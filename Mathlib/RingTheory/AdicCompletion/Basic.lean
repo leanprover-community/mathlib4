@@ -7,7 +7,6 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.SModEq
 import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 import Mathlib.RingTheory.Jacobson.Ideal
-import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 
 /-!
 # Completion of a module with respect to an ideal.
@@ -66,7 +65,7 @@ theorem eq_iff_smodEq {x y : M} :
   refine ⟨fun h _ ↦ h ▸ rfl, fun h ↦ ?_⟩
   rw [← sub_eq_zero]
   apply IsHausdorff.haus' (I := I) (x - y)
-  simpa only [SModEq.sub_mem, sub_zero] using h
+  simpa [SModEq.sub_mem] using h
 
 alias ⟨_, eq_of_smodEq⟩ := eq_iff_smodEq
 
@@ -76,21 +75,21 @@ is not defeq to `I ^ n • ⊤`.
 -/
 theorem eq_iff_smodEq' [IsHausdorff I R]
     {x y : R} :  x = y ↔ ∀ n, x ≡ y [SMOD I ^ n] := by
-  constructor
-  · intro h n
-    simp only [h]
-    rfl
-  · intro h
-    rw [← sub_eq_zero]
-    apply IsHausdorff.haus' (I := I)
-    intro n
-    simpa [sub_smodEq_zero] using h n
+  refine ⟨fun h _ ↦ h ▸ rfl, fun h ↦ ?_⟩
+  rw [← sub_eq_zero]
+  apply IsHausdorff.haus' (I := I) (x - y)
+  simpa [SModEq.sub_mem] using h
 
 alias ⟨_, eq_of_smodEq'⟩ := eq_iff_smodEq'
 
 variable {a : ℕ → ℕ} (ha : StrictMono a)
 include ha
 
+/--
+Given an strictly increasing sequence `a : ℕ → ℕ` and two elements `x y` in a module `M`
+Hausdorff with respect to an ideal `I`, `x = y` if and only if `x ≡ y [SMOD (I ^ a n • ⊤)]`
+for all `n`.
+-/
 theorem eq_iff_smodEq_of_strictMono {x y : M} :
     x = y ↔ ∀ n, x ≡ y [SMOD (I ^ a n • ⊤ : Submodule R M)] := by
   refine ⟨fun h _ ↦ h ▸ rfl, fun h ↦ ?_⟩
@@ -99,6 +98,9 @@ theorem eq_iff_smodEq_of_strictMono {x y : M} :
   intro n
   simpa only [SModEq.sub_mem, sub_zero] using SModEq.mono (pow_smul_top_le I M (ha.id_le n)) (h n)
 
+/--
+The `M = R` invariant of `IsHausdorff.eq_iff_smodEq_of_strictMono`.
+-/
 theorem eq_iff_smodEq_of_strictMono' [IsHausdorff I R] {x y : R} :
     x = y ↔ ∀ n, x ≡ y [SMOD (I ^ a n)] := by
   refine ⟨fun h _ ↦ h ▸ rfl, fun h ↦ ?_⟩
@@ -110,7 +112,8 @@ theorem eq_iff_smodEq_of_strictMono' [IsHausdorff I R] {x y : R} :
       SModEq.mono (Ideal.pow_le_pow_right (ha.id_le n)) (h n)
 
 /--
-If `F : N → M` is the limit function of `f n : N → M ⧸ (I ^ a n • ⊤)`, and each
+If `F : N → M` is the
+limit function of `f n : N → M ⧸ (I ^ a n • ⊤)`, and each
 `f n` is additive, then `F` is additive.
 -/
 protected theorem map_add {N : Type*} [Add N] {f : (n : ℕ) → N → M ⧸ (I ^ (a n) • ⊤)}
@@ -135,7 +138,7 @@ protected theorem map_add' [IsHausdorff I R] {N : Type*} [Add N]
 
 /--
 If `F : N → M` is the limit function of `f n : N → M ⧸ (I ^ a n • ⊤)`, and each
-`f n` is preserves scalar multiplication, then `F` preserves scalar multiplication.
+`f n` preserves scalar multiplication, then `F` preserves scalar multiplication.
 -/
 protected theorem map_smul {N : Type*} [HSMul R N N]
     {f : (n : ℕ) → N → M ⧸ (I ^ a n • ⊤)} (hf : ∀ (n : ℕ) (r : R) (x : N), f n (r • x) = r • f n x)
@@ -147,7 +150,7 @@ protected theorem map_smul {N : Type*} [HSMul R N N]
   exact hf _ _ _
 
 /--
-If `F : S → R` is the limit function of `f n : S → R ⧸ (I ^ n)`, and each
+If `F : S → R` is the limit function of `f n : S → R ⧸ (I ^ a n)`, and each
 `f n` preserves multiplication, then `F` preserves multiplication.
 -/
 protected theorem map_mul {S : Type*} [IsHausdorff I R] [Mul S]
@@ -159,7 +162,7 @@ protected theorem map_mul {S : Type*} [IsHausdorff I R] [Mul S]
   exact hf n _ _
 
 /--
-The limit of `1 : R ⧸ I ^ n` is `1 : R`.
+The limit of `1 : R ⧸ I ^ a n` is `1 : R`.
 -/
 protected theorem eq_one [IsHausdorff I R] {L : R} (hL : ∀ n, Ideal.Quotient.mk (I ^ a n) L = 1) :
     L = 1 := by
@@ -167,7 +170,7 @@ protected theorem eq_one [IsHausdorff I R] {L : R} (hL : ∀ n, Ideal.Quotient.m
   simpa [SModEq, mk_zero] using hL n
 
 /--
-The limit of `0 : M ⧸ I ^ n • ⊤` is `0 : M`.
+The limit of `0 : M ⧸ I ^ (a n) • ⊤` is `0 : M`.
 -/
 protected theorem eq_zero {L : M} (hL : ∀ n, mkQ (I ^ a n • ⊤ : Submodule R M) L = 0) :
     L = 0 := by
@@ -175,7 +178,7 @@ protected theorem eq_zero {L : M} (hL : ∀ n, mkQ (I ^ a n • ⊤ : Submodule 
   simpa [SModEq, mk_zero] using hL n
 
 /--
-The `M = R` variant of `IsHausdorff.eq_zero`. The limit of `0 : R ⧸ I ^ n` is `0 : R`.
+The `M = R` variant of `IsHausdorff.eq_zero`. The limit of `0 : R ⧸ I ^ a n` is `0 : R`.
 -/
 protected theorem eq_zero' [IsHausdorff I R] {L : R} (hL : ∀ n, Ideal.Quotient.mk (I ^ a n) L = 0) :
     L = 0 := by
@@ -218,20 +221,19 @@ theorem of_SModEq_succ {f : ℕ → M}
     ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)] := by
   refine IsPrecomplete.prec' _ ?_
   intro m n h
-  rw [(Nat.add_sub_of_le h).symm]
-  induction n - m with
-  | zero => rfl
-  | succ k ih =>
-    refine ih.trans (SModEq.mono ?_ hf)
-    apply Submodule.smul_mono_left (Ideal.pow_le_pow_right _)
-    simp only [le_add_iff_nonneg_right, zero_le]
+  simp only [SModEq]
+  rw [← mkQ_apply _ (f n), ← Submodule.factor_mk (pow_smul_top_le I M h), mkQ_apply]
+  apply Submodule.eq_factor_of_eq_factor_succ
+      (p := fun n => I ^ n • ⊤) (x := fun m ↦ Submodule.Quotient.mk (f m))
+  intro m
+  simpa using hf
 
 /--
 A variant of `IsPrecomplete.of_SModEq_succ`. Instead of starting with a compatible sequence
 `f n` in `M`, we start with a compatible sequence `f n` in `M ⧸ I ^ n`.
 -/
-theorem of_eq_mapQPowSucc {f : (n : ℕ) → M ⧸ (I ^ n • ⊤)}
-    (hf : ∀ {m}, f m = mapQPowSucc I M m (f (m + 1))) :
+theorem of_eq_factorPowSucc {f : (n : ℕ) → M ⧸ (I ^ n • ⊤)}
+    (hf : ∀ {m}, f m = factorPowSucc I M m (f (m + 1))) :
     ∃ L : M, ∀ n, f n = mkQ _ L := by
   choose g hmk using fun n ↦ Submodule.Quotient.mk_surjective _ (f n)
   have hg : ∀ {m}, g m ≡ g (m + 1) [SMOD (I ^ m • ⊤ : Submodule R M)] := by
@@ -239,17 +241,17 @@ theorem of_eq_mapQPowSucc {f : (n : ℕ) → M ⧸ (I ^ n • ⊤)}
     simp only [SModEq]
     calc
       _ = f m := (hmk m)
-      _ = mapQPowSucc I M m (f (m + 1)) := hf
+      _ = factorPowSucc I M m (f (m + 1)) := hf
       _ = _ := by simp [← (hmk (m + 1))]
   choose L hL using of_SModEq_succ hg
   refine ⟨L, fun n ↦ (hmk n).symm.trans ?_⟩
   simpa using hL n
 
 /--
-The `M = R` variant of `IsPrecomplete.of_eq_mapQPowSucc`.
+The `M = R` variant of `IsPrecomplete.of_eq_factorPowSucc`.
 It helps to solve the problem that `I ^ n` is not defeq to `I ^ n • ⊤`.
 -/
-theorem of_eq_factorPowSucc [IsPrecomplete I R] {f : (n : ℕ) → R ⧸ I ^ n}
+theorem of_eq_factorPowSucc' [IsPrecomplete I R] {f : (n : ℕ) → R ⧸ I ^ n}
     (hf : ∀ {m}, f m = factorPowSucc I m (f (m + 1))) :
     ∃ L : R, ∀ n, f n = Ideal.Quotient.mk _ L := by
   let i := fun n ↦ (I ^ n).quotEquivOfEq (J := I ^ n • ⊤) (mul_top _).symm
@@ -261,64 +263,79 @@ theorem of_eq_factorPowSucc [IsPrecomplete I R] {f : (n : ℕ) → R ⧸ I ^ n}
     apply_fun (i n).symm at this
     simpa only [RingEquiv.symm_apply_apply, mkQ_apply, mk_eq_mk, quotientEquiv_symm_mk,
       RingEquiv.symm_refl, RingEquiv.refl_apply, i, f'] using this
-  apply IsPrecomplete.of_eq_mapQPowSucc
+  apply IsPrecomplete.of_eq_factorPowSucc
   intro m
   have := hf (m := m)
   apply_fun i m at this
-  simpa [f', i, mapQPowSucc, mapQPow, factorPowSucc, Ideal.quotEquivOfEq_eq_factor] using this
+  simpa [f', i, Submodule.factorPowSucc, Submodule.factorPow,
+      Ideal.quotEquivOfEq_eq_factor] using this
 
 variable {a : ℕ → ℕ} (ha : StrictMono a)
 include ha
 
-theorem of_eq_mapQPow {f : (n : ℕ) → M ⧸ (I ^ (a n) • ⊤)}
-    (hf : ∀ {m}, f m = mapQPow I M (ha.monotone m.le_succ) (f (m + 1))) :
+/--
+Given an strictly increasing sequence `a : ℕ → ℕ`, a
+sequence `f n` in `M ⧸ I ^ a n • ⊤`
+compatible in the sense that the image of `f (m + 1)` in `M ⧸ I ^ a m • ⊤`
+is `f m`, there exist a limit `L` in `M` such that `f n` the image of `L` in `M ⧸ I ^ a n • ⊤`.
+-/
+theorem of_eq_factorPow {f : (n : ℕ) → M ⧸ (I ^ (a n) • ⊤)}
+    (hf : ∀ {m}, f m = factorPow I M (ha.monotone m.le_succ) (f (m + 1))) :
     ∃ L : M, ∀ n, f n = mkQ _ L := by
   let f' : (n : ℕ) → M ⧸ (I ^ n • ⊤) :=
     fun n => Submodule.factor (pow_smul_top_le _ _ <| ha.id_le n) (f n)
-  have : ∀ {m}, f' m = mapQPowSucc I M m (f' (m + 1)) := by
+  have : ∀ {m}, f' m = factorPowSucc I M m (f' (m + 1)) := by
     intro m
     simp [f', hf (m := m)]
-  choose L hL using of_eq_mapQPowSucc this
+  choose L hL using of_eq_factorPowSucc this
   refine ⟨L, fun n ↦ ((hL (a n)).symm.trans ?_).symm⟩
-  suffices hf' : ∀ {m n}, (h : m ≤ n) → f m = mapQPow I M (ha.monotone h) (f n) by
+  suffices hf' : ∀ {m n}, (h : m ≤ n) → f m = factorPow I M (ha.monotone h) (f n) by
     simpa [f'] using (hf' (ha.id_le n)).symm
   intro m n h
-  induction' hmn : n - m with k ih generalizing n m
-  · have : n = n - m + m := (Nat.sub_add_cancel h).symm
-    simp only [hmn, zero_add] at this
-    subst this
-    simp
-  · calc
-      _ = (mapQPow I M _) (f (m + k)) := ih (n := m + k) sorry sorry
-      _ = _ := sorry
-
-theorem of_eq_factorPow {f : (n : ℕ) → R ⧸ I ^ (a n)}
-    (hf : ∀ {m}, f m = factorPow I (ha.monotone m.le_succ) (f (m + 1))) :
-    ∃ L : R, ∀ n, f n = Ideal.Quotient.mk _ L := by
-  sorry
+  exact Submodule.eq_factor_of_eq_factor_succ
+      (fun _ _ h ↦ pow_smul_top_le I M (ha.monotone h)) f (fun m ↦ hf) m n h
 
 /--
-The function variant of `IsPrecomplete.of_eq_mapQPow`. Instead of construct a single
+The `M = R` variant of `IsPrecomplete.of_eq_factorPow`.
+-/
+theorem of_eq_factorPow' [IsPrecomplete I R] {f : (n : ℕ) → R ⧸ I ^ (a n)}
+    (hf : ∀ {m}, f m = factorPow I (ha.monotone m.le_succ) (f (m + 1))) :
+    ∃ L : R, ∀ n, f n = Ideal.Quotient.mk _ L := by
+  let f' : (n : ℕ) → R ⧸ I ^ n :=
+    fun n => Ideal.Quotient.factor (I.pow_le_pow_right (ha.id_le n)) (f n)
+  have : ∀ {m}, f' m = factorPowSucc I m (f' (m + 1)) := by
+    intro m
+    simp [f', hf (m := m)]
+  choose L hL using of_eq_factorPowSucc' this
+  refine ⟨L, fun n ↦ ((hL (a n)).symm.trans ?_).symm⟩
+  suffices hf' : ∀ {m n}, (h : m ≤ n) → f m = factorPow I (ha.monotone h) (f n) by
+    simpa [f'] using (hf' (ha.id_le n)).symm
+  intro m n h
+  exact Submodule.eq_factor_of_eq_factor_succ
+      (fun _ _ h ↦ I.pow_le_pow_right (ha.monotone h)) f (fun m ↦ hf) m n h
+
+/--
+The function variant of `IsPrecomplete.of_eq_factorPow`. Instead of construct a single
 element from a compatible sequence of elements in `M ⧸ (I ^ n • ⊤)`, we construct a function
 from a compatible sequence of functions.
 -/
-theorem function_of_eq_mapQPow {α : Type*} {f : (n : ℕ) → α → M ⧸ (I ^ (a n) • ⊤)}
-    (hf : ∀ {m s}, f m s = Submodule.mapQPow I M (ha.monotone m.le_succ) (f (m + 1) s)) :
+theorem function_of_eq_factorPow {α : Type*} {f : (n : ℕ) → α → M ⧸ (I ^ (a n) • ⊤)}
+    (hf : ∀ {m s}, f m s = Submodule.factorPow I M (ha.monotone m.le_succ) (f (m + 1) s)) :
     ∃ F : α → M, ∀ n s, f n s = mkQ (I ^ (a n) • ⊤) (F s) :=
-    ⟨fun s ↦ Classical.choose <| IsPrecomplete.of_eq_mapQPow ha (hf (s := s)),
-    fun n s => (Classical.choose_spec <| IsPrecomplete.of_eq_mapQPow ha (hf (s := s))) n⟩
+    ⟨fun s ↦ Classical.choose <| IsPrecomplete.of_eq_factorPow ha (hf (s := s)),
+    fun n s => (Classical.choose_spec <| IsPrecomplete.of_eq_factorPow ha (hf (s := s))) n⟩
 
 /--
 The function variant of `IsPrecomplete.of_eq_factorPowSucc`, the `M = R` variant of
-`IsPrecomplete.function_of_eq_mapQPow`. Instead of construct a single
+`IsPrecomplete.function_of_eq_factorPow`. Instead of construct a single
 element from a compatible sequence of elements in `R ⧸ I ^ n`, we construct a function
 from a compatible sequence of functions.
 -/
-theorem function_of_eq_factorPow {α : Type*} {f : (n : ℕ) → α → R ⧸ I ^ (a n)}
+theorem function_of_eq_factorPow' [IsPrecomplete I R] {α : Type*} {f : (n : ℕ) → α → R ⧸ I ^ (a n)}
     (hf : ∀ {m s}, f m s = Ideal.Quotient.factorPow I (ha.monotone m.le_succ) (f (m + 1) s)) :
     ∃ F : α → R, ∀ n s, f n s = Ideal.Quotient.mk (I ^ (a n)) (F s) :=
-  ⟨fun s ↦ Classical.choose <| IsPrecomplete.of_eq_factorPow ha (hf (s := s)),
-    fun n s => (Classical.choose_spec <| IsPrecomplete.of_eq_factorPow ha (hf (s := s))) n⟩
+  ⟨fun s ↦ Classical.choose <| IsPrecomplete.of_eq_factorPow' ha (hf (s := s)),
+    fun n s => (Classical.choose_spec <| IsPrecomplete.of_eq_factorPow' ha (hf (s := s))) n⟩
 
 end IsPrecomplete
 
@@ -336,16 +353,16 @@ linear maps `N →ₗ[R] M ⧸ (I ^ n • ⊤)`.
 -/
 noncomputable
 def limLinearMap {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ (a n) • ⊤)}
-    (hf : ∀ {m s}, f m s = mapQPow I M (ha.monotone m.le_succ) (f (m + 1) s)) :
+    (hf : ∀ {m s}, f m s = factorPow I M (ha.monotone m.le_succ) (f (m + 1) s)) :
     N →ₗ[R] M where
       toFun := Classical.choose <|
-        IsPrecomplete.function_of_eq_mapQPow ha (f := fun n ↦ f n) hf
+        IsPrecomplete.function_of_eq_factorPow ha (f := fun n ↦ f n) hf
       map_add' := IsHausdorff.map_add ha (fun n ↦ (f n).map_add') <|
         Classical.choose_spec <|
-          IsPrecomplete.function_of_eq_mapQPow (I := I) (f := fun n ↦ f n) ha hf
+          IsPrecomplete.function_of_eq_factorPow (I := I) (f := fun n ↦ f n) ha hf
       map_smul' := IsHausdorff.map_smul ha (fun n ↦ (f n).map_smul') <|
         Classical.choose_spec <|
-          IsPrecomplete.function_of_eq_mapQPow (I := I) (f := fun n ↦ f n) ha hf
+          IsPrecomplete.function_of_eq_factorPow (I := I) (f := fun n ↦ f n) ha hf
 
 /--
 Let `F : N →ₗ[R] M` be the limit of `f n : N →ₗ[R] M ⧸ (I ^ n • ⊤)`.
@@ -354,10 +371,10 @@ projection `M →ₗ[R] M ⧸ (I ^ n • ⊤)` is `f n` .
 -/
 @[simp]
 theorem mkQ_limLinearMap {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ a n • ⊤)}
-    (hf : ∀ {m s}, f m s = mapQPow I M (ha.monotone m.le_succ) (f (m + 1) s)) (n : ℕ) (s : N) :
+    (hf : ∀ {m s}, f m s = factorPow I M (ha.monotone m.le_succ) (f (m + 1) s)) (n : ℕ) (s : N) :
     (mkQ (I ^ (a n) • ⊤ : Submodule R M) (limLinearMap ha hf s)) = f n s :=
   ((Classical.choose_spec <|
-      IsPrecomplete.function_of_eq_mapQPow (I := I) (f := fun n ↦ f n) ha hf) n s).symm
+      IsPrecomplete.function_of_eq_factorPow (I := I) (f := fun n ↦ f n) ha hf) n s).symm
 
 /--
 Let `F : N →ₗ[R] M` be the limit of `f n : N →ₗ[R] M ⧸ (I ^ n • ⊤)`.
@@ -366,7 +383,7 @@ projection `M →ₗ[R] M ⧸ (I ^ n • ⊤)` is `f n` .
 -/
 @[simp]
 theorem mkQ_comp_limLinearMap {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ (a n) • ⊤)}
-    (hf : ∀ {m s}, f m s = mapQPow I M (ha.monotone m.le_succ) (f (m + 1) s)) (n : ℕ) :
+    (hf : ∀ {m s}, f m s = factorPow I M (ha.monotone m.le_succ) (f (m + 1) s)) (n : ℕ) :
     (mkQ (I ^ (a n) • ⊤ : Submodule R M)).comp (limLinearMap ha hf) = f n :=
   LinearMap.ext (IsAdicComplete.mkQ_limLinearMap ha hf n)
 
@@ -387,19 +404,19 @@ def limRingHom {f : (n : ℕ) → S →+* R ⧸ I ^ a n}
     (hf : ∀ {m s}, f m s = factorPow I (ha.monotone m.le_succ) (f (m + 1) s)) :
     S →+* R where
       toFun := Classical.choose <|
-        IsPrecomplete.function_of_eq_factorPow (I := I) (f := fun n ↦ f n) ha hf
+        IsPrecomplete.function_of_eq_factorPow' (I := I) (f := fun n ↦ f n) ha hf
       map_one' := IsHausdorff.eq_one ha <| fun n ↦ by
           simpa only [(f n).map_one] using ((Classical.choose_spec <|
-            IsPrecomplete.function_of_eq_factorPow (I := I) (f := fun n ↦ f n) ha hf) n 1).symm
+            IsPrecomplete.function_of_eq_factorPow' (I := I) (f := fun n ↦ f n) ha hf) n 1).symm
       map_mul' := IsHausdorff.map_mul ha (fun n ↦ (f n).map_mul) <|
         Classical.choose_spec <|
-          IsPrecomplete.function_of_eq_factorPow (I := I) (f := fun n ↦ f n) ha hf
+          IsPrecomplete.function_of_eq_factorPow' (I := I) (f := fun n ↦ f n) ha hf
       map_zero' := IsHausdorff.eq_zero' ha <| fun n ↦ by
           simpa only [(f n).map_zero] using ((Classical.choose_spec <|
-            IsPrecomplete.function_of_eq_factorPow (I := I) (f := fun n ↦ f n) ha hf) n 0).symm
+            IsPrecomplete.function_of_eq_factorPow' (I := I) (f := fun n ↦ f n) ha hf) n 0).symm
       map_add' := IsHausdorff.map_add' ha (fun n ↦ (f n).map_add) <|
         Classical.choose_spec <|
-          IsPrecomplete.function_of_eq_factorPow (I := I) (f := fun n ↦ f n) ha hf
+          IsPrecomplete.function_of_eq_factorPow' (I := I) (f := fun n ↦ f n) ha hf
 
 /--
 Let `F : S →+* R` be the limit of `f n : S →+* R ⧸ I ^ n`.
@@ -411,7 +428,7 @@ theorem mk_limRingHom {f : (n : ℕ) → S →+* R ⧸ I ^ a n}
     (hf : ∀ {m s}, f m s = factorPow I (ha.monotone m.le_succ) (f (m + 1) s)) (n : ℕ) (s : S) :
     Ideal.Quotient.mk (I ^ a n) (limRingHom ha hf s) = f n s :=
   ((Classical.choose_spec <|
-      IsPrecomplete.function_of_eq_factorPow (I := I) (f := fun n ↦ f n) ha hf) n s).symm
+      IsPrecomplete.function_of_eq_factorPow' (I := I) (f := fun n ↦ f n) ha hf) n s).symm
 
 /--
 Let `F : S →+* R` be the limit of `f n : S →+* R ⧸ I ^ n`.
@@ -809,7 +826,7 @@ def AdicCauchySequence.mk (f : ℕ → M)
 def mk : AdicCauchySequence I M →ₗ[R] AdicCompletion I M where
   toFun f := ⟨fun n ↦ Submodule.mkQ (I ^ n • ⊤ : Submodule R M) (f n), by
     intro m n hmn
-    simp only [mkQ_apply, factor_mk]
+    simp only [mkQ_apply, Submodule.factor_mk]
     exact (f.property hmn).symm⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
