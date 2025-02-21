@@ -1815,6 +1815,7 @@ import Mathlib.CategoryTheory.Comma.Presheaf.Basic
 import Mathlib.CategoryTheory.Comma.Presheaf.Colimit
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 import Mathlib.CategoryTheory.Comma.StructuredArrow.CommaMap
+import Mathlib.CategoryTheory.Comma.StructuredArrow.Final
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Functor
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 import Mathlib.CategoryTheory.ComposableArrows
