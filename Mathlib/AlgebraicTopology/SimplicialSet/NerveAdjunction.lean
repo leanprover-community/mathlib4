@@ -184,7 +184,6 @@ lemma toNerve₂.mk_naturality_δ0i {X : SSet.Truncated.{u} 2}  {C : Type u} [Sm
   apply ComposableArrows.ext₀
   fin_cases i <;> rfl
 
-@[simp]
 theorem nerve_δ22 {C : Type u} [SmallCategory C] {X₀ X₁ X₂ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) :
     (nerve C).map (δ 2).op (ComposableArrows.mk₂ f g) = ComposableArrows.mk₁ f := by
   fapply ComposableArrows.ext₁
@@ -193,7 +192,6 @@ theorem nerve_δ22 {C : Type u} [SmallCategory C] {X₀ X₁ X₂ : C} (f : X₀
   · simp
     rfl
 
-@[simp]
 theorem nerve_δ20 {C : Type u} [SmallCategory C] {X₀ X₁ X₂ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) :
     (nerve C).map (δ 0).op (ComposableArrows.mk₂ f g) = ComposableArrows.mk₁ g := by
   fapply ComposableArrows.ext₁
@@ -202,7 +200,6 @@ theorem nerve_δ20 {C : Type u} [SmallCategory C] {X₀ X₁ X₂ : C} (f : X₀
   · simp
     rfl
 
-@[simp]
 theorem nerve_δ21 {C : Type u} [SmallCategory C] {X₀ X₁ X₂ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) :
     (nerve C).map (δ 1).op (ComposableArrows.mk₂ f g) = ComposableArrows.mk₁ (f ≫ g) := by
   fapply ComposableArrows.ext₁
