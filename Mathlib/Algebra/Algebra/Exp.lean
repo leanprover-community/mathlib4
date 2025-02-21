@@ -40,11 +40,11 @@ theorem wellDef {k : ℕ} (a : A) (h : a ^ k = 0) :
     ∑ n ∈ Finset.range k, (Nat.factorial n : R)⁻¹ • (a ^ n) = exp R A a := by
   sorry
 
-theorem mul_add (a b : A) (h : a * b = b * a) (IsNilpotent a : A) (IsNilpotent b : A) :
+theorem mul_add (a b : A) (h : a * b = b * a) (h1 : IsNilpotent a) (h2 : IsNilpotent b) :
     exp R A (a + b) = exp R A a * exp R A b := by
   sorry
 
-theorem exp_inv (a : A) (IsNilpotent a : A) : IsUnit (exp R A a) := by
+theorem exp_inv (a : A) (h : IsNilpotent a) : IsUnit (exp R A a) := by
   sorry
 
 end Exp
