@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Abelian.CommSq
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Monomorphisms
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ColimCoyoneda
+import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Monomorphisms
 import Mathlib.CategoryTheory.Abelian.Monomorphisms
-import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
 import Mathlib.CategoryTheory.SmallObject.Basic
 import Mathlib.CategoryTheory.Subobject.HasCardinalLT
@@ -153,7 +151,7 @@ variable {X : C}
 open Classical in
 /-- Assuming `G : C` is a generator, `X : C`, and `A : Subobject X`,
 this is a subobject of `X` which is `⊤` if `A = ⊤`, and otherwise
-it is a larger subobject given by the lemma `exists_large_subobject`.
+it is a larger subobject given by the lemma `exists_larger_subobject`.
 The inclusion of `A` in `largerSubobject hG A` is a pushout of
 a monomorphism in the family `generatingMonomorphisms G`
 (see `pushouts_ofLE_le_largerSubobject`). -/
