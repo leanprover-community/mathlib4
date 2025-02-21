@@ -79,7 +79,17 @@ def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E :
   invFun g :=
     { app y := (uliftYonedaEquiv.{max w v₂} (y.hom ≫ g)).down
       naturality := sorry }
-  left_inv := sorry
+  left_inv f := by
+    ext X
+    let e : CostructuredArrow.mk
+      (uliftYonedaEquiv.{max w v₂}.symm (X.hom.app (op X.left) ⟨𝟙 X.left⟩)) ≅ X :=
+        CostructuredArrow.isoMk (Iso.refl _) (by
+          ext Y x
+          dsimp
+          rw [← FunctorToTypes.naturality]
+          simp [uliftYoneda]
+          rfl )
+    simpa [e] using f.naturality e.inv
   right_inv := sorry
 
 section
@@ -163,8 +173,8 @@ end
 by the fact that it factors through the yoneda embedding).
 `coconeOfRepresentable` gives a cocone for this functor which is a colimit and has point `P`.
 -/
-@[reducible]
-def functorToRepresentables (P : Cᵒᵖ ⥤ Type (max w v₁)) :
+@[simps! obj map]
+def functorToRepresentables (P : Cᵒᵖ ⥤ Type max w v₁) :
     P.Elementsᵒᵖ ⥤ Cᵒᵖ ⥤ Type (max w v₁) :=
   (CategoryOfElements.π P).leftOp ⋙ uliftYoneda.{w}
 
@@ -175,34 +185,57 @@ presheaf `P` as a colimit of representables.
 The construction of [MM92], Chapter I, Section 5, Corollary 3.
 -/
 @[simps]
-noncomputable def coconeOfRepresentable (P : Cᵒᵖ ⥤ Type v₁) :
+noncomputable def coconeOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
     Cocone (functorToRepresentables P) where
   pt := P
   ι :=
     { app x := uliftYonedaEquiv.symm x.unop.2
       naturality := fun {x₁ x₂} f => by
         dsimp
-        rw [comp_id]
-        rw [← uliftYonedaEquiv_symm_map]
-        congr 1
-        rw [f.unop.2] }
-
-#exit
+        rw [comp_id, ← uliftYonedaEquiv_symm_map, f.unop.2] }
 
 /-- The legs of the cocone `coconeOfRepresentable` are natural in the choice of presheaf. -/
-theorem coconeOfRepresentable_naturality {P₁ P₂ : Cᵒᵖ ⥤ Type v₁} (α : P₁ ⟶ P₂) (j : P₁.Elementsᵒᵖ) :
+theorem coconeOfRepresentable_naturality
+    {P₁ P₂ : Cᵒᵖ ⥤ Type max w v₁} (α : P₁ ⟶ P₂) (j : P₁.Elementsᵒᵖ) :
     (coconeOfRepresentable P₁).ι.app j ≫ α =
       (coconeOfRepresentable P₂).ι.app ((CategoryOfElements.map α).op.obj j) := by
   ext T f
-  simpa [coconeOfRepresentable_ι_app] using FunctorToTypes.naturality _ _ α f.op _
+  simp [uliftYonedaEquiv, FunctorToTypes.naturality]
 
 /-- The cocone with point `P` given by `coconeOfRepresentable` is a colimit:
 that is, we have exhibited an arbitrary presheaf `P` as a colimit of representables.
 
 The result of [MM92], Chapter I, Section 5, Corollary 3.
 -/
-noncomputable def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type v₁) :
+noncomputable def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
     IsColimit (coconeOfRepresentable P) where
+  desc s :=
+    { app X x := uliftYonedaEquiv (s.ι.app (Opposite.op (Functor.elementsMk P X x)))
+      naturality X Y f := by
+        ext x
+        have := s.w (Quiver.Hom.op (CategoryOfElements.homMk (P.elementsMk X x)
+          (P.elementsMk Y (P.map f x)) f rfl))
+        dsimp at this x ⊢
+        rw [← this, uliftYonedaEquiv_comp]
+        dsimp
+        rw [uliftYonedaEquiv_apply, ← FunctorToTypes.naturality,
+          uliftYonedaEquiv_uliftYoneda_map]
+        simp [uliftYoneda] }
+  fac s j := by
+    ext X x
+    let φ : j.unop ⟶ (Functor.elementsMk P _
+      ((uliftYonedaEquiv.symm (unop j).snd).app X x)) := ⟨x.down.op, rfl⟩
+    have := s.w φ.op
+    dsimp [φ] at this x ⊢
+    rw [← this, uliftYonedaEquiv_apply]
+    dsimp [uliftYoneda]
+    rw [id_comp]
+  uniq s m hm := by
+    ext X x
+    dsimp at hm ⊢
+    rw [← hm, uliftYonedaEquiv_comp, Equiv.apply_symm_apply]
+#exit
+  /-
   desc s :=
     { app := fun X x => (s.ι.app (Opposite.op (Functor.elementsMk P X x))).app X (𝟙 _)
       naturality := fun X Y f => by
@@ -221,7 +254,7 @@ noncomputable def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type v₁) :
     dsimp
     rw [← hm]
     apply congr_arg
-    simp [coconeOfRepresentable_ι_app, yonedaEquiv]
+    simp [coconeOfRepresentable_ι_app, yonedaEquiv]-/
 
 variable {A : C ⥤ ℰ}
 

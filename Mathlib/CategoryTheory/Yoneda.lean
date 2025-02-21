@@ -653,6 +653,11 @@ lemma uliftYonedaEquiv_naturality {X Y : Cᵒᵖ} {F : Cᵒᵖ ⥤ Type max w v�
     ← FunctorToTypes.naturality _ _ f g (ULift.up (𝟙 _))]
   simp [uliftYoneda]
 
+lemma uliftYonedaEquiv_comp {X : C} {F G : Cᵒᵖ ⥤ Type max w v₁}
+    (α : uliftYoneda.{w}.obj X ⟶ F) (β : F ⟶ G) :
+    uliftYonedaEquiv.{w} (α ≫ β) = β.app _ (uliftYonedaEquiv α) :=
+  rfl
+
 @[reassoc]
 lemma uliftYonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {F : Cᵒᵖ ⥤ Type max w v₁}
     (t : F.obj X) :
@@ -661,6 +666,12 @@ lemma uliftYonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {F : Cᵒᵖ ⥤ T
   obtain ⟨u, rfl⟩ := uliftYonedaEquiv.surjective t
   rw [uliftYonedaEquiv_naturality]
   simp
+
+@[simp]
+lemma uliftYonedaEquiv_uliftYoneda_map {X Y : C} (f : X ⟶ Y) :
+    DFunLike.coe (β := fun _ ↦ ULift.{w} (X ⟶ Y))
+        uliftYonedaEquiv.{w} (uliftYoneda.map f) = ULift.up f := by
+  simp [uliftYonedaEquiv, uliftYoneda]
 
 end YonedaLemma
 
