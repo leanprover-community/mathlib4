@@ -36,9 +36,10 @@ variable {α : Type*} [Fintype α] [DecidableEq α] (g : Perm α)
 
 namespace Equiv.Perm.OnCycleFactors
 
-theorem sign_kerParam_apply_apply
-    (k : Perm (Function.fixedPoints g))
-    (v : (c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α)) :
+variable (k : Perm (fixedPoints g))
+    (v : (c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α))
+
+theorem sign_kerParam_apply_apply :
     sign (kerParam g ⟨k, v⟩) = sign k * ∏ c, sign (v c : Perm α) := by
   rw [kerParam, MonoidHom.noncommCoprod_apply, ← Prod.fst_mul_snd ⟨k, v⟩, Prod.mk_mul_mk, mul_one,
     one_mul, map_mul, sign_ofSubtype, Finset.univ_eq_attach, mul_right_inj, ← MonoidHom.comp_apply,
@@ -46,9 +47,7 @@ theorem sign_kerParam_apply_apply
     univ_eq_attach, noncommProd_eq_prod]
   simp
 
-theorem cycleType_kerParam_apply_apply
-    (k : Perm (Function.fixedPoints g))
-    (v : (c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α)) :
+theorem cycleType_kerParam_apply_apply :
     cycleType (kerParam g ⟨k, v⟩) = cycleType k + ∑ c, cycleType (v c : Perm α) := by
   let U := (Finset.univ : Finset { x // x ∈ g.cycleFactorsFinset }).toSet
   have hU : U.Pairwise fun i j ↦ (v i : Perm α).Disjoint (v j : Perm α) := fun c _ d _ h ↦ by
@@ -64,27 +63,21 @@ theorem cycleType_kerParam_apply_apply
   exact congr_arg₂ _ cycleType_ofSubtype rfl
 
 variable {g} in
-theorem odd_of_centralizer_le_alternatingGroup
-    (h : Subgroup.centralizer {g} ≤ alternatingGroup α) :
+theorem odd_of_centralizer_le_alternatingGroup (h : Subgroup.centralizer {g} ≤ alternatingGroup α) :
     ∀ i ∈ g.cycleType, Odd i := by
   intro i hi
   rw [cycleType_def g, Multiset.mem_map] at hi
   obtain ⟨c, hc, rfl⟩ := hi
   rw [← Finset.mem_def] at hc
   suffices sign c = 1 by
-    rw [IsCycle.sign _, neg_eq_iff_eq_neg] at this
-    · rw [← Nat.not_even_iff_odd, Function.comp_apply]
-      rw [← Int.units_ne_iff_eq_neg] at this
+    rw [IsCycle.sign _, neg_eq_iff_eq_neg, ← Int.units_ne_iff_eq_neg] at this
+    · rw [← Nat.not_even_iff_odd, comp_apply]
       exact fun h ↦ this h.neg_one_pow
     · rw [mem_cycleFactorsFinset_iff] at hc
       exact hc.left
   apply h
-  apply kerParam_range_le_centralizer
-  -- apply Subgroup.map_subtype_le (toPermHom g).ker
-  -- rw [← kerParam_range_eq, kerParam]
-  rw [kerParam]
-  use ⟨1, Pi.mulSingle ⟨c, hc⟩ ⟨c, Subgroup.mem_zpowers c⟩⟩
-  simp
+  rw [Subgroup.mem_centralizer_singleton_iff]
+  exact Equiv.Perm.self_mem_cycle_factors_commute hc
 
 end Equiv.Perm.OnCycleFactors
 
@@ -93,7 +86,7 @@ namespace AlternatingGroup
 open Nat Equiv.Perm.OnCycleFactors Equiv.Perm
 
 private theorem of_cycleType_aux (m : Multiset ℕ) :
-    map (Function.Embedding.subtype fun x ↦ x ∈ alternatingGroup α)
+    map (Embedding.subtype fun x ↦ x ∈ alternatingGroup α)
       (univ.filter fun g : alternatingGroup α => (g : Equiv.Perm α).cycleType = m) =
       if Even (m.sum + Multiset.card m)
         then Finset.univ.filter fun g : Equiv.Perm α => g.cycleType = m
@@ -101,14 +94,14 @@ private theorem of_cycleType_aux (m : Multiset ℕ) :
   split_ifs with hm
   · ext g
     simp only [Finset.mem_map, Finset.mem_filter, Finset.mem_univ, true_and,
-      Function.Embedding.coe_subtype, Subtype.exists, mem_alternatingGroup, exists_and_left,
+      Embedding.coe_subtype, Subtype.exists, mem_alternatingGroup, exists_and_left,
       exists_prop, exists_eq_right_right, and_iff_left_iff_imp]
     intro hg
     rw [sign_of_cycleType, hg, Even.neg_one_pow hm]
   · rw [Finset.eq_empty_iff_forall_not_mem]
     intro g hg
     simp only [Finset.mem_map, Finset.mem_filter, Finset.mem_univ, true_and,
-      Function.Embedding.coe_subtype, Subtype.exists, mem_alternatingGroup, exists_and_left,
+      Embedding.coe_subtype, Subtype.exists, mem_alternatingGroup, exists_and_left,
       exists_prop, exists_eq_right_right] at hg
     rcases hg with ⟨hg, hs⟩
     apply hm
@@ -177,7 +170,7 @@ theorem card_le_of_centralizer_le_alternating
     obtain ⟨a, b, hab⟩ := Fintype.exists_pair_of_one_lt_card this
     suffices sign (kerParam g ⟨swap a b, 1⟩) ≠ 1 by
       exact this (h (kerParam_range_le_centralizer (Set.mem_range_self _)))
-    simp [sign_kerParam, hab]
+    simp [sign_kerParam_apply_apply, hab]
   rwa [card_fixedPoints g, Nat.lt_iff_add_one_le, Nat.le_sub_iff_add_le]
   rw [sum_cycleType]
   exact Finset.card_le_univ _
@@ -234,7 +227,7 @@ theorem count_le_one_of_centralizer_le_alternating
       rw [hτ, mul_two]
     rw [← pow_prime_eq_one_iff, ← Subgroup.coe_pow, ← Subgroup.coe_one, Subtype.coe_inj]
     simp only [k, ← map_pow]
-    suffices  (⟨τ, hτ⟩ : range_toPermHom' g) ^ 2 = 1  by
+    suffices (⟨τ, hτ⟩ : range_toPermHom' g) ^ 2 = 1 by
       simp only [this, map_one, OneMemClass.coe_one]
     rw [← Subtype.coe_inj]
     simp only [SubmonoidClass.mk_pow, OneMemClass.coe_one, τ]
@@ -264,21 +257,18 @@ theorem kerParam_range_eq_centralizer_of_count_le_one (h_count : ∀ i, g.cycleT
     simp only [Subgroup.mem_map, MonoidHom.mem_ker, Subgroup.coeSubtype, Subtype.exists,
       exists_and_right, exists_eq_right]
     use hx
-    have that := mem_range_toPermHom_iff (τ := (toPermHom g) ⟨x, hx⟩)
-    simp only [MonoidHom.mem_range, exists_apply_eq_apply, true_iff] at that
     ext1 c
+    rw [coe_one, id_eq, ← Subtype.coe_inj]
     rw [← Multiset.nodup_iff_count_le_one, cycleType_def,
       Multiset.nodup_map_iff_inj_on (cycleFactorsFinset g).nodup] at h_count
-    rw [coe_one, id_eq, ← Subtype.coe_inj]
-    apply h_count _ _ _ c.prop (that c)
-    simp only [Finset.mem_val, Finset.coe_mem]
+    exact h_count _ (by simp) _ c.prop ((mem_range_toPermHom_iff).mp (by simp) c)
 
 /-- The centralizer of a permutation is contained in the alternating group if and only if
 all cycles have odd length, with at most one of each, and there is at most one fixed point. -/
 theorem centralizer_le_alternating_iff :
     Subgroup.centralizer {g} ≤ alternatingGroup α ↔
-    (∀ c ∈ g.cycleType, Odd c) ∧ Fintype.card α ≤ g.cycleType.sum + 1 ∧
-      ∀ i, g.cycleType.count i ≤ 1 :=  by
+      (∀ c ∈ g.cycleType, Odd c) ∧ Fintype.card α ≤ g.cycleType.sum + 1 ∧
+        ∀ i, g.cycleType.count i ≤ 1 := by
   rw [SetLike.le_def]
   constructor
   · intro h
@@ -288,16 +278,13 @@ theorem centralizer_le_alternating_iff :
   · rintro ⟨h_odd, h_fixed, h_count⟩ x hx
     rw [← kerParam_range_eq_centralizer_of_count_le_one g h_count] at hx
     obtain ⟨⟨y, uv⟩, rfl⟩ := MonoidHom.mem_range.mp hx
-    rw [mem_alternatingGroup]
-    have := sign_kerParam (g := g) y uv
-    rw [this]
+    rw [mem_alternatingGroup, sign_kerParam_apply_apply (g := g) y uv]
     convert mul_one _
     · apply Finset.prod_eq_one
       rintro ⟨c, hc⟩ _
       obtain ⟨k, hk⟩ := (uv _).prop
       rw [← hk, map_zpow]
       convert one_zpow k
-      simp only
       rw [IsCycle.sign, Odd.neg_one_pow, neg_neg]
       · apply h_odd
         rw [cycleType_def, Multiset.mem_map]
