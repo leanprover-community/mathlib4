@@ -331,6 +331,9 @@ theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Ty
     exact sSup_le fun b ⟨a, ha⟩ => (ha a le_rfl).trans (hbdd _)
   · exact MemLp.zero
 
+@[deprecated (since := "2025-02-21")]
+alias mem𝓛p_limitProcess_of_eLpNorm_bdd := memLp_limitProcess_of_eLpNorm_bdd
+
 end Limit
 
 variable {α : Type*}

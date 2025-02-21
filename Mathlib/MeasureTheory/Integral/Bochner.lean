@@ -765,6 +765,9 @@ theorem MemLp.eLpNorm_eq_integral_rpow_norm {f : α → H} {p : ℝ≥0∞} (hp1
   rw [A, ← ofReal_rpow_of_nonneg toReal_nonneg (inv_nonneg.2 toReal_nonneg), ofReal_toReal]
   exact (lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp1 hp2 hf.2).ne
 
+@[deprecated (since := "2025-02-21")]
+alias Mem𝓛p.eLpNorm_eq_integral_rpow_norm := MemLp.eLpNorm_eq_integral_rpow_norm
+
 end NormedAddCommGroup
 
 theorem integral_mono_ae {f g : α → ℝ} (hf : Integrable f μ) (hg : Integrable g μ) (h : f ≤ᵐ[μ] g) :

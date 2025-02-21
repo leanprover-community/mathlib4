@@ -257,6 +257,9 @@ theorem memLp_trim_of_mem_lpMeasSubgroup (hm : m ≤ m0) (f : Lp F p μ)
   rw [h_eLpNorm_fg]
   exact Lp.eLpNorm_lt_top f
 
+@[deprecated (since := "2025-02-21")]
+alias mem𝓛p_trim_of_mem_lpMeasSubgroup := memLp_trim_of_mem_lpMeasSubgroup
+
 /-- If `f` belongs to `Lp` for the measure `μ.trim hm`, then it belongs to the subgroup
 `lpMeasSubgroup F m p μ`. -/
 theorem mem_lpMeasSubgroup_toLp_of_trim (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) :
@@ -629,6 +632,9 @@ theorem MemLp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ �
     specialize h_add h_disj hf_mem hg_mem hfm hgm hfP' hgP'
     refine h_ae ?_ (hf_mem.add hg_mem) h_add
     exact (hf_mem.coeFn_toLp.symm.add hg_mem.coeFn_toLp.symm).trans (Lp.coeFn_add _ _).symm
+
+@[deprecated (since := "2025-02-21")]
+alias Mem𝓛p.induction_stronglyMeasurable := MemLp.induction_stronglyMeasurable
 
 end Induction
 

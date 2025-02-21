@@ -140,6 +140,9 @@ theorem MemLp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] {f : α → 
   rw [eLpNorm_eq_eLpNorm' hq0 hq_top] at hfq_lt_top
   exact eLpNorm'_lt_top_of_eLpNorm'_lt_top_of_exponent_le hfq_m hfq_lt_top hp_pos.le hpq_real
 
+@[deprecated (since := "2025-02-21")]
+alias Mem𝓛p.mono_exponent := MemLp.mono_exponent
+
 @[deprecated (since := "2025-01-07")] alias MemLp.memLp_of_exponent_le := MemLp.mono_exponent
 
 /-- If a function is supported on a finite-measure set and belongs to `ℒ^p`, then it belongs to
@@ -282,6 +285,9 @@ theorem MemLp.of_bilin {p q r : ℝ≥0∞} {f : α → E} {g : α → F} (b : E
   have := hg.2
   finiteness
 
+@[deprecated (since := "2025-02-21")]
+alias Mem𝓛p.of_bilin := MemLp.of_bilin
+
 end Bilinear
 
 section BoundedSMul
@@ -320,6 +326,9 @@ theorem MemLp.smul {p q r : ℝ≥0∞} {f : α → E} {φ : α → 𝕜} (hf : 
     eLpNorm_smul_le_mul_eLpNorm hf.1 hφ.1 |>.trans_lt <|
       ENNReal.mul_lt_top hφ.eLpNorm_lt_top hf.eLpNorm_lt_top⟩
 
+@[deprecated (since := "2025-02-21")]
+alias Mem𝓛p.smul := MemLp.smul
+
 @[deprecated (since := "2025-02-13")] alias MemLp.smul_of_top_right := MemLp.smul
 @[deprecated (since := "2025-02-13")] alias MemLp.smul_of_top_left := MemLp.smul
 
@@ -334,11 +343,17 @@ theorem MemLp.mul (hf : MemLp f q μ) (hφ : MemLp φ p μ) [hpqr : HolderTriple
     MemLp (φ * f) r μ :=
   MemLp.smul hf hφ
 
+@[deprecated (since := "2025-02-21")]
+alias Mem𝓛p.mul := MemLp.mul
+
 /-- Variant of `MemLp.mul` where the function is written as `fun x ↦ φ x * f x`
 instead of `φ * f`. -/
 theorem MemLp.mul' (hf : MemLp f q μ) (hφ : MemLp φ p μ) [hpqr : HolderTriple p q r] :
     MemLp (fun x ↦ φ x * f x) r μ :=
   MemLp.smul hf hφ
+
+@[deprecated (since := "2025-02-21")]
+alias Mem𝓛p.mul' := MemLp.mul'
 
 @[deprecated (since := "2025-02-13")] alias MemLp.mul_of_top_right := MemLp.mul
 @[deprecated (since := "2025-02-13")] alias MemLp.mul_of_top_right' := MemLp.mul'

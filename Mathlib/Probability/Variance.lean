@@ -108,6 +108,9 @@ theorem evariance_lt_top_iff_memLp [IsFiniteMeasure μ] (hX : AEStronglyMeasurab
   mp := by contrapose!; rw [top_le_iff]; exact evariance_eq_top hX
   mpr := evariance_lt_top
 
+@[deprecated (since := "2025-02-21")]
+alias evariance_lt_top_iff_mem𝓛p := evariance_lt_top_iff_memLp
+
 lemma evariance_eq_top_iff [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ) :
     evariance X μ = ∞ ↔ ¬ MemLp X 2 μ := by simp [← evariance_lt_top_iff_memLp hX]
 
