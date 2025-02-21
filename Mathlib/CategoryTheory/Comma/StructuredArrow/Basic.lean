@@ -668,12 +668,6 @@ def postIsoMap₂ (S : C) (F : B ⥤ C) (G : C ⥤ D) :
     post F G S ≅ map₂ (F := 𝟭 _) (𝟙 (F ⋙ G)) (𝟙 _) :=
   NatIso.ofComponents fun _ => isoMk <| Iso.refl _
 
-/-- `CostructuredArrow.pre` is a special case of `CostructuredArrow.map₂` up to natural
-isomorphism. -/
-def preIsoMap₂ (F : B ⥤ C) (G : C ⥤ D) (S : D) :
-    pre F G S ≅ map₂ (G := 𝟭 _) (𝟙 _) (𝟙 _) :=
-  NatIso.ofComponents fun _ => isoMk <| Iso.refl _
-
 /-- A costructured arrow is called universal if it is terminal. -/
 abbrev IsUniversal (f : CostructuredArrow S T) := IsTerminal f
 
