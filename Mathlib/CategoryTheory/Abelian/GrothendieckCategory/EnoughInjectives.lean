@@ -4,9 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Abelian.CommSq
+import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
 import Mathlib.CategoryTheory.Generator.Basic
 import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
+import Mathlib.Order.TransfiniteIteration
+import Mathlib.Order.Interval.Set.SuccOrder
+import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
 # Grothendieck abelian categories have enough injectives
@@ -99,6 +105,163 @@ lemma exists_larger_subobject {X : C} (A : Subobject X) (hA : A ≠ ⊤) :
   dsimp
   simp only [← cancel_mono p', assoc, fac,
     Subobject.underlyingIso_hom_comp_eq_mk, Subobject.ofLE_arrow]
+
+variable {X : C}
+
+open Classical in
+/-- Assuming `G : C` is a generator, `X : C`, and `A : Subobject X`,
+this is a subobject of `X` which is `⊤` if `A = ⊤`, and otherwise
+it is a larger subobject given by the lemma `exists_large_subobject`.
+The inclusion of `A` in `largerSubobject hG A` is a pushout of
+a monomorphism in the family `generatingMonomorphisms G`
+(see `pushouts_ofLE_le_largerSubobject`). -/
+noncomputable def largerSubobject (A : Subobject X) : Subobject X :=
+  if hA : A = ⊤ then ⊤ else (exists_larger_subobject hG A hA).choose
+
+variable (X) in
+@[simp]
+lemma largerSubobject_top : largerSubobject hG (⊤ : Subobject X) = ⊤ := dif_pos rfl
+
+lemma lt_largerSubobject (A : Subobject X) (hA : A ≠ ⊤) :
+    A < largerSubobject hG A := by
+  dsimp only [largerSubobject]
+  rw [dif_neg hA]
+  exact (exists_larger_subobject hG A hA).choose_spec.choose
+
+lemma le_largerSubobject (A : Subobject X) :
+    A ≤ largerSubobject hG A := by
+  by_cases hA : A = ⊤
+  · subst hA
+    simp only [largerSubobject_top, le_refl]
+  · exact (lt_largerSubobject hG A hA).le
+
+lemma pushouts_ofLE_le_largerSubobject (A : Subobject X) :
+      (generatingMonomorphisms G).pushouts
+        (Subobject.ofLE _ _ (le_largerSubobject hG A)) := by
+  by_cases hA : A = ⊤
+  · subst hA
+    have := (Subobject.isIso_arrow_iff_eq_top (largerSubobject hG (⊤ : Subobject X))).2 (by simp)
+    exact (MorphismProperty.arrow_mk_iso_iff _
+      (Arrow.isoMk (asIso (Subobject.arrow _)) (asIso (Subobject.arrow _)) (by simp))).2
+        (isomorphisms_le_pushouts_generatingMonomorphisms G (𝟙 X)
+          (MorphismProperty.isomorphisms.infer_property _))
+  · refine (MorphismProperty.arrow_mk_iso_iff _ ?_).1
+      (exists_larger_subobject hG A hA).choose_spec.choose_spec
+    exact Arrow.isoMk (Iso.refl _)
+      (Subobject.isoOfEq _ _ ((by simp [largerSubobject, dif_neg hA])))
+
+variable [IsGrothendieckAbelian.{w} C]
+
+lemma top_mem_range (A₀ : Subobject X) {J : Type w} [LinearOrder J] [OrderBot J] [SuccOrder J]
+    [WellFoundedLT J] (hJ : Cardinal.mk (Shrink (Subobject X)) < Cardinal.mk J) :
+    ∃ (j : J), transfiniteIterate (largerSubobject hG) j A₀ = ⊤ :=
+  top_mem_range_transfiniteIterate (largerSubobject hG) A₀ (lt_largerSubobject hG) (by simp)
+    (fun h ↦ (lt_self_iff_false _).1 (lt_of_le_of_lt
+      (Cardinal.mk_le_of_injective ((equivShrink.{w} (Subobject X)).injective.comp h)) hJ))
+
+lemma exists_ordinal (A₀ : Subobject X) :
+    ∃ (o : Ordinal.{w}) (j : o.toType), transfiniteIterate (largerSubobject hG) j A₀ = ⊤ := by
+  let κ := Order.succ (Cardinal.mk (Shrink.{w} (Subobject X)))
+  have : OrderBot κ.ord.toType := Ordinal.toTypeOrderBot (by
+    simp only [ne_eq, Cardinal.ord_eq_zero]
+    apply Cardinal.succ_ne_zero)
+  exact ⟨κ.ord, top_mem_range hG A₀ (lt_of_lt_of_le (Order.lt_succ _) (by simp [κ]))⟩
+
+section
+
+variable (A₀ : Subobject X) (J : Type w) [LinearOrder J] [OrderBot J] [SuccOrder J]
+  [WellFoundedLT J]
+
+/-- Let `C` be a Grothendieck abelian category with a generator (`hG`),
+`X : C`, `A₀ : Subobject X`. Let `J` be a well ordered type. This is
+the functor `J ⥤ MonoOver X` which corresponds to the evaluation
+at `A₀` of the transfinite iteration of the map
+`largerSubobject hG : Subobject X → Subobject X`. -/
+@[simps]
+noncomputable def functorToMonoOver : J ⥤ MonoOver X where
+  obj j := MonoOver.mk' (transfiniteIterate (largerSubobject hG) j A₀).arrow
+  map {j j'} f := MonoOver.homMk (Subobject.ofLE _ _
+      (monotone_transfiniteIterate _ _ (le_largerSubobject hG) (leOfHom f)))
+
+/-- The functor `J ⥤ C` induced by `functorToMonoOver hG A₀ J : J ⥤ MonoOver X`. -/
+noncomputable abbrev functor : J ⥤ C :=
+  functorToMonoOver hG A₀ J ⋙ MonoOver.forget _ ⋙ Over.forget _
+
+instance : (functor hG A₀ J).IsWellOrderContinuous where
+  nonempty_isColimit m hm := ⟨by
+    have : Nonempty (Set.Iio m) := ⟨⟨⊥, Ne.bot_lt (by simpa using hm.not_isMin)⟩⟩
+    let c := (Set.principalSegIio m).cocone (functorToMonoOver hG A₀ J ⋙ MonoOver.forget _)
+    have : Mono c.pt.hom := by dsimp [c]; infer_instance
+    apply IsGrothendieckAbelian.isColimitMapCoconeOfSubobjectMkEqISup
+      ((Set.principalSegIio m).monotone.functor ⋙ functorToMonoOver hG A₀ J) c
+    dsimp [c]
+    simp only [Subobject.mk_arrow]
+    exact transfiniteIterate_limit (largerSubobject hG) A₀ m hm⟩
+
+lemma mono_functor_map_le_succ (j : J) (hj : ¬IsMax j) :
+    (generatingMonomorphisms G).pushouts ((functor hG A₀ J).map (homOfLE (Order.le_succ j))) := by
+  refine (MorphismProperty.arrow_mk_iso_iff _ ?_).2
+    (pushouts_ofLE_le_largerSubobject hG
+      (transfiniteIterate (largerSubobject hG) j A₀))
+  exact Arrow.isoMk (Iso.refl _) (Subobject.isoOfEq _ _ (transfiniteIterate_succ _ _ _ hj))
+    (by simp [MonoOver.forget])
+
+variable {J} in
+/-- For any `j`, the map `(functor hG A₀ J).map (homOfLE bot_le : ⊥ ⟶ j)`
+is a transfinite composition of pushouts of monomorphisms in the
+family `generatingMonomorphisms G`. -/
+noncomputable def transfiniteCompositionOfShapeMapFromBot (j : J) :
+  (generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape (Set.Iic j)
+    ((functor hG A₀ J).map (homOfLE bot_le : ⊥ ⟶ j)) where
+  F := (Set.initialSegIic j).monotone.functor ⋙ functor hG A₀ J
+  isoBot := Iso.refl _
+  incl :=
+    { app k := (functor hG A₀ J).map (homOfLE k.2)
+      naturality k k' h := by simp [MonoOver.forget] }
+  isColimit := colimitOfDiagramTerminal isTerminalTop _
+  map_mem k hk := by
+    dsimp [MonoOver.forget]
+    convert pushouts_ofLE_le_largerSubobject hG
+      (transfiniteIterate (largerSubobject hG) k.1 A₀) using 2
+    all_goals
+      rw [Set.Iic.succ_eq_of_not_isMax hk,
+        transfiniteIterate_succ _ _ _ (Set.not_isMax_coe _ hk)]
+
+end
+
+variable {A : C} {f : A ⟶ X} [Mono f]
+
+/-- If `transfiniteIterate (largerSubobject hG) j (Subobject.mk f) = ⊤`,
+then the monomorphism `f` is a transfinite composition of pushouts of
+monomorphisms in the family `generatingMonomorphisms G`. -/
+noncomputable def transfiniteCompositionOfShapeOfEqTop
+    {J : Type w} [LinearOrder J] [OrderBot J] [SuccOrder J] [WellFoundedLT J] {j : J}
+    (hj : transfiniteIterate (largerSubobject hG) j (Subobject.mk f) = ⊤) :
+    (generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape (Set.Iic j) f := by
+  let t := transfiniteIterate (largerSubobject hG) j (Subobject.mk f)
+  have := (Subobject.isIso_arrow_iff_eq_top t).mpr hj
+  apply (transfiniteCompositionOfShapeMapFromBot hG (Subobject.mk f) j).ofArrowIso
+  refine Arrow.isoMk ((Subobject.isoOfEq _ _ (transfiniteIterate_bot _ _) ≪≫
+    Subobject.underlyingIso f)) (asIso t.arrow) ?_
+  dsimp [MonoOver.forget]
+  rw [assoc, Subobject.underlyingIso_hom_comp_eq_mk, Subobject.ofLE_arrow,
+    Subobject.ofLE_arrow]
+
+variable (f)
+
+/-- Let `C` be a Grothendieck abelian category. Assume that `G : C` is a generator
+of `C`. Then, any morphism in `C` is a transfinite composition of pushouts
+of monomorphisms in the family `generatingMonomorphisms G` which consists
+of the inclusions of the subobjects of `G`. -/
+lemma exists_transfiniteCompositionOfShape :
+    ∃ (J : Type w) (_ : LinearOrder J) (_ : OrderBot J) (_ : SuccOrder J)
+        (_ : WellFoundedLT J),
+    Nonempty ((generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape J f) := by
+  obtain ⟨o, j, hj⟩ := exists_ordinal hG (Subobject.mk f)
+  have ho : Nonempty o.toType := ⟨j⟩
+  rw [o.toType_nonempty_iff_ne_zero] at ho
+  letI := Ordinal.toTypeOrderBot ho
+  exact ⟨_, _, _, _, _, ⟨transfiniteCompositionOfShapeOfEqTop hG hj⟩⟩
 
 end generatingMonomorphisms
 
