@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
-import Mathlib.Algebra.BigOperators.Monoid.List.Lemmas
 import Mathlib.Algebra.BigOperators.Monoid.List.Basic
 import Mathlib.Algebra.BigOperators.Group.List.Basic
+import Mathlib.Data.List.Rotate
 
 /-!
 # Sums and products from lists

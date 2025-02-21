@@ -3,11 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Lemmas
 import Mathlib.Algebra.BigOperators.Monoid.Multiset.Defs
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Order.Group.Multiset
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Algebra.BigOperators.Monoid.List.Lemmas
 
 /-!
 # Sums and products over multisets

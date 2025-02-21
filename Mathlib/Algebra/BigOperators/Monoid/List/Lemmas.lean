@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Basic
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Int.Units
 import Mathlib.Data.List.Dedup
@@ -11,9 +10,8 @@ import Mathlib.Data.List.Flatten
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Perm.Basic
 import Mathlib.Data.List.Range
-import Mathlib.Data.List.Rotate
-import Mathlib.Data.List.ProdSigma
 import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.BigOperators.Monoid.List.Basic
 
 /-!
 # Sums and products from lists
