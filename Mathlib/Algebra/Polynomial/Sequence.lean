@@ -31,9 +31,7 @@ Generalize linear independence to:
 open Submodule
 open scoped Function
 
-universe u
-
-variable (R : Type u)
+variable (R : Type*)
 
 namespace Polynomial
 
@@ -41,7 +39,7 @@ namespace Polynomial
 structure Sequence [Semiring R] where
   /-- The `i`'th element in the sequence. Use `S i` instead, defined via `CoeFun`. -/
   protected elems' : ℕ → R[X]
-  /-- The `i`'th element in the sequence has degree `i`. Use `S.degree_eq` instead, -/
+  /-- The `i`'th element in the sequence has degree `i`. Use `S.degree_eq` instead. -/
   protected degree_eq' (i : ℕ) : (elems' i).degree = i
 
 attribute [coe] Sequence.elems'
@@ -123,8 +121,8 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
       refine ih tail.natDegree ?_ _ rfl
 
       have isRightRegular_smul_leadingCoeff : IsRightRegular (u • S n).leadingCoeff := by
-        simp [leadingCoeff_smul_of_smul_regular _ <| IsSMulRegular.of_mul_eq_one leftinv, rightinv]
-        exact isRegular_one.right
+        simpa [leadingCoeff_smul_of_smul_regular _ <| IsSMulRegular.of_mul_eq_one leftinv, rightinv]
+          using isRegular_one.right
 
       have head_degree_eq := degree_smul_of_isRightRegular_leadingCoeff
         (leadingCoeff_ne_zero.mpr p_ne_zero) isRightRegular_smul_leadingCoeff
@@ -139,8 +137,8 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
         · rw [n_eq_zero, ← coeff_natDegree, natDegree_eq] at rightinv
           dsimp [head]
           rwa [n_eq_zero, eq_C_of_natDegree_eq_zero <| S.natDegree_eq 0,
-                smul_C, smul_eq_mul, map_mul, ← C_mul, rightinv, smul_C, smul_eq_mul,
-                mul_one, C_eq_zero, leadingCoeff_eq_zero]
+            smul_C, smul_eq_mul, map_mul, ← C_mul, rightinv, smul_C, smul_eq_mul,
+            mul_one, C_eq_zero, leadingCoeff_eq_zero]
         · apply head.ne_zero_of_degree_gt
           rw [← head_degree_eq]
           exact natDegree_pos_iff_degree_pos.mp (by omega)
