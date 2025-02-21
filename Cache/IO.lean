@@ -133,12 +133,23 @@ end
 
 def getPackageDirs : CacheM PackageDirs := return (← read).packageDirs
 
+/--
+`path` is assumed to be the unresolved file path corresping to a module:
+For `Mathlib.Init` this would be `Mathlib/Init.lean`.
+
+Find the root directory for `path`. This corresponds to the folder
+where the associated `.lake` folder lives, and usually is either `.`
+or something like `./.lake/packages/mathlib/`
+-/
 def getPackageDir (path : FilePath) : CacheM FilePath := do
-  match path.withExtension "" |>.components.head? with
-  | none => throw <| IO.userError "Can't find package directory for empty path"
-  | some pkg => match (← getPackageDirs).find? pkg with
-    | none => throw <| IO.userError s!"Unknown package directory for {pkg}"
-    | some path => return path
+  let sp := (← read).srcSearchPath
+
+  -- `path` is a unresolved file name like `Aesop/Build.lean`
+  let mod : Name := .fromComponents <| path.withExtension "" |>.components.map Name.mkSimple
+
+  let .some packageDir ← sp.findWithExtBase "lean" mod |
+    throw <| IO.userError s!"Unknown package directory for {mod}\nsearch paths: {sp}"
+  return packageDir
 
 /-- Runs a terminal command and retrieves its output, passing the lines to `processLine` -/
 partial def runCurlStreaming (args : Array String) (init : α)
