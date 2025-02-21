@@ -63,26 +63,19 @@ lemma eq_trivial_of_isEquiv_trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroD
 
 variable {F S : Type*} [Field F] [LinearOrderedField S] {v w : AbsoluteValue F S}
 
+open Filter in
 theorem lt_one_iff_of_lt_one_imp [Archimedean S] [TopologicalSpace S] [OrderTopology S]
     (hv : v.IsNontrivial) (h : ∀ x, v x < 1 → w x < 1) {a : F} :
     v a < 1 ↔ w a < 1:= by
   let ⟨x₀, hx₀⟩ := hv.exists_abv_lt_one
   refine ⟨h a, fun hw => ?_⟩
   by_contra! hv
-  have (n : ℕ) : w x₀ < w a ^ n := by
-    have : v (x₀ * (1 / a ^ n)) < 1 := by
-      rw [mul_one_div_pow_lt_iff _ (by linarith)]
-      exact lt_of_lt_of_le hx₀.2 <| one_le_pow₀ hv
-    exact mul_one_div_pow_lt_iff _ (pos_of_pos w (by linarith)) |>.1 <| h _ this
-  have hcontr : Filter.Tendsto (fun (_ : ℕ) => w x₀) Filter.atTop (𝓝 0) := by
-    have hwn : Filter.Tendsto (fun n => w a ^ n) Filter.atTop (𝓝 0) := by
-      have := abs_eq_self.2 (w.nonneg _) ▸ hw
-      exact tendsto_pow_atTop_nhds_zero_iff.2 this
-    have hwn' : ∀ᶠ n in Filter.atTop, w x₀ ≤ w a ^ n := by
-      simp only [Filter.eventually_atTop, ge_iff_le]
-      exact ⟨1, fun n _ => le_of_lt (this n)⟩
-    exact tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds
-      hwn (Filter.Eventually.of_forall fun (_ : ℕ) => w.nonneg x₀) hwn'
+  have (n : ℕ) : w x₀ < w a ^ n := (mul_one_div_pow_lt_iff _ (pos_of_pos w (by linarith))).1 <|
+    h _ ((mul_one_div_pow_lt_iff _ (by linarith)).2 (lt_of_lt_of_le hx₀.2 <| one_le_pow₀ hv))
+  have hcontr : atTop.Tendsto (fun (_ : ℕ) => w x₀) (𝓝 0) := by
+    let hwn := tendsto_pow_atTop_nhds_zero_iff.2 <| by convert abs_eq_self.2 (w.nonneg _) ▸ hw
+    exact tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds hwn
+      (Eventually.of_forall fun _ => w.nonneg x₀) (by simpa using ⟨1, fun n _ => le_of_lt (this n)⟩)
   linarith [tendsto_nhds_unique hcontr tendsto_const_nhds, w.pos hx₀.1]
 
 /--
@@ -100,11 +93,10 @@ theorem log_div_image_eq_singleton_of_le_one_iff {v w : AbsoluteValue F ℝ} (hv
   wlog hwlog : Real.log (v b) / Real.log (w b) < Real.log (v a) / Real.log (w a) generalizing a b
   · exact this b hb₁ a ha hb₂.symm <| lt_of_le_of_ne (not_lt.1 hwlog) hb₂.symm
   have : Real.log (v b) / Real.log (v a) < Real.log (w b) / Real.log (w a) := by
-    have hwa := (one_lt_iff_of_lt_one_iff h _).1 ha
-    have hwb := (one_lt_iff_of_lt_one_iff h _).1 hb₁
-    rw [div_lt_div_iff₀ (Real.log_pos ha) (Real.log_pos hwa)]
-    nth_rw 2 [mul_comm]
-    rwa [← div_lt_div_iff₀ (Real.log_pos hwb) (Real.log_pos hwa)]
+    have hwa := Real.log_pos <| (one_lt_iff_of_lt_one_iff h _).1 ha
+    have hwb := Real.log_pos <| (one_lt_iff_of_lt_one_iff h _).1 hb₁
+    rwa [div_lt_div_iff₀ (Real.log_pos ha) hwa, mul_comm (Real.log (w _)),
+      ← div_lt_div_iff₀ hwb hwa]
   let ⟨q, hq⟩ := exists_rat_btwn this
   rw [← Rat.num_div_den q, Rat.cast_div, Rat.cast_intCast, Rat.cast_natCast] at hq
   have h₀ : v (b ^ q.den / a ^ q.num) < 1 := by
@@ -116,9 +108,9 @@ theorem log_div_image_eq_singleton_of_le_one_iff {v w : AbsoluteValue F ℝ} (hv
   have h₁ : 1 < w (b ^ q.den / a ^ q.num) := by
     have hwa := (one_lt_iff_of_lt_one_iff h _).1 ha
     have := hq.2
-    rw [div_lt_div_iff₀ (by simp only [Nat.cast_pos, q.den_pos]) (Real.log_pos hwa)] at this
-    nth_rw 2 [mul_comm] at this
-    rwa [← Real.log_pow, ← Real.log_zpow, Real.log_lt_log_iff (zpow_pos (by linarith) _)
+    rwa [div_lt_div_iff₀ (by simp only [Nat.cast_pos, q.den_pos]) (Real.log_pos hwa),
+      mul_comm (Real.log (w _)), ← Real.log_pow, ← Real.log_zpow,
+      Real.log_lt_log_iff (zpow_pos (by linarith) _)
       (pow_pos (by linarith [(one_lt_iff_of_lt_one_iff h _).1 hb₁]) _),
       ← one_lt_div (zpow_pos (by linarith) _), ← map_pow, ← map_zpow₀, ← map_div₀] at this
   exact not_lt_of_lt ((h _).1 h₀) h₁
