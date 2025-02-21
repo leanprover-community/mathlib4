@@ -107,7 +107,7 @@ variable {X : C}
 open Classical in
 /-- Assuming `G : C` is a generator, `X : C`, and `A : Subobject X`,
 this is a subobject of `X` which is `⊤` if `A = ⊤`, and otherwise
-it is a larger subobject given by the lemma `exists_large_subobject`.
+it is a larger subobject given by the lemma `exists_larger_subobject`.
 The inclusion of `A` in `largerSubobject hG A` is a pushout of
 a monomorphism in the family `generatingMonomorphisms G`
 (see `pushouts_ofLE_le_largerSubobject`). -/
