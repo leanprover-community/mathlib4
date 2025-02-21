@@ -3,7 +3,7 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Alex J. Best, Yaël Dillies
 -/
-import Mathlib.Init
+import Mathlib.Lean.Expr.Lit
 import Qq
 
 /-!
@@ -34,5 +34,23 @@ This is a Qq version of `Lean.Meta.findLocalDeclWithType?` -/
 def findLocalDeclWithTypeQ? {u : Level} (sort : Q(Sort u)) : MetaM (Option Q($sort)) := do
   let some fvarId ← findLocalDeclWithType? q($sort) | return none
   return some <| .fvar fvarId
+
+/-- Returns the natural number from a natural literal expression, or `none` if the expression isn't
+a natural literal.
+
+See `Lean.Expr.rawNatLit?` for a `MetaM`-less version of this function that only checks for raw
+literals. -/
+def natLitQq? : Q(Nat) → MetaM (Option Nat)
+  | ~q(OfNat.ofNat $n) => pure n.rawNatLit?
+  | e => pure e.rawNatLit?
+
+/-- Returns the integer from a integer literal expression, or `none` if the expression isn't
+an integer literal.
+
+See `Lean.Expr.rawIntLit?` for a `MetaM`-less version of this function that only checks for raw
+literals. -/
+def intLitQq? : Q(Int) → MetaM (Option Int)
+  | ~q(OfNat.ofNat $n) => pure n.rawNatLit?
+  | e => pure e.rawIntLit?
 
 end Qq
