@@ -42,7 +42,7 @@ structure ContinuousAlgEquiv (R A B : Type*) [CommSemiring R]
     [Algebra R B] extends A ≃ₐ[R] B, A ≃ₜ B
 
 @[inherit_doc]
-notation:50 A " ≃A[" R "]" B => ContinuousAlgEquiv R A B
+notation:50 A " ≃A[" R "] " B => ContinuousAlgEquiv R A B
 
 attribute [nolint docBlame] ContinuousAlgEquiv.toHomeomorph
 
@@ -76,8 +76,8 @@ instance equivLike : EquivLike (A ≃A[R] B) A B where
   coe f := f.toFun
   inv f := f.invFun
   coe_injective' f g h₁ h₂ := by
-    cases' f with f' _
-    cases' g with g' _
+    obtain ⟨f', _⟩ := f
+    obtain ⟨g', _⟩ := g
     rcases f' with ⟨⟨_, _⟩, _⟩
     rcases g' with ⟨⟨_, _⟩, _⟩
     congr

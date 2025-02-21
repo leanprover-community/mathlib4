@@ -545,7 +545,7 @@ theorem commute_X_pow (p : R[X]) (n : ℕ) : Commute (X ^ n) p :=
 
 @[simp]
 theorem monomial_mul_X (n : ℕ) (r : R) : monomial n r * X = monomial (n + 1) r := by
-  erw [monomial_mul_monomial, mul_one]
+  rw [X, monomial_mul_monomial, mul_one]
 
 @[simp]
 theorem monomial_mul_X_pow (n : ℕ) (r : R) (k : ℕ) :

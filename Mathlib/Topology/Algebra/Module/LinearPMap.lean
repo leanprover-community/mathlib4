@@ -71,7 +71,7 @@ theorem IsClosed.isClosable {f : E →ₗ.[R] F} (hf : f.IsClosed) : f.IsClosabl
 /-- If `g` has a closable extension `f`, then `g` itself is closable. -/
 theorem IsClosable.leIsClosable {f g : E →ₗ.[R] F} (hf : f.IsClosable) (hfg : g ≤ f) :
     g.IsClosable := by
-  cases' hf with f' hf
+  obtain ⟨f', hf⟩ := hf
   have : g.graph.topologicalClosure ≤ f'.graph := by
     rw [← hf]
     exact Submodule.topologicalClosure_mono (le_graph_of_le hfg)
