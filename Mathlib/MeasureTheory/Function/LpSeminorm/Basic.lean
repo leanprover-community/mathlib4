@@ -570,10 +570,11 @@ theorem MemLp.of_le {f : α → E} {g : α → F} (hg : MemLp g p μ) (hf : AESt
     (hfg : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) : MemLp f p μ :=
   ⟨hf, (eLpNorm_mono_ae hfg).trans_lt hg.eLpNorm_lt_top⟩
 
-@[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.of_le := MemLp.of_le
+@[deprecated (since := "2025-02-21")] alias Mem𝓛p.of_le := MemLp.of_le
 
 alias MemLp.mono := MemLp.of_le
+@[deprecated (since := "2025-02-21")] alias Mem𝓛p.mono := MemLp.mono
+
 
 theorem MemLp.mono' {f : α → E} {g : α → ℝ} (hg : MemLp g p μ) (hf : AEStronglyMeasurable f μ)
     (h : ∀ᵐ a ∂μ, ‖f a‖ ≤ g a) : MemLp f p μ :=
