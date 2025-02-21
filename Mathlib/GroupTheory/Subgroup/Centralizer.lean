@@ -3,7 +3,6 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.GroupTheory.Subgroup.Center
 import Mathlib.GroupTheory.Submonoid.Centralizer
 
@@ -112,8 +111,7 @@ instance : MulDistribMulAction H.normalizer H where
 
 /-- The homomorphism N(H) → Aut(H) with kernel C(H). -/
 @[simps!]
-def normalizerMonoidHom : H.normalizer →* MulAut H :=
-  MulDistribMulAction.toMulAut H.normalizer H
+def normalizerMonoidHom : H.normalizer →* MulAut H := MulDistribMulAction.toMulAut ..
 
 theorem normalizerMonoidHom_ker :
     H.normalizerMonoidHom.ker = (Subgroup.centralizer H).subgroupOf H.normalizer := by

@@ -5,6 +5,7 @@ Authors: Joseph Myers, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 # Torsors of additive group actions
@@ -37,6 +38,8 @@ multiplicative group actions).
 * https://en.wikipedia.org/wiki/Affine_space
 
 -/
+
+assert_not_exists MonoidWithZero
 
 open scoped Pointwise
 

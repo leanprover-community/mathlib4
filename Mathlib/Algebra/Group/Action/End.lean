@@ -3,10 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Algebra.Group.Action.Hom
+import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.TypeTags.Hom
-import Mathlib.Logic.Embedding.Basic
+import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 # Endomorphisms, homomorphisms and group actions
@@ -31,9 +30,10 @@ group action
 
 assert_not_exists MonoidWithZero
 
+open Equiv
 open Function (Injective Surjective)
 
-variable {M N α : Type*}
+variable {G M N O α : Type*}
 
 namespace MulAction
 variable [Monoid M] [MulAction M α]
@@ -120,8 +120,95 @@ def AddAction.toEndHom [AddMonoid M] [AddAction M α] : M →+ Additive (Functio
 See note [reducible non-instances]. -/
 abbrev MulAction.ofEndHom [Monoid M] (f : M →* Function.End α) : MulAction M α := .compHom α f
 
-/-- The additive action induced by a hom to `Additive (Function.End α)`
+/-- The permutation of a type is equivalent to the units group of the endomorphisms monoid of this
+type. -/
+@[simps]
+def equivUnitsEnd : Perm α ≃* Units (Function.End α) where
+  -- Porting note: needed to add `.toFun`.
+  toFun e := ⟨e.toFun, e.symm.toFun, e.self_comp_symm, e.symm_comp_self⟩
+  invFun u :=
+    ⟨(u : Function.End α), (↑u⁻¹ : Function.End α), congr_fun u.inv_val, congr_fun u.val_inv⟩
+  left_inv _ := ext fun _ => rfl
+  right_inv _ := Units.ext rfl
+  map_mul' _ _ := rfl
 
+/-- Lift a monoid homomorphism `f : G →* Function.End α` to a monoid homomorphism
+`f : G →* Equiv.Perm α`. -/
+@[simps!]
+def _root_.MonoidHom.toHomPerm {G : Type*} [Group G] (f : G →* Function.End α) : G →* Perm α :=
+  equivUnitsEnd.symm.toMonoidHom.comp f.toHomUnits
+
+variable (G α) in
+/-- Given an action of a group `G` on a type `α`, each `g : G` defines a permutation of `α`. -/
+@[simps]
+def MulAction.toPermHom [Group G] [MulAction G α] : G →* Equiv.Perm α where
+  toFun := MulAction.toPerm
+  map_one' := Equiv.ext <| one_smul _
+  map_mul' _ _ := Equiv.ext <| mul_smul _ _
+
+/-- Given an action of an additive group `F` on a set `α`, each `g : G` defines a permutation of
+`α`. -/
+@[simps!]
+def AddAction.toPermHom (G α : Type*) [AddGroup G] [AddAction G α] : G →+ Additive (Equiv.Perm α) :=
+  MonoidHom.toAdditive'' <| MulAction.toPermHom ..
+
+section MulDistribMulAction
+variable [Monoid M] [Monoid N] [Monoid O] [MulDistribMulAction M N] [MulDistribMulAction N O]
+
+/-- Pullback a multiplicative distributive multiplicative action along an injective monoid
+homomorphism.
 See note [reducible non-instances]. -/
-abbrev AddAction.ofEndHom [AddMonoid M] (f : M →+ Additive (Function.End α)) : AddAction M α :=
-  .compHom α f
+protected abbrev Function.Injective.mulDistribMulAction [SMul M O] (f : O →* N) (hf : Injective f)
+  (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M O where
+  __ := hf.mulAction f smul
+  smul_mul c x y := hf <| by simp only [smul, f.map_mul, smul_mul']
+  smul_one c := hf <| by simp only [smul, f.map_one, smul_one]
+
+/-- Pushforward a multiplicative distributive multiplicative action along a surjective monoid
+homomorphism.
+See note [reducible non-instances]. -/
+protected abbrev Function.Surjective.mulDistribMulAction [SMul M O] (f : N →* O) (hf : Surjective f)
+    (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M O where
+  __ := hf.mulAction f smul
+  smul_mul c := by simp only [hf.forall, smul_mul', ← smul, ← f.map_mul, implies_true]
+  smul_one c := by rw [← f.map_one, ← smul, smul_one]
+
+variable (N) in
+/-- Scalar multiplication by `r` as a `MonoidHom`. -/
+def MulDistribMulAction.toMonoidHom (r : M) : N →* N where
+  toFun := (r • ·)
+  map_one' := smul_one r
+  map_mul' := smul_mul' r
+
+@[simp]
+lemma MulDistribMulAction.toMonoidHom_apply (r : M) (x : N) : toMonoidHom N r x = r • x := rfl
+
+@[simp] lemma smul_pow' (r : M) (x : N) (n : ℕ) : r • x ^ n = (r • x) ^ n :=
+  (MulDistribMulAction.toMonoidHom ..).map_pow ..
+
+end MulDistribMulAction
+
+section MulDistribMulAction
+variable [Monoid M] [Group G] [MulDistribMulAction M G]
+
+@[simp]
+lemma smul_inv' (r : M) (x : G) : r • x⁻¹ = (r • x)⁻¹ :=
+  (MulDistribMulAction.toMonoidHom G r).map_inv x
+
+lemma smul_div' (r : M) (x y : G) : r • (x / y) = r • x / r • y :=
+  map_div (MulDistribMulAction.toMonoidHom G r) x y
+
+end MulDistribMulAction
+
+section MulDistribMulAction
+variable [Group G] [Monoid M] [MulDistribMulAction G M]
+variable (M)
+
+/-- Each element of the group defines a multiplicative monoid isomorphism.
+
+This is a stronger version of `MulAction.toPerm`. -/
+@[simps (config := { simpRhs := true })]
+def MulDistribMulAction.toMulEquiv (x : G) : M ≃* M :=
+  { MulDistribMulAction.toMonoidHom M x, MulAction.toPermHom G M x with }
+
+end MulDistribMulAction
