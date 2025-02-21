@@ -188,7 +188,7 @@ protected theorem memLp (f : Lp E p μ) : MemLp f p μ :=
   ⟨Lp.aestronglyMeasurable f, f.prop⟩
 
 @[deprecated (since := "2025-02-21")]
-alias mem𝓛p := memLp
+alias mem𝓛p := Lp.memLp
 
 variable (E p μ)
 
@@ -1569,3 +1569,5 @@ theorem meas_ge_le_mul_pow_enorm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_t
 end Lp
 
 end MeasureTheory
+
+set_option linter.style.longFile 1700
