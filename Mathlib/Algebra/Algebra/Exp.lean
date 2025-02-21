@@ -21,7 +21,7 @@ import Mathlib.Data.Nat.Factorial.Basic
 This file could usefully be split further.
 -/
 
-universe u v w u₁ v₁
+universe u w
 
 open Function
 
@@ -34,9 +34,10 @@ variable [Field R] [CharZero R]
 variable [Semiring A] [Algebra R A]
 
 def exp (a : A) (h : IsNilpotent a) : A :=
+  --let k := nilpotency_class a h
   let five_factorial : R := Nat.factorial 5
   let inv_five_factorial : R := five_factorial⁻¹
-  inv_five_factorial • a
+  ∑ n ∈ Finset.range 11, (Nat.factorial n : R)⁻¹ • a
 
 end Exp
 
