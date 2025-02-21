@@ -1184,6 +1184,7 @@ import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Analytic.Within
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Asymptotics.Defs
+import Mathlib.Analysis.Asymptotics.ExpGrowth
 import Mathlib.Analysis.Asymptotics.Lemmas
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
