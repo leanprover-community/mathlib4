@@ -24,6 +24,7 @@ We define polynomial sequences – sequences of polynomials `a₀, a₁, ...` su
 ## TODO
 
 Generalize linear independence to:
+  * semirings, though we seem not to have an `AddCancelCommSemiring` typeclass which would be needed
   * just require coefficients are regular
   * arbitrary sets of polynomials which are pairwise different degree.
 -/
