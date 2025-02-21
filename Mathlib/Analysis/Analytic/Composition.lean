@@ -918,9 +918,7 @@ theorem HasFiniteFPowerSeriesAt.comp {m n : ℕ} {g : F → G} {f : E → F}
     (hg : HasFiniteFPowerSeriesAt g q (f x) m) (hf : HasFiniteFPowerSeriesAt f p x n) (hn : 0 < n) :
     HasFiniteFPowerSeriesAt (g ∘ f) (q.comp p) x (m * n) := by
   rcases hg.hasFPowerSeriesAt.comp hf.hasFPowerSeriesAt with ⟨r, hr⟩
-  refine ⟨r, hr, ?_⟩
-  intro i hi
-  simp only [FormalMultilinearSeries.comp]
+  refine ⟨r, hr, fun i hi ↦ ?_⟩
   apply Finset.sum_eq_zero
   rintro c -
   ext v
