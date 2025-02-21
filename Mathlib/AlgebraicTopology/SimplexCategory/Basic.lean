@@ -594,68 +594,6 @@ lemma isSkeletonOf :
   skel := skeletal
   eqv := SkeletalFunctor.isEquivalence
 
-<<<<<<< HEAD:Mathlib/AlgebraicTopology/SimplexCategory.lean
-/-- The truncated simplex category. -/
-def Truncated (n : ℕ) :=
-  FullSubcategory fun a : SimplexCategory => a.len ≤ n
-
-instance (n : ℕ) : SmallCategory.{0} (Truncated n) :=
-  FullSubcategory.category _
-
-namespace Truncated
-
-instance {n} : Inhabited (Truncated n) :=
-  ⟨⟨⦋0⦌, by simp⟩⟩
-
-/-- The fully faithful inclusion of the truncated simplex category into the usual
-simplex category.
--/
-def inclusion (n : ℕ) : SimplexCategory.Truncated n ⥤ SimplexCategory :=
-  fullSubcategoryInclusion _
-
-instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Full := FullSubcategory.full _
-instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Faithful := FullSubcategory.faithful _
-
-/-- A proof that the full subcategory inclusion is fully faithful.-/
-noncomputable def inclusion.fullyFaithful (n : ℕ) :
-    (inclusion n : Truncated n ⥤ _).op.FullyFaithful := Functor.FullyFaithful.ofFullyFaithful _
-
-@[ext]
-theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
-    f.toOrderHom = g.toOrderHom → f = g := SimplexCategory.Hom.ext _ _
-
-/-- Some quick attempts to prove that `⦋m⦌` is `n`-truncated (`⦋m⦌.len ≤ n`). -/
-macro "trunc" : tactic =>
-  `(tactic| first | decide | assumption |
-    dsimp only [SimplexCategory.len_mk]; omega)
-
-/-- Make a morphism in `Truncated n` from a morphism in `SimplexCategory`. This
-is equivalent to `@id (⦋a⦌ₙ ⟶ ⦋b⦌ₙ) f`. -/
-abbrev Hom.tr {n : ℕ} {a b : SimplexCategory} (f : a ⟶ b)
-    (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc) :
-    (⟨a, ha⟩ : Truncated n) ⟶ ⟨b, hb⟩ :=
-  f
-
-lemma Hom.tr_comp {n : ℕ} {a b c : SimplexCategory} (f : a ⟶ b) (g : b ⟶ c)
-    (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc)
-    (hc : c.len ≤ n := by trunc) :
-    tr (f ≫ g) = tr f ≫ tr g :=
-  rfl
-
-/-- The inclusion of `Truncated n` into `Truncated m` when `n ≤ m`. -/
-def incl (n m : ℕ) (h : n ≤ m := by omega) : Truncated n ⥤ Truncated m where
-  obj a := ⟨a.1, a.2.trans h⟩
-  map := id
-
-/-- For all `n ≤ m`, `inclusion n` factors through `Truncated m`. -/
-lemma incl_comp_inclusion {n m : ℕ} (h : n ≤ m) :
-    incl n m ⋙ inclusion m = inclusion n :=
-  rfl
-
-end Truncated
-
-=======
->>>>>>> sset-redef-horn-boundary:Mathlib/AlgebraicTopology/SimplexCategory/Basic.lean
 section Concrete
 
 instance : ConcreteCategory SimplexCategory (fun i j => Fin (i.len + 1) →o Fin (j.len + 1)) where
