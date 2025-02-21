@@ -45,7 +45,7 @@ variable {α ε E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q :
 
 namespace MeasureTheory
 
-section ℒp
+section Lp
 
 /-!
 ### ℒp seminorm
@@ -63,7 +63,7 @@ deduce it for `eLpNorm`, and translate it in terms of `MemLp`.
 -/
 
 
-section ℒpSpaceDefinition
+section LpSpaceDefinition
 
 /-- `(∫ ‖f a‖^q ∂μ) ^ (1/q)`, which is a seminorm on the space of measurable functions for which
 this quantity is finite -/
@@ -149,7 +149,7 @@ lemma eLpNorm_nnreal_pow_eq_lintegral {f : α → ε} {p : ℝ≥0} (hp : p ≠ 
   simp [eLpNorm_eq_eLpNorm' (by exact_mod_cast hp) ENNReal.coe_ne_top,
     lintegral_rpow_enorm_eq_rpow_eLpNorm' ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr hp)]
 
-end ℒpSpaceDefinition
+end LpSpaceDefinition
 
 section Top
 
@@ -573,7 +573,7 @@ theorem MemLp.of_le {f : α → E} {g : α → F} (hg : MemLp g p μ) (hf : AESt
 @[deprecated (since := "2025-02-21")]
 alias Mem𝓛p.of_le := MemLp.of_le
 
-alias Mem𝓛p.mono := MemLp.of_le
+alias MemLp.mono := MemLp.of_le
 
 theorem MemLp.mono' {f : α → E} {g : α → ℝ} (hg : MemLp g p μ) (hf : AEStronglyMeasurable f μ)
     (h : ∀ᵐ a ∂μ, ‖f a‖ ≤ g a) : MemLp f p μ :=
@@ -1411,6 +1411,6 @@ theorem MemLp.exists_eLpNorm_indicator_compl_lt {β : Type*} [NormedAddCommGroup
 alias Mem𝓛p.exists_eLpNorm_indicator_compl_lt := MemLp.exists_eLpNorm_indicator_compl_lt
 
 end UnifTight
-end ℒp
+end Lp
 
 end MeasureTheory
