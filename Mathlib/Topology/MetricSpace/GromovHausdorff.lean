@@ -788,7 +788,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       rcases Cardinal.lt_aleph0.1 (lt_of_le_of_lt scard (Cardinal.nat_lt_aleph0 _)) with ⟨N, hN⟩
       rw [hN, Nat.cast_le] at scard
       have : #s = #(Fin N) := by rw [hN, Cardinal.mk_fin]
-      cases' Quotient.exact this with E
+      obtain ⟨E⟩ := Quotient.exact this
       use s, N, scard, E
       simp only [scover, imp_true_iff]
   choose s N hN E hs using this

@@ -48,7 +48,7 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
-assert_not_exists OrderedAddCommMonoid Multiset Ring
+assert_not_exists RelIso OrderedCommMonoid Multiset MonoidWithZero
 
 open Function
 open scoped Int
@@ -195,8 +195,13 @@ protected def subtype : H →* G where
   toFun := ((↑) : H → G); map_one' := rfl; map_mul' := fun _ _ => rfl
 
 @[to_additive (attr := simp)]
-theorem coeSubtype : (SubgroupClass.subtype H : H → G) = ((↑) : H → G) := by
+theorem coe_subtype : (SubgroupClass.subtype H : H → G) = ((↑) : H → G) := by
   rfl
+
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
+@[deprecated (since := "2025-02-18")]
+alias _root_.AddSubgroupClass.coeSubtype := _root_.AddSubgroupClass.coe_subtype
 
 variable {H}
 
@@ -242,7 +247,7 @@ theorem coe_inclusion {H K : S} {h : H ≤ K} (a : H) : (inclusion h a : G) = a 
 theorem subtype_comp_inclusion {H K : S} (hH : H ≤ K) :
     (SubgroupClass.subtype K).comp (inclusion hH) = SubgroupClass.subtype H := by
   ext
-  simp only [MonoidHom.comp_apply, coeSubtype, coe_inclusion]
+  simp only [MonoidHom.comp_apply, coe_subtype, coe_inclusion]
 
 end SubgroupClass
 
@@ -522,8 +527,13 @@ protected def subtype : H →* G where
   toFun := ((↑) : H → G); map_one' := rfl; map_mul' _ _ := rfl
 
 @[to_additive (attr := simp)]
-theorem coeSubtype : ⇑ H.subtype = ((↑) : H → G) :=
+theorem coe_subtype : ⇑ H.subtype = ((↑) : H → G) :=
   rfl
+
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
+@[deprecated (since := "2025-02-18")]
+alias _root_.AddSubgroup.coeSubtype := AddSubgroup.coe_subtype
 
 @[to_additive]
 theorem subtype_injective : Function.Injective (Subgroup.subtype H) :=

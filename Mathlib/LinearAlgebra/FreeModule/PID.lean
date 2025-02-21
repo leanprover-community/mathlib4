@@ -334,7 +334,7 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
     (hs : span R (range s) = ⊤) [NoZeroSMulDivisors R M] : Σn : ℕ, Basis (Fin n) R M := by
   classical
     -- We define `N` as the submodule spanned by a maximal linear independent subfamily of `s`
-    have := exists_maximal_independent R s
+    have := exists_maximal_linearIndepOn R s
     let I : Set ι := this.choose
     obtain
       ⟨indepI : LinearIndependent R (s ∘ (fun x => x) : I → M), hI :
@@ -648,8 +648,6 @@ theorem Ideal.smithCoeffs_ne_zero (b : Basis ι R S) (I : Ideal S) (hI : I ≠ �
   apply Basis.ne_zero (Ideal.selfBasis b I hI) i
   refine Subtype.coe_injective ?_
   simp [hi]
-
--- Porting note: can be inferred in Lean 4 so no longer necessary
 
 end Ideal
 
