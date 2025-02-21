@@ -153,7 +153,7 @@ theorem IsSymmSndFDerivAt.isSymmSndFDerivWithinAt (h : IsSymmSndFDerivAt 𝕜 f 
     (hf : ContDiffAt 𝕜 2 f x) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     IsSymmSndFDerivWithinAt 𝕜 f s x := by
   simp only [← isSymmSndFDerivWithinAt_univ, ← contDiffWithinAt_univ] at h hf
-  exact h.mono_of_mem_nhdsWithin univ_mem hf hs uniqueDiffOn_univ hx
+  exact h.mono_of_mem_nhdsWithin univ_mem hf hs .univ hx
 
 /-- If a function is analytic within a set at a point, then its second derivative is symmetric. -/
 theorem ContDiffWithinAt.isSymmSndFDerivWithinAt_of_omega (hf : ContDiffWithinAt 𝕜 ω f s x)
@@ -170,7 +170,7 @@ theorem ContDiffWithinAt.isSymmSndFDerivWithinAt_of_omega (hf : ContDiffWithinAt
 theorem ContDiffAt.isSymmSndFDerivAt_of_omega (hf : ContDiffAt 𝕜 ω f x) :
     IsSymmSndFDerivAt 𝕜 f x := by
   simp only [← isSymmSndFDerivWithinAt_univ, ← contDiffWithinAt_univ] at hf ⊢
-  exact hf.isSymmSndFDerivWithinAt_of_omega uniqueDiffOn_univ (mem_univ _)
+  exact hf.isSymmSndFDerivWithinAt_of_omega .univ (mem_univ _)
 
 end General
 
@@ -551,7 +551,7 @@ theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : WithTop ℕ∞}
   obtain ⟨m, hm, hmn, m_ne⟩ := exist_minSmoothness_le_ne_infty hn
   rcases (hf.of_le hmn).contDiffOn' le_rfl (by simp [m_ne]) with ⟨u, u_open, xu, hu⟩
   simp only [insert_eq_of_mem h'x] at hu
-  have h'u : UniqueDiffOn 𝕜 (s ∩ u) := hs.inter u_open
+  have h'u : UniqueDiffOn 𝕜 (s ∩ u) := hs.inter_isOpen u_open
   obtain ⟨y, hy, y_lim⟩ : ∃ y, (∀ (n : ℕ), y n ∈ interior s) ∧ Tendsto y atTop (𝓝 x) :=
     mem_closure_iff_seq_limit.1 hx
   have L : ∀ᶠ k in atTop, y k ∈ u := y_lim (u_open.mem_nhds xu)

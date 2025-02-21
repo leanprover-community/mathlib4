@@ -133,7 +133,7 @@ end
 lemma iteratedDeriv_add (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
     iteratedDeriv n (f + g) x = iteratedDeriv n f x + iteratedDeriv n g x := by
   simpa only [iteratedDerivWithin_univ] using
-    iteratedDerivWithin_add (Set.mem_univ _) uniqueDiffOn_univ hf hg
+    iteratedDerivWithin_add (Set.mem_univ _) .univ hf hg
 
 theorem iteratedDeriv_const_add (hn : 0 < n) (c : F) :
     iteratedDeriv n (fun z => c + f z) x = iteratedDeriv n f x := by
@@ -150,7 +150,7 @@ lemma iteratedDeriv_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
 lemma iteratedDeriv_sub (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
     iteratedDeriv n (f - g) x = iteratedDeriv n f x - iteratedDeriv n g x := by
   simpa only [iteratedDerivWithin_univ] using
-    iteratedDerivWithin_sub (Set.mem_univ _) uniqueDiffOn_univ hf hg
+    iteratedDerivWithin_sub (Set.mem_univ _) .univ hf hg
 
 theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiffAt 𝕜 n f x) (c : 𝕜) :
     iteratedDeriv n (c • f) x = c • iteratedDeriv n f x := by
@@ -168,7 +168,7 @@ theorem iteratedDeriv_comp_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff �
     iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n • iteratedDeriv n f (c * x) := by
   funext x
   simpa only [iteratedDerivWithin_univ] using
-    iteratedDerivWithin_comp_const_smul (Set.mem_univ x) uniqueDiffOn_univ (contDiffOn_univ.mpr h)
+    iteratedDerivWithin_comp_const_smul (Set.mem_univ x) .univ (contDiffOn_univ.mpr h)
       c (Set.mapsTo_univ _ _)
 
 theorem iteratedDeriv_comp_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiff 𝕜 n f) (c : 𝕜) :

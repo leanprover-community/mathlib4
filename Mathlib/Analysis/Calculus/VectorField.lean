@@ -92,7 +92,7 @@ lemma lieBracketWithin_smul_left {c : 𝕜} (hV : DifferentiableWithinAt 𝕜 V 
 lemma lieBracket_smul_left {c : 𝕜} (hV : DifferentiableAt 𝕜 V x) :
     lieBracket 𝕜 (c • V) W x = c • lieBracket 𝕜 V W x := by
   simp only [← differentiableWithinAt_univ, ← lieBracketWithin_univ] at hV ⊢
-  exact lieBracketWithin_smul_left hV uniqueDiffWithinAt_univ
+  exact lieBracketWithin_smul_left hV .univ
 
 lemma lieBracketWithin_smul_right {c : 𝕜} (hW : DifferentiableWithinAt 𝕜 W s x)
     (hs : UniqueDiffWithinAt 𝕜 s x) :
@@ -105,7 +105,7 @@ lemma lieBracketWithin_smul_right {c : 𝕜} (hW : DifferentiableWithinAt 𝕜 W
 lemma lieBracket_smul_right {c : 𝕜} (hW : DifferentiableAt 𝕜 W x) :
     lieBracket 𝕜 V (c • W) x = c • lieBracket 𝕜 V W x := by
   simp only [← differentiableWithinAt_univ, ← lieBracketWithin_univ] at hW ⊢
-  exact lieBracketWithin_smul_right hW uniqueDiffWithinAt_univ
+  exact lieBracketWithin_smul_right hW .univ
 
 lemma lieBracketWithin_add_left (hV : DifferentiableWithinAt 𝕜 V s x)
     (hV₁ : DifferentiableWithinAt 𝕜 V₁ s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
@@ -164,7 +164,7 @@ lemma _root_.ContDiffAt.lieBracket_vectorField {m n : WithTop ℕ∞} (hV : Cont
     ContDiffAt 𝕜 m (lieBracket 𝕜 V W) x := by
   rw [← contDiffWithinAt_univ] at hV hW ⊢
   simp_rw [← lieBracketWithin_univ]
-  exact hV.lieBracketWithin_vectorField hW uniqueDiffOn_univ hmn (mem_univ _)
+  exact hV.lieBracketWithin_vectorField hW .univ hmn (mem_univ _)
 
 lemma _root_.ContDiffOn.lieBracketWithin_vectorField {m n : WithTop ℕ∞} (hV : ContDiffOn 𝕜 n V s)
     (hW : ContDiffOn 𝕜 n W s) (hs : UniqueDiffOn 𝕜 s) (hmn : m + 1 ≤ n) :
@@ -347,7 +347,7 @@ lemma leibniz_identity_lieBracket (hn : minSmoothness 𝕜 2 ≤ n) {U V W : E �
     lieBracket 𝕜 U (lieBracket 𝕜 V W) x =
       lieBracket 𝕜 (lieBracket 𝕜 U V) W x + lieBracket 𝕜 V (lieBracket 𝕜 U W) x := by
   simp only [← lieBracketWithin_univ, ← contDiffWithinAt_univ] at hU hV hW ⊢
-  exact leibniz_identity_lieBracketWithin hn uniqueDiffOn_univ (by simp) (mem_univ _) hU hV hW
+  exact leibniz_identity_lieBracketWithin hn .univ (by simp) (mem_univ _) hU hV hW
 
 
 /-!
@@ -492,7 +492,7 @@ lemma _root_.exists_continuousLinearEquiv_fderiv_symm_eq
     ∧ ∀ v, fderiv 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) x v
       = - (N x).symm  ∘L ((fderiv 𝕜 (fderiv 𝕜 f) x v)) ∘L (N x).symm := by
   simp only [← fderivWithin_univ, ← contDiffWithinAt_univ, ← nhdsWithin_univ] at hf h'f ⊢
-  exact exists_continuousLinearEquiv_fderivWithin_symm_eq h'f hf uniqueDiffOn_univ (mem_univ _)
+  exact exists_continuousLinearEquiv_fderivWithin_symm_eq h'f hf .univ (mem_univ _)
 
 /-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
 second derivative. Version in a complete space. One could also give a version avoiding
@@ -568,7 +568,7 @@ lemma pullback_lieBracket_of_isSymmSndFDerivAt {f : E → F} {V W : F → F} {x 
     pullback 𝕜 f (lieBracket 𝕜 V W) x = lieBracket 𝕜 (pullback 𝕜 f V) (pullback 𝕜 f W) x := by
   simp only [← lieBracketWithin_univ, ← pullbackWithin_univ, ← isSymmSndFDerivWithinAt_univ,
     ← differentiableWithinAt_univ] at hf h'f hV hW ⊢
-  exact pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt hf h'f hV hW uniqueDiffOn_univ
+  exact pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt hf h'f hV hW .univ
     (mem_univ _) (mapsTo_univ _ _)
 
 /-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
