@@ -87,7 +87,7 @@ theorem subset_univ (s : Finset α) : s ⊆ univ := fun a _ => mem_univ a
 end Finset
 
 namespace Mathlib.Meta
-open Lean Elab Term Meta Batteries.ExtendedBinder
+open Lean Elab Term Meta Batteries.ExtendedBinder Parser.Term PrettyPrinter.Delaborator SubExpr
 
 /-- Elaborate set builder notation for `Finset`.
 
@@ -108,8 +108,6 @@ See also
   `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
 * `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator handling syntax of the
   form `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
-
-TODO: Write a delaborator
 -/
 @[term_elab setBuilder]
 def elabFinsetBuilderSetOf : TermElab
@@ -138,6 +136,27 @@ def elabFinsetBuilderSetOf : TermElab
     unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
     elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) (singleton $a)ᶜ)) expectedType?
   | _, _ => throwUnsupportedSyntax
+
+/-- Delaborator for `Finset.filter`. The `pp.funBinderTypes` option controls whether
+to show the domain type when the filter is over `Finset.univ`. -/
+@[app_delab Finset.filter] def delabFinsetFilter : Delab :=
+  whenPPOption getPPNotation do
+  let ppDomain ← getPPOption getPPFunBinderTypes
+  let #[_, p, _, t] := (← getExpr).getAppArgs | failure
+  guard p.isLambda
+  let i ← withNaryArg 1 <| withBindingBodyUnusedName fun i => pure ⟨i⟩
+  let p ← withNaryArg 1 <| withBindingBody i.getId do
+    let p ← delab
+    return p
+  if t.isAppOfArity ``Finset.univ 2 then
+    if ppDomain then
+      let ty ← withNaryArg 0 delab
+      `({$i:ident : $ty | $p})
+    else
+      `({$i:ident | $p})
+  else
+    let t ← withNaryArg 3 delab
+    `({$i:ident ∈ $t | $p})
 
 end Mathlib.Meta
 
