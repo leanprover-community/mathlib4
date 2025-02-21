@@ -5,7 +5,7 @@ Authors: Johan Commelin, Adam Topaz
 -/
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.AlgebraicTopology.SimplexCategory.Basic
-import Mathlib.Topology.Category.TopCat.Basic
+import Mathlib.Topology.Category.TopCat.ULift
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Instances.NNReal.Defs
 
@@ -17,6 +17,7 @@ topological `n`-simplex.
 This is used to define `TopCat.toSSet` in `AlgebraicTopology.SingularSet`.
 -/
 
+universe u
 
 noncomputable section
 
@@ -100,7 +101,7 @@ theorem continuous_toTopMap {x y : SimplexCategory} (f : x ⟶ y) : Continuous (
 
 /-- The functor associating the topological `n`-simplex to `⦋n⦌ : SimplexCategory`. -/
 @[simps obj map]
-def toTop : SimplexCategory ⥤ TopCat where
+def toTop₀ : SimplexCategory ⥤ TopCat.{0} where
   obj x := TopCat.of x.toTopObj
   map f := TopCat.ofHom ⟨toTopMap f, by continuity⟩
   map_id := by
@@ -117,5 +118,10 @@ def toTop : SimplexCategory ⥤ TopCat where
       · exact Finset.ext (fun j => ⟨fun hj => by simpa using hj, fun hj => by simpa using hj⟩)
       · tauto
     · apply Set.pairwiseDisjoint_filter
+
+/-- The functor associating the topological `n`-simplex to `⦋n⦌ : SimplexCategory`. -/
+@[simps! (config := .lemmasOnly) obj map]
+def toTop : SimplexCategory ⥤ TopCat.{u} :=
+  toTop₀ ⋙ TopCat.uliftFunctor
 
 end SimplexCategory
