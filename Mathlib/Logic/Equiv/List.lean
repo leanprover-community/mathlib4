@@ -112,7 +112,7 @@ end Finset
 
 /-- A listable type with decidable equality is encodable. -/
 def encodableOfList [DecidableEq α] (l : List α) (H : ∀ x, x ∈ l) : Encodable α :=
-  ⟨fun a => idxOf a l, l.get?, fun _ => idxOf_get? (H _)⟩
+  ⟨fun a => idxOf a l, (l[·]?), fun _ => getElem?_idxOf (H _)⟩
 
 /-- A finite type is encodable. Because the encoding is not unique, we wrap it in `Trunc` to
 preserve computability. -/

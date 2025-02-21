@@ -4,12 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.Deriv.AffineMap
-import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.Analysis.Calculus.LocalExtr.Rolle
-import Mathlib.Analysis.Convex.Normed
+import Mathlib.Analysis.Normed.Group.AddTorsor
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Analysis.RCLike.Basic
+import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.Topology.Instances.RealVectorSpace
 import Mathlib.Topology.LocallyConstant.Basic
 
 /-!

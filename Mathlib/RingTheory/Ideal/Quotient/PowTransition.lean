@@ -18,7 +18,7 @@ related to `IsAdicComplete` to find a lift element from compatible sequences in 
 We also include results about the relation between quotients of submodules and quotients of
 ideals here.
 ## Main definitions
-- `Submodule.mapQPow`: the linear map from `M ⧸ I ^ m • ⊤` to `M ⧸ I ^ n • ⊤` induced by
+- `Submodule.factorPow`: the linear map from `M ⧸ I ^ m • ⊤` to `M ⧸ I ^ n • ⊤` induced by
 the natural inclusion `I ^ n • ⊤ → I ^ m • ⊤`.
 - `Ideal.Quotient.factorPow`: the ring homomorphism from `R ⧸ I ^ m`
 to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
@@ -70,17 +70,17 @@ lemma pow_smul_top_le {m n : ℕ} (h : m ≤ n) : (I ^ n • ⊤ : Submodule R M
 The linear map from `M ⧸ I ^ m • ⊤` to `M ⧸ I ^ n • ⊤` induced by
 the natural inclusion `I ^ n • ⊤ → I ^ m • ⊤`.
 
-To future contributors: Before adding lemmas related to `Submodule.mapQPow`, please
+To future contributors: Before adding lemmas related to `Submodule.factorPow`, please
 check whether it can be generalized to `Submodule.factor` and whether the
 corresponding (more general) lemma for `Submodule.factor` already exists.
 -/
-abbrev mapQPow {m n : ℕ} (le : m ≤ n) :
+abbrev factorPow {m n : ℕ} (le : m ≤ n) :
     M ⧸ (I ^ n • ⊤ : Submodule R M) →ₗ[R] M ⧸ (I ^ m • ⊤ : Submodule R M) :=
   factor (smul_mono_left (Ideal.pow_le_pow_right le))
 
-/--`mapQPow` for `n = m + 1`-/
-abbrev mapQPowSucc (m : ℕ) : M ⧸ (I ^ (m + 1) • ⊤ : Submodule R M) →ₗ[R]
-    M ⧸ (I ^ m • ⊤ : Submodule R M) := mapQPow I M (Nat.le_succ m)
+/--`factorPow` for `n = m + 1`-/
+abbrev factorPowSucc (m : ℕ) : M ⧸ (I ^ (m + 1) • ⊤ : Submodule R M) →ₗ[R]
+    M ⧸ (I ^ m • ⊤ : Submodule R M) := factorPow I M (Nat.le_succ m)
 
 end Submodule
 

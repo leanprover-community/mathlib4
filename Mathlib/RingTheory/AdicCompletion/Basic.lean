@@ -7,6 +7,7 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.SModEq
 import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 import Mathlib.RingTheory.Jacobson.Ideal
+import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 
 /-!
 # Completion of a module with respect to an ideal.
@@ -435,7 +436,7 @@ abbrev Hausdorffification : Type _ :=
 
 /-- The canonical linear map `M ⧸ (I ^ n • ⊤) →ₗ[R] M ⧸ (I ^ m • ⊤)` for `m ≤ n` used
 to define `AdicCompletion`. -/
-abbrev AdicCompletion.transitionMap {m n : ℕ} (hmn : m ≤ n) := mapQPow I M hmn
+abbrev AdicCompletion.transitionMap {m n : ℕ} (hmn : m ≤ n) := factorPow I M hmn
 
 /-- The completion of a module with respect to an ideal. This is not necessarily Hausdorff.
 In fact, this is only complete if the ideal is finitely generated. -/
@@ -808,7 +809,7 @@ def AdicCauchySequence.mk (f : ℕ → M)
 def mk : AdicCauchySequence I M →ₗ[R] AdicCompletion I M where
   toFun f := ⟨fun n ↦ Submodule.mkQ (I ^ n • ⊤ : Submodule R M) (f n), by
     intro m n hmn
-    simp only [mkQ_apply, Submodule.factor_mk]
+    simp only [mkQ_apply, factor_mk]
     exact (f.property hmn).symm⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
