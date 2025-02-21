@@ -194,7 +194,6 @@ lemma IsCodetecting.isIso_iff_of_epi {𝒢 : Set C} (h𝒢 : IsCodetecting 𝒢)
   · intro h
     rw [isIso_iff_coyoneda_map_bijective] at h
     intro A _
-    have pif := h A
     exact (h A).2
   · intro hf
     refine h𝒢 _ (fun A hA g ↦ existsUnique_of_exists_of_unique ?_ ?_)
