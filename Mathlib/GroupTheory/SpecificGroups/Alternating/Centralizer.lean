@@ -36,33 +36,6 @@ variable {α : Type*} [Fintype α] [DecidableEq α] (g : Perm α)
 
 namespace Equiv.Perm
 
-section
-
-variable {α : Type*} [DecidableEq α] [Fintype α]
-
-theorem sameCycle_iff_cycleOf_eq_of_mem_support
-    {g : Perm α} {x y : α} (hx : x ∈ g.support) (hy : y ∈ g.support) :
-    g.SameCycle x y ↔ g.cycleOf x = g.cycleOf y := by
-  refine ⟨SameCycle.cycleOf_eq, fun h ↦ ?_⟩
-  rw [← mem_support_cycleOf_iff' (mem_support.mp hx), h,
-    mem_support_cycleOf_iff' (mem_support.mp hy)]
-
-theorem pow_prime_eq_one_iff {σ : Perm α} {p : ℕ} [hp : Fact (Nat.Prime p)] :
-    σ ^ p = 1 ↔ ∀ c ∈ σ.cycleType, c = p := by
-  refine ⟨fun hσ ↦ ?_, fun h ↦ ?_⟩
-  · rcases eq_or_ne σ 1 with rfl | hσ'; · simp
-    have := orderOf_eq_prime hσ hσ'
-    rw [← this] at hp ⊢
-    obtain ⟨n, h⟩ := σ.cycleType_prime_order hp.elim
-    intro c hc
-    rw [h] at hc
-    exact Multiset.eq_of_mem_replicate hc
-  · rw [← orderOf_dvd_iff_pow_eq_one, ← lcm_cycleType, Multiset.lcm_dvd]
-    intro b hb
-    simp only [h b hb, dvd_refl]
-
-end
-
 namespace OnCycleFactors
 
 theorem sign_kerParam
