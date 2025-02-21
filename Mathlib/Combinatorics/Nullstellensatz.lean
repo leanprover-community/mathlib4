@@ -26,7 +26,7 @@ the vanishing of `f` at any `x : σ → R` such that `x s ∈ S s` for all `s`.
 
 - `combinatorial_nullstellensatz_exists_linearCombination`
   If `f` vanishes at every such point, then it can be written as a linear combination
-  `f = linearCombination (MvPolynomial σ R) (fun i ↦ (∏ r ∈ S i, (X i - C r))) h`,
+  `f = linearCombination (MvPolynomial σ R) (fun i ↦ ∏ r ∈ S i, (X i - C r)) h`,
   for some `h : σ →₀ MvPolynomial σ R` such that
   `((∏ r ∈ S s, (X i - C r)) * h i).totalDegree ≤ f.totalDegree` for all `s`.
 
@@ -60,7 +60,7 @@ namespace MvPolynomial
 open Finsupp
 
 /-- A multivariate polynomial that vanishes on a large product finite set is the zero polynomial. -/
-theorem eq_zero_of_eval_zero_at_prod_finset_nat {n : ℕ} [IsDomain R]
+private theorem eq_zero_of_eval_zero_at_prod_finset_nat {n : ℕ} [IsDomain R]
     (P : MvPolynomial (Fin n) R) (S : Fin n → Finset R)
     (Hdeg : ∀ i, P.degreeOf i < #(S i))
     (Heval : ∀ (x : Fin n → R), (∀ i, x i ∈ S i) → eval x P = 0) :
@@ -216,7 +216,7 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
     (f : MvPolynomial σ R) (Heval : ∀ (x : σ → R), (∀ i, x i ∈ S i) → eval x f = 0) :
     ∃ (h : σ →₀ MvPolynomial σ R)
       (_ : ∀ i, ((∏ s ∈ S i, (X i - C s)) * h i).totalDegree ≤ f.totalDegree),
-    f = linearCombination (MvPolynomial σ R) (fun i ↦ (∏ r ∈ S i, (X i - C r))) h := by
+    f = linearCombination (MvPolynomial σ R) (fun i ↦ ∏ r ∈ S i, (X i - C r)) h := by
   letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   obtain ⟨h, r, hf, hh, hr⟩ := degLex.div (b := fun i ↦ Alon.P (S i) i)
       (fun i ↦ by simp only [(Alon.monic_P ..).leadingCoeff_eq_one, isUnit_one]) f
@@ -258,7 +258,7 @@ there exists a point `x : σ → R` such that `x s ∈ S s` for all `s` and `f.e
 theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
     (f : MvPolynomial σ R)
     (t : σ →₀ ℕ) (ht : f.coeff t ≠ 0) (ht' : f.totalDegree = t.degree)
-    (S : σ → Finset R) (htS : ∀ i, t i < (S i).card) :
+    (S : σ → Finset R) (htS : ∀ i, t i < #(S i)) :
     ∃ (s : σ → R) (_ : ∀ i, s i ∈ S i), eval s f ≠ 0 := by
   let _ : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   classical
