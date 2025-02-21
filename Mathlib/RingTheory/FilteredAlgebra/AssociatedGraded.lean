@@ -33,7 +33,7 @@ abbrev GradedPiece (i : ι) :=
   ((F i) : AddSubgroup A) ⧸ ((F_lt i) : AddSubgroup A).addSubgroupOf ((F i) : AddSubgroup A)
 
 /-- Direct sum of `GradedPiece`-/
-abbrev AssociatedGraded := DirectSum _ <| GradedPiece F F_lt
+abbrev AssociatedGraded := DirectSum ι (GradedPiece F F_lt)
 
 namespace AssociatedGraded
 
@@ -206,18 +206,18 @@ lemma hasGMul_AddSubgroup (F : ι → AddSubgroup R) (F_lt : outParam <| ι → 
     intro i j x y hx hy
     let S : AddSubgroup R := {
       carrier := {z | z * y ∈ F_lt (i + j)}
-      add_mem' := fun ha hb ↦ by simp only [Set.mem_setOf_eq, add_mul, add_mem ha.out hb.out]
-      zero_mem' := by simp only [Set.mem_setOf_eq, zero_mul, zero_mem]
-      neg_mem' := by simp only [Set.mem_setOf_eq, neg_mul, neg_mem_iff, imp_self, implies_true]}
+      add_mem' := fun ha hb ↦ by simp [add_mul, add_mem ha.out hb.out]
+      zero_mem' := by simp [zero_mem]
+      neg_mem' := by simp }
     exact IsFiltration.is_sup S i (fun k hk z hz ↦
       IsFiltration.is_le (add_lt_add_right hk j) (IsRingFiltration.mul_mem hz hy)) hx
   mul_F_lt_mem := by
     intro i j x y hx hy
     let S : AddSubgroup R := {
       carrier := {z | x * z ∈ F_lt (i + j)}
-      add_mem' := fun ha hb ↦ by simp only [Set.mem_setOf_eq, mul_add, add_mem ha.out hb.out]
-      zero_mem' := by simp only [Set.mem_setOf_eq, mul_zero, zero_mem]
-      neg_mem' := by simp only [Set.mem_setOf_eq, mul_neg, neg_mem_iff, imp_self, implies_true]}
+      add_mem' := fun ha hb ↦ by simp [mul_add, add_mem ha.out hb.out]
+      zero_mem' := by simp [zero_mem]
+      neg_mem' := by simp }
     exact IsFiltration.is_sup S j (fun k hk z hz ↦
       IsFiltration.is_le (add_lt_add_left hk i) (IsRingFiltration.mul_mem hx hz)) hy
 
@@ -237,9 +237,7 @@ instance [IsRingFiltration F F_lt] {i j : ι} :
 lemma hasGMul.mul_equiv_mul [hasGMul F F_lt] {i j : ι}
     ⦃x₁ x₂ : F i⦄ (hx : x₁ ≈ x₂)
     ⦃y₁ y₂ : F j⦄ (hy : y₁ ≈ y₂) : x₁ * y₁ ≈ x₂ * y₂ := by
-  simp only [HasEquiv.Equiv, QuotientAddGroup.leftRel_apply, AddSubgroup.mem_addSubgroupOf,
-    AddSubgroup.coe_add, NegMemClass.coe_neg, AddMonoidHom.mem_range, AddSubgroupClass.coeSubtype,
-    Subtype.exists, exists_prop, exists_eq_right] at hx hy ⊢
+  simp only [HasEquiv.Equiv, QuotientAddGroup.leftRel_apply] at hx hy ⊢
   have eq : - (x₁ * y₁ : R) + (x₂ * y₂ : R) = (- x₁ + x₂ : R) * y₁ + x₂ * (- y₁ + y₂ : R) := by
     noncomm_ring
   have eq : - (x₁ * y₁) + (x₂ * y₂) = (- x₁ + x₂) * y₁ + x₂ * (- y₁ + y₂) :=
@@ -338,19 +336,13 @@ lemma Filtration.pow_lift [hasGMul F F_lt] (n : ℕ) {i : ι}
     (⟨x₂ ^ n, Filtration.pow_mem F F_lt n x₂⟩ : (F (n • i))) := by
   induction' n with d hd
   · simp only [pow_zero, mk_eq, exact]
-  · simp only [pow_succ]
-    simp only [HasEquiv.Equiv, QuotientAddGroup.leftRel_apply, AddSubgroup.mem_addSubgroupOf,
-      AddSubgroup.coe_add, NegMemClass.coe_neg, AddMonoidHom.mem_range, AddSubgroupClass.coeSubtype,
-      Subtype.exists, exists_prop, exists_eq_right] at h hd ⊢
+  · simp only [pow_succ, HasEquiv.Equiv, QuotientAddGroup.leftRel_apply] at h hd ⊢
     have mem1 : x₁.1 ^ d * x₂.1 - x₁.1 ^ d * x₁.1 ∈ F_lt ((d + 1) • i) := by
       rw [← mul_sub, sub_eq_neg_add]
-      have := Filtration.pow_mem F F_lt d x₁
-      simp only [AddMonoidHom.mem_range, AddSubgroupClass.coeSubtype, Subtype.exists, exists_prop,
-        exists_eq_right] at this
-      simpa [succ_nsmul i d] using hasGMul.mul_F_lt_mem this h
+      simpa [succ_nsmul i d] using hasGMul.mul_F_lt_mem (Filtration.pow_mem F F_lt d x₁) h
     have mem2 : x₂.1 ^ d * x₂.1 - x₁.1 ^ d * x₂.1 ∈ F_lt ((d + 1) • i) := by
       rw [← sub_mul, sub_eq_neg_add]
-      simp [succ_nsmul i d]
+      simp only [succ_nsmul i d]
       exact hasGMul.F_lt_mul_mem hd x₂.2
     show -(x₁.1 ^ d * x₁.1) + x₂.1 ^ d * x₂.1 ∈ (F_lt ((d + 1) • i))
     have : -(x₁.1 ^ d * x₁.1) + x₂.1 ^ d * x₂.1 =
@@ -444,7 +436,8 @@ lemma GradedPiece.add_mul [hasGMul F F_lt] {i j : ι} (a b : GradedPiece F F_lt 
   induction c using Quotient.ind'
   show Quotient.mk'' _ = Quotient.mk'' _
   rw [Quotient.eq'']
-  simp [QuotientAddGroup.leftRel_apply, AddSubgroup.mem_addSubgroupOf]
+  simp only [QuotientAddGroup.leftRel_apply, AddSubgroup.mem_addSubgroupOf, AddSubgroup.coe_add,
+    NegMemClass.coe_neg, AddSubgroup.mem_mk, SetLike.mem_coe]
   rename_i a1 a2 a3
   have : -((a1 + a2) * a3).1 + ((a1 * a3).1 + (a2 * a3).1) = 0 := by
     have : -((a1.1 + a2.1) * a3.1) + (a1.1 * a3.1 + a2.1 * a3.1) = 0 := by noncomm_ring
