@@ -320,7 +320,7 @@ lemma optionEquivLeft_C (r : R) : optionEquivLeft R S₁ (C r) = Polynomial.C (C
   simp only [optionEquivLeft_apply, aeval_C, Polynomial.algebraMap_apply, algebraMap_eq]
 
 theorem optionEquivLeft_monomial (m : Option S₁ →₀ ℕ) (r : R) :
-    optionEquivLeft R S₁ (monomial m r) = Polynomial.monomial (m none) (monomial m.some r):= by
+    optionEquivLeft R S₁ (monomial m r) = .monomial (m none) (monomial m.some r) := by
   rw [optionEquivLeft_apply, aeval_monomial, prod_option_index]
   · rw [MvPolynomial.monomial_eq, ← Polynomial.C_mul_X_pow_eq_monomial]
     simp only [Polynomial.algebraMap_apply, algebraMap_eq, Option.elim_none, Option.elim_some,
@@ -331,7 +331,7 @@ theorem optionEquivLeft_monomial (m : Option S₁ →₀ ℕ) (r : R) :
   · intros; rw [pow_add]
 
 /-- The coefficient of `m` in the `i`-th coefficient of `optionEquivLeft R S₁ f` equals the
-  coefficient of … in `f` -/
+coefficient of … in `f` -/
 theorem optionEquivLeft_coeff_coeff (n : Option S₁ →₀ ℕ) (f : MvPolynomial (Option S₁) R) :
     coeff n.some (Polynomial.coeff (optionEquivLeft R S₁ f) (n none)) =
       coeff n f := by
