@@ -34,8 +34,9 @@ namespace IsGrothendieckAbelian
 
 /-- Given an object `G : C`, this is the family of morphisms in `C`
 given by the inclusions of all subobjects of `G`. If `G` is a separator,
-we shall show (TODO) that any monomorphism in `C` is a transfinite composition
-of pushouts of monomorphisms in this family. -/
+and `C` is a Grothendieck abelian category, then any monomorphism in `C`
+is a transfinite composition of pushouts of monomorphisms in this family
+(see `generatingMonomorphisms.exists_transfiniteCompositionOfShape`). -/
 def generatingMonomorphisms (G : C) : MorphismProperty C :=
   MorphismProperty.ofHoms (fun (X : Subobject G) ↦ X.arrow)
 
@@ -153,11 +154,10 @@ lemma pushouts_ofLE_le_largerSubobject (A : Subobject X) :
 variable [IsGrothendieckAbelian.{w} C]
 
 lemma top_mem_range (A₀ : Subobject X) {J : Type w} [LinearOrder J] [OrderBot J] [SuccOrder J]
-    [WellFoundedLT J] (hJ : Cardinal.mk (Shrink (Subobject X)) < Cardinal.mk J) :
+    [WellFoundedLT J] (hJ : HasCardinalLT (Subobject X) (Cardinal.mk J)) :
     ∃ (j : J), transfiniteIterate (largerSubobject hG) j A₀ = ⊤ :=
   top_mem_range_transfiniteIterate (largerSubobject hG) A₀ (lt_largerSubobject hG) (by simp)
-    (fun h ↦ (lt_self_iff_false _).1 (lt_of_le_of_lt
-      (Cardinal.mk_le_of_injective ((equivShrink.{w} (Subobject X)).injective.comp h)) hJ))
+    (fun h ↦ by simpa [hasCardinalLT_iff_cardinal_mk_lt] using hJ.of_injective _ h)
 
 lemma exists_ordinal (A₀ : Subobject X) :
     ∃ (o : Ordinal.{w}) (j : o.toType), transfiniteIterate (largerSubobject hG) j A₀ = ⊤ := by
@@ -197,14 +197,6 @@ instance : (functor hG A₀ J).IsWellOrderContinuous where
     dsimp [c]
     simp only [Subobject.mk_arrow]
     exact transfiniteIterate_limit (largerSubobject hG) A₀ m hm⟩
-
-lemma mono_functor_map_le_succ (j : J) (hj : ¬IsMax j) :
-    (generatingMonomorphisms G).pushouts ((functor hG A₀ J).map (homOfLE (Order.le_succ j))) := by
-  refine (MorphismProperty.arrow_mk_iso_iff _ ?_).2
-    (pushouts_ofLE_le_largerSubobject hG
-      (transfiniteIterate (largerSubobject hG) j A₀))
-  exact Arrow.isoMk (Iso.refl _) (Subobject.isoOfEq _ _ (transfiniteIterate_succ _ _ _ hj))
-    (by simp [MonoOver.forget])
 
 variable {J} in
 /-- For any `j`, the map `(functor hG A₀ J).map (homOfLE bot_le : ⊥ ⟶ j)`
@@ -258,9 +250,8 @@ lemma exists_transfiniteCompositionOfShape :
         (_ : WellFoundedLT J),
     Nonempty ((generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape J f) := by
   obtain ⟨o, j, hj⟩ := exists_ordinal hG (Subobject.mk f)
-  have ho : Nonempty o.toType := ⟨j⟩
-  rw [o.toType_nonempty_iff_ne_zero] at ho
-  letI := Ordinal.toTypeOrderBot ho
+  letI : OrderBot o.toType := Ordinal.toTypeOrderBot (by
+    simpa only [← Ordinal.toType_nonempty_iff_ne_zero] using Nonempty.intro j)
   exact ⟨_, _, _, _, _, ⟨transfiniteCompositionOfShapeOfEqTop hG hj⟩⟩
 
 end generatingMonomorphisms
