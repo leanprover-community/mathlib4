@@ -22,7 +22,7 @@ universe u
 
 open LightCondensed LightCondSet CategoryTheory LightProfinite
 
-attribute [local instance] ConcreteCategory.instFunLike
+attribute [local instance] HasForget.instFunLike
 
 namespace LightCondSet
 

@@ -48,8 +48,8 @@ def doPivotOperation (exitIdx enterIdx : Nat) : SimplexAlgorithmM matType Unit :
     let newBasic := s.basic.set! exitIdx s.free[enterIdx]!
     let newFree := s.free.set! enterIdx s.basic[exitIdx]!
 
-    have hb : newBasic.size = s.basic.size := by apply Array.size_setD
-    have hf : newFree.size = s.free.size := by apply Array.size_setD
+    have hb : newBasic.size = s.basic.size := by apply Array.size_setIfInBounds
+    have hf : newFree.size = s.free.size := by apply Array.size_setIfInBounds
 
     return (⟨newBasic, newFree, hb ▸ hf ▸ mat⟩ : Tableau matType)
 
@@ -60,7 +60,7 @@ nonnegative.
 def checkSuccess : SimplexAlgorithmM matType Bool := do
   let lastIdx := (← get).free.size - 1
   return (← get).mat[(0, lastIdx)]! > 0 &&
-    (← Nat.allM (← get).basic.size (fun i => do return (← get).mat[(i, lastIdx)]! >= 0))
+    (← (← get).basic.size.allM (fun i _ => do return (← get).mat[(i, lastIdx)]! ≥ 0))
 
 /--
 Chooses an entering variable: among the variables with a positive coefficient in the objective

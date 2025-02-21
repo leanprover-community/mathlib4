@@ -227,7 +227,7 @@ theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [
         rw [add_comm, add_eq_max (aleph0_le_lift.2 (infinite_iff.1 iM)), max_le_iff]
         rw [← lift_le.{w'}, lift_lift, lift_lift] at h1
         exact ⟨h2, h1⟩)
-      (hN0.trans (by rw [← lift_umax', lift_id]))
+      (hN0.trans (by rw [← lift_umax, lift_id]))
   letI := (lhomWithConstants L M).reduct N
   haveI h : N ⊨ L.elementaryDiagram M :=
     (NN0.theory_model_iff (L.elementaryDiagram M)).2 inferInstance

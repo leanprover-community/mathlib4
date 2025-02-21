@@ -21,11 +21,11 @@ universe v u w u' v'
 
 open CategoryTheory Sheaf Opposite Limits Condensed ConcreteCategory
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
 
 namespace Condensed
 
-variable (A : Type u') [Category.{v'} A] [ConcreteCategory.{v'} A]
+variable (A : Type u') [Category.{v'} A] [HasForget.{v'} A]
   [HasFunctorialSurjectiveInjectiveFactorization A]
 
 variable {X Y : Condensed.{u} A} (f : X ⟶ Y)

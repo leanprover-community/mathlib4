@@ -5,12 +5,13 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Function.Defs
 import Mathlib.Logic.Function.Iterate
+import Aesop
 import Mathlib.Tactic.Inhabit
 
 /-!
 # Extra facts about `Prod`
 
-This file defines `Prod.swap : α × β → β × α` and proves various simple lemmas about `Prod`.
+This file proves various simple lemmas about `Prod`.
 It also defines better delaborators for product projections.
 -/
 
@@ -19,6 +20,8 @@ variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 @[deprecated (since := "2024-05-08")] alias Prod_map := Prod.map_apply
 
 namespace Prod
+
+lemma swap_eq_iff_eq_swap {x : α × β} {y : β × α} : x.swap = y ↔ x = y.swap := by aesop
 
 def mk.injArrow {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
     (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=
@@ -248,10 +251,10 @@ theorem map_injective [Nonempty α] [Nonempty β] {f : α → γ} {g : β → δ
     ⟨fun a₁ a₂ ha => by
       inhabit β
       injection
-        @h (a₁, default) (a₂, default) (congr_arg (fun c : γ => Prod.mk c (g default)) ha : _),
+        @h (a₁, default) (a₂, default) (congr_arg (fun c : γ => Prod.mk c (g default)) ha :),
       fun b₁ b₂ hb => by
       inhabit α
-      injection @h (default, b₁) (default, b₂) (congr_arg (Prod.mk (f default)) hb : _)⟩,
+      injection @h (default, b₁) (default, b₂) (congr_arg (Prod.mk (f default)) hb :)⟩,
     fun h => h.1.prodMap h.2⟩
 
 @[simp]
@@ -297,21 +300,43 @@ theorem map_involutive [Nonempty α] [Nonempty β] {f : α → α} {g : β → �
     Involutive (map f g) ↔ Involutive f ∧ Involutive g :=
   map_leftInverse
 
-section delaborators
+namespace PrettyPrinting
 open Lean PrettyPrinter Delaborator
 
+/--
+When true, then `Prod.fst x` and `Prod.snd x` pretty print as `x.1` and `x.2`
+rather than as `x.fst` and `x.snd`.
+-/
+register_option pp.numericProj.prod : Bool := {
+  defValue := true
+  descr := "enable pretty printing `Prod.fst x` as `x.1` and `Prod.snd x` as `x.2`."
+}
+
+/-- Tell whether pretty-printing should use numeric projection notations `.1`
+and `.2` for `Prod.fst` and `Prod.snd`. -/
+def getPPNumericProjProd (o : Options) : Bool :=
+  o.get pp.numericProj.prod.name pp.numericProj.prod.defValue
+
 /-- Delaborator for `Prod.fst x` as `x.1`. -/
-@[delab app.Prod.fst]
-def delabProdFst : Delab := withOverApp 3 do
-  let x ← SubExpr.withAppArg delab
-  `($(x).1)
+@[app_delab Prod.fst]
+def delabProdFst : Delab :=
+  whenPPOption getPPNumericProjProd <|
+  whenPPOption getPPFieldNotation <|
+  whenNotPPOption getPPExplicit <|
+  withOverApp 3 do
+    let x ← SubExpr.withAppArg delab
+    `($(x).1)
 
 /-- Delaborator for `Prod.snd x` as `x.2`. -/
-@[delab app.Prod.snd]
-def delabProdSnd : Delab := withOverApp 3 do
-  let x ← SubExpr.withAppArg delab
-  `($(x).2)
+@[app_delab Prod.snd]
+def delabProdSnd : Delab :=
+  whenPPOption getPPNumericProjProd <|
+  whenPPOption getPPFieldNotation <|
+  whenNotPPOption getPPExplicit <|
+  withOverApp 3 do
+    let x ← SubExpr.withAppArg delab
+    `($(x).2)
 
-end delaborators
+end PrettyPrinting
 
 end Prod

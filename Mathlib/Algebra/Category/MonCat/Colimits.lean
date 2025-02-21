@@ -47,7 +47,7 @@ Monoid.mk : {M : Type u} →
 -/
 
 
-universe v
+universe v u
 
 open CategoryTheory
 
@@ -63,7 +63,7 @@ and the identifications given by the morphisms in the diagram.
 -/
 
 
-variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCat.{v})
+variable {J : Type v} [Category.{u} J] (F : J ⥤ MonCat.{v})
 
 /-- An inductive type representing all monoid expressions (without relations)
 on a collection of types indexed by the objects of `J`.

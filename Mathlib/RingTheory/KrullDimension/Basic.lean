@@ -5,7 +5,8 @@ Authors: Fangming Li, Jujian Zhang
 -/
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.RingTheory.PrimeSpectrum
+import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 import Mathlib.Order.KrullDimension
 
 /-!
@@ -21,7 +22,7 @@ open Order
 /--
 The ring theoretic Krull dimension is the Krull dimension of its spectrum ordered by inclusion.
 -/
-noncomputable def ringKrullDim (R : Type*) [CommRing R] : WithBot (WithTop ℕ) :=
+noncomputable def ringKrullDim (R : Type*) [CommRing R] : WithBot ℕ∞ :=
   krullDim (PrimeSpectrum R)
 
 variable {R S : Type*} [CommRing R] [CommRing S]
@@ -29,11 +30,11 @@ variable {R S : Type*} [CommRing R] [CommRing S]
 @[nontriviality]
 lemma ringKrullDim_eq_bot_of_subsingleton [Subsingleton R] :
     ringKrullDim R = ⊥ :=
-  krullDim_eq_bot_of_isEmpty
+  krullDim_eq_bot
 
 lemma ringKrullDim_nonneg_of_nontrivial [Nontrivial R] :
     0 ≤ ringKrullDim R :=
-  krullDim_nonneg_of_nonempty
+  krullDim_nonneg
 
 /-- If `f : R →+* S` is surjective, then `ringKrullDim S ≤ ringKrullDim R`. -/
 theorem ringKrullDim_le_of_surjective (f : R →+* S) (hf : Function.Surjective f) :

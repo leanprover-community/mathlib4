@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.IsPrimePow
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Order.Interval.Finset.Nat
 
@@ -133,6 +134,12 @@ theorem divisor_le {m : ℕ} : n ∈ divisors m → n ≤ m := by
 theorem divisors_subset_of_dvd {m : ℕ} (hzero : n ≠ 0) (h : m ∣ n) : divisors m ⊆ divisors n :=
   Finset.subset_iff.2 fun _x hx => Nat.mem_divisors.mpr ⟨(Nat.mem_divisors.mp hx).1.trans h, hzero⟩
 
+theorem card_divisors_le_self (n : ℕ) : #n.divisors ≤ n := calc
+  _ ≤ #(Ico 1 (n + 1)) := by
+    apply card_le_card
+    simp only [divisors, filter_subset]
+  _ = n := by rw [card_Ico, add_tsub_cancel_right]
+
 theorem divisors_subset_properDivisors {m : ℕ} (hzero : n ≠ 0) (h : m ∣ n) (hdiff : m ≠ n) :
     divisors m ⊆ properDivisors n := by
   apply Finset.subset_iff.2
@@ -203,7 +210,7 @@ lemma one_lt_of_mem_properDivisors {m n : ℕ} (h : m ∈ n.properDivisors) : 1 
 lemma one_lt_div_of_mem_properDivisors {m n : ℕ} (h : m ∈ n.properDivisors) :
     1 < n / m := by
   obtain ⟨h_dvd, h_lt⟩ := mem_properDivisors.mp h
-  rwa [Nat.lt_div_iff_mul_lt h_dvd, mul_one]
+  rwa [Nat.lt_div_iff_mul_lt' h_dvd, mul_one]
 
 /-- See also `Nat.mem_properDivisors`. -/
 lemma mem_properDivisors_iff_exists {m n : ℕ} (hn : n ≠ 0) :
@@ -391,7 +398,7 @@ theorem Prime.prod_divisors {α : Type*} [CommMonoid α] {p : ℕ} {f : ℕ → 
 theorem properDivisors_eq_singleton_one_iff_prime : n.properDivisors = {1} ↔ n.Prime := by
   refine ⟨?_, ?_⟩
   · intro h
-    refine Nat.prime_def_lt''.mpr ⟨?_, fun m hdvd => ?_⟩
+    refine Nat.prime_def.mpr ⟨?_, fun m hdvd => ?_⟩
     · match n with
       | 0 => contradiction
       | 1 => contradiction
@@ -514,5 +521,11 @@ theorem prod_div_divisors {α : Type*} [CommMonoid α] (n : ℕ) (f : ℕ → α
   · intro x hx y hy h
     rw [mem_divisors] at hx hy
     exact (div_eq_iff_eq_of_dvd_dvd hn hx.1 hy.1).mp h
+
+theorem disjoint_divisors_filter_isPrimePow {a b : ℕ} (hab : a.Coprime b) :
+    Disjoint (a.divisors.filter IsPrimePow) (b.divisors.filter IsPrimePow) := by
+  simp only [Finset.disjoint_left, Finset.mem_filter, and_imp, Nat.mem_divisors, not_and]
+  rintro n han _ha hn hbn _hb -
+  exact hn.ne_one (Nat.eq_one_of_dvd_coprimes hab han hbn)
 
 end Nat

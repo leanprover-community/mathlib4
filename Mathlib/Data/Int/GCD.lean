@@ -3,13 +3,13 @@ Copyright (c) 2018 Guy Leroy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Order.Lattice
 import Mathlib.Data.Set.Operations
+import Mathlib.Order.Basic
 import Mathlib.Order.Bounds.Defs
+import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # Extended GCD and divisibility over ℤ

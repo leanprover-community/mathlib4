@@ -128,9 +128,9 @@ theorem lt_toLex_update_self_iff : toLex x < toLex (update x i a) ↔ x i < a :=
   dsimp at h
   obtain rfl : j = i := by
     by_contra H
-    rw [update_noteq H] at h
+    rw [update_of_ne H] at h
     exact h.false
-  rwa [update_same] at h
+  rwa [update_self] at h
 
 @[simp]
 theorem toLex_update_lt_self_iff : toLex (update x i a) < toLex x ↔ a < x i := by
@@ -139,9 +139,9 @@ theorem toLex_update_lt_self_iff : toLex (update x i a) < toLex x ↔ a < x i :=
   dsimp at h
   obtain rfl : j = i := by
     by_contra H
-    rw [update_noteq H] at h
+    rw [update_of_ne H] at h
     exact h.false
-  rwa [update_same] at h
+  rwa [update_self] at h
 
 @[simp]
 theorem le_toLex_update_self_iff : toLex x ≤ toLex (update x i a) ↔ x i ≤ a := by
@@ -176,10 +176,10 @@ instance [Preorder ι] [∀ i, LT (β i)] [∀ i, DenselyOrdered (β i)] :
       refine ⟨Function.update a₂ _ a, ⟨i, fun j hj => ?_, ?_⟩, i, fun j hj => ?_, ?_⟩
       · rw [h j hj]
         dsimp only at hj
-        rw [Function.update_noteq hj.ne a]
-      · rwa [Function.update_same i a]
-      · rw [Function.update_noteq hj.ne a]
-      · rwa [Function.update_same i a]⟩
+        rw [Function.update_of_ne hj.ne a]
+      · rwa [Function.update_self i a]
+      · rw [Function.update_of_ne hj.ne a]
+      · rwa [Function.update_self i a]⟩
 
 theorem Lex.noMaxOrder' [Preorder ι] [∀ i, LT (β i)] (i : ι) [NoMaxOrder (β i)] :
     NoMaxOrder (Lex (∀ i, β i)) :=
@@ -187,7 +187,7 @@ theorem Lex.noMaxOrder' [Preorder ι] [∀ i, LT (β i)] (i : ι) [NoMaxOrder (�
     let ⟨b, hb⟩ := exists_gt (a i)
     classical
     exact ⟨Function.update a i b, i, fun j hj =>
-      (Function.update_noteq hj.ne b a).symm, by rwa [Function.update_same i b]⟩⟩
+      (Function.update_of_ne hj.ne b a).symm, by rwa [Function.update_self i b]⟩⟩
 
 instance [LinearOrder ι] [WellFoundedLT ι] [Nonempty ι] [∀ i, PartialOrder (β i)]
     [∀ i, NoMaxOrder (β i)] : NoMaxOrder (Lex (∀ i, β i)) :=

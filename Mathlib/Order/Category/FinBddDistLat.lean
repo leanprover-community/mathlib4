@@ -56,8 +56,8 @@ instance : Inhabited FinBddDistLat :=
 instance largeCategory : LargeCategory FinBddDistLat :=
   InducedCategory.category toBddDistLat
 
-instance concreteCategory : ConcreteCategory FinBddDistLat :=
-  InducedCategory.concreteCategory toBddDistLat
+instance hasForget : HasForget FinBddDistLat :=
+  InducedCategory.hasForget toBddDistLat
 
 instance hasForgetToBddDistLat : HasForget₂ FinBddDistLat BddDistLat :=
   InducedCategory.hasForget₂ FinBddDistLat.toBddDistLat

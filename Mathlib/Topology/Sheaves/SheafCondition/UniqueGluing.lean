@@ -40,7 +40,7 @@ open TopCat TopCat.Presheaf CategoryTheory CategoryTheory.Limits
 
 universe v u x
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
+variable {C : Type u} [Category.{v} C] [HasForget.{v} C]
 
 namespace TopCat
 
@@ -48,7 +48,7 @@ namespace Presheaf
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
 
 variable {X : TopCat.{x}} (F : Presheaf C X) {ι : Type x} (U : ι → Opens X)
 
@@ -135,7 +135,7 @@ end TypeValued
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
 
 variable [HasLimits C] [(forget C).ReflectsIsomorphisms] [PreservesLimits (forget C)]
 variable {X : TopCat.{v}} (F : Presheaf C X)
@@ -159,10 +159,10 @@ open CategoryTheory
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
 
-variable [HasLimits C] [(ConcreteCategory.forget (C := C)).ReflectsIsomorphisms]
-variable [PreservesLimits (ConcreteCategory.forget (C := C))]
+variable [HasLimits C] [(HasForget.forget (C := C)).ReflectsIsomorphisms]
+variable [PreservesLimits (HasForget.forget (C := C))]
 variable {X : TopCat.{v}} (F : Sheaf C X) {ι : Type v} (U : ι → Opens X)
 
 /-- A more convenient way of obtaining a unique gluing of sections for a sheaf.

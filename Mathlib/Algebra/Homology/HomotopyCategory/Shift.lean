@@ -22,6 +22,8 @@ We also show that if `F : C ⥤ D` is an additive functor, then the functors
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe v v' u u'
 
 open CategoryTheory

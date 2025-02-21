@@ -3,10 +3,11 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Shrink
 import Mathlib.Data.Fintype.Sum
+import Mathlib.Data.Finite.Prod
 
 /-!
 # The Hales-Jewett theorem
@@ -64,7 +65,6 @@ combinatorial line, Ramsey theory, arithmetic progression
 -/
 
 open Function
-open scoped Classical
 
 universe u v
 variable {η α ι κ : Type*}
@@ -106,6 +106,7 @@ lemma coe_apply (l : Subspace η α ι) (x : η → α) (i : ι) : l x i = (l.id
 
 -- Note: This is not made a `FunLike` instance to avoid having two syntactically different coercions
 lemma coe_injective [Nontrivial α] : Injective ((⇑) : Subspace η α ι → (η → α) → ι → α) := by
+  classical
   rintro l m hlm
   ext i
   simp only [funext_iff] at hlm
@@ -419,7 +420,6 @@ private theorem exists_mono_in_high_dimension' :
     -- and adding to this the vertical line obtained by the focus point and `l`.
     refine Or.inl ⟨⟨(s.lines.map ?_).cons ⟨(l'.map some).vertical s.focus, C' s.focus, fun x => ?_⟩,
             Sum.elim s.focus (l'.map some none), ?_, ?_⟩, ?_⟩
-    -- Porting note: Needed to reorder the following two goals
     -- The product lines are almost monochromatic.
     · refine fun p => ⟨p.line.prod (l'.map some), p.color, fun x => ?_⟩
       rw [Line.prod_apply, Line.map_apply, ← p.has_color, ← congr_fun (hl' x)]
@@ -452,6 +452,7 @@ end Line
 monoid, and `S` is a finite subset, then there exists a monochromatic homothetic copy of `S`. -/
 theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset M) [Finite κ]
     (C : M → κ) : ∃ a > 0, ∃ (b : M) (c : κ), ∀ s ∈ S, C (a • s + b) = c := by
+  classical
   obtain ⟨ι, _inst, hι⟩ := Line.exists_mono_in_high_dimension S κ
   specialize hι fun v => C <| ∑ i, v i
   obtain ⟨l, c, hl⟩ := hι

@@ -31,7 +31,7 @@ commutative ring, field of fractions
 -/
 
 
-variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
+variable {R : Type*} [CommSemiring R] (S : Type*) [CommSemiring S]
 variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 section AtPrime
@@ -48,6 +48,12 @@ def primeCompl : Submonoid R where
 
 theorem primeCompl_le_nonZeroDivisors [NoZeroDivisors R] : P.primeCompl ≤ nonZeroDivisors R :=
   le_nonZeroDivisors_of_noZeroDivisors <| not_not_intro P.zero_mem
+
+lemma disjoint_map_primeCompl_iff_comap_le {S : Type*} [Semiring S] {f : R →+* S}
+    {p : Ideal R} {I : Ideal S} [p.IsPrime] :
+    Disjoint (I : Set S) (p.primeCompl.map f) ↔ I.comap f ≤ p := by
+  rw [disjoint_comm]
+  simp [Set.disjoint_iff, Set.ext_iff, Ideal.primeCompl, not_imp_not, SetLike.le_def]
 
 end Ideal
 
@@ -248,5 +254,28 @@ theorem localRingHom_comp {S : Type*} [CommSemiring S] (J : Ideal S) [hJ : J.IsP
       (localRingHom J K g hJK).comp (localRingHom I J f hIJ) :=
   localRingHom_unique _ _ _ _ fun r => by
     simp only [Function.comp_apply, RingHom.coe_comp, localRingHom_to_map]
+
+namespace AtPrime
+
+variable {ι : Type*} {R : ι → Type*} [∀ i, CommSemiring (R i)]
+variable {i : ι} (I : Ideal (R i)) [I.IsPrime]
+
+/-- `Localization.localRingHom` specialized to a projection homomorphism from a product ring. -/
+noncomputable abbrev mapPiEvalRingHom :
+    Localization.AtPrime (I.comap <| Pi.evalRingHom R i) →+* Localization.AtPrime I :=
+  localRingHom _ _ _ rfl
+
+theorem mapPiEvalRingHom_bijective : Function.Bijective (mapPiEvalRingHom I) :=
+  Localization.mapPiEvalRingHom_bijective _
+
+theorem mapPiEvalRingHom_comp_algebraMap :
+    (mapPiEvalRingHom I).comp (algebraMap _ _) = (algebraMap _ _).comp (Pi.evalRingHom R i) :=
+  IsLocalization.map_comp _
+
+theorem mapPiEvalRingHom_algebraMap_apply {r : Π i, R i} :
+    mapPiEvalRingHom I (algebraMap _ _ r) = algebraMap _ _ (r i) :=
+  localRingHom_to_map ..
+
+end AtPrime
 
 end Localization

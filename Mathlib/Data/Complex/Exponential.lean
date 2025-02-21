@@ -9,6 +9,7 @@ import Mathlib.Data.Complex.Abs
 import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Exponential, trigonometric and hyperbolic trigonometric functions
@@ -46,7 +47,6 @@ def exp' (z : ℂ) : CauSeq ℂ Complex.abs :=
   ⟨fun n => ∑ m ∈ range n, z ^ m / m.factorial, isCauSeq_exp z⟩
 
 /-- The complex exponential function, defined via its Taylor series -/
--- Porting note: removed `irreducible` attribute, so I can prove things
 @[pp_nodot]
 def exp (z : ℂ) : ℂ :=
   CauSeq.lim (exp' z)
@@ -184,11 +184,11 @@ theorem exp_add : exp (x + y) = exp x * exp y := by
   simp only [hj]
   exact cauchy_product (isCauSeq_abs_exp x) (isCauSeq_exp y)
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- the exponential function as a monoid hom from `Multiplicative ℂ` to `ℂ` -/
 @[simps]
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℂ) ℂ :=
-  { toFun := fun z => exp (Multiplicative.toAdd z),
+  { toFun := fun z => exp z.toAdd,
     map_one' := by simp,
     map_mul' := by simp [exp_add] }
 
@@ -456,9 +456,6 @@ theorem cos_zero : cos 0 = 1 := by simp [cos]
 @[simp]
 theorem cos_neg : cos (-x) = cos x := by simp [cos, sub_eq_add_neg, exp_neg, add_comm]
 
-private theorem cos_add_aux {a b c d : ℂ} :
-    (a + b) * (c + d) - (b - a) * (d - c) * -1 = 2 * (a * c + b * d) := by ring
-
 theorem cos_add : cos (x + y) = cos x * cos y - sin x * sin y := by
   rw [← cosh_mul_I, add_mul, cosh_add, cosh_mul_I, cosh_mul_I, sinh_mul_I, sinh_mul_I,
     mul_mul_mul_comm, I_mul_I, mul_neg_one, sub_eq_add_neg]
@@ -688,11 +685,11 @@ theorem exp_zero : exp 0 = 1 := by simp [Real.exp]
 
 nonrec theorem exp_add : exp (x + y) = exp x * exp y := by simp [exp_add, exp]
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- the exponential function as a monoid hom from `Multiplicative ℝ` to `ℝ` -/
 @[simps]
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℝ) ℝ :=
-  { toFun := fun x => exp (Multiplicative.toAdd x),
+  { toFun := fun x => exp x.toAdd,
     map_one' := by simp,
     map_mul' := by simp [exp_add] }
 
@@ -1066,7 +1063,7 @@ theorem cosh_pos (x : ℝ) : 0 < Real.cosh x :=
   (cosh_eq x).symm ▸ half_pos (add_pos (exp_pos x) (exp_pos (-x)))
 
 theorem sinh_lt_cosh : sinh x < cosh x :=
-  lt_of_pow_lt_pow_left 2 (cosh_pos _).le <| (cosh_sq x).symm ▸ lt_add_one _
+  lt_of_pow_lt_pow_left₀ 2 (cosh_pos _).le <| (cosh_sq x).symm ▸ lt_add_one _
 
 end Real
 
@@ -1177,6 +1174,71 @@ theorem abs_exp_sub_one_sub_id_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1 
       (exp_bound hx (by decide))
     _ ≤ abs x ^ 2 * 1 := by gcongr; norm_num [Nat.factorial]
     _ = abs x ^ 2 := by rw [mul_one]
+
+lemma abs_exp_sub_sum_le_exp_abs_sub_sum (x : ℂ) (n : ℕ) :
+    abs (exp x - ∑ m ∈ range n, x ^ m / m.factorial)
+      ≤ Real.exp (abs x) - ∑ m ∈ range n, (abs x) ^ m / m.factorial := by
+  rw [← CauSeq.lim_const (abv := Complex.abs) (∑ m ∈ range n, _), Complex.exp, sub_eq_add_neg,
+    ← CauSeq.lim_neg, CauSeq.lim_add, ← lim_abs]
+  refine CauSeq.lim_le (CauSeq.le_of_exists ⟨n, fun j hj => ?_⟩)
+  simp_rw [← sub_eq_add_neg]
+  calc abs ((∑ m ∈ range j, x ^ m / m.factorial) - ∑ m ∈ range n, x ^ m / m.factorial)
+  _ ≤ (∑ m ∈ range j, abs x ^ m / m.factorial) - ∑ m ∈ range n, abs x ^ m / m.factorial := by
+    rw [sum_range_sub_sum_range hj, sum_range_sub_sum_range hj]
+    refine (IsAbsoluteValue.abv_sum Complex.abs ..).trans_eq ?_
+    congr with i
+    simp
+  _ ≤ Real.exp (abs x) - ∑ m ∈ range n, (abs x) ^ m / m.factorial := by
+    gcongr
+    exact Real.sum_le_exp_of_nonneg (by exact AbsoluteValue.nonneg abs x) _
+
+lemma abs_exp_le_exp_abs (x : ℂ) : abs (exp x) ≤ Real.exp (abs x) := by
+  convert abs_exp_sub_sum_le_exp_abs_sub_sum x 0 using 1 <;> simp
+
+lemma abs_exp_sub_sum_le_abs_mul_exp (x : ℂ) (n : ℕ) :
+    abs (exp x - ∑ m ∈ range n, x ^ m / m.factorial) ≤ abs x ^ n * Real.exp (abs x) := by
+  rw [← CauSeq.lim_const (abv := Complex.abs) (∑ m ∈ range n, _), Complex.exp, sub_eq_add_neg,
+    ← CauSeq.lim_neg, CauSeq.lim_add, ← lim_abs]
+  refine CauSeq.lim_le (CauSeq.le_of_exists ⟨n, fun j hj => ?_⟩)
+  simp_rw [← sub_eq_add_neg]
+  show abs ((∑ m ∈ range j, x ^ m / m.factorial) - ∑ m ∈ range n, x ^ m / m.factorial) ≤ _
+  rw [sum_range_sub_sum_range hj]
+  calc
+    abs (∑ m ∈ range j with n ≤ m, (x ^ m / m.factorial : ℂ))
+      = abs (∑ m ∈ range j with n ≤ m, (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)) := by
+      refine congr_arg abs (sum_congr rfl fun m hm => ?_)
+      rw [mem_filter, mem_range] at hm
+      rw [← mul_div_assoc, ← pow_add, add_tsub_cancel_of_le hm.2]
+    _ ≤ ∑ m ∈ range j with n ≤ m, abs (x ^ n * (x ^ (m - n) / m.factorial)) :=
+      IsAbsoluteValue.abv_sum Complex.abs ..
+    _ ≤ ∑ m ∈ range j with n ≤ m, abs x ^ n * (abs x ^ (m - n) / (m - n).factorial) := by
+      simp_rw [map_mul, map_pow, map_div₀, abs_natCast]
+      gcongr with i hi
+      · rw [IsAbsoluteValue.abv_pow abs]
+      · simp
+    _ = abs x ^ n * ∑ m ∈ range j with n ≤ m, (abs x ^ (m - n) / (m - n).factorial) := by
+      rw [← mul_sum]
+    _ = abs x ^ n * ∑ m ∈ range (j - n), (abs x ^ m / m.factorial) := by
+      congr 1
+      refine (sum_bij (fun m hm ↦ m + n) ?_ ?_ ?_ ?_).symm
+      · intro a ha
+        simp only [mem_filter, mem_range, le_add_iff_nonneg_left, zero_le, and_true]
+        simp only [mem_range] at ha
+        rwa [← lt_tsub_iff_right]
+      · intro a ha b hb hab
+        simpa using hab
+      · intro b hb
+        simp only [mem_range, exists_prop]
+        simp only [mem_filter, mem_range] at hb
+        refine ⟨b - n, ?_, ?_⟩
+        · rw [tsub_lt_tsub_iff_right hb.2]
+          exact hb.1
+        · rw [tsub_add_cancel_of_le hb.2]
+      · simp
+    _ ≤ abs x ^ n * Real.exp (abs x) := by
+      gcongr
+      refine Real.sum_le_exp_of_nonneg ?_ _
+      exact AbsoluteValue.nonneg abs x
 
 end Complex
 
@@ -1404,7 +1466,7 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
     _ ≤ 1 + x + x ^ 2 := by
       -- Porting note: was `norm_num [Finset.sum] <;> nlinarith`
       -- This proof should be restored after the norm_num plugin for big operators is ported.
-      -- (It may also need the positivity extensions in #3907.)
+      -- (It may also need the positivity extensions in https://github.com/leanprover-community/mathlib4/pull/3907.)
       erw [Finset.sum_range_succ]
       repeat rw [Finset.sum_range_succ]
       norm_num [Nat.factorial]
@@ -1441,13 +1503,18 @@ theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t 
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
     rwa [Nat.cast_zero] at ht'
-  convert pow_le_pow_left ?_ (one_sub_le_exp_neg (t / n)) n using 2
-  · rw [← Real.exp_nat_mul]
-    congr 1
-    field_simp
-    ring_nf
-  · rwa [sub_nonneg, div_le_one]
-    positivity
+  calc
+    (1 - t / n) ^ n ≤ rexp (-(t / n)) ^ n := by
+      gcongr
+      · exact sub_nonneg.2 <| div_le_one_of_le₀ ht' n.cast_nonneg
+      · exact one_sub_le_exp_neg _
+    _ = rexp (-t) := by rw [← Real.exp_nat_mul, mul_neg, mul_comm, div_mul_cancel₀]; positivity
+
+lemma le_inv_mul_exp (x : ℝ) {c : ℝ} (hc : 0 < c) : x ≤ c⁻¹ * exp (c * x) := by
+    rw [le_inv_mul_iff₀ hc]
+    calc c * x
+    _ ≤ c * x + 1 := le_add_of_nonneg_right zero_le_one
+    _ ≤ _ := Real.add_one_le_exp (c * x)
 
 end Real
 

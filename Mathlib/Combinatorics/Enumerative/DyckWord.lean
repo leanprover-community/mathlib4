@@ -205,8 +205,7 @@ def denest (hn : p.IsNested) : DyckWord where
     rw [← drop_one, take_drop, dropLast_eq_take, take_take]
     have ub : min (1 + i) (p.toList.length - 1) < p.toList.length :=
       (min_le_right _ p.toList.length.pred).trans_lt (Nat.pred_lt ((length_pos.mpr h).ne'))
-    have lb : 0 < min (1 + i) (p.toList.length - 1) := by
-      rw [l3, add_comm, min_add_add_right]; omega
+    have lb : 0 < min (1 + i) (p.toList.length - 1) := by omega
     have eq := hn.2 lb ub
     set j := min (1 + i) (p.toList.length - 1)
     rw [← (p.toList.take j).take_append_drop 1, count_append, count_append, take_take,

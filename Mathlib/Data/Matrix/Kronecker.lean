@@ -43,8 +43,6 @@ These require `open Kronecker`:
 
 
 namespace Matrix
-
-open Matrix
 open scoped RightActions
 
 variable {R α α' β β' γ γ' : Type*}
@@ -56,7 +54,7 @@ section KroneckerMap
 def kroneckerMap (f : α → β → γ) (A : Matrix l m α) (B : Matrix n p β) : Matrix (l × n) (m × p) γ :=
   of fun (i : l × n) (j : m × p) => f (A i.1 j.1) (B i.2 j.2)
 
--- TODO: set as an equation lemma for `kroneckerMap`, see mathlib4#3024
+-- TODO: set as an equation lemma for `kroneckerMap`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem kroneckerMap_apply (f : α → β → γ) (A : Matrix l m α) (B : Matrix n p β) (i j) :
     kroneckerMap f A B i j = f (A i.1 j.1) (B i.2 j.2) :=
@@ -315,14 +313,14 @@ theorem natCast_kronecker [NonAssocSemiring α] [DecidableEq l] (a : ℕ) (B : M
     simp [(Nat.cast_commute a _).eq]
 
 theorem kronecker_ofNat [Semiring α] [DecidableEq n] (A : Matrix l m α) (b : ℕ) [b.AtLeastTwo] :
-    A ⊗ₖ (no_index (OfNat.ofNat b) : Matrix n n α) =
-      blockDiagonal fun _ => A <• (OfNat.ofNat b : α) :=
+    A ⊗ₖ (ofNat(b) : Matrix n n α) =
+      blockDiagonal fun _ => A <• (ofNat(b) : α) :=
   kronecker_diagonal _ _
 
 theorem ofNat_kronecker [Semiring α] [DecidableEq l] (a : ℕ) [a.AtLeastTwo] (B : Matrix m n α) :
-    (no_index (OfNat.ofNat a) : Matrix l l α) ⊗ₖ B =
+    (ofNat(a) : Matrix l l α) ⊗ₖ B =
       Matrix.reindex (.prodComm _ _) (.prodComm _ _)
-        (blockDiagonal fun _ => (OfNat.ofNat a : α) • B) :=
+        (blockDiagonal fun _ => (ofNat(a) : α) • B) :=
   diagonal_kronecker _ _
 
 theorem one_kronecker_one [MulZeroOneClass α] [DecidableEq m] [DecidableEq n] :

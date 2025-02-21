@@ -16,8 +16,6 @@ noncomputable section
 
 namespace Polynomial
 
-open Polynomial
-
 universe u
 
 variable {R : Type u} {a b : R} {m n : ℕ}

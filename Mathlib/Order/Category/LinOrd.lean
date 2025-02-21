@@ -28,8 +28,8 @@ instance : BundledHom.ParentProjection @LinearOrder.toPartialOrder :=
 deriving instance LargeCategory for LinOrd
 
 -- Porting note: Probably see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory LinOrd :=
-  BundledHom.concreteCategory _
+instance : HasForget LinOrd :=
+  BundledHom.hasForget _
 
 instance : CoeSort LinOrd Type* :=
   Bundled.coeSort

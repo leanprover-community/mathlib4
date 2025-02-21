@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Devon Tuma
 -/
 import Mathlib.Probability.ProbabilityMassFunction.Monad
+import Mathlib.Control.ULiftable
 
 /-!
 # Specific Constructions of Probability Mass Functions
@@ -23,7 +24,7 @@ and `filter` uses this to filter the support of a `PMF` and re-normalize the new
 
 -/
 
-universe u
+universe u v
 
 namespace PMF
 
@@ -133,6 +134,21 @@ instance : LawfulMonad PMF := LawfulMonad.mk'
   (id_map := id_map)
   (pure_bind := pure_bind)
   (bind_assoc := bind_bind)
+
+/--
+This instance allows `do` notation for `PMF` to be used across universes, for instance as
+```lean4
+example {R : Type u} [Ring R] (x : PMF ℕ) : PMF R := do
+  let ⟨n⟩ ← ULiftable.up x
+  pure n
+```
+where `x` is in universe `0`, but the return value is in universe `u`.
+-/
+instance : ULiftable PMF.{u} PMF.{v} where
+  congr e :=
+    { toFun := map e, invFun := map e.symm
+      left_inv := fun a => by simp [map_comp, map_id]
+      right_inv := fun a => by simp [map_comp, map_id] }
 
 section OfFinset
 

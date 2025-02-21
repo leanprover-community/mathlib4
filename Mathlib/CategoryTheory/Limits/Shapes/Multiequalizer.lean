@@ -139,7 +139,7 @@ lemma Hom.comp_eq_comp {X Y Z : WalkingMultispan fst snd}
 end WalkingMultispan
 
 /-- This is a structure encapsulating the data necessary to define a `Multicospan`. -/
--- Porting note(#5171): has_nonempty_instance linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): has_nonempty_instance linter not ported yet
 @[nolint checkUnivs]
 structure MulticospanIndex (C : Type u) [Category.{v} C] where
   (L : Type w)
@@ -151,7 +151,7 @@ structure MulticospanIndex (C : Type u) [Category.{v} C] where
   snd : ∀ b, left (sndTo b) ⟶ right b
 
 /-- This is a structure encapsulating the data necessary to define a `Multispan`. -/
--- Porting note(#5171): has_nonempty_instance linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): has_nonempty_instance linter not ported yet
 @[nolint checkUnivs]
 structure MultispanIndex (C : Type u) [Category.{v} C] where
   (L : Type w)
@@ -276,13 +276,13 @@ end MultispanIndex
 variable {C : Type u} [Category.{v} C]
 
 /-- A multifork is a cone over a multicospan. -/
--- Porting note(#5171): linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
 -- @[nolint has_nonempty_instance]
 abbrev Multifork (I : MulticospanIndex.{w, w'} C) :=
   Cone I.multicospan
 
 /-- A multicofork is a cocone over a multispan. -/
--- Porting note(#5171): linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
 -- @[nolint has_nonempty_instance]
 abbrev Multicofork (I : MultispanIndex.{w, w'} C) :=
   Cocone I.multispan
@@ -586,8 +586,8 @@ noncomputable def ofSigmaCofork (c : Cofork I.fstSigmaMap I.sndSigmaMap) : Multi
   ι :=
     { app := fun x =>
         match x with
-        | WalkingMultispan.left a => (Sigma.ι I.left a : _) ≫ I.fstSigmaMap ≫ c.π
-        | WalkingMultispan.right b => (Sigma.ι I.right b : _) ≫ c.π
+        | WalkingMultispan.left a => (Sigma.ι I.left a :) ≫ I.fstSigmaMap ≫ c.π
+        | WalkingMultispan.right b => (Sigma.ι I.right b :) ≫ c.π
       naturality := by
         rintro (_ | _) (_ | _) (_ | _ | _)
         · simp
@@ -595,21 +595,22 @@ noncomputable def ofSigmaCofork (c : Cofork I.fstSigmaMap I.sndSigmaMap) : Multi
         · simp [c.condition]
         · simp }
 
--- Porting note (#10675): dsimp cannot prove this... once ofSigmaCofork_ι_app_right' is defined
+-- Porting note: https://github.com/leanprover-community/mathlib4/issues/10675
+-- dsimp cannot prove this, once ofSigmaCofork_ι_app_right' is defined
 @[simp]
 theorem ofSigmaCofork_ι_app_left (c : Cofork I.fstSigmaMap I.sndSigmaMap) (a) :
     (ofSigmaCofork I c).ι.app (WalkingMultispan.left a) =
-      (Sigma.ι I.left a : _) ≫ I.fstSigmaMap ≫ c.π :=
+      (Sigma.ι I.left a :) ≫ I.fstSigmaMap ≫ c.π :=
   rfl
 
 -- @[simp] -- Porting note: LHS simplifies to obtain the normal form below
 theorem ofSigmaCofork_ι_app_right (c : Cofork I.fstSigmaMap I.sndSigmaMap) (b) :
-    (ofSigmaCofork I c).ι.app (WalkingMultispan.right b) = (Sigma.ι I.right b : _) ≫ c.π :=
+    (ofSigmaCofork I c).ι.app (WalkingMultispan.right b) = (Sigma.ι I.right b :) ≫ c.π :=
   rfl
 
 @[simp]
 theorem ofSigmaCofork_ι_app_right' (c : Cofork I.fstSigmaMap I.sndSigmaMap) (b) :
-    π (ofSigmaCofork I c) b = (Sigma.ι I.right b : _) ≫ c.π :=
+    π (ofSigmaCofork I c) b = (Sigma.ι I.right b :) ≫ c.π :=
   rfl
 
 end Multicofork
@@ -664,7 +665,7 @@ noncomputable def multicoforkEquivSigmaCofork :
   counitIso := NatIso.ofComponents fun K =>
     Cofork.ext (Iso.refl _)
       (by
-        -- Porting note (#11041): in mathlib3 this was just `ext` and I don't know why it's not here
+        -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): in mathlib3 this was just `ext` and I don't know why it's not here
         apply Limits.colimit.hom_ext
         rintro ⟨j⟩
         dsimp

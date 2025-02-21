@@ -58,13 +58,13 @@ instance (L₁ L₂ : IntermediateField k K) [IsGalois k L₁] [IsGalois k L₂]
 
 instance (L₁ L₂ : IntermediateField k K) [FiniteDimensional k L₁] :
     FiniteDimensional k ↑(L₁ ⊓ L₂) :=
-  .of_injective (IntermediateField.inclusion inf_le_left).toLinearMap
-    (IntermediateField.inclusion inf_le_left).injective
+  .of_injective (IntermediateField.inclusion (E := L₁ ⊓ L₂) (F := L₁) inf_le_left).toLinearMap
+    (IntermediateField.inclusion (E := L₁ ⊓ L₂) (F := L₁) inf_le_left).toRingHom.injective
 
 instance (L₁ L₂ : IntermediateField k K) [FiniteDimensional k L₂] :
     FiniteDimensional k ↑(L₁ ⊓ L₂) :=
-  .of_injective (IntermediateField.inclusion inf_le_right).toLinearMap
-    (IntermediateField.inclusion inf_le_right).injective
+  .of_injective (IntermediateField.inclusion (E := L₁ ⊓ L₂) (F := L₂) inf_le_right).toLinearMap
+    (IntermediateField.inclusion (E := L₁ ⊓ L₂) (F := L₂) inf_le_right).injective
 
 instance (L₁ L₂ : IntermediateField k K) [Algebra.IsSeparable k L₁] :
     Algebra.IsSeparable k ↑(L₁ ⊓ L₂) :=

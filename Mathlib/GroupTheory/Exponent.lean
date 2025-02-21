@@ -439,7 +439,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
     nth_rw 1 [← pow_one p]
     have : 1 = (Nat.factorization (orderOf (t ^ p ^ k))) p + 1 := by
      rw [hpk', Nat.factorization_div hpk]
-     simp [hp]
+     simp [k, hp]
     rw [this]
     -- Porting note: convert made to_additive complain
     apply Nat.pow_succ_factorization_not_dvd (hG.orderOf_pos <| t ^ p ^ k).ne' hp
@@ -494,16 +494,18 @@ end Monoid
 
 section Group
 
-variable [Group G]
+variable [Group G] {n m : ℤ}
 
 @[to_additive (attr := deprecated Monoid.one_lt_exponent (since := "2024-02-17"))
   AddGroup.one_lt_exponent]
 lemma Group.one_lt_exponent [Finite G] [Nontrivial G] : 1 < Monoid.exponent G :=
   Monoid.one_lt_exponent
 
+@[to_additive]
 theorem Group.exponent_dvd_card [Fintype G] : Monoid.exponent G ∣ Fintype.card G :=
   Monoid.exponent_dvd.mpr <| fun _ => orderOf_dvd_card
 
+@[to_additive]
 theorem Group.exponent_dvd_nat_card : Monoid.exponent G ∣ Nat.card G :=
   Monoid.exponent_dvd.mpr orderOf_dvd_natCard
 
@@ -519,6 +521,16 @@ theorem Subgroup.exponent_top : Monoid.exponent (⊤ : Subgroup G) = Monoid.expo
 @[to_additive]
 theorem Subgroup.pow_exponent_eq_one {H : Subgroup G} {g : G} (g_in_H : g ∈ H) :
     g ^ Monoid.exponent H = 1 := exponent_toSubmonoid H ▸ Submonoid.pow_exponent_eq_one g_in_H
+
+@[to_additive]
+theorem Group.exponent_dvd_iff_forall_zpow_eq_one :
+    (Monoid.exponent G : ℤ) ∣ n ↔ ∀ g : G, g ^ n = 1 := by
+  simp_rw [Int.natCast_dvd, Monoid.exponent_dvd_iff_forall_pow_eq_one, pow_natAbs_eq_one]
+
+@[to_additive]
+theorem Group.exponent_dvd_sub_iff_zpow_eq_zpow :
+    (Monoid.exponent G : ℤ) ∣ n - m ↔ ∀ g : G, g ^ n = g ^ m := by
+  simp_rw [Group.exponent_dvd_iff_forall_zpow_eq_one, zpow_sub, mul_inv_eq_one]
 
 end Group
 
@@ -632,7 +644,8 @@ lemma inv_eq_self_of_orderOf_eq_two {x : G} (hx : orderOf x = 2) :
 
 -- TODO: delete
 /-- Any group of exponent two is abelian. -/
-@[to_additive (attr := reducible, deprecated (since := "2024-02-17"))
+@[to_additive (attr := reducible,
+  deprecated "No deprecation message was provided." (since := "2024-02-17"))
   "Any additive group of exponent two is abelian."]
 def instCommGroupOfExponentTwo (hG : Monoid.exponent G = 2) : CommGroup G where
   mul_comm := mul_comm_of_exponent_two hG

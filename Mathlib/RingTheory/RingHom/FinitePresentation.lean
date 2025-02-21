@@ -151,7 +151,7 @@ theorem finitePresentation_ofLocalizationSpanTarget :
     have : ∃ (a : S) (hb : a ∈ s), (Ideal.Quotient.mk I) (g' ⟨a, hb⟩) = g.val := by
       obtain ⟨g, hg⟩ := g
       convert hg
-      simp [t]
+      simp [A, f', t]
     obtain ⟨r, hr, hrr⟩ := this
     simp only [f']
     rw [← hrr, Ideal.Quotient.liftₐ_apply, Ideal.Quotient.lift_mk]

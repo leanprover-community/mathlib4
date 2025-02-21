@@ -60,8 +60,8 @@ theorem coe_toBddLat (X : BddDistLat) : ↥X.toBddLat = ↥X :=
 instance : LargeCategory.{u} BddDistLat :=
   InducedCategory.category toBddLat
 
-instance : ConcreteCategory BddDistLat :=
-  InducedCategory.concreteCategory toBddLat
+instance : HasForget BddDistLat :=
+  InducedCategory.hasForget toBddLat
 
 instance hasForgetToDistLat : HasForget₂ BddDistLat DistLat where
   forget₂ :=

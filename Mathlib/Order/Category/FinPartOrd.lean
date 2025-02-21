@@ -55,8 +55,8 @@ instance : Inhabited FinPartOrd :=
 instance largeCategory : LargeCategory FinPartOrd :=
   InducedCategory.category FinPartOrd.toPartOrd
 
-instance concreteCategory : ConcreteCategory FinPartOrd :=
-  InducedCategory.concreteCategory FinPartOrd.toPartOrd
+instance hasForget : HasForget FinPartOrd :=
+  InducedCategory.hasForget FinPartOrd.toPartOrd
 
 instance hasForgetToPartOrd : HasForget₂ FinPartOrd PartOrd :=
   InducedCategory.hasForget₂ FinPartOrd.toPartOrd

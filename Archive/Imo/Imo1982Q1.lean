@@ -77,9 +77,9 @@ lemma superadditive {m n : ℕ+} : f m + f n ≤ f (m + n) := by
   · rw [hr]; nth_rewrite 1 [← add_zero (f n), ← add_assoc]; apply add_le_add_right (by norm_num)
 
 lemma superhomogeneous {m n : ℕ+} : ↑n * f m ≤ f (n * m) := by
-  induction n using PNat.recOn
-  case p1 => simp
-  case hp n' ih =>
+  induction n with
+  | one => simp
+  | succ n' ih =>
     calc
     ↑(n' + 1) * f m = ↑n' * f m + f m := by rw [PNat.add_coe, add_mul, PNat.val_ofNat, one_mul]
     _ ≤ f (n' * m) + f m := add_le_add_right ih (f m)

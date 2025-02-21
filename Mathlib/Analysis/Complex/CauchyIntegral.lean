@@ -8,6 +8,7 @@ import Mathlib.Analysis.Calculus.DiffContOnCl
 import Mathlib.Analysis.Calculus.DSlope
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Complex.ReImTopology
+import Mathlib.Data.Real.Cardinality
 import Mathlib.MeasureTheory.Integral.CircleIntegral
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
@@ -426,7 +427,7 @@ theorem circleIntegral_sub_inv_smul_of_differentiable_on_off_countable_aux {R : 
   have hne : ∀ z ∈ sphere c R, z ≠ w := fun z hz => ne_of_mem_of_not_mem hz (ne_of_lt hw.1)
   have hFeq : EqOn F (fun z => (z - w)⁻¹ • f z - (z - w)⁻¹ • f w) (sphere c R) := fun z hz ↦
     calc
-      F z = (z - w)⁻¹ • (f z - f w) := update_noteq (hne z hz) _ _
+      F z = (z - w)⁻¹ • (f z - f w) := update_of_ne (hne z hz) ..
       _ = (z - w)⁻¹ • f z - (z - w)⁻¹ • f w := smul_sub _ _ _
   have hc' : ContinuousOn (fun z => (z - w)⁻¹) (sphere c R) :=
     (continuousOn_id.sub continuousOn_const).inv₀ fun z hz => sub_ne_zero.2 <| hne z hz
@@ -577,9 +578,9 @@ theorem _root_.DifferentiableOn.analyticOn {s : Set ℂ} {f : ℂ → E} (hd : D
 
 /-- If `f : ℂ → E` is complex differentiable on some open set `s`, then it is continuously
 differentiable on `s`. -/
-protected theorem _root_.DifferentiableOn.contDiffOn {s : Set ℂ} {f : ℂ → E} {n : ℕ}
+protected theorem _root_.DifferentiableOn.contDiffOn {s : Set ℂ} {f : ℂ → E} {n : WithTop ℕ∞}
     (hd : DifferentiableOn ℂ f s) (hs : IsOpen s) : ContDiffOn ℂ n f s :=
-  (hd.analyticOnNhd hs).contDiffOn
+  (hd.analyticOnNhd hs).contDiffOn_of_completeSpace
 
 /-- A complex differentiable function `f : ℂ → E` is analytic at every point. -/
 protected theorem _root_.Differentiable.analyticAt {f : ℂ → E} (hf : Differentiable ℂ f) (z : ℂ) :
@@ -587,7 +588,8 @@ protected theorem _root_.Differentiable.analyticAt {f : ℂ → E} (hf : Differe
   hf.differentiableOn.analyticAt univ_mem
 
 /-- A complex differentiable function `f : ℂ → E` is continuously differentiable at every point. -/
-protected theorem _root_.Differentiable.contDiff {f : ℂ → E} (hf : Differentiable ℂ f) {n : ℕ∞} :
+protected theorem _root_.Differentiable.contDiff
+    {f : ℂ → E} (hf : Differentiable ℂ f) {n : WithTop ℕ∞} :
     ContDiff ℂ n f :=
   contDiff_iff_contDiffAt.mpr fun z ↦ (hf.analyticAt z).contDiffAt
 

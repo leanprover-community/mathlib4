@@ -4,15 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
 import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Algebra.Group.ULift
-import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Cast.Prod
-import Mathlib.Data.Nat.Find
-import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.ULift
-import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Order.Interval.Set.Defs
 
 /-!
@@ -24,7 +19,7 @@ imports of `CharP/Lemmas.lean`.
 As such, we can probably reorganize and find a better home for most of these lemmas.
 -/
 
-assert_not_exists Finset
+assert_not_exists Finset TwoSidedIdeal
 
 open Set
 
@@ -55,10 +50,6 @@ lemma intCast_injOn_Ico [IsRightCancelAdd R] : InjOn (Int.cast : ℤ → R) (Ico
 
 end AddGroupWithOne
 end CharP
-
-lemma RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [Semiring L] [Nontrivial L]
-    (f : K →+* L) (p : ℕ) : CharP K p ↔ CharP L p := by
-  simp only [charP_iff, ← f.injective.eq_iff, map_natCast f, map_zero f]
 
 namespace CharP
 

@@ -8,7 +8,7 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.RingTheory.Noetherian.Defs
+import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Ring-theoretic supplement of Algebra.Polynomial.
@@ -153,10 +153,8 @@ def degreeLTEquiv (R) [Semiring R] (n : ℕ) : degreeLT R n ≃ₗ[R] Fin n → 
     · intro h
       exact (h (Finset.mem_univ _)).elim
 
--- Porting note: removed @[simp] as simp can prove this
 theorem degreeLTEquiv_eq_zero_iff_eq_zero {n : ℕ} {p : R[X]} (hp : p ∈ degreeLT R n) :
-    degreeLTEquiv _ _ ⟨p, hp⟩ = 0 ↔ p = 0 := by
-  rw [LinearEquiv.map_eq_zero_iff, Submodule.mk_eq_zero]
+    degreeLTEquiv _ _ ⟨p, hp⟩ = 0 ↔ p = 0 := by simp
 
 theorem eval_eq_sum_degreeLTEquiv {n : ℕ} {p : R[X]} (hp : p ∈ degreeLT R n) (x : R) :
     p.eval x = ∑ i, degreeLTEquiv _ _ ⟨p, hp⟩ i * x ^ (i : ℕ) := by
@@ -359,9 +357,8 @@ theorem coeff_restriction {p : R[X]} {n : ℕ} : ↑(coeff (restriction p) n) = 
     rfl
   · rfl
 
--- Porting note: removed @[simp] as simp can prove this
-theorem coeff_restriction' {p : R[X]} {n : ℕ} : (coeff (restriction p) n).1 = coeff p n :=
-  coeff_restriction
+theorem coeff_restriction' {p : R[X]} {n : ℕ} : (coeff (restriction p) n).1 = coeff p n := by
+  simp
 
 @[simp]
 theorem support_restriction (p : R[X]) : support (restriction p) = support p := by
@@ -429,9 +426,8 @@ theorem coeff_toSubring {n : ℕ} : ↑(coeff (toSubring p T hp) n) = coeff p n 
     rfl
   · rfl
 
--- Porting note: removed @[simp] as simp can prove this
-theorem coeff_toSubring' {n : ℕ} : (coeff (toSubring p T hp) n).1 = coeff p n :=
-  coeff_toSubring _ _ hp
+theorem coeff_toSubring' {n : ℕ} : (coeff (toSubring p T hp) n).1 = coeff p n := by
+  simp
 
 @[simp]
 theorem support_toSubring : support (toSubring p T hp) = support p := by
@@ -577,9 +573,9 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
     exact (I.map C : Ideal R[X]).mul_mem_left _ (mem_map_of_mem _ (hf n))
 
 theorem _root_.Polynomial.ker_mapRingHom (f : R →+* S) :
-    LinearMap.ker (Polynomial.mapRingHom f).toSemilinearMap = f.ker.map (C : R →+* R[X]) := by
+    RingHom.ker (Polynomial.mapRingHom f) = f.ker.map (C : R →+* R[X]) := by
   ext
-  simp only [LinearMap.mem_ker, RingHom.toSemilinearMap_apply, coe_mapRingHom]
+  simp only [RingHom.mem_ker, coe_mapRingHom]
   rw [mem_map_C_iff, Polynomial.ext_iff]
   simp [RingHom.mem_ker]
 
@@ -810,18 +806,15 @@ namespace MvPolynomial
 
 private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommRing R] [Fintype σ] :
     Prime (C r : MvPolynomial σ R) ↔ Prime r := by
-  rw [(renameEquiv R (Fintype.equivFin σ)).toMulEquiv.prime_iff]
+  rw [← MulEquiv.prime_iff (renameEquiv R (Fintype.equivFin σ))]
   convert_to Prime (C r) ↔ _
   · congr!
-    apply rename_C
-  · symm
-    induction' Fintype.card σ with d hd
-    · exact (isEmptyAlgEquiv R (Fin 0)).toMulEquiv.symm.prime_iff
-    · rw [hd, ← Polynomial.prime_C_iff]
-      convert (finSuccEquiv R d).toMulEquiv.symm.prime_iff (p := Polynomial.C (C r))
-      rw [← finSuccEquiv_comp_C_eq_C]
-      simp_rw [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, MulEquiv.symm_mk,
-        AlgEquiv.toEquiv_eq_coe, AlgEquiv.symm_toEquiv_eq_symm, MulEquiv.coe_mk, EquivLike.coe_coe]
+    simp only [renameEquiv_apply, algHom_C, algebraMap_eq]
+  · induction' Fintype.card σ with d hd
+    · exact MulEquiv.prime_iff (isEmptyAlgEquiv R (Fin 0)).symm (p := r)
+    · convert MulEquiv.prime_iff (finSuccEquiv R d).symm (p := Polynomial.C (C r))
+      · simp [← finSuccEquiv_comp_C_eq_C]
+      · simp [← hd, Polynomial.prime_C_iff]
 
 theorem prime_C_iff : Prime (C r : MvPolynomial σ R) ↔ Prime r :=
   ⟨comap_prime C constantCoeff (constantCoeff_C _), fun hr =>
@@ -864,12 +857,9 @@ theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
           iterToSum_C_X, renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply, Sum.swap_inr,
           Equiv.Set.sumCompl_apply_inl]
     apply_fun (· p) at this
-    simp_rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe] at this
-    rw [← prime_C_iff, eqv.toMulEquiv.prime_iff, this]
-    simp only [MulEquiv.coe_mk, AlgEquiv.toEquiv_eq_coe, EquivLike.coe_coe, AlgEquiv.trans_apply,
-      MvPolynomial.sumAlgEquiv_symm_apply, renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply,
-      AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp, RingHom.coe_coe,
-      AlgEquiv.coe_trans, Function.comp_apply]
+    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AlgEquiv.toAlgHom_eq_coe,
+      AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp, Function.comp_apply] at this
+    rw [this, MulEquiv.prime_iff, prime_C_iff]
 
 end MvPolynomial
 

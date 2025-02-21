@@ -3,7 +3,6 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Regular
 import Mathlib.RingTheory.Ideal.Lattice
 
 /-!
@@ -101,6 +100,14 @@ theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : �
 end Ideal
 
 end CommSemiring
+
+section Ring
+
+theorem IsDomain.of_bot_isPrime (A : Type*) [Ring A] [hbp : (⊥ : Ideal A).IsPrime] : IsDomain A :=
+  @NoZeroDivisors.to_isDomain A _
+    ⟨1, 0, fun h => hbp.ne_top ((Ideal.eq_top_iff_one ⊥).mpr h)⟩ ⟨fun h => hbp.2 h⟩
+
+end Ring
 
 section DivisionSemiring
 

@@ -14,7 +14,7 @@ This file defines the type of points on a Weierstrass curve as an inductive, con
 at infinity and affine points satisfying a Weierstrass equation with a nonsingular condition. This
 file also defines the negation and addition operations of the group law for this type, and proves
 that they respect the Weierstrass equation and the nonsingular condition. The fact that they form an
-abelian group is proven in `Mathlib.AlgebraicGeometry.EllipticCurve.Group`.
+abelian group is proven in `Mathlib/AlgebraicGeometry/EllipticCurve/Group.lean`.
 
 ## Mathematical background
 
@@ -65,7 +65,7 @@ The group law on this set is then uniquely determined by these constructions.
  * `WeierstrassCurve.Affine.nonsingular_add`: addition preserves the nonsingular condition.
  * `WeierstrassCurve.Affine.nonsingular_of_Δ_ne_zero`: an affine Weierstrass curve is nonsingular at
     every point if its discriminant is non-zero.
- * `EllipticCurve.Affine.nonsingular`: an affine elliptic curve is nonsingular at every point.
+ * `WeierstrassCurve.Affine.nonsingular`: an affine elliptic curve is nonsingular at every point.
 
 ## Notations
 
@@ -81,6 +81,7 @@ elliptic curve, rational point, affine coordinates
 -/
 
 open Polynomial
+open scoped Polynomial.Bivariate
 
 local macro "C_simp" : tactic =>
   `(tactic| simp only [map_ofNat, C_0, C_1, C_neg, C_add, C_sub, C_mul, C_pow])
@@ -834,9 +835,7 @@ lemma baseChange_negPolynomial :
   rw [← map_negPolynomial, map_baseChange]
 
 lemma baseChange_negY (x y : A) :
-    (W.baseChange B).toAffine.negY (f x) (f y) = f ((W.baseChange A).toAffine.negY x y) := by
-  erw [← map_negY, map_baseChange]
-  rfl
+    (W.baseChange B).toAffine.negY (f x) (f y) = f ((W.baseChange A).toAffine.negY x y) := by simp
 
 lemma baseChange_addPolynomial (x y L : A) :
     (W.baseChange B).toAffine.addPolynomial (f x) (f y) (f L) =
@@ -846,21 +845,15 @@ lemma baseChange_addPolynomial (x y L : A) :
 
 lemma baseChange_addX (x₁ x₂ L : A) :
     (W.baseChange B).toAffine.addX (f x₁) (f x₂) (f L) =
-      f ((W.baseChange A).toAffine.addX x₁ x₂ L) := by
-  erw [← map_addX, map_baseChange]
-  rfl
+      f ((W.baseChange A).toAffine.addX x₁ x₂ L) := by simp
 
 lemma baseChange_negAddY (x₁ x₂ y₁ L : A) :
     (W.baseChange B).toAffine.negAddY (f x₁) (f x₂) (f y₁) (f L) =
-      f ((W.baseChange A).toAffine.negAddY x₁ x₂ y₁ L) := by
-  erw [← map_negAddY, map_baseChange]
-  rfl
+      f ((W.baseChange A).toAffine.negAddY x₁ x₂ y₁ L) := by simp
 
 lemma baseChange_addY (x₁ x₂ y₁ L : A) :
     (W.baseChange B).toAffine.addY (f x₁) (f x₂) (f y₁) (f L) =
-      f ((W.baseChange A).toAffine.addY x₁ x₂ y₁ L) := by
-  erw [← map_addY, map_baseChange]
-  rfl
+      f ((W.baseChange A).toAffine.addY x₁ x₂ y₁ L) := by simp
 
 variable {F : Type u} [Field F] [Algebra R F] [Algebra S F] [IsScalarTower R S F]
   {K : Type v} [Field K] [Algebra R K] [Algebra S K] [IsScalarTower R S K] (f : F →ₐ[S] K)
@@ -947,21 +940,16 @@ end BaseChange
 @[deprecated (since := "2024-06-03")] alias baseChange_addY' := baseChange_negAddY
 @[deprecated (since := "2024-06-03")] alias map_addY' := map_negAddY
 
-end WeierstrassCurve.Affine
-
 /-! ## Elliptic curves -/
 
-/-- The coercion from an elliptic curve to a Weierstrass curve in affine coordinates. -/
-abbrev EllipticCurve.toAffine {R : Type u} [CommRing R] (E : EllipticCurve R) :
-    WeierstrassCurve.Affine R :=
-  E.toWeierstrassCurve.toAffine
+section EllipticCurve
 
-namespace EllipticCurve.Affine
-
-variable {R : Type u} [CommRing R] (E : EllipticCurve R)
+variable {R : Type u} [CommRing R] (E : WeierstrassCurve R) [E.IsElliptic]
 
 lemma nonsingular [Nontrivial R] {x y : R} (h : E.toAffine.Equation x y) :
     E.toAffine.Nonsingular x y :=
   E.toAffine.nonsingular_of_Δ_ne_zero h <| E.coe_Δ' ▸ E.Δ'.ne_zero
 
-end EllipticCurve.Affine
+end EllipticCurve
+
+end WeierstrassCurve.Affine

@@ -122,7 +122,6 @@ protected def rec {C : OnePoint X → Sort*} (infty : C ∞) (coe : ∀ x : X, C
 theorem isCompl_range_coe_infty : IsCompl (range ((↑) : X → OnePoint X)) {∞} :=
   isCompl_range_some_none X
 
--- Porting note: moved @[simp] to a new lemma
 theorem range_coe_union_infty : range ((↑) : X → OnePoint X) ∪ {∞} = univ :=
   range_some_union_none X
 

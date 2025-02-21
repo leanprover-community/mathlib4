@@ -85,7 +85,7 @@ open Batteries.ExtendedBinder
 
 /-- Delaborator for `Finset.expect`. The `pp.piBinderTypes` option controls whether
 to show the domain type when the expect is over `Finset.univ`. -/
-@[scoped delab app.Finset.expect] def delabFinsetExpect : Delab :=
+@[scoped app_delab Finset.expect] def delabFinsetExpect : Delab :=
   whenPPOption getPPNotation <| withOverApp 6 <| do
   let #[_, _, _, _, s, f] := (← getExpr).getAppArgs | failure
   guard <| f.isLambda

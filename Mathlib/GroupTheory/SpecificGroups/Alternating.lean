@@ -3,10 +3,11 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.GroupTheory.Subgroup.Simple
 import Mathlib.Tactic.IntervalCases
-import Mathlib.Data.Fintype.Units
 
 /-!
 # Alternating Groups
@@ -51,7 +52,7 @@ variable (α : Type*) [Fintype α] [DecidableEq α]
 def alternatingGroup : Subgroup (Perm α) :=
   sign.ker
 
--- Porting note (#10754): manually added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): manually added instance
 instance alternatingGroup.instFintype : Fintype (alternatingGroup α) :=
   @Subtype.fintype _ _ sign.decidableMemKer _
 
@@ -78,7 +79,6 @@ theorem IsThreeCycle.mem_alternatingGroup {f : Perm α} (h : IsThreeCycle f) :
     f ∈ alternatingGroup α :=
   Perm.mem_alternatingGroup.mpr h.sign
 
-set_option linter.deprecated false in
 theorem finRotate_bit1_mem_alternatingGroup {n : ℕ} :
     finRotate (2 * n + 1) ∈ alternatingGroup (Fin (2 * n + 1)) := by
   rw [mem_alternatingGroup, sign_finRotate, pow_mul, pow_two, Int.units_mul_self, one_pow]
@@ -169,7 +169,7 @@ theorem IsThreeCycle.alternating_normalClosure (h5 : 5 ≤ Fintype.card α) {f :
     (by
       have hi : Function.Injective (alternatingGroup α).subtype := Subtype.coe_injective
       refine eq_top_iff.1 (map_injective hi (le_antisymm (map_mono le_top) ?_))
-      rw [← MonoidHom.range_eq_map, subtype_range, normalClosure, MonoidHom.map_closure]
+      rw [← MonoidHom.range_eq_map, range_subtype, normalClosure, MonoidHom.map_closure]
       refine (le_of_eq closure_three_cycles_eq_alternating.symm).trans (closure_mono ?_)
       intro g h
       obtain ⟨c, rfl⟩ := isConj_iff.1 (isConj_iff_cycleType_eq.2 (hf.trans h.symm))
@@ -232,7 +232,7 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
         SetLike.mem_coe.1 (subset_normalClosure (Set.mem_singleton _))
       exact (mul_mem (Subgroup.normalClosure_normal.conj_mem _ h
         -- Porting note: added `: _`
-        ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) : _))
+        ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) :))
 
 /-- The normal closure of $(04)(13)$ within $A_5$ is the whole group. This will be
   used to show that the normal closure of any permutation of cycle type $(2,2)$ is the whole group.
@@ -266,7 +266,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
   rw [← Multiset.eq_replicate_card] at h2
   rw [← sum_cycleType, h2, Multiset.sum_replicate, smul_eq_mul] at h
   have h : Multiset.card g.cycleType ≤ 3 :=
-    le_of_mul_le_mul_right (le_trans h (by simp only [card_fin]; ring_nf; decide)) (by simp)
+    le_of_mul_le_mul_right (le_trans h (by norm_num only [card_fin])) (by simp)
   rw [mem_alternatingGroup, sign_of_cycleType, h2] at ha
   norm_num at ha
   rw [pow_add, pow_mul, Int.units_pow_two, one_mul, neg_one_pow_eq_one_iff_even] at ha

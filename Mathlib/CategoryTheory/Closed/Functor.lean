@@ -34,13 +34,13 @@ noncomputable section
 
 namespace CategoryTheory
 
-open Category Limits CartesianClosed
+open Category CartesianClosed MonoidalCategory ChosenFiniteProducts
 
 universe v u u'
 
 variable {C : Type u} [Category.{v} C]
 variable {D : Type u'} [Category.{v} D]
-variable [HasFiniteProducts C] [HasFiniteProducts D]
+variable [ChosenFiniteProducts C] [ChosenFiniteProducts D]
 variable (F : C ⥤ D) {L : D ⥤ C}
 
 /-- The Frobenius morphism for an adjunction `L ⊣ F` at `A` is given by the morphism
@@ -54,20 +54,20 @@ We will show that if `C` and `D` are cartesian closed, then this morphism is an 
 `A` iff `F` is a cartesian closed functor, i.e. it preserves exponentials.
 -/
 def frobeniusMorphism (h : L ⊣ F) (A : C) :
-    prod.functor.obj (F.obj A) ⋙ L ⟶ L ⋙ prod.functor.obj A :=
-  prodComparisonNatTrans L (F.obj A) ≫ whiskerLeft _ (prod.functor.map (h.counit.app _))
+    tensorLeft (F.obj A) ⋙ L ⟶ L ⋙ tensorLeft A :=
+  prodComparisonNatTrans L (F.obj A) ≫ whiskerLeft _ ((curriedTensor C).map (h.counit.app _))
 
 /-- If `F` is full and faithful and has a left adjoint `L` which preserves binary products, then the
 Frobenius morphism is an isomorphism.
 -/
 instance frobeniusMorphism_iso_of_preserves_binary_products (h : L ⊣ F) (A : C)
-    [PreservesLimitsOfShape (Discrete WalkingPair) L] [F.Full] [F.Faithful] :
+    [Limits.PreservesLimitsOfShape (Discrete Limits.WalkingPair) L] [F.Full] [F.Faithful] :
     IsIso (frobeniusMorphism F h A) :=
   suffices ∀ (X : D), IsIso ((frobeniusMorphism F h A).app X) from NatIso.isIso_of_isIso_app _
   fun B ↦ by dsimp [frobeniusMorphism]; infer_instance
 
 variable [CartesianClosed C] [CartesianClosed D]
-variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
+variable [Limits.PreservesLimitsOfShape (Discrete Limits.WalkingPair) F]
 
 /-- The exponential comparison map.
 `F` is a cartesian closed functor if this is an iso for all `A`.
@@ -76,17 +76,18 @@ def expComparison (A : C) : exp A ⋙ F ⟶ F ⋙ exp (F.obj A) :=
   mateEquiv (exp.adjunction A) (exp.adjunction (F.obj A)) (prodComparisonNatIso F A).inv
 
 theorem expComparison_ev (A B : C) :
-    Limits.prod.map (𝟙 (F.obj A)) ((expComparison F A).app B) ≫ (exp.ev (F.obj A)).app (F.obj B) =
+    F.obj A ◁ ((expComparison F A).app B) ≫ (exp.ev (F.obj A)).app (F.obj B) =
       inv (prodComparison F _ _) ≫ F.map ((exp.ev _).app _) := by
   convert mateEquiv_counit _ _ (prodComparisonNatIso F A).inv B using 2
-  apply IsIso.inv_eq_of_hom_inv_id -- Porting note (#11041): was `ext`
-  simp only [Limits.prodComparisonNatIso_inv, asIso_inv, NatIso.isIso_inv_app, IsIso.hom_inv_id]
+  apply IsIso.inv_eq_of_hom_inv_id -- Porting note: was `ext`
+  simp only [prodComparisonNatTrans_app, prodComparisonNatIso_inv, asIso_inv, NatIso.isIso_inv_app,
+    IsIso.hom_inv_id]
 
 theorem coev_expComparison (A B : C) :
-    F.map ((exp.coev A).app B) ≫ (expComparison F A).app (A ⨯ B) =
+    F.map ((exp.coev A).app B) ≫ (expComparison F A).app (A ⊗ B) =
       (exp.coev _).app (F.obj B) ≫ (exp (F.obj A)).map (inv (prodComparison F A B)) := by
   convert unit_mateEquiv _ _ (prodComparisonNatIso F A).inv B using 3
-  apply IsIso.inv_eq_of_hom_inv_id -- Porting note (#11041): was `ext`
+  apply IsIso.inv_eq_of_hom_inv_id -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was `ext`
   dsimp
   simp
 
@@ -102,20 +103,20 @@ theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
   unfold expComparison pre
   have vcomp1 := mateEquiv_conjugateEquiv_vcomp
     (exp.adjunction A) (exp.adjunction (F.obj A)) (exp.adjunction (F.obj A'))
-    ((prodComparisonNatIso F A).inv) ((prod.functor.map (F.map f)))
+    ((prodComparisonNatIso F A).inv) (((curriedTensor D).map (F.map f)))
   have vcomp2 := conjugateEquiv_mateEquiv_vcomp
     (exp.adjunction A) (exp.adjunction A') (exp.adjunction (F.obj A'))
-    ((prod.functor.map f)) ((prodComparisonNatIso F A').inv)
+    (((curriedTensor C).map f)) ((prodComparisonNatIso F A').inv)
   unfold leftAdjointSquareConjugate.vcomp rightAdjointSquareConjugate.vcomp at vcomp1
   unfold leftAdjointConjugateSquare.vcomp rightAdjointConjugateSquare.vcomp at vcomp2
   rw [← vcomp1, ← vcomp2]
   apply congr_arg
   ext B
-  simp only [Functor.comp_obj, prod.functor_obj_obj, prodComparisonNatIso_inv, asIso_inv,
-    NatTrans.comp_app, whiskerLeft_app, prod.functor_map_app, NatIso.isIso_inv_app,
-    whiskerRight_app]
-  rw [← F.map_id]
-  exact (prodComparison_inv_natural F f (𝟙 B)).symm
+  simp only [Functor.comp_obj, tensorLeft_obj, prodComparisonNatIso_inv, asIso_inv,
+    NatTrans.comp_app, whiskerLeft_app, curriedTensor_map_app, NatIso.isIso_inv_app,
+    whiskerRight_app, IsIso.eq_inv_comp, prodComparisonNatTrans_app]
+  rw [← prodComparison_inv_natural_whiskerRight F f]
+  simp
 
 /-- The functor `F` is cartesian closed (ie preserves exponentials) if each natural transformation
 `exp_comparison F A` is an isomorphism
@@ -132,33 +133,30 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
   unfold expComparison frobeniusMorphism
   have conjeq := iterated_mateEquiv_conjugateEquiv h h
     (exp.adjunction (F.obj A)) (exp.adjunction A)
-    (prodComparisonNatTrans L (F.obj A) ≫ whiskerLeft L (prod.functor.map (h.counit.app A)))
+    (prodComparisonNatTrans L (F.obj A) ≫ whiskerLeft L ((curriedTensor C).map (h.counit.app A)))
   rw [← conjeq]
   apply congr_arg
   ext B
   unfold mateEquiv
-  simp only [Functor.comp_obj, prod.functor_obj_obj, Functor.id_obj, Equiv.coe_fn_mk,
-    whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp, assoc, NatTrans.comp_app,
-    whiskerLeft_app, whiskerRight_app, prodComparisonNatTrans_app, prod.functor_map_app,
-    Functor.comp_map, prod.functor_obj_map, prodComparisonNatIso_inv, asIso_inv,
-    NatIso.isIso_inv_app]
+  simp only [Functor.comp_obj, tensorLeft_obj, Functor.id_obj, Equiv.coe_fn_mk, whiskerLeft_comp,
+    whiskerLeft_twice, whiskerRight_comp, assoc, NatTrans.comp_app, whiskerLeft_app,
+    curriedTensor_obj_obj, whiskerRight_app, prodComparisonNatTrans_app, curriedTensor_map_app,
+    Functor.comp_map, tensorLeft_map, prodComparisonNatIso_inv, asIso_inv, NatIso.isIso_inv_app]
   rw [← F.map_comp, ← F.map_comp]
-  simp only [prod.map_map, comp_id, id_comp]
+  simp only [Functor.map_comp]
   apply IsIso.eq_inv_of_inv_hom_id
-  rw [F.map_comp, assoc, assoc, prodComparison_natural]
-  slice_lhs 2 3 =>
-    {
-      rw [← prodComparison_comp]
-    }
-  rw [← assoc]
+  simp only [assoc]
+  rw [prodComparison_natural_whiskerLeft, prodComparison_natural_whiskerRight_assoc]
+  slice_lhs 2 3 => rw [← prodComparison_comp]
+  simp only [assoc]
   unfold prodComparison
-  have ηlemma : (h.unit.app (F.obj A ⨯ F.obj B) ≫
-    prod.lift ((L ⋙ F).map prod.fst) ((L ⋙ F).map prod.snd)) =
-    prod.map (h.unit.app (F.obj A)) (h.unit.app (F.obj B)) := by
+  have ηlemma : (h.unit.app (F.obj A ⊗ F.obj B) ≫
+    lift ((L ⋙ F).map (fst _ _)) ((L ⋙ F).map (snd _ _))) =
+      (h.unit.app (F.obj A)) ⊗ (h.unit.app (F.obj B)) := by
     ext <;> simp
-  rw [ηlemma]
-  simp only [Functor.id_obj, Functor.comp_obj, prod.map_map, Adjunction.right_triangle_components,
-    prod.map_id_id]
+  slice_lhs 1 2 => rw [ηlemma]
+  simp only [Functor.id_obj, Functor.comp_obj, assoc, ← whisker_exchange, ← tensorHom_def']
+  ext <;> simp
 
 /--
 If the exponential comparison transformation (at `A`) is an isomorphism, then the Frobenius morphism
@@ -177,6 +175,7 @@ theorem expComparison_iso_of_frobeniusMorphism_iso (h : L ⊣ F) (A : C)
     [i : IsIso (frobeniusMorphism F h A)] : IsIso (expComparison F A) := by
   rw [← frobeniusMorphism_mate F h]; infer_instance
 
+open Limits in
 /-- If `F` is full and faithful, and has a left adjoint which preserves binary products, then it is
 cartesian closed.
 

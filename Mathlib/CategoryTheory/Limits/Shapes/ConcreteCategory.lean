@@ -35,7 +35,7 @@ universe w w' v u t r
 
 namespace CategoryTheory.Limits.Concrete
 
-attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
+attribute [local instance] HasForget.instFunLike HasForget.hasCoeToSort
 
 variable {C : Type u} [Category.{v} C]
 
@@ -43,7 +43,7 @@ section Products
 
 section ProductEquiv
 
-variable [ConcreteCategory.{max w v} C] {J : Type w} (F : J → C)
+variable [HasForget.{max w v} C] {J : Type w} (F : J → C)
   [HasProduct F] [PreservesLimit (Discrete.functor F) (forget C)]
 
 /-- The equivalence `(forget C).obj (∏ᶜ F) ≃ ∀ j, F j` if `F : J → C` is a family of objects
@@ -66,7 +66,7 @@ end ProductEquiv
 section ProductExt
 
 variable {J : Type w} (f : J → C) [HasProduct f] {D : Type t} [Category.{r} D]
-  [ConcreteCategory.{max w r} D] (F : C ⥤ D)
+  [HasForget.{max w r} D] (F : C ⥤ D)
   [PreservesLimit (Discrete.functor f) F]
   [HasProduct fun j => F.obj (f j)]
   [PreservesLimitsOfShape WalkingCospan (forget D)]
@@ -89,7 +89,7 @@ end Products
 
 section Terminal
 
-variable [ConcreteCategory.{w} C]
+variable [HasForget.{w} C]
 
 /-- If `forget C` preserves terminals and `X` is terminal, then `(forget C).obj X` is a
 singleton. -/
@@ -124,7 +124,7 @@ end Terminal
 
 section Initial
 
-variable [ConcreteCategory.{w} C]
+variable [HasForget.{w} C]
 
 /-- If `forget C` preserves initials and `X` is initial, then `(forget C).obj X` is empty. -/
 lemma empty_of_initial_of_preserves [PreservesColimit (Functor.empty.{0} C) (forget C)] (X : C)
@@ -149,7 +149,7 @@ end Initial
 
 section BinaryProducts
 
-variable [ConcreteCategory.{w} C] (X₁ X₂ : C) [HasBinaryProduct X₁ X₂]
+variable [HasForget.{w} C] (X₁ X₂ : C) [HasBinaryProduct X₁ X₂]
   [PreservesLimit (pair X₁ X₂) (forget C)]
 
 /-- The equivalence `(forget C).obj (X₁ ⨯ X₂) ≃ ((forget C).obj X₁) × ((forget C).obj X₂)`
@@ -183,7 +183,7 @@ end BinaryProducts
 
 section Pullbacks
 
-variable [ConcreteCategory.{v} C] {X₁ X₂ S : C} (f₁ : X₁ ⟶ S) (f₂ : X₂ ⟶ S)
+variable [HasForget.{v} C] {X₁ X₂ S : C} (f₁ : X₁ ⟶ S) (f₂ : X₂ ⟶ S)
     [HasPullback f₁ f₂] [PreservesLimit (cospan f₁ f₂) (forget C)]
 
 /-- In a concrete category `C`, given two morphisms `f₁ : X₁ ⟶ S` and `f₂ : X₂ ⟶ S`,
@@ -220,7 +220,7 @@ end Pullbacks
 
 section WidePullback
 
-variable [ConcreteCategory.{max w v} C]
+variable [HasForget.{max w v} C]
 
 open WidePullback
 
@@ -247,7 +247,7 @@ end WidePullback
 
 section Multiequalizer
 
-variable [ConcreteCategory.{max w w' v} C]
+variable [HasForget.{max w w' v} C]
 
 theorem multiequalizer_ext {I : MulticospanIndex.{w, w'} C} [HasMultiequalizer I]
     [PreservesLimit I.multicospan (forget C)] (x y : ↑(multiequalizer I))
@@ -315,7 +315,7 @@ open WidePushout
 
 open WidePushoutShape
 
-variable [ConcreteCategory.{v} C]
+variable [HasForget.{v} C]
 
 theorem widePushout_exists_rep {B : C} {α : Type _} {X : α → C} (f : ∀ j : α, B ⟶ X j)
     [HasWidePushout.{v} B X f] [PreservesColimit (wideSpan B X f) (forget C)]
@@ -340,7 +340,7 @@ theorem widePushout_exists_rep' {B : C} {α : Type _} [Nonempty α] {X : α → 
 end WidePushout
 
 -- We don't mark this as an `@[ext]` lemma as we don't always want to work elementwise.
-theorem cokernel_funext {C : Type*} [Category C] [HasZeroMorphisms C] [ConcreteCategory C]
+theorem cokernel_funext {C : Type*} [Category C] [HasZeroMorphisms C] [HasForget C]
     {M N K : C} {f : M ⟶ N} [HasCokernel f] {g h : cokernel f ⟶ K}
     (w : ∀ n : N, g (cokernel.π f n) = h (cokernel.π f n)) : g = h := by
   ext x

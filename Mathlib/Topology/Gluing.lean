@@ -82,8 +82,8 @@ that the `U i`'s are open subspaces of the glued space.
 Most of the times it would be easier to use the constructor `TopCat.GlueData.mk'` where the
 conditions are stated in a less categorical way.
 -/
--- porting note (#5171): removed @[nolint has_nonempty_instance]
-structure GlueData extends GlueData TopCat where
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
+structure GlueData extends CategoryTheory.GlueData TopCat where
   f_open : ∀ i j, IsOpenEmbedding (f i j)
   f_mono i j := (TopCat.mono_iff_injective _).mpr (f_open i j).isEmbedding.injective
 
@@ -100,11 +100,9 @@ theorem isOpen_iff (U : Set 𝖣.glued) : IsOpen U ↔ ∀ i, IsOpen (𝖣.ι i 
   delta CategoryTheory.GlueData.ι
   simp_rw [← Multicoequalizer.ι_sigmaπ 𝖣.diagram]
   rw [← (homeoOfIso (Multicoequalizer.isoCoequalizer 𝖣.diagram).symm).isOpen_preimage]
-  rw [coequalizer_isOpen_iff]
+  rw [coequalizer_isOpen_iff, colimit_isOpen_iff.{u}]
   dsimp only [GlueData.diagram_l, GlueData.diagram_left, GlueData.diagram_r, GlueData.diagram_right,
     parallelPair_obj_one]
-  rw [colimit_isOpen_iff.{_,u}]  -- Porting note: changed `.{u}` to `.{_,u}`.  fun fact: the proof
-                                 -- breaks down if this `rw` is merged with the `rw` above.
   constructor
   · intro h j; exact h ⟨j⟩
   · intro h j; cases j; apply h
@@ -129,7 +127,7 @@ theorem rel_equiv : Equivalence D.Rel :=
     let z := (pullbackIsoProdSubtype (D.f j i) (D.f j k)).inv ⟨⟨_, _⟩, e₂.trans e₃.symm⟩
     have eq₁ : (D.t j i) ((pullback.fst _ _ : _ /-(D.f j k)-/ ⟶ D.V (j, i)) z) = x := by
       dsimp only [coe_of, z]
-      erw [pullbackIsoProdSubtype_inv_fst_apply, D.t_inv_apply]-- now `erw` after #13170
+      erw [pullbackIsoProdSubtype_inv_fst_apply, D.t_inv_apply]-- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
     have eq₂ : (pullback.snd _ _ : _ ⟶ D.V _) z = y := pullbackIsoProdSubtype_inv_snd_apply _ _ _
     clear_value z
     right
@@ -197,7 +195,7 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
       show _ = Sigma.mk j y from ConcreteCategory.congr_hom (sigmaIsoSigma.{_, u} D.U).inv_hom_id _]
     change InvImage D.Rel (sigmaIsoSigma.{_, u} D.U).hom _ _
     rw [← (InvImage.equivalence _ _ D.rel_equiv).eqvGen_iff]
-    refine Relation.EqvGen.mono ?_ (D.eqvGen_of_π_eq h : _)
+    refine Relation.EqvGen.mono ?_ (D.eqvGen_of_π_eq h :)
     rintro _ _ ⟨x⟩
     obtain ⟨⟨⟨i, j⟩, y⟩, rfl⟩ :=
       (ConcreteCategory.bijective_of_isIso (sigmaIsoSigma.{u, u} _).inv).2 x
@@ -205,7 +203,7 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     simp only [forget_map_eq_coe]
     erw [TopCat.comp_app, sigmaIsoSigma_inv_apply, ← comp_apply, ← comp_apply,
       colimit.ι_desc_assoc, ← comp_apply, ← comp_apply, colimit.ι_desc_assoc]
-      -- previous line now `erw` after #13170
+      -- previous line now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
     erw [sigmaIsoSigma_hom_ι_apply, sigmaIsoSigma_hom_ι_apply]
     exact Or.inr ⟨y, ⟨rfl, rfl⟩⟩
   · rintro (⟨⟨⟩⟩ | ⟨z, e₁, e₂⟩)
@@ -234,13 +232,10 @@ theorem image_inter (i j : D.J) :
   · rintro ⟨⟨x₁, eq₁⟩, ⟨x₂, eq₂⟩⟩
     obtain ⟨⟨⟩⟩ | ⟨y, e₁, -⟩ := (D.ι_eq_iff_rel _ _ _ _).mp (eq₁.trans eq₂.symm)
     · exact ⟨inv (D.f i i) x₁, by
-        -- porting note (#10745): was `simp [eq₁]`
+        -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [eq₁]`
         -- See https://github.com/leanprover-community/mathlib4/issues/5026
         rw [TopCat.comp_app, CategoryTheory.IsIso.inv_hom_id_apply, eq₁]⟩
-    · -- Porting note: was
-      -- dsimp only at *; substs e₁ eq₁; exact ⟨y, by simp⟩
-      dsimp only at *
-      substs eq₁
+    · subst eq₁
       exact ⟨y, by simp [e₁]⟩
   · rintro ⟨x, hx⟩
     refine ⟨⟨D.f i j x, hx⟩, ⟨D.f j i (D.t _ _ x), ?_⟩⟩
@@ -257,7 +252,7 @@ theorem preimage_image_eq_image (i j : D.J) (U : Set (𝖣.U i)) :
   have : D.f _ _ ⁻¹' (𝖣.ι j ⁻¹' (𝖣.ι i '' U)) = (D.t j i ≫ D.f _ _) ⁻¹' U := by
     ext x
     conv_rhs => rw [← Set.preimage_image_eq U (D.ι_injective _)]
-    generalize 𝖣.ι i '' U = U' -- next 4 lines were `simp` before #13170
+    generalize 𝖣.ι i '' U = U' -- next 4 lines were `simp` before https://github.com/leanprover-community/mathlib4/pull/13170
     simp only [GlueData.diagram_l, GlueData.diagram_r, Set.mem_preimage, coe_comp,
       Function.comp_apply]
     rw [D.glue_condition_apply]
@@ -274,17 +269,14 @@ theorem preimage_image_eq_image' (i j : D.J) (U : Set (𝖣.U i)) :
   -- Porting note: `show` was not needed, since `rw [← Set.image_image]` worked.
   show (fun x => ((forget TopCat).map _ ((forget TopCat).map _ x))) '' _ = _
   rw [← Set.image_image]
-  -- Porting note: `congr 1` was here, instead of `congr_arg`, however, it did nothing.
-  refine congr_arg ?_ ?_
+  congr! 1
   rw [← Set.eq_preimage_iff_image_eq, Set.preimage_preimage]
   · change _ = (D.t i j ≫ D.t j i ≫ _) ⁻¹' _
     rw [𝖣.t_inv_assoc]
   rw [← isIso_iff_bijective]
   apply (forget TopCat).map_isIso
 
--- Porting note: the goal was simply `IsOpen (𝖣.ι i '' U)`.
--- I had to manually add the explicit type ascription.
-theorem open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' (U : Set (D.U i))) := by
+theorem open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' U) := by
   rw [isOpen_iff]
   intro j
   rw [preimage_image_eq_image]
@@ -312,7 +304,7 @@ such that
 
 We can then glue the topological spaces `U i` together by identifying `V i j` with `V j i`.
 -/
--- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 structure MkCore where
   {J : Type u}
   U : J → TopCat.{u}
@@ -356,7 +348,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
   V i := (Opens.toTopCat _).obj (h.V i.1 i.2)
   f i j := (h.V i j).inclusion'
   f_id i := by
-    -- Porting note (#12129): additional beta reduction needed
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
     beta_reduce
     exact (h.V_id i).symm ▸ (Opens.inclusionTopIso (h.U i)).isIso_hom
   f_open := fun i j : h.J => (h.V i j).isOpenEmbedding
@@ -393,15 +385,8 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
     { J
       U := fun i => (Opens.toTopCat <| TopCat.of α).obj (U i)
       V := fun _ j => (Opens.map <| Opens.inclusion' _).obj (U j)
-      t := fun i j => ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by
-        -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
-        refine Continuous.subtype_mk ?_ ?_
-        refine Continuous.subtype_mk ?_ ?_
-        continuity⟩
-      V_id := fun i => by
-        ext
-        -- Porting note: no longer needed `cases U i`!
-        simp
+      t := fun i j => ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by fun_prop⟩
+      V_id := fun i => by ext; simp
       t_id := fun i => by ext; rfl
       t_inter := fun _ _ _ _ hx => hx
       cocycle := fun _ _ _ _ _ => rfl }
@@ -445,8 +430,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
     apply (Opens.isOpenEmbedding (X := TopCat.of α) (U i)).isOpenMap
     convert hs i using 1
     erw [← ι_fromOpenSubsetsGlue, coe_comp, Set.preimage_comp]
-    --  porting note: `congr 1` did nothing, so I replaced it with `apply congr_arg`
-    apply congr_arg
+    congr! 1
     exact Set.preimage_image_eq _ (fromOpenSubsetsGlue_injective U)
   · refine ⟨Set.mem_image_of_mem _ hx, ?_⟩
     rw [ι_fromOpenSubsetsGlue_apply]

@@ -20,7 +20,7 @@ This file provides infrastructure to compute with filters.
 
 open Set Filter
 
--- Porting note (#11215): TODO write doc strings
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO write doc strings
 /-- A `CFilter α σ` is a realization of a filter (base) on `α`,
   represented by a type `σ` together with operations for the top element and
   the binary `inf` operation. -/
@@ -86,7 +86,7 @@ theorem mem_toFilter_sets (F : CFilter (Set α) σ) {a : Set α} : a ∈ F.toFil
 
 end CFilter
 
--- Porting note (#11215): TODO write doc strings
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO write doc strings
 /-- A realizer for filter `f` is a cfilter which generates `f`. -/
 structure Filter.Realizer (f : Filter α) where
   σ : Type*
@@ -286,7 +286,7 @@ protected def iSup {f : α → Filter β} (F : ∀ i, (f i).Realizer) : (⨆ i, 
       ⟨fun ⟨_, f⟩ i ↦ f i ⟨⟩, fun f ↦ ⟨(), fun i _ ↦ f i⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
 
 /-- Construct a realizer for the product of filters -/
-protected def prod {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f.prod g).Realizer :=
+protected def prod {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ×ˢ g).Realizer :=
   (F.comap _).inf (G.comap _)
 
 theorem le_iff {f g : Filter α} (F : f.Realizer) (G : g.Realizer) :

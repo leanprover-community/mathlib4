@@ -12,8 +12,7 @@ import Mathlib.Data.Vector.Snoc
 
 variable {α β γ ζ σ σ₁ σ₂ φ : Type*} {n : ℕ} {s : σ} {s₁ : σ₁} {s₂ : σ₂}
 
-namespace Mathlib
-
+namespace List
 namespace Vector
 
 /-!
@@ -402,4 +401,4 @@ end Flip
 
 end Vector
 
-end Mathlib
+end List

@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Patrick Massot, Sébastien Gouëzel
 import Mathlib.Order.Interval.Set.Disjoint
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+import Mathlib.Algebra.EuclideanDomain.Basic
 
 /-!
 # Integral over an interval
@@ -84,6 +85,11 @@ theorem intervalIntegrable_iff : IntervalIntegrable f μ a b ↔ IntegrableOn f 
   it is integrable on `uIoc a b` with respect to `μ`. -/
 theorem IntervalIntegrable.def' (h : IntervalIntegrable f μ a b) : IntegrableOn f (Ι a b) μ :=
   intervalIntegrable_iff.mp h
+
+theorem IntervalIntegrable.congr {g : ℝ → E} (hf : IntervalIntegrable f μ a b)
+    (h : f =ᵐ[μ.restrict (Ι a b)] g) :
+    IntervalIntegrable g μ a b := by
+  rwa [intervalIntegrable_iff, ← integrableOn_congr_fun_ae h, ← intervalIntegrable_iff]
 
 theorem intervalIntegrable_iff_integrableOn_Ioc_of_le (hab : a ≤ b) :
     IntervalIntegrable f μ a b ↔ IntegrableOn f (Ioc a b) μ := by
@@ -367,6 +373,69 @@ theorem Antitone.intervalIntegrable {u : ℝ → E} {a b : ℝ} (hu : Antitone u
 
 end
 
+/-!
+## Interval integrability of functions with even or odd parity
+-/
+section
+
+variable {f : ℝ → E}
+
+/-- An even function is interval integrable (with respect to the volume measure) on every interval
+of the form `0..x` if it is interval integrable (with respect to the volume measure) on every
+interval of the form `0..x`, for positive `x`.
+
+See `intervalIntegrable_of_even` for a stronger result.-/
+lemma intervalIntegrable_of_even₀ (h₁f : ∀ x, f x = f (-x))
+    (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (t : ℝ) :
+    IntervalIntegrable f volume 0 t := by
+  rcases lt_trichotomy t 0 with h | h | h
+  · rw [IntervalIntegrable.iff_comp_neg]
+    conv => arg 1; intro t; rw [← h₁f]
+    simp [h₂f (-t) (by norm_num [h])]
+  · rw [h]
+  · exact h₂f t h
+
+/-- An even function is interval integrable (with respect to the volume measure) on every interval
+if it is interval integrable (with respect to the volume measure) on every interval of the form
+`0..x`, for positive `x`. -/
+theorem intervalIntegrable_of_even
+  (h₁f : ∀ x, f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (a b : ℝ) :
+  IntervalIntegrable f volume a b :=
+  -- Split integral and apply lemma
+  (intervalIntegrable_of_even₀ h₁f h₂f a).symm.trans (b := 0)
+    (intervalIntegrable_of_even₀ h₁f h₂f b)
+
+/-- An odd function is interval integrable (with respect to the volume measure) on every interval
+of the form `0..x` if it is interval integrable (with respect to the volume measure) on every
+interval of the form `0..x`, for positive `x`.
+
+See `intervalIntegrable_of_odd` for a stronger result.-/
+lemma intervalIntegrable_of_odd₀
+  (h₁f : ∀ x, -f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (t : ℝ) :
+  IntervalIntegrable f volume 0 t := by
+  rcases lt_trichotomy t 0 with h | h | h
+  · rw [IntervalIntegrable.iff_comp_neg]
+    conv => arg 1; intro t; rw [← h₁f]
+    apply IntervalIntegrable.neg
+    simp [h₂f (-t) (by norm_num [h])]
+  · rw [h]
+  · exact h₂f t h
+
+/-- An odd function is interval integrable (with respect to the volume measure) on every interval
+iff it is interval integrable (with respect to the volume measure) on every interval of the form
+`0..x`, for positive `x`. -/
+theorem intervalIntegrable_of_odd
+  (h₁f : ∀ x, -f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (a b : ℝ) :
+  IntervalIntegrable f volume a b :=
+  -- Split integral and apply lemma
+  (intervalIntegrable_of_odd₀ h₁f h₂f a).symm.trans (b := 0) (intervalIntegrable_of_odd₀ h₁f h₂f b)
+
+end
+
+/-!
+## Limits of intervals
+-/
+
 /-- Let `l'` be a measurably generated filter; let `l` be a of filter such that each `s ∈ l'`
 eventually includes `Ioc u v` as both `u` and `v` tend to `l`. Let `μ` be a measure finite at `l'`.
 
@@ -414,8 +483,12 @@ as `∫ x in Ioc a b, f x ∂μ - ∫ x in Ioc b a, f x ∂μ`. If `a ≤ b`, th
 def intervalIntegral (f : ℝ → E) (a b : ℝ) (μ : Measure ℝ) : E :=
   (∫ x in Ioc a b, f x ∂μ) - ∫ x in Ioc b a, f x ∂μ
 
+@[inherit_doc intervalIntegral]
 notation3"∫ "(...)" in "a".."b", "r:60:(scoped f => f)" ∂"μ:70 => intervalIntegral r a b μ
 
+/-- The interval integral `∫ x in a..b, f x` is defined
+as `∫ x in Ioc a b, f x - ∫ x in Ioc b a, f x`. If `a ≤ b`, then it equals
+`∫ x in Ioc a b, f x`, otherwise it equals `-∫ x in Ioc b a, f x`. -/
 notation3"∫ "(...)" in "a".."b", "r:60:(scoped f => intervalIntegral f a b volume) => r
 
 namespace intervalIntegral
@@ -580,7 +653,7 @@ nonrec theorem integral_smul_measure (c : ℝ≥0∞) :
 
 end Basic
 
--- Porting note (#11215): TODO: add `Complex.ofReal` version of `_root_.integral_ofReal`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add `Complex.ofReal` version of `_root_.integral_ofReal`
 nonrec theorem _root_.RCLike.intervalIntegral_ofReal {𝕜 : Type*} [RCLike 𝕜] {a b : ℝ}
     {μ : Measure ℝ} {f : ℝ → ℝ} : (∫ x in a..b, (f x : 𝕜) ∂μ) = ↑(∫ x in a..b, f x ∂μ) := by
   simp only [intervalIntegral, integral_ofReal, RCLike.ofReal_sub]
@@ -1060,6 +1133,15 @@ theorem integral_mono_on (h : ∀ x ∈ Icc a b, f x ≤ g x) :
     (∫ u in a..b, f u ∂μ) ≤ ∫ u in a..b, g u ∂μ := by
   let H x hx := h x <| Ioc_subset_Icc_self hx
   simpa only [integral_of_le hab] using setIntegral_mono_on hf.1 hg.1 measurableSet_Ioc H
+
+theorem integral_mono_on_of_le_Ioo [NoAtoms μ] (h : ∀ x ∈ Ioo a b, f x ≤ g x) :
+    (∫ u in a..b, f u ∂μ) ≤ ∫ u in a..b, g u ∂μ := by
+  simp only [integral_of_le hab, integral_Ioc_eq_integral_Ioo]
+  apply setIntegral_mono_on
+  · apply hf.1.mono Ioo_subset_Ioc_self le_rfl
+  · apply hg.1.mono Ioo_subset_Ioc_self le_rfl
+  · exact measurableSet_Ioo
+  · exact h
 
 theorem integral_mono (h : f ≤ g) : (∫ u in a..b, f u ∂μ) ≤ ∫ u in a..b, g u ∂μ :=
   integral_mono_ae hab hf hg <| ae_of_all _ h

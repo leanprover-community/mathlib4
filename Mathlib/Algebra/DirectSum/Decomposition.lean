@@ -136,17 +136,9 @@ theorem degree_eq_of_mem_mem {x : M} {i j : ι} (hxi : x ∈ ℳ i) (hxj : x ∈
 
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 an additive monoid to a direct sum of components. -/
--- Porting note: deleted [simps] and added the corresponding lemmas by hand
+@[simps!]
 def decomposeAddEquiv : M ≃+ ⨁ i, ℳ i :=
   AddEquiv.symm { (decompose ℳ).symm with map_add' := map_add (DirectSum.coeAddMonoidHom ℳ) }
-
-@[simp]
-lemma decomposeAddEquiv_apply (a : M) :
-    decomposeAddEquiv ℳ a = decompose ℳ a := rfl
-
-@[simp]
-lemma decomposeAddEquiv_symm_apply (a : ⨁ i, ℳ i) :
-    (decomposeAddEquiv ℳ).symm a = (decompose ℳ).symm a := rfl
 
 @[simp]
 theorem decompose_zero : decompose ℳ (0 : M) = 0 :=

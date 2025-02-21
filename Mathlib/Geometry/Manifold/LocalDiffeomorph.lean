@@ -64,7 +64,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {G : Type*} [TopologicalSpace G]
   (I : ModelWithCorners 𝕜 E H) (J : ModelWithCorners 𝕜 F G)
   (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-  (N : Type*) [TopologicalSpace N] [ChartedSpace G N] (n : ℕ∞)
+  (N : Type*) [TopologicalSpace N] [ChartedSpace G N] (n : WithTop ℕ∞)
 
 section PartialDiffeomorph
 /-- A partial diffeomorphism on `s` is a function `f : M → N` such that `f` restricts to a

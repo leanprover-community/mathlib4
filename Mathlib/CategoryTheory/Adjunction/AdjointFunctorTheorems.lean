@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
-import Mathlib.CategoryTheory.Generator
+import Mathlib.CategoryTheory.Generator.Basic
 import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
@@ -29,9 +29,11 @@ This file also proves the special adjoint functor theorem, in the form:
 * If `G : D ⥤ C` preserves limits and `D` is complete, well-powered and has a small coseparating
   set, then `G` has a left adjoint: `isRightAdjointOfPreservesLimitsOfIsCoseparating`
 
-Finally, we prove the following corollary of the special adjoint functor theorem:
+Finally, we prove the following corollaries of the special adjoint functor theorem:
 * If `C` is complete, well-powered and has a small coseparating set, then it is cocomplete:
-  `hasColimits_of_hasLimits_of_isCoseparating`
+  `hasColimits_of_hasLimits_of_isCoseparating`, `hasColimits_of_hasLimits_of_hasCoseparator`
+* If `C` is cocomplete, co-well-powered and has a small separating set, then it is complete:
+  `hasLimits_of_hasColimits_of_isSeparating`, `hasLimits_of_hasColimits_of_hasSeparator`
 
 -/
 
@@ -98,7 +100,7 @@ variable {D : Type u'} [Category.{v} D]
 /-- The special adjoint functor theorem: if `G : D ⥤ C` preserves limits and `D` is complete,
 well-powered and has a small coseparating set, then `G` has a left adjoint.
 -/
-lemma isRightAdjoint_of_preservesLimits_of_isCoseparating [HasLimits D] [WellPowered D]
+lemma isRightAdjoint_of_preservesLimits_of_isCoseparating [HasLimits D] [WellPowered.{v} D]
     {𝒢 : Set D} [Small.{v} 𝒢] (h𝒢 : IsCoseparating 𝒢) (G : D ⥤ C) [PreservesLimits G] :
     G.IsRightAdjoint :=
   have : ∀ A, HasInitial (StructuredArrow A G) := fun A =>
@@ -108,7 +110,7 @@ lemma isRightAdjoint_of_preservesLimits_of_isCoseparating [HasLimits D] [WellPow
 /-- The special adjoint functor theorem: if `F : C ⥤ D` preserves colimits and `C` is cocomplete,
 well-copowered and has a small separating set, then `F` has a right adjoint.
 -/
-lemma isLeftAdjoint_of_preservesColimits_of_isSeparating [HasColimits C] [WellPowered Cᵒᵖ]
+lemma isLeftAdjoint_of_preservesColimits_of_isSeparating [HasColimits C] [WellPowered.{v} Cᵒᵖ]
     {𝒢 : Set C} [Small.{v} 𝒢] (h𝒢 : IsSeparating 𝒢) (F : C ⥤ D) [PreservesColimits F] :
     F.IsLeftAdjoint :=
   have : ∀ A, HasTerminal (CostructuredArrow F A) := fun A =>
@@ -121,7 +123,7 @@ namespace Limits
 
 /-- A consequence of the special adjoint functor theorem: if `C` is complete, well-powered and
     has a small coseparating set, then it is cocomplete. -/
-theorem hasColimits_of_hasLimits_of_isCoseparating [HasLimits C] [WellPowered C] {𝒢 : Set C}
+theorem hasColimits_of_hasLimits_of_isCoseparating [HasLimits C] [WellPowered.{v} C] {𝒢 : Set C}
     [Small.{v} 𝒢] (h𝒢 : IsCoseparating 𝒢) : HasColimits C :=
   { has_colimits_of_shape := fun _ _ =>
       hasColimitsOfShape_iff_isRightAdjoint_const.2
@@ -129,11 +131,23 @@ theorem hasColimits_of_hasLimits_of_isCoseparating [HasLimits C] [WellPowered C]
 
 /-- A consequence of the special adjoint functor theorem: if `C` is cocomplete, well-copowered and
     has a small separating set, then it is complete. -/
-theorem hasLimits_of_hasColimits_of_isSeparating [HasColimits C] [WellPowered Cᵒᵖ] {𝒢 : Set C}
+theorem hasLimits_of_hasColimits_of_isSeparating [HasColimits C] [WellPowered.{v} Cᵒᵖ] {𝒢 : Set C}
     [Small.{v} 𝒢] (h𝒢 : IsSeparating 𝒢) : HasLimits C :=
   { has_limits_of_shape := fun _ _ =>
       hasLimitsOfShape_iff_isLeftAdjoint_const.2
         (isLeftAdjoint_of_preservesColimits_of_isSeparating h𝒢 _) }
+
+/-- A consequence of the special adjoint functor theorem: if `C` is complete, well-powered and
+    has a separator, then it is complete. -/
+theorem hasLimits_of_hasColimits_of_hasSeparator [HasColimits C] [HasSeparator C]
+    [WellPowered.{v} Cᵒᵖ] : HasLimits C :=
+  hasLimits_of_hasColimits_of_isSeparating <| isSeparator_separator C
+
+/-- A consequence of the special adjoint functor theorem: if `C` is complete, well-powered and
+    has a coseparator, then it is cocomplete. -/
+theorem hasColimits_of_hasLimits_of_hasCoseparator [HasLimits C] [HasCoseparator C]
+    [WellPowered.{v} C] : HasColimits C :=
+  hasColimits_of_hasLimits_of_isCoseparating <| isCoseparator_coseparator C
 
 end Limits
 

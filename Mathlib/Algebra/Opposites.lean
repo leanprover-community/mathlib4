@@ -49,7 +49,7 @@ same way that it is convenient to have `Additive α = α`; this means that we al
 `AddOpposite (Additive α) = MulOpposite α`, which is convenient when working with quotients.
 
 This is a compromise between making `MulOpposite α = AddOpposite α = α` (what we had in Lean 3) and
-having no defeqs within those three types (which we had as of mathlib4#1036). -/
+having no defeqs within those three types (which we had as of https://github.com/leanprover-community/mathlib4/pull/1036). -/
 structure PreOpposite (α : Type*) : Type _ where
   /-- The element of `PreOpposite α` that represents `x : α`. -/ op' ::
   /-- The element of `α` represented by `x : PreOpposite α`. -/ unop' : α

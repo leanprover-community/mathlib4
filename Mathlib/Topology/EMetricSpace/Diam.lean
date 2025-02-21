@@ -11,7 +11,7 @@ import Mathlib.Topology.EMetricSpace.Pi
 -/
 
 
-open Set Filter Classical
+open Set Filter
 
 open scoped Uniformity Topology Filter NNReal ENNReal Pointwise
 

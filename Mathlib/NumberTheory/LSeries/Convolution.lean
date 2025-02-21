@@ -167,6 +167,12 @@ lemma LSeriesSummable.convolution {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSum
     LSeriesSummable (f ⍟ g) s :=
   (LSeriesHasSum.convolution hf.LSeriesHasSum hg.LSeriesHasSum).LSeriesSummable
 
+/-- The abscissa of absolute convergence of `f ⍟ g` is at most the maximum of those
+of `f` and `g`. -/
+lemma LSeries.abscissaOfAbsConv_convolution_le (f g : ℕ → ℂ) :
+    abscissaOfAbsConv (f ⍟ g) ≤ max (abscissaOfAbsConv f) (abscissaOfAbsConv g) :=
+  abscissaOfAbsConv_binop_le LSeriesSummable.convolution f g
+
 namespace ArithmeticFunction
 
 /-!

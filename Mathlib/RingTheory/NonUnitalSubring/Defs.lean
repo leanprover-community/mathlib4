@@ -159,7 +159,7 @@ theorem copy_eq (S : NonUnitalSubring R) (s : Set R) (hs : s = ↑S) : S.copy s 
 
 theorem toNonUnitalSubsemiring_injective :
     Function.Injective (toNonUnitalSubsemiring : NonUnitalSubring R → NonUnitalSubsemiring R)
-  | _r, _s, h => ext (SetLike.ext_iff.mp h : _)
+  | _r, _s, h => ext (SetLike.ext_iff.mp h :)
 
 @[mono]
 theorem toNonUnitalSubsemiring_strictMono :
@@ -173,7 +173,7 @@ theorem toNonUnitalSubsemiring_mono :
 
 theorem toAddSubgroup_injective :
     Function.Injective (toAddSubgroup : NonUnitalSubring R → AddSubgroup R)
-  | _r, _s, h => ext (SetLike.ext_iff.mp h : _)
+  | _r, _s, h => ext (SetLike.ext_iff.mp h :)
 
 @[mono]
 theorem toAddSubgroup_strictMono :
@@ -185,7 +185,7 @@ theorem toAddSubgroup_mono : Monotone (toAddSubgroup : NonUnitalSubring R → Ad
 
 theorem toSubsemigroup_injective :
     Function.Injective (toSubsemigroup : NonUnitalSubring R → Subsemigroup R)
-  | _r, _s, h => ext (SetLike.ext_iff.mp h : _)
+  | _r, _s, h => ext (SetLike.ext_iff.mp h :)
 
 @[mono]
 theorem toSubsemigroup_strictMono :

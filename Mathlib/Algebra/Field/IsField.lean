@@ -77,7 +77,7 @@ a lemma that there is a unique inverse could be useful.
 theorem uniq_inv_of_isField (R : Type u) [Ring R] (hf : IsField R) :
     ∀ x : R, x ≠ 0 → ∃! y : R, x * y = 1 := by
   intro x hx
-  apply exists_unique_of_exists_of_unique
+  apply existsUnique_of_exists_of_unique
   · exact hf.mul_inv_cancel hx
   · intro y z hxy hxz
     calc

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
 # Squares and even elements
@@ -29,8 +29,7 @@ This file defines square and even elements in a monoid.
 `Mathlib.Algebra.Ring.Parity` for the definition of odd elements.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 open MulOpposite
 
@@ -45,7 +44,10 @@ for some `r : α`. -/
 for some `r : α`."]
 def IsSquare (a : α) : Prop := ∃ r, a = r * r
 
-@[to_additive (attr := simp)] lemma isSquare_mul_self (m : α) : IsSquare (m * m) := ⟨m, rfl⟩
+@[to_additive (attr := simp)] lemma IsSquare.mul_self (m : α) : IsSquare (m * m) := ⟨m, rfl⟩
+
+@[deprecated (since := "2024-08-27")] alias isSquare_mul_self := IsSquare.mul_self
+@[deprecated (since := "2024-08-27")] alias even_add_self := Even.add_self
 
 @[to_additive]
 lemma isSquare_op_iff {a : α} : IsSquare (op a) ↔ IsSquare a :=
@@ -62,7 +64,7 @@ instance [DecidablePred (IsSquare : α → Prop)] : DecidablePred (IsSquare : α
 lemma even_ofMul_iff {a : α} : Even (Additive.ofMul a) ↔ IsSquare a := Iff.rfl
 
 @[simp]
-lemma isSquare_toMul_iff {a : Additive α} : IsSquare (Additive.toMul a) ↔ Even a := Iff.rfl
+lemma isSquare_toMul_iff {a : Additive α} : IsSquare (a.toMul) ↔ Even a := Iff.rfl
 
 instance Additive.instDecidablePredEven [DecidablePred (IsSquare : α → Prop)] :
     DecidablePred (Even : Additive α → Prop) :=
@@ -76,7 +78,7 @@ variable [Add α]
 @[simp] lemma isSquare_ofAdd_iff {a : α} : IsSquare (Multiplicative.ofAdd a) ↔ Even a := Iff.rfl
 
 @[simp]
-lemma even_toAdd_iff {a : Multiplicative α} : Even (Multiplicative.toAdd a) ↔ IsSquare a := Iff.rfl
+lemma even_toAdd_iff {a : Multiplicative α} : Even a.toAdd ↔ IsSquare a := Iff.rfl
 
 instance Multiplicative.instDecidablePredIsSquare [DecidablePred (Even : α → Prop)] :
     DecidablePred (IsSquare : Multiplicative α → Prop) :=
@@ -85,7 +87,9 @@ instance Multiplicative.instDecidablePredIsSquare [DecidablePred (Even : α → 
 end Add
 
 @[to_additive (attr := simp)]
-lemma isSquare_one [MulOneClass α] : IsSquare (1 : α) := ⟨1, (mul_one _).symm⟩
+lemma IsSquare.one [MulOneClass α] : IsSquare (1 : α) := ⟨1, (mul_one _).symm⟩
+
+@[to_additive, deprecated (since := "2024-12-27")] alias isSquare_one := IsSquare.one
 
 @[to_additive]
 lemma IsSquare.map [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
@@ -111,7 +115,10 @@ attribute [to_additive Even.exists_two_nsmul
 @[to_additive Even.nsmul'] lemma Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨n, rfl⟩ a; exact ⟨a ^ n, pow_add _ _ _⟩
 
-@[to_additive even_two_nsmul] lemma IsSquare_sq (a : α) : IsSquare (a ^ 2) := ⟨a, pow_two _⟩
+@[to_additive Even.two_nsmul] lemma IsSquare.sq (a : α) : IsSquare (a ^ 2) := ⟨a, pow_two _⟩
+
+@[deprecated (since := "2024-12-27")] alias IsSquare_sq := IsSquare.sq
+@[deprecated (since := "2024-12-27")] alias even_two_nsmul := Even.two_nsmul
 
 end Monoid
 

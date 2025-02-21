@@ -143,6 +143,10 @@ lemma isUnit_iff_valuation_eq_one (hv : Integers v O) {x : O} :
     IsUnit x ↔ v (algebraMap O F x) = 1 :=
   ⟨hv.one_of_isUnit, hv.isUnit_of_one'⟩
 
+lemma valuation_unit (hv : Integers v O) (x : Oˣ) :
+    v (algebraMap O F x) = 1 := by
+  simp [← hv.isUnit_iff_valuation_eq_one]
+
 lemma valuation_pos_iff_ne_zero (hv : Integers v O) {x : O} :
     0 < v (algebraMap O F x) ↔ x ≠ 0 := by
   rw [← not_le]
@@ -167,6 +171,15 @@ theorem eq_algebraMap_or_inv_eq_algebraMap (hv : Integers v O) (x : F) :
   rcases val_le_one_or_val_inv_le_one v x with h | h <;>
   obtain ⟨a, ha⟩ := exists_of_le_one hv h
   exacts [⟨a, Or.inl ha.symm⟩, ⟨a, Or.inr ha.symm⟩]
+
+lemma bijective_algebraMap_of_subsingleton_units_mrange (hv : Integers v O)
+    [Subsingleton (MonoidHom.mrange v)ˣ] :
+    Function.Bijective (algebraMap O F) := by
+  refine ⟨hv.hom_inj, fun x ↦ hv.exists_of_le_one ?_⟩
+  rcases eq_or_ne x 0 with rfl|hx
+  · simp
+  · exact (congr_arg Units.val (Subsingleton.elim (α := (MonoidHom.mrange v)ˣ)
+      ((isUnit_iff_ne_zero.mpr hx).unit.map v.toMonoidHom.mrangeRestrict) 1)).le
 
 lemma isPrincipal_iff_exists_isGreatest (hv : Integers v O) {I : Ideal O} :
     I.IsPrincipal ↔ ∃ x, IsGreatest (v ∘ algebraMap O F '' I) x := by
@@ -225,8 +238,6 @@ lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : 
       using H.dense ⟨v (algebraMap O F x), mem_range_self _⟩ ⟨1, 1, v.map_one⟩ hx₁
   obtain ⟨z, rfl⟩ := hv.exists_of_le_one hy₁.le
   exact hy.not_le <| hx ⟨hy₁, mem_range_self _⟩
-
--- TODO: isPrincipalIdealRing_iff_not_denselyOrdered when MulArchimedean
 
 end Integers
 

@@ -21,7 +21,7 @@ noncomputable section
 
 namespace TopCat
 
-variable {J : Type v} [SmallCategory J]
+variable {J : Type v} [Category.{w} J]
 
 section Pullback
 
@@ -29,15 +29,13 @@ variable {X Y Z : TopCat.{u}}
 
 /-- The first projection from the pullback. -/
 abbrev pullbackFst (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1 = g p.2 } ⟶ X :=
-  ⟨Prod.fst ∘ Subtype.val, by
-    apply Continuous.comp <;> set_option tactic.skipAssignedInstances false in continuity⟩
+  ⟨Prod.fst ∘ Subtype.val, by fun_prop⟩
 
 lemma pullbackFst_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackFst f g x = x.1.1 := rfl
 
 /-- The second projection from the pullback. -/
 abbrev pullbackSnd (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1 = g p.2 } ⟶ Y :=
-  ⟨Prod.snd ∘ Subtype.val, by
-    apply Continuous.comp <;> set_option tactic.skipAssignedInstances false in continuity⟩
+  ⟨Prod.snd ∘ Subtype.val, by fun_prop⟩
 
 lemma pullbackSnd_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackSnd f g x = x.1.2 := rfl
 
@@ -49,7 +47,7 @@ def pullbackCone (f : X ⟶ Z) (g : Y ⟶ Z) : PullbackCone f g :=
       ext ⟨x, h⟩
       -- Next 2 lines were
       -- `rw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk]`
-      -- `exact h` before leanprover/lean4#2644
+      -- `exact h` before https://github.com/leanprover/lean4/pull/2644
       rw [comp_apply, comp_apply]
       congr!)
 
@@ -70,16 +68,16 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
       refine ⟨?_, ?_, ?_⟩
       · delta pullbackCone
         ext a
-        -- This used to be `rw`, but we need `rw; rfl` after leanprover/lean4#2644
+        -- This used to be `rw`, but we need `rw; rfl` after https://github.com/leanprover/lean4/pull/2644
         rw [comp_apply, ContinuousMap.coe_mk]
         rfl
       · delta pullbackCone
         ext a
-        -- This used to be `rw`, but we need `rw; rfl` after leanprover/lean4#2644
+        -- This used to be `rw`, but we need `rw; rfl` after https://github.com/leanprover/lean4/pull/2644
         rw [comp_apply, ContinuousMap.coe_mk]
         rfl
       · intro m h₁ h₂
-        -- Porting note (#11041): used to be `ext x`.
+        -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be `ext x`.
         apply ContinuousMap.ext; intro x
         apply Subtype.ext
         apply Prod.ext
@@ -121,7 +119,7 @@ theorem pullbackIsoProdSubtype_hom_snd (f : X ⟶ Z) (g : Y ⟶ Z) :
 
 -- Porting note: why do I need to tell Lean to coerce pullback to a type
 theorem pullbackIsoProdSubtype_hom_apply {f : X ⟶ Z} {g : Y ⟶ Z}
-    (x : ConcreteCategory.forget.obj (pullback f g)) :
+    (x : HasForget.forget.obj (pullback f g)) :
     (pullbackIsoProdSubtype f g).hom x =
       ⟨⟨pullback.fst f g x, pullback.snd f g x⟩, by
         simpa using ConcreteCategory.congr_hom pullback.condition x⟩ := by
@@ -145,15 +143,15 @@ theorem range_pullback_to_prod {X Y Z : TopCat} (f : X ⟶ Z) (g : Y ⟶ Z) :
   ext x
   constructor
   · rintro ⟨y, rfl⟩
-    change (_ ≫ _ ≫ f) _ = (_ ≫ _ ≫ g) _ -- new `change` after #13170
+    change (_ ≫ _ ≫ f) _ = (_ ≫ _ ≫ g) _ -- new `change` after https://github.com/leanprover-community/mathlib4/pull/13170
     simp [pullback.condition]
   · rintro (h : f (_, _).1 = g (_, _).2)
     use (pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, h⟩
-    change (forget TopCat).map _ _ = _ -- new `change` after #13170
+    change (forget TopCat).map _ _ = _ -- new `change` after https://github.com/leanprover-community/mathlib4/pull/13170
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩ <;>
-    erw [← comp_apply, ← comp_apply, limit.lift_π] <;> -- now `erw` after #13170
-    -- This used to be `simp` before leanprover/lean4#2644
+    erw [← comp_apply, ← comp_apply, limit.lift_π] <;> -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
+    -- This used to be `simp` before https://github.com/leanprover/lean4/pull/2644
     aesop_cat
 
 /-- The pullback along an embedding is (isomorphic to) the preimage. -/
@@ -212,22 +210,22 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
     apply (TopCat.mono_iff_injective _).mp H₃
     rw [← comp_apply, eq₁, ← comp_apply, eq₂,
       comp_apply, comp_apply, hx₁, hx₂, ← comp_apply, pullback.condition]
-    rfl -- `rfl` was not needed before #13170
+    rfl -- `rfl` was not needed before https://github.com/leanprover-community/mathlib4/pull/13170
   use (pullbackIsoProdSubtype f₁ f₂).inv ⟨⟨x₁, x₂⟩, this⟩
   change (forget TopCat).map _ _ = _
   apply Concrete.limit_ext
   rintro (_ | _ | _) <;>
-  erw [← comp_apply, ← comp_apply] -- now `erw` after #13170
+  erw [← comp_apply, ← comp_apply] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
   · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_π_app_one]
     simp only [cospan_one, pullbackIsoProdSubtype_inv_fst_assoc, comp_apply]
     rw [pullbackFst_apply, hx₁, ← limit.w _ WalkingCospan.Hom.inl, cospan_map_inl,
         comp_apply (g := g₁)]
   · simp only [cospan_left, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
       pullbackIsoProdSubtype_inv_fst_assoc, comp_apply]
-    erw [hx₁] -- now `erw` after #13170
+    erw [hx₁] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
   · simp only [cospan_right, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
       pullbackIsoProdSubtype_inv_snd_assoc, comp_apply]
-    erw [hx₂] -- now `erw` after #13170
+    erw [hx₂] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
 
 theorem pullback_fst_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
     Set.range (pullback.fst f g) = { x : X | ∃ y : Y, f x = g y } := by
@@ -412,7 +410,7 @@ theorem pullback_snd_image_fst_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set X) 
       ⟨(pullback.fst f g) y, hy, ConcreteCategory.congr_hom pullback.condition y⟩
   · rintro ⟨y, hy, eq⟩
   -- next 5 lines were
-  -- `exact ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq⟩, by simpa, by simp⟩` before #13170
+  -- `exact ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq⟩, by simpa, by simp⟩` before https://github.com/leanprover-community/mathlib4/pull/13170
     refine ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq⟩, ?_, ?_⟩
     · simp only [coe_of, Set.mem_preimage]
       convert hy
@@ -431,7 +429,7 @@ theorem pullback_fst_image_snd_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set Y) 
   · rintro ⟨y, hy, eq⟩
     -- next 5 lines were
     -- `exact ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq.symm⟩, by simpa, by simp⟩`
-    -- before #13170
+    -- before https://github.com/leanprover-community/mathlib4/pull/13170
     refine ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq.symm⟩, ?_, ?_⟩
     · simp only [coe_of, Set.mem_preimage]
       convert hy
@@ -452,14 +450,14 @@ theorem colimit_topology (F : J ⥤ TopCat.{max v u}) :
     (colimit F).str = ⨆ j, (F.obj j).str.coinduced (colimit.ι F j) :=
   coinduced_of_isColimit _ (colimit.isColimit F)
 
-theorem colimit_isOpen_iff (F : J ⥤ TopCat.{max v u}) (U : Set ((colimit F : _) : Type max v u)) :
+theorem colimit_isOpen_iff (F : J ⥤ TopCat.{max v u}) (U : Set ((colimit F :) : Type max v u)) :
     IsOpen U ↔ ∀ j, IsOpen (colimit.ι F j ⁻¹' U) := by
   dsimp [topologicalSpace_coe]
   conv_lhs => rw [colimit_topology F]
   exact isOpen_iSup_iff
 
 theorem coequalizer_isOpen_iff (F : WalkingParallelPair ⥤ TopCat.{u})
-    (U : Set ((colimit F : _) : Type u)) :
+    (U : Set ((colimit F :) : Type u)) :
     IsOpen U ↔ IsOpen (colimit.ι F WalkingParallelPair.one ⁻¹' U) := by
   rw [colimit_isOpen_iff]
   constructor

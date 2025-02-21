@@ -20,7 +20,7 @@ open Filter Finset Function
 
 open scoped Topology
 
-variable {α β γ δ : Type*}
+variable {α β γ : Type*}
 
 
 /-! ## Product, Sigma and Pi types -/
@@ -192,6 +192,11 @@ theorem Multipliable.prod_factor {f : β × γ → α} (h : Multipliable f) (b :
     Multipliable fun c ↦ f (b, c) :=
   h.comp_injective fun _ _ h ↦ (Prod.ext_iff.1 h).2
 
+@[to_additive Summable.prod]
+lemma Multipliable.prod {f : β × γ → α} (h : Multipliable f) :
+    Multipliable fun b ↦ ∏' c, f (b, c) :=
+  ((Equiv.sigmaEquivProd β γ).multipliable_iff.mpr h).sigma
+
 @[to_additive]
 lemma HasProd.tprod_fiberwise [T2Space α] {f : β → α} {a : α} (hf : HasProd f a) (g : β → γ) :
     HasProd (fun c : γ ↦ ∏' b : g ⁻¹' {c}, f b) a :=
@@ -251,14 +256,14 @@ open MulOpposite
 variable [AddCommMonoid α] [TopologicalSpace α] {f : β → α} {a : α}
 
 theorem HasSum.op (hf : HasSum f a) : HasSum (fun a ↦ op (f a)) (op a) :=
-  (hf.map (@opAddEquiv α _) continuous_op : _)
+  (hf.map (@opAddEquiv α _) continuous_op :)
 
 theorem Summable.op (hf : Summable f) : Summable (op ∘ f) :=
   hf.hasSum.op.summable
 
 theorem HasSum.unop {f : β → αᵐᵒᵖ} {a : αᵐᵒᵖ} (hf : HasSum f a) :
     HasSum (fun a ↦ unop (f a)) (unop a) :=
-  (hf.map (@opAddEquiv α _).symm continuous_unop : _)
+  (hf.map (@opAddEquiv α _).symm continuous_unop :)
 
 theorem Summable.unop {f : β → αᵐᵒᵖ} (hf : Summable f) : Summable (unop ∘ f) :=
   hf.hasSum.unop.summable

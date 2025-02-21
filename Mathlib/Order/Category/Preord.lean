@@ -35,8 +35,8 @@ instance : BundledHom @OrderHom where
 deriving instance LargeCategory for Preord
 
 -- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory Preord :=
-  BundledHom.concreteCategory _
+instance : HasForget Preord :=
+  BundledHom.hasForget _
 
 instance : CoeSort Preord Type* :=
   Bundled.coeSort

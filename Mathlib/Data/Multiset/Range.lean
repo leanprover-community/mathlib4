@@ -7,6 +7,7 @@ import Mathlib.Data.Multiset.Basic
 
 /-! # `Multiset.range n` gives `{0, 1, ..., n-1}` as a multiset. -/
 
+assert_not_exists Monoid
 
 open List Nat
 
@@ -27,7 +28,7 @@ theorem range_zero : range 0 = 0 :=
 
 @[simp]
 theorem range_succ (n : ℕ) : range (succ n) = n ::ₘ range n := by
-  rw [range, List.range_succ, ← coe_add, add_comm]; rfl
+  rw [range, List.range_succ, ← coe_add, Multiset.add_comm]; rfl
 
 @[simp]
 theorem card_range (n : ℕ) : card (range n) = n :=

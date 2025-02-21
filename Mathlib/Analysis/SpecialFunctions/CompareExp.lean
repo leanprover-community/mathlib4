@@ -112,13 +112,12 @@ This is the main lemma in the proof of `Complex.IsExpCmpFilter.isLittleO_cpow_ex
 theorem isLittleO_log_abs_re (hl : IsExpCmpFilter l) : (fun z => Real.log (abs z)) =o[l] re :=
   calc
     (fun z => Real.log (abs z)) =O[l] fun z => Real.log (√2) + Real.log (max z.re |z.im|) :=
-      IsBigO.of_bound 1 <|
+      .of_norm_eventuallyLE <|
         (hl.tendsto_re.eventually_ge_atTop 1).mono fun z hz => by
           have h2 : 0 < √2 := by simp
           have hz' : 1 ≤ abs z := hz.trans (re_le_abs z)
           have hm₀ : 0 < max z.re |z.im| := lt_max_iff.2 (Or.inl <| one_pos.trans_le hz)
-          rw [one_mul, Real.norm_eq_abs, _root_.abs_of_nonneg (Real.log_nonneg hz')]
-          refine le_trans ?_ (le_abs_self _)
+          simp only [Real.norm_of_nonneg (Real.log_nonneg hz')]
           rw [← Real.log_mul, Real.log_le_log_iff, ← _root_.abs_of_nonneg (le_trans zero_le_one hz)]
           exacts [abs_le_sqrt_two_mul_max z, one_pos.trans_le hz', mul_pos h2 hm₀, h2.ne', hm₀.ne']
     _ =o[l] re :=

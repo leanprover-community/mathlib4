@@ -28,7 +28,7 @@ namespace Nat
 
 /-! successor and predecessor -/
 
-@[deprecated (since := "2024-08-23")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-23")]
 def discriminate {B : Sort u} {n : ℕ} (H1 : n = 0 → B) (H2 : ∀ m, n = succ m → B) : B := by
   induction n with
   | zero => exact H1 rfl
@@ -36,7 +36,7 @@ def discriminate {B : Sort u} {n : ℕ} (H1 : n = 0 → B) (H2 : ∀ m, n = succ
 
 -- Unused in Mathlib;
 -- if downstream projects find this essential please copy it or remove the deprecation.
-@[deprecated (since := "2024-07-27")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-27")]
 theorem one_eq_succ_zero : 1 = succ 0 :=
   rfl
 
@@ -44,7 +44,7 @@ theorem one_eq_succ_zero : 1 = succ 0 :=
 
 -- Unused in Mathlib;
 -- if downstream projects find this essential please copy it or remove the deprecation.
-@[deprecated (since := "2024-07-27")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-27")]
 def subInduction {P : ℕ → ℕ → Sort u} (H1 : ∀ m, P 0 m) (H2 : ∀ n, P (succ n) 0)
     (H3 : ∀ n m, P n m → P (succ n) (succ m)) : ∀ n m : ℕ, P n m
   | 0, _m => H1 _
@@ -55,7 +55,7 @@ def subInduction {P : ℕ → ℕ → Sort u} (H1 : ∀ m, P 0 m) (H2 : ∀ n, P
 
 -- Unused in Mathlib;
 -- if downstream projects find this essential please copy it or remove the deprecation.
-@[deprecated (since := "2024-07-27")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-27")]
 theorem cond_decide_mod_two (x : ℕ) [d : Decidable (x % 2 = 1)] :
     cond (@decide (x % 2 = 1) d) 1 0 = x % 2 := by
   simp only [cond_eq_if, decide_eq_true_eq]

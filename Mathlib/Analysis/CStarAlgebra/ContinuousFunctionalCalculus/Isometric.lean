@@ -150,7 +150,7 @@ variable [Semifield S] [StarRing S] [MetricSpace S] [TopologicalSemiring S] [Con
 variable [Ring A] [StarRing A] [Algebra S A]
 variable [Algebra R S] [Algebra R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]
 variable [MetricSpace A] [IsometricContinuousFunctionalCalculus S A q]
-variable [CompleteSpace R] [UniqueContinuousFunctionalCalculus R A]
+variable [CompleteSpace R] [ContinuousMap.UniqueHom R A]
 
 open scoped ContinuousFunctionalCalculus in
 protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S)) (h0 : p 0)
@@ -321,7 +321,7 @@ variable [SMulCommClass S A A]
 variable [Algebra R S] [Module R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]
 variable [IsScalarTower R A A] [SMulCommClass R A A]
 variable [MetricSpace A] [NonUnitalIsometricContinuousFunctionalCalculus S A q]
-variable [CompleteSpace R] [UniqueNonUnitalContinuousFunctionalCalculus R A]
+variable [CompleteSpace R] [ContinuousMapZero.UniqueHom R A]
 
 open scoped NonUnitalContinuousFunctionalCalculus in
 protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S)) (h0 : p 0)
@@ -353,34 +353,21 @@ end QuasispectrumRestricts
 
 end NonUnital
 
-/-! ### Instances of isometric continuous functional calculi -/
+/-! ### Instances of isometric continuous functional calculi
+
+The instances for `ℝ` and `ℂ` can be found in
+`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic`, as those require an actual
+`CStarAlgebra` instance on `A`, whereas the one for `ℝ≥0` is simply inherited from an existing
+instance for `ℝ`.
+-/
 
 section Instances
 
 section Unital
 
-section Complex
-
-variable {A : Type*} [CStarAlgebra A]
-
-instance IsStarNormal.instIsometricContinuousFunctionalCalculus :
-    IsometricContinuousFunctionalCalculus ℂ A IsStarNormal where
-  isometric a ha := by
-    rw [cfcHom_eq_of_isStarNormal]
-    exact isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
-
-instance IsSelfAdjoint.instIsometricContinuousFunctionalCalculus :
-    IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=
-  SpectrumRestricts.isometric_cfc Complex.reCLM Complex.isometry_ofReal (.zero _)
-    fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_spectrumRestricts
-
-end Complex
-
-section NNReal
-
 variable {A : Type*} [NormedRing A] [PartialOrder A] [StarRing A] [StarOrderedRing A]
 variable [NormedAlgebra ℝ A] [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-variable [NonnegSpectrumClass ℝ A] [UniqueContinuousFunctionalCalculus ℝ A]
+variable [NonnegSpectrumClass ℝ A]
 
 open NNReal in
 instance Nonneg.instIsometricContinuousFunctionalCalculus :
@@ -388,52 +375,20 @@ instance Nonneg.instIsometricContinuousFunctionalCalculus :
   SpectrumRestricts.isometric_cfc (q := IsSelfAdjoint) ContinuousMap.realToNNReal
     isometry_subtype_coe le_rfl (fun _ ↦ nonneg_iff_isSelfAdjoint_and_spectrumRestricts)
 
-end NNReal
-
 end Unital
 
 section NonUnital
 
-section Complex
-
-variable {A : Type*} [NonUnitalCStarAlgebra A]
-
-open Unitization
-
-
-open ContinuousMapZero in
-instance IsStarNormal.instNonUnitalIsometricContinuousFunctionalCalculus :
-    NonUnitalIsometricContinuousFunctionalCalculus ℂ A IsStarNormal where
-  isometric a ha := by
-    refine AddMonoidHomClass.isometry_of_norm _ fun f ↦ ?_
-    rw [← norm_inr (𝕜 := ℂ), ← inrNonUnitalStarAlgHom_apply, ← NonUnitalStarAlgHom.comp_apply,
-      inr_comp_cfcₙHom_eq_cfcₙAux a, cfcₙAux]
-    simp only [NonUnitalStarAlgHom.comp_assoc, NonUnitalStarAlgHom.comp_apply,
-      toContinuousMapHom_apply, NonUnitalStarAlgHom.coe_coe]
-    rw [norm_cfcHom (a : Unitization ℂ A), StarAlgEquiv.norm_map]
-    rfl
-
-instance IsSelfAdjoint.instNonUnitalIsometricContinuousFunctionalCalculus :
-    NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=
-  QuasispectrumRestricts.isometric_cfc Complex.reCLM Complex.isometry_ofReal (.zero _)
-    fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts
-
-end Complex
-
-section NNReal
-
 variable {A : Type*} [NonUnitalNormedRing A] [PartialOrder A] [StarRing A] [StarOrderedRing A]
 variable [NormedSpace ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
 variable [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-variable [NonnegSpectrumClass ℝ A] [UniqueNonUnitalContinuousFunctionalCalculus ℝ A]
+variable [NonnegSpectrumClass ℝ A]
 
 open NNReal in
 instance Nonneg.instNonUnitalIsometricContinuousFunctionalCalculus :
     NonUnitalIsometricContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·) :=
   QuasispectrumRestricts.isometric_cfc (q := IsSelfAdjoint) ContinuousMap.realToNNReal
     isometry_subtype_coe le_rfl (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
-
-end NNReal
 
 end NonUnital
 
@@ -449,7 +404,7 @@ section Unital
 
 variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A] [PartialOrder A]
 variable [StarOrderedRing A] [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-variable [NonnegSpectrumClass ℝ A] [UniqueContinuousFunctionalCalculus ℝ A]
+variable [NonnegSpectrumClass ℝ A]
 
 lemma IsGreatest.nnnorm_cfc_nnreal [Nontrivial A] (f : ℝ≥0 → ℝ≥0) (a : A)
     (hf : ContinuousOn f (σ ℝ≥0 a) := by cfc_cont_tac) (ha : 0 ≤ a := by cfc_tac) :
@@ -509,7 +464,7 @@ section NonUnital
 variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A]
 variable [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [PartialOrder A]
 variable [StarOrderedRing A] [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-variable [NonnegSpectrumClass ℝ A] [UniqueNonUnitalContinuousFunctionalCalculus ℝ A]
+variable [NonnegSpectrumClass ℝ A]
 
 lemma IsGreatest.nnnorm_cfcₙ_nnreal (f : ℝ≥0 → ℝ≥0) (a : A)
     (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)

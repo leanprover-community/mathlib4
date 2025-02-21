@@ -8,7 +8,7 @@ set_option linter.unusedVariables false
 
 section CC1
 
-open Mathlib (Vector)
+open List (Vector)
 open Mathlib.Tactic.CC
 
 open Lean Meta Elab Tactic
@@ -220,17 +220,21 @@ universe u
 
 open Mathlib
 
-axiom app : {α : Type u} → {n m : Nat} → Vector α m → Vector α n → Vector α (m + n)
+axiom app : {α : Type u} → {n m : Nat} →
+  List.Vector α m → List.Vector α n → List.Vector α (m + n)
 
-example (n1 n2 n3 : Nat) (v1 w1 : Vector Nat n1) (w1' : Vector Nat n3) (v2 w2 : Vector Nat n2) :
+example (n1 n2 n3 : Nat)
+    (v1 w1 : List.Vector Nat n1) (w1' : List.Vector Nat n3) (v2 w2 : List.Vector Nat n2) :
     n1 = n3 → v1 = w1 → HEq w1 w1' → v2 = w2 → HEq (app v1 v2) (app w1' w2) := by
   cc
 
-example (n1 n2 n3 : Nat) (v1 w1 : Vector Nat n1) (w1' : Vector Nat n3) (v2 w2 : Vector Nat n2) :
+example (n1 n2 n3 : Nat)
+    (v1 w1 : List.Vector Nat n1) (w1' : List.Vector Nat n3) (v2 w2 : List.Vector Nat n2) :
     HEq n1 n3 → v1 = w1 → HEq w1 w1' → HEq v2 w2 → HEq (app v1 v2) (app w1' w2) := by
   cc
 
-example (n1 n2 n3 : Nat) (v1 w1 v : Vector Nat n1) (w1' : Vector Nat n3) (v2 w2 w : Vector Nat n2) :
+example (n1 n2 n3 : Nat)
+    (v1 w1 v : List.Vector Nat n1) (w1' : List.Vector Nat n3) (v2 w2 w : List.Vector Nat n2) :
     HEq n1 n3 → v1 = w1 → HEq w1 w1' → HEq v2 w2 → HEq (app w1' w2) (app v w) →
       app v1 v2 = app v w := by
   cc
@@ -588,3 +592,12 @@ example : "Miyahara Kō" = "Miyahara Kō" := by
   cc
 
 end lit
+
+section CCPanic
+
+example (n k : ℤ) (hnk : n = 2 * k + 1)
+    (hk : (2 * k + 1) * (2 * k + 1 + 1) = 2 * ((2 * k + 1) * (k + 1))) :
+    n * (n + 1) = 2 * ((2 * k + 1) * (k + 1)) := by
+  cc
+
+end CCPanic

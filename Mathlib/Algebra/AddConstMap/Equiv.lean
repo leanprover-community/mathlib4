@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.AddConstMap.Basic
 import Mathlib.GroupTheory.Perm.Basic
+
 /-!
 # Equivalences conjugating `(· + a)` to `(· + b)`
 
@@ -13,6 +14,8 @@ to be the type of equivalences such that `∀ x, f (x + a) = f x + b`.
 
 We also define the corresponding typeclass and prove some basic properties.
 -/
+
+assert_not_exists Finset
 
 open Function
 open scoped AddConstMap

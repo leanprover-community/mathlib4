@@ -156,28 +156,28 @@ the product of the homomorphism monoids."]
 def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → Type*)
     [(i : ι) → CommMonoid (M i)] (M' : Type*) [CommMonoid M'] :
     (((i : ι) → M i) →* M') ≃* ((i : ι) → (M i →* M')) where
-      toFun φ i := φ.comp <| MonoidHom.mulSingle M i
-      invFun φ := ∏ (i : ι), (φ i).comp (Pi.evalMonoidHom M i)
-      left_inv φ := by
-        ext
-        simp only [MonoidHom.finset_prod_apply, MonoidHom.coe_comp, Function.comp_apply,
-          evalMonoidHom_apply, MonoidHom.mulSingle_apply, ← map_prod]
-        refine congrArg _ <| funext fun _ ↦ ?_
-        rw [Fintype.prod_apply]
-        exact Fintype.prod_pi_mulSingle ..
-      right_inv φ := by
-        ext i m
-        simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.mulSingle_apply,
-          MonoidHom.finset_prod_apply, evalMonoidHom_apply, ]
-        let φ' i : M i → M' := ⇑(φ i)
-        conv =>
-          enter [1, 2, j]
-          rw [show φ j = φ' j from rfl, Pi.apply_mulSingle φ' (fun i ↦ map_one (φ i))]
-        rw [show φ' i = φ i from rfl]
-        exact Fintype.prod_pi_mulSingle' ..
-      map_mul' φ ψ := by
-        ext
-        simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.mulSingle_apply,
-          MonoidHom.mul_apply, mul_apply]
+  toFun φ i := φ.comp <| MonoidHom.mulSingle M i
+  invFun φ := ∏ (i : ι), (φ i).comp (Pi.evalMonoidHom M i)
+  left_inv φ := by
+    ext
+    simp only [MonoidHom.finset_prod_apply, MonoidHom.coe_comp, Function.comp_apply,
+      evalMonoidHom_apply, MonoidHom.mulSingle_apply, ← map_prod]
+    refine congrArg _ <| funext fun _ ↦ ?_
+    rw [Fintype.prod_apply]
+    exact Fintype.prod_pi_mulSingle ..
+  right_inv φ := by
+    ext i m
+    simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.mulSingle_apply,
+      MonoidHom.finset_prod_apply, evalMonoidHom_apply, ]
+    let φ' i : M i → M' := ⇑(φ i)
+    conv =>
+      enter [1, 2, j]
+      rw [show φ j = φ' j from rfl, Pi.apply_mulSingle φ' (fun i ↦ map_one (φ i))]
+    rw [show φ' i = φ i from rfl]
+    exact Fintype.prod_pi_mulSingle' ..
+  map_mul' φ ψ := by
+    ext
+    simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.mulSingle_apply,
+      MonoidHom.mul_apply, mul_apply]
 
 end MulEquiv

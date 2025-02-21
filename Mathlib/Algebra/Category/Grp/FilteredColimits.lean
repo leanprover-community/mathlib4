@@ -95,11 +95,9 @@ noncomputable instance colimitGroup : Group (G.{v, u} F) :=
     inv_mul_cancel := fun x => by
       refine Quot.inductionOn x ?_; clear x; intro x
       obtain ⟨j, x⟩ := x
-      erw [colimit_inv_mk_eq,
-        colimit_mul_mk_eq (F ⋙ forget₂ Grp MonCat.{max v u}) ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j),
-        colimit_one_eq (F ⋙ forget₂ Grp MonCat.{max v u}) j]
-      dsimp
-      erw [CategoryTheory.Functor.map_id, inv_mul_cancel] }
+      erw [colimit_inv_mk_eq]
+      erw [colimit_mul_mk_eq (F ⋙ forget₂ Grp MonCat.{max v u}) ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j)]
+      simp [colimit_one_eq (F ⋙ forget₂ Grp MonCat.{max v u}) j] }
 
 /-- The bundled group giving the filtered colimit of a diagram. -/
 @[to_additive "The bundled additive group giving the filtered colimit of a diagram."]
@@ -128,18 +126,18 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
       ((forget Grp).mapCocone t) _
         fun j => funext fun x => DFunLike.congr_fun (h j) x
 
-@[to_additive forget₂AddMonPreservesFilteredColimits]
-noncomputable instance forget₂MonPreservesFilteredColimits :
+@[to_additive forget₂AddMon_preservesFilteredColimits]
+noncomputable instance forget₂Mon_preservesFilteredColimits :
     PreservesFilteredColimits.{u} (forget₂ Grp.{u} MonCat.{u}) where
       preserves_filtered_colimits x hx1 _ :=
       letI : Category.{u, u} x := hx1
-      ⟨fun {F} => preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit.{u, u} F)
+      ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (MonCat.FilteredColimits.colimitCoconeIsColimit.{u, u} _)⟩
 
 @[to_additive]
-noncomputable instance forgetPreservesFilteredColimits :
+noncomputable instance forget_preservesFilteredColimits :
     PreservesFilteredColimits (forget Grp.{u}) :=
-  Limits.compPreservesFilteredColimits (forget₂ Grp MonCat) (forget MonCat.{u})
+  Limits.comp_preservesFilteredColimits (forget₂ Grp MonCat) (forget MonCat.{u})
 
 end
 
@@ -198,19 +196,19 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
         ((forget CommGrp).mapCocone t) _ fun j => funext fun x => DFunLike.congr_fun (h j) x
 
 @[to_additive]
-noncomputable instance forget₂GroupPreservesFilteredColimits :
+noncomputable instance forget₂Group_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ CommGrp Grp.{u}) where
   preserves_filtered_colimits J hJ1 _ :=
     letI : Category J := hJ1
     { preservesColimit := fun {F} =>
-        preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit.{u, u} F)
+        preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (Grp.FilteredColimits.colimitCoconeIsColimit.{u, u}
             (F ⋙ forget₂ CommGrp Grp.{u})) }
 
 @[to_additive]
-noncomputable instance forgetPreservesFilteredColimits :
+noncomputable instance forget_preservesFilteredColimits :
     PreservesFilteredColimits (forget CommGrp.{u}) :=
-  Limits.compPreservesFilteredColimits (forget₂ CommGrp Grp) (forget Grp.{u})
+  Limits.comp_preservesFilteredColimits (forget₂ CommGrp Grp) (forget Grp.{u})
 
 end
 

@@ -3,7 +3,7 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Logic.Nontrivial.Basic
 
@@ -17,8 +17,7 @@ This file defines instances for group, monoid, semigroup and related structures 
 We also provide `MulEquiv.ulift : ULift R ≃* R` (and its additive analogue).
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 universe u v
 
@@ -112,10 +111,9 @@ instance instIntCast [IntCast α] : IntCast (ULift α) := ⟨(up ·)⟩
 theorem up_natCast [NatCast α] (n : ℕ) : up (n : α) = n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem up_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
-    up (no_index (OfNat.ofNat n : α)) = OfNat.ofNat n :=
+    up (ofNat(n) : α) = ofNat(n) :=
   rfl
 
 @[simp, norm_cast]
@@ -126,10 +124,9 @@ theorem up_intCast [IntCast α] (n : ℤ) : up (n : α) = n :=
 theorem down_natCast [NatCast α] (n : ℕ) : down (n : ULift α) = n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem down_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
-    down (no_index (OfNat.ofNat n : ULift α)) = OfNat.ofNat n :=
+    down (ofNat(n) : ULift α) = ofNat(n) :=
   rfl
 
 @[simp, norm_cast]

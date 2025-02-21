@@ -19,12 +19,12 @@ This file provides lemmas about the interaction between infinite sums and multip
 
 open Filter Finset Function
 
-variable {ι κ R α : Type*}
+variable {ι κ α : Type*}
 
 section NonUnitalNonAssocSemiring
 
-variable [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [TopologicalSemiring α] {f g : ι → α}
-  {a a₁ a₂ : α}
+variable [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [TopologicalSemiring α] {f : ι → α}
+  {a₁ : α}
 
 theorem HasSum.mul_left (a₂) (h : HasSum f a₁) : HasSum (fun i ↦ a₂ * f i) (a₂ * a₁) := by
   simpa only using h.map (AddMonoidHom.mulLeft a₂) (continuous_const.mul continuous_id)
@@ -63,8 +63,7 @@ end NonUnitalNonAssocSemiring
 
 section DivisionSemiring
 
-variable [DivisionSemiring α] [TopologicalSpace α] [TopologicalSemiring α] {f g : ι → α}
-  {a a₁ a₂ : α}
+variable [DivisionSemiring α] [TopologicalSpace α] [TopologicalSemiring α] {f : ι → α} {a a₁ a₂ : α}
 
 theorem HasSum.div_const (h : HasSum f a) (b : α) : HasSum (fun i ↦ f i / b) (a / b) := by
   simp only [div_eq_mul_inv, h.mul_right b⁻¹]

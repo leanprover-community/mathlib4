@@ -93,17 +93,17 @@ protected lemma LocallyLipschitz.locallyLipschitzOn (h : LocallyLipschitz f) :
     LocallyLipschitzOn s f := (locallyLipschitzOn_univ.2 h).mono s.subset_univ
 
 theorem lipschitzOnWith_iff_restrict : LipschitzOnWith K f s ↔ LipschitzWith K (s.restrict f) := by
-  simp only [LipschitzOnWith, LipschitzWith, SetCoe.forall', restrict, Subtype.edist_eq]
+  simp [LipschitzOnWith, LipschitzWith]
 
 lemma lipschitzOnWith_restrict {t : Set s} :
     LipschitzOnWith K (s.restrict f) t ↔ LipschitzOnWith K f (s ∩ Subtype.val '' t) := by
-  simp only [LipschitzOnWith, LipschitzWith, Subtype.forall, restrict, Subtype.edist_eq]; aesop
+  simp [LipschitzOnWith, LipschitzWith]
 
 lemma locallyLipschitzOn_iff_restrict :
     LocallyLipschitzOn s f ↔ LocallyLipschitz (s.restrict f) := by
-  simp only [LocallyLipschitzOn, LocallyLipschitz, SetCoe.forall', restrict, Subtype.edist_eq,
-    ← lipschitzOnWith_iff_restrict, lipschitzOnWith_restrict, nhds_subtype_eq_comap_nhdsWithin,
-    mem_comap]
+  simp only [LocallyLipschitzOn, LocallyLipschitz, SetCoe.forall', restrict_apply,
+    Subtype.edist_mk_mk, ← lipschitzOnWith_iff_restrict, lipschitzOnWith_restrict,
+    nhds_subtype_eq_comap_nhdsWithin, mem_comap]
   congr! with x K
   constructor
   · rintro ⟨t, ht, hft⟩
@@ -320,7 +320,7 @@ protected theorem prod {g : α → γ} {Kf Kg : ℝ≥0} (hf : LipschitzOnWith K
 theorem ediam_image2_le (f : α → β → γ) {K₁ K₂ : ℝ≥0} (s : Set α) (t : Set β)
     (hf₁ : ∀ b ∈ t, LipschitzOnWith K₁ (f · b) s) (hf₂ : ∀ a ∈ s, LipschitzOnWith K₂ (f a) t) :
     EMetric.diam (Set.image2 f s t) ≤ ↑K₁ * EMetric.diam s + ↑K₂ * EMetric.diam t := by
-  simp only [EMetric.diam_le_iff, forall_image2_iff]
+  simp only [EMetric.diam_le_iff, forall_mem_image2]
   intro a₁ ha₁ b₁ hb₁ a₂ ha₂ b₂ hb₂
   refine (edist_triangle _ (f a₂ b₁) _).trans ?_
   exact

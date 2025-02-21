@@ -11,7 +11,7 @@ import Mathlib.MeasureTheory.Measure.Haar.Unique
 # Ergodicity from minimality
 
 In this file we prove that the left shift `(a * ·)` on a compact topological group `G`
-is ergodic with respect to the Haar measure if and only if its minimal,
+is ergodic with respect to the Haar measure if and only if it is minimal,
 i.e., the powers `a ^ n` are dense in `G`.
 
 The proof of the more difficult "if minimal, then ergodic" implication

@@ -449,7 +449,7 @@ instance FiberFunctor.isPretransitive_of_isConnected (X : C) [IsConnected X] :
     MulAction.IsPretransitive (Aut F) (F.obj X) where
   exists_smul_eq x y := by
     let F' : C ⥤ FintypeCat.{u₂} := F ⋙ FintypeCat.uSwitch.{w, u₂}
-    letI : FiberFunctor F' := FiberFunctor.compRight _
+    letI : FiberFunctor F' := FiberFunctor.comp_right _
     let e (Y : C) : F'.obj Y ≃ F.obj Y := (F.obj Y).uSwitchEquiv
     set x' : F'.obj X := (e X).symm x with hx'
     set y' : F'.obj X := (e X).symm y with hy'

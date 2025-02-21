@@ -11,6 +11,7 @@ import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.LinearMap.End
 import Mathlib.Algebra.Module.Pi
+import Mathlib.Algebra.Module.Prod
 
 /-!
 # Further results on (semi)linear equivalences.
@@ -18,11 +19,8 @@ import Mathlib.Algebra.Module.Pi
 
 open Function
 
-universe u u' v w x y z
-
-variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
-variable {k : Type*} {K : Type*} {S : Type*} {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
-variable {N₁ : Type*} {N₂ : Type*} {N₃ : Type*} {N₄ : Type*} {ι : Type*}
+variable {R : Type*} {R₂ : Type*}
+variable {K : Type*} {S : Type*} {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
 
 section AddCommMonoid
 
@@ -51,7 +49,7 @@ def restrictScalars (f : M ≃ₗ[S] M₂) : M ≃ₗ[R] M₂ :=
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (M ≃ₗ[S] M₂) → M ≃ₗ[R] M₂) := fun _ _ h ↦
-  ext (LinearEquiv.congr_fun h : _)
+  ext (LinearEquiv.congr_fun h :)
 
 @[simp]
 theorem restrictScalars_inj (f g : M ≃ₗ[S] M₂) :
@@ -98,6 +96,8 @@ lemma coe_toLinearMap_mul {e₁ e₂ : M ≃ₗ[R] M} :
 theorem coe_pow (e : M ≃ₗ[R] M) (n : ℕ) : ⇑(e ^ n) = e^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
 theorem pow_apply (e : M ≃ₗ[R] M) (n : ℕ) (m : M) : (e ^ n) m = e^[n] m := congr_fun (coe_pow e n) m
+
+@[simp] lemma mul_apply (f : M ≃ₗ[R] M) (g : M ≃ₗ[R] M) (x : M) : (f * g) x = f (g x) := rfl
 
 /-- Restriction from `R`-linear automorphisms of `M` to `R`-linear endomorphisms of `M`,
 promoted to a monoid hom. -/
@@ -593,8 +593,7 @@ end CommSemiring
 
 section Field
 
-variable [Field K] [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
-variable [Module K M] [Module K M₂] [Module K M₃]
+variable [Field K] [AddCommGroup M] [Module K M]
 variable (K) (M)
 
 open LinearMap
@@ -699,5 +698,37 @@ theorem funCongrLeft_symm (e : m ≃ n) : (funCongrLeft R M e).symm = funCongrLe
 end LinearEquiv
 
 end FunLeft
+
+section Pi
+
+namespace LinearEquiv
+
+/-- The product over `S ⊕ T` of a family of modules is isomorphic to the product of
+(the product over `S`) and (the product over `T`).
+
+This is `Equiv.sumPiEquivProdPi` as a `LinearEquiv`.
+-/
+def sumPiEquivProdPi (R : Type*) [Semiring R] (S T : Type*) (A : S ⊕ T → Type*)
+    [∀ st, AddCommMonoid (A st)] [∀ st, Module R (A st)] :
+    (Π (st : S ⊕ T), A st) ≃ₗ[R] (Π (s : S), A (.inl s)) × (Π (t : T), A (.inr t)) where
+  __ := Equiv.sumPiEquivProdPi _
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+/-- The product `Π t : α, f t` of a family of modules is linearly isomorphic to the module
+`f ⬝` when `α` only contains `⬝`.
+
+This is `Equiv.piUnique` as a `LinearEquiv`.
+-/
+@[simps (config := .asFn)]
+def piUnique {α : Type*} [Unique α] (R : Type*) [Semiring R] (f : α → Type*)
+    [∀ x, AddCommMonoid (f x)] [∀ x, Module R (f x)] : (Π t : α, f t) ≃ₗ[R] f default where
+  __ := Equiv.piUnique _
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+end LinearEquiv
+
+end Pi
 
 end AddCommMonoid

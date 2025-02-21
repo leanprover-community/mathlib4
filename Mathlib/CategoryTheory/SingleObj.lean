@@ -205,11 +205,11 @@ def toSingleObjEquiv (e : M ≃* N) : SingleObj M ≌ SingleObj N where
   unitIso := eqToIso (by
     rw [← MonoidHom.comp_toFunctor, ← MonoidHom.id_toFunctor]
     congr 1
-    aesop_cat)
+    simp)
   counitIso := eqToIso (by
     rw [← MonoidHom.comp_toFunctor, ← MonoidHom.id_toFunctor]
     congr 1
-    aesop_cat)
+    simp)
 
 end MulEquiv
 

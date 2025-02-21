@@ -98,15 +98,16 @@ instance (priority := 75) toHasIntCast : IntCast s :=
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a ring inherits a ring structure -/
 instance (priority := 75) toRing : Ring s :=
-  Subtype.coe_injective.ring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
+  Subtype.coe_injective.ring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a `CommRing` is a `CommRing`. -/
 instance (priority := 75) toCommRing {R} [CommRing R] [SetLike S R] [SubringClass S R] :
     CommRing s :=
-  Subtype.coe_injective.commRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+  Subtype.coe_injective.commRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ => rfl) fun _ => rfl
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a domain is a domain. -/
@@ -165,6 +166,9 @@ instance : SubringClass (Subring R) R where
 
 initialize_simps_projections Subring (carrier → coe, as_prefix coe)
 
+/-- Turn a `Subring` into a `NonUnitalSubring` by forgetting that it contains `1`. -/
+def toNonUnitalSubring (S : Subring R) : NonUnitalSubring R where __ := S
+
 @[simp]
 theorem mem_toSubsemiring {s : Subring R} {x : R} : x ∈ s.toSubsemiring ↔ x ∈ s := Iff.rfl
 
@@ -180,6 +184,8 @@ theorem mem_mk {S : Subsemiring R} {x : R} (h) : x ∈ (⟨S, h⟩ : Subring R) 
 theorem mk_le_mk {S S' : Subsemiring R} (h₁ h₂) :
     (⟨S, h₁⟩ : Subring R) ≤ (⟨S', h₂⟩ : Subring R) ↔ S ≤ S' :=
   Iff.rfl
+
+lemma one_mem_toNonUnitalSubring (S : Subring R) : 1 ∈ S.toNonUnitalSubring := S.one_mem
 
 /-- Two subrings are equal if they have the same elements. -/
 @[ext]
@@ -198,13 +204,13 @@ theorem copy_eq (S : Subring R) (s : Set R) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
 
 theorem toSubsemiring_injective : Function.Injective (toSubsemiring : Subring R → Subsemiring R)
-  | _, _, h => ext (SetLike.ext_iff.mp h : _)
+  | _, _, h => ext (SetLike.ext_iff.mp h :)
 
 theorem toAddSubgroup_injective : Function.Injective (toAddSubgroup : Subring R → AddSubgroup R)
-  | _, _, h => ext (SetLike.ext_iff.mp h : _)
+  | _, _, h => ext (SetLike.ext_iff.mp h :)
 
 theorem toSubmonoid_injective : Function.Injective (fun s : Subring R => s.toSubmonoid)
-  | _, _, h => ext (SetLike.ext_iff.mp h : _)
+  | _, _, h => ext (SetLike.ext_iff.mp h :)
 
 /-- Construct a `Subring R` from a set `s`, a submonoid `sm`, and an additive
 subgroup `sa` such that `x ∈ s ↔ x ∈ sm ↔ x ∈ sa`. -/
@@ -340,7 +346,9 @@ theorem coe_intCast : ∀ n : ℤ, ((n : s) : R) = n :=
 theorem coe_toSubsemiring (s : Subring R) : (s.toSubsemiring : Set R) = s :=
   rfl
 
-@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
+-- Porting note: https://github.com/leanprover-community/mathlib4/issues/10675
+-- dsimp cannot prove this
+@[simp, nolint simpNF]
 theorem mem_toSubmonoid {s : Subring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl
 
@@ -348,7 +356,9 @@ theorem mem_toSubmonoid {s : Subring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ 
 theorem coe_toSubmonoid (s : Subring R) : (s.toSubmonoid : Set R) = s :=
   rfl
 
-@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
+-- Porting note: https://github.com/leanprover-community/mathlib4/issues/10675
+-- dsimp cannot prove this
+@[simp, nolint simpNF]
 theorem mem_toAddSubgroup {s : Subring R} {x : R} : x ∈ s.toAddSubgroup ↔ x ∈ s :=
   Iff.rfl
 
@@ -357,6 +367,17 @@ theorem coe_toAddSubgroup (s : Subring R) : (s.toAddSubgroup : Set R) = s :=
   rfl
 
 end Subring
+
+/-- Turn a non-unital subring containing `1` into a subring. -/
+def NonUnitalSubring.toSubring (S : NonUnitalSubring R) (h1 : (1 : R) ∈ S) : Subring R where
+  __ := S
+  one_mem' := h1
+
+lemma Subring.toNonUnitalSubring_toSubring (S : Subring R) :
+    S.toNonUnitalSubring.toSubring S.one_mem = S := by cases S; rfl
+
+lemma NonUnitalSubring.toSubring_toNonUnitalSubring (S : NonUnitalSubring R) (h1 : (1 : R) ∈ S) :
+    (NonUnitalSubring.toSubring S h1).toNonUnitalSubring = S := by cases S; rfl
 
 theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
     (k : R) * g ∈ G := by

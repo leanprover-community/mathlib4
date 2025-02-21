@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 
+import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.FieldTheory.Normal
 import Mathlib.Order.Closure
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
@@ -100,7 +101,7 @@ lemma isNormalClosure_normalClosure : IsNormalClosure F K (normalClosure F K L) 
     exact fun x ↦ splits_of_splits (splits x) ((IntermediateField.subset_adjoin F _).trans <|
       SetLike.coe_subset_coe.mpr <| by apply le_iSup _ x)
   simp_rw [normalClosure, ← top_le_iff]
-  refine fun x _ ↦ (IntermediateField.val _).injective.mem_set_image.mp ?_
+  refine fun x _ ↦ ((⨆ f : K →ₐ[F] L, f.fieldRange).val).injective.mem_set_image |>.mp ?_
   rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, coe_val, ← IntermediateField.coe_val,
     ← IntermediateField.coe_map, IntermediateField.map_iSup]
   refine (iSup_le fun f ↦ ?_ : normalClosure F K L ≤ _) x.2

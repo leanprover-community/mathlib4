@@ -61,7 +61,7 @@ open CategoryTheory CategoryTheory.ActionCategory CategoryTheory.SingleObj Quive
 /-- `IsFreeGroupoid.Generators G` is a type synonym for `G`. We think of this as
 the vertices of the generating quiver of `G` when `G` is free. We can't use `G` directly,
 since `G` already has a quiver instance from being a groupoid. -/
--- Porting note(#5171): @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): @[nolint has_nonempty_instance]
 @[nolint unusedArguments]
 def IsFreeGroupoid.Generators (G) [Groupoid G] :=
   G
@@ -159,7 +159,7 @@ variable {G : Type u} [Groupoid.{u} G] [IsFreeGroupoid G]
 private def root' : G :=
   show T from root T
 
--- this has to be marked noncomputable, see issue #451.
+-- this has to be marked noncomputable, see issue https://github.com/leanprover-community/mathlib4/pull/451.
 -- It might be nicer to define this in terms of `composePath`
 /-- A path in the tree gives a hom, by composition. -/
 -- Porting note: removed noncomputable. This is already declared at the beginning of the section.

@@ -77,9 +77,7 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
     simp only [ENNReal.toReal_ofNat, ENNReal.one_toReal, ENNReal.rpow_two, Ne]
     exact ENNReal.rpow_lt_top_of_nonneg (by linarith) h.ne
   refine hX ?_
-  -- Porting note: `μ[X]` without whitespace is ambiguous as it could be GetElem,
-  -- and `convert` cannot disambiguate based on typeclass inference failure.
-  convert this.add (memℒp_const <| μ [X])
+  convert this.add (memℒp_const μ[X])
   ext ω
   rw [Pi.add_apply, sub_add_cancel]
 
@@ -120,9 +118,7 @@ theorem _root_.MeasureTheory.Memℒp.variance_eq [IsFiniteMeasure μ] (hX : Mem�
   rw [variance, evariance_eq_lintegral_ofReal, ← ofReal_integral_eq_lintegral_ofReal,
     ENNReal.toReal_ofReal (by positivity)]
   · rfl
-  · -- Porting note: `μ[X]` without whitespace is ambiguous as it could be GetElem,
-    -- and `convert` cannot disambiguate based on typeclass inference failure.
-    convert (hX.sub <| memℒp_const (μ [X])).integrable_norm_rpow two_ne_zero ENNReal.two_ne_top
+  · convert (hX.sub <| memℒp_const μ[X]).integrable_norm_rpow two_ne_zero ENNReal.two_ne_top
       with ω
     simp only [Pi.sub_apply, Real.norm_eq_abs, ENNReal.toReal_ofNat, ENNReal.one_toReal,
       Real.rpow_two, sq_abs, abs_pow]

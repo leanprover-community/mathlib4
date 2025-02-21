@@ -30,6 +30,7 @@ building blocks for other homomorphisms:
 
 * `→+`: Bundled `AddMonoid` homs. Also use for `AddGroup` homs.
 * `→*`: Bundled `Monoid` homs. Also use for `Group` homs.
+* `→ₙ+`: Bundled `AddSemigroup` homs.
 * `→ₙ*`: Bundled `Semigroup` homs.
 
 ## Implementation notes
@@ -95,7 +96,9 @@ end Zero
 
 section Add
 
-/-- `AddHom M N` is the type of functions `M → N` that preserve addition.
+/-- `M →ₙ+ N` is the type of functions `M → N` that preserve addition. The `ₙ` in the notation
+stands for "non-unital" because it is intended to match the notation for `NonUnitalAlgHom` and
+`NonUnitalRingHom`, so a `AddHom` is a non-unital additive monoid hom.
 
 When possible, instead of parametrizing results over `(f : AddHom M N)`,
 you should parametrize over `(F : Type*) [AddHomClass F M N] (f : F)`.
@@ -107,6 +110,9 @@ structure AddHom (M : Type*) (N : Type*) [Add M] [Add N] where
   protected toFun : M → N
   /-- The proposition that the function preserves addition -/
   protected map_add' : ∀ x y, toFun (x + y) = toFun x + toFun y
+
+/-- `M →ₙ+ N` denotes the type of addition-preserving maps from `M` to `N`. -/
+infixr:25 " →ₙ+ " => AddHom
 
 /-- `AddHomClass F M N` states that `F` is a type of addition-preserving homomorphisms.
 You should declare an instance of this typeclass when you extend `AddHom`.
@@ -342,9 +348,6 @@ When you extend this structure, make sure to extend `MonoidHomClass`.
 @[to_additive]
 structure MonoidHom (M : Type*) (N : Type*) [MulOneClass M] [MulOneClass N] extends
   OneHom M N, M →ₙ* N
--- Porting note: remove once `to_additive` is updated
--- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
-attribute [to_additive existing] MonoidHom.toMulHom
 
 attribute [nolint docBlame] MonoidHom.toMulHom
 attribute [nolint docBlame] MonoidHom.toOneHom
@@ -843,6 +846,37 @@ protected theorem MonoidHom.map_zpow' [DivInvMonoid M] [DivInvMonoid N] (f : M �
     (hf : ∀ x, f x⁻¹ = (f x)⁻¹) (a : M) (n : ℤ) :
     f (a ^ n) = f a ^ n := map_zpow' f hf a n
 
+/-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/
+@[to_additive (attr := simps)
+  "Make a `ZeroHom` inverse from the bijective inverse of a `ZeroHom`"]
+def OneHom.inverse [One M] [One N]
+    (f : OneHom M N) (g : N → M)
+    (h₁ : Function.LeftInverse g f) :
+  OneHom N M :=
+  { toFun := g,
+    map_one' := by rw [← f.map_one, h₁] }
+
+/-- Makes a multiplicative inverse from a bijection which preserves multiplication. -/
+@[to_additive (attr := simps)
+  "Makes an additive inverse from a bijection which preserves addition."]
+def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M)
+    (h₁ : Function.LeftInverse g f)
+    (h₂ : Function.RightInverse g f) : N →ₙ* M where
+  toFun := g
+  map_mul' x y :=
+    calc
+      g (x * y) = g (f (g x) * f (g y)) := by rw [h₂ x, h₂ y]
+      _ = g (f (g x * g y)) := by rw [f.map_mul]
+      _ = g x * g y := h₁ _
+
+/-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
+@[to_additive (attr := simps)
+  "The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`."]
+def MonoidHom.inverse {A B : Type*} [Monoid A] [Monoid B] (f : A →* B) (g : B → A)
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →* A :=
+  { (f : OneHom A B).inverse g h₁,
+    (f : A →ₙ* B).inverse g h₁ h₂ with toFun := g }
+
 section End
 
 namespace Monoid
@@ -850,17 +884,23 @@ namespace Monoid
 variable (M) [MulOneClass M]
 
 /-- The monoid of endomorphisms. -/
+@[to_additive "The monoid of endomorphisms.", to_additive_dont_translate]
 protected def End := M →* M
 
 namespace End
 
+@[to_additive]
 instance instFunLike : FunLike (Monoid.End M) M M := MonoidHom.instFunLike
+@[to_additive]
 instance instMonoidHomClass : MonoidHomClass (Monoid.End M) M M := MonoidHom.instMonoidHomClass
 
+@[to_additive instOne]
 instance instOne : One (Monoid.End M) where one := .id _
+@[to_additive instMul]
 instance instMul : Mul (Monoid.End M) where mul := .comp
 
-instance : Monoid (Monoid.End M) where
+@[to_additive instMonoid]
+instance instMonoid : Monoid (Monoid.End M) where
   mul := MonoidHom.comp
   one := MonoidHom.id M
   mul_assoc _ _ _ := MonoidHom.comp_assoc _ _ _
@@ -869,53 +909,24 @@ instance : Monoid (Monoid.End M) where
   npow n f := (npowRec n f).copy f^[n] <| by induction n <;> simp [npowRec, *] <;> rfl
   npow_succ _ _ := DFunLike.coe_injective <| Function.iterate_succ _ _
 
+@[to_additive]
 instance : Inhabited (Monoid.End M) := ⟨1⟩
 
-@[simp, norm_cast] lemma coe_pow (f : Monoid.End M) (n : ℕ) : (↑(f ^ n) : M → M) = f^[n] := rfl
+@[to_additive (attr := simp, norm_cast) coe_pow]
+lemma coe_pow (f : Monoid.End M) (n : ℕ) : (↑(f ^ n) : M → M) = f^[n] := rfl
 
-end End
-
-@[simp]
+@[to_additive (attr := simp) coe_one]
 theorem coe_one : ((1 : Monoid.End M) : M → M) = id := rfl
 
-@[simp]
+@[to_additive (attr := simp) coe_mul]
 theorem coe_mul (f g) : ((f * g : Monoid.End M) : M → M) = f ∘ g := rfl
 
-end Monoid
-
-namespace AddMonoid
-
-variable (A : Type*) [AddZeroClass A]
-
-/-- The monoid of endomorphisms. -/
-protected def End := A →+ A
-
-namespace End
-
-instance instFunLike : FunLike (AddMonoid.End A) A A := AddMonoidHom.instFunLike
-instance instAddMonoidHomClass : AddMonoidHomClass (AddMonoid.End A) A A :=
-  AddMonoidHom.instAddMonoidHomClass
-
-instance instOne : One (AddMonoid.End A) where one := .id _
-instance instMul : Mul (AddMonoid.End A) where mul := .comp
-
-@[simp, norm_cast] lemma coe_one : ((1 : AddMonoid.End A) : A → A) = id := rfl
-
-@[simp, norm_cast] lemma coe_mul (f g : AddMonoid.End A) : (f * g : A → A) = f ∘ g := rfl
-
-instance monoid : Monoid (AddMonoid.End A) where
-  mul_assoc _ _ _ := AddMonoidHom.comp_assoc _ _ _
-  mul_one := AddMonoidHom.comp_id
-  one_mul := AddMonoidHom.id_comp
-  npow n f := (npowRec n f).copy (Nat.iterate f n) <| by induction n <;> simp [npowRec, *] <;> rfl
-  npow_succ _ _ := DFunLike.coe_injective <| Function.iterate_succ _ _
-
-@[simp, norm_cast] lemma coe_pow (f : AddMonoid.End A) (n : ℕ) : (↑(f ^ n) : A → A) = f^[n] := rfl
-
-instance : Inhabited (AddMonoid.End A) := ⟨1⟩
-
 end End
-end AddMonoid
+
+@[deprecated (since := "2024-11-20")] protected alias coe_one := End.coe_one
+@[deprecated (since := "2024-11-20")] protected alias coe_mul := End.coe_mul
+
+end Monoid
 
 end End
 

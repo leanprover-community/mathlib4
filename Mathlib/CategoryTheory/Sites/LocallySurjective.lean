@@ -33,9 +33,9 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
 
-variable {A : Type u'} [Category.{v'} A] [ConcreteCategory.{w'} A]
+variable {A : Type u'} [Category.{v'} A] [HasForget.{w'} A]
 
 namespace Presheaf
 
@@ -295,7 +295,7 @@ instance isLocallySurjective_toSheafify (P : Cᵒᵖ ⥤ Type max u v) :
   infer_instance
 
 instance isLocallySurjective_toSheafify' {D : Type*} [Category D]
-    [ConcreteCategory.{max u v} D]
+    [HasForget.{max u v} D]
     (P : Cᵒᵖ ⥤ D) [HasWeakSheafify J D] [J.HasSheafCompose (forget D)]
     [J.PreservesSheafification (forget D)] :
     IsLocallySurjective J (toSheafify J P) := by

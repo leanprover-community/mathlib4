@@ -70,7 +70,7 @@ namespace mapFun
 theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) := by
   intros _ _ h
   ext p
-  exact hf (congr_arg (fun x => coeff x p) h : _)
+  exact hf (congr_arg (fun x => coeff x p) h :)
 
 theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 𝕎 α → 𝕎 β) := fun x =>
   ⟨mk _ fun n => Classical.choose <| hf <| x.coeff n,

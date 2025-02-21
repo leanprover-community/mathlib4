@@ -18,7 +18,7 @@ spaces. It consists of the data of a topological space, satisfying the additiona
 being compact and Hausdorff, and satisfying `P`. We give a category structure to `CompHausLike P`
 induced by the forgetful functor to topological spaces.
 
-It used to be the case (before #12930 was merged) that several different categories of compact
+It used to be the case (before https://github.com/leanprover-community/mathlib4/pull/12930 was merged) that several different categories of compact
 Hausdorff spaces, possibly satisfying some extra property, were defined from scratch in this way.
 For example, one would define a structure `CompHaus` as follows:
 
@@ -64,7 +64,7 @@ universe u
 
 open CategoryTheory
 
-attribute [local instance] ConcreteCategory.instFunLike
+attribute [local instance] HasForget.instFunLike
 
 variable (P : TopCat.{u} → Prop)
 
@@ -89,8 +89,8 @@ instance : CoeSort (CompHausLike P) (Type u) :=
 instance category : Category (CompHausLike P) :=
   InducedCategory.category toTop
 
-instance concreteCategory : ConcreteCategory (CompHausLike P) :=
-  InducedCategory.concreteCategory _
+instance hasForget : HasForget (CompHausLike P) :=
+  InducedCategory.hasForget _
 
 instance hasForget₂ : HasForget₂ (CompHausLike P) TopCat :=
   InducedCategory.hasForget₂ _
@@ -125,15 +125,15 @@ theorem coe_comp {X Y Z : CompHausLike P} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ((forget (CompHausLike P)).map f ≫ (forget (CompHausLike P)).map g) = g ∘ f :=
   rfl
 
--- Note (#10754): Lean does not see through the forgetful functor here
+-- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
 instance (X : CompHausLike.{u} P) : TopologicalSpace ((forget (CompHausLike P)).obj X) :=
   inferInstanceAs (TopologicalSpace X.toTop)
 
--- Note (#10754): Lean does not see through the forgetful functor here
+-- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
 instance (X : CompHausLike.{u} P) : CompactSpace ((forget (CompHausLike P)).obj X) :=
   inferInstanceAs (CompactSpace X.toTop)
 
--- Note (#10754): Lean does not see through the forgetful functor here
+-- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
 instance (X : CompHausLike.{u} P) : T2Space ((forget (CompHausLike P)).obj X) :=
   inferInstanceAs (T2Space X.toTop)
 

@@ -20,7 +20,7 @@ for all sufficiently large `im z`, then `F` extends to a holomorphic function on
 to zero. These results are important in the theory of modular forms.
 -/
 
-open Complex Filter Asymptotics Function
+open Complex Filter Asymptotics
 
 open scoped Real Topology
 
@@ -29,6 +29,8 @@ noncomputable section
 local notation "I∞" => comap im atTop
 
 variable (h : ℝ)
+
+namespace Function.Periodic
 
 /-- Parameter for q-expansions, `qParam h z = exp (2 * π * I * z / h)` -/
 def qParam (z : ℂ) : ℂ := exp (2 * π * I * z / h)
@@ -65,7 +67,7 @@ theorem qParam_left_inv_mod_period (hh : h ≠ 0) (z : ℂ) :
 
 theorem abs_qParam_lt_iff (hh : 0 < h) (A : ℝ) (z : ℂ) :
     abs (qParam h z) < Real.exp (-2 * π * A / h) ↔ A < im z := by
-  rw [abs_qParam, Real.exp_lt_exp, div_lt_div_right hh, mul_lt_mul_left_of_neg]
+  rw [abs_qParam, Real.exp_lt_exp, div_lt_div_iff_of_pos_right hh, mul_lt_mul_left_of_neg]
   simpa using Real.pi_pos
 
 theorem qParam_tendsto (hh : 0 < h) : Tendsto (qParam h) I∞ (𝓝[≠] 0) := by
@@ -80,7 +82,7 @@ theorem qParam_tendsto (hh : 0 < h) : Tendsto (qParam h) I∞ (𝓝[≠] 0) := b
 theorem invQParam_tendsto (hh : 0 < h) : Tendsto (invQParam h) (𝓝[≠] 0) I∞ := by
   simp only [tendsto_comap_iff, comp_def, im_invQParam]
   apply Tendsto.const_mul_atBot_of_neg (div_neg_of_neg_of_pos (neg_lt_zero.mpr hh) (by positivity))
-  exact Real.tendsto_log_nhdsWithin_zero_right.comp tendsto_norm_nhdsWithin_zero
+  exact Real.tendsto_log_nhdsWithin_zero_right.comp tendsto_norm_nhdsNE_zero
 
 end qParam
 
@@ -94,20 +96,20 @@ def cuspFunction : ℂ → ℂ :=
 
 theorem cuspFunction_eq_of_nonzero {q : ℂ} (hq : q ≠ 0) :
     cuspFunction h f q = f (invQParam h q) :=
-  update_noteq hq ..
+  update_of_ne hq ..
 
 theorem cuspFunction_zero_eq_limUnder_nhds_ne :
     cuspFunction h f 0 = limUnder (𝓝[≠] 0) (cuspFunction h f) := by
-  conv_lhs => simp only [cuspFunction, update_same]
+  conv_lhs => simp only [cuspFunction, update_self]
   refine congr_arg lim (Filter.map_congr <| eventuallyEq_nhdsWithin_of_eqOn fun r hr ↦ ?_)
-  rw [cuspFunction, update_noteq hr]
+  rw [cuspFunction, update_of_ne hr]
 
 variable {f h}
 
 theorem eq_cuspFunction (hh : h ≠ 0) (hf : Periodic f h) (z : ℂ) :
     (cuspFunction h f) (𝕢 h z) = f z := by
   have : (cuspFunction h f) (𝕢 h z) = f (invQParam h (𝕢 h z)) := by
-    rw [cuspFunction, update_noteq, comp_apply]
+    rw [cuspFunction, update_of_ne, comp_apply]
     exact exp_ne_zero _
   obtain ⟨m, hm⟩ := qParam_left_inv_mod_period hh z
   simpa only [this, hm] using hf.int_mul m z
@@ -167,7 +169,7 @@ theorem boundedAtFilter_cuspFunction (hh : 0 < h) (h_bd : BoundedAtFilter I∞ f
 
 theorem cuspFunction_zero_of_zero_at_inf (hh : 0 < h) (h_zer : ZeroAtFilter I∞ f) :
     cuspFunction h f 0 = 0 := by
-  simpa only [cuspFunction, update_same] using (h_zer.comp (invQParam_tendsto hh)).limUnder_eq
+  simpa only [cuspFunction, update_self] using (h_zer.comp (invQParam_tendsto hh)).limUnder_eq
 
 theorem differentiableAt_cuspFunction_zero (hh : 0 < h) (hf : Periodic f h)
     (h_hol : ∀ᶠ z in I∞, DifferentiableAt ℂ f z) (h_bd : BoundedAtFilter I∞ f) :
@@ -214,3 +216,5 @@ theorem exp_decay_of_zero_at_inf (hh : 0 < h) (hf : Periodic f h)
       nhdsWithin_le_nhds
 
 end HoloAtInfC
+
+end Function.Periodic

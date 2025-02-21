@@ -164,9 +164,6 @@ variable [Algebra R S] [IsLocalHom (algebraMap R S)]
 noncomputable instance : Algebra (ResidueField R) (ResidueField S) :=
   (ResidueField.map (algebraMap R S)).toAlgebra
 
-noncomputable instance : Algebra R (ResidueField S) :=
-  ((ResidueField.map <| algebraMap R S).comp <| residue R).toAlgebra
-
 instance : IsScalarTower R (ResidueField R) (ResidueField S) :=
   IsScalarTower.of_algebraMap_eq (congrFun rfl)
 
@@ -176,7 +173,6 @@ instance finiteDimensional_of_noetherian [IsNoetherian R S] :
     isNoetherian_of_tower R (S := ResidueField R) (M := ResidueField S) _
   convert isNoetherian_of_surjective S (Ideal.Quotient.mkₐ R (maximalIdeal S)).toLinearMap
     (LinearMap.range_eq_top.mpr Ideal.Quotient.mk_surjective)
-  exact Algebra.algebra_ext _ _ (fun r => rfl)
 
 -- We want to be able to refer to `hfin`
 set_option linter.unusedVariables false in

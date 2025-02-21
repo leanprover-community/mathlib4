@@ -56,8 +56,7 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
   revert i hi
   induction' q with q hq
   · intro i (hi : n + 1 ≤ i)
-    exfalso
-    linarith [Fin.is_lt i]
+    omega
   · intro i (hi : n + 1 ≤ i + q + 1)
     by_cases h : n + 1 ≤ (i : ℕ) + q
     · rw [P_succ, HomologicalComplex.comp_f, ← assoc, hq i h, zero_comp]

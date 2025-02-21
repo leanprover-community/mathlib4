@@ -58,7 +58,7 @@ protected nonrec theorem ContDiff.inversion (hc : ContDiff ℝ n c) (hR : ContDi
 protected theorem DifferentiableWithinAt.inversion (hc : DifferentiableWithinAt ℝ c s a)
     (hR : DifferentiableWithinAt ℝ R s a) (hx : DifferentiableWithinAt ℝ x s a) (hne : x a ≠ c a) :
     DifferentiableWithinAt ℝ (fun a ↦ inversion (c a) (R a) (x a)) s a :=
-  -- TODO: Use `.div` #5870
+  -- TODO: Use `.div` https://github.com/leanprover-community/mathlib4/issues/5870
   (((hR.mul <| (hx.dist ℝ hc hne).inv (dist_ne_zero.2 hne)).pow _).smul (hx.sub hc)).add hc
 
 protected theorem DifferentiableOn.inversion (hc : DifferentiableOn ℝ c s)

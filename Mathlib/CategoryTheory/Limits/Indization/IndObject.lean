@@ -57,7 +57,7 @@ structure IndObjectPresentation (A : Cᵒᵖ ⥤ Type v) where
   F : I ⥤ C
   /-- Use `IndObjectPresentation.cocone` instead. -/
   ι : F ⋙ yoneda ⟶ (Functor.const I).obj A
-  /-- Use `IndObjectPresenation.coconeIsColimit` instead. -/
+  /-- Use `IndObjectPresentation.coconeIsColimit` instead. -/
   isColimit : IsColimit (Cocone.mk A ι)
 
 namespace IndObjectPresentation

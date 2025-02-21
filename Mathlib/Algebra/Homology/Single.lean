@@ -220,7 +220,7 @@ noncomputable def toSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
     obtain rfl : i = 1 := by simpa using hi.symm
     exact f.2)
   left_inv φ := by aesop_cat
-  right_inv f := by aesop_cat
+  right_inv f := by simp
 
 @[simp]
 lemma toSingle₀Equiv_symm_apply_f_zero {C : ChainComplex V ℕ} {X : V}

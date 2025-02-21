@@ -56,47 +56,47 @@ attribute [local ext] Complex.ext
 
 /- The priority of the following instances has been manually lowered, as when they don't apply
 they lead Lean to a very costly path, and most often they don't apply (most actions on `ℂ` don't
-come from actions on `ℝ`). See #11980-/
+come from actions on `ℝ`). See https://github.com/leanprover-community/mathlib4/pull/11980-/
 
--- priority manually adjusted in #11980
+-- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
 instance (priority := 90) [SMul R ℝ] [SMul S ℝ] [SMulCommClass R S ℝ] : SMulCommClass R S ℂ where
   smul_comm r s x := by ext <;> simp [smul_re, smul_im, smul_comm]
 
--- priority manually adjusted in #11980
+-- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
 instance (priority := 90) [SMul R S] [SMul R ℝ] [SMul S ℝ] [IsScalarTower R S ℝ] :
     IsScalarTower R S ℂ where
   smul_assoc r s x := by ext <;> simp [smul_re, smul_im, smul_assoc]
 
--- priority manually adjusted in #11980
+-- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
 instance (priority := 90) [SMul R ℝ] [SMul Rᵐᵒᵖ ℝ] [IsCentralScalar R ℝ] :
     IsCentralScalar R ℂ where
   op_smul_eq_smul r x := by ext <;> simp [smul_re, smul_im, op_smul_eq_smul]
 
--- priority manually adjusted in #11980
+-- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
 instance (priority := 90) mulAction [Monoid R] [MulAction R ℝ] : MulAction R ℂ where
   one_smul x := by ext <;> simp [smul_re, smul_im, one_smul]
   mul_smul r s x := by ext <;> simp [smul_re, smul_im, mul_smul]
 
--- priority manually adjusted in #11980
+-- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
 instance (priority := 90) distribSMul [DistribSMul R ℝ] : DistribSMul R ℂ where
   smul_add r x y := by ext <;> simp [smul_re, smul_im, smul_add]
   smul_zero r := by ext <;> simp [smul_re, smul_im, smul_zero]
 
--- priority manually adjusted in #11980
+-- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
 instance (priority := 90) [Semiring R] [DistribMulAction R ℝ] : DistribMulAction R ℂ :=
   { Complex.distribSMul, Complex.mulAction with }
 
--- priority manually adjusted in #11980
+-- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
 instance (priority := 100) instModule [Semiring R] [Module R ℝ] : Module R ℂ where
   add_smul r s x := by ext <;> simp [smul_re, smul_im, add_smul]
   zero_smul r := by ext <;> simp [smul_re, smul_im, zero_smul]
 
--- priority manually adjusted in #11980
-instance (priority := 95) instAlgebraOfReal [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ :=
-  { Complex.ofRealHom.comp (algebraMap R ℝ) with
-    smul := (· • ·)
-    smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
-    commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [smul_re, smul_im, Algebra.commutes] }
+-- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
+instance (priority := 95) instAlgebraOfReal [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ where
+  algebraMap := Complex.ofRealHom.comp (algebraMap R ℝ)
+  smul := (· • ·)
+  smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
+  commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [smul_re, smul_im, Algebra.commutes]
 
 instance : StarModule ℝ ℂ :=
   ⟨fun r x => by simp only [star_def, star_trivial, real_smul, map_mul, conj_ofReal]⟩
@@ -167,11 +167,11 @@ instance (priority := 900) Algebra.complexToReal {A : Type*} [Semiring A] [Algeb
   RestrictScalars.algebra ℝ ℂ A
 
 -- try to make sure we're not introducing diamonds but we will need
--- `reducible_and_instances` which currently fails #10906
+-- `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906
 example : Prod.algebra ℝ ℂ ℂ = (Prod.algebra ℂ ℂ ℂ).complexToReal := rfl
 
 -- try to make sure we're not introducing diamonds but we will need
--- `reducible_and_instances` which currently fails #10906
+-- `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906
 example {ι : Type*} [Fintype ι] :
     Pi.algebra (R := ℝ) ι (fun _ ↦ ℂ) = (Pi.algebra (R := ℂ) ι (fun _ ↦ ℂ)).complexToReal :=
   rfl
@@ -189,13 +189,13 @@ theorem Complex.coe_smul {E : Type*} [AddCommGroup E] [Module ℂ E] (x : ℝ) (
 another scalar action of `M` on `E` whenever the action of `ℂ` commutes with the action of `M`. -/
 instance (priority := 900) SMulCommClass.complexToReal {M E : Type*} [AddCommGroup E] [Module ℂ E]
     [SMul M E] [SMulCommClass ℂ M E] : SMulCommClass ℝ M E where
-  smul_comm r _ _ := (smul_comm (r : ℂ) _ _ : _)
+  smul_comm r _ _ := smul_comm (r : ℂ) _ _
 
 /-- The scalar action of `ℝ` on a `ℂ`-module `E` induced by `Module.complexToReal` associates with
 another scalar action of `M` on `E` whenever the action of `ℂ` associates with the action of `M`. -/
 instance IsScalarTower.complexToReal {M E : Type*} [AddCommGroup M] [Module ℂ M] [AddCommGroup E]
     [Module ℂ E] [SMul M E] [IsScalarTower ℂ M E] : IsScalarTower ℝ M E where
-  smul_assoc r _ _ := (smul_assoc (r : ℂ) _ _ : _)
+  smul_assoc r _ _ := smul_assoc (r : ℂ) _ _
 
 -- check that the following instance is implied by the one above.
 example (E : Type*) [AddCommGroup E] [Module ℂ E] : IsScalarTower ℝ ℂ E := inferInstance

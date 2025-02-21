@@ -67,6 +67,14 @@ instance universallyClosed_isStableUnderComposition :
   rw [universallyClosed_eq]
   infer_instance
 
+lemma UniversallyClosed.of_comp_surjective {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [UniversallyClosed (f ≫ g)] [Surjective f] : UniversallyClosed g := by
+  constructor
+  intro X' Y' i₁ i₂ f' H
+  have := UniversallyClosed.out _ _ _ ((IsPullback.of_hasPullback i₁ f).paste_horiz H)
+  exact IsClosedMap.of_comp_surjective (MorphismProperty.pullback_fst (P := @Surjective) _ _ ‹_›).1
+    (Scheme.Hom.continuous _) this
+
 instance universallyClosedTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : UniversallyClosed f] [hg : UniversallyClosed g] : UniversallyClosed (f ≫ g) :=
   comp_mem _ _ _ hf hg
@@ -97,11 +105,11 @@ lemma compactSpace_of_universallyClosed
   let 𝒰 : X.OpenCover := X.affineCover
   let U (i : 𝒰.J) : X.Opens := (𝒰.map i).opensRange
   let T : Scheme := Spec (.of <| MvPolynomial 𝒰.J K)
-  let q : T ⟶ Spec (.of K) := Spec.map MvPolynomial.C
+  let q : T ⟶ Spec (.of K) := Spec.map (CommRingCat.ofHom MvPolynomial.C)
   let Ti (i : 𝒰.J) : T.Opens := basicOpen (MvPolynomial.X i)
   let fT : pullback f q ⟶ T := pullback.snd f q
   let p : pullback f q ⟶ X := pullback.fst f q
-  let Z : Set (pullback f q : _) := (⨆ i, fT ⁻¹ᵁ (Ti i) ⊓ p ⁻¹ᵁ (U i) : (pullback f q).Opens)ᶜ
+  let Z : Set (pullback f q :) := (⨆ i, fT ⁻¹ᵁ (Ti i) ⊓ p ⁻¹ᵁ (U i) : (pullback f q).Opens)ᶜ
   have hZ : IsClosed Z := by
     simp only [Z, isClosed_compl_iff, Opens.coe_iSup, Opens.coe_inf, Opens.map_coe]
     exact isOpen_iUnion fun i ↦ (fT.continuous.1 _ (Ti i).2).inter (p.continuous.1 _ (U i).2)
@@ -117,7 +125,7 @@ lemma compactSpace_of_universallyClosed
   let σ : Finset 𝒰.J := MvPolynomial.vars g
   let φ : MvPolynomial 𝒰.J K →+* MvPolynomial 𝒰.J K :=
     (MvPolynomial.aeval fun i : 𝒰.J ↦ if i ∈ σ then MvPolynomial.X i else 0).toRingHom
-  let t' : T := (Spec.map φ).base t
+  let t' : T := (Spec.map (CommRingCat.ofHom φ)).base t
   have ht'g : t' ∈ PrimeSpectrum.basicOpen g :=
     show φ g ∉ t.asIdeal from (show φ g = g from aeval_ite_mem_eq_self g subset_rfl).symm ▸ htU'
   have h : t' ∉ fT.base '' Z := hU'le ht'g
@@ -127,7 +135,7 @@ lemma compactSpace_of_universallyClosed
   contrapose! h
   obtain ⟨x, hx⟩ := h
   obtain ⟨z, rfl, hzr⟩ := exists_preimage_pullback x t' (Subsingleton.elim (f.base x) (q.base t'))
-  suffices ∀ i, t ∈ (Ti i).comap (comap φ) → p.base z ∉ U i from ⟨z, by simpa [Z, p, hzr], hzr⟩
+  suffices ∀ i, t ∈ (Ti i).comap (comap φ) → p.base z ∉ U i from ⟨z, by simpa [Z, p, fT, hzr], hzr⟩
   intro i hi₁ hi₂
   rw [comap_basicOpen, show φ (.X i) = 0 by simpa [φ] using (hx i · hi₂), basicOpen_zero] at hi₁
   cases hi₁

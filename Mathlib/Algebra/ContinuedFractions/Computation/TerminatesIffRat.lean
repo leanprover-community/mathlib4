@@ -80,7 +80,7 @@ nonrec theorem exists_gcf_pair_rat_eq_of_nth_contsAux :
         · use pred_conts
           have : g.contsAux (n + 2) = g.contsAux (n + 1) :=
             contsAux_stable_of_terminated (n + 1).le_succ s_ppred_nth_eq
-          simp only [this, pred_conts_eq]
+          simp only [g, this, pred_conts_eq]
         -- option.some
         · -- invoke the IH a second time
           obtain ⟨ppred_conts, ppred_conts_eq⟩ :=
@@ -88,7 +88,7 @@ nonrec theorem exists_gcf_pair_rat_eq_of_nth_contsAux :
           obtain ⟨a_eq_one, z, b_eq_z⟩ : gp_n.a = 1 ∧ ∃ z : ℤ, gp_n.b = (z : K) :=
             of_partNum_eq_one_and_exists_int_partDen_eq s_ppred_nth_eq
           -- finally, unfold the recurrence to obtain the required rational value.
-          simp only [a_eq_one, b_eq_z,
+          simp only [g, a_eq_one, b_eq_z,
             contsAux_recurrence s_ppred_nth_eq ppred_conts_eq pred_conts_eq]
           use nextConts 1 (z : ℚ) ppred_conts pred_conts
           cases ppred_conts; cases pred_conts

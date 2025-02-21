@@ -21,9 +21,6 @@ are `Fin n` for `n : ℕ`. We prove that the obvious inclusion functor
 We prove that `FintypeCat.Skeleton` is a skeleton of `FintypeCat` in `FintypeCat.isSkeleton`.
 -/
 
-
-open scoped Classical
-
 open CategoryTheory
 
 /-- The category of finite types. -/
@@ -56,7 +53,7 @@ def incl : FintypeCat ⥤ Type* :=
 instance : incl.Full := InducedCategory.full _
 instance : incl.Faithful := InducedCategory.faithful _
 
-instance concreteCategoryFintype : ConcreteCategory FintypeCat :=
+instance hasForgetFintype : HasForget FintypeCat :=
   ⟨incl⟩
 
 /- Help typeclass inference infer fullness of forgetful functor. -/
@@ -78,7 +75,7 @@ lemma hom_inv_id_apply {X Y : FintypeCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x
 lemma inv_hom_id_apply {X Y : FintypeCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
   congr_fun f.inv_hom_id y
 
--- Porting note (#10688): added to ease automation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
   funext

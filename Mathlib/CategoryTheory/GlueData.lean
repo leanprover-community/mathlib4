@@ -43,7 +43,7 @@ such that
     `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
 10. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 -/
--- Porting note(#5171): linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
 -- @[nolint has_nonempty_instance]
 structure GlueData where
   J : Type v
@@ -299,7 +299,7 @@ end
 variable [HasMulticoequalizer D.diagram] [PreservesColimit D.diagram.multispan F]
 
 theorem hasColimit_multispan_comp : HasColimit (D.diagram.multispan ⋙ F) :=
-  ⟨⟨⟨_, PreservesColimit.preserves (colimit.isColimit _)⟩⟩⟩
+  ⟨⟨⟨_, isColimitOfPreserves _ (colimit.isColimit _)⟩⟩⟩
 
 attribute [local instance] hasColimit_multispan_comp
 
@@ -394,8 +394,7 @@ attribute [reassoc (attr := simp)] GlueData'.t_inv GlueData'.cocycle
 
 variable {C}
 
-open scoped Classical
-
+open scoped Classical in
 /-- (Implementation detail) the constructed `GlueData.f` from a `GlueData'`. -/
 abbrev GlueData'.f' (D : GlueData' C) (i j : D.J) :
     (if h : i = j then D.U i else D.V i j h) ⟶ D.U i :=
@@ -421,6 +420,7 @@ instance (D : GlueData' C) (i j k : D.J) :
     have {X Y Z : C} (f : X ⟶ Y) (e : Z = X) : HEq (eqToHom e ≫ f) f := by subst e; simp
     convert D.f_hasPullback i j k hij hik <;> simp [GlueData'.f', hij, hik, this]
 
+open scoped Classical in
 /-- (Implementation detail) the constructed `GlueData.t'` from a `GlueData'`. -/
 def GlueData'.t'' (D : GlueData' C) (i j k : D.J) :
     pullback (D.f' i j) (D.f' i k) ⟶ pullback (D.f' j k) (D.f' j i) :=
@@ -443,11 +443,12 @@ def GlueData'.t'' (D : GlueData' C) (i j k : D.J) :
   else
     haveI := Ne.symm hij
     pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by rw [dif_neg hik]))
-        (eqToHom (by aesop)) (by aesop) (by delta f'; aesop) ≫
+        (eqToHom (by simp)) (by delta f'; aesop) (by delta f'; aesop) ≫
       D.t' i j k hij hik hjk ≫
-      pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by aesop)) (eqToHom (by aesop))
+      pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by aesop)) (eqToHom (by simp))
         (by delta f'; aesop) (by delta f'; aesop)
 
+open scoped Classical in
 /--
 The constructed `GlueData` of a `GlueData'`, where `GlueData'` is a variant of `GlueData` that only
 requires conditions on `V (i, j)` when `i ≠ j`.

@@ -122,9 +122,9 @@ theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
     convert H using 1 <;> field_simp [h₃.ne']
   refine (log_stirlingSeq_diff_le_geo_sum n).trans ?_
   push_cast
-  rw [div_le_div_iff h₂ h₁]
+  rw [div_le_div_iff₀ h₂ h₁]
   field_simp [h₃.ne']
-  rw [div_le_div_right h₃]
+  rw [div_le_div_iff_of_pos_right h₃]
   ring_nf
   norm_cast
   omega

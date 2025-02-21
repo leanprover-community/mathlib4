@@ -38,8 +38,8 @@ variable [PreservesLimit F G]
 
 @[simp]
 theorem preserves_lift_mapCone (c₁ c₂ : Cone F) (t : IsLimit c₁) :
-    (PreservesLimit.preserves t).lift (G.mapCone c₂) = G.map (t.lift c₂) :=
-  ((PreservesLimit.preserves t).uniq (G.mapCone c₂) _ (by simp [← G.map_comp])).symm
+    (isLimitOfPreserves G t).lift (G.mapCone c₂) = G.map (t.lift c₂) :=
+  ((isLimitOfPreserves G t).uniq (G.mapCone c₂) _ (by simp [← G.map_comp])).symm
 
 variable [HasLimit F]
 
@@ -47,7 +47,7 @@ variable [HasLimit F]
 to the limit of the functor `F ⋙ G`.
 -/
 def preservesLimitIso : G.obj (limit F) ≅ limit (F ⋙ G) :=
-  (PreservesLimit.preserves (limit.isLimit _)).conePointUniqueUpToIso (limit.isLimit _)
+  (isLimitOfPreserves G (limit.isLimit _)).conePointUniqueUpToIso (limit.isLimit _)
 
 @[reassoc (attr := simp)]
 theorem preservesLimitIso_hom_π (j) :
@@ -98,8 +98,8 @@ variable [HasLimit F] [HasLimit (F ⋙ G)]
 
 /-- If the comparison morphism `G.obj (limit F) ⟶ limit (F ⋙ G)` is an isomorphism, then `G`
     preserves limits of `F`. -/
-def preservesLimitOfIsIsoPost [IsIso (limit.post F G)] : PreservesLimit F G :=
-  preservesLimitOfPreservesLimitCone (limit.isLimit F) (by
+lemma preservesLimit_of_isIso_post [IsIso (limit.post F G)] : PreservesLimit F G :=
+  preservesLimit_of_preserves_limit_cone (limit.isLimit F) (by
     convert IsLimit.ofPointIso (limit.isLimit (F ⋙ G))
     assumption)
 
@@ -111,8 +111,8 @@ variable [PreservesColimit F G]
 
 @[simp]
 theorem preserves_desc_mapCocone (c₁ c₂ : Cocone F) (t : IsColimit c₁) :
-    (PreservesColimit.preserves t).desc (G.mapCocone _) = G.map (t.desc c₂) :=
-  ((PreservesColimit.preserves t).uniq (G.mapCocone _) _ (by simp [← G.map_comp])).symm
+    (isColimitOfPreserves G t).desc (G.mapCocone _) = G.map (t.desc c₂) :=
+  ((isColimitOfPreserves G t).uniq (G.mapCocone _) _ (by simp [← G.map_comp])).symm
 
 variable [HasColimit F]
 
@@ -121,7 +121,7 @@ variable [HasColimit F]
 to the colimit of the functor `F ⋙ G`.
 -/
 def preservesColimitIso : G.obj (colimit F) ≅ colimit (F ⋙ G) :=
-  (PreservesColimit.preserves (colimit.isColimit _)).coconePointUniqueUpToIso (colimit.isColimit _)
+  (isColimitOfPreserves G (colimit.isColimit _)).coconePointUniqueUpToIso (colimit.isColimit _)
 
 @[reassoc (attr := simp)]
 theorem ι_preservesColimitIso_inv (j : J) :
@@ -134,7 +134,7 @@ alias ι_preservesColimitsIso_inv := ι_preservesColimitIso_inv
 @[reassoc (attr := simp)]
 theorem ι_preservesColimitIso_hom (j : J) :
     G.map (colimit.ι F j) ≫ (preservesColimitIso G F).hom = colimit.ι (F ⋙ G) j :=
-  (PreservesColimit.preserves (colimit.isColimit _)).comp_coconePointUniqueUpToIso_hom _ j
+  (isColimitOfPreserves G (colimit.isColimit _)).comp_coconePointUniqueUpToIso_hom _ j
 
 @[deprecated (since := "2024-10-27")]
 alias ι_preservesColimitsIso_hom := ι_preservesColimitIso_hom
@@ -177,8 +177,8 @@ variable [HasColimit F] [HasColimit (F ⋙ G)]
 
 /-- If the comparison morphism `colimit (F ⋙ G) ⟶ G.obj (colimit F)` is an isomorphism, then `G`
     preserves colimits of `F`. -/
-def preservesColimitOfIsIsoPost [IsIso (colimit.post F G)] : PreservesColimit F G :=
-  preservesColimitOfPreservesColimitCocone (colimit.isColimit F) (by
+lemma preservesColimit_of_isIso_post [IsIso (colimit.post F G)] : PreservesColimit F G :=
+  preservesColimit_of_preserves_colimit_cocone (colimit.isColimit F) (by
     convert IsColimit.ofPointIso (colimit.isColimit (F ⋙ G))
     assumption)
 

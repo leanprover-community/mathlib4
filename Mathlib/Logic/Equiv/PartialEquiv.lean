@@ -525,11 +525,9 @@ theorem refl_coe : (PartialEquiv.refl α : α → α) = id :=
 theorem refl_symm : (PartialEquiv.refl α).symm = PartialEquiv.refl α :=
   rfl
 
--- Porting note: removed `simp` because `simp` can prove this
 @[mfld_simps]
 theorem refl_restr_source (s : Set α) : ((PartialEquiv.refl α).restr s).source = s := by simp
 
--- Porting note: removed `simp` because `simp` can prove this
 @[mfld_simps]
 theorem refl_restr_target (s : Set α) : ((PartialEquiv.refl α).restr s).target = s := by
   change univ ∩ id ⁻¹' s = s

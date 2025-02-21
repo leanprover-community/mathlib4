@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Invertible
 import Mathlib.Order.Synonym
@@ -73,47 +72,6 @@ protected theorem Commute.inv_add_inv (hab : Commute a b) (ha : a ≠ 0) (hb : b
   rw [inv_eq_one_div, inv_eq_one_div, hab.one_div_add_one_div ha hb]
 
 end DivisionSemiring
-
-section DivisionMonoid
-
-variable [DivisionMonoid K] [HasDistribNeg K] {a b : K}
-
-theorem one_div_neg_one_eq_neg_one : (1 : K) / -1 = -1 :=
-  have : -1 * -1 = (1 : K) := by rw [neg_mul_neg, one_mul]
-  Eq.symm (eq_one_div_of_mul_eq_one_right this)
-
-theorem one_div_neg_eq_neg_one_div (a : K) : 1 / -a = -(1 / a) :=
-  calc
-    1 / -a = 1 / (-1 * a) := by rw [neg_eq_neg_one_mul]
-    _ = 1 / a * (1 / -1) := by rw [one_div_mul_one_div_rev]
-    _ = 1 / a * -1 := by rw [one_div_neg_one_eq_neg_one]
-    _ = -(1 / a) := by rw [mul_neg, mul_one]
-
-theorem div_neg_eq_neg_div (a b : K) : b / -a = -(b / a) :=
-  calc
-    b / -a = b * (1 / -a) := by rw [← inv_eq_one_div, division_def]
-    _ = b * -(1 / a) := by rw [one_div_neg_eq_neg_one_div]
-    _ = -(b * (1 / a)) := by rw [neg_mul_eq_mul_neg]
-    _ = -(b / a) := by rw [mul_one_div]
-
-theorem neg_div (a b : K) : -b / a = -(b / a) := by
-  rw [neg_eq_neg_one_mul, mul_div_assoc, ← neg_eq_neg_one_mul]
-
-@[field_simps]
-theorem neg_div' (a b : K) : -(b / a) = -b / a := by simp [neg_div]
-
-@[simp]
-theorem neg_div_neg_eq (a b : K) : -a / -b = a / b := by rw [div_neg_eq_neg_div, neg_div, neg_neg]
-
-theorem neg_inv : -a⁻¹ = (-a)⁻¹ := by rw [inv_eq_one_div, inv_eq_one_div, div_neg_eq_neg_div]
-
-theorem div_neg (a : K) : a / -b = -(a / b) := by rw [← div_neg_eq_neg_div]
-
-theorem inv_neg : (-a)⁻¹ = -a⁻¹ := by rw [neg_inv]
-
-theorem inv_neg_one : (-1 : K)⁻¹ = -1 := by rw [← neg_inv, inv_one]
-
-end DivisionMonoid
 
 section DivisionRing
 
@@ -208,17 +166,6 @@ instance (priority := 100) Field.isDomain : IsDomain K :=
   { DivisionRing.isDomain with }
 
 end Field
-
-namespace RingHom
-
-/-- Any ring homomorphism `f : F → R` from a `DivisionRing F` to nonzero ring `R` is injective.
--/
-@[stacks 09FU]
-protected theorem injective [DivisionRing K] [Semiring L] [Nontrivial L] (f : K →+* L) :
-    Injective f :=
-  (injective_iff_map_eq_zero f).2 fun _ ↦ (map_eq_zero f).1
-
-end RingHom
 
 section NoncomputableDefs
 

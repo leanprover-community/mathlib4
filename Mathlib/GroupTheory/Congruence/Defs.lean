@@ -219,7 +219,7 @@ instance (priority := 500) [∀ a b, Decidable (c a b)] : DecidableEq c.Quotient
 theorem quot_mk_eq_coe {M : Type*} [Mul M] (c : Con M) (x : M) : Quot.mk c x = (x : c.Quotient) :=
   rfl
 
--- Porting note (#11215): TODO: restore `elab_as_elim`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: restore `elab_as_elim`
 /-- The function on the quotient by a congruence relation `c` induced by a function that is
     constant on `c`'s equivalence classes. -/
 @[to_additive "The function on the quotient by a congruence relation `c`
@@ -228,7 +228,7 @@ protected def liftOn {β} {c : Con M} (q : c.Quotient) (f : M → β) (h : ∀ a
     β :=
   Quotient.liftOn' q f h
 
--- Porting note (#11215): TODO: restore `elab_as_elim`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: restore `elab_as_elim`
 /-- The binary function on the quotient by a congruence relation `c` induced by a binary function
     that is constant on `c`'s equivalence classes. -/
 @[to_additive "The binary function on the quotient by a congruence relation `c`
@@ -281,7 +281,7 @@ protected theorem eq {a b : M} : (a : c.Quotient) = (b : c.Quotient) ↔ c a b :
 @[to_additive "The addition induced on the quotient by an additive congruence relation on a type
 with an addition."]
 instance hasMul : Mul c.Quotient :=
-  ⟨Quotient.map₂' (· * ·) fun _ _ h1 _ _ h2 => c.mul h1 h2⟩
+  ⟨Quotient.map₂ (· * ·) fun _ _ h1 _ _ h2 => c.mul h1 h2⟩
 
 /-- The kernel of the quotient map induced by a congruence relation `c` equals `c`. -/
 @[to_additive (attr := simp) "The kernel of the quotient map induced by an additive congruence
@@ -426,13 +426,11 @@ additive congruence relation in which they are contained."]
 theorem conGen_of_con (c : Con M) : conGen c = c :=
   le_antisymm (by rw [conGen_eq]; exact sInf_le fun _ _ => id) ConGen.Rel.of
 
--- Porting note: removing simp, simp can prove it
 /-- The map sending a binary relation to the smallest congruence relation in which it is
     contained is idempotent. -/
 @[to_additive addConGen_idem "The map sending a binary relation to the smallest additive
 congruence relation in which it is contained is idempotent."]
-theorem conGen_idem (r : M → M → Prop) : conGen (conGen r) = conGen r :=
-  conGen_of_con _
+theorem conGen_idem (r : M → M → Prop) : conGen (conGen r) = conGen r := by simp
 
 /-- The supremum of congruence relations `c, d` equals the smallest congruence relation containing
     the binary relation '`x` is related to `y` by `c` or `d`'. -/
@@ -739,7 +737,7 @@ instance hasInv : Inv c.Quotient :=
 @[to_additive "The subtraction induced on the quotient by an additive congruence relation on a type
 with a subtraction."]
 instance hasDiv : Div c.Quotient :=
-  ⟨(Quotient.map₂' (· / ·)) fun _ _ h₁ _ _ h₂ => c.div h₁ h₂⟩
+  ⟨(Quotient.map₂ (· / ·)) fun _ _ h₁ _ _ h₂ => c.div h₁ h₂⟩
 
 /-- The integer scaling induced on the quotient by a congruence relation on a type with a
     subtraction. -/
@@ -763,6 +761,17 @@ instance group : Group c.Quotient :=
     toMonoid := Con.monoid _
     toInv := Con.hasInv _
     toDiv := Con.hasDiv _ }
+
+/-- The quotient of a `CommGroup` by a congruence relation is a `CommGroup`. -/
+@[to_additive "The quotient of an `AddCommGroup` by an additive congruence
+relation is an `AddCommGroup`."]
+instance commGroup {M : Type*} [CommGroup M] (c : Con M) : CommGroup c.Quotient :=
+  { (Function.Surjective.commGroup _ Quotient.mk''_surjective rfl (fun _ _ => rfl) (fun _ => rfl)
+      (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) : CommGroup c.Quotient) with
+    /- The `toGroup` field is given explicitly for performance reasons.
+    This avoids any need to unfold `Function.Surjective.commGroup` when the type checker is
+    checking that instance diagrams commute -/
+    toGroup := Con.group _ }
 
 end Groups
 

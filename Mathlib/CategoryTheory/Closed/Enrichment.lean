@@ -15,9 +15,9 @@ where the hom-object is given by the internal hom (coming from the closed struct
 We use `scoped instance` to avoid potential issues where `C` may also have
 a `C`-category structure coming from another source (e.g. the type of simplicial sets
 `SSet.{v}` has an instance of `EnrichedCategory SSet.{v}` as a category of simplicial objects;
-see `AlgebraicTopology/SimplicialCategory/SimplicialObject`).
+see `Mathlib/AlgebraicTopology/SimplicialCategory/SimplicialObject.lean`).
 
-All structure field values are defined in `Closed/Monoidal`.
+All structure field values are defined in `Mathlib/CategoryTheory/Closed/Monoidal.lean`.
 
 -/
 

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.Normed.Module.Completion
 import Mathlib.Analysis.NormedSpace.Extr
+import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Topology.Order.ExtrClosure
 
 /-!
@@ -132,7 +132,7 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     exact hz (hsub hζ)
   show ‖(w - z)⁻¹ • f w‖ < ‖f z‖ / r
   rw [norm_smul, norm_inv, norm_eq_abs, ← div_eq_inv_mul]
-  exact (div_lt_div_right hr).2 hw_lt
+  exact (div_lt_div_iff_of_pos_right hr).2 hw_lt
 
 /-!
 Now we drop the assumption `CompleteSpace F` by embedding `F` into its completion.

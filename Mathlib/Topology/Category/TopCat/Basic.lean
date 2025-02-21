@@ -34,10 +34,10 @@ instance bundledHom : BundledHom @ContinuousMap where
 
 deriving instance LargeCategory for TopCat
 
--- Porting note: currently no derive handler for ConcreteCategory
+-- Porting note: currently no derive handler for HasForget
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
-instance concreteCategory : ConcreteCategory TopCat :=
-  inferInstanceAs <| ConcreteCategory (Bundled TopologicalSpace)
+instance hasForget : HasForget TopCat :=
+  inferInstanceAs <| HasForget (Bundled TopologicalSpace)
 
 instance : CoeSort TopCat Type* where
   coe X := X.α
@@ -94,7 +94,7 @@ equal function coercion for a continuous map `C(X, Y)`.
 @[simp] theorem coe_of_of {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
     {f : C(X, Y)} {x} :
     @DFunLike.coe (TopCat.of X ⟶ TopCat.of Y) ((CategoryTheory.forget TopCat).obj (TopCat.of X))
-      (fun _ ↦ (CategoryTheory.forget TopCat).obj (TopCat.of Y)) ConcreteCategory.instFunLike
+      (fun _ ↦ (CategoryTheory.forget TopCat).obj (TopCat.of Y)) HasForget.instFunLike
       f x =
     @DFunLike.coe C(X, Y) X
       (fun _ ↦ Y) _
@@ -165,7 +165,6 @@ lemma isIso_of_bijective_of_isClosedMap {X Y : TopCat.{u}} (f : X ⟶ Y)
     (Equiv.ofBijective f hfbij) f.continuous hfcl
   inferInstanceAs <| IsIso (TopCat.isoOfHomeo e).hom
 
--- Porting note: simpNF requested partially simped version below
 theorem isOpenEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     IsOpenEmbedding (f ≫ g) ↔ IsOpenEmbedding f :=
   (TopCat.homeoOfIso (asIso g)).isOpenEmbedding.of_comp_iff f
@@ -182,7 +181,6 @@ theorem isOpenEmbedding_iff_comp_isIso' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y �
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_iff_comp_isIso' := isOpenEmbedding_iff_comp_isIso'
 
--- Porting note: simpNF requested partially simped version below
 theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
     IsOpenEmbedding (f ≫ g) ↔ IsOpenEmbedding g := by
   constructor

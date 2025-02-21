@@ -146,10 +146,10 @@ protected def id : PseudoEpimorphism α α :=
 instance : Inhabited (PseudoEpimorphism α α) :=
   ⟨PseudoEpimorphism.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(PseudoEpimorphism.id α) = id := rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id_orderHom : (PseudoEpimorphism.id α : α →o α) = OrderHom.id := rfl
 
 variable {α}
@@ -223,12 +223,10 @@ instance : EsakiaHomClass (EsakiaHom α β) α β where
   map_continuous f := f.continuous_toFun
   exists_map_eq_of_map_le f := f.exists_map_eq_of_map_le'
 
--- Porting note: introduced this to appease simpNF linter with `toFun_eq_coe`
 @[simp]
 theorem toContinuousOrderHom_coe {f : EsakiaHom α β} :
     f.toContinuousOrderHom = (f : α → β) := rfl
 
--- Porting note: removed simp attribute as simp now solves this
 theorem toFun_eq_coe {f : EsakiaHom α β} : f.toFun = (f : α → β) := rfl
 
 @[ext]
@@ -256,10 +254,10 @@ protected def id : EsakiaHom α α :=
 instance : Inhabited (EsakiaHom α α) :=
   ⟨EsakiaHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(EsakiaHom.id α) = id := rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id_pseudoEpimorphism :
     (EsakiaHom.id α : PseudoEpimorphism α α) = PseudoEpimorphism.id α := rfl
 
@@ -268,7 +266,7 @@ variable {α}
 @[simp]
 theorem id_apply (a : α) : EsakiaHom.id α a = a := rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id_continuousOrderHom : (EsakiaHom.id α : α →Co α) = ContinuousOrderHom.id α := rfl
 
 /-- Composition of `EsakiaHom`s as an `EsakiaHom`. -/

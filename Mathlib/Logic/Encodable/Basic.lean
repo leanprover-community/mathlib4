@@ -592,7 +592,7 @@ section Quotient
 
 open Encodable Quotient
 
-variable {α : Type*} {s : Setoid α} [@DecidableRel α (· ≈ ·)] [Encodable α]
+variable {α : Type*} {s : Setoid α} [DecidableRel (α := α) (· ≈ ·)] [Encodable α]
 
 /-- Representative of an equivalence class. This is a computable version of `Quot.out` for a setoid
 on an encodable type. -/

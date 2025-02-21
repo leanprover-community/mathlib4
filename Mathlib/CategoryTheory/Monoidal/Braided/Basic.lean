@@ -236,7 +236,7 @@ noncomputable def braidedCategoryOfFullyFaithful {C D : Type*} [Category C] [Cat
   braidedCategoryOfFaithful F
     (fun X Y => F.preimageIso
       ((μIso F _ _).symm ≪≫ β_ (F.obj X) (F.obj Y) ≪≫ (μIso F _ _)))
-    (by aesop_cat)
+    (by simp)
 
 section
 
@@ -268,11 +268,9 @@ theorem braiding_leftUnitor_aux₂ (X : C) :
       ((β_ X (𝟙_ C)).hom ▷ 𝟙_ C) ≫ (α_ _ _ _).hom ≫ (α_ _ _ _).inv ≫ ((λ_ X).hom ▷ 𝟙_ C) := by
       monoidal
     _ = ((β_ X (𝟙_ C)).hom ▷ 𝟙_ C) ≫ (α_ _ _ _).hom ≫ (_ ◁ (β_ X _).hom) ≫
-          (_ ◁ (β_ X _).inv) ≫ (α_ _ _ _).inv ≫ ((λ_ X).hom ▷ 𝟙_ C) := by
-      simp
+          (_ ◁ (β_ X _).inv) ≫ (α_ _ _ _).inv ≫ ((λ_ X).hom ▷ 𝟙_ C) := by simp
     _ = (α_ _ _ _).hom ≫ (β_ _ _).hom ≫ (α_ _ _ _).hom ≫ (_ ◁ (β_ X _).inv) ≫ (α_ _ _ _).inv ≫
-          ((λ_ X).hom ▷ 𝟙_ C) := by
-      (slice_lhs 1 3 => rw [← hexagon_forward]); simp only [assoc]
+          ((λ_ X).hom ▷ 𝟙_ C) := by simp
     _ = (α_ _ _ _).hom ≫ (β_ _ _).hom ≫ ((λ_ _).hom ▷ X) ≫ (β_ X _).inv := by
       rw [braiding_leftUnitor_aux₁]
     _ = (α_ _ _ _).hom ≫ (_ ◁ (λ_ _).hom) ≫ (β_ _ _).hom ≫ (β_ X _).inv := by
@@ -302,8 +300,7 @@ theorem braiding_rightUnitor_aux₂ (X : C) :
     _ = (α_ _ _ _).inv ≫ (β_ _ _).hom ≫ (α_ _ _ _).inv ≫ ((β_ _ X).inv ▷ _) ≫ (α_ _ _ _).hom ≫
           (𝟙_ C ◁ (ρ_ X).hom) := by
       (slice_lhs 1 3 => rw [← hexagon_reverse]); simp only [assoc]
-    _ = (α_ _ _ _).inv ≫ (β_ _ _).hom ≫ (X ◁ (ρ_ _).hom) ≫ (β_ _ X).inv := by
-      rw [braiding_rightUnitor_aux₁]
+    _ = (α_ _ _ _).inv ≫ (β_ _ _).hom ≫ (X ◁ (ρ_ _).hom) ≫ (β_ _ X).inv := by simp
     _ = (α_ _ _ _).inv ≫ ((ρ_ _).hom ▷ _) ≫ (β_ _ X).hom ≫ (β_ _ _).inv := by
       (slice_lhs 2 3 => rw [← braiding_naturality_left]); simp only [assoc]
     _ = (α_ _ _ _).inv ≫ ((ρ_ _).hom ▷ _) := by rw [Iso.hom_inv_id, comp_id]

@@ -97,6 +97,13 @@ theorem IsIntegral.mem_range_algebraMap_of_minpoly_splits [Algebra K L] [IsScala
     x ∈ (algebraMap K L).range :=
   int.mem_range_algHom_of_minpoly_splits h (IsScalarTower.toAlgHom R K L)
 
+theorem minpoly_neg_splits [Algebra K L] {x : L} (g : (minpoly K x).Splits (algebraMap K L)) :
+    (minpoly K (-x)).Splits (algebraMap K L) := by
+  rw [minpoly.neg]
+  apply splits_mul _ _ g.comp_neg_X
+  simpa only [map_pow, map_neg, map_one] using
+    splits_C (algebraMap K L) ((-1) ^ (minpoly K x).natDegree)
+
 theorem minpoly_add_algebraMap_splits [Algebra K L] {x : L} (r : K)
     (g : (minpoly K x).Splits (algebraMap K L)) :
     (minpoly K (x + algebraMap K L r)).Splits (algebraMap K L) := by
@@ -111,6 +118,11 @@ theorem minpoly_algebraMap_add_splits [Algebra K L] {x : L} (r : K)
     (g : (minpoly K x).Splits (algebraMap K L)) :
     (minpoly K (algebraMap K L r + x)).Splits (algebraMap K L) := by
   simpa only [add_comm] using minpoly_add_algebraMap_splits r g
+
+theorem minpoly_algebraMap_sub_splits [Algebra K L] {x : L} (r : K)
+    (g : (minpoly K x).Splits (algebraMap K L)) :
+    (minpoly K (algebraMap K L r - x)).Splits (algebraMap K L) := by
+  simpa only [neg_sub] using minpoly_neg_splits (minpoly_sub_algebraMap_splits r g)
 
 end
 

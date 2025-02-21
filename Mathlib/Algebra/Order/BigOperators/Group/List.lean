@@ -3,9 +3,9 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-!
 # Big operators on a list in ordered groups
@@ -177,8 +177,8 @@ lemma all_one_of_le_one_le_of_prod_eq_one [OrderedCommMonoid M] {l : List M}
     (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) (hl₂ : l.prod = 1) {x : M} (hx : x ∈ l) : x = 1 :=
   _root_.le_antisymm (hl₂ ▸ single_le_prod hl₁ _ hx) (hl₁ x hx)
 
-section CanonicallyOrderedCommMonoid
-variable [CanonicallyOrderedCommMonoid M] {l : List M}
+section CanonicallyOrderedMul
+variable [OrderedCommMonoid M] [CanonicallyOrderedMul M] {l : List M}
 
 @[to_additive] lemma prod_eq_one_iff : l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
   ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by
@@ -206,5 +206,6 @@ theorem le_prod_of_mem {xs : List M} {x : M} (h₁ : x ∈ xs) : x ≤ xs.prod :
       simp only [List.prod_cons]
       exact le_mul_left ih
 
-end CanonicallyOrderedCommMonoid
+end CanonicallyOrderedMul
+
 end List

@@ -62,8 +62,8 @@ theorem coe_toBipointed (X : TwoP) : ↥X.toBipointed = ↥X :=
 noncomputable instance largeCategory : LargeCategory TwoP :=
   InducedCategory.category toBipointed
 
-noncomputable instance concreteCategory : ConcreteCategory TwoP :=
-  InducedCategory.concreteCategory toBipointed
+noncomputable instance hasForget : HasForget TwoP :=
+  InducedCategory.hasForget toBipointed
 
 noncomputable instance hasForgetToBipointed : HasForget₂ TwoP Bipointed :=
   InducedCategory.hasForget₂ toBipointed

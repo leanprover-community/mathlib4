@@ -10,6 +10,7 @@ import Mathlib.Order.Compare
 import Mathlib.Order.Max
 import Mathlib.Order.RelClasses
 import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Choose
 
 /-!
@@ -951,6 +952,18 @@ function `ℕ → α`. -/
 theorem exists_strictAnti [Nonempty α] [NoMinOrder α] : ∃ f : ℕ → α, StrictAnti f :=
   exists_strictMono αᵒᵈ
 
+lemma pow_self_mono : Monotone fun n : ℕ ↦ n ^ n := by
+  refine monotone_nat_of_le_succ fun n ↦ ?_
+  rw [Nat.pow_succ]
+  exact (Nat.pow_le_pow_left n.le_succ _).trans (Nat.le_mul_of_pos_right _ n.succ_pos)
+
+lemma pow_monotoneOn : MonotoneOn (fun p : ℕ × ℕ ↦ p.1 ^ p.2) {p | p.1 ≠ 0} := fun _p _ _q hq hpq ↦
+  (Nat.pow_le_pow_left hpq.1 _).trans (Nat.pow_le_pow_right (Nat.pos_iff_ne_zero.2 hq) hpq.2)
+
+lemma pow_self_strictMonoOn : StrictMonoOn (fun n : ℕ ↦ n ^ n) {n : ℕ | n ≠ 0} :=
+  fun _m hm _n hn hmn ↦
+    (Nat.pow_lt_pow_left hmn hm).trans_le (Nat.pow_le_pow_right (Nat.pos_iff_ne_zero.2 hn) hmn.le)
+
 end Nat
 
 theorem Int.rel_of_forall_rel_succ_of_lt (r : β → β → Prop) [IsTrans β r] {f : ℤ → β}
@@ -1104,3 +1117,26 @@ alias ⟨Monotone.apply₂, Monotone.of_apply₂⟩ := monotone_iff_apply₂
 alias ⟨Antitone.apply₂, Antitone.of_apply₂⟩ := antitone_iff_apply₂
 
 end apply
+
+/-- A monotone function `f : ℕ → ℕ` bounded by `b`, which is constant after stabilising for the
+first time, stabilises in at most `b` steps. -/
+lemma Nat.stabilises_of_monotone {f : ℕ → ℕ} {b n : ℕ} (hfmono : Monotone f) (hfb : ∀ m, f m ≤ b)
+    (hfstab : ∀ m, f m = f (m + 1) → f (m + 1) = f (m + 2)) (hbn : b ≤ n) : f n = f b := by
+  obtain ⟨m, hmb, hm⟩ : ∃ m ≤ b, f m = f (m + 1) := by
+    contrapose! hfb
+    let rec strictMono : ∀ m ≤ b + 1, m ≤ f m
+    | 0, _ => Nat.zero_le _
+    | m + 1, hmb => (strictMono _ <| m.le_succ.trans hmb).trans_lt <| (hfmono m.le_succ).lt_of_ne <|
+        hfb _ <| Nat.le_of_succ_le_succ hmb
+    exact ⟨b + 1, strictMono _ le_rfl⟩
+  replace key : ∀ k : ℕ, f (m + k) = f (m + k + 1) ∧ f (m + k) = f m := fun k =>
+    Nat.rec ⟨hm, rfl⟩ (fun k ih => ⟨hfstab _ ih.1, ih.1.symm.trans ih.2⟩) k
+  replace key : ∀ k ≥ m, f k = f m := fun k hk =>
+    (congr_arg f (Nat.add_sub_of_le hk)).symm.trans (key (k - m)).2
+  exact (key n (hmb.trans hbn)).trans (key b hmb).symm
+
+@[deprecated (since := "2024-11-27")]
+alias Group.card_pow_eq_card_pow_card_univ_aux := Nat.stabilises_of_monotone
+
+@[deprecated (since := "2024-11-27")]
+alias Group.card_nsmul_eq_card_nsmulpow_card_univ_aux := Nat.stabilises_of_monotone

@@ -6,7 +6,6 @@ Authors: Michael Jendrusch, Kim Morrison
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Types
-import Mathlib.Logic.Equiv.Fin
 
 /-!
 # The category of types is a monoidal category

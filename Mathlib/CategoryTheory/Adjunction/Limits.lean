@@ -9,14 +9,14 @@ import Mathlib.CategoryTheory.Limits.Creates
 /-!
 # Adjunctions and limits
 
-A left adjoint preserves colimits (`CategoryTheory.Adjunction.leftAdjointPreservesColimits`),
-and a right adjoint preserves limits (`CategoryTheory.Adjunction.rightAdjointPreservesLimits`).
+A left adjoint preserves colimits (`CategoryTheory.Adjunction.leftAdjoint_preservesColimits`),
+and a right adjoint preserves limits (`CategoryTheory.Adjunction.rightAdjoint_preservesLimits`).
 
 Equivalences create and reflect (co)limits.
-(`CategoryTheory.Adjunction.isEquivalenceCreatesLimits`,
-`CategoryTheory.Adjunction.isEquivalenceCreatesColimits`,
-`CategoryTheory.Adjunction.isEquivalenceReflectsLimits`,
-`CategoryTheory.Adjunction.isEquivalenceReflectsColimits`,)
+(`CategoryTheory.Functor.createsLimitsOfIsEquivalence`,
+`CategoryTheory.Functor.createsColimitsOfIsEquivalence`,
+`CategoryTheory.Functor.reflectsLimits_of_isEquivalence`,
+`CategoryTheory.Functor.reflectsColimits_of_isEquivalence`.)
 
 In `CategoryTheory.Adjunction.coconesIso` we show that
 when `F ⊣ G`,
@@ -78,40 +78,53 @@ def functorialityAdjunction : Cocones.functoriality K F ⊣ functorialityRightAd
   unit := functorialityUnit adj K
   counit := functorialityCounit adj K
 
+include adj in
 /-- A left adjoint preserves colimits.
 
 See <https://stacks.math.columbia.edu/tag/0038>.
 -/
-def leftAdjointPreservesColimits : PreservesColimitsOfSize.{v, u} F where
+lemma leftAdjoint_preservesColimits : PreservesColimitsOfSize.{v, u} F where
   preservesColimitsOfShape :=
     { preservesColimit :=
         { preserves := fun hc =>
-            IsColimit.isoUniqueCoconeMorphism.inv fun _ =>
+            ⟨IsColimit.isoUniqueCoconeMorphism.inv fun _ =>
               @Equiv.unique _ _ (IsColimit.isoUniqueCoconeMorphism.hom hc _)
-                ((adj.functorialityAdjunction _).homEquiv _ _) } }
+                ((adj.functorialityAdjunction _).homEquiv _ _)⟩ } }
+
+include adj in
+@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
+lemma leftAdjointPreservesColimits : PreservesColimitsOfSize.{v, u} F :=
+  adj.leftAdjoint_preservesColimits
 
 noncomputable
-instance colimPreservesColimits [HasColimitsOfShape J C] :
+instance colim_preservesColimits [HasColimitsOfShape J C] :
     PreservesColimits (colim (J := J) (C := C)) :=
-  colimConstAdj.leftAdjointPreservesColimits
+  colimConstAdj.leftAdjoint_preservesColimits
 
 -- see Note [lower instance priority]
-noncomputable instance (priority := 100) isEquivalencePreservesColimits
+noncomputable instance (priority := 100) isEquivalence_preservesColimits
     (E : C ⥤ D) [E.IsEquivalence] :
     PreservesColimitsOfSize.{v, u} E :=
-  leftAdjointPreservesColimits E.adjunction
+  leftAdjoint_preservesColimits E.adjunction
 
 -- see Note [lower instance priority]
-noncomputable instance (priority := 100) isEquivalenceReflectsColimits
+noncomputable instance (priority := 100)
+    _root_.CategoryTheory.Functor.reflectsColimits_of_isEquivalence
     (E : D ⥤ C) [E.IsEquivalence] :
     ReflectsColimitsOfSize.{v, u} E where
   reflectsColimitsOfShape :=
     { reflectsColimit :=
         { reflects := fun t =>
-          (isColimitOfPreserves E.inv t).mapCoconeEquiv E.asEquivalence.unitIso.symm } }
+          ⟨(isColimitOfPreserves E.inv t).mapCoconeEquiv E.asEquivalence.unitIso.symm⟩ } }
+
+@[deprecated "No deprecation message was provided." (since := "2024-11-18")]
+lemma isEquivalenceReflectsColimits (E : D ⥤ C) [E.IsEquivalence] :
+    ReflectsColimitsOfSize.{v, u} E :=
+  Functor.reflectsColimits_of_isEquivalence E
 
 -- see Note [lower instance priority]
-noncomputable instance (priority := 100) isEquivalenceCreatesColimits (H : D ⥤ C)
+noncomputable instance (priority := 100)
+    _root_.CategoryTheory.Functor.createsColimitsOfIsEquivalence (H : D ⥤ C)
     [H.IsEquivalence] :
     CreatesColimitsOfSize.{v, u} H where
   CreatesColimitsOfShape :=
@@ -120,16 +133,19 @@ noncomputable instance (priority := 100) isEquivalenceCreatesColimits (H : D ⥤
             { liftedCocone := mapCoconeInv H c
               validLift := mapCoconeMapCoconeInv H c } } }
 
+@[deprecated (since := "2024-11-18")] alias isEquivalenceCreatesColimits :=
+  Functor.createsColimitsOfIsEquivalence
+
 -- verify the preserve_colimits instance works as expected:
 noncomputable example (E : C ⥤ D) [E.IsEquivalence] (c : Cocone K) (h : IsColimit c) :
     IsColimit (E.mapCocone c) :=
-  PreservesColimit.preserves h
+  isColimitOfPreserves E h
 
 theorem hasColimit_comp_equivalence (E : C ⥤ D) [E.IsEquivalence] [HasColimit K] :
     HasColimit (K ⋙ E) :=
   HasColimit.mk
     { cocone := E.mapCocone (colimit.cocone K)
-      isColimit := PreservesColimit.preserves (colimit.isColimit K) }
+      isColimit := isColimitOfPreserves _ (colimit.isColimit K) }
 
 theorem hasColimit_of_comp_equivalence (E : C ⥤ D) [E.IsEquivalence] [HasColimit (K ⋙ E)] :
     HasColimit K :=
@@ -186,40 +202,52 @@ def functorialityAdjunction' : functorialityLeftAdjoint adj K ⊣ Cones.functori
   unit := functorialityUnit' adj K
   counit := functorialityCounit' adj K
 
+include adj in
 /-- A right adjoint preserves limits.
 
 See <https://stacks.math.columbia.edu/tag/0038>.
 -/
-def rightAdjointPreservesLimits : PreservesLimitsOfSize.{v, u} G where
+lemma rightAdjoint_preservesLimits : PreservesLimitsOfSize.{v, u} G where
   preservesLimitsOfShape :=
     { preservesLimit :=
         { preserves := fun hc =>
-            IsLimit.isoUniqueConeMorphism.inv fun _ =>
+            ⟨IsLimit.isoUniqueConeMorphism.inv fun _ =>
               @Equiv.unique _ _ (IsLimit.isoUniqueConeMorphism.hom hc _)
-                ((adj.functorialityAdjunction' _).homEquiv _ _).symm } }
+                ((adj.functorialityAdjunction' _).homEquiv _ _).symm⟩ } }
 
-noncomputable
-instance limPreservesLimits [HasLimitsOfShape J C] :
+include adj in
+@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
+lemma rightAdjointPreservesLimits : PreservesLimitsOfSize.{v, u} G :=
+  adj.rightAdjoint_preservesLimits
+
+instance lim_preservesLimits [HasLimitsOfShape J C] :
     PreservesLimits (lim (J := J) (C := C)) :=
-  constLimAdj.rightAdjointPreservesLimits
+  constLimAdj.rightAdjoint_preservesLimits
 
 -- see Note [lower instance priority]
-noncomputable instance (priority := 100) isEquivalencePreservesLimits
+instance (priority := 100) isEquivalencePreservesLimits
     (E : D ⥤ C) [E.IsEquivalence] :
     PreservesLimitsOfSize.{v, u} E :=
-  rightAdjointPreservesLimits E.asEquivalence.symm.toAdjunction
+  rightAdjoint_preservesLimits E.asEquivalence.symm.toAdjunction
 
 -- see Note [lower instance priority]
-noncomputable instance (priority := 100) isEquivalenceReflectsLimits
+noncomputable instance (priority := 100)
+    _root_.CategoryTheory.Functor.reflectsLimits_of_isEquivalence
     (E : D ⥤ C) [E.IsEquivalence] :
     ReflectsLimitsOfSize.{v, u} E where
   reflectsLimitsOfShape :=
     { reflectsLimit :=
         { reflects := fun t =>
-            (isLimitOfPreserves E.inv t).mapConeEquiv E.asEquivalence.unitIso.symm } }
+            ⟨(isLimitOfPreserves E.inv t).mapConeEquiv E.asEquivalence.unitIso.symm⟩ } }
+
+@[deprecated "No deprecation message was provided." (since := "2024-11-18")]
+lemma isEquivalenceReflectsLimits (E : D ⥤ C) [E.IsEquivalence] :
+    ReflectsLimitsOfSize.{v, u} E :=
+  Functor.reflectsLimits_of_isEquivalence E
 
 -- see Note [lower instance priority]
-noncomputable instance (priority := 100) isEquivalenceCreatesLimits (H : D ⥤ C) [H.IsEquivalence] :
+noncomputable instance (priority := 100)
+    _root_.CategoryTheory.Functor.createsLimitsOfIsEquivalence (H : D ⥤ C) [H.IsEquivalence] :
     CreatesLimitsOfSize.{v, u} H where
   CreatesLimitsOfShape :=
     { CreatesLimit :=
@@ -227,15 +255,18 @@ noncomputable instance (priority := 100) isEquivalenceCreatesLimits (H : D ⥤ C
             { liftedCone := mapConeInv H c
               validLift := mapConeMapConeInv H c } } }
 
+@[deprecated (since := "2024-11-18")] alias isEquivalenceCreatesLimits :=
+  Functor.createsLimitsOfIsEquivalence
+
 -- verify the preserve_limits instance works as expected:
 noncomputable example (E : D ⥤ C) [E.IsEquivalence] (c : Cone K) (h : IsLimit c) :
     IsLimit (E.mapCone c) :=
-  PreservesLimit.preserves h
+  isLimitOfPreserves E h
 
 theorem hasLimit_comp_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimit K] : HasLimit (K ⋙ E) :=
   HasLimit.mk
     { cone := E.mapCone (limit.cone K)
-      isLimit := PreservesLimit.preserves (limit.isLimit K) }
+      isLimit := isLimitOfPreserves _ (limit.isLimit K) }
 
 theorem hasLimit_of_comp_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimit (K ⋙ E)] :
     HasLimit K :=
@@ -330,12 +361,12 @@ variable {J C D : Type*} [Category J] [Category C] [Category D]
   (F : C ⥤ D)
 
 noncomputable instance [IsLeftAdjoint F] : PreservesColimitsOfShape J F :=
-  (Adjunction.ofIsLeftAdjoint F).leftAdjointPreservesColimits.preservesColimitsOfShape
+  (Adjunction.ofIsLeftAdjoint F).leftAdjoint_preservesColimits.preservesColimitsOfShape
 
 noncomputable instance [IsLeftAdjoint F] : PreservesColimitsOfSize.{v, u} F where
 
 noncomputable instance [IsRightAdjoint F] : PreservesLimitsOfShape J F :=
-  (Adjunction.ofIsRightAdjoint F).rightAdjointPreservesLimits.preservesLimitsOfShape
+  (Adjunction.ofIsRightAdjoint F).rightAdjoint_preservesLimits.preservesLimitsOfShape
 
 noncomputable instance [IsRightAdjoint F] : PreservesLimitsOfSize.{v, u} F where
 

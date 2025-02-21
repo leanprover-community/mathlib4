@@ -16,9 +16,6 @@ Proof is based on this online note by Franz Lemmermeyer http://www.fen.bilkent.e
 which is essentially based on Noah Snyder's paper "An Alternative Proof of Mason's Theorem",
 but slightly different.
 
-## TODO
-
-Prove polynomial FLT using Mason-Stothers theorem.
 -/
 
 open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDomain
@@ -51,13 +48,25 @@ private theorem abc_subcall {a b c w : k[X]} {hw : w ≠ 0} (wab : w = wronskian
       exact Nat.add_lt_add_right abc_dr_ndeg_lt _
 
 /-- **Polynomial ABC theorem.** -/
-theorem Polynomial.abc {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) (hab : IsCoprime a b)
-    (hbc : IsCoprime b c) (hca : IsCoprime c a) (hsum : a + b + c = 0) :
+protected theorem Polynomial.abc
+    {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0)
+    (hab : IsCoprime a b) (hsum : a + b + c = 0) :
     ( natDegree a + 1 ≤ (radical (a * b * c)).natDegree ∧
       natDegree b + 1 ≤ (radical (a * b * c)).natDegree ∧
       natDegree c + 1 ≤ (radical (a * b * c)).natDegree ) ∨
       derivative a = 0 ∧ derivative b = 0 ∧ derivative c = 0 := by
   set w := wronskian a b with wab
+  have hbc : IsCoprime b c := by
+    rw [add_eq_zero_iff_neg_eq] at hsum
+    rw [← hsum, IsCoprime.neg_right_iff]
+    convert IsCoprime.add_mul_left_right hab.symm 1
+    rw [mul_one]
+  have hsum' : b + c + a = 0 := by rwa [add_rotate] at hsum
+  have hca : IsCoprime c a := by
+    rw [add_eq_zero_iff_neg_eq] at hsum'
+    rw [← hsum', IsCoprime.neg_right_iff]
+    convert IsCoprime.add_mul_left_right hbc.symm 1
+    rw [mul_one]
   have wbc : w = wronskian b c := wronskian_eq_of_sum_zero hsum
   have wca : w = wronskian c a := by
     rw [add_rotate] at hsum

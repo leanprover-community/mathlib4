@@ -6,8 +6,8 @@ Authors: Kim Morrison, Nicolò Cavalleri
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.Module.LinearMap
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.UniformSpace.CompactConvergence
 
@@ -50,7 +50,7 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 @[to_additive]
 instance instMul [Mul β] [ContinuousMul β] : Mul C(α, β) :=
-  ⟨fun f g => ⟨f * g, continuous_mul.comp (f.continuous.prod_mk g.continuous : _)⟩⟩
+  ⟨fun f g => ⟨f * g, continuous_mul.comp (f.continuous.prod_mk g.continuous :)⟩⟩
 
 @[to_additive (attr := norm_cast, simp)]
 theorem coe_mul [Mul β] [ContinuousMul β] (f g : C(α, β)) : ⇑(f * g) = f * g :=
@@ -351,20 +351,20 @@ instance [CommGroup β] [TopologicalGroup β] : TopologicalGroup C(α, β) where
     have : UniformGroup β := comm_topologicalGroup_is_uniform
     rw [continuous_iff_continuousAt]
     rintro ⟨f, g⟩
-    rw [ContinuousAt, tendsto_iff_forall_compact_tendstoUniformlyOn, nhds_prod_eq]
+    rw [ContinuousAt, tendsto_iff_forall_isCompact_tendstoUniformlyOn, nhds_prod_eq]
     exact fun K hK =>
       uniformContinuous_mul.comp_tendstoUniformlyOn
-        ((tendsto_iff_forall_compact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prod
-          (tendsto_iff_forall_compact_tendstoUniformlyOn.mp Filter.tendsto_id K hK))
+        ((tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prod
+          (tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK))
   continuous_inv := by
     letI : UniformSpace β := TopologicalGroup.toUniformSpace β
     have : UniformGroup β := comm_topologicalGroup_is_uniform
     rw [continuous_iff_continuousAt]
     intro f
-    rw [ContinuousAt, tendsto_iff_forall_compact_tendstoUniformlyOn]
+    rw [ContinuousAt, tendsto_iff_forall_isCompact_tendstoUniformlyOn]
     exact fun K hK =>
       uniformContinuous_inv.comp_tendstoUniformlyOn
-        (tendsto_iff_forall_compact_tendstoUniformlyOn.mp Filter.tendsto_id K hK)
+        (tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK)
 
 /-- If an infinite product of functions in `C(α, β)` converges to `g`
 (for the compact-open topology), then the pointwise product converges to `g x` for all `x ∈ α`. -/
@@ -617,6 +617,13 @@ def coeFnLinearMap : C(α, M) →ₗ[R] α → M :=
   { (coeFnAddMonoidHom : C(α, M) →+ _) with
     map_smul' := coe_smul }
 
+/-- Evaluation at a point, as a continuous linear map. -/
+@[simps apply]
+def evalCLM (x : α) : C(α, M) →L[R] M where
+  toFun f := f x
+  map_add' _ _ := add_apply _ _ x
+  map_smul' _ _ := smul_apply _ _ x
+
 end ContinuousMap
 
 end ModuleStructure
@@ -663,7 +670,7 @@ theorem ContinuousMap.C_apply (r : R) (a : α) : ContinuousMap.C r a = algebraMa
   rfl
 
 instance ContinuousMap.algebra : Algebra R C(α, A) where
-  toRingHom := ContinuousMap.C
+  algebraMap := ContinuousMap.C
   commutes' c f := by ext x; exact Algebra.commutes' _ _
   smul_def' c f := by ext x; exact Algebra.smul_def' _ _
 
@@ -760,8 +767,8 @@ theorem Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h
   let f' : s :=
     ((b - a) * (f x - f y)⁻¹) • (algebraMap _ s (f x) - (⟨f, hf⟩ : s)) + algebraMap _ s a
   refine ⟨f', f'.prop, ?_, ?_⟩
-  · simp [f']
-  · simp [f', inv_mul_cancel_right₀ hxy]
+  · simp [a, b, f']
+  · simp [a, b, f', inv_mul_cancel_right₀ hxy]
 
 end ContinuousMap
 

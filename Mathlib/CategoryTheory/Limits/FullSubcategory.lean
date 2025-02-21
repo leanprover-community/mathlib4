@@ -113,8 +113,6 @@ theorem hasLimit_of_closedUnderLimits (h : ClosedUnderLimitsOfShape J P)
   have : CreatesLimit F (fullSubcategoryInclusion P) :=
     createsLimitFullSubcategoryInclusionOfClosed h F
   hasLimit_of_created F (fullSubcategoryInclusion P)
-@[deprecated (since := "2024-03-23")]
-alias hasLimit_of_closed_under_limits := hasLimit_of_closedUnderLimits
 
 theorem hasLimitsOfShape_of_closedUnderLimits (h : ClosedUnderLimitsOfShape J P)
     [HasLimitsOfShape J C] : HasLimitsOfShape J (FullSubcategory P) :=
@@ -136,14 +134,10 @@ theorem hasColimit_of_closedUnderColimits (h : ClosedUnderColimitsOfShape J P)
   have : CreatesColimit F (fullSubcategoryInclusion P) :=
     createsColimitFullSubcategoryInclusionOfClosed h F
   hasColimit_of_created F (fullSubcategoryInclusion P)
-@[deprecated (since := "2024-03-23")]
-alias hasColimit_of_closed_under_colimits := hasColimit_of_closedUnderColimits
 
 theorem hasColimitsOfShape_of_closedUnderColimits (h : ClosedUnderColimitsOfShape J P)
     [HasColimitsOfShape J C] : HasColimitsOfShape J (FullSubcategory P) :=
   { has_colimit := fun F => hasColimit_of_closedUnderColimits h F }
-@[deprecated (since := "2024-03-23")]
-alias hasColimitsOfShape_of_closed_under_colimits := hasColimitsOfShape_of_closedUnderColimits
 
 end
 

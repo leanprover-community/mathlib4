@@ -5,6 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.UniqueFactorizationDomain.Finite
 
 /-!
 # Factorization of ideals and fractional ideals of Dedekind domains
@@ -46,7 +47,7 @@ dedekind domain, fractional ideal, ideal, factorization
 
 noncomputable section
 
-open scoped Classical nonZeroDivisors
+open scoped nonZeroDivisors
 
 open Set Function UniqueFactorizationMonoid IsDedekindDomain IsDedekindDomain.HeightOneSpectrum
   Classical

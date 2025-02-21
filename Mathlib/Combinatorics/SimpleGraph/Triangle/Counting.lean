@@ -23,7 +23,7 @@ attribute [-instance] decidableEq_of_subsingleton
 
 open Finset Fintype
 
-variable {α : Type*} (G G' : SimpleGraph α) [DecidableRel G.Adj] {ε : ℝ} {s t u : Finset α}
+variable {α : Type*} (G : SimpleGraph α) [DecidableRel G.Adj] {ε : ℝ} {s t u : Finset α}
 
 namespace SimpleGraph
 
@@ -146,7 +146,7 @@ private lemma triple_eq_triple_of_mem (hst : Disjoint s t) (hsu : Disjoint s u) 
   · rintro rfl
     solve_by_elim
 
-variable [Fintype α] {P : Finpartition (univ : Finset α)}
+variable [Fintype α]
 
 /-- The **Triangle Counting Lemma**. If `G` is a graph and `s`, `t`, `u` are disjoint sets of
 vertices such that each pair is `ε`-uniform and `2 * ε`-dense, then `G` contains at least

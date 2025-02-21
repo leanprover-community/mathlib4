@@ -100,8 +100,9 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
     obtain ⟨P, hP₁, hP₂, hP₃, hP₄⟩ := h (⌊4 / ε ^ 5⌋₊ + 1)
     refine ⟨P, hP₁, (le_initialBound _ _).trans hP₂, hP₃.trans ?_,
       hP₄.resolve_right fun hPenergy => lt_irrefl (1 : ℝ) ?_⟩
-    · rw [iterate_succ_apply']
-      exact mul_le_mul_left' (pow_le_pow_left (by norm_num) (by norm_num) _) _
+    · rw [iterate_succ_apply', stepBound, bound]
+      gcongr
+      norm_num
     calc
       (1 : ℝ) = ε ^ 5 / ↑4 * (↑4 / ε ^ 5) := by
         rw [mul_comm, div_mul_div_cancel₀ (pow_pos hε 5).ne']; norm_num

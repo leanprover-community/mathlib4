@@ -277,7 +277,7 @@ open Finset
 noncomputable def traceMatrix (b : κ → B) : Matrix κ κ A :=
   of fun i j => traceForm A B (b i) (b j)
 
--- TODO: set as an equation lemma for `traceMatrix`, see mathlib4#3024
+-- TODO: set as an equation lemma for `traceMatrix`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem traceMatrix_apply (b : κ → B) (i j) : traceMatrix A b i j = traceForm A B (b i) (b j) :=
   rfl
@@ -348,7 +348,7 @@ variable (A)
 def embeddingsMatrix (b : κ → B) : Matrix κ (B →ₐ[A] C) C :=
   of fun i (σ : B →ₐ[A] C) => σ (b i)
 
--- TODO: set as an equation lemma for `embeddingsMatrix`, see mathlib4#3024
+-- TODO: set as an equation lemma for `embeddingsMatrix`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem embeddingsMatrix_apply (b : κ → B) (i) (σ : B →ₐ[A] C) :
     embeddingsMatrix A C b i σ = σ (b i) :=
@@ -494,14 +494,8 @@ namespace Algebra
 
 /-- The trace of a nilpotent element is nilpotent. -/
 lemma trace_isNilpotent_of_isNilpotent {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S}
-    (hx : IsNilpotent x) : IsNilpotent (trace R S x) := by
-  by_cases hS : ∃ s : Finset S, Nonempty (Basis s R S)
-  · obtain ⟨s, ⟨b⟩⟩ := hS
-    have := Module.Finite.of_basis b
-    have := (Module.free_def R S).mpr ⟨s, ⟨b⟩⟩
-    apply LinearMap.isNilpotent_trace_of_isNilpotent (hx.map (lmul R S))
-  · rw [trace_eq_zero_of_not_exists_basis _ hS, LinearMap.zero_apply]
-    exact IsNilpotent.zero
+    (hx : IsNilpotent x) : IsNilpotent (trace R S x) :=
+  LinearMap.isNilpotent_trace_of_isNilpotent (hx.map (lmul R S))
 
 end Algebra
 

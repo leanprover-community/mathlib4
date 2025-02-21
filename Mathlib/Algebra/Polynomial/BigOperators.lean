@@ -42,9 +42,11 @@ section Semiring
 
 variable {S : Type*} [Semiring S]
 
-set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
-theorem natDegree_list_sum_le (l : List S[X]) : natDegree l.sum ≤ (l.map natDegree).foldr max 0 :=
-  List.sum_le_foldr_max natDegree (by simp) natDegree_add_le _
+theorem natDegree_list_sum_le (l : List S[X]) :
+    natDegree l.sum ≤ (l.map natDegree).foldr max 0 := by
+  apply List.sum_le_foldr_max natDegree
+  · simp
+  · exact natDegree_add_le
 
 theorem natDegree_multiset_sum_le (l : Multiset S[X]) :
     natDegree l.sum ≤ (l.map natDegree).foldr max 0 :=
@@ -343,7 +345,7 @@ where additionally, the product of the leading coefficients must be nonzero.
 theorem leadingCoeff_multiset_prod :
     t.prod.leadingCoeff = (t.map fun f => leadingCoeff f).prod := by
   rw [← leadingCoeffHom_apply, MonoidHom.map_multiset_prod]
-  rfl
+  simp only [leadingCoeffHom_apply]
 
 /-- The leading coefficient of a product of polynomials is equal to
 the product of the leading coefficients.

@@ -52,7 +52,7 @@ section
 /-- A projective presentation of an object `X` consists of an epimorphism `f : P ⟶ X`
 from some projective object `P`.
 -/
--- Porting note(#5171): was @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure ProjectivePresentation (X : C) where
   p : C
   [projective : Projective p]
@@ -199,7 +199,7 @@ theorem map_projective (adj : F ⊣ G) [G.PreservesEpimorphisms] (P : C) (hP : P
 theorem projective_of_map_projective (adj : F ⊣ G) [F.Full] [F.Faithful] (P : C)
     (hP : Projective (F.obj P)) : Projective P where
   factors f g _ := by
-    haveI := Adjunction.leftAdjointPreservesColimits.{0, 0} adj
+    haveI := Adjunction.leftAdjoint_preservesColimits.{0, 0} adj
     rcases (@hP).1 (F.map f) (F.map g) with ⟨f', hf'⟩
     use adj.unit.app _ ≫ G.map f' ≫ (inv <| adj.unit.app _)
     exact F.map_injective (by simpa)
@@ -211,7 +211,7 @@ def mapProjectivePresentation (adj : F ⊣ G) [G.PreservesEpimorphisms] (X : C)
   p := F.obj Y.p
   projective := adj.map_projective _ Y.projective
   f := F.map Y.f
-  epi := have := Adjunction.leftAdjointPreservesColimits.{0, 0} adj; inferInstance
+  epi := have := Adjunction.leftAdjoint_preservesColimits.{0, 0} adj; inferInstance
 
 end Adjunction
 

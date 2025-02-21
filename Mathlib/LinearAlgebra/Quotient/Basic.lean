@@ -7,7 +7,7 @@ import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.GroupTheory.QuotientGroup.Basic
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Quotient.Defs
-import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.SetTheory.Cardinal.Finite
 
 /-!

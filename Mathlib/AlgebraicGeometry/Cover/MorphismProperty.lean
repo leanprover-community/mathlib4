@@ -73,6 +73,9 @@ theorem Cover.iUnion_range {X : Scheme.{u}} (𝒰 : X.Cover P) :
   rw [Set.mem_iUnion]
   exact ⟨𝒰.f x, 𝒰.covers x⟩
 
+lemma Cover.exists_eq (𝒰 : X.Cover P) (x : X) : ∃ i y, (𝒰.map i).base y = x :=
+  ⟨_, 𝒰.covers x⟩
+
 /-- Given a family of schemes with morphisms to `X` satisfying `P` that jointly
 cover `X`, this an associated `P`-cover of `X`. -/
 @[simps]
@@ -86,7 +89,7 @@ def Cover.mkOfCovers (J : Type*) (obj : J → Scheme.{u}) (map : (j : J) → obj
   covers x := (covers x).choose_spec
   map_prop := map_prop
 
-/-- Turn a `P`-cover into a `Q`-cover by showing that the components satisfiy `Q`. -/
+/-- Turn a `P`-cover into a `Q`-cover by showing that the components satisfy `Q`. -/
 def Cover.changeProp (Q : MorphismProperty Scheme.{u}) (𝒰 : X.Cover P) (h : ∀ j, Q (𝒰.map j)) :
     X.Cover Q where
   J := 𝒰.J

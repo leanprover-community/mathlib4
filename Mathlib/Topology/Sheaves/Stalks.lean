@@ -3,7 +3,6 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Justus Springer
 -/
-import Mathlib.CategoryTheory.Sites.Pullback
 import Mathlib.Topology.Category.TopCat.OpenNhds
 import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 
@@ -111,19 +110,19 @@ lemma map_germ_eq_Γgerm (F : X.Presheaf C) {U : Opens X} {i : U ⟶ ⊤} (x : X
     F.map i.op ≫ F.germ U x hx = F.Γgerm x :=
   germ_res F i x hx
 
-attribute [local instance] ConcreteCategory.instFunLike in
+attribute [local instance] HasForget.instFunLike in
 theorem germ_res_apply (F : X.Presheaf C)
-    {U V : Opens X} (i : U ⟶ V) (x : X) (hx : x ∈ U) [ConcreteCategory C] (s) :
+    {U V : Opens X} (i : U ⟶ V) (x : X) (hx : x ∈ U) [HasForget C] (s) :
   F.germ U x hx (F.map i.op s) = F.germ V x (i.le hx) s := by rw [← comp_apply, germ_res]
 
-attribute [local instance] ConcreteCategory.instFunLike in
+attribute [local instance] HasForget.instFunLike in
 theorem germ_res_apply' (F : X.Presheaf C)
-    {U V : Opens X} (i : op V ⟶ op U) (x : X) (hx : x ∈ U) [ConcreteCategory C] (s) :
+    {U V : Opens X} (i : op V ⟶ op U) (x : X) (hx : x ∈ U) [HasForget C] (s) :
   F.germ U x hx (F.map i s) = F.germ V x (i.unop.le hx) s := by rw [← comp_apply, germ_res']
 
-attribute [local instance] ConcreteCategory.instFunLike in
+attribute [local instance] HasForget.instFunLike in
 lemma Γgerm_res_apply (F : X.Presheaf C)
-    {U : Opens X} {i : U ⟶ ⊤} (x : X) (hx : x ∈ U) [ConcreteCategory C] (s) :
+    {U : Opens X} {i : U ⟶ ⊤} (x : X) (hx : x ∈ U) [HasForget C] (s) :
   F.germ U x hx (F.map i.op s) = F.Γgerm x s := F.germ_res_apply i x hx s
 
 /-- A morphism from the stalk of `F` at `x` to some object `Y` is completely determined by its
@@ -140,17 +139,17 @@ theorem stalkFunctor_map_germ {F G : X.Presheaf C} (U : Opens X) (x : X) (hx : x
     F.germ U x hx ≫ (stalkFunctor C x).map f = f.app (op U) ≫ G.germ U x hx :=
   colimit.ι_map (whiskerLeft (OpenNhds.inclusion x).op f) (op ⟨U, hx⟩)
 
-attribute [local instance] ConcreteCategory.instFunLike in
-theorem stalkFunctor_map_germ_apply [ConcreteCategory C]
+attribute [local instance] HasForget.instFunLike in
+theorem stalkFunctor_map_germ_apply [HasForget C]
     {F G : X.Presheaf C} (U : Opens X) (x : X) (hx : x ∈ U) (f : F ⟶ G) (s) :
     (stalkFunctor C x).map f (F.germ U x hx s) = G.germ U x hx (f.app (op U) s) := by
   rw [← comp_apply, ← stalkFunctor_map_germ]
   exact (comp_apply _ _ _).symm
 
 -- a variant of `stalkFunctor_map_germ_apply` that makes simpNF happy.
-attribute [local instance] ConcreteCategory.instFunLike in
+attribute [local instance] HasForget.instFunLike in
 @[simp]
-theorem stalkFunctor_map_germ_apply' [ConcreteCategory C]
+theorem stalkFunctor_map_germ_apply' [HasForget C]
     {F G : X.Presheaf C} (U : Opens X) (x : X) (hx : x ∈ U) (f : F ⟶ G) (s) :
     DFunLike.coe (F := F.stalk x ⟶ G.stalk x) ((stalkFunctor C x).map f) (F.germ U x hx s) =
       G.germ U x hx (f.app (op U) s) :=
@@ -204,34 +203,18 @@ theorem comp (ℱ : X.Presheaf C) (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
   ext
   simp [germ, stalkPushforward]
 
-theorem stalkPushforward_iso_of_isOpenEmbedding {f : X ⟶ Y} (hf : IsOpenEmbedding f)
+theorem stalkPushforward_iso_of_isInducing {f : X ⟶ Y} (hf : IsInducing f)
     (F : X.Presheaf C) (x : X) : IsIso (F.stalkPushforward _ f x) := by
-  haveI := Functor.initial_of_adjunction (hf.isOpenMap.adjunctionNhds x)
-  convert
-      ((Functor.Final.colimitIso (hf.isOpenMap.functorNhds x).op
-              ((OpenNhds.inclusion (f x)).op ⋙ f _* F) :
-            _).symm ≪≫
-        colim.mapIso _).isIso_hom
-  swap
-  · fapply NatIso.ofComponents
-    · intro U
-      refine F.mapIso (eqToIso ?_)
-      dsimp only [Functor.op]
-      exact congr_arg op (Opens.ext <| Set.preimage_image_eq (unop U).1.1 hf.injective)
-    · intro U V i; erw [← F.map_comp, ← F.map_comp]; congr 1
-  · change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
-    ext U
-    rw [← Iso.comp_inv_eq]
-    erw [colimit.ι_map_assoc]
-    rw [colimit.ι_pre, Category.assoc]
-    erw [colimit.ι_map_assoc, colimit.ι_pre, ← F.map_comp_assoc]
-    apply colimit.w ((OpenNhds.inclusion (f x)).op ⋙ f _* F) _
-    dsimp only [Functor.op]
-    refine ((homOfLE ?_).op : op (unop U) ⟶ _)
-    exact Set.image_preimage_subset _ _
+  haveI := Functor.initial_of_adjunction (hf.adjunctionNhds x)
+  convert (Functor.Final.colimitIso (OpenNhds.map f x).op ((OpenNhds.inclusion x).op ⋙ F)).isIso_hom
+  refine stalk_hom_ext _ fun U hU ↦ (stalkPushforward_germ _ f F _ x hU).trans ?_
+  symm
+  exact colimit.ι_pre ((OpenNhds.inclusion x).op ⋙ F) (OpenNhds.map f x).op _
 
+@[deprecated (since := "2024-10-27")]
+alias stalkPushforward_iso_of_isOpenEmbedding := stalkPushforward_iso_of_isInducing
 @[deprecated (since := "2024-10-18")]
-alias stalkPushforward_iso_of_openEmbedding := stalkPushforward_iso_of_isOpenEmbedding
+alias stalkPushforward_iso_of_openEmbedding := stalkPushforward_iso_of_isInducing
 
 end stalkPushforward
 
@@ -352,12 +335,12 @@ noncomputable def stalkSpecializes (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
   refine colimit.desc _ ⟨_, fun U => ?_, ?_⟩
   · exact
       colimit.ι ((OpenNhds.inclusion x).op ⋙ F)
-        (op ⟨(unop U).1, (specializes_iff_forall_open.mp h _ (unop U).1.2 (unop U).2 : _)⟩)
+        (op ⟨(unop U).1, (specializes_iff_forall_open.mp h _ (unop U).1.2 (unop U).2 :)⟩)
   · intro U V i
     dsimp
     rw [Category.comp_id]
-    let U' : OpenNhds x := ⟨_, (specializes_iff_forall_open.mp h _ (unop U).1.2 (unop U).2 : _)⟩
-    let V' : OpenNhds x := ⟨_, (specializes_iff_forall_open.mp h _ (unop V).1.2 (unop V).2 : _)⟩
+    let U' : OpenNhds x := ⟨_, (specializes_iff_forall_open.mp h _ (unop U).1.2 (unop U).2 :)⟩
+    let V' : OpenNhds x := ⟨_, (specializes_iff_forall_open.mp h _ (unop V).1.2 (unop V).2 :)⟩
     exact colimit.w ((OpenNhds.inclusion x).op ⋙ F) (show V' ⟶ U' from i.unop).op
 
 @[reassoc (attr := simp), elementwise nosimp]
@@ -388,7 +371,8 @@ theorem stalkSpecializes_stalkFunctor_map {F G : X.Presheaf C} (f : F ⟶ G) {x 
   change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
   ext; delta stalkFunctor; simpa [stalkSpecializes] using by rfl
 
-@[reassoc, elementwise, simp, nolint simpNF] -- see std4#365 for the simpNF issue
+-- See https://github.com/leanprover-community/batteries/issues/365 for the simpNF issue.
+@[reassoc, elementwise, simp, nolint simpNF]
 theorem stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
     (f _* F).stalkSpecializes (f.map_specializes h) ≫ F.stalkPushforward _ f x =
       F.stalkPushforward _ f y ≫ F.stalkSpecializes h := by
@@ -409,11 +393,11 @@ end stalkSpecializes
 section Concrete
 
 variable {C}
-variable [ConcreteCategory.{v} C]
+variable [HasForget.{v} C]
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
 
--- Porting note (#11215): TODO: @[ext] attribute only applies to structures or lemmas proving x = y
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: @[ext] attribute only applies to structures or lemmas proving x = y
 -- @[ext]
 theorem germ_ext (F : X.Presheaf C) {U V : Opens X} {x : X} {hxU : x ∈ U} {hxV : x ∈ V}
     (W : Opens X) (hxW : x ∈ W) (iWU : W ⟶ U) (iWV : W ⟶ V) {sU : F.obj (op U)} {sV : F.obj (op V)}

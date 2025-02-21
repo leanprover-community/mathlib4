@@ -32,10 +32,12 @@ polynomial in `k` splits.
 
 algebraic closure, algebraically closed
 
-## TODO
+## Main results
 
-- Prove that if `K / k` is algebraic, and any monic irreducible polynomial over `k` has a root
-  in `K`, then `K` is algebraically closed (in fact an algebraic closure of `k`).
+- `IsAlgClosure.of_splits`: if `K / k` is algebraic, and every monic irreducible polynomial over
+  `k` splits in `K`, then `K` is algebraically closed (in fact an algebraic closure of `k`).
+  For the stronger fact that only requires every such polynomial has a root in `K`,
+  see `IsAlgClosure.of_exist_roots`.
 
   Reference: <https://kconrad.math.uconn.edu/blurbs/galoistheory/algclosure.pdf>, Theorem 2
 
@@ -262,11 +264,14 @@ variable {K : Type u} [Field K] {L : Type v} {M : Type w} [Field L] [Algebra K L
 /-- If E/L/K is a tower of field extensions with E/L algebraic, and if M is an algebraically
   closed extension of K, then any embedding of L/K into M/K extends to an embedding of E/K.
   Known as the extension lemma in https://math.stackexchange.com/a/687914. -/
-theorem surjective_comp_algebraMap_of_isAlgebraic {E : Type*}
+theorem surjective_restrictDomain_of_isAlgebraic {E : Type*}
     [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E] [Algebra.IsAlgebraic L E] :
-    Function.Surjective fun φ : E →ₐ[K] M ↦ φ.comp (IsScalarTower.toAlgHom K L E) :=
+    Function.Surjective fun φ : E →ₐ[K] M ↦ φ.restrictDomain L :=
   fun f ↦ IntermediateField.exists_algHom_of_splits'
     (E := E) f fun s ↦ ⟨Algebra.IsIntegral.isIntegral s, IsAlgClosed.splits_codomain _⟩
+
+@[deprecated (since := "2024-11-15")]
+alias surjective_comp_algebraMap_of_isAlgebraic := surjective_restrictDomain_of_isAlgebraic
 
 variable [Algebra.IsAlgebraic K L] (K L M)
 
@@ -346,7 +351,7 @@ variable [Algebra R L] [NoZeroSMulDivisors R L] [IsAlgClosure R L]
 /-- A (random) isomorphism between two algebraic closures of `R`. -/
 @[stacks 09GV]
 noncomputable def equiv : L ≃ₐ[R] M :=
-  -- Porting note (#10754): added to replace local instance above
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added to replace local instance above
   haveI : IsAlgClosed L := IsAlgClosure.isAlgClosed R
   haveI : IsAlgClosed M := IsAlgClosure.isAlgClosed R
   AlgEquiv.ofBijective _ (IsAlgClosure.isAlgebraic.algHom_bijective₂
@@ -377,7 +382,7 @@ noncomputable def equivOfAlgebraic' [Nontrivial S] [NoZeroSMulDivisors R S]
   letI : NoZeroSMulDivisors R L := NoZeroSMulDivisors.of_algebraMap_injective <| by
     rw [IsScalarTower.algebraMap_eq R S L]
     exact (Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective S L)
-            (NoZeroSMulDivisors.algebraMap_injective R S) : _)
+            (NoZeroSMulDivisors.algebraMap_injective R S) :)
   letI : IsAlgClosure R L :=
     { isAlgClosed := IsAlgClosure.isAlgClosed S
       isAlgebraic := ‹_› }
@@ -407,7 +412,7 @@ noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
   haveI : IsScalarTower S R L :=
     IsScalarTower.of_algebraMap_eq (by simp [RingHom.algebraMap_toAlgebra])
   haveI : NoZeroSMulDivisors R S := NoZeroSMulDivisors.of_algebraMap_injective hSR.symm.injective
-  have : Algebra.IsAlgebraic R L := (IsAlgClosure.isAlgebraic.tower_top_of_injective
+  have : Algebra.IsAlgebraic R L := (IsAlgClosure.isAlgebraic.extendScalars
     (show Function.Injective (algebraMap S R) from hSR.injective))
   refine
     ⟨equivOfAlgebraic' R S L M, ?_⟩
@@ -492,3 +497,30 @@ theorem Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits_apply_apply (L : Type*) [F
     Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits A L hL f x = algebraMap L A (f x) := rfl
 
 end Algebra.IsAlgebraic
+
+/-- Over an algebraically closed field of characteristic zero a necessary and sufficient condition
+for the set of roots of a nonzero polynomial `f` to be a subset of the set of roots of `g` is that
+`f` divides `f.derivative * g`. Over an integral domain, this is a sufficient but not necessary
+condition. See `isRoot_of_isRoot_of_dvd_derivative_mul` -/
+theorem Polynomial.isRoot_of_isRoot_iff_dvd_derivative_mul {K : Type*} [Field K]
+    [IsAlgClosed K] [CharZero K] {f g : K[X]} (hf0 : f ≠ 0) :
+    (∀ x, IsRoot f x → IsRoot g x) ↔ f ∣ f.derivative * g := by
+  refine ⟨?_, isRoot_of_isRoot_of_dvd_derivative_mul hf0⟩
+  by_cases hg0 : g = 0
+  · simp [hg0]
+  by_cases hdf0 : derivative f = 0
+  · rw [eq_C_of_derivative_eq_zero hdf0]
+    simp only [eval_C, derivative_C, zero_mul, dvd_zero, implies_true]
+  have hdg :  f.derivative * g ≠ 0 := mul_ne_zero hdf0 hg0
+  classical rw [Splits.dvd_iff_roots_le_roots (IsAlgClosed.splits f) hf0 hdg, Multiset.le_iff_count]
+  simp only [count_roots, rootMultiplicity_mul hdg]
+  refine forall_imp fun a => ?_
+  by_cases haf : f.eval a = 0
+  · have h0 : 0 < f.rootMultiplicity a := (rootMultiplicity_pos hf0).2 haf
+    rw [derivative_rootMultiplicity_of_root haf]
+    intro h
+    calc rootMultiplicity a f
+        = rootMultiplicity a f - 1 + 1 := (Nat.sub_add_cancel (Nat.succ_le_iff.1 h0)).symm
+      _ ≤ rootMultiplicity a f - 1 + rootMultiplicity a g := add_le_add le_rfl (Nat.succ_le_iff.1
+        ((rootMultiplicity_pos hg0).2 (h haf)))
+  · simp [haf, rootMultiplicity_eq_zero haf]

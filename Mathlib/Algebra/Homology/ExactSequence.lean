@@ -75,7 +75,7 @@ lemma isComplex₀ (S : ComposableArrows C 0) : S.IsComplex where
   zero i hi := by simp +decide at hi
 
 lemma isComplex₁ (S : ComposableArrows C 1) : S.IsComplex where
-  zero i hi := by exfalso; omega
+  zero i hi := by omega
 
 variable (S)
 

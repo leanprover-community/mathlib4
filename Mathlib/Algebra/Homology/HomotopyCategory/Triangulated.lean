@@ -14,6 +14,8 @@ the pretriangulated category `HomotopyCategory C (ComplexShape.up ℤ)` is trian
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category Limits Pretriangulated ComposableArrows
 
 variable {C : Type*} [Category C] [Preadditive C] [HasBinaryBiproducts C]

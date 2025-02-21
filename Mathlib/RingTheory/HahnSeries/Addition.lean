@@ -24,8 +24,6 @@ coefficients in `R`, whose supports are partially well-ordered. With further str
 
 open Finset Function
 
-open scoped Classical
-
 noncomputable section
 
 variable {Γ Γ' R S U V : Type*}
@@ -85,10 +83,9 @@ and the additive opposite of Hahn series over `Γ` with coefficients `R`.
 def addOppositeEquiv : HahnSeries Γ (Rᵃᵒᵖ) ≃+ (HahnSeries Γ R)ᵃᵒᵖ where
   toFun x := .op ⟨fun a ↦ (x.coeff a).unop, by convert x.isPWO_support; ext; simp⟩
   invFun x := ⟨fun a ↦ .op (x.unop.coeff a), by convert x.unop.isPWO_support; ext; simp⟩
-  left_inv x := by ext; simp
+  left_inv x := by simp
   right_inv x := by
     apply AddOpposite.unop_injective
-    ext
     simp
   map_add' x y := by
     apply AddOpposite.unop_injective
@@ -109,6 +106,7 @@ lemma addOppositeEquiv_symm_support (x : (HahnSeries Γ R)ᵃᵒᵖ) :
 @[simp]
 lemma addOppositeEquiv_orderTop (x : HahnSeries Γ (Rᵃᵒᵖ)) :
     (addOppositeEquiv x).unop.orderTop = x.orderTop := by
+  classical
   simp only [orderTop, AddOpposite.unop_op, mk_eq_zero, EmbeddingLike.map_eq_zero_iff,
     addOppositeEquiv_support, ne_eq]
   simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, zero_coeff]
@@ -123,6 +121,7 @@ lemma addOppositeEquiv_symm_orderTop (x : (HahnSeries Γ R)ᵃᵒᵖ) :
 @[simp]
 lemma addOppositeEquiv_leadingCoeff (x : HahnSeries Γ (Rᵃᵒᵖ)) :
     (addOppositeEquiv x).unop.leadingCoeff = x.leadingCoeff.unop := by
+  classical
   simp only [leadingCoeff, AddOpposite.unop_op, mk_eq_zero, EmbeddingLike.map_eq_zero_iff,
     addOppositeEquiv_support, ne_eq]
   simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, zero_coeff]
@@ -276,10 +275,11 @@ protected lemma map_neg [AddGroup S] (f : R →+ S) {x : HahnSeries Γ R} :
   ext; simp
 
 theorem orderTop_neg {x : HahnSeries Γ R} : (-x).orderTop = x.orderTop := by
-  simp only [orderTop, support_neg, neg_eq_zero]
+  classical simp only [orderTop, support_neg, neg_eq_zero]
 
 @[simp]
 theorem order_neg [Zero Γ] {f : HahnSeries Γ R} : (-f).order = f.order := by
+  classical
   by_cases hf : f = 0
   · simp only [hf, neg_zero]
   simp only [order, support_neg, neg_eq_zero]

@@ -23,7 +23,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
 
   - `LinearOrderedSemiring ℝ≥0`;
   - `OrderedCommSemiring ℝ≥0`;
-  - `CanonicallyOrderedCommSemiring ℝ≥0`;
+  - `CanonicallyOrderedAdd ℝ≥0`;
   - `LinearOrderedCommGroupWithZero ℝ≥0`;
   - `CanonicallyLinearOrderedAddCommMonoid ℝ≥0`;
   - `Archimedean ℝ≥0`;
@@ -53,24 +53,29 @@ open Function
 /-- Nonnegative real numbers. -/
 def NNReal := { r : ℝ // 0 ≤ r } deriving
   Zero, One, Semiring, StrictOrderedSemiring, CommMonoidWithZero, CommSemiring,
-  SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
-  CanonicallyOrderedCommSemiring, Inhabited
+  PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
+  OrderedCommMonoid, Nontrivial, Inhabited
 
 namespace NNReal
 
 scoped notation "ℝ≥0" => NNReal
 
+instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
+instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors
 instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
 instance : OrderBot ℝ≥0 := inferInstance
 instance instArchimedean : Archimedean ℝ≥0 := Nonneg.instArchimedean
 instance instMulArchimedean : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedean
 instance : Min ℝ≥0 := SemilatticeInf.toMin
 instance : Max ℝ≥0 := SemilatticeSup.toMax
-noncomputable instance : Sub ℝ≥0 := Nonneg.sub
-noncomputable instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
+instance : Sub ℝ≥0 := Nonneg.sub
+instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 
-noncomputable instance : CanonicallyLinearOrderedSemifield ℝ≥0 :=
-  Nonneg.canonicallyLinearOrderedSemifield
+noncomputable instance : LinearOrderedSemifield ℝ≥0 :=
+  Nonneg.linearOrderedSemifield
+
+noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 :=
+  Nonneg.linearOrderedCommGroupWithZero
 
 /-- Coercion `ℝ≥0 → ℝ`. -/
 @[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
@@ -100,7 +105,7 @@ protected theorem «exists» {p : ℝ≥0 → Prop} :
   Subtype.exists
 
 /-- Reinterpret a real number `r` as a non-negative real number. Returns `0` if `r < 0`. -/
-noncomputable def _root_.Real.toNNReal (r : ℝ) : ℝ≥0 :=
+def _root_.Real.toNNReal (r : ℝ) : ℝ≥0 :=
   ⟨max r 0, le_max_right _ _⟩
 
 theorem _root_.Real.coe_toNNReal (r : ℝ) (hr : 0 ≤ r) : (Real.toNNReal r : ℝ) = r :=
@@ -122,7 +127,7 @@ example : One ℝ≥0 := by infer_instance
 
 example : Add ℝ≥0 := by infer_instance
 
-noncomputable example : Sub ℝ≥0 := by infer_instance
+example : Sub ℝ≥0 := by infer_instance
 
 example : Mul ℝ≥0 := by infer_instance
 
@@ -143,7 +148,6 @@ protected theorem coe_injective : Injective ((↑) : ℝ≥0 → ℝ) := Subtype
 @[simp, norm_cast] lemma coe_inj {r₁ r₂ : ℝ≥0} : (r₁ : ℝ) = r₂ ↔ r₁ = r₂ :=
   NNReal.coe_injective.eq_iff
 
-@[deprecated (since := "2024-02-03")] protected alias coe_eq := coe_inj
 
 @[simp, norm_cast] lemma coe_zero : ((0 : ℝ≥0) : ℝ) = 0 := rfl
 
@@ -188,7 +192,7 @@ example : CommSemiring ℝ≥0 := by infer_instance
 
 /-- Coercion `ℝ≥0 → ℝ` as a `RingHom`.
 
-Porting note (#11215): TODO: what if we define `Coe ℝ≥0 ℝ` using this function? -/
+Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: what if we define `Coe ℝ≥0 ℝ` using this function? -/
 def toRealHom : ℝ≥0 →+* ℝ where
   toFun := (↑)
   map_one' := NNReal.coe_one
@@ -208,13 +212,13 @@ theorem smul_def {M : Type*} [MulAction ℝ M] (c : ℝ≥0) (x : M) : c • x =
   rfl
 
 instance {M N : Type*} [MulAction ℝ M] [MulAction ℝ N] [SMul M N] [IsScalarTower ℝ M N] :
-    IsScalarTower ℝ≥0 M N where smul_assoc r := (smul_assoc (r : ℝ) : _)
+    IsScalarTower ℝ≥0 M N where smul_assoc r := smul_assoc (r : ℝ)
 
 instance smulCommClass_left {M N : Type*} [MulAction ℝ N] [SMul M N] [SMulCommClass ℝ M N] :
-    SMulCommClass ℝ≥0 M N where smul_comm r := (smul_comm (r : ℝ) : _)
+    SMulCommClass ℝ≥0 M N where smul_comm r := smul_comm (r : ℝ)
 
 instance smulCommClass_right {M N : Type*} [MulAction ℝ N] [SMul M N] [SMulCommClass M ℝ N] :
-    SMulCommClass M ℝ≥0 N where smul_comm m r := (smul_comm m (r : ℝ) : _)
+    SMulCommClass M ℝ≥0 N where smul_comm m r := smul_comm m (r : ℝ)
 
 /-- A `DistribMulAction` over `ℝ` restricts to a `DistribMulAction` over `ℝ≥0`. -/
 instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ M] : DistribMulAction ℝ≥0 M :=
@@ -224,13 +228,13 @@ instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ M] : DistribMulAction �
 instance {M : Type*} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
   Module.compHom M toRealHom
 
--- Porting note (#11215): TODO: after this line, `↑` uses `Algebra.cast` instead of `toReal`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: after this line, `↑` uses `Algebra.cast` instead of `toReal`
 /-- An `Algebra` over `ℝ` restricts to an `Algebra` over `ℝ≥0`. -/
 instance {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
   smul := (· • ·)
   commutes' r x := by simp [Algebra.commutes]
   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ) x, smul_def]
-  toRingHom := (algebraMap ℝ A).comp (toRealHom : ℝ≥0 →+* ℝ)
+  algebraMap := (algebraMap ℝ A).comp (toRealHom : ℝ≥0 →+* ℝ)
 
 -- verify that the above produces instances we might care about
 example : Algebra ℝ≥0 ℝ := by infer_instance
@@ -263,10 +267,8 @@ protected theorem coe_natCast (n : ℕ) : (↑(↑n : ℝ≥0) : ℝ) = n :=
 @[deprecated (since := "2024-04-17")]
 alias coe_nat_cast := NNReal.coe_natCast
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
-protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n : ℝ≥0) : ℝ) = OfNat.ofNat n :=
+protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((ofNat(n) : ℝ≥0) : ℝ) = ofNat(n) :=
   rfl
 
 @[simp, norm_cast]
@@ -317,14 +319,13 @@ theorem mk_natCast (n : ℕ) : @Eq ℝ≥0 (⟨(n : ℝ), n.cast_nonneg⟩ : ℝ
 theorem toNNReal_coe_nat (n : ℕ) : Real.toNNReal n = n :=
   NNReal.eq <| by simp [Real.coe_toNNReal]
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
-    Real.toNNReal (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+    Real.toNNReal ofNat(n) = OfNat.ofNat n :=
   toNNReal_coe_nat n
 
 /-- `Real.toNNReal` and `NNReal.toReal : ℝ≥0 → ℝ` form a Galois insertion. -/
-noncomputable def gi : GaloisInsertion Real.toNNReal (↑) :=
+def gi : GaloisInsertion Real.toNNReal (↑) :=
   GaloisInsertion.monotoneIntro NNReal.coe_mono Real.toNNReal_mono Real.le_coe_toNNReal fun _ =>
     Real.toNNReal_coe
 
@@ -333,8 +334,6 @@ noncomputable def gi : GaloisInsertion Real.toNNReal (↑) :=
 example : OrderBot ℝ≥0 := by infer_instance
 
 example : PartialOrder ℝ≥0 := by infer_instance
-
-noncomputable example : CanonicallyLinearOrderedAddCommMonoid ℝ≥0 := by infer_instance
 
 noncomputable example : LinearOrderedAddCommMonoid ℝ≥0 := by infer_instance
 
@@ -352,10 +351,6 @@ noncomputable example : LinearOrderedCommMonoid ℝ≥0 := by infer_instance
 
 noncomputable example : LinearOrderedCommMonoidWithZero ℝ≥0 := by infer_instance
 
-noncomputable example : LinearOrderedCommGroupWithZero ℝ≥0 := by infer_instance
-
-example : CanonicallyOrderedCommSemiring ℝ≥0 := by infer_instance
-
 example : DenselyOrdered ℝ≥0 := by infer_instance
 
 example : NoMaxOrder ℝ≥0 := by infer_instance
@@ -370,7 +365,7 @@ instance instSMulPosStrictMono {α} [Zero α] [Preorder α] [MulAction ℝ α] [
 
 /-- If `a` is a nonnegative real number, then the closed interval `[0, a]` in `ℝ` is order
 isomorphic to the interval `Set.Iic a`. -/
--- Porting note (#11215): TODO: restore once `simps` supports `ℝ≥0` @[simps!? apply_coe_coe]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: restore once `simps` supports `ℝ≥0` @[simps!? apply_coe_coe]
 def orderIsoIccZeroCoe (a : ℝ≥0) : Set.Icc (0 : ℝ) a ≃o Set.Iic a where
   toEquiv := Equiv.Set.sep (Set.Ici 0) fun x : ℝ => x ≤ a
   map_rel_iff' := Iff.rfl
@@ -482,7 +477,7 @@ theorem zero_le_coe {q : ℝ≥0} : 0 ≤ (q : ℝ) :=
 
 instance instOrderedSMul {M : Type*} [OrderedAddCommMonoid M] [Module ℝ M] [OrderedSMul ℝ M] :
     OrderedSMul ℝ≥0 M where
-  smul_lt_smul_of_pos hab hc := (smul_lt_smul_of_pos_left hab (NNReal.coe_pos.2 hc) : _)
+  smul_lt_smul_of_pos hab hc := (smul_lt_smul_of_pos_left hab (NNReal.coe_pos.2 hc) :)
   lt_of_smul_lt_smul_of_pos {_ _ c} hab _ :=
     lt_of_smul_lt_smul_of_nonneg_left (by exact hab) (NNReal.coe_nonneg c)
 
@@ -531,7 +526,7 @@ alias toNNReal_eq_nat_cast := toNNReal_eq_natCast
 
 @[simp]
 lemma toNNReal_eq_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
-    r.toNNReal = no_index (OfNat.ofNat n) ↔ r = OfNat.ofNat n :=
+    r.toNNReal = ofNat(n) ↔ r = OfNat.ofNat n :=
   toNNReal_eq_natCast (NeZero.ne n)
 
 @[simp]
@@ -562,12 +557,12 @@ alias nat_cast_lt_toNNReal := natCast_lt_toNNReal
 
 @[simp]
 lemma toNNReal_le_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
-    r.toNNReal ≤ no_index (OfNat.ofNat n) ↔ r ≤ n :=
+    r.toNNReal ≤ ofNat(n) ↔ r ≤ n :=
   toNNReal_le_natCast
 
 @[simp]
 lemma ofNat_lt_toNNReal {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
-    no_index (OfNat.ofNat n) < r.toNNReal ↔ n < r :=
+    ofNat(n) < r.toNNReal ↔ n < r :=
   natCast_lt_toNNReal
 
 @[simp]
@@ -628,12 +623,12 @@ alias toNNReal_lt_nat_cast := toNNReal_lt_natCast
 
 @[simp]
 lemma toNNReal_lt_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
-    r.toNNReal < no_index (OfNat.ofNat n) ↔ r < OfNat.ofNat n :=
+    r.toNNReal < ofNat(n) ↔ r < OfNat.ofNat n :=
   toNNReal_lt_natCast (NeZero.ne n)
 
 @[simp]
 lemma ofNat_le_toNNReal {n : ℕ} {r : ℝ} [n.AtLeastTwo] :
-    no_index (OfNat.ofNat n) ≤ r.toNNReal ↔ OfNat.ofNat n ≤ r :=
+    ofNat(n) ≤ r.toNNReal ↔ OfNat.ofNat n ≤ r :=
   natCast_le_toNNReal (NeZero.ne n)
 
 @[simp]
@@ -791,13 +786,15 @@ theorem lt_div_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a < b / r ↔ r * a < b :
 theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
   (lt_div_iff₀ <| pos_iff_ne_zero.2 fun hr => False.elim <| by simp [hr] at h).1 h
 
+@[deprecated div_le_div_of_nonneg_left (since := "2024-11-12")]
 theorem div_le_div_left_of_le {a b c : ℝ≥0} (c0 : c ≠ 0) (cb : c ≤ b) :
     a / b ≤ a / c :=
   div_le_div_of_nonneg_left (zero_le _) c0.bot_lt cb
 
+@[deprecated div_le_div_iff_of_pos_left (since := "2024-11-12")]
 nonrec theorem div_le_div_left {a b c : ℝ≥0} (a0 : 0 < a) (b0 : 0 < b) (c0 : 0 < c) :
     a / b ≤ a / c ↔ c ≤ b :=
-  div_le_div_left a0 b0 c0
+  div_le_div_iff_of_pos_left a0 b0 c0
 
 theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0} (h : ∀ a < 1, a * x ≤ y) : x ≤ y :=
   le_of_forall_ge_of_dense fun a ha => by
@@ -894,7 +891,7 @@ theorem image_coe_nnreal_real (h : t.OrdConnected) : ((↑) '' t : Set ℝ).OrdC
   ⟨forall_mem_image.2 fun x hx =>
       forall_mem_image.2 fun _y hy z hz => ⟨⟨z, x.2.trans hz.1⟩, h.out hx hy hz, rfl⟩⟩
 
--- Porting note (#11215): TODO: does it generalize to a `GaloisInsertion`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: does it generalize to a `GaloisInsertion`?
 theorem image_real_toNNReal (h : s.OrdConnected) : (Real.toNNReal '' s).OrdConnected := by
   refine ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => ?_⟩
   rcases le_total y 0 with hy₀ | hy₀
@@ -915,7 +912,7 @@ namespace Real
 
 /-- The absolute value on `ℝ` as a map to `ℝ≥0`. -/
 -- Porting note (kmill): `pp_nodot` has no affect here
--- unless RFC lean4#1910 leads to dot notation for CoeFun
+-- unless RFC https://github.com/leanprover/lean4/issues/6178 leads to dot notation pp for CoeFun
 @[pp_nodot]
 def nnabs : ℝ →*₀ ℝ≥0 where
   toFun x := ⟨|x|, abs_nonneg x⟩

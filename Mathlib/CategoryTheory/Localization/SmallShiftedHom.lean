@@ -22,7 +22,7 @@ any localization functor for `W`.
 
 -/
 
-universe w w' v₁ v₂ u₁ u₂
+universe w'' w w' v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
@@ -218,6 +218,8 @@ lemma equiv_mk₀ [HasSmallLocalizedShiftedHom.{w} W M X Y]
 
 end
 
+section
+
 variable [W.IsCompatibleWithShift M]
 
 lemma comp_assoc {X Y Z T : C} {a₁ a₂ a₃ a₁₂ a₂₃ a : M}
@@ -232,6 +234,31 @@ lemma comp_assoc {X Y Z T : C} {a₁ a₂ a₃ a₁₂ a₂₃ a : M}
       α.comp (β.comp γ h₂₃) (by rw [← h₂₃, h]) := by
   apply (equiv W W.Q).injective
   simp only [equiv_comp, ShiftedHom.comp_assoc _ _ _ h₁₂ h₂₃ h]
+
+end
+
+section ChangeOfUniverse
+
+variable {W}
+
+/-- Up to an equivalence, the type `SmallShiftedHom.{w} W X Y m` does
+not depend on the universe `w`. -/
+noncomputable def chgUniv {X Y : C} {m : M}
+    [HasSmallLocalizedShiftedHom.{w} W M X Y]
+    [HasSmallLocalizedShiftedHom.{w''} W M X Y] :
+    SmallShiftedHom.{w} W X Y m ≃ SmallShiftedHom.{w''} W X Y m :=
+  SmallHom.chgUniv
+
+lemma equiv_chgUniv (L : C ⥤ D) [L.IsLocalization W] [L.CommShift M] {X Y : C} {m : M}
+    [HasSmallLocalizedShiftedHom.{w} W M X Y]
+    [HasSmallLocalizedShiftedHom.{w''} W M X Y]
+    (e : SmallShiftedHom.{w} W X Y m) :
+    equiv W L (chgUniv.{w''} e) = equiv W L e := by
+  dsimp [equiv]
+  congr
+  apply SmallHom.equiv_chgUniv
+
+end ChangeOfUniverse
 
 end SmallShiftedHom
 

@@ -44,6 +44,7 @@ having a superfluous `add_le'` field in the resulting structure. The same applie
 norm, seminorm
 -/
 
+assert_not_exists Finset
 
 open Set
 

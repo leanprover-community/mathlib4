@@ -266,7 +266,7 @@ theorem dist_fixedPoint_fixedPoint_of_dist_le' (g : α → α) {x y} (hx : IsFix
     dist x y = dist y x := dist_comm x y
     _ ≤ dist y (f y) / (1 - K) := hf.dist_le_of_fixedPoint y hx
     _ = dist (f y) (g y) / (1 - K) := by rw [hy.eq, dist_comm]
-    _ ≤ C / (1 - K) := (div_le_div_right hf.one_sub_K_pos).2 (hfg y)
+    _ ≤ C / (1 - K) := (div_le_div_iff_of_pos_right hf.one_sub_K_pos).2 (hfg y)
 
 variable [Nonempty α] [CompleteSpace α]
 variable (f)

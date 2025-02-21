@@ -20,8 +20,7 @@ We prove the divisor sum formula, namely that `n` equals `φ` summed over the di
 `totient_prime_pow`.
 -/
 
-assert_not_exists Algebra
-assert_not_exists LinearMap
+assert_not_exists Algebra LinearMap
 
 open Finset
 

@@ -544,9 +544,9 @@ lemma tendsto_atTop_sumCoeffsExp : Tendsto (fun (p : ℝ) => ∑ i, a i * (b i) 
 lemma one_mem_range_sumCoeffsExp : 1 ∈ Set.range (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
   refine mem_range_of_exists_le_of_exists_ge R.continuous_sumCoeffsExp ?le_one ?ge_one
   case le_one =>
-    exact Eventually.exists <| eventually_le_of_tendsto_lt zero_lt_one R.tendsto_zero_sumCoeffsExp
+    exact R.tendsto_zero_sumCoeffsExp.eventually_le_const zero_lt_one |>.exists
   case ge_one =>
-    exact Eventually.exists <| R.tendsto_atTop_sumCoeffsExp.eventually_ge_atTop _
+    exact R.tendsto_atTop_sumCoeffsExp.eventually_ge_atTop _ |>.exists
 
 /-- The function x ↦ ∑ a_i b_i^x is injective. This implies the uniqueness of `p`. -/
 lemma injective_sumCoeffsExp : Function.Injective (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) :=
@@ -843,7 +843,7 @@ lemma isEquivalent_deriv_rpow_p_mul_one_sub_smoothingFn {p : ℝ} (hp : p ≠ 0)
           (fun z => z ^ (p-1) / (log z ^ 2)) =o[atTop] fun z => z ^ (p-1) / 1 := by
                       simp_rw [div_eq_mul_inv]
                       refine IsBigO.mul_isLittleO (isBigO_refl _ _)
-                        (IsLittleO.inv_rev ?_ (by aesop (add safe Eventually.of_forall)))
+                        (IsLittleO.inv_rev ?_ (by simp))
                       rw [isLittleO_const_left]
                       refine Or.inr <| Tendsto.comp tendsto_norm_atTop_atTop ?_
                       exact Tendsto.comp (g := fun z => z ^ 2)
@@ -867,7 +867,7 @@ lemma isEquivalent_deriv_rpow_p_mul_one_add_smoothingFn {p : ℝ} (hp : p ≠ 0)
           (fun z => -(z ^ (p-1) / (log z ^ 2))) =o[atTop] fun z => z ^ (p-1) / 1 := by
                       simp_rw [isLittleO_neg_left, div_eq_mul_inv]
                       refine IsBigO.mul_isLittleO (isBigO_refl _ _)
-                        (IsLittleO.inv_rev ?_ (by aesop (add safe Eventually.of_forall)))
+                        (IsLittleO.inv_rev ?_ (by simp))
                       rw [isLittleO_const_left]
                       refine Or.inr <| Tendsto.comp tendsto_norm_atTop_atTop ?_
                       exact Tendsto.comp (g := fun z => z ^ 2)

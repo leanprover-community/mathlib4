@@ -3,7 +3,7 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Data.Set.Pointwise.Interval
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.Topology.MetricSpace.Pseudo.Pi
 
 /-!
@@ -15,7 +15,7 @@ open scoped NNReal Topology
 
 namespace Real
 
-variable {ι α : Type*} [PseudoMetricSpace α]
+variable {ι : Type*}
 
 lemma dist_left_le_of_mem_uIcc {x y z : ℝ} (h : y ∈ uIcc x z) : dist x y ≤ dist x z := by
   simpa only [dist_comm x] using abs_sub_left_of_mem_uIcc h
@@ -35,7 +35,7 @@ lemma dist_le_of_mem_Icc {x y x' y' : ℝ} (hx : x ∈ Icc x' y') (hy : y ∈ Ic
 lemma dist_le_of_mem_Icc_01 {x y : ℝ} (hx : x ∈ Icc (0 : ℝ) 1) (hy : y ∈ Icc (0 : ℝ) 1) :
     dist x y ≤ 1 := by simpa only [sub_zero] using Real.dist_le_of_mem_Icc hx hy
 
-variable {π : ι → Type*} [Fintype ι] [∀ i, PseudoMetricSpace (π i)] {x y x' y' : ι → ℝ}
+variable [Fintype ι] {x y x' y' : ι → ℝ}
 
 lemma dist_le_of_mem_pi_Icc (hx : x ∈ Icc x' y') (hy : y ∈ Icc x' y') : dist x y ≤ dist x' y' := by
   refine (dist_pi_le_iff dist_nonneg).2 fun b =>

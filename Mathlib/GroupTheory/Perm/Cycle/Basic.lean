@@ -5,7 +5,7 @@ Authors: Chris Hughes, Yaël Dillies
 -/
 
 import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Data.Fintype.Perm
+import Mathlib.Data.List.Iterate
 import Mathlib.GroupTheory.Perm.Finite
 import Mathlib.GroupTheory.Perm.List
 
@@ -205,12 +205,13 @@ instance (priority := 100) [DecidableEq α] : DecidableRel (SameCycle (1 : Perm 
   decidable_of_iff (x = y) sameCycle_one.symm
 
 instance [Fintype α] [DecidableEq α] (f : Perm α) : DecidableRel (SameCycle f) := fun x y =>
-  decidable_of_iff (∃ n ∈ List.range (Fintype.card (Perm α)), (f ^ n) x = y)
-    ⟨fun ⟨n, _, hn⟩ => ⟨n, hn⟩, fun ⟨i, hi⟩ => ⟨(i % orderOf f).natAbs,
-      List.mem_range.2 (Int.ofNat_lt.1 <| by
+  decidable_of_iff (y ∈ List.iterate f x (Fintype.card (Perm α))) <| by
+    simp only [List.mem_iterate, iterate_eq_pow, eq_comm (a := y)]
+    exact ⟨fun ⟨n, _, hn⟩ => ⟨n, hn⟩, fun ⟨i, hi⟩ => ⟨(i % orderOf f).natAbs,
+      Int.ofNat_lt.1 <| by
         rw [Int.natAbs_of_nonneg (Int.emod_nonneg _ <| Int.natCast_ne_zero.2 (orderOf_pos _).ne')]
         refine (Int.emod_lt _ <| Int.natCast_ne_zero_iff_pos.2 <| orderOf_pos _).trans_le ?_
-        simp [orderOf_le_card_univ]),
+        simp [orderOf_le_card_univ],
       by
         rw [← zpow_natCast, Int.natAbs_of_nonneg (Int.emod_nonneg _ <|
           Int.natCast_ne_zero_iff_pos.2 <| orderOf_pos _), zpow_mod_orderOf, hi]⟩⟩
@@ -657,9 +658,9 @@ theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : #σ.support = 
   erw [hσ.zpowersEquivSupport_symm_apply n]
   simp only [← Perm.mul_apply, ← pow_succ']
   erw [hσ.zpowersEquivSupport_symm_apply (n + 1)]
-  -- This used to be a `simp only` before leanprover/lean4#2644
+  -- This used to be a `simp only` before https://github.com/leanprover/lean4/pull/2644
   erw [zpowersEquivZPowers_apply, zpowersEquivZPowers_apply, zpowersEquivSupport_apply]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   simp_rw [pow_succ', Perm.mul_apply]
   rfl
 
@@ -782,7 +783,7 @@ theorem IsCycleOn.pow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ 
       (hf.isCycle_subtypePerm hs).pow_eq_one_iff'
         (ne_of_apply_ne ((↑) : s → α) <| hf.apply_ne hs (⟨a, ha⟩ : s).2)]
     simp
-    -- This used to be the end of the proof before leanprover/lean4#2644
+    -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
     erw [subtypePerm_apply]
     simp
 

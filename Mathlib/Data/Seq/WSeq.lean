@@ -454,7 +454,7 @@ theorem liftRel_destruct_iff {R : α → β → Prop} {s : WSeq α} {t : WSeq β
       apply Or.inl⟩⟩
 
 -- Porting note: To avoid ambiguous notation, `~` became `~ʷ`.
-infixl:50 " ~ʷ " => Equiv
+@[inherit_doc] infixl:50 " ~ʷ " => Equiv
 
 theorem destruct_congr {s t : WSeq α} :
     s ~ʷ t → Computation.LiftRel (BisimO (· ~ʷ ·)) (destruct s) (destruct t) :=

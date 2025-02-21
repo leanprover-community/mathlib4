@@ -62,7 +62,7 @@ lemma eHomEquiv_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
   EnrichedOrdinaryCategory.homEquiv_comp _ _
 
 /-- The morphism `(X' ⟶[V] Y) ⟶ (X ⟶[V] Y)` induced by a morphism `X ⟶ X'`. -/
-noncomputable def eHomWhiskerRight {X X' : C} (f : X ⟶ X') (Y : C) :
+def eHomWhiskerRight {X X' : C} (f : X ⟶ X') (Y : C) :
     (X' ⟶[V] Y) ⟶ (X ⟶[V] Y) :=
   (λ_ _).inv ≫ eHomEquiv V f ▷ _ ≫ eComp V X X' Y
 
@@ -81,8 +81,17 @@ lemma eHomWhiskerRight_comp {X X' X'' : C} (f : X ⟶ X') (f' : X' ⟶ X'') (Y :
     ← associator_inv_naturality_left_assoc, Iso.inv_hom_id_assoc,
     ← whisker_exchange_assoc, id_whiskerLeft_assoc, Iso.inv_hom_id_assoc]
 
+/-- Whiskering commutes with the enriched composition. -/
+@[reassoc]
+lemma eComp_eHomWhiskerRight {X X' : C} (f : X ⟶ X') (Y Z : C) :
+    eComp V X' Y Z ≫ eHomWhiskerRight V f Z =
+      eHomWhiskerRight V f Y ▷ _ ≫ eComp V X Y Z := by
+  dsimp [eHomWhiskerRight]
+  rw [leftUnitor_inv_naturality_assoc, whisker_exchange_assoc]
+  simp [e_assoc']
+
 /-- The morphism `(X ⟶[V] Y) ⟶ (X ⟶[V] Y')` induced by a morphism `Y ⟶ Y'`. -/
-noncomputable def eHomWhiskerLeft (X : C) {Y Y' : C} (g : Y ⟶ Y') :
+def eHomWhiskerLeft (X : C) {Y Y' : C} (g : Y ⟶ Y') :
     (X ⟶[V] Y) ⟶ (X ⟶[V] Y') :=
   (ρ_ _).inv ≫ _ ◁ eHomEquiv V g ≫ eComp V X Y Y'
 
@@ -104,6 +113,35 @@ lemma eHomWhiskerLeft_comp (X : C) {Y Y' Y'' : C} (g : Y ⟶ Y') (g' : Y' ⟶ Y'
     associator_inv_naturality_right_assoc, Iso.hom_inv_id_assoc,
     whisker_exchange_assoc, MonoidalCategory.whiskerRight_id_assoc, Iso.inv_hom_id_assoc]
 
+/-- Whiskering commutes with the enriched composition. -/
+@[reassoc]
+lemma eComp_eHomWhiskerLeft (X Y : C) {Z Z' : C} (g : Z ⟶ Z') :
+    eComp V X Y Z ≫ eHomWhiskerLeft V X g =
+      _ ◁ eHomWhiskerLeft V Y g ≫ eComp V X Y Z' := by
+  dsimp [eHomWhiskerLeft]
+  rw [rightUnitor_inv_naturality_assoc, ← whisker_exchange_assoc]
+  simp [e_assoc']
+
+/-- Given an isomorphism `α : Y ≅ Y₁` in C, the enriched composition map
+`eComp V X Y Z : (X ⟶[V] Y) ⊗ (Y ⟶[V] Z) ⟶ (X ⟶[V] Z)` factors through the `V`
+object `(X ⟶[V] Y₁) ⊗ (Y₁ ⟶[V] Z)` via the map defined by whiskering in the
+middle with `α.hom` and `α.inv`. -/
+@[reassoc]
+lemma eHom_whisker_cancel {X Y Y₁ Z : C} (α : Y  ≅ Y₁) :
+    eHomWhiskerLeft V X α.hom ▷ _ ≫ _ ◁ eHomWhiskerRight V α.inv Z ≫
+      eComp V X Y₁ Z = eComp V X Y Z := by
+  dsimp [eHomWhiskerLeft, eHomWhiskerRight]
+  simp only [MonoidalCategory.whiskerLeft_comp_assoc, whisker_assoc_symm,
+    triangle_assoc_comp_left_inv_assoc, e_assoc', assoc]
+  simp only [← comp_whiskerRight_assoc]
+  change (eHomWhiskerLeft V X α.hom ≫ eHomWhiskerLeft V X α.inv) ▷ _ ≫ _ = _
+  simp [← eHomWhiskerLeft_comp]
+
+@[reassoc]
+lemma eHom_whisker_cancel_inv {X Y Y₁ Z : C} (α : Y  ≅ Y₁) :
+    eHomWhiskerLeft V X α.inv ▷ _ ≫ _ ◁ eHomWhiskerRight V α.hom Z ≫
+      eComp V X Y Z = eComp V X Y₁ Z := eHom_whisker_cancel V α.symm
+
 @[reassoc]
 lemma eHom_whisker_exchange {X X' Y Y' : C} (f : X ⟶ X') (g : Y ⟶ Y') :
     eHomWhiskerLeft V X' g ≫ eHomWhiskerRight V f Y' =
@@ -121,7 +159,7 @@ attribute [local simp] eHom_whisker_exchange
 variable (C) in
 /-- The bifunctor `Cᵒᵖ ⥤ C ⥤ V` which sends `X : Cᵒᵖ` and `Y : C` to `X ⟶[V] Y`. -/
 @[simps]
-noncomputable def eHomFunctor : Cᵒᵖ ⥤ C ⥤ V where
+def eHomFunctor : Cᵒᵖ ⥤ C ⥤ V where
   obj X :=
     { obj := fun Y => X.unop ⟶[V] Y
       map := fun φ => eHomWhiskerLeft V X.unop φ }

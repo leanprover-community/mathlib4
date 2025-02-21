@@ -382,7 +382,7 @@ end
 section Fintype
 
 instance {R : Type*} [Fintype R] : Fintype (TruncatedWittVector p n R) :=
-  Pi.fintype
+  Pi.instFintype
 
 variable (p n R)
 
