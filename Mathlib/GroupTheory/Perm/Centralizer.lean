@@ -359,22 +359,19 @@ noncomputable def ofPermHom : range_toPermHom' g →* Perm α where
 theorem ofPermHom_apply (τ) (x) : a.ofPermHom τ x = a.ofPermHomFun τ x := rfl
 
 theorem ofPermHom_support :
-    (ofPermHom a τ).support = Finset.biUnion (τ : Perm g.cycleFactorsFinset).support
-        (fun c ↦ (c : Perm α).support) := by
+    (ofPermHom a τ).support =
+      (τ : Perm g.cycleFactorsFinset).support.biUnion (fun c ↦ (c : Perm α).support) := by
   ext x
-  simp only [mem_support, Finset.mem_biUnion]
-  rw [ofPermHom_apply]
+  simp only [mem_support, Finset.mem_biUnion, ofPermHom_apply]
   rcases mem_fixedPoints_or_exists_zpow_eq a x with (hx | ⟨c, hc, m, hm⟩)
-  · simp only [ofPermHomFun_apply_of_mem_fixedPoints a τ hx, ne_eq, not_true_eq_false, false_iff]
+  · simp only [ofPermHomFun_apply_of_mem_fixedPoints a τ hx, ne_eq, not_true_eq_false, false_iff,
+      ← mem_support]
+    rintro ⟨c, -, hc⟩
     rw [Function.mem_fixedPoints_iff] at hx
-    simp only [← mem_support]
-    intro h
-    obtain ⟨c, _, h'⟩ := h
-    exact mem_support.mp ((mem_cycleFactorsFinset_support_le c.prop) h') hx
+    exact mem_support.mp ((mem_cycleFactorsFinset_support_le c.prop) hc) hx
   · rw [ofPermHomFun_apply_of_cycleOf_mem a τ hc hm]
-    nth_rewrite 1 [← hm]
-    simp only [ne_eq, EmbeddingLike.apply_eq_iff_eq, (a.injective).eq_iff]
-    rw [not_iff_comm]
+    conv_lhs => rw [← hm]
+    rw [(g ^ m).injective.ne_iff, a.injective.ne_iff, not_iff_comm]
     by_cases H : (τ : Perm g.cycleFactorsFinset) c = c
     · simp only [H, iff_true]
       push_neg
@@ -382,16 +379,12 @@ theorem ofPermHom_support :
       rw [← not_mem_support]
       have := g.cycleFactorsFinset_pairwise_disjoint c.prop d.prop
       rw [disjoint_iff_disjoint_support, Finset.disjoint_left] at this
-      refine this ?_ hc
-      intro h
-      rw [Subtype.coe_inj] at h
-      exact hd (h ▸ H)
-    · simp only [H, iff_false, not_not]
-      exact ⟨c, H, mem_support.mp hc⟩
+      exact this (by aesop) hc
+    · simpa only [H, iff_false, not_not] using ⟨c, H, mem_support.mp hc⟩
 
 theorem card_ofPermHom_support :
-    (ofPermHom a τ).support.card =  (τ : Perm g.cycleFactorsFinset).support.sum
-        (fun c ↦ (c : Perm α).support.card) := by
+    (ofPermHom a τ).support.card =
+      (τ : Perm g.cycleFactorsFinset).support.sum (fun c ↦ (c : Perm α).support.card) := by
   rw [ofPermHom_support, Finset.card_biUnion]
   intro c _ d _ h
   apply Equiv.Perm.Disjoint.disjoint_support
