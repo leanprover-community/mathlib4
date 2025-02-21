@@ -100,9 +100,10 @@ variable [Ring R] (S : Sequence R)
 /-- A polynomial sequence spans `R[X]` if all of its elements' leading coefficients are units. -/
 protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.range S) = ⊤ :=
   eq_top_iff'.mpr fun P ↦ by
-  cases subsingleton_or_nontrivial R
-  · simp [Subsingleton.eq_zero P]
-  · induction' hp : P.natDegree using Nat.strong_induction_on with n ih generalizing P
+  nontriviality R using Subsingleton.eq_zero P
+  generalize hp : P.natDegree = n
+  induction n using Nat.strong_induction_on generalizing P with
+  | h n ih =>
     by_cases p_ne_zero : P = 0
     · simp [p_ne_zero]
 
@@ -165,17 +166,17 @@ lemma linearIndependent :
   by_cases hsupzero : s.sup (fun i ↦ (g i • S i).degree) = ⊥
   · have le_sup := Finset.le_sup hi (f := fun i ↦ (g i • S i).degree)
     exact (smul_eq_zero_iff_left (S.ne_zero i)).mp <| degree_eq_bot.mp (eq_bot_mono le_sup hsupzero)
-  · have hpairwise : {i | i ∈ s ∧ g i • S i ≠ 0}.Pairwise (Ne on fun i ↦ (g i • S i).degree) := by
-      intro x ⟨_, hx⟩ y ⟨_, hy⟩ xney
-      have zgx : g x ≠ 0 := (smul_ne_zero_iff.mp hx).1
-      have zgy : g y ≠ 0 := (smul_ne_zero_iff.mp hy).1
-      have rx : IsRightRegular (S x).leadingCoeff := isRegular_of_ne_zero (by simp) |>.right
-      have ry : IsRightRegular (S y).leadingCoeff := isRegular_of_ne_zero (by simp) |>.right
-      simp [degree_smul_of_isRightRegular_leadingCoeff, rx, ry, zgx, zgy, xney]
-    obtain ⟨n, hn⟩ : ∃ n, (s.sup fun i ↦ (g i • S i).degree) = n := exists_eq'
-    refine degree_ne_bot.mp ?_ eqzero |>.elim
-    have hsum := degree_sum_eq_of_disjoint _ s hpairwise
-    exact hsum.trans hn |>.trans_ne <| (ne_of_ne_of_eq (hsupzero ·.symm) hn).symm
+  have hpairwise : {i | i ∈ s ∧ g i • S i ≠ 0}.Pairwise (Ne on fun i ↦ (g i • S i).degree) := by
+    intro x ⟨_, hx⟩ y ⟨_, hy⟩ xney
+    have zgx : g x ≠ 0 := (smul_ne_zero_iff.mp hx).1
+    have zgy : g y ≠ 0 := (smul_ne_zero_iff.mp hy).1
+    have rx : IsRightRegular (S x).leadingCoeff := isRegular_of_ne_zero (by simp) |>.right
+    have ry : IsRightRegular (S y).leadingCoeff := isRegular_of_ne_zero (by simp) |>.right
+    simp [degree_smul_of_isRightRegular_leadingCoeff, rx, ry, zgx, zgy, xney]
+  obtain ⟨n, hn⟩ : ∃ n, (s.sup fun i ↦ (g i • S i).degree) = n := exists_eq'
+  refine degree_ne_bot.mp ?_ eqzero |>.elim
+  have hsum := degree_sum_eq_of_disjoint _ s hpairwise
+  exact hsum.trans hn |>.trans_ne <| (ne_of_ne_of_eq (hsupzero ·.symm) hn).symm
 
 variable (hCoeff : ∀ i, IsUnit (S i).leadingCoeff)
 
