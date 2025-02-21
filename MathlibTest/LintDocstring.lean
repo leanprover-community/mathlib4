@@ -5,7 +5,7 @@ import Mathlib.Tactic.Linter.DocString
 set_option linter.style.docString true
 
 /--
-warning: error: doc-strings should start with a space or newline
+warning: error: doc-strings should start with a single space or newline
 note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
@@ -13,7 +13,7 @@ note: this linter can be disabled with `set_option linter.style.docString false`
 example : Nat := 1
 
 /--
-warning: error: doc-strings should end with a space or newline
+warning: error: doc-strings should end with a single space or newline
 note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
@@ -21,91 +21,24 @@ note: this linter can be disabled with `set_option linter.style.docString false`
 example : Nat := 1
 
 /--
-warning: error: doc-strings should start with a space or newline
+warning: error: doc-strings should start with a single space or newline
 note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
-/--  Trailing newline -/
+/--  Two starting spaces -/
 example : Nat := 1
 
 /--
-warning: error: doc-strings should end with at most a single space
+warning: error: doc-strings should end with a single space or newline
 note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
 /--
-Trailing newline  -/
+Two ending spaces  -/
 example : Nat := 1
 
 /--
-warning: error: subsequent lines in a doc-string should not be indented
-note: this linter can be disabled with `set_option linter.style.docString false`
--/
-#guard_msgs in
-/-- Bad indentation
-  on the second line -/
-example : Nat := 1
-
-/--
-warning: error: subsequent lines in a doc-string should not be indented
-note: this linter can be disabled with `set_option linter.style.docString false`
--/
-#guard_msgs in
-/-- Bad indentation
-not on the second, but
-   the second line -/
-example : Nat := 1
-
-/--
-warning: error: docstring "ends with a comma, " ends with a comma
-note: this linter can be disabled with `set_option linter.style.docString false`
--/
-#guard_msgs in
-/-- ends with a comma, -/
-example : Nat := 1
-
-/--
-warning: error: docstring "With a trailing quote" " ends with a single quote
-note: this linter can be disabled with `set_option linter.style.docString false`
--/
-#guard_msgs in
-/-- With a trailing quote" -/
-example : Nat := 1
-
-/--
-warning: error: subsequent lines in a doc-string should not be indented
-note: this linter can be disabled with `set_option linter.style.docString false`
----
-warning: error: docstring "With a trailing
-  quote" " ends with a single quote note: this linter can be disabled with `set_option linter.style.docString false`
--/
-#guard_msgs in
-/-- With a trailing
-  quote" -/
-example : Nat := 1
-
-
--- Avoid false positives on docstrings containing markdown.
-
-#guard_msgs in
-/-- This function works in a few cases:
-* in this one,
-  and this is complicated.
-* in another one also
--/
-example : Nat := 1
-
-#guard_msgs in
-/-- This function works in a few cases:
-- in this one,
-  and this is complicated.
-- in another one also
--/
-example : Nat := 1
-
--- False positives: indented code blocks.
-/--
-warning: error: subsequent lines in a doc-string should not be indented
+warning: error: doc-strings should end with a single space or newline
 note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
@@ -114,5 +47,6 @@ note: this linter can be disabled with `set_option linter.style.docString false`
 def foo : Bool := by
   sorry
 ```
+
 -/
 example : Nat := 1

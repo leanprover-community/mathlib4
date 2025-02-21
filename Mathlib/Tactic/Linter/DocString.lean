@@ -26,31 +26,6 @@ register_option linter.style.docString : Bool := {
 
 namespace Style
 
-/-- Checks whether a declaration docstring `input` conforms to mathlib's style guidelines
-(or, at least the syntactically checkable parts).
-If the doc-string is not well-formed, return `some messages` where `messages` describe
-what went wrong, otherwise return `none`. -/
-def checkDocstring (input : String) : Option (Array String) := do
-  let mut errors := #[]
-  -- Check the ending of the doc-string: a new line or exactly one space.
-  if !(input.endsWith "\n" || input.endsWith " ") then
-    errors := errors.push s!"error: doc-strings should end with a space or newline"
-  else if (input.endsWith "  ") then
-    errors := errors.push s!"error: doc-strings should end with at most a single space"
-  -- Catch misleading indentation.
-  let lines := (input.split (· == '\n')).drop 0
-  if lines.any (·.startsWith " ")
-    -- For now, we skip cases where a line starts with "* " or "- " as these are probably markdown
-    -- code blocks. (We can later try to re-enable some linting there.)
-    && !lines.any (fun l ↦ l.startsWith "* " || l.startsWith "- ") then
-      errors := errors.push s!"error: subsequent lines in a doc-string should not be indented"
-  if input.trimRight.endsWith "\"" then
-    errors := errors.push s!"error: docstring \"{input}\" ends with a single quote"
-  else if input.trimRight.endsWith "," then
-    errors := errors.push s!"error: docstring \"{input}\" ends with a comma"
-  -- This list of checks is not exhaustive, but a good start.
-  errors
-
 @[inherit_doc Mathlib.Linter.linter.style.docString]
 def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.style.docString (← getOptions) do
@@ -69,10 +44,19 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if !#["\n", " "].contains start then
     let startRg := {start := startSubstring.startPos, stop := startSubstring.stopPos}
     Linter.logLint linter.style.docString (.ofRange startRg)
-      s!"error: doc-strings should start with a space or newline"
-  if let some messages := checkDocstring docString then
-    for msg in messages do
-      Linter.logLint linter.style.docString docStx msg
+      s!"error: doc-strings should start with a single space or newline"
+  let docTrim := docString.trimRight
+  let tail := docTrim.length
+  let tailSubstr : Substring :=
+    {str := docString, startPos := ⟨tail⟩, stopPos := ⟨docString.length⟩}
+  let endRg (n : Nat) : Syntax := .ofRange
+    {start := docStx.getTailPos?.getD 0 - ⟨n⟩, stop := docStx.getTailPos?.getD 0 - ⟨n⟩}
+  if docTrim.takeRight 1 == "," then
+    Linter.logLint linter.style.docString (endRg (docString.length - tail + 3))
+      s!"error: doc-strings should not end with a comma"
+  if tail + 1 != docString.length then
+    Linter.logLint linter.style.docString (endRg 3)
+      s!"error: doc-strings should end with a single space or newline"
 
 initialize addLinter docStringLinter
 
