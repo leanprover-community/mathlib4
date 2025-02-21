@@ -112,6 +112,25 @@ def ofSurjective {vars} (val : vars → S) (h : Function.Surjective (aeval (R :=
   σ' x := (h x).choose
   aeval_val_σ' x := (h x).choose_spec
 
+library_note "type fields of generators and presentations"/--
+When working with generators and presentations, we rely on the MvPolynomial API, but since the
+type of variables is bundled in `Generators R S`, many lemmas don't apply with rw or simp, because
+they can't see through the definition of vars in constructions such as `Generators.comp` and
+`Generators.localizationAway`.
+
+A possible approach is to make all of these constructions abbrevs, but this causes simp to also
+unfold val which is not always desirable. More generally, it is then harder to predict how instance
+search and simp behave. This approached was tried, but caused too many regressions.
+
+Instead we use unification hints, to allow Lean to see through the `vars` (and `rels`) fields
+at reducible transparency.
+-/
+
+/-- See library note [type fields of generators and presentations]. -/
+unif_hint ofSurjective_vars_eq {vars} (val : vars → S)
+    (h : Function.Surjective (aeval (R := R) val)) where
+  ⊢ (ofSurjective val h).vars ≟ vars
+
 /-- If `algebraMap R S` is surjective, the empty type generates `S`. -/
 noncomputable def ofSurjectiveAlgebraMap (h : Function.Surjective (algebraMap R S)) :
     Generators.{w} R S :=
@@ -119,10 +138,18 @@ noncomputable def ofSurjectiveAlgebraMap (h : Function.Surjective (algebraMap R 
     use C (h s).choose
     simp [(h s).choose_spec]
 
+/-- See library note [type fields of generators and presentations]. -/
+unif_hint ofSurjectiveAlgebraMap_vars_eq (h : Function.Surjective (algebraMap R S)) where
+  ⊢ (ofSurjectiveAlgebraMap.{w} h).vars ≟ PEmpty.{w+1}
+
 /-- The canonical generators for `R` as an `R`-algebra. -/
 noncomputable def id : Generators.{w} R R := ofSurjectiveAlgebraMap <| by
   rw [id.map_eq_id]
   exact RingHomSurjective.is_surjective
+
+/-- See library note [type fields of generators and presentations]. -/
+unif_hint id_vars_eq where
+  ⊢ (id (R := R)).vars ≟ PEmpty.{w+1}
 
 /-- Construct `Generators` from an assignment `I → S` such that `R[X] → S` is surjective. -/
 noncomputable
@@ -130,12 +157,20 @@ def ofAlgHom {I} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective f) 
     Generators R S :=
   ofSurjective (f ∘ X) (by rwa [show aeval (f ∘ X) = f by ext; simp])
 
+/-- See library note [type fields of generators and presentations]. -/
+unif_hint ofAlgHom_vars {I} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective f) where
+  ⊢ (ofAlgHom f h).vars ≟ PEmpty.{w+1}
+
 /-- Construct `Generators` from a family of generators of `S`. -/
 noncomputable
 def ofSet {s : Set S} (hs : Algebra.adjoin R s = ⊤) : Generators R S := by
   refine ofSurjective (Subtype.val : s → S) ?_
   rwa [← AlgHom.range_eq_top, ← Algebra.adjoin_range_eq_range_aeval,
     Subtype.range_coe_subtype, Set.setOf_mem_eq]
+
+/-- See library note [type fields of generators and presentations]. -/
+unif_hint ofSet_vars {s : Set S} (hs : Algebra.adjoin R s = ⊤) where
+  ⊢ (ofSet hs).vars ≟ s
 
 variable (R S) in
 /-- The `Generators` containing the whole algebra, which induces the canonical map  `R[S] → S`. -/
@@ -147,10 +182,13 @@ def self : Generators R S where
   σ' := X
   aeval_val_σ' := aeval_X _
 
+/-- See library note [type fields of generators and presentations]. -/
+unif_hint self_vars_eq where ⊢ (self R S).vars ≟ S
+
 /-- The extension `R[X₁,...,Xₙ] → S` given a family of generators. -/
 @[simps]
 noncomputable
-def toExtension : Extension R S where
+abbrev toExtension : Extension R S where
   Ring := P.Ring
   σ := P.σ
   algebraMap_σ := by simp
@@ -178,13 +216,21 @@ def localizationAway : Generators R S where
     rw [mul_one, one_mul, IsLocalization.mk'_pow]
     simp
 
+/-- See library note [type fields of generators and presentations]. -/
+unif_hint localizationAway_vars_eq_unit where
+  ⊢ (localizationAway r (S := S)).vars ≟ Unit
+
+-- test that the `vars` field is reducibly def-eq to `Unit`
+example : (localizationAway (S := S) r).vars = Unit := by
+  with_reducible rfl
+
 end Localization
 
 variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 /-- Given two families of generators `S[X] → T` and `R[Y] → S`,
 we may construct the family of generators `R[X, Y] → T`. -/
-@[simps val, simps (config := .lemmasOnly) vars σ]
+@[simps (config := .lemmasOnly) vars σ]
 noncomputable
 def comp (Q : Generators S T) (P : Generators R S) : Generators R T where
   vars := Q.vars ⊕ P.vars
@@ -198,6 +244,20 @@ def comp (Q : Generators S T) (P : Generators R S) : Generators R T where
       aeval_monomial, map_one, Finsupp.prod_mapDomain_index_inj Sum.inl_injective, Sum.elim_inl,
       one_mul, single_eq_monomial]
 
+/-- See library note [type fields of generators and presentations]. -/
+unif_hint comp_vars_eq_sum (Q : Generators S T) (P : Generators R S) where
+  ⊢ (Q.comp P).vars ≟ Q.vars ⊕ P.vars
+
+-- test that the `vars` field of the composition is now reducibly def-eq to the sum
+example (Q : Generators S T) (P : Generators R S) :
+    (Q.comp P).vars = (Q.vars ⊕ P.vars) := by
+  with_reducible rfl
+
+@[simp]
+lemma comp_val (Q : Generators S T) (P : Generators R S) :
+    (Q.comp P).val = Sum.elim Q.val (algebraMap S T ∘ P.val) :=
+  rfl
+
 variable (S) in
 /-- If `R → S → T` is a tower of algebras, a family of generators `R[X] → T`
 gives a family of generators `S[X] → T`. -/
@@ -209,11 +269,16 @@ def extendScalars (P : Generators R T) : Generators S T where
   σ' x := map (algebraMap R S) (P.σ x)
   aeval_val_σ' s := by simp [@aeval_def S, ← IsScalarTower.algebraMap_eq, ← @aeval_def R]
 
+/-- See library note [type fields of generators and presentations]. -/
+unif_hint extendsScalars_vars (P : Generators R T) where
+  ⊢ (P.extendScalars S).vars ≟ P.vars
+
 /-- If `P` is a family of generators of `S` over `R` and `T` is an `R`-algebra, we
 obtain a natural family of generators of `T ⊗[R] S` over `T`. -/
 @[simps! val, simps! (config := .lemmasOnly) vars]
 noncomputable
-def baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S) : Generators T (T ⊗[R] S) := by
+def baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S) :
+    Generators T (T ⊗[R] S) := by
   apply Generators.ofSurjective (fun x ↦ 1 ⊗ₜ[R] P.val x)
   intro x
   induction x using TensorProduct.induction_on with
@@ -237,6 +302,10 @@ def baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S) : Generators 
     obtain ⟨b, hb⟩ := ey
     use (a + b)
     rw [map_add, ha, hb]
+
+/-- See library note [type fields of generators and presentations]. -/
+unif_hint baseChange_vars_eq (P : Generators R S) where
+  ⊢ (P.baseChange (T := T)).vars ≟ P.vars
 
 end Construction
 
@@ -394,6 +463,13 @@ lemma ofComp_toAlgHom_monomial_sumElim (Q : Generators S T) (P : Generators R S)
     C_mul, Algebra.smul_def, MvPolynomial.algebraMap_apply, mul_assoc]
   nth_rw 2 [mul_comm]
 
+@[simp]
+lemma ofComp_toAlgHom_rename (Q : Generators S T) (P : Generators R S) (p : P.Ring) :
+    (Q.ofComp P).toAlgHom ((rename Sum.inr) p) = algebraMap P.Ring Q.Ring p := by
+  simp only [Hom.toAlgHom, ofComp, Function.comp_def, aeval_rename, Sum.elim_inr,
+    MvPolynomial.algebraMap_apply, algebraMap_apply, ← MvPolynomial.algebraMap_eq,
+    ← IsScalarTower.toAlgHom_apply R S (MvPolynomial Q.vars S), ← comp_aeval_apply P.val]
+
 lemma toComp_toAlgHom_monomial (Q : Generators S T) (P : Generators R S) (j a) :
     (Q.toComp P).toAlgHom (monomial j a) =
       monomial (Finsupp.sumElim 0 j) a := by
@@ -419,7 +495,7 @@ def Hom.toExtensionHom [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S
   algebraMap_toRingHom x := by simp
 
 @[simp]
-lemma Hom.toExtensionHom_id : Hom.toExtensionHom (.id P) = .id _ := by ext; simp
+lemma Hom.toExtensionHom_id : Hom.toExtensionHom (.id P) = .id _ := by ext : 1; simp
 
 @[simp]
 lemma Hom.toExtensionHom_comp [Algebra R S'] [IsScalarTower R S S']
@@ -427,7 +503,16 @@ lemma Hom.toExtensionHom_comp [Algebra R S'] [IsScalarTower R S S']
     [IsScalarTower R S S''] [IsScalarTower R' R'' S''] [IsScalarTower R' S' S'']
     [IsScalarTower S S' S''] [IsScalarTower R R' R''] [IsScalarTower R R' S']
     (f : P'.Hom P'') (g : P.Hom P') :
-    toExtensionHom (f.comp g) = f.toExtensionHom.comp g.toExtensionHom := by ext; simp
+    toExtensionHom (f.comp g) = f.toExtensionHom.comp g.toExtensionHom := by
+      ext : 1
+      refine RingHom.ext (fun x ↦ ?_)
+      simp
+
+@[simp]
+lemma Hom.toExtensionHom_toAlgHom_apply [Algebra R S'] [IsScalarTower R R' S']
+    [IsScalarTower R S S'] (f : P.Hom P') (x) :
+    f.toExtensionHom.toAlgHom x = f.toAlgHom x :=
+  rfl
 
 /-- The kernel of a presentation. -/
 noncomputable abbrev ker : Ideal P.Ring := P.toExtension.ker
@@ -446,7 +531,7 @@ lemma map_toComp_ker (Q : Generators S T) (P : Generators R S) :
   · rw [Ideal.map_le_iff_le_comap]
     rintro x (hx : algebraMap P.Ring S x = 0)
     have : (Q.ofComp P).toAlgHom.comp (Q.toComp P).toAlgHom = IsScalarTower.toAlgHom R _ _ := by
-      ext1; simp
+      ext1; simp [ofComp, Hom.toAlgHom]
     simp only [comp_vars, AlgHom.toRingHom_eq_coe, Ideal.mem_comap, RingHom.coe_coe,
       RingHom.mem_ker, ← AlgHom.comp_apply, this, IsScalarTower.toAlgHom_apply]
     rw [IsScalarTower.algebraMap_apply P.Ring S, hx, map_zero]
