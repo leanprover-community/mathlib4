@@ -584,7 +584,7 @@ lemma integrable_rpow_mul_cexp_of_re_mem_interior_integrableExpSet
   refine (integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet hz hp).mono ?_ ?_
   · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
   refine ae_of_all _ fun ω ↦ ?_
-  simp only [norm_mul, Real.norm_eq_abs, abs_abs, Real.abs_exp]
+  simp only [norm_mul, Real.norm_eq_abs, Complex.abs_abs, Real.abs_exp]
   gcongr
   exact abs_rpow_le_abs_rpow _ _
 

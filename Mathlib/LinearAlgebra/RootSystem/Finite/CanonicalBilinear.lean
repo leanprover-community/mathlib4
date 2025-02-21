@@ -58,11 +58,11 @@ variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N
 
 section Fintype
 
+instance [Finite ι] : Module.Finite R P.rootSpan := .span_of_finite R <| finite_range P.root
+
+instance [Finite ι] : Module.Finite R P.corootSpan := .span_of_finite R <| finite_range P.coroot
+
 variable [Fintype ι]
-
-instance : Module.Finite R P.rootSpan := Finite.span_of_finite R <| finite_range P.root
-
-instance : Module.Finite R P.corootSpan := Finite.span_of_finite R <| finite_range P.coroot
 
 /-- An invariant linear map from weight space to coweight space. -/
 def Polarization : M →ₗ[R] N :=

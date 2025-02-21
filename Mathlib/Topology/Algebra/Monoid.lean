@@ -64,9 +64,9 @@ theorem continuous_mul : Continuous fun p : M × M => p.1 * p.2 :=
 @[to_additive]
 instance : ContinuousMul (ULift.{u} M) := by
   constructor
-  apply continuous_uLift_up.comp
-  exact continuous_mul.comp₂ (continuous_uLift_down.comp continuous_fst)
-    (continuous_uLift_down.comp continuous_snd)
+  apply continuous_uliftUp.comp
+  exact continuous_mul.comp₂ (continuous_uliftDown.comp continuous_fst)
+    (continuous_uliftDown.comp continuous_snd)
 
 @[to_additive]
 instance ContinuousMul.to_continuousSMul : ContinuousSMul M M :=

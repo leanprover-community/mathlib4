@@ -13,3 +13,9 @@ The core implementation of the `gcongr` ("generalized congruence") tactic is in 
 `positivity` as a first-pass discharger for side goals (`gcongr_discharger`). -/
 
 macro_rules | `(tactic| gcongr_discharger) => `(tactic| positivity)
+
+/-!
+We register `gcongr` with the `hint` tactic.
+-/
+
+register_hint gcongr
