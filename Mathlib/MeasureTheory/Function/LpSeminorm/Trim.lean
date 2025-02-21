@@ -68,6 +68,6 @@ theorem memLp_of_memLp_trim (hm : m ≤ m0) {f : α → E} (hf : MemLp f p (μ.t
     (le_of_eq (eLpNorm_trim_ae hm hf.1).symm).trans_lt hf.2⟩
 
 @[deprecated (since := "2025-02-21")]
-alias memLp_of_mem𝓛p_trim := memLp_of_memLp_trim
+alias mem𝓛p_of_mem𝓛p_trim := memLp_of_memLp_trim
 
 end MeasureTheory

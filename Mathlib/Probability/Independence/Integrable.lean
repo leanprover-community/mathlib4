@@ -44,8 +44,7 @@ lemma MemLp.isProbabilityMeasure_of_indepFun
   exact ⟨(ENNReal.mul_eq_left hc.ne' h'c.ne).1 this.symm⟩
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.isProbabilityMeasure_of_indepFun
- := MemLp.isProbabilityMeasure_of_indepFun
+alias Mem𝓛p.isProbabilityMeasure_of_indepFun := MemLp.isProbabilityMeasure_of_indepFun
 
 
 /-- If a nonzero function is integrable and is independent of another function, then

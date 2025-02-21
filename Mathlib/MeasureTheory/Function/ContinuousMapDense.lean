@@ -185,8 +185,7 @@ theorem MemLp.exists_hasCompactSupport_eLpNorm_sub_le
   exact interior_subset (f_support hx)
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.exists_hasCompactSupport_eLpNorm_sub_le
- := MemLp.exists_hasCompactSupport_eLpNorm_sub_le
+alias Mem𝓛p.exists_hasCompactSupport_eLpNorm_sub_le := MemLp.exists_hasCompactSupport_eLpNorm_sub_le
 
 
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
@@ -211,8 +210,7 @@ theorem MemLp.exists_hasCompactSupport_integral_rpow_sub_le
   positivity
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.exists_hasCompactSupport_integral_rpow_sub_le
- := MemLp.exists_hasCompactSupport_integral_rpow_sub_le
+alias Mem𝓛p.exists_hasCompactSupport_integral_rpow_sub_le := MemLp.exists_hasCompactSupport_integral_rpow_sub_le
 
 
 /-- In a locally compact space, any integrable function can be approximated by compactly supported

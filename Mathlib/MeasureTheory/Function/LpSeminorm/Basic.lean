@@ -253,7 +253,7 @@ alias Mem𝓛p.zero := MemLp.zero
 @[deprecated (since := "2025-02-21")]
 alias Mem𝓛p.zero' := MemLp.zero'
 
-@[deprecated (since := "2025-01-21")] alias zero_memLp := MemLp.zero
+@[deprecated (since := "2025-01-21")] alias zero_mem𝓛p := MemLp.zero
 @[deprecated (since := "2025-01-21")] alias zero_mem_ℒp := MemLp.zero'
 
 variable [MeasurableSpace α]
@@ -573,7 +573,7 @@ theorem MemLp.of_le {f : α → E} {g : α → F} (hg : MemLp g p μ) (hf : AESt
 @[deprecated (since := "2025-02-21")]
 alias Mem𝓛p.of_le := MemLp.of_le
 
-alias MemLp.mono := MemLp.of_le
+alias Mem𝓛p.mono := MemLp.of_le
 
 theorem MemLp.mono' {f : α → E} {g : α → ℝ} (hg : MemLp g p μ) (hf : AEStronglyMeasurable f μ)
     (h : ∀ᵐ a ∂μ, ‖f a‖ ≤ g a) : MemLp f p μ :=
@@ -1386,8 +1386,7 @@ theorem _root_.Continuous.memLp_top_of_hasCompactSupport
   exact (hf.stronglyMeasurable_of_hasCompactSupport h'f).aestronglyMeasurable
 
 @[deprecated (since := "2025-02-21")]
-alias _root_.Continuous.mem𝓛p_top_of_hasCompactSupport
- := _root_.Continuous.memLp_top_of_hasCompactSupport
+alias _root_.Continuous.mem𝓛p_top_of_hasCompactSupport := _root_.Continuous.memLp_top_of_hasCompactSupport
 
 
 section UnifTight

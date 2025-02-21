@@ -38,6 +38,9 @@ variable {α F : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCom
 theorem MemLp.integrable_sq {f : α → ℝ} (h : MemLp f 2 μ) : Integrable (fun x => f x ^ 2) μ := by
   simpa [← memLp_one_iff_integrable] using h.norm_rpow two_ne_zero ENNReal.ofNat_ne_top
 
+@[deprecated (since := "2025-02-21")]
+alias Mem𝓛p.integrable_sq := MemLp.integrable_sq
+
 theorem memLp_two_iff_integrable_sq_norm {f : α → F} (hf : AEStronglyMeasurable f μ) :
     MemLp f 2 μ ↔ Integrable (fun x => ‖f x‖ ^ 2) μ := by
   rw [← memLp_one_iff_integrable]
@@ -45,10 +48,16 @@ theorem memLp_two_iff_integrable_sq_norm {f : α → F} (hf : AEStronglyMeasurab
   · simp
   · rw [div_eq_mul_inv, ENNReal.mul_inv_cancel two_ne_zero ENNReal.ofNat_ne_top]
 
+@[deprecated (since := "2025-02-21")]
+alias mem𝓛p_two_iff_integrable_sq_norm := memLp_two_iff_integrable_sq_norm
+
 theorem memLp_two_iff_integrable_sq {f : α → ℝ} (hf : AEStronglyMeasurable f μ) :
     MemLp f 2 μ ↔ Integrable (fun x => f x ^ 2) μ := by
   convert memLp_two_iff_integrable_sq_norm hf using 3
   simp
+
+@[deprecated (since := "2025-02-21")]
+alias mem𝓛p_two_iff_integrable_sq := memLp_two_iff_integrable_sq
 
 end
 
@@ -63,9 +72,15 @@ theorem MemLp.const_inner (c : E) {f : α → E} (hf : MemLp f p μ) : MemLp (fu
   hf.of_le_mul (AEStronglyMeasurable.inner aestronglyMeasurable_const hf.1)
     (Eventually.of_forall fun _ => norm_inner_le_norm _ _)
 
+@[deprecated (since := "2025-02-21")]
+alias Mem𝓛p.const_inner := MemLp.const_inner
+
 theorem MemLp.inner_const {f : α → E} (hf : MemLp f p μ) (c : E) : MemLp (fun a => ⟪f a, c⟫) p μ :=
   hf.of_le_mul (c := ‖c‖) (AEStronglyMeasurable.inner hf.1 aestronglyMeasurable_const)
     (Eventually.of_forall fun x => by rw [mul_comm]; exact norm_inner_le_norm _ _)
+
+@[deprecated (since := "2025-02-21")]
+alias Mem𝓛p.inner_const := MemLp.inner_const
 
 variable {f : α → E}
 

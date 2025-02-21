@@ -143,7 +143,7 @@ theorem MemLp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] {f : α → 
 @[deprecated (since := "2025-02-21")]
 alias Mem𝓛p.mono_exponent := MemLp.mono_exponent
 
-@[deprecated (since := "2025-01-07")] alias MemLp.memLp_of_exponent_le := MemLp.mono_exponent
+@[deprecated (since := "2025-01-07")] alias MemLp.mem𝓛p_of_exponent_le := MemLp.mono_exponent
 
 /-- If a function is supported on a finite-measure set and belongs to `ℒ^p`, then it belongs to
 `ℒ^q` for any `q ≤ p`. -/
@@ -162,7 +162,7 @@ lemma MemLp.mono_exponent_of_measure_support_ne_top {p q : ℝ≥0∞} {f : α �
 alias Mem𝓛p.mono_exponent_of_measure_support_ne_top := MemLp.mono_exponent_of_measure_support_ne_top
 
 @[deprecated (since := "2025-01-07")]
-alias MemLp.memLp_of_exponent_le_of_measure_support_ne_top :=
+alias MemLp.mem𝓛p_of_exponent_le_of_measure_support_ne_top :=
   MemLp.mono_exponent_of_measure_support_ne_top
 
 end SameSpace
@@ -329,8 +329,8 @@ theorem MemLp.smul {p q r : ℝ≥0∞} {f : α → E} {φ : α → 𝕜} (hf : 
 @[deprecated (since := "2025-02-21")]
 alias Mem𝓛p.smul := MemLp.smul
 
-@[deprecated (since := "2025-02-13")] alias MemLp.smul_of_top_right := MemLp.smul
-@[deprecated (since := "2025-02-13")] alias MemLp.smul_of_top_left := MemLp.smul
+@[deprecated (since := "2025-02-13")] alias Mem𝓛p.smul_of_top_right := MemLp.smul
+@[deprecated (since := "2025-02-13")] alias Mem𝓛p.smul_of_top_left := MemLp.smul
 
 end BoundedSMul
 
@@ -355,10 +355,10 @@ theorem MemLp.mul' (hf : MemLp f q μ) (hφ : MemLp φ p μ) [hpqr : HolderTripl
 @[deprecated (since := "2025-02-21")]
 alias Mem𝓛p.mul' := MemLp.mul'
 
-@[deprecated (since := "2025-02-13")] alias MemLp.mul_of_top_right := MemLp.mul
-@[deprecated (since := "2025-02-13")] alias MemLp.mul_of_top_right' := MemLp.mul'
-@[deprecated (since := "2025-02-13")] alias MemLp.mul_of_top_left := MemLp.mul
-@[deprecated (since := "2025-02-13")] alias MemLp.mul_of_top_left' := MemLp.mul'
+@[deprecated (since := "2025-02-13")] alias Mem𝓛p.mul_of_top_right := MemLp.mul
+@[deprecated (since := "2025-02-13")] alias Mem𝓛p.mul_of_top_right' := MemLp.mul'
+@[deprecated (since := "2025-02-13")] alias Mem𝓛p.mul_of_top_left := MemLp.mul
+@[deprecated (since := "2025-02-13")] alias Mem𝓛p.mul_of_top_left' := MemLp.mul'
 
 end Mul
 
