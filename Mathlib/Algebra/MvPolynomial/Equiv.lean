@@ -330,8 +330,8 @@ theorem optionEquivLeft_monomial (m : Option S₁ →₀ ℕ) (r : R) :
   · intros; simp
   · intros; rw [pow_add]
 
-/-- The coefficient of `n.some` in the `n none`-th coefficient of `optionEquivLeft R S₁ f` equals the
-coefficient of `n` in `f` -/
+/-- The coefficient of `n.some` in the `n none`-th coefficient of `optionEquivLeft R S₁ f`
+equals the coefficient of `n` in `f` -/
 theorem optionEquivLeft_coeff_coeff (n : Option S₁ →₀ ℕ) (f : MvPolynomial (Option S₁) R) :
     coeff n.some (Polynomial.coeff (optionEquivLeft R S₁ f) (n none)) =
       coeff n f := by
