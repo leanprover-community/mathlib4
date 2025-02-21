@@ -27,16 +27,14 @@ section Exp
 variable (R : Type*) [Field R] [CharZero R]
 variable (A : Type*) [Semiring A] [Algebra R A]
 
-noncomputable def exponent (a : A) : ℕ :=
-  sInf {k | a ^ k = 0}
-
 noncomputable def exp (a : A) : A :=
-  ∑ n ∈ Finset.range (exponent A a), (Nat.factorial n : R)⁻¹ • (a ^ n)
+  ∑ n ∈ Finset.range (nilpotencyClass a), (Nat.factorial n : R)⁻¹ • (a ^ n)
 
 theorem well_def {k : ℕ} (a : A) (h : a ^ k = 0) :
     ∑ n ∈ Finset.range k, (Nat.factorial n : R)⁻¹ • (a ^ n) = exp R A a := by
   sorry
 
+-- theorem add_pow (h : Commute x y) (n : ℕ) :
 theorem exp_add_mul (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a) (h₃ : IsNilpotent b) :
     exp R A (a + b) = exp R A a * exp R A b := by
   sorry
