@@ -306,3 +306,32 @@ theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddComm
 end PolarSets
 
 end NormedSpace
+
+namespace LinearMap
+
+section NormedField
+
+variable {𝕜 E F : Type*}
+variable [NormedField 𝕜] [NormedSpace ℝ 𝕜] [AddCommMonoid E] [AddCommMonoid F]
+variable [Module 𝕜 E] [Module 𝕜 F]
+
+variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
+
+variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F] [IsScalarTower ℝ 𝕜 𝕜]
+
+theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
+  rw [polar_eq_biInter_preimage]
+  exact AbsConvex.iInter₂ fun i hi =>
+    ⟨Balanced.mulActionHom_preimage (E := F) (balanced_closedBall_zero (E := 𝕜) (r := (1 : ℝ)))
+      (𝕜 := 𝕜) (B i), Convex.linear_preimage (convex_closedBall _ _) (B i)⟩
+
+/-
+TODO: prove the converse and upgrade this to the bipolar theorem
+-/
+set_option linter.unusedSectionVars false in
+proof_wanted bipolar_theorem [Module ℝ E] [IsScalarTower ℝ 𝕜 E] :
+    closedAbsConvexHull (E := WeakBilin B) 𝕜 s = B.flip.polar (B.polar s)
+
+end NormedField
+
+end LinearMap
