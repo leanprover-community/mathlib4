@@ -27,20 +27,17 @@ section Exp
 variable (R : Type*) [Field R] [CharZero R]
 variable (A : Type*) [Semiring A] [Algebra R A]
 
--- Exponent of a nilpotent element
 noncomputable def exponent (a : A) : ℕ :=
   sInf {k | a ^ k = 0}
 
--- Exponential of a nilpotent element
 noncomputable def exp (a : A) : A :=
   ∑ n ∈ Finset.range (exponent A a), (Nat.factorial n : R)⁻¹ • (a ^ n)
-
 
 theorem well_def {k : ℕ} (a : A) (h : a ^ k = 0) :
     ∑ n ∈ Finset.range k, (Nat.factorial n : R)⁻¹ • (a ^ n) = exp R A a := by
   sorry
 
-theorem exp_add_mul (a b : A) (h : a * b = b * a) (h1 : IsNilpotent a) (h2 : IsNilpotent b) :
+theorem exp_add_mul (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a) (h₃ : IsNilpotent b) :
     exp R A (a + b) = exp R A a * exp R A b := by
   sorry
 
