@@ -384,8 +384,9 @@ projection `M →ₗ[R] M ⧸ (I ^ a n • ⊤)` is `f n` .
 @[simp]
 theorem mkQ_comp_limLinearMap {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ (a n) • ⊤)}
     (hf : ∀ {m s}, f m s = factorPow I M (ha.monotone m.le_succ) (f (m + 1) s)) (n : ℕ) :
-    (mkQ (I ^ (a n) • ⊤ : Submodule R M)).comp (limLinearMap ha hf) = f n :=
-  LinearMap.ext (IsAdicComplete.mkQ_limLinearMap ha hf n)
+    (mkQ (I ^ (a n) • ⊤ : Submodule R M)).comp (limLinearMap ha hf) = f n := by
+  ext
+  simp [IsAdicComplete.mk_limLinearMap ha hf n]
 
 end LinearMap
 
