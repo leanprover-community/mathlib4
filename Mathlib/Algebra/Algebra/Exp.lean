@@ -37,7 +37,7 @@ noncomputable def exp (a : A) : A :=
 
 
 theorem wellDef {k : ℕ} (a : A) (h : a ^ k = 0) :
-    exp R A a  = ∑ n ∈ Finset.range k, (Nat.factorial n : R)⁻¹ • (a ^ n) := by
+    ∑ n ∈ Finset.range k, (Nat.factorial n : R)⁻¹ • (a ^ n) = exp R A a := by
   sorry
 
 theorem mul_add (a b : A) (h : a * b = b * a) (IsNilpotent a : A) (IsNilpotent b : A) :
