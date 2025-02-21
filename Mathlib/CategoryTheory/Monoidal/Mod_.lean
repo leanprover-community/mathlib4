@@ -88,14 +88,11 @@ def forget : Mod_ A ⥤ C where
 
 open CategoryTheory.MonoidalCategory
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/6053
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6053
 we needed to increase the `maxHeartbeats` limit if we didn't write an explicit proof for
 `map_id` and `map_comp`.
 
-This may indicate a configuration problem in Aesop.
--/
+This may indicate a configuration problem in Aesop. -/
 /-- A morphism of monoid objects induces a "restriction" or "comap" functor
 between the categories of module objects.
 -/

@@ -439,12 +439,19 @@ theorem inter_iInter [Nonempty ι] (s : Set β) (t : ι → Set β) : (s ∩ ⋂
 theorem iInter_inter [Nonempty ι] (s : Set β) (t : ι → Set β) : (⋂ i, t i) ∩ s = ⋂ i, t i ∩ s :=
   iInf_inf
 
+theorem insert_iUnion [Nonempty ι] (x : β) (t : ι → Set β) :
+    insert x (⋃ i, t i) = ⋃ i, insert x (t i) := by
+  simp_rw [← union_singleton, iUnion_union]
+
 -- classical
 theorem union_iInter (s : Set β) (t : ι → Set β) : (s ∪ ⋂ i, t i) = ⋂ i, s ∪ t i :=
   sup_iInf_eq _ _
 
 theorem iInter_union (s : ι → Set β) (t : Set β) : (⋂ i, s i) ∪ t = ⋂ i, s i ∪ t :=
   iInf_sup_eq _ _
+
+theorem insert_iInter (x : β) (t : ι → Set β) : insert x (⋂ i, t i) = ⋂ i, insert x (t i) := by
+  simp_rw [← union_singleton, iInter_union]
 
 theorem iUnion_diff (s : Set β) (t : ι → Set β) : (⋃ i, t i) \ s = ⋃ i, t i \ s :=
   iUnion_inter _ _
@@ -1103,7 +1110,7 @@ theorem iUnion_image_preimage_sigma_mk_eq_self {ι : Type*} {σ : ι → Type*} 
   · rintro ⟨i, a, h, rfl⟩
     exact h
   · intro h
-    cases' x with i a
+    obtain ⟨i, a⟩ := x
     exact ⟨i, a, h, rfl⟩
 
 theorem Sigma.univ (X : α → Type*) : (Set.univ : Set (Σa, X a)) = ⋃ a, range (Sigma.mk a) :=
@@ -1118,9 +1125,13 @@ theorem iUnion_subset_iUnion_const {s : Set α} (h : ι → ι₂) : ⋃ _ : ι,
   iSup_const_mono (α := Set α) h
 
 @[simp]
-theorem iUnion_singleton_eq_range {α β : Type*} (f : α → β) : ⋃ x : α, {f x} = range f := by
+theorem iUnion_singleton_eq_range (f : α → β) : ⋃ x : α, {f x} = range f := by
   ext x
   simp [@eq_comm _ x]
+
+theorem iUnion_insert_eq_range_union_iUnion {ι : Type*} (x : ι → β) (t : ι → Set β) :
+    ⋃ i, insert (x i) (t i) = range x ∪ ⋃ i, t i := by
+  simp_rw [← union_singleton, iUnion_union_distrib, union_comm, iUnion_singleton_eq_range]
 
 theorem iUnion_of_singleton (α : Type*) : (⋃ x, {x} : Set α) = univ := by simp [Set.ext_iff]
 
@@ -1179,7 +1190,7 @@ theorem iUnion_range_eq_sUnion {α β : Type*} (C : Set (Set α)) {f : ∀ s : C
     refine ⟨_, hs, ?_⟩
     exact (f ⟨s, hs⟩ y).2
   · rintro ⟨s, hs, hx⟩
-    cases' hf ⟨s, hs⟩ ⟨x, hx⟩ with y hy
+    obtain ⟨y, hy⟩ := hf ⟨s, hs⟩ ⟨x, hx⟩
     refine ⟨_, ⟨y, rfl⟩, ⟨s, hs⟩, ?_⟩
     exact congr_arg Subtype.val hy
 
@@ -1189,7 +1200,7 @@ theorem iUnion_range_eq_iUnion (C : ι → Set α) {f : ∀ x : ι, β → C x}
   · rintro ⟨y, i, rfl⟩
     exact ⟨i, (f i y).2⟩
   · rintro ⟨i, hx⟩
-    cases' hf i ⟨x, hx⟩ with y hy
+    obtain ⟨y, hy⟩ := hf i ⟨x, hx⟩
     exact ⟨y, i, congr_arg Subtype.val hy⟩
 
 theorem union_distrib_iInter_left (s : ι → Set α) (t : Set α) : (t ∪ ⋂ i, s i) = ⋂ i, t ∪ s i :=
@@ -1231,6 +1242,24 @@ lemma biInter_gt_eq_iInf [LT α] [NoMinOrder α] {s : α → Set β} :
 
 lemma biInter_ge_eq_iInf [Preorder α] {s : α → Set β} :
     ⋂ (n) (m ≥ n), s m = ⋂ n, s n := biInf_ge_eq_iInf
+
+section le
+
+variable {ι : Type*} [PartialOrder ι] (s : ι → Set α) (i : ι)
+
+theorem biUnion_le : (⋃ j ≤ i, s j) = (⋃ j < i, s j) ∪ s i :=
+  biSup_le_eq_sup s i
+
+theorem biInter_le : (⋂ j ≤ i, s j) = (⋂ j < i, s j) ∩ s i :=
+  biInf_le_eq_inf s i
+
+theorem biUnion_ge : (⋃ j ≥ i, s j) = s i ∪ ⋃ j > i, s j :=
+  biSup_ge_eq_sup s i
+
+theorem biInter_ge : (⋂ j ≥ i, s j) = s i ∩ ⋂ j > i, s j :=
+  biInf_ge_eq_inf s i
+
+end le
 
 section Function
 
@@ -1799,9 +1828,6 @@ theorem directedOn_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
     let ⟨z, zb₁, zb₂⟩ := hd b₁ b₂
     let ⟨x, xf, xa₁, xa₂⟩ := h z a₁ (zb₁ fb₁) a₂ (zb₂ fb₂)
     ⟨x, ⟨z, xf⟩, xa₁, xa₂⟩
-
-@[deprecated (since := "2024-05-05")]
-alias directed_on_iUnion := directedOn_iUnion
 
 theorem directedOn_sUnion {r} {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
     (h : ∀ x ∈ S, DirectedOn r x) : DirectedOn r (⋃₀ S) := by

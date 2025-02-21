@@ -92,13 +92,13 @@ lemma norm_sub_mem_Icc_angle (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
   · norm_cast
     rw [norm_eq_abs, abs_add_mul_I]
     refine ⟨Real.le_sqrt_of_sq_le ?_, ?_⟩
-    · rw [mul_pow, ← _root_.abs_pow, abs_sq]
+    · rw [mul_pow, ← abs_pow, abs_sq]
       calc
         _ = 2 * (1 - (1 - 2 / π ^ 2 * θ ^ 2)) := by ring
         _ ≤ 2 * (1 - θ.cos) := by
             gcongr; exact Real.cos_le_one_sub_mul_cos_sq <| abs_le.2 <| Ioc_subset_Icc_self hθ
         _  = _ := by linear_combination -θ.cos_sq_add_sin_sq
-    · rw [Real.sqrt_le_left (by positivity), ← _root_.abs_pow, abs_sq]
+    · rw [Real.sqrt_le_left (by positivity), ← abs_pow, abs_sq]
       calc
         _ = 2 * (1 - θ.cos) := by linear_combination θ.cos_sq_add_sin_sq
         _ ≤ 2 * (1 - (1 - θ ^ 2 / 2)) := by gcongr; exact Real.one_sub_sq_div_two_le_cos

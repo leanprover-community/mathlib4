@@ -275,8 +275,8 @@ noncomputable def dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basi
 theorem dualBasis_repr_apply
     (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (x i) :
     (B.dualBasis hB b).repr x i = B x (b i) := by
-  #adaptation_note
-  /-- Before https://github.com/leanprover/lean4/pull/4814, we did not need the `@` in front of `toDual_def` in the `rw`.
+  #adaptation_note /-- https://github.com/leanprover/lean4/pull/4814
+  we did not need the `@` in front of `toDual_def` in the `rw`.
   I'm confused! -/
   rw [dualBasis, Basis.map_repr, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
     Basis.dualBasis_repr, @toDual_def]

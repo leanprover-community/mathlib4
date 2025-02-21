@@ -98,7 +98,7 @@ theorem GammaIntegral_convergent {s : ℂ} (hs : 0 < s.re) :
     refine HasFiniteIntegral.congr (Real.GammaIntegral_convergent hs).2 ?_
     apply (ae_restrict_iff' measurableSet_Ioi).mpr
     filter_upwards with x hx
-    rw [norm_eq_abs, map_mul, abs_of_nonneg <| le_of_lt <| exp_pos <| -x,
+    rw [norm_eq_abs, map_mul, Complex.abs_of_nonneg <| le_of_lt <| exp_pos <| -x,
       abs_cpow_eq_rpow_re_of_pos hx _]
     simp
 
@@ -180,7 +180,7 @@ private theorem Gamma_integrand_deriv_integrable_B {s : ℂ} (hs : 0 < s.re) {Y 
     Ioc_subset_Ioi_self).hasFiniteIntegral.congr ?_).const_mul _
   rw [EventuallyEq, ae_restrict_iff']
   · filter_upwards with x hx
-    rw [abs_of_nonneg (exp_pos _).le, abs_cpow_eq_rpow_re_of_pos hx.1]
+    rw [Complex.abs_of_nonneg (exp_pos _).le, abs_cpow_eq_rpow_re_of_pos hx.1]
     simp
   · exact measurableSet_Ioc
 
@@ -237,7 +237,7 @@ theorem GammaIntegral_add_one {s : ℂ} (hs : 0 < s.re) :
     refine eventuallyEq_of_mem (Ioi_mem_atTop 0) ?_
     intro x hx; dsimp only
     rw [norm_eq_abs, map_mul, abs.map_neg, abs_cpow_eq_rpow_re_of_pos hx,
-      abs_of_nonneg (exp_pos (-x)).le, neg_mul, one_mul]
+      Complex.abs_of_nonneg (exp_pos (-x)).le, neg_mul, one_mul]
   exact (tendsto_congr' this).mpr (tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero _ _ zero_lt_one)
 
 end GammaRecurrence
@@ -267,7 +267,7 @@ theorem GammaAux_recurrence1 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
 
 theorem GammaAux_recurrence2 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
     GammaAux n s = GammaAux (n + 1) s := by
-  cases' n with n n
+  rcases n with - | n
   · simp only [CharP.cast_eq_zero, Left.neg_neg_iff] at h1
     dsimp only [GammaAux]
     rw [GammaIntegral_add_one h1, mul_div_cancel_left₀]

@@ -45,7 +45,7 @@ namespace ProbabilityTheory
 theorem hasFiniteIntegral_prod_mk_left (a : α) {s : Set (β × γ)} (h2s : (κ ⊗ₖ η) a s ≠ ∞) :
     HasFiniteIntegral (fun b => (η (a, b) (Prod.mk b ⁻¹' s)).toReal) (κ a) := by
   let t := toMeasurable ((κ ⊗ₖ η) a) s
-  simp_rw [hasFiniteIntegral_iff_nnnorm, ennnorm_eq_ofReal toReal_nonneg]
+  simp_rw [hasFiniteIntegral_iff_enorm, enorm_eq_ofReal toReal_nonneg]
   calc
     ∫⁻ b, ENNReal.ofReal (η (a, b) (Prod.mk b ⁻¹' s)).toReal ∂κ a
     _ ≤ ∫⁻ b, η (a, b) (Prod.mk b ⁻¹' t) ∂κ a := by
@@ -82,19 +82,19 @@ theorem hasFiniteIntegral_compProd_iff ⦃f : β × γ → E⦄ (h1f : StronglyM
     HasFiniteIntegral f ((κ ⊗ₖ η) a) ↔
       (∀ᵐ x ∂κ a, HasFiniteIntegral (fun y => f (x, y)) (η (a, x))) ∧
         HasFiniteIntegral (fun x => ∫ y, ‖f (x, y)‖ ∂η (a, x)) (κ a) := by
-  simp only [hasFiniteIntegral_iff_nnnorm]
-  rw [Kernel.lintegral_compProd _ _ _ h1f.ennnorm]
+  simp only [hasFiniteIntegral_iff_enorm]
+  rw [lintegral_compProd _ _ _ h1f.enorm]
   have : ∀ x, ∀ᵐ y ∂η (a, x), 0 ≤ ‖f (x, y)‖ := fun x => Eventually.of_forall fun y => norm_nonneg _
   simp_rw [integral_eq_lintegral_of_nonneg_ae (this _)
       (h1f.norm.comp_measurable measurable_prod_mk_left).aestronglyMeasurable,
-    ennnorm_eq_ofReal toReal_nonneg, ofReal_norm_eq_coe_nnnorm]
+    enorm_eq_ofReal toReal_nonneg, ofReal_norm_eq_enorm]
   have : ∀ {p q r : Prop} (_ : r → p), (r ↔ p ∧ q) ↔ p → (r ↔ q) := fun {p q r} h1 => by
     rw [← and_congr_right_iff, and_iff_right_of_imp h1]
   rw [this]
   · intro h2f; rw [lintegral_congr_ae]
     filter_upwards [h2f] with x hx
     rw [ofReal_toReal]; rw [← lt_top_iff_ne_top]; exact hx
-  · intro h2f; refine ae_lt_top ?_ h2f.ne; exact h1f.ennnorm.lintegral_kernel_prod_right''
+  · intro h2f; refine ae_lt_top ?_ h2f.ne; exact h1f.enorm.lintegral_kernel_prod_right''
 
 theorem hasFiniteIntegral_compProd_iff' ⦃f : β × γ → E⦄
     (h1f : AEStronglyMeasurable f ((κ ⊗ₖ η) a)) :
@@ -200,21 +200,18 @@ theorem Kernel.continuous_integral_integral :
   refine
     tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_compProd
       (Eventually.of_forall fun h => (L1.integrable_coeFn h).integral_compProd) ?_
-  simp_rw [←
-    Kernel.lintegral_fn_integral_sub (fun x => (‖x‖₊ : ℝ≥0∞)) (L1.integrable_coeFn _)
-      (L1.integrable_coeFn g)]
+  simp_rw [← lintegral_fn_integral_sub (‖·‖ₑ) (L1.integrable_coeFn _) (L1.integrable_coeFn g)]
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le _) _
-  · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖₊ ∂η (a, x) ∂κ a
-  swap; · exact fun i => lintegral_mono fun x => ennnorm_integral_le_lintegral_ennnorm _
+  · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖ₑ ∂η (a, x) ∂κ a
+  swap; · exact fun i => lintegral_mono fun x => enorm_integral_le_lintegral_enorm _
   show
     Tendsto
-      (fun i : β × γ →₁[(κ ⊗ₖ η) a] E => ∫⁻ x, ∫⁻ y : γ, ‖i (x, y) - g (x, y)‖₊ ∂η (a, x) ∂κ a)
+      (fun i : β × γ →₁[(κ ⊗ₖ η) a] E => ∫⁻ x, ∫⁻ y : γ, ‖i (x, y) - g (x, y)‖ₑ ∂η (a, x) ∂κ a)
       (𝓝 g) (𝓝 0)
-  have : ∀ i : (MeasureTheory.Lp (α := β × γ) E 1 (((κ ⊗ₖ η) a) : Measure (β × γ))),
-      Measurable fun z => (‖i z - g z‖₊ : ℝ≥0∞) := fun i =>
-    ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).ennnorm
-  simp_rw [← Kernel.lintegral_compProd _ _ _ (this _), ← L1.ofReal_norm_sub_eq_lintegral, ←
-    ofReal_zero]
+  have this (i : Lp (α := β × γ) E 1 (((κ ⊗ₖ η) a) : Measure (β × γ))) :
+      Measurable fun z => ‖i z - g z‖ₑ :=
+    ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).enorm
+  simp_rw [← lintegral_compProd _ _ _ (this _), ← L1.ofReal_norm_sub_eq_lintegral, ← ofReal_zero]
   refine (continuous_ofReal.tendsto 0).comp ?_
   rw [← tendsto_iff_norm_sub_tendsto_zero]
   exact tendsto_id
@@ -254,23 +251,14 @@ theorem setIntegral_compProd {f : β × γ → E} {s : Set β} {t : Set γ} (hs 
   · simp_rw [Kernel.restrict_apply]
   · rw [compProd_restrict, Kernel.restrict_apply]; exact hf
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_compProd := setIntegral_compProd
-
 theorem setIntegral_compProd_univ_right (f : β × γ → E) {s : Set β} (hs : MeasurableSet s)
     (hf : IntegrableOn f (s ×ˢ univ) ((κ ⊗ₖ η) a)) :
     ∫ z in s ×ˢ univ, f z ∂(κ ⊗ₖ η) a = ∫ x in s, ∫ y, f (x, y) ∂η (a, x) ∂κ a := by
   simp_rw [setIntegral_compProd hs MeasurableSet.univ hf, Measure.restrict_univ]
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_compProd_univ_right := setIntegral_compProd_univ_right
-
 theorem setIntegral_compProd_univ_left (f : β × γ → E) {t : Set γ} (ht : MeasurableSet t)
     (hf : IntegrableOn f (univ ×ˢ t) ((κ ⊗ₖ η) a)) :
     ∫ z in univ ×ˢ t, f z ∂(κ ⊗ₖ η) a = ∫ x, ∫ y in t, f (x, y) ∂η (a, x) ∂κ a := by
   simp_rw [setIntegral_compProd MeasurableSet.univ ht hf, Measure.restrict_univ]
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_compProd_univ_left := setIntegral_compProd_univ_left
 
 end ProbabilityTheory

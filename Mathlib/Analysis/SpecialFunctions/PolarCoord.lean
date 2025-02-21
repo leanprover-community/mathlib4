@@ -46,10 +46,10 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     simp only [prod_mk_mem_set_prod_eq, mem_Ioi, sqrt_pos, mem_Ioo, Complex.neg_pi_lt_arg,
       true_and, Complex.arg_lt_pi_iff]
     constructor
-    · cases' hxy with hxy hxy
+    · rcases hxy with hxy | hxy
       · dsimp at hxy; linarith [sq_pos_of_ne_zero hxy.ne', sq_nonneg y]
       · linarith [sq_nonneg x, sq_pos_of_ne_zero hxy]
-    · cases' hxy with hxy hxy
+    · rcases hxy with hxy | hxy
       · exact Or.inl (le_of_lt hxy)
       · exact Or.inr hxy
   right_inv' := by
@@ -197,8 +197,6 @@ theorem measurableEquivRealProd_symm_polarCoord_symm_apply (p : ℝ × ℝ) :
 
 theorem polarCoord_symm_abs (p : ℝ × ℝ) :
     Complex.abs (Complex.polarCoord.symm p) = |p.1| := by simp
-
-@[deprecated (since := "2024-07-15")] alias polardCoord_symm_abs := polarCoord_symm_abs
 
 protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : ℂ → E) :

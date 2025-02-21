@@ -151,17 +151,14 @@ theorem dist_coe_center (z w : ℍ) (r : ℝ) : dist (z : ℂ) (w.center r) =
 theorem cmp_dist_eq_cmp_dist_coe_center (z w : ℍ) (r : ℝ) :
     cmp (dist z w) r = cmp (dist (z : ℂ) (w.center r)) (w.im * Real.sinh r) := by
   letI := metricSpaceAux
-  cases' lt_or_le r 0 with hr₀ hr₀
+  rcases lt_or_le r 0 with hr₀ | hr₀
   · trans Ordering.gt
     exacts [(hr₀.trans_le dist_nonneg).cmp_eq_gt,
       ((mul_neg_of_pos_of_neg w.im_pos (sinh_neg_iff.2 hr₀)).trans_le dist_nonneg).cmp_eq_gt.symm]
   have hr₀' : 0 ≤ w.im * Real.sinh r := by positivity
   have hzw₀ : 0 < 2 * z.im * w.im := by positivity
-  #adaptation_note
-  /--
-  After the bug fix in https://github.com/leanprover/lean4/pull/6024,
-  we need to give Lean the hint `(y := w.im * Real.sinh r)`.
-  -/
+  #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  we need to give Lean the hint `(y := w.im * Real.sinh r)`. -/
   simp only [← cosh_strictMonoOn.cmp_map_eq dist_nonneg hr₀,
     ← (pow_left_strictMonoOn₀ two_ne_zero).cmp_map_eq dist_nonneg (y := w.im * Real.sinh r) hr₀',
     dist_coe_center_sq]

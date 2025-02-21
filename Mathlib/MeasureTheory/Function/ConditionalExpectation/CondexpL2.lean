@@ -61,8 +61,6 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
 local notation "⟪" x ", " y "⟫₂" => @inner 𝕜 (α →₂[μ] E) _ x y
 
--- Porting note: the argument `E` of `condExpL2` is not automatically filled in Lean 4.
--- To avoid typing `(E := _)` every time it is made explicit.
 variable (E 𝕜)
 
 /-- Conditional expectation of a function in L2 with respect to a sigma-algebra -/
@@ -119,11 +117,6 @@ theorem eLpNorm_condExpL2_le (hm : m ≤ m0) (f : α →₂[μ] E) :
   exact norm_condExpL2_le hm f
 
 @[deprecated (since := "2025-01-21")] alias eLpNorm_condexpL2_le := eLpNorm_condExpL2_le
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_condExpL2_le := eLpNorm_condExpL2_le
-
-@[deprecated (since := "2025-01-21")] alias snorm_condexpL2_le := snorm_condExpL2_le
 
 theorem norm_condExpL2_coe_le (hm : m ≤ m0) (f : α →₂[μ] E) :
     ‖(condExpL2 E 𝕜 hm f : α →₂[μ] E)‖ ≤ ‖f‖ := by
@@ -194,7 +187,7 @@ theorem lintegral_nnnorm_condExpL2_le (hs : MeasurableSet[m] s) (hμs : μ s ≠
     dsimp only
     simp_rw [hx]
   rw [lintegral_congr_ae hg_nnnorm_eq.symm]
-  refine lintegral_nnnorm_le_of_forall_fin_meas_integral_eq
+  refine lintegral_enorm_le_of_forall_fin_meas_integral_eq
     hm (Lp.stronglyMeasurable f) ?_ ?_ ?_ ?_ hs hμs
   · exact integrableOn_Lp_of_measure_ne_top f fact_one_le_two_ennreal.elim hμs
   · exact hg_meas
@@ -225,7 +218,7 @@ theorem condExpL2_ae_eq_zero_of_ae_eq_zero (hs : MeasurableSet[m] s) (hμs : μ 
     dsimp only
     rw [hx]
     simp
-  · exact (Lp.stronglyMeasurable _).ennnorm
+  · exact (Lp.stronglyMeasurable _).enorm
 
 @[deprecated (since := "2025-01-21")]
 alias condexpL2_ae_eq_zero_of_ae_eq_zero := condExpL2_ae_eq_zero_of_ae_eq_zero
@@ -383,18 +376,12 @@ theorem setLIntegral_nnnorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : Measura
     _ = (∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a‖₊ ∂μ) * ‖x‖₊ := by
       simp_rw [nnnorm_smul, ENNReal.coe_mul]
       rw [lintegral_mul_const, lpMeas_coe]
-      exact (Lp.stronglyMeasurable _).ennnorm
+      exact (Lp.stronglyMeasurable _).enorm
     _ ≤ μ (s ∩ t) * ‖x‖₊ :=
       mul_le_mul_right' (lintegral_nnnorm_condExpL2_indicator_le_real hs hμs ht hμt) _
 
 @[deprecated (since := "2025-01-21")]
 alias setLIntegral_nnnorm_condexpL2_indicator_le := setLIntegral_nnnorm_condExpL2_indicator_le
-
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_nnnorm_condExpL2_indicator_le := setLIntegral_nnnorm_condExpL2_indicator_le
-
-@[deprecated (since := "2025-01-21")]
-alias set_lintegral_nnnorm_condexpL2_indicator_le := set_lintegral_nnnorm_condExpL2_indicator_le
 
 theorem lintegral_nnnorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (x : E') [SigmaFinite (μ.trim hm)] :
@@ -488,18 +475,12 @@ theorem setLIntegral_nnnorm_condExpIndSMul_le (hm : m ≤ m0) (hs : MeasurableSe
     _ = (∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a‖₊ ∂μ) * ‖x‖₊ := by
       simp_rw [nnnorm_smul, ENNReal.coe_mul]
       rw [lintegral_mul_const, lpMeas_coe]
-      exact (Lp.stronglyMeasurable _).ennnorm
+      exact (Lp.stronglyMeasurable _).enorm
     _ ≤ μ (s ∩ t) * ‖x‖₊ :=
       mul_le_mul_right' (lintegral_nnnorm_condExpL2_indicator_le_real hs hμs ht hμt) _
 
 @[deprecated (since := "2025-01-21")]
 alias setLIntegral_nnnorm_condexpIndSMul_le := setLIntegral_nnnorm_condExpIndSMul_le
-
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_nnnorm_condExpIndSMul_le := setLIntegral_nnnorm_condExpIndSMul_le
-
-@[deprecated (since := "2025-01-21")]
-alias set_lintegral_nnnorm_condexpIndSMul_le := set_lintegral_nnnorm_condExpIndSMul_le
 
 theorem lintegral_nnnorm_condExpIndSMul_le (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (x : G) [SigmaFinite (μ.trim hm)] : ∫⁻ a, ‖condExpIndSMul hm hs hμs x a‖₊ ∂μ ≤ μ s * ‖x‖₊ := by
@@ -544,12 +525,6 @@ theorem setIntegral_condExpL2_indicator (hs : MeasurableSet[m] s) (ht : Measurab
 @[deprecated (since := "2025-01-21")]
 alias setIntegral_condexpL2_indicator := setIntegral_condExpL2_indicator
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condExpL2_indicator := setIntegral_condExpL2_indicator
-
-@[deprecated (since := "2025-01-21")]
-alias set_integral_condexpL2_indicator := set_integral_condExpL2_indicator
-
 theorem setIntegral_condExpIndSMul (hs : MeasurableSet[m] s) (ht : MeasurableSet t)
     (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) (x : G') :
     ∫ a in s, (condExpIndSMul hm ht hμt x) a ∂μ = (μ (t ∩ s)).toReal • x :=
@@ -563,12 +538,6 @@ theorem setIntegral_condExpIndSMul (hs : MeasurableSet[m] s) (ht : MeasurableSet
     _ = (μ (t ∩ s)).toReal • x := by rw [setIntegral_condExpL2_indicator hs ht hμs hμt]
 
 @[deprecated (since := "2025-01-21")] alias setIntegral_condexpIndSMul := setIntegral_condExpIndSMul
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condExpIndSMul := setIntegral_condExpIndSMul
-
-@[deprecated (since := "2025-01-21")]
-alias set_integral_condexpIndSMul := set_integral_condExpIndSMul
 
 theorem condExpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     [SigmaFinite (μ.trim hm)] : (0 : α → ℝ) ≤ᵐ[μ]
