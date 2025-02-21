@@ -319,10 +319,6 @@ lemma optionEquivLeft_X_none : optionEquivLeft R S₁ (X none) = Polynomial.X :=
 lemma optionEquivLeft_C (r : R) : optionEquivLeft R S₁ (C r) = Polynomial.C (C r) := by
   simp only [optionEquivLeft_apply, aeval_C, Polynomial.algebraMap_apply, algebraMap_eq]
 
-lemma _root_.Polynomial.monomial_eq (m : ℕ) (r : R) :
-    Polynomial.monomial m r = Polynomial.C r * (Polynomial.X ^ m) :=
-  Eq.symm Polynomial.C_mul_X_pow_eq_monomial
-
 theorem optionEquivLeft_monomial (m : Option S₁ →₀ ℕ) (r : R) :
     optionEquivLeft R S₁ (monomial m r) = Polynomial.monomial (m none) (monomial m.some r):= by
   rw [optionEquivLeft_apply, aeval_monomial, prod_option_index]
