@@ -28,7 +28,7 @@ variable {f : E → F}
 variable (e : E →L[𝕜] F)
 variable {x : E}
 variable {s : Set E}
-variable {L : Filter E}
+variable {L : Filter (E × E)}
 
 section ContinuousLinearMap
 
@@ -40,14 +40,13 @@ There are currently two variants of these in mathlib, the bundled version
 predicate `IsBoundedLinearMap`). We give statements for both versions. -/
 
 
-@[fun_prop]
-protected theorem ContinuousLinearMap.hasStrictFDerivAt {x : E} : HasStrictFDerivAt e e x :=
+protected theorem ContinuousLinearMap.hasFDerivAtFilter : HasFDerivAtFilter e e L :=
   .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun x => by
     simp only [e.map_sub, sub_self, Pi.zero_apply]
 
-protected theorem ContinuousLinearMap.hasFDerivAtFilter : HasFDerivAtFilter e e x L :=
-  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun x => by
-    simp only [e.map_sub, sub_self, Pi.zero_apply]
+@[fun_prop]
+protected theorem ContinuousLinearMap.hasStrictFDerivAt {x : E} : HasStrictFDerivAt e e x :=
+  e.hasFDerivAtFilter
 
 @[fun_prop]
 protected theorem ContinuousLinearMap.hasFDerivWithinAt : HasFDerivWithinAt e e s x :=
@@ -83,7 +82,7 @@ protected theorem ContinuousLinearMap.differentiableOn : DifferentiableOn 𝕜 e
   e.differentiable.differentiableOn
 
 theorem IsBoundedLinearMap.hasFDerivAtFilter (h : IsBoundedLinearMap 𝕜 f) :
-    HasFDerivAtFilter f h.toContinuousLinearMap x L :=
+    HasFDerivAtFilter f h.toContinuousLinearMap L :=
   h.toContinuousLinearMap.hasFDerivAtFilter
 
 @[fun_prop]
