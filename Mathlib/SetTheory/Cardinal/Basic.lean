@@ -1033,15 +1033,6 @@ theorem bddAbove_range_comp {ι : Type u} {f : ι → Cardinal.{v}} (hf : BddAbo
 
 /-! ### Bounds on suprema -/
 
-theorem sum_le_iSup_lift {ι : Type u}
-    (f : ι → Cardinal.{max u v}) : sum f ≤ Cardinal.lift #ι * iSup f := by
-  rw [← (iSup f).lift_id, ← lift_umax, lift_umax.{max u v, u}, ← sum_const]
-  exact sum_le_sum _ _ (le_ciSup <| bddAbove_of_small _)
-
-theorem sum_le_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #ι * iSup f := by
-  rw [← lift_id #ι]
-  exact sum_le_iSup_lift f
-
 /-- The lift of a supremum is the supremum of the lifts. -/
 theorem lift_sSup {s : Set Cardinal} (hs : BddAbove s) :
     lift.{u} (sSup s) = sSup (lift.{u} '' s) := by
@@ -1090,6 +1081,21 @@ theorem lift_iSup_le_lift_iSup' {ι : Type v} {ι' : Type v'} {f : ι → Cardin
     {f' : ι' → Cardinal.{v'}} (hf : BddAbove (range f)) (hf' : BddAbove (range f')) (g : ι → ι')
     (h : ∀ i, lift.{v'} (f i) ≤ lift.{v} (f' (g i))) : lift.{v'} (iSup f) ≤ lift.{v} (iSup f') :=
   lift_iSup_le_lift_iSup hf hf' h
+
+/-- See also the specializations `sum_le_iSup_lift` and `sum_le_iSup`. -/
+theorem sum_le_iSup_lift' {ι : Type u} [Small.{v} ι]
+    (f : ι → Cardinal.{v}) : sum f ≤ lift.{v} (#ι) * ⨆ i, lift.{u} (f i) := by
+  rw [← lift_iSup (bddAbove_of_small _), ← (iSup f).lift_id, ← sum_const, lift_id]
+  exact sum_le_sum _ _ (le_ciSup <| bddAbove_of_small _)
+
+theorem sum_le_iSup_lift {ι : Type u}
+    (f : ι → Cardinal.{max u v}) : sum f ≤ lift.{v} (#ι) * ⨆ i, f i := by
+  convert sum_le_iSup_lift' f
+  · exact lift_umax.symm
+  · rw [lift_id']
+
+theorem sum_le_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #ι * iSup f := by
+  simpa using sum_le_iSup_lift' f
 
 lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
     {ι : Type u} (f : ι → Cardinal.{v}) (ω : Cardinal.{v})
@@ -1911,7 +1917,7 @@ theorem mk_iUnion_le {α ι : Type u} (f : ι → Set α) : #(⋃ i, f i) ≤ #�
 theorem mk_iUnion_le_lift {α : Type u} {ι : Type v} (f : ι → Set α) :
     lift.{v} #(⋃ i, f i) ≤ lift.{u} #ι * ⨆ i, lift.{v} #(f i) := by
   refine mk_iUnion_le_sum_mk_lift.trans <| Eq.trans_le ?_ (sum_le_iSup_lift _)
-  rw [← lift_sum, lift_id'.{_,u}]
+  rw [← lift_sum, lift_id']
 
 theorem mk_sUnion_le {α : Type u} (A : Set (Set α)) : #(⋃₀ A) ≤ #A * ⨆ s : A, #s := by
   rw [sUnion_eq_iUnion]
