@@ -221,7 +221,7 @@ open Filter in
 - $v_1, ..., v_k, w$: absolute values on $F$;
 - $1 < v_i(a)$ and $1 < v_i(b)$;
 - $v_j(a) < 1$ for $j \neq i$;
-- $w(a) = 1$ and $w(b) < 1$;
+- $w(a) = 1$ and $w(b) < 1$.
 
 There is a sequence of values that tends to $\infty$
 under $v_i$, tends to $0$ under $v_j$, and is always $< 1$ under $w$.
@@ -247,7 +247,7 @@ open scoped Classical in
 - $v_1, ..., v_k, w$: absolute values on $F$;
 - $1 < v_i(a)$ and $1 < v_i(b)$;
 - $v_j(a) < 1$ for $j \neq i$;
-- $w(a) = 1$ and $w(b) < 1$;
+- $w(a) = 1$ and $w(b) < 1$.
 
 There is a $k\in F$ such that $1 < v_i(k)$ while $v_j(k) < 1$ for all
 $j \neq i$ and $w(k) < 1$.
@@ -275,7 +275,7 @@ open Filter in
 - $v_1, ..., v_k, w$: absolute values on $F$;
 - $1 < v_i(a)$;
 - $v_j(a) < 1$ for $j \neq i$;
-- $1 < w(a)$;
+- $1 < w(a)$.
 
 There is a sequence of elements in $F$ that tendsto $v_i b$ under $v_i$, tends to $0$ under
 $v_j$ for $j ≠ i$, and tends to $w b$ under $w$.
@@ -304,7 +304,7 @@ open scoped Classical in
 - $v_1, ..., v_k, w$: absolute values on $F$;
 - $1 < v_i(a)$;
 - $v_j(a) < 1$ for $j \neq i$;
-- $1 < w(a)$;
+- $1 < w(a)$.
 
 There is a $k ∈ F$ such that $1 < v_i(k)$ while $v_j(k) < 1$ for all
 $j ≠ i$ and $w(k) < 1$. This is given by taking large enough values of a witness sequence to
