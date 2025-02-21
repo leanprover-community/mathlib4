@@ -284,4 +284,51 @@ lemma rank_add_rank_le_card_of_mul_eq_zero [Field R] [Finite l] [Fintype m]
   apply Submodule.finrank_mono
   rw [LinearMap.range_le_ker_iff, ← Matrix.toLin_mul, hAB, map_zero]
 
+section Cardinal
+
+open Set Submodule
+
+variable {m n R : Type*} {A A₁ A₂ : Matrix m n R} {s : Set m} {t : Set n}
+
+noncomputable def cRank [Semiring R] (A : Matrix m n R) : Cardinal :=
+  Module.rank R (Submodule.span R (Set.range Aᵀ))
+
+lemma cRank_toNat [CommRing R] [Fintype n] (A : Matrix m n R) : (cRank A).toNat = A.rank := by
+  rw [cRank, rank, ← Module.finrank, @range_mulVecLin]
+
+variable [CommRing R]
+
+def IsRowBasis (A : Matrix m n R) (s : Set m) := Maximal (LinearIndepOn R A ·) s
+
+def IsColBasis (A : Matrix m n R) := Aᵀ.IsRowBasis
+
+theorem foo1 (h : span R (range A₁) ≤ span R (range A₂)) (ht : LinearIndepOn R A₁ᵀ t) :
+    LinearIndepOn R A₂ᵀ t := by
+  refine linearIndepOn_iff.2 fun l hl hl0 ↦ linearIndepOn_iff.1 ht l hl ?_
+  ext i
+  have hi : A₁ i ∈ span R (range A₂) := h <| subset_span <| mem_range_self ..
+  simp_rw [Finsupp.mem_span_range_iff_exists_finsupp, Finsupp.sum] at hi
+  obtain ⟨c, hc⟩ := hi
+  have hrw (i' : m) : ∑ x ∈ l.support, l x * A₂ i' x = 0 := by
+    simpa [Finsupp.linearCombination, Finsupp.sum] using congr_fun hl0 i'
+  suffices ∑ x ∈ l.support, l x * ∑ x_1 ∈ c.support, c x_1 * A₂ x_1 x = 0 by
+    simpa [Finsupp.linearCombination, Finsupp.sum, ← hc]
+  simp_rw [Finset.mul_sum, Finset.sum_comm (s := l.support), mul_left_comm (a := l _),
+    ← Finset.mul_sum]
+  simp [hrw]
+
+lemma foo2 (h : span R (range A₁) = span R (range A₂)) :
+    LinearIndepOn R A₁ᵀ = LinearIndepOn R A₂ᵀ := by
+  ext t
+  exact ⟨foo1 h.le, foo1 h.symm.le⟩
+
+lemma foo3 (h : span R (range A₁) = span R (range A₂)) : A₁.IsColBasis = A₂.IsColBasis := by
+  ext
+  rw [IsColBasis, IsRowBasis, foo2 h, IsColBasis, IsRowBasis]
+
+lemma foo4 (hs : IsRowBasis A s) (ht : IsColBasis A t) : Matrix.IsColBasis (s.restrict A) t := by
+  _
+
+end Cardinal
+
 end Matrix
