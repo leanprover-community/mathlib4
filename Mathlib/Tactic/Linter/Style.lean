@@ -93,7 +93,7 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
                If you intend to submit this contribution to the Mathlib project, \
                please remove 'set_option {name}'."
 
-initialize addLinter setOptionLinter
+--initialize addLinter setOptionLinter
 
 end Style.setOption
 
@@ -136,7 +136,7 @@ def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
         Linter.logLint linter.style.missingEnd stx
          m!"unclosed sections or namespaces; expected: '{ending}'"
 
-initialize addLinter missingEndLinter
+--initialize addLinter missingEndLinter
 
 end Style.missingEnd
 
@@ -204,7 +204,7 @@ def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
             m!"This central dot `·` is isolated; please merge it with the next line."
       | _ => return
 
-initialize addLinter cdotLinter
+--initialize addLinter cdotLinter
 
 end Style
 
@@ -244,7 +244,7 @@ def dollarSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
       Linter.logLint linter.style.dollarSyntax s
         m!"Please use '<|' instead of '$' for the pipe operator."
 
-initialize addLinter dollarSyntaxLinter
+--initialize addLinter dollarSyntaxLinter
 
 end Style.dollarSyntax
 
@@ -290,7 +290,7 @@ def lambdaSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
         Please use 'fun' and not 'λ' to define anonymous functions.\n\
         The 'λ' syntax is deprecated in mathlib4."
 
-initialize addLinter lambdaSyntaxLinter
+--initialize addLinter lambdaSyntaxLinter
 
 end Style.lambdaSyntax
 
