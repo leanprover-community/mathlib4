@@ -28,12 +28,16 @@ open InnerProductSpace TensorProduct
 
 variable (E : Type*) [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
+/-- The canonical contravariant tensor corresponding to the inner product -/
 noncomputable def InnerProductSpace.canonicalContravariantTensor :
     E ⊗[ℝ] E →ₗ[ℝ] ℝ := lift bilinFormOfRealInner
 
+/-- The canonical covariant tensor corresponding to `InnerProductSpace.canonicalContravariantTensor`
+under the identification of `E` with its dual -/
 noncomputable def InnerProductSpace.canonicalCovariantTensor [FiniteDimensional ℝ E] :
     E ⊗[ℝ] E := ∑ i, ((stdOrthonormalBasis ℝ E) i) ⊗ₜ[ℝ] ((stdOrthonormalBasis ℝ E) i)
 
+/-- Representation of the canonical covariant tensor in terms of an orthonormal basis. -/
 theorem InnerProductSpace.canonicalCovariantTensorRepresentation [FiniteDimensional ℝ E]
     {ι : Type*} [Fintype ι] (v : OrthonormalBasis ι ℝ E) :
     InnerProductSpace.canonicalCovariantTensor E = ∑ i, (v i) ⊗ₜ[ℝ] (v i) := by
