@@ -526,10 +526,9 @@ class hasGSMul [AddCommMonoid M] [Module R M] [isfil : IsRingFiltration F F_lt] 
   F_lt_smul_mem {i : ι} {j : ιM} {x y} : x ∈ F_lt i → y ∈ FM j → x • y ∈ FM_lt (i +ᵥ j)
   smul_F_lt_mem {i : ι} {j : ιM} {x y} : x ∈ F i → y ∈ FM_lt j → x • y ∈ FM_lt (i +ᵥ j)
 
-lemma hasGSMul_int [AddCommMonoid M] [Module R M] (F : ℤ → σ)
-    (mono : Monotone F) (one_mem : 1 ∈ F 0)
-    (mul_mem : ∀ {i j x y}, x ∈ F i → y ∈ F j → x * y ∈ F (i + j)) (F' : ℤ → σM)
-    (mono' : Monotone F')
+lemma hasGSMul_int [AddCommMonoid M] [Module R M] (F : ℤ → σ) (mono : Monotone F)
+    (one_mem : 1 ∈ F 0) (mul_mem : ∀ {i j x y}, x ∈ F i → y ∈ F j → x * y ∈ F (i + j))
+    (F' : ℤ → σM) (mono' : Monotone F')
     (smul_mem : ∀ {i j x y}, x ∈ F i → y ∈ F' j → x • y ∈ F' (i + j)) :
     hasGSMul (isfil := IsRingFiltration_int F mono one_mem mul_mem)
     F (fun n ↦ F (n - 1)) F' (fun n ↦ F' (n - 1)) :=
@@ -542,10 +541,10 @@ lemma hasGSMul_int [AddCommMonoid M] [Module R M] (F : ℤ → σ)
 
 variable [AddSubgroupClass σ R] [AddCommGroup M] [Module R M] [AddSubgroupClass σM M]
 
-lemma hasGSMul_AddSubgroup [IsOrderedCancelVAdd ι ιM]
-    (F : ι → AddSubgroup R) (F_lt : outParam <| ι → AddSubgroup R)
-    [IsRingFiltration F F_lt] (FM : ιM → AddSubgroup M) (FM_lt : outParam <| ιM → AddSubgroup M)
-    [IsModuleFiltration F F_lt FM FM_lt] : hasGSMul F F_lt FM FM_lt where
+lemma hasGSMul_AddSubgroup [IsOrderedCancelVAdd ι ιM] (F : ι → AddSubgroup R)
+    (F_lt : outParam <| ι → AddSubgroup R) [IsRingFiltration F F_lt] (FM : ιM → AddSubgroup M)
+    (FM_lt : outParam <| ιM → AddSubgroup M) [IsModuleFiltration F F_lt FM FM_lt] :
+    hasGSMul F F_lt FM FM_lt where
   F_lt_smul_mem := by
     intro i j x y hx hy
     let S : AddSubgroup R := {
@@ -586,9 +585,7 @@ variable [hasGSMul F F_lt FM FM_lt]
 theorem hasGSMul.mul_equiv_mul {i : ι} {j : ιM} ⦃x₁ x₂ : F i⦄
     (hx : x₁ ≈ x₂) ⦃y₁ y₂ : FM j⦄ (hy : y₁ ≈ y₂) :
     x₁ • y₁ ≈ x₂ • y₂ := by
-  simp only [HasEquiv.Equiv, QuotientAddGroup.leftRel_apply, AddSubgroup.mem_addSubgroupOf,
-    AddSubgroup.coe_add, NegMemClass.coe_neg, AddMonoidHom.mem_range, AddSubgroupClass.coeSubtype,
-    Subtype.exists, exists_prop, exists_eq_right] at hx hy ⊢
+  simp only [HasEquiv.Equiv, QuotientAddGroup.leftRel_apply] at hx hy ⊢
   show -(x₁ • y₁).1 + (x₂ • y₂).1 ∈ (FM_lt (i +ᵥ j))
   have eq : - (x₁ • y₁).1 + (x₂ • y₂).1 = ((- x₁ + x₂) : R) • y₁ + (x₂ : R) • (- y₁ + y₂) := by
     simp only [add_smul, neg_smul, smul_add, smul_neg]
@@ -610,12 +607,10 @@ instance hSMul {i : ι} {j : ιM}:
 
 section HEq
 
-lemma GradedPiece.mk_smul {i : ι} {j : ιM} (x : F i)
-    (y : FM j) :
+lemma GradedPiece.mk_smul {i : ι} {j : ιM} (x : F i) (y : FM j) :
     mk F F_lt x • mk FM FM_lt y = mk FM FM_lt (x • y) := rfl
 
-lemma gradedSMul_def {i : ι} {j : ιM} (x : F i)
-    (y : FM j) :
+lemma gradedSMul_def {i : ι} {j : ιM} (x : F i) (y : FM j) :
     GradedPiece.mk FM FM_lt (IsModuleFiltration.hSMul F F_lt FM FM_lt i j x y) =
     hasGSMul.gradedSMul F F_lt FM FM_lt (GradedPiece.mk F F_lt x) (GradedPiece.mk FM FM_lt y) := rfl
 
