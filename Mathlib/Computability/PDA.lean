@@ -74,7 +74,7 @@ def acceptsByEmptyStack (pda : PDA Q T S) : Language T :=
 /-- `acceptsByFinalState pda` is the language accepted by the PDA `pda` based on the final-state
   condition. -/
 def acceptsByFinalState (pda : PDA Q T S) : Language T :=
-  { w : List T | ∃ q  ∈ pda.final_states, ∃ γ : List S,
+  { w : List T | ∃ q ∈ pda.final_states, ∃ γ : List S,
       Reaches (⟨pda.initial_state, w, [pda.start_symbol]⟩ : conf pda) ⟨q, [], γ⟩ }
 
 end PDA
