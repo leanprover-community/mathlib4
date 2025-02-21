@@ -3,11 +3,9 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Kalle Kytölä
 -/
-import Mathlib.Analysis.LocallyConvex.AbsConvex
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.Topology.Algebra.Module.WeakBilin
-import Mathlib.Analysis.Seminorm
-import Mathlib.Analysis.Normed.Module.Convex
+import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # Polar set
