@@ -341,7 +341,7 @@ theorem insertRec_insert {C : AList β → Sort*} (H0 : C ∅)
     (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) {c : Sigma β}
     {l : AList β} (h : c.1 ∉ l) :
     @insertRec α β _ C H0 IH (l.insert c.1 c.2) = IH c.1 c.2 l h (@insertRec α β _ C H0 IH l) := by
-  cases' l with l hl
+  obtain ⟨l, hl⟩ := l
   suffices HEq (@insertRec α β _ C H0 IH ⟨c :: l, nodupKeys_cons.2 ⟨h, hl⟩⟩)
       (IH c.1 c.2 ⟨l, hl⟩ h (@insertRec α β _ C H0 IH ⟨l, hl⟩)) by
     cases c
@@ -451,7 +451,7 @@ theorem union_comm_of_disjoint {s₁ s₂ : AList β} (h : Disjoint s₁ s₂) :
     (by
       intros; simp only [union_entries, Option.mem_def, dlookup_kunion_eq_some]
       constructor <;> intro h'
-      · cases' h' with h' h'
+      · rcases h' with h' | h'
         · right
           refine ⟨?_, h'⟩
           apply h
@@ -459,7 +459,7 @@ theorem union_comm_of_disjoint {s₁ s₂ : AList β} (h : Disjoint s₁ s₂) :
           exact rfl
         · left
           rw [h'.2]
-      · cases' h' with h' h'
+      · rcases h' with h' | h'
         · right
           refine ⟨?_, h'⟩
           intro h''

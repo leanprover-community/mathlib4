@@ -133,8 +133,6 @@ instance hasLimit : HasLimit F := HasLimit.mk {
 /-- If `J` is `u`-small, the category of `R`-modules has limits of shape `J`. -/
 lemma hasLimitsOfShape [Small.{w} J] : HasLimitsOfShape J (ModuleCat.{w} R) where
 
--- Porting note: mathport translated this as `irreducible_def`, but as `HasLimitsOfSize`
--- is a `Prop`, declaring this as `irreducible` should presumably have no effect
 /-- The category of R-modules has all limits. -/
 lemma hasLimitsOfSize [UnivLE.{v, w}] : HasLimitsOfSize.{t, v} (ModuleCat.{w} R) where
   has_limits_of_shape _ := hasLimitsOfShape
