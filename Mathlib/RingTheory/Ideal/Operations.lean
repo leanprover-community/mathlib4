@@ -944,6 +944,20 @@ theorem IsPrime.inf_le' {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp :
     s.inf f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
   ⟨fun h ↦ hp.prod_le.1 <| prod_le_inf.trans h, fun ⟨_, his, hip⟩ ↦ (Finset.inf_le his).trans hip⟩
 
+theorem IsPrime.sInf_le {s : Set (Ideal R)} (hs : s.Finite) {P : Ideal R} (hp : IsPrime P) :
+    sInf s ≤ P ↔ ∃ I ∈ s, I ≤ P := by
+  have h1 := IsPrime.inf_le' (s := hs.toFinset) (f := fun u ↦ u) hp
+  have h2 : sInf s = hs.toFinset.inf (fun u ↦ u) := by
+    apply le_antisymm
+    · refine (Finset.le_inf fun b hb ↦ _root_.sInf_le (hs.mem_toFinset.mp hb))
+    · refine (le_sInf fun b hb ↦ Finset.inf_le (hs.mem_toFinset.mpr hb))
+  simp_all
+
+theorem IsPrime.mem_of_sInf_eq {s : Set (Ideal R)} (hs : s.Finite) {P : Ideal R} (hp : IsPrime P)
+    (h : sInf s = P) : P ∈ s := by
+  obtain ⟨J, hJ, e⟩ := (IsPrime.sInf_le hs hp).mp h.le
+  exact e.antisymm (h.symm.trans_le <| _root_.sInf_le hJ) ▸ hJ
+
 -- Porting note: needed to add explicit coercions (· : Set R).
 theorem subset_union {R : Type u} [Ring R] {I J K : Ideal R} :
     (I : Set R) ⊆ J ∪ K ↔ I ≤ J ∨ I ≤ K :=

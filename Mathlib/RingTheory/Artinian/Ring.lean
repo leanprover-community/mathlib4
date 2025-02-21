@@ -56,6 +56,9 @@ variable {R : Type*} [CommRing R] [IsArtinianRing R]
 lemma jacobson_eq_radical (I : Ideal R) : I.jacobson = I.radical := by
   simp_rw [Ideal.jacobson, Ideal.radical_eq_sInf, IsArtinianRing.isPrime_iff_isMaximal]
 
+lemma jacobson_eq_nilradical : (⊥ : Ideal R).jacobson = nilradical R :=
+    jacobson_eq_radical _
+
 theorem isNilpotent_nilradical : IsNilpotent (nilradical R) := by
   rw [nilradical, ← jacobson_eq_radical]
   exact isNilpotent_jacobson_bot
