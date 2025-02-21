@@ -195,8 +195,7 @@ lemma linearIndependent_iff_coxeterWeightIn_ne_four :
 
 lemma coxeterWeightIn_eq_four_iff_not_linearIndependent :
     P.coxeterWeightIn S i j = 4 ↔ ¬ LinearIndependent R ![P.root i, P.root j] := by
-  rw [← coxeterWeight_eq_four_iff_not_linearIndependent, ← P.algebraMap_coxeterWeightIn S,
-    ← map_ofNat (algebraMap S R), (algebraMap_injective S R).eq_iff]
+  rw [P.linearIndependent_iff_coxeterWeightIn_ne_four S, not_not]
 
 variable (i j)
 
