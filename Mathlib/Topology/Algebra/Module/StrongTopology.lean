@@ -501,6 +501,25 @@ def postcomp [IsTopologicalAddGroup F] [IsTopologicalAddGroup G] [ContinuousCons
       (UniformOnFun.postcomp_uniformContinuous L.uniformContinuous).continuous.comp
         (UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous
 
+variable (F G σ τ) in
+/-- Composition of continuous semilinear maps as a continuous semibilinear map. -/
+@[simps]
+def compSL [IsTopologicalAddGroup F] [IsTopologicalAddGroup G]
+    [ContinuousConstSMul 𝕜₂ F] [ContinuousConstSMul 𝕜₃ G] :
+    (F →SL[τ] G) →L[𝕜₃] (E →SL[σ] F) →SL[τ] E →SL[ρ] G where
+  toFun := postcomp E
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  cont := by
+    rw [LinearMap.toFun_eq_coe]
+    apply continuous_of_continuousAt_zero
+    rw [ContinuousAt, map_zero,
+      (ContinuousLinearMap.hasBasis_nhds_zero_of_basis
+        ContinuousLinearMap.hasBasis_nhds_zero).tendsto_right_iff]
+    rintro ⟨S, s, U⟩ ⟨hS, hs, hU⟩
+    filter_upwards [eventually_nhds_zero_mapsTo (isVonNBounded_image2_apply hS hs) hU]
+      with g hg f hf x hx using hg <| mem_image2_of_mem hf hx
+
 end BoundedSets
 
 section BilinearMaps
