@@ -34,7 +34,7 @@ which consists of the inclusions of subobjects of `G`. When it is
 applied to the morphism `X ⟶ 0`, the factorization given by the
 small object is a factorization `X ⟶ I ⟶ 0` where `I` is
 injective (because `I ⟶ 0` has the expected right lifting properties),
-and `X ⟶ I` is a monomorphisms because it is a transfinite composition
+and `X ⟶ I` is a monomorphism because it is a transfinite composition
 of monomorphisms (this uses the axiom AB5).
 
 The proof of the technical lemma `generatingMonomorphisms_rlp` that
