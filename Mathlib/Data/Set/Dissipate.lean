@@ -21,8 +21,7 @@ def Dissipate [LE α] (s : α → Set β) (x : α) : Set β :=
   ⋂ y ≤ x, s y
 
 @[simp]
-theorem dissipate_def [LE α] {x : α} : Dissipate s x = ⋂ y ≤ x, s y :=
-  rfl
+theorem dissipate_def [LE α] {x : α} : Dissipate s x = ⋂ y ≤ x, s y := rfl
 
 @[simp]
 theorem mem_dissipate [LE α] {x : α} {z : β} : z ∈ Dissipate s x ↔ ∀ y ≤ x, z ∈ s y := by
@@ -32,7 +31,7 @@ theorem dissipate_subset [Preorder α] {x y : α} (hy : y ≤ x): Dissipate s x 
   biInter_subset_of_mem hy
 
 theorem dissipate_subset_iInter [Preorder α] (x : α) : ⋂ i, s i ⊆ Dissipate s x := by
-  simp [Dissipate]
+  simp only [Dissipate, subset_iInter_iff]
   exact fun x h ↦ iInter_subset_of_subset x fun ⦃a⦄ a ↦ a
 
 theorem antitone_dissipate [Preorder α] : Antitone (Dissipate s) :=
@@ -111,7 +110,7 @@ lemma empty_of_directed {s : ℕ → Set α} (hd : Directed (fun (x1 x2 : Set α
     exact Set.Nonempty.mono hm (h m)
 
 lemma dissipate_directed {s : ℕ → Set α} :
-    Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) fun n ↦ Dissipate s n :=
+    Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) (Dissipate s) :=
      antitone_dissipate.directed_ge
 
 lemma mem_subset_dissipate_of_directed (C : ℕ → Set α)
@@ -141,6 +140,8 @@ lemma dissipate_exists_empty_iff_of_directed (C : ℕ → Set α)
     obtain ⟨m, hm⟩ := mem_subset_dissipate_of_directed C hd n
     exact Set.Nonempty.mono hm (h m)
 
+/-- For a ∩-stable attribute `p` on `Set α` and a sequence of sets `s` with this attribute,
+`p ⋂ i ≤ n, s n` holds. -/
 lemma dissipate_of_piSystem {s : ℕ → Set α} {p : Set α → Prop}
     (hp : ∀ (s t : Set α), p s → p t → p (s ∩ t)) (h : ∀ n, p (s n)) (n : ℕ) :
       p (Dissipate s n) := by
