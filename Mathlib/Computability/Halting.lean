@@ -135,7 +135,7 @@ def ComputablePred {α} [Primcodable α] (p : α → Prop) :=
   ∃ _ : DecidablePred p, Computable fun a => decide (p a)
 
 /-- A recursively enumerable predicate is one which is the domain of a computable partial function.
- -/
+-/
 def REPred {α} [Primcodable α] (p : α → Prop) :=
   Partrec fun a => Part.assert (p a) fun _ => Part.some ()
 
