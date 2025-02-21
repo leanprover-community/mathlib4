@@ -784,8 +784,10 @@ def getRawProjections (stx : Syntax) (str : Name) (traceIfExists : Bool := false
     -- We always print the projections when they already exists and are called by
     -- `initialize_simps_projections`.
     withOptions (· |>.updateBool `trace.simps.verbose (traceIfExists || ·)) <| do
-      trace[simps.debug]
-        projectionsInfo data.2.toList "Already found projection information for structure" str
+      trace[simps.verbose]
+        projectionsInfo data.2.toList "The projections for this structure have already been \
+        initialized by a previous invocation of `initialize_simps_projections` or `@[simps]`.\n\
+        Generated projections for" str
     return data
   trace[simps.verbose] "generating projection information for structure {str}."
   trace[simps.debug] "Applying the rules {rules}."
