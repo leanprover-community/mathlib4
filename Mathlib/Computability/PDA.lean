@@ -17,10 +17,15 @@ exactly the context-free languages.
   transition function. The transition function is given in two parts: `transition_fun` reads a
   letter and `transition_fun'` makes an epsilon transition. -/
 structure PDA (Q T S : Type) [Fintype Q] [Fintype T] [Fintype S] where
+  /-- Initial state. -/
   initial_state : Q
+  /-- Start symbol on the stack. -/
   start_symbol : S
+  /-- Set of final states. -/
   final_states : Set Q
+  /-- Transition function reading a letter from T. -/
   transition_fun : Q → T → S → Set (Q × List S)
+  /-- Epsilon transition function. -/
   transition_fun' : Q → S → Set (Q × List S)
   finite (q : Q)(a : T)(Z : S): (transition_fun q a Z).Finite
   finite' (q : Q)(Z : S): (transition_fun' q Z).Finite
@@ -29,14 +34,20 @@ namespace PDA
 
 variable {Q T S : Type} [Fintype Q] [Fintype T] [Fintype S]
 
+/-- A configuration of a PDA is a state (`state`), the remaining input (`input`), and the current
+  stack. -/
 @[ext]
 structure conf (p : PDA Q T S) where
+  /-- Current state. -/
   state : Q
+  /-- Remaining input. -/
   input : List T
+  /-- Current stack. -/
   stack : List S
 
 variable {pda : PDA Q T S}
 
+/-- `step r₁` is the set of configurations reachable from `r₁` in one step. -/
 def step (r₁ : conf pda) : Set (conf pda) :=
   match r₁ with
     | ⟨q, a::w, Z::α⟩ =>
@@ -48,13 +59,20 @@ def step (r₁ : conf pda) : Set (conf pda) :=
                                           r₂ = ⟨p, [], (β ++ α)⟩ }
     | ⟨_, _, []⟩ => ∅
 
+/-- `Reaches₁ r₁ r₂` means that `r₂` is reachable from `r₁` in one step. -/
 def Reaches₁ (r₁ r₂ : conf pda) : Prop := r₂ ∈ step r₁
+
+/-- `Reaches r₁ r₂` means that `r₂` is reachable from `r₁` in finitely many steps. -/
 def Reaches : conf pda → conf pda → Prop := Relation.ReflTransGen Reaches₁
 
+/-- `acceptsByEmptyStack pda` is the language accepted by the PDA `pda` based on the empty-stack
+  condition. -/
 def acceptsByEmptyStack (pda : PDA Q T S) : Language T :=
   { w : List T | ∃ q : Q,
       Reaches (⟨pda.initial_state, w, [pda.start_symbol]⟩ : conf pda) ⟨q, [], []⟩ }
 
+/-- `acceptsByFinalState pda` is the language accepted by the PDA `pda` based on the final-state
+  condition. -/
 def acceptsByFinalState (pda : PDA Q T S) : Language T :=
   { w : List T | ∃ q  ∈ pda.final_states, ∃ γ : List S,
       Reaches (⟨pda.initial_state, w, [pda.start_symbol]⟩ : conf pda) ⟨q, [], γ⟩ }
