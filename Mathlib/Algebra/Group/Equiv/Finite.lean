@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Data.Fintype.Card
-
+import Mathlib.Data.Fintype.Defs
 /-!
 # Finite types with addition/multiplications
 
@@ -16,11 +14,7 @@ addition/multiplication operator.
 ## Main results
 
 * `Fintype.decidableEqMulEquivFintype`: `MulEquiv`s on finite types have decidable equality
-
-* `Multiplicative.fintype`: a finite type under addition is also finite under multiplication
 -/
-
-assert_not_exists MonoidWithZero MulAction
 
 open Function
 
@@ -30,7 +24,7 @@ universe u v
 
 variable {α β γ : Type*}
 
-open Finset Function
+open Function
 
 namespace Fintype
 
@@ -44,15 +38,3 @@ instance decidableEqMulEquivFintype {α β : Type*} [DecidableEq β] [Fintype α
 end BundledHoms
 
 end Fintype
-
-instance Additive.fintype : ∀ [Fintype α], Fintype (Additive α) :=
-  Fintype.ofEquiv α Additive.ofMul
-
-instance Multiplicative.fintype : ∀ [Fintype α], Fintype (Multiplicative α) :=
-  Fintype.ofEquiv α Multiplicative.ofAdd
-
-@[simp] lemma Fintype.card_multiplicative (α : Type*) [Fintype α] :
-    card (Multiplicative α) = card α := Finset.card_map _
-
-@[simp] lemma Fintype.card_additive (α : Type*) [Fintype α] : card (Additive α) = card α :=
-  Finset.card_map _
