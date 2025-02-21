@@ -57,71 +57,24 @@ variable {R : Type*} [CommRing R]
 
 namespace MvPolynomial
 
-open Finsupp
+open Finsupp Function
 
-/-- A multivariate polynomial that vanishes on a large product finite set is the zero polynomial. -/
-private theorem eq_zero_of_eval_zero_at_prod_finset_nat {n : ℕ} [IsDomain R]
-    (P : MvPolynomial (Fin n) R) (S : Fin n → Finset R)
-    (Hdeg : ∀ i, P.degreeOf i < #(S i))
-    (Heval : ∀ (x : Fin n → R), (∀ i, x i ∈ S i) → eval x P = 0) :
-    P = 0 := by
-  induction n generalizing R with
-  | zero =>
-    suffices P = C (constantCoeff P) by
-      specialize Heval 0 (fun i ↦ False.elim (not_lt_zero' i.prop))
-      rw [eval_zero] at Heval
-      rw [this, Heval, map_zero]
-    ext m
-    suffices m = 0 by
-      rw [this]
-      simp only [← constantCoeff_eq, coeff_C, ↓reduceIte]
-    ext d; exfalso; exact not_lt_zero' d.prop
-  | succ n hrec =>
-    let Q := finSuccEquiv R n P
-    suffices Q = 0 by
-      simp only [Q] at this
-      rw [← AlgEquiv.symm_apply_apply (finSuccEquiv R n) P, this, map_zero]
-    have Heval' : ∀ (x : Fin n → R) (_ : ∀ i, x i ∈ S i.succ),
-      Polynomial.map (eval x) Q = 0 := fun x hx ↦ by
-      apply Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero' _ (S 0)
---      apply Polynomial.eq_zero_of_natDegree_lt_ncard_of_eval_eq_zero _ (S 0)
-      · intro y hy
-        rw [← eval_eq_eval_mv_eval']
-        apply Heval
-        intro i
-        induction i using Fin.inductionOn with
-        | zero => simp only [Fin.cons_zero, hy]
-        | succ i _ => simp only [Fin.cons_succ]; apply hx
-      · apply lt_of_le_of_lt _ (Hdeg 0)
-        rw [Polynomial.natDegree_le_iff_coeff_eq_zero]
-        intro d hd
-        simp only [Q]
-        rw [MvPolynomial.coeff_eval_eq_eval_coeff]
-        convert map_zero (MvPolynomial.eval x)
-        ext m
-        simp only [coeff_zero, finSuccEquiv_coeff_coeff]
-        by_contra hm
-        apply not_le.mpr hd
-        rw [MvPolynomial.degreeOf_eq_sup]
-        rw [← ne_eq, ← MvPolynomial.mem_support_iff] at hm
-        convert Finset.le_sup hm
-        simp only [cons_zero]
-    ext m d
-    simp only [Polynomial.coeff_zero, coeff_zero]
-    suffices Q.coeff m = 0 by
-      simp only [this, coeff_zero]
-    apply hrec _ (fun i ↦ S (i.succ))
-    · intro i
-      apply lt_of_le_of_lt _ (Hdeg i.succ)
-      simp only [degreeOf_eq_sup, Finset.sup_le_iff, mem_support_iff, ne_eq]
-      intro e he
-      simp only [Q, finSuccEquiv_coeff_coeff, ← ne_eq, ← MvPolynomial.mem_support_iff] at he
-      convert Finset.le_sup he
-      simp only [cons_succ]
-    · intro x hx
-      specialize Heval' x hx
-      rw [Polynomial.ext_iff] at Heval'
-      simpa only [Polynomial.coeff_map, Polynomial.coeff_zero] using Heval' m
+theorem _root_.Finsupp.option_embedding_add_single {σ : Type*}
+    {n : Option σ →₀ ℕ} {m : σ →₀ ℕ} {i : ℕ} :
+    (n = embDomain Embedding.some m + Finsupp.single none i) ↔
+      n none = i ∧ n.some = m := by
+  rw [Finsupp.ext_iff, Option.forall]
+  apply and_congr
+  · simp only [coe_add, Pi.add_apply, single_eq_same]
+    rw [embDomain_notin_range _ _ _ ?_, zero_add]
+    rintro ⟨s, hs⟩
+    exact Option.some_ne_none s hs
+  · rw [Finsupp.ext_iff]
+    apply forall_congr'
+    intro s
+    simp only [coe_add, Pi.add_apply, ne_eq, reduceCtorEq, not_false_eq_true, single_eq_of_ne,
+      add_zero, some_apply]
+    rw [← Embedding.some_apply, embDomain_apply, Embedding.some_apply]
 
 /-- A multivariate polynomial that vanishes on a large product finset is the zero polynomial. -/
 theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R]
@@ -129,23 +82,78 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
     (Hdeg : ∀ i, P.degreeOf i < #(S i))
     (Heval : ∀ (x : σ → R), (∀ i, x i ∈ S i) → eval x P = 0) :
     P = 0 := by
-  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin σ
-  suffices MvPolynomial.rename e P = 0 by
-    have that := MvPolynomial.rename_injective (R := R) e (e.injective)
-    rw [RingHom.injective_iff_ker_eq_bot] at that
-    rwa [← RingHom.mem_ker, that] at this
-  apply eq_zero_of_eval_zero_at_prod_finset_nat _ (fun i ↦ S (e.symm i))
-  · intro i
-    classical
-    convert Hdeg (e.symm i)
-    conv_lhs => rw [← e.apply_symm_apply i, degreeOf_rename_of_injective e.injective]
-  · intro x hx
-    simp only [MvPolynomial.eval_rename]
-    apply Heval
-    intro s
-    simp only [Function.comp_apply]
-    convert hx (e s)
-    simp only [Equiv.symm_apply_apply]
+  induction σ using Finite.induction_empty_option with
+  | @of_equiv σ τ e h =>
+    suffices MvPolynomial.rename e.symm P = 0 by
+      have that := MvPolynomial.rename_injective (R := R) e.symm (e.symm.injective)
+      rw [RingHom.injective_iff_ker_eq_bot] at that
+      rwa [← RingHom.mem_ker, that] at this
+    apply h _ (fun i ↦ S (e i))
+    · intro i
+      classical
+      convert Hdeg (e i)
+      conv_lhs => rw [← e.symm_apply_apply i, degreeOf_rename_of_injective e.symm.injective]
+    · intro x hx
+      simp only [MvPolynomial.eval_rename]
+      apply Heval
+      intro s
+      simp only [Function.comp_apply]
+      convert hx (e.symm s)
+      simp only [Equiv.apply_symm_apply]
+  | h_empty =>
+    suffices P = C (constantCoeff P) by
+      specialize Heval default (fun i ↦ PEmpty.elim i)
+      rw [this, eval_C] at Heval
+      rw [this, Heval, C_0]
+    ext m
+    suffices m = 0 by simp [this, ← constantCoeff_eq]
+    ext d; exact PEmpty.elim d
+  | @h_option σ _ h =>
+    set Q := optionEquivLeft R σ P with hQ
+    suffices Q = 0 by
+      rw [← AlgEquiv.symm_apply_apply (optionEquivLeft R σ) P, ← hQ, this, map_zero]
+    have Heval' (x : σ → R) (hx : ∀ i, x i ∈ S (some i)) : Polynomial.map (eval x) Q = 0 := by
+      apply Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero' _ (S none)
+      · intro y hy
+        rw [← optionEquivLeft_elim_eval]
+        apply Heval
+        simp only [Option.forall, Option.elim_none, hy, Option.elim_some, hx, implies_true,
+          and_self]
+      · apply lt_of_le_of_lt _ (Hdeg none)
+        rw [Polynomial.natDegree_le_iff_coeff_eq_zero]
+        intro d hd
+        simp only [hQ]
+        rw [MvPolynomial.coeff_eval_eq_eval_coeff]
+        convert map_zero (MvPolynomial.eval x)
+        ext m
+        simp only [coeff_zero, optionEquivLeft_coeff_coeff]
+        set n := embDomain Function.Embedding.some m + Finsupp.single none d with hn
+        rw [option_embedding_add_single] at hn
+        rw [← hn.1, ← hn.2, optionEquivLeft_coeff_coeff]
+        by_contra hm
+        apply not_le.mpr hd
+        rw [MvPolynomial.degreeOf_eq_sup]
+        rw [← ne_eq, ← MvPolynomial.mem_support_iff] at hm
+        convert Finset.le_sup hm
+        exact hn.1.symm
+    ext m d
+    simp only [Polynomial.coeff_zero, coeff_zero]
+    suffices Q.coeff m = 0 by simp only [this, coeff_zero]
+    apply h _ (fun i ↦ S (some i))
+    · intro i
+      apply lt_of_le_of_lt _ (Hdeg (some i))
+      simp only [degreeOf_eq_sup, Finset.sup_le_iff, mem_support_iff, ne_eq]
+      intro e he
+      set n : Option σ →₀ ℕ := embDomain Function.Embedding.some e + Finsupp.single none m with hn
+      rw [option_embedding_add_single] at hn
+      rw [hQ, ← hn.1, ← hn.2, optionEquivLeft_coeff_coeff, ← ne_eq,
+        ← MvPolynomial.mem_support_iff] at he
+      convert Finset.le_sup he
+      rw [← hn.2, some_apply]
+    · intro x hx
+      specialize Heval' x hx
+      rw [Polynomial.ext_iff] at Heval'
+      simpa only [Polynomial.coeff_map, Polynomial.coeff_zero] using Heval' m
 
 open MonomialOrder
 
