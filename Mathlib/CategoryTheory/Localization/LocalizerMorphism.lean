@@ -75,7 +75,7 @@ lemma inverts : W₁.IsInvertedBy (Φ.functor ⋙ L₂) :=
 
 /-- When `Φ : LocalizerMorphism W₁ W₂` and that `L₁` and `L₂` are localization functors
 for `W₁` and `W₂`, then `Φ.localizedFunctor L₁ L₂` is the induced functor on the
-localized categories. --/
+localized categories. -/
 noncomputable def localizedFunctor : D₁ ⥤ D₂ :=
   lift (Φ.functor ⋙ L₂) (Φ.inverts _) L₁
 

@@ -75,6 +75,10 @@ lemma condDistrib_apply_of_ne_zero [MeasurableSingletonClass β]
   · rw [Measure.fst_map_prod_mk hY]
   · rwa [Measure.fst_map_prod_mk hY]
 
+lemma compProd_map_condDistrib (hY : AEMeasurable Y μ) :
+    (μ.map X) ⊗ₘ condDistrib Y X μ = μ.map fun a ↦ (X a, Y a) := by
+  rw [condDistrib, ← Measure.fst_map_prod_mk₀ hY, Measure.disintegrate]
+
 section Measurability
 
 theorem measurable_condDistrib (hs : MeasurableSet s) :
@@ -90,6 +94,10 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.ae_integrable_condDistrib_map_
 
 variable [NormedSpace ℝ F]
 
+theorem _root_.MeasureTheory.StronglyMeasurable.integral_condDistrib (hf : StronglyMeasurable f) :
+    StronglyMeasurable (fun x ↦ ∫ y, f (x, y) ∂condDistrib Y X μ x) := by
+  rw [condDistrib]; exact hf.integral_kernel_prod_right'
+
 theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condDistrib_map
     (hY : AEMeasurable Y μ) (hf : AEStronglyMeasurable f (μ.map fun a => (X a, Y a))) :
     AEStronglyMeasurable (fun x => ∫ y, f (x, y) ∂condDistrib Y X μ x) (μ.map X) := by
@@ -99,6 +107,10 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condDistrib (hX : AEM
     (hY : AEMeasurable Y μ) (hf : AEStronglyMeasurable f (μ.map fun a => (X a, Y a))) :
     AEStronglyMeasurable (fun a => ∫ y, f (X a, y) ∂condDistrib Y X μ (X a)) μ :=
   (hf.integral_condDistrib_map hY).comp_aemeasurable hX
+
+theorem stronglyMeasurable_integral_condDistrib (hf : StronglyMeasurable f) :
+    StronglyMeasurable[mβ.comap X] (fun a ↦ ∫ y, f (X a, y) ∂condDistrib Y X μ (X a)) :=
+  (hf.integral_condDistrib).comp_measurable <| Measurable.of_comap_le le_rfl
 
 theorem aestronglyMeasurable_integral_condDistrib (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
     (hf : AEStronglyMeasurable f (μ.map fun a => (X a, Y a))) :

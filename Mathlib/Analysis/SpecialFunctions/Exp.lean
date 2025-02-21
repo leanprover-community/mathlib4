@@ -293,7 +293,7 @@ theorem tendsto_div_pow_mul_exp_add_atTop (b c : ℝ) (n : ℕ) (hb : 0 ≠ b) :
     convert (tendsto_mul_exp_add_div_pow_atTop b' c' n h).inv_tendsto_atTop using 1
     ext x
     simp
-  cases' lt_or_gt_of_ne hb with h h
+  rcases lt_or_gt_of_ne hb with h | h
   · exact H b c h
   · convert (H (-b) (-c) (neg_pos.mpr h)).neg using 1
     · ext x

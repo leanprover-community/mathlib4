@@ -317,6 +317,44 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
         (by omega : (m - 1) ≤ p.length) hnm
       omega
 
+lemma IsPath.getVert_eq_start_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
+    p.getVert i = u ↔ i = 0 := by
+  refine ⟨?_, by aesop⟩
+  intro h
+  by_cases hi : i = 0
+  · exact hi
+  · apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega)
+    simp [h]
+
+lemma IsPath.getVert_eq_end_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
+    p.getVert i = w ↔ i = p.length := by
+  have := hp.reverse.getVert_eq_start_iff (by omega : p.reverse.length - i ≤ p.reverse.length)
+  simp only [length_reverse, getVert_reverse,
+    show p.length - (p.length - i) = i from by omega] at this
+  rw [this]
+  omega
+
+lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤ p.length} ↔
+    p.IsPath := by
+  refine ⟨?_, fun a => a.getVert_injOn⟩
+  induction p with
+  | nil => simp
+  | cons h q ih =>
+    intro hinj
+    rw [cons_isPath_iff]
+    refine ⟨ih (by
+      intro n hn m hm hnm
+      simp only [Set.mem_setOf_eq] at hn hm
+      have := hinj (by rw [length_cons]; omega : n + 1 ≤ (q.cons h).length)
+          (by rw [length_cons]; omega : m + 1 ≤ (q.cons h).length)
+          (by simpa [getVert_cons] using hnm)
+      omega), fun h' => ?_⟩
+    obtain ⟨n, ⟨hn, hnl⟩⟩ := mem_support_iff_exists_getVert.mp h'
+    have := hinj (by rw [length_cons]; omega : (n + 1) ≤ (q.cons h).length)
+      (by omega : 0 ≤ (q.cons h).length) (show (q.cons h).getVert (n + 1) = (q.cons h).getVert 0
+        from by rwa [getVert_cons _ _ (by omega : n + 1 ≠ 0), getVert_zero])
+    omega
+
 /-! ### About cycles -/
 
 -- TODO: These results could possibly be less laborious with a periodic function getCycleVert

@@ -198,7 +198,7 @@ theorem Fix.rec_eq {β : Type u} (g : F (append1 α β) → β) (x : F (append1 
     lhs
     rw [Fix.rec, Fix.mk]
     dsimp
-  cases' h : repr x with a f
+  rcases h : repr x with ⟨a, f⟩
   rw [MvPFunctor.map_eq, recF_eq', ← MvPFunctor.map_eq, MvPFunctor.wDest'_wMk']
   rw [← MvPFunctor.comp_map, abs_map, ← h, abs_repr, ← appendFun_comp, id_comp, this]
 

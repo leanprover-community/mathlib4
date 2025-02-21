@@ -1024,8 +1024,6 @@ lemma support_tail_of_not_nil (p : G.Walk u v) (hnp : ¬p.Nil) :
   | .cons h q =>
     simp only [tail_cons, getVert_cons_succ, support_copy, support_cons, List.tail_cons]
 
-
-
 /-- Given a set `S` and a walk `w` from `u` to `v` such that `u ∈ S` but `v ∉ S`,
 there exists a dart in the walk whose start is in `S` but whose end is not. -/
 theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ S) (vS : v ∉ S) :

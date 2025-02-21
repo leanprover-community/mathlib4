@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2021 Kyle Miller. All rights reserved.
+Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Pim Otte
 -/
@@ -8,7 +8,6 @@ import Mathlib.Combinatorics.SimpleGraph.Walk
 
 /-!
 # Decomposing walks
-
 ## Main definitions
 - `takeUntil`: The path obtained by taking edges of an existing path until a given vertex.
 - `dropUntil`: The path obtained by dropping edges of an existing path until a given vertex.
@@ -90,7 +89,7 @@ theorem take_spec {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     · simp! only
       split_ifs with h' <;> subst_vars <;> simp [*]
 
-theorem mem_support_iff_exists_append
+theorem mem_support_iff_exists_append {V : Type u} {G : SimpleGraph V} {u v w : V}
     {p : G.Walk u v} : w ∈ p.support ↔ ∃ (q : G.Walk u w) (r : G.Walk w v), p = q.append r := by
   classical
   constructor
