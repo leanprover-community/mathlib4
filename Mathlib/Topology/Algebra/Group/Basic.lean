@@ -1053,7 +1053,7 @@ variable [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 /-- A version of `Homeomorph.mulLeft a b⁻¹` that is defeq to `a / b`. -/
 @[to_additive (attr := simps! (config := { simpRhs := true }))
-  " A version of `Homeomorph.addLeft a (-b)` that is defeq to `a - b`. "]
+  "A version of `Homeomorph.addLeft a (-b)` that is defeq to `a - b`."]
 def Homeomorph.divLeft (x : G) : G ≃ₜ G :=
   { Equiv.divLeft x with
     continuous_toFun := continuous_const.div' continuous_id
@@ -1418,7 +1418,7 @@ theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
       rw [preimage_compl, compl_compl] at H
       convert H
       ext x
-      simp only [image_smul, mem_setOf_eq, coeSubtype, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_setOf_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
       exact Set.smul_inter_ne_empty_iff' }
 
 -- attribute [local semireducible] MulOpposite -- Porting note: doesn't work in Lean 4
@@ -1443,11 +1443,11 @@ theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Sub
       have : Continuous fun p : G × G => (p.1⁻¹, p.2) := continuous_inv.prodMap continuous_id
       have H : Set.Finite _ :=
         hS ((hK.prod hL).image (continuous_mul.comp this)).compl_mem_cocompact
-      simp only [preimage_compl, compl_compl, coeSubtype, comp_apply] at H
+      simp only [preimage_compl, compl_compl, coe_subtype, comp_apply] at H
       apply Finite.of_preimage _ (equivOp S).surjective
       convert H using 1
       ext x
-      simp only [image_smul, mem_setOf_eq, coeSubtype, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_setOf_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
       exact Set.op_smul_inter_ne_empty_iff }
 
 end
@@ -1631,7 +1631,7 @@ instance {G} [TopologicalSpace G] [AddGroup G] [IsTopologicalAddGroup G] :
   continuous_inv := @continuous_neg G _ _ _
 
 /-- If `G` is a group with topological `⁻¹`, then it is homeomorphic to its units. -/
-@[to_additive " If `G` is an additive group with topological negation, then it is homeomorphic to
+@[to_additive "If `G` is an additive group with topological negation, then it is homeomorphic to
 its additive units."]
 def toUnits_homeomorph [Group G] [TopologicalSpace G] [ContinuousInv G] : G ≃ₜ Gˣ where
   toEquiv := toUnits.toEquiv

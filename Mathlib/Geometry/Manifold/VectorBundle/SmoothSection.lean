@@ -40,7 +40,7 @@ structure ContMDiffSection where
   protected contMDiff_toFun : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x ↦
     TotalSpace.mk' F x (toFun x)
 
-@[deprecated (since := "024-11-21")] alias SmoothSection := ContMDiffSection
+@[deprecated (since := "2024-11-21")] alias SmoothSection := ContMDiffSection
 
 @[inherit_doc] scoped[Manifold] notation "Cₛ^" n "⟮" I "; " F ", " V "⟯" => ContMDiffSection I F n V
 

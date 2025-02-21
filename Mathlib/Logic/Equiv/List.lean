@@ -310,7 +310,7 @@ def raise' : List ℕ → ℕ → List ℕ
 
 theorem lower_raise' : ∀ l n, lower' (raise' l n) n = l
   | [], _ => rfl
-  | m :: l, n => by simp [raise', lower', add_tsub_cancel_right, lower_raise']
+  | m :: l, n => by simp [raise', lower', Nat.add_sub_cancel_right, lower_raise']
 
 theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.Sorted (· < ·) l → raise' (lower' l n) n = l
   | [], _, _, _ => rfl
@@ -352,12 +352,18 @@ end Denumerable
 
 namespace Equiv
 
-/-- The type lists on unit is canonically equivalent to the natural numbers. -/
-def listUnitEquiv : List Unit ≃ ℕ where
+/-- A list on a unique type is equivalent to ℕ by sending each list to its length. -/
+@[simps!]
+def listUniqueEquiv (α : Type*) [Unique α] : List α ≃ ℕ where
   toFun := List.length
-  invFun n := List.replicate n ()
+  invFun n := List.replicate n default
   left_inv u := List.length_injective (by simp)
-  right_inv n := List.length_replicate n ()
+  right_inv n := List.length_replicate n _
+
+/-- The type lists on unit is canonically equivalent to the natural numbers. -/
+@[deprecated listUniqueEquiv (since := "2025-02-17")]
+def listUnitEquiv : List Unit ≃ ℕ :=
+  listUniqueEquiv _
 
 /-- `List ℕ` is equivalent to `ℕ`. -/
 def listNatEquivNat : List ℕ ≃ ℕ :=

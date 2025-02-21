@@ -253,9 +253,9 @@ section Normal
 variable {M : Type*} [Group M] {α : Type*} [MulAction M α]
 
 /-- In a preprimitive action, any normal subgroup that acts nontrivially is pretransitive
-(Wielandt, th. 7.1)-/
+(Wielandt, th. 7.1). -/
 @[to_additive "In a preprimitive additive action,
-  any normal subgroup that acts nontrivially is pretransitive (Wielandt, th. 7.1)"]
+  any normal subgroup that acts nontrivially is pretransitive (Wielandt, th. 7.1)."]
 -- See note [lower instance priority]
 instance (priority := 100) IsPreprimitive.isQuasiPreprimitive [IsPreprimitive M α] :
     IsQuasiPreprimitive M α where
