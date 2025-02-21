@@ -346,11 +346,11 @@ theorem normAtPlace_real (w : InfinitePlace K) (c : ℝ) :
   rw [show ((fun _ ↦ c, fun _ ↦ c) : (mixedSpace K)) = c • 1 by ext <;> simp, normAtPlace_smul,
     map_one, mul_one]
 
-theorem normAtPlace_apply_isReal {w : InfinitePlace K} (hw : IsReal w) (x : mixedSpace K) :
+theorem normAtPlace_apply_of_isReal {w : InfinitePlace K} (hw : IsReal w) (x : mixedSpace K) :
     normAtPlace w x = ‖x.1 ⟨w, hw⟩‖ := by
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dif_pos]
 
-theorem normAtPlace_apply_isComplex {w : InfinitePlace K} (hw : IsComplex w) (x : mixedSpace K) :
+theorem normAtPlace_apply_of_isComplex {w : InfinitePlace K} (hw : IsComplex w) (x : mixedSpace K) :
     normAtPlace w x = ‖x.2 ⟨w, hw⟩‖ := by
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
     dif_neg (not_isReal_iff_isComplex.mpr hw)]
@@ -366,8 +366,8 @@ theorem forall_normAtPlace_eq_zero_iff {x : mixedSpace K} :
     (∀ w, normAtPlace w x = 0) ↔ x = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · ext w
-    · exact norm_eq_zero.mp (normAtPlace_apply_isReal w.prop _ ▸ h w.1)
-    · exact norm_eq_zero.mp (normAtPlace_apply_isComplex w.prop _ ▸ h w.1)
+    · exact norm_eq_zero.mp (normAtPlace_apply_of_isReal w.prop _ ▸ h w.1)
+    · exact norm_eq_zero.mp (normAtPlace_apply_of_isComplex w.prop _ ▸ h w.1)
   · simp_rw [h, map_zero, implies_true]
 
 @[deprecated (since := "2024-09-13")] alias normAtPlace_eq_zero := forall_normAtPlace_eq_zero_iff
@@ -376,6 +376,11 @@ theorem forall_normAtPlace_eq_zero_iff {x : mixedSpace K} :
 theorem exists_normAtPlace_ne_zero_iff {x : mixedSpace K} :
     (∃ w, normAtPlace w x ≠ 0) ↔ x ≠ 0 := by
   rw [ne_eq, ← forall_normAtPlace_eq_zero_iff, not_forall]
+
+theorem continuous_normAtPlace (w : InfinitePlace K) :
+    Continuous (normAtPlace w) := by
+  simp_rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
+  split_ifs <;> fun_prop
 
 variable [NumberField K]
 
@@ -391,9 +396,9 @@ theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
     Prod.nnnorm_def, Pi.nnnorm_def, Pi.nnnorm_def]
   congr
   · ext w
-    simp [normAtPlace_apply_isReal w.prop]
+    simp [normAtPlace_apply_of_isReal w.prop]
   · ext w
-    simp [normAtPlace_apply_isComplex w.prop]
+    simp [normAtPlace_apply_of_isComplex w.prop]
 
 open scoped Classical in
 theorem norm_eq_sup'_normAtPlace (x : mixedSpace K) :
@@ -424,8 +429,7 @@ protected theorem norm_eq_zero_iff {x : mixedSpace K} :
 
 protected theorem norm_ne_zero_iff {x : mixedSpace K} :
     mixedEmbedding.norm x ≠ 0 ↔ ∀ w, normAtPlace w x ≠ 0 := by
-  rw [← not_iff_not]
-  simp_rw [ne_eq, mixedEmbedding.norm_eq_zero_iff, not_not, not_forall, not_not]
+  simp [mixedEmbedding.norm_eq_zero_iff]
 
 theorem norm_eq_of_normAtPlace_eq {x y : mixedSpace K}
     (h : ∀ w, normAtPlace w x = normAtPlace w y) :
@@ -456,6 +460,12 @@ theorem norm_eq_zero_iff' {x : mixedSpace K} (hx : x ∈ Set.range (mixedEmbeddi
   obtain ⟨a, rfl⟩ := hx
   rw [norm_eq_norm, Rat.cast_abs, abs_eq_zero, Rat.cast_eq_zero, Algebra.norm_eq_zero_iff,
     map_eq_zero]
+
+variable (K) in
+protected theorem continuous_norm : Continuous (mixedEmbedding.norm : (mixedSpace K) → ℝ) := by
+  refine continuous_finset_prod Finset.univ fun _ _ ↦ ?_
+  simp_rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dite_pow]
+  split_ifs <;> fun_prop
 
 end norm
 
@@ -925,8 +935,8 @@ variable (s) in
 theorem normAtPlace_negAt (x : mixedSpace K) (w : InfinitePlace K) :
     normAtPlace w (negAt s x) = normAtPlace w x := by
   obtain hw | hw := isReal_or_isComplex w
-  · simp_rw [normAtPlace_apply_isReal hw, Real.norm_eq_abs, negAt_apply_abs_of_isReal]
-  · simp_rw [normAtPlace_apply_isComplex hw, negAt_apply_of_isComplex]
+  · simp_rw [normAtPlace_apply_of_isReal hw, Real.norm_eq_abs, negAt_apply_abs_of_isReal]
+  · simp_rw [normAtPlace_apply_of_isComplex hw, negAt_apply_of_isComplex]
 
 /-- `negAt` preserves the `norm`. -/
 @[simp]

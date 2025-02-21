@@ -122,6 +122,18 @@ theorem logMap_mul (hx : mixedEmbedding.norm x ≠ 0) (hy : mixedEmbedding.norm 
   · exact mixedEmbedding.norm_ne_zero_iff.mp hx w
   · exact mixedEmbedding.norm_ne_zero_iff.mp hy w
 
+theorem logMap_prod {ι : Type*} {s : Finset ι} {x : ι → mixedSpace K}
+    (hx : ∀ i, mixedEmbedding.norm (x i) ≠ 0) :
+    logMap (∏ i ∈ s, x i) = ∑ i ∈ s, logMap (x i) := by
+  have h {t : Finset ι} : mixedEmbedding.norm (∏ i ∈ t, x i) ≠ 0 := by
+    rw [map_prod]
+    exact Finset.prod_ne_zero_iff.mpr fun _ _ ↦ hx _
+  classical
+  induction s using Finset.induction with
+  | empty => simp
+  | insert hi h_ind =>
+      rw [Finset.prod_insert hi, logMap_mul (hx _) h, Finset.sum_insert hi, h_ind]
+
 theorem logMap_apply_of_norm_one (hx : mixedEmbedding.norm x = 1)
     (w : {w : InfinitePlace K // w ≠ w₀}) :
     logMap x w = mult w.val * Real.log (normAtPlace w x) := by
@@ -162,6 +174,23 @@ theorem logMap_eq_of_normAtPlace_eq (h : ∀ w, normAtPlace w x = normAtPlace w 
   ext
   simp_rw [logMap_apply, h, norm_eq_of_normAtPlace_eq h]
 
+variable (K)
+
+theorem measurable_logMap :
+    Measurable (logMap : (mixedSpace K) → _) :=
+  measurable_pi_iff.mpr fun _ ↦
+    measurable_const.mul <| (continuous_normAtPlace _).measurable.log.sub
+      <| (mixedEmbedding.continuous_norm K).measurable.log.mul measurable_const
+
+theorem continuousOn_logMap :
+    ContinuousOn (logMap : (mixedSpace K) → _) {x | mixedEmbedding.norm x ≠ 0} := by
+  refine continuousOn_pi.mpr fun w ↦ continuousOn_const.mul (ContinuousOn.sub ?_ ?_)
+  · exact Real.continuousOn_log.comp' (continuous_normAtPlace _).continuousOn
+      fun _ hx ↦ mixedEmbedding.norm_ne_zero_iff.mp hx _
+  · exact ContinuousOn.mul
+      (Real.continuousOn_log.comp' (mixedEmbedding.continuous_norm K).continuousOn
+        fun _ hx ↦ hx) continuousOn_const
+
 end logMap
 
 noncomputable section
@@ -178,18 +207,29 @@ def fundamentalCone : Set (mixedSpace K) :=
   logMap⁻¹' (ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ _)) \
       {x | mixedEmbedding.norm x = 0}
 
+theorem measurableSet_fundamentalCone :
+    MeasurableSet (fundamentalCone K) := by
+  classical
+  refine MeasurableSet.diff ?_ ?_
+  · unfold logMap
+    refine MeasurableSet.preimage (ZSpan.fundamentalDomain_measurableSet _) <|
+      measurable_pi_iff.mpr fun w ↦ measurable_const.mul ?_
+    exact (continuous_normAtPlace _).measurable.log.sub <|
+      (mixedEmbedding.continuous_norm _).measurable.log.mul measurable_const
+  · exact measurableSet_eq_fun (mixedEmbedding.continuous_norm K).measurable measurable_const
+
 namespace fundamentalCone
 
 variable {K} {x y : mixedSpace K} {c : ℝ}
 
 theorem norm_pos_of_mem (hx : x ∈ fundamentalCone K) :
     0 < mixedEmbedding.norm x :=
-  lt_of_le_of_ne (mixedEmbedding.norm_nonneg _) (Ne.symm hx.2)
+  lt_of_le_of_ne' (mixedEmbedding.norm_nonneg _) hx.2
 
 theorem normAtPlace_pos_of_mem (hx : x ∈ fundamentalCone K) (w : InfinitePlace K) :
     0 < normAtPlace w x :=
-  lt_of_le_of_ne (normAtPlace_nonneg _ _)
-    (mixedEmbedding.norm_ne_zero_iff.mp (norm_pos_of_mem hx).ne' w).symm
+  lt_of_le_of_ne' (normAtPlace_nonneg w x) <|
+    (mixedEmbedding.norm_ne_zero_iff.mp (norm_pos_of_mem hx).ne') w
 
 theorem mem_of_normAtPlace_eq (hx : x ∈ fundamentalCone K)
     (hy : ∀ w, normAtPlace w y = normAtPlace w x) :
