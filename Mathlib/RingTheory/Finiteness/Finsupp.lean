@@ -30,8 +30,8 @@ theorem fg_of_fg_map_of_fg_inf_ker (f : M →ₗ[R] P) {s : Submodule R M}
   haveI := Classical.decEq R
   haveI := Classical.decEq M
   haveI := Classical.decEq P
-  cases' hs1 with t1 ht1
-  cases' hs2 with t2 ht2
+  obtain ⟨t1, ht1⟩ := hs1
+  obtain ⟨t2, ht2⟩ := hs2
   have : ∀ y ∈ t1, ∃ x ∈ s, f x = y := by
     intro y hy
     have : y ∈ s.map f := by
@@ -48,7 +48,7 @@ theorem fg_of_fg_map_of_fg_inf_ker (f : M →ₗ[R] P) {s : Submodule R M}
       apply hg1
     · simp only [dif_pos H]
       apply hg2
-  cases' this with g hg
+  obtain ⟨g, hg⟩ := this
   clear this
   exists t1.image g ∪ t2
   rw [Finset.coe_union, span_union, Finset.coe_image]

@@ -53,13 +53,16 @@ theorem LinearIndependent.sum_elim_of_quotient
   simp_rw [← Quotient.mk_eq_zero, ← mkQ_apply, map_finsupp_sum, map_smul, mkQ_apply] at this
   rw [linearIndependent_iff.mp hg _ this, Finsupp.sum_zero_index]
 
-theorem LinearIndependent.union_of_quotient {M' : Submodule R M}
-    {s : Set M} (hs : s ⊆ M') (hs' : LinearIndependent (ι := s) R Subtype.val) {t : Set M}
-    (ht : LinearIndependent (ι := t) R (Submodule.Quotient.mk (p := M') ∘ Subtype.val)) :
-    LinearIndependent (ι := (s ∪ t :)) R Subtype.val := by
-  refine (LinearIndependent.sum_elim_of_quotient (f := Set.embeddingOfSubset s M' hs)
-    (of_comp M'.subtype (by simpa using hs')) Subtype.val ht).to_subtype_range' ?_
-  simp only [embeddingOfSubset_apply_coe, Sum.elim_range, Subtype.range_val]
+theorem LinearIndepOn.union_of_quotient {M' : Submodule R M}
+    {s : Set M} (hs : s ⊆ M') (hs' : LinearIndepOn R id s) {t : Set M}
+    (ht : LinearIndepOn R (Submodule.Quotient.mk (p := M')) t) : LinearIndepOn R id (s ∪ t) :=
+  have h := (LinearIndependent.sum_elim_of_quotient (f := Set.embeddingOfSubset s M' hs)
+    (LinearIndependent.of_comp M'.subtype (by simpa using hs')) Subtype.val ht)
+  h.linearIndepOn_id' <| by
+    simp only [embeddingOfSubset_apply_coe, Sum.elim_range, Subtype.range_val]
+
+@[deprecated (since := "2025-02-16")] alias LinearIndependent.union_of_quotient :=
+  LinearIndepOn.union_of_quotient
 
 theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
     Module.rank R (M ⧸ M') + Module.rank R M' ≤ Module.rank R M := by
@@ -453,14 +456,14 @@ theorem finrank_span_eq_card [Nontrivial R] {ι : Type*} [Fintype ι] {b : ι �
       rwa [← lift_inj, mk_range_eq_of_injective hb.injective, Cardinal.mk_fintype, lift_natCast,
         lift_eq_nat_iff] at this)
 
-theorem finrank_span_set_eq_card {s : Set M} [Fintype s] (hs : LinearIndependent R ((↑) : s → M)) :
+theorem finrank_span_set_eq_card {s : Set M} [Fintype s] (hs : LinearIndepOn R id s) :
     finrank R (span R s) = s.toFinset.card :=
   finrank_eq_of_rank_eq
     (by
       have : Module.rank R (span R s) = #s := rank_span_set hs
       rwa [Cardinal.mk_fintype, ← Set.toFinset_card] at this)
 
-theorem finrank_span_finset_eq_card {s : Finset M} (hs : LinearIndependent R ((↑) : s → M)) :
+theorem finrank_span_finset_eq_card {s : Finset M} (hs : LinearIndepOn R id (s : Set M)) :
     finrank R (span R (s : Set M)) = s.card := by
   convert finrank_span_set_eq_card (s := (s : Set M)) hs
   ext
@@ -527,7 +530,7 @@ theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
   (Subalgebra.toSubmoduleEquiv (⊥ : Subalgebra F E)).symm.rank_eq.trans <| by
     rw [Algebra.toSubmodule_bot, one_eq_span, rank_span_set, mk_singleton _]
     letI := Module.nontrivial F E
-    exact linearIndependent_singleton one_ne_zero
+    exact LinearIndepOn.id_singleton _ one_ne_zero
 
 @[simp]
 theorem Subalgebra.finrank_bot : finrank F (⊥ : Subalgebra F E) = 1 :=

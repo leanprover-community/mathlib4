@@ -150,10 +150,10 @@ lemma integrable_norm_rpow_iff {f : α → β} {p : ℝ≥0∞}
 theorem Integrable.mono_measure {f : α → β} (h : Integrable f ν) (hμ : μ ≤ ν) : Integrable f μ :=
   ⟨h.aestronglyMeasurable.mono_measure hμ, h.hasFiniteIntegral.mono_measure hμ⟩
 
-theorem Integrable.of_measure_le_smul {μ' : Measure α} (c : ℝ≥0∞) (hc : c ≠ ∞) (hμ'_le : μ' ≤ c • μ)
+theorem Integrable.of_measure_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞) (hμ'_le : μ' ≤ c • μ)
     {f : α → β} (hf : Integrable f μ) : Integrable f μ' := by
   rw [← memℒp_one_iff_integrable] at hf ⊢
-  exact hf.of_measure_le_smul c hc hμ'_le
+  exact hf.of_measure_le_smul hc hμ'_le
 
 @[fun_prop]
 theorem Integrable.add_measure {f : α → β} (hμ : Integrable f μ) (hν : Integrable f ν) :
@@ -415,7 +415,7 @@ theorem Integrable.abs {β} [NormedLatticeAddCommGroup β] {f : α → β} (hf :
 theorem Integrable.bdd_mul {F : Type*} [NormedDivisionRing F] {f g : α → F} (hint : Integrable g μ)
     (hm : AEStronglyMeasurable f μ) (hfbdd : ∃ C, ∀ x, ‖f x‖ ≤ C) :
     Integrable (fun x => f x * g x) μ := by
-  cases' isEmpty_or_nonempty α with hα hα
+  rcases isEmpty_or_nonempty α with hα | hα
   · rw [μ.eq_zero_of_isEmpty]
     exact integrable_zero_measure
   · refine ⟨hm.mul hint.1, ?_⟩
@@ -438,11 +438,11 @@ theorem Integrable.essSup_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace �
     Integrable (fun x : α => g x • f x) μ := by
   rw [← memℒp_one_iff_integrable] at *
   refine ⟨g_aestronglyMeasurable.smul hf.1, ?_⟩
-  have h : (1 : ℝ≥0∞) / 1 = 1 / ∞ + 1 / 1 := by norm_num
   have hg' : eLpNorm g ∞ μ ≠ ∞ := by rwa [eLpNorm_exponent_top]
   calc
     eLpNorm (fun x : α => g x • f x) 1 μ ≤ _ := by
-      simpa using MeasureTheory.eLpNorm_smul_le_mul_eLpNorm hf.1 g_aestronglyMeasurable h
+      simpa using MeasureTheory.eLpNorm_smul_le_mul_eLpNorm hf.1 g_aestronglyMeasurable
+        (p := ∞) (q := 1)
     _ < ∞ := ENNReal.mul_lt_top hg'.lt_top hf.2
 
 /-- Hölder's inequality for integrable functions: the scalar multiplication of an integrable
@@ -453,11 +453,11 @@ theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β]
     Integrable (fun x : α => f x • g x) μ := by
   rw [← memℒp_one_iff_integrable] at *
   refine ⟨hf.1.smul g_aestronglyMeasurable, ?_⟩
-  have h : (1 : ℝ≥0∞) / 1 = 1 / 1 + 1 / ∞ := by norm_num
   have hg' : eLpNorm g ∞ μ ≠ ∞ := by rwa [eLpNorm_exponent_top]
   calc
     eLpNorm (fun x : α => f x • g x) 1 μ ≤ _ := by
-      simpa using MeasureTheory.eLpNorm_smul_le_mul_eLpNorm g_aestronglyMeasurable hf.1 h
+      simpa using MeasureTheory.eLpNorm_smul_le_mul_eLpNorm g_aestronglyMeasurable hf.1
+        (p := 1) (q := ∞)
     _ < ∞ := ENNReal.mul_lt_top hf.2 hg'.lt_top
 
 theorem integrable_norm_iff {f : α → β} (hf : AEStronglyMeasurable f μ) :
@@ -716,9 +716,7 @@ noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f)
       simpa only [Ne, ENNReal.coe_eq_zero] using hx
   norm_map' := by
     intro u
-    -- Porting note: Lean can't infer types of `AddHom.coe_mk`.
-    simp only [eLpNorm, LinearMap.coe_mk,
-      AddHom.coe_mk (M := Lp E 1 (μ.withDensity fun x => f x)) (N := Lp E 1 μ), Lp.norm_toLp,
+    simp only [eLpNorm, LinearMap.coe_mk, AddHom.coe_mk, Lp.norm_toLp,
       one_ne_zero, ENNReal.one_ne_top, ENNReal.one_toReal, if_false, eLpNorm', ENNReal.rpow_one,
       _root_.div_one, Lp.norm_def]
     rw [lintegral_withDensity_eq_lintegral_mul_non_measurable _ f_meas.coe_nnreal_ennreal
@@ -803,12 +801,12 @@ variable [NormedRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β]
 theorem Integrable.smul_of_top_right {f : α → β} {φ : α → 𝕜} (hf : Integrable f μ)
     (hφ : Memℒp φ ∞ μ) : Integrable (φ • f) μ := by
   rw [← memℒp_one_iff_integrable] at hf ⊢
-  exact Memℒp.smul_of_top_right hf hφ
+  exact Memℒp.smul hf hφ
 
 theorem Integrable.smul_of_top_left {f : α → β} {φ : α → 𝕜} (hφ : Integrable φ μ)
     (hf : Memℒp f ∞ μ) : Integrable (φ • f) μ := by
   rw [← memℒp_one_iff_integrable] at hφ ⊢
-  exact Memℒp.smul_of_top_left hf hφ
+  exact Memℒp.smul hf hφ
 
 @[fun_prop]
 theorem Integrable.smul_const {f : α → 𝕜} (hf : Integrable f μ) (c : β) :
@@ -877,6 +875,11 @@ theorem Integrable.mul_of_top_right {f : α → 𝕜} {φ : α → 𝕜} (hf : I
 theorem Integrable.mul_of_top_left {f : α → 𝕜} {φ : α → 𝕜} (hφ : Integrable φ μ)
     (hf : Memℒp f ∞ μ) : Integrable (φ * f) μ :=
   hφ.smul_of_top_left hf
+
+lemma Memℒp.integrable_mul {p q : ℝ≥0∞} {f g : α → 𝕜} (hf : Memℒp f p μ) (hg : Memℒp g q μ)
+    [HolderTriple p q 1] :
+    Integrable (f * g) μ :=
+  memℒp_one_iff_integrable.1 <| hg.mul hf
 
 end NormedRing
 

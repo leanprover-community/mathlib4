@@ -185,6 +185,7 @@ import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.NatFib
+import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.OfScientific
 import Mathlib.Tactic.NormNum.Pow
@@ -205,7 +206,7 @@ import Mathlib.Tactic.ProdAssoc
 import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.ProxyType
-import Mathlib.Tactic.PushNeg
+import Mathlib.Tactic.Push
 import Mathlib.Tactic.Qify
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Recall
