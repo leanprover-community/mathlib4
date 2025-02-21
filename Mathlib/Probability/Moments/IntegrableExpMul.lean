@@ -30,7 +30,7 @@ We prove the integrability of other functions for `t` in the interior of that in
 * `ProbabilityTheory.integrable_rpow_abs_mul_exp_of_mem_interior`: for `v` in the interior of the
   interval in which `exp (t * X)` is integrable, for all nonnegative `p : ℝ`,
   `|X| ^ p * exp (v * X)` is integrable.
-* `ProbabilityTheory.memℒp_of_mem_interior_integrableExpSet`: if 0 belongs to the interior of
+* `ProbabilityTheory.memLp_of_mem_interior_integrableExpSet`: if 0 belongs to the interior of
   `integrableExpSet X μ`, then `X` is in `ℒp` for all finite `p`.
 
 -/
@@ -529,15 +529,18 @@ lemma integrable_pow_of_mem_interior_integrableExpSet
 
 /-- If 0 belongs to the interior of `integrableExpSet X μ`, then `X` is in `ℒp` for all
 finite `p`. -/
-lemma memℒp_of_mem_interior_integrableExpSet (h : 0 ∈ interior (integrableExpSet X μ)) (p : ℝ≥0) :
-    Memℒp X p μ := by
+lemma memLp_of_mem_interior_integrableExpSet (h : 0 ∈ interior (integrableExpSet X μ)) (p : ℝ≥0) :
+    MemLp X p μ := by
   have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet h
   by_cases hp_zero : p = 0
-  · simp only [hp_zero, ENNReal.coe_zero, memℒp_zero_iff_aestronglyMeasurable]
+  · simp only [hp_zero, ENNReal.coe_zero, memLp_zero_iff_aestronglyMeasurable]
     exact hX.aestronglyMeasurable
   rw [← integrable_norm_rpow_iff hX.aestronglyMeasurable (mod_cast hp_zero) (by simp)]
   simp only [norm_eq_abs, ENNReal.coe_toReal]
   exact integrable_rpow_abs_of_mem_interior_integrableExpSet h p.2
+
+@[deprecated (since := "2025-02-21")]
+alias memℒp_of_mem_interior_integrableExpSet := memLp_of_mem_interior_integrableExpSet
 
 section Complex
 

@@ -456,10 +456,10 @@ def rnDeriv (c : ComplexMeasure α) (μ : Measure α) : α → ℂ := fun x =>
 variable {c : ComplexMeasure α}
 
 theorem integrable_rnDeriv (c : ComplexMeasure α) (μ : Measure α) : Integrable (c.rnDeriv μ) μ := by
-  rw [← memℒp_one_iff_integrable, ← memℒp_re_im_iff]
+  rw [← memLp_one_iff_integrable, ← memLp_re_im_iff]
   exact
-    ⟨memℒp_one_iff_integrable.2 (SignedMeasure.integrable_rnDeriv _ _),
-      memℒp_one_iff_integrable.2 (SignedMeasure.integrable_rnDeriv _ _)⟩
+    ⟨memLp_one_iff_integrable.2 (SignedMeasure.integrable_rnDeriv _ _),
+      memLp_one_iff_integrable.2 (SignedMeasure.integrable_rnDeriv _ _)⟩
 
 theorem singularPart_add_withDensity_rnDeriv_eq [c.HaveLebesgueDecomposition μ] :
     c.singularPart μ + μ.withDensityᵥ (c.rnDeriv μ) = c := by

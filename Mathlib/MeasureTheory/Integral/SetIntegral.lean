@@ -836,37 +836,37 @@ variable [NormedAddCommGroup E]
   {𝕜 : Type*} [NormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {p : ℝ≥0∞} {μ : Measure X}
 
 /-- For `f : Lp E p μ`, we can define an element of `Lp E p (μ.restrict s)` by
-`(Lp.memℒp f).restrict s).toLp f`. This map is additive. -/
+`(Lp.memLp f).restrict s).toLp f`. This map is additive. -/
 theorem Lp_toLp_restrict_add (f g : Lp E p μ) (s : Set X) :
-    ((Lp.memℒp (f + g)).restrict s).toLp (⇑(f + g)) =
-      ((Lp.memℒp f).restrict s).toLp f + ((Lp.memℒp g).restrict s).toLp g := by
+    ((Lp.memLp (f + g)).restrict s).toLp (⇑(f + g)) =
+      ((Lp.memLp f).restrict s).toLp f + ((Lp.memLp g).restrict s).toLp g := by
   ext1
   refine (ae_restrict_of_ae (Lp.coeFn_add f g)).mp ?_
   refine
-    (Lp.coeFn_add (Memℒp.toLp f ((Lp.memℒp f).restrict s))
-          (Memℒp.toLp g ((Lp.memℒp g).restrict s))).mp ?_
-  refine (Memℒp.coeFn_toLp ((Lp.memℒp f).restrict s)).mp ?_
-  refine (Memℒp.coeFn_toLp ((Lp.memℒp g).restrict s)).mp ?_
-  refine (Memℒp.coeFn_toLp ((Lp.memℒp (f + g)).restrict s)).mono fun x hx1 hx2 hx3 hx4 hx5 => ?_
+    (Lp.coeFn_add (MemLp.toLp f ((Lp.memLp f).restrict s))
+          (MemLp.toLp g ((Lp.memLp g).restrict s))).mp ?_
+  refine (MemLp.coeFn_toLp ((Lp.memLp f).restrict s)).mp ?_
+  refine (MemLp.coeFn_toLp ((Lp.memLp g).restrict s)).mp ?_
+  refine (MemLp.coeFn_toLp ((Lp.memLp (f + g)).restrict s)).mono fun x hx1 hx2 hx3 hx4 hx5 => ?_
   rw [hx4, hx1, Pi.add_apply, hx2, hx3, hx5, Pi.add_apply]
 
 /-- For `f : Lp E p μ`, we can define an element of `Lp E p (μ.restrict s)` by
-`(Lp.memℒp f).restrict s).toLp f`. This map commutes with scalar multiplication. -/
+`(Lp.memLp f).restrict s).toLp f`. This map commutes with scalar multiplication. -/
 theorem Lp_toLp_restrict_smul (c : 𝕜) (f : Lp F p μ) (s : Set X) :
-    ((Lp.memℒp (c • f)).restrict s).toLp (⇑(c • f)) = c • ((Lp.memℒp f).restrict s).toLp f := by
+    ((Lp.memLp (c • f)).restrict s).toLp (⇑(c • f)) = c • ((Lp.memLp f).restrict s).toLp f := by
   ext1
   refine (ae_restrict_of_ae (Lp.coeFn_smul c f)).mp ?_
-  refine (Memℒp.coeFn_toLp ((Lp.memℒp f).restrict s)).mp ?_
-  refine (Memℒp.coeFn_toLp ((Lp.memℒp (c • f)).restrict s)).mp ?_
+  refine (MemLp.coeFn_toLp ((Lp.memLp f).restrict s)).mp ?_
+  refine (MemLp.coeFn_toLp ((Lp.memLp (c • f)).restrict s)).mp ?_
   refine
-    (Lp.coeFn_smul c (Memℒp.toLp f ((Lp.memℒp f).restrict s))).mono fun x hx1 hx2 hx3 hx4 => ?_
+    (Lp.coeFn_smul c (MemLp.toLp f ((Lp.memLp f).restrict s))).mono fun x hx1 hx2 hx3 hx4 => ?_
   simp only [hx2, hx1, hx3, hx4, Pi.smul_apply]
 
 /-- For `f : Lp E p μ`, we can define an element of `Lp E p (μ.restrict s)` by
-`(Lp.memℒp f).restrict s).toLp f`. This map is non-expansive. -/
+`(Lp.memLp f).restrict s).toLp f`. This map is non-expansive. -/
 theorem norm_Lp_toLp_restrict_le (s : Set X) (f : Lp E p μ) :
-    ‖((Lp.memℒp f).restrict s).toLp f‖ ≤ ‖f‖ := by
-  rw [Lp.norm_def, Lp.norm_def, eLpNorm_congr_ae (Memℒp.coeFn_toLp _)]
+    ‖((Lp.memLp f).restrict s).toLp f‖ ≤ ‖f‖ := by
+  rw [Lp.norm_def, Lp.norm_def, eLpNorm_congr_ae (MemLp.coeFn_toLp _)]
   refine ENNReal.toReal_mono (Lp.eLpNorm_ne_top _) ?_
   exact eLpNorm_mono_measure _ Measure.restrict_le_self
 
@@ -876,14 +876,14 @@ variable (X F 𝕜) in
 def LpToLpRestrictCLM (μ : Measure X) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (s : Set X) :
     Lp F p μ →L[𝕜] Lp F p (μ.restrict s) :=
   @LinearMap.mkContinuous 𝕜 𝕜 (Lp F p μ) (Lp F p (μ.restrict s)) _ _ _ _ _ _ (RingHom.id 𝕜)
-    ⟨⟨fun f => Memℒp.toLp f ((Lp.memℒp f).restrict s), fun f g => Lp_toLp_restrict_add f g s⟩,
+    ⟨⟨fun f => MemLp.toLp f ((Lp.memLp f).restrict s), fun f g => Lp_toLp_restrict_add f g s⟩,
       fun c f => Lp_toLp_restrict_smul c f s⟩
     1 (by intro f; rw [one_mul]; exact norm_Lp_toLp_restrict_le s f)
 
 variable (𝕜) in
 theorem LpToLpRestrictCLM_coeFn [Fact (1 ≤ p)] (s : Set X) (f : Lp F p μ) :
     LpToLpRestrictCLM X F 𝕜 μ p s f =ᵐ[μ.restrict s] f :=
-  Memℒp.coeFn_toLp ((Lp.memℒp f).restrict s)
+  MemLp.coeFn_toLp ((Lp.memLp f).restrict s)
 
 @[continuity]
 theorem continuous_setIntegral [NormedSpace ℝ E] (s : Set X) :
@@ -1273,7 +1273,7 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
         continuous_integral.comp (withDensitySMulLI (E := E) μ f_meas).continuous
       convert this with u
       simp only [Function.comp_apply, withDensitySMulLI_apply]
-      exact integral_congr_ae (memℒ1_smul_of_L1_withDensity f_meas u).coeFn_toLp.symm
+      exact integral_congr_ae (memL1_smul_of_L1_withDensity f_meas u).coeFn_toLp.symm
     exact isClosed_eq C1 C2
   · intro u v huv _ hu
     rw [← integral_congr_ae huv, hu]
