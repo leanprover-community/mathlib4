@@ -1166,7 +1166,7 @@ variable (K) in
 /--
 *Weak approximation for infinite places*
 
-The number field $K$ is dense in $\prod_v, (K, v)$, where $v$ ranges over the infinite places
+The number field $K$ is dense in $\prod_v (K, v)$, where $v$ ranges over the infinite places
 of $K$ and $(K, v)$ denotes $K$ equipped with the topology induced by $v$. In other words,
 for any $(x_v)_v$, with $x_v\in K$, there exists a $y\in K$ such that each $|y - x_v|_v$ is
 arbitrarily small.

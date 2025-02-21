@@ -115,7 +115,7 @@ theorem mixedEmbedding_eq_algebraMap_comp {x : K} :
 /--
 *Weak approximation for the infinite adele ring*
 
-The number field $K$ is dense in the infinite adele ring $\mathbb{A}_{K, \infty} = \prod_v, K_v$.
+The number field $K$ is dense in the infinite adele ring $\mathbb{A}_{K, \infty} = \prod_v K_v$.
 In other words, for any $(x_v)_v$, with $x_v ∈ K_v$ there is a $y ∈ K$ such that each
 $|y - x_v|_v$ is arbitrarily small.
 -/
