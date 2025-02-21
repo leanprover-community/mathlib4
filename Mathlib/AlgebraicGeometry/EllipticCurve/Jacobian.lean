@@ -1188,8 +1188,8 @@ lemma negAddY_neg {P : Fin 3 → R} (hP : W'.Equation P) :
     -2 * P z ^ 3 * (P y - W'.negY P) * (equation_iff _).mp hP
 
 lemma addY_neg {P : Fin 3 → R} (hP : W'.Equation P) : W'.addY P (W'.neg P) = -W'.dblZ P ^ 3 := by
-  rw [addY, addX_neg hP, negAddY_neg hP, addZ_neg, negY_of_Z_eq_zero rfl]
-  rfl
+  rw [addY, addX_neg hP, negAddY_neg hP, addZ_neg, negY_of_Z_eq_zero rfl, Matrix.cons_val_one,
+    Matrix.head_cons]
 
 lemma addXYZ_neg {P : Fin 3 → R} (hP : W'.Equation P) :
     W'.addXYZ P (W'.neg P) = -W'.dblZ P • ![1, 1, 0] := by
