@@ -1,8 +1,6 @@
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.RingTheory.Nilpotent.Defs
 
 namespace Algebra
