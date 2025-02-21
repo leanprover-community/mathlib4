@@ -132,8 +132,7 @@ def coneOfConeCurry {D : DiagramOfCones (curry.obj G)} (Q : ∀ j, IsLimit (D.ob
   π :=
     { app j := (Q j).lift
         { pt := c.pt
-          π := { app k := c.π.app (j, k)
-                 naturality _ _ _ := by simp } }
+          π := { app k := c.π.app (j, k) } }
       naturality {_ j'} _ := (Q j').hom_ext (by simp) }
 
 /-- Given a diagram `D` of colimit cocones over the `F.obj j`, and a cocone over `uncurry.obj F`,
