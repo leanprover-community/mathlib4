@@ -398,15 +398,21 @@ theorem injective_compr₂_of_injective (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g
     (hg : Injective g) : Injective (f.compr₂ g) :=
   fun _ _ h ↦ hf <| ext fun z ↦ hg <| LinearMap.congr_fun h z
 
+theorem surjective_compr₂_of_exists_rightInverse (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ)
+    (hf : Surjective f) (hg : ∃ g' : Qₗ →ₗ[R] Pₗ, g.comp g' = LinearMap.id) :
+    Surjective (f.compr₂ g) := by
+  intro h
+  suffices ∃ m, ∀ n, g (f m n) = h n by
+    obtain ⟨m, hm⟩ := this
+    exact ⟨m, ext fun n ↦ by simpa using hm n⟩
+  obtain ⟨g', hg'⟩ := hg
+  obtain ⟨m, hm⟩ := hf (g'.comp h)
+  exact ⟨m, by simp only [hm, ← comp_apply, hg', ← comp_assoc, id_comp, implies_true]⟩
+
 /-- A version of `Function.Surjective.comp` for composition of a bilinear map with a linear map. -/
 theorem surjective_compr₂_of_equiv (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ ≃ₗ[R] Qₗ) (hf : Surjective f) :
-    Surjective (f.compr₂ g.toLinearMap) := by
-  intro h
-  obtain ⟨m, hm⟩ := hf (g.symm ∘ₗ h)
-  use m
-  ext n
-  rw [compr₂_apply, hm]
-  simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.apply_symm_apply]
+    Surjective (f.compr₂ g.toLinearMap) :=
+  surjective_compr₂_of_exists_rightInverse f g.toLinearMap hf ⟨g.symm, by simp⟩
 
 /-- A version of `Function.Bijective.comp` for composition of a bilinear map with a linear map. -/
 theorem bijective_compr₂_of_equiv (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ ≃ₗ[R] Qₗ) (hf : Bijective f) :
