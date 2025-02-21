@@ -529,4 +529,16 @@ noncomputable instance : LinearOrderedCommRing Surreal where
   mul_pos := by rintro ⟨x⟩ ⟨y⟩; exact x.2.mul_pos y.2
   decidableLE := Classical.decRel _
 
+lemma one_def : 1 = mk 1 numeric_one := rfl
+
+lemma mk_mul {x y : PGame} (hx : x.Numeric) (hy : y.Numeric) :
+    Surreal.mk (x * y) (hx.mul hy) = Surreal.mk x hx * Surreal.mk y hy := by rfl
+
+lemma mul_left_cancel {x y z : PGame} (hx : x.Numeric) (hy : y.Numeric) (hz : z.Numeric)
+    (nz : ¬ x ≈ 0) (h: x * y ≈ x * z): y ≈ z := by
+  have: Surreal.mk x hx * Surreal.mk y hy = Surreal.mk x hx * Surreal.mk z hz := by
+    simpa only [← mk_mul, mk_eq_mk]
+  apply mul_left_cancel₀ (by simpa only [ne_eq, mk_eq_zero]) at this
+  rwa [mk_eq_mk] at this
+
 end Surreal
