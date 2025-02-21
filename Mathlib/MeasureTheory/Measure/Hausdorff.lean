@@ -141,8 +141,7 @@ theorem finset_iUnion_of_pairwise_separated (hm : IsMetric μ) {I : Finset ι} {
     (hI : ∀ i ∈ I, ∀ j ∈ I, i ≠ j → Metric.AreSeparated (s i) (s j)) :
     μ (⋃ i ∈ I, s i) = ∑ i ∈ I, μ (s i) := by
   classical
-  induction' I using Finset.induction_on with i I hiI ihI hI
-  · simp
+  induction I using Finset.induction_on with | empty => simp | @insert i I hiI ihI =>
   simp only [Finset.mem_insert] at hI
   rw [Finset.set_biUnion_insert, hm, ihI, Finset.sum_insert hiI]
   exacts [fun i hi j hj hij => hI i (Or.inr hi) j (Or.inr hj) hij,

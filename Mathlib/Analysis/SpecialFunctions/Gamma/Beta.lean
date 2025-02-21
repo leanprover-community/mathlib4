@@ -202,10 +202,12 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
 /-- Explicit formula for the Beta function when second argument is a positive integer. -/
 theorem betaIntegral_eval_nat_add_one_right {u : ℂ} (hu : 0 < re u) (n : ℕ) :
     betaIntegral u (n + 1) = n ! / ∏ j ∈ Finset.range (n + 1), (u + j) := by
-  induction' n with n IH generalizing u
-  · rw [Nat.cast_zero, zero_add, betaIntegral_eval_one_right hu, Nat.factorial_zero, Nat.cast_one]
+  induction n generalizing u with
+  | zero =>
+    rw [Nat.cast_zero, zero_add, betaIntegral_eval_one_right hu, Nat.factorial_zero, Nat.cast_one]
     simp
-  · have := betaIntegral_recurrence hu (?_ : 0 < re n.succ)
+  | succ n IH =>
+    have := betaIntegral_recurrence hu (?_ : 0 < re n.succ)
     swap; · rw [← ofReal_natCast, ofReal_re]; positivity
     rw [mul_comm u _, ← eq_div_iff] at this
     swap; · contrapose! hu; rw [hu, zero_re]
@@ -345,8 +347,8 @@ theorem GammaSeq_tendsto_Gamma (s : ℂ) : Tendsto (GammaSeq s) atTop (𝓝 <| G
     · refine (Nat.lt_floor_add_one _).trans_le ?_
       rw [sub_eq_neg_add, Nat.floor_add_one (neg_nonneg.mpr hs), Nat.cast_add_one]
   intro m
-  induction' m with m IH generalizing s
-  · -- Base case: `0 < re s`, so Gamma is given by the integral formula
+  induction m generalizing s with
+  | zero => -- Base case: `0 < re s`, so Gamma is given by the integral formula
     intro hs
     rw [Nat.cast_zero, neg_zero] at hs
     rw [← Gamma_eq_GammaAux]
@@ -354,7 +356,7 @@ theorem GammaSeq_tendsto_Gamma (s : ℂ) : Tendsto (GammaSeq s) atTop (𝓝 <| G
       refine (eventually_ne_atTop 0).mp (Eventually.of_forall fun n hn => ?_)
       exact (GammaSeq_eq_approx_Gamma_integral hs hn).symm
     · rwa [Nat.cast_zero, neg_lt_zero]
-  · -- Induction step: use recurrence formulae in `s` for Gamma and GammaSeq
+  | succ m IH => -- Induction step: use recurrence formulae in `s` for Gamma and GammaSeq
     intro hs
     rw [Nat.cast_succ, neg_add, ← sub_eq_add_neg, sub_lt_iff_lt_add, ← one_re, ← add_re] at hs
     rw [GammaAux]
