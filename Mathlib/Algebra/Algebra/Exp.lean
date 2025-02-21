@@ -13,6 +13,7 @@ import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Int.CharZero
 import Mathlib.RingTheory.Nilpotent.Defs
+import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
 # Further basic results about `Algebra`.
@@ -32,9 +33,10 @@ variable {R : Type u} {A : Type w}
 variable [Field R] [CharZero R]
 variable [Semiring A] [Algebra R A]
 
-noncomputable def exp (a : A) (h : IsNilpotent a) : A :=
-  a
-  --∑ n in finset.range (nat.find hx + 1), (x^n) / (n! : R)
+def exp (a : A) (h : IsNilpotent a) : A :=
+  let five_factorial : R := Nat.factorial 5
+  let inv_five_factorial : R := five_factorial⁻¹
+  inv_five_factorial • a
 
 end Exp
 
