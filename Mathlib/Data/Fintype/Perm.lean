@@ -3,10 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.Group.End
 import Mathlib.Data.Fintype.EquivFin
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 # `Fintype` instances for `Equiv` and `Perm`

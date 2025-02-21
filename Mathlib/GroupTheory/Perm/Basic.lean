@@ -9,9 +9,16 @@ import Mathlib.Logic.Equiv.Set
 import Mathlib.Tactic.Common
 
 /-!
-# The group of permutations (self-equivalences) of a type `α`
+# Extra lemmas about permutations
 
-This file defines the `Group` structure on `Equiv.Perm α`.
+This file proves miscellaneous lemmas about `Equiv.Perm`.
+
+## TODO
+
+Most of the content of this file was moved to `Algebra.Group.End` in
+https://github.com/leanprover-community/mathlib4/pull/22141.
+It would be good to merge the remaining lemmas with other files, eg `GroupTheory.Perm.ViaEmbedding`
+looks like it could benefit from such a treatment (splitting into the algebra and non-algebra parts)
 -/
 
 
@@ -40,7 +47,6 @@ theorem swap_smul_self_smul [MulAction (Perm α) β] (i j : α) (x : β) :
 
 theorem swap_smul_involutive [MulAction (Perm α) β] (i j : α) :
     Function.Involutive (swap i j • · : β → β) := swap_smul_self_smul i j
-
 
 end Swap
 end Equiv
