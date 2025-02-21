@@ -30,16 +30,8 @@ namespace Style
 (or, at least the syntactically checkable parts).
 If the doc-string is not well-formed, return `some messages` where `messages` describe
 what went wrong, otherwise return `none`. -/
-def checkDocstring (initialWhitespace input : String) : Option (Array String) := do
+def checkDocstring (input : String) : Option (Array String) := do
   let mut errors := #[]
-  match initialWhitespace with
-  | "\n" | " " => pure ()
-  | "" =>
-    errors := errors.push s!"error: doc-strings should start with a space or newline"
-  | _ =>
-    -- In any other cases, we have extraneous whitespace.
-    errors := errors.push s!"error: doc-strings should start with a single space"
-
   -- Check the ending of the doc-string: a new line or exactly one space.
   if !(input.endsWith "\n" || input.endsWith " ") then
     errors := errors.push s!"error: doc-strings should end with a space or newline"
@@ -69,13 +61,16 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- `docString` contains e.g. trailing spaces before the '-/', but does not contain
   -- any leading whitespace before the actual string starts.
   let docString ← getDocStringText ⟨docStx⟩
-  -- `startSubstring` is only needed if you want to keep track of the whitespace between
-  -- `/--` and the doc-string
+  -- `startSubstring` is the whitespace between `/--` and the actual doc-string text
   let startSubstring := match docStx with
     | .node _ _ #[(.atom si ..), _] => si.getTrailing?.getD default
     | _ => default
   let start := startSubstring.toString
-  if let some messages := checkDocstring start docString then
+  if !#["\n", " "].contains start then
+    let startRg := {start := startSubstring.startPos, stop := startSubstring.stopPos}
+    Linter.logLint linter.style.docString (.ofRange startRg)
+      s!"error: doc-strings should start with a space or newline"
+  if let some messages := checkDocstring docString then
     for msg in messages do
       Linter.logLint linter.style.docString docStx msg
 

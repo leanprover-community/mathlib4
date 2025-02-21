@@ -21,7 +21,7 @@ note: this linter can be disabled with `set_option linter.style.docString false`
 example : Nat := 1
 
 /--
-warning: error: doc-strings should start with a single space
+warning: error: doc-strings should start with a space or newline
 note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
