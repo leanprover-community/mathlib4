@@ -181,4 +181,96 @@ def algHomOfα (η : Aut (F k G)) : (G → k) →ₐ[k] (G → k) := by
   have h := this
   rwa [← one_mul (α_inv 1), map_mul_α, h, mul_one] at this
 
+variable [DecidableEq G]
+
+/-- `τₗ` as a morphism `fdRepτᵣ k G ⟶ fdRepτᵣ k G` in `FDRep k G` -/
+def τₗFDRepHom (s : G) : fdRepτᵣ k G ⟶ fdRepτᵣ k G where
+  hom := ofHom (τₗ s)
+  comm := by
+    intro (t : G)
+    ext (f : G → k)
+    funext u
+    change (τₗ s) ((τᵣ t) f) u = (τᵣ t) ((τₗ s) f) u
+    simp [mul_assoc]
+
+lemma image_α_in_image_τᵣ (η : Aut (F k G)) : ∃ (s : G), α η = τᵣ s := by
+  obtain ⟨s, hs⟩ := eval_of_alghom ((evalAlgHom _ _ 1).comp (algHomOfα η))
+  use s
+  apply Basis.ext (basisFun k G)
+  intro u
+  ext t
+  have hnat := η.hom.hom.naturality (τₗFDRepHom t⁻¹)
+  apply_fun Hom.hom at hnat
+  calc
+    _ = τₗ t⁻¹ (α η (single u 1)) 1 := by simp
+    _ = α η (τₗ t⁻¹ (single u 1)) 1 :=
+      congrFun (congrFun (congrArg DFunLike.coe hnat) (single u 1)).symm 1
+    _ = evalAlgHom _ _ s (τₗ t⁻¹ (single u 1)) :=
+      congrFun (congrArg DFunLike.coe hs) ((τₗ t⁻¹) (single u 1))
+    _ = _ := by
+      by_cases u = t * s <;> simp_all [single_apply]
+
+/-- Auxiliary map for the proof of `α_injective` -/
+@[simps]
+def φ {X : FDRep k G} (v : X) : (G → k) →ₗ[k] X where
+  toFun f := ∑ s : G, (f s) • (X.ρ s⁻¹ v)
+  map_add' _ _ := by
+    simp only [add_apply, add_smul]
+    exact sum_add_distrib
+  map_smul' _ _ := by
+    simp only [smul_apply, smul_eq_mul, RingHom.id_apply, smul_sum, smul_smul]
+
+lemma φ_e_one_eq_id {X : FDRep k G} (v : X) : (φ v) (single 1 1) = v := by
+  rw [φ_apply]
+  let a := fun s ↦ (single 1 1 : G → k) s • (X.ρ s⁻¹) v
+  calc
+    _ = (∑ s ∈ {1}ᶜ, a s) + a 1 :=
+      Fintype.sum_eq_sum_compl_add 1 a
+    _ = a 1 := by
+      apply add_left_eq_self.mpr
+      apply sum_eq_zero
+      simp_all [a]
+    _ = _ := by
+      simp [a]
+
+/-- Auxiliary representation morphism for the proof of `α_injective` -/
+@[simps]
+def φRepMor (X : FDRep k G) (v : X) : (fdRepτᵣ k G) ⟶ X where
+  hom := ofHom (φ v)
+  comm := by
+    intro (t : G)
+    ext (f : G → k)
+    change (φ v) (τᵣ t f) = X.ρ t (φ v f)
+    simp only [φ_apply, map_sum]
+    set φ_term := fun (X : FDRep k G) (f : G → k) v s ↦ (f s) • (X.ρ s⁻¹ v)
+    have := sum_map univ (mulRightEmbedding t⁻¹) (φ_term X (τᵣ t f) v)
+    simp only [φ_term, univ_map_embedding] at this
+    rw [this]
+    apply sum_congr rfl
+    simp
+
+lemma α_injective (η₁ η₂ : Aut (F k G)) (h : α η₁ = α η₂) : η₁ = η₂ := by
+  ext X v
+  have h1 := η₁.hom.hom.naturality (φRepMor X v)
+  have h2 := η₂.hom.hom.naturality (φRepMor X v)
+  rw [hom_ext h, ← h2] at h1
+  apply_fun Hom.hom at h1
+  apply_fun (· (single 1 1)) at h1
+  change Hom.hom _ ((φ v) _) = Hom.hom _ ((φ v) _) at h1
+  rw [φ_e_one_eq_id] at h1
+  exact h1
+
+lemma T_surjective : Function.Surjective (T k G) := by
+  intro η
+  obtain ⟨s, h⟩ := image_α_in_image_τᵣ η
+  use s
+  apply α_injective
+  exact h.symm
+
+theorem tannaka_duality : Function.Bijective (T k G) :=
+  ⟨T_injective, T_surjective⟩
+
+variable (k G) in
+def equiv : G ≃* Aut (F k G) := MulEquiv.ofBijective (T k G) tannaka_duality
+
 end TannakaDuality
