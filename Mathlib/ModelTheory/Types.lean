@@ -33,7 +33,7 @@ This file defines the space of complete types over a first-order theory.
 
 ## TODO
 
-- Connect `T.CompleteType α` to sets of formulas `L.Formula α`.
+- Relate `T.CompleteType α` to `LatticeHom (T.Formula α) Prop`, possibly as a redefinition
 -/
 
 
