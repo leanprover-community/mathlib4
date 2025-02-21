@@ -3,11 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
+import Mathlib.Data.Prod.Basic
+import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.Interval.Set.Defs
 import Mathlib.Order.MinMax
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Tactic.Says
 import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Says
 
 /-!
 # Intervals
@@ -29,6 +30,8 @@ in particular for some statements it should be `LinearOrder` or `DenselyOrdered`
 
 TODO: This is just the beginning; a lot of rules are missing
 -/
+
+assert_not_exists RelIso
 
 open Function
 

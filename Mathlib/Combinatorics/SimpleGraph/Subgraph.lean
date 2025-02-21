@@ -774,21 +774,19 @@ theorem degree_eq_one_iff_unique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neig
   rw [← finset_card_neighborSet_eq_degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
   simp only [Set.mem_toFinset, mem_neighborSet]
 
+lemma neighborSet_eq_of_equiv {v : V} {H : Subgraph G}
+    (h : G.neighborSet v ≃ H.neighborSet v) (hfin : (G.neighborSet v).Finite) :
+    H.neighborSet v = G.neighborSet v := by
+  lift H.neighborSet v to Finset V using h.set_finite_iff.mp hfin with s hs
+  lift G.neighborSet v to Finset V using hfin with t ht
+  refine congrArg _ <| Finset.eq_of_subset_of_card_le ?_ (Finset.card_eq_of_equiv h).le
+  rw [← Finset.coe_subset, hs, ht]
+  exact H.neighborSet_subset _
+
 lemma adj_iff_of_neighborSet_equiv {v : V} {H : Subgraph G}
-    (h : G.neighborSet v ≃ H.neighborSet v) (hfin : Fintype (G.neighborSet v)) :
-    ∀ {w}, H.Adj v w ↔ G.Adj v w := by
-  classical
-  intro w
-  refine ⟨fun a => a.adj_sub, ?_⟩
-  have : Fintype (H.neighborSet v) := (h.set_finite_iff.mp hfin.finite).fintype
-  let f : H.neighborSet v → G.neighborSet v := fun a => ⟨a, a.coe_prop.adj_sub⟩
-  have hfinj : f.Injective := fun w w' hww' ↦ by aesop
-  have hfbij : f.Bijective := ⟨hfinj, hfinj.surjective_of_fintype h.symm⟩
-  intro h
-  have hv := (Fintype.bijInv hfbij ⟨w, h⟩).coe_prop
-  obtain ⟨v', hv'⟩ : ∃ v', f v' = ⟨w, h⟩ := hfbij.surjective ⟨w, h⟩
-  have : (f v') = w := by simpa using congrArg Subtype.val hv'
-  aesop
+    (h : G.neighborSet v ≃ H.neighborSet v) (hfin : (G.neighborSet v).Finite) :
+    ∀ {w}, H.Adj v w ↔ G.Adj v w :=
+  Set.ext_iff.mp (neighborSet_eq_of_equiv h hfin) _
 
 end Subgraph
 

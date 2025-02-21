@@ -69,7 +69,7 @@ theorem nodup_iff_injective_getElem {l : List α} :
     Nodup l ↔ Function.Injective (fun i : Fin l.length => l[i.1]) :=
   pairwise_iff_getElem.trans
     ⟨fun h i j hg => by
-      cases' i with i hi; cases' j with j hj
+      obtain ⟨i, hi⟩ := i; obtain ⟨j, hj⟩ := j
       rcases lt_trichotomy i j with (hij | rfl | hji)
       · exact (h i j hi hj hij hg).elim
       · rfl

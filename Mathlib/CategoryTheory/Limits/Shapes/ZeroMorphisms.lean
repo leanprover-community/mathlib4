@@ -404,7 +404,7 @@ def isoOfIsIsomorphicZero {X : C} (P : IsIsomorphic X 0) : X ≅ 0 where
   hom := 0
   inv := 0
   hom_inv_id := by
-    cases' P with P
+    have P := P.some
     rw [← P.hom_inv_id, ← Category.id_comp P.inv]
     apply Eq.symm
     simp only [id_comp, Iso.hom_inv_id, comp_zero]

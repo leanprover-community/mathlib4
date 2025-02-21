@@ -23,6 +23,7 @@ localization, Ore, non-commutative
 
 -/
 
+assert_not_exists RelIso
 
 universe u
 
