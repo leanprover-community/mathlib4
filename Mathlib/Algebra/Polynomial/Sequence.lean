@@ -67,13 +67,21 @@ lemma natDegree_eq (i : ℕ) : (S i).natDegree = i := natDegree_eq_of_degree_eq_
 @[simp]
 lemma ne_zero (i : ℕ) : S i ≠ 0 := degree_ne_bot.mp <| by simp [S.degree_eq i]
 
-/-- No two elements in the sequence have the same degree. -/
-lemma degree_ne {i j : ℕ} (h : i ≠ j) : (S i).degree ≠ (S j).degree := by
-  simp [S.degree_eq i, S.degree_eq j, h]
+/-- Degree is injective for elements of `S`. -/
+@[simp]
+lemma degree_injective : Function.Injective <| degree ∘ S := fun _ _  ↦ by simp
 
-/-- No two elements in the sequence have the same natural degree. -/
-lemma natDegree_ne {i j : ℕ} (h : i ≠ j) : (S i).natDegree ≠ (S j).natDegree := by
-  simp [S.natDegree_eq i, S.natDegree_eq j, h]
+/-- Natural degree is injective for elements of `S`. -/
+@[simp]
+lemma natDegree_injective : Function.Injective <| natDegree ∘ S := fun _ _  ↦ by simp
+
+variable {i j : ℕ}
+
+/-- Two polynomials have the same degree iff they are the same element in the sequence. -/
+lemma degree_inj : (S i).degree = (S j).degree ↔ i = j := by simp
+
+/-- Two polynomials have the same natural degree iff they are the same element in the sequence. -/
+lemma natDegree_inj : (S i).natDegree = (S j).natDegree ↔ i = j := by simp
 
 /-- Earlier sequence elements have lower degrees. -/
 lemma degree_lt {i j : ℕ} (h : i < j) : (S i).degree < j := by
@@ -82,12 +90,6 @@ lemma degree_lt {i j : ℕ} (h : i < j) : (S i).degree < j := by
 /-- Earlier sequence elements have lower natural degrees. -/
 lemma natDegree_lt {i j : ℕ} (h : i < j) : (S i).natDegree < j := by
   simp [S.natDegree_eq i, S.natDegree_eq j, h]
-
-/-- No two elements in the sequence have the same degree. -/
-lemma degree_inj : Function.Injective <| degree ∘ S := fun _ _  ↦ by simp
-
-/-- No two elements in the sequence have the same natural degree. -/
-lemma natDegree_inj : Function.Injective <| natDegree ∘ S := fun _ _  ↦ by simp
 
 end Semiring
 
