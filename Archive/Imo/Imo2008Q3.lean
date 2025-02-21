@@ -48,7 +48,7 @@ theorem p_lemma (p : ℕ) (hpp : Nat.Prime p) (hp_mod_4_eq_1 : p ≡ 1 [MOD 4]) 
   have hnat₃ : p ≥ 2 * n := by omega
   set k : ℕ := p - 2 * n with hnat₄
   have hnat₅ : p ∣ k ^ 2 + 4 := by
-    cases' hnat₁ with x hx
+    obtain ⟨x, hx⟩ := hnat₁
     have : (p : ℤ) ∣ (k : ℤ) ^ 2 + 4 := by
       use (p : ℤ) - 4 * n + 4 * x
       have hcast₁ : (k : ℤ) = p - 2 * n := by assumption_mod_cast

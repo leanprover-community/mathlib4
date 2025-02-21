@@ -80,7 +80,7 @@ lemma SnakeLemma.eq_of_eq (x : K₃)
 
 /--
 **Snake Lemma**
-Supppose we have an exact commutative diagram
+Suppose we have an exact commutative diagram
 ```
                 K₃
                 |
@@ -124,7 +124,7 @@ lemma SnakeLemma.δ_eq (x : K₃) (y) (hy : f₂ y = ι₃ x) (z) (hz : g₁ z =
 
 include hι₂ in
 /--
-Supppose we have an exact commutative diagram
+Suppose we have an exact commutative diagram
 ```
         K₂ -F-→ K₃
         |       |
@@ -163,7 +163,7 @@ lemma SnakeLemma.exact_δ_right (F : K₂ →ₗ[R] K₃) (hF : f₂.comp ι₂ 
 
 include hπ₂ in
 /--
-Supppose we have an exact commutative diagram
+Suppose we have an exact commutative diagram
 ```
                 K₃
                 |
@@ -200,7 +200,7 @@ lemma SnakeLemma.exact_δ_left (G : C₁ →ₗ[R] C₂) (hF : G.comp π₁ = π
     rw [← G.comp_apply, hF, π₂.comp_apply, H₂, hπ₂.apply_apply_eq_zero]
 
 /--
-Supppose we have an exact commutative diagram
+Suppose we have an exact commutative diagram
 ```
                 K₃
                 |
@@ -232,7 +232,7 @@ lemma SnakeLemma.δ'_eq (hf₂ : Surjective f₂) (hg₁ : Injective g₁)
 
 include hι₂ in
 /--
-Supppose we have an exact commutative diagram
+Suppose we have an exact commutative diagram
 ```
         K₂ -F-→ K₃
         |       |
@@ -259,7 +259,7 @@ lemma SnakeLemma.exact_δ'_right (hf₂ : Surjective f₂) (hg₁ : Injective g�
 
 include hπ₂ in
 /--
-Supppose we have an exact commutative diagram
+Suppose we have an exact commutative diagram
 ```
                 K₃
                 |

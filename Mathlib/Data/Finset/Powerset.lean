@@ -87,7 +87,7 @@ theorem powerset_insert [DecidableEq α] (s : Finset α) (a : α) :
   · constructor
     · exact fun H => Or.inr ⟨_, H, insert_erase h⟩
     · intro H
-      cases' H with H H
+      rcases H with H | H
       · exact Subset.trans (erase_subset a t) H
       · rcases H with ⟨u, hu⟩
         rw [← hu.2]

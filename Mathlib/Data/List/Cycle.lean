@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Data.Fintype.List
+import Mathlib.Data.Fintype.OfMap
 
 /-!
 # Cycles of a list
@@ -578,7 +579,7 @@ theorem nodup_reverse_iff {s : Cycle α} : s.reverse.Nodup ↔ s.Nodup :=
 
 theorem Subsingleton.nodup {s : Cycle α} (h : Subsingleton s) : Nodup s := by
   induction' s using Quot.inductionOn with l
-  cases' l with hd tl
+  obtain - | ⟨hd, tl⟩ := l
   · simp
   · have : tl = [] := by simpa [Subsingleton, length_eq_zero, Nat.succ_le_succ_iff] using h
     simp [this]
@@ -792,7 +793,7 @@ nonrec def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
       · have := isRotated_nil_iff.1 hab
         contradiction
       · dsimp only
-        cases' hab with n hn
+        obtain ⟨n, hn⟩ := hab
         induction' n with d hd generalizing a b l m
         · simp only [rotate_zero, cons.injEq] at hn
           rw [hn.1, hn.2]
