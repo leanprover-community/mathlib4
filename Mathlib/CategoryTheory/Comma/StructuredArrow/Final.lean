@@ -54,13 +54,10 @@ private lemma final_of_final_toOver (L : A ⥤ T) (R : B ⥤ T) [Final R]
           Final.colimitIso _ _
     _ ≅ colimit G := (colimitIsoColimitGrothendieck (𝟭 T) G).symm
   convert (Iso.isIso_hom i)
-  apply colimit.hom_ext
-  intro a
-  simp [i]
-  simp only [← Category.assoc]
-  rw [Iso.eq_comp_inv]
-  simp
-  sorry
+  simp only [Iso.instTransIso_trans, comp_obj, grothendieckProj_obj, Grothendieck.pre_obj_base,
+    Grothendieck.pre_obj_fiber, Iso.trans_assoc, Iso.trans_hom, Iso.symm_hom, i]
+  rw [← Iso.inv_comp_eq, Iso.eq_inv_comp]
+  apply colimit.hom_ext (fun _ => by simp)
 
 end Small
 
