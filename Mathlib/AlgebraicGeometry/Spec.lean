@@ -54,7 +54,7 @@ open Spec (structureSheaf)
 def Spec.topObj (R : CommRingCat.{u}) : TopCat :=
   TopCat.of (PrimeSpectrum R)
 
-@[simp] theorem Spec.topObj_forget {R} : (forget TopCat).obj (Spec.topObj R) = PrimeSpectrum R :=
+@[simp] theorem Spec.topObj_forget {R} : ToType (Spec.topObj R) = PrimeSpectrum R :=
   rfl
 
 /-- The induced map of a ring homomorphism on the ring spectra, as a morphism of topological spaces.
@@ -408,16 +408,11 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
     rw [toPushforwardStalkAlgHom_apply,
       ← (toPushforwardStalk (CommRingCat.ofHom (algebraMap ↑R ↑S)) p).hom.map_zero,
       toPushforwardStalk] at hx
-    -- Porting note: this `change` is manually rewriting `comp_apply`
-    change _ = (TopCat.Presheaf.germ (Spec.topMap (CommRingCat.ofHom (algebraMap ↑R ↑S)) _*
-      (structureSheaf ↑S).val) ⊤ p trivial (toOpen S ⊤ 0)) at hx
-    rw [map_zero] at hx
-    change (forget CommRingCat).map _ _ = (forget _).map _ _ at hx
-    obtain ⟨U, hpU, i₁, i₂, e⟩ := TopCat.Presheaf.germ_eq _ _ _ _ _ _ hx
+    rw [CommRingCat.comp_apply, map_zero] at hx
+    obtain ⟨U, hpU, i₁, i₂, e⟩ := TopCat.Presheaf.germ_eq (C := CommRingCat) _ _ _ _ _ _ hx
     obtain ⟨_, ⟨r, rfl⟩, hpr, hrU⟩ :=
       PrimeSpectrum.isTopologicalBasis_basic_opens.exists_subset_of_mem_open (show p ∈ U.1 from hpU)
         U.2
-    change PrimeSpectrum.basicOpen r ≤ U at hrU
     apply_fun (Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _* (structureSheaf S).1).map
         (homOfLE hrU).op at e
     simp only [Functor.op_map, map_zero, ← CategoryTheory.comp_apply, toOpen_res] at e
@@ -429,10 +424,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
         this
     obtain ⟨⟨_, n, rfl⟩, e⟩ := (IsLocalization.mk'_eq_zero_iff _ _).mp this
     refine ⟨⟨r, hpr⟩ ^ n, ?_⟩
-    rw [Submonoid.smul_def, Algebra.smul_def]
-    -- Porting note: manually rewrite `Submonoid.coe_pow`
-    change (algebraMap R S) (r ^ n) * x = 0
-    rw [map_pow]
+    rw [Submonoid.smul_def, Algebra.smul_def, SubmonoidClass.coe_pow, map_pow]
     exact e
 
 end StructureSheaf

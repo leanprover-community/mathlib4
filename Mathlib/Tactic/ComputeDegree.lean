@@ -152,7 +152,7 @@ theorem natDegree_eq_of_le_of_coeff_ne_zero' {deg m o : ℕ} {c : R} {p : R[X]}
   exact natDegree_eq_of_le_of_coeff_ne_zero ‹_› ‹_›
 
 theorem degree_eq_of_le_of_coeff_ne_zero' {deg m o : WithBot ℕ} {c : R} {p : R[X]}
-    (h_deg_le : degree p ≤ m) (coeff_eq : coeff p (WithBot.unbot' 0 deg) = c)
+    (h_deg_le : degree p ≤ m) (coeff_eq : coeff p (WithBot.unbotD 0 deg) = c)
     (coeff_ne_zero : c ≠ 0) (deg_eq_deg : m = deg) (coeff_eq_deg : o = deg) :
     degree p = deg := by
   subst coeff_eq coeff_eq_deg deg_eq_deg
