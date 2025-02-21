@@ -124,7 +124,7 @@ lemma _root_.Submodule.map_comap_eq_of_le [RingHomSurjective τ₁₂] {f : F} {
   SetLike.coe_injective <| Set.image_preimage_eq_of_subset h
 
 lemma range_restrictScalars [SMul R R₂] [Module R₂ M] [Module R M₂] [CompatibleSMul M M₂ R R₂]
-    (f : M →ₗ[R₂] M₂) :
+    [IsScalarTower R R₂ M₂] (f : M →ₗ[R₂] M₂) :
   LinearMap.range (f.restrictScalars R) = f.range.restrictScalars R := rfl
 
 end
