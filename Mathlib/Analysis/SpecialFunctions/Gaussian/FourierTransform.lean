@@ -49,7 +49,7 @@ def verticalIntegral (b : ℂ) (c T : ℝ) : ℂ :=
 edges. -/
 theorem norm_cexp_neg_mul_sq_add_mul_I (b : ℂ) (c T : ℝ) :
     ‖cexp (-b * (T + c * I) ^ 2)‖ = exp (-(b.re * T ^ 2 - 2 * b.im * c * T - b.re * c ^ 2)) := by
-  rw [Complex.norm_eq_abs, Complex.abs_exp, neg_mul, neg_re, ← re_add_im b]
+  rw [Complex.norm_exp, neg_mul, neg_re, ← re_add_im b]
   simp only [sq, re_add_im, mul_re, mul_im, add_re, add_im, ofReal_re, ofReal_im, I_re, I_im]
   ring_nf
 
@@ -100,7 +100,7 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
       · rw [uIoc_of_ge h.le] at hy
         rw [abs_of_neg h, abs_of_nonpos hy.2, neg_le_neg_iff]
         exact hy.1.le
-    rw [norm_mul, Complex.norm_eq_abs, abs_I, one_mul, two_mul]
+    rw [norm_mul, norm_I, one_mul, two_mul]
     refine (norm_sub_le _ _).trans (add_le_add (vert_norm_bound hT absy) ?_)
     rw [← abs_neg y] at absy
     simpa only [neg_mul, ofReal_neg] using vert_norm_bound hT absy

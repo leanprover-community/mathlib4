@@ -179,9 +179,8 @@ lemma hasFDerivAt_fourierChar_smul (v : V) (w : W) :
 lemma norm_fourierSMulRight (L : V →L[ℝ] W →L[ℝ] ℝ) (f : V → E) (v : V) :
     ‖fourierSMulRight L f v‖ = (2 * π) * ‖L v‖ * ‖f v‖ := by
   rw [fourierSMulRight, norm_smul _ (ContinuousLinearMap.smulRight (L v) (f v)),
-    norm_neg, norm_mul, norm_mul, norm_eq_abs I, abs_I,
-    mul_one, norm_eq_abs ((_ : ℝ) : ℂ), Complex.abs_of_nonneg pi_pos.le, norm_eq_abs (2 : ℂ),
-    Complex.abs_two, ContinuousLinearMap.norm_smulRight_apply, ← mul_assoc]
+    norm_neg, norm_mul, norm_mul, norm_I, mul_one, Complex.norm_of_nonneg pi_pos.le,
+    Complex.norm_two, ContinuousLinearMap.norm_smulRight_apply, ← mul_assoc]
 
 lemma norm_fourierSMulRight_le (L : V →L[ℝ] W →L[ℝ] ℝ) (f : V → E) (v : V) :
     ‖fourierSMulRight L f v‖ ≤ 2 * π * ‖L‖ * ‖v‖ * ‖f v‖ := calc
@@ -389,8 +388,8 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
   rw [iteratedFDeriv_const_smul_apply' (hf := ((smulRightL ℝ (fun _ ↦ W)
     E).isBoundedBilinearMap.contDiff.comp₂ (A.of_le hk) (hf.of_le hk)).contDiffAt),
     norm_smul (β := V [×k]→L[ℝ] (W [×n]→L[ℝ] E))]
-  simp only [norm_pow, norm_neg, norm_mul, RCLike.norm_ofNat, Complex.norm_eq_abs, abs_ofReal,
-    abs_of_nonneg pi_nonneg, abs_I, mul_one, mul_assoc]
+  simp only [mul_assoc, norm_pow, norm_neg, Complex.norm_mul, Complex.norm_ofNat, norm_real,
+    Real.norm_eq_abs, abs_of_nonneg pi_nonneg, norm_I, mul_one, smulRightL_apply, ge_iff_le]
   gcongr
   -- third step: argue that the scalar multiplication is bilinear to bound the iterated derivatives
   -- of `v ↦ (∏ i, L v (m i)) • f v` in terms of those of `v ↦ (∏ i, L v (m i))` and of `f`.

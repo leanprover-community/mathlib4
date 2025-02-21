@@ -64,7 +64,7 @@ section
 
 open Complex in
 set_option synthInstance.maxHeartbeats 3200 in
-example (x : ℝ) : abs (cos x + sin x * I) = 1 := by simp
+example (x : ℝ) : ‖cos x + sin x * I‖ = 1 := by simp
 
 end
 
