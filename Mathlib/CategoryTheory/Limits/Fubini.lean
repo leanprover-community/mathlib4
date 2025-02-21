@@ -179,8 +179,7 @@ def coconeOfCoconeCurry {D : DiagramOfCocones (curry.obj G)} (Q : ∀ j, IsColim
   ι :=
     { app j := (Q j).desc
         { pt := c.pt
-          ι := { app k := c.ι.app (j, k)
-                 naturality _ _ _ := by simp } }
+          ι := { app k := c.ι.app (j, k) } }
       naturality {j _} _ := (Q j).hom_ext (by simp) }
 
 /-- `coneOfConeUncurry Q c` is a limit cone when `c` is a limit cone.
