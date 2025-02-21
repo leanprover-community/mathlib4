@@ -5,7 +5,7 @@ Authors: Sophie Morel
 -/
 import Mathlib.Analysis.Analytic.ChangeOrigin
 
-/-! We specialize the theory fo analytic functions to the case of functions that admit a
+/-! We specialize the theory of analytic functions to the case of functions that admit a
 development given by a *finite* formal multilinear series. We call them "continuously polynomial",
 which is abbreviated to `CPolynomial`. One reason to do that is that we no longer need a
 completeness assumption on the target space `F` to make the series converge, so some of the results
@@ -36,7 +36,7 @@ In this file, we develop the basic properties of these notions, notably:
   power series `p` as `p.changeOrigin y`, which is finite (with the same bound as `p`) by
   `changeOrigin_finite_of_finite`. See `HasFiniteFPowerSeriesOnBall.changeOrigin`. It follows in
   particular that the set of points at which a given function is continuously polynomial is open,
-  see `isOpen_cPolynomialAt`.
+  see `isOpen_cpolynomialAt`.
 
 More API is available in the file `Mathlib/Analysis/Analytic/CPolynomial.lean`, with heavier
 imports.
@@ -75,10 +75,13 @@ neighborhood of `0`and `pₙ = 0` for `n ≤ m`. -/
 def HasFiniteFPowerSeriesAt (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (x : E) (n : ℕ) :=
   ∃ r, HasFiniteFPowerSeriesOnBall f p x n r
 
-theorem HasFiniteFPowerSeriesAt.toHasFPowerSeriesAt
+theorem HasFiniteFPowerSeriesAt.hasFPowerSeriesAt
     (hf : HasFiniteFPowerSeriesAt f p x n) : HasFPowerSeriesAt f p x :=
   let ⟨r, hf⟩ := hf
   ⟨r, hf.toHasFPowerSeriesOnBall⟩
+
+@[deprecated (since := "2025-02-10")]
+alias HasFiniteFPowerSeriesAt.toHasFPowerSeriesAt := HasFiniteFPowerSeriesAt.hasFPowerSeriesAt
 
 theorem HasFiniteFPowerSeriesAt.finite (hf : HasFiniteFPowerSeriesAt f p x n) :
     ∀ m : ℕ, n ≤ m → p m = 0 := let ⟨_, hf⟩ := hf; hf.finite
@@ -102,17 +105,23 @@ theorem HasFiniteFPowerSeriesOnBall.hasFiniteFPowerSeriesAt
     HasFiniteFPowerSeriesAt f p x n :=
   ⟨r, hf⟩
 
-theorem HasFiniteFPowerSeriesAt.cPolynomialAt (hf : HasFiniteFPowerSeriesAt f p x n) :
+theorem HasFiniteFPowerSeriesAt.cpolynomialAt (hf : HasFiniteFPowerSeriesAt f p x n) :
     CPolynomialAt 𝕜 f x :=
   ⟨p, n, hf⟩
 
-theorem HasFiniteFPowerSeriesOnBall.cPolynomialAt (hf : HasFiniteFPowerSeriesOnBall f p x n r) :
+@[deprecated (since := "2025-02-18")]
+alias HasFiniteFPowerSeriesAt.cPolynomialAt := HasFiniteFPowerSeriesAt.cpolynomialAt
+
+theorem HasFiniteFPowerSeriesOnBall.cpolynomialAt (hf : HasFiniteFPowerSeriesOnBall f p x n r) :
     CPolynomialAt 𝕜 f x :=
-  hf.hasFiniteFPowerSeriesAt.cPolynomialAt
+  hf.hasFiniteFPowerSeriesAt.cpolynomialAt
+
+@[deprecated (since := "2025-02-18")]
+alias HasFiniteFPowerSeriesOnBall.cPolynomialAt := HasFiniteFPowerSeriesOnBall.cpolynomialAt
 
 theorem CPolynomialAt.analyticAt (hf : CPolynomialAt 𝕜 f x) : AnalyticAt 𝕜 f x :=
   let ⟨p, _, hp⟩ := hf
-  ⟨p, hp.toHasFPowerSeriesAt⟩
+  ⟨p, hp.hasFPowerSeriesAt⟩
 
 theorem CPolynomialAt.analyticWithinAt {s : Set E} (hf : CPolynomialAt 𝕜 f x) :
     AnalyticWithinAt 𝕜 f s x :=
@@ -128,6 +137,17 @@ theorem HasFiniteFPowerSeriesOnBall.congr (hf : HasFiniteFPowerSeriesOnBall f p 
     (hg : EqOn f g (EMetric.ball x r)) : HasFiniteFPowerSeriesOnBall g p x n r :=
   ⟨hf.1.congr hg, hf.finite⟩
 
+theorem HasFiniteFPowerSeriesOnBall.of_le {m n : ℕ}
+    (h : HasFiniteFPowerSeriesOnBall f p x n r) (hmn : n ≤ m) :
+    HasFiniteFPowerSeriesOnBall f p x m r :=
+  ⟨h.toHasFPowerSeriesOnBall, fun i hi ↦ h.finite i (hmn.trans hi)⟩
+
+theorem HasFiniteFPowerSeriesAt.of_le {m n : ℕ}
+    (h : HasFiniteFPowerSeriesAt f p x n) (hmn : n ≤ m) :
+    HasFiniteFPowerSeriesAt f p x m := by
+  rcases h with ⟨r, hr⟩
+  exact ⟨r, hr.of_le hmn⟩
+
 /-- If a function `f` has a finite power series `p` around `x`, then the function
 `z ↦ f (z - y)` has the same finite power series around `x + y`. -/
 theorem HasFiniteFPowerSeriesOnBall.comp_sub (hf : HasFiniteFPowerSeriesOnBall f p x n r) (y : E) :
@@ -140,15 +160,15 @@ theorem HasFiniteFPowerSeriesOnBall.mono (hf : HasFiniteFPowerSeriesOnBall f p x
 
 theorem HasFiniteFPowerSeriesAt.congr (hf : HasFiniteFPowerSeriesAt f p x n) (hg : f =ᶠ[𝓝 x] g) :
     HasFiniteFPowerSeriesAt g p x n :=
-  Exists.imp (fun _ hg ↦ ⟨hg, hf.finite⟩) (hf.toHasFPowerSeriesAt.congr hg)
+  Exists.imp (fun _ hg ↦ ⟨hg, hf.finite⟩) (hf.hasFPowerSeriesAt.congr hg)
 
 protected theorem HasFiniteFPowerSeriesAt.eventually (hf : HasFiniteFPowerSeriesAt f p x n) :
     ∀ᶠ r : ℝ≥0∞ in 𝓝[>] 0, HasFiniteFPowerSeriesOnBall f p x n r :=
-  hf.toHasFPowerSeriesAt.eventually.mono fun _ h ↦ ⟨h, hf.finite⟩
+  hf.hasFPowerSeriesAt.eventually.mono fun _ h ↦ ⟨h, hf.finite⟩
 
 theorem CPolynomialAt.congr (hf : CPolynomialAt 𝕜 f x) (hg : f =ᶠ[𝓝 x] g) : CPolynomialAt 𝕜 g x :=
   let ⟨_, _, hpf⟩ := hf
-  (hpf.congr hg).cPolynomialAt
+  (hpf.congr hg).cpolynomialAt
 
 theorem CPolynomialAt_congr (h : f =ᶠ[𝓝 x] g) : CPolynomialAt 𝕜 f x ↔ CPolynomialAt 𝕜 g x :=
   ⟨fun hf ↦ hf.congr h, fun hg ↦ hg.congr h.symm⟩
@@ -185,11 +205,14 @@ theorem ContinuousLinearMap.comp_hasFiniteFPowerSeriesOnBall (g : F →L[𝕜] G
 
 /-- If a function `f` is continuously polynomial on a set `s` and `g` is a continuous linear map,
 then `g ∘ f` is continuously polynomial on `s`. -/
-theorem ContinuousLinearMap.comp_cPolynomialOn {s : Set E} (g : F →L[𝕜] G)
+theorem ContinuousLinearMap.comp_cpolynomialOn {s : Set E} (g : F →L[𝕜] G)
     (h : CPolynomialOn 𝕜 f s) : CPolynomialOn 𝕜 (g ∘ f) s := by
   rintro x hx
   rcases h x hx with ⟨p, n, r, hp⟩
   exact ⟨g.compFormalMultilinearSeries p, n, r, g.comp_hasFiniteFPowerSeriesOnBall hp⟩
+
+@[deprecated (since := "2025-02-18")]
+alias ContinuousLinearMap.comp_cPolynomialOn := ContinuousLinearMap.comp_cpolynomialOn
 
 /-- If a function admits a finite power series expansion bounded by `n`, then it is equal to
 the `m`th partial sums of this power series at every point of the disk for `n ≤ m`. -/
@@ -265,7 +288,7 @@ protected theorem HasFiniteFPowerSeriesOnBall.continuousOn
     ContinuousOn f (EMetric.ball x r) := hf.1.continuousOn
 
 protected theorem HasFiniteFPowerSeriesAt.continuousAt (hf : HasFiniteFPowerSeriesAt f p x n) :
-    ContinuousAt f x := hf.toHasFPowerSeriesAt.continuousAt
+    ContinuousAt f x := hf.hasFPowerSeriesAt.continuousAt
 
 protected theorem CPolynomialAt.continuousAt (hf : CPolynomialAt 𝕜 f x) : ContinuousAt f x :=
   hf.analyticAt.continuousAt
@@ -410,10 +433,13 @@ theorem changeOrigin_eval_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : 
 
 /-- The terms of the formal multilinear series `p.changeOrigin` are continuously polynomial
 as we vary the origin -/
-theorem cPolynomialAt_changeOrigin_of_finite (p : FormalMultilinearSeries 𝕜 E F)
+theorem cpolynomialAt_changeOrigin_of_finite (p : FormalMultilinearSeries 𝕜 E F)
     {n : ℕ} (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k : ℕ) :
     CPolynomialAt 𝕜 (p.changeOrigin · k) 0 :=
-  (p.hasFiniteFPowerSeriesOnBall_changeOrigin k fun _ h ↦ hn _ (le_self_add.trans h)).cPolynomialAt
+  (p.hasFiniteFPowerSeriesOnBall_changeOrigin k fun _ h ↦ hn _ (le_self_add.trans h)).cpolynomialAt
+
+@[deprecated (since := "2025-02-18")]
+alias cPolynomialAt_changeOrigin_of_finite := cpolynomialAt_changeOrigin_of_finite
 
 end
 
@@ -440,41 +466,60 @@ theorem HasFiniteFPowerSeriesOnBall.changeOrigin (hf : HasFiniteFPowerSeriesOnBa
 
 /-- If a function admits a finite power series expansion `p` on an open ball `B (x, r)`, then
 it is continuously polynomial at every point of this ball. -/
-theorem HasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem
+theorem HasFiniteFPowerSeriesOnBall.cpolynomialAt_of_mem
     (hf : HasFiniteFPowerSeriesOnBall f p x n r) (h : y ∈ EMetric.ball x r) :
     CPolynomialAt 𝕜 f y := by
   have : (‖y - x‖₊ : ℝ≥0∞) < r := by simpa [edist_eq_enorm_sub] using h
   have := hf.changeOrigin this
   rw [add_sub_cancel] at this
-  exact this.cPolynomialAt
+  exact this.cpolynomialAt
 
-theorem HasFiniteFPowerSeriesOnBall.cPolynomialOn (hf : HasFiniteFPowerSeriesOnBall f p x n r) :
+@[deprecated (since := "2025-02-18")]
+alias HasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem :=
+  HasFiniteFPowerSeriesOnBall.cpolynomialAt_of_mem
+
+theorem HasFiniteFPowerSeriesOnBall.cpolynomialOn (hf : HasFiniteFPowerSeriesOnBall f p x n r) :
     CPolynomialOn 𝕜 f (EMetric.ball x r) :=
-  fun _y hy => hf.cPolynomialAt_of_mem hy
+  fun _y hy => hf.cpolynomialAt_of_mem hy
+
+@[deprecated (since := "2025-02-18")]
+alias HasFiniteFPowerSeriesOnBall.cPolynomialOn := HasFiniteFPowerSeriesOnBall.cpolynomialOn
 
 variable (𝕜 f)
 
 /-- For any function `f` from a normed vector space to a normed vector space, the set of points
 `x` such that `f` is continuously polynomial at `x` is open. -/
-theorem isOpen_cPolynomialAt : IsOpen { x | CPolynomialAt 𝕜 f x } := by
+theorem isOpen_cpolynomialAt : IsOpen { x | CPolynomialAt 𝕜 f x } := by
   rw [isOpen_iff_mem_nhds]
   rintro x ⟨p, n, r, hr⟩
-  exact mem_of_superset (EMetric.ball_mem_nhds _ hr.r_pos) fun y hy => hr.cPolynomialAt_of_mem hy
+  exact mem_of_superset (EMetric.ball_mem_nhds _ hr.r_pos) fun y hy => hr.cpolynomialAt_of_mem hy
+
+@[deprecated (since := "2025-02-18")]
+alias isOpen_cPolynomialAt := isOpen_cpolynomialAt
 
 variable {𝕜}
 
-theorem CPolynomialAt.eventually_cPolynomialAt {f : E → F} {x : E} (h : CPolynomialAt 𝕜 f x) :
+theorem CPolynomialAt.eventually_cpolynomialAt {f : E → F} {x : E} (h : CPolynomialAt 𝕜 f x) :
     ∀ᶠ y in 𝓝 x, CPolynomialAt 𝕜 f y :=
-  (isOpen_cPolynomialAt 𝕜 f).mem_nhds h
+  (isOpen_cpolynomialAt 𝕜 f).mem_nhds h
 
-theorem CPolynomialAt.exists_mem_nhds_cPolynomialOn {f : E → F} {x : E} (h : CPolynomialAt 𝕜 f x) :
+@[deprecated (since := "2025-02-18")]
+alias CPolynomialAt.eventually_cPolynomialAt := CPolynomialAt.eventually_cpolynomialAt
+
+theorem CPolynomialAt.exists_mem_nhds_cpolynomialOn {f : E → F} {x : E} (h : CPolynomialAt 𝕜 f x) :
     ∃ s ∈ 𝓝 x, CPolynomialOn 𝕜 f s :=
-  h.eventually_cPolynomialAt.exists_mem
+  h.eventually_cpolynomialAt.exists_mem
+
+@[deprecated (since := "2025-02-18")]
+alias CPolynomialAt.exists_mem_nhds_cPolynomialOn := CPolynomialAt.exists_mem_nhds_cpolynomialOn
 
 /-- If `f` is continuously polynomial at a point, then it is continuously polynomial in a
 nonempty ball around that point. -/
-theorem CPolynomialAt.exists_ball_cPolynomialOn {f : E → F} {x : E} (h : CPolynomialAt 𝕜 f x) :
+theorem CPolynomialAt.exists_ball_cpolynomialOn {f : E → F} {x : E} (h : CPolynomialAt 𝕜 f x) :
     ∃ r : ℝ, 0 < r ∧ CPolynomialOn 𝕜 f (Metric.ball x r) :=
-  Metric.isOpen_iff.mp (isOpen_cPolynomialAt _ _) _ h
+  Metric.isOpen_iff.mp (isOpen_cpolynomialAt _ _) _ h
+
+@[deprecated (since := "2025-02-18")]
+alias CPolynomialAt.exists_ball_cPolynomialOn := CPolynomialAt.exists_ball_cpolynomialOn
 
 end

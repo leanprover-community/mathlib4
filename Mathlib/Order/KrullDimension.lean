@@ -690,7 +690,7 @@ lemma coheight_le_krullDim (a : α) : coheight a ≤ krullDim α := by
 The Krull dimension is the supremum of the elements' heights.
 
 This version of the lemma assumes that `α` is nonempty. In this case, the coercion from `ℕ∞` to
-`WithBot ℕ∞` is on the outside fo the right-hand side, which is usually more convenient.
+`WithBot ℕ∞` is on the outside of the right-hand side, which is usually more convenient.
 
 If `α` were empty, then `krullDim α = ⊥`. See `krullDim_eq_iSup_height` for the more general
 version, with the coercion under the supremum.

@@ -18,7 +18,7 @@ the Dershowitz-Manna ordering defined over multisets is also well-founded.
 
 ## Main results
 
-- `Multiset.IsDershowitzMannaLT` : the standard definition fo the `Dershowitz-Manna ordering`.
+- `Multiset.IsDershowitzMannaLT` : the standard definition of the `Dershowitz-Manna ordering`.
 - `Multiset.wellFounded_isDershowitzMannaLT` : the main theorem about the
 `Dershowitz-Manna ordering` being well-founded.
 
