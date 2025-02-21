@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 
-import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
-import Mathlib.Algebra.BigOperators.Group.List.Lemmas
+import Mathlib.Algebra.BigOperators.Monoid.Multiset.Basic
 import Mathlib.GroupTheory.Congruence.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Algebra.BigOperators.Monoid.Finset.Defs
 
 /-!
 # Interactions between `∑, ∏` and `(Add)Con`

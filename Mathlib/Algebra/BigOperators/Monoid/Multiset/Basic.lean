@@ -3,8 +3,8 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Lemmas
-import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+import Mathlib.Algebra.BigOperators.Monoid.List.Lemmas
+import Mathlib.Algebra.BigOperators.Monoid.Multiset.Defs
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Order.Group.Multiset
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
@@ -12,8 +12,8 @@ import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 /-!
 # Sums and products over multisets
 
-In this file we define products and sums indexed by multisets. This is later used to define products
-and sums indexed by finite sets.
+In this file we prove lemmas about products and sums indexed by multisets.
+This is later used to define products and sums indexed by finite sets.
 
 ## Main declarations
 

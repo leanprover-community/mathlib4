@@ -11,6 +11,7 @@ import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.Polynomial.Eval.Algebra
 import Mathlib.Algebra.Polynomial.Eval.Degree
 import Mathlib.Algebra.Polynomial.Monomial
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Theory of univariate polynomials

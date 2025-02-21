@@ -493,6 +493,8 @@
   ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],
   "Mathlib.Algebra.Category.MonCat.Basic":
   ["Mathlib.Algebra.Ring.Action.Group"],
+  "Mathlib.Algebra.BigOperators.Monoid.List.Lemmas":
+  ["Mathlib.Data.List.ProdSigma"],
   "Mathlib.Algebra.BigOperators.Group.List.Lemmas":
   ["Mathlib.Data.List.ProdSigma"],
   "Mathlib.Algebra.BigOperators.Group.List": ["Mathlib.Data.List.ProdSigma"],

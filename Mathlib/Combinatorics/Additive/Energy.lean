@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Ella Yu
 -/
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.BigOperators.Monoid.Fintype.Basic
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Fintype.Prod
 

@@ -5,8 +5,8 @@ Authors: Simon Hudon, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Algebra.BigOperators.Group.List.Basic
 import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.BigOperators.Monoid.List.Basic
 
 /-!
 # Free monoid over a given alphabet

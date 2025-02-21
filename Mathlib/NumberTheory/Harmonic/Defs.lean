@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Koundinya Vajjha, Thomas Browning
 -/
 import Mathlib.Data.Rat.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Monoid.Finset.Basic
 
 /-!
 

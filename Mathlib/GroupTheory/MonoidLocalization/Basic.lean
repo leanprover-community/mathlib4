@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.GroupTheory.OreLocalization.Basic
 import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Algebra.BigOperators.Monoid.Finset.Basic
 
 /-!
 # Localizations of commutative monoids

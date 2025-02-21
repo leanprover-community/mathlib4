@@ -9,8 +9,7 @@ import Mathlib.Algebra.Group.Defs
 # Sums and products from lists
 
 This file provides basic definitions for `List.prod`, `List.sum`,
-which calculate the product and sum of elements of a list
-and `List.alternatingProd`, `List.alternatingSum`, their alternating counterparts.
+which calculate the product and sum of elements of a list.
 -/
 
 variable {ι α β M N P G : Type*}

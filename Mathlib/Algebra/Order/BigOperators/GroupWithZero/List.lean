@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell, Daniel Weber
 -/
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
-import Mathlib.Algebra.BigOperators.Group.List.Defs
+import Mathlib.Algebra.BigOperators.Monoid.List.Defs
 
 /-!
 # Big operators on a list in ordered groups with zeros

@@ -7,6 +7,7 @@ import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.Instances.ENNReal.Defs
 import Mathlib.Topology.Metrizable.Uniformity
 import Mathlib.Topology.Sequences
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Continuity of the norm on (semi)groups

@@ -8,7 +8,7 @@ import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.End
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Algebra.BigOperators.Monoid.Finset.Defs
 
 /-!
 # Preadditive categories

@@ -5,6 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Algebra.BigOperators.Group.List.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.Util.AtomM
 
