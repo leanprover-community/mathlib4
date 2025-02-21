@@ -250,7 +250,7 @@ this is the canonical pre-submersive presentation of `T` as an `R`-algebra. -/
 noncomputable def comp : PreSubmersivePresentation R T where
   __ := Q.toPresentation.comp P.toPresentation
   map := Sum.elim (fun rq ↦ Sum.inl <| Q.map rq) (fun rp ↦ Sum.inr <| P.map rp)
-  map_inj := Function.Injective.sum_elim ((Sum.inl_injective).comp (Q.map_inj))
+  map_inj := Function.Injective.sumElim ((Sum.inl_injective).comp (Q.map_inj))
     ((Sum.inr_injective).comp (P.map_inj)) <| by simp
   relations_finite := inferInstanceAs <| Finite (Q.rels ⊕ P.rels)
 

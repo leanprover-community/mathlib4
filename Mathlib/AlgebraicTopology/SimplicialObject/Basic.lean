@@ -3,7 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory
+import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
@@ -90,7 +90,7 @@ def δ {n} (i : Fin (n + 2)) : X _⦋n + 1⦌ ⟶ X _⦋n⦌ :=
 def σ {n} (i : Fin (n + 1)) : X _⦋n⦌ ⟶ X _⦋n + 1⦌ :=
   X.map (SimplexCategory.σ i).op
 
-/-- The diagonal of a simplex is the long edge of the simplex.-/
+/-- The diagonal of a simplex is the long edge of the simplex. -/
 def diagonal {n : ℕ} : X _⦋n⦌ ⟶ X _⦋1⦌ := X.map ((SimplexCategory.diag n).op)
 
 /-- Isomorphisms from identities in ℕ. -/
@@ -293,7 +293,7 @@ end
 
 section adjunctions
 /- When the left and right Kan extensions exist, `Truncated.sk n` and `Truncated.cosk n`
-respectively define left and right adjoints to `truncation n`.-/
+respectively define left and right adjoints to `truncation n`. -/
 
 
 variable (n : ℕ)
@@ -302,11 +302,11 @@ variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
 variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     (SimplexCategory.Truncated.inclusion n).op.HasLeftKanExtension F]
 
-/-- The adjunction between the n-skeleton and n-truncation.-/
+/-- The adjunction between the n-skeleton and n-truncation. -/
 noncomputable def skAdj : Truncated.sk (C := C) n ⊣ truncation n :=
   lanAdjunction _ _
 
-/-- The adjunction between n-truncation and the n-coskeleton.-/
+/-- The adjunction between n-truncation and the n-coskeleton. -/
 noncomputable def coskAdj : truncation (C := C) n ⊣ Truncated.cosk n :=
   ranAdjunction _ _
 
@@ -322,7 +322,7 @@ instance : ((cosk n).obj X).IsRightKanExtension ((coskAdj n).counit.app _) := by
 
 namespace Truncated
 /- When the left and right Kan extensions exist and are pointwise Kan extensions,
-`skAdj n` and `coskAdj n` are respectively coreflective and reflective.-/
+`skAdj n` and `coskAdj n` are respectively coreflective and reflective. -/
 
 variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     (SimplexCategory.Truncated.inclusion n).op.HasPointwiseRightKanExtension F]
@@ -335,7 +335,7 @@ instance cosk_reflective : IsIso (coskAdj (C := C) n).counit :=
 instance sk_coreflective : IsIso (skAdj (C := C) n).unit :=
   coreflective' (SimplexCategory.Truncated.inclusion n).op
 
-/-- Since `Truncated.inclusion` is fully faithful, so is right Kan extension along it.-/
+/-- Since `Truncated.inclusion` is fully faithful, so is right Kan extension along it. -/
 noncomputable def cosk.fullyFaithful :
     (Truncated.cosk (C := C) n).FullyFaithful := by
   apply Adjunction.fullyFaithfulROfIsIsoCounit (coskAdj n)
@@ -348,7 +348,7 @@ instance cosk.faithful : (Truncated.cosk (C := C) n).Faithful :=
 noncomputable instance coskAdj.reflective : Reflective (Truncated.cosk (C := C) n) :=
   Reflective.mk (truncation _) (coskAdj _)
 
-/-- Since `Truncated.inclusion` is fully faithful, so is left Kan extension along it.-/
+/-- Since `Truncated.inclusion` is fully faithful, so is left Kan extension along it. -/
 noncomputable def sk.fullyFaithful : (Truncated.sk (C := C) n).FullyFaithful :=
   Adjunction.fullyFaithfulLOfIsIsoUnit (skAdj n)
 

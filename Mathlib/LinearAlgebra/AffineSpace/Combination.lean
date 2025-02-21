@@ -924,7 +924,7 @@ theorem affineCombination_mem_affineSpan [Nontrivial k] {s : Finset ι} {w : ι 
   classical
     have hnz : ∑ i ∈ s, w i ≠ 0 := h.symm ▸ one_ne_zero
     have hn : s.Nonempty := Finset.nonempty_of_sum_ne_zero hnz
-    cases' hn with i1 hi1
+    obtain ⟨i1, hi1⟩ := hn
     let w1 : ι → k := Function.update (Function.const ι 0) i1 1
     have hw1 : ∑ i ∈ s, w1 i = 1 := by
       simp only [w1, Function.const_zero, Finset.sum_update_of_mem hi1, Pi.zero_apply,
@@ -994,7 +994,7 @@ theorem eq_affineCombination_of_mem_affineSpan {p1 : P} {p : ι → P}
   classical
     have hn : (affineSpan k (Set.range p) : Set P).Nonempty := ⟨p1, h⟩
     rw [affineSpan_nonempty, Set.range_nonempty_iff_nonempty] at hn
-    cases' hn with i0
+    obtain ⟨i0⟩ := hn
     have h0 : p i0 ∈ affineSpan k (Set.range p) := mem_affineSpan k (Set.mem_range_self i0)
     have hd : p1 -ᵥ p i0 ∈ (affineSpan k (Set.range p)).direction :=
       AffineSubspace.vsub_mem_direction h h0

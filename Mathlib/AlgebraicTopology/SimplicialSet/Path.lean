@@ -323,7 +323,7 @@ lemma Subcomplex.map_ι_liftPath {X : SSet.{u}} (A : X.Subcomplex) {n : ℕ} (p 
     (A.liftPath p hp₀ hp₁).map A.ι = p := rfl
 
 /-- Any inner horn contains the spine of the unique non-degenerate `n`-simplex
-in `Δ[n]`.-/
+in `Δ[n]`. -/
 @[simps! vertex_coe arrow_coe]
 def subcomplexHorn.spineId {n : ℕ} (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :

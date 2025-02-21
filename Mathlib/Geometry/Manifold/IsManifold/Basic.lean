@@ -3,9 +3,8 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Convex.Normed
-import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Data.Bundle
 import Mathlib.Geometry.Manifold.ChartedSpace
 
@@ -194,7 +193,7 @@ protected def symm : PartialEquiv E H :=
   I.toPartialEquiv.symm
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+because it is a composition of multiple projections. -/
 def Simps.apply (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*) [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) : H → E :=
   I
@@ -480,8 +479,8 @@ end ModelWithCornersProd
 section Boundaryless
 
 /-- Property ensuring that the model with corners `I` defines manifolds without boundary. This
-  differs from the more general `BoundarylessManifold`, which requires every point on the manifold
-  to be an interior point. -/
+differs from the more general `BoundarylessManifold`, which requires every point on the manifold
+to be an interior point. -/
 class ModelWithCorners.Boundaryless {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) : Prop where
@@ -569,7 +568,7 @@ def contDiffPregroupoid : Pregroupoid H where
 
 variable (n I) in
 /-- Given a model with corners `(E, H)`, we define the groupoid of invertible `C^n` transformations
-  of `H` as the invertible maps that are `C^n` when read in `E` through `I`. -/
+of `H` as the invertible maps that are `C^n` when read in `E` through `I`. -/
 def contDiffGroupoid : StructureGroupoid H :=
   Pregroupoid.groupoid (contDiffPregroupoid n I)
 
@@ -640,9 +639,8 @@ variable {E' H' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [Topologi
 theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
     {e : PartialHomeomorph H H} {e' : PartialHomeomorph H' H'} (he : e ∈ contDiffGroupoid n I)
     (he' : e' ∈ contDiffGroupoid n I') : e.prod e' ∈ contDiffGroupoid n (I.prod I') := by
-  cases' he with he he_symm
-  cases' he' with he' he'_symm
-  simp only at he he_symm he' he'_symm
+  obtain ⟨he, he_symm⟩ := he
+  obtain ⟨he', he'_symm⟩ := he'
   constructor <;> simp only [PartialEquiv.prod_source, PartialHomeomorph.prod_toPartialEquiv,
     contDiffPregroupoid]
   · have h3 := ContDiffOn.prod_map he he'
@@ -823,8 +821,10 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
 
 /-- The disjoint union of two `C^n` manifolds modelled on `(E, H)`
 is a `C^n` manifold modeled on `(E, H)`. -/
-instance disjointUnion [Nonempty H] : IsManifold I n (M ⊕ M') where
+instance disjointUnion : IsManifold I n (M ⊕ M') where
   compatible {e} e' he he' := by
+    obtain (h | h) := isEmpty_or_nonempty H
+    · exact ContDiffGroupoid.mem_of_source_eq_empty _ (eq_empty_of_isEmpty _)
     obtain (⟨f, hf, hef⟩ | ⟨f, hf, hef⟩) := ChartedSpace.mem_atlas_sum he
     · obtain (⟨f', hf', he'f'⟩ | ⟨f', hf', he'f'⟩) := ChartedSpace.mem_atlas_sum he'
       · rw [hef, he'f', f.lift_openEmbedding_trans f' IsOpenEmbedding.inl]
@@ -905,7 +905,7 @@ def TangentSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
     {M : Type*} [TopologicalSpace M] [ChartedSpace H M] (_x : M) : Type u := E
--- Porting note: was deriving TopologicalSpace, AddCommGroup, TopologicalAddGroup
+-- Porting note: was deriving TopologicalSpace, AddCommGroup, IsTopologicalAddGroup
 
 /- In general, the definition of `TangentSpace` is not reducible, so that type class inference
 does not pick wrong instances. We record the right instances for them. -/
@@ -917,7 +917,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 instance : TopologicalSpace (TangentSpace I x) := inferInstanceAs (TopologicalSpace E)
 instance : AddCommGroup (TangentSpace I x) := inferInstanceAs (AddCommGroup E)
-instance : TopologicalAddGroup (TangentSpace I x) := inferInstanceAs (TopologicalAddGroup E)
+instance : IsTopologicalAddGroup (TangentSpace I x) := inferInstanceAs (IsTopologicalAddGroup E)
 instance : Module 𝕜 (TangentSpace I x) := inferInstanceAs (Module 𝕜 E)
 instance : Inhabited (TangentSpace I x) := ⟨0⟩
 

@@ -242,8 +242,8 @@ namespace GrothendieckTopology
 section
 
 variable {D E : Type*} [Category.{max v u} D] [Category.{max v u} E] (F : D ⥤ E)
-  [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) D]
-  [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) E]
+  [∀ (J : MulticospanShape.{max v u, max v u}), HasLimitsOfShape (WalkingMulticospan J) D]
+  [∀ (J : MulticospanShape.{max v u, max v u}), HasLimitsOfShape (WalkingMulticospan J) E]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ E]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
@@ -292,8 +292,8 @@ example {D : Type*} [Category.{max v u} D] {FD : D → D → Type*} {CD : D → 
     [PreservesLimits (forget D)]
     [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
     [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
-    [∀ (α β : Type max u v) (fst snd : β → α),
-        Limits.HasLimitsOfShape (Limits.WalkingMulticospan fst snd) D]
+    [∀ (J : MulticospanShape.{max v u, max v u}),
+      Limits.HasLimitsOfShape (Limits.WalkingMulticospan J) D]
     [(forget D).ReflectsIsomorphisms] : PreservesSheafification J (forget D) :=
   instPreservesSheafification _ _
 
