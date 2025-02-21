@@ -27,7 +27,7 @@ lemma Module.finite_of_isSemisimpleRing [IsJacobsonRing R] [IsSemisimpleRing A] 
 
 /-- If `A` is a finite type algebra over `R`, then `A` is an artinian ring and `R` is jacobson
 implies `A` is finite over `R`. -/
-lemma Module.finite_of_isArtinianRing [IsJacobsonRing R] [IsArtinianRing A] :
+instance Module.finite_of_isArtinianRing [IsJacobsonRing R] [IsArtinianRing A] :
     Module.Finite R A :=
   have := finite_of_isSemisimpleRing R (A ⧸ Ring.jacobson A)
   IsSemiprimaryRing.finite_of_isArtinian R A A
