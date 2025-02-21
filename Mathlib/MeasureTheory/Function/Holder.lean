@@ -18,8 +18,9 @@ spaces. Although this could use the `ContinuousLinearMap.holder` construction ab
 do so in order to minimize the necessary type class assumptions.
 
 When `p q : ℝ≥0∞` are Hölder conjugate (i.e., `HolderConjugate p q`), we also construct the
-natural map `MeasureTheory.Lp.toDualCLM : Lp (Dual 𝕜 E) p μ →L[𝕜] Dual 𝕜 (Lp E q μ)` given by
-`fun φ f ↦ ∫ x, (φ x) (f x) ∂μ`.
+natural map `ContinuousLinearMap.lpPairing : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] G` given by
+`fun f g ↦ ∫ x, B (f x) (g x) ∂μ`. When `B := (NormedSpace.inclusionInDoubleDual 𝕜 E).flip`, this
+is the natural map `Lp (Dual 𝕜 E) p μ →L[𝕜] Dual 𝕜 (Lp E q μ)`.
  -/
 
 open ENNReal MeasureTheory Lp
@@ -94,7 +95,7 @@ lemma holder_smul_right (c : 𝕜) (f : Lp E p μ) (g : Lp F q μ) :
 variable (μ p q r) in
 /-- `MeasureTheory.Lp.holder` as a bilinear map. -/
 @[simps! apply_apply]
-def _root_.ContinuousLinearMap.holderₗ : Lp E p μ →ₗ[𝕜] Lp F q μ →ₗ[𝕜] Lp G r μ :=
+def holderₗ : Lp E p μ →ₗ[𝕜] Lp F q μ →ₗ[𝕜] Lp G r μ :=
   .mk₂ 𝕜 B.holder B.holder_add_left B.holder_smul_left
     B.holder_add_right B.holder_smul_right
 
@@ -103,11 +104,31 @@ variable [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
 variable (μ p q r) in
 /-- `MeasureTheory.Lp.holder` as a continuous bilinear map. -/
 @[simps! apply_apply]
-def _root_.ContinuousLinearMap.holderL : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] Lp G r μ :=
+def holderL : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] Lp G r μ :=
   LinearMap.mkContinuous₂ (B.holderₗ μ p q r) ‖B‖ (norm_holder_apply_apply_le B)
 
-lemma _root_.ContinuousLinearMap.norm_holderL_le : ‖(B.holderL μ p q r)‖ ≤ ‖B‖ :=
+lemma norm_holderL_le : ‖(B.holderL μ p q r)‖ ≤ ‖B‖ :=
   LinearMap.mkContinuous₂_norm_le _ (norm_nonneg B) _
+
+variable [HolderConjugate p q] [NormedSpace ℝ G] [SMulCommClass ℝ 𝕜 G] [CompleteSpace G]
+
+variable (μ p q) in
+/-- The natural pairing between `Lp E p μ` and `Lp F q μ` (for Hölder conjugate `p q : ℝ≥0∞`) with
+values in a space `G` induced by a bilinear map `B : E →L[𝕜] F →L[𝕜] G`.
+
+This is given by `∫ x, B (f x) (g x) ∂μ`.
+
+In the special case when `B := (NormedSpace.inclusionInDoubleDual 𝕜 E).flip`, which is
+definitionally the same as `B := ContinuousLinearMap.id 𝕜 (E →L[𝕜] 𝕜)`, this is the
+natural map `Lp (Dual 𝕜 E) p μ →L[𝕜] Dual 𝕜 (Lp E q μ)`. -/
+def lpPairing (B : E →L[𝕜] F →L[𝕜] G) : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] G :=
+  (L1.integralCLM' 𝕜 |>.postcomp <| Lp F q μ) ∘L (B.holderL μ p q 1)
+
+lemma lpPairing_eq_integral (f : Lp E p μ) (g : Lp F q μ) :
+    B.lpPairing μ p q f g = ∫ x, B (f x) (g x) ∂μ := by
+  show L1.integralCLM _ = _
+  rw [← L1.integral_def, L1.integral_eq_integral]
+  exact integral_congr_ae <| B.coeFn_holder _ _
 
 end ContinuousLinearMap
 
@@ -115,31 +136,6 @@ end Bilinear
 
 namespace MeasureTheory
 namespace Lp
-
-section Dual
-
-open NormedSpace
-
-variable {α 𝕜 E : Type*} {m : MeasurableSpace α} {μ : Measure α}
-    {p q : ℝ≥0∞} [hpqr : HolderTriple p q 1] [Fact (1 ≤ p)] [Fact (1 ≤ q)]
-    [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
-/-- The natural continuous linear map `Lp (Dual 𝕜 E) p μ` into the dual of `Lp E q μ` given by
-integrating the evaluation of the linear functionals at the corresponding points. That is,
-`fun (φ : Lp (Dual 𝕜 E) p μ) (f : Lp E q μ) ↦ ∫ x, φ x (f x) ∂μ`. -/
-@[simps!]
-def MeasureTheory.Lp.toDualCLM : Lp (Dual 𝕜 E) p μ →L[𝕜] Dual 𝕜 (Lp E q μ) :=
-  (L1.integralCLM' 𝕜 |>.postcomp <| Lp E q μ) ∘L ((inclusionInDoubleDual 𝕜 E).flip.holderL μ p q 1)
-
-lemma MeasureTheory.Lp.toDualCLM_eq_integral (φ : Lp (Dual 𝕜 E) p μ) (f : Lp E q μ) :
-    toDualCLM φ f = ∫ x, φ x (f x) ∂μ := by
-  let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
-  show L1.integralCLM _ = _
-  rw [← L1.integral_def, L1.integral_eq_integral]
-  exact integral_congr_ae <| (inclusionInDoubleDual 𝕜 E).flip.coeFn_holder _ _
-
-end Dual
-
 
 /-! ### Heterogeneous scalar multiplication
 
