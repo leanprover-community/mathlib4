@@ -23,7 +23,6 @@ This file could usefully be split further.
 
 universe u w
 
-open Function
 
 namespace Algebra
 
@@ -36,12 +35,17 @@ variable [Semiring A] [Algebra R A]
 noncomputable def exponent (a : A) : ℕ :=
     sInf {k | a ^ k = 0}
 
-noncomputable def exp (a : A) (h : IsNilpotent a) : A :=
+noncomputable def exp (a : A) [Field R]: A :=
   ∑ n ∈ Finset.range (exponent a), (Nat.factorial n : R)⁻¹ • (a ^ n)
+
+theorem wellDef {k : ℕ} (a : A) (h : a ^ k = 0) :
+    exp (R := R) a  = ∑ n ∈ Finset.range k, (Nat.factorial n : R)⁻¹ • (a ^ n) := by
+  sorry
+
+theorem mul_add (a b : A) (h : a * b = b * a) (IsNilpotent a : A) (IsNilpotent b : A) :
+    exp (R := R) (a + b) = (exp (R := R) a : A) * (exp (R := R) b) := by
+  sorry
 
 end Exp
 
-
 end Algebra
-
-open scoped Algebra
