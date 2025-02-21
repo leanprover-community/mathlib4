@@ -25,7 +25,7 @@ for `n : ℕ`, and let `f` be a function from `E` to `F`.
    holds `HasFPowerSeriesAt f p x n`.
 * `CPolynomialOn 𝕜 f s`: the function `f` is analytic at every point of `s`.
 
-We develop the basic properties of these notions, notably:
+In this file, we develop the basic properties of these notions, notably:
 * If a function is continuously polynomial, then it is analytic, see
   `HasFiniteFPowerSeriesOnBall.hasFPowerSeriesOnBall`, `HasFiniteFPowerSeriesAt.hasFPowerSeriesAt`,
   `CPolynomialAt.analyticAt` and `CPolynomialOn.analyticOnNhd`.
@@ -37,6 +37,9 @@ We develop the basic properties of these notions, notably:
   `changeOrigin_finite_of_finite`. See `HasFiniteFPowerSeriesOnBall.changeOrigin`. It follows in
   particular that the set of points at which a given function is continuously polynomial is open,
   see `isOpen_cpolynomialAt`.
+
+More API is available in the file `Mathlib/Analysis/Analytic/CPolynomial.lean`, with heavier
+imports.
 -/
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]

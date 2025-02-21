@@ -12,8 +12,8 @@ import Mathlib.Analysis.Analytic.CPolynomialDef
 In this file we prove that a `ContinuousLinearMap` defines an analytic function with
 the formal power series `f x = f a + f (x - a)`. We also prove similar results for bilinear maps.
 
-TODO: port to use `CPolynomial`, and prove the stronger result that continuous linear maps are
-continuously polynomial
+We deduce this fact from the stronger result that continuous linear map are continuously polynomial,
+i.e., they admit a finite power series.
 -/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
@@ -58,6 +58,9 @@ protected theorem cpolynomialAt (f : E →L[𝕜] F) (x : E) : CPolynomialAt �
 
 protected theorem analyticAt (f : E →L[𝕜] F) (x : E) : AnalyticAt 𝕜 f x :=
   (f.hasFPowerSeriesAt x).analyticAt
+
+protected theorem colynomialOn (f : E →L[𝕜] F) (s : Set E) : CPolynomialOn 𝕜 f s :=
+  fun x _ ↦ f.cpolynomialAt x
 
 protected theorem analyticOnNhd (f : E →L[𝕜] F) (s : Set E) : AnalyticOnNhd 𝕜 f s :=
   fun x _ ↦ f.analyticAt x
