@@ -31,8 +31,6 @@ Weyl group.
  * `RootPairing.rootForm_self_smul_coroot`: The inner product of a root with itself
    times the corresponding coroot is equal to two times Polarization applied to the root.
  * `RootPairing.exists_ge_zero_eq_rootForm`: `RootForm` is positive semidefinite.
- * `RootPairing.coxeterWeight_mem_set_of_isCrystallographic`: the Coxeter weights belongs to the
-   set `{0, 1, 2, 3, 4}`.
 
 ## References:
  * [N. Bourbaki, *Lie groups and Lie algebras. Chapters 4--6*][bourbaki1968]
@@ -241,11 +239,11 @@ end Fintype
 section IsValuedInOrdered
 
 variable (S : Type*) [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R]
-  [Module S M] [IsScalarTower S R M] [P.IsValuedIn S]
+  [Module S M] [IsScalarTower S R M] [P.IsValuedIn S] [Fintype ι]
 
 /-- The bilinear form of a finite root pairing taking values in a linearly-ordered ring, as a
 root-positive form. -/
-def posRootForm [Fintype ι] : P.RootPositiveForm S where
+def posRootForm : P.RootPositiveForm S where
   form := P.RootForm
   symm := P.rootForm_symmetric
   isOrthogonal_reflection := P.rootForm_reflection_reflection_apply
@@ -254,7 +252,7 @@ def posRootForm [Fintype ι] : P.RootPositiveForm S where
     refine ⟨∑ k, P.pairingIn S i k ^ 2, ?_, by simp [sq, rootForm_apply_apply]⟩
     exact Finset.sum_pos' (fun j _ ↦ sq_nonneg _) ⟨i, by simp⟩
 
-theorem exists_ge_zero_eq_rootForm [Fintype ι] (x : M) (hx : x ∈ span S (range P.root)) :
+theorem exists_ge_zero_eq_rootForm (x : M) (hx : x ∈ span S (range P.root)) :
     ∃ s ≥ 0, algebraMap S R s = P.RootForm x x := by
   refine ⟨(P.posRootForm S).posForm ⟨x, hx⟩ ⟨x, hx⟩, IsSumSq.nonneg ?_, by simp [posRootForm]⟩
   choose s hs using P.coroot'_apply_apply_mem_of_mem_span S hx
@@ -263,58 +261,6 @@ theorem exists_ge_zero_eq_rootForm [Fintype ι] (x : M) (hx : x ∈ span S (rang
   apply FaithfulSMul.algebraMap_injective S R
   simp only [posRootForm, RootPositiveForm.algebraMap_posForm, map_sum, map_mul]
   simp [← Algebra.linearMap_apply, hs, rootForm_apply_apply]
-
-/-- SGA3 XXI Prop. 2.3.1 -/
-lemma coxeterWeightIn_le_four [Finite ι] (i j : ι) :
-    P.coxeterWeightIn S i j ≤ 4 := by
-  have : Fintype ι := Fintype.ofFinite ι
-  let ri : span S (range P.root) := ⟨P.root i, Submodule.subset_span (mem_range_self _)⟩
-  let rj : span S (range P.root) := ⟨P.root j, Submodule.subset_span (mem_range_self _)⟩
-  set li := (P.posRootForm S).posForm ri ri
-  set lj := (P.posRootForm S).posForm rj rj
-  set lij := (P.posRootForm S).posForm ri rj
-  obtain ⟨si, hsi, hsi'⟩ := (P.posRootForm S).exists_pos_eq i
-  obtain ⟨sj, hsj, hsj'⟩ := (P.posRootForm S).exists_pos_eq j
-  replace hsi' : si = li := FaithfulSMul.algebraMap_injective S R <| by simpa [li] using hsi'
-  replace hsj' : sj = lj := FaithfulSMul.algebraMap_injective S R <| by simpa [lj] using hsj'
-  rw [hsi'] at hsi
-  rw [hsj'] at hsj
-  have cs : 4 * lij ^ 2 ≤ 4 * (li * lj) := by
-    rw [mul_le_mul_left four_pos]
-    refine (P.posRootForm S).posForm.apply_sq_le_of_symm ?_ (P.posRootForm S).isSymm_posForm ri rj
-    intro x
-    obtain ⟨s, hs, hs'⟩ := P.exists_ge_zero_eq_rootForm S x x.property
-    change _ = (P.posRootForm S).form x x at hs'
-    rw [(P.posRootForm S).algebraMap_apply_eq_form_iff] at hs'
-    rwa [← hs']
-  have key : 4 • lij ^ 2 = P.coxeterWeightIn S i j • (li * lj) := by
-    apply FaithfulSMul.algebraMap_injective S R
-    simpa [map_ofNat, lij, posRootForm, ri, rj, li, lj] using
-       P.four_smul_rootForm_sq_eq_coxeterWeight_smul i j
-  simp only [nsmul_eq_mul, smul_eq_mul, Nat.cast_ofNat] at key
-  rwa [key, mul_le_mul_right (by positivity)] at cs
-
-variable [Finite ι] [P.IsCrystallographic] [CharZero R] (i j : ι)
-
-lemma coxeterWeightIn_mem_set_of_isCrystallographic :
-    P.coxeterWeightIn ℤ i j ∈ ({0, 1, 2, 3, 4} : Set ℤ) := by
-  have : Fintype ι := Fintype.ofFinite ι
-  obtain ⟨n, hcn⟩ : ∃ n : ℕ, P.coxeterWeightIn ℤ i j = n := by
-    have : 0 ≤ P.coxeterWeightIn ℤ i j := by
-      simpa only [P.algebraMap_coxeterWeightIn] using P.coxeterWeight_nonneg (P.posRootForm ℤ) i j
-    obtain ⟨n, hn⟩ := Int.eq_ofNat_of_zero_le this
-    exact ⟨n, by simp [← P.algebraMap_coxeterWeightIn ℤ, hn]⟩
-  have : P.coxeterWeightIn ℤ i j ≤ 4 := P.coxeterWeightIn_le_four ℤ i j
-  simp only [hcn, mem_insert_iff, mem_singleton_iff] at this ⊢
-  norm_cast at this ⊢
-  omega
-
-lemma coxeterWeight_mem_set_of_isCrystallographic :
-    P.coxeterWeight i j ∈ ({0, 1, 2, 3, 4} : Set R) := by
-  have := (FaithfulSMul.algebraMap_injective ℤ R).mem_set_image.mpr <|
-    P.coxeterWeightIn_mem_set_of_isCrystallographic i j
-  rw [algebraMap_coxeterWeightIn] at this
-  simpa [eq_comm] using this
 
 end IsValuedInOrdered
 
