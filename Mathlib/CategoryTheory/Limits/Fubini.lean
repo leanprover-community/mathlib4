@@ -311,16 +311,9 @@ noncomputable def isLimitConeOfHasLimitCurryCompLim : IsLimit (coneOfHasLimitCur
   { lift c' := limit.lift (F := curry.obj G ⋙ lim) (coneOfConeCurry G Q' c')
     fac c' f := by simp [coneOfHasLimitCurryCompLim, Q, Q']
     uniq c' f h := by
-      dsimp only [coneOfHasLimitCurryCompLim, limit.cone_x, Functor.const_obj_obj, Functor.comp_obj,
-        lim_obj, limit.cone_π, DiagramOfCones.mkOfHasLimits_obj, coneOfConeCurry,
-        DiagramOfCones.mkOfHasLimits_conePoints, limit.isLimit_lift, Q, Q'] at f h ⊢
-      rw [IsLimit.hom_lift (limit.isLimit _) f]
-      simp only [Functor.const_obj_obj, limit.cone_x, Functor.comp_obj, lim_obj, limit.cone_π,
-        Functor.comp_map, lim_map, limit.isLimit_lift, Q, Q']
-      congr; ext j k
-      simp only [Prod.forall, Q', coneOfHasLimitCurryCompLim, Q] at h
-      specialize h j k
-      simpa using h }
+      dsimp [coneOfHasLimitCurryCompLim] at f h ⊢
+      refine limit.hom_ext (F := curry.obj G ⋙ lim) (fun j ↦ limit.hom_ext (fun k ↦ ?_))
+      simp [h ⟨j, k⟩, Q'] }
 
 /-- The functor `G` has a limit if `C` has `K`-shaped limits and `(curry.obj G ⋙ lim)` has a limit.
 -/
@@ -414,16 +407,9 @@ noncomputable def isColimitCoconeOfHasColimitCurryCompColim :
   { desc c' := colimit.desc (F := curry.obj G ⋙ colim) (coconeOfCoconeCurry G Q' c')
     fac c' f := by simp [coconeOfHasColimitCurryCompColim, Q, Q']
     uniq c' f h := by
-      dsimp only [coconeOfHasColimitCurryCompColim, colimit.cocone_x,
-        DiagramOfCocones.mkOfHasColimits_obj, Functor.const_obj_obj, colimit.cocone_ι, Q', Q]
-        at f h ⊢
-      rw [IsColimit.hom_desc (colimit.isColimit _) f]
-      simp only [Functor.comp_obj, colim_obj, colimit.cocone_x, Functor.const_obj_obj,
-        colimit.cocone_ι, Functor.comp_map, colim_map, colimit.isColimit_desc, Q', Q]
-      congr; ext j k
-      simp only [Prod.forall, Q', coconeOfHasColimitCurryCompColim, Q] at h
-      specialize h j k
-      simpa using h }
+      dsimp [coconeOfHasColimitCurryCompColim] at f h ⊢
+      refine colimit.hom_ext (F := curry.obj G ⋙ colim) (fun j ↦ colimit.hom_ext (fun k ↦ ?_))
+      simp [← h ⟨j, k⟩, Q'] }
 
 /-- The functor `G` has a colimit if `C` has `K`-shaped colimits and `(curry.obj G ⋙ colim)` has a
 colimit. -/
