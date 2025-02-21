@@ -56,6 +56,7 @@ import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.BigOperators.Monoid.Finset.Basic
 import Mathlib.Algebra.BigOperators.Monoid.Finset.Defs
+import Mathlib.Algebra.BigOperators.Monoid.Fintype.Basic
 import Mathlib.Algebra.BigOperators.Monoid.List.Basic
 import Mathlib.Algebra.BigOperators.Monoid.List.Defs
 import Mathlib.Algebra.BigOperators.Monoid.List.Lemmas
