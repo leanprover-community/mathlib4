@@ -12,12 +12,12 @@ import Mathlib.MeasureTheory.Measure.OpenPos
 
 The Bochner integral extends the definition of the Lebesgue integral to functions that map from a
 measure space into a Banach space (complete normed vector space). It is constructed here using
-the L1 Bochner integral constructed in the file `BochnerL1`.
+the L1 Bochner integral constructed in the file `Mathlib.MeasureTheory.Integral.BochnerL1`.
 
 ## Main definitions
 
-The Bochner integral is defined through the extension process described in the file `SetToL1`,
-which follows these steps:
+The Bochner integral is defined through the extension process described in the file
+`Mathlib.MeasureTheory.Integral.SetToL1`, which follows these steps:
 
 * `MeasureTheory.integral`: the Bochner integral on functions defined as the Bochner integral of
   its equivalence class in L1 space, if it is in L1, and 0 otherwise.
@@ -25,7 +25,7 @@ which follows these steps:
 The result of that construction is `∫ a, f a ∂μ`, which is definitionally equal to
 `setToFun (dominatedFinMeasAdditive_weightedSMul μ) f`. Some basic properties of the integral
 (like linearity) are particular cases of the properties of `setToFun` (which are described in the
-file `SetToL1`).
+file `Mathlib.MeasureTheory.Integral.SetToL1`).
 
 ## Main statements
 
@@ -58,10 +58,11 @@ file `SetToL1`).
     where `f⁺` is the positive part of `f` and `f⁻` is the negative part of `f`.
   * `integral_eq_lintegral_of_nonneg_ae`          : `0 ≤ᵐ[μ] f → ∫ x, f x ∂μ = ∫⁻ x, f x ∂μ`
 
-4. (In the file `DominatedConvergence`)
+4. (In the file `Mathlib.MeasureTheory.Integral.DominatedConvergence`)
   `tendsto_integral_of_dominated_convergence` : the Lebesgue dominated convergence theorem
 
-5. (In the file `SetIntegral`) integration commutes with continuous linear maps.
+5. (In the file `Mathlib.MeasureTheory.Integral.SetIntegral`) integration commutes with continuous
+  linear maps.
 
   * `ContinuousLinearMap.integral_comp_comm`
   * `LinearIsometry.integral_comp_comm`
@@ -72,9 +73,10 @@ file `SetToL1`).
 Some tips on how to prove a proposition if the API for the Bochner integral is not enough so that
 you need to unfold the definition of the Bochner integral and go back to simple functions.
 
-One method is to use the theorem `Integrable.induction` in the file `SimpleFuncDenseLp` (or one
-of the related results, like `Lp.induction` for functions in `Lp`), which allows you to prove
-something for an arbitrary integrable function.
+One method is to use the theorem `Integrable.induction` in the file
+`Mathlib.MeasureTheory.Function.SimpleFuncDenseLp` (or one of the related results, like
+`Lp.induction` for functions in `Lp`), which allows you to prove something for an arbitrary
+integrable function.
 
 Another method is using the following steps.
 See `integral_eq_lintegral_pos_part_sub_lintegral_neg_part` for a complicated example, which proves
@@ -109,14 +111,14 @@ Use `isClosed_property` or `DenseRange.induction_on` for this argument.
 
 ## Notations
 
-* `α →ₛ E` : simple functions (defined in `MeasureTheory/Integration`)
+* `α →ₛ E` : simple functions (defined in `Mathlib/MeasureTheory/Function/SimpleFunc.lean`)
 * `α →₁[μ] E` : functions in L1 space, i.e., equivalence classes of integrable functions (defined in
-                `MeasureTheory/LpSpace`)
+                `Mathlib/MeasureTheory/Function/LpSpace/Basic.lean`)
 * `∫ a, f a ∂μ` : integral of `f` with respect to a measure `μ`
 * `∫ a, f a` : integral of `f` with respect to `volume`, the default measure on the ambient type
 
 We also define notations for integral on a set, which are described in the file
-`MeasureTheory/SetIntegral`.
+`Mathlib/MeasureTheory/Integral/SetIntegral.lean`.
 
 Note : `ₛ` is typed using `\_s`. Sometimes it shows as a box if the font is missing.
 
@@ -483,7 +485,7 @@ theorem integral_eq_lintegral_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f
       refine lintegral_congr_ae (hf.mono fun a h => ?_)
       dsimp only
       rw [Real.norm_eq_abs, abs_of_nonneg h]
-    rw [this, hfi]; rfl
+    rw [this, hfi, top_toReal]
 
 theorem integral_norm_eq_lintegral_enorm {P : Type*} [NormedAddCommGroup P] {f : α → P}
     (hf : AEStronglyMeasurable f μ) : ∫ x, ‖f x‖ ∂μ = (∫⁻ x, ‖f x‖ₑ ∂μ).toReal := by
@@ -519,9 +521,8 @@ theorem lintegral_coe_eq_integral (f : α → ℝ≥0) (hfi : Integrable (fun x 
   simp_rw [integral_eq_lintegral_of_nonneg_ae (Eventually.of_forall fun x => (f x).coe_nonneg)
       hfi.aestronglyMeasurable, ← ENNReal.coe_nnreal_eq]
   rw [ENNReal.ofReal_toReal]
-  rw [← lt_top_iff_ne_top]
-  convert hfi.hasFiniteIntegral
-  simp_rw [hasFiniteIntegral_iff_enorm, NNReal.enorm_eq]
+  simpa [← lt_top_iff_ne_top, hasFiniteIntegral_iff_enorm, NNReal.enorm_eq] using
+    hfi.hasFiniteIntegral
 
 theorem ofReal_integral_eq_lintegral_ofReal {f : α → ℝ} (hfi : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) :
     ENNReal.ofReal (∫ x, f x ∂μ) = ∫⁻ x, ENNReal.ofReal (f x) ∂μ := by
@@ -831,9 +832,8 @@ theorem integral_const (c : E) : ∫ _ : α, c ∂μ = (μ univ).toReal • c :=
     exact setToFun_const (dominatedFinMeasAdditive_weightedSMul _) _
   by_cases hc : c = 0
   · simp [hc, integral_zero]
-  · simp [integral_undef, (integrable_const_iff_isFiniteMeasure hc).not.2 hμ, *]
-    simp only [isFiniteMeasure_iff, not_lt, top_le_iff] at hμ
-    simp [hμ]
+  · simp [(integrable_const_iff_isFiniteMeasure hc).not.2 hμ,
+      integral_undef, MeasureTheory.not_isFiniteMeasure_iff.mp hμ]
 
 theorem norm_integral_le_of_norm_le_const [IsFiniteMeasure μ] {f : α → G} {C : ℝ}
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : ‖∫ x, f x ∂μ‖ ≤ C * (μ univ).toReal :=
@@ -870,7 +870,7 @@ theorem tendsto_integral_norm_approxOn_sub
   rw [integral_norm_eq_lintegral_enorm]
   · simp
   · apply (SimpleFunc.aestronglyMeasurable _).sub
-    apply (stronglyMeasurable_iff_measurable_separable.2 ⟨fmeas, ?_⟩ ).aestronglyMeasurable
+    apply (stronglyMeasurable_iff_measurable_separable.2 ⟨fmeas, ?_⟩).aestronglyMeasurable
     exact .mono (.of_subtype (range f ∪ {0})) subset_union_left
 
 variable {ν : Measure α}
@@ -893,7 +893,7 @@ theorem integral_add_measure {f : α → G} (hμ : Integrable f μ) (hν : Integ
   refine setToFun_add_left' _ _ _ (fun s _ hμνs => ?_) f
   rw [Measure.coe_add, Pi.add_apply, add_lt_top] at hμνs
   rw [weightedSMul, weightedSMul, weightedSMul, ← add_smul, Measure.coe_add, Pi.add_apply,
-  toReal_add hμνs.1.ne hμνs.2.ne]
+    toReal_add hμνs.1.ne hμνs.2.ne]
 
 @[simp]
 theorem integral_zero_measure {m : MeasurableSpace α} (f : α → G) :
@@ -908,7 +908,7 @@ theorem setIntegral_zero_measure (f : α → G) {μ : Measure α} {s : Set α} (
     ∫ x in s, f x ∂μ = 0 := Measure.restrict_eq_zero.mpr hs ▸ integral_zero_measure f
 
 lemma integral_of_isEmpty [IsEmpty α] {f : α → G} : ∫ x, f x ∂μ = 0 :=
-    μ.eq_zero_of_isEmpty ▸ integral_zero_measure _
+  μ.eq_zero_of_isEmpty ▸ integral_zero_measure _
 
 theorem integral_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → G} {μ : ι → Measure α}
     {s : Finset ι} (hf : ∀ i ∈ s, Integrable f (μ i)) :
@@ -1168,13 +1168,11 @@ theorem integral_countable' [Countable α] [MeasurableSingletonClass α] {μ : M
 
 theorem integral_singleton' {μ : Measure α} {f : α → E} (hf : StronglyMeasurable f) (a : α) :
     ∫ a in {a}, f a ∂μ = (μ {a}).toReal • f a := by
-  simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac' f a hf, smul_eq_mul,
-    mul_comm]
+  simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac' f a hf]
 
 theorem integral_singleton [MeasurableSingletonClass α] {μ : Measure α} (f : α → E) (a : α) :
     ∫ a in {a}, f a ∂μ = (μ {a}).toReal • f a := by
-  simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac, smul_eq_mul,
-    mul_comm]
+  simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac]
 
 theorem integral_countable [MeasurableSingletonClass α] (f : α → E) {s : Set α} (hs : s.Countable)
     (hf : IntegrableOn f s μ) :

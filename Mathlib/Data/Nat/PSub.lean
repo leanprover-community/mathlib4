@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Data.Nat.Basic
 
 /-!
 # Partial predecessor and partial subtraction on the natural numbers
