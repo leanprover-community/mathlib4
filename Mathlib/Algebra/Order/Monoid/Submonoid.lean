@@ -100,9 +100,18 @@ def oneLE : Submonoid M where
   mul_mem' := one_le_mul
   one_mem' := le_rfl
 
+/-- The submonoid of elements that are at most `1`. -/
+@[to_additive (attr := simps) "The submonoid of nonpositive elements."]
+def leOne : Submonoid M where
+  carrier := Set.Iic 1
+  mul_mem' := mul_le_one'
+  one_mem' := le_rfl
+
 variable {M}
 
 @[to_additive (attr := simp)] lemma mem_oneLE : a ∈ oneLE M ↔ 1 ≤ a := Iff.rfl
+
+@[to_additive (attr := simp)] lemma mem_leOne : a ∈ leOne M ↔ a ≤ 1 := Iff.rfl
 
 end Preorder
 end Submonoid
