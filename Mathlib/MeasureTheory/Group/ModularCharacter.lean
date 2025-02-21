@@ -87,8 +87,8 @@ lemma modularCharacterFun_eq_haarScalarFactor (μ : Measure G) [IsHaarMeasure μ
     _ = haarScalarFactor (map (· * g) μ) μ :=
       (haarScalarFactor_eq_integral_div _ _ f_cont f_comp (int_f_ne_zero μ)).symm
 
-@[to_additive map_right_add_eq_addModularCharacter_smul]
-lemma map_right_mul_eq_modularCharacter_smul (μ : Measure G) [IsHaarMeasure μ] [InnerRegular μ]
+@[to_additive map_right_add_eq_addModularCharacterFun_smul]
+lemma map_right_mul_eq_modularCharacterFun_smul (μ : Measure G) [IsHaarMeasure μ] [InnerRegular μ]
     (g : G) : (map (· * g) μ) = modularCharacterFun g • μ := by
     rw [modularCharacterFun_eq_haarScalarFactor μ _]
     exact isMulLeftInvariant_eq_smul_of_innerRegular _ μ
