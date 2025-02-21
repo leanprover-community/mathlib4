@@ -215,7 +215,7 @@ lemma length_takeUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (hu
   exact fun hl ↦ huw (by simpa using (hl ▸ getVert_takeUntil h (by rfl) :
     (p.takeUntil u h).getVert (p.takeUntil u h).length = p.getVert p.length))
 
-lemma takeUntil_takeUntil (p : G.Walk u v) (w x : V) (hw : w ∈ p.support)
+lemma takeUntil_takeUntil {w x : V} (p : G.Walk u v) (hw : w ∈ p.support)
     (hx : x ∈ (p.takeUntil w hw).support) :
     (p.takeUntil w hw).takeUntil x hx = p.takeUntil x (p.support_takeUntil_subset hw hx) := by
   induction p, w, hw using takeUntil.induct with
@@ -237,7 +237,7 @@ lemma takeUntil_takeUntil (p : G.Walk u v) (w x : V) (hw : w ∈ p.support)
         rw [takeUntil_cons hu' hau' hadj]
       rw [takeUntil_cons hx hx'.symm hadj, ih _, takeUntil_cons _ hx'.symm]
 
-lemma not_mem_support_takeUntil_takeUntil {p : G.Walk u v} (w x : V) (h : x ≠ w)
+lemma not_mem_support_takeUntil_takeUntil {p : G.Walk u v} {w x : V} (h : x ≠ w)
     (hw : w ∈ p.support) (hx : x ∈ (p.takeUntil w hw).support) :
     w ∉ ((p.takeUntil w hw).takeUntil x hx).support := by
   intro hw'
