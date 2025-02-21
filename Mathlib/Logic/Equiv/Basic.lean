@@ -1046,6 +1046,7 @@ open Subtype
 /-- If `α` is equivalent to `β` and the predicates `p : α → Prop` and `q : β → Prop` are equivalent
 at corresponding points, then `{a // p a}` is equivalent to `{b // q b}`.
 For the statement where `α = β`, that is, `e : perm α`, see `Perm.subtypePerm`. -/
+@[simps apply]
 def subtypeEquiv {p : α → Prop} {q : β → Prop} (e : α ≃ β) (h : ∀ a, p a ↔ q (e a)) :
     { a : α // p a } ≃ { b : β // q b } where
   toFun a := ⟨e a, (h _).mp a.property⟩
@@ -1063,25 +1064,28 @@ theorem subtypeEquiv_refl {p : α → Prop} (h : ∀ a, p a ↔ p (Equiv.refl _ 
   ext
   rfl
 
+theorem subtypeEquiv_symm.proof_1 {p : α → Prop} {q : β → Prop} (e : α ≃ β)
+    (h : ∀ a : α, p a ↔ q (e a)) : ∀ (a : β), q a ↔ p (e.symm a) := by
+  intro a
+  convert (h <| e.symm a).symm
+  exact (e.apply_symm_apply a).symm
+
 @[simp]
 theorem subtypeEquiv_symm {p : α → Prop} {q : β → Prop} (e : α ≃ β) (h : ∀ a : α, p a ↔ q (e a)) :
     (e.subtypeEquiv h).symm =
-      e.symm.subtypeEquiv fun a => by
-        convert (h <| e.symm a).symm
-        exact (e.apply_symm_apply a).symm :=
+      e.symm.subtypeEquiv (subtypeEquiv_symm.proof_1 e h) :=
   rfl
+
+theorem subtypeEquiv_trans.proof_1 {p : α → Prop} {q : β → Prop} {r : γ → Prop} (e : α ≃ β)
+    (f : β ≃ γ) (h : ∀ a : α, p a ↔ q (e a)) (h' : ∀ b : β, q b ↔ r (f b)) :
+    ∀ (a : α), p a ↔ r ((e.trans f) a) :=
+  fun a => (h a).trans (h' <| e a)
 
 @[simp]
 theorem subtypeEquiv_trans {p : α → Prop} {q : β → Prop} {r : γ → Prop} (e : α ≃ β) (f : β ≃ γ)
     (h : ∀ a : α, p a ↔ q (e a)) (h' : ∀ b : β, q b ↔ r (f b)) :
     (e.subtypeEquiv h).trans (f.subtypeEquiv h')
-    = (e.trans f).subtypeEquiv fun a => (h a).trans (h' <| e a) :=
-  rfl
-
-@[simp]
-theorem subtypeEquiv_apply {p : α → Prop} {q : β → Prop}
-    (e : α ≃ β) (h : ∀ a : α, p a ↔ q (e a)) (x : { x // p x }) :
-    e.subtypeEquiv h x = ⟨e x, (h _).1 x.2⟩ :=
+    = (e.trans f).subtypeEquiv (subtypeEquiv_trans.proof_1 e f h h') :=
   rfl
 
 /-- If two predicates `p` and `q` are pointwise equivalent, then `{x // p x}` is equivalent to
@@ -1100,7 +1104,7 @@ lemma subtypeEquivRight_symm_apply {p q : α → Prop} (e : ∀ x, p x ↔ q x)
 to the subtype `{b // p b}`. -/
 def subtypeEquivOfSubtype {p : β → Prop} (e : α ≃ β) : { a : α // p (e a) } ≃ { b : β // p b } :=
   subtypeEquiv e <| by simp
-
+-- #exit
 /-- If `α ≃ β`, then for any predicate `p : α → Prop` the subtype `{a // p a}` is equivalent
 to the subtype `{b // p (e.symm b)}`. This version is used by `equiv_rw`. -/
 def subtypeEquivOfSubtype' {p : α → Prop} (e : α ≃ β) :
