@@ -241,7 +241,7 @@ integrable on `s` and continuous at `x₀`.
 Version assuming that `μ` gives positive mass to all neighborhoods of `x₀` within `s`.
 For a less precise but more usable version, see
 `tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn`.
- -/
+-/
 theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_nhdsWithin_pos
     [MetrizableSpace α] [IsLocallyFiniteMeasure μ] (hs : IsCompact s)
     (hμ : ∀ u, IsOpen u → x₀ ∈ u → 0 < μ (u ∩ s)) {c : α → ℝ} (hc : ContinuousOn c s)
