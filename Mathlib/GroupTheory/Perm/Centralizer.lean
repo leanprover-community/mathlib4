@@ -17,7 +17,7 @@ import Mathlib.GroupTheory.Perm.DomMulAct
 Let `α : Type` with `Fintype α` (and `DecidableEq α`).
 The main goal of this file is to compute the cardinality of
 conjugacy classes in `Equiv.Perm α`.
-Every `g : Equiv.Perm α` has a `cycleType α : Multiset ℕ`.
+Every `g : Equiv.Perm α` has a `g.cycleType : Multiset ℕ`.
 By `Equiv.Perm.isConj_iff_cycleType_eq`,
 two permutations are conjugate in `Equiv.Perm α` iff
 their cycle types are equal.
@@ -33,16 +33,14 @@ orbit-stabilizer theorem
 the computation to the computation of the centralizer of `g`, the
 subgroup of `Equiv.Perm α` consisting of all permutations which
 commute with `g`. It is accessed here as `MulAction.stabilizer
-(ConjAct (Equiv.Perm α)) g` and
-`Equiv.Perm.centralizer_eq_comap_stabilizer`.
+(ConjAct (Equiv.Perm α)) g` and `Subgroup.centralizer_eq_comap_stabilizer`.
 
 We compute this subgroup as follows.
 
 * If `h : Subgroup.centralizer {g}`, then the action of `ConjAct.toConjAct h`
   by conjugation on `Equiv.Perm α` stabilizes `g.cycleFactorsFinset`.
   That induces an action of `Subgroup.centralizer {g}` on
-  `g.cycleFactorsFinset` which is defined via
-  `Equiv.Perm.OnCycleFactors.subMulActionOnCycleFactors`
+  `g.cycleFactorsFinset` which is defined as an instance.
 
 * This action defines a group morphism `Equiv.Perm.OnCycleFactors.toPermHom g`
   from `Subgroup.centralizer {g}` to `Equiv.Perm g.cycleFactorsFinset`.
@@ -51,9 +49,10 @@ We compute this subgroup as follows.
   `Equiv.Perm g.cycleFactorsFinset` consisting of permutations that
   preserve the cardinality of the support.
 
-* `Equiv.Perm.OnCycleFactors.range_toPermHom_eq_range_toPermHom'  shows that
+* `Equiv.Perm.OnCycleFactors.range_toPermHom_eq_range_toPermHom'` shows that
   the range of `Equiv.Perm.OnCycleFactors.toPermHom g`
-  is the subgroup `toPermHom_range' g` of `Equiv.Perm g.cycleFactorsFinset`.
+  is the subgroup `Equiv.Perm.OnCycleFactors.toPermHom_range' g`
+  of `Equiv.Perm g.cycleFactorsFinset`.
 
 This is shown by constructing a right inverse
 `Equiv.Perm.Basis.toCentralizer`, as established by
@@ -73,10 +72,10 @@ This is shown by constructing a right inverse
 This allows to give a description of the kernel of
 `Equiv.Perm.OnCycleFactors.toPermHom g` as the product of a
 symmetric group and of a product of cyclic groups.  This analysis
-starts with the morphism `Equiv.Perm.OnCycleFactors.θ`, its
-injectivity `Equiv.Perm.OnCycleFactors.θ_injective`, its range
-`Equiv.Perm.OnCycleFactors.θ_range_eq`, and its cardinality
-`Equiv.Perm.OnCycleFactors.θ_range_card`.
+starts with the morphism `Equiv.Perm.OnCycleFactors.kerParam`, its
+injectivity `Equiv.Perm.OnCycleFactors.kerParam_injective`, its range
+`Equiv.Perm.OnCycleFactors.kerParam_range_eq`, and its cardinality
+`Equiv.Perm.OnCycleFactors.kerParam_range_card`.
 
 * `Equiv.Perm.nat_card_centralizer g` computes the cardinality
   of the centralizer of `g`.
@@ -354,6 +353,47 @@ noncomputable def ofPermHom : range_toPermHom' g →* Perm α where
   map_one' := ext fun x ↦ ofPermHomFun_one a x
   map_mul' := fun σ τ ↦ ext fun x ↦ by simp [mul_apply, ofPermHomFun_mul a σ τ x]
 
+theorem ofPermHom_apply (τ) (x) : a.ofPermHom τ x = a.ofPermHomFun τ x := rfl
+
+theorem ofPermHom_support :
+    (ofPermHom a τ).support = Finset.biUnion (τ : Perm g.cycleFactorsFinset).support
+        (fun c ↦ (c : Perm α).support) := by
+  ext x
+  simp only [mem_support, Finset.mem_biUnion]
+  rw [ofPermHom_apply]
+  rcases mem_fixedPoints_or_exists_zpow_eq a x with (hx | ⟨c, hc, m, hm⟩)
+  · simp only [ofPermHomFun_apply_of_mem_fixedPoints a τ hx, ne_eq, not_true_eq_false, false_iff]
+    rw [Function.mem_fixedPoints_iff] at hx
+    simp only [← mem_support]
+    intro h
+    obtain ⟨c, _, h'⟩ := h
+    exact mem_support.mp ((mem_cycleFactorsFinset_support_le c.prop) h') hx
+  · rw [ofPermHomFun_apply_of_cycleOf_mem a τ hc hm]
+    nth_rewrite 1 [← hm]
+    simp only [ne_eq, EmbeddingLike.apply_eq_iff_eq, (a.injective).eq_iff]
+    rw [not_iff_comm]
+    by_cases H : (τ : Perm g.cycleFactorsFinset) c = c
+    · simp only [H, iff_true]
+      push_neg
+      intro d hd
+      rw [← not_mem_support]
+      have := g.cycleFactorsFinset_pairwise_disjoint c.prop d.prop
+      rw [disjoint_iff_disjoint_support, Finset.disjoint_left] at this
+      refine this ?_ hc
+      intro h
+      rw [Subtype.coe_inj] at h
+      exact hd (h ▸ H)
+    · simp only [H, iff_false, not_not]
+      exact ⟨c, H, mem_support.mp hc⟩
+
+theorem card_ofPermHom_support :
+    (ofPermHom a τ).support.card =  (τ : Perm g.cycleFactorsFinset).support.sum
+        (fun c ↦ (c : Perm α).support.card) := by
+  rw [ofPermHom_support, Finset.card_biUnion]
+  intro c _ d _ h
+  apply Equiv.Perm.Disjoint.disjoint_support
+  apply g.cycleFactorsFinset_pairwise_disjoint c.prop d.prop (Subtype.coe_ne_coe.mpr h)
+
 theorem ofPermHom_mem_centralizer :
     a.ofPermHom τ ∈ centralizer {g} := by
   rw [mem_centralizer_singleton_iff]
@@ -454,7 +494,6 @@ def kerParam : (Perm (Function.fixedPoints g)) ×
   MonoidHom.noncommCoprod ofSubtype (Subgroup.noncommPiCoprod g.pairwise_commute_of_mem_zpowers)
     g.commute_ofSubtype_noncommPiCoprod
 
-
 theorem kerParam_apply {u : Perm (Function.fixedPoints g)}
     {v : (c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α)} {x : α} :
     kerParam g (u,v) x =
@@ -538,6 +577,11 @@ theorem kerParam_range_eq :
       rwa [mem_support, cycleOf_apply_self, ne_eq]
     · rw [cycleOf_mem_cycleFactorsFinset_iff, not_mem_support] at hx
       rwa [ofSubtype_apply_of_mem, subtypePerm_apply]
+
+theorem kerParam_range_le_centralizer :
+    (kerParam g).range ≤ Subgroup.centralizer {g} := by
+  rw [kerParam_range_eq]
+  exact map_subtype_le (toPermHom g).ker
 
 theorem kerParam_range_card (g : Equiv.Perm α) :
     Fintype.card (kerParam g).range = (Fintype.card α - g.cycleType.sum)! * g.cycleType.prod := by
