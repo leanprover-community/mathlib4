@@ -9,7 +9,7 @@ variable (R : Type*) [Field R] [CharZero R]
 variable (A : Type*) [Semiring A] [Algebra R A]
 
 noncomputable def exp (a : A) : A :=
-  ∑ n ∈ Finset.range (nilpotencyClass a), (Nat.factorial n : R)⁻¹ • (a ^ n)
+  ∑ n ∈ Finset.range (nilpotencyClass a), (n.factorial : R)⁻¹ • (a ^ n)
 
 theorem exp_eq_truncated {k : ℕ} (a : A) (h : a ^ k = 0) :
     ∑ n ∈ Finset.range k, (Nat.factorial n : R)⁻¹ • (a ^ n) = exp R A a := by
