@@ -44,7 +44,7 @@ end lemmas
 partial def evalFinsetIccNat {em eml en enl : Q(ℕ)} (m n : ℕ) (hm : Q(IsNat $em $eml))
     (hn : Q(IsNat $en $enl)) : MetaM ((s : Q(Finset ℕ)) × Q(.Icc $em $en = $s)) := do
   -- If `m = n`, then `Icc m n = {m}`. We handle this case separately because `insert m ∅` is
-  -- not synteq to `{m}`.
+  -- not syntactivally `{m}`.
   if m = n then
     have : $em =Q $en := ⟨⟩
     return ⟨q({$em}), q(Icc_self _)⟩
