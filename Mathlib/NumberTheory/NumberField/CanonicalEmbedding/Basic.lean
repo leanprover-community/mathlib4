@@ -346,11 +346,11 @@ theorem normAtPlace_real (w : InfinitePlace K) (c : ℝ) :
   rw [show ((fun _ ↦ c, fun _ ↦ c) : (mixedSpace K)) = c • 1 by ext <;> simp, normAtPlace_smul,
     map_one, mul_one]
 
-theorem normAtPlace_apply_isReal {w : InfinitePlace K} (hw : IsReal w) (x : mixedSpace K) :
+theorem normAtPlace_apply_of_isReal {w : InfinitePlace K} (hw : IsReal w) (x : mixedSpace K) :
     normAtPlace w x = ‖x.1 ⟨w, hw⟩‖ := by
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dif_pos]
 
-theorem normAtPlace_apply_isComplex {w : InfinitePlace K} (hw : IsComplex w) (x : mixedSpace K) :
+theorem normAtPlace_apply_of_isComplex {w : InfinitePlace K} (hw : IsComplex w) (x : mixedSpace K) :
     normAtPlace w x = ‖x.2 ⟨w, hw⟩‖ := by
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
     dif_neg (not_isReal_iff_isComplex.mpr hw)]
@@ -366,8 +366,8 @@ theorem forall_normAtPlace_eq_zero_iff {x : mixedSpace K} :
     (∀ w, normAtPlace w x = 0) ↔ x = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · ext w
-    · exact norm_eq_zero.mp (normAtPlace_apply_isReal w.prop _ ▸ h w.1)
-    · exact norm_eq_zero.mp (normAtPlace_apply_isComplex w.prop _ ▸ h w.1)
+    · exact norm_eq_zero.mp (normAtPlace_apply_of_isReal w.prop _ ▸ h w.1)
+    · exact norm_eq_zero.mp (normAtPlace_apply_of_isComplex w.prop _ ▸ h w.1)
   · simp_rw [h, map_zero, implies_true]
 
 @[deprecated (since := "2024-09-13")] alias normAtPlace_eq_zero := forall_normAtPlace_eq_zero_iff
@@ -391,9 +391,9 @@ theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
     Prod.nnnorm_def, Pi.nnnorm_def, Pi.nnnorm_def]
   congr
   · ext w
-    simp [normAtPlace_apply_isReal w.prop]
+    simp [normAtPlace_apply_of_isReal w.prop]
   · ext w
-    simp [normAtPlace_apply_isComplex w.prop]
+    simp [normAtPlace_apply_of_isComplex w.prop]
 
 open scoped Classical in
 theorem norm_eq_sup'_normAtPlace (x : mixedSpace K) :
@@ -884,19 +884,19 @@ def negAt :
 variable {s}
 
 @[simp]
-theorem negAt_apply_of_isReal_and_mem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∈ s) :
+theorem negAt_apply_ofIsReal_and_mem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∈ s) :
     (negAt s x).1 w = - x.1 w := by
   simp_rw [negAt, ContinuousLinearEquiv.prod_apply, piCongrRight_apply, if_pos hw,
     ContinuousLinearEquiv.neg_apply]
 
 @[simp]
-theorem negAt_apply_of_isReal_and_not_mem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∉ s) :
+theorem negAt_apply_ofIsReal_and_not_mem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∉ s) :
     (negAt s x).1 w = x.1 w := by
   simp_rw [negAt, ContinuousLinearEquiv.prod_apply, piCongrRight_apply, if_neg hw,
     ContinuousLinearEquiv.refl_apply]
 
 @[simp]
-theorem negAt_apply_of_isComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
+theorem negAt_apply_ofIsComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
     (negAt s x).2 w = x.2 w := rfl
 
 @[simp]
@@ -904,7 +904,7 @@ theorem negAt_apply_snd (x : mixedSpace K) :
     (negAt s x).2 = x.2 := rfl
 
 @[simp]
-theorem negAt_apply_abs_of_isReal (x : mixedSpace K) (w : {w // IsReal w}) :
+theorem negAt_apply_abs_ofIsReal (x : mixedSpace K) (w : {w // IsReal w}) :
     |(negAt s x).1 w| = |x.1 w| := by
   by_cases hw : w ∈ s <;> simp [hw]
 
@@ -925,8 +925,8 @@ variable (s) in
 theorem normAtPlace_negAt (x : mixedSpace K) (w : InfinitePlace K) :
     normAtPlace w (negAt s x) = normAtPlace w x := by
   obtain hw | hw := isReal_or_isComplex w
-  · simp_rw [normAtPlace_apply_isReal hw, Real.norm_eq_abs, negAt_apply_abs_of_isReal]
-  · simp_rw [normAtPlace_apply_isComplex hw, negAt_apply_of_isComplex]
+  · simp_rw [normAtPlace_apply_of_isReal hw, Real.norm_eq_abs, negAt_apply_abs_ofIsReal]
+  · simp_rw [normAtPlace_apply_of_isComplex hw, negAt_apply_ofIsComplex]
 
 /-- `negAt` preserves the `norm`. -/
 @[simp]
@@ -940,9 +940,9 @@ theorem negAt_symm :
     (negAt s).symm = negAt s := by
   ext x w
   · by_cases hw : w ∈ s
-    · simp_rw [negAt_apply_of_isReal_and_mem _ hw, negAt, prod_symm,
+    · simp_rw [negAt_apply_ofIsReal_and_mem _ hw, negAt, prod_symm,
         ContinuousLinearEquiv.prod_apply, piCongrRight_symm_apply, if_pos hw, symm_neg, neg_apply]
-    · simp_rw [negAt_apply_of_isReal_and_not_mem _ hw, negAt, prod_symm,
+    · simp_rw [negAt_apply_ofIsReal_and_not_mem _ hw, negAt, prod_symm,
         ContinuousLinearEquiv.prod_apply, piCongrRight_symm_apply, if_neg hw, refl_symm, refl_apply]
   · rfl
 
@@ -950,14 +950,14 @@ theorem negAt_symm :
 def signSet (x : mixedSpace K) : Set {w : InfinitePlace K // IsReal w} := {w | x.1 w ≤ 0}
 
 @[simp]
-theorem negAt_signSet_apply_of_isReal (x : mixedSpace K) (w : {w // IsReal w}) :
+theorem negAt_signSet_apply_ofIsReal (x : mixedSpace K) (w : {w // IsReal w}) :
     (negAt (signSet x) x).1 w = |x.1 w| := by
   by_cases hw : x.1 w ≤ 0
-  · rw [negAt_apply_of_isReal_and_mem _ hw, abs_of_nonpos hw]
-  · rw [negAt_apply_of_isReal_and_not_mem _ hw, abs_of_pos (lt_of_not_ge hw)]
+  · rw [negAt_apply_ofIsReal_and_mem _ hw, abs_of_nonpos hw]
+  · rw [negAt_apply_ofIsReal_and_not_mem _ hw, abs_of_pos (lt_of_not_ge hw)]
 
 @[simp]
-theorem negAt_signSet_apply_of_isComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
+theorem negAt_signSet_apply_ofIsComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
     (negAt (signSet x) x).2 w = x.2 w := rfl
 
 variable (A : Set (mixedSpace K)) {x : mixedSpace K}
@@ -975,13 +975,13 @@ abbrev plusPart : Set (mixedSpace K) := A ∩ {x | ∀ w, 0 < x.1 w}
 theorem neg_of_mem_negA_plusPart (hx : x ∈ negAt s '' (plusPart A)) {w : {w // IsReal w}}
     (hw : w ∈ s) : x.1 w < 0 := by
   obtain ⟨y, hy, rfl⟩ := hx
-  rw [negAt_apply_of_isReal_and_mem _ hw, neg_lt_zero]
+  rw [negAt_apply_ofIsReal_and_mem _ hw, neg_lt_zero]
   exact hy.2 w
 
 theorem pos_of_not_mem_negAt_plusPart (hx : x ∈ negAt s '' (plusPart A)) {w : {w // IsReal w}}
     (hw : w ∉ s) : 0 < x.1 w := by
   obtain ⟨y, hy, rfl⟩ := hx
-  rw [negAt_apply_of_isReal_and_not_mem _ hw]
+  rw [negAt_apply_ofIsReal_and_not_mem _ hw]
   exact hy.2 w
 
 open scoped Function in -- required for scoped `on` notation
@@ -1006,8 +1006,8 @@ theorem mem_negAt_plusPart_of_mem (hx₁ : x ∈ A) (hx₂ : ∀ w, x.1 w ≠ 0)
       fun ⟨h₁, h₂⟩ ↦ ⟨(fun w ↦ |x.1 w|, x.2), ⟨(hA x).mp hx₁, fun w ↦ abs_pos.mpr (hx₂ w)⟩, ?_⟩⟩
   ext w
   · by_cases hw : w ∈ s
-    · simp only [negAt_apply_of_isReal_and_mem _ hw, abs_of_neg (h₁ w hw), neg_neg]
-    · simp only [negAt_apply_of_isReal_and_not_mem _ hw, abs_of_pos (h₂ w hw)]
+    · simp only [negAt_apply_ofIsReal_and_mem _ hw, abs_of_neg (h₁ w hw), neg_neg]
+    · simp only [negAt_apply_ofIsReal_and_not_mem _ hw, abs_of_pos (h₂ w hw)]
   · rfl
 
 include hA in
@@ -1020,7 +1020,7 @@ theorem iUnion_negAt_plusPart_union :
   rw [Set.mem_union, Set.mem_inter_iff, Set.mem_iUnion, Set.mem_iUnion]
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro (⟨s, ⟨x, ⟨hx, _⟩, rfl⟩⟩ | h)
-    · simp_rw (config := {singlePass := true}) [hA, negAt_apply_abs_of_isReal, negAt_apply_snd]
+    · simp_rw (config := {singlePass := true}) [hA, negAt_apply_abs_ofIsReal, negAt_apply_snd]
       rwa [← hA]
     · exact h.left
   · obtain hx | hx := exists_or_forall_not (fun w ↦ x.1 w = 0)
