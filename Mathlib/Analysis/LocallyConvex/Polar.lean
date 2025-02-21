@@ -6,6 +6,8 @@ Authors: Moritz Doll, Kalle Kytölä
 import Mathlib.Analysis.LocallyConvex.AbsConvex
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.Topology.Algebra.Module.WeakBilin
+import Mathlib.Analysis.Seminorm
+import Mathlib.Analysis.Normed.Module.Convex
 
 /-!
 # Polar set
