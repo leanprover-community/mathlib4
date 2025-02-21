@@ -602,7 +602,7 @@ theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
   apply (PowerSeries.X_pow_dvd_iff).mp _ n hnd
   rwa [← span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow, ← idealX_asIdeal,
     ← (intValuation_le_pow_iff_dvd (PowerSeries.idealX K) f d), ← intValuation_apply,
-    ← valuation_of_algebraMap (R := K⟦X⟧) (K := K⸨X⸩), ← adicValued_apply, coe_algebraMap]
+    ← valuation_of_algebraMap (R := K⟦X⟧) (K := K⸨X⸩), ← adicValued_apply]
 
 /- The valuation of a power series is the order of the first non-zero coefficient. -/
 theorem intValuation_le_iff_coeff_lt_eq_zero {d : ℕ} (f : K⟦X⟧) :
