@@ -23,7 +23,7 @@ structure PDA (Q T S : Type) [Fintype Q] [Fintype T] [Fintype S] where
   start_symbol : S
   /-- Set of final states. -/
   final_states : Set Q
-  /-- Transition function reading a letter from T. -/
+  /-- Transition function reading a letter from `T`. -/
   transition_fun : Q → T → S → Set (Q × List S)
   /-- Epsilon transition function. -/
   transition_fun' : Q → S → Set (Q × List S)
