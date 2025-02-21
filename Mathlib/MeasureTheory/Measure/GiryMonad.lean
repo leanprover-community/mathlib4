@@ -38,7 +38,7 @@ namespace MeasureTheory
 
 namespace Measure
 
-variable [MeasurableSpace α] [MeasurableSpace β]
+variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 /-- Measurability structure on `Measure`: Measures are measurable w.r.t. all projections -/
 instance instMeasurableSpace : MeasurableSpace (Measure α) :=
@@ -161,7 +161,7 @@ def bind (m : Measure α) (f : α → Measure β) : Measure β :=
   join (map f m)
 
 @[simp]
-theorem bind_zero_left (f : α → Measure β) : bind 0 f = 0 := by simp [bind]
+theorem bind_zero_left (f : α → Measure β) : bind (0 : Measure α) f = 0 := by simp [bind]
 
 @[simp]
 theorem bind_zero_right (m : Measure α) : bind m (0 : α → Measure β) = 0 := by
@@ -185,7 +185,8 @@ lemma bind_const {m : Measure α} {ν : Measure β} : m.bind (fun _ ↦ ν) = m 
   rw [bind_apply hs measurable_const, lintegral_const, smul_apply, smul_eq_mul, mul_comm]
 
 @[fun_prop]
-theorem measurable_bind' {g : α → Measure β} (hg : Measurable g) : Measurable fun m => bind m g :=
+theorem measurable_bind' {g : α → Measure β} (hg : Measurable g) :
+    Measurable fun m : Measure α => bind m g :=
   measurable_join.comp (measurable_map _ hg)
 
 theorem lintegral_bind {m : Measure α} {μ : α → Measure β} {f : β → ℝ≥0∞} (hμ : Measurable μ)

@@ -37,10 +37,6 @@ We develop the basic properties of these notions, notably:
   `changeOrigin_finite_of_finite`. See `HasFiniteFPowerSeriesOnBall.changeOrigin`. It follows in
   particular that the set of points at which a given function is continuously polynomial is open,
   see `isOpen_cpolynomialAt`.
-
-We prove in particular that continuous multilinear maps are continuously polynomial, and so
-are continuous linear maps into continuous multilinear maps. In particular, such maps are
-analytic.
 -/
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]

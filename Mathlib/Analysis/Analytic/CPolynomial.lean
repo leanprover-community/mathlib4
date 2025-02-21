@@ -4,41 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
 import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Analytic.CPolynomialDef
 
-/-! We specialize the theory of analytic functions to the case of functions that admit a
-development given by a *finite* formal multilinear series. We call them "continuously polynomial",
-which is abbreviated to `CPolynomial`. One reason to do that is that we no longer need a
-completeness assumption on the target space `F` to make the series converge, so some of the results
-are more general. The class of continuously polynomial functions includes functions defined by
-polynomials on a normed `𝕜`-algebra and continuous multilinear maps.
+/-! # Properties of continuously polynomial functions
 
-## Main definitions
+We expand the API around continuously polynomial functions. Notably, we show that this class is
+stable under the usual operations (addition, subtraction, negation).
 
-Let `p` be a formal multilinear series from `E` to `F`, i.e., `p n` is a multilinear map on `E^n`
-for `n : ℕ`, and let `f` be a function from `E` to `F`.
-
-* `HasFiniteFPowerSeriesOnBall f p x n r`: on the ball of center `x` with radius `r`,
-  `f (x + y) = ∑'_n pₘ yᵐ`, and moreover `pₘ = 0` if `n ≤ m`.
-* `HasFiniteFPowerSeriesAt f p x n`: on some ball of center `x` with positive radius, holds
-  `HasFiniteFPowerSeriesOnBall f p x n r`.
-* `CPolynomialAt 𝕜 f x`: there exists a power series `p` and a natural number `n` such that
-   holds `HasFPowerSeriesAt f p x n`.
-* `CPolynomialOn 𝕜 f s`: the function `f` is analytic at every point of `s`.
-
-We develop the basic properties of these notions, notably:
-* If a function is continuously polynomial, then it is analytic, see
-  `HasFiniteFPowerSeriesOnBall.hasFPowerSeriesOnBall`, `HasFiniteFPowerSeriesAt.hasFPowerSeriesAt`,
-  `CPolynomialAt.analyticAt` and `CPolynomialOn.analyticOnNhd`.
-* The sum of a finite formal power series with positive radius is well defined on the whole space,
-  see `FormalMultilinearSeries.hasFiniteFPowerSeriesOnBall_of_finite`.
-* If a function admits a finite power series in a ball, then it is continuously polynomial at
-  any point `y` of this ball, and the power series there can be expressed in terms of the initial
-  power series `p` as `p.changeOrigin y`, which is finite (with the same bound as `p`) by
-  `changeOrigin_finite_of_finite`. See `HasFiniteFPowerSeriesOnBall.changeOrigin`. It follows in
-  particular that the set of points at which a given function is continuously polynomial is open,
-  see `isOpen_cpolynomialAt`.
-
-We prove in particular that continuous multilinear maps are continuously polynomial, and so
+We also prove that continuous multilinear maps are continuously polynomial, and so
 are continuous linear maps into continuous multilinear maps. In particular, such maps are
 analytic.
 -/
@@ -78,7 +51,6 @@ theorem HasFiniteFPowerSeriesAt.add (hf : HasFiniteFPowerSeriesAt f pf x n)
   rcases (hf.eventually.and hg.eventually).exists with ⟨r, hr⟩
   exact ⟨r, hr.1.add hr.2⟩
 
-
 theorem CPolynomialAt.add (hf : CPolynomialAt 𝕜 f x) (hg : CPolynomialAt 𝕜 g x) :
     CPolynomialAt 𝕜 (f + g) x :=
   let ⟨_, _, hpf⟩ := hf
@@ -111,7 +83,6 @@ theorem HasFiniteFPowerSeriesAt.sub (hf : HasFiniteFPowerSeriesAt f pf x n)
 theorem CPolynomialAt.sub (hf : CPolynomialAt 𝕜 f x) (hg : CPolynomialAt 𝕜 g x) :
     CPolynomialAt 𝕜 (f - g) x := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
-
 
 theorem CPolynomialOn.add {s : Set E} (hf : CPolynomialOn 𝕜 f s) (hg : CPolynomialOn 𝕜 g s) :
     CPolynomialOn 𝕜 (f + g) s :=
