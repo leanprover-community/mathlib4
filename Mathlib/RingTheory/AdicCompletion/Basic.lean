@@ -316,7 +316,7 @@ theorem of_eq_factorPow' [IsPrecomplete I R] {f : (n : ℕ) → R ⧸ I ^ (a n)}
 
 /--
 The function variant of `IsPrecomplete.of_eq_factorPow`. Instead of construct a single
-element from a compatible sequence of elements in `M ⧸ (I ^ n • ⊤)`, we construct a function
+element from a compatible sequence of elements in `M ⧸ (I ^ a n • ⊤)`, we construct a function
 from a compatible sequence of functions.
 -/
 theorem function_of_eq_factorPow {α : Type*} {f : (n : ℕ) → α → M ⧸ (I ^ (a n) • ⊤)}
@@ -328,7 +328,7 @@ theorem function_of_eq_factorPow {α : Type*} {f : (n : ℕ) → α → M ⧸ (I
 /--
 The function variant of `IsPrecomplete.of_eq_factorPowSucc`, the `M = R` variant of
 `IsPrecomplete.function_of_eq_factorPow`. Instead of construct a single
-element from a compatible sequence of elements in `R ⧸ I ^ n`, we construct a function
+element from a compatible sequence of elements in `R ⧸ I ^ a n`, we construct a function
 from a compatible sequence of functions.
 -/
 theorem function_of_eq_factorPow' [IsPrecomplete I R] {α : Type*} {f : (n : ℕ) → α → R ⧸ I ^ (a n)}
@@ -349,7 +349,7 @@ include ha
 
 /-- `Gneralize this to a sequence a n instead of n`
 The limit linear map `F : N →ₗ[R] M` of a sequence of compatible
-linear maps `N →ₗ[R] M ⧸ (I ^ n • ⊤)`.
+linear maps `N →ₗ[R] M ⧸ (I ^ a n • ⊤)`.
 -/
 noncomputable
 def limLinearMap {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ (a n) • ⊤)}
@@ -365,9 +365,9 @@ def limLinearMap {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ (a n) • ⊤)}
           IsPrecomplete.function_of_eq_factorPow (I := I) (f := fun n ↦ f n) ha hf
 
 /--
-Let `F : N →ₗ[R] M` be the limit of `f n : N →ₗ[R] M ⧸ (I ^ n • ⊤)`.
+Let `F : N →ₗ[R] M` be the limit of `f n : N →ₗ[R] M ⧸ (I ^ a n • ⊤)`.
 Then the compositon of limit linear map `F : N →ₗ[R] M` with the canonial
-projection `M →ₗ[R] M ⧸ (I ^ n • ⊤)` is `f n` .
+projection `M →ₗ[R] M ⧸ (I ^ a n • ⊤)` is `f n` .
 -/
 @[simp]
 theorem mkQ_limLinearMap {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ a n • ⊤)}
@@ -377,9 +377,9 @@ theorem mkQ_limLinearMap {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ a n • ⊤)}
       IsPrecomplete.function_of_eq_factorPow (I := I) (f := fun n ↦ f n) ha hf) n s).symm
 
 /--
-Let `F : N →ₗ[R] M` be the limit of `f n : N →ₗ[R] M ⧸ (I ^ n • ⊤)`.
+Let `F : N →ₗ[R] M` be the limit of `f n : N →ₗ[R] M ⧸ (I ^ a n • ⊤)`.
 Then the compositon of limit linear map `F : N →ₗ[R] M` with the canonial
-projection `M →ₗ[R] M ⧸ (I ^ n • ⊤)` is `f n` .
+projection `M →ₗ[R] M ⧸ (I ^ a n • ⊤)` is `f n` .
 -/
 @[simp]
 theorem mkQ_comp_limLinearMap {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ (a n) • ⊤)}
@@ -397,7 +397,7 @@ include ha
 
 /--
 The limit ring map `F : S →+* R` of a sequence of compatible
-ring maps `S →+* R ⧸ I ^ n`.
+ring maps `S →+* R ⧸ I ^ a n`.
 -/
 noncomputable
 def limRingHom {f : (n : ℕ) → S →+* R ⧸ I ^ a n}
@@ -419,9 +419,9 @@ def limRingHom {f : (n : ℕ) → S →+* R ⧸ I ^ a n}
           IsPrecomplete.function_of_eq_factorPow' (I := I) (f := fun n ↦ f n) ha hf
 
 /--
-Let `F : S →+* R` be the limit of `f n : S →+* R ⧸ I ^ n`.
+Let `F : S →+* R` be the limit of `f n : S →+* R ⧸ I ^ a n`.
 Then the compositon of limit ring map `F : S →+* R` with the canonial
-projection `R →+* R ⧸ I ^ n` is `f n` .
+projection `R →+* R ⧸ I ^ a n` is `f n` .
 -/
 @[simp]
 theorem mk_limRingHom {f : (n : ℕ) → S →+* R ⧸ I ^ a n}
@@ -431,9 +431,9 @@ theorem mk_limRingHom {f : (n : ℕ) → S →+* R ⧸ I ^ a n}
       IsPrecomplete.function_of_eq_factorPow' (I := I) (f := fun n ↦ f n) ha hf) n s).symm
 
 /--
-Let `F : S →+* R` be the limit of `f n : S →+* R ⧸ I ^ n`.
+Let `F : S →+* R` be the limit of `f n : S →+* R ⧸ I ^ a n`.
 Then the compositon of limit ring map `F : S →+* R` with the canonial
-projection `R →+* R ⧸ I ^ n` is `f n` .
+projection `R →+* R ⧸ I ^ a n` is `f n` .
 -/
 @[simp]
 theorem mk_comp_limRingHom {f : (n : ℕ) → S →+* R ⧸ I ^ a n}
