@@ -452,7 +452,7 @@ theorem eLpNormEssSup_mono_nnnorm_ae {f g : α → F} (hfg : ∀ᵐ x ∂μ, ‖
     eLpNormEssSup f μ ≤ eLpNormEssSup g μ :=
   essSup_mono_ae <| hfg.mono fun _x hx => ENNReal.coe_le_coe.mpr hx
 
-theorem eLpNorm_mono_enorm_ae {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
+theorem eLpNorm_mono_enorm_ae {f : α → ε} {g : α → ε'} (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm f p μ ≤ eLpNorm g p μ := by
   simp only [eLpNorm]
   split_ifs
@@ -618,15 +618,17 @@ theorem eLpNorm_norm_rpow (f : α → F) (hq_pos : 0 < q) :
   exact eLpNorm'_norm_rpow f p.toReal q hq_pos
 
 theorem eLpNorm_congr_ae {f g : α → ε} (hfg : f =ᵐ[μ] g) : eLpNorm f p μ = eLpNorm g p μ :=
-  eLpNorm_congr_norm_ae <| hfg.mono fun _x hx => hx ▸ rfl
+  eLpNorm_congr_enorm_ae <| hfg.mono fun _x hx => hx ▸ rfl
 
-theorem memLp_congr_ae [TopologicalSpace ε] {f g : α → ε} (hfg : f =ᵐ[μ] g) : MemLp f p μ ↔ MemLp g p μ := by
+theorem memLp_congr_ae [TopologicalSpace ε] {f g : α → ε} (hfg : f =ᵐ[μ] g) :
+    MemLp f p μ ↔ MemLp g p μ := by
   simp only [MemLp, eLpNorm_congr_ae hfg, aestronglyMeasurable_congr hfg]
 
 @[deprecated (since := "2025-02-21")]
 alias memℒp_congr_ae := memLp_congr_ae
 
-theorem MemLp.ae_eq [TopologicalSpace ε] {f g : α → ε} (hfg : f =ᵐ[μ] g) (hf_Lp : MemLp f p μ) : MemLp g p μ :=
+theorem MemLp.ae_eq [TopologicalSpace ε] {f g : α → ε} (hfg : f =ᵐ[μ] g) (hf_Lp : MemLp f p μ) :
+    MemLp g p μ :=
   (memLp_congr_ae hfg).1 hf_Lp
 
 @[deprecated (since := "2025-02-21")]
