@@ -5,6 +5,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Data.Fintype.List
 import Mathlib.Data.Fintype.OfMap
+import Mathlib.Data.List.Rotate
 
 /-!
 # Cycles of a list
