@@ -12,7 +12,7 @@ This file contains the definition of a Pushdown Automaton (PDA). Pushdown automa
 exactly the context-free languages.
 -/
 
-/-- A PDA is a set of states (`Q`), a tape alphabet (`T`), a stack alphabet (`S`),  an inital state
+/-- A PDA is a set of states (`Q`), a tape alphabet (`T`), a stack alphabet (`S`), an initial state
   (`initial_state`), a start symbol (`start_symbol`), a set of final states (`final_states`), and a
   transition function. The transition function is given in two parts: `transition_fun` reads a
   letter and `transition_fun'` makes an epsilon transition. -/
