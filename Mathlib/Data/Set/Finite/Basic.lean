@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
 import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Finset.Union
+import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Finite sets
@@ -155,14 +156,9 @@ protected alias ⟨_, toFinset_mono⟩ := Finite.toFinset_subset_toFinset
 
 protected alias ⟨_, toFinset_strictMono⟩ := Finite.toFinset_ssubset_toFinset
 
--- Porting note: `simp` can simplify LHS but then it simplifies something
--- in the generated `Fintype {x | p x}` instance and fails to apply `Set.toFinset_setOf`
 @[simp high]
 protected theorem toFinset_setOf [Fintype α] (p : α → Prop) [DecidablePred p]
-    (h : { x | p x }.Finite) : h.toFinset = Finset.univ.filter p := by
-  ext
-  -- Porting note: `simp` doesn't use the `simp` lemma `Set.toFinset_setOf` without the `_`
-  simp [Set.toFinset_setOf _]
+    (h : { x | p x }.Finite) : h.toFinset = Finset.univ.filter p := by simp
 
 @[simp]
 nonrec theorem disjoint_toFinset {hs : s.Finite} {ht : t.Finite} :
@@ -220,6 +216,10 @@ protected theorem toFinset_range [DecidableEq α] [Fintype β] (f : β → α) (
     h.toFinset = Finset.univ.image f := by
   ext
   simp
+
+@[simp]
+protected theorem toFinset_nontrivial (h : s.Finite) : h.toFinset.Nontrivial ↔ s.Nontrivial := by
+  rw [Finset.Nontrivial, h.coe_toFinset]
 
 end Finite
 

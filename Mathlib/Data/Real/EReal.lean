@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.ENNReal.Inv
 import Mathlib.Data.Sign
 
 /-!
@@ -1246,7 +1246,7 @@ theorem sub_le_of_le_add {a b c : EReal} (h : a ≤ b + c) : a - c ≤ b := by
   | h_real c => exact (sub_le_iff_le_add (.inl (coe_ne_bot c)) (.inl (coe_ne_top c))).2 h
   | h_top => simp only [sub_top, bot_le]
 
-/-- See also `EReal.sub_le_of_le_add`.-/
+/-- See also `EReal.sub_le_of_le_add`. -/
 theorem sub_le_of_le_add' {a b c : EReal} (h : a ≤ b + c) : a - b ≤ c :=
   sub_le_of_le_add (add_comm b c ▸ h)
 
@@ -1265,7 +1265,7 @@ lemma add_lt_of_lt_sub {a b c : EReal} (h : a < b - c) : a + c < b := by
 lemma sub_lt_of_lt_add {a b c : EReal} (h : a < b + c) : a - c < b :=
   add_lt_of_lt_sub <| by rwa [sub_eq_add_neg, neg_neg]
 
-/-- See also `EReal.sub_lt_of_lt_add`.-/
+/-- See also `EReal.sub_lt_of_lt_add`. -/
 lemma sub_lt_of_lt_add' {a b c : EReal} (h : a < b + c) : a - b < c :=
   sub_lt_of_lt_add <| by rwa [add_comm]
 

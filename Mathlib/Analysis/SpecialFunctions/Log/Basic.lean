@@ -70,6 +70,20 @@ theorem le_exp_log (x : ℝ) : x ≤ exp (log x) := by
 theorem log_exp (x : ℝ) : log (exp x) = x :=
   exp_injective <| exp_log (exp_pos x)
 
+theorem exp_one_mul_le_exp {x : ℝ} : exp 1 * x ≤ exp x := by
+  by_cases hx0 : x ≤ 0
+  · apply le_trans (mul_nonpos_of_nonneg_of_nonpos (exp_pos 1).le hx0) (exp_nonneg x)
+  · have h := add_one_le_exp (log x)
+    rwa [← exp_le_exp, exp_add, exp_log (lt_of_not_le hx0), mul_comm] at h
+
+theorem two_mul_le_exp {x : ℝ} : 2 * x ≤ exp x := by
+  by_cases hx0 : x < 0
+  · exact le_trans (mul_nonpos_of_nonneg_of_nonpos (by simp only [Nat.ofNat_nonneg]) hx0.le)
+      (exp_nonneg x)
+  · apply le_trans (mul_le_mul_of_nonneg_right _ (le_of_not_lt hx0)) exp_one_mul_le_exp
+    have := Real.add_one_le_exp 1
+    rwa [one_add_one_eq_two] at this
+
 theorem surjOn_log : SurjOn log (Ioi 0) univ := fun x _ => ⟨exp x, exp_pos x, log_exp x⟩
 
 theorem log_surjective : Surjective log := fun x => ⟨exp x, log_exp x⟩
@@ -263,9 +277,9 @@ theorem log_pow (x : ℝ) (n : ℕ) : log (x ^ n) = n * log x := by
 
 @[simp]
 theorem log_zpow (x : ℝ) (n : ℤ) : log (x ^ n) = n * log x := by
-  induction n
+  cases n
   · rw [Int.ofNat_eq_coe, zpow_natCast, log_pow, Int.cast_natCast]
-  rw [zpow_negSucc, log_inv, log_pow, Int.cast_negSucc, Nat.cast_add_one, neg_mul_eq_neg_mul]
+  · rw [zpow_negSucc, log_inv, log_pow, Int.cast_negSucc, Nat.cast_add_one, neg_mul_eq_neg_mul]
 
 theorem log_sqrt {x : ℝ} (hx : 0 ≤ x) : log (√x) = log x / 2 := by
   rw [eq_div_iff, mul_comm, ← Nat.cast_two, ← log_pow, sq_sqrt hx]

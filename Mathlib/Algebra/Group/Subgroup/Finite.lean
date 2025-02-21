@@ -73,18 +73,15 @@ theorem noncommProd_mem (K : Subgroup G) {ι : Type*} {t : Finset ι} {f : ι �
     (∀ c ∈ t, f c ∈ K) → t.noncommProd f comm ∈ K :=
   K.toSubmonoid.noncommProd_mem t f comm
 
--- Porting note: increased priority to appease `simpNF`, otherwise left-hand side reduces
 @[to_additive (attr := simp 1100, norm_cast)]
 theorem val_list_prod (l : List H) : (l.prod : G) = (l.map Subtype.val).prod :=
   SubmonoidClass.coe_list_prod l
 
--- Porting note: increased priority to appease `simpNF`, otherwise left-hand side reduces
 @[to_additive (attr := simp 1100, norm_cast)]
 theorem val_multiset_prod {G} [CommGroup G] (H : Subgroup G) (m : Multiset H) :
     (m.prod : G) = (m.map Subtype.val).prod :=
   SubmonoidClass.coe_multiset_prod m
 
--- Porting note: increased priority to appease `simpNF`, otherwise `simp` can prove it.
 @[to_additive (attr := simp 1100, norm_cast)]
 theorem val_finset_prod {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s : Finset ι) :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : G) :=
@@ -155,7 +152,6 @@ theorem card_le_of_le {H K : Subgroup G} [Finite K] (h : H ≤ K) : Nat.card H �
 theorem card_map_of_injective {H : Type*} [Group H] {K : Subgroup G} {f : G →* H}
     (hf : Function.Injective f) :
     Nat.card (map f K) = Nat.card K := by
-  -- simp only [← SetLike.coe_sort_coe]
   apply Nat.card_image_of_injective hf
 
 @[to_additive]

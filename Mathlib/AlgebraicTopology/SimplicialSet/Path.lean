@@ -25,16 +25,16 @@ open Simplicial SimplexCategory
 
 variable (X : SSet.{u})
 
-/-- A path in a simplicial set `X` of length `n` is a directed path of `n` edges.-/
+/-- A path in a simplicial set `X` of length `n` is a directed path of `n` edges. -/
 @[ext]
 structure Path (n : ℕ) where
-  /-- A path includes the data of `n+1` 0-simplices in `X`.-/
+  /-- A path includes the data of `n+1` 0-simplices in `X`. -/
   vertex (i : Fin (n + 1)) : X _⦋0⦌
-  /-- A path includes the data of `n` 1-simplices in `X`.-/
+  /-- A path includes the data of `n` 1-simplices in `X`. -/
   arrow (i : Fin n) : X _⦋1⦌
-  /-- The sources of the 1-simplices in a path are identified with appropriate 0-simplices.-/
+  /-- The sources of the 1-simplices in a path are identified with appropriate 0-simplices. -/
   arrow_src (i : Fin n) : X.δ 1 (arrow i) = vertex i.castSucc
-  /-- The targets of the 1-simplices in a path are identified with appropriate 0-simplices.-/
+  /-- The targets of the 1-simplices in a path are identified with appropriate 0-simplices. -/
   arrow_tgt (i : Fin n) : X.δ 0 (arrow i) = vertex i.succ
 
 
@@ -49,7 +49,7 @@ def Path.interval {n : ℕ} (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n) :
   arrow_tgt i := f.arrow_tgt ⟨j + i, by omega⟩
 
 /-- The spine of an `n`-simplex in `X` is the path of edges of length `n` formed by
-traversing through its vertices in order.-/
+traversing through its vertices in order. -/
 @[simps]
 def spine (n : ℕ) (Δ : X _⦋n⦌) : X.Path n where
   vertex i := X.map (SimplexCategory.const ⦋0⦌ ⦋n⦌ i).op Δ
@@ -92,7 +92,7 @@ lemma Path.ext' {n : ℕ} {f g : Path X (n + 1)}
       rw [← f.arrow_tgt (Fin.last n), ← g.arrow_tgt (Fin.last n), h]
   · exact h j
 
-/-- Maps of simplicial sets induce maps of paths in a simplicial set.-/
+/-- Maps of simplicial sets induce maps of paths in a simplicial set. -/
 @[simps]
 def Path.map {X Y : SSet.{u}} {n : ℕ} (f : X.Path n) (σ : X ⟶ Y) : Y.Path n where
   vertex i := σ.app (Opposite.op ⦋0⦌) (f.vertex i)
@@ -104,12 +104,12 @@ def Path.map {X Y : SSet.{u}} {n : ℕ} (f : X.Path n) (σ : X ⟶ Y) : Y.Path n
     simp only [← f.arrow_tgt i]
     exact congr (σ.naturality (δ 0).op) rfl |>.symm
 
-/-- `Path.map` respects subintervals of paths.-/
+/-- `Path.map` respects subintervals of paths. -/
 lemma map_interval {X Y : SSet.{u}} {n : ℕ} (f : X.Path n) (σ : X ⟶ Y)
     (j l : ℕ) (hjl : j + l ≤ n) :
     (f.map σ).interval j l hjl = (f.interval j l hjl).map σ := rfl
 
-/-- The spine of the unique non-degenerate `n`-simplex in `Δ[n]`.-/
+/-- The spine of the unique non-degenerate `n`-simplex in `Δ[n]`. -/
 def stdSimplex.spineId (n : ℕ) : Path Δ[n] n :=
   spine Δ[n] n (objEquiv.symm (𝟙 _))
 
@@ -144,7 +144,7 @@ lemma Subcomplex.map_ι_liftPath {X : SSet.{u}} (A : X.Subcomplex) {n : ℕ} (p 
     (A.liftPath p hp₀ hp₁).map A.ι = p := rfl
 
 /-- Any inner horn contains the spine of the unique non-degenerate `n`-simplex
-in `Δ[n]`.-/
+in `Δ[n]`. -/
 @[simps! vertex_coe arrow_coe]
 def subcomplexHorn.spineId {n : ℕ} (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
