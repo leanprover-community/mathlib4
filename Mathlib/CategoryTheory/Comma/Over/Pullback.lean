@@ -1,13 +1,13 @@
 /-
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, Andrew Yang
+Authors: Bhavik Mehta, Andrew Yang, Sina Hazratpour
 -/
-
 import Mathlib.CategoryTheory.Adjunction.Mates
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+import Mathlib.CategoryTheory.ChosenFiniteProducts
+import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
 import Mathlib.CategoryTheory.Monad.Products
+import Mathlib.CategoryTheory.Equivalence
 
 /-!
 # Adjunctions related to the over category
@@ -25,39 +25,59 @@ In a category with binary products, for any object `X` the functor
 - `star : C ⥤ Over X` is the functor induced by an object `X`.
 - `forgetAdjStar` is the adjunction  `forget X ⊣ star X`.
 
-## TODO
-Show `star X` itself has a right adjoint provided `C` is cartesian closed and has pullbacks.
+## Notation
+
+- `Σ_ X Y` : is notation for `Sigma` defined by `(Over.map X.hom).obj Y
+- `Δ_ X Y` : is notation for `Reindex` defined by `(Over.pullback X.hom).obj Y
+- `μ X Y` : is notation for `fstProj : (Σ_ Y (Δ_ Y Z)) ⟶ Z`
+- `π X Y` : is notation for `sndProj : (Σ_ Y (Δ_ Y Z)) ⟶ Y`
+
+## Main results
+
+- `Over.mapPulbackNatIsoTensorLeft` constructs a natural isomorphism between the composition
+  `(pullback Y.hom) ⋙ (map Y.hom)` and the left tensor product functor `tensorLeft Y`.
+
+- `mapStarIso` constructs a natural isomorphism between the functors `star X` and
+  `star Y ⋙ pullback f` for any morphism `f : X ⟶ Y`.
+
+## References
+
+The notations `Σ_` and `Δ_` are taken from [GK12].
+
 -/
 
 noncomputable section
 
-universe v u
+universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
 open Category Limits Comonad
 
-variable {C : Type u} [Category.{v} C] (X : C)
-
+variable {C : Type u₁} [Category.{v₁} C]
 
 namespace Over
 
 open Limits
 
-variable [HasPullbacks C]
-
 /-- In a category with pullbacks, a morphism `f : X ⟶ Y` induces a functor `Over Y ⥤ Over X`,
 by pulling back a morphism along `f`. -/
 @[simps! (config := { simpRhs := true}) obj_left obj_hom map_left]
-def pullback {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
+def pullback [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
   obj g := Over.mk (pullback.snd g.hom f)
   map := fun g {h} {k} =>
     Over.homMk (pullback.lift (pullback.fst _ _ ≫ k.left) (pullback.snd _ _)
       (by simp [pullback.condition]))
 
+@[deprecated (since := "2024-05-15")]
+noncomputable alias Limits.baseChange := Over.pullback
+
+@[deprecated (since := "2024-07-08")]
+noncomputable alias baseChange := pullback
+
 /-- `Over.map f` is left adjoint to `Over.pullback f`. -/
 @[simps! unit_app counit_app]
-def mapPullbackAdj {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ pullback f :=
+def mapPullbackAdj [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ pullback f :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun x y =>
         { toFun := fun u =>
@@ -72,28 +92,214 @@ def mapPullbackAdj {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ pullback f :=
             · simp
             · simpa using (Over.w v).symm } }
 
+@[deprecated (since := "2024-07-08")]
+noncomputable alias mapAdjunction := mapPullbackAdj
+
 /-- pullback (𝟙 X) : Over X ⥤ Over X is the identity functor. -/
-def pullbackId {X : C} : pullback (𝟙 X) ≅ 𝟭 _ :=
+def pullbackId {X : C} [HasPullbacks C] : pullback (𝟙 X) ≅ 𝟭 _ :=
   conjugateIsoEquiv (mapPullbackAdj (𝟙 _)) (Adjunction.id (C := Over _)) (Over.mapId _).symm
 
 /-- pullback commutes with composition (up to natural isomorphism). -/
-def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+def pullbackComp [HasPullbacks C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
   conjugateIsoEquiv (mapPullbackAdj _) ((mapPullbackAdj _).comp (mapPullbackAdj _))
     (Over.mapComp _ _).symm
 
-instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) : (pullback f).IsRightAdjoint  :=
+instance pullbackIsRightAdjoint [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
+    (pullback f).IsRightAdjoint  :=
   ⟨_, ⟨mapPullbackAdj f⟩⟩
+
+/-- `Reindex Y Z`, the reindexing of `Z` along `Y`, provides the notation `Δ_ Y Z`. -/
+abbrev Reindex [HasPullbacks C] {X : C} (Y : Over X) (Z : Over X) : Over Y.left :=
+  (Over.pullback Y.hom).obj Z
+
+namespace Reindex
+
+open Sigma
+
+variable [HasPullbacks C] {X : C}
+
+set_option quotPrecheck false in
+/-- The notation for `Reindex`, the object part of the reindexing functor. -/
+scoped notation " Δ_ " => Reindex
+
+lemma hom {Y : Over X} {Z : Over X} :
+    (Δ_ Y Z).hom = pullback.snd Z.hom Y.hom := by
+  rfl
+
+/-- `Δ_` is symmetric, up to an isomorphism, in its first and second arguments. -/
+def symmetryObjIso (Y Z : Over X) :
+    (Δ_ Y Z).left ≅ (Δ_ Z Y).left := pullbackSymmetry _ _
+
+/-- The reindexed sum of `Z` along `Y` is isomorphic to the reindexed sum of `Y` along `Z` in the
+category `Over X`. -/
+@[simps!]
+def sigmaSymmetryIso (Y Z : Over X) :
+  Σ_ Y (Δ_ Y Z) ≅ Σ_ Z (Δ_ Z Y) := by
+  apply Over.isoMk _ _
+  · exact pullbackSymmetry ..
+  · simp [pullback.condition]
+
+lemma symmetry_hom {Y Z : Over X} :
+    (pullback.snd Z.hom Y.hom) ≫ Y.hom =
+    (pullbackSymmetry _ _).hom ≫ (pullback.snd Y.hom Z.hom) ≫ Z.hom  := by
+  simp [← pullback.condition]
+
+/-- The first projection out of the reindexed sigma object. -/
+def fstProj (Y Z : Over X) : (Σ_ Y (Δ_ Y Z)) ⟶ Y :=
+  Over.homMk (pullback.snd Z.hom Y.hom) (by simp)
+
+lemma fstProj_sigma_fst (Y Z : Over X) : fstProj Y Z = Sigma.fst (Δ_ Y Z) := by rfl
+
+/-- The second projection out of the reindexed sigma object. -/
+def sndProj (Y Z : Over X) : (Σ_ Y (Δ_ Y Z)) ⟶ Z :=
+  Over.homMk (pullback.fst Z.hom Y.hom) (by simp [pullback.condition])
+
+/-- The notation for the first projection of the reindexed sigma object. -/
+scoped notation " π_ " => fstProj
+
+/-- The notation for the second projection of the reindexed sigma object. -/
+scoped notation " μ_ " => sndProj
+
+lemma counit_app_pullback_fst {Y Z : Over X} :
+    μ_ Y Z = (mapPullbackAdj Y.hom).counit.app Z := by
+  simp [mapPullbackAdj_counit_app]
+  rfl
+
+lemma counit_app_pullback_snd {Y Z : Over X} :
+    π_ Y Z = (sigmaSymmetryIso Y Z).hom ≫ (mapPullbackAdj Z.hom).counit.app Y := by
+  aesop
+
+@[simp]
+lemma counit_app_pullback_snd_eq_homMk {Y Z : Over X} :
+    π_ Y Z = (homMk (Δ_ Y Z).hom : (Σ_ Y (Δ_ Y Z)) ⟶ Y) :=
+  OverMorphism.ext (by aesop)
+
+end Reindex
+
+section BinaryProduct
+
+open ChosenFiniteProducts Sigma Reindex
+
+variable [HasFiniteWidePullbacks C] {X : C}
+
+/-- The binary fan provided by `μ_` and `π_` is a binary product in `Over X`. -/
+def isBinaryProductSigmaReindex (Y Z : Over X) :
+    IsLimit <| BinaryFan.mk (P:= Σ_ Y (Δ_ Y Z)) (π_ Y Z) (μ_ Y Z) := by
+  refine IsLimit.mk (?lift) ?fac ?uniq
+  · intro s
+    fapply Over.homMk
+    · exact pullback.lift (s.π.app ⟨.right⟩).left (s.π.app ⟨ .left ⟩).left (by aesop)
+    · aesop
+  · rintro s ⟨⟨l⟩|⟨r⟩⟩ <;> apply Over.OverMorphism.ext <;> simp [Reindex.sndProj]
+  · intro s m h
+    apply Over.OverMorphism.ext
+    apply pullback.hom_ext <;> simp
+    · exact congr_arg CommaMorphism.left (h ⟨ .right⟩)
+    · exact congr_arg CommaMorphism.left (h ⟨ .left ⟩)
+
+attribute [local instance] ChosenFiniteProducts.ofFiniteProducts
+
+/-- The object `(Σ_ Y) (Δ_ Y Z)` is isomorphic to the binary product `Y × Z`
+in `Over X`. -/
+@[simps!]
+def sigmaReindexIsoProd (Y Z : Over X) :
+    (Σ_ Y) (Δ_ Y Z) ≅ Limits.prod Y Z := by
+  apply IsLimit.conePointUniqueUpToIso (isBinaryProductSigmaReindex Y Z) (prodIsProd Y Z)
+
+/-- Given a morphism `f : X' ⟶ X` and an object `Y` over `X`, the `(map f).obj ((pullback f).obj Y)`
+is isomorphic to the binary product of `(Over.mk f)` and `Y`. -/
+def sigmaReindexIsoProdMk {Y : C} (f : Y ⟶ X) (Z : Over X) :
+    (map f).obj ((pullback f).obj Z) ≅ Limits.prod (Over.mk f) Z :=
+  sigmaReindexIsoProd (Over.mk f) _
+
+def ReindexIsoMkProdFstLeft {Y : C} (f : Y ⟶ X) (Z : Over X) :
+    (pullback f).obj Z ≅ Over.mk (@Limits.prod.fst _ _ (Over.mk f) Z).left :=
+  sorry
+
+
+lemma sigmaReindexIsoProd_hom_comp_fst {Y Z : Over X} :
+    (sigmaReindexIsoProd Y Z).hom ≫ (fst Y Z) = (π_ Y Z) :=
+  IsLimit.conePointUniqueUpToIso_hom_comp
+    (isBinaryProductSigmaReindex Y Z) (Limits.prodIsProd Y Z) ⟨.left⟩
+
+lemma sigmaReindexIsoProd_hom_comp_snd {Y Z : Over X} :
+    (sigmaReindexIsoProd Y Z).hom ≫ (snd Y Z) = (μ_ Y Z) :=
+  IsLimit.conePointUniqueUpToIso_hom_comp
+    (isBinaryProductSigmaReindex Y Z) (Limits.prodIsProd Y Z) ⟨.right⟩
+
+end BinaryProduct
+
+end Over
+
+section TensorLeft
+
+open MonoidalCategory Over Functor ChosenFiniteProducts
+
+attribute [local instance] ChosenFiniteProducts.ofFiniteProducts
+attribute [local instance] monoidalOfChosenFiniteProducts
+
+variable [HasFiniteWidePullbacks C] {X : C}
+
+/-- The pull-push composition `(Over.pullback Y.hom) ⋙ (Over.map Y.hom)` is naturally isomorphic
+to the left tensor product functor `Y × _` in `Over X`-/
+def Over.sigmaReindexNatIsoTensorLeft (Y : Over X) :
+    (pullback Y.hom) ⋙ (map Y.hom) ≅ tensorLeft Y := by
+  fapply NatIso.ofComponents
+  · intro Z
+    simp only [const_obj_obj, Functor.id_obj, comp_obj, tensorLeft_obj, tensorObj, Over.pullback]
+    exact sigmaReindexIsoProd Y Z
+  · intro Z Z' f
+    simp
+    ext1 <;> simp_rw [assoc]
+    · simp_rw [whiskerLeft_fst]
+      iterate rw [sigmaReindexIsoProd_hom_comp_fst]
+      ext
+      simp
+    · simp_rw [whiskerLeft_snd]
+      iterate rw [sigmaReindexIsoProd_hom_comp_snd, ← assoc, sigmaReindexIsoProd_hom_comp_snd]
+      ext
+      simp [Reindex.sndProj]
+
+lemma Over.sigmaReindexNatIsoTensorLeft_hom_app
+    {Y : Over X} (Z : Over X) :
+    (Over.sigmaReindexNatIsoTensorLeft Y).hom.app Z = (sigmaReindexIsoProd Y Z).hom := by
+  aesop
+
+end TensorLeft
+
+variable (C)
+
+/-- The functor from `C` to `Over (⊤_ C)` which sends `X : C` to `terminal.from X`. -/
+@[simps! obj_left obj_hom map_left]
+def Functor.toOverTerminal [HasTerminal C] : C ⥤ Over (⊤_ C) where
+  obj X := Over.mk (terminal.from X)
+  map {X Y} f := Over.homMk f
+
+/-- The slice category over the terminal object is equivalent to the original category. -/
+def equivOverTerminal [HasTerminal C] : Over (⊤_ C) ≌ C :=
+  CategoryTheory.Equivalence.mk (Over.forget _) (Functor.toOverTerminal C)
+    (NatIso.ofComponents (fun X => Over.isoMk (Iso.refl _)))
+    (NatIso.ofComponents (fun X => Iso.refl _))
+
+namespace Over
+
+variable {C}
 
 /--
 The functor from `C` to `Over X` which sends `Y : C` to `π₁ : X ⨯ Y ⟶ X`, sometimes denoted `X*`.
 -/
 @[simps! obj_left obj_hom map_left]
-def star [HasBinaryProducts C] : C ⥤ Over X :=
+def star [HasBinaryProducts C] (X : C) : C ⥤ Over X :=
   cofree _ ⋙ coalgebraToOver X
 
-/-- The functor `Over.forget X : Over X ⥤ C` has a right adjoint given by `star X`.
+lemma star_map [HasBinaryProducts C] {X : C} {Y Z : C} (f : Y ⟶ Z) :
+    (star X).map f = Over.homMk (prod.map (𝟙 X) f) (by aesop) := by
+  simp [star]
 
+variable (X : C)
+
+/-- The functor `Over.forget X : Over X ⥤ C` has a right adjoint given by `star X`.
 Note that the binary products assumption is necessary: the existence of a right adjoint to
 `Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`.
 -/
@@ -106,11 +312,100 @@ def forgetAdjStar [HasBinaryProducts C] : forget X ⊣ star X :=
 instance [HasBinaryProducts C] : (forget X).IsLeftAdjoint  :=
   ⟨_, ⟨forgetAdjStar X⟩⟩
 
+namespace forgetAdjStar
+
+variable [HasBinaryProducts C]
+
+theorem unit_app {I : C} (X : Over I): (Over.forgetAdjStar I).unit.app X =
+    Over.homMk (prod.lift X.hom (𝟙 X.left)) := by
+  ext
+  simp [Over.forgetAdjStar, Adjunction.comp, Equivalence.symm]
+
+theorem counit_app {I : C} (X : C) :
+    ((Over.forgetAdjStar I).counit.app X) = prod.snd := by
+  simp [Over.forgetAdjStar, Adjunction.comp, Equivalence.symm]
+
+theorem homEquiv {I : C} (X : Over I) (A : C) (f : X.left ⟶ A) :
+    ((Over.forgetAdjStar I).homEquiv X A) f =
+    Over.homMk (prod.lift X.hom f) := by
+  rw [Adjunction.homEquiv_unit, unit_app]
+  ext
+  simp
+
+theorem homEquiv_symm {I : C} (X : Over I) (A : C) (f : X ⟶ (Over.star I).obj A) :
+     ((Over.forgetAdjStar I).homEquiv X A).symm f = f.left ≫ prod.snd := by
+   rw [Adjunction.homEquiv_counit, counit_app]
+   simp
+
+end forgetAdjStar
+
 end Over
+
+namespace Adjunction
+
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+
+/-- A right adjoint to the forward functor of an equivalence is naturally isomorphic to the
+inverse functor of the equivalence. -/
+def functorRightAdjointIsoInverse (e : D ≌ C) (R : C ⥤ D) (adj : e.functor ⊣ R) :
+    R ≅ e.inverse :=
+  conjugateIsoEquiv adj ((e.functor).asEquivalence.toAdjunction) (Iso.refl _) ≪≫
+    (Functor.asEquivalenceInverseNatIso e)
+
+end Adjunction
+
+namespace Over
+
+/-- `star (⊤_ C) : C ⥤ Over (⊤_ C)` is naturally isomorphic to `Functor.toOverTerminal C`. -/
+def starTerminalIso [HasTerminal C] [HasBinaryProducts C] :
+    star (⊤_ C) ≅ Functor.toOverTerminal C := by
+  apply Adjunction.functorRightAdjointIsoInverse
+    (equivOverTerminal C) (star (⊤_ C)) (forgetAdjStar (⊤_ C))
+
+
+variable {C}
+
+/-- A natural isomorphism between the functors `star X` and `star Y ⋙ pullback f`
+for any morphism `f : X ⟶ Y`. -/
+def starPullbackIso [HasBinaryProducts C] [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
+    star Y ⋙ pullback f ≅ star X :=
+  conjugateIsoEquiv ((mapPullbackAdj f).comp (forgetAdjStar Y)) (forgetAdjStar X) (mapForget f)
+
+#check star_obj_hom
+#check Over
+
+/-- `Over.pullback` is isomorphic to `Over.star` up to the iterated slice equivlanece. -/
+def pullbackIso [HasFiniteWidePullbacks C] {X Y : C} (f : X ⟶ Y) :
+    star (Over.mk f) ⋙ (Over.mk f).iteratedSliceEquiv.functor ≅ pullback f := by
+  refine NatIso.ofComponents ?_ ?_
+  · intro A
+    simp only [Functor.comp_obj]
+    dsimp
+    apply (sigmaReindexIsoProdMk f A).symm
+    refine Over.isoMk ?_ ?_
+    · dsimp
+      apply sigmaReindexIsoProdMk
+    · sorry
+
+    simp [star_obj_hom, pullback_obj_hom]
+    apply sigmaReindexIsoProdMk
+    congr 1
+
+    have : (prod.fst (X:= (mk f)) (Y:= A)).left = (pullback.snd A.hom f) := by sorry
+    exact Iso.refl (congr_arg Over.mk (by simp [Over.sigmaReindexIsoProdMk]))
+
+  · sorry
+
+
+end Over
+
+@[deprecated (since := "2024-05-18")] noncomputable alias star := Over.star
+
+@[deprecated (since := "2024-05-18")] noncomputable alias forgetAdjStar := Over.forgetAdjStar
 
 namespace Under
 
-variable [HasPushouts C]
+variable {C} [HasPushouts C]
 
 /-- When `C` has pushouts, a morphism `f : X ⟶ Y` induces a functor `Under X ⥤ Under Y`,
 by pushing a morphism forward along `f`. -/
