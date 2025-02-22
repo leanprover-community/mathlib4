@@ -710,7 +710,7 @@ theorem mul_mem_connectedComponent_one {G : Type*} [TopologicalSpace G] [MulOneC
 
 @[to_additive]
 theorem inv_mem_connectedComponent_one {G : Type*} [TopologicalSpace G] [Group G]
-    [TopologicalGroup G] {g : G} (hg : g ∈ connectedComponent (1 : G)) :
+    [ContinuousInv G] {g : G} (hg : g ∈ connectedComponent (1 : G)) :
     g⁻¹ ∈ connectedComponent (1 : G) := by
   rw [← inv_one]
   exact
@@ -831,7 +831,7 @@ is open iff `φ⁻¹ V` is open). Then `φ` is an open quotient map, and in part
 surjective additive group homomorphism. Assume furthermore that `φ` is a quotient map (i.e., `V ⊆ B`
 is open iff `φ⁻¹ V` is open). Then `φ` is an open quotient map, and in particular an open map."]
 lemma MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
-    [TopologicalSpace A] [TopologicalGroup A] {B : Type*} [Group B] [TopologicalSpace B]
+    [TopologicalSpace A] [ContinuousMul A] {B : Type*} [Group B] [TopologicalSpace B]
     {F : Type*} [FunLike F A B] [MonoidHomClass F A B] {φ : F}
     (hφ : IsQuotientMap φ) : IsOpenQuotientMap φ where
     surjective := hφ.surjective

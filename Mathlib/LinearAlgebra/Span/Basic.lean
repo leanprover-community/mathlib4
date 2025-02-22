@@ -379,7 +379,7 @@ theorem prod_sup_prod : prod p q₁ ⊔ prod p' q₁' = prod (p ⊔ p') (q₁ �
 /-- If a bilinear map takes values in a submodule along two sets, then the same is true along
 the span of these sets. -/
 lemma _root_.LinearMap.BilinMap.apply_apply_mem_of_mem_span {R M N P : Type*} [CommSemiring R]
-    [AddCommGroup M] [AddCommMonoid N] [AddCommMonoid P] [Module R M] [Module R N] [Module R P]
+    [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [Module R M] [Module R N] [Module R P]
     (P' : Submodule R P) (s : Set M) (t : Set N)
     (B : M →ₗ[R] N →ₗ[R] P) (hB : ∀ x ∈ s, ∀ y ∈ t, B x y ∈ P')
     (x : M) (y : N) (hx : x ∈ span R s) (hy : y ∈ span R t) :

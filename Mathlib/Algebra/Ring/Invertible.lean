@@ -32,7 +32,7 @@ theorem one_sub_invOf_two [Ring α] [Invertible (2 : α)] : 1 - (⅟ 2 : α) = �
 theorem invOf_two_add_invOf_two [NonAssocSemiring α] [Invertible (2 : α)] :
     (⅟ 2 : α) + (⅟ 2 : α) = 1 := by rw [← two_mul, mul_invOf_self]
 
-theorem pos_of_invertible_cast [Semiring α] [Nontrivial α] (n : ℕ) [Invertible (n : α)] : 0 < n :=
+theorem pos_of_invertible_cast [NonAssocSemiring α] [Nontrivial α] (n : ℕ) [Invertible (n : α)] : 0 < n :=
   Nat.zero_lt_of_ne_zero fun h => Invertible.ne_zero (n : α) (h ▸ Nat.cast_zero)
 
 theorem invOf_add_invOf [Semiring α] (a b : α) [Invertible a] [Invertible b] :

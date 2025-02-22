@@ -63,12 +63,12 @@ theorem mul_def [Mul M] [Mul N] (p q : M × N) : p * q = (p.1 * q.1, p.2 * q.2) 
   rfl
 
 @[to_additive]
-theorem one_mk_mul_one_mk [Monoid M] [Mul N] (b₁ b₂ : N) :
+theorem one_mk_mul_one_mk [MulOneClass M] [Mul N] (b₁ b₂ : N) :
     ((1 : M), b₁) * (1, b₂) = (1, b₁ * b₂) := by
   rw [mk_mul_mk, mul_one]
 
 @[to_additive]
-theorem mk_one_mul_mk_one [Mul M] [Monoid N] (a₁ a₂ : M) :
+theorem mk_one_mul_mk_one [Mul M] [MulOneClass N] (a₁ a₂ : M) :
     (a₁, (1 : N)) * (a₂, 1) = (a₁ * a₂, 1) := by
   rw [mk_mul_mk, mul_one]
 

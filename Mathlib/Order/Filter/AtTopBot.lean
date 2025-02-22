@@ -341,7 +341,7 @@ theorem tendsto_atBot_mono [Preorder β] {l : Filter α} {f g : α → β} (h : 
     Tendsto g l atBot → Tendsto f l atBot :=
   @tendsto_atTop_mono _ βᵒᵈ _ _ _ _ h
 
-lemma atTop_eq_generate_of_forall_exists_le [LinearOrder α] {s : Set α} (hs : ∀ x, ∃ y ∈ s, x ≤ y) :
+lemma atTop_eq_generate_of_forall_exists_le [Preorder α] {s : Set α} (hs : ∀ x, ∃ y ∈ s, x ≤ y) :
     (atTop : Filter α) = generate (Ici '' s) := by
   rw [atTop_eq_generate_Ici]
   apply le_antisymm

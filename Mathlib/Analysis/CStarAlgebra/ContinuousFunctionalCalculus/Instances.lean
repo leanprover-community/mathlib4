@@ -278,7 +278,7 @@ instance Nonneg.instNonUnitalContinuousFunctionalCalculus :
     (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
 
 open NNReal in
-lemma NNReal.spectrum_nonempty {A : Type*} [Ring A] [StarRing A] [PartialOrder A]
+lemma NNReal.spectrum_nonempty {A : Type*} [Ring A] [StarRing A] [LE A]
     [TopologicalSpace A] [Algebra ℝ≥0 A] [ContinuousFunctionalCalculus ℝ≥0 (fun x : A ↦ 0 ≤ x)]
     [Nontrivial A] {a : A} (ha : 0 ≤ a) : (spectrum ℝ≥0 a).Nonempty :=
   CFC.spectrum_nonempty ℝ≥0 a ha

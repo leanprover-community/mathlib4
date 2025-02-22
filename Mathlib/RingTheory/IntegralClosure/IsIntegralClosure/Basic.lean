@@ -368,7 +368,7 @@ protected theorem isIntegral [Algebra R A] [IsScalarTower R A B] (x : A) : IsInt
 theorem isIntegral_algebra [Algebra R A] [IsScalarTower R A B] : Algebra.IsIntegral R A :=
   ⟨fun x => IsIntegralClosure.isIntegral R B x⟩
 
-theorem noZeroSMulDivisors [Algebra R A] [IsScalarTower R A B] [NoZeroSMulDivisors R B] :
+theorem noZeroSMulDivisors [SMul R A] [IsScalarTower R A B] [NoZeroSMulDivisors R B] :
     NoZeroSMulDivisors R A := by
   refine
     Function.Injective.noZeroSMulDivisors _ (IsIntegralClosure.algebraMap_injective A R B)

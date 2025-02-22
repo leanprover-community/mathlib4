@@ -34,7 +34,7 @@ it is a member of the support of a member of the collection:
 
 variable {ι M : Type*} [DecidableEq ι]
 
-theorem List.support_sum_subset [AddMonoid M] (l : List (ι →₀ M)) :
+theorem List.support_sum_subset [AddZeroClass M] (l : List (ι →₀ M)) :
     l.sum.support ⊆ l.foldr (Finsupp.support · ⊔ ·) ∅ := by
   induction' l with hd tl IH
   · simp
@@ -72,7 +72,7 @@ theorem Finset.mem_sup_support_iff [Zero M] {s : Finset (ι →₀ M)} {x : ι} 
 
 open scoped Function -- required for scoped `on` notation
 
-theorem List.support_sum_eq [AddMonoid M] (l : List (ι →₀ M))
+theorem List.support_sum_eq [AddZeroClass M] (l : List (ι →₀ M))
     (hl : l.Pairwise (_root_.Disjoint on Finsupp.support)) :
     l.sum.support = l.foldr (Finsupp.support · ⊔ ·) ∅ := by
   induction' l with hd tl IH

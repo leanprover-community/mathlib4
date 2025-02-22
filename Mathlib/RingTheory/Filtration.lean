@@ -452,7 +452,7 @@ alias Ideal.isIdempotentElem_iff_eq_bot_or_top_of_localRing :=
   Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing
 
 /-- **Krull's intersection theorem** for noetherian domains. -/
-theorem Ideal.iInf_pow_eq_bot_of_isDomain [IsNoetherianRing R] [IsDomain R] (h : I ≠ ⊤) :
+theorem Ideal.iInf_pow_eq_bot_of_isDomain [IsNoetherianRing R] [IsRightCancelMulZero R] (h : I ≠ ⊤) :
     ⨅ i : ℕ, I ^ i = ⊥ := by
   rw [eq_bot_iff]
   intro x hx

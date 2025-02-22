@@ -60,7 +60,7 @@ theorem eq_zero (H : B.IsRefl) : ∀ {x y : M}, B x y = 0 → B y x = 0 := fun {
 protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsRefl) : (-B).IsRefl := fun x y =>
   neg_eq_zero.mpr ∘ hB x y ∘ neg_eq_zero.mp
 
-protected theorem smul {α} [CommSemiring α] [Module α R] [SMulCommClass R α R]
+protected theorem smul {α} [Semiring α] [Module α R] [SMulCommClass R α R]
     [NoZeroSMulDivisors α R] (a : α) {B : BilinForm R M} (hB : B.IsRefl) :
     (a • B).IsRefl := fun _ _ h =>
   (smul_eq_zero.mp h).elim (fun ha => smul_eq_zero_of_left ha _) fun hBz =>
@@ -129,7 +129,7 @@ theorem neg_eq (H : B₁.IsAlt) (x y : M₁) : -B₁ x y = B₁ y x := LinearMap
 
 theorem isRefl (H : B₁.IsAlt) : B₁.IsRefl := LinearMap.IsAlt.isRefl H
 
-theorem eq_of_add_add_eq_zero [IsCancelAdd R] {a b c : M} (H : B.IsAlt) (hAdd : a + b + c = 0) :
+theorem eq_of_add_add_eq_zero [IsLeftCancelAdd R] {a b c : M} (H : B.IsAlt) (hAdd : a + b + c = 0) :
     B a b = B b c := LinearMap.IsAlt.eq_of_add_add_eq_zero H hAdd
 
 protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) : (B₁ + B₂).IsAlt :=

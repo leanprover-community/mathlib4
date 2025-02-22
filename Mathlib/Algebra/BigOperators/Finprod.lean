@@ -297,7 +297,7 @@ theorem finsum_smul {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [NoZero
 
 /-- The `NoZeroSMulDivisors` makes sure that the result holds even when the support of `f` is
 infinite. For a more usual version assuming `(support f).Finite` instead, see `smul_finsum'`. -/
-theorem smul_finsum {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
+theorem smul_finsum {R M : Type*} [Semiring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
     (c : R) (f : ι → M) : (c • ∑ᶠ i, f i) = ∑ᶠ i, c • f i := by
   rcases eq_or_ne c 0 with (rfl | hc)
   · simp
@@ -1015,11 +1015,11 @@ theorem prod_finprod_comm (s : Finset α) (f : α → β → M) (h : ∀ a ∈ s
     (∏ a ∈ s, ∏ᶠ b : β, f a b) = ∏ᶠ b : β, ∏ a ∈ s, f a b :=
   (finprod_prod_comm s (fun b a => f a b) h).symm
 
-theorem mul_finsum {R : Type*} [Semiring R] (f : α → R) (r : R) (h : (support f).Finite) :
+theorem mul_finsum {R : Type*} [NonUnitalNonAssocSemiring R] (f : α → R) (r : R) (h : (support f).Finite) :
     (r * ∑ᶠ a : α, f a) = ∑ᶠ a : α, r * f a :=
   (AddMonoidHom.mulLeft r).map_finsum h
 
-theorem finsum_mul {R : Type*} [Semiring R] (f : α → R) (r : R) (h : (support f).Finite) :
+theorem finsum_mul {R : Type*} [NonUnitalNonAssocSemiring R] (f : α → R) (r : R) (h : (support f).Finite) :
     (∑ᶠ a : α, f a) * r = ∑ᶠ a : α, f a * r :=
   (AddMonoidHom.mulRight r).map_finsum h
 

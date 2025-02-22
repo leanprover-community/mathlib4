@@ -181,7 +181,7 @@ theorem algebraMap_end_apply (a : R) (m : M) : algebraMap R (End S M) a m = a �
   rfl
 
 @[simp]
-theorem ker_algebraMap_end (K : Type u) (V : Type v) [Field K] [AddCommGroup V] [Module K V] (a : K)
+theorem ker_algebraMap_end (K : Type u) (V : Type v) [Field K] [AddCommMonoid V] [Module K V] (a : K)
     (ha : a ≠ 0) : LinearMap.ker ((algebraMap K (End K V)) a) = ⊥ :=
   LinearMap.ker_smul _ _ ha
 
@@ -287,7 +287,7 @@ instance (R : Type*) [NonAssocSemiring R] : FaithfulSMul R R := ⟨fun {r₁ r�
 
 variable (R A : Type*) [CommSemiring R] [Semiring A]
 
-lemma faithfulSMul_iff_injective_smul_one [Module R A] [IsScalarTower R A A] :
+lemma faithfulSMul_iff_injective_smul_one [SMul R A] [IsScalarTower R A A] :
     FaithfulSMul R A ↔ Injective (fun r : R ↦ r • (1 : A)) := by
   refine ⟨fun ⟨h⟩ {r₁ r₂} hr ↦ h fun a ↦ ?_, fun h ↦ ⟨fun {r₁ r₂} hr ↦ h ?_⟩⟩
   · simp only at hr
@@ -390,8 +390,8 @@ theorem algebraMap_smul (r : R) (m : M) : (algebraMap R A) r • m = r • m :=
   (algebra_compatible_smul A r m).symm
 
 /-- If `M` is `A`-torsion free and `algebraMap R A` is injective, `M` is also `R`-torsion free. -/
-theorem NoZeroSMulDivisors.trans_faithfulSMul (R A M : Type*) [CommRing R] [Ring A] [Algebra R A]
-    [FaithfulSMul R A] [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
+theorem NoZeroSMulDivisors.trans_faithfulSMul (R A M : Type*) [CommRing R] [Semiring A] [Algebra R A]
+    [FaithfulSMul R A] [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
     [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M where
   eq_zero_or_eq_zero_of_smul_eq_zero hx := by
     rw [← algebraMap_smul (A := A)] at hx

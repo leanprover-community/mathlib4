@@ -213,7 +213,7 @@ theorem weightedSMul_union (s t : Set α) (_hs : MeasurableSet s) (ht : Measurab
     (weightedSMul μ (s ∪ t) : F →L[ℝ] F) = weightedSMul μ s + weightedSMul μ t :=
   weightedSMul_union' s t ht hs_finite ht_finite hdisj
 
-theorem weightedSMul_smul [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] (c : 𝕜)
+theorem weightedSMul_smul [NormedField 𝕜] [SMul 𝕜 F] [SMulCommClass ℝ 𝕜 F] (c : 𝕜)
     (s : Set α) (x : F) : weightedSMul μ s (c • x) = c • weightedSMul μ s x := by
   simp_rw [weightedSMul_apply, smul_comm]
 

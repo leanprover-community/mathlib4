@@ -512,7 +512,7 @@ noncomputable section
 
 /-- Auxiliary lemma for `toModuleMonoidAlgebra`. -/
 theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V W : Type*)
-    [AddCommGroup V] [AddCommGroup W] [Module k V] [Module k W] (ρ : G →* V →ₗ[k] V)
+    [AddCommMonoid V] [AddCommMonoid W] [Module k V] [Module k W] (ρ : G →* V →ₗ[k] V)
     (σ : G →* W →ₗ[k] W) (f : V →ₗ[k] W) (w : ∀ g : G, f.comp (ρ g) = (σ g).comp f)
     (r : MonoidAlgebra k G) (x : V) :
     f ((((MonoidAlgebra.lift k G (V →ₗ[k] V)) ρ) r) x) =

@@ -630,7 +630,7 @@ theorem mem_mrange {f : F} {y : N} : y ∈ mrange f ↔ ∃ x, f x = y :=
   Iff.rfl
 
 @[to_additive]
-lemma mrange_comp {O : Type*} [Monoid O] (f : N →* O) (g : M →* N) :
+lemma mrange_comp {O : Type*} [MulOneClass O] (f : N →* O) (g : M →* N) :
     mrange (f.comp g) = (mrange g).map f := SetLike.coe_injective <| Set.range_comp f _
 
 @[to_additive]

@@ -103,7 +103,7 @@ theorem Squarefree.gcd_left {a : α} (b : α) (ha : Squarefree a) : Squarefree (
 
 end SquarefreeGcdOfSquarefree
 
-theorem squarefree_iff_emultiplicity_le_one [CommMonoid R] (r : R) :
+theorem squarefree_iff_emultiplicity_le_one [Monoid R] (r : R) :
     Squarefree r ↔ ∀ x : R, emultiplicity x r ≤ 1 ∨ IsUnit x := by
   refine forall_congr' fun a => ?_
   rw [← sq, pow_dvd_iff_le_emultiplicity, or_iff_not_imp_left, not_le, imp_congr _ Iff.rfl]

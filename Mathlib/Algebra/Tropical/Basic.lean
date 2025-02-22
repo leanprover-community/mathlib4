@@ -421,11 +421,11 @@ instance [AddCommGroup R] : CommGroup (Tropical R) :=
   { instGroupTropical with mul_comm := fun _ _ => untrop_injective (add_comm _ _) }
 
 @[simp]
-theorem untrop_zpow [AddGroup R] (x : Tropical R) (n : ℤ) : untrop (x ^ n) = n • untrop x :=
+theorem untrop_zpow [SubNegMonoid R] (x : Tropical R) (n : ℤ) : untrop (x ^ n) = n • untrop x :=
   rfl
 
 @[simp]
-theorem trop_zsmul [AddGroup R] (x : R) (n : ℤ) : trop (n • x) = trop x ^ n :=
+theorem trop_zsmul [SubNegMonoid R] (x : R) (n : ℤ) : trop (n • x) = trop x ^ n :=
   rfl
 
 end Monoid
@@ -496,7 +496,7 @@ theorem succ_nsmul {R} [LinearOrder R] [OrderTop R] (x : Tropical R) (n : ℕ) :
 -- Requires `zero_eq_bot` to be true
 -- lemma add_eq_zero_iff {a b : tropical R} :
 --   a + b = 1 ↔ a = 1 ∨ b = 1 := sorry
-theorem mul_eq_zero_iff {R : Type*} [LinearOrderedAddCommMonoid R] {a b : Tropical (WithTop R)} :
+theorem mul_eq_zero_iff {R : Type*} [Add R] {a b : Tropical (WithTop R)} :
     a * b = 0 ↔ a = 0 ∨ b = 0 := by simp [← untrop_inj_iff, WithTop.add_eq_top]
 
 instance {R : Type*} [LinearOrderedAddCommMonoid R] : NoZeroDivisors (Tropical (WithTop R)) :=

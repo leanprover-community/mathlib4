@@ -204,7 +204,7 @@ theorem LinearMap.dualMap_id : (LinearMap.id : M₁ →ₗ[R] M₁).dualMap = Li
   ext
   rfl
 
-theorem LinearMap.dualMap_comp_dualMap {M₃ : Type*} [AddCommGroup M₃] [Module R M₃]
+theorem LinearMap.dualMap_comp_dualMap {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃]
     (f : M₁ →ₗ[R] M₂) (g : M₂ →ₗ[R] M₃) : f.dualMap.comp g.dualMap = (g.comp f).dualMap :=
   rfl
 
@@ -239,7 +239,7 @@ theorem LinearEquiv.dualMap_symm {f : M₁ ≃ₗ[R] M₂} :
     (LinearEquiv.dualMap f).symm = LinearEquiv.dualMap f.symm :=
   rfl
 
-theorem LinearEquiv.dualMap_trans {M₃ : Type*} [AddCommGroup M₃] [Module R M₃] (f : M₁ ≃ₗ[R] M₂)
+theorem LinearEquiv.dualMap_trans {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃] (f : M₁ ≃ₗ[R] M₂)
     (g : M₂ ≃ₗ[R] M₃) : g.dualMap.trans f.dualMap = (f.trans g).dualMap :=
   rfl
 
@@ -618,13 +618,13 @@ def evalEquiv : M ≃ₗ[R] Dual R (Dual R M) :=
   ext; simp
 
 @[simp] lemma Dual.eval_comp_comp_evalEquiv_eq
-    {M' : Type*} [AddCommGroup M'] [Module R M'] {f : M →ₗ[R] M'} :
+    {M' : Type*} [AddCommMonoid M'] [Module R M'] {f : M →ₗ[R] M'} :
     Dual.eval R M' ∘ₗ f ∘ₗ (evalEquiv R M).symm = f.dualMap.dualMap := by
   rw [← LinearMap.comp_assoc, LinearEquiv.comp_toLinearMap_symm_eq,
     evalEquiv_toLinearMap, eval_naturality]
 
 lemma dualMap_dualMap_eq_iff_of_injective
-    {M' : Type*} [AddCommGroup M'] [Module R M'] {f g : M →ₗ[R] M'}
+    {M' : Type*} [AddCommMonoid M'] [Module R M'] {f g : M →ₗ[R] M'}
     (h : Injective (Dual.eval R M')) :
     f.dualMap.dualMap = g.dualMap.dualMap ↔ f = g := by
   simp only [← Dual.eval_comp_comp_evalEquiv_eq]

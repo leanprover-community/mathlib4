@@ -42,13 +42,13 @@ theorem continuous_algebraMap [ContinuousSMul R A] : Continuous (algebraMap R A)
   rw [algebraMap_eq_smul_one']
   exact continuous_id.smul continuous_const
 
-theorem continuous_algebraMap_iff_smul [TopologicalSemiring A] :
+theorem continuous_algebraMap_iff_smul [ContinuousMul A] :
     Continuous (algebraMap R A) ↔ Continuous fun p : R × A => p.1 • p.2 := by
   refine ⟨fun h => ?_, fun h => have : ContinuousSMul R A := ⟨h⟩; continuous_algebraMap _ _⟩
   simp only [Algebra.smul_def]
   exact (h.comp continuous_fst).mul continuous_snd
 
-theorem continuousSMul_of_algebraMap [TopologicalSemiring A] (h : Continuous (algebraMap R A)) :
+theorem continuousSMul_of_algebraMap [ContinuousMul A] (h : Continuous (algebraMap R A)) :
     ContinuousSMul R A :=
   ⟨(continuous_algebraMap_iff_smul R A).1 h⟩
 
@@ -573,7 +573,7 @@ an algebra homomorphism, and a separate homeomorphism,
 along with a witness that as functions they are the same.
 -/
 theorem Subalgebra.topologicalClosure_comap_homeomorph (s : Subalgebra R A) {B : Type*}
-    [TopologicalSpace B] [Ring B] [TopologicalRing B] [Algebra R B] (f : B →ₐ[R] A) (f' : B ≃ₜ A)
+    [TopologicalSpace B] [Semiring B] [TopologicalSemiring B] [Algebra R B] (f : B →ₐ[R] A) (f' : B ≃ₜ A)
     (w : (f : B → A) = f') : s.topologicalClosure.comap f = (s.comap f).topologicalClosure := by
   apply SetLike.ext'
   simp only [Subalgebra.topologicalClosure_coe]

@@ -66,7 +66,7 @@ protected theorem Periodic.div [Add α] [Div β] (hf : Periodic f c) (hg : Perio
     Periodic (f / g) c := by simp_all
 
 @[to_additive]
-theorem _root_.List.periodic_prod [Add α] [Monoid β] (l : List (α → β))
+theorem _root_.List.periodic_prod [Add α] [MulOneClass β] (l : List (α → β))
     (hl : ∀ f ∈ l, Periodic f c) : Periodic l.prod c := by
   induction l with
   | nil => simp
@@ -162,7 +162,7 @@ theorem Periodic.sub_const [AddCommGroup α] (h : Periodic f c) (a : α) :
 theorem Periodic.nsmul [AddMonoid α] (h : Periodic f c) (n : ℕ) : Periodic f (n • c) := by
   induction n <;> simp_all [add_nsmul, ← add_assoc, zero_nsmul]
 
-theorem Periodic.nat_mul [Semiring α] (h : Periodic f c) (n : ℕ) : Periodic f (n * c) := by
+theorem Periodic.nat_mul [NonAssocSemiring α] (h : Periodic f c) (n : ℕ) : Periodic f (n * c) := by
   simpa only [nsmul_eq_mul] using h.nsmul n
 
 theorem Periodic.neg_nsmul [AddGroup α] (h : Periodic f c) (n : ℕ) : Periodic f (-(n • c)) :=
@@ -214,7 +214,7 @@ protected theorem Periodic.neg_eq [AddGroup α] (h : Periodic f c) : f (-c) = f 
 protected theorem Periodic.nsmul_eq [AddMonoid α] (h : Periodic f c) (n : ℕ) : f (n • c) = f 0 :=
   (h.nsmul n).eq
 
-theorem Periodic.nat_mul_eq [Semiring α] (h : Periodic f c) (n : ℕ) : f (n * c) = f 0 :=
+theorem Periodic.nat_mul_eq [NonAssocSemiring α] (h : Periodic f c) (n : ℕ) : f (n * c) = f 0 :=
   (h.nat_mul n).eq
 
 theorem Periodic.zsmul_eq [AddGroup α] (h : Periodic f c) (n : ℤ) : f (n • c) = f 0 :=
@@ -315,7 +315,7 @@ protected theorem Antiperiodic.periodic [AddMonoid α] [InvolutiveNeg β]
 
 /-- If a function is `antiperiodic` with antiperiod `c`, then it is also `Periodic` with period
   `2 * c`. -/
-protected theorem Antiperiodic.periodic_two_mul [Semiring α] [InvolutiveNeg β]
+protected theorem Antiperiodic.periodic_two_mul [NonAssocSemiring α] [InvolutiveNeg β]
     (h : Antiperiodic f c) : Periodic f (2 * c) := nsmul_eq_mul 2 c ▸ h.periodic
 
 protected theorem Antiperiodic.eq [AddZeroClass α] [Neg β] (h : Antiperiodic f c) : f c = -f 0 := by
@@ -324,7 +324,7 @@ protected theorem Antiperiodic.eq [AddZeroClass α] [Neg β] (h : Antiperiodic f
 theorem Antiperiodic.even_nsmul_periodic [AddMonoid α] [InvolutiveNeg β] (h : Antiperiodic f c)
     (n : ℕ) : Periodic f ((2 * n) • c) := mul_nsmul c 2 n ▸ h.periodic.nsmul n
 
-theorem Antiperiodic.nat_even_mul_periodic [Semiring α] [InvolutiveNeg β] (h : Antiperiodic f c)
+theorem Antiperiodic.nat_even_mul_periodic [NonAssocSemiring α] [InvolutiveNeg β] (h : Antiperiodic f c)
     (n : ℕ) : Periodic f (n * (2 * c)) :=
   h.periodic_two_mul.nat_mul n
 
@@ -367,7 +367,7 @@ theorem Antiperiodic.neg_eq [AddGroup α] [InvolutiveNeg β] (h : Antiperiodic f
     f (-c) = -f 0 := by
   simpa only [zero_add] using h.neg 0
 
-theorem Antiperiodic.nat_mul_eq_of_eq_zero [Semiring α] [NegZeroClass β] (h : Antiperiodic f c)
+theorem Antiperiodic.nat_mul_eq_of_eq_zero [NonAssocSemiring α] [NegZeroClass β] (h : Antiperiodic f c)
     (hi : f 0 = 0) : ∀ n : ℕ, f (n * c) = 0
   | 0 => by rwa [Nat.cast_zero, zero_mul]
   | n + 1 => by simp [add_mul, h _, Antiperiodic.nat_mul_eq_of_eq_zero h hi n]
@@ -418,7 +418,7 @@ theorem Antiperiodic.nsmul_sub_eq [AddCommGroup α] [AddGroup β] (h : Antiperio
     f (n • c - x) = (-1) ^ n • f (-x) := by
   simpa only [Int.reduceNeg, natCast_zsmul] using h.zsmul_sub_eq n
 
-theorem Antiperiodic.add_nat_mul_eq [Semiring α] [Ring β] (h : Antiperiodic f c) (n : ℕ) :
+theorem Antiperiodic.add_nat_mul_eq [NonAssocSemiring α] [Ring β] (h : Antiperiodic f c) (n : ℕ) :
     f (x + n * c) = (-1) ^ n * f x := by
   simpa only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow, Int.cast_neg,
     Int.cast_one] using h.add_nsmul_eq n
@@ -455,7 +455,7 @@ theorem Antiperiodic.const_smul [AddMonoid α] [Neg β] [Group γ] [DistribMulAc
     (h : Antiperiodic f c) (a : γ) : Antiperiodic (fun x => f (a • x)) (a⁻¹ • c) := fun x => by
   simpa only [smul_add, smul_inv_smul] using h (a • x)
 
-theorem Antiperiodic.const_smul₀ [AddCommMonoid α] [Neg β] [DivisionSemiring γ] [Module γ α]
+theorem Antiperiodic.const_smul₀ [AddMonoid α] [Neg β] [GroupWithZero γ] [DistribMulAction γ α]
     (h : Antiperiodic f c) {a : γ} (ha : a ≠ 0) : Antiperiodic (fun x => f (a • x)) (a⁻¹ • c) :=
   fun x => by simpa only [smul_add, smul_inv_smul₀ ha] using h (a • x)
 
@@ -467,7 +467,7 @@ theorem Antiperiodic.const_inv_smul [AddMonoid α] [Neg β] [Group γ] [DistribM
     (h : Antiperiodic f c) (a : γ) : Antiperiodic (fun x => f (a⁻¹ • x)) (a • c) := by
   simpa only [inv_inv] using h.const_smul a⁻¹
 
-theorem Antiperiodic.const_inv_smul₀ [AddCommMonoid α] [Neg β] [DivisionSemiring γ] [Module γ α]
+theorem Antiperiodic.const_inv_smul₀ [AddCommMonoid α] [Neg β] [DivisionSemiring γ] [DistribMulAction γ α]
     (h : Antiperiodic f c) {a : γ} (ha : a ≠ 0) : Antiperiodic (fun x => f (a⁻¹ • x)) (a • c) := by
   simpa only [inv_inv] using h.const_smul₀ (inv_ne_zero ha)
 
@@ -491,21 +491,21 @@ theorem Antiperiodic.div_inv [DivisionSemiring α] [Neg β] (h : Antiperiodic f 
     (ha : a ≠ 0) : Antiperiodic (fun x => f (x / a)) (c * a) := by
   simpa only [div_eq_mul_inv] using h.mul_const_inv ha
 
-theorem Antiperiodic.add [AddGroup α] [InvolutiveNeg β] (h1 : Antiperiodic f c₁)
+theorem Antiperiodic.add [AddSemigroup α] [InvolutiveNeg β] (h1 : Antiperiodic f c₁)
     (h2 : Antiperiodic f c₂) : Periodic f (c₁ + c₂) := by simp_all [← add_assoc]
 
 theorem Antiperiodic.sub [AddGroup α] [InvolutiveNeg β] (h1 : Antiperiodic f c₁)
     (h2 : Antiperiodic f c₂) : Periodic f (c₁ - c₂) := by
   simpa only [sub_eq_add_neg] using h1.add h2.neg
 
-theorem Periodic.add_antiperiod [AddGroup α] [Neg β] (h1 : Periodic f c₁) (h2 : Antiperiodic f c₂) :
+theorem Periodic.add_antiperiod [AddSemigroup α] [Neg β] (h1 : Periodic f c₁) (h2 : Antiperiodic f c₂) :
     Antiperiodic f (c₁ + c₂) := by simp_all [← add_assoc]
 
 theorem Periodic.sub_antiperiod [AddGroup α] [InvolutiveNeg β] (h1 : Periodic f c₁)
     (h2 : Antiperiodic f c₂) : Antiperiodic f (c₁ - c₂) := by
   simpa only [sub_eq_add_neg] using h1.add_antiperiod h2.neg
 
-theorem Periodic.add_antiperiod_eq [AddGroup α] [Neg β] (h1 : Periodic f c₁)
+theorem Periodic.add_antiperiod_eq [AddMonoid α] [Neg β] (h1 : Periodic f c₁)
     (h2 : Antiperiodic f c₂) : f (c₁ + c₂) = -f 0 :=
   (h1.add_antiperiod h2).eq
 

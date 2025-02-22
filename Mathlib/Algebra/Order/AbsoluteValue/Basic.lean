@@ -346,7 +346,7 @@ lemma not_isNontrivial_apply {v : AbsoluteValue R S} (hv : ¬ v.IsNontrivial) {x
     v x = 1 :=
   v.not_isNontrivial_iff.mp hv _ hx
 
-lemma IsNontrivial.exists_abv_gt_one {F S : Type*} [Field F] [LinearOrderedField S]
+lemma IsNontrivial.exists_abv_gt_one {F S : Type*} [DivisionRing F] [LinearOrderedField S]
     {v : AbsoluteValue F S} (h : v.IsNontrivial) :
     ∃ x, 1 < v x := by
   obtain ⟨x, hx₀, hx₁⟩ := h
@@ -356,7 +356,7 @@ lemma IsNontrivial.exists_abv_gt_one {F S : Type*} [Field F] [LinearOrderedField
     exact (one_lt_inv₀ <| v.pos hx₀).mpr h
   · exact ⟨x, h⟩
 
-lemma IsNontrivial.exists_abv_lt_one {F S : Type*} [Field F] [LinearOrderedField S]
+lemma IsNontrivial.exists_abv_lt_one {F S : Type*} [DivisionRing F] [LinearOrderedField S]
     {v : AbsoluteValue F S} (h : v.IsNontrivial) :
     ∃ x ≠ 0, v x < 1 := by
   obtain ⟨y, hy⟩ := h.exists_abv_gt_one

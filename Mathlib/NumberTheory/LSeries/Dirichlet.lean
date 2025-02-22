@@ -84,7 +84,7 @@ end Moebius
 open Nat
 
 open scoped ArithmeticFunction.zeta in
-lemma ArithmeticFunction.const_one_eq_zeta {R : Type*} [Semiring R] {n : ℕ} (hn : n ≠ 0) :
+lemma ArithmeticFunction.const_one_eq_zeta {R : Type*} [AddMonoidWithOne R] {n : ℕ} (hn : n ≠ 0) :
     (1 : ℕ → R) n = (ζ ·) n := by
   simp [hn]
 

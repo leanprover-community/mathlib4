@@ -724,14 +724,14 @@ theorem addSubmonoid_closure_setOf_eq_monomial :
   rintro _ ⟨n, a, rfl⟩
   exact ⟨n, a, Polynomial.ofFinsupp_single _ _⟩
 
-theorem addHom_ext {M : Type*} [AddMonoid M] {f g : R[X] →+ M}
+theorem addHom_ext {M : Type*} [AddZeroClass M] {f g : R[X] →+ M}
     (h : ∀ n a, f (monomial n a) = g (monomial n a)) : f = g :=
   AddMonoidHom.eq_of_eqOn_denseM addSubmonoid_closure_setOf_eq_monomial <| by
     rintro p ⟨n, a, rfl⟩
     exact h n a
 
 @[ext high]
-theorem addHom_ext' {M : Type*} [AddMonoid M] {f g : R[X] →+ M}
+theorem addHom_ext' {M : Type*} [AddZeroClass M] {f g : R[X] →+ M}
     (h : ∀ n, f.comp (monomial n).toAddMonoidHom = g.comp (monomial n).toAddMonoidHom) : f = g :=
   addHom_ext fun n => DFunLike.congr_fun (h n)
 
@@ -889,7 +889,7 @@ theorem sum_smul_index {S : Type*} [AddCommMonoid S] (p : R[X]) (b : R) (f : ℕ
     (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a => f n (b * a) :=
   Finsupp.sum_smul_index hf
 
-theorem sum_smul_index' {S T : Type*} [DistribSMul T R] [AddCommMonoid S] (p : R[X]) (b : T)
+theorem sum_smul_index' {S T : Type*} [SMulZeroClass T R] [AddCommMonoid S] (p : R[X]) (b : T)
     (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a => f n (b • a) :=
   Finsupp.sum_smul_index' hf
 

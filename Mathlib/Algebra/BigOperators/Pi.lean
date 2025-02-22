@@ -55,7 +55,7 @@ theorem prod_mk_prod {α β γ : Type*} [CommMonoid α] [CommMonoid β] (s : Fin
   Finset.induction_on s rfl (by simp +contextual [Prod.ext_iff])
 
 /-- decomposing `x : ι → R` as a sum along the canonical basis -/
-theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [Semiring R]
+theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [NonAssocSemiring R]
     (x : ι → R) : x = ∑ i, (x i) • fun j => if i = j then (1 : R) else 0 := by
   ext
   simp

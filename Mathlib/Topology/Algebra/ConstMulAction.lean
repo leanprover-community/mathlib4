@@ -173,7 +173,7 @@ theorem smul_closure_orbit_subset (c : M) (x : α) :
     c • closure (MulAction.orbit M x) ⊆ closure (MulAction.orbit M x) :=
   (smul_closure_subset c _).trans <| closure_mono <| MulAction.smul_orbit_subset _ _
 
-theorem isClosed_setOf_map_smul {N : Type*} [Monoid N] (α β) [MulAction M α] [MulAction N β]
+theorem isClosed_setOf_map_smul {N : Type*} [Monoid N] (α β) [SMul M α] [SMul N β]
     [TopologicalSpace β] [T2Space β] [ContinuousConstSMul N β] (σ : M → N) :
     IsClosed { f : α → β | ∀ c x, f (c • x) = σ c • f x } := by
   simp only [Set.setOf_forall]

@@ -14,7 +14,7 @@ import Mathlib.RingTheory.Congruence.Defs
 namespace RingCon
 
 /-- Congruence relation of a ring preserves finite sum indexed by a list. -/
-protected lemma listSum {ι S : Type*} [AddMonoid S] [Mul S]
+protected lemma listSum {ι S : Type*} [AddZeroClass S] [Mul S]
     (t : RingCon S) (l : List ι) {f g : ι → S} (h : ∀ i ∈ l, t (f i) (g i)) :
     t (l.map f).sum (l.map g).sum :=
   t.toAddCon.list_sum h

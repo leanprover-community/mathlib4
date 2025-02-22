@@ -235,13 +235,13 @@ protected theorem add_lt_add_of_lt_of_le [Preorder α] [AddLeftMono α]
     a + c < b + d :=
   (WithTop.add_lt_add_right hc hab).trans_le <| add_le_add_left hcd _
 
-lemma addLECancellable_of_ne_top [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
+lemma addLECancellable_of_ne_top [LE α] [ContravariantClass α α (· + ·) (· ≤ ·)]
     (ha : a ≠ ⊤) : AddLECancellable a := fun _b _c ↦ WithTop.le_of_add_le_add_left ha
 
 lemma addLECancellable_of_lt_top [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
     (ha : a < ⊤) : AddLECancellable a := addLECancellable_of_ne_top ha.ne
 
-lemma addLECancellable_coe [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)] (a : α) :
+lemma addLECancellable_coe [LE α] [ContravariantClass α α (· + ·) (· ≤ ·)] (a : α) :
     AddLECancellable (a : WithTop α) := addLECancellable_of_ne_top coe_ne_top
 
 lemma addLECancellable_iff_ne_top [Nonempty α] [Preorder α]

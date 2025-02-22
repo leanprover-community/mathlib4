@@ -166,7 +166,7 @@ theorem deriv_const_smul (c : R) (hf : DifferentiableAt 𝕜 f x) :
 
 /-- A variant of `deriv_const_smul` without differentiability assumption when the scalar
 multiplication is by field elements. -/
-lemma deriv_const_smul' {f : 𝕜 → F} {x : 𝕜} {R : Type*} [Field R] [Module R F] [SMulCommClass 𝕜 R F]
+lemma deriv_const_smul' {f : 𝕜 → F} {x : 𝕜} {R : Type*} [DivisionRing R] [Module R F] [SMulCommClass 𝕜 R F]
     [ContinuousConstSMul R F] (c : R) :
     deriv (fun y ↦ c • f y) x = c • deriv f x := by
   by_cases hf : DifferentiableAt 𝕜 f x

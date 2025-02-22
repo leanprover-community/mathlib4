@@ -1076,7 +1076,7 @@ instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by
 
 end ZMod
 
-theorem RingHom.ext_zmod {n : ℕ} {R : Type*} [Semiring R] (f g : ZMod n →+* R) : f = g := by
+theorem RingHom.ext_zmod {n : ℕ} {R : Type*} [NonAssocSemiring R] (f g : ZMod n →+* R) : f = g := by
   ext a
   obtain ⟨k, rfl⟩ := ZMod.intCast_surjective a
   let φ : ℤ →+* R := f.comp (Int.castRingHom (ZMod n))

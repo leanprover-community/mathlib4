@@ -265,7 +265,7 @@ theorem ne_bot_of_prod_finsetApprox_mem (J : Ideal S)
 
 /-- Each class in the class group contains an ideal `J`
 such that `M := Π m ∈ finsetApprox` is in `J`. -/
-theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R S] (I : (Ideal S)⁰) :
+theorem exists_mk0_eq_mk0 [IsDedekindRing S] [Algebra.IsAlgebraic R S] (I : (Ideal S)⁰) :
     ∃ J : (Ideal S)⁰,
       ClassGroup.mk0 I = ClassGroup.mk0 J ∧
         algebraMap _ _ (∏ m ∈ finsetApprox bS adm, m) ∈ (J : Ideal S) := by
@@ -307,7 +307,7 @@ noncomputable def mkMMem [IsDedekindDomain S]
   ClassGroup.mk0
     ⟨J.1, mem_nonZeroDivisors_iff_ne_zero.mpr (ne_bot_of_prod_finsetApprox_mem bS adm J.1 J.2)⟩
 
-theorem mkMMem_surjective [IsDedekindDomain S] [Algebra.IsAlgebraic R S] :
+theorem mkMMem_surjective [IsDedekindRing S] [Algebra.IsAlgebraic R S] :
     Function.Surjective (ClassGroup.mkMMem bS adm) := by
   intro I'
   obtain ⟨⟨I, hI⟩, rfl⟩ := ClassGroup.mk0_surjective I'

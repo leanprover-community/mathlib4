@@ -183,7 +183,7 @@ variable {R₁ R₄ : Type*} [Semiring R₁] [CommSemiring R₄]
   [AddCommMonoid M₁] [TopologicalSpace M₂] [AddCommMonoid M₂]
   [TopologicalSpace M₄] [AddCommGroup M₄]
 
-theorem IsCompactOperator.smul {S : Type*} [Monoid S] [DistribMulAction S M₂]
+theorem IsCompactOperator.smul {S : Type*} [Monoid S] [SMul S M₂]
     [ContinuousConstSMul S M₂] {f : M₁ → M₂} (hf : IsCompactOperator f) (c : S) :
     IsCompactOperator (c • f) :=
   let ⟨K, hK, hKf⟩ := hf

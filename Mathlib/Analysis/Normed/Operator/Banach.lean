@@ -257,7 +257,7 @@ alias quotientMap := isQuotientMap
 end
 
 theorem _root_.AffineMap.isOpenMap {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    [CompleteSpace F] {P Q : Type*} [MetricSpace P] [NormedAddTorsor E P] [MetricSpace Q]
+    [CompleteSpace F] {P Q : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P] [PseudoMetricSpace Q]
     [NormedAddTorsor F Q] (f : P →ᵃ[𝕜] Q) (hf : Continuous f) (surj : Surjective f) :
     IsOpenMap f :=
   AffineMap.isOpenMap_linear_iff.mp <|

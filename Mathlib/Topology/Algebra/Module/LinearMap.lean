@@ -791,7 +791,7 @@ instance ring [TopologicalAddGroup M] : Ring (M →L[R] M) where
 theorem intCast_apply [TopologicalAddGroup M] (z : ℤ) (m : M) : (↑z : M →L[R] M) m = z • m :=
   rfl
 
-theorem smulRight_one_pow [TopologicalSpace R] [TopologicalRing R] (c : R) (n : ℕ) :
+theorem smulRight_one_pow [TopologicalSpace R] [ContinuousMul R] (c : R) (n : ℕ) :
     smulRight (1 : R →L[R] R) c ^ n = smulRight (1 : R →L[R] R) (c ^ n) := by
   induction n with
   | zero => ext; simp
@@ -838,7 +838,7 @@ variable {R M : Type*}
 
 /-- A nonzero continuous linear functional is open. -/
 protected theorem isOpenMap_of_ne_zero [TopologicalSpace R] [DivisionRing R] [ContinuousSub R]
-    [AddCommGroup M] [TopologicalSpace M] [ContinuousAdd M] [Module R M] [ContinuousSMul R M]
+    [AddCommMonoid M] [TopologicalSpace M] [ContinuousAdd M] [Module R M] [ContinuousSMul R M]
     (f : M →L[R] R) (hf : f ≠ 0) : IsOpenMap f :=
   let ⟨x, hx⟩ := exists_ne_zero hf
   IsOpenMap.of_sections fun y =>

@@ -104,12 +104,12 @@ theorem IsDiag.transpose [Zero α] {A : Matrix n n α} (ha : A.IsDiag) : Aᵀ.Is
 theorem isDiag_transpose_iff [Zero α] {A : Matrix n n α} : Aᵀ.IsDiag ↔ A.IsDiag :=
   ⟨IsDiag.transpose, IsDiag.transpose⟩
 
-theorem IsDiag.conjTranspose [Semiring α] [StarRing α] {A : Matrix n n α} (ha : A.IsDiag) :
+theorem IsDiag.conjTranspose [NonUnitalNonAssocSemiring α] [StarRing α] {A : Matrix n n α} (ha : A.IsDiag) :
     Aᴴ.IsDiag :=
   ha.transpose.map (star_zero _)
 
 @[simp]
-theorem isDiag_conjTranspose_iff [Semiring α] [StarRing α] {A : Matrix n n α} :
+theorem isDiag_conjTranspose_iff [NonUnitalNonAssocSemiring α] [StarRing α] {A : Matrix n n α} :
     Aᴴ.IsDiag ↔ A.IsDiag :=
   ⟨fun ha => by
     convert ha.conjTranspose

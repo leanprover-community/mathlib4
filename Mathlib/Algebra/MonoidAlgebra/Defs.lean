@@ -673,7 +673,7 @@ theorem ringHom_ext' {R} [Semiring k] [MulOneClass G] [Semiring R] {f g : Monoid
     f = g :=
   ringHom_ext (RingHom.congr_fun h₁) (DFunLike.congr_fun h_of)
 
-theorem induction_on [Semiring k] [Monoid G] {p : MonoidAlgebra k G → Prop} (f : MonoidAlgebra k G)
+theorem induction_on [Semiring k] [MulOneClass G] {p : MonoidAlgebra k G → Prop} (f : MonoidAlgebra k G)
     (hM : ∀ g, p (of k G g)) (hadd : ∀ f g : MonoidAlgebra k G, p f → p g → p (f + g))
     (hsmul : ∀ (r : k) (f), p f → p (r • f)) : p f := by
   refine Finsupp.induction_linear f ?_ (fun f g hf hg => hadd f g hf hg) fun g r => ?_
@@ -1295,7 +1295,7 @@ theorem liftNC_smul {R : Type*} [AddZeroClass G] [Semiring R] (f : k →+* R)
     liftNC (f : k →+ R) g (c • φ) = f c * liftNC (f : k →+ R) g φ :=
   @MonoidAlgebra.liftNC_smul k (Multiplicative G) _ _ _ _ f g c φ
 
-theorem induction_on [AddMonoid G] {p : k[G] → Prop} (f : k[G])
+theorem induction_on [AddZeroClass G] {p : k[G] → Prop} (f : k[G])
     (hM : ∀ g, p (of k G (Multiplicative.ofAdd g)))
     (hadd : ∀ f g : k[G], p f → p g → p (f + g))
     (hsmul : ∀ (r : k) (f), p f → p (r • f)) : p f := by
@@ -1350,7 +1350,7 @@ def singleZeroRingHom [Semiring k] [AddMonoid G] : k →+* k[G] :=
 
 /-- If two ring homomorphisms from `k[G]` are equal on all `single a 1`
 and `single 0 b`, then they are equal. -/
-theorem ringHom_ext {R} [Semiring k] [AddMonoid G] [Semiring R] {f g : k[G] →+* R}
+theorem ringHom_ext {R} [Semiring k] [AddZeroClass G] [Semiring R] {f g : k[G] →+* R}
     (h₀ : ∀ b, f (single 0 b) = g (single 0 b)) (h_of : ∀ a, f (single a 1) = g (single a 1)) :
     f = g :=
   @MonoidAlgebra.ringHom_ext k (Multiplicative G) R _ _ _ _ _ h₀ h_of

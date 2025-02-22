@@ -496,13 +496,13 @@ theorem algHom_bijective [NoZeroSMulDivisors K L] [Algebra.IsAlgebraic K L] (f :
   obtain ⟨a, ha⟩ := this ⟨b, mem_rootSet.2 ⟨hp, he⟩⟩
   exact ⟨a, Subtype.ext_iff.1 ha⟩
 
-theorem algHom_bijective₂ [NoZeroSMulDivisors K L] [Field R] [Algebra K R]
+theorem algHom_bijective₂ [NoZeroSMulDivisors K L] [DivisionRing R] [Algebra K R]
     [Algebra.IsAlgebraic K L] (f : L →ₐ[K] R) (g : R →ₐ[K] L) :
     Function.Bijective f ∧ Function.Bijective g :=
   (g.injective.bijective₂_of_surjective f.injective (algHom_bijective <| g.comp f).2).symm
 
 theorem bijective_of_isScalarTower [NoZeroSMulDivisors K L] [Algebra.IsAlgebraic K L]
-    [Field R] [Algebra K R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
+    [DivisionRing R] [Algebra K R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
     Function.Bijective f :=
   (algHom_bijective₂ (IsScalarTower.toAlgHom K L R) f).2
 

@@ -55,7 +55,7 @@ theorem toMatrix_apply [DecidableEq n] [Zero α] [One α] (f : m ≃. n) (i j) :
     toMatrix f i j = if j ∈ f i then (1 : α) else 0 :=
   rfl
 
-theorem toMatrix_mul_apply [Fintype m] [DecidableEq m] [Semiring α] (f : l ≃. m) (M : Matrix m n α)
+theorem toMatrix_mul_apply [Fintype m] [DecidableEq m] [NonAssocSemiring α] (f : l ≃. m) (M : Matrix m n α)
     (i j) : (f.toMatrix * M :) i j = Option.casesOn (f i) 0 fun fi => M fi j := by
   dsimp [toMatrix, Matrix.mul_apply]
   cases' h : f i with fi
@@ -64,7 +64,7 @@ theorem toMatrix_mul_apply [Fintype m] [DecidableEq m] [Semiring α] (f : l ≃.
 
 @[deprecated (since := "2025-01-27")] alias mul_matrix_apply := toMatrix_mul_apply
 
-theorem mul_toMatrix_apply [Fintype m] [Semiring α] [DecidableEq n] (M : Matrix l m α) (f : m ≃. n)
+theorem mul_toMatrix_apply [Fintype m] [NonAssocSemiring α] [DecidableEq n] (M : Matrix l m α) (f : m ≃. n)
     (i j) : (M * f.toMatrix :) i j = Option.casesOn (f.symm j) 0 (M i) := by
   dsimp [Matrix.mul_apply, toMatrix_apply]
   cases' h : f.symm j with fj
@@ -103,7 +103,7 @@ theorem transpose_toMatrix_toPEquiv_apply
   simp [toMatrix_apply, Pi.single_apply, eq_comm, ← Equiv.apply_eq_iff_eq_symm_apply]
 
 theorem toMatrix_toPEquiv_mul [Fintype m] [DecidableEq m]
-    [Semiring α] (f : l ≃ m) (M : Matrix m n α) :
+    [NonAssocSemiring α] (f : l ≃ m) (M : Matrix m n α) :
     f.toPEquiv.toMatrix * M = M.submatrix f id := by
   ext i j
   rw [toMatrix_mul_apply, Equiv.toPEquiv_apply, submatrix_apply, id]
@@ -111,7 +111,7 @@ theorem toMatrix_toPEquiv_mul [Fintype m] [DecidableEq m]
 @[deprecated (since := "2025-01-27")] alias toPEquiv_mul_matrix := toMatrix_toPEquiv_mul
 
 theorem mul_toMatrix_toPEquiv [Fintype m] [DecidableEq n]
-    [Semiring α] (M : Matrix l m α) (f : m ≃ n) :
+    [NonAssocSemiring α] (M : Matrix l m α) (f : m ≃ n) :
     (M * f.toPEquiv.toMatrix) = M.submatrix id f.symm :=
   Matrix.ext fun i j => by
     rw [PEquiv.mul_toMatrix_apply, ← Equiv.toPEquiv_symm, Equiv.toPEquiv_apply,
@@ -132,7 +132,7 @@ lemma vecMul_toMatrix_toPEquiv [DecidableEq n] [Fintype m]
   ext j
   simp [toMatrix, σ.apply_eq_iff_eq_symm_apply, vecMul, dotProduct]
 
-theorem toMatrix_trans [Fintype m] [DecidableEq m] [DecidableEq n] [Semiring α] (f : l ≃. m)
+theorem toMatrix_trans [Fintype m] [DecidableEq m] [DecidableEq n] [NonAssocSemiring α] (f : l ≃. m)
     (g : m ≃. n) : ((f.trans g).toMatrix : Matrix l n α) = f.toMatrix * g.toMatrix := by
   ext i j
   rw [toMatrix_mul_apply]
@@ -144,7 +144,7 @@ theorem toMatrix_bot [DecidableEq n] [Zero α] [One α] :
     ((⊥ : PEquiv m n).toMatrix : Matrix m n α) = 0 :=
   rfl
 
-theorem toMatrix_injective [DecidableEq n] [MonoidWithZero α] [Nontrivial α] :
+theorem toMatrix_injective [DecidableEq n] [MulZeroOneClass α] [Nontrivial α] :
     Function.Injective (@toMatrix m n α _ _ _) := by
   intro f g
   refine not_imp_not.1 ?_
@@ -159,7 +159,7 @@ theorem toMatrix_injective [DecidableEq n] [MonoidWithZero α] [Nontrivial α] :
   · use fi
     simp [hf.symm, Ne.symm hi]
 
-theorem toMatrix_swap [DecidableEq n] [Ring α] (i j : n) :
+theorem toMatrix_swap [DecidableEq n] [AddGroupWithOne α] (i j : n) :
     (Equiv.swap i j).toPEquiv.toMatrix =
       (1 : Matrix n n α) - (single i i).toMatrix - (single j j).toMatrix + (single i j).toMatrix +
         (single j i).toMatrix := by
@@ -168,13 +168,13 @@ theorem toMatrix_swap [DecidableEq n] [Ring α] (i j : n) :
   split_ifs <;> simp_all
 
 @[simp]
-theorem single_mul_single [Fintype n] [DecidableEq k] [DecidableEq m] [DecidableEq n] [Semiring α]
+theorem single_mul_single [Fintype n] [DecidableEq k] [DecidableEq m] [DecidableEq n] [NonAssocSemiring α]
     (a : m) (b : n) (c : k) :
     ((single a b).toMatrix : Matrix _ _ α) * (single b c).toMatrix = (single a c).toMatrix := by
   rw [← toMatrix_trans, single_trans_single]
 
 theorem single_mul_single_of_ne [Fintype n] [DecidableEq n] [DecidableEq k] [DecidableEq m]
-    [Semiring α] {b₁ b₂ : n} (hb : b₁ ≠ b₂) (a : m) (c : k) :
+    [NonAssocSemiring α] {b₁ b₂ : n} (hb : b₁ ≠ b₂) (a : m) (c : k) :
     (single a b₁).toMatrix * (single b₂ c).toMatrix = (0 : Matrix _ _ α) := by
   rw [← toMatrix_trans, single_trans_single_of_ne hb, toMatrix_bot]
 

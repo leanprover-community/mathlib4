@@ -118,22 +118,22 @@ attribute [simp] apply_nonneg
 variable [FunLike F α β]
 
 @[to_additive]
-theorem le_map_mul_map_div [Group α] [CommSemigroup β] [LE β] [SubmultiplicativeHomClass F α β]
+theorem le_map_mul_map_div [Group α] [CommMagma β] [LE β] [SubmultiplicativeHomClass F α β]
     (f : F) (a b : α) : f a ≤ f b * f (a / b) := by
   simpa only [mul_comm, div_mul_cancel] using map_mul_le_mul f (a / b) b
 
 @[to_additive existing]
-theorem le_map_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAddHomClass F α β] (f : F)
+theorem le_map_add_map_div [Group α] [AddCommMagma β] [LE β] [MulLEAddHomClass F α β] (f : F)
     (a b : α) : f a ≤ f b + f (a / b) := by
   simpa only [add_comm, div_mul_cancel] using map_mul_le_add f (a / b) b
 
 @[to_additive]
-theorem le_map_div_mul_map_div [Group α] [CommSemigroup β] [LE β] [SubmultiplicativeHomClass F α β]
+theorem le_map_div_mul_map_div [Group α] [Mul β] [LE β] [SubmultiplicativeHomClass F α β]
     (f : F) (a b c : α) : f (a / c) ≤ f (a / b) * f (b / c) := by
   simpa only [div_mul_div_cancel] using map_mul_le_mul f (a / b) (b / c)
 
 @[to_additive existing]
-theorem le_map_div_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAddHomClass F α β]
+theorem le_map_div_add_map_div [Group α] [Add β] [LE β] [MulLEAddHomClass F α β]
     (f : F) (a b c : α) : f (a / c) ≤ f (a / b) + f (b / c) := by
     simpa only [div_mul_div_cancel] using map_mul_le_add f (a / b) (b / c)
 

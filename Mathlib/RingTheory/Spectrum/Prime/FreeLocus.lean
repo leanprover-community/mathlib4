@@ -51,7 +51,7 @@ lemma mem_freeLocus {p} : p ∈ freeLocus R M ↔
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma mem_freeLocus_of_isLocalization (p : PrimeSpectrum R)
     (Rₚ Mₚ) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p.asIdeal]
-    [AddCommGroup Mₚ] [Module R Mₚ] (f : M →ₗ[R] Mₚ) [IsLocalizedModule p.asIdeal.primeCompl f]
+    [AddCommMonoid Mₚ] [Module R Mₚ] (f : M →ₗ[R] Mₚ) [IsLocalizedModule p.asIdeal.primeCompl f]
     [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ] :
     p ∈ freeLocus R M ↔ Module.Free Rₚ Mₚ := by
   apply Module.Free.iff_of_ringEquiv (IsLocalization.algEquiv p.asIdeal.primeCompl

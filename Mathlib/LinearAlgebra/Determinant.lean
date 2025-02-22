@@ -472,7 +472,7 @@ theorem LinearMap.associated_det_of_eq_comp (e : M ≃ₗ[R] M) (f f' : M →ₗ
   rw [← mul_one (LinearMap.det f'), LinearMap.det_comp]
   exact Associated.mul_left _ (associated_one_iff_isUnit.mpr e.isUnit_det')
 
-theorem LinearMap.associated_det_comp_equiv {N : Type*} [AddCommGroup N] [Module R N]
+theorem LinearMap.associated_det_comp_equiv {N : Type*} [AddCommMonoid N] [Module R N]
     (f : N →ₗ[R] M) (e e' : M ≃ₗ[R] N) :
     Associated (LinearMap.det (f ∘ₗ ↑e)) (LinearMap.det (f ∘ₗ ↑e')) := by
   refine LinearMap.associated_det_of_eq_comp (e.trans e'.symm) _ _ ?_

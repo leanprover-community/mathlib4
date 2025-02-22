@@ -349,14 +349,14 @@ lemma zeta_of_le (h : a ≤ b) : zeta 𝕜 a b = 1 := if_pos h
 
 end Zeta
 
-lemma zeta_mul_zeta [Semiring 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableRel (α := α) (· ≤ ·)]
+lemma zeta_mul_zeta [NonAssocSemiring 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableRel (α := α) (· ≤ ·)]
     (a b : α) : (zeta 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) a b = (Icc a b).card := by
   rw [mul_apply, card_eq_sum_ones, Nat.cast_sum, Nat.cast_one]
   refine sum_congr rfl fun x hx ↦ ?_
   rw [mem_Icc] at hx
   rw [zeta_of_le hx.1, zeta_of_le hx.2, one_mul]
 
-lemma zeta_mul_kappa [Semiring 𝕜] [Preorder α] [LocallyFiniteOrder α]
+lemma zeta_mul_kappa [NonAssocSemiring 𝕜] [Preorder α] [LocallyFiniteOrder α]
     [DecidableRel (α := α) (· ≤ ·)] (a b : α) :
     (zeta 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) a b = (Icc a b).card := by
   rw [mul_apply, card_eq_sum_ones, Nat.cast_sum, Nat.cast_one]

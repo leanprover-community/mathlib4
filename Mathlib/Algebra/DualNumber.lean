@@ -68,7 +68,7 @@ theorem snd_eps [Zero R] [One R] : snd ε = (1 : R) :=
 
 /-- A version of `TrivSqZeroExt.snd_mul` with `*` instead of `•`. -/
 @[simp]
-theorem snd_mul [Semiring R] (x y : R[ε]) : snd (x * y) = fst x * snd y + snd x * fst y :=
+theorem snd_mul [Distrib R] (x y : R[ε]) : snd (x * y) = fst x * snd y + snd x * fst y :=
   TrivSqZeroExt.snd_mul _ _
 
 @[simp]
@@ -84,11 +84,11 @@ theorem inr_eq_smul_eps [MulZeroOneClass R] (r : R) : inr r = (r • ε : R[ε])
   ext (mul_zero r).symm (mul_one r).symm
 
 /-- `ε` commutes with every element of the algebra. -/
-theorem commute_eps_left [Semiring R] (x : DualNumber R) : Commute ε x := by
+theorem commute_eps_left [NonAssocSemiring R] (x : DualNumber R) : Commute ε x := by
   ext <;> simp
 
 /-- `ε` commutes with every element of the algebra. -/
-theorem commute_eps_right [Semiring R] (x : DualNumber R) : Commute x ε := (commute_eps_left x).symm
+theorem commute_eps_right [NonAssocSemiring R] (x : DualNumber R) : Commute x ε := (commute_eps_left x).symm
 
 variable {A : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 

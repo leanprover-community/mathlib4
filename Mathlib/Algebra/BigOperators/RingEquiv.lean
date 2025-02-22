@@ -19,7 +19,7 @@ variable {α R S : Type*}
 protected theorem map_list_prod [Semiring R] [Semiring S] (f : R ≃+* S) (l : List R) :
     f l.prod = (l.map f).prod := map_list_prod f l
 
-protected theorem map_list_sum [NonAssocSemiring R] [NonAssocSemiring S] (f : R ≃+* S)
+protected theorem map_list_sum [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] (f : R ≃+* S)
     (l : List R) : f l.sum = (l.map f).sum := map_list_sum f l
 
 /-- An isomorphism into the opposite ring acts on the product by acting on the reversed elements -/
@@ -31,7 +31,7 @@ protected theorem map_multiset_prod [CommSemiring R] [CommSemiring S] (f : R ≃
     (s : Multiset R) : f s.prod = (s.map f).prod :=
   map_multiset_prod f s
 
-protected theorem map_multiset_sum [NonAssocSemiring R] [NonAssocSemiring S] (f : R ≃+* S)
+protected theorem map_multiset_sum [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] (f : R ≃+* S)
     (s : Multiset R) : f s.sum = (s.map f).sum :=
   map_multiset_sum f s
 
@@ -39,7 +39,7 @@ protected theorem map_prod [CommSemiring R] [CommSemiring S] (g : R ≃+* S) (f 
     (s : Finset α) : g (∏ x ∈ s, f x) = ∏ x ∈ s, g (f x) :=
   map_prod g f s
 
-protected theorem map_sum [NonAssocSemiring R] [NonAssocSemiring S] (g : R ≃+* S) (f : α → R)
+protected theorem map_sum [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] (g : R ≃+* S) (f : α → R)
     (s : Finset α) : g (∑ x ∈ s, f x) = ∑ x ∈ s, g (f x) :=
   map_sum g f s
 

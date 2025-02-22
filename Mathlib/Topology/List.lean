@@ -157,7 +157,7 @@ theorem continuous_eraseIdx {n : ℕ} : Continuous fun l : List α => eraseIdx l
   continuous_iff_continuousAt.mpr fun _a => tendsto_eraseIdx
 
 @[to_additive]
-theorem tendsto_prod [Monoid α] [ContinuousMul α] {l : List α} :
+theorem tendsto_prod [MulOneClass α] [ContinuousMul α] {l : List α} :
     Tendsto List.prod (𝓝 l) (𝓝 l.prod) := by
   induction' l with x l ih
   · simp +contextual [nhds_nil, mem_of_mem_nhds, tendsto_pure_left]
@@ -167,7 +167,7 @@ theorem tendsto_prod [Monoid α] [ContinuousMul α] {l : List α} :
   exact this.comp (tendsto_id.prod_map ih)
 
 @[to_additive]
-theorem continuous_prod [Monoid α] [ContinuousMul α] : Continuous (prod : List α → α) :=
+theorem continuous_prod [MulOneClass α] [ContinuousMul α] : Continuous (prod : List α → α) :=
   continuous_iff_continuousAt.mpr fun _l => tendsto_prod
 
 end List

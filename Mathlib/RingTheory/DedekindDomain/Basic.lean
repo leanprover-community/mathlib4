@@ -140,7 +140,7 @@ instance [IsDomain A] [IsDedekindRing A] : IsDedekindDomain A where
 /-- An integral domain is a Dedekind domain iff and only if it is
 Noetherian, has dimension ≤ 1, and is integrally closed in a given fraction field.
 In particular, this definition does not depend on the choice of this fraction field. -/
-theorem isDedekindDomain_iff (K : Type*) [Field K] [Algebra A K] [IsFractionRing A K] :
+theorem isDedekindDomain_iff (K : Type*) [CommRing K] [Algebra A K] [IsFractionRing A K] :
     IsDedekindDomain A ↔
       IsDomain A ∧ IsNoetherianRing A ∧ DimensionLEOne A ∧
         ∀ {x : K}, IsIntegral A x → ∃ y, algebraMap A K y = x :=

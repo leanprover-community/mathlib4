@@ -239,7 +239,7 @@ theorem eventually_nhds_zero_mapsTo [TopologicalSpace F] [TopologicalAddGroup F]
 variable {σ F} in
 theorem isVonNBounded_image2_apply {R : Type*} [SeminormedRing R]
     [TopologicalSpace F] [TopologicalAddGroup F]
-    [Module R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
+    [DistribMulAction R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
     {𝔖 : Set (Set E)} {S : Set (UniformConvergenceCLM σ F 𝔖)} (hS : IsVonNBounded R S)
     {s : Set E} (hs : s ∈ 𝔖) : IsVonNBounded R (Set.image2 (fun f x ↦ f x) S s) := by
   intro U hU
@@ -255,7 +255,7 @@ is von Neumann bounded iff for any `s ∈ 𝔖`,
 the set `{f x | (f ∈ S) (x ∈ s)}` is von Neumann bounded. -/
 theorem isVonNBounded_iff {R : Type*} [NormedDivisionRing R]
     [TopologicalSpace F] [TopologicalAddGroup F]
-    [Module R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
+    [DistribMulAction R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
     {𝔖 : Set (Set E)} {S : Set (UniformConvergenceCLM σ F 𝔖)} :
     IsVonNBounded R S ↔ ∀ s ∈ 𝔖, IsVonNBounded R (Set.image2 (fun f x ↦ f x) S s) := by
   refine ⟨fun hS s hs ↦ isVonNBounded_image2_apply hS hs, fun h ↦ ?_⟩
@@ -432,7 +432,7 @@ then the set `{f x | (f ∈ S) (x ∈ s)}` is von Neumann bounded.
 See also `isVonNBounded_iff` for an `Iff` version with stronger typeclass assumptions. -/
 theorem isVonNBounded_image2_apply {R : Type*} [SeminormedRing R]
     [TopologicalSpace F] [TopologicalAddGroup F]
-    [Module R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
+    [DistribMulAction R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
     {S : Set (E →SL[σ] F)} (hS : IsVonNBounded R S) {s : Set E} (hs : IsVonNBounded 𝕜₁ s) :
     IsVonNBounded R (Set.image2 (fun f x ↦ f x) S s) :=
   UniformConvergenceCLM.isVonNBounded_image2_apply hS hs

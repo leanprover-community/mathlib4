@@ -135,7 +135,7 @@ def EuclideanSpace.delabVecNotation : Delab :=
 
 end Notation
 
-theorem EuclideanSpace.nnnorm_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
+theorem EuclideanSpace.nnnorm_eq {𝕜 : Type*} [NormedField 𝕜] {n : Type*} [Fintype n]
     (x : EuclideanSpace 𝕜 n) : ‖x‖₊ = NNReal.sqrt (∑ i, ‖x i‖₊ ^ 2) :=
   PiLp.nnnorm_eq_of_L2 x
 
@@ -143,15 +143,15 @@ theorem EuclideanSpace.norm_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype
     (x : EuclideanSpace 𝕜 n) : ‖x‖ = √(∑ i, ‖x i‖ ^ 2) := by
   simpa only [Real.coe_sqrt, NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) x.nnnorm_eq
 
-theorem EuclideanSpace.dist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
+theorem EuclideanSpace.dist_eq {𝕜 : Type*} [NormedField 𝕜] {n : Type*} [Fintype n]
     (x y : EuclideanSpace 𝕜 n) : dist x y = √(∑ i, dist (x i) (y i) ^ 2) :=
   PiLp.dist_eq_of_L2 x y
 
-theorem EuclideanSpace.nndist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
+theorem EuclideanSpace.nndist_eq {𝕜 : Type*} [NormedField 𝕜] {n : Type*} [Fintype n]
     (x y : EuclideanSpace 𝕜 n) : nndist x y = NNReal.sqrt (∑ i, nndist (x i) (y i) ^ 2) :=
   PiLp.nndist_eq_of_L2 x y
 
-theorem EuclideanSpace.edist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
+theorem EuclideanSpace.edist_eq {𝕜 : Type*} [NormedField 𝕜] {n : Type*} [Fintype n]
     (x y : EuclideanSpace 𝕜 n) : edist x y = (∑ i, edist (x i) (y i) ^ 2) ^ (1 / 2 : ℝ) :=
   PiLp.edist_eq_of_L2 x y
 

@@ -76,7 +76,7 @@ typeclasses. This is the preferred way to construct a term of `ModuleCat R`. -/
 abbrev of (X : Type v) [AddCommGroup X] [Module R X] : ModuleCat.{v} R :=
   ⟨X⟩
 
-lemma coe_of (X : Type v) [Ring X] [Module R X] : (of R X : Type v) = X :=
+lemma coe_of (X : Type v) [AddCommGroup X] [Module R X] : (of R X : Type v) = X :=
   rfl
 
 -- Ensure the roundtrips are reducibly defeq (so tactics like `rw` can see through them).
@@ -608,9 +608,9 @@ end Bilinear
 -/
 
 @[simp] theorem LinearMap.comp_id_moduleCat
-    {R} [Ring R] {G : ModuleCat.{u} R} {H : Type u} [AddCommGroup H] [Module R H] (f : G →ₗ[R] H) :
+    {R} [Ring R] {G : ModuleCat.{u} R} {H : Type u} [AddCommMonoid H] [Module R H] (f : G →ₗ[R] H) :
     f.comp (𝟙 G : G ⟶ G).hom = f := by simp
 
 @[simp] theorem LinearMap.id_moduleCat_comp
-    {R} [Ring R] {G : Type u} [AddCommGroup G] [Module R G] {H : ModuleCat.{u} R} (f : G →ₗ[R] H) :
+    {R} [Ring R] {G : Type u} [AddCommMonoid G] [Module R G] {H : ModuleCat.{u} R} (f : G →ₗ[R] H) :
     LinearMap.comp (𝟙 H : H ⟶ H).hom f = f := by simp

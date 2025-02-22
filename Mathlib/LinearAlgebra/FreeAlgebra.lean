@@ -48,7 +48,7 @@ end FreeAlgebra
 
 open Cardinal
 
-theorem Algebra.rank_adjoin_le {R : Type u} {S : Type v} [CommRing R] [Ring S] [Algebra R S]
+theorem Algebra.rank_adjoin_le {R : Type u} {S : Type v} [CommRing R] [Semiring S] [Algebra R S]
     (s : Set S) : Module.rank R (adjoin R s) ≤ max #s ℵ₀ := by
   rw [adjoin_eq_range_freeAlgebra_lift]
   cases subsingleton_or_nontrivial R

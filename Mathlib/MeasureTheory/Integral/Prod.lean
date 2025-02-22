@@ -279,7 +279,7 @@ theorem Integrable.integral_norm_prod_right [SFinite μ] ⦃f : α × β → E�
     (hf : Integrable f (μ.prod ν)) : Integrable (fun y => ∫ x, ‖f (x, y)‖ ∂μ) ν :=
   hf.swap.integral_norm_prod_left
 
-theorem Integrable.prod_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
+theorem Integrable.prod_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
     {f : α → 𝕜} {g : β → E} (hf : Integrable f μ) (hg : Integrable g ν) :
     Integrable (fun z : α × β => f z.1 • g z.2) (μ.prod ν) := by
   refine (integrable_prod_iff ?_).2 ⟨?_, ?_⟩
@@ -287,7 +287,7 @@ theorem Integrable.prod_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [Norm
   · exact Eventually.of_forall fun x => hg.smul (f x)
   · simpa only [norm_smul, integral_mul_left] using hf.norm.mul_const _
 
-theorem Integrable.prod_mul {L : Type*} [RCLike L] {f : α → L} {g : β → L} (hf : Integrable f μ)
+theorem Integrable.prod_mul {L : Type*} [DenselyNormedField L] {f : α → L} {g : β → L} (hf : Integrable f μ)
     (hg : Integrable g ν) : Integrable (fun z : α × β => f z.1 * g z.2) (μ.prod ν) :=
   hf.prod_smul hg
 

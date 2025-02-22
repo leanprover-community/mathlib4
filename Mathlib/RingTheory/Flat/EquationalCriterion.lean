@@ -216,7 +216,7 @@ let $f \in N$, and let $x \colon N \to M$ be a linear map such that $x(f) = 0$. 
 finite free module $R^k$ and linear maps $a \colon N \to R^k$ and
 $y \colon R^k \to M$ such that $x = y \circ a$ and $a(f) = 0$. -/
 @[stacks 058D "(1) → (2)"]
-theorem exists_factorization_of_apply_eq_zero_of_free [Flat R M] {N : Type*} [AddCommGroup N]
+theorem exists_factorization_of_apply_eq_zero_of_free [Flat R M] {N : Type*} [AddCommMonoid N]
     [Module R N] [Free R N] [Module.Finite R N] {f : N} {x : N →ₗ[R] M} (h : x f = 0) :
     ∃ (k : ℕ) (a : N →ₗ[R] (Fin k →₀ R)) (y : (Fin k →₀ R) →ₗ[R] M), x = y ∘ₗ a ∧ a f = 0 :=
   have e := ((Module.Free.chooseBasis R N).reindex (Fintype.equivFin _)).repr.symm
@@ -228,7 +228,7 @@ theorem exists_factorization_of_apply_eq_zero_of_free [Flat R M] {N : Type*} [Ad
   exists_factorization_of_apply_eq_zero_of_free
 
 private theorem exists_factorization_of_comp_eq_zero_of_free_aux [Flat R M] {K : Type*} {n : ℕ}
-    [AddCommGroup K] [Module R K] [Module.Finite R K] {f : K →ₗ[R] Fin n →₀ R}
+    [AddCommMonoid K] [Module R K] [Module.Finite R K] {f : K →ₗ[R] Fin n →₀ R}
     {x : (Fin n →₀ R) →ₗ[R] M} (h : x ∘ₗ f = 0) :
     ∃ (k : ℕ) (a : (Fin n →₀ R) →ₗ[R] (Fin k →₀ R)) (y : (Fin k →₀ R) →ₗ[R] M),
       x = y ∘ₗ a ∧ a ∘ₗ f = 0 := by
@@ -255,8 +255,8 @@ $x \circ f = 0$. Then there exist a finite free module $R^k$ and linear maps
 $a \colon N \to R^k$ and $y \colon R^k \to M$ such that $x = y \circ a$ and
 $a \circ f = 0$. -/
 @[stacks 058D "(1) → (4)"]
-theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type*} [AddCommGroup K]
-    [Module R K] [Module.Finite R K] [AddCommGroup N] [Module R N] [Free R N] [Module.Finite R N]
+theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type*} [AddCommMonoid K]
+    [Module R K] [Module.Finite R K] [AddCommMonoid N] [Module R N] [Free R N] [Module.Finite R N]
     {f : K →ₗ[R] N} {x : N →ₗ[R] M} (h : x ∘ₗ f = 0) :
     ∃ (k : ℕ) (a : N →ₗ[R] (Fin k →₀ R)) (y : (Fin k →₀ R) →ₗ[R] M),
       x = y ∘ₗ a ∧ a ∘ₗ f = 0 :=

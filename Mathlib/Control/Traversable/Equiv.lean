@@ -151,7 +151,7 @@ protected theorem isLawfulTraversable' [Traversable t']
     (h₀ : ∀ {α β} (f : α → β), map f = Equiv.map eqv f)
     (h₁ : ∀ {α β} (f : β), mapConst f = (Equiv.map eqv ∘ Function.const α) f)
     (h₂ : ∀ {F : Type u → Type u} [Applicative F],
-      ∀ [LawfulApplicative F] {α β} (f : α → F β), traverse f = Equiv.traverse eqv f) :
+      ∀ [LawfulFunctor F] {α β} (f : α → F β), traverse f = Equiv.traverse eqv f) :
     LawfulTraversable t' where
   -- we can't use the same approach as for `lawful_functor'` because
   -- h₂ needs a `LawfulApplicative` assumption

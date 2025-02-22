@@ -58,7 +58,7 @@ of elements `a b : A`, either `a` divides `b` or vice versa. -/
 class ValuationRing (A : Type u) [CommRing A] [IsDomain A] extends PreValuationRing A : Prop
 
 -- Porting note: this lemma is needed since infer kinds are unsupported in Lean 4
-lemma ValuationRing.cond {A : Type u} [CommRing A] [IsDomain A] [ValuationRing A] (a b : A) :
+lemma ValuationRing.cond {A : Type u} [CommRing A] [IsDomain A] [PreValuationRing A] (a b : A) :
     ∃ c : A, a * c = b ∨ b * c = a := PreValuationRing.cond _ _
 
 namespace ValuationRing
@@ -291,7 +291,7 @@ section dvd
 
 variable {R : Type*}
 
-theorem _root_.PreValuationRing.iff_dvd_total [Monoid R] :
+theorem _root_.PreValuationRing.iff_dvd_total [Semigroup R] :
     PreValuationRing R ↔ IsTotal R (· ∣ ·) := by
   classical
   refine ⟨fun H => ⟨fun a b => ?_⟩, fun H => ⟨fun a b => ?_⟩⟩
@@ -324,7 +324,7 @@ theorem iff_ideal_total : ValuationRing R ↔ IsTotal (Ideal R) (· ≤ ·) :=
   Iff.trans (⟨fun inst ↦ inst.toPreValuationRing, fun _ ↦ .mk⟩)
     PreValuationRing.iff_ideal_total
 
-theorem unique_irreducible [ValuationRing R] ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible q) :
+theorem unique_irreducible [PreValuationRing R] ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible q) :
     Associated p q := by
   have := dvd_total p q
   rw [Irreducible.dvd_comm hp hq, or_self_iff] at this

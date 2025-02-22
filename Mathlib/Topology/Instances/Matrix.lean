@@ -173,7 +173,7 @@ theorem Continuous.matrix_trace [Fintype n] [AddCommMonoid R] [ContinuousAdd R]
   continuous_finset_sum _ fun _ _ => hA.matrix_elem _ _
 
 @[continuity, fun_prop]
-theorem Continuous.matrix_det [Fintype n] [DecidableEq n] [CommRing R] [TopologicalRing R]
+theorem Continuous.matrix_det [Fintype n] [DecidableEq n] [CommRing R] [TopologicalSemiring R]
     {A : X → Matrix n n R} (hA : Continuous A) : Continuous fun x => (A x).det := by
   simp_rw [Matrix.det_apply]
   refine continuous_finset_sum _ fun l _ => Continuous.const_smul ?_ _
@@ -196,13 +196,13 @@ theorem Continuous.matrix_updateRow [DecidableEq m] (i : m) {A : X → Matrix m 
   hA.update i hB
 
 @[continuity, fun_prop]
-theorem Continuous.matrix_cramer [Fintype n] [DecidableEq n] [CommRing R] [TopologicalRing R]
+theorem Continuous.matrix_cramer [Fintype n] [DecidableEq n] [CommRing R] [TopologicalSemiring R]
     {A : X → Matrix n n R} {B : X → n → R} (hA : Continuous A) (hB : Continuous B) :
     Continuous fun x => cramer (A x) (B x) :=
   continuous_pi fun _ => (hA.matrix_updateCol _ hB).matrix_det
 
 @[continuity, fun_prop]
-theorem Continuous.matrix_adjugate [Fintype n] [DecidableEq n] [CommRing R] [TopologicalRing R]
+theorem Continuous.matrix_adjugate [Fintype n] [DecidableEq n] [CommRing R] [TopologicalSemiring R]
     {A : X → Matrix n n R} (hA : Continuous A) : Continuous fun x => (A x).adjugate :=
   continuous_matrix fun _j k =>
     (hA.matrix_transpose.matrix_updateCol k continuous_const).matrix_det

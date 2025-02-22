@@ -238,7 +238,7 @@ def mapDomainNonUnitalAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebr
     map_smul' := fun r x => mapDomain_smul r x }
 
 variable (A) in
-theorem mapDomain_algebraMap {F : Type*} [FunLike F G H] [MonoidHomClass F G H] (f : F) (r : k) :
+theorem mapDomain_algebraMap {F : Type*} [FunLike F G H] [OneHomClass F G H] (f : F) (r : k) :
     mapDomain f (algebraMap k (MonoidAlgebra A G) r) = algebraMap k (MonoidAlgebra A H) r := by
   simp only [coe_algebraMap, mapDomain_single, map_one, (· ∘ ·)]
 
@@ -517,7 +517,7 @@ theorem algHom_ext_iff {φ₁ φ₂ : k[G] →ₐ[k] A} :
 end lift
 
 theorem mapDomain_algebraMap (A : Type*) {H F : Type*} [CommSemiring k] [Semiring A] [Algebra k A]
-    [AddMonoid G] [AddMonoid H] [FunLike F G H] [AddMonoidHomClass F G H]
+    [AddMonoid G] [AddMonoid H] [FunLike F G H] [ZeroHomClass F G H]
     (f : F) (r : k) :
     mapDomain f (algebraMap k A[G] r) = algebraMap k A[H] r := by
   simp only [Function.comp_apply, mapDomain_single, AddMonoidAlgebra.coe_algebraMap, map_zero]
