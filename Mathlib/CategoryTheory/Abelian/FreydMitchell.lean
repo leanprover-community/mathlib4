@@ -9,8 +9,9 @@ import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Indization
 /-!
 # The Freyd-Mitchell embedding theorem
 
-In this file, we start with an abelian category `C` and construct a full, faithful and exact
-functor `C ⥤ ModuleCat.{max u v} (EmbeddingRing C)`.
+Let `C` be an abelian category. We construct a ring `FreydMitchell.EmbeddingRing C` and a functor
+`FreydMitchell.embedding : C ⥤ ModuleCat.{max u v} (EmbeddingRing C)` which is full, faithful and
+exact.
 
 ## Implementation notes
 
