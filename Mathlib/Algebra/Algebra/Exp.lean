@@ -2,12 +2,16 @@ import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.Field.Defs
-import Mathlib.RingTheory.Nilpotent.Defs
+import Mathlib.RingTheory.Nilpotent.Basic
 
 namespace Algebra
 
 variable (R : Type*) [Field R]
-variable (A : Type*) [Semiring A] [Algebra R A]
+variable (A : Type*)
+
+section Semi
+
+variable [Semiring A] [Algebra R A]
 
 noncomputable def exp (a : A) : A :=
   ∑ n ∈ Finset.range (nilpotencyClass a), (n.factorial : R)⁻¹ • (a ^ n)
@@ -25,7 +29,7 @@ theorem exp_eq_truncated {k : ℕ} (a : A) (h : a ^ k = 0) :
     rw [h₂, h₃, add_zero]
   suffices h₅ : ∀ n ∈ Finset.Ico (nilpotencyClass a) k, (Nat.factorial n : R)⁻¹ • (a ^ n) = 0 by
     apply Finset.sum_eq_zero h₅
-  intro t ht
+  intro t _
   have h₆ : nilpotencyClass a ≤ t := by
     simp_all only [Finset.mem_Ico]
   suffices h₆ : a ^ t = 0 by
@@ -40,21 +44,61 @@ theorem exp_eq_truncated {k : ℕ} (a : A) (h : a ^ k = 0) :
   rw [h₉]
   exact zero_mul (a ^ (t - nilpotencyClass a))
 
-variable [CharZero R]
+theorem exp_zero_eq_one : exp R A 0 = 1 := by
+  have h : (0 : A) ^ 1 = 0 := by
+    exact pow_one 0
+  have h1 := exp_eq_truncated R A (0 : A) h
+  simp at h1
+  apply h1.symm
 
-example (n : ℕ) (a : A) : (n.factorial : R) • ((n.factorial : R)⁻¹ • a) = a := by
-  have h1 : (n.factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero n
-  simp_all only [ne_eq, Nat.cast_eq_zero, not_false_eq_true, smul_inv_smul₀]
+--example (n : ℕ) (a : A) : (n.factorial : R) • ((n.factorial : R)⁻¹ • a) = a := by
+--have h1 : (n.factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero n
+--simp_all only [ne_eq, Nat.cast_eq_zero, not_false_eq_true, smul_inv_smul₀]
   --exact mul_inv_cancel₀ h1
 
 -- useful: add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero
 -- useful: add_pow (h : Commute x y) (n : ℕ) : ...
 -- useful: isNilpotent_add (h_comm : Commute x y) ...
+
+variable [CharZero R]
 theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a) (h₃ : IsNilpotent b) :
     exp R A (a + b) = exp R A a * exp R A b := by
+  have h : a * b = b * a := h₁
   sorry
 
+
+
+end Semi
+
+section Full
+
+variable [CharZero R]
+variable [Ring A] [Algebra R A]
+
 theorem exp_of_nilpotent_is_unit (a : A) (h : IsNilpotent a) : IsUnit (exp R A a) := by
-  sorry
+  have h₀ : a + (-a) = 0 := by
+    exact add_neg_cancel a
+  have h0 : (-a) + a = 0 := by
+    exact neg_add_cancel a
+  have h₁ : Commute a (-a) := by
+    simp_all only [Commute.neg_right_iff, Commute.refl]
+  have h1 : Commute (-a) a := by
+    simp_all only [add_neg_cancel, Commute.neg_right_iff, Commute.refl, Commute.neg_left_iff]
+  have h₃ : IsNilpotent (-a) := IsNilpotent.neg h
+  have h₄ := exp_add_of_commute R A a (-a) h₁ h h₃
+  rw [h₀] at h₄
+  rw [exp_zero_eq_one R A] at h₄
+  dsimp [IsUnit]
+  apply isUnit_iff_exists.2
+  use exp R A (-a)
+  constructor
+  · apply h₄.symm
+  have h₅ := exp_add_of_commute R A (-a) a h1 h₃ h
+  rw [h0] at h₅
+  rw [exp_zero_eq_one R A] at h₅
+  apply h₅.symm
+
+
+end Full
 
 end Algebra
