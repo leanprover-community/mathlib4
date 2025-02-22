@@ -7,11 +7,14 @@ import LeanCopilot
 
 namespace Algebra
 
-variable (R : Type*) [Field R] [CharZero R]
+variable (R : Type*) [Field R]
 variable (A : Type*) [Semiring A] [Algebra R A]
 
 noncomputable def exp (a : A) : A :=
   ∑ n ∈ Finset.range (nilpotencyClass a), (n.factorial : R)⁻¹ • (a ^ n)
+
+example (a b : ℕ) (h : a ≤ b) : a + (b - a) = b :=
+  Nat.add_sub_of_le h
 
 theorem exp_eq_truncated {k : ℕ} (a : A) (h : a ^ k = 0) :
     ∑ n ∈ Finset.range k, (Nat.factorial n : R)⁻¹ • (a ^ n) = exp R A a := by
@@ -24,8 +27,24 @@ theorem exp_eq_truncated {k : ℕ} (a : A) (h : a ^ k = 0) :
   suffices h₃ : ∑ n ∈ Finset.Ico (nilpotencyClass a) k, (Nat.factorial n : R)⁻¹ • (a ^ n) = 0 by
     dsimp [exp]
     rw [h₂, h₃, add_zero]
-  sorry
+  suffices h₅ : ∀ n ∈ Finset.Ico (nilpotencyClass a) k, (Nat.factorial n : R)⁻¹ • (a ^ n) = 0 by
+    apply Finset.sum_eq_zero h₅
+  intro t ht
+  have h₆ : nilpotencyClass a ≤ t := by
+    simp_all only [Finset.mem_Ico]
+  suffices h₆ : a ^ t = 0 by
+    simp_all only [Finset.mem_Ico, true_and, smul_zero]
+  have h₈ : IsNilpotent a := by
+    use k
+  have h₉ := pow_nilpotencyClass h₈
+  have h10 : t = nilpotencyClass a + (t - nilpotencyClass a) := by
+    simp_all only [Finset.mem_Ico, true_and, add_tsub_cancel_of_le]
+  rw [h10]
+  rw [pow_add]
+  rw [h₉]
+  exact zero_mul (a ^ (t - nilpotencyClass a))
 
+variable [CharZero R]
 -- useful: add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero
 -- useful: add_pow (h : Commute x y) (n : ℕ) : ...
 -- useful: isNilpotent_add (h_comm : Commute x y) ...
