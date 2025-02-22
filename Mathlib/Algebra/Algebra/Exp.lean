@@ -70,10 +70,25 @@ theorem zero_ev {k l : ℕ} {a : A} (h₁ : a ^ k = 0) (h₂ : k ≤ l) : a ^ l 
 variable [CharZero R]
 theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a) (h₃ : IsNilpotent b) :
     exp R A (a + b) = exp R A a * exp R A b := by
-  have h : a * b = b * a := h₁
+  obtain ⟨n₁, hn₁⟩ := h₂
+  obtain ⟨n₂, hn₂⟩ := h₃
+  let N :=  n₁ ⊔ n₂
+  have huh₁ : n₁ ≤ N + 1 := by
+    refine Nat.le_add_right_of_le ?_
+    simp_all only [le_sup_left, N]
+  have huh₂ : n₂ ≤ N + 1 := by
+    refine Nat.le_add_right_of_le ?_
+    simp_all only [le_sup_right, N]
+  have h₃ : a ^ (N + 1) = 0 := zero_ev A hn₁ huh₁
+  have h₄ : b ^ (N + 1) = 0 := zero_ev A hn₂ huh₂
+  have help : (N + 1) + (N + 1) <= (2 * N + 1) + 1 := by
+    calc (N + 1) + (N + 1) = 2 * (N + 1) := by rw [← Nat.two_mul (N + 1)]
+    _ = 2 * N + 2 := by rw [Nat.mul_add_one]
+    _ = (2 * N + 1) + 1 := by rw [Nat.add_assoc]
+    _ ≤ (2 * N + 1) + 1 := by exact le_refl (2 * N + 2)
+  have h₅ : (a + b) ^ (2 * N + 1) = 0 :=
+    Commute.add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero h₁ h₃ h₄ help
   sorry
-
-
 
 end Semi
 
