@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Preadditive.Indization
 # Separating set in the category of ind-objects
 
 We construct a separating set in the category of ind-objects and conclude that if `C` is small
-and additive, then `C` has a separator.
+and additive, then `Ind C` has a separator.
 
 -/
 
