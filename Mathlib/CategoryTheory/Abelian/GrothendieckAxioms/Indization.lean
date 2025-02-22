@@ -13,7 +13,8 @@ import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 /-!
 # AB axioms in the category of ind-objects
 
-We show that `Ind C` satisfies Grothendieck's axiom AB5 if `C` has finite limits.
+We show that `Ind C` satisfies Grothendieck's axiom AB5 if `C` has finite limits and deduce that
+`Ind C` is Grothendieck abelian if `C` is small and abelian.
 -/
 
 universe v u

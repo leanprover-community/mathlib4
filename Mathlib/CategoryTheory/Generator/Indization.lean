@@ -10,12 +10,8 @@ import Mathlib.CategoryTheory.Preadditive.Indization
 /-!
 # Separating set in the category of ind-objects
 
-We construct a separating set in the category of ind-objects.
-
-## Future work
-
-Once we have constructed zero morphisms in the category of ind-objects, we will be able to show
-that under sufficient conditions, the category of ind-objects has a separating object.
+We construct a separating set in the category of ind-objects and conclude that if `C` is small
+and additive, then `C` has a separator.
 
 -/
 
