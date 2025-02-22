@@ -45,7 +45,7 @@ attribute [local instance] AddCommGrp.chosenFiniteProductsAddCommGrp
 private noncomputable local instance : ChosenFiniteProducts C :=
   ChosenFiniteProducts.ofFiniteProducts _
 
-/-- Implementation, see `forgetEquivalence`. -/
+/-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
 noncomputable def inverseAux : (C ⥤ₗ Type v) ⥤ C ⥤ AddCommGrp.{v} :=
   Functor.mapCommGrpFunctor ⋙ (whiskeringLeft _ _ _).obj Preadditive.commGrpEquivalence.functor ⋙
     (whiskeringRight _ _ _).obj
@@ -57,11 +57,11 @@ instance (F : C ⥤ₗ Type v) : PreservesFiniteLimits (inverseAux.obj F) where
       inferInstanceAs (PreservesLimitsOfShape J F.1)
     preservesLimitsOfShape_of_reflects_of_preserves _ (forget AddCommGrp)
 
-/-- Implementation, see `forgetEquivalence`. -/
+/-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
 noncomputable def inverse : (C ⥤ₗ Type v) ⥤ (C ⥤ₗ AddCommGrp.{v}) :=
   FullSubcategory.lift _ inverseAux inferInstance
 
-/-- Implementation, see `forgetEquivalence`.
+/-- Implementation, see `leftExactFunctorForgetEquivalence`.
 This is the complicated bit, where we show that forgetting the group structure in the image of
 `F` and then reconstructing it recovers the group structure we started with. -/
 noncomputable def unitIsoAux (F : C ⥤ AddCommGrp.{v}) [PreservesFiniteLimits F] (X : C) :
@@ -75,7 +75,7 @@ noncomputable def unitIsoAux (F : C ⥤ AddCommGrp.{v}) [PreservesFiniteLimits F
     Functor.Monoidal.μ_snd]
   aesop_cat
 
-/-- Implementation, see `forgetEquivalence`. -/
+/-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
 noncomputable def unitIso : 𝟭 (C ⥤ₗ AddCommGrp) ≅
     (LeftExactFunctor.whiskeringRight _ _ _).obj (LeftExactFunctor.of (forget _)) ⋙ inverse :=
   NatIso.ofComponents (fun F => InducedCategory.isoMk (NatIso.ofComponents (fun X =>
