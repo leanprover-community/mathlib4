@@ -1320,6 +1320,8 @@ def attach (s : Multiset α) : Multiset { x // x ∈ s } :=
 theorem coe_attach (l : List α) : @Eq (Multiset { x // x ∈ l }) (@attach α l) l.attach :=
   rfl
 
+set_option linter.deprecated false in
+@[deprecated "Deprecated without replacement." (since := "2025-02-07")]
 theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {s : Multiset α} (hx : x ∈ s) :
     SizeOf.sizeOf x < SizeOf.sizeOf s := by
   induction' s using Quot.inductionOn with l a b
@@ -1963,9 +1965,9 @@ lemma count_sub (a : α) (s t : Multiset α) : count a (s - t) = count a s - cou
 /-- This is a special case of `tsub_le_iff_right`, which should be used instead of this.
 This is needed to prove `OrderedSub (Multiset α)`. -/
 protected lemma sub_le_iff_le_add : s - t ≤ u ↔ s ≤ u + t := by
-  revert s
-  exact @(Multiset.induction_on t (by simp [Multiset.sub_zero]) fun a t IH s => by
-      simp [IH, erase_le_iff_le_cons])
+  induction t using Multiset.induction_on generalizing s with
+  | empty => simp [Multiset.sub_zero]
+  | cons a s IH => simp [IH, erase_le_iff_le_cons]
 
 /-- This is a special case of `tsub_le_iff_left`, which should be used instead of this. -/
 protected lemma sub_le_iff_le_add' : s - t ≤ u ↔ s ≤ t + u := by
@@ -2403,7 +2405,7 @@ theorem exists_mem_of_rel_of_mem {r : α → β → Prop} {s : Multiset α} {t :
   induction' h with x y s t hxy _hst ih
   · simp
   · intro a ha
-    cases' mem_cons.1 ha with ha ha
+    rcases mem_cons.1 ha with ha | ha
     · exact ⟨y, mem_cons_self _ _, ha.symm ▸ hxy⟩
     · rcases ih ha with ⟨b, hbt, hab⟩
       exact ⟨b, mem_cons.2 (Or.inr hbt), hab⟩
@@ -2510,6 +2512,8 @@ theorem disjoint_left {s t : Multiset α} : Disjoint s t ↔ ∀ {a}, a ∈ s �
   · rw [le_bot_iff, bot_eq_zero, eq_zero_iff_forall_not_mem]
     exact fun a ha ↦ h (subset_of_le hs ha) (subset_of_le ht ha)
 
+alias ⟨_root_.Disjoint.not_mem_of_mem_left_multiset, _⟩ := disjoint_left
+
 @[simp, norm_cast]
 theorem coe_disjoint (l₁ l₂ : List α) : Disjoint (l₁ : Multiset α) l₂ ↔ l₁.Disjoint l₂ :=
   disjoint_left
@@ -2519,6 +2523,8 @@ theorem coe_disjoint (l₁ l₂ : List α) : Disjoint (l₁ : Multiset α) l₂ 
 
 theorem disjoint_right {s t : Multiset α} : Disjoint s t ↔ ∀ {a}, a ∈ t → a ∉ s :=
   disjoint_comm.trans disjoint_left
+
+alias ⟨_root_.Disjoint.not_mem_of_mem_right_multiset, _⟩ := disjoint_right
 
 theorem disjoint_iff_ne {s t : Multiset α} : Disjoint s t ↔ ∀ a ∈ s, ∀ b ∈ t, a ≠ b := by
   simp [disjoint_left, imp_not_comm]

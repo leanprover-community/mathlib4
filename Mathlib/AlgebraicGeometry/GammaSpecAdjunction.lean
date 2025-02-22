@@ -67,12 +67,12 @@ def toΓSpecFun : X → PrimeSpectrum (Γ.obj (op X)) := fun x =>
 
 theorem not_mem_prime_iff_unit_in_stalk (r : Γ.obj (op X)) (x : X) :
     r ∉ (X.toΓSpecFun x).asIdeal ↔ IsUnit (X.presheaf.Γgerm x r) := by
-  erw [IsLocalRing.mem_maximalIdeal, Classical.not_not]
+  simp [toΓSpecFun, IsLocalRing.closedPoint]
 
 /-- The preimage of a basic open in `Spec Γ(X)` under the unit is the basic
 open in `X` defined by the same element (they are equal as sets). -/
 theorem toΓSpec_preimage_basicOpen_eq (r : Γ.obj (op X)) :
-    X.toΓSpecFun ⁻¹' (basicOpen r).1 = (X.toRingedSpace.basicOpen r).1 := by
+    X.toΓSpecFun ⁻¹' basicOpen r = SetLike.coe (X.toRingedSpace.basicOpen r) := by
       ext
       dsimp
       simp only [Set.mem_preimage, SetLike.mem_coe]
@@ -83,14 +83,15 @@ theorem toΓSpec_preimage_basicOpen_eq (r : Γ.obj (op X)) :
 theorem toΓSpec_continuous : Continuous X.toΓSpecFun := by
   rw [isTopologicalBasis_basic_opens.continuous_iff]
   rintro _ ⟨r, rfl⟩
-  erw [X.toΓSpec_preimage_basicOpen_eq r]
+  rw [X.toΓSpec_preimage_basicOpen_eq r]
   exact (X.toRingedSpace.basicOpen r).2
 
 /-- The canonical (bundled) continuous map from the underlying topological
 space of `X` to the prime spectrum of its global sections. -/
-def toΓSpecBase : X.toTopCat ⟶ Spec.topObj (Γ.obj (op X)) where
-  toFun := X.toΓSpecFun
-  continuous_toFun := X.toΓSpec_continuous
+def toΓSpecBase : X.toTopCat ⟶ Spec.topObj (Γ.obj (op X)) :=
+  TopCat.ofHom
+  { toFun := X.toΓSpecFun
+    continuous_toFun := X.toΓSpec_continuous }
 
 variable (r : Γ.obj (op X))
 
@@ -228,10 +229,11 @@ lemma toΓSpec_preimage_zeroLocus_eq {X : LocallyRingedSpace.{u}}
     X.toΓSpec.base ⁻¹' PrimeSpectrum.zeroLocus s = X.toRingedSpace.zeroLocus s := by
   simp only [RingedSpace.zeroLocus]
   have (i : LocallyRingedSpace.Γ.obj (op X)) (_ : i ∈ s) :
-      ((X.toRingedSpace.basicOpen i).carrier)ᶜ =
-        X.toΓSpec.base ⁻¹' (PrimeSpectrum.basicOpen i).carrierᶜ := by
+      (SetLike.coe (X.toRingedSpace.basicOpen i))ᶜ =
+        X.toΓSpec.base ⁻¹' ((PrimeSpectrum.basicOpen i).carrier)ᶜ := by
     symm
-    erw [Set.preimage_compl, X.toΓSpec_preimage_basicOpen_eq i]
+    rw [Set.preimage_compl, Opens.carrier_eq_coe]
+    erw [X.toΓSpec_preimage_basicOpen_eq i]
   erw [Set.iInter₂_congr this]
   simp_rw [← Set.preimage_iInter₂, Opens.carrier_eq_coe, PrimeSpectrum.basicOpen_eq_zeroLocus_compl,
     compl_compl]
@@ -300,8 +302,8 @@ theorem right_triangle (R : CommRingCat) :
   apply LocallyRingedSpace.comp_ring_hom_ext
   · ext (p : PrimeSpectrum R)
     dsimp
-    ext x
-    erw [← IsLocalization.AtPrime.to_map_mem_maximal_iff ((structureSheaf R).presheaf.stalk p)
+    refine PrimeSpectrum.ext (Ideal.ext fun x => ?_)
+    rw [← IsLocalization.AtPrime.to_map_mem_maximal_iff ((structureSheaf R).presheaf.stalk p)
         p.asIdeal x]
     rfl
   · intro r; apply toOpen_res
@@ -488,7 +490,7 @@ instance Spec.preservesLimits : Limits.PreservesLimits Scheme.Spec :=
   ΓSpec.adjunction.rightAdjoint_preservesLimits
 
 /-- The functor `Spec.toLocallyRingedSpace : CommRingCatᵒᵖ ⥤ LocallyRingedSpace`
-is fully faithful.-/
+is fully faithful. -/
 def Spec.fullyFaithfulToLocallyRingedSpace : Spec.toLocallyRingedSpace.FullyFaithful :=
   ΓSpec.locallyRingedSpaceAdjunction.fullyFaithfulROfIsIsoCounit
 
@@ -500,7 +502,7 @@ instance : Spec.toLocallyRingedSpace.Full :=
 instance : Spec.toLocallyRingedSpace.Faithful :=
   Spec.fullyFaithfulToLocallyRingedSpace.faithful
 
-/-- The functor `Spec : CommRingCatᵒᵖ ⥤ Scheme` is fully faithful.-/
+/-- The functor `Spec : CommRingCatᵒᵖ ⥤ Scheme` is fully faithful. -/
 def Spec.fullyFaithful : Scheme.Spec.FullyFaithful :=
   ΓSpec.adjunction.fullyFaithfulROfIsIsoCounit
 

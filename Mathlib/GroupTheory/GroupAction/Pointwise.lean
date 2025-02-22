@@ -60,12 +60,15 @@ theorem image_smul_setₛₗ :
     h '' (c • s) = σ c • h '' s := by
   simp only [← image_smul, image_image, map_smulₛₗ h]
 
+variable {σ s t M N h} in
+@[to_additive]
+theorem Set.MapsTo.smul_setₛₗ (hst : MapsTo h s t) (c : R) : MapsTo h (c • s) (σ c • t) :=
+  Function.Semiconj.mapsTo_image_right (map_smulₛₗ _ _) hst
+
 /-- Translation of preimage is contained in preimage of translation -/
 @[to_additive]
-theorem smul_preimage_set_leₛₗ :
-    c • h ⁻¹' t ⊆ h ⁻¹' (σ c • t) := by
-  rintro x ⟨y, hy, rfl⟩
-  exact ⟨h y, hy, by rw [map_smulₛₗ]⟩
+theorem smul_preimage_set_leₛₗ : c • h ⁻¹' t ⊆ h ⁻¹' (σ c • t) :=
+  mapsTo_iff_subset_preimage.mp <| (mapsTo_preimage h t).smul_setₛₗ c
 
 variable {c}
 
@@ -139,6 +142,11 @@ theorem image_smul_set :
 theorem smul_preimage_set_le :
     c • h ⁻¹' t ⊆ h ⁻¹' (c • t) :=
   smul_preimage_set_leₛₗ _ _ _ h c t
+
+variable {s t M N h} in
+@[to_additive]
+theorem Set.MapsTo.smul_set (hst : MapsTo h s t) (c : R) : MapsTo h (c • s) (c • t) :=
+  hst.smul_setₛₗ c
 
 variable {c}
 

@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Data.Finset.Pairwise
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Nat.Lattice
 
@@ -148,6 +149,14 @@ protected theorem IsClique.finsetMap {f : α ↪ β} {s : Finset α} (h : G.IsCl
     (G.map f).IsClique (s.map f) := by
   simpa
 
+/-- If a set of vertices `A` is a clique in subgraph of `G` induced by a superset of `A`,
+ its embedding is a clique in `G`. -/
+theorem IsClique.of_induce {S : Subgraph G} {F : Set α} {A : Set F}
+    (c : (S.induce F).coe.IsClique A) : G.IsClique (Subtype.val '' A) := by
+  simp only [Set.Pairwise, Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
+  intro _ ⟨_, ainA⟩ _ ⟨_, binA⟩ anb
+  exact S.adj_sub (c ainA binA (Subtype.coe_ne_coe.mp anb)).2.2
+
 end Clique
 
 /-! ### `n`-cliques -/
@@ -213,12 +222,24 @@ section DecidableEq
 
 variable [DecidableEq α]
 
-theorem IsNClique.insert (hs : G.IsNClique n s) (h : ∀ b ∈ s, G.Adj a b) :
+protected theorem IsNClique.insert (hs : G.IsNClique n s) (h : ∀ b ∈ s, G.Adj a b) :
     G.IsNClique (n + 1) (insert a s) := by
   constructor
   · push_cast
     exact hs.1.insert fun b hb _ => h _ hb
   · rw [card_insert_of_not_mem fun ha => (h _ ha).ne rfl, hs.2]
+
+lemma IsNClique.erase_of_mem (hs : G.IsNClique n s) (ha : a ∈ s) :
+    G.IsNClique (n - 1) (s.erase a) where
+  isClique := hs.isClique.subset <| by simp
+  card_eq := by rw [card_erase_of_mem ha, hs.2]
+
+protected lemma IsNClique.insert_erase
+    (hs : G.IsNClique n s) (ha : ∀ w ∈ s \ {b}, G.Adj a w) (hb : b ∈ s) :
+    G.IsNClique n (insert a (erase s b)) := by
+  cases n with
+  | zero => exact False.elim <| not_mem_empty _ (isNClique_zero.1 hs ▸ hb)
+  | succ _ => exact (hs.erase_of_mem hb).insert fun w h ↦ by aesop
 
 theorem is3Clique_triple_iff : G.IsNClique 3 {a, b, c} ↔ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c := by
   simp only [isNClique_iff, isClique_iff, Set.pairwise_insert_of_symmetric G.symm, coe_insert]
@@ -243,6 +264,15 @@ theorem is3Clique_iff_exists_cycle_length_three :
   exact
     ⟨(fun ⟨_, a, _, _, hab, hac, hbc, _⟩ => ⟨a, cons hab (cons hbc (cons hac.symm nil)), by aesop⟩),
     (fun ⟨_, .cons hab (.cons hbc (.cons hca nil)), _, _⟩ => ⟨_, _, _, _, hab, hca.symm, hbc, rfl⟩)⟩
+
+/-- If a set of vertices `A` is an `n`-clique in subgraph of `G` induced by a superset of `A`,
+ its embedding is an `n`-clique in `G`. -/
+theorem IsNClique.of_induce {S : Subgraph G} {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ}
+    (cc : (S.induce F).coe.IsNClique n s) :
+    G.IsNClique n (Finset.map ⟨Subtype.val, Subtype.val_injective⟩ s) := by
+  rw [isNClique_iff] at cc ⊢
+  simp only [Subgraph.induce_verts, coe_map, card_map]
+  exact ⟨cc.left.of_induce, cc.right⟩
 
 end NClique
 
@@ -685,7 +715,7 @@ instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.Is
 /-- If `s` is an independent set, its complement meets every edge of `G`. -/
 lemma IsIndepSet.nonempty_mem_compl_mem_edge
     [Fintype α] [DecidableEq α] {s : Finset α} (indA : G.IsIndepSet s) {e} (he : e ∈ G.edgeSet) :
-  { b ∈ sᶜ | b ∈ e }.Nonempty := by
+    { b ∈ sᶜ | b ∈ e }.Nonempty := by
   obtain ⟨v , w⟩ := e
   by_contra c
   rw [IsIndepSet] at indA
@@ -706,6 +736,12 @@ theorem isIndepSet_neighborSet_of_triangleFree [DecidableEq α] (h: G.CliqueFree
   simp_rw [mem_neighborSet] at nind
   obtain ⟨j, avj, k, avk, _, ajk⟩ := nind
   exact h {v, j, k} (is3Clique_triple_iff.mpr (by simp [avj, avk, ajk]))
+
+/-- The embedding of an independent set of an induced subgraph of the subgraph `G` is an independent
+ set in `G` and vice versa. -/
+theorem isIndepSet_induce {F : Set α} {s : Set F} :
+    ((⊤ : Subgraph G).induce F).coe.IsIndepSet s ↔ G.IsIndepSet (Subtype.val '' s) := by
+  simp [Set.Pairwise]
 
 end IndepSet
 
@@ -736,6 +772,13 @@ instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
     Decidable (G.IsNIndepSet n s) :=
   decidable_of_iff' _ (G.isNIndepSet_iff n s)
 
+/-- The embedding of an `n`-independent set of an induced subgraph of the subgraph `G` is an
+`n`-independent set in `G` and vice versa. -/
+theorem isNIndepSet_induce {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ} :
+    ((⊤ : Subgraph G).induce F).coe.IsNIndepSet n ↑s ↔
+    G.IsNIndepSet n (Finset.map ⟨Subtype.val, Subtype.val_injective⟩ s) := by
+  simp [isNIndepSet_iff, (isIndepSet_induce)]
+
 end NIndepSet
 
 /-! ### Graphs without independent sets -/
@@ -763,7 +806,7 @@ def IndepSetFreeOn (G : SimpleGraph α) (s : Set α) (n : ℕ) : Prop :=
 
 end IndepSetFree
 
-/-! ### Set of independent sets-/
+/-! ### Set of independent sets -/
 
 
 section IndepSetSet
@@ -782,7 +825,7 @@ theorem mem_indepSetSet_iff : s ∈ G.indepSetSet n ↔ G.IsNIndepSet n s :=
 
 end IndepSetSet
 
-/-! ### Independence Number-/
+/-! ### Independence Number -/
 
 
 section IndepNumber
@@ -800,7 +843,7 @@ noncomputable def indepNum (G : SimpleGraph α) : ℕ := sSup {n | ∃ s, G.IsNI
 
 theorem IsIndepSet.card_le_indepNum
     [Fintype α] {t : Finset α} (tc : G.IsIndepSet t) : #t ≤ G.indepNum := by
-  rw[← isClique_compl] at tc
+  rw [← isClique_compl] at tc
   simp_rw [indepNum, ← isNClique_compl]
   exact tc.card_le_cliqueNum
 

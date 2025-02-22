@@ -62,6 +62,7 @@ def Action.imageComplementIncl {X Y : Action FintypeCat (MonCat.of G)} (f : X �
   hom := FintypeCat.imageComplementIncl f.hom
   comm _ := rfl
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance {X Y : Action FintypeCat (MonCat.of G)} (f : X ⟶ Y) :
     Mono (Action.imageComplementIncl G f) := by
   apply Functor.mono_of_mono_map (forget _)
@@ -88,7 +89,7 @@ instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
 
 /-- The forgetful functor from finite `G`-sets to sets is a `FiberFunctor`. -/
 noncomputable instance : FiberFunctor (Action.forget FintypeCat (MonCat.of G)) where
-  preservesFiniteCoproducts := ⟨fun _ _ ↦ inferInstance⟩
+  preservesFiniteCoproducts := ⟨fun _ ↦ inferInstance⟩
   preservesQuotientsByFiniteGroups _ _ _ := inferInstance
   reflectsIsos := ⟨fun f (_ : IsIso f.hom) => inferInstance⟩
 

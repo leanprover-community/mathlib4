@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
+import Mathlib.Tactic.FunProp
 
 /-!
 # Measurable embeddings and equivalences
@@ -501,20 +502,13 @@ lemma piCongrLeft_apply_apply {ι ι' : Type*} (e : ι ≃ ι') {β : ι' → Ty
 /-- The isomorphism `(γ → α × β) ≃ (γ → α) × (γ → β)` as a measurable equivalence. -/
 def arrowProdEquivProdArrow (α β γ : Type*) [MeasurableSpace α] [MeasurableSpace β] :
     (γ → α × β) ≃ᵐ (γ → α) × (γ → β) where
-  __ := Equiv.arrowProdEquivProdArrow α β γ
-  measurable_toFun _ h := by
-    simp_rw [Equiv.arrowProdEquivProdArrow, coe_fn_mk]
-    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-    we need provide the type hints `(a : γ → α × β)`, to avoid unification issues.
-    -/
-    exact MeasurableSet.preimage h (Measurable.prod_mk
-        (measurable_pi_lambda (fun (a : γ → α × β) c ↦ (a c).1)
-          fun a ↦ (measurable_pi_apply a).fst)
-        (measurable_pi_lambda (fun (a : γ → α × β) c ↦ (a c).2)
-          fun a ↦ (measurable_pi_apply a).snd))
-  measurable_invFun _ h := by
-    simp_rw [Equiv.arrowProdEquivProdArrow, coe_fn_symm_mk]
-    exact MeasurableSet.preimage h (by measurability)
+  __ := Equiv.arrowProdEquivProdArrow γ _ _
+  measurable_toFun := by
+    dsimp [Equiv.arrowProdEquivProdArrow]
+    fun_prop
+  measurable_invFun := by
+    dsimp [Equiv.arrowProdEquivProdArrow]
+    fun_prop
 
 /-- The measurable equivalence `(α₁ → β₁) ≃ᵐ (α₂ → β₂)` induced by `α₁ ≃ α₂` and `β₁ ≃ᵐ β₂`. -/
 def arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [MeasurableSpace β₁] [MeasurableSpace β₂]

@@ -3,7 +3,7 @@ Copyright (c) 2020 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Johan Commelin
 -/
-import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
+import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Data.Set.Subsingleton
@@ -55,6 +55,8 @@ structure ProjectiveSpectrum where
 attribute [instance] ProjectiveSpectrum.isPrime
 
 namespace ProjectiveSpectrum
+
+instance (x : ProjectiveSpectrum 𝒜) : Ideal.IsPrime x.asHomogeneousIdeal.toIdeal := x.isPrime
 
 /-- The zero locus of a set `s` of elements of a commutative ring `A` is the set of all relevant
 homogeneous prime ideals of the ring that contain the set `s`.

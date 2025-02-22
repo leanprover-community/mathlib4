@@ -38,8 +38,8 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 
 - `MulAction.BlockMem` : the type of blocks containing a given element
 
-- `MulAction.BlockMem.boundedOrder` :
-  the type of blocks containing a given element is a bounded order.
+- `MulAction.BlockMem.instBoundedOrder` :
+  The type of blocks containing a given element is a bounded order.
 
 ## References
 
@@ -71,7 +71,7 @@ theorem orbit.pairwiseDisjoint :
   exact (orbit.eq_or_disjoint x y).resolve_right h
 
 /-- Orbits of an element form a partition -/
-@[to_additive "Orbits of an element of a partition"]
+@[to_additive "Orbits of an element form a partition"]
 theorem IsPartition.of_orbits :
     Setoid.IsPartition (Set.range fun a : X => orbit G a) := by
   apply orbit.pairwiseDisjoint.isPartition_of_exists_of_ne_empty
@@ -86,7 +86,7 @@ section SMul
 
 variable (G : Type*) {X : Type*} [SMul G X] {B : Set X} {a : X}
 
--- Change terminology : is_fully_invariant ?
+-- Change terminology to IsFullyInvariant?
 /-- A set `B` is a `G`-fixed block if `g • B = B` for all `g : G`. -/
 @[to_additive "A set `B` is a `G`-fixed block if `g +ᵥ B = B` for all `g : G`."]
 def IsFixedBlock (B : Set X) := ∀ g : G, g • B = B
@@ -372,7 +372,7 @@ theorem isBlock_subtypeVal {C : SubMulAction G X} {B : Set C} :
 theorem _root_.AddAction.IsBlock.of_addSubgroup_of_conjugate
     {G : Type*} [AddGroup G] {X : Type*} [AddAction G X] {B : Set X}
     {H : AddSubgroup G} (hB : AddAction.IsBlock H B) (g : G) :
-    AddAction.IsBlock (H.map (AddAut.conj g).toAddMonoidHom) (g +ᵥ B) := by
+    AddAction.IsBlock (H.map (AddAut.conj g).toMul.toAddMonoidHom) (g +ᵥ B) := by
   rw [AddAction.isBlock_iff_vadd_eq_or_disjoint]
   intro h'
   obtain ⟨h, hH, hh⟩ := AddSubgroup.mem_map.mp (SetLike.coe_mem h')
@@ -385,7 +385,6 @@ theorem _root_.AddAction.IsBlock.of_addSubgroup_of_conjugate
   suffices (h' : G) +ᵥ (g +ᵥ B) = g +ᵥ (h +ᵥ B) by
     exact this
   rw [← hh, vadd_vadd, vadd_vadd]
-  erw [AddAut.conj_apply]
   simp
 
 @[to_additive existing]
@@ -593,7 +592,7 @@ theorem stabilizer_orbit_eq {a : X} {H : Subgroup G} (hH : stabilizer G a ≤ H)
 variable (G)
 
 /-- Order equivalence between blocks in `X` containing a point `a`
- and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5)-/
+ and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5) -/
 @[to_additive
   "Order equivalence between blocks in `X` containing a point `a`
  and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5)"]
@@ -735,14 +734,14 @@ theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
    are just `k + ℕ`, for `k ≤ 0`, and the corresponding intersection is `ℕ`, which is not a block.
    (Remark by Thomas Browning) -/
 /-- The intersection of the translates of a *finite* subset which contain a given point
-is a block (Wielandt, th. 7.3)-/
+is a block (Wielandt, th. 7.3). -/
 @[to_additive
   "The intersection of the translates of a *finite* subset which contain a given point
-  is a block (Wielandt, th. 7.3)"]
+  is a block (Wielandt, th. 7.3)."]
 theorem of_subset (a : X) (hfB : B.Finite) :
     IsBlock G (⋂ (k : G) (_ : a ∈ k • B), k • B) := by
   let B' := ⋂ (k : G) (_ : a ∈ k • B), k • B
-  cases' Set.eq_empty_or_nonempty B with hfB_e hfB_ne
+  rcases Set.eq_empty_or_nonempty B with hfB_e | hfB_ne
   · simp [hfB_e]
   have hB'₀ : ∀ (k : G) (_ : a ∈ k • B), B' ≤ k • B := by
     intro k hk

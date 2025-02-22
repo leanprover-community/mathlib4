@@ -339,51 +339,15 @@ theorem support_smul_subset_vadd_support [MulZeroClass R] [SMulWithZero R V] {x 
   rw [h]
   exact support_smul_subset_vadd_support'
 
-theorem smul_coeffTop_orderTop_vAdd_orderTop {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ'] [VAdd Γ Γ']
-    [IsOrderedCancelVAdd Γ Γ'] [Zero R] [SMulWithZero R V] {x : HahnSeries Γ R}
-    {y : HahnModule Γ' R V} :
-    ((of R).symm (x • y)).coeffTop (x.orderTop +ᵥ ((of R).symm y).orderTop) =
-      x.leadingCoeff • ((of R).symm y).leadingCoeff := by
-  by_cases hx : x = 0; · simp_all [hx]
-  by_cases hy : (of R).symm y = 0; · simp_all [hy]
-  simp_rw [HahnSeries.orderTop_of_ne hx, HahnSeries.orderTop_of_ne hy,
-    HahnSeries.leadingCoeff_of_ne hx, HahnSeries.leadingCoeff_of_ne hy, ← WithTop.coe_vAdd,
-    HahnSeries.coeffTop_eq]
-  rw [coeff_smul, Finset.vaddAntidiagonal_min_vadd_min, Finset.sum_singleton]
-
-theorem orderTop_smul_of_nonzero {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ'] [VAdd Γ Γ']
+theorem orderTop_vAdd_le_orderTop_smul {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ'] [VAdd Γ Γ']
     [IsOrderedCancelVAdd Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {x : HahnSeries Γ R}
-    {y : HahnModule Γ' R V} (h : x.leadingCoeff • ((of R).symm y).leadingCoeff ≠ 0) :
-    ((of R).symm (x • y)).orderTop = x.orderTop +ᵥ ((of R).symm y).orderTop := by
-  by_cases hx : x = 0; · simp_all
-  by_cases hy : (of R).symm y = 0; · simp_all
-  refine le_antisymm (HahnSeries.orderTop_le_of_coeffTop_ne_zero ?_) ?_
-  · rw [smul_coeffTop_orderTop_vAdd_orderTop]
-    exact h
-  · rw [HahnSeries.orderTop_of_ne hx, HahnSeries.orderTop_of_ne hy, ← WithTop.coe_vAdd,
-      ← Set.IsWF.min_vadd]
-    have hxy : (of R).symm (x • y) ≠ 0 :=
-      HahnSeries.ne_zero_of_coeffTop_ne_zero (ne_of_eq_of_ne smul_coeffTop_orderTop_vAdd_orderTop h)
-    rw [HahnSeries.orderTop_of_ne hxy, WithTop.coe_le_coe]
-    exact Set.IsWF.min_le_min_of_subset support_smul_subset_vadd_support
-
-theorem leadingCoeff_smul_of_nonzero {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ'] [VAdd Γ Γ']
-    [IsOrderedCancelVAdd Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {x : HahnSeries Γ R}
-    {y : HahnModule Γ' R V} (h : x.leadingCoeff • ((of R).symm y).leadingCoeff ≠ 0) :
-    ((of R).symm (x • y)).leadingCoeff = x.leadingCoeff • ((of R).symm y).leadingCoeff := by
-  by_cases hx : x = 0; · simp_all
-  by_cases hy : (of R).symm y = 0; · simp_all
-  simp only [HahnSeries.leadingCoeff, orderTop_smul_of_nonzero h,
-    smul_coeffTop_orderTop_vAdd_orderTop]
-
-theorem orderTop_vAdd_le_orderTop_smul {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ']
-    [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {x : HahnSeries Γ R}
-    {y : HahnModule Γ' R V} :
+    [VAdd (WithTop Γ) (WithTop Γ')] {y : HahnModule Γ' R V}
+    (h : ∀ (γ : Γ) (γ' : Γ'), γ +ᵥ γ' = (γ : WithTop Γ) +ᵥ (γ' : WithTop Γ')) :
     x.orderTop +ᵥ ((of R).symm y).orderTop ≤ ((of R).symm (x • y)).orderTop := by
   by_cases hx : x = 0; · simp_all
   by_cases hy : y = 0; · simp_all
   have hhy : ((of R).symm y) ≠ 0 := hy
-  rw [HahnSeries.orderTop_of_ne hx, HahnSeries.orderTop_of_ne hhy, ← WithTop.coe_vAdd,
+  rw [HahnSeries.orderTop_of_ne hx, HahnSeries.orderTop_of_ne hhy, ← h,
       ← Set.IsWF.min_vadd]
   by_cases hxy : (of R).symm (x • y) = 0
   · rw [hxy, HahnSeries.orderTop_zero]
@@ -574,7 +538,7 @@ theorem orderTop_add_le_mul {Γ} [LinearOrderedCancelAddCommMonoid Γ]
     [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} :
     x.orderTop + y.orderTop ≤ (x * y).orderTop := by
   rw [← smul_eq_mul]
-  exact HahnModule.orderTop_vAdd_le_orderTop_smul
+  exact HahnModule.orderTop_vAdd_le_orderTop_smul fun i j ↦ rfl
 
 private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
     x * y * z = x * (y * z) := by
@@ -692,17 +656,22 @@ instance [CommRing R] : CommRing (HahnSeries Γ R) :=
   { inferInstanceAs (CommSemiring (HahnSeries Γ R)),
     inferInstanceAs (Ring (HahnSeries Γ R)) with }
 
-theorem sum_orderTop_le_orderTop_prod {Γ} [LinearOrderedCancelAddCommMonoid Γ]
-    [CommSemiring R] {σ : Type*} [Fintype σ] (y : σ → HahnSeries Γ R) :
-    ∑ i, (y i).orderTop ≤ (∏ i, y i).orderTop := by
-  have hs : ∀ (s : Finset σ), ∑ i ∈ s, (y i).orderTop ≤ (∏ i ∈ s, y i).orderTop := by
-    intro s
-    induction s using cons_induction with
-    | empty => simp [zero_le_orderTop_iff]
-    | cons i s his ih =>
-      rw [sum_cons, prod_cons]
-      exact (add_le_add_left ih (y i).orderTop).trans orderTop_add_le_mul
-  exact hs univ
+theorem orderTop_nsmul_le_orderTop_pow {Γ} [LinearOrderedCancelAddCommMonoid Γ]
+    [Semiring R] {x : HahnSeries Γ R} {n : ℕ} : n • x.orderTop ≤ (x ^ n).orderTop := by
+  induction n with
+  | zero =>
+    simp only [zero_smul, pow_zero]
+    by_cases h : (0 : R) = 1
+    · simp [subsingleton_iff_zero_eq_one.mp h]
+    · simp [nontrivial_of_ne 0 1 h]
+  | succ n ih =>
+    rw [add_nsmul, pow_add]
+    calc
+      n • x.orderTop + 1 • x.orderTop ≤ (x ^ n).orderTop + 1 • x.orderTop :=
+        add_le_add_right ih (1 • x.orderTop)
+      (x ^ n).orderTop + 1 • x.orderTop = (x ^ n).orderTop + x.orderTop := by rw [one_nsmul]
+      (x ^ n).orderTop + x.orderTop ≤ (x ^ n * x).orderTop := orderTop_add_le_mul
+      (x ^ n * x).orderTop ≤ (x ^ n * x ^ 1).orderTop := by rw [pow_one]
 
 end HahnSeries
 

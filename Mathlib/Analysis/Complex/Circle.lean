@@ -84,7 +84,7 @@ def toUnits : Circle →* Units ℂ := unitSphereToUnits ℂ
 @[simp] lemma toUnits_apply (z : Circle) : toUnits z = Units.mk0 ↑z z.coe_ne_zero := rfl
 
 instance : CompactSpace Circle := Metric.sphere.compactSpace _ _
-instance : TopologicalGroup Circle := Metric.sphere.topologicalGroup
+instance : IsTopologicalGroup Circle := Metric.sphere.topologicalGroup
 instance instUniformSpace : UniformSpace Circle := instUniformSpaceSubtype
 instance : UniformGroup Circle := by
   convert topologicalGroup_is_uniform_of_compactSpace Circle

@@ -345,9 +345,8 @@ theorem finite_co_support_prod_smul (s : SummableFamily Γ R α)
 
 /-- An elementwise scalar multiplication of one summable family on another. -/
 @[simps]
-def smul (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) :
-    (SummableFamily Γ' V (α × β)) where
-  toFun a := (HahnModule.of R).symm (s (a.1) • ((HahnModule.of R) (t (a.2))))
+def smul (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) : SummableFamily Γ' V (α × β) where
+  toFun ab := (of R).symm (s (ab.1) • ((of R) (t (ab.2))))
   isPWO_iUnion_support' :=
     isPWO_iUnion_support_prod_smul s.isPWO_iUnion_support t.isPWO_iUnion_support
   finite_co_support' g := finite_co_support_prod_smul s t g

@@ -82,8 +82,7 @@ theorem derivWithin_pi (h : ∀ i, DifferentiableWithinAt 𝕜 (fun x => φ x i)
     derivWithin φ s x = fun i => derivWithin (fun x => φ x i) s x := by
   rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
   · exact (hasDerivWithinAt_pi.2 fun i => (h i).hasDerivWithinAt).derivWithin hxs
-  · simp only [derivWithin_zero_of_isolated hxs]
-    rfl
+  · simp only [derivWithin_zero_of_isolated hxs, Pi.zero_def]
 
 theorem deriv_pi (h : ∀ i, DifferentiableAt 𝕜 (fun x => φ x i) x) :
     deriv φ x = fun i => deriv (fun x => φ x i) x :=
