@@ -68,22 +68,28 @@ variable {μ μ' : Measure α} {ν ν' : Measure β} {τ : Measure γ}
 
 /-- If `ν` is a finite measure, and `s ⊆ α × β` is measurable, then `x ↦ ν { y | (x, y) ∈ s }` is
   a measurable function. `measurable_measure_prod_mk_left` is strictly more general. -/
-theorem measurable_measure_prod_mk_left_finite [IsFiniteMeasure ν] {s : Set (α × β)}
+theorem measurable_measure_prodMk_left_finite [IsFiniteMeasure ν] {s : Set (α × β)}
     (hs : MeasurableSet s) : Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
   induction s, hs using induction_on_inter generateFrom_prod.symm isPiSystem_prod with
   | empty => simp
   | basic s hs =>
     obtain ⟨s, hs, t, -, rfl⟩ := hs
-    classical simpa only [mk_preimage_prod_right_eq_if, measure_if]
-      using measurable_const.indicator hs
-  | compl s hs ihs =>
+    classical
+      simpa only [mk_preimage_prod_right_eq_if, measure_if] using measurable_const.indicator hs
+  | compl s hs
+    ihs =>
     simp_rw [preimage_compl, measure_compl (measurable_prodMk_left hs) (measure_ne_top ν _)]
     exact ihs.const_sub _
-  | iUnion f hfd hfm ihf =>
-    have (a : α) : ν (Prod.mk a ⁻¹' ⋃ i, f i) = ∑' i, ν (Prod.mk a ⁻¹' f i) := by
+  | iUnion f hfd hfm
+    ihf =>
+    have (a : α) : ν (Prod.mk a ⁻¹' ⋃ i, f i) = ∑' i, ν (Prod.mk a ⁻¹' f i) :=
+      by
       rw [preimage_iUnion, measure_iUnion]
       exacts [hfd.mono fun _ _ ↦ .preimage _, fun i ↦ measurable_prodMk_left (hfm i)]
     simpa only [this] using Measurable.ennreal_tsum ihf
+
+@[deprecated (since := "2025-02-22")]
+alias measurable_measure_prod_mk_left_finite := measurable_measure_prodMk_left_finite
 
 /-- If `ν` is an s-finite measure, and `s ⊆ α × β` is measurable, then `x ↦ ν { y | (x, y) ∈ s }`
 is a measurable function.
@@ -92,29 +98,40 @@ Not true without the s-finite assumption: on `ℝ × ℝ` with the product sigma
 diagonal and let `ν` be an uncountable sum of Dirac measures (all Dirac measures for points in a
 set `t`). Then `ν (Prod.mk x ⁻¹' s) = ν {x} = if x ∈ t then 1 else 0`. If `t` is chosen
 non-measurable, this will not be measurable. -/
-theorem measurable_measure_prod_mk_left [SFinite ν] {s : Set (α × β)} (hs : MeasurableSet s) :
+theorem measurable_measure_prodMk_left [SFinite ν] {s : Set (α × β)} (hs : MeasurableSet s) :
     Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
   rw [← sum_sfiniteSeq ν]
   simp_rw [Measure.sum_apply_of_countable]
   exact Measurable.ennreal_tsum (fun i ↦ measurable_measure_prodMk_left_finite hs)
 
+@[deprecated (since := "2025-02-22")]
+alias measurable_measure_prod_mk_left := measurable_measure_prodMk_left
+
 /-- If `μ` is an s-finite measure, and `s ⊆ α × β` is measurable, then `y ↦ μ { x | (x, y) ∈ s }` is
   a measurable function. -/
-theorem measurable_measure_prod_mk_right {μ : Measure α} [SFinite μ] {s : Set (α × β)}
+theorem measurable_measure_prodMk_right {μ : Measure α} [SFinite μ] {s : Set (α × β)}
     (hs : MeasurableSet s) : Measurable fun y => μ ((fun x => (x, y)) ⁻¹' s) :=
   measurable_measure_prodMk_left (measurableSet_swap_iff.mpr hs)
 
-theorem Measurable.map_prod_mk_left [SFinite ν] :
-    Measurable fun x : α => map (Prod.mk x) ν := by
+@[deprecated (since := "2025-02-22")]
+alias measurable_measure_prod_mk_right := measurable_measure_prodMk_right
+
+theorem Measurable.map_prodMk_left [SFinite ν] : Measurable fun x : α => map (Prod.mk x) ν := by
   apply measurable_of_measurable_coe; intro s hs
   simp_rw [map_apply measurable_prodMk_left hs]
   exact measurable_measure_prodMk_left hs
 
-theorem Measurable.map_prod_mk_right {μ : Measure α} [SFinite μ] :
+@[deprecated (since := "2025-02-22")]
+alias Measurable.map_prod_mk_left := Measurable.map_prodMk_left
+
+theorem Measurable.map_prodMk_right {μ : Measure α} [SFinite μ] :
     Measurable fun y : β => map (fun x : α => (x, y)) μ := by
   apply measurable_of_measurable_coe; intro s hs
   simp_rw [map_apply measurable_prodMk_right hs]
   exact measurable_measure_prodMk_right hs
+
+@[deprecated (since := "2025-02-22")]
+alias Measurable.map_prod_mk_right := Measurable.map_prodMk_right
 
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
   Tonelli's theorem is measurable. -/
@@ -876,31 +893,34 @@ lemma fst_prod [IsProbabilityMeasure ν] : (μ.prod ν).fst = μ := by
   ext1 s hs
   rw [fst_apply hs, ← prod_univ, prod_prod, measure_univ, mul_one]
 
-theorem fst_map_prod_mk₀ {X : α → β} {Y : α → γ} {μ : Measure α}
-    (hY : AEMeasurable Y μ) : (μ.map fun a => (X a, Y a)).fst = μ.map X := by
+theorem fst_map_prodMk₀ {X : α → β} {Y : α → γ} {μ : Measure α} (hY : AEMeasurable Y μ) :
+    (μ.map fun a => (X a, Y a)).fst = μ.map X := by
   by_cases hX : AEMeasurable X μ
   · ext1 s hs
     rw [Measure.fst_apply hs, Measure.map_apply_of_aemeasurable (hX.prodMk hY) (measurable_fst hs),
       Measure.map_apply_of_aemeasurable hX hs, ← prod_univ, mk_preimage_prod, preimage_univ,
       inter_univ]
   · have : ¬AEMeasurable (fun x ↦ (X x, Y x)) μ := by
-      contrapose! hX; exact measurable_fst.comp_aemeasurable hX
+      contrapose! hX;
+      exact measurable_fst.comp_aemeasurable hX
     simp [map_of_not_aemeasurable, hX, this]
 
-theorem fst_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α}
-    (hY : Measurable Y) : (μ.map fun a => (X a, Y a)).fst = μ.map X :=
-  fst_map_prod_mk₀ hY.aemeasurable
+@[deprecated (since := "2025-02-22")]
+alias fst_map_prod_mk₀ := fst_map_prodMk₀
+
+theorem fst_map_prodMk {X : α → β} {Y : α → γ} {μ : Measure α} (hY : Measurable Y) :
+    (μ.map fun a => (X a, Y a)).fst = μ.map X :=
+  fst_map_prodMk₀ hY.aemeasurable
+
+@[deprecated (since := "2025-02-22")]
+alias fst_map_prod_mk := fst_map_prodMk
 
 @[simp]
-lemma fst_add {μ ν : Measure (α × β)} : (μ + ν).fst = μ.fst + ν.fst := by
-  ext s hs
-  simp_rw [coe_add, Pi.add_apply, fst_apply hs, coe_add, Pi.add_apply]
+lemma fst_add {μ ν : Measure (α × β)} : (μ + ν).fst = μ.fst + ν.fst :=
+  Measure.map_add _ _ measurable_fst
 
-lemma fst_sum {ι : Type*} (μ : ι → Measure (α × β)) : (sum μ).fst = sum (fun n ↦ (μ n).fst) := by
-  ext s hs
-  rw [fst_apply hs, sum_apply, sum_apply _ hs]
-  · simp_rw [fst_apply hs]
-  · exact measurable_fst hs
+lemma fst_sum {ι : Type*} (μ : ι → Measure (α × β)) : (sum μ).fst = sum (fun n ↦ (μ n).fst) :=
+  Measure.map_sum measurable_fst.aemeasurable
 
 @[gcongr]
 theorem fst_mono {μ : Measure (α × β)} (h : ρ ≤ μ) : ρ.fst ≤ μ.fst := map_mono h measurable_fst
@@ -957,15 +977,11 @@ theorem snd_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α} (hX : 
   snd_map_prod_mk₀ hX.aemeasurable
 
 @[simp]
-lemma snd_add {μ ν : Measure (α × β)} : (μ + ν).snd = μ.snd + ν.snd := by
-  ext s hs
-  simp_rw [coe_add, Pi.add_apply, snd_apply hs, coe_add, Pi.add_apply]
+lemma snd_add {μ ν : Measure (α × β)} : (μ + ν).snd = μ.snd + ν.snd :=
+  map_add _ _ measurable_snd
 
-lemma snd_sum {ι : Type*} (μ : ι → Measure (α × β)) : (sum μ).snd = sum (fun n ↦ (μ n).snd) := by
-  ext s hs
-  rw [snd_apply hs, sum_apply, sum_apply _ hs]
-  · simp_rw [snd_apply hs]
-  · exact measurable_snd hs
+lemma snd_sum {ι : Type*} (μ : ι → Measure (α × β)) : (sum μ).snd = sum (fun n ↦ (μ n).snd) :=
+  map_sum measurable_snd.aemeasurable
 
 @[gcongr]
 theorem snd_mono {μ : Measure (α × β)} (h : ρ ≤ μ) : ρ.snd ≤ μ.snd := map_mono h measurable_snd

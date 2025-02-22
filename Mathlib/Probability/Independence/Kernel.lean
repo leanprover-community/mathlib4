@@ -1056,42 +1056,54 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
   · refine Finset.prod_congr rfl fun i hi => ?_
     rw [h_sets_s'_univ hi, Set.univ_inter]
 
-theorem iIndepFun.indepFun_prod_mk (hf_Indep : iIndepFun m f κ μ)
-    (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
-    IndepFun (fun a => (f i a, f j a)) (f k) κ μ := by
+theorem iIndepFun.indepFun_prodMk (hf_Indep : iIndepFun m f κ μ) (hf_meas : ∀ i, Measurable (f i))
+    (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) : IndepFun (fun a => (f i a, f j a)) (f k) κ μ := by
   classical
-  have h_right : f k =
-    (fun p : ∀ j : ({k} : Finset ι), β j => p ⟨k, Finset.mem_singleton_self k⟩) ∘
-    fun a (j : ({k} : Finset ι)) => f j a := rfl
-  have h_meas_right :  Measurable fun p : ∀ j : ({k} : Finset ι),
-    β j => p ⟨k, Finset.mem_singleton_self k⟩ := measurable_pi_apply _
-  let s : Finset ι := {i, j}
-  have h_left : (fun ω => (f i ω, f j ω)) = (fun p : ∀ l : s, β l =>
-    (p ⟨i, Finset.mem_insert_self i _⟩,
-    p ⟨j, Finset.mem_insert_of_mem (Finset.mem_singleton_self _)⟩)) ∘ fun a (j : s) => f j a := by
+  have h_right :
+    f k =
+      (fun p : ∀ j : ({ k } : Finset ι), β j => p ⟨k, Finset.mem_singleton_self k⟩) ∘
+        fun a (j : ({ k } : Finset ι)) => f j a :=
+    rfl
+  have h_meas_right :
+    Measurable fun p : ∀ j : ({ k } : Finset ι), β j => p ⟨k, Finset.mem_singleton_self k⟩ :=
+    measurable_pi_apply _
+  let s : Finset ι := { i, j }
+  have h_left :
+    (fun ω => (f i ω, f j ω)) =
+      (fun p : ∀ l : s, β l =>
+          (p ⟨i, Finset.mem_insert_self i _⟩,
+            p ⟨j, Finset.mem_insert_of_mem (Finset.mem_singleton_self _)⟩)) ∘
+        fun a (j : s) => f j a := by
     ext1 a
     simp only [Prod.mk.inj_iff]
     constructor
-  have h_meas_left : Measurable fun p : ∀ l : s, β l =>
-    (p ⟨i, Finset.mem_insert_self i _⟩,
-    p ⟨j, Finset.mem_insert_of_mem (Finset.mem_singleton_self _)⟩) :=
-      Measurable.prod (measurable_pi_apply _) (measurable_pi_apply _)
+  have h_meas_left :
+    Measurable fun p : ∀ l : s, β l =>
+      (p ⟨i, Finset.mem_insert_self i _⟩,
+        p ⟨j, Finset.mem_insert_of_mem (Finset.mem_singleton_self _)⟩) :=
+    Measurable.prod (measurable_pi_apply _) (measurable_pi_apply _)
   rw [h_left, h_right]
-  refine (hf_Indep.indepFun_finset s {k} ?_ hf_meas).comp h_meas_left h_meas_right
+  refine (hf_Indep.indepFun_finset s { k } ?_ hf_meas).comp h_meas_left h_meas_right
   rw [Finset.disjoint_singleton_right]
   simp only [s, Finset.mem_insert, Finset.mem_singleton, not_or]
   exact ⟨hik.symm, hjk.symm⟩
 
+@[deprecated (since := "2025-02-22")]
+alias ProbabilityTheory.Kernel.iIndepFun.indepFun_prod_mk := iIndepFun.indepFun_prodMk
+
 open Finset in
-lemma iIndepFun.indepFun_prod_mk_prod_mk (hf_indep : iIndepFun m f κ μ)
-    (hf_meas : ∀ i, Measurable (f i))
-    (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
-    IndepFun (fun a ↦ (f i a, f j a)) (fun a ↦ (f k a, f l a)) κ μ := by
+lemma iIndepFun.indepFun_prodMk_prodMk (hf_indep : iIndepFun m f κ μ)
+    (hf_meas : ∀ i, Measurable (f i)) (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k)
+    (hjl : j ≠ l) : IndepFun (fun a ↦ (f i a, f j a)) (fun a ↦ (f k a, f l a)) κ μ := by
   classical
-  let g (i j : ι) (v : Π x : ({i, j} : Finset ι), β x) : β i × β j :=
+  let g (i j : ι) (v : Π x : ({ i, j } : Finset ι), β x) : β i × β j :=
     ⟨v ⟨i, mem_insert_self _ _⟩, v ⟨j, mem_insert_of_mem <| mem_singleton_self _⟩⟩
   have hg (i j : ι) : Measurable (g i j) := by fun_prop
-  exact (hf_indep.indepFun_finset {i, j} {k, l} (by aesop) hf_meas).comp (hg i j) (hg k l)
+  exact (hf_indep.indepFun_finset { i, j } { k, l } (by aesop) hf_meas).comp (hg i j) (hg k l)
+
+@[deprecated (since := "2025-02-22")]
+alias ProbabilityTheory.Kernel.iIndepFun.indepFun_prod_mk_prod_mk :=
+  iIndepFun.indepFun_prodMk_prodMk
 
 end iIndepFun
 

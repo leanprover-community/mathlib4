@@ -531,34 +531,52 @@ theorem MDifferentiableAt.prodMk {f : M → M'} {g : M → M''} (hf : MDifferent
 @[deprecated (since := "2025-02-22")]
 alias MDifferentiableAt.prod_mk := MDifferentiableAt.prodMk
 
-theorem MDifferentiableWithinAt.prod_mk_space {f : M → E'} {g : M → E''}
+theorem MDifferentiableWithinAt.prodMk_space {f : M → E'} {g : M → E''}
     (hf : MDifferentiableWithinAt I 𝓘(𝕜, E') f s x)
     (hg : MDifferentiableWithinAt I 𝓘(𝕜, E'') g s x) :
     MDifferentiableWithinAt I 𝓘(𝕜, E' × E'') (fun x => (f x, g x)) s x :=
   ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
-theorem MDifferentiableAt.prod_mk_space {f : M → E'} {g : M → E''}
+@[deprecated (since := "2025-02-22")]
+alias MDifferentiableWithinAt.prod_mk_space := MDifferentiableWithinAt.prodMk_space
+
+theorem MDifferentiableAt.prodMk_space {f : M → E'} {g : M → E''}
     (hf : MDifferentiableAt I 𝓘(𝕜, E') f x) (hg : MDifferentiableAt I 𝓘(𝕜, E'') g x) :
     MDifferentiableAt I 𝓘(𝕜, E' × E'') (fun x => (f x, g x)) x :=
   ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
-theorem MDifferentiableOn.prod_mk {f : M → M'} {g : M → M''} (hf : MDifferentiableOn I I' f s)
+@[deprecated (since := "2025-02-22")]
+alias MDifferentiableAt.prod_mk_space := MDifferentiableAt.prodMk_space
+
+theorem MDifferentiableOn.prodMk {f : M → M'} {g : M → M''} (hf : MDifferentiableOn I I' f s)
     (hg : MDifferentiableOn I I'' g s) :
     MDifferentiableOn I (I'.prod I'') (fun x => (f x, g x)) s := fun x hx =>
   (hf x hx).prodMk (hg x hx)
 
-theorem MDifferentiable.prod_mk {f : M → M'} {g : M → M''} (hf : MDifferentiable I I' f)
+@[deprecated (since := "2025-02-22")]
+alias MDifferentiableOn.prod_mk := MDifferentiableOn.prodMk
+
+theorem MDifferentiable.prodMk {f : M → M'} {g : M → M''} (hf : MDifferentiable I I' f)
     (hg : MDifferentiable I I'' g) : MDifferentiable I (I'.prod I'') fun x => (f x, g x) := fun x =>
   (hf x).prodMk (hg x)
 
-theorem MDifferentiableOn.prod_mk_space {f : M → E'} {g : M → E''}
+@[deprecated (since := "2025-02-22")]
+alias MDifferentiable.prod_mk := MDifferentiable.prodMk
+
+theorem MDifferentiableOn.prodMk_space {f : M → E'} {g : M → E''}
     (hf : MDifferentiableOn I 𝓘(𝕜, E') f s) (hg : MDifferentiableOn I 𝓘(𝕜, E'') g s) :
     MDifferentiableOn I 𝓘(𝕜, E' × E'') (fun x => (f x, g x)) s := fun x hx =>
   (hf x hx).prodMk_space (hg x hx)
 
-theorem MDifferentiable.prod_mk_space {f : M → E'} {g : M → E''} (hf : MDifferentiable I 𝓘(𝕜, E') f)
+@[deprecated (since := "2025-02-22")]
+alias MDifferentiableOn.prod_mk_space := MDifferentiableOn.prodMk_space
+
+theorem MDifferentiable.prodMk_space {f : M → E'} {g : M → E''} (hf : MDifferentiable I 𝓘(𝕜, E') f)
     (hg : MDifferentiable I 𝓘(𝕜, E'') g) : MDifferentiable I 𝓘(𝕜, E' × E'') fun x => (f x, g x) :=
   fun x => (hf x).prodMk_space (hg x)
+
+@[deprecated (since := "2025-02-22")]
+alias MDifferentiable.prod_mk_space := MDifferentiable.prodMk_space
 
 theorem writtenInExtChartAt_comp (h : ContinuousWithinAt f s x) :
     {y | writtenInExtChartAt I I'' x (g ∘ f) y =

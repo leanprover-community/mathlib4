@@ -323,12 +323,12 @@ theorem comp_measurable [TopologicalSpace β] {_ : MeasurableSpace α} {_ : Meas
 
 theorem of_uncurry_left [TopologicalSpace β] {_ : MeasurableSpace α} {_ : MeasurableSpace γ}
     {f : α → γ → β} (hf : StronglyMeasurable (uncurry f)) {x : α} : StronglyMeasurable (f x) :=
-  hf.comp_measurable measurable_prod_mk_left
+  hf.comp_measurable measurable_prodMk_left
 
 theorem of_uncurry_right [TopologicalSpace β] {_ : MeasurableSpace α} {_ : MeasurableSpace γ}
     {f : α → γ → β} (hf : StronglyMeasurable (uncurry f)) {y : γ} :
     StronglyMeasurable fun x => f x y :=
-  hf.comp_measurable measurable_prod_mk_right
+  hf.comp_measurable measurable_prodMk_right
 
 protected theorem prod_swap {_ : MeasurableSpace α} {_ : MeasurableSpace β} [TopologicalSpace γ]
     {f : β × α → γ} (hf : StronglyMeasurable f) :
