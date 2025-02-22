@@ -47,7 +47,11 @@ theorem exp_eq_truncated {k : ℕ} (a : A) (h : a ^ k = 0) :
   exact zero_mul (a ^ (t - nilpotencyClass a))
 
 theorem exp_zero_eq_one : exp R A 0 = 1 := by
-  sorry
+  have h : (0 : A) ^ 1 = 0 := by
+    exact pow_one 0
+  have h1 := exp_eq_truncated R A (0 : A) h
+  simp at h1
+  apply h1.symm
 
 --example (n : ℕ) (a : A) : (n.factorial : R) • ((n.factorial : R)⁻¹ • a) = a := by
 --have h1 : (n.factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero n
