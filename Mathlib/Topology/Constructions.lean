@@ -880,14 +880,18 @@ theorem continuous_sum_dom {f : X ⊕ Y → Z} :
     (t₂ := TopologicalSpace.coinduced Sum.inr _)).trans <|
     continuous_coinduced_dom.and continuous_coinduced_dom
 
-theorem continuous_sum_elim {f : X → Z} {g : Y → Z} :
+theorem continuous_sumElim {f : X → Z} {g : Y → Z} :
     Continuous (Sum.elim f g) ↔ Continuous f ∧ Continuous g :=
   continuous_sum_dom
 
+@[deprecated (since := "2025-02-20")] alias continuous_sum_elim := continuous_sumElim
+
 @[continuity, fun_prop]
-theorem Continuous.sum_elim {f : X → Z} {g : Y → Z} (hf : Continuous f) (hg : Continuous g) :
+theorem Continuous.sumElim {f : X → Z} {g : Y → Z} (hf : Continuous f) (hg : Continuous g) :
     Continuous (Sum.elim f g) :=
-  continuous_sum_elim.2 ⟨hf, hg⟩
+  continuous_sumElim.2 ⟨hf, hg⟩
+
+@[deprecated (since := "2025-02-20")] alias Continuous.sum_elim := Continuous.sumElim
 
 @[continuity, fun_prop]
 theorem continuous_isLeft : Continuous (isLeft : X ⊕ Y → Bool) :=
@@ -905,7 +909,7 @@ theorem continuous_inr : Continuous (@inr X Y) := ⟨fun _ => And.right⟩
 
 @[fun_prop, continuity]
 lemma continuous_sum_swap : Continuous (@Sum.swap X Y) :=
-  Continuous.sum_elim continuous_inr continuous_inl
+  Continuous.sumElim continuous_inr continuous_inl
 
 theorem isOpen_sum_iff {s : Set (X ⊕ Y)} : IsOpen s ↔ IsOpen (inl ⁻¹' s) ∧ IsOpen (inr ⁻¹' s) :=
   Iff.rfl
@@ -982,15 +986,19 @@ theorem nhds_inr (y : Y) : 𝓝 (inr y : X ⊕ Y) = map inr (𝓝 y) :=
   (IsOpenEmbedding.inr.map_nhds_eq _).symm
 
 @[simp]
-theorem continuous_sum_map {f : X → Y} {g : Z → W} :
+theorem continuous_sumMap {f : X → Y} {g : Z → W} :
     Continuous (Sum.map f g) ↔ Continuous f ∧ Continuous g :=
-  continuous_sum_elim.trans <|
+  continuous_sumElim.trans <|
     IsEmbedding.inl.continuous_iff.symm.and IsEmbedding.inr.continuous_iff.symm
 
+@[deprecated (since := "2025-02-21")] alias continuous_sum_map := continuous_sumMap
+
 @[continuity, fun_prop]
-theorem Continuous.sum_map {f : X → Y} {g : Z → W} (hf : Continuous f) (hg : Continuous g) :
+theorem Continuous.sumMap {f : X → Y} {g : Z → W} (hf : Continuous f) (hg : Continuous g) :
     Continuous (Sum.map f g) :=
-  continuous_sum_map.2 ⟨hf, hg⟩
+  continuous_sumMap.2 ⟨hf, hg⟩
+
+@[deprecated (since := "2025-02-21")] alias Continuous.sum_map := Continuous.sumMap
 
 theorem isOpenMap_sum {f : X ⊕ Y → Z} :
     IsOpenMap f ↔ (IsOpenMap fun a => f (inl a)) ∧ IsOpenMap fun b => f (inr b) := by
@@ -1001,19 +1009,23 @@ theorem IsOpenMap.sumMap {f : X → Y} {g : Z → W} (hf : IsOpenMap f) (hg : Is
   isOpenMap_sum.2 ⟨isOpenMap_inl.comp hf, isOpenMap_inr.comp hg⟩
 
 @[simp]
-theorem isOpenMap_sum_elim {f : X → Z} {g : Y → Z} :
+theorem isOpenMap_sumElim {f : X → Z} {g : Y → Z} :
     IsOpenMap (Sum.elim f g) ↔ IsOpenMap f ∧ IsOpenMap g := by
   simp only [isOpenMap_sum, elim_inl, elim_inr]
 
-theorem IsOpenMap.sum_elim {f : X → Z} {g : Y → Z} (hf : IsOpenMap f) (hg : IsOpenMap g) :
-    IsOpenMap (Sum.elim f g) :=
-  isOpenMap_sum_elim.2 ⟨hf, hg⟩
+@[deprecated (since := "2025-02-20")] alias isOpenMap_sum_elim := isOpenMap_sumElim
 
-lemma IsOpenEmbedding.sum_elim {f : X → Z} {g : Y → Z}
+theorem IsOpenMap.sumElim {f : X → Z} {g : Y → Z} (hf : IsOpenMap f) (hg : IsOpenMap g) :
+    IsOpenMap (Sum.elim f g) :=
+  isOpenMap_sumElim.2 ⟨hf, hg⟩
+
+@[deprecated (since := "2025-02-20")] alias IsOpenMap.sum_elim := IsOpenMap.sumElim
+
+lemma IsOpenEmbedding.sumElim {f : X → Z} {g : Y → Z}
     (hf : IsOpenEmbedding f) (hg : IsOpenEmbedding g) (h : Injective (Sum.elim f g)) :
     IsOpenEmbedding (Sum.elim f g) := by
   rw [isOpenEmbedding_iff_continuous_injective_isOpenMap] at hf hg ⊢
-  exact ⟨hf.1.sum_elim hg.1, h, hf.2.2.sum_elim hg.2.2⟩
+  exact ⟨hf.1.sumElim hg.1, h, hf.2.2.sumElim hg.2.2⟩
 
 theorem isClosedMap_sum {f : X ⊕ Y → Z} :
     IsClosedMap f ↔ (IsClosedMap fun a => f (.inl a)) ∧ IsClosedMap fun b => f (.inr b) := by
@@ -1031,19 +1043,19 @@ theorem IsClosedMap.sumMap {f : X → Y} {g : Z → W} (hf : IsClosedMap f) (hg 
   isClosedMap_sum.2 ⟨isClosedMap_inl.comp hf, isClosedMap_inr.comp hg⟩
 
 @[simp]
-theorem isClosedMap_sum_elim {f : X → Z} {g : Y → Z} :
+theorem isClosedMap_sumElim {f : X → Z} {g : Y → Z} :
     IsClosedMap (Sum.elim f g) ↔ IsClosedMap f ∧ IsClosedMap g := by
   simp only [isClosedMap_sum, Sum.elim_inl, Sum.elim_inr]
 
-theorem IsClosedMap.sum_elim {f : X → Z} {g : Y → Z} (hf : IsClosedMap f) (hg : IsClosedMap g) :
+theorem IsClosedMap.sumElim {f : X → Z} {g : Y → Z} (hf : IsClosedMap f) (hg : IsClosedMap g) :
     IsClosedMap (Sum.elim f g) :=
-  isClosedMap_sum_elim.2 ⟨hf, hg⟩
+  isClosedMap_sumElim.2 ⟨hf, hg⟩
 
-lemma IsClosedEmbedding.sum_elim {f : X → Z} {g : Y → Z}
+lemma IsClosedEmbedding.sumElim {f : X → Z} {g : Y → Z}
     (hf : IsClosedEmbedding f) (hg : IsClosedEmbedding g) (h : Injective (Sum.elim f g)) :
     IsClosedEmbedding (Sum.elim f g) := by
   rw [IsClosedEmbedding.isClosedEmbedding_iff_continuous_injective_isClosedMap] at hf hg ⊢
-  exact ⟨hf.1.sum_elim hg.1, h, hf.2.2.sum_elim hg.2.2⟩
+  exact ⟨hf.1.sumElim hg.1, h, hf.2.2.sumElim hg.2.2⟩
 
 end Sum
 

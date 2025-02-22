@@ -121,13 +121,13 @@ instance ULiftHom.category : Category.{max v₂ v₁} (ULiftHom.{v₂} C) where
   id _ := ⟨𝟙 _⟩
   comp f g := ⟨f.down ≫ g.down⟩
 
-/-- One half of the quivalence between `C` and `ULiftHom C`. -/
+/-- One half of the equivalence between `C` and `ULiftHom C`. -/
 @[simps]
 def ULiftHom.up : C ⥤ ULiftHom C where
   obj := ULiftHom.objUp
   map f := ⟨f⟩
 
-/-- One half of the quivalence between `C` and `ULiftHom C`. -/
+/-- One half of the equivalence between `C` and `ULiftHom C`. -/
 @[simps]
 def ULiftHom.down : ULiftHom C ⥤ C where
   obj := ULiftHom.objDown
