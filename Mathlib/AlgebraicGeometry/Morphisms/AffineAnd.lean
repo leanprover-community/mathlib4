@@ -70,7 +70,7 @@ lemma affineAnd_isLocal (hPi : RingHom.RespectsIso Q) (hQl : RingHom.Localizatio
       show Q (Scheme.Hom.app f ((Y.basicOpen r).ι ''ᵁ ⊤)).hom
       rw [Scheme.Opens.ι_image_top]
       rw [(isAffineOpen_top Y).app_basicOpen_eq_away_map f (isAffineOpen_top X),
-        CommRingCat.hom_comp, hPi.cancel_right_isIso, ← Scheme.Hom.appTop]
+        CommRingCat.hom_comp, hPi.cancel_right_isIso]
       dsimp only [Opens.map_top]
       haveI := (isAffineOpen_top X).isLocalization_basicOpen (f.appTop r)
       apply hQl

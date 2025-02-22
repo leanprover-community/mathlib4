@@ -347,7 +347,6 @@ theorem lpMeasSubgroupToLpTrim_add (hm : m ≤ m0) (f g : lpMeasSubgroup F m p �
       (EventuallyEq.add (lpMeasSubgroupToLpTrim_ae_eq hm f).symm
         (lpMeasSubgroupToLpTrim_ae_eq hm g).symm)
   refine (Lp.coeFn_add _ _).trans ?_
-  simp_rw [lpMeasSubgroup_coe]
   filter_upwards with x using rfl
 
 theorem lpMeasSubgroupToLpTrim_neg (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ) :
@@ -357,7 +356,6 @@ theorem lpMeasSubgroupToLpTrim_neg (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ)
   refine (Lp.stronglyMeasurable _).ae_eq_trim_of_stronglyMeasurable hm (Lp.stronglyMeasurable _).neg
     <| (lpMeasSubgroupToLpTrim_ae_eq hm _).trans <|
     ((Lp.coeFn_neg _).trans ?_).trans  (lpMeasSubgroupToLpTrim_ae_eq hm f).symm.neg
-  simp_rw [lpMeasSubgroup_coe]
   exact Eventually.of_forall fun x => by rfl
 
 theorem lpMeasSubgroupToLpTrim_sub (hm : m ≤ m0) (f g : lpMeasSubgroup F m p μ) :

@@ -55,8 +55,9 @@ def laurentAux : RatFunc R →+* RatFunc R :=
 
 theorem laurentAux_ofFractionRing_mk (q : R[X]⁰) :
     laurentAux r (ofFractionRing (Localization.mk p q)) =
-      ofFractionRing (.mk (taylor r p) ⟨taylor r q, taylor_mem_nonZeroDivisors r q q.prop⟩) :=
-  map_apply_ofFractionRing_mk _ _ _ _
+      ofFractionRing (.mk (taylor r p) ⟨taylor r q, taylor_mem_nonZeroDivisors r q q.prop⟩) := by
+  apply map_apply_ofFractionRing_mk
+  apply taylor_mem_nonZeroDivisors
 
 variable [IsDomain R]
 
