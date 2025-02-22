@@ -574,6 +574,10 @@ theorem _root_.Continuous.memℒp_of_hasCompactSupport [OpensMeasurableSpace X]
   exact this.mono_exponent_of_measure_support_ne_top
     (fun x ↦ image_eq_zero_of_nmem_tsupport) (h'f.measure_lt_top.ne) le_top
 
+theorem _root_.Continuous.eLpNorm_lt_top_of_hasCompactSupport [OpensMeasurableSpace X]
+    {f : X → E} (hf : Continuous f) (h'f : HasCompactSupport f) : eLpNorm f p μ < ⊤ :=
+  (Continuous.memℒp_of_hasCompactSupport hf h'f (p := p) (μ := μ)).2
+
 end Topology
 
 section IndicatorConstLp

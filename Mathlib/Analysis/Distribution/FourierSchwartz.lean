@@ -8,6 +8,7 @@ import Mathlib.Analysis.Distribution.SchwartzDense
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.Fourier.FourierTransformExtra
 import Mathlib.Analysis.Fourier.FourierTransformDeriv
+import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-!
 # Fourier transform on Schwartz functions
@@ -17,10 +18,13 @@ functions, in `fourierTransformCLM`. It is also given as a continuous linear equ
 `fourierTransformCLE`.
 -/
 
-open Real MeasureTheory MeasureTheory.Measure Filter
-open scoped FourierTransform ENNReal InnerProductSpace
+open Real MeasureTheory Filter
+open scoped FourierTransform ENNReal InnerProductSpace SchwartzMap
+
 
 namespace SchwartzMap
+
+open MeasureTheory.Measure
 
 variable
   (𝕜 : Type*) [RCLike 𝕜]
@@ -113,314 +117,387 @@ noncomputable def fourierTransformCLE : 𝓢(V, E) ≃L[𝕜] 𝓢(V, E) where
 
 -- TODO: Is it ugly to provide these definitions?
 
-theorem continuous_fourier (f : 𝓢(V, E)) : Continuous (𝓕 f) :=
+theorem continuous_fourierIntegral (f : 𝓢(V, E)) : Continuous (𝓕 f) :=
   (fourierTransformCLE ℂ f).continuous
 
-theorem integrable_fourier (f : 𝓢(V, E)) : Integrable (𝓕 f) :=
+theorem integrable_fourierIntegral (f : 𝓢(V, E)) : Integrable (𝓕 f) :=
   (fourierTransformCLE ℂ f).integrable
 
-theorem memℒp_fourier (f : 𝓢(V, E)) (p : ℝ≥0∞)
+theorem memℒp_fourierIntegral (f : 𝓢(V, E)) (p : ℝ≥0∞)
     (μ : Measure V := by volume_tac) [μ.HasTemperateGrowth] : Memℒp (𝓕 f) p μ :=
   (fourierTransformCLE ℂ f).memℒp p μ
+
+theorem eLpNorm_fourierIntegral_lt_top (f : 𝓢(V, E)) (p : ℝ≥0∞)
+    (μ : Measure V := by volume_tac) [μ.HasTemperateGrowth] : eLpNorm (𝓕 f) p μ < ⊤ :=
+  (fourierTransformCLE ℂ f).eLpNorm_lt_top p μ
 
 /-- Plancherel's theorem: The Fourier transform preserves the `L^2` inner product. -/
 theorem integral_inner_fourier_eq_integral_inner (f g : 𝓢(V, F)) :
     ∫ ξ, ⟪𝓕 f ξ, 𝓕 g ξ⟫_ℂ = ∫ x, ⟪f x, g x⟫_ℂ :=
-  Real.integral_inner_fourier_eq_integral_inner f.continuous f.integrable f.integrable_fourier
-    g.integrable
+  Real.integral_inner_fourier_eq_integral_inner f.continuous f.integrable
+    f.integrable_fourierIntegral g.integrable
 
 /-- Plancherel's theorem: The Fourier transform preserves the `L^2` norm. -/
 theorem integral_norm_sq_fourier_eq_integral_norm_sq (f : 𝓢(V, F)) :
     ∫ ξ, ‖𝓕 f ξ‖ ^ 2 = ∫ x, ‖f x‖ ^ 2 :=
-  Real.integral_norm_sq_fourier_eq_integral_norm_sq f.continuous f.integrable f.integrable_fourier
+  Real.integral_norm_sq_fourier_eq_integral_norm_sq f.continuous f.integrable
+    f.integrable_fourierIntegral
 
 /-- Plancherel's theorem, `eLpNorm` version. -/
 theorem eLpNorm_fourier_two_eq_eLpNorm_two (f : 𝓢(V, F)) :
     eLpNorm (𝓕 f) 2 volume = eLpNorm f 2 volume :=
   Real.eLpNorm_fourier_two_eq_eLpNorm_two f.continuous f.integrable (f.memℒp 2 _)
-    f.integrable_fourier (f.memℒp_fourier 2 _)
+    f.integrable_fourierIntegral (f.memℒp_fourierIntegral 2 _)
 
 end SchwartzMap
 
-/-! ## Extension to `Lp` using density -/
+
+variable {𝕜 α V E F : Type*}
+
+/-! ## Fourier transform on L1 -/
+
+section L1
 
 namespace MeasureTheory
 
-open scoped SchwartzMap
-
-variable {𝕜 V E F : Type*}
-  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup V]
-  [NormedSpace ℂ E] [InnerProductSpace ℂ F] [CompleteSpace E] [CompleteSpace F]
+variable [NormedAddCommGroup V] [NormedAddCommGroup E] [NormedAddCommGroup F]
   [InnerProductSpace ℝ V] [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
 
-/-- The Fourier transform of a function in `L^p` which has a Schwartz representative is also a
-function in `L^q` with a Schwartz representative, with `q` arbitrary. -/
-theorem Lp.LpSchwartzMap.memℒp_fourierIntegral {p : ℝ≥0∞}
-    (f : LpSchwartzMap E p (volume : Measure V)) (q : ℝ≥0∞) : Memℒp (𝓕 f) q volume :=
-  induction_on f (fun g ↦ Memℒp (𝓕 g) q volume)
-    (fun _ hfg ↦ Eq.subst (motive := fun (f : V → E) ↦ Memℒp f q volume)
-      (Real.fourierIntegral_congr_ae hfg).symm)
-    (fun g ↦ g.memℒp_fourier q volume)
+variable [NormedSpace ℂ E] [NormedSpace ℂ F]
 
-/-- The Fourier transform as a map from `LpSchwartzMap` to `LpSchwartzMap`. -/
-noncomputable def Lp.LpSchwartzMap.fourierTransform {p : ℝ≥0∞} (q : ℝ≥0∞)
-    (f : LpSchwartzMap E p (volume : Measure V)) :
-    LpSchwartzMap E q (volume : Measure V) where
-  val := (memℒp_fourierIntegral f q).toLp
-  property := by
-    rcases f with ⟨f, hf⟩
-    rw [mem_iff_ae] at hf ⊢
-    revert hf
-    refine Exists.imp' (SchwartzMap.fourierTransformCLE ℂ) fun f₀ hf₀ ↦ ?_
-    simpa [Real.fourierIntegral_congr_ae hf₀] using Memℒp.coeFn_toLp _
+variable [RCLike 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
 
-theorem Lp.LpSchwartzMap.coeFn_fourierTransform {p : ℝ≥0∞} (q : ℝ≥0∞)
-    (f : LpSchwartzMap E p (volume : Measure V)) :
-    ⇑(fourierTransform q f) =ᵐ[volume] 𝓕 f := by
-  simpa [fourierTransform] using Memℒp.coeFn_toLp _
+-- TODO: Prove `eq`?
+theorem L1.eLpNorm_fourierIntegral_top_le_eLpNorm_one (f : Lp E 1 (volume : Measure V)) :
+    eLpNorm (𝓕 f) ⊤ volume ≤ eLpNorm f 1 volume := by
+  -- TODO: Already using L1 norm here.
+  calc eLpNorm (𝓕 f) ⊤ volume
+  _ ≤ ENNReal.ofReal (∫ x, ‖f x‖) := by
+    refine eLpNormEssSup_le_of_ae_bound (.of_forall fun ξ ↦ ?_)
+    refine (norm_integral_le_integral_norm _).trans (integral_mono ?_ ?_ ?_)
+    · simpa using (L1.integrable_coeFn f).norm
+    · exact (L1.integrable_coeFn f).norm
+    · simp
+  _ = eLpNorm f 1 volume := by
+    symm
+    simpa using (Lp.memℒp f).eLpNorm_eq_integral_rpow_norm one_ne_zero ENNReal.one_ne_top
 
-/-- The Fourier transform is uniform continuous as a map `L^1 → L^∞`. -/
-theorem Lp.LpSchwartzMap.uniformContinuous_fourierTransform_one_top :
-    UniformContinuous (fun f : LpSchwartzMap E 1 (volume : Measure V) ↦ fourierTransform ⊤ f) := by
-  refine EMetric.uniformContinuous_iff.mpr ?_
-  simp only [Subtype.edist_eq, edist_def]
-  intro ε hε
-  use ε, hε
-  intro a b h
-  calc eLpNorm (⇑(fourierTransform ⊤ a) - ⇑(fourierTransform ⊤ b)) ⊤ volume
-  _ = eLpNorm (𝓕 a - 𝓕 b) ⊤ volume := by
-    refine eLpNorm_congr_ae ?_
-    filter_upwards [coeFn_fourierTransform ⊤ a, coeFn_fourierTransform ⊤ b] with x h₁ h₂
-    simp [h₁, h₂]
-  _ = eLpNorm (𝓕 (a - b)) ⊤ volume := by
-    refine congrArg (eLpNorm · ⊤ volume) ?_
-    calc 𝓕 a - 𝓕 b
-    _ = 𝓕 (⇑a - ⇑b) := by
-      refine induction_on₂ a b (fun a b ↦ 𝓕 a - 𝓕 b = 𝓕 (a - b)) ?_ ?_
-      · intro f' g' hf hg h
-        simp only [Pi.sub_def]
-        rw [Real.fourierIntegral_congr_ae hf, Real.fourierIntegral_congr_ae hg]
-        rw [Real.fourierIntegral_congr_ae (hf.sub hg)]
-        exact h
-      intro f₀ g₀
-      change _ = 𝓕 (f₀ - g₀)
-      simp only [← SchwartzMap.fourierTransformCLM_apply ℂ]  -- TODO: Ok to specify `ℂ` here?
-      ext ξ
-      simp
-    _ = 𝓕 (a - b) := by
-      refine Real.fourierIntegral_congr_ae ?_
-      filter_upwards [coeFn_sub a.val b.val] with x h
-      simpa using h.symm
-  _ ≤ ENNReal.ofReal (eLpNorm (⇑(a - b)) 1 volume).toReal := by
-    simp only [eLpNorm_exponent_top]
-    refine eLpNormEssSup_le_of_ae_nnnorm_bound ?_
-    simp only [ENNReal.toNNReal_toReal_eq]
-    refine ae_of_all _ fun x ↦ ?_
-    refine ENNReal.le_toNNReal_of_coe_le ?_ (eLpNorm_ne_top (a - b).val)
-    simp only [Real.fourierIntegral_eq]
-    refine le_trans (enorm_integral_le_lintegral_enorm _) ?_
-    rw [eLpNorm_one_eq_lintegral_enorm]
-    refine lintegral_mono_fn fun ξ ↦ ?_
-    -- Switch to real-valued norm in order to use `Circle.norm_smul`.
-    simp [enorm_eq_nnnorm, ← NNReal.coe_le_coe]
-  _ ≤ eLpNorm (a - b) 1 volume := ENNReal.ofReal_toReal_le
-  _ = eLpNorm (⇑a - ⇑b) 1 volume := by
-    refine eLpNorm_congr_ae ?_
-    filter_upwards [coeFn_sub a.val b.val] with x h  -- TODO: Define `coe`?
-    simpa using h
-  _ < ε := h
+-- theorem L1.eLpNorm_fourierIntegral_top_eq_eLpNorm_one (f : Lp E 1 (volume : Measure V)) :
+--     eLpNorm (𝓕 f) ⊤ volume = eLpNorm f 1 volume := by
+--   -- TODO: Already using L1 norm here.
+--   calc eLpNorm (𝓕 f) ⊤ volume
+--   _ = ENNReal.ofReal (∫ x, ‖f x‖) := by
+--     rw [eLpNorm_exponent_top]
+--     rw [eLpNormEssSup_eq_essSup_enorm]
 
-theorem Lp.LpSchwartzMap.norm_fourier_two_eq_norm_two (f : LpSchwartzMap F 2 (volume : Measure V)) :
-    ‖fourierTransform 2 f‖ = ‖f‖ := by
-  suffices ‖(fourierTransform 2 f).val‖ₑ = ‖f.val‖ₑ by
-    simpa [enorm_eq_nnnorm, ← NNReal.coe_inj] using this
-  calc ‖(fourierTransform 2 f).val‖ₑ
-  _ = eLpNorm (fourierTransform 2 f) 2 volume := enorm_def _
-  _ = eLpNorm (𝓕 f) 2 volume := eLpNorm_congr_ae (coeFn_fourierTransform 2 f)
-  _ = eLpNorm f 2 volume := by
-    refine induction_on f (fun f ↦ eLpNorm (𝓕 f) 2 volume = eLpNorm f 2 volume)
-      ?_ SchwartzMap.eLpNorm_fourier_two_eq_eLpNorm_two
-    intro f' hf h
-    rw [Real.fourierIntegral_congr_ae hf, eLpNorm_congr_ae hf]
-    exact h
-  _ = ‖f.val‖ₑ := .symm <| enorm_def _
+--     refine eLpNormEssSup_le_of_ae_bound (.of_forall fun ξ ↦ ?_)
+--     refine (norm_integral_le_integral_norm _).trans (integral_mono ?_ ?_ ?_)
+--     · simpa using (L1.integrable_coeFn f).norm
+--     · exact (L1.integrable_coeFn f).norm
+--     · simp
+--   _ = eLpNorm f 1 volume := by
+--     symm
+--     simpa using (Lp.memℒp f).eLpNorm_eq_integral_rpow_norm one_ne_zero ENNReal.one_ne_top
 
--- TODO: Would this be easier to prove using `fourierTransformLM`?
--- TODO: Use `‖fourierTransform 2 f‖ = ‖f‖` from above?
+theorem L1.eLpNorm_fourierIntegral_top_lt_top (f : Lp E 1 (volume : Measure V)) :
+    eLpNorm (𝓕 f) ⊤ volume < ⊤ :=
+  (eLpNorm_fourierIntegral_top_le_eLpNorm_one f).trans_lt (Lp.eLpNorm_lt_top f)
 
-/-- The Fourier transform is uniform continuous under the `L^2` norm. -/
-theorem Lp.LpSchwartzMap.uniformContinuous_fourierTransform_two_two :
-    UniformContinuous (fun f : LpSchwartzMap F 2 (volume : Measure V) ↦ fourierTransform 2 f) := by
-  refine EMetric.uniformContinuous_iff.mpr ?_
-  simp only [Subtype.edist_eq, edist_def]
-  intro ε hε
-  use ε, hε
-  intro f g h
-  -- simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, coeFn_fourierTransformLM]
-  calc eLpNorm (⇑(fourierTransform 2 f) - ⇑(fourierTransform 2 g)) 2 volume
-  _ = eLpNorm (𝓕 f - 𝓕 g) 2 volume := by
-    refine eLpNorm_congr_ae ?_
-    filter_upwards [coeFn_fourierTransform 2 f, coeFn_fourierTransform 2 g] with x h₁ h₂
-    simp [h₁, h₂]
-  _ = eLpNorm (𝓕 (⇑f - ⇑g)) 2 volume := by
-    refine congrArg (eLpNorm · 2 volume) ?_
-    refine induction_on₂ f g (fun f g ↦ 𝓕 f - 𝓕 g = 𝓕 (f - g)) ?_ ?_
-    · intro f' g' hf hg h
-      simp only [Pi.sub_def]
-      rw [Real.fourierIntegral_congr_ae hf, Real.fourierIntegral_congr_ae hg]
-      rw [Real.fourierIntegral_congr_ae (hf.sub hg)]
-      exact h
-    intro f₀ g₀
-    change _ = 𝓕 (f₀ - g₀)
-    simp only [← SchwartzMap.fourierTransformCLM_apply ℂ]  -- TODO: Ok to specify `ℂ` here?
-    ext ξ
-    simp
-  _ = eLpNorm (𝓕 (f - g)) 2 volume := by
-    refine congrArg (eLpNorm · 2 volume) ?_
-    refine Real.fourierIntegral_congr_ae ?_
-    filter_upwards [coeFn_sub f.val g.val] with x h
-    simpa using h.symm
-  _ = eLpNorm (f - g) 2 volume := by
-    refine induction_on (f - g) (fun r ↦ eLpNorm (𝓕 r) 2 volume = eLpNorm r 2 volume) ?_
-      SchwartzMap.eLpNorm_fourier_two_eq_eLpNorm_two
-    intro r hr h
-    rw [Real.fourierIntegral_congr_ae hr, eLpNorm_congr_ae hr]
-    exact h
-  _ = eLpNorm (⇑f - ⇑g) 2 volume := by
-    refine eLpNorm_congr_ae ?_
-    filter_upwards [coeFn_sub f.val g.val] with x h
-    simpa using h
-  _ < ε := h
+/-- The Fourier transform of an `L^1` function is continuous. -/
+theorem L1.continuous_fourierIntegral (f : Lp E 1 (volume : Measure V)) : Continuous (𝓕 f) :=
+  Real.fourierIntegral_continuous (integrable_coeFn f)
 
-section LinearMap
-
-variable [RCLike 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] [NormedSpace 𝕜 F] [SMulCommClass ℂ 𝕜 F]
-
-theorem Lp.LpSchwartzMap.fourierTransform_add {p : ℝ≥0∞} (q : ℝ≥0∞)
-    (f g : LpSchwartzMap E p (volume : Measure V)) :
-    fourierTransform q (f + g) = fourierTransform q f + fourierTransform q g := by
-  ext
-  filter_upwards [coeFn_fourierTransform q f, coeFn_fourierTransform q g,
-    coeFn_fourierTransform q (f + g),
-    AEEqFun.coeFn_add (fourierTransform q f).val.val (fourierTransform q g).val.val]
-    with ξ hf hg hfg hfg'
-  calc fourierTransform q (f + g) ξ
-  _ = 𝓕 (f + g) ξ := hfg
-  _ = (𝓕 f + 𝓕 g) ξ := by
-    refine congrFun ?_ ξ
-    calc 𝓕 (f + g)
-    _ = 𝓕 (⇑f + ⇑g) := by
-      refine Real.fourierIntegral_congr_ae ?_
-      filter_upwards [AEEqFun.coeFn_add f.val.val g.val.val] with x h
-      simpa using h
-    _ = 𝓕 f + 𝓕 g := by
-      refine induction_on₂ f g (fun f g ↦ 𝓕 (f + g) = 𝓕 f + 𝓕 g) ?_ ?_
-      · intro f' g' hf' hg' h
-        simp only [Pi.add_def]
-        rw [Real.fourierIntegral_congr_ae hf', Real.fourierIntegral_congr_ae hg']
-        rw [Real.fourierIntegral_congr_ae (.add hf' hg')]
-        exact h
-      · intro f₀ g₀
-        change 𝓕 ⇑(f₀ + g₀) = _
-        simp only [← SchwartzMap.fourierTransformCLM_apply ℂ]  -- TODO: Remove need to specify `ℂ`
-        ext ξ
-        simp
-  _ = (fourierTransform q f + fourierTransform q g) ξ := by simp [hfg', hf, hg]
-
-theorem Lp.LpSchwartzMap.fourierTransform_smul {p : ℝ≥0∞} (q : ℝ≥0∞) (c : 𝕜)
-    (f : LpSchwartzMap E p (volume : Measure V)) :
-    fourierTransform q (c • f) = c • fourierTransform q f := by
-  ext
-  filter_upwards [coeFn_fourierTransform q f, coeFn_fourierTransform q (c • f),
-    coeFn_smul c (fourierTransform q f : Lp E q volume)]
-    with ξ hf hcf hcf'
-  calc fourierTransform q (c • f) ξ
-  _ = 𝓕 (c • f) ξ := hcf
-  _ = (c • 𝓕 f) ξ := by
-    refine congrFun ?_ ξ
-    calc 𝓕 ⇑(c • f)
-    _ = 𝓕 (c • ⇑f) := by
-      refine Real.fourierIntegral_congr_ae ?_
-      filter_upwards [coeFn_smul c (f : Lp E p volume)] with x h
-      simpa using h
-    _ = c • 𝓕 f := by
-      refine induction_on f (fun f ↦ 𝓕 (c • f) = c • 𝓕 f) ?_ ?_
-      · intro f₀ hf₀ h
-        simp only [Pi.smul_def]
-        rw [Real.fourierIntegral_congr_ae hf₀, Real.fourierIntegral_congr_ae (hf₀.const_smul c)]
-        exact h
-      · intro f₀
-        change 𝓕 ⇑(c • f₀) = _
-        simp only [← SchwartzMap.fourierTransformCLM_apply 𝕜]
-        ext ξ
-        simp
-  _ = (c • fourierTransform q f) ξ := by simp [coe_smul, hcf', hf]
+/-- The Fourier transform of an `L^1` function is an `L^∞` function. -/
+theorem L1.memℒp_fourierIntegral_top (f : Lp E 1 (volume : Measure V)) : Memℒp (𝓕 f) ⊤ :=
+  ⟨(continuous_fourierIntegral f).aestronglyMeasurable, eLpNorm_fourierIntegral_top_lt_top f⟩
 
 variable (𝕜 V E) in
-/-- The Fourier transform as a linear map from Schwartz maps in `L^p` to Schwartz maps in `L^q`. -/
-noncomputable def Lp.LpSchwartzMap.fourierTransformLM (p q : ℝ≥0∞) :
-    LpSchwartzMap E p (volume : Measure V) →ₗ[𝕜] LpSchwartzMap E q (volume : Measure V) where
-  toFun := fourierTransform q
-  map_add' f g := fourierTransform_add q f g
-  map_smul' c f := fourierTransform_smul q c f
+noncomputable def L1.fourierTransformLM :
+    Lp E 1 (volume : Measure V) →ₗ[𝕜] Lp E ⊤ (volume : Measure V) where
+  toFun f := (memℒp_fourierIntegral_top f).toLp
+  map_add' f g := by
+    simp_rw [Real.fourierIntegral_congr_ae (Lp.coeFn_add f g)]
+    simp_rw [Real.fourierIntegral_add (integrable_coeFn f) (integrable_coeFn g)]
+    exact Memℒp.toLp_add _ _
+  map_smul' c f := by
+    simp_rw [Real.fourierIntegral_congr_ae (Lp.coeFn_smul c f), Real.fourierIntegral_const_smul]
+    exact Memℒp.toLp_const_smul _ _
 
-theorem Lp.LpSchwartzMap.coeFn_fourierTransformLM {p q : ℝ≥0∞} :
-    ⇑(fourierTransformLM 𝕜 V E p q) = fourierTransform q := rfl
-
-variable (𝕜 V E) in
-/-- Auxiliary to the definition of `Lp.fourierTransformCLM_one_top`. The Fourier transform as a
-continuous linear map from the Schwartz subset of `L^1` to the Schwartz subset of `L^∞`. -/
-noncomputable def Lp.LpSchwartzMap.fourierTransformCLM_one_top :
-    LpSchwartzMap E 1 (volume : Measure V) →L[𝕜] LpSchwartzMap E ⊤ (volume : Measure V) :=
-  { fourierTransformLM 𝕜 V E 1 ⊤ with
-    cont := uniformContinuous_fourierTransform_one_top.continuous }
-
-variable (𝕜 V F) in
-/-- Auxiliary to the definition of `Lp.fourierTransformCLM_two_two`. The Fourier transform as a
-continuous linear map from the Schwartz subset of `L^2` to the Schwartz subset of `L^2`. -/
-noncomputable def Lp.LpSchwartzMap.fourierTransformCLM_two_two :
-    LpSchwartzMap F 2 (volume : Measure V) →L[𝕜] LpSchwartzMap F 2 (volume : Measure V) :=
-  { fourierTransformLM 𝕜 V F 2 2 with
-    cont := uniformContinuous_fourierTransform_two_two.continuous }
-
-theorem Lp.LpSchwartzMap.fourierTransformCLM_two_two_apply
-    (f : LpSchwartzMap F 2 (volume : Measure V)) :
-    LpSchwartzMap.fourierTransformCLM_two_two 𝕜 V F f = fourierTransform 2 f := rfl
+-- theorem L1.coeFn_fourierTransformLM (f : Lp E 1 (volume : Measure V)) :
+--     ⇑(fourierTransformLM 𝕜 V E f) =ᵐ[volume] 𝓕 f := (memℒp_fourierIntegral_top f).coeFn_toLp
 
 variable (𝕜 V E) in
 /-- The Fourier transform as a continuous linear map from `L^1` to `L^∞`. -/
-noncomputable def Lp.fourierTransformCLM_one_top :
+noncomputable def L1.fourierTransformCLM :
     Lp E 1 (volume : Measure V) →L[𝕜] Lp E ⊤ (volume : Measure V) :=
-  .extend (LpSchwartzMap.subtypeL 𝕜 E ⊤ volume ∘L LpSchwartzMap.fourierTransformCLM_one_top 𝕜 V E)
-    (LpSchwartzMap.subtypeL 𝕜 E 1 volume)
-    (LpSchwartzMap.dense E ENNReal.one_ne_top volume).denseRange_val (isUniformInducing_val _)
+  (fourierTransformLM 𝕜 V E).mkContinuous 1 fun f ↦ by
+    suffices ‖fourierTransformLM 𝕜 V E f‖ₑ ≤ ‖f‖ₑ by simpa [enorm_eq_nnnorm] using this
+    calc ‖(fourierTransformLM 𝕜 V E) f‖ₑ
+    _ = eLpNorm ((fourierTransformLM 𝕜 V E) f) ⊤ volume := Lp.enorm_def _
+    _ = eLpNorm (𝓕 f) ⊤ volume := eLpNorm_congr_ae (memℒp_fourierIntegral_top f).coeFn_toLp
+    _ ≤ eLpNorm f 1 volume := eLpNorm_fourierIntegral_top_le_eLpNorm_one f
+    _ = ‖f‖ₑ := (Lp.enorm_def f).symm
 
-variable (𝕜 V F) in
-/-- The Fourier transform as a continuous linear map from `L^2` to `L^2`. -/
-noncomputable def Lp.fourierTransformCLM_two_two :
-    Lp F 2 (volume : Measure V) →L[𝕜] Lp F 2 (volume : Measure V) :=
-  .extend (LpSchwartzMap.subtypeL 𝕜 F 2 volume ∘L LpSchwartzMap.fourierTransformCLM_two_two 𝕜 V F)
-    (LpSchwartzMap.subtypeL 𝕜 F 2 volume)
-    (LpSchwartzMap.dense F ENNReal.two_ne_top volume).denseRange_val (isUniformInducing_val _)
+theorem L1.fourierTransformCLM_norm_le : ‖fourierTransformCLM 𝕜 V E‖ ≤ 1 :=
+  (fourierTransformLM 𝕜 V E).mkContinuous_norm_le zero_le_one _
 
-theorem Lp.fourierTransformCLM_two_two_apply_coe (f : LpSchwartzMap F 2 (volume : Measure V)) :
-    fourierTransformCLM_two_two 𝕜 V F (f : Lp F 2 volume) = LpSchwartzMap.fourierTransform 2 f :=
-  ContinuousLinearMap.extend_eq _ _ _ _ f
-
-/-- Plancherel's theorem: The Fourier transform preserves the `L^2` norm. -/
-theorem Lp.norm_fourierTransformCLM_two_two_apply (f : Lp F 2 (volume : Measure V)) :
-    ‖fourierTransformCLM_two_two 𝕜 V F f‖ = ‖f‖ := by
-  -- TODO: How does this manage to avoid specifying `P`?
-  refine Dense.induction (LpSchwartzMap.dense F ENNReal.two_ne_top (volume : Measure V)) ?_
-    (isClosed_eq (ContinuousLinearMap.continuous _).norm continuous_norm) f
-  suffices ∀ f : LpSchwartzMap F 2 (volume : Measure V),
-      ‖fourierTransformCLM_two_two 𝕜 V F f.val‖ = ‖f.val‖ by simpa using this
-  intro f
-  rw [fourierTransformCLM_two_two_apply_coe]
-  simpa using LpSchwartzMap.norm_fourier_two_eq_norm_two f
-
--- TODO: Define `LinearIsometry(Equiv)`?
-
-end LinearMap
+variable (𝕜) in
+theorem L1.coeFn_fourierTransformCLM (f : Lp E 1 (volume : Measure V)) :
+    ⇑(fourierTransformCLM 𝕜 V E f) =ᵐ[volume] 𝓕 f :=
+  (memℒp_fourierIntegral_top f).coeFn_toLp
 
 end MeasureTheory
+
+end L1
+
+
+/-! ## Fourier transform for Schwartz L^p functions -/
+
+-- TDOO: Move
+namespace MeasureTheory
+
+variable [MeasurableSpace α] [NormedAddCommGroup E] [NormedField 𝕜] [NormedSpace 𝕜 E]
+
+@[simp] theorem Lp.coe_smul {p : ℝ≥0∞} {μ : Measure α} (c : 𝕜) (f : Lp E p μ) :
+    (c • f).val = c • f.val :=
+  (LpSubmodule E p μ 𝕜).coe_smul c f
+
+@[simp] theorem Lp.inf_coe_smul {p q : ℝ≥0∞} {μ : Measure α} (c : 𝕜)
+    (f : ↥(Lp E p μ ⊓ Lp E q μ)) :
+    (c • f).val = c • f.val :=
+  (Lp.LpSubmodule E p μ 𝕜 ⊓ Lp.LpSubmodule E q μ 𝕜).coe_smul c f
+
+end MeasureTheory
+
+section LpSchwartz
+
+namespace SchwartzMap
+
+section AEEqSchwartz
+
+variable [MeasurableSpace α] [NormedAddCommGroup α] [NormedSpace ℝ α]
+  [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [NormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+
+-- TODO: Is there not a general version of this somewhere?
+theorem inductionOn_ae_eq {f : α → E} {μ : Measure α} (hf : ∃ g : 𝓢(α, E), g =ᵐ[μ] f)
+    {P : (α → E) → Prop} (h_congr : ∀ {f g : α → E}, f =ᵐ[μ] g → (P f ↔ P g))
+    (h_ind : ∀ g : 𝓢(α, E), P g) : P f := by
+  rcases hf with ⟨g, hg⟩
+  exact (h_congr hg).mp (h_ind g)
+
+variable [OpensMeasurableSpace α] [SecondCountableTopologyEither α E]
+
+theorem inductionOn_range_toAEEqFun {μ : Measure α} (f : LinearMap.range (toAEEqFun 𝕜 E μ))
+    {P : (α → E) → Prop} (h_congr : ∀ {f g : α → E}, f =ᵐ[μ] g → (P f ↔ P g))
+    (h_ind : ∀ g : 𝓢(α, E), P g) : P f :=
+  inductionOn_ae_eq (mem_range_toAEEqFun_iff.mp f.2) h_congr h_ind
+
+end AEEqSchwartz
+
+
+-- Now try to define Fourier transform for both `L^p` and `L^p ∩ L^q`.
+-- Later specialize to CLM for `L^2 → L^2` and `L^1 ∩ L^2 → L^2 ∩ L^∞`.
+
+section Fourier
+
+section Lp
+
+variable [MeasurableSpace α] [NormedAddCommGroup E] [NormedField 𝕜] [NormedSpace 𝕜 E]
+
+-- TODO: Move
+variable (𝕜 E) in
+/-- A linear map to the underlying `AEEqFun`. -/
+def _root_.MeasureTheory.Lp.subtype (p : ℝ≥0∞) (μ : Measure α) : Lp E p μ →ₗ[𝕜] α →ₘ[μ] E :=
+  (Lp.LpSubmodule E p μ 𝕜).subtype
+
+-- TODO: Move
+variable (𝕜 E) in
+/-- A linear map to the underlying `AEEqFun`. -/
+def _root_.MeasureTheory.Lp.inf_subtype (p q : ℝ≥0∞) (μ : Measure α) :
+    ↑(Lp E p μ ⊓ Lp E q μ) →ₗ[𝕜] α →ₘ[μ] E :=
+  (Lp.LpSubmodule E p μ 𝕜 ⊓ Lp.LpSubmodule E q μ 𝕜).subtype
+
+end Lp
+
+variable [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+  [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
+  [NormedAddCommGroup E] [NormedSpace ℂ E]
+  -- These depend on `Real.fourierIntegral_const_smul`
+  -- (differs from `VectorFourier.fourierIntegral_const_smul`).
+  [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
+  -- [NormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+
+theorem aeeqFun_fourierIntegral_add {f g : V →ₘ[volume] E}
+    (hf : ∃ f₀ : 𝓢(V, E), f₀ =ᵐ[volume] f) (hg : ∃ g₀ : 𝓢(V, E), g₀ =ᵐ[volume] g) :
+    𝓕 (f + g) = 𝓕 f + 𝓕 g :=
+  (fourierIntegral_congr_ae (AEEqFun.coeFn_add f g)).trans <| fourierIntegral_add
+    (inductionOn_ae_eq hf integrable_congr integrable)
+    (inductionOn_ae_eq hg integrable_congr integrable)
+
+-- TODO: This doesn't actually care about Schwartz...
+theorem aeeqFun_fourierIntegral_const_smul (c : 𝕜) (f : V →ₘ[volume] E) : 𝓕 (c • f) = c • 𝓕 f :=
+  (fourierIntegral_congr_ae (AEEqFun.coeFn_smul c f)).trans (fourierIntegral_const_smul c f)
+
+theorem fourier_inductionOn_ae_eq {f : V → E} (hf : ∃ g : 𝓢(V, E), g =ᵐ[volume] f)
+    {P : (V → E) → Prop} (h_ind : ∀ g : 𝓢(V, E), P (𝓕 g)) : P (𝓕 f) := by
+  rcases hf with ⟨g, hg⟩
+  exact fourierIntegral_congr_ae hg ▸ h_ind g
+
+theorem fourier_inductionOn_range_toAEEqFun
+    (f : LinearMap.range (toAEEqFun 𝕜 E (volume : Measure V))) {P : (V → E) → Prop}
+    (h_ind : ∀ g : 𝓢(V, E), P (𝓕 g)) : P (𝓕 f) :=
+  fourier_inductionOn_ae_eq (mem_range_toAEEqFun_iff.mp f.2) (P := P) h_ind
+
+variable (𝕜 V E) in
+/-- Linear map from aeeq Schwartz functions to functions. -/
+noncomputable def fourierTransformLM_aeeq_to_fun :
+    LinearMap.range (toAEEqFun 𝕜 E (volume : Measure V)) →ₗ[𝕜] V → E where
+  toFun f := 𝓕 f
+  map_add' f g :=
+    (fourierIntegral_congr_ae (AEEqFun.coeFn_add f.1 g.1)).trans <| fourierIntegral_add
+      (inductionOn_range_toAEEqFun f integrable_congr integrable)
+      (inductionOn_range_toAEEqFun g integrable_congr integrable)
+    -- simp only [Submodule.coe_add, fourierIntegral_congr_ae (AEEqFun.coeFn_add f.1 g.1)]
+    -- exact fourierIntegral_add
+    --   (inductionOn_range_toAEEqFun f integrable_congr integrable)
+    --   (inductionOn_range_toAEEqFun g integrable_congr integrable)
+  map_smul' c f :=
+    (fourierIntegral_congr_ae (AEEqFun.coeFn_smul c f.1)).trans (fourierIntegral_const_smul c f.1)
+    -- simp only [SetLike.val_smul, fourierIntegral_congr_ae (AEEqFun.coeFn_smul c f.1)]
+    -- exact fourierIntegral_const_smul c f.1
+
+theorem fourierTransformLM_aeeq_to_fun_apply
+    (f : LinearMap.range (toAEEqFun 𝕜 E (volume : Measure V))) :
+    fourierTransformLM_aeeq_to_fun 𝕜 V E f = 𝓕 f := rfl
+
+variable [CompleteSpace E]
+
+variable (𝕜 V E) in
+/-- Linear map from aeeq Schwartz functions to aeeq functions. -/
+noncomputable def fourierTransformLM_aeeq_to_aeeq :
+    LinearMap.range (toAEEqFun 𝕜 E (volume : Measure V)) →ₗ[𝕜] V →ₘ[volume] E where
+  toFun f := AEEqFun.mk (fourierTransformLM_aeeq_to_fun 𝕜 V E f)
+    (fourier_inductionOn_range_toAEEqFun f (P := fun f ↦ AEStronglyMeasurable f volume)
+      fun f ↦ f.integrable_fourierIntegral.aestronglyMeasurable)
+  map_add' f g := by
+    simp only [AEEqFun.mk_add_mk]
+    congr
+    exact LinearMap.map_add _ f g
+  map_smul' c f := by
+    simp only [AEEqFun.smul_mk]
+    congr
+    exact LinearMap.map_smul _ c f
+
+variable (𝕜 V E) in
+noncomputable def fourierTransformLM_aeeq_to_Lp (p : ℝ≥0∞) [Fact (1 ≤ p)] :
+    LinearMap.range (toAEEqFun 𝕜 E (volume : Measure V)) →ₗ[𝕜] Lp E p (volume : Measure V) where
+  toFun f := Memℒp.toLp (fourierTransformLM_aeeq_to_fun 𝕜 V E f) (by
+    exact fourier_inductionOn_range_toAEEqFun f (P := (Memℒp · p volume))
+      (memℒp_fourierIntegral · p volume))
+  map_add' f g := by
+    simp only [map_add]
+    rfl
+  map_smul' c f := by
+    simp only [_root_.map_smul]
+    rfl
+
+-- `Fact (1 ≤ p)` comes from `toLpCLM`; but `toLp` would suffice.
+variable (𝕜 V E) in
+noncomputable def fourierTransformLM_Lp (p q : ℝ≥0∞) [Fact (1 ≤ p)] :
+    LinearMap.range (toLpCLM 𝕜 E p (volume : Measure V)) →ₗ[𝕜] Lp E q (volume : Measure V) where
+  toFun f := Memℒp.toLp (𝓕 f)
+    (fourier_inductionOn_ae_eq (mem_range_toLpCLM_iff.mp f.2) (P := (Memℒp · q volume))
+      (memℒp_fourierIntegral · q volume))
+  map_add' f g := by
+    simp only [Submodule.coe_add, AddSubgroup.coe_add, aeeqFun_fourierIntegral_add
+      (mem_range_toLpCLM_iff.mp f.2) (mem_range_toLpCLM_iff.mp g.2)]
+    rfl  -- exact Memℒp.toLp_add _ _
+  map_smul' c f := by
+    simp only [SetLike.val_smul, Lp.coe_smul, aeeqFun_fourierIntegral_const_smul c f.1.1]
+    rfl  -- exact Memℒp.toLp_const_smul _ _
+    -- simp only
+    -- refine .trans ?_ (Memℒp.toLp_const_smul _ _)
+    -- congr
+    -- exact aeeqFun_fourierIntegral_const_smul c f.1.1
+
+variable (𝕜 V E) in
+noncomputable def fourierTransformLM_LpInf (p₁ p₂ q₁ q₂ : ℝ≥0∞) :
+    LinearMap.range (toLpInfLM 𝕜 E p₁ p₂ (volume : Measure V)) →ₗ[𝕜]
+      (Lp E q₁ _ ⊓ Lp E q₂ _ : AddSubgroup (V →ₘ[volume] E)) where
+  toFun f := ⟨AEEqFun.mk (𝓕 f) _, Lp.mk_mem_inf_of_eLpNorm_lt_top _
+    (Continuous.aestronglyMeasurable <|
+      fourier_inductionOn_ae_eq (mem_range_toLpInfLM_iff.mp f.2) continuous_fourierIntegral)
+    (fourier_inductionOn_ae_eq (mem_range_toLpInfLM_iff.mp f.2) (P := (eLpNorm · q₁ volume < ⊤))
+      (fun f ↦ f.eLpNorm_fourierIntegral_lt_top q₁ volume))
+    (fourier_inductionOn_ae_eq (mem_range_toLpInfLM_iff.mp f.2) (P := (eLpNorm · q₂ volume < ⊤))
+      (fun f ↦ f.eLpNorm_fourierIntegral_lt_top q₂ volume))⟩
+  map_add' f g := by
+    simp_rw [Submodule.coe_add, AddSubgroup.coe_add, aeeqFun_fourierIntegral_add
+      (mem_range_toLpInfLM_iff.mp f.2) (mem_range_toLpInfLM_iff.mp g.2)]
+    rfl
+  map_smul' c f := by
+    simp_rw [SetLike.val_smul, Lp.inf_coe_smul, aeeqFun_fourierIntegral_const_smul c f.1.1]
+    rfl
+
+theorem fourierTransformLM_Lp_apply {p q : ℝ≥0∞} [Fact (1 ≤ p)]
+    (f : LinearMap.range (toLpCLM 𝕜 E p (volume : Measure V))) :
+    fourierTransformLM_Lp 𝕜 V E p q f = Memℒp.toLp (𝓕 f)
+      (fourier_inductionOn_ae_eq (mem_range_toLpCLM_iff.mp f.2) (P := (Memℒp · q volume))
+        (memℒp_fourierIntegral · q volume)) :=
+  rfl
+
+theorem coeFn_fourierTransformLM_Lp {p q : ℝ≥0∞} [Fact (1 ≤ p)]
+    (f : LinearMap.range (toLpCLM 𝕜 E p (volume : Measure V))) :
+    fourierTransformLM_Lp 𝕜 V E p q f =ᵐ[volume] 𝓕 f :=
+  -- simp only [fourierTransformLM_Lp, LinearMap.coe_mk, AddHom.coe_mk]
+  -- exact Memℒp.coeFn_toLp _
+  AEEqFun.coeFn_mk _ _
+
+theorem coeFn_fourierTransformLM_LpInf {p₁ p₂ q₁ q₂ : ℝ≥0∞}
+    (f : LinearMap.range (toLpInfLM 𝕜 E p₁ p₂ (volume : Measure V))) :
+    fourierTransformLM_LpInf 𝕜 V E _ _ q₁ q₂ f =ᵐ[volume] 𝓕 f :=
+  AEEqFun.coeFn_mk _ _
+
+
+variable [NormedAddCommGroup F] [InnerProductSpace ℂ F]
+  [NormedSpace 𝕜 F] [SMulCommClass ℂ 𝕜 F]
+
+noncomputable def fourierTransformCLM_L2 [CompleteSpace F] :
+    LinearMap.range (toLpCLM 𝕜 F 2 (volume : Measure V)) →L[𝕜] Lp F 2 (volume : Measure V) :=
+  LinearMap.mkContinuous (fourierTransformLM_Lp 𝕜 V F 2 2) 1
+    (fun f ↦ le_of_eq <| by
+      simp only [AddSubgroupClass.coe_norm, Lp.norm_def, one_mul]
+      refine congrArg _ ?_
+      rw [eLpNorm_congr_ae (coeFn_fourierTransformLM_Lp _)]
+      exact inductionOn_ae_eq (mem_range_toLpCLM_iff.mp f.2)
+        (P := fun f ↦ eLpNorm (𝓕 f) 2 volume = eLpNorm f 2 volume)
+        (fun h ↦ by simp_rw [Real.fourierIntegral_congr_ae h, eLpNorm_congr_ae h])
+        eLpNorm_fourier_two_eq_eLpNorm_two)
+
+noncomputable def fourierTransformCLM_L1L2 [CompleteSpace F] :
+    LinearMap.range (toLpInfLM 𝕜 F 1 2 (volume : Measure V)) →L[𝕜]
+      (Lp F ∞ _ ⊓ Lp F 2 _ : AddSubgroup (V →ₘ[volume] F)) :=
+  LinearMap.mkContinuous (fourierTransformLM_LpInf 𝕜 V F 1 2 ∞ 2) 1
+    (fun f ↦ by
+      simp only [AddSubgroupClass.coe_norm, Lp.norm_inf_def, one_mul, Lp.norm_def]
+      gcongr
+      · exact Lp.eLpNorm_ne_top (AddSubgroup.inf_fst f.1)
+      · simp only [AddSubgroup.inf_fst_val]
+        rw [eLpNorm_congr_ae (coeFn_fourierTransformLM_LpInf _)]
+        simp_rw [← AddSubgroup.inf_fst_val]
+        exact L1.eLpNorm_fourierIntegral_top_le_eLpNorm_one _
+      · exact Lp.eLpNorm_ne_top (AddSubgroup.inf_snd f.1)
+      · simp only [AddSubgroup.inf_snd_val]
+        rw [eLpNorm_congr_ae (coeFn_fourierTransformLM_LpInf _)]
+        refine le_of_eq ?_
+        exact inductionOn_ae_eq (mem_range_toLpInfLM_iff.mp f.2)
+          (P := fun f ↦ eLpNorm (𝓕 f) 2 volume = eLpNorm f 2 volume)
+          (fun h ↦ by simp_rw [Real.fourierIntegral_congr_ae h, eLpNorm_congr_ae h])
+          eLpNorm_fourier_two_eq_eLpNorm_two)
+
+end Fourier
+
+end SchwartzMap
+
+end LpSchwartz

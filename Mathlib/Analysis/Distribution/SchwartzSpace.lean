@@ -1148,13 +1148,6 @@ theorem toBoundedContinuousFunction_apply (f : 𝓢(E, F)) (x : E) :
     f.toBoundedContinuousFunction x = f x :=
   rfl
 
-variable (E F) in
-/-- The map to bounded continuous functions as an additive homomorphism. -/
-def toBoundedContinuousFunctionAddHom : 𝓢(E, F) →+ (E →ᵇ F) where
-  toFun := toBoundedContinuousFunction
-  map_add' _ _ := rfl
-  map_zero' := rfl
-
 /-- Schwartz functions as continuous functions -/
 def toContinuousMap (f : 𝓢(E, F)) : C(E, F) :=
   f.toBoundedContinuousFunction.toContinuousMap
@@ -1251,6 +1244,58 @@ def toZeroAtInftyCLM : 𝓢(E, F) →L[𝕜] C₀(E, F) :=
   rfl
 
 end ZeroAtInfty
+
+section AEEqFun
+
+open MeasureTheory
+
+variable [MeasurableSpace D] [NormedAddCommGroup D] [NormedSpace ℝ D]
+  [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+  [RCLike 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F]
+
+-- TODO: Use `toBoundedContinuousFunctionCLM`?
+variable (𝕜 F) in
+def toAEEqFun [OpensMeasurableSpace D] [SecondCountableTopologyEither D F] (μ : Measure D) :
+    𝓢(D, F) →ₗ[𝕜] D →ₘ[μ] F where
+  toFun f := AEEqFun.mk f f.continuous.aestronglyMeasurable
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+-- variable (𝕜 D F) in
+-- def toAEEqFun_of_integrable [BorelSpace D] [SecondCountableTopology D]
+--     (μ : Measure D) [μ.HasTemperateGrowth] : 𝓢(D, F) →ₗ[𝕜] D →ₘ[μ] F where
+--   toFun f := AEEqFun.mk f f.integrable.aestronglyMeasurable
+--   map_add' _ _ := rfl
+--   map_smul' _ _ := rfl
+
+-- theorem toAEEqFun_of_integrable_eq_toAEEqFun [BorelSpace D] [SecondCountableTopology D]
+--     {μ : Measure D} [μ.HasTemperateGrowth] :
+--     toAEEqFun_of_integrable 𝕜 D F μ = toAEEqFun 𝕜 F μ := rfl
+
+theorem toAEEqFun_eq_comp_toBoundedContinuousFunctionCLM
+    [BorelSpace D] [SecondCountableTopologyEither D F] {μ : Measure D} :
+    toAEEqFun 𝕜' F μ = ContinuousMap.toAEEqFunLinearMap μ ∘ₗ
+    BoundedContinuousFunction.toContinuousMapLinearMap D F 𝕜' ∘ₗ
+    toBoundedContinuousFunctionCLM 𝕜' D F := rfl
+
+variable [OpensMeasurableSpace D] [SecondCountableTopologyEither D F]
+
+variable (𝕜) in
+theorem coeFn_toAEEqFun (μ : Measure D) (f : 𝓢(D, F)) : toAEEqFun 𝕜 F μ f =ᵐ[μ] f := by
+  exact AEEqFun.coeFn_mk f _
+
+-- variable (𝕜) in
+-- theorem toAEEqFun_eq_iff {μ : Measure D} (f : D →ₘ[μ] F) (g : 𝓢(D, F)) :
+--     f = toAEEqFun 𝕜 F μ g ↔ f =ᵐ[μ] toAEEqFun 𝕜 F μ g := AEEqFun.ext_iff
+
+theorem mem_range_toAEEqFun_iff {μ : Measure D} {f : D →ₘ[μ] F} :
+    f ∈ LinearMap.range (toAEEqFun 𝕜 F μ) ↔ ∃ g : 𝓢(D, F), g =ᵐ[μ] f := by
+  rw [LinearMap.mem_range]
+  refine exists_congr fun g ↦ ?_
+  rw [AEEqFun.ext_iff]
+  exact (coeFn_toAEEqFun 𝕜 μ g).congr_left
+
+end AEEqFun
 
 section Lp
 
@@ -1356,6 +1401,14 @@ def toLpCLM (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure E := by volume_tac)
 @[fun_prop]
 theorem continuous_toLp {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
     Continuous (fun f : 𝓢(E, F) ↦ f.toLp p μ) := (toLpCLM ℝ F p μ).continuous
+
+theorem mem_range_toLpCLM_iff
+    {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} [hμ : μ.HasTemperateGrowth] {f : Lp F p μ} :
+    f ∈ LinearMap.range (toLpCLM 𝕜 F p μ) ↔ ∃ g : 𝓢(E, F), g =ᵐ[μ] f := by
+  rw [LinearMap.mem_range]
+  refine exists_congr fun g ↦ ?_
+  rw [Lp.ext_iff]
+  exact (coeFn_toAEEqFun 𝕜 μ g).congr_left
 
 end Lp
 

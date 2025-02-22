@@ -16,6 +16,8 @@ open scoped ENNReal FourierTransform InnerProductSpace
 
 variable {𝕜 V E F : Type*} [RCLike 𝕜] [NormedAddCommGroup V]
   [InnerProductSpace ℝ V] [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
+  [NormedAddCommGroup E] [NormedSpace ℂ E]
+  [NormedAddCommGroup F] [InnerProductSpace ℂ F] [CompleteSpace F]
 
 section Basic
 
@@ -23,10 +25,34 @@ theorem Real.conj_fourierChar (x : ℝ) : starRingEnd ℂ (𝐞 x) = 𝐞 (-x) :
   simp only [fourierChar, AddChar.coe_mk, mul_neg, Circle.exp_neg]
   exact .symm <| Circle.coe_inv_eq_conj _
 
-variable [NormedAddCommGroup E] [NormedSpace ℂ E]
+@[simp]
+theorem Real.fourierIntegral_zero : 𝓕 (0 : V → E) = 0 := by
+  ext ξ
+  simp [fourierIntegral_eq]
 
--- TODO: Provide for `VectorFourier.fourierIntegral`? `Real.fourierIntegralInv`?
+theorem Real.fourierIntegral_add {f g : V → E} (hf : Integrable f volume)
+    (hg : Integrable g volume) : 𝓕 (f + g) = 𝓕 f + 𝓕 g :=
+  VectorFourier.fourierIntegral_add continuous_fourierChar continuous_inner hf hg
+
+-- TODO: Is `r : 𝕜` more general than needed? `VectorFourier` uses `r : ℂ`.
+theorem Real.fourierIntegral_const_smul
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
+    (r : 𝕜) (f : V → E) : 𝓕 (r • f) = r • 𝓕 f := by
+  ext ξ
+  simpa [fourierIntegral_eq, smul_comm (𝐞 _)] using integral_smul r _
+
+theorem Real.fourierIntegral_continuous {f : V → E} (hf : Integrable f (volume : Measure V)) :
+    Continuous (𝓕 f) :=
+  VectorFourier.fourierIntegral_continuous continuous_fourierChar continuous_inner hf
+
+-- TODO: Provide for `VectorFourier.fourierIntegral`?
 theorem Real.fourierIntegral_congr_ae {f g : V → E} (h : f =ᵐ[volume] g) : 𝓕 f = 𝓕 g := by
+  ext ξ
+  refine integral_congr_ae ?_
+  filter_upwards [h] with x h
+  rw [h]
+
+theorem Real.fourierIntegralInv_congr_ae {f g : V → E} (h : f =ᵐ[volume] g) : 𝓕⁻ f = 𝓕⁻ g := by
   ext ξ
   refine integral_congr_ae ?_
   filter_upwards [h] with x h
@@ -35,8 +61,6 @@ theorem Real.fourierIntegral_congr_ae {f g : V → E} (h : f =ᵐ[volume] g) : �
 end Basic
 
 section InnerProduct
-
-variable [NormedAddCommGroup F] [InnerProductSpace ℂ F] [CompleteSpace F]
 
 -- TODO: Move into `Mathlib/Analysis/Fourier/FourierTransform.lean`?
 -- TODO: Check type classes for `V`.
