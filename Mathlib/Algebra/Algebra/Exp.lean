@@ -13,9 +13,6 @@ variable (A : Type*) [Semiring A] [Algebra R A]
 noncomputable def exp (a : A) : A :=
   ∑ n ∈ Finset.range (nilpotencyClass a), (n.factorial : R)⁻¹ • (a ^ n)
 
-example (a b : ℕ) (h : a ≤ b) : a + (b - a) = b :=
-  Nat.add_sub_of_le h
-
 theorem exp_eq_truncated {k : ℕ} (a : A) (h : a ^ k = 0) :
     ∑ n ∈ Finset.range k, (Nat.factorial n : R)⁻¹ • (a ^ n) = exp R A a := by
   have h₁ : nilpotencyClass a ≤ k := by
@@ -45,6 +42,12 @@ theorem exp_eq_truncated {k : ℕ} (a : A) (h : a ^ k = 0) :
   exact zero_mul (a ^ (t - nilpotencyClass a))
 
 variable [CharZero R]
+
+example (n : ℕ) (a : A) : (n.factorial : R) • ((n.factorial : R)⁻¹ • a) = a := by
+  have h1 : (n.factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero n
+  simp_all only [ne_eq, Nat.cast_eq_zero, not_false_eq_true, smul_inv_smul₀]
+  --exact mul_inv_cancel₀ h1
+
 -- useful: add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero
 -- useful: add_pow (h : Commute x y) (n : ℕ) : ...
 -- useful: isNilpotent_add (h_comm : Commute x y) ...
