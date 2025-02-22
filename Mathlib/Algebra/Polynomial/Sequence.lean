@@ -152,8 +152,52 @@ variable [NoZeroDivisors R]
 
 section Test
 
+open Finsupp
+
 variable {R : Type*} [Semiring R] [NoZeroDivisors R]
-  (S : Sequence R)
+
+lemma mdr (p : Polynomial R) {k : R} (h : k ≠ 0) :
+    (k • p).leadingCoeff = k * p.leadingCoeff := by
+  rw [← coeff_natDegree, ← coeff_natDegree, natDegree_smul, coeff_smul]
+  · rfl
+  · exact h
+
+variable {R : Type*} [Semiring R] [IsRightCancelMulZero R]
+
+instance : NoZeroDivisors R where
+  eq_zero_or_eq_zero_of_mul_eq_zero {a b} h := by
+    rw [← zero_mul b] at h
+    obtain rfl | hb := eq_or_ne b 0
+    · simp
+    · exact Or.inl (mul_right_cancel₀ hb h)
+
+class IsRightCancelSMulZero (R M : Type*) [SMul R M] [Zero M] : Prop where
+  smul_right_cancel_of_ne_zero : ∀ {a b : R}, ∀ {c : M}, c ≠ 0 → a • c = b • c → a = b
+
+instance : IsRightCancelSMulZero R (Polynomial R) where
+  smul_right_cancel_of_ne_zero := by
+    intro a b p hp h
+    apply mul_right_cancel₀ (b := p.leadingCoeff)
+    · rwa [p.leadingCoeff_ne_zero]
+    obtain rfl | ha := eq_or_ne a 0 <;> obtain rfl | hb := eq_or_ne b 0
+    · simp
+    · rw [← mdr _ hb, ← h]
+      simp
+    · rw [← mdr _ ha, h]
+      simp
+    · rw [← mdr _ ha, ← mdr _ hb, h]
+
+variable (S : Sequence R)
+
+lemma mem_supp {α : Type*} [LinearOrder α] [OrderBot α] {s : Finset α} (hs : s.Nonempty) :
+    s.sup id ∈ s := by
+  rw [← Finset.mem_coe, ← Set.image_id s.toSet]
+  exact Finset.sup_mem_of_nonempty hs
+
+lemma _root_.Finsupp.erase_apply_of_ne {α M : Type*} [DecidableEq α] [Zero M] {a b : α} (h : a ≠ b)
+    (f : α →₀ M) :
+    f.erase a b = f b := by
+    rw [erase_apply, if_neg h.symm]
 
 @[simp]
 lemma _root_.Finsupp.linearCombination_support_eq_empty {α M R : Type*} [Semiring R]
@@ -165,7 +209,9 @@ lemma _root_.Finsupp.linearCombination_support_eq_empty {α M R : Type*} [Semiri
   rw [hl] at ha
   contradiction
 
-lemma nat_deg {a : ℕ →₀ R} : (a.linearCombination R S).natDegree = a.support.sup id := by
+variable {a b : ℕ →₀ R}
+
+lemma nat_deg : (a.linearCombination R S).natDegree = a.support.sup id := by
   obtain ha | ha := Finset.eq_empty_or_nonempty a.support
   · simp [Finsupp.support_eq_empty.1 ha]
   rw [Finsupp.linearCombination_apply, Finsupp.sum]
@@ -184,41 +230,169 @@ lemma nat_deg {a : ℕ →₀ R} : (a.linearCombination R S).natDegree = a.suppo
   rw [natDegree_smul _ zgx, natDegree_smul _ zgy]
   simpa
 
+lemma leadingCoeff : (a.linearCombination R S).leadingCoeff =
+    (a (a.support.sup id)) * (S (a.support.sup id)).leadingCoeff := by
+  obtain ha | ha := Finset.eq_empty_or_nonempty a.support
+  · simp [Finsupp.support_eq_empty.1 ha]
+  rw [linearCombination_apply, ← add_sum_erase _ (a.support.sup id), leadingCoeff_add_of_degree_lt',
+    mdr]
+  · rw [← Finsupp.mem_support_iff]
+    exact mem_supp ha
+  · refine lt_of_le_of_lt (Polynomial.degree_sum_le _ _) ?_
+    rw [Finset.sup_lt_iff]
+    · intro i hi
+      simp only
+      nth_rw 2 [degree_eq_natDegree]
+      · rw [natDegree_smul, S.natDegree_eq]
+        · obtain h | h := eq_or_ne ((Finsupp.erase (a.support.sup id) a) i • S i) 0
+          · rw [h, degree_zero]
+            exact WithBot.bot_lt_coe _
+          · rw [degree_eq_natDegree h, natDegree_smul, S.natDegree_eq]
+            · rw [lt_iff_le_and_ne]
+              constructor
+              · norm_cast
+                rw [← id_eq i]
+                apply Finset.le_sup
+                rw [Finsupp.support_erase] at hi
+                exact Finset.erase_subset _ _ hi
+              · norm_cast
+                rw [Finsupp.support_erase] at hi
+                exact Finset.ne_of_mem_erase hi
+            exact Finsupp.mem_support_iff.1 hi
+        rw [← Finsupp.mem_support_iff]
+        exact mem_supp ha
+      apply smul_ne_zero
+      · exact Finsupp.mem_support_iff.1 (mem_supp ha)
+      · exact S.ne_zero _
+    · apply Ne.bot_lt
+      rw [degree_ne_bot]
+      apply smul_ne_zero
+      · exact Finsupp.mem_support_iff.1 (mem_supp ha)
+      · exact S.ne_zero _
+  exact mem_supp ha
 
-lemma linearIndependent {R : Type*} [Semiring R] [IsCancelAdd R] [NoZeroDivisors R]
+lemma supp_nonempty_iff (h : a.linearCombination R S = b.linearCombination R S) :
+    a.support.Nonempty ↔ b.support.Nonempty := by
+  simp_rw [Finset.nonempty_iff_ne_empty]
+  apply Iff.ne
+  suffices ∀ (a b : ℕ →₀ R), a.linearCombination R S = b.linearCombination R S →
+    a.support = ∅ → b.support = ∅ from ⟨this a b h, this b a h.symm⟩
+  intro a b h ha
+  simp only [ha, linearCombination_support_eq_empty] at h
+  by_contra!
+  rw [← Finset.nonempty_iff_ne_empty] at this
+  have := (leadingCoeff S (a := b)).symm
+  rw [← h, leadingCoeff_zero, mul_eq_zero] at this
+  obtain h' | h' := this
+  · exact Finsupp.mem_support_iff.1 (mem_supp this) h'
+  · exact leadingCoeff_ne_zero.2 (S.ne_zero _) h'
+
+lemma supp_empty_iff (h : a.linearCombination R S = b.linearCombination R S) :
+    a.support = ∅ ↔ b.support = ∅ := by
+  simp_rw [← Finset.not_nonempty_iff_eq_empty]
+  exact Iff.not (supp_nonempty_iff S h)
+
+lemma supp_sup_eq (h : a.linearCombination R S = b.linearCombination R S) :
+    a.support.sup id = b.support.sup id := by
+  obtain ha | ha := Finset.eq_empty_or_nonempty a.support
+  · rw [ha, (supp_empty_iff S h).1 ha]
+  · have hb := (supp_nonempty_iff S h).1 ha
+    rw [← nat_deg S, ← nat_deg S, h]
+
+lemma apply_sup_eq (h : a.linearCombination R S = b.linearCombination R S) :
+    a (a.support.sup id) = b (b.support.sup id) := by
+  obtain ha | ha := Finset.eq_empty_or_nonempty a.support
+  · rw [Finsupp.support_eq_empty.1 ha, Finsupp.support_eq_empty.1 <| (supp_empty_iff S h).1 ha]
+  · have hb := (supp_nonempty_iff S h).1 ha
+    apply mul_right_cancel₀ (leadingCoeff_ne_zero.2 (S.ne_zero (a.support.sup id)))
+    nth_rw 3 [supp_sup_eq S h]
+    rw [← leadingCoeff, ← leadingCoeff, h]
+
+variable [IsCancelAdd R]
+
+lemma erase_eq (h : a.linearCombination R S = b.linearCombination R S) :
+    (a.erase (a.support.sup id)).linearCombination R S =
+    (b.erase (b.support.sup id)).linearCombination R S := by
+  obtain has | has := Finset.eq_empty_or_nonempty a.support
+  · simp [has, (supp_empty_iff S h).1 has]
+  · have aux := h
+    simp_rw [linearCombination_apply] at h
+    rw [←  Finsupp.add_sum_erase _ (a.support.sup id),
+      ←  Finsupp.add_sum_erase b (b.support.sup id), ← linearCombination_apply,
+      ← linearCombination_apply] at h
+    · apply add_left_cancel (a := b (b.support.sup id) • S (b.support.sup id))
+      nth_rw 1 [← apply_sup_eq S aux, ← supp_sup_eq S aux]
+      exact h
+    · exact mem_supp ((supp_nonempty_iff S aux).1 has)
+    · exact mem_supp has
+
+lemma Finset.not_mem_of_sup_lt {α : Type*} [SemilatticeSup α] [OrderBot α] {s : Finset α}
+    {a : α} (ha : s.sup id < a) : a ∉ s := by
+  intro h
+  have : a < a := calc
+    a ≤ s.sup id := id_eq a ▸ Finset.le_sup h
+    _ < a := ha
+  exact lt_irrefl a this
+
+lemma linearIndependent {R : Type*} [Semiring R] [IsCancelAdd R] [IsRightCancelMulZero R]
     (S : Sequence R) : LinearIndependent R S := by
   intro a b h
-  simp_rw [Finsupp.linearCombination_apply, Finsupp.sum] at h
-  have lol : a.support.sup id = b.support.sup id := sorry
-  have has : a.support.Nonempty := sorry
-  have hbs : b.support.Nonempty := sorry
-  generalize hn : a.support.sup id = n
-  induction n generalizing a b with
-  | zero =>
+  generalize n_def : a.support.sup id = n
+  induction n using Nat.case_strong_induction_on generalizing a b with
+  | hz =>
+    obtain has | has := Finset.eq_empty_or_nonempty a.support
+    · rw [Finsupp.support_eq_empty.1 has, Finsupp.support_eq_empty.1 <| supp_empty_iff S h |>.1 has]
+    have aux := n_def
+    have := supp_sup_eq S h ▸ n_def
+    rw [← bot_eq_zero, Finset.sup_eq_bot_iff] at n_def this
+    ext i
     have as : a.support = {0} := by
       rw [Finset.eq_singleton_iff_unique_mem]
       constructor
-      · nth_rw 1 [← hn, ← a.support.image_id, ← Finset.mem_coe, Finset.coe_image]
-        apply Finset.sup_mem_of_nonempty
-        exact has
-      · intro x hx
-        apply le_zero_iff.1
-        rw [← hn, ← id_eq x]
-        exact Finset.le_sup hx
+      · rw [← aux]
+        exact mem_supp has
+      · exact n_def
     have bs : b.support = {0} := by
       rw [Finset.eq_singleton_iff_unique_mem]
       constructor
-      · nth_rw 1 [← hn, lol, ← b.support.image_id, ← Finset.mem_coe, Finset.coe_image]
-        apply Finset.sup_mem_of_nonempty
-        exact hbs
-      · intro x hx
-        apply le_zero_iff.1
-        rw [← hn, lol, ← id_eq x]
-        exact Finset.le_sup hx
-    rw [as, bs, Finset.sum_singleton, Finset.sum_singleton] at h
-    ext i
+      · rw [← aux, supp_sup_eq S h]
+        exact mem_supp ((supp_nonempty_iff S h).1 has)
+      · exact this
+    rw [linearCombination_apply, Finsupp.sum, linearCombination_apply, Finsupp.sum, as, bs,
+      Finset.sum_singleton, Finset.sum_singleton] at h
     obtain rfl | hi := eq_or_ne i 0
-
+    · apply IsRightCancelSMulZero.smul_right_cancel_of_ne_zero (S.ne_zero 0)
+      exact h
+    · rw [Finsupp.not_mem_support_iff.1, Finsupp.not_mem_support_iff.1] <;> simp_all
+  | hi n hind =>
+    ext i
+    obtain hi | hi := le_or_lt i (n + 1)
+    · obtain hi | rfl := le_iff_lt_or_eq.1 hi
+      · suffices a.erase (a.support.sup id) = b.erase (a.support.sup id) by
+          rw [← erase_apply_of_ne hi.ne.symm, ← erase_apply_of_ne (f := b) hi.ne.symm,
+            ← n_def, this]
+        apply hind ((a.erase (a.support.sup id)).support.sup id)
+        · rw [Nat.le_iff_lt_add_one, ← n_def, Finset.sup_lt_iff]
+          · intro j hj
+            rw [lt_iff_le_and_ne]
+            rw [Finsupp.support_erase] at hj
+            constructor
+            · apply Finset.le_sup
+              exact Finset.erase_subset _ _ hj
+            · exact Finset.ne_of_mem_erase hj
+          · rw [n_def]
+            simp
+        · nth_rw 2 [supp_sup_eq S h]
+          exact erase_eq S h
+        · rfl
+      · rw [← n_def]
+        nth_rw 2 [supp_sup_eq S h]
+        exact apply_sup_eq S h
+    · rw [Finsupp.not_mem_support_iff.1, Finsupp.not_mem_support_iff.1]
+      · rw [← n_def, supp_sup_eq S h] at hi
+        exact Finset.not_mem_of_sup_lt hi
+      · rw [← n_def] at hi
+        exact Finset.not_mem_of_sup_lt hi
 
 end Test
 
