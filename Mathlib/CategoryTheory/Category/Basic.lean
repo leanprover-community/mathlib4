@@ -275,7 +275,7 @@ theorem cancel_mono_id (f : X ⟶ Y) [Mono f] {g : X ⟶ X} : g ≫ f = f ↔ g 
   simp
 
 /-- The composition of epimorphisms is again an epimorphism. This version takes `Epi f` and `Epi g`
-as typeclass arguments. For a version taking them as explicit arguments, see `epi_comp`. -/
+as typeclass arguments. For a version taking them as explicit arguments, see `epi_comp'`. -/
 instance epi_comp {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) [Epi g] : Epi (f ≫ g) :=
   ⟨fun _ _ w => (cancel_epi g).1 <| (cancel_epi_assoc_iff f).1 w⟩
 
@@ -291,7 +291,7 @@ instance mono_comp {X Y Z : C} (f : X ⟶ Y) [Mono f] (g : Y ⟶ Z) [Mono g] : M
   ⟨fun _ _ w => (cancel_mono f).1 <| (cancel_mono_assoc_iff g).1 w⟩
 
 /-- The composition of monomorphisms is again a monomorphism. This version takes `Mono f` and
-`Mono g` as explicit arguments. For a version taking them as typeclass arguments, see `mono_comp'`.
+`Mono g` as explicit arguments. For a version taking them as typeclass arguments, see `mono_comp`.
 -/
 theorem mono_comp' {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (hf : Mono f) (hg : Mono g) :
     Mono (f ≫ g) :=
