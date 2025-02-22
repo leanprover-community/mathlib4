@@ -1023,15 +1023,19 @@ theorem nhds_inr (y : Y) : 𝓝 (inr y : X ⊕ Y) = map inr (𝓝 y) :=
   (IsOpenEmbedding.inr.map_nhds_eq _).symm
 
 @[simp]
-theorem continuous_sum_map {f : X → Y} {g : Z → W} :
+theorem continuous_sumMap {f : X → Y} {g : Z → W} :
     Continuous (Sum.map f g) ↔ Continuous f ∧ Continuous g :=
   continuous_sumElim.trans <|
     IsEmbedding.inl.continuous_iff.symm.and IsEmbedding.inr.continuous_iff.symm
 
+@[deprecated (since := "2025-02-21")] alias continuous_sum_map := continuous_sumMap
+
 @[continuity, fun_prop]
-theorem Continuous.sum_map {f : X → Y} {g : Z → W} (hf : Continuous f) (hg : Continuous g) :
+theorem Continuous.sumMap {f : X → Y} {g : Z → W} (hf : Continuous f) (hg : Continuous g) :
     Continuous (Sum.map f g) :=
-  continuous_sum_map.2 ⟨hf, hg⟩
+  continuous_sumMap.2 ⟨hf, hg⟩
+
+@[deprecated (since := "2025-02-21")] alias Continuous.sum_map := Continuous.sumMap
 
 theorem isOpenMap_sum {f : X ⊕ Y → Z} :
     IsOpenMap f ↔ (IsOpenMap fun a => f (inl a)) ∧ IsOpenMap fun b => f (inr b) := by
