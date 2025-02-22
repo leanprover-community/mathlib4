@@ -45,7 +45,7 @@ wish to enforce infiniteness. -/
 class Encodable (α : Type*) where
   /-- Encoding from Type α to ℕ -/
   encode : α → ℕ
-  /-- Decoding from ℕ to Option α-/
+  /-- Decoding from ℕ to Option α -/
   decode : ℕ → Option α
   /-- Invariant relationship between encoding and decoding -/
   encodek : ∀ a, decode (encode a) = some a

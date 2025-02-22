@@ -29,7 +29,7 @@ More advanced theorems about these definitions are located in other files in `Ma
 - `Set.pi`: indexed product of a family of sets `∀ i, Set (α i)`,
   as a set in `∀ i, α i`;
 - `Set.EqOn f g s`: the predicate saying that two functions are equal on a set;
-- `Set.MapsTo f s t`: the predicate syaing that `f` sends all points of `s` to `t;
+- `Set.MapsTo f s t`: the predicate saying that `f` sends all points of `s` to `t`;
 - `Set.MapsTo.restrict`: restrict `f : α → β` to `f' : s → t` provided that `Set.MapsTo f s t`;
 - `Set.restrictPreimage`: restrict `f : α → β` to `f' : (f ⁻¹' t) → t`;
 - `Set.InjOn`: the predicate saying that `f` is injective on a set;
@@ -41,7 +41,7 @@ More advanced theorems about these definitions are located in other files in `Ma
 - `Set.image2`: the image of a pair of sets under a binary operation,
   mostly useful to define pointwise algebraic operations on sets;
 - `Set.seq`: monadic `seq` operation on sets;
-  we don't use monadic notation to ensure support for maps between different universes;
+  we don't use monadic notation to ensure support for maps between different universes.
 
 ## Notations
 

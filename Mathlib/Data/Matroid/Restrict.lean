@@ -161,7 +161,7 @@ theorem isBase_restrict_iff' : (M ↾ X).IsBase I ↔ M.IsBasis' I X := by
 theorem IsBasis'.isBase_restrict (hI : M.IsBasis' I X) : (M ↾ X).IsBase I :=
   isBase_restrict_iff'.1 hI
 
-theorem IsBasis.restrict_base (h : M.IsBasis I X) : (M ↾ X).IsBase I :=
+theorem IsBasis.restrict_isBase (h : M.IsBasis I X) : (M ↾ X).IsBase I :=
   (isBase_restrict_iff h.subset_ground).2 h
 
 instance restrict_rankFinite [M.RankFinite] (R : Set α) : (M ↾ R).RankFinite :=
@@ -237,7 +237,7 @@ scoped infix:50  " <r " => IsStrictRestriction
 /-- A type synonym for matroids with the isRestriction order.
   (The `PartialOrder` on `Matroid α` is reserved for the minor order)  -/
 @[ext] structure Matroidᵣ (α : Type*) where ofMatroid ::
-  /-- The underlying `Matroid`.-/
+  /-- The underlying `Matroid` -/
   toMatroid : Matroid α
 
 instance {α : Type*} : CoeOut (Matroidᵣ α) (Matroid α) where
@@ -376,12 +376,12 @@ theorem IsBasis.isBasis_isRestriction (hI : M.IsBasis I X) (hNM : N ≤r M) (hX 
 theorem IsBasis.of_isRestriction (hI : N.IsBasis I X) (hNM : N ≤r M) : M.IsBasis I X := by
   obtain ⟨R, hR, rfl⟩ := hNM; exact ((isBasis_restrict_iff hR).1 hI).1
 
-theorem Base.isBasis_of_isRestriction (hI : N.IsBase I) (hNM : N ≤r M) : M.IsBasis I N.E := by
+theorem IsBase.isBasis_of_isRestriction (hI : N.IsBase I) (hNM : N ≤r M) : M.IsBasis I N.E := by
   obtain ⟨R, hR, rfl⟩ := hNM; rwa [isBase_restrict_iff] at hI
 
 theorem IsRestriction.base_iff (hMN : N ≤r M) {B : Set α} : N.IsBase B ↔ M.IsBasis B N.E :=
-  ⟨fun h ↦ Base.isBasis_of_isRestriction h hMN,
-    fun h ↦ by simpa [hMN.eq_restrict] using h.restrict_base⟩
+  ⟨fun h ↦ IsBase.isBasis_of_isRestriction h hMN,
+    fun h ↦ by simpa [hMN.eq_restrict] using h.restrict_isBase⟩
 
 theorem IsRestriction.isBasis_iff (hMN : N ≤r M) : N.IsBasis I X ↔ M.IsBasis I X ∧ X ⊆ N.E :=
   ⟨fun h ↦ ⟨h.of_isRestriction hMN, h.subset_ground⟩, fun h ↦ h.1.isBasis_isRestriction hMN h.2⟩
@@ -436,13 +436,13 @@ theorem Indep.exists_insert_of_not_isBasis (hI : M.Indep I) (hIX : I ⊆ X) (hI'
   obtain ⟨e, he, hi⟩ := (hI.indep_restrict_of_subset hIX).exists_insert_of_not_isBase hI' hJ
   exact ⟨e, he, (restrict_indep_iff.mp hi).1⟩
 
-theorem IsBasis.base_of_base_subset (hIX : M.IsBasis I X) (hB : M.IsBase B) (hBX : B ⊆ X) :
+theorem IsBasis.isBase_of_isBase_subset (hIX : M.IsBasis I X) (hB : M.IsBase B) (hBX : B ⊆ X) :
     M.IsBase I :=
   hB.isBase_of_isBasis_superset hBX hIX
 
 theorem IsBasis.exchange (hIX : M.IsBasis I X) (hJX : M.IsBasis J X) (he : e ∈ I \ J) :
     ∃ f ∈ J \ I, M.IsBasis (insert f (I \ {e})) X := by
-  obtain ⟨y,hy, h⟩ := hIX.restrict_base.exchange hJX.restrict_base he
+  obtain ⟨y,hy, h⟩ := hIX.restrict_isBase.exchange hJX.restrict_isBase he
   exact ⟨y, hy, by rwa [isBase_restrict_iff] at h⟩
 
 theorem IsBasis.eq_exchange_of_diff_eq_singleton (hI : M.IsBasis I X) (hJ : M.IsBasis J X)
