@@ -36,7 +36,9 @@ instance : Nonempty (AsSmall.{max u v} C) := ⟨0⟩
 
 variable (C) in
 /-- Given an abelian category `C`, this is a ring such that there is a full, faithful and exact
-embedding `C ⥤ ModuleCat (EmbeddingRing C)`. -/
+embedding `C ⥤ ModuleCat (EmbeddingRing C)`.
+
+It is probably not a good idea to unfold this. -/
 def EmbeddingRing : Type (max u v) :=
   IsGrothendieckAbelian.OppositeModuleEmbedding.EmbeddingRing
     (Ind.yoneda (C := (AsSmall.{max u v} C)ᵒᵖ)).rightOp
@@ -61,7 +63,9 @@ private noncomputable def H :
 
 variable (C) in
 /-- This is the full, faithful and exact embedding `C ⥤ ModuleCat (EmbeddingRing C)`. The fact that
-such an functor exists is called the Freyd-Mitchell embedding theorem. -/
+such an functor exists is called the Freyd-Mitchell embedding theorem.
+
+It is probably not a good idea to unfold this. -/
 noncomputable def functor : C ⥤ ModuleCat.{max u v} (EmbeddingRing C) :=
   F C ⋙ G C ⋙ H C
 
