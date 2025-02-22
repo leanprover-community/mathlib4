@@ -78,7 +78,7 @@ theorem encard_eq_coe_toFinset_card (s : Set α) [Fintype s] : encard s = s.toFi
 
 @[simp] theorem toENat_cardinalMk (s : Set α) : (Cardinal.mk s).toENat = s.encard := rfl
 
-@[simp] theorem cast_fintype_card (s : Set α) [Fintype s] : (Fintype.card s : ℕ∞) = s.encard := by
+@[simp] theorem coe_fintypeCard (s : Set α) [Fintype s] : (Fintype.card s : ℕ∞) = s.encard := by
   simp [encard_eq_coe_toFinset_card]
 
 @[simp, norm_cast] theorem encard_coe_eq_coe_finsetCard (s : Finset α) :
@@ -311,9 +311,8 @@ theorem encard_le_one_iff_subsingleton : s.encard ≤ 1 ↔ s.Subsingleton := by
   rw [encard_le_one_iff, Set.Subsingleton]
   tauto
 
-theorem two_le_encard_iff_nontrivial : 2 ≤ s.encard ↔ s.Nontrivial := by
-  rw [← not_iff_not, ← not_lt, not_not, Set.not_nontrivial_iff, ← encard_le_one_iff_subsingleton,
-    show (2 : ℕ∞) = 1 + 1 from rfl, ENat.lt_add_one_iff (by simp)]
+theorem one_lt_encard_iff_nontrivial : 1 < s.encard ↔ s.Nontrivial := by
+  rw [← not_iff_not, not_lt, Set.not_nontrivial_iff, ← encard_le_one_iff_subsingleton]
 
 theorem one_lt_encard_iff : 1 < s.encard ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
   rw [← not_iff_not, not_exists, not_lt, encard_le_one_iff]; aesop

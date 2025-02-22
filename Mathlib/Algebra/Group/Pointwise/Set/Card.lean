@@ -65,7 +65,7 @@ attribute [deprecated natCard_neg (since := "2024-09-30")] card_neg
 
 @[to_additive (attr := simp)]
 lemma encard_inv (s : Set G) : s⁻¹.encard = s.encard := by
-  rw [encard, ENat.card, Cardinal.mk_inv, toENat_cardinalMk]
+  simp [ENat.card, ←toENat_cardinalMk]
 
 @[to_additive (attr := simp)]
 lemma ncard_inv (s : Set G) : s⁻¹.ncard = s.ncard := by simp [ncard]
@@ -115,7 +115,7 @@ attribute [deprecated Cardinal.mk_vadd_set (since := "2024-09-30")] card_vadd_se
 
 @[to_additive (attr := simp)]
 lemma encard_smul_set (a : G) (s : Set α) : (a • s).encard = s.encard := by
-  rw [encard, ENat.card, Cardinal.mk_smul_set, toENat_cardinalMk]
+  simp [ENat.card, ←toENat_cardinalMk]
 
 @[to_additive (attr := simp)]
 lemma ncard_smul_set (a : G) (s : Set α) : (a • s).ncard = s.ncard := by simp [ncard]
