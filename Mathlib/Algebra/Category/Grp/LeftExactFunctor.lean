@@ -23,7 +23,8 @@ into a functor `C ⥤ AddCommGrp.{v}`. By construction, composing with with the 
 functor recovers the functor we started with, so since the forgetful functor reflects finite
 limits and `F` preserves finite limits, our constructed functor also preserves finite limits. It
 can be shown that this construction gives a quasi-inverse to the whiskering operation
-`(C ⥤ₗ AddCommGrp.{v}) ⥤ (C ⥤ₗ Type v)`. -/
+`(C ⥤ₗ AddCommGrp.{v}) ⥤ (C ⥤ₗ Type v)`.
+-/
 
 open CategoryTheory MonoidalCategory Limits
 
