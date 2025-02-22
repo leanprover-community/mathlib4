@@ -131,9 +131,6 @@ theorem Submartingale.stoppedValue_leastGE_eLpNorm_le [IsFiniteMeasure μ] (hf :
   refine le_trans ?_ ((hf.stoppedValue_leastGE r).setIntegral_le (zero_le _) MeasurableSet.univ)
   simp_rw [stoppedValue, leastGE, hitting_of_le le_rfl, hf0, integral_zero', le_rfl]
 
-@[deprecated (since := "2024-07-27")]
-alias Submartingale.stoppedValue_leastGE_snorm_le := Submartingale.stoppedValue_leastGE_eLpNorm_le
-
 theorem Submartingale.stoppedValue_leastGE_eLpNorm_le' [IsFiniteMeasure μ]
     (hf : Submartingale f ℱ μ) (hr : 0 ≤ r) (hf0 : f 0 = 0)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
@@ -141,9 +138,6 @@ theorem Submartingale.stoppedValue_leastGE_eLpNorm_le' [IsFiniteMeasure μ]
       ENNReal.toNNReal (2 * μ Set.univ * ENNReal.ofReal (r + R)) := by
   refine (hf.stoppedValue_leastGE_eLpNorm_le hr hf0 hbdd i).trans ?_
   simp [ENNReal.coe_toNNReal (measure_ne_top μ _), ENNReal.coe_toNNReal]
-
-@[deprecated (since := "2024-07-27")]
-alias Submartingale.stoppedValue_leastGE_snorm_le' := Submartingale.stoppedValue_leastGE_eLpNorm_le'
 
 /-- This lemma is superseded by `Submartingale.bddAbove_iff_exists_tendsto`. -/
 theorem Submartingale.exists_tendsto_of_abs_bddAbove_aux [IsFiniteMeasure μ]

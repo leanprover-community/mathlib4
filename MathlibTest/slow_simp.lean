@@ -51,16 +51,16 @@ instance : Category PointedSpace where
 
 end PointedSpace
 
-set_option maxHeartbeats 40000 in
+set_option maxHeartbeats 20000 in
 def PointedSpaceEquiv_inverse : Under (TopCat.of Unit) ⥤ PointedSpace where
   obj := fun X =>
   { carrier := X.right
     base := X.hom () }
   map := fun f =>
-  { map := f.right
+  { map := f.right.hom
     base := by
       have := f.w
-      replace this := DFunLike.congr_fun this ()
+      replace this := CategoryTheory.congr_fun this ()
       simp [-Under.w] at this
       simp
       exact this.symm }

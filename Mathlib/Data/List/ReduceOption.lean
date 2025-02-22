@@ -43,8 +43,7 @@ theorem reduceOption_append (l l' : List (Option α)) :
 @[simp]
 theorem reduceOption_replicate_none {n : ℕ} : (replicate n (@none α)).reduceOption = [] := by
   dsimp [reduceOption]
-  rw [filterMap_replicate_of_none]
-  rfl
+  rw [filterMap_replicate_of_none (id_def _)]
 
 theorem reduceOption_eq_nil_iff (l : List (Option α)) :
     l.reduceOption = [] ↔ ∃ n, l = replicate n none := by
@@ -77,12 +76,7 @@ theorem reduceOption_eq_append_iff (l : List (Option α)) (l'₁ l'₂ : List α
     l.reduceOption = l'₁ ++ l'₂ ↔
       ∃ l₁ l₂, l = l₁ ++ l₂ ∧ l₁.reduceOption = l'₁ ∧ l₂.reduceOption = l'₂ := by
   dsimp [reduceOption]
-  constructor
-  · intro h
-    rw [filterMap_eq_append_iff] at h
-    trivial
-  · intro ⟨_, _, h, hl₁, hl₂⟩
-    rw [h, filterMap_append, hl₁, hl₂]
+  exact filterMap_eq_append_iff
 
 theorem reduceOption_eq_concat_iff (l : List (Option α)) (l' : List α) (a : α) :
     l.reduceOption = l'.concat a ↔
@@ -96,8 +90,7 @@ theorem reduceOption_eq_concat_iff (l : List (Option α)) (l' : List α) (a : α
     obtain ⟨m, n, hl₂⟩ := hl₂
     use l₁ ++ replicate m none, replicate n none
     simp_rw [h, reduceOption_append, reduceOption_replicate_none, append_assoc, append_nil, hl₁,
-      hl₂]
-    trivial
+      hl₂, and_self]
   · intro ⟨_, _, h, hl₁, hl₂⟩
     rw [h, reduceOption_append, reduceOption_cons_of_some, hl₁, hl₂]
 
@@ -142,8 +135,11 @@ theorem reduceOption_concat_of_some (l : List (Option α)) (x : α) :
 theorem reduceOption_mem_iff {l : List (Option α)} {x : α} : x ∈ l.reduceOption ↔ some x ∈ l := by
   simp only [reduceOption, id, mem_filterMap, exists_eq_right]
 
-theorem reduceOption_get?_iff {l : List (Option α)} {x : α} :
-    (∃ i, l.get? i = some (some x)) ↔ ∃ i, l.reduceOption.get? i = some x := by
-  rw [← mem_iff_get?, ← mem_iff_get?, reduceOption_mem_iff]
+theorem reduceOption_getElem?_iff {l : List (Option α)} {x : α} :
+    (∃ i : ℕ, l[i]? = some (some x)) ↔ ∃ i : ℕ, l.reduceOption[i]? = some x := by
+  rw [← mem_iff_getElem?, ← mem_iff_getElem?, reduceOption_mem_iff]
+
+@[deprecated (since := "2025-02-21")]
+alias reduceOption_get?_iff := reduceOption_getElem?_iff
 
 end List

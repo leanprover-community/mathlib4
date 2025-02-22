@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Data.DFinsupp.Module
-import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.SMul
 
 /-!
 # Conversion between `Finsupp` and homogeneous `DFinsupp`

@@ -65,9 +65,8 @@ theorem map_rename (f : R →+* S) (g : σ → τ) (p : MvPolynomial σ R) :
     simp only [hp, rename_X, map_X, map_mul]
 
 lemma map_comp_rename (f : R →+* S) (g : σ → τ) :
-    (map f).comp (rename g).toRingHom = (rename g).toRingHom.comp (map f) := by
-  apply RingHom.ext
-  simp [map_rename]
+    (map f).comp (rename g).toRingHom = (rename g).toRingHom.comp (map f) :=
+  RingHom.ext fun p ↦ map_rename f g p
 
 @[simp]
 theorem rename_rename (f : σ → τ) (g : τ → α) (p : MvPolynomial σ R) :
@@ -82,13 +81,14 @@ theorem rename_rename (f : σ → τ) (g : τ → α) (p : MvPolynomial σ R) :
     ext1; simp only [comp_apply, RingHom.coe_comp, eval₂Hom_C]
 
 lemma rename_comp_rename (f : σ → τ) (g : τ → α) :
-    (rename (R := R) g).comp (rename f) = rename (g ∘ f) := by
-  ext
-  simp
+    (rename (R := R) g).comp (rename f) = rename (g ∘ f) :=
+  AlgHom.ext fun p ↦ rename_rename f g p
 
 @[simp]
-theorem rename_id : rename id = AlgHom.id R (MvPolynomial σ R) := by
-  ext
+theorem rename_id : rename id = AlgHom.id R (MvPolynomial σ R) :=
+  AlgHom.ext fun p ↦ eval₂_eta p
+
+lemma rename_id_apply (p : MvPolynomial σ R) : rename id p = p := by
   simp
 
 theorem rename_monomial (f : σ → τ) (d : σ →₀ ℕ) (r : R) :
@@ -147,8 +147,8 @@ def renameEquiv (f : σ ≃ τ) : MvPolynomial σ R ≃ₐ[R] MvPolynomial τ R 
   { rename f with
     toFun := rename f
     invFun := rename f.symm
-    left_inv := fun p => by simp [rename_rename, f.symm_comp_self]
-    right_inv := fun p => by simp [rename_rename, f.self_comp_symm] }
+    left_inv := fun p => by rw [rename_rename, f.symm_comp_self, rename_id_apply]
+    right_inv := fun p => by rw [rename_rename, f.self_comp_symm, rename_id_apply] }
 
 @[simp]
 theorem renameEquiv_refl : renameEquiv R (Equiv.refl σ) = AlgEquiv.refl :=
@@ -184,9 +184,8 @@ theorem aeval_rename [Algebra R S] : aeval g (rename k p) = aeval (g ∘ k) p :=
   eval₂Hom_rename _ _ _ _
 
 lemma aeval_comp_rename [Algebra R S] :
-    (aeval (R := R) g).comp (rename k) = MvPolynomial.aeval (g ∘ k) := by
-  ext
-  simp
+    (aeval (R := R) g).comp (rename k) = MvPolynomial.aeval (g ∘ k) :=
+  AlgHom.ext fun p ↦ aeval_rename k g p
 
 theorem rename_eval₂ (g : τ → MvPolynomial σ R) :
     rename k (p.eval₂ C (g ∘ k)) = (rename k p).eval₂ C (rename k ∘ g) := by
