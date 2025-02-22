@@ -5,15 +5,17 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.Limits.Connected
+import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 
 /-!
 # Exactness of colimits
 
 In this file, we shall study exactness properties of colimits.
 First, we translate the assumption that `colim : (J ⥤ C) ⥤ C`
-preserves monomorphisms (or epimorphisms) into statements
-involving arbitrary cocones instead of the ones given by
-the colimit API. We also show that when an inductive system
+preserves monomorphisms (resp. preserves epimorphisms, resp. is exact)
+into statements involving arbitrary cocones instead of the ones
+given by the colimit API. We also show that when an inductive system
 involves only monomorphisms, then the "inclusion" morphism
 into the colimit is also a monomorphism (assuming `J`
 is filtered and `C` satisfies AB5).
@@ -80,6 +82,75 @@ lemma IsColimit.mono_ι_app_of_isFiltered
   exact colim.map_mono' f (isColimitConstCocone _ _)
     ((Functor.Final.isColimitWhiskerEquiv _ _).symm hc) (c.ι.app j₀) (by aesop_cat)
 
+section
+
+variable [HasColimitsOfShape J C] [HasExactColimitsOfShape J C] [HasZeroMorphisms C]
+  (S : ShortComplex (J ⥤ C)) (hS : S.Exact)
+  {c₁ : Cocone S.X₁} (hc₁ : IsColimit c₁) (c₂ : Cocone S.X₂) (hc₂ : IsColimit c₂)
+  (c₃ : Cocone S.X₃) (hc₃ : IsColimit c₃)
+  (f : c₁.pt ⟶ c₂.pt) (g : c₂.pt ⟶ c₃.pt)
+  (hf : ∀ j, c₁.ι.app j ≫ f = S.f.app j ≫ c₂.ι.app j)
+  (hg : ∀ j, c₂.ι.app j ≫ g = S.g.app j ≫ c₃.ι.app j)
+
+/-- Given `S : ShortCompex (J ⥤ C)` and (colimit) cocones for `S.X₁`, `S.X₂`,
+`S.X₃` equipped with suitable data, this is the induced
+short complex `c₁.pt ⟶ c₂.pt ⟶ c₃.pt`. -/
+@[simps]
+def colim.mapShortComplex : ShortComplex C :=
+  ShortComplex.mk f g (hc₁.hom_ext (fun j ↦ by
+    dsimp
+    rw [reassoc_of% (hf j), hg j, comp_zero, ← NatTrans.comp_app_assoc, S.zero,
+      zero_app, zero_comp]))
+
+variable {S c₂ c₃}
+
+include hc₂ hc₃ hS in
+/-- Assuming `HasExactColimitsOfShape J C`, this lemma rephrases the exactness
+of the functor `colim : (J ⥤ C) ⥤ C` by saying that if `S : ShortComplex (J ⥤ C)`
+is exact, then the short complex obtained by taking the colimits is exact,
+where we allow the replacement of the chosen colimit cocones of the
+colimit API by arbitrary colimit cocones. -/
+lemma colim.exact_mapShortComplex :
+    (mapShortComplex S hc₁ c₂ c₃ f g hf hg).Exact := by
+  refine (ShortComplex.exact_iff_of_iso ?_).2 (hS.map colim)
+  refine ShortComplex.isoMk
+    (IsColimit.coconePointUniqueUpToIso hc₁ (colimit.isColimit _))
+    (IsColimit.coconePointUniqueUpToIso hc₂ (colimit.isColimit _))
+    (IsColimit.coconePointUniqueUpToIso hc₃ (colimit.isColimit _))
+    (hc₁.hom_ext (fun j ↦ ?_)) (hc₂.hom_ext (fun j ↦ ?_))
+  · dsimp
+    rw [IsColimit.comp_coconePointUniqueUpToIso_hom_assoc,
+      colimit.cocone_ι, ι_colimMap, reassoc_of% (hf j),
+      IsColimit.comp_coconePointUniqueUpToIso_hom, colimit.cocone_ι]
+  · dsimp
+    rw [IsColimit.comp_coconePointUniqueUpToIso_hom_assoc,
+      colimit.cocone_ι, ι_colimMap, reassoc_of% (hg j),
+      IsColimit.comp_coconePointUniqueUpToIso_hom, colimit.cocone_ι]
+
+end
+
 end Limits
+
+namespace MorphismProperty
+
+open Limits
+
+open MorphismProperty
+
+variable (J C) in
+lemma isStableUnderColimitsOfShape_monomorphisms
+    [HasColimitsOfShape J C] [(colim : (J ⥤ C) ⥤ C).PreservesMonomorphisms] :
+    (monomorphisms C).IsStableUnderColimitsOfShape J := by
+  intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
+  have (j : J) : Mono (f.app j) := hf _
+  have := NatTrans.mono_of_mono_app f
+  exact colim.map_mono' f hc₁ hc₂ _ (by simp)
+
+instance [HasCoproducts.{u'} C] [AB4OfSize.{u'} C] :
+    IsStableUnderCoproducts.{u'} (monomorphisms C) where
+  isStableUnderCoproductsOfShape _ :=
+    isStableUnderColimitsOfShape_monomorphisms _ _
+
+end MorphismProperty
 
 end CategoryTheory

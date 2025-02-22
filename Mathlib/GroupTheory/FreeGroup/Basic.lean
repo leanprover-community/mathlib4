@@ -241,7 +241,7 @@ theorem to_append_iff : Red L (L₁ ++ L₂) ↔ ∃ L₃ L₄, L = L₃ ++ L₄
       intro h
       induction' h with L' L₁₂ hLL' h ih generalizing L₁ L₂
       · exact ⟨_, _, eq.symm, by rfl, by rfl⟩
-      · cases' h with s e a b
+      · obtain @⟨s, e, a, b⟩ := h
         rcases List.append_eq_append_iff.1 eq with (⟨s', rfl, rfl⟩ | ⟨e', rfl, rfl⟩)
         · have : L₁ ++ (s' ++ (a, b) :: (a, not b) :: e) = L₁ ++ s' ++ (a, b) :: (a, not b) :: e :=
             by simp
@@ -488,7 +488,7 @@ theorem inv_mk : (mk L)⁻¹ = mk (invRev L) :=
 @[to_additive]
 theorem Red.Step.invRev {L₁ L₂ : List (α × Bool)} (h : Red.Step L₁ L₂) :
     Red.Step (FreeGroup.invRev L₁) (FreeGroup.invRev L₂) := by
-  cases' h with a b x y
+  obtain ⟨a, b, x, y⟩ := h
   simp [FreeGroup.invRev]
 
 @[to_additive]
@@ -555,7 +555,7 @@ def Lift.aux : List (α × Bool) → β := fun L =>
 
 @[to_additive]
 theorem Red.Step.lift {f : α → β} (H : Red.Step L₁ L₂) : Lift.aux f L₁ = Lift.aux f L₂ := by
-  cases' H with _ _ _ b; cases b <;> simp [Lift.aux]
+  obtain @⟨_, _, _, b⟩ := H; cases b <;> simp [Lift.aux]
 
 /-- If `β` is a group, then any function from `α` to `β` extends uniquely to a group homomorphism
 from the free group over `α` to `β` -/
@@ -692,7 +692,7 @@ theorem map_eq_lift : map f x = lift (of ∘ f) x :=
 
 The converse can be found in `GroupTheory.FreeAbelianGroupFinsupp`,
 as `Equiv.of_freeGroupEquiv`
- -/
+-/
 @[to_additive (attr := simps apply)
   "Equivalent types give rise to additively equivalent additive free groups."]
 def freeGroupCongr {α β} (e : α ≃ β) : FreeGroup α ≃* FreeGroup β where
