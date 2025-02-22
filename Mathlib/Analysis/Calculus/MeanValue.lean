@@ -1258,7 +1258,7 @@ theorem hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt
   refine ⟨ε, ε0, ?_⟩
   -- simplify formulas involving the product E × E
   rintro ⟨a, b⟩ h
-  rw [← ball_prod_same, prod_mk_mem_set_prod_eq] at h
+  rw [← ball_prod_same, prodMk_mem_set_prod_eq] at h
   -- exploit the choice of ε as the modulus of continuity of f'
   have hf' : ∀ x' ∈ ball x ε, ‖f' x' - f' x‖ ≤ c := fun x' H' => by
     rw [← dist_eq_norm]

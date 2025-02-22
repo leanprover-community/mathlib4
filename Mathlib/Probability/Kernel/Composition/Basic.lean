@@ -382,7 +382,7 @@ theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht :
   rw [compProd_apply hu, restrict_apply' _ _ _ hu,
     compProd_apply (hu.inter (hs.prod ht))]
   simp only [Kernel.restrict_apply, Measure.restrict_apply' ht, Set.mem_inter_iff,
-    Set.prod_mk_mem_set_prod_eq]
+    Set.prodMk_mem_set_prod_eq]
   have :
     ∀ b,
       η (a, b) {c : γ | (b, c) ∈ u ∧ b ∈ s ∧ c ∈ t} =
