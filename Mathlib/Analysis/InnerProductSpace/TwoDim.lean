@@ -192,7 +192,7 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
     norm_map' := fun x => by
       dsimp
       refine le_antisymm ?_ ?_
-      · cases' eq_or_lt_of_le (norm_nonneg (o.rightAngleRotationAux₁ x)) with h h
+      · rcases eq_or_lt_of_le (norm_nonneg (o.rightAngleRotationAux₁ x)) with h | h
         · rw [← h]
           positivity
         refine le_of_mul_le_mul_right ?_ h
@@ -342,7 +342,7 @@ theorem coe_basisRightAngleRotation (x : E) (hx : x ≠ 0) :
   coe_basisOfLinearIndependentOfCardEqFinrank _ _
 
 /-- For vectors `a x y : E`, the identity `⟪a, x⟫ * ⟪a, y⟫ + ω a x * ω a y = ‖a‖ ^ 2 * ⟪x, y⟫`. (See
-`Orientation.inner_mul_inner_add_areaForm_mul_areaForm` for the "applied" form.)-/
+`Orientation.inner_mul_inner_add_areaForm_mul_areaForm` for the "applied" form.) -/
 theorem inner_mul_inner_add_areaForm_mul_areaForm' (a x : E) :
     ⟪a, x⟫ • innerₛₗ ℝ a + ω a x • ω a = ‖a‖ ^ 2 • innerₛₗ ℝ x := by
   by_cases ha : a = 0
@@ -495,7 +495,7 @@ theorem norm_kahler (x y : E) : ‖o.kahler x y‖ = ‖x‖ * ‖y‖ := by sim
 
 theorem eq_zero_or_eq_zero_of_kahler_eq_zero {x y : E} (hx : o.kahler x y = 0) : x = 0 ∨ y = 0 := by
   have : ‖x‖ * ‖y‖ = 0 := by simpa [hx] using (o.norm_kahler x y).symm
-  cases' eq_zero_or_eq_zero_of_mul_eq_zero this with h h
+  rcases eq_zero_or_eq_zero_of_mul_eq_zero this with h | h
   · left
     simpa using h
   · right

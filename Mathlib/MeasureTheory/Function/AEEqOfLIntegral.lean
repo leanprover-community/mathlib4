@@ -125,18 +125,10 @@ theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ [SigmaFinite μ]
     _ ≤ ∑' n, μ (s n) := measure_iUnion_le _
     _ = 0 := by simp only [μs, tsum_zero]
 
-@[deprecated (since := "2024-06-29")]
-alias ae_le_of_forall_set_lintegral_le_of_sigmaFinite₀ :=
-  ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀
-
 theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite [SigmaFinite μ] {f g : α → ℝ≥0∞}
     (hf : Measurable f)
     (h : ∀ s, MeasurableSet s → μ s < ∞ → (∫⁻ x in s, f x ∂μ) ≤ ∫⁻ x in s, g x ∂μ) : f ≤ᵐ[μ] g :=
   ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ hf.aemeasurable h
-
-@[deprecated (since := "2024-06-29")]
-alias ae_le_of_forall_set_lintegral_le_of_sigmaFinite :=
-  ae_le_of_forall_setLIntegral_le_of_sigmaFinite
 
 theorem ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀ [SigmaFinite μ]
     {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
@@ -147,18 +139,10 @@ theorem ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀ [SigmaFinite μ]
     ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ hg fun s hs h's => ge_of_eq (h s hs h's)
   filter_upwards [A, B] with x using le_antisymm
 
-@[deprecated (since := "2024-06-29")]
-alias ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite₀ :=
-  ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀
-
 theorem ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite [SigmaFinite μ] {f g : α → ℝ≥0∞}
     (hf : Measurable f) (hg : Measurable g)
     (h : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ) : f =ᵐ[μ] g :=
   ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀ hf.aemeasurable hg.aemeasurable h
-
-@[deprecated (since := "2024-06-29")]
-alias ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite :=
-  ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite
 
 theorem AEMeasurable.ae_eq_of_forall_setLIntegral_eq {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g μ) (hfi : ∫⁻ x, f x ∂μ ≠ ∞) (hgi : ∫⁻ x, g x ∂μ ≠ ∞)
@@ -187,9 +171,6 @@ theorem AEMeasurable.ae_eq_of_forall_setLIntegral_eq {f g : α → ℝ≥0∞} (
   rw [Measure.restrict_restrict hu]
   rw [Measure.restrict_apply hu] at huμ
   exact hfg (hu.inter (hf'.measurableSet.union hg'.measurableSet)) huμ
-
-@[deprecated (since := "2024-06-29")]
-alias AEMeasurable.ae_eq_of_forall_set_lintegral_eq := AEMeasurable.ae_eq_of_forall_setLIntegral_eq
 
 section WithDensity
 

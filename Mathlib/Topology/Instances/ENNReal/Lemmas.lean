@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Data.ENNReal.Operations
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.Instances.ENNReal.Defs
 import Mathlib.Topology.Instances.NNReal.Lemmas
@@ -50,6 +51,10 @@ theorem coe_range_mem_nhds : range ((↑) : ℝ≥0 → ℝ≥0∞) ∈ 𝓝 (r 
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ≥0∞) :=
   isEmbedding_coe.continuous
 
+lemma tendsto_coe_toNNReal {a : ℝ≥0∞} (ha : a ≠ ⊤) : Tendsto (↑) (𝓝 a.toNNReal) (𝓝 a) := by
+  nth_rewrite 2 [← coe_toNNReal ha]
+  exact continuous_coe.tendsto _
+
 theorem continuous_coe_iff {α} [TopologicalSpace α] {f : α → ℝ≥0} :
     (Continuous fun a => (f a : ℝ≥0∞)) ↔ Continuous f :=
   isEmbedding_coe.continuous_iff.symm
@@ -77,6 +82,17 @@ theorem tendsto_toNNReal {a : ℝ≥0∞} (ha : a ≠ ∞) :
   lift a to ℝ≥0 using ha
   rw [nhds_coe, tendsto_map'_iff]
   exact tendsto_id
+
+theorem tendsto_toNNReal_iff {f : α → ℝ≥0∞} {u : Filter α} (ha : a ≠ ∞) (hf : ∀ x, f x ≠ ∞) :
+    Tendsto (ENNReal.toNNReal ∘ f) u (𝓝 (a.toNNReal)) ↔ Tendsto f u (𝓝 a) := by
+  refine ⟨fun h => ?_, fun h => (ENNReal.tendsto_toNNReal ha).comp h⟩
+  rw [← coe_comp_toNNReal_comp hf]
+  exact (tendsto_coe_toNNReal ha).comp h
+
+theorem tendsto_toNNReal_iff' {f : α → ℝ≥0∞} {u : Filter α} {a : ℝ≥0} (hf : ∀ x, f x ≠ ∞) :
+    Tendsto (ENNReal.toNNReal ∘ f) u (𝓝 a) ↔ Tendsto f u (𝓝 a) := by
+  rw [← toNNReal_coe a]
+  exact tendsto_toNNReal_iff coe_ne_top hf
 
 theorem eventuallyEq_of_toReal_eventuallyEq {l : Filter α} {f g : α → ℝ≥0∞}
     (hfi : ∀ᶠ x in l, f x ≠ ∞) (hgi : ∀ᶠ x in l, g x ≠ ∞)
@@ -275,7 +291,7 @@ theorem tendsto_atTop_zero_iff_lt_of_antitone {β : Type*} [Nonempty β] [Semila
   rw [ENNReal.tendsto_atTop_zero_iff_le_of_antitone hf]
   constructor <;> intro h ε hε
   · obtain ⟨n, hn⟩ := h (min 1 (ε / 2))
-      (lt_min_iff.mpr ⟨zero_lt_one, (ENNReal.div_pos_iff.mpr ⟨ne_of_gt hε, ENNReal.two_ne_top⟩)⟩)
+      (lt_min_iff.mpr ⟨zero_lt_one, (ENNReal.div_pos_iff.mpr ⟨ne_of_gt hε, ENNReal.ofNat_ne_top⟩)⟩)
     · refine ⟨n, hn.trans_lt ?_⟩
       by_cases hε_top : ε = ∞
       · rw [hε_top]
@@ -366,15 +382,16 @@ theorem tendsto_finset_prod_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞
     (s : Finset ι) (h : ∀ i ∈ s, Tendsto (f i) x (𝓝 (a i))) (h' : ∀ i ∈ s, a i ≠ ∞) :
     Tendsto (fun b => ∏ c ∈ s, f c b) x (𝓝 (∏ c ∈ s, a c)) := by
   classical
-  induction' s using Finset.induction with a s has IH
-  · simp [tendsto_const_nhds]
-  simp only [Finset.prod_insert has]
-  apply Tendsto.mul (h _ (Finset.mem_insert_self _ _))
-  · right
-    exact prod_ne_top fun i hi => h' _ (Finset.mem_insert_of_mem hi)
-  · exact IH (fun i hi => h _ (Finset.mem_insert_of_mem hi)) fun i hi =>
-      h' _ (Finset.mem_insert_of_mem hi)
-  · exact Or.inr (h' _ (Finset.mem_insert_self _ _))
+  induction s using Finset.induction with
+  | empty => simp [tendsto_const_nhds]
+  | insert has IH =>
+    simp only [Finset.prod_insert has]
+    apply Tendsto.mul (h _ (Finset.mem_insert_self _ _))
+    · right
+      exact prod_ne_top fun i hi => h' _ (Finset.mem_insert_of_mem hi)
+    · exact IH (fun i hi => h _ (Finset.mem_insert_of_mem hi)) fun i hi =>
+        h' _ (Finset.mem_insert_of_mem hi)
+    · exact Or.inr (h' _ (Finset.mem_insert_self _ _))
 
 protected theorem continuousAt_const_mul {a b : ℝ≥0∞} (h : a ≠ ∞ ∨ b ≠ 0) :
     ContinuousAt (a * ·) b :=
@@ -399,16 +416,17 @@ protected theorem continuous_div_const (c : ℝ≥0∞) (c_ne_zero : c ≠ 0) :
 
 @[continuity, fun_prop]
 protected theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a ^ n := by
-  induction' n with n IH
-  · simp [continuous_const]
-  simp_rw [pow_add, pow_one, continuous_iff_continuousAt]
-  intro x
-  refine ENNReal.Tendsto.mul (IH.tendsto _) ?_ tendsto_id ?_ <;> by_cases H : x = 0
-  · simp only [H, zero_ne_top, Ne, or_true, not_false_iff]
-  · exact Or.inl fun h => H (pow_eq_zero h)
-  · simp only [H, pow_eq_top_iff, zero_ne_top, false_or, eq_self_iff_true, not_true, Ne,
-      not_false_iff, false_and]
-  · simp only [H, true_or, Ne, not_false_iff]
+  induction n with
+  | zero => simp [continuous_const]
+  | succ n IH =>
+    simp_rw [pow_add, pow_one, continuous_iff_continuousAt]
+    intro x
+    refine ENNReal.Tendsto.mul (IH.tendsto _) ?_ tendsto_id ?_ <;> by_cases H : x = 0
+    · simp only [H, zero_ne_top, Ne, or_true, not_false_iff]
+    · exact Or.inl fun h => H (pow_eq_zero h)
+    · simp only [H, pow_eq_top_iff, zero_ne_top, false_or, eq_self_iff_true, not_true, Ne,
+        not_false_iff, false_and]
+    · simp only [H, true_or, Ne, not_false_iff]
 
 theorem continuousOn_sub :
     ContinuousOn (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) { p : ℝ≥0∞ × ℝ≥0∞ | p ≠ ⟨∞, ∞⟩ } := by
@@ -1206,7 +1224,7 @@ theorem cauchySeq_of_edist_le_of_tsum_ne_top {f : ℕ → α} (d : ℕ → ℝ�
   rw [ENNReal.tsum_coe_ne_top_iff_summable] at hd
   exact cauchySeq_of_edist_le_of_summable d hf hd
 
-theorem EMetric.isClosed_ball {a : α} {r : ℝ≥0∞} : IsClosed (closedBall a r) :=
+theorem EMetric.isClosed_closedBall {a : α} {r : ℝ≥0∞} : IsClosed (closedBall a r) :=
   isClosed_le (continuous_id.edist continuous_const) continuous_const
 
 @[simp]

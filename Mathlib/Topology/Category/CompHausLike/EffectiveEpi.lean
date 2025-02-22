@@ -21,8 +21,6 @@ universe u
 
 open CategoryTheory Limits Topology
 
-attribute [local instance] HasForget.instFunLike
-
 namespace CompHausLike
 
 variable {P : TopCat.{u} → Prop}
@@ -33,18 +31,30 @@ If `π` is a surjective morphism in `CompHausLike P`, then it is an effective ep
 noncomputable
 def effectiveEpiStruct {B X : CompHausLike P} (π : X ⟶ B) (hπ : Function.Surjective π) :
     EffectiveEpiStruct π where
-  desc e h := (IsQuotientMap.of_surjective_continuous hπ π.continuous).lift e fun a b hab ↦
-    DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
-    (by ext; exact hab)) a
-  fac e h := ((IsQuotientMap.of_surjective_continuous hπ π.continuous).lift_comp e
-    fun a b hab ↦ DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
+  desc e h := ofHom _ ((IsQuotientMap.of_surjective_continuous hπ π.hom.continuous).lift e.hom
+    fun a b hab ↦
+      CategoryTheory.congr_fun (h
+        (ofHom _ ⟨fun _ ↦ a, continuous_const⟩)
+        (ofHom _ ⟨fun _ ↦ b, continuous_const⟩)
+      (by ext; exact hab)) a)
+  fac e h := TopCat.hom_ext ((IsQuotientMap.of_surjective_continuous hπ π.hom.continuous).lift_comp
+    e.hom
+    fun a b hab ↦ CategoryTheory.congr_fun (h
+      (ofHom _ ⟨fun _ ↦ a, continuous_const⟩)
+      (ofHom _ ⟨fun _ ↦ b, continuous_const⟩)
     (by ext; exact hab)) a)
   uniq e h g hm := by
-    suffices g = (IsQuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv ⟨e,
-      fun a b hab ↦ DFunLike.congr_fun
-        (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩ (by ext; exact hab))
-        a⟩ by assumption
-    rw [← Equiv.symm_apply_eq (IsQuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv]
+    suffices g = ofHom _ ((IsQuotientMap.of_surjective_continuous hπ π.hom.continuous).liftEquiv
+      ⟨e.hom,
+      fun a b hab ↦ CategoryTheory.congr_fun
+        (h
+          (ofHom _ ⟨fun _ ↦ a, continuous_const⟩)
+          (ofHom _ ⟨fun _ ↦ b, continuous_const⟩)
+          (by ext; exact hab))
+        a⟩) by assumption
+    apply ConcreteCategory.ext
+    rw [hom_ofHom,
+      ← Equiv.symm_apply_eq (IsQuotientMap.of_surjective_continuous hπ π.hom.continuous).liftEquiv]
     ext
     simp only [IsQuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]
     rfl

@@ -42,6 +42,8 @@ For `a : α`, `o : Part α`, `a ∈ o` means that `o` is defined and equal to `a
 `o.Dom` and `o.get _ = a`.
 -/
 
+assert_not_exists RelIso
+
 open Function
 
 /-- `Part α` is the type of "partial values" of type `α`. It
@@ -66,8 +68,6 @@ def toOption (o : Part α) [Decidable o.Dom] : Option α :=
 
 @[simp] lemma toOption_eq_none (o : Part α) [Decidable o.Dom] : o.toOption = none ↔ ¬o.Dom := by
   by_cases h : o.Dom <;> simp [h, toOption]
-
-@[deprecated (since := "2024-06-20")] alias toOption_isNone := toOption_eq_none
 
 /-- `Part` extensionality -/
 theorem ext' : ∀ {o p : Part α}, (o.Dom ↔ p.Dom) → (∀ h₁ h₂, o.get h₁ = p.get h₂) → o = p

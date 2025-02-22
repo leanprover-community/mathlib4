@@ -73,7 +73,7 @@ lemma X_pow_sub_C_eq_prod {R : Type*} [CommRing R] [IsDomain R]
     (X ^ n - C a) = ∏ i ∈ Finset.range n, (X - C (ζ ^ i * α)) := by
   let K := FractionRing R
   let i := algebraMap R K
-  have h := NoZeroSMulDivisors.algebraMap_injective R K
+  have h := FaithfulSMul.algebraMap_injective R K
   apply_fun Polynomial.map i using map_injective i h
   simpa only [Polynomial.map_sub, Polynomial.map_pow, map_X, map_C, map_mul, map_pow,
     Polynomial.map_prod, Polynomial.map_mul]
@@ -175,10 +175,8 @@ theorem Polynomial.separable_X_pow_sub_C_of_irreducible : (X ^ n - C a).Separabl
     AdjoinRoot.algebraMap_eq,
     X_pow_sub_C_eq_prod (hζ.map_of_injective (algebraMap K _).injective) hn
     (root_X_pow_sub_C_pow n a), separable_prod_X_sub_C_iff']
-  #adaptation_note
-  /--
-  After https://github.com/leanprover/lean4/pull/5376 we need to provide this helper instance.
-  -/
+  #adaptation_note /-- https://github.com/leanprover/lean4/pull/5376
+  we need to provide this helper instance. -/
   have : MonoidHomClass (K →+* K[n√a]) K K[n√a] := inferInstance
   exact (hζ.map_of_injective (algebraMap K K[n√a]).injective).injOn_pow_mul
     (root_X_pow_sub_C_ne_zero (lt_of_le_of_ne (show 1 ≤ n from hn) (Ne.symm hn')) _)
