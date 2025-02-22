@@ -17,13 +17,13 @@ theorem exp_eq_truncated {k : ℕ} (a : A) (h : a ^ k = 0) :
     ∑ n ∈ Finset.range k, (Nat.factorial n : R)⁻¹ • (a ^ n) = exp R A a := by
   have h₁ : nilpotencyClass a ≤ k := by
     exact csInf_le' h
-  have h₃ : ∑ n ∈ Finset.range k, (Nat.factorial n : R)⁻¹ • (a ^ n) =
+  have h₂ : ∑ n ∈ Finset.range k, (Nat.factorial n : R)⁻¹ • (a ^ n) =
       ∑ n ∈ Finset.range (nilpotencyClass a), (Nat.factorial n : R)⁻¹ • (a ^ n) +
         ∑ n ∈ Finset.Ico (nilpotencyClass a) k, (Nat.factorial n : R)⁻¹ • (a ^ n) :=
     (Finset.sum_range_add_sum_Ico _ h₁).symm
-  suffices h₄ : ∑ n ∈ Finset.Ico (nilpotencyClass a) k, (Nat.factorial n : R)⁻¹ • (a ^ n) = 0 by
+  suffices h₃ : ∑ n ∈ Finset.Ico (nilpotencyClass a) k, (Nat.factorial n : R)⁻¹ • (a ^ n) = 0 by
     dsimp [exp]
-    rw [h₃, h₄, add_zero]
+    rw [h₂, h₃, add_zero]
   sorry
 
 -- useful: add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero
