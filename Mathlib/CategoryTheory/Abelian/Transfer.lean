@@ -145,6 +145,7 @@ noncomputable instance abelian [Abelian C] :
 
 end ShrinkHoms
 
+
 namespace AsSmall
 
 universe w v u
