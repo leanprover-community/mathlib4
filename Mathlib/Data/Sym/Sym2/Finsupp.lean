@@ -14,19 +14,23 @@ import Mathlib.Data.Sym.Sym2
 
 section
 
-variable {M N} {F : M → M → N} (h1 : ∀ a b : M, F a b = F b a)
+structure Symetrizable (M N) [Zero M] [Zero N] where
+  toFun : M → M → N
+  comm : ∀ a b : M, toFun a b = toFun b a
+  right_zero : ∀ (a : M), toFun a 0 = 0
 
-def lift1 : Sym2 M → N := Sym2.lift ⟨F, h1⟩
+variable {M N} [Zero M] [Zero N]
+
+def lift1 (F : Symetrizable M N) : Sym2 M → N := Sym2.lift ⟨F.toFun, F.comm⟩
 
 @[simp]
-lemma lift1_mk (xy : M × M) :
-    lift1 h1 (Sym2.mk xy) = F xy.1 xy.2 := rfl
+lemma lift1_mk (F : Symetrizable M N) (xy : M × M) :
+    lift1 F (Sym2.mk xy) = F.toFun xy.1 xy.2 := rfl
 
-variable [Zero M] [Zero N] (h3 : ∀ (a : M), F a 0 = 0)
+variable {α} [DecidableEq α]
 
-variable {α} [DecidableEq α] {f : α →₀ M}
-
-noncomputable def lift2 : Sym2 α →₀ N := Finsupp.onFinset f.support.sym2 (lift1 h1 ∘ Sym2.map f) (by
+noncomputable def lift2 (F : Symetrizable M N) (f : α →₀ M) : Sym2 α →₀ N :=
+    Finsupp.onFinset f.support.sym2 (lift1 F ∘ Sym2.map f) (by
   intro p
   obtain ⟨a, b⟩ := p
   intro h
@@ -34,10 +38,22 @@ noncomputable def lift2 : Sym2 α →₀ N := Finsupp.onFinset f.support.sym2 (l
     Sym2.mem_iff, Finsupp.mem_support_iff, forall_eq_or_imp, forall_eq]
   apply And.intro
   · by_contra hn
-    rw [h1, hn] at h
-    exact h (h3 (f b))
+    rw [F.comm, hn] at h
+    exact h (F.right_zero (f b))
   · by_contra hn
     rw [hn] at h
-    exact h (h3 (f a)))
+    exact h (F.right_zero (f a)))
+
+def OffDiag (F : Symetrizable M N) (f : α →₀ M) : α → α → N :=
+    fun a b => if a = b then (0 : N) else F.toFun (f a) (f b)
+
+lemma offDiag_symm (F : Symetrizable M N) (f : α →₀ M) {a b : α} :
+    OffDiag F f a b = OffDiag F f b a := by
+  rw [OffDiag, OffDiag, F.comm]
+  simp only [eq_comm]
+
+def SymOffDiag (F : Symetrizable M N) (f : α →₀ M) : Sym2 α → N :=
+    Sym2.lift ⟨OffDiag F f, fun a b => by
+  rw [(offDiag_symm)] ⟩
 
 end
