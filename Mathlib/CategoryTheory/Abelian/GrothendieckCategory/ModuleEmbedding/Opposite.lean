@@ -23,10 +23,6 @@ namespace CategoryTheory.Abelian.IsGrothendieckAbelian
 
 variable {C : Type u} [Category.{v} C] {D : Type v} [SmallCategory D] (F : D ⥤ Cᵒᵖ)
 
-theorem epi_comp' {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (hf : Epi f) (hg : Epi g) :
-    Epi (f ≫ g) :=
-  inferInstance
-
 namespace OppositeModuleEmbedding
 
 variable [Abelian C] [IsGrothendieckAbelian.{v} C]
