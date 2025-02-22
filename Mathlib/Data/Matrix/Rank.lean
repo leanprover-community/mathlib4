@@ -26,7 +26,7 @@ open Matrix
 
 namespace Matrix
 
-open FiniteDimensional
+open Module
 
 variable {l m n o R : Type*} [Fintype n] [Fintype o]
 
@@ -142,8 +142,8 @@ theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type
   have aux₂ := Basis.equiv_apply (Pi.basisFun R n) i v₂
   rw [toLin_eq_toLin', toLin'_apply'] at aux₁
   rw [Pi.basisFun_apply] at aux₁ aux₂
-  simp only [e₁, e₁, LinearMap.comp_apply, LinearEquiv.coe_coe, Equiv.refl_apply, aux₁, aux₂,
-    LinearMap.coe_single, toLin_self, map_sum, LinearEquiv.map_smul, Basis.equiv_apply]
+  simp only [e₁, e₂, LinearMap.comp_apply, LinearEquiv.coe_coe, Equiv.refl_apply,
+    aux₁, aux₂, LinearMap.coe_single, toLin_self, map_sum, LinearEquiv.map_smul, Basis.equiv_apply]
 
 theorem rank_le_card_height [Fintype m] [StrongRankCondition R] (A : Matrix m n R) :
     A.rank ≤ Fintype.card m := by
@@ -165,10 +165,10 @@ section Field
 
 variable [Field R]
 
-/-- The rank of a diagnonal matrix is the count of non-zero elements on its main diagonal -/
+/-- The rank of a diagonal matrix is the count of non-zero elements on its main diagonal -/
 theorem rank_diagonal [Fintype m] [DecidableEq m] [DecidableEq R] (w : m → R) :
     (diagonal w).rank = Fintype.card {i // (w i) ≠ 0} := by
-  rw [Matrix.rank, ← Matrix.toLin'_apply', FiniteDimensional.finrank, ← LinearMap.rank,
+  rw [Matrix.rank, ← Matrix.toLin'_apply', Module.finrank, ← LinearMap.rank,
     LinearMap.rank_diagonal, Cardinal.toNat_natCast]
 
 end Field
@@ -278,7 +278,7 @@ lemma rank_add_rank_le_card_of_mul_eq_zero [Field R] [Finite l] [Fintype m]
   let en : Basis n R (n → R) := Pi.basisFun R n
   rw [Matrix.rank_eq_finrank_range_toLin A el em,
       Matrix.rank_eq_finrank_range_toLin B em en,
-      ← FiniteDimensional.finrank_fintype_fun_eq_card R,
+      ← Module.finrank_fintype_fun_eq_card R,
       ← LinearMap.finrank_range_add_finrank_ker (Matrix.toLin em el A),
       add_le_add_iff_left]
   apply Submodule.finrank_mono

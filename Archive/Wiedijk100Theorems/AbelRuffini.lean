@@ -6,8 +6,9 @@ Authors: Thomas Browning
 import Mathlib.Analysis.Calculus.LocalExtr.Polynomial
 import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.FieldTheory.AbelRuffini
-import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.EisensteinCriterion
+import Mathlib.RingTheory.Int.Basic
+import Mathlib.RingTheory.RootsOfUnity.Minpoly
 
 /-!
 # Construction of an algebraic number that is not solvable by radicals.
@@ -83,7 +84,7 @@ theorem irreducible_Phi (p : ℕ) (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b)
       rw [mem_span_singleton]
       rw [degree_Phi] at hn; norm_cast at hn
       interval_cases n <;>
-      simp (config := {decide := true}) only [Φ, coeff_X_pow, coeff_C, Int.natCast_dvd_natCast.mpr,
+      simp +decide only [Φ, coeff_X_pow, coeff_C, Int.natCast_dvd_natCast.mpr,
         hpb, if_true, coeff_C_mul, if_false, coeff_X_zero, hpa, coeff_add, zero_add, mul_zero,
         coeff_sub, add_zero, zero_sub, dvd_neg, neg_zero, dvd_mul_of_dvd_left]
     · simp only [degree_Phi, ← WithBot.coe_zero, WithBot.coe_lt_coe, Nat.succ_pos']
@@ -115,7 +116,7 @@ theorem real_roots_Phi_ge_aux (hab : b < a) :
   · have hf1 : f 1 < 0 := by simp [hf, hb]
     have hfa : 0 ≤ f a := by
       simp_rw [hf, ← sq]
-      refine add_nonneg (sub_nonneg.mpr (pow_le_pow_right ha ?_)) ?_ <;> norm_num
+      refine add_nonneg (sub_nonneg.mpr (pow_right_mono₀ ha ?_)) ?_ <;> norm_num
     obtain ⟨x, ⟨-, hx1⟩, hx2⟩ := intermediate_value_Ico' hle (hc _) (Set.mem_Ioc.mpr ⟨hf1, hf0⟩)
     obtain ⟨y, ⟨hy1, -⟩, hy2⟩ := intermediate_value_Ioc ha (hc _) (Set.mem_Ioc.mpr ⟨hf1, hfa⟩)
     exact ⟨x, y, (hx1.trans hy1).ne, hx2, hy2⟩
@@ -125,8 +126,7 @@ theorem real_roots_Phi_ge_aux (hab : b < a) :
       calc
         f (-a) = (a : ℝ) ^ 2 - (a : ℝ) ^ 5 + b := by
           norm_num [hf, ← sq, sub_eq_add_neg, add_comm, Odd.neg_pow (by decide : Odd 5)]
-        _ ≤ (a : ℝ) ^ 2 - (a : ℝ) ^ 3 + (a - 1) := by
-          refine add_le_add (sub_le_sub_left (pow_le_pow_right ha ?_) _) ?_ <;> linarith
+        _ ≤ (a : ℝ) ^ 2 - (a : ℝ) ^ 3 + (a - 1) := by gcongr <;> linarith
         _ = -((a : ℝ) - 1) ^ 2 * (a + 1) := by ring
         _ ≤ 0 := by nlinarith
     have ha' := neg_nonpos.mpr (hle.trans ha)

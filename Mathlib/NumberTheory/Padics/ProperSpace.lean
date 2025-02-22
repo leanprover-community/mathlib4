@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jou Glasheen, Kevin Buzzard
 -/
 
-import Mathlib.Analysis.Normed.Module.FiniteDimension
+import Mathlib.Analysis.Normed.Field.ProperSpace
 import Mathlib.NumberTheory.Padics.RingHoms
 
 /-!
@@ -28,6 +28,9 @@ and that `ℚ_[p]` is proper.
 Gouvêa, F. Q. (2020) p-adic Numbers An Introduction. 3rd edition.
   Cham, Springer International Publishing
 -/
+
+assert_not_exists FiniteDimensional
+
 open Metric Topology
 
 variable (p : ℕ) [Fact (Nat.Prime p)]
@@ -55,7 +58,7 @@ namespace Padic
 
 /-- The field of p-adic numbers `ℚ_[p]` is a proper metric space. -/
 instance : ProperSpace ℚ_[p] := by
-  suffices LocallyCompactSpace ℚ_[p] from .of_locallyCompactSpace ℚ_[p]
+  suffices LocallyCompactSpace ℚ_[p] from .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace _
   have : closedBall 0 1 ∈ 𝓝 (0 : ℚ_[p]) := closedBall_mem_nhds _ zero_lt_one
   simp only [closedBall, dist_eq_norm_sub, sub_zero] at this
   refine IsCompact.locallyCompactSpace_of_mem_nhds_of_addGroup ?_ this

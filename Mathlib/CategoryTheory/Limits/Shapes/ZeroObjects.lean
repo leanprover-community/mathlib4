@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Johan Commelin
+Authors: Kim Morrison, Johan Commelin
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
@@ -74,6 +74,12 @@ theorem eq_of_src (hX : IsZero X) (f g : X ⟶ Y) : f = g :=
 
 theorem eq_of_tgt (hX : IsZero X) (f g : Y ⟶ X) : f = g :=
   (hX.eq_from f).trans (hX.eq_from g).symm
+
+lemma epi (h : IsZero X) {Y : C} (f : Y ⟶ X) : Epi f where
+  left_cancellation _ _ _ := h.eq_of_src _ _
+
+lemma mono (h : IsZero X) {Y : C} (f : X ⟶ Y) : Mono f where
+  right_cancellation _ _ _ := h.eq_of_tgt _ _
 
 /-- Any two zero objects are isomorphic. -/
 def iso (hX : IsZero X) (hY : IsZero Y) : X ≅ Y where

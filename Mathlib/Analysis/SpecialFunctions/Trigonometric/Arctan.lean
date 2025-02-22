@@ -145,6 +145,13 @@ theorem arctan_zero : arctan 0 = 0 := by simp [arctan_eq_arcsin]
 @[mono]
 theorem arctan_strictMono : StrictMono arctan := tanOrderIso.symm.strictMono
 
+@[gcongr]
+lemma arctan_lt_arctan {x y : ℝ} (hxy : x < y) : arctan x < arctan y := arctan_strictMono hxy
+
+@[gcongr]
+lemma arctan_le_arctan {x y : ℝ} (hxy : x ≤ y) : arctan x ≤ arctan y :=
+  arctan_strictMono.monotone hxy
+
 theorem arctan_injective : arctan.Injective := arctan_strictMono.injective
 
 @[simp]
@@ -205,10 +212,10 @@ lemma arctan_ne_mul_pi_div_two {x : ℝ} : ∀ (k : ℤ), arctan x ≠ (2 * k + 
   norm_cast at lb ub; change -1 < _ at lb; omega
 
 lemma arctan_add_arctan_lt_pi_div_two {x y : ℝ} (h : x * y < 1) : arctan x + arctan y < π / 2 := by
-  cases' le_or_lt y 0 with hy hy
+  rcases le_or_lt y 0 with hy | hy
   · rw [← add_zero (π / 2), ← arctan_zero]
     exact add_lt_add_of_lt_of_le (arctan_lt_pi_div_two _) (tanOrderIso.symm.monotone hy)
-  · rw [← lt_div_iff hy, ← inv_eq_one_div] at h
+  · rw [← lt_div_iff₀ hy, ← inv_eq_one_div] at h
     replace h : arctan x < arctan y⁻¹ := tanOrderIso.symm.strictMono h
     rwa [arctan_inv_of_pos hy, lt_tsub_iff_right] at h
 
@@ -228,7 +235,7 @@ theorem arctan_add_eq_add_pi {x y : ℝ} (h : 1 < x * y) (hx : 0 < x) :
   have hy : 0 < y := by
     have := mul_pos_iff.mp (zero_lt_one.trans h)
     simpa [hx, hx.asymm]
-  have k := arctan_add (mul_inv x y ▸ inv_lt_one h)
+  have k := arctan_add (mul_inv x y ▸ inv_lt_one_of_one_lt₀ h)
   rw [arctan_inv_of_pos hx, arctan_inv_of_pos hy, show _ + _ = π - (arctan x + arctan y) by ring,
     sub_eq_iff_eq_add, ← sub_eq_iff_eq_add', sub_eq_add_neg, ← arctan_neg, add_comm] at k
   convert k.symm using 3

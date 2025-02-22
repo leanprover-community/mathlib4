@@ -94,6 +94,10 @@ instance (X : Type v) [t : TopologicalSpace X] [DiscreteTopology X] :
     rw [DiscreteTopology.eq_bot (t := t)]
     exact bot_le
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
+The new unused variable linter flags `[tY : TopologicalSpace Y]`,
+but we want to use this as a named argument. -/
+set_option linter.unusedVariables false in
 /-- Let `f : X → Y`. Suppose that to prove that `f` is continuous, it suffices to show that
 for every compact Hausdorff space `K` and every continuous map `g : K → X`, `f ∘ g` is continuous.
 Then `X` is compactly generated. -/
@@ -175,11 +179,11 @@ instance [UCompactlyGeneratedSpace.{u} X] [UCompactlyGeneratedSpace.{v} Y] :
   all_goals
     refine UCompactlyGeneratedSpace.isClosed fun S ⟨f, hf⟩ ↦ ?_
   · let g : ULift.{v} S → X ⊕ Y := Sum.inl ∘ f ∘ ULift.down
-    have hg : Continuous g := continuous_inl.comp <| hf.comp continuous_uLift_down
-    exact (h (CompHaus.of (ULift.{v} S)) ⟨g, hg⟩).preimage continuous_uLift_up
+    have hg : Continuous g := continuous_inl.comp <| hf.comp continuous_uliftDown
+    exact (h (CompHaus.of (ULift.{v} S)) ⟨g, hg⟩).preimage continuous_uliftUp
   · let g : ULift.{u} S → X ⊕ Y := Sum.inr ∘ f ∘ ULift.down
-    have hg : Continuous g := continuous_inr.comp <| hf.comp continuous_uLift_down
-    exact (h (CompHaus.of (ULift.{u} S)) ⟨g, hg⟩).preimage continuous_uLift_up
+    have hg : Continuous g := continuous_inr.comp <| hf.comp continuous_uliftDown
+    exact (h (CompHaus.of (ULift.{u} S)) ⟨g, hg⟩).preimage continuous_uliftUp
 
 /-- The sigma type associated to a family of compactly generated spaces is compactly generated. -/
 instance {ι : Type v} {X : ι → Type w} [∀ i, TopologicalSpace (X i)]
@@ -201,11 +205,11 @@ instance (priority := 100) [SequentialSpace X] : UCompactlyGeneratedSpace.{u} X 
   have : Filter.Tendsto (@OnePoint.some ℕ) Filter.atTop (𝓝 ∞) := by
     rw [← Nat.cofinite_eq_atTop, ← cocompact_eq_cofinite, ← coclosedCompact_eq_cocompact]
     exact tendsto_coe_infty
-  apply IsClosed.mem_of_tendsto _ ((continuous_uLift_up.tendsto ∞).comp this)
+  apply IsClosed.mem_of_tendsto _ ((continuous_uliftUp.tendsto ∞).comp this)
   · simp only [Function.comp_apply, mem_preimage, eventually_atTop, ge_iff_le]
     exact ⟨0, fun b _ ↦ hu b⟩
   · exact h (CompHaus.of (ULift.{u} (OnePoint ℕ)))
-      ⟨g, (continuousMapMkNat u p hup).continuous.comp continuous_uLift_down⟩
+      ⟨g, (continuousMapMkNat u p hup).continuous.comp continuous_uliftDown⟩
 
 end UCompactlyGeneratedSpace
 
@@ -304,13 +308,20 @@ instance {ι : Type u} {X : ι → Type v}
   refine compactlyGeneratedSpace_of_isClosed fun s h ↦ isClosed_sigma_iff.2 fun i ↦
     CompactlyGeneratedSpace.isClosed' fun K _ _ _ f hf ↦ ?_
   let g : ULift.{u} K → (Σ i, X i) := Sigma.mk i ∘ f ∘ ULift.down
-  have hg : Continuous g := continuous_sigmaMk.comp <| hf.comp continuous_uLift_down
-  exact (h _ g hg).preimage continuous_uLift_up
+  have hg : Continuous g := continuous_sigmaMk.comp <| hf.comp continuous_uliftDown
+  exact (h _ g hg).preimage continuous_uliftUp
+
+variable [T2Space X]
+
+theorem CompactlyGeneratedSpace.isClosed_iff_of_t2 [CompactlyGeneratedSpace X] (s : Set X) :
+    IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) where
+  mp hs _ hK := hs.inter hK.isClosed
+  mpr := CompactlyGeneratedSpace.isClosed
 
 /-- Let `s ⊆ X`. Suppose that `X` is Hausdorff, and that to prove that `s` is closed,
 it suffices to show that for every compact set `K ⊆ X`, `s ∩ K` is closed.
 Then `X` is compactly generated. -/
-theorem compactlyGeneratedSpace_of_isClosed_of_t2 [T2Space X]
+theorem compactlyGeneratedSpace_of_isClosed_of_t2
     (h : ∀ s, (∀ (K : Set X), IsCompact K → IsClosed (s ∩ K)) → IsClosed s) :
     CompactlyGeneratedSpace X := by
   refine compactlyGeneratedSpace_of_isClosed fun s hs ↦ h s fun K hK ↦ ?_
@@ -323,15 +334,15 @@ open scoped Set.Notation in
 /-- Let `s ⊆ X`. Suppose that `X` is Hausdorff, and that to prove that `s` is open,
 it suffices to show that for every compact set `K ⊆ X`, `s ∩ K` is open in `K`.
 Then `X` is compactly generated. -/
-theorem compactlyGeneratedSpace_of_isOpen_of_t2 [T2Space X]
+theorem compactlyGeneratedSpace_of_isOpen_of_t2
     (h : ∀ s, (∀ (K : Set X), IsCompact K → IsOpen (K ↓∩ s)) → IsOpen s) :
     CompactlyGeneratedSpace X := by
   refine compactlyGeneratedSpace_of_isOpen fun s hs ↦ h s fun K hK ↦ ?_
   have : CompactSpace ↑K := isCompact_iff_compactSpace.1 hK
   exact hs _ Subtype.val continuous_subtype_val
 
-/-- A Hausdorff and weakly locally compact space and compactly generated. -/
-instance (priority := 100) [WeaklyLocallyCompactSpace X] [T2Space X] :
+/-- A Hausdorff and weakly locally compact space is compactly generated. -/
+instance (priority := 100) [WeaklyLocallyCompactSpace X] :
     CompactlyGeneratedSpace X := by
   refine compactlyGeneratedSpace_of_isClosed_of_t2 fun s h ↦ ?_
   rw [isClosed_iff_forall_filter]

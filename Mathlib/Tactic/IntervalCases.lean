@@ -1,10 +1,11 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Mario Carneiro
+Authors: Kim Morrison, Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.FinCases
+import Mathlib.Control.Basic
 
 /-!
 # Case bash on variables in finite intervals
@@ -269,7 +270,7 @@ Returns an array of `IntervalCasesSubgoal`, one per subgoal. A subgoal has the f
 
 Note that this tactic does not perform any substitution or introduction steps -
 all subgoals are in the same context as `goal` itself.
- -/
+-/
 def intervalCases (g : MVarId) (e e' : Expr) (lbs ubs : Array Expr) (mustUseBounds := false) :
     MetaM (Array IntervalCasesSubgoal) := g.withContext do
   let α ← whnfR (← inferType e)

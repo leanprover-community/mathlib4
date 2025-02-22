@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Data.Finite.Card
+import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Subgroups
@@ -15,6 +16,8 @@ This file provides some result on multiplicative and additive subgroups in the f
 ## Tags
 subgroup, subgroups
 -/
+
+assert_not_exists Field
 
 variable {G : Type*} [Group G]
 variable {A : Type*} [AddGroup A]
@@ -70,18 +73,15 @@ theorem noncommProd_mem (K : Subgroup G) {ι : Type*} {t : Finset ι} {f : ι �
     (∀ c ∈ t, f c ∈ K) → t.noncommProd f comm ∈ K :=
   K.toSubmonoid.noncommProd_mem t f comm
 
--- Porting note: increased priority to appease `simpNF`, otherwise left-hand side reduces
 @[to_additive (attr := simp 1100, norm_cast)]
 theorem val_list_prod (l : List H) : (l.prod : G) = (l.map Subtype.val).prod :=
   SubmonoidClass.coe_list_prod l
 
--- Porting note: increased priority to appease `simpNF`, otherwise left-hand side reduces
 @[to_additive (attr := simp 1100, norm_cast)]
 theorem val_multiset_prod {G} [CommGroup G] (H : Subgroup G) (m : Multiset H) :
     (m.prod : G) = (m.map Subtype.val).prod :=
   SubmonoidClass.coe_multiset_prod m
 
--- Porting note: increased priority to appease `simpNF`, otherwise `simp` can prove it.
 @[to_additive (attr := simp 1100, norm_cast)]
 theorem val_finset_prod {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s : Finset ι) :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : G) :=
@@ -93,9 +93,8 @@ instance fintypeBot : Fintype (⊥ : Subgroup G) :=
     rintro ⟨x, ⟨hx⟩⟩
     exact Finset.mem_singleton_self _⟩
 
-@[to_additive] -- Porting note: removed `simp` because `simpNF` says it can prove it.
-theorem card_bot : Nat.card (⊥ : Subgroup G) = 1 :=
-  Nat.card_unique
+@[to_additive]
+theorem card_bot : Nat.card (⊥ : Subgroup G) = 1 := by simp
 
 @[to_additive]
 theorem card_top : Nat.card (⊤ : Subgroup G) = Nat.card G :=
@@ -149,6 +148,17 @@ theorem card_le_card_group [Finite G] : Nat.card H ≤ Nat.card G :=
 theorem card_le_of_le {H K : Subgroup G} [Finite K] (h : H ≤ K) : Nat.card H ≤ Nat.card K :=
   Nat.card_le_card_of_injective _ (Subgroup.inclusion_injective h)
 
+@[to_additive]
+theorem card_map_of_injective {H : Type*} [Group H] {K : Subgroup G} {f : G →* H}
+    (hf : Function.Injective f) :
+    Nat.card (map f K) = Nat.card K := by
+  apply Nat.card_image_of_injective hf
+
+@[to_additive]
+theorem card_subtype (K : Subgroup G) (L : Subgroup K) :
+    Nat.card (map K.subtype L) = Nat.card L :=
+  card_map_of_injective K.subtype_injective
+
 end Subgroup
 
 namespace Subgroup
@@ -165,9 +175,11 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgro
     x ∈ H := by
   induction I using Finset.induction_on generalizing x with
   | empty =>
-    convert one_mem H
-    ext i
-    exact h1 i (Finset.not_mem_empty i)
+    have : x = 1 := by
+      ext i
+      exact h1 i (Finset.not_mem_empty i)
+    rw [this]
+    exact one_mem H
   | insert hnmem ih =>
     rename_i i I
     have : x = Function.update x i 1 * Pi.mulSingle i (x i) := by
@@ -189,7 +201,7 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgro
         have : j ≠ i := by
           rintro rfl
           contradiction
-        simp only [ne_eq, this, not_false_eq_true, Function.update_noteq]
+        simp only [ne_eq, this, not_false_eq_true, Function.update_of_ne]
         exact h2 _ (Finset.mem_insert_of_mem hj)
     · apply h2
       simp
@@ -270,5 +282,15 @@ Note: this instance can form a diamond with `Subtype.fintype` or `Subgroup.finty
  presence of `Fintype N`."]
 instance fintypeRange [Fintype G] [DecidableEq N] (f : G →* N) : Fintype (range f) :=
   Set.fintypeRange f
+
+lemma _root_.Fintype.card_coeSort_mrange {M N : Type*} [Monoid M] [Monoid N] [Fintype M]
+    [DecidableEq N] {f : M →* N} (hf : Function.Injective f) :
+    Fintype.card (mrange f) = Fintype.card M :=
+  Set.card_range_of_injective hf
+
+lemma _root_.Fintype.card_coeSort_range [Fintype G] [DecidableEq N] {f : G →* N}
+    (hf : Function.Injective f) :
+    Fintype.card (range f) = Fintype.card G :=
+  Set.card_range_of_injective hf
 
 end MonoidHom

@@ -57,7 +57,7 @@ theorem subgroups_basis :
       · exact lt_of_lt_of_le ha ha1
     mul := by
       rintro γ
-      cases' exists_square_le γ with γ₀ h
+      obtain ⟨γ₀, h⟩ := exists_square_le γ
       use γ₀
       rintro - ⟨r, r_in, s, s_in, rfl⟩
       simp only [SetLike.mem_coe, mem_ltAddSubgroup_iff, _root_.map_mul]
@@ -104,18 +104,15 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
   is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔
     ∃ γ ∈ v.rangeGroup, { x : R | v x < γ } ⊆ s
 
--- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
---attribute [nolint dangerous_instance] Valued.toUniformSpace
-
 namespace Valued
 
 /-- Alternative `Valued` constructor for use when there is no preferred `UniformSpace` structure. -/
 def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
   { v
-    toUniformSpace := @TopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _
+    toUniformSpace := @IsTopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _
     toUniformAddGroup := @comm_topologicalAddGroup_is_uniform _ _ v.subgroups_basis.topology _
     is_topological_valuation := by
-      letI := @TopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _
+      letI := @IsTopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _
       intro s
       rw [Filter.hasBasis_iff.mp v.subgroups_basis.hasBasis_nhds_zero s]
       simp only [true_and, Subtype.exists, exists_prop]
@@ -136,7 +133,7 @@ theorem hasBasis_uniformity : (uniformity R).HasBasis (fun _ => True)
   exact (hasBasis_nhds_zero R Γ₀).comap _
 
 theorem toUniformSpace_eq :
-    toUniformSpace = @TopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _ :=
+    toUniformSpace = @IsTopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _ :=
   UniformSpace.ext
     ((hasBasis_uniformity R Γ₀).eq_of_same_basis <| v.subgroups_basis.hasBasis_nhds_zero.comap _)
 
@@ -157,7 +154,7 @@ theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 
   intro y
   exact Valuation.map_eq_of_sub_lt _
 
-instance (priority := 100) : TopologicalRing R :=
+instance (priority := 100) : IsTopologicalRing R :=
   (toUniformSpace_eq R Γ₀).symm ▸ v.subgroups_basis.toRingFilterBasis.isTopologicalRing
 
 theorem cauchy_iff {F : Filter R} : Cauchy F ↔

@@ -6,6 +6,7 @@ Authors: Jeremy Tan
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Tactic.Peel
+import Mathlib.Tactic.Positivity
 
 /-!
 # Abel's limit theorem
@@ -55,9 +56,9 @@ theorem stolzSet_empty {M : ℝ} (hM : M ≤ 1) : stolzSet M = ∅ := by
     _ ≤ _ := norm_sub_norm_le _ _
 
 theorem nhdsWithin_lt_le_nhdsWithin_stolzSet {M : ℝ} (hM : 1 < M) :
-    (𝓝[<] 1).map ofReal' ≤ 𝓝[stolzSet M] 1 := by
+    (𝓝[<] 1).map ofReal ≤ 𝓝[stolzSet M] 1 := by
   rw [← tendsto_id']
-  refine tendsto_map' <| tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within ofReal'
+  refine tendsto_map' <| tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within ofReal
     (tendsto_nhdsWithin_of_tendsto_nhds <| ofRealCLM.continuous.tendsto' 1 1 rfl) ?_
   simp only [eventually_iff, norm_eq_abs, abs_ofReal, abs_lt, mem_nhdsWithin]
   refine ⟨Set.Ioo 0 2, isOpen_Ioo, by norm_num, fun x hx ↦ ?_⟩
@@ -74,7 +75,7 @@ private lemma stolzCone_subset_stolzSet_aux' (s : ℝ) :
     fun x y hx₀ hx₁ hy ↦ ?_⟩
   have H : sqrt ((1 - x) ^ 2 + y ^ 2) ≤ 1 - x / 2 := by
     calc sqrt ((1 - x) ^ 2 + y ^ 2)
-      _ ≤ sqrt ((1 - x) ^ 2 + (s * x) ^ 2) := sqrt_le_sqrt <| by rw [← _root_.sq_abs y]; gcongr
+      _ ≤ sqrt ((1 - x) ^ 2 + (s * x) ^ 2) := sqrt_le_sqrt <| by rw [← sq_abs y]; gcongr
       _ = sqrt (1 - 2 * x + (1 + s ^ 2) * x * x) := by congr 1; ring
       _ ≤ sqrt (1 - 2 * x + (1 + s ^ 2) * (1 / (1 + s ^ 2)) * x) := sqrt_le_sqrt <| by gcongr
       _ = sqrt (1 - x) := by congr 1; field_simp; ring
@@ -84,7 +85,7 @@ private lemma stolzCone_subset_stolzSet_aux' (s : ℝ) :
         rw [div_le_one (by positivity)]
         exact le_add_of_nonneg_right <| sq_nonneg s
   calc sqrt (x ^ 2 + y ^ 2)
-    _ ≤ sqrt (x ^ 2 + (s * x) ^ 2) := sqrt_le_sqrt <| by rw [← _root_.sq_abs y]; gcongr
+    _ ≤ sqrt (x ^ 2 + (s * x) ^ 2) := sqrt_le_sqrt <| by rw [← sq_abs y]; gcongr
     _ = sqrt ((1 + s ^ 2) * x ^ 2) := by congr; ring
     _ = sqrt (1 + s ^ 2) * x := by rw [sqrt_mul' _ (sq_nonneg x), sqrt_sq hx₀.le]
     _ = 2 * sqrt (1 + s ^ 2) * (x / 2) := by ring
@@ -157,7 +158,7 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet
     (h : Tendsto (fun n ↦ ∑ i ∈ range n, f i) atTop (𝓝 l)) {M : ℝ} :
     Tendsto (fun z ↦ ∑' n, f n * z ^ n) (𝓝[stolzSet M] 1) (𝓝 l) := by
   -- If `M ≤ 1` the Stolz set is empty and the statement is trivial
-  cases' le_or_lt M 1 with hM hM
+  rcases le_or_lt M 1 with hM | hM
   · simp_rw [stolzSet_empty hM, nhdsWithin_empty, tendsto_bot]
   -- Abbreviations
   let s := fun n ↦ ∑ i ∈ range n, f i
@@ -206,9 +207,9 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet
     calc
       _ ≤ ‖1 - z‖ * ∑ i ∈ range B₁, ‖l - s (i + 1)‖ := by
         gcongr; nth_rw 3 [← mul_one ‖_‖]
-        gcongr; exact pow_le_one _ (norm_nonneg _) zn.le
+        gcongr; exact pow_le_one₀ (norm_nonneg _) zn.le
       _ ≤ ‖1 - z‖ * (F + 1) := by gcongr; linarith only
-      _ < _ := by rwa [norm_sub_rev, lt_div_iff (by positivity)] at zd
+      _ < _ := by rwa [norm_sub_rev, lt_div_iff₀ (by positivity)] at zd
   have S₂ : ‖1 - z‖ * ∑ i ∈ Ico B₁ (max B₁ B₂), ‖l - s (i + 1)‖ * ‖z‖ ^ i < ε / 4 :=
     calc
       _ ≤ ‖1 - z‖ * ∑ i ∈ Ico B₁ (max B₁ B₂), ε / 4 / M * ‖z‖ ^ i := by
@@ -241,7 +242,7 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzCone
 
 theorem tendsto_tsum_powerSeries_nhdsWithin_lt
     (h : Tendsto (fun n ↦ ∑ i ∈ range n, f i) atTop (𝓝 l)) :
-    Tendsto (fun z ↦ ∑' n, f n * z ^ n) ((𝓝[<] 1).map ofReal') (𝓝 l) :=
+    Tendsto (fun z ↦ ∑' n, f n * z ^ n) ((𝓝[<] 1).map ofReal) (𝓝 l) :=
   (tendsto_tsum_powerSeries_nhdsWithin_stolzSet (M := 2) h).mono_left
     (nhdsWithin_lt_le_nhdsWithin_stolzSet one_lt_two)
 
@@ -258,7 +259,7 @@ is continuous at 1 when approaching 1 from the left. -/
 theorem tendsto_tsum_powerSeries_nhdsWithin_lt
     (h : Tendsto (fun n ↦ ∑ i ∈ range n, f i) atTop (𝓝 l)) :
     Tendsto (fun x ↦ ∑' n, f n * x ^ n) (𝓝[<] 1) (𝓝 l) := by
-  have m : (𝓝 l).map ofReal' ≤ 𝓝 ↑l := ofRealCLM.continuous.tendsto l
+  have m : (𝓝 l).map ofReal ≤ 𝓝 ↑l := ofRealCLM.continuous.tendsto l
   replace h := (tendsto_map.comp h).mono_right m
   rw [Function.comp_def] at h
   push_cast at h

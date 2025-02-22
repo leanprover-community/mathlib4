@@ -48,7 +48,8 @@ def segment (x y : E) : Set E :=
   { z : E | ∃ a b : 𝕜, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ a • x + b • y = z }
 
 /-- Open segment in a vector space. Note that `openSegment 𝕜 x x = {x}` instead of being `∅` when
-the base semiring has some element between `0` and `1`. -/
+the base semiring has some element between `0` and `1`.
+Denoted as `[x -[𝕜] y]` within the `Convex` namespace. -/
 def openSegment (x y : E) : Set E :=
   { z : E | ∃ a b : 𝕜, 0 < a ∧ 0 < b ∧ a + b = 1 ∧ a • x + b • y = z }
 
@@ -171,14 +172,14 @@ end DenselyOrdered
 
 theorem segment_eq_image (x y : E) :
     [x -[𝕜] y] = (fun θ : 𝕜 => (1 - θ) • x + θ • y) '' Icc (0 : 𝕜) 1 :=
-  Set.ext fun z =>
+  Set.ext fun _ =>
     ⟨fun ⟨a, b, ha, hb, hab, hz⟩ =>
       ⟨b, ⟨hb, hab ▸ le_add_of_nonneg_left ha⟩, hab ▸ hz ▸ by simp only [add_sub_cancel_right]⟩,
       fun ⟨θ, ⟨hθ₀, hθ₁⟩, hz⟩ => ⟨1 - θ, θ, sub_nonneg.2 hθ₁, hθ₀, sub_add_cancel _ _, hz⟩⟩
 
 theorem openSegment_eq_image (x y : E) :
     openSegment 𝕜 x y = (fun θ : 𝕜 => (1 - θ) • x + θ • y) '' Ioo (0 : 𝕜) 1 :=
-  Set.ext fun z =>
+  Set.ext fun _ =>
     ⟨fun ⟨a, b, ha, hb, hab, hz⟩ =>
       ⟨b, ⟨hb, hab ▸ lt_add_of_pos_left _ ha⟩, hab ▸ hz ▸ by simp only [add_sub_cancel_right]⟩,
       fun ⟨θ, ⟨hθ₀, hθ₁⟩, hz⟩ => ⟨1 - θ, θ, sub_pos.2 hθ₁, hθ₀, sub_add_cancel _ _, hz⟩⟩
@@ -493,7 +494,7 @@ theorem segment_eq_Icc' (x y : 𝕜) : [x -[𝕜] y] = Icc (min x y) (max x y) :
   · rw [segment_symm, segment_eq_Icc h, max_eq_left h, min_eq_right h]
 
 theorem openSegment_eq_Ioo' (hxy : x ≠ y) : openSegment 𝕜 x y = Ioo (min x y) (max x y) := by
-  cases' hxy.lt_or_lt with h h
+  rcases hxy.lt_or_lt with h | h
   · rw [openSegment_eq_Ioo h, max_eq_right h.le, min_eq_left h.le]
   · rw [openSegment_symm, openSegment_eq_Ioo h, max_eq_left h.le, min_eq_right h.le]
 

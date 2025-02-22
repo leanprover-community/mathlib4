@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.Metrizable.Basic
+import Mathlib.Topology.ContinuousMap.Bounded.Basic
 /-!
 # Urysohn's Metrization Theorem
 
@@ -21,8 +21,8 @@ space structure.
 We use `ℕ →ᵇ ℝ`, not `lpSpace` for `l^∞` to avoid heavy imports.
 -/
 
-open Set Filter Metric
-open scoped Topology BoundedContinuousFunction
+open Filter Metric Set Topology
+open scoped BoundedContinuousFunction
 
 namespace TopologicalSpace
 
@@ -32,7 +32,7 @@ variable (X : Type*) [TopologicalSpace X] [RegularSpace X] [SecondCountableTopol
 
 /-- For a regular topological space with second countable topology,
 there exists an inducing map to `l^∞ = ℕ →ᵇ ℝ`. -/
-theorem exists_inducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, Inducing f := by
+theorem exists_isInducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, IsInducing f := by
   -- Choose a countable basis, and consider the set `s` of pairs of set `(U, V)` such that `U ∈ B`,
   -- `V ∈ B`, and `closure U ⊆ V`.
   rcases exists_countable_basis X with ⟨B, hBc, -, hB⟩
@@ -43,10 +43,10 @@ theorem exists_inducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, Inducing f := by
   -- with the discrete topology and deal with `s →ᵇ ℝ` instead.
   letI : TopologicalSpace s := ⊥
   haveI : DiscreteTopology s := ⟨rfl⟩
-  rsuffices ⟨f, hf⟩ : ∃ f : X → s →ᵇ ℝ, Inducing f
+  rsuffices ⟨f, hf⟩ : ∃ f : X → s →ᵇ ℝ, IsInducing f
   · exact ⟨fun x => (f x).extend (Encodable.encode' s) 0,
       (BoundedContinuousFunction.isometry_extend (Encodable.encode' s)
-        (0 : ℕ →ᵇ ℝ)).embedding.toInducing.comp hf⟩
+        (0 : ℕ →ᵇ ℝ)).isEmbedding.isInducing.comp hf⟩
   have hd : ∀ UV : s, Disjoint (closure UV.1.1) UV.1.2ᶜ :=
     fun UV => disjoint_compl_right.mono_right (compl_subset_compl.2 UV.2.2)
   -- Choose a sequence of `εₙ > 0`, `n : s`, that is bounded above by `1` and tends to zero
@@ -73,7 +73,7 @@ theorem exists_inducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, Inducing f := by
     ⟨⟨fun UV => f UV x, continuous_of_discreteTopology⟩, 1,
       fun UV₁ UV₂ => Real.dist_le_of_mem_Icc_01 (hf01 _ _) (hf01 _ _)⟩
   have hF : ∀ x UV, F x UV = f UV x := fun _ _ => rfl
-  refine ⟨F, inducing_iff_nhds.2 fun x => le_antisymm ?_ ?_⟩
+  refine ⟨F, isInducing_iff_nhds.2 fun x => le_antisymm ?_ ?_⟩
   · /- First we prove that `F` is continuous. Given `δ > 0`, consider the set `T` of `(U, V) ∈ s`
     such that `ε (U, V) ≥ δ`. Since `ε` tends to zero, `T` is finite. Since each `f` is continuous,
     we can choose a neighborhood such that `dist (F y (U, V)) (F x (U, V)) ≤ δ` for any
@@ -103,12 +103,14 @@ theorem exists_inducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, Inducing f := by
     rw [hF, hF, hfε UV hy, hf0 UV hxU, Pi.zero_apply, dist_zero_right]
     exact le_abs_self _
 
+@[deprecated (since := "2024-10-28")] alias exists_inducing_l_infty := exists_isInducing_l_infty
+
 /-- *Urysohn's metrization theorem* (Tychonoff's version):
 a regular topological space with second countable topology `X` is metrizable,
 i.e., there exists a pseudometric space structure that generates the same topology. -/
 instance (priority := 90) PseudoMetrizableSpace.of_regularSpace_secondCountableTopology :
     PseudoMetrizableSpace X :=
-  let ⟨_, hf⟩ := exists_inducing_l_infty X
+  let ⟨_, hf⟩ := exists_isInducing_l_infty X
   hf.pseudoMetrizableSpace
 
 end RegularSpace
@@ -116,14 +118,18 @@ end RegularSpace
 variable (X : Type*) [TopologicalSpace X] [T3Space X] [SecondCountableTopology X]
 
 /-- A T₃ topological space with second countable topology can be embedded into `l^∞ = ℕ →ᵇ ℝ`. -/
-theorem exists_embedding_l_infty : ∃ f : X → ℕ →ᵇ ℝ, Embedding f :=
-  let ⟨f, hf⟩ := exists_inducing_l_infty X; ⟨f, hf.embedding⟩
+theorem exists_embedding_l_infty : ∃ f : X → ℕ →ᵇ ℝ, IsEmbedding f :=
+  let ⟨f, hf⟩ := exists_isInducing_l_infty X; ⟨f, hf.isEmbedding⟩
 
 /-- *Urysohn's metrization theorem* (Tychonoff's version): a T₃ topological space with second
 countable topology `X` is metrizable, i.e., there exists a metric space structure that generates the
 same topology. -/
-instance (priority := 90) metrizableSpace_of_t3_second_countable : MetrizableSpace X :=
+instance (priority := 90) metrizableSpace_of_t3_secondCountable : MetrizableSpace X :=
   let ⟨_, hf⟩ := exists_embedding_l_infty X
   hf.metrizableSpace
+
+-- The `alias` command creates a definition, triggering the defLemma linter.
+@[nolint defLemma, deprecated (since := "2024-11-13")] alias
+metrizableSpace_of_t3_second_countable := metrizableSpace_of_t3_secondCountable
 
 end TopologicalSpace

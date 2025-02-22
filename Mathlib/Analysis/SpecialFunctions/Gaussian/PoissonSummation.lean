@@ -29,8 +29,6 @@ noncomputable section
 
 section GaussianPoisson
 
-variable {E : Type*} [NormedAddCommGroup E]
-
 /-! First we show that Gaussian-type functions have rapid decay along `cocompact ℝ`. -/
 
 lemma rexp_neg_quadratic_isLittleO_rpow_atTop {a : ℝ} (ha : a < 0) (b s : ℝ) :
@@ -42,8 +40,8 @@ lemma rexp_neg_quadratic_isLittleO_rpow_atTop {a : ℝ} (ha : a < 0) (b s : ℝ)
   have : (fun x ↦ -x - (a * x ^ 2 + b * x)) = fun x ↦ x * (-a * x - (b + 1)) := by
     ext1 x; ring_nf
   rw [this]
-  exact tendsto_id.atTop_mul_atTop <|
-    Filter.tendsto_atTop_add_const_right _ _ <| tendsto_id.const_mul_atTop (neg_pos.mpr ha)
+  exact tendsto_id.atTop_mul_atTop₀ <| tendsto_atTop_add_const_right _ _ <|
+    tendsto_id.const_mul_atTop (neg_pos.mpr ha)
 
 lemma cexp_neg_quadratic_isLittleO_rpow_atTop {a : ℂ} (ha : a.re < 0) (b : ℂ) (s : ℝ) :
     (fun x : ℝ ↦ cexp (a * x ^ 2 + b * x)) =o[atTop] (· ^ s) := by

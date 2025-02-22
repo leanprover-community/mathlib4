@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
@@ -51,12 +51,12 @@ lemma dNext_eq_zero (f : ∀ i j, C.X i ⟶ D.X j) (i : ι) (hi : ¬ c.Rel i (c.
   dsimp [dNext]
   rw [shape _ _ _ hi, zero_comp]
 
-@[simp 1100]
+-- This is not a simp lemma; the LHS already simplifies.
 theorem dNext_comp_left (f : C ⟶ D) (g : ∀ i j, D.X i ⟶ E.X j) (i : ι) :
     (dNext i fun i j => f.f i ≫ g i j) = f.f i ≫ dNext i g :=
   (f.comm_assoc _ _ _).symm
 
-@[simp 1100]
+-- This is not a simp lemma; the LHS already simplifies.
 theorem dNext_comp_right (f : ∀ i j, C.X i ⟶ D.X j) (g : D ⟶ E) (i : ι) :
     (dNext i fun i j => f i j ≫ g.f j) = dNext i f ≫ g.f i :=
   (assoc _ _ _).symm
@@ -85,12 +85,12 @@ theorem prevD_eq (f : ∀ i j, C.X i ⟶ D.X j) {j j' : ι} (w : c.Rel j' j) :
   obtain rfl := c.prev_eq' w
   rfl
 
-@[simp 1100]
+-- This is not a simp lemma; the LHS already simplifies.
 theorem prevD_comp_left (f : C ⟶ D) (g : ∀ i j, D.X i ⟶ E.X j) (j : ι) :
     (prevD j fun i j => f.f i ≫ g i j) = f.f j ≫ prevD j g :=
   assoc _ _ _
 
-@[simp 1100]
+-- This is not a simp lemma; the LHS already simplifies.
 theorem prevD_comp_right (f : ∀ i j, C.X i ⟶ D.X j) (g : D ⟶ E) (j : ι) :
     (prevD j fun i j => f i j ≫ g.f j) = prevD j f ≫ g.f j := by
   dsimp [prevD]
@@ -112,7 +112,6 @@ theorem prevD_nat (C D : CochainComplex V ℕ) (i : ℕ) (f : ∀ i j, C.X i ⟶
       not_false_iff, comp_zero, reduceCtorEq]
   · congr <;> simp
 
--- Porting note(#5171): removed @[has_nonempty_instance]
 /-- A homotopy `h` between chain maps `f` and `g` consists of components `h i j : C.X i ⟶ D.X j`
 which are zero unless `c.Rel j i`, satisfying the homotopy condition.
 -/
@@ -131,11 +130,11 @@ namespace Homotopy
 def equivSubZero : Homotopy f g ≃ Homotopy (f - g) 0 where
   toFun h :=
     { hom := fun i j => h.hom i j
-      zero := fun i j w => h.zero _ _ w
+      zero := fun _ _ w => h.zero _ _ w
       comm := fun i => by simp [h.comm] }
   invFun h :=
     { hom := fun i j => h.hom i j
-      zero := fun i j w => h.zero _ _ w
+      zero := fun _ _ w => h.zero _ _ w
       comm := fun i => by simpa [sub_eq_iff_eq_add] using h.comm i }
   left_inv := by aesop_cat
   right_inv := by aesop_cat
@@ -427,21 +426,21 @@ section MkInductive
 
 variable {P Q : ChainComplex V ℕ}
 
-@[simp 1100]
+-- This is not a simp lemma; the LHS already simplifies.
 theorem prevD_chainComplex (f : ∀ i j, P.X i ⟶ Q.X j) (j : ℕ) :
     prevD j f = f j (j + 1) ≫ Q.d _ _ := by
   dsimp [prevD]
   have : (ComplexShape.down ℕ).prev j = j + 1 := ChainComplex.prev ℕ j
   congr 2
 
-@[simp 1100]
+-- This is not a simp lemma; the LHS already simplifies.
 theorem dNext_succ_chainComplex (f : ∀ i j, P.X i ⟶ Q.X j) (i : ℕ) :
     dNext (i + 1) f = P.d _ _ ≫ f i (i + 1) := by
   dsimp [dNext]
   have : (ComplexShape.down ℕ).next (i + 1) = i := ChainComplex.next_nat_succ _
   congr 2
 
-@[simp 1100]
+-- This is not a simp lemma; the LHS already simplifies.
 theorem dNext_zero_chainComplex (f : ∀ i j, P.X i ⟶ Q.X j) : dNext 0 f = 0 := by
   dsimp [dNext]
   rw [P.shape, zero_comp]
@@ -491,7 +490,7 @@ def mkInductiveAux₂ :
       one comm_one succ n
     ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv, by simpa using I.2.2⟩
 
--- Porting note(#11647): during the port we marked these lemmas
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11647): during the port we marked these lemmas
 -- with `@[eqns]` to emulate the old Lean 3 behaviour.
 
 @[simp] theorem mkInductiveAux₂_zero :
@@ -557,21 +556,21 @@ section MkCoinductive
 
 variable {P Q : CochainComplex V ℕ}
 
-@[simp 1100]
+-- This is not a simp lemma; the LHS already simplifies.
 theorem dNext_cochainComplex (f : ∀ i j, P.X i ⟶ Q.X j) (j : ℕ) :
     dNext j f = P.d _ _ ≫ f (j + 1) j := by
   dsimp [dNext]
   have : (ComplexShape.up ℕ).next j = j + 1 := CochainComplex.next ℕ j
   congr 2
 
-@[simp 1100]
+-- This is not a simp lemma; the LHS already simplifies.
 theorem prevD_succ_cochainComplex (f : ∀ i j, P.X i ⟶ Q.X j) (i : ℕ) :
     prevD (i + 1) f = f (i + 1) _ ≫ Q.d i (i + 1) := by
   dsimp [prevD]
   have : (ComplexShape.up ℕ).prev (i + 1) = i := CochainComplex.prev_nat_succ i
   congr 2
 
-@[simp 1100]
+-- This is not a simp lemma; the LHS already simplifies.
 theorem prevD_zero_cochainComplex (f : ∀ i j, P.X i ⟶ Q.X j) : prevD 0 f = 0 := by
   dsimp [prevD]
   rw [Q.shape, comp_zero]
@@ -620,7 +619,7 @@ def mkCoinductiveAux₂ :
     let I := mkCoinductiveAux₁ e zero one comm_one succ n
     ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1, by simpa using I.2.2⟩
 
--- Porting note (#11647): during the port we marked these lemmas with `@[eqns]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11647): during the port we marked these lemmas with `@[eqns]`
 -- to emulate the old Lean 3 behaviour.
 
 @[simp] theorem mkCoinductiveAux₂_zero :

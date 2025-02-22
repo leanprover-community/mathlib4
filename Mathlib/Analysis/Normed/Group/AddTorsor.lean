@@ -3,11 +3,12 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 import Mathlib.Topology.MetricSpace.IsometricSMul
+import Mathlib.Topology.Metrizable.Uniformity
+import Mathlib.Topology.Sequences
 
 /-!
 # Torsors of additive normed group actions.
@@ -44,8 +45,7 @@ variable {α V P W Q : Type*} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [
 
 instance (priority := 100) NormedAddTorsor.to_isometricVAdd : IsometricVAdd V P :=
   ⟨fun c => Isometry.of_dist_eq fun x y => by
-    -- porting note (#10745): was `simp [NormedAddTorsor.dist_eq_norm']`
-    rw [NormedAddTorsor.dist_eq_norm', NormedAddTorsor.dist_eq_norm', vadd_vsub_vadd_cancel_left]⟩
+    simp [NormedAddTorsor.dist_eq_norm']⟩
 
 /-- A `SeminormedAddCommGroup` is a `NormedAddTorsor` over itself. -/
 instance (priority := 100) SeminormedAddCommGroup.toNormedAddTorsor : NormedAddTorsor V V where
@@ -99,8 +99,7 @@ theorem nndist_vadd_cancel_right (v₁ v₂ : V) (x : P) : nndist (v₁ +ᵥ x) 
 
 @[simp]
 theorem dist_vadd_left (v : V) (x : P) : dist (v +ᵥ x) x = ‖v‖ := by
-  -- porting note (#10745): was `simp [dist_eq_norm_vsub V _ x]`
-  rw [dist_eq_norm_vsub V _ x, vadd_vsub]
+  simp [dist_eq_norm_vsub V _ x]
 
 @[simp]
 theorem nndist_vadd_left (v : V) (x : P) : nndist (v +ᵥ x) x = ‖v‖₊ :=
@@ -235,22 +234,26 @@ section
 
 variable [TopologicalSpace α]
 
+@[fun_prop]
 theorem Continuous.vsub {f g : α → P} (hf : Continuous f) (hg : Continuous g) :
-    Continuous (f -ᵥ g) :=
-  continuous_vsub.comp (hf.prod_mk hg : _)
+    Continuous (fun x ↦ f x -ᵥ g x) :=
+  continuous_vsub.comp (hf.prod_mk hg :)
 
+@[fun_prop]
 nonrec theorem ContinuousAt.vsub {f g : α → P} {x : α} (hf : ContinuousAt f x)
     (hg : ContinuousAt g x) :
-    ContinuousAt (f -ᵥ g) x :=
+    ContinuousAt (fun x ↦ f x -ᵥ g x) x :=
   hf.vsub hg
 
+@[fun_prop]
 nonrec theorem ContinuousWithinAt.vsub {f g : α → P} {x : α} {s : Set α}
     (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
-    ContinuousWithinAt (f -ᵥ g) s x :=
+    ContinuousWithinAt (fun x ↦ f x -ᵥ g x) s x :=
   hf.vsub hg
 
+@[fun_prop]
 theorem ContinuousOn.vsub {f g : α → P} {s : Set α} (hf : ContinuousOn f s)
-    (hg : ContinuousOn g s) : ContinuousOn (f -ᵥ g) s := fun x hx ↦
+    (hg : ContinuousOn g s) : ContinuousOn (fun x ↦ f x -ᵥ g x) s := fun x hx ↦
   (hf x hx).vsub (hg x hx)
 
 end

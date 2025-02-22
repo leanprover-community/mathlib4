@@ -34,6 +34,7 @@ We also add an `instance`:
 * `smulMonoidWithZeroHom`: Scalar multiplication bundled as a morphism of monoids with zero.
 -/
 
+assert_not_exists Units
 
 variable {R R' M M' : Type*}
 
@@ -126,7 +127,8 @@ class MulActionWithZero extends MulAction R M where
   zero_smul : ∀ m : M, (0 : R) • m = 0
 
 -- see Note [lower instance priority]
-instance (priority := 100) MulActionWithZero.toSMulWithZero [m : MulActionWithZero R M] :
+instance (priority := 100) MulActionWithZero.toSMulWithZero
+    (R M) {_ : MonoidWithZero R} {_ : Zero M} [m : MulActionWithZero R M] :
     SMulWithZero R M :=
   { m with }
 

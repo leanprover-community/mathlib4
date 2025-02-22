@@ -12,7 +12,7 @@ If `A` is a domain, and a finite-dimensional algebra over a field `F`, with prim
 then there are no non-trivial `F`-subalgebras.
 -/
 
-open FiniteDimensional Submodule
+open Module Submodule
 
 theorem Subalgebra.isSimpleOrder_of_finrank_prime (F A) [Field F] [Ring A] [IsDomain A]
     [Algebra F A] (hp : (finrank F A).Prime) : IsSimpleOrder (Subalgebra F A) :=

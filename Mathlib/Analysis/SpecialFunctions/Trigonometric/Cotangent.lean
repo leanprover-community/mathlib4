@@ -11,9 +11,9 @@ import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 This file contains lemmas about the cotangent function, including useful series expansions.
 -/
 
-open Real Complex BigOperators Filter
+open Real Complex
 
-open scoped UpperHalfPlane Topology
+open scoped UpperHalfPlane
 
 lemma Complex.cot_eq_exp_ratio (z : ℂ) :
     cot z = (Complex.exp (2 * I * z) + 1) / (I * (1 - Complex.exp (2 * I * z))) := by

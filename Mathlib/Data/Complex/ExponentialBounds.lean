@@ -36,16 +36,14 @@ theorem exp_one_lt_d9 : exp 1 < 2.7182818286 :=
   lt_of_le_of_lt (sub_le_iff_le_add.1 (abs_sub_le_iff.1 exp_one_near_10).1) (by norm_num)
 
 theorem exp_neg_one_gt_d9 : 0.36787944116 < exp (-1) := by
-  rw [exp_neg, lt_inv _ (exp_pos _)]
+  rw [exp_neg, lt_inv_comm₀ _ (exp_pos _)]
   · refine lt_of_le_of_lt (sub_le_iff_le_add.1 (abs_sub_le_iff.1 exp_one_near_10).1) ?_
     norm_num
   · norm_num
 
 theorem exp_neg_one_lt_d9 : exp (-1) < 0.3678794412 := by
-  rw [exp_neg, inv_lt (exp_pos _)]
-  · refine lt_of_lt_of_le ?_ (sub_le_comm.1 (abs_sub_le_iff.1 exp_one_near_10).2)
-    norm_num
-  · norm_num
+  rw [exp_neg, inv_lt_comm₀ (exp_pos _) (by norm_num)]
+  exact lt_of_lt_of_le (by norm_num) (sub_le_comm.1 (abs_sub_le_iff.1 exp_one_near_10).2)
 
 theorem log_two_near_10 : |log 2 - 287209 / 414355| ≤ 1 / 10 ^ 10 := by
   suffices |log 2 - 287209 / 414355| ≤ 1 / 17179869184 + (1 / 10 ^ 10 - 1 / 2 ^ 34) by

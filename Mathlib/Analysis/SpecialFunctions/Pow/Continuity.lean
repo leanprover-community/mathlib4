@@ -15,10 +15,7 @@ This file contains lemmas about continuity of the power functions on `ℂ`, `ℝ
 
 noncomputable section
 
-open scoped Classical
-open Real Topology NNReal ENNReal Filter ComplexConjugate
-
-open Filter Finset Set
+open Real Topology NNReal ENNReal Filter ComplexConjugate Finset Set
 
 section CpowLimits
 
@@ -136,6 +133,10 @@ theorem ContinuousOn.cpow_const {b : ℂ} (hf : ContinuousOn f s)
     (h : ∀ a : α, a ∈ s → f a ∈ slitPlane) : ContinuousOn (fun x => f x ^ b) s :=
   hf.cpow continuousOn_const h
 
+@[fun_prop]
+lemma continuous_const_cpow (z : ℂ) [NeZero z] : Continuous fun s : ℂ ↦ z ^ s :=
+  continuous_id.const_cpow (.inl <| NeZero.ne z)
+
 end CpowLimits
 
 section RpowLimits
@@ -194,7 +195,7 @@ theorem continuousAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
 
 theorem continuousAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.2) :
     ContinuousAt (fun p : ℝ × ℝ => p.1 ^ p.2) p := by
-  cases' p with x y
+  obtain ⟨x, y⟩ := p
   dsimp only at hp
   obtain hx | rfl := ne_or_eq x 0
   · exact continuousAt_rpow_of_ne (x, y) hx
@@ -315,7 +316,7 @@ open ComplexOrder in
 assumptions about `p.2`. -/
 theorem continuousAt_cpow_of_re_pos {p : ℂ × ℂ} (h₁ : 0 ≤ p.1.re ∨ p.1.im ≠ 0) (h₂ : 0 < p.2.re) :
     ContinuousAt (fun x : ℂ × ℂ => x.1 ^ x.2) p := by
-  cases' p with z w
+  obtain ⟨z, w⟩ := p
   rw [← not_lt_zero_iff, lt_iff_le_and_ne, not_and_or, Ne, Classical.not_not,
     not_le_zero_iff] at h₁
   rcases h₁ with (h₁ | (rfl : z = 0))
@@ -332,8 +333,7 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
     ContinuousAt (fun p => (p.1 : ℂ) ^ p.2 : ℝ × ℂ → ℂ) (x, y) := by
   rcases lt_trichotomy (0 : ℝ) x with (hx | rfl | hx)
   · -- x > 0 : easy case
-    have : ContinuousAt (fun p => ⟨↑p.1, p.2⟩ : ℝ × ℂ → ℂ × ℂ) (x, y) :=
-      continuous_ofReal.continuousAt.prod_map continuousAt_id
+    have : ContinuousAt (fun p => ⟨↑p.1, p.2⟩ : ℝ × ℂ → ℂ × ℂ) (x, y) := by fun_prop
     refine (continuousAt_cpow (Or.inl ?_)).comp this
     rwa [ofReal_re]
   · -- x = 0 : reduce to continuousAt_cpow_zero_of_re_pos
@@ -341,15 +341,13 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
       rw [ofReal_zero]
       apply continuousAt_cpow_zero_of_re_pos
       tauto
-    have B : ContinuousAt (fun p => ⟨↑p.1, p.2⟩ : ℝ × ℂ → ℂ × ℂ) ⟨0, y⟩ :=
-      continuous_ofReal.continuousAt.prod_map continuousAt_id
+    have B : ContinuousAt (fun p => ⟨↑p.1, p.2⟩ : ℝ × ℂ → ℂ × ℂ) ⟨0, y⟩ := by fun_prop
     exact A.comp_of_eq B rfl
   · -- x < 0 : difficult case
     suffices ContinuousAt (fun p => (-(p.1 : ℂ)) ^ p.2 * exp (π * I * p.2) : ℝ × ℂ → ℂ) (x, y) by
       refine this.congr (eventually_of_mem (prod_mem_nhds (Iio_mem_nhds hx) univ_mem) ?_)
       exact fun p hp => (ofReal_cpow_of_nonpos (le_of_lt hp.1) p.2).symm
-    have A : ContinuousAt (fun p => ⟨-↑p.1, p.2⟩ : ℝ × ℂ → ℂ × ℂ) (x, y) :=
-      ContinuousAt.prod_map continuous_ofReal.continuousAt.neg continuousAt_id
+    have A : ContinuousAt (fun p => ⟨-↑p.1, p.2⟩ : ℝ × ℂ → ℂ × ℂ) (x, y) := by fun_prop
     apply ContinuousAt.mul
     · refine (continuousAt_cpow (Or.inl ?_)).comp A
       rwa [neg_re, ofReal_re, neg_pos]
@@ -357,8 +355,7 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
 
 theorem continuousAt_ofReal_cpow_const (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
     ContinuousAt (fun a => (a : ℂ) ^ y : ℝ → ℂ) x :=
-  ContinuousAt.comp (x := x) (continuousAt_ofReal_cpow x y h)
-    (continuous_id.prod_mk continuous_const).continuousAt
+  (continuousAt_ofReal_cpow x y h).comp₂_of_eq (by fun_prop) (by fun_prop) rfl
 
 theorem continuous_ofReal_cpow_const {y : ℂ} (hs : 0 < y.re) :
     Continuous (fun x => (x : ℂ) ^ y : ℝ → ℂ) :=
@@ -385,7 +382,7 @@ theorem continuousAt_rpow {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 < y) :
   refine continuous_real_toNNReal.continuousAt.comp (ContinuousAt.comp ?_ ?_)
   · apply Real.continuousAt_rpow
     simpa using h
-  · exact ((continuous_subtype_val.comp continuous_fst).prod_mk continuous_snd).continuousAt
+  · fun_prop
 
 theorem eventually_pow_one_div_le (x : ℝ≥0) {y : ℝ≥0} (hy : 1 < y) :
     ∀ᶠ n : ℕ in atTop, x ^ (1 / n : ℝ) ≤ y := by
@@ -394,7 +391,7 @@ theorem eventually_pow_one_div_le (x : ℝ≥0) {y : ℝ≥0} (hy : 1 < y) :
   refine eventually_atTop.2 ⟨m + 1, fun n hn => ?_⟩
   simp only [one_div]
   simpa only [NNReal.rpow_inv_le_iff (Nat.cast_pos.2 <| m.succ_pos.trans_le hn),
-    NNReal.rpow_natCast] using hm.le.trans (pow_le_pow_right hy.le (m.le_succ.trans hn))
+    NNReal.rpow_natCast] using hm.le.trans (pow_right_mono₀ hy.le (m.le_succ.trans hn))
 
 end NNReal
 

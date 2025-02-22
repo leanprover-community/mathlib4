@@ -3,10 +3,9 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Continuity
 import Mathlib.Topology.MetricSpace.Bounded
 import Mathlib.Order.Filter.Pointwise
-import Mathlib.Order.LiminfLimsup
 
 /-!
 # Boundedness in normed groups
@@ -21,11 +20,10 @@ normed group
 open Filter Metric Bornology
 open scoped Pointwise Topology
 
-variable {α ι E F G : Type*}
+variable {α E F G : Type*}
 
 section SeminormedGroup
 variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E}
-  {a a₁ a₂ b b₁ b₂ : E} {r r₁ r₂ : ℝ}
 
 @[to_additive (attr := simp) comap_norm_atTop]
 lemma comap_norm_atTop' : comap norm atTop = cobounded E := by
@@ -113,7 +111,7 @@ of multiplication so that it can be applied to `(*)`, `flip (*)`, `(•)`, and `
 lemma Filter.Tendsto.op_one_isBoundedUnder_le' {f : α → E} {g : α → F} {l : Filter α}
     (hf : Tendsto f l (𝓝 1)) (hg : IsBoundedUnder (· ≤ ·) l (Norm.norm ∘ g)) (op : E → F → G)
     (h_op : ∃ A, ∀ x y, ‖op x y‖ ≤ A * ‖x‖ * ‖y‖) : Tendsto (fun x => op (f x) (g x)) l (𝓝 1) := by
-  cases' h_op with A h_op
+  obtain ⟨A, h_op⟩ := h_op
   rcases hg with ⟨C, hC⟩; rw [eventually_map] at hC
   rw [NormedCommGroup.tendsto_nhds_one] at hf ⊢
   intro ε ε₀
@@ -161,8 +159,6 @@ lemma HasCompactMulSupport.exists_pos_le_norm [One E] (hf : HasCompactMulSupport
   obtain ⟨K, ⟨hK1, hK2⟩⟩ := exists_compact_iff_hasCompactMulSupport.mpr hf
   obtain ⟨S, hS, hS'⟩ := hK1.isBounded.exists_pos_norm_le
   refine ⟨S + 1, by positivity, fun x hx => hK2 x ((mt <| hS' x) ?_)⟩
-  -- Porting note: `ENNReal.add_lt_add` should be `protected`?
-  -- [context: we used `_root_.add_lt_add` in a previous version of this proof]
   contrapose! hx
   exact lt_add_of_le_of_pos hx zero_lt_one
 

@@ -118,7 +118,7 @@ theorem tendsto_verticalIntegral (hb : 0 < b.re) (c : ℝ) :
   refine (tendsto_exp_atBot.comp (tendsto_neg_atTop_atBot.comp ?_)).const_mul _
   apply tendsto_atTop_add_const_right
   simp_rw [sq, ← mul_assoc, ← sub_mul]
-  refine Tendsto.atTop_mul_atTop (tendsto_atTop_add_const_right _ _ ?_) tendsto_id
+  refine Tendsto.atTop_mul_atTop₀ (tendsto_atTop_add_const_right _ _ ?_) tendsto_id
   exact (tendsto_const_mul_atTop_of_pos hb).mpr tendsto_id
 
 theorem integrable_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
@@ -210,9 +210,6 @@ theorem _root_.fourierIntegral_gaussian (hb : 0 < b.re) (t : ℂ) :
   rw [integral_cexp_quadratic (show (-b).re < 0 by rwa [neg_re, neg_lt_zero]), neg_neg, zero_sub,
     mul_neg, div_neg, neg_neg, mul_pow, I_sq, neg_one_mul, mul_comm]
 
-@[deprecated (since := "2024-02-21")]
-alias _root_.fourier_transform_gaussian := fourierIntegral_gaussian
-
 theorem _root_.fourierIntegral_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
     (𝓕 fun x : ℝ => cexp (-π * b * x ^ 2 + 2 * π * c * x)) = fun t : ℝ =>
     1 / b ^ (1 / 2 : ℂ) * cexp (-π / b * (t + I * c) ^ 2) := by
@@ -233,16 +230,10 @@ theorem _root_.fourierIntegral_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
     simp only [I_sq]
     ring
 
-@[deprecated (since := "2024-02-21")]
-alias _root_.fourier_transform_gaussian_pi' := _root_.fourierIntegral_gaussian_pi'
-
 theorem _root_.fourierIntegral_gaussian_pi (hb : 0 < b.re) :
     (𝓕 fun (x : ℝ) ↦ cexp (-π * b * x ^ 2)) =
     fun t : ℝ ↦ 1 / b ^ (1 / 2 : ℂ) * cexp (-π / b * t ^ 2) := by
   simpa only [mul_zero, zero_mul, add_zero] using fourierIntegral_gaussian_pi' hb 0
-
-@[deprecated (since := "2024-02-21")]
-alias root_.fourier_transform_gaussian_pi := _root_.fourierIntegral_gaussian_pi
 
 section InnerProductSpace
 
@@ -332,18 +323,18 @@ theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
 theorem integral_cexp_neg_mul_sq_norm_add
     (hb : 0 < b.re) (c : ℂ) (w : V) :
     ∫ v : V, cexp (- b * ‖v‖^2 + c * ⟪w, v⟫) =
-      (π / b) ^ (FiniteDimensional.finrank ℝ V / 2 : ℂ) * cexp (c ^ 2 * ‖w‖^2 / (4 * b)) := by
+      (π / b) ^ (Module.finrank ℝ V / 2 : ℂ) * cexp (c ^ 2 * ‖w‖^2 / (4 * b)) := by
   let e := (stdOrthonormalBasis ℝ V).repr.symm
   rw [← e.measurePreserving.integral_comp e.toHomeomorph.measurableEmbedding]
   convert integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     hb c (e.symm w) <;> simp [LinearIsometryEquiv.inner_map_eq_flip]
 
 theorem integral_cexp_neg_mul_sq_norm (hb : 0 < b.re) :
-    ∫ v : V, cexp (- b * ‖v‖^2) = (π / b) ^ (FiniteDimensional.finrank ℝ V / 2 : ℂ) := by
+    ∫ v : V, cexp (- b * ‖v‖^2) = (π / b) ^ (Module.finrank ℝ V / 2 : ℂ) := by
   simpa using integral_cexp_neg_mul_sq_norm_add hb 0 (0 : V)
 
 theorem integral_rexp_neg_mul_sq_norm {b : ℝ} (hb : 0 < b) :
-    ∫ v : V, rexp (- b * ‖v‖^2) = (π / b) ^ (FiniteDimensional.finrank ℝ V / 2 : ℝ) := by
+    ∫ v : V, rexp (- b * ‖v‖^2) = (π / b) ^ (Module.finrank ℝ V / 2 : ℝ) := by
   rw [← ofReal_inj]
   convert integral_cexp_neg_mul_sq_norm (show 0 < (b : ℂ).re from hb) (V := V)
   · change ofRealLI (∫ (v : V), rexp (-b * ‖v‖ ^ 2)) = ∫ (v : V), cexp (-↑b * ↑‖v‖ ^ 2)
@@ -354,7 +345,7 @@ theorem integral_rexp_neg_mul_sq_norm {b : ℝ} (hb : 0 < b) :
 
 theorem _root_.fourierIntegral_gaussian_innerProductSpace' (hb : 0 < b.re) (x w : V) :
     𝓕 (fun v ↦ cexp (- b * ‖v‖^2 + 2 * π * Complex.I * ⟪x, v⟫)) w =
-      (π / b) ^ (FiniteDimensional.finrank ℝ V / 2 : ℂ) * cexp (-π ^ 2 * ‖x - w‖ ^ 2 / b) := by
+      (π / b) ^ (Module.finrank ℝ V / 2 : ℂ) * cexp (-π ^ 2 * ‖x - w‖ ^ 2 / b) := by
   simp only [neg_mul, fourierIntegral_eq', ofReal_neg, ofReal_mul, ofReal_ofNat,
     smul_eq_mul, ← Complex.exp_add, real_inner_comm w]
   convert integral_cexp_neg_mul_sq_norm_add hb (2 * π * Complex.I) (x - w) using 3 with v
@@ -367,7 +358,7 @@ theorem _root_.fourierIntegral_gaussian_innerProductSpace' (hb : 0 < b.re) (x w 
 
 theorem _root_.fourierIntegral_gaussian_innerProductSpace (hb : 0 < b.re) (w : V) :
     𝓕 (fun v ↦ cexp (- b * ‖v‖^2)) w =
-      (π / b) ^ (FiniteDimensional.finrank ℝ V / 2 : ℂ) * cexp (-π ^ 2 * ‖w‖^2 / b) := by
+      (π / b) ^ (Module.finrank ℝ V / 2 : ℂ) * cexp (-π ^ 2 * ‖w‖^2 / b) := by
   simpa using fourierIntegral_gaussian_innerProductSpace' hb 0 w
 
 end InnerProductSpace

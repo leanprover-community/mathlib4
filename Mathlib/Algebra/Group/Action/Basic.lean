@@ -16,7 +16,7 @@ This file contains lemmas about group actions that require more imports than
 
 assert_not_exists MonoidWithZero
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 section MulAction
 

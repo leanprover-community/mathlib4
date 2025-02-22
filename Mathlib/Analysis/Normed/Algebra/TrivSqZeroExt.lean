@@ -63,7 +63,7 @@ variable [Field 𝕜] [Ring R] [AddCommGroup M]
   [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
   [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
   [TopologicalSpace R] [TopologicalSpace M]
-  [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
+  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
 @[simp] theorem fst_expSeries (x : tsze R M) (n : ℕ) :
     fst (expSeries 𝕜 (tsze R M) n fun _ => x) = expSeries 𝕜 R n fun _ => x.fst := by
@@ -76,7 +76,7 @@ variable [Field 𝕜] [CharZero 𝕜] [Ring R] [AddCommGroup M]
   [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
   [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
   [TopologicalSpace R] [TopologicalSpace M]
-  [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
+  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
 theorem snd_expSeries_of_smul_comm
     (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) (n : ℕ) :
@@ -115,7 +115,7 @@ variable [T2Space R] [T2Space M]
 theorem exp_def_of_smul_comm (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) :
     exp 𝕜 x = inl (exp 𝕜 x.fst) + inr (exp 𝕜 x.fst • x.snd) := by
   simp_rw [exp, FormalMultilinearSeries.sum]
-  by_cases h : Summable (fun (n : ℕ) => (expSeries 𝕜 R n) fun x_1 ↦ fst x)
+  by_cases h : Summable (fun (n : ℕ) => (expSeries 𝕜 R n) fun _ ↦ fst x)
   · refine (hasSum_expSeries_of_smul_comm 𝕜 x hx ?_).tsum_eq
     exact h.hasSum
   · rw [tsum_eq_zero_of_not_summable h, zero_smul, inr_zero, inl_zero, zero_add,
@@ -141,7 +141,7 @@ variable [Field 𝕜] [CharZero 𝕜] [CommRing R] [AddCommGroup M]
   [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
   [IsCentralScalar R M] [IsScalarTower 𝕜 R M]
   [TopologicalSpace R] [TopologicalSpace M]
-  [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
+  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
 variable [T2Space R] [T2Space M]
 
@@ -169,7 +169,7 @@ variable [Field 𝕜] [CharZero 𝕜] [Field R] [AddCommGroup M]
   [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
   [IsCentralScalar R M] [IsScalarTower 𝕜 R M]
   [TopologicalSpace R] [TopologicalSpace M]
-  [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
+  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
 variable [T2Space R] [T2Space M]
 
@@ -264,10 +264,8 @@ noncomputable section Normed
 
 section Ring
 
-variable [NormedCommRing S] [NormedRing R] [NormedAddCommGroup M]
-variable [Algebra S R] [Module S M] [Module R M] [Module Rᵐᵒᵖ M]
-variable [BoundedSMul S R] [BoundedSMul S M] [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M]
-variable [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
+variable [NormedRing R] [NormedAddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M]
+variable [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 
 instance instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) :=
   inferInstanceAs <| NormedAddCommGroup (WithLp 1 <| R × M)

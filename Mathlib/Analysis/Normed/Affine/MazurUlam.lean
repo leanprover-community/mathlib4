@@ -53,7 +53,7 @@ theorem midpoint_fixed {x y : PE} :
     calc
       dist (e z) z ≤ dist (e z) x + dist x z := dist_triangle (e z) x z
       _ = dist (e x) (e z) + dist x z := by rw [hx, dist_comm]
-      _ = dist x z + dist x z := by erw [e.dist_eq x z]
+      _ = dist x z + dist x z := by rw [e.dist_eq x z]
   -- On the other hand, consider the map `f : (E ≃ᵢ E) → (E ≃ᵢ E)`
   -- sending each `e` to `R ∘ e⁻¹ ∘ R ∘ e`, where `R` is the point reflection in the
   -- midpoint `z` of `[x, y]`.

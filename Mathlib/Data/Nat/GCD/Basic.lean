@@ -3,8 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
+import Batteries.Data.Nat.Gcd
+import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.GroupWithZero.Nat
 
 /-!
 # Properties of `Nat.gcd`, `Nat.lcm`, and `Nat.Coprime`
@@ -23,6 +25,7 @@ Most of this file could be moved to batteries as well.
 assert_not_exists OrderedCommMonoid
 
 namespace Nat
+variable {a a₁ a₂ b b₁ b₂ c : ℕ}
 
 /-! ### `gcd` -/
 
@@ -191,6 +194,28 @@ theorem coprime_mul_right_add_left (m n k : ℕ) : Coprime (k * n + m) n ↔ Cop
 theorem coprime_mul_left_add_left (m n k : ℕ) : Coprime (n * k + m) n ↔ Coprime m n := by
   rw [Coprime, Coprime, gcd_mul_left_add_left]
 
+lemma add_coprime_iff_left (h : c ∣ b) : Coprime (a + b) c ↔ Coprime a c := by
+  obtain ⟨n, rfl⟩ := h; simp
+
+lemma add_coprime_iff_right (h : c ∣ a) : Coprime (a + b) c ↔ Coprime b c := by
+  obtain ⟨n, rfl⟩ := h; simp
+
+lemma coprime_add_iff_left (h : a ∣ c) : Coprime a (b + c) ↔ Coprime a b := by
+  obtain ⟨n, rfl⟩ := h; simp
+
+lemma coprime_add_iff_right (h : a ∣ b) : Coprime a (b + c) ↔ Coprime a c := by
+  obtain ⟨n, rfl⟩ := h; simp
+
+-- TODO: Replace `Nat.Coprime.coprime_dvd_left`
+lemma Coprime.of_dvd_left (ha : a₁ ∣ a₂) (h : Coprime a₂ b) : Coprime a₁ b := h.coprime_dvd_left ha
+
+-- TODO: Replace `Nat.Coprime.coprime_dvd_right`
+lemma Coprime.of_dvd_right (hb : b₁ ∣ b₂) (h : Coprime a b₂) : Coprime a b₁ :=
+  h.coprime_dvd_right hb
+
+lemma Coprime.of_dvd (ha : a₁ ∣ a₂) (hb : b₁ ∣ b₂) (h : Coprime a₂ b₂) : Coprime a₁ b₁ :=
+  (h.of_dvd_left ha).of_dvd_right hb
+
 @[simp]
 theorem coprime_sub_self_left {m n : ℕ} (h : m ≤ n) : Coprime (n - m) m ↔ Coprime n m := by
   rw [Coprime, Coprime, gcd_sub_self_left h]
@@ -298,7 +323,7 @@ theorem Coprime.mul_add_mul_ne_mul {m n a b : ℕ} (cop : Coprime m n) (ha : a �
         ((congr_arg _ h).mpr (Nat.dvd_mul_right m n)))
   rw [mul_comm, mul_ne_zero_iff, ← one_le_iff_ne_zero] at ha hb
   refine mul_ne_zero hb.2 ha.2 (eq_zero_of_mul_eq_self_left (ne_of_gt (add_le_add ha.1 hb.1)) ?_)
-  rw [← mul_assoc, ← h, add_mul, add_mul, mul_comm _ n, ← mul_assoc, mul_comm y]
+  rw [← mul_assoc, ← h, Nat.add_mul, Nat.add_mul, mul_comm _ n, ← mul_assoc, mul_comm y]
 
 variable {x n m : ℕ}
 

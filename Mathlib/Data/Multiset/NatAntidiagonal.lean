@@ -19,6 +19,8 @@ This refines file `Data.List.NatAntidiagonal` and is further refined by file
 `Data.Finset.NatAntidiagonal`.
 -/
 
+assert_not_exists Monoid
+
 namespace Multiset
 
 namespace Nat
@@ -55,8 +57,8 @@ theorem antidiagonal_succ {n : ℕ} :
 
 theorem antidiagonal_succ' {n : ℕ} :
     antidiagonal (n + 1) = (n + 1, 0) ::ₘ (antidiagonal n).map (Prod.map id Nat.succ) := by
-  rw [antidiagonal, List.Nat.antidiagonal_succ', ← coe_add, add_comm, antidiagonal, map_coe,
-    coe_add, List.singleton_append, cons_coe]
+  rw [antidiagonal, List.Nat.antidiagonal_succ', ← coe_add, Multiset.add_comm, antidiagonal,
+    map_coe, coe_add, List.singleton_append, cons_coe]
 
 theorem antidiagonal_succ_succ' {n : ℕ} :
     antidiagonal (n + 2) =

@@ -3,10 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.LinearAlgebra.LinearIndependent
 
 /-!
@@ -24,18 +25,15 @@ universe u
 
 open Function Set Submodule Finsupp
 
-variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {K : Type*}
-variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
+variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
 
 section Module
 
-variable [Semiring R]
-variable [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
-
+variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
 
 namespace Basis
 
-variable (b b₁ : Basis ι R M) (i : ι) (c : R) (x : M)
+variable (b : Basis ι R M)
 
 section Coord
 
@@ -49,10 +47,8 @@ theorem coe_sumCoords_eq_finsum : (b.sumCoords : M → R) = fun m => ∑ᶠ i, b
 end Coord
 
 protected theorem linearIndependent : LinearIndependent R b :=
-  linearIndependent_iff.mpr fun l hl =>
-    calc
-      l = b.repr (Finsupp.linearCombination _ b l) := (b.repr_linearCombination l).symm
-      _ = 0 := by rw [hl, LinearEquiv.map_zero]
+  fun x y hxy => by
+    rw [← b.repr_linearCombination x, hxy, b.repr_linearCombination y]
 
 protected theorem ne_zero [Nontrivial R] (i) : b i ≠ 0 :=
   b.linearIndependent.ne_zero i
@@ -125,28 +121,15 @@ protected theorem noZeroSMulDivisors [NoZeroDivisors R] (b : Basis ι R M) :
     NoZeroSMulDivisors R M :=
   ⟨fun {c x} hcx => by
     exact or_iff_not_imp_right.mpr fun hx => by
-      rw [← b.linearCombination_repr x, ← LinearMap.map_smul] at hcx
-      have := linearIndependent_iff.mp b.linearIndependent (c • b.repr x) hcx
+      rw [← b.linearCombination_repr x, ← LinearMap.map_smul,
+        ← map_zero (linearCombination R b)] at hcx
+      have := b.linearIndependent hcx
       rw [smul_eq_zero] at this
       exact this.resolve_right fun hr => hx (b.repr.map_eq_zero_iff.mp hr)⟩
 
 protected theorem smul_eq_zero [NoZeroDivisors R] (b : Basis ι R M) {c : R} {x : M} :
     c • x = 0 ↔ c = 0 ∨ x = 0 :=
   @smul_eq_zero _ _ _ _ _ b.noZeroSMulDivisors _ _
-
-theorem eq_bot_of_rank_eq_zero [NoZeroDivisors R] (b : Basis ι R M) (N : Submodule R M)
-    (rank_eq : ∀ {m : ℕ} (v : Fin m → N), LinearIndependent R ((↑) ∘ v : Fin m → M) → m = 0) :
-    N = ⊥ := by
-  rw [Submodule.eq_bot_iff]
-  intro x hx
-  contrapose! rank_eq with x_ne
-  refine ⟨1, fun _ => ⟨x, hx⟩, ?_, one_ne_zero⟩
-  rw [Fintype.linearIndependent_iff]
-  rintro g sum_eq i
-  cases' i with _ hi
-  simp only [Function.const_apply, Fin.default_eq_zero, Submodule.coe_mk, Finset.univ_unique,
-    Function.comp_const, Finset.sum_singleton] at sum_eq
-  convert (b.smul_eq_zero.mp sum_eq).resolve_right x_ne
 
 end NoZeroSMulDivisors
 
@@ -178,47 +161,7 @@ theorem basis_singleton_iff {R M : Type*} [Ring R] [Nontrivial R] [AddCommGroup 
 
 end Singleton
 
-end Basis
-
-end Module
-
-section Module
-
-open LinearMap
-
-variable {v : ι → M}
-variable [Ring R] [CommRing R₂] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M'']
-variable [Module R M] [Module R₂ M] [Module R M'] [Module R M'']
-variable {c d : R} {x y : M}
-variable (b : Basis ι R M)
-
-namespace Basis
-
-/-- Any basis is a maximal linear independent set.
--/
-theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal := fun w hi h => by
-  -- If `w` is strictly bigger than `range b`,
-  apply le_antisymm h
-  -- then choose some `x ∈ w \ range b`,
-  intro x p
-  by_contra q
-  -- and write it in terms of the basis.
-  have e := b.linearCombination_repr x
-  -- This then expresses `x` as a linear combination
-  -- of elements of `w` which are in the range of `b`,
-  let u : ι ↪ w :=
-    ⟨fun i => ⟨b i, h ⟨i, rfl⟩⟩, fun i i' r =>
-      b.injective (by simpa only [Subtype.mk_eq_mk] using r)⟩
-  simp_rw [Finsupp.linearCombination_apply] at e
-  change ((b.repr x).sum fun (i : ι) (a : R) ↦ a • (u i : M)) = ((⟨x, p⟩ : w) : M) at e
-  rw [← Finsupp.sum_embDomain (f := u) (g := fun x r ↦ r • (x : M)),
-      ← Finsupp.linearCombination_apply] at e
-  -- Now we can contradict the linear independence of `hi`
-  refine hi.linearCombination_ne_of_not_mem_support _ ?_ e
-  simp only [Finset.mem_map, Finsupp.support_embDomain]
-  rintro ⟨j, -, W⟩
-  simp only [u, Embedding.coeFn_mk, Subtype.mk_eq_mk] at W
-  apply q ⟨j, W⟩
+variable {v : ι → M} {x y : M}
 
 section Mk
 
@@ -280,9 +223,7 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
       rfl
     have h₂ : map (Submodule.subtype (span R (range v))) (span R (range fun i => ⟨v i, this i⟩)) =
         span R (range v) := by
-      rw [← span_image, Submodule.coeSubtype]
-      -- Porting note: why doesn't `rw [h₁]` work here?
-      exact congr_arg _ h₁
+      rw [← span_image, Submodule.coe_subtype, h₁]
     have h₃ : (x : M) ∈ map (Submodule.subtype (span R (range v)))
         (span R (Set.range fun i => Subtype.mk (v i) (this i))) := by
       rw [h₂]
@@ -336,6 +277,8 @@ theorem unitsSMul_apply {v : Basis ι R M} {w : ι → Rˣ} (i : ι) : unitsSMul
   mk_apply (LinearIndependent.units_smul v.linearIndependent w)
     (units_smul_span_eq_top v.span_eq).ge i
 
+variable [CommSemiring R₂] [Module R₂ M]
+
 @[simp]
 theorem coord_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (i : ι) :
     (unitsSMul e w).coord i = (w i)⁻¹ • e.coord i := by
@@ -362,6 +305,66 @@ theorem isUnitSMul_apply {v : Basis ι R M} {w : ι → R} (hw : ∀ i, IsUnit (
     v.isUnitSMul hw i = w i • v i :=
   unitsSMul_apply i
 
+theorem repr_isUnitSMul {v : Basis ι R₂ M} {w : ι → R₂} (hw : ∀ i, IsUnit (w i)) (x : M) (i : ι) :
+    (v.isUnitSMul hw).repr x i = (hw i).unit⁻¹ • v.repr x i :=
+  repr_unitsSMul _ _ _ _
+
+/-- Any basis is a maximal linear independent set.
+-/
+theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal := fun w hi h => by
+  -- If `w` is strictly bigger than `range b`,
+  apply le_antisymm h
+  -- then choose some `x ∈ w \ range b`,
+  intro x p
+  by_contra q
+  -- and write it in terms of the basis.
+  have e := b.linearCombination_repr x
+  -- This then expresses `x` as a linear combination
+  -- of elements of `w` which are in the range of `b`,
+  let u : ι ↪ w :=
+    ⟨fun i => ⟨b i, h ⟨i, rfl⟩⟩, fun i i' r =>
+      b.injective (by simpa only [Subtype.mk_eq_mk] using r)⟩
+  simp_rw [Finsupp.linearCombination_apply] at e
+  change ((b.repr x).sum fun (i : ι) (a : R) ↦ a • (u i : M)) = ((⟨x, p⟩ : w) : M) at e
+  rw [← Finsupp.sum_embDomain (f := u) (g := fun x r ↦ r • (x : M)),
+      ← Finsupp.linearCombination_apply] at e
+  -- Now we can contradict the linear independence of `hi`
+  refine hi.linearCombination_ne_of_not_mem_support _ ?_ e
+  simp only [Finset.mem_map, Finsupp.support_embDomain]
+  rintro ⟨j, -, W⟩
+  simp only [u, Embedding.coeFn_mk, Subtype.mk_eq_mk] at W
+  apply q ⟨j, W⟩
+
+end Basis
+
+end Module
+
+section Module
+
+open LinearMap
+
+variable {v : ι → M}
+variable [Ring R] [CommRing R₂] [AddCommGroup M]
+variable [Module R M] [Module R₂ M]
+variable {x y : M}
+variable (b : Basis ι R M)
+
+theorem Basis.eq_bot_of_rank_eq_zero [NoZeroDivisors R] (b : Basis ι R M) (N : Submodule R M)
+    (rank_eq : ∀ {m : ℕ} (v : Fin m → N), LinearIndependent R ((↑) ∘ v : Fin m → M) → m = 0) :
+    N = ⊥ := by
+  rw [Submodule.eq_bot_iff]
+  intro x hx
+  contrapose! rank_eq with x_ne
+  refine ⟨1, fun _ => ⟨x, hx⟩, ?_, one_ne_zero⟩
+  rw [Fintype.linearIndependent_iff]
+  rintro g sum_eq i
+  obtain ⟨_, hi⟩ := i
+  simp only [Function.const_apply, Fin.default_eq_zero, Submodule.coe_mk, Finset.univ_unique,
+    Function.comp_const, Finset.sum_singleton] at sum_eq
+  convert (b.smul_eq_zero.mp sum_eq).resolve_right x_ne
+
+namespace Basis
+
 section Fin
 
 /-- Let `b` be a basis for a submodule `N` of `M`. If `y : M` is linear independent of `N`
@@ -386,8 +389,6 @@ noncomputable def mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fi
 theorem coe_mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fin n) R N)
     (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0) (hsp : ∀ z : M, ∃ c : R, z + c • y ∈ N) :
     (mkFinCons y b hli hsp : Fin (n + 1) → M) = Fin.cons y ((↑) ∘ b) := by
-  -- Porting note: without `unfold`, Lean can't reuse the proofs included in the definition
-  -- `mkFinCons`
   unfold mkFinCons
   exact coe_mk (v := Fin.cons y (N.subtype ∘ b)) _ _
 
@@ -452,21 +453,23 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*
     exfalso
     rw [mem_bot] at x_mem
     simpa [x_mem] using x_ortho 1 0 N.zero_mem
-  induction' n with n rank_ih generalizing N
-  · suffices N = ⊥ by rwa [this]
+  induction n generalizing N with
+  | zero =>
+    suffices N = ⊥ by rwa [this]
     apply Basis.eq_bot_of_rank_eq_zero b _ fun m hv => Nat.le_zero.mp (rank_le _ hv)
-  apply ih
-  intro N' N'_le x x_mem x_ortho
-  apply rank_ih
-  intro m v hli
-  refine Nat.succ_le_succ_iff.mp (rank_le (Fin.cons ⟨x, x_mem⟩ fun i => ⟨v i, N'_le (v i).2⟩) ?_)
-  convert hli.fin_cons' x _ ?_
-  · ext i
-    refine Fin.cases ?_ ?_ i <;> simp
-  · intro c y hcy
-    refine x_ortho c y (Submodule.span_le.mpr ?_ y.2) hcy
-    rintro _ ⟨z, rfl⟩
-    exact (v z).2
+  | succ n rank_ih =>
+    apply ih
+    intro N' N'_le x x_mem x_ortho
+    apply rank_ih
+    intro m v hli
+    refine Nat.succ_le_succ_iff.mp (rank_le (Fin.cons ⟨x, x_mem⟩ fun i => ⟨v i, N'_le (v i).2⟩) ?_)
+    convert hli.fin_cons' x _ ?_
+    · ext i
+      refine Fin.cases ?_ ?_ i <;> simp
+    · intro c y hcy
+      refine x_ortho c y (Submodule.span_le.mpr ?_ y.2) hcy
+      rintro _ ⟨z, rfl⟩
+      exact (v z).2
 
 end Induction
 

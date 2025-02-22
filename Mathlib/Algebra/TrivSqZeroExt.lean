@@ -3,8 +3,8 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Algebra.GroupWithZero.Invertible
 import Mathlib.LinearAlgebra.Prod
 
 /-!
@@ -147,6 +147,12 @@ theorem snd_comp_inr [Zero R] : snd ∘ (inr : M → tsze R M) = id :=
 
 end
 
+theorem fst_surjective [Nonempty M] : Function.Surjective (fst : tsze R M → R) :=
+  Prod.fst_surjective
+
+theorem snd_surjective [Nonempty R] : Function.Surjective (snd : tsze R M → M) :=
+  Prod.snd_surjective
+
 theorem inl_injective [Zero M] : Function.Injective (inl : R → tsze R M) :=
   Function.LeftInverse.injective <| fst_inl _
 
@@ -225,6 +231,16 @@ instance distribMulAction [Monoid S] [AddMonoid R] [AddMonoid M]
 instance module [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [Module S R] [Module S M] :
     Module S (tsze R M) :=
   Prod.instModule
+
+/-- The trivial square-zero extension is nontrivial if it is over a nontrivial ring. -/
+instance instNontrivial_of_left {R M : Type*} [Nontrivial R] [Nonempty M] :
+    Nontrivial (TrivSqZeroExt R M) :=
+  fst_surjective.nontrivial
+
+/-- The trivial square-zero extension is nontrivial if it is over a nontrivial module. -/
+instance instNontrivial_of_right {R M : Type*} [Nonempty R] [Nontrivial M] :
+    Nontrivial (TrivSqZeroExt R M) :=
+  snd_surjective.nontrivial
 
 @[simp]
 theorem fst_zero [Zero R] [Zero M] : (0 : tsze R M).fst = 0 :=
@@ -474,22 +490,13 @@ instance addMonoidWithOne [AddMonoidWithOne R] [AddMonoid M] : AddMonoidWithOne 
 theorem fst_natCast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (n : tsze R M).fst = n :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias fst_nat_cast := fst_natCast
-
 @[simp]
 theorem snd_natCast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (n : tsze R M).snd = 0 :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias snd_nat_cast := snd_natCast
-
 @[simp]
 theorem inl_natCast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (inl n : tsze R M) = n :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias inl_nat_cast := inl_natCast
 
 instance addGroupWithOne [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsze R M) :=
   { TrivSqZeroExt.addGroup, TrivSqZeroExt.addMonoidWithOne with
@@ -501,22 +508,13 @@ instance addGroupWithOne [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsz
 theorem fst_intCast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (z : tsze R M).fst = z :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias fst_int_cast := fst_intCast
-
 @[simp]
 theorem snd_intCast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (z : tsze R M).snd = 0 :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias snd_int_cast := snd_intCast
-
 @[simp]
 theorem inl_intCast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (inl z : tsze R M) = z :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias inl_int_cast := inl_intCast
 
 instance nonAssocSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] :
     NonAssocSemiring (tsze R M) :=
@@ -641,12 +639,12 @@ $r_0\cdots r_{i-1}m_ir_{i+1}\cdots r_n$. -/
 theorem snd_list_prod [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
     [SMulCommClass R Rᵐᵒᵖ M] (l : List (tsze R M)) :
     l.prod.snd =
-      (l.enum.map fun x : ℕ × tsze R M =>
-          ((l.map fst).take x.1).prod •> x.snd.snd <• ((l.map fst).drop x.1.succ).prod).sum := by
+      (l.zipIdx.map fun x : tsze R M × ℕ =>
+          ((l.map fst).take x.2).prod •> x.fst.snd <• ((l.map fst).drop x.2.succ).prod).sum := by
   induction l with
   | nil => simp
   | cons x xs ih =>
-    rw [List.enum_cons, ← List.map_fst_add_enum_eq_enumFrom]
+    rw [List.zipIdx_cons']
     simp_rw [List.map_cons, List.map_map, Function.comp_def, Prod.map_snd, Prod.map_fst, id,
       List.take_zero, List.take_succ_cons, List.prod_nil, List.prod_cons, snd_mul, one_smul,
       List.drop, mul_smul, List.sum_cons, fst_list_prod, ih, List.smul_sum, List.map_map,
@@ -690,7 +688,9 @@ section Inv
 variable {R : Type u} {M : Type v}
 variable [Neg M] [Inv R] [SMul Rᵐᵒᵖ M] [SMul R M]
 
-/-- Inversion of the trivial-square-zero extension, sending $r + m$ to $r^{-1} - r^{-1}mr^{-1}$. -/
+/-- Inversion of the trivial-square-zero extension, sending $r + m$ to $r^{-1} - r^{-1}mr^{-1}$.
+
+Strictly this is only a _two_-sided inverse when the left and right actions associate. -/
 instance instInv : Inv (tsze R M) :=
   ⟨fun b => (b.1⁻¹, -(b.1⁻¹ •> b.2 <• b.1⁻¹))⟩
 
@@ -701,6 +701,75 @@ instance instInv : Inv (tsze R M) :=
   rfl
 
 end Inv
+
+/-! This section is heavily inspired by analogous results about matrices. -/
+section Invertible
+variable {R : Type u} {M : Type v}
+variable [AddCommGroup M] [Semiring R] [Module Rᵐᵒᵖ M] [Module R M]
+
+/-- `x.fst : R` is invertible when `x : tzre R M` is. -/
+abbrev invertibleFstOfInvertible (x : tsze R M) [Invertible x] : Invertible x.fst where
+  invOf := (⅟x).fst
+  invOf_mul_self := by rw [← fst_mul, invOf_mul_self, fst_one]
+  mul_invOf_self := by rw [← fst_mul, mul_invOf_self, fst_one]
+
+theorem fst_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] : (⅟x).fst = ⅟(x.fst) := by
+  letI := invertibleFstOfInvertible x
+  convert (rfl : _ = ⅟ x.fst)
+
+theorem mul_left_eq_one (r : R) (x : tsze R M) (h : r * x.fst = 1) :
+    (inl r + inr (-((r •> x.snd) <• r))) * x = 1 := by
+  ext <;> dsimp
+  · rw [add_zero, h]
+  · rw [add_zero, zero_add, smul_neg, op_smul_op_smul, h, op_one, one_smul,
+      add_neg_cancel]
+
+theorem mul_right_eq_one (x : tsze R M) (r : R) (h : x.fst * r = 1) :
+    x * (inl r + inr (-(r •> (x.snd <• r)))) = 1 := by
+  ext <;> dsimp
+  · rw [add_zero, h]
+  · rw [add_zero, zero_add, smul_neg, smul_smul, h, one_smul, neg_add_cancel]
+
+variable [SMulCommClass R Rᵐᵒᵖ M]
+
+/-- `x : tzre R M` is invertible when `x.fst : R` is. -/
+abbrev invertibleOfInvertibleFst (x : tsze R M) [Invertible x.fst] : Invertible x where
+  invOf := (⅟x.fst, -(⅟x.fst •> x.snd <• ⅟x.fst))
+  invOf_mul_self := by
+    convert mul_left_eq_one _ _ (invOf_mul_self x.fst)
+    ext <;> simp
+  mul_invOf_self := by
+    convert mul_right_eq_one _ _ (mul_invOf_self x.fst)
+    ext <;> simp [smul_comm]
+
+theorem snd_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] :
+    (⅟x).snd = -(⅟x.fst •> x.snd <• ⅟x.fst) := by
+  letI := invertibleOfInvertibleFst x
+  convert congr_arg (TrivSqZeroExt.snd (R := R) (M := M)) (_ : _ = ⅟ x)
+  convert rfl
+
+/-- Together `TrivSqZeroExt.detInvertibleOfInvertible` and `TrivSqZeroExt.invertibleOfDetInvertible`
+form an equivalence, although both sides of the equiv are subsingleton anyway. -/
+@[simps]
+def invertibleEquivInvertibleFst (x : tsze R M) : Invertible x ≃ Invertible x.fst where
+  toFun _ := invertibleFstOfInvertible x
+  invFun _ := invertibleOfInvertibleFst x
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := Subsingleton.elim _ _
+
+/-- When lowered to a prop, `Matrix.invertibleEquivInvertibleFst` forms an `iff`. -/
+theorem isUnit_iff_isUnit_fst {x : tsze R M} : IsUnit x ↔ IsUnit x.fst := by
+  simp only [← nonempty_invertible_iff_isUnit, (invertibleEquivInvertibleFst x).nonempty_congr]
+
+@[simp]
+theorem isUnit_inl_iff {r : R} : IsUnit (inl r : tsze R M) ↔ IsUnit r := by
+  rw [isUnit_iff_isUnit_fst, fst_inl]
+
+@[simp]
+theorem isUnit_inr_iff {m : M} : IsUnit (inr m : tsze R M) ↔ Subsingleton R := by
+  simp_rw [isUnit_iff_isUnit_fst, fst_inr, isUnit_zero_iff, subsingleton_iff_zero_eq_one]
+
+end Invertible
 
 section DivisionSemiring
 variable {R : Type u} {M : Type v}
@@ -727,18 +796,19 @@ protected theorem inv_one : (1 : tsze R M)⁻¹ = (1 : tsze R M) := by
   rw [← inl_one, TrivSqZeroExt.inv_inl, inv_one]
 
 protected theorem inv_mul_cancel {x : tsze R M} (hx : fst x ≠ 0) : x⁻¹ * x = 1 := by
-  ext
-  · rw [fst_mul, fst_inv, inv_mul_cancel₀ hx, fst_one]
-  · rw [snd_mul, snd_inv, snd_one, smul_neg, op_smul_op_smul, inv_mul_cancel₀ hx, op_one, one_smul,
-      fst_inv, add_neg_cancel]
+  convert mul_left_eq_one _ _ (_root_.inv_mul_cancel₀ hx) using 2
+  ext <;> simp
 
 variable [SMulCommClass R Rᵐᵒᵖ M]
 
+@[simp] theorem invOf_eq_inv (x : tsze R M) [Invertible x] : ⅟x = x⁻¹ := by
+  letI := invertibleFstOfInvertible x
+  ext <;> simp [fst_invOf, snd_invOf]
+
 protected theorem mul_inv_cancel {x : tsze R M} (hx : fst x ≠ 0) : x * x⁻¹ = 1 := by
-  ext
-  · rw [fst_mul, fst_inv, fst_one, mul_inv_cancel₀ hx]
-  · rw [snd_mul, snd_inv, snd_one, smul_neg, smul_comm, smul_smul, mul_inv_cancel₀ hx, one_smul,
-      fst_inv, neg_add_cancel]
+  have : Invertible x.fst := Units.invertible (.mk0 _ hx)
+  have := invertibleOfInvertibleFst x
+  rw [← invOf_eq_inv, mul_invOf_self]
 
 protected theorem mul_inv_rev (a b : tsze R M) :
     (a * b)⁻¹ = b⁻¹ * a⁻¹ := by
@@ -763,6 +833,10 @@ protected theorem inv_inv {x : tsze R M} (hx : fst x ≠ 0) : x⁻¹⁻¹ = x :=
       rw [fst_inv]
       apply inv_ne_zero hx
 
+@[simp]
+theorem isUnit_inv_iff {x : tsze R M} : IsUnit x⁻¹ ↔ IsUnit x := by
+  simp_rw [isUnit_iff_isUnit_fst, fst_inv, isUnit_iff_ne_zero, ne_eq, inv_eq_zero]
+
 end DivisionSemiring
 
 section DivisionRing
@@ -778,25 +852,24 @@ section Algebra
 
 variable (S : Type*) (R R' : Type u) (M : Type v)
 variable [CommSemiring S] [Semiring R] [CommSemiring R'] [AddCommMonoid M]
-variable [Algebra S R] [Algebra S R'] [Module S M]
-variable [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
+variable [Algebra S R] [Module S M] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
-variable [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M] [IsScalarTower S R' M]
+variable [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M]
 
-instance algebra' : Algebra S (tsze R M) :=
-  { (TrivSqZeroExt.inlHom R M).comp (algebraMap S R) with
-    smul := (· • ·)
-    commutes' := fun s x =>
-      ext (Algebra.commutes _ _) <|
-        show algebraMap S R s •> x.snd + (0 : M) <• x.fst
-            = x.fst •> (0 : M) + x.snd <• algebraMap S R s by
-          rw [smul_zero, smul_zero, add_zero, zero_add]
-          rw [Algebra.algebraMap_eq_smul_one, MulOpposite.op_smul, op_one, smul_assoc,
-            one_smul, smul_assoc, one_smul]
-    smul_def' := fun s x =>
-      ext (Algebra.smul_def _ _) <|
-        show s • x.snd = algebraMap S R s •> x.snd + (0 : M) <• x.fst by
-          rw [smul_zero, add_zero, algebraMap_smul] }
+instance algebra' : Algebra S (tsze R M) where
+  algebraMap := (TrivSqZeroExt.inlHom R M).comp (algebraMap S R)
+  smul := (· • ·)
+  commutes' := fun s x =>
+    ext (Algebra.commutes _ _) <|
+      show algebraMap S R s •> x.snd + (0 : M) <• x.fst
+          = x.fst •> (0 : M) + x.snd <• algebraMap S R s by
+        rw [smul_zero, smul_zero, add_zero, zero_add]
+        rw [Algebra.algebraMap_eq_smul_one, MulOpposite.op_smul, op_one, smul_assoc,
+          one_smul, smul_assoc, one_smul]
+  smul_def' := fun s x =>
+    ext (Algebra.smul_def _ _) <|
+      show s • x.snd = algebraMap S R s •> x.snd + (0 : M) <• x.fst by
+        rw [smul_zero, add_zero, algebraMap_smul]
 
 -- shortcut instance for the common case
 instance : Algebra R' (tsze R' M) :=

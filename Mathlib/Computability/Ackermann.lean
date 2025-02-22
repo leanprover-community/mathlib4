@@ -3,7 +3,6 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Computability.Primrec
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
@@ -75,26 +74,25 @@ theorem ack_succ_succ (m n : ℕ) : ack (m + 1) (n + 1) = ack m (ack (m + 1) n) 
 @[simp]
 theorem ack_one (n : ℕ) : ack 1 n = n + 2 := by
   induction' n with n IH
-  · rfl
+  · simp
   · simp [IH]
 
 @[simp]
 theorem ack_two (n : ℕ) : ack 2 n = 2 * n + 3 := by
   induction' n with n IH
-  · rfl
+  · simp
   · simpa [mul_succ]
 
--- Porting note: re-written to get rid of ack_three_aux
 @[simp]
 theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
   induction' n with n IH
-  · rfl
+  · simp
   · rw [ack_succ_succ, IH, ack_two, Nat.succ_add, Nat.pow_succ 2 (n + 3), mul_comm _ 2,
         Nat.mul_sub_left_distrib, ← Nat.sub_add_comm, two_mul 3, Nat.add_sub_add_right]
     have H : 2 * 3 ≤ 2 * 2 ^ 3 := by norm_num
     apply H.trans
     rw [_root_.mul_le_mul_left two_pos]
-    exact pow_le_pow_right one_le_two (Nat.le_add_left 3 n)
+    exact pow_right_mono₀ one_le_two (Nat.le_add_left 3 n)
 
 theorem ack_pos : ∀ m n, 0 < ack m n
   | 0, n => by simp
@@ -118,7 +116,7 @@ theorem one_lt_ack_succ_right : ∀ m n, 1 < ack m (n + 1)
   | 0, n => by simp
   | m + 1, n => by
     rw [ack_succ_succ]
-    cases' exists_eq_succ_of_ne_zero (ack_pos (m + 1) n).ne' with h h
+    obtain ⟨h, h⟩ := exists_eq_succ_of_ne_zero (ack_pos (m + 1) n).ne'
     rw [h]
     apply one_lt_ack_succ_right
 
@@ -176,7 +174,7 @@ theorem lt_ack_right (m n : ℕ) : n < ack m n :=
 
 -- we reorder the arguments to appease the equation compiler
 private theorem ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack m₁ n < ack m₂ n
-  | m, 0, n => fun h => (not_lt_zero m h).elim
+  | m, 0, _ => fun h => (not_lt_zero m h).elim
   | 0, m + 1, 0 => fun _h => by simpa using one_lt_ack_succ_right m 0
   | 0, m + 1, n + 1 => fun h => by
     rw [ack_zero, ack_succ_succ]
@@ -218,7 +216,7 @@ theorem ack_le_ack {m₁ m₂ n₁ n₂ : ℕ} (hm : m₁ ≤ m₂) (hn : n₁ �
   (ack_mono_left n₁ hm).trans <| ack_mono_right m₂ hn
 
 theorem ack_succ_right_le_ack_succ_left (m n : ℕ) : ack m (n + 1) ≤ ack (m + 1) n := by
-  cases' n with n n
+  rcases n with - | n
   · simp
   · rw [ack_succ_succ]
     apply ack_mono_right m (le_trans _ <| add_add_one_le_ack _ n)
@@ -228,7 +226,7 @@ theorem ack_succ_right_le_ack_succ_left (m n : ℕ) : ack m (n + 1) ≤ ack (m +
 private theorem sq_le_two_pow_add_one_minus_three (n : ℕ) : n ^ 2 ≤ 2 ^ (n + 1) - 3 := by
   induction' n with k hk
   · norm_num
-  · cases' k with k k
+  · rcases k with - | k
     · norm_num
     · rw [add_sq, Nat.pow_succ 2, mul_comm _ 2, two_mul (2 ^ _),
           add_tsub_assoc_of_le, add_comm (2 ^ _), add_assoc]
@@ -236,7 +234,7 @@ private theorem sq_le_two_pow_add_one_minus_three (n : ℕ) : n ^ 2 ≤ 2 ^ (n +
         norm_num
         apply succ_le_of_lt
         rw [Nat.pow_succ, mul_comm _ 2, mul_lt_mul_left (zero_lt_two' ℕ)]
-        apply lt_two_pow
+        exact Nat.lt_two_pow_self
       · rw [Nat.pow_succ, Nat.pow_succ]
         linarith [one_le_pow k 2 zero_lt_two]
 
@@ -289,7 +287,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
   · refine ⟨0, fun n => ?_⟩
     rw [ack_zero, Nat.lt_succ_iff]
     exact unpair_right_le n
-  all_goals cases' IHf with a ha; cases' IHg with b hb
+  all_goals obtain ⟨a, ha⟩ := IHf; obtain ⟨b, hb⟩ := IHg
   -- Pairing:
   · refine
       ⟨max a b + 3, fun n =>
@@ -317,7 +315,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
         simp only
         apply (hb _).trans ((ack_pair_lt _ _ _).trans_le _)
         -- If m is the maximum, we get a very weak inequality.
-        cases' lt_or_le _ m with h₁ h₁
+        rcases lt_or_le _ m with h₁ | h₁
         · rw [max_eq_left h₁.le]
           exact ack_le_ack (Nat.add_le_add (le_max_right a b) <| by norm_num)
                            (self_le_add_right m _)
@@ -325,7 +323,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
         -- We get rid of the second `pair`.
         apply (ack_pair_lt _ _ _).le.trans
         -- If n is the maximum, we get a very weak inequality.
-        cases' lt_or_le _ n with h₂ h₂
+        rcases lt_or_le _ n with h₂ | h₂
         · rw [max_eq_left h₂.le, add_assoc]
           exact
             ack_le_ack (Nat.add_le_add (le_max_right a b) <| by norm_num)
@@ -340,7 +338,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
     exact ⟨max a b + 9, fun n => this.trans_le <| ack_mono_right _ <| unpair_add_le n⟩
 
 theorem not_nat_primrec_ack_self : ¬Nat.Primrec fun n => ack n n := fun h => by
-  cases' exists_lt_ack_of_nat_primrec h with m hm
+  obtain ⟨m, hm⟩ := exists_lt_ack_of_nat_primrec h
   exact (hm m).false
 
 theorem not_primrec_ack_self : ¬Primrec fun n => ack n n := by

@@ -15,7 +15,7 @@ the largest of the modulus of its conjugates.
 
 ## References
 * [D. Marcus, *Number Fields*][marcus1977number]
-* [Keng, H. L, *Introduction to number theory*][keng1982house]
+* [Hua, L.-K., *Introduction to number theory*][hua1982house]
 
 ## Tagshouse
 number field, algebraic number, house
@@ -27,7 +27,7 @@ namespace NumberField
 
 noncomputable section
 
-open Module.Free FiniteDimensional canonicalEmbedding Matrix Finset
+open Module.Free Module canonicalEmbedding Matrix Finset
 
 attribute [local instance] Matrix.seminormedAddCommGroup
 
@@ -62,7 +62,7 @@ noncomputable section
 
 variable (K)
 
-open Module.Free FiniteDimensional canonicalEmbedding Matrix Finset
+open Module.Free Module canonicalEmbedding Matrix Finset
 
 attribute [local instance] Matrix.seminormedAddCommGroup
 
@@ -122,8 +122,8 @@ variable {α : Type*} {β : Type*} (a : Matrix α β (𝓞 K))
 private def a' : α → β → (K →+* ℂ) → (K →+* ℂ) → ℤ := fun k l r =>
   (newBasis K).repr (a k l * (newBasis K) r)
 
-/--`asiegel K a` the integer matrix of the coefficients of the
-  product of matrix elements and basis vectors -/
+/-- `asiegel K a` is the integer matrix of the coefficients of the
+product of matrix elements and basis vectors. -/
 private def asiegel : Matrix (α × (K →+* ℂ)) (β × (K →+* ℂ)) ℤ := fun k l => a' K a k.1 l.1 l.2 k.2
 
 variable (ha : a ≠ 0)
@@ -132,8 +132,8 @@ include ha in
 private theorem asiegel_ne_0 : asiegel K a ≠ 0 := by
   simp (config := { unfoldPartialApp := true }) only [asiegel, a']
   simp only [ne_eq]
-  rw [Function.funext_iff]; intros hs
-  simp only [Prod.forall] at hs;
+  rw [funext_iff]; intros hs
+  simp only [Prod.forall] at hs
   apply ha
   rw [← Matrix.ext_iff]; intros k' l
   specialize hs k'
@@ -141,7 +141,7 @@ private theorem asiegel_ne_0 : asiegel K a ≠ 0 := by
   have := ((newBasis K).repr.map_eq_zero_iff (x := (a k' l * (newBasis K) b))).1 <| by
     ext b'
     specialize hs b'
-    rw [Function.funext_iff] at hs
+    rw [funext_iff] at hs
     simp only [Prod.forall] at hs
     apply hs
   simp only [mul_eq_zero] at this
@@ -157,7 +157,7 @@ private theorem ξ_ne_0 : ξ K x ≠ 0 := by
   intro H
   apply hxl
   ext ⟨l, r⟩
-  rw [Function.funext_iff] at H
+  rw [funext_iff] at H
   have hblin := Basis.linearIndependent (newBasis K)
   simp only [zsmul_eq_mul, Fintype.linearIndependent_iff] at hblin
   exact hblin (fun r ↦ x (l,r)) (H _) r
@@ -175,9 +175,9 @@ private theorem ξ_mulVec_eq_0 : a *ᵥ ξ K x = 0 := by
   have lin_0 : ∀ u, ∑ r, ∑ l, (a' K a k l r u * x (l, r) : 𝓞 K) = 0 := by
     intros u
     have hξ := ξ_ne_0 K x hxl
-    rw [Ne, Function.funext_iff, not_forall] at hξ
+    rw [Ne, funext_iff, not_forall] at hξ
     rcases hξ with ⟨l, hξ⟩
-    rw [Function.funext_iff] at hmulvec0
+    rw [funext_iff] at hmulvec0
     specialize hmulvec0 ⟨k, u⟩
     simp only [Fintype.sum_prod_type, mulVec, dotProduct, asiegel] at hmulvec0
     rw [sum_comm] at hmulvec0
@@ -290,7 +290,7 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
 
 include hpq h0p cardα cardβ ha habs in
 /-- There exists a "small" non-zero algebraic integral solution of an
- non-trivial underdetermined system of linear equations with algebraic integer coefficients.-/
+ non-trivial underdetermined system of linear equations with algebraic integer coefficients. -/
 theorem exists_ne_zero_int_vec_house_le :
     ∃ (ξ : β → 𝓞 K), ξ ≠ 0 ∧ a *ᵥ ξ = 0 ∧
     ∀ l, house (ξ l).1 ≤ c₁ K * ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by

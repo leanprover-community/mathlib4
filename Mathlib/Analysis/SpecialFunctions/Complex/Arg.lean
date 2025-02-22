@@ -80,14 +80,14 @@ theorem range_exp_mul_I : (Set.range fun x : ℝ => exp (x * I)) = Metric.sphere
 
 theorem arg_mul_cos_add_sin_mul_I {r : ℝ} (hr : 0 < r) {θ : ℝ} (hθ : θ ∈ Set.Ioc (-π) π) :
     arg (r * (cos θ + sin θ * I)) = θ := by
-  simp only [arg, map_mul, abs_cos_add_sin_mul_I, abs_of_nonneg hr.le, mul_one]
+  simp only [arg, map_mul, abs_cos_add_sin_mul_I, Complex.abs_of_nonneg hr.le, mul_one]
   simp only [re_ofReal_mul, im_ofReal_mul, neg_im, ← ofReal_cos, ← ofReal_sin, ←
     mk_eq_add_mul_I, neg_div, mul_div_cancel_left₀ _ hr.ne', mul_nonneg_iff_right_nonneg_of_pos hr]
   by_cases h₁ : θ ∈ Set.Icc (-(π / 2)) (π / 2)
   · rw [if_pos]
     exacts [Real.arcsin_sin' h₁, Real.cos_nonneg_of_mem_Icc h₁]
   · rw [Set.mem_Icc, not_and_or, not_le, not_le] at h₁
-    cases' h₁ with h₁ h₁
+    rcases h₁ with h₁ | h₁
     · replace hθ := hθ.1
       have hcos : Real.cos θ < 0 := by
         rw [← neg_pos, ← Real.cos_add_pi]
@@ -171,13 +171,16 @@ theorem arg_mul_real {r : ℝ} (hr : 0 < r) (x : ℂ) : arg (x * r) = arg x :=
 
 theorem arg_eq_arg_iff {x y : ℂ} (hx : x ≠ 0) (hy : y ≠ 0) :
     arg x = arg y ↔ (abs y / abs x : ℂ) * x = y := by
-  simp only [ext_abs_arg_iff, map_mul, map_div₀, abs_ofReal, abs_abs,
+  simp only [ext_abs_arg_iff, map_mul, map_div₀, abs_ofReal, Complex.abs_abs,
     div_mul_cancel₀ _ (abs.ne_zero hx), eq_self_iff_true, true_and]
   rw [← ofReal_div, arg_real_mul]
   exact div_pos (abs.pos hy) (abs.pos hx)
 
-@[simp]
-theorem arg_one : arg 1 = 0 := by simp [arg, zero_le_one]
+@[simp] lemma arg_one : arg 1 = 0 := by simp [arg, zero_le_one]
+
+/-- This holds true for all `x : ℂ` because of the junk values `0 / 0 = 0` and `arg 0 = 0`. -/
+@[simp] lemma arg_div_self (x : ℂ) : arg (x / x) = 0 := by
+  obtain rfl | hx := eq_or_ne x 0 <;> simp [*]
 
 @[simp]
 theorem arg_neg_one : arg (-1) = π := by simp [arg, le_refl, not_le.2 (zero_lt_one' ℝ)]
@@ -201,14 +204,14 @@ lemma natCast_arg {n : ℕ} : arg n = 0 :=
   ofReal_natCast n ▸ arg_ofReal_of_nonneg n.cast_nonneg
 
 @[simp]
-lemma ofNat_arg {n : ℕ} [n.AtLeastTwo] : arg (no_index (OfNat.ofNat n)) = 0 :=
+lemma ofNat_arg {n : ℕ} [n.AtLeastTwo] : arg ofNat(n) = 0 :=
   natCast_arg
 
 theorem arg_eq_zero_iff {z : ℂ} : arg z = 0 ↔ 0 ≤ z.re ∧ z.im = 0 := by
   refine ⟨fun h => ?_, ?_⟩
   · rw [← abs_mul_cos_add_sin_mul_I z, h]
     simp [abs.nonneg]
-  · cases' z with x y
+  · obtain ⟨x, y⟩ := z
     rintro ⟨h, rfl : y = 0⟩
     exact arg_ofReal_of_nonneg h
 
@@ -223,7 +226,7 @@ theorem arg_eq_pi_iff {z : ℂ} : arg z = π ↔ z.re < 0 ∧ z.im = 0 := by
   · intro h
     rw [← abs_mul_cos_add_sin_mul_I z, h]
     simp [h₀]
-  · cases' z with x y
+  · obtain ⟨x, y⟩ := z
     rintro ⟨h : x < 0, rfl : y = 0⟩
     rw [← arg_neg_one, ← arg_real_mul (-1) (neg_pos.2 h)]
     simp [← ofReal_def]
@@ -243,7 +246,7 @@ theorem arg_eq_pi_div_two_iff {z : ℂ} : arg z = π / 2 ↔ z.re = 0 ∧ 0 < z.
   · intro h
     rw [← abs_mul_cos_add_sin_mul_I z, h]
     simp [h₀]
-  · cases' z with x y
+  · obtain ⟨x, y⟩ := z
     rintro ⟨rfl : x = 0, hy : 0 < y⟩
     rw [← arg_I, ← arg_real_mul I hy, ofReal_mul', I_re, I_im, mul_zero, mul_one]
 
@@ -253,7 +256,7 @@ theorem arg_eq_neg_pi_div_two_iff {z : ℂ} : arg z = -(π / 2) ↔ z.re = 0 ∧
   · intro h
     rw [← abs_mul_cos_add_sin_mul_I z, h]
     simp [h₀]
-  · cases' z with x y
+  · obtain ⟨x, y⟩ := z
     rintro ⟨rfl : x = 0, hy : y < 0⟩
     rw [← arg_neg_I, ← arg_real_mul (-I) (neg_pos.2 hy), mk_eq_add_mul_I]
     simp
@@ -328,7 +331,7 @@ theorem arg_le_pi_div_two_iff {z : ℂ} : arg z ≤ π / 2 ↔ 0 ≤ re z ∨ im
   · simp only [him.not_lt]
     rw [iff_false, not_le, arg_of_re_neg_of_im_nonneg hre him, ← sub_lt_iff_lt_add, half_sub,
       Real.neg_pi_div_two_lt_arcsin, neg_im, neg_div, neg_lt_neg_iff, div_lt_one, ←
-      _root_.abs_of_nonneg him, abs_im_lt_abs]
+      abs_of_nonneg him, abs_im_lt_abs]
     exacts [hre.ne, abs.pos <| ne_of_apply_ne re hre.ne]
   · simp only [him]
     rw [iff_true, arg_of_re_neg_of_im_neg hre him]
@@ -597,8 +600,8 @@ theorem continuousAt_arg_coe_angle (h : x ≠ 0) : ContinuousAt ((↑) ∘ arg :
   by_cases hs : x ∈ slitPlane
   · exact Real.Angle.continuous_coe.continuousAt.comp (continuousAt_arg hs)
   · rw [← Function.comp_id (((↑) : ℝ → Real.Angle) ∘ arg),
-      (Function.funext_iff.2 fun _ => (neg_neg _).symm : (id : ℂ → ℂ) = Neg.neg ∘ Neg.neg), ←
-      Function.comp.assoc]
+      (funext_iff.2 fun _ => (neg_neg _).symm : (id : ℂ → ℂ) = Neg.neg ∘ Neg.neg), ←
+      Function.comp_assoc]
     refine ContinuousAt.comp ?_ continuous_neg.continuousAt
     suffices ContinuousAt (Function.update (((↑) ∘ arg) ∘ Neg.neg : ℂ → Real.Angle) 0 π) (-x) by
       rwa [continuousAt_update_of_ne (neg_ne_zero.2 h)] at this

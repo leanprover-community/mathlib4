@@ -106,9 +106,7 @@ instance : Repr MiuAtom :=
 
 /-- For simplicity, an `Miustr` is just a list of elements of type `MiuAtom`.
 -/
-def Miustr :=
-  List MiuAtom
-deriving Append
+abbrev Miustr := List MiuAtom
 
 instance : Membership MiuAtom Miustr := by unfold Miustr; infer_instance
 
@@ -141,7 +139,6 @@ instance stringCoeMiustr : Coe String Miustr :=
 -/
 
 
--- Porting note: Added a lot of `↑` to coerce `List MiuAtom` to `Miustr`
 /--
 The inductive type `Derivable` has five constructors. The nonrecursive constructor `mk` corresponds
 to Hofstadter's axiom that `"MI"` is derivable. Each of the constructors `r1`, `r2`, `r3`, `r4`
@@ -149,10 +146,10 @@ corresponds to the one of Hofstadter's rules of inference.
 -/
 inductive Derivable : Miustr → Prop
   | mk : Derivable "MI"
-  | r1 {x} : Derivable (x ++ ↑[I]) → Derivable (x ++ ↑[I, U])
+  | r1 {x} : Derivable (x ++ [I]) → Derivable (x ++ [I, U])
   | r2 {x} : Derivable (M :: x) → Derivable (M :: x ++ x)
-  | r3 {x y} : Derivable (x ++ ↑[I, I, I] ++ y) → Derivable (x ++ ↑(U :: y))
-  | r4 {x y} : Derivable (x ++ ↑[U, U] ++ y) → Derivable (x ++ y)
+  | r3 {x y} : Derivable (x ++ [I, I, I] ++ y) → Derivable (x ++ (U :: y))
+  | r4 {x y} : Derivable (x ++ [U, U] ++ y) → Derivable (x ++ y)
 
 /-!
 ### Rule usage examples

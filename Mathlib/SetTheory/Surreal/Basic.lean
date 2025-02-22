@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Scott Morrison
+Authors: Mario Carneiro, Kim Morrison
 -/
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.SetTheory.Game.Ordinal
@@ -378,6 +378,7 @@ def toGame : Surreal →+o Game where
   map_add' := by rintro ⟨_, _⟩ ⟨_, _⟩; rfl
   monotone' := by rintro ⟨_, _⟩ ⟨_, _⟩; exact id
 
+@[simp]
 theorem zero_toGame : toGame 0 = 0 :=
   rfl
 

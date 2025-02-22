@@ -4,12 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Galois.Basic
-import Mathlib.RepresentationTheory.Action.Basic
-import Mathlib.RepresentationTheory.Action.Concrete
-import Mathlib.RepresentationTheory.Action.Limits
-import Mathlib.CategoryTheory.Limits.FintypeCat
-import Mathlib.CategoryTheory.Limits.Shapes.Types
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.CategoryTheory.Action.Concrete
+import Mathlib.CategoryTheory.Action.Limits
 
 /-!
 # Examples of Galois categories and fiber functors
@@ -25,9 +21,9 @@ universe u v w
 
 namespace CategoryTheory
 
-namespace FintypeCat
-
 open Limits Functor PreGaloisCategory
+
+namespace FintypeCat
 
 /-- Complement of the image of a morphism `f : X ⟶ Y` in `FintypeCat`. -/
 noncomputable def imageComplement {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
@@ -55,9 +51,9 @@ noncomputable def Action.imageComplement {X Y : Action FintypeCat (MonCat.of G)}
       calc (X.ρ g⁻¹ ≫ f.hom) x
           = (Y.ρ g⁻¹ * Y.ρ g) y.val := by rw [f.comm, FintypeCat.comp_apply, h]; rfl
         _ = y.val := by rw [← map_mul, inv_mul_cancel, Action.ρ_one, FintypeCat.id_apply]
-    map_one' := by simp only [Action.ρ_one]; rfl
-    map_mul' := fun g h ↦ FintypeCat.hom_ext _ _ <| fun y ↦ Subtype.ext <| by
-      exact congrFun (MonoidHom.map_mul Y.ρ g h) y.val
+    map_one' := by simp only [map_one, End.one_def, FintypeCat.id_apply, Subtype.coe_eta]; rfl
+    map_mul' := fun g h ↦ FintypeCat.hom_ext _ _ <| fun y ↦ Subtype.ext <|
+      congrFun (MonoidHom.map_mul Y.ρ.hom g h) y.val
   }
 
 /-- The inclusion from the complement of the image of `f : X ⟶ Y` into `Y`. -/
@@ -66,6 +62,7 @@ def Action.imageComplementIncl {X Y : Action FintypeCat (MonCat.of G)} (f : X �
   hom := FintypeCat.imageComplementIncl f.hom
   comm _ := rfl
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance {X Y : Action FintypeCat (MonCat.of G)} (f : X ⟶ Y) :
     Mono (Action.imageComplementIncl G f) := by
   apply Functor.mono_of_mono_map (forget _)
@@ -79,12 +76,12 @@ instance [Finite G] : HasColimitsOfShape (SingleObj G) FintypeCat.{w} := by
 
 noncomputable instance : PreservesFiniteLimits (forget (Action FintypeCat (MonCat.of G))) := by
   show PreservesFiniteLimits (Action.forget FintypeCat _ ⋙ FintypeCat.incl)
-  apply compPreservesFiniteLimits
+  apply comp_preservesFiniteLimits
 
 /-- The category of finite `G`-sets is a `PreGaloisCategory`. -/
 instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
-  hasQuotientsByFiniteGroups G _ _ := inferInstance
-  monoInducesIsoOnDirectSummand {X Y} i h :=
+  hasQuotientsByFiniteGroups _ _ _ := inferInstance
+  monoInducesIsoOnDirectSummand {_ _} i _ :=
     ⟨Action.imageComplement G i, Action.imageComplementIncl G i,
      ⟨isColimitOfReflects (Action.forget _ _ ⋙ FintypeCat.incl) <|
       (isColimitMapCoconeBinaryCofanEquiv (forget _) i _).symm
@@ -92,9 +89,9 @@ instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
 
 /-- The forgetful functor from finite `G`-sets to sets is a `FiberFunctor`. -/
 noncomputable instance : FiberFunctor (Action.forget FintypeCat (MonCat.of G)) where
-  preservesFiniteCoproducts := ⟨fun _ _ ↦ inferInstance⟩
+  preservesFiniteCoproducts := ⟨fun _ ↦ inferInstance⟩
   preservesQuotientsByFiniteGroups _ _ _ := inferInstance
-  reflectsIsos := ⟨fun f (h : IsIso f.hom) => inferInstance⟩
+  reflectsIsos := ⟨fun f (_ : IsIso f.hom) => inferInstance⟩
 
 /-- The forgetful functor from finite `G`-sets to sets is a `FiberFunctor`. -/
 noncomputable instance : FiberFunctor (forget₂ (Action FintypeCat (MonCat.of G)) FintypeCat) :=
@@ -152,6 +149,23 @@ theorem Action.isConnected_of_transitive (X : FintypeCat) [MulAction G X]
 theorem Action.isConnected_iff_transitive (X : Action FintypeCat (MonCat.of G)) [Nonempty X.V] :
     IsConnected X ↔ MulAction.IsPretransitive G X.V :=
   ⟨fun _ ↦ pretransitive_of_isConnected G X, fun _ ↦ isConnected_of_transitive G X.V⟩
+
+variable {G}
+
+/-- If `X` is a connected `G`-set and `x` is an element of `X`, `X` is isomorphic
+to the quotient of `G` by the stabilizer of `x` as `G`-sets. -/
+noncomputable def isoQuotientStabilizerOfIsConnected (X : Action FintypeCat (MonCat.of G))
+    [IsConnected X] (x : X.V) [Fintype (G ⧸ (MulAction.stabilizer G x))] :
+    X ≅ G ⧸ₐ MulAction.stabilizer G x :=
+  haveI : MulAction.IsPretransitive G X.V := Action.pretransitive_of_isConnected G X
+  let e : X.V ≃ G ⧸ MulAction.stabilizer G x :=
+    (Equiv.Set.univ X.V).symm.trans <|
+      (Equiv.setCongr ((MulAction.orbit_eq_univ G x).symm)).trans <|
+      MulAction.orbitEquivQuotientStabilizer G x
+  Iso.symm <| Action.mkIso (FintypeCat.equivEquivIso e.symm) <| fun σ : G ↦ by
+    ext (a : G ⧸ MulAction.stabilizer G x)
+    obtain ⟨τ, rfl⟩ := Quotient.exists_rep a
+    exact mul_smul σ τ x
 
 end FintypeCat
 

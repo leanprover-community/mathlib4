@@ -3,8 +3,7 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.FintypeCat
+import Mathlib.CategoryTheory.Galois.Prorepresentability
 import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
@@ -18,9 +17,12 @@ embedding of `Aut F` into `∀ X, Aut (F.obj X)` where
 
 ## References
 
-- Stacks Project: Tag 0BMQ
+- [Stacks 0BMQ](https://stacks.math.columbia.edu/tag/0BMQ)
 
 -/
+
+open Topology
+
 universe u₁ u₂ v₁ v₂ v w
 
 namespace CategoryTheory
@@ -70,7 +72,7 @@ lemma autEmbedding_range :
   ext a
   simp only [Set.mem_range, id_obj, Set.mem_iInter, Set.mem_setOf_eq]
   refine ⟨fun ⟨σ, h⟩ i ↦ h.symm ▸ σ.hom.naturality i.hom, fun h ↦ ?_⟩
-  · use NatIso.ofComponents (fun X => a X) (fun {X Y} f ↦ h ⟨X, Y, f⟩)
+  · use NatIso.ofComponents a (fun {X Y} f ↦ h ⟨X, Y, f⟩)
     rfl
 
 /-- The image of `Aut F` in `∀ X, Aut (F.obj X)` is closed. -/
@@ -80,34 +82,106 @@ lemma autEmbedding_range_isClosed : IsClosed (Set.range (autEmbedding F)) := by
   · fun_prop
   · fun_prop
 
-lemma autEmbedding_closedEmbedding : ClosedEmbedding (autEmbedding F) where
-  induced := rfl
-  inj := autEmbedding_injective F
+lemma autEmbedding_isClosedEmbedding : IsClosedEmbedding (autEmbedding F) where
+  eq_induced := rfl
+  injective := autEmbedding_injective F
   isClosed_range := autEmbedding_range_isClosed F
 
-instance : CompactSpace (Aut F) := ClosedEmbedding.compactSpace (autEmbedding_closedEmbedding F)
+@[deprecated (since := "2024-10-20")]
+alias autEmbedding_closedEmbedding := autEmbedding_isClosedEmbedding
+
+instance : CompactSpace (Aut F) := (autEmbedding_isClosedEmbedding F).compactSpace
 
 instance : T2Space (Aut F) :=
   T2Space.of_injective_continuous (autEmbedding_injective F) continuous_induced_dom
 
 instance : TotallyDisconnectedSpace (Aut F) :=
-  (Embedding.isTotallyDisconnected_range (autEmbedding_closedEmbedding F).embedding).mp
+  (autEmbedding_isClosedEmbedding F).isEmbedding.isTotallyDisconnected_range.mp
     (isTotallyDisconnected_of_totallyDisconnectedSpace _)
 
 instance : ContinuousMul (Aut F) :=
-  Inducing.continuousMul (autEmbedding F)
-    (autEmbedding_closedEmbedding F).toInducing
+  (autEmbedding_isClosedEmbedding F).isInducing.continuousMul (autEmbedding F)
 
 instance : ContinuousInv (Aut F) :=
-  Inducing.continuousInv (autEmbedding_closedEmbedding F).toInducing (fun _ ↦ rfl)
+  (autEmbedding_isClosedEmbedding F).isInducing.continuousInv fun _ ↦ rfl
 
-instance : TopologicalGroup (Aut F) := ⟨⟩
+instance : IsTopologicalGroup (Aut F) := ⟨⟩
 
 instance (X : C) : SMul (Aut (F.obj X)) (F.obj X) := ⟨fun σ a => σ.hom a⟩
 
 instance (X : C) : ContinuousSMul (Aut (F.obj X)) (F.obj X) := by
   constructor
   fun_prop
+
+instance continuousSMul_aut_fiber (X : C) : ContinuousSMul (Aut F) (F.obj X) where
+  continuous_smul := by
+    let g : Aut (F.obj X) × F.obj X → F.obj X := fun ⟨σ, x⟩ ↦ σ.hom x
+    let h (q : Aut F × F.obj X) : Aut (F.obj X) × F.obj X :=
+      ⟨((fun p ↦ p X) ∘ autEmbedding F) q.1, q.2⟩
+    show Continuous (g ∘ h)
+    fun_prop
+
+variable [GaloisCategory C] [FiberFunctor F]
+
+/--
+If `H` is an open subset of `Aut F` such that `1 ∈ H`, there exists a finite
+set `I` of connected objects of `C` such that every `σ : Aut F` that induces the identity
+on `F.obj X` for all `X ∈ I` is contained in `H`. In other words: The kernel
+of the evaluation map `Aut F →* ∏ X : I ↦ Aut (F.obj X)` is contained in `H`.
+-/
+lemma exists_set_ker_evaluation_subset_of_isOpen
+    {H : Set (Aut F)} (h1 : 1 ∈ H) (h : IsOpen H) :
+    ∃ (I : Set C) (_ : Fintype I), (∀ X ∈ I, IsConnected X) ∧
+      (∀ σ : Aut F, (∀ X : I, σ.hom.app X = 𝟙 (F.obj X)) → σ ∈ H) := by
+  obtain ⟨U, hUopen, rfl⟩ := isOpen_induced_iff.mp h
+  obtain ⟨I, u, ho, ha⟩ := isOpen_pi_iff.mp hUopen 1 h1
+  choose fι ff fc h4 h5 h6 using (fun X : I => has_decomp_connected_components X.val)
+  refine ⟨⋃ X, Set.range (ff X), Fintype.ofFinite _, ?_, ?_⟩
+  · rintro X ⟨A, ⟨Y, rfl⟩, hA2⟩
+    obtain ⟨i, rfl⟩ := hA2
+    exact h5 Y i
+  · refine fun σ h ↦ ha (fun X XinI ↦ ?_)
+    suffices h : autEmbedding F σ X = 1 by
+      rw [h]
+      exact (ho X XinI).right
+    have h : σ.hom.app X = 𝟙 (F.obj X) := by
+      have : Fintype (fι ⟨X, XinI⟩) := Fintype.ofFinite _
+      ext x
+      obtain ⟨⟨j⟩, a, ha : F.map _ a = x⟩ := Limits.FintypeCat.jointly_surjective
+        (Discrete.functor (ff ⟨X, XinI⟩) ⋙ F) _ (Limits.isColimitOfPreserves F (h4 ⟨X, XinI⟩)) x
+      rw [FintypeCat.id_apply, ← ha, FunctorToFintypeCat.naturality]
+      simp [h ⟨(ff _) j, ⟨Set.range (ff ⟨X, XinI⟩), ⟨⟨_, rfl⟩, ⟨j, rfl⟩⟩⟩⟩]
+    exact Iso.ext h
+
+open Limits
+
+/-- The stabilizers of points in the fibers of Galois objects form a neighbourhood basis
+of the identity in `Aut F`. -/
+lemma nhds_one_has_basis_stabilizers : (nhds (1 : Aut F)).HasBasis (fun _ ↦ True)
+    (fun X : PointedGaloisObject F ↦ MulAction.stabilizer (Aut F) X.pt) where
+  mem_iff' S := by
+    rw [mem_nhds_iff]
+    refine ⟨?_, ?_⟩
+    · intro ⟨U, hU, hUopen, hUone⟩
+      obtain ⟨I, _, hc, hmem⟩ := exists_set_ker_evaluation_subset_of_isOpen F hUone hUopen
+      let P : C := ∏ᶜ fun X : I ↦ X.val
+      obtain ⟨A, a, hgal, hbij⟩ := exists_galois_representative F P
+      refine ⟨⟨A, a, hgal⟩, trivial, ?_⟩
+      intro t (ht : t.hom.app A a = a)
+      apply hU
+      apply hmem
+      haveI (X : I) : IsConnected X.val := hc X.val X.property
+      haveI (X : I) : Nonempty (F.obj X.val) := nonempty_fiber_of_isConnected F X
+      intro X
+      ext x
+      simp only [FintypeCat.id_apply]
+      obtain ⟨z, rfl⟩ :=
+        surjective_of_nonempty_fiber_of_isConnected F (Pi.π (fun X : I ↦ X.val) X) x
+      obtain ⟨f, rfl⟩ := hbij.surjective z
+      rw [FunctorToFintypeCat.naturality, FunctorToFintypeCat.naturality, ht]
+    · intro ⟨X, _, h⟩
+      exact ⟨MulAction.stabilizer (Aut F) X.pt, h, stabilizer_isOpen (Aut F) X.pt,
+        Subgroup.one_mem _⟩
 
 end PreGaloisCategory
 

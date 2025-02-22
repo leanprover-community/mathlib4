@@ -3,6 +3,7 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Analysis.InnerProductSpace.Convex
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Combinatorics.Additive.AP.Three.Defs
 import Mathlib.Combinatorics.Pigeonhole
@@ -42,6 +43,8 @@ integer points on that sphere and map them onto `ℕ` in a way that preserves ar
 3AP-free, Salem-Spencer, Behrend construction, arithmetic progression, sphere, strictly convex
 -/
 
+assert_not_exists IsConformalMap Conformal
+
 open Nat hiding log
 open Finset Metric Real
 open scoped Pointwise
@@ -67,12 +70,12 @@ lemma threeAPFree_sphere {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   obtain rfl | hr := eq_or_ne r 0
   · rw [sphere_zero]
     exact threeAPFree_singleton _
-  · convert threeAPFree_frontier isClosed_ball (strictConvex_closedBall ℝ x r)
+  · convert threeAPFree_frontier isClosed_closedBall (strictConvex_closedBall ℝ x r)
     exact (frontier_closedBall _ hr).symm
 
 namespace Behrend
 
-variable {α β : Type*} {n d k N : ℕ} {x : Fin n → ℕ}
+variable {n d k N : ℕ} {x : Fin n → ℕ}
 
 /-!
 ### Turning the sphere into 3AP-free set
@@ -92,17 +95,16 @@ def box (n d : ℕ) : Finset (Fin n → ℕ) :=
 theorem mem_box : x ∈ box n d ↔ ∀ i, x i < d := by simp only [box, Fintype.mem_piFinset, mem_range]
 
 @[simp]
-theorem card_box : (box n d).card = d ^ n := by simp [box]
+theorem card_box : #(box n d) = d ^ n := by simp [box]
 
 @[simp]
 theorem box_zero : box (n + 1) 0 = ∅ := by simp [box]
 
 /-- The intersection of the sphere of radius `√k` with the integer points in the positive
 quadrant. -/
-def sphere (n d k : ℕ) : Finset (Fin n → ℕ) :=
-  (box n d).filter fun x => ∑ i, x i ^ 2 = k
+def sphere (n d k : ℕ) : Finset (Fin n → ℕ) := {x ∈ box n d | ∑ i, x i ^ 2 = k}
 
-theorem sphere_zero_subset : sphere n d 0 ⊆ 0 := fun x => by simp [sphere, Function.funext_iff]
+theorem sphere_zero_subset : sphere n d 0 ⊆ 0 := fun x => by simp [sphere, funext_iff]
 
 @[simp]
 theorem sphere_zero_right (n k : ℕ) : sphere (n + 1) 0 k = ∅ := by simp [sphere]
@@ -128,7 +130,6 @@ def map (d : ℕ) : (Fin n → ℕ) →+ ℕ where
   map_zero' := by simp_rw [Pi.zero_apply, zero_mul, sum_const_zero]
   map_add' a b := by simp_rw [Pi.add_apply, add_mul, sum_add_distrib]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_zero (d : ℕ) (a : Fin 0 → ℕ) : map d a = 0 := by simp [map]
 
 theorem map_succ (a : Fin (n + 1) → ℕ) :
@@ -154,13 +155,12 @@ theorem map_eq_iff {x₁ x₂ : Fin n.succ → ℕ} (hx₁ : ∀ i, x₁ i < d) 
 
 theorem map_injOn : {x : Fin n → ℕ | ∀ i, x i < d}.InjOn (map d) := by
   intro x₁ hx₁ x₂ hx₂ h
-  induction' n with n ih
-  · simp [eq_iff_true_of_subsingleton]
-  ext i
-  have x := (map_eq_iff hx₁ hx₂).1 h
-  refine Fin.cases x.1 (congr_fun <| ih (fun _ => ?_) (fun _ => ?_) x.2) i
-  · exact hx₁ _
-  · exact hx₂ _
+  induction n with
+  | zero => simp [eq_iff_true_of_subsingleton]
+  | succ n ih =>
+    ext i
+    have x := (map_eq_iff hx₁ hx₂).1 h
+    exact Fin.cases x.1 (congr_fun <| ih (fun _ => hx₁ _) (fun _ => hx₂ _) x.2) i
 
 theorem map_le_of_mem_box (hx : x ∈ box n d) :
     map (2 * d - 1) x ≤ ∑ i : Fin n, (d - 1) * (2 * d - 1) ^ (i : ℕ) :=
@@ -204,7 +204,7 @@ theorem sum_lt : (∑ i : Fin n, d * (2 * d + 1) ^ (i : ℕ)) < (2 * d + 1) ^ n 
   sum_eq.trans_lt <| (Nat.div_le_self _ 2).trans_lt <| pred_lt (pow_pos (succ_pos _) _).ne'
 
 theorem card_sphere_le_rothNumberNat (n d k : ℕ) :
-    (sphere n d k).card ≤ rothNumberNat ((2 * d - 1) ^ n) := by
+    #(sphere n d k) ≤ rothNumberNat ((2 * d - 1) ^ n) := by
   cases n
   · dsimp; refine (card_le_univ _).trans_eq ?_; rfl
   cases d
@@ -229,7 +229,7 @@ that we then optimize by tweaking the parameters. The (almost) optimal parameter
 
 
 theorem exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 + 1),
-    (↑(d ^ n) / ((n * (d - 1) ^ 2 :) + 1) : ℝ) ≤ (sphere n d k).card := by
+    (↑(d ^ n) / ((n * (d - 1) ^ 2 :) + 1) : ℝ) ≤ #(sphere n d k) := by
   refine exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun x hx => ?_) nonempty_range_succ ?_
   · rw [mem_range, Nat.lt_succ_iff]
     exact sum_sq_le_of_mem_box hx
@@ -238,7 +238,7 @@ theorem exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 +
     exact (cast_add_one_pos _).ne'
 
 theorem exists_large_sphere (n d : ℕ) :
-    ∃ k, ((d ^ n :) / (n * d ^ 2 :) : ℝ) ≤ (sphere n d k).card := by
+    ∃ k, ((d ^ n :) / (n * d ^ 2 :) : ℝ) ≤ #(sphere n d k) := by
   obtain ⟨k, -, hk⟩ := exists_large_sphere_aux n d
   refine ⟨k, ?_⟩
   obtain rfl | hn := n.eq_zero_or_pos
@@ -284,8 +284,7 @@ theorem log_two_mul_two_le_sqrt_log_eight : log 2 * 2 ≤ √(log 8) := by
 
 theorem two_div_one_sub_two_div_e_le_eight : 2 / (1 - 2 / exp 1) ≤ 8 := by
   rw [div_le_iff₀, mul_sub, mul_one, mul_div_assoc', le_sub_comm, div_le_iff₀ (exp_pos _)]
-  · have : 16 < 6 * (2.7182818283 : ℝ) := by norm_num
-    linarith [exp_one_gt_d9]
+  · linarith [exp_one_gt_d9]
   rw [sub_pos, div_lt_one] <;> exact exp_one_gt_d9.trans' (by norm_num)
 
 theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) ≤ √(log ↑N) := by
@@ -356,7 +355,7 @@ theorem three_le_nValue (hN : 64 ≤ N) : 3 ≤ nValue N := by
     rw [rpow_natCast]
     exact (cast_le.2 hN).trans' (by norm_num1)
   apply lt_of_lt_of_le _ (log_le_log (rpow_pos_of_pos zero_lt_two _) this)
-  rw [log_rpow zero_lt_two, ← div_lt_iff']
+  rw [log_rpow zero_lt_two, ← div_lt_iff₀']
   · exact log_two_gt_d9.trans_le' (by norm_num1)
   · norm_num1
 
@@ -459,14 +458,13 @@ theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :
 
 theorem exp_four_lt : exp 4 < 64 := by
   rw [show (64 : ℝ) = 2 ^ ((6 : ℕ) : ℝ) by rw [rpow_natCast]; norm_num1,
-    ← lt_log_iff_exp_lt (rpow_pos_of_pos zero_lt_two _), log_rpow zero_lt_two, ← div_lt_iff']
+    ← lt_log_iff_exp_lt (rpow_pos_of_pos zero_lt_two _), log_rpow zero_lt_two, ← div_lt_iff₀']
   · exact log_two_gt_d9.trans_le' (by norm_num1)
   · norm_num
 
 theorem four_zero_nine_six_lt_exp_sixteen : 4096 < exp 16 := by
   rw [← log_lt_iff_lt_exp (show (0 : ℝ) < 4096 by norm_num), show (4096 : ℝ) = 2 ^ 12 by norm_cast,
     ← rpow_natCast, log_rpow zero_lt_two, cast_ofNat]
-  have : 12 * (0.6931471808 : ℝ) < 16 := by norm_num
   linarith [log_two_lt_d9]
 
 theorem lower_bound_le_one' (hN : 2 ≤ N) (hN' : N ≤ 4096) :

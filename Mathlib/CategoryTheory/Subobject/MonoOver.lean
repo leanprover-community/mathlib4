@@ -1,9 +1,9 @@
 /-
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, Scott Morrison
+Authors: Bhavik Mehta, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Adjunction.Over
+import Mathlib.CategoryTheory.Comma.Over.Pullback
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.CategoryTheory.Limits.Shapes.Images
@@ -28,7 +28,7 @@ and prove their basic properties and relationships.
 ## Notes
 
 This development originally appeared in Bhavik Mehta's "Topos theory for Lean" repository,
-and was ported to mathlib by Scott Morrison.
+and was ported to mathlib by Kim Morrison.
 
 -/
 
@@ -56,6 +56,8 @@ instance (X : C) : Category (MonoOver X) :=
   FullSubcategory.category _
 
 namespace MonoOver
+
+instance mono_obj_hom (S : MonoOver X) : Mono S.obj.hom := S.2
 
 /-- Construct a `MonoOver X`. -/
 @[simps]
@@ -355,7 +357,7 @@ def imageForgetAdj : image ⊣ forget X :=
                     e := k.left
                     fac := Over.w k }
             · apply image.lift_fac
-          left_inv := fun k => Subsingleton.elim _ _
+          left_inv := fun _ => Subsingleton.elim _ _
           right_inv := fun k => by
             ext1
             change factorThruImage _ ≫ image.lift _ = _

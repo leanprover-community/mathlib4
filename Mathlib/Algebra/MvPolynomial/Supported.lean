@@ -25,11 +25,11 @@ universe u v w
 
 namespace MvPolynomial
 
-variable {σ τ : Type*} {R : Type u} {S : Type v} {r : R} {e : ℕ} {n m : σ}
+variable {σ : Type*} {R : Type u}
 
 section CommSemiring
 
-variable [CommSemiring R] {p q : MvPolynomial σ R}
+variable [CommSemiring R] {p : MvPolynomial σ R}
 variable (R)
 
 /-- The set of polynomials whose variables are contained in `s` as a `Subalgebra` over `R`. -/
@@ -114,7 +114,7 @@ theorem supported_strictMono [Nontrivial R] :
 theorem exists_restrict_to_vars (R : Type*) [CommRing R] {F : MvPolynomial σ ℤ}
     (hF : ↑F.vars ⊆ s) : ∃ f : (s → R) → R, ∀ x : σ → R, f (x ∘ (↑) : s → R) = aeval x F := by
   rw [← mem_supported, supported_eq_range_rename, AlgHom.mem_range] at hF
-  cases' hF with F' hF'
+  obtain ⟨F', hF'⟩ := hF
   use fun z ↦ aeval z F'
   intro x
   simp only [← hF', aeval_rename]

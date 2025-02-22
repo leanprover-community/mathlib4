@@ -37,7 +37,7 @@ To check the concentration property of the middle factor and the fact that it ha
 rely on the explicit computation of the Fourier transform of Gaussians.
 -/
 
-open Filter MeasureTheory Complex FiniteDimensional Metric Real Bornology
+open Filter MeasureTheory Complex Module Metric Real Bornology
 
 open scoped Topology FourierTransform RealInnerProductSpace Complex
 
@@ -145,7 +145,7 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
       ofReal_cpow pi_nonneg, ofReal_cpow hc.le]
     simp [div_eq_inv_mul]
   · norm_cast
-    simp only [one_div, norm_smul, Real.norm_eq_abs, mul_pow, _root_.sq_abs, neg_mul, neg_inj,
+    simp only [one_div, norm_smul, Real.norm_eq_abs, mul_pow, sq_abs, neg_mul, neg_inj,
       ← rpow_natCast, ← rpow_mul hc.le, mul_assoc]
     norm_num
 

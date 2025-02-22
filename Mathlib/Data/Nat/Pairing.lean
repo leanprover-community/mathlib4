@@ -3,9 +3,9 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Data.Set.Lattice
+import Mathlib.Algebra.ZeroOne.Prod
 import Mathlib.Data.Nat.Sqrt
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Naturals pairing function
@@ -23,7 +23,7 @@ It has the advantage of being monotone in both directions and sending `⟦0, n^2
 `⟦0, n - 1⟧²`.
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists Monoid
 
 open Prod Decidable Function
 
@@ -45,10 +45,10 @@ theorem pair_unpair (n : ℕ) : pair (unpair n).1 (unpair n).2 = n := by
   dsimp only [unpair]; let s := sqrt n
   have sm : s * s + (n - s * s) = n := Nat.add_sub_cancel' (sqrt_le _)
   split_ifs with h
-  · simp [pair, h, sm]
+  · simp [s, pair, h, sm]
   · have hl : n - s * s - s ≤ s := Nat.sub_le_iff_le_add.2
       (Nat.sub_le_iff_le_add'.2 <| by rw [← Nat.add_assoc]; apply sqrt_le_add)
-    simp [pair, hl.not_lt, Nat.add_assoc, Nat.add_sub_cancel' (le_of_not_gt h), sm]
+    simp [s, pair, hl.not_lt, Nat.add_assoc, Nat.add_sub_cancel' (le_of_not_gt h), sm]
 
 theorem pair_unpair' {n a b} (H : unpair n = (a, b)) : pair a b = n := by
   simpa [H] using pair_unpair n
@@ -80,7 +80,7 @@ theorem pair_eq_pair {a b c d : ℕ} : pair a b = pair c d ↔ a = c ∧ b = d :
 theorem unpair_lt {n : ℕ} (n1 : 1 ≤ n) : (unpair n).1 < n := by
   let s := sqrt n
   simp only [unpair, Nat.sub_le_iff_le_add]
-  by_cases h : n - s * s < s <;> simp only [h, ↓reduceIte]
+  by_cases h : n - s * s < s <;> simp [s, h, ↓reduceIte]
   · exact lt_of_lt_of_le h (sqrt_le_self _)
   · simp only [not_lt] at h
     have s0 : 0 < s := sqrt_pos.2 n1
@@ -93,7 +93,7 @@ theorem unpair_zero : unpair 0 = 0 := by
 
 theorem unpair_left_le : ∀ n : ℕ, (unpair n).1 ≤ n
   | 0 => by simp
-  | n + 1 => le_of_lt (unpair_lt (Nat.succ_pos _))
+  | _ + 1 => le_of_lt (unpair_lt (Nat.succ_pos _))
 
 theorem left_le_pair (a b : ℕ) : a ≤ pair a b := by simpa using unpair_left_le (pair a b)
 
@@ -134,7 +134,7 @@ theorem pair_lt_max_add_one_sq (m n : ℕ) : pair m n < (max m n + 1) ^ 2 := by
 
 theorem max_sq_add_min_le_pair (m n : ℕ) : max m n ^ 2 + min m n ≤ pair m n := by
   rw [pair]
-  cases' lt_or_le m n with h h
+  rcases lt_or_le m n with h | h
   · rw [if_pos h, max_eq_right h.le, min_eq_left h.le, Nat.pow_two]
   rw [if_neg h.not_lt, max_eq_left h, min_eq_right h, Nat.pow_two, Nat.add_assoc,
     Nat.add_le_add_iff_left]

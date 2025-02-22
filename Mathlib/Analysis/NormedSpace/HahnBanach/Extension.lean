@@ -84,12 +84,12 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
   -- It is an extension of `f`.
   have h : ∀ x : p, g.extendTo𝕜 x = f x := by
     intro x
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [ContinuousLinearMap.extendTo𝕜_apply, ← Submodule.coe_smul, hextends, hextends]
     have :
         (fr x : 𝕜) - I * ↑(fr ((I : 𝕜) • x)) = (re (f x) : 𝕜) - (I : 𝕜) * re (f ((I : 𝕜) • x)) := by
       rfl
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [this]
     apply ext
     · simp only [add_zero, Algebra.id.smul_eq_mul, I_re, ofReal_im, AddMonoidHom.map_add, zero_sub,
@@ -107,7 +107,7 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
       _ = ‖f‖ := by rw [reCLM_norm, one_mul]
   · exact f.opNorm_le_bound g.extendTo𝕜.opNorm_nonneg fun x => h x ▸ g.extendTo𝕜.le_opNorm x
 
-open FiniteDimensional
+open Module
 
 /-- Corollary of the **Hahn-Banach theorem**: if `f : p → F` is a continuous linear map
 from a submodule of a normed space `E` over `𝕜`, `𝕜 = ℝ` or `𝕜 = ℂ`,
@@ -120,7 +120,7 @@ lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {p : Submod
     (f : p →L[𝕜] F) [FiniteDimensional 𝕜 (LinearMap.range f)] :
     ∃ g : E →L[𝕜] F, f = g.comp p.subtypeL := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
-  set b := finBasis 𝕜 (LinearMap.range f)
+  set b := Module.finBasis 𝕜 (LinearMap.range f)
   set e := b.equivFunL
   set fi := fun i ↦ (LinearMap.toContinuousLinearMap (b.coord i)).comp
     (f.codRestrict _ <| LinearMap.mem_range_self _)
@@ -145,8 +145,7 @@ variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 open ContinuousLinearEquiv Submodule
 
 theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x h‖ = 1 := by
-  #adaptation_note
-  /--
+  #adaptation_note /-- https://github.com/leanprover/lean4/pull/4119
   `set_option maxSynthPendingDepth 2` required after https://github.com/leanprover/lean4/pull/4119
   Alternatively, we can add:
   ```

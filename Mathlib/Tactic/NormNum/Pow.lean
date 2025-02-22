@@ -10,8 +10,10 @@ import Mathlib.Tactic.NormNum.Basic
 ## `norm_num` plugin for `^`.
 -/
 
+assert_not_exists RelIso
+
 namespace Mathlib
-open Lean hiding Rat mkRat
+open Lean
 open Meta
 
 namespace Meta.NormNum
@@ -161,6 +163,7 @@ theorem isRat_pow {α} [Ring α] {f : α → ℕ → α} {a : α} {an cn : ℤ} 
   rw [← Nat.cast_pow] at this
   use this; simp [invOf_pow, Commute.mul_pow]
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
 such that `norm_num` successfully recognises both `a` and `b`, with `b : ℕ`. -/
 @[norm_num _ ^ (_ : ℕ)]
@@ -226,9 +229,7 @@ theorem isRat_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : �
     IsRat (a^b) num den := by
   rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_natCast]
 
-#adaptation_note
-/--
-Prior to https://github.com/leanprover/lean4/pull/4096,
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/4096
 the repeated
 ```
 have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩

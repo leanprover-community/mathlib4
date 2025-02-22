@@ -3,8 +3,9 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.NNReal.Basic
+import Mathlib.Topology.Metrizable.Basic
 
 /-!
 # Metrizable uniform spaces
@@ -79,7 +80,7 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
           append_assoc, append_assoc]
         rw [length_cons, length_append, length_singleton]
   -- Porting note: `edist_dist` is no longer inferred
-  edist_dist x y := rfl
+  edist_dist _ _ := rfl
 
 theorem dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x x = 0)
     (dist_comm : ∀ x y, d x y = d y x) (x y : X) :
@@ -117,7 +118,9 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
     rw [← nonpos_iff_eq_zero]
     simpa only [nonpos_iff_eq_zero, hab, hbc, dist_self c, max_self, mul_zero] using hd a b c c
   haveI : IsTrans X fun x y => d x y = 0 := ⟨hd₀_trans⟩
-  induction' hn : length l using Nat.strong_induction_on with n ihn generalizing x y l
+  suffices ∀ n, length l = n → d x y ≤ 2 * (zipWith d (x :: l) (l ++ [y])).sum by exact this _ rfl
+  intro n hn
+  induction n using Nat.strong_induction_on generalizing x y l with | h n ihn =>
   simp only at ihn
   subst n
   set L := zipWith d (x::l) (l ++ [y])
@@ -158,8 +161,8 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
         ← Option.coe_def, Option.toList_some, take_append_of_le_length hMl.le, getElem_cons_succ]
   · exact single_le_sum (fun x _ => zero_le x) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, getElem_zipWith⟩)
   · rcases hMl.eq_or_lt with (rfl | hMl)
-    · simp only [getElem_append_right' le_rfl, sub_self, getElem_singleton, dist_self, zero_le]
-    rw [getElem_append _ hMl]
+    · simp only [getElem_append_right le_rfl, sub_self, getElem_singleton, dist_self, zero_le]
+    rw [getElem_append_left hMl]
     have hlen : length (drop (M + 1) l) = length l - (M + 1) := length_drop _ _
     have hlen_lt : length l - (M + 1) < length l := Nat.sub_lt_of_pos_le M.succ_pos hMl
     refine (ihn _ hlen_lt _ y _ hlen).trans ?_
@@ -173,7 +176,6 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
 
 end PseudoMetricSpace
 
--- Porting note (#11083): this is slower than in Lean3 for some reason...
 /-- If `X` is a uniform space with countably generated uniformity filter, there exists a
 `PseudoMetricSpace` structure compatible with the `UniformSpace` structure. Use
 `UniformSpace.pseudoMetricSpace` or `UniformSpace.metricSpace` instead. -/
@@ -217,7 +219,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     intro x y n
     dsimp only [d]
     split_ifs with h
-    · rw [(pow_right_strictAnti hr.1 hr.2).le_iff_le, Nat.find_le_iff]
+    · rw [(pow_right_strictAnti₀ hr.1 hr.2).le_iff_le, Nat.find_le_iff]
       exact ⟨fun ⟨m, hmn, hm⟩ hn => hm (hB.antitone hmn hn), fun h => ⟨n, le_rfl, h⟩⟩
     · push_neg at h
       simp only [h, not_true, (pow_pos hr.1 _).not_le]

@@ -5,7 +5,8 @@ Authors: Kenny Lau, Eric Wieser
 -/
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.Ideal.Nonunits
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # Characteristic of quotients rings
