@@ -111,7 +111,7 @@ section IsUnramifiedAt
 
 universe u
 
-variable (R : Type u) {S : Type u} [CommRing R] [CommRing S] [Algebra R S]
+variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 noncomputable
 instance (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] :
