@@ -58,7 +58,11 @@ def step (r₁ : Conf M) : Set (Conf M) :=
     | ⟨_, _, []⟩ => ∅
 
 /-- `Reaches₁ r₁ r₂` means that `r₂` is reachable from `r₁` in one step. -/
-def Reaches₁ (r₁ r₂ : Conf M) : Prop := r₂ ∈ step r₁
+def Reaches₁ (r₁ r₂ : Conf M) : Prop :=
+  ∃ (Z : S) (α : List S) (β : List S), r₁.stack = Z::α ∧ r₂.stack = β++α ∧ (
+    (r₁.input = r₂.input ∧ (r₂.state, β) ∈ (M.transition_fun r₁.state none Z)) ∨
+    (∃ (a : T), r₁.input = a::r₂.input ∧ (r₂.state, β) ∈ (M.transition_fun r₁.state (some a) Z))
+  )
 
 /-- `Reaches r₁ r₂` means that `r₂` is reachable from `r₁` in finitely many steps. -/
 def Reaches : Conf M → Conf M → Prop := Relation.ReflTransGen Reaches₁
