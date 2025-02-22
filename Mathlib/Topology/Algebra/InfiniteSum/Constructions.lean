@@ -62,10 +62,16 @@ section ProdCodomain
 
 variable [CommMonoid α] [TopologicalSpace α] [CommMonoid γ] [TopologicalSpace γ]
 
-@[to_additive HasSum.prod_mk]
-theorem HasProd.prod_mk {f : β → α} {g : β → γ} {a : α} {b : γ}
-    (hf : HasProd f a) (hg : HasProd g b) : HasProd (fun x ↦ (⟨f x, g x⟩ : α × γ)) ⟨a, b⟩ := by
+@[to_additive HasSum.prodMk]
+theorem HasProd.prodMk {f : β → α} {g : β → γ} {a : α} {b : γ} (hf : HasProd f a)
+    (hg : HasProd g b) : HasProd (fun x ↦ (⟨f x, g x⟩ : α × γ)) ⟨a, b⟩ := by
   simp [HasProd, ← prod_mk_prod, Filter.Tendsto.prodMk_nhds hf hg]
+
+@[deprecated (since := "2025-02-21")]
+alias HasSm.prod_mk := HasSum.prodMk
+
+@[to_additive existing HasSum.prodMk, deprecated (since := "2025-02-21")]
+alias HasProd.prod_mk := HasProd.prodMk
 
 end ProdCodomain
 
@@ -81,7 +87,7 @@ lemma HasProd.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [Continu
     (h₁ : HasProd (f ∘ Sum.inl) a) (h₂ : HasProd (f ∘ Sum.inr) b) : HasProd f (a * b) := by
   have : Tendsto ((∏ b ∈ ·, f b) ∘ sumEquiv.symm) (atTop.map sumEquiv) (nhds (a * b)) := by
     rw [Finset.sumEquiv.map_atTop, ← prod_atTop_atTop_eq]
-    convert (tendsto_mul.comp (nhds_prod_eq (x := a) (y := b) ▸ Tendsto.prod_map h₁ h₂))
+    convert (tendsto_mul.comp (nhds_prod_eq (x := a) (y := b) ▸ Tendsto.prodMap h₁ h₂))
     ext s
     simp
   simpa [Tendsto, ← Filter.map_map] using this

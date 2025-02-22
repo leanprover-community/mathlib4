@@ -72,7 +72,7 @@ instance Prod.instBoundedLENhdsClass : BoundedLENhdsClass (α × β) := by
   obtain ⟨a, ha⟩ := isBounded_le_nhds x.1
   obtain ⟨b, hb⟩ := isBounded_le_nhds x.2
   rw [← @Prod.mk.eta _ _ x, nhds_prod_eq]
-  exact ⟨(a, b), ha.prodMk hb⟩
+  exact ⟨(a, b), ha.prod_mk hb⟩
 
 instance Pi.instBoundedLENhdsClass [Finite ι] [∀ i, Preorder (π i)] [∀ i, TopologicalSpace (π i)]
     [∀ i, BoundedLENhdsClass (π i)] : BoundedLENhdsClass (∀ i, π i) := by
