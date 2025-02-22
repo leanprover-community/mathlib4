@@ -33,6 +33,15 @@ import Mathlib.RingTheory.Extension
 - `Algebra.Generators.Cotangent`: The cotangent space wrt `P = R[X] → S`, i.e. the
   space `I/I²` with `I` being the kernel of the presentation.
 
+## TODOs
+
+Currently, Lean does not see through the `vars` field of terms of `Generators R S` obtained
+from constructions, e.g. composition. This causes fragile and cumbersome proofs, because
+`simp` and `rw` often don't work properly. `Generators R S` (and `Presentation R S`, etc.) should
+be refactored in a way that makes these equalities reducibly def-eq, for example
+by unbundling the `vars` field or making the field globally reducible in constructions using
+unification hints.
+
 -/
 
 universe w u v
@@ -569,7 +578,7 @@ lemma ofComp_kerCompPreimage (Q : Generators S T) (P : Generators R S) (x : Q.ke
   congr 1
   rw [aeval_def, IsScalarTower.algebraMap_eq R S, ← MvPolynomial.algebraMap_eq,
     ← coe_eval₂Hom, ← map_aeval, P.aeval_val_σ]
-  rfl
+  simp [coeff]
 
 lemma map_ofComp_ker (Q : Generators S T) (P : Generators R S) :
     Ideal.map (Q.ofComp P).toAlgHom (Q.comp P).ker = Q.ker := by
@@ -579,8 +588,7 @@ lemma map_ofComp_ker (Q : Generators S T) (P : Generators R S) :
   · rintro ⟨x, hx, rfl⟩
     simp only [ker_eq_ker_aeval_val, Submodule.coe_restrictScalars, SetLike.mem_coe,
       RingHom.mem_ker, AlgHom.toLinearMap_apply, Submodule.restrictScalars_mem] at hx ⊢
-    rw [← hx, Hom.algebraMap_toAlgHom]
-    rfl
+    rw [← hx, Hom.algebraMap_toAlgHom, id.map_eq_self]
   · intro hx
     exact ⟨_, (kerCompPreimage Q P ⟨x, hx⟩).2, ofComp_kerCompPreimage Q P ⟨x, hx⟩⟩
 
@@ -594,8 +602,7 @@ lemma ker_comp_eq_sup (Q : Generators S T) (P : Generators R S) :
   simp only [le_sup_left, sup_of_le_left, sup_le_iff, le_refl, and_true]
   intro x hx
   simp only [RingHom.mem_ker] at hx
-  rw [Generators.ker_eq_ker_aeval_val, RingHom.mem_ker]
-  show algebraMap T T ((MvPolynomial.aeval (Q.comp P).val) x) = 0
+  rw [Generators.ker_eq_ker_aeval_val, RingHom.mem_ker, ← id.map_eq_self (MvPolynomial.aeval _ x)]
   rw [← Generators.Hom.algebraMap_toAlgHom (Q.ofComp P), hx, map_zero]
 
 end Hom

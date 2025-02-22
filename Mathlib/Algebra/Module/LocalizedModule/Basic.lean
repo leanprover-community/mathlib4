@@ -1112,7 +1112,7 @@ end liftOfLE
 
 include S in
 lemma injective_of_map_eq {N : Type*} [AddCommMonoid N] [Module R N]
-    (g : M' →ₗ[R] N) (H : ∀ {x y}, g (f x) = g (f y) → f x = f y) :
+    {g : M' →ₗ[R] N} (H : ∀ {x y}, g (f x) = g (f y) → f x = f y) :
     Function.Injective g := by
   intro a b hab
   obtain ⟨⟨x, m⟩, (hxm : m • a = f x)⟩ := IsLocalizedModule.surj S f a
@@ -1125,9 +1125,9 @@ lemma injective_of_map_eq {N : Type*} [AddCommMonoid N] [Module R N]
 
 lemma injective_of_map_zero {M M' N : Type*} [AddCommGroup M] [AddCommGroup M']
     [Module R M] [Module R M'] (f : M →ₗ[R] M') [IsLocalizedModule S f]
-    [AddCommGroup N] [Module R N] (g : M' →ₗ[R] N) (H : ∀ m, g (f m) = 0 → f m = 0) :
+    [AddCommGroup N] [Module R N] {g : M' →ₗ[R] N} (H : ∀ m, g (f m) = 0 → f m = 0) :
     Function.Injective g := by
-  refine IsLocalizedModule.injective_of_map_eq S f g (fun hxy ↦ ?_)
+  refine IsLocalizedModule.injective_of_map_eq S f (fun hxy ↦ ?_)
   rw [← sub_eq_zero, ← map_sub]
   apply H
   simpa [sub_eq_zero]

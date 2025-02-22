@@ -28,9 +28,8 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [Algebra R S]
   [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 variable (g : S) [IsLocalization.Away g T] (P : Generators R S)
 
--- Allow seeing through the `vars` field of `Generators`.
--- TODO: eliminate this by refactoring `Generators` and `Presentation`,
--- either unbundling the `vars` field or making the field globally reducible in constructions.
+-- Allow seeing through the `vars` field of `Generators`. For details, see
+-- the TODO in `Mathlib.RingTheory.Generators`.
 set_option allowUnsafeReducibility true in
 attribute [local reducible] Generators.localizationAway in
 lemma comp_localizationAway_ker (P : Generators R S) (f : P.Ring) (h : algebraMap P.Ring S f = g) :
@@ -121,7 +120,7 @@ lemma liftBaseChange_injective_of_isLocalizationAway :
   let f : P.Ring ⧸ P.ker ^ 2 := P.σ g
   let π := compLocalizationAwayAlgHom T g P
   refine IsLocalizedModule.injective_of_map_zero (Submonoid.powers g)
-    (TensorProduct.mk S T P.toExtension.Cotangent 1) _ (fun x hx ↦ ?_)
+    (TensorProduct.mk S T P.toExtension.Cotangent 1) (fun x hx ↦ ?_)
   obtain ⟨x, rfl⟩ := Algebra.Extension.Cotangent.mk_surjective x
   suffices h : algebraMap P.Ring (Localization.Away f) x.val = 0 by
     rw [IsScalarTower.algebraMap_apply _ (P.Ring ⧸ P.ker ^ 2) _,
