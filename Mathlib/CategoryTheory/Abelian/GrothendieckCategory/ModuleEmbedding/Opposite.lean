@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Abelian.Yoneda
 import Mathlib.CategoryTheory.Generator.Abelian
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
 
-universe w v u
-
 /-!
 # Embedding opposites of Grothendieck categories
 
@@ -16,6 +14,8 @@ If `C` is Grothendieck abelian and `F : D ⥤ Cᵒᵖ` is a functor from a small
 an object `G : Cᵒᵖ` such that `preadditiveCoyonedaObj G : Cᵒᵖ ⥤ ModuleCat (End G)ᵐᵒᵖ` is faithful
 and exact and its precomposition with `F` is full if `F` is.
 -/
+
+universe w v u
 
 open CategoryTheory Limits Opposite ZeroObject
 
