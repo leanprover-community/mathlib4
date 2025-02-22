@@ -248,30 +248,54 @@ theorem fontaineThetaModPPow_teichmuller (n : ℕ) (x : O^♭) : fontaineThetaMo
 #check WittVector.map_teichmuller
 #check WittVector.ghostComponent_teichmuller
 
+
+-- Mathlib.FieldTheory.Perfect
+
 -- `Mathlib.FieldTheory.Perfect` after `iterateFrobeniusEquiv_symm`
+
+@[simp]
+theorem coe_frobenius_comp_coe_frobeniusEquiv {p : ℕ} {R : Type*}
+    [CommSemiring R] [ExpChar R p] [PerfectRing R p] :
+    (⇑(frobenius R p) ∘ ⇑(frobeniusEquiv R p).symm) = id := by
+  ext
+  simp
 
 /--
 The `(frobeniusEquiv R p).symm` version of `MonoidHom.map_frobenius`
 -/
 theorem MonoidHom.map_frobeniusEquiv_symm {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S]
     (f : R →* S) (p : ℕ) [ExpChar R p] [PerfectRing R p] [ExpChar S p] [PerfectRing S p] (x : R) :
-    f ((frobeniusEquiv R p).symm x) = (frobeniusEquiv S p).symm (f x) := sorry
+    f ((frobeniusEquiv R p).symm x) = (frobeniusEquiv S p).symm (f x) := by
+  apply_fun (frobeniusEquiv S p)
+  simp [← MonoidHom.map_frobenius]
 
 theorem RingHom.map_frobeniusEquiv_symm {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S]
     (f : R →+* S) (p : ℕ) [ExpChar R p] [PerfectRing R p] [ExpChar S p] [PerfectRing S p] (x : R) :
-    f ((frobeniusEquiv R p).symm x) = (frobeniusEquiv S p).symm (f x) := sorry
+    f ((frobeniusEquiv R p).symm x) = (frobeniusEquiv S p).symm (f x) := by
+  apply_fun (frobeniusEquiv S p)
+  simp [← RingHom.map_frobenius]
 
-theorem MonoidHom.map_frobeniusEquiv_symm_pow {R : Type*} [CommSemiring R]
+theorem MonoidHom.map_iterate_frobeniusEquiv_symm {R : Type*} [CommSemiring R]
     {S : Type*} [CommSemiring S]
     (f : R →* S) (p : ℕ) [ExpChar R p]
     [PerfectRing R p] [ExpChar S p] [PerfectRing S p] (n : ℕ) (x : R) :
-    f (((frobeniusEquiv R p).symm ^[n]) x) = ((frobeniusEquiv S p).symm ^[n]) (f x) := sorry
+    f (((frobeniusEquiv R p).symm ^[n]) x) = ((frobeniusEquiv S p).symm ^[n]) (f x) := by
+  apply_fun (frobeniusEquiv S p)^[n]
+  · simp only [coe_frobeniusEquiv, ← map_iterate_frobenius]
+    · rw [← Function.comp_apply (f := (⇑(_root_.frobenius R p))^[n]),
+          ← Function.comp_apply (f := (⇑(_root_.frobenius S p))^[n]),
+          ← Function.Commute.comp_iterate, ← Function.Commute.comp_iterate]
+      · simp
+      all_goals rw [← coe_frobeniusEquiv]; simp [Function.Commute, Function.Semiconj]
+  apply Function.Injective.iterate
+  simp
 
-theorem RingHom.map_frobeniusEquiv_symm_pow {R : Type*} [CommSemiring R]
+theorem RingHom.map_iterate_frobeniusEquiv_symm {R : Type*} [CommSemiring R]
     {S : Type*} [CommSemiring S]
     (f : R →+* S) (p : ℕ) [ExpChar R p]
     [PerfectRing R p] [ExpChar S p] [PerfectRing S p] (n : ℕ) (x : R) :
-    f (((frobeniusEquiv R p).symm ^[n]) x) = ((frobeniusEquiv S p).symm ^[n]) (f x) := sorry
+    f (((frobeniusEquiv R p).symm ^[n]) x) = ((frobeniusEquiv S p).symm ^[n]) (f x) := 
+  MonoidHom.map_iterate_frobeniusEquiv_symm (f.toMonoidHom) p n x
 
 -- `Mathlib.RingTheory.Perfection` after `Perfection.coeff_iterate_frobenius'`
 @[simp]
