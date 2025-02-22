@@ -106,7 +106,7 @@ def Cone.isLimitOfIsIsoLimMapπ {F : J ⥤ C} [HasLimit F] (c : Cone F)
   congr 1
   simp [← Iso.inv_comp_eq_id]
 
-theorem isIso_limMap_π {F : J ⥤ C} [HasLimit F] {c : Cone F} (hc : IsLimit c) :
+theorem IsLimit.isIso_limMap_π {F : J ⥤ C} [HasLimit F] {c : Cone F} (hc : IsLimit c) :
     IsIso (limMap c.π) := by
   suffices limMap c.π = ((limit.isLimit _).conePointUniqueUpToIso (isLimitConstCone J c.pt) ≪≫
       hc.conePointUniqueUpToIso (limit.isLimit _)).hom by
@@ -119,7 +119,7 @@ theorem isIso_limMap_π {F : J ⥤ C} [HasLimit F] {c : Cone F} (hc : IsLimit c)
 
 theorem Cone.isLimit_iff_isIso_limMap_π {F : J ⥤ C} [HasLimit F] (c : Cone F) :
     Nonempty (IsLimit c) ↔ IsIso (limMap c.π) :=
-  ⟨fun ⟨h⟩ => isIso_limMap_π h, fun _ => ⟨c.isLimitOfIsIsoLimMapπ⟩⟩
+  ⟨fun ⟨h⟩ => IsLimit.isIso_limMap_π h, fun _ => ⟨c.isLimitOfIsIsoLimMapπ⟩⟩
 
 /-- If `J` is connected, `f : J ⥤ C` and `C` is a cocone on `F`, then to check that `c` is a
 colimit it is sufficient to check that `colimMap c.ι` is an isomorphism. The converse is also
@@ -129,7 +129,7 @@ def Cocone.isColimitOfIsIsoColimMapι {F : J ⥤ C} [HasColimit F] (c : Cocone F
   IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (asIso (colimMap c.ι) ≪≫
     (colimit.isColimit _).coconePointUniqueUpToIso (isColimitConstCocone J c.pt)) (by simp))
 
-theorem isIso_colimMap_ι {F : J ⥤ C} [HasColimit F] {c : Cocone F} (hc : IsColimit c) :
+theorem IsColimit.isIso_colimMap_ι {F : J ⥤ C} [HasColimit F] {c : Cocone F} (hc : IsColimit c) :
     IsIso (colimMap c.ι) := by
   suffices colimMap c.ι = ((colimit.isColimit _).coconePointUniqueUpToIso hc ≪≫
       (isColimitConstCocone J c.pt).coconePointUniqueUpToIso (colimit.isColimit _)).hom by
@@ -142,7 +142,7 @@ theorem isIso_colimMap_ι {F : J ⥤ C} [HasColimit F] {c : Cocone F} (hc : IsCo
 
 theorem Cocone.isColimit_iff_isIso_colimMap_ι {F : J ⥤ C} [HasColimit F] (c : Cocone F) :
     Nonempty (IsColimit c) ↔ IsIso (colimMap c.ι) :=
-  ⟨fun ⟨h⟩ => isIso_colimMap_ι h, fun _ => ⟨c.isColimitOfIsIsoColimMapι⟩⟩
+  ⟨fun ⟨h⟩ => IsColimit.isIso_colimMap_ι h, fun _ => ⟨c.isColimitOfIsIsoColimMapι⟩⟩
 
 end
 
