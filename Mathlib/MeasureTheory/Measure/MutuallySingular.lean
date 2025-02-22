@@ -223,7 +223,7 @@ lemma mutuallySingular_of_disjoint (h : Disjoint μ ν) : μ ⟂ₘ ν := by
 lemma MutuallySingular.disjoint (h : μ ⟂ₘ ν) : Disjoint μ ν := by
   have h_bot_iff (ξ : Measure α) : ξ ≤ ⊥ ↔ ξ = 0 := by
     rw [le_bot_iff]
-    rfl
+    rfl -- TODO add lemma bot_eq_zero
   intro ξ hξμ hξν
   rw [h_bot_iff]
   ext s hs
@@ -249,7 +249,7 @@ lemma disjoint_of_disjoint_ae (h : Disjoint (ae μ) (ae ν)) : Disjoint μ ν :=
   simp_rw [Filter.disjoint_iff, mem_ae_iff] at h
   obtain ⟨s, hs, t, ht, hst⟩ := h
   rw [disjoint_iff_inf_le]
-  have : (⊥ : Measure α) = 0 := rfl
+  have : (⊥ : Measure α) = 0 := rfl-- TODO add lemma bot_eq_zero
   refine Measure.le_intro fun u hu _ ↦ ?_
   simp only [Measure.inf_apply hu, this, coe_zero, Pi.zero_apply, nonpos_iff_eq_zero]
   refine csInf_eq_bot_of_bot_mem ⟨t, ?_⟩
