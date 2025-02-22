@@ -109,8 +109,6 @@ end IsLocalRing
 
 section IsUnramifiedAt
 
-universe u
-
 variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 noncomputable
