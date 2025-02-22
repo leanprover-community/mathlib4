@@ -9,7 +9,6 @@ import Mathlib.Data.SProd
 import Mathlib.Data.Subtype
 import Mathlib.Order.Notation
 import Mathlib.Util.CompileInductive
-import Mathlib.Tactic.DeprecateTo
 
 /-!
 # Basic definitions about sets

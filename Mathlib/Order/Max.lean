@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Order.Synonym
-import Mathlib.Tactic.DeprecateTo
 
 /-!
 # Minimal/maximal and bottom/top elements
