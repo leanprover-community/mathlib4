@@ -31,9 +31,8 @@ variable {α} [DecidableEq α]
 
 noncomputable def lift2 (F : Symetrizable M N) (f : α →₀ M) : Sym2 α →₀ N :=
     Finsupp.onFinset f.support.sym2 (lift1 F ∘ Sym2.map f) (by
-  intro p
+  intro p h
   obtain ⟨a, b⟩ := p
-  intro h
   simp_all only [Function.comp_apply, Sym2.map_pair_eq, lift1_mk, ne_eq, Finset.mem_sym2_iff,
     Sym2.mem_iff, Finsupp.mem_support_iff, forall_eq_or_imp, forall_eq]
   apply And.intro
@@ -44,16 +43,35 @@ noncomputable def lift2 (F : Symetrizable M N) (f : α →₀ M) : Sym2 α →�
     rw [hn] at h
     exact h (F.right_zero (f a)))
 
-def OffDiag (F : Symetrizable M N) (f : α →₀ M) : α → α → N :=
+def OffDiag (F : Symetrizable M N) (f : α → M) : α → α → N :=
     fun a b => if a = b then (0 : N) else F.toFun (f a) (f b)
 
-lemma offDiag_symm (F : Symetrizable M N) (f : α →₀ M) {a b : α} :
+lemma offDiag_symm (F : Symetrizable M N) (f : α → M) {a b : α} :
     OffDiag F f a b = OffDiag F f b a := by
   rw [OffDiag, OffDiag, F.comm]
   simp only [eq_comm]
 
-def SymOffDiag (F : Symetrizable M N) (f : α →₀ M) : Sym2 α → N :=
+def SymOffDiag (F : Symetrizable M N) (f : α → M) : Sym2 α → N :=
     Sym2.lift ⟨OffDiag F f, fun a b => by
   rw [(offDiag_symm)] ⟩
+
+@[simp]
+lemma SymOffDiag_mk (F : Symetrizable M N) (f : α → M) (xy : α × α) :
+    SymOffDiag F f (Sym2.mk xy) = OffDiag F f xy.1 xy.2 := rfl
+
+noncomputable def Finsupp.symOffDiag (F : Symetrizable M N) (f : α →₀ M) : Sym2 α →₀ N :=
+    Finsupp.onFinset f.support.sym2 (SymOffDiag F f) (by
+      intro p h
+      obtain ⟨a, b⟩ := p
+      simp_all only [SymOffDiag_mk, ne_eq, Finset.mem_sym2_iff, Sym2.mem_iff, mem_support_iff,
+        forall_eq_or_imp, forall_eq]
+      apply And.intro
+      · by_contra hn
+        rw [offDiag_symm, OffDiag, hn, F.right_zero] at h
+        simp_all only [ite_self, not_true_eq_false]
+      · by_contra hn
+        rw [offDiag_symm, OffDiag, hn, F.comm, F.right_zero] at h
+        simp_all only [ite_self, not_true_eq_false])
+
 
 end
