@@ -225,14 +225,20 @@ theorem cauchySeq_iff {u : ℕ → α} :
     CauchySeq u ↔ ∀ V ∈ 𝓤 α, ∃ N, ∀ k ≥ N, ∀ l ≥ N, (u k, u l) ∈ V := by
   simp only [cauchySeq_iff', Filter.eventually_atTop_prod_self', mem_preimage, Prod.map_apply]
 
-theorem CauchySeq.prod_map {γ δ} [UniformSpace β] [Preorder γ] [Preorder δ] {u : γ → α}
-    {v : δ → β} (hu : CauchySeq u) (hv : CauchySeq v) : CauchySeq (Prod.map u v) := by
+theorem CauchySeq.prodMap {γ δ} [UniformSpace β] [Preorder γ] [Preorder δ] {u : γ → α} {v : δ → β}
+    (hu : CauchySeq u) (hv : CauchySeq v) : CauchySeq (Prod.map u v) := by
   simpa only [CauchySeq, prod_map_map_eq', prod_atTop_atTop_eq] using hu.prod hv
 
-theorem CauchySeq.prod {γ} [UniformSpace β] [Preorder γ] {u : γ → α} {v : γ → β}
+@[deprecated (since := "2025-02-21")]
+alias CauchySeq.prod_map := CauchySeq.prodMap
+
+theorem CauchySeq.prodMk {γ} [UniformSpace β] [Preorder γ] {u : γ → α} {v : γ → β}
     (hu : CauchySeq u) (hv : CauchySeq v) : CauchySeq fun x => (u x, v x) :=
   haveI := hu.1.of_map
-  (Cauchy.prod hu hv).mono (Tendsto.prod_mk le_rfl le_rfl)
+  (Cauchy.prod hu hv).mono (tendsto_map.prodMk tendsto_map)
+
+@[deprecated (since := "2025-02-21")]
+alias CauchySeq.prod := CauchySeq.prodMk
 
 theorem CauchySeq.eventually_eventually [SemilatticeSup β] {u : β → α} (hu : CauchySeq u)
     {V : Set (α × α)} (hV : V ∈ 𝓤 α) : ∀ᶠ k in atTop, ∀ᶠ l in atTop, (u k, u l) ∈ V :=
@@ -484,9 +490,7 @@ theorem TotallyBounded.subset {s₁ s₂ : Set α} (hs : s₁ ⊆ s₂) (h : Tot
 theorem TotallyBounded.closure {s : Set α} (h : TotallyBounded s) : TotallyBounded (closure s) :=
   uniformity_hasBasis_closed.totallyBounded_iff.2 fun V hV =>
     let ⟨t, htf, hst⟩ := h V hV.1
-    ⟨t, htf,
-      closure_minimal hst <|
-        htf.isClosed_biUnion fun _ _ => hV.2.preimage (continuous_id.prod_mk continuous_const)⟩
+    ⟨t, htf, closure_minimal hst <| htf.isClosed_biUnion fun _ _ => hV.2.preimage (.prodMk_left _)⟩
 
 @[simp]
 lemma totallyBounded_closure {s : Set α} : TotallyBounded (closure s) ↔ TotallyBounded s :=
