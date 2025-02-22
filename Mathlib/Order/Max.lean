@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Order.Synonym
+import Mathlib.Tactic.DeprecateTo
 
 /-!
 # Minimal/maximal and bottom/top elements
@@ -366,13 +367,25 @@ section Prod
 
 variable [Preorder α] [Preorder β] {a : α} {b : β} {x : α × β}
 
-theorem IsBot.prod_mk (ha : IsBot a) (hb : IsBot b) : IsBot (a, b) := fun _ => ⟨ha _, hb _⟩
+theorem IsBot.prodMk (ha : IsBot a) (hb : IsBot b) : IsBot (a, b) := fun _ => ⟨ha _, hb _⟩
 
-theorem IsTop.prod_mk (ha : IsTop a) (hb : IsTop b) : IsTop (a, b) := fun _ => ⟨ha _, hb _⟩
+@[deprecated (since := "2025-02-22")]
+alias IsBot.prod_mk := IsBot.prodMk
 
-theorem IsMin.prod_mk (ha : IsMin a) (hb : IsMin b) : IsMin (a, b) := fun _ hc => ⟨ha hc.1, hb hc.2⟩
+theorem IsTop.prodMk (ha : IsTop a) (hb : IsTop b) : IsTop (a, b) := fun _ => ⟨ha _, hb _⟩
 
-theorem IsMax.prod_mk (ha : IsMax a) (hb : IsMax b) : IsMax (a, b) := fun _ hc => ⟨ha hc.1, hb hc.2⟩
+@[deprecated (since := "2025-02-22")]
+alias IsTop.prod_mk := IsTop.prodMk
+
+theorem IsMin.prodMk (ha : IsMin a) (hb : IsMin b) : IsMin (a, b) := fun _ hc => ⟨ha hc.1, hb hc.2⟩
+
+@[deprecated (since := "2025-02-22")]
+alias IsMin.prod_mk := IsMin.prodMk
+
+theorem IsMax.prodMk (ha : IsMax a) (hb : IsMax b) : IsMax (a, b) := fun _ hc => ⟨ha hc.1, hb hc.2⟩
+
+@[deprecated (since := "2025-02-22")]
+alias IsMax.prod_mk := IsMax.prodMk
 
 theorem IsBot.fst (hx : IsBot x) : IsBot x.1 := fun c => (hx (c, x.2)).1
 
