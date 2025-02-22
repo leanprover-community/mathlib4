@@ -34,7 +34,7 @@ variable {Q T S : Type} [Fintype Q] [Fintype T] [Fintype S]
 /-- A configuration of a PDA is a state (`state`), the remaining input (`input`), and the current
   stack. -/
 @[ext]
-structure conf (p : PDA Q T S) where
+structure Conf (p : PDA Q T S) where
   /-- Current state. -/
   state : Q
   /-- Remaining input. -/
@@ -45,34 +45,34 @@ structure conf (p : PDA Q T S) where
 variable {pda : PDA Q T S}
 
 /-- `step r₁` is the set of configurations reachable from `r₁` in one step. -/
-def step (r₁ : conf pda) : Set (conf pda) :=
+def step (r₁ : Conf pda) : Set (Conf pda) :=
   match r₁ with
     | ⟨q, a::w, Z::α⟩ =>
-        { r₂ : conf pda | ∃ (p : Q) (β : List S), (p,β) ∈ pda.transition_fun q (some a) Z ∧
+        { r₂ : Conf pda | ∃ (p : Q) (β : List S), (p,β) ∈ pda.transition_fun q (some a) Z ∧
                           r₂ = ⟨p, w, (β ++ α)⟩ } ∪
-        { r₂ : conf pda | ∃ (p : Q) (β : List S), (p,β) ∈ pda.transition_fun q none Z ∧
+        { r₂ : Conf pda | ∃ (p : Q) (β : List S), (p,β) ∈ pda.transition_fun q none Z ∧
                           r₂ = ⟨p, a :: w, (β ++ α)⟩ }
-    | ⟨q, [], Z::α⟩ => { r₂ : conf pda | ∃ (p : Q) (β : List S),
+    | ⟨q, [], Z::α⟩ => { r₂ : Conf pda | ∃ (p : Q) (β : List S),
                                           (p,β) ∈ pda.transition_fun q none Z
                                           ∧ r₂ = ⟨p, [], (β ++ α)⟩ }
     | ⟨_, _, []⟩ => ∅
 
 /-- `Reaches₁ r₁ r₂` means that `r₂` is reachable from `r₁` in one step. -/
-def Reaches₁ (r₁ r₂ : conf pda) : Prop := r₂ ∈ step r₁
+def Reaches₁ (r₁ r₂ : Conf pda) : Prop := r₂ ∈ step r₁
 
 /-- `Reaches r₁ r₂` means that `r₂` is reachable from `r₁` in finitely many steps. -/
-def Reaches : conf pda → conf pda → Prop := Relation.ReflTransGen Reaches₁
+def Reaches : Conf pda → Conf pda → Prop := Relation.ReflTransGen Reaches₁
 
 /-- `acceptsByEmptyStack pda` is the language accepted by the PDA `pda` based on the empty-stack
   condition. -/
 def acceptsByEmptyStack (pda : PDA Q T S) : Language T :=
   { w : List T | ∃ q : Q,
-      Reaches (⟨pda.initial_state, w, [pda.start_symbol]⟩ : conf pda) ⟨q, [], []⟩ }
+      Reaches (⟨pda.initial_state, w, [pda.start_symbol]⟩ : Conf pda) ⟨q, [], []⟩ }
 
 /-- `acceptsByFinalState pda` is the language accepted by the PDA `pda` based on the final-state
   condition. -/
 def acceptsByFinalState (pda : PDA Q T S) : Language T :=
   { w : List T | ∃ q ∈ pda.final_states, ∃ γ : List S,
-      Reaches (⟨pda.initial_state, w, [pda.start_symbol]⟩ : conf pda) ⟨q, [], γ⟩ }
+      Reaches (⟨pda.initial_state, w, [pda.start_symbol]⟩ : Conf pda) ⟨q, [], γ⟩ }
 
 end PDA
