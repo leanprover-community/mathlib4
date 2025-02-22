@@ -396,7 +396,7 @@ lemma dist_next_next (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ clo
   have : Nonempty (Icc tmin tmax) := ⟨t₀⟩ -- needed for `ciSup_const`
   rw [← MetricSpace.isometry_induced FunSpace.toContinuousMap FunSpace.toContinuousMap.injective
     |>.dist_eq, dist_eq_norm, ContinuousMap.norm_eq_iSup_norm]
-  simp_rw [ContinuousMap.sub_apply, toContinuousMap_apply_eq_apply, next_apply, integrate_apply,
+  simp_rw [ContinuousMap.sub_apply, toContinuousMap_apply_eq_apply, next_apply, picard_apply,
     add_sub_add_right_eq_sub]
   rw [ciSup_const, dist_eq_norm]
 
@@ -636,7 +636,7 @@ theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith
   · rw [hα']
     dsimp only
     rw [dif_pos hx, FunSpace.compProj_apply]
-    apply hasDerivWithinAt_integrate_Icc t₀.2 hf.continuousOn_uncurry
+    apply hasDerivWithinAt_picard_Icc t₀.2 hf.continuousOn_uncurry
       (α x hx |>.continuous_compProj.continuousOn)
       (fun _ ht' ↦ α x hx |>.compProj_mem_closedBall hf.mul_max_le)
       x ht |>.congr_of_mem _ ht
