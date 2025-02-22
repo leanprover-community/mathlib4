@@ -42,37 +42,37 @@ structure Conf (p : PDA Q T S) where
   /-- Current stack. -/
   stack : List S
 
-variable {pda : PDA Q T S}
+variable {M : PDA Q T S}
 
 /-- `step r₁` is the set of configurations reachable from `r₁` in one step. -/
-def step (r₁ : Conf pda) : Set (Conf pda) :=
+def step (r₁ : Conf M) : Set (Conf M) :=
   match r₁ with
     | ⟨q, a::w, Z::α⟩ =>
-        { r₂ : Conf pda | ∃ (p : Q) (β : List S), (p,β) ∈ pda.transition_fun q (some a) Z ∧
+        { r₂ : Conf M | ∃ (p : Q) (β : List S), (p,β) ∈ M.transition_fun q (some a) Z ∧
                           r₂ = ⟨p, w, (β ++ α)⟩ } ∪
-        { r₂ : Conf pda | ∃ (p : Q) (β : List S), (p,β) ∈ pda.transition_fun q none Z ∧
+        { r₂ : Conf M | ∃ (p : Q) (β : List S), (p,β) ∈ M.transition_fun q none Z ∧
                           r₂ = ⟨p, a :: w, (β ++ α)⟩ }
-    | ⟨q, [], Z::α⟩ => { r₂ : Conf pda | ∃ (p : Q) (β : List S),
-                                          (p,β) ∈ pda.transition_fun q none Z
+    | ⟨q, [], Z::α⟩ => { r₂ : Conf M | ∃ (p : Q) (β : List S),
+                                          (p,β) ∈ M.transition_fun q none Z
                                           ∧ r₂ = ⟨p, [], (β ++ α)⟩ }
     | ⟨_, _, []⟩ => ∅
 
 /-- `Reaches₁ r₁ r₂` means that `r₂` is reachable from `r₁` in one step. -/
-def Reaches₁ (r₁ r₂ : Conf pda) : Prop := r₂ ∈ step r₁
+def Reaches₁ (r₁ r₂ : Conf M) : Prop := r₂ ∈ step r₁
 
 /-- `Reaches r₁ r₂` means that `r₂` is reachable from `r₁` in finitely many steps. -/
-def Reaches : Conf pda → Conf pda → Prop := Relation.ReflTransGen Reaches₁
+def Reaches : Conf M → Conf M → Prop := Relation.ReflTransGen Reaches₁
 
-/-- `acceptsByEmptyStack pda` is the language accepted by the PDA `pda` based on the empty-stack
+/-- `acceptsByEmptyStack M` is the language accepted by the PDA `M` based on the empty-stack
   condition. -/
-def acceptsByEmptyStack (pda : PDA Q T S) : Language T :=
+def acceptsByEmptyStack (M : PDA Q T S) : Language T :=
   { w : List T | ∃ q : Q,
-      Reaches (⟨pda.initial_state, w, [pda.start_symbol]⟩ : Conf pda) ⟨q, [], []⟩ }
+      Reaches (⟨M.initial_state, w, [M.start_symbol]⟩ : Conf M) ⟨q, [], []⟩ }
 
-/-- `acceptsByFinalState pda` is the language accepted by the PDA `pda` based on the final-state
+/-- `acceptsByFinalState M` is the language accepted by the PDA `M` based on the final-state
   condition. -/
-def acceptsByFinalState (pda : PDA Q T S) : Language T :=
-  { w : List T | ∃ q ∈ pda.final_states, ∃ γ : List S,
-      Reaches (⟨pda.initial_state, w, [pda.start_symbol]⟩ : Conf pda) ⟨q, [], γ⟩ }
+def acceptsByFinalState (M : PDA Q T S) : Language T :=
+  { w : List T | ∃ q ∈ M.final_states, ∃ γ : List S,
+      Reaches (⟨M.initial_state, w, [M.start_symbol]⟩ : Conf M) ⟨q, [], γ⟩ }
 
 end PDA
