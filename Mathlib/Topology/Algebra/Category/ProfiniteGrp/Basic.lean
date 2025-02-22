@@ -69,7 +69,7 @@ attribute [instance] ProfiniteGrp.group ProfiniteGrp.topologicalGroup
 /-- Construct a term of `ProfiniteGrp` from a type endowed with the structure of a
 compact and totally disconnected topological group.
 (The condition of being Hausdorff can be omitted here because totally disconnected implies that {1}
-is a closed set, thus implying Hausdorff in a topological group.)-/
+is a closed set, thus implying Hausdorff in a topological group.) -/
 @[to_additive "Construct a term of `ProfiniteAddGrp` from a type endowed with the structure of a
 compact and totally disconnected topological additive group.
 (The condition of being Hausdorff can be omitted here because totally disconnected implies that {0}
