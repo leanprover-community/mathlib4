@@ -13,9 +13,9 @@ exactly the context-free languages.
 -/
 
 /-- A PDA is a set of states (`Q`), a tape alphabet (`T`), a stack alphabet (`S`), an initial state
-  (`initial_state`), a start symbol (`start_symbol`), a set of final states (`final_states`), and a
-  transition function. The transition function is given in two parts: `transition_fun` reads a
-  letter and `transition_fun'` makes an epsilon transition. -/
+  (`initial_state`), a start symbol (`start_symbol`), a set of final states (`final_states`), a
+  transition function (`transition_fun`), and a proof that, for any input, the transition function
+  returns a finite set as output. -/
 structure PDA (Q T S : Type) [Fintype Q] [Fintype T] [Fintype S] where
   /-- Initial state. -/
   initial_state : Q
@@ -23,12 +23,9 @@ structure PDA (Q T S : Type) [Fintype Q] [Fintype T] [Fintype S] where
   start_symbol : S
   /-- Set of final states. -/
   final_states : Set Q
-  /-- Transition function reading a letter from `T`. -/
-  transition_fun : Q → T → S → Set (Q × List S)
-  /-- Epsilon transition function. -/
-  transition_fun' : Q → S → Set (Q × List S)
-  finite (q : Q) (a : T) (Z : S) : (transition_fun q a Z).Finite
-  finite' (q : Q) (Z : S) : (transition_fun' q Z).Finite
+  /-- Transition function reading a letter from `T` if present and an epsilon otherwise. -/
+  transition_fun : Q → (Option T) → S → Set (Q × List S)
+  finite (q : Q) (x : (Option T)) (Z : S) : (transition_fun q x Z).Finite
 
 namespace PDA
 
@@ -51,12 +48,13 @@ variable {pda : PDA Q T S}
 def step (r₁ : conf pda) : Set (conf pda) :=
   match r₁ with
     | ⟨q, a::w, Z::α⟩ =>
-        { r₂ : conf pda | ∃ (p : Q) (β : List S), (p,β) ∈ pda.transition_fun q a Z ∧
+        { r₂ : conf pda | ∃ (p : Q) (β : List S), (p,β) ∈ pda.transition_fun q (some a) Z ∧
                           r₂ = ⟨p, w, (β ++ α)⟩ } ∪
-        { r₂ : conf pda | ∃ (p : Q) (β : List S), (p,β) ∈ pda.transition_fun' q Z ∧
+        { r₂ : conf pda | ∃ (p : Q) (β : List S), (p,β) ∈ pda.transition_fun q none Z ∧
                           r₂ = ⟨p, a :: w, (β ++ α)⟩ }
-    | ⟨q, [], Z::α⟩ => { r₂ : conf pda | ∃ (p : Q) (β : List S), (p,β) ∈ pda.transition_fun' q Z ∧
-                                          r₂ = ⟨p, [], (β ++ α)⟩ }
+    | ⟨q, [], Z::α⟩ => { r₂ : conf pda | ∃ (p : Q) (β : List S),
+                                          (p,β) ∈ pda.transition_fun q none Z
+                                          ∧ r₂ = ⟨p, [], (β ++ α)⟩ }
     | ⟨_, _, []⟩ => ∅
 
 /-- `Reaches₁ r₁ r₂` means that `r₂` is reachable from `r₁` in one step. -/
