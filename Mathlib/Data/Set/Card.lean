@@ -76,6 +76,11 @@ theorem encard_eq_coe_toFinset_card (s : Set α) [Fintype s] : encard s = s.toFi
   have h := toFinite s
   rw [h.encard_eq_coe_toFinset_card, toFinite_toFinset]
 
+@[simp] theorem toENat_cardinalMk (s : Set α) : (Cardinal.mk s).toENat = s.encard := rfl
+
+@[simp] theorem cast_fintype_card (s : Set α) [Fintype s] : (Fintype.card s : ℕ∞) = s.encard := by
+  simp [encard_eq_coe_toFinset_card]
+
 @[simp, norm_cast] theorem encard_coe_eq_coe_finsetCard (s : Finset α) :
     encard (s : Set α) = s.card := by
   rw [Finite.encard_eq_coe_toFinset_card (Finset.finite_toSet s)]; simp
