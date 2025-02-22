@@ -38,8 +38,6 @@ open Ideal (span)
 open Set (mem_univ univ)
 open scoped Nat Polynomial
 
-noncomputable def Set.gcd {α : Type*} (S : Set α) (hS : S.Nonempty) : S := ⟨hS.some, hS.some_mem⟩
-
 variable {R : Type*} (S : Set R)
 
 namespace Polynomial
@@ -79,6 +77,10 @@ structure Set.pOrdering where
         emultiplicity ↑p (∏ i ∈ Finset.range k, (s.val - (elems i).val))
 
 instance : CoeFun (S.pOrdering p) (fun _ ↦ ℕ → R) := ⟨fun ν k ↦ ν.elems k |>.val⟩
+
+/-- The generalized descending factorial given a p-ordering. -/
+def Set.pOrdering.descFactorial (ν : S.pOrdering p) (n : ℕ) (x : R) :=
+  ∏ i ∈ Finset.range n, (x - (ν i))
 
 /-- The associated p-sequence for a p-ordering.
 
