@@ -1147,7 +1147,6 @@ ENNReal.iInf_mul_right'
 ENNReal.inv_le_inv'
 ENNReal.inv_lt_inv'
 ENNReal.log_pos_real'
-ENNReal.mul_div_cancel
 ENNReal.mul_le_of_le_div'
 ENNReal.mul_lt_mul_left'
 ENNReal.mul_lt_mul_right'
