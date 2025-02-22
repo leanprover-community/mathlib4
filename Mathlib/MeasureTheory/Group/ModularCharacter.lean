@@ -8,7 +8,7 @@ import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Group.Measure
 import Mathlib.Topology.Metrizable.Urysohn
 import Mathlib.MeasureTheory.Measure.Haar.Unique
-
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Modular character of a locally compact group
@@ -36,8 +36,7 @@ namespace MeasureTheory
 
 namespace Measure
 
-variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
-  [MeasurableSpace G] [BorelSpace G] [LocallyCompactSpace G]
+variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G] [LocallyCompactSpace G]
 
 /-- The modular character as a map is `g ↦ haarScalarFactor (map (· * g) ν) ν`, where `ν` is
   the haar measure given by (the noncomputable) `MeasureTheory.Measure.haar`.
@@ -49,12 +48,15 @@ variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
 
   See also `modularCharacter` that defines the map as a homomorphism.."]
 noncomputable def modularCharacterFun : G → ℝ≥0 :=
+  letI : MeasurableSpace G := borel G
+  haveI : BorelSpace G := ⟨rfl⟩
+  -- Mathlib.Tactic.Borelize.borelize G
   fun g => haarScalarFactor (map (· * g) MeasureTheory.Measure.haar) MeasureTheory.Measure.haar
 
 /-- Independence of modularCharacterFun from the chosen Haar measure. -/
 @[to_additive "Independence of addModularCharacterFun from the chosen Haar measure"]
-lemma modularCharacterFun_eq_haarScalarFactor (μ : Measure G) [IsHaarMeasure μ] (g : G) :
-    modularCharacterFun g = haarScalarFactor (map (· * g) μ) μ := by
+lemma modularCharacterFun_eq_haarScalarFactor [MeasurableSpace G] [BorelSpace G] (μ : Measure G)
+  [IsHaarMeasure μ] (g : G) : modularCharacterFun g = haarScalarFactor (map (· * g) μ) μ := by
   let ν := MeasureTheory.Measure.haar (G := G)
   obtain ⟨⟨f, f_cont⟩, f_comp, f_nonneg, f_one⟩ :
     ∃ f : C(G, ℝ), HasCompactSupport f ∧ 0 ≤ f ∧ f 1 ≠ 0 := exists_continuous_nonneg_pos 1
@@ -72,7 +74,7 @@ lemma modularCharacterFun_eq_haarScalarFactor (μ : Measure G) [IsHaarMeasure μ
     rw [NNReal.coe_ne_zero]
     apply (ne_of_lt (haarScalarFactor_pos_of_isHaarMeasure _ _)).symm
   calc
-  ↑(modularCharacterFun g) = ↑(haarScalarFactor (map (· * g) ν) ν) := rfl
+  ↑(modularCharacterFun g) = ↑(haarScalarFactor (map (· * g) ν) ν) := by borelize G; rfl
   _ = (∫ x, f x ∂(map (· * g) ν)) / ∫ x, f x ∂ν :=
     haarScalarFactor_eq_integral_div _ _ f_cont f_comp (int_f_ne_zero ν)
   _ = (∫ x, f (x * g) ∂ν) / ∫ x, f x ∂ν := by
@@ -94,14 +96,17 @@ lemma modularCharacterFun_eq_haarScalarFactor (μ : Measure G) [IsHaarMeasure μ
     (haarScalarFactor_eq_integral_div _ _ f_cont f_comp (int_f_ne_zero μ)).symm
 
 @[to_additive]
-lemma map_right_mul_eq_modularCharacterFun_smul (μ : Measure G) [IsHaarMeasure μ] [InnerRegular μ]
-    (g : G) : map (· * g) μ = modularCharacterFun g • μ := by
+lemma map_right_mul_eq_modularCharacterFun_smul [MeasurableSpace G] [BorelSpace G] (μ : Measure G)
+  [IsHaarMeasure μ] [InnerRegular μ] (g : G) : map (· * g) μ = modularCharacterFun g • μ := by
   rw [modularCharacterFun_eq_haarScalarFactor μ _]
   exact isMulLeftInvariant_eq_smul_of_innerRegular _ μ
 
 @[to_additive]
-lemma modularCharacter_pos (g : G) : 0 < modularCharacterFun g :=
-  haarScalarFactor_pos_of_isHaarMeasure _ _
+lemma modularCharacter_pos (g : G) : 0 < modularCharacterFun g := by
+  letI : MeasurableSpace G := borel G
+  haveI : BorelSpace G := ⟨rfl⟩
+  rw [modularCharacterFun_eq_haarScalarFactor MeasureTheory.Measure.haar g]
+  exact haarScalarFactor_pos_of_isHaarMeasure _ _
 
 /-- The modular character homomorphism. The underlying function is `modularCharacterFun`, which is
   `g ↦ haarScalarFactor (map (· * g) ν) ν`, where `ν` is the haar measure given by (the
@@ -112,6 +117,8 @@ noncomputable def modularCharacter :
   toFun := modularCharacterFun
   map_one' := by simp [modularCharacterFun, haarScalarFactor_self]
   map_mul' := fun g h => by
+    letI : MeasurableSpace G := borel G
+    haveI : BorelSpace G := ⟨rfl⟩
     have mul_g_meas : Measurable (· * g) := Measurable.mul_const (fun ⦃_⦄ a ↦ a) g
     have mul_h_meas : Measurable (· * h) := Measurable.mul_const (fun ⦃_⦄ a ↦ a) h
     let ν := MeasureTheory.Measure.haar (G := G)
