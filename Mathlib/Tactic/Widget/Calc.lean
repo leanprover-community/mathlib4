@@ -129,7 +129,7 @@ namespace Lean.Elab.Tactic
 
 open Lean Meta Tactic TryThis in
 /-- Create a `calc` proof. -/
-elab stx:"calc?" : tactic => do
+elab stx:"calc?" : tactic => withMainContext do
   let some calcRange := (← getFileMap).rangeOfStx? stx | throwError "calc? failed"
   let indent := calcRange.start.character + 2
   let spc := String.replicate indent ' '
