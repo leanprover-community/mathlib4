@@ -307,6 +307,14 @@ theorem encard_le_one_iff : s.encard ≤ 1 ↔ ∀ a b, a ∈ s → b ∈ s → 
   obtain ⟨x, rfl⟩ := h ⟨_, has⟩
   rw [(has : a = x), (hbs : b = x)]
 
+theorem encard_le_one_iff_subsingleton : s.encard ≤ 1 ↔ s.Subsingleton := by
+  rw [encard_le_one_iff, Set.Subsingleton]
+  tauto
+
+theorem two_le_encard_iff_nontrivial : 2 ≤ s.encard ↔ s.Nontrivial := by
+  rw [← not_iff_not, ← not_lt, not_not, Set.not_nontrivial_iff, ← encard_le_one_iff_subsingleton,
+    show (2 : ℕ∞) = 1 + 1 from rfl, ENat.lt_add_one_iff (by simp)]
+
 theorem one_lt_encard_iff : 1 < s.encard ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
   rw [← not_iff_not, not_exists, not_lt, encard_le_one_iff]; aesop
 
