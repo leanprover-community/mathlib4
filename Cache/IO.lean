@@ -22,10 +22,10 @@ def LIBDIR : FilePath :=
 def IRDIR : FilePath :=
   ".lake" / "build" / "ir"
 
-/--
-TODO: write a better test which modules are part of the mathlib cache
--/
-def isPartOfMathlibCache (mod : Name) := #[
+/-- Determine if the package `mod` is part of the mathlib cache.
+
+TODO: write a better predicate. -/
+def isPartOfMathlibCache (mod : Name) : Bool := #[
   `Mathlib,
   `Batteries,
   `Aesop,
