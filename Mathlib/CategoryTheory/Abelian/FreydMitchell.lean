@@ -64,7 +64,7 @@ private noncomputable def H :
 
 variable (C) in
 /-- This is the full, faithful and exact embedding `C ⥤ ModuleCat (EmbeddingRing C)`. The fact that
-such an functor exists is called the Freyd-Mitchell embedding theorem.
+such a functor exists is called the Freyd-Mitchell embedding theorem.
 
 It is probably not a good idea to unfold this. -/
 noncomputable def functor : C ⥤ ModuleCat.{max u v} (EmbeddingRing C) :=
