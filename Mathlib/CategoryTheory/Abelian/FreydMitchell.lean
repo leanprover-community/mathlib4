@@ -101,14 +101,12 @@ instance : PreservesFiniteColimits (functor C) := by
 
 end FreydMitchell
 
-/-- The Freyd-Mitchell embedding theorem. See also `FreydMitchell.functor` for an unpacked
-version of this statement. -/
+/-- The Freyd-Mitchell embedding theorem. See also `FreydMitchell.functor` for a functor which
+has the relevant instances. -/
 @[stacks 05PP]
 theorem freyd_mitchell (C : Type u) [Category.{v} C] [Abelian C] :
     ∃ (R : Type (max u v)) (_ : Ring R) (F : C ⥤ ModuleCat.{max u v} R),
       F.Full ∧ F.Faithful ∧ PreservesFiniteLimits F ∧ PreservesFiniteColimits F :=
   ⟨_, _, FreydMitchell.functor C, inferInstance, inferInstance, inferInstance, inferInstance⟩
-
-#print axioms freyd_mitchell
 
 end CategoryTheory.Abelian
