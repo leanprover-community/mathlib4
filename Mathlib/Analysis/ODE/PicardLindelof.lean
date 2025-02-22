@@ -33,7 +33,7 @@ repeated applications of the right hand side of this equation.
 
 ## Main definitions and results
 
-* `integrate f t₀ x₀ α t`: the right hand side of the integral equation, applied to the curve `α`.
+* `picard f t₀ x₀ α t`: the Picard iteration, applied to the curve `α`.
 * `IsPicardLindelof`: the structure holding the assumptions of the Picard-Lindelöf theorem.
 * `IsPicardLindelof.exists_eq_hasDerivWithinAt`: the existence theorem for local solutions to
   time-dependent ODEs.
@@ -96,17 +96,16 @@ section
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {f : ℝ → E → E} {α : ℝ → E} {s : Set ℝ} {u : Set E} {t₀ tmin tmax : ℝ}
 
-/-- The main integral expression on which the Picard-Lindelöf theorem is built. It will be shown
-that if `α : ℝ → E` and `integral f t₀ x₀ α` agree on an interval containing `t₀`, then `α` is a
-solution to `f` with `α t₀ = x₀` on this interval. -/
-noncomputable def integrate (f : ℝ → E → E) (t₀ : ℝ) (x₀ : E) (α : ℝ → E) : ℝ → E :=
+/-- The Picard iteration. It will be shown that if `α : ℝ → E` and `picard f t₀ x₀ α` agree on an
+interval containing `t₀`, then `α` is a solution to `f` with `α t₀ = x₀` on this interval. -/
+noncomputable def picard (f : ℝ → E → E) (t₀ : ℝ) (x₀ : E) (α : ℝ → E) : ℝ → E :=
   fun t ↦ x₀ + ∫ τ in t₀..t, f τ (α τ)
 
 @[simp]
-lemma integrate_apply {x₀ : E} {t : ℝ} : integrate f t₀ x₀ α t = x₀ + ∫ τ in t₀..t, f τ (α τ) := rfl
+lemma picard_apply {x₀ : E} {t : ℝ} : picard f t₀ x₀ α t = x₀ + ∫ τ in t₀..t, f τ (α τ) := rfl
 
-lemma integrate_apply₀ {x₀ : E} : integrate f t₀ x₀ α t₀ = x₀ := by
-  simp only [integrate_apply, integral_same, add_zero]
+lemma picard_apply₀ {x₀ : E} : picard f t₀ x₀ α t₀ = x₀ := by
+  simp only [picard_apply, integral_same, add_zero]
 
 /-- Given a $C^n$ time-dependent vector field `f` and a $C^n$ curve `α`, the composition `f t (α t)`
 is $C^n$ in `t`. -/
@@ -133,7 +132,7 @@ end
 /-! ## Space of Lipschitz functions on a closed interval
 
 We define the space of Lipschitz continuous functions from a closed interval. This will be shown to
-be a complete metric space on which `integrate` is a contracting map, leading to a fixed point that
+be a complete metric space on which `picard` is a contracting map, leading to a fixed point that
 will serve as the solution to the ODE. The domain is a closed interval in order to easily inherit
 the sup metric from continuous maps on compact spaces. We cannot use functions `ℝ → E` with junk
 values outside the domain, as the supremum within a closed interval will only be a pseudo-metric,
@@ -270,13 +269,13 @@ lemma intervalIntegrable_comp_compProj (hf : IsPicardLindelof f t₀ x₀ a r L 
   apply α.continuousOn_comp_compProj hf |>.mono
   exact uIcc_subset_Icc t₀.2 t.2
 
-/-- The map on `FunSpace` defined by `integrate`, some `n`-th interate of which will be a
-contracting map -/
+/-- The map on `FunSpace` defined by `picard`, some `n`-th interate of which will be a contracting
+map -/
 noncomputable def next (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
     (α : FunSpace t₀ x₀ r L) : FunSpace t₀ x₀ r L where
-  toFun t := integrate f t₀ x α.compProj t
+  toFun t := picard f t₀ x α.compProj t
   lipschitzWith := LipschitzWith.of_dist_le_mul fun t₁ t₂ ↦ by
-    rw [dist_eq_norm, integrate_apply, integrate_apply, add_sub_add_left_eq_sub,
+    rw [dist_eq_norm, picard_apply, picard_apply, add_sub_add_left_eq_sub,
       integral_interval_sub_left (intervalIntegrable_comp_compProj hf _ t₁)
         (intervalIntegrable_comp_compProj hf _ t₂), Subtype.dist_eq, Real.dist_eq]
     apply intervalIntegral.norm_integral_le_of_norm_le_const
@@ -289,7 +288,7 @@ noncomputable def next (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ c
 @[simp]
 lemma next_apply (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
     (α : FunSpace t₀ x₀ r L) {t : Icc tmin tmax} :
-    next hf hx α t = integrate f t₀ x α.compProj t := rfl
+    next hf hx α t = picard f t₀ x α.compProj t := rfl
 
 lemma next_apply₀ (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
     (α : FunSpace t₀ x₀ r L) : next hf hx α t₀ = x := by simp
@@ -321,7 +320,7 @@ lemma dist_iterate_next_apply_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
       ContinuousMap.dist_apply_le_dist (f := toContinuousMap α) (g := toContinuousMap β) _
   | succ n hn =>
     rw [iterate_succ_apply', iterate_succ_apply', dist_eq_norm, next_apply,
-      next_apply, integrate_apply, integrate_apply, add_sub_add_left_eq_sub,
+      next_apply, picard_apply, picard_apply, add_sub_add_left_eq_sub,
       ← intervalIntegral.integral_sub (intervalIntegrable_comp_compProj hf _ t)
         (intervalIntegrable_comp_compProj hf _ t)]
     calc
@@ -397,7 +396,7 @@ lemma dist_next_next (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ clo
   have : Nonempty (Icc tmin tmax) := ⟨t₀⟩ -- needed for `ciSup_const`
   rw [← MetricSpace.isometry_induced FunSpace.toContinuousMap FunSpace.toContinuousMap.injective
     |>.dist_eq, dist_eq_norm, ContinuousMap.norm_eq_iSup_norm]
-  simp_rw [ContinuousMap.sub_apply, toContinuousMap_apply_eq_apply, next_apply, integrate_apply,
+  simp_rw [ContinuousMap.sub_apply, toContinuousMap_apply_eq_apply, next_apply, picard_apply,
     add_sub_add_right_eq_sub]
   rw [ciSup_const, dist_eq_norm]
 
@@ -471,14 +470,14 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E
 
 -- also works for open sets and `Ici` and `Iic`; generalise?
 /-- If the time-dependent vector field `f` and the curve `α` are continuous, then `f t (α t)` is the
-derivative of `integrate f t₀ x₀ α`. -/
-lemma hasDerivWithinAt_integrate_Icc
+derivative of `picard f t₀ x₀ α`. -/
+lemma hasDerivWithinAt_picard_Icc
     (ht₀ : t₀ ∈ Icc tmin tmax)
     (hf : ContinuousOn (uncurry f) ((Icc tmin tmax) ×ˢ u))
     (hα : ContinuousOn α (Icc tmin tmax))
     (hmem : ∀ t ∈ Icc tmin tmax, α t ∈ u) (x₀ : E)
     {t : ℝ} (ht : t ∈ Icc tmin tmax) :
-    HasDerivWithinAt (integrate f t₀ x₀ α) (f t (α t)) (Icc tmin tmax) t := by
+    HasDerivWithinAt (picard f t₀ x₀ α) (f t (α t)) (Icc tmin tmax) t := by
   apply HasDerivWithinAt.const_add
   have : Fact (t ∈ Icc tmin tmax) := ⟨ht⟩ -- needed to synthesise `FTCFilter` for `Icc`
   apply intervalIntegral.integral_hasDerivWithinAt_right _ -- need `CompleteSpace E` and `Icc`
@@ -678,9 +677,9 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E
 /-- Picard-Lindelöf (Cauchy-Lipschitz) theorem, integral form. This version shows the existence of a
 local solution whose initial point `x` may be be different from the centre `x₀` of the closed ball
 within which the properties of the vector field hold. -/
-theorem exists_eq_integrate_eq
+theorem exists_eq_picard_eq
     (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r) :
-    ∃ α : ℝ → E, α t₀ = x ∧ ∀ t ∈ Icc tmin tmax, α t = ODE.integrate f t₀ x α t := by
+    ∃ α : ℝ → E, α t₀ = x ∧ ∀ t ∈ Icc tmin tmax, α t = ODE.picard f t₀ x α t := by
   obtain ⟨α, hα⟩ := FunSpace.exists_isFixedPt_next hf hx
   refine ⟨(FunSpace.next hf hx α).compProj, by simp, fun t ht ↦ ?_⟩
   rw [FunSpace.compProj_apply, FunSpace.next_apply, hα, projIcc_of_mem _ ht]
@@ -694,7 +693,7 @@ theorem exists_eq_hasDerivWithinAt
       ∀ t ∈ Icc tmin tmax, HasDerivWithinAt α (f t (α t)) (Icc tmin tmax) t := by
   obtain ⟨α, hα⟩ := FunSpace.exists_isFixedPt_next hf hx
   refine ⟨α.compProj, by rw [FunSpace.compProj_val, ← hα, FunSpace.next_apply₀], fun t ht ↦ ?_⟩
-  apply hasDerivWithinAt_integrate_Icc t₀.2 hf.continuousOn_uncurry
+  apply hasDerivWithinAt_picard_Icc t₀.2 hf.continuousOn_uncurry
     α.continuous_compProj.continuousOn (fun _ ht' ↦ α.compProj_mem_closedBall hf.mul_max_le)
     x ht |>.congr_of_mem _ ht
   intro t' ht'
@@ -744,7 +743,7 @@ theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith
   · rw [hα']
     dsimp only
     rw [dif_pos hx, FunSpace.compProj_apply]
-    apply hasDerivWithinAt_integrate_Icc t₀.2 hf.continuousOn_uncurry
+    apply hasDerivWithinAt_picard_Icc t₀.2 hf.continuousOn_uncurry
       (α x hx |>.continuous_compProj.continuousOn)
       (fun _ ht' ↦ α x hx |>.compProj_mem_closedBall hf.mul_max_le)
       x ht |>.congr_of_mem _ ht
