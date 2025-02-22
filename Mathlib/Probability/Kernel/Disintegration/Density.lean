@@ -146,7 +146,7 @@ lemma measurable_countableFiltration_densityProcess (κ : Kernel α (γ × β)) 
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Measurable[countableFiltration γ n] (fun x ↦ densityProcess κ ν n a x s) := by
   refine @Measurable.ennreal_toReal _ (countableFiltration γ n) _ ?_
-  exact (measurable_densityProcess_countableFiltration_aux κ ν n hs).comp measurable_prod_mk_left
+  exact (measurable_densityProcess_countableFiltration_aux κ ν n hs).comp measurable_prodMk_left
 
 lemma stronglyMeasurable_countableFiltration_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α γ)
     (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) :
@@ -207,7 +207,7 @@ lemma setIntegral_densityProcess_of_mem (hκν : fst κ ≤ ν) [hν : IsFiniteK
   · refine Measurable.aemeasurable ?_
     change Measurable ((fun (p : α × _) ↦ κ p.1 (countablePartitionSet n p.2 ×ˢ s)
       / ν p.1 (countablePartitionSet n p.2)) ∘ (fun x ↦ (a, x)))
-    exact (measurable_densityProcess_aux κ ν n hs).comp measurable_prod_mk_left
+    exact (measurable_densityProcess_aux κ ν n hs).comp measurable_prodMk_left
   · refine ae_of_all _ (fun x ↦ ?_)
     by_cases h0 : ν a (countablePartitionSet n x) = 0
     · suffices κ a (countablePartitionSet n x ×ˢ s) = 0 by simp [h0, this]
@@ -452,13 +452,13 @@ lemma measurable_density_left (κ : Kernel α (γ × β)) (ν : Kernel α γ) (x
     {s : Set β} (hs : MeasurableSet s) :
     Measurable (fun a ↦ density κ ν a x s) := by
   change Measurable ((fun (p : α × γ) ↦ density κ ν p.1 p.2 s) ∘ (fun a ↦ (a, x)))
-  exact (measurable_density κ ν hs).comp measurable_prod_mk_right
+  exact (measurable_density κ ν hs).comp measurable_prodMk_right
 
 lemma measurable_density_right (κ : Kernel α (γ × β)) (ν : Kernel α γ)
     {s : Set β} (hs : MeasurableSet s) (a : α) :
     Measurable (fun x ↦ density κ ν a x s) := by
   change Measurable ((fun (p : α × γ) ↦ density κ ν p.1 p.2 s) ∘ (fun x ↦ (a, x)))
-  exact (measurable_density κ ν hs).comp measurable_prod_mk_left
+  exact (measurable_density κ ν hs).comp measurable_prodMk_left
 
 lemma density_mono_set (hκν : fst κ ≤ ν) (a : α) (x : γ) {s s' : Set β} (h : s ⊆ s') :
     density κ ν a x s ≤ density κ ν a x s' := by

@@ -710,11 +710,11 @@ theorem measurable_prod_mk_right {y : β} : Measurable fun x : α => (x, y) :=
 
 theorem Measurable.of_uncurry_left {f : α → β → γ} (hf : Measurable (uncurry f)) {x : α} :
     Measurable (f x) :=
-  hf.comp measurable_prod_mk_left
+  hf.comp measurable_prodMk_left
 
 theorem Measurable.of_uncurry_right {f : α → β → γ} (hf : Measurable (uncurry f)) {y : β} :
     Measurable fun x => f x y :=
-  hf.comp measurable_prod_mk_right
+  hf.comp measurable_prodMk_right
 
 theorem measurable_prod {f : α → β × γ} :
     Measurable f ↔ (Measurable fun a => (f a).1) ∧ Measurable fun a => (f a).2 :=
@@ -737,8 +737,8 @@ theorem measurableSet_prod_of_nonempty {s : Set α} {t : Set β} (h : (s ×ˢ t)
     MeasurableSet (s ×ˢ t) ↔ MeasurableSet s ∧ MeasurableSet t := by
   rcases h with ⟨⟨x, y⟩, hx, hy⟩
   refine ⟨fun hst => ?_, fun h => h.1.prod h.2⟩
-  have : MeasurableSet ((fun x => (x, y)) ⁻¹' s ×ˢ t) := measurable_prod_mk_right hst
-  have : MeasurableSet (Prod.mk x ⁻¹' s ×ˢ t) := measurable_prod_mk_left hst
+  have : MeasurableSet ((fun x => (x, y)) ⁻¹' s ×ˢ t) := measurable_prodMk_right hst
+  have : MeasurableSet (Prod.mk x ⁻¹' s ×ˢ t) := measurable_prodMk_left hst
   simp_all
 
 theorem measurableSet_prod {s : Set α} {t : Set β} :
@@ -886,24 +886,24 @@ theorem measurable_updateFinset' [DecidableEq δ] {s : Finset δ} :
 @[measurability, fun_prop]
 theorem measurable_updateFinset [DecidableEq δ] {s : Finset δ} {x : Π i, π i} :
     Measurable (updateFinset x s) :=
-  measurable_updateFinset'.comp measurable_prod_mk_left
+  measurable_updateFinset'.comp measurable_prodMk_left
 
 @[measurability, fun_prop]
 theorem measurable_updateFinset_left [DecidableEq δ] {s : Finset δ} {x : Π i : s, π i} :
     Measurable (updateFinset · s x) :=
-  measurable_updateFinset'.comp measurable_prod_mk_right
+  measurable_updateFinset'.comp measurable_prodMk_right
 
 /-- The function `update f a : π a → Π a, π a` is always measurable.
   This doesn't require `f` to be measurable.
   This should not be confused with the statement that `update f a x` is measurable. -/
 @[measurability, fun_prop]
 theorem measurable_update (f : ∀ a : δ, π a) {a : δ} [DecidableEq δ] : Measurable (update f a) :=
-  measurable_update'.comp measurable_prod_mk_left
+  measurable_update'.comp measurable_prodMk_left
 
 @[measurability, fun_prop]
 theorem measurable_update_left {a : δ} [DecidableEq δ] {x : π a} :
     Measurable (update · a x) :=
-  measurable_update'.comp measurable_prod_mk_right
+  measurable_update'.comp measurable_prodMk_right
 
 @[measurability, fun_prop]
 theorem Set.measurable_restrict (s : Set δ) : Measurable (s.restrict (π := π)) :=

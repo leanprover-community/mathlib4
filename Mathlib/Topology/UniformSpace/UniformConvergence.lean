@@ -391,7 +391,7 @@ theorem TendstoUniformlyOnFilter.uniformCauchySeqOnFilter (hF : TendstoUniformly
     UniformCauchySeqOnFilter F p p' := by
   intro u hu
   rcases comp_symm_of_uniformity hu with ⟨t, ht, htsymm, htmem⟩
-  have := tendsto_swap4_prod.eventually ((hF t ht).prod_mk (hF t ht))
+  have := tendsto_swap4_prod.eventually ((hF t ht).prodMk (hF t ht))
   apply this.diag_of_prod_right.mono
   simp only [and_imp, Prod.forall]
   intro n1 n2 x hl hr
@@ -485,7 +485,7 @@ theorem UniformCauchySeqOn.prod_map {ι' α' β' : Type*} [UniformSpace β'] {F'
   obtain ⟨v, hv, w, hw, hvw⟩ := hu
   simp_rw [mem_prod, and_imp, Prod.forall, Prod.map_apply]
   rw [← Set.image_subset_iff] at hvw
-  apply (tendsto_swap4_prod.eventually ((h v hv).prod_mk (h' w hw))).mono
+  apply (tendsto_swap4_prod.eventually ((h v hv).prodMk (h' w hw))).mono
   intro x hx a b ha hb
   exact hvw ⟨_, mk_mem_prod (hx.1 a ha) (hx.2 b hb), rfl⟩
 

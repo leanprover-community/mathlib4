@@ -384,7 +384,7 @@ theorem nhds_eq_comap_uniformity {x : α} : 𝓝 x = (𝓤 α).comap (Prod.mk x)
 
 theorem isOpen_uniformity {s : Set α} :
     IsOpen s ↔ ∀ x ∈ s, { p : α × α | p.1 = x → p.2 ∈ s } ∈ 𝓤 α := by
-  simp only [isOpen_iff_mem_nhds, nhds_eq_comap_uniformity, mem_comap_prod_mk]
+  simp only [isOpen_iff_mem_nhds, nhds_eq_comap_uniformity, mem_comap_prodMk]
 
 theorem refl_le_uniformity : 𝓟 idRel ≤ 𝓤 α :=
   (@UniformSpace.toCore α _).refl
@@ -593,7 +593,7 @@ open UniformSpace
 
 theorem mem_nhds_uniformity_iff_right {x : α} {s : Set α} :
     s ∈ 𝓝 x ↔ { p : α × α | p.1 = x → p.2 ∈ s } ∈ 𝓤 α := by
-  simp only [nhds_eq_comap_uniformity, mem_comap_prod_mk]
+  simp only [nhds_eq_comap_uniformity, mem_comap_prodMk]
 
 theorem mem_nhds_uniformity_iff_left {x : α} {s : Set α} :
     s ∈ 𝓝 x ↔ { p : α × α | p.2 = x → p.1 ∈ s } ∈ 𝓤 α := by

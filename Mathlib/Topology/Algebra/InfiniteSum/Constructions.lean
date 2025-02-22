@@ -68,7 +68,7 @@ theorem HasProd.prodMk {f : β → α} {g : β → γ} {a : α} {b : γ} (hf : H
   simp [HasProd, ← prod_mk_prod, Filter.Tendsto.prodMk_nhds hf hg]
 
 @[deprecated (since := "2025-02-21")]
-alias HasSm.prod_mk := HasSum.prodMk
+alias HasSum.prod_mk := HasSum.prodMk
 
 @[to_additive existing HasSum.prodMk, deprecated (since := "2025-02-21")]
 alias HasProd.prod_mk := HasProd.prodMk

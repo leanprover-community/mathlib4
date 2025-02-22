@@ -389,13 +389,13 @@ def prodAssoc : (α × β) × γ ≃ᵐ α × β × γ where
 def punitProd : PUnit × α ≃ᵐ α where
   toEquiv := Equiv.punitProd α
   measurable_toFun := measurable_snd
-  measurable_invFun := measurable_prod_mk_left
+  measurable_invFun := measurable_prodMk_left
 
 /-- `PUnit` is a right identity for product of measurable spaces up to a measurable equivalence. -/
 def prodPUnit : α × PUnit ≃ᵐ α where
   toEquiv := Equiv.prodPUnit α
   measurable_toFun := measurable_fst
-  measurable_invFun := measurable_prod_mk_right
+  measurable_invFun := measurable_prodMk_right
 
 variable [MeasurableSpace δ] in
 /-- Sums of measurable spaces are symmetric. -/

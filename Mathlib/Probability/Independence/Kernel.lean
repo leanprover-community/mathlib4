@@ -1103,7 +1103,7 @@ lemma iIndepFun.indepFun_mul_left (hf_indep : iIndepFun (fun _ ↦ m) f κ μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     IndepFun (f i * f j) (f k) κ μ := by
   have : IndepFun (fun ω => (f i ω, f j ω)) (f k) κ μ :=
-    hf_indep.indepFun_prod_mk hf_meas i j k hik hjk
+    hf_indep.indepFun_prodMk hf_meas i j k hik hjk
   simpa using this.comp (measurable_fst.mul measurable_snd) measurable_id
 
 @[to_additive]
@@ -1117,7 +1117,7 @@ lemma iIndepFun.indepFun_mul_mul (hf_indep : iIndepFun (fun _ ↦ m) f κ μ)
     (hf_meas : ∀ i, Measurable (f i))
     (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
     IndepFun (f i * f j) (f k * f l) κ μ :=
-  (hf_indep.indepFun_prod_mk_prod_mk hf_meas i j k l hik hil hjk hjl).comp
+  (hf_indep.indepFun_prodMk_prodMk hf_meas i j k l hik hil hjk hjl).comp
     measurable_mul measurable_mul
 
 end Mul
@@ -1130,7 +1130,7 @@ lemma iIndepFun.indepFun_div_left (hf_indep : iIndepFun (fun _ ↦ m) f κ μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     IndepFun (f i / f j) (f k) κ μ := by
   have : IndepFun (fun ω => (f i ω, f j ω)) (f k) κ μ :=
-    hf_indep.indepFun_prod_mk hf_meas i j k hik hjk
+    hf_indep.indepFun_prodMk hf_meas i j k hik hjk
   simpa using this.comp (measurable_fst.div measurable_snd) measurable_id
 
 @[to_additive]
@@ -1144,7 +1144,7 @@ lemma iIndepFun.indepFun_div_div (hf_indep : iIndepFun (fun _ ↦ m) f κ μ)
     (hf_meas : ∀ i, Measurable (f i))
     (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
     IndepFun (f i / f j) (f k / f l) κ μ :=
-  (hf_indep.indepFun_prod_mk_prod_mk hf_meas i j k l hik hil hjk hjl).comp
+  (hf_indep.indepFun_prodMk_prodMk hf_meas i j k l hik hil hjk hjl).comp
     measurable_div measurable_div
 
 end Div
