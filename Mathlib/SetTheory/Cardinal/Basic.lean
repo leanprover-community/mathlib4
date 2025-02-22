@@ -850,11 +850,11 @@ alias isSuccLimit_zero := isSuccPrelimit_zero
 
 end deprecated
 
-/-- A cardinal is a strong limit if it is not zero and it is closed under powersets. Note that `ℵ₀`
-is a strong limit by this definition. -/
+/-- A cardinal is a strong limit if it is not zero and it is closed under powersets.
+Note that `ℵ₀` is a strong limit by this definition. -/
 structure IsStrongLimit (c : Cardinal) : Prop where
   ne_zero : c ≠ 0
-  two_power_lt {x} : x < c → 2 ^ x < c
+  two_power_lt ⦃x⦄ : x < c → 2 ^ x < c
 
 protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLimit c := by
   rw [Cardinal.isSuccLimit_iff]
