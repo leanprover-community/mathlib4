@@ -928,12 +928,15 @@ instance {l : Filter α} :
     Trans ((· =ᶠ[l] ·) : (α → β) → (α → β) → Prop) (· =ᶠ[l] ·) (· =ᶠ[l] ·) where
   trans := EventuallyEq.trans
 
-theorem EventuallyEq.prod_mk {l} {f f' : α → β} (hf : f =ᶠ[l] f') {g g' : α → γ} (hg : g =ᶠ[l] g') :
+theorem EventuallyEq.prodMk {l} {f f' : α → β} (hf : f =ᶠ[l] f') {g g' : α → γ} (hg : g =ᶠ[l] g') :
     (fun x => (f x, g x)) =ᶠ[l] fun x => (f' x, g' x) :=
   hf.mp <|
     hg.mono <| by
       intros
       simp only [*]
+
+@[deprecated (since := "2025-02-22")]
+alias EventuallyEq.prod_mk := EventuallyEq.prodMk
 
 -- See `EventuallyEq.comp_tendsto` further below for a similar statement w.r.t.
 -- composition on the right.
@@ -943,7 +946,7 @@ theorem EventuallyEq.fun_comp {f g : α → β} {l : Filter α} (H : f =ᶠ[l] g
 
 theorem EventuallyEq.comp₂ {δ} {f f' : α → β} {g g' : α → γ} {l} (Hf : f =ᶠ[l] f') (h : β → γ → δ)
     (Hg : g =ᶠ[l] g') : (fun x => h (f x) (g x)) =ᶠ[l] fun x => h (f' x) (g' x) :=
-  (Hf.prod_mk Hg).fun_comp (uncurry h)
+  (Hf.prodMk Hg).fun_comp (uncurry h)
 
 @[to_additive]
 theorem EventuallyEq.mul [Mul β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
