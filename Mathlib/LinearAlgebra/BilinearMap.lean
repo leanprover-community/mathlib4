@@ -362,14 +362,10 @@ theorem injective_compr₂_of_injective (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g
     (hg : Injective g) : Injective (f.compr₂ g) :=
   hg.injective_linearMapComp_left.comp hf
 
+/-- A version of `Function.Surjective.comp` for composition of a bilinear map with a linear map. -/
 theorem surjective_compr₂_of_exists_rightInverse (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ)
     (hf : Surjective f) (hg : ∃ g' : Qₗ →ₗ[R] Pₗ, g.comp g' = LinearMap.id) :
-    Surjective (f.compr₂ g) := by
-  suffices Surjective (g.comp ·) from this.comp hf
-  intro h
-  obtain ⟨g', hg'⟩ := hg
-  refine ⟨g'.comp h, ?_⟩
-  simp_rw [← comp_assoc, hg', id_comp]
+    Surjective (f.compr₂ g) := (surjective_linearMapComp_left_of_exists_rightInverse hg).comp hf
 
 /-- A version of `Function.Surjective.comp` for composition of a bilinear map with a linear map. -/
 theorem surjective_compr₂_of_equiv (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ ≃ₗ[R] Qₗ) (hf : Surjective f) :
