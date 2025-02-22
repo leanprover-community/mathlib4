@@ -22,7 +22,7 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
     exp R A (a + b) = exp R A a * exp R A b := by
   sorry
 
-theorem exp_is_unit_of_nilpotent (a : A) (h : IsNilpotent a) : IsUnit (exp R A a) := by
+theorem exp_of_nilpotent_is_unit (a : A) (h : IsNilpotent a) : IsUnit (exp R A a) := by
   sorry
 
 end Algebra
