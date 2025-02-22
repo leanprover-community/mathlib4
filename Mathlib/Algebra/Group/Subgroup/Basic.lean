@@ -698,7 +698,7 @@ See `MonoidHom.eq_liftOfRightInverse` for the uniqueness lemma.
    G₂----> G₃
       ∃!φ
 ```
- -/
+-/
 @[to_additive
       "`liftOfRightInverse f f_inv hf g hg` is the unique additive group homomorphism `φ`
       * such that `φ.comp f = g` (`AddMonoidHom.liftOfRightInverse_comp`),

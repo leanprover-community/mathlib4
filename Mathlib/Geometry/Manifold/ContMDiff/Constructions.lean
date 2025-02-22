@@ -400,11 +400,11 @@ lemma extChartAt_inl_apply {x y : M} :
 lemma extChartAt_inr_apply {x y : M'} :
     (extChartAt I (.inr x : M ⊕ M')) (Sum.inr y) = (extChartAt I x) y := by simp
 
-lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
+lemma ContMDiff.sumElim {f : M → N} {g : M' → N}
     (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.elim f g) := by
   intro p
   rw [contMDiffAt_iff]
-  refine ⟨(Continuous.sum_elim hf.continuous hg.continuous).continuousAt, ?_⟩
+  refine ⟨(Continuous.sumElim hf.continuous hg.continuous).continuousAt, ?_⟩
   cases p with
   | inl x =>
     -- In charts around x : M, the map f ⊔ g looks like f.
@@ -439,9 +439,13 @@ lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
       simp only [extChartAt, ChartedSpace.sum_chartAt_inr, Sum.elim_inr]
       congr
 
-lemma ContMDiff.sum_map {f : M → N} {g : M' → N'}
+@[deprecated (since := "2025-02-20")] alias ContMDiff.sum_elim := ContMDiff.sumElim
+
+lemma ContMDiff.sumMap {f : M → N} {g : M' → N'}
     (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.map f g) :=
-  ContMDiff.sum_elim (ContMDiff.inl.comp hf) (ContMDiff.inr.comp hg)
+  ContMDiff.sumElim (ContMDiff.inl.comp hf) (ContMDiff.inr.comp hg)
+
+@[deprecated (since := "2025-02-20")] alias ContMDiff.sum_map := ContMDiff.sumMap
 
 lemma contMDiff_of_contMDiff_inl {f : M → N}
     (h : ContMDiff I J n ((@Sum.inl N N') ∘ f)) : ContMDiff I J n f := by
@@ -451,7 +455,7 @@ lemma contMDiff_of_contMDiff_inl {f : M → N}
   have : aux ∘ (@Sum.inl N N') ∘ f = f := by simp only [aux, Function.comp_apply]; rfl
   rw [← this]
   rw [← contMDiffOn_univ] at h ⊢
-  apply (contMDiff_id.sum_elim contMDiff_const).contMDiffOn (s := @Sum.inl N N' '' univ).comp h
+  apply (contMDiff_id.sumElim contMDiff_const).contMDiffOn (s := @Sum.inl N N' '' univ).comp h
   intro x _hx
   rw [mem_preimage, Function.comp_apply]
   use f x, trivial
@@ -464,7 +468,7 @@ lemma contMDiff_of_contMDiff_inr {g : M' → N'}
   have : aux ∘ (@Sum.inr N N') ∘ g = g := by simp only [aux, Function.comp_apply]; rfl
   rw [← this]
   rw [← contMDiffOn_univ] at h ⊢
-  apply ((contMDiff_const.sum_elim contMDiff_id).contMDiffOn (s := Sum.inr '' univ)).comp h
+  apply ((contMDiff_const.sumElim contMDiff_id).contMDiffOn (s := Sum.inr '' univ)).comp h
   intro x _hx
   rw [mem_preimage, Function.comp_apply]
   use g x, trivial
@@ -473,8 +477,8 @@ lemma contMDiff_sum_map {f : M → N} {g : M' → N'} :
     ContMDiff I J n (Sum.map f g) ↔ ContMDiff I J n f ∧ ContMDiff I J n g :=
   ⟨fun h ↦ ⟨contMDiff_of_contMDiff_inl (h.comp ContMDiff.inl),
     contMDiff_of_contMDiff_inr (h.comp ContMDiff.inr)⟩,
-   fun h ↦ ContMDiff.sum_map h.1 h.2⟩
+   fun h ↦ ContMDiff.sumMap h.1 h.2⟩
 
-lemma ContMDiff.swap : ContMDiff I I n (@Sum.swap M M') := ContMDiff.sum_elim inr inl
+lemma ContMDiff.swap : ContMDiff I I n (@Sum.swap M M') := ContMDiff.sumElim inr inl
 
 end disjointUnion

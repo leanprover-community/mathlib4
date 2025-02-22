@@ -386,7 +386,7 @@ variable (M : Type v) [AddCommMonoid M] [Module R M]
 
 /-- Given an `R`-module M, consider Hom(S, M) -- the `R`-linear maps between S (as an `R`-module by
  means of restriction of scalars) and M. `S` acts on Hom(S, M) by `s • g = x ↦ g (x • s)`
- -/
+-/
 instance hasSMul : SMul S <| (restrictScalars f).obj (of _ S) →ₗ[R] M where
   smul s g :=
     { toFun := fun s' : S => g (s' * s : S)
@@ -414,7 +414,7 @@ instance distribMulAction : DistribMulAction S <| (restrictScalars f).obj (of _ 
 
 /-- `S` acts on Hom(S, M) by `s • g = x ↦ g (x • s)`, this action defines an `S`-module structure on
 Hom(S, M).
- -/
+-/
 instance isModule : Module S <| (restrictScalars f).obj (of _ S) →ₗ[R] M :=
   { CoextendScalars.distribMulAction f _ with
     add_smul := fun s1 s2 g => LinearMap.ext fun x : S => by simp [mul_add, LinearMap.map_add]
@@ -583,8 +583,8 @@ protected def counit' : coextendScalars f ⋙ restrictScalars f ⟶ 𝟭 (Module
         dsimp
         rw [CoextendScalars.smul_apply, one_mul, ← LinearMap.map_smul]
         congr
-        change f r = (f r) • (1 : S)
-        rw [smul_eq_mul (a := f r) (a' := 1), mul_one] }
+        change f r = f r • (1 : S)
+        rw [smul_eq_mul (f r) 1, mul_one] }
 
 end RestrictionCoextensionAdj
 
