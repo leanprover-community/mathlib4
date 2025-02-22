@@ -348,12 +348,10 @@ variable (O p) in
 def BDeRhamPlus [CharZero O] : Type u := AdicCompletion (R := (Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭)))) (RingHom.ker fontaineThetaInvertP) (Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭)))
 
 -- Mathlib.RingTheory.AdicCompletion.Algebra
-instance [CharZero O] : CommRing (BDeRhamPlus O p) := AdicCompletion.instCommRing _ _
+instance [CharZero O] : CommRing (BDeRhamPlus O p) := AdicCompletion.instCommRing _
 
 end PeriodRing
 def BDeRham [CharZero O] : Type u := FractionRing (BDeRhamPlus O p)
 notation "𝔹_dR^+(" O ")" => BDeRhamPlus O
-
-end PeriodRing
 
 end
