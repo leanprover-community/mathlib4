@@ -35,6 +35,7 @@ namespace AddCommGrp
 section
 
 variable {C : Type u} [Category.{v} C] [Preadditive C] [HasFiniteBiproducts C]
+
 namespace leftExactFunctorForgetEquivalence
 
 attribute [local instance] hasFiniteProducts_of_hasFiniteBiproducts
