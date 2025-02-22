@@ -9,15 +9,19 @@ import Mathlib.RingTheory.WittVector.Complete
 import Mathlib.LinearAlgebra.Quotient.Defs
 import Mathlib.RingTheory.WittVector.Teichmuller
 import Mathlib.RingTheory.AdicCompletion.Basic
+import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.AdicCompletion.Algebra
+
 
 /-!
 # Fontaine's θ map
 In this file, we define Fontaine's `θ` map, which is a ring
-homomorphism from the Witt vector `𝕎(A^♭)` of the tilt of a perfectoid ring `A`
-to `A` itself. Our definition of `θ` does not require that `A` is perfectoid in the first place.
+homomorphism from the Witt vector `𝕎(A^♭)` of the tilt of a perfectoid ring `O`
+to `O` itself. Our definition of `θ` does not require that `O` is perfectoid in the first place.
+We only need `O` to be `p`-adically complete.
 
 ## Main definitions
-* `fontaineTheta` : Fontaine's θ map, which is a ring homomorphism from `𝕎(A^♭)` to `A`.
+* `fontaineTheta` : Fontaine's θ map, which is a ring homomorphism from `𝕎(O^♭)` to `O`.
 * `BDeRhamPlus` : The period ring `B_{dR}^+`.
 
 ## Main theorems
@@ -41,42 +45,14 @@ variable {O : Type u} [CommRing O] {p : ℕ} [Fact (Nat.Prime p)]
     [Fact ¬IsUnit (p : O)] [IsAdicComplete (span {(p : O)}) O]
 
 local notation A "^♭" => PreTilt A p
--- local notation "♯" x => PreTilt.untilt x
 local notation "𝕎" => WittVector p
 
--- /-!
--- ## the underlying function of θ
--- In this section, we define the underlying function of `θ`.
-
--- * `fontaineThetaAux n` is the sum of the first `n`-terms of the summation used in `θ`.
--- * `fontaineThetaFun` is the p-adic limit of the sequence `fontaineThetaAux`.
--- -/
--- section Function
-
--- def fontaineThetaAux (x : 𝕎 (O^♭)) (n : ℕ) : O :=
---   ∑ (i ≤ n), p^i * ♯ ((frobeniusEquiv _ p).symm^[n] (x.coeff n))
-
--- lemma pow_dvd_fontaineThetaAux_sub (x : 𝕎 (O^♭)) {m n : ℕ} (h : m ≤ n) :
---   (p : O) ^ m ∣ fontaineThetaAux x m - fontaineThetaAux x n := by
---   sorry
-
--- lemma exists_pow_dvd_fontaineThetaAux_sub (x : 𝕎 (O^♭)) :
---     ∃ L, ∀ (n : ℕ), (p : O) ^ n ∣ fontaineThetaAux x n - L :=
---   IsPrecomplete.exists_pow_dvd inferInstance (pow_dvd_fontaineThetaAux_sub x)
-
--- def fontaineThetaFun (x : 𝕎 (O^♭)) : O :=
---   Classical.choose <| exists_pow_dvd_fontaineThetaAux_sub x
-
--- lemma pow_dvd_fontaineThetaAux_sub_fontaineThetaFun (x : 𝕎 (O^♭)) (n : ℕ) :
---   (p : O) ^ n ∣ fontaineThetaAux x n - fontaineThetaFun x :=
---   (Classical.choose_spec <| exists_pow_dvd_fontaineThetaAux_sub x) n
-
--- end Function
-
 /-!
-## θ is a ring homomorphism
-In this section, we show that `fontaineThetaFun` is actually a
-ring homomorphism, and define the ring homomorphism `fontaineTheta`.
+## θ as a ring homomorphism
+In this section, we first define the ring homomorphism
+`fontaineThetaModPPow : 𝕎 (O^♭) →+* O ⧸ span {(p : O)} ^ (n + 1)`.
+Then we show they are compatible with each other and lift to a
+ring homomorphism `fontaineTheta : 𝕎 (O^♭) →+* O`.
 
 To prove this, we prove that `fontaineThetaFun` mod `p^n` is a ring homomorphism by
 decompose it as a composition of several ring homomorphisms as below.
@@ -102,35 +78,91 @@ namespace WittVector
 -- import Mathlib.RingTheory.WittVector.Complete
 
 
-def teichmullerSeries {R : Type*} [CommRing R] [ExpChar R p] [PerfectRing R p] (x : 𝕎 R) (n : ℕ) : R :=
-  ((iterateFrobeniusEquiv R p n).symm (x.coeff n))
+-- def teichmullerSeries {R : Type*} [CommRing R] [ExpChar R p] [PerfectRing R p] (x : 𝕎 R) (n : ℕ) : R :=
+--   (((_root_.frobeniusEquiv R p).symm ^ n) (x.coeff n))
 
-theorem teichmullerSeries_def {R : Type*} [CommRing R] [ExpChar R p] [PerfectRing R p] (x : 𝕎 R) (n : ℕ) :
-    teichmullerSeries x n =  ((iterateFrobeniusEquiv R p n).symm  (x.coeff n)) := by
-  sorry
+-- theorem teichmullerSeries_def {R : Type*} [CommRing R] [ExpChar R p] [PerfectRing R p] (x : 𝕎 R) (n : ℕ) :
+--     teichmullerSeries x n =  (((_root_.frobeniusEquiv R p).symm ^ n)  (x.coeff n)) := by
+--   sorry
+#check WittVector.coeff_add_of_disjoint
 
+#check Finset.sum_insert_of_eq_zero_if_not_mem
+#check Finset.sum_insert
+-- local lemma
+theorem coeff_sum_of_disjoint {R : Type*} [CommRing R]
+    {α : Type*} {S : Finset α} (x : α → 𝕎 R)
+    (h : ∀ (n : ℕ), Subsingleton {r | r ∈ S ∧ (x r).coeff n ≠ 0}) (n : ℕ) :
+    (∑ s ∈ S, x s).coeff n = ∑ (s ∈ S), (x s).coeff n := by
+  classical
+  revert n
+  induction' S using Finset.induction with a S' ha hind
+  · simp
+  · intro n
+    have : (∀ (n : ℕ), Subsingleton {r | r ∈ S' ∧ (x r).coeff n ≠ 0 }) := by
+      refine fun n ↦ ⟨fun b c ↦ ?_⟩
+      ext
+      exact congrArg (fun x ↦ x.1) <|
+          (h n).allEq ⟨b.1, S'.subset_insert a b.2.1, b.2.2⟩ ⟨c.1, S'.subset_insert a c.2.1, c.2.2⟩
+    replace hind := hind this
+    simp only [ha, not_false_eq_true, Finset.sum_insert]
+    have : ∀ (n : ℕ), (x a).coeff n = 0 ∨ (∑ s ∈ S', x s).coeff n = 0 := by
+      simp only [hind]
+      by_contra! h
+      obtain ⟨m, hma, hmS'⟩ := h
+      have := Finset.sum_eq_zero.mt hmS'
+      push_neg at this
+      choose b hb hb' using this
+      have : a = b :=
+        congrArg (fun x ↦ x.1) <|
+          (h m).allEq ⟨a, S'.mem_insert_self a, hma⟩ ⟨b, S'.mem_insert_of_mem hb, hb'⟩
+      exact ha (this ▸ hb)
+    rw [coeff_add_of_disjoint n _ _ this, hind n]
+
+
+#check WittVector.mul_pow_charP_coeff_succ
+#check WittVector.mul_pow_charP_coeff_zero
+-- -- local lemma
+-- theorem coeff_foo {R : Type*} [CommRing R] [hp : Fact (Nat.Prime p)] {n : ℕ} (x : R) :
+--     (p ^ n * teichmuller p x).coeff n = x ^ p ^ n := by sorry
+--   sorry
+
+variable (n : ℕ)
+#check ∑ (i ≤ n), i
+example (n : ℕ) : ∑ (i ≤ n), i = Finset.sum (Finset.Iic n) id := rfl
 /--
 The Teichmüller expansion.
 -/
 theorem dvd_sub_sum_teichmuller_iterateFrobeniusEquiv_coeff
-    {R : Type*} [CommRing R] [ExpChar R p] [PerfectRing R p] (x : 𝕎 R) (n : ℕ) :
-    (p : 𝕎 R) ^ (n + 1) ∣ x - ∑ (i ≤ n), p ^ i * teichmuller p
-        ((iterateFrobeniusEquiv R p n).symm (x.coeff i)) := by
-  sorry
+    {R : Type*} [CommRing R] [CharP R p] [PerfectRing R p] (x : 𝕎 R) (n : ℕ) :
+    (p : 𝕎 R) ^ (n + 1) ∣ x - ∑ (i ≤ n), (teichmuller p
+        (((_root_.frobeniusEquiv R p).symm ^ n) (x.coeff i)) * p ^ i) := by
+  rw [← Ideal.mem_span_singleton, mem_span_p_pow_iff_le_coeff_eq_zero,
+      ← le_coeff_eq_iff_le_sub_coeff_eq_zero]
+  intro i hi
+  rw [WittVector.coeff_sum_of_disjoint]
+  · sorry-- simp_rw [mul_comm (p : 𝕎 R) ^ s _]
+  · sorry
+    -- intro n
+    -- simp
 
-theorem eq_of_apply_teichmuller_eq {R S : Type*} [CommRing R] [CommRing S] [ExpChar R p]
+theorem eq_of_apply_teichmuller_eq {R S : Type*} [CommRing R] [CommRing S] [CharP R p]
     [PerfectRing R p] (f g : 𝕎 R →+* S) (hp : IsNilpotent (p : S))
     (h : ∀ (x : R), f (teichmuller p x) = g (teichmuller p x)) : f = g := by
   obtain ⟨n, hn⟩ := hp
   ext x
+  obtain ⟨c, hc⟩ := (dvd_sub_sum_teichmuller_iterateFrobeniusEquiv_coeff x n)
   calc
-    f x = f (x - ∑ (i ≤ n), p ^ i * teichmuller p ((iterateFrobeniusEquiv R p n).symm (x.coeff i))) +
-        f (∑ (i ≤ n), p ^ i * teichmuller p ((iterateFrobeniusEquiv R p n).symm (x.coeff i))) := by
-      sorry
-    _ = ∑ (i ≤ n), p ^ i * f (teichmuller p ((iterateFrobeniusEquiv R p n).symm  (x.coeff i))) := by sorry
-    _ = ∑ (i ≤ n), p ^ i * g (teichmuller p ((iterateFrobeniusEquiv R p n).symm  (x.coeff i))) := by sorry
-    _ = g (x - ∑ (i ≤ n), p ^ i * teichmuller p ((iterateFrobeniusEquiv R p n).symm  (x.coeff i))) + g (∑ (i ≤ n), p ^ i * teichmuller p ((iterateFrobeniusEquiv R p n).symm  (x.coeff i))) := by sorry
-    _ = g x := by sorry
+    f x = f (x - ∑ (i ≤ n), teichmuller p (((_root_.frobeniusEquiv R p).symm ^ n)
+        (x.coeff i)) * p ^ i) + f (∑ (i ≤ n), teichmuller p
+        (((_root_.frobeniusEquiv R p).symm ^ n) (x.coeff i)) * p ^ i) := by simp
+    _ = ∑ (i ≤ n), f (teichmuller p (((_root_.frobeniusEquiv R p).symm ^ n)
+        (x.coeff i))) * p ^ i := by rw [hc]; simp [pow_succ, hn]
+    _ = ∑ (i ≤ n), g (teichmuller p
+        (((_root_.frobeniusEquiv R p).symm ^ n) (x.coeff i))) * p ^ i := by simp [h]
+    _ = g (x - ∑ (i ≤ n), teichmuller p (((_root_.frobeniusEquiv R p).symm ^ n)
+        (x.coeff i)) * p ^ i) + g (∑ (i ≤ n), teichmuller p (((_root_.frobeniusEquiv R p).symm ^ n)
+        (x.coeff i)) * p ^ i) := by rw [hc]; simp [pow_succ, hn]
+    _ = g x := by simp
 
 
 
@@ -152,6 +184,11 @@ def ghostComponentModPPow (n : ℕ): 𝕎 (O ⧸ span {(p : O)}) →+* O ⧸ spa
 
 #check PreTilt.mk_untilt_eq_coeff_zero
 #check RingHom.liftOfRightInverse_comp_apply
+
+theorem foo (n : ℕ) (x : O^♭) : WittVector.map (Ideal.Quotient.mk (span {(p : O)})) (teichmuller p ((((_root_.frobeniusEquiv _ p).symm ^ n) x).untilt)) = (teichmuller p (Perfection.coeff (ModP O p) _ n x)) := sorry
+
+theorem foo_bar (n : ℕ) (x : O^♭) : ghostComponent n (teichmuller p ((((_root_.frobeniusEquiv _ p).symm ^ n) x).untilt)) = x.untilt := sorry
+
 @[simp]
 theorem ghostComponentModPPow_teichmuller_coeff (n : ℕ) (x : O^♭) :
     ghostComponentModPPow n (teichmuller p (Perfection.coeff (ModP O p) _ n x)) =
@@ -170,6 +207,7 @@ def fontaineThetaModPPow (n : ℕ): 𝕎 (O^♭) →+* O ⧸ span {(p : O)} ^ (n
       (((WittVector.map (Perfection.coeff _ p 0))).comp
           (WittVector.map ((frobeniusEquiv (O^♭) p).symm ^ n : O^♭ →+* O^♭)))
 
+theorem fontaineThetaModPPow_teichmuller (n : ℕ) (x : O^♭) : fontaineThetaModPPow O p n (teichmuller p x) = Ideal.Quotient.mk _ x.untilt := sorry
 -- theorem fontaineThetaModP_eq_fontainThetaFun_mod_p (x : 𝕎 (O^♭)) (n : ℕ) :
 --   fontaineThetaModPPow O p n x =
 --   Ideal.Quotient.mk (span {(p : O)} ^ (n + 1)) (fontaineThetaAux x n) := sorry
@@ -292,15 +330,28 @@ end RingHom
 
 theorem fontaineTheta_teichmuller (x : O^♭) : fontaineTheta (teichmuller p x) = x.untilt := sorry
 
+theorem fontaineTheta_p : fontaineTheta (p : 𝕎 (O^♭)) = p := sorry
+
 theorem surjective_fontaineTheta : Function.Surjective (fontaineTheta : 𝕎 (O^♭) → O) := sorry
 
 
+def fontaineThetaInvertP [CharZero O] : Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭)) →+* (FractionRing O) := Localization.awayLift ((algebraMap O _).comp fontaineTheta) (p : 𝕎 (O^♭)) sorry
+
 section PeriodRing
 
-def BDeRhamPlus : Type u := AdicCompletion (RingHom.ker fontaineTheta) (𝕎 (O^♭)) -- WRONG need invert p
+variable (R : Type*) [CommRing R] (f : R)
+#synth CommRing (Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭)))
 
-def BDeRham (O : Type*) [CommRing O] [Fact (Nat.Prime p)]
-  [Fact ¬IsUnit (p : O)] : Type* := sorry -- FractionRing (BDeRhamPlus O p)
+-- import Mathlib.RingTheory.Localization.Away.Basic
+#check Localization.awayLift
+variable (O p) in
+def BDeRhamPlus [CharZero O] : Type u := AdicCompletion (R := (Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭)))) (RingHom.ker fontaineThetaInvertP) (Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭)))
+
+-- Mathlib.RingTheory.AdicCompletion.Algebra
+instance [CharZero O] : CommRing (BDeRhamPlus O p) := AdicCompletion.instCommRing _ _
+
+end PeriodRing
+def BDeRham [CharZero O] : Type u := FractionRing (BDeRhamPlus O p)
 notation "𝔹_dR^+(" O ")" => BDeRhamPlus O
 
 end PeriodRing
