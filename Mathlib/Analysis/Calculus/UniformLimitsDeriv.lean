@@ -126,7 +126,7 @@ theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l 
     -- neighborhood to small enough ball
     rw [Metric.tendstoUniformlyOnFilter_iff] at hf' ⊢
     intro ε hε
-    have := (tendsto_swap4_prod.eventually (hf.prodMk hf)).diag_of_prod_right
+    have := (tendsto_swap4_prod.eventually (hf.prod_mk hf)).diag_of_prod_right
     obtain ⟨a, b, c, d, e⟩ := eventually_prod_iff.1 ((hf' ε hε).and this)
     obtain ⟨R, hR, hR'⟩ := Metric.nhds_basis_ball.eventually_iff.mp d
     let r := min 1 R
@@ -274,7 +274,7 @@ theorem difference_quotients_converge_uniformly
   intro ε hε
   obtain ⟨q, hqpos, hqε⟩ := exists_pos_rat_lt hε
   specialize hfg' (q : ℝ) (by simp [hqpos])
-  have := (tendsto_swap4_prod.eventually (hf.prodMk hf)).diag_of_prod_right
+  have := (tendsto_swap4_prod.eventually (hf.prod_mk hf)).diag_of_prod_right
   obtain ⟨a, b, c, d, e⟩ := eventually_prod_iff.1 (hfg'.and this)
   obtain ⟨r, hr, hr'⟩ := Metric.nhds_basis_ball.eventually_iff.mp d
   rw [eventually_prod_iff]
@@ -379,7 +379,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
       rw [Metric.tendsto_nhds] at h1 ⊢
       exact fun ε hε => (h1 ε hε).curry.mono fun n hn => hn.self_of_nhds
     refine squeeze_zero_norm ?_
-      (tendsto_zero_iff_norm_tendsto_zero.mp (tendsto_fst.comp (h2.prod_map tendsto_id)))
+      (tendsto_zero_iff_norm_tendsto_zero.mp (tendsto_fst.comp (h2.prodMap tendsto_id)))
     intro n
     simp_rw [norm_smul, norm_inv, RCLike.norm_coe_norm]
     by_cases hx : x = n.2; · simp [hx]

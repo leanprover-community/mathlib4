@@ -460,7 +460,7 @@ theorem Continuous.clm_apply {X} [TopologicalSpace X] {f : X → (E →L[𝕜] F
 theorem ContinuousOn.clm_apply {X} [TopologicalSpace X] {f : X → (E →L[𝕜] F)} {g : X → E}
     {s : Set X} (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x ↦ f x (g x)) s :=
-  isBoundedBilinearMap_apply.continuous.comp_continuousOn (hf.prod hg)
+  isBoundedBilinearMap_apply.continuous.comp_continuousOn (hf.prodMk hg)
 
 end
 

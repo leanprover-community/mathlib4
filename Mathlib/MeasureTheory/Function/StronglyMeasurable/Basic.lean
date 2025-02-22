@@ -307,12 +307,14 @@ protected theorem mono {m m' : MeasurableSpace α} [TopologicalSpace β]
       (SimpleFunc.finite_range (hf.approx n))
   exact ⟨f_approx, hf.tendsto_approx⟩
 
-protected theorem prod_mk {m : MeasurableSpace α} [TopologicalSpace β] [TopologicalSpace γ]
+protected theorem prodMk {m : MeasurableSpace α} [TopologicalSpace β] [TopologicalSpace γ]
     {f : α → β} {g : α → γ} (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
     StronglyMeasurable fun x => (f x, g x) := by
   refine ⟨fun n => SimpleFunc.pair (hf.approx n) (hg.approx n), fun x => ?_⟩
   rw [nhds_prod_eq]
   exact Tendsto.prodMk (hf.tendsto_approx x) (hg.tendsto_approx x)
+
+@[deprecated (since := "2025-02-22")] protected alias prod_mk := StronglyMeasurable.prodMk
 
 theorem comp_measurable [TopologicalSpace β] {_ : MeasurableSpace α} {_ : MeasurableSpace γ}
     {f : α → β} {g : γ → α} (hf : StronglyMeasurable f) (hg : Measurable g) :
