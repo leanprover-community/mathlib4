@@ -53,6 +53,11 @@ theorem exp_zero_eq_one : exp R A 0 = 1 := by
   simp at h1
   apply h1.symm
 
+
+theorem zero_ev {k l : ℕ} {a : A} (h₁ : a ^ k = 0) (h₂ : k ≤ l) : a ^ l = 0 := by
+  obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_le h₂
+  rw [pow_add, h₁, zero_mul]
+
 --example (n : ℕ) (a : A) : (n.factorial : R) • ((n.factorial : R)⁻¹ • a) = a := by
 --have h1 : (n.factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero n
 --simp_all only [ne_eq, Nat.cast_eq_zero, not_false_eq_true, smul_inv_smul₀]
