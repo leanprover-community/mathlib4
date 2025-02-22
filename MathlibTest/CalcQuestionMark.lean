@@ -1,0 +1,24 @@
+import Mathlib.Tactic.Widget.Calc
+
+/--
+info: Create calc tactic:
+• calc
+    1 = 1 := by sorry
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+example : 1 = 1 := by
+  calc?
+
+
+/--
+info: Create calc tactic:
+• calc
+    a ≤ a := by sorry
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+example (a : Nat) : a ≤ a := by
+  calc?
