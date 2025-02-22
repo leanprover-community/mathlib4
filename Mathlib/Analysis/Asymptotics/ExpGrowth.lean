@@ -247,17 +247,16 @@ lemma expGrowthInf_inf {u v : ℕ → ℝ≥0∞} :
   exact (monotone_div_right_of_nonneg n.cast_nonneg').map_min
 
 /-- Lower exponential growth as an `InfTopHom`.-/
-noncomputable def expGrowthInf_infTopHom : InfTopHom (ℕ → ℝ≥0∞) EReal where
+noncomputable def expGrowthInfTopHom : InfTopHom (ℕ → ℝ≥0∞) EReal where
   toFun := expGrowthInf
   map_inf' := fun u v ↦ @expGrowthInf_inf u v
   map_top' := expGrowthInf_top
 
 lemma expGrowthInf_biInf {α : Type*} (u : α → ℕ → ℝ≥0∞) {s : Set α} (hs : s.Finite) :
     expGrowthInf (⨅ x ∈ s, u x) = ⨅ x ∈ s, expGrowthInf (u x) := by
-  have := map_finset_inf expGrowthInf_infTopHom hs.toFinset u
-  simp only [expGrowthInf_infTopHom, InfTopHom.coe_mk, InfHom.coe_mk, Finset.inf_eq_iInf,
-    hs.mem_toFinset, comp_apply] at this
-  exact this
+  have := map_finset_inf expGrowthInfTopHom hs.toFinset u
+  simpa only [expGrowthInfTopHom, InfTopHom.coe_mk, InfHom.coe_mk, Finset.inf_eq_iInf,
+    hs.mem_toFinset, comp_apply]
 
 lemma expGrowthInf_iInf {ι : Type*} [Finite ι] (u : ι → ℕ → ℝ≥0∞) :
     expGrowthInf (⨅ i, u i) = ⨅ i, expGrowthInf (u i) := by
@@ -271,17 +270,16 @@ lemma expGrowthSup_sup {u v : ℕ → ℝ≥0∞} :
   exact (monotone_div_right_of_nonneg n.cast_nonneg').map_max
 
 /-- Upper exponential growth as a `SupBotHom`.-/
-noncomputable def expGrowthSup_supBotHom : SupBotHom (ℕ → ℝ≥0∞) EReal where
+noncomputable def expGrowthSupBotHom : SupBotHom (ℕ → ℝ≥0∞) EReal where
   toFun := expGrowthSup
   map_sup' := fun u v ↦ @expGrowthSup_sup u v
   map_bot' := expGrowthSup_zero
 
 lemma expGrowthSup_biSup {α : Type*} (u : α → ℕ → ℝ≥0∞) {s : Set α} (hs : s.Finite) :
     expGrowthSup (⨆ x ∈ s, u x) = ⨆ x ∈ s, expGrowthSup (u x) := by
-  have := map_finset_sup expGrowthSup_supBotHom hs.toFinset u
-  simp only [expGrowthSup_supBotHom, SupBotHom.coe_mk, SupHom.coe_mk, Finset.sup_eq_iSup,
-    hs.mem_toFinset, comp_apply] at this
-  exact this
+  have := map_finset_sup expGrowthSupBotHom hs.toFinset u
+  simpa only [expGrowthSupBotHom, SupBotHom.coe_mk, SupHom.coe_mk, Finset.sup_eq_iSup,
+    hs.mem_toFinset, comp_apply]
 
 lemma expGrowthSup_iSup {ι : Type*} [Finite ι] (u : ι → ℕ → ℝ≥0∞) :
     expGrowthSup (⨆ i, u i) = ⨆ i, expGrowthSup (u i) := by
