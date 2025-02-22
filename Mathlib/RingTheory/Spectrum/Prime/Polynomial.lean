@@ -146,10 +146,10 @@ lemma mem_image_comap_C_basicOpen (f : R[X]) (x : PrimeSpectrum R) :
   · simp [Polynomial.ext_iff]
 
 lemma image_comap_C_basicOpen (f : R[X]) :
-      comap C '' basicOpen f = (zeroLocus (Set.range f.coeff))ᶜ := by
-    ext p
-    rw [mem_image_comap_C_basicOpen]
-    simp [Set.range_subset_iff]
+    comap C '' basicOpen f = (zeroLocus (Set.range f.coeff))ᶜ := by
+  ext p
+  rw [mem_image_comap_C_basicOpen]
+  simp [Set.range_subset_iff]
 
 lemma isOpenMap_comap_C : IsOpenMap (comap (R := R) C) := by
   intro U hU
@@ -209,10 +209,10 @@ lemma mem_image_comap_C_basicOpen (f : MvPolynomial σ R) (x : PrimeSpectrum R) 
   · simp [MvPolynomial.ext_iff, coeff_map]
 
 lemma image_comap_C_basicOpen (f : MvPolynomial σ R) :
-      comap (C (σ := σ)) '' basicOpen f = (zeroLocus (Set.range f.coeff))ᶜ := by
-    ext p
-    rw [mem_image_comap_C_basicOpen]
-    simp [Set.range_subset_iff]
+    comap (C (σ := σ)) '' basicOpen f = (zeroLocus (Set.range f.coeff))ᶜ := by
+  ext p
+  rw [mem_image_comap_C_basicOpen]
+  simp [Set.range_subset_iff]
 
 lemma isOpenMap_comap_C : IsOpenMap (comap (R := R) (C (σ := σ))) := by
   intro U hU

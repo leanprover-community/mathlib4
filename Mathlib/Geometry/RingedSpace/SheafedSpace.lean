@@ -209,14 +209,16 @@ instance [HasLimits C] : HasColimits.{v} (SheafedSpace C) :=
 noncomputable instance [HasLimits C] : PreservesColimits (forget.{_, _, v} C) :=
   Limits.comp_preservesColimits forgetToPresheafedSpace (PresheafedSpace.forget C)
 
-section HasForget
+section ConcreteCategory
 
-variable [HasForget.{v} C] [HasColimits C] [HasLimits C]
-variable  [PreservesLimits (CategoryTheory.forget C)]
+variable {FC : C → C → Type*} {CC : C → Type v} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+variable [instCC : ConcreteCategory.{v} C FC] [HasColimits C] [HasLimits C]
+variable [PreservesLimits (CategoryTheory.forget C)]
 variable [PreservesFilteredColimits (CategoryTheory.forget C)]
 variable [(CategoryTheory.forget C).ReflectsIsomorphisms]
 
-attribute [local instance] HasForget.instFunLike in
+attribute [local ext] DFunLike.ext in
+include instCC in
 lemma hom_stalk_ext {X Y : SheafedSpace C} (f g : X ⟶ Y) (h : f.base = g.base)
     (h' : ∀ x, f.stalkMap x = (Y.presheaf.stalkCongr (h ▸ rfl)).hom ≫ g.stalkMap x) :
     f = g := by
@@ -230,6 +232,8 @@ lemma hom_stalk_ext {X Y : SheafedSpace C} (f g : X ⟶ Y) (h : f.base = g.base)
   erw [← PresheafedSpace.stalkMap_germ_apply ⟨f, fc⟩, ← PresheafedSpace.stalkMap_germ_apply ⟨f, gc⟩]
   simp [h']
 
+attribute [local ext] DFunLike.ext in
+include instCC in
 lemma mono_of_base_injective_of_stalk_epi {X Y : SheafedSpace C} (f : X ⟶ Y)
     (h₁ : Function.Injective f.base)
     (h₂ : ∀ x, Epi (f.stalkMap x)) : Mono f := by
@@ -241,7 +245,7 @@ lemma mono_of_base_injective_of_stalk_epi {X Y : SheafedSpace C} (f : X ⟶ Y)
     ← PresheafedSpace.stalkMap.comp ⟨g, gc⟩ f, ← PresheafedSpace.stalkMap.comp ⟨g, hc⟩ f]
   congr 1
 
-end HasForget
+end ConcreteCategory
 
 end SheafedSpace
 
