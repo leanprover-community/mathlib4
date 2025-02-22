@@ -15,7 +15,15 @@ import Mathlib.CategoryTheory.Preadditive.CommGrp_
 This is true as long as `C` is additive.
 
 Here, `C ⥤ₗ D` is the category of finite-limits-preserving functors from `C` to `D`.
--/
+
+To construct a functor from `C ⥤ₗ Type v` to `C ⥤ₗ AddCommGrp.{v}`, notice that a left-exact
+functor `F : C ⥤ Type v` induces a functor `CommGrp_ C ⥤ CommGrp_ (Type v)`. But `CommGrp_ C` is
+equivalent to `C`, and `CommGrp_ (Type v)` is equivalent to `AddCommGrp.{v}`, so we turn this
+into a functor `C ⥤ AddCommGrp.{v}`. By construction, composing with with the forgetful
+functor recovers the functor we started with, so since the forgetful functor reflects finite
+limits and `F` preserves finite limits, our constructed functor also preserves finite limits. It
+can be shown that this construction gives a quasi-inverse to the whiskering operation
+`(C ⥤ₗ AddCommGrp.{v}) ⥤ (C ⥤ₗ Type v)`. -/
 
 open CategoryTheory MonoidalCategory Limits
 
@@ -27,6 +35,7 @@ namespace AddCommGrp
 section
 
 variable {C : Type u} [Category.{v} C] [Preadditive C] [HasFiniteBiproducts C]
+namespace leftExactFunctorForgetEquivalence
 
 attribute [local instance] hasFiniteProducts_of_hasFiniteBiproducts
 attribute [local instance] AddCommGrp.chosenFiniteProductsAddCommGrp
@@ -74,18 +83,15 @@ noncomputable def unitIso : 𝟭 (C ⥤ₗ AddCommGrp) ≅
       CommGrp.toAddCommGrp.mapIso
         (CommGrpTypeEquivalenceCommGrp.functor.mapIso (unitIsoAux F.obj X)))))
 
-/-- To construct a functor from `C ⥤ₗ Type v` to `C ⥤ₗ AddCommGrp.{v}`, notice that a left-exact
-functor `F : C ⥤ Type v` induces a functor `CommGrp_ C ⥤ CommGrp_ (Type v)`. But `CommGrp_ C` is
-equivalent to `C`, and `CommGrp_ (Type v)` is equivalent to `AddCommGrp.{v}`, so we turn this
-into a functor `C ⥤ AddCommGrp.{v}`. By construction, composing with with the forgetful
-functor recovers the functor we started with, so since the forgetful functor reflects finite
-limits and `F` preserves finite limits, our constructed functor also preserves finite limits. It
-can be shown that this construction gives a quasi-inverse to the whiskering operation
-`(C ⥤ₗ AddCommGrp.{v}) ⥤ (C ⥤ₗ Type v)`. -/
-noncomputable def forgetEquivalence : (C ⥤ₗ AddCommGrp.{v}) ≌ (C ⥤ₗ Type v) where
+end leftExactFunctorForgetEquivalence
+
+variable (C) in
+/-- If `C` is an additive category, the forgetful functor `(C ⥤ₗ AddCommGroup) ⥤ (C ⥤ₗ Type v)` is
+an equivalence. -/
+noncomputable def leftExactFunctorForgetEquivalence : (C ⥤ₗ AddCommGrp.{v}) ≌ (C ⥤ₗ Type v) where
   functor := (LeftExactFunctor.whiskeringRight _ _ _).obj (LeftExactFunctor.of (forget _))
-  inverse := inverse
-  unitIso := unitIso
+  inverse := leftExactFunctorForgetEquivalence.inverse
+  unitIso := leftExactFunctorForgetEquivalence.unitIso
   counitIso := Iso.refl _
 
 end
