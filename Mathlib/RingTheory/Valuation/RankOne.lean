@@ -5,7 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.Data.NNReal.Defs
 import Mathlib.RingTheory.Valuation.Basic
-import Mathlib.Logic.Equiv.TransferInstance
+-- import Mathlib.Logic.Equiv.TransferInstance
 
 /-!
 # Rank one valuations
