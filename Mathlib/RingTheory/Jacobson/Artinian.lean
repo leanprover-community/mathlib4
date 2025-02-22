@@ -27,7 +27,7 @@ lemma Module.finite_of_isSemisimpleRing [IsJacobsonRing R] [IsSemisimpleRing A] 
 
 /-- If `A` is a finite type algebra over `R`, then `A` is an artinian ring and `R` is jacobson
 implies `A` is finite over `R`. -/
-/- If made an instance, causes timeouts synthesizing `FaithfulSMul R I.ResidueField` at 
+/- If made an instance, causes timeouts synthesizing `FaithfulSMul R I.ResidueField` at
 `Ideal.algebraMap_residueField_eq_zero` and `Ideal.ker_algebraMap_residueField` during
 simpNF linting. -/
 lemma Module.finite_of_isArtinianRing [IsJacobsonRing R] [IsArtinianRing A] :
