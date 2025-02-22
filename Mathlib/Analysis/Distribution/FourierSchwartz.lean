@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Distribution.SchwartzSpace
+import Mathlib.Analysis.Fourier.FourierTransformExtra
 import Mathlib.Analysis.Fourier.FourierTransformDeriv
 import Mathlib.Analysis.Fourier.Inversion
 
@@ -16,13 +17,14 @@ functions, in `fourierTransformCLM`. It is also given as a continuous linear equ
 -/
 
 open Real MeasureTheory MeasureTheory.Measure
-open scoped FourierTransform
+open scoped FourierTransform ENNReal InnerProductSpace
 
 namespace SchwartzMap
 
 variable
   (𝕜 : Type*) [RCLike 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
+  {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℂ F] [CompleteSpace F]
   {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
   [MeasurableSpace V] [BorelSpace V]
 
@@ -107,5 +109,37 @@ noncomputable def fourierTransformCLE : 𝓢(V, E) ≃L[𝕜] 𝓢(V, E) where
     (fourierTransformCLE 𝕜).symm f = 𝓕⁻ f := by
   ext x
   exact (fourierIntegralInv_eq_fourierIntegral_neg f x).symm
+
+theorem continuous_fourierIntegral (f : 𝓢(V, E)) : Continuous (𝓕 f) :=
+  (fourierTransformCLE ℂ f).continuous
+
+theorem integrable_fourierIntegral (f : 𝓢(V, E)) : Integrable (𝓕 f) :=
+  (fourierTransformCLE ℂ f).integrable
+
+theorem memLp_fourierIntegral (f : 𝓢(V, E)) (p : ℝ≥0∞)
+    (μ : Measure V := by volume_tac) [μ.HasTemperateGrowth] : MemLp (𝓕 f) p μ :=
+  (fourierTransformCLE ℂ f).memLp p μ
+
+theorem eLpNorm_fourierIntegral_lt_top (f : 𝓢(V, E)) (p : ℝ≥0∞)
+    (μ : Measure V := by volume_tac) [μ.HasTemperateGrowth] : eLpNorm (𝓕 f) p μ < ⊤ :=
+  (fourierTransformCLE ℂ f).eLpNorm_lt_top p μ
+
+/-- Plancherel's theorem: The Fourier transform preserves the `L^2` inner product. -/
+theorem integral_inner_fourier_eq_integral_inner (f g : 𝓢(V, F)) :
+    ∫ ξ, ⟪𝓕 f ξ, 𝓕 g ξ⟫_ℂ = ∫ x, ⟪f x, g x⟫_ℂ :=
+  Real.integral_inner_fourier_eq_integral_inner f.continuous f.integrable
+    f.integrable_fourierIntegral g.integrable
+
+/-- Plancherel's theorem: The Fourier transform preserves the `L^2` norm. -/
+theorem integral_norm_sq_fourier_eq_integral_norm_sq (f : 𝓢(V, F)) :
+    ∫ ξ, ‖𝓕 f ξ‖ ^ 2 = ∫ x, ‖f x‖ ^ 2 :=
+  Real.integral_norm_sq_fourier_eq_integral_norm_sq f.continuous f.integrable
+    f.integrable_fourierIntegral
+
+/-- Plancherel's theorem, `eLpNorm` version. -/
+theorem eLpNorm_fourier_two_eq_eLpNorm_two (f : 𝓢(V, F)) :
+    eLpNorm (𝓕 f) 2 volume = eLpNorm f 2 volume :=
+  Real.eLpNorm_fourier_two_eq_eLpNorm_two f.continuous f.integrable (f.memLp 2 _)
+    f.integrable_fourierIntegral (f.memLp_fourierIntegral 2 _)
 
 end SchwartzMap
