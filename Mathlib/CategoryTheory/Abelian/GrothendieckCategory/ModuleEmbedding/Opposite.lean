@@ -15,7 +15,7 @@ an object `G : Cᵒᵖ` such that `preadditiveCoyonedaObj G : Cᵒᵖ ⥤ Module
 and exact and its precomposition with `F` is full if `F` is.
 -/
 
-universe w v u
+universe v u
 
 open CategoryTheory Limits Opposite ZeroObject
 
