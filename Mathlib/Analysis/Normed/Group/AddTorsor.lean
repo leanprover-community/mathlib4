@@ -237,7 +237,7 @@ variable [TopologicalSpace α]
 @[fun_prop]
 theorem Continuous.vsub {f g : α → P} (hf : Continuous f) (hg : Continuous g) :
     Continuous (fun x ↦ f x -ᵥ g x) :=
-  continuous_vsub.comp (hf.prodMk hg :)
+  continuous_vsub.comp₂ hf hg
 
 @[fun_prop]
 nonrec theorem ContinuousAt.vsub {f g : α → P} {x : α} (hf : ContinuousAt f x)
