@@ -862,6 +862,7 @@ theorem Nodup.isCycleOn_formPerm (h : l.Nodup) :
   refine ⟨l.idxOf b - l.idxOf a, ?_⟩
   simp only [sub_eq_neg_add, zpow_add, zpow_neg, Equiv.Perm.inv_eq_iff_eq, zpow_natCast,
     Equiv.Perm.coe_mul, List.formPerm_pow_apply_getElem _ h, Function.comp]
+  congr 1
   rw [add_comm]
 
 end

@@ -447,7 +447,8 @@ instance instAddCommMonoid : AddCommMonoid (E →ₗ.[R] F) :=
   ⟨fun f g => by
     ext x y hxy
     · simp only [add_domain, inf_comm]
-    · simp only [add_apply, hxy, add_comm]⟩
+    · rw [add_apply, add_apply, add_comm]
+      ⟩
 
 end Add
 

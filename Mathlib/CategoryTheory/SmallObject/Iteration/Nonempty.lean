@@ -63,8 +63,8 @@ noncomputable def mkOfSucc {j : J} (hj : ¬IsMax j) (iter : Φ.Iteration j) :
     congr 1
     apply Arrow.functor_ext
     rintro ⟨k₁, h₁⟩ ⟨k₂, h₂⟩ f
-    dsimp
-    rw [← arrowMap, ← arrowMap, arrowMap_extendToSucc]
+    dsimp [← arrowMap.eq_1]
+    rw [arrowMap_extendToSucc]
 
 namespace mkOfLimit
 
@@ -127,16 +127,16 @@ noncomputable def mkOfLimit {j : J} (hj : Order.IsSuccLimit j)
       congr 1
       apply Arrow.functor_ext
       rintro ⟨l₁, hl₁⟩ ⟨l₂, hl₂⟩ f
-      dsimp
-      rw [← arrowMap, ← arrowMap, arrowMap_functor hj iter l₁ l₂ _ (hl₂.trans hij),
+      dsimp [← arrowMap.eq_1]
+      rw [arrowMap_functor hj iter l₁ l₂ _ (hl₂.trans hij),
         arrow_mk_mapObj]
       apply congr_arrowMap
     · rw [arrowMap_functor_to_top _ _ _ hk, ← arrowι_def _ hi]
       congr 1
       apply Arrow.functor_ext
       rintro ⟨l₁, hl₁⟩ ⟨l₂, hl₂⟩ f
-      dsimp
-      rw [← arrowMap, arrow_mk_mapObj, arrowMap_functor _ _ _ _ _ hl₂, arrow_mk_mapObj]
+      dsimp [← arrowMap.eq_1]
+      rw [arrow_mk_mapObj, arrowMap_functor _ _ _ _ _ hl₂, arrow_mk_mapObj]
 
 variable (Φ)
 

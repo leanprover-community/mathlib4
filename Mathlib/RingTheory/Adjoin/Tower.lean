@@ -49,7 +49,13 @@ theorem adjoin_res_eq_adjoin_res (C D E F : Type*) [CommSemiring C] [CommSemirin
     (hS : Algebra.adjoin C S = ⊤) (hT : Algebra.adjoin C T = ⊤) :
     (Algebra.adjoin E (algebraMap D F '' S)).restrictScalars C =
       (Algebra.adjoin D (algebraMap E F '' T)).restrictScalars C := by
-  rw [adjoin_restrictScalars C E, adjoin_restrictScalars C D, ← hS, ← hT, ← Algebra.adjoin_image,
+  rw [adjoin_restrictScalars C E, adjoin_restrictScalars C D]
+  change -- the only change needed is the instance of IsScalarTower
+    Subalgebra.restrictScalars C (adjoin (↥(Subalgebra.map (IsScalarTower.toAlgHom C E F) ⊤))
+      (⇑(algebraMap D F) '' S)) =
+    Subalgebra.restrictScalars C (adjoin (↥(Subalgebra.map (IsScalarTower.toAlgHom C D F) ⊤))
+      (⇑(algebraMap E F) '' T))
+  rw [← hS, ← hT, ← Algebra.adjoin_image,
     ← Algebra.adjoin_image, ← AlgHom.coe_toRingHom, ← AlgHom.coe_toRingHom,
     IsScalarTower.coe_toAlgHom, IsScalarTower.coe_toAlgHom, ← adjoin_union_eq_adjoin_adjoin, ←
     adjoin_union_eq_adjoin_adjoin, Set.union_comm]
@@ -66,10 +72,10 @@ theorem Algebra.fg_trans' {R S A : Type*} [CommSemiring R] [CommSemiring S] [Sem
   rcases hSA with ⟨t, ht⟩
   exact ⟨s.image (algebraMap S A) ∪ t, by
     rw [Finset.coe_union, Finset.coe_image,
-        Algebra.adjoin_algebraMap_image_union_eq_adjoin_adjoin,
-        hs, Algebra.adjoin_top, ht, Subalgebra.restrictScalars_top,
-        Subalgebra.restrictScalars_top
-       ]
+        Algebra.adjoin_algebraMap_image_union_eq_adjoin_adjoin]
+    convert Subalgebra.restrictScalars_top R
+    · rw [hs, Algebra.adjoin_top, ht, Subalgebra.restrictScalars_top]
+    · exact Subalgebra.isScalarTower_mid _
     ⟩
 end
 
