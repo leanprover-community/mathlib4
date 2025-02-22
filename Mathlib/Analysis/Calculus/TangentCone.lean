@@ -155,7 +155,7 @@ theorem subset_tangentCone_prod_left {t : Set F} {y : F} (ht : y ∈ closure t) 
   · show ∀ᶠ n in atTop, (x, y) + (d n, d' n) ∈ s ×ˢ t
     filter_upwards [hd] with n hn
     simp [hn, (hd' n).1]
-  · apply Tendsto.prod_mk_nhds hy _
+  · apply Tendsto.prodMk_nhds hy _
     refine squeeze_zero_norm (fun n => (hd' n).2.le) ?_
     exact tendsto_pow_atTop_nhds_zero_of_lt_one one_half_pos.le one_half_lt_one
 
@@ -174,7 +174,7 @@ theorem subset_tangentCone_prod_right {t : Set F} {y : F} (hs : x ∈ closure s)
   · show ∀ᶠ n in atTop, (x, y) + (d' n, d n) ∈ s ×ˢ t
     filter_upwards [hd] with n hn
     simp [hn, (hd' n).1]
-  · apply Tendsto.prod_mk_nhds _ hy
+  · apply Tendsto.prodMk_nhds _ hy
     refine squeeze_zero_norm (fun n => (hd' n).2.le) ?_
     exact tendsto_pow_atTop_nhds_zero_of_lt_one one_half_pos.le one_half_lt_one
 

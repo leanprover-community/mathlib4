@@ -128,7 +128,7 @@ theorem le_nhds_of_cauchy_adhp_aux {f : Filter α} {x : α}
   rcases adhs U U_mem with ⟨t, t_mem, ht, y, hxy, hy⟩
   apply mem_of_superset t_mem
   -- Given a point `z ∈ t`, we have `(x, y) ∈ U` and `(y, z) ∈ t × t ⊆ U`, hence `z ∈ s`
-  exact fun z hz => hU (prod_mk_mem_compRel hxy (ht <| mk_mem_prod hy hz)) rfl
+  exact fun z hz => hU (prodMk_mem_compRel hxy (ht <| mk_mem_prod hy hz)) rfl
 
 /-- If `x` is an adherent (cluster) point for a Cauchy filter `f`, then it is a limit point
 for `f`. -/

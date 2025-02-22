@@ -118,21 +118,21 @@ variable [MeasurableSup₂ M]
 
 @[measurability]
 theorem Measurable.sup' (hf : Measurable f) (hg : Measurable g) : Measurable (f ⊔ g) :=
-  measurable_sup.comp (hf.prod_mk hg)
+  measurable_sup.comp (hf.prodMk hg)
 
 @[measurability]
 theorem Measurable.sup (hf : Measurable f) (hg : Measurable g) : Measurable fun a => f a ⊔ g a :=
-  measurable_sup.comp (hf.prod_mk hg)
+  measurable_sup.comp (hf.prodMk hg)
 
 @[measurability]
 theorem AEMeasurable.sup' (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (f ⊔ g) μ :=
-  measurable_sup.comp_aemeasurable (hf.prod_mk hg)
+  measurable_sup.comp_aemeasurable (hf.prodMk hg)
 
 @[measurability]
 theorem AEMeasurable.sup (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun a => f a ⊔ g a) μ :=
-  measurable_sup.comp_aemeasurable (hf.prod_mk hg)
+  measurable_sup.comp_aemeasurable (hf.prodMk hg)
 
 instance (priority := 100) MeasurableSup₂.toMeasurableSup : MeasurableSup M :=
   ⟨fun _ => measurable_const.sup measurable_id, fun _ => measurable_id.sup measurable_const⟩
@@ -175,21 +175,21 @@ variable [MeasurableInf₂ M]
 
 @[measurability]
 theorem Measurable.inf' (hf : Measurable f) (hg : Measurable g) : Measurable (f ⊓ g) :=
-  measurable_inf.comp (hf.prod_mk hg)
+  measurable_inf.comp (hf.prodMk hg)
 
 @[measurability]
 theorem Measurable.inf (hf : Measurable f) (hg : Measurable g) : Measurable fun a => f a ⊓ g a :=
-  measurable_inf.comp (hf.prod_mk hg)
+  measurable_inf.comp (hf.prodMk hg)
 
 @[measurability]
 theorem AEMeasurable.inf' (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (f ⊓ g) μ :=
-  measurable_inf.comp_aemeasurable (hf.prod_mk hg)
+  measurable_inf.comp_aemeasurable (hf.prodMk hg)
 
 @[measurability]
 theorem AEMeasurable.inf (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun a => f a ⊓ g a) μ :=
-  measurable_inf.comp_aemeasurable (hf.prod_mk hg)
+  measurable_inf.comp_aemeasurable (hf.prodMk hg)
 
 instance (priority := 100) MeasurableInf₂.to_hasMeasurableInf : MeasurableInf M :=
   ⟨fun _ => measurable_const.inf measurable_id, fun _ => measurable_id.inf measurable_const⟩

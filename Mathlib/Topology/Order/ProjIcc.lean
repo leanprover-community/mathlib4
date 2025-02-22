@@ -44,7 +44,7 @@ theorem continuous_IccExtend_iff {f : Icc a b → β} : Continuous (IccExtend h 
 protected theorem Continuous.IccExtend {f : γ → Icc a b → β} {g : γ → α} (hf : Continuous ↿f)
     (hg : Continuous g) : Continuous fun a => IccExtend h (f a) (g a) :=
   show Continuous (↿f ∘ fun x => (x, projIcc a b h (g x)))
-  from hf.comp <| continuous_id.prod_mk <| continuous_projIcc.comp hg
+  from hf.comp <| continuous_id.prodMk <| continuous_projIcc.comp hg
 
 /-- A useful special case of `Continuous.IccExtend`. -/
 @[continuity]

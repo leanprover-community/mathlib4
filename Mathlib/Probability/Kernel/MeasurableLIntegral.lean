@@ -89,7 +89,7 @@ theorem measurable_kernel_prod_mk_left' [IsSFiniteKernel η] {s : Set (β × γ)
     intro b; rfl
   simp_rw [this]
   refine (measurable_kernel_prod_mk_left ?_).comp measurable_prod_mk_left
-  exact (measurable_fst.snd.prod_mk measurable_snd) hs
+  exact (measurable_fst.snd.prodMk measurable_snd) hs
 
 theorem measurable_kernel_prod_mk_right [IsSFiniteKernel κ] {s : Set (β × α)}
     (hs : MeasurableSet s) : Measurable fun y => κ y ((fun x => (x, y)) ⁻¹' s) :=

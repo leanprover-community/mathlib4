@@ -122,7 +122,7 @@ protected theorem comp {t : ι → Ω → ι} [TopologicalSpace ι] [BorelSpace 
     (fun p : ↥(Set.Iic i) × Ω => u (p.fst : ι) p.snd) ∘ fun p : ↥(Set.Iic i) × Ω =>
       (⟨t (p.fst : ι) p.snd, Set.mem_Iic.mpr ((ht_le _ _).trans p.fst.prop)⟩, p.snd) := rfl
   rw [this]
-  exact (h i).comp_measurable ((ht i).measurable.subtype_mk.prod_mk measurable_snd)
+  exact (h i).comp_measurable ((ht i).measurable.subtype_mk.prodMk measurable_snd)
 
 section Arithmetic
 

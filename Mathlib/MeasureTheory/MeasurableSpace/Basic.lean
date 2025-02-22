@@ -694,13 +694,13 @@ theorem Measurable.prod_mk {β γ} {_ : MeasurableSpace β} {_ : MeasurableSpace
 @[fun_prop]
 theorem Measurable.prod_map [MeasurableSpace δ] {f : α → β} {g : γ → δ} (hf : Measurable f)
     (hg : Measurable g) : Measurable (Prod.map f g) :=
-  (hf.comp measurable_fst).prod_mk (hg.comp measurable_snd)
+  (hf.comp measurable_fst).prodMk (hg.comp measurable_snd)
 
 theorem measurable_prod_mk_left {x : α} : Measurable (@Prod.mk _ β x) :=
-  measurable_const.prod_mk measurable_id
+  measurable_const.prodMk measurable_id
 
 theorem measurable_prod_mk_right {y : β} : Measurable fun x : α => (x, y) :=
-  measurable_id.prod_mk measurable_const
+  measurable_id.prodMk measurable_const
 
 theorem Measurable.of_uncurry_left {f : α → β → γ} (hf : Measurable (uncurry f)) {x : α} :
     Measurable (f x) :=
@@ -774,7 +774,7 @@ theorem Measurable.find {_ : MeasurableSpace α} {f : ℕ → α → β} {p : �
     [∀ n, DecidablePred (p n)] (hf : ∀ n, Measurable (f n)) (hp : ∀ n, MeasurableSet { x | p n x })
     (h : ∀ x, ∃ n, p n x) : Measurable fun x => f (Nat.find (h x)) x :=
   have : Measurable fun p : α × ℕ => f p.2 p.1 := measurable_from_prod_countable fun n => hf n
-  this.comp (Measurable.prod_mk measurable_id (measurable_find h hp))
+  this.comp (Measurable.prodMk measurable_id (measurable_find h hp))
 
 /-- Let `t i` be a countable covering of a set `T` by measurable sets. Let `f i : t i → β` be a
 family of functions that agree on the intersections `t i ∩ t j`. Then the function
@@ -1002,7 +1002,7 @@ theorem measurable_piEquivPiSubtypeProd_symm (p : δ → Prop) [DecidablePred p]
 @[measurability]
 theorem measurable_piEquivPiSubtypeProd (p : δ → Prop) [DecidablePred p] :
     Measurable (Equiv.piEquivPiSubtypeProd p π) :=
-  (measurable_pi_iff.2 fun _ => measurable_pi_apply _).prod_mk
+  (measurable_pi_iff.2 fun _ => measurable_pi_apply _).prodMk
     (measurable_pi_iff.2 fun _ => measurable_pi_apply _)
 
 end Pi
@@ -1021,7 +1021,7 @@ variable {π : δ → Type*} [∀ x, MeasurableSpace (π x)]
 theorem measurable_tProd_mk (l : List δ) : Measurable (@TProd.mk δ π l) := by
   induction' l with i l ih
   · exact measurable_const
-  · exact (measurable_pi_apply i).prod_mk ih
+  · exact (measurable_pi_apply i).prodMk ih
 
 theorem measurable_tProd_elim [DecidableEq δ] :
     ∀ {l : List δ} {i : δ} (hi : i ∈ l), Measurable fun v : TProd π l => v.elim hi

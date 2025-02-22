@@ -228,7 +228,7 @@ theorem continuous_vsub : Continuous fun x : P × P => x.1 -ᵥ x.2 :=
 
 theorem Filter.Tendsto.vsub {l : Filter α} {f g : α → P} {x y : P} (hf : Tendsto f l (𝓝 x))
     (hg : Tendsto g l (𝓝 y)) : Tendsto (f -ᵥ g) l (𝓝 (x -ᵥ y)) :=
-  (continuous_vsub.tendsto (x, y)).comp (hf.prod_mk_nhds hg)
+  (continuous_vsub.tendsto (x, y)).comp (hf.prodMk_nhds hg)
 
 section
 

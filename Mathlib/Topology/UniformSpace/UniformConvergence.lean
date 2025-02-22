@@ -391,11 +391,11 @@ theorem TendstoUniformlyOnFilter.uniformCauchySeqOnFilter (hF : TendstoUniformly
     UniformCauchySeqOnFilter F p p' := by
   intro u hu
   rcases comp_symm_of_uniformity hu with ⟨t, ht, htsymm, htmem⟩
-  have := tendsto_swap4_prod.eventually ((hF t ht).prod_mk (hF t ht))
+  have := tendsto_swap4_prod.eventually ((hF t ht).prodMk (hF t ht))
   apply this.diag_of_prod_right.mono
   simp only [and_imp, Prod.forall]
   intro n1 n2 x hl hr
-  exact Set.mem_of_mem_of_subset (prod_mk_mem_compRel (htsymm hl) hr) htmem
+  exact Set.mem_of_mem_of_subset (prodMk_mem_compRel (htsymm hl) hr) htmem
 
 /-- A sequence that converges uniformly is also uniformly Cauchy -/
 theorem TendstoUniformlyOn.uniformCauchySeqOn (hF : TendstoUniformlyOn F f p s) :
@@ -485,7 +485,7 @@ theorem UniformCauchySeqOn.prod_map {ι' α' β' : Type*} [UniformSpace β'] {F'
   obtain ⟨v, hv, w, hw, hvw⟩ := hu
   simp_rw [mem_prod, and_imp, Prod.forall, Prod.map_apply]
   rw [← Set.image_subset_iff] at hvw
-  apply (tendsto_swap4_prod.eventually ((h v hv).prod_mk (h' w hw))).mono
+  apply (tendsto_swap4_prod.eventually ((h v hv).prodMk (h' w hw))).mono
   intro x hx a b ha hb
   exact hvw ⟨_, mk_mem_prod (hx.1 a ha) (hx.2 b hb), rfl⟩
 
@@ -784,10 +784,10 @@ theorem continuousWithinAt_of_locally_uniform_approx_of_continuousWithinAt (hx :
   have A : ∀ᶠ y in 𝓝[s] x, (f y, F y) ∈ u₂ := Eventually.mono tx hF
   have B : ∀ᶠ y in 𝓝[s] x, (F y, F x) ∈ u₂ := Uniform.continuousWithinAt_iff'_left.1 hFc h₂
   have C : ∀ᶠ y in 𝓝[s] x, (f y, F x) ∈ u₁ :=
-    (A.and B).mono fun y hy => u₂₁ (prod_mk_mem_compRel hy.1 hy.2)
+    (A.and B).mono fun y hy => u₂₁ (prodMk_mem_compRel hy.1 hy.2)
   have : (F x, f x) ∈ u₁ :=
-    u₂₁ (prod_mk_mem_compRel (refl_mem_uniformity h₂) (hsymm (A.self_of_nhdsWithin hx)))
-  exact C.mono fun y hy => u₁₀ (prod_mk_mem_compRel hy this)
+    u₂₁ (prodMk_mem_compRel (refl_mem_uniformity h₂) (hsymm (A.self_of_nhdsWithin hx)))
+  exact C.mono fun y hy => u₁₀ (prodMk_mem_compRel hy this)
 
 /-- A function which can be locally uniformly approximated by functions which are continuous at
 a point is continuous at this point. -/
@@ -882,7 +882,7 @@ theorem tendsto_comp_of_locally_uniform_limit_within (h : ContinuousWithinAt f s
   rcases hunif u₁ h₁ with ⟨s, sx, hs⟩
   have A : ∀ᶠ n in p, g n ∈ s := hg sx
   have B : ∀ᶠ n in p, (f x, f (g n)) ∈ u₁ := hg (Uniform.continuousWithinAt_iff'_right.1 h h₁)
-  exact B.mp <| A.mp <| hs.mono fun y H1 H2 H3 => u₁₀ (prod_mk_mem_compRel H3 (H1 _ H2))
+  exact B.mp <| A.mp <| hs.mono fun y H1 H2 H3 => u₁₀ (prodMk_mem_compRel H3 (H1 _ H2))
 
 /-- If `Fₙ` converges locally uniformly on a neighborhood of `x` to a function `f` which is
 continuous at `x`, and `gₙ` tends to `x`, then `Fₙ (gₙ)` tends to `f x`. -/

@@ -45,7 +45,7 @@ protected theorem uniformContinuous_dist :
 /-- The new distance is continuous. -/
 protected theorem continuous_dist [TopologicalSpace β] {f g : β → Completion α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x ↦ dist (f x) (g x) :=
-  Completion.uniformContinuous_dist.continuous.comp (hf.prod_mk hg :)
+  Completion.uniformContinuous_dist.continuous.comp (hf.prodMk hg :)
 
 /-- The new distance is an extension of the original distance. -/
 @[simp]

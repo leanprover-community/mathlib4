@@ -716,7 +716,7 @@ theorem isClosed_le_prod : IsClosed { p : α × α | p.1 ≤ p.2 } :=
 
 theorem isClosed_le [TopologicalSpace β] {f g : β → α} (hf : Continuous f) (hg : Continuous g) :
     IsClosed { b | f b ≤ g b } :=
-  continuous_iff_isClosed.mp (hf.prod_mk hg) _ isClosed_le_prod
+  continuous_iff_isClosed.mp (hf.prodMk hg) _ isClosed_le_prod
 
 instance : ClosedIicTopology α where
   isClosed_Iic _ := isClosed_le continuous_id continuous_const
@@ -736,7 +736,7 @@ theorem closure_Icc (a b : α) : closure (Icc a b) = Icc a b :=
 
 theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : f ≤ᶠ[b] g) : a₁ ≤ a₂ :=
-  have : Tendsto (fun b => (f b, g b)) b (𝓝 (a₁, a₂)) := hf.prod_mk_nhds hg
+  have : Tendsto (fun b => (f b, g b)) b (𝓝 (a₁, a₂)) := hf.prodMk_nhds hg
   show (a₁, a₂) ∈ { p : α × α | p.1 ≤ p.2 } from t.isClosed_le'.mem_of_tendsto this h
 
 alias tendsto_le_of_eventuallyLE := le_of_tendsto_of_tendsto
@@ -917,11 +917,11 @@ theorem continuous_max : Continuous fun p : α × α => max p.1 p.2 :=
 
 protected theorem Filter.Tendsto.max {b : Filter β} {a₁ a₂ : α} (hf : Tendsto f b (𝓝 a₁))
     (hg : Tendsto g b (𝓝 a₂)) : Tendsto (fun b => max (f b) (g b)) b (𝓝 (max a₁ a₂)) :=
-  (continuous_max.tendsto (a₁, a₂)).comp (hf.prod_mk_nhds hg)
+  (continuous_max.tendsto (a₁, a₂)).comp (hf.prodMk_nhds hg)
 
 protected theorem Filter.Tendsto.min {b : Filter β} {a₁ a₂ : α} (hf : Tendsto f b (𝓝 a₁))
     (hg : Tendsto g b (𝓝 a₂)) : Tendsto (fun b => min (f b) (g b)) b (𝓝 (min a₁ a₂)) :=
-  (continuous_min.tendsto (a₁, a₂)).comp (hf.prod_mk_nhds hg)
+  (continuous_min.tendsto (a₁, a₂)).comp (hf.prodMk_nhds hg)
 
 protected theorem Filter.Tendsto.max_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
     Tendsto (fun i => max a (f i)) l (𝓝 a) := by

@@ -870,7 +870,7 @@ theorem isCompact_range [CompactSpace X] {f : X → Y} (hf : Continuous f) : IsC
   rw [← image_univ]; exact isCompact_univ.image hf
 
 theorem isCompact_diagonal [CompactSpace X] : IsCompact (diagonal X) :=
-  @range_diag X ▸ isCompact_range (continuous_id.prod_mk continuous_id)
+  @range_diag X ▸ isCompact_range (continuous_id.prodMk continuous_id)
 
 -- Porting note: renamed, golfed
 /-- If `X` is a compact topological space, then `Prod.snd : X × Y → Y` is a closed map. -/

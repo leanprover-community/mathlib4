@@ -67,7 +67,7 @@ example (b : Y) : Continuous (Function.const X b) := --by continuity
 example (b : Y) : Continuous (@Prod.mk Y X b) := by continuity
 
 example (f : C(X × Y, Z)) (a : X) : Continuous (Function.curry f a) := --by continuity
-  f.continuous.comp (continuous_const.prod_mk continuous_id)
+  f.continuous.comp (continuous_const.prodMk continuous_id)
 
 end basic
 

@@ -177,7 +177,7 @@ theorem tendsto_nhds_unique_of_eventuallyEq [T2Space X] {f g : Y → X} {l : Fil
 
 theorem tendsto_nhds_unique_of_frequently_eq [T2Space X] {f g : Y → X} {l : Filter Y} {a b : X}
     (ha : Tendsto f l (𝓝 a)) (hb : Tendsto g l (𝓝 b)) (hfg : ∃ᶠ x in l, f x = g x) : a = b :=
-  have : ∃ᶠ z : X × X in 𝓝 (a, b), z.1 = z.2 := (ha.prod_mk_nhds hb).frequently hfg
+  have : ∃ᶠ z : X × X in 𝓝 (a, b), z.1 = z.2 := (ha.prodMk_nhds hb).frequently hfg
   not_not.1 fun hne => this (isClosed_diagonal.isOpen_compl.mem_nhds hne)
 
 /-- If `s` and `t` are compact sets in a T₂ space, then the set neighborhoods filter of `s ∩ t`
@@ -475,7 +475,7 @@ variable {Z : Type*} [TopologicalSpace Y] [TopologicalSpace Z]
 
 theorem isClosed_eq [T2Space X] {f g : Y → X} (hf : Continuous f) (hg : Continuous g) :
     IsClosed { y : Y | f y = g y } :=
-  continuous_iff_isClosed.mp (hf.prod_mk hg) _ isClosed_diagonal
+  continuous_iff_isClosed.mp (hf.prodMk hg) _ isClosed_diagonal
 
 /-- If functions `f` and `g` are continuous on a closed set `s`,
 then the set of points `x ∈ s` such that `f x = g x` is a closed set. -/

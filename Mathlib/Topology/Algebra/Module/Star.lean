@@ -58,7 +58,7 @@ theorem continuous_skewAdjointPart [ContinuousSub A] [ContinuousStar A] [Continu
 
 theorem continuous_decomposeProdAdjoint [IsTopologicalAddGroup A] [ContinuousStar A]
     [ContinuousConstSMul R A] : Continuous (StarModule.decomposeProdAdjoint R A) :=
-  (continuous_selfAdjointPart R A).prod_mk (continuous_skewAdjointPart R A)
+  (continuous_selfAdjointPart R A).prodMk (continuous_skewAdjointPart R A)
 
 theorem continuous_decomposeProdAdjoint_symm [IsTopologicalAddGroup A] :
     Continuous (StarModule.decomposeProdAdjoint R A).symm :=

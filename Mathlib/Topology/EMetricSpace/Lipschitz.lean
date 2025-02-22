@@ -372,10 +372,10 @@ protected lemma prod {f : α → β} (hf : LocallyLipschitz f) {g : α → γ} (
   exact (hfL.mono inter_subset_left).prod (hgL.mono inter_subset_right)
 
 protected theorem prod_mk_left (a : α) : LocallyLipschitz (Prod.mk a : β → α × β) :=
-  (LipschitzWith.prod_mk_left a).locallyLipschitz
+  (LipschitzWith.prodMk_left a).locallyLipschitz
 
 protected theorem prod_mk_right (b : β) : LocallyLipschitz (fun a : α => (a, b)) :=
-  (LipschitzWith.prod_mk_right b).locallyLipschitz
+  (LipschitzWith.prodMk_right b).locallyLipschitz
 
 protected theorem iterate {f : α → α} (hf : LocallyLipschitz f) : ∀ n, LocallyLipschitz f^[n]
   | 0 => by simpa only [pow_zero] using LocallyLipschitz.id

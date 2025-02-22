@@ -345,11 +345,11 @@ theorem IsBoundedBilinearMap.continuous (h : IsBoundedBilinearMap 𝕜 f) : Cont
 
 theorem IsBoundedBilinearMap.continuous_left (h : IsBoundedBilinearMap 𝕜 f) {e₂ : F} :
     Continuous fun e₁ => f (e₁, e₂) :=
-  h.continuous.comp (continuous_id.prod_mk continuous_const)
+  h.continuous.comp (continuous_id.prodMk continuous_const)
 
 theorem IsBoundedBilinearMap.continuous_right (h : IsBoundedBilinearMap 𝕜 f) {e₁ : E} :
     Continuous fun e₂ => f (e₁, e₂) :=
-  h.continuous.comp (continuous_const.prod_mk continuous_id)
+  h.continuous.comp (continuous_const.prodMk continuous_id)
 
 /-- Useful to use together with `Continuous.comp₂`. -/
 theorem ContinuousLinearMap.continuous₂ (f : E →L[𝕜] F →L[𝕜] G) :

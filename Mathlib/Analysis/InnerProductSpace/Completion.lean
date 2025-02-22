@@ -87,7 +87,7 @@ protected theorem continuous_inner :
 @[fun_prop]
 protected theorem Continuous.inner {α : Type*} [TopologicalSpace α] {f g : α → Completion E}
     (hf : Continuous f) (hg : Continuous g) : Continuous (fun x : α => inner (f x) (g x) : α → 𝕜) :=
-  UniformSpace.Completion.continuous_inner.comp (hf.prod_mk hg :)
+  UniformSpace.Completion.continuous_inner.comp (hf.prodMk hg :)
 
 instance innerProductSpace : InnerProductSpace 𝕜 (Completion E) where
   norm_sq_eq_inner x :=

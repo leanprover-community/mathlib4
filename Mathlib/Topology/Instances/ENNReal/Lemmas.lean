@@ -1192,11 +1192,11 @@ theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
 @[continuity, fun_prop]
 theorem Continuous.edist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => edist (f b) (g b) :=
-  continuous_edist.comp (hf.prod_mk hg :)
+  continuous_edist.comp (hf.prodMk hg :)
 
 theorem Filter.Tendsto.edist {f g : β → α} {x : Filter β} {a b : α} (hf : Tendsto f x (𝓝 a))
     (hg : Tendsto g x (𝓝 b)) : Tendsto (fun x => edist (f x) (g x)) x (𝓝 (edist a b)) :=
-  (continuous_edist.tendsto (a, b)).comp (hf.prod_mk_nhds hg)
+  (continuous_edist.tendsto (a, b)).comp (hf.prodMk_nhds hg)
 
 /-- If the extended distance between consecutive points of a sequence is estimated
 by a summable series of `NNReal`s, then the original sequence is a Cauchy sequence. -/

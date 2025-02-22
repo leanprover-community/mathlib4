@@ -306,7 +306,7 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap 
   let ee := fun u : β × β => (e u.1, e u.2)
   have lim1 : Tendsto (fun a : β × β => (a.2 - a.1, y₁))
       (comap e Nx ×ˢ comap e Nx) (𝓝 (0, y₁)) := by
-    have := Tendsto.prod_mk (tendsto_sub_comap_self de x₀)
+    have := Tendsto.prodMk (tendsto_sub_comap_self de x₀)
       (tendsto_const_nhds : Tendsto (fun _ : β × β => y₁) (comap ee <| 𝓝 (x₀, x₀)) (𝓝 y₁))
     rw [nhds_prod_eq, prod_comap_comap_eq, ← nhds_prod_eq]
     exact (this :)
@@ -405,7 +405,7 @@ theorem extend_Z_bilin : Continuous (extend (de.prodMap df) (fun p : β × δ =>
     · have := prod_mem_prod U'_nhd V'_nhd
       tauto
     · intro p h'
-      simp only [Set.mem_preimage, Set.prod_mk_mem_set_prod_eq] at h'
+      simp only [Set.mem_preimage, Set.prodMk_mem_set_prod_eq] at h'
       rcases p with ⟨⟨x, y⟩, ⟨x', y'⟩⟩
       apply h <;> tauto
 

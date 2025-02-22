@@ -539,20 +539,20 @@ theorem MDifferentiableAt.prod_mk_space {f : M → E'} {g : M → E''}
 theorem MDifferentiableOn.prod_mk {f : M → M'} {g : M → M''} (hf : MDifferentiableOn I I' f s)
     (hg : MDifferentiableOn I I'' g s) :
     MDifferentiableOn I (I'.prod I'') (fun x => (f x, g x)) s := fun x hx =>
-  (hf x hx).prod_mk (hg x hx)
+  (hf x hx).prodMk (hg x hx)
 
 theorem MDifferentiable.prod_mk {f : M → M'} {g : M → M''} (hf : MDifferentiable I I' f)
     (hg : MDifferentiable I I'' g) : MDifferentiable I (I'.prod I'') fun x => (f x, g x) := fun x =>
-  (hf x).prod_mk (hg x)
+  (hf x).prodMk (hg x)
 
 theorem MDifferentiableOn.prod_mk_space {f : M → E'} {g : M → E''}
     (hf : MDifferentiableOn I 𝓘(𝕜, E') f s) (hg : MDifferentiableOn I 𝓘(𝕜, E'') g s) :
     MDifferentiableOn I 𝓘(𝕜, E' × E'') (fun x => (f x, g x)) s := fun x hx =>
-  (hf x hx).prod_mk_space (hg x hx)
+  (hf x hx).prodMk_space (hg x hx)
 
 theorem MDifferentiable.prod_mk_space {f : M → E'} {g : M → E''} (hf : MDifferentiable I 𝓘(𝕜, E') f)
     (hg : MDifferentiable I 𝓘(𝕜, E'') g) : MDifferentiable I 𝓘(𝕜, E' × E'') fun x => (f x, g x) :=
-  fun x => (hf x).prod_mk_space (hg x)
+  fun x => (hf x).prodMk_space (hg x)
 
 theorem writtenInExtChartAt_comp (h : ContinuousWithinAt f s x) :
     {y | writtenInExtChartAt I I'' x (g ∘ f) y =

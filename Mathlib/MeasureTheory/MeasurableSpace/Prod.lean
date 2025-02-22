@@ -74,7 +74,7 @@ lemma MeasurableEmbedding.prodMap {α β γ δ : Type*} {mα : MeasurableSpace �
     {g : γ → δ} (hg : MeasurableEmbedding g) (hf : MeasurableEmbedding f) :
     MeasurableEmbedding (Prod.map g f) := by
   refine ⟨hg.injective.prodMap hf.injective, ?_, ?_⟩
-  · exact (hg.measurable.comp measurable_fst).prod_mk (hf.measurable.comp measurable_snd)
+  · exact (hg.measurable.comp measurable_fst).prodMk (hf.measurable.comp measurable_snd)
   · intro s hs
     -- Induction using the π-system of rectangles
     induction s, hs using induction_on_inter generateFrom_prod.symm isPiSystem_prod with
@@ -101,7 +101,7 @@ lemma MeasurableEmbedding.prod_mk_left {β γ : Type*} [MeasurableSingletonClass
     intro y y'
     simp only [Prod.mk.injEq, true_and]
     exact fun h ↦ hf.injective h
-  measurable := Measurable.prod_mk measurable_const hf.measurable
+  measurable := Measurable.prodMk measurable_const hf.measurable
   measurableSet_image' := by
     intro s hs
     convert (MeasurableSet.singleton x).prod (hf.measurableSet_image.mpr hs)
@@ -110,7 +110,7 @@ lemma MeasurableEmbedding.prod_mk_left {β γ : Type*} [MeasurableSingletonClass
 
 lemma measurableEmbedding_prod_mk_left [MeasurableSingletonClass α] (x : α) :
     MeasurableEmbedding (Prod.mk x : β → α × β) :=
-  MeasurableEmbedding.prod_mk_left x MeasurableEmbedding.id
+  MeasurableEmbedding.prodMk_left x MeasurableEmbedding.id
 
 lemma MeasurableEmbedding.prod_mk_right {β γ : Type*} [MeasurableSingletonClass α]
     {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
@@ -120,7 +120,7 @@ lemma MeasurableEmbedding.prod_mk_right {β γ : Type*} [MeasurableSingletonClas
     intro y y'
     simp only [Prod.mk.injEq, and_true]
     exact fun h ↦ hf.injective h
-  measurable := Measurable.prod_mk hf.measurable measurable_const
+  measurable := Measurable.prodMk hf.measurable measurable_const
   measurableSet_image' := by
     intro s hs
     convert (hf.measurableSet_image.mpr hs).prod (MeasurableSet.singleton x)
@@ -129,4 +129,4 @@ lemma MeasurableEmbedding.prod_mk_right {β γ : Type*} [MeasurableSingletonClas
 
 lemma measurableEmbedding_prod_mk_right [MeasurableSingletonClass α] (x : α) :
     MeasurableEmbedding (fun y ↦ (y, x) : β → β × α) :=
-  MeasurableEmbedding.prod_mk_right MeasurableEmbedding.id x
+  MeasurableEmbedding.prodMk_right MeasurableEmbedding.id x
