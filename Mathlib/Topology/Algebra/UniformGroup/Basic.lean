@@ -118,7 +118,7 @@ end Subgroup
 @[to_additive]
 theorem CauchySeq.mul {ι : Type*} [Preorder ι] {u v : ι → α} (hu : CauchySeq u)
     (hv : CauchySeq v) : CauchySeq (u * v) :=
-  uniformContinuous_mul.comp_cauchySeq (hu.prod hv)
+  uniformContinuous_mul.comp_cauchySeq (hu.prodMk hv)
 
 @[to_additive]
 theorem CauchySeq.mul_const {ι : Type*} [Preorder ι] {u : ι → α} {x : α} (hu : CauchySeq u) :
@@ -154,33 +154,33 @@ variable {ι : Type*} {l : Filter ι} {l' : Filter β} {f f' : ι → β → α}
 theorem TendstoUniformlyOnFilter.mul (hf : TendstoUniformlyOnFilter f g l l')
     (hf' : TendstoUniformlyOnFilter f' g' l l') : TendstoUniformlyOnFilter (f * f') (g * g') l l' :=
   fun u hu =>
-  ((uniformContinuous_mul.comp_tendstoUniformlyOnFilter (hf.prod hf')) u hu).diag_of_prod_left
+  ((uniformContinuous_mul.comp_tendstoUniformlyOnFilter (hf.prodMk hf')) u hu).diag_of_prod_left
 
 @[to_additive]
 theorem TendstoUniformlyOnFilter.div (hf : TendstoUniformlyOnFilter f g l l')
     (hf' : TendstoUniformlyOnFilter f' g' l l') : TendstoUniformlyOnFilter (f / f') (g / g') l l' :=
   fun u hu =>
-  ((uniformContinuous_div.comp_tendstoUniformlyOnFilter (hf.prod hf')) u hu).diag_of_prod_left
+  ((uniformContinuous_div.comp_tendstoUniformlyOnFilter (hf.prodMk hf')) u hu).diag_of_prod_left
 
 @[to_additive]
 theorem TendstoUniformlyOn.mul (hf : TendstoUniformlyOn f g l s)
     (hf' : TendstoUniformlyOn f' g' l s) : TendstoUniformlyOn (f * f') (g * g') l s := fun u hu =>
-  ((uniformContinuous_mul.comp_tendstoUniformlyOn (hf.prod hf')) u hu).diag_of_prod
+  ((uniformContinuous_mul.comp_tendstoUniformlyOn (hf.prodMk hf')) u hu).diag_of_prod
 
 @[to_additive]
 theorem TendstoUniformlyOn.div (hf : TendstoUniformlyOn f g l s)
     (hf' : TendstoUniformlyOn f' g' l s) : TendstoUniformlyOn (f / f') (g / g') l s := fun u hu =>
-  ((uniformContinuous_div.comp_tendstoUniformlyOn (hf.prod hf')) u hu).diag_of_prod
+  ((uniformContinuous_div.comp_tendstoUniformlyOn (hf.prodMk hf')) u hu).diag_of_prod
 
 @[to_additive]
 theorem TendstoUniformly.mul (hf : TendstoUniformly f g l) (hf' : TendstoUniformly f' g' l) :
     TendstoUniformly (f * f') (g * g') l := fun u hu =>
-  ((uniformContinuous_mul.comp_tendstoUniformly (hf.prod hf')) u hu).diag_of_prod
+  ((uniformContinuous_mul.comp_tendstoUniformly (hf.prodMk hf')) u hu).diag_of_prod
 
 @[to_additive]
 theorem TendstoUniformly.div (hf : TendstoUniformly f g l) (hf' : TendstoUniformly f' g' l) :
     TendstoUniformly (f / f') (g / g') l := fun u hu =>
-  ((uniformContinuous_div.comp_tendstoUniformly (hf.prod hf')) u hu).diag_of_prod
+  ((uniformContinuous_div.comp_tendstoUniformly (hf.prodMk hf')) u hu).diag_of_prod
 
 @[to_additive]
 theorem UniformCauchySeqOn.mul (hf : UniformCauchySeqOn f l s) (hf' : UniformCauchySeqOn f' l s) :

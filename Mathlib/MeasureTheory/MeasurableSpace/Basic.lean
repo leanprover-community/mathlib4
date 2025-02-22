@@ -687,14 +687,20 @@ theorem Measurable.prod {f : α → β × γ} (hf₁ : Measurable fun a => (f a)
         exact hf₂)
 
 @[fun_prop]
-theorem Measurable.prod_mk {β γ} {_ : MeasurableSpace β} {_ : MeasurableSpace γ} {f : α → β}
+theorem Measurable.prodMk {β γ} {_ : MeasurableSpace β} {_ : MeasurableSpace γ} {f : α → β}
     {g : α → γ} (hf : Measurable f) (hg : Measurable g) : Measurable fun a : α => (f a, g a) :=
   Measurable.prod hf hg
 
+@[deprecated (since := "2025-02-21")]
+alias Measurable.prod_mk := Measurable.prodMk
+
 @[fun_prop]
-theorem Measurable.prod_map [MeasurableSpace δ] {f : α → β} {g : γ → δ} (hf : Measurable f)
+theorem Measurable.prodMap [MeasurableSpace δ] {f : α → β} {g : γ → δ} (hf : Measurable f)
     (hg : Measurable g) : Measurable (Prod.map f g) :=
   (hf.comp measurable_fst).prodMk (hg.comp measurable_snd)
+
+@[deprecated (since := "2025-02-21")]
+alias Measurable.prod_map := Measurable.prodMap
 
 theorem measurable_prod_mk_left {x : α} : Measurable (@Prod.mk _ β x) :=
   measurable_const.prodMk measurable_id

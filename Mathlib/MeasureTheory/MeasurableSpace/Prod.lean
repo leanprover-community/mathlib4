@@ -93,10 +93,10 @@ lemma MeasurableEmbedding.prodMap {α β γ δ : Type*} {mα : MeasurableSpace �
 @[deprecated (since := "2024-12-11")]
 alias MeasurableEmbedding.prod_mk := MeasurableEmbedding.prodMap
 
-lemma MeasurableEmbedding.prod_mk_left {β γ : Type*} [MeasurableSingletonClass α]
-    {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
-    (x : α) {f : γ → β} (hf : MeasurableEmbedding f) :
-    MeasurableEmbedding (fun y ↦ (x, f y)) where
+lemma MeasurableEmbedding.prodMk_left {β γ : Type*} [MeasurableSingletonClass α]
+    {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ} (x : α) {f : γ → β}
+    (hf : MeasurableEmbedding f) : MeasurableEmbedding (fun y ↦ (x, f y))
+    where
   injective := by
     intro y y'
     simp only [Prod.mk.injEq, true_and]
@@ -108,24 +108,23 @@ lemma MeasurableEmbedding.prod_mk_left {β γ : Type*} [MeasurableSingletonClass
     ext x
     simp
 
-lemma measurableEmbedding_prod_mk_left [MeasurableSingletonClass α] (x : α) :
+@[deprecated (since := "2025-02-22")]
+alias MeasurableEmbedding.prod_mk_left := MeasurableEmbedding.prodMk_left
+
+lemma measurableEmbedding_prodMk_left [MeasurableSingletonClass α] (x : α) :
     MeasurableEmbedding (Prod.mk x : β → α × β) :=
   MeasurableEmbedding.prodMk_left x MeasurableEmbedding.id
 
-lemma MeasurableEmbedding.prod_mk_right {β γ : Type*} [MeasurableSingletonClass α]
-    {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
-    {f : γ → β} (hf : MeasurableEmbedding f) (x : α) :
-    MeasurableEmbedding (fun y ↦ (f y, x)) where
-  injective := by
-    intro y y'
-    simp only [Prod.mk.injEq, and_true]
-    exact fun h ↦ hf.injective h
-  measurable := Measurable.prodMk hf.measurable measurable_const
-  measurableSet_image' := by
-    intro s hs
-    convert (hf.measurableSet_image.mpr hs).prod (MeasurableSet.singleton x)
-    ext x
-    simp
+@[deprecated (since := "2025-02-22")]
+alias measurableEmbedding_prod_mk_left := measurableEmbedding_prodMk_left
+
+lemma MeasurableEmbedding.prodMk_right {β γ : Type*} [MeasurableSingletonClass α]
+    {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ} {f : γ → β} (hf : MeasurableEmbedding f)
+    (x : α) : MeasurableEmbedding (fun y ↦ (f y, x)) :=
+  MeasurableEquiv.prodComm.measurableEmbedding.comp (hf.prodMk_left _)
+
+@[deprecated (since := "2025-02-22")]
+alias MeasurableEmbedding.prod_mk_right := MeasurableEmbedding.prodMk_right
 
 lemma measurableEmbedding_prod_mk_right [MeasurableSingletonClass α] (x : α) :
     MeasurableEmbedding (fun y ↦ (y, x) : β → β × α) :=

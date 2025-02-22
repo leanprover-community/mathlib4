@@ -342,7 +342,7 @@ instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) w
     rw [ContinuousAt, tendsto_iff_forall_isCompact_tendstoUniformlyOn, nhds_prod_eq]
     exact fun K hK =>
       uniformContinuous_mul.comp_tendstoUniformlyOn
-        ((tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prod
+        ((tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prodMk
           (tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK))
   continuous_inv := by
     letI : UniformSpace β := IsTopologicalGroup.toUniformSpace β

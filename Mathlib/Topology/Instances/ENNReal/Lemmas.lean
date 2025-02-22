@@ -1355,8 +1355,9 @@ lemma monotone_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) : Monotone
   exact ne_top_of_le_ne_top t_ne_top (min_le_left _ _)
 
 /-- The truncated cast `ENNReal.truncateToReal t : ℝ≥0∞ → ℝ` is continuous when `t ≠ ∞`. -/
+@[fun_prop]
 lemma continuous_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) : Continuous (truncateToReal t) := by
-  apply continuousOn_toReal.comp_continuous (continuous_min.comp (Continuous.Prod.mk t))
+  apply continuousOn_toReal.comp_continuous (by fun_prop)
   simp [t_ne_top]
 
 end truncateToReal
