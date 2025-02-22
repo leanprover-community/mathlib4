@@ -360,7 +360,7 @@ theorem compr₂_apply (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R]
 /-- A version of `Function.Injective.comp` for composition of a bilinear map with a linear map. -/
 theorem injective_compr₂_of_injective (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) (hf : Injective f)
     (hg : Injective g) : Injective (f.compr₂ g) :=
-  fun _ _ h ↦ hf <| ext fun z ↦ hg <| LinearMap.congr_fun h z
+  hg.injective_linearMapComp_left.comp hf
 
 theorem surjective_compr₂_of_exists_rightInverse (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ)
     (hf : Surjective f) (hg : ∃ g' : Qₗ →ₗ[R] Pₗ, g.comp g' = LinearMap.id) :
