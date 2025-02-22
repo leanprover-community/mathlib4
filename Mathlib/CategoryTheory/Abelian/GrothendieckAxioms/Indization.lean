@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
 import Mathlib.CategoryTheory.Abelian.Indization
 import Mathlib.CategoryTheory.Limits.Indization.Category
 import Mathlib.CategoryTheory.Generator.Indization
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory
+import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 
 /-!
 # AB axioms in the category of ind-objects
