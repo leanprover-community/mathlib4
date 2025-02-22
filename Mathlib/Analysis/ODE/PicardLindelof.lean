@@ -491,16 +491,16 @@ lemma hasDerivWithinAt_picard_Icc
   · rw [uIcc_of_le (not_lt.mp h)]
     exact Icc_subset_Icc ht₀.1 ht.2
 
-/-- Converse of `hasDerivWithinAt_integrate_Icc`: if `f` is the derivative along `α`, then `α`
+/-- Converse of `hasDerivWithinAt_picard_Icc`: if `f` is the derivative along `α`, then `α`
 satisfies the integral equation. -/
-lemma integrate_eq_of_hasDerivAt {t : ℝ}
+lemma picard_eq_of_hasDerivAt {t : ℝ}
     (hf : ContinuousOn (uncurry f) ((uIcc t₀ t) ×ˢ u))
     (hα : ∀ t' ∈ uIcc t₀ t, HasDerivWithinAt α (f t' (α t')) (uIcc t₀ t) t')
     (hmap : MapsTo α (uIcc t₀ t) u) : -- need `Icc` for `uIcc_subset_Icc`
-    integrate f t₀ (α t₀) α t = α t :=
+    picard f t₀ (α t₀) α t = α t :=
   calc
     _ = α t₀ + (α t - α t₀) := by
-      rw [integrate_apply, integral_eq_sub_of_hasDeriv_right]
+      rw [picard_apply, integral_eq_sub_of_hasDeriv_right]
       · intro t' ht'
         exact hα t' ht' |>.continuousWithinAt
       · intro t' ht'
@@ -514,16 +514,16 @@ lemma integrate_eq_of_hasDerivAt {t : ℝ}
 
 /-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
 `interate f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ`. -/
-lemma contDiffOn_nat_integrate_Icc
+lemma contDiffOn_nat_picard_Icc
     (ht₀ : t₀ ∈ Icc tmin tmax) {n : ℕ}
     (hf : ContDiffOn ℝ n (uncurry f) ((Icc tmin tmax) ×ˢ u))
     (hα : ContinuousOn α (Icc tmin tmax))
     (hmem : ∀ t ∈ Icc tmin tmax, α t ∈ u) (x₀ : E)
-    (heqon : ∀ t ∈ Icc tmin tmax, α t = integrate f t₀ x₀ α t) :
-    ContDiffOn ℝ n (integrate f t₀ x₀ α) (Icc tmin tmax) := by
+    (heqon : ∀ t ∈ Icc tmin tmax, α t = picard f t₀ x₀ α t) :
+    ContDiffOn ℝ n (picard f t₀ x₀ α) (Icc tmin tmax) := by
   by_cases hlt : tmin < tmax
   · have {t} (ht : t ∈ Icc tmin tmax) :=
-      hasDerivWithinAt_integrate_Icc ht₀ hf.continuousOn hα hmem x₀ ht
+      hasDerivWithinAt_picard_Icc ht₀ hf.continuousOn hα hmem x₀ ht
     induction n with
     | zero =>
       simp only [CharP.cast_eq_zero, contDiffOn_zero] at *
@@ -547,21 +547,21 @@ lemma contDiffOn_nat_integrate_Icc
 
 /-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
 `interate f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ∞`. -/
-lemma contDiffOn_enat_integrate_Icc
+lemma contDiffOn_enat_picard_Icc
     (ht₀ : t₀ ∈ Icc tmin tmax) {n : ℕ∞}
     (hf : ContDiffOn ℝ n (uncurry f) ((Icc tmin tmax) ×ˢ u))
     (hα : ContinuousOn α (Icc tmin tmax))
     (hmem : ∀ t ∈ Icc tmin tmax, α t ∈ u) (x₀ : E)
-    (heqon : ∀ t ∈ Icc tmin tmax, α t = integrate f t₀ x₀ α t) :
-    ContDiffOn ℝ n (integrate f t₀ x₀ α) (Icc tmin tmax) := by
+    (heqon : ∀ t ∈ Icc tmin tmax, α t = picard f t₀ x₀ α t) :
+    ContDiffOn ℝ n (picard f t₀ x₀ α) (Icc tmin tmax) := by
   induction n with
   | top =>
     rw [contDiffOn_infty] at *
     intro k
-    exact contDiffOn_nat_integrate_Icc ht₀ (hf k) hα hmem x₀ heqon
+    exact contDiffOn_nat_picard_Icc ht₀ (hf k) hα hmem x₀ heqon
   | coe n =>
     simp only [WithTop.coe_natCast] at *
-    exact contDiffOn_nat_integrate_Icc ht₀ hf hα hmem x₀ heqon
+    exact contDiffOn_nat_picard_Icc ht₀ hf hα hmem x₀ heqon
 
 /-- Solutions to ODEs defined by $C^n$ vector fields are also $C^n$. -/
 theorem contDiffOn_enat_Icc_of_hasDerivWithinAt
@@ -573,17 +573,17 @@ theorem contDiffOn_enat_Icc_of_hasDerivWithinAt
   by_cases hlt : tmin < tmax
   · set t₀ := (tmin + tmax) / 2 with h
     have ht₀ : t₀ ∈ Icc tmin tmax := ⟨by linarith, by linarith⟩
-    have : ∀ t ∈ Icc tmin tmax, α t = integrate f t₀ (α t₀) α t := by
+    have : ∀ t ∈ Icc tmin tmax, α t = picard f t₀ (α t₀) α t := by
       intro t ht
       have : uIcc t₀ t ⊆ Icc tmin tmax := uIcc_subset_Icc ht₀ ht
-      rw [integrate_eq_of_hasDerivAt (hf.continuousOn.mono _)]
+      rw [picard_eq_of_hasDerivAt (hf.continuousOn.mono _)]
       · intro t' ht'
         exact hα t' (this ht') |>.mono this
       · apply hmem.mono_left this
       · -- missing `left/right` lemmas for `prod_subset_prod_iff`
         rw [prod_subset_prod_iff]
         exact Or.inl ⟨this, subset_rfl⟩
-    exact contDiffOn_enat_integrate_Icc ht₀ hf
+    exact contDiffOn_enat_picard_Icc ht₀ hf
       (fun t ht ↦ hα t ht |>.continuousWithinAt) hmem (α t₀) this |>.congr this
   · rw [not_lt, le_iff_lt_or_eq] at hlt -- missing lemma?
     cases hlt with
