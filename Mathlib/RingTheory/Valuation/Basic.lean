@@ -999,7 +999,7 @@ section Group
   On the other hand,  let γ = (v a)/(v b)
   Is there a non zero c such that v x < v c → v x < γ ? It suffices to have v (b * c) ≤ v a
   If there exists a nonzero c such that v c < 1, then a large power of c is ok.
-  Otherwise, v c ≥ 1 for all nonzero c ; both topologies are discrete.
+  Otherwise, v c ≥ 1 for all nonzero c and both topologies are discrete.
 
 -/
 
