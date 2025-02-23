@@ -1447,6 +1447,10 @@ lemma map_prod_map {ε} {mε : MeasurableSpace ε} (κ : Kernel α β) [IsSFinit
   rw [map_apply _ (hf.prod_map hg), prod_apply κ, ← Measure.map_prod_map _ _ hf hg, prod_apply,
     map_apply _ hf, map_apply _ hg]
 
+lemma map_prod_eq (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel α γ) [IsSFiniteKernel η]
+    {f : β → δ} (hf : Measurable f) : (κ.map f) ×ₖ η = (κ ×ₖ η).map (Prod.map f id) := by
+  rw [← map_prod_map _ _ hf measurable_id, map_id]
+
 lemma comap_prod_swap (κ : Kernel α β) (η : Kernel γ δ) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     comap (prodMkRight α η ×ₖ prodMkLeft γ κ) Prod.swap measurable_swap
       = map (prodMkRight γ κ ×ₖ prodMkLeft α η) Prod.swap := by
