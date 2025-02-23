@@ -261,7 +261,7 @@ def counterCoreUniformity : UniformSpace.Core ℕ := by
       exists_and_left, exists_prop', nonempty_prop, exists_eq_left, mem_Ici, Prod.mk_le_mk] at h1 h2
     aesop
 
-/--The topology on `ℕ` induced by the "crude" uniformity -/
+/-- The topology on `ℕ` induced by the "crude" uniformity -/
 instance counterTopology : TopologicalSpace ℕ := counterCoreUniformity.toTopologicalSpace
 
 /-- The uniform structure on `ℕ` bundling together the "crude" uniformity and the topology -/
