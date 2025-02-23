@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Yi Yuan. All rights reserved.
+Copyright (c) 2025 Yi Yuan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yi Yuan
 -/
@@ -38,7 +38,8 @@ However, their excessive structural freedom implies overly weak constraints, mak
 support meaningful conclusions (e.g. Without constraints, σ = { ⊥ } would be entirely possible).
 This class introduces the necessary conditions to describe `σA` and `σB`, ensure `f` can induce a
 map from σA → σB.-/
-class SetLikeHom (f : A → B) where
+class SetLikeHom (σA : Type*) [SetLike σA A] {B : Type*} (σB : Type*) [SetLike σB B]
+ (f : A → B) where
   /-- It is the corresponding map from σA → σB with `coe_map` property -/
   map : σA → σB
   coe_map (x : σA) : f '' (x : Set A) = map x
@@ -103,7 +104,7 @@ instance RingHomtoFil (FR FR_lt: ι → σR) [fil : IsRingFiltration FR FR_lt] :
     show 1 ∈ ((map f <| FR 0 : σS) : Set S)
     rw[← coe_map <| FR 0]
     use 1
-    simp only [SetLike.mem_coe, IsRingFiltration.one_mem, map_one, and_self]
+    simp only [SetLike.mem_coe, map_one, and_true, SetLike.GradedOne.one_mem]
   mul_mem {i j x y x_in_i y_in_j}:= by
     show x * y ∈ ((map f <| FR <| i + j : σS) : Set S)
     rw[← coe_map <| FR <| i + j]
@@ -114,8 +115,7 @@ instance RingHomtoFil (FR FR_lt: ι → σR) [fil : IsRingFiltration FR FR_lt] :
     obtain ⟨x₁, x_in, x_eq⟩ := x_in_i
     obtain ⟨y₁, y_in, y_eq⟩ := y_in_j
     use x₁ * y₁
-    simp only [SetLike.mem_coe, IsRingFiltration.mul_mem x_in y_in, map_mul,
-      Mathlib.Tactic.LinearCombination'.mul_pf x_eq y_eq, and_self]
+    simp only [SetLike.mem_coe, map_mul, x_eq, y_eq, and_true, SetLike.GradedMul.mul_mem x_in y_in]
 
 end RingHomtoFil
 
