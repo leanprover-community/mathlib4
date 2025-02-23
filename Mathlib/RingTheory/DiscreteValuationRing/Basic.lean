@@ -394,7 +394,7 @@ theorem addVal_def (r : R) (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) (
     emultiplicity_eq_of_associated_right (Associated.symm ⟨u, mul_comm _ _⟩),
     emultiplicity_pow_self_of_prime (irreducible_iff_prime.1 hϖ)]
 
-/-- An alternative definition of the additive valuation, taking units into account.-/
+/-- An alternative definition of the additive valuation, taking units into account -/
 theorem addVal_def' (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) :
     addVal R ((u : R) * ϖ ^ n) = n :=
   addVal_def _ u hϖ n rfl

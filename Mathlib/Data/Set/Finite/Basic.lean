@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
 import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Finset.Union
+import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Finite sets

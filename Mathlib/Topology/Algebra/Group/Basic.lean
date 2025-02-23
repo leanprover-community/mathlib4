@@ -1418,7 +1418,7 @@ theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
       rw [preimage_compl, compl_compl] at H
       convert H
       ext x
-      simp only [image_smul, mem_setOf_eq, coeSubtype, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_setOf_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
       exact Set.smul_inter_ne_empty_iff' }
 
 -- attribute [local semireducible] MulOpposite -- Porting note: doesn't work in Lean 4
@@ -1443,11 +1443,11 @@ theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Sub
       have : Continuous fun p : G × G => (p.1⁻¹, p.2) := continuous_inv.prodMap continuous_id
       have H : Set.Finite _ :=
         hS ((hK.prod hL).image (continuous_mul.comp this)).compl_mem_cocompact
-      simp only [preimage_compl, compl_compl, coeSubtype, comp_apply] at H
+      simp only [preimage_compl, compl_compl, coe_subtype, comp_apply] at H
       apply Finite.of_preimage _ (equivOp S).surjective
       convert H using 1
       ext x
-      simp only [image_smul, mem_setOf_eq, coeSubtype, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_setOf_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
       exact Set.op_smul_inter_ne_empty_iff }
 
 end

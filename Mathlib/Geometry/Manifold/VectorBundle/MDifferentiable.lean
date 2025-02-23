@@ -97,7 +97,7 @@ Therefore, we formulate it using differentiability of `ϕ` read in coordinates.
 Version for `MDifferentiableWithinAt`. We also give a version for `MDifferentiableAt`, but no
 version for `MDifferentiableOn` or `MDifferentiable` as our assumption, written in coordinates,
 only makes sense around a point.
- -/
+-/
 lemma MDifferentiableWithinAt.clm_apply_of_inCoordinates
     (hϕ : MDifferentiableWithinAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂)
       (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) s m₀)
@@ -135,7 +135,7 @@ Therefore, we formulate it using differentiability of `ϕ` read in coordinates.
 Version for `MDifferentiableAt`. We also give a version for `MDifferentiableWithinAt`,
 but no version for `MDifferentiableOn` or `MDifferentiable` as our assumption, written
 in coordinates, only makes sense around a point.
- -/
+-/
 lemma MDifferentiableAt.clm_apply_of_inCoordinates
     (hϕ : MDifferentiableAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂)
       (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)

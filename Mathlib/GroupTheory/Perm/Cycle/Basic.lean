@@ -409,7 +409,7 @@ theorem IsCycle.eq_swap_of_apply_apply_eq_self {α : Type*} [DecidableEq α] {f 
       else by
         rw [swap_apply_of_ne_of_ne hyx hfyx]
         refine by_contradiction fun hy => ?_
-        cases' hz.2 hy with j hj
+        obtain ⟨j, hj⟩ := hz.2 hy
         rw [← sub_add_cancel j i, zpow_add, mul_apply, hi] at hj
         rcases zpow_apply_eq_of_apply_apply_eq_self hffx (j - i) with hji | hji
         · rw [← hj, hji] at hyx
@@ -458,7 +458,7 @@ theorem IsCycle.of_pow {n : ℕ} (h1 : IsCycle (f ^ n)) (h2 : f.support ⊆ (f ^
     exact (support_pow_le _ n).antisymm h2
   obtain ⟨x, hx1, hx2⟩ := h1
   refine ⟨x, (key x).mp hx1, fun y hy => ?_⟩
-  cases' hx2 ((key y).mpr hy) with i _
+  obtain ⟨i, _⟩ := hx2 ((key y).mpr hy)
   exact ⟨n * i, by rwa [zpow_mul]⟩
 
 -- The lemma `support_zpow_le` is relevant. It means that `h2` is equivalent to
