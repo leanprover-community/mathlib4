@@ -811,6 +811,20 @@ theorem Ico_diff_Ico_right (a b c : α) : Ico a b \ Ico c b = Ico a (min b c) :=
     rw [mem_sdiff, mem_Ico, mem_Ico, mem_Ico, min_eq_right h, and_assoc, not_and', not_le]
     exact and_congr_right' ⟨fun hx => hx.2 hx.1, fun hx => ⟨hx.trans_le h, fun _ => hx⟩⟩
 
+section LocallyFiniteOrderBot
+
+variable [LocallyFiniteOrderBot α]
+
+theorem Iic_diff_Ioc : Iic b \ Ioc a b = Iic (a ⊓ b) := by
+  rw [← coe_inj]
+  push_cast
+  exact Set.Iic_diff_Ioc
+
+theorem Iic_diff_Ioc_self_of_le (hab : a ≤ b) : Iic b \ Ioc a b = Iic a := by
+  rw [Iic_diff_Ioc, min_eq_left hab]
+
+end LocallyFiniteOrderBot
+
 end LocallyFiniteOrder
 
 section LocallyFiniteOrderBot
