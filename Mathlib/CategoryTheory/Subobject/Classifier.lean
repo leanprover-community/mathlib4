@@ -106,11 +106,6 @@ namespace Subobject
 
 open Subobject
 
-@[simp]
-lemma mk_arrow_mk {X : C} (m : MonoOver X) :
-    mk m.arrow = ⟦m⟧ :=
-  rfl
-
 section Pullback
 
 lemma isPullback_eq {X Y Z : C} {x x' : Subobject X}
@@ -136,26 +131,6 @@ lemma isPullback_eq_mk {X Y Z : C} {x : Subobject X}
     x = mk (pullback.snd f g) := by
   have h' := isPullback_mk f g
   apply isPullback_eq h h'
-
-variable [HasPullbacks C]
-
-lemma pullback_obj_representative {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
-    (pullback f).obj x = mk ((MonoOver.pullback f).obj (representative.obj x)).arrow := by
-  induction' x using Quotient.inductionOn' with m
-  unfold pullback lower
-  rw [mk_arrow_mk]
-  dsimp
-  apply Quotient.sound
-  constructor
-  apply Functor.mapIso
-  symm
-  exact (representativeIso _)
-
-@[simp]
-lemma pullback_obj {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
-    (pullback f).obj x = mk (pullback.snd x.arrow f) := by
-  rw [pullback_obj_representative]
-  rfl
 
 end Pullback
 

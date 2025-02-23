@@ -236,6 +236,11 @@ theorem mk_arrow (P : Subobject X) : mk P.arrow = P :=
     obtain ⟨e⟩ := @Quotient.mk_out' _ (isIsomorphicSetoid _) Q
     exact Quotient.sound' ⟨MonoOver.isoMk (Iso.refl _) ≪≫ e⟩
 
+@[simp]
+lemma mk_arrow_mk {X : C} (m : MonoOver X) :
+    mk m.arrow = ⟦m⟧ :=
+  rfl
+
 theorem le_of_comm {B : C} {X Y : Subobject B} (f : (X : C) ⟶ (Y : C)) (w : f ≫ Y.arrow = X.arrow) :
     X ≤ Y := by
   convert mk_le_mk_of_comm _ w <;> simp
@@ -516,6 +521,23 @@ theorem pullback_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject Z) :
     (pullback (f ≫ g)).obj x = (pullback f).obj ((pullback g).obj x) := by
   induction' x using Quotient.inductionOn' with t
   exact Quotient.sound ⟨(MonoOver.pullbackComp _ _).app t⟩
+
+lemma pullback_obj_representative {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
+    (pullback f).obj x = mk ((MonoOver.pullback f).obj (representative.obj x)).arrow := by
+  induction' x using Quotient.inductionOn' with m
+  unfold pullback lower
+  rw [mk_arrow_mk]
+  dsimp
+  apply Quotient.sound
+  constructor
+  apply Functor.mapIso
+  symm
+  exact (representativeIso _)
+
+theorem pullback_obj {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
+    (pullback f).obj x = mk (pullback.snd x.arrow f) := by
+  rw [pullback_obj_representative]
+  rfl
 
 instance (f : X ⟶ Y) : (pullback f).Faithful where
 
