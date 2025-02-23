@@ -1508,6 +1508,13 @@ lemma compProd_prodMkLeft_eq_comp
   rw [lintegral_dirac']
   exact measurable_measure_prod_mk_left hs
 
+lemma prodAssoc_prod (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel α γ) [IsSFiniteKernel η]
+    (ξ : Kernel α δ) [IsSFiniteKernel ξ] :
+    ((κ ×ₖ ξ) ×ₖ η).map MeasurableEquiv.prodAssoc = κ ×ₖ (ξ ×ₖ η) := by
+  ext1 a
+  rw [map_apply _ (by fun_prop), prod_apply, prod_apply, Measure.prodAssoc_prod, prod_apply,
+    prod_apply]
+
 end Prod
 end Kernel
 end ProbabilityTheory
