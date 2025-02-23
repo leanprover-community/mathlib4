@@ -77,4 +77,4 @@ example {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] {x₀ : α}
   (hf : ContinuousAt (Function.uncurry f) (x₀, x₀)) :
   ContinuousAt (fun x ↦ f x x) x₀ := by
   fail_if_success { exact hf.comp (continuousAt_id.prod continuousAt_id) }
-  exact hf.comp_of_eq (continuousAt_id.prod continuousAt_id) rfl
+  exact hf.comp_of_eq (continuousAt_id.prodMk continuousAt_id) rfl
