@@ -24,6 +24,20 @@ warning: declaration uses 'sorry'
 example (a : Nat) : a ≤ a := by
   calc?
 
+-- an indented `calc?`
+
+/--
+info: Create calc tactic:
+• calc
+      a ≤ a := by sorry
+---
+warning: declaration uses 'sorry'
+-/
+-- #guard_msgs in
+example (a : Nat) : a ≤ a := by
+  all_goals
+    calc?
+
 -- a deliberately long line
 /--
 info: Create calc tactic:
