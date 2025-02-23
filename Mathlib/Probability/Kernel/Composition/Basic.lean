@@ -667,10 +667,6 @@ lemma map_id (κ : Kernel α β) : map κ id = κ := by
 @[simp]
 lemma map_id' (κ : Kernel α β) : map κ (fun a ↦ a) = κ := map_id κ
 
-lemma id_map {f : α → β} (hf : Measurable f) : Kernel.id.map f = deterministic f hf := by
-  ext1 x
-  rw [map_apply _ hf, id_apply, Measure.map_dirac hf, deterministic_apply]
-
 nonrec theorem lintegral_map (κ : Kernel α β) (hf : Measurable f) (a : α) {g' : γ → ℝ≥0∞}
     (hg : Measurable g') : ∫⁻ b, g' b ∂map κ f a = ∫⁻ a, g' (f a) ∂κ a := by
   rw [map_apply _ hf, lintegral_map hg hf]
@@ -1280,6 +1276,9 @@ lemma comp_id (κ : Kernel α β) : κ ∘ₖ Kernel.id = κ := by
 @[simp]
 lemma id_comp (κ : Kernel α β) : Kernel.id ∘ₖ κ = κ := by
   rw [Kernel.id, deterministic_comp_eq_map, map_id]
+
+lemma id_map {f : α → β} (hf : Measurable f) : Kernel.id.map f = deterministic f hf := by
+  rw [← deterministic_comp_eq_map, comp_id]
 
 @[simp]
 lemma comp_discard (κ : Kernel α β) [IsMarkovKernel κ] : discard β ∘ₖ κ = discard α := by
