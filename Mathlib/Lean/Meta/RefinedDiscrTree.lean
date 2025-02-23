@@ -53,9 +53,6 @@ and includes many more features.
   - Any combination of `ofNat`, `Nat.zero`, `Nat.succ` and number literals
     is stored as just a number literal. When issue https://github.com/leanprover/lean4/issues/2867
     gets resolved, this behaviour should be updated.
-  - The expression `fun a : α => a` is stored as `@id α`.
-    - This makes lemmas such as `continuous_id'` redundant, which is the same as `continuous_id`,
-      with `id` replaced by `fun x => x`.
 
 - The key `Key.opaque` only matches with a `Key.star` key.
   Depending on the configuration, β-reduction and ζ-reduction may be disabled, so the resulting

@@ -129,17 +129,6 @@ private def encodingStepAux (e : Expr) (lambdas : List FVarId) (root : Bool) : L
     setEAsPrevious
     withLams lambdas <| .proj n i e.getAppNumArgs
   | .fvar fvarId =>
-    /- we index `fun x => x` as `id` when not at the root -/
-    if !root && e.getAppNumArgs == 0 then
-      if let fvarId' :: lambdas := lambdas then
-        if fvarId' == fvarId then
-          let info := {
-            expr       := ← fvarId.getType
-            bvars      := lambdas ++ (← read).bvars
-            lctx       := ← getLCtx
-            localInsts := ← getLocalInstances }
-          modify fun s => { s with stack := .expr info :: s.stack }
-          return ← withLams lambdas <| .const ``id 1
     let bvars := lambdas ++ (← read).bvars
     unless e.getAppNumArgs == 0 do
       setEAsPrevious
