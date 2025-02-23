@@ -176,10 +176,10 @@ theorem exists_P_σ_P_δ_factorization {x y : SimplexCategoryGenRel} (f : x ⟶ 
     obtain ⟨z, e, m, ⟨he, hm, rfl⟩⟩ := h
     cases hm with
     | of g hg =>
-      cases hg
-      obtain ⟨_, _, _, ⟨he₁, hm₁, h₁⟩⟩ := factor_δ_σ j _
+      rcases hg with ⟨i⟩
+      obtain ⟨_, _, _, ⟨he₁, hm₁, h₁⟩⟩ := factor_δ_σ j i
       exact ⟨_, _, _, P_σ.comp_mem _ _ he he₁, hm₁,
-        by rw [Category.assoc, Category.assoc, ← h₁]⟩
+        by simp [← h₁]⟩
     | @id n =>
       exact ⟨mk n', e ≫ σ j, 𝟙 _, P_σ.comp_mem _ _ he (P_σ.σ _), P_δ.id_mem _, by simp⟩
     | comp_of f g hf hg =>
