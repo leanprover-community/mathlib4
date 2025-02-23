@@ -1434,6 +1434,19 @@ instance IsSFiniteKernel.prod (κ : Kernel α β) (η : Kernel α γ) :
     snd (κ ×ₖ η) = η := by
   ext x; simp [snd_apply, prod_apply]
 
+lemma prod_comap (κ : Kernel β γ) [IsSFiniteKernel κ] (η : Kernel β δ) [IsSFiniteKernel η]
+    {f : α → β} (hf : Measurable f) :
+    (κ ×ₖ η).comap f hf = (κ.comap f hf) ×ₖ (η.comap f hf) := by
+  ext1 x
+  rw [comap_apply, prod_apply, prod_apply, comap_apply, comap_apply]
+
+lemma map_prod_map {ε} {mε : MeasurableSpace ε} (κ : Kernel α β) [IsSFiniteKernel κ]
+    (η : Kernel α δ) [IsSFiniteKernel η] {f : β → γ} (hf : Measurable f) {g : δ → ε}
+    (hg : Measurable g) : (κ.map f) ×ₖ (η.map g) = (κ ×ₖ η).map (Prod.map f g) := by
+  ext1 x
+  rw [map_apply _ (hf.prod_map hg), prod_apply κ, ← Measure.map_prod_map _ _ hf hg, prod_apply,
+    map_apply _ hf, map_apply _ hg]
+
 lemma comap_prod_swap (κ : Kernel α β) (η : Kernel γ δ) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     comap (prodMkRight α η ×ₖ prodMkLeft γ κ) Prod.swap measurable_swap
       = map (prodMkRight γ κ ×ₖ prodMkLeft α η) Prod.swap := by
