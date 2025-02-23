@@ -1,8 +1,10 @@
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.Field.Defs
 import Mathlib.RingTheory.Nilpotent.Basic
+import Mathlib.Data.Nat.Cast.Field
 import LeanCopilot
 
 namespace Algebra
@@ -63,11 +65,18 @@ theorem zero_ev {k l : ℕ} {a : A} (h₁ : a ^ k = 0) (h₂ : k ≤ l) : a ^ l 
 --simp_all only [ne_eq, Nat.cast_eq_zero, not_false_eq_true, smul_inv_smul₀]
   --exact mul_inv_cancel₀ h1
 
+
 -- useful: add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero
 -- useful: add_pow (h : Commute x y) (n : ℕ) : ...
 -- useful: isNilpotent_add (h_comm : Commute x y) ...
 
 variable [CharZero R]
+
+theorem ttttt (n : ℕ) : (n.factorial : R)⁻¹  * (n.factorial : R) = 1 := by
+  have h1 : (n.factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero n
+  simp_all only [ne_eq, Nat.cast_eq_zero, not_false_eq_true, inv_mul_cancel₀]
+
+
 theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a) (h₃ : IsNilpotent b) :
     exp R A (a + b) = exp R A a * exp R A b := by
   obtain ⟨n₁, hn₁⟩ := h₂
@@ -89,6 +98,11 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
   have h₅ : (a + b) ^ (2 * N + 1) = 0 :=
     Commute.add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero h₁ h₃ h₄ help
   rw [← exp_eq_truncated R A (a + b) h₅, ← exp_eq_truncated R A a h₃, ← exp_eq_truncated R A b h₄]
+
+ -- have  hh (n : ℕ) (a : A) : n * a = (n : R) • a := by
+  --  norm_cast
+  --  simp_all only [nsmul_eq_mul, N]
+
   have e₁ :=
     calc
       ∑ n ∈ Finset.range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n = ∑ n ∈ Finset.range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n := rfl
@@ -97,6 +111,49 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
         apply Finset.sum_congr rfl
         intros n hn
         rw [Commute.add_pow h₁ n]
+      _ = ∑ n ∈ Finset.range (2 * N + 1), (∑ m ∈ Finset.range (n + 1), (n.factorial : R)⁻¹ • (a ^ m * b ^ (n - m) * n.choose m)) := by
+        apply Finset.sum_congr rfl
+        intro n hn
+        rw [Finset.smul_sum]
+      _ = ∑ n ∈ Finset.range (2 * N + 1), (∑ m ∈ Finset.range (n + 1), ((m.factorial : R)⁻¹ * ((n - m).factorial : R)⁻¹) • (a ^ m * b ^ (n - m))) := by
+        apply Finset.sum_congr rfl
+        intro n hn
+        apply Finset.sum_congr rfl
+        intro m hm
+        have hhh0 : a ^ m * b ^ (n - m) * (n.choose m) = (n.choose m) * (a ^ m * b ^ (n - m)) := by
+          rw [Nat.cast_commute (n.choose m)]
+
+        have  hh (n : ℕ) (a : A) : n * a = (n : R) • a := by
+          norm_cast
+          simp
+        have hhh : (n.factorial : R)⁻¹ • (a ^ m * b ^ (n - m) * (n.choose m)) = ((n.factorial : R)⁻¹ * (n.choose m)) • (a ^ m * b ^ (n - m)) := by
+          rw [hhh0]
+          rw [hh (n.choose m)]
+          rw [← smul_assoc]
+          norm_cast
+        rw [hhh]
+        suffices h11 : (n.factorial : R)⁻¹ * (n.choose m) = ((m.factorial : R)⁻¹ * ((n - m).factorial : R)⁻¹) by
+          simp_all only [Finset.mem_range, N]
+        have t : m ≤ n := by
+          simp_all only [Finset.mem_range, N]
+          omega
+        rw [Nat.choose_eq_factorial_div_factorial t]
+        rw [Nat.cast_div]
+        rw [mul_div]
+        have qqq := ttttt R n
+        rw [qqq]
+        simp
+        rw [mul_comm]
+        apply Nat.factorial_mul_factorial_dvd_factorial
+        apply t
+        rw [Nat.cast_mul]
+        apply mul_ne_zero
+        have h1 : (m.factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero m
+        apply h1
+        have h2 : ((n - m).factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero (n - m)
+        apply h2
+
+
 
   sorry
 
