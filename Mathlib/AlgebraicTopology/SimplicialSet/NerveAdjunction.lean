@@ -51,14 +51,10 @@ def nerve₂Adj.counit.app (C : Type u) [SmallCategory C] :
   · exact
       (whiskerRight (OneTruncation₂.ofNerve₂.natIso).hom _ ≫ ReflQuiv.adj.{u}.counit).app (Cat.of C)
   · intro x y f g rel
-    cases rel; rename_i φ
-    simp [ReflQuiv.adj, Quot.liftOn, Cat.FreeRefl.quotientFunctor, Quotient.functor,
-      Quiv.adj, Quiv.id_eq_id]
-    simp only [OneTruncation₂.nerveHomEquiv, Fin.isValue, OneTruncation₂.nerveEquiv_apply, op_obj,
-      ComposableArrows.obj', Fin.zero_eta, Nat.reduceAdd, Equiv.coe_fn_mk, eqToHom_refl, comp_id,
-      id_comp]
-    exact φ.map_comp (X := (0 : Fin 3)) (Y := 1) (Z := 2)
-      (homOfLE (by decide)) (homOfLE (by decide))
+    obtain ⟨φ⟩ := rel
+    simpa [ReflQuiv.adj, Quot.liftOn, Cat.FreeRefl.quotientFunctor, Quotient.functor,
+        Quiv.adj, OneTruncation₂.nerveHomEquiv] using
+      φ.map_comp (X := 0) (Y := 1) (Z := 2) (homOfLE (by decide)) (homOfLE (by decide))
 
 @[simp]
 theorem nerve₂Adj.counit.app_eq (C : Type u) [SmallCategory C] :
@@ -68,7 +64,7 @@ theorem nerve₂Adj.counit.app_eq (C : Type u) [SmallCategory C] :
       ReflQuiv.adj.{u}.counit).app (Cat.of C) := rfl
 
 /-- Naturality of `nerve₂Adj.counit.app` is proven using `HomotopyCategory.lift_unique'`. -/
-theorem nerve₂Adj.counit.naturality ⦃C D : Type u⦄ [SmallCategory C] [SmallCategory D]
+theorem nerve₂Adj.counit.naturality {C D : Type u} [SmallCategory C] [SmallCategory D]
     (F : C ⥤ D) :
     (nerveFunctor₂ ⋙ hoFunctor₂).map F ⋙ nerve₂Adj.counit.app D =
       nerve₂Adj.counit.app C ⋙ F := by
@@ -86,8 +82,8 @@ theorem nerve₂Adj.counit.naturality ⦃C D : Type u⦄ [SmallCategory C] [Smal
 
 /-- The counit of `nerve₂Adj.` -/
 def nerve₂Adj.counit : nerveFunctor₂ ⋙ hoFunctor₂.{u} ⟶ (𝟭 Cat) where
-  app := fun _ ↦ nerve₂Adj.counit.app (Cat.of _)
-  naturality := fun _ _ F ↦ nerve₂Adj.counit.naturality F
+  app C := nerve₂Adj.counit.app (Cat.of C)
+  naturality _ _ F := nerve₂Adj.counit.naturality F
 
 local notation (priority := high) "[" n "]" => SimplexCategory.mk n
 
@@ -127,10 +123,10 @@ instance (C : Type u) [Category C] : Mono (nerve₂.seagull C) where
     simp [nerve₂.seagull] at eq
     have eq1 := congr($eq ≫ prod.fst)
     have eq2 := congr($eq ≫ prod.snd)
-    simp at eq1 eq2
+    simp only [limit.lift_π, BinaryFan.mk_fst, BinaryFan.mk_snd] at eq1 eq2
     replace eq1 := congr_fun eq1 x
     replace eq2 := congr_fun eq2 x
-    simp at eq1 eq2
+    simp only [types_comp_apply] at eq1 eq2
     generalize f x = fx at *
     generalize g x = gx at *
     fapply ComposableArrows.ext₂
@@ -207,14 +203,14 @@ lemma toNerve₂.mk_naturality_δ1i (i : Fin 3) : toNerve₂.mk.naturalityProper
     rw [nerve_δ20]
     fapply ReflPrefunctor.congr_mk₁_map
     · unfold ev1₂ ι1₂ δ₂
-      simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+      simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
       have := δ_comp_δ (n := 0) (i := 0) (j := 1) (by decide)
-      simp at this
+      dsimp at this
       exact congrFun (congrArg X.map (congrArg Quiver.Hom.op this.symm)) x
     · unfold ev2₂ ι2₂ δ₂
-      simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+      simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
       have := δ_comp_δ (n := 0) (i := 0) (j := 0) (by decide)
-      simp at this
+      dsimp at this
       exact congrFun (congrArg X.map (congrArg Quiver.Hom.op this.symm)) x
     · aesop
   · simp only [Fin.mk_one]
@@ -230,9 +226,9 @@ lemma toNerve₂.mk_naturality_δ1i (i : Fin 3) : toNerve₂.mk.naturalityProper
     rw [nerve_δ22]
     fapply ReflPrefunctor.congr_mk₁_map
     · unfold ev0₂ ι0₂ δ₂
-      simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+      simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
       have := δ_comp_δ (n := 0) (i := 1) (j := 1) (by decide)
-      simp at this
+      dsimp at this
       exact congrFun (congrArg X.map (congrArg Quiver.Hom.op this)) x
     · unfold ev1₂ ι1₂ δ₂
       simp [← FunctorToTypes.map_comp_apply, ← op_comp]
@@ -246,11 +242,11 @@ lemma toNerve₂.mk_naturality_σ1i (i : Fin 2) : toNerve₂.mk.naturalityProper
     rw [← toNerve₂.mk_naturality_δ1i F hyp, ← assoc, ← map_comp, ← op_comp]
     change toNerve₂.mk.naturalityProperty F (δ₂ 2 ≫ σ₂ i)
     fin_cases i
-    · show mk.naturalityProperty F (δ₂ 2 ≫ σ₂ 0)
+    · dsimp only [Fin.zero_eta]
       rw [δ₂_two_comp_σ₂_zero]
       exact (toNerve₂.mk.naturalityProperty F).comp_mem _ _
         (toNerve₂.mk_naturality_σ00 F) (toNerve₂.mk_naturality_δ0i F _)
-    · show mk.naturalityProperty F (δ₂ 2 ≫ σ₂ 1)
+    · dsimp only [Fin.mk_one]
       rw [δ₂_two_comp_σ₂_one]
       exact (toNerve₂.mk.naturalityProperty F).id_mem _
   · unfold δ0₂
@@ -288,8 +284,8 @@ by the isomorphism `nerve₂Adj.NatIso.app C`. -/
 @[simps!] def toNerve₂.mk'
     (f : SSet.oneTruncation₂.obj X ⟶ SSet.oneTruncation₂.obj (nerveFunctor₂.obj (Cat.of C)))
     (hyp : (φ : X _[2]₂) →
-      (f ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev02₂ φ)
-      = CategoryStruct.comp (obj := (Cat.of C))
+      (f ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev02₂ φ) =
+      CategoryStruct.comp (obj := (Cat.of C))
         ((f ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev01₂ φ))
         ((f ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev12₂ φ)))
     : X ⟶ nerveFunctor₂.obj (Cat.of C) :=
