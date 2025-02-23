@@ -831,6 +831,7 @@ theorem constantCoeff_coe : PowerSeries.constantCoeff R φ = φ.coeff 0 :=
 
 variable (R)
 
+-- TODO drop Coe.coe
 theorem coe_injective : Function.Injective (Coe.coe : R[X] → PowerSeries R) := fun x y h => by
   ext
   simp_rw [← coeff_coe]
