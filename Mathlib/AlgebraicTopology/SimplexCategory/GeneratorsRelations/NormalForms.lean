@@ -104,9 +104,8 @@ lemma tail (a : ℕ) (l : List ℕ) (h : IsAdmissible m (a::l)) :
 lemma ext (L₁ : List ℕ) (L₂ : List ℕ)
     (hL₁ : IsAdmissible m L₁) (hL₂ : IsAdmissible m L₂)
     (h : ∀ x : ℕ, x ∈ L₁ ↔ x ∈ L₂) : L₁ = L₂ := by
-  obtain ⟨hL₁, hL₁₂⟩ := hL₁
-  obtain ⟨hL₂, hL₂₂⟩ := hL₂
-  clear hL₁₂ hL₂₂ -- clearing them now so they don’t clutter the induction hyps
+  obtain ⟨hL₁, -⟩ := hL₁
+  obtain ⟨hL₂, -⟩ := hL₂
   induction L₁ generalizing L₂ with
   | nil =>
     simp only [List.nil_eq, List.eq_nil_iff_forall_not_mem]
@@ -124,21 +123,20 @@ lemma ext (L₁ : List ℕ) (L₂ : List ℕ)
       simp only [List.sorted_cons] at hL₁ hL₂
       obtain ⟨haL₁, hL₁⟩ := hL₁
       obtain ⟨hbL₂, hL₂⟩ := hL₂
-      have hab : a = b := by
+      obtain rfl : a = b := by
         haveI := h b
         simp only [true_or, iff_true] at this
-        obtain hb | bL₁ := this
-        · exact hb.symm
+        obtain rfl | bL₁ := this
+        · rfl
         · have ha := h a
           simp only [true_or, true_iff] at ha
-          obtain hab | aL₂ := ha
-          · exact hab
+          obtain rfl | aL₂ := ha
+          · rfl
           · have f₁ := haL₁ _ bL₁
             have f₂ := hbL₂ _ aL₂
             linarith
-      refine ⟨hab, ?_⟩
+      refine ⟨rfl, ?_⟩
       apply h_rec L₂ _ hL₁ hL₂
-      subst hab
       intro x
       by_cases hax : x = a
       · subst hax
@@ -182,9 +180,8 @@ lemma simplicialInsert_length (a : ℕ) (L : List ℕ) :
   induction L generalizing a with
   | nil => rfl
   | cons head tail h_rec =>
-    simp only [simplicialInsert, List.length_cons]
-    split_ifs with h <;> simp only [List.length_cons, add_left_inj]
-    exact h_rec (a + 1)
+    dsimp only [simplicialInsert, List.length_cons]
+    split_ifs with h <;> simp only [List.length_cons, add_left_inj, h_rec (a + 1)]
 
 /-- `simplicialInsert` preserves admissibility -/
 theorem simplicialInsert_isAdmissible (L : List ℕ) (hL : IsAdmissible (m + 1) L) (j : ℕ)
