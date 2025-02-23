@@ -172,16 +172,13 @@ class hasGMul [OrderedAddCommMonoid ι] extends IsRingFiltration F F_lt : Prop w
   F_lt_mul_mem {i j : ι} {x y} : x ∈ F_lt i → y ∈ F j → x * y ∈ F_lt (i + j)
   mul_F_lt_mem {i j : ι} {x y} : x ∈ F i → y ∈ F_lt j → x * y ∈ F_lt (i + j)
 
-lemma hasGMul.mk_int (F : ℤ → σ) (mono : Monotone F) (one_mem : 1 ∈ F 0)
-    (mul_mem : ∀ {i j x y}, x ∈ F i → y ∈ F j → x * y ∈ F (i + j)) :
-    hasGMul F (fun n ↦ F (n - 1)) := {
-    IsRingFiltration.mk_int F mono one_mem mul_mem with
+lemma hasGMul.mk_int (F : ℤ → σ) (mono : Monotone F) [SetLike.GradedMonoid F] :
+    hasGMul F (fun n ↦ F (n - 1)) where
+    __ := IsRingFiltration.mk_int F mono
     F_lt_mul_mem := fun h1 h2 ↦ by
-      have := mul_mem h1 h2
-      rwa [sub_add_eq_add_sub] at this
+      simpa [sub_add_eq_add_sub] using SetLike.GradedMul.mul_mem h1 h2
     mul_F_lt_mem := fun h1 h2 ↦ by
-      have := mul_mem h1 h2
-      rwa [add_sub_assoc'] at this }
+      simpa [add_sub_assoc'] using SetLike.GradedMul.mul_mem h1 h2
 
 lemma hasGMul_AddSubgroup (F : ι → AddSubgroup R) (F_lt : outParam <| ι → AddSubgroup R)
     [OrderedCancelAddCommMonoid ι] [IsRingFiltration F F_lt] : hasGMul F F_lt where
@@ -210,8 +207,7 @@ variable [OrderedAddCommMonoid ι] [AddSubgroupClass σ R]
 def IsRingFiltration.hMul [IsRingFiltration F F_lt] (i j : ι)
     (x : F i) (y : F j) : F (i + j) where
   val := x * y
-  property := by
-    simp [IsRingFiltration.toGradedMonoid.mul_mem x.2 y.2]
+  property := by simp [IsRingFiltration.toGradedMonoid.mul_mem x.2 y.2]
 
 instance [IsRingFiltration F F_lt] {i j : ι} :
     HMul (F i) (F j) (F (i + j)) where
@@ -377,7 +373,6 @@ lemma GradedPiece.mul_zero [hasGMul F F_lt] {i j : ι} (a : GradedPiece F F_lt i
   simp only [ZeroMemClass.coe_zero, mul_zero, QuotientAddGroup.leftRel_apply, add_zero, neg_mem_iff]
   show _ * (0 : R) ∈ (F_lt (i + j))
   simpa only [MulZeroClass.mul_zero] using zero_mem (F_lt (i + j))
-
 
 lemma GradedPiece.zero_mul [hasGMul F F_lt] {i j : ι} (a : GradedPiece F F_lt i) :
     (0 : GradedPiece F F_lt j) * a = 0 := by
