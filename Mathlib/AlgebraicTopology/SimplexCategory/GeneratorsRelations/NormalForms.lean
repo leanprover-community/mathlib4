@@ -192,27 +192,17 @@ theorem simplicialInsert_isAdmissible (L : List ℕ) (hL : IsAdmissible (m + 1) 
     IsAdmissible m (simplicialInsert j L) := by
   have ⟨h₁, h₂⟩ := hL
   induction L generalizing j m with
-  | nil =>
-    dsimp only [simplicialInsert]
-    constructor
-    · simp
-    · simp [j.le_of_lt_add_one hj]
+  | nil => constructor <;> simp [simplicialInsert, j.le_of_lt_add_one hj]
   | cons a L h_rec =>
     dsimp only [simplicialInsert]
-    split_ifs <;> rename_i ha
+    split_ifs with ha
     · exact .cons _ hL _ (j.le_of_lt_add_one hj) (fun _ ↦ ha)
-    · apply IsAdmissible.cons
-      · apply h_rec
-        · exact .tail a L hL
-        · simp [hj]
-        · exact (List.sorted_cons.mp h₁).right
-        · intro k hk
-          haveI := h₂ (k + 1) (by simpa)
-          conv_rhs at this => rw [k.add_comm 1, ← Nat.add_assoc]
-          exact this
-      · rw [not_lt] at ha
-        apply ha.trans
-        exact j.le_of_lt_add_one hj
+    · refine IsAdmissible.cons _ ?_ _ (not_lt.mp ha |>.trans <| j.le_of_lt_add_one hj) ?_
+      · refine h_rec _ (.tail a L hL) _ (by simp [hj]) (List.sorted_cons.mp h₁).right ?_
+        intro k hk
+        haveI := h₂ (k + 1) (by simpa)
+        conv_rhs at this => rw [k.add_comm 1, ← Nat.add_assoc]
+        exact this
       · rw [not_lt, Nat.le_iff_lt_add_one] at ha
         intro u
         cases L with
