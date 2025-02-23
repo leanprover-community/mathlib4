@@ -224,8 +224,8 @@ theorem map_eq_zero_iff {p : ℕ} {R S : Type*} [CommRing R] [CommRing S] [Fact 
     simpa using h n
 
 -- `Mathlib.RingTheory.WittVector.Basic` after `WittVector.ghostComponent_apply` or a local lemma
-theorem foo {R : Type*} [CommRing R] {x : 𝕎 R} (n : ℕ) (hx : ∀ i ≤ n, (p : R) ∣ x.coeff i) :
-    (p : R) ^ n ∣ ghostComponent n x := by
+theorem pow_dvd_ghostComponent_of_dvd_coeff {R : Type*} [CommRing R] {x : 𝕎 R} {n : ℕ}
+    (hx : ∀ i ≤ n, (p : R) ∣ x.coeff i) : (p : R) ^ (n + 1) ∣ ghostComponent n x := by
   rw [WittVector.ghostComponent_apply, wittPolynomial, MvPolynomial.aeval_sum]
   apply Finset.dvd_sum
   intro i hi
@@ -234,21 +234,30 @@ theorem foo {R : Type*} [CommRing R] {x : 𝕎 R} (n : ℕ) (hx : ∀ i ≤ n, (
       (Finsupp.single i (p ^ (n - i)))) (p ^ i)) = ((p : R) ^ i) * (x.coeff i) ^ (p ^ (n - i)) := by
     simp [MvPolynomial.aeval_monomial, map_pow]
   rw [this]
-  nth_rw 1 [← Nat.sub_add_cancel (Nat.le_of_lt_succ hi)]
+  have : n + 1 = (n - i) + 1 + i := by omega
+  nth_rw 1 [this]
   rw [pow_add, mul_comm]
   apply mul_dvd_mul_left
-  refine (pow_dvd_pow_of_dvd ?_ (n - i)).trans (b := (x.coeff i) ^ (n - i)) (pow_dvd_pow _ ?_)
+  refine (pow_dvd_pow_of_dvd ?_ _).trans (b := (x.coeff i) ^ (n - i + 1)) (pow_dvd_pow _ ?_)
   · exact hx i (Nat.le_of_lt_succ hi)
-  · exact ((n - i).lt_two_pow_self).le.trans (pow_left_mono (n - i) (Nat.Prime.two_le Fact.out))
+  · exact ((n - i).lt_two_pow_self).succ_le.trans
+        (pow_left_mono (n - i) (Nat.Prime.two_le Fact.out))
 
 variable (n : ℕ)
 #check mkCompGhostComponent O p n
+omit [Fact ¬IsUnit (p : O)] [IsAdicComplete (span {(p : O)}) O] in
 theorem ker_map_le_ker_mkCompGhostComponent (n : ℕ) :
     RingHom.ker (WittVector.map <| Ideal.Quotient.mk <| span {(p : O)}) ≤
     RingHom.ker (mkCompGhostComponent O p n) := by
   intro x
   simp only [RingHom.mem_ker, map_eq_zero_iff, mkCompGhostComponent, RingHom.comp_apply]
   intro h
+  simp only [ghostComponent]
+  apply_fun Ideal.quotEquivOfEq (Ideal.span_singleton_pow (p : O) (n + 1))
+  simp only [RingHom.coe_comp, Function.comp_apply, Pi.evalRingHom_apply, ghostMap_apply,
+    quotEquivOfEq_mk, map_zero]
+  simp [Ideal.Quotient.eq_zero_iff_dvd] at h ⊢
+  exact pow_dvd_ghostComponent_of_dvd_coeff (fun _ _ ↦ h _)
 
 
 def ghostComponentModPPow (n : ℕ): 𝕎 (O ⧸ span {(p : O)}) →+* O ⧸ span {(p : O)}^(n + 1) :=
