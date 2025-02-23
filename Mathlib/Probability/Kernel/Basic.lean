@@ -68,6 +68,12 @@ theorem deterministic_apply' {f : α → β} (hf : Measurable f) (a : α) {s : S
   change Measure.dirac (f a) s = s.indicator 1 (f a)
   simp_rw [Measure.dirac_apply' _ hs]
 
+/-- Because of the measurability field in `Kernel.deterministic`, `rw [h]` will not rewrite
+`deterministic f hf` to `deterministic g ⋯`. Instead one can do `rw [deterministic_congr h]`. -/
+theorem deterministic_congr {f g : α → β} {hf : Measurable f} (h : f = g) :
+    deterministic f hf = deterministic g (h ▸ hf) := by
+  conv_lhs => enter [1]; rw [h]
+
 instance isMarkovKernel_deterministic {f : α → β} (hf : Measurable f) :
     IsMarkovKernel (deterministic f hf) :=
   ⟨fun a => by rw [deterministic_apply hf]; infer_instance⟩
