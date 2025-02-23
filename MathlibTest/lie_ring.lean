@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2025 Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jingting Wang
+Authors: Jingting Wang, Guo ZiXun
 -/
 import Mathlib.Tactic.LieAlgebra.Basic
+import Mathlib.Tactic.LieAlgebra.LieRingNF
 
 /-! # Tests for the lie_ring tactic -/
 
@@ -37,7 +38,43 @@ example (a : L) : 0 • a = 0 := by
 variable (a b c : L)
 
 /--
-info: the term is reduced to -1 • ⁅⁅a, c⁆, ⁅a, ⁅c, b⁆⁆⁆ + (-1 • ⁅⁅a, c⁆, ⁅⁅a, b⁆, c⁆⁆ + 0)
+info: Try this: -1 • ⁅⁅a, c⁆, ⁅a, ⁅c, b⁆⁆⁆ + (-1 • ⁅⁅a, c⁆, ⁅⁅a, b⁆, c⁆⁆ + 0)
 -/
 #guard_msgs in
 #LieReduce ⁅⁅a, c⁆, ⁅b, ⁅a, c⁆⁆⁆
+
+example : ⁅⁅a, c⁆, ⁅b, ⁅a, c⁆⁆⁆ = lie_reduce% ⁅⁅a, c⁆, ⁅b, ⁅a, c⁆⁆⁆ := by
+  lie_ring
+
+section tests
+
+variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
+
+example (a b c : L) (r r' : R) : ⁅r • ⁅r • a, r' • b⁆, r' • c⁆
+  = (r' * (r * (r' * r))) • ⁅⁅a, b⁆, c⁆ := by
+  lie_algebra
+
+example (a b c : L) : ⁅⁅a, b⁆, c⁆ = ⁅⁅a, c⁆, b⁆ + ⁅a, ⁅b, c⁆⁆ := by
+  lieRing1_nf
+
+example (a b c : L) : ⁅⁅a, b⁆, c⁆ + ⁅⁅b, c⁆, a⁆ + ⁅⁅c, a⁆, b⁆ = 0 := by
+  lieRing1_nf
+
+example (a b : L) : (2 : ℤ) • a + (2 : ℤ) • b = (2 : ℤ) • (a + b) := by
+  lieRing1_nf
+  -- sorry
+
+example (a : L) : ⁅a, a⁆ = 0 := by
+  lieRing_nf!
+
+example (a b : L) : ⁅a, b⁆ = -⁅b, a⁆ := by
+  lieRing1_nf
+  -- module
+
+example (a b c : L) : ⁅a, ⁅b, c⁆⁆ - ⁅b, ⁅a, c⁆⁆ = ⁅⁅a, b⁆, c⁆ := by
+  lie_algebra
+
+example (a : L) : (1 : R) • a + (-1 : R) • a = 0:= by
+  module
+
+end tests
