@@ -114,15 +114,13 @@ It allows direct access to the ring-theoretic aspects of the morphism, enabling 
 and proofs that focus on the algebraic structure independent of the filtration layers.-/
 class FilteredRingHom extends R →+* S, FilteredHom FR FR_lt FS FS_lt
 
-
-variable {FR FS FR_lt FS_lt} in
 /-- Defines a strict morphism, which is a filtered ring morphism `f` between filtered rings
 `IsRingFiltration FR FR_lt` and `IsRingFiltration FS FS_lt`. It is strict if `∀ p : ι`, the image of
 the `p`-th filtration layer of `FR` and `FR_lt` under `f` is exactly the intersection of the image
 of `f` with the `p`-th filtration layer of `FS` and `FS_lt`, respectively.-/
 class FilteredRingHom.IsStrict (f : outParam <| FilteredRingHom FR FR_lt FS FS_lt) : Prop where
-  strict : ∀ p : ι, ∀ y : S, y ∈ f.toRingHom '' (FR p) ↔ (y ∈ (FS p) ∧ y ∈ f.range)
-  strict_lt : ∀ p : ι, ∀ y : S, y ∈ f.toRingHom '' (FR_lt p) ↔ (y ∈ (FS_lt p) ∧ y ∈ f.range)
+  strict {p y} : y ∈ f.toRingHom '' (FR p) ↔ (y ∈ (FS p) ∧ y ∈ Set.range f.toRingHom)
+  strict_lt {p y} : y ∈ f.toRingHom '' (FR_lt p) ↔ (y ∈ (FS_lt p) ∧ y ∈ Set.range f.toRingHom)
 
 variable (g : FilteredRingHom FS FS_lt FT FT_lt) (f : FilteredRingHom FR FR_lt FS FS_lt)
 
@@ -135,7 +133,7 @@ def FilteredRingHom.comp : FilteredRingHom FR FR_lt FT FT_lt := {
     g.toRingHom.comp f.toRingHom with
   pieces_wise := fun i a ha ↦ g.pieces_wise i (f.toFun a) (f.pieces_wise i a ha)
   pieces_wise_lt := fun i a ha ↦ g.pieces_wise_lt i (f.toFun a) (f.pieces_wise_lt i a ha)
-}
+  }
 
 /-- `f ∘ g` denotes the composition defined above. -/
 infixl:100 " ∘ " => FilteredRingHom.comp
@@ -147,6 +145,8 @@ end FilteredRingHom
 section DirectSum
 
 open DirectSum
+
+namespace FilteredRingHom
 
 variable {ι R S T σR σS σT : Type*} [DecidableEq ι]
 
@@ -164,44 +164,47 @@ element in the `i`-th graded piece of `FR` (represented as a quotient `FR i / FR
 to the corresponding graded piece of `FS` by applying the ring homomorphism `f`, ensuring that the
 result lies within the `i`-th filtration layer of `FS`. The construction respects the quotient
 equivalence relation, making it a well-defined additive group homomorphism.-/
-def Gf (i : ι) : GradedPiece FR FR_lt i →+ GradedPiece FS FS_lt i where
+def GradedPieceHom (i : ι) : GradedPiece FR FR_lt i →+ GradedPiece FS FS_lt i where
   toFun := by
     intro a
     use Quotient.lift (fun (s : FR i) ↦ GradedPiece.mk FS FS_lt
       ⟨f.toRingHom s, f.pieces_wise i s <| SetLike.coe_mem s⟩) (fun a b h ↦ ?_) a
     rw [← Quotient.eq_iff_equiv] at h
     have : f.toRingHom (- a + b) ∈ (FS_lt i) :=
-      f.pieces_wise_lt i (⟨- a + b, QuotientAddGroup.eq.mp h⟩ : FR_lt i) <| QuotientAddGroup.eq.mp h
+      f.pieces_wise_lt i (⟨- a + b, QuotientAddGroup.eq.mp h⟩ : FR_lt i) (QuotientAddGroup.eq.mp h)
     rw [map_add, map_neg] at this
     exact QuotientAddGroup.eq.mpr this
   map_zero' := by
     have : (0 : GradedPiece FR FR_lt i) = ⟦0⟧ := rfl
-    simp only[this, Quotient.lift_mk]
-    simp only [ZeroMemClass.coe_zero, map_zero, QuotientAddGroup.eq_zero_iff]
+    simp only[this, Quotient.lift_mk, ZeroMemClass.coe_zero, map_zero, QuotientAddGroup.eq_zero_iff]
     rfl
   map_add' := fun x y ↦ by
     obtain ⟨a, ha⟩ := Quotient.exists_rep x
     obtain ⟨b, hb⟩ := Quotient.exists_rep y
-    have : x + y = ⟦a + b⟧ :=
-      Mathlib.Tactic.Abel.subst_into_add x y ⟦a⟧ ⟦b⟧ ⟦a + b⟧ (id (Eq.symm ha)) (id (Eq.symm hb)) rfl
+    have : x + y = ⟦a + b⟧ := by simp [← ha, ← hb]
     rw[this, ← ha, ← hb]
     simp only [GradedPiece.mk_eq, Quotient.lift_mk]
     congr
     exact RingHom.map_add f.toRingHom a b
 
 variable (g : FilteredRingHom FS FS_lt FT FT_lt)
+
 omit [DecidableEq ι] in
-lemma Gf_comp (x : AssociatedGraded FR FR_lt)(i : ι) :
-    Gf g i (Gf f i (x i)) = Gf (g ∘ f) i (x i) := by
+lemma GradedPieceHom_comp_apply (x : AssociatedGraded FR FR_lt)(i : ι) :
+    GradedPieceHom g i (GradedPieceHom f i (x i)) =
+    GradedPieceHom (g ∘ f) i (x i) := by
   obtain ⟨a, ha⟩ := Quotient.exists_rep (x i)
   rw [← ha]
   congr
 
-private noncomputable def GAux : (AssociatedGraded FR FR_lt) → (AssociatedGraded FS FS_lt) :=
-  fun a ↦ mk (GradedPiece FS FS_lt) (DFinsupp.support a) <| fun i ↦ (Gf f i) (a i)
+private noncomputable def AssociatedGradedRingHomAux :
+    (AssociatedGraded FR FR_lt) → (AssociatedGraded FS FS_lt) :=
+  fun a ↦ DirectSum.mk (GradedPiece FS FS_lt) (DFinsupp.support a)
+    (fun i ↦ (GradedPieceHom f i) (a i))
 
-private lemma GAux_apply (x : AssociatedGraded FR FR_lt) (i : ι) : (GAux f x) i = Gf f i (x i) := by
-  dsimp only [GAux]
+private lemma AssociatedGradedRingHomAux_apply (x : AssociatedGraded FR FR_lt) (i : ι) :
+    (AssociatedGradedRingHomAux f x) i = GradedPieceHom f i (x i) := by
+  dsimp only [AssociatedGradedRingHomAux]
   by_cases ixsupp : i ∈ DFinsupp.support x
   · simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, mk_apply_of_mem ixsupp]
   · simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, mk_apply_of_not_mem ixsupp]
@@ -213,19 +216,24 @@ Specifically, given a filtered ring morphism `f : FilteredRingHom FR FR_lt FS FS
 constructs an AddSubgroup homomorphism `G f` between the associated graded modules
 `⨁ (FR i / FR_lt i)` and `⨁ (FS i / FS_lt i)` by applying `Gf f i` component-wise to each graded
 piece and combining the results into a direct sum of additive group homomorphisms. -/
-noncomputable def G : (AssociatedGraded FR FR_lt) →+ (AssociatedGraded FS FS_lt) where
-  toFun := GAux f
+noncomputable def AssociatedGradedRingHom :
+    (AssociatedGraded FR FR_lt) →+ (AssociatedGraded FS FS_lt) where
+  toFun := AssociatedGradedRingHomAux f
   map_zero' := rfl
   map_add' := fun x y ↦ by
     ext i
-    simp only [add_apply, GAux_apply, map_add]
+    simp only [add_apply, AssociatedGradedRingHomAux_apply, map_add]
 
-theorem G_to_Gf (x : AssociatedGraded FR FR_lt)(i : ι) : (G f x) i = Gf f i (x i) := by
-  simp only [G, AddMonoidHom.coe_mk, ZeroHom.coe_mk, GAux_apply]
+theorem G_to_Gf (x : AssociatedGraded FR FR_lt) (i : ι) :
+    (AssociatedGradedRingHom f x) i = GradedPieceHom f i (x i) := by
+  simp [AssociatedGradedRingHom, AssociatedGradedRingHomAux_apply]
 
-theorem G_comp: (G g) ∘ (G f) = G (g ∘ f) := by
+theorem G_comp: (AssociatedGradedRingHom g) ∘ (AssociatedGradedRingHom f) =
+    AssociatedGradedRingHom (g ∘ f) := by
   ext x i
-  simp only [G, AddMonoidHom.coe_mk, ZeroHom.coe_mk, Function.comp_apply, GAux_apply]
-  exact Gf_comp FT FT_lt f g x i
+  simpa [AssociatedGradedRingHom, AssociatedGradedRingHomAux_apply]
+    using GradedPieceHom_comp_apply FT FT_lt f g x i
+
+end FilteredRingHom
 
 end DirectSum
