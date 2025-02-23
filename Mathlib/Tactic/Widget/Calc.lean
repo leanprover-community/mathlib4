@@ -133,7 +133,7 @@ elab stx:"calc?" : tactic => withMainContext do
   let some calcRange := (← getFileMap).rangeOfStx? stx | throwError "calc? failed"
   let indent := calcRange.start.character + 2
   let spc := String.replicate indent ' '
-  let goalType ← getMainTarget
+  let goalType ← whnfR (← getMainTarget)
   unless (← Lean.Elab.Term.getCalcRelation? goalType).isSome do
     throwError "Cannot start a calculation here: the goal{indentExpr goalType}\nis not a relation."
   let goalFmt ← Meta.ppExpr (← getMainTarget)
