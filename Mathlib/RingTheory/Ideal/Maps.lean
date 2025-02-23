@@ -686,6 +686,12 @@ theorem ker_coe_equiv (f : R ≃+* S) : ker (f : R →+* S) = ⊥ := by
 theorem ker_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S] (f : F') : ker f = ⊥ := by
   simpa only [← injective_iff_ker_eq_bot] using EquivLike.injective f
 
+/-- Synonym for `RingHom.ker_coe_equiv`, but given an algebra equivalence. -/
+@[simp] theorem _root_.AlgHom.ker_coe_equiv {R A B : Type*} [CommSemiring R] [Ring A] [Ring B]
+    [Algebra R A] [Algebra R B] (e : A ≃ₐ[R] B) :
+    RingHom.ker (e : A →+* B) = ⊥ :=
+  RingHom.ker_coe_equiv (e.toRingEquiv)
+
 end Ring
 
 section RingRing
@@ -1058,7 +1064,9 @@ namespace AlgHom
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (f : A →ₐ[R] B)
 
-lemma coe_ker : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
+lemma ker_coe : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
+
+@[deprecated (since := "2025-02-24")] alias coe_ker := ker_coe
 
 lemma coe_ideal_map (I : Ideal A) :
     Ideal.map f I = Ideal.map (f : A →+* B) I := rfl
@@ -1066,12 +1074,6 @@ lemma coe_ideal_map (I : Ideal A) :
 lemma comap_ker {C : Type*} [Semiring C] [Algebra R C] (f : B →ₐ[R] C) (g : A →ₐ[R] B) :
     (RingHom.ker f).comap g = RingHom.ker (f.comp g) :=
   RingHom.comap_ker f.toRingHom g.toRingHom
-
-/-- Synonym for `RingHom.ker_coe_equiv`, but given an algebra equivalence. -/
-@[simp] theorem ker_coe_equiv {R A B : Type*} [CommSemiring R] [Ring A] [Ring B]
-    [Algebra R A] [Algebra R B] (e : A ≃ₐ[R] B) :
-    RingHom.ker (e : A →+* B) = ⊥ :=
-  RingHom.ker_coe_equiv (e.toRingEquiv)
 
 end AlgHom
 
