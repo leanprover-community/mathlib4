@@ -502,10 +502,10 @@ lemma hasGSMul_int [AddCommMonoid M] [Module R M] (F : ℤ → σ) (mono : Monot
     (one_mem : 1 ∈ F 0) (mul_mem : ∀ {i j x y}, x ∈ F i → y ∈ F j → x * y ∈ F (i + j))
     (F' : ℤ → σM) (mono' : Monotone F')
     (smul_mem : ∀ {i j x y}, x ∈ F i → y ∈ F' j → x • y ∈ F' (i + j)) :
-    hasGSMul (isfil := IsRingFiltration_int F mono one_mem mul_mem)
+    hasGSMul (isfil := IsRingFiltration.mk_int F mono one_mem mul_mem)
     F (fun n ↦ F (n - 1)) F' (fun n ↦ F' (n - 1)) :=
-  letI := IsRingFiltration_int F mono one_mem mul_mem
-  letI := IsModuleFiltration_int F mono one_mem mul_mem F' mono' smul_mem
+  letI := IsRingFiltration.mk_int F mono one_mem mul_mem
+  letI := IsModuleFiltration.mk_int F mono one_mem mul_mem F' mono' smul_mem
 { F_lt_smul_mem := fun {i j x y} hx hy ↦ by
     simpa [add_sub_right_comm i j 1] using IsModuleFiltration.smul_mem hx hy
   smul_F_lt_mem := fun {i j x y} hx hy ↦ by
@@ -600,10 +600,9 @@ section
 lemma GradedPiece.HEq_one_smul {i : ιM} (x : GradedPiece FM FM_lt i) :
     HEq ((1 : GradedPiece F F_lt 0) • x) x := by
   let rx := Quotient.out x
-  let r1 : F 0 := ⟨1, IsRingFiltration.one_mem⟩
-  have : r1.1 • rx.1 = rx.1 := MulAction.one_smul rx.1
+  have : (1 : F 0).1 • rx.1 = rx.1 := MulAction.one_smul rx.1
   apply HEq_eq_mk_eq FM FM_lt (zero_vadd ι i) this
-  · convert (gradedSMul_def F F_lt FM FM_lt r1 rx).symm
+  · convert (gradedSMul_def F F_lt FM FM_lt (1 : F 0) rx).symm
     exact (Quotient.out_eq' x).symm
   · exact (Quotient.out_eq' x).symm
   · simp [this]
