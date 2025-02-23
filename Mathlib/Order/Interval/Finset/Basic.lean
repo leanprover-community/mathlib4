@@ -402,6 +402,9 @@ theorem Ico_subset_Iic_self : Ico a b ⊆ Iic b :=
 theorem Ioo_subset_Iic_self : Ioo a b ⊆ Iic b :=
   Ioo_subset_Ioc_self.trans Ioc_subset_Iic_self
 
+theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
+  disjoint_left.2 fun _ hax hbcx ↦ (mem_Iic.1 hax).not_lt <| lt_of_le_of_lt h (mem_Ioc.1 hbcx).1
+
 end LocallyFiniteOrderBot
 
 section LocallyFiniteOrderTop
@@ -810,6 +813,25 @@ theorem Ico_diff_Ico_right (a b c : α) : Ico a b \ Ico c b = Ico a (min b c) :=
     ext x
     rw [mem_sdiff, mem_Ico, mem_Ico, mem_Ico, min_eq_right h, and_assoc, not_and', not_le]
     exact and_congr_right' ⟨fun hx => hx.2 hx.1, fun hx => ⟨hx.trans_le h, fun _ => hx⟩⟩
+
+section LocallyFiniteOrderBot
+
+variable [LocallyFiniteOrderBot α]
+
+theorem Iic_diff_Ioc : Iic b \ Ioc a b = Iic (a ⊓ b) := by
+  rw [← coe_inj]
+  push_cast
+  exact Set.Iic_diff_Ioc
+
+theorem Iic_diff_Ioc_self_of_le (hab : a ≤ b) : Iic b \ Ioc a b = Iic a := by
+  rw [Iic_diff_Ioc, min_eq_left hab]
+
+theorem Iic_union_Ioc_eq_Iic (h : a ≤ b) : Iic a ∪ Ioc a b = Iic b := by
+  rw [← coe_inj]
+  push_cast
+  exact Set.Iic_union_Ioc_eq_Iic h
+
+end LocallyFiniteOrderBot
 
 end LocallyFiniteOrder
 
