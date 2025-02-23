@@ -491,7 +491,7 @@ lemma integrable_of_le_of_le {f g₁ g₂ : α → ℝ} (hf : AEStronglyMeasurab
   exact Integrable.mono (h_int₁.norm.add h_int₂.norm) hf h_le_add
 
 @[fun_prop]
-theorem Integrable.prod_mk {f : α → β} {g : α → γ} (hf : Integrable f μ) (hg : Integrable g μ) :
+theorem Integrable.prodMk {f : α → β} {g : α → γ} (hf : Integrable f μ) (hg : Integrable g μ) :
     Integrable (fun x => (f x, g x)) μ :=
   ⟨hf.aestronglyMeasurable.prodMk hg.aestronglyMeasurable,
     (hf.norm.add' hg.norm).mono <|
@@ -499,6 +499,9 @@ theorem Integrable.prod_mk {f : α → β} {g : α → γ} (hf : Integrable f μ
         calc
           max ‖f x‖ ‖g x‖ ≤ ‖f x‖ + ‖g x‖ := max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _)
           _ ≤ ‖‖f x‖ + ‖g x‖‖ := le_abs_self _⟩
+
+@[deprecated (since := "2025-02-22")]
+alias Integrable.prod_mk := Integrable.prodMk
 
 theorem MemLp.integrable {q : ℝ≥0∞} (hq1 : 1 ≤ q) {f : α → β} [IsFiniteMeasure μ]
     (hfq : MemLp f q μ) : Integrable f μ :=

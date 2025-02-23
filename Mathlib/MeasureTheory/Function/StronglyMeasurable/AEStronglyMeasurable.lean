@@ -208,10 +208,13 @@ theorem _root_.Continuous.aestronglyMeasurable [TopologicalSpace α] [OpensMeasu
     AEStronglyMeasurable f μ :=
   hf.stronglyMeasurable.aestronglyMeasurable
 
-protected theorem prod_mk {f : α → β} {g : α → γ} (hf : AEStronglyMeasurable[m] f μ)
+protected theorem prodMk {f : α → β} {g : α → γ} (hf : AEStronglyMeasurable[m] f μ)
     (hg : AEStronglyMeasurable[m] g μ) : AEStronglyMeasurable[m] (fun x => (f x, g x)) μ :=
   ⟨fun x => (hf.mk f x, hg.mk g x), hf.stronglyMeasurable_mk.prodMk hg.stronglyMeasurable_mk,
     hf.ae_eq_mk.prodMk hg.ae_eq_mk⟩
+
+@[deprecated (since := "2025-02-22")]
+protected alias prod_mk := AEStronglyMeasurable.prodMk
 
 /-- The composition of a continuous function of two variables and two ae strongly measurable
 functions is ae strongly measurable. -/

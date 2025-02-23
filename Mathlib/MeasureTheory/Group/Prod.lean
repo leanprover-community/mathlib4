@@ -101,7 +101,7 @@ theorem measurable_measure_mul_right (hs : MeasurableSet s) :
     Measurable fun y =>
       μ ((fun x => (x, y)) ⁻¹' ((fun z : G × G => ((1 : G), z.1 * z.2)) ⁻¹' univ ×ˢ s))
     by convert this using 1; ext1 x; congr 1 with y : 1; simp
-  apply measurable_measure_prod_mk_right
+  apply measurable_measure_prodMk_right
   apply measurable_const.prodMk measurable_mul (MeasurableSet.univ.prod hs)
   infer_instance
 

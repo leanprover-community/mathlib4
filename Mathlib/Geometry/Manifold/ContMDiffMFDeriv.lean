@@ -409,12 +409,12 @@ theorem tangentMap_tangentBundle_pure [Is : IsManifold I 1 M]
     this.mdifferentiableAt le_top
   have B : fderivWithin 𝕜 (fun x' : E ↦ (x', (0 : E))) (Set.range I) (I ((chartAt H x) x)) v
       = (v, 0) := by
-    rw [fderivWithin_eq_fderiv, DifferentiableAt.fderiv_prod]
+    rw [fderivWithin_eq_fderiv, DifferentiableAt.fderiv_prodMk]
     · simp
     · exact differentiableAt_id'
     · exact differentiableAt_const _
     · exact ModelWithCorners.uniqueDiffWithinAt_image I
-    · exact differentiableAt_id'.prod (differentiableAt_const _)
+    · exact differentiableAt_id'.prodMk (differentiableAt_const _)
   simp (config := { unfoldPartialApp := true }) only [Bundle.zeroSection, tangentMap, mfderiv, A,
     if_pos, chartAt, FiberBundle.chartedSpace_chartAt, TangentBundle.trivializationAt_apply,
     tangentBundleCore, Function.comp_def, ContinuousLinearMap.map_zero, mfld_simps]
