@@ -279,7 +279,7 @@ end Lean.Parser.Tactic
 namespace Lean.Elab.Tactic
 open Meta
 
-def depRewriteTarget (stx : Syntax) (symm : Bool) (config : Rewrite.Config := {}) :
+private def depRewriteTarget (stx : Syntax) (symm : Bool) (config : Rewrite.Config := {}) :
     TacticM Unit := do
   Term.withSynthesize <| withMainContext do
     let e ← elabTerm stx none true
@@ -287,7 +287,7 @@ def depRewriteTarget (stx : Syntax) (symm : Bool) (config : Rewrite.Config := {}
     let mvarId' ← (← getMainGoal).replaceTargetEq r.eNew r.eqProof
     replaceMainGoal (mvarId' :: r.mvarIds)
 
-def depRewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
+private def depRewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
     (config : Rewrite.Config := {}) : TacticM Unit := withMainContext do
   -- Note: we cannot execute `replaceLocalDecl` inside `Term.withSynthesize`.
   -- See issues #2711 and #2727.
@@ -298,7 +298,7 @@ def depRewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
   let replaceResult ← (← getMainGoal).replaceLocalDecl fvarId rwResult.eNew rwResult.eqProof
   replaceMainGoal (replaceResult.mvarId :: rwResult.mvarIds)
 
-@[tactic depRewriteSeq] def evalDepRewriteSeq : Tactic := fun stx => do
+@[tactic depRewriteSeq] private def evalDepRewriteSeq : Tactic := fun stx => do
   let cfg ← elabRewriteConfig stx[1]
   let loc   := expandOptLocation stx[3]
   withRWRulesSeq stx[0] stx[2] fun symm term => do
@@ -307,7 +307,7 @@ def depRewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
       (depRewriteTarget term symm cfg)
       (throwTacticEx `drewrite · "did not find instance of the pattern in the current goal")
 
-@[tactic depRwSeq] def evalDepRwSeq : Tactic := fun stx => do
+@[tactic depRwSeq] private def evalDepRwSeq : Tactic := fun stx => do
   let cfg ← elabRewriteConfig stx[1]
   let loc   := expandOptLocation stx[3]
   withRWRulesSeq stx[0] stx[2] fun symm term => do
@@ -336,7 +336,7 @@ namespace Lean.Elab.Tactic.Conv
 open Meta
 
 -- copied from Lean.Elab.Tactic.Conv.evalRewrite
-def depRewriteTarget (stx : Syntax) (symm : Bool) (config : Rewrite.Config := {}) :
+private def depRewriteTarget (stx : Syntax) (symm : Bool) (config : Rewrite.Config := {}) :
     TacticM Unit := do
   Term.withSynthesize <| withMainContext do
     let e ← elabTerm stx none true
@@ -344,7 +344,7 @@ def depRewriteTarget (stx : Syntax) (symm : Bool) (config : Rewrite.Config := {}
     updateLhs r.eNew r.eqProof
     replaceMainGoal ((← getMainGoal) :: r.mvarIds)
 
-def depRwTarget (stx : Syntax) (symm : Bool) (config : Rewrite.Config := {}) : TacticM Unit := do
+private def depRwTarget (stx : Syntax) (symm : Bool) (config : Rewrite.Config := {}) : TacticM Unit := do
   Term.withSynthesize <| withMainContext do
     let e ← elabTerm stx none true
     let r ←  (← getMainGoal).depRewrite (← getLhs) e symm (config := config)
@@ -353,7 +353,7 @@ def depRwTarget (stx : Syntax) (symm : Bool) (config : Rewrite.Config := {}) : T
     changeLhs (← dsimp (← getLhs) (← depRwContext)).1
     replaceMainGoal ((← getMainGoal) :: r.mvarIds)
 
-def depRwLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : Rewrite.Config := {}) :
+private def depRwLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : Rewrite.Config := {}) :
     TacticM Unit := withMainContext do
   -- Note: we cannot execute `replaceLocalDecl` inside `Term.withSynthesize`.
   -- See issues #2711 and #2727.
@@ -367,7 +367,7 @@ def depRwLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : Rewr
   replaceMainGoal (replaceResult :: rwResult.mvarIds)
 
 @[tactic Lean.Parser.Tactic.Conv.depRewrite]
-def evalDepRewriteSeq : Tactic := fun stx => do
+private def evalDepRewriteSeq : Tactic := fun stx => do
   let cfg ← elabRewriteConfig stx[1]
   let loc   := expandOptLocation stx[3]
   withRWRulesSeq stx[0] stx[2] fun symm term => do
@@ -377,7 +377,7 @@ def evalDepRewriteSeq : Tactic := fun stx => do
       (throwTacticEx `drewrite · "did not find instance of the pattern in the current goal")
 
 @[tactic Lean.Parser.Tactic.Conv.depRw]
-def evalDepRwSeq : Tactic := fun stx => do
+private def evalDepRwSeq : Tactic := fun stx => do
   let cfg ← elabRewriteConfig stx[1]
   let loc   := expandOptLocation stx[3]
   withRWRulesSeq stx[0] stx[2] fun symm term => do
