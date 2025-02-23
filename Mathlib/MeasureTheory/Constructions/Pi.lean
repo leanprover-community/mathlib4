@@ -693,9 +693,9 @@ theorem measurePreserving_arrowProdEquivProdArrow (α β γ : Type*) [Measurable
     · rintro _ ⟨s, ⟨s, _, rfl⟩, ⟨_, ⟨t, _, rfl⟩, rfl⟩⟩
       rw [MeasurableEquiv.map_apply, MeasurableEquiv.arrowProdEquivProdArrow,
         MeasurableEquiv.coe_mk]
-      rw [show Equiv.arrowProdEquivProdArrow α β γ ⁻¹' (univ.pi s ×ˢ univ.pi t) =
+      rw [show Equiv.arrowProdEquivProdArrow γ _ _ ⁻¹' (univ.pi s ×ˢ univ.pi t) =
           (univ.pi fun i ↦ s i ×ˢ t i) by
-          ext; simp [Equiv.arrowProdEquivProdArrow, Equiv.coe_fn_mk, Set.mem_pi, forall_and]]
+          ext; simp [Set.mem_pi, forall_and]]
       simp_rw [pi_pi, prod_prod, pi_pi, Finset.prod_mul_distrib]
 
 theorem volume_measurePreserving_arrowProdEquivProdArrow (α β γ : Type*) [MeasureSpace α]
