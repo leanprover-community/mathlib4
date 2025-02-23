@@ -159,7 +159,7 @@ variable {R : Type*} [Ring R] {σ : Type*} [SetLike σ R]
 
 instance [OrderedAddCommMonoid ι] [AddSubgroupClass σ R] (F : ι → σ) (F_lt : outParam <| ι → σ)
     [IsRingFiltration F F_lt] : One (GradedPiece F F_lt 0) where
-  one := ⟦⟨1, IsRingFiltration.one_mem⟩⟧
+  one := ⟦⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩⟧
 
 variable (F : ι → σ) (F_lt : outParam <| ι → σ)
 
@@ -171,10 +171,10 @@ class hasGMul [OrderedAddCommMonoid ι] extends IsRingFiltration F F_lt : Prop w
   F_lt_mul_mem {i j : ι} {x y} : x ∈ F_lt i → y ∈ F j → x * y ∈ F_lt (i + j)
   mul_F_lt_mem {i j : ι} {x y} : x ∈ F i → y ∈ F_lt j → x * y ∈ F_lt (i + j)
 
-lemma hasGMul_int (F : ℤ → σ) (mono : Monotone F) (one_mem : 1 ∈ F 0)
+lemma hasGMul.mk_int (F : ℤ → σ) (mono : Monotone F) (one_mem : 1 ∈ F 0)
     (mul_mem : ∀ {i j x y}, x ∈ F i → y ∈ F j → x * y ∈ F (i + j)) :
     hasGMul F (fun n ↦ F (n - 1)) := {
-    IsRingFiltration_int F mono one_mem mul_mem with
+    IsRingFiltration.mk_int F mono one_mem mul_mem with
     F_lt_mul_mem := fun h1 h2 ↦ by
       have := mul_mem h1 h2
       rwa [sub_add_eq_add_sub] at this
@@ -192,7 +192,7 @@ lemma hasGMul_AddSubgroup (F : ι → AddSubgroup R) (F_lt : outParam <| ι → 
       zero_mem' := by simp [zero_mem]
       neg_mem' := by simp }
     exact IsFiltration.is_sup S i (fun k hk z hz ↦
-      IsFiltration.is_le (add_lt_add_right hk j) (IsRingFiltration.mul_mem hz hy)) hx
+      IsFiltration.is_le (add_lt_add_right hk j) (IsRingFiltration.toGradedMonoid.mul_mem hz hy)) hx
   mul_F_lt_mem := by
     intro i j x y hx hy
     let S : AddSubgroup R := {
@@ -201,7 +201,7 @@ lemma hasGMul_AddSubgroup (F : ι → AddSubgroup R) (F_lt : outParam <| ι → 
       zero_mem' := by simp [zero_mem]
       neg_mem' := by simp }
     exact IsFiltration.is_sup S j (fun k hk z hz ↦
-      IsFiltration.is_le (add_lt_add_left hk i) (IsRingFiltration.mul_mem hx hz)) hy
+      IsFiltration.is_le (add_lt_add_left hk i) (IsRingFiltration.toGradedMonoid.mul_mem hx hz)) hy
 
 variable [OrderedAddCommMonoid ι] [AddSubgroupClass σ R]
 
@@ -210,7 +210,7 @@ def IsRingFiltration.hMul [IsRingFiltration F F_lt] (i j : ι)
     (x : F i) (y : F j) : F (i + j) where
   val := x * y
   property := by
-    simp [IsRingFiltration.mul_mem x.2 y.2]
+    simp [IsRingFiltration.toGradedMonoid.mul_mem x.2 y.2]
 
 instance [IsRingFiltration F F_lt] {i j : ι} :
     HMul (F i) (F j) (F (i + j)) where
@@ -264,7 +264,7 @@ instance [IsRingFiltration F F_lt] : GradedMonoid.GOne (GradedPiece F F_lt) wher
 lemma GradedPiece.HEq_one_mul [hasGMul F F_lt] {i : ι} (x : GradedPiece F F_lt i) :
     HEq ((1 : GradedPiece F F_lt 0) * x) x := by
   let rx := Quotient.out x
-  let r1 : (F 0) := ⟨1, IsRingFiltration.one_mem⟩
+  let r1 : (F 0) := ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩
   apply HEq_eq_mk_eq F F_lt (zero_add i) (one_mul (rx : R))
   · convert (gradedMul_def F F_lt r1 rx).symm
     exact (Quotient.out_eq' x).symm
@@ -274,7 +274,7 @@ lemma GradedPiece.HEq_one_mul [hasGMul F F_lt] {i : ι} (x : GradedPiece F F_lt 
 lemma GradedPiece.HEq_mul_one [hasGMul F F_lt] {i : ι} (x : GradedPiece F F_lt i) :
     HEq (x * (1 : GradedPiece F F_lt 0)) x := by
   let rx := Quotient.out x
-  let r1 : (F 0) := ⟨1, IsRingFiltration.one_mem⟩
+  let r1 : (F 0) := ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩
   apply HEq_eq_mk_eq F F_lt (add_zero i) (mul_one (rx : R))
   · convert (gradedMul_def F F_lt rx r1).symm
     exact (Quotient.out_eq' x).symm
@@ -305,9 +305,9 @@ omit [AddSubgroupClass σ R] in
 lemma Filtration.pow_mem [IsRingFiltration F F_lt] (n : ℕ) {i : ι}
     (x : F i) : (x : R) ^ n ∈ (F (n • i)) := by
   induction' n with d hd
-  · simpa using IsRingFiltration.one_mem
+  · simpa using IsRingFiltration.toGradedMonoid.one_mem
   · rw [pow_succ]
-    simpa [succ_nsmul i d] using (IsRingFiltration.mul_mem hd x.2)
+    simpa [succ_nsmul i d] using (IsRingFiltration.toGradedMonoid.mul_mem hd x.2)
 
 lemma Filtration.pow_lift [hasGMul F F_lt] (n : ℕ) {i : ι} (x₁ x₂ : F i) (h : x₁ ≈ x₂) :
     (⟨x₁ ^ n, Filtration.pow_mem F F_lt n x₁⟩ : (F (n • i))) ≈
@@ -341,7 +341,7 @@ lemma gnpow_def [hasGMul F F_lt] (n : ℕ) {i : ι} (x : F i) :
 lemma GradedPiece.gnpow_zero' [hasGMul F F_lt] {i : ι} (x : GradedPiece F F_lt i) :
     HEq (gnpow F F_lt 0 x) (1 : GradedPiece F F_lt 0) := by
   let rx := Quotient.out x
-  let r1 : (F 0) := ⟨1, IsRingFiltration.one_mem⟩
+  let r1 : (F 0) := ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩
   apply HEq_eq_mk_eq F F_lt (zero_nsmul i) (pow_zero rx.1) (Filtration.pow_mem F F_lt 0 rx)
     r1.2 _ rfl
   simp only [gnpow_def F F_lt 0 rx, rx, mk_eq]
@@ -354,7 +354,7 @@ lemma GradedPiece.gnpow_succ' [hasGMul F F_lt] (n : ℕ) {i : ι} (x : GradedPie
     nth_rw 1 [← Quotient.out_eq x]
     rfl
   have : rx.1 ^ n * rx.1 ∈ (F (n • i + i)) :=
-    IsRingFiltration.mul_mem (Filtration.pow_mem F F_lt n rx) rx.2
+    IsRingFiltration.toGradedMonoid.mul_mem (Filtration.pow_mem F F_lt n rx) rx.2
   apply HEq_eq_mk_eq F F_lt (succ_nsmul i n) (pow_succ rx.1 n)
     (Filtration.pow_mem F F_lt (n + 1) rx) this
   · rw [gnpow_def, mk_rx]
@@ -426,19 +426,20 @@ lemma GradedPiece.add_mul [hasGMul F F_lt] {i j : ι} (a b : GradedPiece F F_lt 
 
 /--The nat scalar multiple in `GradedPiece F F_lt 0`-/
 def GradedPiece.natCast [IsRingFiltration F F_lt] (n : ℕ) : GradedPiece F F_lt 0 :=
-  mk F F_lt (n • ⟨1, IsRingFiltration.one_mem⟩)
+  mk F F_lt (n • ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩)
 
 lemma GradedPiece.natCast_zero [IsRingFiltration F F_lt] :
     (natCast F F_lt 0 : GradedPiece F F_lt 0) = 0 := by
-  show mk F F_lt (0 • ⟨1, IsRingFiltration.one_mem⟩) = 0
+  show mk F F_lt (0 • ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩) = 0
   simp only [zero_smul, mk_eq]
   rfl
 
 lemma GradedPiece.natCast_succ [IsRingFiltration F F_lt] (n : ℕ) :
     (natCast F F_lt n.succ : GradedPiece F F_lt 0) =
     (natCast F F_lt n : GradedPiece F F_lt 0) + 1 := by
-  show mk F F_lt (n.succ • ⟨1, IsRingFiltration.one_mem⟩) =
-    mk F F_lt ((n • ⟨1, IsRingFiltration.one_mem⟩) + (⟨1, IsRingFiltration.one_mem⟩))
+  show mk F F_lt (n.succ • ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩) =
+    mk F F_lt ((n • ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩) +
+    (⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩))
   simp [add_one_mul]
 
 instance [hasGMul F F_lt] : DirectSum.GSemiring (GradedPiece F F_lt) :=
@@ -453,18 +454,18 @@ instance [hasGMul F F_lt] : DirectSum.GSemiring (GradedPiece F F_lt) :=
 
 /--The int scalar multiple in `GradedPiece F F_lt 0`-/
 def GradedPiece.intCast [IsRingFiltration F F_lt] (n : ℤ) : GradedPiece F F_lt 0 :=
-  mk F F_lt (n • ⟨1, IsRingFiltration.one_mem⟩)
+  mk F F_lt (n • ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩)
 
 lemma GradedPiece.intCast_ofNat [IsRingFiltration F F_lt] (n : ℕ) :
     intCast F F_lt n = natCast F F_lt n := by
-  show mk F F_lt ((n : ℤ) • ⟨1, IsRingFiltration.one_mem⟩) =
-    mk F F_lt (n • ⟨1, IsRingFiltration.one_mem⟩)
+  show mk F F_lt ((n : ℤ) • ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩) =
+    mk F F_lt (n • ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩)
   simp
 
 lemma GradedPiece.intCast_negSucc_ofNat [IsRingFiltration F F_lt] (n : ℕ) :
     intCast F F_lt (Int.negSucc n) = - (natCast F F_lt (n + 1)) := by
-  show mk F F_lt ((Int.negSucc n) • ⟨1, IsRingFiltration.one_mem⟩) =
-    - mk F F_lt ((n + 1) • ⟨1, IsRingFiltration.one_mem⟩)
+  show mk F F_lt ((Int.negSucc n) • ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩) =
+    - mk F F_lt ((n + 1) • ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩)
   simp only [negSucc_zsmul, nsmul_eq_mul, Nat.cast_add, Nat.cast_one, mk_eq]
   rfl
 
