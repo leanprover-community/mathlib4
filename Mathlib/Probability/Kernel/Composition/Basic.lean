@@ -1384,6 +1384,31 @@ theorem lintegral_prod (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel α 
     ∫⁻ c, g c ∂(κ ×ₖ η) a = ∫⁻ b, ∫⁻ c, g (b, c) ∂η a ∂κ a := by
   simp_rw [prod, lintegral_compProd _ _ _ hg, swapLeft_apply, prodMkLeft_apply, Prod.swap_prod_mk]
 
+theorem lintegral_prod_symm (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel α γ)
+    [IsSFiniteKernel η] (a : α) {g : β × γ → ℝ≥0∞} (hg : Measurable g) :
+    ∫⁻ c, g c ∂(κ ×ₖ η) a = ∫⁻ c, ∫⁻ b, g (b, c) ∂κ a ∂η a := by
+  rw [prod_apply, MeasureTheory.lintegral_prod_symm _ hg.aemeasurable]
+
+theorem lintegral_deterministic_prod {f : α → β} (hf : Measurable f) (κ : Kernel α γ)
+    [IsSFiniteKernel κ] (a : α) {g : (β × γ) → ℝ≥0∞} (hg : Measurable g) :
+    ∫⁻ p, g p ∂((deterministic f hf) ×ₖ κ) a = ∫⁻ c, g (f a, c) ∂κ a := by
+  rw [lintegral_prod _ _ _ hg, lintegral_deterministic' _ hg.lintegral_prod_right']
+
+theorem lintegral_prod_deterministic {f : α → γ} (hf : Measurable f) (κ : Kernel α β)
+    [IsSFiniteKernel κ] (a : α) {g : (β × γ) → ℝ≥0∞} (hg : Measurable g) :
+    ∫⁻ p, g p ∂(κ ×ₖ (deterministic f hf)) a = ∫⁻ b, g (b, f a) ∂κ a := by
+  rw [lintegral_prod_symm _ _ _ hg, lintegral_deterministic' _ hg.lintegral_prod_left']
+
+theorem lintegral_id_prod {f : (α × β) → ℝ≥0∞} (hf : Measurable f) (κ : Kernel α β)
+    [IsSFiniteKernel κ] (a : α) :
+    ∫⁻ p, f p ∂(Kernel.id ×ₖ κ) a = ∫⁻ b, f (a, b) ∂κ a := by
+  rw [Kernel.id, lintegral_deterministic_prod _ _ _ hf, id_eq]
+
+theorem lintegral_prod_id {f : (α × β) → ℝ≥0∞} (hf : Measurable f) (κ : Kernel β α)
+    [IsSFiniteKernel κ] (b : β) :
+    ∫⁻ p, f p ∂(κ ×ₖ Kernel.id) b = ∫⁻ a, f (a, b) ∂κ b := by
+  rw [Kernel.id, lintegral_prod_deterministic _ _ _ hf, id_eq]
+
 instance IsMarkovKernel.prod (κ : Kernel α β) [IsMarkovKernel κ] (η : Kernel α γ)
     [IsMarkovKernel η] : IsMarkovKernel (κ ×ₖ η) := by rw [Kernel.prod]; infer_instance
 
