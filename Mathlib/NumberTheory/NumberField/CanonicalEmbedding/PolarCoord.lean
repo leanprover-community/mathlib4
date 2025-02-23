@@ -481,21 +481,20 @@ abbrev normAtAllPlaces (x : mixedSpace K) : realSpace K :=
 theorem normAtAllPlaces_apply (x : mixedSpace K) (w : InfinitePlace K) :
     normAtAllPlaces x w = normAtPlace w x := rfl
 
-theorem mixedSpaceNormAtAllPlaces_apply (x : mixedSpace K) :
-    mixedSpaceOfRealSpace (normAtAllPlaces x) = ⟨fun w ↦ ‖x.1 w‖, fun w ↦ ‖x.2 w‖⟩ := by
-  ext w
-  · simp_rw [mixedSpaceOfRealSpace_apply, normAtAllPlaces_apply, norm_eq_abs,
-      normAtPlace_apply_of_isReal w.prop, Real.norm_eq_abs]
-  · simp_rw [mixedSpaceOfRealSpace_apply, normAtAllPlaces_apply,
-      normAtPlace_apply_of_isComplex w.prop]
+theorem normAtAllPlaces_nonneg (x : mixedSpace K) (w : InfinitePlace K) :
+    0 ≤ normAtAllPlaces x w := normAtPlace_nonneg _ _
+
+theorem normAtPlace_mixedSpaceOfRealSpace {x : realSpace K} {w : InfinitePlace K} (hx : 0 ≤ x w) :
+    normAtPlace w (mixedSpaceOfRealSpace x) = x w := by
+  simp only [mixedSpaceOfRealSpace_apply]
+  obtain hw | hw := isReal_or_isComplex w
+  · rw [normAtPlace_apply_of_isReal hw, Real.norm_of_nonneg hx]
+  · rw [normAtPlace_apply_of_isComplex hw, Complex.norm_eq_abs, Complex.abs_of_nonneg hx]
 
 theorem normAtAllPlaces_normAtAllPlaces (x : mixedSpace K) :
     normAtAllPlaces (mixedSpaceOfRealSpace (normAtAllPlaces x)) = normAtAllPlaces x := by
-  rw [mixedSpaceNormAtAllPlaces_apply]
-  ext w
-  obtain hw | hw := isReal_or_isComplex w
-  · simp_rw [normAtAllPlaces_apply, normAtPlace_apply_of_isReal hw, Real.norm_eq_abs, abs_abs]
-  · simp_rw [normAtAllPlaces_apply, normAtPlace_apply_of_isComplex hw, Complex.norm_real, norm_norm]
+  ext
+  rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace (normAtAllPlaces_nonneg _ _)]
 
 theorem mem_iff_normAtAllPlaces_mem {s : Set (realSpace K)}
     (hs : A = normAtAllPlaces ⁻¹' s) (x : mixedSpace K) :
@@ -517,42 +516,39 @@ theorem realSpace.volume_eq_zero [NumberField K] (w : InfinitePlace K) :
   simpa [A] using (h ▸ Set.mem_univ _ : 1 ∈ A)
 
 theorem volume_eq_two_pow_mul_two_pi_pow_mul_integral_aux₁
-    (hA₁ : ∀ x, x ∈ A ↔ ⟨fun w ↦ ‖x.1 w‖, fun w ↦ ‖x.2 w‖⟩ ∈ A)
+    (hA₁ : ∀ x, x ∈ A ↔ mixedSpaceOfRealSpace (normAtAllPlaces x) ∈ A)
     (hA₂ : ∀ x, x ∈ plusPart A ↔ (x.1, fun w ↦ ↑‖x.2 w‖) ∈ plusPart A) :
     normAtAllPlaces '' A ∩ (⋂ w : {w // IsReal w}, {x | x w.1 ≠ 0}) =
       normAtComplexPlaces '' plusPart A := by
   rw [volume_eq_two_pi_pow_mul_integral_aux₁ hA₂]
   ext x
-  simp only [Set.mem_preimage, Set.mem_inter_iff, mixedSpaceOfRealSpace_apply, Set.mem_setOf_eq,
-    Set.mem_pi, Set.mem_univ, Set.mem_ite_univ_left, not_isReal_iff_isComplex, forall_const,
-    Set.mem_image, Set.mem_iInter, Set.mem_Ici]
-  refine ⟨?_, fun ⟨⟨h₁, h₂⟩, h₃⟩ ↦ ?_⟩
-  · rintro ⟨⟨a, ha₁, rfl⟩, h₂⟩
-    refine ⟨⟨?_, fun w ↦ lt_of_le_of_ne' (normAtPlace_nonneg _ _) (h₂ w)⟩,
+  simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_image, Set.mem_pi, Set.mem_univ,
+    Set.mem_ite_univ_left, not_isReal_iff_isComplex, forall_const, Set.mem_iInter, Set.mem_Ici,
+    Set.mem_setOf_eq]
+  refine ⟨?_, fun ⟨⟨hx₁, hx₂⟩, hx₃⟩ ↦ ⟨⟨mixedSpaceOfRealSpace x, hx₁, ?_⟩, fun w ↦ (hx₂ w).ne'⟩⟩
+  · rintro ⟨⟨a, ha₁, rfl⟩, ha₂⟩
+    exact ⟨⟨by rwa [← hA₁], fun w ↦ lt_of_le_of_ne' (normAtPlace_nonneg _ _) (ha₂ w)⟩,
       fun _ _ ↦ normAtPlace_nonneg _ _⟩
-    simp only [normAtAllPlaces_apply, normAtPlace_apply_of_isReal (Subtype.prop _),
-      normAtPlace_apply_of_isComplex (Subtype.prop _)]
-    rwa [← hA₁]
-  · refine ⟨⟨⟨fun w ↦ ‖x w‖, fun w ↦ ‖(x w : ℂ)‖⟩, by rwa [hA₁] at h₁, ?_⟩, fun w ↦ (h₂ w).ne'⟩
-    ext w
+  · ext w
+    rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace]
     obtain hw | hw := isReal_or_isComplex w
-    · rw [normAtAllPlaces_apply, normAtPlace_apply_of_isReal hw, norm_norm,
-        Real.norm_of_nonneg (h₂ _).le]
-    · rw [normAtAllPlaces_apply, normAtPlace_apply_of_isComplex hw, Complex.norm_real,
-        Complex.norm_real, norm_norm, Real.norm_of_nonneg (h₃ w hw)]
+    · exact (hx₂ ⟨w, hw⟩).le
+    · exact hx₃ w hw
 
 open scoped Classical in
 theorem volume_eq_two_pow_mul_two_pi_pow_mul_integral [NumberField K]
-    (hA : ∀ x, x ∈ A ↔ ⟨fun w ↦ ‖x.1 w‖, fun w ↦ ‖x.2 w‖⟩ ∈ A) (hm : MeasurableSet A) :
+    (hA : ∀ x, x ∈ A ↔ mixedSpaceOfRealSpace (normAtAllPlaces x) ∈ A) (hm : MeasurableSet A) :
     volume A = 2 ^ nrRealPlaces K * .ofReal (2 * π) ^ nrComplexPlaces K *
       ∫⁻ x in normAtAllPlaces '' A, ∏ w : {w // IsComplex w}, ENNReal.ofReal (x w.1) := by
   have hA₁ (x : mixedSpace K) : x ∈ A ↔ (fun w ↦ ‖x.1 w‖, x.2) ∈ A := by
-    nth_rewrite 2 [hA]
-    simpa [norm_norm] using hA x
+    rw [hA, hA (fun w ↦ ‖x.1 w‖, x.2)]
+    simp [mixedSpaceOfRealSpace_apply, normAtAllPlaces,
+      normAtPlace_apply_of_isReal (Subtype.prop _), normAtPlace_apply_of_isComplex (Subtype.prop _)]
   have hA₂ (x : mixedSpace K) : x ∈ A ↔ ⟨x.1, fun w ↦ ‖x.2 w‖⟩ ∈ A := by
-    nth_rewrite 2 [hA]
-    simp_rw [Complex.norm_real, norm_norm]
-    exact hA x
+    rw [hA, hA ⟨x.1, fun w ↦ ‖x.2 w‖⟩]
+    simp [mixedSpaceOfRealSpace_apply, normAtAllPlaces,
+      normAtPlace_apply_of_isReal (Subtype.prop _), normAtPlace_apply_of_isComplex (Subtype.prop _),
+      Complex.norm_real]
   have hA₃ (x : mixedSpace K) : x ∈ plusPart A ↔ (x.1, fun w ↦ ↑‖x.2 w‖) ∈ plusPart A := by
     rw [Set.mem_inter_iff, Set.mem_inter_iff, ← hA₂]
     simp
