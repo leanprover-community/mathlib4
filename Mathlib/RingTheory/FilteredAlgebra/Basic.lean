@@ -5,6 +5,7 @@ Authors: Nailin Guan
 -/
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.Group.Submonoid.Defs
 /-!
 # The filtration on abelian group and ring
@@ -64,21 +65,7 @@ variable {R : Type*} [Semiring R] {σ : Type*} [SetLike σ R]
 ring filtration if `IsFiltration F F_lt` and the pointwise multiplication of `F i` and `F j` is in
 `F (i + j)`. -/
 class IsRingFiltration (F : ι → σ) (F_lt : outParam <| ι → σ)
-    extends IsFiltration F F_lt : Prop where
-  one_mem : 1 ∈ F 0
-  mul_mem : ∀ {i j x y}, x ∈ F i → y ∈ F j → x * y ∈ F (i + j)
-
-instance [AddSubmonoidClass σ R] (F : ι → σ) (F_lt : outParam <| ι → σ) [IsRingFiltration F F_lt] :
-    Semiring (F 0) where
-  mul x y :=  ⟨x.1 * y.1, by simpa using IsRingFiltration.mul_mem x.2 y.2⟩
-  left_distrib a b c := SetCoe.ext (mul_add a.1 b.1 c.1)
-  right_distrib a b c := SetCoe.ext (add_mul a.1 b.1 c.1)
-  zero_mul a := SetCoe.ext (zero_mul a.1)
-  mul_zero a := SetCoe.ext (mul_zero a.1)
-  mul_assoc a b c := SetCoe.ext (mul_assoc a.1 b.1 c.1)
-  one := ⟨1, IsRingFiltration.one_mem⟩
-  one_mul a := SetCoe.ext (one_mul a.1)
-  mul_one a := SetCoe.ext (mul_one a.1)
+    extends IsFiltration F F_lt, SetLike.GradedMonoid F : Prop
 
 /-- A special case of `IsRingFiltration` when index is integer. -/
 lemma IsRingFiltration.mk_int (F : ℤ → σ) (mono : Monotone F) (one_mem : 1 ∈ F 0)
@@ -86,7 +73,7 @@ lemma IsRingFiltration.mk_int (F : ℤ → σ) (mono : Monotone F) (one_mem : 1 
     IsRingFiltration F (fun n ↦ F (n - 1)) where
   __ := IsFiltration.mk_int F mono
   one_mem := one_mem
-  mul_mem := mul_mem
+  mul_mem _ _ := mul_mem
 
 end FilteredRing
 
