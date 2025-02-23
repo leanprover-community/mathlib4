@@ -130,15 +130,11 @@ namespace Lean.Elab.Tactic
 open Lean Meta Tactic TryThis in
 /-- Create a `calc` proof. -/
 elab stx:"calc?" : tactic => withMainContext do
-  let some calcRange := (← getFileMap).rangeOfStx? stx | throwError "calc? failed"
-  let indent := calcRange.start.character + 2
-  let spc := String.replicate indent ' '
   let goalType ← whnfR (← getMainTarget)
   unless (← Lean.Elab.Term.getCalcRelation? goalType).isSome do
     throwError "Cannot start a calculation here: the goal{indentExpr goalType}\nis not a relation."
-  let goalFmt ← Meta.ppExpr (← getMainTarget)
-  let s := s!"calc\n{spc}{goalFmt} := by sorry"
-  addSuggestions (← getRef) #[.suggestion s] (header := "Create calc tactic:")
+  let s ← `(tactic| calc $(← Lean.PrettyPrinter.delab (← getMainTarget)) := by sorry)
+  addSuggestions stx #[.suggestion s] (header := "Create calc tactic:")
   evalTactic (← `(tactic|sorry))
 
 /-- Elaborator for the `calc` tactic mode variant with widgets. -/
