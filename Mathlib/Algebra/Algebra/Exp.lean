@@ -152,7 +152,9 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
         apply h1
         have h2 : ((n - m).factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero (n - m)
         apply h2
-
+  let centre_sum : A :=
+    ∑ kl in (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)) |>.filter (fun kl => kl.1 + kl.2 ≤ 2 * N),
+      ((kl.1.factorial : R)⁻¹ * (kl.2.factorial : R)⁻¹) • (a ^ kl.1 * b ^ kl.2)
 
 
   sorry
