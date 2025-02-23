@@ -15,8 +15,8 @@ In this file, we defined the filtered ring morphsim on ring, and proof some basi
 * `FilteredHom` : defines a morphism between general filtration (filtration of set) that preserves
 both the main and auxiliary filtered structures.
 
-* `FilteredRingHom` : `FilteredRingHom` defines a morphism between filtered rings that preserves
-both the ring and filtration structures.
+* `FilteredRingHom` : defines a morphism between filtered rings that preserves both the ring and
+filtered morphism structures.
 
 * `FilteredRingHom.IsStrict` :
 
@@ -37,9 +37,11 @@ variable (FA : ι → α) (FA_lt : outParam <| ι → α) [IsFiltration FA FA_lt
 variable (FB : ι → β) (FB_lt : outParam <| ι → β) [IsFiltration FB FB_lt]
 variable (FC : ι → σ) (FC_lt : outParam <| ι → σ) [IsFiltration FC FC_lt]
 
-/-- This class describes a structure-preserving map between two filtered rings
-`IsFiltration FA FA_lt` and `IsFiltration FB FB_lt` (types `A` and `B`). -/
+/-- This class describes a structure-preserving map between two filtered set `IsFiltration FA FA_lt`
+ and `IsFiltration FB FB_lt` (types `A` and `B`). -/
 class FilteredHom where
+  /-- It is a map from `A` to `B` which maps each `FA i` pieces to corresponding `FB i` pieces, and
+  maps `FA_lt i` pieces to corresponding `FB_lt i` pieces-/
   toFun : A → B
   pieces_wise : ∀ i : ι, ∀ a ∈ FA i, toFun a ∈ FB i
   pieces_wise_lt : ∀ i : ι, ∀ a ∈ FA_lt i, toFun a ∈ FB_lt i
@@ -47,15 +49,17 @@ class FilteredHom where
 variable (f : FilteredHom FA FA_lt FB FB_lt) (g : FilteredHom FB FB_lt FC FC_lt)
 
 variable {FA FB FC FA_lt FB_lt FC_lt} in
-/-- This function composes two filtered morphisms `f : FilteredHom FA FA_lt FB FB_lt` and
+
+/-- Defines the composition of two filtered morphisms `f : FilteredHom FA FA_lt FB FB_lt` and
 `g : FilteredHom FB FB_lt FC FC_lt`, resulting in a new morphism
-`f ∘ g : FilteredHom FA FA_lt FC FC_lt`. -/
+`f ∘ g : FilteredHom FA FA_lt FC FC_lt`.-/
 def FilteredHom.comp : FilteredHom FA FA_lt FC FC_lt := {
   toFun := g.1.comp f.1
   pieces_wise := fun i a ha ↦ g.pieces_wise i (f.1 a) (f.pieces_wise i a ha)
   pieces_wise_lt := fun i a ha ↦ g.pieces_wise_lt i (f.1 a) (f.pieces_wise_lt i a ha)
 }
 
+/-- `f ∘ g` denotes the composition defined above. -/
 infixl:100 " ∘ " => FilteredHom.comp
 
 end FilteredHom
@@ -75,6 +79,10 @@ that the structure of both the ring and its filtration are maintained under the 
 class FilteredRingHom extends FilteredHom FR FR_lt FS FS_lt, R →+* S
 
 variable {FR FS FR_lt FS_lt} in
+/-- A filtered ring morphism `f` between filtered rings `IsRingFiltration FR FR_lt` and
+`IsRingFiltration FS FS_lt` is strict if `∀ p : ι`, the image of the `p`-th filtration layer
+of `FR` and `FR_lt` under `f` is exactly the intersection of the image of `f` with the `p`-th
+filtration layer of `FS` and `FS_lt`, respectively.-/
 class FilteredRingHom.IsStrict (f : outParam <| FilteredRingHom FR FR_lt FS FS_lt) : Prop where
   strict : ∀ p : ι, ∀ y : S, y ∈ f.toRingHom '' (FR p) ↔ (y ∈ (FS p) ∧ y ∈ f.range)
   strict_lt : ∀ p : ι, ∀ y : S, y ∈ f.toRingHom '' (FR_lt p) ↔ (y ∈ (FS_lt p) ∧ y ∈ f.range)
@@ -167,14 +175,5 @@ theorem G_comp: (G g) ∘ (G f) = G (g ∘ f) := by
   exact Gf_comp FT FT_lt f g x i
 
 end DirectSum
-/- The `docBlame` linter reports:
-DEFINITIONS ARE MISSING DOCUMENTATION STRINGS: -/
-#check @FilteredHom.toFun /- definition missing documentation string -/
-#check «term_∘__1» /- definition missing documentation string -/
-#check @FilteredRingHom /- inductive missing documentation string -/
-#check @FilteredRingHom.toRingHom /- definition missing documentation string -/
-#check @FilteredRingHom.IsStrict /- inductive missing documentation string -/
-#check @FilteredRingHom.comp /- definition missing documentation string -/
-#check «term_∘__2» /- definition missing documentation string -/
-#check @Gf /- definition missing documentation string -/
-#check @G /- definition missing documentation string -/
+
+#lint
