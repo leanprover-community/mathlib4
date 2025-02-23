@@ -55,7 +55,6 @@ abbrev cartanMatrix :
 
 variable [CharZero R]
 
-@[simp]
 lemma cartanMatrix_apply_same (i : b.support) :
     b.cartanMatrix i i = 2 :=
   b.cartanMatrixIn_apply_same ℤ i

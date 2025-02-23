@@ -1131,7 +1131,7 @@ theorem trStmts₁_supports {S q} (H₁ : (q : Λ').Supports S) (HS₁ : trStmts
   induction q with
   | move _ _ _ q q_ih => _ | clear _ _ q q_ih => _ | copy q q_ih => _ | push _ _ q q_ih => _
   | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _ <;>
-    simp [trStmts₁, -Finset.singleton_subset_iff, -Finset.insert_subset_iff] at HS₁ ⊢
+    simp [trStmts₁, -Finset.singleton_subset_iff] at HS₁ ⊢
   any_goals
     obtain ⟨h₁, h₂⟩ := Finset.insert_subset_iff.1 HS₁
     first | have h₃ := h₂ W | try simp [Finset.subset_iff] at h₂
