@@ -94,8 +94,10 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
       ∑ n ∈ Finset.range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n = ∑ n ∈ Finset.range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n := rfl
       _ = ∑ n ∈ Finset.range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n := rfl
       _ = ∑ n ∈ Finset.range (2 * N + 1), (n.factorial : R)⁻¹ • (∑ m ∈ Finset.range (n + 1), a ^ m * b ^ (n - m) * n.choose m) := by
-        apply Equiv.sumCongr with n
-        w[← add_pow h₁ n] --theorem add_pow (h : Commute x y) (n : ℕ) :
+        apply Finset.sum_congr rfl
+        intros n hn
+        rw [Commute.add_pow h₁ n]
+
   sorry
 
 
