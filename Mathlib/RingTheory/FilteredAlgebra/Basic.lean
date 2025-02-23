@@ -98,7 +98,7 @@ class IsModuleFiltration (F : ι → σ) (F_lt : outParam <| ι → σ) [isfil :
   smul_mem : ∀ {i j x y}, x ∈ F i → y ∈ F' j → x • y ∈ F' (i +ᵥ j)
 
 /-- A special case of `IsModuleFiltration` when index is both integer. -/
-lemma IsModuleFiltration_int (F : ℤ → σ) (mono : Monotone F) (one_mem : 1 ∈ F 0)
+lemma IsModuleFiltration.mk_int (F : ℤ → σ) (mono : Monotone F) (one_mem : 1 ∈ F 0)
     (mul_mem : ∀ {i j x y}, x ∈ F i → y ∈ F j → x * y ∈ F (i + j)) (F' : ℤ → σM)
     (mono' : Monotone F')
     (smul_mem : ∀ {i j x y}, x ∈ F i → y ∈ F' j → x • y ∈ F' (i + j)):
