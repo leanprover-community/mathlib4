@@ -597,8 +597,9 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
     trans natDegree (minpoly K⟮aeval (root p) g⟯ (root p))
     · have : K⟮aeval (root p) g⟯⟮root p⟯ = ⊤ := by
         apply restrictScalars_injective K
-        rw [restrictScalars_top, adjoin_adjoin_left, Set.union_comm, ← adjoin_adjoin_left,
-          adjoin_root_eq_top p, restrictScalars_adjoin]
+        rw [restrictScalars_top, adjoin_adjoin_left, Set.union_comm, ← adjoin_adjoin_left]
+        rw![adjoin_root_eq_top p]
+        rw [restrictScalars_adjoin]
         simp
       rw [← finrank_top', ← this, adjoin.finrank]
       exact IsIntegral.of_finite _ _
