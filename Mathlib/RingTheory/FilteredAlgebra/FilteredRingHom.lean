@@ -12,15 +12,26 @@ In this file, we defined the filtered ring morphsim on ring, and proof some basi
 
 # Main definitions
 
-* `FilteredHom` : defines a morphism between general filtration (filtration of set) that preserves
-both the main and auxiliary filtered structures.
+* `FilteredHom` : Defines a morphism between general filtration (filtration of set) that preserves
+both the main and auxiliary filtered structures. This class describes a structure-preserving map
+between two filtered set `IsFiltration FA FA_lt` and `IsFiltration FB FB_lt` (types `A` and `B`).
 
-* `FilteredRingHom` : defines a morphism between filtered rings that preserves both the ring and
+* FilteredHom.comp : Defines the composition of two filtered morphisms
+`f : FilteredHom FA FA_lt FB FB_lt` and `g : FilteredHom FB FB_lt FC FC_lt`, resulting in a new
+morphism `f ∘ g : FilteredHom FA FA_lt FC FC_lt`.
+
+* `FilteredRingHom` : Defines a morphism between filtered rings that preserves both the ring and
 filtered morphism structures.
 
-* `FilteredRingHom.IsStrict` :
+* `FilteredRingHom.IsStrict` : Defines strict morphism that is a filtered ring morphism `f` between
+filtered rings `IsRingFiltration FR FR_lt` and `IsRingFiltration FS FS_lt` is strict if `∀ p : ι`,
+the image of the `p`-th filtration layer of `FR` and `FR_lt` under `f` is exactly the intersection
+of the image of `f` with the `p`-th filtration layer of `FS` and `FS_lt`, respectively.
 
-* `FilteredRingHom.comp` :
+* `FilteredRingHom.comp` : Defines Composition of filtered ring morphisms. Given two filtered
+morphisms `f : FilteredRingHom FR FR_lt FS FS_lt` and `g : FilteredRingHom FS FS_lt FT FT_lt`, their
+composition `g ∘ f` is defined by composing the underlying ring homomorphisms and ensuring
+compatibility with the filtration structures.
 
 * `Gf` :
 
@@ -37,8 +48,9 @@ variable (FA : ι → α) (FA_lt : outParam <| ι → α) [IsFiltration FA FA_lt
 variable (FB : ι → β) (FB_lt : outParam <| ι → β) [IsFiltration FB FB_lt]
 variable (FC : ι → σ) (FC_lt : outParam <| ι → σ) [IsFiltration FC FC_lt]
 
-/-- This class describes a structure-preserving map between two filtered set `IsFiltration FA FA_lt`
- and `IsFiltration FB FB_lt` (types `A` and `B`). -/
+/-- Defines a morphism between general filtration (filtration of set) that preserves
+both the main and auxiliary filtered structures. This class describes a structure-preserving map
+between two filtered set `IsFiltration FA FA_lt` and `IsFiltration FB FB_lt` (types `A` and `B`). -/
 class FilteredHom where
   /-- It is a map from `A` to `B` which maps each `FA i` pieces to corresponding `FB i` pieces, and
   maps `FA_lt i` pieces to corresponding `FB_lt i` pieces-/
@@ -74,15 +86,15 @@ variable [Ring R] (FR : ι → γ) (FR_lt : outParam <| ι → γ) [SetLike γ R
 variable [Ring S] (FS : ι → σ) (FS_lt : outParam <| ι → σ) [SetLike σ S] [IsRingFiltration FS FS_lt]
 variable [Ring T] (FT : ι → τ) (FT_lt : outParam <| ι → τ) [SetLike τ T] [IsRingFiltration FT FT_lt]
 
-/-- This class combines the properties of a ring homomorphism and a filtered homomorphism, ensuring
+/-- This class combines the properties of a ring homomorphism and a filtered morphism, ensuring
 that the structure of both the ring and its filtration are maintained under the morphism.-/
 class FilteredRingHom extends FilteredHom FR FR_lt FS FS_lt, R →+* S
 
 variable {FR FS FR_lt FS_lt} in
-/-- A filtered ring morphism `f` between filtered rings `IsRingFiltration FR FR_lt` and
-`IsRingFiltration FS FS_lt` is strict if `∀ p : ι`, the image of the `p`-th filtration layer
-of `FR` and `FR_lt` under `f` is exactly the intersection of the image of `f` with the `p`-th
-filtration layer of `FS` and `FS_lt`, respectively.-/
+/-- Defines strict morphism that is a filtered ring morphism `f` between filtered rings
+`IsRingFiltration FR FR_lt` and `IsRingFiltration FS FS_lt` is strict if `∀ p : ι`, the image of the
+ `p`-th filtration layer of `FR` and `FR_lt` under `f` is exactly the intersection of the image of
+ `f` with the `p`-th filtration layer of `FS` and `FS_lt`, respectively.-/
 class FilteredRingHom.IsStrict (f : outParam <| FilteredRingHom FR FR_lt FS FS_lt) : Prop where
   strict : ∀ p : ι, ∀ y : S, y ∈ f.toRingHom '' (FR p) ↔ (y ∈ (FS p) ∧ y ∈ f.range)
   strict_lt : ∀ p : ι, ∀ y : S, y ∈ f.toRingHom '' (FR_lt p) ↔ (y ∈ (FS_lt p) ∧ y ∈ f.range)
@@ -90,12 +102,17 @@ class FilteredRingHom.IsStrict (f : outParam <| FilteredRingHom FR FR_lt FS FS_l
 variable (g : FilteredRingHom FS FS_lt FT FT_lt) (f : FilteredRingHom FR FR_lt FS FS_lt)
 
 variable {FR FS FT FR_lt FS_lt FT_lt} in
+/-- Defines Composition of filtered ring morphisms. Given two filtered morphisms
+`f : FilteredRingHom FR FR_lt FS FS_lt` and `g : FilteredRingHom FS FS_lt FT FT_lt`, their
+composition `g ∘ f` is defined by composing the underlying ring homomorphisms and ensuring
+compatibility with the filtration structures.-/
 def FilteredRingHom.comp : FilteredRingHom FR FR_lt FT FT_lt := {
     g.toRingHom.comp f.toRingHom with
   pieces_wise := fun i a ha ↦ g.pieces_wise i (f.toFun a) (f.pieces_wise i a ha)
   pieces_wise_lt := fun i a ha ↦ g.pieces_wise_lt i (f.toFun a) (f.pieces_wise_lt i a ha)
 }
 
+/-- `f ∘ g` denotes the composition defined above. -/
 infixl:100 " ∘ " => FilteredRingHom.comp
 
 end FilteredRingHom
@@ -139,7 +156,7 @@ def Gf (i : ι) : GradedPiece FR FR_lt i →+ GradedPiece FS FS_lt i where
     rw[this, ← ha, ← hb]
     simp only [GradedPiece.mk_eq, Quotient.lift_mk]
     congr
-    exact RingHom.map_add f.toRingHom ↑a ↑b
+    exact RingHom.map_add f.toRingHom a b
 
 variable (g : FilteredRingHom FS FS_lt FT FT_lt)
 omit [DecidableEq ι] in
