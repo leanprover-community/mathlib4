@@ -168,15 +168,14 @@ class hasGMul [OrderedAddCommMonoid ι] extends IsRingFiltration F F_lt : Prop w
   F_lt_mul_mem {i j : ι} {x y} : x ∈ F_lt i → y ∈ F j → x * y ∈ F_lt (i + j)
   mul_F_lt_mem {i j : ι} {x y} : x ∈ F i → y ∈ F_lt j → x * y ∈ F_lt (i + j)
 
-lemma hasGMul.mk_int (F : ℤ → σ) (mono : Monotone F) (one_mem : 1 ∈ F 0)
-    (mul_mem : ∀ {i j x y}, x ∈ F i → y ∈ F j → x * y ∈ F (i + j)) :
+lemma hasGMul.mk_int (F : ℤ → σ) (mono : Monotone F) [gr : SetLike.GradedMonoid F] :
     hasGMul F (fun n ↦ F (n - 1)) := {
-    IsRingFiltration.mk_int F mono one_mem mul_mem with
+    IsRingFiltration.mk_int F mono with
     F_lt_mul_mem := fun h1 h2 ↦ by
-      have := mul_mem h1 h2
+      have := gr.mul_mem h1 h2
       rwa [sub_add_eq_add_sub] at this
     mul_F_lt_mem := fun h1 h2 ↦ by
-      have := mul_mem h1 h2
+      have := gr.mul_mem h1 h2
       rwa [add_sub_assoc'] at this }
 
 lemma hasGMul_AddSubgroup (F : ι → AddSubgroup R) (F_lt : outParam <| ι → AddSubgroup R)
