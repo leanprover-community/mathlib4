@@ -67,7 +67,7 @@ theorem imageSieve_app {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : ToType (
 
 /-- If a morphism `g : V ⟶ U.unop` belongs to the sieve `imageSieve f s g`, then
 this is choice of a preimage of `G.map g.op s` in `F.obj (op V)`, see
-`app_localPreimage`.-/
+`app_localPreimage`. -/
 noncomputable def localPreimage {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : Cᵒᵖ} (s : ToType (G.obj U))
     {V : C} (g : V ⟶ U.unop) (hg : imageSieve f s g) :
     ToType (F.obj (op V)) :=

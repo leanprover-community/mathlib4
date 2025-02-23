@@ -54,7 +54,7 @@ theorem terminates_parallel.aux :
   have lem1 :
     ∀ l S, (∃ a : α, parallel.aux2 l = Sum.inl a) → Terminates (corec parallel.aux1 (l, S)) := by
     intro l S e
-    cases' e with a e
+    obtain ⟨a, e⟩ := e
     have : corec parallel.aux1 (l, S) = return a := by
       apply destruct_eq_pure
       simp only [parallel.aux1, rmap, corec_eq]
@@ -72,7 +72,7 @@ theorem terminates_parallel.aux :
     · rw [← e]
       simp only [parallel.aux2, rmap, List.foldr_cons, destruct_pure]
       split <;> simp
-    · cases' IH m with a' e
+    · obtain ⟨a', e⟩ := IH m
       simp only [parallel.aux2, rmap, List.foldr_cons]
       simp? [parallel.aux2] at e says simp only [parallel.aux2, rmap] at e
       rw [e]
@@ -183,7 +183,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
     ⟨c, h1.resolve_left <| List.not_mem_nil _, h2⟩
   let F : List (Computation α) → α ⊕ (List (Computation α)) → Prop := by
     intro l a
-    cases' a with a l'
+    rcases a with a | l'
     · exact ∃ c ∈ l, a ∈ c
     · exact ∀ a', (∃ c ∈ l', a' ∈ c) → ∃ c ∈ l, a' ∈ c
   have lem1 : ∀ l : List (Computation α), F l (parallel.aux2 l) := by
@@ -215,14 +215,14 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
             refine ⟨c, List.mem_cons_self _ _, ?_⟩
             rw [destruct_eq_think h]
             exact think_mem ad
-          · cases' IH a' ⟨d, dl, ad⟩ with d dm
-            cases' dm with dm ad
+          · obtain ⟨d, dm⟩ := IH a' ⟨d, dl, ad⟩
+            obtain ⟨dm, ad⟩ := dm
             exact ⟨d, List.Mem.tail _ dm, ad⟩
   intro C aC
   -- Porting note: `revert e'` & `intro e'` are required.
   apply memRecOn aC <;> [skip; intro C' IH] <;> intro l S e <;> have e' := congr_arg destruct e <;>
     have := lem1 l <;> simp only [parallel.aux1, corec_eq, destruct_pure, destruct_think] at e' <;>
-    revert this e' <;> cases' parallel.aux2 l with a' l' <;> intro this e' <;>
+    revert this e' <;> rcases parallel.aux2 l with a' | l' <;> intro this e' <;>
     [injection e' with h'; injection e'; injection e'; injection e' with h']
   · rw [h'] at this
     rcases this with ⟨c, cl, ac⟩
@@ -232,7 +232,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
         let ⟨d, o, ad⟩ := IH _ _ h'
         let ⟨c, cl, ac⟩ := this a ⟨d, o.resolve_right (WSeq.not_mem_nil _), ad⟩
         ⟨c, Or.inl cl, ac⟩
-    · cases' a with o S'
+    · obtain ⟨o, S'⟩ := a
       cases' o with c <;> simp [parallel.aux1] at h' <;> rcases IH _ _ h' with ⟨d, dl | dS', ad⟩
       · exact
           let ⟨c, cl, ac⟩ := this a ⟨d, dl, ad⟩
@@ -275,7 +275,7 @@ theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map 
         · cases destruct c <;> simp
       simp only [BisimO, destruct_map, lmap, rmap, corec_eq, parallel.aux1.eq_1]
       rw [this]
-      cases' parallel.aux2 l with a l' <;> simp
+      rcases parallel.aux2 l with a | l' <;> simp
       induction' S using WSeq.recOn with c S S <;> simp <;>
         exact ⟨_, _, rfl, rfl⟩
 
@@ -317,7 +317,7 @@ def parallelRec {S : WSeq (Computation α)} (C : α → Sort v) (H : ∀ s ∈ S
     constructor
     · rwa [i1, i2] at ac'
     · rwa [i2] at cs'
-  cases' this with ac cs
+  obtain ⟨ac, cs⟩ := this
   apply H _ cs _ ac
 
 theorem parallel_promises {S : WSeq (Computation α)} {a} (H : ∀ s ∈ S, s ~> a) : parallel S ~> a :=

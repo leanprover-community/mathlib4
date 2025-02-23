@@ -52,6 +52,7 @@ def oangle (x y : V) : Real.Angle :=
   Complex.arg (o.kahler x y)
 
 /-- Oriented angles are continuous when the vectors involved are nonzero. -/
+@[fun_prop]
 theorem continuousAt_oangle {x : V × V} (hx1 : x.1 ≠ 0) (hx2 : x.2 ≠ 0) :
     ContinuousAt (fun y : V × V => o.oangle y.1 y.2) x := by
   refine (Complex.continuousAt_arg_coe_angle ?_).comp ?_
@@ -786,8 +787,7 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
     intro r'
     rwa [← o.oangle_smul_add_right_eq_zero_or_eq_pi_iff r', not_or] at h
   let s : Set (V × V) := (fun r' : ℝ => (x, r' • x + y)) '' Set.univ
-  have hc : IsConnected s := isConnected_univ.image _ (continuous_const.prod_mk
-    ((continuous_id.smul continuous_const).add continuous_const)).continuousOn
+  have hc : IsConnected s := isConnected_univ.image _ (by fun_prop)
   have hf : ContinuousOn (fun z : V × V => o.oangle z.1 z.2) s := by
     refine continuousOn_of_forall_continuousAt fun z hz => o.continuousAt_oangle ?_ ?_
     all_goals

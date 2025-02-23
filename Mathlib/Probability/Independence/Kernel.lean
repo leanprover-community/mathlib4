@@ -341,7 +341,7 @@ theorem IndepSets.iUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : M
     IndepSets (⋃ n, s n) s' κ μ := by
   intro t1 t2 ht1 ht2
   rw [Set.mem_iUnion] at ht1
-  cases' ht1 with n ht1
+  obtain ⟨n, ht1⟩ := ht1
   exact hyp n t1 t2 ht1 ht2
 
 theorem IndepSets.bUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
@@ -360,7 +360,7 @@ theorem IndepSets.inter {s₁ s' : Set (Set Ω)} (s₂ : Set (Set Ω)) {_mΩ : M
 theorem IndepSets.iInter {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} (h : ∃ n, IndepSets (s n) s' κ μ) :
     IndepSets (⋂ n, s n) s' κ μ := by
-  intro t1 t2 ht1 ht2; cases' h with n h; exact h t1 t2 (Set.mem_iInter.mp ht1 n) ht2
+  intro t1 t2 ht1 ht2; obtain ⟨n, h⟩ := h; exact h t1 t2 (Set.mem_iInter.mp ht1 n) ht2
 
 theorem IndepSets.bInter {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} {u : Set ι} (h : ∃ n ∈ u, IndepSets (s n) s' κ μ) :

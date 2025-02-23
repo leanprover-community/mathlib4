@@ -327,7 +327,7 @@ theorem WithSeminorms.T1_of_separating (hp : WithSeminorms p)
   refine IsTopologicalAddGroup.t1Space _ ?_
   rw [← isOpen_compl_iff, hp.isOpen_iff_mem_balls]
   rintro x (hx : x ≠ 0)
-  cases' h x hx with i pi_nonzero
+  obtain ⟨i, pi_nonzero⟩ := h x hx
   refine ⟨{i}, p i x, by positivity, subset_compl_singleton_iff.mpr ?_⟩
   rw [Finset.sup_singleton, mem_ball, zero_sub, map_neg_eq_map, not_lt]
 
@@ -484,7 +484,7 @@ theorem WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded {s : Set E} (hp 
     simp only [id] at h
     specialize h ((I.sup p).ball 0 1) (p.basisSets_mem I zero_lt_one)
     rcases h.exists_pos with ⟨r, hr, h⟩
-    cases' NormedField.exists_lt_norm 𝕜 r with a ha
+    obtain ⟨a, ha⟩ := NormedField.exists_lt_norm 𝕜 r
     specialize h a (le_of_lt ha)
     rw [Seminorm.smul_ball_zero (norm_pos_iff.1 <| hr.trans ha), mul_one] at h
     refine ⟨‖a‖, lt_trans hr ha, ?_⟩
