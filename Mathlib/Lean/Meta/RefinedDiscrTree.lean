@@ -56,8 +56,6 @@ and includes many more features.
   - The expression `fun a : α => a` is stored as `@id α`.
     - This makes lemmas such as `continuous_id'` redundant, which is the same as `continuous_id`,
       with `id` replaced by `fun x => x`.
-  - Lambdas in front of number literals are removed. This is because usually `n : α → β` is
-    defined to be `fun _ : α => n` for a number literal `n`. So instead of `λ, n` we store `n`.
 
 - The key `Key.opaque` only matches with a `Key.star` key.
   Depending on the configuration, β-reduction and ζ-reduction may be disabled, so the resulting
