@@ -16,8 +16,8 @@ attribute [local instance] Mathlib.Meta.monadLiftOptionMetaM
 The implementation of this tactic imitates the `ring` tactic, using the `Qq` package to implement a
 a specific elimination procedure.
 
-The first version of this tactic only attempts to deal with `ℤ`-coefficients (which means we'll only
-use the LieRing instance), reducing everything to the linear combination of elements of the Lyndon
+This part of the tactic only attempts to deal with `ℤ`-coefficients (which means only the `LieRing`
+instance will be used), reducing everything to the linear combination of elements of the Lyndon
 basis.
 
 The elimination approach implemented here follows the theory of Hall sets and Lyndon words,
