@@ -132,22 +132,15 @@ lemma ext (L₁ : List ℕ) (L₂ : List ℕ)
           simp only [true_or, true_iff] at ha
           obtain rfl | aL₂ := ha
           · rfl
-          · have f₁ := haL₁ _ bL₁
-            have f₂ := hbL₂ _ aL₂
-            linarith
+          · exact False.elim <| lt_irrefl _ (lt_trans (haL₁ _ bL₁) (hbL₂ _ aL₂))
       refine ⟨rfl, ?_⟩
       apply h_rec L₂ _ hL₁ hL₂
       intro x
-      by_cases hax : x = a
-      · subst hax
-        constructor
-        · intro h₁
-          haveI := haL₁ x h₁
-          linarith
-        · intro h₁
-          haveI := hbL₂ x h₁
-          linarith
-      simpa [hax] using h x
+      obtain rfl | hax := eq_or_ne x a
+      · constructor <;> intro h₁
+        · exact False.elim <| (lt_irrefl x) (haL₁ x h₁)
+        · exact False.elim <| (lt_irrefl x) (hbL₂ x h₁)
+      · simpa [hax] using h x
 
 /-- An element of a `m`-admissible list, as an element of the appropriate `Fin` -/
 @[simps]
