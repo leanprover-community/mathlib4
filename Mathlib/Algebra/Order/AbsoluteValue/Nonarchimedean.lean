@@ -9,7 +9,7 @@ import Mathlib.Algebra.Order.AbsoluteValue.Basic
 /-!
 # Nonarchimedean absolute values
 
-An `AbsoluteValue` `f` is nonarchimedean if it satisfies `f (x + y) ≤ max (f x) (f y)` for all
+An absolute value `f` is nonarchimedean if it satisfies `f (x + y) ≤ max (f x) (f y)` for all
 `x` and `y` in `R`.
 -/
 
@@ -21,13 +21,13 @@ section LinearOrderedSemiring
 
 variable [LinearOrderedSemiring S]
 
-/--An `AbsoluteValue` `f` is nonarchimedean if it satisfies `f (x + y) ≤ max (f x) (f y)` for all
-`x` and `y` in `R`-/
+/-- An absolute value `f` is nonarchimedean if it satisfies `f (x + y) ≤ max (f x) (f y)` for all
+`x` and `y` in `R`. -/
 def IsNonarchimedean [Semiring R] (f : AbsoluteValue R S) : Prop :=
   ∀ x y : R, f (x + y) ≤ max (f x) (f y)
 
 open Finset in
-/--Ultrametric inequality with Finset.Sum-/
+/-- Ultrametric inequality with `Finset.Sum`. -/
 lemma apply_sum_le_sup_of_isNonarchimedean [Semiring R] {f : AbsoluteValue R S}
     (nonarch : IsNonarchimedean f) {s : Finset α} (hnonempty : s.Nonempty) {l : α → R} :
     f (∑ i ∈ s, l i) ≤ s.sup' hnonempty fun i => f (l i) := by
