@@ -135,36 +135,27 @@ theorem _root_.Acc.shortlex {a : α} (n : ℕ) (aca : Acc r a)
   | intro xa _ iha =>
     induction (acb b hb) with
     | intro xb _ ihb =>
-      apply Acc.intro ([xa] ++ xb)
-      intro p lt
-      rcases shortlex_def.mp lt with h1 | h2
+      refine Acc.intro ([xa] ++ xb) fun p lt => ?_
+      rcases shortlex_def.mp lt with h1 | ⟨h2len, h2lex⟩
       · exact ih _ h1
-      · cases p with
-        | nil =>
-          simp only [List.length_nil, List.singleton_append, List.length_cons,
-            Nat.succ_eq_add_one, self_eq_add_left, add_eq_zero, List.length_eq_zero, one_ne_zero,
-            and_false, false_and] at h2
-        | cons headp tailp =>
-          cases h2.2 with
-          | cons h =>
-            rw [List.append_eq, List.nil_append] at h
-            simp only [List.length_cons, Nat.succ_eq_add_one, List.singleton_append,
-              add_left_inj] at h2
-            rw [← h2.1] at hb
-            apply ihb _ (of_lex (h2.1) h) hb
-            intro l hl
-            apply ih
-            rw [List.length_cons, ← h2.1]
-            exact hl
-          | rel h =>
-            simp only [List.length_cons, Nat.succ_eq_add_one, List.singleton_append,
-              add_left_inj] at h2
-            rw [← h2.1] at hb
-            apply iha headp h _ hb
-            intro l hl
-            apply ih
-            rw [List.length_cons, ← h2.1]
-            exact hl
+      · simp only [cons_append, nil_append, length_cons] at h2len h2lex
+        cases h2lex with
+        | nil => simp at h2len
+        | @cons x xs _ h =>
+          simp only [length_cons, add_left_inj] at h2len
+          rw [← h2len] at hb
+          refine ihb _ (of_lex h2len h) hb fun l hl => ?_
+          apply ih
+          rw [List.length_cons, ← h2len]
+          exact hl
+        | @rel x xs _ _ h =>
+          simp only [List.length_cons, Nat.succ_eq_add_one, List.singleton_append,
+            add_left_inj] at h2len
+          rw [← h2len] at hb
+          refine iha _ h _ hb fun l hl => ?_
+          apply ih
+          rw [List.length_cons, ← h2len]
+          exact hl
 
 theorem wf (h : WellFounded r) : WellFounded (Shortlex r) := by
   suffices h : ∀ n, ∀ (a : List α), a.length = n → Acc (Shortlex r) a from
