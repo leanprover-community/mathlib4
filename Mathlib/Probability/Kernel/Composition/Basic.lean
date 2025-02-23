@@ -1544,3 +1544,5 @@ lemma fst_prod_comp_id_prod (κ : Kernel α β) [IsSFiniteKernel κ]
 end Prod
 end Kernel
 end ProbabilityTheory
+
+set_option linter.style.longFile 1700
