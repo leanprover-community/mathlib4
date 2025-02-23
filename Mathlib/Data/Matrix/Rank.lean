@@ -241,6 +241,9 @@ theorem rank_le_height [StrongRankCondition R] {m n : ℕ} (A : Matrix (Fin m) (
 theorem rank_eq_finrank_span_cols (A : Matrix m n R) :
     A.rank = finrank R (Submodule.span R (Set.range Aᵀ)) := by rw [rank, Matrix.range_mulVecLin]
 
+theorem cRank_toNat_eq_rank (A : Matrix m n R) : A.cRank.toNat = A.rank := by
+  rw [cRank_toNat_eq_finrank, ← rank_eq_finrank_span_cols]
+
 end CommRing
 
 section Field
