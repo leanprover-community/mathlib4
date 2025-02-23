@@ -676,6 +676,12 @@ nonrec theorem lintegral_map (κ : Kernel α β) (hf : Measurable f) (a : α) {g
     (hg : Measurable g') : ∫⁻ b, g' b ∂map κ f a = ∫⁻ a, g' (f a) ∂κ a := by
   rw [map_apply _ hf, lintegral_map hg hf]
 
+lemma map_apply_eq_iff_map_symm_apply_eq (κ : Kernel α β) {f : β ≃ᵐ γ} (η : Kernel α γ) :
+    κ.map f = η ↔ κ = η.map f.symm := by
+    simp_rw [Kernel.ext_iff, map_apply _ f.measurable, map_apply _ f.symm.measurable,
+      f.map_apply_eq_iff_map_symm_apply_eq]
+    exact ⟨fun h a ↦ (h a).symm, fun h a ↦ (h a).symm⟩
+
 theorem sum_map_seq (κ : Kernel α β) [IsSFiniteKernel κ] (f : β → γ) :
     (Kernel.sum fun n => map (seq κ n) f) = map κ f := by
   by_cases hf : Measurable f
@@ -1285,6 +1291,13 @@ lemma id_comp (κ : Kernel α β) : Kernel.id ∘ₖ κ = κ := by
 lemma id_map {f : α → β} (hf : Measurable f) : Kernel.id.map f = deterministic f hf := by
   rw [← deterministic_comp_eq_map, comp_id]
 
+lemma id_comap {f : α → β} (hf : Measurable f) : Kernel.id.comap f hf = deterministic f hf := by
+  rw [← comp_deterministic_eq_comap, id_comp]
+
+lemma id_map_eq_id_comap {f : α → β} (hf : Measurable f) :
+    Kernel.id.map f = Kernel.id.comap f hf := by
+  rw [id_comap, ← id_map]
+
 lemma deterministic_map {f : α → β} (hf : Measurable f) {g : β → γ} (hg : Measurable g) :
     (deterministic f hf).map g = deterministic (g ∘ f) (hg.comp hf) := by
   rw [← id_map, ← map_comp_right _ hf hg, id_map]
@@ -1409,6 +1422,16 @@ theorem lintegral_prod_id {f : (α × β) → ℝ≥0∞} (hf : Measurable f) (�
     ∫⁻ p, f p ∂(κ ×ₖ Kernel.id) b = ∫⁻ a, f (a, b) ∂κ b := by
   rw [Kernel.id, lintegral_prod_deterministic _ _ _ hf, id_eq]
 
+theorem deterministic_prod_apply' {f : α → β} (mf : Measurable f) (κ : Kernel α γ)
+    [IsSFiniteKernel κ] (a : α) {s : Set (β × γ)} (hs : MeasurableSet s) :
+    ((Kernel.deterministic f mf) ×ₖ κ) a s = κ a (Prod.mk (f a) ⁻¹' s) := by
+  rw [prod_apply' _ _ _ hs, lintegral_deterministic']; · rfl
+  exact measurable_measure_prod_mk_left hs
+
+theorem id_prod_apply' (κ : Kernel α β) [IsSFiniteKernel κ] (a : α) {s : Set (α × β)}
+    (hs : MeasurableSet s) : (Kernel.id ×ₖ κ) a s = κ a (Prod.mk a ⁻¹' s) := by
+  rw [Kernel.id, deterministic_prod_apply' _ _ _ hs, id_eq]
+
 instance IsMarkovKernel.prod (κ : Kernel α β) [IsMarkovKernel κ] (η : Kernel α γ)
     [IsMarkovKernel η] : IsMarkovKernel (κ ×ₖ η) := by rw [Kernel.prod]; infer_instance
 
@@ -1447,6 +1470,10 @@ lemma map_prod_map {ε} {mε : MeasurableSpace ε} (κ : Kernel α β) [IsSFinit
   rw [map_apply _ (hf.prod_map hg), prod_apply κ, ← Measure.map_prod_map _ _ hf hg, prod_apply,
     map_apply _ hf, map_apply _ hg]
 
+lemma map_prod_eq (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel α γ) [IsSFiniteKernel η]
+    {f : β → δ} (hf : Measurable f) : (κ.map f) ×ₖ η = (κ ×ₖ η).map (Prod.map f id) := by
+  rw [← map_prod_map _ _ hf measurable_id, map_id]
+
 lemma comap_prod_swap (κ : Kernel α β) (η : Kernel γ δ) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     comap (prodMkRight α η ×ₖ prodMkLeft γ κ) Prod.swap measurable_swap
       = map (prodMkRight γ κ ×ₖ prodMkLeft α η) Prod.swap := by
@@ -1480,6 +1507,11 @@ lemma deterministic_prod_deterministic {f : α → β} {g : α → γ}
       = deterministic (fun a ↦ (f a, g a)) (hf.prod_mk hg) := by
   ext; simp_rw [prod_apply, deterministic_apply, Measure.dirac_prod_dirac]
 
+lemma id_prod_eq : @Kernel.id (α × β) inferInstance =
+    (deterministic Prod.fst measurable_fst) ×ₖ (deterministic Prod.snd measurable_snd) := by
+  rw [deterministic_prod_deterministic]
+  rfl
+
 lemma compProd_prodMkLeft_eq_comp
     (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel β γ) [IsSFiniteKernel η] :
     κ ⊗ₖ (prodMkLeft α η) = (Kernel.id ×ₖ η) ∘ₖ κ := by
@@ -1491,6 +1523,23 @@ lemma compProd_prodMkLeft_eq_comp
   congr with b
   rw [lintegral_dirac']
   exact measurable_measure_prod_mk_left hs
+
+lemma prodAssoc_prod (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel α γ) [IsSFiniteKernel η]
+    (ξ : Kernel α δ) [IsSFiniteKernel ξ] :
+    ((κ ×ₖ ξ) ×ₖ η).map MeasurableEquiv.prodAssoc = κ ×ₖ (ξ ×ₖ η) := by
+  ext1 a
+  rw [map_apply _ (by fun_prop), prod_apply, prod_apply, Measure.prodAssoc_prod, prod_apply,
+    prod_apply]
+
+lemma fst_prod_comp_id_prod (κ : Kernel α β) [IsSFiniteKernel κ]
+    (η : Kernel (α × β) γ) [IsSFiniteKernel η] :
+    ((deterministic Prod.fst measurable_fst) ×ₖ η) ∘ₖ (Kernel.id ×ₖ κ) =
+    Kernel.id ×ₖ (η ∘ₖ (Kernel.id ×ₖ κ)) := by
+  ext x s ms
+  simp_rw [comp_apply' _ _ _ ms, lintegral_id_prod (Kernel.measurable_coe _ ms),
+    deterministic_prod_apply' _ _ _ ms, id_prod_apply' _ _ ms,
+    comp_apply' _ _ _ (measurable_prod_mk_left ms),
+    lintegral_id_prod (η.measurable_coe (measurable_prod_mk_left ms))]
 
 end Prod
 end Kernel
