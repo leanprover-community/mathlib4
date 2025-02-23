@@ -1170,7 +1170,8 @@ theorem prod_comp [DecidableEq γ] (f : γ → β) (g : α → γ) :
 @[to_additive]
 theorem prod_piecewise [DecidableEq α] (s t : Finset α) (f g : α → β) :
     (∏ x ∈ s, (t.piecewise f g) x) = (∏ x ∈ s ∩ t, f x) * ∏ x ∈ s \ t, g x := by
-  erw [prod_ite, filter_mem_eq_inter, ← sdiff_eq_filter]
+  simp only [piecewise]
+  rw [prod_ite, filter_mem_eq_inter, ← sdiff_eq_filter]
 
 @[to_additive]
 theorem prod_inter_mul_prod_diff [DecidableEq α] (s t : Finset α) (f : α → β) :

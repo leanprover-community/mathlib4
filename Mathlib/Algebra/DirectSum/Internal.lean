@@ -70,7 +70,7 @@ theorem SetLike.natCast_mem_graded [Zero ι] [AddMonoidWithOne R] [SetLike σ R]
 
 theorem SetLike.intCast_mem_graded [Zero ι] [AddGroupWithOne R] [SetLike σ R]
     [AddSubgroupClass σ R] (A : ι → σ) [SetLike.GradedOne A] (z : ℤ) : (z : R) ∈ A 0 := by
-  induction z
+  cases z
   · rw [Int.ofNat_eq_coe, Int.cast_natCast]
     exact SetLike.natCast_mem_graded _ _
   · rw [Int.cast_negSucc]

@@ -53,9 +53,9 @@ example : CountEquivOrEquivTwoMulMod3 "IUIM" "MI" :=
 -/
 theorem mod3_eq_1_or_mod3_eq_2 {a b : ℕ} (h1 : a % 3 = 1 ∨ a % 3 = 2)
     (h2 : b % 3 = a % 3 ∨ b % 3 = 2 * a % 3) : b % 3 = 1 ∨ b % 3 = 2 := by
-  cases' h2 with h2 h2
+  rcases h2 with h2 | h2
   · rw [h2]; exact h1
-  · cases' h1 with h1 h1
+  · rcases h1 with h1 | h1
     · right; simp [h2, mul_mod, h1, Nat.succ_lt_succ]
     · left; simp only [h2, mul_mod, h1, mod_mod]
 

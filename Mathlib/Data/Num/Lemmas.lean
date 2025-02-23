@@ -655,13 +655,7 @@ theorem natSize_to_nat (n) : natSize n = Nat.size n := by rw [← size_eq_natSiz
 
 @[simp 999]
 theorem ofNat'_eq : ∀ n, Num.ofNat' n = n :=
-  Nat.binaryRec (by simp) fun b n IH => by
-    rw [ofNat'] at IH ⊢
-    rw [Nat.binaryRec_eq _ _ (.inl rfl), IH]
-    -- Porting note: `Nat.cast_bit0` & `Nat.cast_bit1` are not `simp` theorems anymore.
-    cases b <;> simp only [cond_false, cond_true, Nat.bit, two_mul, Nat.cast_add, Nat.cast_one]
-    · rw [bit0_of_bit0]
-    · rw [bit1_of_bit1]
+  Nat.binaryRec (by simp) fun b n IH => by tauto
 
 theorem zneg_toZNum (n : Num) : -n.toZNum = n.toZNumNeg := by cases n <;> rfl
 

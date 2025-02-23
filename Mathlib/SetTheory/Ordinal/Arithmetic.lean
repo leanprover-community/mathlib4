@@ -1810,10 +1810,8 @@ set_option linter.deprecated false in
 @[simp]
 theorem sup_typein_succ {o : Ordinal} :
     sup.{u, u} (typein ((· < ·) : (succ o).toType → (succ o).toType → Prop)) = o := by
-  cases'
-    sup_eq_lsub_or_sup_succ_eq_lsub.{u, u}
-      (typein ((· < ·) : (succ o).toType → (succ o).toType → Prop)) with
-    h h
+  rcases sup_eq_lsub_or_sup_succ_eq_lsub.{u, u}
+      (typein ((· < ·) : (succ o).toType → (succ o).toType → Prop)) with h | h
   · rw [sup_eq_lsub_iff_succ] at h
     simp only [lsub_typein] at h
     exact (h o (lt_succ o)).false.elim

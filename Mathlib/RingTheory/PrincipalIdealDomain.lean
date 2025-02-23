@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Morenikeji Neri
 -/
+import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.RingTheory.Ideal.Maps

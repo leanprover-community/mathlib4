@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan
 -/
 import Mathlib.Algebra.Ring.Subsemiring.Defs
-import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.RingTheory.NonUnitalSubring.Defs
 
 /-!
@@ -62,7 +61,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 subring, subrings
 -/
 
-assert_not_exists OrderedRing
+assert_not_exists Even OrderedRing
 
 universe u v w
 
@@ -122,12 +121,10 @@ theorem coeSubtype : (subtype s : s → R) = ((↑) : s → R) :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_natCast (n : ℕ) : ((n : s) : R) = n :=
-  map_natCast (subtype s) n
+theorem coe_natCast (n : ℕ) : ((n : s) : R) = n := rfl
 
 @[simp, norm_cast]
-theorem coe_intCast (n : ℤ) : ((n : s) : R) = n :=
-  map_intCast (subtype s) n
+theorem coe_intCast (n : ℤ) : ((n : s) : R) = n := rfl
 
 end SubringClass
 
@@ -331,12 +328,10 @@ theorem coeSubtype : ⇑s.subtype = ((↑) : s → R) :=
   rfl
 
 @[norm_cast]
-theorem coe_natCast : ∀ n : ℕ, ((n : s) : R) = n :=
-  map_natCast s.subtype
+theorem coe_natCast (n : ℕ) : ((n : s) : R) = n := rfl
 
 @[norm_cast]
-theorem coe_intCast : ∀ n : ℤ, ((n : s) : R) = n :=
-  map_intCast s.subtype
+theorem coe_intCast (n : ℤ) : ((n : s) : R) = n := rfl
 
 /-! ## Partial order -/
 
@@ -378,8 +373,3 @@ lemma Subring.toNonUnitalSubring_toSubring (S : Subring R) :
 
 lemma NonUnitalSubring.toSubring_toNonUnitalSubring (S : NonUnitalSubring R) (h1 : (1 : R) ∈ S) :
     (NonUnitalSubring.toSubring S h1).toNonUnitalSubring = S := by cases S; rfl
-
-theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
-    (k : R) * g ∈ G := by
-  convert AddSubgroup.zsmul_mem G h k using 1
-  simp

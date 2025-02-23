@@ -875,9 +875,7 @@ theorem measurable_updateFinset' [DecidableEq δ] {s : Finset δ} :
     Measurable (fun p : (Π i, π i) × (Π i : s, π i) ↦ updateFinset p.1 s p.2) := by
   simp only [updateFinset, measurable_pi_iff]
   intro i
-  by_cases h : i ∈ s <;> simp [h]
-  · exact Measurable.eval measurable_snd
-  · exact Measurable.eval measurable_fst
+  by_cases h : i ∈ s <;> simp [h, Measurable.eval, measurable_fst, measurable_snd]
 
 @[measurability, fun_prop]
 theorem measurable_updateFinset [DecidableEq δ] {s : Finset δ} {x : Π i, π i} :

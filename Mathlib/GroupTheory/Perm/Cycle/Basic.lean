@@ -372,7 +372,7 @@ theorem isCycle_swap_mul_aux₂ {α : Type*} [DecidableEq α] :
     ∀ (n : ℤ) {b x : α} {f : Perm α} (_ : (swap x (f x) * f) b ≠ b) (_ : (f ^ n) (f x) = b),
       ∃ i : ℤ, ((swap x (f x) * f) ^ i) (f x) = b := by
   intro n
-  induction n with
+  cases n with
   | ofNat n => exact isCycle_swap_mul_aux₁ n
   | negSucc n =>
     intro b x f hb h
