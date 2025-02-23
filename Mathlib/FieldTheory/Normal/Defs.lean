@@ -59,7 +59,7 @@ variable (E : Type*) [Field E] [Algebra F E] [Algebra K E] [IsScalarTower F K E]
 @[stacks 09HN]
 theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
   normal_iff.2 fun x => by
-    cases' h.out x with hx hhx
+    obtain ⟨hx, hhx⟩ := h.out x
     rw [algebraMap_eq F K E] at hhx
     exact
       ⟨hx.tower_top,

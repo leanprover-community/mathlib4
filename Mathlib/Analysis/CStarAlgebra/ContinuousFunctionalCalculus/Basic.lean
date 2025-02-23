@@ -47,7 +47,7 @@ relevant instances on C⋆-algebra can be found in the `Instances` file.
 * `CStarAlgebra.instNonnegSpectrumClass`: In a unital C⋆-algebra over `ℂ` which is also a
   `StarOrderedRing`, the spectrum of a nonnegative element is nonnegative.
 
- -/
+-/
 
 
 open scoped Pointwise ENNReal NNReal ComplexOrder
@@ -432,7 +432,7 @@ open scoped NonUnitalContinuousFunctionalCalculus in
 /-- This lemma requires a lot from type class synthesis, and so one should instead favor the bespoke
 versions for `ℝ≥0`, `ℝ`, and `ℂ`. -/
 lemma Unitization.cfcₙ_eq_cfc_inr {R : Type*} [Semifield R] [StarRing R] [MetricSpace R]
-    [TopologicalSemiring R] [ContinuousStar R] [Module R A] [IsScalarTower R A A]
+    [IsTopologicalSemiring R] [ContinuousStar R] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] [CompleteSpace R] [Algebra R ℂ] [IsScalarTower R ℂ A]
     {p : A → Prop} {p' : A⁺¹ → Prop} [NonUnitalContinuousFunctionalCalculus R p]
     [ContinuousFunctionalCalculus R p']

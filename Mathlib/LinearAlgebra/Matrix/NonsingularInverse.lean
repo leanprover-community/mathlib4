@@ -109,7 +109,7 @@ def invertibleEquivDetInvertible : Invertible A ≃ Invertible A.det where
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 
-/-- Given a proof that `A.det` has a constructive inverse, lift `A` to `(Matrix n n α)ˣ`-/
+/-- Given a proof that `A.det` has a constructive inverse, lift `A` to `(Matrix n n α)ˣ` -/
 def unitOfDetInvertible [Invertible A.det] : (Matrix n n α)ˣ :=
   @unitOfInvertible _ _ A (invertibleOfDetInvertible A)
 
@@ -121,7 +121,7 @@ theorem isUnit_iff_isUnit_det : IsUnit A ↔ IsUnit A.det := by
 theorem isUnits_det_units (A : (Matrix n n α)ˣ) : IsUnit (A : Matrix n n α).det :=
   isUnit_iff_isUnit_det _ |>.mp A.isUnit
 
-/-! #### Variants of the statements above with `IsUnit`-/
+/-! #### Variants of the statements above with `IsUnit` -/
 
 
 theorem isUnit_det_of_invertible [Invertible A] : IsUnit A.det :=
