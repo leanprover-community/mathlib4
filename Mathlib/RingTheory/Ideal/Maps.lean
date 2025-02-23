@@ -544,6 +544,7 @@ variable [FunLike F R S] [rc : RingHomClass F R S]
 variable (f : F)
 variable (I J : Ideal R) (K L : Ideal S)
 
+-- TODO protect
 theorem map_mul {R} [Semiring R] [FunLike F R S] [RingHomClass F R S] (f : F) (I J : Ideal R) :
     map f (I * J) = map f I * map f J :=
   le_antisymm
