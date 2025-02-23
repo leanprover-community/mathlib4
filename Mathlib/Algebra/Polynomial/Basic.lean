@@ -1028,8 +1028,8 @@ theorem mem_coeffs_iff {p : R[X]} {c : R} : c ∈ p.coeffs ↔ ∃ n ∈ p.suppo
 
 theorem coeffs_one : coeffs (1 : R[X]) ⊆ {1} := by
   classical
-    simp_rw [coeffs, Finset.image_subset_iff]
-    simp_all [coeff_one]
+  simp_rw [coeffs, Finset.image_subset_iff]
+  simp_all [coeff_one]
 
 theorem coeff_mem_coeffs (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n ∈ p.coeffs := by
   classical
