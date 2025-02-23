@@ -67,11 +67,10 @@ variable (FC : ι → σ) (FC_lt : outParam <| ι → σ) [IsFiltration FC FC_lt
 
 /-- Defines a morphism between general filtration (filtration of sets) that preserves both the main
 and auxiliary filtered structures. This class describes a structure-preserving map between two
-filtered sets `IsFiltration FA FA_lt` and `IsFiltration FB FB_lt` (types `A` and `B`).
-
-It is a map from `A` to `B` which maps each `FA i` pieces to corresponding `FB i` pieces, and maps
-`FA_lt i` pieces to corresponding `FB_lt i` pieces-/
+filtered sets `IsFiltration FA FA_lt` and `IsFiltration FB FB_lt` (types `A` and `B`).-/
 class FilteredHom where
+  /-- It is a map from `A` to `B` which maps each `FA i` pieces to corresponding `FB i` pieces, and
+  maps `FA_lt i` pieces to corresponding `FB_lt i` pieces -/
   toFun : A → B
   pieces_wise : ∀ i : ι, ∀ a ∈ FA i, toFun a ∈ FB i
   pieces_wise_lt : ∀ i : ι, ∀ a ∈ FA_lt i, toFun a ∈ FB_lt i
