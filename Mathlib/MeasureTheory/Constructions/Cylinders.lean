@@ -3,7 +3,7 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber, Yaël Dillies, Kin Yau James Wong
 -/
-import Mathlib.MeasureTheory.PiSystem
+import Mathlib.MeasureTheory.SetSemiring
 import Mathlib.Topology.Constructions
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
 
@@ -342,6 +342,26 @@ theorem diff_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
     s \ t ∈ measurableCylinders α := by
   rw [diff_eq_compl_inter]
   exact inter_mem_measurableCylinders (compl_mem_measurableCylinders ht) hs
+
+/-- The measurable cylinders are a ring. -/
+theorem isSetRing_measurableCylinders : IsSetRing (measurableCylinders α) where
+  empty_mem := empty_mem_measurableCylinders α
+  union_mem := fun _ _ ↦ union_mem_measurableCylinders
+  diff_mem := fun _ _ ↦ diff_mem_measurableCylinders
+
+/-- The measurable cylinders are a semiring. -/
+theorem isSetSemiring_measurableCylinders : MeasureTheory.IsSetSemiring (measurableCylinders α) :=
+  isSetRing_measurableCylinders.isSetSemiring
+
+theorem iUnion_le_mem_measurableCylinders {s : ℕ → Set (∀ i : ι, α i)}
+    (hs : ∀ n, s n ∈ measurableCylinders α) (n : ℕ) :
+    (⋃ i ≤ n, s i) ∈ measurableCylinders α :=
+  isSetRing_measurableCylinders.iUnion_le_mem hs n
+
+theorem iInter_le_mem_measurableCylinders {s : ℕ → Set (∀ i : ι, α i)}
+    (hs : ∀ n, s n ∈ measurableCylinders α) (n : ℕ) :
+    (⋂ i ≤ n, s i) ∈ measurableCylinders α :=
+  isSetRing_measurableCylinders.iInter_le_mem hs n
 
 /-- The measurable cylinders generate the product σ-algebra. -/
 theorem generateFrom_measurableCylinders :
