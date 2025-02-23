@@ -111,7 +111,6 @@ variable [DecidableEq α] {s t u v : Finset α} {a b : α}
 @[simp]
 theorem erase_empty (a : α) : erase ∅ a = ∅ :=
   rfl
-
 protected lemma Nontrivial.erase_nonempty (hs : s.Nontrivial) : (s.erase a).Nonempty :=
   (hs.exists_ne a).imp <| by aesop
 
@@ -125,6 +124,12 @@ protected lemma Nontrivial.erase_nonempty (hs : s.Nontrivial) : (s.erase a).None
 theorem erase_singleton (a : α) : ({a} : Finset α).erase a = ∅ := by
   ext x
   simp
+
+theorem Nonempty.eq_singleton_or_nonempty_erase (hs : s.Nonempty) (a : α) :
+    s = {a} ∨ (s.erase a).Nonempty := by
+  refine (em (a ∈ s)).elim (fun h ↦ ?_) fun h ↦ ?_
+  · exact .imp_right (erase_nonempty h).mpr (eq_singleton_or_nontrivial h)
+  · exact .inr <| (erase_eq_of_not_mem h).symm ▸ hs
 
 @[simp]
 theorem erase_insert_eq_erase (s : Finset α) (a : α) : (insert a s).erase a = s.erase a :=
