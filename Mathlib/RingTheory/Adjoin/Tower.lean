@@ -344,7 +344,8 @@ private def depRewriteTarget (stx : Syntax) (symm : Bool) (config : Rewrite.Conf
     updateLhs r.eNew r.eqProof
     replaceMainGoal ((← getMainGoal) :: r.mvarIds)
 
-private def depRwTarget (stx : Syntax) (symm : Bool) (config : Rewrite.Config := {}) : TacticM Unit := do
+private def depRwTarget (stx : Syntax) (symm : Bool) (config : Rewrite.Config := {}) :
+    TacticM Unit := do
   Term.withSynthesize <| withMainContext do
     let e ← elabTerm stx none true
     let r ←  (← getMainGoal).depRewrite (← getLhs) e symm (config := config)
@@ -353,8 +354,8 @@ private def depRwTarget (stx : Syntax) (symm : Bool) (config : Rewrite.Config :=
     changeLhs (← dsimp (← getLhs) (← depRwContext)).1
     replaceMainGoal ((← getMainGoal) :: r.mvarIds)
 
-private def depRwLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : Rewrite.Config := {}) :
-    TacticM Unit := withMainContext do
+private def depRwLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
+    (config : Rewrite.Config := {}) : TacticM Unit := withMainContext do
   -- Note: we cannot execute `replaceLocalDecl` inside `Term.withSynthesize`.
   -- See issues #2711 and #2727.
   let rwResult ← Term.withSynthesize <| withMainContext do
