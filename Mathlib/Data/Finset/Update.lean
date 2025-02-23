@@ -61,6 +61,14 @@ theorem updateFinset_updateFinset {s t : Finset ι} (hst : Disjoint s t)
   · exact piCongrLeft_sumInl (fun b : ↥(s ∪ t) => π b) e y z ⟨i, his⟩ |>.symm
   · exact piCongrLeft_sumInr (fun b : ↥(s ∪ t) => π b) e y z ⟨i, hit⟩ |>.symm
 
+lemma updateFinset_updateFinset_subset {s t : Finset ι} (hst : s ⊆ t)
+    (x : Π i, π i) (y : Π i : s, π i) (z : Π i : t, π i) :
+    updateFinset (updateFinset x s y) t z = updateFinset x t z := by
+  ext i
+  simp only [updateFinset]
+  split_ifs with h1 h2 <;> try rfl
+  exact (h1 (hst h2)).elim
+
 theorem restrict_updateFinset' {s t : Finset ι} (hst : s ⊆ t) (x : Π i, π i) (y : Π i : t, π i) :
     s.restrict (updateFinset x t y) = restrict₂ hst y := by
   ext i
