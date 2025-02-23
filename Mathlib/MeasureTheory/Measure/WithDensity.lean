@@ -342,7 +342,7 @@ probability measure, such as the uniform distribution between 0 and 1, the Gauss
 the exponential distribution, the Beta distribution, or the Cauchy distribution (see Section 2.4
 of [wasserman2004]). Thus, this method shows how to one can calculate expectations, variances,
 and other moments as a function of the probability density function.
- -/
+-/
 theorem lintegral_withDensity_eq_lintegral_mul (μ : Measure α) {f : α → ℝ≥0∞}
     (h_mf : Measurable f) :
     ∀ {g : α → ℝ≥0∞}, Measurable g → ∫⁻ a, g a ∂μ.withDensity f = ∫⁻ a, (f * g) a ∂μ := by
@@ -359,9 +359,6 @@ theorem setLIntegral_withDensity_eq_setLIntegral_mul (μ : Measure α) {f g : α
     (hf : Measurable f) (hg : Measurable g) {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ x in s, g x ∂μ.withDensity f = ∫⁻ x in s, (f * g) x ∂μ := by
   rw [restrict_withDensity hs, lintegral_withDensity_eq_lintegral_mul _ hf hg]
-
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_withDensity_eq_set_lintegral_mul := setLIntegral_withDensity_eq_setLIntegral_mul
 
 /-- The Lebesgue integral of `g` with respect to the measure `μ.withDensity f` coincides with
 the integral of `f * g`. This version assumes that `g` is almost everywhere measurable. For a
@@ -406,9 +403,6 @@ lemma setLIntegral_withDensity_eq_lintegral_mul₀' {μ : Measure α} {f : α �
   rw [← restrict_withDensity hs]
   exact hg.restrict
 
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_withDensity_eq_lintegral_mul₀' := setLIntegral_withDensity_eq_lintegral_mul₀'
-
 theorem lintegral_withDensity_eq_lintegral_mul₀ {μ : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) {g : α → ℝ≥0∞} (hg : AEMeasurable g μ) :
     ∫⁻ a, g a ∂μ.withDensity f = ∫⁻ a, (f * g) a ∂μ :=
@@ -420,9 +414,6 @@ lemma setLIntegral_withDensity_eq_lintegral_mul₀ {μ : Measure α} {f : α →
     ∫⁻ a in s, g a ∂μ.withDensity f = ∫⁻ a in s, (f * g) a ∂μ :=
   setLIntegral_withDensity_eq_lintegral_mul₀' hf
     (hg.mono' (MeasureTheory.withDensity_absolutelyContinuous μ f)) hs
-
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_withDensity_eq_lintegral_mul₀ := setLIntegral_withDensity_eq_lintegral_mul₀
 
 theorem lintegral_withDensity_le_lintegral_mul (μ : Measure α) {f : α → ℝ≥0∞}
     (f_meas : Measurable f) (g : α → ℝ≥0∞) : (∫⁻ a, g a ∂μ.withDensity f) ≤ ∫⁻ a, (f * g) a ∂μ := by
@@ -463,10 +454,6 @@ theorem setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable (μ : Measur
     ∫⁻ a in s, g a ∂μ.withDensity f = ∫⁻ a in s, (f * g) a ∂μ := by
   rw [restrict_withDensity hs, lintegral_withDensity_eq_lintegral_mul_non_measurable _ f_meas hf]
 
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable :=
-  setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable
-
 theorem lintegral_withDensity_eq_lintegral_mul_non_measurable₀ (μ : Measure α) {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (h'f : ∀ᵐ x ∂μ, f x < ∞) (g : α → ℝ≥0∞) :
     ∫⁻ a, g a ∂μ.withDensity f = ∫⁻ a, (f * g) a ∂μ := by
@@ -491,19 +478,11 @@ theorem setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀ (μ : Mea
     ∫⁻ a in s, g a ∂μ.withDensity f = ∫⁻ a in s, (f * g) a ∂μ := by
   rw [restrict_withDensity hs, lintegral_withDensity_eq_lintegral_mul_non_measurable₀ _ hf h'f]
 
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable₀ :=
-  setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀
-
 theorem setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀' (μ : Measure α) [SFinite μ]
     {f : α → ℝ≥0∞} (s : Set α) (hf : AEMeasurable f (μ.restrict s)) (g : α → ℝ≥0∞)
     (h'f : ∀ᵐ x ∂μ.restrict s, f x < ∞) :
     ∫⁻ a in s, g a ∂μ.withDensity f = ∫⁻ a in s, (f * g) a ∂μ := by
   rw [restrict_withDensity' s, lintegral_withDensity_eq_lintegral_mul_non_measurable₀ _ hf h'f]
-
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable₀' :=
-  setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀'
 
 theorem withDensity_mul₀ {μ : Measure α} {f g : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
@@ -637,18 +616,6 @@ instance Measure.withDensity.instSFinite [SFinite μ] {f : α → ℝ≥0∞} :
     exact SigmaFinite.withDensity 1
   rw [key]
   infer_instance
-
-@[deprecated Measure.withDensity.instSFinite (since := "2024-07-14"), nolint unusedArguments]
-lemma sFinite_withDensity_of_sigmaFinite_of_measurable (μ : Measure α) [SigmaFinite μ]
-    {f : α → ℝ≥0∞} (_hf : Measurable f) :
-    SFinite (μ.withDensity f) :=
-  inferInstance
-
-@[deprecated Measure.withDensity.instSFinite (since := "2024-07-14"), nolint unusedArguments]
-lemma sFinite_withDensity_of_measurable (μ : Measure α) [SFinite μ]
-    {f : α → ℝ≥0∞} (_hf : Measurable f) :
-    SFinite (μ.withDensity f) :=
-  inferInstance
 
 instance [SFinite μ] (c : ℝ≥0∞) : SFinite (c • μ) := by
   rw [← withDensity_const]

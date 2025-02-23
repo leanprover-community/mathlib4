@@ -3,7 +3,6 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Order.Iterate
 import Mathlib.Order.SemiconjSup
@@ -673,7 +672,7 @@ theorem tendsto_translation_number₀' :
         ((tendsto_const_div_atTop_nhds_zero_nat 1).comp (tendsto_add_atTop_nat 1))
   dsimp
   have : (0 : ℝ) < n + 1 := n.cast_add_one_pos
-  rw [Real.dist_eq, div_sub' _ _ _ (ne_of_gt this), abs_div, ← Real.dist_eq, abs_of_pos this,
+  rw [Real.dist_eq, div_sub' (ne_of_gt this), abs_div, ← Real.dist_eq, abs_of_pos this,
     Nat.cast_add_one, div_le_div_iff_of_pos_right this, ← Nat.cast_add_one]
   apply dist_pow_map_zero_mul_translationNumber_le
 

@@ -262,9 +262,9 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Modu
   rw [traceForm_apply_apply, LinearMap.zero_apply]
   let A := AlgebraicClosure (FractionRing R)
   suffices algebraMap R A (trace R _ ((φ z).comp (φ x))) = 0 by
-    have _i : NoZeroSMulDivisors R A := NoZeroSMulDivisors.trans R (FractionRing R) A
+    have _i : NoZeroSMulDivisors R A := NoZeroSMulDivisors.trans_faithfulSMul R (FractionRing R) A
     rw [← map_zero (algebraMap R A)] at this
-    exact NoZeroSMulDivisors.algebraMap_injective R A this
+    exact FaithfulSMul.algebraMap_injective R A this
   rw [← LinearMap.trace_baseChange, LinearMap.baseChange_comp, ← toEnd_baseChange,
     ← toEnd_baseChange]
   replace hz : 1 ⊗ₜ z ∈ lowerCentralSeries A (A ⊗[R] L) (A ⊗[R] L) 1 := by
@@ -426,10 +426,10 @@ lemma traceForm_eq_sum_finrank_nsmul :
 /-- A variant of `LieModule.traceForm_eq_sum_finrank_nsmul` in which the sum is taken only over the
 non-zero weights. -/
 lemma traceForm_eq_sum_finrank_nsmul' :
-    traceForm K L M = ∑ χ in {χ : Weight K L M | χ.IsNonZero}, finrank K (genWeightSpace M χ) •
+    traceForm K L M = ∑ χ ∈ {χ : Weight K L M | χ.IsNonZero}, finrank K (genWeightSpace M χ) •
       (χ : L →ₗ[K] K).smulRight (χ : L →ₗ[K] K) := by
   classical
-  suffices ∑ χ in {χ : Weight K L M | χ.IsZero}, finrank K (genWeightSpace M χ) •
+  suffices ∑ χ ∈ {χ : Weight K L M | χ.IsZero}, finrank K (genWeightSpace M χ) •
       (χ : L →ₗ[K] K).smulRight (χ : L →ₗ[K] K) = 0 by
     rw [traceForm_eq_sum_finrank_nsmul,
       ← Finset.sum_filter_add_sum_filter_not (p := fun χ : Weight K L M ↦ χ.IsNonZero)]

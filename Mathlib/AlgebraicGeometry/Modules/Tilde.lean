@@ -111,8 +111,8 @@ def sectionsSubmodule (U : (Opens (PrimeSpectrum R))ᵒᵖ) :
     rcases wb (Opens.infLERight _ _ y : Vb) with ⟨nmb, wb⟩
     fconstructor
     · intro H; cases y.1.isPrime.mem_or_mem H <;> contradiction
-    · simp only [Opens.coe_inf, Pi.add_apply, smul_add, map_add,
-        LinearMapClass.map_smul] at wa wb ⊢
+    · simp only [LocalizedModule.mkLinearMap_apply, Opens.comp_apply, Pi.add_apply, smul_add,
+        map_add, map_smul] at wa wb ⊢
       rw [← wa, ← wb, ← mul_smul, ← mul_smul]
       congr 2
       simp [mul_comm]
@@ -126,7 +126,7 @@ def sectionsSubmodule (U : (Opens (PrimeSpectrum R))ᵒᵖ) :
     rcases wr (Opens.infLERight _ _ y) with ⟨nmr, wr⟩
     fconstructor
     · intro H; cases y.1.isPrime.mem_or_mem H <;> contradiction
-    · simp only [Opens.coe_inf, Pi.smul_apply, LinearMapClass.map_smul] at wa wr ⊢
+    · simp only [Opens.coe_inf, Pi.smul_apply, LinearMapClass.map_smul, Opens.apply_def] at wa wr ⊢
       rw [mul_comm, ← Algebra.smul_def] at wr
       rw [sections_smul_localizations_def, ← wa, ← mul_smul, ← smul_assoc, mul_comm sr, mul_smul,
         wr, mul_comm rr, Algebra.smul_def, ← map_mul]
@@ -248,7 +248,7 @@ lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
   refine ⟨V ⊓ O, ⟨mem_V, q.2⟩, homOfLE inf_le_right, num, r * den, fun y ↦ ?_⟩
   obtain ⟨h1, h2⟩ := hV ⟨y, y.2.1⟩
   refine ⟨y.1.asIdeal.primeCompl.mul_mem y.2.2.2 h1, ?_⟩
-  simp only [Opens.coe_inf, isLocallyFraction_pred, mkLinearMap_apply,
+  simp only [Opens.coe_inf, Opens.apply_def, isLocallyFraction_pred, mkLinearMap_apply,
     smul_eq_iff_of_mem (S := y.1.1.primeCompl) (hr := h1), mk_smul_mk, one_smul, mul_one] at h2 ⊢
   simpa only [h2, mk_smul_mk, one_smul, smul'_mk, mk_eq] using ⟨1, by simp only [one_smul]; rfl⟩
 
@@ -396,7 +396,10 @@ noncomputable def stalkIso (x : PrimeSpectrum.Top R) :
     rw [stalkToFiberLinearMap_germ]
     obtain ⟨V, hxV, iVU, f, g, (hg : V ≤ PrimeSpectrum.basicOpen _), hs⟩ :=
       exists_const _ _ s x hxU
-    rw [← res_apply M U V iVU s ⟨x, hxV⟩, ← hs, const_apply, localizationToStalk_mk]
+    have := res_apply M U V iVU s ⟨x, hxV⟩
+    dsimp only [isLocallyFraction_pred, Opens.val_apply, LocalizedModule.mkLinearMap_apply,
+      Opens.apply_mk] at this
+    rw [← this, ← hs, const_apply, localizationToStalk_mk]
     exact (tildeInModuleCat M).germ_ext V hxV (homOfLE hg) iVU <| hs ▸ rfl
   inv_hom_id := by ext x; exact x.induction_on (fun _ _ => by
     simp only [hom_comp, LinearMap.coe_comp, Function.comp_apply, hom_id, LinearMap.id_coe, id_eq]

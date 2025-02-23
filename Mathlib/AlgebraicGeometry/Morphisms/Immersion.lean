@@ -23,7 +23,7 @@ if and only if it can be factored into a closed immersion followed by an open im
 
 universe v u
 
-open CategoryTheory
+open CategoryTheory Limits
 
 namespace AlgebraicGeometry
 
@@ -137,7 +137,7 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g]
   __ := IsPreimmersion.of_comp f g
   isLocallyClosed_range := by
     rw [← Set.preimage_image_eq (Set.range _) g.isEmbedding.injective]
-    have := (f ≫ g).isLocallyClosed_range.preimage g.base.2
+    have := (f ≫ g).isLocallyClosed_range.preimage g.base.hom.2
     simpa only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp] using this
 
 theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g] :
@@ -171,6 +171,15 @@ instance : IsImmersion (pullback.diagonal f) := by
     diagonalCoverDiagonalRange f 𝒰 𝒱) ≫ Scheme.Opens.ι _) := inferInstance
   rwa [morphismRestrict_ι, H, ← Scheme.topIso_hom,
     MorphismProperty.cancel_left_of_respectsIso (P := @IsImmersion)] at this
+
+instance : IsImmersion (prod.lift (𝟙 X) (𝟙 X)) := by
+  rw [← MorphismProperty.cancel_right_of_respectsIso @IsImmersion _ (prodIsoPullback X X).hom]
+  convert inferInstanceAs (IsImmersion (pullback.diagonal (terminal.from X)))
+  ext : 1 <;> simp
+
+instance (f g : X ⟶ Y) : IsImmersion (equalizer.ι f g) :=
+  MorphismProperty.of_isPullback (P := @IsImmersion)
+    (isPullback_equalizer_prod f g).flip inferInstance
 
 end IsImmersion
 

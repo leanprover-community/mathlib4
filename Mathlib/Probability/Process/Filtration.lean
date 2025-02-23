@@ -33,7 +33,7 @@ filtration, stochastic process
 
 open Filter Order TopologicalSpace
 
-open scoped Classical MeasureTheory NNReal ENNReal Topology
+open scoped MeasureTheory NNReal ENNReal Topology
 
 namespace MeasureTheory
 
@@ -133,6 +133,7 @@ theorem sSup_def (s : Set (Filtration ι m)) (i : ι) :
     sSup s i = sSup ((fun f : Filtration ι m => f i) '' s) :=
   rfl
 
+open scoped Classical in
 noncomputable instance : InfSet (Filtration ι m) :=
   ⟨fun s =>
     { seq := fun i => if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m
@@ -151,6 +152,7 @@ noncomputable instance : InfSet (Filtration ι m) :=
         obtain ⟨f, hf_mem⟩ := h_nonempty
         exact le_trans (sInf_le ⟨f, hf_mem, rfl⟩) (f.le i) }⟩
 
+open scoped Classical in
 theorem sInf_def (s : Set (Filtration ι m)) (i : ι) :
     sInf s i = if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m :=
   rfl
@@ -295,6 +297,7 @@ section Limit
 variable {E : Type*} [Zero E] [TopologicalSpace E] {ℱ : Filtration ι m} {f : ι → Ω → E}
   {μ : Measure Ω}
 
+open scoped Classical in
 /-- Given a process `f` and a filtration `ℱ`, if `f` converges to some `g` almost everywhere and
 `g` is `⨆ n, ℱ n`-measurable, then `limitProcess f ℱ μ` chooses said `g`, else it returns 0.
 
@@ -315,9 +318,9 @@ theorem stronglyMeasurable_limitProcess : StronglyMeasurable[⨆ n, ℱ n] (limi
 theorem stronglyMeasurable_limit_process' : StronglyMeasurable[m] (limitProcess f ℱ μ) :=
   stronglyMeasurable_limitProcess.mono (sSup_le fun _ ⟨_, hn⟩ => hn ▸ ℱ.le _)
 
-theorem memℒp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Type*} [NormedAddCommGroup F]
+theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Type*} [NormedAddCommGroup F]
     {ℱ : Filtration ℕ m} {f : ℕ → Ω → F} (hfm : ∀ n, AEStronglyMeasurable (f n) μ)
-    (hbdd : ∀ n, eLpNorm (f n) p μ ≤ R) : Memℒp (limitProcess f ℱ μ) p μ := by
+    (hbdd : ∀ n, eLpNorm (f n) p μ ≤ R) : MemLp (limitProcess f ℱ μ) p μ := by
   rw [limitProcess]
   split_ifs with h
   · refine ⟨StronglyMeasurable.aestronglyMeasurable
@@ -326,10 +329,10 @@ theorem memℒp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : 
         (lt_of_le_of_lt ?_ (ENNReal.coe_lt_top : ↑R < ∞))⟩
     simp_rw [liminf_eq, eventually_atTop]
     exact sSup_le fun b ⟨a, ha⟩ => (ha a le_rfl).trans (hbdd _)
-  · exact Memℒp.zero
+  · exact MemLp.zero
 
-@[deprecated (since := "2024-07-27")]
-alias memℒp_limitProcess_of_snorm_bdd := memℒp_limitProcess_of_eLpNorm_bdd
+@[deprecated (since := "2025-02-21")]
+alias memℒp_limitProcess_of_eLpNorm_bdd := memLp_limitProcess_of_eLpNorm_bdd
 
 end Limit
 

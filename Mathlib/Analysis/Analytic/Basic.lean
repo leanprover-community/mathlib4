@@ -79,9 +79,9 @@ open Topology NNReal Filter ENNReal Set Asymptotics
 
 namespace FormalMultilinearSeries
 
-variable [Ring 𝕜] [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
+variable [Semiring 𝕜] [AddCommMonoid E] [AddCommMonoid F] [Module 𝕜 E] [Module 𝕜 F]
 variable [TopologicalSpace E] [TopologicalSpace F]
-variable [TopologicalAddGroup E] [TopologicalAddGroup F]
+variable [ContinuousAdd E] [ContinuousAdd F]
 variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F]
 
 /-- Given a formal multilinear series `p` and a vector `x`, then `p.sum x` is the sum `Σ pₙ xⁿ`. A
@@ -335,11 +335,10 @@ theorem radius_le_smul {p : FormalMultilinearSeries 𝕜 E F} {c : 𝕜} : p.rad
   gcongr
   exact h n
 
-theorem radius_smul_eq (p : FormalMultilinearSeries 𝕜 E F) {c : 𝕜}
-    (hc : c ≠ 0) : (c • p).radius = p.radius := by
+theorem radius_smul_eq (p : FormalMultilinearSeries 𝕜 E F) {c : 𝕜} (hc : c ≠ 0) :
+    (c • p).radius = p.radius := by
   apply eq_of_le_of_le _ radius_le_smul
-  conv => rhs; rw [show p = c⁻¹ • (c • p) by simp [smul_smul, inv_mul_cancel₀ hc]]
-  apply radius_le_smul
+  exact radius_le_smul.trans_eq (congr_arg _ <| inv_smul_smul₀ hc p)
 
 @[simp]
 theorem radius_shift (p : FormalMultilinearSeries 𝕜 E F) : p.shift.radius = p.radius := by
@@ -354,7 +353,7 @@ theorem radius_shift (p : FormalMultilinearSeries 𝕜 E F) : p.shift.radius = p
     intro h
     simp only [le_refl, le_sup_iff, exists_prop, and_true]
     intro n
-    cases' n with m
+    rcases n with - | m
     · simp
     right
     rw [pow_succ, ← mul_assoc]
