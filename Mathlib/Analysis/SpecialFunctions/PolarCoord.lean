@@ -89,10 +89,6 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
     · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
 
-theorem measurable_polarCoord :
-    Measurable (polarCoord) :=
-  Measurable.prod_mk (by fun_prop) Complex.measurableEquivRealProd.symm.measurable.carg
-
 theorem continuous_polarCoord_symm :
     Continuous (polarCoord.symm) :=
   Continuous.prod_mk (by fun_prop) (by fun_prop)
@@ -185,14 +181,6 @@ It is a homeomorphism between `ℂ - ℝ≤0` and `(0, +∞) × (-π, π)`. -/
 protected noncomputable def polarCoord : PartialHomeomorph ℂ (ℝ × ℝ) :=
   equivRealProdCLM.toHomeomorph.transPartialHomeomorph polarCoord
 
-protected theorem measurable_polarCoord :
-    Measurable (Complex.polarCoord) :=
-  measurable_polarCoord.comp Complex.measurableEquivRealProd.measurable
-
-protected theorem continuous_polarCoord_symm :
-    Continuous (Complex.polarCoord.symm) :=
-  equivRealProdCLM.symm.continuous.comp continuous_polarCoord_symm
-
 protected theorem polarCoord_apply (a : ℂ) :
     Complex.polarCoord a = (Complex.abs a, Complex.arg a) := by
   simp_rw [Complex.abs_def, Complex.normSq_apply, ← pow_two]
@@ -211,7 +199,7 @@ protected theorem polarCoord_symm_apply (p : ℝ × ℝ) :
 theorem measurableEquivRealProd_symm_polarCoord_symm_apply (p : ℝ × ℝ) :
     (measurableEquivRealProd.symm (polarCoord.symm p)) = Complex.polarCoord.symm p := rfl
 
-theorem abs_polarCoord_symm (p : ℝ × ℝ) :
+theorem polarCoord_symm_abs (p : ℝ × ℝ) :
     Complex.abs (Complex.polarCoord.symm p) = |p.1| := by simp
 
 protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
