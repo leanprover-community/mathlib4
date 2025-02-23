@@ -6,7 +6,6 @@ Authors: Geoffrey Irving, Tomaz Mascarenhas
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Computability.QueryComplexity.Defs
-import Mathlib.Tactic.Cases
 
 /-!
 ## Basic properties of `Comp` and its Monad instance.
