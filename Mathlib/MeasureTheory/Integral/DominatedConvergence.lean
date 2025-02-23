@@ -400,7 +400,7 @@ theorem continuousAt_parametric_primitive_of_dominated [FirstCountableTopology X
         ∫ s in a₀..b₀, F p.1 s ∂μ + ∫ s in b₀..p.2, F x₀ s ∂μ +
           ∫ s in b₀..p.2, F p.1 s - F x₀ s ∂μ := by
     rw [nhds_prod_eq]
-    refine (h_bound.prodMk Ioo_nhds).mono ?_
+    refine (h_bound.prod_mk Ioo_nhds).mono ?_
     rintro ⟨x, t⟩ ⟨hx : ∀ᵐ t : ℝ ∂μ.restrict (Ι a b), ‖F x t‖ ≤ bound t, ht : t ∈ Ioo a b⟩
     dsimp
     have hiF : ∀ {x a₀ b₀},
@@ -433,7 +433,7 @@ theorem continuousAt_parametric_primitive_of_dominated [FirstCountableTopology X
     have : ∀ᶠ p : X × ℝ in 𝓝 (x₀, b₀),
         ‖∫ s in b₀..p.2, F p.1 s - F x₀ s ∂μ‖ ≤ |∫ s in b₀..p.2, 2 * bound s ∂μ| := by
       rw [nhds_prod_eq]
-      refine (h_bound.prodMk Ioo_nhds).mono ?_
+      refine (h_bound.prod_mk Ioo_nhds).mono ?_
       rintro ⟨x, t⟩ ⟨hx : ∀ᵐ t ∂μ.restrict (Ι a b), ‖F x t‖ ≤ bound t, ht : t ∈ Ioo a b⟩
       have H : ∀ᵐ t : ℝ ∂μ.restrict (Ι b₀ t), ‖F x t - F x₀ t‖ ≤ 2 * bound t := by
         apply (ae_restrict_of_ae_restrict_of_subset (hsub hb₀ ht) (hx.and hx₀)).mono

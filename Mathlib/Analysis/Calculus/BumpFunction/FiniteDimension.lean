@@ -495,7 +495,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
           rintro ⟨R, x⟩ ⟨hR : 1 < R, _⟩
           simp only [hR, uncurry_apply_pair, if_true, Function.comp_apply]
         apply (y_smooth E).comp
-        · apply ContDiffOn.prod
+        · apply ContDiffOn.prodMk
           · refine
               (contDiffOn_fst.sub contDiffOn_const).div (contDiffOn_fst.add contDiffOn_const) ?_
             rintro ⟨R, x⟩ ⟨hR : 1 < R, _⟩

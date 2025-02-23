@@ -301,9 +301,8 @@ alias condexp_ae_eq_integral_condDistrib' := condExp_ae_eq_integral_condDistrib'
 
 open MeasureTheory
 
-theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_mk
-    {Ω F} {mΩ : MeasurableSpace Ω} (X : Ω → β) {μ : Measure Ω} [TopologicalSpace F] {f : Ω → F}
-    (hf : AEStronglyMeasurable f μ) :
+theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prodMk {Ω F} {mΩ : MeasurableSpace Ω}
+    (X : Ω → β) {μ : Measure Ω} [TopologicalSpace F] {f : Ω → F} (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) := by
   refine ⟨fun x => hf.mk f x.2, hf.stronglyMeasurable_mk.comp_measurable measurable_snd, ?_⟩
   suffices h : Measure.QuasiMeasurePreserving Prod.snd (μ.map fun ω ↦ (X ω, ω)) μ from
@@ -321,8 +320,12 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_mk
     · simp
     · contrapose! hX; exact measurable_fst.comp_aemeasurable hX
 
-theorem _root_.MeasureTheory.Integrable.comp_snd_map_prod_mk
-    {Ω} {mΩ : MeasurableSpace Ω} (X : Ω → β) {μ : Measure Ω} {f : Ω → F} (hf_int : Integrable f μ) :
+@[deprecated (since := "2025-02-22")]
+alias _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_mk :=
+  MeasureTheory.AEStronglyMeasurable.comp_snd_map_prodMk
+
+theorem _root_.MeasureTheory.Integrable.comp_snd_map_prodMk {Ω} {mΩ : MeasurableSpace Ω} (X : Ω → β)
+    {μ : Measure Ω} {f : Ω → F} (hf_int : Integrable f μ) :
     Integrable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) := by
   by_cases hX : AEMeasurable X μ
   · have hf := hf_int.1.comp_snd_map_prodMk X (mΩ := mΩ) (mβ := mβ)
@@ -333,16 +336,27 @@ theorem _root_.MeasureTheory.Integrable.comp_snd_map_prod_mk
     · simp
     · contrapose! hX; exact measurable_fst.comp_aemeasurable hX
 
-theorem aestronglyMeasurable_comp_snd_map_prod_mk_iff {Ω F} {_ : MeasurableSpace Ω}
+@[deprecated (since := "2025-02-22")]
+alias _root_.MeasureTheory.Integrable.comp_snd_map_prod_mk :=
+  MeasureTheory.Integrable.comp_snd_map_prodMk
+
+theorem aestronglyMeasurable_comp_snd_map_prodMk_iff {Ω F} {_ : MeasurableSpace Ω}
     [TopologicalSpace F] {X : Ω → β} {μ : Measure Ω} (hX : Measurable X) {f : Ω → F} :
     AEStronglyMeasurable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) ↔
-    AEStronglyMeasurable f μ :=
+      AEStronglyMeasurable f μ :=
   ⟨fun h => h.comp_measurable (hX.prodMk measurable_id), fun h => h.comp_snd_map_prodMk X⟩
 
-theorem integrable_comp_snd_map_prod_mk_iff {Ω} {_ : MeasurableSpace Ω} {X : Ω → β} {μ : Measure Ω}
+@[deprecated (since := "2025-02-22")]
+alias aestronglyMeasurable_comp_snd_map_prod_mk_iff :=
+  aestronglyMeasurable_comp_snd_map_prodMk_iff
+
+theorem integrable_comp_snd_map_prodMk_iff {Ω} {_ : MeasurableSpace Ω} {X : Ω → β} {μ : Measure Ω}
     (hX : Measurable X) {f : Ω → F} :
     Integrable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) ↔ Integrable f μ :=
   ⟨fun h => h.comp_measurable (hX.prodMk measurable_id), fun h => h.comp_snd_map_prodMk X⟩
+
+@[deprecated (since := "2025-02-22")]
+alias integrable_comp_snd_map_prod_mk_iff := integrable_comp_snd_map_prodMk_iff
 
 theorem condExp_ae_eq_integral_condDistrib_id [NormedSpace ℝ F] [CompleteSpace F] {X : Ω → β}
     {μ : Measure Ω} [IsFiniteMeasure μ] (hX : Measurable X) {f : Ω → F} (hf_int : Integrable f μ) :

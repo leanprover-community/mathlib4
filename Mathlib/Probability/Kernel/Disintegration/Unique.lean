@@ -96,8 +96,8 @@ theorem eq_condKernel_of_measure_eq_compProd (κ : Kernel α Ω) [IsFiniteKernel
     refine eq_condKernel_of_measure_eq_compProd_real (Kernel.map κ f) ?_
     ext s hs
     conv_lhs => rw [hρ'def, hκ]
-    rw [Measure.map_apply (measurable_id.prod_map hf.measurable) hs, hρ',
-      Measure.compProd_apply hs, Measure.compProd_apply (measurable_id.prod_map hf.measurable hs)]
+    rw [Measure.map_apply (measurable_id.prodMap hf.measurable) hs, hρ',
+      Measure.compProd_apply hs, Measure.compProd_apply (measurable_id.prodMap hf.measurable hs)]
     congr with a
     rw [Kernel.map_apply' _ hf.measurable]
     exacts [rfl, measurable_prodMk_left hs]
@@ -116,12 +116,12 @@ theorem eq_condKernel_of_measure_eq_compProd (κ : Kernel α Ω) [IsFiniteKernel
     rw [← hx, Kernel.map_apply _ hf.measurable, Measure.map_apply hf.measurable hs]
   ext s hs
   conv_lhs => rw [← ρ.disintegrate ρ.condKernel]
-  rw [Measure.compProd_apply hs, Measure.map_apply (measurable_id.prod_map hf.measurable) hs,
+  rw [Measure.compProd_apply hs, Measure.map_apply (measurable_id.prodMap hf.measurable) hs,
     Measure.compProd_apply]
   · congr with a
     rw [Kernel.map_apply' _ hf.measurable]
     exacts [rfl, measurable_prodMk_left hs]
-  · exact measurable_id.prod_map hf.measurable hs
+  · exact measurable_id.prodMap hf.measurable hs
 
 end Measure
 
