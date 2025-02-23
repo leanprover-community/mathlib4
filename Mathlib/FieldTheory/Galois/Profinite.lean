@@ -200,7 +200,7 @@ lemma proj_adjoin_singleton_val [IsGalois k K] (g : limit (asProfiniteGaloisGrou
     (x : K) (y : adjoin k {x}) (L : FiniteGaloisIntermediateField k K)
     (h : x ∈ L.toIntermediateField) :
     (proj (adjoin k {x}) g y).val = (proj L g ⟨y, adjoin_simple_le_iff.mpr h y.2⟩).val :=
-  proj_of_le _ g y _ _
+  proj_of_le _ g y _ (adjoin_simple_le_iff.mpr h)
 
 /-- A function from `K` to `K` defined pointwise using a family of compatible elements of
 `Gal(L/k)` where `L` is a `FiniteGaloisIntermediateField` -/
