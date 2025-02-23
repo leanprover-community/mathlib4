@@ -126,16 +126,14 @@ instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStric
 
 /-! ### Inverse Image -/
 
-theorem InvImage.isTrichotomous {α β : Type*} {r : α → α → Prop} [IsTrichotomous α r] {f : β → α}
-    (h : Function.Injective f) : IsTrichotomous β (InvImage r f)  where
+theorem InvImage.isTrichotomous [IsTrichotomous α r] {f : β → α} (h : Function.Injective f) :
+    IsTrichotomous β (InvImage r f)  where
   trichotomous a b := by
     rw [← Function.Injective.eq_iff h]
     exact IsTrichotomous.trichotomous (f a) (f b)
 
-instance InvImage.isAsymm {α β : Type*} {r : α → α → Prop} [IsAsymm α r] (f : β → α) :
-    IsAsymm β (InvImage r f) where
+instance InvImage.isAsymm [IsAsymm α r] (f : β → α) : IsAsymm β (InvImage r f) where
   asymm a b h h2 := IsAsymm.asymm (f a) (f b) h h2
-
 
 /-! ### Well-order -/
 
