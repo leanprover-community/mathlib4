@@ -493,7 +493,7 @@ theorem lmarginalPTraj_le [∀ n, IsMarkovKernel (κ n)] (c : ℕ) {f : (Π n, X
 
 /-- If `f` only depends on the variables uo to rank `a`, integrating beyond rank `a` is the same
 as integrating up to rank `a`. -/
-theorem lmarginalPTraj_right [∀ n, IsMarkovKernel (κ n)] {d : ℕ}
+theorem lmarginalPTraj_right [∀ n, IsMarkovKernel (κ n)] {d : ℕ} {f : (Π n, X n) → ℝ≥0∞}
     (mf : Measurable f) (hf : DependsOn f (Iic a)) (hac : a ≤ c) (had : a ≤ d) :
     lmarginalPTraj κ b c f = lmarginalPTraj κ b d f := by
   wlog hcd : c ≤ d generalizing c d
@@ -515,7 +515,7 @@ theorem dependsOn_lmarginalPTraj [∀ n, IsSFiniteKernel (κ n)] (a : ℕ) {f : 
     congrm ∫⁻ z : _, ?_ ∂(ptraj κ a b).map _ (fun i ↦ ?_)
     · exact hxy i.1 i.2
     · refine hf.updateFinset _ ?_
-      rwa [← coe_sdiff, Iic_sdiff_Ioc_same hab]
+      rwa [← coe_sdiff, Iic_diff_Ioc_self_of_le hab]
 
 end DependsOn
 
