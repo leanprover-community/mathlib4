@@ -141,9 +141,6 @@ maps in `SimplexCategory.Truncated 2).` -/
 abbrev toNerve₂.mk.naturalityProperty : MorphismProperty (SimplexCategory.Truncated 2) :=
   (MorphismProperty.naturalityProperty (fun n => toNerve₂.mk.app F n.unop)).unop
 
-lemma nerve.σ_zero_eq_mk_id (x : C) : (nerve C).σ (0 : Fin 1) (.mk₀ x) = .mk₁ (𝟙 x) :=
-  ComposableArrows.ext₁ rfl rfl (by simp; rfl)
-
 lemma ReflPrefunctor.congr_mk₁_map
     {Y : Type u'} [ReflQuiver.{v'} Y] {C : Type u} [Category.{v} C]
     (F : ReflPrefunctor Y (ReflQuiv.of C))
@@ -169,21 +166,6 @@ lemma toNerve₂.mk_naturality_δ0i (i : Fin 2) : toNerve₂.mk.naturalityProper
   fin_cases i <;> rfl
 
 section
-variable {X₀ X₁ X₂ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂)
-
-theorem nerve_δ22 : (nerve C).map (δ 2).op (ComposableArrows.mk₂ f g) = ComposableArrows.mk₁ f :=
-  ComposableArrows.ext₁ rfl rfl (by simp; rfl)
-
-theorem nerve_δ20 : (nerve C).map (δ 0).op (ComposableArrows.mk₂ f g) = ComposableArrows.mk₁ g :=
-  ComposableArrows.ext₁ rfl rfl (by simp; rfl)
-
-theorem nerve_δ21 : (nerve C).map (δ 1).op (ComposableArrows.mk₂ f g) =
-    ComposableArrows.mk₁ (f ≫ g) :=
-  ComposableArrows.ext₁ rfl rfl (by simp; rfl)
-
-end
-
-section
 variable
   (hyp : ∀ φ, F.map (ev02₂ φ) = CategoryStruct.comp (obj := C) (F.map (ev01₂ φ)) (F.map (ev12₂ φ)))
 include hyp
@@ -200,7 +182,7 @@ lemma toNerve₂.mk_naturality_δ1i (i : Fin 3) : toNerve₂.mk.naturalityProper
   simp only [fullSubcategoryInclusion.map]
   fin_cases i
   · simp only [Fin.zero_eta]
-    rw [nerve_δ20]
+    rw [nerve.δ20_eq]
     fapply ReflPrefunctor.congr_mk₁_map
     · unfold ev1₂ ι1₂ δ₂
       simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
@@ -214,7 +196,7 @@ lemma toNerve₂.mk_naturality_δ1i (i : Fin 3) : toNerve₂.mk.naturalityProper
       exact congrFun (congrArg X.map (congrArg Quiver.Hom.op this.symm)) x
     · aesop
   · simp only [Fin.mk_one]
-    rw [nerve_δ21]
+    rw [nerve.δ21_eq]
     rw [← hyp]
     fapply ReflPrefunctor.congr_mk₁_map
     · unfold ev0₂ ι0₂ δ₂
@@ -223,7 +205,7 @@ lemma toNerve₂.mk_naturality_δ1i (i : Fin 3) : toNerve₂.mk.naturalityProper
       simp [← FunctorToTypes.map_comp_apply, ← op_comp]
     · aesop
   · simp only [Fin.reduceFinMk]
-    rw [nerve_δ22]
+    rw [nerve.δ22_eq]
     fapply ReflPrefunctor.congr_mk₁_map
     · unfold ev0₂ ι0₂ δ₂
       simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
@@ -236,7 +218,7 @@ lemma toNerve₂.mk_naturality_δ1i (i : Fin 3) : toNerve₂.mk.naturalityProper
 
 lemma toNerve₂.mk_naturality_σ1i (i : Fin 2) : toNerve₂.mk.naturalityProperty F (σ₂ i) := by
   apply (cancel_mono (nerve₂.seagull _)).1
-  simp [nerve₂.seagull]
+  simp only [nerve₂.seagull, prod.comp_lift, assoc]
   congr 1 <;> rw [← map_comp, ← op_comp]
   · unfold δ2₂
     rw [← toNerve₂.mk_naturality_δ1i F hyp, ← assoc, ← map_comp, ← op_comp]
