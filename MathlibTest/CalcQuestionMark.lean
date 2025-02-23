@@ -33,7 +33,7 @@ info: Create calc tactic:
 ---
 warning: declaration uses 'sorry'
 -/
--- #guard_msgs in
+#guard_msgs in
 example (a : Nat) : a ≤ a := by
   all_goals
     calc?
