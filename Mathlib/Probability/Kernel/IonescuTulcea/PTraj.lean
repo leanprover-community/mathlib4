@@ -335,7 +335,7 @@ lemma ptraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) : ptraj κ a b =
         map_prod_eq, map_map]
       congr
       any_goals fun_prop
-  · rw [ptraj_le hba, IicProdIoc_le hba, ← map_map _ measurable_fst (measurable_frestrictLe₂ _),
+  · rw [ptraj_le hba, IicProdIoc_le hba, map_comp_right _ measurable_fst (measurable_frestrictLe₂ _),
       ← fst_eq, @fst_prod _ _ _ _ _ _ _ _ _ ?_, id_map]
     exact IsMarkovKernel.map _ (measurable_restrict₂ _)
 
@@ -345,10 +345,10 @@ lemma ptraj_succ_map_frestrictLe₂ (a b : ℕ) :
     (ptraj κ a (b + 1)).map (frestrictLe₂ b.le_succ) = ptraj κ a b := by
   obtain hab | hba := le_or_lt a b
   · have := IsMarkovKernel.map (κ b) (piSingleton b).measurable
-    rw [ptraj_succ_eq_comp hab, map_comp, ptraj_succ_self, map_map, frestrictLe₂_comp_IicProdIoc,
-      ← fst_eq, fst_prod, id_comp]
+    rw [ptraj_succ_eq_comp hab, map_comp, ptraj_succ_self, ← map_comp_right,
+      frestrictLe₂_comp_IicProdIoc, ← fst_eq, fst_prod, id_comp]
     all_goals fun_prop
-  · rw [ptraj_le (Nat.succ_le.2 hba), ptraj_le hba.le, map_deterministic]
+  · rw [ptraj_le (Nat.succ_le.2 hba), ptraj_le hba.le, deterministic_map]
     · rfl
     · fun_prop
 
@@ -359,7 +359,8 @@ theorem ptraj_map_frestrictLe₂ (a : ℕ) (hbc : b ≤ c) :
   induction c, hbc using Nat.le_induction with
   | base => exact map_id ..
   | succ k h hk =>
-    rw [← hk, ← frestrictLe₂_comp_frestrictLe₂ h k.le_succ, ← map_map, ptraj_succ_map_frestrictLe₂]
+    rw [← hk, ← frestrictLe₂_comp_frestrictLe₂ h k.le_succ, map_comp_right,
+      ptraj_succ_map_frestrictLe₂]
     all_goals fun_prop
 
 lemma ptraj_map_frestrictLe₂_apply (x₀ : Π i : Iic a, X i) (hbc : b ≤ c) :
