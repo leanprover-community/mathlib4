@@ -9,6 +9,7 @@ warning: declaration uses 'sorry'
 -/
 #guard_msgs in
 example : 1 = 1 := by
+  have := 0
   calc?
 
 
