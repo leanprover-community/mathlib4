@@ -11,8 +11,8 @@ import Mathlib.Algebra.GradedMulAction
 /-!
 # The filtration on abelian group and ring
 
-In this file, we defined the fitration on abelian group,
-and extend it to get the filtration on ring.
+In this file, we define the fitration on abelian groups,
+and extend it to get the filtration on rings.
 
 # Main definitions
 
@@ -20,8 +20,8 @@ and extend it to get the filtration on ring.
 is filtration if there is another series `F_lt` equal to the supremum of `F` with smaller index
 
 * `IsRingFiltration` : For `σ` satisfying `SetLike σ R` where `R` is a semiring,
-an increasing series `F` in `σ` is ring filtration if `IsFiltration F F_lt` and
-the pointwise multiplication of `F i` and `F j` is in `F (i + j)`
+  an increasing series `F` in `σ` is ring filtration if `IsFiltration F F_lt` and
+  the pointwise multiplication of `F i` and `F j` is in `F (i + j)`
 
 * `IsModuleFiltration` : For `F` satisfying `IsRingFiltration F F_lt` in a semiring `R` and `σM`
 satisfying `SetLike σ M` where `M` is a module over `R`, an increasing series `FM` in `σM` is
@@ -32,9 +32,7 @@ module filtration if `IsFiltration F F_lt` and the pointwise scalar multiplicati
 
 section GeneralFiltration
 
-variable {ι : Type*} [Preorder ι]
-
-variable {A : Type*} {σ : Type*} [SetLike σ A]
+variable {ι A σ : Type*} [Preorder ι] [SetLike σ A]
 
 /-- For `σ` satisfying `SetLike σ A`, an increasing series of `F` in `σ` is filtration if
 there is another series `F_lt` equal to the supremum of `F` with smaller index.
@@ -58,9 +56,7 @@ end GeneralFiltration
 
 section FilteredRing
 
-variable {ι : Type*} [OrderedAddCommMonoid ι]
-
-variable {R : Type*} [Semiring R] {σ : Type*} [SetLike σ R]
+variable {ι R σ : Type*} [OrderedAddCommMonoid ι] [Semiring R] [SetLike σ R]
 
 /-- For `σ` satisfying `SetLike σ R` where `R` is a semiring, an increasing series `F` in `σ` is
 ring filtration if `IsFiltration F F_lt` and the pointwise multiplication of `F i` and `F j` is in
@@ -78,12 +74,8 @@ end FilteredRing
 
 section FilteredModule
 
-variable {ι : Type*} [OrderedAddCommMonoid ι]
-
-variable {R : Type*} [Semiring R] {σ : Type*} [SetLike σ R]
-
-variable {M : Type*} [AddCommMonoid M] [Module R M] {ιM : Type*} [OrderedAddCommMonoid ιM]
-  [VAdd ι ιM] {σM : Type*} [SetLike σM M]
+variable {ι ιM R M σ σM : Type*} [OrderedAddCommMonoid ι] [OrderedAddCommMonoid ιM]
+variable [Semiring R] [SetLike σ R] [AddCommMonoid M] [Module R M] [VAdd ι ιM] [SetLike σM M]
 
 /-- For `F` satisfying `IsRingFiltration F F_lt` in a semiring `R` and `σM` satisfying
  `SetLike σ M` where `M` is a module over `R`, an increasing series `FM` in `σM` is
