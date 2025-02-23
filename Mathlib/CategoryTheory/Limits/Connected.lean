@@ -121,7 +121,7 @@ theorem Cone.isLimit_iff_isIso_limMap_π {F : J ⥤ C} [HasLimit F] (c : Cone F)
     Nonempty (IsLimit c) ↔ IsIso (limMap c.π) :=
   ⟨fun ⟨h⟩ => IsLimit.isIso_limMap_π h, fun _ => ⟨c.isLimitOfIsIsoLimMapπ⟩⟩
 
-/-- If `J` is connected, `f : J ⥤ C` and `C` is a cocone on `F`, then to check that `c` is a
+/-- If `J` is connected, `F : J ⥤ C` and `C` is a cocone on `F`, then to check that `c` is a
 colimit it is sufficient to check that `colimMap c.ι` is an isomorphism. The converse is also
 true, see `Cocone.isColimit_iff_isIso_colimMap_ι`. -/
 def Cocone.isColimitOfIsIsoColimMapι {F : J ⥤ C} [HasColimit F] (c : Cocone F)
