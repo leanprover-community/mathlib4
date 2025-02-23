@@ -1285,6 +1285,10 @@ lemma id_comp (κ : Kernel α β) : Kernel.id ∘ₖ κ = κ := by
 lemma id_map {f : α → β} (hf : Measurable f) : Kernel.id.map f = deterministic f hf := by
   rw [← deterministic_comp_eq_map, comp_id]
 
+lemma deterministic_map {f : α → β} (hf : Measurable f) {g : β → γ} (hg : Measurable g) :
+    (deterministic f hf).map g = deterministic (g ∘ f) (hg.comp hf) := by
+  rw [← id_map, ← map_comp_right _ hf hg, id_map]
+
 lemma comp_map (κ : Kernel α β) (η : Kernel γ δ) {f : β → γ} (hf : Measurable f) :
     η ∘ₖ (κ.map f) = (η.comap f hf) ∘ₖ κ := by
   ext x s ms
