@@ -21,7 +21,7 @@ a valuation.
 
 noncomputable section
 
-variable {R : Type*} {Γ₀ : outParam (Type*)} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
+variable {R Γ₀ : Type*} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
 
 /-- Type synonym for a ring equipped with the topology coming from a valuation. -/
 @[nolint unusedArguments]
