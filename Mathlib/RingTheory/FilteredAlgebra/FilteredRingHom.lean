@@ -5,7 +5,30 @@ Authors: HuanYu Zheng, Yi Yuan, Weichen Jiao
 -/
 import Mathlib.RingTheory.FilteredAlgebra.AssociatedGraded
 import Mathlib.Algebra.Ring.Hom.Defs
+/-!
+# The filtered ring morphsims on ring
 
+In this file, we defined the filtered ring morphsim on ring, and proof some basic property of it.
+
+# Main definitions
+
+* `FilteredHom` : defines a morphism between general filtration (filtration of set) that preserves
+both the main and auxiliary filtered structures.
+
+* `FilteredRingHom` : `FilteredRingHom` defines a morphism between filtered rings that preserves
+both the ring and filtration structures.
+
+* `FilteredRingHom.IsStrict` :
+
+* `FilteredRingHom.comp` :
+
+* `Gf` :
+
+* `Gf_comp` :
+
+* `G` :
+
+-/
 section FilteredHom
 
 variable {ι A B C α β σ: Type*} [Preorder ι] [SetLike α A] [SetLike β B] [SetLike σ C]
@@ -14,6 +37,8 @@ variable (FA : ι → α) (FA_lt : outParam <| ι → α) [IsFiltration FA FA_lt
 variable (FB : ι → β) (FB_lt : outParam <| ι → β) [IsFiltration FB FB_lt]
 variable (FC : ι → σ) (FC_lt : outParam <| ι → σ) [IsFiltration FC FC_lt]
 
+/-- This class describes a structure-preserving map between two filtered rings
+`IsFiltration FA FA_lt` and `IsFiltration FB FB_lt` (types `A` and `B`). -/
 class FilteredHom where
   toFun : A → B
   pieces_wise : ∀ i : ι, ∀ a ∈ FA i, toFun a ∈ FB i
@@ -22,6 +47,9 @@ class FilteredHom where
 variable (f : FilteredHom FA FA_lt FB FB_lt) (g : FilteredHom FB FB_lt FC FC_lt)
 
 variable {FA FB FC FA_lt FB_lt FC_lt} in
+/-- This function composes two filtered morphisms `f : FilteredHom FA FA_lt FB FB_lt` and
+`g : FilteredHom FB FB_lt FC FC_lt`, resulting in a new morphism
+`f ∘ g : FilteredHom FA FA_lt FC FC_lt`. -/
 def FilteredHom.comp : FilteredHom FA FA_lt FC FC_lt := {
   toFun := g.1.comp f.1
   pieces_wise := fun i a ha ↦ g.pieces_wise i (f.1 a) (f.pieces_wise i a ha)
@@ -32,6 +60,8 @@ infixl:100 " ∘ " => FilteredHom.comp
 
 end FilteredHom
 
+
+
 section FilteredRingHom
 
 variable {ι R S T γ σ τ : Type*} [OrderedAddCommMonoid ι]
@@ -40,6 +70,8 @@ variable [Ring R] (FR : ι → γ) (FR_lt : outParam <| ι → γ) [SetLike γ R
 variable [Ring S] (FS : ι → σ) (FS_lt : outParam <| ι → σ) [SetLike σ S] [IsRingFiltration FS FS_lt]
 variable [Ring T] (FT : ι → τ) (FT_lt : outParam <| ι → τ) [SetLike τ T] [IsRingFiltration FT FT_lt]
 
+/-- This class combines the properties of a ring homomorphism and a filtered homomorphism, ensuring
+that the structure of both the ring and its filtration are maintained under the morphism.-/
 class FilteredRingHom extends FilteredHom FR FR_lt FS FS_lt, R →+* S
 
 variable {FR FS FR_lt FS_lt} in
@@ -135,3 +167,14 @@ theorem G_comp: (G g) ∘ (G f) = G (g ∘ f) := by
   exact Gf_comp FT FT_lt f g x i
 
 end DirectSum
+/- The `docBlame` linter reports:
+DEFINITIONS ARE MISSING DOCUMENTATION STRINGS: -/
+#check @FilteredHom.toFun /- definition missing documentation string -/
+#check «term_∘__1» /- definition missing documentation string -/
+#check @FilteredRingHom /- inductive missing documentation string -/
+#check @FilteredRingHom.toRingHom /- definition missing documentation string -/
+#check @FilteredRingHom.IsStrict /- inductive missing documentation string -/
+#check @FilteredRingHom.comp /- definition missing documentation string -/
+#check «term_∘__2» /- definition missing documentation string -/
+#check @Gf /- definition missing documentation string -/
+#check @G /- definition missing documentation string -/
