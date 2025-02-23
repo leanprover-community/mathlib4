@@ -11,8 +11,8 @@ import Mathlib.Algebra.GradedMulAction
 /-!
 # The filtration on abelian group and ring
 
-In this file, we defined the fitration on abelian group,
-and extend it to get the filtration on ring.
+In this file, we define the fitration on abelian groups,
+and extend it to get the filtration on rings.
 
 # Main definitions
 
@@ -20,8 +20,8 @@ and extend it to get the filtration on ring.
 is filtration if there is another series `F_lt` equal to the supremum of `F` with smaller index
 
 * `IsRingFiltration` : For `σ` satisfying `SetLike σ R` where `R` is a semiring,
-an increasing series `F` in `σ` is ring filtration if `IsFiltration F F_lt` and
-the pointwise multiplication of `F i` and `F j` is in `F (i + j)`
+  an increasing series `F` in `σ` is ring filtration if `IsFiltration F F_lt` and
+  the pointwise multiplication of `F i` and `F j` is in `F (i + j)`
 
 * `IsModuleFiltration` : For `F` satisfying `IsRingFiltration F F_lt` in a semiring `R` and `σM`
 satisfying `SetLike σ M` where `M` is a module over `R`, an increasing series `FM` in `σM` is
