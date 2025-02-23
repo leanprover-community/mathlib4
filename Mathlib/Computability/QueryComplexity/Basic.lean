@@ -36,7 +36,7 @@ lemma query'_bind (o : I) (m : o ∈ s) (y : ι o) (f : ω y → Comp ι ω s α
 /-- `Comp` is a lawful monad -/
 instance : LawfulMonad (Comp ι ω s) := LawfulMonad.mk'
   (id_map := fun x => by
-    simp only [map_eq, id, bind, bind']
+    simp only [map_eq, bind]
     induction x with
     | pure' _ => rfl
     | query' _ _ _ _ h => simp only [bind', h])
@@ -49,64 +49,64 @@ instance : LawfulMonad (Comp ι ω s) := LawfulMonad.mk'
 
 variable [DecidableEq I]
 
+@[simp]
+lemma run_pure (a : α) (o : (i : I) → Oracle (ι i) ω) :
+    (pure a : Comp ι ω s α).run o = (a, 0) :=
+  rfl
+
 /-- Running `pure` yields the original value -/
 @[simp]
-lemma value_pure (x : α) (o : (i : I) → Oracle (ι i) ω) : (pure x : Comp ι ω s α).value o = x := by
-  simp only [value, run]
+lemma value_pure (x : α) (o : (i : I) → Oracle (ι i) ω) : (pure x : Comp ι ω s α).value o = x :=
+  rfl
 
 /-- `pure` has cost 0 -/
 @[simp]
 lemma cost_pure (x : α) (o : (i : I) → Oracle (ι i) ω) :
-    (pure x : Comp ι ω s α).cost o = 0 := by
-  ext i
-  simp [cost, run]
+    (pure x : Comp ι ω s α).cost o = 0 :=
+  rfl
+
+lemma run_query' {i : I} (m : i ∈ s) (y : ι i) (f : ω y → Comp ι ω s α)
+    (o : (i : I) → Oracle (ι i) ω) : (query' i m y f).run o =
+      let x := (o i) y
+      let (z, c) := (f x).run o
+      (z, Pi.single i 1 + c) :=
+  rfl
+
+@[simp]
+lemma run_query {i : I} (y : ι i)
+    (o : (i : I) → Oracle (ι i) ω) : (query i y).run o = (o i y, Pi.single i 1) := by
+  simp [query, run_query']
 
 /-- `query'` costs one query, plus the rest -/
 @[simp]
 lemma cost_query' {i : I} (m : i ∈ s) (y : ι i) (f : ω y → Comp ι ω s α)
     (o : (j : I) → Oracle (ι j) ω) :
-    (query' i m y f).cost o = Pi.single i 1 + (f (o i y)).cost o := by
-  ext j
-  simp [cost, run]
-  exact Nat.add_comm (((f (o i y)).run o).snd j) _
+    (query' i m y f).cost o = Pi.single i 1 + (f (o i y)).cost o :=
+  rfl
 
 @[simp]
 lemma cost_query (i : I) (y : ι i) (o : (i : I) → Oracle (ι i) ω) :
     (query i y).cost o i = 1 := by
   simp [query]
 
-/-- Expansion of `query'.run` -/
-lemma run_query {i : I} (m : i ∈ s) (y : ι i) (f : ω y → Comp ι ω s α)
-    (o : (i : I) → Oracle (ι i) ω) : (query' i m y f).run o =
-      let x := (o i) y
-      let (z,c) := (f x).run o
-      (z, c + Pi.single i 1) := rfl
 
 /-- The value of `query` and `query'` -/
 @[simp]
 lemma value_query' (i : I) (m : i ∈ s) (y : ι i) (f : ω y → Comp ι ω s α) (o : (i : I) →
-    Oracle (ι i) ω) : (query' i m y f).value o = (f (o i y)).value o := by
-  simp only [value, run_query]
+    Oracle (ι i) ω) : (query' i m y f).value o = (f (o i y)).value o :=
+  rfl
 
 @[simp]
 lemma value_query (i : I) (y : ι i) (o : (i : I) → Oracle (ι i) ω) :
-    (query i y).value o = o i y := by
-  simp only [query, value_query']
+    (query i y).value o = o i y :=
   rfl
 
 /-- The cost of `f >>= g` is `f.cost + g.cost` -/
 lemma cost_bind (f : Comp ι ω s α) (g : α → Comp ι ω s β) (o : (i : I) → Oracle (ι i) ω) :
     (f >>= g).cost o = f.cost o + (g (f.value o)).cost o := by
-  ext i
   induction f with
-  | pure' _ =>
-    simp only [Pi.add_apply]
-    exact Eq.symm ((fun {_ _} ↦ Nat.add_left_eq_self.mpr) rfl)
-  | query' _ _ _ _ h =>
-    simp only [bind, bind'] at h
-    simp only [cost_query', bind, bind', add_assoc, h, Pi.add_apply]
-    apply congr_arg₂ _ rfl
-    simp only [value_query', add_right_inj]
+  | pure' _ => simp
+  | query' _ _ _ _ h => simp [h, add_assoc]
 
 /-- The value of `f >>= g` is the composition of the two `Comp`s -/
 @[simp]

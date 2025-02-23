@@ -101,15 +101,15 @@ def run (f : Comp ι ω s α) (os : (i : I) → Oracle (ι i) ω) : α × (I →
   | .query' i _ y f =>
     let x := os i y
     let (z, c) := (f x).run os
-    (z, c + Pi.single i 1)
+    (z, Pi.single i 1 + c)
 
 /-- The value of a `Comp ι s` after execution -/
 def value (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) : α :=
   (f.run o).1
 
 /-- The query count for a specific oracle of a `Comp ι s` -/
-def cost (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) (i : I) : ℕ :=
-  (f.run o).2 i
+def cost (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) : I → ℕ :=
+  (f.run o).2
 
 /-- Extend the set of allowed oracles in a computation -/
 def allow (f : Comp ι ω s α) (st : s ⊆ t) : Comp ι ω t α := match f with
