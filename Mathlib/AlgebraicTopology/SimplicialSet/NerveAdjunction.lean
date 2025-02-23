@@ -257,7 +257,7 @@ lemma toNerve₂.mk_naturality_σ1i (i : Fin 2) : toNerve₂.mk.naturalityProper
     rw [← toNerve₂.mk_naturality_δ1i F hyp, ← assoc, ← map_comp, ← op_comp]
     change toNerve₂.mk.naturalityProperty F (δ₂ 0 ≫ σ₂ i)
     fin_cases i <;> dsimp only [Fin.zero_eta, Fin.isValue, Fin.mk_one]
-    · rw [δ₂_zero_comp_σ₂_zero']
+    · rw [δ₂_zero_comp_σ₂_zero]
       exact (toNerve₂.mk.naturalityProperty F).id_mem _
     · rw [δ₂_zero_comp_σ₂_one]
       exact (toNerve₂.mk.naturalityProperty F).comp_mem _ _

@@ -59,20 +59,16 @@ abbrev σ₂ {n} (i : Fin (n + 1)) (hn := by decide) (hn' := by decide) :
     (⟨⦋n+1⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n⦌, hn'⟩ := SimplexCategory.σ i
 
 @[reassoc (attr := simp)]
-lemma δ₂_zero_comp_σ₂_zero : δ₂ (0 : Fin 2) ≫ σ₂ 0 = 𝟙 _ := SimplexCategory.δ_comp_σ_self
-
-@[reassoc (attr := simp)]
-lemma δ₂_zero_comp_σ₂_zero' : δ₂ (0 : Fin 3) ≫ σ₂ 0 = 𝟙 _ := SimplexCategory.δ_comp_σ_self
+lemma δ₂_zero_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
+    δ₂ (n := n) 0 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ := SimplexCategory.δ_comp_σ_self
 
 @[reassoc]
 lemma δ₂_zero_comp_σ₂_one : δ₂ (0 : Fin 3) ≫ σ₂ 1 = σ₂ 0 ≫ δ₂ 0 :=
   SimplexCategory.δ_comp_σ_of_le (i := 0) (j := 0) (Fin.zero_le _)
 
 @[reassoc (attr := simp)]
-lemma δ₂_one_comp_σ₂_zero : δ₂ (1 : Fin 2) ≫ σ₂ 0 = 𝟙 _ := SimplexCategory.δ_comp_σ_succ
-
-@[reassoc (attr := simp)]
-lemma δ₂_one_comp_σ₂_zero' : δ₂ (1 : Fin 3) ≫ σ₂ 0 = 𝟙 _ := SimplexCategory.δ_comp_σ_succ
+lemma δ₂_one_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
+    δ₂ (n := n) 1 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ := SimplexCategory.δ_comp_σ_succ
 
 @[reassoc (attr := simp)]
 lemma δ₂_two_comp_σ₂_one : δ₂ (2 : Fin 3) ≫ σ₂ 1 = 𝟙 _ := SimplexCategory.δ_comp_σ_succ' (by decide)
