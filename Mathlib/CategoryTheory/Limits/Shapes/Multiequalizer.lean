@@ -913,33 +913,10 @@ structure SymmStruct where
   /-- the symmetry isomorphism -/
   iso (i j : ι) : I.left ⟨i, j⟩ ≅ I.left ⟨j, i⟩
   iso_hom_fst (i j : ι) : (iso i j).hom ≫ I.fst ⟨j, i⟩ = I.snd ⟨i, j⟩
-  iso_inv (i j : ι) : (iso i j).inv = (iso j i).hom
-  isIso_fst (i : ι) : IsIso (I.fst ⟨i, i⟩)
-  iso_hom_self (i : ι) : (iso i i).hom = 𝟙 _
+  iso_hom_snd (i j : ι) : (iso i j).hom ≫ I.snd ⟨j, i⟩ = I.fst ⟨i, j⟩
+  fst_eq_snd (i : ι) : I.fst ⟨i, i⟩ = I.snd ⟨i, i⟩
 
-namespace SymmStruct
-
-variable {c} (h : I.SymmStruct)
-
-include h
-
-lemma iso_hom_snd (i j : ι) : (h.iso i j).hom ≫ I.snd ⟨j, i⟩ = I.fst ⟨i, j⟩ := by
-  rw [← h.iso_hom_fst, ← h.iso_inv j i, Iso.inv_hom_id_assoc]
-
-attribute [reassoc] iso_hom_fst iso_hom_snd
-
-lemma isIso_snd (i : ι) : IsIso (I.snd ⟨i, i⟩) := by
-  have := h.isIso_fst i
-  rw [← h.iso_hom_fst]
-  infer_instance
-
-lemma iso_inv_self (i : ι) : (h.iso i i).inv = 𝟙 _ := by
-  rw [h.iso_inv, h.iso_hom_self]
-
-lemma fst_eq_snd (i : ι) : I.fst ⟨i, i⟩ = I.snd ⟨i, i⟩ := by
-  rw [← h.iso_hom_fst, h.iso_hom_self, Category.id_comp]
-
-end SymmStruct
+attribute [reassoc] SymmStruct.iso_hom_fst SymmStruct.iso_hom_snd
 
 variable [LinearOrder ι]
 
