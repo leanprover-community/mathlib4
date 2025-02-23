@@ -262,7 +262,6 @@ instance hasBiproduct_of_preserves : HasBiproduct (F.obj ∘ f) :=
 
 /-- If `F` preserves a biproduct, we get a definitionally nice isomorphism
     `F.obj (⨁ f) ≅ ⨁ (F.obj ∘ f)`. -/
-@[simp]
 def mapBiproduct : F.obj (⨁ f) ≅ ⨁ F.obj ∘ f :=
   biproduct.uniqueUpToIso _ (isBilimitOfPreserves _ (biproduct.isBilimit _))
 
@@ -346,7 +345,6 @@ instance hasBinaryBiproduct_of_preserves : HasBinaryBiproduct (F.obj X) (F.obj Y
 
 /-- If `F` preserves a binary biproduct, we get a definitionally nice isomorphism
     `F.obj (X ⊞ Y) ≅ F.obj X ⊞ F.obj Y`. -/
-@[simp]
 def mapBiprod : F.obj (X ⊞ Y) ≅ F.obj X ⊞ F.obj Y :=
   biprod.uniqueUpToIso _ _ (isBinaryBilimitOfPreserves F (BinaryBiproduct.isBilimit _ _))
 
