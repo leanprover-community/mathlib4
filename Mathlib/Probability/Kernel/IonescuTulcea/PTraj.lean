@@ -3,10 +3,8 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Logic.Function.DependsOn
 import Mathlib.MeasureTheory.MeasurableSpace.PreorderRestrict
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Probability.Kernel.Composition.MeasureComp
+import Mathlib.Probability.Kernel.Composition.Basic
 
 /-!
 # Consecutive composition of kernels
@@ -83,9 +81,9 @@ def IicProdIoc (a b : ℕ) (x : (Π i : Iic a, X i) × (Π i : Ioc a b, X i)) : 
     fun i ↦ if h : i ≤ a then x.1 ⟨i, mem_Iic.2 h⟩
       else x.2 ⟨i, mem_Ioc.2 ⟨not_le.1 h, mem_Iic.1 i.2⟩⟩
 
-/-- When `IicProdIoc` is only partially apply (i.e. `IicProdIoc a b x` but not `IicProdIoc a b x i`)
-`simp [IicProdIoc]` won't unfold the definition. This lemma allows to unfold it
-by writing `simp [IicProdIoc_def]`. -/
+/-- When `IicProdIoc` is only partially applied (i.e. `IicProdIoc a b x` but not
+`IicProdIoc a b x i`) `simp [IicProdIoc]` won't unfold the definition.
+This lemma allows to unfold it by writing `simp [IicProdIoc_def]`. -/
 lemma IicProdIoc_def (a b : ℕ) :
     IicProdIoc (X := X) a b = fun x i ↦ if h : i.1 ≤ a then x.1 ⟨i, mem_Iic.2 h⟩
       else x.2 ⟨i, mem_Ioc.2 ⟨not_le.1 h, mem_Iic.1 i.2⟩⟩ := rfl
