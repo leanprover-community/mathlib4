@@ -547,6 +547,11 @@ instance IsMarkovKernel.compProd (κ : Kernel α β) [IsMarkovKernel κ] (η : K
     [IsMarkovKernel η] : IsMarkovKernel (κ ⊗ₖ η) where
   isProbabilityMeasure a := ⟨by simp [compProd_apply]⟩
 
+instance IsZeroOrMarkovKernel.compProd (κ : Kernel α β) [IsZeroOrMarkovKernel κ]
+    (η : Kernel (α × β) γ) [IsZeroOrMarkovKernel η] : IsZeroOrMarkovKernel (κ ⊗ₖ η) := by
+  obtain rfl | _ := eq_zero_or_isMarkovKernel κ <;> obtain rfl | _ := eq_zero_or_isMarkovKernel η
+  all_goals simpa using by infer_instance
+
 theorem compProd_apply_univ_le (κ : Kernel α β) (η : Kernel (α × β) γ) [IsFiniteKernel η] (a : α) :
     (κ ⊗ₖ η) a Set.univ ≤ κ a Set.univ * IsFiniteKernel.bound η := by
   by_cases hκ : IsSFiniteKernel κ
@@ -1230,6 +1235,11 @@ theorem lintegral_comp (η : Kernel β γ) (κ : Kernel α β) (a : α) {g : γ 
 
 instance IsMarkovKernel.comp (η : Kernel β γ) [IsMarkovKernel η] (κ : Kernel α β)
     [IsMarkovKernel κ] : IsMarkovKernel (η ∘ₖ κ) := by rw [comp_eq_snd_compProd]; infer_instance
+
+instance IsZeroOrMarkovKernel.comp (κ : Kernel α β) [IsZeroOrMarkovKernel κ]
+    (η : Kernel β γ) [IsZeroOrMarkovKernel η] : IsZeroOrMarkovKernel (η ∘ₖ κ) := by
+  obtain rfl | _ := eq_zero_or_isMarkovKernel κ <;> obtain rfl | _ := eq_zero_or_isMarkovKernel η
+  all_goals simpa using by infer_instance
 
 instance IsFiniteKernel.comp (η : Kernel β γ) [IsFiniteKernel η] (κ : Kernel α β)
     [IsFiniteKernel κ] : IsFiniteKernel (η ∘ₖ κ) := by rw [comp_eq_snd_compProd]; infer_instance
