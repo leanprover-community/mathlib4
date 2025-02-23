@@ -251,7 +251,7 @@ instance instAlgebra : Algebra R (𝒜 ᵍ⊗[R] ℬ) where
     dsimp [mul_def, mulHom_apply, auxEquiv_tmul]
     simp_rw [DirectSum.decompose_algebraMap, DirectSum.decompose_one, algebraMap_gradedMul]
     -- Qualified `map_smul` to avoid a TC timeout https://github.com/leanprover-community/mathlib4/pull/8386
-    erw [LinearMap.map_smul]
+    rw [LinearEquiv.map_smul]
     simp
 
 lemma algebraMap_def (r : R) : algebraMap R (𝒜 ᵍ⊗[R] ℬ) r = algebraMap R A r ᵍ⊗ₜ[R] 1 := rfl
@@ -378,7 +378,7 @@ lemma auxEquiv_comm (x : 𝒜 ᵍ⊗[R] ℬ) :
     simp_rw [auxEquiv_comm, auxEquiv_tmul, decompose_coe, ← lof_eq_of R, gradedComm_of_tmul_of,
       @Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_zsmul R]
     -- Qualified `map_smul` to avoid a TC timeout https://github.com/leanprover-community/mathlib4/pull/8386
-    erw [LinearMap.map_smul, auxEquiv_tmul]
+    rw [LinearEquiv.map_smul, auxEquiv_tmul]
     simp_rw [decompose_coe, lof_eq_of]
 
 end GradedTensorProduct

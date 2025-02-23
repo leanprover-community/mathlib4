@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
 -/
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Induction
 
 /-!
 # Join of a list of lists
@@ -18,6 +18,21 @@ assert_not_exists Monoid
 variable {α β : Type*}
 
 namespace List
+
+@[gcongr]
+protected theorem Sublist.flatten {l₁ l₂ : List (List α)} (h : l₁ <+ l₂) :
+    l₁.flatten <+ l₂.flatten := by
+  induction h with
+  | slnil => simp
+  | cons _ _ ih =>
+    rw [flatten_cons]
+    exact ih.trans (sublist_append_right _ _)
+  | cons₂ _ _ ih => simpa
+
+@[gcongr]
+protected theorem Sublist.flatMap {l₁ l₂ : List α} (h : l₁ <+ l₂) (f : α → List β) :
+    l₁.flatMap f <+ l₂.flatMap f :=
+  (h.map f).flatten
 
 set_option linter.deprecated false in
 /-- See `List.length_flatten` for the corresponding statement using `List.sum`. -/

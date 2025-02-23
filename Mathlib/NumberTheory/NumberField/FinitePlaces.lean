@@ -3,6 +3,7 @@ Copyright (c) 2024 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
+import Mathlib.Analysis.Normed.Ring.Ultra
 import Mathlib.Data.Int.WithZero
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
@@ -51,7 +52,7 @@ lemma norm_ne_zero : (absNorm v.asIdeal : NNReal) ≠ 0 :=
   ne_zero_of_lt (one_lt_norm_nnreal v)
 
 /-- The `v`-adic absolute value on `K` defined as the norm of `v` raised to negative `v`-adic
-valuation.-/
+valuation -/
 noncomputable def vadicAbv : AbsoluteValue K ℝ where
   toFun x := toNNReal (norm_ne_zero v) (v.valuation x)
   map_mul' _ _ := by simp only [_root_.map_mul, NNReal.coe_mul]
@@ -132,6 +133,18 @@ to the power of the `v`-adic valuation for integers. -/
 theorem FinitePlace.norm_def_int (x : 𝓞 K) : ‖embedding v x‖ = toNNReal (norm_ne_zero v)
     (v.intValuationDef x) := by
   rw [norm_def, vadicAbv_def, valuation_eq_intValuationDef]
+
+/-- The `v`-adic absolute value satisfies the ultrametric inequality. -/
+theorem vadicAbv_add_le_max (x y : K) : vadicAbv v (x + y) ≤ (vadicAbv v x) ⊔ (vadicAbv v y) := by
+  simp [← FinitePlace.norm_def]
+
+/-- The `v`-adic absolute value of a natural number is `≤ 1`. -/
+theorem vadicAbv_natCast_le_one (n : ℕ) : vadicAbv v n ≤ 1 := by
+  simp only [← FinitePlace.norm_def, map_natCast, IsUltrametricDist.norm_natCast_le_one]
+
+/-- The `v`-adic absolute value of an integer is `≤ 1`. -/
+theorem vadicAbv_intCast_le_one (n : ℤ) : vadicAbv v n ≤ 1 := by
+  simp [← AbsoluteValue.apply_natAbs_eq, vadicAbv_natCast_le_one]
 
 open FinitePlace
 

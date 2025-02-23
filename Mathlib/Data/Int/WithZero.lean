@@ -47,11 +47,11 @@ def toNNReal {e : ℝ≥0} (he : e ≠ 0) : ℤₘ₀ →*₀ ℝ≥0 where
   map_mul' x y := by
     simp only
     by_cases hxy : x * y = 0
-    · cases' zero_eq_mul.mp (Eq.symm hxy) with hx hy
+    · rcases zero_eq_mul.mp (Eq.symm hxy) with hx | hy
       --either x = 0 or y = 0
       · rw [dif_pos hxy, dif_pos hx, MulZeroClass.zero_mul]
       · rw [dif_pos hxy, dif_pos hy, MulZeroClass.mul_zero]
-    · cases' mul_ne_zero_iff.mp hxy with hx hy
+    · obtain ⟨hx, hy⟩ := mul_ne_zero_iff.mp hxy
       --  x Equiv≠ 0 and y ≠ 0
       rw [dif_neg hxy, dif_neg hx, dif_neg hy, ← zpow_add' (Or.inl he), ← toAdd_mul]
       congr

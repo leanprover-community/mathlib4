@@ -18,6 +18,7 @@ for those subobjects.
 
 -/
 
+assert_not_exists RelIso
 
 variable {M G R : Type*}
 variable [Monoid M] [Group G] [Semiring R]
