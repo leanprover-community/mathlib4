@@ -568,31 +568,27 @@ theorem Filter.EventuallyEq.prodMap_nhds {α β : Type*} {f₁ f₂ : X → α} 
     {x : X} {y : Y} (hf : f₁ =ᶠ[𝓝 x] f₂) (hg : g₁ =ᶠ[𝓝 y] g₂) :
     Prod.map f₁ g₁ =ᶠ[𝓝 (x, y)] Prod.map f₂ g₂ := by
   rw [nhds_prod_eq]
-  exact hf.prodMap hg
+  exact hf.prod_map hg
 
 theorem Filter.EventuallyLE.prodMap_nhds {α β : Type*} [LE α] [LE β] {f₁ f₂ : X → α} {g₁ g₂ : Y → β}
     {x : X} {y : Y} (hf : f₁ ≤ᶠ[𝓝 x] f₂) (hg : g₁ ≤ᶠ[𝓝 y] g₂) :
     Prod.map f₁ g₁ ≤ᶠ[𝓝 (x, y)] Prod.map f₂ g₂ := by
   rw [nhds_prod_eq]
-  exact hf.prodMap hg
+  exact hf.prod_map hg
 
 theorem nhds_swap (x : X) (y : Y) : 𝓝 (x, y) = (𝓝 (y, x)).map Prod.swap := by
   rw [nhds_prod_eq, Filter.prod_comm, nhds_prod_eq]; rfl
 
-theorem Filter.Tendsto.prodMk_nhds {γ} {x : X} {y : Y} {f : Filter γ} {mx : γ → X} {my : γ → Y}
+theorem Filter.Tendsto.prod_mk_nhds {γ} {x : X} {y : Y} {f : Filter γ} {mx : γ → X} {my : γ → Y}
     (hx : Tendsto mx f (𝓝 x)) (hy : Tendsto my f (𝓝 y)) :
     Tendsto (fun c => (mx c, my c)) f (𝓝 (x, y)) := by
-  rw [nhds_prod_eq]
-  exact Filter.Tendsto.prodMk hx hy
-
-@[deprecated (since := "2025-02-20")]
-alias Filter.Tendsto.prod_mk_nhds := Filter.Tendsto.prodMk_nhds
+  rw [nhds_prod_eq]; exact Filter.Tendsto.prod_mk hx hy
 
 theorem Filter.Tendsto.prodMap_nhds {x : X} {y : Y} {z : Z} {w : W} {f : X → Y} {g : Z → W}
     (hf : Tendsto f (𝓝 x) (𝓝 y)) (hg : Tendsto g (𝓝 z) (𝓝 w)) :
     Tendsto (Prod.map f g) (𝓝 (x, z)) (𝓝 (y, w)) := by
   rw [nhds_prod_eq, nhds_prod_eq]
-  exact hf.prodMap hg
+  exact hf.prod_map hg
 
 theorem Filter.Eventually.curry_nhds {p : X × Y → Prop} {x : X} {y : Y}
     (h : ∀ᶠ x in 𝓝 (x, y), p x) : ∀ᶠ x' in 𝓝 x, ∀ᶠ y' in 𝓝 y, p (x', y') := by
@@ -600,16 +596,13 @@ theorem Filter.Eventually.curry_nhds {p : X × Y → Prop} {x : X} {y : Y}
   exact h.curry
 
 @[fun_prop]
-theorem ContinuousAt.prodMk {f : X → Y} {g : X → Z} {x : X} (hf : ContinuousAt f x)
+theorem ContinuousAt.prod {f : X → Y} {g : X → Z} {x : X} (hf : ContinuousAt f x)
     (hg : ContinuousAt g x) : ContinuousAt (fun x => (f x, g x)) x :=
-  hf.prodMk_nhds hg
-
-@[deprecated (since := "2025-02-20")]
-alias ContinuousAt.prod := ContinuousAt.prodMk
+  hf.prod_mk_nhds hg
 
 theorem ContinuousAt.prodMap {f : X → Z} {g : Y → W} {p : X × Y} (hf : ContinuousAt f p.fst)
     (hg : ContinuousAt g p.snd) : ContinuousAt (Prod.map f g) p :=
-  hf.fst''.prodMk hg.snd''
+  hf.fst''.prod hg.snd''
 
 @[deprecated (since := "2024-10-05")] alias ContinuousAt.prod_map := ContinuousAt.prodMap
 
@@ -624,7 +617,7 @@ theorem ContinuousAt.prodMap' {f : X → Z} {g : Y → W} {x : X} {y : Y} (hf : 
 theorem ContinuousAt.comp₂ {f : Y × Z → W} {g : X → Y} {h : X → Z} {x : X}
     (hf : ContinuousAt f (g x, h x)) (hg : ContinuousAt g x) (hh : ContinuousAt h x) :
     ContinuousAt (fun x ↦ f (g x, h x)) x :=
-  ContinuousAt.comp hf (hg.prodMk hh)
+  ContinuousAt.comp hf (hg.prod hh)
 
 theorem ContinuousAt.comp₂_of_eq {f : Y × Z → W} {g : X → Y} {h : X → Z} {x : X} {y : Y × Z}
     (hf : ContinuousAt f y) (hg : ContinuousAt g x) (hh : ContinuousAt h x) (e : (g x, h x) = y) :
