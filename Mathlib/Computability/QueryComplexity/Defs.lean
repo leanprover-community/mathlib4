@@ -92,6 +92,22 @@ The `Comp` just returns the same answer the oracle gave. -/
 def query (o : I) (y : ι o) : Comp ι ω {o} (ω y) :=
   Comp.query' o (mem_singleton _) y pure
 
+/-- Extend the set of allowed oracles in a computation. -/
+def allow (f : Comp ι ω s α) (st : s ⊆ t) : Comp ι ω t α := match f with
+  | .pure' x => pure x
+  | .query' i m y f => .query' i (st m) y (fun b => (f b).allow st)
+
+/-- Extend the set of allowed oracles in a computation to the universe set. -/
+abbrev allowAll (f : Comp ι ω s α) : Comp ι ω (univ : Set I) α :=
+  f.allow (subset_univ s)
+
+/-- `query'` is an implementation detail that can be expressed in terms of `query`, `allow`,
+and `bind'`. -/
+theorem query'_eq {o : I} (ho : o ∈ s) (i : ι o) (f : ω i → Comp ι ω s α) :
+    query' o ho i f =
+      ((query o i : Comp ι ω _ _).allow (singleton_subset_iff.2 ho)).bind' f :=
+  rfl
+
 variable [DecidableEq I]
 
 /-- Execute `f` with the oracles `os`. Returns the final value and the number of queries to
@@ -112,14 +128,6 @@ def value (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) : α :=
 def cost (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) : I → ℕ :=
   (f.run o).2
 
-/-- Extend the set of allowed oracles in a computation. -/
-def allow (f : Comp ι ω s α) (st : s ⊆ t) : Comp ι ω t α := match f with
-  | .pure' x => pure x
-  | .query' i m y f => .query' i (st m) y (fun b => (f b).allow st)
-
-/-- Extend the set of allowed oracles in a computation to the universe set. -/
-abbrev allowAll (f : Comp ι ω s α) : Comp ι ω (univ : Set I) α :=
-  f.allow (subset_univ s)
 
 section OneOracle
 variable {ι : Type*} {ω : ι → Type*}
