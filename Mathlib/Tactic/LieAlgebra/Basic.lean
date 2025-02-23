@@ -6,10 +6,6 @@ Authors: Nailin Guan, Zixun Guo, Wanyi He, Jingting Wang
 import Mathlib.Algebra.Lie.Basic
 import Qq
 
-open Lean Meta Elab Tactic Qq
-
-attribute [local instance] Mathlib.Meta.monadLiftOptionMetaM
-
 /-!
 # The tactic on Lie Ring - lie_ring
 
@@ -23,6 +19,10 @@ basis.
 The elimination approach implemented here follows the theory of Hall sets and Lyndon words,
 see for example, ‹https://personal.math.ubc.ca/~cass/research/pdf/Free.pdf›
 -/
+
+open Lean Meta Elab Tactic Qq
+
+attribute [local instance] Mathlib.Meta.monadLiftOptionMetaM
 
 section inductiveTypes
 

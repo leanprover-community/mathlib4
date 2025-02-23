@@ -5,6 +5,8 @@ Authors: Jingting Wang
 -/
 import Mathlib.Tactic.LieAlgebra.Basic
 
+/-! # Tests for the lie_ring tactic -/
+
 variable {R L : Type*} [LieRing L]
 
 /--
