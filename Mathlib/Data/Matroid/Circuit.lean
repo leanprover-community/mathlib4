@@ -501,7 +501,7 @@ lemma finitary_iff_forall_isCircuit_finite : M.Finitary ↔ ∀ C, M.IsCircuit C
   simpa using (hI {x} (by simpa) (finite_singleton _)).subset_ground
 
 /-- In a finitary matroid, every element spanned by a set `X` is in fact
-spanned by a finite independent subset of `X`.  -/
+spanned by a finite independent subset of `X`. -/
 lemma exists_mem_finite_closure_of_mem_closure [M.Finitary] (he : e ∈ M.closure X) :
     ∃ I ⊆ X, I.Finite ∧ M.Indep I ∧ e ∈ M.closure I := by
   by_cases heY : e ∈ X

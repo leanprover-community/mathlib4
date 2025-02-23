@@ -41,7 +41,7 @@ synonym for a list of ordered pairs in `R × M`, where typically `M` is an `R`-m
 form to which the tactics reduce module expressions.
 
 (It is not a full "normal form" because the scalars, i.e. `R` components, are not themselves
-ring-normalized.  But this partial normal form is more convenient for our purposes.)  -/
+ring-normalized. But this partial normal form is more convenient for our purposes.) -/
 def NF (R : Type*) (M : Type*) := List (R × M)
 
 namespace NF

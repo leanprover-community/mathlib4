@@ -95,7 +95,7 @@ theorem intercalate_splitOn (x : α) [DecidableEq α] : [x].intercalate (xs.spli
   cases tl' <;> simpa [flatten, h'] using ih
 
 /-- `splitOn x` is the left inverse of `intercalate [x]`, on the domain
-  consisting of each nonempty list of lists `ls` whose elements do not contain `x`  -/
+consisting of each nonempty list of lists `ls` whose elements do not contain `x` -/
 theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ l) (hls : ls ≠ []) :
     ([x].intercalate ls).splitOn x = ls := by
   simp only [intercalate]
