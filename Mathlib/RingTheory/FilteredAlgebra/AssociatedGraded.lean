@@ -494,17 +494,15 @@ class hasGSMul [AddCommMonoid M] [Module R M] [isfil : IsRingFiltration F F_lt] 
   smul_F_lt_mem {i : ι} {j : ιM} {x y} : x ∈ F i → y ∈ FM_lt j → x • y ∈ FM_lt (i +ᵥ j)
 
 lemma hasGSMul_int [AddCommMonoid M] [Module R M] (F : ℤ → σ) (mono : Monotone F)
-    (one_mem : 1 ∈ F 0) (mul_mem : ∀ {i j x y}, x ∈ F i → y ∈ F j → x * y ∈ F (i + j))
-    (F' : ℤ → σM) (mono' : Monotone F')
-    (smul_mem : ∀ {i j x y}, x ∈ F i → y ∈ F' j → x • y ∈ F' (i + j)) :
-    hasGSMul (isfil := IsRingFiltration.mk_int F mono one_mem mul_mem)
+    [SetLike.GradedMonoid F] (F' : ℤ → σM) (mono' : Monotone F') [SetLike.GradedSMul F F'] :
+    hasGSMul (isfil := IsRingFiltration.mk_int F mono)
     F (fun n ↦ F (n - 1)) F' (fun n ↦ F' (n - 1)) :=
-  letI := IsRingFiltration.mk_int F mono one_mem mul_mem
-  letI := IsModuleFiltration.mk_int F mono one_mem mul_mem F' mono' smul_mem
+  letI := IsRingFiltration.mk_int F mono
+  letI := IsModuleFiltration.mk_int F mono F' mono'
 { F_lt_smul_mem := fun {i j x y} hx hy ↦ by
-    simpa [add_sub_right_comm i j 1] using IsModuleFiltration.smul_mem hx hy
+    simpa [add_sub_right_comm i j 1] using IsModuleFiltration.toGradedSMul.smul_mem hx hy
   smul_F_lt_mem := fun {i j x y} hx hy ↦ by
-    simpa [add_sub_assoc i j 1] using IsModuleFiltration.smul_mem hx hy}
+    simpa [add_sub_assoc i j 1] using IsModuleFiltration.toGradedSMul.smul_mem hx hy}
 
 variable [AddSubgroupClass σ R] [AddCommGroup M] [Module R M] [AddSubgroupClass σM M]
 
@@ -521,7 +519,7 @@ lemma hasGSMul_AddSubgroup [IsOrderedCancelVAdd ι ιM] (F : ι → AddSubgroup 
       neg_mem' := by simp only [Set.mem_setOf_eq, neg_smul, neg_mem_iff, imp_self, implies_true]}
     apply IsFiltration.is_sup (F := F) (F_lt := F_lt) S i (fun k hk z hz ↦
       IsFiltration.is_le (VAdd.vadd_lt_vadd_of_lt_of_le hk (Preorder.le_refl j))
-      (IsModuleFiltration.smul_mem hz hy)) hx
+      (IsModuleFiltration.toGradedSMul.smul_mem hz hy)) hx
   smul_F_lt_mem := by
     intro i j x y hx hy
     let S : AddSubgroup M := {
@@ -531,7 +529,7 @@ lemma hasGSMul_AddSubgroup [IsOrderedCancelVAdd ι ιM] (F : ι → AddSubgroup 
       neg_mem' := by simp only [Set.mem_setOf_eq, smul_neg, neg_mem_iff, imp_self, implies_true]}
     apply IsFiltration.is_sup (F := FM) (F_lt := FM_lt) S j (fun k hk z hz ↦
       IsFiltration.is_le (VAdd.vadd_lt_vadd_of_le_of_lt (Preorder.le_refl i) hk)
-      (IsModuleFiltration.smul_mem hx hz)) hy
+      (IsModuleFiltration.toGradedSMul.smul_mem hx hz)) hy
 
 variable [IsRingFiltration F F_lt] (FM : ιM → σM) (FM_lt : outParam <| ιM → σM)
 
@@ -540,8 +538,7 @@ the scalar multiplication of its value. -/
 def IsModuleFiltration.hSMul [IsModuleFiltration F F_lt FM FM_lt] (i : ι) (j : ιM)
     (x : F i) (y : FM j) : FM (i +ᵥ j) where
   val := x.1 • y
-  property := by
-    simp [IsModuleFiltration.smul_mem x.2 y.2]
+  property := by simp [IsModuleFiltration.toGradedSMul.smul_mem x.2 y.2]
 
 instance (i : ι) (j : ιM) [IsModuleFiltration F F_lt FM FM_lt] :
     HSMul (F i) (FM j) (FM (i +ᵥ j)) where
