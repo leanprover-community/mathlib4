@@ -58,18 +58,6 @@ and includes many more features.
       with `id` replaced by `fun x => x`.
   - Lambdas in front of number literals are removed. This is because usually `n : α → β` is
     defined to be `fun _ : α => n` for a number literal `n`. So instead of `λ, n` we store `n`.
-  - Any expression with head constant `+`, `*`, `-`, `/`, `⁻¹`, `+ᵥ`, `•` or `^` is normalized to
-    not have a lambda in front of it and to have the default amount of arguments
-    (if the instance allows this replacement).
-    e.g. `(f + g) a` is stored as `f a + g a` and `fun x => f x + g x` is stored as `f + g`.
-    - This makes lemmas such as `MeasureTheory.integral_integral_add'` redundant, which is the
-      same as `MeasureTheory.integral_integral_add`, with `f a + g a` replaced by `(f + g) a`
-    - it also means that a lemma like `Continuous.mul` can be stated as talking about `f * g`
-      instead of `fun x => f x * g x`.
-    - When trying to find `Continuous.add` with the expression `Continuous fun x => 1 + x`,
-      this is possible, because we first revert the eta-reduction that happens by default,
-      and then distribute the lambda. Thus this is indexed as `Continuous (1 + id)`,
-      which matches with `Continuous (f + g)` from `Continuous.add`.
 
 - The key `Key.opaque` only matches with a `Key.star` key.
   Depending on the configuration, β-reduction and ζ-reduction may be disabled, so the resulting
@@ -109,8 +97,8 @@ def findImportMatches
   let ngen ← getNGen
   let (cNGen, ngen) := ngen.mkChild
   setNGen ngen
-  let dummy : IO.Ref (Option (RefinedDiscrTree α)) ← IO.mkRef none
-  let ref := @EnvExtension.getState _ ⟨dummy⟩ ext (← getEnv)
+  let _ : Inhabited (IO.Ref (Option (RefinedDiscrTree α))) := ⟨← IO.mkRef none⟩
+  let ref := EnvExtension.getState ext (← getEnv)
   let importTree ← (← ref.get).getDM do
     profileitM Exception  "RefinedDiscrTree import initialization" (← getOptions) <|
       createImportedDiscrTree

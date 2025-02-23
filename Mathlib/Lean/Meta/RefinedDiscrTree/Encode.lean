@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
 import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
-import Mathlib.Lean.Meta.RefinedDiscrTree.Pi
 import Lean.Meta.DiscrTree
 
 /-!
@@ -144,7 +143,7 @@ private def encodingStepAux (e : Expr) (lambdas : List FVarId) (root : Bool) : L
     let bvars := lambdas ++ (← read).bvars
     unless e.getAppNumArgs == 0 do
       setEAsPrevious
-    if let some idx := bvars.indexOf? fvarId then
+    if let some idx := bvars.idxOf? fvarId then
       withLams lambdas <| .bvar idx e.getAppNumArgs
     else
       withLams lambdas <| .fvar fvarId e.getAppNumArgs
@@ -239,22 +238,13 @@ private def encodingStep (original : Expr) (root : Bool)
   lambdaTelescopeReduce original []
     (fun lambdas =>
       return [← (do withLams lambdas (← mkNewStar)).run entry])
-    (fun e lambdas => do
-      unless root do
-        if let some (n, as) ← reducePi e lambdas then
-          return ← as.mapM fun data => do (useReducePi n data).run (← read) entry
-
-      cacheEtaPossibilities e original lambdas root entry)
+    (fun e lambdas => cacheEtaPossibilities e original lambdas root entry)
 
 /-- A single step in encoding an `Expr` into `Key`s. -/
 private def encodingStep' (original : Expr) (root : Bool) : LazyM Key := do
   lambdaTelescopeReduce original []
     (fun lambdas => do withLams lambdas (← mkNewStar))
-    (fun e lambdas => do
-      unless root do
-        if let some (n, as) ← reducePi e lambdas then
-          return ← useReducePi n as.head!
-      encodingStepAux e lambdas root)
+    (fun e lambdas => encodingStepAux e lambdas root)
 
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
 @[inline] def initializeLazyEntryAux (e : Expr) : MetaM (List (Key × LazyEntry)) := do
