@@ -652,6 +652,11 @@ theorem map_apply (κ : Kernel α β) (hf : Measurable f) (a : α) : map κ f a 
 theorem map_apply' (κ : Kernel α β) (hf : Measurable f) (a : α) {s : Set γ} (hs : MeasurableSet s) :
     map κ f a s = κ a (f ⁻¹' s) := by rw [map_apply _ hf, Measure.map_apply hf hs]
 
+lemma map_comp_right (κ : Kernel α β) {f : β → γ} (hf : Measurable f) {g : γ → δ}
+    (hg : Measurable g) : κ.map (g ∘ f) = (κ.map f).map g := by
+  ext1 x
+  rw [map_apply _ hg, map_apply _ hf, Measure.map_map hg hf, ← map_apply _ (hg.comp hf)]
+
 @[simp]
 lemma map_zero : Kernel.map (0 : Kernel α β) f = 0 := by
   ext
