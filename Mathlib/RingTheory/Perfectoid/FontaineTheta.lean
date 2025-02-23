@@ -224,9 +224,22 @@ theorem map_eq_zero_iff {p : ℕ} {R S : Type*} [CommRing R] [CommRing S] [Fact 
     simpa using h n
 
 -- `Mathlib.RingTheory.WittVector.Basic` after `WittVector.ghostComponent_apply` or a local lemma
-theorem foo {R : Type*} [CommRing R] {x : 𝕎 R} (n : ℕ) (hx : ∀ i ≤ n, (p : R) ∣ x.coeff n) :
-    (p : R) ^ (n + 1) ∣ ghostComponent n x := by
-  sorry
+theorem foo {R : Type*} [CommRing R] {x : 𝕎 R} (n : ℕ) (hx : ∀ i ≤ n, (p : R) ∣ x.coeff i) :
+    (p : R) ^ n ∣ ghostComponent n x := by
+  rw [WittVector.ghostComponent_apply, wittPolynomial, MvPolynomial.aeval_sum]
+  apply Finset.dvd_sum
+  intro i hi
+  simp only [Finset.mem_range] at hi
+  have : (MvPolynomial.aeval x.coeff) ((MvPolynomial.monomial (R := ℤ)
+      (Finsupp.single i (p ^ (n - i)))) (p ^ i)) = ((p : R) ^ i) * (x.coeff i) ^ (p ^ (n - i)) := by
+    simp [MvPolynomial.aeval_monomial, map_pow]
+  rw [this]
+  nth_rw 1 [← Nat.sub_add_cancel (Nat.le_of_lt_succ hi)]
+  rw [pow_add, mul_comm]
+  apply mul_dvd_mul_left
+  refine (pow_dvd_pow_of_dvd ?_ (n - i)).trans (b := (x.coeff i) ^ (n - i)) (pow_dvd_pow _ ?_)
+  · exact hx i (Nat.le_of_lt_succ hi)
+  · exact ((n - i).lt_two_pow_self).le.trans (pow_left_mono (n - i) (Nat.Prime.two_le Fact.out))
 
 variable (n : ℕ)
 #check mkCompGhostComponent O p n
