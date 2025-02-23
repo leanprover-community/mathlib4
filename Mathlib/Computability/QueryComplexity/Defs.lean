@@ -178,7 +178,66 @@ theorem runM_map [LawfulMonad m] (g : α → β) (f : Comp ι ω α) (oracle : (
   | pure _ => simp
   | queryBind i f h => simp [h]
 
-end run
+section SimpleCost
+
+variable {𝕜}
+
+/-- Like `runM`, but produce a count, starting at `init`. -/
+abbrev run (f : Comp ι ω α) (oracle : (i : ι) → ω i) (init := 0) : α × ℕ :=
+  let (a, n) := Id.run <| StateT.run (s := (⟨init⟩ : ULift ℕ)) (m := Id) <| f.runM fun i => do
+    modify (fun ⟨n⟩ => ⟨n + 1⟩)
+    pure (oracle i)
+  (a, n.down)
+
+
+@[simp]
+theorem run_pure (a : α) (oracle : (i : ι) → ω i) (init) :
+    run (pure a : Comp ι ω α) oracle init = (a, init) := rfl
+
+@[simp]
+theorem run_queryBind (i : ι) (f : ω i → Comp ι ω α) (oracle : (i : ι) → ω i) (init) :
+    run (.queryBind i f : Comp ι ω α) oracle init =
+      let (a, c) := (f (oracle i)).run oracle init; (a, c + 1) := by
+  simp only [run, Id.run, queryBind_eq, bind_eq, bind_pure_comp, runM_bind, runM_query,
+    bind_map_left, StateT.run_bind, StateT.run_modify, Id.pure_eq, Id.bind_eq]
+  induction f (oracle i) generalizing init with
+  | pure a => simp
+  | queryBind i f ih =>
+    simp [ih]
+
+
+@[simp]
+theorem run_query [LawfulMonad m] (i : ι) (oracle : (i : ι) → ω i) :
+    run (.query i : Comp ι ω (ω i)) oracle = (oracle i, 1) := rfl
+
+@[simp]
+theorem run_bind [LawfulMonad m] (f : Comp ι ω α) (g : α → Comp ι ω β)
+    (oracle : (i : ι) → ω i) :
+    run (f >>= g) oracle =
+      let (a, c) := run f oracle;
+      let (b, c₂) := run (g a) oracle
+      (b, c + c₂) := by
+  simp [Id.run]
+  induction f with
+  | pure _ => simp [run, Id.run]
+  | queryBind i f h => simp [queryBind_eq]
+
+@[simp]
+theorem run_map [LawfulMonad m] (g : α → β) (f : Comp ι ω α) (oracle : (i : ι) → ω i) :
+    run (g <$> f) oracle = g <$> run f oracle := by
+  induction f with
+  | pure _ => simp
+  | queryBind i f h => simp [h]
+
+
+abbrev value (f : Comp ι ω α) (oracle : (i : ι) → ω i) : α :=
+  (run f oracle).1
+
+abbrev cost (f : Comp ι ω α) (oracle : (i : ι) → ω i) : ℕ :=
+  (run f oracle).2
+
+
+end SimpleCost
 
 end Comp
 
