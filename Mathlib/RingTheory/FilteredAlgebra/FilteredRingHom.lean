@@ -6,23 +6,24 @@ Authors: HuanYu Zheng, Yi Yuan, Weichen Jiao
 import Mathlib.RingTheory.FilteredAlgebra.AssociatedGraded
 import Mathlib.Algebra.Ring.Hom.Defs
 /-!
-# The filtered ring morphsims on ring
+# The filtered ring morphisms on rings
 
-In this file, we defined the filtered ring morphsim on ring, and proof some basic property of it.
+In this file, we define the filtered ring morphisms on rings and prove some basic properties of
+them.
 
 # Main definitions
 
-* `FilteredHom` : Defines a morphism between general filtration (filtration of set) that preserves
+* `FilteredHom` : Defines a morphism between general filtration (filtration of sets) that preserves
 both the main and auxiliary filtered structures. This class describes a structure-preserving map
-between two filtered set `IsFiltration FA FA_lt` and `IsFiltration FB FB_lt` (types `A` and `B`).
+between two filtered sets `IsFiltration FA FA_lt` and `IsFiltration FB FB_lt` (types `A` and `B`).
 
 * FilteredHom.comp : Defines the composition of two filtered morphisms
 `f : FilteredHom FA FA_lt FB FB_lt` and `g : FilteredHom FB FB_lt FC FC_lt`, resulting in a new
 morphism `f ∘ g : FilteredHom FA FA_lt FC FC_lt`.
 
 * `FilteredRingHom` : Defines a morphism between filtered rings that preserves both the ring and
-filtered morphism structures.This class combines the properties of a ring homomorphism and a
-filtered morphism, ensuring that the structure of both the ring and its filtration are maintained
+filtered morphism structures. This class combines the properties of a ring homomorphism and a
+filtered morphism, ensuring that both the structure of the ring and its filtration are maintained
 under the morphism.
 
 `R →+* S` retrieves the ring homomorphism component of a filtered ring homomorphism,
@@ -30,18 +31,18 @@ which is responsible for preserving the ring structure between the source and ta
 It allows direct access to the ring-theoretic aspects of the morphism, enabling operations
 and proofs that focus on the algebraic structure independent of the filtration layers.
 
-* `FilteredRingHom.IsStrict` : Defines strict morphism that is a filtered ring morphism `f` between
-filtered rings `IsRingFiltration FR FR_lt` and `IsRingFiltration FS FS_lt` is strict if `∀ p : ι`,
-the image of the `p`-th filtration layer of `FR` and `FR_lt` under `f` is exactly the intersection
-of the image of `f` with the `p`-th filtration layer of `FS` and `FS_lt`, respectively.
+* `FilteredRingHom.IsStrict` : Defines a strict morphism, which is a filtered ring morphism `f`
+between filtered rings `IsRingFiltration FR FR_lt` and `IsRingFiltration FS FS_lt`. It is strict if
+`∀ p : ι`, the image of the `p`-th filtration layer of `FR` and `FR_lt` under `f` is exactly the
+intersection of the image of `f` with the `p`-th filtration layer of `FS` and `FS_lt`, respectively.
 
-* `FilteredRingHom.comp` : Defines Composition of filtered ring morphisms. Given two filtered
+* `FilteredRingHom.comp` : Defines the composition of filtered ring morphisms. Given two filtered
 morphisms `f : FilteredRingHom FR FR_lt FS FS_lt` and `g : FilteredRingHom FS FS_lt FT FT_lt`, their
 composition `g ∘ f` is defined by composing the underlying ring homomorphisms and ensuring
 compatibility with the filtration structures.
 
 * `Gf` : Defines the induced morphism on the `i`-th graded piece of the associated graded ring.
-**It is `(Gf f i) ⟦x⟧ = ⟦f.toRingHom x⟧` in mathmatical intuition**
+**Mathematically, it is `(Gf f i) ⟦x⟧ = ⟦f.toRingHom x⟧`**
 (`x : FR i`, `⟦a⟧ : GradedPiece FR FR_lt i`)
 Given a filtered ring homomorphism `f : FilteredRingHom FR FR_lt FS FS_lt`, this function takes an
 element in the `i`-th graded piece of `FR` (represented as a quotient `FR i / FR_lt i`) and maps it
@@ -50,12 +51,11 @@ result lies within the `i`-th filtration layer of `FS`. The construction respect
 equivalence relation, making it a well-defined additive group homomorphism.
 
 * `G` : Defines the induced graded ring morphism between associated graded rings.
-**It is `G f = ⨁ Gf f i` in mathmatical intuition**
-Specifically, Given a filtered ring morphism `f : FilteredRingHom FR FR_lt FS FS_lt`, this function
-constructs a AddSubgroup homomorphism `G f` between the associated graded modules
+**Mathematically, it is `G f = ⨁ Gf f i`**
+Specifically, given a filtered ring morphism `f : FilteredRingHom FR FR_lt FS FS_lt`, this function
+constructs an AddSubgroup homomorphism `G f` between the associated graded modules
 `⨁ (FR i / FR_lt i)` and `⨁ (FS i / FS_lt i)` by applying `Gf f i` component-wise to each graded
 piece and combining the results into a direct sum of additive group homomorphisms.
-
 -/
 section FilteredHom
 
@@ -65,12 +65,13 @@ variable (FA : ι → α) (FA_lt : outParam <| ι → α) [IsFiltration FA FA_lt
 variable (FB : ι → β) (FB_lt : outParam <| ι → β) [IsFiltration FB FB_lt]
 variable (FC : ι → σ) (FC_lt : outParam <| ι → σ) [IsFiltration FC FC_lt]
 
-/-- Defines a morphism between general filtration (filtration of set) that preserves
-both the main and auxiliary filtered structures. This class describes a structure-preserving map
-between two filtered set `IsFiltration FA FA_lt` and `IsFiltration FB FB_lt` (types `A` and `B`). -/
+/-- Defines a morphism between general filtration (filtration of sets) that preserves both the main
+and auxiliary filtered structures. This class describes a structure-preserving map between two
+filtered sets `IsFiltration FA FA_lt` and `IsFiltration FB FB_lt` (types `A` and `B`).
+
+It is a map from `A` to `B` which maps each `FA i` pieces to corresponding `FB i` pieces, and maps
+`FA_lt i` pieces to corresponding `FB_lt i` pieces-/
 class FilteredHom where
-  /-- It is a map from `A` to `B` which maps each `FA i` pieces to corresponding `FB i` pieces, and
-  maps `FA_lt i` pieces to corresponding `FB_lt i` pieces-/
   toFun : A → B
   pieces_wise : ∀ i : ι, ∀ a ∈ FA i, toFun a ∈ FB i
   pieces_wise_lt : ∀ i : ι, ∀ a ∈ FA_lt i, toFun a ∈ FB_lt i
@@ -103,23 +104,23 @@ variable [Ring R] (FR : ι → γ) (FR_lt : outParam <| ι → γ) [SetLike γ R
 variable [Ring S] (FS : ι → σ) (FS_lt : outParam <| ι → σ) [SetLike σ S] [IsRingFiltration FS FS_lt]
 variable [Ring T] (FT : ι → τ) (FT_lt : outParam <| ι → τ) [SetLike τ T] [IsRingFiltration FT FT_lt]
 
-/-- Defines a morphism between filtered rings that preserves both the ring and filtered morphism
-structures.This class combines the properties of a ring homomorphism and a filtered morphism,
-ensuring that the structure of both the ring and its filtration are maintained under the morphism.
+/-- Defines a morphism between filtered rings that preserves both the ring and
+filtered morphism structures. This class combines the properties of a ring homomorphism and a
+filtered morphism, ensuring that both the structure of the ring and its filtration are maintained
+under the morphism.
 
 `R →+* S` retrieves the ring homomorphism component of a filtered ring homomorphism,
 which is responsible for preserving the ring structure between the source and target rings.
 It allows direct access to the ring-theoretic aspects of the morphism, enabling operations
-and proofs that focus on the algebraic structure independent of the filtration layers.
--/
+and proofs that focus on the algebraic structure independent of the filtration layers.-/
 class FilteredRingHom extends R →+* S, FilteredHom FR FR_lt FS FS_lt
 
 
 variable {FR FS FR_lt FS_lt} in
-/-- Defines strict morphism that is a filtered ring morphism `f` between filtered rings
-`IsRingFiltration FR FR_lt` and `IsRingFiltration FS FS_lt` is strict if `∀ p : ι`, the image of the
- `p`-th filtration layer of `FR` and `FR_lt` under `f` is exactly the intersection of the image of
- `f` with the `p`-th filtration layer of `FS` and `FS_lt`, respectively.-/
+/-- Defines a strict morphism, which is a filtered ring morphism `f` between filtered rings
+`IsRingFiltration FR FR_lt` and `IsRingFiltration FS FS_lt`. It is strict if `∀ p : ι`, the image of
+the `p`-th filtration layer of `FR` and `FR_lt` under `f` is exactly the intersection of the image
+of `f` with the `p`-th filtration layer of `FS` and `FS_lt`, respectively.-/
 class FilteredRingHom.IsStrict (f : outParam <| FilteredRingHom FR FR_lt FS FS_lt) : Prop where
   strict : ∀ p : ι, ∀ y : S, y ∈ f.toRingHom '' (FR p) ↔ (y ∈ (FS p) ∧ y ∈ f.range)
   strict_lt : ∀ p : ι, ∀ y : S, y ∈ f.toRingHom '' (FR_lt p) ↔ (y ∈ (FS_lt p) ∧ y ∈ f.range)
@@ -127,7 +128,7 @@ class FilteredRingHom.IsStrict (f : outParam <| FilteredRingHom FR FR_lt FS FS_l
 variable (g : FilteredRingHom FS FS_lt FT FT_lt) (f : FilteredRingHom FR FR_lt FS FS_lt)
 
 variable {FR FS FT FR_lt FS_lt FT_lt} in
-/-- Defines Composition of filtered ring morphisms. Given two filtered morphisms
+/-- Defines the composition of filtered ring morphisms. Given two filtered morphisms
 `f : FilteredRingHom FR FR_lt FS FS_lt` and `g : FilteredRingHom FS FS_lt FT FT_lt`, their
 composition `g ∘ f` is defined by composing the underlying ring homomorphisms and ensuring
 compatibility with the filtration structures.-/
@@ -144,8 +145,6 @@ end FilteredRingHom
 
 
 
-
-
 section DirectSum
 
 open DirectSum
@@ -159,7 +158,7 @@ variable [Ring T] (FT : ι → σT) (FT_lt : outParam <| ι → σT) [SetLike σ
 variable (f : FilteredRingHom FR FR_lt FS FS_lt)
 
 /-- Defines the induced morphism on the `i`-th graded piece of the associated graded ring.
-**It is `(Gf f i) ⟦x⟧ = ⟦f.toRingHom x⟧` in mathmatical intuition**
+**Mathematically, it is `(Gf f i) ⟦x⟧ = ⟦f.toRingHom x⟧`**
 (`x : FR i`, `⟦a⟧ : GradedPiece FR FR_lt i`)
 Given a filtered ring homomorphism `f : FilteredRingHom FR FR_lt FS FS_lt`, this function takes an
 element in the `i`-th graded piece of `FR` (represented as a quotient `FR i / FR_lt i`) and maps it
@@ -210,11 +209,11 @@ private lemma GAux_apply (x : AssociatedGraded FR FR_lt) (i : ι) : (GAux f x) i
     rw [DFinsupp.not_mem_support_iff.mp ixsupp, map_zero]
 
 /-- Defines the induced graded ring morphism between associated graded rings.
-**It is `G f = ⨁ Gf f i` in mathmatical intuition**
-Specifically, Given a filtered ring morphism `f : FilteredRingHom FR FR_lt FS FS_lt`, this function
-constructs a AddSubgroup homomorphism `G f` between the associated graded modules
+**Mathematically, it is `G f = ⨁ Gf f i`**
+Specifically, given a filtered ring morphism `f : FilteredRingHom FR FR_lt FS FS_lt`, this function
+constructs an AddSubgroup homomorphism `G f` between the associated graded modules
 `⨁ (FR i / FR_lt i)` and `⨁ (FS i / FS_lt i)` by applying `Gf f i` component-wise to each graded
-piece and combining the results into a direct sum of additive group homomorphisms.-/
+piece and combining the results into a direct sum of additive group homomorphisms. -/
 noncomputable def G : (AssociatedGraded FR FR_lt) →+ (AssociatedGraded FS FS_lt) where
   toFun := GAux f
   map_zero' := rfl
