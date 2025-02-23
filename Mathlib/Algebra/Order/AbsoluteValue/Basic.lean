@@ -378,11 +378,12 @@ theorem ne_zero_of_one_lt {F S : Type*} [Field F] [LinearOrderedField S]
 theorem isNontrivial_iff_exists_abv_one_lt {F S : Type*} [Field F] [LinearOrderedField S]
     {v : AbsoluteValue F S} :
     v.IsNontrivial ↔ ∃ x, 1 < v x := by
-  refine ⟨fun h => h.exists_abv_gt_one, fun ⟨x, hx⟩ => ?_⟩
-  refine ⟨x⁻¹, ?_, ?_⟩
+theorem isNontrivial_iff_exists_abv_one_lt {F S : Type*} [Field F] [LinearOrderedField S]
+    {v : AbsoluteValue F S} :
+    v.IsNontrivial ↔ ∃ x, 1 < v x := by
+  refine ⟨fun h => h.exists_abv_gt_one, fun ⟨x, hx⟩ => ⟨x⁻¹, ?_, ?_⟩⟩
   · simp only [ne_eq, inv_eq_zero]; exact ne_zero_of_one_lt hx
-  · simp only [map_inv₀, ne_eq, inv_eq_one]
-    exact ne_of_gt hx
+  · simpa only [map_inv₀, ne_eq, inv_eq_one] using ne_of_gt hx
 
 theorem nonpos_iff {x : F} : v x ≤ 0 ↔ v x = 0 := by
   simp [le_antisymm_iff, v.nonneg _]
