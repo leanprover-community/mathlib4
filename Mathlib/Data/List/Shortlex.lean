@@ -160,20 +160,17 @@ theorem _root_.Acc.shortlex {a : α} (n : ℕ) (aca : Acc r a)
 theorem wf (h : WellFounded r) : WellFounded (Shortlex r) := by
   suffices h : ∀ n, ∀ (a : List α), a.length = n → Acc (Shortlex r) a from
     WellFounded.intro (fun a => h a.length a rfl)
-  intro n
-  induction n using Nat.strongRecOn with
+  intro n a len_a
+  induction n using Nat.strongRecOn generalizing a with
   | ind n ih =>
     cases n with
     | zero =>
-      intro a len_a
       rw [List.length_eq_zero] at len_a
       rw [len_a]
       exact Acc.intro _ <| fun _ ylt => (Shortlex.not_nil_right ylt).elim
     | succ n =>
-      intro a len_a
-      rcases List.exists_of_length_succ a len_a with ⟨head, tail, a_is⟩
-      rw [a_is]
-      rw [a_is, List.length_cons, add_left_inj] at len_a
+      obtain ⟨head, tail, rfl⟩ := List.exists_of_length_succ a len_a
+      rw [List.length_cons, add_left_inj] at len_a
       apply Acc.shortlex (n+1) (WellFounded.apply h head) (fun b bl => ih b.length bl _ rfl)
       · rw [len_a]
         exact lt_add_one n
