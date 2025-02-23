@@ -231,5 +231,3 @@ theorem G_comp: (G g) ∘ (G f) = G (g ∘ f) := by
   exact Gf_comp FT FT_lt f g x i
 
 end DirectSum
-
-#lint
