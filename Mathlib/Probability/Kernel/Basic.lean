@@ -105,6 +105,14 @@ instance : IsMarkovKernel (Kernel.id : Kernel α α) := by rw [Kernel.id]; infer
 lemma id_apply (a : α) : Kernel.id a = Measure.dirac a := by
   rw [Kernel.id, deterministic_apply, id_def]
 
+lemma lintegral_id' {f : α → ℝ≥0∞} (hf : Measurable f) (a : α) :
+    ∫⁻ a, f a ∂(@Kernel.id α mα a) = f a := by
+  rw [id_apply, lintegral_dirac' _ hf]
+
+lemma lintegral_id [MeasurableSingletonClass α] {f : α → ℝ≥0∞} (a : α) :
+    ∫⁻ a, f a ∂(@Kernel.id α mα a) = f a := by
+  rw [id_apply, lintegral_dirac]
+
 end Id
 
 section Copy
