@@ -19,7 +19,16 @@ attribute [local instance] monadLiftOptionMetaM
 
 open Lean (MetaM Expr mkRawNatLit)
 
+/-- TODOS:
+ * subtraction and negation: requires new typeclass assumptions, caching mechanism
+ * scalar multiplication
+ * parsing ofNats as constants
+ * given two normalised polynomials, equate the coefficients and provide side goals.
+ * normalize the constant expressions while parsing the polynomial.
+   Should be doable using the internals of norm_num
+ * (potentially) allow variables in exponents. Need a good normalization procedure to make sure exponents stay aligned.
 
+-/
 
 noncomputable def monomial {α : Type*} [Semiring α] (n : ℕ) (a : α) := Polynomial.monomial n a
 
@@ -95,8 +104,6 @@ variable {u : Lean.Level}
 variable {α : Q(Type u)} (sα : Q(CommSemiring $α)) {R : Type*} [CommSemiring R]
 variable {a a' a₁ a₂ a₃ b b' b₁ b₂ b₃ c c₁ c₂ : R}
 
-
-
 theorem monomial_add {α : Type*} [Semiring α] {m n : ℕ} (a b : α) (h : m = n) :
     monomial m a + monomial n b = monomial m (a + b) := by
   unfold monomial
@@ -115,7 +122,7 @@ def evalAddMon {a b : Q(Polynomial $α)} (va : ExMon sα a) (vb : ExMon sα b) :
     if h : m = n then
       let pf : Q($m = $n) := h ▸ q(rfl)
       return ⟨q(monomial $m ($e₁ + $e₂)),
-        .mon m  q($e₁ + $e₂), q(monomial_add (m := $m) (n := $n) $e₁ $e₂ $pf)⟩
+        .mon m q($e₁ + $e₂), q(monomial_add (m := $m) (n := $n) $e₁ $e₂ $pf)⟩
     else
       OptionT.fail
 
@@ -139,9 +146,6 @@ partial def evalAdd {a b : Q(Polynomial $α)} (va : ExSum sα a) (vb : ExSum sα
     | some (⟨_, vc₁, pc₁⟩) =>
       let ⟨_, vc₂, pc₂⟩ ← evalAdd va₂ vb₂
       return ⟨_, .add vc₁ vc₂, q(add_pf_add_overlap $pc₁ $pc₂)⟩
-    -- | some (.zero pc₁) =>
-    --   let ⟨c₂, vc₂, pc₂⟩ ← evalAdd va₂ vb₂
-    --   return ⟨c₂, vc₂, q(add_pf_add_overlap_zero $pc₁ $pc₂)⟩
     | none =>
       if let .lt := va₁.cmp vb₁ then
         let ⟨_c, vc, (pc : Q($_a₂ + ($b₁ + $_b₂) = $_c))⟩ ← evalAdd va₂ vb
@@ -169,9 +173,7 @@ partial def evalX :
   return ⟨q(monomial 1 1 + 0), (ExMon.mon _ _).toSum, q(evalX_pf)⟩
 
 theorem mul_pf_zero_mul (b : R) : 0 * b = 0 := by simp
-
 theorem mul_pf_mul_zero (a : R) : a * 0 = 0 := by simp
-
 
 partial def evalMonMulMon {a b : Q(Polynomial $α)} (va : ExMon sα a) (vb : ExMon sα b) :
     Lean.Core.CoreM <| Result (u := u) (ExMon sα) q($a * $b) := do
@@ -213,6 +215,46 @@ partial def evalMul {a b : Q(Polynomial $α)} (va : ExSum sα a) (vb : ExSum sα
     let ⟨s, vs, ps⟩ ← evalAdd sα vab₁ vab₂
     return ⟨s, vs, q(evalMul_pf $pab₁ $pab₂ $ps)⟩
 
+theorem pow_pf_pow_zero {a : Polynomial R} {b : ℕ} (hb : b = 0) :
+     a ^ b = monomial 0 (1:R) + (0:Polynomial R) := by
+  simp [monomial_zero, hb]
+
+theorem pow_pf_pow_odd {hf hf2 : R} {b : ℕ} (hb : b % 2 = 1) (hhf : a ^ (b/2) = hf)
+    (hhf2 : hf * hf = hf2) (h : a * hf2 = b') :
+    a ^ b = b' := by
+  subst_vars
+  rw [← pow_add, ← two_mul, mul_comm, ← pow_succ, add_comm, ← hb, Nat.mod_add_div]
+
+theorem pow_pf_pow_even {hf hf2 : R} {b : ℕ} (hb : b % 2 = 0) (hhf : a ^ (b/2) = hf)
+    (hhf2 : hf * hf = hf2):
+    a ^ b = hf2 := by
+  subst_vars
+  rw [← Nat.dvd_iff_mod_eq_zero] at hb
+  rw [← pow_add, ← two_mul, mul_comm, Nat.div_mul_cancel hb]
+
+def mkRawNatLitQq (n : Nat) : Q(Nat) := mkRawNatLit n
+def mkDecideProofQq (p : Q(Prop)) : MetaM Q($p) := mkDecideProof p
+
+/-- This eval runs in MetaM because we use a decide proof - this should be changed to a `rfl` proof.-/
+def evalPow {a : Q(Polynomial $α)} (b : ℕ) (va : ExSum sα a) :
+    MetaM <| Result (u := u) (ExSum sα) q($a ^ $b) := do
+  if h0 : b = 0 then
+    -- is this the right way to do this?
+    let p : Q($b = 0) := by rw[h0]; exact q(rfl)
+    let pf : Q($a^$b = .monomial 0 1 + 0) := q(pow_pf_pow_zero $p)
+    return ⟨q(monomial 0 1 + 0), (ExMon.mon (sα := sα) 0 q(1)).toSum, pf⟩
+  else
+    let ⟨hf, vhf, phf⟩ ← evalPow (b/2) va
+    let ⟨hf2, vhf2, phf2⟩ ← evalMul sα vhf vhf
+    if hb : b % 2 = 1 then
+      -- TODO: turn this into a `rfl` proof?
+      let pb : Q($b % 2 = 1) ← mkDecideProofQq q($b % 2 = 1)
+      let ⟨a', va', pa'⟩ ← evalMul sα va vhf2
+      return ⟨a', va', q(pow_pf_pow_odd $pb $phf $phf2 $pa')⟩
+    else
+      let pb : Q($b % 2 = 0) ← mkDecideProofQq q($b % 2 = 0)
+      return ⟨hf2, vhf2, q(pow_pf_pow_even $pb $phf $phf2)⟩
+
 
 theorem add_congr (_ : a = a') (_ : b = b') (_ : a' + b' = c) : (a + b : R) = c := by
   subst_vars; rfl
@@ -220,6 +262,8 @@ theorem add_congr (_ : a = a') (_ : b = b') (_ : a' + b' = c) : (a + b : R) = c 
 theorem mul_congr (_ : a = a') (_ : b = b') (_ : a' * b' = c) : (a * b : R) = c := by
   subst_vars; rfl
 
+theorem pow_congr {b b' : ℕ} (_ : a = a') (_ : b = b') (_ : a' ^ b' = c) : (a ^ b : R) = c := by
+  subst_vars; rfl
 /--
 Evaluates expression `e` of type `α` into a normalized representation as a polynomial.
 This is the main driver of `ring`, which calls out to `evalAdd`, `evalMul` etc.
@@ -229,7 +273,6 @@ partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
   let els : MetaM (Result (u := u) (ExSum sα) e) := do
     throwError m!"poly failed : unsupported expression : {e}"
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
-  IO.println s!"head name is {n}"
   match n with
   | ``HAdd.hAdd | ``Add.add => match e with
     | ~q($a + $b) =>
@@ -253,6 +296,21 @@ partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
       let ⟨_, vb, pb⟩ ← eval sα b
       let ⟨c, vc, p⟩ ← evalMul sα va vb
       pure ⟨c, vc, q(mul_congr $pa $pb $p)⟩
+  | ``HPow.hPow | ``Pow.pow => match e with
+    | ~q($a ^ ($eb : ℕ)) =>
+      let ⟨blit, pf_isNat⟩ ← try NormNum.deriveNat eb q(Nat.instAddMonoidWithOne) catch
+        | _ => throwError "Failed to normalize {eb} to a natural literal 1"
+      if ! Expr.isRawNatLit blit then
+        throwError s!"Failed to normalize {eb} to a natural literal 3"
+      let b : ℕ := blit.natLit!
+      /- This is just a proof by rfl. What is the right way to do this? -/
+      let p : Q(@Nat.cast ℕ AddMonoidWithOne.toNatCast $blit = $b)
+        ← mkDecideProof q(@Nat.cast ℕ AddMonoidWithOne.toNatCast $blit = $b)
+      let pb : Q($eb = $b) := q(($pf_isNat).out.trans $p)
+      let ⟨_, va, pa⟩ ← eval sα a
+      let ⟨c, vc, p⟩ ← evalPow sα b va
+      return ⟨c, vc, q(pow_congr $pa $pb $p)⟩
+    | _ => els
   | _ => els
 
 
@@ -264,8 +322,6 @@ end evals
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
 
--- set_option diagnostics true
-
 def normalize : TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let some (α, e₁, e₂) :=
@@ -276,23 +332,15 @@ def normalize : TacticM Unit := withMainContext do
   let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
   have α : Q(Type v) := α
   have sα : Q(CommSemiring $α) := ← synthInstanceQ q(CommSemiring $α)
-  IO.println (s!"synthed instance {sα}")
   have e₁ : Q(Polynomial $α) := e₁
   have e₂ : Q(Polynomial $α) := e₂
   let ⟨a, _, pa⟩ ← eval sα e₁
   let ⟨b, _, pb⟩ ← eval sα e₂
   let g' ← mkFreshExprMVarQ q($a = $b)
   goal.assign q(eq_congr $pa $pb $g' : $e₁ = $e₂)
-  IO.println g'
   Tactic.pushGoal g'.mvarId!
 
-
-
-
-
-elab (name := poly) "poly" tk:"!"? : tactic => do (normalize)
-
-
+elab (name := poly) "poly" : tactic => normalize
 
 set_option linter.unusedTactic false
 
@@ -309,7 +357,7 @@ example : Polynomial.C (3:ℚ) * .X + .X = .C 4 * .X := by
   norm_num
 
 
-example : (.C 1 + Polynomial.X)*(.C 1 + .X)  = .X * .X + .C 2 * .X + .C 1 := by
+example : (.C 1 + Polynomial.X)^(5/2)  = .X * .X + .C 2 * .X + .C 1 := by
   poly
   norm_num
 
