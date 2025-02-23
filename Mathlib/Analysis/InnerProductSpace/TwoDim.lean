@@ -342,7 +342,7 @@ theorem coe_basisRightAngleRotation (x : E) (hx : x ≠ 0) :
   coe_basisOfLinearIndependentOfCardEqFinrank _ _
 
 /-- For vectors `a x y : E`, the identity `⟪a, x⟫ * ⟪a, y⟫ + ω a x * ω a y = ‖a‖ ^ 2 * ⟪x, y⟫`. (See
-`Orientation.inner_mul_inner_add_areaForm_mul_areaForm` for the "applied" form.)-/
+`Orientation.inner_mul_inner_add_areaForm_mul_areaForm` for the "applied" form.) -/
 theorem inner_mul_inner_add_areaForm_mul_areaForm' (a x : E) :
     ⟪a, x⟫ • innerₛₗ ℝ a + ω a x • ω a = ‖a‖ ^ 2 • innerₛₗ ℝ x := by
   by_cases ha : a = 0

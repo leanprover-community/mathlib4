@@ -145,7 +145,7 @@ lemma cast_divInt_of_ne_zero (a : ℤ) {b : ℤ} (b0 : (b : α) ≠ 0) : (a /. b
   have d0 : (d : α) ≠ 0 := by
     intro d0
     have dd := den_dvd a b
-    cases' show (d : ℤ) ∣ b by rwa [e] at dd with k ke
+    rcases show (d : ℤ) ∣ b by rwa [e] at dd with ⟨k, ke⟩
     have : (b : α) = (d : α) * (k : α) := by rw [ke, Int.cast_mul, Int.cast_natCast]
     rw [d0, zero_mul] at this
     contradiction

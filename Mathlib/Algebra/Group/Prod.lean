@@ -502,7 +502,7 @@ variable [CommMonoid P] (f : M →* P) (g : N →* P)
 
 /-- Coproduct of two `MonoidHom`s with the same codomain:
   `f.coprod g (p : M × N) = f p.1 * g p.2`.
-  (Commutative case; for the general case, see `MonoidHom.noncommCoprod`.)-/
+  (Commutative case; for the general case, see `MonoidHom.noncommCoprod`.) -/
 @[to_additive
     "Coproduct of two `AddMonoidHom`s with the same codomain:
     `f.coprod g (p : M × N) = f p.1 + g p.2`.

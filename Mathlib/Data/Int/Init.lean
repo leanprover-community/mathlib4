@@ -3,12 +3,12 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
+import Batteries.Logic
+import Batteries.Tactic.Init
 import Mathlib.Data.Int.Notation
-import Mathlib.Data.Nat.Defs
-import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Lift
-import Mathlib.Tactic.OfNat
+import Mathlib.Data.Nat.Notation
+import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.TypeStar
 
 /-!
 # Basic operations on the integers
@@ -17,11 +17,8 @@ This file contains some basic lemmas about integers.
 
 See note [foundational algebra order theory].
 
-## TODO
-
-Split this file into:
-* `Data.Int.Init` (or maybe `Data.Int.Batteries`?) for lemmas that could go to Batteries
-* `Data.Int.Basic` for the lemmas that require mathlib definitions
+This file should not depend on anything defined in Mathlib (except for notation), so that it can be
+upstreamed to Batteries easily.
 -/
 
 open Nat
@@ -33,7 +30,7 @@ section Order
 
 protected lemma le_rfl : a ≤ a := a.le_refl
 protected lemma lt_or_lt_of_ne : a ≠ b → a < b ∨ b < a := Int.lt_or_gt_of_ne
-protected lemma lt_or_le (a b : ℤ) : a < b ∨ b ≤ a := by rw [← Int.not_lt]; exact em _
+protected lemma lt_or_le (a b : ℤ) : a < b ∨ b ≤ a := by rw [← Int.not_lt]; exact Decidable.em _
 protected lemma le_or_lt (a b : ℤ) : a ≤ b ∨ b < a := (b.lt_or_le a).symm
 protected lemma lt_asymm : a < b → ¬ b < a := by rw [Int.not_lt]; exact Int.le_of_lt
 protected lemma le_of_eq (hab : a = b) : a ≤ b := by rw [hab]; exact Int.le_rfl
@@ -41,7 +38,7 @@ protected lemma ge_of_eq (hab : a = b) : b ≤ a := Int.le_of_eq hab.symm
 protected lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
   ⟨fun h ↦ ⟨Int.le_of_eq h, Int.ge_of_eq h⟩, fun h ↦ Int.le_antisymm h.1 h.2⟩
 protected lemma le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := by
-  rw [Int.le_antisymm_iff, Int.lt_iff_le_not_le, ← and_or_left]; simp [em]
+  rw [Int.le_antisymm_iff, Int.lt_iff_le_not_le, ← and_or_left]; simp [Decidable.em]
 
 protected lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := by rw [Int.le_iff_eq_or_lt, or_comm]
 
@@ -80,15 +77,11 @@ protected lemma sub_pos : 0 < a - b ↔ b < a := ⟨Int.lt_of_sub_pos, Int.sub_p
 @[simp, nolint simpNF]
 protected lemma sub_nonneg : 0 ≤ a - b ↔ b ≤ a := ⟨Int.le_of_sub_nonneg, Int.sub_nonneg_of_le⟩
 
-instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
-
 protected theorem ofNat_add_out (m n : ℕ) : ↑m + ↑n = (↑(m + n) : ℤ) := rfl
 
 protected theorem ofNat_mul_out (m n : ℕ) : ↑m * ↑n = (↑(m * n) : ℤ) := rfl
 
 protected theorem ofNat_add_one_out (n : ℕ) : ↑n + (1 : ℤ) = ↑(succ n) := rfl
-
-@[simp] lemma ofNat_injective : Function.Injective ofNat := @Int.ofNat.inj
 
 @[simp] lemma ofNat_eq_natCast (n : ℕ) : Int.ofNat n = n := rfl
 
@@ -209,7 +202,7 @@ It is used as the default induction principle for the `induction` tactic.
     suffices ∀ n : ℕ, p (-n) from this (i + 1)
     intro n; induction n with
     | zero => simp [hz]
-    | succ n ih => convert hn _ ih using 1; simp [ofNat_succ, Int.neg_add, Int.sub_eq_add_neg]
+    | succ n ih => simpa [ofNat_succ, Int.neg_add, Int.sub_eq_add_neg] using hn _ ih
 
 section inductionOn'
 
@@ -219,7 +212,7 @@ variable {C : ℤ → Sort*} (z b : ℤ)
 /-- Inductively define a function on `ℤ` by defining it at `b`, for the `succ` of a number greater
 than `b`, and the `pred` of a number less than `b`. -/
 @[elab_as_elim] protected def inductionOn' : C z :=
-  cast (congr_arg C <| show b + (z - b) = z by rw [Int.add_comm, z.sub_add_cancel b]) <|
+  cast (congrArg C <| show b + (z - b) = z by rw [Int.add_comm, z.sub_add_cancel b]) <|
   match z - b with
   | .ofNat n => pos n
   | .negSucc n => neg n
@@ -242,16 +235,6 @@ variable {z b H0 Hs Hp}
 lemma inductionOn'_self : b.inductionOn' b H0 Hs Hp = H0 :=
   cast_eq_iff_heq.mpr <| .symm <| by rw [b.sub_self, ← cast_eq_iff_heq]; rfl
 
-lemma inductionOn'_add_one (hz : b ≤ z) :
-    (z + 1).inductionOn' b H0 Hs Hp = Hs z hz (z.inductionOn' b H0 Hs Hp) := by
-  apply cast_eq_iff_heq.mpr
-  lift z - b to ℕ using Int.sub_nonneg.mpr hz with zb hzb
-  rw [show z + 1 - b = zb + 1 by omega]
-  have : b + zb = z := by omega
-  subst this
-  convert cast_heq _ _
-  rw [Int.inductionOn', cast_eq_iff_heq, ← hzb]
-
 lemma inductionOn'_sub_one (hz : z ≤ b) :
     (z - 1).inductionOn' b H0 Hs Hp = Hp z hz (z.inductionOn' b H0 Hs Hp) := by
   apply cast_eq_iff_heq.mpr
@@ -263,7 +246,9 @@ lemma inductionOn'_sub_one (hz : z ≤ b) :
     subst this; rw [inductionOn'_self]; exact heq_of_eq rfl
   · have : z = b + -[n+1] := by rw [Int.negSucc_eq] at hn ⊢; omega
     subst this
-    convert cast_heq _ _
+    refine (cast_heq _ _).trans ?_
+    congr
+    symm
     rw [Int.inductionOn', cast_eq_iff_heq, show b + -[n+1] - b = -[n+1] by omega]
 
 end inductionOn'
@@ -306,19 +291,6 @@ and is analogous to `Nat.strongRec` for integers on or above the threshold. -/
 variable {lt ge}
 lemma strongRec_of_lt (hn : n < m) : m.strongRec lt ge n = lt n hn := dif_pos _
 
-lemma strongRec_of_ge :
-    ∀ hn : m ≤ n, m.strongRec lt ge n = ge n hn fun k _ ↦ m.strongRec lt ge k := by
-  refine m.strongRec (fun n hnm hmn ↦ (Int.not_lt.mpr hmn hnm).elim) (fun n _ ih hn ↦ ?_) n
-  rw [Int.strongRec, dif_neg (Int.not_lt.mpr hn)]
-  congr; revert ih
-  refine n.inductionOn' m (fun _ ↦ ?_) (fun k hmk ih' ih ↦ ?_) (fun k hkm ih' _ ↦ ?_) <;> ext l hl
-  · rw [inductionOn'_self, strongRec_of_lt hl]
-  · rw [inductionOn'_add_one hmk]; split_ifs with hlm
-    · rw [strongRec_of_lt hlm]
-    · rw [ih' fun l hl ↦ ih l (Int.lt_trans hl k.lt_succ), ih _ hl]
-  · rw [inductionOn'_sub_one hkm, ih']
-    exact fun l hlk hml ↦ (Int.not_lt.mpr hkm <| Int.lt_of_le_of_lt hml hlk).elim
-
 end strongRec
 
 /-! ### nat abs -/
@@ -333,17 +305,10 @@ lemma natAbs_add_of_nonpos {a b : Int} (ha : a ≤ 0) (hb : b ≤ 0) :
     natAbs (a + b) = natAbs a + natAbs b := by
   omega
 
-lemma natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_ofNat n⟩
-
 lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
   induction k with
   | zero => rfl
   | succ k ih => rw [Int.pow_succ, natAbs_mul, Nat.pow_succ, ih, Nat.mul_comm]
-
-lemma pow_right_injective (h : 1 < a.natAbs) : ((a ^ ·) : ℕ → ℤ).Injective := by
-  refine (?_ : (natAbs ∘ (a ^ · : ℕ → ℤ)).Injective).of_comp
-  convert Nat.pow_right_injective h using 2
-  rw [Function.comp_apply, natAbs_pow]
 
 lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by
   simp [Int.pow_succ, Int.pow_zero, Int.natAbs_mul_self']
@@ -407,7 +372,7 @@ lemma mul_dvd_of_dvd_div (hcb : c ∣ b) (h : a ∣ b / c) : c * a ∣ b :=
   ⟨d, by simpa [Int.mul_comm, Int.mul_left_comm] using Int.eq_mul_of_ediv_eq_left hcb hd⟩
 
 lemma dvd_div_of_mul_dvd (h : a * b ∣ c) : b ∣ c / a := by
-  obtain rfl | ha := eq_or_ne a 0
+  obtain rfl | ha := Decidable.em (a = 0)
   · simp
   · obtain ⟨d, rfl⟩ := h
     simp [Int.mul_assoc, ha]
@@ -440,31 +405,6 @@ lemma exists_lt_and_lt_iff_not_dvd (m : ℤ) (hn : 0 < n) :
     · rw [Int.add_comm _ (1 : ℤ), Int.mul_add, Int.mul_one]
       exact Int.add_lt_add_right (emod_lt_of_pos _ hn) _
 
-@[norm_cast] lemma natCast_dvd_natCast {m n : ℕ} : (↑m : ℤ) ∣ ↑n ↔ m ∣ n where
-  mp := by
-    rintro ⟨a, h⟩
-    obtain rfl | hm := m.eq_zero_or_pos
-    · simpa using h
-    have ha : 0 ≤ a := Int.not_lt.1 fun ha ↦ by
-      simpa [← h, Int.not_lt.2 (Int.natCast_nonneg _)]
-        using Int.mul_neg_of_pos_of_neg (natCast_pos.2 hm) ha
-    lift a to ℕ using ha
-    norm_cast at h
-    exact ⟨a, h⟩
-  mpr := by rintro ⟨a, rfl⟩; simp [Int.dvd_mul_right]
-
-@[norm_cast] theorem ofNat_dvd_natCast {x y : ℕ} : (ofNat(x) : ℤ) ∣ (y : ℤ) ↔ OfNat.ofNat x ∣ y :=
-  natCast_dvd_natCast
-
-@[norm_cast] theorem natCast_dvd_ofNat {x y : ℕ} : (x : ℤ) ∣ (ofNat(y) : ℤ) ↔ x ∣ OfNat.ofNat y :=
-  natCast_dvd_natCast
-
-lemma natCast_dvd {m : ℕ} : (m : ℤ) ∣ n ↔ m ∣ n.natAbs := by
-  obtain hn | hn := natAbs_eq n <;> rw [hn] <;> simp [← natCast_dvd_natCast, Int.dvd_neg]
-
-lemma dvd_natCast {n : ℕ} : m ∣ (n : ℤ) ↔ m.natAbs ∣ n := by
-  obtain hn | hn := natAbs_eq m <;> rw [hn] <;> simp [← natCast_dvd_natCast, Int.neg_dvd]
-
 lemma natAbs_ediv (a b : ℤ) (H : b ∣ a) : natAbs (a / b) = natAbs a / natAbs b := by
   rcases Nat.eq_zero_or_pos (natAbs b) with (h | h)
   · rw [natAbs_eq_zero.1 h]
@@ -490,27 +430,10 @@ lemma eq_mul_div_of_mul_eq_mul_of_dvd_left (hb : b ≠ 0) (hbc : b ∣ c) (h : b
   rw [Int.mul_ediv_cancel_left _ hb]
   rwa [Int.mul_assoc, Int.mul_eq_mul_left_iff hb] at h
 
-/-- If an integer with larger absolute value divides an integer, it is zero. -/
-lemma eq_zero_of_dvd_of_natAbs_lt_natAbs (hmn : m ∣ n) (hnm : natAbs n < natAbs m) : n = 0 := by
-  rw [← natAbs_dvd, ← dvd_natAbs, natCast_dvd_natCast] at hmn
-  rw [← natAbs_eq_zero]
-  exact Nat.eq_zero_of_dvd_of_lt hmn hnm
-
-lemma eq_zero_of_dvd_of_nonneg_of_lt (hm : 0 ≤ m) (hmn : m < n) (hnm : n ∣ m) : m = 0 :=
-  eq_zero_of_dvd_of_natAbs_lt_natAbs hnm (natAbs_lt_natAbs_of_nonneg_of_lt hm hmn)
-
-/-- If two integers are congruent to a sufficiently large modulus, they are equal. -/
-lemma eq_of_mod_eq_of_natAbs_sub_lt_natAbs {a b c : ℤ} (h1 : a % b = c)
-    (h2 : natAbs (a - c) < natAbs b) : a = c :=
-  Int.eq_of_sub_eq_zero (eq_zero_of_dvd_of_natAbs_lt_natAbs (dvd_sub_of_emod_eq h1) h2)
-
 lemma ofNat_add_negSucc_of_ge {m n : ℕ} (h : n.succ ≤ m) :
     ofNat m + -[n+1] = ofNat (m - n.succ) := by
   rw [negSucc_eq, ofNat_eq_natCast, ofNat_eq_natCast, ← natCast_one, ← natCast_add,
     ← Int.sub_eq_add_neg, ← Int.natCast_sub h]
-
-lemma natAbs_le_of_dvd_ne_zero (hmn : m ∣ n) (hn : n ≠ 0) : natAbs m ≤ natAbs n :=
-  not_lt.mp (mt (eq_zero_of_dvd_of_natAbs_lt_natAbs hmn) hn)
 
 /-! #### `/` and ordering -/
 
@@ -518,7 +441,7 @@ lemma natAbs_eq_of_dvd_dvd (hmn : m ∣ n) (hnm : n ∣ m) : natAbs m = natAbs n
   Nat.dvd_antisymm (natAbs_dvd_natAbs.2 hmn) (natAbs_dvd_natAbs.2 hnm)
 
 lemma ediv_dvd_of_dvd (hmn : m ∣ n) : n / m ∣ n := by
-  obtain rfl | hm := eq_or_ne m 0
+  obtain rfl | hm := Decidable.em (m = 0)
   · simpa using hmn
   · obtain ⟨a, ha⟩ := hmn
     simp [ha, Int.mul_ediv_cancel_left _ hm, Int.dvd_mul_left]
