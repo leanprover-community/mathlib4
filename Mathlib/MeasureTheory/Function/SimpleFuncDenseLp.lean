@@ -821,7 +821,8 @@ end simpleFunc
 
 end Lp
 
-variable [MeasurableSpace α] [NormedAddCommGroup E] {f : α → E} {p : ℝ≥0∞} {μ : Measure α}
+variable [MeasurableSpace α] [NormedAddCommGroup E] {f : α → E} {p : ℝ≥0∞} {ps : Finset ℝ≥0∞}
+  {μ : Measure α}
 
 /-- To prove something for an arbitrary `Lp` function in a second countable Borel normed group, it
 suffices to show that
@@ -881,6 +882,59 @@ theorem MemLp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (P : (α �
   have : ∀ f : Lp E p μ, P f := fun f =>
     (Lp.simpleFunc.denseRange hp_ne_top).induction_on f h_closed this
   exact fun f hf => h_ae hf.coeFn_toLp (Lp.memLp _) (this (hf.toLp f))
+
+-- TODO: Could generalize to allow `0 ∈ ps` if needed.
+/-- If a set of ae strongly measurable functions is stable under addition and approximates
+characteristic functions in `ℒp`, then it is dense in `ℒp`. -/
+theorem MemLp.induction_finset_dense (hps_ne : ps.Nonempty) (hps_top : ∞ ∉ ps) (P : (α → E) → Prop)
+    (h0P : ∀ (c : E) ⦃s : Set α⦄, MeasurableSet s → μ s < ∞ → ∀ {ε : ℝ≥0∞}, ε ≠ 0 →
+      ∃ g : α → E, (∀ p ∈ ps, eLpNorm (g - s.indicator fun _ => c) p μ ≤ ε) ∧ P g)
+    (h1P : ∀ f g, P f → P g → P (f + g)) (h2P : ∀ f, P f → AEStronglyMeasurable f μ) {f : α → E}
+    (hf : ∀ p ∈ ps, MemLp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ g : α → E, (∀ p ∈ ps, eLpNorm (f - g) p μ ≤ ε) ∧ P g := by
+  -- TODO: Extract as lemma? `Finset.Nonempty.eq_singleton_or_erase_nonempty`?
+  have : ps = {0} ∨ (ps.erase 0).Nonempty := by
+    refine Or.elim (em (0 ∈ ps)) (fun h ↦ ?_) fun h ↦ ?_
+    · exact (Finset.eq_singleton_or_nontrivial h).imp_right (erase_nonempty h).mpr
+    · rw [erase_eq_of_not_mem h]
+      exact Or.inr hps_ne
+  cases this with
+  | inl hps =>
+    refine Exists.imp (fun g hg ↦ ⟨?_, hg.2⟩) (h0P 0 MeasurableSet.empty (by simp) hε)
+    simp [hps]
+  | inr hps =>
+    suffices H : ∀ (f' : α →ₛ E) (δ : ℝ≥0∞) (hδ : δ ≠ 0), (∀ p ∈ ps, MemLp f' p μ) →
+        ∃ g, (∀ p ∈ ps, eLpNorm (⇑f' - g) p μ ≤ δ) ∧ P g by
+      obtain ⟨η, ηpos, hη⟩ := exists_Lp_half_finset E μ ps hε
+      obtain ⟨f', hf'⟩ := exists_simpleFunc_finset_eLpNorm_sub_lt hps_ne hps_top hf ηpos.ne'
+      obtain ⟨g, hg, Pg⟩ := H f' η ηpos.ne' (fun p hp ↦ (hf' p hp).2)
+      refine ⟨g, fun p hp ↦ ?_, Pg⟩
+      convert (hη (f - f') (f' - g) ?_ ?_ p hp (hf' p hp).1.le (hg p hp)).le using 2
+      · abel
+      · exact (hf p hp).aestronglyMeasurable.sub f'.aestronglyMeasurable
+      · exact f'.aestronglyMeasurable.sub (h2P g Pg)
+    refine SimpleFunc.induction ?_ ?_
+    · intro c s hs ε εpos Hs
+      rcases eq_or_ne c 0 with (rfl | hc)
+      · simpa [Pi.sub_def] using h0P 0 MeasurableSet.empty (by simp) εpos
+      · obtain ⟨p, hp, hp_ne⟩ : ∃ p, p ∈ ps ∧ p ≠ 0 := hps.exists_mem.imp fun p hp ↦
+          ⟨mem_of_mem_erase hp, ne_of_mem_erase hp⟩
+        have hsμ : μ s < ∞ := SimpleFunc.measure_lt_top_of_memLp_indicator hp_ne
+          (ne_of_mem_of_not_mem hp hps_top) hc hs (Hs p hp)
+        refine Exists.imp (fun g hg ↦ ⟨?_, hg.2⟩) (h0P c hs hsμ εpos)
+        simpa [eLpNorm_sub_comm g] using hg.1
+    · intro f f' hff' hf hf' δ δpos int_ff'
+      obtain ⟨η, ηpos, hη⟩ := exists_Lp_half_finset E μ ps δpos
+      simp only [SimpleFunc.coe_add,
+        memLp_add_of_disjoint hff' f.stronglyMeasurable f'.stronglyMeasurable] at int_ff'
+      obtain ⟨g, hg, Pg⟩ := hf η ηpos.ne' (fun p hp ↦ (int_ff' p hp).1)
+      obtain ⟨g', hg', Pg'⟩ := hf' η ηpos.ne' (fun p hp ↦ (int_ff' p hp).2)
+      use g + g', fun p hp ↦ ?_, h1P g g' Pg Pg'
+      refine le_of_lt ?_
+      convert hη _ _ (f.aestronglyMeasurable.sub (h2P g Pg))
+        (f'.aestronglyMeasurable.sub (h2P g' Pg')) p hp (hg p hp) (hg' p hp) using 2
+      rw [SimpleFunc.coe_add]
+      abel
 
 /-- If a set of ae strongly measurable functions is stable under addition and approximates
 characteristic functions in `ℒp`, then it is dense in `ℒp`. -/
