@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Jingting Wang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jingting Wang
+-/
 import Mathlib.Tactic.LieAlgebra.Basic
 
 variable {R L : Type*} [LieRing L]

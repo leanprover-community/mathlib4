@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Jingting Wang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Nailin Guan, Zixun Guo, Wanyi He, Jingting Wang
+-/
 import Mathlib.Algebra.Lie.Basic
 import Qq
 
