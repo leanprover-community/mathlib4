@@ -37,7 +37,7 @@ example (a : L) : 0 • a = 0 := by
 variable (a b c : L)
 
 /--
-info: the term is reduced to -1 • ⁅⁅a, c⁆, ⁅a, ⁅c, b⁆⁆⁆ + (-1 • ⁅⁅a, c⁆, ⁅⁅a, b⁆, c⁆⁆ + 0)
+info: Try this: -1 • ⁅⁅a, c⁆, ⁅a, ⁅c, b⁆⁆⁆ + (-1 • ⁅⁅a, c⁆, ⁅⁅a, b⁆, c⁆⁆ + 0)
 -/
 #guard_msgs in
 #LieReduce ⁅⁅a, c⁆, ⁅b, ⁅a, c⁆⁆⁆
