@@ -41,8 +41,8 @@ The `IsTopologicalSemiring` class should *only* be instantiated in the presence 
 then `IsTopologicalRing` should be used. Note: in the presence of `NonAssocRing`, these classes are
 mathematically equivalent (see `IsTopologicalSemiring.continuousNeg_of_mul` or
 `IsTopologicalSemiring.toIsTopologicalRing`). -/
-class IsTopologicalSemiring [TopologicalSpace α] [NonUnitalNonAssocSemiring α] extends
-  ContinuousAdd α, ContinuousMul α : Prop
+class IsTopologicalSemiring [TopologicalSpace α] [NonUnitalNonAssocSemiring α] : Prop
+    extends ContinuousAdd α, ContinuousMul α
 
 /-- A topological ring is a ring `R` where addition, multiplication and negation are continuous.
 
@@ -50,8 +50,8 @@ If `R` is a (unital) ring, then continuity of negation can be derived from conti
 multiplication as it is multiplication with `-1`. (See
 `IsTopologicalSemiring.continuousNeg_of_mul` and
 `topological_semiring.to_topological_add_group`) -/
-class IsTopologicalRing [TopologicalSpace α] [NonUnitalNonAssocRing α]
-    extends IsTopologicalSemiring α, ContinuousNeg α : Prop
+class IsTopologicalRing [TopologicalSpace α] [NonUnitalNonAssocRing α] : Prop
+    extends IsTopologicalSemiring α, ContinuousNeg α
 
 variable {α}
 
