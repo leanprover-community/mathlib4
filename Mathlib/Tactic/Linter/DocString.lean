@@ -32,8 +32,12 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  let some docStx := stx.find? (·.isOfKind `Lean.Parser.Command.docComment) | return
-  -- `docString` contains e.g. trailing spaces before the '-/', but does not contain
+  let some declMods := stx.find? (·.isOfKind ``Lean.Parser.Command.declModifiers) | return
+  -- `docStx` extracts the `Lean.Parser.Command.docComment` node from the declaration modifiers.
+  -- In particular, this ignores parsing `#adaptation_note`s.
+  let docStx := declMods[0][0]
+  if docStx.isMissing then return
+  -- `docString` contains e.g. trailing spaces before the `-/`, but does not contain
   -- any leading whitespace before the actual string starts.
   let docString ← getDocStringText ⟨docStx⟩
   -- `startSubstring` is the whitespace between `/--` and the actual doc-string text

@@ -1,8 +1,16 @@
+import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Linter.DocString
 
 /-! Tests for the `docstring` linter -/
 
 set_option linter.style.docString true
+
+#adaptation_note /--This comment is not inspected by the `docString` linter.-/
+
+example : True := by
+  #adaptation_note /--   This comment is not inspected by the `docString` linter.
+  -/
+  trivial
 
 /--
 warning: error: doc-strings should start with a single space or newline
