@@ -170,16 +170,15 @@ theorem exists_P_σ_P_δ_factorization {x y : SimplexCategoryGenRel} (f : x ⟶ 
   induction f with
   | @id n => use (mk n), (𝟙 (mk n)), (𝟙 (mk n)), P_σ.id_mem _, P_δ.id_mem _; simp
   | @comp_δ n n' f j h =>
-    obtain ⟨z, e, m, ⟨he, hm, h⟩⟩ := h
-    exact ⟨z, e, m ≫ δ j, he, P_δ.comp_mem _ _ hm (P_δ.δ _), by simp [h]⟩
+    obtain ⟨z, e, m, ⟨he, hm, rfl⟩⟩ := h
+    exact ⟨z, e, m ≫ δ j, he, P_δ.comp_mem _ _ hm (P_δ.δ _), by simp⟩
   | @comp_σ n n' f j h =>
-    obtain ⟨z, e, m, ⟨he, hm, h⟩⟩ := h
-    rw [h]
+    obtain ⟨z, e, m, ⟨he, hm, rfl⟩⟩ := h
     cases hm with
     | of g hg =>
       cases hg
-      obtain ⟨z₁, e₁, m₁, ⟨he₁, hm₁, h₁⟩⟩ := factor_δ_σ j _
-      exact ⟨z₁, e ≫ e₁, m₁, P_σ.comp_mem _ _ he he₁, hm₁,
+      obtain ⟨_, _, _, ⟨he₁, hm₁, h₁⟩⟩ := factor_δ_σ j _
+      exact ⟨_, _, _, P_σ.comp_mem _ _ he he₁, hm₁,
         by rw [Category.assoc, Category.assoc, ← h₁]⟩
     | @id n =>
       exact ⟨mk n', e ≫ σ j, 𝟙 _, P_σ.comp_mem _ _ he (P_σ.σ _), P_δ.id_mem _, by simp⟩
@@ -187,13 +186,13 @@ theorem exists_P_σ_P_δ_factorization {x y : SimplexCategoryGenRel} (f : x ⟶ 
       cases n' with
       | zero =>
         cases hg
-        exact ⟨z, e, f, he, hf, by simp [switch_δ_σ₀]⟩
+        exact ⟨_, _, _, he, hf, by simp [switch_δ_σ₀]⟩
       | succ n =>
         rcases hg with ⟨i⟩
         obtain h' | ⟨j', j'', h'⟩ := switch_δ_σ j i
-        · exact ⟨z, e, f, he, hf, by simp [h']⟩
-        · obtain ⟨z₁, e₁, m₁, ⟨he₁, hm₁, h₁⟩⟩ := factor_P_δ_σ j' f hf
-          exact ⟨z₁, e ≫ e₁, m₁ ≫ δ j'', P_σ.comp_mem _ _ he he₁, P_δ.comp_mem _ _ hm₁ (P_δ.δ _),
+        · exact ⟨_, _, _, he, hf, by simp [h']⟩
+        · obtain ⟨_, _, m₁, ⟨he₁, hm₁, h₁⟩⟩ := factor_P_δ_σ j' f hf
+          exact ⟨_, _, m₁ ≫ δ j'', P_σ.comp_mem _ _ he he₁, P_δ.comp_mem _ _ hm₁ (P_δ.δ _),
             by simp [← reassoc_of% h₁, h']⟩
 
 instance : MorphismProperty.HasFactorization P_σ P_δ where
