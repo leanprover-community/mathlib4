@@ -205,8 +205,10 @@ theorem LinearIndependent.comp (h : LinearIndependent R v) (f : ι' → ι) (hf 
 
 /-- A set of linearly independent vectors in a module `M` over a semiring `K` is also linearly
 independent over a subring `R` of `K`.
-The implementation uses minimal assumptions about the relationship between `R`, `K` and `M`.
-The version where `K` is an `R`-algebra is `LinearIndependent.restrict_scalars_algebras`.
+
+See also `LinearIndependent.restrict_scalars'` for a verison with more convenient typeclass
+assumptions.
+
 TODO : `LinearIndepOn` version.  -/
 theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Module K M]
     [IsScalarTower R K M] (hinj : Injective fun r : R ↦ r • (1 : K))
@@ -217,6 +219,15 @@ theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Modu
   · ext i
     exact hinj congr($this i)
   simpa [Finsupp.linearCombination, f, Finsupp.sum_mapRange_index]
+
+/-- A set of linearly independent vectors in a module `M` over a semiring `S` is also linearly
+independent over a subring `R` of `K`. -/
+theorem LinearIndependent.restrict_scalars' (R : Type*) {S M ι : Type*}
+    [CommSemiring R] [Semiring S] [Algebra R S] [FaithfulSMul R S]
+    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
+    {v : ι → M} (li : LinearIndependent S v) :
+    LinearIndependent R v :=
+  restrict_scalars ((faithfulSMul_iff_injective_smul_one R S).mp inferInstance) li
 
 @[deprecated (since := "2024-08-29")] alias linearIndependent_iff_injective_total :=
   linearIndependent_iff_injective_linearCombination
