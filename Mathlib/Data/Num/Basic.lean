@@ -505,7 +505,7 @@ def divMod (d : PosNum) : PosNum → Num × Num
     divModAux d q (Num.bit1 r₁)
   | 1 => divModAux d 0 1
 
-/-- Division of `PosNum`, -/
+/-- Division of `PosNum` -/
 def div' (n d : PosNum) : Num :=
   (divMod d n).1
 

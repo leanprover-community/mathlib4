@@ -61,6 +61,9 @@ lemma ext (W W' : MorphismProperty C) (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f 
 lemma top_apply {X Y : C} (f : X ⟶ Y) : (⊤ : MorphismProperty C) f := by
   simp only [top_eq]
 
+lemma of_eq_top {P : MorphismProperty C} (h : P = ⊤) {X Y : C} (f : X ⟶ Y) : P f := by
+  simp [h]
+
 @[simp]
 lemma sSup_iff (S : Set (MorphismProperty C)) {X Y : C} (f : X ⟶ Y) :
     sSup S f ↔ ∃ (W : S), W.1 f := by
@@ -72,7 +75,7 @@ lemma sSup_iff (S : Set (MorphismProperty C)) {X Y : C} (f : X ⟶ Y) :
     exact ⟨_, ⟨⟨_, ⟨_, ⟨⟨W, hW⟩, rfl⟩⟩, rfl⟩, rfl⟩, hf⟩
 
 @[simp]
-lemma iSup_iff {ι : Type*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶ Y) :
+lemma iSup_iff {ι : Sort*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶ Y) :
     iSup W f ↔ ∃ i, W i f := by
   apply (sSup_iff (Set.range W) f).trans
   constructor
