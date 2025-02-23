@@ -39,7 +39,7 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if docStx.isMissing then return
   -- `docString` contains e.g. trailing spaces before the `-/`, but does not contain
   -- any leading whitespace before the actual string starts.
-  let docString ← getDocStringText ⟨docStx⟩
+  let docString ← try getDocStringText ⟨docStx⟩ catch _ => return
   -- `startSubstring` is the whitespace between `/--` and the actual doc-string text
   let startSubstring := match docStx with
     | .node _ _ #[(.atom si ..), _] => si.getTrailing?.getD default
