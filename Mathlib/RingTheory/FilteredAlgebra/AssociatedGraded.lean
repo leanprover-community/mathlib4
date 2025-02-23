@@ -261,9 +261,8 @@ instance [IsRingFiltration F F_lt] : GradedMonoid.GOne (GradedPiece F F_lt) wher
 lemma GradedPiece.HEq_one_mul [hasGMul F F_lt] {i : ι} (x : GradedPiece F F_lt i) :
     HEq ((1 : GradedPiece F F_lt 0) * x) x := by
   let rx := Quotient.out x
-  let r1 : (F 0) := ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩
   apply HEq_eq_mk_eq F F_lt (zero_add i) (one_mul (rx : R))
-  · convert (gradedMul_def F F_lt r1 rx).symm
+  · convert (gradedMul_def F F_lt (1 : F 0) rx).symm
     exact (Quotient.out_eq' x).symm
   · exact (Quotient.out_eq' x).symm
   · simp
@@ -271,9 +270,8 @@ lemma GradedPiece.HEq_one_mul [hasGMul F F_lt] {i : ι} (x : GradedPiece F F_lt 
 lemma GradedPiece.HEq_mul_one [hasGMul F F_lt] {i : ι} (x : GradedPiece F F_lt i) :
     HEq (x * (1 : GradedPiece F F_lt 0)) x := by
   let rx := Quotient.out x
-  let r1 : (F 0) := ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩
   apply HEq_eq_mk_eq F F_lt (add_zero i) (mul_one (rx : R))
-  · convert (gradedMul_def F F_lt rx r1).symm
+  · convert (gradedMul_def F F_lt rx (1 : F 0)).symm
     exact (Quotient.out_eq' x).symm
   · exact (Quotient.out_eq' x).symm
   · simp
@@ -338,9 +336,8 @@ lemma gnpow_def [hasGMul F F_lt] (n : ℕ) {i : ι} (x : F i) :
 lemma GradedPiece.gnpow_zero' [hasGMul F F_lt] {i : ι} (x : GradedPiece F F_lt i) :
     HEq (gnpow F F_lt 0 x) (1 : GradedPiece F F_lt 0) := by
   let rx := Quotient.out x
-  let r1 : (F 0) := ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩
   apply HEq_eq_mk_eq F F_lt (zero_nsmul i) (pow_zero rx.1) (Filtration.pow_mem F F_lt 0 rx)
-    r1.2 _ rfl
+    (1 : F 0).2 _ rfl
   simp only [gnpow_def F F_lt 0 rx, rx, mk_eq]
   nth_rw 1 [← Quotient.out_eq x]
 
@@ -423,21 +420,19 @@ lemma GradedPiece.add_mul [hasGMul F F_lt] {i j : ι} (a b : GradedPiece F F_lt 
 
 /--The nat scalar multiple in `GradedPiece F F_lt 0`-/
 def GradedPiece.natCast [IsRingFiltration F F_lt] (n : ℕ) : GradedPiece F F_lt 0 :=
-  mk F F_lt (n • ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩)
+  mk F F_lt (n • (1 : F 0))
 
 lemma GradedPiece.natCast_zero [IsRingFiltration F F_lt] :
     (natCast F F_lt 0 : GradedPiece F F_lt 0) = 0 := by
-  show mk F F_lt (0 • ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩) = 0
+  show mk F F_lt (0 • (1 : F 0)) = 0
   simp only [zero_smul, mk_eq]
   rfl
 
 lemma GradedPiece.natCast_succ [IsRingFiltration F F_lt] (n : ℕ) :
     (natCast F F_lt n.succ : GradedPiece F F_lt 0) =
     (natCast F F_lt n : GradedPiece F F_lt 0) + 1 := by
-  show mk F F_lt (n.succ • ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩) =
-    mk F F_lt ((n • ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩) +
-    (⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩))
-  simp [add_one_mul]
+  show mk F F_lt (n.succ • (1 : F 0)) = mk F F_lt ((n • (1 : F 0)) + (1 : F 0))
+  simp [succ_nsmul]
 
 instance [hasGMul F F_lt] : DirectSum.GSemiring (GradedPiece F F_lt) :=
 { GradedMul.instGMonoidGradedPieceOfHasGMul F F_lt with
@@ -451,18 +446,16 @@ instance [hasGMul F F_lt] : DirectSum.GSemiring (GradedPiece F F_lt) :=
 
 /--The int scalar multiple in `GradedPiece F F_lt 0`-/
 def GradedPiece.intCast [IsRingFiltration F F_lt] (n : ℤ) : GradedPiece F F_lt 0 :=
-  mk F F_lt (n • ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩)
+  mk F F_lt (n • (1 : F 0))
 
 lemma GradedPiece.intCast_ofNat [IsRingFiltration F F_lt] (n : ℕ) :
     intCast F F_lt n = natCast F F_lt n := by
-  show mk F F_lt ((n : ℤ) • ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩) =
-    mk F F_lt (n • ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩)
+  show mk F F_lt ((n : ℤ) • (1 : F 0)) = mk F F_lt (n • (1 : F 0))
   simp
 
 lemma GradedPiece.intCast_negSucc_ofNat [IsRingFiltration F F_lt] (n : ℕ) :
     intCast F F_lt (Int.negSucc n) = - (natCast F F_lt (n + 1)) := by
-  show mk F F_lt ((Int.negSucc n) • ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩) =
-    - mk F F_lt ((n + 1) • ⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩)
+  show mk F F_lt ((Int.negSucc n) • (1 : F 0)) = - mk F F_lt ((n + 1) • (1 : F 0))
   simp only [negSucc_zsmul, nsmul_eq_mul, Nat.cast_add, Nat.cast_one, mk_eq]
   rfl
 
