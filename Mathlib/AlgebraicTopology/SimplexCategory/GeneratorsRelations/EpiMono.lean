@@ -171,40 +171,30 @@ theorem exists_P_σ_P_δ_factorization {x y : SimplexCategoryGenRel} (f : x ⟶ 
   | @id n => use (mk n), (𝟙 (mk n)), (𝟙 (mk n)), P_σ.id_mem _, P_δ.id_mem _; simp
   | @comp_δ n n' f j h =>
     obtain ⟨z, e, m, ⟨he, hm, h⟩⟩ := h
-    rw [h, Category.assoc]
-    use z, e, m ≫ δ j, he, P_δ.comp_mem _ _ hm (P_δ.δ _)
+    exact ⟨z, e, m ≫ δ j, he, P_δ.comp_mem _ _ hm (P_δ.δ _), by simp [h]⟩
   | @comp_σ n n' f j h =>
     obtain ⟨z, e, m, ⟨he, hm, h⟩⟩ := h
     rw [h]
     cases hm with
     | of g hg =>
       cases hg
-      rw [Category.assoc]
       obtain ⟨z₁, e₁, m₁, ⟨he₁, hm₁, h₁⟩⟩ := factor_δ_σ j _
-      rw [h₁]
-      use z₁, e ≫ e₁, m₁, P_σ.comp_mem _ _ he he₁, hm₁
-      simp
+      exact ⟨z₁, e ≫ e₁, m₁, P_σ.comp_mem _ _ he he₁, hm₁,
+        by rw [Category.assoc, Category.assoc, ← h₁]⟩
     | @id n =>
-      simp only [Category.comp_id]
-      use mk n', e ≫ σ j, 𝟙 _, P_σ.comp_mem _ _ he (P_σ.σ _), P_δ.id_mem _
-      simp
+      exact ⟨mk n', e ≫ σ j, 𝟙 _, P_σ.comp_mem _ _ he (P_σ.σ _), P_δ.id_mem _, by simp⟩
     | comp_of f g hf hg =>
-      rw [Category.assoc, Category.assoc]
       cases n' with
       | zero =>
         cases hg
-        rw [switch_δ_σ₀, Category.comp_id]
-        use z, e, f, he, hf
+        exact ⟨z, e, f, he, hf, by simp [switch_δ_σ₀]⟩
       | succ n =>
-        have hg' := hg
-        rcases hg' with ⟨i⟩
-        obtain h' | ⟨j', j'', h'⟩ := switch_δ_σ j i <;> rw [h']
-        · rw [Category.comp_id]
-          use z, e, f, he, hf
+        rcases hg with ⟨i⟩
+        obtain h' | ⟨j', j'', h'⟩ := switch_δ_σ j i
+        · exact ⟨z, e, f, he, hf, by simp [h']⟩
         · obtain ⟨z₁, e₁, m₁, ⟨he₁, hm₁, h₁⟩⟩ := factor_P_δ_σ j' f hf
-          rw [reassoc_of% h₁]
-          use z₁, e ≫ e₁, m₁ ≫ δ j'', P_σ.comp_mem _ _ he he₁, P_δ.comp_mem _ _ hm₁ (P_δ.δ _)
-          simp
+          exact ⟨z₁, e ≫ e₁, m₁ ≫ δ j'', P_σ.comp_mem _ _ he he₁, P_δ.comp_mem _ _ hm₁ (P_δ.δ _),
+            by simp [← reassoc_of% h₁, h']⟩
 
 instance : MorphismProperty.HasFactorization P_σ P_δ where
   nonempty_mapFactorizationData f := by
