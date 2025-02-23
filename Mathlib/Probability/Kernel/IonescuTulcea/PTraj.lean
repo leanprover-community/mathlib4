@@ -244,7 +244,7 @@ lemma ptraj_zero :
 lemma ptraj_le_def (hab : a ≤ b) : ptraj κ a b =
     @Nat.leRec a (fun b _ ↦ Kernel (Π i : Iic a, X i) (Π i : Iic b, X i)) Kernel.id
     (fun k _ κ_k ↦ ((Kernel.id ×ₖ ((κ k).map (piSingleton k))) ∘ₖ κ_k).map (IicProdIoc k (k + 1)))
-    b (Nat.le_of_not_le h) := by
+    b hab := by
   obtain rfl | hab := eq_or_lt_of_le hab
   · simp
   · rw [ptraj, dif_neg (not_le.2 hab)]
