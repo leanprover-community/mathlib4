@@ -60,7 +60,7 @@ namespace SimpleFunc
 section Lp
 
 variable [MeasurableSpace β] [MeasurableSpace E] [NormedAddCommGroup E] [NormedAddCommGroup F]
-  {q : ℝ} {p : ℝ≥0∞}
+  {q : ℝ} {p : ℝ≥0∞} {ps : Finset ℝ≥0∞}
 
 theorem nnnorm_approxOn_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
     {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s] (x : β) (n : ℕ) :
@@ -173,25 +173,40 @@ theorem tendsto_approxOn_range_Lp [BorelSpace E] {f : β → E} [hp : Fact (1 �
     tendsto_approxOn_range_Lp_eLpNorm hp_ne_top fmeas hf.2
 
 /-- Any function in `ℒp` can be approximated by a simple function if `p < ∞`. -/
+theorem _root_.MeasureTheory.MemLp.exists_simpleFunc_finset_eLpNorm_sub_lt {E : Type*}
+    [NormedAddCommGroup E] {f : β → E} {μ : Measure β} (hps_ne : ps.Nonempty) (hps_top : ∞ ∉ ps)
+    (hf : ∀ p ∈ ps, MemLp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ g : β →ₛ E, ∀ p ∈ ps, eLpNorm (f - ⇑g) p μ < ε ∧ MemLp g p μ := by
+  borelize E
+  have hf_meas : AEStronglyMeasurable f μ := hps_ne.elim fun p hp ↦ (hf p hp).1
+  let f' := hf_meas.mk f
+  suffices ∃ g : β →ₛ E, ∀ p ∈ ps, eLpNorm (f' - ⇑g) p μ < ε ∧ MemLp g p μ by
+    refine this.imp fun g hg p hp ↦ ⟨?_, (hg p hp).2⟩
+    refine lt_of_eq_of_lt ?_ (hg p hp).1
+    refine eLpNorm_congr_ae ?_
+    filter_upwards [hf_meas.ae_eq_mk] with x hx
+    simpa only [Pi.sub_apply, sub_left_inj] using hx
+  have hf' : ∀ p ∈ ps, MemLp f' p μ := fun p hp ↦ (hf p hp).ae_eq hf_meas.ae_eq_mk
+  have f'meas : Measurable f' := hf_meas.measurable_mk
+  have : SeparableSpace (range f' ∪ {0} : Set E) :=
+    StronglyMeasurable.separableSpace_range_union_singleton hf_meas.stronglyMeasurable_mk
+  rcases Eventually.exists <| ps.eventually_all.mpr <| fun p hp ↦ Tendsto.eventually
+    (tendsto_approxOn_range_Lp_eLpNorm (ne_of_mem_of_not_mem hp hps_top) f'meas (hf' p hp).2)
+    (gt_mem_nhds hε.bot_lt) with ⟨N, hN⟩
+  use approxOn f' f'meas _ _ (Set.mem_union_right (.range f') (Set.mem_singleton 0)) N
+  refine fun p hp ↦ ⟨?_, ?_⟩
+  · exact eLpNorm_sub_comm _ f' _ _ ▸ hN p hp
+  · exact memLp_approxOn_range f'meas (hf' p hp) N
+
+/-- Any function in `ℒp` can be approximated by a simple function if `p < ∞`. -/
 theorem _root_.MeasureTheory.MemLp.exists_simpleFunc_eLpNorm_sub_lt {E : Type*}
     [NormedAddCommGroup E] {f : β → E} {μ : Measure β} (hf : MemLp f p μ) (hp_ne_top : p ≠ ∞)
     {ε : ℝ≥0∞} (hε : ε ≠ 0) : ∃ g : β →ₛ E, eLpNorm (f - ⇑g) p μ < ε ∧ MemLp g p μ := by
-  borelize E
-  let f' := hf.1.mk f
-  rsuffices ⟨g, hg, g_mem⟩ : ∃ g : β →ₛ E, eLpNorm (f' - ⇑g) p μ < ε ∧ MemLp g p μ
-  · refine ⟨g, ?_, g_mem⟩
-    suffices eLpNorm (f - ⇑g) p μ = eLpNorm (f' - ⇑g) p μ by rwa [this]
-    apply eLpNorm_congr_ae
-    filter_upwards [hf.1.ae_eq_mk] with x hx
-    simpa only [Pi.sub_apply, sub_left_inj] using hx
-  have hf' : MemLp f' p μ := hf.ae_eq hf.1.ae_eq_mk
-  have f'meas : Measurable f' := hf.1.measurable_mk
-  have : SeparableSpace (range f' ∪ {0} : Set E) :=
-    StronglyMeasurable.separableSpace_range_union_singleton hf.1.stronglyMeasurable_mk
-  rcases ((tendsto_approxOn_range_Lp_eLpNorm hp_ne_top f'meas hf'.2).eventually <|
-    gt_mem_nhds hε.bot_lt).exists with ⟨n, hn⟩
-  rw [← eLpNorm_neg, neg_sub] at hn
-  exact ⟨_, hn, memLp_approxOn_range f'meas hf' _⟩
+  have := MemLp.exists_simpleFunc_finset_eLpNorm_sub_lt (ps := {p}) (f := f) (μ := μ)
+    (Finset.singleton_nonempty p)
+    (Finset.not_mem_singleton.mpr hp_ne_top.symm)
+  simp only [Finset.mem_singleton, forall_eq] at this
+  exact this hf hε
 
 end Lp
 
