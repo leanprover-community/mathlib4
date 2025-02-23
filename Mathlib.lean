@@ -4636,6 +4636,7 @@ import Mathlib.RingTheory.Congruence.Opposite
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.CotangentLocalizationAway
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.DedekindDomain.Different
