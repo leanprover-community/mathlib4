@@ -16,9 +16,10 @@ Note that this is the deterministic version.
 
 ## Main Definitions
 
-* `Comp ι ω s α`: a computation with oracles in `s : Set ι` answering with `ω i`, retruning `α`.
-* `Comp.run f oracles : α × (I → ℕ)`: run `f : Comp ι s α` with `oracles : I → Oracle ι`,
-  returning the number of times each oracle is used.
+* `QueryComplexity.Comp ι ω s α`: a computation with oracles in `s : Set ι` answering with `ω i`,
+  returning `α`.
+* `QueryComplexity.Comp.run f oracles : α × (I → ℕ)`: run `f : Comp ι s α` with
+  `oracles : I → Oracle ι`, returning the number of times each oracle is used.
 
 ## Implementation notes
 
@@ -50,10 +51,10 @@ variable {ω : {i : I} → ι i → Type*}
 
 namespace QueryComplexity
 
-/-- A deterministic oracle is a dependent map -/
+/-- A deterministic oracle is a dependent map. -/
 def Oracle (α : Type*) (β : α → Type*) : Type _ := (x : α) → (β x)
 
-/-- An `Oracle` that always returns `Bool` -/
+/-- An `Oracle` that always returns `Bool`. -/
 abbrev BOracle (α : Type*) : Type _ := Oracle α fun _ ↦ Bool
 
 /-- A deterministic computation that make decisions by querying oracles. A computation is either a
@@ -69,13 +70,13 @@ inductive Comp (ι : I → Type*) (ω : {i : I} → ι i → Type*) (s : Set I) 
 
 namespace Comp
 
-/-- The standard bind operation for `Comp` -/
+/-- The standard bind operation for `Comp`. -/
 def bind' (f : Comp ι ω s α) (g : α → Comp ι ω s β) : Comp ι ω s β :=
   match f with
   | .pure' x => g x
   | .query' o m y f => .query' o m y fun b => (f b).bind' g
 
-/-- `Comp` is a monad -/
+/-- `Comp` is a monad. -/
 instance : Monad (Comp ι ω s) where
   pure := Comp.pure'
   bind := Comp.bind'
@@ -103,20 +104,20 @@ def run (f : Comp ι ω s α) (os : (i : I) → Oracle (ι i) ω) : α × (I →
     let (z, c) := (f x).run os
     (z, Pi.single i 1 + c)
 
-/-- The value of a `Comp ι s` after execution -/
+/-- The value of a `Comp ι s` after execution. -/
 def value (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) : α :=
   (f.run o).1
 
-/-- The query count for a specific oracle of a `Comp ι s` -/
+/-- The query count for a specific oracle of a `Comp ι s`. -/
 def cost (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) : I → ℕ :=
   (f.run o).2
 
-/-- Extend the set of allowed oracles in a computation -/
+/-- Extend the set of allowed oracles in a computation. -/
 def allow (f : Comp ι ω s α) (st : s ⊆ t) : Comp ι ω t α := match f with
   | .pure' x => pure x
   | .query' i m y f => .query' i (st m) y (fun b => (f b).allow st)
 
-/-- Extend the set of allowed oracles in a computation to the universe set -/
+/-- Extend the set of allowed oracles in a computation to the universe set. -/
 abbrev allowAll (f : Comp ι ω s α) : Comp ι ω (univ : Set I) α :=
   f.allow (subset_univ s)
 

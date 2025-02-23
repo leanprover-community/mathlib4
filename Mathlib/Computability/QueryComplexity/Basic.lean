@@ -8,7 +8,7 @@ import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Computability.QueryComplexity.Defs
 
 /-!
-## Basic properties of `Comp` and its Monad instance.
+## Basic properties of `Comp` and its Monad instance
 -/
 
 variable {I : Type*}
@@ -22,10 +22,6 @@ namespace QueryComplexity
 
 namespace Comp
 
-/-- The definition of `Comp.map` -/
-lemma map_eq (f : α → β) (x : Comp ι ω s α) : f <$> x = x >>= (fun x ↦ pure (f x)) := rfl
-
-/-- The definition of `Comp.bind` as `simp` lemmas -/
 @[simp]
 lemma pure_bind (x : α) (f : α → Comp ι ω s β) : (pure x : Comp ι ω s α) >>= f = f x := rfl
 
@@ -33,10 +29,10 @@ lemma pure_bind (x : α) (f : α → Comp ι ω s β) : (pure x : Comp ι ω s �
 lemma query'_bind (o : I) (m : o ∈ s) (y : ι o) (f : ω y → Comp ι ω s α)
     (g : α → Comp ι ω s β) : query' o m y f >>= g = .query' o m y fun b => f b >>= g := rfl
 
-/-- `Comp` is a lawful monad -/
+/-- `Comp` is a lawful monad. -/
 instance : LawfulMonad (Comp ι ω s) := LawfulMonad.mk'
   (id_map := fun x => by
-    simp only [map_eq, bind]
+    simp only [instMonad, bind]
     induction x with
     | pure' _ => rfl
     | query' _ _ _ _ h => simp only [bind', h])
@@ -54,12 +50,12 @@ lemma run_pure (a : α) (o : (i : I) → Oracle (ι i) ω) :
     (pure a : Comp ι ω s α).run o = (a, 0) :=
   rfl
 
-/-- Running `pure` yields the original value -/
+/-- Running `pure` yields the original value. -/
 @[simp]
 lemma value_pure (x : α) (o : (i : I) → Oracle (ι i) ω) : (pure x : Comp ι ω s α).value o = x :=
   rfl
 
-/-- `pure` has cost 0 -/
+/-- `pure` has cost 0. -/
 @[simp]
 lemma cost_pure (x : α) (o : (i : I) → Oracle (ι i) ω) :
     (pure x : Comp ι ω s α).cost o = 0 :=
@@ -77,7 +73,7 @@ lemma run_query {i : I} (y : ι i)
     (o : (i : I) → Oracle (ι i) ω) : (query i y).run o = (o i y, Pi.single i 1) := by
   simp [query, run_query']
 
-/-- `query'` costs one query, plus the rest -/
+/-- `query'` costs one query, plus the rest. -/
 @[simp]
 lemma cost_query' {i : I} (m : i ∈ s) (y : ι i) (f : ω y → Comp ι ω s α)
     (o : (j : I) → Oracle (ι j) ω) :
@@ -90,7 +86,6 @@ lemma cost_query (i : I) (y : ι i) (o : (i : I) → Oracle (ι i) ω) :
   simp [query]
 
 
-/-- The value of `query` and `query'` -/
 @[simp]
 lemma value_query' (i : I) (m : i ∈ s) (y : ι i) (f : ω y → Comp ι ω s α) (o : (i : I) →
     Oracle (ι i) ω) : (query' i m y f).value o = (f (o i y)).value o :=
@@ -101,14 +96,14 @@ lemma value_query (i : I) (y : ι i) (o : (i : I) → Oracle (ι i) ω) :
     (query i y).value o = o i y :=
   rfl
 
-/-- The cost of `f >>= g` is `f.cost + g.cost` -/
+/-- The cost of `f >>= g` is `f.cost + g.cost`. -/
 lemma cost_bind (f : Comp ι ω s α) (g : α → Comp ι ω s β) (o : (i : I) → Oracle (ι i) ω) :
     (f >>= g).cost o = f.cost o + (g (f.value o)).cost o := by
   induction f with
   | pure' _ => simp
   | query' _ _ _ _ h => simp [h, add_assoc]
 
-/-- The value of `f >>= g` is the composition of the two `Comp`s -/
+/-- The value of `f >>= g` is the composition of the two `Comp`s. -/
 @[simp]
 lemma value_bind (f : Comp ι ω s α) (g : α → Comp ι ω s β) (o : (i : I) → Oracle (ι i) ω) :
     (f >>= g).value o = (g (f.value o)).value o := by
@@ -149,12 +144,12 @@ lemma allow_pure (x : α) (st : s ⊆ t) : (pure x : Comp ι ω s α).allow st =
 @[simp]
 lemma value_map (f : α → β) (g : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) :
     (f <$> g).value o = f (g.value o) := by
-  simp only [map_eq, value_bind, value_pure]
+  simp only [map_eq_pure_bind, value_bind, value_pure]
 
 @[simp]
 lemma cost_map (f : α → β) (g : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) :
     (f <$> g).cost o = g.cost o := by
-  simp only [map_eq, cost_bind, cost_pure, add_zero]
+  simp only [map_eq_pure_bind, cost_bind, cost_pure, add_zero]
 
 end Comp
 
