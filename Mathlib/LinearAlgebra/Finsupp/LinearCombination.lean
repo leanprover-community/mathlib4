@@ -411,9 +411,8 @@ theorem mem_span_range_iff_exists_fun :
   simp only [Finsupp.mem_span_range_iff_exists_finsupp, Finsupp.equivFunOnFinite_apply]
   exact exists_congr fun c => Eq.congr_left <| Finsupp.sum_fintype _ _ fun i => zero_smul _ _
 
-theorem mem_span_image_iff_exists_fun
-    {α M : Type*} (R : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
-    {v : α → M} {x : M} {s : Set α} [Fintype s] :
+omit [Fintype α] in
+theorem mem_span_image_iff_exists_fun {s : Set α} [Fintype s] :
     x ∈ span R (v '' s) ↔ ∃ c : s → R, ∑ i, c i • v i = x := by
   rw [← mem_span_range_iff_exists_fun, image_eq_range]
 
