@@ -74,10 +74,10 @@ theorem not_nil_right {s : List α} : ¬ Shortlex r s [] := by
   · simp only [List.length_nil, not_lt_zero'] at h1
   · exact List.not_lex_nil h2.2
 
-theorem nil_left_or_eq_nil (s : List α) : Shortlex r [] s ∨ s = [] := by
-  cases s with
-  | nil => right; rfl
-  | cons head tail => exact Or.inl (of_length_lt (Nat.succ_pos tail.length))
+theorem nil_left_or_eq_nil (s : List α) : Shortlex r [] s ∨ s = [] :=
+  match s with
+  | [] => .inr rfl
+  | _ :: tail => .inl <| of_length_lt (Nat.succ_pos tail.length)
 
 @[simp]
 theorem singleton_iff (a b : α) : Shortlex r [a] [b] ↔ r a b := by
@@ -88,13 +88,11 @@ instance isTrichotomous [IsTrichotomous α r] : IsTrichotomous (List α) (Shortl
   InvImage.trichotomous (by simp [Function.Injective])
 
 
-instance isAsymm [IsAsymm α r] : IsAsymm (List α) (Shortlex r) where
-  asymm := fun a b ab ba => (@InvImage.isAsymm _ _ (Prod.Lex (fun x1 x2 ↦ x1 < x2) (Lex r))
-      Prod.IsAsymm (fun a : List α ↦ (a.length, a))).asymm a b ab ba
+instance isAsymm [IsAsymm α r] : IsAsymm (List α) (Shortlex r) :=
+  inferInstanceAs <| IsAsymm (List α) (InvImage _ _)
 
-theorem append_right {s₁ s₂ : List α} (t : List α) : Shortlex r s₁ s₂ →
+theorem append_right {s₁ s₂ : List α} (t : List α) (h : Shortlex r s₁ s₂) :
     Shortlex r s₁ (s₂ ++ t) := by
-  intro h
   rcases shortlex_def.mp h with h1 | h2
   · apply of_length_lt
     rw [List.length_append]
@@ -131,7 +129,7 @@ variable {h : WellFounded r}
 
 theorem _root_.Acc.shortlex {a : α} (n : ℕ) (aca : Acc r a)
     (acb : (b : List α) → b.length < n → Acc (Shortlex r) b) (b : List α) (hb : b.length < n)
-    (ih : ∀ s : List α, s.length < (a::b).length → Acc (Shortlex r) s) :
+    (ih : ∀ s : List α, s.length < (a :: b).length → Acc (Shortlex r) s) :
     Acc (Shortlex r) ([a] ++ b) := by
   induction aca generalizing b with
   | intro xa _ iha =>
@@ -142,9 +140,10 @@ theorem _root_.Acc.shortlex {a : α} (n : ℕ) (aca : Acc r a)
       rcases shortlex_def.mp lt with h1 | h2
       · exact ih _ h1
       · cases p with
-        | nil => simp only [List.length_nil, List.singleton_append, List.length_cons,
-          Nat.succ_eq_add_one, self_eq_add_left, add_eq_zero, List.length_eq_zero, one_ne_zero,
-          and_false, false_and] at h2
+        | nil =>
+          simp only [List.length_nil, List.singleton_append, List.length_cons,
+            Nat.succ_eq_add_one, self_eq_add_left, add_eq_zero, List.length_eq_zero, one_ne_zero,
+            and_false, false_and] at h2
         | cons headp tailp =>
           cases h2.2 with
           | cons h =>
