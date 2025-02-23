@@ -48,15 +48,18 @@ variable (m : ℕ)
 /-- A list of natural numbers [i₀, ⋯, iₙ]) is said to be `m`-admissible (for `m : ℕ`) if
 `i₀ < ⋯ < iₙ` and `iₖ ≤ m + k` for all `k`.
 -/
-def isAdmissible (L : List ℕ) : Prop :=
+def IsAdmissible (L : List ℕ) : Prop :=
   List.Sorted (· < ·) L ∧
   ∀ k: ℕ, (h : k < L.length) → L[k] ≤ m + k
 
-lemma isAdmissible_nil : isAdmissible m [] := by simp [isAdmissible]
+namespace IsAdmissible
+
+lemma nil : IsAdmissible m [] := by simp [IsAdmissible]
 
 variable {m}
+
 /-- If `(a :: l)` is `m`-admissible then a is less than all elements of `l` -/
-lemma isAdmissible_head_lt (a : ℕ) (L : List ℕ) (hl : isAdmissible m (a :: L)) :
+lemma head_lt (a : ℕ) (L : List ℕ) (hl : IsAdmissible m (a :: L)) :
     ∀ a' ∈ L, a < a' := by
   obtain ⟨h₁, h₂⟩ := hl
   intro i hi
@@ -64,9 +67,9 @@ lemma isAdmissible_head_lt (a : ℕ) (L : List ℕ) (hl : isAdmissible m (a :: L
 
 /-- If `L` is (m+1)-admissible index, and `a` is natural number such that a ≤ m and a < L[0], then
   `a::L` is `m`-admissible -/
-lemma isAdmissible_cons (L : List ℕ) (hL : isAdmissible (m + 1) L) (a : ℕ) (ha : a ≤ m)
-    (ha' : (_ : 0 < L.length) → a < L[0]) : isAdmissible m (a :: L) := by
-  dsimp [isAdmissible] at hL ⊢
+lemma cons (L : List ℕ) (hL : IsAdmissible (m + 1) L) (a : ℕ) (ha : a ≤ m)
+    (ha' : (_ : 0 < L.length) → a < L[0]) : IsAdmissible m (a :: L) := by
+  dsimp [IsAdmissible] at hL ⊢
   cases L with
   | nil => constructor <;> simp [ha]
   | cons head tail =>
@@ -82,17 +85,15 @@ lemma isAdmissible_cons (L : List ℕ) (hL : isAdmissible (m + 1) L) (a : ℕ) (
       intro i hi
       exact ha'.trans <| h_tail i hi
     · exact P₁
-    · intro i hi
-      cases i with
-      | zero => simp [ha]
-      | succ i =>
-          simp only [List.getElem_cons_succ]
-          haveI := P₂ i <| Nat.lt_of_succ_lt_succ hi
-          rwa [← add_comm 1, ← add_assoc]
+    · rintro ⟨_ | _⟩ hi
+      · simp [ha]
+      · haveI := P₂ _ <| Nat.lt_of_succ_lt_succ hi
+        rw [List.getElem_cons_succ]
+        omega
 
 /-- The tail of an `m`-admissible list is (m+1)-admissible. -/
-lemma isAdmissible_tail (a : ℕ) (l : List ℕ) (h : isAdmissible m (a::l)) :
-      isAdmissible (m + 1) l := by
+lemma tail (a : ℕ) (l : List ℕ) (h : IsAdmissible m (a::l)) :
+      IsAdmissible (m + 1) l := by
   obtain ⟨h₁, h₂⟩ := h
   refine ⟨(List.sorted_cons.mp h₁).right, ?_⟩
   intro k hk
@@ -100,12 +101,12 @@ lemma isAdmissible_tail (a : ℕ) (l : List ℕ) (h : isAdmissible m (a::l)) :
   simpa [Nat.add_assoc, Nat.add_comm 1] using this
 
 /-- Since they are strictly sorted, two admissible lists with same elements are equal -/
-lemma isAdmissible_ext (L₁ : List ℕ) (L₂ : List ℕ)
-    (hL₁ : isAdmissible m L₁) (hL₂ : isAdmissible m L₂)
+lemma ext (L₁ : List ℕ) (L₂ : List ℕ)
+    (hL₁ : IsAdmissible m L₁) (hL₂ : IsAdmissible m L₂)
     (h : ∀ x : ℕ, x ∈ L₁ ↔ x ∈ L₂) : L₁ = L₂ := by
   obtain ⟨hL₁, hL₁₂⟩ := hL₁
   obtain ⟨hL₂, hL₂₂⟩ := hL₂
-  clear hL₁₂ hL₂₂
+  clear hL₁₂ hL₂₂ -- clearing them now so they don’t clutter the induction hyps
   induction L₁ generalizing L₂ with
   | nil =>
     simp only [List.nil_eq, List.eq_nil_iff_forall_not_mem]
@@ -137,9 +138,8 @@ lemma isAdmissible_ext (L₁ : List ℕ) (L₂ : List ℕ)
             linarith
       refine ⟨hab, ?_⟩
       apply h_rec L₂ _ hL₁ hL₂
-      intro x
       subst hab
-      haveI := h x
+      intro x
       by_cases hax : x = a
       · subst hax
         constructor
@@ -149,18 +149,20 @@ lemma isAdmissible_ext (L₁ : List ℕ) (L₂ : List ℕ)
         · intro h₁
           haveI := hbL₂ x h₁
           linarith
-      simpa [hax] using this
+      simpa [hax] using h x
 
 /-- An element of a `m`-admissible list, as an element of the appropriate `Fin` -/
 @[simps]
-def isAdmissibleGetElemAsFin (L : List ℕ) (hl : isAdmissible m L) (k : ℕ)
+def getElemAsFin {L : List ℕ} (hl : IsAdmissible m L) (k : ℕ)
     (hK : k < L.length) : Fin (m + k + 1) :=
   Fin.mk L[k] <| Nat.le_iff_lt_add_one.mp (by simp [hl.right])
 
 /-- The head of an `m`-admissible list is a special case of this.  -/
 @[simps!]
-def isAdmissibleHead (a : ℕ) (L : List ℕ) (hl : isAdmissible m (a :: L)) : Fin (m + 1) :=
-  isAdmissibleGetElemAsFin (a :: L) hl 0 (by simp)
+def head (a : ℕ) (L : List ℕ) (hl : IsAdmissible m (a :: L)) : Fin (m + 1) :=
+  hl.getElemAsFin 0 (by simp)
+
+end IsAdmissible
 
 /-- The construction `simplicialInsert` describes inserting an element in a list of integer and
 moving it to its "right place" according to the simplicial relations. Somewhat miraculously,
@@ -185,23 +187,23 @@ lemma simplicialInsert_length (a : ℕ) (L : List ℕ) :
     exact h_rec (a + 1)
 
 /-- `simplicialInsert` preserves admissibility -/
-theorem simplicialInsert_isAdmissible (L : List ℕ) (hL : isAdmissible (m + 1) L) (j : ℕ)
+theorem simplicialInsert_isAdmissible (L : List ℕ) (hL : IsAdmissible (m + 1) L) (j : ℕ)
     (hj : j < m + 1) :
-    isAdmissible m (simplicialInsert j L) := by
+    IsAdmissible m (simplicialInsert j L) := by
   have ⟨h₁, h₂⟩ := hL
   induction L generalizing j m with
   | nil =>
-    simp only [simplicialInsert]
+    dsimp only [simplicialInsert]
     constructor
     · simp
     · simp [j.le_of_lt_add_one hj]
   | cons a L h_rec =>
-    simp only [simplicialInsert]
+    dsimp only [simplicialInsert]
     split_ifs <;> rename_i ha
-    · exact isAdmissible_cons _ hL _ (j.le_of_lt_add_one hj) (fun _ ↦ ha)
-    · apply isAdmissible_cons
+    · exact .cons _ hL _ (j.le_of_lt_add_one hj) (fun _ ↦ ha)
+    · apply IsAdmissible.cons
       · apply h_rec
-        · exact isAdmissible_tail a L hL
+        · exact .tail a L hL
         · simp [hj]
         · exact (List.sorted_cons.mp h₁).right
         · intro k hk
@@ -216,8 +218,8 @@ theorem simplicialInsert_isAdmissible (L : List ℕ) (hL : isAdmissible (m + 1) 
         cases L with
         | nil => simp [simplicialInsert, ha]
         | cons a' l' =>
-          simp only [simplicialInsert]
-          split_ifs <;> rename_i h'
+          dsimp only [simplicialInsert]
+          split_ifs
           · exact ha
           · simp only [List.sorted_cons, List.mem_cons, forall_eq_or_imp] at h₁
             simpa using h₁.left.left
