@@ -88,7 +88,9 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
     _ ≤ (2 * N + 1) + 1 := by exact le_refl (2 * N + 2)
   have h₅ : (a + b) ^ (2 * N + 1) = 0 :=
     Commute.add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero h₁ h₃ h₄ help
+  rw [← exp_eq_truncated R A (a + b) h₅, ← exp_eq_truncated R A a h₃, ← exp_eq_truncated R A b h₄]
   sorry
+
 
 end Semi
 
