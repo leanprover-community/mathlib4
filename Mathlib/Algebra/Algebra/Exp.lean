@@ -89,6 +89,13 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
   have h₅ : (a + b) ^ (2 * N + 1) = 0 :=
     Commute.add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero h₁ h₃ h₄ help
   rw [← exp_eq_truncated R A (a + b) h₅, ← exp_eq_truncated R A a h₃, ← exp_eq_truncated R A b h₄]
+  have e₁ :=
+    calc
+      ∑ n ∈ Finset.range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n = ∑ n ∈ Finset.range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n := rfl
+      _ = ∑ n ∈ Finset.range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n := rfl
+      _ = ∑ n ∈ Finset.range (2 * N + 1), (n.factorial : R)⁻¹ • (∑ m ∈ Finset.range (n + 1), a ^ m * b ^ (n - m) * n.choose m) := by
+        apply Equiv.sumCongr with n
+        w[← add_pow h₁ n] --theorem add_pow (h : Commute x y) (n : ℕ) :
   sorry
 
 
