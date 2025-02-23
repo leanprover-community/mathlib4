@@ -326,18 +326,20 @@ lemma ptraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) : ptraj κ a b =
         split_ifs with h1 h2 h3 <;> try rfl
         omega
       nth_rw 1 [← ptraj_comp_ptraj h k.le_succ, hk, ptraj_succ_self, comp_map, comap_map_comm,
-        prod_comap, ← id_map_eq_id_comap, map_prod_eq, map_map, this, ← map_map, id_prod_id,
-        map_prodAssoc, ← map_map, map_prod, map_id, ← map_comp, map_apply_eq_iff_map_symm_apply_eq,
-        fst_comp_id_prod, map_map, ← coe_IicProdIoc (h.trans k.le_succ), symm_comp_self, map_id,
+        prod_comap, ← id_map_eq_id_comap, map_prod_eq, ← map_comp_right, this, map_comp_right,
+        id_prod_eq, prodAssoc_prod, map_comp_right, ← map_prod_map, map_id, ← map_comp,
+        map_apply_eq_iff_map_symm_apply_eq, fst_prod_comp_id_prod, ← map_comp_right,
+        ← coe_IicProdIoc (h.trans k.le_succ), symm_comp_self, map_id,
         deterministic_congr IicProdIoc_comp_restrict₂.symm, ← deterministic_comp_deterministic,
         comp_deterministic_eq_comap, ← prod_comap, ← map_comp, ← comp_map, ← hk,
-        ← ptraj_comp_ptraj h k.le_succ, ptraj_succ_self, map_comp, map_comp, map_map, ← id_map,
-        map_prod_eq, map_map]
-      congr
-      any_goals fun_prop
-  · rw [ptraj_le hba, IicProdIoc_le hba, map_comp_right _ measurable_fst (measurable_frestrictLe₂ _),
-      ← fst_eq, @fst_prod _ _ _ _ _ _ _ _ _ ?_, id_map]
-    exact IsMarkovKernel.map _ (measurable_restrict₂ _)
+        ← ptraj_comp_ptraj h k.le_succ, ptraj_succ_self, map_comp, map_comp, ← map_comp_right,
+        ← id_map, map_prod_eq, ← map_comp_right]
+      · rfl
+      all_goals fun_prop
+  · rw [ptraj_le hba, IicProdIoc_le hba, map_comp_right, ← fst_eq, @fst_prod _ _ _ _ _ _ _ _ _ ?_,
+      id_map]
+    · exact IsMarkovKernel.map _ (measurable_restrict₂ _)
+    all_goals fun_prop
 
 variable [∀ n, IsMarkovKernel (κ n)]
 
