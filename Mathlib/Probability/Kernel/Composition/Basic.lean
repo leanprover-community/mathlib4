@@ -1491,6 +1491,11 @@ lemma deterministic_prod_deterministic {f : α → β} {g : α → γ}
       = deterministic (fun a ↦ (f a, g a)) (hf.prod_mk hg) := by
   ext; simp_rw [prod_apply, deterministic_apply, Measure.dirac_prod_dirac]
 
+lemma id_prod_eq : @Kernel.id (α × β) inferInstance =
+    (deterministic Prod.fst measurable_fst) ×ₖ (deterministic Prod.snd measurable_snd) := by
+  rw [deterministic_prod_deterministic]
+  rfl
+
 lemma compProd_prodMkLeft_eq_comp
     (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel β γ) [IsSFiniteKernel η] :
     κ ⊗ₖ (prodMkLeft α η) = (Kernel.id ×ₖ η) ∘ₖ κ := by
