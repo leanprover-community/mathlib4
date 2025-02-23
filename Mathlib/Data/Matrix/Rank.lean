@@ -18,17 +18,99 @@ This definition does not depend on the choice of basis, see `Matrix.rank_eq_finr
 ## Main declarations
 
 * `Matrix.rank`: the rank of a matrix
+* `Matrix.cRank`: the rank of a matrix as a cardinal
+* `Matrix.eRank`: the rank of a matrix as a term in `ℕ∞`.
 
 -/
-
+universe u v w u₁ u₂
 
 open Matrix
 
 namespace Matrix
 
-open Module
+open Module Cardinal Set Submodule
 
-variable {l m n o R : Type*} [Fintype n] [Fintype o]
+variable {l m n o R : Type*}
+
+section Infinite
+
+variable {m₀ n₀ : Type*} [Semiring R] {A : Matrix m n R}
+
+/-- The rank of a matrix, defined as the dimension of its column space, as a cardinal. -/
+noncomputable def cRank [Semiring R] (A : Matrix m n R) : Cardinal :=
+  Module.rank R (span R (Set.range Aᵀ))
+
+lemma cRank_toNat_eq_finrank (A : Matrix m n R) :
+    A.cRank.toNat = Module.finrank R (span R (range Aᵀ)) := rfl
+
+lemma cRank_mono_col (A : Matrix m n R) (c : n₀ → n) : (A.submatrix id c).cRank ≤ A.cRank := by
+  apply Submodule.rank_mono <| span_mono ?_
+  rintro _ ⟨x, rfl⟩
+  exact ⟨c x, rfl⟩
+
+lemma cRank_lift_mono_row {m : Type u₁} {m₀ : Type u₂} {R : Type u} [Semiring R]
+    (A : Matrix m n R) (r : m₀ → m) :
+    lift.{u₁, max u₂ u} (A.submatrix r id).cRank ≤ lift.{u₂, max u₁ u} A.cRank := by
+  let f : (m → R) →ₗ[R] (m₀ → R) := (LinearMap.funLeft R R r)
+  have h_eq : Submodule.map f (span R (range Aᵀ)) = span R (range (A.submatrix r id)ᵀ) := by
+    rw [LinearMap.map_span, ← image_univ, image_image, transpose_submatrix]
+    convert rfl
+    aesop
+  rw [cRank, ← h_eq]
+  have hwin := lift_rank_map_le f (span R (range Aᵀ))
+  simp_rw [← lift_umax] at hwin ⊢
+  exact hwin
+
+lemma cRank_mono_row {m m₀ : Type u} (A : Matrix m n R) (r : m₀ → m) :
+    (A.submatrix r id).cRank ≤ A.cRank  := by
+  simpa using A.cRank_lift_mono_row r
+
+lemma cRank_le_card_row [StrongRankCondition R] [Fintype m] (A : Matrix m n R) :
+    A.cRank ≤ Fintype.card m :=
+  (Submodule.rank_le (span R (range Aᵀ))).trans <| by rw [rank_fun']
+
+lemma cRank_le_card_col [StrongRankCondition R] [Fintype n] (A : Matrix m n R) :
+    A.cRank ≤ Fintype.card n :=
+  (rank_span_le ..).trans <| by simpa using Cardinal.mk_range_le_lift (f := Aᵀ)
+
+/-- The rank of a matrix, defined as the dimension of its column space, as a term in `ℕ∞`. -/
+noncomputable def eRank [Semiring R] (A : Matrix m n R) : ℕ∞ := A.cRank.toENat
+
+lemma eRank_toNat_eq_finrank (A : Matrix m n R) :
+    A.eRank.toNat = Module.finrank R (span R (range Aᵀ)) :=
+  toNat_toENat ..
+
+lemma eRank_mono_col (A : Matrix m n R) (c : n₀ → n) : (A.submatrix id c).eRank ≤ A.eRank :=
+  OrderHomClass.mono _ <| A.cRank_mono_col c
+
+lemma eRank_mono_row (A : Matrix m n R) (r : m₀ → m) : (A.submatrix r id).eRank ≤ A.eRank := by
+  obtain hlt | hle := lt_or_le A.cRank Cardinal.aleph0
+  · simpa using (toENat_le_iff_of_lt_aleph0 (by simpa)).2 <| A.cRank_lift_mono_row r
+  simp [eRank, toENat_eq_top.2 hle]
+
+lemma eRank_mono (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
+    (A.submatrix r c).eRank ≤ A.eRank :=
+  ((A.submatrix r id).eRank_mono_col c).trans (A.eRank_mono_row r)
+
+lemma eRank_le_card_col [StrongRankCondition R] (A : Matrix m n R) : A.eRank ≤ ENat.card n := by
+  classical
+  wlog hfin : Finite n
+  · simp [ENat.card_eq_top.2 (by simpa using hfin)]
+  have _ := Fintype.ofFinite n
+  rw [ENat.card_eq_coe_fintype_card, eRank, toENat_le_nat]
+  exact A.cRank_le_card_col
+
+lemma eRank_le_card_row [StrongRankCondition R] (A : Matrix m n R) : A.eRank ≤ ENat.card m := by
+  classical
+  wlog hfin : Finite m
+  · simp [ENat.card_eq_top.2 (by simpa using hfin)]
+  have _ := Fintype.ofFinite m
+  rw [ENat.card_eq_coe_fintype_card, eRank, toENat_le_nat]
+  exact A.cRank_le_card_row
+
+end Infinite
+
+variable [Fintype n] [Fintype o]
 
 section CommRing
 
