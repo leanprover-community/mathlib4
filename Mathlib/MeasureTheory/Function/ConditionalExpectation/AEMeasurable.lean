@@ -215,14 +215,6 @@ theorem mem_lpMeas_self {m0 : MeasurableSpace α} (μ : Measure α) (f : Lp F p 
     f ∈ lpMeas F 𝕜 m0 p μ :=
   mem_lpMeas_iff_aeStronglyMeasurable.mpr (Lp.aestronglyMeasurable f)
 
-theorem lpMeasSubgroup_coe {m _ : MeasurableSpace α} {μ : Measure α} {f : lpMeasSubgroup F m p μ} :
-    (f : _ → _) = (f : Lp F p μ) :=
-  rfl
-
-theorem lpMeas_coe {m _ : MeasurableSpace α} {μ : Measure α} {f : lpMeas F 𝕜 m p μ} :
-    (f : _ → _) = (f : Lp F p μ) :=
-  rfl
-
 theorem mem_lpMeas_indicatorConstLp {m m0 : MeasurableSpace α} (hm : m ≤ m0) {μ : Measure α}
     {s : Set α} (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) {c : F} :
     indicatorConstLp p (hm s hs) hμs c ∈ lpMeas F 𝕜 m p μ :=
@@ -331,7 +323,6 @@ theorem lpMeasSubgroupToLpTrim_left_inv (hm : m ≤ m0) :
   intro f
   ext1
   ext1
-  rw [← lpMeasSubgroup_coe]
   exact (lpTrimToLpMeasSubgroup_ae_eq hm _).trans (lpMeasSubgroupToLpTrim_ae_eq hm _)
 
 theorem lpMeasSubgroupToLpTrim_add (hm : m ≤ m0) (f g : lpMeasSubgroup F m p μ) :
@@ -379,7 +370,7 @@ theorem lpMeasToLpTrim_smul (hm : m ≤ m0) (c : 𝕜) (f : lpMeas F 𝕜 m p μ
 theorem lpMeasSubgroupToLpTrim_norm_map [hp : Fact (1 ≤ p)] (hm : m ≤ m0)
     (f : lpMeasSubgroup F m p μ) : ‖lpMeasSubgroupToLpTrim F p μ hm f‖ = ‖f‖ := by
   rw [Lp.norm_def, eLpNorm_trim hm (Lp.stronglyMeasurable _),
-    eLpNorm_congr_ae (lpMeasSubgroupToLpTrim_ae_eq hm _), lpMeasSubgroup_coe, ← Lp.norm_def]
+    eLpNorm_congr_ae (lpMeasSubgroupToLpTrim_ae_eq hm _), ← Lp.norm_def]
   congr
 
 theorem isometry_lpMeasSubgroupToLpTrim [hp : Fact (1 ≤ p)] (hm : m ≤ m0) :
@@ -465,7 +456,6 @@ theorem lpMeasToLpTrimLie_symm_indicator [one_le_p : Fact (1 ≤ p)] [NormedSpac
     ((lpMeasToLpTrimLie F ℝ p μ hm).symm (indicatorConstLp p hs hμs c) : Lp F p μ) =
       indicatorConstLp p (hm s hs) ((le_trim hm).trans_lt hμs.lt_top).ne c := by
   ext1
-  rw [← lpMeas_coe]
   change
     lpTrimToLpMeas F ℝ p μ hm (indicatorConstLp p hs hμs c) =ᵐ[μ]
       (indicatorConstLp p _ _ c : α → F)
@@ -477,7 +467,6 @@ theorem lpMeasToLpTrimLie_symm_toLp [one_le_p : Fact (1 ≤ p)] [NormedSpace ℝ
     ((lpMeasToLpTrimLie F ℝ p μ hm).symm (hf.toLp f) : Lp F p μ) =
       (memℒp_of_memℒp_trim hm hf).toLp f := by
   ext1
-  rw [← lpMeas_coe]
   refine (lpTrimToLpMeas_ae_eq hm _).trans ?_
   exact (ae_eq_of_ae_eq_trim (Memℒp.coeFn_toLp hf)).trans (Memℒp.coeFn_toLp _).symm
 
