@@ -6,7 +6,6 @@ Authors: Yi Yuan
 import Mathlib.RingTheory.FilteredAlgebra.Basic
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Tactic.LinearCombination'
 /-!
 # The filtration on abelian group and ring
 In this file, we defined the fitration induced by a homomorphism,
