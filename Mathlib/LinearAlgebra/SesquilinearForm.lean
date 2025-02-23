@@ -96,7 +96,7 @@ theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} 
   constructor <;> intro H
   · rw [map_smulₛₗ₂, H, smul_zero]
   · rw [map_smulₛₗ₂, smul_eq_zero] at H
-    cases' H with H H
+    rcases H with H | H
     · rw [map_eq_zero I₁] at H
       trivial
     · exact H
@@ -108,7 +108,7 @@ theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y}
   constructor <;> intro H
   · rw [map_smulₛₗ, H, smul_zero]
   · rw [map_smulₛₗ, smul_eq_zero] at H
-    cases' H with H H
+    rcases H with H | H
     · simp only [map_eq_zero] at H
       exfalso
       exact ha H
@@ -213,13 +213,12 @@ end IsSymm
 @[simp]
 theorem isSymm_zero : (0 : M →ₛₗ[I] M →ₗ[R] R).IsSymm := fun _ _ => map_zero _
 
-theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.flip := by
-  constructor <;> intro h
-  · ext
-    rw [← h, flip_apply, RingHom.id_apply]
-  intro x y
-  conv_lhs => rw [h]
-  rfl
+theorem BilinMap.isSymm_iff_eq_flip {N : Type*} [AddCommMonoid N] [Module R N]
+    {B : LinearMap.BilinMap R M N} : (∀ x y, B x y = B y x) ↔ B = B.flip := by
+  simp [LinearMap.ext_iff₂]
+
+theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.flip :=
+  BilinMap.isSymm_iff_eq_flip
 
 end Symmetric
 

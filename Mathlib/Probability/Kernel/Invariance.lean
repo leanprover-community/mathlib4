@@ -75,9 +75,9 @@ theorem Invariant.def (hκ : Invariant κ μ) : μ.bind κ = μ :=
 theorem Invariant.comp_const (hκ : Invariant κ μ) : κ ∘ₖ const α μ = const α μ := by
   rw [← const_bind_eq_comp_const κ μ, hκ.def]
 
-theorem Invariant.comp [IsSFiniteKernel κ] (hκ : Invariant κ μ) (hη : Invariant η μ) :
+theorem Invariant.comp (hκ : Invariant κ μ) (hη : Invariant η μ) :
     Invariant (κ ∘ₖ η) μ := by
-  cases' isEmpty_or_nonempty α with _ hα
+  rcases isEmpty_or_nonempty α with _ | hα
   · exact Subsingleton.elim _ _
   · simp_rw [Invariant, ← comp_const_apply_eq_bind (κ ∘ₖ η) μ hα.some, comp_assoc, hη.comp_const,
       hκ.comp_const, const_apply]

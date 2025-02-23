@@ -166,7 +166,7 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
     · dsimp only
       rw [← hx₁', ← hz, ← Scheme.comp_base_apply]
       erw [← Scheme.comp_base_apply]
-      congr 4
+      congr 5
       apply pullback.hom_ext <;> simp [𝓤, ← pullback.condition, ← pullback.condition_assoc]
   · intro i
     have := H (S.affineOpenCover.obj i.1) (((𝒰.pullbackCover f).obj i.1).affineOpenCover.obj i.2.1)
@@ -177,7 +177,7 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
         ((𝒲 i.1).map i.2.2 ≫ (𝒰.pullbackCover g).map i.1)
         (𝒰.map i.1) (by simp [pullback.condition]) (by simp [pullback.condition])
         inferInstance inferInstance inferInstance
-    convert this using 6
+    convert this using 7
     apply pullback.hom_ext <;>
       simp [𝓤, ← pullback.condition, ← pullback.condition_assoc,
         Scheme.Cover.pullbackHom]

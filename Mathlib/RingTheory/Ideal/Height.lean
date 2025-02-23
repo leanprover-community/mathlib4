@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Jingting Wang, Andrew Yang
 -/
 import Mathlib.Order.KrullDimension
-import Mathlib.RingTheory.Ideal.MinimalPrime
+import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 import Mathlib.RingTheory.Spectrum.Prime.Basic
 /-!
 # The Height of an Ideal
@@ -66,17 +66,17 @@ lemma Ideal.height_ne_top {I : Ideal R} (hI : I ≠ ⊤) [h : I.FiniteHeight] :
 
 lemma Ideal.height_lt_top {I : Ideal R} (hI : I ≠ ⊤) [h : I.FiniteHeight] :
     I.height < ⊤ :=
-  lt_of_le_of_ne le_top (Ideal.height_ne_top hI)
+  (Ideal.height_ne_top hI).lt_top
 
 lemma Ideal.primeHeight_ne_top (I : Ideal R) [I.FiniteHeight] [h : I.IsPrime] :
     I.primeHeight ≠ ⊤ := by
   rw [← I.height_eq_primeHeight]
-  exact Ideal.height_ne_top (by exact h.ne_top)
+  exact Ideal.height_ne_top h.ne_top
 
 lemma Ideal.primeHeight_lt_top (I : Ideal R) [I.FiniteHeight] [h : I.IsPrime] :
     I.primeHeight < ⊤ := by
   rw [← I.height_eq_primeHeight]
-  exact Ideal.height_lt_top (by exact h.ne_top)
+  exact Ideal.height_lt_top h.ne_top
 
 @[gcongr]
 lemma Ideal.primeHeight_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I ≤ J) :
@@ -101,15 +101,14 @@ lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
 
 @[simp]
 theorem Ideal.height_top : (⊤ : Ideal R).height = ⊤ := by
-  simp only [height, minimalPrimes_top]
-  rw [iInf₂_eq_top]; intro i hi; exact False.elim hi
+  simp [height, minimalPrimes_top, iInf₂_eq_top]
 
 @[gcongr]
 theorem Ideal.height_mono {I J : Ideal R} (h : I ≤ J) : I.height ≤ J.height := by
   simp only [height]
-  apply le_iInf₂; intro p hp; haveI := hp.1.1
+  apply le_iInf₂; intro p hp; have := Ideal.minimalPrimes_isPrime hp
   obtain ⟨q, hq, e⟩ := Ideal.exists_minimalPrimes_le (h.trans hp.1.2)
-  haveI := hq.1.1
+  haveI := Ideal.minimalPrimes_isPrime hq
   exact (iInf₂_le q hq).trans (Ideal.primeHeight_mono e)
 
 @[gcongr]
@@ -119,6 +118,6 @@ lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
   by_cases hJ : J = ⊤
   · rw [hJ, height_top]; exact I.primeHeight_lt_top
   · rw [← ENat.add_one_le_iff I.primeHeight_ne_top, Ideal.height]
-    apply le_iInf₂; intro K hK; haveI := hK.1.1
+    apply le_iInf₂; intro K hK; haveI := Ideal.minimalPrimes_isPrime hK
     have : I < K := lt_of_lt_of_le h hK.1.2
     exact Ideal.primeHeight_add_one_le_of_lt this

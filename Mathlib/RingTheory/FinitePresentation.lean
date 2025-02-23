@@ -212,8 +212,8 @@ theorem trans [Algebra A B] [IsScalarTower R A B] [FinitePresentation R A]
 
 open MvPolynomial
 
--- We follow the proof of https://stacks.math.columbia.edu/tag/0561
 -- TODO: extract out helper lemmas and tidy proof.
+@[stacks 0561]
 theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A B]
     [FinitePresentation.{w₁, w₃} R B] [FiniteType R A] :
     FinitePresentation.{w₂, w₃} A B := by

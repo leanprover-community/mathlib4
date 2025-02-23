@@ -490,10 +490,10 @@ lemma crossProduct_eq_zero_of_dotProduct_eq_zero {a b c d : Fin 3 → K} (hac : 
 lemma eq_or_eq_of_orthogonal {a b c d : ℙ K (Fin 3 → K)} (hac : a.orthogonal c)
     (hbc : b.orthogonal c) (had : a.orthogonal d) (hbd : b.orthogonal d) :
     a = b ∨ c = d := by
-  induction' a with a ha
-  induction' b with b hb
-  induction' c with c hc
-  induction' d with d hd
+  induction a with | h a ha =>
+  induction b with | h b hb =>
+  induction c with | h c hc =>
+  induction d with | h d hd =>
   rw [mk_eq_mk_iff_crossProduct_eq_zero, mk_eq_mk_iff_crossProduct_eq_zero]
   exact crossProduct_eq_zero_of_dotProduct_eq_zero hac hbc had hbd
 

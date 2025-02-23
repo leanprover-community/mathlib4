@@ -76,7 +76,7 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
         ((Equiv.Set.prod _ _).trans (H.prodCongr H)).toEmbedding⟩
     refine (Equiv.Set.insert ?_).trans ((Equiv.refl _).sumCongr punitEquivPUnit)
     apply @irrefl _ r
-  cases' lt_or_le (card (succ (typein (· < ·) (g p)))) ℵ₀ with qo qo
+  rcases lt_or_le (card (succ (typein (· < ·) (g p)))) ℵ₀ with qo | qo
   · exact (mul_lt_aleph0 qo qo).trans_le ol
   · suffices (succ (typein LT.lt (g p))).card < #α from (IH _ this qo).trans_lt this
     rw [← lt_ord]
@@ -431,14 +431,6 @@ section aleph
 theorem aleph_add_aleph (o₁ o₂ : Ordinal) : ℵ_ o₁ + ℵ_ o₂ = ℵ_ (max o₁ o₂) := by
   rw [Cardinal.add_eq_max (aleph0_le_aleph o₁), aleph_max]
 
-theorem principal_add_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : Ordinal.Principal (· + ·) c.ord :=
-  fun a b ha hb => by
-  rw [lt_ord, Ordinal.card_add] at *
-  exact add_lt_of_lt hc ha hb
-
-theorem principal_add_aleph (o : Ordinal) : Ordinal.Principal (· + ·) (ℵ_ o).ord :=
-  principal_add_ord <| aleph0_le_aleph o
-
 theorem add_right_inj_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < aleph0) : α + γ = β + γ ↔ α = β :=
   ⟨fun h => Cardinal.eq_of_add_eq_add_right h γ₀, fun h => congr_arg (· + γ) h⟩
 
@@ -526,6 +518,9 @@ theorem power_nat_le_max {c : Cardinal.{u}} {n : ℕ} : c ^ (n : Cardinal.{u}) �
   rcases le_or_lt ℵ₀ c with hc | hc
   · exact le_max_of_le_left (power_nat_le hc)
   · exact le_max_of_le_right (power_lt_aleph0 hc (nat_lt_aleph0 _)).le
+
+lemma power_le_aleph0 {a b : Cardinal.{u}} (ha : a ≤ ℵ₀) (hb : b < ℵ₀) : a ^ b ≤ ℵ₀ := by
+  lift b to ℕ using hb; simpa [ha] using power_nat_le_max (c := a)
 
 theorem powerlt_aleph0 {c : Cardinal} (h : ℵ₀ ≤ c) : c ^< ℵ₀ = c := by
   apply le_antisymm
@@ -792,7 +787,7 @@ section extend
 theorem extend_function {α β : Type*} {s : Set α} (f : s ↪ β)
     (h : Nonempty ((sᶜ : Set α) ≃ ((range f)ᶜ : Set β))) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
   classical
-  have := h; cases' this with g
+  have := h; obtain ⟨g⟩ := this
   let h : α ≃ β :=
     (Set.sumCompl (s : Set α)).symm.trans
       ((sumCongr (Equiv.ofInjective f f.2) g).trans (Set.sumCompl (range f)))
@@ -801,7 +796,7 @@ theorem extend_function {α β : Type*} {s : Set α} (f : s ↪ β)
 theorem extend_function_finite {α : Type u} {β : Type v} [Finite α] {s : Set α} (f : s ↪ β)
     (h : Nonempty (α ≃ β)) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
   apply extend_function.{u, v} f
-  cases' id h with g
+  obtain ⟨g⟩ := id h
   rw [← lift_mk_eq.{u, v, max u v}] at h
   rw [← lift_mk_eq.{u, v, max u v}, mk_compl_eq_mk_compl_finite_lift.{u, v, max u v} h]
   rw [mk_range_eq_lift.{u, v, max u v}]; exact f.2
@@ -811,7 +806,7 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
   cases fintypeOrInfinite α
   · exact extend_function_finite f h
   · apply extend_function f
-    cases' id h with g
+    obtain ⟨g⟩ := id h
     haveI := Infinite.of_injective _ g.injective
     rw [← lift_mk_eq'] at h ⊢
     rwa [mk_compl_of_infinite s hs, mk_compl_of_infinite]
@@ -953,5 +948,39 @@ theorem IsInitial.principal_opow {o : Ordinal} (h : IsInitial o) (ho : ω ≤ o)
 theorem principal_opow_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : Principal (· ^ ·) c.ord := by
   apply (isInitial_ord c).principal_opow
   rwa [omega0_le_ord]
+
+/-! ### Initial ordinals are principal -/
+
+theorem principal_add_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : Principal (· + ·) c.ord := by
+  intro a b ha hb
+  rw [lt_ord, card_add] at *
+  exact add_lt_of_lt hc ha hb
+
+theorem IsInitial.principal_add {o : Ordinal} (h : IsInitial o) (ho : ω ≤ o) :
+    Principal (· + ·) o := by
+  rw [← h.ord_card]
+  apply principal_add_ord
+  rwa [aleph0_le_card]
+
+theorem principal_add_omega (o : Ordinal) : Principal (· + ·) (ω_ o) :=
+  (isInitial_omega o).principal_add (omega0_le_omega o)
+
+theorem principal_mul_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : Principal (· * ·) c.ord := by
+  intro a b ha hb
+  rw [lt_ord, card_mul] at *
+  exact mul_lt_of_lt hc ha hb
+
+theorem IsInitial.principal_mul {o : Ordinal} (h : IsInitial o) (ho : ω ≤ o) :
+    Principal (· * ·) o := by
+  rw [← h.ord_card]
+  apply principal_mul_ord
+  rwa [aleph0_le_card]
+
+theorem principal_mul_omega (o : Ordinal) : Principal (· * ·) (ω_ o) :=
+  (isInitial_omega o).principal_mul (omega0_le_omega o)
+
+@[deprecated principal_add_omega (since := "2024-11-08")]
+theorem _root_.Cardinal.principal_add_aleph (o : Ordinal) : Principal (· + ·) (ℵ_ o).ord :=
+  principal_add_ord <| aleph0_le_aleph o
 
 end Ordinal

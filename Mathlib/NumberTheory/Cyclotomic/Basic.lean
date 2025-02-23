@@ -124,7 +124,7 @@ theorem trans (C : Type w) [CommRing C] [Algebra A C] [Algebra B C] [IsScalarTow
     [hS : IsCyclotomicExtension S A B] [hT : IsCyclotomicExtension T B C]
     (h : Function.Injective (algebraMap B C)) : IsCyclotomicExtension (S ∪ T) A C := by
   refine ⟨fun hn => ?_, fun x => ?_⟩
-  · cases' hn with hn hn
+  · rcases hn with hn | hn
     · obtain ⟨b, hb⟩ := ((isCyclotomicExtension_iff _ _ _).1 hS).1 hn
       refine ⟨algebraMap B C b, ?_⟩
       exact hb.map_of_injective h
@@ -299,19 +299,18 @@ theorem finite_of_singleton [IsDomain B] [h : IsCyclotomicExtension {n} A B] :
 /-- If `S` is finite and `IsCyclotomicExtension S A B`, then `B` is a finite `A`-algebra. -/
 protected theorem finite [IsDomain B] [h₁ : Finite S] [h₂ : IsCyclotomicExtension S A B] :
     Module.Finite A B := by
-  cases' nonempty_fintype S with h
-  revert h₂ A B
-  refine Set.Finite.induction_on _ h₁ (fun A B => ?_) @fun n S _ _ H A B => ?_
-  · intro _ _ _ _ _
+  rw [finite_coe_iff] at h₁
+  induction S, h₁ using Set.Finite.induction_on generalizing h₂ A B with
+  | empty =>
     refine Module.finite_def.2 ⟨({1} : Finset B), ?_⟩
     simp [← top_toSubmodule, ← empty, toSubmodule_bot, Submodule.one_eq_span]
-  · intro _ _ _ _ h
+  | @insert n S _ _ H =>
     haveI : IsCyclotomicExtension S A (adjoin A {b : B | ∃ n : ℕ+, n ∈ S ∧ b ^ (n : ℕ) = 1}) :=
       union_left _ (insert n S) _ _ (subset_insert n S)
     haveI := H A (adjoin A {b : B | ∃ n : ℕ+, n ∈ S ∧ b ^ (n : ℕ) = 1})
     have : Module.Finite (adjoin A {b : B | ∃ n : ℕ+, n ∈ S ∧ b ^ (n : ℕ) = 1}) B := by
-      rw [← union_singleton] at h
-      letI := @union_right S {n} A B _ _ _ h
+      rw [← union_singleton] at h₂
+      let _ := union_right S {n} A B
       exact finite_of_singleton n _ _
     exact Module.Finite.trans (adjoin A {b : B | ∃ n : ℕ+, n ∈ S ∧ b ^ (n : ℕ) = 1}) _
 
@@ -542,12 +541,11 @@ instance CyclotomicField.algebra' {R : Type*} [CommRing R] [Algebra R K] :
 instance {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicField n K) :=
   SplittingField.isScalarTower _
 
-instance CyclotomicField.noZeroSMulDivisors [IsFractionRing A K] :
-    NoZeroSMulDivisors A (CyclotomicField n K) := by
-  refine NoZeroSMulDivisors.of_algebraMap_injective ?_
-  rw [IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
+instance [IsFractionRing A K] : NoZeroSMulDivisors A (CyclotomicField n K) := by
+  rw [NoZeroSMulDivisors.iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective,
+    IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
   exact
-    (Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective K (CyclotomicField n K))
+    (Function.Injective.comp (FaithfulSMul.algebraMap_injective K (CyclotomicField n K))
       (IsFractionRing.injective A K) :)
 
 /-- If `A` is a domain with fraction field `K` and `n : ℕ+`, we define `CyclotomicRing n A K` as
@@ -586,7 +584,7 @@ instance [IsFractionRing A K] :
 
 theorem algebraBase_injective [IsFractionRing A K] :
     Function.Injective <| algebraMap A (CyclotomicRing n A K) :=
-  NoZeroSMulDivisors.algebraMap_injective _ _
+  FaithfulSMul.algebraMap_injective _ _
 
 instance : Algebra (CyclotomicRing n A K) (CyclotomicField n K) :=
   (adjoin A _).toAlgebra
@@ -596,7 +594,7 @@ theorem adjoin_algebra_injective :
   Subtype.val_injective
 
 instance : NoZeroSMulDivisors (CyclotomicRing n A K) (CyclotomicField n K) :=
-  NoZeroSMulDivisors.of_algebraMap_injective (adjoin_algebra_injective n A K)
+  NoZeroSMulDivisors.iff_algebraMap_injective.mpr (adjoin_algebra_injective n A K)
 
 instance : IsScalarTower A (CyclotomicRing n A K) (CyclotomicField n K) :=
   IsScalarTower.subalgebra' _ _ _ _
@@ -606,8 +604,8 @@ instance isCyclotomicExtension [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
   exists_prim_root := @fun a han => by
     rw [mem_singleton_iff] at han
     subst a
-    haveI := NeZero.of_noZeroSMulDivisors A K n
-    haveI := NeZero.of_noZeroSMulDivisors A (CyclotomicField n K) n
+    have := NeZero.of_faithfulSMul A K n
+    have := NeZero.of_faithfulSMul A (CyclotomicField n K) n
     obtain ⟨μ, hμ⟩ := (CyclotomicField.isCyclotomicExtension n K).exists_prim_root (mem_singleton n)
     refine ⟨⟨μ, subset_adjoin ?_⟩, ?_⟩
     · apply (isRoot_of_unity_iff n.pos (CyclotomicField n K)).mpr

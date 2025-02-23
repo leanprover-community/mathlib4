@@ -167,11 +167,9 @@ section
 variable (R : Type u) [CommRing R]
 variable (A : Type u) [CommRing A] [Algebra R A]
 
-/-- An `R`-algebra `A` is étale if it is formally étale and of finite presentation.
-
-Note that the definition <https://stacks.math.columbia.edu/tag/00U1> in the stacks project is
-different, but <https://stacks.math.columbia.edu/tag/00UR> shows that it is equivalent
-to the definition here. -/
+/-- An `R`-algebra `A` is étale if it is formally étale and of finite presentation. -/
+@[stacks 00U1 "Note that this is a different definition from this Stacks entry, but
+<https://stacks.math.columbia.edu/tag/00UR> shows that it is equivalent to the definition here."]
 class Etale : Prop where
   formallyEtale : FormallyEtale R A := by infer_instance
   finitePresentation : FinitePresentation R A := by infer_instance
