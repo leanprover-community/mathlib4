@@ -49,10 +49,8 @@ and includes many more features.
   and  `@Continuous *0 ℝ *1 *2 Real.exp`,
   so that it also comes up if you look up `Continuous Real.exp`.
 
-- For sub-expressions not at the root of the original expression we have some additional reductions:
-  - Any combination of `ofNat`, `Nat.zero`, `Nat.succ` and number literals
-    is stored as just a number literal. When issue https://github.com/leanprover/lean4/issues/2867
-    gets resolved, this behaviour should be updated.
+- How to deal with number literals is waiting for this issue to be resolved:
+  https://github.com/leanprover/lean4/issues/2867
 
 - The key `Key.opaque` only matches with a `Key.star` key.
   Depending on the configuration, β-reduction and ζ-reduction may be disabled, so the resulting
