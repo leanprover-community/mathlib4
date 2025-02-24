@@ -138,19 +138,9 @@ partial def getHash (mod : Name) (sourceFile : FilePath) (visited : Std.HashSet 
         -- one import did not have a hash: invalidate hash of this module
         modify fun stt => { stt with cache := stt.cache.insert mod none }
         return none
-    /-
-    TODO: Currently, the cache uses the hash of the unresolved file name
-    (e.g. `Mathlib/Init.lean`) which is reconstructed from the module name
-    (e.g. `Mathlib.Init`) in `path`. It could, however, directly use `hash mod` instead.
-
-    We can change this at any time causing a one-time cache invalidation, just as
-    a toolchain-bump would.
-    -/
-    let filePath := mkFilePath (mod.components.map toString) |>.withExtension "lean"
-
     let rootHash := (← get).rootHash
-    let pathHash := hash filePath.components -- TODO: change to `hash mod`
-    let fileHash := hash <| rootHash :: pathHash :: hashFileContents content :: importHashes.toList
+    let modHash := hash mod
+    let fileHash := hash <| rootHash :: modHash :: hashFileContents content :: importHashes.toList
     if isPartOfMathlibCache mod then
       -- mathlib/upstream: add hash to `hashMap`
       modifyGet fun stt =>
