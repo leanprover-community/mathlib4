@@ -6,7 +6,6 @@ Authors: Chris Hughes
 import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.MvPolynomial.Cardinal
-import Mathlib.Algebra.Polynomial.Cardinal
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.Algebraic.Cardinality
 import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
@@ -167,7 +166,7 @@ theorem ringEquiv_of_equiv_of_charZero [CharZero K] [CharZero L] (hK : ℵ₀ < 
       ← lift_injective (cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt _
         ht (le_of_eq mk_int) hL)]
     exact Cardinal.lift_mk_eq'.2 hKL
-  cases' Cardinal.lift_mk_eq'.1 this with e
+  obtain ⟨e⟩ := Cardinal.lift_mk_eq'.1 this
   exact ⟨equivOfTranscendenceBasis _ _ e hs ht⟩
 
 private theorem ringEquiv_of_Cardinal_eq_of_charP (p : ℕ) [Fact p.Prime] [CharP K p] [CharP L p]
@@ -186,7 +185,7 @@ private theorem ringEquiv_of_Cardinal_eq_of_charP (p : ℕ) [Fact p.Prime] [Char
       ← lift_injective (cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt _
         ht (le_of_lt (lt_aleph0_of_finite _)) hL)]
     exact Cardinal.lift_mk_eq'.2 hKL
-  cases' Cardinal.lift_mk_eq'.1 this with e
+  obtain ⟨e⟩ := Cardinal.lift_mk_eq'.1 this
   exact ⟨equivOfTranscendenceBasis _ _ e hs ht⟩
 
 /-- Two uncountable algebraically closed fields are isomorphic

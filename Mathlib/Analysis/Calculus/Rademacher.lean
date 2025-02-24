@@ -61,10 +61,13 @@ variation, and is therefore ae differentiable, together with a Fubini argument.
 -/
 
 
-theorem memℒp_lineDeriv (hf : LipschitzWith C f) (v : E) :
-    Memℒp (fun x ↦ lineDeriv ℝ f x v) ∞ μ :=
-  memℒp_top_of_bound (aestronglyMeasurable_lineDeriv hf.continuous μ)
+theorem memLp_lineDeriv (hf : LipschitzWith C f) (v : E) :
+    MemLp (fun x ↦ lineDeriv ℝ f x v) ∞ μ :=
+  memLp_top_of_bound (aestronglyMeasurable_lineDeriv hf.continuous μ)
     (C * ‖v‖) (.of_forall fun _x ↦ norm_lineDeriv_le_of_lipschitz ℝ hf)
+
+@[deprecated (since := "2025-02-21")]
+alias memℒp_lineDeriv := memLp_lineDeriv
 
 variable [FiniteDimensional ℝ E] [IsAddHaarMeasure μ]
 
@@ -87,7 +90,7 @@ theorem ae_lineDifferentiableAt
 
 theorem locallyIntegrable_lineDeriv (hf : LipschitzWith C f) (v : E) :
     LocallyIntegrable (fun x ↦ lineDeriv ℝ f x v) μ :=
-  (hf.memℒp_lineDeriv v).locallyIntegrable le_top
+  (hf.memLp_lineDeriv v).locallyIntegrable le_top
 
 /-!
 ### Step 2: the ae line derivative is linear
@@ -212,7 +215,7 @@ theorem ae_lineDeriv_sum_eq
   simp_rw [Finset.smul_sum]
   have A : ∀ i ∈ s, Integrable (fun x ↦ g x • (a i • fun x ↦ lineDeriv ℝ f x (v i)) x) μ :=
     fun i hi ↦ (g_smooth.continuous.integrable_of_hasCompactSupport g_comp).smul_of_top_left
-      ((hf.memℒp_lineDeriv (v i)).const_smul (a i))
+      ((hf.memLp_lineDeriv (v i)).const_smul (a i))
   rw [integral_finset_sum _ A]
   suffices S1 : ∫ x, lineDeriv ℝ f x (∑ i ∈ s, a i • v i) * g x ∂μ
       = ∑ i ∈ s, a i * ∫ x, lineDeriv ℝ f x (v i) * g x ∂μ by

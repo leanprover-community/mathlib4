@@ -49,7 +49,7 @@ variable (X : LocallyRingedSpace.{u})
 
 /-- An alias for `toSheafedSpace`, where the result type is a `RingedSpace`.
 This allows us to use dot-notation for the `RingedSpace` namespace.
- -/
+-/
 def toRingedSpace : RingedSpace :=
   X.toSheafedSpace
 

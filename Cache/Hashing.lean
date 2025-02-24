@@ -73,12 +73,11 @@ def getFileImports (content : String) (fileName : String := "") :
     CacheM <| Array (Name × FilePath) := do
   let sp := (← read).srcSearchPath
   let fileImports : Array Import ← Lean.parseImports' content fileName
-  let out ← fileImports
+  fileImports
     |>.filter (isPartOfMathlibCache ·.module)
     |>.mapM fun imp => do
       let impSourceFile ← Lean.findLean sp imp.module
       pure (imp.module, impSourceFile)
-  pure out
 
 /-- Computes a canonical hash of a file's contents. -/
 def hashFileContents (contents : String) : UInt64 :=

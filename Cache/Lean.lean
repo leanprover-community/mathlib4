@@ -50,9 +50,8 @@ expose this base path.
 -/
 def findWithExtBase (sp : SearchPath) (ext : String) (mod : Name) : IO (Option FilePath) := do
   let pkg := mod.getRoot.toString (escape := false)
-  let root? ← sp.findM? fun p =>
+  sp.findM? fun p =>
     (p / pkg).isDir <||> ((p / pkg).addExtension ext).pathExists
-  return root?
 
 end Lean.SearchPath
 
