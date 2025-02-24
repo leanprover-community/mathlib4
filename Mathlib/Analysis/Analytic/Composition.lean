@@ -83,9 +83,9 @@ variable [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G]
 
 namespace FormalMultilinearSeries
 
-variable [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-variable [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
-variable [TopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
+variable [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+variable [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+variable [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
 
 /-!
 In this paragraph, we define the composition of formal multilinear series, by summing over all
@@ -117,7 +117,7 @@ theorem applyComposition_single (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
   dsimp
   congr 1
   convert Composition.single_embedding hn ⟨i, hi2⟩ using 1
-  cases' j with j_val j_property
+  obtain ⟨j_val, j_property⟩ := j
   have : j_val = 0 := le_bot_iff.1 (Nat.lt_succ_iff.1 j_property)
   congr!
   simp
@@ -167,8 +167,8 @@ namespace ContinuousMultilinearMap
 
 open FormalMultilinearSeries
 
-variable [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-variable [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+variable [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+variable [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
 
 /-- Given a formal multilinear series `p`, a composition `c` of `n` and a continuous multilinear
 map `f` in `c.length` variables, one may form a continuous multilinear map in `n` variables by
@@ -197,9 +197,9 @@ end ContinuousMultilinearMap
 
 namespace FormalMultilinearSeries
 
-variable [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-variable [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
-variable [TopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
+variable [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+variable [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+variable [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
 
 /-- Given two formal multilinear series `q` and `p` and a composition `c` of `n`, one may
 form a continuous multilinear map in `n` variables by applying the right coefficient of `p` to each

@@ -33,8 +33,11 @@ def subtype (s : S) : s →ₙₐ[R] A :=
   { NonUnitalSubsemiringClass.subtype s, SMulMemClass.subtype s with toFun := (↑) }
 
 @[simp]
-theorem coeSubtype : (subtype s : s → A) = ((↑) : s → A) :=
+theorem coe_subtype : (subtype s : s → A) = ((↑) : s → A) :=
   rfl
+
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
 
 end NonUnitalSubalgebraClass
 
