@@ -12,10 +12,10 @@ import Mathlib.Tactic.ApplyFun
 # Subobject Classifier
 
 We define what it means for a morphism in a category to be a subobject
-classifier as `CategoryTheory.HasClassifier`. The reason for this
-naming convention is to distinguish this internal categorical notion of
-a subobject classifier from a classifier of terms of type `Subobject B`
-for `B : C`.
+classifier as `CategoryTheory.HasClassifier`.
+
+TODO: show the equivalence between having a classifier and the functor `B => Subobject B`
+being representable.
 
 c.f. the following Lean 3 code, where similar work was done:
 https://github.com/b-mehta/topos/blob/master/src/subobject_classifier.lean
