@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Jingting Wang. All rights reserved.
+Copyright (c) 2025 Zixun Guo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Zixun Guo, Wanyi He, Jingting Wang
 -/
@@ -222,4 +222,5 @@ elab (name := lie_algebra) "lie_algebra" cfg:optConfig : tactic =>
     catch _ =>
       restoreState s
       throwError "tactic failed!"
+
 end Mathlib.Tactic.LieRingNF
