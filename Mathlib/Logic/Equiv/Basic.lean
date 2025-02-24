@@ -829,9 +829,11 @@ end Perm
 
 section
 
-/-- The type of functions to a product `α × β` is equivalent to the type of pairs of functions
-`γ → α` and `γ → β`. -/
-def arrowProdEquivProdArrow (α β γ : Type*) : (γ → α × β) ≃ (γ → α) × (γ → β) where
+/-- The type of functions to a product `β × γ` is equivalent to the type of pairs of functions
+`α → β` and `β → γ`. -/
+@[simps]
+def arrowProdEquivProdArrow (α : Type*) (β γ : α → Type*) :
+    ((i : α) → β i × γ i) ≃ ((i : α) → β i) × ((i : α) → γ i) where
   toFun := fun f => (fun c => (f c).1, fun c => (f c).2)
   invFun := fun p c => (p.1 c, p.2 c)
   left_inv := fun _ => rfl
@@ -1679,17 +1681,20 @@ lemma piCongrLeft_apply_eq_cast {P : β → Sort v} {e : α ≃ β}
     piCongrLeft P e f b = cast (congr_arg P (e.apply_symm_apply b)) (f (e.symm b)) :=
   Eq.rec_eq_cast _ _
 
-theorem piCongrLeft_sum_inl {ι ι' ι''} (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
+theorem piCongrLeft_sumInl {ι ι' ι''} (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (i : ι) :
     piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) |>.symm (f, g)) (e (inl i)) = f i := by
   simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_symm_apply,
     sum_rec_congr _ _ _ (e.symm_apply_apply (inl i)), cast_cast, cast_eq]
 
-theorem piCongrLeft_sum_inr {ι ι' ι''} (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
+theorem piCongrLeft_sumInr {ι ι' ι''} (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (j : ι') :
     piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) |>.symm (f, g)) (e (inr j)) = g j := by
   simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_symm_apply,
     sum_rec_congr _ _ _ (e.symm_apply_apply (inr j)), cast_cast, cast_eq]
+
+@[deprecated (since := "2025-02-21")] alias piCongrLeft_sum_inl := piCongrLeft_sumInl
+@[deprecated (since := "2025-02-21")] alias piCongrLeft_sum_inr := piCongrLeft_sumInr
 
 end
 

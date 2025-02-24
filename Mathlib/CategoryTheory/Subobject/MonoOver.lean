@@ -130,7 +130,7 @@ def isoMk {f g : MonoOver X} (h : f.obj.left ≅ g.obj.left)
 
 /-- If `f : MonoOver X`, then `mk' f.arrow` is of course just `f`, but not definitionally, so we
     package it as an isomorphism. -/
-@[simp]
+@[simps!]
 def mk'ArrowIso {X : C} (f : MonoOver X) : mk' f.arrow ≅ f :=
   isoMk (Iso.refl _)
 
