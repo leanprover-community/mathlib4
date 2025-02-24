@@ -235,7 +235,7 @@ alias ⟨_,  Differentiable.add_const⟩ := differentiable_add_const_iff
 theorem fderivWithin_add_const (c : F) :
     fderivWithin 𝕜 (fun y => f y + c) s x = fderivWithin 𝕜 f s x := by
   classical simp [fderivWithin]
-  
+
 @[simp]
 theorem fderiv_add_const (c : F) : fderiv 𝕜 (fun y => f y + c) x = fderiv 𝕜 f x := by
   simp only [← fderivWithin_univ, fderivWithin_add_const]

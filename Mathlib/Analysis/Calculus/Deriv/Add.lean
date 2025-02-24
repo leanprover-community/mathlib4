@@ -80,7 +80,7 @@ alias ⟨_, HasStrictDerivAt.add_const⟩ := hasStrictDerivAt_add_const_iff
 
 @[simp]
 theorem hasDerivWithinAt_add_const_iff (c : F) :
-    HasDerivWithinAt (f · + c) f' s x ↔ HasDerivWithinAt f f' s x := 
+    HasDerivWithinAt (f · + c) f' s x ↔ HasDerivWithinAt f f' s x :=
   hasDerivAtFilter_add_const_iff c
 
 alias ⟨_, HasDerivWithinAt.add_const⟩ := hasDerivWithinAt_add_const_iff
