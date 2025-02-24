@@ -42,7 +42,7 @@ variable (k G) in
 /-- The monoidal forgetful functor from `FDRep k G` to `FGModuleCat k`. -/
 def forget := LaxMonoidalFunctor.of (forget₂ (FDRep k G) (FGModuleCat k))
 
-/-- Definition of `hom g : Aut (forget k G)` by its components. -/
+/-- Definition of `equivHom g : Aut (forget k G)` by its components. -/
 @[simps]
 def equivApp (g : G) (X : FDRep k G) : X.V ≅ X.V where
   hom := ofHom (X.ρ g)
