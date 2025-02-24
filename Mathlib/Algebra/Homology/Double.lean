@@ -191,8 +191,8 @@ this is a quite explicit choice of corepresentative of the functor which sends
 `K : HomologicalComplex C c` to `X ⟶ K.X j`. -/
 noncomputable def evalCompCoyonedaCorepresentative (X : C) (j : ι) :
     HomologicalComplex C c :=
-  if hj : ∃ (k : ι), c.Rel j k ∧ j ≠ k then
-    double (𝟙 X) (hj.choose_spec.1)
+  if hj : ∃ (k : ι), c.Rel j k then
+    double (𝟙 X) hj.choose_spec
   else (single C c j).obj X
 
 /-- If a complex shape `c : ComplexShape ι` has no loop,
@@ -202,9 +202,10 @@ noncomputable def evalCompCoyonedaCorepresentable (X : C) (j : ι) :
     (eval C c j ⋙ coyoneda.obj (op X)).CorepresentableBy
       (evalCompCoyonedaCorepresentative c X j) := by
   dsimp [evalCompCoyonedaCorepresentative]
-  by_cases h : ∃ (k : ι), c.Rel j k ∧ j ≠ k
+  by_cases h : ∃ (k : ι), c.Rel j k
   · rw [dif_pos h]
-    exact evalCompCoyonedaCorepresentableByDoubleId _ h.choose_spec.2 _
+    exact evalCompCoyonedaCorepresentableByDoubleId _
+      (fun hj ↦ c.not_rel_of_eq hj h.choose_spec) _
   · rw [dif_neg h]
     apply evalCompCoyonedaCorepresentableBySingle
     obtain _ | _ := c.exists_distinct_prev_or j <;> tauto
