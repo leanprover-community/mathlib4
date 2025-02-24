@@ -37,6 +37,7 @@ variable (R : Type u) [CommRing R]
 
 /-- The data needed to induce a `MonoidalCategory` structure via
 `HopfAlgebraCat.instMonoidalCategoryStruct` and the forgetful functor to bialgebras. -/
+@[simps]
 noncomputable def MonoidalCategory.inducingFunctorData :
     Monoidal.InducingFunctorData (forget₂ (HopfAlgebraCat R) (BialgebraCat R)) where
   μIso _ _ := Iso.refl _
