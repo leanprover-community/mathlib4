@@ -418,12 +418,6 @@ instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.Full] : (preLeft F L R).Fu
 instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.EssSurj] : (preLeft F L R).EssSurj :=
   Functor.essSurj_of_iso (preLeftIso F L R).symm
 
-/-- Precomposing with a composite functor using `Comma.preLeft` is naturally ismorphic with
-precomposing twice. -/
-def preLeftCompIso (E : B' ⥤ A') (F : A' ⥤ A) (L : A ⥤ T) (R : B ⥤ T) :
-    preLeft (E ⋙ F) L R ≅ preLeft E (F ⋙ L) R ⋙ preLeft F L R :=
-  NatIso.ofComponents (fun X => Iso.refl _)
-
 /-- If `F` is an equivalence, then so is `preLeft F L R`. -/
 instance isEquivalence_preLeft (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.IsEquivalence] :
     (preLeft F L R).IsEquivalence where
