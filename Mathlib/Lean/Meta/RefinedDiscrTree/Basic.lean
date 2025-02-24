@@ -186,10 +186,13 @@ structure LazyEntry where
 instance : Inhabited (LazyEntry) where
   default := { mctx := {} }
 
-private def LazyEntry.format (entry : LazyEntry) : Format :=
-  let results := if entry.results matches [] then f!"" else f!", results: {entry.results}"
-  let todo    := if let some info := entry.previous then f!", todo: {info.expr}" else ""
-  f!"stack: {entry.stack}{results}{todo}"
+private def LazyEntry.format (entry : LazyEntry) : Format := Id.run do
+  let mut parts := #[f!"stack: {entry.stack}"]
+  unless entry.results == [] do
+    parts := parts.push f!"results: {entry.results}"
+  if let some info := entry.previous then
+    parts := parts.push f!"todo: {info.expr}"
+  return Format.joinSep parts.toList ", "
 
 instance : ToFormat LazyEntry := ⟨LazyEntry.format⟩
 
@@ -243,26 +246,27 @@ instance : Inhabited (RefinedDiscrTree α) := ⟨{}⟩
 
 private partial def format [ToFormat α] (tree : RefinedDiscrTree α) : Format :=
   let lines := tree.root.fold (init := #[]) fun lines key trie =>
-    lines.push (Format.nest 2 f! "{key} =>{Format.line}{go trie}")
+    lines.push (Format.nest 2 f!"{key} =>{Format.line}{go trie}")
   if lines.size = 0 then
-    f! "<empty discrimination tree>"
+    f!"<empty discrimination tree>"
   else
-    lines.foldl (init := "Discrimination tree flowchart:") (· ++ Format.line ++ ·)
+    "Discrimination tree flowchart:" ++ Format.joinSep lines.toList "\n"
 where
-  go (trie : TrieIndex) : Format :=
+  go (trie : TrieIndex) : Format := Id.run do
     let { values, stars, children, pending } := tree.tries[trie]!
-    let lines := if pending.isEmpty then #[] else
-      #[f! "pending entries: {pending.map (·.2)}"]
-    let lines := if values.isEmpty then lines else
-      lines.push f! "entries: {values}"
-    let lines := stars.fold (init := lines) fun lines key trie =>
-      lines.push (Format.nest 2 f! "*{key} =>{Format.line}{go trie}")
-    let lines := children.fold (init := lines) fun lines key trie =>
-      lines.push (Format.nest 2 f! "{key} =>{Format.line}{go trie}")
-    if h : lines.size = 0 then
-      f! "<empty node>"
+    let mut lines := #[]
+    unless pending.isEmpty do
+      lines := lines.push f!"pending entries: {pending.map (·.2)}"
+    unless values.isEmpty do
+      lines := lines.push f!"entries: {values}"
+    lines := stars.fold (init := lines) fun lines key trie =>
+      lines.push (Format.nest 2 f!"*{key} =>{Format.line}{go trie}")
+    lines := children.fold (init := lines) fun lines key trie =>
+      lines.push (Format.nest 2 f!"{key} =>{Format.line}{go trie}")
+    if lines.isEmpty then
+      f!"<empty node>"
     else
-      lines.foldl (init := lines[0]) (· ++ Format.line ++ ·) (start := 1)
+      Format.joinSep lines.toList "\n"
 
 instance [ToFormat α] : ToFormat (RefinedDiscrTree α) := ⟨format⟩
 
