@@ -51,8 +51,6 @@ Let `C` refer to a category with a terminal object, denoted by `⊤_ C`.
 ## Implementation notes
 
 * **TODO**: add a uniqueness theorem for subobject classifiers (up to isomorphism)
-* **TODO**: add comments to explain the different steps in the long proof of the "only if" direction
-  of `CategoryTheory.Subobject.hasClassifier_isRepresentable_iff`
 
 ## References
 
@@ -252,6 +250,7 @@ variable [HasTerminal C] [HasPullbacks C]
 theorem isRepresentable_hasClassifier_iff : HasClassifier C ↔ (@sub C).IsRepresentable := by
   constructor <;> intro h
 
+  /- The `sub` presheaf is representable by the truth values object `Classifier.Ω`.  -/
   · obtain ⟨⟨𝒞⟩⟩ := h
     exists Ω
     constructor
@@ -271,15 +270,21 @@ theorem isRepresentable_hasClassifier_iff : HasClassifier C ↔ (@sub C).IsRepre
         simp only [sub, Equiv.coe_fn_mk, compr, Quiver.Hom.unop_op, pullback_comp]
     }
 
+  /- Any representation `⟨Ω,θ⟩` of `sub` gives a subobject classifier with truth values
+     object `Ω`. -/
   · obtain ⟨Ω, ⟨⟨θ, hθ⟩⟩⟩ := h
 
+    /- Each subobject `x` of `X` corresponds to a morphism `φₓ : X ⟶ Ω` through `θ`. -/
     let φ := fun {X} (x : Subobject X) ↦ θ.symm x
     have hφ : ∀ {X} (χ : X ⟶ Ω), χ = φ (θ χ) := by simp [φ]
 
-    let Ω₀ : Subobject Ω := θ (𝟙 _)
+    /- Some subobject `Ω₀` of `Ω` corresponds to the identity `𝟙 Ω` through `θ`. -/
+    let Ω₀ : Subobject Ω := θ (𝟙 Ω)
+    /- Let `t₀` be the underlying monomorphism of `Ω₀` (this requires the axiom of choice). -/
     let t₀ := Ω₀.arrow
     have t₀_mono : Mono t₀ := inferInstance
 
+    /- The naturality of `θ` (hypothesis `hθ`) states that `x = sub φₓ Ω₀` for any `x`. -/
     have hx_pullback : ∀ {X} (x : Subobject X), x = (pullback (φ x)).obj Ω₀ := by
       intro X x
       have := hθ (θ.symm x) (𝟙 _)
@@ -287,25 +292,37 @@ theorem isRepresentable_hasClassifier_iff : HasClassifier C ↔ (@sub C).IsRepre
       rw (occs := .pos [1]) [this]
       simp [sub, φ, Ω₀]
 
+    /- More explicitly, `x` is the canonical representative of the pullback of `t₀` along `φₓ`. -/
     have hx_mk : ∀ {X} (x : Subobject X), x = Subobject.mk (pullback.snd t₀ (φ x)) := by
       intro X x
       rw (occs := .pos [1]) [hx_pullback x, pullback_obj]
 
+    /- Even more explicitly, we have an isomorphism `ιₓ` between the underlying object `(x : C)` of
+       `x` in `C` (obtained through the axiom of choice) and the pullback of `t₀` and `φₓ`. -/
     let ι : ∀ {X} (x : Subobject X), (x : C) ≅ Limits.pullback t₀ (φ x) := by
       intro X x
       rw (occs := .pos [1]) [hx_mk x]
       exact (underlyingIso (pullback.snd t₀ (φ x)))
 
-    let π₁ := fun {X} (x : Subobject X) ↦ (ι x).hom ≫ pullback.fst t₀ (φ x)
+    /- Let `πₓ : x ⟶ Ω₀` be the first projection of the pullback of `t₀` and `φₓ` modulo `ιₓ`. -/
+    let π := fun {X} (x : Subobject X) ↦ (ι x).hom ≫ pullback.fst t₀ (φ x)
 
-    have isPullback_φ : ∀ {X} (x : Subobject X), IsPullback (π₁ x) x.arrow t₀ (φ x) := by
+    /- We can finally state that the corresponding pullback square commutes (diagram (5) in [MM92]).
+
+       Here we need to deal with the usual "transport hell" of dependent types, which materializes
+       in Lean under the guise of the heterogenous equality type `HEq`. This is because the types of
+       morphisms are *propositionally* equal rather than *definitionally* equal, which in turns is
+       caused by the need to explicitly manipulate isomorphisms. Univalence would probably make
+       things much easier.
+    -/
+    have isPullback_φ : ∀ {X} (x : Subobject X), IsPullback (π x) x.arrow t₀ (φ x) := by
       intro X x
       have h := isPullback_mk t₀ (φ x)
       have hx := hx_mk x
       dsimp at h
       rw (occs := .pos [1,2,3]) [hx]
       have h1 : ((underlyingIso (pullback.snd t₀ (φ x))).hom ≫ pullback.fst t₀ (φ x)) =
-                (π₁ (Subobject.mk (pullback.snd t₀ (φ x)))) := by
+                (π (Subobject.mk (pullback.snd t₀ (φ x)))) := by
         congr; try exact hx
         dsimp [ι]
         set hc := Eq.symm (congrArg (fun _a ↦ underlying.obj _a ≅ Limits.pullback t₀
@@ -320,6 +337,12 @@ theorem isRepresentable_hasClassifier_iff : HasClassifier C ↔ (@sub C).IsRepre
       rw [← h1]
       exact h
 
+    /- Furthermore, `φₓ` is the unique morphism that makes this pullback square commute by
+       bijectivity and naturality of `θ`.
+
+       Note that we actually generalize `πₓ` to any morphism `ψ : x ⟶ Ω₀`, which will be necessary
+       many times later on in the proof.
+    -/
     have isPullback_uniq : ∀ {X} (x : Subobject X) ψ χ, IsPullback ψ x.arrow t₀ χ → χ = φ x := by
       intro X x ψ χ hχ
       rw [hφ χ]
@@ -331,7 +354,8 @@ theorem isRepresentable_hasClassifier_iff : HasClassifier C ↔ (@sub C).IsRepre
       rw [pullback_obj, isPullback_eq_mk hχ]
       rfl
 
-    let classifier : ∀ {X} (x : Subobject X), Unique {χ // IsPullback (π₁ x) x.arrow t₀ χ} := by
+    /- Thus `φₓ` satisfies the property of being a subobject classifier. -/
+    have is_classifier : ∀ {X} (x : Subobject X), Unique {χ // IsPullback (π x) x.arrow t₀ χ} := by
       intro X x
       refine ⟨⟨φ x, isPullback_φ x⟩, ?uniq⟩
       intro h
@@ -339,16 +363,22 @@ theorem isRepresentable_hasClassifier_iff : HasClassifier C ↔ (@sub C).IsRepre
       congr
       exact (isPullback_uniq _ _ _ hχ)
 
+    /- It remains to show that `Ω₀` is actually a terminal object in `C`. -/
     have isTerminal_Ω₀ : IsTerminal (Ω₀ : C) := by
       have : (X : C) → Unique (X ⟶ Ω₀) := by
         intro X
-        let s := Subobject.mk (𝟙 X)
-        let φ' := π₁ s
-        let i : X ≅ s := by dsimp [s]; exact (underlyingIso (𝟙 X)).symm
-        let φX := (i.hom ≫ φ')
-        refine { default := φX, uniq := ?_ }
-        intro φX'
+        /- Taking `x` to be the (canonical representative of) the identity `𝟙 X`... -/
+        let x := Subobject.mk (𝟙 X)
+        /- ... gives a map `φ' : X ⟶ Ω₀` (modulo the canonical isomorphism `i : X ≅ x`). -/
+        let i : X ≅ x := by dsimp [x]; exact (underlyingIso (𝟙 X)).symm
+        let φ' := (i.hom ≫ π x)
+
+        /- We show that every `φ'' : X ⟶ Ω₀` is equal to `φ'`. -/
+        refine { default := φ', uniq := ?_ }
+        intro φ''
         dsimp [default]
+
+        /- Since `t₀` is a monomorphism, every `ψ : X ⟶ Ω₀` forms a "trivial" pullback square. -/
         have hψ : ∀ ψ, IsPullback ψ (𝟙 X) t₀ (ψ ≫ t₀) := by
           intro ψ
           constructor
@@ -362,26 +392,34 @@ theorem isRepresentable_hasClassifier_iff : HasClassifier C ↔ (@sub C).IsRepre
               rw [← hm2]
               simp
           · simp
-        have hX := hψ φX
-        have hX' := hψ φX'
-        have hφX := isPullback_uniq s (π₁ s) (φX ≫ t₀)
-        have hφX' := isPullback_uniq s (i.inv ≫ φX') (φX' ≫ t₀)
-        have h : φX ≫ t₀ = φX' ≫ t₀ := by
-          rw [hφX, hφX']
-          · apply IsPullback.of_iso1 hX' i
+
+        /- This applies in particular to `φ` and `φ'`. -/
+        have h' := hψ φ'
+        have h'' := hψ φ''
+
+        /- This square has the same shape as (5) (modulo the iso `i`), hence by the uniqueness of
+           `φₓ` in (5) we get `t₀ ∘ φ' = t₀ ∘ φ''`. -/
+        have hφ' := isPullback_uniq x (π x) (φ' ≫ t₀)
+        have hφ'' := isPullback_uniq x (i.inv ≫ φ'') (φ'' ≫ t₀)
+        have h : φ' ≫ t₀ = φ'' ≫ t₀ := by
+          rw [hφ', hφ'']
+          · apply IsPullback.of_iso1 h'' i
             · simp
-            · simp [i, s]
-          · apply IsPullback.of_iso1 hX i
-            · simp only [φX, φ']
-            · simp [i, s]
+            · simp [i, x]
+          · apply IsPullback.of_iso1 h' i
+            · simp only [φ']
+            · simp [i, x]
+        /- As `t₀` is monic, this gives `φ' = φ''`. -/
         exact Mono.right_cancellation _ _ h.symm
       apply IsTerminal.ofUnique
 
+    /- We need to give explicitly the iso `i` with the "canonical" terminal object `⊤_ C`. -/
     have i : ⊤_ C ≅ Ω₀ := by
       apply IsTerminal.uniqueUpToIso
       exact terminalIsTerminal
       exact isTerminal_Ω₀
 
+    /- Finally, we can give `t₀` as the subobject classifier (modulo `i`).  -/
     constructor; constructor
     exact {
       Ω := Ω
