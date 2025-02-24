@@ -23,7 +23,7 @@ TODO: Show that the character is continuous.
 ## Main Declarations
 
 * `modularCharacterFun`: Define the modular character, which is `g ↦ haarScalarFactor
-  (map (· * g) ν) ν`, where ν is the haar measure given by (the noncomputable)
+  (map (· * g) ν) ν`, where ν is the Haar measure given by (the noncomputable)
   `MeasureTheory.Measure.haar`. The result that this does not depend on the measure chosen is
   `modularCharacterFun_eq_haarScalarFactor`.
 * `modularCharacter`: The homomorphism G →* ℝ≥0 whose toFun is `modularCharacterFun`.
@@ -39,29 +39,28 @@ namespace Measure
 variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G] [LocallyCompactSpace G]
 
 /-- The modular character as a map is `g ↦ haarScalarFactor (map (· * g) ν) ν`, where `ν` is
-  the haar measure given by (the noncomputable) `MeasureTheory.Measure.haar`.
+  the Haar measure given by (the noncomputable) `MeasureTheory.Measure.haar`.
 
   See also `modularCharacter` that defines the map as a homomorphism. -/
 @[to_additive "The additive modular character as a map is `g ↦ haarScalarFactor
-  (map (· + g) ν) ν`, where `ν` is the additive haar measure given by (the noncomputable)
+  (map (· + g) ν) ν`, where `ν` is the additive Haar measure given by (the noncomputable)
   `MeasureTheory.Measure.haar`.
 
   See also `modularCharacter` that defines the map as a homomorphism.."]
 noncomputable def modularCharacterFun : G → ℝ≥0 :=
   letI : MeasurableSpace G := borel G
   haveI : BorelSpace G := ⟨rfl⟩
-  -- Mathlib.Tactic.Borelize.borelize G
   fun g => haarScalarFactor (map (· * g) MeasureTheory.Measure.haar) MeasureTheory.Measure.haar
 
 /-- Independence of modularCharacterFun from the chosen Haar measure. -/
 @[to_additive "Independence of addModularCharacterFun from the chosen Haar measure"]
 lemma modularCharacterFun_eq_haarScalarFactor [MeasurableSpace G] [BorelSpace G] (μ : Measure G)
-  [IsHaarMeasure μ] (g : G) : modularCharacterFun g = haarScalarFactor (map (· * g) μ) μ := by
+    [IsHaarMeasure μ] (g : G) : modularCharacterFun g = haarScalarFactor (map (· * g) μ) μ := by
   let ν := MeasureTheory.Measure.haar (G := G)
   obtain ⟨⟨f, f_cont⟩, f_comp, f_nonneg, f_one⟩ :
     ∃ f : C(G, ℝ), HasCompactSupport f ∧ 0 ≤ f ∧ f 1 ≠ 0 := exists_continuous_nonneg_pos 1
   have int_f_ne_zero (μ₀ : Measure G) [IsHaarMeasure μ₀] : ∫ x, f x ∂μ₀ ≠ 0 :=
-  ne_of_gt (f_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero f_comp f_nonneg f_one)
+    ne_of_gt (f_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero f_comp f_nonneg f_one)
   apply NNReal.coe_injective
   have t : (∫ x, f (x * g) ∂ν) = (∫ x, f (x * g) ∂(haarScalarFactor ν μ • μ)) := by
     refine integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport ν μ ?_ ?_
@@ -97,19 +96,18 @@ lemma modularCharacterFun_eq_haarScalarFactor [MeasurableSpace G] [BorelSpace G]
 
 @[to_additive]
 lemma map_right_mul_eq_modularCharacterFun_smul [MeasurableSpace G] [BorelSpace G] (μ : Measure G)
-  [IsHaarMeasure μ] [InnerRegular μ] (g : G) : map (· * g) μ = modularCharacterFun g • μ := by
+    [IsHaarMeasure μ] [InnerRegular μ] (g : G) : map (· * g) μ = modularCharacterFun g • μ := by
   rw [modularCharacterFun_eq_haarScalarFactor μ _]
   exact isMulLeftInvariant_eq_smul_of_innerRegular _ μ
 
 @[to_additive]
-lemma modularCharacter_pos (g : G) : 0 < modularCharacterFun g := by
-  letI : MeasurableSpace G := borel G
-  haveI : BorelSpace G := ⟨rfl⟩
+lemma modularCharacterFun_pos (g : G) : 0 < modularCharacterFun g := by
+  borelize G
   rw [modularCharacterFun_eq_haarScalarFactor MeasureTheory.Measure.haar g]
   exact haarScalarFactor_pos_of_isHaarMeasure _ _
 
 /-- The modular character homomorphism. The underlying function is `modularCharacterFun`, which is
-  `g ↦ haarScalarFactor (map (· * g) ν) ν`, where `ν` is the haar measure given by (the
+  `g ↦ haarScalarFactor (map (· * g) ν) ν`, where `ν` is the Haar measure given by (the
   noncomputable) `MeasureTheory.Measure.haar`.
  -/
 noncomputable def modularCharacter :
