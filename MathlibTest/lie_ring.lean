@@ -37,7 +37,15 @@ example (a : L) : 0 • a = 0 := by
 variable (a b c : L)
 
 /--
-info: Try this: -1 • ⁅⁅a, c⁆, ⁅a, ⁅c, b⁆⁆⁆ + (-1 • ⁅⁅a, c⁆, ⁅⁅a, b⁆, c⁆⁆ + 0)
+info: the term is reduced to 6 • ⁅⁅a, c⁆, ⁅a, ⁅c, b⁆⁆⁆ + (6 • ⁅⁅a, c⁆, ⁅⁅a, b⁆, c⁆⁆ + 0)
 -/
 #guard_msgs in
-#LieReduce ⁅⁅a, c⁆, ⁅b, ⁅a, c⁆⁆⁆
+#LieReduce ⁅⁅-2 • a, c⁆, ⁅b, ⁅3 • a, c⁆⁆⁆
+
+/--
+info: Try this: 6 • ⁅⁅a, b⁆, ⁅⁅a, c⁆, ⁅b, c⁆⁆⁆ + (6 • ⁅⁅a, b⁆, ⁅⁅⁅a, c⁆, c⁆, b⁆⁆ + 0)
+-/
+#guard_msgs in
+example (a b c : L) :
+    (lie_reduce% ⁅⁅2 • a, b⁆, ⁅⁅b, ⁅a, -3 • c⁆⁆, c⁆⁆) = ⁅⁅2 • a, b⁆, ⁅⁅b, ⁅a, -3 • c⁆⁆, c⁆⁆ := by
+  lie_ring
