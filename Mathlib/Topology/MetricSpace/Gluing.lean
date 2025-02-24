@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Topology.MetricSpace.Isometry
+import Mathlib.Topology.Metrizable.Basic
 
 /-!
 # Metric space gluing
@@ -610,6 +611,29 @@ theorem toInductiveLimit_commute (I : ∀ n, Isometry (f n)) (n : ℕ) :
   rw [inductiveLimitDist_eq_dist I ⟨n.succ, f n x⟩ ⟨n, x⟩ n.succ, leRecOn_self,
     leRecOn_succ, leRecOn_self, dist_self]
   exact le_succ _
+
+instance secondCountableInductiveLimit_of_secondCountable {X : ℕ → Type u}
+    [(n : ℕ) → MetricSpace (X n)] [hs : (n : ℕ) → SecondCountableTopology (X n)]
+    {f : (n : ℕ) → X n → X (n + 1)} (I : ∀ (n : ℕ), Isometry (f n)) :
+    SecondCountableTopology (Metric.InductiveLimit I) := by
+  let U : ℕ → Set (Metric.InductiveLimit I) := fun n => (toInductiveLimit I n '' (⊤ :Set (X n)))
+  have : ∀ i, SecondCountableTopology (U i) := by sorry
+  have U₀ : ∀ i, IsOpen (U i) := by
+    intro i
+    unfold U
+    apply?
+  apply TopologicalSpace.secondCountableTopology_of_countable_cover U₀
+  rw [Set.eq_univ_iff_forall]
+  rintro ⟨n, y⟩
+  refine (mem_iUnion.2 ⟨n, y, ⟨by trivial, rfl⟩⟩)
+
+theorem separableInductiveLimit_of_separable {X : ℕ → Type u} [(n : ℕ) → MetricSpace (X n)]
+    [hs : (n : ℕ) → TopologicalSpace.SeparableSpace (X n)] {f : (n : ℕ) → X n → X (n + 1)}
+    (I : ∀ (n : ℕ), Isometry (f n)) :
+    TopologicalSpace.SeparableSpace (Metric.InductiveLimit I) := by
+  have : ∀ n, SecondCountableTopology (X n) := fun n ↦
+    UniformSpace.secondCountable_of_separable (X n)
+  apply TopologicalSpace.SecondCountableTopology.to_separableSpace
 
 end InductiveLimit
 
