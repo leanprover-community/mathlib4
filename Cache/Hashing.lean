@@ -109,7 +109,7 @@ partial def getHash (filePath : FilePath) (visited : Std.HashSet FilePath := ∅
   match (← get).cache[filePath]? with
   | some hash? => return hash?
   | none =>
-    let fixedPath := (← IO.getPackageDir filePath) / filePath
+    let fixedPath := (← IO.getSrcDir filePath) / filePath
     if !(← fixedPath.pathExists) then
       IO.println s!"Warning: {fixedPath} not found. Skipping all files that depend on it."
       if fixedPath.extension != "lean" then

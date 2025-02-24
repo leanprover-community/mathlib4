@@ -133,12 +133,26 @@ end
 
 def getPackageDirs : CacheM PackageDirs := return (← read).packageDirs
 
-def getPackageDir (path : FilePath) : CacheM FilePath := do
-  match path.withExtension "" |>.components.head? with
-  | none => throw <| IO.userError "Can't find package directory for empty path"
-  | some pkg => match (← getPackageDirs).find? pkg with
-    | none => throw <| IO.userError s!"Unknown package directory for {pkg}"
-    | some path => return path
+/--
+`path` is assumed to be the unresolved file path corresponding to a module:
+For `Mathlib.Init` this would be `Mathlib/Init.lean`.
+
+Find the source directory for `path`.
+This corresponds to the folder where the `.lean` files are located, i.e. for `Mathlib.Init`,
+the file should be located at `(← getSrcDir _) / "Mathlib" / "Init.lean`.
+
+Usually it is either `.` or something like `./.lake/packages/mathlib/`
+-/
+def getSrcDir (path : FilePath) : CacheM FilePath := do
+  let sp := (← read).srcSearchPath
+
+  -- `path` is a unresolved file name like `Aesop/Build.lean`
+  let mod : Name := .fromComponents <| path.withExtension "" |>.components.map Name.mkSimple
+
+  let .some srcDir ← sp.findWithExtBase "lean" mod |
+    throw <| IO.userError s!"Unknown package directory for {mod}\nsearch paths: {sp}"
+
+  return srcDir
 
 /-- Runs a terminal command and retrieves its output, passing the lines to `processLine` -/
 partial def runCurlStreaming (args : Array String) (init : α)
@@ -269,7 +283,21 @@ Given a path to a Lean file, concatenates the paths to its build files.
 Each build file also has a `Bool` indicating whether that file is required for caching to proceed.
 -/
 def mkBuildPaths (path : FilePath) : CacheM <| List (FilePath × Bool) := do
-  let packageDir ← getPackageDir path
+  /-
+  TODO: if `srcDir` or other custom lake layout options are set in the `lean_lib`,
+  `packageSrcDir / LIBDIR` might be the wrong path!
+
+  See [Lake documentation](https://github.com/leanprover/lean4/tree/master/src/lake#layout)
+  for available options.
+
+  If a dependency is added to mathlib which uses such a custom layout, `mkBuildPaths`
+  needs to be adjusted!
+  -/
+  let packageDir ← getSrcDir path
+  if !(← (packageDir / ".lake").isDir) then
+    IO.eprintln <| s!"Warning: {packageDir / ".lake"} seems not to exist, most likely `cache` \
+      will not work as expected!"
+
   return [
     -- Note that `packCache` below requires that the `.trace` file is first in this list.
     (packageDir / LIBDIR / path.withExtension "trace", true),
