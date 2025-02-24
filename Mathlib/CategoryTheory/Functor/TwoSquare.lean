@@ -3,7 +3,9 @@ Copyright (c) 2025 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Equivalence
+import Mathlib.CategoryTheory.Whiskering
+import Mathlib.Tactic.CategoryTheory.Slice
+
 /-!
 # 2-squares of functors
 
@@ -50,8 +52,7 @@ abbrev mk (α : T ⋙ R ⟶ L ⋙ B) : TwoSquare T L R B := α
 variable {T L R B}
 
 @[ext]
-lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.app X = w'.app X) :
-    w = w' :=
+lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.app X = w'.app X) : w = w' :=
   NatTrans.ext (funext h)
 
 /-- The hoizontal identity 2-square. -/
