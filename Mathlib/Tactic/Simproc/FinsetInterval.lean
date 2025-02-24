@@ -5,13 +5,12 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Util.Qq
-import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # Simproc for intervals of natural numbers
 -/
 
-open Qq Lean Mathlib.Meta.NormNum Finset
+open Qq Lean Finset
 
 namespace Mathlib.Tactic.Simp
 section lemmas
