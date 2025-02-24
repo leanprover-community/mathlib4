@@ -208,7 +208,7 @@ elab (name := lie_ring1NF) "lie_ring1_nf" tk:"!"? cfg:optConfig : tactic => do
 
 /--
   Tactic simply call `module` after `lie_ring`.
-  See `lie_ring` for more details about config.
+  See `lie_ring` for more details about configuration.
 -/
 elab (name := lie_algebra) "lie_algebra" cfg:optConfig : tactic =>
   withMainContext do

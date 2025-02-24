@@ -63,20 +63,20 @@ example (a b c : L) (r r' : R) : ⁅r • ⁅r • a, r' • b⁆, r' • c⁆
   lie_algebra
 
 example (a b c : L) : ⁅⁅a, b⁆, c⁆ = ⁅⁅a, c⁆, b⁆ + ⁅a, ⁅b, c⁆⁆ := by
-  lieRing1_nf
+  lie_ring1_nf
 
 example (a b c : L) : ⁅⁅a, b⁆, c⁆ + ⁅⁅b, c⁆, a⁆ + ⁅⁅c, a⁆, b⁆ = 0 := by
-  lieRing1_nf
+  lie_ring1_nf
 
 example (a b : L) : (2 : ℤ) • a + (2 : ℤ) • b = (2 : ℤ) • (a + b) := by
-  lieRing1_nf
+  lie_ring1_nf
   -- sorry
 
 example (a : L) : ⁅a, a⁆ = 0 := by
-  lieRing_nf!
+  lie_ring_nf!
 
 example (a b : L) : ⁅a, b⁆ = -⁅b, a⁆ := by
-  lieRing1_nf
+  lie_ring1_nf
   -- module
 
 example (a b c : L) : ⁅a, ⁅b, c⁆⁆ - ⁅b, ⁅a, c⁆⁆ = ⁅⁅a, b⁆, c⁆ := by
