@@ -69,7 +69,7 @@ variable {T : Type u₁} [Category.{v₃} T]
 
 /-- A functor `L : A ⥤ T` is final if there is a final functor `R : B ⥤ T` such that for all
 `b : B`, the canonical functor `CostructuredArrow L (R.obj b) ⥤ Over (R.obj b)` is final. -/
-private lemma final_of_final_CostructuredArrowtoOver (L : A ⥤ T) (R : B ⥤ T) [Final R]
+theorem final_of_final_CostructuredArrowtoOver (L : A ⥤ T) (R : B ⥤ T) [Final R]
     [hB : ∀ b : B, Final (CostructuredArrow.toOver L (R.obj b))] : Final L := by
   let sA : A ≌ AsSmall.{max u₁ u₂ u₃ v₁ v₂ v₃} A := AsSmall.equiv
   let sB : B ≌ AsSmall.{max u₁ u₂ u₃ v₁ v₂ v₃} B := AsSmall.equiv
@@ -79,23 +79,23 @@ private lemma final_of_final_CostructuredArrowtoOver (L : A ⥤ T) (R : B ⥤ T)
   have : ∀ (b : AsSmall B), (CostructuredArrow.toOver L' (R'.obj b)).Final := fun b => by
     dsimp only [L', R', CostructuredArrow.toOver] at hB ⊢
     let x := (sB.inverse ⋙ R ⋙ sT.functor).obj b
-    let F := pre sA.inverse (L ⋙ sT.functor) x ⋙ pre L _ x ⋙ pre sT.functor (𝟭 _) x
-    have : (pre sT.functor (𝟭 _) x).IsEquivalence := Comma.isEquivalence_preLeft _ _ _
-    have : (pre L (𝟭 T) (AsSmall.down.obj x)).Final := hB _
-    have : (pre L sT.functor x).Final := by
-      apply final_of_natIso (F := map₂ (S := L ⋙ sT.functor)  (F := 𝟭 _) (G := sT.inverse)
-        (whiskerLeft L sT.unitIso.hom) (𝟙 _) ⋙ pre L (𝟭 T) (AsSmall.down.obj x) ⋙
-        map₂ (F := 𝟭 _) (G := sT.functor) (𝟙 _) (𝟙 _))
-      apply NatIso.ofComponents (fun x => by {
-        apply eqToIso
-        rcases x
-        simp [pre, Comma.preLeft, map, map₂, Comma.map]
-        congr
-        simp
-        change _ ≫ eqToHom (by { simp [sT, AsSmall.down, AsSmall.up]; congr }) = _
-        apply eq_of_heq
-        simp })
-    apply final_of_natIso (F := F) (Iso.refl _)
+    let F'' : CostructuredArrow (sA.inverse ⋙ L ⋙ sT.functor) x ⥤ CostructuredArrow (𝟭 _) x :=
+      map₂ (F := sA.inverse) (G := sT.inverse) (whiskerLeft (sA.inverse ⋙ L) sT.unit) (𝟙 _) ⋙
+      pre L (𝟭 T) (R.obj _) ⋙ map₂ (F := sT.functor) (G := sT.functor) (𝟙 _) (𝟙 _)
+    have : F''.Final := by
+      dsimp only [F'']
+      infer_instance
+    apply final_of_natIso (F := F'')
+    apply NatIso.ofComponents (fun x => eqToIso <| by {
+      rcases x
+      simp only [map₂, Comma.map, id_obj, comp_obj, const_obj_obj, whiskerLeft_app,
+        Discrete.natTrans_app, right_eq_id, id_map, pre, Comma.preLeft, NatTrans.id_app,
+        Category.comp_id, const_obj_map, id_eq, map_comp, Equivalence.fun_inv_map,
+        Equivalence.functor_unit_comp_assoc, Category.id_comp, comp_map, F'', x, sT]
+      congr
+      change _ ≫ eqToHom (by simp) = _
+      apply eq_of_heq
+      simp })
   have := final_of_final_CostructuredArrowtoOver_small L' R'
   apply final_of_natIso (F := (sA.functor ⋙ L' ⋙ sT.inverse))
   exact (sA.functor.associator (sA.inverse ⋙ L ⋙ sT.functor) sT.inverse).symm ≪≫
