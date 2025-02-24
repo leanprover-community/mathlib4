@@ -235,7 +235,7 @@ scoped infix:50  " ≤r " => IsRestriction
 scoped infix:50  " <r " => IsStrictRestriction
 
 /-- A type synonym for matroids with the isRestriction order.
-  (The `PartialOrder` on `Matroid α` is reserved for the minor order)  -/
+(The `PartialOrder` on `Matroid α` is reserved for the minor order) -/
 @[ext] structure Matroidᵣ (α : Type*) where ofMatroid ::
   /-- The underlying `Matroid` -/
   toMatroid : Matroid α
