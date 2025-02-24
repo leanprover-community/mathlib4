@@ -1033,6 +1033,9 @@ theorem inter_diff_distrib_left (s t u : Set α) : s ∩ (t \ u) = (s ∩ t) \ (
 theorem inter_diff_distrib_right (s t u : Set α) : (s \ t) ∩ u = (s ∩ u) \ (t ∩ u) :=
   inf_sdiff_distrib_right _ _ _
 
+theorem diff_inter_distrib_right (s t r : Set α) : (t ∩ r) \ s = (t \ s) ∩ (r \ s) := by
+  rw [diff_eq, inter_inter_distrib_right, diff_eq, diff_eq]
+
 theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
     Disjoint s t ↔ s = ∅ := by
   simp only [disjoint_iff, inf_eq_left.mpr h, bot_eq_empty]
@@ -1278,9 +1281,6 @@ theorem diff_compl : s \ tᶜ = s ∩ t :=
 
 theorem diff_diff_right {s t u : Set α} : s \ (t \ u) = s \ t ∪ s ∩ u :=
   sdiff_sdiff_right'
-
-theorem diff_inter_distrib_right (s t r : Set α) : (t ∩ r) \ s = (t \ s) ∩ (r \ s) := by
-  simp only [diff_eq, inter_assoc, inter_comm sᶜ, inter_self]
 
 theorem inter_diff_right_comm {s t r : Set α} : (s ∩ t) \ r = s \ r ∩ t := by
   rw [diff_eq, diff_eq, inter_right_comm]
