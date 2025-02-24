@@ -96,9 +96,6 @@ lemma hasMFDerivAt_extChartAt_comp_of_hasDerivAt {v : (x : M) → TangentSpace I
   have hmem' := interior_subset hmem
   refine ⟨continuousAt_extChartAt_symm'' hmem' |>.comp (x := t) hf.continuousAt,
     HasDerivWithinAt.hasFDerivWithinAt ?_⟩
-  have hft1 := mem_preimage.mp <|
-    mem_of_mem_of_subset hmem' (extChartAt I x₀).target_subset_preimage_source
-  have hft2 := mem_extChartAt_source (I := I) xₜ
   simp only [mfld_simps, hasDerivWithinAt_univ]
   show HasDerivAt ((extChartAt I xₜ ∘ (extChartAt I x₀).symm) ∘ f) (v xₜ) t
   exact hasDerivAt_extChartAt_comp_extChartAt_comp_of_hasDerivAt_tangentCoordChange hmem hf
