@@ -5,7 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Algebra.Order.Module.Algebra
 import Mathlib.Algebra.Ring.Subring.Units
-import Mathlib.LinearAlgebra.LinearIndependent.Basic
+import Mathlib.LinearAlgebra.LinearIndependent.Defs
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Module
 import Mathlib.Tactic.Positivity.Basic
