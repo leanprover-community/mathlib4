@@ -42,6 +42,9 @@ lemma Submodule.length_bot : (⊥ : Submodule R M).length = 0 := sorry
 @[gcongr]
 lemma Submodule.length_mono {p q : Submodule R M} (h : p ≤ q) : p.length ≤ q.length := sorry
 
+lemma Submodule.length_succ_le_of_lt {p q : Submodule R M} (h : p < q) : p.length + 1 ≤ q.length :=
+  sorry
+
 open Classical in
 /--
 The length of a module is greater than or equal to the trimmedLength of any
