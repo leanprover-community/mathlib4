@@ -516,8 +516,7 @@ section Correctness
 
 section TotalAndTransitive
 
-variable {r}
-variable [IsTotal α r] [IsTrans α r]
+variable {r} [IsTotal α r] [IsTrans α r]
 
 theorem Sorted.merge {l l' : List α} (h : Sorted r l) (h' : Sorted r l') :
     Sorted r (merge l l' (r · ·)) := by
