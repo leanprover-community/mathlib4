@@ -425,7 +425,7 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
       if arg.components.length > 1 || arg.extension == "lean" then
         -- provided file name of a Lean file
         let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
-        let packageDir ← getPackageDir arg
+        let srcDir ← getSrcDir arg
         if !(← arg.pathExists) then
           IO.eprintln s!"Invalid argument: non-existing path {arg}"
           IO.Process.exit 1
@@ -435,12 +435,11 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
         else
           -- provided existing directory: walk it
           IO.println s!"Searching directory {arg} for .lean files"
-          let leanModulesInFolder ← walkDir arg packageDir
+          let leanModulesInFolder ← walkDir arg srcDir
           pure <| acc.insertMany leanModulesInFolder
       else
         -- provided a module
         let mod := argₛ.toName
-        let packageDir ← getPackageDir arg
         let sourceFile ← Lean.findLean sp mod
 
         if ← sourceFile.pathExists then
@@ -463,7 +462,7 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
             IO.Process.exit 1
 where
   /-- assumes the folder exists -/
-  walkDir (folder : FilePath) (packageDir : FilePath) : CacheM <| Array (Name × FilePath) := do
+  walkDir (folder : FilePath) (srcDir : FilePath) : CacheM <| Array (Name × FilePath) := do
     -- find all Lean files in the folder, skipping hidden folders/files
     let files ← folder.walkDir fun p => match p.fileName with
       | some s => pure <| !(s.startsWith ".")
@@ -471,7 +470,7 @@ where
     let leanFiles := files.filter (·.extension == some "lean")
     let mut leanModulesInFolder : Array (Name × FilePath) := #[]
     for file in leanFiles do
-      let path := file.withoutParent packageDir
+      let path := file.withoutParent srcDir
       let mod : Name := path.withExtension "" |>.components.foldl .str .anonymous
       leanModulesInFolder := leanModulesInFolder.push (mod, file)
     pure leanModulesInFolder
