@@ -15,6 +15,7 @@ We define bundled non-unital subsemirings and some standard constructions:
 `subtype` and `inclusion` ring homomorphisms.
 -/
 
+assert_not_exists RelIso
 
 universe u v w
 
@@ -56,8 +57,11 @@ def subtype : s →ₙ+* R :=
   { AddSubmonoidClass.subtype s, MulMemClass.subtype s with toFun := (↑) }
 
 @[simp]
-theorem coeSubtype : (subtype s : s → R) = ((↑) : s → R) :=
+theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
   rfl
+
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
 
 /-- A non-unital subsemiring of a `NonUnitalSemiring` is a `NonUnitalSemiring`. -/
 instance toNonUnitalSemiring {R} [NonUnitalSemiring R] [SetLike S R]
