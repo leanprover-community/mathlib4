@@ -72,12 +72,11 @@ def getFileImports (content : String) (fileName : String := "") :
     CacheM <| Array (Name × FilePath) := do
   let sp := (← read).srcSearchPath
   let fileImports : Array Import ← Lean.parseImports' content fileName
-  let out ← fileImports
+  fileImports
     |>.filter (isPartOfMathlibCache ·.module)
     |>.mapM fun imp => do
       let impSourceFile ← Lean.findLean sp imp.module
       pure (imp.module, impSourceFile)
-  pure out
 
 /-- Computes a canonical hash of a file's contents. -/
 def hashFileContents (contents : String) : UInt64 :=
@@ -119,7 +118,7 @@ partial def getHash (filePath : FilePath) (visited : Std.HashSet FilePath := ∅
   match (← get).cache[filePath]? with
   | some hash? => return hash?
   | none =>
-    let fixedPath := (← IO.getPackageDir filePath) / filePath
+    let fixedPath := (← IO.getSrcDir filePath) / filePath
     if !(← fixedPath.pathExists) then
       IO.println s!"Warning: {fixedPath} not found. Skipping all files that depend on it."
       if fixedPath.extension != "lean" then
@@ -129,8 +128,8 @@ partial def getHash (filePath : FilePath) (visited : Std.HashSet FilePath := ∅
       return none
     let content ← IO.FS.readFile fixedPath
     let fileImports' ← getFileImports content filePath.toString
-    -- TODO: This line is only here for backwards compatibility: cache still takes
-    -- keys of the form `Mathlib/Init.lean`, `Aesop/Build.lean` instead of module
+    -- TODO: This line should eventually be removed: most code of cache still works
+    -- with keys of the form `Mathlib/Init.lean`, `Aesop/Build.lean` instead of module
     -- names: `Mathlib.Init`, `Aesop.Build`, but `getFileImports` has been changed
     -- to return the latter, in preparation for the switch
     let fileImports := fileImports'.map fun (key, _) =>

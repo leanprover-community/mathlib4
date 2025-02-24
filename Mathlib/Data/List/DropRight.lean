@@ -123,7 +123,7 @@ theorem rdropWhile_eq_nil_iff : rdropWhile p l = [] ↔ ∀ x ∈ l, p x := by s
 -- it is in this file because it requires `List.Infix`
 @[simp]
 theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.get ⟨0, hl⟩) := by
-  cases' l with hd tl
+  rcases l with - | ⟨hd, tl⟩
   · simp only [dropWhile, true_iff]
     intro h
     by_contra
