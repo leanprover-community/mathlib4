@@ -10,8 +10,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 
 # Subobject Classifier
 
-We define what it means for a morphism in a category to be a subobject
-classifier as `CategoryTheory.HasClassifier`.
+We define what it means for a morphism in a category to be a subobject classifier
+as `CategoryTheory.HasClassifier`.
 
 c.f. the following Lean 3 code, where similar work was done:
 https://github.com/b-mehta/topos/blob/master/src/subobject_classifier.lean
@@ -20,16 +20,15 @@ https://github.com/b-mehta/topos/blob/master/src/subobject_classifier.lean
 
 Let `C` refer to a category with a terminal object.
 
-* `CategoryTheory.Classifier C` is the data of a subobject classifier
-  in `C`.
+* `CategoryTheory.Classifier C` is the data of a subobject classifier in `C`.
 
-* `CategoryTheory.HasClassifier C` says that there is at least one
-  subobject classifier. `Ω C` denotes a choice of subobject classifier.
+* `CategoryTheory.HasClassifier C` says that there is at least one subobject classifier.
+  `Ω C` denotes a choice of subobject classifier.
 
 ## Main results
 
 * It is a theorem that the truth morphism `⊤_ C ⟶ Ω C` is a (split, and
-  therefore regular) monomorphism.
+  therefore regular) monomorphism, simply because its source is the terminal object.
 
 * An instance of `IsRegularMonoCategory C` is exhibited for any category with
   a subobject classifier.
@@ -43,8 +42,8 @@ Let `C` refer to a category with a terminal object.
 * Exhibit the equivalence between having a classifier and the functor `B => Subobject B`
   being representable.
 
-* Make API for constructing a subobject classifier without reference to limits
-  (replacing `⊤_ C` with an arbitrary `Ω₀ : C` and including the assumption `mono truth`)
+* Make API for constructing a subobject classifier without reference to limits (replacing
+  `⊤_ C` with an arbitrary `Ω₀ : C` and including the assumption `mono truth`)
 
 -/
 
@@ -68,8 +67,7 @@ terminal.from U               χ
     ⊤_ C ------truth--------> Ω
 ```
 An equivalent formulation replaces the object `⊤_ C` with an arbitrary object, and instead
-includes the assumption that `truth` is a monomorphism. Under this formulation, the fact that
-`truth` is a monomorphism is instead a theorem.
+includes the assumption that `truth` is a monomorphism.
 -/
 structure Classifier where
   /-- The target of the truth morphism -/
