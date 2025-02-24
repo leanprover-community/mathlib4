@@ -98,29 +98,7 @@ variable (μ E)
 there exists `η` such that two functions bounded by `η` in `L^p` have a sum bounded by `δ`. One
 could take `η = δ / 2` for `p ≥ 1`, but the point of the lemma is that it works also for `p < 1`.
 -/
-theorem exists_Lp_half (p : ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
-    ∃ η : ℝ≥0∞,
-      0 < η ∧
-        ∀ (f g : α → E), AEStronglyMeasurable f μ → AEStronglyMeasurable g μ →
-          eLpNorm f p μ ≤ η → eLpNorm g p μ ≤ η → eLpNorm (f + g) p μ < δ := by
-  have :
-    Tendsto (fun η : ℝ≥0∞ => LpAddConst p * (η + η)) (𝓝[>] 0) (𝓝 (LpAddConst p * (0 + 0))) :=
-    (ENNReal.Tendsto.const_mul (tendsto_id.add tendsto_id)
-          (Or.inr (LpAddConst_lt_top p).ne)).mono_left
-      nhdsWithin_le_nhds
-  simp only [add_zero, mul_zero] at this
-  rcases (((tendsto_order.1 this).2 δ hδ.bot_lt).and self_mem_nhdsWithin).exists with ⟨η, hη, ηpos⟩
-  refine ⟨η, ηpos, fun f g hf hg Hf Hg => ?_⟩
-  calc
-    eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := eLpNorm_add_le' hf hg p
-    _ ≤ LpAddConst p * (η + η) := by gcongr
-    _ < δ := hη
-
-/-- Technical lemma to control the addition of functions in `L^p` even for `p < 1`: Given `δ > 0`,
-there exists `η` such that two functions bounded by `η` in `L^p` have a sum bounded by `δ`. One
-could take `η = δ / 2` for `p ≥ 1`, but the point of the lemma is that it works also for `p < 1`.
--/
-theorem exists_Lp_half_finset (ps : Finset ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
+theorem exists_forall_Lp_half (ps : Finset ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
     ∃ η : ℝ≥0∞, 0 < η ∧ ∀ (f g : α → E), AEStronglyMeasurable f μ → AEStronglyMeasurable g μ →
       ∀ p ∈ ps, eLpNorm f p μ ≤ η → eLpNorm g p μ ≤ η → eLpNorm (f + g) p μ < δ := by
   have (p) (hp : p ∈ ps) :
@@ -135,6 +113,15 @@ theorem exists_Lp_half_finset (ps : Finset ℝ≥0∞) {δ : ℝ≥0∞} (hδ : 
     eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := eLpNorm_add_le' hf hg p
     _ ≤ LpAddConst p * (η + η) := by gcongr
     _ < δ := hη p hp
+
+/-- Technical lemma to control the addition of functions in `L^p` even for `p < 1`: Given `δ > 0`,
+there exists `η` such that two functions bounded by `η` in `L^p` have a sum bounded by `δ`. One
+could take `η = δ / 2` for `p ≥ 1`, but the point of the lemma is that it works also for `p < 1`.
+-/
+theorem exists_Lp_half (p : ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
+    ∃ η : ℝ≥0∞, 0 < η ∧ ∀ (f g : α → E), AEStronglyMeasurable f μ → AEStronglyMeasurable g μ →
+      eLpNorm f p μ ≤ η → eLpNorm g p μ ≤ η → eLpNorm (f + g) p μ < δ :=
+  (exists_forall_Lp_half E μ {p} hδ).imp <| by simp
 
 variable {μ E}
 

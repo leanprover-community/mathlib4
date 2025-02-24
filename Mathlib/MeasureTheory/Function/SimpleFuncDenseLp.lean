@@ -883,29 +883,23 @@ theorem MemLp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (P : (α �
     (Lp.simpleFunc.denseRange hp_ne_top).induction_on f h_closed this
   exact fun f hf => h_ae hf.coeFn_toLp (Lp.memLp _) (this (hf.toLp f))
 
--- TODO: Could generalize to allow `0 ∈ ps` if needed.
+-- TODO: Introduce `MemLpFinset`?
 /-- If a set of ae strongly measurable functions is stable under addition and approximates
 characteristic functions in `ℒp`, then it is dense in `ℒp`. -/
-theorem MemLp.induction_finset_dense (hps_ne : ps.Nonempty) (hps_top : ∞ ∉ ps) (P : (α → E) → Prop)
+theorem MemLp.forall_induction_dense (hps_ne : ps.Nonempty) (hps_top : ∞ ∉ ps) (P : (α → E) → Prop)
     (h0P : ∀ (c : E) ⦃s : Set α⦄, MeasurableSet s → μ s < ∞ → ∀ {ε : ℝ≥0∞}, ε ≠ 0 →
       ∃ g : α → E, (∀ p ∈ ps, eLpNorm (g - s.indicator fun _ => c) p μ ≤ ε) ∧ P g)
     (h1P : ∀ f g, P f → P g → P (f + g)) (h2P : ∀ f, P f → AEStronglyMeasurable f μ) {f : α → E}
     (hf : ∀ p ∈ ps, MemLp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ g : α → E, (∀ p ∈ ps, eLpNorm (f - g) p μ ≤ ε) ∧ P g := by
-  -- TODO: Extract as lemma? `Finset.Nonempty.eq_singleton_or_erase_nonempty`?
-  have : ps = {0} ∨ (ps.erase 0).Nonempty := by
-    refine Or.elim (em (0 ∈ ps)) (fun h ↦ ?_) fun h ↦ ?_
-    · exact (Finset.eq_singleton_or_nontrivial h).imp_right (erase_nonempty h).mpr
-    · rw [erase_eq_of_not_mem h]
-      exact Or.inr hps_ne
-  cases this with
+  cases hps_ne.eq_singleton_or_nonempty_erase 0 with
   | inl hps =>
-    refine Exists.imp (fun g hg ↦ ⟨?_, hg.2⟩) (h0P 0 MeasurableSet.empty (by simp) hε)
+    refine (h0P 0 MeasurableSet.empty (by simp) hε).imp fun g hg ↦ ⟨?_, hg.2⟩
     simp [hps]
   | inr hps =>
     suffices H : ∀ (f' : α →ₛ E) (δ : ℝ≥0∞) (hδ : δ ≠ 0), (∀ p ∈ ps, MemLp f' p μ) →
         ∃ g, (∀ p ∈ ps, eLpNorm (⇑f' - g) p μ ≤ δ) ∧ P g by
-      obtain ⟨η, ηpos, hη⟩ := exists_Lp_half_finset E μ ps hε
+      obtain ⟨η, ηpos, hη⟩ := exists_forall_Lp_half E μ ps hε
       obtain ⟨f', hf'⟩ := exists_simpleFunc_finset_eLpNorm_sub_lt hps_ne hps_top hf ηpos.ne'
       obtain ⟨g, hg, Pg⟩ := H f' η ηpos.ne' (fun p hp ↦ (hf' p hp).2)
       refine ⟨g, fun p hp ↦ ?_, Pg⟩
@@ -924,7 +918,7 @@ theorem MemLp.induction_finset_dense (hps_ne : ps.Nonempty) (hps_top : ∞ ∉ p
         refine Exists.imp (fun g hg ↦ ⟨?_, hg.2⟩) (h0P c hs hsμ εpos)
         simpa [eLpNorm_sub_comm g] using hg.1
     · intro f f' hff' hf hf' δ δpos int_ff'
-      obtain ⟨η, ηpos, hη⟩ := exists_Lp_half_finset E μ ps δpos
+      obtain ⟨η, ηpos, hη⟩ := exists_forall_Lp_half E μ ps δpos
       simp only [SimpleFunc.coe_add,
         memLp_add_of_disjoint hff' f.stronglyMeasurable f'.stronglyMeasurable] at int_ff'
       obtain ⟨g, hg, Pg⟩ := hf η ηpos.ne' (fun p hp ↦ (int_ff' p hp).1)
@@ -939,52 +933,12 @@ theorem MemLp.induction_finset_dense (hps_ne : ps.Nonempty) (hps_top : ∞ ∉ p
 /-- If a set of ae strongly measurable functions is stable under addition and approximates
 characteristic functions in `ℒp`, then it is dense in `ℒp`. -/
 theorem MemLp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop)
-    (h0P :
-      ∀ (c : E) ⦃s : Set α⦄,
-        MeasurableSet s →
-          μ s < ∞ →
-            ∀ {ε : ℝ≥0∞}, ε ≠ 0 → ∃ g : α → E, eLpNorm (g - s.indicator fun _ => c) p μ ≤ ε ∧ P g)
+    (h0P : ∀ (c : E) ⦃s : Set α⦄, MeasurableSet s → μ s < ∞ →
+      ∀ {ε : ℝ≥0∞}, ε ≠ 0 → ∃ g : α → E, eLpNorm (g - s.indicator fun _ => c) p μ ≤ ε ∧ P g)
     (h1P : ∀ f g, P f → P g → P (f + g)) (h2P : ∀ f, P f → AEStronglyMeasurable f μ) {f : α → E}
     (hf : MemLp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) : ∃ g : α → E, eLpNorm (f - g) p μ ≤ ε ∧ P g := by
-  rcases eq_or_ne p 0 with (rfl | hp_pos)
-  · rcases h0P (0 : E) MeasurableSet.empty (by simp only [measure_empty, zero_lt_top])
-        hε with ⟨g, _, Pg⟩
-    exact ⟨g, by simp only [eLpNorm_exponent_zero, zero_le'], Pg⟩
-  suffices H : ∀ (f' : α →ₛ E) (δ : ℝ≥0∞) (hδ : δ ≠ 0), MemLp f' p μ →
-      ∃ g, eLpNorm (⇑f' - g) p μ ≤ δ ∧ P g by
-    obtain ⟨η, ηpos, hη⟩ := exists_Lp_half E μ p hε
-    rcases hf.exists_simpleFunc_eLpNorm_sub_lt hp_ne_top ηpos.ne' with ⟨f', hf', f'_mem⟩
-    rcases H f' η ηpos.ne' f'_mem with ⟨g, hg, Pg⟩
-    refine ⟨g, ?_, Pg⟩
-    convert (hη _ _ (hf.aestronglyMeasurable.sub f'.aestronglyMeasurable)
-          (f'.aestronglyMeasurable.sub (h2P g Pg)) hf'.le hg).le using 2
-    simp only [sub_add_sub_cancel]
-  apply SimpleFunc.induction
-  · intro c s hs ε εpos Hs
-    rcases eq_or_ne c 0 with (rfl | hc)
-    · rcases h0P (0 : E) MeasurableSet.empty (by simp only [measure_empty, zero_lt_top])
-          εpos with ⟨g, hg, Pg⟩
-      rw [← eLpNorm_neg, neg_sub] at hg
-      refine ⟨g, ?_, Pg⟩
-      convert hg
-      ext x
-      simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_zero,
-        piecewise_eq_indicator, indicator_zero', Pi.zero_apply, indicator_zero]
-    · have : μ s < ∞ := SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs Hs
-      rcases h0P c hs this εpos with ⟨g, hg, Pg⟩
-      rw [← eLpNorm_neg, neg_sub] at hg
-      exact ⟨g, hg, Pg⟩
-  · intro f f' hff' hf hf' δ δpos int_ff'
-    obtain ⟨η, ηpos, hη⟩ := exists_Lp_half E μ p δpos
-    rw [SimpleFunc.coe_add,
-      memLp_add_of_disjoint hff' f.stronglyMeasurable f'.stronglyMeasurable] at int_ff'
-    rcases hf η ηpos.ne' int_ff'.1 with ⟨g, hg, Pg⟩
-    rcases hf' η ηpos.ne' int_ff'.2 with ⟨g', hg', Pg'⟩
-    refine ⟨g + g', ?_, h1P g g' Pg Pg'⟩
-    convert (hη _ _ (f.aestronglyMeasurable.sub (h2P g Pg))
-          (f'.aestronglyMeasurable.sub (h2P g' Pg')) hg hg').le using 2
-    rw [SimpleFunc.coe_add]
-    abel
+  simpa using forall_induction_dense (Finset.singleton_nonempty p)
+    (not_mem_singleton.mpr hp_ne_top.symm) P (by simpa using h0P) h1P h2P (by simpa using hf) hε
 
 section Integrable
 
