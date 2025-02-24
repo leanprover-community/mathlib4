@@ -41,9 +41,13 @@ noncomputable def quotKerEquivOfSurjective (f : M →ₗ[R] M₂) (hf : Function
     (M ⧸ LinearMap.ker f) ≃ₗ[R] M₂ :=
   f.quotKerEquivRange.trans <| .ofTop (LinearMap.range f) <| range_eq_top.2 hf
 
-@[simp]
 theorem quotKerEquivRange_apply_mk (x : M) :
     (f.quotKerEquivRange (Submodule.Quotient.mk x) : M₂) = f x :=
+  rfl
+
+@[simp]
+theorem quotKerEquivRange_apply_mkQ (x : M) :
+    (f.quotKerEquivRange (mkQ _ x) : M₂) = f x :=
   rfl
 
 @[simp]
@@ -98,24 +102,23 @@ theorem coe_quotientInfToSupQuotient (p p' : Submodule R M) :
 
 theorem quotientInfEquivSupQuotient_apply_mk (p p' : Submodule R M) (x : p) :
     let map := inclusion (le_sup_left : p ≤ p ⊔ p')
-    quotientInfEquivSupQuotient p p' (Submodule.Quotient.mk x) =
-      @Submodule.Quotient.mk R (p ⊔ p' : Submodule R M) _ _ _ (comap (p ⊔ p').subtype p') (map x) :=
+    quotientInfEquivSupQuotient p p' (mkQ _ x) =
+      @Submodule.mkQ R (p ⊔ p' : Submodule R M) _ _ _ (comap (p ⊔ p').subtype p') (map x) :=
   rfl
 
 theorem quotientInfEquivSupQuotient_symm_apply_left (p p' : Submodule R M) (x : ↥(p ⊔ p'))
     (hx : (x : M) ∈ p) :
-    (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x) =
-      Submodule.Quotient.mk ⟨x, hx⟩ :=
+    (quotientInfEquivSupQuotient p p').symm (mkQ _ x) =
+      mkQ _ ⟨x, hx⟩ :=
   (LinearEquiv.symm_apply_eq _).2 <| by
     rw [quotientInfEquivSupQuotient_apply_mk, inclusion_apply]
 
-
 theorem quotientInfEquivSupQuotient_symm_apply_eq_zero_iff {p p' : Submodule R M} {x : ↥(p ⊔ p')} :
-    (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x) = 0 ↔ (x : M) ∈ p' :=
+    (quotientInfEquivSupQuotient p p').symm (mkQ _ x) = 0 ↔ (x : M) ∈ p' :=
   (LinearEquiv.symm_apply_eq _).trans <| by simp
 
 theorem quotientInfEquivSupQuotient_symm_apply_right (p p' : Submodule R M) {x : ↥(p ⊔ p')}
-    (hx : (x : M) ∈ p') : (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x)
+    (hx : (x : M) ∈ p') : (quotientInfEquivSupQuotient p p').symm (mkQ _ x)
     = 0 :=
   quotientInfEquivSupQuotient_symm_apply_eq_zero_iff.2 hx
 
@@ -139,22 +142,22 @@ def quotientQuotientEquivQuotientAux (h : S ≤ T) : (M ⧸ S) ⧸ T.map S.mkQ �
 
 @[simp]
 theorem quotientQuotientEquivQuotientAux_mk (x : M ⧸ S) :
-    quotientQuotientEquivQuotientAux S T h (Quotient.mk x) = mapQ S T LinearMap.id h x :=
+    quotientQuotientEquivQuotientAux S T h (mkQ _ x) = mapQ S T LinearMap.id h x :=
   liftQ_apply _ _ _
 
 @[simp]
 theorem quotientQuotientEquivQuotientAux_mk_mk (x : M) :
-    quotientQuotientEquivQuotientAux S T h (Quotient.mk (Quotient.mk x)) = Quotient.mk x := by simp
+    quotientQuotientEquivQuotientAux S T h (mkQ _ (mkQ S x)) = mkQ T x := by simp
 
 /-- **Noether's third isomorphism theorem** for modules: `(M / S) / (T / S) ≃ M / T`. -/
 def quotientQuotientEquivQuotient : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ T :=
   { quotientQuotientEquivQuotientAux S T h with
     toFun := quotientQuotientEquivQuotientAux S T h
     invFun := mapQ _ _ (mkQ S) (le_comap_map _ _)
-    left_inv := fun x => Submodule.Quotient.induction_on _
-     x fun x => Submodule.Quotient.induction_on _ x fun x =>
+    left_inv := fun x => Submodule.Quotient.induction_on' _
+     x fun x => Submodule.Quotient.induction_on' _ x fun x =>
       by simp
-    right_inv := fun x => Submodule.Quotient.induction_on _ x
+    right_inv := fun x => Submodule.Quotient.induction_on' _ x
       fun x => by simp }
 
 /-- Essentially the same equivalence as in the third isomorphism theorem,
