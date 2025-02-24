@@ -51,6 +51,10 @@ example (a b c : L) :
     (lie_reduce% ⁅⁅2 • a, b⁆, ⁅⁅b, ⁅a, -3 • c⁆⁆, c⁆⁆) = ⁅⁅2 • a, b⁆, ⁅⁅b, ⁅a, -3 • c⁆⁆, c⁆⁆ := by
   lie_ring
 
+/--
+info: Try this: -1 • ⁅⁅a, c⁆, ⁅a, ⁅c, b⁆⁆⁆ + (-1 • ⁅⁅a, c⁆, ⁅⁅a, b⁆, c⁆⁆ + 0)
+-/
+#guard_msgs in
 example : ⁅⁅a, c⁆, ⁅b, ⁅a, c⁆⁆⁆ = lie_reduce% ⁅⁅a, c⁆, ⁅b, ⁅a, c⁆⁆⁆ := by
   lie_ring
 
