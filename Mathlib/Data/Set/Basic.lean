@@ -1273,16 +1273,16 @@ theorem diff_subset_comm {s t u : Set α} : s \ t ⊆ u ↔ s \ u ⊆ t :=
 theorem diff_inter {s t u : Set α} : s \ (t ∩ u) = s \ t ∪ s \ u :=
   sdiff_inf
 
-theorem diff_inter_diff {s t u : Set α} : s \ t ∩ (s \ u) = s \ (t ∪ u) :=
+theorem diff_inter_diff : s \ t ∩ (s \ u) = s \ (t ∪ u) :=
   sdiff_sup.symm
 
 theorem diff_compl : s \ tᶜ = s ∩ t :=
   sdiff_compl
 
-theorem diff_diff_right {s t u : Set α} : s \ (t \ u) = s \ t ∪ s ∩ u :=
+theorem diff_diff_right : s \ (t \ u) = s \ t ∪ s ∩ u :=
   sdiff_sdiff_right'
 
-theorem inter_diff_right_comm {s t r : Set α} : (s ∩ t) \ r = s \ r ∩ t := by
+theorem inter_diff_right_comm : (s ∩ t) \ u = s \ u ∩ t := by
   rw [diff_eq, diff_eq, inter_right_comm]
 
 theorem diff_inter_right_comm : (s \ u) ∩ t = (s ∩ t) \ u := by
