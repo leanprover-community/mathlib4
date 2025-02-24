@@ -385,9 +385,6 @@ theorem insert_diff_self_of_not_mem {a : α} {s : Set α} (h : a ∉ s) : insert
 lemma insert_diff_self_of_mem (ha : a ∈ s) : insert a (s \ {a}) = s := by
   ext; simp +contextual [or_and_left, em, ha]
 
-lemma diff_singleton_diff_eq (s t : Set α) (x : α) : (s \ {x}) \ t = s \ (insert x t) := by
-  rw [diff_diff, singleton_union]
-
 lemma insert_erase_invOn :
     InvOn (insert a) (fun s ↦ s \ {a}) {s : Set α | a ∈ s} {s : Set α | a ∉ s} :=
   ⟨fun _s ha ↦ insert_diff_self_of_mem ha, fun _s ↦ insert_diff_self_of_not_mem⟩
