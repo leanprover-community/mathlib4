@@ -144,6 +144,11 @@ theorem toDirectSum_intCast [DecidableEq ι] [AddMonoid ι] [Ring M] (z : ℤ) :
   Finsupp.toDFinsupp_single _ _
 
 @[simp]
+theorem toDirectSum_one [DecidableEq ι] [Zero ι] [Semiring M] :
+    (1 : AddMonoidAlgebra M ι).toDirectSum = 1 :=
+  Finsupp.toDFinsupp_single _ _
+
+@[simp]
 theorem toDirectSum_mul [DecidableEq ι] [AddMonoid ι] [Semiring M] (f g : AddMonoidAlgebra M ι) :
     (f * g).toDirectSum = f.toDirectSum * g.toDirectSum := by
   let to_hom : AddMonoidAlgebra M ι →+ ⨁ _ : ι, M :=
@@ -196,6 +201,11 @@ theorem toAddMonoidAlgebra_neg [Ring M] [∀ m : M, Decidable (m ≠ 0)] (f : �
 @[simp]
 theorem toAddMonoidAlgebra_intCast [AddMonoid ι] [Ring M] [∀ m : M, Decidable (m ≠ 0)] (z : ℤ) :
     (z : ⨁ _ : ι, M).toAddMonoidAlgebra = z :=
+  DFinsupp.toFinsupp_single _ _
+
+@[simp]
+theorem toAddMonoidAlgebra_one [Zero ι] [Semiring M] [∀ m : M, Decidable (m ≠ 0)] :
+    (1 : ⨁ _ : ι, M).toAddMonoidAlgebra = 1 :=
   DFinsupp.toFinsupp_single _ _
 
 @[simp]
