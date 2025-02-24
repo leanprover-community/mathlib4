@@ -1322,13 +1322,9 @@ theorem union_eq_diff_union_diff_union_inter (s t : Set α) : s ∪ t = s \ t �
 
 theorem diff_union_diff_cancel_of_inter_subset_of_subset_union (hi : s ∩ u ⊆ t) (hu : t ⊆ s ∪ u) :
     (s \ t) ∪ (t \ u) = s \ u := by
-  refine subset_antisymm (union_subset ?_ ?_) ?_
-  · rwa [subset_diff, and_iff_right diff_subset, disjoint_iff_inter_eq_empty,
-      ← inter_diff_right_comm, diff_eq_empty]
-  · rwa [subset_diff, and_iff_left disjoint_sdiff_left, diff_subset_iff, union_comm]
-  rw [union_comm, diff_subset_iff, ← union_assoc, union_diff_self, union_assoc,
-    union_diff_self, ← union_assoc]
-  exact subset_union_right
+  rw [← diff_eq_empty, inter_diff_right_comm, ← disjoint_iff_inter_eq_empty] at hi
+  simpa [subset_antisymm_iff, subset_diff, diff_subset_iff, disjoint_sdiff_left, union_comm u,
+    hu, union_assoc, ← union_assoc (a := s \ t)]
 
 @[simp]
 theorem diff_ssubset_left_iff : s \ t ⊂ s ↔ (s ∩ t).Nonempty := by
