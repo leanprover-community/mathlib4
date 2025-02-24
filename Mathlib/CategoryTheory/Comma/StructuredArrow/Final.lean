@@ -3,11 +3,7 @@ Copyright (c) 2025 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Comma.Final
-import Mathlib.CategoryTheory.Filtered.OfColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-import Mathlib.CategoryTheory.Limits.Preserves.Grothendieck
 import Mathlib.CategoryTheory.Limits.Final
 
 /-!
@@ -86,8 +82,8 @@ theorem final_of_final_CostructuredArrowtoOver (L : A ⥤ T) (R : B ⥤ T) [Fina
       dsimp only [F'']
       infer_instance
     apply final_of_natIso (F := F'')
-    apply NatIso.ofComponents (fun x => eqToIso <| by {
-      rcases x
+    apply NatIso.ofComponents (fun X => eqToIso <| by {
+      rcases X
       simp only [map₂, Comma.map, id_obj, comp_obj, const_obj_obj, whiskerLeft_app,
         Discrete.natTrans_app, right_eq_id, id_map, pre, Comma.preLeft, NatTrans.id_app,
         Category.comp_id, const_obj_map, id_eq, map_comp, Equivalence.fun_inv_map,
