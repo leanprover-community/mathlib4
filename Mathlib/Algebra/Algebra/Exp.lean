@@ -7,22 +7,15 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Data.Sigma.Basic
-import LeanCopilot
-
-
-
-
 
 namespace Algebra
 
 variable (R : Type*) [Field R]
 variable (A : Type*)
 
-
 section Semi
 
 variable [Semiring A] [Algebra R A]
-
 
 theorem reorder (N : ℕ) {f : ℕ → ℕ → A} : ∑ j ∈ Finset.range (2 * N + 1), ∑ i ∈ Finset.range (j + 1), f i j = ∑ ij ∈ (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)) |>.filter (fun ij => ij.1 ≤ ij.2), f ij.1 ij.2 := by
   rw [Finset.sum_sigma']
@@ -105,22 +98,11 @@ theorem zero_ev {k l : ℕ} {a : A} (h₁ : a ^ k = 0) (h₂ : k ≤ l) : a ^ l 
   obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_le h₂
   rw [pow_add, h₁, zero_mul]
 
---example (n : ℕ) (a : A) : (n.factorial : R) • ((n.factorial : R)⁻¹ • a) = a := by
---have h1 : (n.factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero n
---simp_all only [ne_eq, Nat.cast_eq_zero, not_false_eq_true, smul_inv_smul₀]
-  --exact mul_inv_cancel₀ h1
-
-
--- useful: add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero
--- useful: add_pow (h : Commute x y) (n : ℕ) : ...
--- useful: isNilpotent_add (h_comm : Commute x y) ...
-
 variable [CharZero R]
 
 theorem ttttt (n : ℕ) : (n.factorial : R)⁻¹  * (n.factorial : R) = 1 := by
   have h1 : (n.factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero n
   simp_all only [ne_eq, Nat.cast_eq_zero, not_false_eq_true, inv_mul_cancel₀]
-
 
 theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a) (h₃ : IsNilpotent b) :
     exp R A (a + b) = exp R A a * exp R A b := by
@@ -358,8 +340,6 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
   rw [lll] at e₁
   rw [e2.symm] at e₁
   apply e₁
-
-
 
 end Semi
 
