@@ -2929,7 +2929,7 @@ import Mathlib.Data.Multiset.Sections
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.Multiset.Sum
 import Mathlib.Data.Multiset.Sym
-import Mathlib.Data.Multiset.UnionIntersection
+import Mathlib.Data.Multiset.UnionInter
 import Mathlib.Data.Multiset.ZeroCons
 import Mathlib.Data.NNRat.BigOperators
 import Mathlib.Data.NNRat.Defs
