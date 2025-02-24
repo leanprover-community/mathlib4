@@ -289,7 +289,7 @@ functor which extends `A` to the presheaf category.
 The second part of [MM92], Chapter I, Section 5, Corollary 4.
 See Property 3 of https://ncatlab.org/nlab/show/Yoneda+extension#properties.
 -/
-noncomputable def uniqueExtensionAlongYoneda (L : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ ℰ)
+noncomputable def uniqueExtensionAlongULiftYoneda (L : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ ℰ)
     (e : A ≅ uliftYoneda.{max w v₂} ⋙ L)
     [PreservesColimitsOfSize.{v₁, max w u₁ v₁ v₂} L] :
     L ≅ uliftYoneda.{max w v₂}.leftKanExtension A :=
