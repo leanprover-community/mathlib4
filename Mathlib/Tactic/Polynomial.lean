@@ -23,10 +23,11 @@ open Lean (MetaM Expr mkRawNatLit)
  * subtraction and negation: requires new typeclass assumptions, caching mechanism
  * scalar multiplication
  * parsing ofNats as constants
- * given two normalised polynomials, equate the coefficients and provide side goals.
  * normalize the constant expressions while parsing the polynomial.
    Should be doable using the internals of norm_num
- * (potentially) allow variables in exponents. Need a good normalization procedure to make sure exponents stay aligned.
+ * apply an appropriate discharger to side goals
+ * (potentially) allow variables in exponents.
+   Need a good normalization procedure to make sure exponents stay aligned.
 
 -/
 
@@ -386,6 +387,7 @@ def ExSum.eq_exSum
       goal.assign q(monomial_zero_add_congr (R := $α) $n $g $goal')
       let goals ← (ExSum.add ema exa).eq_exSum goal'.mvarId! e₁ Q exb
       return g.mvarId! :: goals
+  /- Same as m < n case -/
   | .add ema exa , .zero => do
       IO.println "add, zero"
       have m : ℕ := ema.exponent
@@ -397,6 +399,7 @@ def ExSum.eq_exSum
       goal.assign q(monomial_add_zero_congr (R := $α) $m $g $goal')
       let goals ← exa.eq_exSum goal'.mvarId! P e₂ .zero
       return g.mvarId! :: goals
+  /- Same as m > n case -/
   | .zero, .add emb exb  => do
       have n : ℕ := emb.exponent
       have eb : Q($α) := emb.e
