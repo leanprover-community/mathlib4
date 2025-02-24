@@ -47,10 +47,10 @@ variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G] [Loca
   `MeasureTheory.Measure.haar`.
 
   See also `modularCharacter` that defines the map as a homomorphism.."]
-noncomputable def modularCharacterFun : G → ℝ≥0 :=
+noncomputable def modularCharacterFun (g : G) : ℝ≥0 :=
   letI : MeasurableSpace G := borel G
   haveI : BorelSpace G := ⟨rfl⟩
-  fun g => haarScalarFactor (map (· * g) MeasureTheory.Measure.haar) MeasureTheory.Measure.haar
+  haarScalarFactor (map (· * g) MeasureTheory.Measure.haar) MeasureTheory.Measure.haar
 
 /-- Independence of modularCharacterFun from the chosen Haar measure. -/
 @[to_additive "Independence of addModularCharacterFun from the chosen Haar measure"]
