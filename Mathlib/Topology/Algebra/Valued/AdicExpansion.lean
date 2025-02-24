@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
-import Mathlib.Topology.Algebra.Valued.LocallyCompact
+import Mathlib.Analysis.Normed.Field.Lemmas
+import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 
 /-!
@@ -29,9 +28,7 @@ determined as an expansion in terms of a fixed uniformizer.
 
 -/
 
-variable {K R : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] [CommRing R]
-
-open scoped Valued NormedField
+variable {R : Type*} [CommRing R]
 
 namespace AdicExpansion
 
