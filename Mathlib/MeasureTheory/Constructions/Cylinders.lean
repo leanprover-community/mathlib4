@@ -426,11 +426,11 @@ This should not be confused with the statement that `update f a x` is measurable
 @[measurability]
 lemma measurable_update_cylinderEvents (f : ∀ a : ι, π a) {a : ι} [DecidableEq ι] :
     @Measurable _ _ _ (cylinderEvents Δ) (update f a) :=
-  measurable_update_cylinderEvents'.comp measurable_prod_mk_left
+  measurable_update_cylinderEvents'.comp measurable_prodMk_left
 
 lemma measurable_update_cylinderEvents_left {a : ι} [DecidableEq ι] {x : π a} :
     @Measurable _ _ (cylinderEvents Δ) (cylinderEvents Δ) (update · a x) :=
-  measurable_update_cylinderEvents'.comp measurable_prod_mk_right
+  measurable_update_cylinderEvents'.comp measurable_prodMk_right
 
 lemma measurable_restrict_cylinderEvents (Δ : Set ι) :
     Measurable[cylinderEvents (π := π) Δ] (restrict Δ) := by

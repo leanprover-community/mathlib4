@@ -1221,12 +1221,12 @@ theorem fst_integral [CompleteSpace F] {f : X → E × F} (hf : Integrable f μ)
 theorem snd_integral [CompleteSpace E] {f : X → E × F} (hf : Integrable f μ) :
     (∫ x, f x ∂μ).2 = ∫ x, (f x).2 ∂μ := by
   rw [← Prod.fst_swap, swap_integral]
-  exact fst_integral <| hf.snd.prod_mk hf.fst
+  exact fst_integral <| hf.snd.prodMk hf.fst
 
 theorem integral_pair [CompleteSpace E] [CompleteSpace F] {f : X → E} {g : X → F}
     (hf : Integrable f μ) (hg : Integrable g μ) :
     ∫ x, (f x, g x) ∂μ = (∫ x, f x ∂μ, ∫ x, g x ∂μ) :=
-  have := hf.prod_mk hg
+  have := hf.prodMk hg
   Prod.ext (fst_integral this) (snd_integral this)
 
 theorem integral_smul_const {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [CompleteSpace E]
@@ -1412,8 +1412,8 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
     (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) (hg : IntegrableOn g k μ) :
     ContinuousOn (fun x ↦ ∫ y, L (g y) (f x y) ∂μ) s := by
   have A : ∀ p ∈ s, Continuous (f p) := fun p hp ↦ by
-    refine hf.comp_continuous (continuous_const.prod_mk continuous_id') fun y => ?_
-    simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true] using hp
+    refine hf.comp_continuous (.prodMk_right _) fun y => ?_
+    simpa only [prodMk_mem_set_prod_eq, mem_univ, and_true] using hp
   intro q hq
   apply Metric.continuousWithinAt_iff'.2 (fun ε εpos ↦ ?_)
   obtain ⟨δ, δpos, hδ⟩ : ∃ (δ : ℝ), 0 < δ ∧ ∫ x in k, ‖L‖ * ‖g x‖ * δ ∂μ < ε := by

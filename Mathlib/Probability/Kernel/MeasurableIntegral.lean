@@ -50,7 +50,7 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
     hf.separableSpace_range_union_singleton
   let s : ℕ → SimpleFunc (α × β) E :=
     SimpleFunc.approxOn _ hf.measurable (range (uncurry f) ∪ {0}) 0 (by simp)
-  let s' : ℕ → α → SimpleFunc β E := fun n x => (s n).comp (Prod.mk x) measurable_prod_mk_left
+  let s' : ℕ → α → SimpleFunc β E := fun n x => (s n).comp (Prod.mk x) measurable_prodMk_left
   let f' : ℕ → α → E := fun n =>
     {x | Integrable (f x) (κ x)}.indicator fun x => (s' n x).integral (κ x)
   have hf' : ∀ n, StronglyMeasurable (f' n) := by
@@ -62,7 +62,7 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
     refine Finset.stronglyMeasurable_sum _ fun x _ => ?_
     refine (Measurable.ennreal_toReal ?_).stronglyMeasurable.smul_const _
     simp only [s', SimpleFunc.coe_comp, preimage_comp]
-    apply Kernel.measurable_kernel_prod_mk_left
+    apply Kernel.measurable_kernel_prodMk_left
     exact (s n).measurableSet_fiber x
   have h2f' : Tendsto f' atTop (𝓝 fun x : α => ∫ y : β, f x y ∂κ x) := by
     rw [tendsto_pi_nhds]; intro x
@@ -97,9 +97,9 @@ theorem StronglyMeasurable.integral_kernel_prod_right'' {f : β × γ → E}
   change
     StronglyMeasurable
       ((fun x => ∫ y, (fun u : (α × β) × γ => f (u.1.2, u.2)) (x, y) ∂η x) ∘ fun x => (a, x))
-  apply StronglyMeasurable.comp_measurable _ (measurable_prod_mk_left (m := mα))
+  apply StronglyMeasurable.comp_measurable _ (measurable_prodMk_left (m := mα))
   · have := MeasureTheory.StronglyMeasurable.integral_kernel_prod_right' (κ := η)
-      (hf.comp_measurable (measurable_fst.snd.prod_mk measurable_snd))
+      (hf.comp_measurable (measurable_fst.snd.prodMk measurable_snd))
     simpa using this
 
 theorem StronglyMeasurable.integral_kernel_prod_left ⦃f : β → α → E⦄
@@ -115,9 +115,9 @@ theorem StronglyMeasurable.integral_kernel_prod_left'' {f : γ × β → E} (hf 
   change
     StronglyMeasurable
       ((fun y => ∫ x, (fun u : γ × α × β => f (u.1, u.2.2)) (x, y) ∂η y) ∘ fun x => (a, x))
-  apply StronglyMeasurable.comp_measurable _ (measurable_prod_mk_left (m := mα))
+  apply StronglyMeasurable.comp_measurable _ (measurable_prodMk_left (m := mα))
   · have := MeasureTheory.StronglyMeasurable.integral_kernel_prod_left' (κ := η)
-      (hf.comp_measurable (measurable_fst.prod_mk measurable_snd.snd))
+      (hf.comp_measurable (measurable_fst.prodMk measurable_snd.snd))
     simpa using this
 
 end MeasureTheory
