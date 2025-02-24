@@ -22,10 +22,10 @@ def LIBDIR : FilePath :=
 def IRDIR : FilePath :=
   ".lake" / "build" / "ir"
 
-/--
-TODO: write a better test which modules are part of the mathlib cache
--/
-def isPartOfMathlibCache (mod : Name) := #[
+/-- Determine if the package `mod` is part of the mathlib cache.
+
+TODO: write a better predicate. -/
+def isPartOfMathlibCache (mod : Name) : Bool := #[
   `Mathlib,
   `Batteries,
   `Aesop,
@@ -134,14 +134,21 @@ def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 end
 
 /--
-Find the package directory of a module.
+`mod` is assumed to be the module name like `Mathlib.Init`.
+
+Find the source directory for `mod`.
+This corresponds to the folder where the `.lean` files are located, i.e. for `Mathlib.Init`,
+the file should be located at `(← getSrcDir _) / "Mathlib" / "Init.lean`.
+
+Usually it is either `.` or something like `./.lake/packages/mathlib/`
 -/
-def getPackageDir (mod : Name) : CacheM FilePath := do
+def getSrcDir (mod : Name) : CacheM FilePath := do
   let sp := (← read).srcSearchPath
 
-  let .some packageDir ← sp.findWithExtBase "lean" mod |
+  let .some srcDir ← sp.findWithExtBase "lean" mod |
     throw <| IO.userError s!"Unknown package directory for {mod}\nsearch paths: {sp}"
-  return packageDir
+
+  return srcDir
 
 /-- Runs a terminal command and retrieves its output, passing the lines to `processLine` -/
 partial def runCurlStreaming (args : Array String) (init : α)
@@ -268,12 +275,26 @@ def hashes (hashMap : ModuleHashMap) : Lean.RBTree UInt64 compare :=
 end ModuleHashMap
 
 /--
-Given a path to a Lean file, concatenates the paths to its build files.
+Given a module name, concatenates the paths to its build files.
 Each build file also has a `Bool` indicating whether that file is required for caching to proceed.
 -/
 def mkBuildPaths (mod : Name) : CacheM <| List (FilePath × Bool) := do
-  let packageDir ← getPackageDir mod
+  /-
+  TODO: if `srcDir` or other custom lake layout options are set in the `lean_lib`,
+  `packageSrcDir / LIBDIR` might be the wrong path!
+
+  See [Lake documentation](https://github.com/leanprover/lean4/tree/master/src/lake#layout)
+  for available options.
+
+  If a dependency is added to mathlib which uses such a custom layout, `mkBuildPaths`
+  needs to be adjusted!
+  -/
+  let packageDir ← getSrcDir mod
   let path := (System.mkFilePath <| mod.components.map toString)
+  if !(← (packageDir / ".lake").isDir) then
+    IO.eprintln <| s!"Warning: {packageDir / ".lake"} seems not to exist, most likely `cache` \
+      will not work as expected!"
+
   return [
     -- Note that `packCache` below requires that the `.trace` file is first in this list.
     (packageDir / LIBDIR / path.withExtension "trace", true),
@@ -400,7 +421,7 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
       if arg.components.length > 1 || arg.extension == "lean" then
         -- provided file name of a Lean file
         let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
-        let packageDir ← getPackageDir mod
+        let srcDir ← getSrcDir mod
         if !(← arg.pathExists) then
           IO.eprintln s!"Invalid argument: non-existing path {arg}"
           IO.Process.exit 1
@@ -410,7 +431,7 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
         else
           -- provided existing directory: walk it
           IO.println s!"Searching directory {arg} for .lean files"
-          let leanModulesInFolder ← walkDir arg packageDir
+          let leanModulesInFolder ← walkDir arg srcDir
           pure <| acc.insertMany leanModulesInFolder
       else
         -- provided a module
@@ -436,7 +457,7 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
             IO.Process.exit 1
 where
   /-- assumes the folder exists -/
-  walkDir (folder : FilePath) (packageDir : FilePath) : CacheM <| Array (Name × FilePath) := do
+  walkDir (folder : FilePath) (srcDir : FilePath) : CacheM <| Array (Name × FilePath) := do
     -- find all Lean files in the folder, skipping hidden folders/files
     let files ← folder.walkDir fun p => match p.fileName with
       | some s => pure <| !(s.startsWith ".")
@@ -444,7 +465,7 @@ where
     let leanFiles := files.filter (·.extension == some "lean")
     let mut leanModulesInFolder : Array (Name × FilePath) := #[]
     for file in leanFiles do
-      let path := file.withoutParent packageDir
+      let path := file.withoutParent srcDir
       let mod : Name := path.withExtension "" |>.components.foldl .str .anonymous
       leanModulesInFolder := leanModulesInFolder.push (mod, file)
     pure leanModulesInFolder

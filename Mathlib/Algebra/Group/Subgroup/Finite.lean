@@ -152,7 +152,6 @@ theorem card_le_of_le {H K : Subgroup G} [Finite K] (h : H ≤ K) : Nat.card H �
 theorem card_map_of_injective {H : Type*} [Group H] {K : Subgroup G} {f : G →* H}
     (hf : Function.Injective f) :
     Nat.card (map f K) = Nat.card K := by
-  -- simp only [← SetLike.coe_sort_coe]
   apply Nat.card_image_of_injective hf
 
 @[to_additive]

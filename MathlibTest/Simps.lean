@@ -41,6 +41,16 @@ def Foo2.Simps.elim (α : Type _) : Foo2 α → α × α := fun x ↦ (x.elim.1,
 
 initialize_simps_projections Foo2
 
+
+/--
+info: [simps.verbose] The projections for this structure have already been initialized by a previous invocation of `initialize_simps_projections` or `@[simps]`.
+    Generated projections for Foo2:
+    Projection elim: fun α x => (x.elim.1, x.elim.2)
+-/
+#guard_msgs in
+initialize_simps_projections Foo2
+
+
 @[simps]
 def Foo2.foo2 : Foo2 Nat := ⟨(0, 0)⟩
 
