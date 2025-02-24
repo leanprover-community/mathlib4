@@ -48,6 +48,7 @@ theorem support_smul_pow_subset_closure [OrderedCancelAddCommMonoid Γ] [Semirin
     (f n • x ^ n).support ⊆ AddSubmonoid.closure x.support :=
   (Function.support_const_smul_subset (f n) (x ^ n).coeff).trans (support_pow_subset_closure x n)
 
+open scoped Pointwise in
 theorem support_prod_subset_add_support [OrderedCancelAddCommMonoid Γ] [CommSemiring R]
     (σ : Type*) (x : σ →₀ HahnSeries Γ R) (s : Finset σ):
     (∏ i ∈ s, (x i)).support ⊆ ∑ i ∈ s, (x i).support := by
