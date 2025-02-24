@@ -385,11 +385,11 @@ lemma RelCWComplex.isClosed [T2Space X] [RelCWComplex C D] : IsClosed C := by
     exact isClosedBase C
 
 lemma RelCWComplex.iUnion_skeletonLT_eq_skeletonLT [RelCWComplex C D] (n : ℕ∞) :
-    ⋃ (m : ℕ) (_ : m < n + 1), skeletonLT C m = skeletonLT C n := by
+    ⋃ (m : ℕ) (_ : m ≤ n), skeletonLT C m = skeletonLT C n := by
   apply subset_antisymm
-  · exact iUnion₂_subset_iff.2 fun _ h ↦ skeletonLT_mono (Order.le_of_lt_add_one h)
+  · exact iUnion₂_subset_iff.2 fun _ h ↦ skeletonLT_mono h
   · cases' n with n
-    · simp only [skeletonLT_top, top_add, ENat.coe_lt_top, iUnion_true, ← union]
+    · simp only [skeletonLT_top, ← union, le_top, iUnion_true]
       apply union_subset
       · exact subset_iUnion_of_subset 0 (base_subset_skeletonLT 0)
       · apply iUnion₂_subset fun n i ↦ ?_
@@ -399,20 +399,24 @@ lemma RelCWComplex.iUnion_skeletonLT_eq_skeletonLT [RelCWComplex C D] (n : ℕ�
       simp
 
 lemma RelCWComplex.iUnion_skeleton_eq_skeleton [RelCWComplex C D] (n : ℕ∞) :
-    ⋃ (m : ℕ) (_ : m < n + 1), skeleton C m = skeleton C n := by
+    ⋃ (m : ℕ) (_ : m ≤ n), skeleton C m = skeleton C n := by
   simp_rw [skeleton, ← iUnion_skeletonLT_eq_skeletonLT (n + 1)]
   ext x
   simp only [mem_iUnion, exists_prop]
   constructor
   · intro ⟨i, hin, hiC⟩
     refine ⟨i + 1, ?_, hiC⟩
-    exact (ENat.add_lt_add_iff_right ENat.one_ne_top).mpr hin
+    exact add_le_add_right hin 1
   · intro ⟨i, hin, hiC⟩
     cases' i with i
     · refine ⟨0, ?_, skeletonLT_mono (by norm_num) hiC⟩
-      exact ENat.add_one_pos
+      simp
     · refine ⟨i, ?_, hiC⟩
-      exact (ENat.add_lt_add_iff_right ENat.one_ne_top).mp hin
+      cases' n with n n
+      · simp
+      · nth_rw 2 [← Nat.cast_one] at hin
+        rw [← Nat.cast_add, ENat.coe_le_coe, Nat.add_le_add_iff_right] at hin
+        exact ENat.coe_le_coe.mpr hin
 
 lemma RelCWComplex.skeletonLT_succ_eq_skeletonLT_union_iUnion_closedCell [RelCWComplex C D]
     (n : ℕ) : skeletonLT C (n + 1) = skeletonLT C n ∪ ⋃ (j : cell C n), closedCell n j := by
