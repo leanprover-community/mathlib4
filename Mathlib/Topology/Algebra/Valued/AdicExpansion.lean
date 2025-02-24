@@ -267,4 +267,221 @@ lemma evalAtUpto_injOn [IsDomain R]
     · simp [h0]
     · simp [congr_fun ih n]
 
+section CompleteSpace
+
+open Filter Topology
+
+variable {D : Digits 𝒪[K]}
+
+local notation "O" => 𝒪[K]
+
+/-- In a complete ring of integers of a nonarchimedean normed field, an adic expansion can
+be summed entirely, as a limit of the partial sums. -/
+noncomputable
+def evalAt (ϖ : O) (f : AdicExpansion D) : O :=
+  ∑' n, f n * ϖ ^ n
+
+@[simp]
+lemma evalAt_zero (ϖ : O) :
+    evalAt ϖ (0 : AdicExpansion D) = 0 := by
+  simp [evalAt]
+
+lemma cauchySeq_evalAtUpto {ϖ : O} (hϖ : ¬ IsUnit ϖ) (f : AdicExpansion D) :
+    CauchySeq (evalAtUpto ϖ f ·) := by
+  refine NonarchimedeanAddGroup.cauchySeq_of_tendsto_sub_nhds_zero ?_
+  simp only [evalAtUpto_add_one, add_sub_cancel_left]
+  have := tendsto_norm.comp (tendsto_pow_atTop_nhds_zero_of_norm_lt_one (x := ϖ) ?_)
+  · simp only [norm_zero] at this
+    refine squeeze_zero_norm ?_ this
+    intro n
+    dsimp
+    refine (norm_mul_le _ _).trans ?_
+    exact mul_le_of_le_one_left (norm_nonneg _) (Valued.integer.norm_le_one _)
+  · rw [Valued.integer.isUnit_iff_norm_eq_one] at hϖ
+    exact lt_of_le_of_ne (Valued.integer.norm_le_one _) hϖ
+
+lemma Digits.norm_eq_one_iff {x : D} :
+    ‖(x : O)‖ = 1 ↔ x ≠ 0 := by
+  rw [← Valued.integer.isUnit_iff_norm_eq_one, Digits.isUnit_iff]
+
+@[simp]
+lemma Digits.norm_coe_eq_one_iff {x : D} :
+    ‖((x : O) : K)‖ = 1 ↔ x ≠ 0 := by
+  simp [← Digits.norm_eq_one_iff]
+
+lemma norm_evalAtUpto {ϖ : O} (hϖ : ¬ IsUnit ϖ) (f : AdicExpansion D) (n : ℕ)
+    [DecidablePred fun i : ℕ ↦ i < n + 1 ∧ f i ≠ 0]
+    (h : ∃ i < n + 1, f i ≠ 0) :
+    ‖evalAtUpto ϖ f (n + 1)‖ = ‖ϖ‖ ^ (Nat.find h) := by
+  rcases eq_or_ne ϖ 0 with rfl|hϖ0
+  · simp
+    by_cases H : Nat.find h = 0
+    · rw [H]
+      rw [Nat.find_eq_zero] at H
+      simpa using H.right
+    · rw [zero_pow_eq_zero.mpr H]
+      rw [← ne_eq, ← Nat.pos_iff_ne_zero, Nat.lt_find_iff] at H
+      push_neg at H
+      simp [H _ le_rfl]
+  induction n generalizing f with
+  | zero =>
+    rw [(Nat.find_eq_zero h).mpr] <;>
+    simpa using h
+  | succ n ih =>
+    rw [evalAtUpto_add_one]
+    generalize hk : Nat.find h = k
+    rw [Nat.find_eq_iff] at hk
+    simp_rw [Nat.lt_succ_iff] at h hk
+    classical
+    by_cases H : ∃ i < n + 1, f i ≠ 0
+    · specialize ih _ H
+      have hn : ‖ϖ‖ ^ (n + 1) < ‖ϖ‖ ^ Nat.find H := by
+        refine pow_lt_pow_right_of_lt_one₀ ?_ ?_ ?_
+        · simp [hϖ0]
+        · exact lt_of_le_of_ne (Valued.integer.norm_le_one ϖ)
+            (mt Valued.integer.isUnit_iff_norm_eq_one.mpr hϖ)
+        · exact (Nat.find_spec H).left
+      have hf : ‖↑(f (n + 1)) * ϖ ^ (n + 1)‖ < ‖evalAtUpto ϖ f (n + 1)‖ := by
+        rw [ih]
+        refine (norm_mul_le _ _).trans_lt ?_
+        rw [mul_comm]
+        exact mul_lt_of_lt_of_le_one_of_nonneg (by simpa using hn)
+          (Valued.integer.norm_le_one _) (norm_nonneg _)
+      rw [IsUltrametricDist.norm_add_eq_max_of_norm_ne_norm, max_eq_left hf.le, ih]
+      · congr
+        rw [Nat.find_eq_iff]
+        push_neg at hk ⊢
+        rcases hk.left.left.eq_or_lt with rfl|hk'
+        · obtain ⟨i, hi, hi'⟩ := H
+          exact absurd (hk.right i hi hi.le) hi'
+        · exact ⟨⟨hk', hk.left.right⟩, fun m hm hm' ↦ hk.right m hm hm'.le⟩
+      · exact hf.ne'
+    · push_neg at H
+      rw [(evalAtUpto_eq_zero_iff hϖ hϖ0).mpr H]
+      rcases hk.left.left.eq_or_lt with rfl|hk'
+      · simp [Digits.norm_coe_eq_one_iff.mpr hk.left.right]
+      · exact absurd (H _ hk') hk.left.right
+
+variable [CompleteSpace 𝒪[K]] {D : Digits 𝒪[K]}
+
+lemma summable_evalAt {ϖ : O} (hϖ : ¬ IsUnit ϖ) (f : ℕ → O) :
+    Summable (fun n ↦ f n * ϖ ^ n) := by
+  refine NonarchimedeanAddGroup.summable_of_tendsto_cofinite_zero ?_
+  rw [Nat.cofinite_eq_atTop]
+  have := tendsto_norm.comp (tendsto_pow_atTop_nhds_zero_of_norm_lt_one (x := ϖ) ?_)
+  · simp only [norm_zero] at this
+    refine squeeze_zero_norm ?_ this
+    intro n
+    dsimp
+    refine (norm_mul_le _ _).trans ?_
+    exact mul_le_of_le_one_left (norm_nonneg _) (Valued.integer.norm_le_one _)
+  · rw [Valued.integer.isUnit_iff_norm_eq_one] at hϖ
+    exact lt_of_le_of_ne (Valued.integer.norm_le_one _) hϖ
+
+lemma tendsto_evalAtUpto_nhds_evalAt {ϖ : O} (hϖ : ¬ IsUnit ϖ) (f : AdicExpansion D) :
+    Tendsto (evalAtUpto ϖ f ·) atTop (𝓝 (evalAt ϖ f)) := by
+  simpa [evalAt, evalAtUpto] using (summable_evalAt hϖ ((↑) ∘ f)).tendsto_sum_tsum_nat
+
+lemma norm_evalAt {ϖ : O} (hϖ : ¬ IsUnit ϖ) (f : AdicExpansion D) :
+    ‖evalAt ϖ f‖ = ⨆ n, ‖f n * ϖ ^ n‖ := by
+  classical
+  rcases eq_or_ne f 0 with rfl|H
+  · simp
+  simp only [ne_eq, AdicExpansion.ext_iff, zero_apply, not_forall] at H
+  trans ‖ϖ‖ ^ (Nat.find H)
+  · apply tendsto_nhds_unique (tendsto_norm.comp (tendsto_evalAtUpto_nhds_evalAt hϖ f))
+    rw [NormedAddCommGroup.tendsto_atTop]
+    intro ε hε
+    refine ⟨Nat.find H + 1, fun n hn ↦ hε.trans_le' ?_⟩
+    simp only [Function.comp_apply, Real.norm_eq_abs, abs_nonpos_iff, sub_eq_zero]
+    rcases n with (_|n)
+    · simp at hn
+    rw [Nat.succ_le_iff] at hn
+    have : ∃ i < n + 1, f i ≠ 0 := ⟨Nat.find H, hn, Nat.find_spec H⟩
+    rw [norm_evalAtUpto hϖ f n this]
+    congr 1
+    rw [Nat.find_eq_iff]
+    refine ⟨⟨hn, Nat.find_spec H⟩, fun m hm ↦ ?_⟩
+    push_neg
+    intro
+    simpa using Nat.find_min H hm
+  rw [eq_comm]
+  apply ciSup_eq_of_forall_le_of_forall_lt_exists_gt
+  · intro i
+    by_cases h : f i = 0
+    · simp [h]
+    · simp only [AddSubgroupClass.coe_norm, Subring.coe_mul, SubmonoidClass.coe_pow, norm_mul,
+      Digits.norm_coe_eq_one_iff.mpr h, norm_pow, one_mul, ne_eq]
+      refine pow_le_pow_of_le_one (norm_nonneg _) (Valued.integer.norm_le_one _) ?_
+      rw [Nat.find_le_iff]
+      exact ⟨_, le_rfl, h⟩
+  · intro ε hε
+    refine ⟨Nat.find H, hε.trans_le ?_⟩
+    simp [Digits.norm_coe_eq_one_iff.mpr (Nat.find_spec H)]
+
+lemma evalAt_eq_zero_iff {ϖ : O} (hϖ : ¬ IsUnit ϖ) {f : AdicExpansion D} :
+    evalAt ϖ f = 0 ↔ (ϖ = 0 ∧ f 0 = 0) ∨ f = 0 := by
+  constructor
+  · intro h
+    apply_fun (‖·‖) at h
+    rw [norm_evalAt hϖ, norm_zero] at h
+    rcases eq_or_ne f 0 with rfl|hf
+    · simp
+    rw [Function.ne_iff] at hf
+    obtain ⟨i, hi⟩ := hf
+    simp only [AdicExpansion.ext_iff, Pi.zero_apply, Digits.ext_iff, Digits.coe_zero, ne_eq,
+      zero_apply] at hi
+    have hb : BddAbove (Set.range fun n ↦ ‖f n * ϖ ^ n‖) := by
+      refine ⟨1, ?_⟩
+      rw [mem_upperBounds]
+      simp [- norm_mul, - AddSubgroupClass.coe_norm, Valued.integer.norm_le_one]
+    have := h.le
+    rw [ciSup_le_iff hb] at this
+    specialize this i
+    replace this := le_antisymm this (norm_nonneg _)
+    simp only [AddSubgroupClass.coe_norm, Subring.coe_mul, SubmonoidClass.coe_pow, norm_mul,
+      norm_pow, mul_eq_zero, norm_eq_zero, ZeroMemClass.coe_eq_zero, hi, pow_eq_zero_iff', ne_eq,
+      false_or] at this
+    refine Or.inl ⟨this.left, ?_⟩
+    simpa [Digits.ext_iff] using le_antisymm ((le_ciSup hb 0).trans h.le) (norm_nonneg _)
+  · rintro (h|h) <;>
+    simp [evalAt, h, tsum_eq_zero_add (summable_evalAt (not_isUnit_zero) (fun n ↦ (f n : O)))]
+
+lemma quotient_mk_evalAt_eq_quotient_mk_evalAtUpto {ϖ : O}
+    (n : ℕ) (f : AdicExpansion D) :
+    Ideal.Quotient.mk (Ideal.span {ϖ ^ n}) (evalAt ϖ f) =
+    Ideal.Quotient.mk (Ideal.span {ϖ ^ n}) (evalAtUpto ϖ f n) := by
+  by_cases hu : IsUnit ϖ
+  · rw [Ideal.span_singleton_eq_top.mpr (hu.pow n)]
+    exact Subsingleton.elim _ _
+  rw [evalAt, ← sum_add_tsum_nat_add n (summable_evalAt hu _), ← evalAtUpto]
+  simp_rw [pow_add ϖ _ n, ← mul_assoc, (summable_evalAt hu _).tsum_mul_right (a := ϖ ^ n),
+    RingHom.map_add, RingHom.map_mul]
+  simp
+
+lemma injective_evalAt {ϖ : O} (hϖ : Irreducible ϖ) :
+    Function.Injective (evalAt (D := D) ϖ) := by
+  intro f g h
+  contrapose! h
+  intro H
+  rw [Function.ne_iff] at h
+  classical
+  let k := Nat.find h
+  have hkm : ∀ m < k, f m = g m := fun m hm ↦ by simpa using Nat.find_min h hm
+  have hk := Nat.find_spec h
+  apply_fun Ideal.Quotient.mk (Ideal.span {ϖ ^ (k + 1)}) at H
+  rw [quotient_mk_evalAt_eq_quotient_mk_evalAtUpto,
+    quotient_mk_evalAt_eq_quotient_mk_evalAtUpto, evalAtUpto_add_one, evalAtUpto_add_one,
+    congr_of_eqOn _ hkm, RingHom.map_add, RingHom.map_add, add_right_inj, ← sub_eq_zero,
+    ← RingHom.map_sub, ← sub_mul, Ideal.Quotient.eq_zero_iff_dvd] at H
+  suffices ϖ ∣ f k - g k by
+    rw [Digits.not_isUnit_dvd_sub_iff hϖ.not_unit] at this
+    exact absurd this hk
+  rw [pow_dvd_iff_le_emultiplicity, emultiplicity_mul hϖ.prime,
+    emultiplicity_pow_self hϖ.ne_zero hϖ.not_unit, Nat.cast_add, Nat.cast_one, add_comm,
+    (ENat.addLECancellable_of_ne_top (ENat.coe_ne_top _)).add_le_add_iff_right] at H
+  exact dvd_of_emultiplicity_pos (H.trans_lt' zero_lt_one)
+
+end CompleteSpace
+
 end AdicExpansion
