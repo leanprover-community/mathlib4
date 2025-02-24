@@ -474,7 +474,7 @@ theorem cof_succ (o) : cof (succ o) = 1 := by
 theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
   ⟨inductionOn o fun α r _ z => by
       rcases cof_eq r with ⟨S, hl, e⟩; rw [z] at e
-      cases' mk_ne_zero_iff.1 (by rw [e]; exact one_ne_zero) with a
+      obtain ⟨a⟩ := mk_ne_zero_iff.1 (by rw [e]; exact one_ne_zero)
       refine
         ⟨typein r a,
           Eq.symm <|
@@ -720,7 +720,7 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
       refine lt_of_not_ge fun h => ?_
       obtain ⟨a, e⟩ := Cardinal.mem_range_lift_of_le h
       refine Quotient.inductionOn a (fun α e => ?_) e
-      cases' Quotient.exact e with f
+      obtain ⟨f⟩ := Quotient.exact e
       have f := Equiv.ulift.symm.trans f
       let g a := (f a).1
       let o := succ (iSup g)
@@ -799,25 +799,15 @@ namespace Cardinal
 
 open Ordinal
 
-/-- A cardinal is a strong limit if it is not zero and it is
-  closed under powersets. Note that `ℵ₀` is a strong limit by this definition. -/
-def IsStrongLimit (c : Cardinal) : Prop :=
-  c ≠ 0 ∧ ∀ x < c, (2^x) < c
-
-theorem IsStrongLimit.ne_zero {c} (h : IsStrongLimit c) : c ≠ 0 :=
-  h.1
-
-theorem IsStrongLimit.two_power_lt {x c} (h : IsStrongLimit c) : x < c → (2^x) < c :=
-  h.2 x
-
-theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ :=
-  ⟨aleph0_ne_zero, fun x hx => by
-    rcases lt_aleph0.1 hx with ⟨n, rfl⟩
-    exact mod_cast nat_lt_aleph0 (2 ^ n)⟩
+/-- A cardinal is a strong limit if it is not zero and it is closed under powersets.
+Note that `ℵ₀` is a strong limit by this definition. -/
+structure IsStrongLimit (c : Cardinal) : Prop where
+  ne_zero : c ≠ 0
+  two_power_lt ⦃x⦄ : x < c → 2 ^ x < c
 
 protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLimit c := by
   rw [Cardinal.isSuccLimit_iff]
-  exact ⟨H.ne_zero, isSuccPrelimit_of_succ_lt fun x h =>
+  exact ⟨H.ne_zero, isSuccPrelimit_of_succ_lt fun x h ↦
     (succ_le_of_lt <| cantor x).trans_lt (H.two_power_lt h)⟩
 
 protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuccPrelimit c :=
@@ -831,11 +821,15 @@ set_option linter.deprecated false in
 theorem IsStrongLimit.isLimit {c} (H : IsStrongLimit c) : IsLimit c :=
   ⟨H.ne_zero, H.isSuccPrelimit⟩
 
+theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ where
+  ne_zero := aleph0_ne_zero
+  two_power_lt x hx := by obtain ⟨n, rfl⟩ := lt_aleph0.1 hx; exact_mod_cast nat_lt_aleph0 _
+
 theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit (ℶ_ o) := by
   rcases eq_or_ne o 0 with (rfl | h)
   · rw [beth_zero]
     exact isStrongLimit_aleph0
-  · refine ⟨beth_ne_zero o, fun a ha => ?_⟩
+  · refine ⟨beth_ne_zero o, fun a ha ↦ ?_⟩
     rw [beth_limit] at ha
     · rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
       have := power_le_power_left two_ne_zero ha.le
@@ -844,7 +838,7 @@ theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit 
     · rw [isLimit_iff]
       exact ⟨h, H⟩
 
-theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, (2^x) < #α) {r : α → α → Prop}
+theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) {r : α → α → Prop}
     [IsWellOrder α r] (hr : (#α).ord = type r) : #{ s : Set α // Bounded r s } = #α := by
   rcases eq_or_ne #α 0 with (ha | ha)
   · rw [ha]
@@ -874,7 +868,7 @@ theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, (2^x) < #α) {r : α �
     · intro a b hab
       simpa [singleton_eq_singleton_iff] using hab
 
-theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, (2^x) < #α) :
+theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) :
     #{ s : Set α // #s < cof (#α).ord } = #α := by
   rcases eq_or_ne #α 0 with (ha | ha)
   · simp [ha]
@@ -1191,7 +1185,7 @@ theorem deriv_lt_ord {f : Ordinal.{u} → Ordinal} {c} (hc : IsRegular c) (hc' :
 def IsInaccessible (c : Cardinal) :=
   ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c
 
-theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.ord.cof) (h₃ : ∀ x < c, (2^x) < c) :
+theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.ord.cof) (h₃ : ∀ x < c, 2 ^ x < c) :
     IsInaccessible c :=
   ⟨h₁, ⟨h₁.le, h₂⟩, (aleph0_pos.trans h₁).ne', h₃⟩
 

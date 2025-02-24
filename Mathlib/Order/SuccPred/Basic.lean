@@ -47,11 +47,11 @@ variable {α β : Type*}
 class SuccOrder (α : Type*) [Preorder α] where
   /-- Successor function -/
   succ : α → α
-  /-- Proof of basic ordering with respect to `succ`-/
+  /-- Proof of basic ordering with respect to `succ` -/
   le_succ : ∀ a, a ≤ succ a
   /-- Proof of interaction between `succ` and maximal element -/
   max_of_succ_le {a} : succ a ≤ a → IsMax a
-  /-- Proof that `succ a` is the least element greater than `a`-/
+  /-- Proof that `succ a` is the least element greater than `a` -/
   succ_le_of_lt {a b} : a < b → succ a ≤ b
 
 /-- Order equipped with a sensible predecessor function. -/
@@ -59,11 +59,11 @@ class SuccOrder (α : Type*) [Preorder α] where
 class PredOrder (α : Type*) [Preorder α] where
   /-- Predecessor function -/
   pred : α → α
-  /-- Proof of basic ordering with respect to `pred`-/
+  /-- Proof of basic ordering with respect to `pred` -/
   pred_le : ∀ a, pred a ≤ a
   /-- Proof of interaction between `pred` and minimal element -/
   min_of_le_pred {a} : a ≤ pred a → IsMin a
-  /-- Proof that `pred b` is the greatest element less than `b`-/
+  /-- Proof that `pred b` is the greatest element less than `b` -/
   le_pred_of_lt {a b} : a < b → a ≤ pred b
 
 instance [Preorder α] [SuccOrder α] :
@@ -1000,7 +1000,7 @@ instance : SuccOrder (WithTop α) where
     | ⊤ => ⊤
     | Option.some a => ite (succ a = a) ⊤ (some (succ a))
   le_succ a := by
-    cases' a with a a
+    obtain - | a := a
     · exact le_top
     change _ ≤ ite _ _ _
     split_ifs
@@ -1085,9 +1085,10 @@ variable [Preorder α] [NoMaxOrder α]
 instance [hα : Nonempty α] : IsEmpty (PredOrder (WithTop α)) :=
   ⟨by
     intro
-    cases' h : pred (⊤ : WithTop α) with a ha
-    · exact hα.elim fun a => (min_of_le_pred h.ge).not_lt <| coe_lt_top a
-    · obtain ⟨c, hc⟩ := exists_gt a
+    cases h : pred (⊤ : WithTop α) with
+    | top => exact hα.elim fun a => (min_of_le_pred h.ge).not_lt <| coe_lt_top a
+    | coe a =>
+      obtain ⟨c, hc⟩ := exists_gt a
       rw [← coe_lt_coe, ← h] at hc
       exact (le_pred_of_lt (coe_lt_top c)).not_lt hc⟩
 
@@ -1148,20 +1149,21 @@ instance : PredOrder (WithBot α) where
     | ⊥ => ⊥
     | Option.some a => ite (pred a = a) ⊥ (some (pred a))
   pred_le a := by
-    cases' a with a a
+    obtain - | a := a
     · exact bot_le
     change ite _ _ _ ≤ _
     split_ifs
     · exact bot_le
     · exact coe_le_coe.2 (pred_le a)
   min_of_le_pred {a} ha := by
-    cases' a with a a
-    · exact isMin_bot
-    dsimp only at ha
-    split_ifs at ha with ha'
-    · exact (not_coe_le_bot _ ha).elim
-    · rw [coe_le_coe, le_pred_iff_isMin, ← pred_eq_iff_isMin] at ha
-      exact (ha' ha).elim
+    cases a with
+    | bot => exact isMin_bot
+    | coe a =>
+      dsimp only at ha
+      split_ifs at ha with ha'
+      · exact (not_coe_le_bot _ ha).elim
+      · rw [coe_le_coe, le_pred_iff_isMin, ← pred_eq_iff_isMin] at ha
+        exact (ha' ha).elim
   le_pred_of_lt {a b} h := by
     cases a
     · exact bot_le
@@ -1195,9 +1197,10 @@ variable [Preorder α] [NoMinOrder α]
 instance [hα : Nonempty α] : IsEmpty (SuccOrder (WithBot α)) :=
   ⟨by
     intro
-    cases' h : succ (⊥ : WithBot α) with a ha
-    · exact hα.elim fun a => (max_of_succ_le h.le).not_lt <| bot_lt_coe a
-    · obtain ⟨c, hc⟩ := exists_lt a
+    cases h : succ (⊥ : WithBot α) with
+    | bot => exact hα.elim fun a => (max_of_succ_le h.le).not_lt <| bot_lt_coe a
+    | coe a =>
+      obtain ⟨c, hc⟩ := exists_lt a
       rw [← coe_lt_coe, ← h] at hc
       exact (succ_le_of_lt (bot_lt_coe _)).not_lt hc⟩
 

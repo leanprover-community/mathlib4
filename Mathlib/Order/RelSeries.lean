@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Rel
@@ -174,6 +174,10 @@ variable {r} {s : RelSeries r} {x : α}
 /-- If a relation on `α` is infinite dimensional, then `α` is nonempty. -/
 lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
   ⟨RelSeries.withLength r 0 0⟩
+
+lemma nonempty_of_finiteDimensional [r.FiniteDimensional] : Nonempty α := by
+  obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff r).mp ‹r.FiniteDimensional›
+  exact ⟨p 0⟩
 
 instance membership : Membership α (RelSeries r) :=
   ⟨Function.swap (· ∈ Set.range ·)⟩
@@ -696,6 +700,10 @@ protected noncomputable def withLength [InfiniteDimensionalOrder α] (n : ℕ) :
 lemma nonempty_of_infiniteDimensionalType [InfiniteDimensionalOrder α] : Nonempty α :=
   ⟨LTSeries.withLength α 0 0⟩
 
+lemma nonempty_of_finiteDimensionalType [FiniteDimensionalOrder α] : Nonempty α := by
+  obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff (· < ·)).mp ‹_›
+  exact ⟨p 0⟩
+
 variable {α}
 
 lemma longestOf_is_longest [FiniteDimensionalOrder α] (x : LTSeries α) :
@@ -785,7 +793,7 @@ def range (n : ℕ) : LTSeries ℕ where
 /--
 In ℕ, two entries in an `LTSeries` differ by at least the difference of their indices.
 (Expressed in a way that avoids subtraction).
- -/
+-/
 lemma apply_add_index_le_apply_add_index_nat (p : LTSeries ℕ) (i j : Fin (p.length + 1))
     (hij : i ≤ j) : p i + j ≤ p j + i := by
   have ⟨i, hi⟩ := i

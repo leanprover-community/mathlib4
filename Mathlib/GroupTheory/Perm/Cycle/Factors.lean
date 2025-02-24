@@ -603,12 +603,12 @@ lemma disjoint_ofSubtype_noncommPiCoprod (u : Perm (Function.fixedPoints f))
     Disjoint (ofSubtype u) ((Subgroup.noncommPiCoprod f.pairwise_commute_of_mem_zpowers) v) := by
   apply Finset.noncommProd_induction
   · intro a _ b _ h
-    apply f.pairwise_commute_of_mem_zpowers h <;> simp only [Subgroup.coeSubtype, SetLike.coe_mem]
+    apply f.pairwise_commute_of_mem_zpowers h <;> simp only [Subgroup.coe_subtype, SetLike.coe_mem]
   · intro x y
     exact Disjoint.mul_right
   · exact disjoint_one_right _
   · intro c _
-    simp only [Subgroup.coeSubtype]
+    simp only [Subgroup.coe_subtype]
     exact Disjoint.mono (disjoint_ofSubtype_of_memFixedPoints_self u)
       le_rfl (support_zpowers_of_mem_cycleFactorsFinset_le (v c))
 
@@ -781,7 +781,7 @@ theorem mem_support_cycle_of_cycle {g d c : Perm α}
       Commute.eq (cycleFactorsFinset_mem_commute g hc hd h),
       mul_apply, EmbeddingLike.apply_eq_iff_eq]
 
-/-- If a permutation is a cycle of `g`, then its support is invariant under `g`-/
+/-- If a permutation is a cycle of `g`, then its support is invariant under `g`. -/
 theorem mem_cycleFactorsFinset_support {g c : Perm α} (hc : c ∈ g.cycleFactorsFinset) (a : α) :
     a ∈ c.support ↔ g a ∈ c.support :=
   mem_support_iff_of_commute (self_mem_cycle_factors_commute hc).symm a

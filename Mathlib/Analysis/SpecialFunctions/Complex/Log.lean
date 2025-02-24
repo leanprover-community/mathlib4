@@ -22,7 +22,7 @@ open Set Filter Bornology
 open scoped Real Topology ComplexConjugate
 
 /-- Inverse of the `exp` function. Returns values such that `(log x).im > - π` and `(log x).im ≤ π`.
-  `log 0 = 0`-/
+  `log 0 = 0` -/
 @[pp_nodot]
 noncomputable def log (x : ℂ) : ℂ :=
   x.abs.log + arg x * I
@@ -282,8 +282,8 @@ lemma Complex.multipliable_of_summable_log (f : ι → ℂ) (hfn : ∀ n, f n �
     (hf : Summable fun n => log (f n)) : Multipliable fun b ↦ f b  :=
    ⟨_, Complex.hasProd_of_hasSum_log _ hfn hf.hasSum⟩
 
-/--The exponential of a infinite sum of comples logs (which converges absolutely) is an infinite
-product.-/
+/-- The exponential of a infinite sum of comples logs (which converges absolutely) is an infinite
+product. -/
 lemma Complex.cexp_tsum_eq_tprod (f : ι →  ℂ) (hfn : ∀ n, f n ≠ 0)
     (hf : Summable fun n => log (f n)) : (cexp ((∑' n : ι, log (f n )))) = ∏' n : ι, f n  :=
   (Complex.hasProd_of_hasSum_log _ hfn hf.hasSum).tprod_eq.symm
