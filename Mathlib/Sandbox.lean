@@ -22,6 +22,49 @@ follow mainly the strategy given in [D. Marcus, *Number Fields*][marcus1977numbe
 
 section misc
 
+open Set
+
+theorem ContinuousLinearMap.coe_proj {R : Type*} [Semiring R] {ι : Type*} {φ : ι → Type*}
+  [(i : ι) → TopologicalSpace (φ i)] [(i : ι) → AddCommMonoid (φ i)] [(i : ι) → Module R (φ i)]
+  (i : ι) :
+  (ContinuousLinearMap.proj i).toLinearMap = (LinearMap.proj i : ((i : ι) → φ i) →ₗ[R] _) := rfl
+
+theorem MeasureTheory.integral_comp_mul_left_Iio {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
+    ∫ (x : ℝ) in Set.Iio a, g (b * x) = b⁻¹ • ∫ (x : ℝ) in Set.Iio (b * a), g x := by
+  have : ∀ c : ℝ, MeasurableSet (Iio c) := fun c => measurableSet_Iio
+  rw [← integral_indicator (this a), ← integral_indicator (this (b * a)),
+    ← abs_of_pos (inv_pos.mpr hb), ← Measure.integral_comp_mul_left]
+  congr
+  ext1 x
+  rw [← indicator_comp_right, preimage_const_mul_Iio _ hb, mul_div_cancel_left₀ _ hb.ne']
+  rfl
+
+theorem MeasureTheory.integral_comp_mul_right_Iio {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
+    ∫ (x : ℝ) in Set.Iio a, g (x * b) = b⁻¹ • ∫ (x : ℝ) in Set.Iio (a * b), g x := by
+  simpa only [mul_comm] using integral_comp_mul_left_Iio g a hb
+
+theorem MeasureTheory.integrableOn_Iio_comp_mul_left_iff {E : Type*} [NormedAddCommGroup E]
+    (f : ℝ → E)  (c : ℝ)  {a : ℝ} (ha : 0 < a) :
+    IntegrableOn (fun (x : ℝ) => f (a * x)) (Set.Iio c) ↔ IntegrableOn f (Set.Iio (a * c)) := by
+  rw [← integrable_indicator_iff (measurableSet_Iio : MeasurableSet <| Iio c)]
+  rw [← integrable_indicator_iff (measurableSet_Iio : MeasurableSet <| Iio <| a * c)]
+  convert integrable_comp_mul_left_iff ((Iio (a * c)).indicator f) ha.ne' using 2
+  ext1 x
+  rw [← indicator_comp_right, preimage_const_mul_Iio _ ha, mul_comm a c,
+    mul_div_cancel_right₀ _ ha.ne']
+  rfl
+
+theorem MeasureTheory.integrableOn_Iio_comp_mul_right_iff {E : Type*} [NormedAddCommGroup E]
+    (f : ℝ → E) (c : ℝ) {a : ℝ} (ha : 0 < a) :
+    IntegrableOn (fun x => f (x * a)) (Iio c) ↔ IntegrableOn f (Iio <| c * a) := by
+  simpa only [mul_comm, mul_zero] using integrableOn_Iio_comp_mul_left_iff f c ha
+
+theorem hasDerivAt_const_mul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {x : 𝕜} (c : 𝕜) :
+    HasDerivAt (fun (x : 𝕜) => c * x) c x := by
+  simpa only [mul_comm] using hasDerivAt_mul_const c
+
 variable (G : Type*) [LinearOrderedAddCommGroup G]
 
 @[simps]
@@ -103,26 +146,54 @@ end normAtAllPlaces
 
 section expMap
 
-variable [NumberField K]
+-- variable [NumberField K]
+
+-- @[simps?]
+-- def expMap' : PartialHomeomorph (realSpace K) (realSpace K) where
+--   toFun := fun x w ↦ Real.exp ((w.mult : ℝ)⁻¹ * x w)
+--   invFun := fun x w ↦ w.mult * Real.log (x w)
+--   source := Set.univ
+--   target := {x | ∀ w, 0 < x w}
+--   open_source := isOpen_univ
+--   open_target := by
+--     simp_rw [Set.setOf_forall]
+--     exact isOpen_iInter_of_finite fun _ ↦ isOpen_lt continuous_const <| continuous_apply _
+--   continuousOn_toFun := continuousOn_pi'
+--     fun i ↦ (ContinuousOn.mul continuousOn_const (continuousOn_apply i Set.univ)).rexp
+--   continuousOn_invFun := continuousOn_const.mul <| continuousOn_pi.mpr
+--     fun w ↦ Real.continuousOn_log.comp' (continuousOn_apply _ _) (fun _ h ↦ (h w).ne')
+--   map_source' := fun _ _ _ ↦ Real.exp_pos _
+--   map_target' := fun _ _ ↦ trivial
+--   left_inv' := fun _ _ ↦ by simp only [Real.log_exp, mul_inv_cancel_left₀ mult_coe_ne_zero]
+--   right_inv' := fun _ hx ↦ by simp only [inv_mul_cancel_left₀ mult_coe_ne_zero, Real.exp_log (hx _)]
 
 @[simps]
-def expMap : PartialHomeomorph (realSpace K) (realSpace K) where
-  toFun := fun x w ↦ Real.exp ((w.mult : ℝ)⁻¹ * x w)
-  invFun := fun x w ↦ w.mult * Real.log (x w)
+def expMap_single (w : InfinitePlace K) : PartialHomeomorph ℝ ℝ where
+  toFun := fun x ↦ Real.exp ((w.mult : ℝ)⁻¹ * x)
+  invFun := fun x ↦ w.mult * Real.log x
   source := Set.univ
-  target := {x | ∀ w, 0 < x w}
+  target := Set.Ioi 0
   open_source := isOpen_univ
-  open_target := by
-    simp_rw [Set.setOf_forall]
-    exact isOpen_iInter_of_finite fun _ ↦ isOpen_lt continuous_const <| continuous_apply _
-  continuousOn_toFun := continuousOn_pi'
-    fun i ↦ (ContinuousOn.mul continuousOn_const (continuousOn_apply i Set.univ)).rexp
-  continuousOn_invFun := continuousOn_const.mul <| continuousOn_pi.mpr
-    fun w ↦ Real.continuousOn_log.comp' (continuousOn_apply _ _) (fun _ h ↦ (h w).ne')
-  map_source' := fun _ _ _ ↦ Real.exp_pos _
-  map_target' := fun _ _ ↦ trivial
-  left_inv' := fun _ _ ↦ by simp only [Real.log_exp, mul_inv_cancel_left₀ mult_coe_ne_zero]
-  right_inv' := fun _ hx ↦ by simp only [inv_mul_cancel_left₀ mult_coe_ne_zero, Real.exp_log (hx _)]
+  open_target := isOpen_Ioi
+  map_source' _ _ := Real.exp_pos _
+  map_target' _ _ := trivial
+  left_inv' _ _ := by simp only [Real.log_exp, mul_inv_cancel_left₀ mult_coe_ne_zero]
+  right_inv' _ h := by simp only [inv_mul_cancel_left₀ mult_coe_ne_zero, Real.exp_log h]
+  continuousOn_toFun := (continuousOn_const.mul continuousOn_id).rexp
+  continuousOn_invFun := continuousOn_const.mul (Real.continuousOn_log.mono (by aesop))
+
+abbrev deriv_expMap_single (w : InfinitePlace K) (x : ℝ) : ℝ :=
+  (expMap_single w x) * (w.mult : ℝ)⁻¹
+--  Real.exp ((w.mult : ℝ)⁻¹ * x) * (w.mult : ℝ)⁻¹
+
+theorem hasDerivAt_expMap_single (w : InfinitePlace K) (x : ℝ) :
+    HasDerivAt (expMap_single w) (deriv_expMap_single w x) x := by
+  convert (HasDerivAt.comp x (Real.hasDerivAt_exp _) (hasDerivAt_const_mul (w.mult : ℝ)⁻¹)) using 1
+
+variable [NumberField K]
+
+def expMap : PartialHomeomorph (realSpace K) (realSpace K) := by
+  refine PartialHomeomorph.pi fun w ↦ expMap_single w
 
 -- open scoped Classical in
 -- @[simps]
@@ -152,16 +223,40 @@ def expMap : PartialHomeomorph (realSpace K) (realSpace K) where
 --     · aesop
 --     · simp_all only [inv_mul_cancel_left₀ mult_coe_ne_zero, Real.exp_log (hx w hw)]
 
+@[simp]
+theorem expMap_apply (x : realSpace K) (w : InfinitePlace K) :
+    expMap x w = Real.exp ((↑w.mult)⁻¹ * x w) := rfl
+
 theorem expMap_apply' (x : realSpace K) :
     expMap x = fun w ↦ Real.exp ((w.mult : ℝ)⁻¹ * x w) := rfl
+
+@[simp]
+theorem expMap_symm_apply (x : realSpace K) (w : InfinitePlace K) :
+      expMap.symm x w = ↑w.mult * Real.log (x w) := rfl
 
 theorem expMap_pos (x : realSpace K) (w : InfinitePlace K) :
     0 < expMap x w :=
   Real.exp_pos _
 
+variable (K) in
+theorem expMap_source :
+    expMap.source = (Set.univ : Set (realSpace K)) := by
+  simp_rw [expMap, PartialHomeomorph.pi_toPartialEquiv, PartialEquiv.pi_source, expMap_single,
+    Set.pi_univ Set.univ]
+
+variable (K) in
+theorem expMap_target :
+    expMap.target = Set.univ.pi fun (_ : InfinitePlace K) ↦ Set.Ioi 0 := by
+  simp_rw [expMap, PartialHomeomorph.pi_toPartialEquiv, PartialEquiv.pi_target, expMap_single]
+
+variable (K) in
+theorem continuous_expMap :
+    Continuous (expMap : realSpace K → realSpace K) :=
+  continuous_iff_continuousOn_univ.mpr <| (expMap_source K) ▸ expMap.continuousOn
+
 theorem injective_expMap :
     Function.Injective (expMap : realSpace K → realSpace K) :=
-  Set.injective_iff_injOn_univ.mpr expMap.injOn
+  Set.injective_iff_injOn_univ.mpr ((expMap_source K) ▸ expMap.injOn)
 
 @[simp]
 theorem expMap_zero :
@@ -180,6 +275,15 @@ theorem expMap_smul (c : ℝ) (x : realSpace K) :
     expMap (c • x) = (expMap x) ^ c := by
   simp_rw [expMap_apply', Pi.smul_apply, smul_eq_mul, mul_comm c _, ← mul_assoc, Real.exp_mul,
     Pi.pow_def]
+
+def fderiv_expMap (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
+  .pi fun w ↦ (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (deriv_expMap_single w (x w))).comp
+    (.proj w)
+
+theorem hasFDerivAt_expMap (x : realSpace K): HasFDerivAt expMap (fderiv_expMap x) x := by
+  simpa [expMap, fderiv_expMap, hasFDerivAt_pi', PartialHomeomorph.pi_apply,
+    ContinuousLinearMap.proj_pi] using
+    fun w ↦ (hasDerivAt_expMap_single w _).hasFDerivAt.comp x (hasFDerivAt_apply w x)
 
 -- That's an awful name
 def restMap : realSpace K →ₗ[ℝ] ({w : InfinitePlace K // w ≠ w₀} → ℝ) where
@@ -379,7 +483,7 @@ theorem expMap_basis_of_eq :
 
 theorem expMap_basis_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
     expMap (completeBasis K i) = fun w ↦ w (fundSystem K (equivFinRank.symm i) : 𝓞 K) := by
-  rw [completeBasis_apply_of_ne, PartialHomeomorph.right_inv _ (by simp)]
+  rw [completeBasis_apply_of_ne, PartialHomeomorph.right_inv _ (by simp [expMap_target])]
 
 def expMapBasis : PartialHomeomorph (realSpace K) (realSpace K) :=
   (completeBasis K).equivFunL.symm.toHomeomorph.transPartialHomeomorph expMap
@@ -411,8 +515,7 @@ theorem expMapBasis_apply'' (x : realSpace K) :
 variable (K) in
 theorem continuous_expMapBasis :
     Continuous (expMapBasis : realSpace K → realSpace K) :=
-  (continuous_iff_continuousOn_univ.mpr expMap.continuousOn).comp
-    <| ContinuousLinearEquiv.continuous _
+  (continuous_expMap K).comp (ContinuousLinearEquiv.continuous _)
 
 -- theorem expMapBasis₀_apply (x : realSpace K) :
 --     expMapBasis₀ x = expMap₀ ((completeBasis K).equivFun.symm x) := rfl
@@ -423,10 +526,11 @@ theorem expMapBasis_symm_apply (x : realSpace K) :
   rfl
 
 theorem expMapBasis_source :
-    expMapBasis.source = (Set.univ :  Set (realSpace K)) := rfl
+    expMapBasis.source = (Set.univ :  Set (realSpace K)) := by
+  simp [expMapBasis, expMap_source]
 
 theorem expMapBasis_target :
-    expMapBasis.target =  {x : realSpace K | ∀ w, 0 < x w} := rfl
+    expMapBasis.target = Set.univ.pi fun (_ : InfinitePlace K) ↦ Set.Ioi 0 := rfl
 
 theorem expMapBasis_pos (x : realSpace K) (w : InfinitePlace K) :
     0 < expMapBasis x w := expMap_pos _ _
@@ -466,7 +570,7 @@ theorem expMapBasis_symm_normAtAllPlaces {x : mixedSpace K} (hx : mixedEmbedding
   · rw [expMapBasis_source]
     trivial
   · rw [expMapBasis_target]
-    intro w
+    intro w _
     rw [normAtAllPlaces]
     rw [mixedEmbedding.norm_ne_zero_iff] at hx
     specialize hx w
@@ -495,6 +599,88 @@ theorem main (x : realSpace K) (w : {w // w ≠ w₀}) :
       rw [completeBasis_equivFun_symm_apply (by rw [if_pos rfl])]
     rw [LinearEquiv.apply_symm_apply, Equiv.apply_symm_apply, if_neg w.prop]
   · rw [← expMapBasis_apply, norm_expMapBasis, if_pos rfl, Real.exp_zero, one_pow]
+
+open ENNReal MeasureTheory.Measure
+
+variable (K) in
+abbrev fderiv_expMapBasis (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
+  (fderiv_expMap ((completeBasis K).equivFun.symm x)).comp
+    (completeBasis K).equivFunL.symm.toContinuousLinearMap
+
+theorem hasFDerivAt_expMapBasis (x : realSpace K) :
+    HasFDerivAt expMapBasis (fderiv_expMapBasis K x) x := by
+  change HasFDerivAt (expMap ∘ (completeBasis K).equivFunL.symm) (fderiv_expMapBasis K x) x
+  exact (hasFDerivAt_expMap _).comp x (completeBasis K).equivFunL.symm.hasFDerivAt
+
+example (x : realSpace K) :
+    ∏ w, expMap_single w ((completeBasis K).equivFun.symm x w) =
+      ∏ w, (expMapBasis x w) ^ mult w := by
+  simp_rw [expMap_single_apply]
+  simp_rw [expMapBasis_apply, expMap_apply]
+
+
+open scoped Classical in
+theorem toto (x : realSpace K) :
+    ∏ w, deriv_expMap_single w ((completeBasis K).equivFun.symm x w) =
+      (∏ w : {w // IsComplex w}, x w.1) * Real.exp (x w₀) ^ Module.finrank ℚ K *
+        (2⁻¹) ^ nrComplexPlaces K := by
+  simp only [deriv_expMap_single, expMap_single_apply]
+  rw [Finset.prod_mul_distrib]
+  simp only [← Fintype.prod_subtype_mul_prod_subtype (fun w ↦ IsReal w), ← prod_expMapBasis_pow]
+  congr 1
+  · simp_rw [expMapBasis_apply, expMap_apply]
+    conv_rhs =>
+      enter [2, 1, 2, w, 2]
+      rw [mult, if_pos w.prop]
+    conv_rhs =>
+      enter [2, 2, 2, w, 2]
+      rw [mult, if_neg w.prop]
+    simp_rw [pow_one]
+    sorry
+  · conv_lhs =>
+      enter [1, 2, w]
+      rw [mult, if_pos w.prop, Nat.cast_one, inv_one]
+    conv_lhs =>
+      enter [2, 2, w]
+      rw [mult, if_neg w.prop, Nat.cast_ofNat]
+    simp
+
+theorem det_fderiv_expMapBasis (x : realSpace K) : (fderiv_expMapBasis K x).det = 1 := by
+  rw [fderiv_expMapBasis, ContinuousLinearMap.det, ContinuousLinearMap.coe_comp, LinearMap.det_comp]
+  rw [fderiv_expMap]
+  simp only [ Finset.sum_apply, Pi.smul_apply,
+    smul_eq_mul, ContinuousLinearMap.coe_pi, ContinuousLinearMap.coe_comp,
+    ContinuousLinearEquiv.det_coe_symm]
+  erw [LinearMap.det_pi]
+  simp only [LinearMap.det_ring, ContinuousLinearMap.coe_coe, ContinuousLinearMap.smulRight_apply,
+    ContinuousLinearMap.one_apply, smul_eq_mul, one_mul]
+--  simp only [Basis.equivFun_symm_apply, Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
+  simp only [deriv_expMap_single]
+  rw [Finset.prod_mul_distrib]
+
+
+
+
+
+
+
+  sorry
+
+
+open scoped Classical in
+theorem setLIntegral_expMapBasis {s : Set (realSpace K)} (hs : MeasurableSet s)
+    (f : (InfinitePlace K → ℝ) → ℝ≥0∞) :
+    ∫⁻ x in expMapBasis '' s, f x =
+      (2 : ℝ≥0∞)⁻¹ ^ nrComplexPlaces K * ENNReal.ofReal (regulator K) * (Module.finrank ℚ K) *
+      ∫⁻ x in s, ENNReal.ofReal (Real.exp (Module.finrank ℚ K * x w₀)) *
+        (∏ i : {w : InfinitePlace K // IsComplex w},
+          .ofReal (expMapBasis (fun w ↦ x w) i))⁻¹ * f (expMapBasis x) := by
+
+  rw [lintegral_image_eq_lintegral_abs_det_fderiv_mul volume hs
+    (fun x _ ↦ (hasFDerivAt_expMapBasis x).hasFDerivWithinAt)]
+  ·
+    sorry
+  · sorry
 
 variable (K) in
 abbrev normLeOne : Set (mixedSpace K) :=
@@ -526,7 +712,7 @@ theorem normAtAllPlaces_normLeOne :
   refine ⟨?_, ?_⟩
   · rintro ⟨x, ⟨⟨hx₁, hx₂⟩, hx₃⟩, rfl⟩
     have hx₄ : normAtAllPlaces x ∈ expMapBasis.target :=
-      fun w ↦ lt_of_le_of_ne' (normAtPlace_nonneg w x) (mixedEmbedding.norm_ne_zero_iff.mp hx₂ w)
+      fun w _ ↦ lt_of_le_of_ne' (normAtPlace_nonneg w x) (mixedEmbedding.norm_ne_zero_iff.mp hx₂ w)
     refine ⟨?_, ?_, ?_⟩
     · exact expMapBasis.symm (normAtAllPlaces x)
     · intro w _
@@ -627,11 +813,43 @@ theorem isBounded_normLeOne : Bornology.IsBounded (normLeOne K) := by
   · exact isCompact_singleton
   · exact isCompact_Icc
 
+theorem normAtAllPlaces_image_preimage_expMapBasis (s : Set (realSpace K)) :
+    normAtAllPlaces '' (normAtAllPlaces ⁻¹' (expMapBasis '' s)) = expMapBasis '' s := by
+  rw [Set.image_preimage_eq_iff]
+  rintro _ ⟨x, _, rfl⟩
+  refine ⟨mixedSpaceOfRealSpace (expMapBasis x), funext fun x ↦ ?_⟩
+  rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace (expMapBasis_pos _ _).le]
+
+theorem lintegral_paramSet_exp {n : ℕ} (hn : 0 < n) :
+    ∫⁻ (x : realSpace K) in paramSet K, ENNReal.ofReal (Real.exp (n * x w₀)) = (n : ℝ≥0∞)⁻¹ := by
+  classical
+  rw [volume_pi, paramSet, Measure.restrict_pi_pi, lintegral_eq_lmarginal_univ 0,
+    lmarginal_erase' _ (by fun_prop) (Finset.mem_univ w₀), if_pos rfl]
+  simp_rw [Function.update_self, lmarginal, lintegral_const, Measure.pi_univ, if_neg
+    (Finset.ne_of_mem_erase (Subtype.prop _)), restrict_apply_univ, Real.volume_Ico, sub_zero,
+    ENNReal.ofReal_one, prod_const_one, mul_one]
+  rw [← ofReal_integral_eq_lintegral_ofReal]
+  · rw [← setIntegral_congr_set Iio_ae_eq_Iic, integral_comp_mul_left_Iio _ _ (Nat.cast_pos.mpr hn),
+      mul_zero, setIntegral_congr_set Iio_ae_eq_Iic, integral_exp_Iic, Real.exp_zero, smul_eq_mul,
+      mul_one, ENNReal.ofReal_inv_of_pos (Nat.cast_pos.mpr hn), ofReal_natCast]
+  · rw [← IntegrableOn, integrableOn_Iic_iff_integrableOn_Iio, integrableOn_Iio_comp_mul_left_iff _
+      _ (Nat.cast_pos.mpr hn), mul_zero, ← integrableOn_Iic_iff_integrableOn_Iio]
+    exact integrableOn_exp_Iic 0
+  · filter_upwards with _ using Real.exp_nonneg _
+
 open scoped Classical in
-example : volume (normLeOne K) = 0 := by
-  rw [volume_eq_two_pow_mul_two_pi_pow_mul_integral]
-  · sorry
-  · 
+example : volume (normLeOne K) =
+    2 ^ nrRealPlaces K * NNReal.pi ^ nrComplexPlaces K * (regulator K).toNNReal := by
+  rw [volume_eq_two_pow_mul_two_pi_pow_mul_integral (fun x ↦ mem_normLeOne_iff x) sorry,
+    normLeOne_eq, normAtAllPlaces_image_preimage_expMapBasis, setLIntegral_expMapBasis sorry]
+  simp_rw [ENNReal.inv_mul_cancel_right' sorry sorry]
+  rw [lintegral_paramSet_exp sorry]
+  rw [ofReal_mul, mul_pow, ofReal_ofNat, ENNReal.mul_inv_cancel_right]
+  
+
+
+  sorry
+
 
 #exit
 
