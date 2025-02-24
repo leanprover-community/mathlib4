@@ -230,6 +230,36 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
         simp
   have e2 :=
     calc
+      (∑ n ∈ Finset.range (N + 1), (n.factorial : R)⁻¹ • a ^ n) * ∑ n ∈ Finset.range (N + 1), (n.factorial : R)⁻¹ • b ^ n = (∑ n ∈ Finset.range (N + 1), (n.factorial : R)⁻¹ • a ^ n) * ∑ n ∈ Finset.range (N + 1), (n.factorial : R)⁻¹ • b ^ n := by rfl
+      _ = ∑ i ∈ Finset.range (N + 1), ∑ j ∈ Finset.range (N + 1), (i.factorial : R)⁻¹ • a ^ i * (j.factorial : R)⁻¹ • b ^ j := by rw [Finset.sum_mul_sum]
+      _ = ∑ i ∈ Finset.range (N + 1), ∑ j ∈ Finset.range (N + 1), ((i.factorial : R)⁻¹ * (j.factorial : R)⁻¹) • (a ^ i * b ^ j) := by
+       apply Finset.sum_congr rfl
+       intro n hn
+       apply Finset.sum_congr rfl
+       intro m hm
+       rw [smul_mul_assoc]
+       have ppp : a ^ n * (m.factorial : R)⁻¹ • b ^ m = (m.factorial : R)⁻¹ • (a ^ n *  b ^ m) := by
+         simp_all only [Finset.product_eq_sprod, Finset.mem_range, Algebra.mul_smul_comm, N]
+       rw [ppp]
+       rw [smul_smul]
+      _ = ∑ ij ∈ (Finset.range (N + 1)).product (Finset.range (N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
+        rw [Finset.sum_sigma']
+        apply Finset.sum_bij
+          (fun ⟨i, j⟩ _ => (i, j))
+        simp
+        simp
+        intro h1 h2 h3 h4 h5 h6 h7 h8
+        refine Sigma.ext h7 ?_
+        exact heq_of_eq h8
+        simp
+        intro h1 h2 h3 h4
+        constructor
+        apply h3
+        apply h4
+        simp
+
+
+
   sorry
 
 
