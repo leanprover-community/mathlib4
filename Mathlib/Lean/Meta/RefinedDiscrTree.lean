@@ -86,7 +86,7 @@ def findImportMatches
     (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
     (addEntry : Name → ConstantInfo → MetaM (List (α × List (Key × LazyEntry)))) (ty : Expr)
     (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128) : MetaM (MatchResult α) := do
-  let cctx ← (read : CoreM Core.Context)
+  let cctx ← readThe Core.Context
   let ngen ← getNGen
   let (cNGen, ngen) := ngen.mkChild
   setNGen ngen

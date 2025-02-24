@@ -81,6 +81,8 @@ instance : ToFormat Key := ⟨Key.format⟩
 /--
 Converts an entry (i.e., `List Key`) to the discrimination tree into
 `MessageData` that is more user-friendly.
+
+This is a copy of `Lean.Meta.DiscrTree.keysAsPattern`
 -/
 partial def keysAsPattern (keys : Array Key) : CoreM MessageData := do
   let (msg, keys) ← go (paren := false) |>.run keys.toList
@@ -98,10 +100,8 @@ where
     if nargs == 0 then
       return f
     else do
-      let mut r := f
-      for _ in [:nargs] do
-        r := r ++ m!" {← go}"
-      return parenthesize m!"{r}" paren
+      let args ← (List.range nargs).mapM fun _ => go
+      return parenthesize (MessageData.joinSep (f :: args) " ") paren
 
   /-- Format the next expression. -/
   go (paren := true) : StateRefT (List Key) CoreM MessageData := do
@@ -122,7 +122,7 @@ where
     | _ => return key.format
   /-- Add parentheses if `paren == true`. -/
   parenthesize (msg : MessageData) (paren : Bool) : MessageData :=
-    if paren then m! "({msg})" else msg
+    if paren then msg.paren else msg.group
 
 /-- Return the number of arguments that the `Key` takes. -/
 def Key.arity : Key → Nat
@@ -146,14 +146,16 @@ structure ExprInfo where
   /-- The local instances, which may contain the introduced bound variables. -/
   localInsts : LocalInstances
 
-/-- The possible values that can appear in the stack:
-- `.star` is an expression that will not be explicitly indexed
-- `.expr` is an expression that will be indexed
-- `.cache` is a cache entry, used for computations that can have multiple outcomes,
-  so that they always give the same outcome. -/
+/-- The possible values that can appear in the stack -/
 inductive StackEntry where
+  /-- `.star` is an expression that will not be explicitly indexed. -/
   | star
+  /-- `.expr` is an expression that will be indexed. -/
   | expr (info : ExprInfo)
+  /--
+  `.cache` is a cache entry, used for computations that can have multiple outcomes,
+  so that they always give the same outcome.
+  -/
   | cache (key : Expr) (value : List Key)
 
 private def StackEntry.format : StackEntry → Format

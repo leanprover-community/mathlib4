@@ -99,8 +99,9 @@ private def mkStar (mvarId : MVarId) : LazyM Key :=
 private def mkNewStar : StateT LazyEntry MetaM Key :=
   modifyGet fun entry => (.star entry.nStars, { entry with nStars := entry.nStars + 1 })
 
-@[inline] private def withLams (lambdas : List FVarId) (key : Key) : StateT LazyEntry MetaM Key :=
-  do match lambdas with
+@[inline]
+private def withLams (lambdas : List FVarId) (key : Key) : StateT LazyEntry MetaM Key := do
+  match lambdas with
   | [] => return key
   | _ :: tail =>
     modify ({ · with results := tail.foldl (init := [key]) fun keys _ => .lam :: keys })
@@ -186,7 +187,7 @@ private def cacheEtaPossibilities (e original : Expr) (lambdas : List FVarId) (r
     if isStarWithArg (.fvar fvarId) a && !f.getAppFn.isMVar then
       match entry.cache.find? original with
       | some (key :: keys) => return [(key, { entry with results := keys })]
-      | some [] => unreachable!
+      | some [] => panic! "cached list of eta possibilities is empty"
       | none =>
         let entry := { entry with stack := .cache original [] :: entry.stack }
         etaPossibilities e lambdas root entry
@@ -413,7 +414,7 @@ where
       MetaM (Array (Array Key)) := do
     if todo.isEmpty then
       return result
-    else
+    else -- use an if-then-else instead of if-then-return, so that `go` is tail recursive
       let (keys, entry) := todo.back!
       let todo := todo.pop
       match ← evalLazyEntry entry with
