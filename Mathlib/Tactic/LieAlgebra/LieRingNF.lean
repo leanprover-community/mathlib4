@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Zixun Guo, Wanyi He, Jingting Wang
 -/
 import Mathlib.Tactic.LieAlgebra.Basic
-import Mathlib.Tactic.Module
 
 /-!
 # `lie_ring_nf` tactic
