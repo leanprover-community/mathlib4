@@ -40,10 +40,4 @@ def findLocalDeclWithTypeQ? {u : Level} (sort : Q(Sort u)) : MetaM (Option Q($so
 This is a Qq version of `Lean.Meta.mkDecideProof`. -/
 def mkDecideProofQ (p : Q(Prop)) : MetaM Q($p) := mkDecideProof p
 
-/-- Returns the "raw" natural number `.lit (.natVal n)`. This is not the default representation used
-by the Lean frontend. See `mkNatLit`.
-
-This is a Qq version of `Lean.mkRawNatLit`. -/
-def mkRawNatLitQq (n : Nat) : Q(Nat) := mkRawNatLit n
-
 end Qq
