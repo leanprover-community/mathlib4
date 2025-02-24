@@ -448,7 +448,7 @@ theorem descPochhammer_nonneg {n : ℕ} {s : S} (h : n - 1 ≤ s) :
   rcases eq_or_lt_of_le h with heq | h
   · rw [← heq, descPochhammer_eval_eq_ascPochhammer,
       sub_sub_cancel_left, neg_add_cancel, ascPochhammer_eval_zero]
-    exact ite_nonneg zero_le_one le_rfl
+    positivity
   · exact (descPochhammer_pos h).le
 
 /-- `descPochhammer S n` is at least `(s-n+1)^n` on `[n-1, ∞)`. -/
