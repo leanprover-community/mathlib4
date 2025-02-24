@@ -1025,10 +1025,6 @@ theorem mod_eq_of_lt {a b : Ordinal} (h : a < b) : a % b = a := by
 @[simp]
 theorem zero_mod (b : Ordinal) : 0 % b = 0 := by simp only [mod_def, zero_div, mul_zero, sub_self]
 
-@[simp]
-theorem natCast_mod_omega0 (n : ℕ) : n % ω = n :=
-  mod_eq_of_lt (nat_lt_omega0 n)
-
 theorem div_add_mod (a b : Ordinal) : b * (a / b) + a % b = a :=
   Ordinal.add_sub_cancel_of_le <| mul_div_le _ _
 
@@ -2424,6 +2420,10 @@ theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ 
 
 @[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias isLimit_iff_omega_dvd := isLimit_iff_omega0_dvd
+
+@[simp]
+theorem natCast_mod_omega0 (n : ℕ) : n % ω = n :=
+  mod_eq_of_lt (nat_lt_omega0 n)
 
 theorem IsNormal.apply_omega0 {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
     ⨆ n : ℕ, f n = f ω := by rw [← iSup_natCast, hf.map_iSup]
