@@ -41,22 +41,6 @@ open Limits Category Preadditive
 variable {C : Type u} [Category.{v} C] [Abelian C]
   {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
 
-lemma Limits.biprod.decompose_hom_to (f : X ⟶ Y ⊞ Z) :
-    ∃ f₁ f₂, f = f₁ ≫ biprod.inl + f₂ ≫ biprod.inr :=
-  ⟨f ≫ biprod.fst, f ≫ biprod.snd, by aesop⟩
-
-lemma Limits.biprod.ext_to_iff {f g : X ⟶ Y ⊞ Z} :
-    f = g ↔ f ≫ biprod.fst = g ≫ biprod.fst ∧ f ≫ biprod.snd = g ≫ biprod.snd := by
-  aesop
-
-lemma Limits.biprod.decompose_hom_from (f : X ⊞ Y ⟶ Z) :
-    ∃ f₁ f₂, f = biprod.fst ≫ f₁ + biprod.snd ≫ f₂ :=
-  ⟨biprod.inl ≫ f, biprod.inr ≫ f, by aesop⟩
-
-lemma Limits.biprod.ext_from_iff {f g : X ⊞ Y ⟶ Z} :
-    f = g ↔ biprod.inl ≫ f = biprod.inl ≫ g ∧ biprod.inr ≫ f = biprod.inr ≫ g := by
-  aesop
-
 namespace kernelCokernelCompSequence
 
 /-- If `f : X ⟶ Y` and `g : Y ⟶ Z` are composable morphisms,
@@ -128,7 +112,7 @@ noncomputable def isLimit : IsLimit (KernelFork.ofι _ (ι_φ f g)) :=
   KernelFork.IsLimit.ofι' _ _ (fun {A} k hk ↦ by
     refine ⟨kernel.lift _ (k ≫ biprod.fst) ?_, ?_⟩
     all_goals
-      obtain ⟨k₁, k₂, rfl⟩ := biprod.decompose_hom_to k
+      obtain ⟨k₁, k₂, rfl⟩ := biprod.decomp_hom_to k
       simp only [biprod.ext_to_iff, add_comp, assoc, inl_φ, BinaryBicone.inl_fst,
         comp_id, inr_φ_fst, comp_neg, zero_comp, BinaryBicone.inl_snd, comp_zero, φ_snd,
         BinaryBicone.inr_snd_assoc, zero_add, add_neg_eq_zero] at hk
@@ -142,7 +126,7 @@ noncomputable def isColimit : IsColimit (CokernelCofork.ofπ _ (φ_π f g)) :=
     CokernelCofork.IsColimit.ofπ' _ _ (fun {A} k hk ↦ by
       refine ⟨cokernel.desc _ (biprod.inr ≫ k) ?_, ?_⟩
       all_goals
-        obtain ⟨k₁, k₂, rfl⟩ := biprod.decompose_hom_from k
+        obtain ⟨k₁, k₂, rfl⟩ := biprod.decomp_hom_from k
         simp only [comp_add, φ_snd_assoc, biprod.ext_from_iff, inl_φ_assoc,
           BinaryBicone.inl_fst_assoc, BinaryBicone.inl_snd_assoc, zero_comp, add_zero, comp_zero,
           inr_φ_fst_assoc, neg_comp, id_comp, BinaryBicone.inr_snd_assoc, neg_add_eq_zero] at hk
