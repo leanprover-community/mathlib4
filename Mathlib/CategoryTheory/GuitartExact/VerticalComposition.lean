@@ -84,18 +84,12 @@ variable {H₁ : C₁ ⥤ D₁} {L₁ : C₁ ⥤ C₂} {R₁ : D₁ ⥤ D₂} {H
   {L₂ : C₂ ⥤ C₃} {R₂ : D₂ ⥤ D₃} {H₃ : C₃ ⥤ D₃}
   (w' : TwoSquare H₂ L₂ R₂ H₃)
 
-/-- The vertical composition of 2-squares. -/
-@[simps!]
-def vComp : TwoSquare H₁ (L₁ ⋙ L₂) (R₁ ⋙ R₂) H₃ :=
-  (Functor.associator _ _ _).inv ≫ whiskerRight w R₂ ≫
-    (Functor.associator _ _ _).hom ≫ whiskerLeft L₁ w' ≫ (Functor.associator _ _ _).inv
-
 /-- The canonical isomorphism between
 `w.structuredArrowDownwards Y₁ ⋙ w'.structuredArrowDownwards (R₁.obj Y₁)` and
 `(w.vComp w').structuredArrowDownwards Y₁.` -/
 def structuredArrowDownwardsComp (Y₁ : D₁) :
     w.structuredArrowDownwards Y₁ ⋙ w'.structuredArrowDownwards (R₁.obj Y₁) ≅
-      (w.vComp w').structuredArrowDownwards Y₁ :=
+      (w ≫ᵥ w').structuredArrowDownwards Y₁ :=
   NatIso.ofComponents (fun _ => StructuredArrow.isoMk (Iso.refl _))
 
 /-- The vertical composition of 2-squares. (Variant where we allow the replacement of
@@ -122,7 +116,7 @@ instance vComp' [GuitartExact w] [GuitartExact w'] {L₁₂ : C₁ ⥤ C₃}
 
 lemma vComp_iff_of_equivalences (eL : C₂ ≌ C₃) (eR : D₂ ≌ D₃)
     (w' : H₂ ⋙ eR.functor ≅ eL.functor ⋙ H₃) :
-    (w.vComp w'.hom).GuitartExact ↔ w.GuitartExact := by
+    (w ≫ᵥ w'.hom).GuitartExact ↔ w.GuitartExact := by
   constructor
   · intro hww'
     letI : CatCommSq H₂ eL.functor eR.functor H₃ := ⟨w'⟩
@@ -133,7 +127,7 @@ lemma vComp_iff_of_equivalences (eL : C₂ ≌ C₃) (eR : D₂ ≌ D₃)
       Functor.associator _ _ _ ≪≫ isoWhiskerLeft L₁ eL.unitIso.symm ≪≫ L₁.rightUnitor
     let β : (R₁ ⋙ eR.functor) ⋙ eR.inverse ≅ R₁ :=
       Functor.associator _ _ _ ≪≫ isoWhiskerLeft R₁ eR.unitIso.symm ≪≫ R₁.rightUnitor
-    have : w = (w.vComp w'.hom).vComp' w''.hom α β := by
+    have : w = (w ≫ᵥ w'.hom).vComp' w''.hom α β := by
       ext X₁
       dsimp
       simp? [w'', β, α] says

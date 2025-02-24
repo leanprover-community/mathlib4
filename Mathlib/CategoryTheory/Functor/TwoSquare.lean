@@ -55,6 +55,7 @@ lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.app X = w'.app X) :
   NatTrans.ext (funext h)
 
 /-- The hoizontal identity 2-square. -/
+@[simps!]
 def hId (L : C₁ ⥤ C₃) : TwoSquare (𝟭 _) L L (𝟭 _) :=
   𝟙 _
 
@@ -62,6 +63,7 @@ def hId (L : C₁ ⥤ C₃) : TwoSquare (𝟭 _) L L (𝟭 _) :=
 scoped notation "𝟙ₕ" => hId  -- type as \b1\_h
 
 /-- The vertical identity 2-square. -/
+@[simps!]
 def vId (T : C₁ ⥤ C₂) : TwoSquare T (𝟭 _) (𝟭 _) T :=
   𝟙 _
 
@@ -73,6 +75,7 @@ variable {C₅ : Type u₅} {C₆ : Type u₆} {C₇ : Type u₇} {C₈ : Type u
   {T' : C₂ ⥤ C₅} {R' : C₅ ⥤ C₆} {B' : C₄ ⥤ C₆} {L' : C₃ ⥤ C₇} {R'' : C₄ ⥤ C₈} {B'' : C₇ ⥤ C₈}
 
 /-- The horizontal composition of 2-squares. -/
+@[simps!]
 def hComp (w : TwoSquare T L R B) (w' : TwoSquare T' R R' B') :
     TwoSquare (T ⋙ T') L R' (B ⋙ B') :=
   (whiskerLeft T w') ≫ (whiskerRight w B')
@@ -81,6 +84,7 @@ def hComp (w : TwoSquare T L R B) (w' : TwoSquare T' R R' B') :
 scoped infixr:80 " ≫ₕ " => hComp -- type as \gg\_h
 
 /-- The vertical composition of 2-squares. -/
+@[simps!]
 def vComp (w : TwoSquare T L R B) (w' : TwoSquare B L' R'' B'') :
     TwoSquare T (L ⋙ L') (R ⋙ R'') B'' :=
   (whiskerRight w R'') ≫ (whiskerLeft L w')
