@@ -323,7 +323,30 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
     let bbbbb := (Finset.range (N + 1)).product (Finset.range (N + 1))
     have key : aaaaa = bbbbb := by
       dsimp [aaaaa, bbbbb]
-      sorry
+      ext x
+      constructor
+      intro hhh
+      simp at hhh
+      obtain ⟨hhh1, hhh2⟩ := hhh
+      obtain ⟨hhh1a, hhh1b⟩ := hhh1
+      obtain ⟨hhh2a, hhh2b⟩ := hhh2
+      simp
+      constructor
+      exact Nat.lt_add_one_of_le hhh2a
+      exact Nat.lt_add_one_of_le hhh2b
+      intro hhh
+      simp at hhh
+      obtain ⟨hhh1, hhh2⟩ := hhh
+      simp
+      constructor
+      constructor
+      linarith [hhh1]
+      linarith [hhh2]
+      constructor
+      exact Nat.le_of_lt_succ hhh1
+      exact Nat.le_of_lt_succ hhh2
+
+
     apply Finset.sum_congr
     simp at key
     simp
