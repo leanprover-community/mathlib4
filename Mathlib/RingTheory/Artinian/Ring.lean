@@ -121,41 +121,47 @@ instance : IsArtinianRing (Localization S) :=
 
 end Localization
 
+end IsArtinianRing
+
 section temp
 
+variable {R : Type*} [CommRing R]
 
-lemma is_noetherian_of_tower_of_surjective {R S : Type} (M : Type)
-    [CommSemiring R] [Semiring S]
-    [AddCommMonoid M] [Algebra R S] [Module S M] [Module R M] [IsScalarTower R S M]
-    (h : Function.Surjective (algebraMap R S)) :
-    IsNoetherian R M ↔ IsNoetherian S M := by
+def Submodule.orderIsoOfSurjective {R S} (M) [CommSemiring R] [Semiring S] [AddCommMonoid M]
+    [Algebra R S] [Module S M] [Module R M] [IsScalarTower R S M]
+    (h : Function.Surjective (algebraMap R S)) : Submodule S M ≃o Submodule R M :=
+    {
+      Submodule.restrictScalarsEmbedding R S M with
+      invFun := fun p ↦
+        {smul_mem' := fun c x hx ↦ (by obtain ⟨c, rfl⟩ := h c; simpa using p.smul_mem c hx), ..}
+      left_inv := fun x ↦ Submodule.ext fun _ ↦ Iff.rfl
+      right_inv := fun x ↦ Submodule.ext fun _ ↦ Iff.rfl
+    }
 
-  sorry
-
-lemma isNoetherianOfTowerOfSurjective {R S : Type*} (M : Type*) [CommSemiring R] [Semiring S]
+lemma isNoetherian_of_tower_of_surjective {R S} (M) [CommSemiring R] [Semiring S]
   [AddCommMonoid M] [Algebra R S] [Module S M] [Module R M] [IsScalarTower R S M]
   (h : Function.Surjective (algebraMap R S)) :
   IsNoetherian R M ↔ IsNoetherian S M := by
-  refine ⟨isNoetherian_of_tower R, ?_⟩
-  simp_rw [isNoetherian_iff]
-  sorry
+  refine ⟨isNoetherian_of_tower R, fun h' ↦ ?_⟩
+  simp_rw [isNoetherian_iff'] at h' ⊢
+  haveI : WellFoundedGT (Submodule S M) := h'
+  exact (Submodule.orderIsoOfSurjective M h).symm.toOrderEmbedding.wellFoundedGT
 
-lemma isArtinianOfTowerOfSurjective {R S : Type*} (M : Type*) [CommRing R] [CommRing S]
+lemma isArtinian_of_tower_of_surjective {R S} (M) [CommRing R] [CommRing S]
   [AddCommGroup M] [Algebra R S] [Module S M] [Module R M] [IsScalarTower R S M]
   (h : Function.Surjective (algebraMap R S)) :
   IsArtinian R M ↔ IsArtinian S M := by
+  refine ⟨isArtinian_of_tower R, ?_⟩
+  simp_rw [isArtinian_iff]
+  exact (Submodule.orderIsoOfSurjective M h).symm.toOrderEmbedding.wellFounded
 
-  sorry
-
-lemma isArtinianTopIff {R M : Type*} [Semiring R] [AddCommGroup M] [Module R M] :
+lemma isArtinian_top_iff {M} [AddCommGroup M] [Module R M] :
   IsArtinian R (⊤ : Submodule R M) ↔ IsArtinian R M := by
   constructor
-  · intro h
-
-    sorry
-  · intro h
-
-    sorry
+  · intro h; haveI := h
+    exact isArtinian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
+  · intro h; haveI := h
+    exact isArtinian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl).symm
 
 lemma isNoetherianIffIsArtinianOfMul {R : Type*} [CommRing R] (I J : Ideal R) [I.IsMaximal]
   (H : IsNoetherian R (I * J : Submodule R R) ↔ IsArtinian R (I * J : Submodule R R)) :
@@ -198,7 +204,7 @@ lemma isNoetherianIffIsArtinianOfMul {R : Type*} [CommRing R] (I J : Ideal R) [I
 lemma isNoetherianIffIsArtinianOfProdEqBot {R : Type*} [CommRing R] (s : Multiset (Ideal R))
   (hs : ∀ I ∈ s, Ideal.IsMaximal I) (h' : Multiset.prod s = ⊥) :
   IsNoetherianRing R ↔ IsArtinianRing R := by
-  rw [isNoetherianRing_iff, ← isNoetherian_top_iff, isArtinianRing_iff, ← isArtinianTopIff]
+  rw [isNoetherianRing_iff, ← isNoetherian_top_iff, isArtinianRing_iff, ← isArtinian_top_iff]
   by_contra h
   suffices ¬(IsNoetherian R (⊥ : Ideal R) ↔ IsArtinian R (⊥ : Ideal R)) by
     apply this
@@ -217,5 +223,3 @@ lemma isNoetherianIffIsArtinianOfProdEqBot {R : Type*} [CommRing R] (s : Multise
     apply isNoetherianIffIsArtinianOfMul _ _ hs''
 
 end temp
-
-end IsArtinianRing
