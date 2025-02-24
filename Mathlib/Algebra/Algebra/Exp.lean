@@ -5,7 +5,12 @@ import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.Field.Defs
 import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.Data.Nat.Cast.Field
+import Mathlib.Data.Sigma.Basic
 import LeanCopilot
+
+
+
+
 
 namespace Algebra
 
@@ -16,6 +21,45 @@ variable (A : Type*)
 section Semi
 
 variable [Semiring A] [Algebra R A]
+
+
+theorem reorder (N : ℕ) {f : ℕ → ℕ → A} : ∑ j ∈ Finset.range (2 * N + 1), ∑ i ∈ Finset.range (j + 1), f i j = ∑ ij ∈ (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)) |>.filter (fun ij => ij.1 ≤ ij.2), f ij.1 ij.2 := by
+  rw [Finset.sum_sigma']
+  apply Finset.sum_bij
+    (fun ⟨j, i⟩ _ => (i, j))
+  simp
+  intro h1
+  intro h2
+  intro h3
+  constructor
+  constructor
+  · exact Nat.lt_of_lt_of_le h3 h2
+  · exact h2
+  · exact Nat.le_of_lt_succ h3
+  simp
+  intro h4
+  intro h5
+  intro h6
+  intro h7
+  intro h8
+  intro h9
+  intro h10
+  intro h11
+  · refine Sigma.ext h11 ?_
+    exact heq_of_eq h10
+  simp
+  intro h1
+  intro h2
+  intro h3
+  intro h4
+  intro h5
+  use h2, h1
+  constructor
+  constructor
+  exact h4
+  exact Nat.lt_add_one_of_le h5
+  exact Prod.mk.inj_iff.mp rfl
+  simp
 
 noncomputable def exp (a : A) : A :=
   ∑ n ∈ Finset.range (nilpotencyClass a), (n.factorial : R)⁻¹ • (a ^ n)
@@ -152,9 +196,7 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
         apply h1
         have h2 : ((n - m).factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero (n - m)
         apply h2
-  let centre_sum : A :=
-    ∑ kl in (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)) |>.filter (fun kl => kl.1 + kl.2 ≤ 2 * N),
-      ((kl.1.factorial : R)⁻¹ * (kl.2.factorial : R)⁻¹) • (a ^ kl.1 * b ^ kl.2)
+      _ = ∑ ij ∈ (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)) |>.filter (fun ij => ij.1 ≤ ij.2), ((ij.1.factorial : R)⁻¹ * ((ij.2 - ij.1).factorial : R)⁻¹) • (a ^ ij.1 * b ^ (ij.2 - ij.1)) := by rw [reorder]
 
 
   sorry
