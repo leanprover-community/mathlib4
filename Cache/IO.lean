@@ -295,8 +295,8 @@ def mkBuildPaths (path : FilePath) : CacheM <| List (FilePath × Bool) := do
   -/
   let packageDir ← getSrcDir path
   if !(← (packageDir / ".lake").isDir) then
-    IO.println <| s!"Warning: {packageDir / ".lake"} seems not to exist, most likely `cache`" ++
-      "will not work as expected!"
+    IO.eprintln <| s!"Warning: {packageDir / ".lake"} seems not to exist, most likely `cache` \
+      will not work as expected!"
 
   return [
     -- Note that `packCache` below requires that the `.trace` file is first in this list.
