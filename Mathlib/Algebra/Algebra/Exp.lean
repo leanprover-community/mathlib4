@@ -286,6 +286,51 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
   simp at e4
   simp at e₁
   rw [← e4] at e₁
+  simp at e2
+  have e5 : ∑ ij ∈ (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
+    ∑ ij ∈ ((Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1))) with ij.1 ≤ N ∧ ij.2 ≤ N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) +
+    ∑ ij ∈ ((Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1))) with ¬ (ij.1 ≤ N ∧ ij.2 ≤ N), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
+      rw [Finset.sum_filter_add_sum_filter_not]
+
+  have e6 : ∑ ij ∈ ((Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1))) with ¬ (ij.1 ≤ N ∧ ij.2 ≤ N), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 := by
+    apply Finset.sum_eq_zero
+    intro i hi
+    push_neg at hi
+    simp at hi
+    obtain ⟨aa, ba⟩ := hi
+    have rrr : N + 1 ≤ i.1 ∨ N + 1 ≤ i.2 := by
+      by_contra hh
+      push_neg at hh
+      have h₁1 : i.1 < N + 1 := hh.1
+      have h₂1 : i.2 < N + 1 := hh.2
+      have h₃1 : i.1 ≤ N := by
+        exact Nat.le_of_lt_succ h₁1
+      have ttt := ba h₃1
+      linarith
+    cases rrr with
+    | inl h1 =>
+      have qqq : a ^ (i.1) = 0 := zero_ev A h₃ h1
+      rw [qqq]
+      simp
+    | inr h1 =>
+      have qqq : b ^ (i.2) = 0 := zero_ev A h₄ h1
+      rw [qqq]
+      simp
+  rw [e6] at e5
+  simp at e5
+  have lll: ∑ ij ∈ (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)) with ij.1 ≤ N ∧ ij.2 ≤ N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = ∑ ij in (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
+    rw [sum_filter]
+    congr
+    ext ⟨i, j⟩
+    simp only [mem_product, mem_range, and_imp]
+    intro hi hj
+    constructor
+    · intro h
+      exact ⟨Nat.lt_succ_of_le h.1, Nat.lt_succ_of_le h.2⟩
+    · intro h
+      exact ⟨Nat.le_of_lt_succ h.1, Nat.le_of_lt_succ h.2⟩
+
+
 
 
 
