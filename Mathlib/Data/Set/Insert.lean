@@ -432,7 +432,7 @@ theorem insert_diff_singleton_comm (hab : a ≠ b) (s : Set α) :
 
 @[simp]
 lemma insert_diff_insert {s t : Set α} {x : α} : insert x (s \ insert x t) = insert x (s \ t) := by
-  rw [← diff_singleton_diff_eq, diff_diff_comm, insert_diff_singleton]
+  rw [← union_singleton (s := t), ← diff_diff, insert_diff_singleton]
 
 theorem mem_diff_singleton {x y : α} {s : Set α} : x ∈ s \ {y} ↔ x ∈ s ∧ x ≠ y :=
   Iff.rfl
