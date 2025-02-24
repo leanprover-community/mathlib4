@@ -353,28 +353,6 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
     apply key
     intro x hx
     rfl
-    --congr
-    --ext ⟨i, j⟩
-    --simp
-    --intro hi
-    --have rrr : N + 1 ≤ i ∨ N + 1 ≤ j := by
-    --  by_contra hh
-    --  push_neg at hh
-    --  have h₁1 : i < N + 1 := hh.1
-    --  have h₂1 : j < N + 1 := hh.2
-    --  have h₃1 : i ≤ N := by
-    --    exact Nat.le_of_lt_succ h₁1
-    --  have ttt := hi h₃1
-    --  linarith
-    --cases rrr with
-    --| inl h1 =>
-    --  have qqq : a ^ (i) = 0 := zero_ev A h₃ h1
-    --  rw [qqq]
-    --  simp
-    --| inr h1 =>
-    --  have qqq : b ^ (j) = 0 := zero_ev A h₄ h1
-    --  rw [qqq]
-    --  simp
   rw [e5] at e₁
   simp at lll
   rw [lll] at e₁
