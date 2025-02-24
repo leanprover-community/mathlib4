@@ -158,7 +158,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   rw [mul_comm] at hV₂
   have Hc := H_desc hmx mx_lt_my h_base hHm c h_root hV₁ hV₂
   -- This means that we may assume that c ≥ 0 and c ≤ m_x.
-  cases' Hc with c_nonneg c_lt
+  obtain ⟨c_nonneg, c_lt⟩ := Hc
   -- In other words, c is a natural number.
   lift c to ℕ using c_nonneg
   -- Recall that we are trying find a point (a,b) such that b ∈ S and b < m.

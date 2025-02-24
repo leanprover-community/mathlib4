@@ -128,7 +128,7 @@ section
 variable {X} {Y : Type u} [TopologicalSpace Y] [CompactSpace Y] [T2Space Y] [HasProp P Y]
 variable {Z : Type u} [TopologicalSpace Z] [CompactSpace Z] [T2Space Z] [HasProp P Z]
 
-/-- Typecheck a continous map as a morphism in the category `CompHausLike P`. -/
+/-- Typecheck a continuous map as a morphism in the category `CompHausLike P`. -/
 abbrev ofHom (f : C(X, Y)) : of P X ⟶ of P Y := ConcreteCategory.ofHom f
 
 @[simp] lemma hom_ofHom (f : C(X, Y)) : ConcreteCategory.hom (ofHom P f) = f := rfl
