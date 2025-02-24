@@ -35,10 +35,8 @@ Let `C` refer to a category with a terminal object.
 * It is a theorem that the truth morphism `⊤_ C ⟶ Ω C` is a (split, and
   therefore regular) monomorphism.
 
-* `HasClassifier.balanced` shows that any category with a subobject classifier
-  is balanced. This follows from the fact that every monomorphism is the
-  pullback of a regular monomorphism (the truth morphism).
-
+* An instance of `IsRegularMonoCategory C` is exhibited for any category with
+  a subobject classifier.
 
 ## References
 
