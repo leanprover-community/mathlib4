@@ -69,8 +69,8 @@ theorem lifts_iff_coeff_lifts (p : S[X]) : p ∈ lifts f ↔ ∀ n : ℕ, p.coef
   rw [lifts_iff_ringHom_rangeS, mem_map_rangeS f]
   rfl
 
-theorem lifts_iff_coeffs_subset_range {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S)
-    (p : S[X]) : p ∈ lifts f ↔ (p.coeffs : Set S) ⊆ Set.range f := by
+theorem lifts_iff_coeffs_subset_range (p : S[X]) :
+    p ∈ lifts f ↔ (p.coeffs : Set S) ⊆ Set.range f := by
   rw [lifts_iff_coeff_lifts]
   constructor
   · intro h _ hc
