@@ -43,7 +43,7 @@ integral curve, vector field, local existence, uniqueness
 -/
 
 
-open scoped Topology
+open scoped Manifold Topology
 
 open Function Set
 
@@ -52,6 +52,56 @@ variable
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M]
   {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s s' : Set ℝ} (t₀ : ℝ) {x₀ : M}
+
+/-- Let $f : \mathbb{R} \to E$, $x_t = \phi^{-1} (f(t))$, and $v : TM_{x_t}$. If
+$f' = (\phi_{x_0} \circ \phi_{x_t}^{-1})' v$, then
+$(\phi_{x_t} \circ \phi_{x_0}^{-1} \circ f)' = v$. -/
+lemma hasDerivAt_extChartAt_comp_extChartAt_comp_of_hasDerivAt_tangentCoordChange
+    {x₀ : M} {f : ℝ → E} {t : ℝ} {v : TangentSpace I ((extChartAt I x₀).symm (f t))}
+    (hmem : f t ∈ interior (extChartAt I x₀).target)
+    (hf : let xₜ : M := (extChartAt I x₀).symm (f t)
+      HasDerivAt f (tangentCoordChange I xₜ x₀ xₜ v) t) :
+    let xₜ : M := (extChartAt I x₀).symm (f t)
+    HasDerivAt (((extChartAt I xₜ) ∘ (extChartAt I x₀).symm) ∘ f) v t := by
+  dsimp only
+  let xₜ : M := (extChartAt I x₀).symm (f t)
+  have hmem' := interior_subset hmem
+  have hft1 := mem_preimage.mp <|
+    mem_of_mem_of_subset hmem' (extChartAt I x₀).target_subset_preimage_source
+  have hft2 := mem_extChartAt_source (I := I) xₜ
+  -- express `v` as `D⁻¹ D v`, where `D` is a change of coordinates, so we can use
+  -- `HasFDerivAt.comp_hasDerivAt`
+  rw [← tangentCoordChange_self (I := I) (v := v) hft2,
+    ← tangentCoordChange_comp ⟨⟨hft2, hft1⟩, hft2⟩]
+  apply HasFDerivAt.comp_hasDerivAt _ _ hf
+  apply HasFDerivWithinAt.hasFDerivAt (s := range I)
+  · nth_rw 2 [← (extChartAt I x₀).right_inv hmem']
+    exact hasFDerivWithinAt_tangentCoordChange ⟨hft1, hft2⟩
+  · rw [mem_nhds_iff]
+    exact ⟨interior (extChartAt I x₀).target,
+      subset_trans interior_subset (extChartAt_target_subset_range ..), isOpen_interior, hmem⟩
+
+/-- Let `f : ℝ → E` and `v` be a tangent vector field on `M`. This lemma gives what `f'(t)` needs to
+be in the model space in order for $(\phi_{x_0}^{-1} ∘ f)'(t) = v(\phi_{x_0}^{-1}(f(t))$ to hold
+on the manifold. -/
+lemma hasMFDerivAt_extChartAt_comp_of_hasDerivAt {v : (x : M) → TangentSpace I x} {x₀ : M}
+    {f : ℝ → E} {t : ℝ} (hmem : f t ∈ interior (extChartAt I x₀).target)
+    (hf : HasDerivAt f (((extChartAt I.tangent (⟨x₀, v x₀⟩ : TangentBundle I M)) ∘
+      (fun x ↦ ⟨x, v x⟩) ∘ (extChartAt I x₀).symm) (f t)).2 t) :
+    HasMFDerivAt 𝓘(ℝ, ℝ) I ((extChartAt I x₀).symm ∘ f) t
+      ((1 : ℝ →L[ℝ] ℝ).smulRight (v ((extChartAt I x₀).symm (f t)))) := by
+  let xₜ : M := (extChartAt I x₀).symm (f t)
+  change HasDerivAt f (x := t) <| tangentCoordChange I xₜ x₀ xₜ (v xₜ) at hf
+  -- express the derivative of the integral curve in the local chart
+  have hmem' := interior_subset hmem
+  refine ⟨continuousAt_extChartAt_symm'' hmem' |>.comp (x := t) hf.continuousAt,
+    HasDerivWithinAt.hasFDerivWithinAt ?_⟩
+  have hft1 := mem_preimage.mp <|
+    mem_of_mem_of_subset hmem' (extChartAt I x₀).target_subset_preimage_source
+  have hft2 := mem_extChartAt_source (I := I) xₜ
+  simp only [mfld_simps, hasDerivWithinAt_univ]
+  show HasDerivAt ((extChartAt I xₜ ∘ (extChartAt I x₀).symm) ∘ f) (v xₜ) t
+  exact hasDerivAt_extChartAt_comp_extChartAt_comp_of_hasDerivAt_tangentCoordChange hmem hf
 
 /-- Existence of local flows for a $C^1$ vector field at interior points of a $C^1$ manifold. -/
 theorem exists_mem_nhds_isIntegralCurveOn_Ioo_of_contMDiffAt [CompleteSpace E]
@@ -99,7 +149,8 @@ theorem exists_mem_nhds_isIntegralCurveOn_Ioo_of_contMDiffAt [CompleteSpace E]
       f (extChartAt I x₀ x, t) ∈ (extChartAt I x₀).target :=
     mem_of_mem_of_subset (hmem hx ht) interior_subset
   -- main proof
-  refine ⟨U, ?_, ε, hε, γ, fun x hx ↦ ⟨?_, fun t ht ↦ ?_⟩⟩
+  refine ⟨U, ?_, ε, hε, γ, fun x hx ↦
+    ⟨?_, fun t ht ↦ hasMFDerivAt_extChartAt_comp_of_hasDerivAt (hmem hx ht) (hderiv hx ht)⟩⟩
   · apply Filter.inter_mem _ (extChartAt_source_mem_nhds _)
     exact continuousAt_extChartAt _ |>.preimage_mem_nhds hu
   · symm
@@ -109,31 +160,6 @@ theorem exists_mem_nhds_isIntegralCurveOn_Ioo_of_contMDiffAt [CompleteSpace E]
     rw [PartialEquiv.eq_symm_apply _ hx.2 (hmem' hx this)]
     symm
     rw [ht₀ hx this]
-  · let xₜ : M := (extChartAt I x₀).symm <| f ⟨extChartAt I x₀ x, t⟩
-    replace hderiv : HasDerivAt (f ⟨extChartAt I x₀ x, ·⟩) (x := t) <|
-      fderivWithin ℝ (extChartAt I x₀ ∘ (extChartAt I xₜ).symm) (range I)
-        (extChartAt I xₜ xₜ) (v xₜ) := hderiv hx ht
-    -- express the derivative of the integral curve in the local chart
-    refine ⟨continuousAt_extChartAt_symm'' (hmem' hx ht) |>.comp (x := t) hderiv.continuousAt,
-      HasDerivWithinAt.hasFDerivWithinAt ?_⟩
-    have hft1 := mem_preimage.mp <|
-      mem_of_mem_of_subset (hmem' hx ht) (extChartAt I x₀).target_subset_preimage_source
-    have hft2 := mem_extChartAt_source (I := I) xₜ
-    simp only [mfld_simps, hasDerivWithinAt_univ]
-    show HasDerivAt ((extChartAt I xₜ ∘ (extChartAt I x₀).symm) ∘ (f ⟨extChartAt I x₀ x, ·⟩))
-      (v xₜ) t
-    -- express `v (γ t)` as `D⁻¹ D (v (γ t))`, where `D` is a change of coordinates, so we can use
-    -- `HasFDerivAt.comp_hasDerivAt` on `h`
-    rw [← tangentCoordChange_self (I := I) (x := xₜ) (z := xₜ) (v := v xₜ) hft2,
-      ← tangentCoordChange_comp (x := x₀) ⟨⟨hft2, hft1⟩, hft2⟩]
-    apply HasFDerivAt.comp_hasDerivAt _ _ hderiv
-    apply HasFDerivWithinAt.hasFDerivAt (s := range I)
-    · rw [← (extChartAt I x₀).right_inv (hmem' hx ht)]
-      exact hasFDerivWithinAt_tangentCoordChange ⟨hft1, hft2⟩
-    · rw [mem_nhds_iff]
-      exact ⟨interior (extChartAt I x₀).target,
-        subset_trans interior_subset (extChartAt_target_subset_range ..), isOpen_interior,
-        hmem hx ht⟩
 
 /-- Existence of local integral curves for a $C^1$ vector field at interior points of a $C^1$
 manifold. -/
@@ -318,3 +344,66 @@ lemma IsIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
     · rw [not_lt] at hab
       rw [abs_of_nonneg hab]
       exact hγ.periodic_of_eq hv heq
+
+/-
+get solution `γ : ℝ → M` from solution `f : ℝ → E`
+
+xₜ := (extChartAt I x₀).symm (f t)
+
+HasDerivAt f
+  ((fderivWithin ℝ (↑(extChartAt I x₀) ∘ ↑(extChartAt I xₜ).symm) (range I)
+  (↑(extChartAt I xₜ) xₜ)) (v xₜ)) t
+
+v' (f t) := ((fderivWithin ℝ (↑(extChartAt I x₀) ∘ ↑(extChartAt I xₜ).symm) (range I)
+  (↑(extChartAt I xₜ) xₜ)) (v xₜ))
+
+v' : E → E
+
+
+HasDerivAt f
+          ((↑(extChartAt I.tangent { proj := x₀, snd := v x₀ }) ∘
+                (fun x ↦ { proj := x, snd := v x }) ∘ ↑(extChartAt I x₀).symm)
+              (f t)).2
+          t
+
+-/
+
+open scoped Manifold
+
+omit [T2Space M] in
+lemma testing (v : (x : M) → TangentSpace I x) (x₀ x : M) :
+    (extChartAt I.tangent (⟨x₀, v x₀⟩ : TangentBundle I M) ⟨x, v x⟩).2 = fderivWithin ℝ
+      ((extChartAt I x₀) ∘ (extChartAt I x).symm) (range I) (extChartAt I x x) (v x) := rfl
+
+omit [T2Space M] in
+lemma testing2 (v : (x : M) → TangentSpace I x) (x₀ : M) (z : E) :
+    let x := (extChartAt I x₀).symm z
+    (((extChartAt I.tangent (⟨x₀, v x₀⟩ : TangentBundle I M)) ∘
+        (fun x' ↦ ⟨x', v x'⟩) ∘ (extChartAt I x₀).symm) z).2 =
+      fderivWithin ℝ
+        ((extChartAt I x₀) ∘ (extChartAt I x).symm) (range I) (extChartAt I x x) (v x) := rfl
+
+example {v : (x : M) → TangentSpace I x} {x₀ : M} {f : ℝ → E} {t : ℝ}
+    (hf : HasDerivAt f (((extChartAt I.tangent (⟨x₀, v x₀⟩ : TangentBundle I M)) ∘
+      (fun x ↦ ⟨x, v x⟩) ∘ (extChartAt I x₀).symm) (f t)).2 t) :
+    HasMFDerivAt 𝓘(ℝ, ℝ) I ((extChartAt I x₀).symm ∘ f) t
+      (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (v ((extChartAt I x₀).symm (f t)))) := sorry
+
+
+-- /-- Local vector field in the model space corresponding to a vector field on the manifold in the
+-- preferred chart at `x₀`. -/
+-- def VectorField.toModelSpace (v : (x : M) → TangentSpace I x) (x₀ : M) : E → E :=
+--   fun z ↦ (fderivWithin ℝ ((extChartAt I x₀) ∘ (extChartAt I ((extChartAt I x₀).symm z)).symm)
+--       (range I) ((extChartAt I ((extChartAt I x₀).symm z)) ((extChartAt I x₀).symm z)))
+--     (v ((extChartAt I x₀).symm z))
+
+-- -- `ContMDiff v` iff `ContDiff v.toModelSpace`
+-- lemma contMDiff_toModelSpace {v : (x : M) → TangentSpace I x} {x₀ : M} (hx : I.IsInteriorPoint x₀)
+--     {n : ℕ∞} (hv : ContMDiffAt I I.tangent n (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) x₀) :
+--     ContDiffAt ℝ n (VectorField.toModelSpace v x₀) (extChartAt I x₀ x₀) := by
+--   replace hv := contMDiffAt_iff.mp hv |>.2.contDiffAt (range_mem_nhds_isInteriorPoint hx)
+--   have := hv.snd
+
+
+-- example (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (t : ℝ) :
+--   HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight <| v (γ t)) := sorry
