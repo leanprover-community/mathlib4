@@ -14,9 +14,6 @@ import Mathlib.Tactic.ApplyFun
 We define what it means for a morphism in a category to be a subobject
 classifier as `CategoryTheory.HasClassifier`.
 
-TODO: show the equivalence between having a classifier and the functor `B => Subobject B`
-being representable.
-
 c.f. the following Lean 3 code, where similar work was done:
 https://github.com/b-mehta/topos/blob/master/src/subobject_classifier.lean
 
@@ -41,6 +38,14 @@ Let `C` refer to a category with a terminal object.
 ## References
 
 * [S. MacLane and I. Moerdijk, *Sheaves in Geometry and Logic*][MLM92]
+
+## TODO
+
+* Exhibit the equivalence between having a classifier and the functor `B => Subobject B`
+  being representable.
+
+* Make API for constructing a subobject classifier without reference to limits
+  (replacing `⊤_ C` with an arbitrary `Ω₀ : C` and including the assumption `mono truth`)
 
 -/
 
