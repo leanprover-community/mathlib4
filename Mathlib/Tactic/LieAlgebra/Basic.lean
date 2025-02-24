@@ -460,7 +460,7 @@ open Command in
         have α : Q(Type v) := α
         let sα ← synthInstanceQ q(LieRing $α)
         let ⟨a, _, _⟩ ← Mathlib.Tactic.AtomM.run .reducible (eval sα e)
-        logInfo m!"the term is reduced to {a}"
+        TryThis.addTermSuggestion stx a
         return
       catch e => throw e
     | _ => throwUnsupportedSyntax
