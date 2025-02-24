@@ -660,12 +660,14 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 @[simp]
 theorem castSucc_zero' [NeZero n] : castSucc (0 : Fin n) = 0 := rfl
 
+@[simp]
+theorem castSucc_pos_iff [NeZero n] {i : Fin n} : 0 < castSucc i ↔ 0 < i := by simp [← val_pos_iff]
+
 /-- `castSucc i` is positive when `i` is positive.
 
 The `Fin.castSucc_pos` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis. -/
-theorem castSucc_pos' [NeZero n] {i : Fin n} (h : 0 < i) : 0 < castSucc i := by
-  simpa [← val_pos_iff] using h
+alias ⟨_, castSucc_pos'⟩ := castSucc_pos_iff
 
 /--
 The `Fin.castSucc_eq_zero_iff` in `Lean` only applies in `Fin (n+1)`.
