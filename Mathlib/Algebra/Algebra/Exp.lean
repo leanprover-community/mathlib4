@@ -318,29 +318,37 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
       simp
   rw [e6] at e5
   simp at e5
-  have lll: ∑ ij ∈ (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)) with ij.1 ≤ N ∧ ij.2 ≤ N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = ∑ ij in (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
-    rw [sum_filter]
-    congr
-    ext ⟨i, j⟩
-    simp only [mem_product, mem_range, and_imp]
-    intro hi hj
-    constructor
-    · intro h
-      exact ⟨Nat.lt_succ_of_le h.1, Nat.lt_succ_of_le h.2⟩
-    · intro h
-      exact ⟨Nat.le_of_lt_succ h.1, Nat.le_of_lt_succ h.2⟩
-
-
-
-
-
-  have e3 : ∑ ij ∈ (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
-    ∑ ij ∈ Finset.filter (fun ij ↦ ij.1 + ij.2 ≤ 2 * N) ((Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1))), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
-    --rw [sum_union]
+  have lll: ∑ ij ∈ (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)) with ij.1 ≤ N ∧ ij.2 ≤ N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = ∑ ij ∈ (Finset.range (N + 1)).product (Finset.range (N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
     sorry
+    --rw [Finset.sum_filter]
+    --congr
+    --ext ⟨i, j⟩
+    --simp
+    --intro hi
+    --have rrr : N + 1 ≤ i ∨ N + 1 ≤ j := by
+    --  by_contra hh
+    --  push_neg at hh
+    --  have h₁1 : i < N + 1 := hh.1
+    --  have h₂1 : j < N + 1 := hh.2
+    --  have h₃1 : i ≤ N := by
+    --    exact Nat.le_of_lt_succ h₁1
+    --  have ttt := hi h₃1
+    --  linarith
+    --cases rrr with
+    --| inl h1 =>
+    --  have qqq : a ^ (i) = 0 := zero_ev A h₃ h1
+    --  rw [qqq]
+    --  simp
+    --| inr h1 =>
+    --  have qqq : b ^ (j) = 0 := zero_ev A h₄ h1
+    --  rw [qqq]
+    --  simp
+  rw [e5] at e₁
+  simp at lll
+  rw [lll] at e₁
+  rw [e2.symm] at e₁
+  apply e₁
 
-
-  sorry
 
 
 end Semi
