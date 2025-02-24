@@ -283,7 +283,7 @@ lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Id
     · refine Submodule.spanRank_sup_le_sum_spanRank.trans ?_
       push_cast
       refine add_le_add h₂ ?_
-      refine (Submodule.spanRank_span_le_encard _).trans ?_
+      refine (Submodule.spanRank_span_le_card _).trans ?_
       simp
     · refine le_iInf₂ ?_
       intro p hp
