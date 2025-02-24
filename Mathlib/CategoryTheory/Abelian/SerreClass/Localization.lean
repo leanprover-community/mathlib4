@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
+import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.CategoryTheory.Subobject.Lattice
 
 /-!
@@ -61,6 +62,9 @@ lemma W_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] (hf : c.prop (kernel f)) : c.W f 
 
 lemma W_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : c.W f :=
   c.W_of_epi _ (c.prop_of_isZero (isZero_kernel_of_mono f))
+
+instance : c.W.ContainsIdentities where
+  id_mem _ := c.W_of_isIso _
 
 @[nolint unusedArguments]
 structure Localization (c : SerreClass C) : Type u where
