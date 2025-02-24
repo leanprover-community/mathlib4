@@ -22,7 +22,6 @@ This definition does not depend on the choice of basis, see `Matrix.rank_eq_finr
 * `Matrix.eRank`: the rank of a matrix as a term in `ℕ∞`.
 
 -/
-universe u v w u₁ u₂
 
 open Matrix
 
@@ -37,8 +36,7 @@ section Infinite
 variable {m₀ n₀ : Type*} [Semiring R] {A : Matrix m n R}
 
 /-- The rank of a matrix, defined as the dimension of its column space, as a cardinal. -/
-noncomputable def cRank [Semiring R] (A : Matrix m n R) : Cardinal :=
-  Module.rank R (span R (Set.range Aᵀ))
+noncomputable def cRank (A : Matrix m n R) : Cardinal := Module.rank R <| span R <| range Aᵀ
 
 lemma cRank_toNat_eq_finrank (A : Matrix m n R) :
     A.cRank.toNat = Module.finrank R (span R (range Aᵀ)) := rfl
@@ -48,9 +46,9 @@ lemma cRank_mono_col (A : Matrix m n R) (c : n₀ → n) : (A.submatrix id c).cR
   rintro _ ⟨x, rfl⟩
   exact ⟨c x, rfl⟩
 
-lemma cRank_lift_mono_row {m : Type u₁} {m₀ : Type u₂} {R : Type u} [Semiring R]
+lemma cRank_lift_mono_row.{u,u₀,v} {m : Type u} {m₀ : Type u₀} {R : Type v} [Semiring R]
     (A : Matrix m n R) (r : m₀ → m) :
-    lift.{u₁, max u₂ u} (A.submatrix r id).cRank ≤ lift.{u₂, max u₁ u} A.cRank := by
+    lift.{u, max u₀ v} (A.submatrix r id).cRank ≤ lift.{u₀, max u v} A.cRank := by
   let f : (m → R) →ₗ[R] (m₀ → R) := (LinearMap.funLeft R R r)
   have h_eq : Submodule.map f (span R (range Aᵀ)) = span R (range (A.submatrix r id)ᵀ) := by
     rw [LinearMap.map_span, ← image_univ, image_image, transpose_submatrix]
@@ -60,7 +58,7 @@ lemma cRank_lift_mono_row {m : Type u₁} {m₀ : Type u₂} {R : Type u} [Semir
   simp_rw [← lift_umax] at hwin ⊢
   exact hwin
 
-lemma cRank_mono_row {m m₀ : Type u} (A : Matrix m n R) (r : m₀ → m) :
+lemma cRank_mono_row.{u} {m m₀ : Type u} (A : Matrix m n R) (r : m₀ → m) :
     (A.submatrix r id).cRank ≤ A.cRank  := by
   simpa using A.cRank_lift_mono_row r
 
@@ -73,7 +71,7 @@ lemma cRank_le_card_col [StrongRankCondition R] [Fintype n] (A : Matrix m n R) :
   (rank_span_le ..).trans <| by simpa using Cardinal.mk_range_le_lift (f := Aᵀ)
 
 /-- The rank of a matrix, defined as the dimension of its column space, as a term in `ℕ∞`. -/
-noncomputable def eRank [Semiring R] (A : Matrix m n R) : ℕ∞ := A.cRank.toENat
+noncomputable def eRank (A : Matrix m n R) : ℕ∞ := A.cRank.toENat
 
 lemma eRank_toNat_eq_finrank (A : Matrix m n R) :
     A.eRank.toNat = Module.finrank R (span R (range Aᵀ)) :=
