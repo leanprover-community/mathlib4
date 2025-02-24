@@ -37,7 +37,8 @@ Use `exists_isIntegralCurve_of_isIntegralCurveOn`
 
 -/
 
-example (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) :
+omit [T2Space M] in
+lemma exist_uniform_time (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) :
     ∃ ε > 0, ∀ x, ∃ γ : ℝ → M, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-ε) ε) := by
   have (x : M) := exists_mem_nhds_isIntegralCurveOn_Ioo_of_contMDiffAt 0 (hv.contMDiffAt (x := x))
     BoundarylessManifold.isInteriorPoint
@@ -51,7 +52,14 @@ example (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I
     have ⟨x, hx⟩ := this -- missing lemma? `Finset.nonempty_of_exists_mem`
     exact ⟨x, hx.1⟩
   let εmin := Finset.image ε t |>.min' (Finset.image_nonempty.mpr ht')
-  have hpos : 0 < εmin := sorry
+  have hpos : 0 < εmin := by
+    dsimp only [εmin]
+    rw [Finset.image ε t |>.min'_eq_inf' (Finset.image_nonempty.mpr ht'), Finset.lt_inf'_iff]
+    intro r hr
+    rw [Finset.mem_image] at hr
+    replace ⟨x, hx, hr⟩ := hr
+    rw [← hr]
+    exact hε x
   have hle (x) (hx : x ∈ t) : εmin ≤ ε x := by
     apply Finset.min'_le
     exact Finset.mem_image_of_mem _ hx
@@ -67,18 +75,15 @@ example (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I
   replace hle := hle x₀ hx₀
   exact Ioo_subset_Ioo (by linarith) (by linarith)
 
-
-
-
-
-
-
-example (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) (x : M) :
+theorem exist_isIntegralCurve
+    (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) (x : M) :
     ∃ γ : ℝ → M, γ 0 = x ∧ IsIntegralCurve γ v := by
-  -- construct `ε`
+  have ⟨ε, hε, h⟩ := exist_uniform_time hv
+  exact exists_isIntegralCurve_of_isIntegralCurveOn hv hε h x
 
-
-  apply exists_isIntegralCurve_of_isIntegralCurveOn hv
-
-
-  sorry
+-- swap t x arguments in γ?
+theorem exist_global_flow
+    (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) :
+    ∃ γ : ℝ → M → M, ∀ x, γ 0 x = x ∧ IsIntegralCurve (γ · x) v := by
+  choose γ hγ using exist_isIntegralCurve hv
+  refine ⟨fun t x ↦ γ x t, fun x ↦ hγ x⟩
