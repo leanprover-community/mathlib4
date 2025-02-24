@@ -815,12 +815,20 @@ lemma not_nil_iff {p : G.Walk v w} :
     ¬ p.Nil ↔ ∃ (u : V) (h : G.Adj v u) (q : G.Walk u w), p = cons h q := by
   cases p <;> simp [*]
 
+@[simp]
+lemma nil_append_iff {p : G.Walk u v} {q : G.Walk v w} : (p.append q).Nil ↔ p.Nil ∧ q.Nil := by
+  cases p <;> cases q <;> simp
+
+lemma Nil.append {p : G.Walk u v} {q : G.Walk v w} (hp : p.Nil) (hq : q.Nil) : (p.append q).Nil :=
+  by simp [hp, hq]
+
+@[simp]
+lemma nil_reverse {p : G.Walk v w} : p.reverse.Nil ↔ p.Nil := by
+  cases p <;> simp
+
 /-- A walk with its endpoints defeq is `Nil` if and only if it is equal to `nil`. -/
 lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
   | .nil | .cons _ _ => by simp
-
-@[simp]
-lemma nil_reverse {p : G.Walk v w} : p.reverse.Nil ↔ p.Nil := by simp [nil_iff_length_eq]
 
 alias ⟨Nil.eq_nil, _⟩ := nil_iff_eq_nil
 
@@ -837,6 +845,9 @@ lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → ¬ p.Nil → S
     (cons : {u v w : V} → (h : G.Adj u v) → (q : G.Walk v w) →
     motive (q.cons h) Walk.not_nil_cons) (h' : G.Adj u v) (q' : G.Walk v w) :
     @Walk.notNilRec _ _ _ _ _ cons _ _ = cons h' q' := by rfl
+
+theorem end_mem_tail_support {u v : V} {p : G.Walk u v} (h : ¬ p.Nil) : v ∈ p.support.tail :=
+  p.notNilRec (by simp) h
 
 /-- The walk obtained by removing the first `n` darts of a walk. -/
 def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
@@ -1038,7 +1049,6 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
   | .cons h q =>
     simp only [getVert_cons_succ, tail_cons_eq, getVert_cons]
     exact getVert_copy q n (getVert_zero q).symm rfl
-
 end Walk
 
 /-! ### Mapping walks -/
