@@ -382,7 +382,7 @@ lemma ext_iff_isCircuit {M₁ M₂ : Matroid α} :
 
 section Elimination
 
-/-! ### IsCircuit Elimination -/
+/-! ### Circuit Elimination -/
 
 variable {ι : Type*} {J C₀ C₁ C₂ : Set α}
 
@@ -545,10 +545,10 @@ abbrev IsCocircuit (M : Matroid α) (K : Set α) : Prop := M✶.IsCircuit K
 
 lemma isCocircuit_def : M.IsCocircuit K ↔ M✶.IsCircuit K := Iff.rfl
 
-lemma IsCocircuit.circuit (hK : M.IsCocircuit K) : M✶.IsCircuit K :=
+lemma IsCocircuit.isCircuit (hK : M.IsCocircuit K) : M✶.IsCircuit K :=
   hK
 
-lemma Circuit.isCocircuit (hC : M.IsCircuit C) : M✶.IsCocircuit C := by
+lemma IsCircuit.isCocircuit (hC : M.IsCircuit C) : M✶.IsCocircuit C := by
   rwa [isCocircuit_def, dual_dual]
 
 @[aesop unsafe 10% (rule_sets := [Matroid])]
@@ -636,19 +636,19 @@ lemma IsCircuit.isCocircuit_disjoint_or_nontrivial_inter (hC : M.IsCircuit C)
   rw [or_iff_not_imp_left, disjoint_iff_inter_eq_empty, ← ne_eq, ← nonempty_iff_ne_empty]
   exact hC.isCocircuit_inter_nontrivial hK
 
-lemma dual_rankPos_iff_exists_circuit : M✶.RankPos ↔ ∃ C, M.IsCircuit C := by
+lemma dual_rankPos_iff_exists_isCircuit : M✶.RankPos ↔ ∃ C, M.IsCircuit C := by
   rw [rankPos_iff, dual_isBase_iff, diff_empty, not_iff_comm, not_exists,
     ← ground_indep_iff_isBase, indep_iff_forall_subset_not_isCircuit]
   exact ⟨fun h C _ ↦ h C, fun h C hC ↦ h C hC.subset_ground hC⟩
 
 lemma IsCircuit.dual_rankPos (hC : M.IsCircuit C) : M✶.RankPos :=
-  dual_rankPos_iff_exists_circuit.mpr ⟨C, hC⟩
+  dual_rankPos_iff_exists_isCircuit.mpr ⟨C, hC⟩
 
-lemma exists_circuit [RankPos M✶] : ∃ C, M.IsCircuit C :=
-  dual_rankPos_iff_exists_circuit.1 (by assumption)
+lemma exists_isCircuit [RankPos M✶] : ∃ C, M.IsCircuit C :=
+  dual_rankPos_iff_exists_isCircuit.1 (by assumption)
 
 lemma rankPos_iff_exists_isCocircuit : M.RankPos ↔ ∃ K, M.IsCocircuit K := by
-  rw [← dual_dual M, dual_rankPos_iff_exists_circuit, dual_dual M]
+  rw [← dual_dual M, dual_rankPos_iff_exists_isCircuit, dual_dual M]
 
 /-- The fundamental cocircuit for `B` and `e`:
 that is, the unique cocircuit `K` of `M` for which `K ∩ B = {e}`.
