@@ -226,6 +226,13 @@ variable {v : ι → M}
 variable [Ring R] [AddCommGroup M] [AddCommGroup M']
 variable [Module R M] [Module R M']
 
+/-- A finite family of vectors `v i` is linear independent iff the linear map that sends
+`c : ι → R` to `∑ i, c i • v i` has the trivial kernel. -/
+theorem Fintype.linearIndependent_iff' [Fintype ι] [DecidableEq ι] :
+    LinearIndependent R v ↔
+      LinearMap.ker (LinearMap.lsum R (fun _ ↦ R) ℕ fun i ↦ LinearMap.id.smulRight (v i)) = ⊥ := by
+  simp [Fintype.linearIndependent_iff, LinearMap.ker_eq_bot', funext_iff]
+
 /-- Also see `LinearIndependent.pair_iff'` for a simpler version over fields. -/
 lemma LinearIndependent.pair_iff {x y : M} :
     LinearIndependent R ![x, y] ↔ ∀ (s t : R), s • x + t • y = 0 → s = 0 ∧ t = 0 := by
