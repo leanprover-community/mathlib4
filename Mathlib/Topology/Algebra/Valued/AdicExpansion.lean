@@ -267,4 +267,132 @@ lemma evalAtUpto_injOn [IsDomain R]
     · simp [h0]
     · simp [congr_fun ih n]
 
+section appr
+
+/-- The trailing digit in an adic expansion -- the digit when mod-ding by the base. -/
+noncomputable
+abbrev trailingDigit (x : R) : D :=
+  Function.invFun (IsLocalRing.residue R ∘ (↑)) (IsLocalRing.residue R x)
+
+@[simp]
+lemma trailingDigit_zero : (trailingDigit 0 : D) = 0 := by
+  apply Subtype.val_injective
+  apply D.bij.injOn (Subtype.prop _) (Subtype.prop _)
+  change (IsLocalRing.residue R ∘ Subtype.val) _ = _
+  apply Function.invFun_eq
+  refine ⟨0, ?_⟩
+  simp
+
+lemma residue_sub_trailingDigit_eq_zero (x : R) :
+    IsLocalRing.residue R (x - (trailingDigit x : D)) = 0 := by
+  rw [trailingDigit, RingHom.map_sub, sub_eq_zero, eq_comm]
+  change (IsLocalRing.residue R ∘ Subtype.val) _ = _
+  apply Function.invFun_eq
+  simpa using D.bij.surjOn (Set.mem_univ (IsLocalRing.residue R x))
+
+lemma sub_trailingDigit_mem_maximalIdeal (x : R) :
+    x - (trailingDigit x : D) ∈ IsLocalRing.maximalIdeal R := by
+  rw [← Ideal.Quotient.eq_zero_iff_mem, ← IsLocalRing.residue]
+  exact residue_sub_trailingDigit_eq_zero x
+
+variable [IsDiscreteValuationRing 𝒪[K]] (D : Digits 𝒪[K]) {ϖ : 𝒪[K]} (hϖ : Irreducible ϖ)
+include hϖ
+
+/-- The quotient when dividing through by the base after subtracting out the trailing digit.
+In an adic expansion, this corresponds to the sequence of digits that come after the trailing digit.
+-/
+noncomputable
+abbrev tail (x : 𝒪[K]) : 𝒪[K] :=
+  ⟨(x - (trailingDigit x : D)) / ϖ, by
+    suffices ϖ ∣ x - (trailingDigit x : D) by
+      obtain ⟨c, hc⟩ := this
+      simp only [← AddSubgroupClass.coe_sub, hc, Subring.coe_mul]
+      rw [mul_div_cancel_left₀]
+      · simp
+      · simp [hϖ.ne_zero]
+    rw [← Ideal.Quotient.eq_zero_iff_dvd, ← hϖ.maximalIdeal_eq, ← IsLocalRing.residue]
+    exact residue_sub_trailingDigit_eq_zero x⟩
+
+@[simp]
+lemma tail_zero : tail D hϖ 0 = 0 := by
+  ext
+  simp [tail]
+
+lemma trailingDigit_mul (x : 𝒪[K]) :
+    trailingDigit (ϖ * x) = (0 : D) := by
+  rw [trailingDigit, RingHom.map_mul]
+  have : IsLocalRing.residue 𝒪[K] ϖ = 0 := by
+    simp [hϖ.not_unit]
+  simp only [this, zero_mul]
+  rw [← (IsLocalRing.residue 𝒪[K]).map_zero, ← trailingDigit]
+  simp
+
+@[simp]
+lemma tail_mul (x : 𝒪[K]) :
+    tail D hϖ (ϖ * x) = x := by
+  ext
+  simp only [Subring.coe_mul, trailingDigit_mul D hϖ, Digits.coe_zero, ZeroMemClass.coe_zero,
+    sub_zero]
+  rw [mul_div_cancel_left₀]
+  simp [hϖ.ne_zero]
+
+lemma mul_tail (x : 𝒪[K]) :
+    ϖ * tail D hϖ x = x - (trailingDigit x : D) := by
+  ext
+  simp only [tail, Subring.coe_mul, AddSubgroupClass.coe_sub]
+  rw [mul_div_cancel₀]
+  simp [hϖ.ne_zero]
+
+/-- Recursively construct a partial adic expansion at a base, up to `n` digits. This construction
+uses an explicit fuel of target of `n` digits to ensure it terminates. -/
+noncomputable
+def apprUpto : ℕ → 𝒪[K] → AdicExpansion D
+  | 0, _ => 0
+  | n + 1, x =>
+    let d : D := trailingDigit x
+    Function.update (apprUpto n (tail D hϖ x) ∘ (· - 1)) 0 d
+
+@[simp]
+lemma apprUpto_at_zero (x : 𝒪[K]) :
+    apprUpto D hϖ 0 x = 0 := by
+  simp [apprUpto]
+
+lemma apprUpto_eval_zero_eq_invFun (n : ℕ) (x : 𝒪[K]) :
+    apprUpto D hϖ (n + 1) x 0 = trailingDigit x := by
+  simp [apprUpto]
+
+@[simp]
+lemma apprUpto_zero (n : ℕ) :
+    apprUpto D hϖ n 0 = 0 := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    simp only [apprUpto]
+    ext
+    simp [ih]
+
+lemma residue_apprUpto_eval_zero (n : ℕ) (x : 𝒪[K]) :
+    IsLocalRing.residue 𝒪[K] (apprUpto D hϖ (n + 1) x 0) = IsLocalRing.residue 𝒪[K] x := by
+  rw [apprUpto]
+  change (IsLocalRing.residue 𝒪[K] ∘ Subtype.val) _ = _
+  apply Function.invFun_eq
+  simpa using D.bij.surjOn (Set.mem_univ (IsLocalRing.residue 𝒪[K] x))
+
+lemma pow_dvd_sub_evalAtUpto_apprUpto (n : ℕ) (x : 𝒪[K]) :
+    ϖ ^ n ∣ x - evalAtUpto ϖ (apprUpto D hϖ n x) n := by
+  rcases n with (_|n)
+  · simp
+  induction n generalizing x with
+  | zero =>
+    simp only [zero_add, pow_one, evalAtUpto_one]
+    rw [← Ideal.Quotient.eq_zero_iff_dvd, ← hϖ.maximalIdeal_eq, RingHom.map_sub, sub_eq_zero,
+      eq_comm]
+    exact residue_apprUpto_eval_zero D _ _ _
+  | succ n ih =>
+    rw [apprUpto, evalAtUpto_add_one', Function.update_self, ← sub_sub, ← mul_tail D hϖ,
+      ← mul_sub, pow_succ']
+    exact mul_dvd_mul_left ϖ (ih (tail D hϖ x))
+
+end appr
+
 end AdicExpansion
