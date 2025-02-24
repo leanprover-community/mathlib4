@@ -480,7 +480,7 @@ partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
 
 end MkDTExpr
 
-/--  -/
+/-- -/
 def DTExpr.isSpecific : DTExpr → Bool
   | .star _
   | .const ``Eq #[.star _, .star _, .star _] => false

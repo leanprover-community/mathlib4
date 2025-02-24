@@ -52,7 +52,6 @@ example [AddCommGroup α] (a : α) : (3 : ℤ) • a = a + (2 : ℤ) • a := by
   syntax "abel" (&" raw" <|> &" term")? (location)? : tactic
   ```
   It is undecided whether these features should be restored eventually.
-
 -/
 syntax (name := abel) "abel" "!"? : tactic
 

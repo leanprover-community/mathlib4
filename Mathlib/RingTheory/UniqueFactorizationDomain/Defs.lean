@@ -28,7 +28,7 @@ local infixl:50 " ~ᵤ " => Associated
 /-- Well-foundedness of the strict version of ∣, which is equivalent to the descending chain
 condition on divisibility and to the ascending chain condition on
 principal ideals in an integral domain.
-  -/
+-/
 abbrev WfDvdMonoid (α : Type*) [CommMonoidWithZero α] : Prop :=
   IsWellFounded α DvdNotUnit
 
@@ -106,7 +106,7 @@ section Prio
 -- set_option default_priority 100
 
 -- see Note [default priority]
-/-- unique factorization monoids.
+/-- Unique factorization monoids.
 
 These are defined as `CancelCommMonoidWithZero`s with well-founded strict divisibility
 relations, but this is equivalent to more familiar definitions:
@@ -122,7 +122,6 @@ of irreducible factors, use the definition `of_existsUnique_irreducible_factors`
 
 To define a UFD using the definition in terms of multisets
 of prime factors, use the definition `of_exists_prime_factors`
-
 -/
 class UniqueFactorizationMonoid (α : Type*) [CancelCommMonoidWithZero α] extends
     IsWellFounded α DvdNotUnit : Prop where
