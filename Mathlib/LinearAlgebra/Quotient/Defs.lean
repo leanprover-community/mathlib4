@@ -237,7 +237,7 @@ theorem mkQ_sub : mkQ p (x - y) = mkQ p x - mkQ p y :=
   rfl
 
 @[simp]
-theorem mk_smul (r : R) (x : M) : mkQ p (r • x) = r • mkQ p x :=
+theorem mkQ_smul (r : R) (x : M) : mkQ p (r • x) = r • mkQ p x :=
   rfl
 
 theorem mkQ_surjective : Function.Surjective p.mkQ := by
