@@ -54,7 +54,6 @@ lemma cRank_lift_mono_row {m : Type u₁} {m₀ : Type u₂} {R : Type u} [Semir
   let f : (m → R) →ₗ[R] (m₀ → R) := (LinearMap.funLeft R R r)
   have h_eq : Submodule.map f (span R (range Aᵀ)) = span R (range (A.submatrix r id)ᵀ) := by
     rw [LinearMap.map_span, ← image_univ, image_image, transpose_submatrix]
-    convert rfl
     aesop
   rw [cRank, ← h_eq]
   have hwin := lift_rank_map_le f (span R (range Aᵀ))
