@@ -174,7 +174,8 @@ lemma pos_or_neg_of_sum_smul_root_mem [CharZero R] [Fintype ι] (f : ι → ℤ)
   replace hf : ∑ j, f' j • P.root j ∈ AddSubmonoid.closure (P.root '' b.support) := by
     suffices ∑ j, f' j • P.root j = ∑ j, f j • P.root j by rwa [this]
     rw [← Fintype.sum_subset (s := b.support.toFinset) (by aesop), ← Finset.sum_set_coe]
-  rw [← span_nat_eq_addSubmonoid_closure, mem_toAddSubmonoid, mem_span_image_iff_exists_fun] at hf
+  rw [← span_nat_eq_addSubmonoid_closure, mem_toAddSubmonoid,
+    Fintype.mem_span_image_iff_exists_fun] at hf
   obtain ⟨c, hc⟩ := hf
   replace hc (i : b.support) : c i = f' i := Fintype.linearIndependent_iffₛ.mp
     (b.linInd_root.restrict_scalars' ℤ) (Int.ofNat ∘ c) f' (by simpa) i
