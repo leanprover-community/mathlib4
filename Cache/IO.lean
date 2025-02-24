@@ -134,7 +134,7 @@ end
 def getPackageDirs : CacheM PackageDirs := return (← read).packageDirs
 
 /--
-`path` is assumed to be the unresolved file path corresping to a module:
+`path` is assumed to be the unresolved file path corresponding to a module:
 For `Mathlib.Init` this would be `Mathlib/Init.lean`.
 
 Find the source directory for `path`.
