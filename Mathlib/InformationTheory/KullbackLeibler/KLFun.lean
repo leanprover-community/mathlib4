@@ -13,7 +13,7 @@ We define `klFun x = x * log x + 1 - x`. That function is notable because the Ku
 divergence is an f-divergence for `klFun`. That is, the Kullback-Leibler divergence is an integral
 of `klFun` composed with a Radon-Nikodym derivative.
 
-For probability measures, any function `f` that differ from `klFun` by an affine function would give
+For probability measures, any function `f` that differs from `klFun` by an affine function would give
 the same value for the integral `∫ x, f (μ.rnDeriv ν x).toReal ∂ν`.
 However, `klFun` is the particular choice among those that satisfies `klFun 1 = 0` and
 `deriv klFun 1 = 0`, which ensures that desirable properties of the Kullback-Leibler divergence
