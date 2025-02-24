@@ -354,15 +354,6 @@ theorem isRepresentable_hasClassifier_iff : HasClassifier C ↔ (@sub C).IsRepre
       rw [pullback_obj, isPullback_eq_mk hχ]
       rfl
 
-    /- Thus `φₓ` satisfies the property of being a subobject classifier. -/
-    have is_classifier : ∀ {X} (x : Subobject X), Unique {χ // IsPullback (π x) x.arrow t₀ χ} := by
-      intro X x
-      refine ⟨⟨φ x, isPullback_φ x⟩, ?uniq⟩
-      intro h
-      obtain ⟨χ, hχ⟩ := h
-      congr
-      exact (isPullback_uniq _ _ _ hχ)
-
     /- It remains to show that `Ω₀` is actually a terminal object in `C`. -/
     have isTerminal_Ω₀ : IsTerminal (Ω₀ : C) := by
       have : (X : C) → Unique (X ⟶ Ω₀) := by
@@ -426,10 +417,13 @@ theorem isRepresentable_hasClassifier_iff : HasClassifier C ↔ (@sub C).IsRepre
       t := i.hom ≫ t₀
       is_classifier := by
         intro X x
+        /- The characteristic map is given by `φₓ`. -/
         refine { default := ⟨φ x, ?_⟩, uniq := ?_ }
+        /- `x` is the pullback of `t₀` along `φₓ` (modulo `i`)... -/
         · apply IsPullback.of_iso3 (isPullback_φ x) i.symm
           · apply unique_eq (uniqueToTerminal _)
           · simp
+        /- ...and it is so uniquely. -/
         · simp only [Subtype.forall, Subtype.mk.injEq]
           intro χ hχ
           apply isPullback_uniq x (terminal.from (x : C) ≫ i.hom) χ
