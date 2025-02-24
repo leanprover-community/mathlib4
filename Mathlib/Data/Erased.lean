@@ -21,7 +21,7 @@ universe u
   and proofs. This can be used to track data without storing it
   literally. -/
 def Erased (α : Sort u) : Sort max 1 u :=
-  Σ's : α → Prop, ∃ a, (fun b => a = b) = s
+  { s : α → Prop // ∃ a, (a = ·) = s }
 
 namespace Erased
 

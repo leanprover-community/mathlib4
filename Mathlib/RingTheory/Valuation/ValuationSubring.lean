@@ -7,7 +7,7 @@ import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.Algebra.Ring.Subring.Pointwise
 import Mathlib.Algebra.Ring.Action.Field
-import Mathlib.RingTheory.PrimeSpectrum
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
@@ -110,7 +110,7 @@ instance : ValuationRing A where
     · use 0; right
       ext
       simp [h]
-    cases' A.mem_or_inv_mem (a / b) with hh hh
+    rcases A.mem_or_inv_mem (a / b) with hh | hh
     · use ⟨a / b, hh⟩
       right
       ext
@@ -135,7 +135,7 @@ instance : IsFractionRing A K where
     (Units.mk0 (y : K) fun c => nonZeroDivisors.ne_zero hy <| Subtype.ext c).isUnit
   surj' z := by
     by_cases h : z = 0; · use (0, 1); simp [h]
-    cases' A.mem_or_inv_mem z with hh hh
+    rcases A.mem_or_inv_mem z with hh | hh
     · use (⟨z, hh⟩, 1); simp
     · refine ⟨⟨1, ⟨⟨_, hh⟩, ?_⟩⟩, mul_inv_cancel₀ h⟩
       exact mem_nonZeroDivisors_iff_ne_zero.2 fun c => h (inv_eq_zero.mp (congr_arg Subtype.val c))
@@ -443,7 +443,7 @@ theorem unitGroup_le_unitGroup {A B : ValuationSubring K} : A.unitGroup ≤ B.un
     by_cases h_1 : x = 0; · simp only [h_1, zero_mem]
     by_cases h_2 : 1 + x = 0
     · simp only [← add_eq_zero_iff_neg_eq.1 h_2, neg_mem _ _ (one_mem _)]
-    cases' hx with hx hx
+    rcases hx with hx | hx
     · have := h (show Units.mk0 _ h_2 ∈ A.unitGroup from A.valuation.map_one_add_of_lt hx)
       simpa using
         B.add_mem _ _ (show 1 + x ∈ B from SetLike.coe_mem (B.unitGroupMulEquiv ⟨_, this⟩ : B))
@@ -473,7 +473,7 @@ end UnitGroup
 
 section nonunits
 
-/-- The nonunits of a valuation subring of `K`, as a subsemigroup of `K`-/
+/-- The nonunits of a valuation subring of `K`, as a subsemigroup of `K` -/
 def nonunits : Subsemigroup K where
   carrier := {x | A.valuation x < 1}
   -- Porting note: added `Set.mem_setOf.mp`
@@ -510,7 +510,7 @@ variable {A}
 
 See also `mem_nonunits_iff_exists_mem_maximalIdeal`, which gets rid of the coercion to `K`,
 at the expense of a more complicated right hand side.
- -/
+-/
 theorem coe_mem_nonunits_iff {a : A} : (a : K) ∈ A.nonunits ↔ a ∈ IsLocalRing.maximalIdeal A :=
   (valuation_lt_one_iff _ _).symm
 
@@ -524,7 +524,7 @@ theorem nonunits_subset : (A.nonunits : Set K) ⊆ A :=
 
 See also `coe_mem_nonunits_iff`, which has a simpler right hand side but requires the element
 to be in `A` already.
- -/
+-/
 theorem mem_nonunits_iff_exists_mem_maximalIdeal {a : K} :
     a ∈ A.nonunits ↔ ∃ ha, (⟨a, ha⟩ : A) ∈ IsLocalRing.maximalIdeal A :=
   ⟨fun h => ⟨nonunits_subset h, coe_mem_nonunits_iff.mp h⟩, fun ⟨_, h⟩ =>
@@ -643,10 +643,10 @@ theorem ker_unitGroupToResidueFieldUnits :
   ext
   -- Porting note: simp fails but rw works
   -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  -- simp [Subgroup.mem_comap, Subgroup.coeSubtype, coe_mem_principalUnitGroup_iff]
-  rw [Subgroup.mem_comap, Subgroup.coeSubtype, coe_mem_principalUnitGroup_iff]
+  -- simp [Subgroup.mem_comap, Subgroup.coe_subtype, coe_mem_principalUnitGroup_iff]
+  rw [Subgroup.mem_comap, Subgroup.coe_subtype, coe_mem_principalUnitGroup_iff]
   rfl
-  -- simp [Subgroup.mem_comap, Subgroup.coeSubtype, coe_mem_principalUnitGroup_iff]
+  -- simp [Subgroup.mem_comap, Subgroup.coe_subtype, coe_mem_principalUnitGroup_iff]
 
 theorem surjective_unitGroupToResidueFieldUnits :
     Function.Surjective A.unitGroupToResidueFieldUnits :=
@@ -754,13 +754,13 @@ theorem mem_inv_pointwise_smul_iff {g : G} {S : ValuationSubring K} {x : K} :
 
 @[simp]
 theorem pointwise_smul_le_pointwise_smul_iff {g : G} {S T : ValuationSubring K} :
-    g • S ≤ g • T ↔ S ≤ T := Set.set_smul_subset_set_smul_iff
+    g • S ≤ g • T ↔ S ≤ T := Set.smul_set_subset_smul_set_iff
 
 theorem pointwise_smul_subset_iff {g : G} {S T : ValuationSubring K} : g • S ≤ T ↔ S ≤ g⁻¹ • T :=
-  Set.set_smul_subset_iff
+  Set.smul_set_subset_iff_subset_inv_smul_set
 
 theorem subset_pointwise_smul_iff {g : G} {S T : ValuationSubring K} : S ≤ g • T ↔ g⁻¹ • S ≤ T :=
-  Set.subset_set_smul_iff
+  Set.subset_smul_set_iff
 
 end PointwiseActions
 

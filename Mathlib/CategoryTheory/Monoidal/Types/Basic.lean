@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 
 /-!
-# The category of types is a monoidal category
+# The category of types is a (symmetric) monoidal category
 -/
 
 
@@ -91,6 +91,21 @@ theorem associator_inv_apply {X Y Z : Type u} {x : X} {y : Y} {z : Z} :
 
 @[simp] theorem associator_inv_apply_2 {X Y Z : Type u} {x} :
     (((α_ X Y Z).inv : X ⊗ Y ⊗ Z → (X ⊗ Y) ⊗ Z) x).2 = x.2.2 :=
+  rfl
+
+@[simp]
+theorem braiding_hom_apply {X Y : Type u} {x : X} {y : Y} :
+    ((β_ X Y).hom : X ⊗ Y → Y ⊗ X) (x, y) = (y, x) :=
+  rfl
+
+@[simp]
+theorem braiding_inv_apply {X Y : Type u} {x : X} {y : Y} :
+    ((β_ X Y).inv : Y ⊗ X → X ⊗ Y) (y, x) = (x, y) :=
+  rfl
+
+@[simp]
+theorem ChosenFiniteProducts.lift_apply {X Y Z : Type u} {f : X ⟶ Y} {g : X ⟶ Z} {x : X} :
+    lift f g x = (f x, g x) :=
   rfl
 
 -- We don't yet have an API for tensor products indexed by finite ordered types,

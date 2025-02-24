@@ -100,9 +100,6 @@ def limitCone : Cone F where
 def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
   refine
     IsLimit.ofFaithful (forget (AlgebraCat R)) (Types.Small.limitConeIsLimit.{v, w} _)
-      -- Porting note: in mathlib3 the function term
-      -- `fun v => ⟨fun j => ((forget (AlgebraCat R)).mapCone s).π.app j v`
-      -- was provided by unification, and the last argument `(fun s => _)` was `(fun s => rfl)`.
       (fun s => ofHom
         { toFun := _, map_one' := ?_, map_mul' := ?_, map_zero' := ?_, map_add' := ?_,
           commutes' := ?_ })

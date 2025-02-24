@@ -265,7 +265,7 @@ variable [FiberBundle F E] [VectorBundle 𝕜 F E]
 variable (n IB) in
 /-- When `B` is a manifold with respect to a model `IB` and `E` is a
 topological vector bundle over `B` with fibers isomorphic to `F`,
-then `ContMDiffVectorBundle F E IB` registers that the bundle is `C^n`, in the sense of having
+then `ContMDiffVectorBundle n F E IB` registers that the bundle is `C^n`, in the sense of having
 `C^n` transition functions. This is a mixin, not carrying any new data. -/
 class ContMDiffVectorBundle : Prop where
   protected contMDiffOn_coordChangeL :

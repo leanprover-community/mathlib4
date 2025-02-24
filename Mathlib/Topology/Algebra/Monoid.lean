@@ -9,6 +9,7 @@ import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Topology.ContinuousMap.Defs
+import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
 # Theory of topological monoids
@@ -63,9 +64,9 @@ theorem continuous_mul : Continuous fun p : M × M => p.1 * p.2 :=
 @[to_additive]
 instance : ContinuousMul (ULift.{u} M) := by
   constructor
-  apply continuous_uLift_up.comp
-  exact continuous_mul.comp₂ (continuous_uLift_down.comp continuous_fst)
-    (continuous_uLift_down.comp continuous_snd)
+  apply continuous_uliftUp.comp
+  exact continuous_mul.comp₂ (continuous_uliftDown.comp continuous_fst)
+    (continuous_uliftDown.comp continuous_snd)
 
 @[to_additive]
 instance ContinuousMul.to_continuousSMul : ContinuousSMul M M :=
@@ -220,8 +221,7 @@ theorem ContinuousWithinAt.mul {f g : X → M} {s : Set X} {x : X} (hf : Continu
 @[to_additive]
 instance Prod.continuousMul [TopologicalSpace N] [Mul N] [ContinuousMul N] :
     ContinuousMul (M × N) :=
-  ⟨(continuous_fst.fst'.mul continuous_fst.snd').prod_mk
-      (continuous_snd.fst'.mul continuous_snd.snd')⟩
+  ⟨by apply Continuous.prod_mk <;> fun_prop⟩
 
 @[to_additive]
 instance Pi.continuousMul {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Mul (C i)]
@@ -567,6 +567,12 @@ theorem exists_open_nhds_one_mul_subset {U : Set M} (hU : U ∈ 𝓝 (1 : M)) :
     ∃ V : Set M, IsOpen V ∧ (1 : M) ∈ V ∧ V * V ⊆ U := by
   simpa only [mul_subset_iff] using exists_open_nhds_one_split hU
 
+@[to_additive]
+theorem Filter.HasBasis.mul_self {p : ι → Prop} {s : ι → Set M} (h : (𝓝 1).HasBasis p s) :
+    (𝓝 1).HasBasis p fun i => s i * s i := by
+  rw [← nhds_mul_nhds_one, ← map₂_mul, ← map_uncurry_prod]
+  simpa only [← image_mul_prod] using h.prod_self.map _
+
 end MulOneClass
 
 section ContinuousMul
@@ -846,7 +852,7 @@ instance : ContinuousMul αˣ := isInducing_embedProduct.continuousMul (embedPro
 
 end Units
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem Continuous.units_map [Monoid M] [Monoid N] [TopologicalSpace M] [TopologicalSpace N]
     (f : M →* N) (hf : Continuous f) : Continuous (Units.map f) :=
   Units.continuous_iff.2 ⟨hf.comp Units.continuous_val, hf.comp Units.continuous_coe_inv⟩

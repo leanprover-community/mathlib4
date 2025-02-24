@@ -93,9 +93,7 @@ lemma changeLevel_trans {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
 
 lemma changeLevel_eq_cast_of_dvd {m : ℕ} (hm : n ∣ m) (a : Units (ZMod m)) :
     (changeLevel hm χ) a = χ (ZMod.cast (a : ZMod m)) := by
-  set_option tactic.skipAssignedInstances false in
-  simpa [changeLevel_def, Function.comp_apply, MonoidHom.coe_comp] using
-      toUnitHom_eq_char' _ <| ZMod.isUnit_cast_of_dvd hm a
+  simp [changeLevel_def, ZMod.unitsMap_val]
 
 /-- `χ` of level `n` factors through a Dirichlet character `χ₀` of level `d` if `d ∣ n` and
 `χ₀ = χ ∘ (ZMod n → ZMod d)`. -/
@@ -235,8 +233,6 @@ variable (χ)
 /-- A character is primitive if its level is equal to its conductor. -/
 def IsPrimitive : Prop := conductor χ = n
 
-@[deprecated (since := "2024-06-16")] alias isPrimitive := IsPrimitive
-
 lemma isPrimitive_def : IsPrimitive χ ↔ conductor χ = n := Iff.rfl
 
 lemma isPrimitive_one_level_one : IsPrimitive (1 : DirichletCharacter R 1) :=
@@ -285,8 +281,6 @@ lemma mul_def {n m : ℕ} {χ : DirichletCharacter R n} {ψ : DirichletCharacter
 lemma primitive_mul_isPrimitive {m : ℕ} (ψ : DirichletCharacter R m) :
     IsPrimitive (primitive_mul χ ψ) :=
   primitiveCharacter_isPrimitive _
-
-@[deprecated (since := "2024-06-16")] alias isPrimitive.primitive_mul := primitive_mul_isPrimitive
 
 /-
 ### Even and odd characters

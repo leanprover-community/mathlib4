@@ -252,7 +252,7 @@ lemma reflection_mul_reflection_zpow_apply_self (m : ℤ)
   have S_eval_t_sub_two (k : ℤ) :
       (S R (k - 2)).eval t = (f y * g x - 2) * (S R (k - 1)).eval t - (S R k).eval t := by
     simp [S_sub_two, ht]
-  induction m using Int.induction_on with
+  induction m with
   | hz => simp
   | hp m ih =>
     -- Apply the inductive hypothesis.

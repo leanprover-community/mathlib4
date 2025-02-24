@@ -534,7 +534,7 @@ theorem coordChange_linear_comp (i j k : ι) :
   exact Z.coordChange_comp i j k x hx v
 
 /-- The index set of a vector bundle core, as a convenience function for dot notation -/
-@[nolint unusedArguments] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was `nolint has_nonempty_instance`
+@[nolint unusedArguments]
 def Index := ι
 
 /-- The base space of a vector bundle core, as a convenience function for dot notation -/
@@ -543,7 +543,7 @@ def Base := B
 
 /-- The fiber of a vector bundle core, as a convenience function for dot notation and
 typeclass inference -/
-@[nolint unusedArguments] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was `nolint has_nonempty_instance`
+@[nolint unusedArguments]
 def Fiber : B → Type _ :=
   Z.toFiberBundleCore.Fiber
 
@@ -745,7 +745,6 @@ The field `exists_coordChange` is stated as an existential statement (instead of
 fields), since it depends on propositional information (namely `e e' ∈ pretrivializationAtlas`).
 This makes it inconvenient to explicitly define a `coordChange` function when constructing a
 `VectorPrebundle`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure VectorPrebundle where
   pretrivializationAtlas : Set (Pretrivialization F (π F E))
   pretrivialization_linear' : ∀ e, e ∈ pretrivializationAtlas → e.IsLinear R

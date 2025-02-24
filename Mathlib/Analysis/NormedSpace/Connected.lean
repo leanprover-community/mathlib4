@@ -170,7 +170,7 @@ end NormedSpace
 section
 
 variable {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
-  [TopologicalAddGroup F] [ContinuousSMul ℝ F]
+  [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
 
 /-- Let `E` be a linear subspace in a real vector space.
 If `E` has codimension at least two, its complement is path-connected. -/
