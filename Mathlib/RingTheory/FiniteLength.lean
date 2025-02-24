@@ -3,6 +3,7 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
+import Mathlib.Algebra.Module.Length
 import Mathlib.RingTheory.Artinian.Module
 
 /-!
@@ -98,6 +99,9 @@ theorem IsSemisimpleModule.finite_tfae [IsSemisimpleModule R M] :
 
 instance [IsSemisimpleModule R M] [Module.Finite R M] : IsArtinian R M :=
   (IsSemisimpleModule.finite_tfae.out 0 2).mp ‹_›
+
+theorem isFiniteLength_iff_length_finite (M : Type*) [AddCommGroup M] [Module R M] :
+    IsFiniteLength R M ↔ Module.length R M ≠ ⊤ := sorry
 
 /- The following instances are now automatic:
 example [IsSemisimpleRing R] : IsNoetherianRing R := inferInstance

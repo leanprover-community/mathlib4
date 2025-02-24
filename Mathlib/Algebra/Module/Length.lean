@@ -11,7 +11,7 @@ import Mathlib.Data.ENat.Lattice
 /-!
 # The length of a module
 
-`TODO`: add APIs with `IsFiniteLength`.
+`TODO`: add APIs linking to `IsFiniteLength`.
 -/
 
 variable {R : Type*} [Ring R] {M M' : Type*} [AddCommGroup M] [AddCommGroup M']
