@@ -370,7 +370,7 @@ theorem offDiag_insert (has : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a
 
 theorem offDiag_filter_lt_eq_filter_le {ι}
     [PartialOrder ι] [DecidableEq ι]
-    [DecidableRel (LE.le (α := ι))] [DecidableRel (LT.lt (α := ι))]
+    [DecidableLE ι] [DecidableLT ι]
     (s : Finset ι) :
     s.offDiag.filter (fun i => i.1 < i.2) = s.offDiag.filter (fun i => i.1 ≤ i.2) := by
   rw [Finset.filter_inj']

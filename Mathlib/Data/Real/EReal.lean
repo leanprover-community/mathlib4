@@ -82,7 +82,7 @@ instance : CharZero EReal := inferInstanceAs (CharZero (WithBot (WithTop ℝ)))
 namespace EReal
 
 -- things unify with `WithBot.decidableLT` later if we don't provide this explicitly.
-instance decidableLT : DecidableRel ((· < ·) : EReal → EReal → Prop) :=
+instance decidableLT : DecidableLT EReal :=
   WithBot.decidableLT
 
 -- TODO: Provide explicitly, otherwise it is inferred noncomputably from `CompleteLinearOrder`
