@@ -15,7 +15,7 @@ at position `(i, j)`, and zeroes elsewhere.
 assert_not_exists Matrix.trace
 
 variable {l m n : Type*}
-variable {R α : Type*}
+variable {R α β : Type*}
 
 namespace Matrix
 
@@ -37,6 +37,11 @@ theorem stdBasisMatrix_eq_of_single_single (i : m) (j : n) (a : α) :
   by_cases hi : i = a <;> by_cases hj : j = b <;> simp [*]
 
 @[simp]
+theorem of_symm_stdBasisMatrix (i : m) (j : n) (a : α) :
+    of.symm (stdBasisMatrix i j a) = Pi.single i (Pi.single j a) :=
+  congr_arg of.symm <| stdBasisMatrix_eq_of_single_single i j a
+
+@[simp]
 theorem smul_stdBasisMatrix [SMulZeroClass R α] (r : R) (i : m) (j : n) (a : α) :
     r • stdBasisMatrix i j a = stdBasisMatrix i j (r • a) := by
   unfold stdBasisMatrix
@@ -48,6 +53,17 @@ theorem stdBasisMatrix_zero (i : m) (j : n) : stdBasisMatrix i j (0 : α) = 0 :=
   unfold stdBasisMatrix
   ext
   simp
+
+@[simp]
+lemma transpose_stdBasisMatrix (i : m) (j : n) (a : α) :
+    (stdBasisMatrix i j a)ᵀ = stdBasisMatrix j i a := by
+  aesop (add unsafe unfold stdBasisMatrix)
+
+@[simp]
+lemma map_stdBasisMatrix (i : m) (j : n) (a : α) {β : Type*} [Zero β]
+    {F : Type*} [FunLike F α β] [ZeroHomClass F α β] (f : F) :
+    (stdBasisMatrix i j a).map f = stdBasisMatrix i j (f a) := by
+  aesop (add unsafe unfold stdBasisMatrix)
 
 end Zero
 
@@ -112,6 +128,53 @@ protected theorem induction_on
       inhabit n
       simpa using h_std_basis default default 0)
     h_add h_std_basis
+
+/-- `Matrix.stdBasisMatrix` as a bundled additive map. -/
+@[simps]
+def stdBasisMatrixAddMonoidHom [AddCommMonoid α] (i : m) (j : n) : α →+ Matrix m n α where
+  toFun := stdBasisMatrix i j
+  map_zero' := stdBasisMatrix_zero _ _
+  map_add' _ _ := stdBasisMatrix_add _ _ _ _
+
+variable (R)
+/-- `Matrix.stdBasisMatrix` as a bundled linear map. -/
+@[simps!]
+def stdBasisMatrixLinearMap [Semiring R] [AddCommMonoid α] [Module R α] (i : m) (j : n) :
+    α →ₗ[R] Matrix m n α where
+  __ := stdBasisMatrixAddMonoidHom i j
+  map_smul' _ _:= smul_stdBasisMatrix _ _ _ _ |>.symm
+
+section ext
+
+/-- Additive maps from finite matrices are equal if they agree on the standard basis.
+
+See note [partially-applied ext lemmas]. -/
+@[local ext]
+theorem ext_addMonoidHom
+    [Finite m] [Finite n] [AddCommMonoid α] [AddCommMonoid β] ⦃f g : Matrix m n α →+ β⦄
+    (h : ∀ i j, f.comp (stdBasisMatrixAddMonoidHom i j) = g.comp (stdBasisMatrixAddMonoidHom i j)) :
+    f = g := by
+  cases nonempty_fintype m
+  cases nonempty_fintype n
+  ext x
+  rw [matrix_eq_sum_stdBasisMatrix x]
+  simp_rw [map_sum]
+  congr! 2
+  exact DFunLike.congr_fun (h _ _) _
+
+/-- Linear maps from finite matrices are equal if they agree on the standard basis.
+
+See note [partially-applied ext lemmas]. -/
+@[local ext]
+theorem ext_linearMap
+    [Finite m] [Finite n][Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R α] [Module R β]
+    ⦃f g : Matrix m n α →ₗ[R] β⦄
+    (h : ∀ i j, f ∘ₗ stdBasisMatrixLinearMap R i j = g ∘ₗ stdBasisMatrixLinearMap R i j) :
+    f = g :=
+  LinearMap.toAddMonoidHom_injective <| ext_addMonoidHom fun i j =>
+    congrArg LinearMap.toAddMonoidHom <| h i j
+
+end ext
 
 namespace StdBasisMatrix
 

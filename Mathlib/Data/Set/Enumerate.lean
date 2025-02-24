@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Tactic.Common
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Insert
 
 /-!
 # Set enumeration
@@ -15,6 +15,7 @@ The definition does not assume `sel` actually is a choice function, i.e. `sel s 
 `sel s = none ↔ s = ∅`. These assumptions are added to the lemmas needing them.
 -/
 
+assert_not_exists RelIso
 
 noncomputable section
 

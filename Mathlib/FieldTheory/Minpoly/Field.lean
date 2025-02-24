@@ -18,7 +18,6 @@ are irreducible, and uniquely determined by their defining property.
 -/
 
 
-open scoped Classical
 open Polynomial Set Function minpoly
 
 namespace minpoly
@@ -181,6 +180,7 @@ theorem neg {B : Type*} [CommRing B] [Algebra A B] (x : B) :
 
 section AlgHomFintype
 
+open scoped Classical in
 /-- A technical finiteness result. -/
 noncomputable def Fintype.subtypeProd {E : Type*} {X : Set E} (hX : X.Finite) {L : Type*}
     (F : E → Multiset L) : Fintype (∀ x : X, { l : L // l ∈ F x }) :=

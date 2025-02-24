@@ -143,11 +143,12 @@ theorem adjointAux_unique (y : T.adjointDomain) {x₀ : E}
 variable (T)
 
 open scoped Classical in
-/-- The adjoint operator as a partially defined linear operator. -/
+/-- The adjoint operator as a partially defined linear operator, denoted as `T†`. -/
 def adjoint : F →ₗ.[𝕜] E where
   domain := T.adjointDomain
   toFun := if hT : Dense (T.domain : Set E) then adjointAux hT else 0
 
+@[inherit_doc]
 scoped postfix:1024 "†" => LinearPMap.adjoint
 
 theorem mem_adjoint_domain_iff (y : F) : y ∈ T†.domain ↔ Continuous ((innerₛₗ 𝕜 y).comp T.toFun) :=
@@ -157,7 +158,7 @@ variable {T}
 
 theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, ⟪w, x⟫ = ⟪y, T x⟫) :
     y ∈ T†.domain := by
-  cases' h with w hw
+  obtain ⟨w, hw⟩ := h
   rw [T.mem_adjoint_domain_iff]
   have : Continuous ((innerSL 𝕜 w).comp T.domain.subtypeL) := by fun_prop
   convert this using 1

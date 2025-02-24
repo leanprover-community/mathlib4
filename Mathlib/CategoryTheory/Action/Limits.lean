@@ -219,7 +219,7 @@ instance : HasZeroMorphisms (Action V G) where
 
 instance forget_preservesZeroMorphisms : Functor.PreservesZeroMorphisms (forget V G) where
 
-instance forget₂_preservesZeroMorphisms [ConcreteCategory V] :
+instance forget₂_preservesZeroMorphisms [HasForget V] :
     Functor.PreservesZeroMorphisms (forget₂ (Action V G) V) where
 
 instance functorCategoryEquivalence_preservesZeroMorphisms :
@@ -251,7 +251,7 @@ instance : Preadditive (Action V G) where
 
 instance forget_additive : Functor.Additive (forget V G) where
 
-instance forget₂_additive [ConcreteCategory V] : Functor.Additive (forget₂ (Action V G) V) where
+instance forget₂_additive [HasForget V] : Functor.Additive (forget₂ (Action V G) V) where
 
 instance functorCategoryEquivalence_additive :
     Functor.Additive (functorCategoryEquivalence V G).functor where
@@ -289,7 +289,7 @@ instance : Linear R (Action V G) where
 
 instance forget_linear : Functor.Linear R (forget V G) where
 
-instance forget₂_linear [ConcreteCategory V] : Functor.Linear R (forget₂ (Action V G) V) where
+instance forget₂_linear [HasForget V] : Functor.Linear R (forget₂ (Action V G) V) where
 
 instance functorCategoryEquivalence_linear :
     Functor.Linear R (functorCategoryEquivalence V G).functor where
@@ -328,6 +328,6 @@ instance mapAction_preadditive [F.Additive] : (F.mapAction G).Additive where
 
 variable {R : Type*} [Semiring R] [CategoryTheory.Linear R V] [CategoryTheory.Linear R W]
 
-instance mapAction_linear [F.Additive] [F.Linear R] : (F.mapAction G).Linear R where
+instance mapAction_linear [F.Linear R] : (F.mapAction G).Linear R where
 
 end CategoryTheory.Functor

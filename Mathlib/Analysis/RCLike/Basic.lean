@@ -879,6 +879,18 @@ theorem ofReal_mul_neg_iff (x : ℝ) (z : K) :
     x * z < 0 ↔ (x < 0 ∧ 0 < z) ∨ (0 < x ∧ z < 0) := by
   simpa only [mul_neg, neg_pos, neg_neg_iff_pos] using ofReal_mul_pos_iff x (-z)
 
+lemma instPosMulReflectLE : PosMulReflectLE K where
+  elim a b c h := by
+    obtain ⟨a', ha1, ha2⟩ := pos_iff_exists_ofReal.mp a.2
+    rw [← sub_nonneg]
+    rw [← ha2, ← sub_nonneg, ← mul_sub, le_iff_lt_or_eq] at h
+    rcases h with h | h
+    · rw [ofReal_mul_pos_iff] at h
+      exact le_of_lt <| h.rec (False.elim <| not_lt_of_gt ·.1 ha1) (·.2)
+    · exact ((mul_eq_zero_iff_left <| ofReal_ne_zero.mpr ha1.ne').mp h.symm).ge
+
+scoped[ComplexOrder] attribute [instance] RCLike.instPosMulReflectLE
+
 end Order
 
 section CleanupLemmas
@@ -1093,7 +1105,7 @@ section
 
 /-- A mixin over a normed field, saying that the norm field structure is the same as `ℝ` or `ℂ`.
 To endow such a field with a compatible `RCLike` structure in a proof, use
-`letI := IsRCLikeNormedField.rclike 𝕜`.-/
+`letI := IsRCLikeNormedField.rclike 𝕜`. -/
 class IsRCLikeNormedField (𝕜 : Type*) [hk : NormedField 𝕜] : Prop where
   out : ∃ h : RCLike 𝕜, hk = h.toNormedField
 
@@ -1115,11 +1127,12 @@ noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (h
   star_add := by subst h''; exact h.star_add
   -- algebra fields
   smul := (@Algebra.toSMul _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra)).smul
-  toFun := @Algebra.toRingHom _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra)
-  map_one' := by subst h''; exact h.map_one'
-  map_mul' := by subst h''; exact h.map_mul'
-  map_zero' := by subst h''; exact h.map_zero'
-  map_add' := by subst h''; exact h.map_add'
+  algebraMap :=
+  { toFun := @Algebra.algebraMap _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra)
+    map_one' := by subst h''; exact h.algebraMap.map_one'
+    map_mul' := by subst h''; exact h.algebraMap.map_mul'
+    map_zero' := by subst h''; exact h.algebraMap.map_zero'
+    map_add' := by subst h''; exact h.algebraMap.map_add' }
   commutes' := by subst h''; exact h.commutes'
   smul_def' := by subst h''; exact h.smul_def'
   norm_smul_le := by subst h''; exact h.norm_smul_le

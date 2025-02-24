@@ -6,6 +6,7 @@ Authors: Simon Hudon, Yury Kudryashov
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Units.Defs
 import Mathlib.Algebra.BigOperators.Group.List.Basic
+import Mathlib.Algebra.Group.Equiv.Defs
 
 /-!
 # Free monoid over a given alphabet
@@ -121,7 +122,7 @@ variable {a : FreeMonoid α}
 /-- The length of a free monoid element: 1.length = 0 and (a * b).length = a.length + b.length -/
 @[to_additive "The length of an additive free monoid element: 1.length = 0 and (a + b).length =
   a.length + b.length"]
-def length (a : FreeMonoid α) : ℕ := List.length a
+def length (a : FreeMonoid α) : ℕ := a.toList.length
 
 @[to_additive (attr := simp)]
 theorem length_one : length (1 : FreeMonoid α) = 0 := rfl
@@ -358,12 +359,20 @@ theorem map_comp (g : β → γ) (f : α → β) : map (g ∘ f) = (map g).comp 
 @[to_additive (attr := simp)]
 theorem map_id : map (@id α) = MonoidHom.id (FreeMonoid α) := hom_eq fun _ ↦ rfl
 
+@[to_additive (attr := simp)]
+theorem map_symm_apply_map_eq {x : FreeMonoid α} (e : α ≃ β) :
+    (map ⇑e.symm) ((map ⇑e) x) = x := by simp [map_map]
+
+@[to_additive (attr := simp)]
+theorem map_apply_map_symm_eq {x : FreeMonoid β} (e : α ≃ β) :
+    (map ⇑e) ((map ⇑e.symm) x) = x := by simp [map_map]
+
 /-- The only invertible element of the free monoid is 1; this instance enables `units_eq_one`. -/
 @[to_additive]
 instance uniqueUnits : Unique (FreeMonoid α)ˣ where
   uniq u := Units.ext <| toList.injective <|
     have : toList u.val ++ toList u.inv = [] := DFunLike.congr_arg toList u.val_inv
-    (List.append_eq_nil.mp this).1
+    (List.append_eq_nil_iff.mp this).1
 
 @[to_additive (attr := simp)]
 theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Function.Surjective f := by
@@ -414,5 +423,28 @@ theorem length_reverse {a : FreeMonoid α} : a.reverse.length = a.length :=
   List.length_reverse _
 
 end Reverse
+
+section IsomorphicTypes
+
+variable {α β : Type*}
+
+/-- free monoids over isomorphic types are isomorphic -/
+@[to_additive "if two types are isomorphic, the additive free monoids over those types are
+isomorphic"]
+def freeMonoidCongr (e : α ≃ β) :  FreeMonoid α ≃* FreeMonoid β where
+  toFun := FreeMonoid.map ⇑e
+  invFun := FreeMonoid.map ⇑e.symm
+  left_inv _ := map_symm_apply_map_eq e
+  right_inv _ := map_apply_map_symm_eq e
+  map_mul' := by simp [map_mul]
+
+@[to_additive (attr := simp)]
+theorem freeMonoidCongr_of (e : α ≃ β) (a : α) : freeMonoidCongr e (of a) = of (e a) := rfl
+
+@[to_additive (attr := simp)]
+theorem freeMonoidCongr_symm_of (e : α ≃ β) (b : β) :
+    freeMonoidCongr e.symm (of b) = of (e.symm b) := rfl
+
+end IsomorphicTypes
 
 end FreeMonoid

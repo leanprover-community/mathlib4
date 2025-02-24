@@ -3,10 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.Algebra.Associated.Basic
-import Mathlib.Algebra.BigOperators.Group.Multiset
-import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Algebra.GroupWithZero.Associated
+import Mathlib.Algebra.GroupWithZero.Submonoid
 import Mathlib.Order.WellFounded
 
 /-!
@@ -19,9 +19,7 @@ import Mathlib.Order.WellFounded
   `Irreducible` is equivalent to `Prime`
 -/
 
-assert_not_exists Field
-assert_not_exists Finsupp
-assert_not_exists Ideal
+assert_not_exists Field Finsupp Ideal
 
 variable {α : Type*}
 

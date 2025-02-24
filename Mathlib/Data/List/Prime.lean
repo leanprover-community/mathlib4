@@ -3,8 +3,8 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Anne Baanen
 -/
-import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.BigOperators.Group.List.Lemmas
+import Mathlib.Algebra.GroupWithZero.Associated
 
 /-!
 # Products of lists of prime elements.
@@ -28,7 +28,7 @@ theorem Prime.dvd_prod_iff {p : M} {L : List M} (pp : Prime p) : p ∣ L.prod �
     · rw [prod_nil] at h
       exact absurd h pp.not_dvd_one
     · rw [prod_cons] at h
-      cases' pp.dvd_or_dvd h with hd hd
+      rcases pp.dvd_or_dvd h with hd | hd
       · exact ⟨L_hd, mem_cons_self L_hd L_tl, hd⟩
       · obtain ⟨x, hx1, hx2⟩ := L_ih hd
         exact ⟨x, mem_cons_of_mem L_hd hx1, hx2⟩

@@ -172,15 +172,13 @@ theorem Function.Surjective.isEngelian {f : L →ₗ⁅R⁆ L₂} (hf : Function
   have hnp : ∀ x, IsNilpotent (toEnd R L M x) := fun x => h' (f x)
   have surj_id : Function.Surjective (LinearMap.id : M →ₗ[R] M) := Function.surjective_id
   haveI : LieModule.IsNilpotent L M := h M hnp
-  apply hf.lieModuleIsNilpotent surj_id
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp`
-  intros; simp only [LinearMap.id_coe, id_eq]; rfl
+  apply hf.lieModuleIsNilpotent _ surj_id
+  aesop
 
 theorem LieEquiv.isEngelian_iff (e : L ≃ₗ⁅R⁆ L₂) :
     LieAlgebra.IsEngelian.{u₁, u₂, u₄} R L ↔ LieAlgebra.IsEngelian.{u₁, u₃, u₄} R L₂ :=
   ⟨e.surjective.isEngelian, e.symm.surjective.isEngelian⟩
 
--- Porting note: changed statement from `∃ ∃ ..` to `∃ .. ∧ ..`
 theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalgebra R L}
     (hK₁ : LieAlgebra.IsEngelian.{u₁, u₂, u₄} R K) (hK₂ : K < K.normalizer) :
     ∃ (K' : LieSubalgebra R L), LieAlgebra.IsEngelian.{u₁, u₂, u₄} R K' ∧ K < K' := by
@@ -243,12 +241,9 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
           K.toSubmodule_inj]
       exact Submodule.Quotient.nontrivial_of_lt_top _ hK₂.lt_top
     have : LieModule.IsNilpotent K (L' ⧸ K.toLieSubmodule) := by
-      -- Porting note: was refine' hK₁ _ fun x => _
-      apply hK₁
-      intro x
+      refine hK₁ _ fun x => ?_
       have hx := LieAlgebra.isNilpotent_ad_of_isNilpotent (h x)
       apply Module.End.IsNilpotent.mapQ ?_ hx
-      -- Porting note: mathlib3 solved this on its own with `submodule.mapq_linear._proof_5`
       intro X HX
       simp only [LieSubalgebra.coe_toLieSubmodule, LieSubalgebra.mem_toSubmodule] at HX
       simp only [LieSubalgebra.coe_toLieSubmodule, Submodule.mem_comap, ad_apply,
@@ -256,9 +251,6 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
       exact LieSubalgebra.lie_mem K x.prop HX
     exact nontrivial_max_triv_of_isNilpotent R K (L' ⧸ K.toLieSubmodule)
   haveI _i5 : IsNoetherian R L' := by
-    -- Porting note: was
-    -- isNoetherian_of_surjective L _ (LinearMap.range_rangeRestrict (toEnd R L M))
-    -- abusing the relation between `LieHom.rangeRestrict` and `LinearMap.rangeRestrict`
     refine isNoetherian_of_surjective L (LieHom.rangeRestrict (toEnd R L M)) ?_
     simp only [LieHom.range_toSubmodule, LieHom.coe_toLinearMap,
       LinearMap.range_eq_top]

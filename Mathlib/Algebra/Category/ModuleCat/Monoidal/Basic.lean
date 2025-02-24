@@ -244,7 +244,7 @@ lemma tensorLift_tmul (m : M₁) (n : M₂) :
 
 end
 
-lemma tensor_ext {f g : M₁ ⊗ M₂ ⟶ M₃} (h : ∀ m n, f (m ⊗ₜ n) = g (m ⊗ₜ n)) :
+lemma tensor_ext {f g : M₁ ⊗ M₂ ⟶ M₃} (h : ∀ m n, f.hom (m ⊗ₜ n) = g.hom (m ⊗ₜ n)) :
     f = g :=
   hom_ext <| TensorProduct.ext (by ext; apply h)
 

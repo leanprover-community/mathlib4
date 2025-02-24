@@ -43,8 +43,6 @@ such that
     `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
 10. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
--- @[nolint has_nonempty_instance]
 structure GlueData where
   J : Type v
   U : J → C
@@ -124,31 +122,11 @@ def sigmaOpens [HasCoproduct D.U] : C :=
   ∐ D.U
 
 /-- (Implementation) The diagram to take colimit of. -/
-def diagram : MultispanIndex C where
-  L := D.J × D.J
-  R := D.J
-  fstFrom := _root_.Prod.fst
-  sndFrom := _root_.Prod.snd
+def diagram : MultispanIndex (.prod D.J) C where
   left := D.V
   right := D.U
   fst := fun ⟨i, j⟩ => D.f i j
   snd := fun ⟨i, j⟩ => D.t i j ≫ D.f j i
-
-@[simp]
-theorem diagram_l : D.diagram.L = (D.J × D.J) :=
-  rfl
-
-@[simp]
-theorem diagram_r : D.diagram.R = D.J :=
-  rfl
-
-@[simp]
-theorem diagram_fstFrom (i j : D.J) : D.diagram.fstFrom ⟨i, j⟩ = i :=
-  rfl
-
-@[simp]
-theorem diagram_sndFrom (i j : D.J) : D.diagram.sndFrom ⟨i, j⟩ = j :=
-  rfl
 
 @[simp]
 theorem diagram_fst (i j : D.J) : D.diagram.fst ⟨i, j⟩ = D.f i j :=

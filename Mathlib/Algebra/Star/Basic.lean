@@ -30,9 +30,7 @@ Our star rings are actually star non-unital, non-associative, semirings, but of 
 `star_neg : star (-r) = - star r` when the underlying semiring is a ring.
 -/
 
-assert_not_exists Finset
-assert_not_exists Subgroup
-assert_not_exists Rat.instField
+assert_not_exists Finset Subgroup Rat.instField
 
 universe u v w
 
@@ -334,7 +332,7 @@ simp can prove this:
   by simp only [RingHomCompTriple.comp_apply, RingHom.id_apply]
 One of the lemmas above could be a duplicate.
 If that's not the case try reordering lemmas or adding @[priority].
- -/
+-/
 -- @[simp]
 theorem starRingEnd_self_apply (x : R) : starRingEnd R (starRingEnd R x) = x := star_star x
 

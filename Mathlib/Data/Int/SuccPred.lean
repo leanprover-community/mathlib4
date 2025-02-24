@@ -83,6 +83,3 @@ theorem natCast_covBy {a b : ℕ} : (a : ℤ) ⋖ b ↔ a ⋖ b := by
 end Int
 
 alias ⟨_, CovBy.intCast⟩ := Int.natCast_covBy
-
-@[deprecated (since := "2024-05-27")] alias Nat.cast_int_covBy_iff := Int.natCast_covBy
-@[deprecated (since := "2024-05-27")] alias CovBy.cast_int := CovBy.intCast

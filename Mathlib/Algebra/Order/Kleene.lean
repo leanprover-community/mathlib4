@@ -127,8 +127,6 @@ variable [IdemSemiring α] {a b c : α}
 theorem add_eq_sup (a b : α) : a + b = a ⊔ b :=
   IdemSemiring.add_eq_sup _ _
 
--- Porting note: This simp theorem often leads to timeout when `α` has rich structure.
---               So, this theorem should be scoped.
 scoped[Computability] attribute [simp] add_eq_sup
 
 theorem add_idem (a : α) : a + a = a := by simp
@@ -160,13 +158,17 @@ theorem add_le (ha : a ≤ c) (hb : b ≤ c) : a + b ≤ c :=
   add_le_iff.2 ⟨ha, hb⟩
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toCanonicallyOrderedAddCommMonoid :
-    CanonicallyOrderedAddCommMonoid α :=
+instance (priority := 100) IdemSemiring.toOrderedAddCommMonoid :
+    OrderedAddCommMonoid α :=
   { ‹IdemSemiring α› with
     add_le_add_left := fun a b hbc c ↦ by
       simp_rw [add_eq_sup]
-      exact sup_le_sup_left hbc _
-    exists_add_of_le := fun h ↦ ⟨_, h.add_eq_right.symm⟩
+      exact sup_le_sup_left hbc _ }
+
+-- See note [lower instance priority]
+instance (priority := 100) IdemSemiring.toCanonicallyOrderedAdd :
+    CanonicallyOrderedAdd α :=
+  { exists_add_of_le := fun h ↦ ⟨_, h.add_eq_right.symm⟩
     le_self_add := fun a b ↦ add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem] }
 
 -- See note [lower instance priority]
