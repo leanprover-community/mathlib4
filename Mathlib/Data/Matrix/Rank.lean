@@ -80,17 +80,12 @@ lemma eRank_toNat_eq_finrank (A : Matrix m n R) :
     A.eRank.toNat = Module.finrank R (span R (range Aᵀ)) :=
   toNat_toENat ..
 
-lemma eRank_mono_col (A : Matrix m n R) (c : n₀ → n) : (A.submatrix id c).eRank ≤ A.eRank :=
-  OrderHomClass.mono _ <| A.cRank_mono_col c
-
-lemma eRank_mono_row (A : Matrix m n R) (r : m₀ → m) : (A.submatrix r id).eRank ≤ A.eRank := by
-  obtain hlt | hle := lt_or_le A.cRank Cardinal.aleph0
-  · simpa using (toENat_le_iff_of_lt_aleph0 (by simpa)).2 <| A.cRank_lift_mono_row r
-  simp [eRank, toENat_eq_top.2 hle]
-
-lemma eRank_mono (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
-    (A.submatrix r c).eRank ≤ A.eRank :=
-  ((A.submatrix r id).eRank_mono_col c).trans (A.eRank_mono_row r)
+lemma eRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
+    (A.submatrix r c).eRank ≤ A.eRank := by
+  obtain hle | hlt := le_or_lt aleph0 (A.submatrix id c).cRank
+  · simp [eRank, toENat_eq_top.2 (hle.trans (A.cRank_mono_col c))]
+  refine le_trans ?_ <| OrderHomClass.mono _ <| A.cRank_mono_col c
+  simpa using (toENat_le_iff_of_lt_aleph0 (by simpa)).2 <| (A.submatrix id c).cRank_lift_mono_row r
 
 lemma eRank_le_card_col [StrongRankCondition R] (A : Matrix m n R) : A.eRank ≤ ENat.card n := by
   classical
