@@ -500,12 +500,13 @@ section congr
 
 /-! ### Congruence properties of derivatives -/
 
-theorem Filter.EventuallyEq.hasDerivAtFilter_iff (h₀ : f₀ =ᶠ[L] f₁) (hx : f₀ x = f₁ x)
-    (h₁ : f₀' = f₁') : HasDerivAtFilter f₀ f₀' x L ↔ HasDerivAtFilter f₁ f₁' x L :=
-  h₀.hasFDerivAtFilter_iff hx (by simp [h₁])
+theorem Filter.EventuallyEq.hasDerivAtFilter_iff (h₀ : Prod.map f₀ f₀ =ᶠ[L] Prod.map f₁ f₁)
+    (h₁ : f₀' = f₁') : HasDerivAtFilter f₀ f₀' L ↔ HasDerivAtFilter f₁ f₁' L :=
+  h₀.hasFDerivAtFilter_iff (by simp [h₁])
 
-theorem HasDerivAtFilter.congr_of_eventuallyEq (h : HasDerivAtFilter f f' x L) (hL : f₁ =ᶠ[L] f)
-    (hx : f₁ x = f x) : HasDerivAtFilter f₁ f' x L := by rwa [hL.hasDerivAtFilter_iff hx rfl]
+theorem HasDerivAtFilter.congr_of_eventuallyEq (h : HasDerivAtFilter f f' L)
+    (hL : Prod.map f₁ f₁ =ᶠ[L] Prod.map f f) : HasDerivAtFilter f₁ f' L := by
+  rwa [hL.hasDerivAtFilter_iff rfl]
 
 theorem HasDerivWithinAt.congr_mono (h : HasDerivWithinAt f f' s x) (ht : ∀ x ∈ t, f₁ x = f x)
     (hx : f₁ x = f x) (h₁ : t ⊆ s) : HasDerivWithinAt f₁ f' t x :=
@@ -519,13 +520,13 @@ theorem HasDerivWithinAt.congr_of_mem (h : HasDerivWithinAt f f' s x) (hs : ∀ 
     (hx : x ∈ s) : HasDerivWithinAt f₁ f' s x :=
   h.congr hs (hs _ hx)
 
+theorem Filter.EventuallyEq.hasDerivWithinAt_iff (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
+    HasDerivWithinAt f₁ f' s x ↔ HasDerivWithinAt f f' s x := by
+  simp only [hasDerivWithinAt_iff_hasFDerivWithinAt, h₁.hasFDerivWithinAt_iff hx]
+
 theorem HasDerivWithinAt.congr_of_eventuallyEq (h : HasDerivWithinAt f f' s x)
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : HasDerivWithinAt f₁ f' s x :=
-  HasDerivAtFilter.congr_of_eventuallyEq h h₁ hx
-
-theorem Filter.EventuallyEq.hasDerivWithinAt_iff (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
-    HasDerivWithinAt f₁ f' s x ↔ HasDerivWithinAt f f' s x :=
-  ⟨fun h' ↦ h'.congr_of_eventuallyEq h₁.symm hx.symm, fun h' ↦ h'.congr_of_eventuallyEq h₁ hx⟩
+  (h₁.hasDerivWithinAt_iff hx).mpr h
 
 theorem HasDerivWithinAt.congr_of_eventuallyEq_of_mem (h : HasDerivWithinAt f f' s x)
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) : HasDerivWithinAt f₁ f' s x :=
@@ -538,7 +539,7 @@ theorem Filter.EventuallyEq.hasDerivWithinAt_iff_of_mem (h₁ : f₁ =ᶠ[𝓝[s
 
 theorem HasStrictDerivAt.congr_deriv (h : HasStrictDerivAt f f' x) (h' : f' = g') :
     HasStrictDerivAt f g' x :=
-  h.congr_fderiv <| congr_arg _ h'
+  h' ▸ h
 
 theorem HasDerivAt.congr_deriv (h : HasDerivAt f f' x) (h' : f' = g') : HasDerivAt f g' x :=
   HasFDerivAt.congr_fderiv h <| congr_arg _ h'
@@ -549,7 +550,7 @@ theorem HasDerivWithinAt.congr_deriv (h : HasDerivWithinAt f f' s x) (h' : f' = 
 
 theorem HasDerivAt.congr_of_eventuallyEq (h : HasDerivAt f f' x) (h₁ : f₁ =ᶠ[𝓝 x] f) :
     HasDerivAt f₁ f' x :=
-  HasDerivAtFilter.congr_of_eventuallyEq h h₁ (mem_of_mem_nhds h₁ :)
+  h.hasFDerivAt.congr_of_eventuallyEq h₁
 
 theorem Filter.EventuallyEq.hasDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) :
     HasDerivAt f₀ f' x ↔ HasDerivAt f₁ f' x :=
@@ -580,20 +581,20 @@ section id
 
 variable (s x L)
 
-theorem hasDerivAtFilter_id : HasDerivAtFilter id 1 x L :=
-  (hasFDerivAtFilter_id x L).hasDerivAtFilter
+theorem hasDerivAtFilter_id : HasDerivAtFilter id 1 L :=
+  (hasFDerivAtFilter_id L).hasDerivAtFilter
 
 theorem hasDerivWithinAt_id : HasDerivWithinAt id 1 s x :=
-  hasDerivAtFilter_id _ _
+  hasDerivAtFilter_id _
 
 theorem hasDerivAt_id : HasDerivAt id 1 x :=
-  hasDerivAtFilter_id _ _
+  hasDerivAtFilter_id _
 
 theorem hasDerivAt_id' : HasDerivAt (fun x : 𝕜 => x) 1 x :=
-  hasDerivAtFilter_id _ _
+  hasDerivAtFilter_id _
 
 theorem hasStrictDerivAt_id : HasStrictDerivAt id 1 x :=
-  (hasStrictFDerivAt_id x).hasStrictDerivAt
+  hasDerivAtFilter_id _
 
 theorem deriv_id : deriv id x = 1 :=
   HasDerivAt.deriv (hasDerivAt_id x)
@@ -622,17 +623,17 @@ section Const
 
 variable (c : F) (s x L)
 
-theorem hasDerivAtFilter_const : HasDerivAtFilter (fun _ => c) 0 x L :=
-  (hasFDerivAtFilter_const c x L).hasDerivAtFilter
+theorem hasDerivAtFilter_const : HasDerivAtFilter (fun _ => c) 0 L :=
+  (hasFDerivAtFilter_const c L).hasDerivAtFilter
 
 theorem hasStrictDerivAt_const : HasStrictDerivAt (fun _ => c) 0 x :=
-  (hasStrictFDerivAt_const c x).hasStrictDerivAt
+  hasDerivAtFilter_const _ _
 
 theorem hasDerivWithinAt_const : HasDerivWithinAt (fun _ => c) 0 s x :=
-  hasDerivAtFilter_const _ _ _
+  hasDerivAtFilter_const _ _
 
 theorem hasDerivAt_const : HasDerivAt (fun _ => c) 0 x :=
-  hasDerivAtFilter_const _ _ _
+  hasDerivAtFilter_const _ _
 
 theorem deriv_const : deriv (fun _ => c) x = 0 :=
   HasDerivAt.deriv (hasDerivAt_const x c)
@@ -654,16 +655,17 @@ section Continuous
 
 /-! ### Continuity of a function admitting a derivative -/
 
-nonrec theorem HasDerivAtFilter.tendsto_nhds (hL : L ≤ 𝓝 x) (h : HasDerivAtFilter f f' x L) :
-    Tendsto f L (𝓝 (f x)) :=
+
+nonrec theorem HasDerivAtFilter.tendsto_nhds {L : Filter 𝕜} (hL : L ≤ 𝓝 x)
+    (h : HasDerivAtFilter f f' (map (·, x) L)) : Tendsto f L (𝓝 (f x)) :=
   h.tendsto_nhds hL
 
 theorem HasDerivWithinAt.continuousWithinAt (h : HasDerivWithinAt f f' s x) :
     ContinuousWithinAt f s x :=
-  HasDerivAtFilter.tendsto_nhds inf_le_left h
+  h.hasFDerivWithinAt.continuousWithinAt
 
 theorem HasDerivAt.continuousAt (h : HasDerivAt f f' x) : ContinuousAt f x :=
-  HasDerivAtFilter.tendsto_nhds le_rfl h
+  h.hasFDerivAt.continuousAt
 
 protected theorem HasDerivAt.continuousOn {f f' : 𝕜 → F} (hderiv : ∀ x ∈ s, HasDerivAt f (f' x) x) :
     ContinuousOn f s := fun x hx => (hderiv x hx).continuousAt.continuousWithinAt

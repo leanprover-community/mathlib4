@@ -25,16 +25,16 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [StarAddMonoid F] [NormedSpace 𝕜 F] [StarModule 𝕜 F]
   [ContinuousStar F]
 
-variable {f : E → F} {f' : E →L[𝕜] F} {x : E} {s : Set E} {L : Filter E}
+variable {f : E → F} {f' : E →L[𝕜] F} {x : E} {s : Set E} {L : Filter (E × E)}
+
+theorem HasFDerivAtFilter.star (h : HasFDerivAtFilter f f' L) :
+    HasFDerivAtFilter (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') L :=
+  (starL' 𝕜 : F ≃L[𝕜] F).toContinuousLinearMap.hasFDerivAtFilter.comp h Filter.tendsto_map
 
 @[fun_prop]
-theorem HasStrictFDerivAt.star (h : HasStrictFDerivAt f f' x) :
+nonrec theorem HasStrictFDerivAt.star (h : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') x :=
-  (starL' 𝕜 : F ≃L[𝕜] F).toContinuousLinearMap.hasStrictFDerivAt.comp x h
-
-theorem HasFDerivAtFilter.star (h : HasFDerivAtFilter f f' x L) :
-    HasFDerivAtFilter (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') x L :=
-  (starL' 𝕜 : F ≃L[𝕜] F).toContinuousLinearMap.hasFDerivAtFilter.comp x h Filter.tendsto_map
+  h.star
 
 @[fun_prop]
 nonrec theorem HasFDerivWithinAt.star (h : HasFDerivWithinAt f f' s x) :

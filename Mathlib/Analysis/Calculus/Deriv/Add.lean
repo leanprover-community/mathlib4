@@ -30,19 +30,20 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {f g : 𝕜 → F}
 variable {f' g' : F}
-variable {x : 𝕜} {s : Set 𝕜} {L : Filter 𝕜}
+variable {x : 𝕜} {s : Set 𝕜} {L : Filter (𝕜 × 𝕜)}
 
 section Add
 
 /-! ### Derivative of the sum of two functions -/
 
 
-nonrec theorem HasDerivAtFilter.add (hf : HasDerivAtFilter f f' x L)
-    (hg : HasDerivAtFilter g g' x L) : HasDerivAtFilter (fun y => f y + g y) (f' + g') x L := by
+nonrec theorem HasDerivAtFilter.add (hf : HasDerivAtFilter f f' L)
+    (hg : HasDerivAtFilter g g' L) : HasDerivAtFilter (fun y => f y + g y) (f' + g') L := by
   simpa using (hf.add hg).hasDerivAtFilter
 
 nonrec theorem HasStrictDerivAt.add (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x) :
-    HasStrictDerivAt (fun y => f y + g y) (f' + g') x := by simpa using (hf.add hg).hasStrictDerivAt
+    HasStrictDerivAt (fun y => f y + g y) (f' + g') x :=
+  hf.add hg
 
 nonrec theorem HasDerivWithinAt.add (hf : HasDerivWithinAt f f' s x)
     (hg : HasDerivWithinAt g g' s x) : HasDerivWithinAt (fun y => f y + g y) (f' + g') s x :=
@@ -64,13 +65,13 @@ theorem deriv_add (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g
     deriv (fun y => f y + g y) x = deriv f x + deriv g x :=
   (hf.hasDerivAt.add hg.hasDerivAt).deriv
 
-theorem HasStrictDerivAt.add_const (c : F) (hf : HasStrictDerivAt f f' x) :
-    HasStrictDerivAt (fun y ↦ f y + c) f' x :=
-  add_zero f' ▸ hf.add (hasStrictDerivAt_const x c)
+theorem HasDerivAtFilter.add_const (hf : HasDerivAtFilter f f' L) (c : F) :
+    HasDerivAtFilter (fun y => f y + c) f' L :=
+  add_zero f' ▸ hf.add (hasDerivAtFilter_const L c)
 
-theorem HasDerivAtFilter.add_const (hf : HasDerivAtFilter f f' x L) (c : F) :
-    HasDerivAtFilter (fun y => f y + c) f' x L :=
-  add_zero f' ▸ hf.add (hasDerivAtFilter_const x L c)
+nonrec theorem HasStrictDerivAt.add_const (c : F) (hf : HasStrictDerivAt f f' x) :
+    HasStrictDerivAt (fun y ↦ f y + c) f' x :=
+  hf.add_const c
 
 nonrec theorem HasDerivWithinAt.add_const (hf : HasDerivWithinAt f f' s x) (c : F) :
     HasDerivWithinAt (fun y => f y + c) f' s x :=
@@ -93,13 +94,13 @@ theorem deriv_add_const (c : F) : deriv (fun y => f y + c) x = deriv f x := by
 theorem deriv_add_const' (c : F) : (deriv fun y => f y + c) = deriv f :=
   funext fun _ => deriv_add_const c
 
+theorem HasDerivAtFilter.const_add (c : F) (hf : HasDerivAtFilter f f' L) :
+    HasDerivAtFilter (fun y => c + f y) f' L :=
+  zero_add f' ▸ (hasDerivAtFilter_const L c).add hf
+
 theorem HasStrictDerivAt.const_add (c : F) (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun y ↦ c + f y) f' x :=
   zero_add f' ▸ (hasStrictDerivAt_const x c).add hf
-
-theorem HasDerivAtFilter.const_add (c : F) (hf : HasDerivAtFilter f f' x L) :
-    HasDerivAtFilter (fun y => c + f y) f' x L :=
-  zero_add f' ▸ (hasDerivAtFilter_const x L c).add hf
 
 nonrec theorem HasDerivWithinAt.const_add (c : F) (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (fun y => c + f y) f' s x :=
@@ -111,9 +112,7 @@ nonrec theorem HasDerivAt.const_add (c : F) (hf : HasDerivAt f f' x) :
 
 theorem derivWithin_const_add (c : F) :
     derivWithin (fun y => c + f y) s x = derivWithin f s x := by
-  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
-  · simp only [derivWithin, fderivWithin_const_add hxs]
-  · simp [derivWithin_zero_of_isolated hxs]
+  simp only [derivWithin, fderivWithin_const_add]
 
 theorem deriv_const_add (c : F) : deriv (fun y => c + f y) x = deriv f x := by
   simp only [deriv, fderiv_const_add]

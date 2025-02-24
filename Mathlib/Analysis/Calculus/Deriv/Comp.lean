@@ -47,7 +47,7 @@ variable {f : 𝕜 → F}
 variable {f' : F}
 variable {x : 𝕜}
 variable {s : Set 𝕜}
-variable {L : Filter 𝕜}
+variable {L : Filter (𝕜 × 𝕜)}
 
 section Composition
 
@@ -66,21 +66,23 @@ usual multiplication in `comp` lemmas.
 get confused since there are too many possibilities for composition -/
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
   [IsScalarTower 𝕜 𝕜' F] {s' t' : Set 𝕜'} {h : 𝕜 → 𝕜'} {h₂ : 𝕜' → 𝕜'} {h' h₂' : 𝕜'}
-  {g₁ : 𝕜' → F} {g₁' : F} {L' : Filter 𝕜'} {y : 𝕜'} (x)
+  {g₁ : 𝕜' → F} {g₁' : F} {L' : Filter (𝕜' × 𝕜')} {y : 𝕜'} (x)
 
-theorem HasDerivAtFilter.scomp (hg : HasDerivAtFilter g₁ g₁' (h x) L')
-    (hh : HasDerivAtFilter h h' x L) (hL : Tendsto h L L') :
-    HasDerivAtFilter (g₁ ∘ h) (h' • g₁') x L := by
-  simpa using ((hg.restrictScalars 𝕜).comp x hh hL).hasDerivAtFilter
+theorem HasDerivAtFilter.scomp (hg : HasDerivAtFilter g₁ g₁' L')
+    (hh : HasDerivAtFilter h h' L) (hL : Tendsto (Prod.map h h) L L') :
+    HasDerivAtFilter (g₁ ∘ h) (h' • g₁') L := by
+  simpa using ((hg.restrictScalars 𝕜).comp hh hL).hasDerivAtFilter
 
-theorem HasDerivAtFilter.scomp_of_eq (hg : HasDerivAtFilter g₁ g₁' y L')
-    (hh : HasDerivAtFilter h h' x L) (hy : y = h x) (hL : Tendsto h L L') :
-    HasDerivAtFilter (g₁ ∘ h) (h' • g₁') x L := by
-  rw [hy] at hg; exact hg.scomp x hh hL
+@[deprecated (since := "2025-02-23")]
+alias HasDerivAtFilter.scomp_of_eq := HasDerivAtFilter.scomp
 
+-- TODO: add `HasFDerivWithinAt.comp_hasFDerivAt`
 theorem HasDerivWithinAt.scomp_hasDerivAt (hg : HasDerivWithinAt g₁ g₁' s' (h x))
-    (hh : HasDerivAt h h' x) (hs : ∀ x, h x ∈ s') : HasDerivAt (g₁ ∘ h) (h' • g₁') x :=
-  hg.scomp x hh <| tendsto_inf.2 ⟨hh.continuousAt, tendsto_principal.2 <| Eventually.of_forall hs⟩
+    (hh : HasDerivAt h h' x) (hs : ∀ x, h x ∈ s') : HasDerivAt (g₁ ∘ h) (h' • g₁') x := by
+  refine hg.scomp hh ?_
+  simp only [← prod_pure]
+  refine .prod_map ?_ (tendsto_pure_pure _ _)
+  simp [tendsto_nhdsWithin_iff, hs, hh.continuousAt.tendsto]
 
 theorem HasDerivWithinAt.scomp_hasDerivAt_of_eq (hg : HasDerivWithinAt g₁ g₁' s' y)
     (hh : HasDerivAt h h' x) (hs : ∀ x, h x ∈ s') (hy : y = h x) :

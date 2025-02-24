@@ -41,33 +41,39 @@ variable {x : 𝕜}
 variable {s : Set 𝕜}
 
 /-- If the domain has dimension one, then Fréchet derivative is equivalent to the classical
-definition with a limit. In this version we have to take the limit along the subset `-{x}`,
+definition with a limit. In this version we have to take the limit along the subset `(diagonal _)ᶜ`,
 because for `y=x` the slope equals zero due to the convention `0⁻¹=0`. -/
-theorem hasDerivAtFilter_iff_tendsto_slope {x : 𝕜} {L : Filter 𝕜} :
-    HasDerivAtFilter f f' x L ↔ Tendsto (slope f x) (L ⊓ 𝓟 {x}ᶜ) (𝓝 f') :=
-  calc HasDerivAtFilter f f' x L
-    ↔ Tendsto (fun y ↦ slope f x y - (y - x)⁻¹ • (y - x) • f') L (𝓝 0) := by
-        simp only [hasDerivAtFilter_iff_tendsto, ← norm_inv, ← norm_smul,
-          ← tendsto_zero_iff_norm_tendsto_zero, slope_def_module, smul_sub]
-  _ ↔ Tendsto (fun y ↦ slope f x y - (y - x)⁻¹ • (y - x) • f') (L ⊓ 𝓟 {x}ᶜ) (𝓝 0) :=
-        .symm <| tendsto_inf_principal_nhds_iff_of_forall_eq <| by simp
-  _ ↔ Tendsto (fun y ↦ slope f x y - f') (L ⊓ 𝓟 {x}ᶜ) (𝓝 0) := tendsto_congr' <| by
-        refine (EqOn.eventuallyEq fun y hy ↦ ?_).filter_mono inf_le_right
-        rw [inv_smul_smul₀ (sub_ne_zero.2 hy) f']
-  _ ↔ Tendsto (slope f x) (L ⊓ 𝓟 {x}ᶜ) (𝓝 f') := by
-        rw [← nhds_translation_sub f', tendsto_comap_iff]; rfl
+theorem hasDerivAtFilter_iff_tendsto_slope {L : Filter (𝕜 × 𝕜)} :
+    HasDerivAtFilter f f' L ↔ Tendsto (fun p ↦ slope f p.2 p.1) (L ⊓ 𝓟 ((diagonal 𝕜)ᶜ)) (𝓝 f') :=
+  calc
+    HasDerivAtFilter f f' L
+      ↔ Tendsto (fun p : 𝕜 × 𝕜 ↦ slope f p.2 p.1 - (p.1 - p.2)⁻¹ • (p.1 - p.2) • f') L (𝓝 0) := by
+      simp only [hasDerivAtFilter_iff_tendsto, ← norm_inv, ← norm_smul,
+        ← tendsto_zero_iff_norm_tendsto_zero, slope_def_module, smul_sub]
+    _ ↔ Tendsto (fun p : 𝕜 × 𝕜 ↦ slope f p.2 p.1 - (p.1 - p.2)⁻¹ • (p.1 - p.2) • f')
+          (L ⊓ 𝓟 ((diagonal 𝕜)ᶜ)) (𝓝 0) :=
+      .symm <| tendsto_inf_principal_nhds_iff_of_forall_eq <| by simp
+    _ ↔ Tendsto (fun p : 𝕜 × 𝕜 ↦ slope f p.2 p.1 - f') (L ⊓ 𝓟 ((diagonal 𝕜)ᶜ)) (𝓝 0) := by
+      refine tendsto_congr' <| (EqOn.eventuallyEq fun y hy ↦ ?_).filter_mono inf_le_right
+      rw [inv_smul_smul₀ (sub_ne_zero.2 hy) f']
+    _ ↔ Tendsto (fun p : 𝕜 × 𝕜 ↦ slope f p.2 p.1) (L ⊓ 𝓟 ((diagonal 𝕜)ᶜ)) (𝓝 f') := by
+      rw [← nhds_translation_sub f', tendsto_comap_iff]; rfl
 
 theorem hasDerivWithinAt_iff_tendsto_slope :
     HasDerivWithinAt f f' s x ↔ Tendsto (slope f x) (𝓝[s \ {x}] x) (𝓝 f') := by
-  simp only [HasDerivWithinAt, nhdsWithin, diff_eq, ← inf_assoc, inf_principal.symm]
-  exact hasDerivAtFilter_iff_tendsto_slope
+  have : map (·, x) (𝓝[s \ {x}] x) = map (·, x) (𝓝[s] x) ⊓ 𝓟 ((diagonal 𝕜)ᶜ) := by
+    simp only [← prod_pure, ← principal_singleton, prod_eq_inf, diff_eq, nhdsWithin_inter',
+      comap_inf, inf_assoc, comap_principal, inf_principal]
+    congr 2 with ⟨a, b⟩
+    aesop
+  simp [HasDerivWithinAt, hasDerivAtFilter_iff_tendsto_slope, ← this, Function.comp_def]
 
 theorem hasDerivWithinAt_iff_tendsto_slope' (hs : x ∉ s) :
     HasDerivWithinAt f f' s x ↔ Tendsto (slope f x) (𝓝[s] x) (𝓝 f') := by
   rw [hasDerivWithinAt_iff_tendsto_slope, diff_singleton_eq_self hs]
 
-theorem hasDerivAt_iff_tendsto_slope : HasDerivAt f f' x ↔ Tendsto (slope f x) (𝓝[≠] x) (𝓝 f') :=
-  hasDerivAtFilter_iff_tendsto_slope
+theorem hasDerivAt_iff_tendsto_slope : HasDerivAt f f' x ↔ Tendsto (slope f x) (𝓝[≠] x) (𝓝 f') := by
+  simp only [← hasDerivWithinAt_univ, hasDerivWithinAt_iff_tendsto_slope, compl_eq_univ_diff]
 
 theorem hasDerivAt_iff_tendsto_slope_zero :
     HasDerivAt f f' x ↔ Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[≠] 0) (𝓝 f') := by
