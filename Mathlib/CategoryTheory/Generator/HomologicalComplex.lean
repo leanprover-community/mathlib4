@@ -3,11 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-
 import Mathlib.Algebra.Homology.Double
 import Mathlib.Algebra.Homology.HomologicalComplexLimits
 import Mathlib.CategoryTheory.Generator.Basic
---import Mathlib.CategoryTheory.Generator.Coproduct
 
 /-!
 # Generators of the category of homological complexes
@@ -65,7 +63,7 @@ lemma isSeparator_coproduct_separatingFamily {X : C} (hX : IsSeparator X) :
   exact IsColimit.ofWhiskerEquivalence
     (Discrete.equivalence (Equiv.punitProd.{0} ι).symm) (coproductIsCoproduct φ)
 
-instance hasSeparator [HasSeparator C] : HasSeparator (HomologicalComplex C c) :=
+instance [HasSeparator C] : HasSeparator (HomologicalComplex C c) :=
   ⟨_, isSeparator_coproduct_separatingFamily c (isSeparator_separator C)⟩
 
 end HomologicalComplex

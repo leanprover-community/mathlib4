@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Rel
@@ -781,7 +781,7 @@ def range (n : ℕ) : LTSeries ℕ where
 /--
 In ℕ, two entries in an `LTSeries` differ by at least the difference of their indices.
 (Expressed in a way that avoids subtraction).
- -/
+-/
 lemma apply_add_index_le_apply_add_index_nat (p : LTSeries ℕ) (i j : Fin (p.length + 1))
     (hij : i ≤ j) : p i + j ≤ p j + i := by
   have ⟨i, hi⟩ := i

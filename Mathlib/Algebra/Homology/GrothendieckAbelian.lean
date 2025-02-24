@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory
+import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 import Mathlib.CategoryTheory.Generator.HomologicalComplex
 import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 
