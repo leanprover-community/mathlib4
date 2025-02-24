@@ -69,16 +69,12 @@ theorem nerve₂Adj.counit.naturality {C D : Type u} [SmallCategory C] [SmallCat
     (nerveFunctor₂ ⋙ hoFunctor₂).map F ⋙ nerve₂Adj.counit.app D =
       nerve₂Adj.counit.app C ⋙ F := by
   apply HomotopyCategory.lift_unique'
-  conv => lhs; rw [← Functor.assoc]; lhs; apply (hoFunctor₂_naturality _).symm
-  simp only [Cat.freeRefl_obj_α, ReflQuiv.of_val, comp_obj, Functor.comp_map]
-  rw [← Functor.assoc _ _ F]
-  conv => rhs; lhs; exact (nerve₂Adj.counit.app_eq C)
-  let F' : (Cat.of C) ⟶ (Cat.of D) := F
-  conv => rhs; exact ((whiskerRight OneTruncation₂.ofNerve₂.natIso.hom Cat.freeRefl ≫
-    ReflQuiv.adj.counit).naturality F').symm
-  simp only [app, Cat.comp_eq_comp, Functor.comp_map, Functor.assoc,
-    SSet.Truncated.HomotopyCategory.quotientFunctor]
-  rw [Quotient.lift_spec]
+  change ((oneTruncation₂ ⋙ Cat.freeRefl).map (nerveFunctor₂.map _)) ⋙
+    HomotopyCategory.quotientFunctor (nerveFunctor₂.obj (Cat.of D)) ⋙ app D = _
+  rw [nerve₂Adj.counit.app_eq D]
+  rw [← Functor.assoc _ _ F, nerve₂Adj.counit.app_eq C]
+  exact (whiskerRight OneTruncation₂.ofNerve₂.natIso.{u}.hom Cat.freeRefl ≫
+    ReflQuiv.adj.counit).naturality _
 
 /-- The counit of `nerve₂Adj.` -/
 def nerve₂Adj.counit : nerveFunctor₂ ⋙ hoFunctor₂.{u} ⟶ (𝟭 Cat) where
