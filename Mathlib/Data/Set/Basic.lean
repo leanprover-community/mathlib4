@@ -720,7 +720,7 @@ theorem ssubset_union_left_iff : s ⊂ s ∪ t ↔ ¬ t ⊆ s := by
 
 @[simp]
 theorem ssubset_union_right_iff : t ⊂ s ∪ t ↔ ¬ s ⊆ t := by
-  rw [ssubset_iff_subset_ne, and_iff_right subset_union_right, Ne, eq_comm, union_eq_right]
+  rw [union_comm, ssubset_union_left_iff]
 
 /-! ### Lemmas about intersection -/
 
@@ -846,7 +846,7 @@ theorem inter_ssubset_right_iff : s ∩ t ⊂ t ↔ ¬ t ⊆ s := by
 
 @[simp]
 theorem inter_ssubset_left_iff : s ∩ t ⊂ s ↔ ¬ s ⊆ t := by
-  rw [ssubset_iff_subset_ne, and_iff_right inter_subset_left, Ne, inter_eq_left]
+  rw [inter_comm, inter_ssubset_right_iff]
 
 /-! ### Distributivity laws -/
 
