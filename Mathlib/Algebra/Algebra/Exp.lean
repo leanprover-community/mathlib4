@@ -319,8 +319,17 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
   rw [e6] at e5
   simp at e5
   have lll: ∑ ij ∈ (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)) with ij.1 ≤ N ∧ ij.2 ≤ N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = ∑ ij ∈ (Finset.range (N + 1)).product (Finset.range (N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
-    sorry
-    --rw [Finset.sum_filter]
+    let aaaaa := ((Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1))).filter (fun ij => ij.1 ≤ N ∧ ij.2 ≤ N)
+    let bbbbb := (Finset.range (N + 1)).product (Finset.range (N + 1))
+    have key : aaaaa = bbbbb := by
+      dsimp [aaaaa, bbbbb]
+      sorry
+    apply Finset.sum_congr
+    simp at key
+    simp
+    apply key
+    intro x hx
+    rfl
     --congr
     --ext ⟨i, j⟩
     --simp
