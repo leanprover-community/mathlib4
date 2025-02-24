@@ -553,7 +553,7 @@ lemma IsCircuit.isCocircuit (hC : M.IsCircuit C) : M✶.IsCocircuit C := by
 
 @[aesop unsafe 10% (rule_sets := [Matroid])]
 lemma IsCocircuit.subset_ground (hC : M.IsCocircuit C) : C ⊆ M.E :=
-  hC.circuit.subset_ground
+  hC.isCircuit.subset_ground
 
 @[simp] lemma dual_isCocircuit_iff : M✶.IsCocircuit C ↔ M.IsCircuit C := by
   rw [isCocircuit_def, dual_dual]
