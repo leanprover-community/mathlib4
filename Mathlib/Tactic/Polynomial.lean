@@ -83,6 +83,7 @@ def ExMon.cmp
   | .mon n _, .mon m _ =>
     compare n m
 
+
 /--
 The result of evaluating an (unnormalized) expression `e` into the type family `E`
 (one of `ExSum`, `ExProd`, `ExBase`) is a (normalized) element `e'`
@@ -264,6 +265,7 @@ theorem mul_congr (_ : a = a') (_ : b = b') (_ : a' * b' = c) : (a * b : R) = c 
 
 theorem pow_congr {b b' : ℕ} (_ : a = a') (_ : b = b') (_ : a' ^ b' = c) : (a ^ b : R) = c := by
   subst_vars; rfl
+
 /--
 Evaluates expression `e` of type `α` into a normalized representation as a polynomial.
 This is the main driver of `ring`, which calls out to `evalAdd`, `evalMul` etc.
@@ -301,12 +303,11 @@ partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
       let ⟨blit, pf_isNat⟩ ← try NormNum.deriveNat eb q(Nat.instAddMonoidWithOne) catch
         | _ => throwError "Failed to normalize {eb} to a natural literal 1"
       if ! Expr.isRawNatLit blit then
+        /- This code should be unreachable? -/
         throwError s!"Failed to normalize {eb} to a natural literal 3"
       let b : ℕ := blit.natLit!
-      /- This is just a proof by rfl. What is the right way to do this? -/
-      let p : Q(@Nat.cast ℕ AddMonoidWithOne.toNatCast $blit = $b)
-        ← mkDecideProof q(@Nat.cast ℕ AddMonoidWithOne.toNatCast $blit = $b)
-      let pb : Q($eb = $b) := q(($pf_isNat).out.trans $p)
+      have : @Nat.cast ℕ AddMonoidWithOne.toNatCast $blit =Q $b := ⟨⟩
+      let pb : Q($eb = $b) := q(($pf_isNat).out.trans $this)
       let ⟨_, va, pa⟩ ← eval sα a
       let ⟨c, vc, p⟩ ← evalPow sα b va
       return ⟨c, vc, q(pow_congr $pa $pb $p)⟩
@@ -318,9 +319,95 @@ theorem eq_congr {a b a' b' : Polynomial R} (ha : a = a') (hb : b = b') (h : a' 
   subst ha hb
   exact h
 
+theorem monomial_add_congr (n : ℕ) {P Q : Polynomial R} (hab : a = b) (hPQ : P = Q) :
+    monomial n a + P = monomial n b + Q := by
+  subst_vars
+  rfl
+
+theorem monomial_zero_right (n : ℕ) : monomial n (0:R) = 0 := by
+  simp [monomial]
+
+theorem monomial_zero_add_congr (n : ℕ) {P Q : Polynomial R} (hab : b = 0) (hPQ : P = Q) :
+    P = monomial n b + Q := by
+  rw [hPQ, hab, monomial_zero_right (R := R) n, zero_add]
+
+theorem monomial_add_zero_congr (n : ℕ) {P Q : Polynomial R} (hab : a = 0) (hPQ : P = Q) :
+    monomial n a + P = Q := by
+  rw [hPQ, hab, monomial_zero_right (R := R) n, zero_add]
+
 end evals
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
+-- set_option profiler true
+
+def ExSum.eq_exSum
+    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a b : Q(Polynomial $α)}
+    (goal : MVarId) (e₁ e₂ : Q(Polynomial $α)) (exa : ExSum sα a) (exb : ExSum sα b)
+    : MetaM (List MVarId):=
+  match exa, exb with
+  | .zero, .zero => do
+      goal.assign q(rfl : (0: Polynomial $α) = 0)
+      return []
+  | .add ema exa, .add emb exb => do
+    have m : ℕ := ema.exponent
+    have n : ℕ := emb.exponent
+    have ea : Q($α) := ema.e
+    have eb : Q($α) := emb.e
+    /- TODO: isolate reused code. -/
+    if m == n then
+      IO.println "m = n"
+      /- goal is of the form `monomial n e₁ + _ = monomial n e₂ + _`-/
+      /- Something here feels wrong, I don't like having to do the `@monomial` thing.
+        Should I merge `ExSum` and `Result`?-/
+      have g : Q($ea = $eb) := ← mkFreshExprMVarQ q($ea = $eb)
+      let ~q(monomial _ _ + $P) := e₁
+        | throwError "error a"
+      let ~q(monomial _ _ + $Q) := e₂
+        | throwError "error b"
+      have goal' : Q($P = $Q) := ← mkFreshExprMVarQ q($P = $Q)
+      goal.assign q(monomial_add_congr (R := $α) $n $g $goal')
+      let goals ← exa.eq_exSum goal'.mvarId! P Q exb
+      return g.mvarId! :: goals
+    else if m < n then
+      IO.println "m < n"
+      let ~q(monomial _ _ + $P) := e₁
+        | throwError "error g"
+      have g : Q($ea = 0) := ← mkFreshExprMVarQ q($ea = 0)
+      have goal' : Q($P = $e₂) := ← mkFreshExprMVarQ q($P = $e₂)
+      goal.assign q(monomial_add_zero_congr (R := $α) $m $g $goal')
+      let goals ← exa.eq_exSum goal'.mvarId! P e₂ (.add emb exb)
+      return g.mvarId! :: goals
+    else
+      IO.println "m > n"
+      let ~q(monomial _ _ + $Q) := e₂
+        | throwError "error c"
+      have g : Q($eb = 0) := ← mkFreshExprMVarQ q($eb = 0)
+      have goal' : Q($e₁ = $Q) := ← mkFreshExprMVarQ q($e₁ = $Q)
+      goal.assign q(monomial_zero_add_congr (R := $α) $n $g $goal')
+      let goals ← (ExSum.add ema exa).eq_exSum goal'.mvarId! e₁ Q exb
+      return g.mvarId! :: goals
+  | .add ema exa , .zero => do
+      IO.println "add, zero"
+      have m : ℕ := ema.exponent
+      have ea : Q($α) := ema.e
+      let ~q(monomial _ _ + $P) := e₁
+        | throwError "error g"
+      have g : Q($ea = 0) := ← mkFreshExprMVarQ q($ea = 0)
+      have goal' : Q($P = $e₂) := ← mkFreshExprMVarQ q($P = $e₂)
+      goal.assign q(monomial_add_zero_congr (R := $α) $m $g $goal')
+      let goals ← exa.eq_exSum goal'.mvarId! P e₂ .zero
+      return g.mvarId! :: goals
+  | .zero, .add emb exb  => do
+      have n : ℕ := emb.exponent
+      have eb : Q($α) := emb.e
+      let ~q(monomial _ _ + $Q) := e₂
+        | throwError "error c"
+      have g : Q($eb = 0) := ← mkFreshExprMVarQ q($eb = 0)
+      have goal' : Q($e₁ = $Q) := ← mkFreshExprMVarQ q($e₁ = $Q)
+      goal.assign q(monomial_zero_add_congr (R := $α) $n $g $goal')
+      let goals ← (ExSum.zero).eq_exSum goal'.mvarId! e₁ Q exb
+      return g.mvarId! :: goals
+
 
 def normalize : TacticM Unit := withMainContext do
   let goal ← getMainGoal
@@ -334,11 +421,12 @@ def normalize : TacticM Unit := withMainContext do
   have sα : Q(CommSemiring $α) := ← synthInstanceQ q(CommSemiring $α)
   have e₁ : Q(Polynomial $α) := e₁
   have e₂ : Q(Polynomial $α) := e₂
-  let ⟨a, _, pa⟩ ← eval sα e₁
-  let ⟨b, _, pb⟩ ← eval sα e₂
+  let ⟨a, exa, pa⟩ ← eval sα e₁
+  let ⟨b, exb, pb⟩ ← eval sα e₂
   let g' ← mkFreshExprMVarQ q($a = $b)
   goal.assign q(eq_congr $pa $pb $g' : $e₁ = $e₂)
-  Tactic.pushGoal g'.mvarId!
+  let l ← ExSum.eq_exSum g'.mvarId! a b exa exb
+  Tactic.pushGoals l
 
 elab (name := poly) "poly" : tactic => normalize
 
@@ -356,9 +444,20 @@ example : Polynomial.C (3:ℚ) * .X + .X = .C 4 * .X := by
   poly
   norm_num
 
-
 example : (.C 1 + Polynomial.X)^(5/2)  = .X * .X + .C 2 * .X + .C 1 := by
-  poly
-  norm_num
+  poly <;> norm_num
+
+example : .X^2 + .C (-1) = (.X + Polynomial.C (-1 : ℚ)) * (.X + .C 1) := by
+  poly <;> norm_num
+
+example : (.X + Polynomial.C (-1 : ℚ)) * (.X + .C 1) = .X^2 + .C (-1) := by
+  poly <;> norm_num
+
+
+example (a : ℚ) (ha : a = 0) : Polynomial.C a * .X = .C (1 - 1) := by
+  poly <;> subst ha <;> norm_num
+
+example (a : ℚ) (ha : a = 0) : .C (1 - 1) = Polynomial.C a * .X  := by
+  poly <;> subst ha <;> norm_num
 
 end Mathlib.Tactic.Poly
