@@ -258,6 +258,41 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
         apply h4
         simp
 
+  have e4 : ∑ ij ∈ (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
+    ∑ ij ∈ ((Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1))) with ij.1 + ij.2 ≤ 2 * N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) +
+    ∑ ij ∈ ((Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1))) with ¬ ij.1 + ij.2 ≤ 2 * N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
+      rw [Finset.sum_filter_add_sum_filter_not]
+
+  have e5 : ∑ ij ∈ ((Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1))) with ¬ ij.1 + ij.2 ≤ 2 * N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 := by
+    apply Finset.sum_eq_zero
+    intro i hi
+    simp at hi
+    obtain ⟨hi1, hi2⟩ := hi
+    have help : N + 1 ≤ i.1 ∨ N + 1 ≤ i.2 := by
+      by_contra h
+      simp at h
+      obtain ⟨hi11, hi21⟩ := h
+      linarith
+    cases help with
+    | inl h1 =>
+      have qqq : a ^ (i.1) = 0 := zero_ev A h₃ h1
+      rw [qqq]
+      simp
+    | inr h1 =>
+      have qqq : b ^ (i.2) = 0 := zero_ev A h₄ h1
+      rw [qqq]
+      simp
+  rw [e5] at e4
+  simp at e4
+  simp at e₁
+  rw [← e4] at e₁
+
+
+
+  have e3 : ∑ ij ∈ (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
+    ∑ ij ∈ Finset.filter (fun ij ↦ ij.1 + ij.2 ≤ 2 * N) ((Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1))), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
+    --rw [sum_union]
+    sorry
 
 
   sorry
