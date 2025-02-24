@@ -3,9 +3,9 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
+import Mathlib.Algebra.Group.Action.End
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Tactic.Common
 
@@ -328,12 +328,12 @@ theorem subtypePerm_mul (f g : Perm α) (hf hg) :
 private theorem inv_aux : (∀ x, p x ↔ p (f x)) ↔ ∀ x, p x ↔ p (f⁻¹ x) :=
   f⁻¹.surjective.forall.trans <| by simp_rw [f.apply_inv_self, Iff.comm]
 
-/-- See `Equiv.Perm.inv_subtypePerm`-/
+/-- See `Equiv.Perm.inv_subtypePerm`. -/
 theorem subtypePerm_inv (f : Perm α) (hf) :
     f⁻¹.subtypePerm hf = (f.subtypePerm <| inv_aux.2 hf : Perm { x // p x })⁻¹ :=
   rfl
 
-/-- See `Equiv.Perm.subtypePerm_inv`-/
+/-- See `Equiv.Perm.subtypePerm_inv`. -/
 @[simp]
 theorem inv_subtypePerm (f : Perm α) (hf) :
     (f.subtypePerm hf : Perm { x // p x })⁻¹ = f⁻¹.subtypePerm (inv_aux.1 hf) :=
@@ -359,7 +359,7 @@ private theorem zpow_aux (hf : ∀ x, p x ↔ p (f x)) : ∀ {n : ℤ} (x), p x 
 @[simp]
 theorem subtypePerm_zpow (f : Perm α) (n : ℤ) (hf) :
     (f.subtypePerm hf ^ n : Perm { x // p x }) = (f ^ n).subtypePerm (zpow_aux hf) := by
-  induction n with
+  cases n with
   | ofNat n => exact subtypePerm_pow _ _ _
   | negSucc n => simp only [zpow_negSucc, subtypePerm_pow, subtypePerm_inv]
 

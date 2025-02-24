@@ -43,7 +43,7 @@ def modSwap (i j : α) : Setoid (Perm α) :=
   ⟨fun σ τ => σ = τ ∨ σ = swap i j * τ, fun σ => Or.inl (refl σ), fun {σ τ} h =>
     Or.casesOn h (fun h => Or.inl h.symm) fun h => Or.inr (by rw [h, swap_mul_self_mul]),
     fun {σ τ υ} hστ hτυ => by
-    cases' hστ with hστ hστ <;> cases' hτυ with hτυ hτυ <;>
+    rcases hστ with hστ | hστ <;> rcases hτυ with hτυ | hτυ <;>
       (try rw [hστ, hτυ, swap_mul_self_mul]) <;>
       simp [hστ, hτυ]⟩
 
@@ -96,7 +96,7 @@ is preserved under composition with a non-trivial swap, then `P` holds for all p
 theorem swap_induction_on [Finite α] {P : Perm α → Prop} (f : Perm α) :
     P 1 → (∀ f x y, x ≠ y → P f → P (swap x y * f)) → P f := by
   cases nonempty_fintype α
-  cases' (truncSwapFactors f).out with l hl
+  obtain ⟨l, hl⟩ := (truncSwapFactors f).out
   induction' l with g l ih generalizing f
   · simp +contextual only [hl.left.symm, List.prod_nil, forall_true_iff]
   · intro h1 hmul_swap

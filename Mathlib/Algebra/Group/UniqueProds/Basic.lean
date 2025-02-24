@@ -134,7 +134,7 @@ theorem exists_iff_exists_existsUnique :
   ⟨fun ⟨_, _, hA, hB, h⟩ ↦ ⟨_, (iff_existsUnique hA hB).mp h⟩, fun ⟨g, h⟩ ↦ by
     have h' := h
     rcases h' with ⟨⟨a, b⟩, ⟨hab, rfl, -⟩, -⟩
-    cases' Finset.mem_product.mp hab with ha hb
+    obtain ⟨ha, hb⟩ := Finset.mem_product.mp hab
     exact ⟨a, b, ha, hb, (iff_existsUnique ha hb).mpr h⟩⟩
 
 /-- `UniqueMul` is preserved by inverse images under injective, multiplicative maps. -/

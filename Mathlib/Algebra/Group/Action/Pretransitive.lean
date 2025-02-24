@@ -75,30 +75,10 @@ end MulAction
 
 namespace MulAction
 
-variable (α)
-
-/-- If an action is transitive, then composing this action with a surjective homomorphism gives
-again a transitive action. -/
-@[to_additive]
-lemma isPretransitive_compHom {E F G : Type*} [Monoid E] [Monoid F] [MulAction F G]
-    [IsPretransitive F G] {f : E →* F} (hf : Surjective f) :
-    letI : MulAction E G := MulAction.compHom _ f
-    IsPretransitive E G := by
-  let _ : MulAction E G := MulAction.compHom _ f
-  refine ⟨fun x y ↦ ?_⟩
-  obtain ⟨m, rfl⟩ : ∃ m : F, m • x = y := exists_smul_eq F x y
-  obtain ⟨e, rfl⟩ : ∃ e, f e = m := hf m
-  exact ⟨e, rfl⟩
-
 @[to_additive]
 lemma IsPretransitive.of_smul_eq {M N α : Type*} [SMul M α] [SMul N α] [IsPretransitive M α]
     (f : M → N) (hf : ∀ {c : M} {x : α}, f c • x = c • x) : IsPretransitive N α where
   exists_smul_eq x y := (exists_smul_eq x y).elim fun m h ↦ ⟨f m, hf.trans h⟩
-
-@[to_additive]
-lemma IsPretransitive.of_compHom {M N α : Type*} [Monoid M] [Monoid N] [MulAction N α]
-    (f : M →* N) [h : letI := compHom α f; IsPretransitive M α] : IsPretransitive N α :=
-  letI := compHom α f; h.of_smul_eq f rfl
 
 end MulAction
 

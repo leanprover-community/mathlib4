@@ -649,7 +649,7 @@ theorem multiplicity_neg (a b : α) : multiplicity a (-b) = multiplicity a b :=
 
 theorem Int.emultiplicity_natAbs (a : ℕ) (b : ℤ) :
     emultiplicity a b.natAbs = emultiplicity (a : ℤ) b := by
-  cases' Int.natAbs_eq b with h h <;> conv_rhs => rw [h]
+  rcases Int.natAbs_eq b with h | h <;> conv_rhs => rw [h]
   · rw [Int.natCast_emultiplicity]
   · rw [emultiplicity_neg, Int.natCast_emultiplicity]
 

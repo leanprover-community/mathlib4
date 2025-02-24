@@ -100,7 +100,7 @@ def mkSymmCongruencesKey (lhs rhs : Expr) : CCM SymmCongruencesKey := do
 
 /-- Auxiliary function for comparing `lhs₁ ~ rhs₁` and `lhs₂ ~ rhs₂`,
     when `~` is symmetric/commutative.
-    It returns `true` (equal) for `a ~ b` `b ~ a`-/
+It returns `true` (equal) for `a ~ b` `b ~ a`. -/
 def compareSymmAux (lhs₁ rhs₁ lhs₂ rhs₂ : Expr) : CCM Bool := do
   let lhs₁ ← getRoot lhs₁
   let rhs₁ ← getRoot rhs₁

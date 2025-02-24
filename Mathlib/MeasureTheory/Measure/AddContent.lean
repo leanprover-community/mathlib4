@@ -137,7 +137,7 @@ lemma addContent_eq_add_disjointOfDiffUnion_of_subset (hC : IsSetSemiring C)
   · rwa [hC.sUnion_union_disjointOfDiffUnion_of_subset hs hI hI_ss]
 
 /-- For an `m : addContent C` on a `SetSemiring C`, if `I` is a `Finset` of pairwise disjoint
-  sets in `C` and `⋃₀ I ⊆ t` for `t ∈ C`, then `∑ s ∈ I, m s ≤ m t`.-/
+  sets in `C` and `⋃₀ I ⊆ t` for `t ∈ C`, then `∑ s ∈ I, m s ≤ m t`. -/
 lemma sum_addContent_le_of_subset (hC : IsSetSemiring C)
     (h_ss : ↑I ⊆ C) (h_dis : PairwiseDisjoint (I : Set (Set α)) id)
     (ht : t ∈ C) (hJt : ∀ s ∈ I, s ⊆ t) :
@@ -157,7 +157,7 @@ lemma addContent_mono (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
   · simp [hst]
 
 /-- For an `m : addContent C` on a `SetSemiring C` and `s t : Set α` with `s ⊆ t`, we can write
-`m t = m s + ∑ i in hC.disjointOfDiff ht hs, m i`.-/
+`m t = m s + ∑ i in hC.disjointOfDiff ht hs, m i`. -/
 theorem eq_add_disjointOfDiff_of_subset (hC : IsSetSemiring C)
     (hs : s ∈ C) (ht : t ∈ C) (hst : s ⊆ t) :
     m t = m s + ∑ i ∈ hC.disjointOfDiff ht hs, m i := by
@@ -173,7 +173,7 @@ theorem eq_add_disjointOfDiff_of_subset (hC : IsSetSemiring C)
   · rw [coe_insert]
     rwa [hC.sUnion_insert_disjointOfDiff ht hs hst]
 
-/-- An `addContent C` on a `SetSemiring C` is sub-additive.-/
+/-- An `addContent C` on a `SetSemiring C` is sub-additive. -/
 lemma addContent_sUnion_le_sum {m : AddContent C} (hC : IsSetSemiring C)
     (J : Finset (Set α)) (h_ss : ↑J ⊆ C) (h_mem : ⋃₀ ↑J ∈ C) :
     m (⋃₀ ↑J) ≤ ∑ u ∈ J, m u := by

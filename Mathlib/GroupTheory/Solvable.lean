@@ -189,7 +189,7 @@ theorem IsSimpleGroup.derivedSeries_succ {n : ℕ} : derivedSeries G n.succ = co
   | zero => exact derivedSeries_one G
   | succ n ih =>
     rw [_root_.derivedSeries_succ, ih, _root_.commutator]
-    cases' (commutator_normal (⊤ : Subgroup G) (⊤ : Subgroup G)).eq_bot_or_eq_top with h h
+    rcases (commutator_normal (⊤ : Subgroup G) (⊤ : Subgroup G)).eq_bot_or_eq_top with h | h
     · rw [h, commutator_bot_left]
     · rwa [h]
 

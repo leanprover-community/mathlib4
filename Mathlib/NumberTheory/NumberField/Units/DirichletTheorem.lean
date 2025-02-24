@@ -33,7 +33,7 @@ fundamental system `fundSystem`.
 
 ## Tags
 number field, units, Dirichlet unit theorem
- -/
+-/
 
 open scoped NumberField
 

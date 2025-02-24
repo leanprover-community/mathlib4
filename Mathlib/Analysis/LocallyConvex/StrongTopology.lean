@@ -31,7 +31,7 @@ open Topology UniformConvergence
 variable {R 𝕜₁ 𝕜₂ E F : Type*}
 
 variable [AddCommGroup E] [TopologicalSpace E] [AddCommGroup F] [TopologicalSpace F]
-  [TopologicalAddGroup F]
+  [IsTopologicalAddGroup F]
 
 section General
 
