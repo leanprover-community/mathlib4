@@ -38,8 +38,8 @@ def piQuotientLift [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
 @[simp]
 theorem piQuotientLift_mk [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
     (q : Submodule R N) (f : ∀ i, Ms i →ₗ[R] N) (hf : ∀ i, p i ≤ q.comap (f i)) (x : ∀ i, Ms i) :
-    (piQuotientLift p q f hf fun i => Quotient.mk (x i)) = Quotient.mk (lsum _ _ R f x) := by
-  rw [piQuotientLift, lsum_apply, sum_apply, ← mkQ_apply, lsum_apply, sum_apply, _root_.map_sum]
+    (piQuotientLift p q f hf fun i => mkQ _ (x i)) = mkQ _ (lsum _ _ R f x) := by
+  rw [piQuotientLift, lsum_apply, sum_apply, lsum_apply, sum_apply, _root_.map_sum]
   simp only [coe_proj, mapQ_apply, mkQ_apply, comp_apply]
 
 @[simp]
@@ -66,7 +66,7 @@ def quotientPiLift (p : ∀ i, Submodule R (Ms i)) (f : ∀ i, Ms i →ₗ[R] Ns
 @[simp]
 theorem quotientPiLift_mk (p : ∀ i, Submodule R (Ms i)) (f : ∀ i, Ms i →ₗ[R] Ns i)
     (hf : ∀ i, p i ≤ ker (f i)) (x : ∀ i, Ms i) :
-    quotientPiLift p f hf (Quotient.mk x) = fun i => f i (x i) :=
+    quotientPiLift p f hf (mkQ _ x) = fun i => f i (x i) :=
   rfl
 
 namespace quotientPi_aux
@@ -92,22 +92,21 @@ def invFun : (∀ i, Ms i ⧸ p i) → (∀ i, Ms i) ⧸ pi Set.univ p :=
   piQuotientLift p (pi Set.univ p) _ fun _ => le_comap_single_pi p
 
 theorem left_inv : Function.LeftInverse (invFun p) (toFun p) := fun x =>
-  Submodule.Quotient.induction_on _ x fun x' => by
+  Submodule.Quotient.induction_on' _ x fun x' => by
     dsimp only [toFun, invFun]
-    rw [quotientPiLift_mk p, funext fun i => (mkQ_apply (p i) (x' i)), piQuotientLift_mk p,
+    rw [quotientPiLift_mk p, piQuotientLift_mk p,
       lsum_single, id_apply]
 
 theorem right_inv : Function.RightInverse (invFun p) (toFun p) := by
   dsimp only [toFun, invFun]
   rw [Function.rightInverse_iff_comp, ← coe_comp, ← @id_coe R]
-  refine congr_arg _ (pi_ext fun i x => Submodule.Quotient.induction_on _ x fun x' =>
+  refine congr_arg _ (pi_ext fun i x => Submodule.Quotient.induction_on' _ x fun x' =>
     funext fun j => ?_)
-  rw [comp_apply, piQuotientLift_single, mapQ_apply,
-    quotientPiLift_mk, id_apply]
-  by_cases hij : i = j <;> simp only [mkQ_apply, coe_single]
+  rw [comp_apply, piQuotientLift_single, id_apply, mapQ_apply_mkQ, quotientPiLift_mk]
+  by_cases hij : i = j <;> simp only [coe_single]
   · subst hij
     rw [Pi.single_eq_same, Pi.single_eq_same]
-  · rw [Pi.single_eq_of_ne (Ne.symm hij), Pi.single_eq_of_ne (Ne.symm hij), Quotient.mk_zero]
+  · rw [Pi.single_eq_of_ne (Ne.symm hij), Pi.single_eq_of_ne (Ne.symm hij), mkQ_zero]
 
 end quotientPi_aux
 
