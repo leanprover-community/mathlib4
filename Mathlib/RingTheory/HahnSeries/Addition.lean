@@ -257,7 +257,7 @@ end AddMonoid
 
 section AddCommMonoid
 
-variable [AddCommMonoid R] {α : Type*}
+variable [AddCommMonoid R]
 
 instance : AddCommMonoid (HahnSeries Γ R) :=
   { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
@@ -266,7 +266,7 @@ instance : AddCommMonoid (HahnSeries Γ R) :=
       apply add_comm }
 
 @[simp]
-theorem coeff_sum {x : α → HahnSeries Γ R} {s : Finset α} (g : Γ) :
+theorem coeff_sum {s : Finset α} {x : α → HahnSeries Γ R} (g : Γ) :
     (∑ i ∈ s, x i).coeff g = ∑ i ∈ s, (x i).coeff g :=
   cons_induction rfl (fun i s his hsum => by rw [sum_cons, sum_cons, coeff_add, hsum]) s
 

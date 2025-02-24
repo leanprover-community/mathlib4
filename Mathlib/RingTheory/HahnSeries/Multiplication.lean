@@ -22,7 +22,7 @@ Hahn series.
   of `HahnSeries Γ R` on `HahnModule Γ' R V` for an `R`-module `V`, where `Γ'` admits an ordered
   cancellative vector addition operation from `Γ`.
 
-  ## Main results
+## Main results
   * If `R` is a (commutative) (semi-)ring, then so is `HahnSeries Γ R`.
   * If `V` is an `R`-module, then `HahnModule Γ' R V` is a `HahnSeries Γ R`-module.
 
@@ -585,7 +585,7 @@ private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
   simp only [coeff_mul, coeff_add, sum_mul, mul_sum, sum_sigma']
   apply Finset.sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l + j), (l, j)⟩)
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;>
-  aesop (add safe Set.add_mem_add) (add simp [add_assoc, mul_assoc])
+    aesop (add safe Set.add_mem_add) (add simp [add_assoc, mul_assoc])
 
 instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (HahnSeries Γ R) :=
   { inferInstanceAs (AddCommMonoid (HahnSeries Γ R)),

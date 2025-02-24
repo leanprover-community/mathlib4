@@ -231,7 +231,7 @@ section Order
 
 open Classical in
 /-- The orderTop of a Hahn series `x` is a minimal element of `WithTop Γ` where `x` has a nonzero
-  coefficient if `x ≠ 0`, and is `⊤` when `x = 0`. -/
+coefficient if `x ≠ 0`, and is `⊤` when `x = 0`. -/
 def orderTop (x : HahnSeries Γ R) : WithTop Γ :=
   if h : x = 0 then ⊤ else x.isWF_support.min (support_nonempty_iff.2 h)
 
@@ -563,8 +563,8 @@ section LocallyFiniteLinearOrder
 
 variable [Zero R] [LinearOrder Γ]
 
-theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ)
-    (hn : ∀(m : Γ), m < n → f m = 0) : BddBelow (Function.support f) := by
+theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀(m : Γ), m < n → f m = 0) :
+    BddBelow (Function.support f) := by
   simp only [BddBelow, Set.Nonempty, lowerBounds]
   use n
   intro m hm
@@ -582,18 +582,16 @@ theorem suppBddBelow_supp_PWO (f : Γ → R) (hf : BddBelow (Function.support f)
 
 /-- Construct a Hahn series from any function whose support is bounded below. -/
 @[simps]
-def ofSuppBddBelow (f : Γ → R)
-    (hf : BddBelow (Function.support f)) : HahnSeries Γ R where
+def ofSuppBddBelow (f : Γ → R) (hf : BddBelow (Function.support f)) : HahnSeries Γ R where
   coeff := f
   isPWO_support' := suppBddBelow_supp_PWO f hf
 
 @[simp]
-theorem zero_ofSuppBddBelow [Nonempty Γ] :
-    ofSuppBddBelow 0 BddBelow_zero = (0 : HahnSeries Γ R) :=
+theorem zero_ofSuppBddBelow [Nonempty Γ] : ofSuppBddBelow 0 BddBelow_zero = (0 : HahnSeries Γ R) :=
   rfl
 
-theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R)
-    (hf : f ≠ 0) (n : Γ) (hn : ∀(m : Γ), m < n → f m = 0) :
+theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
+    (hn : ∀(m : Γ), m < n → f m = 0) :
     n ≤ order (ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn)) := by
   dsimp only [order]
   by_cases h : ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn) = 0
