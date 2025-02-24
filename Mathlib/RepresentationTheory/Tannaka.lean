@@ -34,7 +34,7 @@ universe u
 
 namespace TannakaDuality
 
-variable {k G : Type u} [Field k] [Group G]
+variable {k G : Type u} [CommRing k] [Group G]
 
 section definitions
 
@@ -115,7 +115,7 @@ end definitions
 
 variable [Fintype G]
 
-lemma T_injective [DecidableEq G] : Function.Injective (T k G) := by
+lemma T_injective [Nontrivial k] [DecidableEq G] : Function.Injective (T k G) := by
   rw [injective_iff_map_eq_one]
   intro s h
   apply_fun α at h
@@ -124,7 +124,7 @@ lemma T_injective [DecidableEq G] : Function.Injective (T k G) := by
   simp_all [single_apply]
 
 /-- An algebra morphism `φ : (G → k) →ₐ[k] k` is an evaluation map. -/
-lemma eval_of_alghom {G : Type u} [DecidableEq G] [Fintype G] (φ : (G → k) →ₐ[k] k) :
+lemma eval_of_alghom [IsDomain k] {G : Type u} [DecidableEq G] [Fintype G] (φ : (G → k) →ₐ[k] k) :
     ∃ (s : G), φ = evalAlgHom _ _ s := by
   have h1 := map_one φ
   rw [← univ_sum_single (1 : G → k), map_sum] at h1
@@ -193,7 +193,7 @@ def τₗFDRepHom (s : G) : fdRepτᵣ k G ⟶ fdRepτᵣ k G where
     change (τₗ s) ((τᵣ t) f) u = (τᵣ t) ((τₗ s) f) u
     simp [mul_assoc]
 
-lemma image_α_in_image_τᵣ (η : Aut (F k G)) : ∃ (s : G), α η = τᵣ s := by
+lemma image_α_in_image_τᵣ [IsDomain k] (η : Aut (F k G)) : ∃ (s : G), α η = τᵣ s := by
   obtain ⟨s, hs⟩ := eval_of_alghom ((evalAlgHom _ _ 1).comp (algHomOfα η))
   use s
   apply Basis.ext (basisFun k G)
@@ -260,17 +260,17 @@ lemma α_injective (η₁ η₂ : Aut (F k G)) (h : α η₁ = α η₂) : η₁
   rw [φ_e_one_eq_id] at h1
   exact h1
 
-lemma T_surjective : Function.Surjective (T k G) := by
+lemma T_surjective [IsDomain k] : Function.Surjective (T k G) := by
   intro η
   obtain ⟨s, h⟩ := image_α_in_image_τᵣ η
   use s
   apply α_injective
   exact h.symm
 
-theorem tannaka_duality : Function.Bijective (T k G) :=
+theorem tannaka_duality [IsDomain k] : Function.Bijective (T k G) :=
   ⟨T_injective, T_surjective⟩
 
 variable (k G) in
-def equiv : G ≃* Aut (F k G) := MulEquiv.ofBijective (T k G) tannaka_duality
+def equiv [IsDomain k] : G ≃* Aut (F k G) := MulEquiv.ofBijective (T k G) tannaka_duality
 
 end TannakaDuality
