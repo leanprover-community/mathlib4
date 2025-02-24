@@ -1221,12 +1221,12 @@ lemma IsOpen.preimage_val {s t : Set X} (ht : IsOpen t) : IsOpen (s ↓∩ t) :=
 lemma IsClosed.preimage_val {s t : Set X} (ht : IsClosed t) : IsClosed (s ↓∩ t) :=
   ht.preimage continuous_subtype_val
 
-lemma IsOpen.inter_preimage_val_iff {s t : Set X} (hs : IsOpen s) :
+@[simp] lemma IsOpen.inter_preimage_val_iff {s t : Set X} (hs : IsOpen s) :
     IsOpen (s ↓∩ t) ↔ IsOpen (s ∩ t) :=
   ⟨fun h ↦ by simpa using hs.isOpenMap_subtype_val _ h,
     fun h ↦ (Subtype.preimage_coe_self_inter _ _).symm ▸ h.preimage_val⟩
 
-lemma IsClosed.inter_preimage_val_iff {s t : Set X} (hs : IsClosed s) :
+@[simp] lemma IsClosed.inter_preimage_val_iff {s t : Set X} (hs : IsClosed s) :
     IsClosed (s ↓∩ t) ↔ IsClosed (s ∩ t) :=
   ⟨fun h ↦ by simpa using hs.isClosedMap_subtype_val _ h,
     fun h ↦ (Subtype.preimage_coe_self_inter _ _).symm ▸ h.preimage_val⟩
