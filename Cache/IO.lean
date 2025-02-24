@@ -436,7 +436,7 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
       else
         -- provided a module
         let mod := argₛ.toName
-        let packageDir ← getPackageDir mod
+        let srcDir ← getSrcDir mod
         let sourceFile ← Lean.findLean sp mod
 
         if ← sourceFile.pathExists then
@@ -450,7 +450,7 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
           IO.println s!"Searching directory {folder} for .lean files"
           if ← folder.pathExists then
             -- provided "module name" of an existing folder: walk dir
-            let leanModulesInFolder ← walkDir folder packageDir
+            let leanModulesInFolder ← walkDir folder srcDir
             pure <| acc.insertMany leanModulesInFolder
           else
             IO.eprintln s!"Invalid argument: non-existing module {mod}"
