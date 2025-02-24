@@ -1026,7 +1026,7 @@ theorem mod_eq_of_lt {a b : Ordinal} (h : a < b) : a % b = a := by
 theorem zero_mod (b : Ordinal) : 0 % b = 0 := by simp only [mod_def, zero_div, mul_zero, sub_self]
 
 @[simp]
-theorem nat_mod_omega0 (n : ℕ) : n % ω = n :=
+theorem natCast_mod_omega0 (n : ℕ) : n % ω = n :=
   mod_eq_of_lt (nat_lt_omega0 n)
 
 theorem div_add_mod (a b : Ordinal) : b * (a / b) + a % b = a :=
