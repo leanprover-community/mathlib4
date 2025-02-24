@@ -94,7 +94,7 @@ variable {C₉ : Type u₉} [Category.{v₉} C₉] {R₃ : C₆ ⥤ C₉} {B₃ 
 
 /-- When composing 2-squares which form a diagram of grid, compositing horionzall first yields the
 same result as composing vertically first. -/
-lemma hCompVComphComp (w₁ : TwoSquare T L R B) (w₂ : TwoSquare T' R R' B')
+lemma hCompVCompHComp (w₁ : TwoSquare T L R B) (w₂ : TwoSquare T' R R' B')
     (w₃ : TwoSquare B L' R'' B'') (w₄ : TwoSquare B' R'' R₃ B₃) :
     (w₁ ≫ₕ w₂) ≫ᵥ (w₃ ≫ₕ w₄) = (w₁ ≫ᵥ w₃) ≫ₕ (w₂ ≫ᵥ w₄) := by
   unfold hComp vComp
