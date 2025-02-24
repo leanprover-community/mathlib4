@@ -452,7 +452,7 @@ theorem addVal_add {a b : R} : min (addVal R a) (addVal R b) ≤ addVal R (a + b
   (addVal R).map_add _ _
 
 @[simp]
-lemma addVal_val_unit (u : Rˣ) :
+lemma addVal_eq_zero_of_unit (u : Rˣ) :
     addVal R u = 0 := by
   obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
   rw [addVal_def (u : R) u hϖ 0] <;>
