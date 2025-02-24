@@ -21,7 +21,7 @@ an `OmegaCompletePartialOrder`.
  * `ωCPO`
    * an instance of `Category` and `HasForget`
 
- -/
+-/
 
 
 open CategoryTheory

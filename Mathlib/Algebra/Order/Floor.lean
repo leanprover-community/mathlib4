@@ -3,12 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
-import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Group.Int.Even
 import Mathlib.Algebra.Group.Int.Units
-import Mathlib.Data.Int.Lemmas
+import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Data.Nat.Cast.Order.Field
+import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Monotone
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Order.Interval.Set.Defs
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
@@ -526,7 +528,7 @@ theorem subsingleton_floorSemiring {α} [LinearOrderedSemiring α] :
   have : H₁.ceil = H₂.ceil := funext fun a => (H₁.gc_ceil.l_unique H₂.gc_ceil) fun n => rfl
   have : H₁.floor = H₂.floor := by
     ext a
-    cases' lt_or_le a 0 with h h
+    rcases lt_or_le a 0 with h | h
     · rw [H₁.floor_of_neg, H₂.floor_of_neg] <;> exact h
     · refine eq_of_forall_le_iff fun n => ?_
       rw [H₁.gc_floor, H₂.gc_floor] <;> exact h
