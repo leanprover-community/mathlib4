@@ -50,7 +50,7 @@ def degree (p : R[X]) : WithBot ℕ :=
 def natDegree (p : R[X]) : ℕ :=
   (degree p).unbotD 0
 
-/-- `leadingCoeff p` gives the coefficient of the highest power of `X` in `p`-/
+/-- `leadingCoeff p` gives the coefficient of the highest power of `X` in `p`. -/
 def leadingCoeff (p : R[X]) : R :=
   coeff p (natDegree p)
 
@@ -329,7 +329,7 @@ theorem degree_add_le_of_le {a b : WithBot ℕ} (hp : degree p ≤ a) (hq : degr
   (p.degree_add_le q).trans <| max_le_max ‹_› ‹_›
 
 theorem natDegree_add_le (p q : R[X]) : natDegree (p + q) ≤ max (natDegree p) (natDegree q) := by
-  cases' le_max_iff.1 (degree_add_le p q) with h h <;> simp [natDegree_le_natDegree h]
+  rcases le_max_iff.1 (degree_add_le p q) with h | h <;> simp [natDegree_le_natDegree h]
 
 theorem natDegree_add_le_of_degree_le {p q : R[X]} {n : ℕ} (hp : natDegree p ≤ n)
     (hq : natDegree q ≤ n) : natDegree (p + q) ≤ n :=

@@ -40,6 +40,7 @@ pequiv, partial equivalence
 
 -/
 
+assert_not_exists RelIso
 
 universe u v w x
 

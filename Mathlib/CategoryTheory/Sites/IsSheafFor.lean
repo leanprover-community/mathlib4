@@ -357,7 +357,7 @@ theorem FamilyOfElements.IsAmalgamation.compPresheafMap {x : FamilyOfElements P 
 
 theorem is_compatible_of_exists_amalgamation (x : FamilyOfElements P R)
     (h : ∃ t, x.IsAmalgamation t) : x.Compatible := by
-  cases' h with t ht
+  obtain ⟨t, ht⟩ := h
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ comm
   rw [← ht _ h₁, ← ht _ h₂, ← FunctorToTypes.map_comp_apply, ← op_comp, comm]
   simp

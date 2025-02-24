@@ -114,14 +114,14 @@ instance [Neg R] [Neg M] [ContinuousNeg R] [ContinuousNeg M] : ContinuousNeg (ts
   Prod.continuousNeg
 
 /-- This is not an instance due to complaints by the `fails_quickly` linter. At any rate, we only
-really care about the `TopologicalRing` instance below. -/
+really care about the `IsTopologicalRing` instance below. -/
 theorem topologicalSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
-    [TopologicalSemiring R] [ContinuousAdd M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
-    TopologicalSemiring (tsze R M) := { }
+    [IsTopologicalSemiring R] [ContinuousAdd M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
+    IsTopologicalSemiring (tsze R M) := { }
 
-instance [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [TopologicalRing R]
-    [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
-    TopologicalRing (tsze R M) where
+instance [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [IsTopologicalRing R]
+    [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
+    IsTopologicalRing (tsze R M) where
 
 instance [SMul S R] [SMul S M] [ContinuousConstSMul S R] [ContinuousConstSMul S M] :
     ContinuousConstSMul S (tsze R M) :=

@@ -76,8 +76,11 @@ def subtype (s : S) : s →⋆ₙₐ[R] A :=
     map_star' := fun _ => rfl }
 
 @[simp]
-theorem coeSubtype : (subtype s : s → A) = Subtype.val :=
+theorem coe_subtype : (subtype s : s → A) = Subtype.val :=
   rfl
+
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
 
 end NonUnitalStarSubalgebraClass
 

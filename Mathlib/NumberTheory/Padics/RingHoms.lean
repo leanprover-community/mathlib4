@@ -3,8 +3,9 @@ Copyright (c) 2020 Johan Commelin, Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.RingTheory.LocalRing.ResidueField.Defs
+import Mathlib.Algebra.Field.ZMod
 import Mathlib.NumberTheory.Padics.PadicIntegers
+import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.ZMod
 
 /-!

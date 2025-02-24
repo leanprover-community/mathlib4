@@ -276,3 +276,102 @@ structure LowerSet (α : Type*) [LE α] where
   lower' : IsLowerSet carrier
 
 extend_docs LowerSet before "The type of lower sets of an order."
+
+variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
+
+theorem of_eq [IsRefl α r] : ∀ {a b}, a = b → r a b
+  | _, _, .refl _ => refl _
+
+theorem comm [IsSymm α r] {a b : α} : r a b ↔ r b a :=
+  ⟨symm, symm⟩
+
+theorem antisymm' [IsAntisymm α r] {a b : α} : r a b → r b a → b = a := fun h h' => antisymm h' h
+
+theorem antisymm_iff [IsRefl α r] [IsAntisymm α r] {a b : α} : r a b ∧ r b a ↔ a = b :=
+  ⟨fun h => antisymm h.1 h.2, by
+    rintro rfl
+    exact ⟨refl _, refl _⟩⟩
+
+/-- A version of `antisymm` with `r` explicit.
+
+This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
+@[elab_without_expected_type]
+theorem antisymm_of (r : α → α → Prop) [IsAntisymm α r] {a b : α} : r a b → r b a → a = b :=
+  antisymm
+
+/-- A version of `antisymm'` with `r` explicit.
+
+This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
+@[elab_without_expected_type]
+theorem antisymm_of' (r : α → α → Prop) [IsAntisymm α r] {a b : α} : r a b → r b a → b = a :=
+  antisymm'
+
+/-- A version of `comm` with `r` explicit.
+
+This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
+theorem comm_of (r : α → α → Prop) [IsSymm α r] {a b : α} : r a b ↔ r b a :=
+  comm
+
+protected theorem IsAsymm.isAntisymm (r) [IsAsymm α r] : IsAntisymm α r :=
+  ⟨fun _ _ h₁ h₂ => (_root_.asymm h₁ h₂).elim⟩
+
+protected theorem IsAsymm.isIrrefl [IsAsymm α r] : IsIrrefl α r :=
+  ⟨fun _ h => _root_.asymm h h⟩
+
+protected theorem IsTotal.isTrichotomous (r) [IsTotal α r] : IsTrichotomous α r :=
+  ⟨fun a b => or_left_comm.1 (Or.inr <| total_of r a b)⟩
+
+-- see Note [lower instance priority]
+instance (priority := 100) IsTotal.to_isRefl (r) [IsTotal α r] : IsRefl α r :=
+  ⟨fun a => or_self_iff.1 <| total_of r a a⟩
+
+theorem ne_of_irrefl {r} [IsIrrefl α r] : ∀ {x y : α}, r x y → x ≠ y
+  | _, _, h, rfl => irrefl _ h
+
+theorem ne_of_irrefl' {r} [IsIrrefl α r] : ∀ {x y : α}, r x y → y ≠ x
+  | _, _, h, rfl => irrefl _ h
+
+theorem not_rel_of_subsingleton (r) [IsIrrefl α r] [Subsingleton α] (x y) : ¬r x y :=
+  Subsingleton.elim x y ▸ irrefl x
+
+theorem rel_of_subsingleton (r) [IsRefl α r] [Subsingleton α] (x y) : r x y :=
+  Subsingleton.elim x y ▸ refl x
+
+@[simp]
+theorem empty_relation_apply (a b : α) : EmptyRelation a b ↔ False :=
+  Iff.rfl
+
+instance : IsIrrefl α EmptyRelation :=
+  ⟨fun _ => id⟩
+
+theorem rel_congr_left [IsSymm α r] [IsTrans α r] {a b c : α} (h : r a b) : r a c ↔ r b c :=
+  ⟨trans_of r (symm_of r h), trans_of r h⟩
+
+theorem rel_congr_right [IsSymm α r] [IsTrans α r] {a b c : α} (h : r b c) : r a b ↔ r a c :=
+  ⟨(trans_of r · h), (trans_of r · (symm_of r h))⟩
+
+theorem rel_congr [IsSymm α r] [IsTrans α r] {a b c d : α} (h₁ : r a b) (h₂ : r c d) :
+    r a c ↔ r b d := by
+  rw [rel_congr_left h₁, rel_congr_right h₂]
+
+theorem trans_trichotomous_left [IsTrans α r] [IsTrichotomous α r] {a b c : α}
+    (h₁ : ¬r b a) (h₂ : r b c) : r a c := by
+  rcases trichotomous_of r a b with (h₃ | rfl | h₃)
+  · exact _root_.trans h₃ h₂
+  · exact h₂
+  · exact absurd h₃ h₁
+
+theorem trans_trichotomous_right [IsTrans α r] [IsTrichotomous α r] {a b c : α}
+    (h₁ : r a b) (h₂ : ¬r c b) : r a c := by
+  rcases trichotomous_of r b c with (h₃ | rfl | h₃)
+  · exact _root_.trans h₁ h₃
+  · exact h₁
+  · exact absurd h₃ h₂
+
+theorem transitive_of_trans (r : α → α → Prop) [IsTrans α r] : Transitive r := IsTrans.trans
+
+/-- In a trichotomous irreflexive order, every element is determined by the set of predecessors. -/
+theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [IsTrichotomous α r] [IsIrrefl α r]
+    {a b : α} (H : ∀ x, r x a ↔ r x b) : a = b :=
+  ((@trichotomous _ r _ a b).resolve_left <| mt (H _).2 <| irrefl a).resolve_right <| mt (H _).1
+    <| irrefl b

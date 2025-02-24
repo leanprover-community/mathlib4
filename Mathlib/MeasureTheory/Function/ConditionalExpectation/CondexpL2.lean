@@ -249,11 +249,11 @@ end Real
 `condExpL2_comp_continuousLinearMap` for a more general result about commuting with continuous
 linear maps. -/
 theorem condExpL2_const_inner (hm : m ≤ m0) (f : Lp E 2 μ) (c : E) :
-    condExpL2 𝕜 𝕜 hm (((Lp.memℒp f).const_inner c).toLp fun a => ⟪c, f a⟫) =ᵐ[μ]
+    condExpL2 𝕜 𝕜 hm (((Lp.memLp f).const_inner c).toLp fun a => ⟪c, f a⟫) =ᵐ[μ]
     fun a => ⟪c, (condExpL2 E 𝕜 hm f : α → E) a⟫ := by
   rw [lpMeas_coe]
-  have h_mem_Lp : Memℒp (fun a => ⟪c, (condExpL2 E 𝕜 hm f : α → E) a⟫) 2 μ := by
-    refine Memℒp.const_inner _ ?_; rw [lpMeas_coe]; exact Lp.memℒp _
+  have h_mem_Lp : MemLp (fun a => ⟪c, (condExpL2 E 𝕜 hm f : α → E) a⟫) 2 μ := by
+    refine MemLp.const_inner _ ?_; rw [lpMeas_coe]; exact Lp.memLp _
   have h_eq : h_mem_Lp.toLp _ =ᵐ[μ] fun a => ⟪c, (condExpL2 E 𝕜 hm f : α → E) a⟫ :=
     h_mem_Lp.coeFn_toLp
   refine EventuallyEq.trans ?_ h_eq
@@ -269,7 +269,7 @@ theorem condExpL2_const_inner (hm : m ≤ m0) (f : Lp E 2 μ) (c : E) :
       ← inner_condExpL2_left_eq_right, condExpL2_indicator_of_measurable _ hs,
       L2.inner_indicatorConstLp_eq_setIntegral_inner 𝕜 f (hm s hs) c hμs.ne,
       setIntegral_congr_ae (hm s hs)
-        ((Memℒp.coeFn_toLp ((Lp.memℒp f).const_inner c)).mono fun x hx _ => hx)]
+        ((MemLp.coeFn_toLp ((Lp.memLp f).const_inner c)).mono fun x hx _ => hx)]
   · rw [← lpMeas_coe]; exact lpMeas.aeStronglyMeasurable _
   · refine AEStronglyMeasurable.congr ?_ h_eq.symm
     exact (lpMeas.aeStronglyMeasurable _).const_inner
@@ -290,7 +290,7 @@ theorem integral_condExpL2_eq (hm : m ≤ m0) (f : Lp E' 2 μ) (hs : MeasurableS
   rw [integral_sub
       ((integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs).const_inner c)
       ((integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs).const_inner c)]
-  have h_ae_eq_f := Memℒp.coeFn_toLp (E := 𝕜) ((Lp.memℒp f).const_inner c)
+  have h_ae_eq_f := MemLp.coeFn_toLp (E := 𝕜) ((Lp.memLp f).const_inner c)
   rw [← lpMeas_coe, sub_eq_zero, ←
     setIntegral_congr_ae (hm s hs) ((condExpL2_const_inner hm f c).mono fun x hx _ => hx), ←
     setIntegral_congr_ae (hm s hs) (h_ae_eq_f.mono fun x hx _ => hx)]

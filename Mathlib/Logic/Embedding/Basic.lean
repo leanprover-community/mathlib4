@@ -258,7 +258,7 @@ open Sum
 
 /-- If `e₁` and `e₂` are embeddings, then so is `Sum.map e₁ e₂`. -/
 def sumMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α ⊕ γ ↪ β ⊕ δ :=
-  ⟨Sum.map e₁ e₂, e₁.injective.sum_map e₂.injective⟩
+  ⟨Sum.map e₁ e₂, e₁.injective.sumMap e₂.injective⟩
 
 @[simp]
 theorem coe_sumMap {α β γ δ} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : sumMap e₁ e₂ = Sum.map e₁ e₂ :=

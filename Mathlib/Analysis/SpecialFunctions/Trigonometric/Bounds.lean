@@ -36,7 +36,7 @@ variable {x : ℝ}
 
 /-- For 0 < x, we have sin x < x. -/
 theorem sin_lt (h : 0 < x) : sin x < x := by
-  cases' lt_or_le 1 x with h' h'
+  rcases lt_or_le 1 x with h' | h'
   · exact (sin_le_one x).trans_lt h'
   have hx : |x| = x := abs_of_nonneg h.le
   have := le_of_abs_le (sin_bound <| show |x| ≤ 1 by rwa [hx])

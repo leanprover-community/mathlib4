@@ -80,7 +80,7 @@ The following notations are localized in the locale `Convolution`:
 # To do
 * Existence and (uniform) continuity of the convolution if
   one of the maps is in `ℒ^p` and the other in `ℒ^q` with `1 / p + 1 / q = 1`.
-  This might require a generalization of `MeasureTheory.Memℒp.smul` where `smul` is generalized
+  This might require a generalization of `MeasureTheory.MemLp.smul` where `smul` is generalized
   to a continuous bilinear map.
   (see e.g. [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2], 255K)
 * The convolution is an `AEStronglyMeasurable` function
@@ -301,7 +301,7 @@ theorem Integrable.ae_convolution_exists (hf : Integrable f ν) (hg : Integrable
 
 end Right
 
-variable [TopologicalSpace G] [TopologicalAddGroup G] [BorelSpace G]
+variable [TopologicalSpace G] [IsTopologicalAddGroup G] [BorelSpace G]
 
 theorem _root_.HasCompactSupport.convolutionExistsAt {x₀ : G}
     (h : HasCompactSupport fun t => L (f t) (g (x₀ - t))) (hf : LocallyIntegrable f μ)
@@ -385,7 +385,7 @@ theorem convolutionExistsAt_iff_integrable_swap :
 
 end MeasurableGroup
 
-variable [TopologicalSpace G] [TopologicalAddGroup G] [BorelSpace G]
+variable [TopologicalSpace G] [IsTopologicalAddGroup G] [BorelSpace G]
 variable [IsAddLeftInvariant μ] [IsNegInvariant μ]
 
 theorem _root_.HasCompactSupport.convolutionExists_left
@@ -535,7 +535,7 @@ theorem Integrable.integrable_convolution (hf : Integrable f μ)
 end
 
 variable [TopologicalSpace G]
-variable [TopologicalAddGroup G]
+variable [IsTopologicalAddGroup G]
 
 protected theorem _root_.HasCompactSupport.convolution [T2Space G] (hcf : HasCompactSupport f)
     (hcg : HasCompactSupport g) : HasCompactSupport (f ⋆[L, μ] g) :=
@@ -583,8 +583,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
   have A : ContinuousOn g'.uncurry (s' ×ˢ univ) := by
     have : g'.uncurry = g.uncurry ∘ (fun w ↦ (w.1.1, w.1.2 - w.2)) := by ext y; rfl
     rw [this]
-    refine hg.comp (continuous_fst.fst.prod_mk (continuous_fst.snd.sub
-      continuous_snd)).continuousOn ?_
+    refine hg.comp (by fun_prop) ?_
     simp +contextual [s', MapsTo]
   have B : ContinuousOn (fun a ↦ ∫ x, L (f x) (g' a x) ∂μ) s' := by
     apply continuousOn_integral_bilinear_of_locally_integrable_of_compact_support L k'_comp A _
@@ -689,7 +688,7 @@ theorem convolution_neg_of_neg_eq (h1 : ∀ᵐ x ∂μ, f (-x) = f x) (h2 : ∀�
 end Measurable
 
 variable [TopologicalSpace G]
-variable [TopologicalAddGroup G]
+variable [IsTopologicalAddGroup G]
 variable [BorelSpace G]
 
 theorem _root_.HasCompactSupport.continuous_convolution_left

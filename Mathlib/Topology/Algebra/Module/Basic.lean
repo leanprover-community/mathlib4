@@ -30,7 +30,7 @@ section
 variable {R : Type*} {M : Type*} [Ring R] [TopologicalSpace R] [TopologicalSpace M]
   [AddCommGroup M] [Module R M]
 
-theorem ContinuousSMul.of_nhds_zero [TopologicalRing R] [TopologicalAddGroup M]
+theorem ContinuousSMul.of_nhds_zero [IsTopologicalRing R] [IsTopologicalAddGroup M]
     (hmul : Tendsto (fun p : R × M => p.1 • p.2) (𝓝 0 ×ˢ 𝓝 0) (𝓝 0))
     (hmulleft : ∀ m : M, Tendsto (fun a : R => a • m) (𝓝 0) (𝓝 0))
     (hmulright : ∀ a : R, Tendsto (fun m : M => a • m) (𝓝 0) (𝓝 0)) : ContinuousSMul R M where
@@ -114,9 +114,9 @@ namespace Submodule
 
 variable {α β : Type*} [TopologicalSpace β]
 
-instance topologicalAddGroup [Ring α] [AddCommGroup β] [Module α β] [TopologicalAddGroup β]
-    (S : Submodule α β) : TopologicalAddGroup S :=
-  inferInstanceAs (TopologicalAddGroup S.toAddSubgroup)
+instance topologicalAddGroup [Ring α] [AddCommGroup β] [Module α β] [IsTopologicalAddGroup β]
+    (S : Submodule α β) : IsTopologicalAddGroup S :=
+  inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup)
 
 end Submodule
 
@@ -256,16 +256,16 @@ theorem isOpenMap_mkQ [ContinuousAdd M] : IsOpenMap S.mkQ :=
 theorem isOpenQuotientMap_mkQ [ContinuousAdd M] : IsOpenQuotientMap S.mkQ :=
   QuotientAddGroup.isOpenQuotientMap_mk
 
-instance topologicalAddGroup_quotient [TopologicalAddGroup M] : TopologicalAddGroup (M ⧸ S) :=
-  inferInstanceAs <| TopologicalAddGroup (M ⧸ S.toAddSubgroup)
+instance topologicalAddGroup_quotient [IsTopologicalAddGroup M] : IsTopologicalAddGroup (M ⧸ S) :=
+  inferInstanceAs <| IsTopologicalAddGroup (M ⧸ S.toAddSubgroup)
 
-instance continuousSMul_quotient [TopologicalSpace R] [TopologicalAddGroup M] [ContinuousSMul R M] :
-    ContinuousSMul R (M ⧸ S) where
+instance continuousSMul_quotient [TopologicalSpace R] [IsTopologicalAddGroup M]
+    [ContinuousSMul R M] : ContinuousSMul R (M ⧸ S) where
   continuous_smul := by
     rw [← (IsOpenQuotientMap.id.prodMap S.isOpenQuotientMap_mkQ).continuous_comp_iff]
     exact continuous_quot_mk.comp continuous_smul
 
-instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] :
+instance t3_quotient_of_isClosed [IsTopologicalAddGroup M] [IsClosed (S : Set M)] :
     T3Space (M ⧸ S) :=
   letI : IsClosed (S.toAddSubgroup : Set M) := ‹_›
   QuotientAddGroup.instT3Space S.toAddSubgroup

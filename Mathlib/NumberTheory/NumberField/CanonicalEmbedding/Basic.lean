@@ -312,7 +312,7 @@ noncomputable section norm
 variable {K}
 
 open scoped Classical in
-/-- The norm at the infinite place `w` of an element of the mixed space. --/
+/-- The norm at the infinite place `w` of an element of the mixed space -/
 def normAtPlace (w : InfinitePlace K) : (mixedSpace K) →*₀ ℝ where
   toFun x := if hw : IsReal w then ‖x.1 ⟨w, hw⟩‖ else ‖x.2 ⟨w, not_isReal_iff_isComplex.mp hw⟩‖
   map_zero' := by simp
@@ -337,9 +337,7 @@ theorem normAtPlace_add_le (w : InfinitePlace K) (x y : mixedSpace K) :
 theorem normAtPlace_smul (w : InfinitePlace K) (x : mixedSpace K) (c : ℝ) :
     normAtPlace w (c • x) = |c| * normAtPlace w x := by
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
-  split_ifs
-  · rw [Prod.smul_fst, Pi.smul_apply, norm_smul, Real.norm_eq_abs]
-  · rw [Prod.smul_snd, Pi.smul_apply, norm_smul, Real.norm_eq_abs, Complex.norm_eq_abs]
+  split_ifs <;> simp
 
 theorem normAtPlace_real (w : InfinitePlace K) (c : ℝ) :
     normAtPlace w ((fun _ ↦ c, fun _ ↦ c) : (mixedSpace K)) = |c| := by

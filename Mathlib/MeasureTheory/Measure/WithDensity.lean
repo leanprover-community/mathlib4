@@ -342,7 +342,7 @@ probability measure, such as the uniform distribution between 0 and 1, the Gauss
 the exponential distribution, the Beta distribution, or the Cauchy distribution (see Section 2.4
 of [wasserman2004]). Thus, this method shows how to one can calculate expectations, variances,
 and other moments as a function of the probability density function.
- -/
+-/
 theorem lintegral_withDensity_eq_lintegral_mul (μ : Measure α) {f : α → ℝ≥0∞}
     (h_mf : Measurable f) :
     ∀ {g : α → ℝ≥0∞}, Measurable g → ∫⁻ a, g a ∂μ.withDensity f = ∫⁻ a, (f * g) a ∂μ := by

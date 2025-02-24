@@ -378,8 +378,11 @@ theorem subtype_apply (s : AffineSubspace k P) [Nonempty s] (p : s) : s.subtype 
   rfl
 
 @[simp]
-theorem coeSubtype (s : AffineSubspace k P) [Nonempty s] : (s.subtype : s → P) = ((↑) : s → P) :=
+theorem coe_subtype (s : AffineSubspace k P) [Nonempty s] : (s.subtype : s → P) = ((↑) : s → P) :=
   rfl
+
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
 
 theorem injective_subtype (s : AffineSubspace k P) [Nonempty s] : Function.Injective s.subtype :=
   Subtype.coe_injective

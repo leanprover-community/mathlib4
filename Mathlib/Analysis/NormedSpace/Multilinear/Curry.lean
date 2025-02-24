@@ -99,7 +99,7 @@ theorem ContinuousMultilinearMap.norm_map_snoc_le (f : ContinuousMultilinearMap 
 
 /-- Given a continuous linear map `f` from `E 0` to continuous multilinear maps on `n` variables,
 construct the corresponding continuous multilinear map on `n+1` variables obtained by concatenating
-the variables, given by `m ↦ f (m 0) (tail m)`-/
+the variables, given by `m ↦ f (m 0) (tail m)` -/
 def ContinuousLinearMap.uncurryLeft
     (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) :
     ContinuousMultilinearMap 𝕜 Ei G :=

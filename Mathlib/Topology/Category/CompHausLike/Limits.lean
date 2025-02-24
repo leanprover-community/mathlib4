@@ -173,7 +173,7 @@ alias Sigma.openEmbedding_ι := Sigma.isOpenEmbedding_ι
 /-- The functor to `TopCat` preserves finite coproducts if they exist. -/
 instance (P) [HasExplicitFiniteCoproducts.{0} P] :
     PreservesFiniteCoproducts (compHausLikeToTop P) := by
-  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
+  refine ⟨fun _ ↦ ⟨fun {F} ↦ ?_⟩⟩
   suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) (compHausLikeToTop P) from
     preservesColimit_of_iso_diagram _ Discrete.natIsoFunctor.symm
   apply preservesColimit_of_preserves_colimit_cocone (CompHausLike.finiteCoproduct.isColimit _)
@@ -240,10 +240,7 @@ def pullback.lift {Z : CompHausLike P} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f 
     Z ⟶ pullback f g :=
   TopCat.ofHom
   { toFun := fun z ↦ ⟨⟨a z, b z⟩, by apply_fun (fun q ↦ q z) at w; exact w⟩
-    continuous_toFun := by
-      apply Continuous.subtype_mk
-      rw [continuous_prod_mk]
-      exact ⟨a.hom.continuous, b.hom.continuous⟩ }
+    continuous_toFun := by fun_prop }
 
 @[reassoc (attr := simp)]
 lemma pullback.lift_fst {Z : CompHausLike P} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :

@@ -1257,7 +1257,6 @@ instance : AddCommGroup (MultilinearMap R M₁ M₂) :=
       { toFun := fun m => n • f m
         map_update_add' := fun m i x y => by simp [smul_add]
         map_update_smul' := fun l i x d => by simp [← smul_comm x n (_ : M₂)] }
-    -- Porting note: changed from `AddCommGroup` to `SubNegMonoid`
     zsmul_zero' := fun _ => MultilinearMap.ext fun _ => SubNegMonoid.zsmul_zero' _
     zsmul_succ' := fun _ _ => MultilinearMap.ext fun _ => SubNegMonoid.zsmul_succ' _ _
     zsmul_neg' := fun _ _ => MultilinearMap.ext fun _ => SubNegMonoid.zsmul_neg' _ _ }
@@ -1401,7 +1400,7 @@ variable [CommSemiring R] [∀ i, AddCommMonoid (M i)] [AddCommMonoid M'] [AddCo
 
 /-- Given a linear map `f` from `M 0` to multilinear maps on `n` variables,
 construct the corresponding multilinear map on `n+1` variables obtained by concatenating
-the variables, given by `m ↦ f (m 0) (tail m)`-/
+the variables, given by `m ↦ f (m 0) (tail m)` -/
 def LinearMap.uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => M i.succ) M₂) :
     MultilinearMap R M M₂ where
   toFun m := f (m 0) (tail m)
@@ -1497,7 +1496,7 @@ variable {R M M₂}
 
 /-- Given a multilinear map `f` in `n` variables to the space of linear maps from `M (last n)` to
 `M₂`, construct the corresponding multilinear map on `n+1` variables obtained by concatenating
-the variables, given by `m ↦ f (init m) (m (last n))`-/
+the variables, given by `m ↦ f (init m) (m (last n))` -/
 def MultilinearMap.uncurryRight
     (f : MultilinearMap R (fun i : Fin n => M (castSucc i)) (M (last n) →ₗ[R] M₂)) :
     MultilinearMap R M M₂ where

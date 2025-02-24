@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
+import Mathlib.Topology.Order.LeftRight
 import Mathlib.Topology.Separation.Hausdorff
 
 /-!
@@ -273,6 +274,12 @@ protected theorem PredOrder.nhdsLT [PredOrder α] : 𝓝[<] a = ⊥ := by
   else exact (Order.pred_covBy_of_not_isMin h).nhdsLT
 
 @[deprecated (since := "2024-12-21")] protected alias PredOrder.nhdsWithin_Iio := PredOrder.nhdsLT
+
+theorem PredOrder.nhdsGT_eq_nhdsNE [PredOrder α] (a : α) : 𝓝[>] a = 𝓝[≠] a := by
+  rw [← nhdsLT_sup_nhdsGT, PredOrder.nhdsLT, bot_sup_eq]
+
+theorem PredOrder.nhdsGE_eq_nhds [PredOrder α] (a : α) : 𝓝[≥] a = 𝓝 a := by
+  rw [← nhdsLT_sup_nhdsGE, PredOrder.nhdsLT, bot_sup_eq]
 
 theorem Ico_mem_nhdsLT_of_mem (H : b ∈ Ioc a c) : Ico a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsLT_of_mem H) Ioo_subset_Ico_self
@@ -555,6 +562,12 @@ protected theorem CovBy.nhdsGT (h : a ⋖ b) : 𝓝[>] a = ⊥ := h.toDual.nhdsL
 protected theorem SuccOrder.nhdsGT [SuccOrder α] : 𝓝[>] a = ⊥ := PredOrder.nhdsLT (α := αᵒᵈ)
 
 @[deprecated (since := "2024-12-22")] alias SuccOrder.nhdsWithin_Ioi := SuccOrder.nhdsGT
+
+theorem SuccOrder.nhdsLT_eq_nhdsNE [SuccOrder α] (a : α) : 𝓝[<] a = 𝓝[≠] a :=
+  PredOrder.nhdsGT_eq_nhdsNE (α := αᵒᵈ) a
+
+theorem SuccOrder.nhdsLE_eq_nhds [SuccOrder α] (a : α) : 𝓝[≤] a = 𝓝 a :=
+  PredOrder.nhdsGE_eq_nhds (α := αᵒᵈ) a
 
 theorem Ioc_mem_nhdsGT_of_mem (H : b ∈ Ico a c) : Ioc a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsGT_of_mem H) Ioo_subset_Ioc_self

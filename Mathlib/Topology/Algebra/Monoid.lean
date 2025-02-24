@@ -221,8 +221,7 @@ theorem ContinuousWithinAt.mul {f g : X → M} {s : Set X} {x : X} (hf : Continu
 @[to_additive]
 instance Prod.continuousMul [TopologicalSpace N] [Mul N] [ContinuousMul N] :
     ContinuousMul (M × N) :=
-  ⟨(continuous_fst.fst'.mul continuous_fst.snd').prod_mk
-      (continuous_snd.fst'.mul continuous_snd.snd')⟩
+  ⟨by apply Continuous.prod_mk <;> fun_prop⟩
 
 @[to_additive]
 instance Pi.continuousMul {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Mul (C i)]
@@ -853,7 +852,7 @@ instance : ContinuousMul αˣ := isInducing_embedProduct.continuousMul (embedPro
 
 end Units
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem Continuous.units_map [Monoid M] [Monoid N] [TopologicalSpace M] [TopologicalSpace N]
     (f : M →* N) (hf : Continuous f) : Continuous (Units.map f) :=
   Units.continuous_iff.2 ⟨hf.comp Units.continuous_val, hf.comp Units.continuous_coe_inv⟩

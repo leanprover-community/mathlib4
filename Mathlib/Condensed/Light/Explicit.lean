@@ -42,7 +42,7 @@ noncomputable def ofSheafLightProfinite (F : LightProfinite.{u}ᵒᵖ ⥤ A) [Pr
   val := F
   cond := by
     rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition F]
-    exact ⟨⟨fun _ _ ↦ inferInstance⟩, hF⟩
+    exact ⟨⟨fun _ ↦ inferInstance⟩, hF⟩
 
 /--
 The light condensed object associated to a presheaf on `LightProfinite` whose postcomposition with
@@ -57,7 +57,7 @@ noncomputable def ofSheafForgetLightProfinite
   cond := by
     apply isSheaf_coherent_of_hasPullbacks_of_comp F (CategoryTheory.forget A)
     rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
-    exact ⟨⟨fun _ _ ↦ inferInstance⟩, hF⟩
+    exact ⟨⟨fun _ ↦ inferInstance⟩, hF⟩
 
 /-- A light condensed object satisfies the equalizer condition. -/
 theorem equalizerCondition (X : LightCondensed A) : EqualizerCondition X.val :=

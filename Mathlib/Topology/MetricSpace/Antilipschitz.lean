@@ -235,8 +235,3 @@ end AntilipschitzWith
 theorem LipschitzWith.to_rightInverse [PseudoEMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0}
     {f : α → β} (hf : LipschitzWith K f) {g : β → α} (hg : Function.RightInverse g f) :
     AntilipschitzWith K g := fun x y => by simpa only [hg _] using hf (g x) (g y)
-
-/-- The preimage of a proper space under a Lipschitz homeomorphism is proper. -/
-protected theorem LipschitzWith.properSpace [PseudoMetricSpace α] [MetricSpace β] [ProperSpace β]
-    {K : ℝ≥0} {f : α ≃ₜ β} (hK : LipschitzWith K f) : ProperSpace α :=
-  (hK.to_rightInverse f.right_inv).properSpace f.symm.continuous f.symm.surjective

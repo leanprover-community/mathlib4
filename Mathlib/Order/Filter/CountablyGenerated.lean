@@ -105,7 +105,7 @@ theorem HasAntitoneBasis.hasBasis_ge [Preorder ι] [IsDirected ι (· ≤ ·)] {
 /-- If `f` is countably generated and `f.HasBasis p s`, then `f` admits a decreasing basis
 enumerated by natural numbers such that all sets have the form `s i`. More precisely, there is a
 sequence `i n` such that `p (i n)` for all `n` and `s (i n)` is a decreasing sequence of sets which
-forms a basis of `f`-/
+forms a basis of `f`. -/
 theorem HasBasis.exists_antitone_subbasis {f : Filter α} [h : f.IsCountablyGenerated]
     {p : ι' → Prop} {s : ι' → Set α} (hs : f.HasBasis p s) :
     ∃ x : ℕ → ι', (∀ i, p (x i)) ∧ f.HasAntitoneBasis fun i => s (x i) := by

@@ -1447,7 +1447,7 @@ section UnifTight
 such that the integral of `f` over `sᶜ` is less than a given positive number.
 
 Also used to prove an `Lᵖ`-norm version in
-`MeasureTheory.Memℒp.exists_eLpNorm_indicator_compl_le`. -/
+`MeasureTheory.MemLp.exists_eLpNorm_indicator_compl_le`. -/
 theorem exists_setLintegral_compl_lt {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a ∂μ ≠ ∞)
     {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧ ∫⁻ a in sᶜ, f a ∂μ < ε := by
@@ -1653,7 +1653,7 @@ lemma tendsto_of_lintegral_tendsto_of_monotone_aux {α : Type*} {mα : Measurabl
     filter_upwards [h_bound, h_bound_finite, hf_mono] with a h_le h_fin h_mono
     have h_tendsto : Tendsto (fun i ↦ f i a) atTop atTop ∨
         ∃ l, Tendsto (fun i ↦ f i a) atTop (𝓝 l) := tendsto_of_monotone h_mono
-    cases' h_tendsto with h_absurd h_tendsto
+    rcases h_tendsto with h_absurd | h_tendsto
     · rw [tendsto_atTop_atTop_iff_of_monotone h_mono] at h_absurd
       obtain ⟨i, hi⟩ := h_absurd (F a + 1)
       refine absurd (hi.trans (h_le _)) (not_le.mpr ?_)

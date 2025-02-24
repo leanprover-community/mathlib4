@@ -104,7 +104,7 @@ lemma OrthogonalIdempotents.option (he : OrthogonalIdempotents e) [Fintype I] (x
   idem i := i.rec hx he.idem
   ortho i j ne := by
     classical
-    cases' i with i <;> cases' j with j
+    rcases i with - | i <;> rcases j with - | j
     · cases ne rfl
     · simpa only [mul_assoc, Finset.sum_mul, he.mul_eq, Finset.sum_ite_eq', Finset.mem_univ,
         ↓reduceIte, zero_mul] using congr_arg (· * e j) hx₁
@@ -214,7 +214,7 @@ theorem exists_isIdempotentElem_mul_eq_zero_of_ker_isNilpotent_aux
     simp [RingHom.mem_ker, mul_sub, pow_two, ha, he₁.eq]
   obtain ⟨n, hn⟩ := h _ hx'
   refine ⟨_, isIdempotentElem_one_sub_one_sub_pow_pow _ _ hn, ?_, ?_⟩
-  · cases' n with n
+  · rcases n with - | n
     · simp at hn
     simp only [map_sub, map_one, map_pow, ha, he₁.pow_succ_eq,
       he₁.one_sub.pow_succ_eq, sub_sub_cancel]
@@ -222,7 +222,7 @@ theorem exists_isIdempotentElem_mul_eq_zero_of_ker_isNilpotent_aux
     apply_fun MulOpposite.unop at hk
     have : 1 - (1 - a ^ n) ^ n = MulOpposite.unop k * a ^ n := by simpa using hk
     rw [this, mul_assoc]
-    cases' n with n
+    rcases n with - | n
     · simp at hn
     rw [pow_succ, mul_assoc, ha', mul_zero, mul_zero]
 
@@ -305,7 +305,7 @@ lemma CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker_aux
   cases subsingleton_or_nontrivial S
   · obtain ⟨n, hn⟩ := h 1 (Subsingleton.elim _ _)
     simp at hn
-  cases' n with n
+  rcases n with - | n
   · simpa using he.complete
   obtain ⟨e', h₁, h₂⟩ := OrthogonalIdempotents.lift_of_isNilpotent_ker f h he.1 he'
   refine ⟨_, (equiv (finSuccEquiv n)).mpr

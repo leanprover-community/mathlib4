@@ -6,6 +6,7 @@ Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 
 import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.Int.Basic
 import Mathlib.Order.Minimal
 import Mathlib.Order.RelSeries
 import Mathlib.Tactic.FinCases
@@ -655,7 +656,7 @@ lemma krullDim_eq_iSup_length [Nonempty α] :
 
 lemma krullDim_lt_coe_iff {n : ℕ} : krullDim α < n ↔ ∀ l : LTSeries α, l.length < n := by
   rw [krullDim, ← WithBot.coe_natCast]
-  cases' n with n
+  rcases n with - | n
   · rw [ENat.coe_zero, ← bot_eq_zero, WithBot.lt_coe_bot]
     simp
   · simp [WithBot.lt_add_one_iff, WithBot.coe_natCast, Nat.lt_succ]

@@ -430,7 +430,27 @@ def isoOfMkEqMk {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mono f] [Mo
   hom := ofMkLEMk f g h.le
   inv := ofMkLEMk g f h.ge
 
+lemma mk_lt_mk_of_comm {X A₁ A₂ : C} {i₁ : A₁ ⟶ X} {i₂ : A₂ ⟶ X} [Mono i₁] [Mono i₂]
+    (f : A₁ ⟶ A₂) (fac : f ≫ i₂ = i₁) (hf : ¬ IsIso f) :
+    Subobject.mk i₁ < Subobject.mk i₂ := by
+  obtain _ | h := (mk_le_mk_of_comm _ fac).lt_or_eq
+  · assumption
+  · exfalso
+    apply hf
+    convert (isoOfMkEqMk i₁ i₂ h).isIso_hom
+    rw [← cancel_mono i₂, isoOfMkEqMk_hom, ofMkLEMk_comp, fac]
+
+lemma mk_lt_mk_iff_of_comm {X A₁ A₂ : C} {i₁ : A₁ ⟶ X} {i₂ : A₂ ⟶ X} [Mono i₁] [Mono i₂]
+    (f : A₁ ⟶ A₂) (fac : f ≫ i₂ = i₁) :
+    Subobject.mk i₁ < Subobject.mk i₂ ↔ ¬ IsIso f :=
+  ⟨fun h hf ↦ by simp only [mk_eq_mk_of_comm i₁ i₂ (asIso f) fac, lt_self_iff_false] at h,
+    mk_lt_mk_of_comm f fac⟩
+
 end Subobject
+
+lemma MonoOver.subobjectMk_le_mk_of_hom {P Q : MonoOver X} (f : P ⟶ Q) :
+    Subobject.mk P.obj.hom ≤ Subobject.mk Q.obj.hom :=
+  Subobject.mk_le_mk_of_comm f.left (by simp)
 
 open CategoryTheory.Limits
 
@@ -509,6 +529,10 @@ by post-composition with a monomorphism `f : X ⟶ Y`.
 def map (f : X ⟶ Y) [Mono f] : Subobject X ⥤ Subobject Y :=
   lower (MonoOver.map f)
 
+lemma map_mk {A X Y : C} (i : A ⟶ X) [Mono i] (f : X ⟶ Y) [Mono f] :
+    (map f).obj (mk i) = mk (i ≫ f) :=
+  rfl
+
 theorem map_id (x : Subobject X) : (map (𝟙 X)).obj x = x := by
   induction' x using Quotient.inductionOn' with f
   exact Quotient.sound ⟨(MonoOver.mapId _).app f⟩
@@ -517,6 +541,14 @@ theorem map_comp (f : X ⟶ Y) (g : Y ⟶ Z) [Mono f] [Mono g] (x : Subobject X)
     (map (f ≫ g)).obj x = (map g).obj ((map f).obj x) := by
   induction' x using Quotient.inductionOn' with t
   exact Quotient.sound ⟨(MonoOver.mapComp _ _).app t⟩
+
+lemma map_obj_injective {X Y : C} (f : X ⟶ Y) [Mono f] :
+    Function.Injective (Subobject.map f).obj := by
+  intro X₁ X₂ h
+  induction' X₁ using Subobject.ind with X₁ i₁ _
+  induction' X₂ using Subobject.ind with X₂ i₂ _
+  simp only [map_mk] at h
+  exact mk_eq_mk_of_comm _ _ (isoOfMkEqMk _ _ h) (by simp [← cancel_mono f])
 
 /-- Isomorphic objects have equivalent subobject lattices. -/
 def mapIso {A B : C} (e : A ≅ B) : Subobject A ≌ Subobject B :=

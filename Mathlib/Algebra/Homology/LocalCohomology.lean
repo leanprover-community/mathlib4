@@ -95,7 +95,7 @@ will be where `I` is (cofinal with) the diagram of powers of a single given idea
 
 Below, we give two equivalent definitions of the usual local cohomology with support
 in an ideal `J`, `localCohomology` and `localCohomology.ofSelfLERadical`.
- -/
+-/
 /-- `localCohomology.ofDiagram I i` is the functor sending a module `M` over a commutative
 ring `R` to the direct limit of `Ext^i(R/J, M)`, where `J` ranges over a collection of ideals
 of `R`, represented as a functor `I`. -/
@@ -197,7 +197,7 @@ valued in `SelfLERadical J`. -/
 def idealPowersToSelfLERadical (J : Ideal R) : ℕᵒᵖ ⥤ SelfLERadical J :=
   FullSubcategory.lift _ (idealPowersDiagram J) fun k => by
     change _ ≤ (J ^ unop k).radical
-    cases' unop k with n
+    rcases unop k with - | n
     · simp [Ideal.radical_top, pow_zero, Ideal.one_eq_top, le_top]
     · simp only [J.radical_pow n.succ_ne_zero, Ideal.le_radical]
 

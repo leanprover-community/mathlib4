@@ -270,7 +270,7 @@ Returns an array of `IntervalCasesSubgoal`, one per subgoal. A subgoal has the f
 
 Note that this tactic does not perform any substitution or introduction steps -
 all subgoals are in the same context as `goal` itself.
- -/
+-/
 def intervalCases (g : MVarId) (e e' : Expr) (lbs ubs : Array Expr) (mustUseBounds := false) :
     MetaM (Array IntervalCasesSubgoal) := g.withContext do
   let α ← whnfR (← inferType e)

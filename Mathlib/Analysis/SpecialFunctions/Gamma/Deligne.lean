@@ -183,7 +183,7 @@ lemma inv_Gammaℝ_two_sub {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -n) :
     div_mul_cancel₀ _ (ofReal_ne_zero.mpr pi_ne_zero), inv_one]
   rw [← Ne, ← sub_ne_zero] at h
   have h' (n : ℕ) : s - 1 ≠ -n := by
-    cases' n with m
+    rcases n with - | m
     · rwa [Nat.cast_zero, neg_zero]
     · rw [Ne, sub_eq_iff_eq_add]
       convert hs m using 2

@@ -198,8 +198,7 @@ lemma hom_ext {W : A} {f g : W ⟶ R.obj (op X)}
 
 variable (S)
 
-/-- Auxiliary definition for `ran_isSheaf_of_isCocontinuous`: if `G : C ⥤ D` is a
-cocontinuous functor,   -/
+/-- Auxiliary definition for `ran_isSheaf_of_isCocontinuous` -/
 def isLimitMultifork : IsLimit (S.multifork R) :=
   Multifork.IsLimit.mk _ (lift hF hR) (fac hF hR)
     (fun s _ hm ↦ hom_ext K hF hR (fun i ↦ (hm i).trans (fac hF hR s i).symm))

@@ -108,7 +108,7 @@ theorem round_ofNat_add (n : ℕ) [n.AtLeastTwo] (x : α) :
 
 theorem abs_sub_round_eq_min (x : α) : |x - round x| = min (fract x) (1 - fract x) := by
   simp_rw [round, min_def_lt, two_mul, ← lt_tsub_iff_left]
-  cases' lt_or_ge (fract x) (1 - fract x) with hx hx
+  rcases lt_or_ge (fract x) (1 - fract x) with hx | hx
   · rw [if_pos hx, if_pos hx, self_sub_floor, abs_fract]
   · have : 0 < fract x := by
       replace hx : 0 < fract x + fract x := lt_of_lt_of_le zero_lt_one (tsub_le_iff_left.mp hx)
@@ -136,7 +136,7 @@ variable [LinearOrderedField α] [FloorRing α]
 
 theorem round_eq (x : α) : round x = ⌊x + 1 / 2⌋ := by
   simp_rw [round, (by simp only [lt_div_iff₀', two_pos] : 2 * fract x < 1 ↔ fract x < 1 / 2)]
-  cases' lt_or_le (fract x) (1 / 2) with hx hx
+  rcases lt_or_le (fract x) (1 / 2) with hx | hx
   · conv_rhs => rw [← fract_add_floor x, add_assoc, add_left_comm, floor_int_add]
     rw [if_pos hx, self_eq_add_right, floor_eq_iff, cast_zero, zero_add]
     constructor

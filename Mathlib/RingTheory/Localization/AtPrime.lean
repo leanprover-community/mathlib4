@@ -64,7 +64,7 @@ theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
   IsLocalRing.of_nonunits_add
     (by
       intro x y hx hy hu
-      cases' isUnit_iff_exists_inv.1 hu with z hxyz
+      obtain ⟨z, hxyz⟩ := isUnit_iff_exists_inv.1 hu
       have : ∀ {r : R} {s : P.primeCompl}, mk' S r s ∈ nonunits S → r ∈ P := fun {r s} =>
         not_imp_comm.1 fun nr => isUnit_iff_exists_inv.2 ⟨mk' S ↑s (⟨r, nr⟩ : P.primeCompl),
           mk'_mul_mk'_eq_one' _ _ <| show r ∈ P.primeCompl from nr⟩
@@ -192,7 +192,7 @@ localization of `R` at `J.comap f` to the localization of `S` at `J`.
 
 To make this definition more flexible, we allow any ideal `I` of `R` as input, together with a proof
 that `I = J.comap f`. This can be useful when `I` is not definitionally equal to `J.comap f`.
- -/
+-/
 noncomputable def localRingHom (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.comap f) :
     Localization.AtPrime I →+* Localization.AtPrime J :=
   IsLocalization.map (Localization.AtPrime J) f (le_comap_primeCompl_iff.mpr (ge_of_eq hIJ))

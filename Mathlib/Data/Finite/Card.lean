@@ -58,8 +58,7 @@ theorem Finite.card_pos [Finite α] [h : Nonempty α] : 0 < Nat.card α :=
 
 namespace Finite
 
-theorem cast_card_eq_mk {α : Type*} [Finite α] : ↑(Nat.card α) = Cardinal.mk α :=
-  Cardinal.cast_toNat_of_lt_aleph0 (Cardinal.lt_aleph0_of_finite α)
+@[deprecated (since := "2025-02-21")] alias cast_card_eq_mk := Nat.cast_card
 
 theorem card_eq [Finite α] [Finite β] : Nat.card α = Nat.card β ↔ Nonempty (α ≃ β) := by
   haveI := Fintype.ofFinite α
@@ -171,18 +170,17 @@ theorem card_eq_coe_natCard (α : Type*) [Finite α] : card α = Nat.card α := 
   unfold ENat.card
   apply symm
   rw [Cardinal.natCast_eq_toENat_iff]
-  exact Finite.cast_card_eq_mk
+  exact Nat.cast_card
 
 end ENat
 
 namespace Set
 
 theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + Nat.card t := by
-  cases' _root_.finite_or_infinite (↥(s ∪ t)) with h h
+  rcases _root_.finite_or_infinite (↥(s ∪ t)) with h | h
   · rw [finite_coe_iff, finite_union, ← finite_coe_iff, ← finite_coe_iff] at h
     cases h
-    rw [← @Nat.cast_le Cardinal, Nat.cast_add, Finite.cast_card_eq_mk, Finite.cast_card_eq_mk,
-      Finite.cast_card_eq_mk]
+    rw [← @Nat.cast_le Cardinal, Nat.cast_add, Nat.cast_card, Nat.cast_card, Nat.cast_card]
     exact Cardinal.mk_union_le s t
   · exact Nat.card_eq_zero_of_infinite.trans_le (zero_le _)
 

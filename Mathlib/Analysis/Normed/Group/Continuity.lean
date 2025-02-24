@@ -35,7 +35,7 @@ theorem tendsto_one_iff_norm_tendsto_zero {f : α → E} {a : Filter α} :
     Tendsto f a (𝓝 1) ↔ Tendsto (‖f ·‖) a (𝓝 0) :=
   tendsto_iff_norm_div_tendsto_zero.trans <| by simp only [div_one]
 
-@[to_additive]
+@[to_additive (attr := simp 1100)]
 theorem comap_norm_nhds_one : comap norm (𝓝 0) = 𝓝 (1 : E) := by
   simpa only [dist_one_right] using nhds_comap_dist (1 : E)
 
@@ -80,15 +80,15 @@ theorem tendsto_norm' {x : E} : Tendsto (fun a => ‖a‖) (𝓝 x) (𝓝 ‖x�
 theorem tendsto_norm_one : Tendsto (fun a : E => ‖a‖) (𝓝 1) (𝓝 0) := by
   simpa using tendsto_norm_div_self (1 : E)
 
-@[to_additive (attr := continuity) continuous_norm]
+@[to_additive (attr := continuity, fun_prop) continuous_norm]
 theorem continuous_norm' : Continuous fun a : E => ‖a‖ := by
   simpa using continuous_id.dist (continuous_const : Continuous fun _a => (1 : E))
 
-@[to_additive (attr := continuity) continuous_nnnorm]
+@[to_additive (attr := continuity, fun_prop) continuous_nnnorm]
 theorem continuous_nnnorm' : Continuous fun a : E => ‖a‖₊ :=
   continuous_norm'.subtype_mk _
 
-@[to_additive (attr := continuity) continuous_enorm]
+@[to_additive (attr := continuity, fun_prop) continuous_enorm]
 lemma continuous_enorm' : Continuous fun a : E ↦ ‖a‖ₑ :=
   ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnnorm'
 

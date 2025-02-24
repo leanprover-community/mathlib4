@@ -774,7 +774,7 @@ theorem norm_compAlongOrderedFinpartition_le (f : F [×c.length]→L[𝕜] G)
   exact f.le_opNorm_mul_prod_of_le <| c.norm_applyOrderedFinpartition_le _ _
 
 /-- Bundled version of `compAlongOrderedFinpartition`, depending linearly on `f`
-and multilinearly on `p`.-/
+and multilinearly on `p`. -/
 @[simps apply_apply]
 def compAlongOrderedFinpartitionₗ :
     (F [×c.length]→L[𝕜] G) →ₗ[𝕜]
@@ -796,7 +796,7 @@ def compAlongOrderedFinpartitionₗ :
 
 variable (𝕜 E F G) in
 /-- Bundled version of `compAlongOrderedFinpartition`, depending continuously linearly on `f`
-and continuously multilinearly on `p`.-/
+and continuously multilinearly on `p`. -/
 noncomputable def compAlongOrderedFinpartitionL :
     (F [×c.length]→L[𝕜] G) →L[𝕜]
       ContinuousMultilinearMap 𝕜 (fun i ↦ E[×c.partSize i]→L[𝕜] F) (E[×n]→L[𝕜] G) := by

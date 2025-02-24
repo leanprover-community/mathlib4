@@ -133,12 +133,12 @@ end PartialDiffeomorph
 variable {M N}
 
 /-- `f : M → N` is called a **`C^n` local diffeomorphism at *x*** iff there exist
-  open sets `U ∋ x` and `V ∋ f x` and a diffeomorphism `Φ : U → V` such that `f = Φ` on `U`. -/
+open sets `U ∋ x` and `V ∋ f x` and a diffeomorphism `Φ : U → V` such that `f = Φ` on `U`. -/
 def IsLocalDiffeomorphAt (f : M → N) (x : M) : Prop :=
   ∃ Φ : PartialDiffeomorph I J M N n, x ∈ Φ.source ∧ EqOn f Φ Φ.source
 
 /-- `f : M → N` is called a **`C^n` local diffeomorphism on *s*** iff it is a local diffeomorphism
-  at each `x : s`. -/
+at each `x : s`. -/
 def IsLocalDiffeomorphOn (f : M → N) (s : Set M) : Prop :=
   ∀ x : s, IsLocalDiffeomorphAt I J n f x
 

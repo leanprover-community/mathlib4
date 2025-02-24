@@ -35,7 +35,7 @@ Some key definitions are not yet present.
 * Affine frames.  An affine frame might perhaps be represented as an `AffineEquiv` to a `Finsupp`
   (in the general case) or function type (in the finite-dimensional case) that gives the
   coordinates, with appropriate proofs of existence when `k` is a field.
- -/
+-/
 
 
 @[inherit_doc] scoped[Affine] notation "AffineSpace" => AddTorsor

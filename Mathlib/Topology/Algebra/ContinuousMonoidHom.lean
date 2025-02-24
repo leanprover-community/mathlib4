@@ -116,7 +116,7 @@ lemma coe_toContinuousMap (f : ContinuousMonoidHom A B) : f.toContinuousMap = f 
 
 section
 
-variable  {F : Type*} [FunLike F A B]
+variable {F : Type*} [FunLike F A B]
 
 /-- Turn an element of a type `F` satisfying `MonoidHomClass F A B` and `ContinuousMapClass F A B`
 into a`ContinuousMonoidHom`. This is declared as the default coercion from `F` to
@@ -279,7 +279,7 @@ end CommMonoid
 
 section CommGroup
 
-variable [CommGroup E] [TopologicalSpace E] [TopologicalGroup E]
+variable [CommGroup E] [TopologicalSpace E] [IsTopologicalGroup E]
 /-- The continuous homomorphism given by inversion. -/
 @[to_additive (attr := simps!) "The continuous homomorphism given by negation."]
 def inv : ContinuousMonoidHom E E :=

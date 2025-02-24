@@ -217,8 +217,7 @@ theorem imageBasicOpen_image_open :
   erw [← TopCat.coe_comp]
   rw [PreservesCoequalizer.iso_hom, ι_comp_coequalizerComparison]
   dsimp only [SheafedSpace.forget]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw`
-  erw [imageBasicOpen_image_preimage]
+  rw [imageBasicOpen_image_preimage]
   exact (imageBasicOpen f g U s).2
 
 @[instance]

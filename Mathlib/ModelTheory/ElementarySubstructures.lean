@@ -18,7 +18,7 @@ import Mathlib.ModelTheory.ElementaryMaps
 - The Tarski-Vaught Test for substructures:
   `FirstOrder.Language.Substructure.isElementary_of_exists` gives a simple criterion for a
   substructure to be elementary.
- -/
+-/
 
 
 open FirstOrder
@@ -70,8 +70,11 @@ def subtype (S : L.ElementarySubstructure M) : S ↪ₑ[L] M where
   map_formula' := S.isElementary
 
 @[simp]
-theorem coeSubtype {S : L.ElementarySubstructure M} : ⇑S.subtype = ((↑) : S → M) :=
+theorem coe_subtype {S : L.ElementarySubstructure M} : ⇑S.subtype = ((↑) : S → M) :=
   rfl
+
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
 
 /-- The substructure `M` of the structure `M` is elementary. -/
 instance instTop : Top (L.ElementarySubstructure M) :=

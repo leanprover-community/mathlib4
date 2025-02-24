@@ -48,8 +48,11 @@ protected def subtype : S' →ₗ[R] M where
   map_smul' _ _ := rfl
 
 @[simp]
-protected theorem coeSubtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
+protected theorem coe_subtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
+
+@[deprecated (since := "2025-02-18")]
+protected alias coeSubtype := SMulMemClass.coe_subtype
 
 end SMulMemClass
 

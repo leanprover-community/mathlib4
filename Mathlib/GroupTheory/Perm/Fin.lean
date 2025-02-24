@@ -76,7 +76,6 @@ Define the permutations `Fin.cycleRange i`, the cycle `(0 1 2 ... i)`.
 
 open Equiv.Perm
 
--- Porting note: renamed from finRotate_succ because there is already a theorem with that name
 theorem finRotate_succ_eq_decomposeFin {n : ℕ} :
     finRotate n.succ = decomposeFin.symm (1, finRotate n) := by
   ext i
@@ -110,7 +109,7 @@ theorem support_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : support (finRotate n) 
 theorem isCycle_finRotate {n : ℕ} : IsCycle (finRotate (n + 2)) := by
   refine ⟨0, by simp, fun x hx' => ⟨x, ?_⟩⟩
   clear hx'
-  cases' x with x hx
+  obtain ⟨x, hx⟩ := x
   rw [zpow_natCast, Fin.ext_iff, Fin.val_mk]
   induction' x with x ih; · rfl
   rw [pow_succ', Perm.mul_apply, coe_finRotate_of_ne_last, ih (lt_trans x.lt_succ_self hx)]
@@ -167,7 +166,7 @@ theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
 
 theorem coe_cycleRange_of_le {n : ℕ} {i j : Fin n} (h : j ≤ i) :
     (cycleRange i j : ℕ) = if j = i then 0 else (j : ℕ) + 1 := by
-  cases' n with n
+  rcases n with - | n
   · exact absurd le_rfl i.pos.not_le
   rw [cycleRange_of_le h]
   split_ifs with h'
@@ -247,7 +246,7 @@ theorem succAbove_cycleRange {n : ℕ} (i j : Fin n) :
 @[simp]
 theorem cycleRange_succAbove {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
     i.cycleRange (i.succAbove j) = j.succ := by
-  cases' lt_or_ge (castSucc j) i with h h
+  rcases lt_or_ge (castSucc j) i with h | h
   · rw [Fin.succAbove_of_castSucc_lt _ _ h, Fin.cycleRange_of_lt h, Fin.coeSucc_eq_succ]
   · rw [Fin.succAbove_of_le_castSucc _ _ h, Fin.cycleRange_of_gt (Fin.le_castSucc_iff.mp h)]
 
@@ -262,7 +261,7 @@ theorem cycleRange_symm_succ {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
 
 theorem isCycle_cycleRange {n : ℕ} [NeZero n] {i : Fin n} (h0 : i ≠ 0) :
     IsCycle (cycleRange i) := by
-  cases' i with i hi
+  obtain ⟨i, hi⟩ := i
   cases i
   · exact (h0 rfl).elim
   exact isCycle_finRotate.extendDomain _
@@ -270,7 +269,7 @@ theorem isCycle_cycleRange {n : ℕ} [NeZero n] {i : Fin n} (h0 : i ≠ 0) :
 @[simp]
 theorem cycleType_cycleRange {n : ℕ} [NeZero n] {i : Fin n} (h0 : i ≠ 0) :
     cycleType (cycleRange i) = {(i + 1 : ℕ)} := by
-  cases' i with i hi
+  obtain ⟨i, hi⟩ := i
   cases i
   · exact (h0 rfl).elim
   rw [cycleRange, cycleType_extendDomain]

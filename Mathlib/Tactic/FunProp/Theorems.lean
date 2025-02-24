@@ -20,7 +20,7 @@ open Lean Meta
 namespace Meta.FunProp
 
 /-- Tag for one of the 5 basic lambda theorems, that also hold extra data for composition theorem
- -/
+-/
 inductive LambdaTheoremArgs
   /-- Identity theorem e.g. `Continuous fun x => x` -/
   | id
@@ -139,7 +139,7 @@ compositional
 ```
 theorem Continuous_add (hf : Continuous f) (hg : Continuous g) : Continuous (fun x => (f x) + (g x))
 ```
- -/
+-/
 inductive TheoremForm where
   | uncurried | comp
   deriving Inhabited, BEq, Repr

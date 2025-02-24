@@ -211,15 +211,15 @@ def counterBasis : FilterBasis (ℕ × ℕ) where
     obtain ⟨t, ht⟩ := hT
     simp only [mem_range, subset_inter_iff, exists_exists_eq_and, fundamentalEntourage]
     use max t s
-    refine ⟨fun ⟨P1, P2⟩ hP ↦ ?_, fun ⟨P1, P2⟩ hP ↦ ?_⟩ <;>
-    cases' hP with h h <;>
-    simp only [iUnion_singleton_eq_range, mem_range, Prod.mk.injEq, Subtype.exists, mem_Icc,
-      zero_le, le_max_iff, true_and, exists_and_left, exists_prop', nonempty_prop,
-      exists_eq_left] at h
-    · simpa only [← hs, mem_fundamentalEntourage] using Or.inr h.2
+    refine ⟨fun ⟨P1, P2⟩ hP ↦ ?_, fun ⟨P1, P2⟩ hP ↦ ?_⟩ <;> rcases hP with h | h
+    · simp only [iUnion_singleton_eq_range, mem_range, Prod.mk.injEq, Subtype.exists,
+        exists_and_left, exists_eq_left] at h
+      simpa only [← hs, mem_fundamentalEntourage] using Or.inr h.2
     · simpa only [← hs, mem_fundamentalEntourage] using Or.inl
         ⟨le_trans (by omega) h.1, le_trans (by omega) h.2⟩
-    · simpa only [← ht, mem_fundamentalEntourage] using Or.inr h.2
+    · simp only [iUnion_singleton_eq_range, mem_range, Prod.mk.injEq, Subtype.exists,
+        exists_and_left, exists_eq_left] at h
+      simpa only [← ht, mem_fundamentalEntourage] using Or.inr h.2
     · simp only [mem_Ici, Prod.mk_le_mk] at h
       simpa only [← ht, mem_fundamentalEntourage] using Or.inl ⟨le_trans
          (by omega) h.1, le_trans (by omega) h.2⟩

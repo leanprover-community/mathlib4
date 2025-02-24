@@ -139,7 +139,7 @@ lemma toColex_compress_lt_toColex {hU : U.Nonempty} {hV : V.Nonempty} (h : max' 
   have : a ∉ U := fun H ↦ ha.not_lt ((le_max' _ _ H).trans_lt h)
   simp [‹a ∉ U›, ‹a ∉ V›]
 
-/-- These are the compressions which we will apply to decrease the "measure" of a family of sets.-/
+/-- These are the compressions which we will apply to decrease the "measure" of a family of sets. -/
 private def UsefulCompression (U V : Finset α) : Prop :=
   Disjoint U V ∧ #U = #V ∧ ∃ (HU : U.Nonempty) (HV : V.Nonempty), max' U HU < max' V HV
 

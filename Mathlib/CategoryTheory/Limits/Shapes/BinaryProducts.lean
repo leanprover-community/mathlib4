@@ -306,11 +306,11 @@ theorem BinaryCofan.mk_inr {P : C} (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : (Binary
 
 /-- Every `BinaryFan` is isomorphic to an application of `BinaryFan.mk`. -/
 def isoBinaryFanMk {X Y : C} (c : BinaryFan X Y) : c ≅ BinaryFan.mk c.fst c.snd :=
-    Cones.ext (Iso.refl _) fun j => by cases' j with l; cases l; repeat simp
+    Cones.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
 
 /-- Every `BinaryFan` is isomorphic to an application of `BinaryFan.mk`. -/
 def isoBinaryCofanMk {X Y : C} (c : BinaryCofan X Y) : c ≅ BinaryCofan.mk c.inl c.inr :=
-    Cocones.ext (Iso.refl _) fun j => by cases' j with l; cases l; repeat simp
+    Cocones.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
 
 /-- This is a more convenient formulation to show that a `BinaryFan` constructed using
 `BinaryFan.mk` is a limit cone.

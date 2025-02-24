@@ -371,6 +371,17 @@ lemma quasispectrum_inr_eq (R S : Type*) {A : Type*} [Semifield R]
 
 end Unitization
 
+lemma quasispectrum.mul_comm {R A : Type*} [CommRing R] [NonUnitalRing A] [Module R A]
+    [IsScalarTower R A A] [SMulCommClass R A A] (a b : A) :
+    quasispectrum R (a * b) = quasispectrum R (b * a) := by
+  rw [← Set.inter_union_compl (quasispectrum R (a * b)) {r | IsUnit r},
+    ← Set.inter_union_compl (quasispectrum R (b * a)) {r | IsUnit r}]
+  congr! 1
+  · simpa [Set.inter_comm _ {r | IsUnit r}, Unitization.quasispectrum_eq_spectrum_inr,
+      Unitization.inr_mul] using spectrum.setOf_isUnit_inter_mul_comm _ _
+  · rw [Set.inter_eq_right.mpr, Set.inter_eq_right.mpr]
+    all_goals exact fun _ ↦ quasispectrum.not_isUnit_mem _
+
 /-- A class for `𝕜`-algebras with a partial order where the ordering is compatible with the
 (quasi)spectrum. -/
 class NonnegSpectrumClass (𝕜 A : Type*) [OrderedCommSemiring 𝕜] [NonUnitalRing A] [PartialOrder A]
@@ -459,7 +470,15 @@ lemma of_quasispectrum_eq {a b : A} {f : S → R} (ha : QuasispectrumRestricts a
   rightInvOn := h ▸ ha.rightInvOn
   left_inv := ha.left_inv
 
-variable [IsScalarTower S A A] [SMulCommClass S A A] [IsScalarTower R S A]
+variable [IsScalarTower S A A] [SMulCommClass S A A]
+
+lemma mul_comm_iff {f : S → R} {a b : A} :
+    QuasispectrumRestricts (a * b) f ↔ QuasispectrumRestricts (b * a) f := by
+  simp only [quasispectrumRestricts_iff, quasispectrum.mul_comm]
+
+alias ⟨mul_comm, _⟩ := mul_comm_iff
+
+variable [IsScalarTower R S A]
 
 theorem algebraMap_image (h : QuasispectrumRestricts a f) :
     algebraMap R S '' quasispectrum R a = quasispectrum S a := by
@@ -544,6 +563,13 @@ lemma of_spectrum_eq {a b : A} {f : S → R} (ha : SpectrumRestricts a f)
     rw [quasispectrum_eq_spectrum_union_zero, ← h, ← quasispectrum_eq_spectrum_union_zero]
     exact QuasispectrumRestricts.rightInvOn ha
   left_inv := ha.left_inv
+
+lemma mul_comm_iff {R S A : Type*} [Semifield R] [Field S] [Ring A]
+    [Algebra R S] [Algebra R A] [Algebra S A] {a b : A} {f : S → R} :
+    SpectrumRestricts (a * b) f ↔ SpectrumRestricts (b * a) f :=
+  QuasispectrumRestricts.mul_comm_iff
+
+alias ⟨mul_comm, _⟩ := mul_comm_iff
 
 variable [IsScalarTower R S A]
 

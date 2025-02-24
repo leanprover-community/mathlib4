@@ -128,7 +128,6 @@ section MulOneClass
 
 variable [MulOneClass M] [MulOneClass N] [MulOneClass P] (c : Con M)
 
--- Porting note: made M implicit
 /-- The submonoid of `M × M` defined by a congruence relation on a monoid `M`. -/
 @[to_additive (attr := coe) "The `AddSubmonoid` of `M × M` defined by an additive congruence
 relation on an `AddMonoid` `M`."]

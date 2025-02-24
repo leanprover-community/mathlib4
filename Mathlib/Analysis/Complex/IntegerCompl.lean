@@ -16,7 +16,7 @@ We also show that the upper half plane embeds into the integer complement.
 
 open UpperHalfPlane
 
-/--The complement of the integers in `ℂ`. -/
+/-- The complement of the integers in `ℂ` -/
 def Complex.integerComplement := (Set.range ((↑) : ℤ → ℂ))ᶜ
 
 namespace Complex

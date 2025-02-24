@@ -4,13 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Algebra.ModEq
-import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Periodic
+import Mathlib.Algebra.Ring.Periodic
 import Mathlib.Data.Int.SuccPred
 import Mathlib.Order.Circular
-import Mathlib.Data.List.TFAE
-import Mathlib.Data.Set.Lattice
 
 /-!
 # Reducing to an interval modulo its length

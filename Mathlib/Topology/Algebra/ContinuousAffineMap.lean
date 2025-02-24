@@ -171,7 +171,7 @@ instance : MulAction S (P →ᴬ[R] W) :=
 
 end MulAction
 
-variable [TopologicalAddGroup W]
+variable [IsTopologicalAddGroup W]
 
 instance : Add (P →ᴬ[R] W) where
   add f g := { (f : P →ᵃ[R] W) + (g : P →ᵃ[R] W) with cont := f.continuous.add g.continuous }
