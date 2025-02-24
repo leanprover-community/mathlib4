@@ -41,18 +41,17 @@ private lemma Iio_zero : Iio 0 = ∅ := by simp
 end lemmas
 
 /-- Given natural numbers `m` and `n`, returns `(s, ⊢ Finset.Icc m n = s)`. -/
-partial def evalFinsetIccNat {em eml en enl : Q(ℕ)} (m n : ℕ) (hm : Q(IsNat $em $eml))
-    (hn : Q(IsNat $en $enl)) : MetaM ((s : Q(Finset ℕ)) × Q(.Icc $em $en = $s)) := do
+partial def evalFinsetIccNat (m n : ℕ) (em en : Q(ℕ)) :
+    MetaM ((s : Q(Finset ℕ)) × Q(.Icc $em $en = $s)) := do
   -- If `m = n`, then `Icc m n = {m}`. We handle this case separately because `insert m ∅` is
-  -- not syntactivally `{m}`.
+  -- not syntactically `{m}`.
   if m = n then
     have : $em =Q $en := ⟨⟩
     return ⟨q({$em}), q(Icc_self _)⟩
   -- If `m < n`, then `Icc m n = insert m (Icc m n)`.
   else if m < n then
     let hmn ← mkDecideProofQq q($em ≤ $en)
-    let hm := q(isNat_natSucc $hm rfl)
-    let ⟨s, hs⟩ ← evalFinsetIccNat (m+1) n hm hn
+    let ⟨s, hs⟩ ← evalFinsetIccNat (m+1) n q($em + 1) en
     return ⟨q(insert $em $s), q(Icc_eq_insert_of_Icc_succ_eq $hmn $hs)⟩
   -- Else `n < m` and `Icc m n = ∅`.
   else
@@ -73,87 +72,64 @@ namespace Finset
 simproc_decl Icc_nat (Icc _ _) := fun e ↦ do
   let ⟨1, ~q(Finset ℕ), ~q(Icc (OfNat.ofNat $em) (OfNat.ofNat $en))⟩ ← inferTypeQ e
     | return .continue
-  let hm : Q(IsNat (OfNat.ofNat $em) $em) := q(⟨rfl⟩)
-  let hn : Q(IsNat (OfNat.ofNat $en) $en) := q(⟨rfl⟩)
-  unless em.isRawNatLit && en.isRawNatLit do
-    logWarning "unreachable code was reached"
+  unless em.isRawNatLit && en.isRawNatLit do logWarning "unreachable code was reached"
   let m := em.natLit!
   let n := en.natLit!
-  let ⟨s, p⟩ ← evalFinsetIccNat m n hm hn
+  let ⟨s, p⟩ ← evalFinsetIccNat m n em en
   return .done { expr := s, proof? := p }
 
 /-- Simproc to compute `Finset.Ico a b` when `a b : ℕ`. -/
 simproc_decl Ico_nat (Ico _ _) := fun e ↦ do
   let ⟨1, ~q(Finset ℕ), ~q(Ico (OfNat.ofNat $em) (OfNat.ofNat $en))⟩ ← inferTypeQ e
     | return .continue
-  let hm : Q(IsNat (OfNat.ofNat $em) $em) := q(⟨rfl⟩)
-  let hn : Q(IsNat (OfNat.ofNat $en) $en) := q(⟨rfl⟩)
-  unless em.isRawNatLit && en.isRawNatLit do
-    logWarning "unreachable code was reached"
+  unless em.isRawNatLit && en.isRawNatLit do logWarning "unreachable code was reached"
   let m := em.natLit!
   let n := en.natLit!
   match n with
   | 0 =>
     return .done { expr := (q(∅) : Q(Finset ℕ)), proof? := q(Ico_zero $em) }
   | n + 1 =>
-    let hn := q(isNat_natPred $hn rfl)
-    let ⟨s, p⟩ ← evalFinsetIccNat m n hm hn
+    let ⟨s, p⟩ ← evalFinsetIccNat m n em q($en - 1)
     return .done { expr := s, proof? := q(Ico_eq_of_Icc_pred_eq (Nat.succ_ne_zero _) $p) }
 
 /-- Simproc to compute `Finset.Ioc a b` when `a b : ℕ`. -/
 simproc_decl Ioc_nat (Ioc _ _) := fun e ↦ do
   let ⟨1, ~q(Finset ℕ), ~q(Ioc (OfNat.ofNat $em) (OfNat.ofNat $en))⟩ ← inferTypeQ e
     | return .continue
-  let hm : Q(IsNat (OfNat.ofNat $em) $em) := q(⟨rfl⟩)
-  let hn : Q(IsNat (OfNat.ofNat $en) $en) := q(⟨rfl⟩)
-  unless em.isRawNatLit && en.isRawNatLit do
-    return .continue
+  unless em.isRawNatLit && en.isRawNatLit do return .continue
   let m := em.natLit!
   let n := en.natLit!
-  let hm := q(isNat_natSucc $hm rfl)
-  let ⟨s, p⟩ ← evalFinsetIccNat (m + 1) n hm hn
+  let ⟨s, p⟩ ← evalFinsetIccNat (m + 1) n q($em + 1) en
   return .done { expr := s, proof? := q(Ioc_eq_of_Icc_succ_eq $p) }
 
 /-- Simproc to compute `Finset.Ioo a b` when `a b : ℕ`. -/
 simproc_decl Ioo_nat (Ioo _ _) := fun e ↦ do
   let ⟨1, ~q(Finset ℕ), ~q(Ioo (OfNat.ofNat $em) (OfNat.ofNat $en))⟩ ← inferTypeQ e
     | return .continue
-  let hm : Q(IsNat (OfNat.ofNat $em) $em) := q(⟨rfl⟩)
-  let hn : Q(IsNat (OfNat.ofNat $en) $en) := q(⟨rfl⟩)
-  unless em.isRawNatLit && en.isRawNatLit do
-    logWarning "unreachable code was reached"
+  unless em.isRawNatLit && en.isRawNatLit do logWarning "unreachable code was reached"
   let m := em.natLit!
   let n := en.natLit!
-  let hm := q(isNat_natSucc $hm rfl)
-  let hn := q(isNat_natPred $hn rfl)
-  let ⟨s, p⟩ ← evalFinsetIccNat (m + 1) (n - 1) hm hn
+  let ⟨s, p⟩ ← evalFinsetIccNat (m + 1) (n - 1) q($em + 1) q($en - 1)
   return .done { expr := s, proof? := q(Ioo_eq_of_Icc_succ_pred_eq $p) }
 
 /-- Simproc to compute `Finset.Iic b` when `b : ℕ`. -/
 simproc_decl Iic_nat (Iic _) := fun e ↦ do
-  let ⟨1, ~q(Finset ℕ), ~q(Iic (OfNat.ofNat $en))⟩ ← inferTypeQ e
-    | return .continue
-  let hn : Q(IsNat (OfNat.ofNat $en) $en) := q(⟨rfl⟩)
-  unless en.isRawNatLit do
-    logWarning "unreachable code was reached"
+  let ⟨1, ~q(Finset ℕ), ~q(Iic (OfNat.ofNat $en))⟩ ← inferTypeQ e | return .continue
+  unless en.isRawNatLit do logWarning "unreachable code was reached"
   let n := en.natLit!
-  let ⟨s, p⟩ ← evalFinsetIccNat 0 n q(isNat_zero' _) hn
+  let ⟨s, p⟩ ← evalFinsetIccNat 0 n q(0) en
   return .done { expr := s, proof? := q(Iic_eq_of_Icc_zero_eq $p) }
 
 /-- Simproc to compute `Finset.Iio b` when `b : ℕ`. -/
 simproc_decl Iio_nat (Iio _) := fun e ↦ do
-  let ⟨1, ~q(Finset ℕ), ~q(Iio (OfNat.ofNat $en))⟩ ← inferTypeQ e
-    | return .continue
-  let hn : Q(IsNat (OfNat.ofNat $en) $en) := q(⟨rfl⟩)
-  unless en.isRawNatLit do
-    logWarning "unreachable code was reached"
+  let ⟨1, ~q(Finset ℕ), ~q(Iio (OfNat.ofNat $en))⟩ ← inferTypeQ e | return .continue
+  unless en.isRawNatLit do logWarning "unreachable code was reached"
   let n := en.natLit!
   match n with
   | 0 =>
     return .done { expr := (q(∅) : Q(Finset ℕ)), proof? := q(Iio_zero) }
   | n + 1 =>
-    let hn := q(isNat_natPred $hn rfl)
-    let ⟨s, p⟩ ← evalFinsetIccNat 0 n q(isNat_zero' _) hn
+    let ⟨s, p⟩ ← evalFinsetIccNat 0 n q(0) q($en - 1)
     return .done { expr := s, proof? := q(Iio_eq_of_Icc_zero_pred_eq (Nat.succ_ne_zero _) $p) }
 
 example : Icc 1 0 = ∅ := by simp only [Icc_nat]
