@@ -107,6 +107,7 @@ import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.Algebra.Category.GrpWithZero
 import Mathlib.Algebra.Category.HopfAlgebraCat.Basic
+import Mathlib.Algebra.Category.HopfAlgebraCat.Monoidal
 import Mathlib.Algebra.Category.ModuleCat.AB
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
@@ -475,6 +476,7 @@ import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
 import Mathlib.Algebra.Homology.ExactSequence
 import Mathlib.Algebra.Homology.Factorizations.Basic
 import Mathlib.Algebra.Homology.Functor
+import Mathlib.Algebra.Homology.HasNoLoop
 import Mathlib.Algebra.Homology.HomologicalBicomplex
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.HomologicalComplexAbelian
@@ -1185,6 +1187,7 @@ import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Analytic.Within
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Asymptotics.Defs
+import Mathlib.Analysis.Asymptotics.ExpGrowth
 import Mathlib.Analysis.Asymptotics.Lemmas
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
@@ -1698,6 +1701,7 @@ import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 import Mathlib.CategoryTheory.Abelian.EpiWithInjectiveKernel
 import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.CategoryTheory.Abelian.Ext
+import Mathlib.CategoryTheory.Abelian.FreydMitchell
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
@@ -1707,11 +1711,13 @@ import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ColimCoyoneda
+import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Coseparator
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ModuleEmbedding.Opposite
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Monomorphisms
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
 import Mathlib.CategoryTheory.Abelian.Images
+import Mathlib.CategoryTheory.Abelian.Indization
 import Mathlib.CategoryTheory.Abelian.Injective.Basic
 import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 import Mathlib.CategoryTheory.Abelian.LeftDerived
@@ -1916,6 +1922,7 @@ import Mathlib.CategoryTheory.Galois.Prorepresentability
 import Mathlib.CategoryTheory.Galois.Topology
 import Mathlib.CategoryTheory.Generator.Abelian
 import Mathlib.CategoryTheory.Generator.Basic
+import Mathlib.CategoryTheory.Generator.HomologicalComplex
 import Mathlib.CategoryTheory.Generator.Indization
 import Mathlib.CategoryTheory.Generator.Preadditive
 import Mathlib.CategoryTheory.Generator.Presheaf
@@ -1993,6 +2000,7 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Filtered
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Finite
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.FunctorToTypes
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.IndYoneda
@@ -2221,6 +2229,7 @@ import Mathlib.CategoryTheory.Preadditive.EilenbergMoore
 import Mathlib.CategoryTheory.Preadditive.EndoFunctor
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 import Mathlib.CategoryTheory.Preadditive.HomOrthogonal
+import Mathlib.CategoryTheory.Preadditive.Indization
 import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
 import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
@@ -2590,7 +2599,6 @@ import Mathlib.Data.Bool.Set
 import Mathlib.Data.Bracket
 import Mathlib.Data.Bundle
 import Mathlib.Data.Char
-import Mathlib.Data.Complex.Abs
 import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Complex.Cardinality
@@ -2907,6 +2915,7 @@ import Mathlib.Data.Matroid.Constructions
 import Mathlib.Data.Matroid.Dual
 import Mathlib.Data.Matroid.IndepAxioms
 import Mathlib.Data.Matroid.Init
+import Mathlib.Data.Matroid.Loop
 import Mathlib.Data.Matroid.Map
 import Mathlib.Data.Matroid.Rank.Cardinal
 import Mathlib.Data.Matroid.Rank.Finite
@@ -4636,6 +4645,7 @@ import Mathlib.RingTheory.Congruence.Opposite
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.CotangentLocalizationAway
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.DedekindDomain.Different
@@ -5172,6 +5182,7 @@ import Mathlib.Tactic.DeriveCountable
 import Mathlib.Tactic.DeriveEncodable
 import Mathlib.Tactic.DeriveFintype
 import Mathlib.Tactic.DeriveTraversable
+import Mathlib.Tactic.ENatToNat
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.ErwQuestion
 import Mathlib.Tactic.Eval
@@ -5296,6 +5307,7 @@ import Mathlib.Tactic.NormNum.Result
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.Observe
 import Mathlib.Tactic.OfNat
+import Mathlib.Tactic.PNatToNat
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.Peel
 import Mathlib.Tactic.Polyrith
