@@ -1328,8 +1328,8 @@ theorem diff_union_diff_cancel_of_inter_subset_of_subset_union (hi : s ∩ u ⊆
 
 @[simp]
 theorem diff_ssubset_left_iff : s \ t ⊂ s ↔ (s ∩ t).Nonempty := by
-  rw [ssubset_iff_subset_ne, and_iff_right diff_subset, Ne, sdiff_eq_left,
-    disjoint_iff_inter_eq_empty, nonempty_iff_ne_empty]
+  rw [diff_eq, inter_ssubset_left_iff, subset_compl_iff_disjoint_left,
+    not_disjoint_iff_nonempty_inter, inter_comm]
 
 lemma _root_.HasSubset.Subset.diff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s.Nonempty) :
     t \ s ⊂ t := by
