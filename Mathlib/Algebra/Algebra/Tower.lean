@@ -318,6 +318,20 @@ theorem map_mem_span_algebraMap_image {S T : Type*} [CommSemiring S] [Semiring T
 
 end Algebra
 
+section OrderIso
+
+def orderIsoOfSurjective {R S} (M) [CommSemiring R] [Semiring S] [AddCommMonoid M]
+    [Algebra R S] [Module S M] [Module R M] [IsScalarTower R S M]
+    (h : Function.Surjective (algebraMap R S)) : Submodule S M ≃o Submodule R M := {
+      Submodule.restrictScalarsEmbedding R S M with
+      invFun := fun p ↦
+        {smul_mem' := fun c x hx ↦ (by obtain ⟨c, rfl⟩ := h c; simpa using p.smul_mem c hx), ..}
+      left_inv := fun x ↦ Submodule.ext fun _ ↦ Iff.rfl
+      right_inv := fun x ↦ Submodule.ext fun _ ↦ Iff.rfl
+    }
+
+end OrderIso
+
 end Submodule
 
 end Semiring

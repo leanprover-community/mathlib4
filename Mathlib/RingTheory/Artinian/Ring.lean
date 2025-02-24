@@ -9,6 +9,7 @@ import Mathlib.RingTheory.Localization.Defs
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.RingTheory.Noetherian.Basic
+import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # Artinian rings
@@ -121,85 +122,7 @@ instance : IsArtinianRing (Localization S) :=
 
 end Localization
 
-end IsArtinianRing
-
-section temp
-
-variable {R : Type*} [CommRing R]
-
-def Submodule.orderIsoOfSurjective {R S} (M) [CommSemiring R] [Semiring S] [AddCommMonoid M]
-    [Algebra R S] [Module S M] [Module R M] [IsScalarTower R S M]
-    (h : Function.Surjective (algebraMap R S)) : Submodule S M ≃o Submodule R M :=
-    {
-      Submodule.restrictScalarsEmbedding R S M with
-      invFun := fun p ↦
-        {smul_mem' := fun c x hx ↦ (by obtain ⟨c, rfl⟩ := h c; simpa using p.smul_mem c hx), ..}
-      left_inv := fun x ↦ Submodule.ext fun _ ↦ Iff.rfl
-      right_inv := fun x ↦ Submodule.ext fun _ ↦ Iff.rfl
-    }
-
-lemma isNoetherian_of_tower_of_surjective {R S} (M) [CommSemiring R] [Semiring S]
-  [AddCommMonoid M] [Algebra R S] [Module S M] [Module R M] [IsScalarTower R S M]
-  (h : Function.Surjective (algebraMap R S)) :
-  IsNoetherian R M ↔ IsNoetherian S M := by
-  refine ⟨isNoetherian_of_tower R, fun h' ↦ ?_⟩
-  simp_rw [isNoetherian_iff'] at h' ⊢
-  haveI : WellFoundedGT (Submodule S M) := h'
-  exact (Submodule.orderIsoOfSurjective M h).symm.toOrderEmbedding.wellFoundedGT
-
-lemma isArtinian_of_tower_of_surjective {R S} (M) [CommRing R] [CommRing S]
-  [AddCommGroup M] [Algebra R S] [Module S M] [Module R M] [IsScalarTower R S M]
-  (h : Function.Surjective (algebraMap R S)) :
-  IsArtinian R M ↔ IsArtinian S M := by
-  refine ⟨isArtinian_of_tower R, ?_⟩
-  simp_rw [isArtinian_iff]
-  exact (Submodule.orderIsoOfSurjective M h).symm.toOrderEmbedding.wellFounded
-
-lemma isArtinian_top_iff {M} [AddCommGroup M] [Module R M] :
-  IsArtinian R (⊤ : Submodule R M) ↔ IsArtinian R M := by
-  constructor
-  · intro h; haveI := h
-    exact isArtinian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
-  · intro h; haveI := h
-    exact isArtinian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl).symm
-
-lemma isNoetherianIffIsArtinianOfMul {R : Type*} [CommRing R] (I J : Ideal R) [I.IsMaximal]
-  (H : IsNoetherian R (I * J : Submodule R R) ↔ IsArtinian R (I * J : Submodule R R)) :
-  IsNoetherian R J ↔ IsArtinian R J := by
-  let IJ := Submodule.comap J.subtype (I * J)
-  have : Module.IsTorsionBySet R (J ⧸ IJ) I := by
-    intro x ⟨y, hy⟩
-    obtain ⟨⟨x, hx⟩, rfl⟩ := Submodule.mkQ_surjective IJ x
-    rw [Subtype.coe_mk, ← map_smul, Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero]
-    show _ ∈ I * J
-    simp [Ideal.mul_mem_mul hy hx]
-  letI : Module (R ⧸ I) (J ⧸ IJ) := this.module
-  letI : Field (R ⧸ I) := Ideal.Quotient.field I
-  have : Function.Surjective (algebraMap R (R ⧸ I)) := Ideal.Quotient.mk_surjective
-  have : IsNoetherian R (J ⧸ IJ) ↔ IsArtinian R (J ⧸ IJ) := by
-    -- rw [isNoetherianOfTowerOfSurjective (J ⧸ IJ) this,
-    --     (Module.finiteLengthTfaeOfField (R ⧸ I) (J ⧸ IJ)).out 1 2,
-    --     ← isArtinianOfTowerOfSurjective (J ⧸ IJ) this]
-    sorry
-  constructor
-  · intro hNoetherianJ
-    haveI := this.mp inferInstance
-    haveI : IsArtinian R (I * J : Submodule R R) := H.mp (isNoetherian_of_le Ideal.mul_le_left)
-    -- apply isArtinian_of_range_eq_ker
-      -- (Submodule.ofLe Ideal.mul_le_left : (I * J : Submodule R R) →ₗ[R] J) IJ.mkQ
-      -- (Submodule.ofLe_injective Ideal.mul_le_left)
-      -- (Submodule.mkQ_surjective IJ)
-      -- (by simp [Submodule.range_ofLe])
-    sorry
-  · intro hArtinianJ
-    haveI := this.mpr inferInstance
-    haveI : IsNoetherian R (I * J : Submodule R R) := H.mpr (isArtinian_of_le Ideal.mul_le_left)
-    -- exact isNoetherianOfRangeEqKer
-    --   (Submodule.ofLe Ideal.mul_le_left : (I * J : Submodule R R) →ₗ[R] J) IJ.mkQ
-    --   (Submodule.ofLe_injective Ideal.mul_le_left)
-    --   (Submodule.mkQ_surjective IJ)
-    --   (by simp [Submodule.range_ofLe])
-    sorry
+section IsNoetherian
 
 lemma isNoetherianIffIsArtinianOfProdEqBot {R : Type*} [CommRing R] (s : Multiset (Ideal R))
   (hs : ∀ I ∈ s, Ideal.IsMaximal I) (h' : Multiset.prod s = ⊥) :
@@ -222,4 +145,6 @@ lemma isNoetherianIffIsArtinianOfProdEqBot {R : Type*} [CommRing R] (s : Multise
     haveI := hs a (Multiset.mem_cons_self a s)
     apply isNoetherianIffIsArtinianOfMul _ _ hs''
 
-end temp
+end IsNoetherian
+
+end IsArtinianRing

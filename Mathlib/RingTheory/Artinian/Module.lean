@@ -3,6 +3,7 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Module.Torsion
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.RingTheory.Ideal.Prod
@@ -114,6 +115,14 @@ theorem LinearEquiv.isArtinian_iff (f : M ≃ₗ[R] P) : IsArtinian R M ↔ IsAr
 
 instance (priority := 100) isArtinian_of_finite [Finite M] : IsArtinian R M :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
+
+lemma isArtinian_top_iff {M} [AddCommGroup M] [Module R M] :
+  IsArtinian R (⊤ : Submodule R M) ↔ IsArtinian R M := by
+  constructor
+  · intro h; haveI := h
+    exact isArtinian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
+  · intro h; haveI := h
+    exact isArtinian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl).symm
 
 -- Porting note: elab_as_elim can only be global and cannot be changed on an imported decl
 -- attribute [local elab_as_elim] Finite.induction_empty_option
@@ -597,5 +606,64 @@ instance : IsSemiprimaryRing R where
     rw [← Ideal.span, this, smul_eq_mul, eq]
 
 end Ring
+
+section IsNoetherian
+
+lemma isNoetherian_of_tower_of_surjective {R S} (M) [CommSemiring R] [Semiring S]
+  [AddCommMonoid M] [Algebra R S] [Module S M] [Module R M] [IsScalarTower R S M]
+  (h : Function.Surjective (algebraMap R S)) :
+  IsNoetherian R M ↔ IsNoetherian S M := by
+  refine ⟨isNoetherian_of_tower R, fun h' ↦ ?_⟩
+  simp_rw [isNoetherian_iff'] at h' ⊢
+  haveI : WellFoundedGT (Submodule S M) := h'
+  exact (Submodule.orderIsoOfSurjective M h).symm.toOrderEmbedding.wellFoundedGT
+
+lemma isArtinian_of_tower_of_surjective {R S} (M) [CommRing R] [CommRing S]
+  [AddCommGroup M] [Algebra R S] [Module S M] [Module R M] [IsScalarTower R S M]
+  (h : Function.Surjective (algebraMap R S)) :
+  IsArtinian R M ↔ IsArtinian S M := by
+  refine ⟨isArtinian_of_tower R, ?_⟩
+  simp_rw [isArtinian_iff]
+  exact (Submodule.orderIsoOfSurjective M h).symm.toOrderEmbedding.wellFounded
+
+end IsNoetherian
+
+section Ideal
+
+lemma isNoetherianIffIsArtinianOfMul {R : Type*} [CommRing R] (I J : Ideal R) [I.IsMaximal]
+  (H : IsNoetherian R (I * J : Submodule R R) ↔ IsArtinian R (I * J : Submodule R R)) :
+  IsNoetherian R J ↔ IsArtinian R J := by
+  let IJ := Submodule.comap J.subtype (I * J)
+  have : Module.IsTorsionBySet R (J ⧸ IJ) I := by
+    intro x ⟨y, hy⟩
+    obtain ⟨⟨x, hx⟩, rfl⟩ := Submodule.mkQ_surjective IJ x
+    rw [Subtype.coe_mk, ← map_smul, Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero]
+    show _ ∈ I * J
+    simp [Ideal.mul_mem_mul hy hx]
+  letI : Module (R ⧸ I) (J ⧸ IJ) := this.module
+  letI : Field (R ⧸ I) := Ideal.Quotient.field I
+  have : Function.Surjective (algebraMap R (R ⧸ I)) := Ideal.Quotient.mk_surjective
+  have : IsNoetherian R (J ⧸ IJ) ↔ IsArtinian R (J ⧸ IJ) := by
+    -- rw [isNoetherianOfTowerOfSurjective (J ⧸ IJ) this,
+    --     (Module.finiteLengthTfaeOfField (R ⧸ I) (J ⧸ IJ)).out 1 2,
+    --     ← isArtinianOfTowerOfSurjective (J ⧸ IJ) this]
+    sorry
+  constructor
+  · intro hNoetherianJ
+    haveI := this.mp inferInstance
+    haveI : IsArtinian R (I * J : Submodule R R) := H.mp (isNoetherian_of_le Ideal.mul_le_left)
+    apply isArtinian_of_range_eq_ker
+      (Submodule.inclusion Ideal.mul_le_left : (I * J : Submodule R R) →ₗ[R] J) IJ.mkQ
+    simp [Submodule.range_inclusion]
+    rfl
+  · intro hArtinianJ
+    haveI := this.mpr inferInstance
+    haveI : IsNoetherian R (I * J : Submodule R R) := H.mpr (isArtinian_of_le Ideal.mul_le_left)
+    apply isNoetherian_of_range_eq_ker
+      (Submodule.inclusion Ideal.mul_le_left : (I * J : Submodule R R) →ₗ[R] J) IJ.mkQ
+    simp [Submodule.range_inclusion]
+    rfl
+
+end Ideal
 
 end IsArtinianRing
