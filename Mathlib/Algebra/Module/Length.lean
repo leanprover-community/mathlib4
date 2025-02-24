@@ -18,6 +18,8 @@ variable [Module R M] [Module R M']
 
 open Order
 
+noncomputable def Submodule.length (p : Submodule R M) : ℕ∞ := Order.height p
+
 variable (R M) in
 /--
 The length of a module M is defined to be the supremum of lengths of chains of submodules of M. We
@@ -25,6 +27,11 @@ define this using the existing krull dimension api, and as a result this takes v
 WithBot ℕ∞ in spite of the fact that there is no module with length equal to ⊥.
 -/
 noncomputable def Module.length : WithBot ℕ∞ := krullDim (α := Submodule R M)
+
+variable (R M) in
+lemma Submodule.length_top_eq : (⊤ : Submodule R M).length = Module.length R M := sorry
+
+lemma Submodule.length_eq (p : Submodule R M) : p.length = Module.length R p := sorry
 
 open Classical in
 /--
