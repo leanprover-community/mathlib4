@@ -229,7 +229,7 @@ lemma takeUntil_takeUntil {w x : V} (p : G.Walk u v) (hw : w ∈ p.support)
     simp only [takeUntil_cons hu' hau' hadj, support_cons, List.mem_cons] at hx
     by_cases hx' : x = a
     · aesop
-    · simp [hx'] at hx
+    · replace hx : x ∈ (q.takeUntil u' hu').support := by simpa [hx'] using hx
       push_neg at hx'
       conv_lhs =>
         enter [1]
