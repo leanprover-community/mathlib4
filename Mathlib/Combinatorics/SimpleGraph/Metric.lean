@@ -192,7 +192,7 @@ protected theorem Reachable.pos_dist_of_ne (h : G.Reachable u v) (hne : u ≠ v)
     0 < G.dist u v :=
   Nat.pos_of_ne_zero (by simp [h, hne])
 
-lemma Reachable.one_lt_dist_of_ne_of_not_adj (h : G.Reachable u v) (hne : u ≠ v)
+protected theorem Reachable.one_lt_dist_of_ne_of_not_adj (h : G.Reachable u v) (hne : u ≠ v)
     (hnadj : ¬G.Adj u v) : 1 < G.dist u v := Nat.lt_of_le_of_ne (h.pos_dist_of_ne hne) (by
     by_contra! hc
     obtain ⟨p, hp⟩ := Reachable.exists_walk_length_eq_dist h
@@ -204,6 +204,10 @@ protected theorem Connected.dist_eq_zero_iff (hconn : G.Connected) :
 protected theorem Connected.pos_dist_of_ne (hconn : G.Connected) (hne : u ≠ v) :
     0 < G.dist u v :=
   Nat.pos_of_ne_zero fun h ↦ False.elim <| hne <| (hconn.dist_eq_zero_iff).mp h
+
+protected theorem Connected.one_lt_dist_of_ne_of_not_adj (h : G.Connected) (hne : u ≠ v)
+    (hnadj : ¬G.Adj u v) : 1 < G.dist u v :=
+  Reachable.one_lt_dist_of_ne_of_not_adj (h u v) hne hnadj
 
 theorem dist_eq_zero_of_not_reachable (h : ¬G.Reachable u v) : G.dist u v = 0 := by
   simp [h]
@@ -282,6 +286,8 @@ protected theorem Reachable.dist_anti {G' : SimpleGraph V} (h : G ≤ G') (hr : 
   rw [← hw, ← Walk.length_map (Hom.mapSpanningSubgraphs h)]
   apply dist_le
 
+/-- This bundles and abstracts some facts about the first three vertices of a shortest walk
+of length at least two: the first and third nodes are different and not connected. -/
 lemma Walk.exists_adj_adj_not_adj_ne {p : G.Walk v w} (hp : p.length = G.dist v w)
     (hl : 1 < G.dist v w) : ∃ (x a b : V), G.Adj x a ∧ G.Adj a b ∧ ¬ G.Adj x b ∧ x ≠ b := by
   use v, p.getVert 1, p.getVert 2
@@ -297,10 +303,10 @@ lemma Walk.exists_adj_adj_not_adj_ne {p : G.Walk v w} (hp : p.length = G.dist v 
       simpa [hv, p.getVert_tail] using dist_le p.tail.tail
     omega
   by_cases hadj : G.Adj v (p.getVert 2)
-  · have : G.dist v w ≤ p.tail.tail.length + 1 := by
-      simpa using dist_le (p.tail.tail.cons (p.getVert_tail ▸ hadj))
+  · have : G.dist v w ≤ p.tail.tail.length + 1 :=
+      dist_le <| p.tail.tail.cons <| p.getVert_tail ▸ hadj
     omega
-  exact ⟨by simpa using p.adj_snd hnp, by simpa using p.adj_getVert_succ (hp ▸ hl), hadj, hv⟩
+  exact ⟨p.adj_snd hnp, p.adj_getVert_succ (hp ▸ hl), hadj, hv⟩
 
 end dist
 

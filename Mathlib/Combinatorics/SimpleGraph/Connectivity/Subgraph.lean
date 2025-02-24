@@ -397,28 +397,31 @@ lemma exists_isCycle_snd_verts_eq {p : G.Walk v v} (h : p.IsCycle) (hadj : p.toS
 
 end IsCycle
 
-/-- This lemma considers the `SimpleGraph.Walk` until any vertex in a given set.
-This is formulated as a lemma instead of a definition, because we give up the knowledge
+/-- This lemma considers the `SimpleGraph.Walk` until any vertex in a given set. You could
+interpret this as being `takeUntilSet`, but this cannot be defined since= we give up the knowledge
 of what the endpoint is, compared to normal `SimpleGraph.Walk.takeUntil` usage. -/
-lemma takeUntilSet {u v} [DecidableEq V] {p : G.Walk u v} {s : Set V} (hs : s.Finite)
-    (h : (s ∩ p.support.toFinset).Nonempty) : ∃ x ∈ s, ∃ (hx : x ∈ p.support),
-    (∀ t ∈ s, ∀ w ∈ s, ¬ (p.takeUntil x hx).toSubgraph.Adj t w) := by
+lemma exists_mem_support_forall_not_adj_toSubgraph_takeUntil {u v} [DecidableEq V] {p : G.Walk u v}
+    {s : Set V} (hs : s.Finite) (h : (s ∩ p.support.toFinset).Nonempty) : ∃ x ∈ s,
+    ∃ (hx : x ∈ p.support), (∀ t ∈ s, ∀ w ∈ s, ¬(p.takeUntil x hx).toSubgraph.Adj t w) := by
   classical
   obtain ⟨x, hx⟩ := h
   simp only [List.coe_toFinset, Set.mem_inter_iff, Set.mem_setOf_eq] at hx
   by_cases hxe : ((s \ {x}) ∩ (p.takeUntil x hx.2).support.toFinset).Nonempty
-  · obtain ⟨x', hx', hx'p, h⟩ := (p.takeUntil x hx.2).takeUntilSet (Set.Finite.diff hs) hxe
+  · have := p.length_takeUntil_le hx.2
+    have : 0 < s.ncard := (Set.ncard_pos hs).mpr ⟨x, hx.1⟩
+    obtain ⟨x', hx', hx'p, h⟩ :=
+      (p.takeUntil x hx.2).exists_mem_support_forall_not_adj_toSubgraph_takeUntil hs.diff hxe
     use x', hx'.1, (p.support_takeUntil_subset _ hx'p)
     simp only [takeUntil_takeUntil, Set.mem_diff] at h
     intro t ht r hr
     by_cases htrx : t = x ∨ r = x
     · have : x ∉ (p.takeUntil x' (p.support_takeUntil_subset _ hx'p)).support := by
         rw [← takeUntil_takeUntil]
-        exact Walk.not_mem_support_takeUntil_takeUntil hx'.2 hx.2 hx'p
+        exact not_mem_support_takeUntil_takeUntil hx'.2 hx.2 hx'p
       intro htr
       have := mem_support_of_adj_toSubgraph htr
       have := mem_support_of_adj_toSubgraph htr.symm
-      aesop (simp_config := {})
+      aesop
     push_neg at htrx
     exact h t ⟨ht, by simp [htrx.1]⟩ r ⟨hr, by simp [htrx.2]⟩
   use x, hx.1, hx.2
@@ -438,9 +441,6 @@ lemma takeUntilSet {u v} [DecidableEq V] {p : G.Walk u v} {s : Set V} (hs : s.Fi
 termination_by p.length + s.ncard
 decreasing_by
   simp_wf
-  simp only [List.coe_toFinset, Set.mem_inter_iff, Set.mem_setOf_eq] at hx
-  have := p.length_takeUntil_le hx.2
-  have : 0 < s.ncard := (Set.ncard_pos hs).mpr ⟨x, hx.1⟩
   simp only [Set.ncard_diff (by simp [hx.1] : {x} ⊆ s), Set.ncard_singleton, gt_iff_lt]
   omega
 
