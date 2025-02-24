@@ -96,12 +96,12 @@ end BoolRing
 
 /-! ### Equivalence between `BoolAlg` and `BoolRing` -/
 
--- We have to add this instance since it doesn't see through `X.toBddDistLat`.
+-- We have to add this instance since Lean doesn't see through `X.toBddDistLat`.
 instance {X : BoolAlg} :
     BooleanAlgebra ↑(BddDistLat.toBddLat (X.toBddDistLat)).toLat :=
   BoolAlg.str _
 
--- We have to add this instance since it doesn't see through `R.toBddDistLat`.
+-- We have to add this instance since Lean doesn't see through `R.toBddDistLat`.
 instance {R : Type u} [BooleanRing R] :
     BooleanRing (BoolAlg.of (AsBoolAlg ↑R)).toBddDistLat.toBddLat.toLat :=
   inferInstanceAs <| BooleanRing R
