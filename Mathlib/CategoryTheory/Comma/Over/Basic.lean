@@ -360,6 +360,10 @@ theorem iteratedSliceForward_forget :
     iteratedSliceForward f ⋙ forget f.left = forget f ⋙ forget X :=
   rfl
 
+theorem iteratedSliceBackward_forget :
+    iteratedSliceBackward f ⋙ forget f = Over.map f.hom :=
+  rfl
+
 theorem iteratedSliceBackward_forget_forget :
     iteratedSliceBackward f ⋙ forget f ⋙ forget X = forget f.left :=
   rfl
