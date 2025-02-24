@@ -23,6 +23,8 @@ def Nat.toHexDigits (n : Nat) : Nat → (res : String := "") → String
     Nat.toHexDigits n len <|
       s.push (Nat.digitChar (b >>> 4).toNat) |>.push (Nat.digitChar (b &&& 15).toNat)
 
+def UInt64.toHexDigits (n : UInt64) : String := Nat.toHexDigits n.toNat 8
+
 /-- Format hash as hex digit with extension `.ltar` -/
 def UInt64.asLTar (n : UInt64) : String :=
   s!"{Nat.toHexDigits n.toNat 8}.ltar"
