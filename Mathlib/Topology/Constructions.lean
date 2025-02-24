@@ -1075,8 +1075,7 @@ lemma Topology.IsInducing.of_codRestrict {f : X → Y} {t : Set Y} (ht : ∀ x, 
 lemma Topology.IsEmbedding.subtypeVal : IsEmbedding ((↑) : Subtype p → X) :=
   ⟨.subtypeVal, Subtype.coe_injective⟩
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_subtype_val := IsEmbedding.subtypeVal
+@[deprecated (since := "2024-10-26")] alias embedding_subtype_val := IsEmbedding.subtypeVal
 
 theorem Topology.IsClosedEmbedding.subtypeVal (h : IsClosed {a | p a}) :
     IsClosedEmbedding ((↑) : Subtype p → X) :=
@@ -1255,6 +1254,24 @@ theorem frontier_inter_open_inter {s t : Set X} (ht : IsOpen t) :
   simp only [Set.inter_comm _ t, ← Subtype.preimage_coe_eq_preimage_coe_iff,
     ht.isOpenMap_subtype_val.preimage_frontier_eq_frontier_preimage continuous_subtype_val,
     Subtype.preimage_coe_self_inter]
+
+open scoped Set.Notation in
+lemma IsOpen.preimage_val {s t : Set X} (ht : IsOpen t) : IsOpen (s ↓∩ t) :=
+  ht.preimage continuous_subtype_val
+
+open scoped Set.Notation in
+lemma IsClosed.preimage_val {s t : Set X} (ht : IsClosed t) : IsClosed (s ↓∩ t) :=
+  ht.preimage continuous_subtype_val
+
+open scoped Set.Notation in
+lemma IsOpen.inter_of_isOpen_preimage_val {s t : Set X} (hs : IsOpen s) (hst : IsOpen (s ↓∩ t)) :
+    IsOpen (s ∩ t) := by
+  simpa using hs.isOpenMap_subtype_val _ hst
+
+open scoped Set.Notation in
+lemma IsClosed.inter_of_isClosed_preimage_val {s t : Set X} (hs : IsClosed s)
+    (hst : IsClosed (s ↓∩ t)) : IsClosed (s ∩ t) := by
+  simpa using hs.isClosedMap_subtype_val _ hst
 
 end Subtype
 
