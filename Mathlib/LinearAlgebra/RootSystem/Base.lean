@@ -166,10 +166,8 @@ lemma pos_or_neg_of_sum_smul_root_mem [CharZero R] [Fintype ι] (f : ι → ℤ)
       (hf₀ : f.support ⊆ b.support), 0 ≤ f by
     obtain ⟨k, hk⟩ := hf
     rcases b.root_mem_or_neg_mem k with hk' | hk' <;> rw [hk] at hk'
-    · left
-      exact this f hk' hf₀
-    · right
-      simpa using this (-f) (by convert hk'; simp) (by simpa only [support_neg'])
+    · left; exact this f hk' hf₀
+    · right; simpa using this (-f) (by convert hk'; simp) (by simpa only [support_neg'])
   intro f hf hf₀
   have _i : Fintype b.support := Fintype.ofFinite b.support
   let f' : b.support → ℤ := fun i ↦ f i
@@ -196,8 +194,8 @@ lemma sub_nmem_range_root [CharZero R] [Finite ι]
   have _i : Fintype ι := Fintype.ofFinite ι
   let f : ι → ℤ := fun k ↦ if k = i then 1 else if k = j then -1 else 0
   have hf : ∑ k, f k • P.root k = P.root i - P.root j := by
-    rw [← Fintype.sum_subset (s := {i, j}) (by aesop),
-      Finset.sum_insert (by simpa using hij.symm), Finset.sum_singleton]
+    rw [← Fintype.sum_subset (s := {i, j}) (by aesop), Finset.sum_insert (by aesop),
+      Finset.sum_singleton]
     simp [f, hij, sub_eq_add_neg]
   intro contra
   rcases b.pos_or_neg_of_sum_smul_root_mem f (by rwa [hf]) (by aesop) with pos | neg

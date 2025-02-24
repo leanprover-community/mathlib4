@@ -220,8 +220,6 @@ theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Modu
     exact hinj congr($this i)
   simpa [Finsupp.linearCombination, f, Finsupp.sum_mapRange_index]
 
-/-- A set of linearly independent vectors in a module `M` over a semiring `S` is also linearly
-independent over a subring `R` of `K`. -/
 theorem LinearIndependent.restrict_scalars' (R : Type*) {S M ι : Type*}
     [CommSemiring R] [Semiring S] [Algebra R S] [FaithfulSMul R S]
     [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]

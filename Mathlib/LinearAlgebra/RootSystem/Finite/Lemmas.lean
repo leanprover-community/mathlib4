@@ -39,13 +39,16 @@ namespace RootPairing
 
 variable (P : RootPairing ι R M N) [Finite ι]
 
+local notation "Φ" => range P.root
+local notation "α" => P.root
+
 /-- SGA3 XXI Prop. 2.3.1 -/
 lemma coxeterWeightIn_le_four (S : Type*) [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R]
     [Module S M] [IsScalarTower S R M] [P.IsValuedIn S] (i j : ι) :
     P.coxeterWeightIn S i j ≤ 4 := by
   have : Fintype ι := Fintype.ofFinite ι
-  let ri : span S (range P.root) := ⟨P.root i, Submodule.subset_span (mem_range_self _)⟩
-  let rj : span S (range P.root) := ⟨P.root j, Submodule.subset_span (mem_range_self _)⟩
+  let ri : span S Φ := ⟨α i, Submodule.subset_span (mem_range_self _)⟩
+  let rj : span S Φ := ⟨α j, Submodule.subset_span (mem_range_self _)⟩
   set li := (P.posRootForm S).posForm ri ri
   set lj := (P.posRootForm S).posForm rj rj
   set lij := (P.posRootForm S).posForm ri rj
@@ -109,9 +112,9 @@ variable [NoZeroSMulDivisors R M] [NoZeroSMulDivisors R N]
 variable {i j}
 
 lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i ≠ j) :
-    P.root i - P.root j ∈ range P.root := by
+    α i - α j ∈ Φ := by
   have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
-  by_cases hli : LinearIndependent R ![P.root i, P.root j]
+  by_cases hli : LinearIndependent R ![α i, α j]
   · -- The case where the two roots are linearly independent
     suffices P.pairingIn ℤ i j = 1 ∨ P.pairingIn ℤ j i = 1 by
       rcases this with h₁ | h₁
@@ -144,17 +147,14 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
     · rw [and_comm] at hij
       simp [(P.pairingIn_one_four_iff ℤ j i).mp hij, two_smul]
 
-lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : P.root i ≠ - P.root j) :
-    P.root i + P.root j ∈ range P.root := by
+lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : α i ≠ - α j) :
+    α i + α j ∈ Φ := by
   let _i := P.indexNeg
   replace h : 0 < P.pairingIn ℤ i (-j) := by simpa
   replace h' : i ≠ -j := by contrapose! h'; simp [h']
   simpa using P.root_sub_root_mem_of_pairingIn_pos h h'
 
 namespace Base
-
-local notation "Φ" => range P.root
-local notation "α" => P.root
 
 variable {P}
 variable (b : P.Base) (i j k : ι) (hij : i ≠ j) (hi : i ∈ b.support) (hj : j ∈ b.support)
@@ -219,7 +219,7 @@ lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     (hkj : α k ≠ - α i) (hk' : α k - α j ∈ Φ) :
     α k + α i ∈ Φ := by
   let _i := P.indexNeg
-  replace hk : P.root (-k) + P.root j - P.root i ∈ Φ := by
+  replace hk : α (-k) + α j - α i ∈ Φ := by
     rw [← neg_mem_range_root_iff]
     convert hk using 1
     simp only [indexNeg_neg, root_reflection_perm, reflection_apply_self]
