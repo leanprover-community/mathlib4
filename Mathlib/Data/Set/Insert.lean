@@ -92,6 +92,9 @@ theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ a ∉ s, insert a s 
   simp only [insert_subset_iff, exists_and_right, ssubset_def, not_subset]
   aesop
 
+theorem _root_.HasSubset.Subset.ssubset_of_mem_not_mem (hst : s ⊆ t) (hat : a ∈ t) (has : a ∉ s) :
+    s ⊂ t := hst.ssubset_of_not_subset fun a ↦ has (a hat)
+
 theorem ssubset_insert {s : Set α} {a : α} (h : a ∉ s) : s ⊂ insert a s :=
   ssubset_iff_insert.2 ⟨a, h, Subset.rfl⟩
 
@@ -382,6 +385,9 @@ theorem insert_diff_self_of_not_mem {a : α} {s : Set α} (h : a ∉ s) : insert
 lemma insert_diff_self_of_mem (ha : a ∈ s) : insert a (s \ {a}) = s := by
   ext; simp +contextual [or_and_left, em, ha]
 
+lemma diff_singleton_diff_eq (s t : Set α) (x : α) : (s \ {x}) \ t = s \ (insert x t) := by
+  rw [diff_diff, singleton_union]
+
 lemma insert_erase_invOn :
     InvOn (insert a) (fun s ↦ s \ {a}) {s : Set α | a ∈ s} {s : Set α | a ∉ s} :=
   ⟨fun _s ha ↦ insert_diff_self_of_mem ha, fun _s ↦ insert_diff_self_of_not_mem⟩
@@ -426,6 +432,10 @@ theorem insert_diff_singleton_comm (hab : a ≠ b) (s : Set α) :
     insert a (s \ {b}) = insert a s \ {b} := by
   simp_rw [← union_singleton, union_diff_distrib,
     diff_singleton_eq_self (mem_singleton_iff.not.2 hab.symm)]
+
+@[simp]
+lemma insert_diff_insert {s t : Set α} {x : α} : insert x (s \ insert x t) = insert x (s \ t) := by
+  rw [← diff_singleton_diff_eq, diff_diff_comm, insert_diff_singleton]
 
 theorem mem_diff_singleton {x y : α} {s : Set α} : x ∈ s \ {y} ↔ x ∈ s ∧ x ≠ y :=
   Iff.rfl
