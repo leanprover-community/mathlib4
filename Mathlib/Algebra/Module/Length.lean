@@ -11,6 +11,7 @@ import Mathlib.Data.ENat.Lattice
 /-!
 # The length of a module
 
+`TODO`: add APIs with `IsFiniteLength`.
 -/
 
 variable {R : Type*} [Ring R] {M M' : Type*} [AddCommGroup M] [AddCommGroup M']
@@ -32,6 +33,14 @@ variable (R M) in
 lemma Submodule.length_top_eq : (⊤ : Submodule R M).length = Module.length R M := sorry
 
 lemma Submodule.length_eq (p : Submodule R M) : p.length = Module.length R p := sorry
+
+lemma Submodule.sup_lt_length_succ (p : Submodule R M) : (⨆ q < p, q.length) + 1 = p.length := sorry
+
+@[simp]
+lemma Submodule.length_bot : (⊥ : Submodule R M).length = 0 := sorry
+
+@[gcongr]
+lemma Submodule.length_mono {p q : Submodule R M} (h : p ≤ q) : p.length ≤ q.length := sorry
 
 open Classical in
 /--
