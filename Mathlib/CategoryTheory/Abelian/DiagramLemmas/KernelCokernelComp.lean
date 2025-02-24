@@ -12,138 +12,202 @@ If `f : X ⟶ Y` and `g : Y ⟶ Z` are composable morphisms in an
 abelian category, we construct a long exact sequence :
 `0 ⟶ ker f ⟶ ker (f ≫ g) ⟶ ker g ⟶ coker f ⟶ coker (f ≫ g) ⟶ coker g ⟶ 0`.
 
+This is obtained by applying the snake lemma to the following morphism of
+exact sequences, where the rows are the obvious split exact sequences
+```
+0 ⟶ X ⟶ X ⊞ Y ⟶ Y ⟶ 0
+    |f    |φ    |g
+    v     v     v
+0 ⟶ Y ⟶ Y ⊞ Z ⟶ Z ⟶ 0
+```
+and `φ` is given by the following matrix:
+```
+(f  -𝟙 Y)
+(0     g)
+```
+
+Indeed the snake lemma gives an exact sequence involving the kernels and cokernels
+of the vertical maps: in order to get the expected long exact sequence, it suffices
+to obtain isomorphisms `ker φ ≅ ker (f ≫ g)` and `coker φ ≅ coker (f ⋙ g)`.
+
 -/
 
 universe v u
 
 namespace CategoryTheory
 
-open Limits Category
+open Limits Category Preadditive
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
   {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
 
+lemma Limits.biprod.decompose_hom_to (f : X ⟶ Y ⊞ Z) :
+    ∃ f₁ f₂, f = f₁ ≫ biprod.inl + f₂ ≫ biprod.inr :=
+  ⟨f ≫ biprod.fst, f ≫ biprod.snd, by aesop⟩
+
+lemma Limits.biprod.ext_to_iff {f g : X ⟶ Y ⊞ Z} :
+    f = g ↔ f ≫ biprod.fst = g ≫ biprod.fst ∧ f ≫ biprod.snd = g ≫ biprod.snd := by
+  aesop
+
+lemma Limits.biprod.decompose_hom_from (f : X ⊞ Y ⟶ Z) :
+    ∃ f₁ f₂, f = biprod.fst ≫ f₁ + biprod.snd ≫ f₂ :=
+  ⟨biprod.inl ≫ f, biprod.inr ≫ f, by aesop⟩
+
+lemma Limits.biprod.ext_from_iff {f g : X ⊞ Y ⟶ Z} :
+    f = g ↔ biprod.inl ≫ f = biprod.inl ≫ g ∧ biprod.inr ≫ f = biprod.inr ≫ g := by
+  aesop
+
 namespace kernelCokernelCompSequence
 
-@[simps (config := .lemmasOnly) L₁ L₂ v₁₂]
-noncomputable def snakeInput : ShortComplex.SnakeInput C where
-  L₁_exact := (ShortComplex.Splitting.ofHasBinaryBiproduct X Y).exact
-  L₂_exact := (ShortComplex.Splitting.ofHasBinaryBiproduct Y Z).exact
-  v₁₂ :=
-    { τ₁ := f
-      τ₂ := biprod.desc (f ≫ biprod.inl) (biprod.lift (-𝟙 Y) g)
-      τ₃ := g }
-  h₀ := kernelIsKernel _
-  h₃ := cokernelIsCokernel _
-  epi_L₁_g := by dsimp; infer_instance
-  mono_L₂_f := by dsimp; infer_instance
-
-@[simp]
-lemma snakeInput_v₀₁ : (snakeInput f g).v₀₁ = kernel.ι ((snakeInput f g).v₁₂) := rfl
-
-@[simp]
-lemma snakeInput_v₂₃ : (snakeInput f g).v₂₃ = cokernel.π ((snakeInput f g).v₁₂) := rfl
-
-attribute [simp] snakeInput_L₁ snakeInput_L₂
-
-attribute [local simp] snakeInput_v₁₂ in
-@[simps!]
-noncomputable def kernelFork : KernelFork (snakeInput f g).v₁₂.τ₂ :=
-  KernelFork.ofι (biprod.lift (kernel.ι (f ≫ g)) (kernel.ι _ ≫ f))
-    (by aesop_cat)
-
-def isLimitKernelFork : IsLimit (kernelFork f g) := sorry
-
-@[simps!]
-noncomputable def cokernelCofork : CokernelCofork (snakeInput f g).v₁₂.τ₂ :=
-  CokernelCofork.ofπ (biprod.desc (g ≫ cokernel.π (f ≫ g)) (cokernel.π (f ≫ g)))
-    (by
-      dsimp [snakeInput_v₁₂]
-      ext
-      · simp only [biprod.inl_desc_assoc, assoc, biprod.inl_desc, comp_zero]
-        rw [← assoc, cokernel.condition]
-      · simp)
-
-def isColimitCokernelCofork : IsColimit (cokernelCofork f g) := sorry
-
-noncomputable def iso₀ : kernel f ≅ (snakeInput f g).L₀.X₁ :=
-  (asIso (kernelComparison (snakeInput f g).v₁₂ ShortComplex.π₁)).symm
-
-noncomputable def iso₁' : kernel (f ≫ g) ≅ kernel (snakeInput f g).v₁₂.τ₂ := by
-  let e := IsLimit.conePointUniqueUpToIso (isLimitKernelFork f g)
-    (kernelIsKernel ((snakeInput f g).v₁₂.τ₂))
-  exact e
-
-noncomputable def iso₁ : kernel (f ≫ g) ≅ (snakeInput f g).L₀.X₂ :=
-  iso₁' f g ≪≫ (asIso (kernelComparison (snakeInput f g).v₁₂ ShortComplex.π₂)).symm
-
-noncomputable def iso₂ : kernel g ≅ (snakeInput f g).L₀.X₃ :=
-  (asIso (kernelComparison (snakeInput f g).v₁₂ ShortComplex.π₃)).symm
-
-noncomputable def iso₃ : cokernel f ≅ (snakeInput f g).L₃.X₁ :=
-  asIso (cokernelComparison (snakeInput f g).v₁₂ ShortComplex.π₁)
-
-def iso₄ : cokernel (f ≫ g) ≅ (snakeInput f g).L₃.X₂ := sorry
-
-noncomputable def iso₅ : cokernel g ≅ (snakeInput f g).L₃.X₃ :=
-  asIso (cokernelComparison (snakeInput f g).v₁₂ ShortComplex.π₃)
-
-noncomputable def δ : kernel g ⟶ cokernel f :=
-  (iso₂ f g).hom ≫ (snakeInput f g).δ ≫ (iso₃ f g).inv
+/-- If `f : X ⟶ Y` and `g : Y ⟶ Z` are composable morphisms,
+this is the morphism `kernel (f ≫ g) ⟶ X ⊞ Y` which
+"sends `x` to `(x, f(x))`". -/
+noncomputable def ι : kernel (f ≫ g) ⟶ X ⊞ Y :=
+  biprod.lift (kernel.ι (f ≫ g)) (kernel.ι (f ≫ g) ≫ f)
 
 @[reassoc (attr := simp)]
-lemma comm₀₁' :
-    kernel.map f (f ≫ g) (𝟙 X) g (by simp) ≫ (iso₁' f g).hom =
-      kernel.map _ _ biprod.inl biprod.inl (by simp [snakeInput_v₁₂]) := by
-  have := IsLimit.conePointUniqueUpToIso_hom_comp (isLimitKernelFork f g)
-    (kernelIsKernel ((snakeInput f g).v₁₂.τ₂)) .zero
-  dsimp [kernelFork] at this ⊢
-  rw [← cancel_mono (kernel.ι _), assoc, kernel.lift_ι, iso₁', this]
+lemma ι_fst : ι f g ≫ biprod.fst = kernel.ι (f ≫ g) := by simp [ι]
+
+@[reassoc (attr := simp)]
+lemma ι_snd : ι f g ≫ biprod.snd = kernel.ι (f ≫ g) ≫ f := by simp [ι]
+
+/-- If `f : X ⟶ Y` and `g : Y ⟶ Z` are composable morphisms,
+this is the morphism `X ⊞ Y ⟶ Y ⊞ Z` given by the matrix
+```
+(f  -𝟙 Y)
+(0     g)
+```
+-/
+noncomputable def φ : X ⊞ Y ⟶ Y ⊞ Z :=
+  biprod.desc (f ≫ biprod.inl) (biprod.lift (-𝟙 Y) g)
+
+@[reassoc (attr := simp)]
+lemma inl_φ : biprod.inl ≫ φ f g = f ≫ biprod.inl := by simp [φ]
+
+@[reassoc (attr := simp)]
+lemma inr_φ_fst : biprod.inr ≫ φ f g ≫ biprod.fst = - 𝟙 Y := by simp [φ]
+
+@[reassoc (attr := simp)]
+lemma φ_snd : φ f g ≫ biprod.snd = biprod.snd ≫ g := by
+  dsimp [φ]
+  aesop
+
+/-- If `f : X ⟶ Y` and `g : Y ⟶ Z` are composable morphisms,
+this is the morphism `Y ⊞ Z ⟶ cokernel (f ≫ g)` which
+"sends `(y, z)` to `[g(y)] + [z]`". -/
+noncomputable def π : Y ⊞ Z ⟶ cokernel (f ≫ g) :=
+  biprod.desc (g ≫ cokernel.π (f ≫ g)) (cokernel.π (f ≫ g))
+
+@[reassoc (attr := simp)]
+lemma inl_π : biprod.inl ≫ π f g = g ≫ cokernel.π (f ≫ g) := by simp [π]
+
+@[reassoc (attr := simp)]
+lemma inr_π : biprod.inr ≫ π f g = cokernel.π (f ≫ g) := by simp [π]
+
+@[reassoc (attr := simp)]
+lemma ι_φ : ι f g ≫ φ f g = 0 := by
+  dsimp [ι, φ]
   aesop
 
 @[reassoc (attr := simp)]
-lemma comm₀₁ :
-    kernel.map f (f ≫ g) (𝟙 X) g (by simp) ≫ (iso₁ f g).hom =
-      (iso₀ f g).hom ≫ (snakeInput f g).L₀.f := by
-  have h₁ := kernelComparison_comp_ι (snakeInput f g).v₁₂ ShortComplex.π₂
-  have h₂ := (snakeInput f g).v₀₁.comm₁₂
-  dsimp at h₁ h₂
-  dsimp only [iso₁, Iso.trans, Iso.symm, asIso_inv]
-  rw [← cancel_mono (kernelComparison (snakeInput f g).v₁₂ ShortComplex.π₂)]
-  dsimp
-  rw [comm₀₁'_assoc, assoc, assoc, IsIso.inv_hom_id, comp_id,
-    ← cancel_mono (kernel.ι _), kernel.lift_ι, assoc, assoc, h₁, ← h₂]
-  rw [← assoc]
-  congr 1
-  dsimp [iso₀]
-  rw [IsIso.eq_inv_comp]
-  apply kernelComparison_comp_ι
+lemma φ_π : φ f g ≫ π f g = 0 := by
+  dsimp [φ, π]
+  ext
+  · rw [biprod.inl_desc_assoc, assoc, biprod.inl_desc, comp_zero,
+      ← assoc, cokernel.condition]
+  · simp
 
-@[reassoc (attr := simp)]
-lemma comm₁₂ :
-    kernel.map (f ≫ g) g f (𝟙 _) (by simp) ≫ (iso₂ f g).hom =
-      (iso₁ f g).hom ≫ (snakeInput f g).L₀.g := sorry
+instance : Mono (ι f g) := mono_of_mono_fac (ι_fst f g)
 
-@[reassoc (attr := simp)]
-lemma comm₂₃ :
-    δ f g ≫ (iso₃ f g).hom =
-      (iso₂ f g).hom ≫ (snakeInput f g).δ := by
-  simp [δ]
+instance : Epi (π f g) := epi_of_epi_fac (inr_π f g)
 
-@[reassoc (attr := simp)]
-lemma comm₃₄ :
-    cokernel.map f (f ≫ g) (𝟙 X) g (by simp) ≫ (iso₄ f g).hom =
-      (iso₃ f g).hom ≫ (snakeInput f g).L₃.f := sorry
+/-- If `f : X ⟶ Y` and `g : Y ⟶ Z` are composable morphisms,
+then the kernel of `φ f g : X ⊞ Y ⟶ Y ⊞ Z` identifies
+to `kernel (f ≫ g)`. -/
+noncomputable def isLimit : IsLimit (KernelFork.ofι _ (ι_φ f g)) :=
+  KernelFork.IsLimit.ofι' _ _ (fun {A} k hk ↦ by
+    refine ⟨kernel.lift _ (k ≫ biprod.fst) ?_, ?_⟩
+    all_goals
+      obtain ⟨k₁, k₂, rfl⟩ := biprod.decompose_hom_to k
+      simp only [biprod.ext_to_iff, add_comp, assoc, inl_φ, BinaryBicone.inl_fst,
+        comp_id, inr_φ_fst, comp_neg, zero_comp, BinaryBicone.inl_snd, comp_zero, φ_snd,
+        BinaryBicone.inr_snd_assoc, zero_add, add_neg_eq_zero] at hk
+      obtain ⟨rfl, hk⟩ := hk
+      aesop)
 
-@[reassoc (attr := simp)]
-lemma comm₄₅ :
-    cokernel.map (f ≫ g) g f (𝟙 _) (by simp) ≫ (iso₅ f g).hom =
-      (iso₄ f g).hom ≫ (snakeInput f g).L₃.g := sorry
+/-- If `f : X ⟶ Y` and `g : Y ⟶ Z` are composable morphisms,
+then the cokernel of `φ f g : X ⊞ Y ⟶ Y ⊞ Z` identifies
+to `cokernel (f ≫ g)`. -/
+noncomputable def isColimit : IsColimit (CokernelCofork.ofπ _ (φ_π f g)) :=
+    CokernelCofork.IsColimit.ofπ' _ _ (fun {A} k hk ↦ by
+      refine ⟨cokernel.desc _ (biprod.inr ≫ k) ?_, ?_⟩
+      all_goals
+        obtain ⟨k₁, k₂, rfl⟩ := biprod.decompose_hom_from k
+        simp only [comp_add, φ_snd_assoc, biprod.ext_from_iff, inl_φ_assoc,
+          BinaryBicone.inl_fst_assoc, BinaryBicone.inl_snd_assoc, zero_comp, add_zero, comp_zero,
+          inr_φ_fst_assoc, neg_comp, id_comp, BinaryBicone.inr_snd_assoc, neg_add_eq_zero] at hk
+        obtain ⟨hk, rfl⟩ := hk
+        aesop)
+
+/-- The "snake input" which gives the exact sequence
+`0 ⟶ ker f ⟶ ker (f ≫ g) ⟶ ker g ⟶ coker f ⟶ coker (f ≫ g) ⟶ coker g ⟶ 0`,
+see `kernelCokernelCompSequence_exact`. -/
+@[simps]
+noncomputable def snakeInput : ShortComplex.SnakeInput C where
+  L₀ :=
+    { f := kernel.map f (f ≫ g) (𝟙 _) g (by simp)
+      g := kernel.map (f ≫ g) g f (𝟙 _) (by simp)
+      zero := by aesop }
+  L₁ := ShortComplex.mk (biprod.inl : X ⟶ _) (biprod.snd : _ ⟶ Y) (by simp)
+  L₂ := ShortComplex.mk (biprod.inl : Y ⟶ _) (biprod.snd : _ ⟶ Z) (by simp)
+  L₃ :=
+    { f := cokernel.map f (f ≫ g) (𝟙 _) g (by simp)
+      g := cokernel.map (f ≫ g) g f (𝟙 _) (by simp)
+      zero := by aesop }
+  v₀₁ :=
+    { τ₁ := kernel.ι f
+      τ₂ := ι f g
+      τ₃ := kernel.ι g }
+  v₁₂ :=
+    { τ₁ := f
+      τ₂ := φ f g
+      τ₃ := g }
+  v₂₃ :=
+    { τ₁ := cokernel.π f
+      τ₂ := π f g
+      τ₃ := cokernel.π g }
+  h₀ := by
+    apply ShortComplex.isLimitOfIsLimitπ <;>
+      apply (KernelFork.isLimitMapConeEquiv _ _).2
+    · exact kernelIsKernel _
+    · exact isLimit f g
+    · exact kernelIsKernel _
+  h₃ := by
+    apply ShortComplex.isColimitOfIsColimitπ <;>
+      apply (CokernelCofork.isColimitMapCoconeEquiv _ _).2
+    · exact cokernelIsCokernel _
+    · exact isColimit f g
+    · exact cokernelIsCokernel _
+  epi_L₁_g := by dsimp; infer_instance
+  mono_L₂_f := by dsimp; infer_instance
+  L₁_exact := (ShortComplex.Splitting.ofHasBinaryBiproduct X Y).exact
+  L₂_exact := (ShortComplex.Splitting.ofHasBinaryBiproduct Y Z).exact
+
+/-- If `f : X ⟶ Y` and `g : Y ⟶ Z` are composable morphisms, this
+is the connecting homomorphism `kernel g ⟶ cokernel f`. -/
+noncomputable def δ : kernel g ⟶ cokernel f := (snakeInput f g).δ
+
+lemma δ_fac : δ f g = - kernel.ι g ≫ cokernel.π f := by
+  simpa using (snakeInput f g).δ_eq (𝟙 _) (kernel.ι g ≫ biprod.inr) (-kernel.ι g)
+    (by simp) (by aesop)
 
 end kernelCokernelCompSequence
 
 open kernelCokernelCompSequence
 
+/-- If `f : X ⟶ Y` and `g : Y ⟶ Z` are composable morphisms in an
+abelian category, this is the long exact sequence
+`0 ⟶ ker f ⟶ ker (f ≫ g) ⟶ ker g ⟶ coker f ⟶ coker (f ≫ g) ⟶ coker g ⟶ 0`. -/
 noncomputable abbrev kernelCokernelCompSequence : ComposableArrows C 5 :=
   .mk₅ (kernel.map f (f ≫ g) (𝟙 _) g (by simp))
     (kernel.map (f ≫ g) g f (𝟙 _) (by simp))
@@ -151,15 +215,15 @@ noncomputable abbrev kernelCokernelCompSequence : ComposableArrows C 5 :=
     (cokernel.map f (f ≫ g) (𝟙 _) g (by simp))
     (cokernel.map (f ≫ g) g f (𝟙 _) (by simp))
 
-attribute [local simp] ComposableArrows.Precomp.map
+instance : Mono ((kernelCokernelCompSequence f g).map' 0 1) := by
+  dsimp; infer_instance
 
-noncomputable def kernelCokernelCompSequence.iso :
-    kernelCokernelCompSequence f g ≅ (snakeInput f g).composableArrows :=
-  ComposableArrows.isoMk₅ (iso₀ _ _) (iso₁ _ _) (iso₂ _ _) (iso₃ _ _) (iso₄ _ _) (iso₅ _ _)
-    (by simp) (by simp) (by simp) (by simp) (by simp)
+instance : Epi ((kernelCokernelCompSequence f g).map' 4 5) := by
+  dsimp [ComposableArrows.Precomp.map]
+  infer_instance
 
 lemma kernelCokernelCompSequence_exact :
     (kernelCokernelCompSequence f g).Exact :=
-  ComposableArrows.exact_of_iso (iso f g).symm (snakeInput f g).snake_lemma
+  (snakeInput f g).snake_lemma
 
 end CategoryTheory
