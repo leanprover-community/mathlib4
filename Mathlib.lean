@@ -475,6 +475,7 @@ import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
 import Mathlib.Algebra.Homology.ExactSequence
 import Mathlib.Algebra.Homology.Factorizations.Basic
 import Mathlib.Algebra.Homology.Functor
+import Mathlib.Algebra.Homology.HasNoLoop
 import Mathlib.Algebra.Homology.HomologicalBicomplex
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.HomologicalComplexAbelian
@@ -1919,6 +1920,7 @@ import Mathlib.CategoryTheory.Galois.Prorepresentability
 import Mathlib.CategoryTheory.Galois.Topology
 import Mathlib.CategoryTheory.Generator.Abelian
 import Mathlib.CategoryTheory.Generator.Basic
+import Mathlib.CategoryTheory.Generator.HomologicalComplex
 import Mathlib.CategoryTheory.Generator.Indization
 import Mathlib.CategoryTheory.Generator.Preadditive
 import Mathlib.CategoryTheory.Generator.Presheaf
@@ -2595,7 +2597,6 @@ import Mathlib.Data.Bool.Set
 import Mathlib.Data.Bracket
 import Mathlib.Data.Bundle
 import Mathlib.Data.Char
-import Mathlib.Data.Complex.Abs
 import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Complex.Cardinality
@@ -2912,6 +2913,7 @@ import Mathlib.Data.Matroid.Constructions
 import Mathlib.Data.Matroid.Dual
 import Mathlib.Data.Matroid.IndepAxioms
 import Mathlib.Data.Matroid.Init
+import Mathlib.Data.Matroid.Loop
 import Mathlib.Data.Matroid.Map
 import Mathlib.Data.Matroid.Rank.Cardinal
 import Mathlib.Data.Matroid.Rank.Finite
