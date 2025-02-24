@@ -3,6 +3,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Group.Basic
 import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Data.Sigma.Basic
@@ -197,8 +198,38 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
         have h2 : ((n - m).factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero (n - m)
         apply h2
       _ = ∑ ij ∈ (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)) |>.filter (fun ij => ij.1 ≤ ij.2), ((ij.1.factorial : R)⁻¹ * ((ij.2 - ij.1).factorial : R)⁻¹) • (a ^ ij.1 * b ^ (ij.2 - ij.1)) := by rw [reorder]
-
-
+      _ = ∑ ij ∈ (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)) |>.filter (fun ij => ij.1 + ij.2 <= 2 * N), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
+        apply Finset.sum_bij
+          (fun ⟨i, j⟩ _ => (i, j - i))
+        simp
+        intro h1 h2 h3 h4 h5
+        constructor
+        constructor
+        apply h3
+        exact tsub_lt_of_lt h4
+        rw [Nat.add_sub_of_le h5]
+        exact Nat.le_of_lt_succ h4
+        simp
+        intro h1 h2 h3 h4 h5 h6 h7 h8 h9 h10 h11 h12
+        constructor
+        apply h11
+        rw [h11] at h12
+        omega
+        simp
+        intro h1 h2 h3 h4 h5
+        use h1, h1 + h2
+        constructor
+        constructor
+        constructor
+        apply h3
+        exact Nat.lt_add_one_of_le h5
+        exact Nat.le_add_right h1 h2
+        constructor
+        rfl
+        omega
+        simp
+  have e2 :=
+    calc
   sorry
 
 
