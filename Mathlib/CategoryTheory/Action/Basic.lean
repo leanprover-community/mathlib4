@@ -334,13 +334,13 @@ def resComp {G H K : Type u} [Monoid G] [Monoid H] [Monoid K]
 -- TODO promote `res` to a pseudofunctor from
 -- the locally discrete bicategory constructed from `Monᵒᵖ` to `Cat`, sending `G` to `Action V G`.
 
-variable {G H : MonCat.{u}} (f : G ⟶ H)
+variable {G H : Type u} [Monoid G] [Monoid H] (f : G →* H)
 
 /-- The functor from `Action V H` to `Action V G` induced by a morphism `f : G → H` is faithful. -/
 instance : (res V f).Faithful where
   map_injective {X} {Y} g₁ g₂ h := by
     ext
-    rw [← res_map_hom _ _ g₁, ← res_map_hom _ _ g₂, h]
+    rw [← res_map_hom _ f g₁, ← res_map_hom _ f g₂, h]
 
 /-- The functor from `Action V H` to `Action V G` induced by a morphism `f : G → H` is full
 if `f` is surjective. -/
