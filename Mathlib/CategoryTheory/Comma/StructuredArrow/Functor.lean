@@ -105,7 +105,7 @@ def mapCompιCompGrothendieckProj {X Y : D} (f : X ⟶ Y) :
 `CostructuredArrow.functor (S ⋙ T) ⟶ CostructuredArrow.functor T` for `S : C ⥤ D` and
 `T : D ⥤ E`. -/
 @[simps]
-def functorPre {D : Type u₁} [Category.{v₁} D] (S : C ⥤ D) (T : D ⥤ E) :
+def preFunctor {D : Type u₁} [Category.{v₁} D] (S : C ⥤ D) (T : D ⥤ E) :
     functor (S ⋙ T) ⟶ functor T where
   app e := pre S T e
 

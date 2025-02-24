@@ -35,14 +35,14 @@ private lemma final_of_final_CostructuredArrowtoOver_small (L : A ⥤ T) (R : B 
     [∀ b : B, Final (CostructuredArrow.toOver L (R.obj b))] : Final L := by
   rw [final_iff_isIso_colimit_pre]
   intro G
-  have : ∀ (b : B), Final ((whiskerLeft R (functorPre L (𝟭 T))).app b) := fun b =>
+  have : ∀ (b : B), Final ((whiskerLeft R (preFunctor L (𝟭 T))).app b) := fun b =>
     inferInstanceAs (Final (CostructuredArrow.toOver L (R.obj b)))
   let i : colimit (L ⋙ G) ≅ colimit G :=
   calc colimit (L ⋙ G) ≅ colimit <| grothendieckProj L ⋙ L ⋙ G :=
           colimitIsoColimitGrothendieck L (L ⋙ G)
     _ ≅ colimit <| Grothendieck.pre (functor L) R ⋙ grothendieckProj L ⋙ L ⋙ G :=
           (Final.colimitIso (Grothendieck.pre (functor L) R) (grothendieckProj L ⋙ L ⋙ G)).symm
-    _ ≅ colimit <| Grothendieck.map (whiskerLeft _ (functorPre L (𝟭 T))) ⋙
+    _ ≅ colimit <| Grothendieck.map (whiskerLeft _ (preFunctor L (𝟭 T))) ⋙
           grothendieckPrecompFunctorToComma (𝟭 T) R ⋙ Comma.fst (𝟭 T) R ⋙ G :=
             HasColimit.isoOfNatIso (NatIso.ofComponents (fun _ => Iso.refl _))
     _ ≅ colimit <| grothendieckPrecompFunctorToComma (𝟭 T) R ⋙ Comma.fst (𝟭 T) R ⋙ G :=
