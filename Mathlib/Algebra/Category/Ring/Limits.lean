@@ -42,12 +42,9 @@ instance semiringObj (j) : Semiring ((F ⋙ forget SemiRingCat).obj j) :=
 
 /-- The flat sections of a functor into `SemiRingCat` form a subsemiring of all sections. -/
 def sectionsSubsemiring : Subsemiring (∀ j, F.obj j) :=
-  -- Porting note: if `f` and `g` were inlined, it does not compile
-  letI f : J ⥤ AddMonCat.{u} := F ⋙ forget₂ SemiRingCat.{u} AddCommMonCat.{u} ⋙
-    forget₂ AddCommMonCat AddMonCat
-  letI g : J ⥤ MonCat.{u} := F ⋙ forget₂ SemiRingCat.{u} MonCat.{u}
-  { (MonCat.sectionsSubmonoid (J := J) g),
-    (AddMonCat.sectionsAddSubmonoid (J := J) f) with
+  { (MonCat.sectionsSubmonoid (J := J) (F ⋙ forget₂ SemiRingCat.{u} MonCat.{u})),
+    (AddMonCat.sectionsAddSubmonoid (J := J) (F ⋙ forget₂ SemiRingCat.{u} AddCommMonCat.{u} ⋙
+      forget₂ AddCommMonCat AddMonCat)) with
     carrier := (F ⋙ forget SemiRingCat).sections }
 
 instance sectionsSemiring : Semiring (F ⋙ forget SemiRingCat.{u}).sections :=
@@ -63,7 +60,6 @@ instance limitSemiring :
 /-- `limit.π (F ⋙ forget SemiRingCat) j` as a `RingHom`. -/
 def limitπRingHom (j) :
     (Types.Small.limitCone.{v, u} (F ⋙ forget SemiRingCat)).pt →+* (F ⋙ forget SemiRingCat).obj j :=
-  -- Porting note: if `f` and `g` were inlined, it does not compile
   letI f : J ⥤ AddMonCat.{u} := F ⋙ forget₂ SemiRingCat.{u} AddCommMonCat.{u} ⋙
     forget₂ AddCommMonCat AddMonCat
   letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ MonCat) ⋙ forget MonCat)) :=
@@ -375,11 +371,9 @@ instance forget₂SemiRing_preservesLimits : PreservesLimits (forget₂ RingCat 
 -/
 def forget₂AddCommGroupPreservesLimitsAux :
     IsLimit ((forget₂ RingCat.{u} AddCommGrp).mapCone (limitCone.{v, u} F)) := by
-  -- Porting note: inline `f` would not compile
-  letI f := F ⋙ forget₂ RingCat.{u} AddCommGrp.{u}
-  letI : Small.{u} (Functor.sections (f ⋙ forget _)) :=
+  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ RingCat.{u} AddCommGrp.{u}) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
-  apply AddCommGrp.limitConeIsLimit.{v, u} f
+  apply AddCommGrp.limitConeIsLimit.{v, u} _
 
 /-- The forgetful functor from rings to additive commutative groups preserves all limits.
 -/
