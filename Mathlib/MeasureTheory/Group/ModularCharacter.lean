@@ -106,31 +106,39 @@ lemma modularCharacterFun_pos (g : G) : 0 < modularCharacterFun g := by
   rw [modularCharacterFun_eq_haarScalarFactor MeasureTheory.Measure.haar g]
   exact haarScalarFactor_pos_of_isHaarMeasure _ _
 
+@[to_additive]
+lemma modularCharacterFun_map_one' : modularCharacterFun (1 : G) = 1 := by
+  simp [modularCharacterFun, haarScalarFactor_self]
+
+
+@[to_additive]
+lemma modularCharacterFun_map_mul' (g h : G) : modularCharacterFun (g * h) =
+    modularCharacterFun g * modularCharacterFun h := by
+  borelize G
+  have mul_g_meas : Measurable (· * g) := Measurable.mul_const (fun ⦃_⦄ a ↦ a) g
+  have mul_h_meas : Measurable (· * h) := Measurable.mul_const (fun ⦃_⦄ a ↦ a) h
+  let ν := MeasureTheory.Measure.haar (G := G)
+  symm
+  calc
+    modularCharacterFun g * modularCharacterFun h =
+      modularCharacterFun h * modularCharacterFun g := mul_comm _ _
+    _ = haarScalarFactor (map (· * h) (map (· * g) ν)) (map (· * g) ν) *
+      modularCharacterFun g := by
+      rw [modularCharacterFun_eq_haarScalarFactor (map (· * g) ν) _]
+    _ = haarScalarFactor (map (· * h) (map (· * g) ν)) (map (· * g) ν) *
+      haarScalarFactor (map (· * g) ν) ν := rfl
+    _ = haarScalarFactor (map (· * (g * h)) ν) ν := by simp only [map_map mul_h_meas mul_g_meas,
+      comp_mul_right, ← haarScalarFactor_eq_mul]
+
+
 /-- The modular character homomorphism. The underlying function is `modularCharacterFun`, which is
   `g ↦ haarScalarFactor (map (· * g) ν) ν`, where `ν` is the Haar measure given by (the
   noncomputable) `MeasureTheory.Measure.haar`.
  -/
-noncomputable def modularCharacter :
-    G →* ℝ≥0 where
+noncomputable def modularCharacter : G →* ℝ≥0 where
   toFun := modularCharacterFun
-  map_one' := by simp [modularCharacterFun, haarScalarFactor_self]
-  map_mul' := fun g h => by
-    letI : MeasurableSpace G := borel G
-    haveI : BorelSpace G := ⟨rfl⟩
-    have mul_g_meas : Measurable (· * g) := Measurable.mul_const (fun ⦃_⦄ a ↦ a) g
-    have mul_h_meas : Measurable (· * h) := Measurable.mul_const (fun ⦃_⦄ a ↦ a) h
-    let ν := MeasureTheory.Measure.haar (G := G)
-    symm
-    calc
-      modularCharacterFun g * modularCharacterFun h =
-        modularCharacterFun h * modularCharacterFun g := mul_comm _ _
-      _ = haarScalarFactor (map (· * h) (map (· * g) ν)) (map (· * g) ν) *
-        modularCharacterFun g := by
-        rw [modularCharacterFun_eq_haarScalarFactor (map (· * g) ν) _]
-      _ = haarScalarFactor (map (· * h) (map (· * g) ν)) (map (· * g) ν) *
-        haarScalarFactor (map (· * g) ν) ν := rfl
-      _ = haarScalarFactor (map (· * (g * h)) ν) ν := by simp only [map_map mul_h_meas mul_g_meas,
-        comp_mul_right, ← haarScalarFactor_eq_mul]
+  map_one' := modularCharacterFun_map_one'
+  map_mul' := modularCharacterFun_map_mul'
 
 end Measure
 
