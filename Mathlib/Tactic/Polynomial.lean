@@ -8,6 +8,9 @@ import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Util.AtomM
 import Mathlib.Algebra.Polynomial.Basic
+/- TODO: remove this import. it's mainly used to prove `a • p = .C a * p`, but it transitively
+  imports `ring` -/
+import Mathlib.Algebra.Polynomial.Coeff
 
 namespace Mathlib.Tactic
 namespace Poly
@@ -20,12 +23,12 @@ attribute [local instance] monadLiftOptionMetaM
 open Lean (MetaM Expr mkRawNatLit)
 
 /-- TODOS:
+ * Currently there's a simp only preprocessing step. This should instead be done using an
+   explicit simp set rather than `evalTactic`
  * subtraction and negation: requires new typeclass assumptions, caching mechanism
- * scalar multiplication
- * parsing ofNats as constants
+--  * apply an appropriate discharger to side goals (currently : norm_num)
  * normalize the constant expressions while parsing the polynomial.
    Should be doable using the internals of norm_num
- * apply an appropriate discharger to side goals
  * (potentially) allow variables in exponents.
    Need a good normalization procedure to make sure exponents stay aligned.
 
@@ -36,17 +39,12 @@ noncomputable def monomial {α : Type*} [Semiring α] (n : ℕ) (a : α) := Poly
 theorem monomial_eq  {α : Type*} [Semiring α] (n : ℕ) (a : α) : monomial n a = .C a * .X ^ n := by
   simp_rw [monomial, ← Polynomial.C_mul_X_pow_eq_monomial]
 
-theorem monomial_mul {α : Type*} [CommSemiring α] {m n c : ℕ} (a b : α) (h : m + n = c) :
-    monomial m a * monomial n b = monomial c (a * b) := by
-  unfold monomial
-  rw [← h, Polynomial.monomial_mul_monomial]
-
 mutual
 
 inductive ExMon : ∀ {u : Lean.Level} {α : Q(Type u)}, (sα : Q(CommSemiring $α)) →
     (e : Q(Polynomial $α)) → Type
-  | mon {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} (n : ℕ) (e : Q($α))
-    : ExMon sα q(monomial $n $e)
+  | mon {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} {en : Q(ℕ)} (n : ℕ) (e : Q($α))
+    : ExMon sα q(monomial $en $e)
 
 inductive ExSum : ∀ {u : Lean.Level} {α : Q(Type u)}, (sα : Q(CommSemiring $α)) →
     (e : Q(Polynomial $α)) → Type
@@ -106,10 +104,10 @@ variable {u : Lean.Level}
 variable {α : Q(Type u)} (sα : Q(CommSemiring $α)) {R : Type*} [CommSemiring R]
 variable {a a' a₁ a₂ a₃ b b' b₁ b₂ b₃ c c₁ c₂ : R}
 
-theorem monomial_add {α : Type*} [Semiring α] {m n : ℕ} (a b : α) (h : m = n) :
-    monomial m a + monomial n b = monomial m (a + b) := by
+theorem monomial_add {α : Type*} [Semiring α] {m n : ℕ} (a b c : α) (hc : a + b = c) (h : m = n) :
+    monomial m a + monomial n b = monomial m c := by
   unfold monomial
-  rw [h]
+  rw [h, ← hc]
   exact Eq.symm (Polynomial.monomial_add n a b)
 
 theorem add_pf_zero_add (b : R) : 0 + b = b := by simp
@@ -117,14 +115,21 @@ theorem add_pf_zero_add (b : R) : 0 + b = b := by simp
 theorem add_pf_add_zero (a : R) : a + 0 = a := by simp
 
 def evalAddMon {a b : Q(Polynomial $α)} (va : ExMon sα a) (vb : ExMon sα b) :
-    OptionT Lean.Core.CoreM (Result (u:=u) (ExMon sα) q($a + $b)) := do
+    OptionT MetaM (Result (u:=u) (ExMon sα) q($a + $b)) := do
   Lean.Core.checkSystem decl_name%.toString
   match va, vb with
-  | .mon m e₁, .mon n e₂ =>
-    if h : m = n then
-      let pf : Q($m = $n) := h ▸ q(rfl)
-      return ⟨q(monomial $m ($e₁ + $e₂)),
-        .mon m q($e₁ + $e₂), q(monomial_add (m := $m) (n := $n) $e₁ $e₂ $pf)⟩
+  | .mon (en := em) m e₁, .mon (en := en) n e₂ =>
+    if m = n then
+      have : $em =Q $en := ⟨⟩
+      /- TODO : use correct nurmnum extensions instead of calling eval -/
+      -- let res ← NormNum.eval q($e₁ + $e₂)
+      -- have expr : Q($α) := res.expr
+      -- let some (pf : Q($e₁ + $e₂ = $expr)) := res.proof?
+      --   | throwError "case not handled 1"
+      have expr : Q($α) := q($e₁ + $e₂)
+      have : ($e₁ + $e₂) =Q $expr := ⟨⟩
+      return ⟨q(monomial $em $expr),
+        .mon m q($expr), q(monomial_add (m := $em) (n := $en) $e₁ $e₂ $expr rfl rfl)⟩
     else
       OptionT.fail
 
@@ -138,7 +143,7 @@ theorem add_pf_add_gt (b₁ : R) (_ : a + b₂ = c) : a + (b₁ + b₂) = b₁ +
   subst_vars; simp [add_left_comm]
 
 partial def evalAdd {a b : Q(Polynomial $α)} (va : ExSum sα a) (vb : ExSum sα b) :
-    Lean.Core.CoreM <| Result (u := u) (ExSum sα) q($a + $b) := do
+    MetaM <| Result (u := u) (ExSum sα) q($a + $b) := do
   Lean.Core.checkSystem decl_name%.toString
   match va, vb with
   | .zero, vb => return ⟨b, vb, q(add_pf_zero_add $b)⟩
@@ -172,19 +177,32 @@ theorem evalX_pf : .X = monomial 1 (1:R) + 0 := by
 
 partial def evalX :
     Lean.Core.CoreM <| Result (u := u) (ExSum sα) q(Polynomial.X)  := do
-  return ⟨q(monomial 1 1 + 0), (ExMon.mon _ _).toSum, q(evalX_pf)⟩
+  return ⟨q(monomial 1 1 + 0), (ExMon.mon 1 _).toSum, q(evalX_pf)⟩
 
 theorem mul_pf_zero_mul (b : R) : 0 * b = 0 := by simp
 theorem mul_pf_mul_zero (a : R) : a * 0 = 0 := by simp
 
+theorem monomial_mul {α : Type*} [CommSemiring α] {m n k : ℕ} (a b c : α) (hc : a * b = c)
+    (h : m + n = k) :
+    monomial m a * monomial n b = monomial k c := by
+  unfold monomial
+  rw [← h, ← hc, Polynomial.monomial_mul_monomial]
+
+
 partial def evalMonMulMon {a b : Q(Polynomial $α)} (va : ExMon sα a) (vb : ExMon sα b) :
-    Lean.Core.CoreM <| Result (u := u) (ExMon sα) q($a * $b) := do
+    MetaM <| Result (u := u) (ExMon sα) q($a * $b) := do
   match va, vb with
-  | .mon m e₁, .mon n e₂ =>
+  | .mon (en := em) m e₁, .mon (en := en) n e₂ =>
     let c : ℕ := m + n
-    have h : c = m + n := rfl
-    have pf : Q($m + $n = $c ) := h ▸ q(rfl)
-    return ⟨q(monomial $c ($e₁ * $e₂)), .mon c q($e₁ * $e₂), q(monomial_mul _ _ $pf)⟩
+    have ec : Q(ℕ) := q($c)
+    have : ($em + $en) =Q $ec := ⟨⟩
+    -- let res ←  NormNum.eval q($e₁ * $e₂)
+    -- have expr : Q($α) := res.expr
+    -- let some (pf : Q($e₁ * $e₂ = $expr)) := res.proof?
+    --   | throwError "case not handled 1"
+      have expr : Q($α) := q($e₁ * $e₂)
+      have : ($e₁ * $e₂) =Q $expr := ⟨⟩
+    return ⟨q(monomial $ec ($expr)), .mon c q($expr), q(monomial_mul _ _ _ rfl rfl)⟩
 
 
 theorem evalMulMon_pf (h : a₁ * b = a') (h' : a₂ * b = b'): (a₁ + a₂) * b = a' + b' := by
@@ -192,7 +210,7 @@ theorem evalMulMon_pf (h : a₁ * b = a') (h' : a₂ * b = b'): (a₁ + a₂) * 
   rw [add_mul]
 
 partial def evalMulMon {a b : Q(Polynomial $α)} (va : ExSum sα a) (vb : ExMon sα b) :
-    Lean.Core.CoreM <| Result (u := u) (ExSum sα) q($a * $b) := do
+    MetaM <| Result (u := u) (ExSum sα) q($a * $b) := do
   Lean.Core.checkSystem decl_name%.toString
   match va with
   | .zero => return ⟨q(0), .zero, q(mul_pf_zero_mul $b)⟩
@@ -207,7 +225,7 @@ theorem evalMul_pf {s : R} (h : a * b₁ = a') (h' : a * b₂ = b') (h'' : a' + 
   rw [mul_add]
 
 partial def evalMul {a b : Q(Polynomial $α)} (va : ExSum sα a) (vb : ExSum sα b) :
-    Lean.Core.CoreM <| Result (u := u) (ExSum sα) q($a * $b) := do
+    MetaM <| Result (u := u) (ExSum sα) q($a * $b) := do
   Lean.Core.checkSystem decl_name%.toString
   match  vb with
   | .zero => return ⟨q(0), .zero, q(mul_pf_mul_zero $a)⟩
@@ -396,8 +414,26 @@ partial def ExSum.eq_exSum
       let goals ← exSum_a.eq_exSum goal'.mvarId! e₁ Q exb
       return g.mvarId! :: goals
 
+theorem poly_nsmul_eq_C_mul {R : Type*} [Semiring R] {p : Polynomial R} (a : ℕ) :
+    a • p = .C a * p := by
+  simp only [nsmul_eq_mul, map_natCast]
+
+theorem poly_zsmul_eq_C_mul {R : Type*} [Ring R] {p : Polynomial R} (a : ℤ) :
+    a • p = .C a * p := by
+  simp only [zsmul_eq_mul, map_intCast]
+
+theorem poly_ofNat {R : Type*} [Semiring R] (n : ℕ) [Nat.AtLeastTwo n] :
+    (ofNat(n) : Polynomial R) = Polynomial.C (n : R) := rfl
+theorem poly_zero : 0 = Polynomial.C 0 := by simp
+theorem poly_one : 1 = Polynomial.C 1 := rfl
+
 def normalize : TacticM Unit := withMainContext do
-  let goal ← getMainGoal
+  /- TODO : -/
+  evalTactic <| ← `(tactic|
+    simp -failIfUnchanged only [Polynomial.smul_eq_C_mul, poly_ofNat, poly_zero, poly_one,
+      ← Polynomial.C_mul_X_pow_eq_monomial, poly_nsmul_eq_C_mul, poly_zsmul_eq_C_mul])
+  let goal ← try getMainGoal catch
+    | _ => return
   let some (α, e₁, e₂) :=
     (← whnfR <|← instantiateMVars <|← goal.getType).eq?
     | throwError "poly failed: not an equality of polynomials"
@@ -414,6 +450,13 @@ def normalize : TacticM Unit := withMainContext do
   goal.assign q(eq_congr $pa $pb $g' : $e₁ = $e₂)
   let l ← ExSum.eq_exSum g'.mvarId! a b exa exb
   Tactic.pushGoals l
+  /- TODO: we probably want to do some sort of normalization of intermediate expressions.
+    `norm_num` does not seem set up to do this very well. Much of the work is actually done by
+    `simp`, namely `a+0 -> a` and `a*1 -> a`. -/
+  for g in l do
+    let l ← evalTacticAt (← `(tactic| norm_num)) g
+    Tactic.pushGoals l
+    -- NormNum.normNumAt g (← getSimpContext)
 
 elab (name := poly) "poly" : tactic => normalize
 
@@ -421,30 +464,76 @@ set_option linter.unusedTactic false
 
 example : Polynomial.C 1 + Polynomial.C 1 = Polynomial.C 2  := by
   poly
-  rfl
 
 example : .X + .X = .X + (.X : Polynomial ℚ) := by
   poly
-  rfl
 
 example : Polynomial.C (3:ℚ) * .X + .X = .C 4 * .X := by
   poly
-  norm_num
 
-example : (.C 1 + Polynomial.X)^(5/2)  = .X * .X + .C 2 * .X + .C 1 := by
-  poly <;> norm_num
+example : (.C 1 + Polynomial.X)^(5/2)  = .X * .X +  2 • .X + .C 1 := by
+  poly
 
 example : .X^2 + .C (-1) = (.X + Polynomial.C (-1 : ℚ)) * (.X + .C 1) := by
-  poly <;> norm_num
+  poly
 
 example : (.X + Polynomial.C (-1 : ℚ)) * (.X + .C 1) = .X^2 + .C (-1) := by
-  poly <;> norm_num
+  poly
 
+
+example (a : ℚ) : (Polynomial.C a * .X)^7 = .C (a^7) * .X^7 := by
+  poly
+  simp_rw [← mul_assoc, pow_succ, pow_zero, one_mul]
 
 example (a : ℚ) (ha : a = 0) : Polynomial.C a * .X = .C (1 - 1) := by
-  poly <;> subst ha <;> norm_num
+  poly
+  exact ha
 
 example (a : ℚ) (ha : a = 0) : .C (1 - 1) = Polynomial.C a * .X  := by
-  poly <;> subst ha <;> norm_num
+  poly
+  exact ha
+
+example {a : ℚ} : a • Polynomial.X = .C a * Polynomial.X := by
+  poly
+
+example : 8 * Polynomial.X = .C 8 * Polynomial.X := by
+  poly
+
+example : (1+Polynomial.X : Polynomial ℕ)^3 = 1 + 3*.X + 3 * .X^2 + .X^3 := by
+  poly
+
+-- #synth HSMul ℕ (Polynomial ℚ) (Polynomial ℚ)
+-- #synth HSMul ℕ (Polynomial ℚ) (Polynomial ℚ)
+
+example : Polynomial.monomial 4 (3/2:ℤ) = (1 : ℕ) • .X^4 := by
+  poly
+
+example : Polynomial.monomial 4 (4/2:ℚ) = (2 : ℤ) • .X^4 := by
+  poly
+
+example (a : ℚ) : (.C a + Polynomial.X)^(1+7/3)
+  = .X ^ 3 + .C (3 * a) * .X^2  + .C (3 * a^2) * .X  + .C (a^3) := by
+  poly <;> ring
+
+example (a : ℚ) : (.C a + Polynomial.X)^(1+7/3)
+  = .X ^ 3 + .C (3 * a) * .X^2  + .C (3 * a^2) * .X  + .C (a^3) := by
+  poly <;> ring
+
+example (a : ℚ) : (.C a + Polynomial.X)^2 = .X ^ 2 + .C (2 * a) * .X + .C (a^2) := by
+  poly
+  /-
+  a : ℚ
+  ⊢ a + a = 2 * a
+  a : ℚ
+  ⊢ a * a = a ^ 2
+  -/
+  repeat sorry
+
+
+example (a : ℚ) : (.C a + Polynomial.X)^(3)
+  = .X ^ 3 + .C (3 * a) * .X^2  + .C (3 * a^2) * .X  + .C (a^3) := by
+  poly <;> ring
+-- set_option profiler true
+
 
 end Mathlib.Tactic.Poly
