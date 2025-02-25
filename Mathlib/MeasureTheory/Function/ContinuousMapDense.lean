@@ -64,7 +64,7 @@ open MeasureTheory TopologicalSpace ContinuousMap Set Bornology
 
 variable {α : Type*} [TopologicalSpace α] [NormalSpace α]
   [MeasurableSpace α] [BorelSpace α]
-variable {E : Type*} [NormedAddCommGroup E] {μ : Measure α} {p : ℝ≥0∞}
+variable {E : Type*} [NormedAddCommGroup E] {μ : Measure α} {p : ℝ≥0∞} {ps : Finset ℝ≥0∞}
 
 namespace MeasureTheory
 
@@ -75,16 +75,13 @@ consider two sets `s ⊆ u` which are respectively closed and open with `μ s < 
 Then one may find a continuous function `f` equal to `c` on `s` and to `0` outside of `u`,
 bounded by `‖c‖` everywhere, and such that the `ℒ^p` norm of `f - s.indicator (fun y ↦ c)` is
 arbitrarily small. Additionally, this function `f` belongs to `ℒ^p`. -/
-theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠ ∞) {s u : Set α}
-    (s_closed : IsClosed s) (u_open : IsOpen u) (hsu : s ⊆ u) (hs : μ s ≠ ∞) (c : E) {ε : ℝ≥0∞}
-    (hε : ε ≠ 0) :
-    ∃ f : α → E,
-      Continuous f ∧
-        eLpNorm (fun x => f x - s.indicator (fun _y => c) x) p μ ≤ ε ∧
-          (∀ x, ‖f x‖ ≤ ‖c‖) ∧ Function.support f ⊆ u ∧ MemLp f p μ := by
-  obtain ⟨η, η_pos, hη⟩ :
-      ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η → eLpNorm (s.indicator fun _x => c) p μ ≤ ε :=
-    exists_eLpNorm_indicator_le hp c hε
+theorem exists_continuous_forall_eLpNorm_sub_lt_of_closed [μ.OuterRegular] (hps_top : ∞ ∉ ps)
+    {s u : Set α} (s_closed : IsClosed s) (u_open : IsOpen u) (hsu : s ⊆ u) (hs : μ s ≠ ∞) (c : E)
+    {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ f : α → E, Continuous f ∧
+      (∀ p ∈ ps, eLpNorm (fun x => f x - s.indicator (fun _y => c) x) p μ < ε) ∧
+      (∀ x, ‖f x‖ ≤ ‖c‖) ∧ Function.support f ⊆ u ∧ (∀ p ∈ ps, MemLp f p μ) := by
+  obtain ⟨η, η_pos, hη⟩ := exists_forall_eLpNorm_indicator_lt (μ := μ) hps_top c hε
   have ηpos : (0 : ℝ≥0∞) < η := ENNReal.coe_lt_coe.2 η_pos
   obtain ⟨V, sV, V_open, h'V, hV⟩ : ∃ (V : Set α), V ⊇ s ∧ IsOpen V ∧ μ V < ∞ ∧ μ (V \ s) < η :=
     s_closed.measurableSet.exists_isOpen_diff_lt hs ηpos.ne'
@@ -115,7 +112,7 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
   have gc_support : (Function.support fun x : α => g x • c) ⊆ v := by
     refine Function.support_subset_iff'.2 fun x hx => ?_
     simp only [hgv hx, Pi.zero_apply, zero_smul]
-  have gc_mem : MemLp (fun x => g x • c) p μ := by
+  have gc_mem (p) (hp : p ∈ ps) : MemLp (fun x => g x • c) p μ := by
     refine MemLp.smul (memLp_top_const _) ?_ (p := p) (q := ∞)
     refine ⟨g.continuous.aestronglyMeasurable, ?_⟩
     have : eLpNorm (v.indicator fun _x => (1 : ℝ)) p μ < ⊤ :=
@@ -125,10 +122,39 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
     · simp only [hx, abs_of_nonneg (hg_range x).1, (hg_range x).2, Real.norm_eq_abs,
         indicator_of_mem, CStarRing.norm_one]
     · simp only [hgv hx, Pi.zero_apply, Real.norm_eq_abs, abs_zero, abs_nonneg]
-  refine
-    ⟨fun x => g x • c, g.continuous.smul continuous_const, (eLpNorm_mono gc_bd).trans ?_, gc_bd0,
-      gc_support.trans inter_subset_left, gc_mem⟩
-  exact hη _ ((measure_mono (diff_subset_diff inter_subset_right Subset.rfl)).trans hV.le)
+  refine ⟨fun x ↦ g x • c, g.continuous.smul continuous_const, fun p hp ↦ ?_, gc_bd0,
+    gc_support.trans inter_subset_left, gc_mem⟩
+  refine lt_of_le_of_lt (eLpNorm_mono gc_bd) ?_
+  exact hη _ ((measure_mono (diff_subset_diff inter_subset_right Subset.rfl)).trans hV.le) p hp
+
+/-- A variant of Urysohn's lemma, `ℒ^p` version, for an outer regular measure `μ`:
+consider two sets `s ⊆ u` which are respectively closed and open with `μ s < ∞`, and a vector `c`.
+Then one may find a continuous function `f` equal to `c` on `s` and to `0` outside of `u`,
+bounded by `‖c‖` everywhere, and such that the `ℒ^p` norm of `f - s.indicator (fun y ↦ c)` is
+arbitrarily small. Additionally, this function `f` belongs to `ℒ^p`. -/
+theorem exists_continuous_eLpNorm_sub_lt_of_closed [μ.OuterRegular] (hp : p ≠ ∞)
+    {s u : Set α} (s_closed : IsClosed s) (u_open : IsOpen u) (hsu : s ⊆ u) (hs : μ s ≠ ∞) (c : E)
+    {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ f : α → E, Continuous f ∧ eLpNorm (fun x => f x - s.indicator (fun _y => c) x) p μ < ε ∧
+      (∀ x, ‖f x‖ ≤ ‖c‖) ∧ Function.support f ⊆ u ∧ MemLp f p μ := by
+  simpa using exists_continuous_forall_eLpNorm_sub_lt_of_closed
+    (Finset.not_mem_singleton.mpr hp.symm) s_closed u_open hsu hs c hε
+
+-- TODO: Remove? Provided for backwards compatibility.
+/-- A variant of Urysohn's lemma, `ℒ^p` version, for an outer regular measure `μ`:
+consider two sets `s ⊆ u` which are respectively closed and open with `μ s < ∞`, and a vector `c`.
+Then one may find a continuous function `f` equal to `c` on `s` and to `0` outside of `u`,
+bounded by `‖c‖` everywhere, and such that the `ℒ^p` norm of `f - s.indicator (fun y ↦ c)` is
+arbitrarily small. Additionally, this function `f` belongs to `ℒ^p`. -/
+theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠ ∞) {s u : Set α}
+    (s_closed : IsClosed s) (u_open : IsOpen u) (hsu : s ⊆ u) (hs : μ s ≠ ∞) (c : E) {ε : ℝ≥0∞}
+    (hε : ε ≠ 0) :
+    ∃ f : α → E,
+      Continuous f ∧
+        eLpNorm (fun x => f x - s.indicator (fun _y => c) x) p μ ≤ ε ∧
+          (∀ x, ‖f x‖ ≤ ‖c‖) ∧ Function.support f ⊆ u ∧ MemLp f p μ :=
+  (exists_continuous_eLpNorm_sub_lt_of_closed hp s_closed u_open hsu hs c hε).imp
+    fun _ ⟨hf_c, hf_d, hf_bd, hf_s, hf_m⟩ ↦ ⟨hf_c, hf_d.le, hf_bd, hf_s, hf_m⟩
 
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
 continuous functions when `p < ∞`, version in terms of `eLpNorm`. -/
