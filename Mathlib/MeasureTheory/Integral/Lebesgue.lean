@@ -124,6 +124,9 @@ theorem lintegral_const (c : ℝ≥0∞) : ∫⁻ _, c ∂μ = c * μ univ := by
   rw [← SimpleFunc.const_lintegral, ← SimpleFunc.lintegral_eq_lintegral, SimpleFunc.coe_const]
   rfl
 
+lemma lintegral_eq_const [IsProbabilityMeasure μ] {f : α → ℝ≥0∞} {c : ℝ≥0∞} (hf : ∀ x, f x = c) :
+    ∫⁻ x, f x ∂μ = c := by simp [hf]
+
 theorem lintegral_zero : ∫⁻ _ : α, 0 ∂μ = 0 := by simp
 
 theorem lintegral_zero_fun : lintegral μ (0 : α → ℝ≥0∞) = 0 :=
