@@ -147,9 +147,13 @@ theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
 theorem mk_eq_mk {a h a' h'} : @mk n a h = @mk n a' h' ↔ a = a' :=
   Fin.ext_iff
 
-lemma val_ne_zero_iff {n : ℕ} (k : Fin (n+1)) :
-  k ≠ 0 ↔ (k : ℕ) ≠ 0 := by
+@[norm_cast]
+lemma val_ne_zero_iff {n : ℕ} (k : Fin (n+1)) : (k : ℕ) ≠ 0 ↔ k ≠ 0 := by
   rw [←Fin.val_ne_iff, Fin.val_zero]
+
+@[norm_cast, simp]
+lemma val_eq_zero_iff {n : ℕ} (k : Fin (n+1)) : (k : ℕ) = 0 ↔ k = 0 := by
+  rw [←Fin.val_eq_val, Fin.val_zero]
 
 -- syntactic tautologies now
 
@@ -202,7 +206,7 @@ theorem val_fin_le {n : ℕ} {a b : Fin n} : (a : ℕ) ≤ (b : ℕ) ↔ a ≤ b
 lemma one_le_of_ne_zero {n : ℕ} {k : Fin (n+1)} (hk : k ≠ 0) : 1 ≤ k := by
   match n with
   | 0 => simp only [Nat.reduceAdd, Fin.isValue, Fin.zero_le]
-  | n+1 => rwa [Fin.le_iff_val_le_val, Fin.val_one, Nat.one_le_iff_ne_zero, ←val_ne_zero_iff]
+  | n+1 => rwa [Fin.le_iff_val_le_val, Fin.val_one, Nat.one_le_iff_ne_zero, val_ne_zero_iff]
 
 theorem min_val {a : Fin n} : min (a : ℕ) n = a := by simp
 
