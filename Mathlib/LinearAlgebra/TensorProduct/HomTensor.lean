@@ -34,7 +34,7 @@ variable (f0 : M' →ₗ[R] M) (g0 : M →ₗ[R] M') (fg : f0.comp g0 = LinearMa
 open LinearMap
 
 include fg in
-private lemma projection_inlusion1 : (g0.lcomp R P).comp (f0.lcomp R P) =
+private lemma projection_inclusion1 : (g0.lcomp R P).comp (f0.lcomp R P) =
     LinearMap.id := by
   ext f x
   simp only [coe_comp, Function.comp_apply, lcomp_apply, id_coe, id_eq]
