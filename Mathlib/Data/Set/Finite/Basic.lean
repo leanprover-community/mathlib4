@@ -40,7 +40,7 @@ instances since they do not compute anything.
 finite sets
 -/
 
-assert_not_exists Monoid MonoidWithZero OrderedRing
+assert_not_exists Monoid
 
 open Set Function
 open scoped symmDiff

@@ -21,7 +21,7 @@ This property already has a name, namely `α ≃ ℕ`, but here we are intereste
 typeclass.
 -/
 
-assert_not_exists Monoid OrderedSemiring
+assert_not_exists Monoid
 
 variable {α β : Type*}
 
