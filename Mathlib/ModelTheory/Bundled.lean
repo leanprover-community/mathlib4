@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.ModelTheory.ElementarySubstructures
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
 /-!
 # Bundled First-Order Structures
@@ -53,6 +54,62 @@ end Equiv
 namespace FirstOrder
 
 namespace Language
+
+open CategoryTheory
+
+variable {M N O : Bundled.{w} L.Structure}
+
+instance : Category (Bundled.{w} L.Structure) where
+  Hom := (· ↪[L] ·)
+  id _ := Embedding.refl _ _
+  comp f g := g.comp f
+
+instance instConcreteCategory : ConcreteCategory (Bundled.{w} L.Structure) (· ↪[L] ·) where
+  hom f := f
+  ofHom f := f
+
+@[simp]
+theorem ConcreteCategory.comp_def (f : M ↪[L] N) (g : N ↪[L] O) :
+    f ≫ g = instConcreteCategory.ofHom (g.comp f) := rfl
+
+@[simp]
+theorem ConcreteCategory.ofHom_def (f : M ↪[L] N) : instConcreteCategory.ofHom f = f := rfl
+
+@[simp]
+theorem ConcreteCategory.hom_def (f : M ⟶ N) : instConcreteCategory.hom f = f := rfl
+
+@[simp]
+theorem ConcreteCategory.id_def : 𝟙 M = Embedding.refl L M := rfl
+
+/-- Construct a categorical isomorphism between two bundled `L.Structure`s from an equivalence. -/
+def Iso.mk (f : M ≃[L] N) : M ≅ N where
+  hom := f.toEmbedding
+  inv := f.symm.toEmbedding
+  hom_inv_id := by simp only [ConcreteCategory.comp_def, Equiv.symm_comp_self_toEmbedding,
+    ConcreteCategory.ofHom_def, ConcreteCategory.id_def]
+
+theorem Iso.bijective (f : M ≅ N) : Function.Bijective f.hom := by
+  refine ⟨Embedding.injective f.hom, Function.RightInverse.surjective (g := f.inv) ?_⟩
+  intro x
+  change (f.inv ≫ f.hom) x = x
+  simp only [Iso.inv_hom_id, ConcreteCategory.id_apply]
+
+/-- Construct an equivalence between two bundled `L.Structure`s from a categorical isomorphism. -/
+def Equiv.ofIso (f : M ≅ N) : M ≃[L] N where
+  toFun := f.hom
+  invFun := f.inv
+  left_inv := by intro x; change (f.hom ≫ f.inv) x = x; simp only [Iso.hom_inv_id,
+    ConcreteCategory.id_def, ConcreteCategory.hom_def, Embedding.refl_apply]
+  right_inv := by intro x; change (f.inv ≫ f.hom) x = x; simp only [Iso.inv_hom_id,
+    ConcreteCategory.id_def, ConcreteCategory.hom_def, Embedding.refl_apply]
+  map_fun' := f.hom.map_fun'
+  map_rel' := f.hom.map_rel'
+
+@[simp]
+theorem Equiv.ofIso_mk (f : M ≃[L] N) : Equiv.ofIso (Iso.mk f) = f := rfl
+
+@[simp]
+theorem Iso.mk_ofIso (f : M ≅ N) : Iso.mk (Equiv.ofIso f) = f := rfl
 
 /-- The equivalence relation on bundled `L.Structure`s indicating that they are isomorphic. -/
 instance equivSetoid : Setoid (CategoryTheory.Bundled L.Structure) where
@@ -196,6 +253,47 @@ def ElementarySubstructure.toModel {M : T.ModelType} (S : L.ElementarySubstructu
 instance ElementarySubstructure.toModel.instSmall {M : T.ModelType}
     (S : L.ElementarySubstructure M) [h : Small.{w, x} S] : Small.{w, x} (S.toModel T) :=
   h
+
+variable {M N P : CategoryTheory.Bundled.{w} L.Structure}
+
+namespace Embedding
+
+@[simp]
+theorem eqToHom_comp (h : M = N) (h' : N = P) :
+    (eqToHom h').comp (eqToHom h) = eqToHom (h.trans h') := eqToHom_trans h h'
+
+theorem eqToHom_comp_apply (h : M = N) (h' : N = P) (m : M) :
+    eqToHom h' (eqToHom h m) = eqToHom (h.trans h') m := by
+  cases h
+  rfl
+
+end Embedding
+
+namespace Equiv
+
+/-- Equivalence between equal structures. -/
+def ofEq (h : M = N) : M ≃[L] N := ofIso (eqToIso h)
+
+@[simp]
+theorem ofEq_refl : ofEq (Eq.refl M) = refl L M := rfl
+
+@[simp]
+theorem ofEq_comp (h : M = N) (h' : N = P) :
+    (ofEq h').comp (ofEq h) = ofEq (h.trans h') := by
+  cases h
+  rfl
+
+@[simp]
+theorem ofEq_comp_apply (h : M = N) (h' : N = P) (m : M) :
+    ofEq h' (ofEq h m) = ofEq (h.trans h') m := by
+  cases h
+  rfl
+
+@[simp]
+theorem ofEq_toEmbedding (h : M = N) :
+    (ofEq h).toEmbedding = eqToHom h := rfl
+
+end Equiv
 
 end Language
 
