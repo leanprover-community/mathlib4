@@ -77,7 +77,7 @@ theorem Invariant.comp_const (hκ : Invariant κ μ) : κ ∘ₖ const α μ = c
 
 theorem Invariant.comp (hκ : Invariant κ μ) (hη : Invariant η μ) :
     Invariant (κ ∘ₖ η) μ := by
-  cases' isEmpty_or_nonempty α with _ hα
+  rcases isEmpty_or_nonempty α with _ | hα
   · exact Subsingleton.elim _ _
   · simp_rw [Invariant, ← comp_const_apply_eq_bind (κ ∘ₖ η) μ hα.some, comp_assoc, hη.comp_const,
       hκ.comp_const, const_apply]

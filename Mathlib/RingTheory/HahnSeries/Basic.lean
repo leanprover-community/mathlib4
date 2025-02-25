@@ -240,6 +240,10 @@ def orderTop (x : HahnSeries Γ R) : WithTop Γ :=
 theorem orderTop_zero : orderTop (0 : HahnSeries Γ R) = ⊤ :=
   dif_pos rfl
 
+@[simp]
+theorem orderTop_of_Subsingleton [Subsingleton R] {x : HahnSeries Γ R} : x.orderTop = ⊤ :=
+  (Subsingleton.eq_zero x) ▸ orderTop_zero
+
 theorem orderTop_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) :
     orderTop x = x.isWF_support.min (support_nonempty_iff.2 hx) :=
   dif_neg hx

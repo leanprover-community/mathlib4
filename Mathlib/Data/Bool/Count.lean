@@ -52,7 +52,7 @@ variable {l : List Bool}
 
 theorem count_not_eq_count (hl : Chain' (· ≠ ·) l) (h2 : Even (length l)) (b : Bool) :
     count (!b) l = count b l := by
-  cases' l with x l
+  rcases l with - | ⟨x, l⟩
   · rfl
   rw [length_cons, Nat.even_add_one, Nat.not_even_iff] at h2
   suffices count (!x) (x :: l) = count x (x :: l) by
@@ -69,7 +69,7 @@ theorem count_false_eq_count_true (hl : Chain' (· ≠ ·) l) (h2 : Even (length
 
 theorem count_not_le_count_add_one (hl : Chain' (· ≠ ·) l) (b : Bool) :
     count (!b) l ≤ count b l + 1 := by
-  cases' l with x l
+  rcases l with - | ⟨x, l⟩
   · exact zero_le _
   obtain rfl | rfl : b = x ∨ b = !x := by simp only [Bool.eq_not_iff, em]
   · rw [count_cons_of_ne b.not_ne_self, count_cons_self, hl.count_not, add_assoc]
@@ -95,7 +95,7 @@ theorem two_mul_count_bool_eq_ite (hl : Chain' (· ≠ ·) l) (b : Bool) :
       if Option.some b == l.head? then length l + 1 else length l - 1 := by
   by_cases h2 : Even (length l)
   · rw [if_pos h2, hl.two_mul_count_bool_of_even h2]
-  · cases' l with x l
+  · rcases l with - | ⟨x, l⟩
     · exact (h2 .zero).elim
     simp only [if_neg h2, count_cons, mul_add, head?, Option.mem_some_iff, @eq_comm _ x]
     rw [length_cons, Nat.even_add_one, not_not] at h2
