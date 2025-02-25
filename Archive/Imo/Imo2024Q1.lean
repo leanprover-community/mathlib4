@@ -39,7 +39,7 @@ lemma condition_two_mul_int (m : ℤ) : Condition (2 * m) := by
   suffices (n : ℤ) ∣ ∑ i ∈ Finset.Icc 0 n, ⌊((i * (2 * m) : ℤ) : ℝ)⌋ by
     rw [← Nat.Icc_insert_succ_left n.zero_le, Finset.sum_insert_zero (by norm_num)] at this
     exact_mod_cast this
-  simp_rw [Int.floor_intCast, ← Finset.sum_mul, ← Nat.Ico_succ_right, ← Finset.range_eq_Ico,
+  simp_rw [Int.floor_intCast, ← Finset.sum_mul, ← Finset.Ico_succ_right_eq_Icc, ← Finset.range_eq_Ico,
            ← mul_assoc]
   apply dvd_mul_of_dvd_left
   rw [← Nat.cast_sum, ← Nat.cast_ofNat (n := 2), ← Nat.cast_mul, Finset.sum_range_id_mul_two]

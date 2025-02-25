@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.Interval.Finset
+import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Tactic.Linarith
 
 /-!
 # Results about big operators over intervals
@@ -137,7 +138,7 @@ theorem prod_Ioc_succ_top {a b : ℕ} (hab : a ≤ b) (f : ℕ → M) :
 @[to_additive]
 theorem prod_Icc_succ_top {a b : ℕ} (hab : a ≤ b + 1) (f : ℕ → M) :
     (∏ k ∈ Icc a (b + 1), f k) = (∏ k ∈ Icc a b, f k) * f (b + 1) := by
-  rw [← Nat.Ico_succ_right, prod_Ico_succ_top hab, Nat.Ico_succ_right]
+  rw [← Ico_add_one_right_eq_Icc, prod_Ico_succ_top hab, Ico_add_one_right_eq_Icc]
 
 @[to_additive]
 theorem prod_range_mul_prod_Ico (f : ℕ → M) {m n : ℕ} (h : m ≤ n) :
@@ -258,7 +259,7 @@ theorem sum_range_id_mul_two (n : ℕ) : (∑ i ∈ range n, i) * 2 = n * (n - 1
 
 /-- Gauss' summation formula -/
 theorem sum_range_id (n : ℕ) : ∑ i ∈ range n, i = n * (n - 1) / 2 := by
-  rw [← sum_range_id_mul_two n, Nat.mul_div_cancel _ zero_lt_two]
+  rw [← sum_range_id_mul_two n, Nat.mul_div_cancel _ Nat.zero_lt_two]
 
 end GaussSum
 
