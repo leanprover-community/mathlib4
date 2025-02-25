@@ -65,7 +65,7 @@ We assume that `M` is a manifold over the pair `(E, H)` with model `I`.
 
 In practice, one commonly wants to take `k=∞` (as then e.g. the intersection form is a powerful tool
 to compute bordism groups; for the definition, this makes no difference.) -/
-structure SingularNManifold.{u} (X : Type*) [TopologicalSpace X] (n : ℕ) (k : WithTop ℕ∞)
+structure SingularNManifold.{u} (X : Type*) [TopologicalSpace X] (k : WithTop ℕ∞)
   {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [TopologicalSpace H] (I : ModelWithCorners ℝ E H) where
   /-- The manifold `M` of a singular `n`-manifold `(M, f)` -/
@@ -78,8 +78,6 @@ structure SingularNManifold.{u} (X : Type*) [TopologicalSpace X] (n : ℕ) (k : 
   [isManifold : IsManifold I k M]
   [compactSpace : CompactSpace M]
   [boundaryless : BoundarylessManifold I M]
-  /-- `M` is `n`-dimensional, as its model space `E` is -/
-  dimension : finrank ℝ E = n
   /-- The underlying map `M → X` of a singular `n`-manifold `(M, f)` on `X` -/
   f : M → X
   hf : Continuous f
@@ -87,35 +85,34 @@ structure SingularNManifold.{u} (X : Type*) [TopologicalSpace X] (n : ℕ) (k : 
 namespace SingularNManifold
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-  {n : ℕ} {k : WithTop ℕ∞}
+  {k : WithTop ℕ∞}
   {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [TopologicalSpace H] {I : ModelWithCorners ℝ E H} [TopologicalSpace M] [ChartedSpace H M]
   [IsManifold I k M] [CompactSpace M] [BoundarylessManifold I M]
 
-instance {s : SingularNManifold X n k I} : TopologicalSpace s.M := s.topSpaceM
+instance {s : SingularNManifold X k I} : TopologicalSpace s.M := s.topSpaceM
 
-instance {s : SingularNManifold X n k I} : ChartedSpace H s.M := s.chartedSpace
+instance {s : SingularNManifold X k I} : ChartedSpace H s.M := s.chartedSpace
 
-instance {s : SingularNManifold X n k I} : IsManifold I k s.M := s.isManifold
+instance {s : SingularNManifold X k I} : IsManifold I k s.M := s.isManifold
 
-instance {s : SingularNManifold X n k I} : CompactSpace s.M := s.compactSpace
+instance {s : SingularNManifold X k I} : CompactSpace s.M := s.compactSpace
 
-instance {s : SingularNManifold X n k I} : BoundarylessManifold I s.M := s.boundaryless
+instance {s : SingularNManifold X k I} : BoundarylessManifold I s.M := s.boundaryless
 
 /-- A map of topological spaces induces a corresponding map of singular n-manifolds. -/
 -- This is part of proving functoriality of the bordism groups.
-noncomputable def map (s : SingularNManifold X n k I)
-    {φ : X → Y} (hφ : Continuous φ) : SingularNManifold Y n k I where
+noncomputable def map (s : SingularNManifold X k I)
+    {φ : X → Y} (hφ : Continuous φ) : SingularNManifold Y k I where
   f := φ ∘ s.f
   hf := hφ.comp s.hf
-  dimension := s.dimension
 
 @[simp]
-lemma map_f (s : SingularNManifold X n k I) {φ : X → Y} (hφ : Continuous φ) :
+lemma map_f (s : SingularNManifold X k I) {φ : X → Y} (hφ : Continuous φ) :
     (s.map hφ).f = φ ∘ s.f :=
   rfl
 
-lemma map_comp (s : SingularNManifold X n k I)
+lemma map_comp (s : SingularNManifold X k I)
     {φ : X → Y} {ψ : Y → Z} (hφ : Continuous φ) (hψ : Continuous ψ) :
     ((s.map hφ).map hψ).f = (ψ ∘ φ) ∘ s.f := by
   simp [Function.comp_def]
@@ -133,33 +130,28 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
 
 variable (M I) in
 /-- If `M` is `n`-dimensional and closed, it is a singular `n`-manifold over itself.-/
-noncomputable def refl (hdim : finrank ℝ E = n) :
-    SingularNManifold M n k I where
-  dimension := hdim
+noncomputable def refl : SingularNManifold M k I where
   f := id
   hf := continuous_id
 
 /-- If `(N, f)` is a singular `n`-manifold on `X` and `M` another `n`-dimensional manifold,
 a continuous map `φ : M → N` induces a singular `n`-manifold structure `(M, f ∘ φ)` on `X`. -/
-noncomputable def comap [h : Fact (finrank ℝ E = n)] (s : SingularNManifold X n k I)
-    {φ : M → s.M} (hφ : Continuous φ) : SingularNManifold X n k I where
+noncomputable def comap (s : SingularNManifold X k I)
+    {φ : M → s.M} (hφ : Continuous φ) : SingularNManifold X k I where
   f := s.f ∘ φ
   hf := s.hf.comp hφ
-  dimension := h.out
 
 @[simp]
-lemma comap_f [Fact (finrank ℝ E = n)]
-    (s : SingularNManifold X n k I) {φ : M → s.M} (hφ : Continuous φ) :
+lemma comap_f (s : SingularNManifold X k I) {φ : M → s.M} (hφ : Continuous φ) :
     (s.comap hφ).f = s.f ∘ φ :=
   rfl
 
 variable (M I) in
 /-- The canonical singular `n`-manifold associated to the empty set (seen as an `n`-dimensional
 manifold, i.e. modelled on an `n`-dimensional space). -/
-def empty [h : Fact (finrank ℝ E = n)] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-    {I : ModelWithCorners ℝ E H} [IsManifold I k M] [IsEmpty M] : SingularNManifold X n k I where
+def empty (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+    {I : ModelWithCorners ℝ E H} [IsManifold I k M] [IsEmpty M] : SingularNManifold X k I where
   M := M
-  dimension := h.out
   f := fun x ↦ (IsEmpty.false x).elim
   hf := by
     rw [continuous_iff_continuousAt]
@@ -167,9 +159,8 @@ def empty [h : Fact (finrank ℝ E = n)] (M : Type*) [TopologicalSpace M] [Chart
 
 variable (M I) in
 /-- An `n`-dimensional manifold induces a singular `n`-manifold on the one-point space. -/
-def toPUnit [h : Fact (finrank ℝ E = n)] : SingularNManifold PUnit n k I where
+def toPUnit : SingularNManifold PUnit k I where
   M := M
-  dimension := h.out
   f := fun _ ↦ PUnit.unit
   hf := continuous_const
 
@@ -177,23 +168,20 @@ def toPUnit [h : Fact (finrank ℝ E = n)] : SingularNManifold PUnit n k I where
 is a singular `n+m`-manifold. -/
 -- FUTURE: prove that this observation induces a commutative ring structure
 -- on the unoriented bordism group `Ω_n^O = Ω_n^O(pt)`.
-def prod {m n : ℕ} (s : SingularNManifold PUnit n k I) (t : SingularNManifold PUnit m k I') :
-    SingularNManifold PUnit (n + m) k (I.prod I') where
+def prod (s : SingularNManifold PUnit k I) (t : SingularNManifold PUnit k I') :
+    SingularNManifold PUnit k (I.prod I') where
   M := s.M × t.M
   f := fun _ ↦ PUnit.unit
   hf := continuous_const
-  dimension := by rw [finrank_prod, s.dimension, t.dimension]
 
-variable (s t : SingularNManifold X n k I)
+variable (s t : SingularNManifold X k I)
 
 /-- The disjoint union of two singular `n`-manifolds on `X` is a singular `n`-manifold on `X`. -/
 -- We need to choose a model space for the disjoint union (as a priori `s` and `t` could be
 -- modelled on very different spaces: for simplicity, we choose `ℝ^n`; all real work is contained
 -- in the two instances above.
-def sum {n : ℕ} (s t : SingularNManifold X n k I) [finrank : Fact (finrank ℝ E = n)] :
-    SingularNManifold X n k I where
+def sum (s t : SingularNManifold X k I) : SingularNManifold X k I where
   M := s.M ⊕ t.M
-  dimension := finrank.out
   f := Sum.elim s.f t.f
   hf := s.hf.sum_elim t.hf
 
