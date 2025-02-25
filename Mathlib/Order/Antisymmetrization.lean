@@ -57,8 +57,7 @@ instance [IsRefl α r] : IsRefl α (AntisymmRel r) where
 
 variable {r}
 
-theorem AntisymmRel.of_eq [IsRefl α r] {a b : α} (h : a = b) : AntisymmRel r a b :=
-  h ▸ AntisymmRel.rfl
+theorem AntisymmRel.of_eq [IsRefl α r] {a b : α} (h : a = b) : AntisymmRel r a b := h ▸ .rfl
 
 @[symm]
 theorem AntisymmRel.symm : AntisymmRel r a b → AntisymmRel r b a :=
