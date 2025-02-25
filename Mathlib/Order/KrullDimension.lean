@@ -799,10 +799,8 @@ lemma height_eq_krullDim_Iic (x : α) :
 
 lemma coheight_eq_krullDim_Ici {α : Type*} [Preorder α] (x : α) :
     (coheight x : ℕ∞) = krullDim (Set.Ici x) := by
-  rw [coheight, ← krullDim_orderDual]
-  let iso : (Set.Ici x)ᵒᵈ ≃o Set.Iic (α := αᵒᵈ) x := OrderIso.refl _
-  rw [Order.krullDim_eq_of_orderIso iso]
-  apply height_eq_krullDim_Iic
+  rw [coheight, ← krullDim_orderDual, Order.krullDim_eq_of_orderIso (OrderIso.refl _)]
+  exact height_eq_krullDim_Iic _
 
 end krullDim
 
