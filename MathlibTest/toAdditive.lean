@@ -299,7 +299,7 @@ theorem isUnit_iff_exists_inv [Mul M] {a : M} : IsUnit a ↔ ∃ _ : α, a ≠ a
   ⟨fun h => absurd rfl h, fun ⟨_, hab⟩ => hab⟩
 
 /-! Test that `@[to_additive]` correctly translates auxiliary declarations that do not have the
-original declaration name as prefix.-/
+original declaration name as prefix. -/
 @[to_additive]
 def IsUnit' [Monoid M] (a : M) : Prop := ∃ b : M, a * b = 1
 

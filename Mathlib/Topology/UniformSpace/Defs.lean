@@ -752,7 +752,7 @@ nonrec theorem UniformContinuous.comp [UniformSpace β] [UniformSpace γ] {g : �
   hg.comp hf
 
 /--If a function `T` is uniformly continuous in a uniform space `β`,
-then its `n`-th iterate `T^[n]` is also uniformly continuous.-/
+then its `n`-th iterate `T^[n]` is also uniformly continuous. -/
 theorem UniformContinuous.iterate [UniformSpace β] (T : β → β) (n : ℕ) (h : UniformContinuous T) :
     UniformContinuous T^[n] := by
   induction n with
