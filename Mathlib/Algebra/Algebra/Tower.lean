@@ -248,6 +248,10 @@ theorem coe_span_eq_span_of_surjective (h : Function.Surjective (algebraMap R A)
     (Submodule.span A s : Set M) = Submodule.span R s :=
   congr_arg ((↑) : Submodule R M → Set M) (Submodule.restrictScalars_span R A h s)
 
+lemma range_restrictScalars {N : Type*} [AddCommMonoid N] [Module R N] [Module A N]
+    [IsScalarTower R A N] (f : M →ₗ[A] N) :
+    LinearMap.range (f.restrictScalars R) = f.range.restrictScalars R := rfl
+
 end Submodule
 
 section Semiring

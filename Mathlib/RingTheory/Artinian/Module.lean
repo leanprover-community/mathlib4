@@ -165,31 +165,6 @@ theorem monotone_stabilizes_iff_artinian :
     (∀ f : ℕ →o (Submodule R M)ᵒᵈ, ∃ n, ∀ m, n ≤ m → f n = f m) ↔ IsArtinian R M :=
   wellFoundedGT_iff_monotone_chain_condition.symm
 
-lemma Module.finite.trans' (R A B : Type*)
-  [CommSemiring R] [CommSemiring A] [Algebra R A]
-  [AddCommMonoid B] [Module R B] [Module A B] [IsScalarTower R A B] :
-  ∀ [Module.Finite R A] [Module.Finite A B], Module.Finite R B
-  | ⟨⟨s, hs⟩⟩, ⟨⟨t, ht⟩⟩ => ⟨Submodule.fg_def.2
-    ⟨Set.image2 (· • ·) (s : Set A) (t : Set B),
-      Set.Finite.image2 (· • ·) s.finite_toSet t.finite_toSet,
-      by rw [← image_prod, image_smul_prod, span_smul_of_span_eq_top hs _,
-       ht, restrictScalars_eq_top_iff]⟩⟩
-
-lemma Module.finite_of_tower (R S M : Type*)
-  [CommSemiring R] [CommSemiring S] [AddCommGroup M]
-  [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M] [Module.Finite R S] :
-  Module.Finite R M ↔ Module.Finite S M :=
-⟨fun h => by exact Module.Finite.of_restrictScalars_finite R S M,
-  fun h => by exact Module.finite.trans' R S M⟩
-
-lemma LinearMap.range_restrict_scalars {R S M N : Type*}
-  [CommSemiring R] [Semiring S]
-  [AddCommMonoid M] [AddCommMonoid N] [Algebra R S]
-  [Module R M] [Module S M] [IsScalarTower R S M]
-  [Module R N] [Module S N] [IsScalarTower R S N]
-  (f : M →ₗ[S] N) :
-  LinearMap.range (f.restrictScalars R) = f.range.restrictScalars R := rfl
-
 namespace IsArtinian
 
 variable [IsArtinian R M]
@@ -709,7 +684,10 @@ lemma isArtinian_of_isArtinian_of_mul_of_field (K : Type*) {R : Type*} [CommRing
   have : Function.Surjective (algebraMap R (R ⧸ I)) := Ideal.Quotient.mk_surjective
   haveI : Algebra.FiniteType K (R ⧸ I) := (‹Algebra.FiniteType K R›).trans inferInstance
   haveI : Module.Finite K (R ⧸ I) := by
-    -- need use finite_of_finite_type_of_is_jacobson_of_field, but it in jacobson.lean
+    -- `NOTE`: the theorem used here is in Mathlib.RingTheory.Jacobson.Ring, but
+    -- such an import will cause build cycle
+
+    -- need to use finite_of_finite_type_of_isJacobsonRing
     sorry
   have : IsArtinian R (J ⧸ IJ) ↔ IsArtinian K (J ⧸ IJ) := by
     rw [isArtinian_of_tower_of_surjective (J ⧸ IJ) (by aesop)]
@@ -721,7 +699,7 @@ lemma isArtinian_of_isArtinian_of_mul_of_field (K : Type*) {R : Type*} [CommRing
   refine isArtinian_of_range_eq_ker
     ((Submodule.inclusion (Ideal.mul_le_left) : (I * J : _) →ₗ[R] J).restrictScalars K)
     (IJ.mkQ.restrictScalars K) ?_
-  rw [LinearMap.ker_restrictScalars, Submodule.ker_mkQ, LinearMap.range_restrict_scalars,
+  rw [LinearMap.ker_restrictScalars, Submodule.ker_mkQ, range_restrictScalars,
     Submodule.range_inclusion]
 
 end Algebra
