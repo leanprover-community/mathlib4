@@ -180,4 +180,5 @@ theorem restrict₂_comp_restrict₂ {s t u : Finset ι} (hst : s ⊆ t) (htu : 
     (restrict₂ (π := π) hst) ∘ (restrict₂ htu) = restrict₂ (hst.trans htu) := rfl
 
 end Pi
+
 end Finset

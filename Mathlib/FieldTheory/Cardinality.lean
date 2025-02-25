@@ -36,7 +36,7 @@ universe u
 /-- A finite field has prime power cardinality. -/
 theorem Fintype.isPrimePow_card_of_field {α} [Fintype α] [Field α] : IsPrimePow ‖α‖ := by
   -- TODO: `Algebra` version of `CharP.exists`, of type `∀ p, Algebra (ZMod p) α`
-  cases' CharP.exists α with p _
+  obtain ⟨p, _⟩ := CharP.exists α
   haveI hp := Fact.mk (CharP.char_is_prime α p)
   letI : Algebra (ZMod p) α := ZMod.algebra _ _
   let b := IsNoetherian.finsetBasis (ZMod p) α

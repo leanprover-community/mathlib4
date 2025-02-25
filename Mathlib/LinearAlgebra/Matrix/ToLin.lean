@@ -125,7 +125,7 @@ variable [DecidableEq m]
 
 /-- Linear maps `(m → R) →ₗ[R] (n → R)` are linearly equivalent over `Rᵐᵒᵖ` to `Matrix m n R`,
 by having matrices act by right multiplication.
- -/
+-/
 def LinearMap.toMatrixRight' : ((m → R) →ₗ[R] n → R) ≃ₗ[Rᵐᵒᵖ] Matrix m n R where
   toFun f i j := f (single R (fun _ ↦ R) i 1) j
   invFun := Matrix.vecMulLinear
