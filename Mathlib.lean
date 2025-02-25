@@ -4503,6 +4503,7 @@ import Mathlib.Order.SupIndep
 import Mathlib.Order.SymmDiff
 import Mathlib.Order.Synonym
 import Mathlib.Order.TransfiniteIteration
+import Mathlib.Order.TrimmedLength
 import Mathlib.Order.TypeTags
 import Mathlib.Order.ULift
 import Mathlib.Order.UpperLower.Basic
