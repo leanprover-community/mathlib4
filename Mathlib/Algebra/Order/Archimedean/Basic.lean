@@ -535,7 +535,6 @@ instance WithBot.instArchimedean (α) [OrderedAddCommMonoid α] [Archimedean α]
     | bot => refine ⟨0, bot_le⟩
     | coe x => simpa [← WithBot.coe_nsmul] using (Archimedean.arch x (by simpa using hxy))
 
-@[to_additive existing WithBot.instArchimedean]
 instance WithZero.instMulArchimedean (α) [OrderedCommMonoid α] [MulArchimedean α] :
     MulArchimedean (WithZero α) := by
   constructor
