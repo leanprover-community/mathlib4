@@ -305,14 +305,14 @@ def functorEquivFunctorCompSndIso :
   is naturally isomorphic to the first projection. -/
 @[simps!]
 def functorEquivInverseCompWhiskeringLeftInLIso :
-    (functorEquiv _ _ _).inverse ⋙ ((whiskeringLeft _ _ C).obj (inl_ A A')) ≅ Prod.fst _ _ :=
+    (functorEquiv _ _ _).inverse ⋙ (whiskeringLeft _ _ C).obj (inl_ A A') ≅ Prod.fst _ _ :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 /-- Composing the backward direction of `functorEquiv` with the second projection is the same as
   precomposition with `inr_ A A'`. -/
 @[simps!]
 def functorEquivInverseCompWhiskeringLeftInRIso :
-    (functorEquiv _ _ _).inverse ⋙ ((whiskeringLeft _ _ C).obj (inr_ A A')) ≅ Prod.snd _ _ :=
+    (functorEquiv _ _ _).inverse ⋙ (whiskeringLeft _ _ C).obj (inr_ A A') ≅ Prod.snd _ _ :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 end Sum
