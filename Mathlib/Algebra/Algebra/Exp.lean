@@ -109,13 +109,10 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
           rw [← Nat.cast_commute (i.choose j), ← this, ← Algebra.mul_smul_comm, ← nsmul_eq_mul,
           mul_smul, ← smul_assoc, smul_comm, smul_assoc]
           norm_cast
-        have le₄ : j ≤ i := Nat.le_of_lt_succ hj
-        rw [Nat.choose_eq_factorial_div_factorial le₄, Nat.cast_div, mul_div]
-        · have inv : (i.factorial : R)⁻¹  * (i.factorial : R) = 1 := by
-            have : (i.factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero i
-            simp_all only [ne_eq, Nat.cast_eq_zero, not_false_eq_true, inv_mul_cancel₀]
-          rw [inv, Nat.cast_mul, one_div, mul_inv_rev, mul_comm]
-        · exact Nat.factorial_mul_factorial_dvd_factorial le₄
+        rw [Nat.choose_eq_factorial_div_factorial (Nat.le_of_lt_succ hj), Nat.cast_div, mul_div]
+        · rw [inv_mul_cancel₀ (mod_cast Nat.factorial_ne_zero i), Nat.cast_mul, one_div,
+          mul_inv_rev, mul_comm]
+        · exact Nat.factorial_mul_factorial_dvd_factorial (Nat.le_of_lt_succ hj)
         rw [Nat.cast_mul]
         apply mul_ne_zero <;> exact_mod_cast Nat.factorial_ne_zero _
       _ = ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) with ij.1 + ij.2 <= 2 * N,
