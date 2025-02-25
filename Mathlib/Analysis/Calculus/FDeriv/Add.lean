@@ -236,7 +236,7 @@ theorem fderivWithin_add_const (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
     simpa
 
 theorem fderiv_add_const (c : F) : fderiv 𝕜 (fun y => f y + c) x = fderiv 𝕜 f x := by
-  simp only [← fderivWithin_univ, fderivWithin_add_const uniqueDiffWithinAt_univ]
+  simp only [← fderivWithin_univ, fderivWithin_add_const .univ]
 
 @[fun_prop]
 theorem HasStrictFDerivAt.const_add (hf : HasStrictFDerivAt f f' x) (c : F) :
@@ -438,7 +438,7 @@ theorem fderivWithin_neg' (hxs : UniqueDiffWithinAt 𝕜 s x) :
 
 @[simp]
 theorem fderiv_neg : fderiv 𝕜 (fun y => -f y) x = -fderiv 𝕜 f x := by
-  simp only [← fderivWithin_univ, fderivWithin_neg uniqueDiffWithinAt_univ]
+  simp only [← fderivWithin_univ, fderivWithin_neg .univ]
 
 /-- Version of `fderiv_neg` where the function is written `-f` instead of `fun y ↦ - f y`. -/
 theorem fderiv_neg' : fderiv 𝕜 (-f) x = -fderiv 𝕜 f x :=
@@ -677,7 +677,7 @@ theorem fderivWithin_const_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
   simp only [sub_eq_add_neg, fderivWithin_const_add, fderivWithin_neg, hxs]
 
 theorem fderiv_const_sub (c : F) : fderiv 𝕜 (fun y => c - f y) x = -fderiv 𝕜 f x := by
-  simp only [← fderivWithin_univ, fderivWithin_const_sub uniqueDiffWithinAt_univ]
+  simp only [← fderivWithin_univ, fderivWithin_const_sub .univ]
 
 end Sub
 

@@ -664,8 +664,8 @@ theorem _root_.eq_of_fderiv_eq
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   let A : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
   suffices Set.univ.EqOn f g from funext fun x => this <| mem_univ x
-  exact convex_univ.eqOn_of_fderivWithin_eq hf.differentiableOn hg.differentiableOn
-    uniqueDiffOn_univ (fun x _ => by simpa using hf' _) (mem_univ _) hfgx
+  exact convex_univ.eqOn_of_fderivWithin_eq hf.differentiableOn hg.differentiableOn .univ
+    (fun x _ => by simpa using hf' _) (mem_univ _) hfgx
 
 end Convex
 

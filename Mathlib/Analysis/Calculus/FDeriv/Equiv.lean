@@ -137,7 +137,7 @@ theorem comp_fderivWithin {f : G → E} {s : Set G} {x : G} (hxs : UniqueDiffWit
 theorem comp_fderiv {f : G → E} {x : G} :
     fderiv 𝕜 (iso ∘ f) x = (iso : E →L[𝕜] F).comp (fderiv 𝕜 f x) := by
   rw [← fderivWithin_univ, ← fderivWithin_univ]
-  exact iso.comp_fderivWithin uniqueDiffWithinAt_univ
+  exact iso.comp_fderivWithin .univ
 
 lemma _root_.fderivWithin_continuousLinearEquiv_comp (L : G ≃L[𝕜] G') (f : E → (F →L[𝕜] G))
     (hs : UniqueDiffWithinAt 𝕜 s x) :
@@ -228,7 +228,7 @@ theorem comp_right_fderivWithin {f : F → G} {s : Set F} {x : E}
 theorem comp_right_fderiv {f : F → G} {x : E} :
     fderiv 𝕜 (f ∘ iso) x = (fderiv 𝕜 f (iso x)).comp (iso : E →L[𝕜] F) := by
   rw [← fderivWithin_univ, ← fderivWithin_univ, ← iso.comp_right_fderivWithin, preimage_univ]
-  exact uniqueDiffWithinAt_univ
+  exact .univ
 
 end ContinuousLinearEquiv
 
