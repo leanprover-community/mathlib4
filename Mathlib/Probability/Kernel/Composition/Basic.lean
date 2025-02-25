@@ -1300,12 +1300,6 @@ lemma deterministic_map {f : α → β} (hf : Measurable f) {g : β → γ} (hg 
     (deterministic f hf).map g = deterministic (g ∘ f) (hg.comp hf) := by
   rw [← id_map, ← map_comp_right _ hf hg, id_map]
 
-lemma comp_map (κ : Kernel α β) (η : Kernel γ δ) {f : β → γ} (hf : Measurable f) :
-    η ∘ₖ (κ.map f) = (η.comap f hf) ∘ₖ κ := by
-  ext x s ms
-  rw [comp_apply' _ _ _ ms, lintegral_map _ hf _ (η.measurable_coe ms), comp_apply' _ _ _ ms]
-  simp_rw [comap_apply']
-
 @[simp]
 lemma comp_discard (κ : Kernel α β) [IsMarkovKernel κ] : discard β ∘ₖ κ = discard α := by
   ext a s hs; simp [comp_apply' _ _ _ hs]
@@ -1343,6 +1337,12 @@ lemma map_comp (κ : Kernel α β) (η : Kernel β γ) (f : γ → δ) :
     · simp_rw [map_apply' _ hf _ hs]
     · exact hf hs
   · simp [map_of_not_measurable _ hf]
+
+lemma comp_map (κ : Kernel α β) (η : Kernel γ δ) {f : β → γ} (hf : Measurable f) :
+    η ∘ₖ (κ.map f) = (η.comap f hf) ∘ₖ κ := by
+  ext x s ms
+  rw [comp_apply' _ _ _ ms, lintegral_map _ hf _ (η.measurable_coe ms), comp_apply' _ _ _ ms]
+  simp_rw [comap_apply']
 
 lemma fst_comp (κ : Kernel α β) (η : Kernel β (γ × δ)) : (η ∘ₖ κ).fst = η.fst ∘ₖ κ := by
   simp [fst_eq, map_comp κ η _]
