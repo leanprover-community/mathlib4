@@ -30,10 +30,10 @@ That lemma is our version of Gibbs' inequality ("the Kullback-Leibler divergence
 
 ## Implementation details
 
-The definition of the Kullback-Leibler divergence on probability measures is
-`∫ x, llr μ ν x ∂μ` if `μ ≪ ν` (and the log-likelihood ratio is integrable) and `∞` otherwise.
+The Kullback-Leibler divergence on probability measures is `∫ x, llr μ ν x ∂μ` if `μ ≪ ν`
+(and the log-likelihood ratio is integrable) and `∞` otherwise.
 The definition we use extends this to finite measures by introducing a correction term
-`(ν univ).toReal - (μ univ).toReal`. Our definition of the divergence thus uses the formula
+`(ν univ).toReal - (μ univ).toReal`. The definition of the divergence thus uses the formula
 `∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal`, which is nonnegative for all finite
 measures `μ ≪ ν`. This also makes `kl μ ν` equal to an f-divergence: it equals the integral
 `∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν`, in which `klFun x = x * log x + 1 - x`.
@@ -84,10 +84,9 @@ lemma kl_zero_right [NeZero μ] : kl μ 0 = ∞ :=
   kl_of_not_ac (Measure.absolutelyContinuous_zero_iff.mp.mt (NeZero.ne _))
 
 lemma kl_eq_top_iff : kl μ ν = ∞ ↔ μ ≪ ν → ¬ Integrable (llr μ ν) μ := by
-  constructor <;> intro h <;> push_neg at *
+  constructor <;> intro h
   · contrapose! h
-    rw [kl_of_ac_of_integrable h.1 h.2]
-    simp only [ne_eq, ENNReal.ofReal_ne_top, not_false_eq_true]
+    simp [kl_of_ac_of_integrable h.1 h.2]
   · rcases or_not_of_imp h with (h | h) <;> simp [h]
 
 lemma kl_ne_top_iff : kl μ ν ≠ ∞ ↔ μ ≪ ν ∧ Integrable (llr μ ν) μ := by simp [ne_eq, kl_eq_top_iff]
