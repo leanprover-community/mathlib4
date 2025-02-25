@@ -45,7 +45,7 @@ with `DependsOn` because writing mathematically "independent of variables in `s`
 depends on
 -/
 
-open Set
+open Function Set
 
 variable {ι : Type*} {α : ι → Type*} {β : Type*}
 
@@ -54,13 +54,13 @@ def DependsOn (f : (Π i, α i) → β) (s : Set ι) : Prop :=
   ∀ ⦃x y⦄, (∀ i ∈ s, x i = y i) → f x = f y
 
 lemma dependsOn_iff_factorsThrough {f : (Π i, α i) → β} {s : Set ι} :
-    DependsOn f s ↔ Function.FactorsThrough f s.restrict := by
-  rw [DependsOn, Function.FactorsThrough]
+    DependsOn f s ↔ FactorsThrough f s.restrict := by
+  rw [DependsOn, FactorsThrough]
   simp [funext_iff]
 
 lemma dependsOn_iff_exists_comp [Nonempty β] {f : (Π i, α i) → β} {s : Set ι} :
     DependsOn f s ↔ ∃ g : (Π i : s, α i) → β, f = g ∘ s.restrict := by
-  rw [dependsOn_iff_factorsThrough, Function.factorsThrough_iff]
+  rw [dependsOn_iff_factorsThrough, factorsThrough_iff]
 
 lemma dependsOn_univ (f : (Π i, α i) → β) : DependsOn f univ :=
   fun _ _ h ↦ congrArg _ <| funext fun i ↦ h i trivial
