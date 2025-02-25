@@ -94,7 +94,7 @@ variable {P} (X Y : P.SerreWLocalization)
 
 namespace Hom
 
-structure DefDomain  where
+structure DefDomain where
   src : C
   i : src ⟶ X.obj
   [mono_i : Mono i]
@@ -148,9 +148,24 @@ instance : Category (DefDomain X Y) where
   id := Hom.id
   comp := Hom.comp
 
+instance : Subsingleton (d₁ ⟶ d₂) :=
+  inferInstanceAs (Subsingleton (Hom d₁ d₂))
+
 end Hom
 
-lemma exists_min (d₁ d₂ : DefDomain X Y) :
+@[simp] lemma id_ι (d : DefDomain X Y) : Hom.ι (𝟙 d) = 𝟙 _ := rfl
+@[simp] lemma id_π (d : DefDomain X Y) : Hom.π (𝟙 d) = 𝟙 _ := rfl
+
+section
+
+variable {d₁ d₂ d₃}
+
+@[simp] lemma comp_ι (f : d₁ ⟶ d₂) (g : d₂ ⟶ d₃) : (f ≫ g).ι = f.ι ≫ g.ι := rfl
+@[simp] lemma comp_π (f : d₁ ⟶ d₂) (g : d₂ ⟶ d₃) : (f ≫ g).π = g.π ≫ f.π := rfl
+
+end
+
+lemma exists_min :
     ∃ (d : DefDomain X Y), Nonempty (d ⟶ d₁) ∧ Nonempty (d ⟶ d₂) := by
   let d : DefDomain X Y :=
     { src := pullback d₁.i d₂.i
@@ -171,6 +186,79 @@ lemma exists_min (d₁ d₂ : DefDomain X Y) :
 
 end DefDomain
 
+variable {X Y} in
+abbrev restrict {d₁ d₂ : DefDomain X Y} (φ : d₁ ⟶ d₂) (f : d₂.src ⟶ d₂.tgt) :
+    d₁.src ⟶ d₁.tgt :=
+  φ.ι ≫ f ≫ φ.π
+
+end Hom
+
+abbrev Hom' := Σ (d : Hom.DefDomain X Y), d.src ⟶ d.tgt
+
+section
+
+variable {X Y}
+
+abbrev Hom'.mk {d : Hom.DefDomain X Y} (φ : d.src ⟶ d.tgt) : Hom' X Y := ⟨d, φ⟩
+
+lemma Hom'.mk_surjective (a : Hom' X Y) :
+    ∃ (d : Hom.DefDomain X Y) (φ : d.src ⟶ d.tgt), a = .mk φ :=
+  ⟨a.1, a.2, rfl⟩
+
+end
+
+inductive Hom'Rel : Hom' X Y → Hom' X Y → Prop
+  | restrict (d₁ d₂ : Hom.DefDomain X Y) (φ : d₁ ⟶ d₂) (f : d₂.src ⟶ d₂.tgt) :
+      Hom'Rel ⟨d₂, f⟩ ⟨d₁, Hom.restrict φ f⟩
+
+def Hom := Quot (Hom'Rel X Y)
+
+namespace Hom
+
+variable {X Y}
+
+def mk {d : Hom.DefDomain X Y} (φ : d.src ⟶ d.tgt) : Hom X Y :=
+  Quot.mk _ (.mk φ)
+
+lemma quotMk_eq_quotMk_iff {x y : Hom' X Y} :
+    Quot.mk (Hom'Rel X Y) x = Quot.mk (Hom'Rel X Y) y ↔
+      ∃ (d : DefDomain X Y) (φ₁ : d ⟶ x.1) (φ₂ : d ⟶ y.1),
+        restrict φ₁ x.2 = restrict φ₂ y.2 := by
+  constructor
+  · intro h
+    rw [Quot.eq] at h
+    induction h with
+    | rel _ _ h =>
+      obtain ⟨d₁, d₂, φ, f⟩ := h
+      exact ⟨d₁, φ, 𝟙 _, by simp [restrict]⟩
+    | refl x =>
+      exact ⟨_, 𝟙 _, 𝟙 _, by simp [restrict]⟩
+    | symm _ _ _ h =>
+      obtain ⟨_, _, _, eq⟩ := h
+      exact ⟨_, _, _, eq.symm⟩
+    | trans _ _ _ _ _ h₁₂ h₂₃ =>
+      obtain ⟨d₁₂, φ₁, φ₂, eq₁₂⟩ := h₁₂
+      obtain ⟨d₂₃, ψ₂, ψ₃, eq₂₃⟩ := h₂₃
+      obtain ⟨d, ⟨i₁₂⟩, ⟨i₂₃⟩⟩ := DefDomain.exists_min d₁₂ d₂₃
+      refine ⟨d, i₁₂ ≫ φ₁, i₂₃ ≫ ψ₃, ?_⟩
+      simp only [restrict] at eq₁₂ eq₂₃
+      simp only [restrict, DefDomain.comp_ι, DefDomain.comp_π, assoc]
+      have hι := congr_arg DefDomain.Hom.ι (Subsingleton.elim (i₁₂ ≫ φ₂) (i₂₃ ≫ ψ₂))
+      have hπ := congr_arg DefDomain.Hom.π (Subsingleton.elim (i₁₂ ≫ φ₂) (i₂₃ ≫ ψ₂))
+      dsimp at hι hπ
+      rw [reassoc_of% eq₁₂, ← reassoc_of% eq₂₃, reassoc_of% hι, hπ]
+  · obtain ⟨d₁, f₁, rfl⟩ := x.mk_surjective
+    obtain ⟨d₂, f₂, rfl⟩ := y.mk_surjective
+    rintro ⟨d, φ₁, φ₂, h⟩
+    trans mk (Hom.restrict φ₁ f₁)
+    · exact (Quot.sound (by constructor))
+    · rw [h]
+      exact (Quot.sound (by constructor)).symm
+
+lemma ext_iff {d₁ d₂ : DefDomain X Y} (f₁ : d₁.src ⟶ d₁.tgt) (f₂ : d₂.src ⟶ d₂.tgt) :
+    mk f₁ = mk f₂ ↔ ∃ (d : DefDomain X Y) (φ₁ : d ⟶ d₁) (φ₂ : d ⟶ d₂),
+      restrict φ₁ f₁ = restrict φ₂ f₂ := by
+  apply quotMk_eq_quotMk_iff
 
 end Hom
 
