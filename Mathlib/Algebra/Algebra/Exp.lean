@@ -67,8 +67,8 @@ theorem exp_eq_truncated {k : ℕ} (a : A) (h : a ^ k = 0) :
   suffices ∀ n ∈ Ico (nilpotencyClass a) k, (Nat.factorial n : R)⁻¹ • (a ^ n) = 0 by
     exact sum_eq_zero this
   intro t ht
-  rw [pow_eq_zero_of_le (by simp_all only [mem_Ico]) (pow_nilpotencyClass ⟨k, h⟩), smul_zero]
-
+  simp only [mem_Ico] at ht
+  rw [pow_eq_zero_of_le ht.1 (pow_nilpotencyClass ⟨k, h⟩), smul_zero]
 
 theorem exp_zero_eq_one : exp R A 0 = 1 := by
   have h : (0 : A) ^ 1 = 0 := by
