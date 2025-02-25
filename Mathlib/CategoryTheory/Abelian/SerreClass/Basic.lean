@@ -20,7 +20,11 @@ that `X₁` and `X₃` belong to the class, then so does `X₂` (see `SerreClass
 
 ## Future works
 
-* Construct the localization of `C` with respect to a Serre class.
+* Show that the localization of `C` with respect to a Serre class is an abelian category.
+
+## References
+
+* [Jean-Pierre Serre, *Groupes d'homotopie et classes de groupes abéliens*][serre1958]
 
 -/
 
