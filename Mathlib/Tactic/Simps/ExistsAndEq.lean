@@ -35,10 +35,10 @@ set_option linter.unusedVariables false in
 partial def fingImpEqProof (p : Expr) : MetaM <| Option Expr := do
   lambdaTelescope p fun xs body => do
     let #[x] := xs | return .none
-    let ⟨_, _, x⟩ ← inferTypeQ x
+    let ⟨_, _, x⟩ ← withTransparency .all (inferTypeQ x)
     let ⟨u, _, body⟩ ← inferTypeQ body
     let _ : u =QL 0 := ⟨⟩
-    withLocalDeclQ (u := 0) .anonymous .default body fun h => do
+    withLocalDeclQ (u := 0) .anonymous .default body fun h => withNewMCtxDepth do
       let .some proof ← go x h | return .none
       let pf1 ← mkLambdaFVars #[x, h] proof
       let pf2 ← mkAppM ``exists_of_imp_eq #[pf1]
