@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Paul Lezeau
 -/
 import Mathlib.Data.Finset.Sort
-import Mathlib.Lean.Expr.Lit
 import Mathlib.NumberTheory.Divisors
-import Mathlib.Tactic.Simp.FinsetNat
 
 /-!
 # Simproc for `Int.divisorsAntidiag`
@@ -21,16 +19,13 @@ open
       Term
     Parser
       Tactic
-  Mathlib
-    Meta
-      NormNum
 
 namespace Mathlib.Tactic.Simp
 
 open Finset
 
 /-- Given a natural number `n`, returns `(s, ⊢ Nat.divisorsAntidiagonal n = s)`. -/
-def evalNatDivisorsAntidiag {en enl : Q(ℕ)} (hn : Q(IsNat $en $enl)) :
+def evalNatDivisorsAntidiag (n : ℕ) (en : Q(ℕ)) :
     MetaM ((l : Q(Finset (ℕ × ℕ))) × Q(Nat.divisorsAntidiagonal $en = $l)) := do
   match enl.natLit! with
   | 0 =>
@@ -63,11 +58,10 @@ def evalDivisorsAntidiag
     have h2 : Q(IsNat 2 (nat_lit 2)) := q(⟨Eq.refl (nat_lit 2)⟩)
     let ⟨l, p⟩ ← evalPrimeFactorsListAux hn h2
     return ⟨l, q(($p).primeFactorsList_eq)⟩
->
+
 simproc divisors_antidiag (Int.divisorsAntidiag _) := fun e ↦ do
   let ⟨1, ~q(Finset (ℤ × ℤ)), ~q(Int.divisorsAntidiag <| OfNat.ofNat $e)⟩ ← inferTypeQ e
     | return .continue
-  let hn : Q(IsNat (OfNat.ofNat $e) $e) := q(⟨rfl⟩)
   let ⟨l, p⟩ ← evalPrimeFactorsList hn
   return .done { expr := l, proof? := p }
 

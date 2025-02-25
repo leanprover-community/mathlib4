@@ -232,9 +232,9 @@ import Mathlib.Tactic.Says
 import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Simp.DivisorsAntidiag
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Simproc.DivisorsAntidiag
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SplitIfs
