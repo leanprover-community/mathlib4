@@ -4,14 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Janos Wolosz
 -/
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Group.Basic
-import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.Data.Nat.Cast.Field
-import Mathlib.Data.Sigma.Basic
+import Mathlib.RingTheory.Nilpotent.Basic
 import LeanCopilot
 
 /-!
