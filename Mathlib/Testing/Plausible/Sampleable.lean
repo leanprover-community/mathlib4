@@ -6,7 +6,7 @@ Authors: Henrik Böving, Simon Hudon
 import Batteries.Data.Rat.Basic
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.List.Monad
-import Mathlib.Data.PNat.Basic
+import Mathlib.Data.PNat.Defs
 import Plausible.Sampleable
 
 /-!
