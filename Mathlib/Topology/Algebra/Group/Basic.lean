@@ -398,8 +398,8 @@ that the division operation `x y ↦ x * y⁻¹` (resp., subtraction) is continu
 -- to match the multiplicative version?
 /-- A topological (additive) group is a group in which the addition and negation operations are
 continuous. -/
-class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] extends
-  ContinuousAdd G, ContinuousNeg G : Prop
+class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] : Prop
+    extends ContinuousAdd G, ContinuousNeg G
 
 /-- A topological group is a group in which the multiplication and inversion operations are
 continuous.
@@ -409,8 +409,8 @@ you should also provide an instance of `UniformSpace` and `UniformGroup` using
 `IsTopologicalGroup.toUniformSpace` and `topologicalCommGroup_isUniform`. -/
 -- Porting note: check that these ↑ names exist once they've been ported in the future.
 @[to_additive]
-class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] extends ContinuousMul G,
-  ContinuousInv G : Prop
+class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] : Prop
+    extends ContinuousMul G, ContinuousInv G
 
 section Conj
 
@@ -1722,9 +1722,9 @@ structure GroupTopology (α : Type u) [Group α] : Type u
   extends TopologicalSpace α, IsTopologicalGroup α
 
 /-- An additive group topology on an additive group `α` is a topology for which addition and
-  negation are continuous. -/
-structure AddGroupTopology (α : Type u) [AddGroup α] extends TopologicalSpace α,
-  IsTopologicalAddGroup α : Type u
+negation are continuous. -/
+structure AddGroupTopology (α : Type u) [AddGroup α] : Type u
+    extends TopologicalSpace α, IsTopologicalAddGroup α
 
 attribute [to_additive] GroupTopology
 
