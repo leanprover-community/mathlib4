@@ -715,12 +715,12 @@ theorem union_univ (s : Set α) : s ∪ univ = univ := sup_top_eq _
 theorem univ_union (s : Set α) : univ ∪ s = univ := top_sup_eq _
 
 @[simp]
-theorem ssubset_union_left_iff : s ⊂ s ∪ t ↔ ¬ t ⊆ s := by
-  rw [ssubset_iff_subset_ne, and_iff_right subset_union_left, Ne, eq_comm, union_eq_left]
+theorem ssubset_union_left_iff : s ⊂ s ∪ t ↔ ¬ t ⊆ s :=
+  left_lt_sup
 
 @[simp]
-theorem ssubset_union_right_iff : t ⊂ s ∪ t ↔ ¬ s ⊆ t := by
-  rw [union_comm, ssubset_union_left_iff]
+theorem ssubset_union_right_iff : t ⊂ s ∪ t ↔ ¬ s ⊆ t :=
+  right_lt_sup
 
 /-! ### Lemmas about intersection -/
 
@@ -841,12 +841,12 @@ theorem setOf_inter_eq_sep (p : α → Prop) (s : Set α) : {a | p a} ∩ s = {a
   inter_comm _ _
 
 @[simp]
-theorem inter_ssubset_right_iff : s ∩ t ⊂ t ↔ ¬ t ⊆ s := by
-  rw [ssubset_iff_subset_ne, and_iff_right inter_subset_right, Ne, inter_eq_right]
+theorem inter_ssubset_right_iff : s ∩ t ⊂ t ↔ ¬ t ⊆ s :=
+  inf_lt_right
 
 @[simp]
-theorem inter_ssubset_left_iff : s ∩ t ⊂ s ↔ ¬ s ⊆ t := by
-  rw [inter_comm, inter_ssubset_right_iff]
+theorem inter_ssubset_left_iff : s ∩ t ⊂ s ↔ ¬ s ⊆ t :=
+  inf_lt_left
 
 /-! ### Distributivity laws -/
 
@@ -1033,8 +1033,8 @@ theorem inter_diff_distrib_left (s t u : Set α) : s ∩ (t \ u) = (s ∩ t) \ (
 theorem inter_diff_distrib_right (s t u : Set α) : (s \ t) ∩ u = (s ∩ u) \ (t ∩ u) :=
   inf_sdiff_distrib_right _ _ _
 
-theorem diff_inter_distrib_right (s t r : Set α) : (t ∩ r) \ s = (t \ s) ∩ (r \ s) := by
-  rw [diff_eq, inter_inter_distrib_right, diff_eq, diff_eq]
+theorem diff_inter_distrib_right (s t r : Set α) : (t ∩ r) \ s = (t \ s) ∩ (r \ s) :=
+  inf_sdiff
 
 theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
     Disjoint s t ↔ s = ∅ := by
@@ -1327,9 +1327,8 @@ theorem diff_union_diff_cancel_of_inter_subset_of_subset_union (hi : s ∩ u ⊆
     hu, union_assoc, ← union_assoc (a := s \ t)]
 
 @[simp]
-theorem diff_ssubset_left_iff : s \ t ⊂ s ↔ (s ∩ t).Nonempty := by
-  rw [diff_eq, inter_ssubset_left_iff, subset_compl_iff_disjoint_left,
-    not_disjoint_iff_nonempty_inter, inter_comm]
+theorem diff_ssubset_left_iff : s \ t ⊂ s ↔ (s ∩ t).Nonempty :=
+  sdiff_lt_left.trans <| by rw [not_disjoint_iff_nonempty_inter, inter_comm]
 
 lemma _root_.HasSubset.Subset.diff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s.Nonempty) :
     t \ s ⊂ t := by
