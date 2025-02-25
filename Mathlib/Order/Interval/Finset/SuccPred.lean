@@ -8,6 +8,12 @@ import Mathlib.Algebra.Order.Interval.Set.Monoid
 import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Order.Interval.Finset.Basic
 
+/-!
+# Finset intervals in a successor-predecessor order
+
+This files proves relations between the various finset intervals in a successor/predecessor order.
+-/
+
 open Order
 
 namespace Finset
