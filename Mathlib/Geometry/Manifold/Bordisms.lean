@@ -64,11 +64,11 @@ We assume that `M` is a manifold over the pair `(E, H)` with model `I`.
 
 In practice, one commonly wants to take `k=∞` (as then e.g. the intersection form is a powerful tool
 to compute bordism groups; for the definition, this makes no difference.) -/
-structure SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ) (k : ℕ∞)
+structure SingularNManifold.{u} (X : Type*) [TopologicalSpace X] (n : ℕ) (k : ℕ∞)
   {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [TopologicalSpace H] (I : ModelWithCorners ℝ E H) where
   /-- The manifold `M` of a singular `n`-manifold `(M, f)` -/
-  M : Type*
+  M : Type u
   /-- The manifold `M` is a topological space. -/
   [topSpaceM : TopologicalSpace M]
   /-- The manifold `M` is a charted space over `H`. -/
