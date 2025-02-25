@@ -50,7 +50,7 @@ variable (m : ℕ)
 -/
 abbrev IsAdmissible (L : List ℕ) : Prop :=
   List.Sorted (· < ·) L ∧
-  ∀ k: ℕ, (h : k < L.length) → L[k] ≤ m + k
+  ∀ (k : ℕ), (h : k < L.length) → L[k] ≤ m + k
 
 namespace IsAdmissible
 
@@ -58,12 +58,13 @@ lemma nil : IsAdmissible m [] := by simp [IsAdmissible]
 
 variable {m}
 
+lemma sorted {L : List ℕ} (hL : IsAdmissible m L) : L.Sorted (· < ·) := hL.1
+
+lemma le {L : List ℕ} (hL : IsAdmissible m L) : ∀ (k : ℕ), (h : k < L.length) → L[k] ≤ m + k := hL.2
+
 /-- If `(a :: l)` is `m`-admissible then a is less than all elements of `l` -/
 lemma head_lt (a : ℕ) (L : List ℕ) (hl : IsAdmissible m (a :: L)) :
-    ∀ a' ∈ L, a < a' := by
-  obtain ⟨h₁, -⟩ := hl
-  intro i hi
-  exact (List.sorted_cons.mp h₁).left i hi
+    ∀ a' ∈ L, a < a' := fun i hi ↦ (List.sorted_cons.mp hl.sorted).left i hi
 
 /-- If `L` is (m+1)-admissible index, and `a` is natural number such that a ≤ m and a < L[0], then
   `a::L` is `m`-admissible -/
@@ -75,29 +76,25 @@ lemma cons (L : List ℕ) (hL : IsAdmissible (m + 1) L) (a : ℕ) (ha : a ≤ m)
     simp only [List.length_cons, lt_add_iff_pos_left, add_pos_iff,
       Nat.lt_one_iff, pos_of_gt, or_true, List.getElem_cons_zero,
       forall_const] at ha'
-    have ⟨P₁, P₂⟩ := hL
-    simp only [IsAdmissible, List.sorted_cons, List.mem_cons, forall_eq_or_imp] at P₁ ⊢
+    simp only [IsAdmissible, List.sorted_cons, List.mem_cons, forall_eq_or_imp]
     constructor <;> repeat constructor
     · exact ha'
-    · have h_tail := P₁.left
-      rw [← List.forall_getElem] at h_tail ⊢
+    · rw [← List.forall_getElem]
       intro i hi
-      exact ha'.trans <| h_tail i hi
-    · exact P₁
+      exact ha'.trans <| (List.sorted_cons.mp hL.sorted).left tail[i] <| List.getElem_mem hi
+    · exact List.sorted_cons.mp hL.sorted
     · rintro ⟨_ | _⟩ hi
       · simp [ha]
-      · haveI := P₂ _ <| Nat.lt_of_succ_lt_succ hi
+      · haveI := hL.le _ <| Nat.lt_of_succ_lt_succ hi
         rw [List.getElem_cons_succ]
         omega
 
 /-- The tail of an `m`-admissible list is (m+1)-admissible. -/
 lemma tail (a : ℕ) (l : List ℕ) (h : IsAdmissible m (a::l)) :
       IsAdmissible (m + 1) l := by
-  obtain ⟨h₁, h₂⟩ := h
-  refine ⟨(List.sorted_cons.mp h₁).right, ?_⟩
-  intro k hk
-  haveI := h₂ (k + 1) (by simpa)
-  simpa [Nat.add_assoc, Nat.add_comm 1] using this
+  refine ⟨(List.sorted_cons.mp h.sorted).right, ?_⟩
+  intro k _
+  simpa [Nat.add_assoc, Nat.add_comm 1] using h.le (k + 1) (by simpa)
 
 /-- Since they are strictly sorted, two admissible lists with same elements are equal -/
 lemma ext (L₁ : List ℕ) (L₂ : List ℕ)
@@ -119,7 +116,6 @@ lemma ext (L₁ : List ℕ) (L₂ : List ℕ)
       rw [List.cons_eq_cons]
       simp only [List.mem_cons] at h
       simp only [List.sorted_cons] at hL₁ hL₂
-      obtain ⟨⟨haL₁, hL₁⟩, ⟨hbL₂, hL₂⟩⟩ := hL₁, hL₂
       obtain rfl : a = b := by
         haveI := h b
         simp only [true_or, iff_true] at this
@@ -129,21 +125,21 @@ lemma ext (L₁ : List ℕ) (L₂ : List ℕ)
           simp only [true_or, true_iff] at ha
           obtain rfl | aL₂ := ha
           · rfl
-          · exact False.elim <| lt_irrefl _ <| lt_trans (haL₁ _ bL₁) (hbL₂ _ aL₂)
+          · exact False.elim <| lt_irrefl _ <| lt_trans (hL₁.1 _ bL₁) (hL₂.1 _ aL₂)
       refine ⟨rfl, ?_⟩
-      apply h_rec L₂ _ hL₁ hL₂
+      apply h_rec L₂ _ hL₁.2 hL₂.2
       intro x
       obtain rfl | hax := eq_or_ne x a
       · constructor <;> intro h₁
-        · exact False.elim <| lt_irrefl x <| haL₁ x h₁
-        · exact False.elim <| lt_irrefl x <| hbL₂ x h₁
+        · exact False.elim <| lt_irrefl x <| hL₁.1 x h₁
+        · exact False.elim <| lt_irrefl x <| hL₂.1 x h₁
       · simpa [hax] using h x
 
 /-- An element of a `m`-admissible list, as an element of the appropriate `Fin` -/
 @[simps]
 def getElemAsFin {L : List ℕ} (hl : IsAdmissible m L) (k : ℕ)
     (hK : k < L.length) : Fin (m + k + 1) :=
-  Fin.mk L[k] <| Nat.le_iff_lt_add_one.mp (by simp [hl.right])
+  Fin.mk L[k] <| Nat.le_iff_lt_add_one.mp (by simp [hl.le])
 
 /-- The head of an `m`-admissible list is a special case of this.  -/
 @[simps!]
@@ -177,7 +173,6 @@ lemma simplicialInsert_length (a : ℕ) (L : List ℕ) :
 theorem simplicialInsert_isAdmissible (L : List ℕ) (hL : IsAdmissible (m + 1) L) (j : ℕ)
     (hj : j < m + 1) :
     IsAdmissible m <| simplicialInsert j L := by
-  have ⟨h₁, h₂⟩ := hL
   induction L generalizing j m with
   | nil => constructor <;> simp [simplicialInsert, j.le_of_lt_add_one hj]
   | cons a L h_rec =>
@@ -185,11 +180,7 @@ theorem simplicialInsert_isAdmissible (L : List ℕ) (hL : IsAdmissible (m + 1) 
     split_ifs with ha
     · exact .cons _ hL _ (j.le_of_lt_add_one hj) (fun _ ↦ ha)
     · refine IsAdmissible.cons _ ?_ _ (not_lt.mp ha |>.trans <| j.le_of_lt_add_one hj) ?_
-      · refine h_rec _ (.tail a L hL) _ (by simp [hj]) (List.sorted_cons.mp h₁).right ?_
-        intro k hk
-        haveI := h₂ (k + 1) (by simpa)
-        conv_rhs at this => rw [k.add_comm 1, ← Nat.add_assoc]
-        exact this
+      · refine h_rec _ (.tail a L hL) _ (by simp [hj])
       · rw [not_lt, Nat.le_iff_lt_add_one] at ha
         intro u
         cases L with
@@ -198,8 +189,7 @@ theorem simplicialInsert_isAdmissible (L : List ℕ) (hL : IsAdmissible (m + 1) 
           dsimp only [simplicialInsert]
           split_ifs
           · exact ha
-          · simp only [List.sorted_cons, List.mem_cons, forall_eq_or_imp] at h₁
-            simpa using h₁.left.left
+          · exact (List.sorted_cons_cons.mp hL.sorted).1
 
 end AdmissibleLists
 
