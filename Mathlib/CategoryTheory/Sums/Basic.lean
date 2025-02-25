@@ -148,8 +148,10 @@ end Swap
 
 end Sum
 
-variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B] {C : Type u₁}
-  [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] {A' : Type u₁} [Category.{v₁} A']
+variable {A : Type u₁} [Category.{v₁} A] {A' : Type u₁} [Category.{v₁} A']
+  {B : Type u₂} [Category.{v₂} B]
+  {C : Type u₁} [Category.{v₁} C]
+  {D : Type u₂} [Category.{v₂} D]
 
 namespace Functor
 
