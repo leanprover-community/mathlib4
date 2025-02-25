@@ -181,3 +181,15 @@ def AddAction.toPermHom : G →+ Additive (Equiv.Perm α) :=
   MonoidHom.toAdditive'' <| MulAction.toPermHom ..
 
 end AddGroup
+
+section MulDistribMulAction
+variable (M) [Group G] [Monoid M] [MulDistribMulAction G M]
+
+/-- Each element of the group defines a multiplicative monoid isomorphism.
+
+This is a stronger version of `MulAction.toPerm`. -/
+@[simps (config := { simpRhs := true })]
+def MulDistribMulAction.toMulEquiv (x : G) : M ≃* M :=
+  { MulDistribMulAction.toMonoidHom M x, MulAction.toPermHom G M x with }
+
+end MulDistribMulAction
