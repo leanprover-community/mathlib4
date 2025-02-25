@@ -37,10 +37,10 @@ universe v u v' u'
 section
 
 set_option quotPrecheck false
-local macro:max (priority := high) "[" n:term "]₂" : term =>
+local macro:max (priority := high) "⦋" n:term "⦌₂" : term =>
   `((⟨SimplexCategory.mk $n, by decide⟩ : SimplexCategory.Truncated 2))
 
-local macro:1000 (priority := high) X:term " _[" n:term "]₂" : term =>
+local macro:1000 (priority := high) X:term " _⦋" n:term "⦌₂" : term =>
     `(($X : SSet.Truncated 2).obj (Opposite.op ⟨SimplexCategory.mk $n, by decide⟩))
 
 /-- The components of the counit of `nerve₂Adj`. -/
@@ -97,19 +97,19 @@ def toNerve₂.mk.app (n : SimplexCategory.Truncated 2) :
   | 1 => exact fun f => .mk₁ (F.map ⟨f, rfl, rfl⟩)
   | 2 => exact fun φ => .mk₂ (F.map (ev01₂ φ)) (F.map (ev12₂ φ))
 
-@[simp] theorem toNerve₂.mk.app_zero (x : X _[0]₂) : mk.app F [0]₂ x = .mk₀ (F.obj x) := rfl
+@[simp] theorem toNerve₂.mk.app_zero (x : X _⦋0⦌₂) : mk.app F ⦋0⦌₂ x = .mk₀ (F.obj x) := rfl
 
-@[simp] theorem toNerve₂.mk.app_one (f : X _[1]₂) :
-    mk.app F [1]₂ f = .mk₁ (F.map ⟨f, rfl, rfl⟩) := rfl
+@[simp] theorem toNerve₂.mk.app_one (f : X _⦋1⦌₂) :
+    mk.app F ⦋1⦌₂ f = .mk₁ (F.map ⟨f, rfl, rfl⟩) := rfl
 
-@[simp] theorem toNerve₂.mk.app_two (φ : X _[2]₂) :
-    mk.app F [2]₂ φ = .mk₂ (F.map (ev01₂ φ)) (F.map (ev12₂ φ)) := rfl
+@[simp] theorem toNerve₂.mk.app_two (φ : X _⦋2⦌₂) :
+    mk.app F ⦋2⦌₂ φ = .mk₂ (F.map (ev01₂ φ)) (F.map (ev12₂ φ)) := rfl
 
 /-- This is similar to one of the famous Segal maps, except valued in a product rather than a
 pullback.-/
 noncomputable def nerve₂.seagull (C : Type u) [Category C] :
-    (nerveFunctor₂.obj (Cat.of C)).obj (op [2]₂) ⟶
-    (nerveFunctor₂.obj (Cat.of C)).obj (op [1]₂) ⨯ (nerveFunctor₂.obj (Cat.of C)).obj (op [1]₂) :=
+    (nerveFunctor₂.obj (Cat.of C)).obj (op ⦋2⦌₂) ⟶
+    (nerveFunctor₂.obj (Cat.of C)).obj (op ⦋1⦌₂) ⨯ (nerveFunctor₂.obj (Cat.of C)).obj (op ⦋1⦌₂) :=
   prod.lift
     ((nerveFunctor₂.obj (Cat.of C)).map (.op δ2₂)) ((nerveFunctor₂.obj (Cat.of C)).map (.op δ0₂))
 
@@ -264,7 +264,7 @@ valued in a nerve  from the underlying ReflPrefunctor, where the central hypothe
 by the isomorphism `nerve₂Adj.NatIso.app C`. -/
 @[simps!] def toNerve₂.mk'
     (f : SSet.oneTruncation₂.obj X ⟶ SSet.oneTruncation₂.obj (nerveFunctor₂.obj (Cat.of C)))
-    (hyp : (φ : X _[2]₂) →
+    (hyp : (φ : X _⦋2⦌₂) →
       (f ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev02₂ φ) =
       CategoryStruct.comp (obj := (Cat.of C))
         ((f ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev01₂ φ))
@@ -275,7 +275,7 @@ by the isomorphism `nerve₂Adj.NatIso.app C`. -/
 /-- A computation about `toNerve₂.mk'`. -/
 theorem oneTruncation₂_toNerve₂Mk'
     (f : SSet.oneTruncation₂.obj X ⟶ SSet.oneTruncation₂.obj (nerveFunctor₂.obj (Cat.of C)))
-    (hyp : (φ : X _[2]₂) →
+    (hyp : (φ : X _⦋2⦌₂) →
       (f ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev02₂ φ)
       = CategoryStruct.comp (obj := C)
         ((f ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev01₂ φ))
@@ -304,8 +304,8 @@ underlying refl prefunctors. -/
 theorem toNerve₂.ext
     (f g : X ⟶ nerveFunctor₂.obj (Cat.of C))
     (hyp : SSet.oneTruncation₂.map f = SSet.oneTruncation₂.map g) : f = g := by
-  have eq₀ x : f.app (op [0]₂) x = g.app (op [0]₂) x := congr(($hyp).obj x)
-  have eq₁ x : f.app (op [1]₂) x = g.app (op [1]₂) x := congr((($hyp).map ⟨x, rfl, rfl⟩).1)
+  have eq₀ x : f.app (op ⦋0⦌₂) x = g.app (op ⦋0⦌₂) x := congr(($hyp).obj x)
+  have eq₁ x : f.app (op ⦋1⦌₂) x = g.app (op ⦋1⦌₂) x := congr((($hyp).map ⟨x, rfl, rfl⟩).1)
   ext ⟨⟨n, hn⟩⟩ x
   induction' n using SimplexCategory.rec with n
   match n with
@@ -313,11 +313,11 @@ theorem toNerve₂.ext
   | 1 => apply eq₁
   | 2 =>
     apply Functor.hext (fun i : Fin 3 => ?_) (fun (i j : Fin 3) k => ?_)
-    · let pt : [0]₂ ⟶ [2]₂ := SimplexCategory.const _ _ i
+    · let pt : ⦋0⦌₂ ⟶ ⦋2⦌₂ := SimplexCategory.const _ _ i
       refine congr(($(congr_fun (f.naturality pt.op) x)).obj 0).symm.trans ?_
       refine .trans ?_ congr(($(congr_fun (g.naturality pt.op) x)).obj 0)
       exact congr($(eq₀ _).obj 0)
-    · let ar : [1]₂ ⟶ [2]₂ := mkOfLe _ _ k.le
+    · let ar : ⦋1⦌₂ ⟶ ⦋2⦌₂ := mkOfLe _ _ k.le
       have h1 := congr_arg_heq (fun x => x.map' 0 1) (congr_fun (f.naturality (op ar)) x)
       have h2 := congr_arg_heq (fun x => x.map' 0 1) (congr_fun (g.naturality (op ar)) x)
       exact h1.symm.trans <| .trans (congr_arg_heq (fun x => x.map' 0 1) (eq₁ _)) h2
