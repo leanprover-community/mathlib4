@@ -356,7 +356,7 @@ theorem finRotate_symm_lt_of_ne_zero (i : Fin (n + 1)) :
   refine ⟨fun hi hc ↦ ?_, fun hi ↦ ?_⟩
   · simp only [hc, Fin.last_add_one, Fin.not_lt_zero] at hi
   · rw [Fin.lt_iff_val_lt_val, coe_finRotate_symm_of_ne_zero hi]
-    apply Nat.sub_lt (Nat.zero_lt_of_ne_zero <| val_ne_zero_iff.mp hi)
+    apply Nat.sub_lt (Nat.zero_lt_of_ne_zero <| Fin.val_ne_zero_iff.mp hi)
       (Nat.zero_lt_one)
 
 /-- Equivalence between `Fin m × Fin n` and `Fin (m * n)` -/
