@@ -111,8 +111,7 @@ variable [Fintype G]
 lemma equivHom_inj [Nontrivial k] [DecidableEq G] : Function.Injective (equivHom k G) := by
   rw [injective_iff_map_eq_one]
   intro s h
-  apply_fun toRightFDRepComp at h
-  apply_fun (· (single 1 1) 1) at h
+  apply_fun (fun x ↦ (toRightFDRepComp x) (single 1 1) 1) at h
   change (single 1 1 : G → k) (1 * s) = (single 1 1 : G → k) 1 at h
   simp_all [single_apply]
 
