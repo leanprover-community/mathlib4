@@ -120,7 +120,7 @@ lemma equivHom_inj [Nontrivial k] [DecidableEq G] : Function.Injective (equivHom
 lemma eval_of_alghom [IsDomain k] {G : Type u} [DecidableEq G] [Fintype G] (φ : (G → k) →ₐ[k] k) :
     ∃ (s : G), φ = evalAlgHom _ _ s := by
   have h1 := map_one φ
-  rw [← univ_sum_single (1 : G → k), map_sum] at h1
+  simp only [← univ_sum_single (1 : G → k), one_apply, map_sum] at h1
   obtain ⟨s, hs⟩ : ∃ (s : G), φ (single s 1) ≠ 0 := by
     by_contra
     simp_all
@@ -132,12 +132,9 @@ lemma eval_of_alghom [IsDomain k] {G : Type u} [DecidableEq G] [Fintype G] (φ :
     ext u
     by_cases u = s <;> simp_all
   have h3 : φ (single s 1) = 1 := by
-    rwa [Fintype.sum_eq_single s] at h1
-    exact h2
+    rwa [Fintype.sum_eq_single s h2] at h1
   use s
-  apply AlgHom.toLinearMap_injective
-  apply Basis.ext (basisFun k G)
-  intro t
+  refine AlgHom.toLinearMap_injective (Basis.ext (basisFun k G) (fun t ↦ ?_))
   by_cases t = s <;> simp_all
 
 /-- The `FDRep k G` morphism induced by multiplication on `G → k`. -/
@@ -146,8 +143,7 @@ def mulRepHom : rightFDRep k G ⊗ rightFDRep k G ⟶ rightFDRep k G where
   comm := by
     intro
     ext (u : TensorProduct k (G → k) (G → k))
-    refine TensorProduct.induction_on u rfl (fun _ _ ↦ rfl) ?_
-    intro _ _ hx hy
+    refine TensorProduct.induction_on u rfl (fun _ _ ↦ rfl) (fun _ _ hx hy ↦ ?_)
     simp only [map_add, hx, hy]
 
 /-- For `η : Aut (forget k G)`, `toRightFDRepComp η` preserves multiplication -/
