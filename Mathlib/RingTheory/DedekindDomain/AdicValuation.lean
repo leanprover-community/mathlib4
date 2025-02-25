@@ -364,31 +364,12 @@ variable (K)
 /-- The completion of `K` with respect to its `v`-adic valuation. -/
 abbrev adicCompletion := (v.valuation K).Completion
 
--- now inferred automatically
--- instance : Field (v.adicCompletion K) := inferInstanceAs <|
---   Field (@UniformSpace.Completion K v.adicValued.toUniformSpace)
-
-instance : Inhabited (v.adicCompletion K) :=
-  ⟨0⟩
-
--- now inferred automatically
--- instance valuedAdicCompletion : Valued (v.adicCompletion K) ℤₘ₀ := inferInstanceAs <|
---   Valued (@UniformSpace.Completion K v.adicValued.toUniformSpace) ℤₘ₀
-
 theorem valuedAdicCompletion_def {x : v.adicCompletion K} : Valued.v x = Valued.extension x :=
   rfl
-
--- now inferred automatically
--- instance adicCompletion_completeSpace : CompleteSpace (v.adicCompletion K) :=
---  inferInstanceCompleteSpace (@UniformSpace.Completion K v.adicValued.toUniformSpace)
 
 -- Porting note: replaced by `Coe`
 -- instance AdicCompletion.hasLiftT : HasLiftT K (v.adicCompletion K) :=
 --   (inferInstance : HasLiftT K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
-
--- now inferred automatically
--- instance adicCompletion.instCoe : Coe K (v.adicCompletion K) :=
---   inferInstanceAs <| Coe K (@UniformSpace.Completion K v.adicValued.toUniformSpace)
 
 /-- The ring of integers of `adicCompletion`. -/
 def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
@@ -451,10 +432,6 @@ theorem coe_smul_adicCompletion (r : S) (x : WithVal (v.valuation K)) :
 
 theorem algebraMap_adicCompletion : ⇑(algebraMap S <| v.adicCompletion K) = (↑) ∘ algebraMap S K :=
   rfl
-
--- now inferred automatically
--- instance : IsScalarTower S K (v.adicCompletion K) := inferInstanceAs <|
---   IsScalarTower _ K (@UniformSpace.Completion K v.adicValued.toUniformSpace)
 
 end Algebra
 

@@ -9,12 +9,20 @@ import Mathlib.Topology.Algebra.Valued.ValuationTopology
 /-!
 # Ring topologised by a valuation
 
-`WithVal v` is a type synonym for a ring `R` equipped with the topology coming from
-a valuation.
+For a given valuation `v : Valuation R Γ₀` on a ring `R` taking values in `Γ₀`, this file
+defines the type synonym `WithVal v` of `R`. By assigning a `Valued (WithVal v) Γ₀` instance,
+`WithVal v` represents the ring `R` equipped with the topology coming from `v`. The type
+synonym `WithVal v` is in isomorphism to `R` as rings via `WithVal.equiv v`. This
+isomorphism should be used to explicitly map terms of `WithVal v` with terms of `R`.
+
+The `WithVal` type synonym is used to define the completion of `R` with respect to `v` in
+`Valuation.Completion`. An example application of this is
+`IsDedekindDomain.HeightOneSpectrum.adicCompletion`, which is the completion of the field of
+fractions of a Dedekind domain with respect to a height-one prime ideal of the domain.
 
 ## Main definitions
  - `WithVal` : type synonym for a ring equipped with the topology coming from a valuation.
- - `WithVal.equiv` : The canonical ring equivalence between `WithValuation v` and `R`.
+ - `WithVal.equiv` : the canonical ring equivalence between `WithValuation v` and `R`.
  - `Valuation.Completion` : the uniform space completion of a field `K` according to the
   uniform structure defined by the specified valuation.
 -/
@@ -31,15 +39,13 @@ namespace WithVal
 
 variable (v : Valuation R Γ₀)
 
-instance [Nontrivial R] : Nontrivial (WithVal v) := ‹Nontrivial R›
-
-instance [Unique R] : Unique (WithVal v) := ‹Unique R›
-
 instance : Ring (WithVal v) := ‹Ring R›
+
+instance [Field R] : Field (WithVal v) := ‹Field R›
 
 instance [CommRing R] : CommRing (WithVal v) := ‹CommRing R›
 
-instance [Field R] : Field (WithVal v) := ‹Field R›
+--instance [Field R] : Field (WithVal v) := ‹Field R›
 
 instance : Inhabited (WithVal v) := ⟨0⟩
 
@@ -70,12 +76,12 @@ namespace Valuation
 
 open WithVal
 
-variable {K : Type*} [Field K] (v : Valuation K Γ₀)
+variable {R : Type*} [Ring R] (v : Valuation R Γ₀)
 
 /-- The completion of a field with respect to a valuation. -/
 abbrev Completion := UniformSpace.Completion (WithVal v)
 
-instance : Coe K v.Completion :=
+instance : Coe R v.Completion :=
   inferInstanceAs <| Coe (WithVal v) (UniformSpace.Completion (WithVal v))
 
 end Valuation
