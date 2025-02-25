@@ -132,7 +132,7 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
       ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 := by
     apply sum_eq_zero
     intro i hi
-    simp only [mem_filter] at hi
+    rw [mem_filter] at hi
     cases le_or_lt (N + 1) i.1 with
       | inl h => rw [pow_eq_zero_of_le h h₄, zero_mul, smul_zero]
       | inr _ => rw [pow_eq_zero_of_le (by linarith) h₅, mul_zero, smul_zero]
@@ -143,10 +143,8 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
         ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ ij.1 + ij.2 ≤ 2 * N,
           ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
       rw [sum_filter_add_sum_filter_not]
-  rw [z₁] at split₁
-  simp only [product_eq_sprod, add_zero] at split₁
-  simp only [product_eq_sprod] at s₁
-  rw [← split₁] at s₁
+  rw [z₁, product_eq_sprod, add_zero] at split₁
+  rw [product_eq_sprod, ← split₁] at s₁
   have z₂ : ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ (ij.1 ≤ N ∧ ij.2 ≤ N),
       ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 := by
     apply sum_eq_zero
@@ -162,8 +160,7 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
           ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ (ij.1 ≤ N ∧ ij.2 ≤ N),
             ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
       rw [sum_filter_add_sum_filter_not]
-  rw [z₂] at split₂
-  simp only [product_eq_sprod, add_zero] at split₂
+  rw [z₂, product_eq_sprod, add_zero] at split₂
   rw [split₂] at s₁
   have split₃: ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) with ij.1 ≤ N ∧ ij.2 ≤ N,
       ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
