@@ -240,7 +240,7 @@ theorem sum_app_inr {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I
     (sum α β).app (inr c) = β.app c :=
   rfl
 
-/-- The sum of two natural transformations. -/
+/-- The sum of two natural transformations, where all functors have the same target category. -/
 def sum' {F G : A ⥤ B} {H I : A' ⥤ B} (α : F ⟶ G) (β : H ⟶ I) : F.sum' H ⟶ G.sum' I where
   app X :=
     match X with
