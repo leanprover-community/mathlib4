@@ -3,21 +3,24 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Embedding
-import Mathlib.Algebra.Order.Interval.Set.Monoid
-import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Order.Interval.Finset.Basic
+import Mathlib.Order.SuccPred.Basic
 
 /-!
 # Finset intervals in a successor-predecessor order
 
-This files proves relations between the various finset intervals in a successor/predecessor order.
+This file proves relations between the various finset intervals in a successor/predecessor order.
 -/
+
+assert_not_exists MonoidWithZero
 
 open Order
 
 namespace Finset
-variable {α : Type*} [LinearOrder α] [LocallyFiniteOrder α]
+variable {α : Type*} [LinearOrder α]
+
+section LocallyFiniteOrder
+variable [LocallyFiniteOrder α]
 
 section SuccOrder
 variable [SuccOrder α] {a b : α}
@@ -105,4 +108,62 @@ lemma Icc_succ_pred_eq_Ioo (a b : α) : Icc (succ a) (pred b) = Ioo a b := by
   · rw [Icc_pred_right_eq_Ico_of_not_isMin hb, Ico_succ_left_eq_Ioo]
 
 end SuccPredOrder
+end LocallyFiniteOrder
+
+section LocallyFiniteOrderBot
+variable [LocallyFiniteOrderBot α]
+
+section SuccOrder
+variable [SuccOrder α] {b : α}
+
+lemma Iio_succ_eq_Iic_of_not_isMax (hb : ¬ IsMax b) : Iio (succ b) = Iic b := by
+  ext x; rw [mem_Iio, mem_Iic, lt_succ_iff_of_not_isMax hb]
+
+variable [NoMaxOrder α]
+
+lemma Iio_succ_eq_Iic (b : α) : Iio (succ b) = Iic b := Iio_succ_eq_Iic_of_not_isMax (not_isMax _)
+
+end SuccOrder
+
+section PredOrder
+variable [PredOrder α] {a b : α}
+
+lemma Iic_pred_eq_Iio_of_not_isMin (hb : ¬ IsMin b) : Iic (pred b) = Iio b := by
+  ext x; rw [mem_Iic, mem_Iio, le_pred_iff_of_not_isMin hb]
+
+variable [NoMinOrder α]
+
+lemma Iic_pred_eq_Iio (b : α) : Iic (pred b) = Iio b := Iic_pred_eq_Iio_of_not_isMin (not_isMin _)
+
+end PredOrder
+end LocallyFiniteOrderBot
+
+section LocallyFiniteOrderTop
+variable [LocallyFiniteOrderTop α]
+
+section SuccOrder
+variable [SuccOrder α] {a : α}
+
+lemma Ici_succ_eq_Ioi_of_not_isMax (ha : ¬ IsMax a) : Ici (succ a) = Ioi a := by
+  ext x; rw [mem_Ici, mem_Ioi, succ_le_iff_of_not_isMax ha]
+
+variable [NoMaxOrder α]
+
+lemma Ici_succ_eq_Ioi (a : α) : Ici (succ a) = Ioi a := Ici_succ_eq_Ioi_of_not_isMax (not_isMax _)
+
+end SuccOrder
+
+section PredOrder
+variable [PredOrder α] {a a : α}
+
+lemma Ioi_pred_eq_Ici_of_not_isMin (ha : ¬ IsMin a) : Ioi (pred a) = Ici a := by
+  ext x; rw [mem_Ioi, mem_Ici, pred_lt_iff_of_not_isMin ha]
+
+variable [NoMinOrder α]
+
+lemma Ioi_pred_eq_Ici (a : α) : Ioi (pred a) = Ici a :=
+  Ioi_pred_eq_Ici_of_not_isMin (not_isMin _)
+
+end PredOrder
+end LocallyFiniteOrderTop
 end Finset

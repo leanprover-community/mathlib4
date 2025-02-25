@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2021 Yaël Dillies. All rights reserved.
+Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
@@ -10,9 +10,10 @@ import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Order.Interval.Finset.SuccPred
 
 /-!
-# Finset intervals in a successor-predecessor order
+# Finset intervals in an additive successor-predecessor order
 
-This files proves relations between the various finset intervals in a successor/predecessor order.
+This file proves relations between the various finset intervals in an additive successor/predecessor
+order.
 -/
 
 open Function Order OrderDual
@@ -20,7 +21,10 @@ open Function Order OrderDual
 variable {ι α : Type*}
 
 namespace Finset
-variable [LinearOrder α] [LocallyFiniteOrder α] [One α]
+variable [LinearOrder α] [One α]
+
+section LocallyFiniteOrder
+variable [LocallyFiniteOrder α]
 
 section SuccAddOrder
 variable [Add α] [SuccAddOrder α] {a b : α}
@@ -99,4 +103,65 @@ lemma Icc_add_one_sub_one_eq_Ioo (a b : α) : Icc (a + 1) (b - 1) = Ioo a b := b
   simpa [succ_eq_add_one, pred_eq_sub_one] using Icc_succ_pred_eq_Ioo a b
 
 end SuccAddPredSubOrder
+end LocallyFiniteOrder
+
+section LocallyFiniteOrderBot
+variable [LocallyFiniteOrderBot α]
+
+section SuccAddOrder
+variable [Add α] [SuccAddOrder α] {b : α}
+
+lemma Iio_add_one_eq_Iic_of_not_isMax (hb : ¬ IsMax b) : Iio (b + 1) = Iic b := by
+  simpa [succ_eq_add_one] using Iio_succ_eq_Iic_of_not_isMax hb
+
+variable [NoMaxOrder α]
+
+lemma Iio_add_one_eq_Iic (b : α) : Iio (b + 1) = Iic b := by
+  simpa [succ_eq_add_one] using Iio_succ_eq_Iic b
+
+end SuccAddOrder
+
+section PredSubOrder
+variable [Sub α] [PredSubOrder α] {a b : α}
+
+lemma Iic_sub_one_eq_Iio_of_not_isMin (hb : ¬ IsMin b) : Iic (b - 1) = Iio b := by
+  simpa [pred_eq_sub_one] using Iic_pred_eq_Iio_of_not_isMin hb
+
+variable [NoMinOrder α]
+
+lemma Iic_sub_one_eq_Iio (b : α) : Iic (b - 1) = Iio b := by
+  simpa [pred_eq_sub_one] using Iic_pred_eq_Iio b
+
+end PredSubOrder
+end LocallyFiniteOrderBot
+
+section LocallyFiniteOrderTop
+variable [LocallyFiniteOrderTop α]
+
+section SuccAddOrder
+variable [Add α] [SuccAddOrder α] {a : α}
+
+lemma Ici_add_one_eq_Ioi_of_not_isMax (ha : ¬ IsMax a) : Ici (a + 1) = Ioi a := by
+  simpa [succ_eq_add_one] using Ici_succ_eq_Ioi_of_not_isMax ha
+
+variable [NoMaxOrder α]
+
+lemma Ici_add_one_eq_Ioi (a : α) : Ici (a + 1) = Ioi a := by
+  simpa [succ_eq_add_one] using Ici_succ_eq_Ioi a
+
+end SuccAddOrder
+
+section PredSubOrder
+variable [Sub α] [PredSubOrder α] {a a : α}
+
+lemma Ioi_sub_one_eq_Ici_of_not_isMin (ha : ¬ IsMin a) : Ioi (a - 1) = Ici a := by
+  simpa [pred_eq_sub_one] using Ioi_pred_eq_Ici_of_not_isMin ha
+
+variable [NoMinOrder α]
+
+lemma Ioi_sub_one_eq_Ici (a : α) : Ioi (a - 1) = Ici a := by
+  simpa [pred_eq_sub_one] using Ioi_pred_eq_Ici a
+
+end PredSubOrder
+end LocallyFiniteOrderTop
 end Finset
