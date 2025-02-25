@@ -651,10 +651,8 @@ def isoFunctorOfIsoInverse {G G' : C ≌ D} (i : G.inverse ≅ G'.inverse) : G.f
 @[simp]
 lemma isoFunctorOfIsoInverse_isoInverseOfIsoFunctor {G G' : C ≌ D} (i : G.functor ≅ G'.functor) :
     isoFunctorOfIsoInverse (isoInverseOfIsoFunctor i) = i := by
-  ext x
-  simp [isoFunctorOfIsoInverse, G.counitInv_app_functor,
-    i.hom.naturality_assoc (f := (G.unit.app x)) (h := G'.functor.map (G.unitIso.inv.app x)),
-    ← G'.functor.map_comp]
+  ext X
+  simp [← NatTrans.naturality]
 
 @[simp]
 lemma isoInverseOfIsoFunctor_isoFunctorOfIsoInverse {G G' : C ≌ D} (i : G.inverse ≅ G'.inverse) :
