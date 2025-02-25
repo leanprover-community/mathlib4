@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Janos Wolosz. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Janos Wolosz
+-/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
@@ -9,20 +14,37 @@ import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Data.Sigma.Basic
 import LeanCopilot
 
+/-!
+# Exponential map on algebras
 
+This file defines the exponential map `Algebra.exp` on algebras. The definition of `Algebra.exp a`
+applies to any `R`-algebra `A` and any element `a`, though it yields meaningful (non-junk)
+values only when `a` is nilpotent.
 
+When `R` is a characteristic zero field, the theorem `Algebra.exp_add_of_commute` establishes
+the expected connection between the additive and multiplicative structures of `A` for commuting
+nilpotent elements.
 
+Furthermore, in case `A` is a ring (rather than a general semiring) and `a` is nilpotent,
+`Algebra.exp_of_nilpotent_is_unit` shows that `Algebra.exp a` is a unit in `A`.
+
+## Main definitions
+
+  * `Algebra.exp`
+
+## Tags
+
+algebra, exponential map, nilpotent
+-/
 
 namespace Algebra
 
 variable (R : Type*) [Field R]
 variable (A : Type*)
 
-
-section Semi
+section Semiring
 
 variable [Semiring A] [Algebra R A]
-
 
 theorem reorder (N : ℕ) {f : ℕ → ℕ → A} : ∑ j ∈ Finset.range (2 * N + 1), ∑ i ∈ Finset.range (j + 1), f i j = ∑ ij ∈ (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)) |>.filter (fun ij => ij.1 ≤ ij.2), f ij.1 ij.2 := by
   rw [Finset.sum_sigma']
@@ -345,8 +367,6 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
       constructor
       exact Nat.le_of_lt_succ hhh1
       exact Nat.le_of_lt_succ hhh2
-
-
     apply Finset.sum_congr
     simp at key
     simp
@@ -359,11 +379,9 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
   rw [e2.symm] at e₁
   apply e₁
 
+end Semiring
 
-
-end Semi
-
-section Full
+section Ring
 
 variable [CharZero R]
 variable [Ring A] [Algebra R A]
@@ -391,7 +409,6 @@ theorem exp_of_nilpotent_is_unit (a : A) (h : IsNilpotent a) : IsUnit (exp R A a
   rw [exp_zero_eq_one R A] at h₅
   apply h₅.symm
 
-
-end Full
+end Ring
 
 end Algebra
