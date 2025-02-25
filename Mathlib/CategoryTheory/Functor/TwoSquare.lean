@@ -71,6 +71,29 @@ def vId (T : C₁ ⥤ C₂) : TwoSquare T (𝟭 _) (𝟭 _) T :=
 /-- Notation for the vertical identity 2-square. -/
 scoped notation "𝟙ᵥ" => vId  -- type as \b1\_v
 
+/-- Whiskering a 2-square with a natural transformation at the top. -/
+@[simps!]
+protected def whiskerTop {T' : C₁ ⥤ C₂} (α : T ⟶ T') (w : TwoSquare T' L R B) : TwoSquare T L R B :=
+  whiskerRight α R ≫ w
+
+/-- Whiskering a 2-square with a natural transformation at the left side. -/
+@[simps!]
+protected def whiskerLeft {L' : C₁ ⥤ C₃} (α : L ⟶ L') (w : TwoSquare T L R B) :
+    TwoSquare T L' R B :=
+  w ≫ whiskerRight α B
+
+/-- Whiskering a 2-square with a natural transformation at the right side. -/
+@[simps!]
+protected def whiskerRight {R' : C₂ ⥤ C₄} (α : R ⟶ R') (w : TwoSquare T L R' B) :
+    TwoSquare T L R B :=
+  whiskerLeft T α ≫ w
+
+/-- Whiskering a 2-square with a natural transformation at the bottom. -/
+@[simps!]
+protected def whiskerBottom {B' : C₃ ⥤ C₄} (α : B ⟶ B') (w : TwoSquare T L R B) :
+    TwoSquare T L R B' :=
+  w ≫ whiskerLeft L α
+
 variable {C₅ : Type u₅} {C₆ : Type u₆} {C₇ : Type u₇} {C₈ : Type u₈}
   [Category.{v₅} C₅] [Category.{v₆} C₆] [Category.{v₇} C₇] [Category.{v₈} C₈]
   {T' : C₂ ⥤ C₅} {R' : C₅ ⥤ C₆} {B' : C₄ ⥤ C₆} {L' : C₃ ⥤ C₇} {R'' : C₄ ⥤ C₈} {B'' : C₇ ⥤ C₈}

@@ -474,14 +474,13 @@ def rightAdjointSquareConjugate.vcomp :
   fun α β ↦ α ≫ (whiskerLeft H β)
 
 /-- The mates equivalence commutes with this composition, essentially by `mateEquiv_vcomp`. -/
-theorem mateEquiv_conjugateEquiv_vcomp
-    (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (β : L₃ ⟶ L₂) :
-    (mateEquiv adj₁ adj₃) (leftAdjointSquareConjugate.vcomp α β) =
-      rightAdjointSquareConjugate.vcomp (mateEquiv adj₁ adj₂ α) (conjugateEquiv adj₂ adj₃ β) := by
+theorem mateEquiv_conjugateEquiv_vcomp (α : TwoSquare G L₁ L₂ H) (β : L₃ ⟶ L₂) :
+    (mateEquiv adj₁ adj₃) (α.whiskerRight β) =
+      (mateEquiv adj₁ adj₂ α).whiskerBottom (conjugateEquiv adj₂ adj₃ β) := by
   ext b
   have vcomp := mateEquiv_vcomp adj₁ adj₂ adj₃ α (L₃.leftUnitor.hom ≫ β ≫ L₂.rightUnitor.inv)
   unfold vComp hComp at vcomp
-  unfold leftAdjointSquareConjugate.vcomp rightAdjointSquareConjugate.vcomp conjugateEquiv
+  unfold TwoSquare.whiskerRight TwoSquare.whiskerBottom conjugateEquiv
   have vcompb := congr_app vcomp b
   simp at vcompb
   unfold mateEquiv
@@ -503,25 +502,14 @@ variable {G : A ⥤ C} {H : B ⥤ D}
 variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : A ⥤ B} {R₂ : B ⥤ A} {L₃ : C ⥤ D} {R₃ : D ⥤ C}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
-/-- Composition of a conjugate square with a squares between left adjoints. -/
-def leftAdjointConjugateSquare.vcomp :
-    (L₂ ⟶ L₁) → TwoSquare G L₂ L₃ H → TwoSquare G L₁ L₃ H :=
-  fun α β ↦ β ≫ (whiskerRight α H)
-
-/-- Composition of a conjugate square with a squares between right adjoints. -/
-def rightAdjointConjugateSquare.vcomp :
-    (R₁ ⟶ R₂) → TwoSquare R₂ H G R₃ → TwoSquare R₁ H G R₃ :=
-  fun α β ↦ (whiskerRight α G) ≫ β
-
 /-- The mates equivalence commutes with this composition, essentially by `mateEquiv_vcomp`. -/
-theorem conjugateEquiv_mateEquiv_vcomp
-    (α : L₂ ⟶ L₁) (β : G ⋙ L₃ ⟶ L₂ ⋙ H) :
-    (mateEquiv adj₁ adj₃) (leftAdjointConjugateSquare.vcomp α β) =
-      rightAdjointConjugateSquare.vcomp (conjugateEquiv adj₁ adj₂ α) (mateEquiv adj₂ adj₃ β) := by
+theorem conjugateEquiv_mateEquiv_vcomp (α : L₂ ⟶ L₁) (β : TwoSquare G L₂ L₃ H) :
+    (mateEquiv adj₁ adj₃) (β.whiskerLeft α) =
+      (mateEquiv adj₂ adj₃ β).whiskerTop (conjugateEquiv adj₁ adj₂ α) := by
   ext b
   have vcomp := mateEquiv_vcomp adj₁ adj₂ adj₃ (L₂.leftUnitor.hom ≫ α ≫ L₁.rightUnitor.inv) β
   unfold vComp hComp at vcomp
-  unfold leftAdjointConjugateSquare.vcomp rightAdjointConjugateSquare.vcomp conjugateEquiv
+  unfold TwoSquare.whiskerLeft TwoSquare.whiskerTop conjugateEquiv
   have vcompb := congr_app vcomp b
   simp at vcompb
   unfold mateEquiv
