@@ -56,7 +56,7 @@ section FiniteFPowerSeries
 `f` has `p` as a finite power series on the ball of radius `r > 0` around `x` if
 `f (x + y) = ∑' pₘ yᵐ` for all `‖y‖ < r` and `pₙ = 0` for `n ≤ m`. -/
 structure HasFiniteFPowerSeriesOnBall (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (x : E)
-    (n : ℕ) (r : ℝ≥0∞) extends HasFPowerSeriesOnBall f p x r : Prop where
+    (n : ℕ) (r : ℝ≥0∞) : Prop extends HasFPowerSeriesOnBall f p x r where
   finite : ∀ (m : ℕ), n ≤ m → p m = 0
 
 theorem HasFiniteFPowerSeriesOnBall.mk' {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {x : E}

@@ -307,9 +307,8 @@ class HasOfPrecompProperty (W W' : MorphismProperty C) : Prop where
 
 /-- A class of morphisms `W` has the two-out-of-three property if whenever two out
 of three maps in `f`, `g`, `f ≫ g` are in `W`, then the third map is also in `W`. -/
-class HasTwoOutOfThreeProperty (W : MorphismProperty C)
-    extends W.IsStableUnderComposition, W.HasOfPostcompProperty W,
-      W.HasOfPrecompProperty W : Prop where
+class HasTwoOutOfThreeProperty (W : MorphismProperty C) : Prop
+    extends W.IsStableUnderComposition, W.HasOfPostcompProperty W, W.HasOfPrecompProperty W where
 
 section
 

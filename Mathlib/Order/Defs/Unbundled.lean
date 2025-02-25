@@ -94,8 +94,8 @@ class IsTrichotomous (α : Sort*) (lt : α → α → Prop) : Prop where
 
 /-- `IsStrictTotalOrder X lt` means that the binary relation `lt` on `X` is a strict total order,
 that is, `IsTrichotomous X lt` and `IsStrictOrder X lt`. -/
-class IsStrictTotalOrder (α : Sort*) (lt : α → α → Prop) extends IsTrichotomous α lt,
-    IsStrictOrder α lt : Prop
+class IsStrictTotalOrder (α : Sort*) (lt : α → α → Prop) : Prop
+    extends IsTrichotomous α lt, IsStrictOrder α lt
 
 /-- Equality is an equivalence relation. -/
 instance eq_isEquiv (α : Sort*) : IsEquiv α (· = ·) where

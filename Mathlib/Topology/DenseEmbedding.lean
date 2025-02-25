@@ -255,8 +255,8 @@ theorem continuous_extend [T3Space β] (hs : Dense s)
 end Dense
 
 /-- A dense embedding is an embedding with dense image. -/
-structure IsDenseEmbedding [TopologicalSpace α] [TopologicalSpace β] (e : α → β) extends
-  IsDenseInducing e : Prop where
+structure IsDenseEmbedding [TopologicalSpace α] [TopologicalSpace β] (e : α → β) : Prop
+    extends IsDenseInducing e where
   /-- A dense embedding is injective. -/
   injective : Function.Injective e
 

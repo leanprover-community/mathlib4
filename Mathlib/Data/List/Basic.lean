@@ -88,7 +88,7 @@ theorem mem_map_of_involutive {f : α → α} (hf : Involutive f) {a : α} {l : 
 
 /-! ### length -/
 
-alias ⟨_, length_pos_of_ne_nil⟩ := length_pos
+alias ⟨_, length_pos_of_ne_nil⟩ := length_pos_iff
 
 theorem length_pos_iff_ne_nil {l : List α} : 0 < length l ↔ l ≠ [] :=
   ⟨ne_nil_of_length_pos, length_pos_of_ne_nil⟩
@@ -390,7 +390,7 @@ theorem head!_nil [Inhabited α] : ([] : List α).head! = default := rfl
   cases x <;> simp at h ⊢
 
 theorem head_eq_getElem_zero {l : List α} (hl : l ≠ []) :
-    l.head hl = l[0]'(length_pos.2 hl) :=
+    l.head hl = l[0]'(length_pos_iff.2 hl) :=
   (getElem_zero _).symm
 
 theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).iget := by cases l <;> rfl
