@@ -338,7 +338,7 @@ theorem AnalyticAt.preimg_of_nhdsNE {x : 𝕜} {f : 𝕜 → E} {s : Set E} (hfx
 /-- Preimages of codiscrete sets, local filter version: if `f` is analytic at `x` and not locally
 constant, then the push-forward of the punctured neighbourhood filter `𝓝[≠] x` is less than or
 equal to the punctured neighbourhood filter `𝓝[≠] f x`. -/
-theorem AnalyticAt.map_nbhdsNE {x : 𝕜} {f : 𝕜 → E} (hfx : AnalyticAt 𝕜 f x)
+theorem AnalyticAt.map_nhdsNE {x : 𝕜} {f : 𝕜 → E} (hfx : AnalyticAt 𝕜 f x)
     (h₂f : ¬Filter.EventuallyConst f (𝓝 x)) :
     (𝓝[≠] x).map f ≤ (𝓝[≠] f x) := fun _ hs ↦ mem_map.1 (preimg_of_nhdsNE hfx h₂f hs)
 
