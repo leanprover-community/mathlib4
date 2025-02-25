@@ -238,7 +238,7 @@ lemma head_toList (p : RelSeries r) : p.toList.head p.toList_ne_nil = p.head := 
 
 @[simp]
 lemma toList_getElem_eq_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
-    p.toList[i] = p i := by
+    p.toList[(i : ℕ)] = p i := by
   simp only [Fin.getElem_fin, toList, List.getElem_ofFn p.toFun]
 
 @[simp]
@@ -461,7 +461,6 @@ lemma toList_cons (p : RelSeries r) (x : α) (hx : r x p.head) :
   ext i
   simp [cons, append, singleton, Fin.append, Fin.addCases, Fin.subNat, Fin.succ]
 
-@[simp]
 lemma fromListChain'_cons (l : List α) (l_ne_nil : l ≠ [])
     (hl : l.Chain' r) (x : α) (hx : r x (l.head l_ne_nil)) :
     fromListChain' (x :: l) (by simp) (hl.cons_of_ne_nil l_ne_nil hx) =
@@ -469,7 +468,6 @@ lemma fromListChain'_cons (l : List α) (l_ne_nil : l ≠ [])
   apply toList_injective
   simp
 
-@[simp]
 lemma append_cons {p q : RelSeries r} {x : α} (hx : r x p.head) (hq : r p.last q.head) :
     (p.cons x hx).append q (by simpa) = (p.append q hq).cons x (by simpa) := by
   simp only [cons]
