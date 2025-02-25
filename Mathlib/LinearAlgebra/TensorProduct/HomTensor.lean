@@ -44,8 +44,8 @@ include fg fg' in
 private lemma tensor_inclusion1_projection1 :
   (TensorProduct.map (g0.lcomp R P) (g0'.lcomp R Q)).comp
     (TensorProduct.map (f0.lcomp R P) (f0'.lcomp R Q)) = LinearMap.id := by
-  simp [← TensorProduct.map_comp, projection_inlusion1 R M P M' f0 g0 fg,
-    projection_inlusion1 R N Q N' f0' g0' fg']
+  simp [← TensorProduct.map_comp, projection_inclusion1 R M P M' f0 g0 fg,
+    projection_inclusion1 R N Q N' f0' g0' fg']
 
 include g0 g0' fg fg' in
 private lemma tensor_inclusion1_inj: Function.Injective
@@ -133,7 +133,7 @@ private lemma comm_square3_apply (f : (M' →ₗ[R] P) ⊗[R] (N' →ₗ[R] Q)):
     ((TensorProduct.map (g0.lcomp R P) (g0'.lcomp R Q)) f)) =
     (TensorProduct.map f0 f0').lcomp R (P ⊗[R] Q) ((TensorProduct.map g0 g0').lcomp _ _
     (homTensorHomEquiv R _ _ _ _ f)) :=
-  DFunLike.congr_fun (comm_sqaure3 R M N P Q M' N' f0 g0 f0' g0') f
+  DFunLike.congr_fun (comm_square3 R M N P Q M' N' f0 g0 f0' g0') f
 
 include fg fg' in
 private lemma comm_square4: TensorProduct.homTensorHomMap R M N P Q ∘ₗ
