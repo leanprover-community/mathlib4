@@ -75,13 +75,15 @@ theorem prodMap_comp_prodIsoTensorObj_hom {X Y Z W : C} (f : X ⟶ Y) (g : Z ⟶
 
 end
 
-variable [HasTerminal C] [HasPullbacks C] [CartesianClosed C]
+variable [HasTerminal C] [HasPullbacks C]
+
+variable (I : C) [Exponentiable I]
 
 /-- The first leg of a cospan constructing a pullback diagram in `C` used to define `sections` . -/
-def curryId (I : C) : ⊤_ C ⟶ (I ⟹ I) :=
+def curryId : ⊤_ C ⟶ (I ⟹ I) :=
   CartesianClosed.curry (ChosenFiniteProducts.fst I (⊤_ C))
 
-variable {I : C}
+variable {I}
 
 namespace Over
 
@@ -202,7 +204,10 @@ def coreHomEquiv : CoreHomEquiv (star I) (sections I) where
     simp [sectionsMap, curryId]
     rw [← CartesianClosed.curry_natural_right, Category.assoc]
 
+variable (I)
+
 /-- The adjunction between the star functor and the sections functor. -/
+@[simps! unit_app counit_app]
 def starSectionsAdj : star I ⊣ sections I :=
   .mkOfHomEquiv coreHomEquiv
 

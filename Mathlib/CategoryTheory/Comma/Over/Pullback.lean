@@ -27,10 +27,8 @@ In a category with binary products, for any object `X` the functor
 
 ## Notation
 
-- `Σ_ X Y` : is notation for `Sigma` defined by `(Over.map X.hom).obj Y
-- `Δ_ X Y` : is notation for `Reindex` defined by `(Over.pullback X.hom).obj Y
-- `μ X Y` : is notation for `fstProj : (Σ_ Y (Δ_ Y Z)) ⟶ Z`
-- `π X Y` : is notation for `sndProj : (Σ_ Y (Δ_ Y Z)) ⟶ Y`
+- `μ X Y` : is notation for `fstProj : (Sigma Y (Reindex Y Z)) ⟶ Z`
+- `π X Y` : is notation for `sndProj : (Sigma Y (Reindex Y Z)) ⟶ Y`
 
 ## Main results
 
@@ -39,10 +37,6 @@ In a category with binary products, for any object `X` the functor
 
 - `mapStarIso` constructs a natural isomorphism between the functors `star X` and
   `star Y ⋙ pullback f` for any morphism `f : X ⟶ Y`.
-
-## References
-
-The notations `Σ_` and `Δ_` are taken from [GK12].
 
 -/
 
@@ -109,7 +103,8 @@ instance pullbackIsRightAdjoint [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
     (pullback f).IsRightAdjoint  :=
   ⟨_, ⟨mapPullbackAdj f⟩⟩
 
-/-- `Reindex Y Z`, the reindexing of `Z` along `Y`, provides the notation `Δ_ Y Z`. -/
+/-- `Reindex Y Z` is the reindexing of `Z : Over X` along `Y : Over X`, provided by the pullback of
+`Z` along `Y.hom`. -/
 abbrev Reindex [HasPullbacks C] {X : C} (Y : Over X) (Z : Over X) : Over Y.left :=
   (Over.pullback Y.hom).obj Z
 
@@ -119,23 +114,19 @@ open Sigma
 
 variable [HasPullbacks C] {X : C}
 
-set_option quotPrecheck false in
-/-- The notation for `Reindex`, the object part of the reindexing functor. -/
-scoped notation " Δ_ " => Reindex
-
 lemma hom {Y : Over X} {Z : Over X} :
-    (Δ_ Y Z).hom = pullback.snd Z.hom Y.hom := by
+    (Reindex Y Z).hom = pullback.snd Z.hom Y.hom := by
   rfl
 
-/-- `Δ_` is symmetric, up to an isomorphism, in its first and second arguments. -/
+/-- `Reindex` is symmetric, up to an isomorphism, in its first and second arguments. -/
 def symmetryObjIso (Y Z : Over X) :
-    (Δ_ Y Z).left ≅ (Δ_ Z Y).left := pullbackSymmetry _ _
+    (Reindex Y Z).left ≅ (Reindex Z Y).left := pullbackSymmetry _ _
 
 /-- The reindexed sum of `Z` along `Y` is isomorphic to the reindexed sum of `Y` along `Z` in the
 category `Over X`. -/
 @[simps!]
 def sigmaSymmetryIso (Y Z : Over X) :
-  Σ_ Y (Δ_ Y Z) ≅ Σ_ Z (Δ_ Z Y) := by
+  Sigma Y (Reindex Y Z) ≅ Sigma Z (Reindex Z Y) := by
   apply Over.isoMk _ _
   · exact pullbackSymmetry ..
   · simp [pullback.condition]
@@ -146,13 +137,13 @@ lemma symmetry_hom {Y Z : Over X} :
   simp [← pullback.condition]
 
 /-- The first projection out of the reindexed sigma object. -/
-def fstProj (Y Z : Over X) : (Σ_ Y (Δ_ Y Z)) ⟶ Y :=
+def fstProj (Y Z : Over X) : (Sigma Y (Reindex Y Z)) ⟶ Y :=
   Over.homMk (pullback.snd Z.hom Y.hom) (by simp)
 
-lemma fstProj_sigma_fst (Y Z : Over X) : fstProj Y Z = Sigma.fst (Δ_ Y Z) := by rfl
+lemma fstProj_sigma_fst (Y Z : Over X) : fstProj Y Z = Sigma.fst (Reindex Y Z) := by rfl
 
 /-- The second projection out of the reindexed sigma object. -/
-def sndProj (Y Z : Over X) : (Σ_ Y (Δ_ Y Z)) ⟶ Z :=
+def sndProj (Y Z : Over X) : (Sigma Y (Reindex Y Z)) ⟶ Z :=
   Over.homMk (pullback.fst Z.hom Y.hom) (by simp [pullback.condition])
 
 /-- The notation for the first projection of the reindexed sigma object. -/
@@ -172,7 +163,7 @@ lemma counit_app_pullback_snd {Y Z : Over X} :
 
 @[simp]
 lemma counit_app_pullback_snd_eq_homMk {Y Z : Over X} :
-    π_ Y Z = (homMk (Δ_ Y Z).hom : (Σ_ Y (Δ_ Y Z)) ⟶ Y) :=
+    π_ Y Z = (homMk (Reindex Y Z).hom : (Sigma Y (Reindex Y Z)) ⟶ Y) :=
   OverMorphism.ext (by aesop)
 
 end Reindex
@@ -185,7 +176,7 @@ variable [HasFiniteWidePullbacks C] {X : C}
 
 /-- The binary fan provided by `μ_` and `π_` is a binary product in `Over X`. -/
 def isBinaryProductSigmaReindex (Y Z : Over X) :
-    IsLimit <| BinaryFan.mk (P:= Σ_ Y (Δ_ Y Z)) (π_ Y Z) (μ_ Y Z) := by
+    IsLimit <| BinaryFan.mk (P:= Sigma Y (Reindex Y Z)) (π_ Y Z) (μ_ Y Z) := by
   refine IsLimit.mk (?lift) ?fac ?uniq
   · intro s
     fapply Over.homMk
@@ -200,11 +191,11 @@ def isBinaryProductSigmaReindex (Y Z : Over X) :
 
 attribute [local instance] ChosenFiniteProducts.ofFiniteProducts
 
-/-- The object `(Σ_ Y) (Δ_ Y Z)` is isomorphic to the binary product `Y × Z`
+/-- The object `(Sigma Y) (Reindex Y Z)` is isomorphic to the binary product `Y × Z`
 in `Over X`. -/
 @[simps!]
 def sigmaReindexIsoProd (Y Z : Over X) :
-    (Σ_ Y) (Δ_ Y Z) ≅ Limits.prod Y Z := by
+    (Sigma Y) (Reindex Y Z) ≅ Limits.prod Y Z := by
   apply IsLimit.conePointUniqueUpToIso (isBinaryProductSigmaReindex Y Z) (prodIsProd Y Z)
 
 /-- Given a morphism `f : X' ⟶ X` and an object `Y` over `X`, the `(map f).obj ((pullback f).obj Y)`
@@ -212,11 +203,6 @@ is isomorphic to the binary product of `(Over.mk f)` and `Y`. -/
 def sigmaReindexIsoProdMk {Y : C} (f : Y ⟶ X) (Z : Over X) :
     (map f).obj ((pullback f).obj Z) ≅ Limits.prod (Over.mk f) Z :=
   sigmaReindexIsoProd (Over.mk f) _
-
-def ReindexIsoMkProdFstLeft {Y : C} (f : Y ⟶ X) (Z : Over X) :
-    (pullback f).obj Z ≅ Over.mk (@Limits.prod.fst _ _ (Over.mk f) Z).left :=
-  sorry
-
 
 lemma sigmaReindexIsoProd_hom_comp_fst {Y Z : Over X} :
     (sigmaReindexIsoProd Y Z).hom ≫ (fst Y Z) = (π_ Y Z) :=
@@ -347,55 +333,34 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 /-- A right adjoint to the forward functor of an equivalence is naturally isomorphic to the
 inverse functor of the equivalence. -/
-def functorRightAdjointIsoInverse (e : D ≌ C) (R : C ⥤ D) (adj : e.functor ⊣ R) :
+def equivalenceRightAdjointIsoInverse (e : D ≌ C) (R : C ⥤ D) (adj : e.functor ⊣ R) :
     R ≅ e.inverse :=
-  conjugateIsoEquiv adj ((e.functor).asEquivalence.toAdjunction) (Iso.refl _) ≪≫
-    (Functor.asEquivalenceInverseNatIso e)
+  conjugateIsoEquiv adj (e.toAdjunction) (Iso.refl _)
 
 end Adjunction
 
 namespace Over
 
 /-- `star (⊤_ C) : C ⥤ Over (⊤_ C)` is naturally isomorphic to `Functor.toOverTerminal C`. -/
-def starTerminalIso [HasTerminal C] [HasBinaryProducts C] :
+def starIsoToOverTerminal [HasTerminal C] [HasBinaryProducts C] :
     star (⊤_ C) ≅ Functor.toOverTerminal C := by
-  apply Adjunction.functorRightAdjointIsoInverse
+  apply Adjunction.equivalenceRightAdjointIsoInverse
     (equivOverTerminal C) (star (⊤_ C)) (forgetAdjStar (⊤_ C))
-
 
 variable {C}
 
 /-- A natural isomorphism between the functors `star X` and `star Y ⋙ pullback f`
 for any morphism `f : X ⟶ Y`. -/
-def starPullbackIso [HasBinaryProducts C] [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
+def starPullbackIsoStar [HasBinaryProducts C] [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
     star Y ⋙ pullback f ≅ star X :=
   conjugateIsoEquiv ((mapPullbackAdj f).comp (forgetAdjStar Y)) (forgetAdjStar X) (mapForget f)
 
-#check star_obj_hom
-#check Over
-
-/-- `Over.pullback` is isomorphic to `Over.star` up to the iterated slice equivlanece. -/
-def pullbackIso [HasFiniteWidePullbacks C] {X Y : C} (f : X ⟶ Y) :
-    star (Over.mk f) ⋙ (Over.mk f).iteratedSliceEquiv.functor ≅ pullback f := by
-  refine NatIso.ofComponents ?_ ?_
-  · intro A
-    simp only [Functor.comp_obj]
-    dsimp
-    apply (sigmaReindexIsoProdMk f A).symm
-    refine Over.isoMk ?_ ?_
-    · dsimp
-      apply sigmaReindexIsoProdMk
-    · sorry
-
-    simp [star_obj_hom, pullback_obj_hom]
-    apply sigmaReindexIsoProdMk
-    congr 1
-
-    have : (prod.fst (X:= (mk f)) (Y:= A)).left = (pullback.snd A.hom f) := by sorry
-    exact Iso.refl (congr_arg Over.mk (by simp [Over.sigmaReindexIsoProdMk]))
-
-  · sorry
-
+/-- The functor `Over.pullback` is naturally isomorphic to `Over.star` up to the iterated slice
+equivlanece. -/
+def starIteratedSliceForwardIsoPullback [HasFiniteWidePullbacks C]
+    {X Y : C} (f : X ⟶ Y) : star (Over.mk f) ⋙ (Over.mk f).iteratedSliceForward ≅ pullback f :=
+  conjugateIsoEquiv ((Over.mk f).iteratedSliceEquiv.symm.toAdjunction.comp (forgetAdjStar _))
+  (mapPullbackAdj f) (eqToIso (iteratedSliceBackward_forget (Over.mk f)))
 
 end Over
 

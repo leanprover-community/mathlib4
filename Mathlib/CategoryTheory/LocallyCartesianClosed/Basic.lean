@@ -114,7 +114,7 @@ def pushforwardCompIso {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
   conjugateIsoEquiv (gexp.adj.comp fexp.adj) ((comp f g).adj) (pullbackComp f g)
 
 /-- A morphism with a pushforward is an exponentiable object in the slice category. -/
-instance exponentiableOverMk [HasFiniteWidePullbacks C] {X I : C} (f : X ⟶ I)
+def exponentiableOverMk [HasFiniteWidePullbacks C] {X I : C} (f : X ⟶ I)
     [ExponentiableMorphism f] :
     Exponentiable (Over.mk f) where
   rightAdj := pullback f ⋙ pushforward f
@@ -123,6 +123,18 @@ instance exponentiableOverMk [HasFiniteWidePullbacks C] {X I : C} (f : X ⟶ I)
     · exact Over.pullback f ⋙ Over.map f
     · exact Adjunction.comp ExponentiableMorphism.adj (Over.mapPullbackAdj _)
     · exact sigmaReindexNatIsoTensorLeft (Over.mk f)
+
+/-- An exponentibale object `X` in the slice category `Over I` gives rise to an exponentiable
+morphism `X.hom`. -/
+def ofOverExponentiable [HasFiniteWidePullbacks C] {I : C} (X : Over I) [Exponentiable X] :
+    ExponentiableMorphism X.hom where
+  pushforward := X.iteratedSliceEquiv.inverse ⋙ sections X
+  adj := by
+    have : (Over.mk X.hom) = X := by rfl
+    have : Exponentiable (Over.mk X.hom) := by rw [this]; infer_instance
+    refine ofNatIsoLeft (Adjunction.comp ?_ ?_) (starIteratedSliceForwardIsoPullback X.hom)
+    · exact starSectionsAdj X
+    · apply (Over.mk X.hom).iteratedSliceEquiv.toAdjunction
 
 end ExponentiableMorphism
 
@@ -135,7 +147,7 @@ class HasPushforwards [HasFiniteWidePullbacks C] where
 
 namespace HasPushforwards
 
-open Over
+open Over ExponentiableMorphism
 
 variable {C} [HasFiniteWidePullbacks C] [HasPushforwards C]
 
@@ -144,30 +156,16 @@ def pushforward {I J : C} (f : I ⟶ J) :
     Over I ⥤ Over J :=
   (exponentiable f).pushforward
 
-/-- In a category with pushforwards along all morphisms, every slice category `Over I` is
+/-- `Pi X Y` is the dependent product of `Y` along `X` in the slice category `Over I`. -/
+abbrev Pi {I : C} (X : Over I) (Y : Over X.left) : Over I :=
+  (pushforward X.hom).obj Y
+
+/-- In a category where pushforwards exists along all morphisms, every slice category `Over I` is
 cartesian closed. -/
 instance cartesianClosedOver
     [HasFiniteWidePullbacks C] [HasPushforwards C] (I : C) :
     CartesianClosed (Over I) where
-  closed X := {
-    rightAdj := (Over.pullback X.hom ⋙ (HasPushforwards.exponentiable X.hom).pushforward)
-    adj := ofNatIsoLeft (F := (Over.pullback X.hom ⋙ Over.map X.hom))
-      (((HasPushforwards.exponentiable X.hom).adj).comp (Over.mapPullbackAdj X.hom))
-      (Over.sigmaReindexNatIsoTensorLeft _)
-  }
-
-section Notation
-
-/-- The object part of the pushforward of `Y` along `X`. This function provides the
-notation `Π_ X Y`. -/
-def pushforwardObj {I : C} (X : Over I) (Y : Over (X.left)) : Over I :=
-  (pushforward X.hom).obj Y
-
-set_option quotPrecheck false in
-/-- The notation `Π_ X Y` for the object part of the pushforward of `Y` along `X`. -/
-scoped notation " Π_ " => pushforwardObj
-
-end Notation
+  closed X := @exponentiableOverMk _ _ _ _ _ _ X.hom (HasPushforwards.exponentiable X.hom)
 
 end HasPushforwards
 
@@ -177,113 +175,48 @@ open Over Reindex IsIso ChosenFiniteProducts CartesianClosed HasPushforwards
 
 variable {C} [HasFiniteWidePullbacks C] {I J : C} [CartesianClosed (Over J)] (f : I ⟶ J)
 
+/-- The pushforward functor along a morphism `f : I ⟶ J` defined using the section functor
+Over (Over.mk f) ⥤ Over J. -/
 @[simps!]
 def pushforward : (Over I) ⥤ (Over J) :=
   (Over.mk f).iteratedSliceEquiv.inverse ⋙ sections (Over.mk f)
 
-def pushforwardAdj : pullback f ⊣ pushforward f := Adjunction.comp (starSectionsAdj)
+@[simps! unit_app counit_app]
+def pushforwardAdj : pullback f ⊣ pushforward f := by
+  refine ofNatIsoLeft (Adjunction.comp ?_ ?_) (starIteratedSliceForwardIsoPullback f)
+  · apply starSectionsAdj
+  · apply (Over.mk f).iteratedSliceEquiv.toAdjunction
 
-
-
+variable {f}
 
 /-- The currying of `(Over.pullback f).obj A ⟶ X` in `Over I` to a morphism
 `A ⟶ (pushforward f).obj X` in `Over J`. -/
 def pushforwardCurry {X : Over I} {A : Over J} (u : (Over.pullback f).obj A ⟶ X) :
-    A ⟶ (pushforwardFunctor f).obj X := by
-  apply pullback.lift ((mkIdTerminal (X := J)).from A) (pushforwardCurryAux u)
-    ((uncurry_injective (A := Over.mk f)) _)
-  rw [uncurry_natural_left, curryId, pushforwardCurryAux]
-  simp [uncurry_curry, expMapFstProj, uncurry_natural_right]
-  have sigmaReindexIsoProd_inv_comp_pi :
-      (sigmaReindexIsoProd (Over.mk f) A).inv ≫ (π_ (Over.mk f) A) = fst (Over.mk f) A := by
-    rw [Iso.inv_comp_eq]
-    simp [sigmaReindexIsoProd_hom_comp_fst]
-  have : ((Over.map f).map u ≫ (homMk X.hom rfl : (Over.map f).obj X ⟶ Over.mk f)) =
-      π_ (Over.mk f) A  := OverMorphism.ext (by aesop_cat)
-  simp_rw [this, sigmaReindexIsoProd_inv_comp_pi]
+    A ⟶ (pushforward f).obj X :=
+  (pushforwardAdj f).homEquiv A X u
 
 /-- The uncurrying of `A ⟶ (pushforward f).obj X` in `Over J` to a morphism
 `(Over.pullback f).obj A ⟶ X` in `Over I`. -/
-def pushforwardUncurry {X : Over I} {A : Over J} (v : A ⟶ (pushforwardFunctor f).obj X) :
-    (Over.pullback f).obj A ⟶ X := by
-  let v₁ : A ⟶ Over.mk (𝟙 J) := v ≫ (pullback.fst ..)
-  let v₂ : A ⟶ ((Over.mk f) ⟹ ((Over.map f).obj X)) := v ≫ pullback.snd ..
-  have w : (mkIdTerminal (X := J)).from A ≫ (curryId f) =
-      v₂ ≫ (expMapFstProj f X) := by
-    rw [IsTerminal.hom_ext mkIdTerminal ( (mkIdTerminal (X := J)).from A) v₁]
-    simp [v₁, v₂, pullback.condition]
-  dsimp [curryId, expMapFstProj] at w
-  have w' := homEquiv_naturality_right_square (F := MonoidalCategory.tensorLeft (Over.mk f))
-    (adj := exp.adjunction (Over.mk f)) _ _ _ _ w
-  simp [CartesianClosed.curry] at w'
-  refine Sigma.overHomMk ((sigmaReindexIsoProd _ _).hom ≫ (CartesianClosed.uncurry v₂)) ?_
-  · dsimp [CartesianClosed.uncurry] at *
-    simp [Over.Sigma.fst, Over.Sigma]
-    rw [← w']
-    simp [sigmaReindexIsoProd_hom_comp_fst]
-
-@[simp]
-theorem pushforward_curry_uncurry {X : Over I} {A : Over J} (v : A ⟶ (pushforwardFunctor f).obj X) :
-    pushforwardCurry (pushforwardUncurry v) = v := by
-  dsimp [pushforwardCurry, pushforwardUncurry, pushforwardCurryAux]
-  let v₁ : A ⟶ Over.mk (𝟙 J) := v ≫ (pullback.fst ..)
-  let v₂ : A ⟶ ((Over.mk f) ⟹ ((Over.map f).obj X)) := v ≫ pullback.snd _ _
-  apply pullback.hom_ext
-  · simp
-    rw [IsTerminal.hom_ext mkIdTerminal ((mkIdTerminal (X := J)).from A) v₁]
-  · simp
-    apply (CartesianClosed.curry_eq_iff _ _).mpr
-    ext
-    simp [Sigma.overHomMk]
-    rw [← assoc]
-    have inv_hom_id := (sigmaReindexIsoProd (Over.mk f) A).inv_hom_id
-    apply_fun (Over.forget _).map at inv_hom_id
-    rw [(Over.forget _).map_id, (Over.forget _).map_comp] at inv_hom_id
-    simp at inv_hom_id
-    exact inv_hom_id ▸ id_comp (CartesianClosed.uncurry v₂).left
+def pushforwardUncurry {X : Over I} {A : Over J} (v : A ⟶ (pushforward f).obj X) :
+    (Over.pullback f).obj A ⟶ X :=
+  ((pushforwardAdj f).homEquiv A X).invFun v
 
 theorem pushforward_uncurry_curry {X : Over I} {A : Over J} (u : (Over.pullback f).obj A ⟶ X) :
     pushforwardUncurry (pushforwardCurry u) = u := by
-  unfold pushforwardCurry pushforwardUncurry pushforwardCurryAux
-  ext
-  simp [Sigma.overHomMk]
+  exact ((pushforwardAdj f).homEquiv A X).left_inv u
+
+theorem pushforward_curry_uncurry {X : Over I} {A : Over J} (v : A ⟶ (pushforward f).obj X) :
+    pushforwardCurry (pushforwardUncurry v) = v := by
+  exact ((pushforwardAdj f).homEquiv A X).right_inv v
 
 end CartesianClosedOver
 
 /-- A category with cartesian closed slices has pushforwards along all morphisms. -/
 instance CartesianClosedOver.hasPushforwards [HasFiniteWidePullbacks C]
     [Π (I : C), CartesianClosed (Over I)] : HasPushforwards C where
-  exponentiable {I J} f := {
-    pushforward := pushforwardFunctor f
-    adj := mkOfHomEquiv {
-      homEquiv A X := {
-        toFun := pushforwardCurry
-        invFun := pushforwardUncurry
-        left_inv := pushforward_uncurry_curry
-        right_inv := pushforward_curry_uncurry
-      }
-      homEquiv_naturality_left_symm := by
-        intro A' A X g v
-        unfold pushforwardUncurry
-        dsimp
-        have natiso := (Over.sigmaReindexNatIsoTensorLeft (Over.mk f)).hom.naturality g
-        simp only [Over.sigmaReindexNatIsoTensorLeft_hom_app, tensorLeft_map] at natiso
-        simp_rw [CartesianClosed.uncurry_natural_left, MonoidalCategory.whiskerLeft_comp]
-        simp_rw [← assoc, ← natiso]
-        simp [Sigma.overHomMk]
-        rfl
-      homEquiv_naturality_right := by
-        intro A X' X u g
-        unfold pushforwardCurry
-        dsimp
-        apply pullback.hom_ext (IsTerminal.hom_ext mkIdTerminal _ _)
-        unfold pushforwardCurryAux pushforwardMap
-        simp [pullback.lift_snd]
-        rw [← CartesianClosed.curry_natural_right, assoc]
-    }
-  }
+  exponentiable f := ExponentiableMorphism.ofOverExponentiable (Over.mk f)
 
-/-- A category with `FiniteWidePullbacks` is locally cartesian closed if every morphisms in it
+/-- A category with `FiniteWidePullbacks` is locally cartesian closed if every morphism in it
 is exponentiable and all the slices are cartesian closed. -/
 class LocallyCartesianClosed [HasFiniteWidePullbacks C] extends
     HasPushforwards C where
@@ -307,10 +240,10 @@ variable [LocallyCartesianClosed C]
 
 /-- The exponential `X^^A` in the slice category `Over I` is isomorphic to the pushforward of the
 pullback of `X` along `A`. -/
-def expIso {I : C} (A X : Over I) :  Π_ A (Δ_ A X) ≅ X^^A := Iso.refl _
+def expIso {I : C} (A X : Over I) :  Pi A (Reindex A X) ≅ A ⟹ X := Iso.refl _
 
 /-- The dependent evaluation morphisms. -/
-abbrev ev {I : C} (X : Over I) (Y : Over X.left) : Δ_ X (Π_ X Y) ⟶ Y :=
+abbrev ev {I : C} (X : Over I) (Y : Over X.left) : Reindex X (Pi X Y) ⟶ Y :=
   (exponentiable X.hom).adj.counit.app Y
 
 /-- A locally cartesian closed category with a terminal object is cartesian closed. -/
