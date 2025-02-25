@@ -151,7 +151,10 @@ lemma Filter.codiscreteWithin.mono {X : Type u_1} [TopologicalSpace X] {U₁ U�
     Filter.codiscreteWithin U₁ ≤ Filter.codiscreteWithin U₂ := by
   intro s hs
   simp_rw [mem_codiscreteWithin, disjoint_principal_right] at hs ⊢
-  exact fun x hx ↦ mem_of_superset (hs x (hU hx)) (Set.compl_subset_compl.2
-    (fun y hy ↦ ⟨hU hy.1, hy.2⟩))
+  intro x hx
+  specialize hs x (hU hx)
+  apply mem_of_superset hs
+  rw [Set.compl_subset_compl]
+  exact diff_subset_diff_left hU
 
 end codiscrete_filter
