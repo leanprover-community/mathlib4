@@ -229,19 +229,13 @@ lemma isArtinianRing_iff_finite_of_field:
   -- need tfae
   sorry
 
+omit [Algebra K R] [Algebra.FiniteType K R] in
 lemma isArtinianRing_iff_ringHomFinite_of_field (f : K →+* R) (hf : f.FiniteType) :
     IsArtinianRing R ↔ f.Finite := by
-  -- apply (isArtinianRing_iff_finite_of_field K).trans
-  -- constructor
-  -- · intro h
-  --   -- how to using f.toAlgebra?
-  --   sorry
-  -- · intro h
-  --   exact (isArtinianRing_iff_finite_of_field K).mp (by infer_instance)
-  sorry
+  algebraize [f]
+  exact isArtinianRing_iff_finite_of_field K
 
-lemma finite_iff_forall_prime_is_maximal_of_field (K : Type*) [Field K]
-    [Algebra K R] [Algebra.FiniteType K R] :
+lemma finite_iff_forall_prime_is_maximal_of_field :
     Module.Finite K R ↔ ∀ I : Ideal R, I.IsPrime → I.IsMaximal := by
   haveI := isNoetherianRing_of_fg ‹Algebra.FiniteType K R›.1
   haveI := isNoetherianRing_of_surjective (⊤ : Subalgebra K R) R

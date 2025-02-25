@@ -690,13 +690,13 @@ lemma isNoetherian_iff_IsArtinian_of_mul {R : Type*} [CommRing R] (I J : Ideal R
     simp [Submodule.range_inclusion]
     rfl
 
-variable {R : Type*} [CommRing R] in
-instance (I : Ideal R) : Module.Finite R (R ⧸ I) :=
-  Module.Finite.of_surjective (Ideal.Quotient.mkₐ R I).toLinearMap Ideal.Quotient.mk_surjective
+end Ideal
 
-variable (K : Type*) {R : Type*} [CommRing R] [Field K] [Algebra K R] [Algebra.FiniteType K R] in
-lemma isArtinian_of_isArtinian_of_mul_of_field (I J : Ideal R)
-  [I.IsMaximal] [IsArtinian R J] (H : IsArtinian K (I * J : _)) : IsArtinian K J := by
+section Algebra
+
+lemma isArtinian_of_isArtinian_of_mul_of_field (K : Type*) {R : Type*} [CommRing R] [Field K]
+    [Algebra K R] [Algebra.FiniteType K R] (I J : Ideal R) [I.IsMaximal] [IsArtinian R J]
+    (H : IsArtinian K (I * J : _)) : IsArtinian K J := by
   let IJ := Submodule.comap J.subtype (I * J)
   have : Module.IsTorsionBySet R (J ⧸ IJ) I := by
     intro x ⟨y, hy⟩
@@ -724,6 +724,6 @@ lemma isArtinian_of_isArtinian_of_mul_of_field (I J : Ideal R)
   rw [LinearMap.ker_restrictScalars, Submodule.ker_mkQ, LinearMap.range_restrict_scalars,
     Submodule.range_inclusion]
 
-end Ideal
+end Algebra
 
 end IsArtinianRing
