@@ -61,7 +61,7 @@ lemma measure_univ_eq_of_subset (hP : IsProjectiveMeasureFamily P) (hJI : J ⊆ 
     P I univ = P J univ := by
   classical
   have : (univ : Set (∀ i : I, α i)) =
-      Finset.restrict₂ hJI ⁻¹' (univ : Set (∀ i : J, α i)) := by
+      Set.restrict₂ hJI ⁻¹' (univ : Set (∀ i : J, α i)) := by
     rw [preimage_univ]
   rw [this, ← Measure.map_apply _ MeasurableSet.univ]
   · rw [hP I J hJI]
