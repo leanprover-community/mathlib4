@@ -264,7 +264,7 @@ lemma support_inter (I : IdealSheafData X) (U : X.affineOpens) :
   · simp [hxU]
 
 lemma isClosed_support (I : IdealSheafData X) : IsClosed I.support := by
-  rw [isClosed_iff_coe_preimage_of_iSup_eq_top (iSup_affineOpens_eq_top X)]
+  rw [TopologicalSpace.IsOpenCover.isClosed_iff_coe_preimage (iSup_affineOpens_eq_top X)]
   intro U
   refine ⟨(X.zeroLocus (U := U.1) (I.ideal U))ᶜ, (X.zeroLocus_isClosed _).isOpen_compl, ?_⟩
   simp only [Set.preimage_compl, compl_inj_iff]
