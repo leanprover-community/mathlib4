@@ -1,4 +1,5 @@
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Abstract
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Algebraize
 import Mathlib.Tactic.ApplyAt
