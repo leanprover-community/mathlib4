@@ -86,24 +86,6 @@ theorem exp_zero_eq_one : exp R A 0 = 1 := by
 
 variable [CharZero R]
 
-theorem reorder (N : ℕ) {f : ℕ → ℕ → A} :
-    ∑ j ∈ range (2 * N + 1), ∑ i ∈ range (j + 1), f i j =
-      ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) with ij.1 ≤ ij.2, f ij.1 ij.2 := by
-  rw [sum_sigma']
-  apply sum_bij (fun ⟨j, i⟩ _ => (i, j))
-  · simp only [mem_sigma, mem_range, product_eq_sprod, mem_filter, mem_product, and_imp]
-    intro h₁ h₂ h₃
-    exact ⟨⟨Nat.lt_of_lt_of_le h₃ h₂, h₂⟩, Nat.le_of_lt_succ h₃⟩
-  · simp only [mem_sigma, mem_range, Prod.mk.injEq, and_imp]
-    intro _ _ _ _ _ _ h₁ h₂
-    exact Sigma.ext h₂ (heq_of_eq h₁)
-  · simp only [product_eq_sprod, mem_filter, mem_product, mem_range, mem_sigma, exists_prop,
-      Sigma.exists, and_imp, Prod.forall, Prod.mk.injEq]
-    intro h1 h2 h3 h4 h5
-    use h2, h1
-    exact ⟨⟨h4, Nat.lt_add_one_of_le h5⟩, Prod.mk.inj_iff.mp rfl⟩
-  simp
-
 theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a) (h₃ : IsNilpotent b) :
     exp R A (a + b) = exp R A a * exp R A b := by
   obtain ⟨n₁, hn₁⟩ := h₂
@@ -154,37 +136,19 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
         · exact Nat.factorial_mul_factorial_dvd_factorial le₄
         rw [Nat.cast_mul]
         apply mul_ne_zero <;> exact_mod_cast Nat.factorial_ne_zero _
-      _ = ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) |>.filter (fun ij => ij.1 ≤ ij.2), ((ij.1.factorial : R)⁻¹ * ((ij.2 - ij.1).factorial : R)⁻¹) • (a ^ ij.1 * b ^ (ij.2 - ij.1)) := by rw [reorder]
-      _ = ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) |>.filter (fun ij => ij.1 + ij.2 <= 2 * N), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
-        apply sum_bij
-          (fun ⟨i, j⟩ _ => (i, j - i))
-        simp
-        intro h1 h2 h3 h4 h5
-        constructor
-        constructor
-        apply h3
-        exact tsub_lt_of_lt h4
-        rw [Nat.add_sub_of_le h5]
-        exact Nat.le_of_lt_succ h4
-        simp
-        intro h1 h2 h3 h4 h5 h6 h7 h8 h9 h10 h11 h12
-        constructor
-        apply h11
-        rw [h11] at h12
-        omega
-        simp
-        intro h1 h2 h3 h4 h5
-        use h1, h1 + h2
-        constructor
-        constructor
-        constructor
-        apply h3
-        exact Nat.lt_add_one_of_le h5
-        exact Nat.le_add_right h1 h2
-        constructor
-        rfl
-        omega
-        simp
+      _ = ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) with ij.1 + ij.2 <= 2 * N,
+            ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
+        rw [sum_sigma']
+        apply sum_bij (fun ⟨i, j⟩ _ => (j, i - j))
+        · simp only [mem_sigma, mem_range, product_eq_sprod, mem_filter, mem_product, and_imp]
+          intro _ _ _
+          try omega
+        · simp only [mem_sigma, mem_range, Prod.mk.injEq, and_imp]
+          (intro h1 h2 h3 h4 h5 h6 h7 h8; exact Sigma.ext (by omega) (heq_of_eq h7))
+        · simp only [product_eq_sprod, mem_filter, mem_product, mem_range, mem_sigma, exists_prop,
+            Sigma.exists, and_imp, Prod.forall, Prod.mk.injEq]
+          (intro h1 h2 h3 h4 h5; use h1 + h2, h1; omega)
+        simp only [mem_sigma, mem_range, implies_true]
 
   have e2 :=
     calc
