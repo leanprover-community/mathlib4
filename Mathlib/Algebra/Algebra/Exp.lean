@@ -57,31 +57,18 @@ noncomputable def exp (a : A) : A :=
 
 theorem exp_eq_truncated {k : ℕ} (a : A) (h : a ^ k = 0) :
     ∑ n ∈ range k, (Nat.factorial n : R)⁻¹ • (a ^ n) = exp R A a := by
-  have h₁ : nilpotencyClass a ≤ k := by
-    exact csInf_le' h
-  have h₂ : ∑ n ∈ range k, (Nat.factorial n : R)⁻¹ • (a ^ n) =
+  have h₁ : ∑ n ∈ range k, (Nat.factorial n : R)⁻¹ • (a ^ n) =
       ∑ n ∈ range (nilpotencyClass a), (Nat.factorial n : R)⁻¹ • (a ^ n) +
         ∑ n ∈ Ico (nilpotencyClass a) k, (Nat.factorial n : R)⁻¹ • (a ^ n) :=
-    (sum_range_add_sum_Ico _ h₁).symm
-  suffices h₃ : ∑ n ∈ Ico (nilpotencyClass a) k, (Nat.factorial n : R)⁻¹ • (a ^ n) = 0 by
+    (sum_range_add_sum_Ico _ (csInf_le' h)).symm
+  suffices ∑ n ∈ Ico (nilpotencyClass a) k, (Nat.factorial n : R)⁻¹ • (a ^ n) = 0 by
     dsimp [exp]
-    rw [h₂, h₃, add_zero]
-  suffices h₅ : ∀ n ∈ Ico (nilpotencyClass a) k, (Nat.factorial n : R)⁻¹ • (a ^ n) = 0 by
-    apply sum_eq_zero h₅
-  intro t _
-  have h₆ : nilpotencyClass a ≤ t := by
-    simp_all only [mem_Ico]
-  suffices h₆ : a ^ t = 0 by
-    simp_all only [mem_Ico, true_and, smul_zero]
-  have h₈ : IsNilpotent a := by
-    use k
-  have h₉ := pow_nilpotencyClass h₈
-  have h10 : t = nilpotencyClass a + (t - nilpotencyClass a) := by
-    simp_all only [mem_Ico, true_and, add_tsub_cancel_of_le]
-  rw [h10]
-  rw [pow_add]
-  rw [h₉]
-  exact zero_mul (a ^ (t - nilpotencyClass a))
+    rw [h₁, this, add_zero]
+  suffices ∀ n ∈ Ico (nilpotencyClass a) k, (Nat.factorial n : R)⁻¹ • (a ^ n) = 0 by
+    exact sum_eq_zero this
+  intro t ht
+  rw [pow_eq_zero_of_le (by simp_all only [mem_Ico]) (pow_nilpotencyClass ⟨k, h⟩), smul_zero]
+
 
 theorem exp_zero_eq_one : exp R A 0 = 1 := by
   have h : (0 : A) ^ 1 = 0 := by
@@ -90,10 +77,6 @@ theorem exp_zero_eq_one : exp R A 0 = 1 := by
   simp at h1
   apply h1.symm
 
-
-theorem zero_ev {k l : ℕ} {a : A} (h₁ : a ^ k = 0) (h₂ : k ≤ l) : a ^ l = 0 := by
-  obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_le h₂
-  rw [pow_add, h₁, zero_mul]
 
 --example (n : ℕ) (a : A) : (n.factorial : R) • ((n.factorial : R)⁻¹ • a) = a := by
 --have h1 : (n.factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero n
@@ -114,7 +97,7 @@ theorem ttttt (n : ℕ) : (n.factorial : R)⁻¹  * (n.factorial : R) = 1 := by
 
 theorem reorder (N : ℕ) {f : ℕ → ℕ → A} :
     ∑ j ∈ range (2 * N + 1), ∑ i ∈ range (j + 1), f i j =
-    ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) with ij.1 ≤ ij.2, f ij.1 ij.2 := by
+      ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) with ij.1 ≤ ij.2, f ij.1 ij.2 := by
   rw [sum_sigma']
   apply sum_bij (fun ⟨j, i⟩ _ => (i, j))
   · simp only [mem_sigma, mem_range, product_eq_sprod, mem_filter, mem_product, and_imp]
@@ -142,8 +125,8 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
   have huh₂ : n₂ ≤ N + 1 := by
     refine Nat.le_add_right_of_le ?_
     simp_all only [le_sup_right, N]
-  have h₃ : a ^ (N + 1) = 0 := zero_ev A hn₁ huh₁
-  have h₄ : b ^ (N + 1) = 0 := zero_ev A hn₂ huh₂
+  have h₃ : a ^ (N + 1) = 0 := pow_eq_zero_of_le huh₁ hn₁
+  have h₄ : b ^ (N + 1) = 0 := pow_eq_zero_of_le huh₂ hn₂
   have help : (N + 1) + (N + 1) <= (2 * N + 1) + 1 := by
     calc (N + 1) + (N + 1) = 2 * (N + 1) := by rw [← Nat.two_mul (N + 1)]
     _ = 2 * N + 2 := by rw [Nat.mul_add_one]
@@ -284,11 +267,11 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
       linarith
     cases help with
     | inl h1 =>
-      have qqq : a ^ (i.1) = 0 := zero_ev A h₃ h1
+      have qqq : a ^ (i.1) = 0 := pow_eq_zero_of_le h1 h₃
       rw [qqq]
       simp
     | inr h1 =>
-      have qqq : b ^ (i.2) = 0 := zero_ev A h₄ h1
+      have qqq : b ^ (i.2) = 0 := pow_eq_zero_of_le h1 h₄
       rw [qqq]
       simp
   rw [e5] at e4
@@ -318,11 +301,11 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
       linarith
     cases rrr with
     | inl h1 =>
-      have qqq : a ^ (i.1) = 0 := zero_ev A h₃ h1
+      have qqq : a ^ (i.1) = 0 := pow_eq_zero_of_le h1 h₃
       rw [qqq]
       simp
     | inr h1 =>
-      have qqq : b ^ (i.2) = 0 := zero_ev A h₄ h1
+      have qqq : b ^ (i.2) = 0 := pow_eq_zero_of_le h1 h₄
       rw [qqq]
       simp
   rw [e6] at e5
