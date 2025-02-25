@@ -267,7 +267,7 @@ namespace Sum
 
 variable (A A') (B) (C)
 -- (Impl.) Not marking it as `[simps]` as it is already slow and times out.
-/-- The equivalence between functors ot of a sum and the product of the
+/-- The equivalence between functors from a sum and the product of the
  functor categories. -/
 def functorEquiv : (A ⊕ A') ⥤ B ≌ (A ⥤ B) × (A' ⥤ B) where
   functor := {
@@ -285,35 +285,35 @@ def functorEquiv : (A ⊕ A') ⥤ B ≌ (A ⥤ B) × (A' ⥤ B) where
       | inl x => Iso.refl _
       | inr x => Iso.refl _))
   counitIso := NatIso.ofComponents <| fun _ ↦
-    Iso.prod (NatIso.ofComponents (fun t ↦ Iso.refl _)) (NatIso.ofComponents (fun t ↦ Iso.refl _))
+    Iso.prod (NatIso.ofComponents (fun _ ↦ Iso.refl _)) (NatIso.ofComponents (fun _ ↦ Iso.refl _))
 
 /-- Composing the forward direction of `functorEquiv` with the first projection is the same as
   precomposition with `inl_ A A'`. -/
 @[simps!]
 def functorEquivFunctorCompFstIso :
     (functorEquiv _ _ _).functor ⋙ Prod.fst _ _ ≅ (whiskeringLeft _ _ C).obj (inl_ A A') :=
-  NatIso.ofComponents (fun t ↦ Iso.refl _)
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 /-- Composing the forward direction of `functorEquiv` with the second projection is the same as
   precomposition with `inr_ A A'`. -/
 @[simps!]
 def functorEquivFunctorCompSndIso :
     (functorEquiv _ _ _).functor ⋙ Prod.snd _ _ ≅ (whiskeringLeft _ _ C).obj (inr_ A A') :=
-  NatIso.ofComponents (fun t ↦ Iso.refl _)
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 /-- Composing the backward direction of `functorEquiv` with precomposition with `inl_ A A'`.
   is naturally isomorphic to the first projection. -/
 @[simps!]
 def functorEquivInverseCompWhiskeringLeftInLIso :
-    (functorEquiv _ _ _).inverse ⋙ ((whiskeringLeft _ _ C).obj (inl_ A A')) ≅ Prod.fst _ _:=
-  NatIso.ofComponents (fun t ↦ Iso.refl _)
+    (functorEquiv _ _ _).inverse ⋙ ((whiskeringLeft _ _ C).obj (inl_ A A')) ≅ Prod.fst _ _ :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 /-- Composing the backward direction of `functorEquiv` with the second projection is the same as
   precomposition with `inr_ A A'`. -/
 @[simps!]
 def functorEquivInverseCompWhiskeringLeftInRIso :
-    (functorEquiv _ _ _).inverse ⋙ ((whiskeringLeft _ _ C).obj (inr_ A A')) ≅ Prod.snd _ _:=
-  NatIso.ofComponents (fun t ↦ Iso.refl _)
+    (functorEquiv _ _ _).inverse ⋙ ((whiskeringLeft _ _ C).obj (inr_ A A')) ≅ Prod.snd _ _ :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 end Sum
 
