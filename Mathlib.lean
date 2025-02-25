@@ -5804,6 +5804,7 @@ import Mathlib.Topology.SeparatedMap
 import Mathlib.Topology.Separation.Basic
 import Mathlib.Topology.Separation.CompletelyRegular
 import Mathlib.Topology.Separation.CountableSeparatingOn
+import Mathlib.Topology.Separation.DisjointCover
 import Mathlib.Topology.Separation.GDelta
 import Mathlib.Topology.Separation.Hausdorff
 import Mathlib.Topology.Separation.NotNormal
@@ -5813,6 +5814,7 @@ import Mathlib.Topology.Separation.SeparatedNhds
 import Mathlib.Topology.Sequences
 import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.Sets.Compacts
+import Mathlib.Topology.Sets.OpenCover
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Topology.Sets.Order
 import Mathlib.Topology.Sheaves.Alexandrov
