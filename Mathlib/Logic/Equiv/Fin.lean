@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Logic.Embedding.Set
 import Mathlib.Logic.Equiv.Option
@@ -333,6 +334,30 @@ theorem coe_finRotate_of_ne_last {i : Fin n.succ} (h : i ≠ Fin.last n) :
 theorem coe_finRotate (i : Fin n.succ) :
     (finRotate n.succ i : ℕ) = if i = Fin.last n then (0 : ℕ) else i + 1 := by
   rw [finRotate_succ_apply, Fin.val_add_one i]
+
+theorem lt_finRotate_iff_ne_last (i : Fin (n + 1)) :
+    i < finRotate _ i ↔ i ≠ Fin.last n := by
+  refine ⟨fun hi hc ↦ ?_, fun hi ↦ ?_⟩
+  · simp only [hc, finRotate_succ_apply, Fin.last_add_one, Fin.not_lt_zero] at hi
+  · rw [Fin.lt_iff_val_lt_val, coe_finRotate_of_ne_last hi, Nat.lt_add_one_iff]
+
+lemma finRotate_succ_symm_apply (i : Fin n.succ) :
+    (finRotate _).symm i = i - 1 := by
+  apply (finRotate n.succ).symm_apply_eq.mpr ?_
+  rw [finRotate_succ_apply, sub_add_cancel]
+
+lemma coe_finRotate_symm_of_ne_zero {i : Fin n.succ}
+    (hi : i ≠ 0) :
+    ((finRotate _).symm i : ℕ) = i - 1 := by
+  rwa [finRotate_succ_symm_apply, Fin.val_sub_one_of_ne_zero]
+
+theorem finRotate_symm_lt_iff_ne_zero (i : Fin (n + 1)) :
+    (finRotate _).symm i < i ↔ i ≠ 0 := by
+  refine ⟨fun hi hc ↦ ?_, fun hi ↦ ?_⟩
+  · simp only [hc, Fin.last_add_one, Fin.not_lt_zero] at hi
+  · rw [Fin.lt_iff_val_lt_val, coe_finRotate_symm_of_ne_zero hi]
+    apply Nat.sub_lt (Nat.zero_lt_of_ne_zero <| (Fin.val_ne_zero_iff _).mp hi)
+      (Nat.zero_lt_one)
 
 /-- Equivalence between `Fin m × Fin n` and `Fin (m * n)` -/
 @[simps]
