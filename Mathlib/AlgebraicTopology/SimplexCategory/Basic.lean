@@ -493,30 +493,29 @@ lemma mkOfSucc_δ_eq {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
     rfl
 
 theorem eq_of_one_to_two (f : ⦋1⦌ ⟶ ⦋2⦌) :
-    f = (δ (n := 1) 0) ∨ f = (δ (n := 1) 1) ∨ f = (δ (n := 1) 2) ∨
-      ∃ a, f = SimplexCategory.const _ _ a := by
+    (∃ i, f = (δ (n := 1) i)) ∨ ∃ a, f = SimplexCategory.const _ _ a := by
   have : f.toOrderHom 0 ≤ f.toOrderHom 1 := f.toOrderHom.monotone (by decide : (0 : Fin 2) ≤ 1)
   match e0 : f.toOrderHom 0, e1 : f.toOrderHom 1 with
   | 1, 2 =>
-    left
+    refine .inl ⟨0, ?_⟩
     ext i : 3
     match i with
     | 0 => exact e0
     | 1 => exact e1
   | 0, 2 =>
-    right; left
+    refine .inl ⟨1, ?_⟩
     ext i : 3
     match i with
     | 0 => exact e0
     | 1 => exact e1
   | 0, 1 =>
-    right; right; left
+    refine .inl ⟨2, ?_⟩
     ext i : 3
     match i with
     | 0 => exact e0
     | 1 => exact e1
   | 0, 0 | 1, 1 | 2, 2 =>
-    right; right; right; use f.toOrderHom 0
+    refine .inr ⟨f.toOrderHom 0, ?_⟩
     ext i : 3
     match i with
     | 0 => rfl
@@ -524,6 +523,15 @@ theorem eq_of_one_to_two (f : ⦋1⦌ ⟶ ⦋2⦌) :
   | 1, 0 | 2, 0 | 2, 1 =>
     rw [e0, e1] at this
     exact Not.elim (by decide) this
+
+theorem eq_of_one_to_two' (f : ⦋1⦌ ⟶ ⦋2⦌) :
+    f = (δ (n := 1) 0) ∨ f = (δ (n := 1) 1) ∨ f = (δ (n := 1) 2) ∨
+      ∃ a, f = SimplexCategory.const _ _ a :=
+  match eq_of_one_to_two f with
+  | .inl ⟨0, h⟩ => .inl h
+  | .inl ⟨1, h⟩ => .inr (.inl h)
+  | .inl ⟨2, h⟩ => .inr (.inr (.inl h))
+  | .inr h => .inr (.inr (.inr h))
 
 end Generators
 
