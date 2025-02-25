@@ -19,41 +19,6 @@ variable {α R}
 
 variable [CommMonoidWithZero R]
 
-section
-
-variable [DecidableEq R]
-
-/--
-Off-diagonal multiplication
--/
-def mulOffDiag : R → R → R := fun a b => if a = b then (0 : R) else a * b
-
-/--
-Off-diagonal multiplication as a function from `Sym2`.
--/
-def Sym2.mulOffDiag : Sym2 R → R := lift ⟨_root_.mulOffDiag, fun a b => by
-  rw [_root_.mulOffDiag, _root_.mulOffDiag, mul_comm]
-  simp_rw [eq_comm]⟩
-
-@[simp]
-lemma Sym2.mulOffDiag_mk (xy : R × R) :
-    mulOffDiag (.mk xy) = if xy.1 = xy.2 then (0 : R) else xy.1 * xy.2 := rfl
-
-lemma mem_sym2_support_of_mulOffDiag_ne_zero {f : α →₀ R} (p : Sym2 α)
-    (hp : Sym2.mulOffDiag (p.map f) ≠ (0 : R)) : p ∈ f.support.sym2 := by
-  obtain ⟨_, _⟩ := p
-  aesop
-
-/--
-The composition of a `Finsupp` with `Sym2.mul` as a `Finsupp`
--/
-noncomputable def Finsupp.mulOffDiag (f : α →₀ R) :
-    Sym2 α →₀ R := Finsupp.onFinset
-      f.support.sym2
-    (fun p => Sym2.mulOffDiag (p.map f)) mem_sym2_support_of_mulOffDiag_ne_zero
-
-end
-
 namespace Sym2
 
 lemma sym2_support_eq_preimage_support_mul [NoZeroDivisors R] (f : α →₀ R) :
