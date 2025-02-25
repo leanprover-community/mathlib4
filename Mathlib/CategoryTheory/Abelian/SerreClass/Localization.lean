@@ -90,7 +90,7 @@ structure SerreWLocalization (P : ObjectProperty C) [P.IsSerreClass] : Type u wh
 
 namespace SerreWLocalization
 
-variable {P} (X Y : P.SerreWLocalization)
+variable {P} (X Y Z : P.SerreWLocalization)
 
 namespace Hom
 
