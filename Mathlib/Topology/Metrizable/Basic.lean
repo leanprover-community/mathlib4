@@ -85,8 +85,8 @@ instance (priority := 100) MetrizableSpace.toPseudoMetrizableSpace [h : Metrizab
 
 instance (priority := 100) PseudoMetrizableSpace.toMetrizableSpace
     [T0Space X] [h : PseudoMetrizableSpace X] : MetrizableSpace X :=
-  let m := pseudoMetrizableSpacePseudoMetric X
-  ⟨{m with eq_of_dist_eq_zero := by simp [← Metric.inseparable_iff]}, rfl⟩
+  letI := pseudoMetrizableSpacePseudoMetric X
+  ⟨.ofT0PseudoMetricSpace X, rfl⟩
 
 /-- Construct on a metrizable space a metric compatible with the topology. -/
 noncomputable def metrizableSpaceMetric (X : Type*) [TopologicalSpace X] [h : MetrizableSpace X] :
