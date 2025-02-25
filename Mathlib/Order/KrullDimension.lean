@@ -781,7 +781,7 @@ lemma coheight_bot_eq_krullDim [OrderBot α] : coheight (⊥ : α) = krullDim α
   rw [← krullDim_orderDual]
   exact height_top_eq_krullDim (α := αᵒᵈ)
 
-lemma height_eq_krullDim_Iic {α : Type*} [Preorder α] (x : α) :
+lemma height_eq_krullDim_Iic (x : α) :
     (height x : ℕ∞) = krullDim (Set.Iic x) := by
   rw [← height_top_eq_krullDim, height, height, WithBot.coe_inj]
   apply le_antisymm
@@ -819,11 +819,9 @@ variable {α : Type*} [Preorder α]
 lemma finiteDimensionalOrder_iff_krullDim_ne_bot_and_top :
     FiniteDimensionalOrder α ↔ (krullDim α ≠ ⊥ ∧ krullDim α ≠ ⊤) := by
   by_cases h : Nonempty α
-  · haveI := h
-    rw [← not_infiniteDimensionalOrder_iff, ← krullDim_eq_top_iff]
-    simp
+  · simp [← not_infiniteDimensionalOrder_iff, ← krullDim_eq_top_iff]
   · constructor
-    · exact (fun h1 ↦ False.elim (h (@LTSeries.nonempty_of_finiteDimensionalType α ‹_› ‹_›)))
+    · exact (fun h1 ↦ False.elim (h (LTSeries.nonempty_of_finiteDimensionalType (α := α))))
     · exact (fun h1 ↦ False.elim (h1.1 (krullDim_eq_bot_iff.mpr (not_nonempty_iff.mp h))))
 
 end finiteDimensional
