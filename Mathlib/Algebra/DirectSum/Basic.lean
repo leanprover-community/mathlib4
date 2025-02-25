@@ -394,6 +394,31 @@ theorem finite_support (A : ι → S) (x : DirectSum ι fun i => A i) :
   classical
   exact (DFinsupp.support x).finite_toSet.subset (DirectSum.support_subset _ x)
 
+section map
+
+variable {ι : Type*} [DecidableEq ι] {α : ι → Type*} {β : ι → Type*} [∀ i, AddCommMonoid (α i)]
+variable [∀ i, AddCommMonoid (β i)] (f : ∀(i : ι), α i →+ β i)
+
+def map : (⨁ i, α i) →+ ⨁ i, β i :=
+  DirectSum.toAddMonoid (fun i : ι ↦ (of β i).comp (f i))
+
+@[simp] lemma map_of (i : ι) (x : α i) : (map f) (of α i x) = of β i (f i x) := by
+  simp [map]
+
+@[simp] lemma map_apply (i : ι) (x : ⨁ i, α i) : (map f) x i = f i (x i) := by
+  sorry
+
+def map_surjective (h : ∀ i, Function.Surjective (f i)) : Function.Surjective (map f) := sorry
+
+def map_eq_iff (x y : ⨁ i, α i) : map f x = map f y ↔ ∀ i, f i (x i) = f i (y i) := by
+  constructor
+  · intro h i
+    have : (map f) x i = (map f) y i := by rw [h]
+    simpa using this
+  · intro h; ext i; simpa using h i
+
+end map
+
 end DirectSum
 
 /-- The canonical isomorphism of a finite direct sum of additive commutative monoids
