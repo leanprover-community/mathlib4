@@ -659,6 +659,14 @@ theorem integrable_withDensity_iff_integrable_coe_smul₀ {f : α → ℝ≥0} (
       filter_upwards [hf.ae_eq_mk] with x hx
       simp [hx]
 
+theorem integrable_withDensity_iff_integrable_smul₀' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ)
+    (hflt : ∀ᵐ x ∂μ, f x < ∞) {g : α → E} :
+    Integrable g (μ.withDensity f) ↔ Integrable (fun x => (f x).toReal • g x) μ := by
+  rw [← withDensity_congr_ae (coe_toNNReal_ae_eq hflt),
+    integrable_withDensity_iff_integrable_coe_smul₀]
+  · congr!
+  · exact hf.ennreal_toNNReal
+
 theorem integrable_withDensity_iff_integrable_smul₀ {f : α → ℝ≥0} (hf : AEMeasurable f μ)
     {g : α → E} : Integrable g (μ.withDensity fun x => f x) ↔ Integrable (fun x => f x • g x) μ :=
   integrable_withDensity_iff_integrable_coe_smul₀ hf
@@ -801,6 +809,10 @@ theorem _root_.IsUnit.integrable_smul_iff [NormedRing 𝕜] [Module 𝕜 β] [Bo
 theorem integrable_smul_iff [NormedDivisionRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β] {c : 𝕜}
     (hc : c ≠ 0) (f : α → β) : Integrable (c • f) μ ↔ Integrable f μ :=
   (IsUnit.mk0 _ hc).integrable_smul_iff f
+
+theorem integrable_smul_iff' [NormedDivisionRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β] {c : 𝕜}
+    (hc : c ≠ 0) (f : α → β) : Integrable (fun x ↦ c • f x) μ ↔ Integrable f μ :=
+  integrable_smul_iff hc f
 
 variable [NormedRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β]
 
