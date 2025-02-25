@@ -214,33 +214,28 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
         (n.factorial : R)⁻¹ • b ^ n =
       ∑ i ∈ range (N + 1), ∑ j ∈ range (N + 1), ((i.factorial : R)⁻¹ * (j.factorial : R)⁻¹) •
         (a ^ i * b ^ j) := by
-       rw [sum_mul_sum]
-       apply sum_congr rfl
-       intro n hn
-       apply sum_congr rfl
-       intro m hm
-       rw [smul_mul_assoc]
-       have ppp : a ^ n * (m.factorial : R)⁻¹ • b ^ m = (m.factorial : R)⁻¹ • (a ^ n *  b ^ m) := by
-         simp_all only [product_eq_sprod, mem_range, Algebra.mul_smul_comm, N]
-       rw [ppp, smul_smul]
+        rw [sum_mul_sum]
+        apply sum_congr rfl
+        intro n hn
+        apply sum_congr rfl
+        intro m hm
+        rw [smul_mul_assoc, Algebra.mul_smul_comm, smul_smul]
       _ = ∑ ij ∈ (range (N + 1)).product (range (N + 1)), ((ij.1.factorial : R)⁻¹ *
           (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
         rw [sum_sigma']
         apply sum_bij (fun ⟨i, j⟩ _ => (i, j))
         · simp only [mem_sigma, product_eq_sprod, mem_product, imp_self, implies_true]
         · simp only [mem_sigma, Prod.mk.injEq, and_imp]
-          intro h1 h2 h3 h4 h5 h6 h7 h8
-          refine Sigma.ext h7 ?_
-          exact heq_of_eq h8
-        · simp
-          intro h1 h2 h3 h4
-          constructor
-          apply h3
-          apply h4
+          intro _ _ _ _ _ _ h₁ h₂
+          exact Sigma.ext h₁ (heq_of_eq h₂)
+        · simp only [product_eq_sprod, mem_product, mem_range, mem_sigma, exists_prop,
+          Sigma.exists, and_imp, Prod.forall, Prod.mk.injEq, exists_eq_right_right, exists_eq_right]
+          intro _ _ h₁ h₂
+          exact ⟨h₁, h₂⟩
         simp only [implies_true]
-  simp at s₂
+  simp only [product_eq_sprod] at s₂
   rw [s₂.symm] at s₁
-  apply s₁
+  exact s₁
 
 end SemiringAlgebras
 
