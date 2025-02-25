@@ -20,21 +20,21 @@ and will be added in a future PR, as well as the definition of the (unoriented) 
 ## Main definitions
 
 - **SingularNManifold**: a singular `n`-manifold on a topological space `X`, for `n ∈ ℕ`, is a pair
-`(M, f)` of a closed `n`-dimensional smooth manifold `M` together with a continuous map `M → X`.
-We don't assume `M` to be modelled on `ℝ^n`, but add the model topological space `H`,
-the vector space `E` and the model with corners `I` as type parameters.
+  `(M, f)` of a closed `n`-dimensional smooth manifold `M` together with a continuous map `M → X`.
+  We don't assume `M` to be modelled on `ℝ^n`, but add the model topological space `H`,
+  the vector space `E` and the model with corners `I` as type parameters.
 - `SingularNManifold.map`: a map `X → Y` of topological spaces induces a map between the spaces
-of singular n-manifolds
-- `SingularNManifold.comap`: if `(N,f)` is a singular n-manifold on `X` and `φ: M → N` is smooth,
-the `comap` of `(N,f)` and `φ` is the induced singular n-manifold `(M, f ∘ φ)` on `X`.
+  of singular n-manifolds
+- `SingularNManifold.comap`: if `(N,f)` is a singular n-manifold on `X` and `φ: M → N` is continuous,
+  the `comap` of `(N,f)` and `φ` is the induced singular n-manifold `(M, f ∘ φ)` on `X`.
 - `SingularNManifold.empty`: the empty set `M`, viewed as an `n`-manifold,
-as a singular `n`-manifold over any space `X`.
+  as a singular `n`-manifold over any space `X`.
 - `SingularNManifold.trivial`: an `n`-dimensional manifold induces a singular `n`-manifold
-on the one-point space.
+  on the one-point space.
 - `SingularNManifold.prod`: the product of a singular `n`-manifold and a singular `m`-manifold
-on the one-point space, is a singular `n+m`-manifold on the one-point space.
+  on the one-point space, is a singular `n+m`-manifold on the one-point space.
 - `SingularNManifold.sum`: the disjoint union of two singular `n`-manifolds
-is a singular `n`-manifold.
+  is a singular `n`-manifold.
 
 ## Implementation notes
 
@@ -140,17 +140,17 @@ noncomputable def refl (hdim : finrank ℝ E = n) :
   hf := continuous_id
 
 /-- If `(N, f)` is a singular `n`-manifold on `X` and `M` another `n`-dimensional manifold,
-a smooth map `φ : M → N` induces a singular `n`-manifold structure `(M, f ∘ φ)` on `X`. -/
+a continuous map `φ : M → N` induces a singular `n`-manifold structure `(M, f ∘ φ)` on `X`. -/
 noncomputable def comap [h : Fact (finrank ℝ E' = n)]
     (s : SingularNManifold X n k I)
-    {φ : M' → s.M} (hφ : ContMDiff I' I n φ) : SingularNManifold X n k I' where
+    {φ : M' → s.M} (hφ : Continuous φ) : SingularNManifold X n k I' where
   f := s.f ∘ φ
-  hf := s.hf.comp hφ.continuous
+  hf := s.hf.comp hφ
   dimension := h.out
 
 @[simp]
 lemma comap_f [Fact (finrank ℝ E' = n)]
-    (s : SingularNManifold X n k I) {φ : M' → s.M} (hφ : ContMDiff I' I n φ) :
+    (s : SingularNManifold X n k I) {φ : M' → s.M} (hφ : Continuous φ) :
     (s.comap hφ).f = s.f ∘ φ :=
   rfl
 
