@@ -84,5 +84,4 @@ open ObjectProperty
 @[deprecated (since := "2025-02-25")] alias mem_isoClosure_iff := prop_isoClosure_iff
 @[deprecated (since := "2025-02-25")] alias mem_isoClosure := prop_isoClosure
 
-
 end CategoryTheory
