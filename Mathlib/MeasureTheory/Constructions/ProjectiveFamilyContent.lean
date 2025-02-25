@@ -5,6 +5,7 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 import Mathlib.MeasureTheory.Constructions.Projective
 import Mathlib.MeasureTheory.Measure.AddContent
+import Mathlib.MeasureTheory.SetAlgebra
 
 /-!
 # Additive content built from a projective family of measures
@@ -44,10 +45,13 @@ variable {ι : Type*} {α : ι → Type*} {mα : ∀ i, MeasurableSpace (α i)}
 
 section MeasurableCylinders
 
-lemma isSetRing_measurableCylinders : IsSetRing (measurableCylinders α) where
+lemma isSetAlgebra_measurableCylinders : IsSetAlgebra (measurableCylinders α) where
   empty_mem := empty_mem_measurableCylinders α
+  compl_mem _ := compl_mem_measurableCylinders
   union_mem _ _ := union_mem_measurableCylinders
-  diff_mem _ _ := diff_mem_measurableCylinders
+
+lemma isSetRing_measurableCylinders : IsSetRing (measurableCylinders α) :=
+  isSetAlgebra_measurableCylinders.isSetRing
 
 lemma isSetSemiring_measurableCylinders : MeasureTheory.IsSetSemiring (measurableCylinders α) :=
   isSetRing_measurableCylinders.isSetSemiring
