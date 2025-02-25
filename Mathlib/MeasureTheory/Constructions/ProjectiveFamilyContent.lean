@@ -87,12 +87,10 @@ lemma projectiveFamilyFun_union (hP : IsProjectiveMeasureFamily P)
   obtain ⟨I, S, hS, hs_eq⟩ := (mem_measurableCylinders _).1 hs
   obtain ⟨J, T, hT, ht_eq⟩ := (mem_measurableCylinders _).1 ht
   classical
-  let S' := (fun f : Π i : (I ∪ J : Finset ι), α i ↦
-    fun j : I ↦ f ⟨j, mem_union_left J j.prop⟩) ⁻¹' S
-  let T' := (fun f : Π i : (I ∪ J : Finset ι), α i ↦
-    fun j : J ↦ f ⟨j, mem_union_right I j.prop⟩) ⁻¹' T
-  have hS' : MeasurableSet S' := measurable_pi_lambda _ (fun j ↦ measurable_pi_apply _) hS
-  have hT' : MeasurableSet T' := measurable_pi_lambda _ (fun j ↦ measurable_pi_apply _) hT
+  let S' := restrict₂ (subset_union_left (s₂ := J)) ⁻¹' S
+  let T' := restrict₂ (subset_union_right (s₁ := I)) ⁻¹' T
+  have hS' : MeasurableSet S' := measurable_restrict₂ _ hS
+  have hT' : MeasurableSet T' := measurable_restrict₂ _ hT
   have h_eq1 : s = cylinder (I ∪ J) S' := by rw [hs_eq]; exact cylinder_eq_cylinder_union I S J
   have h_eq2 : t = cylinder (I ∪ J) T' := by rw [ht_eq]; exact cylinder_eq_cylinder_union J T I
   have h_eq3 : s ∪ t = cylinder (I ∪ J) (S' ∪ T') := by
@@ -139,7 +137,7 @@ lemma projectiveFamilyContent_iUnion_le (hP : IsProjectiveMeasureFamily P)
     projectiveFamilyContent hP (⋃ i ≤ n, s i)
       ≤ ∑ i ∈ range (n + 1), projectiveFamilyContent hP (s i) :=
   calc projectiveFamilyContent hP (⋃ i ≤ n, s i)
-  _ = projectiveFamilyContent hP (⋃ i ∈ range (n+1), s i) := by
+  _ = projectiveFamilyContent hP (⋃ i ∈ range (n + 1), s i) := by
     simp only [mem_range_succ_iff]
   _ ≤ ∑ i ∈ range (n + 1), projectiveFamilyContent hP (s i) :=
     addContent_biUnion_le isSetRing_measurableCylinders (fun i _ ↦ hs i)
