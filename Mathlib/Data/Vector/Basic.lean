@@ -210,7 +210,7 @@ theorem tail_ofFn {n : ℕ} (f : Fin n.succ → α) : tail (ofFn f) = ofFn fun i
 
 @[simp]
 theorem toList_empty (v : Vector α 0) : v.toList = [] :=
-  List.length_eq_zero.mp v.2
+  List.length_eq_zero_iff.mp v.2
 
 /-- The list that makes up a `Vector` made up of a single element,
 retrieved via `toList`, is equal to the list of that single element. -/

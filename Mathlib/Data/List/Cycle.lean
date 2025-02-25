@@ -533,7 +533,7 @@ theorem Subsingleton.congr {s : Cycle α} (h : Subsingleton s) :
     ∀ ⦃x⦄ (_hx : x ∈ s) ⦃y⦄ (_hy : y ∈ s), x = y := by
   induction' s using Quot.inductionOn with l
   simp only [length_subsingleton_iff, length_coe, mk_eq_coe, le_iff_lt_or_eq, Nat.lt_add_one_iff,
-    length_eq_zero, length_eq_one, Nat.not_lt_zero, false_or] at h
+    length_eq_zero_iff, length_eq_one_iff, Nat.not_lt_zero, false_or] at h
   rcases h with (rfl | ⟨z, rfl⟩) <;> simp
 
 /-- A `s : Cycle α` that is made up of at least two unique elements. -/
@@ -586,7 +586,7 @@ theorem Subsingleton.nodup {s : Cycle α} (h : Subsingleton s) : Nodup s := by
   induction' s using Quot.inductionOn with l
   obtain - | ⟨hd, tl⟩ := l
   · simp
-  · have : tl = [] := by simpa [Subsingleton, length_eq_zero, Nat.succ_le_succ_iff] using h
+  · have : tl = [] := by simpa [Subsingleton, length_eq_zero_iff, Nat.succ_le_succ_iff] using h
     simp [this]
 
 theorem Nodup.nontrivial_iff {s : Cycle α} (h : Nodup s) : Nontrivial s ↔ ¬Subsingleton s := by
