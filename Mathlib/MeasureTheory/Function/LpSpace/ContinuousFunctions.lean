@@ -7,6 +7,7 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.MeasureTheory.Function.LpSpace.Basic
 import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.Topology.ContinuousMap.Compact
+import Mathlib.Topology.ContinuousMap.CompactlySupported
 
 /-!
 # Continuous functions in Lp space
@@ -17,7 +18,7 @@ as `BoundedContinuousFunction.toLp`.
 
 -/
 
-open BoundedContinuousFunction MeasureTheory Filter
+open BoundedContinuousFunction CompactlySupported MeasureTheory Filter
 open scoped ENNReal
 
 variable {α E : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
@@ -199,3 +200,42 @@ theorem toLp_norm_le :
   exact BoundedContinuousFunction.toLp_norm_le μ
 
 end ContinuousMap
+
+namespace CompactlySupportedContinuousMap
+
+variable [IsFiniteMeasureOnCompacts μ]
+
+variable (p μ) in
+/-- A compactly supported, continuous function is in `Lp` for any measure that is finite on
+compact sets. -/
+theorem mem_Lp (f : α →C_c E) :
+    f.toContinuousMap.toAEEqFun μ ∈ Lp E p μ := by
+  refine Lp.mem_Lp_iff_memLp.mpr ?_
+  refine (memLp_congr_ae ?_).mpr <| f.continuous.memLp_of_hasCompactSupport f.hasCompactSupport
+  exact f.toContinuousMap.coeFn_toAEEqFun μ
+
+variable (p μ) in
+/-- The linear map from compactly supported, continuous functions to `Lp`. -/
+def toLp : (α →C_c E) →+ Lp E p μ where
+  toFun f := ⟨_, f.mem_Lp p μ⟩
+  map_zero' := rfl
+  map_add' _ _ := rfl
+
+theorem coe_toLp (f : α →C_c E) : toLp p μ f = f.toContinuousMap.toAEEqFun μ := rfl
+
+theorem coeFn_toLp (f : α →C_c E) : ⇑(toLp p μ f) =ᵐ[μ] f := f.toContinuousMap.coeFn_toAEEqFun μ
+
+variable (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 E]
+
+variable (p μ) in
+/-- The linear map from compactly supported, continuous functions to `Lp`. -/
+def toLpₗ : (α →C_c E) →ₗ[𝕜] Lp E p μ where
+  toFun f := ⟨_, f.mem_Lp p μ⟩
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+theorem coe_toLpₗ (f : α →C_c E) : toLpₗ p μ 𝕜 f = f.toContinuousMap.toAEEqFun μ := rfl
+
+theorem coeFn_toLpₗ (f : α →C_c E) : ⇑(toLpₗ p μ 𝕜 f) =ᵐ[μ] f := f.toContinuousMap.coeFn_toAEEqFun μ
+
+end CompactlySupportedContinuousMap

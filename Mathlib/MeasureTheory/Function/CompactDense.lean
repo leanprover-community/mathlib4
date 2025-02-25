@@ -51,38 +51,6 @@ end NNReal
 
 variable {𝕜 E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F]
 
-section Compact
-
-variable [MeasurableSpace E]
-
--- TODO: Provide `.toLp` as CLM?
--- Would require `TopologicalSpace (E →C_c F)`, e.g. via `PseudoMetricSpace`.
-
-/-- Any `CompactlySupportedContinuousMap` is in `L^p`. -/
-theorem CompactlySupportedContinuousMap.memLp [OpensMeasurableSpace E] (f : E →C_c F) (p : ℝ≥0∞)
-    (μ : Measure E := by volume_tac) [IsFiniteMeasureOnCompacts μ] : MemLp f p μ :=
-  f.continuous.memLp_of_hasCompactSupport f.hasCompactSupport
-
-variable (F) in
-/-- The mapping from continuous, compact-support functions to `L^p` with `1 ≤ p < ⊤` is dense. -/
-theorem CompactlySupportedContinuousMap.toLp_denseRange
-    [NormalSpace E] [BorelSpace E] [WeaklyLocallyCompactSpace E] [NormedSpace ℝ F]
-    {p : ℝ≥0∞} [Fact (1 ≤ p)] (hp_top : p ≠ ⊤) (μ : Measure E := by volume_tac) [μ.Regular] :
-    DenseRange (fun f : E →C_c F ↦ (f.memLp p μ).toLp) := by
-  rw [Metric.denseRange_iff]
-  intro f ε hε
-  -- Use `ε / 2` to obtain strict inequality.
-  obtain ⟨g, hg_supp, hg_dist, hg_cont, _⟩ := (Lp.memLp f).exists_hasCompactSupport_eLpNorm_sub_le
-    hp_top (ε := .ofReal (ε / 2)) (by simpa using hε)
-  use ⟨⟨g, hg_cont⟩, hg_supp⟩
-  rw [Lp.dist_def]
-  refine ENNReal.toReal_lt_of_lt_ofReal ?_
-  refine lt_of_eq_of_lt (eLpNorm_congr_ae ?_) (lt_of_le_of_lt hg_dist ?_)
-  · exact .sub .rfl (MemLp.coeFn_toLp _)
-  · exact ENNReal.ofReal_lt_ofReal_iff'.mpr ⟨div_two_lt_of_pos hε, hε⟩
-
-end Compact
-
 /-! ## Smooth, compact functions -/
 
 section Smooth
@@ -377,7 +345,7 @@ theorem ContDiff.toLp_denseRange [BorelSpace E] [NormedSpace ℝ E] [FiniteDimen
   rw [Metric.denseRange_iff]
   intro f ε hε
   obtain ⟨g, hfg⟩ := DenseRange.exists_dist_lt
-    (CompactlySupportedContinuousMap.toLp_denseRange F hp_top μ) f (half_pos hε)
+    (CompactlySupportedContinuousMap.toLp_denseRange F μ hp_top) f (half_pos hε)
   obtain ⟨φ, hφ⟩ := Continuous.exists_contDiffBump_eLpNorm_conv_sub_self_lt_of_hasCompactSupport
     g.continuous g.hasCompactSupport hp.out hp_top μ _ (half_pos hε)
   -- Show that `φ.normed μ ⋆ g` satisfies `ContDiff` and `HasCompactSupport`.
@@ -387,12 +355,12 @@ theorem ContDiff.toLp_denseRange [BorelSpace E] [NormedSpace ℝ E] [FiniteDimen
   · exact .convolution _ φ.hasCompactSupport_normed g.hasCompactSupport
   -- Apply triangle inequality.
   rw [← add_halves ε]
-  refine lt_of_le_of_lt (dist_triangle f (g.memLp p μ).toLp _) ?_
+  refine lt_of_le_of_lt (dist_triangle f (g.toLp p μ) _) ?_
   refine add_lt_add_of_lt_of_le hfg ?_
   rw [dist_comm, Lp.dist_def]
   refine ENNReal.toReal_le_of_le_ofReal (half_pos hε).le ?_
   refine le_of_eq_of_le (eLpNorm_congr_ae ?_) hφ
   -- TODO: More idiomatic to solve with `filter_upwards`?
-  exact .sub (MemLp.coeFn_toLp _) (MemLp.coeFn_toLp _)
+  exact .sub (MemLp.coeFn_toLp _) g.coeFn_toLp
 
 end Smooth

@@ -3,11 +3,11 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.MeasureTheory.Measure.Regular
-import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-import Mathlib.Topology.UrysohnsLemma
 import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
+import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Measure.Regular
+import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Approximation in Lᵖ by continuous functions
@@ -58,7 +58,7 @@ Vitali-Carathéodory theorem, in the file `Mathlib/MeasureTheory/Integral/Vitali
 -/
 
 
-open scoped ENNReal NNReal Topology BoundedContinuousFunction
+open scoped ENNReal NNReal Topology BoundedContinuousFunction CompactlySupported
 
 open MeasureTheory TopologicalSpace ContinuousMap Set Bornology
 
@@ -379,3 +379,24 @@ theorem toLp_denseRange [CompactSpace α] [μ.WeaklyRegular] [IsFiniteMeasure μ
   exact ⟨f.toContinuousMap, rfl⟩
 
 end ContinuousMap
+
+namespace CompactlySupportedContinuousMap
+
+/-- The mapping from continuous, compactly supported functions to `Lp` with `1 ≤ p < ⊤` is dense. -/
+theorem toLp_denseRange [R1Space α] [WeaklyLocallyCompactSpace α] [NormedSpace ℝ E]
+    {p : ℝ≥0∞} [Fact (1 ≤ p)] (hp_top : p ≠ ⊤) [μ.Regular] :
+    DenseRange (fun f : α →C_c E ↦ f.toLp p μ) := by
+  rw [Metric.denseRange_iff]
+  intro f ε hε
+  obtain ⟨γ, hγ_pos, hγ⟩ : ∃ γ : ℝ≥0, 0 < γ ∧ γ < ⟨ε, hε.le⟩ := exists_between hε
+  obtain ⟨g, hg_supp, hg_dist, hg_cont, _⟩ := MemLp.exists_hasCompactSupport_eLpNorm_sub_le hp_top
+    (Lp.memLp f) (ENNReal.coe_pos.mpr hγ_pos).ne'
+  suffices ∃ g, edist f (toLp p μ g) ≤ γ by
+    refine this.imp fun g h ↦ lt_of_le_of_lt ?_ hγ
+    simpa using h
+  use ⟨⟨g, hg_cont⟩, hg_supp⟩
+  simp only [Lp.edist_def]
+  convert hg_dist using 1
+  exact eLpNorm_congr_ae <| .sub .rfl (coeFn_toLp _)
+
+end CompactlySupportedContinuousMap
