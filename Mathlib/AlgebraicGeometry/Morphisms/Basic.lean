@@ -174,6 +174,26 @@ theorem iff_of_openCover (𝒰 : Y.OpenCover) :
     P f ↔ ∀ i, P (𝒰.pullbackHom f i) :=
   ⟨fun H _ ↦ of_isPullback (.of_hasPullback _ _) H, of_openCover _⟩
 
+lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : ι → Y.Opens)
+    (H : Set.range f.base ⊆ (⨆ i, U i : Y.Opens)) (hf : ∀ i, P (f ∣_ U i)) : P f := by
+  let g : X ⟶ (⨆ i, U i : Y.Opens) := IsOpenImmersion.lift (Scheme.Opens.ι _) f (by simpa using H)
+  rw [← IsOpenImmersion.lift_fac (⨆ i, U i).ι f (by simpa using H)]
+  apply MorphismProperty.RespectsRight.postcomp (Q := @IsOpenImmersion) _ inferInstance
+  rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) (U := fun i : ι ↦ (⨆ i, U i).ι ⁻¹ᵁ U i)]
+  · intro i
+    have heq : g ⁻¹ᵁ (⨆ i, U i).ι ⁻¹ᵁ U i = f ⁻¹ᵁ U i := by
+      show (g ≫ (⨆ i, U i).ι) ⁻¹ᵁ U i = _
+      simp [g]
+    let e : Arrow.mk (g ∣_ (⨆ i, U i).ι ⁻¹ᵁ U i) ≅ Arrow.mk (f ∣_ U i) :=
+        Arrow.isoMk (X.isoOfEq heq) (Scheme.Opens.isoOfLE (le_iSup U i)) <| by
+      simp [← CategoryTheory.cancel_mono (U i).ι, g]
+    rw [P.arrow_mk_iso_iff e]
+    exact hf i
+  apply (⨆ i, U i).ι.image_injective
+  dsimp
+  rw [Scheme.Hom.image_iSup, Scheme.Hom.image_top_eq_opensRange, Scheme.Opens.opensRange_ι]
+  simp [Scheme.Hom.image_preimage_eq_opensRange_inter, le_iSup U]
+
 end IsLocalAtTarget
 
 /--
@@ -195,10 +215,10 @@ namespace IsLocalAtSource
 attribute [instance] respectsIso
 
 /--
-`P` is local at the target if
+`P` is local at the source if
 1. `P` respects isomorphisms.
-2. If `P` holds for `f : X ⟶ Y`, then `P` holds for `f ∣_ U` for any `U`.
-3. If `P` holds for `f ∣_ U` for an open cover `U` of `Y`, then `P` holds for `f`.
+2. If `P` holds for `f : X ⟶ Y`, then `P` holds for `U.ι ≫ f` for any `U`.
+3. If `P` holds for `U.ι ≫ f` for an open cover `U` of `X`, then `P` holds for `f`.
 -/
 protected lemma mk' {P : MorphismProperty Scheme} [P.RespectsIso]
     (restrict : ∀ {X Y : Scheme} (f : X ⟶ Y) (U : X.Opens), P f → P (U.ι ≫ f))
@@ -621,5 +641,22 @@ lemma isLocalAtSource
 end HasAffineProperty
 
 end targetAffineLocally
+
+open MorphismProperty
+
+lemma hasOfPostcompProperty_isOpenImmersion_of_morphismRestrict (P : MorphismProperty Scheme)
+    [P.RespectsIso] (H : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens), P f → P (f ∣_ U)) :
+    P.HasOfPostcompProperty @IsOpenImmersion where
+  of_postcomp {X Y Z} f g hg hfg := by
+    have : (f ≫ g) ⁻¹ᵁ g.opensRange = ⊤ := by simp
+    have : f = X.topIso.inv ≫ (X.isoOfEq this).inv ≫ (f ≫ g) ∣_ g.opensRange ≫
+        (IsOpenImmersion.isoOfRangeEq g.opensRange.ι g (by simp)).hom := by
+      simp [← cancel_mono g]
+    simp_rw [this, cancel_left_of_respectsIso (P := P), cancel_right_of_respectsIso (P := P)]
+    exact H _ _ hfg
+
+instance (P : MorphismProperty Scheme) [P.IsStableUnderBaseChange] :
+    P.HasOfPostcompProperty @IsOpenImmersion :=
+  HasOfPostcompProperty.of_le P (.monomorphisms Scheme) (fun _ _ f _ ↦ inferInstanceAs (Mono f))
 
 end AlgebraicGeometry

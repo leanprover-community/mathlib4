@@ -93,7 +93,7 @@ instance {X : Scheme.{u}} : Subsingleton Γ(X, ⊥) :=
   CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
 
 @[continuity, fun_prop]
-lemma Hom.continuous {X Y : Scheme} (f : X.Hom Y) : Continuous f.base := f.base.2
+lemma Hom.continuous {X Y : Scheme} (f : X.Hom Y) : Continuous f.base := f.base.hom.2
 
 /-- The structure sheaf of a scheme. -/
 protected abbrev sheaf (X : Scheme) :=
@@ -270,7 +270,6 @@ theorem comp_coeBase {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).base = f.base ≫ g.base :=
   rfl
 
--- Porting note: removed elementwise attribute, as generated lemmas were trivial.
 @[reassoc]
 theorem comp_base {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).base = f.base ≫ g.base :=
@@ -407,7 +406,7 @@ variable {R S : CommRingCat.{u}} (f : R ⟶ S)
 lemma Spec_carrier (R : CommRingCat.{u}) : (Spec R).carrier = PrimeSpectrum R := rfl
 lemma Spec_sheaf (R : CommRingCat.{u}) : (Spec R).sheaf = Spec.structureSheaf R := rfl
 lemma Spec_presheaf (R : CommRingCat.{u}) : (Spec R).presheaf = (Spec.structureSheaf R).1 := rfl
-lemma Spec.map_base : (Spec.map f).base = PrimeSpectrum.comap f.hom := rfl
+lemma Spec.map_base : (Spec.map f).base = ofHom (PrimeSpectrum.comap f.hom) := rfl
 lemma Spec.map_base_apply (x : Spec S) : (Spec.map f).base x = PrimeSpectrum.comap f.hom x := rfl
 
 lemma Spec.map_app (U) :
@@ -765,12 +764,12 @@ lemma stalkMap_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
 
 @[reassoc]
 lemma stalkSpecializes_stalkMap (x x' : X)
-    (h : x ⤳ x') : Y.presheaf.stalkSpecializes (f.base.map_specializes h) ≫ f.stalkMap x =
+    (h : x ⤳ x') : Y.presheaf.stalkSpecializes (f.base.hom.map_specializes h) ≫ f.stalkMap x =
       f.stalkMap x' ≫ X.presheaf.stalkSpecializes h :=
   PresheafedSpace.stalkMap.stalkSpecializes_stalkMap f.toPshHom h
 
 lemma stalkSpecializes_stalkMap_apply (x x' : X) (h : x ⤳ x') (y) :
-    f.stalkMap x (Y.presheaf.stalkSpecializes (f.base.map_specializes h) y) =
+    f.stalkMap x (Y.presheaf.stalkSpecializes (f.base.hom.map_specializes h) y) =
       (X.presheaf.stalkSpecializes h (f.stalkMap x' y)) :=
   DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkSpecializes_stalkMap f x x' h)) y
 

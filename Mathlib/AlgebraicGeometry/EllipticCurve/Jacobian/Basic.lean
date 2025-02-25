@@ -45,7 +45,10 @@ notation `![x, y, z]`. However, `P` is not syntactically equivalent to the expan
 two forms. The equivalence of two point representatives `P` and `Q` is implemented as an equivalence
 of orbits of the action of `Rˣ`, or equivalently that there is some unit `u` of `R` such that
 `P = u • Q`. However, `u • Q` is not syntactically equal to `![u² * Q x, u³ * Q y, u * Q z]`, so the
-lemmas `smul_fin3` and `smul_fin3_ext` can be used to convert between the two forms.
+lemmas `smul_fin3` and `smul_fin3_ext` can be used to convert between the two forms. Files in
+`Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian` make extensive use of `erw` to get around this.
+While `erw` is often an indication of a problem, in this case it is self-contained and should not
+cause any issues. It would alternatively be possible to add some automation to assist here.
 
 Whenever possible, all changes to documentation and naming of definitions and theorems should be
 mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Basic.lean`.
@@ -141,7 +144,7 @@ scoped instance : MulAction R <| Fin 3 → R where
   mul_smul _ _ _ := by simp only [smul_fin3, mul_pow, mul_assoc, fin3_def_ext]
 
 /-- The equivalence setoid for a point representative. -/
-scoped instance : Setoid <| Fin 3 → R :=
+@[reducible] scoped instance : Setoid <| Fin 3 → R :=
   MulAction.orbitRel Rˣ <| Fin 3 → R
 
 variable (R) in
@@ -158,8 +161,7 @@ lemma smul_eq (P : Fin 3 → R) {u : R} (hu : IsUnit u) : (⟦u • P⟧ : Point
 
 lemma smul_equiv_smul (P Q : Fin 3 → R) {u v : R} (hu : IsUnit u) (hv : IsUnit v) :
     u • P ≈ v • Q ↔ P ≈ Q := by
-  erw [← Quotient.eq_iff_equiv, ← Quotient.eq_iff_equiv, smul_eq P hu, smul_eq Q hv]
-  rfl
+  rw [← Quotient.eq_iff_equiv, ← Quotient.eq_iff_equiv, smul_eq P hu, smul_eq Q hv]
 
 variable (W') in
 /-- The coercion to a Weierstrass curve in affine coordinates. -/

@@ -37,10 +37,6 @@ profinite
 
 -/
 
--- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
-attribute [local instance] CategoryTheory.HasForget.instFunLike
-
-
 universe v u
 
 open CategoryTheory Topology CompHausLike
@@ -66,10 +62,6 @@ instance : Inhabited Profinite :=
 
 instance {X : Profinite} : TotallyDisconnectedSpace X :=
   X.prop
-
-instance {X : Profinite} : TotallyDisconnectedSpace ((forget Profinite).obj X) := by
-  change TotallyDisconnectedSpace X
-  exact inferInstance
 
 end Profinite
 
@@ -109,12 +101,12 @@ spaces in compact Hausdorff spaces.
 -/
 def Profinite.toCompHausEquivalence (X : CompHaus.{u}) (Y : Profinite.{u}) :
     (CompHaus.toProfiniteObj X ⟶ Y) ≃ (X ⟶ profiniteToCompHaus.obj Y) where
-  toFun f := f.comp ⟨Quotient.mk'', continuous_quotient_mk'⟩
-  invFun g :=
-    { toFun := Continuous.connectedComponentsLift g.2
-      continuous_toFun := Continuous.connectedComponentsLift_continuous g.2 }
-  left_inv _ := ContinuousMap.ext <| ConnectedComponents.surjective_coe.forall.2 fun _ => rfl
-  right_inv _ := ContinuousMap.ext fun _ => rfl
+  toFun f := ofHom _ (f.hom.comp ⟨Quotient.mk'', continuous_quotient_mk'⟩)
+  invFun g := TopCat.ofHom
+    { toFun := Continuous.connectedComponentsLift g.hom.2
+      continuous_toFun := Continuous.connectedComponentsLift_continuous g.hom.2 }
+  left_inv _ := TopCat.ext <| ConnectedComponents.surjective_coe.forall.2 fun _ => rfl
+  right_inv _ := TopCat.ext fun _ => rfl
 
 /-- The connected_components functor from compact Hausdorff spaces to profinite spaces,
 left adjoint to the inclusion functor.
@@ -140,10 +132,10 @@ attribute [local instance] FintypeCat.discreteTopology
 
 /-- The natural functor from `Fintype` to `Profinite`, endowing a finite type with the
 discrete topology. -/
-@[simps -isSimp map_apply]
+@[simps! -isSimp map_hom_apply]
 def FintypeCat.toProfinite : FintypeCat ⥤ Profinite where
   obj A := Profinite.of A
-  map f := ⟨f, by continuity⟩
+  map f := ofHom _ ⟨f, by continuity⟩
 
 /-- `FintypeCat.toLightProfinite` is fully faithful. -/
 def FintypeCat.toProfiniteFullyFaithful : toProfinite.FullyFaithful where
@@ -222,7 +214,7 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
     contrapose!
     rintro ⟨y, hy⟩ hf
     let C := Set.range f
-    have hC : IsClosed C := (isCompact_range f.continuous).isClosed
+    have hC : IsClosed C := (isCompact_range f.hom.continuous).isClosed
     let U := Cᶜ
     have hyU : y ∈ U := by
       refine Set.mem_compl ?_
@@ -232,22 +224,20 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
     obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_isClopen.mem_nhds_iff.mp hUy
     classical
       let Z := of (ULift.{u} <| Fin 2)
-      let g : Y ⟶ Z := ⟨(LocallyConstant.ofIsClopen hV).map ULift.up, LocallyConstant.continuous _⟩
-      let h : Y ⟶ Z := ⟨fun _ => ⟨1⟩, continuous_const⟩
+      let g : Y ⟶ Z := ofHom _
+        ⟨(LocallyConstant.ofIsClopen hV).map ULift.up, LocallyConstant.continuous _⟩
+      let h : Y ⟶ Z := ofHom _ ⟨fun _ => ⟨1⟩, continuous_const⟩
       have H : h = g := by
         rw [← cancel_epi f]
         ext x
-        apply ULift.ext
         dsimp [g, LocallyConstant.ofIsClopen]
-        -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-        erw [CategoryTheory.comp_apply, ContinuousMap.coe_mk, CategoryTheory.comp_apply,
+        rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, ConcreteCategory.hom_ofHom,
           ContinuousMap.coe_mk, Function.comp_apply, if_neg]
         refine mt (fun α => hVU α) ?_
-        simp only [U, C, Set.mem_range_self, not_true, not_false_iff, Set.mem_compl_iff]
+        simp [U, C]
       apply_fun fun e => (e y).down at H
       dsimp [g, LocallyConstant.ofIsClopen] at H
-      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-      erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
+      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
       exact top_ne_bot H
   · rw [← CategoryTheory.epi_iff_surjective]
     apply (forget Profinite).epi_of_epi_map

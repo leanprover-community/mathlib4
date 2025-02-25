@@ -34,8 +34,7 @@ instance {α : Sort u} {β : Sort v} : EmbeddingLike (α ↪ β) α β where
 
 initialize_simps_projections Embedding (toFun → apply)
 
--- Porting note: this needs `tactic.lift`.
---instance {α β : Sort*} : CanLift (α → β) (α ↪ β) coeFn Injective where prf f hf := ⟨⟨f, hf⟩, rfl⟩
+instance {α β : Sort*} : CanLift (α → β) (α ↪ β) (↑) Injective where prf f hf := ⟨⟨f, hf⟩, rfl⟩
 
 theorem exists_surjective_iff {α β : Sort*} :
     (∃ f : α → β, Surjective f) ↔ Nonempty (α → β) ∧ Nonempty (β ↪ α) :=
@@ -197,9 +196,6 @@ lemma setValue_right_apply_eq {α β} (f : α ↪ β) (a c : α) [∀ a', Decida
 protected def some {α} : α ↪ Option α :=
   ⟨some, Option.some_injective α⟩
 
--- Porting note: Lean 4 unfolds coercion `α → Option α` to `some`, so there is no separate
--- `Function.Embedding.coeOption`.
-
 /-- A version of `Option.map` for `Function.Embedding`s. -/
 @[simps (config := .asFn)]
 def optionMap {α β} (f : α ↪ β) : Option α ↪ Option β :=
@@ -262,7 +258,7 @@ open Sum
 
 /-- If `e₁` and `e₂` are embeddings, then so is `Sum.map e₁ e₂`. -/
 def sumMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α ⊕ γ ↪ β ⊕ δ :=
-  ⟨Sum.map e₁ e₂, e₁.injective.sum_map e₂.injective⟩
+  ⟨Sum.map e₁ e₂, e₁.injective.sumMap e₂.injective⟩
 
 @[simp]
 theorem coe_sumMap {α β γ δ} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : sumMap e₁ e₂ = Sum.map e₁ e₂ :=
