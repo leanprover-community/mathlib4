@@ -84,8 +84,7 @@ lemma hasDerivAt_klFun (hx : x ≠ 0) : HasDerivAt klFun (log x) x := by
   ring
 
 lemma not_differentiableAt_klFun_zero : ¬ DifferentiableAt ℝ klFun 0 := by
-  simp only [differentiableAt_id', DifferentiableAt.sub_iff_left, differentiableAt_add_const_iff]
-  exact not_DifferentiableAt_log_mul_zero
+  simpa using not_DifferentiableAt_log_mul_zero
 
 /-- The derivative of `klFun` is `log x`. This also holds at `x = 0` although `klFun` is not
 differentiable there since the default value of `deriv` in that case is 0. -/
@@ -136,15 +135,11 @@ lemma tendsto_rightDeriv_klFun_atTop :
 
 end Derivatives
 
-/-- The function `klFun` is nonnegative on `[0,∞)`. -/
-lemma klFun_nonneg (hx : 0 ≤ x) : 0 ≤ klFun x := by
-  rcases hx.eq_or_lt with rfl | hx
-  · simp
-  · rw [← klFun_one]
-    exact convexOn_Ioi_klFun.isMinOn_of_rightDeriv_eq_zero (by simp) (by simp) hx
-
 lemma isMinOn_klFun : IsMinOn klFun (Ici 0) 1 :=
-  isMinOn_iff.mpr fun _ hy ↦ klFun_one ▸ klFun_nonneg hy
+  convexOn_klFun.isMinOn_of_rightDeriv_eq_zero (by simp) (by simp)
+
+/-- The function `klFun` is nonnegative on `[0,∞)`. -/
+lemma klFun_nonneg (hx : 0 ≤ x) : 0 ≤ klFun x := klFun_one ▸ isMinOn_klFun hx
 
 lemma klFun_eq_zero_iff (hx : 0 ≤ x) : klFun x = 0 ↔ x = 1 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
