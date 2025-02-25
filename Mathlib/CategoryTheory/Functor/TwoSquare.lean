@@ -49,6 +49,16 @@ namespace TwoSquare
 /-- Constructor for `TwoSquare`. -/
 abbrev mk (α : T ⋙ R ⟶ L ⋙ B) : TwoSquare T L R B := α
 
+variable {T} {L} {R} {B} in
+abbrev out (w : TwoSquare T L R B) : T ⋙ R ⟶ L ⋙ B := w
+
+@[simps]
+def equivNatTrans : TwoSquare T L R B ≃ (T ⋙ R ⟶ L ⋙ B) where
+  toFun := out
+  invFun := mk T L R B
+  left_inv := fun _ => rfl
+  right_inv := fun _ => rfl
+
 variable {T L R B}
 
 @[ext]

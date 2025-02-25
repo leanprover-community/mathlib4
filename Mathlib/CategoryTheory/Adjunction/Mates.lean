@@ -73,13 +73,13 @@ Note that if one of the transformations is an iso, it does not imply the other i
 -/
 @[simps]
 def mateEquiv : TwoSquare G L₁ L₂ H ≃ TwoSquare R₁ H G R₂ where
-  toFun α :=
+  toFun α := .mk _ _ _ _ <|
     whiskerLeft (R₁ ⋙ G) adj₂.unit ≫
-    whiskerRight (whiskerLeft R₁ α) R₂ ≫
+    whiskerRight (whiskerLeft R₁ α.out) R₂ ≫
     whiskerRight adj₁.counit (H ⋙ R₂)
-  invFun β :=
+  invFun β := .mk _ _ _ _ <|
     whiskerRight adj₁.unit (G ⋙ L₂) ≫
-    whiskerRight (whiskerLeft L₁ β) L₂ ≫
+    whiskerRight (whiskerLeft L₁ β.out) L₂ ≫
     whiskerLeft (L₁ ⋙ H) adj₂.counit
   left_inv α := by
     ext
@@ -243,8 +243,10 @@ This is in contrast to the general case `mateEquiv` which does not in general ha
 @[simps!]
 def conjugateEquiv : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
   calc
-    (L₂ ⟶ L₁) ≃ _ := (Iso.homCongr L₂.leftUnitor L₁.rightUnitor).symm
+    (L₂ ⟶ L₁) ≃ (𝟭 C ⋙ L₂ ⟶ L₁ ⋙ 𝟭 D) := (Iso.homCongr L₂.leftUnitor L₁.rightUnitor).symm
+    _ ≃ TwoSquare _ _ _ _ := (TwoSquare.equivNatTrans _ _ _ _).symm
     _ ≃ _ := mateEquiv adj₁ adj₂
+    _ ≃ (R₁ ⋙ 𝟭 C ⟶ 𝟭 D ⋙ R₂) := TwoSquare.equivNatTrans _ _ _ _
     _ ≃ (R₁ ⟶ R₂) := R₁.rightUnitor.homCongr R₂.leftUnitor
 
 /-- A component of a transposed form of the conjugation definition. -/
@@ -252,8 +254,6 @@ theorem conjugateEquiv_counit (α : L₂ ⟶ L₁) (d : D) :
     L₂.map ((conjugateEquiv adj₁ adj₂ α).app _) ≫ adj₂.counit.app d =
       α.app _ ≫ adj₁.counit.app d := by
   dsimp [conjugateEquiv]
-  erw [Iso.homCongr_apply, mateEquiv_apply]
-  dsimp
   rw [id_comp, comp_id]
   have := mateEquiv_counit adj₁ adj₂ (L₂.leftUnitor.hom ≫ α ≫ L₁.rightUnitor.inv) d
   dsimp at this
@@ -272,8 +272,6 @@ theorem unit_conjugateEquiv (α : L₂ ⟶ L₁) (c : C) :
     adj₁.unit.app _ ≫ (conjugateEquiv adj₁ adj₂ α).app _ =
       adj₂.unit.app c ≫ R₂.map (α.app _) := by
   dsimp [conjugateEquiv]
-  erw [Iso.homCongr_apply, mateEquiv_apply]
-  dsimp
   rw [id_comp, comp_id]
   have := unit_mateEquiv adj₁ adj₂ (L₂.leftUnitor.hom ≫ α ≫ L₁.rightUnitor.inv) c
   dsimp at this
@@ -290,10 +288,7 @@ theorem unit_conjugateEquiv_symm (α : R₁ ⟶ R₂) (c : C) :
 @[simp]
 theorem conjugateEquiv_id : conjugateEquiv adj₁ adj₁ (𝟙 _) = 𝟙 _ := by
   ext
-  dsimp [conjugateEquiv, mateEquiv]
-  erw [Iso.homCongr_apply]
-  dsimp
-  simp only [comp_id, map_id, id_comp, right_triangle_components]
+  simp
 
 @[simp]
 theorem conjugateEquiv_symm_id : (conjugateEquiv adj₁ adj₁).symm (𝟙 _) = 𝟙 _ := by
@@ -302,17 +297,11 @@ theorem conjugateEquiv_symm_id : (conjugateEquiv adj₁ adj₁).symm (𝟙 _) = 
 
 theorem conjugateEquiv_adjunction_id {L R : C ⥤ C} (adj : L ⊣ R) (α : 𝟭 C ⟶ L) (c : C) :
     (conjugateEquiv adj Adjunction.id α).app c = α.app (R.obj c) ≫ adj.counit.app c := by
-  dsimp [conjugateEquiv, mateEquiv, Adjunction.id]
-  erw [Iso.homCongr_apply]
-  dsimp
-  simp only [comp_id, id_comp]
+  simp [conjugateEquiv, mateEquiv, Adjunction.id]
 
 theorem conjugateEquiv_adjunction_id_symm {L R : C ⥤ C} (adj : L ⊣ R) (α : R ⟶ 𝟭 C) (c : C) :
     ((conjugateEquiv adj Adjunction.id).symm α).app c = adj.unit.app c ≫ α.app (L.obj c) := by
-  dsimp [conjugateEquiv, mateEquiv, Adjunction.id]
-  simp only [comp_id, id_comp]
-  erw [Iso.homCongr_symm_apply]
-  simp
+  simp [conjugateEquiv, mateEquiv, Adjunction.id]
 
 end conjugateEquiv
 
@@ -333,11 +322,8 @@ theorem conjugateEquiv_comp (α : L₂ ⟶ L₁) (β : L₃ ⟶ L₂) :
     (L₃.leftUnitor.hom ≫ β ≫ L₂.rightUnitor.inv)
   have vcompd := congr_app vcomp d
   dsimp [mateEquiv, vComp, vComp] at vcompd
-  simp only [comp_id, id_comp, assoc, map_comp] at vcompd ⊢
-  erw [Iso.homCongr_apply, Iso.homCongr_apply, Iso.homCongr_apply]
   simp only [hComp_app, id_obj, comp_app, comp_obj, leftUnitor_hom_app, rightUnitor_inv_app,
-    comp_id, id_comp, Functor.id_map, map_comp, assoc, whiskerRight_comp, whiskerLeft_app,
-    whiskerRight_app, map_id, Functor.comp_map] at vcompd ⊢
+    comp_id, id_comp, Functor.id_map, map_comp, assoc] at vcompd ⊢
   rw [vcompd]
 
 @[simp]
@@ -415,9 +401,11 @@ def conjugateIsoEquiv : (L₂ ≅ L₁) ≃ (R₁ ≅ R₂) where
 
 end ConjugateIsomorphism
 
-section IteratedmateEquiv
 variable {A : Type u₁} {B : Type u₂} {C : Type u₃} {D : Type u₄}
 variable [Category.{v₁} A] [Category.{v₂} B] [Category.{v₃} C] [Category.{v₄} D]
+
+section IteratedmateEquiv
+
 variable {F₁ : A ⥤ C} {U₁ : C ⥤ A} {F₂ : B ⥤ D} {U₂ : D ⥤ B}
 variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : C ⥤ D} {R₂ : D ⥤ C}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : F₁ ⊣ U₁) (adj₄ : F₂ ⊣ U₂)
@@ -434,47 +422,28 @@ In this case the iterated mate equals the conjugate of the original transformati
 isomorphism if and only if the original transformation is. This explains why some Beck-Chevalley
 natural transformations are natural isomorphisms.
 -/
-theorem iterated_mateEquiv_conjugateEquiv (α : F₁ ⋙ L₂ ⟶ L₁ ⋙ F₂) :
-    mateEquiv adj₄ adj₃ (mateEquiv adj₁ adj₂ α) =
+theorem iterated_mateEquiv_conjugateEquiv (α : TwoSquare F₁ L₁ L₂ F₂) :
+    (mateEquiv adj₄ adj₃ (mateEquiv adj₁ adj₂ α)).out =
       conjugateEquiv (adj₁.comp adj₄) (adj₃.comp adj₂) α := by
   ext d
   unfold conjugateEquiv mateEquiv Adjunction.comp
-  simp only [comp_obj, Equiv.coe_fn_mk, whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp,
-    assoc, comp_app, whiskerLeft_app, whiskerRight_app, id_obj, Functor.comp_map, Iso.homCongr_symm,
-    mk'_unit, mk'_counit, whiskerRight_twice, Equiv.instTrans_trans, Equiv.trans_apply,
-    Iso.homCongr_apply, Iso.symm_inv, Iso.symm_hom]
-  erw [Iso.homCongr_apply]
   simp
 
-theorem iterated_mateEquiv_conjugateEquiv_symm (α : U₂ ⋙ R₁ ⟶ R₂ ⋙ U₁) :
+theorem iterated_mateEquiv_conjugateEquiv_symm (α : TwoSquare U₂ R₂ R₁ U₁) :
     (mateEquiv adj₁ adj₂).symm ((mateEquiv adj₄ adj₃).symm α) =
-      (conjugateEquiv (adj₁.comp adj₄) (adj₃.comp adj₂)).symm α := by
-  erw [Equiv.eq_symm_apply, ← iterated_mateEquiv_conjugateEquiv]
-  simp only [Equiv.apply_symm_apply]
+      (conjugateEquiv (adj₁.comp adj₄) (adj₃.comp adj₂)).symm.trans
+        (equivNatTrans _ _ _ _).symm α := by
+  ext
+  simp
 
 end IteratedmateEquiv
 
-section mateEquivconjugateEquivVComp
-
-variable {A : Type u₁} {B : Type u₂} {C : Type u₃} {D : Type u₄}
-variable [Category.{v₁} A] [Category.{v₂} B] [Category.{v₃} C]
-variable [Category.{v₄} D]
 variable {G : A ⥤ C} {H : B ⥤ D}
-variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : C ⥤ D} {R₂ : D ⥤ C} {L₃ : C ⥤ D} {R₃ : D ⥤ C}
-variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
-
-/-- Composition of a squares between left adjoints with a conjugate square. -/
-def leftAdjointSquareConjugate.vcomp :
-    TwoSquare G L₁ L₂ H → (L₃ ⟶ L₂) → TwoSquare G L₁ L₃ H :=
-  fun α β ↦ (whiskerLeft G β) ≫ α
-
-/-- Composition of a squares between right adjoints with a conjugate square. -/
-def rightAdjointSquareConjugate.vcomp :
-    TwoSquare R₁ H G R₂ → (R₂ ⟶ R₃) → TwoSquare R₁ H G R₃ :=
-  fun α β ↦ α ≫ (whiskerLeft H β)
 
 /-- The mates equivalence commutes with this composition, essentially by `mateEquiv_vcomp`. -/
-theorem mateEquiv_conjugateEquiv_vcomp (α : TwoSquare G L₁ L₂ H) (β : L₃ ⟶ L₂) :
+theorem mateEquiv_conjugateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : C ⥤ D} {R₂ : D ⥤ C}
+    {L₃ : C ⥤ D} {R₃ : D ⥤ C}
+    (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃) (α : TwoSquare G L₁ L₂ H) (β : L₃ ⟶ L₂) :
     (mateEquiv adj₁ adj₃) (α.whiskerRight β) =
       (mateEquiv adj₁ adj₂ α).whiskerBottom (conjugateEquiv adj₂ adj₃ β) := by
   ext b
@@ -482,28 +451,16 @@ theorem mateEquiv_conjugateEquiv_vcomp (α : TwoSquare G L₁ L₂ H) (β : L₃
   unfold vComp hComp at vcomp
   unfold TwoSquare.whiskerRight TwoSquare.whiskerBottom conjugateEquiv
   have vcompb := congr_app vcomp b
-  simp at vcompb
-  unfold mateEquiv
-  simp only [comp_obj, Equiv.coe_fn_mk, whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp,
-    assoc, comp_app, whiskerLeft_app, whiskerRight_app, id_obj, Functor.comp_map, Iso.homCongr_symm,
-    Equiv.instTrans_trans, Equiv.trans_apply, Iso.homCongr_apply, Iso.symm_inv, Iso.symm_hom,
-    rightUnitor_inv_app, leftUnitor_hom_app, map_id, Functor.id_map, comp_id, id_comp]
-  erw [Iso.homCongr_apply]
-  simpa
-
-end mateEquivconjugateEquivVComp
-
-section conjugateEquivmateEquivVComp
-
-variable {A : Type u₁} {B : Type u₂} {C : Type u₃} {D : Type u₄}
-variable [Category.{v₁} A] [Category.{v₂} B] [Category.{v₃} C]
-variable [Category.{v₄} D]
-variable {G : A ⥤ C} {H : B ⥤ D}
-variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : A ⥤ B} {R₂ : B ⥤ A} {L₃ : C ⥤ D} {R₃ : D ⥤ C}
-variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
+  simp only [comp_obj, id_obj, whiskerLeft_comp, assoc, mateEquiv_apply, whiskerLeft_twice,
+    whiskerRight_comp, comp_app, whiskerLeft_app, whiskerRight_app, associator_hom_app, map_id,
+    leftUnitor_hom_app, rightUnitor_inv_app, associator_inv_app, Functor.id_map, Functor.comp_map,
+    id_comp, whiskerRight_twice, comp_id] at vcompb
+  simpa [mateEquiv]
 
 /-- The mates equivalence commutes with this composition, essentially by `mateEquiv_vcomp`. -/
-theorem conjugateEquiv_mateEquiv_vcomp (α : L₂ ⟶ L₁) (β : TwoSquare G L₂ L₃ H) :
+theorem conjugateEquiv_mateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : A ⥤ B} {R₂ : B ⥤ A}
+    {L₃ : C ⥤ D} {R₃ : D ⥤ C}
+    (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃) (α : L₂ ⟶ L₁) (β : TwoSquare G L₂ L₃ H) :
     (mateEquiv adj₁ adj₃) (β.whiskerLeft α) =
       (mateEquiv adj₂ adj₃ β).whiskerTop (conjugateEquiv adj₁ adj₂ α) := by
   ext b
@@ -511,15 +468,10 @@ theorem conjugateEquiv_mateEquiv_vcomp (α : L₂ ⟶ L₁) (β : TwoSquare G L�
   unfold vComp hComp at vcomp
   unfold TwoSquare.whiskerLeft TwoSquare.whiskerTop conjugateEquiv
   have vcompb := congr_app vcomp b
-  simp at vcompb
-  unfold mateEquiv
-  simp only [comp_obj, Equiv.coe_fn_mk, whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp,
-    assoc, comp_app, whiskerLeft_app, whiskerRight_app, id_obj, Functor.comp_map, Iso.homCongr_symm,
-    Equiv.instTrans_trans, Equiv.trans_apply, Iso.homCongr_apply, Iso.symm_inv, Iso.symm_hom,
-    rightUnitor_inv_app, leftUnitor_hom_app, map_id, Functor.id_map, comp_id, id_comp]
-  erw [Iso.homCongr_apply]
-  simpa
-
-end conjugateEquivmateEquivVComp
+  simp only [comp_obj, id_obj, whiskerRight_comp, assoc, mateEquiv_apply, whiskerLeft_comp,
+    whiskerLeft_twice, comp_app, whiskerLeft_app, whiskerRight_app, associator_hom_app, map_id,
+    associator_inv_app, leftUnitor_hom_app, rightUnitor_inv_app, Functor.comp_map, Functor.id_map,
+    id_comp, whiskerRight_twice, comp_id] at vcompb
+  simpa [mateEquiv]
 
 end CategoryTheory
