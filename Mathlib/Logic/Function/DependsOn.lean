@@ -28,7 +28,7 @@ the set `s`, then `f x = f y`. This is equivalent to `Function.FactorsThrough f 
 * `dependsOn_iff_factorsThrough`: A function `f` depends on `s` if and only if it factors
   through `s.restrict`.
 
-## Implementation note
+## Implementation notes
 
 When we write `DependsOn f s`, i.e. `f` only depends on `s`, it should be interpreted as
 "`f` _potentially_ depends only on variables in `s`". However it might be the case
