@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
 import Mathlib.Topology.ContinuousMap.Bounded.Basic
+import Mathlib.Topology.ContinuousMap.Star
 import Mathlib.Analysis.CStarAlgebra.Basic
 
 /-!
@@ -48,6 +49,9 @@ variable {𝕜 : Type*} [NormedField 𝕜] [StarRing 𝕜] [TopologicalSpace α]
 
 variable [NormedSpace 𝕜 β] [StarModule 𝕜 β]
 
+instance instStar : Star (α →ᵇ β) where
+  star f := f.comp star starNormedAddGroupHom.lipschitz
+
 instance instStarAddMonoid : StarAddMonoid (α →ᵇ β) where
   star f := f.comp star starNormedAddGroupHom.lipschitz
   star_involutive f := ext fun x => star_star (f x)
@@ -88,5 +92,20 @@ instance instCStarRing : CStarRing (α →ᵇ β) where
     exact norm_coe_le_norm (star f * f) x
 
 end CStarRing
+
+section NormedAlgebra
+
+variable (𝕜 : Type*) [NormedField 𝕜] [TopologicalSpace α]
+  [NormedRing β] [NormedAlgebra 𝕜 β] [StarAddMonoid β] [NormedStarGroup β]
+
+/-- The ⋆-algebra-homomorphism forgetting that a bounded continuous function is bounded. -/
+@[simps!]
+def toContinuousMap_starₐ : (α →ᵇ β) →⋆ₐ[𝕜] C(α, β) := { toContinuousMapₐ 𝕜 with
+  map_star' _ := rfl }
+
+@[simp]
+theorem coe_toContinuousMap_starₐ (f : α →ᵇ β) : (f.toContinuousMap_starₐ 𝕜 : α → β) = f := rfl
+
+end NormedAlgebra
 
 end BoundedContinuousFunction
