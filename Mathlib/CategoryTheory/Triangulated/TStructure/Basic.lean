@@ -54,11 +54,11 @@ open Pretriangulated
 /-- `TStructure C` is the type of t-structures on the (pre)triangulated category `C`. -/
 structure TStructure where
   /-- the predicate of objects that are `≤ n` for `n : ℤ`. -/
-  LE (n : ℤ) : C → Prop
+  LE (n : ℤ) : ObjectProperty C
   /-- the predicate of objects that are `≥ n` for `n : ℤ`. -/
-  GE (n : ℤ) : C → Prop
-  LE_closedUnderIsomorphisms (n : ℤ) : ClosedUnderIsomorphisms (LE n) := by infer_instance
-  GE_closedUnderIsomorphisms (n : ℤ) : ClosedUnderIsomorphisms (GE n) := by infer_instance
+  GE (n : ℤ) : ObjectProperty C
+  LE_closedUnderIsomorphisms (n : ℤ) : (LE n).IsClosedUnderIsomorphisms := by infer_instance
+  GE_closedUnderIsomorphisms (n : ℤ) : (GE n).IsClosedUnderIsomorphisms := by infer_instance
   LE_shift (n a n' : ℤ) (h : a + n' = n) (X : C) (hX : LE n X) : LE n' (X⟦a⟧)
   GE_shift (n a n' : ℤ) (h : a + n' = n) (X : C) (hX : GE n X) : GE n' (X⟦a⟧)
   zero' ⦃X Y : C⦄ (f : X ⟶ Y) (hX : LE 0 X) (hY : GE 1 Y) : f = 0
@@ -92,7 +92,7 @@ lemma predicateShift_LE (a n n' : ℤ) (hn' : a + n = n') :
   ext X
   constructor
   · intro hX
-    exact (mem_iff_of_iso (LE t n') ((shiftEquiv C a).unitIso.symm.app X)).1
+    exact ((LE t n').prop_iff_of_iso ((shiftEquiv C a).unitIso.symm.app X)).1
       (t.LE_shift n (-a) n' (by omega) _ hX)
   · intro hX
     exact t.LE_shift _ _ _ hn' X hX
@@ -102,7 +102,7 @@ lemma predicateShift_GE (a n n' : ℤ) (hn' : a + n = n') :
   ext X
   constructor
   · intro hX
-    exact (mem_iff_of_iso (GE t n') ((shiftEquiv C a).unitIso.symm.app X)).1
+    exact ((GE t n').prop_iff_of_iso ((shiftEquiv C a).unitIso.symm.app X)).1
       (t.GE_shift n (-a) n' (by omega) _ hX)
   · intro hX
     exact t.GE_shift _ _ _ hn' X hX
