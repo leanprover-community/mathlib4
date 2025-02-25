@@ -315,6 +315,25 @@ def functorEquivInverseCompWhiskeringLeftInRIso :
     (functorEquiv _ _ _).inverse ⋙ (whiskeringLeft _ _ C).obj (inr_ A A') ≅ Prod.snd _ _ :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
+namespace Swap
+
+/-- `functorEquiv A A' B` transforms `Swap.equivalence` into `Prod.braiding`. -/
+@[simps!]
+def equivalenceFunctorEquivFunctorIso :
+    ((equivalence _ _).congrLeft.trans ((functorEquiv A A' B))).functor ≅
+      ((functorEquiv _ _ _).trans (Prod.braiding _ _)).functor :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+
+/-- `functorEquiv A A' B` transforms `Swap.equivalence` into `Prod.braiding` (backward direction).
+-/
+@[simps!]
+def equivalenceFunctorEquivInverseIso :
+    ((equivalence _ _).congrLeft.trans ((functorEquiv A A' B))).inverse ≅
+      ((functorEquiv _ _ _).trans (Prod.braiding _ _)).inverse :=
+  Iso.isoInverseOfIsoFunctor (equivalenceFunctorEquivFunctorIso _ _ _)
+
+end Swap
+
 end Sum
 
 end CategoryTheory
