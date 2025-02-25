@@ -99,20 +99,20 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
       _ = ∑ i ∈ range (2 * N + 1), (∑ j ∈ range (i + 1), ((j.factorial : R)⁻¹ *
             ((i - j).factorial : R)⁻¹) • (a ^ j * b ^ (i - j))) := by
         apply sum_congr rfl
-        intro n hn
+        intro i hi
         rw [smul_sum]
         apply sum_congr rfl
-        intro m hm
-        simp_all only [mem_range]
-        suffices (n.factorial : R)⁻¹ * (n.choose m) =
-            ((m.factorial : R)⁻¹ * ((n - m).factorial : R)⁻¹) by
-          rw [← Nat.cast_commute (n.choose m), ← this, ← Algebra.mul_smul_comm, ← nsmul_eq_mul,
+        intro j hj
+        simp only [mem_range] at hi hj
+        suffices (i.factorial : R)⁻¹ * (i.choose j) =
+            ((j.factorial : R)⁻¹ * ((i - j).factorial : R)⁻¹) by
+          rw [← Nat.cast_commute (i.choose j), ← this, ← Algebra.mul_smul_comm, ← nsmul_eq_mul,
           mul_smul, ← smul_assoc, smul_comm, smul_assoc]
           norm_cast
-        have le₄ : m ≤ n := Nat.le_of_lt_succ hm
+        have le₄ : j ≤ i := Nat.le_of_lt_succ hj
         rw [Nat.choose_eq_factorial_div_factorial le₄, Nat.cast_div, mul_div]
-        · have inv : (n.factorial : R)⁻¹  * (n.factorial : R) = 1 := by
-            have : (n.factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero n
+        · have inv : (i.factorial : R)⁻¹  * (i.factorial : R) = 1 := by
+            have : (i.factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero i
             simp_all only [ne_eq, Nat.cast_eq_zero, not_false_eq_true, inv_mul_cancel₀]
           rw [inv, Nat.cast_mul, one_div, mul_inv_rev, mul_comm]
         · exact Nat.factorial_mul_factorial_dvd_factorial le₄
