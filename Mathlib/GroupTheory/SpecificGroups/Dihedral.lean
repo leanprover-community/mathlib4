@@ -112,9 +112,7 @@ theorem r_pow (i : ZMod n) (k : ℕ) : (r i)^k = r (i * k : ZMod n) := by
   induction k with
   | zero => simp only [pow_zero, Nat.cast_zero, mul_zero, r_zero]
   | succ k IH =>
-  rw [show (r i)^(k+1) = (r i)^k * (r i) by rfl, IH]
-  simp only [r_mul_r, Nat.cast_add, Nat.cast_one, r.injEq]
-  ring
+    rw [pow_add, pow_one, IH, r_mul_r, Nat.cast_add, Nat.cast_one, r.injEq, mul_add, mul_one]
 
 @[simp]
 theorem r_zpow (i : ZMod n) (k : ℤ) : (r i)^k = r (i * k : ZMod n) := by
