@@ -154,13 +154,11 @@ theorem nat_card : Nat.card (DihedralGroup n) = 2 * n := by
   · rw [Nat.card_eq_zero_of_infinite]
   · rw [Nat.card_eq_fintype_card, card]
 
-@[simp]
 theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
-  simp [r_pow (1 : ZMod n) k]
+  simp only [r_pow, one_mul]
 
-@[simp]
 theorem r_one_zpow (k : ℤ) : (r 1 : DihedralGroup n) ^ k = r k := by
-  cases k <;> simp
+  simp only [r_zpow, one_mul]
 
 theorem r_one_pow_n : r (1 : ZMod n) ^ n = 1 := by
   simp
