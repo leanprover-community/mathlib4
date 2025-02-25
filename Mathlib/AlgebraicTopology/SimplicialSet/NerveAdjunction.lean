@@ -77,7 +77,7 @@ theorem nerve₂Adj.counit.naturality {C D : Type u} [SmallCategory C] [SmallCat
     ReflQuiv.adj.counit).naturality _
 
 /-- The counit of `nerve₂Adj.` -/
-def nerve₂Adj.counit : nerveFunctor₂ ⋙ hoFunctor₂.{u} ⟶ (𝟭 Cat) where
+def nerve₂Adj.counit : nerveFunctor₂ ⋙ hoFunctor₂.{u} ⟶ 𝟭 Cat where
   app C := nerve₂Adj.counit.app (Cat.of C)
   naturality _ _ F := nerve₂Adj.counit.naturality F
 
