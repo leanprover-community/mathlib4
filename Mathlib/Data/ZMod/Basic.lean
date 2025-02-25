@@ -703,7 +703,7 @@ theorem mul_inv_eq_gcd {n : ℕ} (a : ZMod n) : a * a⁻¹ = Nat.gcd a.val n := 
   · dsimp [ZMod] at a ⊢
     calc
       _ = a * Int.sign a := rfl
-      _ = a.natAbs := by rw [Int.mul_sign]
+      _ = a.natAbs := by rw [Int.mul_sign_self]
       _ = a.natAbs.gcd 0 := by rw [Nat.gcd_zero_right]
   · calc
       a * a⁻¹ = a * a⁻¹ + n.succ * Nat.gcdB (val a) n.succ := by
