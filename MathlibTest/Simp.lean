@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Tactic.Simps.ExistsAndEq
 
 /-!
 Tests for the behavior of `simp`.
@@ -17,3 +18,7 @@ example {α R : Type*} [CommRing R] (f : α → R) (r : R) (a : α) :
     (r • f) a = r • (f a) := by
   let _ : SMul R R := SMulZeroClass.toSMul
   simp only [Pi.smul_apply]
+
+example (α : Type) (p q : α → Prop) (a : α) (hp : p a) (hq : q a) : ∃ b : α, (p b ∧ b = a) ∧ q b := by
+  simp only [existsAndEq, and_true]
+  exact ⟨hp, hq⟩
