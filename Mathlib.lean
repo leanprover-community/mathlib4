@@ -1690,6 +1690,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.SpecificLimits.FloorPow
+import Mathlib.Analysis.SpecificLimits.InvPow
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Analysis.SpecificLimits.RCLike
 import Mathlib.Analysis.Subadditive
