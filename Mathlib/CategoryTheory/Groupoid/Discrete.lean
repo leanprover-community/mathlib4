@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.DiscreteCategory.Basic
 /-!
 
 # Discrete categories are groupoids
