@@ -43,13 +43,13 @@ variable (M : Type*) [Group M] (α : Type*) [MulAction M α]
 
 /-- The structure underlying the Iwasawa criterion -/
 structure IwasawaStructure where
-/-- The subgroups of the Iwasawa structure -/
+  /-- The subgroups of the Iwasawa structure -/
   T : α → Subgroup M
-/-- The commutativity property of the subgroups -/
+  /-- The commutativity property of the subgroups -/
   is_comm : ∀ x : α, (T x).IsCommutative
-/-- The conjugacy property of the subgroups -/
+  /-- The conjugacy property of the subgroups -/
   is_conj : ∀ g : M, ∀ x : α, T (g • x) = MulAut.conj g • T x
-/-- The subgroups generate the group -/
+  /-- The subgroups generate the group -/
   is_generator : iSup T = ⊤
 
 variable {M α}
