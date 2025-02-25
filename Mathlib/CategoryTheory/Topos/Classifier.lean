@@ -280,8 +280,6 @@ lemma compr_cmap {X : C} (x : Subobject X) :
 lemma cmap_compr {X : C} (φ : X ⟶ 𝒞.Ω) :
     (compr φ).cmap = φ := by
   have h := compr_isPullback φ
-  have h' := compr_isPullback (𝒞 := 𝒞) (compr φ).cmap
-  rw [compr_cmap] at h'
   conv => rhs; rw [𝒞.uniq (compr φ).arrow φ h]
   simp [cmap]
 
