@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Category.Basic
 # Properties of objects in a category
 
 Given a category `C`, we introduce an abbreviation `ObjectProperty C`
-for predicated `C → Prop`.
+for predicates `C → Prop`.
 
 ## TODO
 
