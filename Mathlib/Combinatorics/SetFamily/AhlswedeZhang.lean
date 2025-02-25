@@ -6,7 +6,7 @@ Authors: Yaël Dillies, Vladimir Ivanov
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Finset.Sups
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Positivity
@@ -358,13 +358,9 @@ lemma infSum_union_add_infSum_sups (𝒜 ℬ : Finset (Finset α)) :
 lemma IsAntichain.le_infSum (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) (h𝒜₀ : ∅ ∉ 𝒜) :
     ∑ s ∈ 𝒜, ((card α).choose #s : ℚ)⁻¹ ≤ infSum 𝒜 := by
   calc
-    _ = ∑ s ∈ 𝒜, #(truncatedInf 𝒜 s) / (#s * (card α).choose #s : ℚ) :=
-      sum_congr rfl fun s hs ↦ ?_
-    _ ≤ ∑ s, #(truncatedInf 𝒜 s) / (#s * (card α).choose #s : ℚ) := by
-      gcongr
-      · intros
-        positivity
-      · exact subset_univ _
+    _ = ∑ s ∈ 𝒜, #(truncatedInf 𝒜 s) / (#s * (card α).choose #s : ℚ) := ?_
+    _ ≤ _ := sum_le_univ_sum_of_nonneg fun s ↦ by positivity
+  refine sum_congr rfl fun s hs ↦ ?_
   rw [truncatedInf_of_isAntichain h𝒜 hs, div_mul_cancel_left₀]
   have := (nonempty_iff_ne_empty.2 <| ne_of_mem_of_not_mem hs h𝒜₀).card_pos
   positivity
