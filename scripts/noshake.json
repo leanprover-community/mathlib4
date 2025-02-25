@@ -253,6 +253,7 @@
   ["Batteries.Tactic.Unreachable", "Lean.Parser.Syntax"],
   "Mathlib.Tactic.LinearCombination":
   ["Mathlib.Tactic.LinearCombination.Lemmas"],
+  "Mathlib.Tactic.LieAlgebra.LieRingNF": ["Mathlib.Tactic.Module"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
   "Mathlib.Tactic.IrreducibleDef":
   ["Mathlib.Data.Subtype", "Mathlib.Util.TermReduce"],
