@@ -10,13 +10,6 @@ import Mathlib.RingTheory.GradedAlgebra.Basic
 # Homogeneous Relation
 
 -/
-#check RingQuot.mkRingHom
-#check RingQuot.mkAlgHom
-#check Relation.EqvGen
-
-#check RingQuot.mkRingHom
-#check RingQuot.mkAlgHom
-#check Relation.EqvGen
 
 variable {ι : Type*} [DecidableEq ι] [AddMonoid ι]
 variable {A : Type*} [Semiring A]
