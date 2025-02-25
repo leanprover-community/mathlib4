@@ -11,6 +11,8 @@ import Mathlib.Tactic.Lift
 import Mathlib.Data.Option.Basic
 import Mathlib.Order.Lattice
 import Mathlib.Order.BoundedOrder.Basic
+import Mathlib.Tactic.IrreducibleDef
+import Mathlib.Util.WhatsNew
 
 /-!
 # `WithBot`, `WithTop`
@@ -196,16 +198,22 @@ section LE
 
 variable [LE α] {x y : WithBot α}
 
-instance (priority := 10) le : LE (WithBot α) :=
-  ⟨fun o₁ o₂ => ∀ a : α, o₁ = ↑a → ∃ b : α, o₂ = ↑b ∧ a ≤ b⟩
+/-- The order on `WithBot α`, defined by `⊥ ≤ ⊥`, `⊥ ≤ ↑a` and `a ≤ b → ↑a ≤ ↑b`. -/
+@[mk_iff le_iff]
+protected inductive LE : WithBot α → WithBot α → Prop
+  | protected bot_le (x : WithBot α) : WithBot.LE ⊥ x
+  | protected coe_le_coe {a b : α} : a ≤ b → WithBot.LE a b
 
-lemma le_def : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b := .rfl
+instance (priority := 10) instLE : LE (WithBot α) where le := WithBot.LE
+
+lemma le_def : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b := by
+  cases x <;> cases y <;> simp [LE.le, le_iff]
 
 @[simp, norm_cast] lemma coe_le_coe : (a : WithBot α) ≤ b ↔ a ≤ b := by simp [le_def]
 
-lemma not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := by simp [le_def]
+lemma not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := nofun
 
-instance orderBot : OrderBot (WithBot α) where bot_le := by simp [le_def]
+instance orderBot : OrderBot (WithBot α) where bot_le := .bot_le
 
 -- TODO: This deprecated lemma is still used (through simp)
 @[simp, deprecated coe_le_coe "Don't mix Option and WithBot" (since := "2024-05-27")]
@@ -249,14 +257,20 @@ section LT
 
 variable [LT α] {x y : WithBot α}
 
-instance (priority := 10) lt : LT (WithBot α) :=
-  ⟨fun o₁ o₂ : WithBot α => ∃ b : α, o₂ = ↑b ∧ ∀ a : α, o₁ = ↑a → a < b⟩
+/-- The order on `WithBot α`, defined by `⊥ < ↑a` and `a < b → ↑a < ↑b`. -/
+@[mk_iff lt_iff]
+protected inductive LT : WithBot α → WithBot α → Prop
+  | protected bot_lt_coe (a : α) : WithBot.LT ⊥ a
+  | protected coe_lt_coe {a b : α} : a < b → WithBot.LT a b
 
-lemma lt_def : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := .rfl
+instance (priority := 10) instLT : LT (WithBot α) where lt := WithBot.LT
+
+lemma lt_def : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := by
+  cases x <;> cases y <;> simp [LT.lt, lt_iff]
 
 @[simp, norm_cast] lemma coe_lt_coe : (a : WithBot α) < b ↔ a < b := by simp [lt_def]
-@[simp] lemma bot_lt_coe (a : α) : ⊥ < (a : WithBot α) := by simp [lt_def]
-@[simp] protected lemma not_lt_bot (a : WithBot α) : ¬a < ⊥ := by simp [lt_def]
+@[simp] lemma bot_lt_coe (a : α) : ⊥ < (a : WithBot α) := .bot_lt_coe _
+@[simp] protected lemma not_lt_bot (a : WithBot α) : ¬a < ⊥ := nofun
 
 -- TODO: This deprecated lemma is still used (through simp)
 @[simp, deprecated coe_lt_coe "Don't mix Option and WithBot" (since := "2024-05-27")]
@@ -270,7 +284,7 @@ theorem none_lt_some (a : α) : @LT.lt (WithBot α) _ none (some a) := bot_lt_co
 @[simp, deprecated not_lt_bot "Don't mix Option and WithBot" (since := "2024-05-27")]
 theorem not_lt_none (a : WithBot α) : ¬@LT.lt (WithBot α) _ a none := WithBot.not_lt_bot _
 
-lemma lt_iff_exists_coe : x < y ↔ ∃ b : α, y = b ∧ x < b := by cases y <;> simp
+lemma lt_iff_exists_coe : x < y ↔ ∃ b : α, b = y ∧ x < b := by cases y <;> simp
 
 lemma lt_coe_iff : x < b ↔ ∀ a : α, x = a → a < b := by simp [lt_def]
 
@@ -700,21 +714,27 @@ section LE
 
 variable [LE α] {x y : WithTop α}
 
-instance (priority := 10) le : LE (WithTop α) :=
-  ⟨fun o₁ o₂ => ∀ a : α, o₂ = ↑a → ∃ b : α, o₁ = ↑b ∧ b ≤ a⟩
+/-- The order on `WithTop α`, defined by `⊤ ≤ ⊤`, `↑a ≤ ⊤` and `a ≤ b → ↑a ≤ ↑b`. -/
+@[mk_iff le_iff]
+protected inductive LE : WithTop α → WithTop α → Prop
+  | protected le_top (x : WithTop α) : WithTop.LE x ⊤
+  | protected coe_le_coe {a b : α} : a ≤ b → WithTop.LE a b
 
-lemma le_def : x ≤ y ↔ ∀ b : α, y = ↑b → ∃ a : α, x = ↑a ∧ a ≤ b := .rfl
+instance (priority := 10) instLE : LE (WithTop α) where le := WithTop.LE
+
+lemma le_def : x ≤ y ↔ ∀ b : α, y = ↑b → ∃ a : α, x = ↑a ∧ a ≤ b := by
+  cases x <;> cases y <;> simp [LE.le, le_iff]
 
 @[simp, norm_cast] lemma coe_le_coe : (a : WithTop α) ≤ b ↔ a ≤ b := by simp [le_def]
 
-lemma not_top_le_coe (a : α) : ¬ ⊤ ≤ (a : WithTop α) := by simp [le_def]
+lemma not_top_le_coe (a : α) : ¬ ⊤ ≤ (a : WithTop α) := nofun
 
 -- TODO: This deprecated lemma is still used (through simp)
 @[simp, deprecated coe_le_coe "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem some_le_some : @LE.le (WithTop α) _ (Option.some a) (Option.some b) ↔ a ≤ b :=
   coe_le_coe
 
-instance orderTop : OrderTop (WithTop α) where le_top := by simp [le_def]
+instance orderTop : OrderTop (WithTop α) where le_top := .le_top
 
 -- TODO: This deprecated lemma is still used (through simp)
 @[simp, deprecated le_top "Don't mix Option and WithTop" (since := "2024-05-27")]
@@ -753,14 +773,20 @@ section LT
 
 variable [LT α] {x y : WithTop α}
 
-instance (priority := 10) lt : LT (WithTop α) :=
-  ⟨fun o₁ o₂ : Option α => ∃ b ∈ o₁, ∀ a ∈ o₂, b < a⟩
+/-- The order on `WithTop α`, defined by `↑a < ⊤` and `a < b → ↑a < ↑b`. -/
+@[mk_iff lt_iff]
+protected inductive LT : WithTop α → WithTop α → Prop
+  | protected coe_lt_top (a : α) : WithTop.LT a ⊤
+  | protected coe_lt_coe {a b : α} : a < b → WithTop.LT a b
 
-lemma lt_def : x < y ↔ ∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b := .rfl
+instance (priority := 10) instLT : LT (WithTop α) where lt := WithTop.LT
 
-@[simp, norm_cast] lemma coe_lt_coe : (a : WithTop α) < b ↔ a < b := by simp [lt_def]
-@[simp] lemma coe_lt_top (a : α) : (a : WithTop α) < ⊤ := by simp [lt_def]
-@[simp] protected lemma not_top_lt (a : WithTop α) : ¬⊤ < a := by simp [lt_def]
+lemma lt_def : x < y ↔ ∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b := by
+  cases x <;> cases y <;> simp [LT.lt, lt_iff]
+
+@[simp, norm_cast] lemma coe_lt_coe : (a : WithTop α) < b ↔ a < b := by simp [LT.lt, lt_iff]
+@[simp] lemma coe_lt_top (a : α) : (a : WithTop α) < ⊤ := .coe_lt_top _
+@[simp] protected lemma not_top_lt (a : WithTop α) : ¬⊤ < a := nofun
 
 @[simp, deprecated coe_lt_coe "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem some_lt_some : @LT.lt (WithTop α) _ (Option.some a) (Option.some b) ↔ a < b := coe_lt_coe
@@ -771,7 +797,7 @@ theorem some_lt_none (a : α) : @LT.lt (WithTop α) _ (Option.some a) none := co
 @[simp, deprecated not_top_lt "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem not_none_lt (a : WithTop α) : ¬@LT.lt (WithTop α) _ none a := WithTop.not_top_lt _
 
-lemma lt_iff_exists_coe : x < y ↔ ∃ a : α, x = a ∧ a < y := by cases x <;> simp
+lemma lt_iff_exists_coe : x < y ↔ ∃ a : α, a = x ∧ a < y := by cases x <;> simp
 
 lemma coe_lt_iff : a < y ↔ ∀ b : α, y = b → a < b := by simp [lt_def]
 
@@ -848,8 +874,10 @@ theorem coe_top_lt [OrderTop α] : (⊤ : α) < x ↔ x = ⊤ := by cases x <;> 
 lemma forall_gt_iff_eq_top : (∀ a : α, a < y) ↔ y = ⊤ := by
   cases y <;> simp; simpa using ⟨_, lt_irrefl _⟩
 
-lemma forall_ge_iff_eq_top [NoMaxOrder α] : (∀ a : α, a ≤ y) ↔ y = ⊤ :=
-  WithBot.forall_le_iff_eq_bot (α := αᵒᵈ)
+lemma forall_ge_iff_eq_top [NoMaxOrder α] : (∀ a : α, a ≤ y) ↔ y = ⊤ := by
+  refine ⟨fun h ↦ forall_gt_iff_eq_top.1 fun y ↦ ?_, by simp +contextual⟩
+  obtain ⟨w, hw⟩ := exists_gt y
+  exact (h w).trans_lt' (coe_lt_coe.2 hw)
 
 end Preorder
 
@@ -918,13 +946,24 @@ lemma ge_of_forall_gt_iff_ge : (∀ a : α, a < x → a ≤ y) ↔ x ≤ y := by
 
 end LinearOrder
 
-instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithTop α) :=
-  inferInstanceAs <| WellFoundedLT (WithBot αᵒᵈ)ᵒᵈ
+instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithTop α) where
+  wf :=
+  have acc_some (a : α) : Acc ((· < ·) : WithTop α → WithTop α → Prop) a :=
+    (wellFounded_lt.1 a).rec fun _ _ ih =>
+      .intro _ fun
+        | (b : α), hlt => ih _ (coe_lt_coe.1 hlt)
+  .intro fun
+    | (a : α) => acc_some a
+    | ⊤ => .intro _ fun | (b : α), _ => acc_some b
 
 open OrderDual
 
-instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithTop α) :=
-  inferInstanceAs <| WellFoundedGT (WithBot αᵒᵈ)ᵒᵈ
+instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithTop α) where
+  wf := .intro fun
+  | ⊤ => ⟨_, by simp⟩
+  | (a : α) => (wellFounded_gt.1 a).rec fun _ _ ih ↦ .intro _ fun
+    | ⊤, _ => ⟨_, by simp⟩
+    | (b : α), hlt => ih _ (coe_lt_coe.1 hlt)
 
 instance trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
     IsTrichotomous (WithTop α) (· < ·) where
@@ -953,8 +992,14 @@ instance _root_.WithBot.isWellOrder.gt [Preorder α] [h : IsWellOrder α (· > �
     IsWellOrder (WithBot α) (· > ·) where
   trichotomous x y := by cases x <;> cases y <;> simp; simpa using trichotomous_of (· > ·) ..
 
-instance [LT α] [DenselyOrdered α] [NoMaxOrder α] : DenselyOrdered (WithTop α) :=
-  OrderDual.denselyOrdered (WithBot αᵒᵈ)
+instance [LT α] [DenselyOrdered α] [NoMaxOrder α] : DenselyOrdered (WithTop α) where
+  dense := fun
+    | (a : α), ⊤, _ =>
+      let ⟨b, hb⟩ := exists_gt a
+      ⟨b, by simpa⟩
+    | (a : α), (b : α), hab =>
+      let ⟨c, hac, hcb⟩ := exists_between (coe_lt_coe.1 hab)
+      ⟨c, coe_lt_coe.2 hac, coe_lt_coe.2 hcb⟩
 
 theorem lt_iff_exists_coe_btwn [Preorder α] [DenselyOrdered α] [NoMaxOrder α] {a b : WithTop α} :
     a < b ↔ ∃ x : α, a < ↑x ∧ ↑x < b :=
