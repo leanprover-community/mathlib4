@@ -394,7 +394,7 @@ nonrec def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ := by
       (Y := hoFunctor₂.obj X) (SSet.Truncated.HomotopyCategory.quotientFunctor X)
     dsimp at nat
     rw [← Cat.comp_eq_comp, assoc]
-    conv_lhs => rhs ; apply nat
+    conv_lhs => rhs; apply nat
     rw [← assoc]
     conv => lhs; lhs; apply ReflQuiv.adj.left_triangle_components (SSet.oneTruncation₂.obj X)
     simp
