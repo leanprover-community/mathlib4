@@ -10,7 +10,6 @@ import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.Algebra.Group.Pi.Units
-import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
@@ -78,19 +77,17 @@ theorem bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom [IsLocalization M
   (ringEquivOfRingEquiv (M := M) (T := M) _ _ (.refl _) <|
     Submonoid.map_equiv_eq_comap_symm _ _).bijective
 
-open Function in
+open Function
 include M in
 lemma surjective_piRingHom_algebraMap_comp_piEvalRingHom_of_nilradical_isMaximal
     (h : ∀ i, (nilradical (R i)).IsMaximal) :
     Surjective (Pi.ringHom (fun i ↦ (algebraMap (R i) (S i)).comp (Pi.evalRingHom R i))) := by
-  apply Function.Surjective.piMap (fun i ↦ ?_)
+  apply Surjective.piMap (fun i ↦ ?_)
   by_cases h₀ : (0 : R i) ∈ (M.map (Pi.evalRingHom R i))
   · have := uniqueOfZeroMem h₀ (S := (S i))
-    exact Function.surjective_to_subsingleton (algebraMap (R i) (S i))
+    exact surjective_to_subsingleton (algebraMap (R i) (S i))
   · exact AlgEquiv.surjective (localizationEquivSelfOfNilradicalIsMaximal h₀)
 
-
-open Function in
 /-- Let `M` be a submonoid of a direct product of commutative rings `R i`.
 If each `R i` has maximal nilradical then the direct product `∏ R i` surjects onto the
 localization of `∏ R i` at `M`. -/
