@@ -166,8 +166,8 @@ lemma homTensorHomMap_bij: Function.Bijective (TensorProduct.homTensorHomMap R M
     homTensorHomMap_surj R M N P Q (Fin n1 → R) (Fin n2 → R) _ _ fg _ _ fg'⟩
 
 /-- `Hom (M, P) ⊗ Hom (N, Q)` is linearly equivalent to `Hom(M ⊗ N, P ⊗ Q)` via the map
-  `TensorProduct.homTensorHomMap`, this could also be seen as a generalisation of
-  `homTensorHomEquiv`. -/
+`TensorProduct.homTensorHomMap`, this could also be seen as a generalisation of
+`homTensorHomEquiv`. -/
 @[simps!]
 def Module.Hom.Tensor : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) ≃ₗ[R] (M ⊗[R] N →ₗ[R] P ⊗[R] Q) :=
   LinearEquiv.ofBijective (TensorProduct.homTensorHomMap R M N P Q) (homTensorHomMap_bij R M N P Q)
