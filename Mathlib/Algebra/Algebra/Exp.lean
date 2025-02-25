@@ -68,11 +68,10 @@ theorem exp_eq_truncated {k : ℕ} (a : A) (h : a ^ k = 0) :
     rw [pow_eq_zero_of_le (mem_Ico.1 h₂).1 (pow_nilpotencyClass ⟨k, h⟩), smul_zero]
 
 theorem exp_zero_eq_one : exp R A 0 = 1 := by
-  have h : (0 : A) ^ 1 = 0 := by
-    exact pow_one 0
-  have h1 := exp_eq_truncated R A (0 : A) h
-  simp at h1
-  apply h1.symm
+  have h₁ := exp_eq_truncated R A (0 : A) (pow_one 0)
+  rw [range_one, sum_singleton, Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero,
+    one_smul] at h₁
+  exact h₁.symm
 
 
 --example (n : ℕ) (a : A) : (n.factorial : R) • ((n.factorial : R)⁻¹ • a) = a := by
