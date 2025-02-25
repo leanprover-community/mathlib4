@@ -29,7 +29,7 @@ theorem isUnit_of_isIntegral_of_nonZeroDivisor {a : A}
   haveI : Module.Finite R B := Algebra.finite_adjoin_simple_of_isIntegral hi
   haveI : IsArtinianRing B := isArtinian_of_tower R inferInstance
   have hinj : Function.Injective (B.subtype) := Subtype.val_injective
-  have hb : b ∈ B⁰ := comap_nonZeroDivisor_le_of_injective hinj ha
+  have hb : b ∈ B⁰ := comap_nonZeroDivisors_le_of_injective hinj ha
   (isUnit_of_mem_nonZeroDivisors hb).map B.subtype
 
 /-- Integral element of an algebra over artinian ring `R` is either a zero divisor or a unit. -/

@@ -66,7 +66,7 @@ Lots is missing!
 --  This would likely involve adding a `comapDomain` analogue of
 --  `AddMonoidAlgebra.mapDomainAlgHom` and an `R`-linear version of
 --  `Polynomial.toFinsuppIso`.
--- Add `degree, int_degree, int_trailing_degree, leading_coeff, trailing_coeff,...`.
+-- Add `degree, intDegree, intTrailingDegree, leadingCoeff, trailingCoeff,...`.
 -/
 
 
@@ -162,7 +162,6 @@ theorem T_zero : (T 0 : R[T;T⁻¹]) = 1 :=
   rfl
 
 theorem T_add (m n : ℤ) : (T (m + n) : R[T;T⁻¹]) = T m * T n := by
-  -- Porting note: was `convert single_mul_single.symm`
   simp [T, single_mul_single]
 
 theorem T_sub (m n : ℤ) : (T (m - n) : R[T;T⁻¹]) = T m * T (-n) := by rw [← T_add, sub_eq_add_neg]
@@ -179,7 +178,6 @@ theorem mul_T_assoc (f : R[T;T⁻¹]) (m n : ℤ) : f * T m * T n = f * T (m + n
 @[simp]
 theorem single_eq_C_mul_T (r : R) (n : ℤ) :
     (Finsupp.single n r : R[T;T⁻¹]) = (C r * T n : R[T;T⁻¹]) := by
-  -- Porting note: was `convert single_mul_single.symm`
   simp [C, T, single_mul_single]
 
 -- This lemma locks in the right changes and is what Lean proved directly.
@@ -305,15 +303,13 @@ theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (mon
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`
   erw [comapDomain.addMonoidHom_apply Int.ofNat_injective]
   rw [toFinsuppIso_apply]
-  -- Porting note: rewrote proof below relative to mathlib3.
-  by_cases n0 : 0 ≤ n
-  · lift n to ℕ using n0
-    erw [comapDomain_single]
-    simp only [Nat.cast_nonneg, Int.toNat_ofNat, ite_true, toFinsupp_monomial]
-  · lift -n to ℕ using (neg_pos.mpr (not_le.mp n0)).le with m
-    rw [toFinsupp_inj, if_neg n0]
+  split_ifs with n0
+  · rw [toFinsupp_monomial]
+    lift n to ℕ using n0
+    apply comapDomain_single
+  · rw [toFinsupp_inj]
     ext a
-    have := ((not_le.mp n0).trans_le (Int.ofNat_zero_le a)).ne
+    have : n ≠ a := by omega
     simp only [coeff_ofFinsupp, comapDomain_apply, Int.ofNat_eq_coe, coeff_zero,
       single_eq_of_ne this]
 
@@ -352,7 +348,7 @@ theorem exists_T_pow (f : R[T;T⁻¹]) : ∃ (n : ℕ) (f' : R[X]), toLaurent f'
     refine ⟨m + n, fn * X ^ n + gn * X ^ m, ?_⟩
     simp only [hf, hg, add_mul, add_comm (n : ℤ), map_add, map_mul, Polynomial.toLaurent_X_pow,
       mul_T_assoc, Int.ofNat_add]
-  · cases' n with n n
+  · rcases n with n | n
     · exact ⟨0, Polynomial.C a * X ^ n, by simp⟩
     · refine ⟨n + 1, Polynomial.C a, ?_⟩
       simp only [Int.negSucc_eq, Polynomial.toLaurent_C, Int.ofNat_succ, mul_T_assoc,
@@ -381,8 +377,6 @@ theorem reduce_to_polynomial_of_mul_T (f : R[T;T⁻¹]) {Q : R[T;T⁻¹] → Pro
 section Support
 
 theorem support_C_mul_T (a : R) (n : ℤ) : Finsupp.support (C a * T n) ⊆ {n} := by
-  -- Porting note: was
-  -- simpa only [← single_eq_C_mul_T] using support_single_subset
   rw [← single_eq_C_mul_T]
   exact support_single_subset
 

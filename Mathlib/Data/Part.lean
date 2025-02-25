@@ -42,6 +42,8 @@ For `a : α`, `o : Part α`, `a ∈ o` means that `o` is defined and equal to `a
 `o.Dom` and `o.get _ = a`.
 -/
 
+assert_not_exists RelIso
+
 open Function
 
 /-- `Part α` is the type of "partial values" of type `α`. It

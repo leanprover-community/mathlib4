@@ -3,6 +3,7 @@ Copyright (c) 2024 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Youle Fang, Jujian Zhang, Yuyang Zhao
 -/
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 import Mathlib.Topology.Algebra.ClopenNhdofOne
 
@@ -32,7 +33,7 @@ its quotients by open normal subgroups.
 
 universe u
 
-open CategoryTheory TopologicalGroup
+open CategoryTheory IsTopologicalGroup
 
 namespace ProfiniteGrp
 
@@ -41,14 +42,14 @@ instance (P : ProfiniteGrp) : SmallCategory (OpenNormalSubgroup P) :=
 
 /-- The functor from `OpenNormalSubgroup P` to `FiniteGrp` sending `U` to `P ⧸ U`,
 where `P : ProfiniteGrp`. -/
-def toFiniteQuotientFunctor (P : ProfiniteGrp) : OpenNormalSubgroup P ⥤ FiniteGrp := {
-    obj := fun H => FiniteGrp.of (P ⧸ H.toSubgroup)
-    map := fun fHK => FiniteGrp.ofHom (QuotientGroup.map _ _ (.id _) (leOfHom fHK))
-    map_id _ := ConcreteCategory.ext <| QuotientGroup.map_id _
-    map_comp f g := ConcreteCategory.ext <| (QuotientGroup.map_comp_map
-      _ _ _ (.id _) (.id _) (leOfHom f) (leOfHom g)).symm }
+def toFiniteQuotientFunctor (P : ProfiniteGrp) : OpenNormalSubgroup P ⥤ FiniteGrp where
+  obj := fun H => FiniteGrp.of (P ⧸ H.toSubgroup)
+  map := fun fHK => FiniteGrp.ofHom (QuotientGroup.map _ _ (.id _) (leOfHom fHK))
+  map_id _ := ConcreteCategory.ext <| QuotientGroup.map_id _
+  map_comp f g := ConcreteCategory.ext <| (QuotientGroup.map_comp_map
+    _ _ _ (.id _) (.id _) (leOfHom f) (leOfHom g)).symm
 
-/--The `MonoidHom` from a profinite group `P` to  the projective limit of its quotients by
+/-- The `MonoidHom` from a profinite group `P` to the projective limit of its quotients by
 open normal subgroups ordered by inclusion.-/
 def toLimit_fun (P : ProfiniteGrp.{u}) : P →*
     limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp) where
@@ -59,10 +60,9 @@ def toLimit_fun (P : ProfiniteGrp.{u}) : P →*
 lemma toLimit_fun_continuous (P : ProfiniteGrp.{u}) : Continuous (toLimit_fun P) := by
   apply continuous_induced_rng.mpr (continuous_pi _)
   intro H
-  dsimp only [Functor.comp_obj, CompHausLike.toCompHausLike_obj, CompHausLike.compHausLikeToTop_obj,
-    CompHausLike.coe_of, Functor.comp_map, CompHausLike.toCompHausLike_map,
-    CompHausLike.compHausLikeToTop_map, Set.mem_setOf_eq, toLimit_fun,
-    MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply]
+  dsimp only [Functor.comp_obj, CompHausLike.coe_of, Functor.comp_map,
+    CompHausLike.toCompHausLike_map, CompHausLike.compHausLikeToTop_map, Set.mem_setOf_eq,
+    toLimit_fun, MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply]
   apply Continuous.mk
   intro s _
   rw [← (Set.biUnion_preimage_singleton QuotientGroup.mk s)]
@@ -123,27 +123,19 @@ theorem toLimit_injective (P : ProfiniteGrp.{u}) : Function.Injective (toLimit P
 its quotients by open normal subgroups -/
 noncomputable def continuousMulEquivLimittoFiniteQuotientFunctor (P : ProfiniteGrp.{u}) :
     P ≃ₜ* (limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp)) := {
-  (Continuous.homeoOfEquivCompactToT2 (f := Equiv.ofBijective _
-  ⟨toLimit_injective P, toLimit_surjective P⟩)
-    P.toLimit.hom.continuous_toFun)
-  with
+  (Continuous.homeoOfEquivCompactToT2
+    (f := Equiv.ofBijective _ ⟨toLimit_injective P, toLimit_surjective P⟩)
+    P.toLimit.hom.continuous_toFun) with
   map_mul' := (toLimit P).hom.map_mul' }
 
---TODO : Refactor using `(forget ProfiniteGrp.{u}).ReflectsIsomorphisms` after it is proved.
+instance isIso_toLimit (P : ProfiniteGrp.{u}) : IsIso (toLimit P) := by
+  rw [CategoryTheory.ConcreteCategory.isIso_iff_bijective]
+  exact ⟨toLimit_injective P, toLimit_surjective P⟩
+
 /-- The isomorphism in the category of profinite group between a profinite group and
 the projective limit of its quotients by open normal subgroups -/
 noncomputable def isoLimittoFiniteQuotientFunctor (P : ProfiniteGrp.{u}) :
-    P ≅ (limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp)) where
-  hom := P.toLimit
-  inv := ofHom { (continuousMulEquivLimittoFiniteQuotientFunctor P).symm.toMonoidHom with
-    continuous_toFun := (continuousMulEquivLimittoFiniteQuotientFunctor P).continuous_invFun}
-  hom_inv_id := by
-    ext x
-    exact ContinuousMulEquiv.symm_apply_apply
-      (continuousMulEquivLimittoFiniteQuotientFunctor P) x
-  inv_hom_id := by
-    ext x
-    exact ContinuousMulEquiv.apply_symm_apply
-      (continuousMulEquivLimittoFiniteQuotientFunctor P) x
+    P ≅ (limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp)) :=
+  ContinuousMulEquiv.toProfiniteGrpIso (continuousMulEquivLimittoFiniteQuotientFunctor P)
 
 end ProfiniteGrp

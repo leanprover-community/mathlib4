@@ -28,7 +28,7 @@ open Parser.Tactic.Conv
 `slice` is a conv tactic; if the current focus is a composition of several morphisms,
 `slice a b` reassociates as needed, and zooms in on the `a`-th through `b`-th morphisms.
 Thus if the current focus is `(a ≫ b) ≫ ((c ≫ d) ≫ e)`, then `slice 2 3` zooms to `b ≫ c`.
- -/
+-/
 syntax (name := slice) "slice " num ppSpace num : conv
 
 /--
