@@ -416,7 +416,7 @@ theorem IsPreconnected.prod [TopologicalSpace β] {s : Set α} {t : Set β} (hs 
   refine ⟨Prod.mk a₁ '' t ∪ flip Prod.mk b₂ '' s, ?_, .inl ⟨b₁, hb₁, rfl⟩, .inr ⟨a₂, ha₂, rfl⟩, ?_⟩
   · rintro _ (⟨y, hy, rfl⟩ | ⟨x, hx, rfl⟩)
     exacts [⟨ha₁, hy⟩, ⟨hx, hb₂⟩]
-  · exact (ht.image _ (Continuous.Prod.mk _).continuousOn).union (a₁, b₂) ⟨b₂, hb₂, rfl⟩
+  · exact (ht.image _ (by fun_prop)).union (a₁, b₂) ⟨b₂, hb₂, rfl⟩
       ⟨a₁, ha₁, rfl⟩ (hs.image _ (continuous_id.prod_mk continuous_const).continuousOn)
 
 theorem IsConnected.prod [TopologicalSpace β] {s : Set α} {t : Set β} (hs : IsConnected s)
@@ -428,10 +428,13 @@ theorem isPreconnected_univ_pi [∀ i, TopologicalSpace (π i)] {s : ∀ i, Set 
   rintro u v uo vo hsuv ⟨f, hfs, hfu⟩ ⟨g, hgs, hgv⟩
   classical
   rcases exists_finset_piecewise_mem_of_mem_nhds (uo.mem_nhds hfu) g with ⟨I, hI⟩
-  induction' I using Finset.induction_on with i I _ ihI
-  · refine ⟨g, hgs, ⟨?_, hgv⟩⟩
+  induction I using Finset.induction_on with
+  | empty =>
+    refine ⟨g, hgs, ⟨?_, hgv⟩⟩
     simpa using hI
-  · rw [Finset.piecewise_insert] at hI
+  | insert _ ihI =>
+    rename_i i I _
+    rw [Finset.piecewise_insert] at hI
     have := I.piecewise_mem_set_pi hfs hgs
     refine (hsuv this).elim ihI fun h => ?_
     set S := update (I.piecewise f g) i '' s i
@@ -668,7 +671,7 @@ theorem preconnectedSpace_iff_connectedComponent :
   · intro h x
     exact eq_univ_of_univ_subset <| isPreconnected_univ.subset_connectedComponent (mem_univ x)
   · intro h
-    cases' isEmpty_or_nonempty α with hα hα
+    rcases isEmpty_or_nonempty α with hα | hα
     · exact ⟨by rw [univ_eq_empty_iff.mpr hα]; exact isPreconnected_empty⟩
     · exact ⟨by rw [← h (Classical.choice hα)]; exact isPreconnected_connectedComponent⟩
 

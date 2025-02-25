@@ -698,7 +698,7 @@ See `MonoidHom.eq_liftOfRightInverse` for the uniqueness lemma.
    G₂----> G₃
       ∃!φ
 ```
- -/
+-/
 @[to_additive
       "`liftOfRightInverse f f_inv hf g hg` is the unique additive group homomorphism `φ`
       * such that `φ.comp f = g` (`AddMonoidHom.liftOfRightInverse_comp`),
@@ -871,9 +871,7 @@ theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Nor
   suffices x * y * x⁻¹ * y⁻¹ = 1 by
     show x * y = y * x
     · rw [mul_assoc, mul_eq_one_iff_eq_inv] at this
-      -- Porting note: Previous code was:
-      -- simpa
-      simp only [this, mul_inv_rev, inv_inv]
+      simpa
   apply hdis.le_bot
   constructor
   · suffices x * (y * x⁻¹ * y⁻¹) ∈ H₁ by simpa [mul_assoc]
@@ -921,6 +919,18 @@ def noncenter (G : Type*) [Monoid G] : Set (ConjClasses G) :=
   {x | x.carrier.Nontrivial}
 
 @[simp] lemma mem_noncenter {G} [Monoid G] (g : ConjClasses G) :
-  g ∈ noncenter G ↔ g.carrier.Nontrivial := Iff.rfl
+    g ∈ noncenter G ↔ g.carrier.Nontrivial := Iff.rfl
 
 end ConjClasses
+
+/-- Suppose `G` acts on `M` and `I` is a subgroup of `M`.
+The inertia subgroup of `I` is the subgroup of `G` whose action is trivial mod `I`. -/
+def AddSubgroup.inertia {M : Type*} [AddGroup M] (I : AddSubgroup M) (G : Type*)
+    [Group G] [MulAction G M] : Subgroup G where
+  carrier := { σ | ∀ x, σ • x - x ∈ I }
+  mul_mem' {a b} ha hb x := by simpa [mul_smul] using add_mem (ha (b • x)) (hb x)
+  one_mem' := by simp [zero_mem]
+  inv_mem' {a} ha x := by simpa using sub_mem_comm_iff.mp (ha (a⁻¹ • x))
+
+@[simp] lemma AddSubgroup.mem_inertia {M : Type*} [AddGroup M] {I : AddSubgroup M} {G : Type*}
+    [Group G] [MulAction G M] {σ : G} : σ ∈ I.inertia G ↔ ∀ x, σ • x - x ∈ I := .rfl

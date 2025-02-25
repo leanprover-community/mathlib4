@@ -25,7 +25,7 @@ lemma RingHom.surjective_of_tmul_eq_tmul_of_finite {R S}
     [CommRing R] [CommRing S] [Algebra R S] [Module.Finite R S]
     (h₁ : ∀ s : S, s ⊗ₜ[R] 1 = 1 ⊗ₜ s) : Function.Surjective (algebraMap R S) := by
   let R' := LinearMap.range (Algebra.ofId R S).toLinearMap
-  cases' subsingleton_or_nontrivial (S ⧸ R') with h
+  rcases subsingleton_or_nontrivial (S ⧸ R') with h | _
   · rwa [Submodule.subsingleton_quotient_iff_eq_top, LinearMap.range_eq_top] at h
   have : Subsingleton ((S ⧸ R') ⊗[R] (S ⧸ R')) := by
     refine subsingleton_of_forall_eq 0 fun y ↦ ?_

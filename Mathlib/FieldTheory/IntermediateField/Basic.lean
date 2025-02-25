@@ -229,6 +229,9 @@ end InheritedLemmas
 
 theorem natCast_mem (n : ℕ) : (n : L) ∈ S := by simpa using intCast_mem S n
 
+instance instSMulMemClass : SMulMemClass (IntermediateField K L) K L where
+  smul_mem := fun _ _ hx ↦ IntermediateField.smul_mem _ hx
+
 end IntermediateField
 
 /-- Turn a subalgebra closed under inverses into an intermediate field -/
@@ -611,7 +614,7 @@ theorem mem_lift {F : IntermediateField K L} {E : IntermediateField K F} (x : F)
     x.1 ∈ lift E ↔ x ∈ E :=
   Subtype.val_injective.mem_set_image
 
-/--The algEquiv between an intermediate field and its lift-/
+/-- The algEquiv between an intermediate field and its lift -/
 def liftAlgEquiv {E : IntermediateField K L} (F : IntermediateField K E) : ↥F ≃ₐ[K] lift F where
   toFun x := ⟨x.1.1, (mem_lift x.1).mpr x.2⟩
   invFun x := ⟨⟨x.1, lift_le F x.2⟩, (mem_lift ⟨x.1, lift_le F x.2⟩).mp x.2⟩
