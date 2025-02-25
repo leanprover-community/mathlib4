@@ -26,6 +26,8 @@ group action, invariant subring
 
 -/
 
+assert_not_exists Equiv.Perm.equivUnitsEnd Prod.fst_mul
+
 universe u v
 
 /-- Typeclass for multiplicative actions by monoids on semirings.
