@@ -83,7 +83,7 @@ noncomputable def embedding : WithVal (v.valuation K) →+* adicCompletion K v :
 theorem embedding_apply (x : K) : embedding v x = ↑x := rfl
 
 noncomputable instance instRankOneValuedAdicCompletion :
-    Valuation.RankOne (Valued.valuedCompletion (K := WithVal (v.valuation K))).v where
+    Valuation.RankOne (Valued.v : Valuation (v.adicCompletion K) ℤₘ₀) where
   hom := {
     toFun := toNNReal (norm_ne_zero v)
     map_zero' := rfl
