@@ -19,7 +19,7 @@ open Lean Meta Qq
 namespace existsAndEq
 
 universe u in
-private theorem exists_of_imp_eq {α : Sort u} {p : α → Prop} (a : α) (h : ∀ b, p b → a = b) :
+private theorem exists_of_imp_eq {α : Sort u} {p : α → Prop} {a : α} (h : ∀ b, p b → a = b) :
     (∃ b, p b) = p a := by
   apply propext
   constructor
@@ -29,31 +29,25 @@ private theorem exists_of_imp_eq {α : Sort u} {p : α → Prop} (a : α) (h : �
   · intro h'
     exact ⟨a, h'⟩
 
-set_option linter.unusedVariables false in
 /-- For an expression `p` of the form `fun (x : α) ↦ (body : Prop)`, checks whether
 `body` implies `x = a` for some `a`, and constructs a proof of `(∃ x, p x) = p a` using
 `exists_of_imp_eq`. -/
-partial def findImpEqProof (p : Expr) : MetaM <| Option Expr := do
-  lambdaTelescope p fun xs body => do
-    let #[x] := xs | return none
-    let ⟨u, α, x⟩ ← withTransparency .all (inferTypeQ x)
-    let ⟨v, bt, body⟩ ← inferTypeQ body
-    let _ : v =QL 1 := ⟨⟩
-    let .defEq _ ← isDefEqQ q($bt) q(Prop) | return none
-    withLocalDeclQ .anonymous .default q($body) fun h => withNewMCtxDepth do
+partial def findImpEqProof {u : Level} {α : Q(Sort u)} (p : Q($α → Prop)) :
+    MetaM <| Option ((a : Q($α)) × Q((∃ x, $p x) = $p $a)) := do
+  lambdaTelescope p fun xs (body : Q(Prop)) => do
+    let #[(x : Q($α))] := xs | return none
+    withLocalDeclQ .anonymous .default body fun h => withNewMCtxDepth do
       let .some ⟨res, proof⟩ ← go x h | return none
-      let pf1 ← mkLambdaFVars #[x, h] proof
-      let pf2 := mkApp4 (.const ``exists_of_imp_eq [u]) α p res pf1
-      return .some pf2
+      let pf1 : Q(∀ (b : $α), $p b → $res = b) ← mkLambdaFVars #[x, h] proof
+      return .some ⟨res, q(exists_of_imp_eq $pf1)⟩
 where
   /-- Traverses the expression `h`, branching at each `And`, to find a proof of `x = a`
   for some `a`. -/
-  go {u : Level} {α : Q(Sort u)} (x : Q($α)) {e : Q(Prop)} (h : Q($e)) :
-      MetaM <| Option ((a : Q($α)) × Q($a = $x)) := do
+  go (x : Q($α)) {e : Q(Prop)} (h : Q($e)) : MetaM <| Option ((a : Q($α)) × Q($a = $x)) := do
     match e, h with
-    | ~q(@Eq.{u} $β $a $b) => do
+    | ~q(@Eq.{u} $β $a $b) =>
       let .defEq _ := ← isDefEqQ q($α) q($β) | return none
-      if let .defEq _ ← isDefEqQ q($x) q($a) then
+      if let .defEq _ ← isDefEqQ x a then
         return .some ⟨b, q(($h).symm)⟩
       else if let .defEq _ ← isDefEqQ x (b : Q($α)) then
         return .some ⟨a, q(($h))⟩
@@ -72,7 +66,6 @@ end existsAndEq
 /-- Checks whether `P a'` has the form `... ∧ a' = a ∧ ...` or `... ∧ a = a' ∧ ...` in
 the goal `∃ a', P a'`. If so, rewrites the goal as `P a`. -/
 simproc existsAndEq (Exists (fun _ => And _ _)) := fun e => do
-  let_expr Exists _ p := e | return .continue
-  let .some pf := ← existsAndEq.findImpEqProof p | return .continue
-  let some (_, _, rhs) := (← inferType pf).eq? | return .continue
-  return .visit {expr := rhs, proof? := pf}
+  let ⟨1, ~q(Prop), ~q(Exists $p)⟩ ← inferTypeQ e | return .continue
+  let .some ⟨rhs, pf⟩ ← existsAndEq.findImpEqProof p | return .continue
+  return .visit {expr := q($p $rhs), proof? := pf}
