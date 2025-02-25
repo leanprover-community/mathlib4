@@ -140,6 +140,9 @@ a loop in the class inheritance graph. -/
 abbrev mk' (α : Sort u) [h₁ : Inhabited α] [Subsingleton α] : Unique α :=
   { h₁ with uniq := fun _ ↦ Subsingleton.elim _ _ }
 
+lemma eq (h : Unique α) (x y : α) : x = y := by
+  rw [uniq h x, uniq h y]
+
 end Unique
 
 theorem nonempty_unique (α : Sort u) [Subsingleton α] [Nonempty α] : Nonempty (Unique α) := by
