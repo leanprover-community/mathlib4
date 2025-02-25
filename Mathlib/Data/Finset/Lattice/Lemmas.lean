@@ -64,6 +64,13 @@ theorem Nonempty.inr {s t : Finset α} (h : t.Nonempty) : (s ∪ t).Nonempty :=
 theorem insert_eq (a : α) (s : Finset α) : insert a s = {a} ∪ s :=
   rfl
 
+/- Todo: make these two lemmas `simp`. If so, make sure to formulate `union_singleton` first,
+so that it has lower `simp`-priority.
+The reason is that together with `Finset.mem_insert` we don't break the natural order of the
+disjunctions. -/
+lemma union_singleton : s ∪ {a} = insert a s := by ext; simp [or_comm]
+lemma singleton_union : {a} ∪ s = insert a s := rfl
+
 @[simp]
 theorem insert_union (a : α) (s t : Finset α) : insert a s ∪ t = insert a (s ∪ t) := by
   simp only [insert_eq, union_assoc]
