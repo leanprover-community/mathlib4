@@ -141,8 +141,13 @@ theorem teichmuller_mul_pow_coeff_of_ne {R : Type*} [CommRing R] [CharP R p] (x 
     simp [Prime.ne_zero <| Nat.Prime.prime Fact.out]
 
 -- `Mathlib.Algebra.Ring.Aut` after `toPerm`
+theorem RingAut.one_eq_refl (R : Type*) [Mul R] [Add R] : (1 : R ≃+* R) = RingEquiv.refl R := rfl
+
 @[simp]
 theorem RingAut.one_apply (R : Type*) [Mul R] [Add R] (x : R) : (1 : R ≃+* R) x = x := rfl
+
+@[simp]
+theorem RingAut.coe_one (R : Type*) [Mul R] [Add R] : ⇑(1 : R ≃+* R) = id := rfl
 
 @[simp]
 theorem RingAut.mul_apply (R : Type*) [Mul R] [Add R]
@@ -153,9 +158,11 @@ theorem RingAut.inv_apply (R : Type*) [Mul R] [Add R]
     (f : R ≃+* R) (x : R) : f⁻¹ x = f.symm x := rfl
 
 @[simp]
-theorem RingAut.coe_pow {R : Type*} [CommSemiring R] (f : R ≃+* R) (n : ℕ) :
-    ⇑(f ^ n) = f^[n] := sorry
-  -- RingHom.coe_pow f.toRingHom n
+theorem RingAut.coe_pow {R : Type*} [CommSemiring R] (f : R ≃+* R) (n : ℕ) : ⇑(f ^ n) = f^[n] := by
+  induction' n with n ih
+  · simp
+  · ext
+    simp [pow_succ, ih]
 
 -- `Mathlib.FieldTheory.Perfect` after `frobeniusEquiv_symm_pow_p`
 @[simp]
@@ -329,13 +336,20 @@ theorem RingHom.map_iterate_frobeniusEquiv_symm {R : Type*} [CommSemiring R]
 theorem Perfection.coeff_frobeniusEquiv_symm {R : Type*} [CommSemiring R] {p : ℕ}
     [hp : Fact (Nat.Prime p)] [CharP R p] (f : Ring.Perfection R p) (n : ℕ) :
     (Perfection.coeff R p n) ((_root_.frobeniusEquiv (Ring.Perfection R p) p).symm f) =
-    (Perfection.coeff R p (n + 1)) f := by sorry
+    (Perfection.coeff R p (n + 1)) f := by
+  nth_rw 2 [← frobenius_apply_frobeniusEquiv_symm _ p f]
+  rw [coeff_frobenius]
 
 @[simp]
 theorem Perfection.coeff_iterate_frobeniusEquiv_symm {R : Type*} [CommSemiring R] {p : ℕ}
     [hp : Fact (Nat.Prime p)] [CharP R p] (f : Ring.Perfection R p) (n m : ℕ) :
     (Perfection.coeff _ p n) ((_root_.frobeniusEquiv _ p).symm ^[m] f) =
-    (Perfection.coeff _ p (n + m)) f := by sorry
+    (Perfection.coeff _ p (n + m)) f := by
+  revert f n
+  induction' m with m ih
+  · simp
+  · intro f n
+    simp [ih, ← add_assoc]
 
 section
 -- PreTilt
@@ -392,12 +406,6 @@ theorem PreTilt.untilt_frobeniusEquiv_symm_pow_pow (x : O^♭) (n : ℕ) :
 --   simp
 
 #check RingHom.liftOfRightInverse_comp_apply
-
-def ghostComponentModPPow' (n : ℕ): 𝕎 (O ⧸ span {(p : O)}) →+* O ⧸ span {(p : O)}^(n + 1) :=
-  RingHom.liftOfSurjective (WittVector.map <| Ideal.Quotient.mk <| span {(p : O)})
-    (map_surjective _ Ideal.Quotient.mk_surjective)
-    ⟨((Ideal.Quotient.mk <| span {(p : O)} ^ (n + 1))).comp
-    (WittVector.ghostComponent (p := p) n), ker_map_le_ker_mk_comp_ghostComponent n⟩
 
 -- `Mathlib.RingTheory.Ideal.Maps` after `RingHom.eq_liftOfRightInverse`
 open RingHom
@@ -513,28 +521,159 @@ theorem factorPowSucc_fontaineThetaModPPow_eq (n : ℕ) (x : 𝕎 (O^♭)) :
 
 #check fontaineThetaModPPow
 
-def fontaineTheta : 𝕎 (O^♭) →+* O := by
-  apply IsAdicComplete.limRingHom (a := fun n ↦ n + 1) (S := 𝕎 (O^♭)) (R := O) (I := span {(p : O)})
-  · exact (factorPowSucc_fontaineThetaModPPow_eq _ _).symm
-  · exact Order.succ_strictMono
-  -- · exact fun n ↦ fontaineThetaModPPow O p n
-    -- (fun x => (factorPowSucc_fontaineThetaModPPow_eq x).symm)
+def fontaineTheta : 𝕎 (O^♭) →+* O :=
+  IsAdicComplete.limRingHom Order.succ_strictMono (factorPowSucc_fontaineThetaModPPow_eq _ _).symm
 
--- theorem fontaineTheta :
+theorem mk_pow_fontaineTheta (n : ℕ) (x : 𝕎 (O^♭)) :
+    Ideal.Quotient.mk (span {(p : O)} ^ (n + 1)) (fontaineTheta x) = fontaineThetaModPPow O p n x :=
+  IsAdicComplete.mk_limRingHom Order.succ_strictMono
+      (factorPowSucc_fontaineThetaModPPow_eq _ _).symm n x
+
+-- `Mathlib.RingTheory.WittVector.Basic` after `WittVector.map_coeff`
+@[simp]
+theorem WittVector.map_id (R : Type*) [CommRing R] :
+    WittVector.map (RingHom.id R) = RingHom.id (𝕎 R) := by
+  ext
+  simp
+
+-- move this lemma
+omit [Fact (Nat.Prime p)]
+  [Fact ¬IsUnit (p : O)]
+  [IsAdicComplete (span {(p : O)}) O] in
+private theorem ghostComponentModPPow.aux : span {(p : O)} ^ (0 + 1) = span {(p : O)} := by
+  simp
+
+def ghostComponentModPPow' (n : ℕ): 𝕎 (O ⧸ span {(p : O)}) →+* O ⧸ span {(p : O)}^(n + 1) :=
+  RingHom.liftOfSurjective (WittVector.map <| Ideal.Quotient.mk <| span {(p : O)})
+    (map_surjective _ Ideal.Quotient.mk_surjective)
+    ⟨((Ideal.Quotient.mk <| span {(p : O)} ^ (n + 1))).comp
+    (WittVector.ghostComponent (p := p) n), ker_map_le_ker_mk_comp_ghostComponent n⟩
+
+omit
+  [Fact ¬IsUnit (p : O)]
+  [IsAdicComplete (span {(p : O)}) O] in
+@[simp]
+theorem quotEquivOfEq_ghostComponentModPPow (x : 𝕎 (O ⧸ span {(p : O)})) :
+    quotEquivOfEq (ghostComponentModPPow.aux) (ghostComponentModPPow 0 x) =
+    ghostComponent 0 x := by
+  simp only [Nat.reduceAdd, ghostComponentModPPow, RingHom.liftOfSurjective]
+  have surj : Function.Surjective (WittVector.map (p := p) (Ideal.Quotient.mk (span {(p : O)}))) :=
+    map_surjective _ Ideal.Quotient.mk_surjective
+  choose y hy using surj x
+  have := RingHom.liftOfSurjective_comp_apply
+      (WittVector.map (p := p) (Ideal.Quotient.mk (span {(p : O)})))
+      surj ⟨((Ideal.Quotient.mk <| span {(p : O)} ^ (0 + 1))).comp
+      (WittVector.ghostComponent (p := p) 0), ker_map_le_ker_mk_comp_ghostComponent 0⟩ y
+  rw [hy] at this
+  rw [this]
+  simp [← hy, ghostComponent_apply]
+
+
+theorem mk_fontaineTheta (x : 𝕎 (O^♭)) :
+    Ideal.Quotient.mk (span {(p : O)}) (fontaineTheta x) =
+    Perfection.coeff (ModP O p) _ 0 (x.coeff 0) := by
+  have := mk_pow_fontaineTheta 0 x
+  simp only [Nat.reduceAdd] at this
+  apply_fun Ideal.quotEquivOfEq (pow_one (p : O) ▸ Ideal.span_singleton_pow (p : O) 1) at this
+  simp only [quotEquivOfEq_mk] at this
+  rw [this]
+  simp only [fontaineThetaModPPow, Nat.reduceAdd, pow_zero, RingHom.one_def, WittVector.map_id,
+    RingHomCompTriple.comp_eq, RingHom.coe_comp, Function.comp_apply,
+    quotEquivOfEq_ghostComponentModPPow, ghostComponent_apply, wittPolynomial_zero,
+    MvPolynomial.aeval_X]
+  -- Note to reviewer : `WittVector.map_coeff` should, but does not work in this simp
+  rfl
+
 end RingHom
 
 -- theorem modPPow
 
 -- Teichmuller lifts
 
-theorem fontaineTheta_teichmuller (x : O^♭) : fontaineTheta (teichmuller p x) = x.untilt := sorry
+theorem fontaineTheta_teichmuller (x : O^♭) : fontaineTheta (teichmuller p x) = x.untilt := by
+  rw [IsHausdorff.eq_iff_smodEq' (I := span {(p : O)})]
+  intro n
+  cases n
+  · simp
+  · simp [SModEq, mk_pow_fontaineTheta]
 
 -- theorem fontaineTheta_p : fontaineTheta (p : 𝕎 (O^♭)) = p := by simp
 
-theorem surjective_fontaineTheta : Function.Surjective (fontaineTheta : 𝕎 (O^♭) → O) := sorry
+-- AdicComplete
+theorem IsAdicComplete.surjective_of_surjective_mkQ_comp {R M N: Type*} [CommRing R]
+    [AddCommGroup M] [AddCommGroup N] [Module R M]
+    [Module R N] (I : Ideal R) [IsAdicComplete I M] [IsHausdorff I N] (f : M →ₗ[R] N)
+    (hf : Function.Surjective ((Submodule.mkQ (I • ⊤ : Submodule R N)).comp f)) :
+    Function.Surjective f := sorry
+
+-- this is a lemma from #20431 by Andrew Yang
+section
+
+variable {R S : Type*} [CommRing R] [CommRing S] {I : Ideal R} {J : Ideal S}
+
+variable (M : Type*) [AddCommGroup M] [Module R M] [Module S M]
+
+lemma SModEq.of_toAddSubgroup_le {U : Submodule R M} {V : Submodule S M}
+    (h : U.toAddSubgroup ≤ V.toAddSubgroup) {x y : M} (hxy : x ≡ y [SMOD U]) : x ≡ y [SMOD V] := by
+  simp only [SModEq, Submodule.Quotient.eq] at hxy ⊢
+  exact h hxy
+
+-- `Mathlib.Algebra.Module.Submodule.Basic` after `Submodule.toAddSubgroup_mono`
+@[simp]
+theorem Submodule.toAddSubgroup_toAddSubmonoid {R : Type*}  {M : Type*}  [Ring R]
+    [AddCommGroup M] {module_M : Module R M}
+    (p : Submodule R M) : p.toAddSubgroup.toAddSubmonoid = p.toAddSubmonoid := by
+  ext
+  simp
+
+-- -- `Mathlib.Algebra.Group.Submonoid.Pointwise` after `AddSubmonoid.smul_iSup`
+-- theorem foo {R S A: Type} [AddMonoid A] [CommSemiring R] [Semiring S] [DistribSMul R A]
+-- [DistribSMul S A] [Algebra R S] [IsScalarTower R S A] (hIJ : I.map f ≤ J)
+-- (p : AddSubmonoid M) :
+-- I.toAddSubmonoid • p ≤ J • p := sorry
+
+-- Note: after #20431 this lemma should be moved to the file `RingTheory.AdicCompletion.Mono`,
+-- after `IsHausdorff.mono`
+variable [Algebra R S]  [IsScalarTower R S M] (hIJ : I.map (algebraMap R S) ≤ J)
+
+include hIJ in
+lemma IsHausdorff.map [IsHausdorff J M] : IsHausdorff I M := by
+  refine ⟨fun x h ↦ IsHausdorff.haus ‹_› x fun n ↦ ?_⟩ -- fun n ↦ ((h n).of_toAddSubgroup_le ?_)
+  apply SModEq.of_toAddSubgroup_le
+      (U := (I ^ n • ⊤ : Submodule R M)) (V := (J ^ n • ⊤ : Submodule S M))
+  · -- show (I ^ n • ⊤ : Submodule R M).toAddSubmonoid ≤ (J ^ n • ⊤ : Submodule S M).toAddSubmonoid
+    rw [← AddSubgroup.toAddSubmonoid_le]
+    simp only [Submodule.toAddSubgroup_toAddSubmonoid, Submodule.smul_toAddSubmonoid,
+      Submodule.top_toAddSubmonoid]
+    rw [AddSubmonoid.smul_le]
+    intro r hr m _
+    rw [← algebraMap_smul S r m]
+    apply AddSubmonoid.smul_mem_smul
+    · have := Ideal.mem_map_of_mem (algebraMap R S) hr
+      simp only [Ideal.map_pow] at this
+      apply Ideal.pow_right_mono (I :=  I.map (algebraMap R S)) hIJ n this
+    · trivial
+  · exact h n
+end
+
+theorem surjective_fontaineTheta : Function.Surjective (fontaineTheta : 𝕎 (O^♭) → O) := by
+  let I := span {(p : 𝕎 (O^♭))}
+  haveI : IsAdicComplete I (𝕎 (O^♭)) := inferInstance
+  letI : Algebra (𝕎 (O^♭)) O := RingHom.toAlgebra fontaineTheta
+  haveI : IsHausdorff I O := sorry
+  let f : 𝕎 (O^♭) →ₐ[𝕎 (O^♭)] O := Algebra.ofId _ _
+  have : ⇑f.toLinearMap = ⇑fontaineTheta := rfl
+  -- have : (I • ⊤).mkQ ∘ₗ f.toLinearMap = (I • ⊤).mkQ
+  rw [← this]
+  apply IsAdicComplete.surjective_of_surjective_mkQ_comp I f.toLinearMap
+  intro x
+  simp? [f, Algebra.ofId_apply, RingHom.algebraMap_toAlgebra]
 
 
-def fontaineThetaInvertP [CharZero O] : Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭)) →+* (FractionRing O) := Localization.awayLift ((algebraMap O _).comp fontaineTheta) (p : 𝕎 (O^♭)) sorry
+def fontaineThetaInvertP :
+    Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭)) →+* Localization.Away (p : O) :=
+  Localization.awayLift ((algebraMap O _).comp fontaineTheta) (p : 𝕎 (O^♭))
+      (by simpa using IsLocalization.Away.algebraMap_isUnit (p : O))
 
 section PeriodRing
 
@@ -544,13 +683,20 @@ variable (R : Type*) [CommRing R] (f : R)
 -- import Mathlib.RingTheory.Localization.Away.Basic
 #check Localization.awayLift
 variable (O p) in
-def BDeRhamPlus [CharZero O] : Type u := AdicCompletion (R := (Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭)))) (RingHom.ker fontaineThetaInvertP) (Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭)))
+def BDeRhamPlus : Type u :=
+  AdicCompletion (R := (Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭))))
+      (RingHom.ker fontaineThetaInvertP) (Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭)))
 
 -- Mathlib.RingTheory.AdicCompletion.Algebra
-instance [CharZero O] : CommRing (BDeRhamPlus O p) := AdicCompletion.instCommRing _
+instance : CommRing (BDeRhamPlus O p) := AdicCompletion.instCommRing _
 
 end PeriodRing
-def BDeRham [CharZero O] : Type u := FractionRing (BDeRhamPlus O p)
+def BDeRham : Type u := FractionRing (BDeRhamPlus O p)
 notation "𝔹_dR^+(" O ")" => BDeRhamPlus O
 
 end
+
+-- Teichmuller series PR
+-- lemmas about frobenius and untilt another PR
+-- fontaine theta and Bdr PR
+-- surjective to another PR
