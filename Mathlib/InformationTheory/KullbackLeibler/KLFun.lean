@@ -155,7 +155,7 @@ lemma tendsto_klFun_atTop : Tendsto klFun atTop atTop := by
   have : klFun = (fun x ↦ x * (log x - 1) + 1) := by ext; ring
   rw [this]
   refine Tendsto.atTop_add ?_ tendsto_const_nhds
-  refine tendsto_id.atTop_mul_atTop ?_
+  refine tendsto_id.atTop_mul_atTop₀ ?_
   exact tendsto_log_atTop.atTop_add tendsto_const_nhds
 
 section Integral
