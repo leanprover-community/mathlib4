@@ -317,7 +317,7 @@ section PreimgCodiscrete
 
 /-- Preimages of codiscrete sets, local version: if `f` is analytic at `x` and not locally constant,
 then the preimage of any punctured neighbourhood of `f x` is a punctured neighbourhood of `x`. -/
-theorem AnalyticAt.preimg_of_puncNhd {x : 𝕜} {f : 𝕜 → E} {s : Set E} (hfx : AnalyticAt 𝕜 f x)
+theorem AnalyticAt.preimg_of_nhdsNE {x : 𝕜} {f : 𝕜 → E} {s : Set E} (hfx : AnalyticAt 𝕜 f x)
     (h₂f : ¬Filter.EventuallyConst f (𝓝 x)) (hs : s ∈ 𝓝[≠] f x) :
     f ⁻¹' s ∈ 𝓝[≠] x := by
   have : ∀ᶠ (z : 𝕜) in 𝓝 x, f z ∈ insert (f x) s := by
@@ -340,7 +340,7 @@ constant, then the push-forward of the punctured neighbourhood filter `𝓝[≠]
 equal to the punctured neighbourhood filter `𝓝[≠] f x`. -/
 theorem AnalyticAt.map_nbhdsNE {x : 𝕜} {f : 𝕜 → E} (hfx : AnalyticAt 𝕜 f x)
     (h₂f : ¬Filter.EventuallyConst f (𝓝 x)) :
-    (𝓝[≠] x).map f ≤ (𝓝[≠] f x) := fun _ hs ↦ mem_map.1 (preimg_of_puncNhd hfx h₂f hs)
+    (𝓝[≠] x).map f ≤ (𝓝[≠] f x) := fun _ hs ↦ mem_map.1 (preimg_of_nhdsNE hfx h₂f hs)
 
 /-- Preimages of codiscrete sets: if `f` is analytic on a neighbourhood of `U` and not locally
 constant, then the preimage of any subset codiscrete within `f '' U` is codiscrete within `U`.
@@ -353,7 +353,7 @@ theorem AnalyticOnNhd.preimg_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {f 
     f ⁻¹' s ∈ codiscreteWithin U := by
   simp_rw [mem_codiscreteWithin, disjoint_principal_right, Set.compl_diff] at *
   intro x hx
-  apply mem_of_superset ((hfU x hx).preimg_of_puncNhd (h₂f x hx) (hs (f x) (by tauto)))
+  apply mem_of_superset ((hfU x hx).preimg_of_nhdsNE (h₂f x hx) (hs (f x) (by tauto)))
   rw [preimage_union, preimage_compl]
   apply union_subset_union_right (f ⁻¹' s)
   intro x hx
@@ -369,6 +369,6 @@ Applications might want to use the theorem `Filter.codiscreteWithin.mono`.
 theorem AnalyticOnNhd.map_codiscreteWithin {U : Set 𝕜} {f : 𝕜 → E}
     (hfU : AnalyticOnNhd 𝕜 f U) (h₂f : ∀ x ∈ U, ¬EventuallyConst f (𝓝 x)) :
     Filter.map f (Filter.codiscreteWithin U) ≤ (Filter.codiscreteWithin (f '' U)) :=
-  fun _ hs ↦ mem_map.1 (preimg_codiscrete hfU h₂f hs)
+  fun _ hs ↦ mem_map.1 (preimg_mem_codiscreteWithin hfU h₂f hs)
 
 end PreimgCodiscrete
