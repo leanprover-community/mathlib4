@@ -222,23 +222,22 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
        rw [smul_mul_assoc]
        have ppp : a ^ n * (m.factorial : R)⁻¹ • b ^ m = (m.factorial : R)⁻¹ • (a ^ n *  b ^ m) := by
          simp_all only [product_eq_sprod, mem_range, Algebra.mul_smul_comm, N]
-       rw [ppp]
-       rw [smul_smul]
-      _ = ∑ ij ∈ (range (N + 1)).product (range (N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
+       rw [ppp, smul_smul]
+      _ = ∑ ij ∈ (range (N + 1)).product (range (N + 1)), ((ij.1.factorial : R)⁻¹ *
+          (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
         rw [sum_sigma']
-        apply sum_bij
-          (fun ⟨i, j⟩ _ => (i, j))
-        simp
-        simp
-        intro h1 h2 h3 h4 h5 h6 h7 h8
-        refine Sigma.ext h7 ?_
-        exact heq_of_eq h8
-        simp
-        intro h1 h2 h3 h4
-        constructor
-        apply h3
-        apply h4
-        simp
+        apply sum_bij (fun ⟨i, j⟩ _ => (i, j))
+        · simp only [mem_sigma, product_eq_sprod, mem_product, imp_self, implies_true]
+        · simp only [mem_sigma, Prod.mk.injEq, and_imp]
+          intro h1 h2 h3 h4 h5 h6 h7 h8
+          refine Sigma.ext h7 ?_
+          exact heq_of_eq h8
+        · simp
+          intro h1 h2 h3 h4
+          constructor
+          apply h3
+          apply h4
+        simp only [implies_true]
   simp at s₂
   rw [s₂.symm] at s₁
   apply s₁
