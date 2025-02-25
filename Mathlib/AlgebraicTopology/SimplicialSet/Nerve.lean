@@ -62,7 +62,7 @@ variable {C : Type*} [Category C] {n : ℕ}
 
 lemma δ₀_eq {x : nerve C _⦋n + 1⦌} : (nerve C).δ (0 : Fin (n + 2)) x = x.δ₀ := rfl
 
-lemma σ_zero_eq_mk_id (x : C) : (nerve C).σ (0 : Fin 1) (.mk₀ x) = .mk₁ (𝟙 x) :=
+lemma σ₀_mk₀_eq (x : C) : (nerve C).σ (0 : Fin 1) (.mk₀ x) = .mk₁ (𝟙 x) :=
   ComposableArrows.ext₁ rfl rfl (by simp; rfl)
 
 section
@@ -70,14 +70,13 @@ open SimplexCategory
 
 variable {X₀ X₁ X₂ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂)
 
-theorem δ22_eq : (nerve C).map (δ 2).op (ComposableArrows.mk₂ f g) = ComposableArrows.mk₁ f :=
+theorem δ₂_mk₂_eq : (nerve C).δ 2 (ComposableArrows.mk₂ f g) = ComposableArrows.mk₁ f :=
   ComposableArrows.ext₁ rfl rfl (by simp; rfl)
 
-theorem δ20_eq : (nerve C).map (δ 0).op (ComposableArrows.mk₂ f g) = ComposableArrows.mk₁ g :=
+theorem δ₀_mk₂_eq : (nerve C).δ 0 (ComposableArrows.mk₂ f g) = ComposableArrows.mk₁ g :=
   ComposableArrows.ext₁ rfl rfl (by simp; rfl)
 
-theorem δ21_eq : (nerve C).map (δ 1).op (ComposableArrows.mk₂ f g) =
-    ComposableArrows.mk₁ (f ≫ g) :=
+theorem δ₁_mk₂_eq : (nerve C).δ 1 (ComposableArrows.mk₂ f g) = ComposableArrows.mk₁ (f ≫ g) :=
   ComposableArrows.ext₁ rfl rfl (by simp; rfl)
 
 end
