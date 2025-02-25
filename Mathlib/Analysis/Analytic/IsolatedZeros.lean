@@ -347,7 +347,7 @@ constant, then the preimage of any subset codiscrete within `f '' U` is codiscre
 
 Applications might want to use the theorem `Filter.codiscreteWithin.mono`.
 -/
-theorem AnalyticOnNhd.preimg_codiscrete {U : Set 𝕜} {s : Set E} {f : 𝕜 → E}
+theorem AnalyticOnNhd.preimg_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {f : 𝕜 → E}
     (hfU : AnalyticOnNhd 𝕜 f U) (h₂f : ∀ x ∈ U, ¬EventuallyConst f (𝓝 x))
     (hs : s ∈ codiscreteWithin (f '' U)) :
     f ⁻¹' s ∈ codiscreteWithin U := by
