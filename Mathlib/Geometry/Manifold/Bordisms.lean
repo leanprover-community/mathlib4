@@ -25,8 +25,9 @@ and will be added in a future PR, as well as the definition of the (unoriented) 
   the vector space `E` and the model with corners `I` as type parameters.
 - `SingularNManifold.map`: a map `X → Y` of topological spaces induces a map between the spaces
   of singular n-manifolds
-- `SingularNManifold.comap`: if `(N,f)` is a singular n-manifold on `X` and `φ: M → N` is continuous,
-  the `comap` of `(N,f)` and `φ` is the induced singular n-manifold `(M, f ∘ φ)` on `X`.
+- `SingularNManifold.comap`: if `(N,f)` is a singular n-manifold on `X`
+  and `φ: M → N` is continuous, the `comap` of `(N,f)` and `φ`
+  is the induced singular n-manifold `(M, f ∘ φ)` on `X`.
 - `SingularNManifold.empty`: the empty set `M`, viewed as an `n`-manifold,
   as a singular `n`-manifold over any space `X`.
 - `SingularNManifold.toPUnit`: an `n`-dimensional manifold induces a singular `n`-manifold
@@ -141,16 +142,15 @@ noncomputable def refl (hdim : finrank ℝ E = n) :
 
 /-- If `(N, f)` is a singular `n`-manifold on `X` and `M` another `n`-dimensional manifold,
 a continuous map `φ : M → N` induces a singular `n`-manifold structure `(M, f ∘ φ)` on `X`. -/
-noncomputable def comap [h : Fact (finrank ℝ E' = n)]
-    (s : SingularNManifold X n k I)
-    {φ : M' → s.M} (hφ : Continuous φ) : SingularNManifold X n k I' where
+noncomputable def comap [h : Fact (finrank ℝ E = n)] (s : SingularNManifold X n k I)
+    {φ : M → s.M} (hφ : Continuous φ) : SingularNManifold X n k I where
   f := s.f ∘ φ
   hf := s.hf.comp hφ
   dimension := h.out
 
 @[simp]
-lemma comap_f [Fact (finrank ℝ E' = n)]
-    (s : SingularNManifold X n k I) {φ : M' → s.M} (hφ : Continuous φ) :
+lemma comap_f [Fact (finrank ℝ E = n)]
+    (s : SingularNManifold X n k I) {φ : M → s.M} (hφ : Continuous φ) :
     (s.comap hφ).f = s.f ∘ φ :=
   rfl
 
