@@ -241,7 +241,8 @@ theorem mkQ_sub : mkQ p (x - y) = mkQ p x - mkQ p y :=
   rfl
 
 @[simp]
-theorem mkQ_smul (r : R) (x : M) : mkQ p (r • x) = r • mkQ p x :=
+theorem mkQ_smul {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (x : M) :
+    mkQ p (r • x) = r • mkQ p x :=
   rfl
 
 protected theorem mkQ_eq' {x y : M} : mkQ p x = mkQ p y ↔ -x + y ∈ p :=
@@ -249,6 +250,12 @@ protected theorem mkQ_eq' {x y : M} : mkQ p x = mkQ p y ↔ -x + y ∈ p :=
 
 protected theorem mkQ_eq {x y : M} : mkQ p x = mkQ p y ↔ x - y ∈ p :=
   (Submodule.mkQ_eq' p).trans (leftRel_apply.symm.trans p.quotientRel_def)
+
+theorem mk''_eq_mkQ {p : Submodule R M} (x : M) : Quotient.mk'' x = mkQ p x :=
+  rfl
+
+theorem quot_mk_eq_mkQ {p : Submodule R M} (x : M) : Quot.mk _ x = mkQ p x :=
+  rfl
 
 theorem mkQ_surjective : Function.Surjective p.mkQ := by
   rintro ⟨x⟩; exact ⟨x, rfl⟩
