@@ -29,9 +29,9 @@ This file also provides diffeomorphisms related to products and disjoint unions.
 * `Diffeomorph.prodComm`: `M × N` is diffeomorphic to `N × M`
 * `Diffeomorph.prodAssoc`: `(M × N) × N'` is diffeomorphic to `M × (N × N')`
 * `Diffeomorph.sumCongr`: the disjoint union of two diffeomorphisms
-* `Diffeomorph.sumComm`: a diffeomorphism `M ⊕ M' → M' × M`
-* `Diffeomorph.sumAssoc`: a diffeomorphism `(M ⊕ N) ⊕ P → M ⊕ (N ⊕ P)`
-* `Diffeomorph.sumEmpty`: a diffeomorphism `M ⊕ ∅ → M
+* `Diffeomorph.sumComm`: `M ⊕ M'` is diffeomorphic to `M' × M`
+* `Diffeomorph.sumAssoc`: `(M ⊕ N) ⊕ P` is diffeomorphic to `M ⊕ (N ⊕ P)`
+* `Diffeomorph.sumEmpty`: `M ⊕ ∅` is diffeomorphic to `M`
 
 ## Notations
 
@@ -592,20 +592,20 @@ def sumCongr (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
   contMDiff_invFun := ContMDiff.sum_map φ.contMDiff_invFun ψ.contMDiff_invFun
 
 lemma sumCongr_symm_symm (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
-  sumCongr φ.symm ψ.symm = (sumCongr φ ψ).symm := rfl
+    sumCongr φ.symm ψ.symm = (sumCongr φ ψ).symm := rfl
 
 @[simp]
 lemma sumCongr_coe (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
-  sumCongr φ ψ = Sum.map φ ψ := rfl
+    sumCongr φ ψ = Sum.map φ ψ := rfl
 
 lemma sumCongr_inl (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
-  (sumCongr φ ψ) ∘ Sum.inl = Sum.inl ∘ φ := rfl
+    (sumCongr φ ψ) ∘ Sum.inl = Sum.inl ∘ φ := rfl
 
 lemma sumCongr_inr (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
-  (sumCongr φ ψ) ∘ Sum.inr = Sum.inr ∘ ψ := rfl
+    (sumCongr φ ψ) ∘ Sum.inr = Sum.inr ∘ ψ := rfl
 
 variable (I M M' n) in
-/-- A diffeomorphism `M ⊕ M' → M' ⊕ M` -/
+/-- The canonical diffeomorphism `M ⊕ M' → M' ⊕ M` -/
 def sumComm : Diffeomorph I I (M ⊕ M') (M' ⊕ M) n where
   toEquiv := Equiv.sumComm M M'
   contMDiff_toFun := ContMDiff.swap
@@ -628,7 +628,7 @@ lemma sumComm_inr : (Diffeomorph.sumComm I M n M') ∘ Sum.inr = Sum.inl := by
   exact Sum.swap_inr
 
 variable (I M M' M'' n) in
-/-- A diffeomorphism `(M ⊕ N) ⊕ P → M ⊕ (N ⊕ P)` -/
+/-- The canonical diffeomorphism `(M ⊕ N) ⊕ P → M ⊕ (N ⊕ P)` -/
 def sumAssoc : Diffeomorph I I ((M ⊕ M') ⊕ M'') (M ⊕ (M' ⊕ M'')) n where
   toEquiv := Equiv.sumAssoc M M' M''
   contMDiff_toFun := by
@@ -645,7 +645,7 @@ theorem sumAssoc_coe :
     (sumAssoc I M n M' M'' : (M ⊕ M') ⊕ M'' → M ⊕ (M' ⊕ M'')) = Equiv.sumAssoc M M' M'' := rfl
 
 variable (I M n) in
-/-- A diffeomorphism `M ⊕ ∅ → M` -/
+/-- The canonical diffeomorphism `M ⊕ ∅ → M` -/
 def sumEmpty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M n where
   toEquiv := Equiv.sumEmpty M M'
   contMDiff_toFun := contMDiff_id.sum_elim fun x ↦ (IsEmpty.false x).elim
