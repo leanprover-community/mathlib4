@@ -45,11 +45,13 @@ variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α} {x : ℝ}
 
 /-- The function `x : ℝ ↦ x * log x + 1 - x`.
 The Kullback-Leibler divergence is an f-divergence for this function. -/
-noncomputable abbrev klFun (x : ℝ) : ℝ := x * log x + 1 - x
+noncomputable def klFun (x : ℝ) : ℝ := x * log x + 1 - x
 
-lemma klFun_zero : klFun 0 = 1 := by simp
+lemma klFun_apply (x : ℝ) : klFun x = x * log x + 1 - x := rfl
 
-lemma klFun_one : klFun 1 = 0 := by simp
+lemma klFun_zero : klFun 0 = 1 := by simp [klFun]
+
+lemma klFun_one : klFun 1 = 0 := by simp [klFun]
 
 /-- `klFun` is strictly convex on [0,∞). -/
 lemma strictConvexOn_klFun : StrictConvexOn ℝ (Ici 0) klFun :=
@@ -66,7 +68,7 @@ lemma convexOn_Ioi_klFun : ConvexOn ℝ (Ioi 0) klFun :=
 
 /-- `klFun` is continuous. -/
 @[continuity, fun_prop]
-lemma continuous_klFun : Continuous klFun := by fun_prop
+lemma continuous_klFun : Continuous klFun := by unfold klFun; fun_prop
 
 /-- `klFun` is measurable. -/
 @[measurability, fun_prop]
@@ -84,8 +86,7 @@ lemma hasDerivAt_klFun (hx : x ≠ 0) : HasDerivAt klFun (log x) x := by
   ring
 
 lemma not_differentiableAt_klFun_zero : ¬ DifferentiableAt ℝ klFun 0 := by
-  simp only [differentiableAt_id', DifferentiableAt.sub_iff_left, differentiableAt_add_const_iff]
-  exact not_DifferentiableAt_log_mul_zero
+  unfold klFun; simpa using not_DifferentiableAt_log_mul_zero
 
 /-- The derivative of `klFun` is `log x`. This also holds at `x = 0` although `klFun` is not
 differentiable there since the default value of `deriv` in that case is 0. -/
@@ -136,23 +137,19 @@ lemma tendsto_rightDeriv_klFun_atTop :
 
 end Derivatives
 
-/-- The function `klFun` is nonnegative on `[0,∞)`. -/
-lemma klFun_nonneg (hx : 0 ≤ x) : 0 ≤ klFun x := by
-  rcases hx.eq_or_lt with rfl | hx
-  · simp
-  · rw [← klFun_one]
-    exact convexOn_Ioi_klFun.isMinOn_of_rightDeriv_eq_zero (by simp) (by simp) hx
-
 lemma isMinOn_klFun : IsMinOn klFun (Ici 0) 1 :=
-  isMinOn_iff.mpr fun _ hy ↦ klFun_one ▸ klFun_nonneg hy
+  convexOn_klFun.isMinOn_of_rightDeriv_eq_zero (by simp) (by simp)
+
+/-- The function `klFun` is nonnegative on `[0,∞)`. -/
+lemma klFun_nonneg (hx : 0 ≤ x) : 0 ≤ klFun x := klFun_one ▸ isMinOn_klFun hx
 
 lemma klFun_eq_zero_iff (hx : 0 ≤ x) : klFun x = 0 ↔ x = 1 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [klFun_apply, h]⟩
   exact strictConvexOn_klFun.eq_of_isMinOn (isMinOn_iff.mpr fun y hy ↦ h ▸ klFun_nonneg hy)
     isMinOn_klFun hx (zero_le_one' ℝ)
 
 lemma tendsto_klFun_atTop : Tendsto klFun atTop atTop := by
-  have : klFun = (fun x ↦ x * (log x - 1) + 1) := by ext; ring
+  have : klFun = (fun x ↦ x * (log x - 1) + 1) := by unfold klFun; ext; ring
   rw [this]
   refine Tendsto.atTop_add ?_ tendsto_const_nhds
   refine tendsto_id.atTop_mul_atTop₀ ?_
@@ -176,6 +173,7 @@ lemma integrable_klFun_rnDeriv_iff (hμν : μ ≪ ν) :
 lemma integral_klFun_rnDeriv (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
     ∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν
       = ∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal := by
+  unfold klFun
   rw [integral_sub, integral_add, integral_const, Measure.integral_toReal_rnDeriv hμν, smul_eq_mul,
     mul_one]
   · congr 2
