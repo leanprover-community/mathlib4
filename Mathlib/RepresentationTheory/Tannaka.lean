@@ -149,12 +149,10 @@ def mulRepHom : rightFDRep k G ⊗ rightFDRep k G ⟶ rightFDRep k G where
 lemma map_mul_toRightFDRepComp (η : Aut (forget k G)) (f g : G → k) :
     (toRightFDRepComp η) (f * g) = ((toRightFDRepComp η) f) * ((toRightFDRepComp η) g) := by
   have nat := η.hom.hom.naturality mulRepHom
-  have tensor := η.hom.isMonoidal.tensor
-  have F_μ {X Y} : Functor.LaxMonoidal.μ (forget k G).toFunctor X Y = 𝟙 _ := rfl
-  simp only [F_μ, Category.id_comp, Category.comp_id] at tensor
+  have tensor (X Y) : η.hom.hom.app (X ⊗ Y) = (η.hom.hom.app X ⊗ η.hom.hom.app Y) :=
+    η.hom.isMonoidal.tensor X Y
   rw [tensor] at nat
-  apply_fun Hom.hom at nat
-  apply_fun (· (f ⊗ₜ[k] g)) at nat
+  apply_fun (Hom.hom · (f ⊗ₜ[k] g)) at nat
   exact nat
 
 /-- For `η : Aut (forget k G)`, `toRightFDRepComp η` gives rise to
@@ -163,9 +161,7 @@ def algHomOfRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₐ[k] (G → 
   refine AlgHom.ofLinearMap (toRightFDRepComp η) ?_ (map_mul_toRightFDRepComp η)
   let α_inv : (G → k) → (G → k) := (η.inv.hom.app (rightFDRep k G)).hom
   have := η.inv_hom_id
-  apply_fun NatTrans.app ∘ LaxMonoidalFunctor.Hom.hom at this
-  replace := congrFun this (rightFDRep k G)
-  apply_fun (Hom.hom · (1 : G → k)) at this
+  apply_fun (fun x ↦ (x.hom.app (rightFDRep k G)).hom (1 : G → k)) at this
   change (toRightFDRepComp η) (α_inv 1) = (1 : G → k) at this
   have h := this
   rwa [← one_mul (α_inv 1), map_mul_toRightFDRepComp, h, mul_one] at this
@@ -244,8 +240,7 @@ lemma toRightFDRepComp_inj : Function.Injective <| @toRightFDRepComp k G _ _ _ :
   have h1 := η₁.hom.hom.naturality (auxFDRepHom X v)
   have h2 := η₂.hom.hom.naturality (auxFDRepHom X v)
   rw [hom_ext h, ← h2] at h1
-  apply_fun Hom.hom at h1
-  apply_fun (· (single 1 1)) at h1
+  apply_fun (Hom.hom · (single 1 1)) at h1
   change Hom.hom _ ((auxLinearMap v) _) = Hom.hom _ ((auxLinearMap v) _) at h1
   rw [auxLinearMap_single_id] at h1
   exact h1
