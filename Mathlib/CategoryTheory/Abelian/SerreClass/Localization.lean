@@ -40,57 +40,57 @@ end Limits
 
 variable [Abelian C]
 
-namespace SerreClass
+namespace ObjectProperty
 
-variable (c : SerreClass C)
+variable (P : ObjectProperty C) [P.IsSerreClass]
 
-def W : MorphismProperty C := fun _ _ f ↦ c.prop (kernel f) ∧ c.prop (cokernel f)
+def serreW : MorphismProperty C := fun _ _ f ↦ P (kernel f) ∧ P (cokernel f)
 
-lemma W_iff_of_mono {X Y : C} (f : X ⟶ Y) [Mono f] : c.W f ↔ c.prop (cokernel f) := by
-  dsimp [W]
-  have : c.prop (kernel f) := c.prop_of_isZero (isZero_kernel_of_mono f)
+lemma serreW_iff_of_mono {X Y : C} (f : X ⟶ Y) [Mono f] : P.serreW f ↔ P (cokernel f) := by
+  dsimp [serreW]
+  have := P.prop_of_isZero (isZero_kernel_of_mono f)
   tauto
 
-lemma W_iff_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] : c.W f ↔ c.prop (kernel f) := by
-  dsimp [W]
-  have : c.prop (cokernel f) := c.prop_of_isZero (isZero_cokernel_of_epi f)
+lemma serreW_iff_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] : P.serreW f ↔ P (kernel f) := by
+  dsimp [serreW]
+  have := P.prop_of_isZero (isZero_cokernel_of_epi f)
   tauto
 
-lemma W_of_mono {X Y : C} (f : X ⟶ Y) [Mono f] (hf : c.prop (cokernel f)) : c.W f := by
-  rwa [W_iff_of_mono]
+lemma serreW_of_mono {X Y : C} (f : X ⟶ Y) [Mono f] (hf : P (cokernel f)) : P.serreW f := by
+  rwa [serreW_iff_of_mono]
 
-lemma W_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] (hf : c.prop (kernel f)) : c.W f := by
-  rwa [W_iff_of_epi]
+lemma serreW_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] (hf : P (kernel f)) : P.serreW f := by
+  rwa [serreW_iff_of_epi]
 
-lemma W_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : c.W f :=
-  c.W_of_epi _ (c.prop_of_isZero (isZero_kernel_of_mono f))
+lemma serreW_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : P.serreW f :=
+  P.serreW_of_epi _ (P.prop_of_isZero (isZero_kernel_of_mono f))
 
-instance : c.W.IsMultiplicative where
-  id_mem _ := c.W_of_isIso _
+instance : P.serreW.IsMultiplicative where
+  id_mem _ := P.serreW_of_isIso _
   comp_mem f g hf hg :=
-    ⟨c.prop_of_exact ((kernelCokernelCompSequence_exact f g).exact 0) hf.1 hg.1,
-      c.prop_of_exact ((kernelCokernelCompSequence_exact f g).exact 3) hf.2 hg.2⟩
+    ⟨P.prop_X₂_of_exact ((kernelCokernelCompSequence_exact f g).exact 0) hf.1 hg.1,
+      P.prop_X₂_of_exact ((kernelCokernelCompSequence_exact f g).exact 3) hf.2 hg.2⟩
 
-instance : c.W.HasTwoOutOfThreeProperty where
+instance : P.serreW.HasTwoOutOfThreeProperty where
   of_postcomp f g hg hfg :=
-    ⟨c.prop_of_mono (kernel.map f (f ≫ g) (𝟙 _) g (by simp)) hfg.1,
-      c.prop_of_exact ((kernelCokernelCompSequence_exact f g).exact 2) hg.1 hfg.2⟩
+    ⟨P.prop_of_mono (kernel.map f (f ≫ g) (𝟙 _) g (by simp)) hfg.1,
+      P.prop_X₂_of_exact ((kernelCokernelCompSequence_exact f g).exact 2) hg.1 hfg.2⟩
   of_precomp f g hf hfg :=
-    ⟨c.prop_of_exact ((kernelCokernelCompSequence_exact f g).exact 1) hfg.1 hf.2,
-      c.prop_of_epi (cokernel.map (f ≫ g) g f (𝟙 _) (by simp)) hfg.2⟩
+    ⟨P.prop_X₂_of_exact ((kernelCokernelCompSequence_exact f g).exact 1) hfg.1 hf.2,
+      P.prop_of_epi (cokernel.map (f ≫ g) g f (𝟙 _) (by simp)) hfg.2⟩
 
-instance : c.W.IsStableUnderRetracts where
+instance : P.serreW.IsStableUnderRetracts where
   of_retract {X' Y' X Y} f' f h hf :=
-    ⟨c.prop_of_mono (kernel.map f' f h.left.i h.right.i (by simp)) hf.1,
-      c.prop_of_epi (cokernel.map f f' h.left.r h.right.r (by simp)) hf.2⟩
+    ⟨P.prop_of_mono (kernel.map f' f h.left.i h.right.i (by simp)) hf.1,
+      P.prop_of_epi (cokernel.map f f' h.left.r h.right.r (by simp)) hf.2⟩
 
 @[nolint unusedArguments]
-structure Localization (c : SerreClass C) : Type u where
+structure SerreWLocalization (P : ObjectProperty C) [P.IsSerreClass] : Type u where
   obj : C
 
-namespace Localization
+namespace SerreWLocalization
 
-variable {c} (X Y : c.Localization)
+variable {P} (X Y : P.SerreWLocalization)
 
 namespace Hom
 
@@ -98,11 +98,11 @@ structure DefDomain  where
   src : C
   i : src ⟶ X.obj
   [mono_i : Mono i]
-  hi : c.W i
+  hi : P.serreW i
   tgt : C
   p : Y.obj ⟶ tgt
   [epi_p : Epi p]
-  hp : c.W p
+  hp : P.serreW p
 
 namespace DefDomain
 
@@ -174,8 +174,8 @@ end DefDomain
 
 end Hom
 
-end Localization
+end SerreWLocalization
 
-end SerreClass
+end ObjectProperty
 
 end CategoryTheory
