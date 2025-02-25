@@ -172,7 +172,7 @@ lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
   ⟨RelSeries.withLength r 0 0⟩
 
 lemma nonempty_of_finiteDimensional [r.FiniteDimensional] : Nonempty α := by
-  obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff r).mp ‹r.FiniteDimensional›
+  obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff r).mp ‹_›
   exact ⟨p 0⟩
 
 instance membership : Membership α (RelSeries r) :=
@@ -697,7 +697,7 @@ lemma nonempty_of_infiniteDimensionalType [InfiniteDimensionalOrder α] : Nonemp
   ⟨LTSeries.withLength α 0 0⟩
 
 lemma nonempty_of_finiteDimensionalType [FiniteDimensionalOrder α] : Nonempty α := by
-  obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff (· < ·)).mp ‹_›
+  obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff _).mp ‹_›
   exact ⟨p 0⟩
 
 variable {α}
