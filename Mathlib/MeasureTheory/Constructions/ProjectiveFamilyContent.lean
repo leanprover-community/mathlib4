@@ -18,8 +18,10 @@ We build an additive content `projectiveFamilyContent` on the measurable cylinde
 and `S` is a measurable set in `Π i : I, α i`.
 
 This content will be used to define the projective limit of the family of measures `P`.
-For a countable index set, the projective limit is given by the Ionescu-Tulcea theorem.
-For an arbitrary index set, this is the result of the Kolmogorov extension theorem.
+For a countable index set and a projective family given by a sequence of kernels,
+the projective limit is given by the Ionescu-Tulcea theorem.
+For an arbitrary index set but under topological conditions on the spaces, this is the result of
+the Kolmogorov extension theorem.
 (both results are not yet in Mathlib)
 
 ## Main definitions
