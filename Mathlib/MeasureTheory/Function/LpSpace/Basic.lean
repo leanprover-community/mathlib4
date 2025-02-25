@@ -62,8 +62,8 @@ noncomputable section
 open TopologicalSpace MeasureTheory Filter
 open scoped NNReal ENNReal Topology symmDiff
 
-variable {α 𝕜 𝕜' E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
-  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
+variable {α 𝕜 𝕜' E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {ps : Finset ℝ≥0∞} {q : ℝ}
+  {μ ν : Measure α} [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
 
 namespace MeasureTheory
 
@@ -486,28 +486,51 @@ For a set `s` with `(hs : MeasurableSet s)` and `(hμs : μ s < ∞)`, we build
 /-- The `ℒ^p` norm of the indicator of a set is uniformly small if the set itself has small measure,
 for any `p < ∞`. Given here as an existential `∀ ε > 0, ∃ η > 0, ...` to avoid later
 management of `ℝ≥0∞`-arithmetic. -/
+theorem exists_forall_eLpNorm_indicator_lt (hps_top : ⊤ ∉ ps) (c : E) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η →
+      ∀ p ∈ ps, eLpNorm (s.indicator fun _ ↦ c) p μ < ε := by
+  have h_toReal_inv (p : ℝ≥0∞) : 0 ≤ p.toReal⁻¹ := by simp
+  -- Eliminate zero from `ps`; eLpNorm is zero and condition is true regardless of s, η.
+  suffices ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η →
+      ∀ p ∈ ps.erase 0, eLpNorm (s.indicator fun _ ↦ c) p μ < ε by
+    refine this.imp fun η ⟨hη_pos, hη⟩ ↦ ⟨hη_pos, fun s hs p hp ↦ ?_⟩
+    cases eq_or_ne p 0 with
+    | inl h => simpa [h] using hε.bot_lt
+    | inr h => exact hη s hs p <| Finset.mem_erase_of_ne_of_mem h hp
+  obtain ⟨η, hη_pos, hη⟩ : ∃ η : ℝ≥0, η > 0 ∧ ∀ p ∈ ps.erase 0, ‖c‖ₑ * η ^ p.toReal⁻¹ < ε := by
+    refine Eventually.exists_gt ?_
+    refine (eventually_all_finset _).mpr fun p hp ↦ ?_
+    have hp_pos : 0 < p.toReal := ENNReal.toReal_pos (Finset.ne_of_mem_erase hp)
+      (ne_of_mem_of_not_mem (Finset.mem_of_mem_erase hp) hps_top)
+    suffices Tendsto (fun x ↦ ‖c‖₊ * x ^ p.toReal⁻¹) (𝓝 0) (𝓝 0) by
+      rw [← ENNReal.tendsto_coe] at this
+      convert this.eventually (gt_mem_nhds hε.bot_lt)
+      simp only [ENNReal.coe_mul]
+      rw [ENNReal.coe_rpow_of_nonneg _ (h_toReal_inv p)]
+      simp [enorm_eq_nnnorm]
+    convert (NNReal.continuousAt_rpow_const (.inr (h_toReal_inv p))).tendsto.const_mul _
+    rw [NNReal.zero_rpow (inv_ne_zero hp_pos.ne')]
+    simp
+  refine ⟨η, hη_pos, fun s hs p hp ↦ ?_⟩
+  calc eLpNorm (s.indicator fun x ↦ c) p μ
+  _ ≤ ‖c‖ₑ * μ s ^ (1 / p.toReal) := eLpNorm_indicator_const_le _ _
+  _ ≤ ‖c‖ₑ * (η : ℝ≥0∞) ^ p.toReal⁻¹ := by simp only [one_div]; gcongr
+  _ < ε := hη p hp
+
+/-- The `ℒ^p` norm of the indicator of a set is uniformly small if the set itself has small measure,
+for any `p < ∞`. Given here as an existential `∀ ε > 0, ∃ η > 0, ...` to avoid later
+management of `ℝ≥0∞`-arithmetic. -/
+theorem exists_eLpNorm_indicator_lt (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η → eLpNorm (s.indicator fun _ => c) p μ < ε := by
+  simpa using exists_forall_eLpNorm_indicator_lt (Finset.not_mem_singleton.mpr hp.symm) c hε
+
+-- TODO: Remove (provided for backwards compatibility.
+/-- The `ℒ^p` norm of the indicator of a set is uniformly small if the set itself has small measure,
+for any `p < ∞`. Given here as an existential `∀ ε > 0, ∃ η > 0, ...` to avoid later
+management of `ℝ≥0∞`-arithmetic. -/
 theorem exists_eLpNorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
-    ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η → eLpNorm (s.indicator fun _ => c) p μ ≤ ε := by
-  rcases eq_or_ne p 0 with (rfl | h'p)
-  · exact ⟨1, zero_lt_one, fun s _ => by simp⟩
-  have hp₀ : 0 < p := bot_lt_iff_ne_bot.2 h'p
-  have hp₀' : 0 ≤ 1 / p.toReal := div_nonneg zero_le_one ENNReal.toReal_nonneg
-  have hp₀'' : 0 < p.toReal := ENNReal.toReal_pos hp₀.ne' hp
-  obtain ⟨η, hη_pos, hη_le⟩ : ∃ η : ℝ≥0, 0 < η ∧ ‖c‖ₑ * (η : ℝ≥0∞) ^ (1 / p.toReal) ≤ ε := by
-    have :
-      Filter.Tendsto (fun x : ℝ≥0 => ((‖c‖₊ * x ^ (1 / p.toReal) : ℝ≥0) : ℝ≥0∞)) (𝓝 0)
-        (𝓝 (0 : ℝ≥0)) := by
-      rw [ENNReal.tendsto_coe]
-      convert (NNReal.continuousAt_rpow_const (Or.inr hp₀')).tendsto.const_mul _
-      simp [hp₀''.ne']
-    have hε' : 0 < ε := hε.bot_lt
-    obtain ⟨δ, hδ, hδε'⟩ := NNReal.nhds_zero_basis.eventually_iff.mp (this.eventually_le_const hε')
-    obtain ⟨η, hη, hηδ⟩ := exists_between hδ
-    refine ⟨η, hη, ?_⟩
-    simpa only [← ENNReal.coe_rpow_of_nonneg _ hp₀', enorm, ← ENNReal.coe_mul] using hδε' hηδ
-  refine ⟨η, hη_pos, fun s hs => ?_⟩
-  refine (eLpNorm_indicator_const_le _ _).trans (le_trans ?_ hη_le)
-  exact mul_le_mul_left' (ENNReal.rpow_le_rpow hs hp₀') _
+    ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η → eLpNorm (s.indicator fun _ => c) p μ ≤ ε :=
+  (exists_eLpNorm_indicator_lt hp c hε).imp fun _ ⟨hη_pos, hη⟩ ↦ ⟨hη_pos, fun s hs ↦ (hη s hs).le⟩
 
 section Topology
 variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
