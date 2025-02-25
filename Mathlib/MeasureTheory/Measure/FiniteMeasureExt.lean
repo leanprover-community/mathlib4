@@ -73,3 +73,5 @@ theorem ext_of_forall_mem_subalgebra_integral_eq_of_polish [TopologicalSpace E] 
     (heq : ∀ g ∈ A, ∫ x, (g : E → 𝕜) x ∂P = ∫ x, (g : E → 𝕜) x ∂P') : P = P' := by
   letI := upgradePolishSpace E
   exact ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable hA hbound heq
+
+end MeasureTheory
