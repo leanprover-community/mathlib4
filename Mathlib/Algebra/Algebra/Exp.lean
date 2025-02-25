@@ -106,12 +106,9 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
         simp_all only [mem_range]
         suffices (n.factorial : R)⁻¹ * (n.choose m) =
             ((m.factorial : R)⁻¹ * ((n - m).factorial : R)⁻¹) by
-          have help : (n.factorial : R)⁻¹ • (a ^ m * b ^ (n - m) * (n.choose m)) =
-              ((n.factorial : R)⁻¹ * (n.choose m)) • (a ^ m * b ^ (n - m)) := by
-            rw [← Nat.cast_commute (n.choose m), mul_smul]
-            norm_cast
-            rw [nsmul_eq_mul]
-          simp_all only [mem_range]
+          rw [← Nat.cast_commute (n.choose m), ← this, ← Algebra.mul_smul_comm, ← nsmul_eq_mul,
+          mul_smul, ← smul_assoc, smul_comm, smul_assoc]
+          norm_cast
         have le₄ : m ≤ n := Nat.le_of_lt_succ hm
         rw [Nat.choose_eq_factorial_div_factorial le₄, Nat.cast_div, mul_div]
         · have inv : (n.factorial : R)⁻¹  * (n.factorial : R) = 1 := by
