@@ -5,6 +5,7 @@ Authors: Salvatore Mercuri
 -/
 import Mathlib.Topology.UniformSpace.Completion
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
+import Mathlib.NumberTheory.NumberField.Basic
 
 /-!
 # Ring topologised by a valuation
@@ -45,7 +46,7 @@ instance [Field R] : Field (WithVal v) := ‹Field R›
 
 instance [CommRing R] : CommRing (WithVal v) := ‹CommRing R›
 
---instance [Field R] : Field (WithVal v) := ‹Field R›
+instance [Field R] : Field (WithVal v) := ‹Field R›
 
 instance : Inhabited (WithVal v) := ⟨0⟩
 
@@ -68,6 +69,8 @@ instance (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ := Valued.mk' v
 /-- Canonical ring equivalence between `WithValuation v` and `R`. -/
 def equiv : WithVal v ≃+* R := RingEquiv.refl _
 
+theorem apply (r : WithVal v) : v r = v (WithVal.equiv v r) := rfl
+
 end WithVal
 
 /-! The completion of a field with respect to a valuation. -/
@@ -85,3 +88,13 @@ instance : Coe R v.Completion :=
   inferInstanceAs <| Coe (WithVal v) (UniformSpace.Completion (WithVal v))
 
 end Valuation
+
+namespace NumberField.RingOfIntegers
+
+variable {K : Type*} [Field K] [NumberField K] (v : Valuation K Γ₀)
+
+instance : CoeHead (𝓞 (WithVal v)) (WithVal v) := inferInstanceAs (CoeHead (𝓞 K) K)
+
+instance : IsDedekindDomain (𝓞 (WithVal v)) := inferInstanceAs (IsDedekindDomain (𝓞 K))
+
+end NumberField.RingOfIntegers
