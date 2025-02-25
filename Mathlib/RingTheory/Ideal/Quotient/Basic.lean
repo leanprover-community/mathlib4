@@ -39,7 +39,7 @@ namespace Quotient
 variable {I} {x y : R}
 
 theorem zero_eq_one_iff : (0 : R ⧸ I) = 1 ↔ I = ⊤ :=
-  eq_comm.trans <| (Submodule.Quotient.mk_eq_zero _).trans (eq_top_iff_one _).symm
+  eq_comm.trans <| (Submodule.mkQ_eq_zero _).trans (eq_top_iff_one _).symm
 
 theorem zero_ne_one_iff : (0 : R ⧸ I) ≠ 1 ↔ I ≠ ⊤ :=
   not_congr zero_eq_one_iff
@@ -75,7 +75,7 @@ theorem eq_zero_iff_dvd {R} [CommRing R] (x y : R) :
 
 @[simp]
 lemma mk_singleton_self (x : R) [(Ideal.span {x}).IsTwoSided] : mk (Ideal.span {x}) x = 0 :=
-  (Submodule.Quotient.mk_eq_zero _).mpr (mem_span_singleton_self _)
+  (Submodule.mkQ_eq_zero _).mpr (mem_span_singleton_self _)
 
 variable (I)
 
@@ -171,7 +171,7 @@ variable (ι : Type v)
 /-- `R^n/I^n` is a `R/I`-module. -/
 instance modulePi [I.IsTwoSided] : Module (R ⧸ I) ((ι → R) ⧸ pi fun _ ↦ I) where
   smul c m :=
-    Quotient.liftOn₂' c m (fun r m ↦ Submodule.Quotient.mk <| r • m) <| by
+    Quotient.liftOn₂' c m (fun r m ↦ Submodule.mkQ _ (r • m)) <| by
       intro c₁ m₁ c₂ m₂ hc hm
       apply Ideal.Quotient.eq.2
       rw [Submodule.quotientRel_def] at hc hm

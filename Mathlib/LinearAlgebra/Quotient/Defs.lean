@@ -244,6 +244,12 @@ theorem mkQ_sub : mkQ p (x - y) = mkQ p x - mkQ p y :=
 theorem mkQ_smul (r : R) (x : M) : mkQ p (r • x) = r • mkQ p x :=
   rfl
 
+protected theorem mkQ_eq' {x y : M} : mkQ p x = mkQ p y ↔ -x + y ∈ p :=
+  QuotientAddGroup.eq
+
+protected theorem mkQ_eq {x y : M} : mkQ p x = mkQ p y ↔ x - y ∈ p :=
+  (Submodule.mkQ_eq' p).trans (leftRel_apply.symm.trans p.quotientRel_def)
+
 theorem mkQ_surjective : Function.Surjective p.mkQ := by
   rintro ⟨x⟩; exact ⟨x, rfl⟩
 

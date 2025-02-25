@@ -138,7 +138,7 @@ def quotientQuotientEquivQuotientAux (h : S ≤ T) : (M ⧸ S) ⧸ T.map S.mkQ �
     (by
       rintro _ ⟨x, hx, rfl⟩
       rw [LinearMap.mem_ker, mkQ_apply, mapQ_apply]
-      exact (Quotient.mk_eq_zero _).mpr hx)
+      exact (mkQ_eq_zero _).mpr hx)
 
 @[simp]
 theorem quotientQuotientEquivQuotientAux_mk (x : M ⧸ S) :
