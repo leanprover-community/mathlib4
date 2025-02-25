@@ -30,8 +30,8 @@ the set `s`, then `f x = f y`. This is equivalent to `Function.FactorsThrough f 
 
 ## Implementation note
 
-It should be noted that when we say `DependsOn f s`, i.e. `f` only depends on `s`, it should be
-interpreted as "`f` _potentially_ depends only on variables in `s`". However it might be the case
+When we write `DependsOn f s`, i.e. `f` only depends on `s`, it should be interpreted as
+"`f` _potentially_ depends only on variables in `s`". However it might be the case
 that `f` does not depend at all on variables in `s`, for example if `f` is constant`. On the other
 hand, `DependsOn f univ` is always true, see `dependsOn_univ`.
 
