@@ -211,8 +211,10 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
   have s₂ :=
     calc
       (∑ n ∈ range (N + 1), (n.factorial : R)⁻¹ • a ^ n) * ∑ n ∈ range (N + 1),
-        (n.factorial : R)⁻¹ • b ^ n = ∑ i ∈ range (N + 1), ∑ j ∈ range (N + 1), (i.factorial : R)⁻¹ • a ^ i * (j.factorial : R)⁻¹ • b ^ j := by rw [sum_mul_sum]
-      _ = ∑ i ∈ range (N + 1), ∑ j ∈ range (N + 1), ((i.factorial : R)⁻¹ * (j.factorial : R)⁻¹) • (a ^ i * b ^ j) := by
+        (n.factorial : R)⁻¹ • b ^ n =
+      ∑ i ∈ range (N + 1), ∑ j ∈ range (N + 1), ((i.factorial : R)⁻¹ * (j.factorial : R)⁻¹) •
+        (a ^ i * b ^ j) := by
+       rw [sum_mul_sum]
        apply sum_congr rfl
        intro n hn
        apply sum_congr rfl
