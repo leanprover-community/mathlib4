@@ -42,8 +42,6 @@ variable (v : Valuation R Γ₀)
 
 instance : Ring (WithVal v) := ‹Ring R›
 
-instance [Field R] : Field (WithVal v) := ‹Field R›
-
 instance [CommRing R] : CommRing (WithVal v) := ‹CommRing R›
 
 instance [Field R] : Field (WithVal v) := ‹Field R›
