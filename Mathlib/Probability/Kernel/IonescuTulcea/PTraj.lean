@@ -178,7 +178,7 @@ lemma MeasurableEquiv.coe_IicProdIoc_symm {a b : ℕ} (hab : a ≤ b) :
 
 end Maps
 
-variable {hX : ∀ n, MeasurableSpace (X n)} {a b c : ℕ}
+variable {mX : ∀ n, MeasurableSpace (X n)} {a b c : ℕ}
   {κ : (n : ℕ) → Kernel (Π i : Iic n, X i) (X (n + 1))}
 
 section ptraj
