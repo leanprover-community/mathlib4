@@ -6,6 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 import Mathlib.Order.SetNotation
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.FunProp
+import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.ToAdditive
 /-!
 # Basic definitions about topological spaces
 
