@@ -50,13 +50,6 @@ variable {P} in
 lemma prop_isoClosure {X Y : C} (h : P X) (e : X ⟶ Y) [IsIso e] : isoClosure P Y :=
   ⟨X, h, ⟨(asIso e).symm⟩⟩
 
-@[deprecated (since := "2025-02-25")] alias mem_of_iso := prop_of_iso
-@[deprecated (since := "2025-02-25")] alias mem_iff_of_iso := prop_iff_of_iso
-@[deprecated (since := "2025-02-25")] alias mem_of_isIso := prop_of_isIso
-@[deprecated (since := "2025-02-25")] alias mem_iff_of_isIso := prop_iff_of_isIso
-@[deprecated (since := "2025-02-25")] alias mem_isoClosure_iff := prop_isoClosure_iff
-@[deprecated (since := "2025-02-25")] alias mem_isoClosure := prop_isoClosure
-
 lemma le_isoClosure : P ≤ isoClosure P :=
   fun X hX => ⟨X, hX, ⟨Iso.refl X⟩⟩
 
@@ -81,5 +74,15 @@ instance : IsClosedUnderIsomorphisms (isoClosure P) where
     exact ⟨Z, hZ, ⟨e.symm.trans f⟩⟩
 
 end ObjectProperty
+
+open ObjectProperty
+
+@[deprecated (since := "2025-02-25")] alias mem_of_iso := prop_of_iso
+@[deprecated (since := "2025-02-25")] alias mem_iff_of_iso := prop_iff_of_iso
+@[deprecated (since := "2025-02-25")] alias mem_of_isIso := prop_of_isIso
+@[deprecated (since := "2025-02-25")] alias mem_iff_of_isIso := prop_iff_of_isIso
+@[deprecated (since := "2025-02-25")] alias mem_isoClosure_iff := prop_isoClosure_iff
+@[deprecated (since := "2025-02-25")] alias mem_isoClosure := prop_isoClosure
+
 
 end CategoryTheory
