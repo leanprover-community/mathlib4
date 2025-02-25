@@ -21,9 +21,8 @@ and will be added in a future PR, as well as the definition of the (unoriented) 
 
 - **SingularNManifold**: a singular `n`-manifold on a topological space `X`, for `n ∈ ℕ`, is a pair
 `(M, f)` of a closed `n`-dimensional smooth manifold `M` together with a continuous map `M → X`.
-We don't assume `M` to be modelled on `ℝ^n` (nor to be using with the standard model),
-but instead add the model topological space `H`, the vector space `E` and the model with corners `I`
-as type parameters.
+We don't assume `M` to be modelled on `ℝ^n`, but add the model topological space `H`,
+the vector space `E` and the model with corners `I` as type parameters.
 - `SingularNManifold.map`: a map `X → Y` of topological spaces induces a map between the spaces
 of singular n-manifolds
 - `SingularNManifold.comap`: if `(N,f)` is a singular n-manifold on `X` and `φ: M → N` is smooth,
@@ -75,9 +74,9 @@ structure SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ) (k : ℕ�
   /-- The manifold `M` is a charted space over `H`. -/
   [chartedSpace : ChartedSpace H M]
   /-- `M` is a `C^k` manifold. -/
-  [isManifold: IsManifold I k M]
-  [compactSpace: CompactSpace M]
-  [boundaryless: BoundarylessManifold I M]
+  [isManifold : IsManifold I k M]
+  [compactSpace : CompactSpace M]
+  [boundaryless : BoundarylessManifold I M]
   /-- `M` is `n`-dimensional, as its model space `E` is -/
   dimension : finrank ℝ E = n
   /-- The underlying map `M → X` of a singular `n`-manifold `(M, f)` on `X` -/
@@ -169,7 +168,7 @@ def empty [h : Fact (finrank ℝ E = n)] (M : Type*) [TopologicalSpace M] [Chart
 
 variable (M I) in
 /-- An `n`-dimensional manifold induces a singular `n`-manifold on the one-point space. -/
-def trivial [h: Fact (finrank ℝ E = n)] : SingularNManifold PUnit n k I where
+def trivial [h : Fact (finrank ℝ E = n)] : SingularNManifold PUnit n k I where
   M := M
   dimension := h.out
   f := fun _ ↦ PUnit.unit
@@ -192,7 +191,7 @@ variable (s t : SingularNManifold X n k I)
 -- We need to choose a model space for the disjoint union (as a priori `s` and `t` could be
 -- modelled on very different spaces: for simplicity, we choose `ℝ^n`; all real work is contained
 -- in the two instances above.
-def sum {n : ℕ} (s t : SingularNManifold X n k I) [finrank: Fact (finrank ℝ E = n)] :
+def sum {n : ℕ} (s t : SingularNManifold X n k I) [finrank : Fact (finrank ℝ E = n)] :
     SingularNManifold X n k I where
   M := s.M ⊕ t.M
   dimension := finrank.out
