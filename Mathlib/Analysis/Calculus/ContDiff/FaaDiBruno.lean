@@ -576,7 +576,7 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
         rintro rfl
         simp only [c.emb_zero] at hij
         exact (Fin.succ_ne_zero _).symm hij
-      have je_ne' : (j : ℕ) ≠ 0 := by simpa [← val_eq_val] using j_ne
+      have je_ne' : (j : ℕ) ≠ 0 := by simpa
       simp only [↓reduceDIte, Nat.succ_eq_add_one]
       have A : c.partSize (c.index 0) - 1 + 1 = c.partSize (c.index 0) :=
         Nat.sub_add_cancel (c.partSize_pos _)
