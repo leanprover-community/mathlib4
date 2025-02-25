@@ -1,0 +1,55 @@
+/-
+Copyright (c) 2025 Qinchuan Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Qinchuan Zhang
+-/
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.LinearCombination
+import Mathlib.RingTheory.Polynomial.Vieta
+
+/-!
+# Vieta's Formula for polynomial of small degrees.
+-/
+
+namespace Multiset
+
+lemma esymm_one_of_pair {R : Type*} [CommSemiring R] (x1 x2 : R) :
+    esymm {x1, x2} 1 = x2 + x1 := by
+  simp [esymm, powersetCard_one]
+
+lemma esymm_two_of_pair {R : Type*} [CommSemiring R] (x1 x2 : R) :
+    esymm {x1, x2} 2 = x1 * x2 := by
+  simp [esymm, powersetCard_one]
+
+end Multiset
+
+namespace Polynomial
+
+/-- **Vieta's formula** for quadratic in term of `Polynomial.roots`.
+This is a consequence of `Polynomial.coeff_eq_esymm_roots_of_card`. -/
+lemma quadratic_vieta {R : Type*} [CommRing R] [IsDomain R] {a b c x1 x2 : R}
+    (hroots : (C a * X ^ 2 + C b * X + C c).roots = {x1, x2}) :
+    b = -a * (x1 + x2) ∧ c = a * x1 * x2 := by
+  let p : R[X] := C a * X ^ 2 + C b * X + C c
+  have hp_natDegree : p.natDegree = 2 := le_antisymm natDegree_quadratic_le
+    (by convert Polynomial.card_roots' p; rw [hroots, Multiset.card_pair])
+  have hp_roots_card : p.roots.card = p.natDegree := by
+    rw [hp_natDegree, hroots, Multiset.card_pair]
+  have hp_coeff2 : p.coeff 2 = a := by simp [p]
+  constructor
+  · convert coeff_eq_esymm_roots_of_card hp_roots_card (k := 1) (by norm_num [hp_natDegree]) using 1
+    · simp [p]
+    · rw [leadingCoeff, hp_natDegree, hroots, hp_coeff2, Multiset.esymm_one_of_pair]; ring
+  · convert coeff_eq_esymm_roots_of_card hp_roots_card (k := 0) (by norm_num) using 1
+    · simp [p]
+    · rw [leadingCoeff, hp_natDegree, hroots, hp_coeff2, Multiset.esymm_two_of_pair]; ring
+
+/-- **Vieta's formula** for quadratic in term of `Polynomial.roots`. -/
+lemma quadratic_vieta' {R : Type*} [Field R] {a b c x1 x2 : R} (ha : a ≠ 0)
+    (hroots : (C a * X ^ 2 + C b * X + C c).roots = {x1, x2}) :
+    x1 + x2 = -b / a ∧ x1 * x2 = c / a := by
+  refine And.imp ?_ ?_ (quadratic_vieta hroots)
+  · field_simp; intro h; linear_combination h
+  · field_simp; intro h; linear_combination -h
+
+end Polynomial
