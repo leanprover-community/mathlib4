@@ -106,6 +106,9 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
        ((Disjoint.symm hd₁).hasSeparatingCover_closed_gdelta_right isClosed_closure <|
          closed_gdelta isClosed_closure).mono (fun ⦃_⦄ a ↦ a) subset_closure⟩
 
+theorem IsClosed.isGδ [PerfectlyNormalSpace X] {s : Set X} (hs : IsClosed s) : IsGδ s :=
+  PerfectlyNormalSpace.closed_gdelta hs
+
 /-- A T₆ space is a perfectly normal T₁ space. -/
 class T6Space (X : Type u) [TopologicalSpace X] extends T1Space X, PerfectlyNormalSpace X : Prop
 
