@@ -10,7 +10,7 @@ import Mathlib.Order.Basic
 /-! # Properties of objects which are closed under isomorphisms
 
 Given a category `C` and `P : ObjectProperty C` (i.e. `P : C → Prop`),
-this file introduces the type class `P.IsClosedUnderIsomorphisms P`.
+this file introduces the type class `P.IsClosedUnderIsomorphisms`.
 
 -/
 
