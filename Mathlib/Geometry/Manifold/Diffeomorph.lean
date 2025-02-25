@@ -588,8 +588,8 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
 def sumCongr (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
     Diffeomorph I J (M ⊕ M') (N ⊕ N') n where
   toEquiv := Equiv.sumCongr φ.toEquiv ψ.toEquiv
-  contMDiff_toFun := ContMDiff.sum_map φ.contMDiff_toFun ψ.contMDiff_toFun
-  contMDiff_invFun := ContMDiff.sum_map φ.contMDiff_invFun ψ.contMDiff_invFun
+  contMDiff_toFun := ContMDiff.sumMap φ.contMDiff_toFun ψ.contMDiff_toFun
+  contMDiff_invFun := ContMDiff.sumMap φ.contMDiff_invFun ψ.contMDiff_invFun
 
 lemma sumCongr_symm_symm (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
     sumCongr φ.symm ψ.symm = (sumCongr φ ψ).symm := rfl
@@ -632,13 +632,13 @@ variable (I M M' M'' n) in
 def sumAssoc : Diffeomorph I I ((M ⊕ M') ⊕ M'') (M ⊕ (M' ⊕ M'')) n where
   toEquiv := Equiv.sumAssoc M M' M''
   contMDiff_toFun := by
-    apply ContMDiff.sum_elim
-    · exact contMDiff_id.sum_map ContMDiff.inl
+    apply ContMDiff.sumElim
+    · exact contMDiff_id.sumMap ContMDiff.inl
     · exact ContMDiff.inr.comp ContMDiff.inr
   contMDiff_invFun := by
-    apply ContMDiff.sum_elim
+    apply ContMDiff.sumElim
     · exact ContMDiff.inl.comp ContMDiff.inl
-    · exact ContMDiff.inr.sum_map contMDiff_id
+    · exact ContMDiff.inr.sumMap contMDiff_id
 
 @[simp]
 theorem sumAssoc_coe :
@@ -648,7 +648,7 @@ variable (I M n) in
 /-- The canonical diffeomorphism `M ⊕ ∅ → M` -/
 def sumEmpty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M n where
   toEquiv := Equiv.sumEmpty M M'
-  contMDiff_toFun := contMDiff_id.sum_elim fun x ↦ (IsEmpty.false x).elim
+  contMDiff_toFun := contMDiff_id.sumElim fun x ↦ (IsEmpty.false x).elim
   contMDiff_invFun := ContMDiff.inl
 
 @[simp]
