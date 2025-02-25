@@ -29,7 +29,7 @@ and will be added in a future PR, as well as the definition of the (unoriented) 
   the `comap` of `(N,f)` and `φ` is the induced singular n-manifold `(M, f ∘ φ)` on `X`.
 - `SingularNManifold.empty`: the empty set `M`, viewed as an `n`-manifold,
   as a singular `n`-manifold over any space `X`.
-- `SingularNManifold.trivial`: an `n`-dimensional manifold induces a singular `n`-manifold
+- `SingularNManifold.toPUnit`: an `n`-dimensional manifold induces a singular `n`-manifold
   on the one-point space.
 - `SingularNManifold.prod`: the product of a singular `n`-manifold and a singular `m`-manifold
   on the one-point space, is a singular `n+m`-manifold on the one-point space.
@@ -168,7 +168,7 @@ def empty [h : Fact (finrank ℝ E = n)] (M : Type*) [TopologicalSpace M] [Chart
 
 variable (M I) in
 /-- An `n`-dimensional manifold induces a singular `n`-manifold on the one-point space. -/
-def trivial [h : Fact (finrank ℝ E = n)] : SingularNManifold PUnit n k I where
+def toPUnit [h : Fact (finrank ℝ E = n)] : SingularNManifold PUnit n k I where
   M := M
   dimension := h.out
   f := fun _ ↦ PUnit.unit
