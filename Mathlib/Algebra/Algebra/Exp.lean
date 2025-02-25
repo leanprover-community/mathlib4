@@ -12,7 +12,6 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Data.Sigma.Basic
-import LeanCopilot
 
 /-!
 # Exponential map on algebras
