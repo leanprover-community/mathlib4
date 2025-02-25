@@ -1215,3 +1215,122 @@ theorem ContDiff.contDiff_fderiv_apply {f : E → F} (hf : ContDiff 𝕜 n f) (h
   rw [← contDiffOn_univ] at hf ⊢
   rw [← fderivWithin_univ, ← univ_prod_univ]
   exact contDiffOn_fderivWithin_apply hf uniqueDiffOn_univ hmn
+
+section deriv
+
+/-!
+### One dimension
+
+All results up to now have been expressed in terms of the general Fréchet derivative `fderiv`. For
+maps defined on the field, the one-dimensional derivative `deriv` is often easier to use. In this
+paragraph, we reformulate some higher smoothness results in terms of `deriv`.
+-/
+
+
+variable {f₂ : 𝕜 → F} {s₂ : Set 𝕜}
+
+open ContinuousLinearMap (smulRight)
+
+/-- A function is `C^(n + 1)` on a domain with unique derivatives if and only if it is
+differentiable there, and its derivative (formulated with `derivWithin`) is `C^n`. -/
+theorem contDiffOn_succ_iff_derivWithin (hs : UniqueDiffOn 𝕜 s₂) :
+    ContDiffOn 𝕜 (n + 1) f₂ s₂ ↔
+      DifferentiableOn 𝕜 f₂ s₂ ∧ (n = ω → AnalyticOn 𝕜 f₂ s₂) ∧
+        ContDiffOn 𝕜 n (derivWithin f₂ s₂) s₂ := by
+  rw [contDiffOn_succ_iff_fderivWithin hs, and_congr_right_iff]
+  intro _
+  constructor
+  · rintro ⟨h', h⟩
+    refine ⟨h', ?_⟩
+    have : derivWithin f₂ s₂ = (fun u : 𝕜 →L[𝕜] F => u 1) ∘ fderivWithin 𝕜 f₂ s₂ := by
+      ext x; rfl
+    simp_rw [this]
+    apply ContDiff.comp_contDiffOn _ h
+    exact (isBoundedBilinearMap_apply.isBoundedLinearMap_left _).contDiff
+  · rintro ⟨h', h⟩
+    refine ⟨h', ?_⟩
+    have : fderivWithin 𝕜 f₂ s₂ = smulRight (1 : 𝕜 →L[𝕜] 𝕜) ∘ derivWithin f₂ s₂ := by
+      ext x; simp [derivWithin]
+    simp only [this]
+    apply ContDiff.comp_contDiffOn _ h
+    have : IsBoundedBilinearMap 𝕜 fun _ : (𝕜 →L[𝕜] 𝕜) × F => _ := isBoundedBilinearMap_smulRight
+    exact (this.isBoundedLinearMap_right _).contDiff
+
+theorem contDiffOn_infty_iff_derivWithin (hs : UniqueDiffOn 𝕜 s₂) :
+    ContDiffOn 𝕜 ∞ f₂ s₂ ↔ DifferentiableOn 𝕜 f₂ s₂ ∧ ContDiffOn 𝕜 ∞ (derivWithin f₂ s₂) s₂ := by
+  rw [show ∞ = ∞ + 1 by rfl, contDiffOn_succ_iff_derivWithin hs]
+  simp
+
+@[deprecated (since := "2024-11-27")]
+alias contDiffOn_top_iff_derivWithin := contDiffOn_infty_iff_derivWithin
+
+/-- A function is `C^(n + 1)` on an open domain if and only if it is
+differentiable there, and its derivative (formulated with `deriv`) is `C^n`. -/
+theorem contDiffOn_succ_iff_deriv_of_isOpen (hs : IsOpen s₂) :
+    ContDiffOn 𝕜 (n + 1) f₂ s₂ ↔
+      DifferentiableOn 𝕜 f₂ s₂ ∧ (n = ω → AnalyticOn 𝕜 f₂ s₂) ∧
+        ContDiffOn 𝕜 n (deriv f₂) s₂ := by
+  rw [contDiffOn_succ_iff_derivWithin hs.uniqueDiffOn]
+  exact Iff.rfl.and (Iff.rfl.and (contDiffOn_congr fun _ => derivWithin_of_isOpen hs))
+
+theorem contDiffOn_infty_iff_deriv_of_isOpen (hs : IsOpen s₂) :
+    ContDiffOn 𝕜 ∞ f₂ s₂ ↔ DifferentiableOn 𝕜 f₂ s₂ ∧ ContDiffOn 𝕜 ∞ (deriv f₂) s₂ := by
+  rw [show ∞ = ∞ + 1 by rfl, contDiffOn_succ_iff_deriv_of_isOpen hs]
+  simp
+
+@[deprecated (since := "2024-11-27")]
+alias contDiffOn_top_iff_deriv_of_isOpen := contDiffOn_infty_iff_deriv_of_isOpen
+
+protected theorem ContDiffOn.derivWithin (hf : ContDiffOn 𝕜 n f₂ s₂) (hs : UniqueDiffOn 𝕜 s₂)
+    (hmn : m + 1 ≤ n) : ContDiffOn 𝕜 m (derivWithin f₂ s₂) s₂ :=
+  ((contDiffOn_succ_iff_derivWithin hs).1 (hf.of_le hmn)).2.2
+
+theorem ContDiffOn.deriv_of_isOpen (hf : ContDiffOn 𝕜 n f₂ s₂) (hs : IsOpen s₂) (hmn : m + 1 ≤ n) :
+    ContDiffOn 𝕜 m (deriv f₂) s₂ :=
+  (hf.derivWithin hs.uniqueDiffOn hmn).congr fun _ hx => (derivWithin_of_isOpen hs hx).symm
+
+theorem ContDiffOn.continuousOn_derivWithin (h : ContDiffOn 𝕜 n f₂ s₂) (hs : UniqueDiffOn 𝕜 s₂)
+    (hn : 1 ≤ n) : ContinuousOn (derivWithin f₂ s₂) s₂ := by
+  rw [show (1 : WithTop ℕ∞) = 0 + 1 from rfl] at hn
+  exact ((contDiffOn_succ_iff_derivWithin hs).1 (h.of_le hn)).2.2.continuousOn
+
+theorem ContDiffOn.continuousOn_deriv_of_isOpen (h : ContDiffOn 𝕜 n f₂ s₂) (hs : IsOpen s₂)
+    (hn : 1 ≤ n) : ContinuousOn (deriv f₂) s₂ := by
+  rw [show (1 : WithTop ℕ∞) = 0 + 1 from rfl] at hn
+  exact ((contDiffOn_succ_iff_deriv_of_isOpen hs).1 (h.of_le hn)).2.2.continuousOn
+
+/-- A function is `C^(n + 1)` if and only if it is differentiable,
+  and its derivative (formulated in terms of `deriv`) is `C^n`. -/
+theorem contDiff_succ_iff_deriv :
+    ContDiff 𝕜 (n + 1) f₂ ↔ Differentiable 𝕜 f₂ ∧ (n = ω → AnalyticOn 𝕜 f₂ univ) ∧
+      ContDiff 𝕜 n (deriv f₂) := by
+  simp only [← contDiffOn_univ, contDiffOn_succ_iff_deriv_of_isOpen, isOpen_univ,
+    differentiableOn_univ]
+
+theorem contDiff_one_iff_deriv :
+    ContDiff 𝕜 1 f₂ ↔ Differentiable 𝕜 f₂ ∧ Continuous (deriv f₂) := by
+  rw [show (1 : WithTop ℕ∞) = 0 + 1 from rfl, contDiff_succ_iff_deriv]
+  simp
+
+theorem contDiff_infty_iff_deriv :
+    ContDiff 𝕜 ∞ f₂ ↔ Differentiable 𝕜 f₂ ∧ ContDiff 𝕜 ∞ (deriv f₂) := by
+  rw [show (∞ : WithTop ℕ∞) = ∞ + 1 from rfl, contDiff_succ_iff_deriv]
+  simp
+
+@[deprecated (since := "2024-11-27")] alias contDiff_top_iff_deriv := contDiff_infty_iff_deriv
+
+theorem ContDiff.continuous_deriv (h : ContDiff 𝕜 n f₂) (hn : 1 ≤ n) : Continuous (deriv f₂) := by
+  rw [show (1 : WithTop ℕ∞) = 0 + 1 from rfl] at hn
+  exact (contDiff_succ_iff_deriv.mp (h.of_le hn)).2.2.continuous
+
+theorem ContDiff.iterate_deriv :
+    ∀ (n : ℕ) {f₂ : 𝕜 → F}, ContDiff 𝕜 ∞ f₂ → ContDiff 𝕜 ∞ (deriv^[n] f₂)
+  | 0,     _, hf => hf
+  | n + 1, _, hf => ContDiff.iterate_deriv n (contDiff_infty_iff_deriv.mp hf).2
+
+theorem ContDiff.iterate_deriv' (n : ℕ) :
+    ∀ (k : ℕ) {f₂ : 𝕜 → F}, ContDiff 𝕜 (n + k : ℕ) f₂ → ContDiff 𝕜 n (deriv^[k] f₂)
+  | 0,     _, hf => hf
+  | k + 1, _, hf => ContDiff.iterate_deriv' _ k (contDiff_succ_iff_deriv.mp hf).2.2
+
+end deriv
