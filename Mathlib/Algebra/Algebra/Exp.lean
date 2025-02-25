@@ -123,10 +123,10 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
           intro _ _ _
           omega
         · simp only [mem_sigma, mem_range, Prod.mk.injEq, and_imp]
-          (intro h1 h2 h3 h4 h5 h6 h7 h8; exact Sigma.ext (by omega) (heq_of_eq h7))
+          (intro _ _ _ _ _ _ h _; exact Sigma.ext (by omega) (heq_of_eq h))
         · simp only [product_eq_sprod, mem_filter, mem_product, mem_range, mem_sigma, exists_prop,
             Sigma.exists, and_imp, Prod.forall, Prod.mk.injEq]
-          (intro h1 h2 h3 h4 h5; use h1 + h2, h1; omega)
+          (intro h₁ h₂ _ _ _; use h₁ + h₂, h₁; omega)
         simp only [mem_sigma, mem_range, implies_true]
   have z₁ : ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ ij.1 + ij.2 ≤ 2 * N,
       ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 := by
