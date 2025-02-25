@@ -66,8 +66,8 @@ instance inhabited : Inhabited (M ⧸ N) :=
 
 /-- Map sending an element of `M` to the corresponding element of `M/N`, when `N` is a
 lie_submodule of the lie_module `N`. -/
-abbrev mk : M →ₗ[R] M ⧸ N :=
-  Submodule.mkQ N.toSubmodule
+abbrev mk : M → M ⧸ N :=
+  Submodule.Quotient.mk
 
 @[simp]
 theorem mk_eq_zero' {m : M} : mk (N := N) m = 0 ↔ m ∈ N :=
