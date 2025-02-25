@@ -109,13 +109,13 @@ lemma hasDerivAt_log_sub_logTaylor (n : ℕ) {z : ℂ} (hz : 1 + z ∈ slitPlane
 lemma norm_one_add_mul_inv_le {t : ℝ} (ht : t ∈ Set.Icc 0 1) {z : ℂ} (hz : ‖z‖ < 1) :
     ‖(1 + t * z)⁻¹‖ ≤ (1 - ‖z‖)⁻¹ := by
   rw [Set.mem_Icc] at ht
-  rw [norm_inv, norm_eq_abs]
+  rw [norm_inv]
   refine inv_anti₀ (by linarith) ?_
   calc 1 - ‖z‖
     _ ≤ 1 - t * ‖z‖ := by
       nlinarith [norm_nonneg z]
     _ = 1 - ‖t * z‖ := by
-      rw [norm_mul, norm_eq_abs (t : ℂ), Complex.abs_of_nonneg ht.1]
+      rw [norm_mul, Complex.norm_of_nonneg ht.1]
     _ ≤ ‖1 + t * z‖ := by
       rw [← norm_neg (t * z), ← sub_neg_eq_add]
       convert norm_sub_norm_le 1 (-(t * z))
@@ -162,7 +162,7 @@ lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
     _ = ∫ t in (0 : ℝ)..1, t ^ n * ‖(1 + t * z)⁻¹‖ := by
         refine intervalIntegral.integral_congr <| fun t ht ↦ ?_
         rw [Set.uIcc_of_le zero_le_one, Set.mem_Icc] at ht
-        simp_rw [norm_mul, norm_pow, norm_eq_abs, Complex.abs_of_nonneg ht.1]
+        simp_rw [norm_mul, norm_pow, Complex.norm_of_nonneg ht.1]
     _ ≤ ∫ t in (0 : ℝ)..1, t ^ n * (1 - ‖z‖)⁻¹ :=
         intervalIntegral.integral_mono_on zero_le_one
           (integrable_pow_mul_norm_one_add_mul_inv n hz) help <|
@@ -197,9 +197,8 @@ lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1/2) : ‖(log (
     · rw [inv_nonneg]
       linarith
     · rw [sq, div_eq_mul_one_div]
-      apply mul_le_mul (by simp only [norm_eq_abs, mul_one, le_refl])
-        (by simpa only [norm_eq_abs, one_div] using hz) (norm_nonneg z)
-        (by simp only [norm_eq_abs, mul_one, apply_nonneg])
+      apply mul_le_mul (by simp only [mul_one, le_refl])
+        (by simpa only [one_div] using hz) (norm_nonneg z) (by simp only [mul_one, norm_nonneg])
   simp only [isUnit_iff_ne_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
     IsUnit.div_mul_cancel] at hz4
   linarith
