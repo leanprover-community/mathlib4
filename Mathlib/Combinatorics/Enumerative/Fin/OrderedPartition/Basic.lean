@@ -6,15 +6,9 @@ import Mathlib.Data.Finset.Sort
 
 open Set Function List
 
-@[simp]
-lemma Fin.val_eq_zero_iff {n : ℕ} [NeZero n] {a : Fin n} : a.val = 0 ↔ a = 0 := by
-  rw [← val_zero n, val_inj]
-
 namespace List
 
 variable {α β γ : Type*}
-
-attribute [gcongr] Perm.append_left Perm.append_right Perm.append Perm.map
 
 theorem mem_unattach {p : α → Prop} {l : List (Subtype p)} {x : α} :
     x ∈ l.unattach ↔ ∃ y ∈ l, y.1 = x :=
@@ -29,19 +23,6 @@ theorem subset_flatMap_of_mem {l : List α} {a : α} (ha : a ∈ l) (f : α → 
 
 theorem subset_flatten_of_mem {L : List (List α)} {l : List α} (h : l ∈ L) : l ⊆ L.flatten :=
   fun _b hb ↦ mem_flatten_of_mem h hb
-
-theorem perm_map_iff {f : α → β} (hf : f.Injective) {l₁ l₂ : List α} :
-    l₁.map f ~ l₂.map f ↔ l₁ ~ l₂ := by
-  refine ⟨fun hl ↦ ?_, .map f⟩
-  induction l₁ generalizing l₂ with
-  | nil => simp_all
-  | cons a l₁ ihl₁ =>
-    obtain ⟨i, hi, rfl⟩ : ∃ (i : ℕ) (hi : i < l₂.length), l₂[i] = a := by
-      rw [← mem_iff_getElem, ← mem_map_of_injective hf, ← hl.mem_iff]
-      simp
-    refine .trans (.cons _ <| ihl₁ ?_) (getElem_cons_eraseIdx_perm hi)
-    rw [← perm_cons, ← map_cons f l₂[i] (l₂.eraseIdx i)]
-    exact hl.trans <| .map _ <| (getElem_cons_eraseIdx_perm hi).symm
 
 @[simp] -- TODO: generalize to `finSuccEquiv'`
 theorem filterMap_finSuccEquiv_finRange (n : ℕ) :
@@ -324,7 +305,7 @@ def eraseLeft (c : OrderedPartition (n + 1)) (hc : c.head = [0]) : OrderedPartit
     simpa [← eraseLeft.zero_cons_map_partsAux c hc, Sorted, pairwise_pmap, pmap_map]
       using c.sorted_getLast_le
   perm_finRange := by
-    rw [← perm_map_iff (succ_injective _), ← perm_cons, ← finRange_succ,
+    rw [← map_perm_map_iff (succ_injective _), ← perm_cons, ← finRange_succ,
       map_flatten, ← singleton_append, ← flatten_cons, eraseLeft.zero_cons_map_partsAux]
     exact c.perm_finRange
 
@@ -372,7 +353,7 @@ theorem extendPart.perm_partsAux_iff {L : List (List (Fin n))} {i : ℕ} (hi : i
     (partsAux L i).flatten ~ finRange (n + 1) ↔ L.flatten ~ finRange n := by
   rw [← rel_congr_left (getElem_cons_eraseIdx_perm hi).flatten]
   simp [partsAux, rel_congr_left (modify_perm_cons_eraseIdx _ _).flatten, finRange_succ,
-    ← perm_map_iff (succ_injective n), eraseIdx_map, hi]
+    ← map_perm_map_iff (succ_injective n), eraseIdx_map, hi]
 
 def extendPart (c : OrderedPartition n) (i : Fin c.parts.length) : OrderedPartition (n + 1) where
   parts := extendPart.partsAux c.parts i
