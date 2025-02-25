@@ -8,9 +8,19 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 import Mathlib.Algebra.Group.Even
 import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.Finset.Powerset
-import Mathlib.Data.Finset.Preimage
+
+-- import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Finset.Union
+
+import Mathlib.Data.Finset.Sigma
+import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Fintype.Pi
+
+-- import Mathlib.Data.Fintype.Pi
+-- import Mathlib.Data.Finset.Pi
+import Mathlib.Data.Finset.Card
+-- import Mathlib.Data.Multiset.Pi
 
 /-!
 # Big operators
@@ -41,6 +51,7 @@ See the documentation of `to_additive.attr` for more information.
 -- TODO
 -- assert_not_exists AddCommMonoidWithOne
 assert_not_exists MonoidWithZero MulAction OrderedCommMonoid
+assert_not_exists Finset.preimage Fintype.piFinset
 
 variable {ι κ α β γ : Type*}
 
@@ -362,19 +373,6 @@ lemma prod_fiberwise' (s : Finset ι) (g : ι → κ) (f : κ → α) :
 
 end bij
 
-/-- Taking a product over `univ.pi t` is the same as taking the product over `Fintype.piFinset t`.
-`univ.pi t` and `Fintype.piFinset t` are essentially the same `Finset`, but differ
-in the type of their element, `univ.pi t` is a `Finset (Π a ∈ univ, t a)` and
-`Fintype.piFinset t` is a `Finset (Π a, t a)`. -/
-@[to_additive "Taking a sum over `univ.pi t` is the same as taking the sum over
-`Fintype.piFinset t`. `univ.pi t` and `Fintype.piFinset t` are essentially the same `Finset`,
-but differ in the type of their element, `univ.pi t` is a `Finset (Π a ∈ univ, t a)` and
-`Fintype.piFinset t` is a `Finset (Π a, t a)`."]
-lemma prod_univ_pi [DecidableEq ι] [Fintype ι] {κ : ι → Type*} (t : ∀ i, Finset (κ i))
-    (f : (∀ i ∈ (univ : Finset ι), κ i) → β) :
-    ∏ x ∈ univ.pi t, f x = ∏ x ∈ Fintype.piFinset t, f fun a _ ↦ x a := by
-  apply prod_nbij' (fun x i ↦ x i <| mem_univ _) (fun x i _ ↦ x i) <;> simp
-
 @[to_additive (attr := simp)]
 lemma prod_diag [DecidableEq α] (s : Finset α) (f : α × α → β) :
     ∏ i ∈ s.diag, f i = ∏ i ∈ s, f (i, i) := by
@@ -616,26 +614,6 @@ theorem prod_subtype {p : α → Prop} {F : Fintype (Subtype p)} (s : Finset α)
   subst p
   rw [← prod_coe_sort]
   congr!
-
-@[to_additive]
-lemma prod_preimage' (f : ι → κ) [DecidablePred (· ∈ Set.range f)] (s : Finset κ) (hf) (g : κ → β) :
-    ∏ x ∈ s.preimage f hf, g (f x) = ∏ x ∈ s with x ∈ Set.range f, g x := by
-  classical
-  calc
-    ∏ x ∈ preimage s f hf, g (f x) = ∏ x ∈ image f (preimage s f hf), g x :=
-      Eq.symm <| prod_image <| by simpa only [mem_preimage, Set.InjOn] using hf
-    _ = ∏ x ∈ s with x ∈ Set.range f, g x := by rw [image_preimage]
-
-@[to_additive]
-lemma prod_preimage (f : ι → κ) (s : Finset κ) (hf) (g : κ → β)
-    (hg : ∀ x ∈ s, x ∉ Set.range f → g x = 1) :
-    ∏ x ∈ s.preimage f hf, g (f x) = ∏ x ∈ s, g x := by
-  classical rw [prod_preimage', prod_filter_of_ne]; exact fun x hx ↦ Not.imp_symm (hg x hx)
-
-@[to_additive]
-lemma prod_preimage_of_bij (f : ι → κ) (s : Finset κ) (hf : Set.BijOn f (f ⁻¹' ↑s) ↑s) (g : κ → β) :
-    ∏ x ∈ s.preimage f hf.injOn, g (f x) = ∏ x ∈ s, g x :=
-  prod_preimage _ _ hf.injOn g fun _ hs h_f ↦ (h_f <| hf.subset_range hs).elim
 
 @[to_additive]
 theorem prod_set_coe (s : Set α) [Fintype s] : (∏ i : s, f i) = ∏ i ∈ s.toFinset, f i :=
