@@ -411,10 +411,10 @@ instance Submodule.Quotient.completeSpace [CompleteSpace M] : CompleteSpace (M �
 /-- For any `x : M ⧸ S` and any `0 < ε`, there is `m : M` such that `Submodule.Quotient.mk m = x`
 and `‖m‖ < ‖x‖ + ε`. -/
 nonrec theorem Submodule.Quotient.norm_mk_lt {S : Submodule R M} (x : M ⧸ S) {ε : ℝ} (hε : 0 < ε) :
-    ∃ m : M, Submodule.Quotient.mk m = x ∧ ‖m‖ < ‖x‖ + ε :=
+    ∃ m : M, Submodule.mkQ S m = x ∧ ‖m‖ < ‖x‖ + ε :=
   norm_mk_lt x hε
 
-theorem Submodule.Quotient.norm_mk_le (m : M) : ‖(Submodule.Quotient.mk m : M ⧸ S)‖ ≤ ‖m‖ :=
+theorem Submodule.Quotient.norm_mk_le (m : M) : ‖(Submodule.mkQ S m : M ⧸ S)‖ ≤ ‖m‖ :=
   quotient_norm_mk_le S.toAddSubgroup m
 
 instance Submodule.Quotient.instBoundedSMul (𝕜 : Type*)

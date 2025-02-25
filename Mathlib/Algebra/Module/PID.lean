@@ -137,8 +137,8 @@ theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ p
             @hM' x]
         · exact mem_nonZeroDivisors_of_ne_zero (pow_ne_zero _ hp.ne_zero)
       rw [Submodule.mem_span_singleton] at this; obtain ⟨a, ha⟩ := this; use a
-      rw [f.eq_symm_apply, ← Ideal.Quotient.mk_eq_mk, ← Quotient.mk_smul] at ha
-      dsimp only [smul_eq_mul, LinearEquiv.trans_apply, Submodule.quotEquivOfEq_mk,
+      rw [f.eq_symm_apply, ← Ideal.Quotient.mkQ_eq_mk, ← mkQ_smul] at ha
+      dsimp only [smul_eq_mul, LinearEquiv.trans_apply, Submodule.quotEquivOfEq_mkQ,
         quotTorsionOfEquivSpanSingleton_apply_mk] at ha
       rw [smul_smul, mul_comm]; exact congr_arg ((↑) : _ → M) ha.symm
     · symm; convert Ideal.torsionOf_eq_span_pow_pOrder hp hM y
@@ -151,16 +151,17 @@ open Submodule.Quotient
 
 theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ pOrder hM z))
     {k : ℕ} (f : (R ⧸ R ∙ p ^ k) →ₗ[R] M ⧸ R ∙ z) :
-    ∃ x : M, p ^ k • x = 0 ∧ Submodule.Quotient.mk (p := span R {z}) x = f 1 := by
-  have f1 := mk_surjective (R ∙ z) (f 1)
+    ∃ x : M, p ^ k • x = 0 ∧ Submodule.mkQ (span R {z}) x = f 1 := by
+  have f1 := mkQ_surjective (R ∙ z) (f 1)
   have : p ^ k • f1.choose ∈ R ∙ z := by
-    rw [← Quotient.mk_eq_zero, mk_smul, f1.choose_spec, ← f.map_smul]
-    convert f.map_zero; change _ • Submodule.Quotient.mk _ = _
-    rw [← mk_smul, Quotient.mk_eq_zero, Algebra.id.smul_eq_mul, mul_one]
+    rw [← mkQ_eq_zero, mkQ_smul, f1.choose_spec, ← f.map_smul]
+    convert f.map_zero
+    show _ • Submodule.mkQ _ _ = _
+    rw [← mkQ_smul, mkQ_eq_zero, Algebra.id.smul_eq_mul, mul_one]
     exact Submodule.mem_span_singleton_self _
   obtain ⟨a, ha⟩ := p_pow_smul_lift hp hM hz this
   refine ⟨f1.choose - a • z, by rw [smul_sub, sub_eq_zero, ha], ?_⟩
-  rw [mk_sub, mk_smul, (Quotient.mk_eq_zero _).mpr <| Submodule.mem_span_singleton_self _,
+  rw [mkQ_sub, mkQ_smul, (mkQ_eq_zero _).mpr <| Submodule.mem_span_singleton_self _,
     smul_zero, sub_zero, f1.choose_spec]
 
 open Finset Multiset
@@ -180,14 +181,14 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
     exact ⟨0⟩
   · have : ∀ x : N, Decidable (x = 0) := fun _ => by classical infer_instance
     obtain ⟨j, hj⟩ := exists_isTorsionBy hN d.succ d.succ_ne_zero s hs
-    let s' : Fin d → N ⧸ R ∙ s j := Submodule.Quotient.mk ∘ s ∘ j.succAbove
+    let s' : Fin d → N ⧸ R ∙ s j := Submodule.mkQ _ ∘ s ∘ j.succAbove
     -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5732):
     -- `obtain` doesn't work with placeholders.
     have := IH ?_ s' ?_
     · obtain ⟨k, ⟨f⟩⟩ := this
       clear IH
       have : ∀ i : Fin d,
-          ∃ x : N, p ^ k i • x = 0 ∧ f (Submodule.Quotient.mk x) = DirectSum.lof R _ _ i 1 := by
+          ∃ x : N, p ^ k i • x = 0 ∧ f (Submodule.mkQ _ x) = DirectSum.lof R _ _ i 1 := by
         intro i
         let fi := f.symm.toLinearMap.comp (DirectSum.lof _ _ _ i)
         obtain ⟨x, h0, h1⟩ := exists_smul_eq_zero_and_mk_eq hp hN hj fi; refine ⟨x, h0, ?_⟩; rw [h1]
@@ -214,17 +215,17 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
           suffices (f.toLinearMap.comp (R ∙ s j).mkQ).comp _ = LinearMap.id by
             rw [this, LinearMap.id_comp]
           ext i : 3
-          simp only [LinearMap.coe_comp, Function.comp_apply, mkQ_apply]
+          simp only [LinearMap.coe_comp, Function.comp_apply]
           rw [LinearEquiv.coe_toLinearMap, LinearMap.id_apply, DirectSum.toModule_lof,
-            liftQSpanSingleton_apply, LinearMap.toSpanSingleton_one, Ideal.Quotient.mk_eq_mk,
+            liftQSpanSingleton_apply_mkQ, LinearMap.toSpanSingleton_one, Ideal.Quotient.mkQ_eq_mk,
             map_one (Ideal.Quotient.mk _), (this i).choose_spec.right]
-    · exact (mk_surjective _).forall.mpr fun x =>
-        ⟨(@hN x).choose, by rw [← Quotient.mk_smul, (@hN x).choose_spec, Quotient.mk_zero]⟩
+    · exact (mkQ_surjective _).forall.mpr fun x =>
+        ⟨(@hN x).choose, by rw [← mkQ_smul, (@hN x).choose_spec, mkQ_zero]⟩
     · have hs' := congr_arg (Submodule.map <| mkQ <| R ∙ s j) hs
-      rw [Submodule.map_span, Submodule.map_top, range_mkQ] at hs'; simp only [mkQ_apply] at hs'
+      rw [Submodule.map_span, Submodule.map_top, range_mkQ] at hs'
       simp only [s']; rw [← Function.comp_assoc, Set.range_comp (_ ∘ s), Fin.range_succAbove]
       rw [← Set.range_comp, ← Set.insert_image_compl_eq_range _ j, Function.comp_apply,
-        (Quotient.mk_eq_zero _).mpr (Submodule.mem_span_singleton_self _), span_insert_zero] at hs'
+        (mkQ_eq_zero _).mpr (Submodule.mem_span_singleton_self _), span_insert_zero] at hs'
       exact hs'
 
 end PTorsion

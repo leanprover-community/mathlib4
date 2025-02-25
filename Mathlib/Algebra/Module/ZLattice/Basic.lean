@@ -276,14 +276,22 @@ def quotientEquiv [Fintype ι] :
   · obtain ⟨a, rfl⟩ := fractRestrict_surjective b x
     exact ⟨Quotient.mk'' a, rfl⟩
 
-@[simp]
 theorem quotientEquiv_apply_mk [Fintype ι] (x : E) :
     quotientEquiv b (Submodule.Quotient.mk x) = fractRestrict b x := rfl
 
 @[simp]
+theorem quotientEquiv_apply_mkQ [Fintype ι] (x : E) :
+    quotientEquiv b (Submodule.mkQ _ x) = fractRestrict b x := rfl
+
 theorem quotientEquiv.symm_apply [Fintype ι] (x : fundamentalDomain b) :
-    (quotientEquiv b).symm x = Submodule.Quotient.mk ↑x := by
-  rw [Equiv.symm_apply_eq, quotientEquiv_apply_mk b ↑x, Subtype.ext_iff, fractRestrict_apply]
+    (quotientEquiv b).symm x = Submodule.Quotient.mk x.1 := by
+  rw [Equiv.symm_apply_eq, quotientEquiv_apply_mk b x.1, Subtype.ext_iff, fractRestrict_apply]
+  exact (fract_eq_self.mpr x.prop).symm
+
+@[simp]
+theorem quotientEquiv.symm_apply_mkQ [Fintype ι] (x : fundamentalDomain b) :
+    (quotientEquiv b).symm x = Submodule.mkQ _ x.1 := by
+  rw [Equiv.symm_apply_eq, quotientEquiv_apply_mkQ b x.1, Subtype.ext_iff, fractRestrict_apply]
   exact (fract_eq_self.mpr x.prop).symm
 
 end NormedLatticeField
