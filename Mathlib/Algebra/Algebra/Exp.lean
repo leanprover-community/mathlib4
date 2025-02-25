@@ -75,13 +75,10 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
   obtain ⟨n₁, hn₁⟩ := h₂
   obtain ⟨n₂, hn₂⟩ := h₃
   let N := n₁ ⊔ n₂
-  have le₁ : n₁ ≤ N + 1 := by omega
-  have le₂ : n₂ ≤ N + 1 := by omega
-  have h₄ : a ^ (N + 1) = 0 := pow_eq_zero_of_le le₁ hn₁
-  have h₅ : b ^ (N + 1) = 0 := pow_eq_zero_of_le le₂ hn₂
-  have le₃ : (N + 1) + (N + 1) ≤ (2 * N + 1) + 1 := by omega
+  have h₄ : a ^ (N + 1) = 0 := pow_eq_zero_of_le (by omega) hn₁
+  have h₅ : b ^ (N + 1) = 0 := pow_eq_zero_of_le (by omega) hn₂
   have h₆ : (a + b) ^ (2 * N + 1) = 0 :=
-    Commute.add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero h₁ h₄ h₅ le₃
+    Commute.add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero h₁ h₄ h₅ (by omega)
   rw [← exp_eq_truncated R A (a + b) h₆, ← exp_eq_truncated R A a h₄, ← exp_eq_truncated R A b h₅]
   have s₁ :=
     calc
