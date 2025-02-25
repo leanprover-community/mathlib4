@@ -5126,6 +5126,7 @@ import Mathlib.SetTheory.ZFC.Rank
 import Mathlib.Std.Data.HashMap
 import Mathlib.Tactic
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Abstract
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Algebraize
 import Mathlib.Tactic.ApplyAt
