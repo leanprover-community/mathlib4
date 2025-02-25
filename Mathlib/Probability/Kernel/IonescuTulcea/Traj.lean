@@ -6,7 +6,6 @@ Authors: Etienne Marion
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
 import Mathlib.Probability.Kernel.IonescuTulcea.PTraj
--- import KolmogorovExtension4.KolmogorovExtension
 
 /-!
 # Ionescu-Tulcea theorem
@@ -69,7 +68,9 @@ see Proposition 10.6.1 in [D. L. Cohn, *Measure Theory*][cohn2013measure].
 Ionescu-Tulcea theorem
 -/
 
-open ENNReal Filter Finset Function MeasurableEquiv MeasurableSpace MeasureTheory Preorder ProbabilityTheory Topology
+open Filter Finset Function MeasurableEquiv MeasurableSpace MeasureTheory Preorder ProbabilityTheory
+
+open scoped ENNReal Topology
 
 variable {X : ℕ → Type*}
 

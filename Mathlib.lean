@@ -4556,6 +4556,7 @@ import Mathlib.Probability.Kernel.Disintegration.Unique
 import Mathlib.Probability.Kernel.Integral
 import Mathlib.Probability.Kernel.Invariance
 import Mathlib.Probability.Kernel.IonescuTulcea.PTraj
+import Mathlib.Probability.Kernel.IonescuTulcea.Traj
 import Mathlib.Probability.Kernel.MeasurableIntegral
 import Mathlib.Probability.Kernel.MeasurableLIntegral
 import Mathlib.Probability.Kernel.Proper
