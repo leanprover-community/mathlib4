@@ -10,7 +10,7 @@ import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.Linter.OldObtain
 -- To test that the new simproc doesn't break anything
-import Mathlib.Tactic.Simps.ExistsAndEq
+import Mathlib.Tactic.Simproc.ExistsAndEq
 
 /-!
 # Basic tactics and utilities for tactic writing

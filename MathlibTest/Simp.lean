@@ -1,6 +1,5 @@
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Tactic.Simps.ExistsAndEq
 
 /-!
 Tests for the behavior of `simp`.

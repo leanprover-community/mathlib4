@@ -50,7 +50,7 @@ where
       if let .defEq _ ← isDefEqQ x a then
         return .some ⟨b, q(($h).symm)⟩
       else if let .defEq _ ← isDefEqQ x (b : Q($α)) then
-        return .some ⟨a, q(($h))⟩
+        return .some ⟨a, q($h)⟩
       else
         return .none
     | ~q(And $a $b) =>
