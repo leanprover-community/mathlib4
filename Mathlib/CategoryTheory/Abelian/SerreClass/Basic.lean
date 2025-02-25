@@ -63,7 +63,7 @@ lemma prop_iff_of_shortExact {S : ShortComplex C} (hS : S.ShortExact) :
   ⟨fun h ↦ ⟨P.prop_X₁_of_shortExact hS h, P.prop_X₃_of_shortExact hS h⟩,
     fun h ↦ P.prop_X₂_of_shortExact hS h.1 h.2⟩
 
-lemma prop_of_exact {S : ShortComplex C} (hS : S.Exact)
+lemma prop_X₂_of_exact {S : ShortComplex C} (hS : S.Exact)
     (h₁ : P S.X₁) (h₃ : P S.X₃) : P S.X₂ := by
   let d := S.homologyData
   have := hS.epi_f' d.left
