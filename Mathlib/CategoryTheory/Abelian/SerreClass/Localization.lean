@@ -85,12 +85,12 @@ instance : P.serreW.IsStableUnderRetracts where
       P.prop_of_epi (cokernel.map f f' h.left.r h.right.r (by simp)) hf.2⟩
 
 @[nolint unusedArguments]
-structure SerreWLocalization (P : ObjectProperty C) [P.IsSerreClass] : Type u where
+structure SerreWLoc (P : ObjectProperty C) [P.IsSerreClass] : Type u where
   obj : C
 
-namespace SerreWLocalization
+namespace SerreWLoc
 
-variable {P} (X Y Z : P.SerreWLocalization)
+variable {P} (X Y Z T : P.SerreWLoc)
 
 namespace Hom
 
@@ -108,7 +108,16 @@ namespace DefDomain
 
 attribute [instance] mono_i epi_p
 
-variable {X Y} (d₁ d₂ d₃ : DefDomain X Y)
+@[simps]
+def top : DefDomain X Y where
+  src := X.obj
+  i := 𝟙 X.obj
+  hi := MorphismProperty.id_mem _ _
+  tgt := Y.obj
+  p := 𝟙 Y.obj
+  hp := MorphismProperty.id_mem _ _
+
+variable {X Y Z T} (d₁ d₂ d₃ : DefDomain X Y)
 
 structure Hom where
   ι : d₁.src ⟶ d₂.src
@@ -184,6 +193,18 @@ lemma exists_min :
       π := pushout.inr _ _
       p_π := pushout.condition.symm }⟩⟩
 
+structure CompStruct (d₁₂ : DefDomain X Y) (d₂₃ : DefDomain Y Z) (d₁₃ : DefDomain X Z) where
+  ι : d₁₃.src ⟶ d₁₂.src
+  ι_i : ι ≫ d₁₂.i = d₁₃.i := by aesop_cat
+  π : d₂₃.tgt ⟶ d₁₃.tgt
+  p_π : d₂₃.p ≫ π = d₁₃.p := by aesop_cat
+  obj : C
+  toObj : d₂₃.src ⟶ obj
+  fromObj : obj ⟶ d₁₂.tgt
+  fac : toObj ≫ fromObj = d₂₃.i ≫ d₁₂.p := by aesop_cat
+  epi_toObj : Epi toObj
+  mono_toObj : Mono toObj
+
 end DefDomain
 
 variable {X Y} in
@@ -197,7 +218,7 @@ abbrev Hom' := Σ (d : Hom.DefDomain X Y), d.src ⟶ d.tgt
 
 section
 
-variable {X Y}
+variable {X Y Z T}
 
 abbrev Hom'.mk {d : Hom.DefDomain X Y} (φ : d.src ⟶ d.tgt) : Hom' X Y := ⟨d, φ⟩
 
@@ -215,7 +236,7 @@ def Hom := Quot (Hom'Rel X Y)
 
 namespace Hom
 
-variable {X Y}
+variable {X Y Z T}
 
 def mk {d : Hom.DefDomain X Y} (φ : d.src ⟶ d.tgt) : Hom X Y :=
   Quot.mk _ (.mk φ)
@@ -260,9 +281,89 @@ lemma ext_iff {d₁ d₂ : DefDomain X Y} (f₁ : d₁.src ⟶ d₁.tgt) (f₂ :
       restrict φ₁ f₁ = restrict φ₂ f₂ := by
   apply quotMk_eq_quotMk_iff
 
+variable (P) in
+def ofHom {X Y : C} (f : X ⟶ Y) : Hom (P := P) ⟨X⟩ ⟨Y⟩ :=
+  mk (d := DefDomain.top _ _) f
+
+variable (X) in
+abbrev id : Hom X X := ofHom P (𝟙 X.obj)
+
+variable {d₁₂ : DefDomain X Y} {d₂₃ : DefDomain Y Z}
+    (a : d₁₂.src ⟶ d₁₂.tgt) (b : d₂₃.src ⟶ d₂₃.tgt)
+
+structure CompStruct {d₁₃ : DefDomain X Z}
+    (h : DefDomain.CompStruct d₁₂ d₂₃ d₁₃) where
+  α : d₁₃.src ⟶ h.obj
+  β : h.obj ⟶ d₁₃.tgt
+  hα : α ≫ h.fromObj = h.ι ≫ a
+  hβ : h.toObj ≫ β = b ≫ h.π
+
+namespace CompStruct
+
+lemma nonempty : ∃ (d₁₃ : DefDomain X Z)
+    (h : DefDomain.CompStruct d₁₂ d₂₃ d₁₃), Nonempty (CompStruct a b h) := sorry
+
+variable {a b}
+def comp {d₁₃ : DefDomain X Z}
+    {h : DefDomain.CompStruct d₁₂ d₂₃ d₁₃} (γ : CompStruct a b h) :
+    Hom X Z :=
+  Hom.mk (d := d₁₃) (γ.α ≫ γ.β)
+
+end CompStruct
+
+
 end Hom
 
-end SerreWLocalization
+variable {X Y Z}
+
+namespace Hom'
+
+variable (f : Hom' X Y) (g : Hom' Y Z)
+
+noncomputable def comp.defDomain : Hom.DefDomain X Z :=
+  (Hom.CompStruct.nonempty f.2 g.2).choose
+
+noncomputable def comp.defDomainCompStruct :
+    Hom.DefDomain.CompStruct f.1 g.1 (defDomain f g) :=
+  (Hom.CompStruct.nonempty f.2 g.2).choose_spec.choose
+
+noncomputable def comp.compStruct :
+    Hom.CompStruct f.2 g.2 (defDomainCompStruct f g) :=
+  (Hom.CompStruct.nonempty f.2 g.2).choose_spec.choose_spec.some
+
+noncomputable def comp : Hom X Z := (comp.compStruct f g).comp
+
+end Hom'
+
+namespace Hom
+
+noncomputable def comp : Hom X Y → Hom Y Z → Hom X Z :=
+  Quot.lift₂ Hom'.comp sorry sorry
+
+@[simp]
+lemma id_comp (f : Hom X Y) : (Hom.id X).comp f = f := sorry
+
+@[simp]
+lemma comp_id (f : Hom X Y) : f.comp (.id Y) = f := sorry
+
+@[simp]
+lemma assoc (f : Hom X Y) (g : Hom Y Z) (h : Hom Z T) :
+    (f.comp g).comp h = f.comp (g.comp h) := sorry
+
+end Hom
+
+noncomputable instance : Category P.SerreWLoc where
+  Hom := Hom
+  id := Hom.id
+  comp := Hom.comp
+
+end SerreWLoc
+
+def toSerreWLoc : C ⥤ P.SerreWLoc where
+  obj X := ⟨X⟩
+  map f := .ofHom P f
+  map_id _ := rfl
+  map_comp := sorry
 
 end ObjectProperty
 
