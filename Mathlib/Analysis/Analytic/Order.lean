@@ -140,10 +140,10 @@ end AnalyticAt
 
 namespace AnalyticOnNhd
 
-variable {U : Set 𝕜}
+variable {U : Set 𝕜} (hf : AnalyticOnNhd 𝕜 f U)
 
 /-- The set where an analytic function has infinite order is clopen in its domain of analyticity. -/
-theorem isClopen_setOf_order_eq_top (hf : AnalyticOnNhd 𝕜 f U) :
+theorem isClopen_setOf_order_eq_top :
     IsClopen { u : U | (hf u.1 u.2).order = ⊤ } := by
   constructor
   · rw [← isOpen_compl_iff, isOpen_iff_forall_mem_open]
@@ -187,7 +187,7 @@ theorem isClopen_setOf_order_eq_top (hf : AnalyticOnNhd 𝕜 f U) :
 
 /-- On a connected set, there exists a point where a meromorphic function `f` has finite order iff
 `f` has finite order at every point. -/
-theorem exists_order_ne_top_iff_forall (hf : AnalyticOnNhd 𝕜 f U) (hU : IsConnected U) :
+theorem exists_order_ne_top_iff_forall (hU : IsConnected U) :
     (∃ u : U, (hf u u.2).order ≠ ⊤) ↔ (∀ u : U, (hf u u.2).order ≠ ⊤) := by
   constructor
   · intro h₂f
@@ -207,14 +207,14 @@ theorem exists_order_ne_top_iff_forall (hf : AnalyticOnNhd 𝕜 f U) (hU : IsCon
 
 /-- On a preconnected set, a meromorphic function has finite order at one point if it has finite
 order at another point. -/
-theorem order_ne_top_of_isPreconnected {x y : 𝕜} (hf : AnalyticOnNhd 𝕜 f U) (hU : IsPreconnected U)
-    (h₁x : x ∈ U) (hy : y ∈ U) (h₂x : (hf x h₁x).order ≠ ⊤) :
+theorem order_ne_top_of_isPreconnected {x y : 𝕜} (hU : IsPreconnected U) (h₁x : x ∈ U) (hy : y ∈ U)
+    (h₂x : (hf x h₁x).order ≠ ⊤) :
     (hf y hy).order ≠ ⊤ :=
   (hf.exists_order_ne_top_iff_forall ⟨nonempty_of_mem h₁x, hU⟩).1 (by use ⟨x, h₁x⟩) ⟨y, hy⟩
 
 /-- The set where an analytic function has zero or infinite order is discrete within its domain of
 analyticity. -/
-theorem codiscrete_setOf_order_eq_zero_or_top (hf : AnalyticOnNhd 𝕜 f U) :
+theorem codiscrete_setOf_order_eq_zero_or_top :
     {u : U | (hf u u.2).order = 0 ∨ (hf u u.2).order = ⊤} ∈ Filter.codiscrete U := by
   rw [mem_codiscrete_subtype_iff_mem_codiscreteWithin, mem_codiscreteWithin]
   intro x hx
