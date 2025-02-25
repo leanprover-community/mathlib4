@@ -12,7 +12,7 @@ import Mathlib.Topology.Separation.GDelta
 
 ## Main results
 We prove that metrizable spaces are T6.
-We prove that the continuity set of a function from a topological space to a uniform space is a
+We prove that the continuity set of a function from a topological space to a metrizable space is a
 Gδ set.
 
 -/
