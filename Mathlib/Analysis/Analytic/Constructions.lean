@@ -102,14 +102,14 @@ theorem AnalyticWithinAt.add (hf : AnalyticWithinAt 𝕜 f s x) (hg : AnalyticWi
   (hpf.add hqf).analyticWithinAt
 
 @[fun_prop]
-theorem AnalyticAt.add (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) : AnalyticAt 𝕜 (f + g) x :=
+theorem AnalyticAt.add (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
+    AnalyticAt 𝕜 (fun z ↦ f z + g z) x :=
   let ⟨_, hpf⟩ := hf
   let ⟨_, hqf⟩ := hg
   (hpf.add hqf).analyticAt
 
 @[fun_prop]
-theorem AnalyticAt.add' (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
-    AnalyticAt 𝕜 (fun z ↦ f z + g z) x :=
+theorem AnalyticAt.add' (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) : AnalyticAt 𝕜 (f + g) x :=
   hf.add hg
 
 theorem HasFPowerSeriesWithinOnBall.neg (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
@@ -142,12 +142,12 @@ theorem AnalyticWithinAt.neg (hf : AnalyticWithinAt 𝕜 f s x) : AnalyticWithin
   hpf.neg.analyticWithinAt
 
 @[fun_prop]
-theorem AnalyticAt.neg (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (-f) x :=
+theorem AnalyticAt.neg (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (fun z ↦ -f z) x :=
   let ⟨_, hpf⟩ := hf
   hpf.neg.analyticAt
 
 @[fun_prop]
-theorem AnalyticAt.neg' (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (fun z ↦ -f z) x :=
+theorem AnalyticAt.neg' (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (-f) x :=
   hf.neg
 
 theorem HasFPowerSeriesWithinOnBall.sub (hf : HasFPowerSeriesWithinOnBall f pf s x r)
@@ -174,12 +174,12 @@ theorem AnalyticWithinAt.sub (hf : AnalyticWithinAt 𝕜 f s x) (hg : AnalyticWi
 
 @[fun_prop]
 theorem AnalyticAt.sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
-    AnalyticAt 𝕜 (f - g) x := by
+    AnalyticAt 𝕜 (fun z ↦ f z - g z) x := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
 
 @[fun_prop]
 theorem AnalyticAt.sub' (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
-    AnalyticAt 𝕜 (fun z ↦ f z - g z) x :=
+    AnalyticAt 𝕜 (f - g) x :=
   hf.sub hg
 
 theorem HasFPowerSeriesWithinOnBall.const_smul (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
@@ -210,12 +210,12 @@ theorem AnalyticWithinAt.const_smul (hf : AnalyticWithinAt 𝕜 f s x) :
   hpf.const_smul.analyticWithinAt
 
 @[fun_prop]
-theorem AnalyticAt.const_smul (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (c • f) x :=
+theorem AnalyticAt.const_smul (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (fun z ↦ c • f z) x :=
   let ⟨_, hpf⟩ := hf
   hpf.const_smul.analyticAt
 
 @[fun_prop]
-theorem AnalyticAt.const_smul' (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (fun z ↦ c • f z) x :=
+theorem AnalyticAt.const_smul' (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (c • f) x :=
   hf.const_smul
 
 theorem AnalyticOn.add (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
@@ -635,14 +635,14 @@ lemma AnalyticWithinAt.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F]
 @[fun_prop]
 lemma AnalyticAt.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F} {z : E}
     (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
-    AnalyticAt 𝕜 (f • g) z :=
+    AnalyticAt 𝕜 (fun x ↦ f x • g x) z :=
   (analyticAt_smul _).comp₂ hf hg
 
 /-- Scalar multiplication of one analytic function by another. -/
 @[fun_prop]
 lemma AnalyticAt.smul' [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F} {z : E}
     (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
-    AnalyticAt 𝕜 (fun x ↦ f x • g x) z :=
+    AnalyticAt 𝕜 (f • g) z :=
   hf.smul hg
 
 /-- Scalar multiplication of one analytic function by another. -/
@@ -670,12 +670,12 @@ lemma AnalyticWithinAt.mul {f g : E → A} {s : Set E} {z : E}
 /-- Multiplication of analytic functions (valued in a normed `𝕜`-algebra) is analytic. -/
 @[fun_prop]
 lemma AnalyticAt.mul {f g : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
-    AnalyticAt 𝕜 (f * g) z :=
+    AnalyticAt 𝕜 (fun x ↦ f x * g x) z :=
   (analyticAt_mul _).comp₂ hf hg
 
 @[fun_prop]
 lemma AnalyticAt.mul' {f g : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
-    AnalyticAt 𝕜 (fun x ↦ f x * g x) z :=
+    AnalyticAt 𝕜 (f * g) z :=
   hf.mul hg
 
 /-- Multiplication of analytic functions (valued in a normed `𝕜`-algebra) is analytic. -/
@@ -695,7 +695,7 @@ lemma AnalyticOnNhd.mul {f g : E → A} {s : Set E}
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 lemma AnalyticWithinAt.pow {f : E → A} {z : E} {s : Set E} (hf : AnalyticWithinAt 𝕜 f s z) (n : ℕ) :
-    AnalyticWithinAt 𝕜 (f ^ n) s z := by
+    AnalyticWithinAt 𝕜 (fun x ↦ f x ^ n) s z := by
   induction n with
   | zero =>
     simp only [pow_zero]
@@ -707,28 +707,30 @@ lemma AnalyticWithinAt.pow {f : E → A} {z : E} {s : Set E} (hf : AnalyticWithi
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 lemma AnalyticWithinAt.pow' {f : E → A} {z : E} {s : Set E} (hf : AnalyticWithinAt 𝕜 f s z)
     (n : ℕ) :
-    AnalyticWithinAt 𝕜 (fun x ↦ f x ^ n) s z := AnalyticWithinAt.pow hf n
+    AnalyticWithinAt 𝕜 (f ^ n) s z :=
+  AnalyticWithinAt.pow hf n
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 @[fun_prop]
 lemma AnalyticAt.pow {f : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (n : ℕ) :
-    AnalyticAt 𝕜 (f ^ n) z := by
+    AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := by
   rw [← analyticWithinAt_univ] at hf ⊢
   exact hf.pow n
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 @[fun_prop]
 lemma AnalyticAt.pow' {f : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (n : ℕ) :
-    AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := AnalyticAt.pow hf n
+    AnalyticAt 𝕜 (f ^ n) z :=
+  AnalyticAt.pow hf n
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 lemma AnalyticOn.pow {f : E → A} {s : Set E} (hf : AnalyticOn 𝕜 f s) (n : ℕ) :
-    AnalyticOn 𝕜 (f ^ n) s :=
+    AnalyticOn 𝕜 (fun x ↦ f x ^ n) s :=
   fun _ m ↦ (hf _ m).pow n
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 lemma AnalyticOn.pow' {f : E → A} {s : Set E} (hf : AnalyticOn 𝕜 f s) (n : ℕ) :
-    AnalyticOn 𝕜 (fun x ↦ f x ^ n) s :=
+    AnalyticOn 𝕜 (f ^ n) s :=
   fun _ m ↦ (hf _ m).pow n
 
 @[deprecated (since := "2024-09-26")]
@@ -736,18 +738,19 @@ alias AnalyticWithinOn.pow := AnalyticOn.pow
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 lemma AnalyticOnNhd.pow {f : E → A} {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) (n : ℕ) :
-    AnalyticOnNhd 𝕜 (f ^ n) s :=
+    AnalyticOnNhd 𝕜 (fun x ↦ f x ^ n) s :=
   fun _ m ↦ (hf _ m).pow n
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 lemma AnalyticOnNhd.pow' {f : E → A} {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) (n : ℕ) :
-    AnalyticOnNhd 𝕜 (fun x ↦ f x ^ n) s := AnalyticOnNhd.pow hf n
+    AnalyticOnNhd 𝕜 (f ^ n) s :=
+  AnalyticOnNhd.pow hf n
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
 nonnegative. -/
 lemma AnalyticWithinAt.zpow_nonneg {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ}
     (hf : AnalyticWithinAt 𝕜 f s z) (hn : 0 ≤ n) :
-    AnalyticWithinAt 𝕜 (f ^ n) s z := by
+    AnalyticWithinAt 𝕜 (fun x ↦ f x ^ n) s z := by
   simp_rw [(Eq.symm (Int.toNat_of_nonneg hn) : n = OfNat.ofNat n.toNat), zpow_ofNat]
   apply pow hf
 
@@ -755,37 +758,41 @@ lemma AnalyticWithinAt.zpow_nonneg {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ
 nonnegative. -/
 lemma AnalyticWithinAt.zpow_nonneg' {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ}
     (hf : AnalyticWithinAt 𝕜 f s z) (hn : 0 ≤ n) :
-    AnalyticWithinAt 𝕜 (fun x ↦ f x ^ n) s z := zpow_nonneg hf hn
+    AnalyticWithinAt 𝕜 (f ^ n) s z :=
+  zpow_nonneg hf hn
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
 nonnegative. -/
 lemma AnalyticAt.zpow_nonneg {f : E → 𝕝} {z : E} {n : ℤ} (hf : AnalyticAt 𝕜 f z) (hn : 0 ≤ n) :
-    AnalyticAt 𝕜 (f ^ n) z := by
+    AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := by
   simp_rw [(Eq.symm (Int.toNat_of_nonneg hn) : n = OfNat.ofNat n.toNat), zpow_ofNat]
   apply pow hf
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
 nonnegative. -/
-lemma AnalyticAt.zpow_nonneg' {f : E → 𝕝} {z : E} {n : ℤ}  (hf : AnalyticAt 𝕜 f z) (hn : 0 ≤ n) :
-    AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := zpow_nonneg hf hn
+lemma AnalyticAt.zpow_nonneg' {f : E → 𝕝} {z : E} {n : ℤ} (hf : AnalyticAt 𝕜 f z) (hn : 0 ≤ n) :
+    AnalyticAt 𝕜 (f ^ n) z :=
+  zpow_nonneg hf hn
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
 nonnegative. -/
-lemma AnalyticOn.zpow_nonneg {f : E → 𝕝} {s : Set E} {n : ℤ}  (hf : AnalyticOn 𝕜 f s) (hn : 0 ≤ n) :
-    AnalyticOn 𝕜 (f ^ n) s := by
+lemma AnalyticOn.zpow_nonneg {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : AnalyticOn 𝕜 f s) (hn : 0 ≤ n) :
+    AnalyticOn 𝕜 (fun x ↦ f x ^ n) s := by
   simp_rw [(Eq.symm (Int.toNat_of_nonneg hn) : n = OfNat.ofNat n.toNat), zpow_ofNat]
   apply pow hf
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
 nonnegative. -/
-lemma AnalyticOn.zpow_nonneg' {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : AnalyticOn 𝕜 f s) (hn : 0 ≤ n) :
-    AnalyticOn 𝕜 (fun x ↦ f x ^ n) s := zpow_nonneg hf hn
+lemma AnalyticOn.zpow_nonneg' {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : AnalyticOn 𝕜 f s)
+    (hn : 0 ≤ n) :
+    AnalyticOn 𝕜 (f ^ n) s :=
+  zpow_nonneg hf hn
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
 nonnegative. -/
 lemma AnalyticOnNhd.zpow_nonneg {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : AnalyticOnNhd 𝕜 f s)
     (hn : 0 ≤ n) :
-    AnalyticOnNhd 𝕜 (f ^ n) s := by
+    AnalyticOnNhd 𝕜 (fun x ↦ f x ^ n) s := by
   simp_rw [(Eq.symm (Int.toNat_of_nonneg hn) : n = OfNat.ofNat n.toNat), zpow_ofNat]
   apply pow hf
 
@@ -793,7 +800,8 @@ lemma AnalyticOnNhd.zpow_nonneg {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : Ana
 nonnegative. -/
 lemma AnalyticOnNhd.zpow_nonneg' {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : AnalyticOnNhd 𝕜 f s)
     (hn : 0 ≤ n) :
-    AnalyticOnNhd 𝕜 (fun x ↦ f x ^ n) s := zpow_nonneg hf hn
+    AnalyticOnNhd 𝕜 (f ^ n) s :=
+  zpow_nonneg hf hn
 
 /-!
 ### Restriction of scalars
@@ -972,31 +980,36 @@ lemma analyticOn_inv : AnalyticOn 𝕜 (fun z ↦ z⁻¹) {z : 𝕝 | z ≠ 0} :
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
 theorem AnalyticWithinAt.inv {f : E → 𝕝} {x : E} {s : Set E} (fa : AnalyticWithinAt 𝕜 f s x)
     (f0 : f x ≠ 0) :
-    AnalyticWithinAt 𝕜 f⁻¹ s x :=
+    AnalyticWithinAt 𝕜 (fun x ↦ (f x)⁻¹) s x :=
   (analyticAt_inv f0).comp_analyticWithinAt fa
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
 theorem AnalyticWithinAt.inv' {f : E → 𝕝} {x : E} {s : Set E} (fa : AnalyticWithinAt 𝕜 f s x)
     (f0 : f x ≠ 0) :
-    AnalyticWithinAt 𝕜 (fun x ↦ (f x)⁻¹) s x := inv fa f0
+    AnalyticWithinAt 𝕜 f⁻¹ s x :=
+  inv fa f0
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
 @[fun_prop]
 theorem AnalyticAt.inv {f : E → 𝕝} {x : E} (fa : AnalyticAt 𝕜 f x) (f0 : f x ≠ 0) :
-    AnalyticAt 𝕜 f⁻¹ x := (analyticAt_inv f0).comp fa
+    AnalyticAt 𝕜 (fun x ↦ (f x)⁻¹) x :=
+  (analyticAt_inv f0).comp fa
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
 @[fun_prop]
 theorem AnalyticAt.inv' {f : E → 𝕝} {x : E} (fa : AnalyticAt 𝕜 f x) (f0 : f x ≠ 0) :
-    AnalyticAt 𝕜 (fun x ↦ (f x)⁻¹) x := fa.inv f0
+    AnalyticAt 𝕜 f⁻¹ x :=
+  fa.inv f0
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
 theorem AnalyticOn.inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOn 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
-    AnalyticOn 𝕜 f⁻¹ s := fun x m ↦ (fa x m).inv (f0 x m)
+    AnalyticOn 𝕜 (fun x ↦ (f x)⁻¹) s :=
+  fun x m ↦ (fa x m).inv (f0 x m)
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
 theorem AnalyticOn.inv' {f : E → 𝕝} {s : Set E} (fa : AnalyticOn 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
-    AnalyticOn 𝕜 (fun x ↦ (f x)⁻¹) s := inv fa f0
+    AnalyticOn 𝕜 f⁻¹ s :=
+  inv fa f0
 
 @[deprecated (since := "2024-09-26")]
 alias AnalyticWithinOn.inv := AnalyticOn.inv
@@ -1004,18 +1017,20 @@ alias AnalyticWithinOn.inv := AnalyticOn.inv
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
 theorem AnalyticOnNhd.inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOnNhd 𝕜 f s)
     (f0 : ∀ x ∈ s, f x ≠ 0) :
-    AnalyticOnNhd 𝕜 f⁻¹ s := fun x m ↦ (fa x m).inv (f0 x m)
+    AnalyticOnNhd 𝕜 (fun x ↦ (f x)⁻¹) s :=
+  fun x m ↦ (fa x m).inv (f0 x m)
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
 theorem AnalyticOnNhd.inv' {f : E → 𝕝} {s : Set E} (fa : AnalyticOnNhd 𝕜 f s)
     (f0 : ∀ x ∈ s, f x ≠ 0) :
-    AnalyticOnNhd 𝕜 (fun x ↦ (f x)⁻¹) s := inv fa f0
+    AnalyticOnNhd 𝕜 f⁻¹ s :=
+  inv fa f0
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
 -/
 lemma AnalyticWithinAt.zpow {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ} (h₁f : AnalyticWithinAt 𝕜 f s z)
     (h₂f : f z ≠ 0) :
-    AnalyticWithinAt 𝕜 (f ^ n) s z := by
+    AnalyticWithinAt 𝕜 (fun x ↦ f x ^ n) s z := by
   by_cases hn : 0 ≤ n
   · exact zpow_nonneg h₁f hn
   · rw [(Int.eq_neg_comm.mp rfl : n = - (- n))]
@@ -1024,61 +1039,65 @@ lemma AnalyticWithinAt.zpow {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ} (h₁
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
 -/
-lemma AnalyticWithinAt.zpow' {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ} (
-    h₁f : AnalyticWithinAt 𝕜 f s z)
-    (h₂f : f z ≠ 0) :
-    AnalyticWithinAt 𝕜 (fun x ↦ f x ^ n) s z := zpow h₁f h₂f
+lemma AnalyticWithinAt.zpow' {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ}
+    (h₁f : AnalyticWithinAt 𝕜 f s z) (h₂f : f z ≠ 0) :
+    AnalyticWithinAt 𝕜 (f ^ n) s z :=
+  zpow h₁f h₂f
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
 -/
-lemma AnalyticAt.zpow {f : E → 𝕝} {z : E} {n : ℤ} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
+lemma AnalyticAt.zpow {f : E → 𝕝} {z : E} {n : ℤ}  (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
+    AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := by
+  by_cases hn : 0 ≤ n
+  · exact zpow_nonneg h₁f hn
+  · rw [(Int.eq_neg_comm.mp rfl : n = - (- n))]
+    conv => arg 2; intro x; rw [zpow_neg]
+    exact (h₁f.zpow_nonneg (by linarith)).inv (zpow_ne_zero (-n) h₂f)
+
+/-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
+-/
+lemma AnalyticAt.zpow' {f : E → 𝕝} {z : E} {n : ℤ} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
     AnalyticAt 𝕜 (f ^ n) z := by
-  by_cases hn : 0 ≤ n
-  · exact zpow_nonneg h₁f hn
-  · rw [(Int.eq_neg_comm.mp rfl : n = - (- n))]
-    conv => arg 2; intro x; rw [zpow_neg]
-    exact (h₁f.zpow_nonneg (by linarith)).inv (zpow_ne_zero (-n) h₂f)
+  exact zpow h₁f h₂f
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
 -/
-lemma AnalyticAt.zpow' {f : E → 𝕝} {z : E} {n : ℤ}  (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
-    AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := zpow h₁f h₂f
-
-/-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
--/
-lemma AnalyticOn.zpow {f : E → 𝕝} {s : Set E} {n : ℤ}  (h₁f : AnalyticOn 𝕜 f s)
+lemma AnalyticOn.zpow {f : E → 𝕝} {s : Set E} {n : ℤ} (h₁f : AnalyticOn 𝕜 f s)
     (h₂f : ∀ z ∈ s, f z ≠ 0) :
-    AnalyticOn 𝕜 (f ^ n) s := by exact fun z hz ↦ (h₁f z hz).zpow (h₂f z hz)
+    AnalyticOn 𝕜 (fun x ↦ f x ^ n) s :=
+  fun z hz ↦ (h₁f z hz).zpow (h₂f z hz)
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
 -/
-lemma AnalyticOn.zpow' {f : E → 𝕝} {s : Set E} {n : ℤ} (h₁f : AnalyticOn 𝕜 f s)
+lemma AnalyticOn.zpow' {f : E → 𝕝} {s : Set E} {n : ℤ}  (h₁f : AnalyticOn 𝕜 f s)
     (h₂f : ∀ z ∈ s, f z ≠ 0) :
-    AnalyticOn 𝕜 (fun x ↦ f x ^ n) s := zpow h₁f h₂f
+    AnalyticOn 𝕜 (f ^ n) s := by
+  exact zpow h₁f h₂f
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
 -/
 lemma AnalyticOnNhd.zpow {f : E → 𝕝} {s : Set E} {n : ℤ} (h₁f : AnalyticOnNhd 𝕜 f s)
     (h₂f : ∀ z ∈ s, f z ≠ 0) :
-    AnalyticOnNhd 𝕜 (f ^ n) s := by exact fun z hz ↦ (h₁f z hz).zpow (h₂f z hz)
+    AnalyticOnNhd 𝕜 (fun x ↦ f x ^ n) s :=
+  fun z hz ↦ (h₁f z hz).zpow (h₂f z hz)
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
 -/
 lemma AnalyticOnNhd.zpow' {f : E → 𝕝} {s : Set E} {n : ℤ} (h₁f : AnalyticOnNhd 𝕜 f s)
     (h₂f : ∀ z ∈ s, f z ≠ 0) :
-    AnalyticOnNhd 𝕜 (fun x ↦ f x ^ n) s := zpow h₁f h₂f
+    AnalyticOnNhd 𝕜 (f ^ n) s :=
+  zpow h₁f h₂f
 
 /- A function is analytic at a point iff it is analytic after scalar
   multiplication with a non-vanishing analytic function. -/
-theorem analyticAt_iff_analytic_smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F}
-    {z : E} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
-    AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (f • g) z := by
+theorem analyticAt_iff_analytic_smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝}
+    {g : E → F} {z : E} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
+    AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (fun z ↦ f z • g z) z := by
   constructor
   · exact fun a ↦ h₁f.smul a
   · intro hprod
     rw [analyticAt_congr (g := (f⁻¹ • f) • g), smul_assoc]
-    · have := h₁f.inv h₂f
-      fun_prop
+    · exact (h₁f.inv h₂f).smul' hprod
     · filter_upwards [h₁f.continuousAt.preimage_mem_nhds (compl_singleton_mem_nhds_iff.2 h₂f)]
       intro y hy
       rw [Set.preimage_compl, Set.mem_compl_iff, Set.mem_preimage, Set.mem_singleton_iff] at hy
@@ -1088,22 +1107,23 @@ theorem analyticAt_iff_analytic_smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 �
   multiplication with a non-vanishing analytic function. -/
 theorem analyticAt_iff_analytic_smul' [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝}
     {g : E → F} {z : E} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
-    AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (fun z ↦ f z • g z) z :=
+    AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (f • g) z :=
   analyticAt_iff_analytic_smul h₁f h₂f
 
 /- A function is analytic at a point iff it is analytic after multiplication
   with a non-vanishing analytic function. -/
-theorem analyticAt_iff_analytic_mul {f g : E → 𝕝} {z : E} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
-    AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (f * g) z := by
-  rw [← smul_eq_mul]
+theorem analyticAt_iff_analytic_mul {f g : E → 𝕝} {z : E} (h₁f : AnalyticAt 𝕜 f z)
+    (h₂f : f z ≠ 0) :
+    AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (fun z ↦ f z * g z) z := by
+  simp_rw [← smul_eq_mul]
   exact analyticAt_iff_analytic_smul h₁f h₂f
 
 /- A function is analytic at a point iff it is analytic after multiplication
   with a non-vanishing analytic function. -/
 theorem analyticAt_iff_analytic_mul' {f g : E → 𝕝} {z : E} (h₁f : AnalyticAt 𝕜 f z)
     (h₂f : f z ≠ 0) :
-    AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (fun z ↦ f z * g z) z := by
-  exact analyticAt_iff_analytic_mul h₁f h₂f
+    AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (f * g) z :=
+  analyticAt_iff_analytic_mul h₁f h₂f
 
 /-- `f x / g x` is analytic away from `g x = 0` -/
 theorem AnalyticWithinAt.div {f g : E → 𝕝} {s : Set E} {x : E}
@@ -1115,13 +1135,13 @@ theorem AnalyticWithinAt.div {f g : E → 𝕝} {s : Set E} {x : E}
 @[fun_prop]
 theorem AnalyticAt.div {f g : E → 𝕝} {x : E}
     (fa : AnalyticAt 𝕜 f x) (ga : AnalyticAt 𝕜 g x) (g0 : g x ≠ 0) :
-    AnalyticAt 𝕜 (f / g) x := by
+    AnalyticAt 𝕜 (fun x ↦ f x / g x) x := by
   simp_rw [div_eq_mul_inv]; exact fa.mul (ga.inv g0)
 
 @[fun_prop]
 theorem AnalyticAt.div' {f g : E → 𝕝} {x : E}
     (fa : AnalyticAt 𝕜 f x) (ga : AnalyticAt 𝕜 g x) (g0 : g x ≠ 0) :
-    AnalyticAt 𝕜 (fun x ↦ f x / g x) x :=
+    AnalyticAt 𝕜 (f / g) x :=
   fa.div ga g0
 
 /-- `f x / g x` is analytic away from `g x = 0` -/
