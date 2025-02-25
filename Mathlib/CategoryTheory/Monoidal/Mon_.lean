@@ -589,8 +589,8 @@ theorem tensor_one (M N : Mon_ C) : (M ⊗ N).one = (λ_ (𝟙_ C)).inv ≫ (M.o
 theorem tensor_mul (M N : Mon_ C) : (M ⊗ N).mul =
     tensorμ M.X N.X M.X N.X ≫ (M.mul ⊗ N.mul) := rfl
 
-instance monMonoidal : MonoidalCategory (Mon_ C) where
-  tensorHom_def := by intros; ext; simp [tensorHom_def]
+instance monMonoidal : MonoidalCategory (Mon_ C)
+  := ofTensorComp (tensorHom_def := by intros; ext; simp [tensorHom_def])
 
 @[simps!]
 instance {M N : C} [Mon_Class M] [Mon_Class N] : Mon_Class (M ⊗ N) :=

@@ -30,15 +30,18 @@ variable (C : Type u) [Category.{v} C]
 with tensor product given by composition of functors
 (and horizontal composition of natural transformations).
 -/
-def endofunctorMonoidalCategory : MonoidalCategory (C ⥤ C) where
-  tensorObj F G := F ⋙ G
-  whiskerLeft X _ _ F := whiskerLeft X F
-  whiskerRight F X := whiskerRight F X
-  tensorHom α β := α ◫ β
-  tensorUnit := 𝟭 C
-  associator F G H := Functor.associator F G H
-  leftUnitor F := Functor.leftUnitor F
-  rightUnitor F := Functor.rightUnitor F
+def endofunctorMonoidalCategory : MonoidalCategory (C ⥤ C) :=
+  letI _ : MonoidalCategoryStruct (C ⥤ C) := {
+    tensorObj F G := F ⋙ G
+    whiskerLeft X _ _ F := whiskerLeft X F
+    whiskerRight F X := whiskerRight F X
+    tensorHom α β := α ◫ β
+    tensorUnit := 𝟭 C
+    associator F G H := Functor.associator F G H
+    leftUnitor F := Functor.leftUnitor F
+    rightUnitor F := Functor.rightUnitor F
+  };
+  MonoidalCategory.ofTensorHom
 
 open CategoryTheory.MonoidalCategory
 
