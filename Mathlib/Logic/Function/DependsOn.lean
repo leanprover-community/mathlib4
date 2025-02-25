@@ -11,7 +11,7 @@ import Mathlib.Data.Set.Function
 When dealing with a function `f : Π i, α i` depending on many variables, some operations
 may get rid of the dependency on some variables (see `Function.updateFinset` or
 `MeasureTheory.lmarginal` for example). However considering this new function
-as having a different domain with fewer points is not comfortable in lean, as it requires the use
+as having a different domain with fewer points is not comfortable in Lean, as it requires the use
 of subtypes and can lead to tedious writing.
 
 On the other hand one wants to be able for example to call some function constant with respect to
@@ -27,6 +27,18 @@ the set `s`, then `f x = f y`. This is equivalent to `Function.FactorsThrough f 
 
 * `dependsOn_iff_factorsThrough`: A function `f` depends on `s` if and only if it factors
   through `s.restrict`.
+
+## Implementation note
+
+It should be noted that when we say `DependsOn f s`, i.e. `f` only depends on `s`, it should be
+interpreted as "`f` _potentially_ depends only on variables in `s`". However it might be the case
+that `f` does not depend at all on variables in `s`, for example if `f` is constant`. On the other
+hand, `DependsOn f univ` is always true, see `dependsOn_univ`.
+
+The predicate `DependsOn f s` can also be interpreted as saying that `f` is independent of all
+the variables which are not in `s`. Although this phrasing might seem more natural, we choose to go
+with `DependsOn` because writing mathematically "independent of variables in `s`" would boil down to
+`∀ x y, (∀ i ∉ s, x i = y i) → f x = f y`, which is the same as `DependsOn f sᶜ`.
 
 ## Tags
 
