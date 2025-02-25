@@ -53,31 +53,31 @@ variable [Semiring A] [Algebra R A]
 /-- The exponential map on algebras, defined in analogy with the usual exponential series.
 It provides meaningful (non-junk) values for nilpotent elements. -/
 noncomputable def exp (a : A) : A :=
-  ∑ n ∈ Finset.range (nilpotencyClass a), (n.factorial : R)⁻¹ • (a ^ n)
+  ∑ n ∈ range (nilpotencyClass a), (n.factorial : R)⁻¹ • (a ^ n)
 
 theorem exp_eq_truncated {k : ℕ} (a : A) (h : a ^ k = 0) :
-    ∑ n ∈ Finset.range k, (Nat.factorial n : R)⁻¹ • (a ^ n) = exp R A a := by
+    ∑ n ∈ range k, (Nat.factorial n : R)⁻¹ • (a ^ n) = exp R A a := by
   have h₁ : nilpotencyClass a ≤ k := by
     exact csInf_le' h
-  have h₂ : ∑ n ∈ Finset.range k, (Nat.factorial n : R)⁻¹ • (a ^ n) =
-      ∑ n ∈ Finset.range (nilpotencyClass a), (Nat.factorial n : R)⁻¹ • (a ^ n) +
-        ∑ n ∈ Finset.Ico (nilpotencyClass a) k, (Nat.factorial n : R)⁻¹ • (a ^ n) :=
-    (Finset.sum_range_add_sum_Ico _ h₁).symm
-  suffices h₃ : ∑ n ∈ Finset.Ico (nilpotencyClass a) k, (Nat.factorial n : R)⁻¹ • (a ^ n) = 0 by
+  have h₂ : ∑ n ∈ range k, (Nat.factorial n : R)⁻¹ • (a ^ n) =
+      ∑ n ∈ range (nilpotencyClass a), (Nat.factorial n : R)⁻¹ • (a ^ n) +
+        ∑ n ∈ Ico (nilpotencyClass a) k, (Nat.factorial n : R)⁻¹ • (a ^ n) :=
+    (sum_range_add_sum_Ico _ h₁).symm
+  suffices h₃ : ∑ n ∈ Ico (nilpotencyClass a) k, (Nat.factorial n : R)⁻¹ • (a ^ n) = 0 by
     dsimp [exp]
     rw [h₂, h₃, add_zero]
-  suffices h₅ : ∀ n ∈ Finset.Ico (nilpotencyClass a) k, (Nat.factorial n : R)⁻¹ • (a ^ n) = 0 by
-    apply Finset.sum_eq_zero h₅
+  suffices h₅ : ∀ n ∈ Ico (nilpotencyClass a) k, (Nat.factorial n : R)⁻¹ • (a ^ n) = 0 by
+    apply sum_eq_zero h₅
   intro t _
   have h₆ : nilpotencyClass a ≤ t := by
-    simp_all only [Finset.mem_Ico]
+    simp_all only [mem_Ico]
   suffices h₆ : a ^ t = 0 by
-    simp_all only [Finset.mem_Ico, true_and, smul_zero]
+    simp_all only [mem_Ico, true_and, smul_zero]
   have h₈ : IsNilpotent a := by
     use k
   have h₉ := pow_nilpotencyClass h₈
   have h10 : t = nilpotencyClass a + (t - nilpotencyClass a) := by
-    simp_all only [Finset.mem_Ico, true_and, add_tsub_cancel_of_le]
+    simp_all only [mem_Ico, true_and, add_tsub_cancel_of_le]
   rw [h10]
   rw [pow_add]
   rw [h₉]
@@ -159,20 +159,20 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
 
   have e₁ :=
     calc
-      ∑ n ∈ Finset.range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n = ∑ n ∈ Finset.range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n := rfl
-      _ = ∑ n ∈ Finset.range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n := rfl
-      _ = ∑ n ∈ Finset.range (2 * N + 1), (n.factorial : R)⁻¹ • (∑ m ∈ Finset.range (n + 1), a ^ m * b ^ (n - m) * n.choose m) := by
-        apply Finset.sum_congr rfl
+      ∑ n ∈ range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n = ∑ n ∈ range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n := rfl
+      _ = ∑ n ∈ range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n := rfl
+      _ = ∑ n ∈ range (2 * N + 1), (n.factorial : R)⁻¹ • (∑ m ∈ range (n + 1), a ^ m * b ^ (n - m) * n.choose m) := by
+        apply sum_congr rfl
         intros n hn
         rw [Commute.add_pow h₁ n]
-      _ = ∑ n ∈ Finset.range (2 * N + 1), (∑ m ∈ Finset.range (n + 1), (n.factorial : R)⁻¹ • (a ^ m * b ^ (n - m) * n.choose m)) := by
-        apply Finset.sum_congr rfl
+      _ = ∑ n ∈ range (2 * N + 1), (∑ m ∈ range (n + 1), (n.factorial : R)⁻¹ • (a ^ m * b ^ (n - m) * n.choose m)) := by
+        apply sum_congr rfl
         intro n hn
-        rw [Finset.smul_sum]
-      _ = ∑ n ∈ Finset.range (2 * N + 1), (∑ m ∈ Finset.range (n + 1), ((m.factorial : R)⁻¹ * ((n - m).factorial : R)⁻¹) • (a ^ m * b ^ (n - m))) := by
-        apply Finset.sum_congr rfl
+        rw [smul_sum]
+      _ = ∑ n ∈ range (2 * N + 1), (∑ m ∈ range (n + 1), ((m.factorial : R)⁻¹ * ((n - m).factorial : R)⁻¹) • (a ^ m * b ^ (n - m))) := by
+        apply sum_congr rfl
         intro n hn
-        apply Finset.sum_congr rfl
+        apply sum_congr rfl
         intro m hm
         have hhh0 : a ^ m * b ^ (n - m) * (n.choose m) = (n.choose m) * (a ^ m * b ^ (n - m)) := by
           rw [Nat.cast_commute (n.choose m)]
@@ -187,9 +187,9 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
           norm_cast
         rw [hhh]
         suffices h11 : (n.factorial : R)⁻¹ * (n.choose m) = ((m.factorial : R)⁻¹ * ((n - m).factorial : R)⁻¹) by
-          simp_all only [Finset.mem_range, N]
+          simp_all only [mem_range, N]
         have t : m ≤ n := by
-          simp_all only [Finset.mem_range, N]
+          simp_all only [mem_range, N]
           omega
         rw [Nat.choose_eq_factorial_div_factorial t]
         rw [Nat.cast_div]
@@ -206,9 +206,9 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
         apply h1
         have h2 : ((n - m).factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero (n - m)
         apply h2
-      _ = ∑ ij ∈ (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)) |>.filter (fun ij => ij.1 ≤ ij.2), ((ij.1.factorial : R)⁻¹ * ((ij.2 - ij.1).factorial : R)⁻¹) • (a ^ ij.1 * b ^ (ij.2 - ij.1)) := by rw [reorder]
-      _ = ∑ ij ∈ (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)) |>.filter (fun ij => ij.1 + ij.2 <= 2 * N), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
-        apply Finset.sum_bij
+      _ = ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) |>.filter (fun ij => ij.1 ≤ ij.2), ((ij.1.factorial : R)⁻¹ * ((ij.2 - ij.1).factorial : R)⁻¹) • (a ^ ij.1 * b ^ (ij.2 - ij.1)) := by rw [reorder]
+      _ = ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) |>.filter (fun ij => ij.1 + ij.2 <= 2 * N), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
+        apply sum_bij
           (fun ⟨i, j⟩ _ => (i, j - i))
         simp
         intro h1 h2 h3 h4 h5
@@ -239,21 +239,21 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
         simp
   have e2 :=
     calc
-      (∑ n ∈ Finset.range (N + 1), (n.factorial : R)⁻¹ • a ^ n) * ∑ n ∈ Finset.range (N + 1), (n.factorial : R)⁻¹ • b ^ n = (∑ n ∈ Finset.range (N + 1), (n.factorial : R)⁻¹ • a ^ n) * ∑ n ∈ Finset.range (N + 1), (n.factorial : R)⁻¹ • b ^ n := by rfl
-      _ = ∑ i ∈ Finset.range (N + 1), ∑ j ∈ Finset.range (N + 1), (i.factorial : R)⁻¹ • a ^ i * (j.factorial : R)⁻¹ • b ^ j := by rw [Finset.sum_mul_sum]
-      _ = ∑ i ∈ Finset.range (N + 1), ∑ j ∈ Finset.range (N + 1), ((i.factorial : R)⁻¹ * (j.factorial : R)⁻¹) • (a ^ i * b ^ j) := by
-       apply Finset.sum_congr rfl
+      (∑ n ∈ range (N + 1), (n.factorial : R)⁻¹ • a ^ n) * ∑ n ∈ range (N + 1), (n.factorial : R)⁻¹ • b ^ n = (∑ n ∈ range (N + 1), (n.factorial : R)⁻¹ • a ^ n) * ∑ n ∈ range (N + 1), (n.factorial : R)⁻¹ • b ^ n := by rfl
+      _ = ∑ i ∈ range (N + 1), ∑ j ∈ range (N + 1), (i.factorial : R)⁻¹ • a ^ i * (j.factorial : R)⁻¹ • b ^ j := by rw [sum_mul_sum]
+      _ = ∑ i ∈ range (N + 1), ∑ j ∈ range (N + 1), ((i.factorial : R)⁻¹ * (j.factorial : R)⁻¹) • (a ^ i * b ^ j) := by
+       apply sum_congr rfl
        intro n hn
-       apply Finset.sum_congr rfl
+       apply sum_congr rfl
        intro m hm
        rw [smul_mul_assoc]
        have ppp : a ^ n * (m.factorial : R)⁻¹ • b ^ m = (m.factorial : R)⁻¹ • (a ^ n *  b ^ m) := by
-         simp_all only [Finset.product_eq_sprod, Finset.mem_range, Algebra.mul_smul_comm, N]
+         simp_all only [product_eq_sprod, mem_range, Algebra.mul_smul_comm, N]
        rw [ppp]
        rw [smul_smul]
-      _ = ∑ ij ∈ (Finset.range (N + 1)).product (Finset.range (N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
-        rw [Finset.sum_sigma']
-        apply Finset.sum_bij
+      _ = ∑ ij ∈ (range (N + 1)).product (range (N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
+        rw [sum_sigma']
+        apply sum_bij
           (fun ⟨i, j⟩ _ => (i, j))
         simp
         simp
@@ -267,13 +267,13 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
         apply h4
         simp
 
-  have e4 : ∑ ij ∈ (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
-    ∑ ij ∈ ((Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1))) with ij.1 + ij.2 ≤ 2 * N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) +
-    ∑ ij ∈ ((Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1))) with ¬ ij.1 + ij.2 ≤ 2 * N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
-      rw [Finset.sum_filter_add_sum_filter_not]
+  have e4 : ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
+    ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ij.1 + ij.2 ≤ 2 * N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) +
+    ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ ij.1 + ij.2 ≤ 2 * N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
+      rw [sum_filter_add_sum_filter_not]
 
-  have e5 : ∑ ij ∈ ((Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1))) with ¬ ij.1 + ij.2 ≤ 2 * N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 := by
-    apply Finset.sum_eq_zero
+  have e5 : ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ ij.1 + ij.2 ≤ 2 * N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 := by
+    apply sum_eq_zero
     intro i hi
     simp at hi
     obtain ⟨hi1, hi2⟩ := hi
@@ -296,13 +296,13 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
   simp at e₁
   rw [← e4] at e₁
   simp at e2
-  have e5 : ∑ ij ∈ (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
-    ∑ ij ∈ ((Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1))) with ij.1 ≤ N ∧ ij.2 ≤ N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) +
-    ∑ ij ∈ ((Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1))) with ¬ (ij.1 ≤ N ∧ ij.2 ≤ N), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
-      rw [Finset.sum_filter_add_sum_filter_not]
+  have e5 : ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
+    ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ij.1 ≤ N ∧ ij.2 ≤ N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) +
+    ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ (ij.1 ≤ N ∧ ij.2 ≤ N), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
+      rw [sum_filter_add_sum_filter_not]
 
-  have e6 : ∑ ij ∈ ((Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1))) with ¬ (ij.1 ≤ N ∧ ij.2 ≤ N), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 := by
-    apply Finset.sum_eq_zero
+  have e6 : ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ (ij.1 ≤ N ∧ ij.2 ≤ N), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 := by
+    apply sum_eq_zero
     intro i hi
     push_neg at hi
     simp at hi
@@ -327,9 +327,9 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
       simp
   rw [e6] at e5
   simp at e5
-  have lll: ∑ ij ∈ (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)) with ij.1 ≤ N ∧ ij.2 ≤ N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = ∑ ij ∈ (Finset.range (N + 1)).product (Finset.range (N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
-    let aaaaa := ((Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1))).filter (fun ij => ij.1 ≤ N ∧ ij.2 ≤ N)
-    let bbbbb := (Finset.range (N + 1)).product (Finset.range (N + 1))
+  have lll: ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) with ij.1 ≤ N ∧ ij.2 ≤ N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = ∑ ij ∈ (range (N + 1)).product (range (N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
+    let aaaaa := ((range (2 * N + 1)).product (range (2 * N + 1))).filter (fun ij => ij.1 ≤ N ∧ ij.2 ≤ N)
+    let bbbbb := (range (N + 1)).product (range (N + 1))
     have key : aaaaa = bbbbb := by
       dsimp [aaaaa, bbbbb]
       ext x
@@ -354,7 +354,7 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
       constructor
       exact Nat.le_of_lt_succ hhh1
       exact Nat.le_of_lt_succ hhh2
-    apply Finset.sum_congr
+    apply sum_congr
     simp at key
     simp
     apply key
