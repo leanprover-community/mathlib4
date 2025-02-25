@@ -15,14 +15,14 @@ We Define power objects for a category `C` with a subobject classifier and chose
 
 Let `C` be a category with a terminal object, a subobject classifier, and chosen finite products.
 
-* For an object `B : C`, `CategoryTheory.Power.PowerObject B` contains the data
+* For an object `B : C`, `CategoryTheory.PowerObject B` contains the data
   of a power object for `B`.
 
-* `CategoryTheory.Power.HasPowerObjects C` says that every object in `C` has a power object.
+* `CategoryTheory.HasPowerObjects C` says that every object in `C` has a power object.
 
 * If `C` has all power objects, then there is a functor `powFunctor C : Cᵒᵖ ⥤ C` which
   sends an object `B : C` to its power object `𝒫 B`, and sends a morphism `f : A ⟶ B` to the
-  corresponding "inverse image" morphism `inverseImage f : 𝒫 B ⟶ 𝒫 A`.
+  corresponding "inverse image" morphism `f⁻¹ : 𝒫 B ⟶ 𝒫 A`.
 
 ## Main results
 
@@ -42,6 +42,9 @@ Let `C` be a category with a terminal object, a subobject classifier, and chosen
 
 * To "curry" maps in the other coordinate, put the caret `^` before the function argument
   instead of after.
+
+* If `f : A ⟶ B` is a morphism in a category with power objects, then `f⁻¹` denotes
+  the corresponding map `inverseImage f : 𝒫 B ⟶ 𝒫 A`.
 
 ## References
 
