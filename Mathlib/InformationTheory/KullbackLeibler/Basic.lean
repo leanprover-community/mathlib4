@@ -40,11 +40,11 @@ measures `μ ≪ ν`. This also makes `kl μ ν` equal to an f-divergence: it eq
 
 -/
 
-open Real MeasureTheory Filter MeasurableSpace Set
+open Real MeasureTheory Set
 
-open scoped ENNReal NNReal Topology BigOperators
+open scoped ENNReal
 
-namespace ProbabilityTheory
+namespace InformationTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α}
 
@@ -235,4 +235,4 @@ lemma kl_eq_zero_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   have hx' : klFun (μ.rnDeriv ν x).toReal = 0 := le_antisymm hx (klFun_nonneg ENNReal.toReal_nonneg)
   rwa [klFun_eq_zero_iff ENNReal.toReal_nonneg, ENNReal.toReal_eq_one_iff] at hx'
 
-end ProbabilityTheory
+end InformationTheory
