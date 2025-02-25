@@ -53,15 +53,15 @@ variable [Semiring A] [Algebra R A]
 /-- The exponential map on algebras, defined in analogy with the usual exponential series.
 It provides meaningful (non-junk) values for nilpotent elements. -/
 noncomputable def exp (a : A) : A :=
-  ∑ n ∈ range (nilpotencyClass a), (n.factorial : R)⁻¹ • (a ^ n)
+  ∑ i ∈ range (nilpotencyClass a), (i.factorial : R)⁻¹ • (a ^ i)
 
 theorem exp_eq_truncated {k : ℕ} (a : A) (h : a ^ k = 0) :
-    ∑ n ∈ range k, (Nat.factorial n : R)⁻¹ • (a ^ n) = exp R A a := by
-  have h₁ : ∑ n ∈ range k, (Nat.factorial n : R)⁻¹ • (a ^ n) =
-      ∑ n ∈ range (nilpotencyClass a), (Nat.factorial n : R)⁻¹ • (a ^ n) +
-        ∑ n ∈ Ico (nilpotencyClass a) k, (Nat.factorial n : R)⁻¹ • (a ^ n) :=
+    ∑ i ∈ range k, (i.factorial : R)⁻¹ • (a ^ i) = exp R A a := by
+  have h₁ : ∑ i ∈ range k, (i.factorial : R)⁻¹ • (a ^ i) =
+      ∑ i ∈ range (nilpotencyClass a), (i.factorial : R)⁻¹ • (a ^ i) +
+        ∑ i ∈ Ico (nilpotencyClass a) k, (i.factorial : R)⁻¹ • (a ^ i) :=
     (sum_range_add_sum_Ico _ (csInf_le' h)).symm
-  suffices ∑ n ∈ Ico (nilpotencyClass a) k, (Nat.factorial n : R)⁻¹ • (a ^ n) = 0 by
+  suffices ∑ i ∈ Ico (nilpotencyClass a) k, (i.factorial : R)⁻¹ • (a ^ i) = 0 by
     dsimp [exp]
     rw [h₁, this, add_zero]
   exact sum_eq_zero fun _ h₂ => by
@@ -90,14 +90,14 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
   rw [← exp_eq_truncated R A (a + b) h₆, ← exp_eq_truncated R A a h₄, ← exp_eq_truncated R A b h₅]
   have s₁ :=
     calc
-      ∑ n ∈ range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n
-          = ∑ n ∈ range (2 * N + 1), (n.factorial : R)⁻¹ •
-            (∑ m ∈ range (n + 1), a ^ m * b ^ (n - m) * n.choose m) := by
+      ∑ i ∈ range (2 * N + 1), (i.factorial : R)⁻¹ • (a + b) ^ i
+          = ∑ i ∈ range (2 * N + 1), (i.factorial : R)⁻¹ •
+            (∑ j ∈ range (i + 1), a ^ j * b ^ (i - j) * i.choose j) := by
         apply sum_congr rfl
         intros n hn
         rw [Commute.add_pow h₁ n]
-      _ = ∑ n ∈ range (2 * N + 1), (∑ m ∈ range (n + 1), ((m.factorial : R)⁻¹ *
-            ((n - m).factorial : R)⁻¹) • (a ^ m * b ^ (n - m))) := by
+      _ = ∑ i ∈ range (2 * N + 1), (∑ j ∈ range (i + 1), ((j.factorial : R)⁻¹ *
+            ((i - j).factorial : R)⁻¹) • (a ^ j * b ^ (i - j))) := by
         apply sum_congr rfl
         intro n hn
         rw [smul_sum]
@@ -127,7 +127,7 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
         apply sum_bij (fun ⟨i, j⟩ _ => (j, i - j))
         · simp only [mem_sigma, mem_range, product_eq_sprod, mem_filter, mem_product, and_imp]
           intro _ _ _
-          try omega
+          omega
         · simp only [mem_sigma, mem_range, Prod.mk.injEq, and_imp]
           (intro h1 h2 h3 h4 h5 h6 h7 h8; exact Sigma.ext (by omega) (heq_of_eq h7))
         · simp only [product_eq_sprod, mem_filter, mem_product, mem_range, mem_sigma, exists_prop,
@@ -139,7 +139,6 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
     apply sum_eq_zero
     intro i hi
     simp only [mem_filter] at hi
-    obtain ⟨hi1, hi2⟩ := hi
     cases le_or_lt (N + 1) i.1 with
       | inl h => rw [pow_eq_zero_of_le h h₄, zero_mul, smul_zero]
       | inr _ => rw [pow_eq_zero_of_le (by linarith) h₅, mul_zero, smul_zero]
@@ -186,8 +185,8 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
   rw [split₃] at s₁
   have s₂ :=
     calc
-      (∑ n ∈ range (N + 1), (n.factorial : R)⁻¹ • a ^ n) * ∑ n ∈ range (N + 1),
-        (n.factorial : R)⁻¹ • b ^ n =
+      (∑ i ∈ range (N + 1), (i.factorial : R)⁻¹ • a ^ i) * ∑ i ∈ range (N + 1),
+        (i.factorial : R)⁻¹ • b ^ i =
       ∑ i ∈ range (N + 1), ∑ j ∈ range (N + 1), ((i.factorial : R)⁻¹ * (j.factorial : R)⁻¹) •
         (a ^ i * b ^ j) := by
         rw [sum_mul_sum]
