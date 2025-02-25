@@ -37,51 +37,35 @@ Furthermore, in case `A` is a ring (rather than a general semiring) and `a` is n
 algebra, exponential map, nilpotent
 -/
 
+universe u v
+
 namespace Algebra
 
-variable (R : Type*) [Field R]
-variable (A : Type*)
+variable (R : Type u) [Field R]
+variable (A : Type v)
 
-section Semiring
+open Finset
+
+section SemiringAlgebras
 
 variable [Semiring A] [Algebra R A]
 
-theorem reorder (N : ℕ) {f : ℕ → ℕ → A} : ∑ j ∈ Finset.range (2 * N + 1), ∑ i ∈ Finset.range (j + 1), f i j = ∑ ij ∈ (Finset.range (2 * N + 1)).product (Finset.range (2 * N + 1)) |>.filter (fun ij => ij.1 ≤ ij.2), f ij.1 ij.2 := by
-  rw [Finset.sum_sigma']
-  apply Finset.sum_bij
-    (fun ⟨j, i⟩ _ => (i, j))
-  simp
-  intro h1
-  intro h2
-  intro h3
-  constructor
-  constructor
-  · exact Nat.lt_of_lt_of_le h3 h2
-  · exact h2
-  · exact Nat.le_of_lt_succ h3
-  simp
-  intro h4
-  intro h5
-  intro h6
-  intro h7
-  intro h8
-  intro h9
-  intro h10
-  intro h11
-  · refine Sigma.ext h11 ?_
-    exact heq_of_eq h10
-  simp
-  intro h1
-  intro h2
-  intro h3
-  intro h4
-  intro h5
-  use h2, h1
-  constructor
-  constructor
-  exact h4
-  exact Nat.lt_add_one_of_le h5
-  exact Prod.mk.inj_iff.mp rfl
+theorem reorder (N : ℕ) {f : ℕ → ℕ → A} :
+    ∑ j ∈ range (2 * N + 1), ∑ i ∈ range (j + 1), f i j =
+    ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) with ij.1 ≤ ij.2, f ij.1 ij.2 := by
+  rw [sum_sigma']
+  apply sum_bij (fun ⟨j, i⟩ _ => (i, j))
+  · simp only [mem_sigma, mem_range, product_eq_sprod, mem_filter, mem_product, and_imp]
+    intro h₁ h₂ h₃
+    exact ⟨⟨Nat.lt_of_lt_of_le h₃ h₂, h₂⟩, Nat.le_of_lt_succ h₃⟩
+  · simp only [mem_sigma, mem_range, Prod.mk.injEq, and_imp]
+    intro _ _ _ _ _ _ h₁ h₂
+    exact Sigma.ext h₂ (heq_of_eq h₁)
+  · simp only [product_eq_sprod, mem_filter, mem_product, mem_range, mem_sigma, exists_prop,
+      Sigma.exists, and_imp, Prod.forall, Prod.mk.injEq]
+    intro h1 h2 h3 h4 h5
+    use h2, h1
+    exact ⟨⟨h4, Nat.lt_add_one_of_le h5⟩, Prod.mk.inj_iff.mp rfl⟩
   simp
 
 noncomputable def exp (a : A) : A :=
@@ -379,9 +363,9 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
   rw [e2.symm] at e₁
   apply e₁
 
-end Semiring
+end SemiringAlgebras
 
-section Ring
+section RingAlgebras
 
 variable [CharZero R]
 variable [Ring A] [Algebra R A]
@@ -409,6 +393,6 @@ theorem exp_of_nilpotent_is_unit (a : A) (h : IsNilpotent a) : IsUnit (exp R A a
   rw [exp_zero_eq_one R A] at h₅
   apply h₅.symm
 
-end Ring
+end RingAlgebras
 
 end Algebra
