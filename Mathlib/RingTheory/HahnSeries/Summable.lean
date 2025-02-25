@@ -692,14 +692,14 @@ theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1)
       simp only [AddUnits.neg_eq_val_neg, ← leadingCoeff_eq, single_mul_single,
         IsAddUnit.val_neg_add, hr, single_zero_one]
     simp only [hrx, sub_self, orderTop_zero, WithTop.top_pos]
-  have hr' : IsRegular r := IsUnit.isRegular <| isUnit_of_mul_eq_one r x.leadingCoeff hr
-  have hy' : 0 < (single (IsAddUnit.addUnit hxo).neg r * y).order := by
-    rw [(order_mul_single_of_isRegular hr' hy)]
-    refine pos_of_lt_add_right (a := x.order) ?_
-    rw [← add_assoc, add_comm x.order, AddUnits.neg_eq_val_neg, IsAddUnit.val_neg_add, zero_add]
-    exact order_lt_order_of_eq_add_single (sub_add_cancel x _).symm hy
-  rw [one_minus_single_neg_mul hr (sub_add_cancel x _).symm, orderTop_neg]
-  exact zero_lt_orderTop_of_order hy'
+  · have hr' : IsRegular r := IsUnit.isRegular <| isUnit_of_mul_eq_one r x.leadingCoeff hr
+    have hy' : 0 < (single (IsAddUnit.addUnit hxo).neg r * y).order := by
+      rw [(order_mul_single_of_isRegular hr' hy)]
+      refine pos_of_lt_add_right (a := x.order) ?_
+      rw [← add_assoc, add_comm x.order, AddUnits.neg_eq_val_neg, IsAddUnit.val_neg_add, zero_add]
+      exact order_lt_order_of_eq_add_single (sub_add_cancel x _).symm hy
+    rw [one_minus_single_neg_mul hr (sub_add_cancel x _).symm, orderTop_neg]
+    exact zero_lt_orderTop_of_order hy'
 
 theorem isUnit_of_isUnit_leadingCoeff_AddUnitOrder {x : HahnSeries Γ R} (hx : IsUnit x.leadingCoeff)
     (hxo : IsAddUnit x.order) : IsUnit x := by
@@ -715,27 +715,6 @@ end CommRing
 section IsDomain
 
 variable [LinearOrderedAddCommGroup Γ] [CommRing R] [IsDomain R]
-
-theorem unit_aux' (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1) :
-    0 < (1 - single (-x.order) r * x).orderTop := by
-  by_cases hx : x = 0; · simp_all [hx]
-  have hrz : r ≠ 0 := by
-    intro h
-    rw [h, zero_mul] at hr
-    exact (zero_ne_one' R) hr
-  refine lt_of_le_of_ne (le_trans ?_ min_orderTop_le_orderTop_sub) fun h => ?_
-  · refine le_min (by rw [orderTop_one]) ?_
-    refine le_trans ?_ orderTop_add_orderTop_le_orderTop_mul
-    by_cases h : x = 0; · simp [h]
-    rw [← order_eq_orderTop_of_ne h, orderTop_single
-      (fun _ => by simp_all only [zero_mul, zero_ne_one]), ← @WithTop.coe_add,
-      WithTop.coe_nonneg, neg_add_cancel]
-  · apply coeff_orderTop_ne h.symm
-    simp only [C_apply, single_mul_single, zero_add, mul_one, coeff_sub', Pi.sub_apply, coeff_one,
-      ↓reduceIte]
-    have hrc := coeff_mul_order_add_order ((single (-x.order)) r) x
-    rw [order_single hrz, leadingCoeff_of_single, neg_add_cancel, hr] at hrc
-    rw [hrc, sub_self]
 
 theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.leadingCoeff) := by
   constructor

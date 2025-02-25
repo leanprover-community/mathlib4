@@ -250,9 +250,6 @@ theorem order_lt_order_of_eq_add_single {R} {Γ} [LinearOrder Γ] [Zero Γ] [Add
       simpa [this] using hg
   exact Set.IsWF.min_le_min_of_subset this
 
-  --rw [← WithTop.coe_lt_coe, order_eq_orderTop_of_ne hy, order_eq_orderTop_of_ne]
-
-
 /-- `single` as an additive monoid/group homomorphism -/
 @[simps!]
 def single.addMonoidHom (a : Γ) : R →+ HahnSeries Γ R :=
