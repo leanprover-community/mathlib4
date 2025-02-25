@@ -114,23 +114,15 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
     exp R A (a + b) = exp R A a * exp R A b := by
   obtain ⟨n₁, hn₁⟩ := h₂
   obtain ⟨n₂, hn₂⟩ := h₃
-  let N :=  n₁ ⊔ n₂
-  have huh₁ : n₁ ≤ N + 1 := by
-    refine Nat.le_add_right_of_le ?_
-    simp_all only [le_sup_left, N]
-  have huh₂ : n₂ ≤ N + 1 := by
-    refine Nat.le_add_right_of_le ?_
-    simp_all only [le_sup_right, N]
-  have h₃ : a ^ (N + 1) = 0 := pow_eq_zero_of_le huh₁ hn₁
-  have h₄ : b ^ (N + 1) = 0 := pow_eq_zero_of_le huh₂ hn₂
-  have help : (N + 1) + (N + 1) <= (2 * N + 1) + 1 := by
-    calc (N + 1) + (N + 1) = 2 * (N + 1) := by rw [← Nat.two_mul (N + 1)]
-    _ = 2 * N + 2 := by rw [Nat.mul_add_one]
-    _ = (2 * N + 1) + 1 := by rw [Nat.add_assoc]
-    _ ≤ (2 * N + 1) + 1 := by exact le_refl (2 * N + 2)
-  have h₅ : (a + b) ^ (2 * N + 1) = 0 :=
-    Commute.add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero h₁ h₃ h₄ help
-  rw [← exp_eq_truncated R A (a + b) h₅, ← exp_eq_truncated R A a h₃, ← exp_eq_truncated R A b h₄]
+  let N := n₁ ⊔ n₂
+  have le₁ : n₁ ≤ N + 1 := by omega
+  have le₂ : n₂ ≤ N + 1 := by omega
+  have h₄ : a ^ (N + 1) = 0 := pow_eq_zero_of_le le₁ hn₁
+  have h₅ : b ^ (N + 1) = 0 := pow_eq_zero_of_le le₂ hn₂
+  have le₃ : (N + 1) + (N + 1) ≤ (2 * N + 1) + 1 := by omega
+  have h₆ : (a + b) ^ (2 * N + 1) = 0 :=
+    Commute.add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero h₁ h₄ h₅ le₃
+  rw [← exp_eq_truncated R A (a + b) h₆, ← exp_eq_truncated R A a h₄, ← exp_eq_truncated R A b h₅]
 
  -- have  hh (n : ℕ) (a : A) : n * a = (n : R) • a := by
   --  norm_cast
@@ -138,24 +130,19 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
 
   have e₁ :=
     calc
-      ∑ n ∈ range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n = ∑ n ∈ range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n := rfl
-      _ = ∑ n ∈ range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n := rfl
-      _ = ∑ n ∈ range (2 * N + 1), (n.factorial : R)⁻¹ • (∑ m ∈ range (n + 1), a ^ m * b ^ (n - m) * n.choose m) := by
+      ∑ n ∈ range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n
+        = ∑ n ∈ range (2 * N + 1), (n.factorial : R)⁻¹ • (∑ m ∈ range (n + 1), a ^ m * b ^ (n - m) * n.choose m) := by
         apply sum_congr rfl
         intros n hn
         rw [Commute.add_pow h₁ n]
-      _ = ∑ n ∈ range (2 * N + 1), (∑ m ∈ range (n + 1), (n.factorial : R)⁻¹ • (a ^ m * b ^ (n - m) * n.choose m)) := by
-        apply sum_congr rfl
-        intro n hn
-        rw [smul_sum]
       _ = ∑ n ∈ range (2 * N + 1), (∑ m ∈ range (n + 1), ((m.factorial : R)⁻¹ * ((n - m).factorial : R)⁻¹) • (a ^ m * b ^ (n - m))) := by
         apply sum_congr rfl
         intro n hn
+        rw [smul_sum]
         apply sum_congr rfl
         intro m hm
         have hhh0 : a ^ m * b ^ (n - m) * (n.choose m) = (n.choose m) * (a ^ m * b ^ (n - m)) := by
           rw [Nat.cast_commute (n.choose m)]
-
         have  hh (n : ℕ) (a : A) : n * a = (n : R) • a := by
           norm_cast
           simp
@@ -216,6 +203,7 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
         rfl
         omega
         simp
+
   have e2 :=
     calc
       (∑ n ∈ range (N + 1), (n.factorial : R)⁻¹ • a ^ n) * ∑ n ∈ range (N + 1), (n.factorial : R)⁻¹ • b ^ n = (∑ n ∈ range (N + 1), (n.factorial : R)⁻¹ • a ^ n) * ∑ n ∈ range (N + 1), (n.factorial : R)⁻¹ • b ^ n := by rfl
@@ -263,11 +251,11 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
       linarith
     cases help with
     | inl h1 =>
-      have qqq : a ^ (i.1) = 0 := pow_eq_zero_of_le h1 h₃
+      have qqq : a ^ (i.1) = 0 := pow_eq_zero_of_le h1 h₄
       rw [qqq]
       simp
     | inr h1 =>
-      have qqq : b ^ (i.2) = 0 := pow_eq_zero_of_le h1 h₄
+      have qqq : b ^ (i.2) = 0 := pow_eq_zero_of_le h1 h₅
       rw [qqq]
       simp
   rw [e5] at e4
@@ -297,11 +285,11 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
       linarith
     cases rrr with
     | inl h1 =>
-      have qqq : a ^ (i.1) = 0 := pow_eq_zero_of_le h1 h₃
+      have qqq : a ^ (i.1) = 0 := pow_eq_zero_of_le h1 h₄
       rw [qqq]
       simp
     | inr h1 =>
-      have qqq : b ^ (i.2) = 0 := pow_eq_zero_of_le h1 h₄
+      have qqq : b ^ (i.2) = 0 := pow_eq_zero_of_le h1 h₅
       rw [qqq]
       simp
   rw [e6] at e5
