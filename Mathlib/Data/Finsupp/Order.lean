@@ -237,10 +237,10 @@ lemma support_monotone : Monotone (support (α := ι) (M := α)) :=
 
 lemma support_mono (hfg : f ≤ g) : f.support ⊆ g.support := support_monotone hfg
 
-instance decidableLE [DecidableRel (@LE.le α _)] : DecidableRel (@LE.le (ι →₀ α) _) := fun f g =>
+instance decidableLE [DecidableLE α] : DecidableLE (ι →₀ α) := fun f g =>
   decidable_of_iff _ (le_iff f g).symm
 
-instance decidableLT [DecidableRel (@LE.le α _)] : DecidableRel (@LT.lt (ι →₀ α) _) :=
+instance decidableLT [DecidableLE α] : DecidableLT (ι →₀ α) :=
   decidableLTOfDecidableLE
 
 @[simp]
