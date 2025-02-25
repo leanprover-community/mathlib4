@@ -50,24 +50,8 @@ section SemiringAlgebras
 
 variable [Semiring A] [Algebra R A]
 
-theorem reorder (N : ℕ) {f : ℕ → ℕ → A} :
-    ∑ j ∈ range (2 * N + 1), ∑ i ∈ range (j + 1), f i j =
-    ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) with ij.1 ≤ ij.2, f ij.1 ij.2 := by
-  rw [sum_sigma']
-  apply sum_bij (fun ⟨j, i⟩ _ => (i, j))
-  · simp only [mem_sigma, mem_range, product_eq_sprod, mem_filter, mem_product, and_imp]
-    intro h₁ h₂ h₃
-    exact ⟨⟨Nat.lt_of_lt_of_le h₃ h₂, h₂⟩, Nat.le_of_lt_succ h₃⟩
-  · simp only [mem_sigma, mem_range, Prod.mk.injEq, and_imp]
-    intro _ _ _ _ _ _ h₁ h₂
-    exact Sigma.ext h₂ (heq_of_eq h₁)
-  · simp only [product_eq_sprod, mem_filter, mem_product, mem_range, mem_sigma, exists_prop,
-      Sigma.exists, and_imp, Prod.forall, Prod.mk.injEq]
-    intro h1 h2 h3 h4 h5
-    use h2, h1
-    exact ⟨⟨h4, Nat.lt_add_one_of_le h5⟩, Prod.mk.inj_iff.mp rfl⟩
-  simp
-
+/-- The exponential map on algebras, defined in analogy with the usual exponential series.
+It provides meaningful (non-junk) values for nilpotent elements. -/
 noncomputable def exp (a : A) : A :=
   ∑ n ∈ Finset.range (nilpotencyClass a), (n.factorial : R)⁻¹ • (a ^ n)
 
@@ -126,6 +110,25 @@ variable [CharZero R]
 theorem ttttt (n : ℕ) : (n.factorial : R)⁻¹  * (n.factorial : R) = 1 := by
   have h1 : (n.factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero n
   simp_all only [ne_eq, Nat.cast_eq_zero, not_false_eq_true, inv_mul_cancel₀]
+
+
+theorem reorder (N : ℕ) {f : ℕ → ℕ → A} :
+    ∑ j ∈ range (2 * N + 1), ∑ i ∈ range (j + 1), f i j =
+    ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) with ij.1 ≤ ij.2, f ij.1 ij.2 := by
+  rw [sum_sigma']
+  apply sum_bij (fun ⟨j, i⟩ _ => (i, j))
+  · simp only [mem_sigma, mem_range, product_eq_sprod, mem_filter, mem_product, and_imp]
+    intro h₁ h₂ h₃
+    exact ⟨⟨Nat.lt_of_lt_of_le h₃ h₂, h₂⟩, Nat.le_of_lt_succ h₃⟩
+  · simp only [mem_sigma, mem_range, Prod.mk.injEq, and_imp]
+    intro _ _ _ _ _ _ h₁ h₂
+    exact Sigma.ext h₂ (heq_of_eq h₁)
+  · simp only [product_eq_sprod, mem_filter, mem_product, mem_range, mem_sigma, exists_prop,
+      Sigma.exists, and_imp, Prod.forall, Prod.mk.injEq]
+    intro h1 h2 h3 h4 h5
+    use h2, h1
+    exact ⟨⟨h4, Nat.lt_add_one_of_le h5⟩, Prod.mk.inj_iff.mp rfl⟩
+  simp
 
 
 theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a) (h₃ : IsNilpotent b) :
