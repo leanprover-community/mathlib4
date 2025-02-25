@@ -3,10 +3,11 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Data.Finset.Prod
+import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Data.SetLike.Basic
 
 /-!
 # The symmetric square
@@ -638,8 +639,8 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
   left_inv := by apply Sym2.ind; aesop (add norm unfold [Sym2.fromVector])
   right_inv x := by
     refine x.recOnSubsingleton fun x => ?_
-    cases' x with x hx
-    cases' x with _ x
+    obtain ⟨x, hx⟩ := x
+    obtain - | ⟨-, x⟩ := x
     · simp at hx
     rcases x with - | ⟨_, x⟩
     · simp at hx
@@ -776,5 +777,21 @@ instance [Nontrivial α] : Nontrivial (Sym2 α) :=
 -- TODO: use a sort order if available, https://github.com/leanprover-community/mathlib/issues/18166
 unsafe instance [Repr α] : Repr (Sym2 α) where
   reprPrec s _ := f!"s({repr s.unquot.1}, {repr s.unquot.2})"
+
+lemma lift_smul_lift {α R N} [SMul R N] (f : { f : α → α → R // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ })
+    (g : { g : α → α → N // ∀ a₁ a₂, g a₁ a₂ = g a₂ a₁ }) :
+    lift f • lift g = lift ⟨f.val • g.val, fun _ _ => by
+      rw [Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', f.prop, g.prop]⟩ := by
+  ext ⟨i,j⟩
+  simp_all only [Pi.smul_apply', lift_mk]
+
+/--
+Multiplication as a function from `Sym2`.
+-/
+def mul {M} [CommMagma M] : Sym2 M → M := lift ⟨(· * ·), mul_comm⟩
+
+@[simp]
+lemma mul_mk {M} [CommMagma M] (xy : M × M) :
+    mul (.mk xy) = xy.1 * xy.2 := rfl
 
 end Sym2

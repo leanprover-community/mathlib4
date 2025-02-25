@@ -592,7 +592,7 @@ theorem stabilizer_orbit_eq {a : X} {H : Subgroup G} (hH : stabilizer G a ≤ H)
 variable (G)
 
 /-- Order equivalence between blocks in `X` containing a point `a`
- and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5)-/
+ and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5) -/
 @[to_additive
   "Order equivalence between blocks in `X` containing a point `a`
  and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5)"]
@@ -734,10 +734,10 @@ theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
    are just `k + ℕ`, for `k ≤ 0`, and the corresponding intersection is `ℕ`, which is not a block.
    (Remark by Thomas Browning) -/
 /-- The intersection of the translates of a *finite* subset which contain a given point
-is a block (Wielandt, th. 7.3)-/
+is a block (Wielandt, th. 7.3). -/
 @[to_additive
   "The intersection of the translates of a *finite* subset which contain a given point
-  is a block (Wielandt, th. 7.3)"]
+  is a block (Wielandt, th. 7.3)."]
 theorem of_subset (a : X) (hfB : B.Finite) :
     IsBlock G (⋂ (k : G) (_ : a ∈ k • B), k • B) := by
   let B' := ⋂ (k : G) (_ : a ∈ k • B), k • B

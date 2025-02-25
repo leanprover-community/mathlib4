@@ -397,7 +397,7 @@ theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
 a `Finset (Set α)` such that `K j := hC.disjointOfUnion hJ` are disjoint
 and `⋃₀ K j ⊆ j`, for `j ∈ J`.
 Using these we write `⋃₀ J` as a disjoint union `⋃₀ J = ⋃₀ ⋃ x ∈ J, (K x)`.
-See `MeasureTheory.IsSetSemiring.disjointOfUnion_props`.-/
+See `MeasureTheory.IsSetSemiring.disjointOfUnion_props`. -/
 noncomputable def disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (j : Set α) :=
   (hC.disjointOfUnion_props hJ).choose j
 

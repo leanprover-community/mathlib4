@@ -298,7 +298,7 @@ theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by
 
 @[elab_as_elim]
 protected theorem ind_mk {C : Real → Prop} (x : Real) (h : ∀ y, C (mk y)) : C x := by
-  cases' x with x
+  obtain ⟨x⟩ := x
   induction' x using Quot.induction_on with x
   exact h x
 
