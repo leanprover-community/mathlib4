@@ -214,6 +214,10 @@ def mkQ : M →ₗ[R] M ⧸ p where
 theorem Quotient.induction_on' {C : M ⧸ p → Prop} (x : M ⧸ p) (H : ∀ z, C (mkQ p z)) :
     C x := Quotient.inductionOn' x H
 
+theorem Quotient.quot_hom_ext' (f g : (M ⧸ p) →ₗ[R] M₂) (h : ∀ x : M, f (mkQ p x) = g (mkQ p x)) :
+    f = g :=
+  LinearMap.ext fun x => Submodule.Quotient.induction_on' _ x h
+
 theorem mkQ_apply (x : M) : p.mkQ x = Quotient.mk x :=
   rfl
 
@@ -267,10 +271,14 @@ def quotEquivOfEq (h : p = p') : (M ⧸ p) ≃ₗ[R] M ⧸ p' :=
       rintro x ⟨y⟩
       rfl }
 
-@[simp]
 theorem quotEquivOfEq_mk (h : p = p') (x : M) :
     Submodule.quotEquivOfEq p p' h (Submodule.Quotient.mk x) =
       (Submodule.Quotient.mk x) :=
+  rfl
+
+@[simp]
+theorem quotEquivOfEq_mkQ (h : p = p') (x : M) :
+    Submodule.quotEquivOfEq p p' h (mkQ p x) = (mkQ p' x) :=
   rfl
 
 end Submodule

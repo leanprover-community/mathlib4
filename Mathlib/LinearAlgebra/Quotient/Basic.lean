@@ -73,7 +73,7 @@ theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
 end Quotient
 
 instance QuotientBot.infinite [Infinite M] : Infinite (M ⧸ (⊥ : Submodule R M)) :=
-  Infinite.of_injective Submodule.Quotient.mk fun _x _y h =>
+  Infinite.of_injective (Submodule.mkQ (⊥ : Submodule R M)) fun _x _y h =>
     sub_eq_zero.mp <| (Submodule.Quotient.eq ⊥).mp h
 
 instance QuotientTop.unique : Unique (M ⧸ (⊤ : Submodule R M)) where
@@ -134,7 +134,6 @@ theorem liftQ_apply (f : M →ₛₗ[τ₁₂] M₂) {h} (x : M) : p.liftQ f h (
 @[simp]
 theorem liftQ_apply_mkQ (f : M →ₛₗ[τ₁₂] M₂) {h} (x : M) : p.liftQ f h (mkQ p x) = f x :=
   rfl
-
 
 @[simp]
 theorem liftQ_mkQ (f : M →ₛₗ[τ₁₂] M₂) (h) : (p.liftQ f h).comp p.mkQ = f := by ext; rfl
@@ -240,7 +239,7 @@ theorem comap_liftQ (f : M →ₛₗ[τ₁₂] M₂) (h) : q.comap (p.liftQ f h)
 theorem map_liftQ [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (h) (q : Submodule R (M ⧸ p)) :
     q.map (p.liftQ f h) = (q.comap p.mkQ).map f :=
   le_antisymm (by rintro _ ⟨⟨x⟩, hxq, rfl⟩; exact ⟨x, hxq, rfl⟩)
-    (by rintro _ ⟨x, hxq, rfl⟩; exact ⟨Quotient.mk x, hxq, rfl⟩)
+    (by rintro _ ⟨x, hxq, rfl⟩; exact ⟨mkQ p x, hxq, rfl⟩)
 
 theorem ker_liftQ (f : M →ₛₗ[τ₁₂] M₂) (h) : ker (p.liftQ f h) = (ker f).map (mkQ p) :=
   comap_liftQ _ _ _ _
@@ -290,9 +289,8 @@ theorem factor_comp_apply (H1 : p ≤ p') (H2 : p' ≤ p'') (x : M ⧸ p) :
   simp
 
 lemma factor_surjective (H : p ≤ p') : Function.Surjective (factor H) := by
-  intro x
-  use Quotient.mk x.out
-  exact Quotient.out_eq x
+  rintro ⟨x⟩
+  exact ⟨mkQ p x, rfl⟩
 
 end
 
