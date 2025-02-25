@@ -3,7 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 -/
-import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.Algebra.Algebra.Tower
+import Mathlib.LinearAlgebra.LinearIndependent.Basic
 import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
