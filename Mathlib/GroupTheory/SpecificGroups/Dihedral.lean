@@ -118,10 +118,7 @@ theorem r_pow (i : ZMod n) (k : ℕ) : (r i)^k = r (i * k : ZMod n) := by
 
 @[simp]
 theorem r_zpow (i : ZMod n) (k : ℤ) : (r i)^k = r (i * k : ZMod n) := by
-  cases k
-  · simp [r_pow]
-  · simp [r_pow]
-    ring
+  cases k <;> simp [r_pow, neg_mul_eq_mul_neg]
 
 private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where
   invFun
