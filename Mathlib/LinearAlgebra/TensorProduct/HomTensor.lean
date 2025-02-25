@@ -116,7 +116,7 @@ lemma homTensorHomMap_inj : Function.Injective
     (homTensorHomEquiv R M' N' P Q).injective <|
     tensor_inclusion1_inj _ _ _ _ _ _ _ _ _ fg _ _ fg'
 
-private lemma comm_sqaure3: (homTensorHomEquiv R _ _ _ _).toLinearMap ∘ₗ
+private lemma comm_square3 : (homTensorHomEquiv R _ _ _ _).toLinearMap ∘ₗ
     (TensorProduct.map (f0.lcomp R P) (f0'.lcomp R Q)) ∘ₗ
     (TensorProduct.map (g0.lcomp R P) (g0'.lcomp R Q)) =
     (TensorProduct.map f0 f0').lcomp _ _ ∘ₗ (TensorProduct.map g0 g0').lcomp _ _ ∘ₗ
