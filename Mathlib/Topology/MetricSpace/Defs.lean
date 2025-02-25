@@ -245,8 +245,6 @@ section
 
 variable [PseudoMetricSpace X]
 
-instance : PseudoMetricSpace Xᵒᵈ := ‹PseudoMetricSpace X›
-
 @[simp] theorem nndist_toDual (a b : X) : nndist (toDual a) (toDual b) = nndist a b := rfl
 
 @[simp] theorem nndist_ofDual (a b : Xᵒᵈ) : nndist (ofDual a) (ofDual b) = nndist a b := rfl

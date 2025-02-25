@@ -205,27 +205,3 @@ instance SeparationQuotient.instMetricSpace {α : Type u} [PseudoMetricSpace α]
     surjective_mk.forall₂.2 dist_edist
 
 end EqRel
-
-/-!
-### `Additive`, `Multiplicative`
-
-The distance on those type synonyms is inherited without change.
--/
-
-open Additive Multiplicative
-
-instance [MetricSpace X] : MetricSpace (Additive X) := ‹MetricSpace X›
-instance [MetricSpace X] : MetricSpace (Multiplicative X) := ‹MetricSpace X›
-
-instance MulOpposite.instMetricSpace [MetricSpace X] : MetricSpace Xᵐᵒᵖ :=
-  MetricSpace.induced unop unop_injective ‹_›
-
-/-!
-### Order dual
-
-The distance on this type synonym is inherited without change.
--/
-
-open OrderDual
-
-instance [MetricSpace X] : MetricSpace Xᵒᵈ := ‹MetricSpace X›
