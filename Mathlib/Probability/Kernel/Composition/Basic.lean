@@ -1529,16 +1529,6 @@ lemma prodAssoc_prod (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel α γ
   rw [map_apply _ (by fun_prop), prod_apply, prod_apply, Measure.prodAssoc_prod, prod_apply,
     prod_apply]
 
-lemma fst_prod_comp_id_prod (κ : Kernel α β) [IsSFiniteKernel κ]
-    (η : Kernel (α × β) γ) [IsSFiniteKernel η] :
-    ((deterministic Prod.fst measurable_fst) ×ₖ η) ∘ₖ (Kernel.id ×ₖ κ) =
-    Kernel.id ×ₖ (η ∘ₖ (Kernel.id ×ₖ κ)) := by
-  ext x s ms
-  simp_rw [comp_apply' _ _ _ ms, lintegral_id_prod (Kernel.measurable_coe _ ms),
-    deterministic_prod_apply' _ _ _ ms, id_prod_apply' _ _ ms,
-    comp_apply' _ _ _ (measurable_prod_mk_left ms),
-    lintegral_id_prod (η.measurable_coe (measurable_prod_mk_left ms))]
-
 end Prod
 end Kernel
 end ProbabilityTheory
