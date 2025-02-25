@@ -3,13 +3,11 @@ Copyright (c) 2023 Junyan Xu, Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Algebra.Group.Action.End
 import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Set.Card
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
-import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Subgroup of `Equiv.Perm α` preserving a function
@@ -120,7 +118,7 @@ theorem stabilizer_ncard [Finite α] [Fintype ι] :
 variable [DecidableEq α] [DecidableEq ι]
 
 /-- The cardinality of the type of permutations preserving a function
-  (without the finiteness assumption on target)-/
+  (without the finiteness assumption on target) -/
 theorem stabilizer_card':
     Fintype.card {g : Perm α // f ∘ g = f} =
       ∏ i ∈ Finset.univ.image f, (Fintype.card ({a // f a = i}))! := by
