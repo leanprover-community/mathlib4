@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Burgun
 -/
 import Mathlib.Algebra.Group.Commute.Basic
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Dynamics.PeriodicPts.Defs
 import Mathlib.GroupTheory.GroupAction.Defs
 

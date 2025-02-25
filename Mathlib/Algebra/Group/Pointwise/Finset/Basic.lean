@@ -10,7 +10,6 @@ import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
 import Mathlib.Data.Finset.Density
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.NAry
-import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
 # Pointwise operations of finsets
