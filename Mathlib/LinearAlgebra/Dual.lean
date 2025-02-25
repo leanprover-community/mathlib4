@@ -733,8 +733,7 @@ theorem exists_dual_map_eq_bot_of_nmem {x : M} (hx : x ∉ p) (hp' : Free R (M �
     ∃ f : Dual R M, f x ≠ 0 ∧ p.map f = ⊥ := by
   suffices ∃ f : Dual R (M ⧸ p), f (p.mkQ x) ≠ 0 by
     obtain ⟨f, hf⟩ := this; exact ⟨f.comp p.mkQ, hf, by simp [Submodule.map_comp]⟩
-  rwa [← Submodule.Quotient.mk_eq_zero, ← Submodule.mkQ_apply,
-    ← forall_dual_apply_eq_zero_iff (K := R), not_forall] at hx
+  rwa [← Submodule.mkQ_eq_zero, ← forall_dual_apply_eq_zero_iff (K := R), not_forall] at hx
 
 theorem exists_dual_map_eq_bot_of_lt_top (hp : p < ⊤) (hp' : Free R (M ⧸ p)) :
     ∃ f : Dual R M, f ≠ 0 ∧ p.map f = ⊥ := by
@@ -1090,10 +1089,10 @@ theorem dualAnnihilator_dualCoannihilator_eq {W : Subspace K V} :
     W.dualAnnihilator.dualCoannihilator = W := by
   refine le_antisymm (fun v ↦ Function.mtr ?_) (le_dualAnnihilator_dualCoannihilator _)
   simp only [mem_dualAnnihilator, mem_dualCoannihilator]
-  rw [← Quotient.mk_eq_zero W, ← Module.forall_dual_apply_eq_zero_iff K]
+  rw [← mkQ_eq_zero W, ← Module.forall_dual_apply_eq_zero_iff K]
   push_neg
   refine fun ⟨φ, hφ⟩ ↦ ⟨φ.comp W.mkQ, fun w hw ↦ ?_, hφ⟩
-  rw [comp_apply, mkQ_apply, (Quotient.mk_eq_zero W).mpr hw, φ.map_zero]
+  rw [comp_apply, (mkQ_eq_zero W).mpr hw, φ.map_zero]
 
 -- exact elaborates slowly
 theorem forall_mem_dualAnnihilator_apply_eq_zero_iff (W : Subspace K V) (v : V) :
@@ -1170,9 +1169,14 @@ noncomputable def quotAnnihilatorEquiv (W : Subspace K V) :
   (quotEquivOfEq _ _ W.dualRestrict_ker_eq_dualAnnihilator).symm.trans <|
     W.dualRestrict.quotKerEquivOfSurjective dualRestrict_surjective
 
+theorem quotAnnihilatorEquiv_apply' (W : Subspace K V) (φ : Module.Dual K V) :
+    W.quotAnnihilatorEquiv (Submodule.Quotient.mk φ) = W.dualRestrict φ := by
+  ext
+  rfl
+
 @[simp]
 theorem quotAnnihilatorEquiv_apply (W : Subspace K V) (φ : Module.Dual K V) :
-    W.quotAnnihilatorEquiv (Submodule.Quotient.mk φ) = W.dualRestrict φ := by
+    W.quotAnnihilatorEquiv (Submodule.mkQ _ φ) = W.dualRestrict φ := by
   ext
   rfl
 
@@ -1298,9 +1302,13 @@ instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R where
     simp only [funext_iff] at h
     exact h _
 
+theorem dualCopairing_apply' {W : Submodule R M} (φ : W.dualAnnihilator) (x : M) :
+    W.dualCopairing φ (Quotient.mk x) = φ x :=
+  rfl
+
 @[simp]
 theorem dualCopairing_apply {W : Submodule R M} (φ : W.dualAnnihilator) (x : M) :
-    W.dualCopairing φ (Quotient.mk x) = φ x :=
+    W.dualCopairing φ (mkQ _ x) = φ x :=
   rfl
 
 /-- Given a submodule, restrict to the pairing on `W` by
@@ -1312,9 +1320,13 @@ See `Subspace.dualPairing_nondegenerate`. -/
 def dualPairing (W : Submodule R M) : Module.Dual R M ⧸ W.dualAnnihilator →ₗ[R] W →ₗ[R] R :=
   W.dualAnnihilator.liftQ W.dualRestrict le_rfl
 
+theorem dualPairing_apply' {W : Submodule R M} (φ : Module.Dual R M) (x : W) :
+    W.dualPairing (Quotient.mk φ) x = φ x :=
+  rfl
+
 @[simp]
 theorem dualPairing_apply {W : Submodule R M} (φ : Module.Dual R M) (x : W) :
-    W.dualPairing (Quotient.mk φ) x = φ x :=
+    W.dualPairing (mkQ _ φ) x = φ x :=
   rfl
 
 /-- That $\operatorname{im}(q^* : (V/W)^* \to V^*) = \operatorname{ann}(W)$. -/
@@ -1341,18 +1353,26 @@ def dualQuotEquivDualAnnihilator (W : Submodule R M) :
       W.range_dualMap_mkQ_eq ▸ LinearMap.mem_range_self W.mkQ.dualMap φ)
     W.dualCopairing (by ext; rfl) (by ext; rfl)
 
+theorem dualQuotEquivDualAnnihilator_apply' (W : Submodule R M) (φ : Module.Dual R (M ⧸ W))
+    (x : M) : dualQuotEquivDualAnnihilator W φ x = φ (Quotient.mk x) :=
+  rfl
+
 @[simp]
 theorem dualQuotEquivDualAnnihilator_apply (W : Submodule R M) (φ : Module.Dual R (M ⧸ W)) (x : M) :
-    dualQuotEquivDualAnnihilator W φ x = φ (Quotient.mk x) :=
+    dualQuotEquivDualAnnihilator W φ x = φ (mkQ _ x) :=
   rfl
 
 theorem dualCopairing_eq (W : Submodule R M) :
     W.dualCopairing = (dualQuotEquivDualAnnihilator W).symm.toLinearMap :=
   rfl
 
-@[simp]
 theorem dualQuotEquivDualAnnihilator_symm_apply_mk (W : Submodule R M) (φ : W.dualAnnihilator)
     (x : M) : (dualQuotEquivDualAnnihilator W).symm φ (Quotient.mk x) = φ x :=
+  rfl
+
+@[simp]
+theorem dualQuotEquivDualAnnihilator_symm_apply_mkQ (W : Submodule R M) (φ : W.dualAnnihilator)
+    (x : M) : (dualQuotEquivDualAnnihilator W).symm φ (mkQ _ x) = φ x :=
   rfl
 
 theorem finite_dualAnnihilator_iff {W : Submodule R M} [Free R (M ⧸ W)] :
@@ -1366,9 +1386,12 @@ def quotDualCoannihilatorToDual (W : Submodule R (Dual R M)) :
     M ⧸ W.dualCoannihilator →ₗ[R] Dual R W :=
   liftQ _ (flip <| Submodule.subtype _) le_rfl
 
+theorem quotDualCoannihilatorToDual_apply' (W : Submodule R (Dual R M)) (m : M) (w : W) :
+    W.quotDualCoannihilatorToDual (Quotient.mk m) w = w.1 m := rfl
+
 @[simp]
 theorem quotDualCoannihilatorToDual_apply (W : Submodule R (Dual R M)) (m : M) (w : W) :
-    W.quotDualCoannihilatorToDual (Quotient.mk m) w = w.1 m := rfl
+    W.quotDualCoannihilatorToDual (mkQ _ m) w = w.1 m := rfl
 
 theorem quotDualCoannihilatorToDual_injective (W : Submodule R (Dual R M)) :
     Function.Injective W.quotDualCoannihilatorToDual :=
@@ -1531,14 +1554,14 @@ theorem dualPairing_nondegenerate (W : Subspace K V₁) : W.dualPairing.Nondegen
     rw [← forall_dual_apply_eq_zero_iff K x]
     intro φ
     simpa only [Submodule.dualPairing_apply, dualLift_of_subtype] using
-      h (Submodule.Quotient.mk (W.dualLift φ))
+      h (Submodule.mkQ _ (W.dualLift φ))
 
 theorem dualCopairing_nondegenerate (W : Subspace K V₁) : W.dualCopairing.Nondegenerate := by
   constructor
   · rw [LinearMap.separatingLeft_iff_ker_eq_bot, dualCopairing_eq]
     apply LinearEquiv.ker
   · rintro ⟨x⟩
-    simp only [Quotient.quot_mk_eq_mk, dualCopairing_apply, Quotient.mk_eq_zero]
+    simp only [quot_mk_eq_mkQ, dualCopairing_apply, mkQ_eq_zero]
     rw [← forall_mem_dualAnnihilator_apply_eq_zero_iff, SetLike.forall]
     exact id
 
