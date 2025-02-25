@@ -41,6 +41,7 @@ open FinsetInterval
 variable {ι α : Type*} {a a₁ a₂ b b₁ b₂ c x : α}
 
 namespace Finset
+
 section Preorder
 
 variable [Preorder α]

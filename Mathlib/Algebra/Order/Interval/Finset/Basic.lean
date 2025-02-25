@@ -18,7 +18,6 @@ open Function OrderDual
 variable {ι α : Type*}
 
 namespace Finset
-
 variable [OrderedCancelAddCommMonoid α] [ExistsAddOfLE α] [LocallyFiniteOrder α]
 
 @[simp] lemma map_add_left_Icc (a b c : α) :
