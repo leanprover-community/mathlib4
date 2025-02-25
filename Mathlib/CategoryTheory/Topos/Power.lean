@@ -157,12 +157,12 @@ def transposeEquiv (A B : C) : (B ⊗ A ⟶ Ω C) ≃ (A ⟶ 𝒫 B) where
 variable {A B : C}
 
 /-- `transposeInv` is a left inverse of `transpose`. -/
-@[reassoc, simp] -- `simp` can prove the assoc version
+@[simp]
 lemma transpose_left_inv (f : B ⊗ A ⟶ Ω C) : (f^)^ = f :=
   (transposeEquiv _ _).left_inv _
 
 /-- `transposeInv` is a right inverse of `transpose`. -/
-@[reassoc, simp] -- `simp` can prove the assoc version
+@[simp]
 lemma transpose_right_inv (f : A ⟶ 𝒫 B) : (f^)^ = f :=
   (transposeEquiv _ _).right_inv _
 
@@ -200,13 +200,13 @@ def transposeEquivSymm : (B ⊗ A ⟶ Ω C) ≃ (B ⟶ 𝒫 A) where
 variable {A B : C}
 
 /-- `transposeSymmInv` is the left inverse of `transposeSymm`. -/
-@[reassoc, simp] -- `simp` can prove the assoc version
+@[simp]
 lemma transpose_symm_left_inv (f : B ⊗ A ⟶ Ω C) :
     ^(^f) = f :=
   (transposeEquivSymm _ _).left_inv _
 
 /-- `transposeSymmInv` is the right inverse of `transposeSymm`. -/
-@[reassoc, simp] -- `simp` can prove the assoc version
+@[simp]
 lemma transpose_symm_right_inv {B A : C} (f : B ⟶ 𝒫 A) :
     (^(^f)) = f :=
   (transposeEquivSymm _ _).right_inv _
