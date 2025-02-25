@@ -48,7 +48,7 @@ local macro:max (priority := high) "⦋" n:term "⦌₂" : term =>
 open StructuredArrow
 
 namespace StrictSegal
-variable (X : SSet.{u}) [StrictSegal X]
+variable {X : SSet.{u}} (sx : StrictSegal X)
 
 namespace isPointwiseRightKanExtensionAt
 
@@ -62,10 +62,10 @@ abbrev strArrowMk₂ {i : ℕ} {n : ℕ} (φ : ⦋i⦌ ⟶ ⦋n⦌) (hi : i ≤ 
 `(proj (op ⦋n⦌) ((Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X)` where `X` is
 Strict Segal, one can produce an `n`-simplex in `X`. -/
 @[simp]
-noncomputable def lift {X : SSet.{u}} [StrictSegal X] {n}
+noncomputable def lift {X : SSet.{u}} (sx : StrictSegal X) {n}
     (s : Cone (proj (op ⦋n⦌) (Truncated.inclusion 2).op ⋙
       (Truncated.inclusion 2).op ⋙ X)) (x : s.pt) : X _⦋n⦌ :=
-  StrictSegal.spineToSimplex {
+  sx.spineToSimplex {
     vertex := fun i ↦ s.π.app (.mk (Y := op ⦋0⦌₂) (.op (SimplexCategory.const _ _ i))) x
     arrow := fun i ↦ s.π.app (.mk (Y := op ⦋1⦌₂) (.op (mkOfLe _ _ (Fin.castSucc_le_succ i)))) x
     arrow_src := fun i ↦ by
@@ -85,7 +85,7 @@ noncomputable def lift {X : SSet.{u}} [StrictSegal X] {n}
 lemma fac_aux₁ {n : ℕ}
     (s : Cone (proj (op ⦋n⦌) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
     (x : s.pt) (i : ℕ) (hi : i < n) :
-    X.map (mkOfSucc ⟨i, hi⟩).op (lift s x) =
+    X.map (mkOfSucc ⟨i, hi⟩).op (lift sx s x) =
       s.π.app (strArrowMk₂ (mkOfSucc ⟨i, hi⟩)) x := by
   dsimp [lift]
   rw [spineToSimplex_arrow]
@@ -94,7 +94,7 @@ lemma fac_aux₁ {n : ℕ}
 lemma fac_aux₂ {n : ℕ}
     (s : Cone (proj (op ⦋n⦌) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
     (x : s.pt) (i j : ℕ) (hij : i ≤ j) (hj : j ≤ n) :
-    X.map (mkOfLe ⟨i, by omega⟩ ⟨j, by omega⟩ hij).op (lift s x) =
+    X.map (mkOfLe ⟨i, by omega⟩ ⟨j, by omega⟩ hij).op (lift sx s x) =
       s.π.app (strArrowMk₂ (mkOfLe ⟨i, by omega⟩ ⟨j, by omega⟩ hij)) x := by
   obtain ⟨k, hk⟩ := Nat.le.dest hij
   revert i j
@@ -125,8 +125,7 @@ lemma fac_aux₂ {n : ℕ}
           ⟨j, by omega⟩ (by simp) (by simp only [Fin.mk_le_mk]; omega))
       let α₀ := strArrowMk₂ (mkOfLe (n := n) ⟨i + k, by omega⟩ ⟨j, by omega⟩
         (by simp only [Fin.mk_le_mk]; omega))
-      let α₁ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by omega⟩ ⟨j, by omega⟩
-        (by simp only [Fin.mk_le_mk]; omega))
+      let α₁ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by omega⟩ ⟨j, by omega⟩ hij)
       let α₂ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by omega⟩ ⟨i + k, by omega⟩ (by simp))
       let β₀ : α ⟶ α₀ := StructuredArrow.homMk ((mkOfSucc 1).op) (Quiver.Hom.unop_inj
         (by ext x; fin_cases x <;> rfl))
@@ -134,14 +133,14 @@ lemma fac_aux₂ {n : ℕ}
         (by ext x; fin_cases x <;> rfl))
       let β₂ : α ⟶ α₂ := StructuredArrow.homMk ((mkOfSucc 0).op) (Quiver.Hom.unop_inj
         (by ext x; fin_cases x <;> rfl))
-      have h₀ : X.map α₀.hom (lift s x) = s.π.app α₀ x := by
+      have h₀ : X.map α₀.hom (lift sx s x) = s.π.app α₀ x := by
         subst hik
         exact fac_aux₁ _ _ _ _ hj
-      have h₂ : X.map α₂.hom (lift s x) = s.π.app α₂ x :=
+      have h₂ : X.map α₂.hom (lift sx s x) = s.π.app α₂ x :=
         hk i (i + k) (by simp) (by omega) rfl
-      change X.map α₁.hom (lift s x) = s.π.app α₁ x
-      have : X.map α.hom (lift s x) = s.π.app α x := by
-        apply StrictSegal.spineInjective
+      change X.map α₁.hom (lift sx s x) = s.π.app α₁ x
+      have : X.map α.hom (lift sx s x) = s.π.app α x := by
+        apply sx.spineInjective
         apply Path.ext'
         intro t
         dsimp only [spineEquiv]
@@ -164,7 +163,7 @@ lemma fac_aux₂ {n : ℕ}
 lemma fac_aux₃ {n : ℕ}
     (s : Cone (proj (op ⦋n⦌) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
     (x : s.pt) (φ : ⦋1⦌ ⟶ ⦋n⦌) :
-    X.map φ.op (lift s x) = s.π.app (strArrowMk₂ φ) x := by
+    X.map φ.op (lift sx s x) = s.π.app (strArrowMk₂ φ) x := by
   obtain ⟨i, j, hij, rfl⟩ : ∃ i j hij, φ = mkOfLe i j hij :=
     ⟨φ.toOrderHom 0, φ.toOrderHom 1, φ.toOrderHom.monotone (by decide),
       Hom.ext_one_left _ _ rfl rfl⟩
@@ -178,18 +177,18 @@ open isPointwiseRightKanExtensionAt in
 /-- A strict Segal simplicial set is 2-coskeletal. -/
 noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
     (rightExtensionInclusion X 2).IsPointwiseRightKanExtensionAt ⟨⦋n⦌⟩ where
-  lift s x := lift (X := X) s x
+  lift s x := lift sx s x
   fac s j := by
     ext x
     obtain ⟨⟨i, hi⟩, ⟨f :  _ ⟶ _⟩, rfl⟩ := j.mk_surjective
     obtain ⟨i, rfl⟩ : ∃ j, SimplexCategory.mk j = i := ⟨_, i.mk_len⟩
     dsimp at hi ⊢
-    apply StrictSegal.spineInjective
+    apply sx.spineInjective
     dsimp
     ext k
     · dsimp only [spineEquiv, Equiv.coe_fn_mk]
       rw [show op f = f.op from rfl]
-      rw [spine_map_vertex, spine_spineToSimplex, spine_vertex]
+      rw [spine_map_vertex, spine_spineToSimplex_apply, spine_vertex]
       let α : strArrowMk₂ f hi ⟶ strArrowMk₂ (⦋0⦌.const ⦋n⦌ (f.toOrderHom k)) :=
         StructuredArrow.homMk ((⦋0⦌.const _ (by exact k)).op) (by simp; rfl)
       exact congr_fun (s.w α).symm x
@@ -200,9 +199,9 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
       exact (isPointwiseRightKanExtensionAt.fac_aux₃ _ _ _ _).trans (congr_fun (s.w α).symm x)
   uniq s m hm := by
     ext x
-    apply StrictSegal.spineInjective (X := X)
+    apply sx.spineInjective (X := X)
     dsimp [spineEquiv]
-    rw [StrictSegal.spine_spineToSimplex]
+    rw [sx.spine_spineToSimplex_apply]
     ext i
     · exact congr_fun (hm (StructuredArrow.mk (Y := op ⦋0⦌₂) (⦋0⦌.const ⦋n⦌ i).op)) x
     · exact congr_fun (hm (.mk (Y := op ⦋1⦌₂) (.op (mkOfLe _ _ (Fin.castSucc_le_succ i))))) x
@@ -211,16 +210,17 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
 cones are limit cones, `rightExtensionInclusion X 2` is a pointwise right Kan extension. -/
 noncomputable def isPointwiseRightKanExtension :
     (rightExtensionInclusion X 2).IsPointwiseRightKanExtension :=
-  fun Δ => isPointwiseRightKanExtensionAt X Δ.unop.len
+  fun Δ => sx.isPointwiseRightKanExtensionAt Δ.unop.len
 
-theorem isRightKanExtension :
+theorem isRightKanExtension (sx : StrictSegal X) :
     X.IsRightKanExtension (𝟙 ((inclusion 2).op ⋙ X)) :=
   RightExtension.IsPointwiseRightKanExtension.isRightKanExtension
-    (isPointwiseRightKanExtension X)
+    sx.isPointwiseRightKanExtension
 
 /-- When `X` is `StrictSegal`, `X` is 2-coskeletal. -/
-instance isCoskeletal : SimplicialObject.IsCoskeletal X 2 where
-  isRightKanExtension := isRightKanExtension X
+theorem isCoskeletal (sx : StrictSegal X) :
+    SimplicialObject.IsCoskeletal X 2 where
+  isRightKanExtension := sx.isRightKanExtension
 
 end StrictSegal
 
@@ -234,8 +234,8 @@ namespace Nerve
 
 open SSet
 
-example (C : Type u) [Category.{v} C] :
-    SimplicialObject.IsCoskeletal (nerve C) 2 := by infer_instance
+instance (C : Type u) [Category.{v} C] :
+    SimplicialObject.IsCoskeletal (nerve C) 2 := strictSegal C |>.isCoskeletal
 
 /-- The essential data of the nerve functor is contained in the 2-truncation, which is
 recorded by the composite functor `nerveFunctor₂`. -/
