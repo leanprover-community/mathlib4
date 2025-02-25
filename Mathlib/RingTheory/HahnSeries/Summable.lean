@@ -672,13 +672,51 @@ end SummableFamily
 
 section Inversion
 
-variable [LinearOrderedAddCommGroup Γ]
+section CommRing
+
+variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
+
+theorem one_minus_single_neg_mul {x y : HahnSeries Γ R} {r : R} (hr : r * x.leadingCoeff = 1)
+    (hxy : x = y + single x.order x.leadingCoeff) (hxo : IsAddUnit x.order) :
+    1 - single (IsAddUnit.addUnit hxo).neg r * x = -(single (IsAddUnit.addUnit hxo).neg r * y) := by
+  nth_rw 2 [hxy]
+  rw [mul_add, single_mul_single, hr, AddUnits.neg_eq_val_neg, IsAddUnit.val_neg_add,
+  sub_add_eq_sub_sub_swap, sub_eq_neg_self, sub_eq_zero_of_eq single_zero_one.symm]
+
+theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1)
+    (hxo : IsAddUnit x.order) : 0 < (1 - single (IsAddUnit.addUnit hxo).neg r * x).orderTop := by
+  let y := (x - single x.order x.leadingCoeff)
+  by_cases hy : y = 0
+  · have hrx : (single (IsAddUnit.addUnit hxo).neg) r * x = 1 := by
+      nth_rw 2 [eq_of_sub_eq_zero hy] -- get a bad loop without `nth_rw`
+      simp only [AddUnits.neg_eq_val_neg, ← leadingCoeff_eq, single_mul_single,
+        IsAddUnit.val_neg_add, hr, single_zero_one]
+    simp only [hrx, sub_self, orderTop_zero, WithTop.top_pos]
+  have hr' : IsRegular r := IsUnit.isRegular <| isUnit_of_mul_eq_one r x.leadingCoeff hr
+  have hy' : 0 < (single (IsAddUnit.addUnit hxo).neg r * y).order := by
+    rw [(order_mul_single_of_isRegular hr' hy)]
+    refine pos_of_lt_add_right (a := x.order) ?_
+    rw [← add_assoc, add_comm x.order, AddUnits.neg_eq_val_neg, IsAddUnit.val_neg_add, zero_add]
+    exact order_lt_order_of_eq_add_single (sub_add_cancel x _).symm hy
+  rw [one_minus_single_neg_mul hr (sub_add_cancel x _).symm, orderTop_neg]
+  exact zero_lt_orderTop_of_order hy'
+
+theorem isUnit_of_isUnit_leadingCoeff_AddUnitOrder {x : HahnSeries Γ R} (hx : IsUnit x.leadingCoeff)
+    (hxo : IsAddUnit x.order) : IsUnit x := by
+  let ⟨⟨u, i, ui, iu⟩, h⟩ := hx
+  rw [Units.val_mk] at h
+  rw [h] at iu
+  have h' := SummableFamily.one_sub_self_mul_hsum_powers (unit_aux x iu hxo)
+  rw [sub_sub_cancel] at h'
+  exact isUnit_of_mul_isUnit_right (isUnit_of_mul_eq_one _ _ h')
+
+end CommRing
 
 section IsDomain
 
-variable [CommRing R] [IsDomain R]
+variable [LinearOrderedAddCommGroup Γ] [CommRing R] [IsDomain R]
 
-theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1) :
+theorem unit_aux' (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1) :
     0 < (1 - single (-x.order) r * x).orderTop := by
   by_cases hx : x = 0; · simp_all [hx]
   have hrz : r ≠ 0 := by
@@ -707,28 +745,29 @@ theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.leadingCoeff) 
         ((coeff_mul_order_add_order u i).symm.trans ?_)
     rw [ui, coeff_one, if_pos]
     rw [← order_mul (left_ne_zero_of_mul_eq_one ui) (right_ne_zero_of_mul_eq_one ui), ui, order_one]
-  · rintro ⟨⟨u, i, ui, iu⟩, h⟩
-    rw [Units.val_mk] at h
-    rw [h] at iu
-    have h := SummableFamily.one_sub_self_mul_hsum_powers (unit_aux x iu)
+  · rintro ⟨⟨u, i, ui, iu⟩, hx⟩
+    rw [Units.val_mk] at hx
+    rw [hx] at iu
+    have h :=
+      SummableFamily.one_sub_self_mul_hsum_powers (unit_aux x iu (AddGroup.isAddUnit x.order))
     rw [sub_sub_cancel] at h
     exact isUnit_of_mul_isUnit_right (isUnit_of_mul_eq_one _ _ h)
 
 end IsDomain
 
 open Classical in
-instance instField [Field R] : Field (HahnSeries Γ R) where
+instance instField [LinearOrderedAddCommGroup Γ] [Field R] : Field (HahnSeries Γ R) where
   __ : IsDomain (HahnSeries Γ R) := inferInstance
   inv x :=
     if x0 : x = 0 then 0
     else
-      (single (-x.order)) (x.leadingCoeff)⁻¹ *
-        (SummableFamily.powers _ (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)))).hsum
+      (single (IsAddUnit.addUnit (AddGroup.isAddUnit x.order)).neg) (x.leadingCoeff)⁻¹ *
+        (SummableFamily.powers _ (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)) _)).hsum
   inv_zero := dif_pos rfl
   mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans <| by
     have h :=
       SummableFamily.one_sub_self_mul_hsum_powers
-        (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)))
+        (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)) (AddGroup.isAddUnit x.order))
     rw [sub_sub_cancel] at h
     rw [← mul_assoc, mul_comm x, h]
   nnqsmul := _
