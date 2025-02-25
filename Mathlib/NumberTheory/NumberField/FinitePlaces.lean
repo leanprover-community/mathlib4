@@ -28,6 +28,8 @@ number field, places, finite places
 
 open Ideal IsDedekindDomain HeightOneSpectrum WithZeroMulInt
 
+open scoped Multiplicative
+
 namespace NumberField
 
 section absoluteValue
@@ -78,8 +80,10 @@ variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
 def embedding : K →+* adicCompletion K v :=
   @UniformSpace.Completion.coeRingHom K _ v.adicValued.toUniformSpace _ _
 
+theorem embedding_apply (x : K) : embedding v x = ↑x := rfl
+
 noncomputable instance instRankOneValuedAdicCompletion :
-    Valuation.RankOne (valuedAdicCompletion K v).v where
+    Valuation.RankOne (inferInstanceAs (Valued (v.adicCompletion K) ℤₘ₀)).v where
   hom := {
     toFun := toNNReal (norm_ne_zero v)
     map_zero' := rfl
@@ -112,16 +116,16 @@ noncomputable def FinitePlace.mk (v : HeightOneSpectrum (𝓞 K)) : FinitePlace 
   ⟨place (embedding v), ⟨v, rfl⟩⟩
 
 lemma toNNReal_Valued_eq_vadicAbv (x : K) :
-    toNNReal (norm_ne_zero v) (Valued.v (self:=v.adicValued) x) = vadicAbv v x := rfl
+    toNNReal (norm_ne_zero v) (v.adicValued.v x) = vadicAbv v x := rfl
+
+lemma toNNReal_Valued_eq_vadicAbv' (x : K) :
+    toNNReal (norm_ne_zero v) ((WithVal.instValued (v.valuation K)).v x) = vadicAbv v x := rfl
 
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/
 theorem FinitePlace.norm_def (x : K) : ‖embedding v x‖ = vadicAbv v x := by
-  simp only [adicCompletion, NormedField.toNorm, instNormedFieldValuedAdicCompletion,
-    Valued.toNormedField, instFieldAdicCompletion, Valued.norm, Valuation.RankOne.hom,
-    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, embedding, UniformSpace.Completion.coeRingHom,
-    RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Valued.valuedCompletion_apply,
-    toNNReal_Valued_eq_vadicAbv]
+  simp [NormedField.toNorm, instNormedFieldValuedAdicCompletion, Valued.toNormedField, Valued.norm,
+    Valuation.RankOne.hom, embedding_apply, ← toNNReal_Valued_eq_vadicAbv']
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/
