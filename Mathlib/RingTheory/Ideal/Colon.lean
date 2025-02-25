@@ -104,8 +104,8 @@ variable {N N₁ N₂ P P₁ P₂ : Submodule R M}
 lemma annihilator_map_mkQ_eq_colon : annihilator (P.map N.mkQ) = N.colon P := by
   ext
   rw [mem_annihilator, mem_colon]
-  exact ⟨fun H p hp ↦ (Quotient.mk_eq_zero N).1 (H (Quotient.mk p) (mem_map_of_mem hp)),
-    fun H _ ⟨p, hp, hpm⟩ ↦ hpm ▸ ((Quotient.mk_eq_zero N).2 <| H p hp)⟩
+  exact ⟨fun H p hp ↦ (mkQ_eq_zero N).1 (H (mkQ N p) (mem_map_of_mem hp)),
+    fun H _ ⟨p, hp, hpm⟩ ↦ hpm ▸ ((mkQ_eq_zero N).2 <| H p hp)⟩
 
 theorem annihilator_quotient {N : Submodule R M} :
     Module.annihilator R (M ⧸ N) = N.colon ⊤ := by
