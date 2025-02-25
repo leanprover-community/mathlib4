@@ -8,19 +8,9 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 import Mathlib.Algebra.Group.Even
 import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.Finset.Powerset
-
--- import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Finset.Union
-
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Finset.Prod
-
--- import Mathlib.Data.Fintype.Pi
--- import Mathlib.Data.Finset.Pi
-import Mathlib.Data.Finset.Card
--- import Mathlib.Data.Multiset.Pi
 
 /-!
 # Big operators
