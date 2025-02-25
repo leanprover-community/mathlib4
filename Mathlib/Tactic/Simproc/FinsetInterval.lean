@@ -3,6 +3,8 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Order.Interval.Finset
+import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Util.Qq
 
@@ -22,15 +24,15 @@ private lemma Icc_eq_insert_of_Icc_succ_eq (hmn : m.ble n) (hs : Icc (m + 1) n =
     Icc m n = insert m s := by rw [← hs, Nat.Icc_insert_succ_left (by simpa using hmn)]
 
 private lemma Ico_eq_of_Icc_pred_eq (hn : n ≠ 0) (hs : Icc m (n - 1) = s) : Ico m n = s := by
-  rw [← hs, Nat.Icc_pred_right _ hn.bot_lt]
+  rw [← hs, Icc_sub_one_right_eq_Ico_of_not_isMin (by simpa)]
 
 private lemma Ico_zero (m : ℕ) : Ico m 0 = ∅ := by simp
 
 private lemma Ioc_eq_of_Icc_succ_eq (hs : Icc (m + 1) n = s) : Ioc m n = s := by
-  rw [← hs, Nat.Icc_succ_left]
+  rw [← hs, Icc_add_one_left_eq_Ioc]
 
 private lemma Ioo_eq_of_Icc_succ_pred_eq (hs : Icc (m + 1) (n - 1) = s) : Ioo m n = s := by
-  rw [← hs, ← Nat.Icc_succ_pred_eq_Ioo]
+  rw [← hs, ← Icc_add_one_sub_one_eq_Ioo]
 
 private lemma Iic_eq_of_Icc_zero_eq (hs : Icc 0 n = s) : Iic n = s := hs
 
