@@ -103,7 +103,7 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
  -- have  hh (n : ℕ) (a : A) : n * a = (n : R) • a := by
   --  norm_cast
   --  simp_all only [nsmul_eq_mul, N]
-  have e₁ :=
+  have s₁ :=
     calc
       ∑ n ∈ range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n
           = ∑ n ∈ range (2 * N + 1), (n.factorial : R)⁻¹ •
@@ -150,36 +150,6 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
           (intro h1 h2 h3 h4 h5; use h1 + h2, h1; omega)
         simp only [mem_sigma, mem_range, implies_true]
 
-  have e2 :=
-    calc
-      (∑ n ∈ range (N + 1), (n.factorial : R)⁻¹ • a ^ n) * ∑ n ∈ range (N + 1), (n.factorial : R)⁻¹ • b ^ n = (∑ n ∈ range (N + 1), (n.factorial : R)⁻¹ • a ^ n) * ∑ n ∈ range (N + 1), (n.factorial : R)⁻¹ • b ^ n := by rfl
-      _ = ∑ i ∈ range (N + 1), ∑ j ∈ range (N + 1), (i.factorial : R)⁻¹ • a ^ i * (j.factorial : R)⁻¹ • b ^ j := by rw [sum_mul_sum]
-      _ = ∑ i ∈ range (N + 1), ∑ j ∈ range (N + 1), ((i.factorial : R)⁻¹ * (j.factorial : R)⁻¹) • (a ^ i * b ^ j) := by
-       apply sum_congr rfl
-       intro n hn
-       apply sum_congr rfl
-       intro m hm
-       rw [smul_mul_assoc]
-       have ppp : a ^ n * (m.factorial : R)⁻¹ • b ^ m = (m.factorial : R)⁻¹ • (a ^ n *  b ^ m) := by
-         simp_all only [product_eq_sprod, mem_range, Algebra.mul_smul_comm, N]
-       rw [ppp]
-       rw [smul_smul]
-      _ = ∑ ij ∈ (range (N + 1)).product (range (N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
-        rw [sum_sigma']
-        apply sum_bij
-          (fun ⟨i, j⟩ _ => (i, j))
-        simp
-        simp
-        intro h1 h2 h3 h4 h5 h6 h7 h8
-        refine Sigma.ext h7 ?_
-        exact heq_of_eq h8
-        simp
-        intro h1 h2 h3 h4
-        constructor
-        apply h3
-        apply h4
-        simp
-
   have e4 : ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
     ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ij.1 + ij.2 ≤ 2 * N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) +
     ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ ij.1 + ij.2 ≤ 2 * N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
@@ -206,9 +176,8 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
       simp
   rw [e5] at e4
   simp at e4
-  simp at e₁
-  rw [← e4] at e₁
-  simp at e2
+  simp at s₁
+  rw [← e4] at s₁
   have e5 : ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
     ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ij.1 ≤ N ∧ ij.2 ≤ N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) +
     ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ (ij.1 ≤ N ∧ ij.2 ≤ N), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
@@ -273,11 +242,43 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
     apply key
     intro x hx
     rfl
-  rw [e5] at e₁
+  rw [e5] at s₁
   simp at lll
-  rw [lll] at e₁
-  rw [e2.symm] at e₁
-  apply e₁
+  rw [lll] at s₁
+
+
+  have s₂ :=
+    calc
+      (∑ n ∈ range (N + 1), (n.factorial : R)⁻¹ • a ^ n) * ∑ n ∈ range (N + 1), (n.factorial : R)⁻¹ • b ^ n = (∑ n ∈ range (N + 1), (n.factorial : R)⁻¹ • a ^ n) * ∑ n ∈ range (N + 1), (n.factorial : R)⁻¹ • b ^ n := by rfl
+      _ = ∑ i ∈ range (N + 1), ∑ j ∈ range (N + 1), (i.factorial : R)⁻¹ • a ^ i * (j.factorial : R)⁻¹ • b ^ j := by rw [sum_mul_sum]
+      _ = ∑ i ∈ range (N + 1), ∑ j ∈ range (N + 1), ((i.factorial : R)⁻¹ * (j.factorial : R)⁻¹) • (a ^ i * b ^ j) := by
+       apply sum_congr rfl
+       intro n hn
+       apply sum_congr rfl
+       intro m hm
+       rw [smul_mul_assoc]
+       have ppp : a ^ n * (m.factorial : R)⁻¹ • b ^ m = (m.factorial : R)⁻¹ • (a ^ n *  b ^ m) := by
+         simp_all only [product_eq_sprod, mem_range, Algebra.mul_smul_comm, N]
+       rw [ppp]
+       rw [smul_smul]
+      _ = ∑ ij ∈ (range (N + 1)).product (range (N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
+        rw [sum_sigma']
+        apply sum_bij
+          (fun ⟨i, j⟩ _ => (i, j))
+        simp
+        simp
+        intro h1 h2 h3 h4 h5 h6 h7 h8
+        refine Sigma.ext h7 ?_
+        exact heq_of_eq h8
+        simp
+        intro h1 h2 h3 h4
+        constructor
+        apply h3
+        apply h4
+        simp
+  simp at s₂
+  rw [s₂.symm] at s₁
+  apply s₁
 
 end SemiringAlgebras
 
