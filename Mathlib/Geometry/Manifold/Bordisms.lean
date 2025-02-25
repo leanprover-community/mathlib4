@@ -65,7 +65,7 @@ We assume that `M` is a manifold over the pair `(E, H)` with model `I`.
 
 In practice, one commonly wants to take `k=∞` (as then e.g. the intersection form is a powerful tool
 to compute bordism groups; for the definition, this makes no difference.) -/
-structure SingularNManifold.{u} (X : Type*) [TopologicalSpace X] (n : ℕ) (k : ℕ∞)
+structure SingularNManifold.{u} (X : Type*) [TopologicalSpace X] (n : ℕ) (k : WithTop ℕ∞)
   {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [TopologicalSpace H] (I : ModelWithCorners ℝ E H) where
   /-- The manifold `M` of a singular `n`-manifold `(M, f)` -/
@@ -87,21 +87,20 @@ structure SingularNManifold.{u} (X : Type*) [TopologicalSpace X] (n : ℕ) (k : 
 namespace SingularNManifold
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-  {n : ℕ} {k : ℕ∞}
+  {n : ℕ} {k : WithTop ℕ∞}
   {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [TopologicalSpace H] {I : ModelWithCorners ℝ E H} [TopologicalSpace M] [ChartedSpace H M]
   [IsManifold I k M] [CompactSpace M] [BoundarylessManifold I M]
 
-instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k I} : TopologicalSpace s.M := s.topSpaceM
+instance {s : SingularNManifold X n k I} : TopologicalSpace s.M := s.topSpaceM
 
-instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k I} : ChartedSpace H s.M := s.chartedSpace
+instance {s : SingularNManifold X n k I} : ChartedSpace H s.M := s.chartedSpace
 
-instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k I} : IsManifold I k s.M := s.isManifold
+instance {s : SingularNManifold X n k I} : IsManifold I k s.M := s.isManifold
 
-instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k I} : CompactSpace s.M := s.compactSpace
+instance {s : SingularNManifold X n k I} : CompactSpace s.M := s.compactSpace
 
-instance {n : ℕ} {k : ℕ∞} {s : SingularNManifold X n k I} : BoundarylessManifold I s.M :=
-  s.boundaryless
+instance {s : SingularNManifold X n k I} : BoundarylessManifold I s.M := s.boundaryless
 
 /-- A map of topological spaces induces a corresponding map of singular n-manifolds. -/
 -- This is part of proving functoriality of the bordism groups.
