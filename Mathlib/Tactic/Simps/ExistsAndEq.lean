@@ -49,14 +49,14 @@ where
   /-- Traverses the expression `h`, branching at each `And`, to find a proof of `x = a`
   for some `a`. -/
   go {u : Level} {α : Q(Sort u)} (x : Q($α)) {e : Q(Prop)} (h : Q($e)) :
-      MetaM <| Option ((a : Q($α)) × Q($x = $a)) := do
-    match e with
-    | ~q(@Eq.{u} $β $a $b) =>
-      -- let .defEq _ := ← isDefEqQ α β | return none
-      if let .defEq _ ← isDefEqQ x a then
-        return .some ⟨b, ← mkAppM ``Eq.symm #[h]⟩
+      MetaM <| Option ((a : Q($α)) × Q($a = $x)) := do
+    match e, h with
+    | ~q(@Eq.{u} $β $a $b) => do
+      let .defEq _ := ← isDefEqQ q($α) q($β) | return none
+      if let .defEq _ ← isDefEqQ q($x) q($a) then
+        return .some ⟨b, q(($h).symm)⟩
       else if let .defEq _ ← isDefEqQ x (b : Q($α)) then
-        return .some ⟨a, h⟩
+        return .some ⟨a, q(($h))⟩
       else
         return .none
     | ~q(And $a $b) =>
