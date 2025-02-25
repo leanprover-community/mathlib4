@@ -74,6 +74,10 @@ theorem AbsConvex.iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, AbsConvex �
     AbsConvex 𝕜 (⋂ i, s i) :=
   sInter_range s ▸ AbsConvex.sInter <| forall_mem_range.2 h
 
+theorem AbsConvex.iInter₂ {ι : Sort*} {κ : ι → Sort*} {f : ∀ i, κ i → Set E}
+    (h : ∀ i j, AbsConvex 𝕜 (f i j)) : AbsConvex 𝕜 (⋂ (i) (j), f i j) :=
+  AbsConvex.iInter fun _  => (AbsConvex.iInter fun _ => h _ _)
+
 variable (𝕜)
 
 /-- The absolute convex hull of a set `s` is the minimal absolute convex set that includes `s`. -/
