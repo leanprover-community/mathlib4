@@ -107,6 +107,22 @@ theorem r_zero : r 0 = (1 : DihedralGroup n) :=
 theorem one_def : (1 : DihedralGroup n) = r 0 :=
   rfl
 
+@[simp]
+theorem r_pow (i : ZMod n) (k : ℕ) : (r i)^k = r (i * k : ZMod n) := by
+  induction k with
+  | zero => simp only [pow_zero, Nat.cast_zero, mul_zero, r_zero]
+  | succ k IH =>
+  rw [show (r i)^(k+1) = (r i)^k * (r i) by rfl, IH]
+  simp only [r_mul_r, Nat.cast_add, Nat.cast_one, r.injEq]
+  ring
+
+@[simp]
+theorem r_zpow (i : ZMod n) (k : ℤ) : (r i)^k = r (i * k : ZMod n) := by
+  cases k
+  · simp [r_pow]
+  · simp [r_pow]
+    ring
+
 private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where
   invFun
     | r j => .inl j
@@ -140,13 +156,7 @@ theorem nat_card : Nat.card (DihedralGroup n) = 2 * n := by
 
 @[simp]
 theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
-  induction' k with k IH
-  · rw [Nat.cast_zero]
-    rfl
-  · rw [pow_succ', IH, r_mul_r]
-    congr 1
-    norm_cast
-    rw [Nat.one_add]
+  simp [r_pow (1 : ZMod n) k]
 
 @[simp]
 theorem r_one_zpow (k : ℤ) : (r 1 : DihedralGroup n) ^ k = r k := by
