@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Group.List.Defs
+import Mathlib.Algebra.Group.End
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Data.Fintype.EquivFin
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 # `Fintype` instances for `Equiv` and `Perm`

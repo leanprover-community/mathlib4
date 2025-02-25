@@ -289,7 +289,6 @@ import Mathlib.Algebra.Group.Action.Sum
 import Mathlib.Algebra.Group.Action.TypeTags
 import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.Group.AddChar
-import Mathlib.Algebra.Group.Aut
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Center
 import Mathlib.Algebra.Group.Commutator
@@ -301,6 +300,7 @@ import Mathlib.Algebra.Group.Conj
 import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.Embedding
+import Mathlib.Algebra.Group.End
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Equiv.TypeTags
@@ -928,6 +928,7 @@ import Mathlib.Algebra.Regular.Pow
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Ring.Action.ConjAct
+import Mathlib.Algebra.Ring.Action.End
 import Mathlib.Algebra.Ring.Action.Field
 import Mathlib.Algebra.Ring.Action.Group
 import Mathlib.Algebra.Ring.Action.Invariant
