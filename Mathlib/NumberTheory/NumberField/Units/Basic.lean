@@ -183,7 +183,7 @@ theorem torsionOrder_eq_two_of_odd_finrank [NumberField K]
   classical
   refine PNat.eq ?_
   erw [Finset.card_eq_two]
-  use 1 , ⟨-1, by erw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one] ; use 2 ; norm_num⟩
+  use 1 , ⟨-1, by erw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]; use 2; norm_num⟩
   constructor
   · intro hc
     simp [← Subtype.val_inj] at hc
@@ -195,7 +195,7 @@ theorem torsionOrder_eq_two_of_odd_finrank [NumberField K]
       have : IsOfFinOrder (↑(↑x : (𝓞 K)ˣ) : (𝓞 K)) := by
         rw [isOfFinOrder_iff_pow_eq_one]
         show (∃ m, 0 < m ∧ (↑((↑x : (𝓞 K)ˣ) ^ m) : (𝓞 K)) = 1)
-        exact ⟨m, ⟨hm.1, by erw [hm.2] ; rfl⟩⟩
+        exact ⟨m, ⟨hm.1, by erw [hm.2]; rfl⟩⟩
       rw [IsOfFinOrder_iff_eq_one_or_neg_one_of_odd_finrank h] at this
       simp only [Finset.mem_insert, Finset.mem_singleton]
       rw [← Subtype.val_inj, ← Subtype.val_inj, ← Units.eq_iff, ← Units.eq_iff]
