@@ -46,6 +46,10 @@ lemma dependsOn_iff_factorsThrough {f : (Π i, α i) → β} {s : Set ι} :
   rw [DependsOn, Function.FactorsThrough]
   simp [funext_iff]
 
+lemma dependsOn_iff_exists_comp [Nonempty β] {f : (Π i, α i) → β} {s : Set ι} :
+    DependsOn f s ↔ ∃ g : (Π i : s, α i) → β, f = g ∘ s.restrict := by
+  rw [dependsOn_iff_factorsThrough, Function.factorsThrough_iff]
+
 lemma dependsOn_univ (f : (Π i, α i) → β) : DependsOn f univ :=
   fun _ _ h ↦ congrArg _ <| funext fun i ↦ h i trivial
 
