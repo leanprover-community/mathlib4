@@ -144,7 +144,7 @@ theorem eqvGen_proj_mul_left {a b c : A} (n : ι)
 variable [IsHomogeneousRelation 𝒜 rel]
 
 instance : IsHomogeneousRelation 𝒜 (RingQuot.Rel rel) := ⟨by
-  intro x y h ; induction h
+  intro x y h; induction h
   case of x y h_rel =>
     intro n
     apply eqvGen_ringQuot_of_eqvGen
