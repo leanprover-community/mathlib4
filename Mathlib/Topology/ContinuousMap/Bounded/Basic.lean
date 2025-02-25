@@ -1330,17 +1330,20 @@ instance instNormedAlgebra : NormedAlgebra 𝕜 (α →ᵇ γ) where
   __ := instAlgebra
   __ := instNormedSpace
 
-variable (α γ 𝕜)
+variable (𝕜)
 
 /-- The algebra-homomorphism forgetting that a bounded continuous function is bounded. -/
 @[simps]
-def toContinuousFunₐ : (α →ᵇ γ) →ₐ[𝕜] C(α, γ) where
+def toContinuousMapₐ : (α →ᵇ γ) →ₐ[𝕜] C(α, γ) where
   toFun := (↑)
   map_one' := rfl
   map_mul' _ _ := rfl
   map_zero' := rfl
   map_add' _ _ := rfl
   commutes' _ := rfl
+
+@[simp]
+theorem coe_toContinuousMapₐ (f : α →ᵇ γ) : (f.toContinuousMapₐ 𝕜 : α → γ) = f := rfl
 
 /-!
 ### Structure as normed module over scalar functions

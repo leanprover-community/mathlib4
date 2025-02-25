@@ -95,13 +95,16 @@ end CStarRing
 
 section NormedAlgebra
 
-variable {𝕜 : Type*} [NormedField 𝕜] [TopologicalSpace α]
+variable (𝕜 : Type*) [NormedField 𝕜] [TopologicalSpace α]
   [NormedRing β] [NormedAlgebra 𝕜 β] [StarAddMonoid β] [NormedStarGroup β]
 
 /-- The ⋆-algebra-homomorphism forgetting that a bounded continuous function is bounded. -/
 @[simps!]
-def toContinuousFun_starₐ : (α →ᵇ β) →⋆ₐ[𝕜] C(α, β) := { toContinuousFunₐ α β 𝕜 with
+def toContinuousMap_starₐ : (α →ᵇ β) →⋆ₐ[𝕜] C(α, β) := { toContinuousMapₐ 𝕜 with
   map_star' _ := rfl }
+
+@[simp]
+theorem coe_toContinuousMap_starₐ (f : α →ᵇ β) : (f.toContinuousMap_starₐ 𝕜 : α → β) = f := rfl
 
 end NormedAlgebra
 

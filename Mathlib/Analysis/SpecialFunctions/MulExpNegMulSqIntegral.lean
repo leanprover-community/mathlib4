@@ -84,7 +84,8 @@ theorem tendsto_integral_mul_one_plus_inv_smul_sq_pow (g : E →ᵇ ℝ) (hε : 
   · obtain ⟨N, hgN⟩ := exists_nat_gt (ε * (norm g * norm g))
     use norm g
     rw [eventually_atTop]
-    use N; intro n hn
+    use N
+    intro n hn
     have hnpos : 0 < (n : ℝ) := by
       apply lt_of_lt_of_le (lt_of_le_of_lt _ hgN) (Nat.cast_le.mpr hn)
       exact (mul_nonneg (le_of_lt hε) (mul_self_nonneg (norm g)))

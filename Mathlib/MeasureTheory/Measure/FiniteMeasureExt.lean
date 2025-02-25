@@ -15,7 +15,7 @@ the integrals of all elements `A` with respect to two finite measures `P, P'`coi
 measures coincide. In other words: If a Subalgebra separates points, it separates finite measures.
 -/
 
-open MeasureTheory Filter Real RCLike
+open MeasureTheory Filter Real RCLike BoundedContinuousFunction
 
 open scoped Topology
 
@@ -25,7 +25,7 @@ variable {E 𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace E]
 
 theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable
     [PseudoEMetricSpace E] [BorelSpace E] [CompleteSpace E] [SecondCountableTopology E]
-    {P P' : Measure E} [hP : IsFiniteMeasure P] [hP' : IsFiniteMeasure P']
+    {P P' : Measure E} [IsFiniteMeasure P] [IsFiniteMeasure P']
     {A : StarSubalgebra 𝕜 C(E, 𝕜)} (hA : A.SeparatesPoints)
     (hbound : ∀ g ∈ A, ∃ C, ∀ x y : E, dist (g x) (g y) ≤ C)
     (heq : ∀ g ∈ A, ∫ x, (g : E → 𝕜) x ∂P = ∫ x, (g : E → 𝕜) x ∂P') : P = P' := by
@@ -67,11 +67,9 @@ theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_count
   exact eq_of_abs_sub_eq_zero (tendsto_nhds_unique lim2 lim1)
 
 theorem ext_of_forall_mem_subalgebra_integral_eq_of_polish [TopologicalSpace E] [PolishSpace E]
-    [BorelSpace E] {P P' : Measure E} [hP : IsFiniteMeasure P] [hP' : IsFiniteMeasure P']
+    [BorelSpace E] {P P' : Measure E} [IsFiniteMeasure P] [IsFiniteMeasure P']
     {A : StarSubalgebra 𝕜 C(E, 𝕜)} (hA : A.SeparatesPoints)
     (hbound : ∀ g ∈ A, ∃ C, ∀ x y : E, dist (g x) (g y) ≤ C)
     (heq : ∀ g ∈ A, ∫ x, (g : E → 𝕜) x ∂P = ∫ x, (g : E → 𝕜) x ∂P') : P = P' := by
   letI := upgradePolishSpace E
   exact ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable hA hbound heq
-
-end MeasureTheory
