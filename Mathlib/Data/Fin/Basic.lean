@@ -147,7 +147,7 @@ theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
 theorem mk_eq_mk {a h a' h'} : @mk n a h = @mk n a' h' ↔ a = a' :=
   Fin.ext_iff
 
-lemma val_ne_zero_iff {n : ℕ} {k : Fin (n+1)} :
+lemma val_ne_zero_iff {n : ℕ} (k : Fin (n+1)) :
   k ≠ 0 ↔ (k : ℕ) ≠ 0 := by
   rw [←Fin.val_ne_iff, Fin.val_zero]
 
@@ -199,8 +199,7 @@ theorem val_fin_lt {n : ℕ} {a b : Fin n} : (a : ℕ) < (b : ℕ) ↔ a < b :=
 theorem val_fin_le {n : ℕ} {a b : Fin n} : (a : ℕ) ≤ (b : ℕ) ↔ a ≤ b :=
   Iff.rfl
 
-lemma one_le_of_ne_zero {n : ℕ} {k : Fin (n+1)}
-    (hk : k ≠ 0) : 1 ≤ k := by
+lemma one_le_of_ne_zero {n : ℕ} {k : Fin (n+1)} (hk : k ≠ 0) : 1 ≤ k := by
   match n with
   | 0 => simp only [Nat.reduceAdd, Fin.isValue, Fin.zero_le]
   | n+1 => rwa [Fin.le_iff_val_le_val, Fin.val_one, Nat.one_le_iff_ne_zero, ←val_ne_zero_iff]
@@ -388,9 +387,7 @@ lemma intCast_val_sub_eq_sub_add_ite {n : ℕ} (a b : Fin n) :
     ((a - b).val : ℤ) = a.val - b.val + if b ≤ a then 0 else n := by
   split <;> fin_omega
 
-lemma val_sub_one_of_ne_zero
-    (i : Fin n.succ) (hi : i ≠ 0) :
-    (i - 1).val = i - 1 := by
+lemma val_sub_one_of_ne_zero {i : Fin n.succ} (hi : i ≠ 0) : (i - 1).val = i - 1 := by
   match n with
   | 0 =>
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, isValue, val_eq_zero,
