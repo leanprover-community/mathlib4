@@ -106,7 +106,7 @@ theorem angle_triangle (x y z : V) : angle x z ≤ angle x y + angle y z := by
   rcases le_or_gt (angle x y + angle y z) π with h|h
   · have h₁ := angle_nonneg x y
     have h₂ := angle_nonneg y z
-    rw [← StrictAntiOn.le_iff_le (Real.strictAntiOn_cos) ⟨by positivity, h⟩ ⟨angle_nonneg x z, angle_le_pi x z⟩]
+    rw [← (Real.strictAntiOn_cos).le_iff_le ⟨by positivity, h⟩ ⟨angle_nonneg x z, angle_le_pi x z⟩]
     rw [cos_add, tsub_le_iff_right, add_comm, ← tsub_le_iff_right]
     apply le_of_sq_le_sq ?_  <| Left.mul_nonneg (sin_angle_nonneg x y) (sin_angle_nonneg y z)
     rw [mul_pow, Real.sin_sq, Real.sin_sq]
@@ -130,9 +130,9 @@ theorem angle_triangle (x y z : V) : angle x z ≤ angle x y + angle y z := by
         fin_cases i <;> fin_cases j <;> rfl
       · intro v
         convert real_inner_self_nonneg (x := (v 0 / ‖x‖) • x + (v 1 / ‖y‖) • y + (v 2 / ‖z‖) • z)
-        simp [star, Matrix.mulVec, A, Matrix.vecHead, Matrix.vecTail, inner_add_left, inner_add_right,
-          real_inner_smul_left, inner_smul_right, θxy, θxz, θyz, cos_angle, ← sub_eq_zero,
-          real_inner_self_eq_norm_mul_norm, real_inner_comm y x, real_inner_comm z]
+        simp [star, Matrix.mulVec, A, Matrix.vecHead, Matrix.vecTail, inner_add_left,
+          inner_add_right, real_inner_smul_left, inner_smul_right, θxy, θxz, θyz, cos_angle,
+          ← sub_eq_zero, real_inner_self_eq_norm_mul_norm, real_inner_comm y x, real_inner_comm z]
         field_simp
         ring_nf
     have hAd : 0 ≤ A.det := by
