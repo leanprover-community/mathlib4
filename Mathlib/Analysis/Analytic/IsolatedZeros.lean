@@ -309,10 +309,11 @@ lemma eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors A]
 end Mul
 end AnalyticOnNhd
 
-section PreimgCodiscrete
 /-!
 ### Preimages of codiscrete sets
 -/
+
+section PreimgCodiscrete
 
 /-- Preimages of codiscrete sets, local version: if `f` is analytic at `x` and not locally constant,
 then the preimage of any punctured neighbourhood of `f x` is a punctured neighbourhood of `x`. -/
