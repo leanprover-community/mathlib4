@@ -353,27 +353,13 @@ variable [CharZero R]
 variable [Ring A] [Algebra R A]
 
 theorem exp_of_nilpotent_is_unit (a : A) (h : IsNilpotent a) : IsUnit (exp R A a) := by
-  have h₀ : a + (-a) = 0 := by
-    exact add_neg_cancel a
-  have h0 : (-a) + a = 0 := by
-    exact neg_add_cancel a
-  have h₁ : Commute a (-a) := by
-    simp_all only [Commute.neg_right_iff, Commute.refl]
-  have h1 : Commute (-a) a := by
-    simp_all only [add_neg_cancel, Commute.neg_right_iff, Commute.refl, Commute.neg_left_iff]
-  have h₃ : IsNilpotent (-a) := IsNilpotent.neg h
-  have h₄ := exp_add_of_commute R A a (-a) h₁ h h₃
-  rw [h₀] at h₄
-  rw [exp_zero_eq_one R A] at h₄
-  dsimp [IsUnit]
+  have h₁ : Commute a (-a) := Commute.neg_right rfl
+  have h₂ : IsNilpotent (-a) := IsNilpotent.neg h
+  have h₃ := exp_add_of_commute R A a (-a) h₁ h h₂
+  rw [add_neg_cancel a, exp_zero_eq_one] at h₃
   apply isUnit_iff_exists.2
-  use exp R A (-a)
-  constructor
-  · apply h₄.symm
-  have h₅ := exp_add_of_commute R A (-a) a h1 h₃ h
-  rw [h0] at h₅
-  rw [exp_zero_eq_one R A] at h₅
-  apply h₅.symm
+  refine ⟨exp R A (-a), h₃.symm, ?_⟩
+  rw [← exp_add_of_commute R A (-a) a h₁.symm h₂ h, neg_add_cancel a, exp_zero_eq_one]
 
 end RingAlgebras
 
