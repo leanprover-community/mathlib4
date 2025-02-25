@@ -5347,6 +5347,7 @@ import Mathlib.Tactic.SetLike
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.Simps.ExistsAndEq
 import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
