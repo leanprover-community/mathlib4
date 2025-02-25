@@ -14,6 +14,10 @@ import Mathlib.Order.Interval.Finset.SuccPred
 
 This file proves relations between the various finset intervals in an additive successor/predecessor
 order.
+
+## TODO
+
+Copy over `insert` lemmas from `Mathlib.Order.Interval.Finset.Nat`.
 -/
 
 open Function Order OrderDual

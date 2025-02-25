@@ -10,6 +10,10 @@ import Mathlib.Order.SuccPred.Basic
 # Finset intervals in a successor-predecessor order
 
 This file proves relations between the various finset intervals in a successor/predecessor order.
+
+## TODO
+
+Copy over `insert` lemmas from `Mathlib.Order.Interval.Finset.Nat`.
 -/
 
 assert_not_exists MonoidWithZero
