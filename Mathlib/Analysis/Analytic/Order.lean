@@ -97,14 +97,14 @@ TODO: Behaviour under Addition/Subtraction
 /-- Helper lemma for `AnalyticAt.order_mul` -/
 lemma order_mul_of_order_eq_top {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀)
     (hg : AnalyticAt 𝕜 g z₀) (h'f : hf.order = ⊤) :
-    (hf.mul hg).order = ⊤ := by
+    (hf.mul' hg).order = ⊤ := by
   rw [AnalyticAt.order_eq_top_iff, eventually_nhds_iff] at *
   obtain ⟨t, h₁t, h₂t, h₃t⟩ := h'f
   exact ⟨t, fun y hy ↦ (by simp [h₁t y hy]), h₂t, h₃t⟩
 
 /-- The order is additive when multiplying analytic functions. -/
 theorem order_mul {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
-    (hf.mul hg).order = hf.order + hg.order := by
+    (hf.mul' hg).order = hf.order + hg.order := by
   -- Trivial cases: one of the functions vanishes around z₀
   by_cases h₂f : hf.order = ⊤
   · simp [hf.order_mul_of_order_eq_top hg h₂f, h₂f]
@@ -125,7 +125,7 @@ theorem order_mul {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (hg : Anal
 
 /-- The order multiplies by `n` when taking an analytic function to its `n`th power. -/
 theorem order_pow {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
-    (hf.pow n).order = n • hf.order := by
+    (hf.pow' n).order = n • hf.order := by
   induction n
   case zero =>
     simp [AnalyticAt.order_eq_zero_iff]
