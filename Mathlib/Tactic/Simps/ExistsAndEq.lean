@@ -10,7 +10,8 @@ import Qq
 # simproc for `∃ a', ... ∧ a' = a ∧ ...`
 
 This module implements the `existsAndEq` simproc that checks whether `P a'` has
-the form `... ∧ a' = a ∧ ...` for the goal `∃ a', P a'`. If so, it rewrites the latter as `P a`.
+the form `... ∧ a' = a ∧ ...` or `... ∧ a = a' ∧ ...` for the goal `∃ a', P a'`.
+If so, it rewrites the latter as `P a`.
 -/
 
 open Lean Meta Qq
@@ -66,8 +67,8 @@ where
 
 end existsAndEq
 
-/-- Checks whether `P a'` has the form `... ∧ a' = a ∧ ...` in the goal `∃ a', P a'`.
-If so, rewrites the goal as `P a`. -/
+/-- Checks whether `P a'` has the form `... ∧ a' = a ∧ ...` or `... ∧ a = a' ∧ ...` in
+the goal `∃ a', P a'`. If so, rewrites the goal as `P a`. -/
 simproc existsAndEq (Exists (fun _ => And _ _)) := fun e => do
   let_expr Exists _ p := e | return .continue
   let .some pf := ← existsAndEq.fingImpEqProof p | return .continue

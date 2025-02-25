@@ -320,7 +320,8 @@
    "Mathlib.Algebra.Order.Floor",
    "Mathlib.Analysis.Analytic.Basic",
    "Mathlib.Tactic.Bound.Init"],
-  "Mathlib.Tactic.Basic": ["Mathlib.Tactic.Linter.OldObtain"],
+  "Mathlib.Tactic.Basic":
+  ["Mathlib.Tactic.Linter.OldObtain", "Mathlib.Tactic.Simps.ExistsAndEq"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.Tactic.Algebraize": ["Mathlib.Algebra.Algebra.Tower"],
