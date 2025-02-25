@@ -52,7 +52,7 @@ def evalFinsetIccNat (m n : ℕ) (em en : Q(ℕ)) :
   -- If `m < n`, then `Icc m n = insert m (Icc m n)`.
   else if m < n then
     let hmn : Q(Nat.ble $em $en = true) := (q(Eq.refl true) :)
-    have em' : Q(ℕ) := mkNatLitQq (m + 1)
+    have em' : Q(ℕ) := mkNatLitQ (m + 1)
     have : $em' =Q $em + 1 := ⟨⟩
     let ⟨s, hs⟩ ← evalFinsetIccNat (m + 1) n em' en
     return ⟨q(insert $em $s), q(Icc_eq_insert_of_Icc_succ_eq $hmn $hs)⟩

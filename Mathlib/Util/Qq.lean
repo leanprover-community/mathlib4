@@ -45,6 +45,6 @@ pplication. Recall that all theorems and definitions containing numeric literals
 `OfNat.ofNat` applications in the frontend.
 
 This is a Qq version of `Lean.mkNatLit`. -/
-def mkNatLitQq (n : Nat) : Q(Nat) := mkNatLit n
+def mkNatLitQ (n : Nat) : Q(Nat) := mkNatLit n
 
 end Qq
