@@ -80,7 +80,6 @@ variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
 def embedding : K →+* adicCompletion K v :=
   @UniformSpace.Completion.coeRingHom K _ v.adicValued.toUniformSpace _ _
 
-@[simp]
 theorem embedding_apply (x : K) : embedding v x = ↑x := rfl
 
 noncomputable instance instRankOneValuedAdicCompletion :
@@ -126,7 +125,7 @@ lemma toNNReal_Valued_eq_vadicAbv' (x : K) :
 value. -/
 theorem FinitePlace.norm_def (x : K) : ‖embedding v x‖ = vadicAbv v x := by
   simp [NormedField.toNorm, instNormedFieldValuedAdicCompletion, Valued.toNormedField, Valued.norm,
-    Valuation.RankOne.hom, ← toNNReal_Valued_eq_vadicAbv']
+    Valuation.RankOne.hom, embedding_apply, ← toNNReal_Valued_eq_vadicAbv']
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/
