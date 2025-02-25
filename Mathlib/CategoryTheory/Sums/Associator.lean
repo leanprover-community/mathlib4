@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Sums.Basic
+import Mathlib.CategoryTheory.Products.Associator
 
 /-!
 # Associator for binary disjoint union of categories.
@@ -126,6 +127,35 @@ instance associatorIsEquivalence : (associator C D E).IsEquivalence :=
 
 instance inverseAssociatorIsEquivalence : (inverseAssociator C D E).IsEquivalence :=
   (by infer_instance : (associativity C D E).inverse.IsEquivalence)
+
+section CompatibilityWithProductAssociator
+
+variable (T : Type*) [Category T]
+
+/-- The forward direction of the fact that the equivalence `Sum.functorEquiv` sends associativity of
+sums to associativity of products -/
+@[simps!]
+def associativityFunctorEquivNaturalityFunctorIso :
+    ((associativity _ _ _).congrLeft.trans <| (Sum.functorEquiv C (D ⊕ E) T).trans <|
+      Equivalence.refl.prod <| Sum.functorEquiv _ _ T).functor ≅
+        (Sum.functorEquiv (C ⊕ D) E T).trans
+          ((Sum.functorEquiv _ _ _).prod Equivalence.refl)|>.trans
+            (prod.associativity _ _ _)|>.functor :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+
+/-- The backward direction of the fact that the equivalence `Sum.functorEquiv` sends associativity
+of sums to associativity of products -/
+@[simps!]
+def associativityFunctorNaturalityInverseIso :
+    ((associativity _ _ _).congrLeft.trans <| (Sum.functorEquiv C (D ⊕ E) T).trans <|
+      Equivalence.refl.prod <| Sum.functorEquiv _ _ T).inverse ≅
+        (Sum.functorEquiv (C ⊕ D) E T).trans
+          ((Sum.functorEquiv _ _ _).prod Equivalence.refl)|>.trans
+            (prod.associativity _ _ _)|>.inverse :=
+  Iso.isoInverseOfIsoFunctor (associativityFunctorEquivNaturalityFunctorIso _ _ _ _)
+
+
+end CompatibilityWithProductAssociator
 
 -- TODO unitors?
 -- TODO pentagon natural transformation? ...satisfying?
