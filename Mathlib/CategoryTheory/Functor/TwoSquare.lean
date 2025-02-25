@@ -79,7 +79,8 @@ variable {C₅ : Type u₅} {C₆ : Type u₆} {C₇ : Type u₇} {C₈ : Type u
 @[simps!]
 def hComp (w : TwoSquare T L R B) (w' : TwoSquare T' R R' B') :
     TwoSquare (T ⋙ T') L R' (B ⋙ B') :=
-  (whiskerLeft T w') ≫ (whiskerRight w B')
+  (Functor.associator _ _ _).hom ≫ (whiskerLeft T w') ≫
+  (Functor.associator _ _ _).inv ≫ (whiskerRight w B') ≫ (Functor.associator _ _ _).hom
 
 /-- Notation for the horizontal composition of 2-squares. -/
 scoped infixr:80 " ≫ₕ " => hComp -- type as \gg\_h
@@ -88,7 +89,8 @@ scoped infixr:80 " ≫ₕ " => hComp -- type as \gg\_h
 @[simps!]
 def vComp (w : TwoSquare T L R B) (w' : TwoSquare B L' R'' B'') :
     TwoSquare T (L ⋙ L') (R ⋙ R'') B'' :=
-  (whiskerRight w R'') ≫ (whiskerLeft L w')
+  (Functor.associator _ _ _).hom ≫ (whiskerRight w R'') ≫
+  (Functor.associator _ _ _).inv ≫ (whiskerLeft L w') ≫ (Functor.associator _ _ _).hom
 
 /-- Notation for the vertical composition of 2-squares. -/
 scoped infixr:80 " ≫ᵥ " => vComp -- type as \gg\_v
@@ -105,7 +107,8 @@ lemma hCompVCompHComp (w₁ : TwoSquare T L R B) (w₂ : TwoSquare T' R R' B')
   unfold hComp vComp
   unfold whiskerLeft whiskerRight
   ext c
-  simp only [Functor.comp_obj, NatTrans.comp_app, Functor.map_comp, assoc]
+  simp only [Functor.comp_obj, NatTrans.comp_app, Functor.associator_hom_app,
+    Functor.associator_inv_app, comp_id, id_comp, Functor.map_comp, assoc]
   slice_rhs 2 3 =>
     rw [← Functor.comp_map _ B₃, ← w₄.naturality]
   simp only [Functor.comp_obj, Functor.comp_map, assoc]
