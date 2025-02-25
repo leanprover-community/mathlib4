@@ -4782,6 +4782,7 @@ import Mathlib.RingTheory.Invariant
 import Mathlib.RingTheory.IsAdjoinRoot
 import Mathlib.RingTheory.IsPrimary
 import Mathlib.RingTheory.IsTensorProduct
+import Mathlib.RingTheory.Jacobson.Artinian
 import Mathlib.RingTheory.Jacobson.Ideal
 import Mathlib.RingTheory.Jacobson.Polynomial
 import Mathlib.RingTheory.Jacobson.Radical

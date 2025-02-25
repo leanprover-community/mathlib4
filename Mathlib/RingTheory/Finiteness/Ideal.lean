@@ -88,4 +88,18 @@ lemma exists_pow_le_of_le_radical_of_fg {R : Type*} [CommSemiring R] {I J : Idea
     use n₁ + n₂
     exact Ideal.sup_pow_add_le_pow_sup_pow.trans (sup_le hn₁ hn₂)
 
+theorem _root_.Submodule.FG.smul {I : Ideal R} [I.IsTwoSided] {N : Submodule R M}
+    (hI : I.FG) (hN : N.FG) : (I • N).FG := by
+  obtain ⟨s, rfl⟩ := hI
+  obtain ⟨t, rfl⟩ := hN
+  classical rw [Submodule.span_smul_span, ← s.coe_smul]
+  exact ⟨_, rfl⟩
+
+theorem FG.mul {I J : Ideal R} [I.IsTwoSided] (hI : I.FG) (hJ : J.FG) : (I * J).FG :=
+  Submodule.FG.smul hI hJ
+
+theorem FG.pow {I : Ideal R} [I.IsTwoSided] {n : ℕ} (hI : I.FG) : (I ^ n).FG :=
+  n.rec (by rw [I.pow_zero, one_eq_top]; exact fg_top R) fun n ih ↦ by
+    rw [IsTwoSided.pow_succ]; exact hI.mul ih
+
 end Ideal
