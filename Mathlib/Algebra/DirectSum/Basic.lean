@@ -406,12 +406,22 @@ def map : (⨁ i, α i) →+ ⨁ i, β i :=
   simp [map]
 
 @[simp] lemma map_apply (i : ι) (x : ⨁ i, α i) : (map f) x i = f i (x i) := by
-  sorry
+  apply DirectSum.induction_on (C := fun x ↦ (map f) x i = f i (x i)) x
+  · simp
+  · intro j x; rw [map_of, of_apply, of_apply]
+    by_cases h : j = i
+    · simp [h]; subst h; rfl
+    · simp [h]
+  · simp +contextual
 
-def map_surjective (h : ∀ i, Function.Surjective (f i)) : Function.Surjective (map f) := by
-  sorry
+lemma map_surjective (h : ∀ i, Function.Surjective (f i)) : Function.Surjective (map f) := by
+  intro x
+  apply DirectSum.induction_on (C := fun x ↦ ∃ a, (map f) a = x) x
+  · use 0; rfl
+  · intro i x; obtain ⟨y, hy⟩ := h i x; use of α i y; simp [hy]
+  · rintro x y ⟨u, hu⟩ ⟨v, hv⟩; use (u + v); simp [hu, hv]
 
-def map_eq_iff (x y : ⨁ i, α i) : map f x = map f y ↔ ∀ i, f i (x i) = f i (y i) := by
+lemma map_eq_iff (x y : ⨁ i, α i) : map f x = map f y ↔ ∀ i, f i (x i) = f i (y i) := by
   constructor
   · intro h i
     have : (map f) x i = (map f) y i := by rw [h]
