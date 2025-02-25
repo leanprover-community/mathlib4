@@ -408,7 +408,8 @@ def map : (⨁ i, α i) →+ ⨁ i, β i :=
 @[simp] lemma map_apply (i : ι) (x : ⨁ i, α i) : (map f) x i = f i (x i) := by
   sorry
 
-def map_surjective (h : ∀ i, Function.Surjective (f i)) : Function.Surjective (map f) := sorry
+def map_surjective (h : ∀ i, Function.Surjective (f i)) : Function.Surjective (map f) := by
+  sorry
 
 def map_eq_iff (x y : ⨁ i, α i) : map f x = map f y ↔ ∀ i, f i (x i) = f i (y i) := by
   constructor
