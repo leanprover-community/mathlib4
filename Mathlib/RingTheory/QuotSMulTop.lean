@@ -55,10 +55,13 @@ def map : (M →ₗ[R] M') →ₗ[R] QuotSMulTop r M →ₗ[R] QuotSMulTop r M' 
     map_le_iff_le_comap.mp <| le_of_eq_of_le (map_pointwise_smul _ _ _) <|
       smul_mono_right r le_top
 
-@[simp]
 lemma map_apply_mk (f : M →ₗ[R] M') (x : M) :
     map r f (Submodule.Quotient.mk x) =
       (Submodule.Quotient.mk (f x) : QuotSMulTop r M') := rfl
+
+@[simp]
+lemma map_apply_mkQ (f : M →ₗ[R] M') (x : M) :
+    map r f (Submodule.mkQ (r • ⊤) x) = Submodule.mkQ (r • ⊤) (f x) := rfl
 
 -- weirdly expensive to typecheck the type here?
 lemma map_comp_mkQ (f : M →ₗ[R] M') :
@@ -84,6 +87,12 @@ lemma equivQuotTensor_naturality_mk (f : M →ₗ[R] M') (x : M) :
         (equivQuotTensor r M (Submodule.Quotient.mk x)) :=
   (LinearMap.lTensor_tmul (R ⧸ Ideal.span {r}) f 1 x).symm
 
+lemma equivQuotTensor_naturality_mkQ (f : M →ₗ[R] M') (x : M) :
+    equivQuotTensor r M' (map r f (Submodule.mkQ (r • ⊤) x)) =
+      f.lTensor (R ⧸ Ideal.span {r})
+        (equivQuotTensor r M (Submodule.mkQ (r • ⊤) x)) :=
+  (LinearMap.lTensor_tmul (R ⧸ Ideal.span {r}) f 1 x).symm
+
 lemma equivQuotTensor_naturality (f : M →ₗ[R] M') :
     equivQuotTensor r M' ∘ₗ map r f =
       f.lTensor (R ⧸ Ideal.span {r}) ∘ₗ equivQuotTensor r M :=
@@ -93,6 +102,12 @@ lemma equivTensorQuot_naturality_mk (f : M →ₗ[R] M') (x : M) :
     equivTensorQuot r M' (map r f (Submodule.Quotient.mk x)) =
       f.rTensor (R ⧸ Ideal.span {r})
         (equivTensorQuot r M (Submodule.Quotient.mk x)) :=
+  (LinearMap.rTensor_tmul (R ⧸ Ideal.span {r}) f 1 x).symm
+
+lemma equivTensorQuot_naturality_mkQ (f : M →ₗ[R] M') (x : M) :
+    equivTensorQuot r M' (map r f (Submodule.mkQ (r • ⊤) x)) =
+      f.rTensor (R ⧸ Ideal.span {r})
+        (equivTensorQuot r M (Submodule.mkQ (r • ⊤) x)) :=
   (LinearMap.rTensor_tmul (R ⧸ Ideal.span {r}) f 1 x).symm
 
 lemma equivTensorQuot_naturality (f : M →ₗ[R] M') :

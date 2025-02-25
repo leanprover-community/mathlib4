@@ -131,16 +131,16 @@ open Ideal Finset Submodule in
 theorem exists_smodEq (pb : PowerBasis A B) (b : B) :
     ∃ a, SModEq (Ideal.span ({pb.gen})) b (algebraMap A B a) := by
   rcases subsingleton_or_nontrivial B
-  · exact ⟨0, by rw [SModEq, Subsingleton.eq_zero b, _root_.map_zero]⟩
+  · exact ⟨0, by simp [SModEq.def, Subsingleton.eq_zero b]⟩
   refine ⟨pb.basis.repr b ⟨0, pb.dim_pos⟩, ?_⟩
   have H := pb.basis.sum_repr b
   rw [← insert_erase (mem_univ ⟨0, pb.dim_pos⟩), sum_insert (not_mem_erase _ _)] at H
-  rw [SModEq, ← add_zero (algebraMap _ _ _), Quotient.mk_add]
+  rw [SModEq, ← add_zero (algebraMap _ _ _), mkQ_add]
   nth_rewrite 1 [← H]
-  rw [Quotient.mk_add]
+  rw [mkQ_add]
   congr 1
   · simp [Algebra.algebraMap_eq_smul_one ((pb.basis.repr b) _)]
-  · rw [Quotient.mk_zero, Quotient.mk_eq_zero, coe_basis]
+  · rw [mkQ_zero, mkQ_eq_zero, coe_basis]
     refine sum_mem _ (fun i hi ↦ ?_)
     rw [Algebra.smul_def']
     refine Ideal.mul_mem_left _ _ <| Ideal.pow_mem_of_mem _ (Ideal.subset_span (by simp)) _ <|

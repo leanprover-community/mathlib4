@@ -99,7 +99,7 @@ instance rTensor_nontrivial
   have injective_inc : Function.Injective inc := LinearMap.ker_eq_bot.1 <| eq_bot_iff.2 <| by
     intro r hr
     induction r using Quotient.inductionOn' with | h r =>
-    simpa only [Submodule.Quotient.mk''_eq_mk, Submodule.mem_bot, Submodule.Quotient.mk_eq_zero,
+    simpa only [Submodule.mk''_eq_mkQ, Submodule.mem_bot, Submodule.mkQ_eq_zero,
       Submodule.mem_annihilator_span_singleton, LinearMap.mem_ker, Submodule.liftQ_apply,
       LinearMap.flip_apply, LinearMap.lsmul_apply, I, inc] using hr
   have ne_top := iff_flat_and_proper_ideal R M |>.1 fl |>.2 I I_ne_top
@@ -129,7 +129,6 @@ lemma lTensor_reflects_triviality
   haveI : Subsingleton (N ⊗[R] M) := (TensorProduct.comm R N M).toEquiv.injective.subsingleton
   apply rTensor_reflects_triviality R M
 
-attribute [-simp] Ideal.Quotient.mk_eq_mk in
 lemma iff_flat_and_rTensor_faithful :
     FaithfullyFlat R M ↔
     (Flat R M ∧

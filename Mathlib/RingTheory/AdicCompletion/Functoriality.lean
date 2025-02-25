@@ -3,7 +3,6 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.RingTheory.AdicCompletion.Basic
 import Mathlib.RingTheory.AdicCompletion.Algebra
 import Mathlib.Algebra.DirectSum.Basic
 
@@ -45,8 +44,8 @@ private def reduceModIdealAux (f : M →ₗ[R] N) :
 
 @[local simp]
 private theorem reduceModIdealAux_apply (f : M →ₗ[R] N) (x : M) :
-    (f.reduceModIdealAux I) (Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) x) =
-      Submodule.Quotient.mk (p := (I • ⊤ : Submodule R N)) (f x) :=
+    (f.reduceModIdealAux I) (Submodule.mkQ (I • ⊤ : Submodule R M) x) =
+      Submodule.mkQ (I • ⊤ : Submodule R N) (f x) :=
   rfl
 
 /-- The induced linear map on the quotients mod `I • ⊤`. -/
@@ -57,14 +56,17 @@ def reduceModIdeal (f : M →ₗ[R] N) :
   map_smul' r x := by
     refine Quotient.inductionOn' r (fun r ↦ ?_)
     refine Quotient.inductionOn' x (fun x ↦ ?_)
-    simp only [Submodule.Quotient.mk''_eq_mk, Ideal.Quotient.mk_eq_mk, Module.Quotient.mk_smul_mk,
-      Submodule.Quotient.mk_smul, LinearMapClass.map_smul, reduceModIdealAux_apply,
-      RingHomCompTriple.comp_apply]
+    simp [Submodule.mk''_eq_mkQ, Module.Quotient.mkQ_smul_mkQ]
+
+theorem reduceModIdeal_apply' (f : M →ₗ[R] N) (x : M) :
+    (f.reduceModIdeal I) (Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) x) =
+      Submodule.Quotient.mk (p := (I • ⊤ : Submodule R N)) (f x) :=
+  rfl
 
 @[simp]
 theorem reduceModIdeal_apply (f : M →ₗ[R] N) (x : M) :
-    (f.reduceModIdeal I) (Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) x) =
-      Submodule.Quotient.mk (p := (I • ⊤ : Submodule R N)) (f x) :=
+    (f.reduceModIdeal I) (Submodule.mkQ (I • ⊤ : Submodule R M) x) =
+      Submodule.mkQ (I • ⊤ : Submodule R N) (f x) :=
   rfl
 
 end LinearMap
@@ -291,7 +293,7 @@ theorem sumInv_comp_sum : sumInv I M ∘ₗ sum I M = LinearMap.id := by
   apply DirectSum.ext_component (AdicCompletion I R) (fun i ↦ ?_)
   ext n
   simp only [LinearMap.coe_comp, Function.comp_apply, sum_lof, map_mk, component_sumInv,
-    mk_apply_coe, AdicCauchySequence.map_apply_coe, Submodule.mkQ_apply, LinearMap.id_comp]
+    mk_apply_coe, AdicCauchySequence.map_apply_coe, LinearMap.id_comp]
   rw [DirectSum.component.of, DirectSum.component.of]
   split
   · next h => subst h; simp
@@ -299,12 +301,11 @@ theorem sumInv_comp_sum : sumInv I M ∘ₗ sum I M = LinearMap.id := by
 
 theorem sum_comp_sumInv : sum I M ∘ₗ sumInv I M = LinearMap.id := by
   ext f n
-  simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq, mk_apply_coe,
-    Submodule.mkQ_apply]
+  simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq, mk_apply_coe]
   rw [← DirectSum.sum_univ_of (((sumInv I M) ((AdicCompletion.mk I (⨁ (j : ι), M j)) f)))]
   simp only [sumInv_apply, map_mk, map_sum, sum_of, val_sum_apply, mk_apply_coe,
-    AdicCauchySequence.map_apply_coe, Submodule.mkQ_apply]
-  simp only [← Submodule.mkQ_apply, ← map_sum]
+    AdicCauchySequence.map_apply_coe]
+  simp only [← map_sum]
   erw [DirectSum.sum_univ_of]
 
 /-- If `ι` is finite, `sum` has `sumInv` as inverse. -/

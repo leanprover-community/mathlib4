@@ -351,7 +351,7 @@ instance Quotient.isScalarTower [SMul R₁ R₂] [IsScalarTower R₁ R₂ A] (I 
 /-- The canonical morphism `A →ₐ[R₁] A ⧸ I` as morphism of `R₁`-algebras, for `I` an ideal of
 `A`, where `A` is an `R₁`-algebra. -/
 def Quotient.mkₐ (I : Ideal A) [I.IsTwoSided] : A →ₐ[R₁] A ⧸ I :=
-  ⟨⟨⟨⟨fun a => Submodule.Quotient.mk a, rfl⟩, fun _ _ => rfl⟩, rfl, fun _ _ => rfl⟩, fun _ => rfl⟩
+  ⟨⟨⟨⟨fun a => Submodule.mkQ I a, rfl⟩, fun _ _ => rfl⟩, rfl, fun _ _ => rfl⟩, fun _ => rfl⟩
 
 theorem Quotient.algHom_ext {I : Ideal A} [I.IsTwoSided]
     {S} [Semiring S] [Algebra R₁ S] ⦃f g : A ⧸ I →ₐ[R₁] S⦄
@@ -1001,16 +1001,16 @@ def powQuotPowSuccLinearEquivMapMkPowSuccPow :
   · intro
     simp [Submodule.mem_smul_top_iff, pow_succ']
   · intro x
-    obtain ⟨⟨y, hy⟩, rfl⟩ := Submodule.Quotient.mk_surjective _ x
+    obtain ⟨⟨y, hy⟩, rfl⟩ := Submodule.mkQ_surjective _ x
     simp [Ideal.mem_sup_left hy]
   · intro a b
-    obtain ⟨⟨x, hx⟩, rfl⟩ := Submodule.Quotient.mk_surjective _ a
-    obtain ⟨⟨y, hy⟩, rfl⟩ := Submodule.Quotient.mk_surjective _ b
-    simp [Ideal.Quotient.eq, Submodule.Quotient.eq, Submodule.mem_smul_top_iff, pow_succ']
+    obtain ⟨⟨x, hx⟩, rfl⟩ := Submodule.mkQ_surjective _ a
+    obtain ⟨⟨y, hy⟩, rfl⟩ := Submodule.mkQ_surjective _ b
+    simp [Ideal.Quotient.eq, Submodule.mkQ_eq, Submodule.mem_smul_top_iff, pow_succ']
   · intro ⟨x, hx⟩
     rw [Ideal.mem_map_iff_of_surjective _ Ideal.Quotient.mk_surjective] at hx
     obtain ⟨y, hy, rfl⟩ := hx
-    refine ⟨Submodule.Quotient.mk ⟨y, hy⟩, ?_⟩
+    refine ⟨Submodule.mkQ (I • ⊤) ⟨y, hy⟩, ?_⟩
     simp
 
 /-- `I ^ n ⧸ I ^ (n + 1)` can be viewed as a quotient module and as ideal of `R ⧸ I ^ (n + 1)`.

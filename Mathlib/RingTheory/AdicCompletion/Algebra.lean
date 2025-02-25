@@ -190,7 +190,7 @@ theorem evalₐ_mkₐ (n : ℕ) (x : AdicCauchySequence I R) :
 theorem Ideal.mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (r : AdicCauchySequence I R) :
     Ideal.Quotient.mk (I ^ m) (r.val n) = Ideal.Quotient.mk (I ^ m) (r.val m) := by
   have h : I ^ m = I ^ m • ⊤ := by simp
-  rw [← Ideal.Quotient.mk_eq_mk, ← Ideal.Quotient.mk_eq_mk, h]
+  rw [← Ideal.Quotient.mkQ_eq_mk, ← Ideal.Quotient.mkQ_eq_mk, h]
   exact (r.property hmn).symm
 
 theorem smul_mk {m n : ℕ} (hmn : m ≤ n) (r : AdicCauchySequence I R)
@@ -200,6 +200,14 @@ theorem smul_mk {m n : ℕ} (hmn : m ≤ n) (r : AdicCauchySequence I R)
   rw [← Submodule.Quotient.mk_smul, ← Module.Quotient.mk_smul_mk,
     AdicCauchySequence.mk_eq_mk hmn, Ideal.mk_eq_mk I hmn, Module.Quotient.mk_smul_mk,
     Submodule.Quotient.mk_smul]
+
+theorem smul_mkQ {m n : ℕ} (hmn : m ≤ n) (r : AdicCauchySequence I R)
+    (x : AdicCauchySequence I M) :
+    r.val n • Submodule.mkQ (I ^ m • ⊤ : Submodule R M) (x.val n) =
+      r.val m • Submodule.mkQ (I ^ m • ⊤ : Submodule R M) (x.val m) := by
+  rw [← Submodule.mkQ_smul, ← Module.Quotient.mkQ_smul_mkQ,
+    AdicCauchySequence.mkQ_eq_mkQ hmn, Ideal.mk_eq_mk I hmn, Module.Quotient.mkQ_smul_mkQ,
+    Submodule.mkQ_smul]
 
 /-- Scalar multiplication of `R ⧸ (I • ⊤)` on `M ⧸ (I • ⊤)`. This is used in order to have
 good definitional behaviour for the module instance on adic completions -/

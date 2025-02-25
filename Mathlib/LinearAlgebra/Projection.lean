@@ -70,19 +70,31 @@ def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
       ⟨by rw [← ker_eq_bot, ker_comp, ker_mkQ, disjoint_iff_comap_eq_bot.1 h.symm.disjoint], by
         rw [← range_eq_top, range_comp, range_subtype, map_mkQ_eq_top, h.sup_eq_top]⟩
 
-@[simp]
-theorem quotientEquivOfIsCompl_symm_apply (h : IsCompl p q) (x : q) :
+theorem quotientEquivOfIsCompl_symm_apply' (h : IsCompl p q) (x : q) :
     -- Porting note: type ascriptions needed on the RHS
     (quotientEquivOfIsCompl p q h).symm x = (Quotient.mk (x : E) : E ⧸ p) := rfl
 
 @[simp]
+theorem quotientEquivOfIsCompl_symm_apply (h : IsCompl p q) (x : q) :
+    -- Porting note: type ascriptions needed on the RHS
+    (quotientEquivOfIsCompl p q h).symm x = mkQ p x := rfl
+
 theorem quotientEquivOfIsCompl_apply_mk_coe (h : IsCompl p q) (x : q) :
     quotientEquivOfIsCompl p q h (Quotient.mk x) = x :=
   (quotientEquivOfIsCompl p q h).apply_symm_apply x
 
 @[simp]
+theorem quotientEquivOfIsCompl_apply_mkQ_coe (h : IsCompl p q) (x : q) :
+    quotientEquivOfIsCompl p q h (mkQ p x) = x :=
+  (quotientEquivOfIsCompl p q h).apply_symm_apply x
+
 theorem mk_quotientEquivOfIsCompl_apply (h : IsCompl p q) (x : E ⧸ p) :
     (Quotient.mk (quotientEquivOfIsCompl p q h x) : E ⧸ p) = x :=
+  (quotientEquivOfIsCompl p q h).symm_apply_apply x
+
+@[simp]
+theorem mkQ_quotientEquivOfIsCompl_apply (h : IsCompl p q) (x : E ⧸ p) :
+    mkQ p (quotientEquivOfIsCompl p q h x) = x :=
   (quotientEquivOfIsCompl p q h).symm_apply_apply x
 
 /-- If `q` is a complement of `p`, then `p × q` is isomorphic to `E`. It is the unique

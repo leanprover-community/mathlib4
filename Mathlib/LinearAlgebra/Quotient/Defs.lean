@@ -83,25 +83,20 @@ instance : Zero (M ⧸ p) where
 instance : Inhabited (M ⧸ p) :=
   ⟨0⟩
 
-@[simp]
 theorem mk_zero : mk 0 = (0 : M ⧸ p) :=
   rfl
 
-@[simp]
 theorem mk_eq_zero : (mk x : M ⧸ p) = 0 ↔ x ∈ p := by simpa using (Quotient.eq' p : mk x = 0 ↔ _)
 
 instance addCommGroup : AddCommGroup (M ⧸ p) :=
   QuotientAddGroup.Quotient.addCommGroup p.toAddSubgroup
 
-@[simp]
 theorem mk_add : (mk (x + y) : M ⧸ p) = mk x + mk y :=
   rfl
 
-@[simp]
 theorem mk_neg : (mk (-x) : M ⧸ p) = -(mk x) :=
   rfl
 
-@[simp]
 theorem mk_sub : (mk (x - y) : M ⧸ p) = mk x - mk y :=
   rfl
 
@@ -125,7 +120,6 @@ instance instSMul' : SMul S (M ⧸ P) :=
 instance instSMul : SMul R (M ⧸ P) :=
   Quotient.instSMul' P
 
-@[simp]
 theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
   rfl
 
@@ -213,11 +207,54 @@ theorem quot_hom_ext (f g : (M ⧸ p) →ₗ[R] M₂) (h : ∀ x : M, f (Quotien
 /-- The map from a module `M` to the quotient of `M` by a submodule `p` as a linear map. -/
 def mkQ : M →ₗ[R] M ⧸ p where
   toFun := Quotient.mk
-  map_add' := by simp
-  map_smul' := by simp
+  map_add' := by simp [Submodule.Quotient.mk_add]
+  map_smul' := by simp [Submodule.Quotient.mk_smul]
+
+@[elab_as_elim]
+theorem Quotient.induction_on' {C : M ⧸ p → Prop} (x : M ⧸ p) (H : ∀ z, C (mkQ p z)) :
+    C x := Quotient.inductionOn' x H
+
+theorem Quotient.quot_hom_ext' (f g : (M ⧸ p) →ₗ[R] M₂) (h : ∀ x : M, f (mkQ p x) = g (mkQ p x)) :
+    f = g :=
+  LinearMap.ext fun x => Submodule.Quotient.induction_on' _ x h
+
+theorem mkQ_apply (x : M) : p.mkQ x = Quotient.mk x :=
+  rfl
 
 @[simp]
-theorem mkQ_apply (x : M) : p.mkQ x = Quotient.mk x :=
+theorem mkQ_zero : mkQ p 0 = 0 :=
+  rfl
+
+@[simp]
+theorem mkQ_eq_zero : mkQ p x = 0 ↔ x ∈ p := by simpa using (Quotient.eq' p : mkQ p x = 0 ↔ _)
+
+@[simp]
+theorem mkQ_add : mkQ p (x + y) = mkQ p x + mkQ p y :=
+  rfl
+
+@[simp]
+theorem mkQ_neg : mkQ p (-x) = -(mkQ p x) :=
+  rfl
+
+@[simp]
+theorem mkQ_sub : mkQ p (x - y) = mkQ p x - mkQ p y :=
+  rfl
+
+@[simp]
+theorem mkQ_smul {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (x : M) :
+    mkQ p (r • x) = r • mkQ p x :=
+  rfl
+
+protected theorem mkQ_eq' {x y : M} : mkQ p x = mkQ p y ↔ -x + y ∈ p :=
+  QuotientAddGroup.eq
+
+protected theorem mkQ_eq {x y : M} : mkQ p x = mkQ p y ↔ x - y ∈ p :=
+  (Submodule.mkQ_eq' p).trans (leftRel_apply.symm.trans p.quotientRel_def)
+
+theorem mk''_eq_mkQ {p : Submodule R M} (x : M) : Quotient.mk'' x = mkQ p x :=
+  rfl
+
+theorem quot_mk_eq_mkQ {p : Submodule R M} (x : M) : Quot.mk _ x = mkQ p x :=
   rfl
 
 theorem mkQ_surjective : Function.Surjective p.mkQ := by
@@ -247,10 +284,14 @@ def quotEquivOfEq (h : p = p') : (M ⧸ p) ≃ₗ[R] M ⧸ p' :=
       rintro x ⟨y⟩
       rfl }
 
-@[simp]
 theorem quotEquivOfEq_mk (h : p = p') (x : M) :
     Submodule.quotEquivOfEq p p' h (Submodule.Quotient.mk x) =
       (Submodule.Quotient.mk x) :=
+  rfl
+
+@[simp]
+theorem quotEquivOfEq_mkQ (h : p = p') (x : M) :
+    Submodule.quotEquivOfEq p p' h (mkQ p x) = (mkQ p' x) :=
   rfl
 
 end Submodule

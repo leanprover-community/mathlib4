@@ -456,16 +456,16 @@ lemma surjective_range_liftQ (h : range f ≤ ker g) (hg : Function.Surjective g
     Function.Surjective ((range f).liftQ g h) := by
   intro x₃
   obtain ⟨x₂, rfl⟩ := hg x₃
-  exact ⟨Submodule.Quotient.mk x₂, rfl⟩
+  exact ⟨mkQ _ x₂, rfl⟩
 
 lemma ker_eq_bot_range_liftQ_iff (h : range f ≤ ker g) :
     ker ((range f).liftQ g h) = ⊥ ↔ ker g = range f := by
   simp only [Submodule.ext_iff, mem_ker, Submodule.mem_bot, mem_range]
   constructor
   · intro hfg x
-    simpa using hfg (Submodule.Quotient.mk x)
+    simpa using hfg (mkQ _ x)
   · intro hfg x
-    obtain ⟨x, rfl⟩ := Submodule.Quotient.mk_surjective _ x
+    obtain ⟨x, rfl⟩ := mkQ_surjective _ x
     simpa using hfg x
 
 lemma injective_range_liftQ_of_exact (h : Function.Exact f g) :
