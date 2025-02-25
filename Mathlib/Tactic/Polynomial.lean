@@ -70,7 +70,7 @@ def ExMon.exp_eq
     -- | _, _ => false
 def ExMon.e
     {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a : Q(Polynomial $α)} :
-    ExMon sα a → Expr
+    ExMon sα a → Q($α)
   | .mon _ e => e
 
 def ExMon.toSum
@@ -341,15 +341,16 @@ end evals
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
 -- set_option profiler true
 
-def ExSum.eq_exSum
+/- Close the goal P = Q by equating coefficients. -/
+partial def ExSum.eq_exSum
     {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a b : Q(Polynomial $α)}
-    (goal : MVarId) (e₁ e₂ : Q(Polynomial $α)) (exa : ExSum sα a) (exb : ExSum sα b)
-    : MetaM (List MVarId):=
-  match exa, exb with
+    (goal : MVarId) (e₁ e₂ : Q(Polynomial $α)) (exSum_a : ExSum sα a) (exSum_b : ExSum sα b)
+    : MetaM (List MVarId) :=
+  match exSum_a, exSum_b with
   | .zero, .zero => do
       goal.assign q(rfl : (0: Polynomial $α) = 0)
       return []
-  | .add ema exa, .add emb exb => do
+  | .add (b := P) ema exa, .add (b := Q) emb exb => do
     have m : ℕ := ema.exponent
     have n : ℕ := emb.exponent
     have ea : Q($α) := ema.e
@@ -358,59 +359,42 @@ def ExSum.eq_exSum
     if m == n then
       IO.println "m = n"
       /- goal is of the form `monomial n e₁ + _ = monomial n e₂ + _`-/
-      /- Something here feels wrong, I don't like having to do the `@monomial` thing.
-        Should I merge `ExSum` and `Result`?-/
       have g : Q($ea = $eb) := ← mkFreshExprMVarQ q($ea = $eb)
-      let ~q(monomial _ _ + $P) := e₁
-        | throwError "error a"
-      let ~q(monomial _ _ + $Q) := e₂
-        | throwError "error b"
       have goal' : Q($P = $Q) := ← mkFreshExprMVarQ q($P = $Q)
       goal.assign q(monomial_add_congr (R := $α) $n $g $goal')
       let goals ← exa.eq_exSum goal'.mvarId! P Q exb
       return g.mvarId! :: goals
     else if m < n then
       IO.println "m < n"
-      let ~q(monomial _ _ + $P) := e₁
-        | throwError "error g"
       have g : Q($ea = 0) := ← mkFreshExprMVarQ q($ea = 0)
       have goal' : Q($P = $e₂) := ← mkFreshExprMVarQ q($P = $e₂)
       goal.assign q(monomial_add_zero_congr (R := $α) $m $g $goal')
-      let goals ← exa.eq_exSum goal'.mvarId! P e₂ (.add emb exb)
+      let goals ← exa.eq_exSum goal'.mvarId! P e₂ exSum_b
       return g.mvarId! :: goals
     else
       IO.println "m > n"
-      let ~q(monomial _ _ + $Q) := e₂
-        | throwError "error c"
       have g : Q($eb = 0) := ← mkFreshExprMVarQ q($eb = 0)
       have goal' : Q($e₁ = $Q) := ← mkFreshExprMVarQ q($e₁ = $Q)
       goal.assign q(monomial_zero_add_congr (R := $α) $n $g $goal')
-      let goals ← (ExSum.add ema exa).eq_exSum goal'.mvarId! e₁ Q exb
+      let goals ← exSum_a.eq_exSum goal'.mvarId! e₁ Q exb
       return g.mvarId! :: goals
   /- Same as m < n case -/
-  | .add ema exa , .zero => do
+  | .add (b := P) ema exa , .zero => do
       IO.println "add, zero"
       have m : ℕ := ema.exponent
-      have ea : Q($α) := ema.e
-      let ~q(monomial _ _ + $P) := e₁
-        | throwError "error g"
-      have g : Q($ea = 0) := ← mkFreshExprMVarQ q($ea = 0)
+      have g : Q($ema.e = 0) := ← mkFreshExprMVarQ q($ema.e = 0)
       have goal' : Q($P = $e₂) := ← mkFreshExprMVarQ q($P = $e₂)
       goal.assign q(monomial_add_zero_congr (R := $α) $m $g $goal')
-      let goals ← exa.eq_exSum goal'.mvarId! P e₂ .zero
+      let goals ← exa.eq_exSum goal'.mvarId! P e₂ exSum_b
       return g.mvarId! :: goals
   /- Same as m > n case -/
-  | .zero, .add emb exb  => do
+  | .zero, .add (b := Q) emb exb  => do
       have n : ℕ := emb.exponent
-      have eb : Q($α) := emb.e
-      let ~q(monomial _ _ + $Q) := e₂
-        | throwError "error c"
-      have g : Q($eb = 0) := ← mkFreshExprMVarQ q($eb = 0)
+      have g : Q($emb.e = 0) := ← mkFreshExprMVarQ q($emb.e = 0)
       have goal' : Q($e₁ = $Q) := ← mkFreshExprMVarQ q($e₁ = $Q)
       goal.assign q(monomial_zero_add_congr (R := $α) $n $g $goal')
-      let goals ← (ExSum.zero).eq_exSum goal'.mvarId! e₁ Q exb
+      let goals ← exSum_a.eq_exSum goal'.mvarId! e₁ Q exb
       return g.mvarId! :: goals
-
 
 def normalize : TacticM Unit := withMainContext do
   let goal ← getMainGoal
