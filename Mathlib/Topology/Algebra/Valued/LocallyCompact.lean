@@ -169,7 +169,7 @@ variable (K) in
 lemma exists_nnnorm_lt : ∃ x : 𝒪[K], 0 < ‖x‖₊ ∧ ‖x‖₊ < 1 :=
   exists_norm_coe_lt K
 
-lemma _root_.Valuation.integer.isPrincipalIdealRing_of_compactSpace {F Γ₀} [Field F]
+lemma isPrincipalIdealRing_of_compactSpace {F Γ₀} [Field F]
     [LinearOrderedCommGroupWithZero Γ₀] [MulArchimedean Γ₀] [hv : Valued F Γ₀] [CompactSpace 𝒪[F]]
     (h : ∃ x : F, 0 < Valued.v x ∧ Valued.v x < 1) :
     IsPrincipalIdealRing 𝒪[F] := by
@@ -285,7 +285,7 @@ lemma isDiscreteValuationRing_of_compactSpace [h : CompactSpace 𝒪[K]] :
   obtain ⟨x, hx, hx'⟩ := exists_nnnorm_lt K
   rw [← nnnorm_one (α := K)] at hx'
   have key : IsPrincipalIdealRing 𝒪[K] :=
-    Valuation.integer.isPrincipalIdealRing_of_compactSpace (NormedField.exists_norm_lt_one K)
+    isPrincipalIdealRing_of_compactSpace (NormedField.exists_norm_lt_one K)
   exact {
     __ := hl
     __ := key
