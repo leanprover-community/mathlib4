@@ -150,102 +150,63 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
           (intro h1 h2 h3 h4 h5; use h1 + h2, h1; omega)
         simp only [mem_sigma, mem_range, implies_true]
 
-  have e4 : ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
-    ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ij.1 + ij.2 ≤ 2 * N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) +
-    ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ ij.1 + ij.2 ≤ 2 * N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
-      rw [sum_filter_add_sum_filter_not]
-
-  have e5 : ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ ij.1 + ij.2 ≤ 2 * N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 := by
+  have z₁ : ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ ij.1 + ij.2 ≤ 2 * N,
+      ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 := by
     apply sum_eq_zero
     intro i hi
-    simp at hi
+    simp only [mem_filter] at hi
     obtain ⟨hi1, hi2⟩ := hi
-    have help : N + 1 ≤ i.1 ∨ N + 1 ≤ i.2 := by
-      by_contra h
-      simp at h
-      obtain ⟨hi11, hi21⟩ := h
-      linarith
-    cases help with
-    | inl h1 =>
-      have qqq : a ^ (i.1) = 0 := pow_eq_zero_of_le h1 h₄
-      rw [qqq]
-      simp
-    | inr h1 =>
-      have qqq : b ^ (i.2) = 0 := pow_eq_zero_of_le h1 h₅
-      rw [qqq]
-      simp
-  rw [e5] at e4
-  simp at e4
-  simp at s₁
-  rw [← e4] at s₁
-  have e5 : ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
-    ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ij.1 ≤ N ∧ ij.2 ≤ N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) +
-    ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ (ij.1 ≤ N ∧ ij.2 ≤ N), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
+    cases le_or_lt (N + 1) i.1 with
+      | inl h => rw [pow_eq_zero_of_le h h₄, zero_mul, smul_zero]
+      | inr _ => rw [pow_eq_zero_of_le (by linarith) h₅, mul_zero, smul_zero]
+
+  have split₁ : ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)), ((ij.1.factorial : R)⁻¹ *
+      (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
+        ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ij.1 + ij.2 ≤ 2 * N,
+          ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) +
+        ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ ij.1 + ij.2 ≤ 2 * N,
+          ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
       rw [sum_filter_add_sum_filter_not]
 
-  have e6 : ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ (ij.1 ≤ N ∧ ij.2 ≤ N), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 := by
+  rw [z₁] at split₁
+  simp only [product_eq_sprod, add_zero] at split₁
+  simp only [product_eq_sprod] at s₁
+  rw [← split₁] at s₁
+
+  have z₂ : ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ (ij.1 ≤ N ∧ ij.2 ≤ N),
+      ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 := by
     apply sum_eq_zero
     intro i hi
-    push_neg at hi
     simp at hi
-    obtain ⟨aa, ba⟩ := hi
-    have rrr : N + 1 ≤ i.1 ∨ N + 1 ≤ i.2 := by
-      by_contra hh
-      push_neg at hh
-      have h₁1 : i.1 < N + 1 := hh.1
-      have h₂1 : i.2 < N + 1 := hh.2
-      have h₃1 : i.1 ≤ N := by
-        exact Nat.le_of_lt_succ h₁1
-      have ttt := ba h₃1
-      linarith
-    cases rrr with
-    | inl h1 =>
-      have qqq : a ^ (i.1) = 0 := pow_eq_zero_of_le h1 h₄
-      rw [qqq]
-      simp
-    | inr h1 =>
-      have qqq : b ^ (i.2) = 0 := pow_eq_zero_of_le h1 h₅
-      rw [qqq]
-      simp
-  rw [e6] at e5
-  simp at e5
-  have lll: ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) with ij.1 ≤ N ∧ ij.2 ≤ N, ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = ∑ ij ∈ (range (N + 1)).product (range (N + 1)), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
-    let aaaaa := ((range (2 * N + 1)).product (range (2 * N + 1))).filter (fun ij => ij.1 ≤ N ∧ ij.2 ≤ N)
-    let bbbbb := (range (N + 1)).product (range (N + 1))
-    have key : aaaaa = bbbbb := by
-      dsimp [aaaaa, bbbbb]
-      ext x
-      constructor
-      intro hhh
-      simp at hhh
-      obtain ⟨hhh1, hhh2⟩ := hhh
-      obtain ⟨hhh1a, hhh1b⟩ := hhh1
-      obtain ⟨hhh2a, hhh2b⟩ := hhh2
-      simp
-      constructor
-      exact Nat.lt_add_one_of_le hhh2a
-      exact Nat.lt_add_one_of_le hhh2b
-      intro hhh
-      simp at hhh
-      obtain ⟨hhh1, hhh2⟩ := hhh
-      simp
-      constructor
-      constructor
-      linarith [hhh1]
-      linarith [hhh2]
-      constructor
-      exact Nat.le_of_lt_succ hhh1
-      exact Nat.le_of_lt_succ hhh2
-    apply sum_congr
-    simp at key
-    simp
-    apply key
-    intro x hx
-    rfl
-  rw [e5] at s₁
-  simp at lll
-  rw [lll] at s₁
+    cases le_or_lt (N + 1) i.1 with
+      | inl h => rw [pow_eq_zero_of_le h h₄, zero_mul, smul_zero]
+      | inr h => rw [pow_eq_zero_of_le (hi.2 (Nat.le_of_lt_succ h)) h₅, mul_zero, smul_zero]
 
+  have split₂ : ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)),
+      ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
+          ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ij.1 ≤ N ∧ ij.2 ≤ N,
+            ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) +
+          ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ (ij.1 ≤ N ∧ ij.2 ≤ N),
+            ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
+      rw [sum_filter_add_sum_filter_not]
+
+  rw [z₂] at split₂
+  simp only [product_eq_sprod, add_zero] at split₂
+  rw [split₂] at s₁
+
+  have split₃: ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) with ij.1 ≤ N ∧ ij.2 ≤ N,
+      ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
+        ∑ ij ∈ (range (N + 1)).product (range (N + 1)), ((ij.1.factorial : R)⁻¹ *
+      (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
+    apply sum_congr
+    · ext x
+      simp
+      constructor <;> omega
+    · intro x hx
+      rfl
+
+  simp only [product_eq_sprod] at split₃
+  rw [split₃] at s₁
 
   have s₂ :=
     calc
