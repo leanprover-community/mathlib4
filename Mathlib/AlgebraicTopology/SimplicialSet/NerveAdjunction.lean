@@ -133,7 +133,7 @@ instance (C : Type u) [Category C] : Mono (nerve₂.seagull C) where
     · exact (conj_eqToHom_iff_heq' _ _ _ _).2 (congr_arg_heq (·.hom) <| eq2)
 
 /-- Naturality of the components defined by `toNerve₂.mk.app` as a morphism property of
-maps in `SimplexCategory.Truncated 2).` -/
+maps in `SimplexCategory.Truncated 2`. -/
 abbrev toNerve₂.mk.naturalityProperty : MorphismProperty (SimplexCategory.Truncated 2) :=
   (MorphismProperty.naturalityProperty (fun n => toNerve₂.mk.app F n.unop)).unop
 
