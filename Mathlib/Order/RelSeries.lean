@@ -570,8 +570,15 @@ lemma cons_self_tail {p : RelSeries r} (hp : p.length ≠ 0) :
     congr
     exact Fin.val_inj.mp (Nat.succ_pred_eq_of_ne_zero h)
 
+/--
+To show a proposition `p` for `xs : RelSeries r` it suffices to show it for all singletons
+and to show that when `p` holds for `xs` it also holds for `xs` prepended with one element.
+
+Note: This can also be used to construct data, but it does not have good definitional properties,
+since `(p.cons x hx).tail _ = p` is not a definitional equality.
+-/
 @[elab_as_elim]
-def inductionOn (motive : RelSeries r → Prop)
+def inductionOn (motive : RelSeries r → Sort*)
     (singleton : (x : α) → motive (RelSeries.singleton r x))
     (cons : (p : RelSeries r) → (x : α) → (hx : r x p.head) → (hp : motive p) →
       motive (p.cons x hx)) (p : RelSeries r) :
