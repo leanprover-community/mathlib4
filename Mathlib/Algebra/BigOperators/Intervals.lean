@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.Order.Interval.Finset
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Tactic.Linarith
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 
 /-!
 # Results about big operators over intervals

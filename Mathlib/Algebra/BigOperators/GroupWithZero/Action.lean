@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Algebra.BigOperators.Group.Finset.Pi
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Order.Group.Multiset
 import Mathlib.Data.Finset.Basic
