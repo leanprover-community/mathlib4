@@ -158,7 +158,7 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
       ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 := by
     apply sum_eq_zero
     intro i hi
-    simp at hi
+    simp only [not_and, not_le, mem_filter] at hi
     cases le_or_lt (N + 1) i.1 with
       | inl h => rw [pow_eq_zero_of_le h h₄, zero_mul, smul_zero]
       | inr h => rw [pow_eq_zero_of_le (hi.2 (Nat.le_of_lt_succ h)) h₅, mul_zero, smul_zero]
@@ -178,7 +178,7 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
       (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
     apply sum_congr
     · ext x
-      simp
+      simp only [product_eq_sprod, mem_filter, mem_product, mem_range]
       constructor <;> omega
     · intro x hx
       rfl
