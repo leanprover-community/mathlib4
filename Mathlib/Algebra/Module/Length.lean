@@ -45,52 +45,88 @@ theorem RelSeries.moduleLength_ge_trimmedLength
 
 
 open Classical in
-  /--
-  The module length is additive in short exact sequences.
-  -/
-    theorem Module.length_additive
-    {S : CategoryTheory.ShortComplex (ModuleCat R)} (hS : S.ShortExact) :
-      Module.length R S.X₂ = Module.length R S.X₁ + Module.length R S.X₃ := by
-    simp only [length, krullDim, le_antisymm_iff, iSup_le_iff]
-    constructor
-    · intro rs
-      trans ↑((RelSeries.submoduleComap rs S.f.hom).trimmedLength +
-             (RelSeries.submoduleMap rs S.g.hom).trimmedLength)
-      · apply Nat.mono_cast
-        have trimmedProof := RelSeries.trimmedLength_additive hS rs
-        rwa[Nat.add_comm] at trimmedProof
-      · have trimleft :=
-          RelSeries.moduleLength_ge_trimmedLength (RelSeries.submoduleComap rs S.f.hom)
-        have trimright :=
-          RelSeries.moduleLength_ge_trimmedLength (RelSeries.submoduleMap rs S.g.hom)
-        exact add_le_add trimleft trimright
-    · rw[WithBot.iSup_le_add]
-      intro rstemp rstemp'
-      obtain ⟨rs, hrs⟩ := RelSeries.exists_ltSeries_ge_head_bot_last_top rstemp
-      obtain ⟨rs', hrs'⟩ := RelSeries.exists_ltSeries_ge_head_bot_last_top rstemp'
+/--
+The module length is additive in short exact sequences.
+-/
+theorem Module.length_additive
+{S : CategoryTheory.ShortComplex (ModuleCat R)} (hS : S.ShortExact) :
+  Module.length R S.X₂ = Module.length R S.X₁ + Module.length R S.X₃ := by
+simp only [length, krullDim, le_antisymm_iff, iSup_le_iff]
+constructor
+· intro rs
+  trans ↑((RelSeries.submoduleComap rs S.f.hom).trimmedLength +
+          (RelSeries.submoduleMap rs S.g.hom).trimmedLength)
+  · apply Nat.mono_cast
+    have trimmedProof := RelSeries.trimmedLength_additive hS rs
+    rwa[Nat.add_comm] at trimmedProof
+  · have trimleft :=
+      RelSeries.moduleLength_ge_trimmedLength (RelSeries.submoduleComap rs S.f.hom)
+    have trimright :=
+      RelSeries.moduleLength_ge_trimmedLength (RelSeries.submoduleMap rs S.g.hom)
+    exact add_le_add trimleft trimright
+· rw[WithBot.iSup_le_add]
+  intro rstemp rstemp'
+  obtain ⟨rs, hrs⟩ := RelSeries.exists_ltSeries_ge_head_bot_last_top rstemp
+  obtain ⟨rs', hrs'⟩ := RelSeries.exists_ltSeries_ge_head_bot_last_top rstemp'
 
-      let gInv : RelSeries (fun (a : Submodule R S.X₂) (b : Submodule R S.X₂) => a < b) :=
-        LTSeries.map rs' (Submodule.comap S.g.hom)
-        (Submodule.comap_strictMono_of_surjective hS.moduleCat_surjective_g)
+  let gInv : RelSeries (fun (a : Submodule R S.X₂) (b : Submodule R S.X₂) => a < b) :=
+    LTSeries.map rs' (Submodule.comap S.g.hom)
+    (Submodule.comap_strictMono_of_surjective hS.moduleCat_surjective_g)
 
-      let fIm : RelSeries (fun (a : Submodule R S.X₂) (b : Submodule R S.X₂) => a < b) :=
-        LTSeries.map rs (Submodule.map S.f.hom)
-        (Submodule.map_strictMono_of_injective hS.moduleCat_injective_f)
+  let fIm : RelSeries (fun (a : Submodule R S.X₂) (b : Submodule R S.X₂) => a < b) :=
+    LTSeries.map rs (Submodule.map S.f.hom)
+    (Submodule.map_strictMono_of_injective hS.moduleCat_injective_f)
 
-      have connect : fIm.last = gInv.head := by
-        convert CategoryTheory.ShortComplex.Exact.moduleCat_range_eq_ker hS.exact
-        · simp only [RelSeries.last, LTSeries.map_length, LTSeries.map_toFun, fIm]
-          have obv : (rs.toFun (Fin.last rs.length)) = ⊤ := hrs.2.2
-          rw[obv]; exact Submodule.map_top S.f.hom
-        · simp only [RelSeries.head, LTSeries.map_toFun, gInv]
-          have obv : rs'.toFun 0 = ⊥ := hrs'.2.1
-          rw[obv]; exact rfl
+  have connect : fIm.last = gInv.head := by
+    convert CategoryTheory.ShortComplex.Exact.moduleCat_range_eq_ker hS.exact
+    · simp only [RelSeries.last, LTSeries.map_length, LTSeries.map_toFun, fIm]
+      have obv : (rs.toFun (Fin.last rs.length)) = ⊤ := hrs.2.2
+      rw[obv]; exact Submodule.map_top S.f.hom
+    · simp only [RelSeries.head, LTSeries.map_toFun, gInv]
+      have obv : rs'.toFun 0 = ⊥ := hrs'.2.1
+      rw[obv]; exact rfl
 
-      let smashfg := RelSeries.smash fIm gInv connect
-      trans ↑smashfg.length
-      · have this' : smashfg.length = rs.length + rs'.length := rfl
-        rw[this']
-        simp only [Nat.cast_add, ge_iff_le]
-        refine add_le_add ?h₁ ?h₂
-        all_goals simp only [Nat.cast_le, hrs.1, hrs'.1]
-      · exact le_iSup_iff.mpr fun b a ↦ a smashfg
+  let smashfg := RelSeries.smash fIm gInv connect
+  trans ↑smashfg.length
+  · have this' : smashfg.length = rs.length + rs'.length := rfl
+    rw[this']
+    simp only [Nat.cast_add, ge_iff_le]
+    refine add_le_add ?h₁ ?h₂
+    all_goals simp only [Nat.cast_le, hrs.1, hrs'.1]
+  · exact le_iSup_iff.mpr fun b a ↦ a smashfg
+
+theorem Module.length_additive_of_quotient {N : Submodule R M} :
+  Module.length R M = Module.length R N + Module.length R (M ⧸ N) := by
+  let quotientSeq : CategoryTheory.ShortComplex (ModuleCat R) := {
+    X₁ := ModuleCat.of R N
+    X₂ := ModuleCat.of R M
+    X₃ := ModuleCat.of R (M ⧸ N)
+    f := ModuleCat.ofHom <| Submodule.subtype N
+    g := ModuleCat.ofHom <| Submodule.mkQ N
+    zero := by
+      ext a
+      simp
+    }
+  let ex : quotientSeq.ShortExact := {
+    exact := by
+      simp[CategoryTheory.ShortComplex.moduleCat_exact_iff]
+      intro a b
+      have X2 : ↑quotientSeq.X₂ = M := rfl
+      have X1 : ↑quotientSeq.X₁ = @Subtype M fun x ↦ x ∈ N := rfl
+      let a'' : N := {
+        val := a
+        property := (Submodule.Quotient.mk_eq_zero N).mp b
+      }
+      use a''
+      aesop
+    mono_f := by
+      simp[quotientSeq]
+      have : Function.Injective (N.subtype) := by exact Submodule.injective_subtype N
+      exact (ModuleCat.mono_iff_injective (ModuleCat.ofHom N.subtype)).mpr this
+    epi_g := by
+      simp[quotientSeq]
+      have : Function.Surjective (N.mkQ) := by exact Submodule.mkQ_surjective N
+      exact (ModuleCat.epi_iff_surjective (ModuleCat.ofHom N.mkQ)).mpr this
+  }
+  have := Module.length_additive ex
+  aesop
