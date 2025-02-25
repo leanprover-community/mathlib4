@@ -231,10 +231,10 @@ lemma lTensor.inverse_of_rightInverse_apply'
   apply LinearMap.congr_fun
   apply TensorProduct.ext'
   intro n q
-  simp? [lTensor.inverse_of_rightInverse] says
-    simp only [inverse_of_rightInverse, coe_comp, Function.comp_apply, lTensor_tmul,
-      lift.tmul, flip_apply, coe_mk, AddHom.coe_mk, mk_apply, Submodule.mkQ_apply]
-  rw [Submodule.Quotient.eq, ← TensorProduct.tmul_sub]
+  simp? [inverse_of_rightInverse] says
+    simp only [inverse_of_rightInverse, coe_comp, Function.comp_apply, lTensor_tmul, lift.tmul,
+    flip_apply, coe_mk, AddHom.coe_mk, mk_apply]
+  rw [Submodule.mkQ_eq, ← TensorProduct.tmul_sub]
   apply le_comap_range_lTensor f n
   rw [← hfg, mem_ker, map_sub, sub_eq_zero, hgh]
 
