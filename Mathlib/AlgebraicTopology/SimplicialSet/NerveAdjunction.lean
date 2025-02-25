@@ -251,7 +251,7 @@ theorem toNerve₂.mk_naturality : toNerve₂.mk.naturalityProperty F = ⊤ :=
 recovered from the underlying ReflPrefunctor. -/
 @[simps!]
 def toNerve₂.mk : X ⟶ nerveFunctor₂.obj (Cat.of C) where
-  app := fun n => toNerve₂.mk.app F n.unop
+  app n := toNerve₂.mk.app F n.unop
   naturality _ _ f := MorphismProperty.of_eq_top (toNerve₂.mk_naturality F hyp) f.unop
 
 end
