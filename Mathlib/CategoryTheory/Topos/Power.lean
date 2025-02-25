@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.ChosenFiniteProducts
 
 We Define power objects for a category `C` with a subobject classifier and chosen finite products.
 
-c.f. the following lean 3 code, where similar work was done:
+This work is adapted from the following lean 3 code:
 https://github.com/b-mehta/topos/blob/master/src/power.lean
 
 ## Main definitions
