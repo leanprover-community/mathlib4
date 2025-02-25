@@ -37,13 +37,13 @@ partial def findImpEqProof (p : Expr) : MetaM <| Option Expr := do
   lambdaTelescope p fun xs body => do
     let #[x] := xs | return none
     let ⟨u, α, x⟩ ← withTransparency .all (inferTypeQ x)
-    let ⟨v, _, body⟩ ← inferTypeQ body
-    let _ : v =QL 0 := ⟨⟩
-    withLocalDeclQ (u := 0) .anonymous .default body fun h => withNewMCtxDepth do
+    let ⟨v, bt, body⟩ ← inferTypeQ body
+    let _ : v =QL 1 := ⟨⟩
+    let .defEq _ ← isDefEqQ q($bt) q(Prop) | return none
+    withLocalDeclQ .anonymous .default q($body) fun h => withNewMCtxDepth do
       let .some ⟨res, proof⟩ ← go x h | return none
       let pf1 ← mkLambdaFVars #[x, h] proof
       let pf2 := mkApp4 (.const ``exists_of_imp_eq [u]) α p res pf1
-      -- let pf2 ← mkAppM ``exists_of_imp_eq #[res, pf1]
       return .some pf2
 where
   /-- Traverses the expression `h`, branching at each `And`, to find a proof of `x = a`
