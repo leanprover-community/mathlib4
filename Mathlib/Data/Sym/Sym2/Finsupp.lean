@@ -52,4 +52,11 @@ lemma mulFinsupp_eq_mul_comp_map (l : α →₀ R) : l.sym2_mul = mul ∘ map l 
 
 end Sym2
 
+variable [DecidableEq α]
+
+noncomputable def Finsupp.sym2OffDiag (f : α →₀ R) :
+    Sym2 α →₀ R := Finsupp.onFinset {p ∈ f.support.sym2 | ¬ p.IsDiag}
+    (Sym2.lift ⟨fun a b ↦ if a = b then 0 else f a * f b, by simp [eq_comm, mul_comm]⟩)
+    (by simp +contextual [Sym2.forall]; aesop)
+
 end
