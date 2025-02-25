@@ -13,6 +13,13 @@ We define `klFun x = x * log x + 1 - x`. That function is notable because the Ku
 divergence is an f-divergence for `klFun`. That is, the Kullback-Leibler divergence is an integral
 of `klFun` composed with a Radon-Nikodym derivative.
 
+For probability measures, any function `f` that differs from `klFun` by an affine function of the
+form `x ↦ a * (x - 1)` would give the same value for the integral
+`∫ x, f (μ.rnDeriv ν x).toReal ∂ν`.
+However, `klFun` is the particular choice among those that satisfies `klFun 1 = 0` and
+`deriv klFun 1 = 0`, which ensures that desirable properties of the Kullback-Leibler divergence
+extend to other finite measures: it is nonnegative and zero iff the two measures are equal.
+
 ## Main definitions
 
 * `klFun`: the function `fun x : ℝ ↦ x * log x + 1 - x`.
@@ -32,7 +39,7 @@ This is a continuous nonnegative, strictly convex function on [0,∞), with mini
 
 open Real MeasureTheory Filter Set
 
-namespace ProbabilityTheory
+namespace InformationTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α} {x : ℝ}
 
@@ -76,31 +83,55 @@ lemma hasDerivAt_klFun (hx : x ≠ 0) : HasDerivAt klFun (log x) x := by
   convert ((hasDerivAt_mul_log hx).add (hasDerivAt_const x 1)).sub (hasDerivAt_id x) using 1
   ring
 
-/-- The derivative of `klFun` at `x ≠ 0` is `log x`. -/
-@[simp]
-lemma deriv_klFun (hx : x ≠ 0) : deriv klFun x = log x := (hasDerivAt_klFun hx).deriv
+lemma not_differentiableAt_klFun_zero : ¬ DifferentiableAt ℝ klFun 0 := by
+  simp only [differentiableAt_id', DifferentiableAt.sub_iff_left, differentiableAt_add_const_iff]
+  exact not_DifferentiableAt_log_mul_zero
 
-/-- The right derivative of `klFun` at `x ≠ 0` is `log x`. -/
+/-- The derivative of `klFun` is `log x`. This also holds at `x = 0` although `klFun` is not
+differentiable there since the default value of `deriv` in that case is 0. -/
 @[simp]
-lemma rightDeriv_klFun (hx : x ≠ 0) : derivWithin klFun (Ioi x) x = log x :=
-  (hasDerivAt_klFun hx).hasDerivWithinAt.derivWithin (uniqueDiffWithinAt_Ioi x)
+lemma deriv_klFun : deriv klFun = log := by
+  ext x
+  by_cases h0 : x = 0
+  · simp only [h0, log_zero]
+    exact deriv_zero_of_not_differentiableAt not_differentiableAt_klFun_zero
+  · exact (hasDerivAt_klFun h0).deriv
 
-/-- The left derivative of `klFun` at `x ≠ 0` is `log x`. -/
+lemma not_differentiableWithinAt_klFun_Ioi_zero : ¬ DifferentiableWithinAt ℝ klFun (Ioi 0) 0 := by
+  refine not_differentiableWithinAt_of_deriv_tendsto_atBot_Ioi _ ?_
+  rw [deriv_klFun]
+  exact tendsto_log_nhdsWithin_zero_right
+
+lemma not_differentiableWithinAt_klFun_Iio_zero : ¬ DifferentiableWithinAt ℝ klFun (Iio 0) 0 := by
+  refine not_differentiableWithinAt_of_deriv_tendsto_atBot_Iio _ ?_
+  rw [deriv_klFun]
+  exact tendsto_log_nhdsWithin_zero_left
+
+/-- The right derivative of `klFun` is `log x`. This also holds at `x = 0` although `klFun` is not
+differentiable there since the default value of `derivWithin` in that case is 0. -/
 @[simp]
-lemma leftDeriv_klFun (hx : x ≠ 0) : derivWithin klFun (Iio x) x = log x :=
-  (hasDerivAt_klFun hx).hasDerivWithinAt.derivWithin (uniqueDiffWithinAt_Iio x)
+lemma rightDeriv_klFun : derivWithin klFun (Ioi x) x = log x := by
+  by_cases h0 : x = 0
+  · simp only [h0, log_zero]
+    exact derivWithin_zero_of_not_differentiableWithinAt not_differentiableWithinAt_klFun_Ioi_zero
+  · exact (hasDerivAt_klFun h0).hasDerivWithinAt.derivWithin (uniqueDiffWithinAt_Ioi x)
+
+/-- The left derivative of `klFun` is `log x`. This also holds at `x = 0` although `klFun` is not
+differentiable there since the default value of `derivWithin` in that case is 0. -/
+@[simp]
+lemma leftDeriv_klFun : derivWithin klFun (Iio x) x = log x := by
+  by_cases h0 : x = 0
+  · simp only [h0, log_zero]
+    exact derivWithin_zero_of_not_differentiableWithinAt not_differentiableWithinAt_klFun_Iio_zero
+  · exact (hasDerivAt_klFun h0).hasDerivWithinAt.derivWithin (uniqueDiffWithinAt_Iio x)
 
 lemma rightDeriv_klFun_one : derivWithin klFun (Ioi 1) 1 = 0 := by simp
 
 lemma leftDeriv_klFun_one : derivWithin klFun (Iio 1) 1 = 0 := by simp
 
-lemma rightDeriv_klFun_eventually_eq : (fun x ↦ derivWithin klFun (Ioi x) x) =ᶠ[atTop] log := by
-  filter_upwards [eventually_ne_atTop 0] with x hx
-  rw [rightDeriv_klFun hx]
-
 lemma tendsto_rightDeriv_klFun_atTop :
     Tendsto (fun x ↦ derivWithin klFun (Ioi x) x) atTop atTop := by
-  rw [tendsto_congr' rightDeriv_klFun_eventually_eq]
+  simp only [rightDeriv_klFun]
   exact tendsto_log_atTop
 
 end Derivatives
@@ -112,10 +143,13 @@ lemma klFun_nonneg (hx : 0 ≤ x) : 0 ≤ klFun x := by
   · rw [← klFun_one]
     exact convexOn_Ioi_klFun.isMinOn_of_rightDeriv_eq_zero (by simp) (by simp) hx
 
+lemma isMinOn_klFun : IsMinOn klFun (Ici 0) 1 :=
+  isMinOn_iff.mpr fun _ hy ↦ klFun_one ▸ klFun_nonneg hy
+
 lemma klFun_eq_zero_iff (hx : 0 ≤ x) : klFun x = 0 ↔ x = 1 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
   exact strictConvexOn_klFun.eq_of_isMinOn (isMinOn_iff.mpr fun y hy ↦ h ▸ klFun_nonneg hy)
-    (isMinOn_iff.mpr fun y hy ↦ klFun_one ▸ klFun_nonneg hy) hx (zero_le_one' ℝ)
+    isMinOn_klFun hx (zero_le_one' ℝ)
 
 lemma tendsto_klFun_atTop : Tendsto klFun atTop atTop := by
   have : klFun = (fun x ↦ x * (log x - 1) + 1) := by ext; ring
@@ -154,4 +188,4 @@ lemma integral_klFun_rnDeriv (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν)
 
 end Integral
 
-end ProbabilityTheory
+end InformationTheory
