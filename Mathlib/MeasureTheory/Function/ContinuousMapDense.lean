@@ -156,36 +156,33 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
   (exists_continuous_eLpNorm_sub_lt_of_closed hp s_closed u_open hsu hs c hε).imp
     fun _ ⟨hf_c, hf_d, hf_bd, hf_s, hf_m⟩ ↦ ⟨hf_c, hf_d.le, hf_bd, hf_s, hf_m⟩
 
--- TODO: Nonempty is just to get AEMeasurable? Better to define MemLpFinset?
--- TODO: Confirm that it is nontrivial to obtain strict inequality.
+-- TODO: Nonempty only required for induction if we use `borelize`?
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
 continuous functions when `p < ∞`, version in terms of `eLpNorm`. -/
 theorem MemLp.exists_hasCompactSupport_forall_eLpNorm_sub_le
     [R1Space α] [WeaklyLocallyCompactSpace α] [μ.Regular] (hps_ne : ps.Nonempty) (hps_top : ∞ ∉ ps)
     {f : α → E} (hf : ∀ p ∈ ps, MemLp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
-    ∃ g : α → E, HasCompactSupport g ∧ (∀ p ∈ ps, eLpNorm (f - g) p μ ≤ ε) ∧ Continuous g ∧
+    ∃ g : α → E, (∀ p ∈ ps, eLpNorm (f - g) p μ ≤ ε) ∧ Continuous g ∧ HasCompactSupport g ∧
       ∀ p ∈ ps, MemLp g p μ := by
-  suffices H : ∃ g : α → E, (∀ p ∈ ps, eLpNorm (f - g) p μ ≤ ε) ∧ Continuous g ∧
-      (∀ p ∈ ps, MemLp g p μ) ∧ HasCompactSupport g by
-    rcases H with ⟨g, hg, g_cont, g_mem, g_support⟩
-    exact ⟨g, g_support, hg, g_cont, g_mem⟩
+  -- borelize E  -- to use `Continuous.stronglyMeasurable_of_hasCompactSupport`
   -- It suffices to check that the set of functions we consider approximates characteristic
   -- functions, is stable under addition and consists of ae strongly measurable functions.
   -- First check the latter easy facts.
   refine MemLp.forall_induction_dense hps_ne hps_top _ ?_ ?_ ?_ hf hε
   rotate_left
   -- stability under addition
-  · rintro f g ⟨f_cont, f_mem, hf⟩ ⟨g_cont, g_mem, hg⟩
-    exact ⟨f_cont.add g_cont, fun p hp ↦ (f_mem p hp).add (g_mem p hp), hf.add hg⟩
+  · rintro f g ⟨f_cont, f_supp, f_mem⟩ ⟨g_cont, g_supp, g_mem⟩
+    exact ⟨f_cont.add g_cont, f_supp.add g_supp, fun p hp ↦ (f_mem p hp).add (g_mem p hp)⟩
   -- ae strong measurability
-  · rintro f ⟨_, f_mem, _⟩
+  · rintro f ⟨f_cont, f_supp, f_mem⟩
     exact hps_ne.elim fun p hp ↦ (f_mem p hp).aestronglyMeasurable
+    -- exact (f_cont.stronglyMeasurable_of_hasCompactSupport f_supp).aestronglyMeasurable
   -- We are left with approximating characteristic functions.
   -- This follows from `exists_continuous_eLpNorm_sub_le_of_closed`.
   intro c t ht htμ ε hε
   rcases exists_forall_Lp_half E μ ps hε with ⟨δ, δpos, hδ⟩
   obtain ⟨η, ηpos, hη⟩ : ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η →
-      ∀ p ∈ ps, eLpNorm (s.indicator fun _x => c) p μ < δ :=
+      ∀ p ∈ ps, eLpNorm (s.indicator fun _ ↦ c) p μ < δ :=
     exists_forall_eLpNorm_indicator_lt hps_top c δpos.ne'
   have hη_pos' : (0 : ℝ≥0∞) < η := ENNReal.coe_pos.2 ηpos
   obtain ⟨s, st, s_compact, s_closed, μs⟩ :
@@ -193,25 +190,25 @@ theorem MemLp.exists_hasCompactSupport_forall_eLpNorm_sub_le
     ht.exists_isCompact_isClosed_diff_lt htμ.ne hη_pos'.ne'
   have hsμ : μ s < ∞ := (measure_mono st).trans_lt htμ
   have I1 (p) (hp : p ∈ ps) :
-      eLpNorm ((s.indicator fun _y => c) - t.indicator fun _y => c) p μ < δ := by
+      eLpNorm ((s.indicator fun _ ↦ c) - t.indicator fun _ ↦ c) p μ < δ := by
     rw [← eLpNorm_neg, neg_sub, ← indicator_diff st]
     exact hη _ μs.le p hp
   obtain ⟨k, k_compact, sk⟩ : ∃ k : Set α, IsCompact k ∧ s ⊆ interior k :=
     exists_compact_superset s_compact
   rcases exists_continuous_forall_eLpNorm_sub_lt_of_closed hps_top s_closed isOpen_interior sk
-    hsμ.ne c δpos.ne' with ⟨f, f_cont, I2, _f_bound, f_support, f_mem⟩
-  have hf_meas := hps_ne.elim fun p hp ↦ (f_mem p hp).aestronglyMeasurable
-  have I3 (p) (hp : p ∈ ps) : eLpNorm (f - t.indicator fun _y => c) p μ < ε := by
-    convert hδ _ _
-      (.sub hf_meas (aestronglyMeasurable_const.indicator s_closed.measurableSet))
+    hsμ.ne c δpos.ne' with ⟨f, f_cont, I2, _, f_supp_subset, f_mem⟩
+  have f_supp : HasCompactSupport f :=
+    .of_support_subset_isCompact k_compact (f_supp_subset.trans interior_subset)
+  have f_meas := hps_ne.elim fun p hp ↦ (f_mem p hp).aestronglyMeasurable
+  -- have f_meas : AEStronglyMeasurable f μ :=
+  --   (f_cont.stronglyMeasurable_of_hasCompactSupport f_supp).aestronglyMeasurable
+  have I3 (p) (hp : p ∈ ps) : eLpNorm (f - t.indicator fun _ ↦ c) p μ < ε := by
+    convert hδ (f - s.indicator _) (s.indicator _ - t.indicator _)
+      (.sub f_meas (aestronglyMeasurable_const.indicator s_closed.measurableSet))
       (.sub (aestronglyMeasurable_const.indicator s_closed.measurableSet)
-        (aestronglyMeasurable_const.indicator ht))
-      p hp (le_of_lt (I2 p hp)) (le_of_lt (I1 p hp)) using 2
+        (aestronglyMeasurable_const.indicator ht)) p hp (I2 p hp).le (I1 p hp).le using 2
     simp only [sub_add_sub_cancel]
-  refine ⟨f, fun p hp ↦ (I3 p hp).le, f_cont, f_mem, .intro k_compact fun x hx ↦ ?_⟩
-  rw [← Function.nmem_support]
-  contrapose! hx
-  exact interior_subset (f_support hx)
+  exact ⟨f, fun p hp ↦ (I3 p hp).le, f_cont, f_supp, f_mem⟩
 
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
 continuous functions when `p < ∞`, version in terms of `eLpNorm`. -/
@@ -219,8 +216,10 @@ theorem MemLp.exists_hasCompactSupport_eLpNorm_sub_le
     [R1Space α] [WeaklyLocallyCompactSpace α] [μ.Regular]
     (hp : p ≠ ∞) {f : α → E} (hf : MemLp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ g : α → E, HasCompactSupport g ∧ eLpNorm (f - g) p μ ≤ ε ∧ Continuous g ∧ MemLp g p μ := by
-  simpa using MemLp.exists_hasCompactSupport_forall_eLpNorm_sub_le (Finset.singleton_nonempty p)
-    (Finset.not_mem_singleton.mpr hp.symm) (by simpa using hf) hε
+  obtain ⟨g, hg, g_cont, g_supp, g_mem⟩ :=
+    exists_hasCompactSupport_forall_eLpNorm_sub_le (Finset.singleton_nonempty p)
+      (Finset.not_mem_singleton.mpr hp.symm) (by simpa using hf) hε
+  exact ⟨g, g_supp, by simpa using hg, g_cont, by simpa using g_mem⟩
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.exists_hasCompactSupport_eLpNorm_sub_le := MemLp.exists_hasCompactSupport_eLpNorm_sub_le
