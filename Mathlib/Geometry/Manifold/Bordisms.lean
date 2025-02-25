@@ -29,13 +29,13 @@ of singular n-manifolds
 - `SingularNManifold.comap`: if `(N,f)` is a singular n-manifold on `X` and `φ: M → N` is smooth,
 the `comap` of `(N,f)` and `φ` is the induced singular n-manifold `(M, f ∘ φ)` on `X`.
 - `SingularNManifold.empty`: the empty set `M`, viewed as an `n`-manifold,
-as a singular `n`-manifold over any space `X`
+as a singular `n`-manifold over any space `X`.
 - `SingularNManifold.trivial`: an `n`-dimensional manifold induces a singular `n`-manifold
 on the one-point space.
 - `SingularNManifold.prod`: the product of a singular `n`-manifold and a singular `m`-manifold
 on the one-point space, is a singular `n+m`-manifold on the one-point space.
 - `SingularNManifold.sum`: the disjoint union of two singular `n`-manifolds
-is a singular `n`-manifold
+is a singular `n`-manifold.
 
 ## Implementation notes
 
@@ -73,7 +73,7 @@ structure SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ) (k : ℕ�
   /-- The manifold `M` is a topological space. -/
   [topSpaceM : TopologicalSpace M]
   /-- The manifold `M` is a charted space over `H`. -/
-  [chartedSpace: ChartedSpace H M]
+  [chartedSpace : ChartedSpace H M]
   /-- `M` is a `C^k` manifold. -/
   [isManifold: IsManifold I k M]
   [compactSpace: CompactSpace M]
@@ -158,7 +158,7 @@ lemma comap_f [Fact (finrank ℝ E' = n)]
 variable (M I) in
 /-- The canonical singular `n`-manifold associated to the empty set (seen as an `n`-dimensional
 manifold, i.e. modelled on an `n`-dimensional space). -/
-def empty [h: Fact (finrank ℝ E = n)] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+def empty [h : Fact (finrank ℝ E = n)] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     {I : ModelWithCorners ℝ E H} [IsManifold I k M] [IsEmpty M] : SingularNManifold X n k I where
   M := M
   dimension := h.out
