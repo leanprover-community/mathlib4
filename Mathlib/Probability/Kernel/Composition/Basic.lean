@@ -1455,7 +1455,7 @@ instance IsSFiniteKernel.prod (κ : Kernel α β) (η : Kernel α γ) :
     snd (κ ×ₖ η) = η := by
   ext x; simp [snd_apply, prod_apply]
 
-lemma prod_comap (κ : Kernel β γ) [IsSFiniteKernel κ] (η : Kernel β δ) [IsSFiniteKernel η]
+lemma comap_prod (κ : Kernel β γ) [IsSFiniteKernel κ] (η : Kernel β δ) [IsSFiniteKernel η]
     {f : α → β} (hf : Measurable f) :
     (κ ×ₖ η).comap f hf = (κ.comap f hf) ×ₖ (η.comap f hf) := by
   ext1 x
