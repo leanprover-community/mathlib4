@@ -157,6 +157,13 @@ theorem IsClique.of_induce {S : Subgraph G} {F : Set α} {A : Set F}
   intro _ ⟨_, ainA⟩ _ ⟨_, binA⟩ anb
   exact S.adj_sub (c ainA binA (Subtype.coe_ne_coe.mp anb)).2.2
 
+lemma IsClique.sdiff_of_sup_edge {v w : α} {s : Set α} (hc : (G ⊔ edge v w).IsClique s) :
+    G.IsClique (s \ {v}) := by
+  intro x hx y hy hxy
+  have := hc hx.1 hy.1 hxy
+  rw [sup_adj, edge_adj] at this
+  aesop
+
 end Clique
 
 /-! ### `n`-cliques -/
@@ -273,6 +280,11 @@ theorem IsNClique.of_induce {S : Subgraph G} {F : Set α} {s : Finset { x // x �
   rw [isNClique_iff] at cc ⊢
   simp only [Subgraph.induce_verts, coe_map, card_map]
   exact ⟨cc.left.of_induce, cc.right⟩
+
+lemma IsNClique.erase_of_sup_edge_of_mem [DecidableEq α] {v w : α} {s : Finset α} {n : ℕ}
+    (hc : (G ⊔ edge v w).IsNClique n s) (hx : v ∈ s) : G.IsNClique (n - 1) (s.erase v) where
+  isClique := coe_erase v _ ▸ hc.1.sdiff_of_sup_edge
+  card_eq  := by rw [card_erase_of_mem hx, hc.2]
 
 end NClique
 
@@ -413,32 +425,13 @@ theorem cliqueFree_two : G.CliqueFree 2 ↔ G = ⊥ := by
 /-- Adding an edge increases the clique number by at most one. -/
 protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
     (G ⊔ edge v w).CliqueFree (n + 1) := by
-  contrapose h
-  obtain ⟨f, ha⟩ := topEmbeddingOfNotCliqueFree h
-  simp only [ne_eq, top_adj] at ha
-  rw [not_cliqueFree_iff]
-  by_cases mw : w ∈ Set.range f
-  · obtain ⟨x, hx⟩ := mw
-    use ⟨f ∘ x.succAboveEmb, f.2.comp Fin.succAbove_right_injective⟩
-    intro a b
-    simp_rw [Embedding.coeFn_mk, comp_apply, Fin.succAboveEmb_apply, top_adj]
-    have hs := @ha (x.succAbove a) (x.succAbove b)
-    have ia : w ≠ f (x.succAbove a) :=
-      (hx ▸ f.apply_eq_iff_eq x (x.succAbove a)).ne.mpr (x.succAbove_ne a).symm
-    have ib : w ≠ f (x.succAbove b) :=
-      (hx ▸ f.apply_eq_iff_eq x (x.succAbove b)).ne.mpr (x.succAbove_ne b).symm
-    rw [sup_adj, edge_adj] at hs
-    simp only [ia.symm, ib.symm, and_false, false_and, or_false] at hs
-    rw [hs, Fin.succAbove_right_inj]
-  · use ⟨f ∘ Fin.succEmb n, (f.2.of_comp_iff _).mpr (Fin.succ_injective _)⟩
-    intro a b
-    simp only [Fin.val_succEmb, Embedding.coeFn_mk, comp_apply, top_adj]
-    have hs := @ha a.succ b.succ
-    have ia : f a.succ ≠ w := by simp_all
-    have ib : f b.succ ≠ w := by simp_all
-    rw [sup_adj, edge_adj] at hs
-    simp only [ia, ib, and_false, false_and, or_false] at hs
-    rw [hs, Fin.succ_inj]
+  intro s hs
+  have := hs.1.sdiff_of_sup_edge
+  classical
+  by_cases hv : v ∈ s
+  · exact (hs.erase_of_sup_edge_of_mem hv).not_cliqueFree h
+  · exact (h.mono <| Nat.le_succ n) (s \ {v}) ⟨by rwa [coe_sdiff, coe_singleton],
+                    (sdiff_eq_left.2 <| disjoint_singleton_right.2 hv).symm ▸ hs.2⟩
 
 end CliqueFree
 
