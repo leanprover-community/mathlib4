@@ -17,13 +17,6 @@ Serre classes in `S` (also known as "Serre subcategories"). A Serre class is
 a property `P : ObjectProperty C` of objects in `P` which holds for a zero object,
 and is stable under subobjects, quotients and extensions.
 
---contains the zero objectconsists of a predicate
---on objects of `C` which holds for the zero object and is such that if
---`0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` is a short exact sequence, then `X₂` belongs to the class
---iff `X₁` and `X₃` do. This implies that the class is stable under subobjects,
---quotients, extensions. As a result, if `X₁ ⟶ X₂ ⟶ X₃` is an exact sequence such
---that `X₁` and `X₃` belong to the class, then so does `X₂` (see `SerreClass.prop_of_exact`).
-
 ## Future works
 
 * Show that the localization of `C` with respect to a Serre class is an abelian category.
