@@ -436,6 +436,33 @@ theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
   exact Submodule.inner_right_of_mem_orthogonal (vsub_orthogonalProjection_mem_direction p₂ hp₁)
     (orthogonalProjection_vsub_mem_direction_orthogonal s p₂)
 
+/-- The distance between a point and its orthogonal projection to a subspace equals the distance
+to that subspace as given by `Metric.infDist`. This is not a `simp` lemma since the simplest form
+depends on the context (if any calculations are to be done with the distance, the version with
+the orthogonal projection gives access to more lemmas about orthogonal projections that may be
+useful). -/
+lemma dist_orthogonalProjection_eq_infDist (s : AffineSubspace ℝ P) [Nonempty s]
+    [HasOrthogonalProjection s.direction] (p : P) :
+    dist p (orthogonalProjection s p) = Metric.infDist p s := by
+  refine le_antisymm ?_ (Metric.infDist_le_dist_of_mem (orthogonalProjection_mem _))
+  rw [Metric.infDist_eq_iInf]
+  refine le_ciInf fun x ↦ le_of_sq_le_sq ?_ dist_nonneg
+  rw [dist_comm _ (x : P)]
+  simp_rw [pow_two,
+    dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p x.property]
+  simp [mul_self_nonneg]
+
+/-- The nonnegative distance between a point and its orthogonal projection to a subspace equals
+the distance to that subspace as given by `Metric.infNndist`. This is not a `simp` lemma since
+the simplest form depends on the context (if any calculations are to be done with the distance,
+the version with the orthogonal projection gives access to more lemmas about orthogonal
+projections that may be useful). -/
+lemma dist_orthogonalProjection_eq_infNndist (s : AffineSubspace ℝ P) [Nonempty s]
+    [HasOrthogonalProjection s.direction] (p : P) :
+    nndist p (orthogonalProjection s p) = Metric.infNndist p s := by
+  rw [← NNReal.coe_inj]
+  simp [dist_orthogonalProjection_eq_infDist]
+
 /-- The square of the distance between two points constructed by
 adding multiples of the same orthogonal vector to points in the same
 subspace. -/

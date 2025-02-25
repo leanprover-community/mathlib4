@@ -79,9 +79,9 @@ theorem mem_sublists' {s t : List α} : s ∈ sublists' t ↔ s <+ t := by
   · rcases h with (h | ⟨s, h, rfl⟩)
     · exact sublist_cons_of_sublist _ h
     · exact h.cons_cons _
-  · cases' h with _ _ _ h s _ _ h
+  · obtain - | ⟨-, h⟩ | ⟨-, h⟩ := h
     · exact Or.inl h
-    · exact Or.inr ⟨s, h, rfl⟩
+    · exact Or.inr ⟨_, h, rfl⟩
 
 @[simp]
 theorem length_sublists' : ∀ l : List α, length (sublists' l) = 2 ^ length l
@@ -275,7 +275,7 @@ theorem mem_sublistsLen_self {l l' : List α} (h : l' <+ l) :
     l' ∈ sublistsLen (length l') l := by
   induction' h with l₁ l₂ a s IH l₁ l₂ a s IH
   · simp
-  · cases' l₁ with b l₁
+  · rcases l₁ with - | ⟨b, l₁⟩
     · simp
     · rw [length, sublistsLen_succ_cons]
       exact mem_append_left _ IH
@@ -310,7 +310,7 @@ theorem Pairwise.sublists' {R} :
       and_imp]
     refine ⟨H₂.sublists', H₂.sublists'.imp fun l₁ => Lex.cons l₁, ?_⟩
     rintro l₁ sl₁ x l₂ _ rfl
-    cases' l₁ with b l₁; · constructor
+    rcases l₁ with - | ⟨b, l₁⟩; · constructor
     exact Lex.rel (H₁ _ <| sl₁.subset <| mem_cons_self _ _)
 
 theorem pairwise_sublists {R} {l : List α} (H : Pairwise R l) :

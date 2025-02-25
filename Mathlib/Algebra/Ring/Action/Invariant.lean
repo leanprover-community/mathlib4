@@ -8,6 +8,7 @@ import Mathlib.Algebra.Ring.Subring.Defs
 
 /-! # Subrings invariant under an action -/
 
+assert_not_exists RelIso
 
 section Ring
 

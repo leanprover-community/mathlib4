@@ -73,7 +73,7 @@ theorem not_of_mem_foldl_argAux (hr₀ : Irreflexive r) (hr₁ : Transitive r) :
   · simp
   intro b m o hb ho
   rw [foldl_append, foldl_cons, foldl_nil, argAux] at ho
-  cases' hf : foldl (argAux r) o tl with c
+  rcases hf : foldl (argAux r) o tl with - | c
   · rw [hf] at ho
     rw [foldl_argAux_eq_none] at hf
     simp_all [hf.1, hf.2, hr₀ _]
@@ -169,7 +169,7 @@ theorem argmax_cons (f : α → β) (a : α) (l : List α) :
       Option.casesOn (argmax f l) (some a) fun c => if f a < f c then some c else some a :=
   List.reverseRecOn l rfl fun hd tl ih => by
     rw [← cons_append, argmax_concat, ih, argmax_concat]
-    cases' h : argmax f hd with m
+    rcases h : argmax f hd with - | m
     · simp [h]
     dsimp
     rw [← apply_ite, ← apply_ite]
@@ -216,7 +216,7 @@ theorem mem_argmax_iff :
   ⟨fun hm => ⟨argmax_mem hm, fun _ ha => le_of_mem_argmax ha hm, fun _ => index_of_argmax hm⟩,
     by
       rintro ⟨hml, ham, hma⟩
-      cases' harg : argmax f l with n
+      rcases harg : argmax f l with - | n
       · simp_all
       · have :=
           _root_.le_antisymm (hma n (argmax_mem harg) (le_of_mem_argmax hml harg))
@@ -351,6 +351,12 @@ theorem le_minimum_of_forall_le {b : WithTop α} (h : ∀ a ∈ l, b ≤ a) : b 
   | cons a l ih =>
     simp only [minimum_cons, le_min_iff]
     exact ⟨h a (by simp), ih fun a w => h a (mem_cons.mpr (Or.inr w))⟩
+
+theorem maximum_mono {l₁ l₂ : List α} (h : l₁ ⊆ l₂) : l₁.maximum ≤ l₂.maximum :=
+  maximum_le_of_forall_le fun _ ↦ (le_maximum_of_mem' <| h ·)
+
+theorem minimum_anti {l₁ l₂ : List α} (h : l₁ ⊆ l₂) : l₂.minimum ≤ l₁.minimum :=
+  @maximum_mono αᵒᵈ _ _ _ h
 
 theorem maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m := by
   rw [maximum, ← WithBot.some_eq_coe, argmax_eq_some_iff]

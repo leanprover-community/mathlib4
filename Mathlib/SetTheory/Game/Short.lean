@@ -86,7 +86,7 @@ attribute [class] Short
 This is an unindexed typeclass, so it can't be made a global instance.
 -/
 def fintypeLeft {α β : Type u} {L : α → PGame.{u}} {R : β → PGame.{u}} [S : Short ⟨α, β, L, R⟩] :
-    Fintype α := by cases' S with _ _ _ _ _ _ F _; exact F
+    Fintype α := by cases S; assumption
 
 attribute [local instance] fintypeLeft
 
@@ -97,7 +97,7 @@ instance fintypeLeftMoves (x : PGame) [S : Short x] : Fintype x.LeftMoves := by
 This is an unindexed typeclass, so it can't be made a global instance.
 -/
 def fintypeRight {α β : Type u} {L : α → PGame.{u}} {R : β → PGame.{u}} [S : Short ⟨α, β, L, R⟩] :
-    Fintype β := by cases' S with _ _ _ _ _ _ _ F; exact F
+    Fintype β := by cases S; assumption
 
 attribute [local instance] fintypeRight
 
@@ -105,26 +105,26 @@ instance fintypeRightMoves (x : PGame) [S : Short x] : Fintype x.RightMoves := b
   cases S; assumption
 
 instance moveLeftShort (x : PGame) [S : Short x] (i : x.LeftMoves) : Short (x.moveLeft i) := by
-  cases' S with _ _ _ _ L _ _ _; apply L
+  obtain ⟨L, _⟩ := S; apply L
 
 /-- Extracting the `Short` instance for a move by Left.
 This would be a dangerous instance potentially introducing new metavariables
 in typeclass search, so we only make it an instance locally.
 -/
 def moveLeftShort' {xl xr} (xL xR) [S : Short (mk xl xr xL xR)] (i : xl) : Short (xL i) := by
-  cases' S with _ _ _ _ L _ _ _; apply L
+  obtain ⟨L, _⟩ := S; apply L
 
 attribute [local instance] moveLeftShort'
 
 instance moveRightShort (x : PGame) [S : Short x] (j : x.RightMoves) : Short (x.moveRight j) := by
-  cases' S with _ _ _ _ _ R _ _; apply R
+  obtain ⟨_, R⟩ := S; apply R
 
 /-- Extracting the `Short` instance for a move by Right.
 This would be a dangerous instance potentially introducing new metavariables
 in typeclass search, so we only make it an instance locally.
 -/
 def moveRightShort' {xl xr} (xL xR) [S : Short (mk xl xr xL xR)] (j : xr) : Short (xR j) := by
-  cases' S with _ _ _ _ _ R _ _; apply R
+  obtain ⟨_, R⟩ := S; apply R
 
 attribute [local instance] moveRightShort'
 
