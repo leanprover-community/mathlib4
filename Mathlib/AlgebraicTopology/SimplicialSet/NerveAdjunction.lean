@@ -265,7 +265,7 @@ section
 variable (F : SSet.oneTruncation₂.obj X ⟶ SSet.oneTruncation₂.obj (nerveFunctor₂.obj (Cat.of C)))
 variable (hyp : (φ : X _⦋2⦌₂) →
             (F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev02₂ φ) =
-              CategoryStruct.comp (obj := (Cat.of C))
+              CategoryStruct.comp (obj := C)
               ((F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev01₂ φ))
               ((F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev12₂ φ)))
 
@@ -273,23 +273,19 @@ variable (hyp : (φ : X _⦋2⦌₂) →
 `X ⟶ nerveFunctor₂.obj (Cat.of C)` from the underlying refl prefunctor under a composition
 hypothesis, where that prefunctor the central hypothesis is conjugated by the isomorphism
 `nerve₂Adj.NatIso.app C`. -/
-@[simps!] def toNerve₂.mk'
-    : X ⟶ nerveFunctor₂.obj (Cat.of C) :=
+@[simps!] def toNerve₂.mk' : X ⟶ nerveFunctor₂.obj (Cat.of C) :=
   toNerve₂.mk (F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom) hyp
 
 /-- A computation about `toNerve₂.mk'`. -/
-theorem oneTruncation₂_toNerve₂Mk' :
-    oneTruncation₂.map (toNerve₂.mk' F hyp) = F := by
+theorem oneTruncation₂_toNerve₂Mk' : oneTruncation₂.map (toNerve₂.mk' F hyp) = F := by
   refine ReflPrefunctor.ext (fun _ ↦ ComposableArrows.ext₀ rfl)
     (fun X Y g ↦ eq_of_heq (heq_eqRec_iff_heq.2 <| heq_eqRec_iff_heq.2 ?_))
   simp [oneTruncation₂]
-  have {A B A' B' : OneTruncation₂ (nerveFunctor₂.obj (Cat.of C))}
-      : A = A' → B = B' → ∀ (x : A ⟶ B) (y : A' ⟶ B'), x.1 = y.1 → HEq x y := by
-    rintro rfl rfl ⟨⟩ ⟨⟩ ⟨⟩; rfl
-  apply this
+  refine Quiver.heq_of_homOfEq_ext ?_ ?_ (f' := F.map g) ?_
   · exact ComposableArrows.ext₀ rfl
   · exact ComposableArrows.ext₀ rfl
-  · simp
+  · apply OneTruncation₂.Hom.ext
+    simp only [oneTruncation₂_obj, ReflQuiv.of_val, OneTruncation₂.homOfEq_edge]
     fapply ComposableArrows.ext₁ <;> simp [ReflQuiv.comp_eq_comp]
     · rw [g.src_eq]; exact congr_arg (·.obj 0) (F.map g).src_eq.symm
     · rw [g.tgt_eq]; exact congr_arg (·.obj 1) (F.map g).tgt_eq.symm
@@ -302,8 +298,7 @@ end
 
 /-- An equality between maps into the 2-truncated nerve is detected by an equality beteween their
 underlying refl prefunctors. -/
-theorem toNerve₂.ext
-    (F G : X ⟶ nerveFunctor₂.obj (Cat.of C))
+theorem toNerve₂.ext (F G : X ⟶ nerveFunctor₂.obj (Cat.of C))
     (hyp : SSet.oneTruncation₂.map F = SSet.oneTruncation₂.map G) : F = G := by
   have eq₀ x : F.app (op ⦋0⦌₂) x = G.app (op ⦋0⦌₂) x := congr(($hyp).obj x)
   have eq₁ x : F.app (op ⦋1⦌₂) x = G.app (op ⦋1⦌₂) x := congr((($hyp).map ⟨x, rfl, rfl⟩).1)
