@@ -63,7 +63,7 @@ theorem nerve₂Adj.counit.app_eq (C : Type u) [SmallCategory C] :
     (whiskerRight OneTruncation₂.ofNerve₂.natIso.hom _ ≫
       ReflQuiv.adj.{u}.counit).app (Cat.of C) := rfl
 
-/-- Naturality of `nerve₂Adj.counit.app` is proven using `HomotopyCategory.lift_unique'`. -/
+/-- The naturality of `nerve₂Adj.counit.app`. -/
 theorem nerve₂Adj.counit.naturality {C D : Type u} [SmallCategory C] [SmallCategory D]
     (F : C ⥤ D) :
     (nerveFunctor₂ ⋙ hoFunctor₂).map F ⋙ nerve₂Adj.counit.app D =
