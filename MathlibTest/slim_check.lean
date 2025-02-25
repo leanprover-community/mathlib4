@@ -2,9 +2,11 @@ import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Data.DFinsupp.Defs
 import Mathlib.Data.Finsupp.Notation
 import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.PNat.Basic
 import Mathlib.Tactic.Have
 import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Testing.Plausible.Functions
+import Mathlib.Testing.Plausible.Sampleable
 import Plausible
 
 private axiom test_sorry : ∀ {α}, α
@@ -220,3 +222,21 @@ issue: ⋯ does not hold
 #guard_msgs in
 example {a : ℕ} [Fact a.Prime] : (a + 1).Prime ∨ (a + 2).Prime := by
   plausible (config := { randomSeed := some 257 })
+
+/--
+info: Unable to find a counter-example
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+example (x : Rat) : x < x + 1 := by
+  plausible
+
+/--
+info: Unable to find a counter-example
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+example (x : PNat) : x < x + 1 := by
+  plausible
