@@ -185,12 +185,12 @@ lemma subsingleton_of_isChain_of_isAntichain (hs : IsChain r s) (ht : IsAntichai
 lemma isChain_and_isAntichain_iff_subsingleton : IsChain r s ∧ IsAntichain r s ↔ s.Subsingleton :=
   ⟨fun h ↦ subsingleton_of_isChain_of_isAntichain h.1 h.2, fun h ↦ ⟨h.isChain, h.isAntichain _⟩⟩
 
-/-- The intersection of a chain and an antichain is subsingleton.  -/
+/-- The intersection of a chain and an antichain is subsingleton. -/
 lemma inter_subsingleton_of_isChain_of_isAntichain (hs : IsChain r s) (ht : IsAntichain r t) :
     (s ∩ t).Subsingleton :=
   subsingleton_of_isChain_of_isAntichain (hs.mono (by simp)) (ht.subset (by simp))
 
-/-- The intersection of an antichain and a chain is subsingleton.  -/
+/-- The intersection of an antichain and a chain is subsingleton. -/
 lemma inter_subsingleton_of_isAntichain_of_isChain (hs : IsAntichain r s) (ht : IsChain r t) :
     (s ∩ t).Subsingleton :=
   inter_comm _ _ ▸ inter_subsingleton_of_isChain_of_isAntichain ht hs

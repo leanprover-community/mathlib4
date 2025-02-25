@@ -192,7 +192,7 @@ section lift
 variable (fn : N →* H) (fg : G →* H)
   (h : ∀ g, fn.comp (φ g).toMonoidHom = (MulAut.conj (fg g)).toMonoidHom.comp fn)
 
-/-- Define a group hom `N ⋊[φ] G →* H`, by defining maps `N →* H` and `G →* H`  -/
+/-- Define a group hom `N ⋊[φ] G →* H`, by defining maps `N →* H` and `G →* H` -/
 def lift : N ⋊[φ] G →* H where
   toFun a := fn a.1 * fg a.2
   map_one' := by simp

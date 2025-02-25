@@ -34,7 +34,7 @@ section absoluteValue
 
 variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
 
-/-- The norm of a maximal ideal is `> 1`  -/
+/-- The norm of a maximal ideal is `> 1` -/
 lemma one_lt_norm : 1 < absNorm v.asIdeal := by
   by_contra! h
   apply IsPrime.ne_top v.isPrime
@@ -44,10 +44,10 @@ lemma one_lt_norm : 1 < absNorm v.asIdeal := by
     exact (v.asIdeal.fintypeQuotientOfFreeOfNeBot v.ne_bot).finite
   omega
 
-/-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1`  -/
+/-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1` -/
 lemma one_lt_norm_nnreal : 1 < (absNorm v.asIdeal : NNReal) := mod_cast one_lt_norm v
 
-/-- The norm of a maximal ideal as an element of `ℝ≥0` is `≠ 0`  -/
+/-- The norm of a maximal ideal as an element of `ℝ≥0` is `≠ 0` -/
 lemma norm_ne_zero : (absNorm v.asIdeal : NNReal) ≠ 0 :=
   ne_zero_of_lt (one_lt_norm_nnreal v)
 

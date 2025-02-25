@@ -711,7 +711,7 @@ theorem eq_univ_of_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X 
 
 @[deprecated (since := "2024-10-29")] alias eq_univ_card_lt := eq_univ_of_card_lt
 
-/-- If a block has too many translates, then it is a (sub)singleton  -/
+/-- If a block has too many translates, then it is a (sub)singleton -/
 @[to_additive "If a block has too many translates, then it is a (sub)singleton"]
 theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
     (hB' : Nat.card X < 2 * Set.ncard (orbit G B)) :

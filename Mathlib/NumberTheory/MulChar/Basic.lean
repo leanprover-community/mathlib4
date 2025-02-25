@@ -456,7 +456,7 @@ theorem IsQuadratic.comp {χ : MulChar R R'} (hχ : χ.IsQuadratic) (f : R' →+
   intro a
   rcases hχ a with (ha | ha | ha) <;> simp [ha]
 
-/-- The inverse of a quadratic character is itself. →  -/
+/-- The inverse of a quadratic character is itself. → -/
 theorem IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = χ := by
   ext x
   rw [inv_apply_eq_inv]
