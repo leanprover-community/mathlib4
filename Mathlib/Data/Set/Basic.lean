@@ -1260,10 +1260,8 @@ theorem diff_inter_diff {s t u : Set α} : s \ t ∩ (s \ u) = s \ (t ∪ u) :=
 theorem diff_compl : s \ tᶜ = s ∩ t :=
   sdiff_compl
 
-theorem compl_diff {α : Type u} {s t : Set α} : (t \ s)ᶜ = s ∪ tᶜ := by
-  ext z
-  rw [mem_compl_iff, mem_diff, not_and, not_not, mem_union]
-  tauto
+theorem compl_diff : (t \ s)ᶜ = s ∪ tᶜ :=
+  Eq.trans compl_sdiff himp_eq
 
 theorem diff_diff_right {s t u : Set α} : s \ (t \ u) = s \ t ∪ s ∩ u :=
   sdiff_sdiff_right'
