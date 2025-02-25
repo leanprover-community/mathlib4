@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.Contraction
 
 This file proves that for `M` and `N` being finitely generated projective
 modules over a commutative ring `R`, the tensor product of the hom module
-from `M` to `P` tensor the one from `N` to `Q` for `P`, `Q` being arbitrary
+from `M` to `P` and the one from `N` to `Q` for `P`, `Q` being arbitrary
 `R`-modules is isomorphic to the hom module from `M ⊗ N` to `P ⊗ Q` as modules.
 
 ## Main results
