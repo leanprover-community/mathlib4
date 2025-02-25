@@ -366,7 +366,7 @@ than or equal to the filter of sets codiscrete within `f '' U`.
 
 Applications might want to use the theorem `Filter.codiscreteWithin.mono`.
 -/
-theorem AnalyticOnNhd.map_of_codiscreteWithinFilter {U : Set 𝕜} {f : 𝕜 → E}
+theorem AnalyticOnNhd.map_codiscreteWithin {U : Set 𝕜} {f : 𝕜 → E}
     (hfU : AnalyticOnNhd 𝕜 f U) (h₂f : ∀ x ∈ U, ¬EventuallyConst f (𝓝 x)) :
     Filter.map f (Filter.codiscreteWithin U) ≤ (Filter.codiscreteWithin (f '' U)) :=
   fun _ hs ↦ mem_map.1 (preimg_codiscrete hfU h₂f hs)
