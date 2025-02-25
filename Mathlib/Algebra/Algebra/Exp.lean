@@ -86,11 +86,6 @@ theorem exp_zero_eq_one : exp R A 0 = 1 := by
 
 variable [CharZero R]
 
-theorem ttttt (n : ℕ) : (n.factorial : R)⁻¹  * (n.factorial : R) = 1 := by
-  have h1 : (n.factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero n
-  simp_all only [ne_eq, Nat.cast_eq_zero, not_false_eq_true, inv_mul_cancel₀]
-
-
 theorem reorder (N : ℕ) {f : ℕ → ℕ → A} :
     ∑ j ∈ range (2 * N + 1), ∑ i ∈ range (j + 1), f i j =
       ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) with ij.1 ≤ ij.2, f ij.1 ij.2 := by
@@ -109,7 +104,6 @@ theorem reorder (N : ℕ) {f : ℕ → ℕ → A} :
     exact ⟨⟨h4, Nat.lt_add_one_of_le h5⟩, Prod.mk.inj_iff.mp rfl⟩
   simp
 
-
 theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a) (h₃ : IsNilpotent b) :
     exp R A (a + b) = exp R A a * exp R A b := by
   obtain ⟨n₁, hn₁⟩ := h₂
@@ -127,51 +121,39 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
  -- have  hh (n : ℕ) (a : A) : n * a = (n : R) • a := by
   --  norm_cast
   --  simp_all only [nsmul_eq_mul, N]
-
   have e₁ :=
     calc
       ∑ n ∈ range (2 * N + 1), (n.factorial : R)⁻¹ • (a + b) ^ n
-        = ∑ n ∈ range (2 * N + 1), (n.factorial : R)⁻¹ • (∑ m ∈ range (n + 1), a ^ m * b ^ (n - m) * n.choose m) := by
+          = ∑ n ∈ range (2 * N + 1), (n.factorial : R)⁻¹ •
+            (∑ m ∈ range (n + 1), a ^ m * b ^ (n - m) * n.choose m) := by
         apply sum_congr rfl
         intros n hn
         rw [Commute.add_pow h₁ n]
-      _ = ∑ n ∈ range (2 * N + 1), (∑ m ∈ range (n + 1), ((m.factorial : R)⁻¹ * ((n - m).factorial : R)⁻¹) • (a ^ m * b ^ (n - m))) := by
+      _ = ∑ n ∈ range (2 * N + 1), (∑ m ∈ range (n + 1), ((m.factorial : R)⁻¹ *
+            ((n - m).factorial : R)⁻¹) • (a ^ m * b ^ (n - m))) := by
         apply sum_congr rfl
         intro n hn
         rw [smul_sum]
         apply sum_congr rfl
         intro m hm
-        have hhh0 : a ^ m * b ^ (n - m) * (n.choose m) = (n.choose m) * (a ^ m * b ^ (n - m)) := by
-          rw [Nat.cast_commute (n.choose m)]
-        have  hh (n : ℕ) (a : A) : n * a = (n : R) • a := by
-          norm_cast
-          simp
-        have hhh : (n.factorial : R)⁻¹ • (a ^ m * b ^ (n - m) * (n.choose m)) = ((n.factorial : R)⁻¹ * (n.choose m)) • (a ^ m * b ^ (n - m)) := by
-          rw [hhh0]
-          rw [hh (n.choose m)]
-          rw [← smul_assoc]
-          norm_cast
-        rw [hhh]
-        suffices h11 : (n.factorial : R)⁻¹ * (n.choose m) = ((m.factorial : R)⁻¹ * ((n - m).factorial : R)⁻¹) by
-          simp_all only [mem_range, N]
-        have t : m ≤ n := by
-          simp_all only [mem_range, N]
-          omega
-        rw [Nat.choose_eq_factorial_div_factorial t]
-        rw [Nat.cast_div]
-        rw [mul_div]
-        have qqq := ttttt R n
-        rw [qqq]
-        simp
-        rw [mul_comm]
-        apply Nat.factorial_mul_factorial_dvd_factorial
-        apply t
+        simp_all only [mem_range]
+        suffices (n.factorial : R)⁻¹ * (n.choose m) =
+            ((m.factorial : R)⁻¹ * ((n - m).factorial : R)⁻¹) by
+          have help : (n.factorial : R)⁻¹ • (a ^ m * b ^ (n - m) * (n.choose m)) =
+              ((n.factorial : R)⁻¹ * (n.choose m)) • (a ^ m * b ^ (n - m)) := by
+            rw [← Nat.cast_commute (n.choose m), mul_smul]
+            norm_cast
+            rw [nsmul_eq_mul]
+          simp_all only [mem_range]
+        have le₄ : m ≤ n := Nat.le_of_lt_succ hm
+        rw [Nat.choose_eq_factorial_div_factorial le₄, Nat.cast_div, mul_div]
+        · have inv : (n.factorial : R)⁻¹  * (n.factorial : R) = 1 := by
+            have : (n.factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero n
+            simp_all only [ne_eq, Nat.cast_eq_zero, not_false_eq_true, inv_mul_cancel₀]
+          rw [inv, Nat.cast_mul, one_div, mul_inv_rev, mul_comm]
+        · exact Nat.factorial_mul_factorial_dvd_factorial le₄
         rw [Nat.cast_mul]
-        apply mul_ne_zero
-        have h1 : (m.factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero m
-        apply h1
-        have h2 : ((n - m).factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero (n - m)
-        apply h2
+        apply mul_ne_zero <;> exact_mod_cast Nat.factorial_ne_zero _
       _ = ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) |>.filter (fun ij => ij.1 ≤ ij.2), ((ij.1.factorial : R)⁻¹ * ((ij.2 - ij.1).factorial : R)⁻¹) • (a ^ ij.1 * b ^ (ij.2 - ij.1)) := by rw [reorder]
       _ = ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) |>.filter (fun ij => ij.1 + ij.2 <= 2 * N), ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
         apply sum_bij
