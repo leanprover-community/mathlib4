@@ -619,6 +619,15 @@ theorem nrRealPlaces_eq_one_of_finrank_eq_one (h : finrank ℚ K = 1) :
   have := card_add_two_mul_card_eq_rank K
   rwa [nrComplexPlaces_eq_zero_of_finrank_eq_one h, h, mul_zero, add_zero] at this
 
+theorem nrRealPlaces_pos_of_odd_finrank (h : Odd (finrank ℚ K)) :
+    0 < nrRealPlaces K := by
+  refine Nat.pos_of_ne_zero ?_
+  by_contra hc
+  have := card_add_two_mul_card_eq_rank K
+  rw [hc, zero_add] at this
+  rw [← this] at h
+  exact Nat.not_odd_iff_even.2 (even_two_mul _) h
+
 /-- The restriction of an infinite place along an embedding. -/
 def comap (w : InfinitePlace K) (f : k →+* K) : InfinitePlace k :=
   ⟨w.1.comp f.injective, w.embedding.comp f,
