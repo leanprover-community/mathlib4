@@ -5,7 +5,7 @@ Authors: Kim Morrison, Joël Riou, Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 
