@@ -98,26 +98,20 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
       _ = ∑ i ∈ range (2 * N + 1), (∑ j ∈ range (i + 1), ((j.factorial : R)⁻¹ *
             ((i - j).factorial : R)⁻¹) • (a ^ j * b ^ (i - j))) := by
         apply sum_congr rfl
-        intro n hn
+        intro i hi
         rw [smul_sum]
         apply sum_congr rfl
-        intro m hm
-        simp_all only [mem_range]
-        suffices (n.factorial : R)⁻¹ * (n.choose m) =
-            ((m.factorial : R)⁻¹ * ((n - m).factorial : R)⁻¹) by
-          have help : (n.factorial : R)⁻¹ • (a ^ m * b ^ (n - m) * (n.choose m)) =
-              ((n.factorial : R)⁻¹ * (n.choose m)) • (a ^ m * b ^ (n - m)) := by
-            rw [← Nat.cast_commute (n.choose m), mul_smul]
-            norm_cast
-            rw [nsmul_eq_mul]
-          simp_all only [mem_range]
-        have le₄ : m ≤ n := Nat.le_of_lt_succ hm
-        rw [Nat.choose_eq_factorial_div_factorial le₄, Nat.cast_div, mul_div]
-        · have inv : (n.factorial : R)⁻¹  * (n.factorial : R) = 1 := by
-            have : (n.factorial : R) ≠ 0 := by exact_mod_cast Nat.factorial_ne_zero n
-            simp_all only [ne_eq, Nat.cast_eq_zero, not_false_eq_true, inv_mul_cancel₀]
-          rw [inv, Nat.cast_mul, one_div, mul_inv_rev, mul_comm]
-        · exact Nat.factorial_mul_factorial_dvd_factorial le₄
+        intro j hj
+        simp only [mem_range] at hi hj
+        suffices (i.factorial : R)⁻¹ * (i.choose j) =
+            ((j.factorial : R)⁻¹ * ((i - j).factorial : R)⁻¹) by
+          rw [← Nat.cast_commute (i.choose j), ← this, ← Algebra.mul_smul_comm, ← nsmul_eq_mul,
+          mul_smul, ← smul_assoc, smul_comm, smul_assoc]
+          norm_cast
+        rw [Nat.choose_eq_factorial_div_factorial (Nat.le_of_lt_succ hj), Nat.cast_div, mul_div]
+        · rw [inv_mul_cancel₀ (mod_cast Nat.factorial_ne_zero i), Nat.cast_mul, one_div,
+          mul_inv_rev, mul_comm]
+        · exact Nat.factorial_mul_factorial_dvd_factorial (Nat.le_of_lt_succ hj)
         rw [Nat.cast_mul]
         apply mul_ne_zero <;> exact_mod_cast Nat.factorial_ne_zero _
       _ = ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) with ij.1 + ij.2 <= 2 * N,
@@ -128,30 +122,24 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
           intro _ _ _
           omega
         · simp only [mem_sigma, mem_range, Prod.mk.injEq, and_imp]
-          (intro h1 h2 h3 h4 h5 h6 h7 h8; exact Sigma.ext (by omega) (heq_of_eq h7))
+          (intro _ _ _ _ _ _ h _; exact Sigma.ext (by omega) (heq_of_eq h))
         · simp only [product_eq_sprod, mem_filter, mem_product, mem_range, mem_sigma, exists_prop,
             Sigma.exists, and_imp, Prod.forall, Prod.mk.injEq]
-          (intro h1 h2 h3 h4 h5; use h1 + h2, h1; omega)
+          (intro h₁ h₂ _ _ _; use h₁ + h₂, h₁; omega)
         simp only [mem_sigma, mem_range, implies_true]
   have z₁ : ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ ij.1 + ij.2 ≤ 2 * N,
       ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 := by
     apply sum_eq_zero
     intro i hi
-    simp only [mem_filter] at hi
+    rw [mem_filter] at hi
     cases le_or_lt (N + 1) i.1 with
       | inl h => rw [pow_eq_zero_of_le h h₄, zero_mul, smul_zero]
       | inr _ => rw [pow_eq_zero_of_le (by linarith) h₅, mul_zero, smul_zero]
-  have split₁ : ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)), ((ij.1.factorial : R)⁻¹ *
-      (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
-        ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ij.1 + ij.2 ≤ 2 * N,
-          ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) +
-        ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ ij.1 + ij.2 ≤ 2 * N,
-          ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
-      rw [sum_filter_add_sum_filter_not]
-  rw [z₁] at split₁
-  simp only [product_eq_sprod, add_zero] at split₁
-  simp only [product_eq_sprod] at s₁
-  rw [← split₁] at s₁
+  have split₁ := sum_filter_add_sum_filter_not ((range (2 * N + 1)).product (range (2 * N + 1)))
+    (fun ij => ij.1 + ij.2 ≤ 2 * N)
+    (fun ij => ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2))
+  rw [z₁, product_eq_sprod, add_zero] at split₁
+  rw [product_eq_sprod, split₁] at s₁
   have z₂ : ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ (ij.1 ≤ N ∧ ij.2 ≤ N),
       ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 := by
     apply sum_eq_zero
@@ -160,17 +148,12 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
     cases le_or_lt (N + 1) i.1 with
       | inl h => rw [pow_eq_zero_of_le h h₄, zero_mul, smul_zero]
       | inr h => rw [pow_eq_zero_of_le (hi.2 (Nat.le_of_lt_succ h)) h₅, mul_zero, smul_zero]
-  have split₂ : ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)),
-      ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
-          ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ij.1 ≤ N ∧ ij.2 ≤ N,
-            ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) +
-          ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ (ij.1 ≤ N ∧ ij.2 ≤ N),
-            ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
-      rw [sum_filter_add_sum_filter_not]
-  rw [z₂] at split₂
-  simp only [product_eq_sprod, add_zero] at split₂
-  rw [split₂] at s₁
-  have split₃: ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) with ij.1 ≤ N ∧ ij.2 ≤ N,
+  have split₂ := sum_filter_add_sum_filter_not ((range (2 * N + 1)).product (range (2 * N + 1)))
+    (fun ij => ij.1 ≤ N ∧ ij.2 ≤ N)
+    (fun ij => ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2))
+  rw [z₂, product_eq_sprod, add_zero] at split₂
+  rw [← split₂] at s₁
+  have restrict: ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) with ij.1 ≤ N ∧ ij.2 ≤ N,
       ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
         ∑ ij ∈ (range (N + 1)).product (range (N + 1)), ((ij.1.factorial : R)⁻¹ *
       (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
@@ -180,8 +163,8 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
       constructor <;> omega
     · intro x hx
       rfl
-  simp only [product_eq_sprod] at split₃
-  rw [split₃] at s₁
+  simp only [product_eq_sprod] at restrict
+  rw [restrict] at s₁
   have s₂ :=
     calc
       (∑ i ∈ range (N + 1), (i.factorial : R)⁻¹ • a ^ i) * ∑ i ∈ range (N + 1),
