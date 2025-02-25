@@ -18,7 +18,7 @@ open Lean Meta Qq
 namespace existsAndEq
 
 universe u in
-theorem exists_of_imp_eq {α : Sort u} {p : α → Prop} {a : α} (h : ∀ b, p b → a = b) :
+private theorem exists_of_imp_eq {α : Sort u} {p : α → Prop} {a : α} (h : ∀ b, p b → a = b) :
     (∃ b, p b) = p a := by
   apply propext
   constructor
