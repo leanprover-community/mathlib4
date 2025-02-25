@@ -3,8 +3,9 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Probability.Kernel.IonescuTulcea.PTraj
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
+import Mathlib.Probability.Kernel.IonescuTulcea.PTraj
 -- import KolmogorovExtension4.KolmogorovExtension
 
 /-!
