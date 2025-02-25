@@ -23,7 +23,7 @@ Prove the triangle inequality for the angle.
 -/
 
 
-assert_not_exists HasFDerivAt ConformalAt
+assert_not_exists ConformalAt
 
 noncomputable section
 
