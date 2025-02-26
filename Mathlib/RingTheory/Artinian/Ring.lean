@@ -122,34 +122,9 @@ instance : IsArtinianRing (Localization S) :=
 
 end Localization
 
-end IsArtinianRing
+section Ideal
 
-section IsNoetherian
-
-variable {R : Type*} [CommRing R]
-
-lemma isNoetherian_iff_isArtinian_of_prod_eq_bot (s : Multiset (Ideal R))
-    (hs : ∀ I ∈ s, Ideal.IsMaximal I) (h' : Multiset.prod s = ⊥) :
-    IsNoetherianRing R ↔ IsArtinianRing R := by
-  rw [isNoetherianRing_iff, ← isNoetherian_top_iff, isArtinianRing_iff, ← isArtinian_top_iff]
-  by_contra h
-  suffices ¬(IsNoetherian R (⊥ : Ideal R) ↔ IsArtinian R (⊥ : Ideal R)) by
-    apply this
-    exact ⟨fun _ => inferInstance, fun _ => inferInstance⟩
-  rw [← h']
-  clear h'
-  induction s using Multiset.induction with
-  | empty =>
-    rw [Multiset.prod_zero, Ideal.one_eq_top]
-    exact h
-  | cons a s hs' =>
-    rw [Multiset.prod_cons]
-    intro hs''
-    apply hs' (fun I hMem => hs I (Multiset.mem_cons_of_mem hMem))
-    haveI := hs a (Multiset.mem_cons_self a s)
-    exact IsArtinianRing.isNoetherian_iff_IsArtinian_of_mul _ _ hs''
-
-lemma IsArtinianRing.exists_multiset_ideal_is_maximal_and_prod_eq_bot [IsArtinianRing R] :
+lemma exists_multiset_ideal_is_maximal_and_prod_eq_bot :
     ∃ s : Multiset (Ideal R), (∀ I ∈ s, Ideal.IsMaximal I) ∧ s.prod = ⊥ := by
   cases' subsingleton_or_nontrivial R with h h
   · exact ⟨∅, by simp; exact eq_bot_of_subsingleton⟩
@@ -166,82 +141,6 @@ lemma IsArtinianRing.exists_multiset_ideal_is_maximal_and_prod_eq_bot [IsArtinia
       refine Ideal.prod_le_inf.trans (le_sInf fun I hI => Finset.inf_le ?_)
       rwa [Set.Finite.mem_toFinset]
 
-lemma isArtinianRing_iff_isNoetherianRing_and_primes_maximal :
-    IsArtinianRing R ↔ IsNoetherianRing R ∧ ∀ I : Ideal R, I.IsPrime → I.IsMaximal := by
-  cases' subsingleton_or_nontrivial R with h h
-  · exact ⟨fun _ => ⟨inferInstance, by
-      exact fun I a ↦ (fun p ↦ (IsArtinianRing.isPrime_iff_isMaximal p).mp) I a⟩,
-        fun _ => inferInstance⟩
-  · constructor
-    · intro H
-      obtain ⟨s, hs, hs'⟩ :=
-        IsArtinianRing.exists_multiset_ideal_is_maximal_and_prod_eq_bot (R := R)
-      have := isNoetherian_iff_isArtinian_of_prod_eq_bot s hs hs'
-      simp_rw [IsArtinianRing.isPrime_iff_isMaximal, this]
-      exact ⟨H, fun _ h => h⟩
-    · rintro ⟨h₁, h₂⟩
-      obtain ⟨n, e⟩ := IsNoetherianRing.isNilpotent_nilradical R
-      have hn : n ≠ 0 := by
-        intro h
-        rw [h] at e
-        simp_all
-      rwa [← isNoetherian_iff_isArtinian_of_prod_eq_bot
-        (n • (minimalPrimes.finite_of_isNoetherianRing R).toFinset.1) _ _]
-      · simp_rw [Multiset.mem_nsmul, ← Finset.mem_def, Set.Finite.mem_toFinset]
-        exact fun I ↦ fun hI ↦  h₂ _ hI.2.1.1
-      · rw [Multiset.prod_nsmul, eq_bot_iff, ← Ideal.zero_eq_bot, ← e, nilradical,
-          ← Ideal.sInf_minimalPrimes, Finset.prod_val]
-        apply Ideal.pow_right_mono
-        refine Ideal.prod_le_inf.trans (le_sInf fun I hI => Finset.inf_le ?_)
-        rwa [Set.Finite.mem_toFinset]
+end Ideal
 
-end IsNoetherian
-
-section Algebra
-
-variable {R : Type*} [CommRing R] (K : Type*) [Field K] [Algebra K R] [Algebra.FiniteType K R]
-
-lemma isArtinianRing_iff_isArtinian_of_field : IsArtinianRing R ↔ IsArtinian K R := by
-  classical
-  refine ⟨?_, isArtinian_of_tower K⟩
-  intro H
-  by_contra H'
-  obtain ⟨s, hs, hs'⟩ :=
-    IsArtinianRing.exists_multiset_ideal_is_maximal_and_prod_eq_bot (R := R)
-  suffices ¬ IsArtinian K s.prod by
-    rw [hs'] at this
-    exact this (by infer_instance)
-  clear hs'
-  induction s using Multiset.induction_on with
-  | empty =>
-    rw [Multiset.prod_zero, Ideal.one_eq_top]
-    rwa [← isArtinian_top_iff] at H'
-  | cons a s h₁ =>
-    intro h₃
-    rw [Multiset.prod_cons] at h₃
-    apply h₁ (fun I hI => hs I (Multiset.mem_cons_of_mem hI))
-    have := hs a (Multiset.mem_cons_self a s)
-    exact IsArtinianRing.isArtinian_of_isArtinian_of_mul_of_field _ a s.prod h₃
-
-lemma isArtinianRing_iff_finite_of_field:
-    IsArtinianRing R ↔ Module.Finite K R := by
-  apply (isArtinianRing_iff_isArtinian_of_field K).trans
-  -- need tfae
-  sorry
-
-omit [Algebra K R] [Algebra.FiniteType K R] in
-lemma isArtinianRing_iff_ringHomFinite_of_field (f : K →+* R) (hf : f.FiniteType) :
-    IsArtinianRing R ↔ f.Finite := by
-  algebraize [f]
-  exact isArtinianRing_iff_finite_of_field K
-
-lemma finite_iff_forall_prime_is_maximal_of_field :
-    Module.Finite K R ↔ ∀ I : Ideal R, I.IsPrime → I.IsMaximal := by
-  haveI := isNoetherianRing_of_fg ‹Algebra.FiniteType K R›.1
-  haveI := isNoetherianRing_of_surjective (⊤ : Subalgebra K R) R
-    Subalgebra.topEquiv.toRingEquiv.toRingHom Subalgebra.topEquiv.surjective
-  rw [← isArtinianRing_iff_finite_of_field K,
-    isArtinianRing_iff_isNoetherianRing_and_primes_maximal]
-  exact and_iff_right inferInstance
-
-end Algebra
+end IsArtinianRing
