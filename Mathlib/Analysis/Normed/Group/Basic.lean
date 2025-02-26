@@ -678,16 +678,15 @@ lemma ofReal_norm' (x : E) : .ofReal ‖x‖ = ‖x‖ₑ := by
   simp [enorm, ENNReal.ofReal, Real.toNNReal, nnnorm]
 
 @[to_additive enorm_eq_iff_norm_eq]
-theorem enorm'_eq_iff_norm_eq {x : E} {y : F} : ‖x‖ = ‖y‖ ↔ ‖x‖ₑ = ‖y‖ₑ := by
+theorem enorm'_eq_iff_norm_eq {x : E} {y : F} : ‖x‖ₑ = ‖y‖ₑ ↔ ‖x‖ = ‖y‖ := by
   simp only [← ofReal_norm']
-  refine ⟨fun h ↦ by congr, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ by congr⟩
   exact (Real.toNNReal_eq_toNNReal_iff (norm_nonneg' _) (norm_nonneg' _)).mp (ENNReal.coe_inj.mp h)
 
-@[to_additive enorm_leq_iff_norm_leq]
-theorem enorm'_leq_iff_norm_leq
-    {x : E} {y : F} : ‖x‖ ≤ ‖y‖ ↔ ‖x‖ₑ ≤ ‖y‖ₑ := by
+@[to_additive enorm_le_iff_norm_le]
+theorem enorm'_le_iff_norm_le {x : E} {y : F} : ‖x‖ₑ ≤ ‖y‖ₑ ↔ ‖x‖ ≤ ‖y‖ := by
   simp only [← ofReal_norm']
-  refine ⟨fun h ↦ by gcongr, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ by gcongr⟩
   rw [ENNReal.ofReal_le_ofReal_iff (norm_nonneg' _)] at h
   exact h
 
