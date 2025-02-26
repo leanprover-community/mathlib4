@@ -205,7 +205,7 @@ lemma whiskerRight_coprod_inr_rightDistrib_inv [IsMonoidalRightDistrib C] {X Y Z
 /-- In a symmetric monoidal category, the left distributivity is equal to
 the right distributivity up to braiding isomorphisms. -/
 @[simp]
-lemma SymmetricCategory.leftDistrib_braiding [BraidedCategory C] {X Y Z : C} :
+lemma coprodComparison_tensorLeft_braiding_hom [BraidedCategory C] {X Y Z : C} :
     (coprodComparison (tensorLeft X) Y Z) ≫ (β_ X (Y ⨿ Z)).hom =
     (coprod.map (β_ X Y).hom (β_ X Z).hom) ≫ (coprodComparison (tensorRight X) Y Z) := by
   simp [coprodComparison]
@@ -213,7 +213,7 @@ lemma SymmetricCategory.leftDistrib_braiding [BraidedCategory C] {X Y Z : C} :
 /-- In a symmetric monoidal category, the right distributivity is equal to
 the left distributivity up to braiding isomorphisms. -/
 @[simp]
-lemma SymmetricCategory.rightDistrib_braiding [SymmetricCategory C] {X Y Z : C} :
+lemma coprodComparison_tensorRight_braiding_hom [SymmetricCategory C] {X Y Z : C} :
     (coprodComparison (tensorRight X) Y Z) ≫ (β_ (Y ⨿ Z) X).hom =
     (coprod.map (β_ Y X).hom (β_ Z X).hom) ≫ (coprodComparison (tensorLeft X) Y Z) := by
   simp [coprodComparison]
