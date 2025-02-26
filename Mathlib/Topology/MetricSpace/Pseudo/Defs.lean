@@ -1153,6 +1153,36 @@ theorem denseRange_iff {f : β → α} : DenseRange f ↔ ∀ x, ∀ r > 0, ∃ 
 
 end Metric
 
+open Additive Multiplicative
+
 instance : PseudoMetricSpace (Additive α) := ‹_›
 instance : PseudoMetricSpace (Multiplicative α) := ‹_›
+
+section
+
+variable [PseudoMetricSpace X]
+
+@[simp] theorem nndist_ofMul (a b : X) : nndist (ofMul a) (ofMul b) = nndist a b := rfl
+
+@[simp] theorem nndist_ofAdd (a b : X) : nndist (ofAdd a) (ofAdd b) = nndist a b := rfl
+
+@[simp] theorem nndist_toMul (a b : Additive X) : nndist a.toMul b.toMul = nndist a b := rfl
+
+@[simp]
+theorem nndist_toAdd (a b : Multiplicative X) : nndist a.toAdd b.toAdd = nndist a b := rfl
+
+end
+
+open OrderDual
+
 instance : PseudoMetricSpace αᵒᵈ := ‹_›
+
+section
+
+variable [PseudoMetricSpace X]
+
+@[simp] theorem nndist_toDual (a b : X) : nndist (toDual a) (toDual b) = nndist a b := rfl
+
+@[simp] theorem nndist_ofDual (a b : Xᵒᵈ) : nndist (ofDual a) (ofDual b) = nndist a b := rfl
+
+end
