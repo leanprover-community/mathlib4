@@ -486,19 +486,48 @@ theorem support_mul_subset_add_support [NonUnitalNonAssocSemiring R] {x y : Hahn
   rw [← of_symm_smul_of_eq_mul, ← vadd_eq_add]
   exact HahnModule.support_smul_subset_vadd_support
 
-theorem coeff_mul_order_add_order {Γ} [LinearOrderedCancelAddCommMonoid Γ]
-    [NonUnitalNonAssocSemiring R] (x y : HahnSeries Γ R) :
+section orderLemmas
+
+variable {Γ : Type*} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocSemiring R]
+
+theorem coeff_mul_order_add_order  (x y : HahnSeries Γ R) :
     (x * y).coeff (x.order + y.order) = x.leadingCoeff * y.leadingCoeff := by
   simp only [← of_symm_smul_of_eq_mul]
   exact HahnModule.coeff_smul_order_add_order x y
 
 @[deprecated (since := "2025-01-31")] alias mul_coeff_order_add_order := coeff_mul_order_add_order
 
-theorem orderTop_add_le_mul {Γ} [LinearOrderedCancelAddCommMonoid Γ]
-    [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} :
+theorem orderTop_add_le_mul {x y : HahnSeries Γ R} :
     x.orderTop + y.orderTop ≤ (x * y).orderTop := by
   rw [← smul_eq_mul]
   exact HahnModule.orderTop_vAdd_le_orderTop_smul fun i j ↦ rfl
+
+theorem order_mul_of_nonzero {x y : HahnSeries Γ R}
+    (h : x.leadingCoeff * y.leadingCoeff ≠ 0) : (x * y).order = x.order + y.order := by
+  have hx : x.leadingCoeff ≠ 0 := by aesop
+  have hy : y.leadingCoeff ≠ 0 := by aesop
+  have hxy : (x * y).coeff (x.order + y.order) ≠ 0 :=
+    ne_of_eq_of_ne (coeff_mul_order_add_order x y) h
+  refine le_antisymm (order_le_of_coeff_ne_zero
+    (Eq.mpr (congrArg (fun _a ↦ _a ≠ 0) (coeff_mul_order_add_order x y)) h)) ?_
+  rw [order_of_ne <| leadingCoeff_ne_iff.mp hx, order_of_ne <| leadingCoeff_ne_iff.mp hy,
+    order_of_ne <| ne_zero_of_coeff_ne_zero hxy, ← Set.IsWF.min_add]
+  exact Set.IsWF.min_le_min_of_subset support_mul_subset_add_support
+
+theorem order_mul_single_of_isRegular {g : Γ} {r : R} (hr : IsRegular r)
+    {x : HahnSeries Γ R} (hx : x ≠ 0) : (((single g) r) * x).order = g + x.order := by
+  have : Nontrivial R := by
+    by_contra h
+    have : Subsingleton R := not_nontrivial_iff_subsingleton.mp h
+    have : Subsingleton (HahnSeries Γ R) := instSubsingleton
+    apply hx <| Subsingleton.eq_zero x
+  have hrx : ((single g) r).leadingCoeff * x.leadingCoeff ≠ 0 := by
+    rw [leadingCoeff_of_single]
+    intro h
+    apply (leadingCoeff_ne_iff.mpr hx) ((IsLeftRegular.mul_left_eq_zero_iff hr.left).mp h)
+  rw [order_mul_of_nonzero hrx, order_single <| IsRegular.ne_zero hr]
+
+end orderLemmas
 
 private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
     x * y * z = x * (y * z) := by
