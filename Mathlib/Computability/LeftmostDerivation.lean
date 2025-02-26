@@ -183,7 +183,7 @@ theorem rewrites_append {r : ContextFreeRule T N}{v₁ v₂ u : List (Symbol T N
   | cons x v₁ ih =>
     rw [List.cons_append] at h
     apply rewrites_cons at h
-    obtain ⟨u₁,u₂,hu⟩ := h
+    obtain ⟨u₁, u₂, hu⟩ := h
     rcases hu.2 with hu'|hu'
     · refine ⟨u₁++v₁, v₂, ?_, ?_⟩
       · simp [hu.1, hu'.2]
@@ -306,7 +306,7 @@ theorem derivesLeftmost_cons {x : Symbol T g.NT} {v u : List (Symbol T g.NT)}
     use [x]
     exact ⟨by simp, by rfl⟩
   | tail _ last ih =>
-    obtain ⟨u₁,hu⟩|⟨w₁,u₂,hu⟩ := ih
+    obtain ⟨u₁, hu⟩|⟨w₁, u₂, hu⟩ := ih
     · rw [hu.1] at last
       obtain ⟨r, hr, last⟩ := last
       obtain ⟨o₁, o₂, ho⟩|⟨w₁, o₂, ho⟩ := ContextFreeRule.rewritesLeftmost_append last
