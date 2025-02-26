@@ -1,5 +1,6 @@
 import Mathlib.Tactic.MoveAdd
 import Mathlib.Algebra.Ring.Nat
+import Mathlib.Data.Nat.Basic
 
 universe u
 

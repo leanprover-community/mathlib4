@@ -43,8 +43,6 @@ coefficients are in a commutative domain.
 
 open Finset Function
 
-open Pointwise
-
 noncomputable section
 
 variable {Γ Γ' R V α β σ : Type*}

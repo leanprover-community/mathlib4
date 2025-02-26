@@ -780,7 +780,7 @@ theorem add_mk_self (a b c) : (mk a b : Localization M) + mk c b = mk (a + c) b 
   ring
 
 /-- For any given denominator `b : M`, the map `a ↦ a / b` is an `AddMonoidHom` from `R` to
-  `Localization M`-/
+  `Localization M`. -/
 @[simps]
 def mkAddMonoidHom (b : M) : R →+ Localization M where
   toFun a := mk a b
@@ -870,7 +870,7 @@ lemma injective_of_map_algebraMap_zero {T} [CommRing T] (f : S →+* T)
 theorem to_map_eq_zero_iff {x : R} (hM : M ≤ nonZeroDivisors R) : algebraMap R S x = 0 ↔ x = 0 := by
   rw [← (algebraMap R S).map_zero]
   constructor <;> intro h
-  · cases' (eq_iff_exists M S).mp h with c hc
+  · obtain ⟨c, hc⟩ := (eq_iff_exists M S).mp h
     rw [mul_zero, mul_comm] at hc
     exact hM c.2 x hc
   · rw [h]
@@ -908,8 +908,8 @@ theorem noZeroDivisors_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [Is
     (hM : M ≤ nonZeroDivisors A) : NoZeroDivisors S :=
   { eq_zero_or_eq_zero_of_mul_eq_zero := by
       intro z w h
-      cases' surj M z with x hx
-      cases' surj M w with y hy
+      obtain ⟨x, hx⟩ := surj M z
+      obtain ⟨y, hy⟩ := surj M w
       have :
         z * w * algebraMap A S y.2 * algebraMap A S x.2 = algebraMap A S x.1 * algebraMap A S y.1 :=
         by rw [mul_assoc z, hy, ← hx]; ring

@@ -105,7 +105,7 @@ theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ :
       classical
         rw [← perm_inv_mapsTo_iff_mapsTo] at h
         intro x
-        cases' hx : σ x with l r)
+        rcases hx : σ x with l | r)
   · rintro ⟨a, rfl⟩
     obtain ⟨y, hy⟩ := h ⟨l, rfl⟩
     rw [← hx, σ.inv_apply_self] at hy
@@ -139,7 +139,7 @@ theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finit
     use σ₁, σ₂
     rw [Perm.sumCongrHom_apply]
     ext x
-    cases' x with a b
+    rcases x with a | b
     · rw [Equiv.sumCongr_apply, Sum.map_inl, permCongr_apply, Equiv.symm_symm,
         apply_ofInjective_symm Sum.inl_injective]
       rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk]

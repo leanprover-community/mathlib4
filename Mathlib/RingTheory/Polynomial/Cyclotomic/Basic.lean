@@ -303,7 +303,7 @@ theorem degree_cyclotomic (n : ℕ) (R : Type*) [Ring R] [Nontrivial R] :
     (cyclotomic n R).degree = Nat.totient n := by
   rw [← map_cyclotomic_int]
   rw [degree_map_eq_of_leadingCoeff_ne_zero (Int.castRingHom R) _]
-  · cases' n with k
+  · rcases n with - | k
     · simp only [cyclotomic, degree_one, dif_pos, Nat.totient_zero, CharP.cast_eq_zero]
     rw [← degree_cyclotomic' (Complex.isPrimitiveRoot_exp k.succ (Nat.succ_ne_zero k))]
     exact (int_cyclotomic_spec k.succ).2.1
