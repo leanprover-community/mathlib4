@@ -48,6 +48,7 @@ lemma continuous_coinducingCoprod {S : CompHaus.{u}} (x : X.val.obj ⟨S⟩) :
 
 variable {X} {Y : CondensedSet} (f : X ⟶ Y)
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- The map part of the functor `CondensedSet ⥤ TopCat`  -/
 @[simps!]
 def toTopCatMap : X.toTopCat ⟶ Y.toTopCat :=
