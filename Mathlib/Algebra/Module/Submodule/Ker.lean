@@ -201,6 +201,35 @@ theorem ker_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊥ ↔ Injective 
   rw [← ker_eq_bot, ker_restrict hf, ← ker_domRestrict, ker_eq_bot, injective_domRestrict_iff,
     disjoint_iff]
 
+theorem ne_map_or_ne_kernel_inter_of_lt {M' : Type*} [AddCommGroup M'] [Module R M']
+    {A B : Submodule R M} (f : M →ₗ[R] M') (hab : A < B) :
+    Submodule.map f A ≠ Submodule.map f B ∨ ker f ⊓ A ≠ ker f ⊓ B := by
+      by_cases q : ker f ⊓ A ≠ ker f ⊓ B
+      · exact Or.inr q
+      · simp only [ne_eq, not_not] at q
+        apply Or.inl
+        intro h
+        apply hab.ne
+        apply le_antisymm hab.le
+        intro x hx
+        obtain ⟨z, hz, hzy⟩ := (h ▸ ⟨x, hx, rfl⟩ : f x ∈ Submodule.map f A)
+        suffices x - z ∈ LinearMap.ker f ⊓ A by simpa using add_mem this.2 hz
+        exact q ▸ ⟨by simp[hzy], sub_mem hx (hab.le hz)⟩
+
+theorem ker_inter_mono_of_map_eq {M' : Type*} [AddCommGroup M'] [Module R M']
+    {A B : Submodule R M} {f :  M →ₗ[R] M'} (hab : A < B)
+    (q : Submodule.map f A = Submodule.map f B) : LinearMap.ker f ⊓ A < LinearMap.ker f ⊓ B :=
+      lt_iff_le_and_ne.mpr ⟨inf_le_inf le_rfl hab.le,
+       Or.elim (LinearMap.ne_map_or_ne_kernel_inter_of_lt f hab)
+        (fun h ↦ False.elim (h q)) (fun h ↦ h)⟩
+
+theorem map_mono_of_ker_inter_eq {M' : Type*} [AddCommGroup M'] [Module R M']
+    {A B : Submodule R M} {f :  M →ₗ[R] M'} (hab : A < B)
+    (q : LinearMap.ker f ⊓ A = LinearMap.ker f ⊓ B) : Submodule.map f A < Submodule.map f B :=
+      lt_iff_le_and_ne.mpr ⟨Set.image_mono hab.le,
+       Or.elim (LinearMap.ne_map_or_ne_kernel_inter_of_lt f hab)
+        (fun h ↦ h) (fun h ↦ False.elim (h q))⟩
+
 end Ring
 
 section Semifield
