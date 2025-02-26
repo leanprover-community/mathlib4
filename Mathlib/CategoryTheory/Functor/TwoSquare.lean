@@ -50,8 +50,11 @@ namespace TwoSquare
 abbrev mk (α : T ⋙ R ⟶ L ⋙ B) : TwoSquare T L R B := α
 
 variable {T} {L} {R} {B} in
+/-- The natural transfomration associated to a 2-square. -/
 abbrev out (w : TwoSquare T L R B) : T ⋙ R ⟶ L ⋙ B := w
 
+/-- The type of 2-squares on functors `T`, `L`, `R`, and `B` is trivially equivalent to
+the type of natural transformations `T ⋙ R ⟶ L ⋙ B`. -/
 @[simps]
 def equivNatTrans : TwoSquare T L R B ≃ (T ⋙ R ⟶ L ⋙ B) where
   toFun := out
