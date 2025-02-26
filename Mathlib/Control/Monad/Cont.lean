@@ -14,7 +14,8 @@ import Batteries.Lean.Except
 
 Monad encapsulating continuation passing programming style, similar to
 Haskell's `Cont`, `ContT` and `MonadCont`:
-<http://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-Cont.html>
+<https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-Cont.html>
+<https://hub.darcs.net/ross/transformers/browse/Control/Monad/Trans/Cont.hs>
 -/
 
 universe u v w u₀ u₁ v₀ v₁
@@ -99,9 +100,42 @@ instance : LawfulMonadCont (ContT r m) where
   callCC_bind_left := by intros; ext; rfl
   callCC_dummy := by intros; ext; rfl
 
+/-- Note that `tryCatch` does not have correct behavior in this monad:
+```
+def foo : ContT Bool (Except String) Bool := do
+  let x ← try
+    pure true
+  catch _ =>
+    return false
+  throw s!"oh no {x}"
+
+#eval foo.run pure
+-- `Except.ok false`, no error
+```
+Here, the `throwError` is being run inside the `try`.
+
+See [Zulip](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/MonadExcept.20in.20the.20ContT.20monad/near/375341221)
+for further discussion.
+-/
 instance (ε) [MonadExcept ε m] : MonadExcept ε (ContT r m) where
   throw e _ := throw e
   tryCatch act h f := tryCatch (act f) fun e => h e f
+
+instance (ε) [MonadExceptOf ε m] : MonadExceptOf ε (ContT r m) where
+  throw e := throw e
+  tryCatch act h := tryCatch act h
+
+instance (r m) [Monad m] [Lean.AddErrorMessageContext m] :
+    Lean.AddErrorMessageContext (ContT r m) where
+  add stx msg := monadLift <| Lean.AddErrorMessageContext.add stx msg
+
+instance (r m) [Monad m] [Lean.MonadRef m] : Lean.MonadRef (ContT r m) where
+  getRef := monadLift <| Lean.MonadRef.getRef
+  withRef stx h := fun f => do
+    let oldStx ← Lean.MonadRef.getRef
+    Lean.MonadRef.withRef stx (h <| Lean.MonadRef.withRef oldStx ∘ f)
+
+instance (r m) [Monad m] [Lean.MonadError m] : Lean.MonadError (ContT r m) where
 
 end ContT
 
