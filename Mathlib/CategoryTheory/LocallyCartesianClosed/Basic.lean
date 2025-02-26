@@ -126,8 +126,6 @@ def ofOverExponentiable [HasFiniteWidePullbacks C] {I : C} (X : Over I) [Exponen
     ExponentiableMorphism X.hom where
   pushforward := X.iteratedSliceEquiv.inverse ⋙ sections X
   adj := by
-    have : (Over.mk X.hom) = X := by rfl
-    have : Exponentiable (Over.mk X.hom) := by rw [this]; infer_instance
     refine ofNatIsoLeft (Adjunction.comp ?_ ?_) (starIteratedSliceForwardIsoPullback X.hom)
     · exact starSectionsAdj X
     · apply (Over.mk X.hom).iteratedSliceEquiv.toAdjunction
@@ -179,6 +177,7 @@ Over (Over.mk f) ⥤ Over J. -/
 def pushforward : (Over I) ⥤ (Over J) :=
   (Over.mk f).iteratedSliceEquiv.inverse ⋙ sections (Over.mk f)
 
+/-- `CartesianClosedOver.pushforward` is a right adjoint to `Over.pullback f`. -/
 @[simps! unit_app counit_app]
 def pushforwardAdj : pullback f ⊣ pushforward f := by
   refine ofNatIsoLeft (Adjunction.comp ?_ ?_) (starIteratedSliceForwardIsoPullback f)
@@ -238,12 +237,12 @@ instance mkOfCartesianClosedOver [Π (I : C), CartesianClosed (Over I)] :
 
 variable [LocallyCartesianClosed C]
 
-/-- The exponential `X^^A` in the slice category `Over I` is isomorphic to the pushforward of the
-pullback of `X` along `A`. -/
-def expIso {I : C} (A X : Over I) :  Pi A (Reindex A X) ≅ A ⟹ X := Iso.refl _
+/-- The dependent evaluation natural transformation as the counit of the adjunction. -/
+abbrev ev {X I : C} (f : X ⟶ I) : pushforward f ⋙ Over.pullback f ⟶ 𝟭 _ :=
+(exponentiable f).adj.counit
 
 /-- The dependent evaluation morphisms. -/
-abbrev ev {I : C} (X : Over I) (Y : Over X.left) : Reindex X (Pi X Y) ⟶ Y :=
+abbrev ev' {I : C} (X : Over I) (Y : Over X.left) : Reindex X (Pi X Y) ⟶ Y :=
   (exponentiable X.hom).adj.counit.app Y
 
 /-- A locally cartesian closed category with a terminal object is cartesian closed. -/
@@ -255,6 +254,10 @@ def overLocallyCartesianClosed (I : C) : LocallyCartesianClosed (Over I) := by
   apply (config := { allowSynthFailures:= true}) mkOfCartesianClosedOver
   intro X
   exact cartesianClosedOfEquiv (C := Over (X.left)) X.iteratedSliceEquiv.symm
+
+/-- The exponential `X^^A` in the slice category `Over I` is isomorphic to the pushforward of the
+pullback of `X` along `A`. -/
+def expIso {I : C} (A X : Over I) :  Pi A (Reindex A X) ≅ A ⟹ X := Iso.refl _
 
 end LocallyCartesianClosed
 
