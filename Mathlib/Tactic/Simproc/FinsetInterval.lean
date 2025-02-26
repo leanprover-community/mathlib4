@@ -3,7 +3,7 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Interval.Finset
+import Mathlib.Algebra.Order.Interval.Finset.Basic
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Util.Qq
@@ -79,13 +79,14 @@ namespace Finset
 * With the standard depth recursion limit, this simproc can compute intervals of size 250 at most.
 * Make sure to exclude `Finset.insert_eq_of_mem` from your simp call when using this simproc. This
   avoids a quadratic time performance hit. -/
-simproc_decl Icc_nat (Icc _ _) := fun e ↦ do
-  let ⟨1, ~q(Finset ℕ), ~q(Icc (OfNat.ofNat $em) (OfNat.ofNat $en))⟩ ← inferTypeQ e
-    | return .continue
-  let some m := em.rawNatLit? | return .continue
-  let some n := en.rawNatLit? | return .continue
-  let ⟨es, p⟩ ← evalFinsetIccNat m n em en
-  return .done { expr := es, proof? := p }
+simproc_decl Icc_nat (Icc _ _) := .ofQ fun u α e ↦ do
+  match u, α, e with
+  | 1, ~q(Finset ℕ), ~q(Icc (OfNat.ofNat $em) (OfNat.ofNat $en)) =>
+    let some m := em.rawNatLit? | return .continue
+    let some n := en.rawNatLit? | return .continue
+    let ⟨es, p⟩ ← evalFinsetIccNat m n em en
+    return .done { expr := es, proof? := p }
+  | _, _, _ => return .continue
 
 /-- Simproc to compute `Finset.Ico a b` when `a b : ℕ`.
 
@@ -93,17 +94,18 @@ simproc_decl Icc_nat (Icc _ _) := fun e ↦ do
 * With the standard depth recursion limit, this simproc can compute intervals of size 250 at most.
 * Make sure to exclude `Finset.insert_eq_of_mem` from your simp call when using this simproc. This
   avoids a quadratic time performance hit. -/
-simproc_decl Ico_nat (Ico _ _) := fun e ↦ do
-  let ⟨1, ~q(Finset ℕ), ~q(Ico (OfNat.ofNat $em) (OfNat.ofNat $en))⟩ ← inferTypeQ e
-    | return .continue
-  let some m := em.rawNatLit? | return .continue
-  let some n := en.rawNatLit? | return .continue
-  match n with
-  | 0 =>
-    return .done { expr := (q(∅) : Q(Finset ℕ)), proof? := q(Ico_zero $em) }
-  | n + 1 =>
-    let ⟨es, p⟩ ← evalFinsetIccNat m n em q($en - 1)
-    return .done { expr := es, proof? := q(Ico_eq_of_Icc_pred_eq (Nat.succ_ne_zero _) $p) }
+simproc_decl Ico_nat (Ico _ _) := .ofQ fun u α e ↦ do
+  match u, α, e with
+  | 1, ~q(Finset ℕ), ~q(Ico (OfNat.ofNat $em) (OfNat.ofNat $en)) =>
+    let some m := em.rawNatLit? | return .continue
+    let some n := en.rawNatLit? | return .continue
+    match n with
+    | 0 =>
+      return .done { expr := (q(∅) : Q(Finset ℕ)), proof? := q(Ico_zero $em) }
+    | n + 1 =>
+      let ⟨es, p⟩ ← evalFinsetIccNat m n em q($en - 1)
+      return .done { expr := es, proof? := q(Ico_eq_of_Icc_pred_eq (Nat.succ_ne_zero _) $p) }
+  | _, _, _ => return .continue
 
 /-- Simproc to compute `Finset.Ioc a b` when `a b : ℕ`.
 
@@ -111,13 +113,14 @@ simproc_decl Ico_nat (Ico _ _) := fun e ↦ do
 * With the standard depth recursion limit, this simproc can compute intervals of size 250 at most.
 * Make sure to exclude `Finset.insert_eq_of_mem` from your simp call when using this simproc. This
   avoids a quadratic time performance hit. -/
-simproc_decl Ioc_nat (Ioc _ _) := fun e ↦ do
-  let ⟨1, ~q(Finset ℕ), ~q(Ioc (OfNat.ofNat $em) (OfNat.ofNat $en))⟩ ← inferTypeQ e
-    | return .continue
-  let some m := em.rawNatLit? | return .continue
-  let some n := en.rawNatLit? | return .continue
-  let ⟨es, p⟩ ← evalFinsetIccNat (m + 1) n q($em + 1) en
-  return .done { expr := es, proof? := q(Ioc_eq_of_Icc_succ_eq $p) }
+simproc_decl Ioc_nat (Ioc _ _) := .ofQ fun u α e ↦ do
+  match u, α, e with
+  | 1, ~q(Finset ℕ), ~q(Ioc (OfNat.ofNat $em) (OfNat.ofNat $en)) =>
+    let some m := em.rawNatLit? | return .continue
+    let some n := en.rawNatLit? | return .continue
+    let ⟨es, p⟩ ← evalFinsetIccNat (m + 1) n q($em + 1) en
+    return .done { expr := es, proof? := q(Ioc_eq_of_Icc_succ_eq $p) }
+  | _, _, _ => return .continue
 
 /-- Simproc to compute `Finset.Ioo a b` when `a b : ℕ`.
 
@@ -125,13 +128,14 @@ simproc_decl Ioc_nat (Ioc _ _) := fun e ↦ do
 * With the standard depth recursion limit, this simproc can compute intervals of size 250 at most.
 * Make sure to exclude `Finset.insert_eq_of_mem` from your simp call when using this simproc. This
   avoids a quadratic time performance hit. -/
-simproc_decl Ioo_nat (Ioo _ _) := fun e ↦ do
-  let ⟨1, ~q(Finset ℕ), ~q(Ioo (OfNat.ofNat $em) (OfNat.ofNat $en))⟩ ← inferTypeQ e
-    | return .continue
-  let some m := em.rawNatLit? | return .continue
-  let some n := en.rawNatLit? | return .continue
-  let ⟨es, p⟩ ← evalFinsetIccNat (m + 1) (n - 1) q($em + 1) q($en - 1)
-  return .done { expr := es, proof? := q(Ioo_eq_of_Icc_succ_pred_eq $p) }
+simproc_decl Ioo_nat (Ioo _ _) := .ofQ fun u α e ↦ do
+  match u, α, e with
+  | 1, ~q(Finset ℕ), ~q(Ioo (OfNat.ofNat $em) (OfNat.ofNat $en)) =>
+    let some m := em.rawNatLit? | return .continue
+    let some n := en.rawNatLit? | return .continue
+    let ⟨es, p⟩ ← evalFinsetIccNat (m + 1) (n - 1) q($em + 1) q($en - 1)
+    return .done { expr := es, proof? := q(Ioo_eq_of_Icc_succ_pred_eq $p) }
+  | _, _, _ => return .continue
 
 /-- Simproc to compute `Finset.Iic b` when `b : ℕ`.
 
@@ -139,11 +143,13 @@ simproc_decl Ioo_nat (Ioo _ _) := fun e ↦ do
 * With the standard depth recursion limit, this simproc can compute intervals of size 250 at most.
 * Make sure to exclude `Finset.insert_eq_of_mem` from your simp call when using this simproc. This
   avoids a quadratic time performance hit. -/
-simproc_decl Iic_nat (Iic _) := fun e ↦ do
-  let ⟨1, ~q(Finset ℕ), ~q(Iic (OfNat.ofNat $en))⟩ ← inferTypeQ e | return .continue
-  let some n := en.rawNatLit? | return .continue
-  let ⟨es, p⟩ ← evalFinsetIccNat 0 n q(0) en
-  return .done { expr := es, proof? := q(Iic_eq_of_Icc_zero_eq $p) }
+simproc_decl Iic_nat (Iic _) := .ofQ fun u α e ↦ do
+  match u, α, e with
+  | 1, ~q(Finset ℕ), ~q(Iic (OfNat.ofNat $en)) =>
+    let some n := en.rawNatLit? | return .continue
+    let ⟨es, p⟩ ← evalFinsetIccNat 0 n q(0) en
+    return .done { expr := es, proof? := q(Iic_eq_of_Icc_zero_eq $p) }
+  | _, _, _ => return .continue
 
 /-- Simproc to compute `Finset.Iio b` when `b : ℕ`.
 
@@ -151,15 +157,17 @@ simproc_decl Iic_nat (Iic _) := fun e ↦ do
 * With the standard depth recursion limit, this simproc can compute intervals of size 250 at most.
 * Make sure to exclude `Finset.insert_eq_of_mem` from your simp call when using this simproc. This
   avoids a quadratic time performance hit. -/
-simproc_decl Iio_nat (Iio _) := fun e ↦ do
-  let ⟨1, ~q(Finset ℕ), ~q(Iio (OfNat.ofNat $en))⟩ ← inferTypeQ e | return .continue
-  let some n := en.rawNatLit? | return .continue
-  match n with
-  | 0 =>
-    return .done { expr := (q(∅) : Q(Finset ℕ)), proof? := q(Iio_zero) }
-  | n + 1 =>
-    let ⟨es, p⟩ ← evalFinsetIccNat 0 n q(0) q($en - 1)
-    return .done { expr := es, proof? := q(Iio_eq_of_Icc_zero_pred_eq (Nat.succ_ne_zero _) $p) }
+simproc_decl Iio_nat (Iio _) := .ofQ fun u α e ↦ do
+  match u, α, e with
+  | 1, ~q(Finset ℕ), ~q(Iio (OfNat.ofNat $en)) =>
+    let some n := en.rawNatLit? | return .continue
+    match n with
+    | 0 =>
+      return .done { expr := (q(∅) : Q(Finset ℕ)), proof? := q(Iio_zero) }
+    | n + 1 =>
+      let ⟨es, p⟩ ← evalFinsetIccNat 0 n q(0) q($en - 1)
+      return .done { expr := es, proof? := q(Iio_eq_of_Icc_zero_pred_eq (Nat.succ_ne_zero _) $p) }
+  | _, _, _ => return .continue
 
 example : Icc 1 0 = ∅ := by simp only [Icc_nat]
 example : Icc 1 1 = {1} := by simp only [Icc_nat]
