@@ -110,7 +110,7 @@ def homologicalKernel [F.IsHomological] :
     (Triangle.shift_distinguished T hT n)).isZero_of_both_zeros
       (IsZero.eq_of_src (h₁ n) _ _) (IsZero.eq_of_tgt (h₃ n) _ _))
 
-instance [F.IsHomological] : ClosedUnderIsomorphisms F.homologicalKernel.P := by
+instance [F.IsHomological] : F.homologicalKernel.P.IsClosedUnderIsomorphisms := by
   dsimp only [homologicalKernel]
   infer_instance
 
