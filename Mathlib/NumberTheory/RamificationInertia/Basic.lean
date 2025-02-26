@@ -318,8 +318,8 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
     rw [Submodule.restrictScalars_mem] at hx
     obtain ⟨x', rfl⟩ := Submodule.mem_span_singleton.mp hx
     rw [smul_eq_mul, mul_comm, ← Algebra.smul_def] at hx ⊢
-    rw [← Submodule.Quotient.mk_eq_zero, Submodule.Quotient.mk_smul]
-    obtain ⟨a', _, quot_x_eq⟩ := exists_sum (Submodule.Quotient.mk x')
+    rw [← Submodule.mkQ_eq_zero, Submodule.mkQ_smul]
+    obtain ⟨a', _, quot_x_eq⟩ := exists_sum (Submodule.mkQ _ x')
     rw [← quot_x_eq, Finset.smul_sum]
     conv =>
       lhs; congr; next => skip
@@ -512,8 +512,8 @@ noncomputable def quotientToQuotientRangePowQuotSuccAux {i : ℕ} {a : S} (a_mem
       Subtype.coe_mk, _root_.map_mul, map_sub, mul_sub]
 
 theorem quotientToQuotientRangePowQuotSuccAux_mk {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) (x : S) :
-    quotientToQuotientRangePowQuotSuccAux p P a_mem (Submodule.Quotient.mk x) =
-      Submodule.Quotient.mk ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩ := by
+    quotientToQuotientRangePowQuotSuccAux p P a_mem (Submodule.mkQ P x) =
+      Submodule.mkQ _ ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩ := by
   apply Quotient.map'_mk''
 
 section
@@ -527,22 +527,22 @@ noncomputable def quotientToQuotientRangePowQuotSucc
   toFun := quotientToQuotientRangePowQuotSuccAux p P a_mem
   map_add' := by
     intro x y; refine Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => ?_
-    simp only [Submodule.Quotient.mk''_eq_mk, ← Submodule.Quotient.mk_add,
+    simp only [Submodule.mk''_eq_mkQ, ← Submodule.mkQ_add,
       quotientToQuotientRangePowQuotSuccAux_mk, mul_add]
     exact congr_arg Submodule.Quotient.mk rfl
   map_smul' := by
     intro x y; refine Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => ?_
-    simp only [Submodule.Quotient.mk''_eq_mk, RingHom.id_apply,
+    simp only [Submodule.mk''_eq_mkQ, RingHom.id_apply,
       quotientToQuotientRangePowQuotSuccAux_mk]
     refine congr_arg Submodule.Quotient.mk ?_
     ext
-    simp only [mul_assoc, _root_.map_mul, Quotient.mk_eq_mk, Submodule.coe_smul_of_tower,
+    simp only [mul_assoc, _root_.map_mul, Quotient.mkQ_eq_mk, Submodule.coe_smul_of_tower,
       Algebra.smul_def, Quotient.algebraMap_quotient_pow_ramificationIdx]
     ring
 
 theorem quotientToQuotientRangePowQuotSucc_mk {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) (x : S) :
-    quotientToQuotientRangePowQuotSucc p P a_mem (Submodule.Quotient.mk x) =
-      Submodule.Quotient.mk ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩ :=
+    quotientToQuotientRangePowQuotSucc p P a_mem (Submodule.mkQ P x) =
+      Submodule.mkQ _ ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩ :=
   quotientToQuotientRangePowQuotSuccAux_mk p P a_mem x
 
 theorem quotientToQuotientRangePowQuotSucc_injective [IsDedekindDomain S] [P.IsPrime]
@@ -551,14 +551,14 @@ theorem quotientToQuotientRangePowQuotSucc_injective [IsDedekindDomain S] [P.IsP
   Quotient.inductionOn' x fun x y =>
     Quotient.inductionOn' y fun y h => by
       have Pe_le_Pi1 : P ^ e ≤ P ^ (i + 1) := Ideal.pow_le_pow_right hi
-      simp only [Submodule.Quotient.mk''_eq_mk, quotientToQuotientRangePowQuotSucc_mk,
-        Submodule.Quotient.eq, LinearMap.mem_range, Subtype.ext_iff, Subtype.coe_mk,
+      simp only [Submodule.mk''_eq_mkQ, quotientToQuotientRangePowQuotSucc_mk,
+        Submodule.mkQ_eq, LinearMap.mem_range, Subtype.ext_iff, Subtype.coe_mk,
         Submodule.coe_sub] at h ⊢
       rcases h with ⟨⟨⟨z⟩, hz⟩, h⟩
-      rw [Submodule.Quotient.quot_mk_eq_mk, Ideal.Quotient.mk_eq_mk, Ideal.mem_quotient_iff_mem_sup,
+      rw [Submodule.quot_mk_eq_mkQ, Ideal.Quotient.mkQ_eq_mk, Ideal.mem_quotient_iff_mem_sup,
         sup_eq_left.mpr Pe_le_Pi1] at hz
-      rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Submodule.Quotient.quot_mk_eq_mk,
-        Ideal.Quotient.mk_eq_mk, ← map_sub, Ideal.Quotient.eq, ← mul_sub] at h
+      rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Submodule.quot_mk_eq_mkQ,
+        Ideal.Quotient.mkQ_eq_mk, ← map_sub, Ideal.Quotient.eq, ← mul_sub] at h
       exact
         (Ideal.IsPrime.mem_pow_mul _
               ((Submodule.sub_mem_iff_right _ hz).mp (Pe_le_Pi1 h))).resolve_left
@@ -570,17 +570,17 @@ theorem quotientToQuotientRangePowQuotSucc_surjective [IsDedekindDomain S]
     Function.Surjective (quotientToQuotientRangePowQuotSucc p P a_mem) := by
   rintro ⟨⟨⟨x⟩, hx⟩⟩
   have Pe_le_Pi : P ^ e ≤ P ^ i := Ideal.pow_le_pow_right hi.le
-  rw [Submodule.Quotient.quot_mk_eq_mk, Ideal.Quotient.mk_eq_mk, Ideal.mem_quotient_iff_mem_sup,
+  rw [Submodule.quot_mk_eq_mkQ, Ideal.Quotient.mkQ_eq_mk, Ideal.mem_quotient_iff_mem_sup,
     sup_eq_left.mpr Pe_le_Pi] at hx
   suffices hx' : x ∈ Ideal.span {a} ⊔ P ^ (i + 1) by
     obtain ⟨y', hy', z, hz, rfl⟩ := Submodule.mem_sup.mp hx'
     obtain ⟨y, rfl⟩ := Ideal.mem_span_singleton.mp hy'
-    refine ⟨Submodule.Quotient.mk y, ?_⟩
-    simp only [Submodule.Quotient.quot_mk_eq_mk, quotientToQuotientRangePowQuotSucc_mk,
-      Submodule.Quotient.eq, LinearMap.mem_range, Subtype.ext_iff, Subtype.coe_mk,
+    refine ⟨Submodule.mkQ P y, ?_⟩
+    simp only [Submodule.quot_mk_eq_mkQ, quotientToQuotientRangePowQuotSucc_mk,
+      Submodule.mkQ_eq, LinearMap.mem_range, Subtype.ext_iff, Subtype.coe_mk,
       Submodule.coe_sub]
     refine ⟨⟨_, Ideal.mem_map_of_mem _ (Submodule.neg_mem _ hz)⟩, ?_⟩
-    rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Ideal.Quotient.mk_eq_mk, map_add,
+    rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Ideal.Quotient.mkQ_eq_mk, map_add,
       sub_add_cancel_left, map_neg]
   letI := Classical.decEq (Ideal S)
   rw [sup_eq_prod_inf_factors _ (pow_ne_zero _ hP0), normalizedFactors_pow,
@@ -771,7 +771,7 @@ noncomputable def Factors.piQuotientLinearEquiv (p : Ideal R) (hp : map (algebra
   { Factors.piQuotientEquiv p hp with
     map_smul' := by
       rintro ⟨c⟩ ⟨x⟩; ext P
-      simp only [Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, Algebra.smul_def,
+      simp only [Submodule.quot_mk_eq_mkQ, Quotient.mkQ_eq_mk, Algebra.smul_def,
         Quotient.algebraMap_quotient_map_quotient, Quotient.mk_algebraMap,
         RingHomCompTriple.comp_apply, Pi.mul_apply, Pi.algebraMap_apply]
       congr }

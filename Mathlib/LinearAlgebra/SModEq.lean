@@ -24,19 +24,23 @@ variable {N : Type*} [AddCommGroup N] [Module R N] (V V₁ V₂ : Submodule R N)
 
 /-- A predicate saying two elements of a module are equivalent modulo a submodule. -/
 def SModEq (x y : M) : Prop :=
-  (Submodule.Quotient.mk x : M ⧸ U) = Submodule.Quotient.mk y
+  Submodule.mkQ U x = Submodule.mkQ U y
 
 @[inherit_doc] notation:50 x " ≡ " y " [SMOD " N "]" => SModEq N x y
 
 variable {U U₁ U₂}
 
-protected theorem SModEq.def :
+protected theorem SModEq.def' :
     x ≡ y [SMOD U] ↔ (Submodule.Quotient.mk x : M ⧸ U) = Submodule.Quotient.mk y :=
+  Iff.rfl
+
+protected theorem SModEq.def :
+    x ≡ y [SMOD U] ↔ Submodule.mkQ U x = Submodule.mkQ U y :=
   Iff.rfl
 
 namespace SModEq
 
-theorem sub_mem : x ≡ y [SMOD U] ↔ x - y ∈ U := by rw [SModEq.def, Submodule.Quotient.eq]
+theorem sub_mem : x ≡ y [SMOD U] ↔ x - y ∈ U := by rw [SModEq.def, Submodule.mkQ_eq]
 
 @[simp]
 theorem top : x ≡ y [SMOD (⊤ : Submodule R M)] :=
@@ -44,7 +48,7 @@ theorem top : x ≡ y [SMOD (⊤ : Submodule R M)] :=
 
 @[simp]
 theorem bot : x ≡ y [SMOD (⊥ : Submodule R M)] ↔ x = y := by
-  rw [SModEq.def, Submodule.Quotient.eq, mem_bot, sub_eq_zero]
+  rw [SModEq.def, Submodule.mkQ_eq, mem_bot, sub_eq_zero]
 
 @[mono]
 theorem mono (HU : U₁ ≤ U₂) (hxy : x ≡ y [SMOD U₁]) : x ≡ y [SMOD U₂] :=
@@ -73,38 +77,38 @@ instance instTrans : Trans (SModEq U) (SModEq U) (SModEq U) where
 
 theorem add (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : x₁ + x₂ ≡ y₁ + y₂ [SMOD U] := by
   rw [SModEq.def] at hxy₁ hxy₂ ⊢
-  simp_rw [Quotient.mk_add, hxy₁, hxy₂]
+  simp_rw [mkQ_add, hxy₁, hxy₂]
 
 theorem smul (hxy : x ≡ y [SMOD U]) (c : R) : c • x ≡ c • y [SMOD U] := by
   rw [SModEq.def] at hxy ⊢
-  simp_rw [Quotient.mk_smul, hxy]
+  simp_rw [mkQ_smul, hxy]
 
 lemma nsmul (hxy : x ≡ y [SMOD U]) (n : ℕ) : n • x ≡ n • y [SMOD U] := by
   rw [SModEq.def] at hxy ⊢
-  simp_rw [Quotient.mk_smul, hxy]
+  simp [hxy]
 
 lemma zsmul (hxy : x ≡ y [SMOD U]) (n : ℤ) : n • x ≡ n • y [SMOD U] := by
   rw [SModEq.def] at hxy ⊢
-  simp_rw [Quotient.mk_smul, hxy]
+  simp [hxy]
 
 theorem mul {I : Ideal A} {x₁ x₂ y₁ y₂ : A} (hxy₁ : x₁ ≡ y₁ [SMOD I])
     (hxy₂ : x₂ ≡ y₂ [SMOD I]) : x₁ * x₂ ≡ y₁ * y₂ [SMOD I] := by
-  simp only [SModEq.def, Ideal.Quotient.mk_eq_mk, map_mul] at hxy₁ hxy₂ ⊢
+  simp only [SModEq.def, Ideal.Quotient.mkQ_eq_mk, map_mul] at hxy₁ hxy₂ ⊢
   rw [hxy₁, hxy₂]
 
 lemma pow {I : Ideal A} {x y : A} (n : ℕ) (hxy : x ≡ y [SMOD I]) :
     x ^ n ≡ y ^ n [SMOD I] := by
-  simp only [SModEq.def, Ideal.Quotient.mk_eq_mk, map_pow] at hxy ⊢
+  simp only [SModEq.def, Ideal.Quotient.mkQ_eq_mk, map_pow] at hxy ⊢
   rw [hxy]
 
 lemma neg (hxy : x ≡ y [SMOD U]) : - x ≡ - y [SMOD U] := by
-  simpa only [SModEq.def, Quotient.mk_neg, neg_inj]
+  simpa only [SModEq.def, mkQ_neg, neg_inj]
 
 lemma sub (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : x₁ - x₂ ≡ y₁ - y₂ [SMOD U] := by
   rw [SModEq.def] at hxy₁ hxy₂ ⊢
-  simp_rw [Quotient.mk_sub, hxy₁, hxy₂]
+  simp_rw [mkQ_sub, hxy₁, hxy₂]
 
-theorem zero : x ≡ 0 [SMOD U] ↔ x ∈ U := by rw [SModEq.def, Submodule.Quotient.eq, sub_zero]
+theorem zero : x ≡ 0 [SMOD U] ↔ x ∈ U := by rw [SModEq.def, Submodule.mkQ_eq, sub_zero]
 
 theorem _root_.sub_smodEq_zero : x - y ≡ 0 [SMOD U] ↔ x ≡ y [SMOD U] := by
   simp only [SModEq.sub_mem, sub_zero]

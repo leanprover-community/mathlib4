@@ -133,7 +133,7 @@ variable (I M)
 
 instance : IsHausdorff I (Hausdorffification I M) :=
   ⟨fun x => Quotient.inductionOn' x fun x hx =>
-    (Quotient.mk_eq_zero _).2 <| (mem_iInf _).2 fun n => by
+    (mkQ_eq_zero _).2 <| (mem_iInf _).2 fun n => by
       have := comap_map_mkQ (⨅ n : ℕ, I ^ n • ⊤ : Submodule R M) (I ^ n • ⊤)
       simp only [sup_of_le_right (iInf_le (fun n => (I ^ n • ⊤ : Submodule R M)) n)] at this
       rw [← this, map_smul'', mem_comap, Submodule.map_top, range_mkQ, ← SModEq.zero]
@@ -428,6 +428,11 @@ theorem mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (f : AdicCauchySequence I M) :
       Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (f m) :=
   (f.property hmn).symm
 
+theorem mkQ_eq_mkQ {m n : ℕ} (hmn : m ≤ n) (f : AdicCauchySequence I M) :
+    Submodule.mkQ (I ^ m • ⊤ : Submodule R M) (f n) =
+      Submodule.mkQ (I ^ m • ⊤ : Submodule R M) (f m) :=
+  (f.property hmn).symm
+
 end AdicCauchySequence
 
 /-- The `I`-adic cauchy condition can be checked on successive `n`. -/
@@ -468,19 +473,17 @@ theorem mk_zero_of (f : AdicCauchySequence I M)
   obtain ⟨k, h⟩ := h
   ext n
   obtain ⟨m, hnm, l, hnl, hl⟩ := h (n + k) (by omega)
-  rw [mk_apply_coe, Submodule.mkQ_apply, val_zero,
-    ← AdicCauchySequence.mk_eq_mk (show n ≤ m by omega)]
-  simpa using (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by omega))) hl
+  rw [mk_apply_coe, val_zero, ← AdicCauchySequence.mkQ_eq_mkQ (show n ≤ m by omega)]
+  simpa using (Submodule.smul_mono_left (Ideal.pow_le_pow_right (Nat.le_of_add_right_le hnl))) hl
 
 /-- Every element in the adic completion is represented by a Cauchy sequence. -/
 theorem mk_surjective : Function.Surjective (mk I M) := by
   intro x
-  choose a ha using fun n ↦ Submodule.Quotient.mk_surjective _ (x.val n)
+  choose a ha using fun n ↦ Submodule.mkQ_surjective _ (x.val n)
   refine ⟨⟨a, ?_⟩, ?_⟩
   · intro m n hmn
-    rw [SModEq.def, ha m, ← mkQ_apply,
-      ← factor_mk (Submodule.smul_mono_left (Ideal.pow_le_pow_right hmn)) (a n),
-      mkQ_apply,  ha n, x.property hmn]
+    rw [SModEq.def, ha m, ← factor_mk (Submodule.smul_mono_left (Ideal.pow_le_pow_right hmn)) (a n),
+      ha n, x.property hmn]
   · ext n
     simp [ha n]
 

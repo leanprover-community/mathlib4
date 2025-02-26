@@ -46,7 +46,7 @@ namespace Quotient
 variable {I} {x y : R}
 
 instance one (I : Ideal R) : One (R ⧸ I) :=
-  ⟨Submodule.Quotient.mk 1⟩
+  ⟨Submodule.mkQ I 1⟩
 
 /-- On `Ideal`s, `Submodule.quotientRel` is a ring congruence. -/
 protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R where
@@ -75,11 +75,10 @@ example : (ring I).toAddCommGroup = Submodule.Quotient.addCommGroup I := rfl
 variable (I) in
 /-- The ring homomorphism from a ring `R` to a quotient ring `R/I`. -/
 def mk : R →+* R ⧸ I where
-  toFun a := Submodule.Quotient.mk a
+  __ := Submodule.mkQ I
   map_zero' := rfl
   map_one' := rfl
   map_mul' _ _ := rfl
-  map_add' _ _ := rfl
 
 instance : Coe R (R ⧸ I) :=
   ⟨Ideal.Quotient.mk I⟩
@@ -99,11 +98,13 @@ instance : Nonempty (R ⧸ I) :=
 protected theorem eq : mk I x = mk I y ↔ x - y ∈ I :=
   Submodule.Quotient.eq I
 
-@[simp]
 theorem mk_eq_mk (x : R) : (Submodule.Quotient.mk x : R ⧸ I) = mk I x := rfl
 
+@[simp]
+theorem mkQ_eq_mk (x : R) : Submodule.mkQ I x = mk I x := rfl
+
 theorem eq_zero_iff_mem : mk I a = 0 ↔ a ∈ I :=
-  Submodule.Quotient.mk_eq_zero _
+  Submodule.mkQ_eq_zero _
 
 theorem mk_eq_mk_iff_sub_mem (x y : R) : mk I x = mk I y ↔ x - y ∈ I := by
   rw [← eq_zero_iff_mem, map_sub, sub_eq_zero]

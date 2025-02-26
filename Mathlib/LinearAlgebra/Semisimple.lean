@@ -265,7 +265,7 @@ section PerfectField
 variable [PerfectField K] (comm : Commute f g) (hf : f.IsSemisimple) (hg : g.IsSemisimple)
 include comm hf hg
 
-attribute [local simp] Submodule.Quotient.quot_mk_eq_mk in
+attribute [local simp] Submodule.quot_mk_eq_mkQ in
 theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin K {f, g}) :
     a.IsSemisimple := by
   let R := K[X] ⧸ Ideal.span {minpoly K f}
@@ -291,7 +291,8 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
     fun a ↦ ?_) g ?_) ((Ideal.span_singleton_le_iff_mem _).mpr ?_ : _ ≤ RingHom.ker _)
   rotate_left 1
   · rw [Ideal.span, ← minpoly.ker_aeval_eq_span_minpoly]; exact id
-  · rintro ⟨p⟩; exact p.induction_on (fun k ↦ by simp [R, Algebra.commute_algebraMap_left])
+  · rintro ⟨p⟩; exact p.induction_on (fun k ↦ by
+      simp [Ideal.Quotient.liftₐ_apply, R, Algebra.commute_algebraMap_left])
       (fun p q hp hq ↦ by simpa [R] using hp.add_left hq)
       fun n k ↦ by simpa [R, pow_succ, ← mul_assoc _ _ X] using (·.mul_left comm)
   · simpa only [RingHom.mem_ker, eval₂AlgHom'_apply, eval₂_map, AlgHom.comp_algebraMap_of_tower]
