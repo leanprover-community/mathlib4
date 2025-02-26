@@ -42,7 +42,7 @@ lemma isRat_realSqrt_of_isRat_ofNat {x : ℝ} {n sn : ℕ} {d sd : ℕ} (hn : sn
     IsRat √x (.ofNat sn) sd := by
   obtain ⟨inv, rfl⟩ := h
   refine ⟨?_, ?out⟩
-  · exact invertibleOfNonzero <| by rw [←mul_self_ne_zero, ←Nat.cast_mul, hd] ; exact inv.ne_zero
+  · exact invertibleOfNonzero <| by rw [← mul_self_ne_zero, ← Nat.cast_mul, hd]; exact inv.ne_zero
   · simp [← hn, ← hd, Real.sqrt_mul (mul_self_nonneg ↑sn)]
 
 /-- `norm_num` extension that evaluates the function `Real.sqrt`. -/
