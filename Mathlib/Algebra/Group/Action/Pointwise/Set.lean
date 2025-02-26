@@ -10,38 +10,12 @@ import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Data.Set.Pairwise.Basic
 
 /-!
-# Pointwise operations of sets
-
-This file defines pointwise algebraic operations on sets.
-
-## Main declarations
-
-For sets `s` and `t` and scalar `a`:
-* `s * t`: Multiplication, set of all `x * y` where `x ∈ s` and `y ∈ t`.
-* `s + t`: Addition, set of all `x + y` where `x ∈ s` and `y ∈ t`.
-* `s⁻¹`: Inversion, set of all `x⁻¹` where `x ∈ s`.
-* `-s`: Negation, set of all `-x` where `x ∈ s`.
-* `s / t`: Division, set of all `x / y` where `x ∈ s` and `y ∈ t`.
-* `s - t`: Subtraction, set of all `x - y` where `x ∈ s` and `y ∈ t`.
-* `s • t`: Scalar multiplication, set of all `x • y` where `x ∈ s` and `y ∈ t`.
-* `s +ᵥ t`: Scalar addition, set of all `x +ᵥ y` where `x ∈ s` and `y ∈ t`.
-* `s -ᵥ t`: Scalar subtraction, set of all `x -ᵥ y` where `x ∈ s` and `y ∈ t`.
-* `a • s`: Scaling, set of all `a • x` where `x ∈ s`.
-* `a +ᵥ s`: Translation, set of all `a +ᵥ x` where `x ∈ s`.
-
-For `α` a semigroup/monoid, `Set α` is a semigroup/monoid.
-As an unfortunate side effect, this means that `n • s`, where `n : ℕ`, is ambiguous between
-pointwise scaling and repeated pointwise addition; the former has `(2 : ℕ) • {1, 2} = {2, 4}`, while
-the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note [pointwise nat action].
-
-Appropriate definitions and results are also transported to the additive theory via `to_additive`.
+# Pointwise actions on sets
+This file proves that several kinds of actions of a type `α` on another type `β` transfer to actions
+of `α`/`Set α` on `Set β`.
 
 ## Implementation notes
 
-* The following expressions are considered in simp-normal form in a group:
-  `(fun h ↦ h * g) ⁻¹' s`, `(fun h ↦ g * h) ⁻¹' s`, `(fun h ↦ h * g⁻¹) ⁻¹' s`,
-  `(fun h ↦ g⁻¹ * h) ⁻¹' s`, `s * t`, `s⁻¹`, `(1 : Set _)` (and similarly for additive variants).
-  Expressions equal to one of these will be simplified.
 * We put all instances in the locale `Pointwise`, so that these instances are not available by
   default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
   since we expect the locale to be open whenever the instances are actually used (and making the
@@ -54,18 +28,6 @@ pointwise subtraction
 -/
 
 assert_not_exists MonoidWithZero OrderedAddCommMonoid
-
-library_note "pointwise nat action"/--
-Pointwise monoids (`Set`, `Finset`, `Filter`) have derived pointwise actions of the form
-`SMul α β → SMul α (Set β)`. When `α` is `ℕ` or `ℤ`, this action conflicts with the
-nat or int action coming from `Set β` being a `Monoid` or `DivInvMonoid`. For example,
-`2 • {a, b}` can both be `{2 • a, 2 • b}` (pointwise action, pointwise repeated addition,
-`Set.smulSet`) and `{a + a, a + b, b + a, b + b}` (nat or int action, repeated pointwise
-addition, `Set.NSMul`).
-
-Because the pointwise action can easily be spelled out in such cases, we give higher priority to the
-nat and int actions.
--/
 
 open Function MulOpposite
 
@@ -87,19 +49,21 @@ open scoped RightActions in
 @[to_additive] lemma op_smul_set_subset_mul : a ∈ t → s <• a ⊆ s * t := image_subset_image2_left
 
 @[to_additive]
-lemma image_op_smul : (op '' s) • t = t * s := by
+theorem image_op_smul : (op '' s) • t = t * s := by
   rw [← image2_smul, ← image2_mul, image2_image_left, image2_swap]
   rfl
 
 @[to_additive (attr := simp)]
-lemma iUnion_op_smul_set (s t : Set α) : ⋃ a ∈ t, MulOpposite.op a • s = s * t :=
+theorem iUnion_op_smul_set (s t : Set α) : ⋃ a ∈ t, MulOpposite.op a • s = s * t :=
   iUnion_image_right _
 
 @[to_additive]
-lemma mul_subset_iff_left : s * t ⊆ u ↔ ∀ a ∈ s, a • t ⊆ u := image2_subset_iff_left
+lemma mul_subset_iff_left : s * t ⊆ u ↔ ∀ a ∈ s, a • t ⊆ u :=
+  image2_subset_iff_left
 
 @[to_additive]
-lemma mul_subset_iff_right : s * t ⊆ u ↔ ∀ b ∈ t, op b • s ⊆ u := image2_subset_iff_right
+lemma mul_subset_iff_right : s * t ⊆ u ↔ ∀ b ∈ t, op b • s ⊆ u :=
+  image2_subset_iff_right
 
 @[to_additive] lemma pair_mul (a b : α) (s : Set α) : {a, b} * s = a • s ∪ b • s := by
   rw [insert_eq, union_mul, singleton_mul, singleton_mul]; rfl
