@@ -60,7 +60,8 @@ def trivial : Representation k G V :=
 variable {G V}
 
 @[simp]
-theorem trivial_apply (g : G) (v : V) : trivial k G V g v = v := rfl
+theorem trivial_apply (g : G) (v : V) : trivial k G V g v = v :=
+  rfl
 
 variable {k}
 
