@@ -7,10 +7,17 @@ import Mathlib.RingTheory.AdicCompletion.Basic
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 import Mathlib.RingTheory.Perfection
+import Mathlib.RingTheory.Perfectoid.Untilt
+
+/-!
+# Integral Perfectoid Rings
+
+
+-/
 
 section IsPerfectoidPsU
 
-variable {A : Type*} [CommRing A] [TopologicalSpace A] [TopologicalRing A]
+variable {A : Type*} [CommRing A] [TopologicalSpace A] [IsTopologicalRing A]
 
 /--
 Fix a (prime) number `p`. Let `A` be a topological commutative ring.
@@ -33,27 +40,12 @@ structure IsPerfectoidPsU (p : ℕ) (π : A) : Prop where
 end IsPerfectoidPsU
 
 class IntegralPerfectoid (A : Type*) [CommRing A] [TopologicalSpace A]
-    [TopologicalRing A] (p : outParam ℕ) : Prop where
+    [IsTopologicalRing A] (p : outParam ℕ) : Prop where
   exists_isPerfectoidPsU : ∃ π : A, IsPerfectoidPsU p π
 #check Tilt
 namespace IntegralPerfectoid
 
 variable (A : Type*) [CommRing A] [TopologicalSpace A]
-    [TopologicalRing A] (p : ℕ) [Fact p.Prime] [IntegralPerfectoid A p]
-
-def Tilt := Ring.Perfection (A ⧸ Ideal.span {(p : A)}) p
-
-instance : CommRing (Tilt A p) := Perfection.commRing p (A ⧸ Ideal.span {(p : A)}) -- p is not invertible in integral perfectoid case
-
-def sharp : (PreTilt A p) →* A := sorry
-
-local notation "♯" => sharp A p
-
-theorem sharp_p_pow (x : Tilt A p) : ♯ (x ^ p) = (♯ x) ^ p := by sorry
-
-
-scoped postfix:max "^♯" => Nat.succ
-
-#check 1 ^♯
+    [IsTopologicalRing A] (p : ℕ) [Fact p.Prime] [IntegralPerfectoid A p]
 
 end IntegralPerfectoid

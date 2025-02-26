@@ -5,13 +5,7 @@ Authors: Jiedong Jiang
 -/
 
 import Mathlib.RingTheory.Perfectoid.Untilt
-import Mathlib.RingTheory.WittVector.Complete
-import Mathlib.LinearAlgebra.Quotient.Defs
 import Mathlib.RingTheory.WittVector.TeichmullerSeries
-import Mathlib.RingTheory.AdicCompletion.Basic
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.AdicCompletion.Algebra
-
 
 /-!
 # Fontaine's θ map
@@ -47,6 +41,8 @@ variable {O : Type u} [CommRing O] {p : ℕ} [Fact (Nat.Prime p)]
 local notation A "^♭" => PreTilt A p
 local notation "𝕎" => WittVector p
 
+namespace WittVector
+
 /-!
 ## θ as a ring homomorphism
 In this section, we first define the ring homomorphism
@@ -65,12 +61,7 @@ Here, the ring map `gh_n` fits in the following diagram.
 v                   v
 𝕎(A/p) --gh_n-> A/p^(n+1)
 ```
-
 -/
-
-namespace WittVector
-
--- this file
 
 variable (n : ℕ)
 
@@ -95,20 +86,6 @@ def ghostComponentModPPow (n : ℕ): 𝕎 (O ⧸ span {(p : O)}) →+* O ⧸ spa
     ⟨((Ideal.Quotient.mk <| span {(p : O)} ^ (n + 1))).comp
     (WittVector.ghostComponent (p := p) n), ker_map_le_ker_mk_comp_ghostComponent n⟩
 
-end WittVector
-
--- `Untilt`, after `mk_comp_untilt_eq_coeff_zero`
-namespace WittVector
--- @[simp]
--- theorem map_mk_teichmuller_frobeniusEquiv_symm_pow_untilt (n : ℕ) (x : O^♭) :
---     WittVector.map (Ideal.Quotient.mk (span {(p : O)}))
---     (teichmuller p ((((_root_.frobeniusEquiv _ p).symm ^ n) x).untilt)) =
---     (teichmuller p (Perfection.coeff (ModP O p) _ n x)) := by
---   simp only [RingAut.coe_pow, map_teichmuller, mk_untilt_eq_coeff_zero,
---     coeff_iterate_frobeniusEquiv_symm, zero_add]
-
-open RingHom
-
 @[simp]
 theorem ghostComponentModPPow_teichmuller_coeff (n : ℕ) (x : O^♭) :
     ghostComponentModPPow n (teichmuller p (Perfection.coeff (ModP O p) _ n x)) =
@@ -124,7 +101,7 @@ variable (O p) in
 def fontaineThetaModPPow (n : ℕ): 𝕎 (O^♭) →+* O ⧸ span {(p : O)} ^ (n + 1) :=
   (ghostComponentModPPow n).comp
       (((WittVector.map (Perfection.coeff _ p 0))).comp
-          (WittVector.map ((frobeniusEquiv (O^♭) p).symm ^ n : O^♭ →+* O^♭)))
+          (WittVector.map ((_root_.frobeniusEquiv (O^♭) p).symm ^ n : O^♭ →+* O^♭)))
 
 @[simp]
 theorem fontaineThetaModPPow_teichmuller (n : ℕ) (x : O^♭) :
@@ -138,7 +115,8 @@ theorem factorPowSucc_comp_fontaineThetaModPPow (n : ℕ) :
       ((factorPowSucc _ (n + 1)).comp (fontaineThetaModPPow O p (n + 1)))
       (fontaineThetaModPPow O p n)
   · use n + 1
-    have : (p : (O ⧸ span {(p : O)} ^ (n + 1))) = mk (span {(p : O)} ^ (n + 1)) (p : O) := by
+    have : (p : (O ⧸ span {(p : O)} ^ (n + 1))) =
+        Ideal.Quotient.mk (span {(p : O)} ^ (n + 1)) (p : O) := by
       simp only [map_natCast]
     rw [this, ← map_pow, Ideal.Quotient.eq_zero_iff_mem]
     exact Ideal.pow_mem_pow (mem_span_singleton_self _) _
@@ -196,14 +174,12 @@ theorem mk_fontaineTheta (x : 𝕎 (O^♭)) :
     RingHomCompTriple.comp_eq, RingHom.coe_comp, Function.comp_apply,
     quotEquivOfEq_ghostComponentModPPow, ghostComponent_apply, wittPolynomial_zero,
     MvPolynomial.aeval_X]
-  -- Note to reviewers : This line was designed to be `simp [fontaineThetaModPPow]`
+  -- Note to reviewers : This line was designed to be
+  -- `simp [fontaineThetaModPPow, ghostComponent_apply, RingHom.one_def]`
   -- However, `WittVector.map_coeff` should, but does not work here.
   rfl
 
--- theorem modPPow
-
--- Teichmuller lifts
-
+@[simp]
 theorem fontaineTheta_teichmuller (x : O^♭) : fontaineTheta (teichmuller p x) = x.untilt := by
   rw [IsHausdorff.eq_iff_smodEq' (I := span {(p : O)})]
   intro n
@@ -284,34 +260,11 @@ theorem surjective_fontaineTheta : Function.Surjective (fontaineTheta : 𝕎 (O^
   rw [← this]
   apply IsAdicComplete.surjective_of_surjective_mkQ_comp I f.toLinearMap
   intro x
-  simp? [f, Algebra.ofId_apply, RingHom.algebraMap_toAlgebra]
+  simp [f, Algebra.ofId_apply, RingHom.algebraMap_toAlgebra]
+  sorry
 
 
-def fontaineThetaInvertP :
-    Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭)) →+* Localization.Away (p : O) :=
-  Localization.awayLift ((algebraMap O _).comp fontaineTheta) (p : 𝕎 (O^♭))
-      (by simpa using IsLocalization.Away.algebraMap_isUnit (p : O))
 
-section PeriodRing
-
-variable (R : Type*) [CommRing R] (f : R)
-#synth CommRing (Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭)))
-
--- import Mathlib.RingTheory.Localization.Away.Basic
-#check Localization.awayLift
-variable (O p) in
-def BDeRhamPlus : Type u :=
-  AdicCompletion (R := (Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭))))
-      (RingHom.ker fontaineThetaInvertP) (Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭)))
-
--- Mathlib.RingTheory.AdicCompletion.Algebra
-instance : CommRing (BDeRhamPlus O p) := AdicCompletion.instCommRing _
-
-end PeriodRing
-def BDeRham : Type u := FractionRing (BDeRhamPlus O p)
-notation "𝔹_dR^+(" O ")" => BDeRhamPlus O
-
-end
 
 -- lemmas about frobenius and untilt another PR
 -- fontaine theta and Bdr PR

@@ -167,8 +167,8 @@ theorem mk_comp_untilt_eq_coeff_zero :
   funext mk_untilt_eq_coeff_zero
 
 @[simp]
-theorem PreTilt.untilt_iterate_frobeniusEquiv_symm_pow (x : PreTilt O p) (n : ℕ) :
-    untilt (((frobeniusEquiv (O^♭) p).symm ^[n]) x) ^ p ^ n = x.untilt := by
+theorem untilt_iterate_frobeniusEquiv_symm_pow (x : PreTilt O p) (n : ℕ) :
+    untilt (((frobeniusEquiv (PreTilt O p) p).symm ^[n]) x) ^ p ^ n = x.untilt := by
   simp only [← map_pow]
   congr
   simp
