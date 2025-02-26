@@ -14,22 +14,31 @@ import Mathlib.Data.Sym.Sym2
 
 section
 
-structure Symetrizable (M N) [Zero M] [Zero N] where
+/--
+Functions which are symmetrizable
+-/
+structure Symmetrizable (M N) [Zero M] [Zero N] where
   toFun : M → M → N
   comm : ∀ a b : M, toFun a b = toFun b a
   right_zero : ∀ (a : M), toFun a 0 = 0
 
 variable {M N} [Zero M] [Zero N]
 
-def lift1 (F : Symetrizable M N) : Sym2 M → N := Sym2.lift ⟨F.toFun, F.comm⟩
+/--
+Lift a symmetrizable function to its sym
+-/
+def lift1 (F : Symmetrizable M N) : Sym2 M → N := Sym2.lift ⟨F.toFun, F.comm⟩
 
 @[simp]
-lemma lift1_mk (F : Symetrizable M N) (xy : M × M) :
+lemma lift1_mk (F : Symmetrizable M N) (xy : M × M) :
     lift1 F (Sym2.mk xy) = F.toFun xy.1 xy.2 := rfl
 
 variable {α} [DecidableEq α]
 
-noncomputable def lift2 (F : Symetrizable M N) (f : α →₀ M) : Sym2 α →₀ N :=
+/--
+Lift a symmetrizable function composed with a finsupp
+-/
+noncomputable def lift2 (F : Symmetrizable M N) (f : α →₀ M) : Sym2 α →₀ N :=
     Finsupp.onFinset f.support.sym2 (lift1 F ∘ Sym2.map f) (by
   intro p h
   obtain ⟨a, b⟩ := p
@@ -43,23 +52,32 @@ noncomputable def lift2 (F : Symetrizable M N) (f : α →₀ M) : Sym2 α →�
     rw [hn] at h
     exact h (F.right_zero (f a)))
 
-def OffDiag (F : Symetrizable M N) (f : α → M) : α → α → N :=
+/--
+The off-diagonal of a symmetrizable function composed with a finsupp
+-/
+def OffDiag (F : Symmetrizable M N) (f : α → M) : α → α → N :=
     fun a b => if a = b then (0 : N) else F.toFun (f a) (f b)
 
-lemma offDiag_symm (F : Symetrizable M N) (f : α → M) {a b : α} :
+lemma offDiag_symm (F : Symmetrizable M N) (f : α → M) {a b : α} :
     OffDiag F f a b = OffDiag F f b a := by
   rw [OffDiag, OffDiag, F.comm]
   simp only [eq_comm]
 
-def SymOffDiag (F : Symetrizable M N) (f : α → M) : Sym2 α → N :=
+/--
+Lift the off-diagonal of a symmetrizable function composed with a finsupp
+-/
+def SymOffDiag (F : Symmetrizable M N) (f : α → M) : Sym2 α → N :=
     Sym2.lift ⟨OffDiag F f, fun a b => by
   rw [(offDiag_symm)] ⟩
 
 @[simp]
-lemma SymOffDiag_mk (F : Symetrizable M N) (f : α → M) (xy : α × α) :
+lemma SymOffDiag_mk (F : Symmetrizable M N) (f : α → M) (xy : α × α) :
     SymOffDiag F f (Sym2.mk xy) = OffDiag F f xy.1 xy.2 := rfl
 
-noncomputable def Finsupp.sym2OffDiag (F : Symetrizable M N) (f : α →₀ M) : Sym2 α →₀ N :=
+/--
+The lift the off-diagonal of a symmetrizable function composed with a finsupp as a finsupp
+-/
+noncomputable def Finsupp.sym2OffDiag (F : Symmetrizable M N) (f : α →₀ M) : Sym2 α →₀ N :=
     Finsupp.onFinset f.support.sym2 (SymOffDiag F f) (by
       intro p h
       obtain ⟨a, b⟩ := p
@@ -74,11 +92,11 @@ noncomputable def Finsupp.sym2OffDiag (F : Symetrizable M N) (f : α →₀ M) :
         simp_all only [ite_self, not_true_eq_false])
 
 @[simp]
-lemma sym2OffDiag_mk (F : Symetrizable M N) (f : α →₀ M) (xy : α × α) :
+lemma sym2OffDiag_mk (F : Symmetrizable M N) (f : α →₀ M) (xy : α × α) :
     Finsupp.sym2OffDiag F f (Sym2.mk xy) = if xy.1 = xy.2 then 0 else F.toFun (f xy.1) (f xy.2) :=
   rfl
 
-lemma support_sym2OffDiag (F : Symetrizable M N) (f : α →₀ M) :
+lemma support_sym2OffDiag (F : Symmetrizable M N) (f : α →₀ M) :
     (Finsupp.sym2OffDiag F f).support ⊆ Finset.filter (fun ij ↦ ¬ij.IsDiag) f.support.sym2 := by
   intro p hp
   obtain ⟨a,b⟩ := p

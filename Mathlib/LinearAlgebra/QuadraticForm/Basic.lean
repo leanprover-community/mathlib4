@@ -276,7 +276,10 @@ theorem polar_sub_left (x x' y : M) : polar Q (x - x') y = polar Q x y - polar Q
 theorem polar_zero_right (y : M) : polar Q y 0 = 0 := by
   simp only [add_zero, polar, QuadraticMap.map_zero, sub_self]
 
-def symetrizablePolarSym2 : Symetrizable M N where
+/--
+The polar of a quadratic as a symmetrizable function
+-/
+def symmetrizablePolarSym2 : Symmetrizable M N where
   toFun := polar Q
   comm := polar_comm Q
   right_zero := Q.polar_zero_right
