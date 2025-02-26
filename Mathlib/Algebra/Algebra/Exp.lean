@@ -155,9 +155,8 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
   rw [restrict] at s₁
   have s₂ := calc
     (∑ i ∈ range (N + 1), (i.factorial : R)⁻¹ • a ^ i) * ∑ i ∈ range (N + 1),
-      (i.factorial : R)⁻¹ • b ^ i =
-        ∑ i ∈ range (N + 1), ∑ j ∈ range (N + 1), ((i.factorial : R)⁻¹ * (j.factorial : R)⁻¹) •
-          (a ^ i * b ^ j) := by
+      (i.factorial : R)⁻¹ • b ^ i = ∑ i ∈ range (N + 1), ∑ j ∈ range (N + 1),
+        ((i.factorial : R)⁻¹ * (j.factorial : R)⁻¹) • (a ^ i * b ^ j) := by
       rw [sum_mul_sum]
       apply sum_congr rfl
       intro _ _
