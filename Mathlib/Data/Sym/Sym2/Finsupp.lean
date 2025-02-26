@@ -59,7 +59,7 @@ def SymOffDiag (F : Symetrizable M N) (f : α → M) : Sym2 α → N :=
 lemma SymOffDiag_mk (F : Symetrizable M N) (f : α → M) (xy : α × α) :
     SymOffDiag F f (Sym2.mk xy) = OffDiag F f xy.1 xy.2 := rfl
 
-noncomputable def Finsupp.symOffDiag (F : Symetrizable M N) (f : α →₀ M) : Sym2 α →₀ N :=
+noncomputable def Finsupp.sym2OffDiag (F : Symetrizable M N) (f : α →₀ M) : Sym2 α →₀ N :=
     Finsupp.onFinset f.support.sym2 (SymOffDiag F f) (by
       intro p h
       obtain ⟨a, b⟩ := p
@@ -73,5 +73,28 @@ noncomputable def Finsupp.symOffDiag (F : Symetrizable M N) (f : α →₀ M) : 
         rw [offDiag_symm, OffDiag, hn, F.comm, F.right_zero] at h
         simp_all only [ite_self, not_true_eq_false])
 
+@[simp]
+lemma sym2OffDiag_mk (F : Symetrizable M N) (f : α →₀ M) (xy : α × α) :
+    Finsupp.sym2OffDiag F f (Sym2.mk xy) = if xy.1 = xy.2 then 0 else F.toFun (f xy.1) (f xy.2) :=
+  rfl
+
+lemma support_sym2OffDiag (F : Symetrizable M N) (f : α →₀ M) :
+    (Finsupp.sym2OffDiag F f).support ⊆ Finset.filter (fun ij ↦ ¬ij.IsDiag) f.support.sym2 := by
+  intro p hp
+  obtain ⟨a,b⟩ := p
+  simp at hp
+  simp
+  obtain ⟨hp1,hp2⟩ := hp
+  constructor
+  · constructor
+    · by_contra ha
+      have e1 : F.toFun (f a) (f b) = 0 := by
+        rw [ha, F.comm, F.right_zero]
+      exact hp2 e1
+    · by_contra hb
+      have e1 : F.toFun (f a) (f b) = 0 := by
+        rw [hb, F.right_zero]
+      exact hp2 e1
+  · exact hp1
 
 end
