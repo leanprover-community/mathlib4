@@ -838,6 +838,9 @@ theorem integral_const (c : E) : ∫ _ : α, c ∂μ = (μ univ).toReal • c :=
   · simp [(integrable_const_iff_isFiniteMeasure hc).not.2 hμ,
       integral_undef, MeasureTheory.not_isFiniteMeasure_iff.mp hμ]
 
+lemma integral_eq_const [IsProbabilityMeasure μ] {f : α → E} {c : E} (hf : ∀ᵐ x ∂μ, f x = c) :
+    ∫ x, f x ∂μ = c := by simp [integral_congr_ae hf]
+
 theorem norm_integral_le_of_norm_le_const [IsFiniteMeasure μ] {f : α → G} {C : ℝ}
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : ‖∫ x, f x ∂μ‖ ≤ C * (μ univ).toReal :=
   calc
