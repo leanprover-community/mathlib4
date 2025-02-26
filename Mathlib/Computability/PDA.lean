@@ -44,19 +44,6 @@ structure Conf (p : PDA Q T S) where
 
 variable {M : PDA Q T S}
 
-/-- `step r₁` is the set of configurations reachable from `r₁` in one step. -/
-def step (r₁ : Conf M) : Set (Conf M) :=
-  match r₁ with
-    | ⟨q, a::w, Z::α⟩ =>
-        { r₂ : Conf M | ∃ (p : Q) (β : List S), (p,β) ∈ M.transition_fun q (some a) Z ∧
-                          r₂ = ⟨p, w, (β ++ α)⟩ } ∪
-        { r₂ : Conf M | ∃ (p : Q) (β : List S), (p,β) ∈ M.transition_fun q none Z ∧
-                          r₂ = ⟨p, a :: w, (β ++ α)⟩ }
-    | ⟨q, [], Z::α⟩ => { r₂ : Conf M | ∃ (p : Q) (β : List S),
-                                          (p,β) ∈ M.transition_fun q none Z
-                                          ∧ r₂ = ⟨p, [], (β ++ α)⟩ }
-    | ⟨_, _, []⟩ => ∅
-
 /-- `Reaches₁ r₁ r₂` means that `r₂` is reachable from `r₁` in one step. -/
 def Reaches₁ (r₁ r₂ : Conf M) : Prop :=
   ∃ (Z : S) (α : List S) (β : List S), r₁.stack = Z::α ∧ r₂.stack = β++α ∧ (
