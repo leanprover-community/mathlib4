@@ -6,25 +6,26 @@ Authors: Peter Nelson
 import Mathlib.Data.Matroid.Dual
 
 /-!
-# Matroid IsRestriction
+# Matroid Restriction
 
 Given `M : Matroid α` and `R : Set α`, the independent sets of `M` that are contained in `R`
 are the independent sets of another matroid `M ↾ R` with ground set `R`,
-called the 'isRestriction' of `M` to `R`.
-For `I, R ⊆ M.E`, `I` is a isBasis of `R` in `M` if and only if `I` is a base
-of the isRestriction `M ↾ R`, so this construction relates `Matroid.IsBasis` to `Matroid.Base`.
+called the 'restriction' of `M` to `R`.
+For `I ⊆ R ⊆ M.E`, `I` is a basis of `R` in `M` if and only if `I` is a base
+of the restriction `M ↾ R`, so this construction relates `Matroid.IsBasis` to `Matroid.IsBase`.
 
 If `N M : Matroid α` satisfy `N = M ↾ R` for some `R ⊆ M.E`,
-then we call `N` a 'isRestriction of `M`', and write `N ≤r M`. This is a partial order.
+then we call `N` a 'restriction of `M`', and write `N ≤r M`. This is a partial order.
 
-This file proves that the isRestriction is a matroid and that the `≤r` order is a partial order,
+This file proves that the restriction is a matroid and that the `≤r` order is a partial order,
 and gives related API.
-It also proves some `IsBasis` analogues of `Base` lemmas that, while they could be stated in
-`Data.Matroid.Basic`, are hard to prove without `Matroid.restrict` API.
+It also proves some `Matroid.IsBasis` analogues of `Matroid.IsBase` lemmas that,
+while they could be stated in `Data.Matroid.Basic`,
+are hard to prove without `Matroid.restrict` API.
 
 ## Main Definitions
 
-* `M.restrict R`, written `M ↾ R`, is the isRestriction of `M : Matroid α` to `R : Set α`: i.e.
+* `M.restrict R`, written `M ↾ R`, is the restriction of `M : Matroid α` to `R : Set α`: i.e.
   the matroid with ground set `R` whose independent sets are the `M`-independent subsets of `R`.
 
 * `Matroid.Restriction N M`, written `N ≤r M`, means that `N = M ↾ R` for some `R ⊆ M.E`.
@@ -35,11 +36,11 @@ It also proves some `IsBasis` analogues of `Base` lemmas that, while they could 
 
 ## Implementation Notes
 
-Since `R` and `M.E` are both terms in `Set α`, to define the isRestriction `M ↾ R`,
+Since `R` and `M.E` are both terms in `Set α`, to define the restriction `M ↾ R`,
 we need to either insist that `R ⊆ M.E`, or to say what happens when `R` contains the junk
 outside `M.E`.
 
-It turns out that `R ⊆ M.E` is just an unnecessary hypothesis; if we say the isRestriction
+It turns out that `R ⊆ M.E` is just an unnecessary hypothesis; if we say the restriction
 `M ↾ R` has ground set `R` and its independent sets are the `M`-independent subsets of `R`,
 we always get a matroid, in which the elements of `R \ M.E` aren't in any independent sets.
 We could instead define this matroid to always be 'smaller' than `M` by setting
@@ -48,16 +49,17 @@ We could instead define this matroid to always be 'smaller' than `M` by setting
 This makes it possible to actually restrict a matroid 'upwards'; for instance, if `M : Matroid α`
 satisfies `M.E = ∅`, then `M ↾ Set.univ` is the matroid on `α` whose ground set is all of `α`,
 where the empty set is only the independent set.
-(Elements of `R` outside the ground set are all 'loops' of the matroid.)
+(In general, elements of `R \ M.E` are all 'loops' of the matroid `M ↾ R`;
+see `Matroid.loops` and `Matroid.restrict_loops_eq'` for a precise version of this statement.)
 This is mathematically strange, but is useful for API building.
 
-The cost of allowing a isRestriction of `M` to be 'bigger' than the `M` itself is that
+The cost of allowing a restriction of `M` to be 'bigger' than `M` itself is that
 the statement `M ↾ R ≤r M` is only true with the hypothesis `R ⊆ M.E`
 (at least, if we want `≤r` to be a partial order).
 But this isn't too inconvenient in practice. Indeed `(· ⊆ M.E)` proofs
 can often be automatically provided by `aesop_mat`.
 
-We define the isRestriction order `≤r` to give a `PartialOrder` instance on the type synonym
+We define the restriction order `≤r` to give a `PartialOrder` instance on the type synonym
 `Matroidᵣ α` rather than `Matroid α` itself, because the `PartialOrder (Matroid α)` instance is
 reserved for the more mathematically important 'minor' order.
 -/
@@ -161,7 +163,7 @@ theorem isBase_restrict_iff' : (M ↾ X).IsBase I ↔ M.IsBasis' I X := by
 theorem IsBasis'.isBase_restrict (hI : M.IsBasis' I X) : (M ↾ X).IsBase I :=
   isBase_restrict_iff'.1 hI
 
-theorem IsBasis.restrict_base (h : M.IsBasis I X) : (M ↾ X).IsBase I :=
+theorem IsBasis.restrict_isBase (h : M.IsBasis I X) : (M ↾ X).IsBase I :=
   (isBase_restrict_iff h.subset_ground).2 h
 
 instance restrict_rankFinite [M.RankFinite] (R : Set α) : (M ↾ R).RankFinite :=
@@ -234,10 +236,10 @@ scoped infix:50  " ≤r " => IsRestriction
 /-- `N <r M` means that `N` is a `IsStrictRestriction` of `M`. -/
 scoped infix:50  " <r " => IsStrictRestriction
 
-/-- A type synonym for matroids with the isRestriction order.
+/-- A type synonym for matroids with the restriction order.
   (The `PartialOrder` on `Matroid α` is reserved for the minor order)  -/
 @[ext] structure Matroidᵣ (α : Type*) where ofMatroid ::
-  /-- The underlying `Matroid`.-/
+  /-- The underlying `Matroid` -/
   toMatroid : Matroid α
 
 instance {α : Type*} : CoeOut (Matroidᵣ α) (Matroid α) where
@@ -376,12 +378,12 @@ theorem IsBasis.isBasis_isRestriction (hI : M.IsBasis I X) (hNM : N ≤r M) (hX 
 theorem IsBasis.of_isRestriction (hI : N.IsBasis I X) (hNM : N ≤r M) : M.IsBasis I X := by
   obtain ⟨R, hR, rfl⟩ := hNM; exact ((isBasis_restrict_iff hR).1 hI).1
 
-theorem Base.isBasis_of_isRestriction (hI : N.IsBase I) (hNM : N ≤r M) : M.IsBasis I N.E := by
+theorem IsBase.isBasis_of_isRestriction (hI : N.IsBase I) (hNM : N ≤r M) : M.IsBasis I N.E := by
   obtain ⟨R, hR, rfl⟩ := hNM; rwa [isBase_restrict_iff] at hI
 
 theorem IsRestriction.base_iff (hMN : N ≤r M) {B : Set α} : N.IsBase B ↔ M.IsBasis B N.E :=
-  ⟨fun h ↦ Base.isBasis_of_isRestriction h hMN,
-    fun h ↦ by simpa [hMN.eq_restrict] using h.restrict_base⟩
+  ⟨fun h ↦ IsBase.isBasis_of_isRestriction h hMN,
+    fun h ↦ by simpa [hMN.eq_restrict] using h.restrict_isBase⟩
 
 theorem IsRestriction.isBasis_iff (hMN : N ≤r M) : N.IsBasis I X ↔ M.IsBasis I X ∧ X ⊆ N.E :=
   ⟨fun h ↦ ⟨h.of_isRestriction hMN, h.subset_ground⟩, fun h ↦ h.1.isBasis_isRestriction hMN h.2⟩
@@ -436,13 +438,13 @@ theorem Indep.exists_insert_of_not_isBasis (hI : M.Indep I) (hIX : I ⊆ X) (hI'
   obtain ⟨e, he, hi⟩ := (hI.indep_restrict_of_subset hIX).exists_insert_of_not_isBase hI' hJ
   exact ⟨e, he, (restrict_indep_iff.mp hi).1⟩
 
-theorem IsBasis.base_of_base_subset (hIX : M.IsBasis I X) (hB : M.IsBase B) (hBX : B ⊆ X) :
+theorem IsBasis.isBase_of_isBase_subset (hIX : M.IsBasis I X) (hB : M.IsBase B) (hBX : B ⊆ X) :
     M.IsBase I :=
   hB.isBase_of_isBasis_superset hBX hIX
 
 theorem IsBasis.exchange (hIX : M.IsBasis I X) (hJX : M.IsBasis J X) (he : e ∈ I \ J) :
     ∃ f ∈ J \ I, M.IsBasis (insert f (I \ {e})) X := by
-  obtain ⟨y,hy, h⟩ := hIX.restrict_base.exchange hJX.restrict_base he
+  obtain ⟨y,hy, h⟩ := hIX.restrict_isBase.exchange hJX.restrict_isBase he
   exact ⟨y, hy, by rwa [isBase_restrict_iff] at h⟩
 
 theorem IsBasis.eq_exchange_of_diff_eq_singleton (hI : M.IsBasis I X) (hJ : M.IsBasis J X)

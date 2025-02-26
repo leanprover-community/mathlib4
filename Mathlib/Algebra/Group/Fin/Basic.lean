@@ -6,7 +6,6 @@ Authors: Yakov Pechersky
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.NeZero
 import Mathlib.Data.Nat.Cast.Defs
-import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Fin.Rev
 
 /-!

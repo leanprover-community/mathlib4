@@ -7,7 +7,7 @@ import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Homology.Opposite
 import Mathlib.CategoryTheory.Abelian.LeftDerived
 import Mathlib.CategoryTheory.Abelian.Opposite
-import Mathlib.CategoryTheory.Abelian.ProjectiveResolution
+import Mathlib.CategoryTheory.Abelian.Projective.Resolution
 import Mathlib.CategoryTheory.Linear.Yoneda
 
 /-!

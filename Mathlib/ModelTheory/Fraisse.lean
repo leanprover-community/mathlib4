@@ -301,14 +301,14 @@ theorem IsUltrahomogeneous.extend_embedding (M_homog : L.IsUltrahomogeneous M) {
   ext x
   have eq' := congr_fun (congr_arg DFunLike.coe eq) ⟨s x, Hom.mem_range.2 ⟨x, rfl⟩⟩
   simp only [Embedding.comp_apply, Hom.comp_apply,
-    Equiv.coe_toHom, Embedding.coe_toHom, coeSubtype] at eq'
+    Equiv.coe_toHom, Embedding.coe_toHom, coe_subtype] at eq'
   simp only [Embedding.comp_apply, ← eq', Equiv.coe_toEmbedding, EmbeddingLike.apply_eq_iff_eq]
   apply (Embedding.equivRange (Embedding.comp r g)).injective
   ext
   simp only [Equiv.apply_symm_apply, Embedding.equivRange_apply, s]
 
 /-- A countably generated structure is ultrahomogeneous if and only if any equivalence between
-finitely generated substructures can be extended to any element in the domain.-/
+finitely generated substructures can be extended to any element in the domain. -/
 theorem isUltrahomogeneous_iff_IsExtensionPair (M_CG : CG L M) : L.IsUltrahomogeneous M ↔
     L.IsExtensionPair M M := by
   constructor
@@ -320,7 +320,7 @@ theorem isUltrahomogeneous_iff_IsExtensionPair (M_CG : CG L M) : L.IsUltrahomoge
     refine ⟨⟨⟨S, f'.toHom.range, f'.equivRange⟩, f_FG.sup (fg_closure_singleton _)⟩,
       subset_closure.trans (le_sup_right : _ ≤ S) (mem_singleton m), ⟨dom_le_S, ?_⟩⟩
     ext
-    simp only [Embedding.comp_apply, Equiv.coe_toEmbedding, coeSubtype, eq_f',
+    simp only [Embedding.comp_apply, Equiv.coe_toEmbedding, coe_subtype, eq_f',
       Embedding.equivRange_apply, Substructure.coe_inclusion, EmbeddingLike.apply_eq_iff_eq]
   · intro h S S_FG f
     let ⟨g, ⟨dom_le_dom, eq⟩⟩ :=
@@ -346,7 +346,7 @@ theorem IsUltrahomogeneous.amalgamation_age (h : L.IsUltrahomogeneous M) :
   apply Subtype.ext
   have hgn := (Embedding.ext_iff.1 hg) ((PM.comp NP).equivRange n)
   simp only [Embedding.comp_apply, Equiv.coe_toEmbedding, Equiv.symm_apply_apply,
-    Substructure.coeSubtype, Embedding.equivRange_apply] at hgn
+    Substructure.coe_subtype, Embedding.equivRange_apply] at hgn
   simp only [Embedding.comp_apply, Equiv.coe_toEmbedding]
   erw [Substructure.coe_inclusion, Substructure.coe_inclusion]
   simp only [Embedding.comp_apply, Equiv.coe_toEmbedding, Set.coe_inclusion,

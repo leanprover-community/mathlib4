@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.ZMod.Aut
 import Mathlib.Data.ZMod.QuotientGroup
-import Mathlib.GroupTheory.SpecificGroups.Dihedral
+import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.Subgroup.Simple
 import Mathlib.Tactic.Group
 
@@ -37,7 +37,7 @@ For the concrete cyclic group of order `n`, see `Data.ZMod.Basic`.
 cyclic group
 -/
 
-assert_not_exists TwoSidedIdeal
+assert_not_exists Ideal TwoSidedIdeal
 
 variable {α G G' : Type*} {a : α}
 
@@ -59,7 +59,7 @@ protected theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top [Group α] (H : Su
     IsCyclic H ↔ ∃ g : α, Subgroup.zpowers g = H := by
   rw [isCyclic_iff_exists_zpowers_eq_top]
   simp_rw [← (map_injective H.subtype_injective).eq_iff, ← MonoidHom.range_eq_map,
-    H.range_subtype, MonoidHom.map_zpowers, Subtype.exists, coeSubtype, exists_prop]
+    H.range_subtype, MonoidHom.map_zpowers, Subtype.exists, coe_subtype, exists_prop]
   exact exists_congr fun g ↦ and_iff_right_of_imp fun h ↦ h ▸ mem_zpowers g
 
 @[to_additive]
@@ -881,13 +881,3 @@ lemma mulEquivOfOrderOfEq_symm_apply_gen : (mulEquivOfOrderOfEq hg hg' h).symm g
 end mulEquiv
 
 end generator
-
-lemma DihedralGroup.not_isCyclic {n : ℕ} (h1 : n ≠ 1) : ¬IsCyclic (DihedralGroup n) := fun h' => by
-  by_cases h2 : n = 2
-  · simpa [exponent, card, h2] using h'.exponent_eq_card
-  · exact not_commutative h1 h2 h'.commutative
-
-lemma DihedralGroup.isCyclic_iff {n : ℕ} :
-    IsCyclic (DihedralGroup n) ↔ n = 1 where
-  mp := by contrapose; exact not_isCyclic
-  mpr := by rintro rfl; exact isCyclic_of_prime_card (p := 2) nat_card
