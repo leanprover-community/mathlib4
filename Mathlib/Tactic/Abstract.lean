@@ -27,6 +27,13 @@ elab "abstract" tacs:ppDedent(tacticSeq) : tactic => do
   let newGoal ← mkFreshExprMVar target
   setGoals [newGoal.mvarId!]
   evalTactic tacs
-  setGoals [goal]
-  let auxName := (← getDeclName?).get! ++ `abstract ++ (← mkFreshId)
-  goal.assign <| ← mkAuxTheorem auxName target newGoal
+  let newGoal ← instantiateMVars newGoal
+  if newGoal.hasMVar then
+    let newMVars ← getMVars newGoal
+    _ ← goal.assign newGoal
+    setGoals newMVars.toList
+    return
+  else
+    setGoals [goal]
+    let auxName ← mkAuxName ((← getDeclName?).getD .anonymous ++ `abstract) 1
+    goal.assign <| ← mkAuxTheorem auxName target newGoal
