@@ -102,7 +102,7 @@ def papercutLinter : Linter where run := withSetOptionIn fun _stx => do
       unless isEmpty t do  -- there is nothing to see if `t` is empty
       let x ← t.visitM (α := List (Syntax × MessageData))
         (postNode := fun ctx info _ msgs => do
-          let msgs := msgs.reduceOption.join
+          let msgs := msgs.reduceOption.flatten
           let next? ← OptionT.run do
             let .ofTermInfo ti := info | failure
             withMCtx ctx.mctx <| withLCtx ti.lctx {} do
