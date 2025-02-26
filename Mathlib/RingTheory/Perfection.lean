@@ -133,23 +133,6 @@ theorem coeff_iterate_frobenius' (f : Ring.Perfection R p) (n m : ℕ) (hmn : m 
   Eq.symm <| (coeff_iterate_frobenius _ _ m).symm.trans <| (tsub_add_cancel_of_le hmn).symm ▸ rfl
 
 @[simp]
-theorem Perfection.coeff_frobeniusEquiv_symm (f : Ring.Perfection R p) (n : ℕ) :
-    (Perfection.coeff R p n) ((_root_.frobeniusEquiv (Ring.Perfection R p) p).symm f) =
-    (Perfection.coeff R p (n + 1)) f := by
-  nth_rw 2 [← frobenius_apply_frobeniusEquiv_symm _ p f]
-  rw [coeff_frobenius]
-
-@[simp]
-theorem Perfection.coeff_iterate_frobeniusEquiv_symm (f : Ring.Perfection R p) (n m : ℕ) :
-    (Perfection.coeff _ p n) ((_root_.frobeniusEquiv _ p).symm ^[m] f) =
-    (Perfection.coeff _ p (n + m)) f := by
-  revert f n
-  induction' m with m ih
-  · simp
-  · intro f n
-    simp [ih, ← add_assoc]
-
-@[simp]
 theorem pthRoot_frobenius : (pthRoot R p).comp (frobenius _ p) = RingHom.id _ :=
   RingHom.ext fun x =>
     ext fun n => by rw [RingHom.comp_apply, RingHom.id_apply, coeff_pthRoot, coeff_frobenius]
@@ -171,13 +154,31 @@ theorem coeff_ne_zero_of_le {f : Ring.Perfection R p} {m n : ℕ} (hfm : coeff R
   let ⟨k, hk⟩ := Nat.exists_eq_add_of_le hmn
   hk.symm ▸ coeff_add_ne_zero hfm k
 
-variable (R p)
-
+variable (R p) in
 instance perfectRing : PerfectRing (Ring.Perfection R p) p where
   bijective_frobenius := Function.bijective_iff_has_inverse.mpr
     ⟨pthRoot R p,
      DFunLike.congr_fun <| @frobenius_pthRoot R _ p _ _,
      DFunLike.congr_fun <| @pthRoot_frobenius R _ p _ _⟩
+
+@[simp]
+theorem coeff_frobeniusEquiv_symm (f : Ring.Perfection R p) (n : ℕ) :
+    (Perfection.coeff R p n) ((frobeniusEquiv (Ring.Perfection R p) p).symm f) =
+    (Perfection.coeff R p (n + 1)) f := by
+  nth_rw 2 [← frobenius_apply_frobeniusEquiv_symm _ p f]
+  rw [coeff_frobenius]
+
+@[simp]
+theorem coeff_iterate_frobeniusEquiv_symm (f : Ring.Perfection R p) (n m : ℕ) :
+    (Perfection.coeff _ p n) ((frobeniusEquiv _ p).symm ^[m] f) =
+    (Perfection.coeff _ p (n + m)) f := by
+  revert f n
+  induction' m with m ih
+  · simp
+  · intro f n
+    simp [ih, ← add_assoc]
+
+variable (R p)
 
 /-- Given rings `R` and `S` of characteristic `p`, with `R` being perfect,
 any homomorphism `R →+* S` can be lifted to a homomorphism `R →+* Perfection S p`. -/
@@ -485,26 +486,26 @@ instance : PerfectRing (PreTilt O p) p :=
 section coeff
 
 @[simp]
-theorem PreTilt.coeff_frobenius (n : ℕ) (x : PreTilt O p) :
-    ((Perfection.coeff (ModP O p) p (n + 1)) (((_root_.frobenius (PreTilt O p) p)) x)) =
+theorem coeff_frobenius (n : ℕ) (x : PreTilt O p) :
+    ((Perfection.coeff (ModP O p) p (n + 1)) (((frobenius (PreTilt O p) p)) x)) =
     ((Perfection.coeff (ModP O p) p n) x):= by
   simp [PreTilt]
 
 @[simp]
-theorem PreTilt.coeff_frobenius_pow (m n : ℕ) (x : PreTilt O p) :
-    ((Perfection.coeff (ModP O p) p (m + n)) (((_root_.frobenius (PreTilt O p) p) ^[n]) x)) =
+theorem coeff_frobenius_pow (m n : ℕ) (x : PreTilt O p) :
+    ((Perfection.coeff (ModP O p) p (m + n)) (((frobenius (PreTilt O p) p) ^[n]) x)) =
     ((Perfection.coeff (ModP O p) p m) x):= by
   simp [PreTilt]
 
 @[simp]
-theorem PreTilt.coeff_frobeniusEquiv_symm (n : ℕ) (x : PreTilt O p) :
-    ((Perfection.coeff (ModP O p) p n) (((_root_.frobeniusEquiv (PreTilt O p) p).symm) x)) =
+theorem coeff_frobeniusEquiv_symm (n : ℕ) (x : PreTilt O p) :
+    ((Perfection.coeff (ModP O p) p n) (((frobeniusEquiv (PreTilt O p) p).symm) x)) =
     ((Perfection.coeff (ModP O p) p (n + 1)) x):= by
   simp [PreTilt]
 
 @[simp]
-theorem PreTilt.coeff_iterate_frobeniusEquiv_symm (m n : ℕ) (x : PreTilt O p) :
-    ((Perfection.coeff (ModP O p) p m) (((_root_.frobeniusEquiv (PreTilt O p) p).symm ^[n]) x)) =
+theorem coeff_iterate_frobeniusEquiv_symm (m n : ℕ) (x : PreTilt O p) :
+    ((Perfection.coeff (ModP O p) p m) (((frobeniusEquiv (PreTilt O p) p).symm ^[n]) x)) =
     ((Perfection.coeff (ModP O p) p (m + n)) x):= by
   simp [PreTilt]
 
