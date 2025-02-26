@@ -77,6 +77,13 @@ theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R 
   rw [Q.map_sum f.support (fun i => g i (f i))]
   rfl
 
+variable (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M)
+
+#check fun p _ ↦ polarSym2 (⇑Q) (Sym2.map (fun i ↦ g i (f i)) p)
+
+#check Finsupp.sum_of_support_subset  f.sym2OffDiag f.support_sym2OffDiag
+  (fun p _ ↦ polarSym2 (⇑Q) (Sym2.map (fun i ↦ g i (f i)) p)) sorry
+
 open Finsupp in
 theorem map_finsuppSum'' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
     Q (f.sum g) =
@@ -89,8 +96,12 @@ theorem map_finsuppSum'' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → 
   have e2 : (f.sum fun i r ↦ Q (g i r)) = ∑ i ∈ f.support, Q (g i (f i)) := rfl
   rw [e2]
   simp only [add_right_inj]
-  rw [Finsupp.sym2OffDiag]
-  apply Finsupp.congr (Finset.filter (fun ij ↦ ¬ij.IsDiag) f.support.sym2) ()
+  rw [(Finsupp.sum_of_support_subset  f.sym2OffDiag f.support_sym2OffDiag
+  (fun p _ ↦ polarSym2 (⇑Q) (Sym2.map (fun i ↦ g i (f i)) p)) (by
+    intro p hp
+    obtain ⟨a,b⟩ := p
+    aesop
+  ))]
 
 -- c.f. `Finsupp.apply_linearCombination`
 open Finsupp in
