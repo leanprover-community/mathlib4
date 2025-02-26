@@ -129,7 +129,7 @@ theorem comp_eq_fun (f : γ → β) : r ∘r (· = f ·) = (r · <| f ·) := by
 theorem comp_eq : r ∘r (· = ·) = r := comp_eq_fun ..
 
 @[simp]
-theorem fun_eq_comp (f : γ → α) : (f · = ·) ∘r r = (f · |> r <| ·) := by
+theorem fun_eq_comp (f : γ → α) : (f · = ·) ∘r r = (r <| f ·) := by
   ext x y
   simp [Comp]
 
