@@ -74,13 +74,6 @@ protected theorem eq' {x y : M} : (mk x : M ⧸ p) = mk y ↔ -x + y ∈ p :=
 protected theorem eq {x y : M} : (mk x : M ⧸ p) = mk y ↔ x - y ∈ p :=
   (Submodule.Quotient.eq' p).trans (leftRel_apply.symm.trans p.quotientRel_def)
 
-variable {p} in
-/-- For every `x` in `M ⧸ p`, the canonical projection of an arbitary
-representatative `x.out : M` of `x` is `x` itself. -/
-@[simp]
-protected theorem mk_out (x : M ⧸ p) : mk (x.out) = x :=
-  Quotient.out_eq x
-
 instance : Zero (M ⧸ p) where
   -- Use Quotient.mk'' instead of mk here because mk is not reducible.
   -- This would lead to non-defeq diamonds.
