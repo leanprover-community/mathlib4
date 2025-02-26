@@ -47,24 +47,6 @@ lemma Ideal.Quotient.factor_ker (H : I ≤ J) [I.IsTwoSided] [J.IsTwoSided] :
   · rcases mem_image_of_mem_map_of_surjective _ Ideal.Quotient.mk_surjective h with ⟨r, hr, eq⟩
     simpa [← eq, Ideal.Quotient.eq_zero_iff_mem] using hr
 
-lemma Submodule.eq_factor_of_eq_factor_succ {p : ℕ → Submodule R M}
-    (hp : Antitone p) (x : (n : ℕ) → M ⧸ (p n)) (h : ∀ m, x m = factor (hp m.le_succ) (x (m + 1)))
-    (m n : ℕ) (g : m ≤ n) : x m = factor (hp g) (x n) := by
-  induction' hmn : n - m with k ih generalizing m n <;>
-  have : n = m + (n - m) := (Nat.add_sub_of_le g).symm
-  · rw [hmn, Nat.add_zero] at this
-    subst this
-    simp
-  · rw [hmn, ← add_assoc] at this
-    subst this
-    rw [ih m (m + k) (m.le_add_right k) (by simp), h]
-    simp
-
-lemma Ideal.Quotient.eq_factor_of_eq_factor_succ {I : ℕ → Ideal R} [∀ n, (I n).IsTwoSided]
-    (hI : Antitone I) (x : (n : ℕ) → R ⧸ (I n)) (h : ∀ m, x m = factor (hI m.le_succ) (x (m + 1)))
-    (m n : ℕ) (g : m ≤ n) : x m = factor (hI g) (x n) :=
-  Submodule.eq_factor_of_eq_factor_succ hI x h m n g
-
 namespace Submodule
 
 section
@@ -72,10 +54,6 @@ section
 @[simp]
 theorem mapQ_eq_factor (h : I ≤ J) (x : R ⧸ I) :
     mapQ I J LinearMap.id h x = factor h x := rfl
-
-@[simp]
-theorem factor_eq_factor [I.IsTwoSided] [J.IsTwoSided] (h : I ≤ J) (x : R ⧸ I) :
-    Submodule.factor h x = Ideal.Quotient.factor h x := rfl
 
 end
 

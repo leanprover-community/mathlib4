@@ -149,7 +149,6 @@ def untilt : PreTilt O p →* O where
 The composition of the mod `p` map
 with the untilt function equals taking the zeroth component of the perfection.
 -/
-@[simp]
 theorem mk_untilt_eq_coeff_zero (x : PreTilt O p) :
     Ideal.Quotient.mk (Ideal.span {(p : O)}) (x.untilt) = coeff (ModP O p) p 0 x := by
   simp only [untilt]
@@ -161,7 +160,6 @@ The composition of the mod `p` map
 with the untilt function equals taking the zeroth component of the perfection.
 A variation of `PreTilt.mk_untilt_eq_coeff_zero`.
 -/
-@[simp]
 theorem mk_comp_untilt_eq_coeff_zero :
     Ideal.Quotient.mk (Ideal.span {(p : O)}) ∘ untilt = coeff (ModP O p) p 0 :=
   funext mk_untilt_eq_coeff_zero
