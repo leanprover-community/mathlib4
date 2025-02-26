@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
+Authors: Junyan Xu, Andrew Yang
 -/
 import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.Jacobson.Ring
@@ -27,6 +27,9 @@ lemma Module.finite_of_isSemisimpleRing [IsJacobsonRing R] [IsSemisimpleRing A] 
 
 /-- If `A` is a finite type algebra over `R`, then `A` is an artinian ring and `R` is jacobson
 implies `A` is finite over `R`. -/
+/- If made an instance, causes timeouts synthesizing `FaithfulSMul R I.ResidueField` at
+`Ideal.algebraMap_residueField_eq_zero` and `Ideal.ker_algebraMap_residueField` during
+simpNF linting. -/
 lemma Module.finite_of_isArtinianRing [IsJacobsonRing R] [IsArtinianRing A] :
     Module.Finite R A :=
   have := finite_of_isSemisimpleRing R (A ⧸ Ring.jacobson A)

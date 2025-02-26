@@ -71,29 +71,25 @@ section
 
 variable [IsScalarTower R₀ R R] [Module.Finite R₀ (R ⧸ Ring.jacobson R)]
 
-theorem finite_of_isNoetherian [IsNoetherian R M] : Module.Finite R₀ M := by
-  refine IsSemiprimaryRing.induction R₀ R M (P := fun M ↦ IsNoetherian R M → Module.Finite R₀ M)
-    (fun M _ _ _ _ _ hJ h ↦ ?_) (fun M _ _ _ _ hs hq h ↦ ?_) ‹_›
+private theorem finite_of_isNoetherian_or_isArtinian :
+    IsNoetherian R M ∨ IsArtinian R M → Module.Finite R₀ M := by
+  refine IsSemiprimaryRing.induction R₀ R M (P := fun M ↦ IsNoetherian R M ∨ IsArtinian R M →
+    Module.Finite R₀ M) (fun M _ _ _ _ _ hJ h ↦ ?_) (fun M _ _ _ _ hs hq h ↦ ?_)
   · let _ := hJ.module
-    simp_rw [IsSemisimpleModule.finite_tfae (R := R) (M := M).out 1 0,
+    have := IsSemisimpleModule.finite_tfae (R := R) (M := M)
+    simp_rw [this.out 1 0, this.out 2 0, or_self,
       hJ.semilinearMap.finite_iff_of_bijective Function.bijective_id] at h
     exact .trans (R ⧸ Ring.jacobson R) M
   · let N := (Ring.jacobson R • ⊤ : Submodule R M).restrictScalars R₀
-    have : Module.Finite R₀ N := hs inferInstance
-    have : Module.Finite R₀ (M ⧸ N) := hq inferInstance
+    have : Module.Finite R₀ N := by refine hs (h.imp ?_ ?_) <;> (intro; infer_instance)
+    have : Module.Finite R₀ (M ⧸ N) := by refine hq (h.imp ?_ ?_) <;> (intro; infer_instance)
     exact .of_submodule_quotient N
 
-theorem finite_of_isArtinian [IsArtinian R M] : Module.Finite R₀ M := by
-  refine IsSemiprimaryRing.induction R₀ R M (P := fun M ↦ IsArtinian R M → Module.Finite R₀ M)
-    (fun M _ _ _ _ _ hJ h ↦ ?_) (fun M _ _ _ _ hs hq h ↦ ?_) ‹_›
-  · let _ := hJ.module
-    simp_rw [IsSemisimpleModule.finite_tfae.out 2 0,
-      hJ.semilinearMap.finite_iff_of_bijective Function.bijective_id] at h
-    exact .trans (R ⧸ Ring.jacobson R) M
-  · let N := (Ring.jacobson R • ⊤ : Submodule R M).restrictScalars R₀
-    have : Module.Finite R₀ N := hs inferInstance
-    have : Module.Finite R₀ (M ⧸ N) := hq inferInstance
-    exact .of_submodule_quotient N
+theorem finite_of_isNoetherian [IsNoetherian R M] : Module.Finite R₀ M :=
+  finite_of_isNoetherian_or_isArtinian R₀ R M (.inl ‹_›)
+
+theorem finite_of_isArtinian [IsArtinian R M] : Module.Finite R₀ M :=
+  finite_of_isNoetherian_or_isArtinian R₀ R M (.inr ‹_›)
 
 end
 

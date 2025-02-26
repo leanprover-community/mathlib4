@@ -152,6 +152,10 @@ lemma preimage_opensRange {X Y : Scheme.{u}} (f : X.Hom Y) [IsOpenImmersion f] :
     f ⁻¹ᵁ f.opensRange = ⊤ := by
   simp [Scheme.Hom.opensRange]
 
+lemma isIso_app (V : Y.Opens) (hV : V ≤ f.opensRange) : IsIso (f.app V) := by
+  rw [show V = f ''ᵁ f ⁻¹ᵁ V from Opens.ext (Set.image_preimage_eq_of_subset hV).symm]
+  infer_instance
+
 /-- The isomorphism `Γ(Y, f(U)) ≅ Γ(X, U)` induced by an open immersion `f : X ⟶ Y`. -/
 def appIso (U) : Γ(Y, f ''ᵁ U) ≅ Γ(X, U) :=
   (asIso <| LocallyRingedSpace.IsOpenImmersion.invApp f.toLRSHom U).symm
@@ -483,17 +487,13 @@ instance pullback_snd_of_left : IsOpenImmersion (pullback.snd f g) := by
 
 instance pullback_fst_of_right : IsOpenImmersion (pullback.fst g f) := by
   rw [← pullbackSymmetry_hom_comp_snd]
-  -- Porting note: was just `infer_instance`, it is a bit weird that no explicit class instance is
-  -- provided but still class inference fail to find this
-  exact LocallyRingedSpace.IsOpenImmersion.comp (H := inferInstance) _ _
+  infer_instance
 
 instance pullback_to_base [IsOpenImmersion g] :
     IsOpenImmersion (limit.π (cospan f g) WalkingCospan.one) := by
   rw [← limit.w (cospan f g) WalkingCospan.Hom.inl]
   change IsOpenImmersion (_ ≫ f)
-  -- Porting note: was just `infer_instance`, it is a bit weird that no explicit class instance is
-  -- provided but still class inference fail to find this
-  exact LocallyRingedSpace.IsOpenImmersion.comp (H := inferInstance) _ _
+  infer_instance
 
 instance forgetToTop_preserves_of_left : PreservesLimit (cospan f g) Scheme.forgetToTop := by
   delta Scheme.forgetToTop
@@ -553,6 +553,24 @@ theorem range_pullback_to_base_of_right :
   rw [Scheme.comp_base, TopCat.coe_comp, Set.range_comp, range_pullback_fst_of_right,
     Opens.map_obj, Opens.carrier_eq_coe, Opens.coe_mk, Set.image_preimage_eq_inter_range,
     Set.inter_comm]
+
+lemma image_preimage_eq_preimage_image_of_isPullback {X Y U V : Scheme.{u}}
+    {f : X ⟶ Y} {f' : U ⟶ V} {iU : U ⟶ X} {iV : V ⟶ Y} [IsOpenImmersion iV] [IsOpenImmersion iU]
+    (H : IsPullback f' iU iV f) (W : V.Opens) : iU ''ᵁ f' ⁻¹ᵁ W = f ⁻¹ᵁ iV ''ᵁ W := by
+  ext x
+  by_cases hx : x ∈ Set.range iU.base
+  · obtain ⟨x, rfl⟩ := hx
+    simp only [IsOpenMap.coe_functor_obj, TopologicalSpace.Opens.map_coe,
+      iU.isOpenEmbedding.injective.mem_set_image, Set.mem_preimage, SetLike.mem_coe,
+      ← Scheme.comp_base_apply, ← H.w]
+    simp only [Scheme.comp_coeBase, TopCat.comp_app,
+      iV.isOpenEmbedding.injective.mem_set_image, SetLike.mem_coe]
+  · constructor
+    · rintro ⟨x, hx, rfl⟩; cases hx ⟨x, rfl⟩
+    · rintro ⟨y, hy, e : iV.base y = f.base x⟩
+      obtain ⟨x, rfl⟩ := (IsOpenImmersion.range_pullback_snd_of_left iV f).ge ⟨y, e⟩
+      rw [← H.isoPullback_inv_snd] at hx
+      cases hx ⟨_, rfl⟩
 
 /-- The universal property of open immersions:
 For an open immersion `f : X ⟶ Z`, given any morphism of schemes `g : Y ⟶ Z` whose topological

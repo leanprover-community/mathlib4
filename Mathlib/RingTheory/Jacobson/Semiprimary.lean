@@ -45,7 +45,7 @@ theorem IsSemisimpleModule.jacobson_le_annihilator [IsSemisimpleModule R M] :
     have := Module.le_comap_jacobson (LinearMap.toSpanSingleton R M m) hr
     rwa [jacobson_eq_bot] at this
 
-instance (priority := 900) (R) [CommRing R] [IsSemisimpleRing R] : IsReduced R where
+instance (priority := low) (R) [CommRing R] [IsSemisimpleRing R] : IsReduced R where
   eq_zero _ := fun ⟨n, eq⟩ ↦ (IsSemisimpleRing.jacobson_eq_bot R).le <| Ideal.mem_sInf.mpr
     fun I hI ↦ (Ideal.isMaximal_def.mpr hI).isPrime.mem_of_pow_mem n (eq ▸ I.zero_mem)
 

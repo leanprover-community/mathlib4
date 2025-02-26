@@ -107,7 +107,7 @@ theorem nilradical_le_jacobson (R) [CommRing R] : nilradical R ≤ Ring.jacobson
 theorem Ring.jacobson_eq_nilradical_of_krullDimLE_zero (R) [CommRing R] [KrullDimLE 0 R] :
     jacobson R = nilradical R := by
   refine (nilradical_le_jacobson R).antisymm' (nilradical_eq_sInf R ▸ le_sInf fun I hI ↦ sInf_le ?_)
-  change I.IsPrime at hI
+  rw [Set.mem_def, Set.setOf_app_iff] at hI
   exact Ideal.IsMaximal.out
 
 end Zero

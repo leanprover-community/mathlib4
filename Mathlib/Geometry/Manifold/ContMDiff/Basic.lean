@@ -253,6 +253,13 @@ theorem contMDiffWithinAt_of_subsingleton [Subsingleton M'] : ContMDiffWithinAt 
 theorem contMDiffOn_of_subsingleton [Subsingleton M'] : ContMDiffOn I I' n f s :=
   contMDiff_of_subsingleton.contMDiffOn
 
+lemma contMDiff_of_discreteTopology [DiscreteTopology M] :
+    ContMDiff I I' n f := by
+  intro x
+  -- f is locally constant, and constant functions are smooth.
+  apply contMDiff_const (c := f x).contMDiffAt.congr_of_eventuallyEq
+  simp [EventuallyEq]
+
 end const
 
 /-- `f` is continuously differentiable if it is cont. differentiable at

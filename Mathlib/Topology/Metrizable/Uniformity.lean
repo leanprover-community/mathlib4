@@ -118,7 +118,9 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
     rw [← nonpos_iff_eq_zero]
     simpa only [nonpos_iff_eq_zero, hab, hbc, dist_self c, max_self, mul_zero] using hd a b c c
   haveI : IsTrans X fun x y => d x y = 0 := ⟨hd₀_trans⟩
-  induction' hn : length l using Nat.strong_induction_on with n ihn generalizing x y l
+  suffices ∀ n, length l = n → d x y ≤ 2 * (zipWith d (x :: l) (l ++ [y])).sum by exact this _ rfl
+  intro n hn
+  induction n using Nat.strong_induction_on generalizing x y l with | h n ihn =>
   simp only at ihn
   subst n
   set L := zipWith d (x::l) (l ++ [y])
