@@ -119,8 +119,6 @@ private def encodingStepAux (e : Expr) (lambdas : List FVarId) (root : Bool) : L
   match e.getAppFn with
   | .const n _ =>
     unless root do
-      /- since `(fun _ => 0) = 0` and `(fun _ => 1) = 1`,
-      we don't index lambdas before literals -/
       if let some v := toNatLit? e then
         return ← withLams lambdas <| .lit v
     unless e.getAppNumArgs == 0 do
