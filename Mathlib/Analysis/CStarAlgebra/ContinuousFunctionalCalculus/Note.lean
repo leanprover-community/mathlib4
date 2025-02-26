@@ -17,7 +17,7 @@ as the organizational structure within Mathlib.
 library_note "continuous functional calculus" /--
 # The continuous functional calculus
 
-In Mathlib, there are two classes --- `NonUnitalCotinuousFunctionalCalculus` and
+In Mathlib, there are two classes --- `NonUnitalContinuousFunctionalCalculus` and
 `ContinuousFunctionalCalculus`, indexed by the scalar ring `R` and the predicate `p : A → Prop`
 which must be satisfied --- which are used to provide the interface to the continuous functional
 calculus. This allows us to reason about the continuous functional calculus in both unital and
@@ -135,7 +135,7 @@ works is `ℂ`.
 Unless you are developing theory over arbitrary scalar rings, it should never be necessary to
 assume `ContinuousMap.UniqueHom` or `ContinuousMapZero.UniqueHom`, despite the fact that these
 hypotheses are necessary for certain lemmas (in particular, `cfc_comp`). Over `ℝ` and `ℂ`, this
-instance should always be avaiable, and for `ℝ≥0`, one needs only to have the additional assumptions
+instance should always be available, and for `ℝ≥0`, one needs only to have the additional assumptions
 `T2Space A` and `IsTopologicalRing A` (as before, the algebra `A` should still be an `ℝ`-algebra).
 
 ## Using `autoParam`
@@ -156,7 +156,7 @@ The reason is that it is often necessary to supply these arguments in order for 
 arguments to fire.
 
 As to argument order, we generally prefer functions before elements of the algebra (i.e., `f` and
-then `a`) to match the order of application (i.e., `cfc f a`). Likewise, we generally places the
+then `a`) to match the order of application (i.e., `cfc f a`). Likewise, we generally place the
 `autoParam`s for the continuity conditions before the others because these are the most likely to
 require manual intervention.
 
