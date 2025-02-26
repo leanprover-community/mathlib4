@@ -607,6 +607,46 @@ Now we will prove that a compactly generated modular atomistic lattice is a comp
 Most explicitly, every element is the complement of a supremum of indepedendent atoms.
 -/
 
+/-- This lemma is probably not as general as it can be. -/
+protected lemma sSupIndep.insert [ComplementedLattice α] {a : α} {s : Set α} (hs : sSupIndep s)
+    (has : Disjoint a (sSup s)) (ha : IsAtom a) (hs' : ∀ b ∈ s, IsAtom b) :
+    sSupIndep (insert a s) := by
+  rintro b (rfl | hb)
+  · simpa using has.mono_right <| sSup_le_sSup diff_subset
+  · obtain ⟨c, hac⟩ := exists_isCompl a
+    
+    rw [← (hs' _ hb).not_le_iff_disjoint]
+    rintro hba
+    have := hs hb
+    sorry -- Is this true?
+
+-- TODO: Possibly generalisable to complemented atomic lattices
+/-- In an atomistic lattice, every element `b` has a complement of the form `sSup s`, where each
+element of `s` is an atom. See also `complementedLattice_of_sSup_atoms_eq_top`. -/
+theorem exists_sSupIndep_eq_sSup_isAtom [ComplementedLattice α] (b : α) :
+    ∃ s : Set α, sSupIndep s ∧ b = sSup s ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a := by
+  have zorn := zorn_subset
+    (S := {s : Set α | sSupIndep s ∧ sSup s ≤ b ∧ ∀ a ∈ s, IsAtom a})
+    fun c hc1 hc2 =>
+      ⟨⋃₀ c,
+        ⟨iSupIndep_sUnion_of_directed hc2.directedOn fun s hs => (hc1 hs).1, ?_,
+          fun a ⟨s, sc, as⟩ => (hc1 sc).2.2 a as⟩,
+        fun _ => Set.subset_sUnion_of_mem⟩
+  swap
+  · rw [sSup_sUnion, ← sSup_image, sSup_le_iff]
+    rintro _ ⟨s, hs, rfl⟩
+    exact (hc1 hs).2.1
+  simp_rw [maximal_subset_iff] at zorn
+  obtain ⟨s, ⟨s_ind, sSup_s_le_b, s_atoms⟩, s_max⟩ := zorn
+  refine ⟨s, s_ind, sSup_s_le_b.antisymm' ?_, s_atoms⟩
+  rw [le_iff_atom_le_imp]
+  rintro a ha hab
+  by_contra has
+  have := @s_max (insert a s) ⟨s_ind.insert s_atoms <| ha.not_le_iff_disjoint.1 has, by
+    simpa [hab] using sSup_s_le_b, by simpa [ha]⟩ (subset_insert ..)
+  rw [eq_comm, insert_eq_self] at this
+  exact has <| le_sSup this
+
 /-- In an atomic lattice, every element `b` has a complement of the form `sSup s`, where each
 element of `s` is an atom. See also `complementedLattice_of_sSup_atoms_eq_top`. -/
 theorem exists_sSupIndep_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a } = ⊤) (b : α) :
