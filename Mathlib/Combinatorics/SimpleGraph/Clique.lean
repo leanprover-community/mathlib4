@@ -427,8 +427,9 @@ lemma CliqueFree.mem_of_sup_edge_isNClique {x y : α} {t : Finset α} {n : ℕ} 
   by_contra! hf
   have ht : (t : Set α) \ {x} = t := sdiff_eq_left.mpr <| Set.disjoint_singleton_right.mpr hf
   exact h t ⟨ht ▸ hc.1.sdiff_of_sup_edge, hc.2⟩
-
-protected lemma CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
+  
+/-- Adding an edge increases the clique number by at most one. -/
+protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
     (G ⊔ edge v w).CliqueFree (n + 1) := fun _ hs ↦ (hs.erase_of_sup_edge_of_mem <|
         (h.mono (Nat.le_succ n)).mem_of_sup_edge_isNClique hs).not_cliqueFree h
 
