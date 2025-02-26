@@ -6,10 +6,10 @@ Authors: Tobias Leichtfried
 import Mathlib.Computability.ContextFreeGrammar
 
 /-!
-# Leftmost Deriviations in Context-Free Gammars
+# Leftmost Deriviations in Context-Free Grammars
 
 This file contains the definition of a leftmost derivation. These are derivations
-where in each rewriting step the leftmost nonterminal instead of an arbitrary one is replaced
+where in each rewriting step the leftmost nonterminal instead of an arbitrary one is replaced.
 
 ## Main Definitions
 * `ContextFreeRule.RewritesLeftmost`: Leftmost counterpart to `ContextFreeRule.Rewrites`
@@ -65,7 +65,7 @@ theorem RewritesLeftmost.rewritesLeftmost_of_exists_parts (r : ContextFreeRule T
 
 /-- Rule `r` rewrites string `u` is to string `v` iff the share a prefix of terminal symbols, a
 postfix of terminal and nonterminal symbols, and the remaining parts are `r.input` and `r.output`
-respectively-/
+respectively. -/
 theorem RewritesLeftmost.rewritesLeftmost_iff {r : ContextFreeRule T N} {u v : List (Symbol T N)} :
     r.RewritesLeftmost u v ↔
     ∃ (p : List T) (q : List (Symbol T N)),
@@ -134,7 +134,7 @@ theorem rewritesLeftmost_append {r : ContextFreeRule T N} {v₁ v₂ u : List (S
   | cons x v₁' ih =>
     rw [List.cons_append] at h
     apply rewritesLeftmost_cons at h
-    obtain ⟨u₁, u₂, h⟩|⟨w₁,u₂, h⟩ := h
+    obtain ⟨u₁, u₂, h⟩|⟨w₁, u₂, h⟩ := h
     · left
       use u₁++v₁', v₂
       refine ⟨by simp_all, ?_, rfl⟩
@@ -145,7 +145,7 @@ theorem rewritesLeftmost_append {r : ContextFreeRule T N} {v₁ v₂ u : List (S
       · left
         use w₁.map terminal ++ u₂₁, v₂
         refine ⟨by simp_all, ?_, rfl⟩
-        rw [← List.singleton_append,h.2.1]
+        rw [← List.singleton_append, h.2.1]
         apply RewritesLeftmost.append_left
         exact hu.2.1
       · right
@@ -174,7 +174,7 @@ theorem rewrites_cons {r : ContextFreeRule T N} {x : Symbol T N} {v u : List (Sy
 
 /-- If `r` rewrites `v₁++v₂` to `u`, than one of two options is the case:
 Either the rewrite happens in `v₁` and `v₂` remains unchanged or vice versa. -/
-theorem rewrites_append {r : ContextFreeRule T N}{v₁ v₂ u : List (Symbol T N)}
+theorem rewrites_append {r : ContextFreeRule T N} {v₁ v₂ u : List (Symbol T N)}
     (h : r.Rewrites (v₁ ++ v₂) u) :
     ∃ (u₁ u₂ : List (Symbol T N)), u = u₁ ++ u₂ ∧
       ((r.Rewrites v₁ u₁ ∧ v₂ = u₂) ∨ (r.Rewrites v₂ u₂ ∧ v₁ = u₁)) := by
