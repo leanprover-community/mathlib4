@@ -86,7 +86,7 @@ theorem cramer_is_linear : IsLinearMap α (cramerMap A) := by
 
   If `A * x = b` has a unique solution in `x`, `cramer A` sends the vector `b` to `A.det • x`.
   Otherwise, the outcome of `cramer` is well-defined but not necessarily useful.
- -/
+-/
 def cramer (A : Matrix n n α) : (n → α) →ₗ[α] (n → α) :=
   IsLinearMap.mk' (cramerMap A) (cramer_is_linear A)
 

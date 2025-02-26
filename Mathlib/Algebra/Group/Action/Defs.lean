@@ -338,7 +338,7 @@ lemma Commute.smul_left [Mul α] [SMulCommClass M α α] [IsScalarTower M α α]
 end
 
 section
-variable [Monoid M] [MulAction M α]
+variable [Monoid M] [MulAction M α] {a : M}
 
 @[to_additive]
 lemma smul_smul (a₁ a₂ : M) (b : α) : a₁ • a₂ • b = (a₁ * a₂) • b := (mul_smul _ _ _).symm
@@ -358,6 +358,15 @@ lemma comp_smul_left (a₁ a₂ : M) : (a₁ • ·) ∘ (a₂ • ·) = (((a₁
   funext fun _ ↦ (mul_smul _ _ _).symm
 
 variable {M}
+
+@[to_additive (attr := simp)]
+theorem smul_iterate (a : M) : ∀ n : ℕ, (a • · : α → α)^[n] = (a ^ n • ·)
+  | 0 => by simp [funext_iff]
+  | n + 1 => by ext; simp [smul_iterate, pow_succ, smul_smul]
+
+@[to_additive]
+lemma smul_iterate_apply (a : M) (n : ℕ) (x : α) : (a • ·)^[n] x = a ^ n • x := by
+  rw [smul_iterate]
 
 /-- Pullback a multiplicative action along an injective map respecting `•`.
 See note [reducible non-instances]. -/
