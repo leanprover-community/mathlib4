@@ -65,7 +65,9 @@ end existsAndEq
 
 /-- Checks whether `P a'` has the form `... ∧ a' = a ∧ ...` or `... ∧ a = a' ∧ ...` in
 the goal `∃ a', P a'`. If so, rewrites the goal as `P a`. -/
-simproc existsAndEq (Exists (fun _ => And _ _)) := fun e => do
-  let ⟨1, ~q(Prop), ~q(Exists $p)⟩ ← inferTypeQ e | return .continue
-  let .some ⟨rhs, pf⟩ ← existsAndEq.findImpEqProof p | return .continue
-  return .visit {expr := q($p $rhs), proof? := pf}
+simproc existsAndEq (Exists (fun _ => And _ _)) := .ofQ fun u α e => do
+  match u, α, e with
+  | 1, ~q(Prop), ~q(Exists $p) =>
+    let .some ⟨_, pf⟩ ← existsAndEq.findImpEqProof p | return .continue
+    return .visit <| .mk _ <| some q($pf)
+  | _, _, _ => return .continue
