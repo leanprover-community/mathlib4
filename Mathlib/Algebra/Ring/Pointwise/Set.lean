@@ -22,7 +22,7 @@ assert_not_exists MulAction OrderedAddCommMonoid Field
 open Function
 open scoped Pointwise
 
-variable {α β : Type*}
+variable {α : Type*}
 
 namespace Set
 

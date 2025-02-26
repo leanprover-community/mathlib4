@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Algebra.GroupWithZero.Basic
 
 /-!
 # Pointwise operations of sets in a group with zero
@@ -22,9 +22,10 @@ assert_not_exists MulAction OrderedAddCommMonoid Ring
 open Function
 open scoped Pointwise
 
-variable {α β : Type*}
+variable {α : Type*}
 
 namespace Set
+
 section MulZeroClass
 variable [MulZeroClass α] {s : Set α}
 
