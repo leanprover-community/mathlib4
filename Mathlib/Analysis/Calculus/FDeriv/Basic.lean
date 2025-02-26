@@ -457,7 +457,7 @@ theorem HasFDerivAt.lim (hf : HasFDerivAt f f' x) (v : E) {α : Type*} {c : α �
 
 theorem HasFDerivAt.unique (h₀ : HasFDerivAt f f₀' x) (h₁ : HasFDerivAt f f₁' x) : f₀' = f₁' := by
   rw [← hasFDerivWithinAt_univ] at h₀ h₁
-  exact uniqueDiffWithinAt_univ.eq h₀ h₁
+  exact UniqueDiffWithinAt.univ.eq h₀ h₁
 
 theorem hasFDerivWithinAt_inter' (h : t ∈ 𝓝[s] x) :
     HasFDerivWithinAt f f' (s ∩ t) x ↔ HasFDerivWithinAt f f' s x := by

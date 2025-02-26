@@ -196,7 +196,7 @@ theorem HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum
   apply HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
   · exact h.mono inter_subset_left
   · exact h'.mono inter_subset_left
-  · exact hs.inter EMetric.isOpen_ball
+  · exact hs.inter_isOpen EMetric.isOpen_ball
   · exact ⟨hx, EMetric.mem_ball_self h.r_pos⟩
   · exact inter_subset_right
 
@@ -207,7 +207,7 @@ theorem HasFPowerSeriesOnBall.iteratedFDeriv_eq_sum
     (h : HasFPowerSeriesOnBall f p x r) (h' : AnalyticOn 𝕜 f univ) {n : ℕ} (v : Fin n → E) :
     iteratedFDeriv 𝕜 n f x v = ∑ σ : Perm (Fin n), p n (fun i ↦ v (σ i)) := by
   simp only [← iteratedFDerivWithin_univ, ← hasFPowerSeriesWithinOnBall_univ] at h ⊢
-  exact h.iteratedFDerivWithin_eq_sum h' uniqueDiffOn_univ (mem_univ x) v
+  exact h.iteratedFDerivWithin_eq_sum h' .univ (mem_univ x) v
 
 /-- If a function has a power series in a ball, then its `n`-th iterated derivative is given by
 `(v₁, ..., vₙ) ↦ ∑ pₙ (v_{σ (1)}, ..., v_{σ (n)})` where the sum is over all
@@ -224,7 +224,7 @@ theorem HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_completeSpace
   · exact h.mono inter_subset_left
   · apply h.analyticOn.mono
     rw [insert_eq_of_mem hx]
-  · exact hs.inter EMetric.isOpen_ball
+  · exact hs.inter_isOpen EMetric.isOpen_ball
   · exact ⟨hx, EMetric.mem_ball_self h.r_pos⟩
   · exact inter_subset_right
 
@@ -235,7 +235,7 @@ theorem HasFPowerSeriesOnBall.iteratedFDeriv_eq_sum_of_completeSpace [CompleteSp
     (h : HasFPowerSeriesOnBall f p x r) {n : ℕ} (v : Fin n → E) :
     iteratedFDeriv 𝕜 n f x v = ∑ σ : Perm (Fin n), p n (fun i ↦ v (σ i)) := by
   simp only [← iteratedFDerivWithin_univ, ← hasFPowerSeriesWithinOnBall_univ] at h ⊢
-  exact h.iteratedFDerivWithin_eq_sum_of_completeSpace uniqueDiffOn_univ (mem_univ _) v
+  exact h.iteratedFDerivWithin_eq_sum_of_completeSpace .univ (mem_univ _) v
 
 /-- The `n`-th iterated derivative of an analytic function on a set is symmetric. -/
 theorem AnalyticOn.iteratedFDerivWithin_comp_perm
@@ -257,18 +257,18 @@ theorem ContDiffWithinAt.iteratedFDerivWithin_comp_perm
   have : iteratedFDerivWithin 𝕜 n f (s ∩ u) x = iteratedFDerivWithin 𝕜 n f s x :=
     iteratedFDerivWithin_inter_open u_open xu
   rw [← this]
-  exact AnalyticOn.iteratedFDerivWithin_comp_perm hu.analyticOn (hs.inter u_open) ⟨hx, xu⟩ _ _
+  exact hu.analyticOn.iteratedFDerivWithin_comp_perm (hs.inter_isOpen u_open) ⟨hx, xu⟩ _ _
 
 /-- The `n`-th iterated derivative of an analytic function is symmetric. -/
 theorem AnalyticOn.iteratedFDeriv_comp_perm
     (h : AnalyticOn 𝕜 f univ) {n : ℕ} (v : Fin n → E) (σ : Perm (Fin n)) :
     iteratedFDeriv 𝕜 n f x (v ∘ σ) = iteratedFDeriv 𝕜 n f x v := by
   rw [← iteratedFDerivWithin_univ]
-  exact h.iteratedFDerivWithin_comp_perm uniqueDiffOn_univ (mem_univ x) _ _
+  exact h.iteratedFDerivWithin_comp_perm .univ (mem_univ x) _ _
 
 /-- The `n`-th iterated derivative of an analytic function is symmetric. -/
 theorem ContDiffAt.iteratedFDeriv_comp_perm
     (h : ContDiffAt 𝕜 ω f x) {n : ℕ} (v : Fin n → E) (σ : Perm (Fin n)) :
     iteratedFDeriv 𝕜 n f x (v ∘ σ) = iteratedFDeriv 𝕜 n f x v := by
   rw [← iteratedFDerivWithin_univ]
-  exact h.iteratedFDerivWithin_comp_perm uniqueDiffOn_univ (mem_univ x) _ _
+  exact h.iteratedFDerivWithin_comp_perm .univ (mem_univ x) _ _

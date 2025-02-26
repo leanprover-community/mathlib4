@@ -89,11 +89,13 @@ theorem mem_tangentConeAt_of_pow_smul {r : 𝕜} (hr₀ : r ≠ 0) (hr : ‖r‖
     exact tendsto_pow_atTop_atTop_of_one_lt <| (one_lt_inv₀ (norm_pos_iff.2 hr₀)).2 hr
   · simp only [inv_smul_smul₀ (pow_ne_zero _ hr₀), tendsto_const_nhds]
 
+@[simp]
 theorem tangentCone_univ : tangentConeAt 𝕜 univ x = univ :=
   let ⟨_r, hr₀, hr⟩ := exists_norm_lt_one 𝕜
   eq_univ_of_forall fun _ ↦ mem_tangentConeAt_of_pow_smul (norm_pos_iff.1 hr₀) hr <|
     Eventually.of_forall fun _ ↦ mem_univ _
 
+@[gcongr]
 theorem tangentCone_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
   rintro y ⟨c, d, ds, ctop, clim⟩
   exact ⟨c, d, mem_of_superset ds fun n hn => h hn, ctop, clim⟩
@@ -366,15 +368,25 @@ theorem UniqueDiffOn.uniqueDiffWithinAt {s : Set E} {x} (hs : UniqueDiffOn 𝕜 
     UniqueDiffWithinAt 𝕜 s x :=
   hs x h
 
-theorem uniqueDiffWithinAt_univ : UniqueDiffWithinAt 𝕜 univ x := by
+@[simp]
+protected theorem UniqueDiffWithinAt.univ : UniqueDiffWithinAt 𝕜 univ x := by
   rw [uniqueDiffWithinAt_iff, tangentCone_univ]
   simp
 
-theorem uniqueDiffOn_univ : UniqueDiffOn 𝕜 (univ : Set E) :=
-  fun _ _ => uniqueDiffWithinAt_univ
+@[deprecated (since := "2025-01-02")]
+alias uniqueDiffWithinAt_univ := UniqueDiffWithinAt.univ
 
-theorem uniqueDiffOn_empty : UniqueDiffOn 𝕜 (∅ : Set E) :=
-  fun _ hx => hx.elim
+@[simp]
+protected theorem UniqueDiffOn.univ : UniqueDiffOn 𝕜 (univ : Set E) := fun _ _ ↦ .univ
+
+@[deprecated (since := "2025-01-02")]
+alias uniqueDiffOn_univ := UniqueDiffOn.univ
+
+@[simp]
+protected theorem UniqueDiffon.empty : UniqueDiffOn 𝕜 (∅ : Set E) := fun _ hx => hx.elim
+
+@[deprecated (since := "2025-01-02")]
+alias uniqueDiffOn_empty := UniqueDiffon.empty
 
 theorem UniqueDiffWithinAt.congr_pt (h : UniqueDiffWithinAt 𝕜 s x) (hy : x = y) :
     UniqueDiffWithinAt 𝕜 s y := hy ▸ h
@@ -404,26 +416,41 @@ theorem uniqueDiffWithinAt_inter (ht : t ∈ 𝓝 x) :
     UniqueDiffWithinAt 𝕜 (s ∩ t) x ↔ UniqueDiffWithinAt 𝕜 s x :=
   uniqueDiffWithinAt_congr <| (nhdsWithin_restrict' _ ht).symm
 
-theorem UniqueDiffWithinAt.inter (hs : UniqueDiffWithinAt 𝕜 s x) (ht : t ∈ 𝓝 x) :
+theorem UniqueDiffWithinAt.inter_nhds (hs : UniqueDiffWithinAt 𝕜 s x) (ht : t ∈ 𝓝 x) :
     UniqueDiffWithinAt 𝕜 (s ∩ t) x :=
   (uniqueDiffWithinAt_inter ht).2 hs
+
+@[deprecated (since := "2025-01-02")]
+alias UniqueDiffWithinAt.inter := UniqueDiffWithinAt.inter_nhds
 
 theorem uniqueDiffWithinAt_inter' (ht : t ∈ 𝓝[s] x) :
     UniqueDiffWithinAt 𝕜 (s ∩ t) x ↔ UniqueDiffWithinAt 𝕜 s x :=
   uniqueDiffWithinAt_congr <| (nhdsWithin_restrict'' _ ht).symm
 
-theorem UniqueDiffWithinAt.inter' (hs : UniqueDiffWithinAt 𝕜 s x) (ht : t ∈ 𝓝[s] x) :
+theorem UniqueDiffWithinAt.inter_nhdsWithin (hs : UniqueDiffWithinAt 𝕜 s x) (ht : t ∈ 𝓝[s] x) :
     UniqueDiffWithinAt 𝕜 (s ∩ t) x :=
   (uniqueDiffWithinAt_inter' ht).2 hs
 
-theorem uniqueDiffWithinAt_of_mem_nhds (h : s ∈ 𝓝 x) : UniqueDiffWithinAt 𝕜 s x := by
-  simpa only [univ_inter] using uniqueDiffWithinAt_univ.inter h
+@[deprecated (since := "2025-01-02")]
+alias UniqueDiffWithinAt.inter' := UniqueDiffWithinAt.inter_nhdsWithin
+
+theorem UniqueDiffWithinAt.of_mem_nhds (h : s ∈ 𝓝 x) : UniqueDiffWithinAt 𝕜 s x := by
+  simpa only [univ_inter] using UniqueDiffWithinAt.univ.inter_nhds h
+
+@[deprecated (since := "2025-01-02")]
+alias uniqueDiffWithinAt_of_mem_nhds := UniqueDiffWithinAt.of_mem_nhds
 
 theorem IsOpen.uniqueDiffWithinAt (hs : IsOpen s) (xs : x ∈ s) : UniqueDiffWithinAt 𝕜 s x :=
-  uniqueDiffWithinAt_of_mem_nhds (IsOpen.mem_nhds hs xs)
+  .of_mem_nhds (IsOpen.mem_nhds hs xs)
 
-theorem UniqueDiffOn.inter (hs : UniqueDiffOn 𝕜 s) (ht : IsOpen t) : UniqueDiffOn 𝕜 (s ∩ t) :=
-  fun x hx => (hs x hx.1).inter (IsOpen.mem_nhds ht hx.2)
+theorem UniqueDiffOn.inter_isOpen (hs : UniqueDiffOn 𝕜 s) (ht : IsOpen t) :
+    UniqueDiffOn 𝕜 (s ∩ t) := fun x hx => (hs x hx.1).inter_nhds (IsOpen.mem_nhds ht hx.2)
+
+@[deprecated (since := "2025-01-02")]
+alias UniqueDiffOn.inter := UniqueDiffOn.inter_isOpen
+
+theorem IsOpen.inter_uniqueDiffOn (hs : IsOpen s) (ht : UniqueDiffOn 𝕜 t) :
+    UniqueDiffOn 𝕜 (s ∩ t) := inter_comm s t ▸ ht.inter_isOpen hs
 
 theorem IsOpen.uniqueDiffOn (hs : IsOpen s) : UniqueDiffOn 𝕜 s :=
   fun _ hx => IsOpen.uniqueDiffWithinAt hs hx
@@ -458,7 +485,7 @@ theorem UniqueDiffWithinAt.pi (ι : Type*) [Finite ι] (E : ι → Type*)
   classical
   rw [← Set.univ_pi_piecewise_univ]
   refine UniqueDiffWithinAt.univ_pi ι E _ _ fun i => ?_
-  by_cases hi : i ∈ I <;> simp [*, uniqueDiffWithinAt_univ]
+  by_cases hi : i ∈ I <;> simp [*]
 
 /-- The product of two sets of unique differentiability is a set of unique differentiability. -/
 theorem UniqueDiffOn.prod {t : Set F} (hs : UniqueDiffOn 𝕜 s) (ht : UniqueDiffOn 𝕜 t) :
@@ -486,7 +513,7 @@ variable [NormedAddCommGroup G] [NormedSpace ℝ G]
 
 /-- In a real vector space, a convex set with nonempty interior is a set of unique
 differentiability at every point of its closure. -/
-theorem uniqueDiffWithinAt_convex {s : Set G} (conv : Convex ℝ s) (hs : (interior s).Nonempty)
+theorem UniqueDiffWithinAt.of_convex {s : Set G} (conv : Convex ℝ s) (hs : (interior s).Nonempty)
     {x : G} (hx : x ∈ closure s) : UniqueDiffWithinAt ℝ s x := by
   rcases hs with ⟨y, hy⟩
   suffices y - x ∈ interior (tangentConeAt ℝ s x) by
@@ -500,57 +527,101 @@ theorem uniqueDiffWithinAt_convex {s : Set G} (conv : Convex ℝ s) (hs : (inter
   refine mem_tangentCone_of_openSegment_subset (Subset.trans ?_ interior_subset)
   exact conv.openSegment_closure_interior_subset_interior hx zs
 
+@[deprecated (since := "2025-01-02")]
+alias uniqueDiffWithinAt_convex := UniqueDiffWithinAt.of_convex
+
+alias Convex.uniqueDiffWithinAt := UniqueDiffWithinAt.of_convex
+
 /-- In a real vector space, a convex set with nonempty interior is a set of unique
 differentiability. -/
-theorem uniqueDiffOn_convex {s : Set G} (conv : Convex ℝ s) (hs : (interior s).Nonempty) :
-    UniqueDiffOn ℝ s :=
-  fun _ xs => uniqueDiffWithinAt_convex conv hs (subset_closure xs)
+theorem UniqueDiffOn.of_convex {s : Set G} (conv : Convex ℝ s) (hs : (interior s).Nonempty) :
+    UniqueDiffOn ℝ s := fun _ xs => .of_convex conv hs (subset_closure xs)
+
+@[deprecated (since := "2025-01-02")]
+alias uniqueDiffOn_convex := UniqueDiffOn.of_convex
+
+alias Convex.uniqueDiffOn := UniqueDiffOn.of_convex
 
 end RealNormed
 
 section Real
 
-theorem uniqueDiffOn_Ici (a : ℝ) : UniqueDiffOn ℝ (Ici a) :=
-  uniqueDiffOn_convex (convex_Ici a) <| by simp only [interior_Ici, nonempty_Ioi]
+protected theorem UniqueDiffOn.Ici (a : ℝ) : UniqueDiffOn ℝ (Ici a) :=
+  (convex_Ici a).uniqueDiffOn <| by simp only [interior_Ici, nonempty_Ioi]
 
-theorem uniqueDiffOn_Iic (a : ℝ) : UniqueDiffOn ℝ (Iic a) :=
-  uniqueDiffOn_convex (convex_Iic a) <| by simp only [interior_Iic, nonempty_Iio]
+@[deprecated (since := "2025-01-02")]
+alias uniqueDiffOn_Ici := UniqueDiffOn.Ici
 
-theorem uniqueDiffOn_Ioi (a : ℝ) : UniqueDiffOn ℝ (Ioi a) :=
+protected theorem UniqueDiffOn.Iic (a : ℝ) : UniqueDiffOn ℝ (Iic a) :=
+  .of_convex (convex_Iic a) <| by simp only [interior_Iic, nonempty_Iio]
+
+@[deprecated (since := "2025-01-02")]
+alias uniqueDiffOn_Iic := UniqueDiffOn.Iic
+
+protected theorem UniqueDiffOn.Ioi (a : ℝ) : UniqueDiffOn ℝ (Ioi a) :=
   isOpen_Ioi.uniqueDiffOn
 
-theorem uniqueDiffOn_Iio (a : ℝ) : UniqueDiffOn ℝ (Iio a) :=
+@[deprecated (since := "2025-01-02")]
+alias uniqueDiffOn_Ioi := UniqueDiffOn.Ioi
+
+protected theorem UniqueDiffOn.Iio (a : ℝ) : UniqueDiffOn ℝ (Iio a) :=
   isOpen_Iio.uniqueDiffOn
 
-theorem uniqueDiffOn_Icc {a b : ℝ} (hab : a < b) : UniqueDiffOn ℝ (Icc a b) :=
-  uniqueDiffOn_convex (convex_Icc a b) <| by simp only [interior_Icc, nonempty_Ioo, hab]
+@[deprecated (since := "2025-01-02")]
+alias uniqueDiffOn_Iio := UniqueDiffOn.Iio
 
-theorem uniqueDiffOn_Ico (a b : ℝ) : UniqueDiffOn ℝ (Ico a b) :=
+protected theorem UniqueDiffOn.Icc {a b : ℝ} (hab : a < b) : UniqueDiffOn ℝ (Icc a b) :=
+  .of_convex (convex_Icc a b) <| by simp only [interior_Icc, nonempty_Ioo, hab]
+
+@[deprecated (since := "2025-01-02")]
+alias uniqueDiffOn_Icc := UniqueDiffOn.Icc
+
+protected theorem UniqueDiffOn.Ico (a b : ℝ) : UniqueDiffOn ℝ (Ico a b) :=
   if hab : a < b then
-    uniqueDiffOn_convex (convex_Ico a b) <| by simp only [interior_Ico, nonempty_Ioo, hab]
-  else by simp only [Ico_eq_empty hab, uniqueDiffOn_empty]
+    .of_convex (convex_Ico a b) <| by simp only [interior_Ico, nonempty_Ioo, hab]
+  else by simp [hab]
 
-theorem uniqueDiffOn_Ioc (a b : ℝ) : UniqueDiffOn ℝ (Ioc a b) :=
+@[deprecated (since := "2025-01-02")]
+alias uniqueDiffOn_Ico := UniqueDiffOn.Ico
+
+protected theorem UniqueDiffOn.Ioc (a b : ℝ) : UniqueDiffOn ℝ (Ioc a b) :=
   if hab : a < b then
-    uniqueDiffOn_convex (convex_Ioc a b) <| by simp only [interior_Ioc, nonempty_Ioo, hab]
-  else by simp only [Ioc_eq_empty hab, uniqueDiffOn_empty]
+    .of_convex (convex_Ioc a b) <| by simp only [interior_Ioc, nonempty_Ioo, hab]
+  else by simp [hab]
 
-theorem uniqueDiffOn_Ioo (a b : ℝ) : UniqueDiffOn ℝ (Ioo a b) :=
+@[deprecated (since := "2025-01-02")]
+alias uniqueDiffOn_Ioc := UniqueDiffOn.Ioc
+
+protected theorem UniqueDiffOn.Ioo (a b : ℝ) : UniqueDiffOn ℝ (Ioo a b) :=
   isOpen_Ioo.uniqueDiffOn
 
-/-- The real interval `[0, 1]` is a set of unique differentiability. -/
-theorem uniqueDiffOn_Icc_zero_one : UniqueDiffOn ℝ (Icc (0 : ℝ) 1) :=
-  uniqueDiffOn_Icc zero_lt_one
+@[deprecated (since := "2025-01-02")]
+alias uniqueDiffOn_Ioo := UniqueDiffOn.Ioo
 
-theorem uniqueDiffWithinAt_Ioo {a b t : ℝ} (ht : t ∈ Set.Ioo a b) :
+/-- The real interval `[0, 1]` is a set of unique differentiability. -/
+theorem UniqueDiffOn.Icc_zero_one : UniqueDiffOn ℝ (Icc (0 : ℝ) 1) := .Icc zero_lt_one
+
+@[deprecated (since := "2025-01-02")]
+alias uniqueDiffOn_Icc_zero_one := UniqueDiffOn.Icc_zero_one
+
+protected theorem UniqueDiffWithinAt.Ioo {a b t : ℝ} (ht : t ∈ Set.Ioo a b) :
     UniqueDiffWithinAt ℝ (Set.Ioo a b) t :=
   IsOpen.uniqueDiffWithinAt isOpen_Ioo ht
 
-theorem uniqueDiffWithinAt_Ioi (a : ℝ) : UniqueDiffWithinAt ℝ (Ioi a) a :=
-  uniqueDiffWithinAt_convex (convex_Ioi a) (by simp) (by simp)
+@[deprecated (since := "2025-01-02")]
+alias uniqueDiffWithinAt_Ioo := UniqueDiffWithinAt.Ioo
 
-theorem uniqueDiffWithinAt_Iio (a : ℝ) : UniqueDiffWithinAt ℝ (Iio a) a :=
-  uniqueDiffWithinAt_convex (convex_Iio a) (by simp) (by simp)
+protected theorem UniqueDiffWithinAt.Ioi (a : ℝ) : UniqueDiffWithinAt ℝ (Ioi a) a :=
+  .of_convex (convex_Ioi a) (by simp) (by simp)
+
+@[deprecated (since := "2025-01-02")]
+alias uniqueDiffWithinAt_Ioi := UniqueDiffWithinAt.Ioi
+
+protected theorem UniqueDiffWithinAt.Iio (a : ℝ) : UniqueDiffWithinAt ℝ (Iio a) a :=
+  .of_convex (convex_Iio a) (by simp) (by simp)
+
+@[deprecated (since := "2025-01-02")]
+alias uniqueDiffWithinAt_Iio := UniqueDiffWithinAt.Iio
 
 /-- In one dimension, every point is either a point of unique differentiability, or isolated. -/
 theorem uniqueDiffWithinAt_or_nhdsWithin_eq_bot (s : Set 𝕜) (x : 𝕜) :

@@ -116,7 +116,7 @@ theorem deriv_sqrt_mul_log (x : ℝ) :
   rcases lt_or_le 0 x with hx | hx
   · exact (hasDerivAt_sqrt_mul_log hx.ne').deriv
   · rw [sqrt_eq_zero_of_nonpos hx, mul_zero, div_zero]
-    refine HasDerivWithinAt.deriv_eq_zero ?_ (uniqueDiffOn_Iic 0 x hx)
+    refine HasDerivWithinAt.deriv_eq_zero ?_ <| UniqueDiffOn.Iic 0 x hx
     refine (hasDerivWithinAt_const x _ 0).congr_of_mem (fun x hx => ?_) hx
     rw [sqrt_eq_zero_of_nonpos hx, zero_mul]
 
@@ -129,7 +129,7 @@ theorem deriv2_sqrt_mul_log (x : ℝ) :
   simp only [Nat.iterate, deriv_sqrt_mul_log']
   rcases le_or_lt x 0 with hx | hx
   · rw [sqrt_eq_zero_of_nonpos hx, zero_pow three_ne_zero, mul_zero, div_zero]
-    refine HasDerivWithinAt.deriv_eq_zero ?_ (uniqueDiffOn_Iic 0 x hx)
+    refine HasDerivWithinAt.deriv_eq_zero ?_ <| UniqueDiffOn.Iic 0 x hx
     refine (hasDerivWithinAt_const _ _ 0).congr_of_mem (fun x hx => ?_) hx
     rw [sqrt_eq_zero_of_nonpos hx, mul_zero, div_zero]
   · have h₀ : √x ≠ 0 := sqrt_ne_zero'.2 hx

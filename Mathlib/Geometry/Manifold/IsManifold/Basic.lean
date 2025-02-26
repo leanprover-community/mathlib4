@@ -164,7 +164,7 @@ def modelWithCornersSelf (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] : ModelWithCorners 𝕜 E E where
   toPartialEquiv := PartialEquiv.refl E
   source_eq := rfl
-  uniqueDiffOn' := uniqueDiffOn_univ
+  uniqueDiffOn' := .univ
   target_subset_closure_interior := by simp
   continuous_toFun := continuous_id
   continuous_invFun := continuous_id
@@ -319,9 +319,8 @@ theorem symm_map_nhdsWithin_range (x : H) : map I.symm (𝓝[range I] I x) = �
   rw [← I.map_nhds_eq, map_map, I.symm_comp_self, map_id]
 
 theorem uniqueDiffOn_preimage {s : Set H} (hs : IsOpen s) :
-    UniqueDiffOn 𝕜 (I.symm ⁻¹' s ∩ range I) := by
-  rw [inter_comm]
-  exact I.uniqueDiffOn.inter (hs.preimage I.continuous_invFun)
+    UniqueDiffOn 𝕜 (I.symm ⁻¹' s ∩ range I) :=
+  (hs.preimage I.continuous_invFun).inter_uniqueDiffOn I.uniqueDiffOn
 
 @[deprecated (since := "2024-09-30")]
 alias unique_diff_preimage := uniqueDiffOn_preimage

@@ -184,14 +184,12 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
   right_inv' _ hx := update_eq_iff.2 ⟨max_eq_left hx, fun _ _ => rfl⟩
   source_eq := rfl
   uniqueDiffOn' := by
-    have : UniqueDiffOn ℝ _ :=
-      UniqueDiffOn.pi (Fin n) (fun _ => ℝ) _ _ fun i (_ : i ∈ ({0} : Set (Fin n))) =>
-        uniqueDiffOn_Ici 0
+    have : UniqueDiffOn ℝ (({0} : Set (Fin n)).pi fun _ ↦ Ici (0 : ℝ)) :=
+      .pi (Fin n) (fun _ => ℝ) _ _ fun i _ => .Ici 0
     simpa only [singleton_pi] using this
   target_subset_closure_interior := by simp
   continuous_toFun := continuous_subtype_val
-  continuous_invFun := by
-    exact (continuous_id.update 0 <| (continuous_apply 0).max continuous_const).subtype_mk _
+  continuous_invFun := by fun_prop
 
 /--
 Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanQuadrant n)`, used as a
@@ -209,7 +207,7 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
   source_eq := rfl
   uniqueDiffOn' := by
     have this : UniqueDiffOn ℝ _ :=
-      UniqueDiffOn.univ_pi (Fin n) (fun _ => ℝ) _ fun _ => uniqueDiffOn_Ici 0
+      UniqueDiffOn.univ_pi (Fin n) (fun _ => ℝ) _ fun _ => .Ici 0
     simpa only [pi_univ_Ici] using this
   target_subset_closure_interior := by
     have : {x : EuclideanSpace ℝ (Fin n) | ∀ (i : Fin n), 0 ≤ x i}

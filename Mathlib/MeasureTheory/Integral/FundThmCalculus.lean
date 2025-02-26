@@ -1210,7 +1210,7 @@ theorem integrableOn_deriv_right_of_nonneg (hcont : ContinuousOn g (Icc a b))
   have meas_g' : AEMeasurable g' (volume.restrict (Ioo a b)) := by
     apply (aemeasurable_derivWithin_Ioi g _).congr
     refine (ae_restrict_mem measurableSet_Ioo).mono fun x hx => ?_
-    exact (hderiv x hx).derivWithin (uniqueDiffWithinAt_Ioi _)
+    exact (hderiv x hx).derivWithin (.Ioi _)
   suffices H : (∫⁻ x in Ioo a b, ‖g' x‖₊) ≤ ENNReal.ofReal (g b - g a) from
     ⟨meas_g'.aestronglyMeasurable, H.trans_lt ENNReal.ofReal_lt_top⟩
   by_contra! H

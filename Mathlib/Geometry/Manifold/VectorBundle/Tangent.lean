@@ -269,8 +269,7 @@ theorem trivializationAt_symmL {b₀ b : M}
 @[simp high, mfld_simps]
 theorem coordChange_model_space (b b' x : F) :
     (tangentBundleCore 𝓘(𝕜, F) F).coordChange (achart F b) (achart F b') x = 1 := by
-  simpa only [tangentBundleCore_coordChange, mfld_simps] using
-    fderivWithin_id uniqueDiffWithinAt_univ
+  simpa only [tangentBundleCore_coordChange, mfld_simps] using fderivWithin_id .univ
 
 -- Porting note: `simp` simplifies LHS to `.id _ _`
 @[simp high, mfld_simps]
