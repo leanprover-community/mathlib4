@@ -77,7 +77,6 @@ lemma indicator_one_inj (h : indicator s (1 : ι → M₀) = indicator t 1) : s 
   ext; simp_rw [← indicator_eq_one_iff_mem M₀, h]
 
 end MulZeroOneClass
-
 end Set
 
 namespace Function
