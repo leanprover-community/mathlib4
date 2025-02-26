@@ -606,6 +606,12 @@ theorem Filter.Tendsto.prodMap_nhds {x : X} {y : Y} {z : Z} {w : W} {f : X → Y
   rw [nhds_prod_eq, nhds_prod_eq]
   exact hf.prodMap hg
 
+theorem Filter.Tendsto.prodMap_nhds {x : X} {y : Y} {z : Z} {w : W} {f : X → Y} {g : Z → W}
+    (hf : Tendsto f (𝓝 x) (𝓝 y)) (hg : Tendsto g (𝓝 z) (𝓝 w)) :
+    Tendsto (Prod.map f g) (𝓝 (x, z)) (𝓝 (y, w)) := by
+  rw [nhds_prod_eq, nhds_prod_eq]
+  exact hf.prod_map hg
+
 theorem Filter.Eventually.curry_nhds {p : X × Y → Prop} {x : X} {y : Y}
     (h : ∀ᶠ x in 𝓝 (x, y), p x) : ∀ᶠ x' in 𝓝 x, ∀ᶠ y' in 𝓝 y, p (x', y') := by
   rw [nhds_prod_eq] at h
@@ -1112,8 +1118,7 @@ lemma Topology.IsInducing.of_codRestrict {f : X → Y} {t : Set Y} (ht : ∀ x, 
 lemma Topology.IsEmbedding.subtypeVal : IsEmbedding ((↑) : Subtype p → X) :=
   ⟨.subtypeVal, Subtype.coe_injective⟩
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_subtype_val := IsEmbedding.subtypeVal
+@[deprecated (since := "2024-10-26")] alias embedding_subtype_val := IsEmbedding.subtypeVal
 
 theorem Topology.IsClosedEmbedding.subtypeVal (h : IsClosed {a | p a}) :
     IsClosedEmbedding ((↑) : Subtype p → X) :=
@@ -1292,6 +1297,28 @@ theorem frontier_inter_open_inter {s t : Set X} (ht : IsOpen t) :
   simp only [Set.inter_comm _ t, ← Subtype.preimage_coe_eq_preimage_coe_iff,
     ht.isOpenMap_subtype_val.preimage_frontier_eq_frontier_preimage continuous_subtype_val,
     Subtype.preimage_coe_self_inter]
+
+section SetNotation
+
+open scoped Set.Notation
+
+lemma IsOpen.preimage_val {s t : Set X} (ht : IsOpen t) : IsOpen (s ↓∩ t) :=
+  ht.preimage continuous_subtype_val
+
+lemma IsClosed.preimage_val {s t : Set X} (ht : IsClosed t) : IsClosed (s ↓∩ t) :=
+  ht.preimage continuous_subtype_val
+
+@[simp] lemma IsOpen.inter_preimage_val_iff {s t : Set X} (hs : IsOpen s) :
+    IsOpen (s ↓∩ t) ↔ IsOpen (s ∩ t) :=
+  ⟨fun h ↦ by simpa using hs.isOpenMap_subtype_val _ h,
+    fun h ↦ (Subtype.preimage_coe_self_inter _ _).symm ▸ h.preimage_val⟩
+
+@[simp] lemma IsClosed.inter_preimage_val_iff {s t : Set X} (hs : IsClosed s) :
+    IsClosed (s ↓∩ t) ↔ IsClosed (s ∩ t) :=
+  ⟨fun h ↦ by simpa using hs.isClosedMap_subtype_val _ h,
+    fun h ↦ (Subtype.preimage_coe_self_inter _ _).symm ▸ h.preimage_val⟩
+
+end SetNotation
 
 end Subtype
 

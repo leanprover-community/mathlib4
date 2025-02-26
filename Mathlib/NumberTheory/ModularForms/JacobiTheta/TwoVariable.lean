@@ -70,7 +70,7 @@ everywhere else.
 
 lemma norm_jacobiTheta₂_term (n : ℤ) (z τ : ℂ) :
     ‖jacobiTheta₂_term n z τ‖ = rexp (-π * n ^ 2 * τ.im - 2 * π * n * z.im) := by
-  rw [jacobiTheta₂_term, Complex.norm_eq_abs, Complex.abs_exp, (by push_cast; ring :
+  rw [jacobiTheta₂_term, Complex.norm_exp, (by push_cast; ring :
     (2 * π : ℂ) * I * n * z + π * I * n ^ 2 * τ = (π * (2 * n):) * z * I + (π * n ^ 2 :) * τ * I),
     add_re, mul_I_re, im_ofReal_mul, mul_I_re, im_ofReal_mul]
   ring_nf
@@ -95,8 +95,8 @@ lemma norm_jacobiTheta₂'_term_le {S T : ℝ} (hT : 0 < T) {z τ : ℂ}
   rw [jacobiTheta₂'_term, norm_mul]
   refine mul_le_mul (le_of_eq ?_) (norm_jacobiTheta₂_term_le hT hz hτ n)
     (norm_nonneg _) (by positivity)
-  simp only [norm_mul, Complex.norm_eq_abs, Complex.abs_two, abs_I,
-    Complex.abs_of_nonneg pi_pos.le, abs_intCast, mul_one, Int.cast_abs]
+  simp only [norm_mul, Complex.norm_two, norm_I, Complex.norm_of_nonneg pi_pos.le,
+    norm_intCast, mul_one, Int.cast_abs]
 
 /-- The uniform bound we have given is summable, and remains so after multiplying by any fixed
 power of `|n|` (we shall need this for `k = 0, 1, 2`). -/
@@ -187,7 +187,7 @@ lemma norm_jacobiTheta₂_term_fderiv_ge (n : ℤ) (z τ : ℂ) :
     smul_eq_mul, mul_one, mul_comm _ ‖cexp _‖, norm_mul]
   refine mul_le_mul_of_nonneg_left (le_of_eq ?_) (norm_nonneg _)
   simp_rw [norm_real, norm_of_nonneg pi_pos.le, norm_I, mul_one,
-    Int.cast_abs, ← abs_intCast, Complex.norm_eq_abs, Complex.abs_pow]
+    Int.cast_abs, ← norm_intCast, norm_pow]
 
 lemma summable_jacobiTheta₂_term_fderiv_iff (z τ : ℂ) :
     Summable (jacobiTheta₂_term_fderiv · z τ) ↔ 0 < im τ := by
@@ -236,8 +236,8 @@ lemma summable_jacobiTheta₂'_term_iff (z τ : ℂ) :
     rw [jacobiTheta₂'_term, norm_mul, ← mul_assoc, pow_one]
     refine mul_le_mul (le_of_eq ?_) (norm_jacobiTheta₂_term_le hτ le_rfl le_rfl n)
       (norm_nonneg _) (by positivity)
-    simp_rw [norm_mul, Complex.norm_eq_abs, Complex.abs_two, abs_I,
-      Complex.abs_of_nonneg pi_pos.le, abs_intCast, mul_one, Int.cast_abs]
+    simp_rw [norm_mul, Complex.norm_two, norm_I, Complex.norm_of_nonneg pi_pos.le,
+      norm_intCast, mul_one, Int.cast_abs]
 
 end term_bounds
 

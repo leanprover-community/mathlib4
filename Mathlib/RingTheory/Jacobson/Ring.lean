@@ -696,6 +696,7 @@ lemma RingHom.FiniteType.isJacobsonRing {A B : Type*} [CommRing A] [CommRing B]
     {f : A →+* B} [IsJacobsonRing A] (H : f.FiniteType) : IsJacobsonRing B :=
   @isJacobsonRing_of_finiteType A B _ _ f.toAlgebra _ H
 
+@[stacks 0CY7 "See also https://en.wikipedia.org/wiki/Zariski%27s_lemma."]
 lemma finite_of_finite_type_of_isJacobsonRing (R S : Type*) [CommRing R] [Field S]
     [Algebra R S] [IsJacobsonRing R] [Algebra.FiniteType R S] :
     Module.Finite R S := by

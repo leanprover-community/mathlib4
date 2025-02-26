@@ -8,7 +8,7 @@ import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.Preadditive.SingleObj
