@@ -163,7 +163,7 @@ end Distributive
 open Distributive
 
 
-instance IsMonoidalRightDistrib.of_isIso_coprodComparisonTensorRight
+lemma IsMonoidalRightDistrib.of_isIso_coprodComparisonTensorRight
     [i : ∀ {X Y Z : C}, IsIso (coprodComparison (tensorRight X) Y Z)] :
     IsMonoidalRightDistrib C where
   preservesBinaryCoproducts_tensorRight _ :=
