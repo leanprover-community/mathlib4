@@ -518,12 +518,6 @@ noncomputable def inv (F : C ⥤ D) [F.IsEquivalence] : D ⥤ C where
   map_id X := by apply F.map_injective; simp
   map_comp {X Y Z} f g := by apply F.map_injective; simp
 
-lemma inv_obj (F : C ⥤ D) [F.IsEquivalence] (X : D) : (F.inv.obj X) = F.objPreimage X := by rfl
-
-lemma inv_map (F : C ⥤ D) [F.IsEquivalence] {X Y : D} (f : X ⟶ Y) :
-    F.inv.map f = F.preimage ((F.objObjPreimageIso X).hom ≫ f ≫ (F.objObjPreimageIso Y).inv) := by
-  rfl
-
 /-- Interpret a functor that is an equivalence as an equivalence. -/
 @[simps functor, stacks 02C3]
 noncomputable def asEquivalence (F : C ⥤ D) [F.IsEquivalence] : C ≌ D where
@@ -554,6 +548,7 @@ instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringRight E C D
 end Functor
 
 namespace Functor
+
 
 @[simp]
 theorem fun_inv_map (F : C ⥤ D) [IsEquivalence F] (X Y : D) (f : X ⟶ Y) :

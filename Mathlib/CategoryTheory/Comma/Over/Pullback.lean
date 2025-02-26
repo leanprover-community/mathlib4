@@ -22,8 +22,11 @@ In a category with binary products, for any object `X` the functor
 
 - `Over.pullback f : Over Y ⥤ Over X` is the functor induced by a morphism `f : X ⟶ Y`.
 - `Over.mapPullbackAdj` is the adjunction `Over.map f ⊣ Over.pullback f`.
-- `star : C ⥤ Over X` is the functor induced by an object `X`.
+- `star : C ⥤ Over X` is the functor induced by an object `X`. When `X` is the terminal object,
+  this functor is isomorphic to `Functor.toOverTerminal C` which maps `Y : C` to `terminal.from Y`.
 - `forgetAdjStar` is the adjunction  `forget X ⊣ star X`.
+- `Reindex` is the reindexing of `Z : Over X` along `Y : Over X`. It is a syntactic sugar for
+  `(Over.pullback Y.hom).obj Z`.
 
 ## Notation
 
@@ -103,8 +106,8 @@ instance pullbackIsRightAdjoint [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
     (pullback f).IsRightAdjoint  :=
   ⟨_, ⟨mapPullbackAdj f⟩⟩
 
-/-- `Reindex Y Z` is the reindexing of `Z : Over X` along `Y : Over X`, provided by the pullback of
-`Z` along `Y.hom`. -/
+/-- The reindexing of `Z : Over X` along `Y : Over X`, defined by pulling back `Z` along
+`Y.hom : Y.left ⟶ X`. -/
 abbrev Reindex [HasPullbacks C] {X : C} (Y : Over X) (Z : Over X) : Over Y.left :=
   (Over.pullback Y.hom).obj Z
 
@@ -118,7 +121,7 @@ lemma hom {Y : Over X} {Z : Over X} :
     (Reindex Y Z).hom = pullback.snd Z.hom Y.hom := by
   rfl
 
-/-- `Reindex` is symmetric, up to an isomorphism, in its first and second arguments. -/
+/-- `Reindex` is symmetric in its first and second arguments up to an isomorphism. -/
 def symmetryObjIso (Y Z : Over X) :
     (Reindex Y Z).left ≅ (Reindex Z Y).left := pullbackSymmetry _ _
 
@@ -137,13 +140,13 @@ lemma symmetry_hom {Y Z : Over X} :
   simp [← pullback.condition]
 
 /-- The first projection out of the reindexed sigma object. -/
-def fstProj (Y Z : Over X) : (Sigma Y (Reindex Y Z)) ⟶ Y :=
+def fstProj (Y Z : Over X) : Sigma Y (Reindex Y Z) ⟶ Y :=
   Over.homMk (pullback.snd Z.hom Y.hom) (by simp)
 
 lemma fstProj_sigma_fst (Y Z : Over X) : fstProj Y Z = Sigma.fst (Reindex Y Z) := by rfl
 
 /-- The second projection out of the reindexed sigma object. -/
-def sndProj (Y Z : Over X) : (Sigma Y (Reindex Y Z)) ⟶ Z :=
+def sndProj (Y Z : Over X) : Sigma Y (Reindex Y Z) ⟶ Z :=
   Over.homMk (pullback.fst Z.hom Y.hom) (by simp [pullback.condition])
 
 /-- The notation for the first projection of the reindexed sigma object. -/
@@ -355,8 +358,9 @@ def starPullbackIsoStar [HasBinaryProducts C] [HasPullbacks C] {X Y : C} (f : X 
     star Y ⋙ pullback f ≅ star X :=
   conjugateIsoEquiv ((mapPullbackAdj f).comp (forgetAdjStar Y)) (forgetAdjStar X) (mapForget f)
 
-/-- The functor `Over.pullback` is naturally isomorphic to `Over.star` up to the iterated slice
-equivlanece. -/
+/-- The functor `Over.pullback f : Over Y ⥤ Over X` is naturally isomorphic to
+`Over.star : Over Y ⥤ Over (Over.mk f)` post-composed with the
+iterated slice equivlanece `Over (Over.mk f) ⥤ Over X`. -/
 def starIteratedSliceForwardIsoPullback [HasFiniteWidePullbacks C]
     {X Y : C} (f : X ⟶ Y) : star (Over.mk f) ⋙ (Over.mk f).iteratedSliceForward ≅ pullback f :=
   conjugateIsoEquiv ((Over.mk f).iteratedSliceEquiv.symm.toAdjunction.comp (forgetAdjStar _))

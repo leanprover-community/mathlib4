@@ -94,6 +94,17 @@ end
 def homMk {U V : Over X} (f : U.left ⟶ V.left) (w : f ≫ V.hom = U.hom := by aesop_cat) : U ⟶ V :=
   CostructuredArrow.homMk f w
 
+@[simp]
+lemma left_homMk {U V : Over X} (f : U ⟶ V) (h) :
+    homMk f.left h = f := by
+  rfl
+
+/-- This is useful when `homMk (· ≫ ·)` appears under `Functor.map` or a natural equivalence. -/
+lemma homMk_comp {U V W : Over X} (f : U.left ⟶ V.left) (g : V.left ⟶ W.left) (w_f w_g)
+    (w_fg := by aesop) : homMk (f ≫ g) w_fg = homMk f w_f ≫ homMk g w_g := by
+  ext
+  simp
+
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward
 direction gives a commutative triangle.
 -/
@@ -166,7 +177,9 @@ def mapIso {Y : T} (f : X ≅ Y) : Over X ≌ Over Y :=
 @[simp] lemma mapIso_functor {Y : T} (f : X ≅ Y) : (mapIso f).functor = map f.hom := rfl
 @[simp] lemma mapIso_inverse {Y : T} (f : X ≅ Y) : (mapIso f).inverse = map f.inv := rfl
 
-/-- `Sigma Y U` a shorthand for `(Over.map Y.hom).obj U`. -/
+/-- `Over.Sigma Y U` a shorthand for `(Over.map Y.hom).obj U`. This is the categoy-theoretic
+analogue of `Sigma` for types.
+-/
 abbrev Sigma {X : T} (Y : Over X) (U : Over (Y.left)) : Over X :=
   (map Y.hom).obj U
 

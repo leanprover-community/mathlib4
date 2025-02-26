@@ -25,14 +25,6 @@ open Category Limits MonoidalCategory CartesianClosed Adjunction Over
 
 variable {C : Type u₁} [Category.{v₁} C]
 
--- this lemma is already PR'd in #21574
---https://github.com/leanprover-community/mathlib4/pull/21574/files
-lemma Over.homMk_comp {I : C} {U V W : Over I}
-    (f : U.left ⟶ V.left) (g : V.left ⟶ W.left) (w_f w_g) (w_fg := by aesop) :
-    homMk (f ≫ g) w_fg = homMk f w_f ≫ homMk g w_g := by
-  ext
-  simp
-
 attribute [local instance] hasBinaryProducts_of_hasTerminal_and_pullbacks
 attribute [local instance] hasFiniteProducts_of_has_binary_and_terminal
 attribute [local instance] ChosenFiniteProducts.ofFiniteProducts
