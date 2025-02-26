@@ -335,7 +335,6 @@ theorem pmap_prev_eq_rotate_length_sub_one (h : Nodup l) :
 
 theorem prev_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
     prev l (next l x hx) (next_mem _ _ _) = x := by
-
   obtain ⟨n, hn, rfl⟩ := getElem_of_mem hx
   simp only [next_getElem, prev_getElem, h, Nat.mod_add_mod]
   rcases l with - | ⟨hd, tl⟩
