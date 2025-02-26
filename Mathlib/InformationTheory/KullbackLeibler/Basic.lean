@@ -118,8 +118,7 @@ lemma kl_eq_lintegral_klFun :
     rw [ofReal_integral_eq_lintegral_ofReal]
     · rwa [integrable_klFun_rnDeriv_iff hμν]
     · exact ae_of_all _ fun _ ↦ klFun_nonneg ENNReal.toReal_nonneg
-  · rw [← not_iff_not] at h_int_iff
-    simp only [ne_eq, Decidable.not_not] at h_int_iff
+  · rw [← not_iff_not, ne_eq, Decidable.not_not] at h_int_iff
     symm
     simp [hμν, h_int, h_int_iff, integrable_klFun_rnDeriv_iff hμν]
 
@@ -149,13 +148,12 @@ lemma toReal_kl_of_measure_eq (h : μ ≪ ν) (h_eq : μ univ = ν univ) :
     (kl μ ν).toReal = ∫ a, llr μ ν a ∂μ := by
   by_cases h_int : Integrable (llr μ ν) μ
   · simp [toReal_kl h h_int, h_eq]
-  · rw [kl_of_not_integrable h_int, integral_undef h_int]
-    simp [h_eq]
+  · rw [kl_of_not_integrable h_int, integral_undef h_int, ENNReal.top_toReal]
 
 lemma toReal_kl_eq_integral_klFun (h : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
     (kl μ ν).toReal = ∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν := by
   rw [kl_eq_integral_klFun, if_pos ⟨h, h_int⟩, ENNReal.toReal_ofReal]
-  exact integral_nonneg (fun _ ↦ klFun_nonneg ENNReal.toReal_nonneg)
+  exact integral_nonneg fun _ ↦ klFun_nonneg ENNReal.toReal_nonneg
 
 end Real
 
@@ -226,8 +224,7 @@ lemma kl_eq_zero_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   refine ⟨fun h ↦ ?_, fun h ↦ h ▸ kl_self _⟩
   have h_ne : kl μ ν ≠ ⊤ := by simp [h]
   rw [kl_ne_top_iff] at h_ne
-  simp only [kl_eq_lintegral_klFun, h_ne.1, ↓reduceIte] at h
-  rw [lintegral_eq_zero_iff (by fun_prop)] at h
+  rw [kl_eq_lintegral_klFun, if_pos h_ne.1, lintegral_eq_zero_iff (by fun_prop)] at h
   refine (Measure.rnDeriv_eq_one_iff_eq h_ne.1).mp ?_
   filter_upwards [h] with x hx
   simp only [Pi.zero_apply, ENNReal.ofReal_eq_zero] at hx
