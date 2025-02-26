@@ -50,40 +50,40 @@ lemma eqvGen_ringQuot_add_right {a b c : A} (h : EqvGen (RingQuot.Rel rel) a b) 
     EqvGen (RingQuot.Rel rel) (a + c) (b + c) := by
   induction h with
   | rel x y hxy =>
-  apply EqvGen.rel
-  exact RingQuot.Rel.add_left hxy
+    apply EqvGen.rel
+    exact RingQuot.Rel.add_left hxy
   | refl x =>
-  exact Quot.eqvGen_exact rfl
+    exact Quot.eqvGen_exact rfl
   | symm x y h1 h2 =>
-  exact EqvGen.symm (x + c) (y + c) h2
+    exact EqvGen.symm (x + c) (y + c) h2
   | trans x y z _ _ h1 h2 =>
-  exact EqvGen.trans (x + c) (y + c) (z + c) h1 h2
+    exact EqvGen.trans (x + c) (y + c) (z + c) h1 h2
 
 lemma eqvGen_ringQuot_mul_left {a b c : A} (h : EqvGen (RingQuot.Rel rel) a b) :
     EqvGen (RingQuot.Rel rel) (a * c) (b * c) := by
   induction h with
   | rel x y hxy =>
-  apply EqvGen.rel
-  exact RingQuot.Rel.mul_left hxy
+    apply EqvGen.rel
+    exact RingQuot.Rel.mul_left hxy
   | refl x =>
-  exact Quot.eqvGen_exact rfl
+    exact Quot.eqvGen_exact rfl
   | symm x y h1 h2 =>
-  exact EqvGen.symm (x * c) (y * c) h2
+    exact EqvGen.symm (x * c) (y * c) h2
   | trans x y z _ _ h1 h2 =>
-  exact EqvGen.trans (x * c) (y * c) (z * c) h1 h2
+    exact EqvGen.trans (x * c) (y * c) (z * c) h1 h2
 
 lemma eqvGen_ringQuot_mul_right {a b c : A} (h : EqvGen (RingQuot.Rel rel) a b) :
     EqvGen (RingQuot.Rel rel) (c * a) (c * b) := by
   induction h with
   | rel x y hxy =>
-  apply EqvGen.rel
-  exact RingQuot.Rel.mul_right hxy
+    apply EqvGen.rel
+    exact RingQuot.Rel.mul_right hxy
   | refl x =>
-  exact Quot.eqvGen_exact rfl
+    exact Quot.eqvGen_exact rfl
   | symm x y h1 h2 =>
-  exact EqvGen.symm (c * x) (c * y) h2
+    exact EqvGen.symm (c * x) (c * y) h2
   | trans x y z _ _ h1 h2 =>
-  exact EqvGen.trans (c * x) (c * y) (c * z) h1 h2
+    exact EqvGen.trans (c * x) (c * y) (c * z) h1 h2
 
 lemma Finset.relation_sum_induction {α : Type*} {s : Finset α} [DecidableEq α]
     {M : Type*} [AddCommMonoid M] (f : α → M) (g : α → M) (r : M → M → Prop)
