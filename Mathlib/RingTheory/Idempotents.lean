@@ -12,7 +12,7 @@ import Mathlib.RingTheory.Nilpotent.Defs
 
 ## Idempotents in rings
 
-The predicate `IsIdempotentElem` is defined for general monoids in `Algebra/Ring/Idempotents.lean`.
+The predicate `IsIdempotentElem` is defined for general monoids in `Algebra/Ring/Idempotent.lean`.
 In this file we provide various results regarding idempotent elements in rings.
 
 ## Main definitions
