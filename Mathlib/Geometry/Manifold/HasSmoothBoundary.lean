@@ -91,7 +91,7 @@ structure BoundaryManifoldData.{u} (M : Type*) [TopologicalSpace M] [ChartedSpac
     {E₀ H₀: Type*} [NormedAddCommGroup E₀] [NormedSpace ℝ E₀]
     [TopologicalSpace H₀] (I₀ : ModelWithCorners ℝ E₀ H₀) where
   /-- A `C^k` manifold `M₀` which describes the boundary of `M` -/
-  M₀ : Type u
+  M₀: Type u
   /-- `M₀` is a topological space-/
   [topologicalSpace: TopologicalSpace M₀]
   /-- A chosen charted space structure on `M₀` on `H₀` -/
@@ -120,8 +120,7 @@ instance (d : BoundaryManifoldData M I k I₀) : TopologicalSpace d.M₀ := d.to
 
 instance (d : BoundaryManifoldData M I k I₀) : ChartedSpace H₀ d.M₀ := d.chartedSpace
 
-instance (d : BoundaryManifoldData M I k I₀) : IsManifold I₀ k d.M₀ :=
-  d.isManifold
+instance (d : BoundaryManifoldData M I k I₀) : IsManifold I₀ k d.M₀ := d.isManifold
 
 variable (M) in
 /-- If `M` is boundaryless, its boundary manifold data is easy to construct. -/
@@ -240,12 +239,14 @@ lemma mfderiv_prod_map
 
 end
 
+variable {N' : Type*} [TopologicalSpace N'] [ChartedSpace H' N']
+
 @[simp, mfld_simps]
-theorem mfderiv_sum_at_inl {f : M → N} {g : M' → N} {p : M} (hf : MDifferentiableAt I J f p) :
+theorem mfderiv_sumMap_at_inl {f : M → N} (g : M' → N') {p : M} (hf : MDifferentiableAt I J f p) :
     mfderiv I J (Sum.map f g) (Sum.inl p) = mfderiv I J f p := sorry
 
 @[simp, mfld_simps]
-theorem mfderiv_sum_at_inr {f : M → N} {g : M' → N} {p : M'} (hg : MDifferentiableAt I J g p) :
+theorem mfderiv_sumMap_at_inr (f : M → N) {g : M' → N'} {p : M'} (hg : MDifferentiableAt I J g p) :
     mfderiv I J (Sum.map f g) (Sum.inr p) = mfderiv I J g p := sorry
 
 -- and variations for within, etc
@@ -408,15 +409,13 @@ lemma IsEmbedding.sum_elim {f : X → Z} {g : Y → Z}
     sorry
   | inr x => simpa only [Sum.elim_inr, nhds_inr, hg x] using Filter.bar (𝓝 (g x))
 
--- TODO: need bd and bd' to have the same data E₀ and H₀!
 /-- If `M` and `M'` are modelled on the same model `I` and have nice boundary over `I₀`,
 their disjoint union also does. -/
--- XXX: for bordism groups, do I need to prescribe the model on the boundary also?
 noncomputable def BoundaryManifoldData.sum
     (bd : BoundaryManifoldData M I k I₀) (bd' : BoundaryManifoldData M' I k I₀) :
     BoundaryManifoldData (M ⊕ M') I k I₀ where
   M₀ := bd.M₀ ⊕ bd'.M₀
-  isManifold := sorry -- TODO: investigate where this fails to be inferred!
+  isManifold := by infer_instance
   f := Sum.map bd.f bd'.f
   isEmbedding := by
     -- The boundaries are contained in disjoint open set, namely M and M' (as subsets of M ⊕ M').
@@ -448,23 +447,18 @@ noncomputable def BoundaryManifoldData.sum
   isImmersion hk p := by
     cases p with
     | inl x =>
-      simp only [Sum.map_inl]
-      -- contMDiff, then use hk and standard lemmas
-      have diff : MDifferentiableAt I₀ I bd.f x := sorry
-      -- ideal proof should be like `rw [mfderiv_sum_at_inl this]; apply bd.isImmersion hk x`
-      convert bd.isImmersion hk x
-      -- cannot guess g, but specifying it makes unification go haywire
-      -- -> there's a problem somewhere!
-      -- apply mfderiv_sum_at_inl diff --(g := bd'.f) diff
-      sorry
-    | inr x => sorry -- similar to the inl case
+      simp_rw [Sum.map_inl, mfderiv_sumMap_at_inl _ (bd.contMDiff.mdifferentiableAt hk)]
+      exact bd.isImmersion hk x
+    | inr x =>
+      simp_rw [Sum.map_inr, mfderiv_sumMap_at_inr _ (bd'.contMDiff.mdifferentiableAt hk)]
+      exact bd'.isImmersion hk x
   range_eq_boundary := by
     rw [Sum.range_eq, ModelWithCorners.boundary_disjointUnion]
     congr
-    · have : Sum.map bd.f bd'.f ∘ Sum.inl = (Sum.inl (α := M) (β := M')) ∘ bd.f := by
+    · have : Sum.map bd.f bd'.f ∘ Sum.inl = (@Sum.inl M M') ∘ bd.f := by
         ext; simp
       rw [this, range_comp, bd.range_eq_boundary]
-    · have : Sum.map bd.f bd'.f ∘ Sum.inr = (Sum.inr (α := M) (β := M')) ∘ bd'.f := by
+    · have : Sum.map bd.f bd'.f ∘ Sum.inr = (@Sum.inr M M') ∘ bd'.f := by
         ext; simp
       rw [this, range_comp, bd'.range_eq_boundary]
 
