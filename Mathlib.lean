@@ -4917,6 +4917,9 @@ import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.RingTheory.OreLocalization.Ring
 import Mathlib.RingTheory.OrzechProperty
 import Mathlib.RingTheory.Perfection
+import Mathlib.RingTheory.Perfectoid.BDeRham
+import Mathlib.RingTheory.Perfectoid.FontaineTheta
+import Mathlib.RingTheory.Perfectoid.IntergalPerfectoid
 import Mathlib.RingTheory.Perfectoid.Untilt
 import Mathlib.RingTheory.PiTensorProduct
 import Mathlib.RingTheory.Polynomial.Basic
@@ -5084,6 +5087,7 @@ import Mathlib.RingTheory.WittVector.MulCoeff
 import Mathlib.RingTheory.WittVector.MulP
 import Mathlib.RingTheory.WittVector.StructurePolynomial
 import Mathlib.RingTheory.WittVector.Teichmuller
+import Mathlib.RingTheory.WittVector.TeichmullerSeries
 import Mathlib.RingTheory.WittVector.Truncated
 import Mathlib.RingTheory.WittVector.Verschiebung
 import Mathlib.RingTheory.WittVector.WittPolynomial
