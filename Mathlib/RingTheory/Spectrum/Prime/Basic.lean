@@ -62,6 +62,10 @@ instance [Nontrivial R] : Nonempty <| PrimeSpectrum R :=
 instance [Subsingleton R] : IsEmpty (PrimeSpectrum R) :=
   ⟨fun x ↦ x.isPrime.ne_top <| SetLike.ext' <| Subsingleton.eq_univ_of_nonempty x.asIdeal.nonempty⟩
 
+lemma nontrivial (p : PrimeSpectrum R) : Nontrivial R := by
+  refine ⟨0, 1, fun h ↦ p.2.ne_top ?_⟩
+  simp [Ideal.eq_top_iff_one p.asIdeal, ← h]
+
 variable (R S)
 
 /-- The prime spectrum is in bijection with the set of prime ideals. -/

@@ -3,7 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
+import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.Spectrum.Prime.Basic
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Functoriality of the prime spectrum
@@ -183,5 +185,25 @@ lemma PrimeSpectrum.mem_range_comap_iff {p : PrimeSpectrum R} :
   rw [Ideal.comap_map_eq_self_iff_of_isPrime]
   rintro ⟨q, _, hq⟩
   exact ⟨⟨q, inferInstance⟩, PrimeSpectrum.ext hq⟩
+
+open TensorProduct
+
+/-- A prime `p` is in the range of `Spec S → Spec R` if the fiber over `p` is nontrivial. -/
+lemma PrimeSpectrum.mem_rangeComap_iff_nontrivial {S : Type*} [CommRing S]
+    [Algebra R S] (p : PrimeSpectrum R) :
+    Nontrivial (p.asIdeal.ResidueField ⊗[R] S) ↔ p ∈ Set.range (algebraMap R S).specComap := by
+  let k := p.asIdeal.ResidueField
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨m, hm⟩ := Ideal.exists_maximal (k ⊗[R] S)
+    use (Algebra.TensorProduct.includeRight).specComap ⟨m, hm.isPrime⟩
+    ext : 1
+    rw [← PrimeSpectrum.specComap_comp_apply,
+      ← Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap, specComap_comp_apply]
+    simp [Ideal.eq_bot_of_prime, k, ← RingHom.ker_eq_comap_bot]
+  · obtain ⟨q, rfl⟩ := h
+    let f : k ⊗[R] S →ₐ[R] q.asIdeal.ResidueField :=
+      Algebra.TensorProduct.lift (Ideal.ResidueField.mapₐ _ _ rfl)
+        (IsScalarTower.toAlgHom _ _ _) (fun _ _ ↦ Commute.all ..)
+    exact RingHom.domain_nontrivial f.toRingHom
 
 end SpecOfSurjective
