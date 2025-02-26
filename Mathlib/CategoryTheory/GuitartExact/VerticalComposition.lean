@@ -130,11 +130,13 @@ lemma vComp_iff_of_equivalences (eL : C₂ ≌ C₃) (eR : D₂ ≌ D₃)
     have : w = (w ≫ᵥ w'.hom).vComp' w''.hom α β := by
       ext X₁
       dsimp
-      simp? [w'', α, β] says simp only [vComp'_app, Functor.comp_obj, Iso.trans_inv,
-        isoWhiskerLeft_inv, Iso.symm_inv, assoc, NatTrans.comp_app, Functor.id_obj,
-        Functor.rightUnitor_inv_app, Functor.associator_inv_app, comp_id, id_comp, vComp_app,
-        Functor.map_comp, Equivalence.inv_fun_map, Iso.trans_hom, isoWhiskerLeft_hom, Iso.symm_hom,
-        Functor.associator_hom_app, Functor.rightUnitor_hom_app, w'', α, β]
+      simp? [w'', α, β] says
+        simp only [vComp'_app, Functor.comp_obj, Iso.trans_inv, isoWhiskerLeft_inv, Iso.symm_inv,
+          assoc, NatTrans.comp_app, Functor.id_obj, Functor.rightUnitor_inv_app,
+          CategoryTheory.whiskerLeft_app, Functor.associator_inv_app, comp_id, id_comp, vComp_app,
+          Functor.map_comp, Equivalence.inv_fun_map, Iso.trans_hom, isoWhiskerLeft_hom,
+          Iso.symm_hom, Functor.associator_hom_app, Functor.rightUnitor_hom_app,
+          Iso.hom_inv_id_app_assoc, w'', α, β]
       erw [CatCommSq.vInv_iso'_hom_app]
       simp only [CategoryTheory.whiskerLeft_app, Iso.hom_inv_id_app_assoc,
         hw', assoc, ← eR.inverse.map_comp_assoc]
