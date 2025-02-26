@@ -7,8 +7,9 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Int.GCD
-import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Prime.Basic
 
 /-!
@@ -60,5 +61,17 @@ theorem natCast_factorial_isUnit_of_charP  {n : ℕ} (h : n < p) : IsUnit (n ! :
     exact isUnit_of_mul_eq_one _ _ h1
 
 end CharP
+
+open Ring
+
+lemma Nat.castChoose_eq {A : Type*} [CommSemiring A] {m : ℕ} {k : ℕ × ℕ}
+    (hm : IsUnit (m ! : A)) (hk : k ∈ Finset.antidiagonal m) :
+    (choose m k.1 : A) = ↑m ! * inverse ↑k.1! * inverse ↑k.2! := by
+  rw [Finset.mem_antidiagonal] at hk
+  rw [eq_mul_inverse_iff_mul_eq, eq_mul_inverse_iff_mul_eq,
+    ← hk, ← Nat.cast_mul, ← Nat.cast_mul, add_comm, Nat.add_choose_mul_factorial_mul_factorial] <;>
+  apply natCast_factorial_isUnit_of_le hm <;>
+  rw [← hk];
+  exacts [Nat.le_add_right k.1 k.2, Nat.le_add_left k.2 k.1]
 
 end Factorial
