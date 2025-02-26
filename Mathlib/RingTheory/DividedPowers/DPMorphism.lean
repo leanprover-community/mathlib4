@@ -7,9 +7,9 @@ import Mathlib.RingTheory.DividedPowers.Basic
 
 /-! # Divided power morphisms
 
-Let `A` and `B` be commutative (semi)rings and `I` be an ideal of `A`.
-Given divided power structures on the `A`-ideal `I` and the `B`-ideal `J`, a ring morphism
-  `A → B` is a divided power morphism if it is compatible with these divided power structures.
+Let `A` and `B` be commutative (semi)rings, let `I` be an ideal of `A` and let `J` be an ideal of
+`B`. Given divided power structures on `I` and `J`, a ring morphism `A →+* B` is a *divided
+power morphism* if it is compatible with these divided power structures.
 
 ## Main definitions
 
