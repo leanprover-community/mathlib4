@@ -148,11 +148,11 @@ theorem mk_eq_mk {a h a' h'} : @mk n a h = @mk n a' h' ↔ a = a' :=
   Fin.ext_iff
 
 @[norm_cast]
-lemma val_ne_zero_iff {n : ℕ} (k : Fin (n+1)) : (k : ℕ) ≠ 0 ↔ k ≠ 0 := by
+lemma val_ne_zero_iff {n : ℕ} [NeZero n] (k : Fin n) : (k : ℕ) ≠ 0 ↔ k ≠ 0 := by
   rw [←Fin.val_ne_iff, Fin.val_zero]
 
 @[norm_cast, simp]
-lemma val_eq_zero_iff {n : ℕ} (k : Fin (n+1)) : (k : ℕ) = 0 ↔ k = 0 := by
+lemma val_eq_zero_iff {n : ℕ} [NeZero n] (k : Fin n) : (k : ℕ) = 0 ↔ k = 0 := by
   rw [←Fin.val_eq_val, Fin.val_zero]
 
 -- syntactic tautologies now
@@ -274,7 +274,8 @@ theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
 @[simp] lemma cast_eq_self (a : Fin n) : a.cast rfl = a := rfl
 
 @[simp] theorem cast_eq_zero {k l : ℕ} [NeZero k] [NeZero l]
-    (h : k = l) (x : Fin k) : Fin.cast h x = 0 ↔ x = 0 := by simp [← val_eq_val]
+    (h : k = l) (x : Fin k) : Fin.cast h x = 0 ↔ x = 0 := by
+  simp only [← val_eq_val, coe_cast, val_zero]
 
 lemma cast_injective {k l : ℕ} (h : k = l) : Injective (Fin.cast h) :=
   fun a b hab ↦ by simpa [← val_eq_val] using hab
