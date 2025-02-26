@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
 import Mathlib.Algebra.Algebra.Tower
+import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.RingTheory.Localization.Defs
 
 /-!
@@ -1285,6 +1286,20 @@ theorem mkOfAlgebra {R S S' : Type*} [CommRing R] [CommRing S] [CommRing S'] [Al
     exact id
 
 end Algebra
+
+variable {R A M M' : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (S : Submonoid R)
+  [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
+  [IsLocalization S A]
+
+/-- If `M'` is the localization of `M` at `S` and `A = S⁻¹R`, then
+`M' is an `A`-module. -/
+noncomputable def module (f : M →ₗ[R] M') [IsLocalizedModule S f] : Module A M' :=
+  (IsLocalizedModule.iso S f).symm.toAddEquiv.module A
+
+lemma isScalarTower_module (f : M →ₗ[R] M') [IsLocalizedModule S f] :
+    letI : Module A M' := IsLocalizedModule.module S f
+    IsScalarTower R A M' :=
+  (IsLocalizedModule.iso S f).symm.isScalarTower A
 
 section Subsingleton
 
