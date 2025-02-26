@@ -158,6 +158,7 @@ noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : �
 variable {X Y Z W : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [TopologicalSpace W]
 
+/- The following results are not used, but might be useful for mathlib
 def Homeomorph.sumEquivBoolProd (X : Type*) [TopologicalSpace X] : X ⊕ X ≃ₜ Bool × X := by
   apply Homeomorph.homeomorphOfContinuousClosed (Equiv.boolProdEquivSum X).symm
   · show Continuous (Sum.elim (Prod.mk false) (Prod.mk true))
@@ -172,7 +173,10 @@ def Homeomorph.foo {X : Type*} [TopologicalSpace X] : X ⊕ X ≃ₜ X × Fin 2 
   letI b := Homeomorph.finTwo.symm.prodCongr (Homeomorph.refl X)
   ((Homeomorph.sumEquivBoolProd X).trans b.symm).trans (Homeomorph.prodComm _ _)
 
--- def Diffeomorph.foo : M ⊕ M ≃ₘ^k⟮I, I⟯ M × Fin 2 := sorry
+-- needs merging master, and perhaps further work,
+-- until a ChartedSpace instance on M × Fin 2 is found
+-- def Diffeomorph.foo : Diffeomorph I I (M ⊕ M) (M × Fin 2) ⊤ := sorry
+-/
 
 open Topology
 
