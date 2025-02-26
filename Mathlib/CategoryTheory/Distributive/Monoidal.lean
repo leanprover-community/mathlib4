@@ -68,7 +68,7 @@ if the left tensor product functor preserves binary coproducts. -/
 class IsMonoidalLeftDistrib (C : Type u) [Category.{v} C]
     [MonoidalCategory C] [HasBinaryCoproducts C] : Prop where
   preservesBinaryCoproducts_tensorLeft (X : C) :
-    PreservesColimitsOfShape (Discrete WalkingPair) (tensorLeft X)
+    PreservesColimitsOfShape (Discrete WalkingPair) (tensorLeft X) := by infer_instance
 
 /-- A monoidal category with binary coproducts is right distributive
 if the right tensor product functor preserves binary coproducts. -/
