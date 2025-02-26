@@ -20,6 +20,8 @@ structures.
 - `FirstOrder.Language.withConstants` is defined so that if `M` is an `L.Structure` and
   `A : Set M`, `L.withConstants A`, denoted `L[[A]]`, is a language which adds constant symbols for
   elements of `A` to `L`.
+- An instance of `L.Expands L'` indicates that there is a default map `L'.inclusion L : L' →ᴸ L`
+  which is injective.
 
 ## References
 
@@ -174,8 +176,15 @@ end SumMap
 
 /-- A language homomorphism is injective when all the maps between symbol types are. -/
 protected structure Injective : Prop where
-  onFunction {n} : Function.Injective fun f : L.Functions n => onFunction ϕ f
-  onRelation {n} : Function.Injective fun R : L.Relations n => onRelation ϕ R
+  onFunction {n} : Function.Injective fun f : L.Functions n => onFunction ϕ f := by
+    exact IsEmptyElim
+  onRelation {n} : Function.Injective fun R : L.Relations n => onRelation ϕ R := by
+    exact IsEmptyElim
+
+lemma Injective.comp {ϕ : L' →ᴸ L''} {ϕ' : L →ᴸ L'} (hϕ : ϕ.Injective) (hϕ' : ϕ'.Injective) :
+    (ϕ.comp ϕ').Injective where
+  onFunction {_} := hϕ.onFunction.comp hϕ'.onFunction
+  onRelation {_} := hϕ.onRelation.comp hϕ'.onRelation
 
 /-- Pulls an `L`-structure along a language map `ϕ : L →ᴸ L'`, and then expands it
   to an `L'`-structure arbitrarily. -/
@@ -308,6 +317,26 @@ protected def trans (e : L ≃ᴸ L') (e' : L' ≃ᴸ L'') : L ≃ᴸ L'' :=
   ⟨e'.toLHom.comp e.toLHom, e.invLHom.comp e'.invLHom, by
     rw [LHom.comp_assoc, ← LHom.comp_assoc e'.invLHom, e'.left_inv, LHom.id_comp, e.left_inv], by
     rw [LHom.comp_assoc, ← LHom.comp_assoc e.toLHom, e.right_inv, LHom.id_comp, e'.right_inv]⟩
+
+/-- A `LEquiv` induces an equivalence between corresponding function types. -/
+@[simps]
+def onFunction {n} : L.Functions n ≃ L'.Functions n where
+  toFun f := e.toLHom.onFunction f
+  invFun f := e.invLHom.onFunction f
+  left_inv f := by simp only [← LHom.comp_onFunction, e.left_inv, LHom.id_onFunction, id_eq]
+  right_inv f := by simp only [← LHom.comp_onFunction, e.right_inv, LHom.id_onFunction, id_eq]
+
+/-- A `LEquiv` induces an equivalence between corresponding relation types. -/
+@[simps]
+def onRelation {n} : L.Relations n ≃ L'.Relations n where
+  toFun f := e.toLHom.onRelation f
+  invFun f := e.invLHom.onRelation f
+  left_inv f := by simp only [← LHom.comp_onRelation, e.left_inv, LHom.id_onRelation, id_eq]
+  right_inv f := by simp only [← LHom.comp_onRelation, e.right_inv, LHom.id_onRelation, id_eq]
+
+lemma toHom_injective : e.toLHom.Injective where
+  onFunction {_} := e.onFunction.injective
+  onRelation {_} := e.onRelation.injective
 
 end LEquiv
 
@@ -507,6 +536,51 @@ instance map_constants_inclusion_isExpansionOn :
   LHom.sumMap_isExpansionOn _ _ _
 
 end WithConstants
+
+variable (L L')
+
+/-- If `L.Expands L'`, then there is a privileged `LHom` from `L'` into `L`. -/
+class Expands where
+  /-- The privileged map `L' →ᴸ L`, preferably accessed as `L'.inclusion L`. -/
+  toLHom : L' →ᴸ L
+  toLHom_injective : toLHom.Injective
+
+/-- Note that the variables of `L.inclusion L'` are reversed from the corresponding instance
+  `L'.Expands L`. -/
+protected abbrev inclusion [L'.Expands L] : L →ᴸ L' := Expands.toLHom
+
+lemma inclusion_injective [L'.Expands L] : (L.inclusion L').Injective := Expands.toLHom_injective
+
+namespace Expands
+
+variable (L'' : Language)
+
+/-- If `L.Expands L'` and `L'.Expands L''`, then `L.Expands L''`, by composing the default
+  inclusions. -/
+def trans [L.Expands L'] [L'.Expands L''] : L.Expands L'' where
+  toLHom := (L'.inclusion L).comp (L''.inclusion L')
+  toLHom_injective := (L'.inclusion_injective L).comp (L''.inclusion_injective L')
+
+variable {L L' L''} [L.Expands L']
+
+@[simps]
+instance : L.Expands L where
+  toLHom := (LEquiv.refl L).toLHom
+  toLHom_injective := (LEquiv.refl L).toHom_injective
+
+instance : (L.sum L'').Expands L' where
+  toLHom := LHom.sumInl.comp (L'.inclusion L)
+  toLHom_injective := LHom.sumInl_injective.comp (L'.inclusion_injective L)
+
+instance : (L''.sum L).Expands L' where
+  toLHom := LHom.sumInr.comp (L'.inclusion L)
+  toLHom_injective := LHom.sumInr_injective.comp (L'.inclusion_injective L)
+
+instance {α : Type*} : L[[α]].Expands L where
+  toLHom := L.lhomWithConstants α
+  toLHom_injective := L.lhomWithConstants_injective α
+
+end Expands
 
 end Language
 
