@@ -102,12 +102,6 @@ noncomputable section
 
 open ENat NNReal Topology Filter Set Fin Filter Function
 
-/-
-Porting note: These lines are not required in Mathlib4.
-attribute [local instance 1001]
-  NormedAddCommGroup.toAddCommGroup AddCommGroup.toAddCommMonoid
--/
-
 /-- Smoothness exponent for analytic functions. -/
 scoped [ContDiff] notation3 "ω" => (⊤ : WithTop ℕ∞)
 /-- Smoothness exponent for infinitely differentiable functions. -/
@@ -324,7 +318,7 @@ theorem hasFTaylorSeriesUpToOn_succ_nat_iff_right {n : ℕ} :
     constructor
     · exact Hzero_eq
     · intro m (hm : (m : WithTop ℕ∞) < n.succ) x (hx : x ∈ s)
-      cases' m with m
+      rcases m with - | m
       · exact Hfderiv_zero x hx
       · have A : (m : WithTop ℕ∞) < n := by
           rw [Nat.cast_lt] at hm ⊢
@@ -341,7 +335,7 @@ theorem hasFTaylorSeriesUpToOn_succ_nat_iff_right {n : ℕ} :
             (p x m.succ.succ) (snoc (cons y (init v)) (v (last _)))
         rw [← cons_snoc_eq_snoc_cons, snoc_init_self]
     · intro m (hm : (m : WithTop ℕ∞) ≤ n.succ)
-      cases' m with m
+      rcases m with - | m
       · have : DifferentiableOn 𝕜 (fun x => p x 0) s := fun x hx =>
           (Hfderiv_zero x hx).differentiableWithinAt
         exact this.continuousOn

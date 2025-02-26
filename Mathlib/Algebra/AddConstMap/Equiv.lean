@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.AddConstMap.Basic
-import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 # Equivalences conjugating `(· + a)` to `(· + b)`

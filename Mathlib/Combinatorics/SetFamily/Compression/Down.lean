@@ -3,6 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
@@ -154,7 +155,7 @@ it suffices to prove it for
 
 This is a way of formalising induction on `n` where `𝒜` is a finset family on `n` elements.
 
-See also `Finset.family_induction_on.`-/
+See also `Finset.family_induction_on.` -/
 @[elab_as_elim]
 lemma memberFamily_induction_on {p : Finset (Finset α) → Prop}
     (𝒜 : Finset (Finset α)) (empty : p ∅) (singleton_empty : p {∅})
@@ -188,7 +189,7 @@ it suffices to prove it for
 
 This is a way of formalising induction on `n` where `𝒜` is a finset family on `n` elements.
 
-See also `Finset.memberFamily_induction_on.`-/
+See also `Finset.memberFamily_induction_on.` -/
 @[elab_as_elim]
 protected lemma family_induction_on {p : Finset (Finset α) → Prop}
     (𝒜 : Finset (Finset α)) (empty : p ∅) (singleton_empty : p {∅})
