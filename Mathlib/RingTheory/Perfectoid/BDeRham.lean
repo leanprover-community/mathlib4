@@ -39,7 +39,7 @@ local notation "𝕎" => WittVector p
 noncomputable section
 
 /--
-The Fontaine θ map inverting `p`. Note that if `p = 0` in `O`, then this is the zero map.
+The Fontaine's θ map inverting `p`. Note that if `p = 0` in `O`, then this is the zero map.
 -/
 def fontaineThetaInvertP :
     Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭)) →+* Localization.Away (p : O) :=
@@ -51,7 +51,7 @@ variable (O p)
 /--
 The de Rham period ring \(\mathbb{B}_dR^+\) for general perfectoid ring.
 It is the completion of `𝕎 (O^♭)` inverting `p` with respect to the kernel of
-the Fontaine θ map. When \(O = \mathcal{O}_{\mathbb{C}_p}\), it coincides
+the Fontaine's θ map. When \(O = \mathcal{O}_{\mathbb{C}_p}\), it coincides
 with the classical de Rham period ring. Note that if `p = 0` in `O`,
 then this
 definition is the zero ring.

@@ -33,10 +33,15 @@ take a perfectoid field as the input.
 universe u
 
 open Ideal Quotient PreTilt WittVector
+
+-- an one term proof used in the later statement `quotEquivOfEq_ghostComponentModPPow`.
+private lemma Ideal.span_pow_zero_add_one {R : Type*} [CommRing R]
+    {I : Ideal R} : I ^ (0 + 1) = I := by
+  simp
+
 noncomputable section
 
 variable {O : Type u} [CommRing O] {p : ℕ} [Fact (Nat.Prime p)]
-    [Fact ¬IsUnit (p : O)] [IsAdicComplete (span {(p : O)}) O]
 
 local notation A "^♭" => PreTilt A p
 local notation "𝕎" => WittVector p
@@ -50,9 +55,10 @@ In this section, we first define the ring homomorphism
 Then we show they are compatible with each other and lift to a
 ring homomorphism `fontaineTheta : 𝕎 (O^♭) →+* O`.
 
-To prove this, we prove that `fontaineThetaFun` mod `p^n` is a ring homomorphism by
-decompose it as a composition of several ring homomorphisms as below.
+To prove this, we define `fontaineThetaModPPow`
+as a composition of the following ring homomorphisms.
 `𝕎(O^♭) --𝕎(Frob^-n)->  𝕎(O^♭) --𝕎(coeff 0)-> 𝕎(O/p) --gh_n-> O/p^(n+1)`
+
 Here, the ring map `gh_n` fits in the following diagram.
 
 ```
@@ -63,9 +69,6 @@ v                   v
 ```
 -/
 
-variable (n : ℕ)
-
-omit [Fact ¬IsUnit (p : O)] [IsAdicComplete (span {(p : O)}) O] in
 theorem ker_map_le_ker_mk_comp_ghostComponent (n : ℕ) :
     RingHom.ker (WittVector.map <| Ideal.Quotient.mk <| span {(p : O)}) ≤
     RingHom.ker (((Ideal.Quotient.mk <| span {(p : O)} ^ (n + 1))).comp
@@ -80,11 +83,33 @@ theorem ker_map_le_ker_mk_comp_ghostComponent (n : ℕ) :
   simp only [eq_zero_iff_dvd] at h ⊢
   exact pow_dvd_ghostComponent_of_dvd_coeff (fun _ _ ↦ h _)
 
+/--
+The lift ring map `gh_n : 𝕎(A/p) →+* A/p^(n+1)` of the `n`-th ghost component
+`𝕎(A) →+* A` along the surjective ring map `𝕎(A) →+* 𝕎(A/p)`.
+-/
 def ghostComponentModPPow (n : ℕ): 𝕎 (O ⧸ span {(p : O)}) →+* O ⧸ span {(p : O)}^(n + 1) :=
   RingHom.liftOfSurjective (WittVector.map <| Ideal.Quotient.mk <| span {(p : O)})
     (map_surjective _ Ideal.Quotient.mk_surjective)
     ⟨((Ideal.Quotient.mk <| span {(p : O)} ^ (n + 1))).comp
     (WittVector.ghostComponent (p := p) n), ker_map_le_ker_mk_comp_ghostComponent n⟩
+
+@[simp]
+theorem quotEquivOfEq_ghostComponentModPPow (x : 𝕎 (O ⧸ span {(p : O)})) :
+    quotEquivOfEq (Ideal.span_pow_zero_add_one) (ghostComponentModPPow 0 x) =
+    ghostComponent 0 x := by
+  simp only [Nat.reduceAdd, ghostComponentModPPow, RingHom.liftOfSurjective]
+  have surj : Function.Surjective (WittVector.map (p := p) (Ideal.Quotient.mk (span {(p : O)}))) :=
+    map_surjective _ Ideal.Quotient.mk_surjective
+  choose y hy using surj x
+  have := RingHom.liftOfSurjective_comp_apply
+      (WittVector.map (p := p) (Ideal.Quotient.mk (span {(p : O)})))
+      surj ⟨((Ideal.Quotient.mk <| span {(p : O)} ^ (0 + 1))).comp
+      (WittVector.ghostComponent (p := p) 0), ker_map_le_ker_mk_comp_ghostComponent 0⟩ y
+  rw [hy] at this
+  rw [this]
+  simp [← hy, ghostComponent_apply]
+
+variable [Fact ¬IsUnit (p : O)] [IsAdicComplete (span {(p : O)}) O]
 
 @[simp]
 theorem ghostComponentModPPow_teichmuller_coeff (n : ℕ) (x : O^♭) :
@@ -98,6 +123,11 @@ theorem ghostComponentModPPow_teichmuller_coeff (n : ℕ) (x : O^♭) :
       (teichmuller p ((((_root_.frobeniusEquiv _ p).symm ^ n) x).untilt))
 
 variable (O p) in
+/--
+The Fontaine's theta map modulo `p ^ n`.
+It is the composition of the following ring homomorphisms.
+`𝕎(O^♭) --𝕎(Frob^-n)->  𝕎(O^♭) --𝕎(coeff 0)-> 𝕎(O/p) --gh_n-> O/p^(n+1)`
+-/
 def fontaineThetaModPPow (n : ℕ): 𝕎 (O^♭) →+* O ⧸ span {(p : O)} ^ (n + 1) :=
   (ghostComponentModPPow n).comp
       (((WittVector.map (Perfection.coeff _ p 0))).comp
@@ -124,10 +154,14 @@ theorem factorPowSucc_comp_fontaineThetaModPPow (n : ℕ) :
   simp [PreTilt, fontaineThetaModPPow]
 
 theorem factorPowSucc_fontaineThetaModPPow_eq (n : ℕ) (x : 𝕎 (O^♭)) :
-    (factorPowSucc _ (n + 1)).comp (fontaineThetaModPPow O p (n + 1)) x =
+    (factorPowSucc _ (n + 1)) ((fontaineThetaModPPow O p (n + 1)) x) =
     fontaineThetaModPPow O p n x:= by
-  rw [← factorPowSucc_comp_fontaineThetaModPPow n]
+  simp [← factorPowSucc_comp_fontaineThetaModPPow n]
 
+/--
+The Fontaine's θ map from `𝕎(O^♭)` to `O`.
+It is the limit of the ring maps `fontaineThetaModPPow n` from `𝕎(O^♭)` `O/p^(n+1)`.
+-/
 def fontaineTheta : 𝕎 (O^♭) →+* O :=
   IsAdicComplete.limRingHom Order.succ_strictMono (factorPowSucc_fontaineThetaModPPow_eq _ _).symm
 
@@ -135,32 +169,6 @@ theorem mk_pow_fontaineTheta (n : ℕ) (x : 𝕎 (O^♭)) :
     Ideal.Quotient.mk (span {(p : O)} ^ (n + 1)) (fontaineTheta x) = fontaineThetaModPPow O p n x :=
   IsAdicComplete.mk_limRingHom Order.succ_strictMono
       (factorPowSucc_fontaineThetaModPPow_eq _ _).symm n x
-
--- move this lemma
-omit [Fact (Nat.Prime p)]
-  [Fact ¬IsUnit (p : O)]
-  [IsAdicComplete (span {(p : O)}) O] in
-private theorem _root_.Ideal.span_pow_zero_add_one : span {(p : O)} ^ (0 + 1) = span {(p : O)} := by
-  simp
-
-omit
-  [Fact ¬IsUnit (p : O)]
-  [IsAdicComplete (span {(p : O)}) O] in
-@[simp]
-theorem quotEquivOfEq_ghostComponentModPPow (x : 𝕎 (O ⧸ span {(p : O)})) :
-    quotEquivOfEq (Ideal.span_pow_zero_add_one) (ghostComponentModPPow 0 x) =
-    ghostComponent 0 x := by
-  simp only [Nat.reduceAdd, ghostComponentModPPow, RingHom.liftOfSurjective]
-  have surj : Function.Surjective (WittVector.map (p := p) (Ideal.Quotient.mk (span {(p : O)}))) :=
-    map_surjective _ Ideal.Quotient.mk_surjective
-  choose y hy using surj x
-  have := RingHom.liftOfSurjective_comp_apply
-      (WittVector.map (p := p) (Ideal.Quotient.mk (span {(p : O)})))
-      surj ⟨((Ideal.Quotient.mk <| span {(p : O)} ^ (0 + 1))).comp
-      (WittVector.ghostComponent (p := p) 0), ker_map_le_ker_mk_comp_ghostComponent 0⟩ y
-  rw [hy] at this
-  rw [this]
-  simp [← hy, ghostComponent_apply]
 
 theorem mk_fontaineTheta (x : 𝕎 (O^♭)) :
     Ideal.Quotient.mk (span {(p : O)}) (fontaineTheta x) =
@@ -249,6 +257,8 @@ lemma IsHausdorff.map [IsHausdorff J M] : IsHausdorff I M := by
   · exact h n
 end
 
+variable [Fact ¬IsUnit (p : O)] [IsAdicComplete (span {(p : O)}) O]
+
 theorem surjective_fontaineTheta : Function.Surjective (fontaineTheta : 𝕎 (O^♭) → O) := by
   let I := span {(p : 𝕎 (O^♭))}
   haveI : IsAdicComplete I (𝕎 (O^♭)) := inferInstance
@@ -267,5 +277,5 @@ theorem surjective_fontaineTheta : Function.Surjective (fontaineTheta : 𝕎 (O^
 
 
 -- lemmas about frobenius and untilt another PR
--- fontaine theta and Bdr PR
+-- Fontaine's theta and Bdr PR
 -- surjective to another PR

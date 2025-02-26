@@ -39,10 +39,13 @@ structure IsPerfectoidPsU (p : ℕ) (π : A) : Prop where
 
 end IsPerfectoidPsU
 
+/--
+A ring is called integral perfectoid if it admits a perfectoid pseudo-uniformizer.
+-/
 class IntegralPerfectoid (A : Type*) [CommRing A] [TopologicalSpace A]
     [IsTopologicalRing A] (p : outParam ℕ) : Prop where
   exists_isPerfectoidPsU : ∃ π : A, IsPerfectoidPsU p π
-#check Tilt
+
 namespace IntegralPerfectoid
 
 variable (A : Type*) [CommRing A] [TopologicalSpace A]
