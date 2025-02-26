@@ -162,9 +162,6 @@ end Distributive
 
 open Distributive
 
-instance IsMonoidalRightDistrib.isIso_rightDistrib_hom [IsMonoidalRightDistrib C] {X Y Z : C} :
-    IsIso (∂R X Y Z).hom :=
-  isIso_hom <| rightDistrib X Y Z
 
 instance IsMonoidalRightDistrib.of_isIso_coprodComparisonTensorRight
     [i : ∀ {X Y Z : C}, IsIso (coprodComparison (tensorRight X) Y Z)] :
