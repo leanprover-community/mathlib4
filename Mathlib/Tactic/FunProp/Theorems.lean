@@ -158,9 +158,9 @@ structure FunctionTheorem where
   funOrigin   : Origin
   /-- array of argument indices about which this theorem is about -/
   mainArgs    : Array Nat
-  /-- total number of arguments applied to the function  -/
+  /-- total number of arguments applied to the function -/
   appliedArgs : Nat
-  /-- priority  -/
+  /-- priority -/
   priority    : Nat  := eval_prio default
   /-- form of the theorem, see documentation of TheoremForm -/
   form : TheoremForm

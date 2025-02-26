@@ -450,7 +450,7 @@ theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
         erw [(d.compl (-u)).equiv_snd_eq_inv_mul, this]
         simp
 
-/-- the equivalence given by multiplication on the left by `t`  -/
+/-- the equivalence given by multiplication on the left by `t` -/
 @[simps]
 noncomputable def unitsSMulEquiv : NormalWord d ≃ NormalWord d :=
   { toFun := unitsSMul φ 1
