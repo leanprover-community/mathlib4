@@ -22,6 +22,23 @@ def LIBDIR : FilePath :=
 def IRDIR : FilePath :=
   ".lake" / "build" / "ir"
 
+/-- Determine if the package `mod` is part of the mathlib cache.
+
+TODO: write a better predicate. -/
+def isPartOfMathlibCache (mod : Name) : Bool := #[
+  `Mathlib,
+  `Batteries,
+  `Aesop,
+  `Cli,
+  `ImportGraph,
+  `LeanSearchClient,
+  `Plausible,
+  `Qq,
+  `ProofWidgets,
+  `Archive,
+  `Counterexamples,
+  `MathlibTest ].contains mod.getRoot
+
 /-- Target directory for caching -/
 initialize CACHEDIR : FilePath ← do
   match ← IO.getEnv "MATHLIB_CACHE_DIR" with
@@ -70,12 +87,16 @@ def getCurl : IO String := do
 def getLeanTar : IO String := do
   return if (← LEANTARBIN.pathExists) then LEANTARBIN.toString else "leantar"
 
-abbrev PackageDirs := Lean.RBMap String FilePath compare
-
 /--
 `CacheM` stores the following information:
 * the source directory where `Mathlib.lean` lies
-* package directories
+* the Lean search path. This contains
+  paths to the source directory of each imported package, i.e. where the `.lean` files
+  can be found.
+  (Note: in a standard setup these might also be the paths where the correpsponding `.lake`
+  folders are located. However, `lake` has multiple options to customise these paths, like
+  setting `srcDir` in a `lean_lib`. See `mkBuildPaths` below which currently assumes
+  that no such options are set in any mathlib dependency)
 * the build directory for proofwidgets
 -/
 structure CacheM.Context where
@@ -83,8 +104,6 @@ structure CacheM.Context where
   mathlibDepPath : FilePath
   /-- the Lean source search path -/
   srcSearchPath : SearchPath
-  /-- TODO: use search path instead -/
-  packageDirs : PackageDirs
   /-- build directory for proofwidgets -/
   proofWidgetsBuildDir : FilePath
 
@@ -104,34 +123,18 @@ private def CacheM.mathlibDepPath (sp : SearchPath) : IO FilePath := do
     | throw <| IO.userError s!"Mathlib not found in dependencies"
   return mathlibSource
 
--- TODO this should be generated automatically from the information in `lakefile.lean`.
 private def CacheM.getContext : IO CacheM.Context := do
   let sp ← initSrcSearchPath
   let mathlibSource ← CacheM.mathlibDepPath sp
   return {
     mathlibDepPath := mathlibSource,
     srcSearchPath := sp,
-    packageDirs := .ofList [
-      ("Mathlib", mathlibSource),
-      ("Archive", mathlibSource),
-      ("Counterexamples", mathlibSource),
-      ("MathlibTest", mathlibSource),
-      ("Aesop", LAKEPACKAGESDIR / "aesop"),
-      ("Batteries", LAKEPACKAGESDIR / "batteries"),
-      ("Cli", LAKEPACKAGESDIR / "Cli"),
-      ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
-      ("Qq", LAKEPACKAGESDIR / "Qq"),
-      ("ImportGraph", LAKEPACKAGESDIR / "importGraph"),
-      ("LeanSearchClient", LAKEPACKAGESDIR / "LeanSearchClient"),
-      ("Plausible", LAKEPACKAGESDIR / "plausible")],
     proofWidgetsBuildDir := LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build"}
 
 /-- Run a `CacheM` in `IO` by loading the context from `LEAN_SRC_PATH`. -/
 def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 
 end
-
-def getPackageDirs : CacheM PackageDirs := return (← read).packageDirs
 
 /--
 `path` is assumed to be the unresolved file path corresponding to a module:
