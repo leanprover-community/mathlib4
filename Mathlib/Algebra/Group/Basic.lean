@@ -49,40 +49,6 @@ attribute [to_additive (attr := simp)] dite_smul smul_dite ite_smul smul_ite
 
 end ite
 
-section IsLeftCancelMul
-
-variable [Mul G] [IsLeftCancelMul G]
-
-@[to_additive]
-theorem mul_right_injective (a : G) : Injective (a * ·) := fun _ _ ↦ mul_left_cancel
-
-@[to_additive (attr := simp)]
-theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
-  (mul_right_injective a).eq_iff
-
-@[to_additive]
-theorem mul_ne_mul_right (a : G) {b c : G} : a * b ≠ a * c ↔ b ≠ c :=
-  (mul_right_injective a).ne_iff
-
-end IsLeftCancelMul
-
-section IsRightCancelMul
-
-variable [Mul G] [IsRightCancelMul G]
-
-@[to_additive]
-theorem mul_left_injective (a : G) : Function.Injective (· * a) := fun _ _ ↦ mul_right_cancel
-
-@[to_additive (attr := simp)]
-theorem mul_left_inj (a : G) {b c : G} : b * a = c * a ↔ b = c :=
-  (mul_left_injective a).eq_iff
-
-@[to_additive]
-theorem mul_ne_mul_left (a : G) {b c : G} : b * a ≠ c * a ↔ b ≠ c :=
-  (mul_left_injective a).ne_iff
-
-end IsRightCancelMul
-
 section Semigroup
 variable [Semigroup α]
 
@@ -336,24 +302,13 @@ section DivInvMonoid
 
 variable [DivInvMonoid G]
 
-@[to_additive, field_simps] -- The attributes are out of order on purpose
-theorem inv_eq_one_div (x : G) : x⁻¹ = 1 / x := by rw [div_eq_mul_inv, one_mul]
-
 @[to_additive]
 theorem mul_one_div (x y : G) : x * (1 / y) = x / y := by
   rw [div_eq_mul_inv, one_mul, div_eq_mul_inv]
 
-@[to_additive]
-theorem mul_div_assoc (a b c : G) : a * b / c = a * (b / c) := by
-  rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc _ _ _]
-
 @[to_additive, field_simps] -- The attributes are out of order on purpose
 theorem mul_div_assoc' (a b c : G) : a * (b / c) = a * b / c :=
   (mul_div_assoc _ _ _).symm
-
-@[to_additive (attr := simp)]
-theorem one_div (a : G) : 1 / a = a⁻¹ :=
-  (inv_eq_one_div a).symm
 
 @[to_additive]
 theorem mul_div (a b c : G) : a * (b / c) = a * b / c := by simp only [mul_assoc, div_eq_mul_inv]
@@ -724,17 +679,6 @@ theorem div_right_injective : Function.Injective fun a ↦ b / a := by
   -- FIXME see above
   simp only [div_eq_mul_inv]
   exact fun a a' h ↦ inv_injective (mul_right_injective b h)
-
-@[to_additive (attr := simp)]
-theorem div_mul_cancel (a b : G) : a / b * b = a := by
-  rw [div_eq_mul_inv, inv_mul_cancel_right a b]
-
-@[to_additive (attr := simp) sub_self]
-theorem div_self' (a : G) : a / a = 1 := by rw [div_eq_mul_inv, mul_inv_cancel a]
-
-@[to_additive (attr := simp)]
-theorem mul_div_cancel_right (a b : G) : a * b / b = a := by
-  rw [div_eq_mul_inv, mul_inv_cancel_right a b]
 
 @[to_additive (attr := simp)]
 lemma div_mul_cancel_right (a b : G) : a / (b * a) = b⁻¹ := by rw [← inv_div, mul_div_cancel_right]
