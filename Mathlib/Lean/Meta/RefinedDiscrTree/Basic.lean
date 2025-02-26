@@ -100,8 +100,14 @@ where
     if nargs == 0 then
       return f
     else do
-      let args ← (List.range nargs).mapM fun _ => go
-      return parenthesize (MessageData.joinSep (f :: args) " ") paren
+      let mut r := m!""
+      for _ in [:nargs] do
+        r := r ++ Format.line ++ (← go)
+      r := f ++ .nest 2 r
+      if paren then
+        return .paren r
+      else
+        return .group r
 
   /-- Format the next expression. -/
   go (paren := true) : StateRefT (List Key) CoreM MessageData := do
