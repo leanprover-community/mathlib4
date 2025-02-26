@@ -851,9 +851,9 @@ end zero_or_one
 
 section finiteDimensional
 
-variable {α : Type*} [Preorder α]
+variable {α : Type*}
 
-lemma finiteDimensionalOrder_iff_krullDim_ne_bot_and_top :
+lemma finiteDimensionalOrder_iff_krullDim_ne_bot_and_top [Preorder α] :
     FiniteDimensionalOrder α ↔ (krullDim α ≠ ⊥ ∧ krullDim α ≠ ⊤) := by
   by_cases h : Nonempty α
   · simp [← not_infiniteDimensionalOrder_iff, ← krullDim_eq_top_iff]
@@ -861,13 +861,38 @@ lemma finiteDimensionalOrder_iff_krullDim_ne_bot_and_top :
     · exact (fun h1 ↦ False.elim (h (LTSeries.nonempty_of_finiteDimensionalType α)))
     · exact (fun h1 ↦ False.elim (h1.1 (krullDim_eq_bot_iff.mpr (not_nonempty_iff.mp h))))
 
-lemma exists_coatom_of_finiteDimensional [Preorder α] [OrderTop α] [FiniteDimensionalOrder α]
+lemma exists_coatom_of_finiteDimensional [PartialOrder α] [OrderTop α] [FiniteDimensionalOrder α]
     [Nontrivial α] : ∃ a : α, IsCoatom a := by
-  let p := LTSeries.longestOf α
+  set p := LTSeries.longestOf α with hp
   have : p.length ≥ 1 := by
-    by_contra h; simp only [not_le, Nat.lt_one_iff] at h
-    sorry
-  sorry
+    by_contra h; rw [not_le, Nat.lt_one_iff] at h
+    have : krullDim α = 0 := by
+      rw [Order.krullDim_eq_length_of_finiteDimensionalOrder (α := α), ← hp, h]; rfl
+    rw [orderTop_krullDim_eq_zero_iff (α := α), ← not_nontrivial_iff_subsingleton] at this
+    exact this ‹_›
+  set u := p ⟨p.length - 1, by omega⟩ with hu
+  use u
+  constructor
+  · apply ne_top_of_lt (p.step ⟨p.length - 1, by omega⟩)
+  · intro b hb
+    by_contra hb'; rw [← ne_eq, ← lt_top_iff_ne_top] at hb'
+    have h1 : Order.height u ≥ ((p.length - 1) : ℕ) := by rw [hu]; exact Order.index_le_height _ _
+    have h2 : Order.coheight u ≥ (2 : ℕ) := by
+      let q : LTSeries α := ⟨2, fun i ↦ match i with | 0 => u | 1 => b | 2 => ⊤, by
+        intro i; fin_cases i; all_goals simpa⟩
+      exact Order.length_le_coheight_head (p := q)
+    have h3 : (p.length : WithBot ℕ∞) < Order.height u + Order.coheight u := by
+      show ((p.length : ℕ∞) : WithBot ℕ∞) < _
+      rw [← WithBot.coe_add, WithBot.coe_lt_coe]
+      calc
+      (p.length : ℕ∞) < ((p.length - 1) : ℕ) + (2 : ℕ) := by
+        rw [← ENat.coe_add]; gcongr; omega
+      _ ≤ Order.height u + Order.coheight u := add_le_add h1 h2
+    rw [hp, ← Order.krullDim_eq_length_of_finiteDimensionalOrder (α := α)] at h3
+    apply not_le_of_lt h3
+    rw [Order.krullDim_eq_iSup_height_add_coheight_of_nonempty]
+    norm_cast
+    exact le_iSup (fun x ↦ height x + coheight x) u
 
 end finiteDimensional
 
