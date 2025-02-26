@@ -38,7 +38,7 @@ universe u v
 
 variable (C : Type u) [Category.{v} C] [Limits.HasPullbacks C]
 
-/-- `sub` is the presheaf that sends every object `X : C` to its category of subobjects
+/-- This is the presheaf that sends every object `X : C` to its category of subobjects
     `Subobject X`, and every morphism `f : X ⟶ Y` to the function `Subobject Y → Subobject X`
     that maps every subobject of `Y` to its pullback along `f`. -/
 @[simps]
