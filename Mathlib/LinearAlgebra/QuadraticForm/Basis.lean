@@ -88,7 +88,7 @@ open Finsupp in
 theorem map_finsuppSum'' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
     Q (f.sum g) =
       (f.sum (fun i r => Q (g i r))) +
-      (f.sym2OffDiag.sum fun p i =>
+      (f.sym2OffDiag.sum fun p a =>
         polarSym2 Q (p.map fun i => g i (f i))) := by
   have e1 : Q (f.sum g) = Q (∑ i ∈ f.support, g i (f i)) := rfl
   rw [e1]
