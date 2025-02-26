@@ -7,15 +7,15 @@ import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 /-!
-# Properties of objects that are stable under subobjects and quotients
+# Properties of objects that are closed under subobjects and quotients
 
 Given a category `C` and `P : ObjectProperty C`, we define type classes
-`P.IsStableUnderSubobjects` and `P.IsStableUnderQuotients` expressing
-that `P` is stable under subobjects (resp. quotients).
+`P.IsClosedUnderSubobjects` and `P.IsClosedUnderQuotients` expressing
+that `P` is closed under subobjects (resp. quotients).
 
 -/
 
-universe v v' u u'
+universe v u
 
 namespace CategoryTheory
 
@@ -27,17 +27,17 @@ namespace ObjectProperty
 
 variable (P : ObjectProperty C)
 
-/-- Given `P : ObjectProperty C`, we say that `P` is stable under subobjects,
+/-- Given `P : ObjectProperty C`, we say that `P` is closed under subobjects,
 if for any monomorphism `X ⟶ Y`, `P Y` implies `P X`. -/
-class IsStableUnderSubobjects : Prop where
+class IsClosedUnderSubobjects : Prop where
   prop_of_mono {X Y : C} (f : X ⟶ Y) [Mono f] (hY : P Y) : P X
 
 section
 
-variable [P.IsStableUnderSubobjects]
+variable [P.IsClosedUnderSubobjects]
 
 lemma prop_of_mono {X Y : C} (f : X ⟶ Y) [Mono f] (hY : P Y) : P X :=
-  IsStableUnderSubobjects.prop_of_mono f hY
+  IsClosedUnderSubobjects.prop_of_mono f hY
 
 instance : P.IsClosedUnderIsomorphisms where
   of_iso e := P.prop_of_mono e.inv
@@ -48,22 +48,22 @@ lemma prop_X₁_of_shortExact [HasZeroMorphisms C] {S : ShortComplex C} (hS : S.
   exact P.prop_of_mono S.f h₂
 
 instance (F : D ⥤ C) [F.PreservesMonomorphisms] :
-    (P.inverseImage F).IsStableUnderSubobjects where
+    (P.inverseImage F).IsClosedUnderSubobjects where
   prop_of_mono f _ h := P.prop_of_mono (F.map f) h
 
 end
 
 section
 
-/-- Given `P : ObjectProperty C`, we say that `P` is stable under quotients,
+/-- Given `P : ObjectProperty C`, we say that `P` is closed under quotients,
 if for any epimorphism `X ⟶ Y`, `P X` implies `P Y`. -/
-class IsStableUnderQuotients : Prop where
+class IsClosedUnderQuotients : Prop where
   prop_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] (hX : P X) : P Y
 
-variable [P.IsStableUnderQuotients]
+variable [P.IsClosedUnderQuotients]
 
 lemma prop_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] (hX : P X) : P Y :=
-  IsStableUnderQuotients.prop_of_epi f hX
+  IsClosedUnderQuotients.prop_of_epi f hX
 
 instance : P.IsClosedUnderIsomorphisms where
   of_iso e := P.prop_of_epi e.hom
@@ -74,21 +74,21 @@ lemma prop_X₃_of_shortExact [HasZeroMorphisms C] {S : ShortComplex C} (hS : S.
   exact P.prop_of_epi S.g h₂
 
 instance (F : D ⥤ C) [F.PreservesEpimorphisms] :
-    (P.inverseImage F).IsStableUnderQuotients where
+    (P.inverseImage F).IsClosedUnderQuotients where
   prop_of_epi f _ h := P.prop_of_epi (F.map f) h
 
 end
 
-instance : (⊤ : ObjectProperty C).IsStableUnderSubobjects where
+instance : (⊤ : ObjectProperty C).IsClosedUnderSubobjects where
   prop_of_mono := by simp
 
-instance : (⊤ : ObjectProperty C).IsStableUnderQuotients where
+instance : (⊤ : ObjectProperty C).IsClosedUnderQuotients where
   prop_of_epi := by simp
 
-instance [HasZeroMorphisms C] : IsStableUnderSubobjects (IsZero (C := C)) where
+instance [HasZeroMorphisms C] : IsClosedUnderSubobjects (IsZero (C := C)) where
   prop_of_mono f _ hX := IsZero.of_mono f hX
 
-instance [HasZeroMorphisms C] : IsStableUnderQuotients (IsZero (C := C)) where
+instance [HasZeroMorphisms C] : IsClosedUnderQuotients (IsZero (C := C)) where
   prop_of_epi f _ hX := IsZero.of_epi f hX
 
 end ObjectProperty
