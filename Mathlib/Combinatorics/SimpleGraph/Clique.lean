@@ -413,26 +413,32 @@ protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n)
 lemma cliqueFree_one : G.CliqueFree 1 ↔ IsEmpty α := by
   simp [CliqueFree, isEmpty_iff]
 
+section classical
+open Classical
 @[simp]
 theorem cliqueFree_two : G.CliqueFree 2 ↔ G = ⊥ := by
-  classical
   constructor
   · simp_rw [← edgeSet_eq_empty, Set.eq_empty_iff_forall_not_mem, Sym2.forall, mem_edgeSet]
     exact fun h a b hab => h _ ⟨by simpa [hab.ne], card_pair hab.ne⟩
   · rintro rfl
     exact cliqueFree_bot le_rfl
 
-/-- Adding an edge increases the clique number by at most one. -/
-protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
-    (G ⊔ edge v w).CliqueFree (n + 1) := by
-  intro s hs
-  have := hs.1.sdiff_of_sup_edge
-  classical
-  by_cases hv : v ∈ s
-  · exact (hs.erase_of_sup_edge_of_mem hv).not_cliqueFree h
-  · exact (h.mono <| Nat.le_succ n) (s \ {v}) ⟨by rwa [coe_sdiff, coe_singleton],
-                    (sdiff_eq_left.2 <| disjoint_singleton_right.2 hv).symm ▸ hs.2⟩
+lemma CliqueFree.mem_of_sup_edge_isNClique {x y : α} {t : Finset α} {n : ℕ} (h : G.CliqueFree n)
+    (hc : (G ⊔ edge x y).IsNClique n t) : x ∈ t := by
+  by_contra! hf
+  have ht : (t : Set α) \ {x} = t := sdiff_eq_left.mpr <| Set.disjoint_singleton_right.mpr hf
+  exact h t ⟨ht ▸ hc.1.sdiff_of_sup_edge, hc.2⟩
 
+protected lemma CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
+    (G ⊔ edge v w).CliqueFree (n + 1) := fun _ hs ↦ (hs.erase_of_sup_edge_of_mem <|
+        (h.mono (Nat.le_succ n)).mem_of_sup_edge_isNClique hs).not_cliqueFree h
+
+lemma IsNClique.exists_not_adj_of_cliqueFree_succ (hc : G.IsNClique n s)
+    (h : G.CliqueFree (n + 1)) (x : α) :  ∃ y, y ∈ s ∧ ¬G.Adj x y := by
+  by_contra! hf
+  exact (hc.insert hf).not_cliqueFree h
+
+end classical
 end CliqueFree
 
 section CliqueFreeOn
