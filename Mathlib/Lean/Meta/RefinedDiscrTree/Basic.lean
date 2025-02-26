@@ -161,22 +161,38 @@ inductive StackEntry where
   /--
   `.cache` is a cache entry, used for computations that can have multiple outcomes,
   so that they always give the same outcome.
+
+  Whenever a new `Key` is computed, it is added to the `valueRev` list in
+  all `.cache` entries in the stack. At the end, `valueRev` needs to be reversed.
   -/
-  | cache (key : Expr) (value : List Key)
+  | cache (key : Expr) (valueRev : List Key)
 
 private def StackEntry.format : StackEntry → Format
   | .star => f!".star"
   | .expr info => f!".expr {info.expr}"
-  | .cache key value => f!".cache {key} {value}"
+  | .cache key valueRev => f!".cache {key} {valueRev}"
 
 instance : ToFormat StackEntry := ⟨StackEntry.format⟩
 
 /-- A `LazyEntry` represents a snapshot of the computation of encoding an `Expr` as `Array Key`.
 This is used for computing the keys one by one. -/
 structure LazyEntry where
-  /-- If the previous expression creates more StackEntries, then we store its `ExprInfo`. -/
+  /--
+  If an expression creates more entries in the stack, for example because it is an application,
+  then instead of pushing to the stack greedily, we only extend the stack once we need to.
+  So, the field `previous` is used to extend the `stack` before looking in the `stack`.
+
+  For example in `1.add (2.add 3)`, after computing the key `⟨Nat.add, 2⟩`, the stack is still
+  empty, and `previous` will be `1.add (2.add 3)`.
+  -/
   previous : Option ExprInfo := none
-  /-- The stack, used to emulate recursion. -/
+  /--
+  The stack, used to emulate recursion. It contains the list of all expressions for which the
+  keys still need to be computed, in that order.
+
+  For example in `1.add (2.add 3)`, after computing the keys `⟨Nat.add, 2⟩` and `1`, the stack
+  will be a list of length 1 containing the expression `2.add 3`.
+  -/
   stack    : List StackEntry := []
   /-- The metavariable context, which may contain variables appearing in this entry. -/
   mctx     : MetavarContext
@@ -184,7 +200,13 @@ structure LazyEntry where
   stars    : AssocList MVarId Nat := {}
   /-- The number to be used for the next new `.star` key. -/
   nStars   : Nat := 0
-  /-- The `Key`s that have already been computed. -/
+  /--
+  The `Key`s that have already been computed.
+
+  Sometimes, more than one `Key` ends up being computed in one go. This happens when the result
+  is cached, or when there are lambda binders (because it depends on the body whether the lambda key
+  should be indexed or not). In that case the remaining `Key`s are stored in `results`.
+  -/
   results  : List Key := []
   /-- The cache of past computations that have multiple possible outcomes. -/
   cache    : AssocList Expr (List Key) := {}

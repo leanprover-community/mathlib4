@@ -99,15 +99,28 @@ private def mkStar (mvarId : MVarId) : LazyM Key :=
 private def mkNewStar : StateT LazyEntry MetaM Key :=
   modifyGet fun entry => (.star entry.nStars, { entry with nStars := entry.nStars + 1 })
 
+/--
+Sometimes, we need to not index lambda binders, in particular when the body is the application of
+a metavariable.
+
+In the case where we do index the lambda binders,
+`withLams` efficiently adds the lambdas and `key` to the result.
+-/
 @[inline]
 private def withLams (lambdas : List FVarId) (key : Key) : StateT LazyEntry MetaM Key := do
   match lambdas with
   | [] => return key
   | _ :: tail =>
-    modify ({ · with results := tail.foldl (init := [key]) fun keys _ => .lam :: keys })
+    -- Add `key` and `lambdas.length - 1` lambdas to the result, returning the final lambda.
+    modify ({ · with results := tail.foldl (init := [key]) (fun _ => .lam :: ·) })
     return .lam
 
 private def encodingStepAux (e : Expr) (lambdas : List FVarId) (root : Bool) : LazyM Key := do
+  /-
+  If entries need to be added to the stack, we don't do that now, because of the lazy design.
+  Instead, we set `previous` to be `e`, and later,
+  `processPrevious` adds the required entries to the stack.
+  -/
   let setEAsPrevious : LazyM Unit := do
     let info := {
       expr       := e
@@ -266,7 +279,8 @@ where
 private def hasLooseBVars (keys : List Key) : Bool :=
   hasLooseBVarsAux 0 keys |>.isNone
 
-private partial def processLazyEntryAux (entry : LazyEntry) :
+/-- Auxiliary function for `evalLazyEntry` -/
+private partial def evalLazyEntryAux (entry : LazyEntry) :
     MetaM (Option (List (Key × LazyEntry))) := do
   match entry.stack with
   | [] => return none
@@ -277,14 +291,15 @@ private partial def processLazyEntryAux (entry : LazyEntry) :
       let value := valueRev.reverse
       let entry := if hasLooseBVars value then entry else
         { entry with cache := entry.cache.insert key value }
-      processLazyEntryAux entry
+      evalLazyEntryAux entry
     | .star =>
       return some [← mkNewStar.run entry]
     | .expr info =>
       withLCtx info.lctx info.localInsts do
       return some (← encodingStep info.expr false entry |>.run { bvars := info.bvars })
 
-private partial def processLazyEntryAux' (entry : LazyEntry) :
+/-- Auxiliary function for `evalLazyEntry'` -/
+private partial def evalLazyEntryAux' (entry : LazyEntry) :
     MetaM (Option (Key × LazyEntry)) := do
   match entry.stack with
   | [] => return none
@@ -295,7 +310,7 @@ private partial def processLazyEntryAux' (entry : LazyEntry) :
       let value := valueRev.reverse
       let entry := if hasLooseBVars value then entry else
         { entry with cache := entry.cache.insert key value }
-      processLazyEntryAux' entry
+      evalLazyEntryAux' entry
     | .star =>
       return some (← mkNewStar.run entry)
     | .expr info =>
@@ -338,6 +353,10 @@ where
     | .strictImplicit => return !(← isType arg)
     | .default => isProof arg
 
+/--
+If `entry.previous.isSome`, then replace it with `none`, and add the required entries
+to entry.stack`.
+-/
 private def processPrevious (entry : LazyEntry) : MetaM (LazyEntry) := do
   let some { expr, bvars, lctx, localInsts } := entry.previous | return entry
   let entry := { entry with previous := none }
@@ -367,31 +386,38 @@ private def processPrevious (entry : LazyEntry) : MetaM (LazyEntry) := do
       return { entry with stack := .expr { expr := a, bvars, lctx, localInsts } :: entry.stack}
   | _ => stackArgs entry
 
+/--
+Adds `key` to the `value` list in every `.cache` entry in `stack`. This needs to be done with
+every `key` that is computed, so that the `.cache` entries end up with the correct
+`value : List Key` when they are popped off the stack.
+-/
 private def updateCaches (stack : List StackEntry) (key : Key) : List StackEntry :=
   stack.map fun
     | .cache k value => .cache k (key :: value)
     | x => x
 
-/-- A single step in evaluating a `LazyEntry`. -/
+/-- A single step in evaluating a `LazyEntry`. Allow multiple different outcomes. -/
 def evalLazyEntry (entry : LazyEntry) :
     MetaM (Option (List (Key × LazyEntry))) := do
   if let key :: results := entry.results then
+    -- If there is already a result available, use it.
     return some [(key, { entry with results, stack := updateCaches entry.stack key })]
   else withMCtx entry.mctx do
     let entry ← processPrevious entry
-    let result ← processLazyEntryAux entry
+    let result ← evalLazyEntryAux entry
     return result.map <| List.map fun (key, entry) =>
           (key, { entry with stack := updateCaches entry.stack key })
 
 
-/-- A single step in evaluating a `LazyEntry`. -/
+/-- A single step in evaluating a `LazyEntry`. Don't allow multiple different outcomes. -/
 private def evalLazyEntry' (entry : LazyEntry) :
     MetaM (Option (Key × LazyEntry)) := do
   if let key :: results := entry.results then
+    -- If there is already a result available, use it.
     return some (key, { entry with results, stack := updateCaches entry.stack key })
   else withMCtx entry.mctx do
     let entry ← processPrevious entry
-    let result ← processLazyEntryAux' entry
+    let result ← evalLazyEntryAux' entry
     return result.map fun (key, entry) =>
       (key, { entry with stack := updateCaches entry.stack key })
 
