@@ -849,10 +849,34 @@ section calculations
   simp_all
 
 lemma orderTop_krullDim_eq_zero_iff {α : Type*} [PartialOrder α] [OrderTop α] :
-    krullDim α = 0 ↔ Subsingleton α := sorry
+    krullDim α = 0 ↔ Subsingleton α := by
+  constructor
+  · intro h;
+    have : ¬ ∃ x y : α, x < y := by rw [← Order.one_le_krullDim_iff, h]; trivial
+    exact subsingleton_of_forall_eq ⊤ fun y ↦ (by
+      by_contra h; rw [← ne_eq, ← lt_top_iff_ne_top] at h; exact this ⟨y, ⊤, h⟩)
+  · intro h; exact le_antisymm Order.krullDim_nonpos_of_subsingleton Order.krullDim_nonneg
 
 lemma orderBot_orderTop_krullDim_eq_one_iff {α : Type*} [PartialOrder α] [OrderBot α] [OrderTop α] :
-    krullDim α = 1 ↔ IsSimpleOrder α := sorry
+    krullDim α = 1 ↔ IsSimpleOrder α := by
+  constructor
+  · intro h;
+    have : ⊥ ≠ (⊤ : α) := by
+      by_contra h'
+      have : Subsingleton α := by exact subsingleton_of_bot_eq_top h'
+      absurd orderTop_krullDim_eq_zero_iff.mpr this; rw [h]; trivial
+    exact {
+      exists_pair_ne := ⟨⊥, ⊤, this⟩
+      eq_bot_or_eq_top := fun a ↦ by
+        by_contra h'; push_neg at h'
+        have : a < ⊤ := lt_top_iff_ne_top.mpr h'.2
+        have : a > ⊥ := bot_lt_iff_ne_bot.mpr h'.1
+        let p : LTSeries α := ⟨2, fun i ↦ match i with | 0 => ⊥ | 1 => a | 2 => ⊤
+          , by intro i; fin_cases i; all_goals simpa⟩
+        absurd Order.LTSeries.length_le_krullDim p
+        rw [h]; show ¬ 2 ≤ 1; trivial
+    }
+  · intro _; exact krullDim_isSimpleOrder
 
 variable {α : Type*} [Preorder α]
 
