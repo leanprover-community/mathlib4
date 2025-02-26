@@ -3,9 +3,8 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Elab.Command
-import Lean.Linter.Util
-import Batteries.Data.List.Basic
+import Lean.Server.InfoUtils
+import Mathlib.Init
 
 /-!
 # The papercut linter
@@ -124,3 +123,5 @@ def papercutLinter : Linter where run := withSetOptionIn fun _stx => do
   catch _e => return
 
 initialize addLinter papercutLinter
+
+end Mathlib.Linter.Papercut
