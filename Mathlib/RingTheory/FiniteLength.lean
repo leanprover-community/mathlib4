@@ -100,8 +100,12 @@ theorem IsSemisimpleModule.finite_tfae [IsSemisimpleModule R M] :
 instance [IsSemisimpleModule R M] [Module.Finite R M] : IsArtinian R M :=
   (IsSemisimpleModule.finite_tfae.out 0 2).mp ‹_›
 
+section length
+
 theorem isFiniteLength_iff_length_finite (M : Type*) [AddCommGroup M] [Module R M] :
     IsFiniteLength R M ↔ Module.length R M ≠ ⊤ := sorry
+
+end length
 
 /- The following instances are now automatic:
 example [IsSemisimpleRing R] : IsNoetherianRing R := inferInstance

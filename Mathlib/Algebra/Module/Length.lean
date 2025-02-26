@@ -1,6 +1,7 @@
 import Mathlib.Order.KrullDimension
 import Mathlib.Order.TrimmedLength
 import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.LinearAlgebra.Dimension.Basic
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.Order.Hom.Basic
@@ -10,8 +11,6 @@ import Mathlib.Data.ENat.Lattice
 
 /-!
 # The length of a module
-
-`TODO`: add APIs linking to `IsFiniteLength`.
 -/
 
 variable {R : Type*} [Ring R] {M M' : Type*} [AddCommGroup M] [AddCommGroup M']
@@ -127,3 +126,10 @@ theorem Module.length_additive_of_quotient {N : Submodule R M} :
   }
   have := Module.length_additive ex
   aesop
+
+section field
+
+theorem Module.length_eq_rank_of_field (R M : Type*) [Field R] [AddCommGroup M] [Module R M] :
+    Module.length R M = (Module.rank R M).toENat := sorry
+
+end field
