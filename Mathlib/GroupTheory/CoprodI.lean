@@ -317,7 +317,7 @@ instance (i : ι) : Inhabited (Pair M i) :=
 variable {M}
 
 /-- Construct a new `Word` without any reduction. The underlying list of
-`cons m w _ _` is `⟨_, m⟩::w`  -/
+`cons m w _ _` is `⟨_, m⟩::w` -/
 @[simps]
 def cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) : Word M :=
   { toList := ⟨i, m⟩ :: w.toList,

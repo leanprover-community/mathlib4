@@ -34,7 +34,7 @@ In other words, the topology coinduced by the map `CondensedSet.coinducingCoprod
 local instance : TopologicalSpace (X.val.obj ⟨CompHaus.of PUnit⟩) :=
   TopologicalSpace.coinduced (coinducingCoprod X) inferInstance
 
-/-- The object part of the functor `CondensedSet ⥤ TopCat`  -/
+/-- The object part of the functor `CondensedSet ⥤ TopCat` -/
 abbrev CondensedSet.toTopCat : TopCat.{u+1} := TopCat.of (X.val.obj ⟨of PUnit⟩)
 
 namespace CondensedSet
@@ -49,7 +49,7 @@ lemma continuous_coinducingCoprod {S : CompHaus.{u}} (x : X.val.obj ⟨S⟩) :
 variable {X} {Y : CondensedSet} (f : X ⟶ Y)
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
-/-- The map part of the functor `CondensedSet ⥤ TopCat`  -/
+/-- The map part of the functor `CondensedSet ⥤ TopCat` -/
 @[simps!]
 def toTopCatMap : X.toTopCat ⟶ Y.toTopCat :=
   TopCat.ofHom
@@ -65,7 +65,7 @@ def toTopCatMap : X.toTopCat ⟶ Y.toTopCat :=
 
 end CondensedSet
 
-/-- The functor `CondensedSet ⥤ TopCat`  -/
+/-- The functor `CondensedSet ⥤ TopCat` -/
 @[simps]
 def condensedSetToTopCat : CondensedSet.{u} ⥤ TopCat.{u+1} where
   obj X := X.toTopCat
