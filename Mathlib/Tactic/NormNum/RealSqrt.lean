@@ -27,36 +27,23 @@ lemma isNat_nnrealSqrt {x : ℝ≥0} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * n
     IsNat (NNReal.sqrt x) ny := ⟨by simp [h.out, ← hy]⟩
 
 lemma isNat_realSqrt_neg {x : ℝ} {nx : ℕ} (h : IsInt x (Int.negOfNat nx)) :
-    IsNat √x 0 := by
-  refine ⟨?_⟩
-  simp only [Nat.cast_zero]
-  refine Real.sqrt_eq_zero_of_nonpos ?_
-  simp [h.out]
+IsNat √x 0 :=
+  ⟨by simp only [Nat.cast_zero, Real.sqrt_eq_zero', h.out, Int.cast_negOfNat, Left.neg_nonpos_iff, Nat.cast_nonneg]⟩
 
 lemma isNat_realSqrt_of_isRat_negOfNat {x : ℝ} {num : ℕ} {denom : ℕ}
     (h : IsRat x (.negOfNat num) denom) : IsNat √x 0 := by
-  refine ⟨?_⟩
+refine ⟨?_⟩
   obtain ⟨inv, rfl⟩ := h
-  simp only [Nat.cast_zero]
-  refine Real.sqrt_eq_zero_of_nonpos ?_
-  simp only [Int.cast_negOfNat, neg_mul, neg_nonpos]
-  exact mul_nonneg (Nat.cast_nonneg' _) (invOf_nonneg.2 <| Nat.cast_nonneg' _)
+  simpa only [Nat.cast_zero, Real.sqrt_eq_zero', Int.cast_negOfNat, neg_mul, neg_nonpos] using
+    mul_nonneg (Nat.cast_nonneg' _) (invOf_nonneg.2 <| Nat.cast_nonneg' _)
 
 lemma isRat_realSqrt_of_isRat_ofNat {x : ℝ} {n sn : ℕ} {d sd : ℕ} (hn : sn * sn = n)
     (hd : sd * sd = d) (h : IsRat x (.ofNat n) d) :
     IsRat √x (.ofNat sn) sd := by
-  obtain ⟨inv, rfl⟩ := h
-  obtain rfl | hd₂ := eq_or_ne sd 0
-  · simp at hd
-    subst hd
-    refine ⟨inv, ?_⟩
-    simp
-  refine ⟨invertibleOfNonzero (by exact_mod_cast hd₂), ?out⟩
-  rw [← hn, invOf_eq_inv, ← hd]
-  simp only [Int.ofNat_eq_coe, Int.cast_mul, Nat.cast_mul, mul_inv_rev, invOf_eq_inv,
-    Int.cast_natCast]
-  rw [Real.sqrt_mul (mul_self_nonneg ↑sn)]
-  aesop
+obtain ⟨inv, rfl⟩ := h
+  refine ⟨invertibleOfNonzero <| by rw [←mul_self_ne_zero, ←Nat.cast_mul, hd] ; exact inv.ne_zero, ?out⟩
+  simp only [← hn, invOf_eq_inv, ← hd, Int.ofNat_eq_coe, Int.cast_mul, Nat.cast_mul, mul_inv_rev, invOf_eq_inv,
+    Int.cast_natCast,  Real.sqrt_mul (mul_self_nonneg ↑sn), Nat.cast_nonneg, Real.sqrt_mul_self, inv_nonneg]
 
 /-- `norm_num` extension that evaluates the function `Real.sqrt`. -/
 @[norm_num √_]
