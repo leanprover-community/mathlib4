@@ -23,7 +23,7 @@ concurrency:
 jobs:
   style_lint:
     if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
-    name: Lint styleJOB_NAME
+    name: Lint style is indeed my JOB_NAME
     runs-on: STYLE_LINT_RUNNER
     steps:
       - name: cleanup
