@@ -166,6 +166,13 @@ theorem mk_comp_untilt_eq_coeff_zero :
     Ideal.Quotient.mk (Ideal.span {(p : O)}) ∘ untilt = coeff (ModP O p) p 0 :=
   funext mk_untilt_eq_coeff_zero
 
+@[simp]
+theorem PreTilt.untilt_iterate_frobeniusEquiv_symm_pow (x : PreTilt O p) (n : ℕ) :
+    untilt (((frobeniusEquiv (O^♭) p).symm ^[n]) x) ^ p ^ n = x.untilt := by
+  simp only [← map_pow]
+  congr
+  simp
+
 end IsAdicComplete
 
 end PreTilt

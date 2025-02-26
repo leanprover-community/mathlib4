@@ -67,47 +67,10 @@ v                   v
 ```
 
 -/
-section RingHom
-#check WittVector.ghostComponent
-#check WittVector.map_surjective
 
 namespace WittVector
 
 -- this file
-
--- variable (O p) in
--- def mkCompGhostComponent (n : ℕ) : 𝕎 O →+* O ⧸ span {(p : O)} ^ (n + 1) :=
---   ((Ideal.Quotient.mk <| span {(p : O)} ^ (n + 1))).comp (WittVector.ghostComponent n)
-
--- `Mathlib.RingTheory.WittVector.Basic` after `WittVector.map_coeff`
-theorem map_eq_zero_iff {p : ℕ} {R S : Type*} [CommRing R] [CommRing S] [Fact (Nat.Prime p)]
-    (f : R →+* S) {x : WittVector p R} :
-    ((map f) x) = 0 ↔ ∀ n, f (x.coeff n) = 0 := by
-  refine ⟨fun h n ↦ ?_, fun h ↦ ?_⟩
-  · apply_fun (fun x ↦ x.coeff n) at h
-    simpa using h
-  · ext n
-    simpa using h n
-
--- `Mathlib.RingTheory.WittVector.Basic` after `WittVector.ghostComponent_apply` or a local lemma
-theorem pow_dvd_ghostComponent_of_dvd_coeff {R : Type*} [CommRing R] {x : 𝕎 R} {n : ℕ}
-    (hx : ∀ i ≤ n, (p : R) ∣ x.coeff i) : (p : R) ^ (n + 1) ∣ ghostComponent n x := by
-  rw [WittVector.ghostComponent_apply, wittPolynomial, MvPolynomial.aeval_sum]
-  apply Finset.dvd_sum
-  intro i hi
-  simp only [Finset.mem_range] at hi
-  have : (MvPolynomial.aeval x.coeff) ((MvPolynomial.monomial (R := ℤ)
-      (Finsupp.single i (p ^ (n - i)))) (p ^ i)) = ((p : R) ^ i) * (x.coeff i) ^ (p ^ (n - i)) := by
-    simp [MvPolynomial.aeval_monomial, map_pow]
-  rw [this]
-  have : n + 1 = (n - i) + 1 + i := by omega
-  nth_rw 1 [this]
-  rw [pow_add, mul_comm]
-  apply mul_dvd_mul_left
-  refine (pow_dvd_pow_of_dvd ?_ _).trans (b := (x.coeff i) ^ (n - i + 1)) (pow_dvd_pow _ ?_)
-  · exact hx i (Nat.le_of_lt_succ hi)
-  · exact ((n - i).lt_two_pow_self).succ_le.trans
-        (pow_left_mono (n - i) (Nat.Prime.two_le Fact.out))
 
 variable (n : ℕ)
 
@@ -132,154 +95,19 @@ def ghostComponentModPPow (n : ℕ): 𝕎 (O ⧸ span {(p : O)}) →+* O ⧸ spa
     ⟨((Ideal.Quotient.mk <| span {(p : O)} ^ (n + 1))).comp
     (WittVector.ghostComponent (p := p) n), ker_map_le_ker_mk_comp_ghostComponent n⟩
 
-#check PreTilt.mk_untilt_eq_coeff_zero
 end WittVector
-
--- Mathlib.FieldTheory.Perfect
-
--- `Mathlib.FieldTheory.Perfect` after `iterateFrobeniusEquiv_symm`
-
-@[simp]
-theorem coe_frobenius_comp_coe_frobeniusEquiv {p : ℕ} {R : Type*}
-    [CommSemiring R] [ExpChar R p] [PerfectRing R p] :
-    (⇑(frobenius R p) ∘ ⇑(frobeniusEquiv R p).symm) = id := by
-  ext
-  simp
-
-/--
-The `(frobeniusEquiv R p).symm` version of `MonoidHom.map_frobenius`
--/
-theorem MonoidHom.map_frobeniusEquiv_symm {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S]
-    (f : R →* S) (p : ℕ) [ExpChar R p] [PerfectRing R p] [ExpChar S p] [PerfectRing S p] (x : R) :
-    f ((frobeniusEquiv R p).symm x) = (frobeniusEquiv S p).symm (f x) := by
-  apply_fun (frobeniusEquiv S p)
-  simp [← MonoidHom.map_frobenius]
-
-theorem RingHom.map_frobeniusEquiv_symm {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S]
-    (f : R →+* S) (p : ℕ) [ExpChar R p] [PerfectRing R p] [ExpChar S p] [PerfectRing S p] (x : R) :
-    f ((frobeniusEquiv R p).symm x) = (frobeniusEquiv S p).symm (f x) := by
-  apply_fun (frobeniusEquiv S p)
-  simp [← RingHom.map_frobenius]
-
-theorem MonoidHom.map_iterate_frobeniusEquiv_symm {R : Type*} [CommSemiring R]
-    {S : Type*} [CommSemiring S]
-    (f : R →* S) (p : ℕ) [ExpChar R p]
-    [PerfectRing R p] [ExpChar S p] [PerfectRing S p] (n : ℕ) (x : R) :
-    f (((frobeniusEquiv R p).symm ^[n]) x) = ((frobeniusEquiv S p).symm ^[n]) (f x) := by
-  apply_fun (frobeniusEquiv S p)^[n]
-  · simp only [coe_frobeniusEquiv, ← map_iterate_frobenius]
-    · rw [← Function.comp_apply (f := (⇑(_root_.frobenius R p))^[n]),
-          ← Function.comp_apply (f := (⇑(_root_.frobenius S p))^[n]),
-          ← Function.Commute.comp_iterate, ← Function.Commute.comp_iterate]
-      · simp
-      all_goals rw [← coe_frobeniusEquiv]; simp [Function.Commute, Function.Semiconj]
-  apply Function.Injective.iterate
-  simp
-
-theorem RingHom.map_iterate_frobeniusEquiv_symm {R : Type*} [CommSemiring R]
-    {S : Type*} [CommSemiring S]
-    (f : R →+* S) (p : ℕ) [ExpChar R p]
-    [PerfectRing R p] [ExpChar S p] [PerfectRing S p] (n : ℕ) (x : R) :
-    f (((frobeniusEquiv R p).symm ^[n]) x) = ((frobeniusEquiv S p).symm ^[n]) (f x) :=
-  MonoidHom.map_iterate_frobeniusEquiv_symm (f.toMonoidHom) p n x
-
--- `Mathlib.RingTheory.Perfection` after `Perfection.coeff_iterate_frobenius'`
-@[simp]
-theorem Perfection.coeff_frobeniusEquiv_symm {R : Type*} [CommSemiring R] {p : ℕ}
-    [hp : Fact (Nat.Prime p)] [CharP R p] (f : Ring.Perfection R p) (n : ℕ) :
-    (Perfection.coeff R p n) ((_root_.frobeniusEquiv (Ring.Perfection R p) p).symm f) =
-    (Perfection.coeff R p (n + 1)) f := by
-  nth_rw 2 [← frobenius_apply_frobeniusEquiv_symm _ p f]
-  rw [coeff_frobenius]
-
-@[simp]
-theorem Perfection.coeff_iterate_frobeniusEquiv_symm {R : Type*} [CommSemiring R] {p : ℕ}
-    [hp : Fact (Nat.Prime p)] [CharP R p] (f : Ring.Perfection R p) (n m : ℕ) :
-    (Perfection.coeff _ p n) ((_root_.frobeniusEquiv _ p).symm ^[m] f) =
-    (Perfection.coeff _ p (n + m)) f := by
-  revert f n
-  induction' m with m ih
-  · simp
-  · intro f n
-    simp [ih, ← add_assoc]
-
-section
--- PreTilt
-omit [IsAdicComplete (span {(p : O)}) O]
-
-@[simp]
-theorem PreTilt.coeff_frobenius (n : ℕ) (x : PreTilt O p) :
-    ((Perfection.coeff (ModP O p) p (n + 1)) (((_root_.frobenius (PreTilt O p) p)) x)) =
-    ((Perfection.coeff (ModP O p) p n) x):= by
-  simp [PreTilt]
-
-@[simp]
-theorem PreTilt.coeff_frobenius_pow (m n : ℕ) (x : PreTilt O p) :
-    ((Perfection.coeff (ModP O p) p (m + n)) (((_root_.frobenius (PreTilt O p) p) ^[n]) x)) =
-    ((Perfection.coeff (ModP O p) p m) x):= by
-  simp [PreTilt]
-
-@[simp]
-theorem PreTilt.coeff_frobeniusEquiv_symm (n : ℕ) (x : PreTilt O p) :
-    ((Perfection.coeff (ModP O p) p n) (((_root_.frobeniusEquiv (PreTilt O p) p).symm) x)) =
-    ((Perfection.coeff (ModP O p) p (n + 1)) x):= by
-  simp [PreTilt]
-
-@[simp]
-theorem PreTilt.coeff_iterate_frobeniusEquiv_symm (m n : ℕ) (x : PreTilt O p) :
-    ((Perfection.coeff (ModP O p) p m) (((_root_.frobeniusEquiv (PreTilt O p) p).symm ^[n]) x)) =
-    ((Perfection.coeff (ModP O p) p (m + n)) x):= by
-  simp [PreTilt]
-
-end
 
 -- `Untilt`, after `mk_comp_untilt_eq_coeff_zero`
 namespace WittVector
-@[simp]
-theorem map_mk_teichmuller_frobeniusEquiv_symm_pow_untilt (n : ℕ) (x : O^♭) :
-    WittVector.map (Ideal.Quotient.mk (span {(p : O)}))
-    (teichmuller p ((((_root_.frobeniusEquiv _ p).symm ^ n) x).untilt)) =
-    (teichmuller p (Perfection.coeff (ModP O p) _ n x)) := by
-  simp only [RingAut.coe_pow, map_teichmuller, mk_untilt_eq_coeff_zero,
-    coeff_iterate_frobeniusEquiv_symm, zero_add]
-
-@[simp]
-theorem PreTilt.untilt_frobeniusEquiv_symm_pow_pow (x : O^♭) (n : ℕ) :
-    untilt (((_root_.frobeniusEquiv (O^♭) p).symm ^[n]) x) ^ p ^ n = x.untilt := by
-  simp only [← map_pow]
-  congr
-  simp
-
--- already simp
 -- @[simp]
--- theorem ghostComponent_teichmuller_frobeniusEquiv_symm_pow_untilt (n : ℕ) (x : O^♭) :
---     ghostComponent n (teichmuller p ((((_root_.frobeniusEquiv _ p).symm ^ n) x).untilt)) =
---     x.untilt := by
---   simp
+-- theorem map_mk_teichmuller_frobeniusEquiv_symm_pow_untilt (n : ℕ) (x : O^♭) :
+--     WittVector.map (Ideal.Quotient.mk (span {(p : O)}))
+--     (teichmuller p ((((_root_.frobeniusEquiv _ p).symm ^ n) x).untilt)) =
+--     (teichmuller p (Perfection.coeff (ModP O p) _ n x)) := by
+--   simp only [RingAut.coe_pow, map_teichmuller, mk_untilt_eq_coeff_zero,
+--     coeff_iterate_frobeniusEquiv_symm, zero_add]
 
-#check RingHom.liftOfRightInverse_comp_apply
-
--- `Mathlib.RingTheory.Ideal.Maps` after `RingHom.eq_liftOfRightInverse`
 open RingHom
-theorem RingHom.liftOfSurjective_comp_apply {A B C : Type*} [Ring A] [Ring B] [Ring C]
-    (f : A →+* B) (hf : Function.Surjective f)
-    (g : { g : A →+* C // RingHom.ker f ≤ RingHom.ker g }) (x : A) :
-    ((f.liftOfSurjective hf) g) (f x) = (g : A →+* C) x :=
-  RingHom.liftOfRightInverse_comp_apply f _ _ g x
-
-theorem RingHom.liftOfSurjective_comp {A B C : Type*} [Ring A] [Ring B] [Ring C]
-    (f : A →+* B) (hf : Function.Surjective f)
-    (g : { g : A →+* C // RingHom.ker f ≤ RingHom.ker g }) :
-    ((f.liftOfSurjective hf) g).comp f = (g : A →+* C) :=
-  RingHom.liftOfRightInverse_comp f _ _ g
-
-theorem RingHom.eq_liftOfSurjective {A B C : Type*} [Ring A] [Ring B] [Ring C]
-    (f : A →+* B) (hf : Function.Surjective f) (g : A →+* C)
-    (hg : RingHom.ker f ≤ RingHom.ker g)
-    (h : B →+* C) (hh : h.comp f = g) : h = (f.liftOfSurjective hf) ⟨g, hg⟩ :=
-  RingHom.eq_liftOfRightInverse f _ _ g _ _ hh
-
---
 
 @[simp]
 theorem ghostComponentModPPow_teichmuller_coeff (n : ℕ) (x : O^♭) :
@@ -292,12 +120,6 @@ theorem ghostComponentModPPow_teichmuller_coeff (n : ℕ) (x : O^♭) :
       (WittVector.ghostComponent (p := p) n), ker_map_le_ker_mk_comp_ghostComponent n⟩
       (teichmuller p ((((_root_.frobeniusEquiv _ p).symm ^ n) x).untilt))
 
--- Quotient.lift
-#check RingHom.liftOfSurjective
-#check WittVector.map
-
-end WittVector
-
 variable (O p) in
 def fontaineThetaModPPow (n : ℕ): 𝕎 (O^♭) →+* O ⧸ span {(p : O)} ^ (n + 1) :=
   (ghostComponentModPPow n).comp
@@ -308,46 +130,6 @@ def fontaineThetaModPPow (n : ℕ): 𝕎 (O^♭) →+* O ⧸ span {(p : O)} ^ (n
 theorem fontaineThetaModPPow_teichmuller (n : ℕ) (x : O^♭) :
     fontaineThetaModPPow O p n (teichmuller p x) = Ideal.Quotient.mk _ x.untilt := by
   simp [fontaineThetaModPPow, PreTilt]
--- theorem fontaineThetaModP_eq_fontainThetaFun_mod_p (x : 𝕎 (O^♭)) (n : ℕ) :
---   fontaineThetaModPPow O p n x =
---   Ideal.Quotient.mk (span {(p : O)} ^ (n + 1)) (fontaineThetaAux x n) := sorry
-
--- variable (R S : Type*) [CommRing R] [CommRing S] [Unique S]
--- #check R ⧸ (⊤ : Ideal R)
--- #synth Unique (R ⧸ (⊤ : Ideal R))
--- #synth Inhabited (R → S)
--- #synth Subsingleton S
--- #synth Unique (R → S)
--- #synth Unique (R →+ S)
--- #synth Subsingleton (R →+ S)
-
--- -- Where to put this?
--- instance (I : Ideal R) : Subsingleton (R ⧸ I ^ 0) :=
---   Ideal.Quotient.subsingleton_iff.mpr (Ideal.one_eq_top (R := R) ▸ pow_zero I)
-
--- def RingHom.zero (R S : Type*) [CommRing R] [CommRing S] [Subsingleton S] :
---   R →+* S where
---     toFun _ := 0
---     map_one' := Subsingleton.allEq _ _
---     map_mul' _ _ := Subsingleton.allEq _ _
---     map_zero' := Subsingleton.allEq _ _
---     map_add' _ _ := Subsingleton.allEq _ _
-
--- #check Ideal.Quotient.factorPowSucc
--- instance
--- variable (R : Type*) [CommRing R] (I : Ideal R)
--- #synth Subsingleton (R ⧸ I ^ 0)
-
--- private def fontaineThetaModPPow' (n : ℕ): 𝕎 (O^♭) →+* O ⧸ span {(p : O)} ^ n :=
---   if h : n = 0
---   then h ▸ RingHom.zero _ _
---   else Nat.sub_add_cancel (sorry  : 1 ≤ n) ▸ fontaineThetaModPPow O p (n - 1)
-
---
-#check  eq_of_apply_teichmuller_eq
-#check WittVector.map_teichmuller
-#check WittVector.ghostComponent_teichmuller
-
 
 theorem factorPowSucc_comp_fontaineThetaModPPow (n : ℕ) :
     (factorPowSucc _ (n + 1)).comp (fontaineThetaModPPow O p (n + 1)) =
@@ -368,11 +150,6 @@ theorem factorPowSucc_fontaineThetaModPPow_eq (n : ℕ) (x : 𝕎 (O^♭)) :
     fontaineThetaModPPow O p n x:= by
   rw [← factorPowSucc_comp_fontaineThetaModPPow n]
 
-#check IsAdicComplete.limRingHom
-#synth IsAdicComplete (span {(p : 𝕎 (O^♭))}) (𝕎 (O^♭))
-
-#check fontaineThetaModPPow
-
 def fontaineTheta : 𝕎 (O^♭) →+* O :=
   IsAdicComplete.limRingHom Order.succ_strictMono (factorPowSucc_fontaineThetaModPPow_eq _ _).symm
 
@@ -381,32 +158,19 @@ theorem mk_pow_fontaineTheta (n : ℕ) (x : 𝕎 (O^♭)) :
   IsAdicComplete.mk_limRingHom Order.succ_strictMono
       (factorPowSucc_fontaineThetaModPPow_eq _ _).symm n x
 
--- `Mathlib.RingTheory.WittVector.Basic` after `WittVector.map_coeff`
-@[simp]
-theorem WittVector.map_id (R : Type*) [CommRing R] :
-    WittVector.map (RingHom.id R) = RingHom.id (𝕎 R) := by
-  ext
-  simp
-
 -- move this lemma
 omit [Fact (Nat.Prime p)]
   [Fact ¬IsUnit (p : O)]
   [IsAdicComplete (span {(p : O)}) O] in
-private theorem ghostComponentModPPow.aux : span {(p : O)} ^ (0 + 1) = span {(p : O)} := by
+private theorem _root_.Ideal.span_pow_zero_add_one : span {(p : O)} ^ (0 + 1) = span {(p : O)} := by
   simp
-
-def ghostComponentModPPow' (n : ℕ): 𝕎 (O ⧸ span {(p : O)}) →+* O ⧸ span {(p : O)}^(n + 1) :=
-  RingHom.liftOfSurjective (WittVector.map <| Ideal.Quotient.mk <| span {(p : O)})
-    (map_surjective _ Ideal.Quotient.mk_surjective)
-    ⟨((Ideal.Quotient.mk <| span {(p : O)} ^ (n + 1))).comp
-    (WittVector.ghostComponent (p := p) n), ker_map_le_ker_mk_comp_ghostComponent n⟩
 
 omit
   [Fact ¬IsUnit (p : O)]
   [IsAdicComplete (span {(p : O)}) O] in
 @[simp]
 theorem quotEquivOfEq_ghostComponentModPPow (x : 𝕎 (O ⧸ span {(p : O)})) :
-    quotEquivOfEq (ghostComponentModPPow.aux) (ghostComponentModPPow 0 x) =
+    quotEquivOfEq (Ideal.span_pow_zero_add_one) (ghostComponentModPPow 0 x) =
     ghostComponent 0 x := by
   simp only [Nat.reduceAdd, ghostComponentModPPow, RingHom.liftOfSurjective]
   have surj : Function.Surjective (WittVector.map (p := p) (Ideal.Quotient.mk (span {(p : O)}))) :=
@@ -420,7 +184,6 @@ theorem quotEquivOfEq_ghostComponentModPPow (x : 𝕎 (O ⧸ span {(p : O)})) :
   rw [this]
   simp [← hy, ghostComponent_apply]
 
-
 theorem mk_fontaineTheta (x : 𝕎 (O^♭)) :
     Ideal.Quotient.mk (span {(p : O)}) (fontaineTheta x) =
     Perfection.coeff (ModP O p) _ 0 (x.coeff 0) := by
@@ -433,10 +196,9 @@ theorem mk_fontaineTheta (x : 𝕎 (O^♭)) :
     RingHomCompTriple.comp_eq, RingHom.coe_comp, Function.comp_apply,
     quotEquivOfEq_ghostComponentModPPow, ghostComponent_apply, wittPolynomial_zero,
     MvPolynomial.aeval_X]
-  -- Note to reviewer : `WittVector.map_coeff` should, but does not work in this simp
+  -- Note to reviewers : This line was designed to be `simp [fontaineThetaModPPow]`
+  -- However, `WittVector.map_coeff` should, but does not work here.
   rfl
-
-end RingHom
 
 -- theorem modPPow
 
@@ -448,6 +210,9 @@ theorem fontaineTheta_teichmuller (x : O^♭) : fontaineTheta (teichmuller p x) 
   cases n
   · simp
   · simp [SModEq, mk_pow_fontaineTheta]
+
+end WittVector
+
 
 -- theorem fontaineTheta_p : fontaineTheta (p : 𝕎 (O^♭)) = p := by simp
 
@@ -548,7 +313,6 @@ notation "𝔹_dR^+(" O ")" => BDeRhamPlus O
 
 end
 
--- Teichmuller series PR
 -- lemmas about frobenius and untilt another PR
 -- fontaine theta and Bdr PR
 -- surjective to another PR
