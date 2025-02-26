@@ -232,7 +232,7 @@ theorem IsNoetherian.induction [IsNoetherian R M] {P : Submodule R M → Prop}
     (hgt : ∀ I, (∀ J > I, P J) → P I) (I : Submodule R M) : P I :=
   IsWellFounded.induction _ I hgt
 
-theorem LinearMap.isNoetherian_iff_of_bijective {S P} [Ring S] [AddCommGroup P] [Module S P]
+theorem LinearMap.isNoetherian_iff_of_bijective {S P} [Semiring S] [AddCommMonoid P] [Module S P]
     {σ : R →+* S} [RingHomSurjective σ] (l : M →ₛₗ[σ] P) (hl : Function.Bijective l) :
     IsNoetherian R M ↔ IsNoetherian S P := by
   simp_rw [isNoetherian_iff']
