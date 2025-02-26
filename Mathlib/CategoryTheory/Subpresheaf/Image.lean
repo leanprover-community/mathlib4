@@ -90,6 +90,8 @@ lemma epi_iff_range_eq_top :
   simp [NatTrans.epi_iff_epi_app, epi_iff_surjective, Subpresheaf.ext_iff, funext_iff,
     Set.range_eq_univ]
 
+lemma range_eq_top [Epi p] : range p = ⊤ := by rwa [← epi_iff_range_eq_top]
+
 instance : Epi (toRange p) := by simp [epi_iff_range_eq_top]
 
 instance [Mono p] : IsIso (toRange p) := by
@@ -121,6 +123,10 @@ def image : Subpresheaf F' where
     exact ⟨F.map φ x, G.map φ hx, by apply FunctorToTypes.naturality⟩
 
 lemma image_top : (⊤ : Subpresheaf F).image f = range f := by aesop
+
+@[simp]
+lemma image_iSup {ι : Type*} (G : ι → Subpresheaf F) (f : F ⟶ F') :
+    (⨆ i, G i).image f = ⨆ i, (G i).image f := by aesop
 
 lemma image_comp (g : F' ⟶ F'') :
     G.image (f ≫ g) = (G.image f).image g := by aesop
