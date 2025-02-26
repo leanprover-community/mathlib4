@@ -85,12 +85,16 @@ open Function
 
 variable [DecidableEq α]
 
-theorem frestrictLe_updateFinset' {a b : α} (hab : a ≤ b) (x : Π c, π c) (y : Π c : Iic b, π c) :
+lemma frestrictLe_updateFinset' {a b : α} (hab : a ≤ b) (x : Π c, π c) (y : Π c : Iic b, π c) :
     frestrictLe a (updateFinset x _ y) = frestrictLe₂ hab y :=
   restrict_updateFinset' (Iic_subset_Iic.2 hab) ..
 
 lemma frestrictLe_updateFinset {a : α} (x : Π a, π a) (y : Π b : Iic a, π b) :
     frestrictLe a (updateFinset x _ y) = y := restrict_updateFinset ..
+
+@[simp]
+lemma updateFinset_frestrictLe {a : α} (x : Π a, π a) : updateFinset x _ (frestrictLe a x) = x := by
+  simp [frestrictLe]
 
 end updateFinset
 

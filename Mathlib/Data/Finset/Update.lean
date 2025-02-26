@@ -69,7 +69,7 @@ lemma updateFinset_updateFinset_subset {s t : Finset ι} (hst : s ⊆ t)
   split_ifs with h1 h2 <;> try rfl
   exact (h1 (hst h2)).elim
 
-theorem restrict_updateFinset' {s t : Finset ι} (hst : s ⊆ t) (x : Π i, π i) (y : Π i : t, π i) :
+lemma restrict_updateFinset' {s t : Finset ι} (hst : s ⊆ t) (x : Π i, π i) (y : Π i : t, π i) :
     s.restrict (updateFinset x t y) = restrict₂ hst y := by
   ext i
   simp [updateFinset, dif_pos (hst i.2)]
@@ -78,5 +78,11 @@ lemma restrict_updateFinset {s : Finset ι} (x : Π i, π i) (y : Π i : s, π i
     s.restrict (updateFinset x s y) = y := by
   rw [restrict_updateFinset' subset_rfl]
   rfl
+
+@[simp]
+lemma updateFinset_restrict {s : Finset ι} (x : Π i, π i) :
+    updateFinset x s (s.restrict x) = x := by
+  ext i
+  simp [updateFinset]
 
 end Function
