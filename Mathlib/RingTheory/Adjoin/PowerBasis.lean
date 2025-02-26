@@ -85,7 +85,7 @@ variable [IsScalarTower R S A] {B : PowerBasis S A}
 `IsIntegral R (B.basis.repr (B.gen ^ n) i)` for all `i` if
 `minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)`. This is the case if `R` is a GCD domain
 and `S` is its fraction ring. -/
-theorem repr_gen_pow_isIntegral (hB : IsIntegral R B.gen) [IsDomain S]
+theorem repr_gen_pow_isIntegral (hB : IsIntegral R B.gen) [Nontrivial S]
     (hmin : minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)) (n : ℕ) :
     ∀ i, IsIntegral R (B.basis.repr (B.gen ^ n) i) := by
   intro i

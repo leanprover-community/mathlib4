@@ -23,7 +23,7 @@ instance [CommMonoid α] [AddCommMonoid α] :
     HasCompl {a : α × α // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
   compl a := ⟨(a.1.2, a.1.1), (mul_comm ..).trans a.2.1, (add_comm ..).trans a.2.2⟩
 
-lemma eq_of_mul_eq_add_eq_one [Semiring α] (a : α) {b c : α}
+lemma eq_of_mul_eq_add_eq_one [NonAssocSemiring α] (a : α) {b c : α}
     (mul : a * b = c * a) (add_ab : a + b = 1) (add_ac : a + c = 1) :
     b = c :=
   calc b = (a + c) * b := by rw [add_ac, one_mul]

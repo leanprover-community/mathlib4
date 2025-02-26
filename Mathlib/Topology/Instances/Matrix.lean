@@ -173,7 +173,7 @@ theorem Continuous.matrix_trace [Fintype n] [AddCommMonoid R] [ContinuousAdd R]
   continuous_finset_sum _ fun _ _ => hA.matrix_elem _ _
 
 @[continuity, fun_prop]
-theorem Continuous.matrix_det [Fintype n] [DecidableEq n] [CommRing R] [IsTopologicalRing R]
+theorem Continuous.matrix_det [Fintype n] [DecidableEq n] [CommRing R] [IsTopologicalSemiring R]
     {A : X → Matrix n n R} (hA : Continuous A) : Continuous fun x => (A x).det := by
   simp_rw [Matrix.det_apply]
   refine continuous_finset_sum _ fun l _ => Continuous.const_smul ?_ _

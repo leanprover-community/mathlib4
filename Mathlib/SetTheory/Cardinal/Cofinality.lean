@@ -134,7 +134,7 @@ def cof (o : Ordinal.{u}) : Cardinal.{u} :=
 theorem cof_type (r : α → α → Prop) [IsWellOrder α r] : (type r).cof = Order.cof (swap rᶜ) :=
   rfl
 
-theorem cof_type_lt [LinearOrder α] [IsWellOrder α (· < ·)] :
+theorem cof_type_lt [LinearOrder α] [IsWellFounded α (· < ·)] :
     (@type α (· < ·) _).cof = @Order.cof α (· ≤ ·) := by
   rw [cof_type, compl_lt, swap_ge]
 

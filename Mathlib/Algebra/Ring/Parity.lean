@@ -139,7 +139,7 @@ lemma Odd.pow (ha : Odd a) : ∀ {n : ℕ}, Odd (a ^ n)
     exact odd_one
   | n + 1 => by rw [pow_succ]; exact ha.pow.mul ha
 
-lemma Odd.pow_add_pow_eq_zero [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
+lemma Odd.pow_add_pow_eq_zero [IsRightCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
     a ^ n + b ^ n = 0 := by
   obtain ⟨k, rfl⟩ := hn
   induction' k with k ih

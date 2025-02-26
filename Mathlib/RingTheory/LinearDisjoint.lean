@@ -513,7 +513,7 @@ theorem of_isField (H : IsField (A ⊗[R] B)) : A.LinearDisjoint B := by
 
 /-- If `A ⊗[R] B` is a field, then for any `R`-algebra `S`
 and injections of `A` and `B` into `S`, their images are linearly disjoint. -/
-theorem of_isField' {A : Type v} [CommRing A] {B : Type w} [CommRing B]
+theorem of_isField' {A : Type v} [Semiring A] {B : Type w} [Semiring B]
     [Algebra R A] [Algebra R B] (H : IsField (A ⊗[R] B))
     (fa : A →ₐ[R] S) (fb : B →ₐ[R] S) (hfa : Function.Injective fa) (hfb : Function.Injective fb) :
     fa.range.LinearDisjoint fb.range := by

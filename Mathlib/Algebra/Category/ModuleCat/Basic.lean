@@ -76,7 +76,7 @@ typeclasses. This is the preferred way to construct a term of `ModuleCat R`. -/
 abbrev of (X : Type v) [AddCommGroup X] [Module R X] : ModuleCat.{v} R :=
   ⟨X⟩
 
-lemma coe_of (X : Type v) [Ring X] [Module R X] : (of R X : Type v) = X :=
+lemma coe_of (X : Type v) [AddCommGroup X] [Module R X] : (of R X : Type v) = X :=
   rfl
 
 -- Ensure the roundtrips are reducibly defeq (so tactics like `rw` can see through them).

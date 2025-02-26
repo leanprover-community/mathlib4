@@ -346,7 +346,7 @@ lemma not_isNontrivial_apply {v : AbsoluteValue R S} (hv : ¬ v.IsNontrivial) {x
     v x = 1 :=
   v.not_isNontrivial_iff.mp hv _ hx
 
-lemma IsNontrivial.exists_abv_gt_one {F S : Type*} [Field F] [LinearOrderedField S]
+lemma IsNontrivial.exists_abv_gt_one {F S : Type*} [DivisionRing F] [LinearOrderedField S]
     {v : AbsoluteValue F S} (h : v.IsNontrivial) :
     ∃ x, 1 < v x := by
   obtain ⟨x, hx₀, hx₁⟩ := h

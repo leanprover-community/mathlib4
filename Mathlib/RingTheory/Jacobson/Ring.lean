@@ -250,7 +250,7 @@ section CommRing
 
 -- Porting note: move to better place
 -- Porting note: make `S` and `T` universe polymorphic
-lemma Subring.mem_closure_image_of {S T : Type*} [CommRing S] [CommRing T] (g : S →+* T)
+lemma Subring.mem_closure_image_of {S T : Type*} [Ring S] [Ring T] (g : S →+* T)
     (u : Set S) (x : S) (hx : x ∈ Subring.closure u) : g x ∈ Subring.closure (g '' u) := by
   rw [Subring.mem_closure] at hx ⊢
   intro T₁ h₁
@@ -722,7 +722,7 @@ lemma RingHom.finite_iff_finiteType_of_isJacobsonRing
 /-- If `K` is a jacobson noetherian ring, `A` a nontrivial `K`-algebra of finite type,
 then any `K`-subfield of `A` is finite over `K`. -/
 theorem finite_of_algHom_finiteType_of_isJacobsonRing
-    {K L A : Type*} [CommRing K] [Field L] [CommRing A]
+    {K L A : Type*} [CommRing K] [DivisionRing L] [CommRing A]
     [IsJacobsonRing K] [IsNoetherianRing K] [Nontrivial A]
     [Algebra K L] [Algebra K A]
     [Algebra.FiniteType K A] (f : L →ₐ[K] A) :

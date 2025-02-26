@@ -153,7 +153,7 @@ nonrec theorem zero_mul {α : Type} [Ring α] (x : Holor α ds₂) : (0 : Holor 
 nonrec theorem mul_zero {α : Type} [Ring α] (x : Holor α ds₁) : x ⊗ (0 : Holor α ds₂) = 0 :=
   funext fun t => mul_zero (x (HolorIndex.take t))
 
-theorem mul_scalar_mul [Monoid α] (x : Holor α []) (y : Holor α ds) :
+theorem mul_scalar_mul [Mul α] (x : Holor α []) (y : Holor α ds) :
     x ⊗ y = x ⟨[], Forall₂.nil⟩ • y := by
   simp (config := { unfoldPartialApp := true }) [mul, SMul.smul, HolorIndex.take, HolorIndex.drop,
     HSMul.hSMul]
@@ -185,7 +185,7 @@ theorem slice_eq (x : Holor α (d :: ds)) (y : Holor α (d :: ds)) (h : slice x 
         _ = slice y i hid ⟨is, hisds⟩ := by rw [h]
         _ = y ⟨i :: is, _⟩ := congr_arg y (Subtype.eq rfl)
 
-theorem slice_unitVec_mul [Ring α] {i : ℕ} {j : ℕ} (hid : i < d) (x : Holor α ds) :
+theorem slice_unitVec_mul [Semiring α] {i : ℕ} {j : ℕ} (hid : i < d) (x : Holor α ds) :
     slice (unitVec d j ⊗ x) i hid = if i = j then x else 0 :=
   funext fun t : HolorIndex ds =>
     if h : i = j then by simp [slice, mul, HolorIndex.take, unitVec, HolorIndex.drop, h]
@@ -240,11 +240,11 @@ inductive CPRankMax [Mul α] [AddMonoid α] : ℕ → ∀ {ds}, Holor α ds → 
   | succ (n) {ds} (x : Holor α ds) (y : Holor α ds) :
     CPRankMax1 x → CPRankMax n y → CPRankMax (n + 1) (x + y)
 
-theorem cprankMax_nil [Monoid α] [AddMonoid α] (x : Holor α nil) : CPRankMax 1 x := by
+theorem cprankMax_nil [Mul α] [AddMonoid α] (x : Holor α nil) : CPRankMax 1 x := by
   have h := CPRankMax.succ 0 x 0 (CPRankMax1.nil x) CPRankMax.zero
   rwa [add_zero x, zero_add] at h
 
-theorem cprankMax_1 [Monoid α] [AddMonoid α] {x : Holor α ds} (h : CPRankMax1 x) :
+theorem cprankMax_1 [Mul α] [AddMonoid α] {x : Holor α ds} (h : CPRankMax1 x) :
     CPRankMax 1 x := by
   have h' := CPRankMax.succ 0 x 0 h CPRankMax.zero
   rwa [zero_add, add_zero] at h'
@@ -273,7 +273,7 @@ theorem cprankMax_mul [Ring α] :
     · exact cprankMax_1 (CPRankMax1.cons _ _ hy₁)
     · exact cprankMax_mul _ x y₂ hy₂
 
-theorem cprankMax_sum [Ring α] {β} {n : ℕ} (s : Finset β) (f : β → Holor α ds) :
+theorem cprankMax_sum [Semiring α] {β} {n : ℕ} (s : Finset β) (f : β → Holor α ds) :
     (∀ x ∈ s, CPRankMax n (f x)) → CPRankMax (s.card * n) (∑ x ∈ s, f x) :=
   letI := Classical.decEq β
   Finset.induction_on s (by simp [CPRankMax.zero])

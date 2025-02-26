@@ -96,8 +96,8 @@ vertical map is injective, then the upper row is exact iff the lower row is.
 See `ShortComplex.exact_iff_of_epi_of_isIso_of_mono` in the file
 `Algebra.Homology.ShortComplex.Exact` for the categorical version of this result. -/
 lemma exact_iff_of_surjective_of_bijective_of_injective
-  {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
-  [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
+  {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddZeroClass M₁] [AddZeroClass M₂] [AddZeroClass M₃]
+  [AddZeroClass N₁] [AddZeroClass N₂] [AddZeroClass N₃]
   (f : M₁ →+ M₂) (g : M₂ →+ M₃) (f' : N₁ →+ N₂) (g' : N₂ →+ N₃)
   (τ₁ : M₁ →+ N₁) (τ₂ : M₂ →+ N₂) (τ₃ : M₃ →+ N₃)
   (comm₁₂ : f'.comp τ₁ = τ₂.comp f)

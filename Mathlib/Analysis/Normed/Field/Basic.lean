@@ -626,7 +626,7 @@ instance MulOpposite.instNormedCommRing : NormedCommRing αᵐᵒᵖ where
   __ := instSeminormedCommRing
 
 /-- The restriction of a power-multiplicative function to a subalgebra is power-multiplicative. -/
-theorem IsPowMul.restriction {R S : Type*} [NormedCommRing R] [CommRing S] [Algebra R S]
+theorem IsPowMul.restriction {R S : Type*} [NormedCommRing R] [Semiring S] [Algebra R S]
     (A : Subalgebra R S) {f : S → ℝ} (hf_pm : IsPowMul f) :
     IsPowMul fun x : A => f x.val := fun x n hn => by
   simpa [SubsemiringClass.coe_pow] using hf_pm (↑x) hn
