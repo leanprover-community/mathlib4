@@ -229,8 +229,10 @@ variable {C} [HasFiniteWidePullbacks C]
 
 attribute [scoped instance] hasFiniteLimits_of_hasTerminal_and_pullbacks
 
+/-- A category with pushforwards along all morphisms is locally cartesian closed. -/
 instance mkOfHasPushforwards [HasPushforwards C] : LocallyCartesianClosed C where
 
+/-- A category with cartesian closed slices is locally cartesian closed. -/
 instance mkOfCartesianClosedOver [Π (I : C), CartesianClosed (Over I)] :
   LocallyCartesianClosed C where
 
