@@ -886,6 +886,3 @@ lemma finiteDimensionalOrder_of_strictMono [Preorder α] [Preorder β] [Nonempty
   rw [not_finiteDimensionalOrder_iff] at h
   absurd infiniteDimensionalOrder_of_strictMono f hf
   rwa [not_infiniteDimensionalOrder_iff (α := β)]
-
-lemma exists_coatom_of_finiteDimensional [Preorder α] [OrderTop α] [FiniteDimensionalOrder α]
-  [Nontrivial α] : ∃ a : α, IsCoatom a := sorry

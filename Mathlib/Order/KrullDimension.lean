@@ -802,38 +802,16 @@ lemma coheight_eq_krullDim_Ici {α : Type*} [Preorder α] (x : α) :
 
 end krullDim
 
-section finiteDimensional
+section zero_or_one
 
-variable {α : Type*} [Preorder α]
-
-lemma finiteDimensionalOrder_iff_krullDim_ne_bot_and_top :
-    FiniteDimensionalOrder α ↔ (krullDim α ≠ ⊥ ∧ krullDim α ≠ ⊤) := by
-  by_cases h : Nonempty α
-  · simp [← not_infiniteDimensionalOrder_iff, ← krullDim_eq_top_iff]
-  · constructor
-    · exact (fun h1 ↦ False.elim (h (LTSeries.nonempty_of_finiteDimensionalType α)))
-    · exact (fun h1 ↦ False.elim (h1.1 (krullDim_eq_bot_iff.mpr (not_nonempty_iff.mp h))))
-
-end finiteDimensional
-
-section typeclass
-
-/-- Typeclass for orders with krull dimension at most `n`. -/
-@[mk_iff]
-class KrullDimLE (n : ℕ) (α : Type*) [Preorder α] : Prop where
-  krullDim_le : krullDim α ≤ n
-
-lemma KrullDimLE.mono {n m : ℕ} (e : n ≤ m) (α : Type*) [Preorder α] [KrullDimLE n α] :
-    KrullDimLE m α :=
-  ⟨KrullDimLE.krullDim_le (n := n).trans (Nat.cast_le.mpr e)⟩
-
-end typeclass
-
-/-!
-## Concrete calculations
--/
-
-section calculations
+lemma orderTop_krullDim_eq_zero_iff {α : Type*} [PartialOrder α] [OrderTop α] :
+    krullDim α = 0 ↔ Subsingleton α := by
+  constructor
+  · intro h;
+    have : ¬ ∃ x y : α, x < y := by rw [← Order.one_le_krullDim_iff, h]; trivial
+    exact subsingleton_of_forall_eq ⊤ fun y ↦ (by
+      by_contra h; rw [← ne_eq, ← lt_top_iff_ne_top] at h; exact this ⟨y, ⊤, h⟩)
+  · intro h; exact le_antisymm Order.krullDim_nonpos_of_subsingleton Order.krullDim_nonneg
 
 @[simp] lemma krullDim_isSimpleOrder {α : Type*} [PartialOrder α] [BoundedOrder α]
     [IsSimpleOrder α] : krullDim α = 1 := by
@@ -847,15 +825,6 @@ section calculations
   have : p ⟨1, h1⟩ = ⊤ := IsSimpleOrder.eq_top_of_lt (p.step ⟨0, h0'⟩)
   have : p ⟨1, h1⟩ < p ⟨2, h2⟩ := p.step ⟨1, h⟩
   simp_all
-
-lemma orderTop_krullDim_eq_zero_iff {α : Type*} [PartialOrder α] [OrderTop α] :
-    krullDim α = 0 ↔ Subsingleton α := by
-  constructor
-  · intro h;
-    have : ¬ ∃ x y : α, x < y := by rw [← Order.one_le_krullDim_iff, h]; trivial
-    exact subsingleton_of_forall_eq ⊤ fun y ↦ (by
-      by_contra h; rw [← ne_eq, ← lt_top_iff_ne_top] at h; exact this ⟨y, ⊤, h⟩)
-  · intro h; exact le_antisymm Order.krullDim_nonpos_of_subsingleton Order.krullDim_nonneg
 
 lemma orderBot_orderTop_krullDim_eq_one_iff {α : Type*} [PartialOrder α] [OrderBot α] [OrderTop α] :
     krullDim α = 1 ↔ IsSimpleOrder α := by
@@ -877,6 +846,49 @@ lemma orderBot_orderTop_krullDim_eq_one_iff {α : Type*} [PartialOrder α] [Orde
         rw [h]; show ¬ 2 ≤ 1; trivial
     }
   · intro _; exact krullDim_isSimpleOrder
+
+end zero_or_one
+
+section finiteDimensional
+
+variable {α : Type*} [Preorder α]
+
+lemma finiteDimensionalOrder_iff_krullDim_ne_bot_and_top :
+    FiniteDimensionalOrder α ↔ (krullDim α ≠ ⊥ ∧ krullDim α ≠ ⊤) := by
+  by_cases h : Nonempty α
+  · simp [← not_infiniteDimensionalOrder_iff, ← krullDim_eq_top_iff]
+  · constructor
+    · exact (fun h1 ↦ False.elim (h (LTSeries.nonempty_of_finiteDimensionalType α)))
+    · exact (fun h1 ↦ False.elim (h1.1 (krullDim_eq_bot_iff.mpr (not_nonempty_iff.mp h))))
+
+lemma exists_coatom_of_finiteDimensional [Preorder α] [OrderTop α] [FiniteDimensionalOrder α]
+    [Nontrivial α] : ∃ a : α, IsCoatom a := by
+  let p := LTSeries.longestOf α
+  have : p.length ≥ 1 := by
+    by_contra h; simp only [not_le, Nat.lt_one_iff] at h
+    sorry
+  sorry
+
+end finiteDimensional
+
+section typeclass
+
+/-- Typeclass for orders with krull dimension at most `n`. -/
+@[mk_iff]
+class KrullDimLE (n : ℕ) (α : Type*) [Preorder α] : Prop where
+  krullDim_le : krullDim α ≤ n
+
+lemma KrullDimLE.mono {n m : ℕ} (e : n ≤ m) (α : Type*) [Preorder α] [KrullDimLE n α] :
+    KrullDimLE m α :=
+  ⟨KrullDimLE.krullDim_le (n := n).trans (Nat.cast_le.mpr e)⟩
+
+end typeclass
+
+/-!
+## Concrete calculations
+-/
+
+section calculations
 
 variable {α : Type*} [Preorder α]
 
