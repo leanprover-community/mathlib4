@@ -102,7 +102,7 @@ theorem mapsTo_gaugeRescale_interior (h₀ : t ∈ 𝓝 0) (hc : Convex ℝ t) :
 theorem mapsTo_gaugeRescale_closure {s t : Set E} (hsc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0)
     (htc : Convex ℝ t) (ht₀ : 0 ∈ t) (hta : Absorbent ℝ t) :
     MapsTo (gaugeRescale s t) (closure s) (closure t) := fun _x hx ↦
-  mem_closure_of_gauge_le_one htc ht₀ hta <| (gauge_gaugeRescale_le _ _ _).trans <|
+  mem_closure_of_gauge_le_one (htc.starConvex ht₀) hta <| (gauge_gaugeRescale_le _ _ _).trans <|
     (gauge_le_one_iff_mem_closure hsc hs₀).2 hx
 
 variable [T1Space E]
