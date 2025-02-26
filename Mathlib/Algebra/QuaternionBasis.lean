@@ -33,7 +33,12 @@ namespace QuaternionAlgebra
 Note that for definitional convenience, `k` is provided as a field even though `i_mul_j` fully
 determines it. -/
 structure Basis {R : Type*} (A : Type*) [CommRing R] [Ring A] [Algebra R A] (c₁ c₂ c₃ : R) where
-  (i j k : A)
+  /-- The first imaginary unit -/
+  i : A
+  /-- The second imaginary unit -/
+  j : A
+  /-- The third imaginary unit -/
+  k : A
   i_mul_i : i * i = c₁ • (1 : A) + c₂ • i
   j_mul_j : j * j = c₃ • (1 : A)
   i_mul_j : i * j = k
