@@ -50,7 +50,7 @@ It provides meaningful (non-junk) values for nilpotent elements. -/
 noncomputable def exp (a : A) : A :=
   ∑ i ∈ range (nilpotencyClass a), (i.factorial : R)⁻¹ • (a ^ i)
 
-theorem exp_eq_truncated {k : ℕ} (a : A) (h : a ^ k = 0) :
+theorem exp_eq_truncated {a : A} {k : ℕ}  (h : a ^ k = 0) :
     ∑ i ∈ range k, (i.factorial : R)⁻¹ • (a ^ i) = exp R A a := by
   have h₁ : ∑ i ∈ range k, (i.factorial : R)⁻¹ • (a ^ i) =
       ∑ i ∈ range (nilpotencyClass a), (i.factorial : R)⁻¹ • (a ^ i) +
@@ -63,23 +63,23 @@ theorem exp_eq_truncated {k : ℕ} (a : A) (h : a ^ k = 0) :
     rw [pow_eq_zero_of_le (mem_Ico.1 h₂).1 (pow_nilpotencyClass ⟨k, h⟩), smul_zero]
 
 theorem exp_zero_eq_one : exp R A 0 = 1 := by
-  have h₁ := exp_eq_truncated R A (0 : A) (pow_one 0)
+  have h₁ := exp_eq_truncated R A (pow_one 0)
   rw [range_one, sum_singleton, Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero,
     one_smul] at h₁
   exact h₁.symm
 
 variable [CharZero R]
 
-theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a) (h₃ : IsNilpotent b) :
+theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a) (h₃ : IsNilpotent b) :
     exp R A (a + b) = exp R A a * exp R A b := by
   obtain ⟨n₁, hn₁⟩ := h₂
   obtain ⟨n₂, hn₂⟩ := h₃
   let N := n₁ ⊔ n₂
   have h₄ : a ^ (N + 1) = 0 := pow_eq_zero_of_le (by omega) hn₁
   have h₅ : b ^ (N + 1) = 0 := pow_eq_zero_of_le (by omega) hn₂
-  rw [← exp_eq_truncated R A (k := 2 * N + 1) (a + b)
+  rw [← exp_eq_truncated R A (k := 2 * N + 1)
   (Commute.add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero h₁ h₄ h₅ (by omega)),
-  ← exp_eq_truncated R A a h₄, ← exp_eq_truncated R A b h₅]
+  ← exp_eq_truncated R A h₄, ← exp_eq_truncated R A h₅]
   have s₁ := calc
     ∑ i ∈ range (2 * N + 1), (i.factorial : R)⁻¹ • (a + b) ^ i =
       ∑ i ∈ range (2 * N + 1), (i.factorial : R)⁻¹ •
@@ -181,14 +181,14 @@ section RingAlgebras
 variable [CharZero R]
 variable [Ring A] [Algebra R A]
 
-theorem exp_of_nilpotent_is_unit (a : A) (h : IsNilpotent a) : IsUnit (exp R A a) := by
+theorem exp_of_nilpotent_is_unit {a : A} (h : IsNilpotent a) : IsUnit (exp R A a) := by
   have h₁ : Commute a (-a) := Commute.neg_right rfl
   have h₂ : IsNilpotent (-a) := IsNilpotent.neg h
-  have h₃ := exp_add_of_commute R A a (-a) h₁ h h₂
+  have h₃ := exp_add_of_commute R A h₁ h h₂
   rw [add_neg_cancel a, exp_zero_eq_one] at h₃
   apply isUnit_iff_exists.2
   refine ⟨exp R A (-a), h₃.symm, ?_⟩
-  rw [← exp_add_of_commute R A (-a) a h₁.symm h₂ h, neg_add_cancel a, exp_zero_eq_one]
+  rw [← exp_add_of_commute R A h₁.symm h₂ h, neg_add_cancel a, exp_zero_eq_one]
 
 end RingAlgebras
 
