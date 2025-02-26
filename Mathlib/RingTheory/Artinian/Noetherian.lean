@@ -1,19 +1,11 @@
 import Mathlib.RingTheory.Artinian.Ring
 import Mathlib.RingTheory.Artinian.Module
 import Mathlib.RingTheory.HopkinsLevitzki
+import Mathlib.RingTheory.Jacobson.Ring
 
 open Set Submodule
 
 section Algebra
-
-lemma isNoetherian_of_tower_of_surjective {R S} (M) [CommSemiring R] [Semiring S]
-    [AddCommMonoid M] [Algebra R S] [Module S M] [Module R M] [IsScalarTower R S M]
-    (h : Function.Surjective (algebraMap R S)) :
-  IsNoetherian R M ↔ IsNoetherian S M := by
-  refine ⟨isNoetherian_of_tower R, fun h' ↦ ?_⟩
-  simp_rw [isNoetherian_iff'] at h' ⊢
-  haveI : WellFoundedGT (Submodule S M) := h'
-  exact (Submodule.orderIsoOfSurjective M h).symm.toOrderEmbedding.wellFoundedGT
 
 lemma isArtinian_of_tower_of_surjective {R S} (M) [CommRing R] [CommRing S]
     [AddCommGroup M] [Algebra R S] [Module S M] [Module R M] [IsScalarTower R S M]
@@ -40,11 +32,10 @@ lemma isNoetherian_iff_isArtinian_of_mul {R : Type*} [CommRing R] (I J : Ideal R
   letI : Module (R ⧸ I) (J ⧸ IJ) := this.module
   letI : Field (R ⧸ I) := Ideal.Quotient.field I
   have : Function.Surjective (algebraMap R (R ⧸ I)) := Ideal.Quotient.mk_surjective
+  have tfae_out := (IsArtinianRing.tfae (R ⧸ I) (J ⧸ IJ)).out 1 2
   have : IsNoetherian R (J ⧸ IJ) ↔ IsArtinian R (J ⧸ IJ) := by
-    -- rw [isNoetherian_of_tower_of_surjective (J ⧸ IJ) this,
-        -- (IsArtinianRing.tfae (R ⧸ I) (J ⧸ IJ)).out 1 2,
-        -- ← isArtinianOfTowerOfSurjective (J ⧸ IJ) this]
-    sorry
+    rw [isNoetherian_of_tower_of_surjective (J ⧸ IJ) this, tfae_out,
+        ← isArtinian_of_tower_of_surjective (J ⧸ IJ) this]
   constructor
   · intro hNoetherianJ
     haveI := this.mp inferInstance
@@ -121,8 +112,9 @@ end Noetherian
 
 section AlgebraOverField
 
-lemma isArtinian_of_isArtinian_of_mul_of_field (K : Type*) {R : Type*} [CommRing R] [Field K]
-    [Algebra K R] [Algebra.FiniteType K R] (I J : Ideal R) [I.IsMaximal] [IsArtinian R J]
+variable {R : Type*} [CommRing R] (K : Type*) [Field K] [Algebra K R] [Algebra.FiniteType K R]
+
+lemma isArtinian_of_isArtinian_of_mul_of_field (I J : Ideal R) [I.IsMaximal] [IsArtinian R J]
     (H : IsArtinian K (I * J : _)) : IsArtinian K J := by
   let IJ := Submodule.comap J.subtype (I * J)
   have : Module.IsTorsionBySet R (J ⧸ IJ) I := by
@@ -133,28 +125,22 @@ lemma isArtinian_of_isArtinian_of_mul_of_field (K : Type*) {R : Type*} [CommRing
     simpa using Ideal.mul_mem_mul hy hx
   letI : Module (R ⧸ I) (J ⧸ IJ) := this.module
   letI := Ideal.Quotient.field I
-  have : Function.Surjective (algebraMap R (R ⧸ I)) := Ideal.Quotient.mk_surjective
+  have h : Function.Surjective (algebraMap R (R ⧸ I)) := Ideal.Quotient.mk_surjective
   haveI : Algebra.FiniteType K (R ⧸ I) := (‹Algebra.FiniteType K R›).trans inferInstance
-  haveI : Module.Finite K (R ⧸ I) := by
-    -- `NOTE`: the theorem used here is in Mathlib.RingTheory.Jacobson.Ring, but
-    -- such an import will cause build cycle
-
-    -- need to use finite_of_finite_type_of_isJacobsonRing
-    sorry
+  haveI : Module.Finite K (R ⧸ I) := finite_of_finite_type_of_isJacobsonRing _ _
+  have h1_out := (IsArtinianRing.tfae (R ⧸ I) (J ⧸ IJ)).out 2 0
+  have h2_out := (IsArtinianRing.tfae K (J ⧸ IJ)).out 2 0
   have : IsArtinian R (J ⧸ IJ) ↔ IsArtinian K (J ⧸ IJ) := by
-    rw [isArtinian_of_tower_of_surjective (J ⧸ IJ) (by aesop)]
-    -- rw [(module.finite_length_tfae_of_field (R ⧸ I) (J ⧸ IJ)).out 2 0,
-    --     (module.finite_length_tfae_of_field K (J ⧸ IJ)).out 2 0]
-    -- exact (module.finite_of_tower K (R ⧸ I) (J ⧸ IJ)).symm
-    sorry
+    rw [isArtinian_of_tower_of_surjective (J ⧸ IJ) h, h1_out, h2_out]
+    constructor
+    · intro h; exact Module.Finite.trans (R ⧸ I) _
+    · intro h; exact Module.Finite.of_restrictScalars_finite K (R ⧸ I) _
   haveI := this.mp inferInstance
   refine isArtinian_of_range_eq_ker
     ((Submodule.inclusion (Ideal.mul_le_left) : (I * J : _) →ₗ[R] J).restrictScalars K)
     (IJ.mkQ.restrictScalars K) ?_
   rw [LinearMap.ker_restrictScalars, Submodule.ker_mkQ, range_restrictScalars,
     Submodule.range_inclusion]
-
-variable {R : Type*} [CommRing R] (K : Type*) [Field K] [Algebra K R] [Algebra.FiniteType K R]
 
 lemma isArtinianRing_iff_isArtinian_of_field : IsArtinianRing R ↔ IsArtinian K R := by
   classical
@@ -178,11 +164,8 @@ lemma isArtinianRing_iff_isArtinian_of_field : IsArtinianRing R ↔ IsArtinian K
     have := hs a (Multiset.mem_cons_self a s)
     exact isArtinian_of_isArtinian_of_mul_of_field _ a s.prod h₃
 
-lemma isArtinianRing_iff_finite_of_field:
-    IsArtinianRing R ↔ Module.Finite K R := by
-  apply (isArtinianRing_iff_isArtinian_of_field K).trans
-  -- need tfae
-  sorry
+lemma isArtinianRing_iff_finite_of_field : IsArtinianRing R ↔ Module.Finite K R :=
+  (isArtinianRing_iff_isArtinian_of_field K).trans ((IsArtinianRing.tfae K R).out 2 0)
 
 omit [Algebra K R] [Algebra.FiniteType K R] in
 lemma isArtinianRing_iff_ringHomFinite_of_field (f : K →+* R) (hf : f.FiniteType) :
