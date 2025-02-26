@@ -14,6 +14,8 @@ namespace IsLocalizedModule
 
 variable {R : Type*} [CommSemiring R] (S : Submonoid R)
 
+attribute [local instance] IsLocalizedModule.isScalarTower_module
+
 /-- Localization of modules commutes with binary products. -/
 instance prodMap {M N M' N' : Type*}
     [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]

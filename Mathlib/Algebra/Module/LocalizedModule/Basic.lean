@@ -1296,7 +1296,7 @@ variable {R A M M' : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (S :
 noncomputable def module (f : M →ₗ[R] M') [IsLocalizedModule S f] : Module A M' :=
   (IsLocalizedModule.iso S f).symm.toAddEquiv.module A
 
-instance isScalarTower_module (f : M →ₗ[R] M') [IsLocalizedModule S f] :
+lemma isScalarTower_module (f : M →ₗ[R] M') [IsLocalizedModule S f] :
     letI : Module A M' := IsLocalizedModule.module S f
     IsScalarTower R A M' :=
   (IsLocalizedModule.iso S f).symm.isScalarTower A
