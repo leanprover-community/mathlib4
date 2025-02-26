@@ -6,13 +6,41 @@ Authors: Zichen Wang, Chenyi Li, ZaiWen Wen
 import Mathlib.Analysis.Convex.Intrinsic
 /-!
 # Intrinsic Interior, Closure, and Related Properties of Convex Sets
+
 This file explores the intrinsic interior, intrinsic closure,
 and related properties of convex sets in a normed vector space,
 focusing on their interactions with affine spans, closures, and intersections.
-These concepts are essential in convex analysis and finite-dimensional spaces.
 The intrinsic interior and closure of a convex set are defined based on its affine span,
 while the intrinsic interior is generally larger than the topological interior,
 and the intrinsic closure coincides with the topological closure under certain conditions.
+
+## Results
+The main results are:
+* `openSegment_sub_intrinsicInterior`: The open segment between two points in the intrinsic
+    interior of a convex set is contained in the intrinsic interior.
+* `convex_intrinsicInterior`: The intrinsic interior of a convex set is convex.
+* `convex_intrinsicClosure`: The intrinsic closure of a convex set is convex.
+* `affinespan_intrinsicInterior`: The affine span of the intrinsic interior of a convex set is
+    equal to the affine span of the set.
+* `intrinsicInterior_intrinsicInterior`: The intrinsic interior of the intrinsic interior of
+    a convex set is equal to the intrinsic interior of the set.
+* `intrinsicInterior_iff`: A point lies in the intrinsic interior of a convex set if and only if
+    for every point in the set, there exists a scalar greater than one such that the point
+    lies in the set.
+* `intrinsicInterior_intrinsicClosure`: The intrinsic interior of the intrinsic closure of a
+    convex set is equal to the intrinsic interior of the set.
+* `intrinsicClosure_intrinsicInterior`: The intrinsic closure of the intrinsic interior of a
+    convex set is equal to the intrinsic closure of the set.
+* `closure_intrinsicInterior`: The closure of the intrinsic interior of a convex set is equal to
+    the closure of the set.
+* `intrinsicInterior_closure`: The intrinsic interior of the closure of a convex set is
+    equal to the intrinsic interior of the set.
+* `iIntersection_closure_eq_intrinsicInterior_closure`: if each set is convex and there exists
+    a point in the intrinsic interior of all sets, then the intersection of their closures equals
+    the closure of their intersection.
+* `iIntersection_intrinsicInterior_eq_intrinsicInterior_iIntersection`: The intrinsic interior
+    of the finite intersection of convex sets is equal to the intersection of their intrinsic
+    interiors.
 
 ## References
 
