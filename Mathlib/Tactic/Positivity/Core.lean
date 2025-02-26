@@ -62,6 +62,8 @@ def Strictness.toNonzero {e} : Strictness zα pα e → Option Q($e ≠ 0)
 
 /-- An extension for `positivity`. -/
 structure PositivityExt where
+  /-- Name for debug information. -/
+  name : Name := by exact decl_name%
   /-- Attempts to prove an expression `e : α` is `>0`, `≥0`, or `≠0`. -/
   eval {u} {α : Q(Type u)} (zα : Q(Zero $α)) (pα : Q(PartialOrder $α)) (e : Q($α)) :
     MetaM (Strictness zα pα e)
@@ -315,15 +317,31 @@ def orElse {e : Q($α)} (t₁ : Strictness zα pα e) (t₂ : MetaM (Strictness 
 
 /-- Run each registered `positivity` extension on an expression, returning a `NormNum.Result`. -/
 def core (e : Q($α)) : MetaM (Strictness zα pα e) := do
+  withTraceNode `Tactic.positivity
+    (fun
+      | .ok .none =>
+        return m!"{crossEmoji}: unable to show anything about {e}"
+      | .ok r =>
+        return m!"{checkEmoji}: proved positivity of {e} as {r.toString}"
+      | .error err =>
+        return m!"{bombEmoji}: proving positivity of {e}:{indentD err.toMessageData}") do
   let mut result := .none
-  trace[Tactic.positivity] "trying to prove positivity of {e}"
   for ext in ← (positivityExt.getState (← getEnv)).2.getMatch e do
-    try
-      result ← orElse result <| ext.eval zα pα e
-    catch err =>
-      trace[Tactic.positivity] "{e} failed: {err.toMessageData}"
-  result ← orElse result <| normNumPositivity zα pα e
-  result ← orElse result <| positivityCanon zα pα e
+    result ← orElse result <|
+      withTraceNode `Tactic.positivity (return m!"{exceptEmoji ·} {.ofConstName ext.name}") <|
+        try
+          ext.eval zα pα e
+        catch err =>
+          trace[Tactic.positivity] "{e} failed: {err.toMessageData}"
+          pure .none
+  result ← orElse result <|
+    withTraceNode `Tactic.positivity
+      (return m!"{exceptEmoji ·} {.ofConstName ``normNumPositivity}") <|
+      normNumPositivity zα pα e
+  result ← orElse result <|
+    withTraceNode `Tactic.positivity
+      (return m!"{exceptEmoji ·} {.ofConstName ``positivityCanon}") <|
+      positivityCanon zα pα e
   if let .positive _ := result then
     trace[Tactic.positivity] "{e} => {result.toString}"
     return result
