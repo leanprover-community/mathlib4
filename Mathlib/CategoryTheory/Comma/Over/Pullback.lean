@@ -41,6 +41,12 @@ In a category with binary products, for any object `X` the functor
 - `mapStarIso` constructs a natural isomorphism between the functors `star X` and
   `star Y ⋙ pullback f` for any morphism `f : X ⟶ Y`.
 
+- `starIteratedSliceForwardIsoPullback` relates `Over.pullback f` and `star (Over.mk f)`.
+  In particular, it constructs a natural isomorphism between the functors
+  `star (Over.mk f) ⋙ (Over.mk f).iteratedSliceForward` and `pullback f`. We shall use the
+  mate conjugate of this isomorphic to construct the right adjoint of `Over.pullback f` in locally
+  cartesian closed categories.
+
 -/
 
 noncomputable section
