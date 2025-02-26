@@ -3,7 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Chris Hughes, Michael Howes
 -/
-import Mathlib.Algebra.Group.Aut
+import Mathlib.Algebra.Group.End
 import Mathlib.Algebra.Group.Semiconj.Units
 
 /-!
@@ -12,7 +12,7 @@ import Mathlib.Algebra.Group.Semiconj.Units
 See also `MulAut.conj` and `Quandle.conj`.
 -/
 
-assert_not_exists MonoidWithZero Multiset
+assert_not_exists MonoidWithZero Multiset MulAction
 
 universe u v
 
@@ -81,8 +81,6 @@ theorem isConj_iff {a b : α} : IsConj a b ↔ ∃ c : α, c * a * c⁻¹ = b :=
   ⟨fun ⟨c, hc⟩ => ⟨c, mul_inv_eq_iff_eq_mul.2 hc⟩, fun ⟨c, hc⟩ =>
     ⟨⟨c, c⁻¹, mul_inv_cancel c, inv_mul_cancel c⟩, mul_inv_eq_iff_eq_mul.1 hc⟩⟩
 
--- Porting note: not in simp NF.
--- @[simp]
 theorem conj_inv {a b : α} : (b * a * b⁻¹)⁻¹ = b * a⁻¹ * b⁻¹ :=
   (map_inv (MulAut.conj b) a).symm
 
@@ -98,12 +96,10 @@ theorem conj_pow {i : ℕ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻�
 
 @[simp]
 theorem conj_zpow {i : ℤ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
-  induction i
-  · change (a * b * a⁻¹) ^ (_ : ℤ) = a * b ^ (_ : ℤ) * a⁻¹
-    simp [zpow_natCast]
+  cases i
+  · simp
   · simp only [zpow_negSucc, conj_pow, mul_inv_rev, inv_inv]
     rw [mul_assoc]
--- Porting note: Added `change`, `zpow_natCast`, and `rw`.
 
 theorem conj_injective {x : α} : Function.Injective fun g : α => x * g * x⁻¹ :=
   (MulAut.conj x).injective
@@ -246,7 +242,7 @@ theorem IsConj.conjugatesOf_eq {a b : α} (ab : IsConj a b) : conjugatesOf a = c
 
 theorem isConj_iff_conjugatesOf_eq {a b : α} : IsConj a b ↔ conjugatesOf a = conjugatesOf b :=
   ⟨IsConj.conjugatesOf_eq, fun h => by
-    have ha := @mem_conjugatesOf_self _ _ b -- Porting note: added `@`.
+    have ha := mem_conjugatesOf_self (a := b)
     rwa [← h] at ha⟩
 
 end Monoid

@@ -3,15 +3,14 @@ Copyright (c) 2023 Junyan Xu, Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Algebra.Group.Action.End
 import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Set.Card
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
-import Mathlib.SetTheory.Cardinal.Finite
 
-/-!  Subgroup of `Equiv.Perm α` preserving a function
+/-!
+# Subgroup of `Equiv.Perm α` preserving a function
 
 Let `α` and `ι` by types and let `f : α → ι`
 
@@ -33,9 +32,11 @@ Let `α` and `ι` by types and let `f : α → ι`
   formula, where the product is restricted to `Finset.univ.image f`.
 -/
 
-variable {α ι : Type*} {f : α → ι}
+assert_not_exists Field
 
 open Equiv MulAction
+
+variable {α ι : Type*} {f : α → ι}
 
 namespace DomMulAct
 
@@ -117,7 +118,7 @@ theorem stabilizer_ncard [Finite α] [Fintype ι] :
 variable [DecidableEq α] [DecidableEq ι]
 
 /-- The cardinality of the type of permutations preserving a function
-  (without the finiteness assumption on target)-/
+  (without the finiteness assumption on target) -/
 theorem stabilizer_card':
     Fintype.card {g : Perm α // f ∘ g = f} =
       ∏ i ∈ Finset.univ.image f, (Fintype.card ({a // f a = i}))! := by

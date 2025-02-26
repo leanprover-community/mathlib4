@@ -37,10 +37,6 @@ profinite
 
 -/
 
--- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
-attribute [local instance] CategoryTheory.HasForget.instFunLike
-
-
 universe v u
 
 open CategoryTheory Topology CompHausLike
@@ -66,10 +62,6 @@ instance : Inhabited Profinite :=
 
 instance {X : Profinite} : TotallyDisconnectedSpace X :=
   X.prop
-
-instance {X : Profinite} : TotallyDisconnectedSpace ((forget Profinite).obj X) := by
-  change TotallyDisconnectedSpace X
-  exact inferInstance
 
 end Profinite
 

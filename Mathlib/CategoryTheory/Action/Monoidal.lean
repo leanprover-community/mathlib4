@@ -40,26 +40,14 @@ variable [MonoidalCategory V]
 instance instMonoidalCategory : MonoidalCategory (Action V G) :=
   Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
 
-/- Adding this solves `simpNF` linter report at `tensorUnit_ρ` -/
 @[simp]
-theorem tensorUnit_ρ' {g : G} :
+theorem tensorUnit_ρ {g : G} :
     @DFunLike.coe (G →* End (𝟙_ V)) _ _ _ (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) := by
   rfl
 
 @[simp]
-theorem tensorUnit_ρ {g : G} :
-    (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
-  rfl
-
-/- Adding this solves `simpNF` linter report at `tensor_ρ` -/
-@[simp]
-theorem tensor_ρ' {X Y : Action V G} {g : G} :
-    @DFunLike.coe (G →* End (X.V ⊗ Y.V)) _ _ _ (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
-  rfl
-
-@[simp]
 theorem tensor_ρ {X Y : Action V G} {g : G} :
-    (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
+    @DFunLike.coe (G →* End (X.V ⊗ Y.V)) _ _ _ (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
   rfl
 
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action
@@ -206,7 +194,38 @@ section
 
 open MonoidalCategory
 
-variable (G : Type u)
+/-- Given `X : Action (Type u) G` for `G` a group, then `G × X` (with `G` acting as left
+multiplication on the first factor and by `X.ρ` on the second) is isomorphic as a `G`-set to
+`G × X` (with `G` acting as left multiplication on the first factor and trivially on the second).
+The isomorphism is given by `(g, x) ↦ (g, g⁻¹ • x)`. -/
+@[simps]
+noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type u) G) :
+    leftRegular G ⊗ X ≅ leftRegular G ⊗ Action.mk X.V 1 where
+  hom :=
+    { hom := fun g => ⟨g.1, (X.ρ (g.1⁻¹ : G) g.2 : X.V)⟩
+      comm := fun (g : G) => by
+        funext ⟨(x₁ : G), (x₂ : X.V)⟩
+        refine Prod.ext rfl ?_
+        change (X.ρ ((g * x₁)⁻¹ : G) * X.ρ g) x₂ = X.ρ _ _
+        rw [mul_inv_rev, ← X.ρ.map_mul, inv_mul_cancel_right] }
+  inv :=
+    { hom := fun g => ⟨g.1, X.ρ g.1 g.2⟩
+      comm := fun (g : G) => by
+        funext ⟨(x₁ : G), (x₂ : X.V)⟩
+        refine Prod.ext rfl ?_
+        simp [leftRegular] }
+  hom_inv_id := by
+    apply Hom.ext
+    funext x
+    refine Prod.ext rfl ?_
+    change (X.ρ x.1 * X.ρ (x.1⁻¹ : G)) x.2 = x.2
+    rw [← X.ρ.map_mul, mul_inv_cancel, X.ρ.map_one, End.one_def, types_id_apply]
+  inv_hom_id := by
+    apply Hom.ext
+    funext x
+    refine Prod.ext rfl ?_
+    change (X.ρ (x.1⁻¹ : G) * X.ρ x.1) x.2 = x.2
+    rw [← X.ρ.map_mul, inv_mul_cancel, X.ρ.map_one, End.one_def, types_id_apply]
 
 /-- The natural isomorphism of `G`-sets `Gⁿ⁺¹ ≅ G × Gⁿ`, where `G` acts by left multiplication on
 each factor. -/

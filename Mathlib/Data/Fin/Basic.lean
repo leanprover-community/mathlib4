@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Algebra.NeZero
-import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Int.DivMod
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Equiv.Set
@@ -144,8 +143,6 @@ theorem val_eq_val (a b : Fin n) : (a : ℕ) = b ↔ a = b :=
 theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
   Fin.ext_iff.not
 
--- Porting note: I'm not sure if this comment still applies.
--- built-in reduction doesn't always work
 @[simp, nolint simpNF]
 theorem mk_eq_mk {a h a' h'} : @mk n a h = @mk n a' h' ↔ a = a' :=
   Fin.ext_iff
@@ -371,7 +368,6 @@ theorem val_add_eq_ite {n : ℕ} (a b : Fin n) :
     (↑(a + b) : ℕ) = if n ≤ a + b then a + b - n else a + b := by
   rw [Fin.val_add, Nat.add_mod_eq_ite, Nat.mod_eq_of_lt (show ↑a < n from a.2),
     Nat.mod_eq_of_lt (show ↑b < n from b.2)]
---- Porting note: syntactically the same as the above
 
 theorem val_add_eq_of_add_lt {n : ℕ} {a b : Fin n} (huv : a.val + b.val < n) :
     (a + b).val = a.val + b.val := by
@@ -398,12 +394,8 @@ theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).
 
 /-- If `n` is non-zero, converting the value of a `Fin n` to `Fin n` results
 in the same value. -/
-@[simp] theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a :=
+@[simp, norm_cast] theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a :=
   Fin.ext <| val_cast_of_lt a.isLt
-
--- Porting note: this is syntactically the same as `val_cast_of_lt`
-
--- Porting note: this is syntactically the same as `cast_val_of_lt`
 
 -- This is a special case of `CharP.cast_eq_zero` that doesn't require typeclass search
 @[simp high] lemma natCast_self (n : ℕ) [NeZero n] : (n : Fin n) = 0 := by ext; simp
@@ -521,7 +513,7 @@ lemma nonempty_embedding_iff : Nonempty (Fin n ↪ Fin m) ↔ n ≤ m := by
   induction n generalizing m with
   | zero => exact m.zero_le
   | succ n ihn =>
-    cases' h with e
+    obtain ⟨e⟩ := h
     rcases exists_eq_succ_of_ne_zero (pos_iff_nonempty.2 (Nonempty.map e inferInstance)).ne'
       with ⟨m, rfl⟩
     refine Nat.succ_le_succ <| ihn ⟨?_⟩
@@ -635,8 +627,11 @@ theorem succ_le_or_le_castSucc (p : Fin (n + 1)) (i : Fin n) : succ i ≤ p ∨ 
   rw [le_castSucc_iff, ← castSucc_lt_iff_succ_le]
   exact p.castSucc_lt_or_lt_succ i
 
-theorem exists_castSucc_eq_of_ne_last {x : Fin (n + 1)} (h : x ≠ (last _)) :
+theorem eq_castSucc_of_ne_last {x : Fin (n + 1)} (h : x ≠ (last _)) :
     ∃ y, Fin.castSucc y = x := exists_castSucc_eq.mpr h
+
+@[deprecated (since := "2025-02-06")]
+alias exists_castSucc_eq_of_ne_last := eq_castSucc_of_ne_last
 
 theorem forall_fin_succ' {P : Fin (n + 1) → Prop} :
     (∀ i, P i) ↔ (∀ i : Fin n, P i.castSucc) ∧ P (.last _) :=
@@ -755,7 +750,7 @@ theorem castSucc_pred_eq_pred_castSucc {a : Fin (n + 1)} (ha : a ≠ 0)
 
 theorem castSucc_pred_add_one_eq {a : Fin (n + 1)} (ha : a ≠ 0) :
     (a.pred ha).castSucc + 1 = a := by
-  cases' a using cases with a
+  cases a using cases
   · exact (ha rfl).elim
   · rw [pred_succ, coeSucc_eq_succ]
 
@@ -859,7 +854,7 @@ theorem succ_castPred_eq_castPred_succ {a : Fin (n + 1)} (ha : a ≠ last n)
 
 theorem succ_castPred_eq_add_one {a : Fin (n + 1)} (ha : a ≠ last n) :
     (a.castPred ha).succ = a + 1 := by
-  cases' a using lastCases with a
+  cases a using lastCases
   · exact (ha rfl).elim
   · rw [castPred_castSucc, coeSucc_eq_succ]
 
@@ -1034,7 +1029,7 @@ lemma succAbove_last_apply (i : Fin n) : succAbove (last n) i = castSucc i := by
 results in a value that is less than `p`. -/
 lemma succAbove_lt_iff_castSucc_lt (p : Fin (n + 1)) (i : Fin n) :
     p.succAbove i < p ↔ castSucc i < p := by
-  cases' castSucc_lt_or_lt_succ p i with H H
+  rcases castSucc_lt_or_lt_succ p i with H | H
   · rwa [iff_true_right H, succAbove_of_castSucc_lt _ _ H]
   · rw [castSucc_lt_iff_succ_le, iff_false_right (Fin.not_le.2 H), succAbove_of_lt_succ _ _ H]
     exact Fin.not_lt.2 <| Fin.le_of_lt H
@@ -1047,7 +1042,7 @@ lemma succAbove_lt_iff_succ_le (p : Fin (n + 1)) (i : Fin n) :
 results in a value that is greater than `p`. -/
 lemma lt_succAbove_iff_le_castSucc (p : Fin (n + 1)) (i : Fin n) :
     p < p.succAbove i ↔ p ≤ castSucc i := by
-  cases' castSucc_lt_or_lt_succ p i with H H
+  rcases castSucc_lt_or_lt_succ p i with H | H
   · rw [iff_false_right (Fin.not_le.2 H), succAbove_of_castSucc_lt _ _ H]
     exact Fin.not_lt.2 <| Fin.le_of_lt H
   · rwa [succAbove_of_lt_succ _ _ H, iff_true_left H, le_castSucc_iff]
@@ -1426,7 +1421,7 @@ section Mul
 -/
 
 protected theorem mul_one' [NeZero n] (k : Fin n) : k * 1 = k := by
-  cases' n with n
+  rcases n with - | n
   · simp [eq_iff_true_of_subsingleton]
   cases n
   · simp [fin_one_eq_zero]

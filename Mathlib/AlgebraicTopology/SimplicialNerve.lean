@@ -19,7 +19,7 @@ poset of subsets of the interval `[i, j]` in `J`, containing the endpoints.
 The simplicial nerve of a simplicial category `C` is then defined as the simplicial set whose
 `n`-simplices are given by the set of simplicial functors from the simplicial thickening of
 the linear order `Fin (n + 1)` to `C`, in other words
-`SimplicialNerve C _[n] := EnrichedFunctor SSet (SimplicialThickening (Fin (n + 1))) C`.
+`SimplicialNerve C _⦋n⦌ := EnrichedFunctor SSet (SimplicialThickening (Fin (n + 1))) C`.
 
 ## Projects
 
