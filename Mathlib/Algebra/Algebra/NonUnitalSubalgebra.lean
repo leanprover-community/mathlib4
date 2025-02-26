@@ -916,7 +916,7 @@ instance _root_.NonUnitalAlgHom.subsingleton [Subsingleton (NonUnitalSubalgebra 
 
 /-- The map `S → T` when `S` is a non-unital subalgebra contained in the non-unital subalgebra `T`.
 
-This is the non-unital subalgebra version of `Submodule.inclusion`, or `Subring.inclusion`  -/
+This is the non-unital subalgebra version of `Submodule.inclusion`, or `Subring.inclusion` -/
 def inclusion {S T : NonUnitalSubalgebra R A} (h : S ≤ T) : S →ₙₐ[R] T where
   toFun := Set.inclusion h
   map_add' _ _ := rfl
