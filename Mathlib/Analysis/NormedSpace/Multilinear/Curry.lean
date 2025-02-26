@@ -102,10 +102,13 @@ construct the corresponding continuous multilinear map on `n+1` variables obtain
 the variables, given by `m ↦ f (m 0) (tail m)` -/
 def ContinuousLinearMap.uncurryLeft
     (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) :
-    ContinuousMultilinearMap 𝕜 Ei G :=
-  (@LinearMap.uncurryLeft 𝕜 n Ei G _ _ _ _ _
-      (ContinuousMultilinearMap.toMultilinearMapLinear.comp f.toLinearMap)).mkContinuous
-    ‖f‖ fun m => by exact ContinuousLinearMap.norm_map_tail_le f m
+    ContinuousMultilinearMap 𝕜 Ei G where
+  toMultilinearMap :=
+    (@LinearMap.uncurryLeft 𝕜 n Ei G _ _ _ _ _
+        (ContinuousMultilinearMap.toMultilinearMapLinear.comp f.toLinearMap))
+  cont := by
+    dsimp [LinearMap.uncurryLeft]
+    continuity
 
 @[simp]
 theorem ContinuousLinearMap.uncurryLeft_apply
@@ -113,26 +116,56 @@ theorem ContinuousLinearMap.uncurryLeft_apply
     f.uncurryLeft m = f (m 0) (tail m) :=
   rfl
 
+section toMove
+
+/-- The `Fin` version of `inf_iInf_nat_succ`. -/
+theorem Fin.iInf_succ {α} [CompleteLattice α] {n : ℕ} {f : Fin (n + 1) → α} :
+    ⨅ i, f i = f 0 ⊓ ⨅ i, f (.succ i) :=
+  le_antisymm
+    (le_inf (iInf_le _ _) <| iInf_mono' fun _ => ⟨_, le_rfl⟩)
+    (le_iInf <| Fin.cases inf_le_left fun _ => inf_le_right.trans (iInf_le _ _))
+
+theorem IsUniformInducing.finCons
+    {n : ℕ} {α : Type*} {β : Fin n.succ → Type*}
+    [UniformSpace α] [∀ i, UniformSpace (β i)] {x : α → β 0} {xs : α → Π i, β (Fin.succ i)}
+    (hx : IsUniformInducing x) (hxs : IsUniformInducing xs) :
+    IsUniformInducing (fun a => Fin.cons (x a) (xs a)) where
+  comap_uniformity := by
+    replace hx := hx.comap_uniformity
+    replace hxs := hxs.comap_uniformity
+    simp_rw [Pi.uniformity, Filter.comap_iInf, Filter.comap_comap, Function.comp_def] at hxs ⊢
+    rw [Fin.iInf_succ]
+    simp [hx, hxs]
+
+theorem IsUniformEmbedding.finCons
+    {n : ℕ} {α : Type*} {β : Fin n.succ → Type*}
+    [UniformSpace α] [∀ i, UniformSpace (β i)] (x : α → β 0) (xs : α → Π i, β (Fin.succ i))
+    (hx : IsUniformEmbedding x) (hxs : IsUniformEmbedding xs) :
+    IsUniformEmbedding (fun a => Fin.cons (x a) (xs a)) where
+  injective := fun _ _ hab => hx.injective <| congrFun hab 0
+  toIsUniformInducing := hx.isUniformInducing.finCons hxs.isUniformInducing
+
+end toMove
 /-- Given a continuous multilinear map `f` in `n+1` variables, split the first variable to obtain
 a continuous linear map into continuous multilinear maps in `n` variables, given by
 `x ↦ (m ↦ f (cons x m))`. -/
 def ContinuousMultilinearMap.curryLeft (f : ContinuousMultilinearMap 𝕜 Ei G) :
-    Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G :=
-  LinearMap.mkContinuous
-    { -- define a linear map into `n` continuous multilinear maps
-      -- from an `n+1` continuous multilinear map
-      toFun := fun x =>
-        (f.toMultilinearMap.curryLeft x).mkContinuous (‖f‖ * ‖x‖) (f.norm_map_cons_le x)
-      map_add' := fun x y => by
-        ext m
-        exact f.cons_add m x y
-      map_smul' := fun c x => by
-        ext m
-        exact
-          f.cons_smul m c x }-- then register its continuity thanks to its boundedness properties.
-    ‖f‖ fun x => by
-      rw [LinearMap.coe_mk, AddHom.coe_mk]
-      exact MultilinearMap.mkContinuous_norm_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) _
+    Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G where
+  toFun x :=
+    { toMultilinearMap := f.toMultilinearMap.curryLeft x
+      cont := (ContinuousMapClass.map_continuous f).comp (continuous_const.finCons continuous_id) }
+  map_add' x y := by
+    ext m
+    exact f.cons_add m x y
+  map_smul' c x := by
+    ext m
+    exact f.cons_smul m c x
+  cont := by
+    refine (IsUniformInducing.isInducing ?_).continuous
+    rw [← isUniformInducing_toUniformOnFun.of_comp_iff]
+    dsimp [Function.comp_def]
+    rw [isUniformInducing_iff_uniformSpace]
+    sorry
 
 @[simp]
 theorem ContinuousMultilinearMap.curryLeft_apply (f : ContinuousMultilinearMap 𝕜 Ei G) (x : Ei 0)
@@ -173,11 +206,10 @@ def continuousMultilinearCurryLeftEquiv :
       left_inv := ContinuousMultilinearMap.uncurry_curryLeft
       right_inv := ContinuousLinearMap.curry_uncurryLeft }
     (fun f => by
-      simp only [LinearEquiv.coe_mk]
-      exact LinearMap.mkContinuous_norm_le _ (norm_nonneg f) _)
-    (fun f => by
-      simp only [LinearEquiv.coe_symm_mk]
-      exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg f) _)
+      refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg f) fun x => ?_
+      refine opNorm_le_bound (mul_nonneg (norm_nonneg _) (norm_nonneg _)) fun m => ?_
+      exact ContinuousMultilinearMap.norm_map_cons_le f x m)
+    (fun f => opNorm_le_bound (norm_nonneg f) (ContinuousLinearMap.norm_map_tail_le f))
 
 variable {𝕜 Ei G}
 
