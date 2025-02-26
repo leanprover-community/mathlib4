@@ -263,6 +263,21 @@ theorem map_surjective (f : R →+* S) (hf : Surjective f) : Surjective (map f :
 theorem map_coeff (f : R →+* S) (x : 𝕎 R) (n : ℕ) : (map f x).coeff n = f (x.coeff n) :=
   rfl
 
+@[simp]
+theorem map_id (R : Type*) [CommRing R] :
+    WittVector.map (RingHom.id R) = RingHom.id (𝕎 R) := by
+  ext
+  simp
+
+theorem map_eq_zero_iff {p : ℕ} {R S : Type*} [CommRing R] [CommRing S] [Fact (Nat.Prime p)]
+    (f : R →+* S) {x : WittVector p R} :
+    ((map f) x) = 0 ↔ ∀ n, f (x.coeff n) = 0 := by
+  refine ⟨fun h n ↦ ?_, fun h ↦ ?_⟩
+  · apply_fun (fun x ↦ x.coeff n) at h
+    simpa using h
+  · ext n
+    simpa using h n
+
 /-- `WittVector.ghostMap` is a ring homomorphism that maps each Witt vector
 to the sequence of its ghost components. -/
 def ghostMap : 𝕎 R →+* ℕ → R where
@@ -279,6 +294,25 @@ def ghostComponent (n : ℕ) : 𝕎 R →+* R :=
 
 theorem ghostComponent_apply (n : ℕ) (x : 𝕎 R) : ghostComponent n x = aeval x.coeff (W_ ℤ n) :=
   rfl
+
+theorem pow_dvd_ghostComponent_of_dvd_coeff {x : 𝕎 R} {n : ℕ}
+    (hx : ∀ i ≤ n, (p : R) ∣ x.coeff i) : (p : R) ^ (n + 1) ∣ ghostComponent n x := by
+  rw [WittVector.ghostComponent_apply, wittPolynomial, MvPolynomial.aeval_sum]
+  apply Finset.dvd_sum
+  intro i hi
+  simp only [Finset.mem_range] at hi
+  have : (MvPolynomial.aeval x.coeff) ((MvPolynomial.monomial (R := ℤ)
+      (Finsupp.single i (p ^ (n - i)))) (p ^ i)) = ((p : R) ^ i) * (x.coeff i) ^ (p ^ (n - i)) := by
+    simp [MvPolynomial.aeval_monomial, map_pow]
+  rw [this]
+  have : n + 1 = (n - i) + 1 + i := by omega
+  nth_rw 1 [this]
+  rw [pow_add, mul_comm]
+  apply mul_dvd_mul_left
+  refine (pow_dvd_pow_of_dvd ?_ _).trans (b := (x.coeff i) ^ (n - i + 1)) (pow_dvd_pow _ ?_)
+  · exact hx i (Nat.le_of_lt_succ hi)
+  · exact ((n - i).lt_two_pow_self).succ_le.trans
+        (pow_left_mono (n - i) (Nat.Prime.two_le Fact.out))
 
 @[simp]
 theorem ghostMap_apply (x : 𝕎 R) (n : ℕ) : ghostMap x n = ghostComponent n x :=
