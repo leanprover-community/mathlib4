@@ -8,6 +8,8 @@ import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.EuclideanDomain.Field
 
 /-!
 # Binomial rings
@@ -265,9 +267,9 @@ noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R �
 
 end Basic_Instances
 
-section Neg
-
 namespace Ring
+
+section Neg
 
 open Polynomial
 
@@ -344,9 +346,23 @@ theorem smeval_ascPochhammer_int_ofNat {R} [NonAssocRing R] [Pow R ℕ] [NatPowA
     simp only [smeval_add, smeval_X, ← C_eq_natCast, smeval_C, natCast_zsmul, nsmul_eq_mul,
       Nat.cast_id]
 
-end Ring
 
 end Neg
+
+open Polynomial in
+theorem ascPochhammer_smeval_nonneg {R : Type*} [LinearOrderedRing R] {a : R} {n : ℕ} (ha : 0 ≤ a) :
+    0 ≤ (ascPochhammer ℕ n).smeval a := by
+  cases' n with m
+  · simp
+  simp only [ascPochhammer_succ_right, smeval_mul, ascPochhammer_smeval_cast, smeval_add,
+    smeval_X, pow_one, smeval_natCast, pow_zero, nsmul_eq_mul, mul_one]
+  apply mul_nonneg
+  · exact ascPochhammer_smeval_nonneg ha
+  · rw [← zero_add 0]
+    gcongr
+    exact Nat.cast_nonneg' m
+
+end Ring
 
 section Choose
 
@@ -461,6 +477,18 @@ theorem choose_add_smul_choose [NatPowAssoc R] (r : R) (n k : ℕ) :
     add_sub_cancel_right]
 
 end
+
+theorem choose_eq_smul [Field R] [CharZero R]
+    {a : R} {n : ℕ} :
+    Ring.choose a n = (n.factorial : R)⁻¹ • (descPochhammer ℤ n).smeval a := by
+  rw [Ring.descPochhammer_eq_factorial_smul_choose]
+  trans (n.factorial : R)⁻¹ • ((n.factorial : R) • Ring.choose a n)
+  · rw [smul_smul, inv_mul_cancel₀]
+    · simp
+    rw [Nat.cast_ne_zero]
+    exact Nat.factorial_ne_zero n
+  · congr
+    apply Nat.cast_smul_eq_nsmul
 
 open Finset
 

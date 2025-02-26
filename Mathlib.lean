@@ -1175,6 +1175,7 @@ import Mathlib.AlgebraicTopology.SingularSet
 import Mathlib.AlgebraicTopology.TopologicalSimplex
 import Mathlib.Analysis.AbsoluteValue.Equivalence
 import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.Analytic.Binomial
 import Mathlib.Analysis.Analytic.CPolynomial
 import Mathlib.Analysis.Analytic.CPolynomialDef
 import Mathlib.Analysis.Analytic.ChangeOrigin
