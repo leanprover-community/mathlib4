@@ -205,8 +205,7 @@ private lemma map_map_of_eq.{w}  {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ 
     {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z} {φ} :
     α ≫ β = γ → V.map α.op (V.map β.op φ) = V.map γ.op φ := by
   rintro rfl
-  change (V.map _ ≫ V.map _) _ = _
-  rw [← map_comp]; rfl
+  simp
 
 variable {V : SSet}
 

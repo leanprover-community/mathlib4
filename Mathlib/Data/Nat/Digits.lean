@@ -237,8 +237,7 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
   rcases b with - | b
   · rcases n with - | n
     · rfl
-    · change ofDigits 0 [n + 1] = n + 1
-      dsimp [ofDigits]
+    · simp
   · rcases b with - | b
     · induction' n with n ih
       · rfl
