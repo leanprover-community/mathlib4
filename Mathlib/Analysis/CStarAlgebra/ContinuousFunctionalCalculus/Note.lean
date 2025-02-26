@@ -135,8 +135,9 @@ works is `ℂ`.
 Unless you are developing theory over arbitrary scalar rings, it should never be necessary to
 assume `ContinuousMap.UniqueHom` or `ContinuousMapZero.UniqueHom`, despite the fact that these
 hypotheses are necessary for certain lemmas (in particular, `cfc_comp`). Over `ℝ` and `ℂ`, this
-instance should always be available, and for `ℝ≥0`, one needs only to have the additional assumptions
-`T2Space A` and `IsTopologicalRing A` (as before, the algebra `A` should still be an `ℝ`-algebra).
+instance should always be available, and for `ℝ≥0`, one needs only to have the additional
+assumptions `T2Space A` and `IsTopologicalRing A` (as before, the algebra `A` should still be an
+`ℝ`-algebra).
 
 ## Using `autoParam`
 
