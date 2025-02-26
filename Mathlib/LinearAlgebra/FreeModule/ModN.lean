@@ -15,7 +15,7 @@ If `G` is a rank `d` free `ℤ`-module, then `G/nG` is a finite group of cardina
 
 open Finsupp Function
 
-variable {G H M : Type*} [AddCommGroup G] [Module.Free ℤ G] {n : ℕ}
+variable {G H M : Type*} [AddCommGroup G] {n : ℕ}
 
 variable (G n) in
 /-- `ModN G n` denotes the quotient of `G` by multiples of `n` -/
@@ -46,26 +46,28 @@ protected def liftEquiv [AddMonoid M] : (ModN G n →+ M) ≃ {φ : G →+ M // 
 `ModN G n` are the same as monoid homormorphisms from `G` whose values are `n`-torsion. -/
 protected def liftEquiv' [AddCommGroup H] [Module (ZMod n) H] :
     (ModN G n →ₗ[ZMod n] H) ≃ {φ : G →+ H // ∀ g, n • φ g = 0} :=
-  (AddMonoidHom.toZModLinearMapEquiv n).symm.toEquiv.trans (ModN.liftEquiv )
+  (AddMonoidHom.toZModLinearMapEquiv n).symm.toEquiv.trans ModN.liftEquiv
+
+variable (n) in
+/-- The quotient map `G → G / nG`. -/
+def mkQ : G →+ ModN G n := (LinearMap.range (LinearMap.lsmul ℤ G n)).mkQ
 
 variable [NeZero n]
 
 /-- Given a free module `G` over `ℤ`, construct the corresponding basis
 of `G / ⟨n⟩` over `ℤ / nℤ`. -/
-noncomputable def basis : Basis (Module.Free.ChooseBasisIndex ℤ G) (ZMod n) (ModN G n) := by
+noncomputable def basis {ι : Type*} (b : Basis ι ℤ G) : Basis ι (ZMod n) (ModN G n) := by
   set ψ : G →+ G := zsmulAddGroupHom n
   set nG := LinearMap.range (LinearMap.lsmul ℤ G n)
   set H := G ⧸ nG
   set φ : G →ₗ[ℤ] H := nG.mkQ
-  let B := Module.Free.ChooseBasisIndex ℤ G
-  let bG : Basis B ℤ G := Module.Free.chooseBasis ℤ G
-  let mod : (B →₀ ℤ) →ₗ[ℤ] (B →₀ ZMod n) := mapRange.linearMap (Int.castAddHom _).toIntLinearMap
-  let f : G →ₗ[ℤ] (B →₀ ℤ) := bG.repr
+  let mod : (ι →₀ ℤ) →ₗ[ℤ] (ι →₀ ZMod n) := mapRange.linearMap (Int.castAddHom _).toIntLinearMap
+  let f : G →ₗ[ℤ] (ι →₀ ℤ) := b.repr
   have hker : nG ≤ LinearMap.ker (mod.comp f) := by
     rintro _ ⟨x, rfl⟩
     ext b
     simp [mod, f, nG, CharP.ofNat_eq_zero]
-  let g : H →ₗ[ℤ] (B →₀ ZMod n) := nG.liftQ (mod.comp f) hker
+  let g : H →ₗ[ℤ] (ι →₀ ZMod n) := nG.liftQ (mod.comp f) hker
   refine ⟨.ofBijective (g.toAddMonoidHom.toZModLinearMap n) ⟨?_, ?_⟩⟩
   · rw [AddMonoidHom.coe_toZModLinearMap, LinearMap.toAddMonoidHom_coe, injective_iff_map_eq_zero,
       nG.mkQ_surjective.forall]
@@ -74,27 +76,32 @@ noncomputable def basis : Basis (Module.Free.ChooseBasisIndex ℤ G) (ZMod n) (M
     rw [Submodule.liftQ_apply] at hx
     replace hx : ∀ b, ↑n ∣ f x b := by
       simpa [mod, DFunLike.ext_iff, ZMod.intCast_zmod_eq_zero_iff_dvd] using hx
-    simp only [Submodule.mkQ_apply, B, mod, g, f]
+    simp only [Submodule.mkQ_apply, mod, g, f]
     rw [Submodule.Quotient.mk_eq_zero]
     choose c hc using hx
-    refine ⟨bG.repr.symm ⟨(f x).support, c, by simp [hc, NeZero.ne]⟩, bG.repr.injective ?_⟩
+    refine ⟨b.repr.symm ⟨(f x).support, c, by simp [hc, NeZero.ne]⟩, b.repr.injective ?_⟩
     simpa [DFunLike.ext_iff, eq_comm] using hc
-  · suffices mod ∘ bG.repr = g ∘ nG.mkQ by
+  · suffices mod ∘ b.repr = g ∘ nG.mkQ by
       exact (this ▸ (mapRange_surjective _ (map_zero _) ZMod.intCast_surjective).comp
-        bG.repr.surjective).of_comp
+        b.repr.surjective).of_comp
     ext x b
     simp only [comp_apply, mapRange.linearMap_apply, AddMonoidHom.coe_toIntLinearMap,
-      Int.coe_castAddHom, mapRange_apply, Submodule.mkQ_apply, mod, bG, g, f, B, H]
+      Int.coe_castAddHom, mapRange_apply, Submodule.mkQ_apply, mod, g, f, H]
     rfl
 
-variable [Module.Finite ℤ G]
+lemma basis_apply_eq_mkQ {ι : Type*} (b : Basis ι ℤ G) (i : ι) : basis b i = mkQ n (b i) := by
+  rw [Basis.apply_eq_iff]; simp [basis, mkQ]
 
-instance instModuleFinite : Module.Finite (ZMod n) (ModN G n) := .of_basis basis
+variable [Module.Free ℤ G] [Module.Finite ℤ G]
+
+instance instModuleFinite : Module.Finite (ZMod n) (ModN G n) :=
+  .of_basis <| basis <| Module.Free.chooseBasis ℤ G
+
 instance instFinite : Finite (ModN G n) := Module.finite_of_finite (ZMod n)
 
 variable (G n)
 @[simp] lemma natCard_eq : Nat.card (ModN G n) = n ^ Module.finrank ℤ G := by
-  simp [Nat.card_congr basis.repr.toEquiv, Nat.card_eq_fintype_card,
-    Module.finrank_eq_card_chooseBasisIndex]
+  simp [Nat.card_congr (basis <| Module.Free.chooseBasis ℤ G).repr.toEquiv,
+    Nat.card_eq_fintype_card, Module.finrank_eq_card_chooseBasisIndex]
 
 end ModN
