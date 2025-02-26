@@ -195,7 +195,6 @@ theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) 
 
 theorem setOf_injective : Function.Injective (@setOf α) := injective_id
 
-@[simp]
 theorem setOf_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q := Iff.rfl
 
 /-! ### Lemmas about `mem` and `setOf` -/
