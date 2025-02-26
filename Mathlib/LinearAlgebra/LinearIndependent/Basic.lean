@@ -60,10 +60,8 @@ variable {R v}
 
 /-- A set of linearly independent vectors in a module `M` over a semiring `K` is also linearly
 independent over a subring `R` of `K`.
-
-See also `LinearIndependent.restrict_scalars'` for a verison with more convenient typeclass
-assumptions.
-
+The implementation uses minimal assumptions about the relationship between `R`, `K` and `M`.
+The version where `K` is an `R`-algebra is `LinearIndependent.restrict_scalars_algebras`.
 TODO : `LinearIndepOn` version.  -/
 theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Module K M]
     [IsScalarTower R K M] (hinj : Injective fun r : R ↦ r • (1 : K))
