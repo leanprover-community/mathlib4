@@ -464,7 +464,7 @@ theorem lmarginalPTraj_le [∀ n, IsMarkovKernel (κ n)] (c : ℕ) {f : (Π n, X
     lmarginalPTraj κ b c f = f := by
   ext x
   rw [lmarginalPTraj_eq_lintegral_map mf]
-  refine @lintegral_eq_const _ _ _ ?_ _ _ fun y ↦ hf fun i hi ↦ ?_
+  refine @lintegral_eq_const _ _ _ ?_ _ _ (ae_of_all _ fun y ↦ hf fun i hi ↦ ?_)
   · refine @IsMarkovKernel.isProbabilityMeasure _ _ _ _ _ ?_ _
     exact IsMarkovKernel.map _ (by fun_prop)
   · simp_all only [coe_Iic, Set.mem_Iic, Function.updateFinset, mem_Ioc, dite_eq_right_iff]
