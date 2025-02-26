@@ -372,8 +372,7 @@ open Fact.Manifold
 
 variable (k) in
 -- FIXME: delete this, in favour of the boundary data instance on Icc and the product
-noncomputable def BoundaryManifoldData.prod_Icc [Nonempty H] [Nonempty M]
-    [BoundarylessManifold I M] :
+noncomputable def BoundaryManifoldData.prod_Icc [BoundarylessManifold I M] :
     BoundaryManifoldData (M × (Set.Icc (0 : ℝ) 1)) (I.prod (𝓡∂ 1)) k I where
   M₀ := M ⊕ M
   f := Sum.elim (·, ⊥) (·, ⊤)
