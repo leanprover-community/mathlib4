@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.GroupWithZero.NeZero
-import Mathlib.Algebra.SMulWithZero
 
 /-!
 # Scalar actions on and by `Mᵐᵒᵖ`
