@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
 import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.LinearAlgebra.TensorProduct.Prod
 import Mathlib.LinearAlgebra.Pi
+import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 
@@ -165,3 +167,31 @@ lemma piScalarRight_symm_single (x : N) (i : ι) :
   simp [piScalarRight]
 
 end TensorProduct
+
+variable {R S}
+
+/-- Base change commutes with binary products. -/
+lemma IsBaseChange.prodMap {M N M' N' : Type*}
+    [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+    [AddCommMonoid M'] [AddCommMonoid N'] [Module R M'] [Module R N']
+    [Module S M'] [Module S N'] [IsScalarTower R S M'] [IsScalarTower R S N']
+    (f : M →ₗ[R] M') (g : N →ₗ[R] N') (hf : IsBaseChange S f) (hg : IsBaseChange S g) :
+    IsBaseChange S (f.prodMap g) := by
+  apply IsBaseChange.of_equiv (TensorProduct.prodRight R _ S M N ≪≫ₗ hf.equiv.prod hg.equiv)
+  intro p
+  simp [hf.equiv_tmul, hg.equiv_tmul]
+
+/-- Base change commutes with finite products. -/
+lemma IsBaseChange.pi {ι : Type*} [Finite ι]
+    {M M' : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, AddCommMonoid (M' i)]
+    [∀ i, Module R (M i)] [∀ i, Module R (M' i)] [∀ i, Module S (M' i)]
+    [∀ i, IsScalarTower R S (M' i)]
+    (f : ∀ i, M i →ₗ[R] M' i) (hf : ∀ i, IsBaseChange S (f i)) :
+    IsBaseChange S (.pi fun i ↦ f i ∘ₗ .proj i) := by
+  classical
+  cases nonempty_fintype ι
+  apply IsBaseChange.of_equiv <| TensorProduct.piRight R S _ M ≪≫ₗ
+    .piCongrRight fun i ↦ (hf i).equiv
+  intro x
+  ext i
+  simp [IsBaseChange.equiv_tmul]
