@@ -283,7 +283,7 @@ end NatTrans
 
 namespace Sum
 
-variable (A A') (B) (C)
+variable (A A') (B)
 
 /-- The equivalence between functors from a sum and the product of the
  functor categories. -/
@@ -308,6 +308,8 @@ def functorEquiv : (A ⊕ A') ⥤ B ≌ (A ⥤ B) × (A' ⥤ B) where
 
 -- generated simps lemma for `functorEquiv` include match arms in the statements, so we rather
 -- state them separately for the two constructors of `A ⊕ A'`.
+
+variable {A A'} {B}
 
 @[simp]
 lemma functorEquiv_inverse_obj_obj_inl (F : (A ⥤ B) × (A' ⥤ B)) (a : A) :
@@ -412,7 +414,6 @@ def functorEquivInverseCompWhiskeringLeftInRIso :
     (functorEquiv _ _ _).inverse ⋙ (whiskeringLeft _ _ C).obj (inr_ A A') ≅ Prod.snd _ _ :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
-variable {A} {A'} {B}
 /-- A restatement `functorEquiv` : we can construct a natural transformation of functors
 `A ⊕ A' ⥤ B` from the data of natural transformations of their whiskering with `inl_` and `inr_`. -/
 @[simps!]
