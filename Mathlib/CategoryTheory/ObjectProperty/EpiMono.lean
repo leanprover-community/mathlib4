@@ -15,7 +15,7 @@ that `P` is closed under subobjects (resp. quotients).
 
 -/
 
-universe v u
+universe v v' u u'
 
 namespace CategoryTheory
 

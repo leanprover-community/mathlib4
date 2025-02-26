@@ -4,13 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-<<<<<<< HEAD
---import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
---import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
-=======
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
->>>>>>> origin
 
 /-!
 # Properties of objects which hold for a zero object
@@ -22,21 +16,13 @@ that `P` holds for all zero objects, as in some applications (e.g. triangulated 
 
 -/
 
-<<<<<<< HEAD
 universe v v' u u'
-=======
-universe v u
->>>>>>> origin
 
 namespace CategoryTheory
 
 open Limits ZeroObject
 
-<<<<<<< HEAD
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
-=======
-variable {C : Type u} [Category.{v} C]
->>>>>>> origin
 
 namespace ObjectProperty
 

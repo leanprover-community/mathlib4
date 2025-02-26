@@ -50,8 +50,8 @@ instance : IsClosedUnderExtensions (IsZero (C := C)) where
   prop_X₂_of_shortExact hS h₁ h₃ :=
     hS.exact.isZero_of_both_zeros (h₁.eq_of_src _ _) (h₃.eq_of_tgt _ _)
 
-instance [P.IsClosedUnderExtensions] (F : D ⥤ C) [HasZeroMorphisms D]
-    [F.PreservesZeroMorphisms]
+instance [P.IsClosedUnderExtensions] (F : D ⥤ C)
+    [HasZeroMorphisms D] [F.PreservesZeroMorphisms]
     [PreservesFiniteLimits F] [PreservesFiniteColimits F] :
     (P.inverseImage F).IsClosedUnderExtensions where
   prop_X₂_of_shortExact hS h₁ h₃ := by
