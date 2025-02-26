@@ -293,6 +293,9 @@ theorem sdiff_lt (hx : y ≤ x) (hy : y ≠ ⊥) : x \ y < x := by
   rw [sdiff_eq_self_iff_disjoint', disjoint_iff] at h
   rw [← h, inf_eq_right.mpr hx]
 
+theorem sdiff_lt_left : x \ y < x ↔ ¬ Disjoint y x := by
+  rw [lt_iff_le_and_ne, Ne, sdiff_eq_self_iff_disjoint, and_iff_right sdiff_le]
+
 @[simp]
 theorem le_sdiff_right : x ≤ y \ x ↔ x = ⊥ :=
   ⟨fun h => disjoint_self.1 (disjoint_sdiff_self_right.mono_right h), fun h => h.le.trans bot_le⟩
