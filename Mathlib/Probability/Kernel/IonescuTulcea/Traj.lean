@@ -156,7 +156,7 @@ theorem isProjectiveLimit_nat_iff' {μ : (I : Finset ℕ) → Measure (Π i : I,
     (hμ : IsProjectiveMeasureFamily μ) (ν : Measure (Π n, X n)) (a : ℕ) :
     IsProjectiveLimit ν μ ↔ ∀ ⦃n⦄, n ≥ a → ν.map (frestrictLe n) = μ (Iic n) := by
   refine ⟨fun h n _ ↦ h (Iic n), fun h I ↦ ?_⟩
-  have := (I.sub_Iic.trans (Iic_subset_Iic.2 (le_max_left (I.sup id) a)))
+  have := (I.subset_Iic_sup_id.trans (Iic_subset_Iic.2 (le_max_left (I.sup id) a)))
   rw [← restrict₂_comp_restrict this, ← Measure.map_map, ← frestrictLe, h (le_max_right _ _), ← hμ]
   all_goals fun_prop
 
@@ -173,7 +173,7 @@ variable (μ : (n : ℕ) → Measure (Π i : Iic n, X i))
 /-- Given a family of measures `μ : (n : ℕ) → Measure (Π i : Iic n, X i)`, we can define a family
 of measures indexed by `Finset ℕ` by projecting the measures. -/
 noncomputable def inducedFamily (S : Finset ℕ) : Measure ((k : S) → X k) :=
-    (μ (S.sup id)).map (restrict₂ S.sub_Iic)
+    (μ (S.sup id)).map (restrict₂ S.subset_Iic_sup_id)
 
 instance [∀ n, SFinite (μ n)] (I : Finset ℕ) :
     SFinite (inducedFamily μ I) := by rw [inducedFamily]; infer_instance
@@ -206,8 +206,8 @@ theorem isProjectiveMeasureFamily_inducedFamily
   have sls : J.sup id ≤ I.sup id := sup_mono hJI
   simp only [inducedFamily]
   rw [Measure.map_map, restrict₂_comp_restrict₂,
-    ← restrict₂_comp_restrict₂ J.sub_Iic (Iic_subset_Iic.2 sls), ← Measure.map_map, ← frestrictLe₂,
-    h (J.sup id) (I.sup id) sls]
+    ← restrict₂_comp_restrict₂ J.subset_Iic_sup_id (Iic_subset_Iic.2 sls), ← Measure.map_map,
+    ← frestrictLe₂, h (J.sup id) (I.sup id) sls]
   all_goals fun_prop
 
 end MeasureTheory
@@ -230,13 +230,14 @@ lemma isProjectiveMeasureFamily_ptraj {a : ℕ} (x₀ : Π i : Iic a, X i) :
 trajectory up to time `a` we can construct an additive content over cylinders. It corresponds
 to composing the kernels, starting at time `a + 1`. -/
 noncomputable def trajContent {a : ℕ} (x₀ : Π i : Iic a, X i) :
-    AddContent (measurableCylinders X) := kolContent (isProjectiveMeasureFamily_ptraj κ x₀)
+    AddContent (measurableCylinders X) :=
+  projectiveFamilyContent (isProjectiveMeasureFamily_ptraj κ x₀)
 
 /-- The `trajContent κ x₀` of a cylinder indexed by first coordinates is given by `ptraj`. -/
 theorem trajContent_cylinder {a b : ℕ} (x₀ : Π i : Iic a, X i)
     {S : Set (Π i : Iic b, X i)} (mS : MeasurableSet S) :
     trajContent κ x₀ (cylinder _ S) = ptraj κ a b x₀ S := by
-  rw [trajContent, kolContent_cylinder _ mS, inducedFamily_Iic]
+  rw [trajContent, projectiveFamilyContent_cylinder _ mS, inducedFamily_Iic]
 
 /-- The `trajContent` of a cylinder is equal to the integral of its indicator function against
 `ptraj`. -/
@@ -259,7 +260,7 @@ theorem cylinders_nat :
   simp only [mem_measurableCylinders, exists_prop, Set.mem_iUnion, mem_singleton]
   refine ⟨?_, fun ⟨N, S, mS, s_eq⟩ ↦ ⟨Iic N, S, mS, s_eq⟩⟩
   rintro ⟨t, S, mS, rfl⟩
-  refine ⟨t.sup id, restrict₂ t.sub_Iic ⁻¹' S, measurable_restrict₂ _ mS, ?_⟩
+  refine ⟨t.sup id, restrict₂ t.subset_Iic_sup_id ⁻¹' S, measurable_restrict₂ _ mS, ?_⟩
   unfold cylinder
   rw [← Set.preimage_comp, restrict₂_comp_restrict]
   exact Set.mem_singleton _
