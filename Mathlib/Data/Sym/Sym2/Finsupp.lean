@@ -17,6 +17,7 @@ section
 Functions which are symmetrizable
 -/
 structure Symmetrizable (M N) [Zero M] [Zero N] where
+  /-- The function -/
   toFun : M → M → N
   comm : ∀ a b : M, toFun a b = toFun b a
   right_zero : ∀ (a : M), toFun a 0 = 0
