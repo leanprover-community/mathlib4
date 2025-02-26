@@ -32,6 +32,13 @@ instance instMonoidWithZero [MonoidWithZero α] : MonoidWithZero αᵐᵒᵖ whe
   __ := instMonoid
   __ := instMulZeroOneClass
 
+instance instGroupWithZero [GroupWithZero α] : GroupWithZero αᵐᵒᵖ where
+  __ := instMonoidWithZero
+  __ := instNontrivial
+  __ := instDivInvMonoid
+  mul_inv_cancel _ hx := unop_injective <| inv_mul_cancel₀ <| unop_injective.ne hx
+  inv_zero := unop_injective inv_zero
+
 instance instNoZeroDivisors [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors αᵐᵒᵖ where
   eq_zero_or_eq_zero_of_mul_eq_zero (H : op (_ * _) = op (0 : α)) :=
       Or.casesOn (eq_zero_or_eq_zero_of_mul_eq_zero <| op_injective H)
