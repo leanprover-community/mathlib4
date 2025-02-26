@@ -1413,7 +1413,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
     ContinuousOn (fun x ↦ ∫ y, L (g y) (f x y) ∂μ) s := by
   have A : ∀ p ∈ s, Continuous (f p) := fun p hp ↦ by
     refine hf.comp_continuous (continuous_const.prod_mk continuous_id') fun y => ?_
-    simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true] using hp
+    simpa only [prodMk_mem_set_prod_eq, mem_univ, and_true] using hp
   intro q hq
   apply Metric.continuousWithinAt_iff'.2 (fun ε εpos ↦ ?_)
   obtain ⟨δ, δpos, hδ⟩ : ∃ (δ : ℝ), 0 < δ ∧ ∫ x in k, ‖L‖ * ‖g x‖ * δ ∂μ < ε := by
