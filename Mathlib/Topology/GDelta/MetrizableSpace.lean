@@ -22,7 +22,7 @@ open TopologicalSpace Metric Set
 
 section Metrizable
 
-instance (priority := 100) [PseudoMetrizableSpace X] : PerfectlyNormalSpace X where
+instance (priority := 500) [PseudoMetrizableSpace X] : PerfectlyNormalSpace X where
   normal s t hs ht hst := by
     letI := pseudoMetrizableSpacePseudoMetric
     by_cases hee : s = ∅ ∨ t = ∅
@@ -80,7 +80,7 @@ instance (priority := 100) [PseudoMetrizableSpace X] : PerfectlyNormalSpace X wh
           rw [← @Nat.cast_le ℝ, Nat.cast_add, Nat.cast_one] at hcf
           exact (not_le_of_lt (hcf.trans_lt hx) (Nat.le_ceil _))
 
-instance (priority := 100) [MetrizableSpace X] : T6Space X where
+instance (priority := 500) [MetrizableSpace X] : T6Space X where
 
 end Metrizable
 
