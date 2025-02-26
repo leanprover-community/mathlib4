@@ -71,4 +71,9 @@ instance [P.ContainsZero] [P.IsClosedUnderIsomorphisms]
 
 end ObjectProperty
 
+/-- The kernel of a functor `F : C ⥤ D`, this is the property of objects
+of `C` satisfies by those `X : C` such that `F.obj X` is a zero object in `D`. -/
+protected abbrev Functor.kernel (F : C ⥤ D) : ObjectProperty C :=
+  ObjectProperty.inverseImage IsZero F
+
 end CategoryTheory
