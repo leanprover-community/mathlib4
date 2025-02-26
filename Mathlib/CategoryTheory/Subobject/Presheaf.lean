@@ -16,8 +16,8 @@ Following Section I.3 of [Sheaves in Geometry and Logic][MM92], we define the su
 
 Let `C` refer to a category with pullbacks.
 
-* `CategoryTheory.Subobject.presheaf C` is the presheaf that sends every object `X : C` to its category
-  of subobjects `Subobject X`, and every morphism `f : X ⟶ Y` to the function
+* `CategoryTheory.Subobject.presheaf C` is the presheaf that sends every object `X : C` to its
+  category of subobjects `Subobject X`, and every morphism `f : X ⟶ Y` to the function
   `Subobject Y → Subobject X` that maps every subobject of `Y` to its pullback along `f`.
 
 ## References
@@ -32,6 +32,8 @@ subobject, representable functor, presheaf, topos theory
 
 open CategoryTheory Subobject
 
+namespace Subobject
+
 universe u v
 
 variable (C : Type u) [Category.{v} C] [Limits.HasPullbacks C]
@@ -45,3 +47,5 @@ noncomputable def presheaf : Cᵒᵖ ⥤ Type max u v where
   map f := (pullback f.unop).obj
   map_id _ := by ext : 1; simp [pullback_id]
   map_comp _ _ := by ext : 1; simp [pullback_comp]
+
+end Subobject
