@@ -34,7 +34,7 @@ open scoped Cardinal nonZeroDivisors
 universe u
 
 /-- A finite field has prime power cardinality. -/
-theorem Fintype.isPrimePow_card_of_field {α} [Fintype α] [Field α] : IsPrimePow ‖α‖ := by
+theorem Fintype.isPrimePow_card_of_field {α} [Fintype α] [DivisionRing α] : IsPrimePow ‖α‖ := by
   -- TODO: `Algebra` version of `CharP.exists`, of type `∀ p, Algebra (ZMod p) α`
   obtain ⟨p, _⟩ := CharP.exists α
   haveI hp := Fact.mk (CharP.char_is_prime α p)

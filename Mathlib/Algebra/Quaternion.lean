@@ -365,7 +365,7 @@ instance [SMulCommClass S T R] : SMulCommClass S T ℍ[R,c₁,c₂,c₃] where
 
 @[simp] theorem smul_imK : (s • a).imK = s • a.imK := rfl
 
-@[simp] theorem smul_im {S} [CommRing R] [SMulZeroClass S R] (s : S) : (s • a).im = s • a.im :=
+@[simp] theorem smul_im {S} [Zero R] [SMulZeroClass S R] (s : S) : (s • a).im = s • a.im :=
   QuaternionAlgebra.ext (smul_zero s).symm rfl rfl rfl
 
 @[simp]

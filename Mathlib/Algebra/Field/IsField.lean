@@ -75,7 +75,7 @@ noncomputable def IsField.toField {R : Type u} [Ring R] (h : IsField R) : Field 
 Since `IsField` doesn't remember the data of an `inv` function and as such,
 a lemma that there is a unique inverse could be useful.
 -/
-theorem uniq_inv_of_isField (R : Type u) [Ring R] (hf : IsField R) :
+theorem uniq_inv_of_isField (R : Type u) [Semiring R] (hf : IsField R) :
     ∀ x : R, x ≠ 0 → ∃! y : R, x * y = 1 := by
   intro x hx
   apply existsUnique_of_exists_of_unique

@@ -275,7 +275,7 @@ lemma descResidueField_stalkClosedPointTo_fromSpecResidueField
 end fromResidueField
 
 /-- A helper lemma to work with `AlgebraicGeometry.Scheme.SpecToEquivOfField`. -/
-lemma SpecToEquivOfField_eq_iff {K : Type*} [Field K] {X : Scheme}
+lemma SpecToEquivOfField_eq_iff {K : Type*} [CommRing K] {X : Scheme}
     {f₁ f₂ : Σ x : X.carrier, X.residueField x ⟶ .of K} :
     f₁ = f₂ ↔ ∃ e : f₁.1 = f₂.1, f₁.2 = (X.residueFieldCongr e).hom ≫ f₂.2 := by
   constructor

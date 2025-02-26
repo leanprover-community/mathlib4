@@ -58,7 +58,7 @@ of elements `a b : A`, either `a` divides `b` or vice versa. -/
 class ValuationRing (A : Type u) [CommRing A] [IsDomain A] extends PreValuationRing A : Prop
 
 -- Porting note: this lemma is needed since infer kinds are unsupported in Lean 4
-lemma ValuationRing.cond {A : Type u} [CommRing A] [IsDomain A] [ValuationRing A] (a b : A) :
+lemma ValuationRing.cond {A : Type u} [CommRing A] [IsDomain A] [PreValuationRing A] (a b : A) :
     ∃ c : A, a * c = b ∨ b * c = a := PreValuationRing.cond _ _
 
 namespace ValuationRing
@@ -291,7 +291,7 @@ section dvd
 
 variable {R : Type*}
 
-theorem _root_.PreValuationRing.iff_dvd_total [Monoid R] :
+theorem _root_.PreValuationRing.iff_dvd_total [Semigroup R] :
     PreValuationRing R ↔ IsTotal R (· ∣ ·) := by
   classical
   refine ⟨fun H => ⟨fun a b => ?_⟩, fun H => ⟨fun a b => ?_⟩⟩

@@ -471,7 +471,7 @@ theorem blockDiag_transpose (M : Matrix (m × o) (n × o) α) (k : o) :
   ext fun _ _ => rfl
 
 @[simp]
-theorem blockDiag_conjTranspose {α : Type*} [AddMonoid α] [StarAddMonoid α]
+theorem blockDiag_conjTranspose {α : Type*} [AddMonoid α] [Star α]
     (M : Matrix (m × o) (n × o) α) (k : o) : blockDiag Mᴴ k = (blockDiag M k)ᴴ :=
   ext fun _ _ => rfl
 
@@ -514,7 +514,7 @@ theorem blockDiag_one [DecidableEq o] [DecidableEq m] [One α] :
 end Zero
 
 @[simp]
-theorem blockDiag_add [AddZeroClass α] (M N : Matrix (m × o) (n × o) α) :
+theorem blockDiag_add [Add α] (M N : Matrix (m × o) (n × o) α) :
     blockDiag (M + N) = blockDiag M + blockDiag N :=
   rfl
 
@@ -541,7 +541,7 @@ theorem blockDiag_sub [AddGroup α] (M N : Matrix (m × o) (n × o) α) :
   map_sub (blockDiagAddMonoidHom m n o α) M N
 
 @[simp]
-theorem blockDiag_smul {R : Type*} [Monoid R] [AddMonoid α] [DistribMulAction R α] (x : R)
+theorem blockDiag_smul {R : Type*} [Monoid R] [AddMonoid α] [SMul R α] (x : R)
     (M : Matrix (m × o) (n × o) α) : blockDiag (x • M) = x • blockDiag M :=
   rfl
 
@@ -732,7 +732,7 @@ theorem blockDiag'_transpose (M : Matrix (Σi, m' i) (Σi, n' i) α) (k : o) :
   ext fun _ _ => rfl
 
 @[simp]
-theorem blockDiag'_conjTranspose {α : Type*} [AddMonoid α] [StarAddMonoid α]
+theorem blockDiag'_conjTranspose {α : Type*} [AddMonoid α] [Star α]
     (M : Matrix (Σi, m' i) (Σi, n' i) α) (k : o) : blockDiag' Mᴴ k = (blockDiag' M k)ᴴ :=
   ext fun _ _ => rfl
 
@@ -776,7 +776,7 @@ theorem blockDiag'_one [DecidableEq o] [∀ i, DecidableEq (m' i)] [One α] :
 end Zero
 
 @[simp]
-theorem blockDiag'_add [AddZeroClass α] (M N : Matrix (Σi, m' i) (Σi, n' i) α) :
+theorem blockDiag'_add [Add α] (M N : Matrix (Σi, m' i) (Σi, n' i) α) :
     blockDiag' (M + N) = blockDiag' M + blockDiag' N :=
   rfl
 
@@ -805,7 +805,7 @@ theorem blockDiag'_sub [AddGroup α] (M N : Matrix (Σi, m' i) (Σi, n' i) α) :
   map_sub (blockDiag'AddMonoidHom m' n' α) M N
 
 @[simp]
-theorem blockDiag'_smul {R : Type*} [Monoid R] [AddMonoid α] [DistribMulAction R α] (x : R)
+theorem blockDiag'_smul {R : Type*} [Monoid R] [AddMonoid α] [SMul R α] (x : R)
     (M : Matrix (Σi, m' i) (Σi, n' i) α) : blockDiag' (x • M) = x • blockDiag' M :=
   rfl
 

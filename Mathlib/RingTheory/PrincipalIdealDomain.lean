@@ -287,7 +287,7 @@ instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincip
 
 end
 
-theorem IsField.isPrincipalIdealRing {R : Type*} [CommRing R] (h : IsField R) :
+theorem IsField.isPrincipalIdealRing {R : Type*} [Ring R] (h : IsField R) :
     IsPrincipalIdealRing R :=
   @EuclideanDomain.to_principal_ideal_domain R (@Field.toEuclideanDomain R h.toField)
 

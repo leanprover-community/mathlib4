@@ -355,7 +355,7 @@ lemma Monic.ne_zero [Nonempty A] [Nontrivial R] (hp : p.Monic D) : p ≠ 0 := fu
   simp_rw [Monic, h, leadingCoeff_zero, zero_ne_one] at hp
 
 @[simp]
-theorem monic_one [AddZeroClass A] (hD : D.Injective) : (1 : R[A]).Monic D := by
+theorem monic_one [Zero A] (hD : D.Injective) : (1 : R[A]).Monic D := by
   rw [Monic, one_def, leadingCoeff_single hD]
 
 variable (D) in
@@ -414,7 +414,7 @@ lemma leadingCoeff_eq_zero (hD : D.Injective) : p.leadingCoeff D = 0 ↔ p = 0 :
 lemma leadingCoeff_ne_zero (hD : D.Injective) : p.leadingCoeff D ≠ 0 ↔ p ≠ 0 :=
   (leadingCoeff_eq_zero hD).ne
 
-lemma supDegree_sub_lt_of_leadingCoeff_eq (hD : D.Injective) {R} [CommRing R] {p q : R[A]}
+lemma supDegree_sub_lt_of_leadingCoeff_eq (hD : D.Injective) {R} [Ring R] {p q : R[A]}
     (hd : p.supDegree D = q.supDegree D) (hc : p.leadingCoeff D = q.leadingCoeff D) :
     (p - q).supDegree D < p.supDegree D ∨ p = q := by
   rw [or_iff_not_imp_right]
@@ -593,7 +593,7 @@ theorem infDegree_withTop_some_comp {s : AddMonoidAlgebra R A} (hs : s.support.N
   unfold AddMonoidAlgebra.infDegree
   rw [← Finset.coe_inf' hs, Finset.inf'_eq_inf]
 
-theorem le_infDegree_mul [AddZeroClass A] [Add T] [AddLeftMono T] [AddRightMono T]
+theorem le_infDegree_mul [Add A] [Add T] [AddLeftMono T] [AddRightMono T]
     (D : AddHom A T) (f g : R[A]) :
     f.infDegree D + g.infDegree D ≤ (f * g).infDegree D :=
   le_inf_support_mul (fun {a b : A} => (map_add D a b).ge) _ _

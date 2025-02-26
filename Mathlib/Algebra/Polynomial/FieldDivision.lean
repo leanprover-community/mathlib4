@@ -591,7 +591,7 @@ theorem degree_pos_of_irreducible (hp : Irreducible p) : 0 < p.degree :=
     have := eq_C_of_degree_le_zero hp0
     not_irreducible_C (p.coeff 0) <| this ▸ hp
 
-theorem X_sub_C_mul_divByMonic_eq_sub_modByMonic {K : Type*} [Field K] (f : K[X]) (a : K) :
+theorem X_sub_C_mul_divByMonic_eq_sub_modByMonic {K : Type*} [Ring K] (f : K[X]) (a : K) :
     (X - C a) * (f /ₘ (X - C a)) = f - f %ₘ (X - C a) := by
   rw [eq_sub_iff_add_eq, ← eq_sub_iff_add_eq', modByMonic_eq_sub_mul_div]
   exact monic_X_sub_C a
@@ -671,7 +671,7 @@ end Field
 end Polynomial
 
 /-- An irreducible polynomial over a field must have positive degree. -/
-theorem Irreducible.natDegree_pos {F : Type*} [Field F] {f : F[X]} (h : Irreducible f) :
+theorem Irreducible.natDegree_pos {F : Type*} [DivisionRing F] {f : F[X]} (h : Irreducible f) :
     0 < f.natDegree := Nat.pos_of_ne_zero fun H ↦ by
   obtain ⟨x, hf⟩ := natDegree_eq_zero.1 H
   by_cases hx : x = 0

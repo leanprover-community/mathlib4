@@ -627,7 +627,7 @@ def _root_.OrderIso.toInitialSeg [Preorder α] [Preorder β] (f : α ≃o β) : 
 
 variable [PartialOrder β] {a a' : α} {b : β}
 
-theorem mem_range_of_le [Preorder α] (f : α ≤i β) (h : b ≤ f a) : b ∈ Set.range f := by
+theorem mem_range_of_le [LT α] (f : α ≤i β) (h : b ≤ f a) : b ∈ Set.range f := by
   obtain rfl | hb := h.eq_or_lt
   exacts [⟨a, rfl⟩, f.mem_range_of_rel hb]
 
@@ -667,7 +667,7 @@ theorem map_bot [PartialOrder α] [OrderBot α] [OrderBot β] (f : α ≤i β) :
 theorem image_Iio [PartialOrder α] (f : α ≤i β) (a : α) : f '' Set.Iio a = Set.Iio (f a) :=
   f.toOrderEmbedding.image_Iio f.isLowerSet_range a
 
-theorem le_apply_iff [LinearOrder α] (f : α ≤i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b := by
+theorem le_apply_iff [PartialOrder α] (f : α ≤i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b := by
   constructor
   · intro h
     obtain ⟨c, hc⟩ := f.mem_range_of_le h
@@ -676,7 +676,7 @@ theorem le_apply_iff [LinearOrder α] (f : α ≤i β) : b ≤ f a ↔ ∃ c ≤
   · rintro ⟨c, hc, rfl⟩
     exact f.monotone hc
 
-theorem lt_apply_iff [LinearOrder α] (f : α ≤i β) : b < f a ↔ ∃ a' < a, f a' = b := by
+theorem lt_apply_iff [PartialOrder α] (f : α ≤i β) : b < f a ↔ ∃ a' < a, f a' = b := by
   constructor
   · intro h
     obtain ⟨c, hc⟩ := f.mem_range_of_rel h

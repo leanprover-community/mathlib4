@@ -35,7 +35,7 @@ variable {R S : Type*}
 
 open Tropical Finset
 
-theorem List.trop_sum [AddMonoid R] (l : List R) : trop l.sum = List.prod (l.map trop) := by
+theorem List.trop_sum [AddZeroClass R] (l : List R) : trop l.sum = List.prod (l.map trop) := by
   induction' l with hd tl IH
   · simp
   · simp [← IH]
@@ -50,7 +50,7 @@ theorem trop_sum [AddCommMonoid R] (s : Finset S) (f : S → R) :
   simp only [Multiset.map_map, Function.comp_apply]
   rfl
 
-theorem List.untrop_prod [AddMonoid R] (l : List (Tropical R)) :
+theorem List.untrop_prod [AddZeroClass R] (l : List (Tropical R)) :
     untrop l.prod = List.sum (l.map untrop) := by
   induction' l with hd tl IH
   · simp

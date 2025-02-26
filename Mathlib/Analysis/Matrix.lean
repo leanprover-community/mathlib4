@@ -180,7 +180,7 @@ section NormedSpace
 attribute [local instance] Matrix.seminormedAddCommGroup
 
 /-- This applies to the sup norm of sup norm. -/
-protected theorem boundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
+protected theorem boundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [SMul R α]
     [BoundedSMul R α] : BoundedSMul R (Matrix m n α) :=
   Pi.instBoundedSMul
 

@@ -91,14 +91,14 @@ instance T35Space.instT3space [T35Space X] : T3Space X := {}
 
 instance T4Space.instT35Space [T4Space X] : T35Space X := {}
 
-lemma separatesPoints_continuous_of_t35Space [T35Space X] :
+lemma separatesPoints_continuous_of_t35Space [CompletelyRegularSpace X] :
     SeparatesPoints (Continuous : Set (X → ℝ)) := by
   intro x y x_ne_y
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
   exact ⟨fun x ↦ f x, continuous_subtype_val.comp f_cont, by aesop⟩
 
-lemma separatesPoints_continuous_of_t35Space_Icc [T35Space X] :
+lemma separatesPoints_continuous_of_t35Space_Icc [CompletelyRegularSpace X] :
     SeparatesPoints (Continuous : Set (X → I)) := by
   intro x y x_ne_y
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=

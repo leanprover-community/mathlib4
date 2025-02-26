@@ -280,7 +280,7 @@ theorem _root_.isLinearTopology_iff_hasBasis_ideal :
       (fun I : Ideal R ↦ (I : Set R) ∈ 𝓝 0) (fun I : Ideal R ↦ (I : Set R)) :=
   isLinearTopology_iff_hasBasis_submodule
 
-theorem _root_.isLinearTopology_iff_hasBasis_open_ideal [IsTopologicalRing R] :
+theorem _root_.isLinearTopology_iff_hasBasis_open_ideal [ContinuousAdd R] :
     IsLinearTopology R R ↔ (𝓝 0).HasBasis
       (fun I : Ideal R ↦ IsOpen (I : Set R)) (fun I : Ideal R ↦ (I : Set R)) :=
   isLinearTopology_iff_hasBasis_open_submodule

@@ -38,7 +38,7 @@ instance self : IsCentral K K where
   out x := by simp [Algebra.mem_bot]
 
 lemma baseField_essentially_unique
-    (k K D : Type*) [Field k] [Field K] [Ring D] [Nontrivial D]
+    (k K D : Type*) [Field k] [Field K] [Semiring D] [Nontrivial D]
     [Algebra k K] [Algebra K D] [Algebra k D] [IsScalarTower k K D]
     [IsCentral k D] :
     Function.Bijective (algebraMap k K) := by

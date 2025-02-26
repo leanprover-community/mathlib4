@@ -99,7 +99,7 @@ theorem ofReal_alg (x : ℝ) : (x : K) = x • (1 : K) :=
 theorem real_smul_eq_coe_mul (r : ℝ) (z : K) : r • z = (r : K) * z :=
   Algebra.smul_def r z
 
-theorem real_smul_eq_coe_smul [AddCommGroup E] [Module K E] [Module ℝ E] [IsScalarTower ℝ K E]
+theorem real_smul_eq_coe_smul [AddCommGroup E] [MulAction K E] [Module ℝ E] [IsScalarTower ℝ K E]
     (r : ℝ) (x : E) : r • x = (r : K) • x := by rw [RCLike.ofReal_alg, smul_one_smul]
 
 theorem algebraMap_eq_ofReal : ⇑(algebraMap ℝ K) = ofReal :=
@@ -1096,7 +1096,7 @@ variable {G : Type*} [Finite G]
 lemma inv_apply_eq_conj [AddLeftCancelMonoid G] (ψ : AddChar G K) (x : G) : (ψ x)⁻¹ = conj (ψ x) :=
   RCLike.inv_eq_conj <| norm_apply _ _
 
-lemma map_neg_eq_conj [AddCommGroup G] (ψ : AddChar G K) (x : G) : ψ (-x) = conj (ψ x) := by
+lemma map_neg_eq_conj [AddGroup G] (ψ : AddChar G K) (x : G) : ψ (-x) = conj (ψ x) := by
   rw [map_neg_eq_inv, inv_apply_eq_conj]
 
 end AddChar

@@ -231,7 +231,7 @@ lemma restrict_equiv (f : X.PartialMap Y) (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) : (f.restrict U hU hU').equiv f :=
   ⟨U, hU, le_rfl, hU', by simp⟩
 
-lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
+lemma equiv_of_fromSpecStalkOfMem_eq [PreirreducibleSpace X]
     {x : X} [X.IsGermInjectiveAt x] (f g : X.PartialMap Y)
     (hxf : x ∈ f.domain) (hxg : x ∈ g.domain)
     (H : f.fromSpecStalkOfMem hxf = g.fromSpecStalkOfMem hxg) : f.equiv g := by

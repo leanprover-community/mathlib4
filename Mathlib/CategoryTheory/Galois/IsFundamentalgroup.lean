@@ -167,7 +167,7 @@ open Pointwise
 fibers of `F`, `toAut F G` is surjective if and only if it acts transitively on the fibers
 of all Galois objects. This is the `if` direction. For the `only if` see
 `isPretransitive_of_surjective`. -/
-lemma toAut_surjective_of_isPretransitive [TopologicalSpace G] [IsTopologicalGroup G]
+lemma toAut_surjective_of_isPretransitive [TopologicalSpace G] [ContinuousMul G]
     [CompactSpace G] [∀ (X : C), ContinuousSMul G (F.obj X)]
     (h : ∀ (X : C) [IsGalois X], MulAction.IsPretransitive G (F.obj X)) :
     Function.Surjective (toAut F G) := by

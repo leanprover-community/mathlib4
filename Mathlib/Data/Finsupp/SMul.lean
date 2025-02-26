@@ -168,11 +168,11 @@ theorem comapDomain_smul_of_injective [AddMonoid M] [Monoid R] [DistribMulAction
 
 end
 
-theorem sum_smul_index [Semiring R] [AddCommMonoid M] {g : α →₀ R} {b : R} {h : α → R → M}
+theorem sum_smul_index [MulZeroClass R] [AddCommMonoid M] {g : α →₀ R} {b : R} {h : α → R → M}
     (h0 : ∀ i, h i 0 = 0) : (b • g).sum h = g.sum fun i a => h i (b * a) :=
   Finsupp.sum_mapRange_index h0
 
-theorem sum_smul_index' [AddMonoid M] [DistribSMul R M] [AddCommMonoid N] {g : α →₀ M} {b : R}
+theorem sum_smul_index' [AddZeroClass M] [DistribSMul R M] [AddCommMonoid N] {g : α →₀ M} {b : R}
     {h : α → M → N} (h0 : ∀ i, h i 0 = 0) : (b • g).sum h = g.sum fun i c => h i (b • c) :=
   Finsupp.sum_mapRange_index h0
 

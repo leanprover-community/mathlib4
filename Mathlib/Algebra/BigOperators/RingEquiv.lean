@@ -19,7 +19,7 @@ variable {α R S : Type*}
 protected theorem map_list_prod [Semiring R] [Semiring S] (f : R ≃+* S) (l : List R) :
     f l.prod = (l.map f).prod := map_list_prod f l
 
-protected theorem map_list_sum [NonAssocSemiring R] [NonAssocSemiring S] (f : R ≃+* S)
+protected theorem map_list_sum [NonUnitalNonAssocSemiring R] [NonAssocSemiring S] (f : R ≃+* S)
     (l : List R) : f l.sum = (l.map f).sum := map_list_sum f l
 
 /-- An isomorphism into the opposite ring acts on the product by acting on the reversed elements -/

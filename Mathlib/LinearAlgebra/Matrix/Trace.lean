@@ -170,7 +170,7 @@ theorem trace_col_mul_row {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R]
 
 end Mul
 
-lemma trace_submatrix_succ {n : ℕ} [NonUnitalNonAssocSemiring R]
+lemma trace_submatrix_succ {n : ℕ} [AddCommMonoid R]
     (M : Matrix (Fin n.succ) (Fin n.succ) R) :
     M 0 0 + trace (submatrix M Fin.succ Fin.succ) = trace M := by
   delta trace

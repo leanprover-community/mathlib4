@@ -248,7 +248,7 @@ field `𝕜` are analytic everywhere and coincide at points which accumulate to 
 they coincide globally.
 For higher-dimensional versions requiring that the functions coincide in a neighborhood of `z₀`,
 see `AnalyticOnNhd.eq_of_eventuallyEq`. -/
-theorem eq_of_frequently_eq [ConnectedSpace 𝕜] (hf : AnalyticOnNhd 𝕜 f univ)
+theorem eq_of_frequently_eq [PreconnectedSpace 𝕜] (hf : AnalyticOnNhd 𝕜 f univ)
     (hg : AnalyticOnNhd 𝕜 g univ) (hfg : ∃ᶠ z in 𝓝[≠] z₀, f z = g z) : f = g :=
   funext fun x =>
     eqOn_of_preconnected_of_frequently_eq hf hg isPreconnected_univ (mem_univ z₀) hfg (mem_univ x)

@@ -132,7 +132,7 @@ theorem lift_of {x : α} : lift f h (of rels x) = f x := rfl
 end ToMonoid
 
 @[to_additive (attr := ext)]
-theorem ext {M : Type*} [Monoid M] (rels : FreeMonoid α → FreeMonoid α → Prop)
+theorem ext {M : Type*} [MulOneClass M] (rels : FreeMonoid α → FreeMonoid α → Prop)
     {φ ψ : PresentedMonoid rels →* M} (hx : ∀ (x : α), φ (.of rels x) = ψ (.of rels x)) :
     φ = ψ := by
   apply MonoidHom.eq_of_eqOn_denseM (closure_range_of _)

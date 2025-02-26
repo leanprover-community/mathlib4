@@ -23,7 +23,7 @@ section AddMonoidHomClass
 
 variable {A B F : Type*} [FunLike F ℕ A]
 
-lemma ext_nat' [AddMonoid A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = g 1) : f = g :=
+lemma ext_nat' [AddZeroClass A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = g 1) : f = g :=
   DFunLike.ext f g <| by
     intro n
     induction n with

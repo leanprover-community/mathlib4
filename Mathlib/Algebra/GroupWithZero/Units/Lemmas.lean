@@ -22,7 +22,7 @@ section Monoid
 
 variable [Monoid M] [GroupWithZero G₀]
 
-lemma isLocalHom_of_exists_map_ne_one [FunLike F G₀ M] [MonoidHomClass F G₀ M] {f : F}
+lemma isLocalHom_of_exists_map_ne_one [FunLike F G₀ M] [MulHomClass F G₀ M] {f : F}
     (hf : ∃ x : G₀, f x ≠ 1) : IsLocalHom f where
   map_nonunit a h := by
     rcases eq_or_ne a 0 with (rfl | h)

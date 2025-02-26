@@ -25,7 +25,7 @@ open Cardinal Polynomial
 
 namespace Algebraic
 
-theorem infinite_of_charZero (R A : Type*) [CommRing R] [IsDomain R] [Ring A] [Algebra R A]
+theorem infinite_of_charZero (R A : Type*) [CommRing R] [Nontrivial R] [Ring A] [Algebra R A]
     [CharZero A] : { x : A | IsAlgebraic R x }.Infinite :=
   infinite_of_injective_forall_mem Nat.cast_injective isAlgebraic_nat
 

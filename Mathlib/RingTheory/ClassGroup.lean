@@ -216,17 +216,17 @@ noncomputable def FractionalIdeal.mk0 [IsDedekindDomain R] :
   map_mul' x y := by simp
 
 @[simp]
-theorem FractionalIdeal.coe_mk0 [IsDedekindDomain R] (I : (Ideal R)⁰) :
+theorem FractionalIdeal.coe_mk0 [IsDedekindRing R] (I : (Ideal R)⁰) :
     (FractionalIdeal.mk0 K I : FractionalIdeal R⁰ K) = I := rfl
 
-theorem FractionalIdeal.canonicalEquiv_mk0 [IsDedekindDomain R] (K' : Type*) [Field K']
+theorem FractionalIdeal.canonicalEquiv_mk0 [IsDedekindRing R] (K' : Type*) [Field K']
     [Algebra R K'] [IsFractionRing R K'] (I : (Ideal R)⁰) :
     FractionalIdeal.canonicalEquiv R⁰ K K' (FractionalIdeal.mk0 K I) =
     FractionalIdeal.mk0 K' I := by
   simp only [FractionalIdeal.coe_mk0, FractionalIdeal.canonicalEquiv_coeIdeal]
 
 @[simp]
-theorem FractionalIdeal.map_canonicalEquiv_mk0 [IsDedekindDomain R] (K' : Type*) [Field K']
+theorem FractionalIdeal.map_canonicalEquiv_mk0 [IsDedekindRing R] (K' : Type*) [Field K']
     [Algebra R K'] [IsFractionRing R K'] (I : (Ideal R)⁰) :
     Units.map (↑(FractionalIdeal.canonicalEquiv R⁰ K K')) (FractionalIdeal.mk0 K I) =
       FractionalIdeal.mk0 K' I :=
@@ -237,20 +237,20 @@ noncomputable def ClassGroup.mk0 [IsDedekindDomain R] : (Ideal R)⁰ →* ClassG
   ClassGroup.mk.comp (FractionalIdeal.mk0 (FractionRing R))
 
 @[simp]
-theorem ClassGroup.mk_mk0 [IsDedekindDomain R] (I : (Ideal R)⁰) :
+theorem ClassGroup.mk_mk0 [IsDedekindRing R] (I : (Ideal R)⁰) :
     ClassGroup.mk (FractionalIdeal.mk0 K I) = ClassGroup.mk0 I := by
   rw [ClassGroup.mk0, MonoidHom.comp_apply, ← ClassGroup.mk_canonicalEquiv K (FractionRing R),
     FractionalIdeal.map_canonicalEquiv_mk0]
 
 @[simp]
-theorem ClassGroup.equiv_mk0 [IsDedekindDomain R] (I : (Ideal R)⁰) :
+theorem ClassGroup.equiv_mk0 [IsDedekindRing R] (I : (Ideal R)⁰) :
     ClassGroup.equiv K (ClassGroup.mk0 I) =
       QuotientGroup.mk' (toPrincipalIdeal R K).range (FractionalIdeal.mk0 K I) := by
   rw [ClassGroup.mk0, MonoidHom.comp_apply, ClassGroup.equiv_mk]
   congr 1
   simp [← Units.eq_iff]
 
-theorem ClassGroup.mk0_eq_mk0_iff_exists_fraction_ring [IsDedekindDomain R] {I J : (Ideal R)⁰} :
+theorem ClassGroup.mk0_eq_mk0_iff_exists_fraction_ring [IsDedekindRing R] {I J : (Ideal R)⁰} :
     ClassGroup.mk0 I =
       ClassGroup.mk0 J ↔ ∃ (x : _) (_ : x ≠ (0 : K)), spanSingleton R⁰ x * I = J := by
   refine (ClassGroup.equiv K).injective.eq_iff.symm.trans ?_
@@ -267,7 +267,7 @@ theorem ClassGroup.mk0_eq_mk0_iff_exists_fraction_ring [IsDedekindDomain R] {I J
 
 variable {K}
 
-theorem ClassGroup.mk0_eq_mk0_iff [IsDedekindDomain R] {I J : (Ideal R)⁰} :
+theorem ClassGroup.mk0_eq_mk0_iff [IsDedekindRing R] {I J : (Ideal R)⁰} :
     ClassGroup.mk0 I = ClassGroup.mk0 J ↔
       ∃ (x y : R) (_hx : x ≠ 0) (_hy : y ≠ 0), Ideal.span {x} * (I : Ideal R) =
       Ideal.span {y} * J := by
@@ -295,7 +295,7 @@ theorem ClassGroup.integralRep_mem_nonZeroDivisors
     I.num ∈ (Ideal R)⁰ := by
   rwa [mem_nonZeroDivisors_iff_ne_zero, ne_eq, FractionalIdeal.num_eq_zero_iff]
 
-theorem ClassGroup.mk0_integralRep [IsDedekindDomain R]
+theorem ClassGroup.mk0_integralRep [IsDedekindRing R]
     (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     ClassGroup.mk0 ⟨ClassGroup.integralRep I, ClassGroup.integralRep_mem_nonZeroDivisors I.ne_zero⟩
       = ClassGroup.mk I := by
@@ -307,7 +307,7 @@ theorem ClassGroup.mk0_integralRep [IsDedekindDomain R]
   rw [mul_comm, val_mul, coe_toPrincipalIdeal, val_mk0]
   exact FractionalIdeal.den_mul_self_eq_num' R⁰ (FractionRing R) I
 
-theorem ClassGroup.mk0_surjective [IsDedekindDomain R] :
+theorem ClassGroup.mk0_surjective [IsDedekindRing R] :
     Function.Surjective (ClassGroup.mk0 : (Ideal R)⁰ → ClassGroup R) := by
   rintro ⟨I⟩
   refine ⟨⟨ClassGroup.integralRep I.1, ClassGroup.integralRep_mem_nonZeroDivisors I.ne_zero⟩, ?_⟩
@@ -329,11 +329,11 @@ theorem ClassGroup.mk_eq_one_iff {I : (FractionalIdeal R⁰ K)ˣ} :
   · intro x_eq; apply Units.ne_zero I; simp [hx', x_eq]
   · simp [hx']
 
-theorem ClassGroup.mk0_eq_one_iff [IsDedekindDomain R] {I : Ideal R} (hI : I ∈ (Ideal R)⁰) :
+theorem ClassGroup.mk0_eq_one_iff [IsDedekindRing R] {I : Ideal R} (hI : I ∈ (Ideal R)⁰) :
     ClassGroup.mk0 ⟨I, hI⟩ = 1 ↔ I.IsPrincipal :=
   ClassGroup.mk_eq_one_iff.trans (coeSubmodule_isPrincipal R _)
 
-theorem ClassGroup.mk0_eq_mk0_inv_iff [IsDedekindDomain R] {I J : (Ideal R)⁰} :
+theorem ClassGroup.mk0_eq_mk0_inv_iff [IsDedekindRing R] {I J : (Ideal R)⁰} :
     ClassGroup.mk0 I = (ClassGroup.mk0 J)⁻¹ ↔
       ∃ x ≠ (0 : R), I * J = Ideal.span {x} := by
   rw [eq_inv_iff_mul_eq_one, ← _root_.map_mul, ClassGroup.mk0_eq_one_iff,
@@ -363,7 +363,7 @@ theorem card_classGroup_eq_one [IsPrincipalIdealRing R] : Fintype.card (ClassGro
   exact ClassGroup.mk_eq_one_iff.mpr (I : FractionalIdeal R⁰ (FractionRing R)).isPrincipal
 
 /-- The class number is `1` iff the ring of integers is a principal ideal domain. -/
-theorem card_classGroup_eq_one_iff [IsDedekindDomain R] [Fintype (ClassGroup R)] :
+theorem card_classGroup_eq_one_iff [IsDedekindRing R] [Fintype (ClassGroup R)] :
     Fintype.card (ClassGroup R) = 1 ↔ IsPrincipalIdealRing R := by
   constructor; swap; · intros; convert card_classGroup_eq_one (R := R)
   rw [Fintype.card_eq_one_iff]
