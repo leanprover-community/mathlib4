@@ -279,7 +279,7 @@ end CommMonoid
 
 section CommGroup
 
-variable [CommGroup E] [TopologicalSpace E] [TopologicalGroup E]
+variable [CommGroup E] [TopologicalSpace E] [IsTopologicalGroup E]
 /-- The continuous homomorphism given by inversion. -/
 @[to_additive (attr := simps!) "The continuous homomorphism given by negation."]
 def inv : ContinuousMonoidHom E E :=

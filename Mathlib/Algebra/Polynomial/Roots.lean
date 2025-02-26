@@ -270,7 +270,7 @@ theorem card_roots_X_pow_sub_C {n : ℕ} (hn : 0 < n) (a : R) :
 
 section NthRoots
 
-/-- `nthRoots n a` noncomputably returns the solutions to `x ^ n = a`-/
+/-- `nthRoots n a` noncomputably returns the solutions to `x ^ n = a`. -/
 def nthRoots (n : ℕ) (a : R) : Multiset R :=
   roots ((X : R[X]) ^ n - C a)
 

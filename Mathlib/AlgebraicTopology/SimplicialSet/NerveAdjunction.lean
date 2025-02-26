@@ -558,4 +558,6 @@ noncomputable instance : Reflective nerveFunctor where
   L := hoFunctor
   adj := nerveAdjunction
 
+end
+
 end CategoryTheory

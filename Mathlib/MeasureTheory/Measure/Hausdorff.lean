@@ -594,7 +594,7 @@ theorem hausdorffMeasure_zero_or_top {d₁ d₂ : ℝ} (h : d₁ < d₂) (s : Se
 /-- Hausdorff measure `μH[d] s` is monotone in `d`. -/
 theorem hausdorffMeasure_mono {d₁ d₂ : ℝ} (h : d₁ ≤ d₂) (s : Set X) : μH[d₂] s ≤ μH[d₁] s := by
   rcases h.eq_or_lt with (rfl | h); · exact le_rfl
-  cases' hausdorffMeasure_zero_or_top h s with hs hs
+  rcases hausdorffMeasure_zero_or_top h s with hs | hs
   · rw [hs]; exact zero_le _
   · rw [hs]; exact le_top
 

@@ -6,7 +6,6 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Data.Nat.Defs
 
 /-!
 # The naturals form a linear ordered monoid

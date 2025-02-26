@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Algebra.GCDMonoid.Multiset
+import Mathlib.Algebra.GCDMonoid.Nat
+import Mathlib.Algebra.Group.TypeTags.Fintype
 import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Data.List.Rotate
-import Mathlib.GroupTheory.Perm.Cycle.Factors
 import Mathlib.GroupTheory.Perm.Closure
-import Mathlib.Algebra.GCDMonoid.Nat
+import Mathlib.GroupTheory.Perm.Cycle.Factors
 import Mathlib.Tactic.NormNum.GCD
 
 /-!
@@ -541,7 +542,7 @@ variable [DecidableEq α]
 def partition (σ : Perm α) : (Fintype.card α).Partition where
   parts := σ.cycleType + Multiset.replicate (Fintype.card α - σ.support.card) 1
   parts_pos {n hn} := by
-    cases' mem_add.mp hn with hn hn
+    rcases mem_add.mp hn with hn | hn
     · exact zero_lt_one.trans (one_lt_of_mem_cycleType hn)
     · exact lt_of_lt_of_le zero_lt_one (ge_of_eq (Multiset.eq_of_mem_replicate hn))
   parts_sum := by
