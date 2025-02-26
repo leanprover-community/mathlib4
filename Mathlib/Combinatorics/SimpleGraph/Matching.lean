@@ -3,11 +3,13 @@ Copyright (c) 2020 Alena Gusakov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
 -/
+import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Data.Fintype.Order
+import Mathlib.Data.Set.Card.Arithmetic
 import Mathlib.Data.Set.Functor
 
 /-!
@@ -259,6 +261,20 @@ lemma IsPerfectMatching.toSubgraph_iff (h : M.spanningCoe ≤ G') :
   simp only [isPerfectMatching_iff, toSubgraph_adj, spanningCoe_adj]
 
 end Subgraph
+
+lemma IsClique.even_iff_exists_isMatching {u : Set V} (hc : G.IsClique u)
+    (hu : Set.Finite u) : Even u.ncard ↔ ∃ (M : Subgraph G), M.verts = u ∧ M.IsMatching := by
+  refine ⟨fun h ↦ ?_, by
+    rintro ⟨M, ⟨rfl, hMr⟩⟩
+    simpa [Set.ncard_eq_toFinset_card _ hu, Set.toFinite_toFinset,
+      ← Set.toFinset_card] using @hMr.even_card _ _ _ hu.fintype⟩
+  obtain ⟨t, u, rfl, hd, hcard⟩ := Set.exists_union_disjoint_ncard_eq_of_even h
+  obtain ⟨f⟩ : Nonempty (t ≃ u) := by
+    rw [← Cardinal.eq, ← t.cast_ncard (Set.finite_union.mp hu).1,
+      ← u.cast_ncard (Set.finite_union.mp hu).2]
+    exact congrArg Nat.cast hcard
+  exact Subgraph.IsMatching.exists_of_disjoint_sets_of_equiv hd f
+    (fun v ↦ hc (by simp) (by simp) <| hd.ne_of_mem (by simp) (by simp))
 
 namespace ConnectedComponent
 
