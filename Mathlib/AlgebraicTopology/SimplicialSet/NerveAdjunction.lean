@@ -323,8 +323,8 @@ def nerve₂Adj.unit.component (X : SSet.Truncated.{u} 2) :
     X ⟶ nerveFunctor₂.obj (hoFunctor₂.obj X) := by
   fapply toNerve₂.mk' (C := hoFunctor₂.obj X)
   · exact (ReflQuiv.adj.{u}.unit.app (SSet.oneTruncation₂.obj X) ⋙rq
-    (SSet.Truncated.HomotopyCategory.quotientFunctor X).toReflPrefunctor ⋙rq
-    (OneTruncation₂.ofNerve₂.natIso).inv.app (hoFunctor₂.obj X))
+      (SSet.Truncated.HomotopyCategory.quotientFunctor X).toReflPrefunctor ⋙rq
+      (OneTruncation₂.ofNerve₂.natIso).inv.app (hoFunctor₂.obj X))
   · exact fun φ ↦ Quotient.sound _ (HoRel₂.mk φ)
 
 theorem nerve₂Adj.unit.component_eq (X : SSet.Truncated.{u} 2) :
