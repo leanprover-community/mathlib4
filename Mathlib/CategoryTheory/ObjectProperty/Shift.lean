@@ -30,7 +30,7 @@ def shift (a : A) : ObjectProperty C := fun X => P (X⟦a⟧)
 lemma prop_shift_iff (a : A) (X : C) : P.shift a X ↔ P (X⟦a⟧) := Iff.rfl
 
 instance (a : A) [P.IsClosedUnderIsomorphisms] :
-    (P.shift a).IsClosedUnderIsomorphisms  where
+    (P.shift a).IsClosedUnderIsomorphisms where
   of_iso e hX := P.prop_of_iso ((shiftFunctor C a).mapIso e) hX
 
 variable (A)

@@ -81,6 +81,7 @@ open ObjectProperty
 @[deprecated (since := "2025-02-25")] alias mem_iff_of_iso := prop_iff_of_iso
 @[deprecated (since := "2025-02-25")] alias mem_of_isIso := prop_of_isIso
 @[deprecated (since := "2025-02-25")] alias mem_iff_of_isIso := prop_iff_of_isIso
+@[deprecated (since := "2025-02-25")] alias isoClosure := isoClosure
 @[deprecated (since := "2025-02-25")] alias mem_isoClosure_iff := prop_isoClosure_iff
 @[deprecated (since := "2025-02-25")] alias mem_isoClosure := prop_isoClosure
 

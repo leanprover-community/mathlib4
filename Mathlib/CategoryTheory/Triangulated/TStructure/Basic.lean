@@ -167,6 +167,12 @@ lemma le_of_isLE (X : C) (n : ℤ) [t.IsLE X n] : t.le n X := IsLE.le
 
 lemma ge_of_isGE (X : C) (n : ℤ) [t.IsGE X n] : t.ge n X := IsGE.ge
 
+@[deprecated (since := "2025-02-25")] alias LE := le
+@[deprecated (since := "2025-02-25")] alias GE := ge
+@[deprecated (since := "2025-02-25")] alias LE_shift := le_shift
+@[deprecated (since := "2025-02-25")] alias GE_shift := ge_shift
+@[deprecated (since := "2025-02-25")] alias LE_zero_le := le_zero_le
+@[deprecated (since := "2025-02-25")] alias GE_one_le := ge_one_le
 @[deprecated (since := "2025-02-25")] alias predicateShift_LE := shift_le
 @[deprecated (since := "2025-02-25")] alias predicateShift_GE := shift_ge
 @[deprecated (since := "2025-02-25")] alias LE_monotone := le_monotone
