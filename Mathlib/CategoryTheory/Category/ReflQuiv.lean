@@ -191,21 +191,21 @@ open Category Functor
 /-- The unit components are defined as the composite of the corresponding unit component for the
 adjunction between categories and quivers with the map underlying the quotient functor. -/
 @[simps! toPrefunctor obj map]
-def adj.unit.component (V : Type u) [ReflQuiver V] :
+def adj.unit.app (V : Type u) [ReflQuiver V] :
     V ⥤rq forget.obj (Cat.freeRefl.obj (ReflQuiv.of V)) where
   toPrefunctor := Quiv.adj.unit.app (Quiv.of V) ⋙q
     Quiv.forget.map (Cat.FreeRefl.quotientFunctor V)
   map_id := fun _ => Quotient.sound _ ⟨⟩
 
 /-- This is used in the proof of both triangle equalities. -/
-theorem adj.unit.component_eq (V : ReflQuiv.{max u v, u}) :
-    forgetToQuiv.map (adj.unit.component V) = Quiv.adj.unit.app (V.toQuiv) ≫
+theorem adj.unit.map_app_eq (V : ReflQuiv.{max u v, u}) :
+    forgetToQuiv.map (adj.unit.app V) = Quiv.adj.unit.app (V.toQuiv) ≫
     Quiv.forget.map (Y := Cat.of _) (Cat.FreeRefl.quotientFunctor V) := rfl
 
 /-- The counit components are defined using the universal property of the quotient
 from the corresponding counit component for the adjunction between categories and quivers. -/
 @[simps!]
-def adj.counit.component (C : Type u) [Category.{max u v} C] :
+def adj.counit.app (C : Type u) [Category.{max u v} C] :
     Cat.freeRefl.obj (ReflQuiv.of C) ⥤ C :=
   Quotient.lift Cat.FreeReflRel (Quiv.adj.counit.app (Cat.of C)) (by
     intro x y f g rel
@@ -217,16 +217,8 @@ def adj.counit.component (C : Type u) [Category.{max u v} C] :
 
 /-- The counit of `ReflQuiv.adj` is closely related to the counit of `Quiv.adj`. -/
 @[simp]
-theorem adj.counit.component_eq (C : Type u) [SmallCategory C] :
-    Cat.FreeRefl.quotientFunctor C ⋙ adj.counit.component C =
-    Quiv.adj.counit.app (Cat.of C) := rfl
-
-/-- The counit of `ReflQuiv.adj` is closely related to the counit of `Quiv.adj`. For ease of use,
-we introduce primed version for unbundled categories. -/
-@[simp]
-theorem adj.counit.component_eq' (C) [Category C] :
-    Cat.FreeRefl.quotientFunctor C ⋙ adj.counit.component (Cat.of C) =
-    Quiv.adj.counit.app (Cat.of C) := rfl
+theorem adj.counit.app_eq (C : Type u) [Category C] :
+    Cat.FreeRefl.quotientFunctor C ⋙ adj.counit.app C = Quiv.adj.counit.app (Cat.of C) := rfl
 
 /--
 The adjunction between forming the free category on a reflexive quiver, and forgetting a category
@@ -235,12 +227,12 @@ to a reflexive quiver.
 nonrec def adj : Cat.freeRefl.{max u v, u} ⊣ ReflQuiv.forget :=
   Adjunction.mkOfUnitCounit {
     unit := {
-      app V := adj.unit.component V
-      naturality := fun V W f ↦ by exact rfl
+      app _ := adj.unit.app _
+      naturality _ _ _ := rfl
     }
     counit := {
-      app C := adj.counit.component C
-      naturality := fun C D F ↦ Quotient.lift_unique' _ _ _ (Quiv.adj.counit.naturality F)
+      app _ := adj.counit.app _
+      naturality _ _ F := Quotient.lift_unique' _ _ _ (Quiv.adj.counit.naturality F)
     }
     left_triangle := by
       ext V
@@ -252,7 +244,7 @@ nonrec def adj : Cat.freeRefl.{max u v, u} ⊣ ReflQuiv.forget :=
       simp only [Cat.freeRefl_obj_α, Functor.comp_id]
       rw [← Functor.assoc, ← Cat.freeRefl_naturality, Functor.assoc]
       dsimp [Cat.freeRefl]
-      have := adj.counit.component_eq' (Cat.FreeRefl V)
+      have := adj.counit.app_eq (Cat.FreeRefl V)
       simp [Cat.of_α] at this
       rw [this]
       conv =>
@@ -268,6 +260,7 @@ nonrec def adj : Cat.freeRefl.{max u v, u} ⊣ ReflQuiv.forget :=
       exact Functor.id_comp _
     right_triangle := by
       ext C
+      dsimp
       exact forgetToQuiv_faithful _ _ (Quiv.adj.right_triangle_components C)
   }
 
