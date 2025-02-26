@@ -96,7 +96,7 @@ instance instFunLike : FunLike (DPMorphism hI hJ) A B where
   coe h := h.toRingHom
   coe_injective' h h' hh' := by
     cases h; cases h'; congr
-    dsimp at hh' ; ext; rw [hh']
+    dsimp at hh'; ext; rw [hh']
 
 instance coe_ringHom : CoeOut (DPMorphism hI hJ) (A →+* B) := ⟨DPMorphism.toRingHom⟩
 
