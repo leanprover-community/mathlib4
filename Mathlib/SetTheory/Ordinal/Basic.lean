@@ -170,72 +170,88 @@ theorem _root_.RelIso.ordinal_type_eq {α β} {r : α → α → Prop} {s : β �
     [IsWellOrder β s] (h : r ≃r s) : type r = type s :=
   type_eq.2 ⟨h⟩
 
-theorem type_eq_zero_of_empty (r) [IsWellOrder α r] [IsEmpty α] : type r = 0 :=
+theorem type_eq_zero (r) [IsWellOrder α r] [IsEmpty α] : type r = 0 :=
   (RelIso.relIsoOfIsEmpty r _).ordinal_type_eq
 
+@[deprecated (since := "2024-12-02")]
+alias type_eq_zero_of_empty := type_eq_zero
+
 @[simp]
-theorem type_eq_zero_iff_isEmpty [IsWellOrder α r] : type r = 0 ↔ IsEmpty α :=
+theorem type_eq_zero_iff [IsWellOrder α r] : type r = 0 ↔ IsEmpty α :=
   ⟨fun h =>
     let ⟨s⟩ := type_eq.1 h
     s.toEquiv.isEmpty,
-    @type_eq_zero_of_empty α r _⟩
+    @type_eq_zero α r _⟩
 
-theorem type_ne_zero_iff_nonempty [IsWellOrder α r] : type r ≠ 0 ↔ Nonempty α := by simp
+@[deprecated (since := "2024-12-02")]
+alias type_eq_zero_iff_isEmpty := type_eq_zero_iff
 
-theorem type_ne_zero_of_nonempty (r) [IsWellOrder α r] [h : Nonempty α] : type r ≠ 0 :=
-  type_ne_zero_iff_nonempty.2 h
+theorem type_ne_zero_iff [IsWellOrder α r] : type r ≠ 0 ↔ Nonempty α := by simp
 
-theorem type_pEmpty : type (@EmptyRelation PEmpty) = 0 :=
-  rfl
+@[deprecated (since := "2024-12-02")]
+alias type_ne_zero_iff_nonempty := type_ne_zero_iff
 
-theorem type_empty : type (@EmptyRelation Empty) = 0 :=
-  type_eq_zero_of_empty _
+theorem type_ne_zero (r) [IsWellOrder α r] [h : Nonempty α] : type r ≠ 0 := by simp
 
-theorem type_eq_one_of_unique (r) [IsWellOrder α r] [Nonempty α] [Subsingleton α] : type r = 1 := by
+@[deprecated (since := "2024-12-02")]
+alias type_ne_zero_of_nonempty := type_ne_zero
+
+@[deprecated type_eq_zero (since := "2024-12-02")]
+theorem type_pEmpty : type (@EmptyRelation PEmpty) = 0 := type_eq_zero _
+@[deprecated type_eq_zero (since := "2024-12-02")]
+theorem type_empty : type (@EmptyRelation Empty) = 0 := type_eq_zero _
+
+theorem type_eq_one (r) [IsWellOrder α r] [Nonempty α] [Subsingleton α] : type r = 1 := by
   cases nonempty_unique α
   exact (RelIso.ofUniqueOfIrrefl r _).ordinal_type_eq
 
+@[deprecated (since := "2024-12-02")]
+alias type_eq_one_of_unique := type_eq_one
+
 @[simp]
-theorem type_eq_one_iff_unique [IsWellOrder α r] : type r = 1 ↔ Nonempty (Unique α) :=
+theorem type_eq_one_iff [IsWellOrder α r] : type r = 1 ↔ Nonempty (Unique α) :=
   ⟨fun h ↦ let ⟨s⟩ := type_eq.1 h; ⟨s.toEquiv.unique⟩,
-    fun ⟨_⟩ ↦ type_eq_one_of_unique r⟩
+    fun ⟨_⟩ ↦ type_eq_one r⟩
 
-theorem type_pUnit : type (@EmptyRelation PUnit) = 1 :=
-  rfl
+@[deprecated (since := "2024-12-02")]
+alias type_eq_one_iff_unique := type_eq_one_iff
 
-theorem type_unit : type (@EmptyRelation Unit) = 1 :=
-  rfl
+@[deprecated type_eq_one (since := "2024-12-02")]
+theorem type_pUnit : type (@EmptyRelation PUnit) = 1 := type_eq_one _
+@[deprecated type_eq_one (since := "2024-12-02")]
+theorem type_unit : type (@EmptyRelation Unit) = 1 :=type_eq_one _
 
 @[simp]
-theorem toType_empty_iff_eq_zero {o : Ordinal} : IsEmpty o.toType ↔ o = 0 := by
-  rw [← @type_eq_zero_iff_isEmpty o.toType (· < ·), type_toType]
+theorem isEmpty_toType_iff {o : Ordinal} : IsEmpty o.toType ↔ o = 0 := by
+  rw [← @type_eq_zero_iff o.toType (· < ·), type_toType]
+
+@[deprecated (since := "2024-12-02")]
+alias toType_empty_iff_eq_zero := isEmpty_toType_iff
 
 @[deprecated toType_empty_iff_eq_zero (since := "2024-08-26")]
-alias out_empty_iff_eq_zero := toType_empty_iff_eq_zero
-
-@[deprecated toType_empty_iff_eq_zero (since := "2024-08-26")]
-theorem eq_zero_of_out_empty (o : Ordinal) [h : IsEmpty o.toType] : o = 0 :=
-  toType_empty_iff_eq_zero.1 h
+alias out_empty_iff_eq_zero := isEmpty_toType_iff
 
 instance isEmpty_toType_zero : IsEmpty (toType 0) :=
-  toType_empty_iff_eq_zero.2 rfl
+  isEmpty_toType_iff.2 rfl
 
 @[simp]
-theorem toType_nonempty_iff_ne_zero {o : Ordinal} : Nonempty o.toType ↔ o ≠ 0 := by
-  rw [← @type_ne_zero_iff_nonempty o.toType (· < ·), type_toType]
+theorem nonempty_toType_iff {o : Ordinal} : Nonempty o.toType ↔ o ≠ 0 := by
+  rw [← @type_ne_zero_iff o.toType (· < ·), type_toType]
+
+@[deprecated (since := "2024-12-02")]
+alias toType_nonempty_iff_ne_zero := nonempty_toType_iff
 
 @[deprecated toType_nonempty_iff_ne_zero (since := "2024-08-26")]
 alias out_nonempty_iff_ne_zero := toType_nonempty_iff_ne_zero
 
-@[deprecated toType_nonempty_iff_ne_zero (since := "2024-08-26")]
-theorem ne_zero_of_out_nonempty (o : Ordinal) [h : Nonempty o.toType] : o ≠ 0 :=
-  toType_nonempty_iff_ne_zero.1 h
+instance : NeZero (1 : Ordinal) :=
+  ⟨type_ne_zero _⟩
 
-protected theorem one_ne_zero : (1 : Ordinal) ≠ 0 :=
-  type_ne_zero_of_nonempty _
+@[deprecated one_ne_zero (since := "2024-08-26")]
+protected theorem one_ne_zero : (1 : Ordinal) ≠ 0 := one_ne_zero
 
-instance nontrivial : Nontrivial Ordinal.{u} :=
-  ⟨⟨1, 0, Ordinal.one_ne_zero⟩⟩
+instance : Nontrivial Ordinal.{u} :=
+  ⟨⟨1, 0, one_ne_zero⟩⟩
 
 /-- `Quotient.inductionOn` specialized to ordinals.
 
@@ -377,9 +393,6 @@ theorem eq_zero_or_pos : ∀ a : Ordinal, a = 0 ∨ 0 < a :=
 
 instance : ZeroLEOneClass Ordinal :=
   ⟨Ordinal.zero_le _⟩
-
-instance instNeZeroOne : NeZero (1 : Ordinal) :=
-  ⟨Ordinal.one_ne_zero⟩
 
 theorem type_le_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
     [IsWellOrder β s] : type r ≤ type s ↔ Nonempty (r ≼i s) :=
@@ -778,11 +791,11 @@ theorem lift_lift (a : Ordinal.{u}) : lift.{w} (lift.{v} a) = lift.{max v w} a :
 
 @[simp]
 theorem lift_zero : lift 0 = 0 :=
-  type_eq_zero_of_empty _
+  type_eq_zero _
 
 @[simp]
 theorem lift_one : lift 1 = 1 :=
-  type_eq_one_of_unique _
+  type_eq_one _
 
 @[simp]
 theorem lift_card (a) : Cardinal.lift.{u, v} (card a) = card (lift.{u} a) :=
