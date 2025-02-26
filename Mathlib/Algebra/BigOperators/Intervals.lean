@@ -3,10 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 import Mathlib.Algebra.Order.Interval.Finset
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Tactic.Linarith
-import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 
 /-!
 # Results about big operators over intervals
