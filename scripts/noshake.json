@@ -339,6 +339,8 @@
   ["Mathlib.Tactic.Algebraize"],
   "Mathlib.RingTheory.Finiteness.Defs":
   ["Mathlib.Data.Finsupp.Defs", "Mathlib.Tactic.Algebraize"],
+  "Mathlib.RingTheory.FilteredAlgebra.InduceMaps":
+  ["Mathlib.GroupTheory.GroupAction.SubMulAction"],
   "Mathlib.RingTheory.Binomial": ["Mathlib.Algebra.Order.Floor"],
   "Mathlib.RingTheory.Adjoin.Basic": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.RepresentationTheory.FdRep":
