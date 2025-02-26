@@ -102,13 +102,13 @@ theorem hom_comm_apply {A B : Rep k G} (f : A ⟶ B) (g : G) (x : A) :
 variable (k G)
 
 /-- The trivial `k`-linear `G`-representation on a `k`-module `V.` -/
-def trivial (V : Type u) [AddCommGroup V] [Module k V] : Rep k G :=
-  Rep.of (@Representation.trivial k G V _ _ _ _)
+abbrev trivial (V : Type u) [AddCommGroup V] [Module k V] : Rep k G :=
+  Rep.of (Representation.trivial k G V)
 
 variable {k G}
 
-theorem trivial_def {V : Type u} [AddCommGroup V] [Module k V] (g : G) (v : V) :
-    (trivial k G V).ρ g v = v :=
+theorem trivial_def {V : Type u} [AddCommGroup V] [Module k V] (g : G) :
+    (trivial k G V).ρ g = LinearMap.id :=
   rfl
 
 /-- A predicate for representations that fix every element. -/
@@ -118,7 +118,7 @@ instance {V : Type u} [AddCommGroup V] [Module k V] :
     IsTrivial (Rep.trivial k G V) where
 
 instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
-    IsTrivial (Rep.of ρ) where
+    IsTrivial (Rep.of ρ) := ‹_›
 
 -- Porting note: the two following instances were found automatically in mathlib3
 noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
@@ -127,17 +127,11 @@ noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k))
 noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.preservesColimits_forget.{u} _ _
 
-/- Porting note: linter complains `simp` unfolds some types in the LHS, so
-have removed `@[simp]`. -/
-theorem MonoidalCategory.braiding_hom_apply {A B : Rep k G} (x : A) (y : B) :
-    Action.Hom.hom (β_ A B).hom (TensorProduct.tmul k x y) = TensorProduct.tmul k y x :=
-  rfl
+open MonoidalCategory in
+@[simp]
+theorem tensor_ρ {A B : Rep k G} : (A ⊗ B).ρ = A.ρ.tprod B.ρ := rfl
 
-/- Porting note: linter complains `simp` unfolds some types in the LHS, so
-have removed `@[simp]`. -/
-theorem MonoidalCategory.braiding_inv_apply {A B : Rep k G} (x : A) (y : B) :
-    Action.Hom.hom (β_ A B).inv (TensorProduct.tmul k y x) = TensorProduct.tmul k x y :=
-  rfl
+end
 
 section Linearization
 
@@ -219,7 +213,7 @@ noncomputable abbrev ofMulAction (H : Type u) [MulAction G H] : Rep k G :=
   of <| Representation.ofMulAction k G H
 
 /-- The `k`-linear `G`-representation on `k[G]`, induced by left multiplication. -/
-noncomputable def leftRegular : Rep k G :=
+noncomputable abbrev leftRegular : Rep k G :=
   ofMulAction k G G
 
 /-- The `k`-linear `G`-representation on `k[Gⁿ]`, induced by left multiplication. -/
@@ -272,55 +266,138 @@ variable {k G}
 /-- Given an element `x : A`, there is a natural morphism of representations `k[G] ⟶ A` sending
 `g ↦ A.ρ(g)(x).` -/
 @[simps]
-noncomputable def leftRegularHom (A : Rep k G) (x : A) : Rep.ofMulAction k G G ⟶ A where
-  hom := ModuleCat.ofHom <| Finsupp.lift _ _ _ fun g => A.ρ g x
-  comm g := by
-    ext : 1
-    refine Finsupp.lhom_ext' fun y => LinearMap.ext_ring ?_
-/- Porting note: rest of broken proof was
-    simpa only [LinearMap.comp_apply, ModuleCat.comp_def, Finsupp.lsingle_apply, Finsupp.lift_apply,
-      Action_ρ_eq_ρ, of_ρ_apply, Representation.ofMulAction_single, Finsupp.sum_single_index,
-      zero_smul, one_smul, smul_eq_mul, A.ρ.map_mul] -/
-    simp only [LinearMap.comp_apply, ModuleCat.hom_comp, Finsupp.lsingle_apply]
-    erw [Finsupp.lift_apply, Finsupp.lift_apply, Representation.ofMulAction_single (G := G)]
-    simp only [Finsupp.sum_single_index, zero_smul, one_smul, smul_eq_mul, A.ρ.map_mul, of_ρ]
-    rfl
+def leftRegularHom (A : Rep k G) (x : A) : leftRegular k G ⟶ A where
+  hom := ModuleCat.ofHom <| Finsupp.lift A k G fun g => A.ρ g x
+  comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring <| by
+    simp [ModuleCat.endRingEquiv]
 
-theorem leftRegularHom_apply {A : Rep k G} (x : A) :
-    (leftRegularHom A x).hom (Finsupp.single 1 1) = x := by
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [leftRegularHom_hom, Finsupp.lift_apply, Finsupp.sum_single_index, one_smul,
-    A.ρ.map_one, LinearMap.one_apply]
-  rw [zero_smul]
+theorem leftRegularHom_hom_single {A : Rep k G} (g : G) (x : A) (r : k) :
+    (leftRegularHom A x).hom (Finsupp.single g r) = r • A.ρ g x := by
+  simp
 
 /-- Given a `k`-linear `G`-representation `A`, there is a `k`-linear isomorphism between
 representation morphisms `Hom(k[G], A)` and `A`. -/
 @[simps]
-noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶ A) ≃ₗ[k] A where
+noncomputable def leftRegularHomEquiv (A : Rep k G) : (leftRegular k G ⟶ A) ≃ₗ[k] A where
   toFun f := f.hom (Finsupp.single 1 1)
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun x := leftRegularHom A x
-  left_inv f := by
-    refine Action.Hom.ext (ModuleCat.hom_ext (Finsupp.lhom_ext' fun x : G => LinearMap.ext_ring ?_))
-    have :
-      f.hom ((ofMulAction k G G).ρ x (Finsupp.single (1 : G) (1 : k))) =
-        A.ρ x (f.hom (Finsupp.single (1 : G) (1 : k))) :=
-      LinearMap.ext_iff.1 (ModuleCat.hom_ext_iff.mp (f.comm x)) (Finsupp.single 1 1)
-    simp only [leftRegularHom_hom, LinearMap.comp_apply, Finsupp.lsingle_apply,
-      Finsupp.lift_apply, ← this, coe_of, of_ρ, Representation.ofMulAction_single x (1 : G) (1 : k),
-      smul_eq_mul, mul_one, zero_smul, Finsupp.sum_single_index, one_smul,
-      ConcreteCategory.hom_ofHom]
-  right_inv x := leftRegularHom_apply x
+  left_inv f := Action.Hom.ext <| ModuleCat.hom_ext <| Finsupp.lhom_ext' fun x =>
+    LinearMap.ext_ring <| by simp [← hom_comm_apply f]
+  right_inv x := by simp
 
-theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
+theorem leftRegularHomEquiv_symm_hom_single {A : Rep k G} (x : A) (g : G) :
     ((leftRegularHomEquiv A).symm x).hom (Finsupp.single g 1) = A.ρ g x := by
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [leftRegularHomEquiv_symm_apply, leftRegularHom_hom, Finsupp.lift_apply,
-    Finsupp.sum_single_index, one_smul]
-  rw [zero_smul]
+  simp
 
 end Linearization
+section Finsupp
+
+open Finsupp
+
+/-- The representation on `α →₀ A` defined pointwise by a representation on `A`. -/
+abbrev finsupp (α : Type u) (A : Rep k G) : Rep k G :=
+  Rep.of (Representation.finsupp A.ρ α)
+
+variable (k G) in
+/-- The representation on `α →₀ k[G]` defined pointwise by the left regular representation on
+`k[G]`. -/
+abbrev free (α : Type u) : Rep k G :=
+  Rep.of (V := (α →₀ G →₀ k)) (Representation.free k G α)
+
+/-- Given `f : α → A`, the natural representation morphism `(α →₀ k[G]) ⟶ A` sending
+`single a (single g r) ↦ r • A.ρ g (f a)`. -/
+@[simps]
+def freeLift {α : Type u} (A : Rep k G) (f : α → A) :
+    free k G α ⟶ A where
+  hom := ModuleCat.ofHom <| linearCombination k (fun x => A.ρ x.2 (f x.1)) ∘ₗ
+    (finsuppProdLEquiv k).symm.toLinearMap
+  comm _ := ModuleCat.hom_ext <| lhom_ext' fun _ => lhom_ext fun _ _ => by
+    simp [ModuleCat.endRingEquiv]
+
+lemma freeLift_hom_single_single {α : Type u} (A : Rep k G)
+    (f : α → A) (i : α) (g : G) (r : k) :
+    (freeLift A f).hom (single i (single g r)) = r • A.ρ g (f i) := by
+  simp
+
+/-- The natural linear equivalence between functions `α → A` and representation morphisms
+`(α →₀ k[G]) ⟶ A`. -/
+@[simps]
+def freeLiftLEquiv (α : Type u) (A : Rep k G) :
+    (free k G α ⟶ A) ≃ₗ[k] (α → A) where
+  toFun f i := f.hom (single i (single 1 1))
+  invFun := freeLift A
+  left_inv x := Action.Hom.ext <| ModuleCat.hom_ext <| lhom_ext' fun i => lhom_ext fun j y => by
+      have := (hom_comm_apply x j (single i (single 1 1))).symm
+      simp_all [← map_smul]
+  right_inv _ := by ext; simp
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+@[ext]
+lemma free_ext {α : Type u} {A : Rep k G} (f g : free k G α ⟶ A)
+    (h : ∀ i : α, f.hom (single i (single 1 1)) = g.hom (single i (single 1 1))) : f = g :=
+  (freeLiftLEquiv α A).injective (funext_iff.2 h)
+
+section
+
+open MonoidalCategory
+
+variable (A B : Rep k G) (α : Type u)
+
+open ModuleCat.MonoidalCategory
+
+/-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
+`(α →₀ A) ⊗ B ≅ (A ⊗ B) →₀ α` sending `single x a ⊗ₜ b ↦ single x (a ⊗ₜ b)`. -/
+@[simps! hom_hom inv_hom]
+def finsuppTensorLeft [DecidableEq α] :
+    A.finsupp α ⊗ B ≅ (A ⊗ B).finsupp α :=
+  Action.mkIso (TensorProduct.finsuppLeft k A B α).toModuleIso
+    fun _ => ModuleCat.hom_ext <| TensorProduct.ext <| lhom_ext fun _ _ => by
+      ext
+      simp [Action_ρ_eq_ρ, TensorProduct.finsuppLeft_apply_tmul,
+        instMonoidalCategoryStruct_tensorObj, instMonoidalCategoryStruct_tensorHom,
+        ModuleCat.MonoidalCategory.tensorObj, ModuleCat.endRingEquiv]
+
+/-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
+`A ⊗ (α →₀ B) ≅ (A ⊗ B) →₀ α` sending `a ⊗ₜ single x b ↦ single x (a ⊗ₜ b)`. -/
+@[simps! hom_hom inv_hom]
+def finsuppTensorRight [DecidableEq α] :
+    A ⊗ B.finsupp α ≅ (A ⊗ B).finsupp α :=
+  Action.mkIso (TensorProduct.finsuppRight k A B α).toModuleIso fun _ => ModuleCat.hom_ext <|
+    TensorProduct.ext <| LinearMap.ext fun _ => lhom_ext fun _ _ => by
+      simp [Action_ρ_eq_ρ, TensorProduct.finsuppRight_apply_tmul, ModuleCat.endRingEquiv,
+        instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj]
+
+variable (k G) in
+/-- The natural isomorphism sending `single g r₁ ⊗ single a r₂ ↦ single a (single g r₁r₂)`. -/
+@[simps! (config := .lemmasOnly) hom_hom inv_hom]
+def leftRegularTensorTrivialIsoFree (α : Type u) :
+    leftRegular k G ⊗ trivial k G (α →₀ k) ≅ free k G α :=
+  Action.mkIso (finsuppTensorFinsupp' k G α ≪≫ₗ Finsupp.domLCongr (Equiv.prodComm G α) ≪≫ₗ
+    finsuppProdLEquiv k).toModuleIso fun _ =>
+      ModuleCat.hom_ext <| TensorProduct.ext <| lhom_ext fun _ _ => lhom_ext fun _ _ => by
+        simp [Action_ρ_eq_ρ, instMonoidalCategoryStruct_tensorObj, ModuleCat.endRingEquiv,
+          instMonoidalCategoryStruct_whiskerRight, ModuleCat.MonoidalCategory.whiskerRight,
+          ModuleCat.MonoidalCategory.tensorObj]
+
+variable {α : Type u}
+
+lemma leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single (i : α) (g : G) (r s : k) :
+    (leftRegularTensorTrivialIsoFree k G α).hom.hom (single g r ⊗ₜ single i s) =
+      single i (single g (r * s)) := by
+  simp [leftRegularTensorTrivialIsoFree, instMonoidalCategoryStruct_tensorObj,
+    ModuleCat.MonoidalCategory.tensorObj]
+
+lemma leftRegularTensorTrivialIsoFree_inv_hom_single_single (i : α) (g : G) (r : k) :
+    (leftRegularTensorTrivialIsoFree k G α).inv.hom (single i (single g r)) =
+      single g r ⊗ₜ[k] single i 1 := by
+  simp [leftRegularTensorTrivialIsoFree, finsuppTensorFinsupp'_symm_single_eq_tmul_single_one,
+    instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj]
+
+end
+end Finsupp
 
 end
 
@@ -355,33 +432,16 @@ protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
 def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) where
   toFun f :=
     { hom := ModuleCat.ofHom <| (TensorProduct.curry f.hom.hom).flip
-      comm := fun g => by
-        ext x : 2
-        refine LinearMap.ext fun y => ?_
-        change f.hom (_ ⊗ₜ[k] _) = C.ρ g (f.hom (_ ⊗ₜ[k] _))
-        rw [← hom_comm_apply]
-        change _ = f.hom ((A.ρ g * A.ρ g⁻¹) y ⊗ₜ[k] _)
-        simp only [← map_mul, mul_inv_cancel, map_one]
-        rfl }
+      comm := fun g => ModuleCat.hom_ext <| LinearMap.ext fun x => LinearMap.ext fun y => by
+        simpa [ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj,
+          ModuleCat.MonoidalCategory.tensorObj, ModuleCat.endRingEquiv] using
+          hom_comm_apply f g (A.ρ g⁻¹ y ⊗ₜ[k] x) }
   invFun f :=
     { hom := ModuleCat.ofHom <| TensorProduct.uncurry k _ _ _ f.hom.hom.flip
       comm := fun g => ModuleCat.hom_ext <| TensorProduct.ext' fun x y => by
-          /- Porting note: rest of broken proof was
-        dsimp only [MonoidalCategory.tensorLeft_obj, ModuleCat.comp_def, LinearMap.comp_apply,
-          tensor_ρ, ModuleCat.MonoidalCategory.hom_apply, TensorProduct.map_tmul]
-        simp only [TensorProduct.uncurry_apply f.hom.flip, LinearMap.flip_apply, Action_ρ_eq_ρ,
-          hom_comm_apply f g y, Rep.ihom_obj_ρ_apply, LinearMap.comp_apply, ρ_inv_self_apply] -/
-        change TensorProduct.uncurry k _ _ _ f.hom.hom.flip (A.ρ g x ⊗ₜ[k] B.ρ g y) =
-          C.ρ g (TensorProduct.uncurry k _ _ _ f.hom.hom.flip (x ⊗ₜ[k] y))
-        -- The next 3 tactics used to be `rw` before https://github.com/leanprover/lean4/pull/2644
-        erw [TensorProduct.uncurry_apply, LinearMap.flip_apply, hom_comm_apply,
-          Rep.ihom_obj_ρ_apply,
-          LinearMap.comp_apply, LinearMap.comp_apply] --, ρ_inv_self_apply (A := C)]
-        dsimp
-        rw [ρ_inv_self_apply]
-        rfl }
-  left_inv _ := Action.Hom.ext (ModuleCat.hom_ext (TensorProduct.ext' fun _ _ => rfl))
-  right_inv f := by ext; rfl
+        simpa using LinearMap.ext_iff.1 (hom_comm_apply f g y) (A.ρ g x) }
+  left_inv _ := Action.Hom.ext (ModuleCat.hom_ext <| TensorProduct.ext' fun _ _ => rfl)
+  right_inv _ := by ext; rfl
 
 variable {A B C}
 
