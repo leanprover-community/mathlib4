@@ -73,8 +73,8 @@ protected theorem norm_nonneg (x : L) : 0 ≤ B.norm x := by
 variable {B}
 
 /-- For any `K`-basis `B` of `L` containing `1`, `B.norm` extends the norm on `K`. -/
-theorem norm_extends {i : ι} (hBi : B i = (1 : L)) :
-    Extends_map_algebraMap (fun x : K ↦ ‖x‖) B.norm := fun k ↦ by
+theorem norm_extends {i : ι} (hBi : B i = (1 : L)) (x : K) :
+    B.norm ((algebraMap K L) x) = ‖x‖ := by
   classical
   simp only [norm, repr_algebraMap _ hBi]
   apply le_antisymm
@@ -95,7 +95,7 @@ theorem norm_isNonarchimedean (hna : IsNonarchimedean (Norm.norm : K → ℝ)) :
 /-- For any `K`-basis of `L`, `B.norm` is bounded with respect to multiplication. That is,
   `∃ (c : ℝ), c > 0` such that ` ∀ (x y : L), B.norm (x * y) ≤ c * B.norm x * B.norm y`. -/
 theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
-      (hna : IsNonarchimedean (Norm.norm : K → ℝ)) :
+    (hna : IsNonarchimedean (Norm.norm : K → ℝ)) :
     ∃ (c : ℝ) (_ : 0 < c), ∀ x y : L, B.norm (x * y) ≤ c * B.norm x * B.norm y := by
   -- The bounding constant `c` will be the maximum of the products `B.norm (B i * B j)`.
   obtain ⟨c, _, hc⟩ := exists_mem_eq_sup' univ_nonempty (fun i : ι × ι ↦ B.norm (B i.1 * B i.2))
@@ -113,25 +113,22 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
     have hna' : IsNonarchimedean (NormedField.toMulRingNorm K) := hna
     /- Since the norm is nonarchimidean, the norm of a finite sum is bounded by the maximum of the
           norms of the summands. -/
-    have hk : ∃ (k : ι) (_ : (univ : Finset ι).Nonempty → k ∈ univ ),
-        ‖∑ i : ι, (B.repr x i • ∑ i_1 : ι, B.repr y i_1 • B.repr (B i * B i_1)) ixy‖ ≤
-          ‖(B.repr x k • ∑ j : ι, B.repr y j • B.repr (B k * B j)) ixy‖ := by
-      obtain ⟨k, hk0, hk⟩ := IsNonarchimedean.finset_image_add hna'
+    obtain ⟨k, -, (hk : ‖∑ i : ι, (B.repr x i • ∑ i_1 : ι,
+      B.repr y i_1 • B.repr (B i * B i_1)) ixy‖ ≤
+      ‖(B.repr x k • ∑ j : ι, B.repr y j • B.repr (B k * B j)) ixy‖)⟩ :=
+      IsNonarchimedean.finset_image_add hna'
         (fun i ↦ (B.repr x i • ∑ i_1 : ι, B.repr y i_1 • B.repr (B i * B i_1)) ixy)
         (univ : Finset ι)
-      exact ⟨k, hk0, hk⟩
-    obtain ⟨k, -, hk⟩ := hk
     simp only [Finsupp.coe_smul, Finsupp.coe_finset_sum, Pi.smul_apply, sum_apply, smul_eq_mul,
       norm_mul, sup'_le_iff, mem_univ, forall_const] at hk ⊢
     apply le_trans hk
     -- We use the above property again.
-    have hk' : ∃ (k' : ι) (_ : (univ : Finset ι).Nonempty → k' ∈ univ),
+    obtain ⟨k', hk'⟩ : ∃ (k' : ι),
         ‖∑ j : ι, B.repr y j • B.repr (B k * B j) ixy‖ ≤
           ‖B.repr y k' • B.repr (B k * B k') ixy‖ := by
       obtain ⟨k, hk0, hk⟩ := IsNonarchimedean.finset_image_add hna'
         (fun i ↦ B.repr y i • B.repr (B k * B i) ixy) (univ : Finset ι)
-      exact ⟨k, hk0, hk⟩
-    obtain ⟨k', -, hk'⟩ := hk'
+      exact ⟨k, hk⟩
     apply le_trans (mul_le_mul_of_nonneg_left hk' (norm_nonneg _))
     -- Now an easy computation leads to the desired conclusion.
     rw [norm_smul, mul_assoc, mul_comm (B.norm (B c.fst * B c.snd)), ← mul_assoc]
@@ -155,7 +152,6 @@ theorem norm_smul {ι : Type*} [Fintype ι] [Nonempty ι] {B : Basis ι K L} {i 
   by_cases hk : k = 0
   · rw [hk, map_zero, MulZeroClass.zero_mul, B.norm_zero, MulZeroClass.zero_mul]
   · rw [norm_extends hBi]
-    --simp only [norm]
     obtain ⟨i, _, hi⟩ := exists_mem_eq_sup' univ_nonempty (fun i ↦ ‖B.repr y i‖)
     obtain ⟨j, _, hj⟩ := exists_mem_eq_sup' univ_nonempty
       (fun i ↦ ‖B.repr ((algebraMap K L) k * y) i‖)
@@ -181,7 +177,7 @@ variable {K L : Type*} [NormedField K] [Field L] [Algebra K L]
 power-multiplicative nonarchimedean `K`-algebra norm on `L` extending the norm on `K`. -/
 theorem exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional (hfd : FiniteDimensional K L)
     (hna : IsNonarchimedean (norm : K → ℝ)) :
-    ∃ f : AlgebraNorm K L, IsPowMul f ∧ Extends_map_algebraMap (norm : K → ℝ) f ∧
+    ∃ f : AlgebraNorm K L, IsPowMul f ∧ (∀ (x : K), f ((algebraMap K L) x) = ‖x‖) ∧
       IsNonarchimedean f := by
   -- Choose a basis B = {1, e2,..., en} of the K-vector space L
   set h1 : LinearIndependent K fun x : ({1} : Set L) ↦ (x : L) :=
@@ -199,7 +195,7 @@ theorem exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional (hfd : Finit
   -- g takes nonnegative values
   have hg_nonneg : ∀ x : L, 0 ≤ g x := fun x ↦ by simp only [g, Basis.norm]; aesop
   -- g extends the norm on K
-  have hg_ext : Extends_map_algebraMap (norm : K → ℝ) g := Basis.norm_extends hB1
+  have hg_ext : ∀ (x : K), g ((algebraMap K L) x) = ‖x‖ := Basis.norm_extends hB1
   -- g is nonarchimedean
   have hg_na : IsNonarchimedean g := Basis.norm_isNonarchimedean hna
   -- g satisfies the triangle inequality
@@ -216,10 +212,8 @@ theorem exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional (hfd : Finit
   set f := seminormFromBounded hg0 hg_nonneg hg_bdd hg_add hg_neg
   have hf_na : IsNonarchimedean f := seminormFromBounded_isNonarchimedean hg_nonneg hg_bdd hg_na
   have hf_1 : f 1 ≤ 1 := seminormFromBounded_one_le hg_nonneg hg_bdd
-  have hf_ext : Extends_map_algebraMap (norm : K → ℝ) f := by
-    intro k
-    rw [← hg_ext]
-    exact seminormFromBounded_of_mul_apply hg_nonneg hg_bdd (hg_mul k)
+  have hf_ext : ∀ (x : K), f ((algebraMap K L) x) = ‖x‖ :=
+    fun k ↦ hg_ext k ▸ seminormFromBounded_of_mul_apply hg_nonneg hg_bdd (hg_mul k)
   -- Using BGR Prop. 1.3.2/1, we obtain from f  a power multiplicative K-algebra norm on L
   -- extending the norm on K.
   set F' := smoothingSeminorm f hf_1 hf_na with hF'
