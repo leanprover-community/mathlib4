@@ -415,6 +415,13 @@ def map : (⨁ i, α i) →+ ⨁ i, β i :=
     · simp [h]
   · simp +contextual
 
+@[simp] lemma map_id : (map (fun i ↦ AddMonoidHom.id (α i))) = AddMonoidHom.id (⨁ i, α i) := by
+  ext i x; simp
+
+@[simp] lemma map_comp {γ : ι → Type*} [∀ i, AddCommMonoid (γ i)] (g : ∀ (i : ι), β i →+ γ i) :
+    (map (fun i ↦ (g i).comp (f i))) = (map g).comp (map f) := by
+  ext i x; simp
+
 lemma map_surjective (h : ∀ i, Function.Surjective (f i)) : Function.Surjective (map f) := by
   intro x
   apply DirectSum.induction_on (C := fun x ↦ ∃ a, (map f) a = x) x
