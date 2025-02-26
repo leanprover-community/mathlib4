@@ -311,7 +311,7 @@ theorem le_lmarginalPTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a : ℕ
       all_goals omega
   -- `F` is also a bounded sequence.
   have F_le n x : F n x ≤ bound := by
-    simpa [F, lmarginalPTraj] using lintegral_le _ fun z ↦ le_bound _ _
+    simpa [F, lmarginalPTraj] using lintegral_le_const (ae_of_all _ fun z ↦ le_bound _ _)
   -- By dominated convergence, the integral of `fₙ` between time `k` and time `a n` converges
   -- to the integral of `l` between time `k` and time `k + 1`.
   have tendsto_int x : Tendsto (fun n ↦ lmarginalPTraj κ k (a n) (f n) x) atTop
@@ -330,7 +330,7 @@ theorem le_lmarginalPTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a : ℕ
   -- therefore there exists `x` such that `ε ≤ l(y, x)`.
   obtain ⟨x, hx⟩ : ∃ x, ε ≤ l (update (updateFinset x_ _ y) (k + 1) x) := by
     have : ∫⁻ x, l (update (updateFinset x_ _ y) (k + 1) x) ∂(κ k y) ≠ ∞ :=
-      ne_top_of_le_ne_top fin_bound <| lintegral_le _
+      ne_top_of_le_ne_top fin_bound <| lintegral_le_const <| ae_of_all _
         fun y ↦ le_of_tendsto' (tendstoF _) <| fun _ ↦ F_le _ _
     obtain ⟨x, hx⟩ := exists_lintegral_le this
     refine ⟨x, (ε_le_lint x_).trans ?_⟩
@@ -352,7 +352,7 @@ theorem le_lmarginalPTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a : ℕ
 theorem dependsOn_cylinder_indicator {ι : Type*} {α : ι → Type*} {I : Finset ι}
     (S : Set ((i : I) → α i)) :
     DependsOn ((cylinder I S).indicator (1 : ((Π i, α i) → ℝ≥0∞))) I :=
-  fun x y hxy ↦ indicator_const_eq _ (by simp [restrict_def, hxy])
+  fun x y hxy ↦ Set.indicator_const_eq_indicator_const (by simp [restrict_def, hxy])
 
 /-- This is the key theorem to prove the existence of the `traj`:
 the `trajContent` of a decreasing sequence of cylinders with empty intersection
@@ -399,7 +399,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
   -- Integrating `χₙ` further than the last coordinate it depends on does nothing.
   -- This is used to then show that the integral of `χₙ` from time `k` is non-increasing.
   have lma_inv k M n (h : a n ≤ M) : lmarginalPTraj κ k M (χ n) = lmarginalPTraj κ k (a n) (χ n) :=
-    (χ_dep n).lmarginalPTraj_right (mχ n) h le_rfl
+    (χ_dep n).lmarginalPTraj_const_right (mχ n) h le_rfl
   -- the integral of `χₙ` from time `k` is non-increasing.
   have anti_lma k x : Antitone fun n ↦ lmarginalPTraj κ k (a n) (χ n) x := by
     intro m n hmn
@@ -442,9 +442,14 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
     | base => exact fun x n ↦ by simpa [z, frestrictLe_iterateInduction] using hpos x n
     | succ k hn h =>
       intro x n
-      rw [← update_updateFinset_eq]
       convert hind k (fun i ↦ z i.1) h x n
-      simp [z, iterateInduction, Nat.lt_succ.2 hn]
+      ext i
+      simp only [updateFinset, mem_Iic, frestrictLe_apply, dite_eq_ite, update, χ, z]
+      split_ifs with h1 h2 h3 h4 h5
+      any_goals omega
+      any_goals rfl
+      cases h2
+      rw [iterateInduction, dif_neg (by omega)]
   -- We now want to prove that the integral of `χₙ`, which is equal to the `trajContent`
   -- of `Aₙ`, converges to `0`.
   have aux x n : trajContent κ x₀ (A n) = lmarginalPTraj κ p (a n) (χ n) (updateFinset x _ x₀) := by
@@ -467,10 +472,8 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
   exact (A_inter ▸ Set.mem_iInter.2 mem).elim
 
 /-- The `trajContent` is sigma-subadditive. -/
-theorem trajContent_sigma_subadditive {a : ℕ} (x₀ : Π i : Iic a, X i)
-    ⦃f : ℕ → Set (Π n, X n)⦄ (hf : ∀ n, f n ∈ measurableCylinders X)
-    (hf_Union : (⋃ n, f n) ∈ measurableCylinders X) :
-    trajContent κ x₀ (⋃ n, f n) ≤ ∑' n, trajContent κ x₀ (f n) := by
+theorem isSigmaSubadditive_trajContent {a : ℕ} (x₀ : Π i : Iic a, X i) :
+    (trajContent κ x₀).IsSigmaSubadditive := by
   refine addContent_iUnion_le_of_addContent_iUnion_eq_tsum
     isSetRing_measurableCylinders (fun f hf hf_Union hf' ↦ ?_) f hf hf_Union
   refine addContent_iUnion_eq_sum_of_tendsto_zero isSetRing_measurableCylinders
