@@ -4,10 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Abelian.SerreClass.MorphismProperty
-import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
-import Mathlib.CategoryTheory.MorphismProperty.Composition
-import Mathlib.CategoryTheory.MorphismProperty.Retract
-import Mathlib.CategoryTheory.Subobject.Lattice
 
 /-!
 # Localization with respect to a Serre class
