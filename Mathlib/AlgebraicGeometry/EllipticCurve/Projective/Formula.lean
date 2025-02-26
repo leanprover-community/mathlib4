@@ -13,7 +13,7 @@ import Mathlib.Tactic.LinearCombination'
 Let `W` be a Weierstrass curve over a field `F`. The nonsingular projective points on `W` can be
 given negation and addition operations defined by an analogue of the secant-and-tangent process in
 `Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean`, but the polynomials involved are
-homogeneous, and any instances of division become multiplication in the `Z`-coordinate. Most
+homogeneous, so any instances of division become multiplication in the `Z`-coordinate. Most
 computational proofs are immediate from their analogous proofs for affine coordinates.
 
 This file defines polynomials associated to negation, doubling, and addition of nonsingular points
@@ -33,6 +33,18 @@ be defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Point.lean`.
  * `WeierstrassCurve.Projective.addY`: the `Y`-coordinate of `P + Q`.
 
 ## Implementation notes
+
+The definitions of `WeierstrassCurve.Projective.dblX`, `WeierstrassCurve.Projective.negDblY`,
+`WeierstrassCurve.Projective.addZ`, `WeierstrassCurve.Projective.addX`, and
+`WeierstrassCurve.Projective.negAddY` are given explicitly by large polynomials that are homogeneous
+of degree `4`. Clearing the denominators of their corresponding affine rational functions in
+`Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean` would give polynomials that are
+homogeneous of degrees `5`, `6`, `6`, `8`, and `8` respectively, so their actual definitions are off
+by powers of certain polynomial factors that are homogeneous of degree `1` or `2`. These factors
+divide their corresponding affine polynomials only modulo the homogeneous Weierstrass equation, so
+their large quotient polynomials are calculated explicitly in a computer algebra system. All of this
+is done to ensure that the definitions of both `WeierstrassCurve.Projective.dblXYZ` and
+`WeierstrassCurve.Projective.addXYZ` are homogeneous of degree `4`.
 
 Whenever possible, all changes to documentation and naming of definitions and theorems should be
 mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Formula.lean`.

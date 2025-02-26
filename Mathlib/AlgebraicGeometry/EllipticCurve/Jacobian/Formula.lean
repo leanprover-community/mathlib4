@@ -13,7 +13,7 @@ import Mathlib.Tactic.LinearCombination'
 Let `W` be a Weierstrass curve over a field `F`. The nonsingular Jacobian points on `W` can be given
 negation and addition operations defined by an analogue of the secant-and-tangent process in
 `Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean`, but the polynomials involved are
-`(2, 3, 1)`-homogeneous, and any instances of division become multiplication in the `Z`-coordinate.
+`(2, 3, 1)`-homogeneous, so any instances of division become multiplication in the `Z`-coordinate.
 Most computational proofs are immediate from their analogous proofs for affine coordinates.
 
 This file defines polynomials associated to negation, doubling, and addition of nonsingular points
@@ -33,6 +33,17 @@ defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Point.lean`.
  * `WeierstrassCurve.Jacobian.addY`: the `Y`-coordinate of `P + Q`.
 
 ## Implementation notes
+
+The definitions of `WeierstrassCurve.Jacobian.addX` and `WeierstrassCurve.Jacobian.negAddY` are
+given explicitly by large polynomials that are homogeneous of degrees `8` and `12` respectively.
+Clearing the denominators of their corresponding affine rational functions in
+`Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean` would give polynomials that are
+homogeneous of degrees `12` and `18` respectively, so their actual definitions are off by powers of
+a certain polynomial factor that is homogeneous of degree `2`. This factor divides their
+corresponding affine polynomials only modulo the `(2, 3, 1)`-homogeneous Weierstrass equation, so
+their large quotient polynomials are calculated explicitly in a computer algebra system. All of this
+is done to ensure that the definitions of both `WeierstrassCurve.Jacobian.dblXYZ` and
+`WeierstrassCurve.Jacobian.addXYZ` are `(2, 3, 1)`-homogeneous of degree `4`.
 
 Whenever possible, all changes to documentation and naming of definitions and theorems should be
 mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Formula.lean`.
