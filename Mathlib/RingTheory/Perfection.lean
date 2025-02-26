@@ -106,19 +106,24 @@ variable {R p}
 @[simp]
 theorem coeff_mk (f : ℕ → R) (hf) (n : ℕ) : coeff R p n ⟨f, hf⟩ = f n := rfl
 
+@[simp]
 theorem coeff_pthRoot (f : Ring.Perfection R p) (n : ℕ) :
     coeff R p n (pthRoot R p f) = coeff R p (n + 1) f := rfl
 
+@[simp]
 theorem coeff_pow_p (f : Ring.Perfection R p) (n : ℕ) :
     coeff R p (n + 1) (f ^ p) = coeff R p n f := by rw [RingHom.map_pow]; exact f.2 n
 
+@[simp]
 theorem coeff_pow_p' (f : Ring.Perfection R p) (n : ℕ) : coeff R p (n + 1) f ^ p = coeff R p n f :=
   f.2 n
 
+@[simp]
 theorem coeff_frobenius (f : Ring.Perfection R p) (n : ℕ) :
     coeff R p (n + 1) (frobenius _ p f) = coeff R p n f := by apply coeff_pow_p f n
 
 -- `coeff_pow_p f n` also works but is slow!
+@[simp]
 theorem coeff_iterate_frobenius (f : Ring.Perfection R p) (n m : ℕ) :
     coeff R p (n + m) ((frobenius _ p)^[m] f) = coeff R p n f :=
   Nat.recOn m rfl fun m ih => by erw [Function.iterate_succ_apply', coeff_frobenius, ih]
@@ -127,10 +132,12 @@ theorem coeff_iterate_frobenius' (f : Ring.Perfection R p) (n m : ℕ) (hmn : m 
     coeff R p n ((frobenius _ p)^[m] f) = coeff R p (n - m) f :=
   Eq.symm <| (coeff_iterate_frobenius _ _ m).symm.trans <| (tsub_add_cancel_of_le hmn).symm ▸ rfl
 
+@[simp]
 theorem pthRoot_frobenius : (pthRoot R p).comp (frobenius _ p) = RingHom.id _ :=
   RingHom.ext fun x =>
     ext fun n => by rw [RingHom.comp_apply, RingHom.id_apply, coeff_pthRoot, coeff_frobenius]
 
+@[simp]
 theorem frobenius_pthRoot : (frobenius _ p).comp (pthRoot R p) = RingHom.id _ :=
   RingHom.ext fun x =>
     ext fun n => by
@@ -322,7 +329,7 @@ section ModP
 variable (O : Type u₂) [CommRing O] (p : ℕ)
 
 /-- `O/(p)` for `O`, ring of integers of `K`. -/
-def ModP :=
+abbrev ModP :=
   O ⧸ (Ideal.span {(p : O)} : Ideal O)
 
 namespace ModP
@@ -454,6 +461,9 @@ instance : CommRing (PreTilt O p) :=
 
 instance : CharP (PreTilt O p) p :=
   Perfection.charP (ModP O p) p
+
+instance : PerfectRing (PreTilt O p) p :=
+  Perfection.perfectRing (ModP O p) p
 
 section Classical
 
