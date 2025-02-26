@@ -43,14 +43,9 @@ We do *not* require that `M` or `∂M` be finite-dimensional
   (such that the model is surjective),
   it has smooth boundary: this might require e.g. invariance of domain
 
-* Should this file be merged into `IsManifold/InteriorBoundary.lean`?
-
 -/
 
 open scoped Manifold
-
---universe u
--- XXX: should M₀, E₀, H₀ have the same universe?
 
 -- Let M, M' and M'' be smooth manifolds *over the same space* `H`, with *the same* `model `I`.
 variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -91,12 +86,12 @@ and being a topological embedding.
 Is a pair `(M₀, f)` of a smooth manifold `M₀` modelled over `(E₀, H₀)` and an embedding
 `f : M₀ → M` which is a smooth immersion, such that `range f = I.boundary M`.
 -/
-structure BoundaryManifoldData (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+structure BoundaryManifoldData.{u} (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners ℝ E H) (k : ℕ∞) [IsManifold I k M]
     {E₀ H₀: Type*} [NormedAddCommGroup E₀] [NormedSpace ℝ E₀]
     [TopologicalSpace H₀] (I₀ : ModelWithCorners ℝ E₀ H₀) where
   /-- A `C^k` manifold `M₀` which describes the boundary of `M` -/
-  M₀ : Type*
+  M₀ : Type u
   /-- `M₀` is a topological space-/
   [topologicalSpace: TopologicalSpace M₀]
   /-- A chosen charted space structure on `M₀` on `H₀` -/
