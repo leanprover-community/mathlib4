@@ -39,9 +39,6 @@ theorem IsInt.raw_refl (n : ℤ) : IsInt n n := ⟨rfl⟩
 theorem isNat_zero (α) [AddMonoidWithOne α] : IsNat (Zero.zero : α) (nat_lit 0) :=
   ⟨Nat.cast_zero.symm⟩
 
-theorem isNat_zero' (α) [AddMonoidWithOne α] : IsNat (0 : α) (nat_lit 0) :=
-  ⟨Nat.cast_zero.symm⟩
-
 /-- The `norm_num` extension which identifies the expression `Zero.zero`, returning `0`. -/
 @[norm_num Zero.zero] def evalZero : NormNumExt where eval {u α} e := do
   let sα ← inferAddMonoidWithOne α
@@ -499,10 +496,6 @@ theorem eq_of_false {a b : Prop} (ha : ¬a) (hb : ¬b) : a = b := propext (iff_o
 
 theorem isNat_natSucc : {a : ℕ} → {a' c : ℕ} →
     IsNat a a' → Nat.succ a' = c → IsNat (a.succ) c
-  | _, _,_, ⟨rfl⟩, rfl => ⟨by simp⟩
-
-theorem isNat_natPred : {a : ℕ} → {a' c : ℕ} →
-    IsNat a a' → Nat.pred a' = c → IsNat a.pred c
   | _, _,_, ⟨rfl⟩, rfl => ⟨by simp⟩
 
 /-- The `norm_num` extension which identifies expressions of the form `Nat.succ a`,
