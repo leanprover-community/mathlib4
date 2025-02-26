@@ -97,7 +97,6 @@ lemma algebraMap_pi_surjective_of_nilradical_isMaximal (h : ∀ i, (nilradical (
   set S := fun (i : ι) => Localization (M.map (Pi.evalRingHom R i))
   obtain ⟨r, hr⟩ := surjective_piRingHom_algebraMap_comp_piEvalRingHom_of_nilradical_isMaximal
     R S M h ((lift (isUnit_piRingHom_algebraMap_comp_piEvalRingHom R S M)) s)
-  refine ⟨r, Bijective.injective (bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom R S _ M)
-    ?_⟩
+  refine ⟨r, (bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom R S _ M).injective ?_⟩
   rwa [lift_eq (isUnit_piRingHom_algebraMap_comp_piEvalRingHom R S M) r]
 end IsLocalization
