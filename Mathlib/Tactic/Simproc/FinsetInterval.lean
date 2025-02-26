@@ -3,7 +3,7 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Interval.Finset.Basic
+import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Util.Qq
@@ -45,7 +45,7 @@ end lemmas
 
 /-- Given natural numbers `m` and `n`, returns `(s, ⊢ Finset.Icc m n = s)`. -/
 def evalFinsetIccNat (m n : ℕ) (em en : Q(ℕ)) :
-    MetaM ((s : Q(Finset ℕ)) × Q(.Icc $em $en = $s)) := do
+    MetaM ((s : Q(Finset ℕ)) × Q(.Icc (OfNat.ofNat $em) (OfNat.ofNat $en) = $s)) := do
   -- If `m = n`, then `Icc m n = {m}`. We handle this case separately because `insert m ∅` is
   -- not syntactically `{m}`.
   if m = n then
@@ -85,7 +85,7 @@ simproc_decl Icc_nat (Icc _ _) := .ofQ fun u α e ↦ do
     let some m := em.rawNatLit? | return .continue
     let some n := en.rawNatLit? | return .continue
     let ⟨es, p⟩ ← evalFinsetIccNat m n em en
-    return .done { expr := es, proof? := p }
+    return .done <| .mk es <| .some p
   | _, _, _ => return .continue
 
 /-- Simproc to compute `Finset.Ico a b` when `a b : ℕ`.
@@ -101,7 +101,8 @@ simproc_decl Ico_nat (Ico _ _) := .ofQ fun u α e ↦ do
     let some n := en.rawNatLit? | return .continue
     match n with
     | 0 =>
-      return .done { expr := (q(∅) : Q(Finset ℕ)), proof? := q(Ico_zero $em) }
+      have : $en =Q 0 := ⟨⟩
+      return .done <| .mk q(∅) <| .some q(Ico_zero $em)
     | n + 1 =>
       let ⟨es, p⟩ ← evalFinsetIccNat m n em q($en - 1)
       return .done { expr := es, proof? := q(Ico_eq_of_Icc_pred_eq (Nat.succ_ne_zero _) $p) }
@@ -119,7 +120,7 @@ simproc_decl Ioc_nat (Ioc _ _) := .ofQ fun u α e ↦ do
     let some m := em.rawNatLit? | return .continue
     let some n := en.rawNatLit? | return .continue
     let ⟨es, p⟩ ← evalFinsetIccNat (m + 1) n q($em + 1) en
-    return .done { expr := es, proof? := q(Ioc_eq_of_Icc_succ_eq $p) }
+    return .done <| .mk es <| .some q(Ioc_eq_of_Icc_succ_eq $p)
   | _, _, _ => return .continue
 
 /-- Simproc to compute `Finset.Ioo a b` when `a b : ℕ`.
@@ -134,7 +135,7 @@ simproc_decl Ioo_nat (Ioo _ _) := .ofQ fun u α e ↦ do
     let some m := em.rawNatLit? | return .continue
     let some n := en.rawNatLit? | return .continue
     let ⟨es, p⟩ ← evalFinsetIccNat (m + 1) (n - 1) q($em + 1) q($en - 1)
-    return .done { expr := es, proof? := q(Ioo_eq_of_Icc_succ_pred_eq $p) }
+    return .done <| .mk es <| .some q(Ioo_eq_of_Icc_succ_pred_eq $p)
   | _, _, _ => return .continue
 
 /-- Simproc to compute `Finset.Iic b` when `b : ℕ`.
@@ -148,7 +149,7 @@ simproc_decl Iic_nat (Iic _) := .ofQ fun u α e ↦ do
   | 1, ~q(Finset ℕ), ~q(Iic (OfNat.ofNat $en)) =>
     let some n := en.rawNatLit? | return .continue
     let ⟨es, p⟩ ← evalFinsetIccNat 0 n q(0) en
-    return .done { expr := es, proof? := q(Iic_eq_of_Icc_zero_eq $p) }
+    return .done <| .mk es <| .some q(Iic_eq_of_Icc_zero_eq $p)
   | _, _, _ => return .continue
 
 /-- Simproc to compute `Finset.Iio b` when `b : ℕ`.
@@ -163,7 +164,8 @@ simproc_decl Iio_nat (Iio _) := .ofQ fun u α e ↦ do
     let some n := en.rawNatLit? | return .continue
     match n with
     | 0 =>
-      return .done { expr := (q(∅) : Q(Finset ℕ)), proof? := q(Iio_zero) }
+      have : $en  =Q 0 := ⟨⟩
+      return .done <| .mk q(∅) <| .some q(Iio_zero)
     | n + 1 =>
       let ⟨es, p⟩ ← evalFinsetIccNat 0 n q(0) q($en - 1)
       return .done { expr := es, proof? := q(Iio_eq_of_Icc_zero_pred_eq (Nat.succ_ne_zero _) $p) }
