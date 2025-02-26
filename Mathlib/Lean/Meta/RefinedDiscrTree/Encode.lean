@@ -136,22 +136,19 @@ private def encodingStepAux (e : Expr) (lambdas : List FVarId) (root : Bool) : L
     else
       withLams lambdas <| .fvar fvarId e.getAppNumArgs
   | .mvar mvarId =>
-    if root then
-      if e.isApp then
-        -- if there are arguemnts, we don't index the lambdas:
-        -- because, for example `fun x => ?m x x` may be any function
-        return .star 0
-      else
-        -- by indexing the lambdas, we only allow matches with constant functions
-        withLams lambdas <| .star 0
-    -- even if there are no arguments, we don't index the lambdas:
-    -- because, it should be able to match with
-    -- `fun _ => x + y`, which is indexed as `(fun _ => x) + (fun _ => y)`.
-    else if lambdas.isEmpty then
-      mkStar mvarId
-    else
+    if e.isApp then
+      /-
+      If `e.isApp`, we don't index `lambdas`,
+      since for example `fun x => ?m x x` may be any function.
+      -/
       mkNewStar
-
+    else
+      /-
+      If `e` is `.mvar mvarId`, we do index `lambdas`, since it is a constant function.
+      We create a `.star` key that is identified by `mvarId`,
+      so that multiple appearances of `.mvar mvarId` are indexed the same.
+      -/
+      withLams lambdas <| ← mkStar mvarId
   | .forallE .. =>
     setEAsPrevious
     withLams lambdas .forall
