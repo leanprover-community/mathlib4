@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 # Subobjects presheaf
 
 Following Section I.3 of [Sheaves in Geometry and Logic][MM92], we define the subobjects presheaf
-`Subobject.presheaf C` mapping any object `X` to its category of subobjects `Subobject X`.
+`Subobject.presheaf C` mapping any object `X` to its type of subobjects `Subobject X`.
 
 ## Main definitions
 
