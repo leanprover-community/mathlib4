@@ -13,7 +13,6 @@ import Mathlib.CategoryTheory.Monoidal.Preadditive
 /-!
 # Distributive monoidal categories
 
-
 ## Main definitions
 
 A monoidal category `C` with binary coproducts is left distributive if the left tensor product
@@ -76,7 +75,7 @@ if the right tensor product functor preserves binary coproducts. -/
 class IsMonoidalRightDistrib (C : Type u) [Category.{v} C]
     [MonoidalCategory C] [HasBinaryCoproducts C] : Prop where
   preservesBinaryCoproducts_tensorRight (X : C) :
-    PreservesColimitsOfShape (Discrete WalkingPair) (tensorRight X)
+    PreservesColimitsOfShape (Discrete WalkingPair) (tensorRight X) := by infer_instance
 
 /-- A monoidal category with binary coproducts is distributive
 if it is both left and right distributive. -/
