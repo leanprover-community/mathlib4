@@ -288,7 +288,7 @@ variable (A A') (B)
 /-- The equivalence between functors from a sum and the product of the
  functor categories. -/
 @[simps! functor_obj functor_map]
-def functorEquiv : (A ⊕ A') ⥤ B ≌ (A ⥤ B) × (A' ⥤ B) where
+def functorEquiv : A ⊕ A' ⥤ B ≌ (A ⥤ B) × (A' ⥤ B) where
   functor :=
     { obj F := ⟨inl_ _ _ ⋙ F , inr_ _ _ ⋙ F⟩
       map η := ⟨whiskerLeft _ η, whiskerLeft _ η⟩ }
@@ -303,7 +303,7 @@ def functorEquiv : (A ⊕ A') ⥤ B ≌ (A ⥤ B) × (A' ⥤ B) where
       NatIso.ofComponents (fun t ↦
         match t with
         | inl x => Iso.refl _
-        | inr x => Iso.refl _))
+        | inr x => Iso.refl _ ))
   counitIso :=
     NatIso.ofComponents <| fun _ ↦
       Iso.prod (NatIso.ofComponents (fun _ ↦ Iso.refl _)) (NatIso.ofComponents (fun _ ↦ Iso.refl _))
@@ -359,32 +359,32 @@ lemma functorEquiv_counitIso_inv_app (X : (A ⥤ B) × (A' ⥤ B)) :
   rfl
 
 @[simp]
-lemma functorEquiv_unitIso_inv_app_app_inl (X : A ⊕ A' ⥤ B) (a : A):
+lemma functorEquiv_unitIso_inv_app_app_inl (X : A ⊕ A' ⥤ B) (a : A) :
     ((functorEquiv A A' B).unitIso.inv.app X).app (inl a) = 𝟙 (X.obj (inl a)) :=
   rfl
 
 @[simp]
-lemma functorEquiv_unitIso_inv_app_app_inr (X : A ⊕ A' ⥤ B) (a' : A'):
+lemma functorEquiv_unitIso_inv_app_app_inr (X : A ⊕ A' ⥤ B) (a' : A') :
     ((functorEquiv A A' B).unitIso.inv.app X).app (inr a') = 𝟙 (X.obj (inr a')) :=
   rfl
 
 @[simp]
-lemma functorEquiv_unitIso_hom_app_app_inl (X : A ⊕ A' ⥤ B) (a : A):
+lemma functorEquiv_unitIso_hom_app_app_inl (X : A ⊕ A' ⥤ B) (a : A) :
     ((functorEquiv A A' B).unitIso.hom.app X).app (inl a) = 𝟙 (X.obj (inl a)) :=
   rfl
 
 @[simp]
-lemma functorEquiv_unitIso_hom_app_app_inr (X : A ⊕ A' ⥤ B) (a' : A'):
+lemma functorEquiv_unitIso_hom_app_app_inr (X : A ⊕ A' ⥤ B) (a' : A') :
     ((functorEquiv A A' B).unitIso.hom.app X).app (inr a') = 𝟙 (X.obj (inr a')) :=
   rfl
 
 @[simp]
-lemma functorEquiv_unit_app_app_inl (X : A ⊕ A' ⥤ B) (a : A):
+lemma functorEquiv_unit_app_app_inl (X : A ⊕ A' ⥤ B) (a : A) :
     ((functorEquiv A A' B).unit.app X).app (inl a) = 𝟙 (X.obj (inl a)) :=
   rfl
 
 @[simp]
-lemma functorEquiv_unit_app_app_inr (X : A ⊕ A' ⥤ B) (a' : A'):
+lemma functorEquiv_unit_app_app_inr (X : A ⊕ A' ⥤ B) (a' : A') :
     ((functorEquiv A A' B).unit.app X).app (inr a') = 𝟙 (X.obj (inr a')) :=
   rfl
 
