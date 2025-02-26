@@ -468,7 +468,7 @@ theorem LinearIndependent.linearIndepOn_id (i : LinearIndependent R v) :
   LinearIndependent.coe_range := LinearIndependent.linearIndepOn_id
 
 /-- A version of `LinearIndependent.linearIndepOn_id` with the set range equality as a
-hypothesis. -/
+hypothesis -/
 theorem LinearIndependent.linearIndepOn_id' (hv : LinearIndependent R v) {t : Set M}
     (ht : Set.range v = t) : LinearIndepOn R id t :=
   ht ▸ hv.linearIndepOn_id

@@ -816,7 +816,7 @@ section DiscreteUniformity
 
 open Filter
 
-/-- A Cauchy filter in a discrete uniform space is contained in a principal filter -/
+/-- A Cauchy filter in a discrete uniform space is contained in a principal filter. -/
 theorem DiscreteUnif.cauchy_le_pure {X : Type*} {uX : UniformSpace X}
     (hX : uX = ⊥) {α : Filter X} (hα : Cauchy α) : ∃ x : X, α = pure x := by
   rcases hα with ⟨α_ne_bot, α_le⟩
