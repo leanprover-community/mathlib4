@@ -101,42 +101,53 @@ theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by
 
 theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by rw [Fintype.card_ofFinset, card_Iio]
 
--- TODO@Yaël: Generalize all the following lemmas to `SuccOrder`
+@[deprecated "Use `Finset.Icc_succ_left_eq_Ioc`" (since := "2025-02-25")]
 theorem Icc_succ_left : Icc a.succ b = Ioc a b := by
   ext x
   rw [mem_Icc, mem_Ioc, succ_le_iff]
 
+@[deprecated "Use `Finset.Ico_succ_right_eq_Icc`" (since := "2025-02-25")]
 theorem Ico_succ_right : Ico a b.succ = Icc a b := by
   ext x
   rw [mem_Ico, mem_Icc, Nat.lt_succ_iff]
 
+@[deprecated "Use `Finset.Ico_succ_left_eq_Ioo`" (since := "2025-02-25")]
 theorem Ico_succ_left : Ico a.succ b = Ioo a b := by
   ext x
   rw [mem_Ico, mem_Ioo, succ_le_iff]
 
+@[deprecated "Use `Finset.Icc_pred_right_eq_Ico`" (since := "2025-02-25")]
 theorem Icc_pred_right {b : ℕ} (h : 0 < b) : Icc a (b - 1) = Ico a b := by
   ext x
   rw [mem_Icc, mem_Ico, lt_iff_le_pred h]
 
+@[deprecated "Use `Finset.Ico_succ_succ_eq_Ioc`" (since := "2025-02-25")]
 theorem Ico_succ_succ : Ico a.succ b.succ = Ioc a b := by
   ext x
   rw [mem_Ico, mem_Ioc, succ_le_iff, Nat.lt_succ_iff]
 
+-- TODO: Decide whether to generalise the following series of lemmas, or delete.
+
+set_option linter.deprecated false in
 @[simp]
 theorem Ico_succ_singleton : Ico a (a + 1) = {a} := by rw [Ico_succ_right, Icc_self]
 
+set_option linter.deprecated false in
 @[simp]
 theorem Ico_pred_singleton {a : ℕ} (h : 0 < a) : Ico (a - 1) a = {a - 1} := by
   rw [← Icc_pred_right _ h, Icc_self]
 
+set_option linter.deprecated false in
 @[simp]
 theorem Ioc_succ_singleton : Ioc b (b + 1) = {b + 1} := by rw [← Nat.Icc_succ_left, Icc_self]
 
 variable {a b c}
 
+set_option linter.deprecated false in
 theorem Ico_succ_right_eq_insert_Ico (h : a ≤ b) : Ico a (b + 1) = insert b (Ico a b) := by
   rw [Ico_succ_right, ← Ico_insert_right h]
 
+set_option linter.deprecated false in
 theorem Ico_insert_succ_left (h : a < b) : insert a (Ico a.succ b) = Ico a b := by
   rw [Ico_succ_left, ← Ioo_insert_left h]
 
@@ -166,6 +177,7 @@ theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
   rintro ⟨x, hx, rfl⟩
   omega
 
+set_option linter.deprecated false in
 theorem Ico_succ_left_eq_erase_Ico : Ico a.succ b = erase (Ico a b) a := by
   ext x
   rw [Ico_succ_left, mem_erase, mem_Ico, mem_Ioo, ← and_assoc, ne_comm,
