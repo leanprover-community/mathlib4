@@ -81,7 +81,7 @@ theorem invariants_eq_inter : (invariants ρ).carrier = ⋂ g : G, Function.fixe
 
 theorem invariants_eq_top [ρ.IsTrivial] :
     invariants ρ = ⊤ :=
-eq_top_iff.2 (fun x _ g => ρ.apply_eq_self g x)
+eq_top_iff.2 (fun x _ g => ρ.isTrivial_apply g x)
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
