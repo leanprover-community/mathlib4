@@ -44,7 +44,7 @@ where
   /-- Traverses the expression `h`, branching at each `And`, to find a proof of `x = a`
   for some `a`. -/
   go (x : Q($α)) {e : Q(Prop)} (h : Q($e)) : MetaM <| Option ((a : Q($α)) × Q($a = $x)) := do
-    match e, h with
+    match e with
     | ~q(@Eq.{u} $β $a $b) =>
       let .defEq _ := ← isDefEqQ q($α) q($β) | return none
       if let .defEq _ ← isDefEqQ x a then
