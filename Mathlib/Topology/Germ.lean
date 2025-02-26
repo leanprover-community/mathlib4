@@ -3,10 +3,10 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Order.Filter.Germ
+import Mathlib.Order.Filter.Germ.Basic
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Normed.Module.Basic
 
 /-! # Germs of functions between topological spaces
 
@@ -17,7 +17,7 @@ with respect to the neighbourhood filter `𝓝 x`.
 * `Filter.Germ.value φ f`: value associated to the germ `φ` at a point `x`, w.r.t. the
 neighbourhood filter at `x`. This is the common value of all representatives of `φ` at `x`.
 * `Filter.Germ.valueOrderRingHom` and friends: the map `Germ (𝓝 x) E → E` is a
-monoid homomorphism, 𝕜-module homomorphism, ring homomorphism, monotone ring homomorphism
+monoid homomorphism, 𝕜-linear map, ring homomorphism, monotone ring homomorphism
 
 * `RestrictGermPredicate`: given a predicate on germs `P : Π x : X, germ (𝓝 x) Y → Prop` and
 `A : set X`, build a new predicate on germs `restrictGermPredicate P A` such that
@@ -29,9 +29,6 @@ to the corresponding germ of functions `X → Z` at `x ∈ X` resp. `Y → Z` at
 * `eq_of_germ_isConstant`: if each germ of `f : X → Y` is constant and `X` is pre-connected,
 `f` is constant.
 -/
-
-variable {F G : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedAddCommGroup G] [NormedSpace ℝ G]
 
 open scoped Topology
 
@@ -117,7 +114,7 @@ theorem forall_restrictGermPredicate_iff {P : ∀ x : X, Germ (𝓝 x) Y → Pro
 theorem forall_restrictGermPredicate_of_forall
     {P : ∀ x : X, Germ (𝓝 x) Y → Prop} (h : ∀ x, P x f) :
     ∀ x, RestrictGermPredicate P A x f :=
-  forall_restrictGermPredicate_iff.mpr (eventually_of_forall h)
+  forall_restrictGermPredicate_iff.mpr (Eventually.of_forall h)
 end RestrictGermPredicate
 
 namespace Filter.Germ

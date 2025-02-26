@@ -151,7 +151,7 @@ variable (A)
 protected def id : A →⋆ₙ+* A :=
   { (1 : A →ₙ+* A) with map_star' := fun _ => rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(NonUnitalStarRingHom.id A) = id :=
   rfl
 
@@ -160,10 +160,7 @@ end
 /-- The composition of non-unital ⋆-ring homomorphisms, as a non-unital ⋆-ring homomorphism. -/
 def comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : A →⋆ₙ+* C :=
   { f.toNonUnitalRingHom.comp g.toNonUnitalRingHom with
-    map_star' := fun a => (calc
-      (f ∘ g) (star a) = f ( g (star a)) := rfl
-      _ = star (f (g a)) := by rw [map_star, map_star]
-      _ = star ((f ∘ g) a) := rfl )}
+    map_star' := fun a => by simp [Function.comp_def, map_star, map_star] }
 
 @[simp]
 theorem coe_comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : ⇑(comp f g) = f ∘ g :=
@@ -205,7 +202,7 @@ end Basic
 section Zero
 
 -- the `zero` requires extra type class assumptions because we need `star_zero`
-variable {A B C D : Type*}
+variable {A B C : Type*}
 variable [NonUnitalNonAssocSemiring A] [StarAddMonoid A]
 variable [NonUnitalNonAssocSemiring B] [StarAddMonoid B]
 
@@ -322,9 +319,6 @@ theorem toRingEquiv_eq_coe (e : A ≃⋆+* B) : e.toRingEquiv = e :=
 theorem ext {f g : A ≃⋆+* B} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
 
-theorem ext_iff {f g : A ≃⋆+* B} : f = g ↔ ∀ a, f a = g a :=
-  DFunLike.ext_iff
-
 /-- The identity map as a star ring isomorphism. -/
 @[refl]
 def refl : A ≃⋆+* A :=
@@ -360,9 +354,7 @@ theorem invFun_eq_symm {e : A ≃⋆+* B} : EquivLike.inv e = e.symm :=
   rfl
 
 @[simp]
-theorem symm_symm (e : A ≃⋆+* B) : e.symm.symm = e := by
-  ext
-  rfl
+theorem symm_symm (e : A ≃⋆+* B) : e.symm.symm = e := rfl
 
 theorem symm_bijective : Function.Bijective (symm : (A ≃⋆+* B) → B ≃⋆+* A) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
@@ -373,7 +365,7 @@ theorem coe_mk (e h₁) : ⇑(⟨e, h₁⟩ : A ≃⋆+* B) = e := rfl
 theorem mk_coe (e : A ≃⋆+* B) (e' h₁ h₂ h₃ h₄ h₅) :
     (⟨⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩, h₅⟩ : A ≃⋆+* B) = e := ext fun _ => rfl
 
-/-- Auxilliary definition to avoid looping in `dsimp` with `StarRingEquiv.symm_mk`. -/
+/-- Auxiliary definition to avoid looping in `dsimp` with `StarRingEquiv.symm_mk`. -/
 protected def symm_mk.aux (f f') (h₁ h₂ h₃ h₄ h₅) :=
   (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅⟩ : A ≃⋆+* B).symm
 
@@ -433,7 +425,7 @@ variable {F G A B : Type*}
 variable [NonUnitalNonAssocSemiring A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [Star B]
 variable [FunLike F A B] [NonUnitalRingHomClass F A B] [NonUnitalStarRingHomClass F A B]
-variable [FunLike G B A] [NonUnitalRingHomClass G B A] [NonUnitalStarRingHomClass G B A]
+variable [FunLike G B A]
 
 /-- If a (unital or non-unital) star ring morphism has an inverse, it is an isomorphism of
 star rings. -/

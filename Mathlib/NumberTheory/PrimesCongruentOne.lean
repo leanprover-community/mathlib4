@@ -5,8 +5,6 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 
-#align_import number_theory.primes_congruent_one from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
-
 /-!
 # Primes congruent to one
 
@@ -55,19 +53,16 @@ theorem exists_prime_gt_modEq_one {k : ℕ} (n : ℕ) (hk0 : k ≠ 0) :
     have : k = orderOf (b : ZMod p) := (isRoot_cyclotomic_iff.mp hroot).eq_orderOf
     rw [← this] at hdiv
     exact ((modEq_iff_dvd' hprime.1.pos).2 hdiv).symm
-#align nat.exists_prime_gt_modeq_one Nat.exists_prime_gt_modEq_one
 
 theorem frequently_atTop_modEq_one {k : ℕ} (hk0 : k ≠ 0) :
     ∃ᶠ p in atTop, Nat.Prime p ∧ p ≡ 1 [MOD k] := by
   refine frequently_atTop.2 fun n => ?_
   obtain ⟨p, hp⟩ := exists_prime_gt_modEq_one n hk0
   exact ⟨p, ⟨hp.2.1.le, hp.1, hp.2.2⟩⟩
-#align nat.frequently_at_top_modeq_one Nat.frequently_atTop_modEq_one
 
 /-- For any positive `k : ℕ` there are infinitely many primes `p` such that `p ≡ 1 [MOD k]`. -/
 theorem infinite_setOf_prime_modEq_one {k : ℕ} (hk0 : k ≠ 0) :
     Set.Infinite {p : ℕ | Nat.Prime p ∧ p ≡ 1 [MOD k]} :=
   frequently_atTop_iff_infinite.1 (frequently_atTop_modEq_one hk0)
-#align nat.infinite_set_of_prime_modeq_one Nat.infinite_setOf_prime_modEq_one
 
 end Nat

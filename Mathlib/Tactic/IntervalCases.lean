@@ -1,10 +1,11 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Mario Carneiro
+Authors: Kim Morrison, Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.FinCases
+import Mathlib.Control.Basic
 
 /-!
 # Case bash on variables in finite intervals
@@ -21,11 +22,6 @@ You can also explicitly specify a lower and upper bound to use, as `interval_cas
 where the hypotheses should be of the form `hl : a ≤ n` and `hu : n < b`. In that case,
 `interval_cases` calls `fin_cases` on the resulting hypothesis `h : n ∈ Set.Ico a b`.
 -/
-
-set_option autoImplicit true
-
--- In this file we would like to be able to use multi-character auto-implicits.
-set_option relaxedAutoImplicit true
 
 namespace Mathlib.Tactic
 
@@ -123,6 +119,8 @@ structure Methods where
   /-- Construct the canonical numeral for integer `z`, or fail if `z` is out of range. -/
   mkNumeral : Int → MetaM Expr
 
+variable {α : Type*} {a b a' b' : α}
+
 theorem of_not_lt_left [LinearOrder α] (h : ¬(a:α) < b) (eq : a = a') : b ≤ a' := eq ▸ not_lt.1 h
 theorem of_not_lt_right [LinearOrder α] (h : ¬(a:α) < b) (eq : b = b') : b' ≤ a := eq ▸ not_lt.1 h
 theorem of_not_le_left [LE α] (h : ¬(a:α) ≤ b) (eq : a = a') : ¬a' ≤ b := eq ▸ h
@@ -159,7 +157,8 @@ def Methods.getBound (m : Methods) (e : Expr) (pf : Expr) (lb : Bool) :
   let .true ← withNewMCtxDepth <| withReducible <| isDefEq e e' | failure
   pure c
 
-theorem le_of_not_le_of_le [LinearOrder α] (h1 : ¬hi ≤ n) (h2 : hi ≤ lo) : (n:α) ≤ lo :=
+theorem le_of_not_le_of_le {hi n lo : α} [LinearOrder α] (h1 : ¬hi ≤ n) (h2 : hi ≤ lo) :
+    (n:α) ≤ lo :=
   le_trans (le_of_not_le h1) h2
 
 /--
@@ -219,8 +218,8 @@ def natMethods : Methods where
   eval e := do
     let ⟨z, e, p⟩ := (← NormNum.derive (α := (q(ℕ) : Q(Type))) e).toRawIntEq.get!
     pure (z, e, p)
-  proveLE (lhs rhs : Q(ℕ)) := mkDecideProof q($lhs ≤ $rhs)
-  proveLT (lhs rhs : Q(ℕ)) := mkDecideProof q(¬$rhs ≤ $lhs)
+  proveLE (lhs rhs : Q(ℕ)) := mkDecideProofQ q($lhs ≤ $rhs)
+  proveLT (lhs rhs : Q(ℕ)) := mkDecideProofQ q(¬$rhs ≤ $lhs)
   roundUp (lhs rhs _ : Q(ℕ)) (p : Q(¬$rhs ≤ $lhs)) := pure q(Nat.gt_of_not_le $p)
   roundDown (lhs _ rhs' : Q(ℕ)) (p : Q(¬Nat.succ $rhs' ≤ $lhs)) := pure q(Nat.ge_of_not_lt $p)
   mkNumeral
@@ -238,8 +237,8 @@ def intMethods : Methods where
   eval e := do
     let ⟨z, e, p⟩ := (← NormNum.derive (α := (q(ℤ) : Q(Type))) e).toRawIntEq.get!
     pure (z, e, p)
-  proveLE (lhs rhs : Q(ℤ)) := mkDecideProof q($lhs ≤ $rhs)
-  proveLT (lhs rhs : Q(ℤ)) := mkDecideProof q(¬$rhs ≤ $lhs)
+  proveLE (lhs rhs : Q(ℤ)) := mkDecideProofQ q($lhs ≤ $rhs)
+  proveLT (lhs rhs : Q(ℤ)) := mkDecideProofQ q(¬$rhs ≤ $lhs)
   roundUp (lhs rhs _ : Q(ℤ)) (p : Q(¬$rhs ≤ $lhs)) := pure q(Int.add_one_le_of_not_le $p)
   roundDown (lhs rhs _ : Q(ℤ)) (p : Q(¬$rhs ≤ $lhs)) := pure q(Int.le_sub_one_of_not_le $p)
   mkNumeral
@@ -271,7 +270,7 @@ Returns an array of `IntervalCasesSubgoal`, one per subgoal. A subgoal has the f
 
 Note that this tactic does not perform any substitution or introduction steps -
 all subgoals are in the same context as `goal` itself.
- -/
+-/
 def intervalCases (g : MVarId) (e e' : Expr) (lbs ubs : Array Expr) (mustUseBounds := false) :
     MetaM (Array IntervalCasesSubgoal) := g.withContext do
   let α ← whnfR (← inferType e)
@@ -398,3 +397,5 @@ elab_rules : tactic
         catch _ => pure ()
       cont x xs[1]? subst g e lbs ubs (mustUseBounds := false)
     | _, _, _ => throwUnsupportedSyntax
+
+end Mathlib.Tactic

@@ -68,3 +68,11 @@ noncomputable abbrev Condensed.freeAb : CondensedSet ⥤ CondensedAb := free _
 
 /-- The free-forgetful adjunction for condensed abelian groups. -/
 noncomputable abbrev Condensed.setAbAdjunction : freeAb ⊣ abForget := freeForgetAdjunction _
+
+namespace CondensedMod
+
+lemma hom_naturality_apply {X Y : CondensedMod.{u} R} (f : X ⟶ Y) {S T : CompHausᵒᵖ} (g : S ⟶ T)
+    (x : X.val.obj S) : f.val.app T (X.val.map g x) = Y.val.map g (f.val.app S x) :=
+  NatTrans.naturality_apply f.val g x
+
+end CondensedMod

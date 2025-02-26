@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl
 -/
 import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.Topology.Separation
-
-#align_import dynamics.fixed_points.topology from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Topological properties of fixed points
@@ -35,9 +33,7 @@ theorem isFixedPt_of_tendsto_iterate {x y : α} (hy : Tendsto (fun n => f^[n] x)
   refine tendsto_nhds_unique ((tendsto_add_atTop_iff_nat 1).1 ?_) hy
   simp only [iterate_succ' f]
   exact hf.tendsto.comp hy
-#align is_fixed_pt_of_tendsto_iterate isFixedPt_of_tendsto_iterate
 
 /-- The set of fixed points of a continuous map is a closed set. -/
 theorem isClosed_fixedPoints (hf : Continuous f) : IsClosed (fixedPoints f) :=
   isClosed_eq hf continuous_id
-#align is_closed_fixed_points isClosed_fixedPoints

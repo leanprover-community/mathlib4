@@ -5,8 +5,6 @@ Authors: Anne Baanen
 -/
 import Mathlib.Data.FunLike.Basic
 
-#align_import data.fun_like.embedding from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
-
 /-!
 # Typeclass for a type `F` with an injective map to `A ↪ B`
 
@@ -16,7 +14,7 @@ This typeclass is primarily for use by embeddings such as `RelEmbedding`.
 
 A typical type of embeddings should be declared as:
 ```
-structure MyEmbedding (A B : Type*) [MyClass A] [MyClass B] :=
+structure MyEmbedding (A B : Type*) [MyClass A] [MyClass B] where
   (toFun : A → B)
   (injective' : Function.Injective toFun)
   (map_op' : ∀ (x y : A), toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
@@ -60,8 +58,8 @@ Continuing the example above:
 You should extend this class when you extend `MyEmbedding`. -/
 class MyEmbeddingClass (F : Type*) (A B : outParam Type*) [MyClass A] [MyClass B]
     [FunLike F A B]
-    extends EmbeddingLike F A B :=
-  (map_op : ∀ (f : F) (x y : A), f (MyClass.op x y) = MyClass.op (f x) (f y))
+    extends EmbeddingLike F A B where
+  map_op : ∀ (f : F) (x y : A), f (MyClass.op x y) = MyClass.op (f x) (f y)
 
 @[simp]
 lemma map_op {F A B : Type*} [MyClass A] [MyClass B] [FunLike F A B] [MyEmbeddingClass F A B]
@@ -86,12 +84,12 @@ The second step is to add instances of your new `MyEmbeddingClass` for all types
 Typically, you can just declare a new class analogous to `MyEmbeddingClass`:
 
 ```
-structure CoolerEmbedding (A B : Type*) [CoolClass A] [CoolClass B] extends MyEmbedding A B :=
+structure CoolerEmbedding (A B : Type*) [CoolClass A] [CoolClass B] extends MyEmbedding A B where
   (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
 class CoolerEmbeddingClass (F : Type*) (A B : outParam Type*) [CoolClass A] [CoolClass B]
     [FunLike F A B]
-    extends MyEmbeddingClass F A B :=
+    extends MyEmbeddingClass F A B where
   (map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
 
 @[simp]
@@ -133,7 +131,6 @@ injective coercion to injective functions `α ↪ β`.
 class EmbeddingLike (F : Sort*) (α β : outParam (Sort*)) [FunLike F α β] : Prop where
   /-- The coercion to functions must produce injective functions. -/
   injective' : ∀ f : F, Function.Injective (DFunLike.coe f)
-#align embedding_like EmbeddingLike
 
 namespace EmbeddingLike
 
@@ -141,17 +138,14 @@ variable {F α β γ : Sort*} [FunLike F α β] [i : EmbeddingLike F α β]
 
 protected theorem injective (f : F) : Function.Injective f :=
   injective' f
-#align embedding_like.injective EmbeddingLike.injective
 
 @[simp]
 theorem apply_eq_iff_eq (f : F) {x y : α} : f x = f y ↔ x = y :=
   (EmbeddingLike.injective f).eq_iff
-#align embedding_like.apply_eq_iff_eq EmbeddingLike.apply_eq_iff_eq
 
 @[simp]
 theorem comp_injective {F : Sort*} [FunLike F β γ] [EmbeddingLike F β γ] (f : α → β) (e : F) :
     Function.Injective (e ∘ f) ↔ Function.Injective f :=
   (EmbeddingLike.injective e).of_comp_iff f
-#align embedding_like.comp_injective EmbeddingLike.comp_injective
 
 end EmbeddingLike

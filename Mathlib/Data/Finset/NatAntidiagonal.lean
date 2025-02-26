@@ -5,10 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Order.Antidiag.Prod
 import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Finset.Card
 import Mathlib.Data.Multiset.NatAntidiagonal
-
-#align_import data.finset.nat_antidiagonal from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Antidiagonals in ℕ × ℕ as finsets
@@ -22,6 +19,8 @@ generally for sums going from `0` to `n`.
 This refines files `Data.List.NatAntidiagonal` and `Data.Multiset.NatAntidiagonal`, providing an
 instance enabling `Finset.antidiagonal` on `Nat`.
 -/
+
+assert_not_exists Field
 
 open Function
 
@@ -56,13 +55,10 @@ lemma antidiagonal_eq_image' (n : ℕ) :
 /-- The cardinality of the antidiagonal of `n` is `n + 1`. -/
 @[simp]
 theorem card_antidiagonal (n : ℕ) : (antidiagonal n).card = n + 1 := by simp [antidiagonal]
-#align finset.nat.card_antidiagonal Finset.Nat.card_antidiagonal
 
 /-- The antidiagonal of `0` is the list `[(0, 0)]` -/
--- nolint as this is for dsimp
 @[simp]
 theorem antidiagonal_zero : antidiagonal 0 = {(0, 0)} := rfl
-#align finset.nat.antidiagonal_zero Finset.Nat.antidiagonal_zero
 
 theorem antidiagonal_succ (n : ℕ) :
     antidiagonal (n + 1) =
@@ -73,7 +69,6 @@ theorem antidiagonal_succ (n : ℕ) :
   apply eq_of_veq
   rw [cons_val, map_val]
   apply Multiset.Nat.antidiagonal_succ
-#align finset.nat.antidiagonal_succ Finset.Nat.antidiagonal_succ
 
 theorem antidiagonal_succ' (n : ℕ) :
     antidiagonal (n + 1) =
@@ -84,7 +79,6 @@ theorem antidiagonal_succ' (n : ℕ) :
   apply eq_of_veq
   rw [cons_val, map_val]
   exact Multiset.Nat.antidiagonal_succ'
-#align finset.nat.antidiagonal_succ' Finset.Nat.antidiagonal_succ'
 
 theorem antidiagonal_succ_succ' {n : ℕ} :
     antidiagonal (n + 2) =
@@ -97,7 +91,6 @@ theorem antidiagonal_succ_succ' {n : ℕ} :
         (by simp) := by
   simp_rw [antidiagonal_succ (n + 1), antidiagonal_succ', Finset.map_cons, map_map]
   rfl
-#align finset.nat.antidiagonal_succ_succ' Finset.Nat.antidiagonal_succ_succ'
 
 theorem antidiagonal.fst_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.1 < n + 1 :=
   Nat.lt_succ_of_le <| antidiagonal.fst_le hlk
@@ -154,15 +147,15 @@ theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagon
   ext ⟨i, j⟩
   simpa using aux₂ i j
 
-/-- The set `antidiagonal n` is equivalent to `Fin (n+1)`, via the first projection. --/
+/-- The set `antidiagonal n` is equivalent to `Fin (n+1)`, via the first projection. -/
 @[simps]
 def antidiagonalEquivFin (n : ℕ) : antidiagonal n ≃ Fin (n + 1) where
-  toFun := fun ⟨⟨i, j⟩, h⟩ ↦ ⟨i, antidiagonal.fst_lt h⟩
+  toFun := fun ⟨⟨i, _⟩, h⟩ ↦ ⟨i, antidiagonal.fst_lt h⟩
   invFun := fun ⟨i, h⟩ ↦ ⟨⟨i, n - i⟩, by
-    rw [mem_antidiagonal, add_comm, tsub_add_cancel_iff_le]
+    rw [mem_antidiagonal, add_comm, Nat.sub_add_cancel]
     exact Nat.le_of_lt_succ h⟩
   left_inv := by rintro ⟨⟨i, j⟩, h⟩; ext; rfl
-  right_inv x := rfl
+  right_inv _ := rfl
 
 end Nat
 

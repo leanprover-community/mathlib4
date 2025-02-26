@@ -9,7 +9,7 @@ import Mathlib.Tactic.Attr.Core
 
 /-! # The `nontriviality` tactic. -/
 
-set_option autoImplicit true
+universe u
 
 namespace Mathlib.Tactic.Nontriviality
 open Lean Elab Meta Tactic Qq
@@ -24,14 +24,15 @@ Tries to generate a `Nontrivial α` instance by performing case analysis on
 attempting to discharge the subsingleton branch using lemmas with `@[nontriviality]` attribute,
 including `Subsingleton.le` and `eq_iff_true_of_subsingleton`.
 -/
-def nontrivialityByElim (α : Q(Type u)) (g : MVarId) (simpArgs : Array Syntax) : MetaM MVarId := do
+def nontrivialityByElim {u : Level} (α : Q(Type u)) (g : MVarId) (simpArgs : Array Syntax) :
+    MetaM MVarId := do
   let p : Q(Prop) ← g.getType
   guard (← instantiateMVars (← inferType p)).isProp
   g.withContext do
     let g₁ ← mkFreshExprMVarQ q(Subsingleton $α → $p)
     let (_, g₁') ← g₁.mvarId!.intro1
     g₁'.withContext try
-      -- FIXME: restore after lean4#2054 is fixed
+      -- FIXME: restore after https://github.com/leanprover/lean4/issues/2054 is fixed
       -- g₁'.inferInstance <|> do
       (do g₁'.assign (← synthInstance (← g₁'.getType))) <|> do
         let simpArgs := simpArgs.push (Unhygienic.run `(Parser.Tactic.simpLemma| nontriviality))
@@ -122,3 +123,7 @@ syntax (name := nontriviality) "nontriviality" (ppSpace colGt term)?
       g.assert `inst ty m
     let g ← liftM <| tac <|> nontrivialityByElim α g stx[2][1].getSepArgs
     replaceMainGoal [(← g.intro1).2]
+
+end Nontriviality
+
+end Mathlib.Tactic

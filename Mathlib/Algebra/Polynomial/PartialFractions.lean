@@ -5,11 +5,10 @@ Authors: Kevin Buzzard, Sidharth Hariharan
 -/
 import Mathlib.Algebra.Polynomial.Div
 import Mathlib.Logic.Function.Basic
+import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
-
-#align_import data.polynomial.partial_fractions from "leanprover-community/mathlib"@"6e70e0d419bf686784937d64ed4bfde866ff229e"
 
 /-!
 
@@ -50,8 +49,7 @@ variable (K : Type) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
 
 section TwoDenominators
 
--- Porting note: added for scoped `Algebra.cast` instance
-open algebraMap
+open scoped algebraMap
 
 /-- Let R be an integral domain and f, g₁, g₂ ∈ R[X]. Let g₁ and g₂ be monic and coprime.
 Then, ∃ q, r₁, r₂ ∈ R[X] such that f / g₁g₂ = q + r₁/g₁ + r₂/g₂ and deg(r₁) < deg(g₁) and
@@ -77,13 +75,11 @@ theorem div_eq_quo_add_rem_div_add_rem_div (f : R[X]) {g₁ g₂ : R[X]} (hg₁ 
   field_simp
   norm_cast
   linear_combination -1 * f * hcd + -1 * g₁ * hfc + -1 * g₂ * hfd
-#align div_eq_quo_add_rem_div_add_rem_div div_eq_quo_add_rem_div_add_rem_div
 
 end TwoDenominators
 
 section NDenominators
 
--- Porting note: added for scoped `Algebra.cast` instance
 open algebraMap
 
 /-- Let R be an integral domain and f ∈ R[X]. Let s be a finite index set.
@@ -129,6 +125,5 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
   rw [if_neg]
   rintro rfl
   exact hab hxb
-#align div_eq_quo_add_sum_rem_div div_eq_quo_add_sum_rem_div
 
 end NDenominators

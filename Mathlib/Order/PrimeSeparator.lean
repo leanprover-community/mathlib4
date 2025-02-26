@@ -7,7 +7,6 @@ Authors: Sam van Gool
 import Mathlib.Order.PrimeIdeal
 import Mathlib.Order.Zorn
 
-
 /-!
 # Separating prime filters and ideals
 
@@ -64,7 +63,8 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
             ⟨le_trans (hcS hJ).2.1 (le_sSup hJ), fun J hJ ↦ (hcS hJ).2.2⟩⟩
 
   -- Thus, by Zorn's lemma, we can pick a maximal ideal J in S.
-  obtain ⟨Jset, ⟨Jidl, IJ, JF⟩, ⟨_, Jmax⟩⟩ := zorn_subset_nonempty S chainub I IinS
+  obtain ⟨Jset, _, hmax⟩ := zorn_subset_nonempty S chainub I IinS
+  obtain ⟨Jidl, IJ, JF⟩ := hmax.prop
   set J := IsIdeal.toIdeal Jidl
   use J
   have IJ' : I ≤ J := IJ
@@ -95,8 +95,8 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
   have J₂J : ↑J₂ ≠ Jset := ne_of_mem_of_not_mem' a₂J₂ ha₂
 
   -- Therefore, since J is maximal, we must have Jᵢ ∉ S.
-  have J₁S : ↑J₁ ∉ S := fun h => J₁J (Jmax J₁ h (le_sup_left : J ≤ J₁))
-  have J₂S : ↑J₂ ∉ S := fun h => J₂J (Jmax J₂ h (le_sup_left : J ≤ J₂))
+  have J₁S : ↑J₁ ∉ S := fun h => J₁J (hmax.eq_of_le h (le_sup_left : J ≤ J₁)).symm
+  have J₂S : ↑J₂ ∉ S := fun h => J₂J (hmax.eq_of_le h (le_sup_left : J ≤ J₂)).symm
 
   -- Since Jᵢ is an ideal that contains I, we have that Jᵢ is not disjoint from F.
   have J₁F : ¬ (Disjoint (F : Set α) J₁) := by
@@ -145,3 +145,5 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
 -- TODO: Define prime filters in Mathlib so that the following corollary can be stated and proved.
 -- theorem prime_filter_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : Set α)) :
 --     ∃ G : PFilter α, (IsPrime G) ∧ F ≤ G ∧ Disjoint (G : Set α) I := by sorry
+
+end DistribLattice

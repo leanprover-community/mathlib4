@@ -99,11 +99,11 @@ lemma sieve₁_eq_pullback_sieve₁' {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W �
   · rintro ⟨j, h, fac₁, fac₂⟩
     exact ⟨_, h, _, ⟨j⟩, by aesop_cat⟩
   · rintro ⟨_, h, w, ⟨j⟩, fac⟩
-    exact ⟨j, h, by simpa using fac.symm =≫ pullback.fst,
-      by simpa using fac.symm =≫ pullback.snd⟩
+    exact ⟨j, h, by simpa using fac.symm =≫ pullback.fst _ _,
+      by simpa using fac.symm =≫ pullback.snd _ _⟩
 
 variable (i₁ i₂) in
-lemma sieve₁'_eq_sieve₁ : E.sieve₁' i₁ i₂ = E.sieve₁ pullback.fst pullback.snd := by
+lemma sieve₁'_eq_sieve₁ : E.sieve₁' i₁ i₂ = E.sieve₁ (pullback.fst _ _) (pullback.snd _ _) := by
   rw [← Sieve.pullback_id (S := E.sieve₁' i₁ i₂),
     sieve₁_eq_pullback_sieve₁' _ _ _ pullback.condition]
   congr
@@ -114,14 +114,18 @@ end
 /-- The sigma type of all `E.I₁ i₁ i₂` for `⟨i₁, i₂⟩ : E.I₀ × E.I₀`. -/
 abbrev I₁' : Type w := Sigma (fun (i : E.I₀ × E.I₀) => E.I₁ i.1 i.2)
 
+/-- The shape of the multiforks attached to `E : PreOneHypercover S`. -/
+@[simps]
+def multicospanShape : MulticospanShape where
+  L := E.I₀
+  R := E.I₁'
+  fst j := j.1.1
+  snd j := j.1.2
+
 /-- The diagram of the multifork attached to a presheaf
 `F : Cᵒᵖ ⥤ A`, `S : C` and `E : PreOneHypercover S`. -/
 @[simps]
-def multicospanIndex (F : Cᵒᵖ ⥤ A) : MulticospanIndex A where
-  L := E.I₀
-  R := E.I₁'
-  fstTo j := j.1.1
-  sndTo j := j.1.2
+def multicospanIndex (F : Cᵒᵖ ⥤ A) : MulticospanIndex E.multicospanShape A where
   left i := F.obj (Opposite.op (E.X i))
   right j := F.obj (Opposite.op (E.Y j.2))
   fst j := F.map ((E.p₁ j.2).op)
@@ -164,7 +168,7 @@ check that the data provides a covering of `S` and of the fibre products. -/
 @[simps toPreOneHypercover]
 def mk' {S : C} (E : PreOneHypercover S) [E.HasPullbacks]
     (mem₀ : E.sieve₀ ∈ J S) (mem₁' : ∀ (i₁ i₂ : E.I₀), E.sieve₁' i₁ i₂ ∈ J _) :
-        J.OneHypercover S where
+    J.OneHypercover S where
   toPreOneHypercover := E
   mem₀ := mem₀
   mem₁ i₁ i₂ W p₁ p₂ w := by

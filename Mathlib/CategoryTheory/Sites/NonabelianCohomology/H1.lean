@@ -48,7 +48,7 @@ variable {C : Type u} [Category.{v} C]
 
 namespace PresheafOfGroups
 
-variable (G : Cᵒᵖ ⥤ Grp.{w}) {X : C} {I : Type w'} (U : I → C)
+variable (G : Cᵒᵖ ⥤ Grp.{w}) {I : Type w'} (U : I → C)
 
 /-- A zero cochain consists of a family of sections. -/
 def ZeroCochain := ∀ (i : I), G.obj (Opposite.op (U i))
@@ -57,7 +57,9 @@ instance : Group (ZeroCochain G U) := Pi.group
 
 namespace Cochain₀
 
-@[simp]
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/4481
+the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`. -/
+@[simp, nolint simpNF]
 lemma one_apply (i : I) : (1 : ZeroCochain G U) i = 1 := rfl
 
 @[simp]
@@ -94,14 +96,14 @@ lemma one_ev (i j : I) {T : C} (a : T ⟶ U i) (b : T ⟶ U j) :
 variable {G U}
 
 instance : Mul (OneCochain G U) where
-  mul γ₁ γ₂ := { ev := fun i j T a b ↦ γ₁.ev i j a b * γ₂.ev i j a b }
+  mul γ₁ γ₂ := { ev := fun i j _ a b ↦ γ₁.ev i j a b * γ₂.ev i j a b }
 
 @[simp]
 lemma mul_ev (γ₁ γ₂ : OneCochain G U) (i j : I) {T : C} (a : T ⟶ U i) (b : T ⟶ U j) :
     (γ₁ * γ₂).ev i j a b = γ₁.ev i j a b * γ₂.ev i j a b := rfl
 
 instance : Inv (OneCochain G U) where
-  inv γ := { ev := fun i j T a b ↦ (γ.ev i j a b) ⁻¹}
+  inv γ := { ev := fun i j _ a b ↦ (γ.ev i j a b) ⁻¹}
 
 @[simp]
 lemma inv_ev (γ : OneCochain G U) (i j : I) {T : C} (a : T ⟶ U i) (b : T ⟶ U j) :
@@ -111,7 +113,7 @@ instance : Group (OneCochain G U) where
   mul_assoc _ _ _ := by ext; apply mul_assoc
   one_mul _ := by ext; apply one_mul
   mul_one _ := by ext; apply mul_one
-  mul_left_inv _ := by ext; apply mul_left_inv
+  inv_mul_cancel _ := by ext; apply inv_mul_cancel
 
 end OneCochain
 
@@ -136,7 +138,7 @@ lemma ev_refl (γ : OneCocycle G U) (i : I) ⦃T : C⦄ (a : T ⟶ U i) :
 lemma ev_symm (γ : OneCocycle G U) (i j : I) ⦃T : C⦄ (a : T ⟶ U i) (b : T ⟶ U j) :
     γ.ev i j a b = (γ.ev j i b a)⁻¹ := by
   rw [← mul_left_inj (γ.ev j i b a), γ.ev_trans i j i a b a,
-    ev_refl, mul_left_inv]
+    ev_refl, inv_mul_cancel]
 
 end OneCocycle
 
@@ -156,7 +158,7 @@ lemma symm {γ₁ γ₂ : OneCochain G U} {α : ZeroCochain G U} (h : OneCohomol
     OneCohomologyRelation γ₂ γ₁ α⁻¹ := fun i j T a b ↦ by
   rw [← mul_left_inj (G.map b.op (α j)), mul_assoc, ← h i j a b,
     mul_assoc, Cochain₀.inv_apply, map_inv, inv_mul_cancel_left,
-    Cochain₀.inv_apply, map_inv, mul_left_inv, mul_one]
+    Cochain₀.inv_apply, map_inv, inv_mul_cancel, mul_one]
 
 lemma trans {γ₁ γ₂ γ₃ : OneCochain G U} {α β : ZeroCochain G U}
     (h₁₂ : OneCohomologyRelation γ₁ γ₂ α) (h₂₃ : OneCohomologyRelation γ₂ γ₃ β) :

@@ -7,8 +7,6 @@ import Mathlib.Analysis.LocallyConvex.Bounded
 import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.UniformConvergence
 
-#align_import topology.algebra.uniform_convergence from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # Algebraic facts about the topology of uniform convergence
 
@@ -40,9 +38,8 @@ uniform convergence, strong dual
 
 -/
 
-open Filter
-
-open scoped Topology Pointwise UniformConvergence Uniformity
+open Filter Topology
+open scoped Pointwise UniformConvergence Uniformity
 
 section Module
 
@@ -59,11 +56,11 @@ i.e., the pointwise scalar multiplication is continuous in both variables.
 For convenience we require that `H` is a vector space over `𝕜`
 with a topology induced by `UniformFun.ofFun ∘ φ`, where `φ : H →ₗ[𝕜] (α → E)`. -/
 lemma UniformFun.continuousSMul_induced_of_range_bounded (φ : hom)
-    (hφ : Inducing (ofFun ∘ φ)) (h : ∀ u : H, Bornology.IsVonNBounded 𝕜 (Set.range (φ u))) :
+    (hφ : IsInducing (ofFun ∘ φ)) (h : ∀ u : H, Bornology.IsVonNBounded 𝕜 (Set.range (φ u))) :
     ContinuousSMul 𝕜 H := by
-  have : TopologicalAddGroup H :=
+  have : IsTopologicalAddGroup H :=
     let ofFun' : (α → E) →+ (α →ᵤ E) := AddMonoidHom.id _
-    Inducing.topologicalAddGroup (ofFun'.comp (φ : H →+ (α → E))) hφ
+    IsInducing.topologicalAddGroup (ofFun'.comp (φ : H →+ (α → E))) hφ
   have hb : (𝓝 (0 : H)).HasBasis (· ∈ 𝓝 (0 : E)) fun V ↦ {u | ∀ x, φ u x ∈ V} := by
     simp only [hφ.nhds_eq_comap, Function.comp_apply, map_zero]
     exact UniformFun.hasBasis_nhds_zero.comap _
@@ -93,10 +90,10 @@ For convenience, we don't literally ask for `H : Submodule (α →ᵤ[𝔖] E)`.
 result for any vector space `H` equipped with a linear inducing to `α →ᵤ[𝔖] E`, which is often
 easier to use. We also state the `Submodule` version as
 `UniformOnFun.continuousSMul_submodule_of_image_bounded`. -/
-theorem UniformOnFun.continuousSMul_induced_of_image_bounded (φ : hom) (hφ : Inducing (ofFun 𝔖 ∘ φ))
+lemma UniformOnFun.continuousSMul_induced_of_image_bounded (φ : hom) (hφ : IsInducing (ofFun 𝔖 ∘ φ))
     (h : ∀ u : H, ∀ s ∈ 𝔖, Bornology.IsVonNBounded 𝕜 ((φ u : α → E) '' s)) :
     ContinuousSMul 𝕜 H := by
-  obtain rfl := hφ.induced; clear hφ
+  obtain rfl := hφ.eq_induced; clear hφ
   simp only [induced_iInf, UniformOnFun.topologicalSpace_eq, induced_compose]
   refine continuousSMul_iInf fun s ↦ continuousSMul_iInf fun hs ↦ ?_
   letI : TopologicalSpace H :=
@@ -107,7 +104,6 @@ theorem UniformOnFun.continuousSMul_induced_of_image_bounded (φ : hom) (hφ : I
       map_add' := fun x y ↦ by exact congr_arg s.restrict (map_add φ x y) }
   refine UniformFun.continuousSMul_induced_of_range_bounded 𝕜 s E H φ' ⟨rfl⟩ fun u ↦ ?_
   simpa only [Set.image_eq_range] using h u s hs
-#align uniform_on_fun.has_continuous_smul_induced_of_image_bounded UniformOnFun.continuousSMul_induced_of_image_bounded
 
 /-- Let `E` be a TVS, `𝔖 : Set (Set α)` and `H` a submodule of `α →ᵤ[𝔖] E`. If the image of any
 `S ∈ 𝔖` by any `u ∈ H` is bounded (in the sense of `Bornology.IsVonNBounded`), then `H`,
@@ -118,7 +114,6 @@ theorem UniformOnFun.continuousSMul_submodule_of_image_bounded (H : Submodule �
     (h : ∀ u ∈ H, ∀ s ∈ 𝔖, Bornology.IsVonNBounded 𝕜 (u '' s)) :
     @ContinuousSMul 𝕜 H _ _ ((UniformOnFun.topologicalSpace α E 𝔖).induced ((↑) : H → α →ᵤ[𝔖] E)) :=
   UniformOnFun.continuousSMul_induced_of_image_bounded 𝕜 α E H
-    (LinearMap.id.domRestrict H : H →ₗ[𝕜] α → E) inducing_subtype_val fun ⟨u, hu⟩ => h u hu
-#align uniform_on_fun.has_continuous_smul_submodule_of_image_bounded UniformOnFun.continuousSMul_submodule_of_image_bounded
+    (LinearMap.id.domRestrict H : H →ₗ[𝕜] α → E) IsInducing.subtypeVal fun ⟨u, hu⟩ => h u hu
 
 end Module

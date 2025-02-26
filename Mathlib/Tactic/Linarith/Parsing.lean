@@ -27,9 +27,7 @@ This is ultimately converted into a `Linexp` in the obvious way.
 `linearFormsAndMaxVar` is the main entry point into this file. Everything else is contained.
 -/
 
-set_option autoImplicit true
-
-open Linarith.Ineq Batteries
+open Mathlib.Ineq Batteries
 
 section
 open Lean Elab Tactic Meta
@@ -39,7 +37,8 @@ open Lean Elab Tactic Meta
 and returns the value associated with this key if it exists.
 Otherwise, it fails.
 -/
-def List.findDefeq (red : TransparencyMode) (m : List (Expr × v)) (e : Expr) : MetaM v := do
+def List.findDefeq {v : Type} (red : TransparencyMode) (m : List (Expr × v)) (e : Expr) :
+    MetaM v := do
   if let some (_, n) ← m.findM? fun ⟨e', _⟩ => withTransparency red (isDefEq e e') then
     return n
   else
@@ -51,7 +50,8 @@ We introduce a local instance allowing addition of `RBMap`s,
 removing any keys with value zero.
 We don't need to prove anything about this addition, as it is only used in meta code.
 -/
-local instance [Add β] [Zero β] [DecidableEq β] : Add (RBMap α β c) where
+local instance {α β : Type*} {c : α → α → Ordering} [Add β] [Zero β] [DecidableEq β] :
+    Add (RBMap α β c) where
   add := fun f g => (f.mergeWith (fun _ b b' => b + b') g).filter (fun _ b => b ≠ 0)
 
 namespace Linarith
@@ -192,7 +192,7 @@ partial def linearFormOfExpr (red : TransparencyMode) (m : ExprMap) (e : Expr) :
 The output `RBMap ℕ ℤ` has the same structure as `s : Sum`,
 but each monomial key is replaced with its index according to `map`.
 If any new monomials are encountered, they are assigned variable numbers and `map` is updated.
- -/
+-/
 def elimMonom (s : Sum) (m : Map Monom ℕ) : Map Monom ℕ × Map ℕ ℤ :=
   s.foldr (fun mn coeff ⟨map, out⟩ ↦
     match map.find? mn with
@@ -220,7 +220,7 @@ def toComp (red : TransparencyMode) (e : Expr) (e_map : ExprMap) (monom_map : Ma
 /--
 `toCompFold red e_map exprs monom_map` folds `toComp` over `exprs`,
 updating `e_map` and `monom_map` as it goes.
- -/
+-/
 def toCompFold (red : TransparencyMode) : ExprMap → List Expr → Map Monom ℕ →
     MetaM (List Comp × ExprMap × Map Monom ℕ)
 | m, [],     mm => return ([], m, mm)

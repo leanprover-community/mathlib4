@@ -32,7 +32,7 @@ namespace CategoryTheory
 
 variable {C D A : Type*} [Category C] [Category D] [Category A]
   {L : C ⥤ D} {F : D ⥤ A} {G : C ⥤ A} (e : L ⋙ F ≅ G) (M : Type*)
-  [AddMonoid M] [HasShift C M] [HasShift D M] [L.CommShift M]
+  [AddMonoid M] [HasShift C M]
   [G.ShiftSequence M] (F' : M → D ⥤ A) (e' : ∀ m, L ⋙ F' m ≅ G.shift m)
   [((whiskeringLeft C D A).obj L).Full] [((whiskeringLeft C D A).obj L).Faithful]
 
@@ -52,6 +52,7 @@ lemma isoZero_hom_app_obj (X : C) :
   NatTrans.congr_app (((whiskeringLeft C D A).obj L).map_preimage _) X
 
 variable (L G)
+variable [HasShift D M] [L.CommShift M]
 
 /-- The `shiftIso` field of the induced shift sequence. -/
 noncomputable def shiftIso (n a a' : M) (ha' : n + a = a') :
@@ -70,6 +71,8 @@ lemma shiftIso_hom_app_obj (n a a' : M) (ha' : n + a = a') (X : C) :
 attribute [irreducible] isoZero shiftIso
 
 end induced
+
+variable [HasShift D M] [L.CommShift M]
 
 /-- Given an isomorphism of functors `e : L ⋙ F ≅ G` relating functors `L : C ⥤ D`,
 `F : D ⥤ A` and `G : C ⥤ A`, an additive monoid `M`, a family of functors `F' : M → D ⥤ A`

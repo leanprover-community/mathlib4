@@ -3,11 +3,9 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Topology
-import Mathlib.Analysis.NormedSpace.AddTorsorBases
+import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-
-#align_import analysis.convex.measure from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Convex sets are null-measurable
@@ -20,7 +18,7 @@ convex set in `E`. Then the frontier of `s` has measure zero (see `Convex.addHaa
 
 open MeasureTheory MeasureTheory.Measure Set Metric Filter Bornology
 
-open FiniteDimensional (finrank)
+open Module (finrank)
 
 open scoped Topology NNReal ENNReal
 
@@ -33,7 +31,7 @@ namespace Convex
 theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
   /- If `s` is included in a hyperplane, then `frontier s ⊆ closure s` is included in the same
     hyperplane, hence it has measure zero. -/
-  cases' ne_or_eq (affineSpan ℝ s) ⊤ with hspan hspan
+  rcases ne_or_eq (affineSpan ℝ s) ⊤ with hspan | hspan
   · refine measure_mono_null ?_ (addHaar_affineSubspace _ _ hspan)
     exact frontier_subset_closure.trans
       (closure_minimal (subset_affineSpan _ _) (affineSpan ℝ s).closed_of_finiteDimensional)
@@ -61,12 +59,12 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
     `μ (closure s) ≤ μ (interior s)`. -/
   replace hb : μ (interior s) ≠ ∞ := (hb.subset interior_subset).measure_lt_top.ne
   suffices μ (closure s) ≤ μ (interior s) by
-    rwa [frontier, measure_diff interior_subset_closure isOpen_interior.measurableSet hb,
+    rwa [frontier, measure_diff interior_subset_closure isOpen_interior.nullMeasurableSet hb,
       tsub_eq_zero_iff_le]
   /- Due to `Convex.closure_subset_image_homothety_interior_of_one_lt`, for any `r > 1` we have
     `closure s ⊆ homothety x r '' interior s`, hence `μ (closure s) ≤ r ^ d * μ (interior s)`,
     where `d = finrank ℝ E`. -/
-  set d : ℕ := FiniteDimensional.finrank ℝ E
+  set d : ℕ := Module.finrank ℝ E
   have : ∀ r : ℝ≥0, 1 < r → μ (closure s) ≤ ↑(r ^ d) * μ (interior s) := fun r hr ↦ by
     refine (measure_mono <|
       hs.closure_subset_image_homothety_interior_of_one_lt hx r hr).trans_eq ?_
@@ -78,12 +76,10 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
   refine (((ENNReal.continuous_mul_const hb).comp
     (ENNReal.continuous_coe.comp (continuous_pow d))).tendsto' _ _ ?_).mono_left nhdsWithin_le_nhds
   simp
-#align convex.add_haar_frontier Convex.addHaar_frontier
 
 /-- A convex set in a finite dimensional real vector space is null measurable with respect to an
 additive Haar measure on this space. -/
 protected theorem nullMeasurableSet (hs : Convex ℝ s) : NullMeasurableSet s μ :=
   nullMeasurableSet_of_null_frontier (hs.addHaar_frontier μ)
-#align convex.null_measurable_set Convex.nullMeasurableSet
 
 end Convex

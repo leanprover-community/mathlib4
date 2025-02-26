@@ -6,8 +6,6 @@ Authors: Kalle Kytölä
 import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.MeasureTheory.Integral.Layercake
 
-#align_import measure_theory.integral.layercake from "leanprover-community/mathlib"@"08a4542bec7242a5c60f179e4e49de8c0d677b1b"
-
 /-!
 # The integral of the real power of a nonnegative function
 
@@ -37,9 +35,11 @@ namespace MeasureTheory
 
 variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f)
   (f_mble : AEMeasurable f μ) {p : ℝ} (p_pos : 0 < p)
+include f_nn f_mble p_pos
 
 section Layercake
 
+include f_nn f_mble p_pos in
 /-- An application of the layer cake formula / Cavalieri's principle / tail probability formula:
 
 For a nonnegative function `f` on a measure space, the Lebesgue integral of `f` can
@@ -70,12 +70,12 @@ theorem lintegral_rpow_eq_lintegral_meas_le_mul :
                   (μ := μ)
     exact (Measurable.ennreal_ofReal (hf := measurable_id)).comp_aemeasurable
       ((f_mble.pow aux).div_const p)
-#align measure_theory.lintegral_rpow_eq_lintegral_meas_le_mul MeasureTheory.lintegral_rpow_eq_lintegral_meas_le_mul
 
 end Layercake
 
 section LayercakeLT
 
+include f_nn f_mble p_pos in
 /-- An application of the layer cake formula / Cavalieri's principle / tail probability formula:
 
 For a nonnegative function `f` on a measure space, the Lebesgue integral of `f` can
@@ -92,7 +92,6 @@ theorem lintegral_rpow_eq_lintegral_meas_lt_mul :
   filter_upwards [meas_le_ae_eq_meas_lt μ (volume.restrict (Ioi 0)) f]
     with t ht
   rw [ht]
-#align lintegral_rpow_eq_lintegral_meas_lt_mul MeasureTheory.lintegral_rpow_eq_lintegral_meas_lt_mul
 
 end LayercakeLT
 

@@ -1,12 +1,10 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Eric Wieser
+Authors: Kim Morrison, Eric Wieser
 -/
+import Mathlib.Init
 import Batteries.Util.LibraryNote
-import Mathlib.Mathport.Rename
-
-#align_import algebra.hierarchy_design from "leanprover-community/mathlib"@"41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3"
 
 /-!
 # Documentation of the algebraic hierarchy
@@ -141,7 +139,7 @@ etc., we also define "bundled" versions, which carry `category` instances.
 
 These bundled versions are usually named by appending `Cat`,
 so for example we have `AddCommGrp` as a bundled `AddCommGroup`, and `TopCommRingCat`
-(which bundles together `CommRing`, `TopologicalSpace`, and `TopologicalRing`).
+(which bundles together `CommRing`, `TopologicalSpace`, and `IsTopologicalRing`).
 
 These bundled versions have many appealing features:
 * a uniform notation for morphisms `X ⟶ Y`

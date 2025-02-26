@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
+import Mathlib.Init
 import Lean.Elab.ElabRules
+import Lean.DocString
 
 /-!
 #  `extend_doc` command

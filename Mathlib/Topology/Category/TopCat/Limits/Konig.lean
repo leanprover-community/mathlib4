@@ -6,8 +6,6 @@ Authors: Kyle Miller
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 
-#align_import topology.category.Top.limits.konig from "leanprover-community/mathlib"@"dbdf71cee7bb20367cb7e37279c08b0c218cf967"
-
 /-!
 # Topological Kőnig's lemma
 
@@ -30,8 +28,6 @@ discrete topology) in lemmas `nonempty_sections_of_finite_cofiltered_system` and
 
 (See <https://stacks.math.columbia.edu/tag/086J> for the Set version.)
 -/
-
-set_option linter.uppercaseLean3 false
 
 open CategoryTheory
 
@@ -64,7 +60,6 @@ a finite subset of objects and morphisms of `J`.
 def partialSections {J : Type u} [SmallCategory J] (F : J ⥤ TopCat.{v}) {G : Finset J}
     (H : Finset (FiniteDiagramArrow G)) : Set (∀ j, F.obj j) :=
   {u | ∀ {f : FiniteDiagramArrow G} (_ : f ∈ H), F.map f.2.2.2.2 (u f.1) = u f.2.1}
-#align Top.partial_sections TopCat.partialSections
 
 theorem partialSections.nonempty [IsCofilteredOrEmpty J] [h : ∀ j : J, Nonempty (F.obj j)]
     {G : Finset J} (H : Finset (FiniteDiagramArrow G)) : (partialSections F H).Nonempty := by
@@ -78,7 +73,6 @@ theorem partialSections.nonempty [IsCofilteredOrEmpty J] [h : ∀ j : J, Nonempt
   rintro ⟨X, Y, hX, hY, f⟩ hf
   dsimp only
   rwa [dif_pos hX, dif_pos hY, ← comp_app, ← F.map_comp, @IsCofiltered.infTo_commutes _ _ _ G H]
-#align Top.partial_sections.nonempty TopCat.partialSections.nonempty
 
 theorem partialSections.directed :
     Directed Superset fun G : FiniteDiagram J => partialSections F G.2 := by
@@ -101,7 +95,6 @@ theorem partialSections.directed :
       rw [Finset.mem_image]
       exact ⟨f, hf, rfl⟩
     exact hu this
-#align Top.partial_sections.directed TopCat.partialSections.directed
 
 theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
     (H : Finset (FiniteDiagramArrow G)) : IsClosed (partialSections F H) := by
@@ -114,14 +107,7 @@ theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
   rw [this]
   apply isClosed_biInter
   intro f _
-  -- Porting note: can't see through forget
-  have : T2Space ((forget TopCat).obj (F.obj f.snd.fst)) :=
-    inferInstanceAs (T2Space (F.obj f.snd.fst))
-  apply isClosed_eq
-  -- Porting note: used to be a single `continuity` that closed both goals
-  · exact (F.map f.snd.snd.snd.snd).continuous.comp (continuous_apply f.fst)
-  · continuity
-#align Top.partial_sections.closed TopCat.partialSections.closed
+  apply isClosed_eq <;> fun_prop
 
 /-- Cofiltered limits of nonempty compact Hausdorff spaces are nonempty topological spaces.
 -/
@@ -140,10 +126,9 @@ theorem nonempty_limitCone_of_compact_t2_cofiltered_system (F : J ⥤ TopCat.{ma
   intro X Y f
   let G : FiniteDiagram J :=
     ⟨{X, Y},
-      {⟨X, Y, by simp only [true_or_iff, eq_self_iff_true, Finset.mem_insert], by
-          simp only [eq_self_iff_true, or_true_iff, Finset.mem_insert, Finset.mem_singleton], f⟩}⟩
+      {⟨X, Y, by simp only [true_or, eq_self_iff_true, Finset.mem_insert], by
+          simp only [eq_self_iff_true, or_true, Finset.mem_insert, Finset.mem_singleton], f⟩}⟩
   exact hu _ ⟨G, rfl⟩ (Finset.mem_singleton_self _)
-#align Top.nonempty_limit_cone_of_compact_t2_cofiltered_system TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system
 
 end TopologicalKonig
 

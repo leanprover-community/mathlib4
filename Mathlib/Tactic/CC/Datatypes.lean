@@ -3,12 +3,10 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
-import Lean.Meta.CongrTheorems
-import Lean.Meta.Tactic.Rfl
-import Batteries.Data.HashMap.Basic
 import Batteries.Data.RBMap.Basic
 import Mathlib.Lean.Meta.Basic
-import Mathlib.Mathport.Rename
+import Mathlib.Lean.Meta.CongrTheorems
+import Mathlib.Data.Ordering.Basic
 
 /-!
 # Datatypes for `cc`
@@ -85,7 +83,7 @@ Once the `cc` tactic is used a lot in Mathlib, we should profile and see
 if `HashSet` could be more optimal. -/
 abbrev RBExprSet := Batteries.RBSet Expr compare
 
-/-- `CongrTheorem`s equiped with additional infos used by congruence closure modules. -/
+/-- `CongrTheorem`s equipped with additional infos used by congruence closure modules. -/
 structure CCCongrTheorem extends CongrTheorem where
   /-- If `heqResult` is true, then lemma is based on heterogeneous equality
       and the conclusion is a heterogeneous equality. -/
@@ -111,7 +109,7 @@ structure CCCongrTheoremKey where
   deriving BEq, Hashable
 
 /-- Caches used to find corresponding `CCCongrTheorem`s. -/
-abbrev CCCongrTheoremCache := Batteries.HashMap CCCongrTheoremKey (Option CCCongrTheorem)
+abbrev CCCongrTheoremCache := Std.HashMap CCCongrTheoremKey (Option CCCongrTheorem)
 
 /-- Configs used in congruence closure modules. -/
 structure CCConfig where
@@ -132,7 +130,6 @@ structure CCConfig where
   /-- If `true`, we treat values as atomic symbols -/
   values : Bool := false
   deriving Inhabited
-#align cc_config Mathlib.Tactic.CC.CCConfig
 
 /-- An `ACApps` represents either just an `Expr` or applications of an associative and commutative
   binary operator. -/
@@ -156,9 +153,10 @@ scoped instance : Ord ACApps where
     | .ofExpr _, .apps _ _ => .lt
     | .apps _ _, .ofExpr _ => .gt
     | .apps op₁ args₁, .apps op₂ args₂ =>
-      compare op₁ op₂ |>.then <| compare args₁.size args₂.size |>.then <| Id.run do
-        for i in [:args₁.size] do
-          let o := compare args₁[i]! args₂[i]!
+      compare op₁ op₂ |>.then <| compare args₁.size args₂.size |>.dthen fun hs => Id.run do
+        have hs := Batteries.BEqCmp.cmp_iff_eq.mp hs
+        for hi : i in [:args₁.size] do
+          have hi := hi.right; let o := compare args₁[i] (args₂[i]'(hs ▸ hi.1))
           if o != .eq then return o
         return .eq
 
@@ -368,7 +366,7 @@ structure Entry where
       theorem prover. The basic idea is to introduce a counter gmt that records the number of
       heuristic instantiation that have occurred in the current branch. It is incremented after each
       round of heuristic instantiation. The field `mt` records the last time any proper descendant
-      of of thie entry was involved in a merge. -/
+      of this entry was involved in a merge. -/
   mt : Nat
   deriving Inhabited
 
@@ -417,7 +415,7 @@ inductive CongruencesKey
   deriving BEq, Hashable
 
 /-- Maps each expression (via `mkCongruenceKey`) to expressions it might be congruent to. -/
-abbrev Congruences := Batteries.HashMap CongruencesKey (List Expr)
+abbrev Congruences := Std.HashMap CongruencesKey (List Expr)
 
 structure SymmCongruencesKey where
   (h₁ h₂ : Expr)
@@ -428,9 +426,10 @@ structure SymmCongruencesKey where
 The `Name` identifies which relation the congruence is considered for.
 Note that this only works for two-argument relations: `ModEq n` and `ModEq m` are considered the
 same. -/
-abbrev SymmCongruences := Batteries.HashMap SymmCongruencesKey (List (Expr × Name))
+abbrev SymmCongruences := Std.HashMap SymmCongruencesKey (List (Expr × Name))
 
-/-- Stores the root representatives of subsingletons. -/
+/-- Stores the root representatives of subsingletons, this uses `FastSingleton` instead of
+`Subsingleton`. -/
 abbrev SubsingletonReprs := RBExprMap Expr
 
 /-- Stores the root representatives of `.instImplicit` arguments. -/
@@ -464,22 +463,19 @@ structure CCState extends CCConfig where
   /-- Mapping from operators occurring in terms and their canonical
       representation in this module -/
   canOps : RBExprMap Expr := ∅
-  /-- Whether the canonical operator is suppoted by AC. -/
+  /-- Whether the canonical operator is supported by AC. -/
   opInfo : RBExprMap Bool := ∅
   /-- Extra `Entry` information used by the AC part of the tactic. -/
   acEntries : RBExprMap ACEntry := ∅
   /-- Records equality between `ACApps`. -/
   acR : RBACAppsMap (ACApps × DelayedExpr) := ∅
   /-- Returns true if the `CCState` is inconsistent. For example if it had both `a = b` and `a ≠ b`
-      in it.-/
+      in it. -/
   inconsistent : Bool := false
   /-- "Global Modification Time". gmt is a number stored on the `CCState`,
       it is compared with the modification time of a cc_entry in e-matching. See `CCState.mt`. -/
   gmt : Nat := 0
   deriving Inhabited
-#align cc_state Mathlib.Tactic.CC.CCState
-#align cc_state.inconsistent Mathlib.Tactic.CC.CCState.inconsistent
-#align cc_state.gmt Mathlib.Tactic.CC.CCState.gmt
 
 attribute [inherit_doc SubsingletonReprs] CCState.subsingletonReprs
 
@@ -508,7 +504,6 @@ def root (ccs : CCState) (e : Expr) : Expr :=
   match ccs.entries.find? e with
   | some n => n.root
   | none => e
-#align cc_state.root Mathlib.Tactic.CC.CCState.root
 
 /-- Get the next element in the equivalence class.
 Note that if the given `Expr` `e` is not in the graph then it will just return `e`. -/
@@ -516,33 +511,29 @@ def next (ccs : CCState) (e : Expr) : Expr :=
   match ccs.entries.find? e with
   | some n => n.next
   | none => e
-#align cc_state.next Mathlib.Tactic.CC.CCState.next
 
 /-- Check if `e` is the root of the congruence class. -/
 def isCgRoot (ccs : CCState) (e : Expr) : Bool :=
   match ccs.entries.find? e with
   | some n => e == n.cgRoot
   | none => true
-#align cc_state.is_cg_root Mathlib.Tactic.CC.CCState.isCgRoot
 
 /--
 "Modification Time". The field `mt` is used to implement the mod-time optimization introduced by the
 Simplify theorem prover. The basic idea is to introduce a counter `gmt` that records the number of
 heuristic instantiation that have occurred in the current branch. It is incremented after each round
-of heuristic instantiation. The field `mt` records the last time any proper descendant of of thie
+of heuristic instantiation. The field `mt` records the last time any proper descendant of this
 entry was involved in a merge. -/
 def mt (ccs : CCState) (e : Expr) : Nat :=
   match ccs.entries.find? e with
   | some n => n.mt
   | none => ccs.gmt
-#align cc_state.mt Mathlib.Tactic.CC.CCState.mt
 
 /-- Is the expression in an equivalence class with only one element (namely, itself)? -/
 def inSingletonEqc (ccs : CCState) (e : Expr) : Bool :=
   match ccs.entries.find? e with
   | some it => it.next == e
   | none => true
-#align cc_state.in_singlenton_eqc Mathlib.Tactic.CC.CCState.inSingletonEqc
 
 /-- Append to `roots` all the roots of equivalence classes in `ccs`.
 
@@ -593,10 +584,10 @@ def getVarWithLeastOccs (ccs : CCState) (e : ACApps) (inLHS : Bool) : Option Exp
     let mut r := args[0]?
     let mut numOccs := r.casesOn 0 fun r' => ccs.getNumROccs r' inLHS
     for hi : i in [1:args.size] do
-      if (args[i]'hi.2) != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) hi.2)) then
-        let currOccs := ccs.getNumROccs (args[i]'hi.2) inLHS
+      if args[i] != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) hi.2.1)) then
+        let currOccs := ccs.getNumROccs args[i] inLHS
         if currOccs < numOccs then
-          r := (args[i]'hi.2)
+          r := args[i]
           numOccs := currOccs
     return r
   | .ofExpr e => e
@@ -622,7 +613,6 @@ def ppEqc (ccs : CCState) (e : Expr) : MessageData := Id.run do
   until it == e
   let l := lr.reverse
   return bracket "{" (group <| joinSep l (ofFormat ("," ++ .line))) "}"
-#align cc_state.pp_eqc Mathlib.Tactic.CC.CCState.ppEqc
 
 /-- Pretty print the entire cc graph.
 If the `nonSingleton` argument is set to `true` then singleton equivalence classes will be
@@ -632,7 +622,6 @@ def ppEqcs (ccs : CCState) (nonSingleton : Bool := true) : MessageData :=
   let a := roots.map (fun root => ccs.ppEqc root)
   let l := a.toList
   bracket "{" (group <| joinSep l (ofFormat ("," ++ .line))) "}"
-#align cc_state.pp_core Mathlib.Tactic.CC.CCState.ppEqcs
 
 def ppParentOccsAux (ccs : CCState) (e : Expr) : MessageData :=
   match ccs.parents.find? e with
@@ -679,7 +668,7 @@ end CCState
 
 /-- The congruence closure module (optionally) uses a normalizer.
     The idea is to use it (if available) to normalize auxiliary expressions
-    produced by internal propagation rules (e.g., subsingleton propagator).  -/
+    produced by internal propagation rules (e.g., subsingleton propagator). -/
 structure CCNormalizer where
   normalize : Expr → MetaM Expr
 
@@ -703,5 +692,12 @@ structure CCStructure extends CCState where
   phandler : Option CCPropagationHandler := none
   cache : CCCongrTheoremCache := ∅
   deriving Inhabited
+
+initialize
+  registerTraceClass `Meta.Tactic.cc.merge
+  registerTraceClass `Meta.Tactic.cc.failure
+  registerTraceClass `Debug.Meta.Tactic.cc
+  registerTraceClass `Debug.Meta.Tactic.cc.ac
+  registerTraceClass `Debug.Meta.Tactic.cc.parentOccs
 
 end Mathlib.Tactic.CC

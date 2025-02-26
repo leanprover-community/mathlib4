@@ -3,8 +3,9 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Module.LocalizedModuleIntegers
-import Mathlib.RingTheory.LocalProperties
+import Mathlib.Algebra.Module.LocalizedModule.Int
+import Mathlib.RingTheory.Localization.Algebra
+import Mathlib.RingTheory.RingHom.Finite
 
 /-!
 
@@ -26,8 +27,6 @@ In this file we establish behaviour of `Module.Finite` under localizations.
 
 universe u v w t
 
-open Classical
-
 namespace Module.Finite
 
 section
@@ -38,7 +37,9 @@ variable {M : Type w} [AddCommMonoid M] [Module R M]
 variable {Mₚ : Type t} [AddCommMonoid Mₚ] [Module R Mₚ] [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ]
 variable (f : M →ₗ[R] Mₚ) [IsLocalizedModule S f]
 
+include S f in
 lemma of_isLocalizedModule [Module.Finite R M] : Module.Finite Rₚ Mₚ := by
+  classical
   obtain ⟨T, hT⟩ := ‹Module.Finite R M›
   use T.image f
   rw [eq_top_iff]
@@ -52,14 +53,13 @@ lemma of_isLocalizedModule [Module.Finite R M] : Module.Finite Rₚ Mₚ := by
       (Submodule.span Rₚ (f '' T)).restrictScalars R := by
     rw [Submodule.span_le]; exact Submodule.subset_span
   convert (Submodule.span Rₚ (f '' T)).smul_mem
-    (IsLocalization.mk' Rₚ (1 : R) m) (H this) using 1
+    (IsLocalization.mk' Rₚ (1 : R) m) (H this) using 0
   · rw [← hyx, ← IsLocalizedModule.mk'_one S, IsLocalizedModule.mk'_smul_mk']
     simp
-  · simp
 
 end
 
-variable {R : Type u} [CommRing R] (S : Submonoid R) {M : Type w} [AddCommMonoid M] [Module R M]
+variable {R : Type u} [CommRing R] {M : Type w} [AddCommMonoid M] [Module R M]
 
 /--
 If there exists a finite set `{ r }` of `R` such that `Mᵣ` is `Rᵣ`-finite for each `r`,
@@ -78,6 +78,7 @@ theorem of_localizationSpan_finite' (t : Finset R) (ht : Ideal.span (t : Set R) 
     (f : ∀ (g : t), M →ₗ[R] Mₚ g) [∀ (g : t), IsLocalizedModule (Submonoid.powers g.val) (f g)]
     (H : ∀ (g : t), Module.Finite (Rₚ g) (Mₚ g)) :
     Module.Finite R M := by
+  classical
   constructor
   choose s₁ s₂ using (fun g ↦ (H g).1)
   let sf := fun x : t ↦
@@ -145,3 +146,37 @@ theorem of_localizationSpan (t : Set R) (ht : Ideal.span t = ⊤)
   let f (g : t) : M →ₗ[R] LocalizedModule (Submonoid.powers g.val) M :=
     LocalizedModule.mkLinearMap (Submonoid.powers g.val) M
   of_localizationSpan' t ht f H
+
+end Finite
+
+end Module
+
+namespace Ideal
+
+variable {R : Type u} [CommRing R]
+
+/-- If `I` is an ideal such that there exists a set `{ r }` of `R` such
+that the image of `I` in `Rᵣ` is finitely generated for each `r`, then `I` is finitely
+generated. -/
+lemma fg_of_localizationSpan {I : Ideal R} (t : Set R) (ht : Ideal.span t = ⊤)
+    (H : ∀ (g : t), (I.map (algebraMap R (Localization.Away g.val))).FG) : I.FG := by
+  apply Module.Finite.iff_fg.mp
+  let k (g : t) : I →ₗ[R] (I.map (algebraMap R (Localization.Away g.val))) :=
+    Algebra.idealMap I (S := Localization.Away g.val)
+  exact Module.Finite.of_localizationSpan' t ht k (fun g ↦ Module.Finite.iff_fg.mpr (H g))
+
+end Ideal
+
+variable {R : Type u} [CommRing R] {S : Type v} [CommRing S] {f : R →+* S}
+
+/--
+To check that the kernel of a ring homomorphism is finitely generated,
+it suffices to check this after localizing at a spanning set of the source.
+-/
+lemma RingHom.ker_fg_of_localizationSpan (t : Set R) (ht : Ideal.span t = ⊤)
+    (H : ∀ g : t, (RingHom.ker (Localization.awayMap f g.val)).FG) :
+    (RingHom.ker f).FG := by
+  apply Ideal.fg_of_localizationSpan t ht
+  intro g
+  rw [← IsLocalization.ker_map (Localization.Away (f g.val)) f (Submonoid.map_powers f g.val)]
+  exact H g

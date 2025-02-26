@@ -5,8 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Module.Submodule.Ker
 
-#align_import linear_algebra.basic from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
-
 /-!
 # The submodule of elements `x : M` such that `f x = g x`
 
@@ -46,19 +44,16 @@ def eqLocus (f g : F) : Submodule R M :=
   { (f : M →+ M₂).eqLocusM g with
     carrier := { x | f x = g x }
     smul_mem' := fun {r} {x} (hx : _ = _) => show _ = _ by
-      -- Note: #8386 changed `map_smulₛₗ` into `map_smulₛₗ _`
+      -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 changed `map_smulₛₗ` into `map_smulₛₗ _`
       simpa only [map_smulₛₗ _] using congr_arg (τ₁₂ r • ·) hx }
-#align linear_map.eq_locus LinearMap.eqLocus
 
 @[simp]
 theorem mem_eqLocus {x : M} {f g : F} : x ∈ eqLocus f g ↔ f x = g x :=
   Iff.rfl
-#align linear_map.mem_eq_locus LinearMap.mem_eqLocus
 
 theorem eqLocus_toAddSubmonoid (f g : F) :
     (eqLocus f g).toAddSubmonoid = (f : M →+ M₂).eqLocusM g :=
   rfl
-#align linear_map.eq_locus_to_add_submonoid LinearMap.eqLocus_toAddSubmonoid
 
 @[simp]
 theorem eqLocus_eq_top {f g : F} : eqLocus f g = ⊤ ↔ f = g := by
@@ -66,15 +61,16 @@ theorem eqLocus_eq_top {f g : F} : eqLocus f g = ⊤ ↔ f = g := by
 
 @[simp]
 theorem eqLocus_same (f : F) : eqLocus f f = ⊤ := eqLocus_eq_top.2 rfl
-#align linear_map.eq_locus_same LinearMap.eqLocus_same
 
 theorem le_eqLocus {f g : F} {S : Submodule R M} : S ≤ eqLocus f g ↔ Set.EqOn f g S := Iff.rfl
 
+include τ₁₂ in
 theorem eqOn_sup {f g : F} {S T : Submodule R M} (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) :
     Set.EqOn f g ↑(S ⊔ T) := by
   rw [← le_eqLocus] at hS hT ⊢
   exact sup_le hS hT
 
+include τ₁₂ in
 theorem ext_on_codisjoint {f g : F} {S T : Submodule R M} (hST : Codisjoint S T)
     (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) : f = g :=
   DFunLike.ext _ _ fun _ ↦ eqOn_sup hS hT <| hST.eq_top.symm ▸ trivial
@@ -94,7 +90,6 @@ open Submodule
 
 theorem eqLocus_eq_ker_sub (f g : M →ₛₗ[τ₁₂] M₂) : eqLocus f g = ker (f - g) :=
   SetLike.ext fun _ => sub_eq_zero.symm
-#align linear_map.eq_locus_eq_ker_sub LinearMap.eqLocus_eq_ker_sub
 
 end Ring
 
