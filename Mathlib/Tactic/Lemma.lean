@@ -14,7 +14,7 @@ open Lean
 
 -- higher priority to override the one in Batteries
 /-- `lemma` means the same as `theorem`. It is used to denote "less important" theorems -/
-syntax (name := lemma) (priority := default + 1) declModifiers
+syntax (name := «lemma») (priority := default + 1) declModifiers
   group("lemma " declId ppIndent(declSig) declVal) : command
 
 /-- Implementation of the `lemma` command, by macro expansion to `theorem`. -/

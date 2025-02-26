@@ -1,0 +1,128 @@
+import Mathlib.Tactic.Linter.GeneralizeTypeClass
+-- import Mathlib.Algebra.Module.Defs
+
+class Parent where
+  parent_thm : False
+class Child extends Parent where
+  child_thm : False
+class Child2 extends Child where
+  child2_thm : False
+
+class abbrev ChildClassAbbrev := Child, Child2
+abbrev ChildAbbrev := Child
+
+/-- info: Generalize type class: Parent -/
+#guard_msgs in
+theorem basic1 [Child] : False := Parent.parent_thm
+
+namespace ANameSpace
+/-- info: Generalize type class: Parent -/
+#guard_msgs in
+theorem basic2 [C : Child] : False := C.parent_thm
+/-- info: Generalize type class: Parent -/
+#guard_msgs in
+protected theorem basic3 [Child2] : False := Parent.parent_thm
+end ANameSpace
+
+/-- info: Generalize type class: Parent -/
+#guard_msgs in
+theorem basic4 [Child2] : False := Parent.parent_thm
+/-- info: Generalize type class: Parent -/
+#guard_msgs in
+private theorem basic5 [Child2] : False := Parent.parent_thm
+/-- info: Generalize type class: Parent -/
+#guard_msgs in
+theorem basic6 [ChildClassAbbrev] : False := Parent.parent_thm
+
+theorem basic7 [Child] : False := Child.child_thm
+theorem basic8 [C : Child] : False := C.child_thm
+
+-- Ensure we don't 'generalize' type classes in hypotheses
+class HypothesisParent where
+  parent_thm : True
+class HypothesisChild extends HypothesisParent where
+  child_thm : False
+
+/---/
+#guard_msgs in
+theorem dont_generalize_hypotheses_helper (_ : ∀ [HypothesisChild], False) : True := True.intro
+theorem dont_generalize_hypotheses : True := by
+  apply dont_generalize_hypotheses_helper
+  intro inst
+  exact inst.child_thm
+
+class AnotherParent where
+  parent_thm : False
+class AnotherChild extends AnotherParent where
+  child_thm : False
+
+class MultipleParents extends Child, AnotherChild
+
+/-- info: Generalize type class: AnotherParent
+---
+info: Generalize type class: Parent -/
+#guard_msgs in
+theorem multiple_parents [C : MultipleParents] : False := C.parent_thm
+
+class ParentArg (T : Type) where
+  parent_thm : False
+class ParentArg2 (T : Type) where
+  parent_thm2 : False
+class ChildArg (T : Type) extends ParentArg T, ParentArg2 T where
+  child_thm : False
+
+class abbrev ChildArgClassAbbrev (T : Type) := ChildArg T
+
+/-- info: Generalize type class: ParentArg -/
+#guard_msgs in
+theorem argument1 [C : ChildArgClassAbbrev Nat] : False := C.parent_thm
+/-- info: Generalize type class: ParentArg
+---
+info: Generalize type class: ParentArg2 -/
+#guard_msgs in
+theorem argument2 [C : ChildArg Nat] : False := by
+  try exact C.parent_thm
+  try exact C.parent_thm2
+theorem argument3 [C : ChildArg Nat] : False := C.child_thm
+/-- info: Generalize type class: ParentArg -/
+#guard_msgs in
+theorem argument4 [C : ChildArg Nat] : False := C.parent_thm
+/-- info: Generalize type class: ParentArg2 -/
+#guard_msgs in
+theorem argument5 [C : ChildArg Nat] : False := C.parent_thm2
+
+/-- info: Generalize type class: AddCommMonoid -/
+#guard_msgs in
+theorem ring_module1 [X : Semiring R] [AddCommGroup M] [Y : Module R M] : True := by
+  let b := Y.add_smul
+  exact True.intro
+/---/
+#guard_msgs in
+theorem ring_module2 [X : CommRing R] [AddCommGroup M] [Y : Module R M] : True := by
+  let a := X.toCommSemiring
+  let b := Y.add_smul
+  exact True.intro
+
+namespace VariableTest
+
+class NatParent where
+  nat : Nat
+class NatChild extends NatParent
+def helper [N : NatChild] : Nat × Nat := ⟨0, N.nat⟩
+variable {N₁ : NatChild}
+/---/
+#guard_msgs in
+theorem variable1 [D : VariableTest.NatChild] : helper.1 = 0 := rfl
+
+#print variable1
+
+end VariableTest
+
+------ TODO
+
+section SectionTest
+variable [B : Child]
+/-- info: Generalize type class: Parent -/
+--#guard_msgs in
+theorem FAIL : False := Parent.parent_thm
+end SectionTest

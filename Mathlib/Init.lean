@@ -12,6 +12,7 @@ import Mathlib.Tactic.Linter.OldObtain
 import Mathlib.Tactic.Linter.UnusedTacticExtension
 import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.Linter.Style
+import Mathlib.Tactic.Linter.GeneralizeTypeClass
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.

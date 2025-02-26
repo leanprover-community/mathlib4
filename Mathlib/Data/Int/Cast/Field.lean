@@ -5,6 +5,7 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Tactic.Linter.GeneralizeTypeClass
 
 /-!
 # Cast of integers into fields
@@ -23,6 +24,7 @@ open Nat
 
 variable {α : Type*}
 
+set_option linter.generalizeTypeClass false in
 /-- Auxiliary lemma for norm_cast to move the cast `-↑n` upwards to `↑-↑n`.
 
 (The restriction to `DivisionRing` is necessary, otherwise this would also apply in the case where

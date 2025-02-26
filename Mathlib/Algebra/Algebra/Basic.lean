@@ -12,6 +12,7 @@ import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Int.CharZero
+import Mathlib.Tactic.Linter.GeneralizeTypeClass
 
 /-!
 # Further basic results about `Algebra`.
