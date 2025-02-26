@@ -34,7 +34,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-open Category CartesianClosed MonoidalCategory ChosenFiniteProducts
+open Category CartesianClosed MonoidalCategory ChosenFiniteProducts TwoSquare
 
 universe v u u'
 
@@ -53,8 +53,7 @@ of the adjunction.
 We will show that if `C` and `D` are cartesian closed, then this morphism is an isomorphism for all
 `A` iff `F` is a cartesian closed functor, i.e. it preserves exponentials.
 -/
-def frobeniusMorphism (h : L ⊣ F) (A : C) :
-    tensorLeft (F.obj A) ⋙ L ⟶ L ⋙ tensorLeft A :=
+def frobeniusMorphism (h : L ⊣ F) (A : C) : TwoSquare (tensorLeft (F.obj A)) L L (tensorLeft A) :=
   prodComparisonNatTrans L (F.obj A) ≫ whiskerLeft _ ((curriedTensor C).map (h.counit.app _))
 
 /-- If `F` is full and faithful and has a left adjoint `L` which preserves binary products, then the
@@ -62,8 +61,8 @@ Frobenius morphism is an isomorphism.
 -/
 instance frobeniusMorphism_iso_of_preserves_binary_products (h : L ⊣ F) (A : C)
     [Limits.PreservesLimitsOfShape (Discrete Limits.WalkingPair) L] [F.Full] [F.Faithful] :
-    IsIso (frobeniusMorphism F h A) :=
-  suffices ∀ (X : D), IsIso ((frobeniusMorphism F h A).app X) from NatIso.isIso_of_isIso_app _
+    IsIso (frobeniusMorphism F h A).out :=
+  suffices ∀ (X : D), IsIso ((frobeniusMorphism F h A).out.app X) from NatIso.isIso_of_isIso_app _
   fun B ↦ by dsimp [frobeniusMorphism]; infer_instance
 
 variable [CartesianClosed C] [CartesianClosed D]
@@ -72,11 +71,11 @@ variable [Limits.PreservesLimitsOfShape (Discrete Limits.WalkingPair) F]
 /-- The exponential comparison map.
 `F` is a cartesian closed functor if this is an iso for all `A`.
 -/
-def expComparison (A : C) : exp A ⋙ F ⟶ F ⋙ exp (F.obj A) :=
+def expComparison (A : C) : TwoSquare (exp A) F F (exp (F.obj A)) :=
   mateEquiv (exp.adjunction A) (exp.adjunction (F.obj A)) (prodComparisonNatIso F A).inv
 
 theorem expComparison_ev (A B : C) :
-    F.obj A ◁ ((expComparison F A).app B) ≫ (exp.ev (F.obj A)).app (F.obj B) =
+    F.obj A ◁ ((expComparison F A).out.app B) ≫ (exp.ev (F.obj A)).app (F.obj B) =
       inv (prodComparison F _ _) ≫ F.map ((exp.ev _).app _) := by
   convert mateEquiv_counit _ _ (prodComparisonNatIso F A).inv B using 2
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note: was `ext`
@@ -84,7 +83,7 @@ theorem expComparison_ev (A B : C) :
     IsIso.hom_inv_id]
 
 theorem coev_expComparison (A B : C) :
-    F.map ((exp.coev A).app B) ≫ (expComparison F A).app (A ⊗ B) =
+    F.map ((exp.coev A).app B) ≫ (expComparison F A).out.app (A ⊗ B) =
       (exp.coev _).app (F.obj B) ≫ (exp (F.obj A)).map (inv (prodComparison F A B)) := by
   convert unit_mateEquiv _ _ (prodComparisonNatIso F A).inv B using 3
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was `ext`
@@ -92,14 +91,14 @@ theorem coev_expComparison (A B : C) :
   simp
 
 theorem uncurry_expComparison (A B : C) :
-    CartesianClosed.uncurry ((expComparison F A).app B) =
+    CartesianClosed.uncurry ((expComparison F A).out.app B) =
       inv (prodComparison F _ _) ≫ F.map ((exp.ev _).app _) := by
   rw [uncurry_eq, expComparison_ev]
 
 /-- The exponential comparison map is natural in `A`. -/
 theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
-    expComparison F A ≫ whiskerLeft _ (pre (F.map f)) =
-      whiskerRight (pre f) _ ≫ expComparison F A' := by
+    (expComparison F A).out ≫ whiskerLeft _ (pre (F.map f)) =
+      whiskerRight (pre f) _ ≫ (expComparison F A').out := by
   unfold expComparison pre
   have vcomp1 := mateEquiv_conjugateEquiv_vcomp
     (exp.adjunction A) (exp.adjunction (F.obj A)) (exp.adjunction (F.obj A'))
@@ -107,8 +106,8 @@ theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
   have vcomp2 := conjugateEquiv_mateEquiv_vcomp
     (exp.adjunction A) (exp.adjunction A') (exp.adjunction (F.obj A'))
     (((curriedTensor C).map f)) ((prodComparisonNatIso F A').inv)
-  unfold leftAdjointSquareConjugate.vcomp rightAdjointSquareConjugate.vcomp at vcomp1
-  unfold leftAdjointConjugateSquare.vcomp rightAdjointConjugateSquare.vcomp at vcomp2
+  unfold TwoSquare.whiskerRight TwoSquare.whiskerBottom at vcomp1
+  unfold TwoSquare.whiskerLeft TwoSquare.whiskerTop at vcomp2
   rw [← vcomp1, ← vcomp2]
   apply congr_arg
   ext B
@@ -122,19 +121,19 @@ theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
 `exp_comparison F A` is an isomorphism
 -/
 class CartesianClosedFunctor : Prop where
-  comparison_iso : ∀ A, IsIso (expComparison F A)
+  comparison_iso : ∀ A, IsIso (expComparison F A).out
 
 attribute [instance] CartesianClosedFunctor.comparison_iso
 
 theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
     conjugateEquiv (h.comp (exp.adjunction A)) ((exp.adjunction (F.obj A)).comp h)
-        (frobeniusMorphism F h A) =
-      expComparison F A := by
+        (frobeniusMorphism F h A).out = (expComparison F A).out := by
   unfold expComparison frobeniusMorphism
   have conjeq := iterated_mateEquiv_conjugateEquiv h h
     (exp.adjunction (F.obj A)) (exp.adjunction A)
     (prodComparisonNatTrans L (F.obj A) ≫ whiskerLeft L ((curriedTensor C).map (h.counit.app A)))
   rw [← conjeq]
+  congr 1
   apply congr_arg
   ext B
   unfold mateEquiv
@@ -163,7 +162,7 @@ If the exponential comparison transformation (at `A`) is an isomorphism, then th
 at `A` is an isomorphism.
 -/
 theorem frobeniusMorphism_iso_of_expComparison_iso (h : L ⊣ F) (A : C)
-    [i : IsIso (expComparison F A)] : IsIso (frobeniusMorphism F h A) := by
+    [i : IsIso (expComparison F A).out] : IsIso (frobeniusMorphism F h A).out := by
   rw [← frobeniusMorphism_mate F h] at i
   exact @conjugateEquiv_of_iso _ _ _ _ _ _ _ _ _ _ _ i
 
@@ -172,7 +171,7 @@ If the Frobenius morphism at `A` is an isomorphism, then the exponential compari
 (at `A`) is an isomorphism.
 -/
 theorem expComparison_iso_of_frobeniusMorphism_iso (h : L ⊣ F) (A : C)
-    [i : IsIso (frobeniusMorphism F h A)] : IsIso (expComparison F A) := by
+    [i : IsIso (frobeniusMorphism F h A)] : IsIso (expComparison F A).out := by
   rw [← frobeniusMorphism_mate F h]; infer_instance
 
 open Limits in
