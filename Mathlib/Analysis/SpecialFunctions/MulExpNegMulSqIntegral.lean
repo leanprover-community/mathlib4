@@ -33,9 +33,8 @@ contains results on the integral of `mulExpNegMulSq g ε` with respect to a fini
 `dist_integral_mulExpNegMulSq_comp_le`: For a subalgebra of functions `A`, if for any `g ∈ A` the
 integral with respect to two finite measures `P, P'` coincide, then the difference of the integrals
 of `mulExpNegMulSq ε ∘ g` with respect to `P, P'` is bounded by `6 * sqrt ε`.
-This will be a key ingredient in the proof of theorem `ext_of_forall_mem_subalgebra_integral_eq`
-(future work), where it is shown that a subalgebra of functions that separates points separates
-finite measures.
+This is a key ingredient in the proof of theorem `ext_of_forall_mem_subalgebra_integral_eq`, where
+it is shown that a subalgebra of functions that separates points separates finite measures.
 -/
 
 open MeasureTheory Real NNReal ENNReal BoundedContinuousFunction Filter
@@ -85,7 +84,8 @@ theorem tendsto_integral_mul_one_plus_inv_smul_sq_pow (g : E →ᵇ ℝ) (hε : 
   · obtain ⟨N, hgN⟩ := exists_nat_gt (ε * (norm g * norm g))
     use norm g
     rw [eventually_atTop]
-    use N; intro n hn
+    use N
+    intro n hn
     have hnpos : 0 < (n : ℝ) := by
       apply lt_of_lt_of_le (lt_of_le_of_lt _ hgN) (Nat.cast_le.mpr hn)
       exact (mul_nonneg (le_of_lt hε) (mul_self_nonneg (norm g)))
