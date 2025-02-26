@@ -81,43 +81,43 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
   (Commute.add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero h₁ h₄ h₅ (by omega)),
   ← exp_eq_truncated R A a h₄, ← exp_eq_truncated R A b h₅]
   have s₁ := calc
-      ∑ i ∈ range (2 * N + 1), (i.factorial : R)⁻¹ • (a + b) ^ i
-          = ∑ i ∈ range (2 * N + 1), (i.factorial : R)⁻¹ •
-            (∑ j ∈ range (i + 1), a ^ j * b ^ (i - j) * i.choose j) := by
-        apply sum_congr rfl
-        intro i _
-        rw [Commute.add_pow h₁ i]
-      _ = ∑ i ∈ range (2 * N + 1), (∑ j ∈ range (i + 1), ((j.factorial : R)⁻¹ *
-            ((i - j).factorial : R)⁻¹) • (a ^ j * b ^ (i - j))) := by
-        apply sum_congr rfl
-        intro i hi
-        rw [smul_sum]
-        apply sum_congr rfl
-        intro j hj
-        simp only [mem_range] at hi hj
-        suffices (i.factorial : R)⁻¹ * (i.choose j) =
-            ((j.factorial : R)⁻¹ * ((i - j).factorial : R)⁻¹) by
-          rw [← Nat.cast_commute (i.choose j), ← this, ← Algebra.mul_smul_comm, ← nsmul_eq_mul,
-          mul_smul, ← smul_assoc, smul_comm, smul_assoc]
-          norm_cast
-        rw [Nat.choose_eq_factorial_div_factorial (Nat.le_of_lt_succ hj), Nat.cast_div, mul_div]
-        · rw [inv_mul_cancel₀ (mod_cast Nat.factorial_ne_zero i), Nat.cast_mul, one_div,
-          mul_inv_rev, mul_comm]
-        · exact Nat.factorial_mul_factorial_dvd_factorial (Nat.le_of_lt_succ hj)
-        rw [Nat.cast_mul]
-        apply mul_ne_zero <;> exact_mod_cast Nat.factorial_ne_zero _
-      _ = ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) with ij.1 + ij.2 <= 2 * N,
-            ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
-        rw [sum_sigma']
-        apply sum_bij (fun ⟨i, j⟩ _ => (j, i - j))
-        · simp only [mem_sigma, mem_range, product_eq_sprod, mem_filter, mem_product, and_imp]
-          (intro _ _ _; omega)
-        · simp only [mem_sigma, mem_range, Prod.mk.injEq, and_imp]
-          (intro _ _ _ _ _ _ h _; exact Sigma.ext (by omega) (heq_of_eq h))
-        · simp only [product_eq_sprod, mem_filter, mem_product, mem_range, mem_sigma, exists_prop,
-            Sigma.exists, and_imp, Prod.forall, Prod.mk.injEq]
-          (intro h₁ h₂ _ _ _; use h₁ + h₂, h₁; omega)
-        simp only [mem_sigma, mem_range, implies_true]
+    ∑ i ∈ range (2 * N + 1), (i.factorial : R)⁻¹ • (a + b) ^ i =
+      ∑ i ∈ range (2 * N + 1), (i.factorial : R)⁻¹ •
+        (∑ j ∈ range (i + 1), a ^ j * b ^ (i - j) * i.choose j) := by
+      apply sum_congr rfl
+      intro i _
+      rw [Commute.add_pow h₁ i]
+    _ = ∑ i ∈ range (2 * N + 1), (∑ j ∈ range (i + 1), ((j.factorial : R)⁻¹ *
+          ((i - j).factorial : R)⁻¹) • (a ^ j * b ^ (i - j))) := by
+      apply sum_congr rfl
+      intro i hi
+      rw [smul_sum]
+      apply sum_congr rfl
+      intro j hj
+      simp only [mem_range] at hi hj
+      suffices (i.factorial : R)⁻¹ * (i.choose j) =
+          ((j.factorial : R)⁻¹ * ((i - j).factorial : R)⁻¹) by
+        rw [← Nat.cast_commute (i.choose j), ← this, ← Algebra.mul_smul_comm, ← nsmul_eq_mul,
+        mul_smul, ← smul_assoc, smul_comm, smul_assoc]
+        norm_cast
+      rw [Nat.choose_eq_factorial_div_factorial (Nat.le_of_lt_succ hj), Nat.cast_div, mul_div]
+      · rw [inv_mul_cancel₀ (mod_cast Nat.factorial_ne_zero i), Nat.cast_mul, one_div,
+        mul_inv_rev, mul_comm]
+      · exact Nat.factorial_mul_factorial_dvd_factorial (Nat.le_of_lt_succ hj)
+      rw [Nat.cast_mul]
+      apply mul_ne_zero <;> exact_mod_cast Nat.factorial_ne_zero _
+    _ = ∑ ij ∈ (range (2 * N + 1)).product (range (2 * N + 1)) with ij.1 + ij.2 <= 2 * N,
+          ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
+      rw [sum_sigma']
+      apply sum_bij (fun ⟨i, j⟩ _ => (j, i - j))
+      · simp only [mem_sigma, mem_range, product_eq_sprod, mem_filter, mem_product, and_imp]
+        (intro _ _ _; omega)
+      · simp only [mem_sigma, mem_range, Prod.mk.injEq, and_imp]
+        (intro _ _ _ _ _ _ h _; exact Sigma.ext (by omega) (heq_of_eq h))
+      · simp only [product_eq_sprod, mem_filter, mem_product, mem_range, mem_sigma, exists_prop,
+          Sigma.exists, and_imp, Prod.forall, Prod.mk.injEq]
+        (intro h₁ h₂ _ _ _; use h₁ + h₂, h₁; omega)
+      simp only [mem_sigma, mem_range, implies_true]
   have z₁ : ∑ ij ∈ ((range (2 * N + 1)).product (range (2 * N + 1))) with ¬ ij.1 + ij.2 ≤ 2 * N,
       ((ij.1.factorial : R)⁻¹ * (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 :=
     sum_eq_zero fun i hi ↦ by
@@ -154,23 +154,23 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
   simp only [product_eq_sprod] at restrict
   rw [restrict] at s₁
   have s₂ := calc
-      (∑ i ∈ range (N + 1), (i.factorial : R)⁻¹ • a ^ i) * ∑ i ∈ range (N + 1),
-        (i.factorial : R)⁻¹ • b ^ i =
-      ∑ i ∈ range (N + 1), ∑ j ∈ range (N + 1), ((i.factorial : R)⁻¹ * (j.factorial : R)⁻¹) •
-        (a ^ i * b ^ j) := by
-        rw [sum_mul_sum]
-        apply sum_congr rfl
-        intro _ _
-        apply sum_congr rfl
-        intro _ _
-        rw [smul_mul_assoc, Algebra.mul_smul_comm, smul_smul]
-      _ = ∑ ij ∈ (range (N + 1)).product (range (N + 1)), ((ij.1.factorial : R)⁻¹ *
+    (∑ i ∈ range (N + 1), (i.factorial : R)⁻¹ • a ^ i) * ∑ i ∈ range (N + 1),
+      (i.factorial : R)⁻¹ • b ^ i =
+        ∑ i ∈ range (N + 1), ∑ j ∈ range (N + 1), ((i.factorial : R)⁻¹ * (j.factorial : R)⁻¹) •
+          (a ^ i * b ^ j) := by
+      rw [sum_mul_sum]
+      apply sum_congr rfl
+      intro _ _
+      apply sum_congr rfl
+      intro _ _
+      rw [smul_mul_assoc, Algebra.mul_smul_comm, smul_smul]
+    _ = ∑ ij ∈ (range (N + 1)).product (range (N + 1)), ((ij.1.factorial : R)⁻¹ *
           (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
-        rw [sum_sigma']
-        apply sum_bijective (fun ⟨i, j⟩ => (i, j))
-        exact ⟨fun ⟨i, j⟩ ⟨i', j'⟩ h => by cases h; rfl, fun ⟨i, j⟩ => ⟨⟨i, j⟩, rfl⟩⟩
-        · simp only [mem_sigma, product_eq_sprod, mem_product, implies_true]
-        simp only [implies_true]
+      rw [sum_sigma']
+      apply sum_bijective (fun ⟨i, j⟩ => (i, j))
+      exact ⟨fun ⟨i, j⟩ ⟨i', j'⟩ h => by cases h; rfl, fun ⟨i, j⟩ => ⟨⟨i, j⟩, rfl⟩⟩
+      · simp only [mem_sigma, product_eq_sprod, mem_product, implies_true]
+      simp only [implies_true]
   simp only [product_eq_sprod] at s₂
   rw [s₂.symm] at s₁
   exact s₁
