@@ -77,9 +77,9 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
   let N := n₁ ⊔ n₂
   have h₄ : a ^ (N + 1) = 0 := pow_eq_zero_of_le (by omega) hn₁
   have h₅ : b ^ (N + 1) = 0 := pow_eq_zero_of_le (by omega) hn₂
-  have h₆ : (a + b) ^ (2 * N + 1) = 0 :=
-    Commute.add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero h₁ h₄ h₅ (by omega)
-  rw [← exp_eq_truncated R A (a + b) h₆, ← exp_eq_truncated R A a h₄, ← exp_eq_truncated R A b h₅]
+  rw [← exp_eq_truncated R A (k := 2 * N + 1) (a + b)
+  (Commute.add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero h₁ h₄ h₅ (by omega)),
+  ← exp_eq_truncated R A a h₄, ← exp_eq_truncated R A b h₅]
   have s₁ :=
     calc
       ∑ i ∈ range (2 * N + 1), (i.factorial : R)⁻¹ • (a + b) ^ i
