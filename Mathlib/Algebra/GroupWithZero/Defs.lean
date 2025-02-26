@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.SplitIfs
+import Mathlib.Logic.Basic
 
 /-!
 # Typeclasses for groups with an adjoined zero element

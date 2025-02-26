@@ -50,7 +50,7 @@ assert_not_imported Mathlib.Algebra.NeZero
 
 assert_not_exists MonoidHom
 
-open Function Set
+open Function
 
 universe u
 
