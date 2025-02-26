@@ -266,7 +266,7 @@ its accumulation points below the ordinal. -/
 def IsClosedBelow (S : Set Ordinal) (o : Ordinal) : Prop :=
   IsClosed (Iio o ↓∩ S)
 
-theorem isAcc_iff (o : Ordinal) (S : Set Ordinal) : o.IsAcc S ↔
+theorem isAcc_iff {o : Ordinal} {S : Set Ordinal} : o.IsAcc S ↔
     o ≠ 0 ∧ ∀ p < o, (S ∩ Ioo p o).Nonempty := by
   dsimp [IsAcc]
   constructor
@@ -290,10 +290,10 @@ theorem isAcc_iff (o : Ordinal) (S : Set Ordinal) : o.IsAcc S ↔
     exact ⟨⟨hl.2 ⟨hx.2.1, hx.2.2.le⟩, hx.1⟩, hx.2.2.ne⟩
 
 theorem IsAcc.forall_lt {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) :
-    ∀ p < o, (S ∩ Ioo p o).Nonempty := ((isAcc_iff _ _).mp h).2
+    ∀ p < o, (S ∩ Ioo p o).Nonempty := (isAcc_iff.mp h).2
 
 theorem IsAcc.pos {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) :
-    0 < o := Ordinal.pos_iff_ne_zero.mpr ((isAcc_iff _ _).mp h).1
+    0 < o := Ordinal.pos_iff_ne_zero.mpr (isAcc_iff.mp h).1
 
 theorem IsAcc.isLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsLimit o := by
   rw [isAcc_iff] at h
