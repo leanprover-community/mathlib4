@@ -18,7 +18,7 @@ its left adjoint provide a construction of colimits in the category of small cat
 
 noncomputable section
 
-universe v u
+universe v
 
 open CategoryTheory.Limits
 
