@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Simps.Basic
 
 /-!
 # Subtypes
@@ -33,7 +34,7 @@ attribute [coe] Subtype.val
 initialize_simps_projections Subtype (val → coe)
 
 /-- A version of `x.property` or `x.2` where `p` is syntactically applied to the coercion of `x`
-  instead of `x.1`. A similar result is `Subtype.mem` in `Data.Set.Basic`. -/
+  instead of `x.1`. A similar result is `Subtype.mem` in `Mathlib.Data.Set.Basic`. -/
 theorem prop (x : Subtype p) : p x :=
   x.2
 
@@ -98,18 +99,12 @@ theorem val_inj {a b : Subtype p} : a.val = b.val ↔ a = b :=
 
 lemma coe_ne_coe {a b : Subtype p} : (a : α) ≠ b ↔ a ≠ b := coe_injective.ne_iff
 
-@[deprecated (since := "2024-04-04")] alias ⟨ne_of_val_ne, _⟩ := coe_ne_coe
-
--- Porting note: it is unclear why the linter doesn't like this.
--- If you understand why, please replace this comment with an explanation, or resolve.
-@[simp, nolint simpNF]
+@[simp]
 theorem _root_.exists_eq_subtype_mk_iff {a : Subtype p} {b : α} :
     (∃ h : p b, a = Subtype.mk b h) ↔ ↑a = b :=
   coe_eq_iff.symm
 
--- Porting note: it is unclear why the linter doesn't like this.
--- If you understand why, please replace this comment with an explanation, or resolve.
-@[simp, nolint simpNF]
+@[simp]
 theorem _root_.exists_subtype_mk_eq_iff {a : Subtype p} {b : α} :
     (∃ h : p b, Subtype.mk b h = a) ↔ b = a := by
   simp only [@eq_comm _ b, exists_eq_subtype_mk_iff, @eq_comm _ _ a]
@@ -136,7 +131,7 @@ theorem surjective_restrict {α} {β : α → Type*} [ne : ∀ a, Nonempty (β a
   rintro ⟨x, hx⟩
   exact dif_pos hx
 
-/-- Defining a map into a subtype, this can be seen as a "coinduction principle" of `Subtype`-/
+/-- Defining a map into a subtype, this can be seen as a "coinduction principle" of `Subtype` -/
 @[simps]
 def coind {α β} (f : α → β) {p : β → Prop} (h : ∀ a, p (f a)) : α → Subtype p := fun a ↦ ⟨f a, h a⟩
 
@@ -158,7 +153,6 @@ def map {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ a, p a → 
     Subtype p → Subtype q :=
   fun x ↦ ⟨f x, h x x.prop⟩
 
-#adaptation_note /-- nightly-2024-03-16: added to replace simp [Subtype.map] -/
 theorem map_def {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ a, p a → q (f a)) :
     map f h = fun x ↦ ⟨f x, h x x.prop⟩ :=
   rfl

@@ -245,11 +245,11 @@ lemma antivaryOn_inv_left₀ (hf : ∀ i ∈ s, 0 < f i) : AntivaryOn f⁻¹ g s
 
 @[simp]
 lemma monovaryOn_inv_right₀ (hg : ∀ i ∈ s, 0 < g i) : MonovaryOn f g⁻¹ s ↔ AntivaryOn f g s :=
-  forall₂_swap.trans <| forall₄_congr fun i hi j hj ↦ by erw [inv_lt_inv₀ (hg _ hj) (hg _ hi)]
+  forall₂_swap.trans <| forall₄_congr fun i hi j hj ↦ by simp [inv_lt_inv₀ (hg _ hj) (hg _ hi)]
 
 @[simp]
 lemma antivaryOn_inv_right₀ (hg : ∀ i ∈ s, 0 < g i) : AntivaryOn f g⁻¹ s ↔ MonovaryOn f g s :=
-  forall₂_swap.trans <| forall₄_congr fun i hi j hj ↦ by erw [inv_lt_inv₀ (hg _ hj) (hg _ hi)]
+  forall₂_swap.trans <| forall₄_congr fun i hi j hj ↦ by simp [inv_lt_inv₀ (hg _ hj) (hg _ hi)]
 
 lemma monovaryOn_inv₀ (hf : ∀ i ∈ s, 0 < f i) (hg : ∀ i ∈ s, 0 < g i) :
     MonovaryOn f⁻¹ g⁻¹ s ↔ MonovaryOn f g s := by
@@ -265,10 +265,10 @@ lemma antivaryOn_inv₀ (hf : ∀ i ∈ s, 0 < f i) (hg : ∀ i ∈ s, 0 < g i) 
   forall₃_congr fun _i _j _ ↦ inv_le_inv₀ (hf _) (hf _)
 
 @[simp] lemma monovary_inv_right₀ (hg : StrongLT 0 g) : Monovary f g⁻¹ ↔ Antivary f g :=
-  forall_swap.trans <| forall₂_congr fun i j ↦ by erw [inv_lt_inv₀ (hg _) (hg _)]
+  forall_swap.trans <| forall₂_congr fun i j ↦ by simp [inv_lt_inv₀ (hg _) (hg _)]
 
 @[simp] lemma antivary_inv_right₀ (hg : StrongLT 0 g) : Antivary f g⁻¹ ↔ Monovary f g :=
-  forall_swap.trans <| forall₂_congr fun i j ↦ by erw [inv_lt_inv₀ (hg _) (hg _)]
+  forall_swap.trans <| forall₂_congr fun i j ↦ by simp [inv_lt_inv₀ (hg _) (hg _)]
 
 lemma monovary_inv₀ (hf : StrongLT 0 f) (hg : StrongLT 0 g) : Monovary f⁻¹ g⁻¹ ↔ Monovary f g := by
   rw [monovary_inv_left₀ hf, antivary_inv_right₀ hg]

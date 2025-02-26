@@ -100,7 +100,7 @@ theorem Matrix.toBilin'_apply (M : Matrix n n R₁) (x y : n → R₁) :
     (by simp only [smul_eq_mul, mul_assoc, mul_comm, mul_left_comm])
 
 theorem Matrix.toBilin'_apply' (M : Matrix n n R₁) (v w : n → R₁) :
-    Matrix.toBilin' M v w = Matrix.dotProduct v (M *ᵥ w) := Matrix.toLinearMap₂'_apply' _ _ _
+    Matrix.toBilin' M v w = dotProduct v (M *ᵥ w) := Matrix.toLinearMap₂'_apply' _ _ _
 
 @[simp]
 theorem Matrix.toBilin'_single (M : Matrix n n R₁) (i j : n) :
@@ -297,33 +297,12 @@ variable {n : Type*} [Fintype n]
 variable (b : Basis n R₂ M₂)
 variable (J J₃ A A' : Matrix n n R₂)
 
-@[simp]
-theorem isAdjointPair_toBilin' [DecidableEq n] :
-    BilinForm.IsAdjointPair (Matrix.toBilin' J) (Matrix.toBilin' J₃) (Matrix.toLin' A)
-        (Matrix.toLin' A') ↔
-      Matrix.IsAdjointPair J J₃ A A' :=
-  isAdjointPair_toLinearMap₂' _ _ _ _
-
-@[simp]
-theorem isAdjointPair_toBilin [DecidableEq n] :
-    BilinForm.IsAdjointPair (Matrix.toBilin b J) (Matrix.toBilin b J₃) (Matrix.toLin b b A)
-        (Matrix.toLin b b A') ↔
-      Matrix.IsAdjointPair J J₃ A A' :=
-  isAdjointPair_toLinearMap₂ _ _ _ _ _ _
-
 theorem Matrix.isAdjointPair_equiv' [DecidableEq n] (P : Matrix n n R₂) (h : IsUnit P) :
     (Pᵀ * J * P).IsAdjointPair (Pᵀ * J * P) A A' ↔
       J.IsAdjointPair J (P * A * P⁻¹) (P * A' * P⁻¹) :=
   Matrix.isAdjointPair_equiv _ _ _ _ h
 
 variable [DecidableEq n]
-
-/-- The submodule of pair-self-adjoint matrices with respect to bilinear forms corresponding to
-given matrices `J`, `J₂`. -/
-def pairSelfAdjointMatricesSubmodule' : Submodule R₂ (Matrix n n R₂) :=
-  (BilinForm.isPairSelfAdjointSubmodule (Matrix.toBilin' J) (Matrix.toBilin' J₃)).map
-    ((LinearMap.toMatrix' : ((n → R₂) →ₗ[R₂] n → R₂) ≃ₗ[R₂] Matrix n n R₂) :
-      ((n → R₂) →ₗ[R₂] n → R₂) →ₗ[R₂] Matrix n n R₂)
 
 theorem mem_pairSelfAdjointMatricesSubmodule' :
     A ∈ pairSelfAdjointMatricesSubmodule J J₃ ↔ Matrix.IsAdjointPair J J₃ A A := by

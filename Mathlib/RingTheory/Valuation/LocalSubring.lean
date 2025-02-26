@@ -3,8 +3,9 @@ Copyright (c) 2024 Andrew Yang, Yaël Dillies, Javier López-Contreras. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras
 -/
-import Mathlib.RingTheory.LocalRing.Subring
-import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.Ideal.GoingUp
+import Mathlib.RingTheory.LocalRing.LocalSubring
+import Mathlib.RingTheory.Polynomial.Ideal
 import Mathlib.RingTheory.Valuation.ValuationSubring
 
 /-!
@@ -53,8 +54,9 @@ lemma LocalSubring.mem_of_isMax_of_isIntegral {R : LocalSubring K}
     (hR : IsMax R) {x : K} (hx : IsIntegral R.toSubring x) : x ∈ R.toSubring := by
   let S := Algebra.adjoin R.toSubring {x}
   have : Algebra.IsIntegral R.toSubring S := Algebra.IsIntegral.adjoin (by simpa)
+  have : FaithfulSMul R.toSubring S := NoZeroSMulDivisors.instFaithfulSMulOfNontrivial
   obtain ⟨Q : Ideal S.toSubring, hQ, e⟩ := Ideal.exists_ideal_over_maximal_of_isIntegral
-    (R := R.toSubring) (S := S) (maximalIdeal _) (le_maximalIdeal (by simp [Ideal.eq_top_iff_one]))
+    (R := R.toSubring) (S := S) (maximalIdeal _) (le_maximalIdeal (by simp))
   have : R = .ofPrime S.toSubring Q := by
     have hRS : R.toSubring ≤ S.toSubring := fun r hr ↦ algebraMap_mem S ⟨r, hr⟩
     apply hR.eq_of_le ⟨hRS.trans (LocalSubring.le_ofPrime _ _), ⟨?_⟩⟩

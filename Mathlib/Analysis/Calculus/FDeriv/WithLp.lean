@@ -67,7 +67,7 @@ theorem hasStrictFDerivAt_equiv_symm (f : PiLp p E) :
 
 nonrec theorem hasStrictFDerivAt_apply (f : PiLp p E) (i : ι) :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun f : PiLp p E => f i) (proj p E i) f :=
-  (hasStrictFDerivAt_apply i f).comp f (hasStrictFDerivAt_equiv p f)
+  (hasStrictFDerivAt_apply i f).comp f (hasStrictFDerivAt_equiv (𝕜 := 𝕜) p f)
 
 theorem hasFDerivAt_equiv (f : PiLp p E) :
     HasFDerivAt (WithLp.equiv p (∀ i, E i))

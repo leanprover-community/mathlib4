@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
 import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.Nat.Choose.Sum
 
@@ -12,9 +11,7 @@ import Mathlib.Data.Nat.Choose.Sum
 # Characteristic of semirings
 -/
 
-assert_not_exists Algebra
-assert_not_exists LinearMap
-assert_not_exists orderOf
+assert_not_exists Algebra LinearMap orderOf
 
 open Finset
 
@@ -274,6 +271,10 @@ variable (R) [Ring R] [NoZeroDivisors R] [Nontrivial R] [Finite R]
 
 theorem char_is_prime (p : ℕ) [CharP R p] : p.Prime :=
   Or.resolve_right (char_is_prime_or_zero R p) (char_ne_zero_of_finite R p)
+
+lemma prime_ringChar : Nat.Prime (ringChar R) := by
+  apply CharP.char_prime_of_ne_zero R
+  exact CharP.ringChar_ne_zero_of_finite R
 
 end Ring
 end CharP

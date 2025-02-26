@@ -207,7 +207,7 @@ lemma continuous_dist : Continuous fun p : α × α ↦ dist p.1 p.2 := uniformC
 @[continuity, fun_prop]
 protected lemma Continuous.dist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => dist (f b) (g b) :=
-  continuous_dist.comp (hf.prod_mk hg : _)
+  continuous_dist.comp (hf.prod_mk hg :)
 
 protected lemma Filter.Tendsto.dist {f g : β → α} {x : Filter β} {a b : α}
     (hf : Tendsto f x (𝓝 a)) (hg : Tendsto g x (𝓝 b)) :
@@ -233,7 +233,7 @@ lemma continuous_nndist : Continuous fun p : α × α => nndist p.1 p.2 :=
 @[fun_prop]
 protected lemma Continuous.nndist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => nndist (f b) (g b) :=
-  continuous_nndist.comp (hf.prod_mk hg : _)
+  continuous_nndist.comp (hf.prod_mk hg :)
 
 protected lemma Filter.Tendsto.nndist {f g : β → α} {x : Filter β} {a b : α}
     (hf : Tendsto f x (𝓝 a)) (hg : Tendsto g x (𝓝 b)) :

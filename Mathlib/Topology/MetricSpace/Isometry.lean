@@ -3,8 +3,9 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.Antilipschitz
 import Mathlib.Data.Fintype.Lattice
+import Mathlib.Data.Fintype.Sum
+import Mathlib.Topology.MetricSpace.Antilipschitz
 
 /-!
 # Isometries
@@ -62,7 +63,7 @@ namespace Isometry
 section PseudoEmetricIsometry
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-variable {f : α → β} {x y z : α} {s : Set α}
+variable {f : α → β} {x : α}
 
 /-- An isometry preserves edistances. -/
 theorem edist_eq (hf : Isometry f) (x y : α) : edist (f x) (f y) = edist x y :=
@@ -258,9 +259,20 @@ theorem Topology.IsEmbedding.to_isometry {α β} [TopologicalSpace α] [MetricSp
 @[deprecated (since := "2024-10-26")]
 alias Embedding.to_isometry := IsEmbedding.to_isometry
 
+theorem PseudoEMetricSpace.isometry_induced (f : α → β) [m : PseudoEMetricSpace β] :
+    letI := m.induced f; Isometry f := fun _ _ ↦ rfl
+
+theorem PsuedoMetricSpace.isometry_induced (f : α → β) [m : PseudoMetricSpace β] :
+    letI := m.induced f; Isometry f := fun _ _ ↦ rfl
+
+theorem EMetricSpace.isometry_induced (f : α → β) (hf : f.Injective) [m : EMetricSpace β] :
+    letI := m.induced f hf; Isometry f := fun _ _ ↦ rfl
+
+theorem MetricSpace.isometry_induced (f : α → β) (hf : f.Injective) [m : MetricSpace β] :
+    letI := m.induced f hf; Isometry f := fun _ _ ↦ rfl
+
 -- such a bijection need not exist
 /-- `α` and `β` are isometric if there is an isometric bijection between them. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure IsometryEquiv (α : Type u) (β : Type v) [PseudoEMetricSpace α] [PseudoEMetricSpace β]
     extends α ≃ β where
   isometry_toFun : Isometry toFun
@@ -365,7 +377,7 @@ def Simps.apply (h : α ≃ᵢ β) : α → β := h
 def Simps.symm_apply (h : α ≃ᵢ β) : β → α :=
   h.symm
 
-initialize_simps_projections IsometryEquiv (toEquiv_toFun → apply, toEquiv_invFun → symm_apply)
+initialize_simps_projections IsometryEquiv (toFun → apply, invFun → symm_apply)
 
 @[simp]
 theorem symm_symm (h : α ≃ᵢ β) : h.symm.symm = h := rfl

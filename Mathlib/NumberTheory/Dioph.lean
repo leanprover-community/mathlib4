@@ -26,7 +26,7 @@ there exists `t : ℕ^β` with `p (v, t) = 0`.
 * `Dioph`: a predicate stating that a set is Diophantine, i.e. a set `S ⊆ ℕ^α` is
   Diophantine if there exists a polynomial on `α ⊕ β` such that `v ∈ S` iff there
   exists `t : ℕ^β` with `p (v, t) = 0`.
-* `dioph_fn`: a predicate on a function stating that it is Diophantine in the sense that its graph
+* `DiophFn`: a predicate on a function stating that it is Diophantine in the sense that its graph
   is Diophantine as a set.
 
 ## Main statements
@@ -199,12 +199,12 @@ instance : CommRing (Poly α) where
 
 theorem induction {C : Poly α → Prop} (H1 : ∀ i, C (proj i)) (H2 : ∀ n, C (const n))
     (H3 : ∀ f g, C f → C g → C (f - g)) (H4 : ∀ f g, C f → C g → C (f * g)) (f : Poly α) : C f := by
-  cases' f with f pf
-  induction' pf with i n f g pf pg ihf ihg f g pf pg ihf ihg
-  · apply H1
-  · apply H2
-  · apply H3 _ _ ihf ihg
-  · apply H4 _ _ ihf ihg
+  obtain ⟨f, pf⟩ := f
+  induction pf with
+  | proj => apply H1
+  | const => apply H2
+  | sub _ _ ihf ihg => apply H3 _ _ ihf ihg
+  | mul _ _ ihf ihg => apply H4 _ _ ihf ihg
 
 /-- The sum of squares of a list of polynomials. This is relevant for
   Diophantine equations, because it means that a list of equations
@@ -275,11 +275,11 @@ theorem of_no_dummies (S : Set (α → ℕ)) (p : Poly α) (h : ∀ v, S v ↔ p
 theorem inject_dummies_lem (f : β → γ) (g : γ → Option β) (inv : ∀ x, g (f x) = some x)
     (p : Poly (α ⊕ β)) (v : α → ℕ) :
     (∃ t, p (v ⊗ t) = 0) ↔ ∃ t, p.map (inl ⊗ inr ∘ f) (v ⊗ t) = 0 := by
-  dsimp; refine ⟨fun t => ?_, fun t => ?_⟩ <;> cases' t with t ht
+  dsimp; refine ⟨fun t => ?_, fun t => ?_⟩ <;> obtain ⟨t, ht⟩ := t
   · have : (v ⊗ (0 ::ₒ t) ∘ g) ∘ (inl ⊗ inr ∘ f) = v ⊗ t :=
-      funext fun s => by cases' s with a b <;> dsimp [(· ∘ ·)]; try rw [inv]; rfl
+      funext fun s => by rcases s with a | b <;> dsimp [(· ∘ ·)]; try rw [inv]; rfl
     exact ⟨(0 ::ₒ t) ∘ g, by rwa [this]⟩
-  · have : v ⊗ t ∘ f = (v ⊗ t) ∘ (inl ⊗ inr ∘ f) := funext fun s => by cases' s with a b <;> rfl
+  · have : v ⊗ t ∘ f = (v ⊗ t) ∘ (inl ⊗ inr ∘ f) := funext fun s => by rcases s with a | b <;> rfl
     exact ⟨t ∘ f, by rwa [this]⟩
 
 theorem inject_dummies (f : β → γ) (g : γ → Option β) (inv : ∀ x, g (f x) = some x)
@@ -294,7 +294,7 @@ theorem reindex_dioph (f : α → β) : Dioph S → Dioph {v | v ∘ f ∈ S}
       (pe _).trans <|
         exists_congr fun t =>
           suffices v ∘ f ⊗ t = (v ⊗ t) ∘ (inl ∘ f ⊗ inr) by simp [this]
-          funext fun s => by cases' s with a b <;> rfl⟩
+          funext fun s => by rcases s with a | b <;> rfl⟩
 
 variable {β}
 
@@ -305,8 +305,7 @@ theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
     from
     let ⟨β, pl, h⟩ := this
     ⟨β, Poly.sumsq pl, fun v => (h v).trans <| exists_congr fun t => (Poly.sumsq_eq_zero _ _).symm⟩
-  induction' l with S l IH
-  · exact ⟨ULift Empty, [], fun _ => by simp⟩
+  induction l with | nil => exact ⟨ULift Empty, [], fun _ => by simp⟩ | cons S l IH =>
   simp? at d says simp only [List.forall_cons] at d
   exact
     let ⟨⟨β, p, pe⟩, dl⟩ := d
@@ -318,21 +317,21 @@ theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
           ⟨fun ⟨⟨m, hm⟩, ⟨n, hn⟩⟩ =>
             ⟨m ⊗ n, by
               rw [show (v ⊗ m ⊗ n) ∘ (inl ⊗ inr ∘ inl) = v ⊗ m from
-                    funext fun s => by cases' s with a b <;> rfl]; exact hm, by
+                    funext fun s => by rcases s with a | b <;> rfl]; exact hm, by
               refine List.Forall.imp (fun q hq => ?_) hn; dsimp [Function.comp_def]
               rw [show
                     (fun x : α ⊕ γ => (v ⊗ m ⊗ n) ((inl ⊗ fun x : γ => inr (inr x)) x)) = v ⊗ n
-                    from funext fun s => by cases' s with a b <;> rfl]; exact hq⟩,
+                    from funext fun s => by rcases s with a | b <;> rfl]; exact hq⟩,
             fun ⟨t, hl, hr⟩ =>
             ⟨⟨t ∘ inl, by
                 rwa [show (v ⊗ t) ∘ (inl ⊗ inr ∘ inl) = v ⊗ t ∘ inl from
-                    funext fun s => by cases' s with a b <;> rfl] at hl⟩,
+                    funext fun s => by rcases s with a | b <;> rfl] at hl⟩,
               ⟨t ∘ inr, by
                 refine List.Forall.imp (fun q hq => ?_) hr; dsimp [Function.comp_def] at hq
                 rwa [show
                     (fun x : α ⊕ γ => (v ⊗ t) ((inl ⊗ fun x : γ => inr (inr x)) x)) =
                       v ⊗ t ∘ inr
-                    from funext fun s => by cases' s with a b <;> rfl] at hq ⟩⟩⟩⟩
+                    from funext fun s => by rcases s with a | b <;> rfl] at hq ⟩⟩⟩⟩
 
 theorem inter (d : Dioph S) (d' : Dioph S') : Dioph (S ∩ S') := DiophList.forall [S, S'] ⟨d, d'⟩
 
@@ -372,7 +371,7 @@ theorem ex_dioph {S : Set (α ⊕ β → ℕ)} : Dioph S → Dioph {v | ∃ x, v
         let ⟨t, ht⟩ := (pe _).1 hx
         ⟨x ⊗ t, by
           simp; rw [show (v ⊗ x ⊗ t) ∘ ((inl ⊗ inr ∘ inl) ⊗ inr ∘ inr) = (v ⊗ x) ⊗ t from
-            funext fun s => by cases' s with a b <;> try { cases a <;> rfl }; rfl]
+            funext fun s => by rcases s with a | b <;> try { cases a <;> rfl }; rfl]
           exact ht⟩,
         fun ⟨t, ht⟩ =>
         ⟨t ∘ inl,
@@ -380,7 +379,7 @@ theorem ex_dioph {S : Set (α ⊕ β → ℕ)} : Dioph S → Dioph {v | ∃ x, v
             ⟨t ∘ inr, by
               simp only [Poly.map_apply] at ht
               rwa [show (v ⊗ t) ∘ ((inl ⊗ inr ∘ inl) ⊗ inr ∘ inr) = (v ⊗ t ∘ inl) ⊗ t ∘ inr from
-                funext fun s => by cases' s with a b <;> try { cases a <;> rfl }; rfl] at ht⟩⟩⟩⟩
+                funext fun s => by rcases s with a | b <;> try { cases a <;> rfl }; rfl] at ht⟩⟩⟩⟩
 
 theorem ex1_dioph {S : Set (Option α → ℕ)} : Dioph S → Dioph {v | ∃ x, x ::ₒ v ∈ S}
   | ⟨β, p, pe⟩ =>
@@ -390,7 +389,7 @@ theorem ex1_dioph {S : Set (Option α → ℕ)} : Dioph S → Dioph {v | ∃ x, 
         ⟨x ::ₒ t, by
           simp only [Poly.map_apply]
           rw [show (v ⊗ x ::ₒ t) ∘ (inr none ::ₒ inl ⊗ inr ∘ some) = x ::ₒ v ⊗ t from
-            funext fun s => by cases' s with a b <;> try { cases a <;> rfl}; rfl]
+            funext fun s => by rcases s with a | b <;> try { cases a <;> rfl}; rfl]
           exact ht⟩,
         fun ⟨t, ht⟩ =>
         ⟨t none,
@@ -398,7 +397,7 @@ theorem ex1_dioph {S : Set (Option α → ℕ)} : Dioph S → Dioph {v | ∃ x, 
             ⟨t ∘ some, by
               simp only [Poly.map_apply] at ht
               rwa [show (v ⊗ t) ∘ (inr none ::ₒ inl ⊗ inr ∘ some) = t none ::ₒ v ⊗ t ∘ some from
-                funext fun s => by cases' s with a b <;> try { cases a <;> rfl }; rfl] at ht ⟩⟩⟩⟩
+                funext fun s => by rcases s with a | b <;> try { cases a <;> rfl }; rfl] at ht ⟩⟩⟩⟩
 
 theorem dom_dioph {f : (α → ℕ) →. ℕ} (d : DiophPFun f) : Dioph f.Dom :=
   cast (congr_arg Dioph <| Set.ext fun _ => (PFun.dom_iff_graph _ _).symm) (ex1_dioph d)
@@ -418,7 +417,7 @@ theorem diophPFun_comp1 {S : Set (Option α → ℕ)} (d : Dioph S) {f} (df : Di
   ext (ex1_dioph (d.inter df)) fun v =>
     ⟨fun ⟨x, hS, (h : Exists _)⟩ => by
       rw [show (x ::ₒ v) ∘ some = v from funext fun s => rfl] at h
-      cases' h with hf h; refine ⟨hf, ?_⟩; rw [PFun.fn, h]; exact hS,
+      obtain ⟨hf, h⟩ := h; refine ⟨hf, ?_⟩; rw [PFun.fn, h]; exact hS,
     fun ⟨x, hS⟩ =>
       ⟨f.fn v x, hS, show Exists _ by
         rw [show (f.fn v x ::ₒ v) ∘ some = v from funext fun s => rfl]; exact ⟨x, rfl⟩⟩⟩
@@ -456,7 +455,7 @@ theorem vec_ex1_dioph (n) {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) :
     exists_congr fun x => by
       dsimp
       rw [show Option.elim' x v ∘ cons none some = x::v from
-          funext fun s => by cases' s with a b <;> rfl]
+          funext fun s => by rcases s with a | b <;> rfl]
 
 theorem diophFn_vec (f : Vector3 ℕ n → ℕ) : DiophFn f ↔ Dioph {v | f (v ∘ fs) = v fz} :=
   ⟨reindex_dioph _ (fz ::ₒ fs), reindex_dioph _ (none::some)⟩
@@ -596,7 +595,7 @@ theorem mod_dioph : DiophFn fun v => f v % g v :=
         (vectorAll_iff_forall _).1 fun z x y =>
           show ((y = 0 ∨ z < y) ∧ ∃ c, z + y * c = x) ↔ x % y = z from
             ⟨fun ⟨h, c, hc⟩ => by
-              rw [← hc]; simp only [add_mul_mod_self_left]; cases' h with x0 hl
+              rw [← hc]; simp only [add_mul_mod_self_left]; rcases h with x0 | hl
               · rw [x0, mod_zero]
               exact mod_eq_of_lt hl, fun e => by
                 rw [← e]

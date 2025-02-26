@@ -23,8 +23,8 @@ variable {ι : Type*}
 variable {V : Type u} [Category.{v} V] [Preadditive V]
 variable {W : Type*} [Category W] [Preadditive W]
 variable {W₁ W₂ : Type*} [Category W₁] [Category W₂] [HasZeroMorphisms W₁] [HasZeroMorphisms W₂]
-variable {c : ComplexShape ι} {C D E : HomologicalComplex V c}
-variable (f g : C ⟶ D) (h k : D ⟶ E) (i : ι)
+variable {c : ComplexShape ι} {C D : HomologicalComplex V c}
+variable (f : C ⟶ D) (i : ι)
 
 namespace HomologicalComplex
 
@@ -170,13 +170,13 @@ theorem NatTrans.mapHomologicalComplex_comp (c : ComplexShape ι) {F G H : W₁ 
       NatTrans.mapHomologicalComplex α c ≫ NatTrans.mapHomologicalComplex β c := by
   aesop_cat
 
-@[reassoc (attr := simp 1100)]
+@[reassoc]
 theorem NatTrans.mapHomologicalComplex_naturality {c : ComplexShape ι} {F G : W₁ ⥤ W₂}
     [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms]
     (α : F ⟶ G) {C D : HomologicalComplex W₁ c} (f : C ⟶ D) :
     (F.mapHomologicalComplex c).map f ≫ (NatTrans.mapHomologicalComplex α c).app D =
       (NatTrans.mapHomologicalComplex α c).app C ≫ (G.mapHomologicalComplex c).map f := by
-  aesop_cat
+  simp
 
 /-- A natural isomorphism between functors induces a natural isomorphism
 between those functors applied to homological complexes.

@@ -35,11 +35,8 @@ section
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
 -- the generates simp lemmas like `id_fst` and `comp_snd`
-/-- `prod C D` gives the cartesian product of two categories.
-
-See <https://stacks.math.columbia.edu/tag/001K>.
--/
-@[simps (config := { notRecursive := [] }) Hom id_fst id_snd comp_fst comp_snd]
+/-- `prod C D` gives the cartesian product of two categories. -/
+@[simps (config := { notRecursive := [] }) Hom id_fst id_snd comp_fst comp_snd, stacks 001K]
 instance prod : Category.{max v₁ v₂} (C × D) where
   Hom X Y := (X.1 ⟶ Y.1) × (X.2 ⟶ Y.2)
   id X := ⟨𝟙 X.1, 𝟙 X.2⟩
@@ -167,6 +164,20 @@ def braiding : C × D ≌ D × C where
 
 instance swapIsEquivalence : (swap C D).IsEquivalence :=
   (by infer_instance : (braiding C D).functor.IsEquivalence)
+
+variable {C D}
+
+/-- Any morphism in a product factors as a morphsim whose left component is an identity
+followed by a morphism whose right component is an identity. -/
+@[reassoc]
+lemma fac {x y : C × D} (f : x ⟶ y) :
+    f = ((𝟙 x.1, f.2) : _ ⟶ ⟨x.1, y.2⟩) ≫ (f.1, 𝟙 y.2) := by aesop
+
+/-- Any morphism in a product factors as a morphsim whose right component is an identity
+followed by a morphism whose left component is an identity. -/
+@[reassoc]
+lemma fac' {x y : C × D} (f : x ⟶ y) :
+    f = ((f.1, 𝟙 x.2) : _ ⟶ ⟨y.1, x.2⟩) ≫ (𝟙 y.1, f.2) := by aesop
 
 end Prod
 

@@ -120,7 +120,7 @@ end PseudoMetricSpace
 section ContinuousConstSMul
 
 variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-  [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+  [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 /-- If `s` is a convex set, then `a • interior s + b • closure s ⊆ interior s` for all `0 < a`,
 `0 ≤ b`, `a + b = 1`. See also `Convex.combo_interior_self_subset_interior` for a weaker version. -/
@@ -268,6 +268,31 @@ protected theorem Convex.strictConvex {s : Set E} (hs : Convex 𝕜 s)
 
 end ContinuousConstSMul
 
+section ContinuousSMul
+
+variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [IsTopologicalAddGroup E] [TopologicalSpace 𝕜] [OrderTopology 𝕜] [ContinuousSMul 𝕜 E]
+
+theorem Convex.closure_interior_eq_closure_of_nonempty_interior {s : Set E} (hs : Convex 𝕜 s)
+    (hs' : (interior s).Nonempty) : closure (interior s) = closure s :=
+  subset_antisymm (closure_mono interior_subset)
+    fun _ h ↦ closure_mono (hs.openSegment_interior_closure_subset_interior hs'.choose_spec h)
+      (segment_subset_closure_openSegment (right_mem_segment ..))
+
+theorem Convex.interior_closure_eq_interior_of_nonempty_interior {s : Set E} (hs : Convex 𝕜 s)
+    (hs' : (interior s).Nonempty) : interior (closure s) = interior s := by
+  refine subset_antisymm ?_ (interior_mono subset_closure)
+  intro y hy
+  rcases hs' with ⟨x, hx⟩
+  have h := AffineMap.lineMap_apply_one (k := 𝕜) x y
+  obtain ⟨t, ht1, ht⟩ := AffineMap.lineMap_continuous.tendsto' _ _ h |>.eventually_mem
+    (mem_interior_iff_mem_nhds.1 hy) |>.exists_gt
+  apply hs.openSegment_interior_closure_subset_interior hx ht
+  nth_rw 1 [← AffineMap.lineMap_apply_zero (k := 𝕜) x y, ← image_openSegment]
+  exact ⟨1, Ioo_subset_openSegment ⟨zero_lt_one, ht1⟩, h⟩
+
+end ContinuousSMul
+
 section TopologicalSpace
 
 variable [OrderedSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
@@ -318,7 +343,7 @@ end TopologicalSpace
 section ContinuousConstSMul
 
 variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-  [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+  [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 theorem closedConvexHull_eq_closure_convexHull {s : Set E} :
     closedConvexHull 𝕜 s = closure (convexHull 𝕜 s) := subset_antisymm
@@ -330,7 +355,7 @@ end ContinuousConstSMul
 
 section ContinuousSMul
 
-variable [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [TopologicalAddGroup E]
+variable [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [IsTopologicalAddGroup E]
   [ContinuousSMul ℝ E]
 
 /-- Convex hull of a finite set is compact. -/
@@ -360,8 +385,8 @@ theorem Convex.closure_subset_image_homothety_interior_of_one_lt {s : Set E} (hs
   refine
     ⟨homothety x t⁻¹ y, hs.openSegment_interior_closure_subset_interior hx hy ?_,
       (AffineEquiv.homothetyUnitsMulHom x (Units.mk0 t hne)).apply_symm_apply y⟩
-  rw [openSegment_eq_image_lineMap, ← inv_one, ← inv_Ioi (zero_lt_one' ℝ), ← image_inv, image_image,
-    homothety_eq_lineMap]
+  rw [openSegment_eq_image_lineMap, ← inv_one, ← inv_Ioi₀ (zero_lt_one' ℝ), ← image_inv_eq_inv,
+    image_image, homothety_eq_lineMap]
   exact mem_image_of_mem _ ht
 
 /-- If we dilate a convex set about a point in its interior by a scale `t > 1`, the interior of
@@ -411,18 +436,18 @@ protected theorem Convex.isPreconnected {s : Set E} (h : Convex ℝ s) : IsPreco
 
 Not an instance, because it creates enormous TC subproblems (turn on `pp.all`).
 -/
-protected theorem TopologicalAddGroup.pathConnectedSpace : PathConnectedSpace E :=
+protected theorem IsTopologicalAddGroup.pathConnectedSpace : PathConnectedSpace E :=
   pathConnectedSpace_iff_univ.mpr <| convex_univ.isPathConnected ⟨(0 : E), trivial⟩
 
 end ContinuousSMul
 
 section ComplementsConnected
 
-variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [TopologicalAddGroup E]
+variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [IsTopologicalAddGroup E]
 
 local notation "π" => Submodule.linearProjOfIsCompl _ _
 
-attribute [local instance 100] TopologicalAddGroup.pathConnectedSpace
+attribute [local instance 100] IsTopologicalAddGroup.pathConnectedSpace
 
 /-- Given two complementary subspaces `p` and `q` in `E`, if the complement of `{0}`
 is path connected in `p` then the complement of `q` is path connected in `E`. -/

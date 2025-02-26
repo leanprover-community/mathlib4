@@ -13,7 +13,7 @@ import Mathlib.RingTheory.Nilpotent.Lemmas
 theorem Ideal.isRadical_iff_quotient_reduced {R : Type*} [CommRing R] (I : Ideal R) :
     I.IsRadical ↔ IsReduced (R ⧸ I) := by
   conv_lhs => rw [← @Ideal.mk_ker R _ I]
-  exact RingHom.ker_isRadical_iff_reduced_of_surjective (@Ideal.Quotient.mk_surjective R _ I)
+  exact RingHom.ker_isRadical_iff_reduced_of_surjective Quotient.mk_surjective
 
 variable {S : Type*} [CommRing S] (I : Ideal S)
 
@@ -31,11 +31,11 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
   · subst hI'
     apply h₁
     rw [← Ideal.zero_eq_bot, zero_pow two_ne_zero]
-  cases' n with n
+  rcases n with - | n
   · rw [pow_zero, Ideal.one_eq_top] at hI
     haveI := subsingleton_of_bot_eq_top hI.symm
     exact (hI' (Subsingleton.elim _ _)).elim
-  cases' n with n
+  rcases n with - | n
   · rw [pow_one] at hI
     exact (hI' hI).elim
   apply h₂ (I ^ 2) _ (Ideal.pow_le_self two_ne_zero)

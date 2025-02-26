@@ -3,9 +3,9 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.UniformSpace.Equicontinuity
+import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.Support
+import Mathlib.Topology.UniformSpace.Equicontinuity
 
 /-!
 # Compact separated uniform spaces
@@ -33,10 +33,10 @@ variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
 continuous. -/
 theorem CompactSpace.uniformContinuous_of_continuous [CompactSpace α] {f : α → β}
     (h : Continuous f) : UniformContinuous f :=
-calc map (Prod.map f f) (𝓤 α)
-   = map (Prod.map f f) (𝓝ˢ (diagonal α)) := by rw [nhdsSet_diagonal_eq_uniformity]
- _ ≤ 𝓝ˢ (diagonal β)                      := (h.prodMap h).tendsto_nhdsSet mapsTo_prod_map_diagonal
- _ ≤ 𝓤 β                                  := nhdsSet_diagonal_le_uniformity
+  calc map (Prod.map f f) (𝓤 α)
+    = map (Prod.map f f) (𝓝ˢ (diagonal α)) := by rw [nhdsSet_diagonal_eq_uniformity]
+  _ ≤ 𝓝ˢ (diagonal β) := (h.prodMap h).tendsto_nhdsSet mapsTo_prod_map_diagonal
+  _ ≤ 𝓤 β := nhdsSet_diagonal_le_uniformity
 
 /-- Heine-Cantor: a continuous function on a compact set of a uniform space is uniformly
 continuous. -/

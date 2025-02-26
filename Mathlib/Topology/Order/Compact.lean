@@ -3,10 +3,10 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Order.LocalExtr
+import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.Order.IntermediateValue
-import Mathlib.Topology.Support
 import Mathlib.Topology.Order.IsLUB
+import Mathlib.Topology.Order.LocalExtr
 
 /-!
 # Compactness of a closed interval
@@ -97,10 +97,10 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   have hcs : c ∈ s := by
     rcases hc.1.eq_or_lt with (rfl | hlt); · assumption
     refine ⟨hc, fun hcf => hf fun U hU => ?_⟩
-    rcases (mem_nhdsWithin_Iic_iff_exists_Ioc_subset' hlt).1 (mem_nhdsWithin_of_mem_nhds hU)
+    rcases (mem_nhdsLE_iff_exists_Ioc_subset' hlt).1 (mem_nhdsWithin_of_mem_nhds hU)
       with ⟨x, hxc, hxU⟩
-    rcases ((hsc.frequently_mem ⟨a, ha⟩).and_eventually
-      (Ioc_mem_nhdsWithin_Iic ⟨hxc, le_rfl⟩)).exists with ⟨y, ⟨_hyab, hyf⟩, hy⟩
+    rcases ((hsc.frequently_mem ⟨a, ha⟩).and_eventually (Ioc_mem_nhdsLE hxc)).exists
+      with ⟨y, ⟨_hyab, hyf⟩, hy⟩
     refine mem_of_superset (f.diff_mem_iff.2 ⟨hcf, hyf⟩) (Subset.trans ?_ hxU)
     rw [diff_subset_iff]
     exact Subset.trans Icc_subset_Icc_union_Ioc <| union_subset_union Subset.rfl <|
@@ -109,9 +109,8 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   · exact hcs.2
   exfalso
   refine hf fun U hU => ?_
-  rcases (mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hlt).1
-      (mem_nhdsWithin_of_mem_nhds hU) with
-    ⟨y, hxy, hyU⟩
+  rcases (mem_nhdsGE_iff_exists_mem_Ioc_Ico_subset hlt).1 (mem_nhdsWithin_of_mem_nhds hU)
+    with ⟨y, hxy, hyU⟩
   refine mem_of_superset ?_ hyU; clear! U
   have hy : y ∈ Icc a b := ⟨hc.1.trans hxy.1.le, hxy.2⟩
   by_cases hay : Icc a y ∈ f
@@ -155,6 +154,26 @@ instance compactSpace_Icc (a b : α) : CompactSpace (Icc a b) :=
   isCompact_iff_compactSpace.mp isCompact_Icc
 
 end
+
+section openIntervals
+variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α] [DenselyOrdered α]
+
+/-- `Set.Ico a b` is only compact if it is empty. -/
+@[simp]
+theorem isCompact_Ico_iff {a b : α} : IsCompact (Set.Ico a b) ↔ b ≤ a :=
+  ⟨fun h => isClosed_Ico_iff.mp h.isClosed, by simp_all⟩
+
+/-- `Set.Ioc a b` is only compact if it is empty. -/
+@[simp]
+theorem isCompact_Ioc_iff {a b : α} : IsCompact (Set.Ioc a b) ↔ b ≤ a :=
+  ⟨fun h => isClosed_Ioc_iff.mp h.isClosed, by simp_all⟩
+
+/-- `Set.Ioo a b` is only compact if it is empty. -/
+@[simp]
+theorem isCompact_Ioo_iff {a b : α} : IsCompact (Set.Ioo a b) ↔ b ≤ a :=
+  ⟨fun h => isClosed_Ioo_iff.mp h.isClosed, by simp_all⟩
+
+end openIntervals
 
 /-!
 ### Extreme value theorem
@@ -356,13 +375,13 @@ theorem IsCompact.bddAbove_image [ClosedIciTopology α] [Nonempty α] {f : β �
   IsCompact.bddBelow_image (α := αᵒᵈ) hK hf
 
 /-- A continuous function with compact support is bounded below. -/
-@[to_additive " A continuous function with compact support is bounded below. "]
+@[to_additive "A continuous function with compact support is bounded below."]
 theorem Continuous.bddBelow_range_of_hasCompactMulSupport [ClosedIicTopology α] [One α]
     {f : β → α} (hf : Continuous f) (h : HasCompactMulSupport f) : BddBelow (range f) :=
   (h.isCompact_range hf).bddBelow
 
 /-- A continuous function with compact support is bounded above. -/
-@[to_additive " A continuous function with compact support is bounded above. "]
+@[to_additive "A continuous function with compact support is bounded above."]
 theorem Continuous.bddAbove_range_of_hasCompactMulSupport [ClosedIciTopology α] [One α]
     {f : β → α} (hf : Continuous f) (h : HasCompactMulSupport f) : BddAbove (range f) :=
   Continuous.bddBelow_range_of_hasCompactMulSupport (α := αᵒᵈ) hf h

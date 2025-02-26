@@ -55,7 +55,7 @@ lemma exponentialPDF_of_nonneg {r x : ℝ} (hx : 0 ≤ x) :
     exponentialPDF r x = ENNReal.ofReal (r * rexp (-(r * x))) := by
   simp only [exponentialPDF_eq, if_pos hx]
 
-/-- The Lebesgue integral of the exponential pdf over nonpositive reals equals 0-/
+/-- The Lebesgue integral of the exponential pdf over nonpositive reals equals 0 -/
 lemma lintegral_exponentialPDF_of_nonpos {x r : ℝ} (hx : x ≤ 0) :
     ∫⁻ y in Iio x, exponentialPDF r y = 0 := lintegral_gammaPDF_of_nonpos hx
 
@@ -154,14 +154,14 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
         exact Continuous.continuousOn (Continuous.comp' (continuous_mul_left (-1)) this)
       · simp only [neg_mul, one_mul]
         exact fun _ _ ↦ HasDerivAt.hasDerivWithinAt hasDerivAt_neg_exp_mul_exp
-    · apply Integrable.aestronglyMeasurable (Integrable.const_mul _ _)
+    · refine Integrable.aestronglyMeasurable (Integrable.const_mul ?_ _)
       rw [← IntegrableOn, integrableOn_Icc_iff_integrableOn_Ioc]
       exact exp_neg_integrableOn_Ioc hr
     · refine ne_of_lt (IntegrableOn.setLIntegral_lt_top ?_)
       rw [integrableOn_Icc_iff_integrableOn_Ioc]
       exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
 
-/-- The CDF of the exponential distribution equals ``1 - exp (-(r * x))``-/
+/-- The CDF of the exponential distribution equals ``1 - exp (-(r * x))`` -/
 lemma exponentialCDFReal_eq {r : ℝ} (hr : 0 < r) (x : ℝ) :
     exponentialCDFReal r x = if 0 ≤ x then 1 - exp (-(r * x)) else 0 := by
   rw [exponentialCDFReal_eq_lintegral hr, lintegral_exponentialPDF_eq_antiDeriv hr x,

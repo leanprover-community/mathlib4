@@ -157,4 +157,18 @@ instance : IsIso (sigmaComparison G f) := by
 
 end
 
+/-- If `F` preserves the limit of every `Discrete.functor f`, it preserves all limits of shape
+`Discrete J`. -/
+lemma preservesLimitsOfShape_of_discrete (F : C ⥤ D)
+    [∀ (f : J → C), PreservesLimit (Discrete.functor f) F] :
+    PreservesLimitsOfShape (Discrete J) F where
+  preservesLimit := preservesLimit_of_iso_diagram F (Discrete.natIsoFunctor).symm
+
+/-- If `F` preserves the colimit of every `Discrete.functor f`, it preserves all colimits of shape
+`Discrete J`. -/
+lemma preservesColimitsOfShape_of_discrete (F : C ⥤ D)
+    [∀ (f : J → C), PreservesColimit (Discrete.functor f) F] :
+    PreservesColimitsOfShape (Discrete J) F where
+  preservesColimit := preservesColimit_of_iso_diagram F (Discrete.natIsoFunctor).symm
+
 end CategoryTheory.Limits

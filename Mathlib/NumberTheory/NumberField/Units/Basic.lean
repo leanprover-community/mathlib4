@@ -5,6 +5,7 @@ Authors: Xavier Roblot
 -/
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.GroupTheory.Torsion
 
 /-!
 # Units of a number field
@@ -26,7 +27,7 @@ places `w` of `K`.
 
 ## Tags
 number field, units
- -/
+-/
 
 open scoped NumberField
 

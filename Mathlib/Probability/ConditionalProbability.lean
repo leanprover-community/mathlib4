@@ -70,8 +70,8 @@ and scaled by the inverse of `μ s` (to make it a probability measure):
 def cond (s : Set Ω) : Measure Ω :=
   (μ s)⁻¹ • μ.restrict s
 
-@[inherit_doc] scoped notation:max μ "[" t " | " s "]" => ProbabilityTheory.cond μ s t
 @[inherit_doc] scoped notation:max μ "[|" s "]" => ProbabilityTheory.cond μ s
+@[inherit_doc cond] scoped notation3:max μ "[" t " | " s "]" => ProbabilityTheory.cond μ s t
 
 /-- The conditional probability measure of measure `μ` on `{ω | X ω ∈ s}`.
 
@@ -138,6 +138,12 @@ lemma absolutelyContinuous_cond_univ [IsFiniteMeasure μ] : μ ≪ μ[|univ] := 
   refine absolutelyContinuous_smul ?_
   simp [measure_ne_top]
 
+lemma ae_cond_mem₀ (hs : NullMeasurableSet s μ) : ∀ᵐ x ∂μ[|s], x ∈ s :=
+  ae_smul_measure (ae_restrict_mem₀ hs) _
+
+lemma ae_cond_mem (hs : MeasurableSet s) : ∀ᵐ x ∂μ[|s], x ∈ s :=
+  ae_smul_measure (ae_restrict_mem hs) _
+
 section Bayes
 
 variable (μ) in
@@ -172,7 +178,7 @@ theorem inter_pos_of_cond_ne_zero (hms : MeasurableSet s) (hcst : μ[t|s] ≠ 0)
   simp [hms, Set.inter_comm, cond]
 
 lemma cond_pos_of_inter_ne_zero [IsFiniteMeasure μ] (hms : MeasurableSet s) (hci : μ (s ∩ t) ≠ 0) :
-    0 < μ[|s] t := by
+    0 < μ[t | s] := by
   rw [cond_apply hms]
   refine ENNReal.mul_pos ?_ hci
   exact ENNReal.inv_ne_zero.mpr (measure_ne_top _ _)

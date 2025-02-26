@@ -16,7 +16,7 @@ a morphism `f` is in `W` iff `f⟦a⟧'` is. When this compatibility is satisfie
 then the corresponding localized category can be equipped with
 a shift by `A`, and the localization functor is compatible with the shift.
 
---/
+-/
 
 universe v₁ v₂ v₃ u₁ u₂ u₃ w
 

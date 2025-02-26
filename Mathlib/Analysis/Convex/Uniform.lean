@@ -96,16 +96,7 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
     _ ≤ 2 - δ + δ' + δ' :=
       (add_le_add_three (h (h₁ _ hx') (h₁ _ hy') hxy') (h₂ _ hx hx'.le) (h₂ _ hy hy'.le))
     _ ≤ 2 - δ' := by
-      dsimp only [δ']
-      rw [← le_sub_iff_add_le, ← le_sub_iff_add_le, sub_sub, sub_sub]
-      refine sub_le_sub_left ?_ _
-      ring_nf
-      rw [← mul_div_cancel₀ δ three_ne_zero]
-      norm_num
-      -- Porting note: these three extra lines needed to make `exact` work
-      have : 3 * (δ / 3) * (1 / 3) = δ / 3 := by linarith
-      rw [this, mul_comm]
-      gcongr
+      suffices δ' ≤ δ / 3 by linarith
       exact min_le_of_right_le <| min_le_right _ _
 
 theorem exists_forall_closed_ball_dist_add_le_two_mul_sub (hε : 0 < ε) (r : ℝ) :

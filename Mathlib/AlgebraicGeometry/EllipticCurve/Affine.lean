@@ -14,7 +14,7 @@ This file defines the type of points on a Weierstrass curve as an inductive, con
 at infinity and affine points satisfying a Weierstrass equation with a nonsingular condition. This
 file also defines the negation and addition operations of the group law for this type, and proves
 that they respect the Weierstrass equation and the nonsingular condition. The fact that they form an
-abelian group is proven in `Mathlib.AlgebraicGeometry.EllipticCurve.Group`.
+abelian group is proven in `Mathlib/AlgebraicGeometry/EllipticCurve/Group.lean`.
 
 ## Mathematical background
 
@@ -65,7 +65,7 @@ The group law on this set is then uniquely determined by these constructions.
  * `WeierstrassCurve.Affine.nonsingular_add`: addition preserves the nonsingular condition.
  * `WeierstrassCurve.Affine.nonsingular_of_Δ_ne_zero`: an affine Weierstrass curve is nonsingular at
     every point if its discriminant is non-zero.
- * `EllipticCurve.Affine.nonsingular`: an affine elliptic curve is nonsingular at every point.
+ * `WeierstrassCurve.Affine.nonsingular`: an affine elliptic curve is nonsingular at every point.
 
 ## Notations
 
@@ -81,6 +81,7 @@ elliptic curve, rational point, affine coordinates
 -/
 
 open Polynomial
+open scoped Polynomial.Bivariate
 
 local macro "C_simp" : tactic =>
   `(tactic| simp only [map_ofNat, C_0, C_1, C_neg, C_add, C_sub, C_mul, C_pow])
@@ -160,7 +161,6 @@ lemma irreducible_polynomial [IsDomain R] : Irreducible W.polynomial := by
   rw [Cubic.degree_of_a_ne_zero' <| neg_ne_zero.mpr <| one_ne_zero' R, degree_mul] at h0
   apply (h1.symm.le.trans Cubic.degree_of_b_eq_zero').not_lt
   rcases Nat.WithBot.add_eq_three_iff.mp h0.symm with h | h | h | h
-  -- Porting note: replaced two `any_goals` proofs with two `iterate 2` proofs
   iterate 2 rw [degree_add_eq_right_of_degree_lt] <;> simp only [h] <;> decide
   iterate 2 rw [degree_add_eq_left_of_degree_lt] <;> simp only [h] <;> decide
 
@@ -232,13 +232,6 @@ lemma evalEval_polynomialY (x y : R) :
 @[simp]
 lemma evalEval_polynomialY_zero : W.polynomialY.evalEval 0 0 = W.a₃ := by
   simp only [evalEval_polynomialY, zero_add, mul_zero]
-
-@[deprecated (since := "2024-06-19")] alias eval_polynomial := evalEval_polynomial
-@[deprecated (since := "2024-06-19")] alias eval_polynomial_zero := evalEval_polynomial_zero
-@[deprecated (since := "2024-06-19")] alias eval_polynomialX := evalEval_polynomialX
-@[deprecated (since := "2024-06-19")] alias eval_polynomialX_zero := evalEval_polynomialX_zero
-@[deprecated (since := "2024-06-19")] alias eval_polynomialY := evalEval_polynomialY
-@[deprecated (since := "2024-06-19")] alias eval_polynomialY_zero := evalEval_polynomialY_zero
 
 /-- The proposition that an affine point $(x, y)$ in `W` is nonsingular.
 In other words, either $W_X(x, y) \ne 0$ or $W_Y(x, y) \ne 0$.
@@ -698,15 +691,6 @@ lemma add_of_X_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h
     (hx : x₁ ≠ x₂) : some h₁ + some h₂ = -some (nonsingular_negAdd h₁ h₂ fun h => (hx h).elim) :=
   add_of_X_ne hx
 
-@[deprecated (since := "2024-06-03")] alias some_add_some_of_Yeq := add_of_Y_eq
-@[deprecated (since := "2024-06-03")] alias some_add_self_of_Yeq := add_self_of_Y_eq
-@[deprecated (since := "2024-06-03")] alias some_add_some_of_Yne := add_of_Y_ne
-@[deprecated (since := "2024-06-03")] alias some_add_some_of_Yne' := add_of_Y_ne'
-@[deprecated (since := "2024-06-03")] alias some_add_self_of_Yne := add_self_of_Y_ne
-@[deprecated (since := "2024-06-03")] alias some_add_self_of_Yne' := add_self_of_Y_ne'
-@[deprecated (since := "2024-06-03")] alias some_add_some_of_Xne := add_of_X_ne
-@[deprecated (since := "2024-06-03")] alias some_add_some_of_Xne' := add_of_X_ne'
-
 end Point
 
 end Group
@@ -810,8 +794,7 @@ lemma baseChange_polynomial : (W.baseChange B).toAffine.polynomial =
 
 lemma baseChange_equation (hf : Function.Injective f) (x y : A) :
     (W.baseChange B).toAffine.Equation (f x) (f y) ↔ (W.baseChange A).toAffine.Equation x y := by
-  erw [← map_equation _ hf, map_baseChange]
-  rfl
+  simp [← map_equation _ hf]
 
 lemma baseChange_polynomialX : (W.baseChange B).toAffine.polynomialX =
     (W.baseChange A).toAffine.polynomialX.map (mapRingHom f) := by
@@ -825,8 +808,7 @@ variable {f} in
 lemma baseChange_nonsingular (hf : Function.Injective f) (x y : A) :
     (W.baseChange B).toAffine.Nonsingular (f x) (f y) ↔
       (W.baseChange A).toAffine.Nonsingular x y := by
-  erw [← map_nonsingular _ hf, map_baseChange]
-  rfl
+  simp [← map_nonsingular _ hf]
 
 lemma baseChange_negPolynomial :
     (W.baseChange B).toAffine.negPolynomial =
@@ -834,9 +816,7 @@ lemma baseChange_negPolynomial :
   rw [← map_negPolynomial, map_baseChange]
 
 lemma baseChange_negY (x y : A) :
-    (W.baseChange B).toAffine.negY (f x) (f y) = f ((W.baseChange A).toAffine.negY x y) := by
-  erw [← map_negY, map_baseChange]
-  rfl
+    (W.baseChange B).toAffine.negY (f x) (f y) = f ((W.baseChange A).toAffine.negY x y) := by simp
 
 lemma baseChange_addPolynomial (x y L : A) :
     (W.baseChange B).toAffine.addPolynomial (f x) (f y) (f L) =
@@ -846,21 +826,15 @@ lemma baseChange_addPolynomial (x y L : A) :
 
 lemma baseChange_addX (x₁ x₂ L : A) :
     (W.baseChange B).toAffine.addX (f x₁) (f x₂) (f L) =
-      f ((W.baseChange A).toAffine.addX x₁ x₂ L) := by
-  erw [← map_addX, map_baseChange]
-  rfl
+      f ((W.baseChange A).toAffine.addX x₁ x₂ L) := by simp
 
 lemma baseChange_negAddY (x₁ x₂ y₁ L : A) :
     (W.baseChange B).toAffine.negAddY (f x₁) (f x₂) (f y₁) (f L) =
-      f ((W.baseChange A).toAffine.negAddY x₁ x₂ y₁ L) := by
-  erw [← map_negAddY, map_baseChange]
-  rfl
+      f ((W.baseChange A).toAffine.negAddY x₁ x₂ y₁ L) := by simp
 
 lemma baseChange_addY (x₁ x₂ y₁ L : A) :
     (W.baseChange B).toAffine.addY (f x₁) (f x₂) (f y₁) (f L) =
-      f ((W.baseChange A).toAffine.addY x₁ x₂ y₁ L) := by
-  erw [← map_addY, map_baseChange]
-  rfl
+      f ((W.baseChange A).toAffine.addY x₁ x₂ y₁ L) := by simp
 
 variable {F : Type u} [Field F] [Algebra R F] [Algebra S F] [IsScalarTower R S F]
   {K : Type v} [Field K] [Algebra R K] [Algebra S K] [IsScalarTower R S K] (f : F →ₐ[S] K)
@@ -869,8 +843,7 @@ variable {F : Type u} [Field F] [Algebra R F] [Algebra S F] [IsScalarTower R S F
 lemma baseChange_slope (x₁ x₂ y₁ y₂ : F) :
     (W.baseChange K).toAffine.slope (f x₁) (f x₂) (f y₁) (f y₂) =
       f ((W.baseChange F).toAffine.slope x₁ x₂ y₁ y₂) := by
-  erw [← map_slope, map_baseChange]
-  rfl
+  rw [← f.coe_toRingHom, ← map_slope, map_baseChange]
 
 namespace Point
 
@@ -933,35 +906,16 @@ end Point
 
 end BaseChange
 
-@[deprecated (since := "2024-06-03")] alias addY' := negAddY
-@[deprecated (since := "2024-06-03")] alias
-  nonsingular_add_of_eval_derivative_ne_zero := nonsingular_negAdd_of_eval_derivative_ne_zero
-@[deprecated (since := "2024-06-03")] alias slope_of_Yeq := slope_of_Y_eq
-@[deprecated (since := "2024-06-03")] alias slope_of_Yne := slope_of_Y_ne
-@[deprecated (since := "2024-06-03")] alias slope_of_Xne := slope_of_X_ne
-@[deprecated (since := "2024-06-03")] alias slope_of_Yne_eq_eval := slope_of_Y_ne_eq_eval
-@[deprecated (since := "2024-06-03")] alias Yeq_of_Xeq := Y_eq_of_X_eq
-@[deprecated (since := "2024-06-03")] alias Yeq_of_Yne := Y_eq_of_Y_ne
-@[deprecated (since := "2024-06-03")] alias equation_add' := equation_negAdd
-@[deprecated (since := "2024-06-03")] alias nonsingular_add' := nonsingular_negAdd
-@[deprecated (since := "2024-06-03")] alias baseChange_addY' := baseChange_negAddY
-@[deprecated (since := "2024-06-03")] alias map_addY' := map_negAddY
-
-end WeierstrassCurve.Affine
-
 /-! ## Elliptic curves -/
 
-/-- The coercion from an elliptic curve to a Weierstrass curve in affine coordinates. -/
-abbrev EllipticCurve.toAffine {R : Type u} [CommRing R] (E : EllipticCurve R) :
-    WeierstrassCurve.Affine R :=
-  E.toWeierstrassCurve.toAffine
+section EllipticCurve
 
-namespace EllipticCurve.Affine
-
-variable {R : Type u} [CommRing R] (E : EllipticCurve R)
+variable {R : Type u} [CommRing R] (E : WeierstrassCurve R) [E.IsElliptic]
 
 lemma nonsingular [Nontrivial R] {x y : R} (h : E.toAffine.Equation x y) :
     E.toAffine.Nonsingular x y :=
   E.toAffine.nonsingular_of_Δ_ne_zero h <| E.coe_Δ' ▸ E.Δ'.ne_zero
 
-end EllipticCurve.Affine
+end EllipticCurve
+
+end WeierstrassCurve.Affine

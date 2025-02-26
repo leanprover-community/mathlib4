@@ -106,7 +106,7 @@ lemma basicOpenToSpec_app_top :
 noncomputable
 def toSpecZero : Proj 𝒜 ⟶ Spec (.of (𝒜 0)) :=
   (Scheme.topIso _).inv ≫ (Scheme.isoOfEq _ (basicOpen_one _)).inv ≫
-    basicOpenToSpec 𝒜 1 ≫ Spec.map (fromZeroRingHom 𝒜 _)
+    basicOpenToSpec 𝒜 1 ≫ Spec.map (CommRingCat.ofHom (fromZeroRingHom 𝒜 _))
 
 variable {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m)
 
@@ -166,8 +166,91 @@ lemma awayι_toSpecZero : awayι 𝒜 f f_deg hm ≫ toSpecZero 𝒜 =
     ← Spec.map_comp, ← Spec.map_comp, ← Spec.map_comp]
   rfl
 
+variable {f}
+variable {m' : ℕ} {g : A} (g_deg : g ∈ 𝒜 m') (hm' : 0 < m') {x : A} (hx : x = f * g)
+
+@[reassoc]
+lemma awayMap_awayToSection  :
+    CommRingCat.ofHom (awayMap 𝒜 g_deg hx) ≫ awayToSection 𝒜 x =
+      awayToSection 𝒜 f ≫ (Proj 𝒜).presheaf.map (homOfLE (basicOpen_mono _ _ _ ⟨_, hx⟩)).op := by
+  ext a
+  apply Subtype.ext
+  ext ⟨i, hi⟩
+  obtain ⟨⟨n, a, ⟨b, hb'⟩, i, rfl : _ = b⟩, rfl⟩ := mk_surjective a
+  simp only [homOfLE_leOfHom, CommRingCat.hom_comp, RingHom.coe_comp, Function.comp_apply]
+  erw [ProjectiveSpectrum.Proj.awayToSection_apply]
+  rw [CommRingCat.hom_ofHom, val_awayMap_mk, Localization.mk_eq_mk', IsLocalization.map_mk',
+    ← Localization.mk_eq_mk']
+  refine Localization.mk_eq_mk_iff.mpr ?_
+  rw [Localization.r_iff_exists]
+  use 1
+  simp only [OneMemClass.coe_one, RingHom.id_apply, one_mul, hx]
+  ring
+
+@[reassoc]
+lemma basicOpenToSpec_SpecMap_awayMap :
+    basicOpenToSpec 𝒜 x ≫ Spec.map (CommRingCat.ofHom (awayMap 𝒜 g_deg hx)) =
+      (Proj 𝒜).homOfLE (basicOpen_mono _ _ _ ⟨_, hx⟩) ≫ basicOpenToSpec 𝒜 f := by
+  rw [basicOpenToSpec, Category.assoc, ← Spec.map_comp, awayMap_awayToSection,
+    Spec.map_comp, Scheme.Opens.toSpecΓ_SpecMap_map_assoc]
+  rfl
+
+@[reassoc]
+lemma SpecMap_awayMap_awayι :
+    Spec.map (CommRingCat.ofHom (awayMap 𝒜 g_deg hx)) ≫ awayι 𝒜 f f_deg hm =
+      awayι 𝒜 x (hx ▸ SetLike.mul_mem_graded f_deg g_deg) (hm.trans_le (m.le_add_right m')) := by
+  rw [awayι, awayι, Iso.eq_inv_comp, basicOpenIsoSpec_hom, basicOpenToSpec_SpecMap_awayMap_assoc,
+  ← basicOpenIsoSpec_hom _ _ f_deg hm, Iso.hom_inv_id_assoc, Scheme.homOfLE_ι]
+
+/-- The isomorphism `D₊(f) ×[Proj 𝒜] D₊(g) ≅ D₊(fg)`. -/
+noncomputable
+def pullbackAwayιIso :
+    Limits.pullback (awayι 𝒜 f f_deg hm) (awayι 𝒜 g g_deg hm') ≅
+      Spec (CommRingCat.of (Away 𝒜 x)) :=
+    IsOpenImmersion.isoOfRangeEq (Limits.pullback.fst _ _ ≫ awayι 𝒜 f f_deg hm)
+      (awayι 𝒜 x (hx ▸ SetLike.mul_mem_graded f_deg g_deg) (hm.trans_le (m.le_add_right m'))) <| by
+  rw [IsOpenImmersion.range_pullback_to_base_of_left]
+  show ((awayι 𝒜 f _ _).opensRange ⊓ (awayι 𝒜 g _ _).opensRange).1 = (awayι 𝒜 _ _ _).opensRange.1
+  rw [opensRange_awayι, opensRange_awayι, opensRange_awayι, ← basicOpen_mul, hx]
+
+@[reassoc (attr := simp)]
+lemma pullbackAwayιIso_hom_awayι :
+    (pullbackAwayιIso 𝒜 f_deg hm g_deg hm' hx).hom ≫
+      awayι 𝒜 x (hx ▸ SetLike.mul_mem_graded f_deg g_deg) (hm.trans_le (m.le_add_right m')) =
+      Limits.pullback.fst _ _ ≫ awayι 𝒜 f f_deg hm :=
+  IsOpenImmersion.isoOfRangeEq_hom_fac ..
+
+@[reassoc (attr := simp)]
+lemma pullbackAwayιIso_hom_SpecMap_awayMap_left :
+    (pullbackAwayιIso 𝒜 f_deg hm g_deg hm' hx).hom ≫
+      Spec.map (CommRingCat.ofHom (awayMap 𝒜 g_deg hx)) = Limits.pullback.fst _ _ := by
+  rw [← cancel_mono (awayι 𝒜 f f_deg hm), ← pullbackAwayιIso_hom_awayι,
+    Category.assoc, SpecMap_awayMap_awayι]
+
+@[reassoc (attr := simp)]
+lemma pullbackAwayιIso_hom_SpecMap_awayMap_right :
+    (pullbackAwayιIso 𝒜 f_deg hm g_deg hm' hx).hom ≫
+      Spec.map (CommRingCat.ofHom (awayMap 𝒜 f_deg (hx.trans (mul_comm _ _)))) =
+      Limits.pullback.snd _ _ := by
+  rw [← cancel_mono (awayι 𝒜 g g_deg hm'), ← Limits.pullback.condition,
+    ← pullbackAwayιIso_hom_awayι 𝒜 f_deg hm g_deg hm' hx,
+    Category.assoc, SpecMap_awayMap_awayι]
+  rfl
+
+@[reassoc (attr := simp)]
+lemma pullbackAwayιIso_inv_fst :
+    (pullbackAwayιIso 𝒜 f_deg hm g_deg hm' hx).inv ≫ Limits.pullback.fst _ _ =
+      Spec.map (CommRingCat.ofHom (awayMap 𝒜 g_deg hx)) := by
+  rw [← pullbackAwayιIso_hom_SpecMap_awayMap_left, Iso.inv_hom_id_assoc]
+
+@[reassoc (attr := simp)]
+lemma pullbackAwayιIso_inv_snd :
+    (pullbackAwayιIso 𝒜 f_deg hm g_deg hm' hx).inv ≫ Limits.pullback.snd _ _ =
+      Spec.map (CommRingCat.ofHom (awayMap 𝒜 f_deg (hx.trans (mul_comm _ _)))) := by
+  rw [← pullbackAwayιIso_hom_SpecMap_awayMap_right, Iso.inv_hom_id_assoc]
+
 open TopologicalSpace.Opens in
-/-- Given a family of homogeneous elements `f` of positive degree that spans the irrelavent ideal,
+/-- Given a family of homogeneous elements `f` of positive degree that spans the irrelevant ideal,
 `Spec (A_f)₀ ⟶ Proj A` forms an affine open cover of `Proj A`. -/
 noncomputable
 def openCoverOfISupEqTop {ι : Type*} (f : ι → A) {m : ι → ℕ}

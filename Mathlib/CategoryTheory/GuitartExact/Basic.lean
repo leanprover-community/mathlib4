@@ -128,7 +128,6 @@ abbrev CostructuredArrowDownwards.mk (comm : R.map a ≫ w.app X₁ ≫ B.map b 
   CostructuredArrow.mk (Y := StructuredArrow.mk a)
     (StructuredArrow.homMk b (by simpa using comm))
 
-variable (comm : R.map a ≫ w.app X₁ ≫ B.map b = g)
 variable {w g}
 
 lemma StructuredArrowRightwards.mk_surjective

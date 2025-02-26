@@ -45,7 +45,7 @@ section Semiring
 variable {R : Type*} [CommSemiring R]
 variable {R' : Type*} [Monoid R']
 variable {R'' : Type*} [Semiring R'']
-variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*} {S : Type*} {T : Type*}
+variable {A M N P Q S T : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
 variable [AddCommMonoid Q] [AddCommMonoid S] [AddCommMonoid T]
 variable [Module R M] [Module R N] [Module R Q] [Module R S] [Module R T]
@@ -91,6 +91,9 @@ namespace TensorProduct
 
 section Module
 
+protected instance zero : Zero (M ⊗[R] N) :=
+  (addConGen (TensorProduct.Eqv R M N)).zero
+
 protected instance add : Add (M ⊗[R] N) :=
   (addConGen (TensorProduct.Eqv R M N)).hasAdd
 
@@ -99,7 +102,8 @@ instance addZeroClass : AddZeroClass (M ⊗[R] N) :=
     /- The `toAdd` field is given explicitly as `TensorProduct.add` for performance reasons.
     This avoids any need to unfold `Con.addMonoid` when the type checker is checking
     that instance diagrams commute -/
-    toAdd := TensorProduct.add _ _ }
+    toAdd := TensorProduct.add _ _
+    toZero := TensorProduct.zero _ _ }
 
 instance addSemigroup : AddSemigroup (M ⊗[R] N) :=
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with
@@ -130,7 +134,6 @@ infixl:100 " ⊗ₜ " => tmul _
 /-- The canonical function `M → N → M ⊗ N`. -/
 notation:100 x " ⊗ₜ[" R "] " y:100 => tmul R x y
 
--- Porting note: make the arguments of induction_on explicit
 @[elab_as_elim, induction_eliminator]
 protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
     (zero : motive 0)
@@ -243,8 +246,6 @@ theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m 
     (r • m) ⊗ₜ n = m ⊗ₜ[R] (r • n) :=
   CompatibleSMul.smul_tmul _ _ _
 
--- Porting note: This is added as a local instance for `SMul.aux`.
--- For some reason type-class inference in Lean 3 unfolded this definition.
 private def addMonoidWithWrongNSMul : AddMonoid (M ⊗[R] N) :=
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
 
@@ -320,7 +321,7 @@ protected theorem add_smul (r s : R'') (x : M ⊗[R] N) : (r + s) • x = r • 
 instance addMonoid : AddMonoid (M ⊗[R] N) :=
   { TensorProduct.addZeroClass _ _ with
     toAddSemigroup := TensorProduct.addSemigroup _ _
-    toZero := (TensorProduct.addZeroClass _ _).toZero
+    toZero := TensorProduct.zero _ _
     nsmul := fun n v => n • v
     nsmul_zero := by simp [TensorProduct.zero_smul]
     nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
@@ -442,16 +443,16 @@ section
 theorem sum_tmul {α : Type*} (s : Finset α) (m : α → M) (n : N) :
     (∑ a ∈ s, m a) ⊗ₜ[R] n = ∑ a ∈ s, m a ⊗ₜ[R] n := by
   classical
-    induction' s using Finset.induction with a s has ih h
-    · simp
-    · simp [Finset.sum_insert has, add_tmul, ih]
+    induction s using Finset.induction with
+    | empty => simp
+    | insert has ih => simp [Finset.sum_insert has, add_tmul, ih]
 
 theorem tmul_sum (m : M) {α : Type*} (s : Finset α) (n : α → N) :
     (m ⊗ₜ[R] ∑ a ∈ s, n a) = ∑ a ∈ s, m ⊗ₜ[R] n a := by
   classical
-    induction' s using Finset.induction with a s has ih h
-    · simp
-    · simp [Finset.sum_insert has, tmul_add, ih]
+    induction s using Finset.induction with
+    | empty => simp
+    | insert has ih => simp [Finset.sum_insert has, tmul_add, ih]
 
 end
 
@@ -547,49 +548,6 @@ theorem lift_compr₂ (g : P →ₗ[R] Q) : lift (f.compr₂ g) = g.comp (lift f
 
 theorem lift_mk_compr₂ (f : M ⊗ N →ₗ[R] P) : lift ((mk R M N).compr₂ f) = f := by
   rw [lift_compr₂ f, lift_mk, LinearMap.comp_id]
-
-section ScalarTower
-
-variable (R M N A) [CommSemiring A] [Module A M] [Module A N] [SMulCommClass R A M]
-  [CompatibleSMul R A M N]
-
-/-- If M and N are both R- and A-modules and their actions on them commute,
-and if the A-action on `M ⊗[R] N` can switch between the two factors, then there is a
-canonical A-linear map from `M ⊗[A] N` to `M ⊗[R] N`. -/
-def mapOfCompatibleSMul : M ⊗[A] N →ₗ[A] M ⊗[R] N :=
-  lift
-  { toFun := fun m ↦
-    { __ := mk R M N m
-      map_smul' := fun _ _ ↦ (smul_tmul _ _ _).symm }
-    map_add' := fun _ _ ↦ LinearMap.ext <| by simp
-    map_smul' := fun _ _ ↦ rfl }
-
-@[simp] theorem mapOfCompatibleSMul_tmul (m n) : mapOfCompatibleSMul R M N A (m ⊗ₜ n) = m ⊗ₜ n :=
-  rfl
-
-attribute [local instance] SMulCommClass.symm
-
-/-- `mapOfCompatibleSMul R M N A` is also A-linear. -/
-def mapOfCompatibleSMul' : M ⊗[A] N →ₗ[R] M ⊗[R] N where
-  __ := mapOfCompatibleSMul R M N A
-  map_smul' _ x := x.induction_on (map_zero _) (fun _ _ ↦ by simp [smul_tmul'])
-    fun _ _ h h' ↦ by simpa using congr($h + $h')
-
-theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMul R M N A) :=
-  fun x ↦ x.induction_on (⟨0, map_zero _⟩) (fun m n ↦ ⟨_, mapOfCompatibleSMul_tmul ..⟩)
-    fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simpa using congr($hx + $hy)⟩
-
-/-- If the R- and A-actions on M and N satisfy `CompatibleSMul` both ways,
-then `M ⊗[A] N` is canonically isomorphic to `M ⊗[R] N`. -/
-def equivOfCompatibleSMul [CompatibleSMul A R M N] : M ⊗[A] N ≃ₗ[A] M ⊗[R] N where
-  __ := mapOfCompatibleSMul R M N A
-  invFun := mapOfCompatibleSMul A M N R
-  left_inv x := x.induction_on (map_zero _) (fun _ _ ↦ rfl)
-    fun _ _ h h' ↦ by simpa using congr($h + $h')
-  right_inv x := x.induction_on (map_zero _) (fun _ _ ↦ rfl)
-    fun _ _ h h' ↦ by simpa using congr($h + $h')
-
-end ScalarTower
 
 /-- This used to be an `@[ext]` lemma, but it fails very slowly when the `ext` tactic tries to apply
 it in some cases, notably when one wants to show equality of two linear maps. The `@[ext]`
@@ -751,6 +709,60 @@ theorem rid_symm_apply (m : M) : (TensorProduct.rid R M).symm m = m ⊗ₜ 1 :=
 variable (R) in
 theorem lid_eq_rid : TensorProduct.lid R R = TensorProduct.rid R R :=
   LinearEquiv.toLinearMap_injective <| ext' mul_comm
+
+section CompatibleSMul
+
+variable (R A M N) [CommSemiring A] [Module A M] [Module A N] [SMulCommClass R A M]
+  [CompatibleSMul R A M N]
+
+/-- If M and N are both R- and A-modules and their actions on them commute,
+and if the A-action on `M ⊗[R] N` can switch between the two factors, then there is a
+canonical A-linear map from `M ⊗[A] N` to `M ⊗[R] N`. -/
+def mapOfCompatibleSMul : M ⊗[A] N →ₗ[A] M ⊗[R] N :=
+  lift
+  { toFun := fun m ↦
+    { __ := mk R M N m
+      map_smul' := fun _ _ ↦ (smul_tmul _ _ _).symm }
+    map_add' := fun _ _ ↦ LinearMap.ext <| by simp
+    map_smul' := fun _ _ ↦ rfl }
+
+@[simp] theorem mapOfCompatibleSMul_tmul (m n) : mapOfCompatibleSMul R A M N (m ⊗ₜ n) = m ⊗ₜ n :=
+  rfl
+
+theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMul R A M N) :=
+  fun x ↦ x.induction_on (⟨0, map_zero _⟩) (fun m n ↦ ⟨_, mapOfCompatibleSMul_tmul ..⟩)
+    fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simpa using congr($hx + $hy)⟩
+
+attribute [local instance] SMulCommClass.symm
+
+/-- `mapOfCompatibleSMul R A M N` is also R-linear. -/
+def mapOfCompatibleSMul' : M ⊗[A] N →ₗ[R] M ⊗[R] N where
+  __ := mapOfCompatibleSMul R A M N
+  map_smul' _ x := x.induction_on (map_zero _) (fun _ _ ↦ by simp [smul_tmul'])
+    fun _ _ h h' ↦ by simpa using congr($h + $h')
+
+/-- If the R- and A-actions on M and N satisfy `CompatibleSMul` both ways,
+then `M ⊗[A] N` is canonically isomorphic to `M ⊗[R] N`. -/
+def equivOfCompatibleSMul [CompatibleSMul A R M N] : M ⊗[A] N ≃ₗ[A] M ⊗[R] N where
+  __ := mapOfCompatibleSMul R A M N
+  invFun := mapOfCompatibleSMul A R M N
+  left_inv x := x.induction_on (map_zero _) (fun _ _ ↦ rfl)
+    fun _ _ h h' ↦ by simpa using congr($h + $h')
+  right_inv x := x.induction_on (map_zero _) (fun _ _ ↦ rfl)
+    fun _ _ h h' ↦ by simpa using congr($h + $h')
+
+omit [SMulCommClass R A M]
+
+variable [Module R A] [SMulCommClass R A A] [CompatibleSMul R A A M] [CompatibleSMul A R A M]
+
+/-- If the R- and A- action on A and M satisfy `CompatibleSMul` both ways,
+then `A ⊗[R] M` is canonically isomorphic to `M`. -/
+def lidOfCompatibleSMul : A ⊗[R] M ≃ₗ[A] M :=
+  (equivOfCompatibleSMul R A A M).symm ≪≫ₗ TensorProduct.lid _ _
+
+theorem lidOfCompatibleSMul_tmul (a m) : lidOfCompatibleSMul R A M (a ⊗ₜ[R] m) = a • m := rfl
+
+end CompatibleSMul
 
 open LinearMap
 
@@ -1018,7 +1030,7 @@ theorem congr_mul (f : M ≃ₗ[R] M) (g : N ≃ₗ[R] N) (f' : M ≃ₗ[R] M) (
 
 @[simp] theorem congr_zpow (f : M ≃ₗ[R] M) (g : N ≃ₗ[R] N) (n : ℤ) :
     congr f g ^ n = congr (f ^ n) (g ^ n) := by
-  induction n with
+  cases n with
   | ofNat n => exact congr_pow _ _ _
   | negSucc n => simp_rw [zpow_negSucc, congr_pow]; exact congr_symm _ _
 
@@ -1067,11 +1079,17 @@ theorem tensorTensorTensorComm_tmul (m : M) (n : N) (p : P) (q : Q) :
     tensorTensorTensorComm R M N P Q (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
   rfl
 
--- Porting note: the proof here was `rfl` but that caused a timeout.
 @[simp]
 theorem tensorTensorTensorComm_symm :
-    (tensorTensorTensorComm R M N P Q).symm = tensorTensorTensorComm R M P N Q := by
-  ext; rfl
+    (tensorTensorTensorComm R M N P Q).symm = tensorTensorTensorComm R M P N Q :=
+  rfl
+
+theorem tensorTensorTensorComm_comp_map {V W : Type*}
+    [AddCommMonoid V] [AddCommMonoid W] [Module R V] [Module R W]
+    (f : M →ₗ[R] S) (g : N →ₗ[R] T) (h : P →ₗ[R] V) (j : Q →ₗ[R] W) :
+    tensorTensorTensorComm R S T V W ∘ₗ map (map f g) (map h j) =
+      map (map f h) (map g j) ∘ₗ tensorTensorTensorComm R M N P Q :=
+  ext_fourfold' fun _ _ _ _ => rfl
 
 variable (M N P Q)
 
@@ -1120,6 +1138,10 @@ def rTensor (f : N →ₗ[R] P) : N ⊗[R] M →ₗ[R] P ⊗[R] M :=
   TensorProduct.map f id
 
 variable (g : P →ₗ[R] Q) (f : N →ₗ[R] P)
+
+theorem lTensor_def : f.lTensor M = TensorProduct.map LinearMap.id f := rfl
+
+theorem rTensor_def : f.rTensor M = TensorProduct.map f LinearMap.id := rfl
 
 @[simp]
 theorem lTensor_tmul (m : M) (n : N) : f.lTensor M (m ⊗ₜ n) = m ⊗ₜ f n :=
@@ -1514,7 +1536,7 @@ instance CompatibleSMul.int : CompatibleSMul R ℤ M N :=
 
 instance CompatibleSMul.unit {S} [Monoid S] [DistribMulAction S M] [DistribMulAction S N]
     [CompatibleSMul R S M N] : CompatibleSMul R Sˣ M N :=
-  ⟨fun s m n => (CompatibleSMul.smul_tmul (s : S) m n : _)⟩
+  ⟨fun s m n => CompatibleSMul.smul_tmul (s : S) m n⟩
 
 end TensorProduct
 

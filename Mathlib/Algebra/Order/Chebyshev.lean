@@ -7,8 +7,7 @@ import Mathlib.Algebra.Order.Monovary
 import Mathlib.Algebra.Order.Rearrangement
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.Positivity
 
 /-!
 # Chebyshev's sum inequality
