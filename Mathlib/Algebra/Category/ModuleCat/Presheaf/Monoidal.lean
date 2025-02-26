@@ -107,20 +107,20 @@ noncomputable instance monoidalCategoryStruct :
     rfl))
 
 noncomputable instance monoidalCategory :
-    MonoidalCategory (PresheafOfModules.{u} (R ⋙ forget₂ _ _)) where
-  tensorHom_def _ _ := by ext1; apply tensorHom_def
-  tensor_id _ _ := by ext1; apply tensor_id
-  tensor_comp _ _ _ _ := by ext1; apply tensor_comp
-  whiskerLeft_id M₁ M₂ := by
-    ext1 X
-    apply MonoidalCategory.whiskerLeft_id (C := ModuleCat (R.obj X))
-  id_whiskerRight _ _ := by
-    ext1 X
-    apply MonoidalCategory.id_whiskerRight (C := ModuleCat (R.obj X))
-  associator_naturality _ _ _ := by ext1; apply associator_naturality
-  leftUnitor_naturality _ := by ext1; apply leftUnitor_naturality
-  rightUnitor_naturality _ := by ext1; apply rightUnitor_naturality
-  pentagon _ _ _ _ := by ext1; apply pentagon
-  triangle _ _ := by ext1; apply triangle
+    MonoidalCategory (PresheafOfModules.{u} (R ⋙ forget₂ _ _)) :=
+  ofTensorComp
+    (tensorHom_def := fun _ _ => by ext1; apply tensorHom_def)
+    (tensor_comp := fun _ _ _ _ => by ext1; apply tensor_comp)
+    (whiskerLeft_id := fun M₁ M₂ => by
+      ext1 X
+      apply MonoidalCategory.whiskerLeft_id (C := ModuleCat (R.obj X)))
+    (id_whiskerRight := fun _ _ => by
+      ext1 X
+      apply MonoidalCategory.id_whiskerRight (C := ModuleCat (R.obj X)))
+    (associator_naturality := fun _ _ _ => by ext1; apply associator_naturality)
+    (leftUnitor_naturality := fun _ => by ext1; apply leftUnitor_naturality)
+    (rightUnitor_naturality := fun _ => by ext1; apply rightUnitor_naturality)
+    (pentagon := fun _ _ _ _ => by ext1; apply pentagon)
+    (triangle := fun _ _ => by ext1; apply triangle)
 
 end PresheafOfModules
