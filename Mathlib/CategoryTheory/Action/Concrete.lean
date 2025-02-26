@@ -3,11 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Group.Action.End
 import Mathlib.Algebra.Group.Action.Pi
+import Mathlib.CategoryTheory.Action.Basic
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.CategoryTheory.Action.Basic
 
 /-!
 # Constructors for `Action V G` for some concrete categories

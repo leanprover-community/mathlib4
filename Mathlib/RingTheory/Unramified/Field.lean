@@ -177,7 +177,7 @@ theorem range_eq_top_of_isPurelyInseparable
     have inst : IsReduced (L ⊗[K] L) := isReduced_of_field L _
     exact sub_eq_zero.mp (IsNilpotent.eq_zero ⟨_, this⟩)
   by_cases h' : LinearIndependent K ![1, x]
-  · have h := h'.coe_range
+  · have h := h'.linearIndepOn_id
     let S := h.extend (Set.subset_univ _)
     let a : S := ⟨1, h.subset_extend _ (by simp)⟩
     have ha : Basis.extend h a = 1 := by simp [a]

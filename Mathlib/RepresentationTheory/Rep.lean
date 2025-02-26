@@ -355,8 +355,8 @@ protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
   map_comp := fun _ _ => by ext; rfl
 
 @[simp] theorem ihom_obj_ρ_apply {A B : Rep k G} (g : G) (x : A →ₗ[k] B) :
-  -- Hint to put this lemma into `simp`-normal form.
-  DFunLike.coe (F := (Representation k G (↑A.V →ₗ[k] ↑B.V)))
+    -- Hint to put this lemma into `simp`-normal form.
+    DFunLike.coe (F := (Representation k G (↑A.V →ₗ[k] ↑B.V)))
     ((Rep.ihom A).obj B).ρ g x = B.ρ g ∘ₗ x ∘ₗ A.ρ g⁻¹ :=
   rfl
 
