@@ -630,6 +630,7 @@ import Mathlib.Algebra.Module.Projective
 import Mathlib.Algebra.Module.Rat
 import Mathlib.Algebra.Module.RingHom
 import Mathlib.Algebra.Module.SnakeLemma
+import Mathlib.Algebra.Module.SpanRank
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.Module.Submodule.Bilinear
 import Mathlib.Algebra.Module.Submodule.Defs
@@ -773,11 +774,13 @@ import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Algebra.Order.Interval.Basic
-import Mathlib.Algebra.Order.Interval.Finset
+import Mathlib.Algebra.Order.Interval.Finset.Basic
+import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 import Mathlib.Algebra.Order.Interval.Multiset
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Algebra.Order.Interval.Set.Instances
 import Mathlib.Algebra.Order.Interval.Set.Monoid
+import Mathlib.Algebra.Order.Interval.Set.SuccPred
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Algebra.Order.Module.Algebra
@@ -1164,6 +1167,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
 import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
+import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 import Mathlib.AlgebraicTopology.SimplicialSet.Path
 import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
@@ -1701,6 +1705,7 @@ import Mathlib.Analysis.VonNeumannAlgebra.Basic
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Abelian.CommSq
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
+import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
 import Mathlib.CategoryTheory.Abelian.EpiWithInjectiveKernel
 import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.CategoryTheory.Abelian.Ext
@@ -1838,6 +1843,7 @@ import Mathlib.CategoryTheory.Comma.Presheaf.Basic
 import Mathlib.CategoryTheory.Comma.Presheaf.Colimit
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 import Mathlib.CategoryTheory.Comma.StructuredArrow.CommaMap
+import Mathlib.CategoryTheory.Comma.StructuredArrow.Final
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Functor
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 import Mathlib.CategoryTheory.ComposableArrows
@@ -3683,6 +3689,7 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 import Mathlib.LinearAlgebra.FreeModule.Int
+import Mathlib.LinearAlgebra.FreeModule.ModN
 import Mathlib.LinearAlgebra.FreeModule.Norm
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
@@ -4436,6 +4443,7 @@ import Mathlib.Order.Interval.Finset.Box
 import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Order.Interval.Finset.Fin
 import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Order.Interval.Finset.SuccPred
 import Mathlib.Order.Interval.Multiset
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Order.Interval.Set.Defs
@@ -4454,6 +4462,7 @@ import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Order.Interval.Set.Pi
 import Mathlib.Order.Interval.Set.ProjIcc
 import Mathlib.Order.Interval.Set.SuccOrder
+import Mathlib.Order.Interval.Set.SuccPred
 import Mathlib.Order.Interval.Set.SurjOn
 import Mathlib.Order.Interval.Set.UnorderedInterval
 import Mathlib.Order.Interval.Set.WithBotTop
