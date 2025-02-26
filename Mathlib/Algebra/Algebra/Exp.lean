@@ -80,8 +80,7 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
   rw [← exp_eq_truncated R A (k := 2 * N + 1) (a + b)
   (Commute.add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero h₁ h₄ h₅ (by omega)),
   ← exp_eq_truncated R A a h₄, ← exp_eq_truncated R A b h₅]
-  have s₁ :=
-    calc
+  have s₁ := calc
       ∑ i ∈ range (2 * N + 1), (i.factorial : R)⁻¹ • (a + b) ^ i
           = ∑ i ∈ range (2 * N + 1), (i.factorial : R)⁻¹ •
             (∑ j ∈ range (i + 1), a ^ j * b ^ (i - j) * i.choose j) := by
@@ -112,8 +111,7 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
         rw [sum_sigma']
         apply sum_bij (fun ⟨i, j⟩ _ => (j, i - j))
         · simp only [mem_sigma, mem_range, product_eq_sprod, mem_filter, mem_product, and_imp]
-          intro _ _ _
-          omega
+          (intro _ _ _; omega)
         · simp only [mem_sigma, mem_range, Prod.mk.injEq, and_imp]
           (intro _ _ _ _ _ _ h _; exact Sigma.ext (by omega) (heq_of_eq h))
         · simp only [product_eq_sprod, mem_filter, mem_product, mem_range, mem_sigma, exists_prop,
@@ -152,12 +150,10 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
     · ext x
       simp only [product_eq_sprod, mem_filter, mem_product, mem_range]
       constructor <;> omega
-    · intro x hx
-      rfl
+    · (intro _ _; rfl)
   simp only [product_eq_sprod] at restrict
   rw [restrict] at s₁
-  have s₂ :=
-    calc
+  have s₂ := calc
       (∑ i ∈ range (N + 1), (i.factorial : R)⁻¹ • a ^ i) * ∑ i ∈ range (N + 1),
         (i.factorial : R)⁻¹ • b ^ i =
       ∑ i ∈ range (N + 1), ∑ j ∈ range (N + 1), ((i.factorial : R)⁻¹ * (j.factorial : R)⁻¹) •
