@@ -102,6 +102,9 @@ instance [IsSemisimpleModule R M] [Module.Finite R M] : IsArtinian R M :=
 
 section length
 
+lemma isSimpleModule_length_eq_one (M : Type*) [AddCommGroup M] [Module R M] [IsSimpleModule R M] :
+    Module.length R M = 1 := sorry
+
 theorem isFiniteLength_iff_length_finite (M : Type*) [AddCommGroup M] [Module R M] :
     IsFiniteLength R M ↔ Module.length R M ≠ ⊤ := sorry
 
