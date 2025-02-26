@@ -55,6 +55,26 @@ theorem NumberField.isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
   convert (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
   rw [← abs_one, abs_eq_abs, ← Rat.RingOfIntegers.isUnit_iff]
 
+theorem NumberField.IsOfFinOrder_iff_eq_one_or_neg_one_of_odd_finrank [NumberField K]
+    (h : Odd (Module.finrank ℚ K)) {x : 𝓞 K} : IsOfFinOrder x ↔ x = 1 ∨ x = -1 := by
+  constructor
+  · intro hf
+    by_cases hc : 2 < orderOf (x : K)
+    · linarith [IsPrimitiveRoot.nrRealPlaces_eq_zero_of_two_lt hc (IsPrimitiveRoot.orderOf (x : K)),
+        NumberField.InfinitePlace.nrRealPlaces_pos_of_odd_finrank h]
+    · push_neg at hc
+      erw [le_iff_lt_or_eq, orderOf_submonoid] at hc
+      rcases hc with h1 | h2
+      · rw [← orderOf_pos_iff] at hf
+        exact Or.intro_left _ (orderOf_eq_one_iff.1 (by linarith))
+      · have aux := pow_orderOf_eq_one x
+        rw [h2, sq_eq_one_iff] at aux
+        exact aux
+  · rintro (rfl | rfl)
+    · exact IsOfFinOrder.one
+    · rw [isOfFinOrder_iff_pow_eq_one]
+      exact ⟨2, by simp ⟩
+
 end IsUnit
 
 namespace NumberField.Units
@@ -153,6 +173,36 @@ theorem rootsOfUnity_eq_torsion [NumberField K] :
   · rw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
     exact ⟨↑(torsionOrder K), (torsionOrder K).prop, h⟩
   · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ _ ⟨ζ, h⟩)
+
+section odd
+
+variable {K}
+
+theorem torsionOrder_eq_two_of_odd_finrank [NumberField K]
+    (h : Odd (Module.finrank ℚ K)) : NumberField.Units.torsionOrder K = 2 := by
+  classical
+  refine PNat.eq ?_
+  erw [Finset.card_eq_two]
+  use 1 , ⟨-1, by erw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]; use 2; norm_num⟩
+  constructor
+  · intro hc
+    simp [← Subtype.val_inj] at hc
+  · ext x
+    constructor
+    · intro hx
+      obtain ⟨m ,hm⟩ := isOfFinOrder_iff_pow_eq_one.1
+        ((CommGroup.mem_torsion _ _).1 (SetLike.coe_mem x))
+      have : IsOfFinOrder (↑(↑x : (𝓞 K)ˣ) : (𝓞 K)) := by
+        rw [isOfFinOrder_iff_pow_eq_one]
+        show (∃ m, 0 < m ∧ (↑((↑x : (𝓞 K)ˣ) ^ m) : (𝓞 K)) = 1)
+        exact ⟨m, ⟨hm.1, by erw [hm.2]; rfl⟩⟩
+      rw [IsOfFinOrder_iff_eq_one_or_neg_one_of_odd_finrank h] at this
+      simp only [Finset.mem_insert, Finset.mem_singleton]
+      rw [← Subtype.val_inj, ← Subtype.val_inj, ← Units.eq_iff, ← Units.eq_iff]
+      exact this
+    · simp
+
+end odd
 
 end torsion
 
