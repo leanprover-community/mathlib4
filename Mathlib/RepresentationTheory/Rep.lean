@@ -127,22 +127,7 @@ noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k))
 noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.preservesColimits_forget.{u} _ _
 
-section
-
-open MonoidalCategory
-
-/- Porting note: linter complains `simp` unfolds some types in the LHS, so
-have removed `@[simp]`. -/
-theorem MonoidalCategory.braiding_hom_apply {A B : Rep k G} (x : A) (y : B) :
-    Action.Hom.hom (β_ A B).hom (TensorProduct.tmul k x y) = TensorProduct.tmul k y x :=
-  rfl
-
-/- Porting note: linter complains `simp` unfolds some types in the LHS, so
-have removed `@[simp]`. -/
-theorem MonoidalCategory.braiding_inv_apply {A B : Rep k G} (x : A) (y : B) :
-    Action.Hom.hom (β_ A B).inv (TensorProduct.tmul k y x) = TensorProduct.tmul k x y :=
-  rfl
-
+open MonoidalCategory in
 @[simp]
 theorem tensor_ρ {A B : Rep k G} : (A ⊗ B).ρ = A.ρ.tprod B.ρ := rfl
 
@@ -299,7 +284,7 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (leftRegular k G ⟶ A) �
   map_smul' _ _ := rfl
   invFun x := leftRegularHom A x
   left_inv f := Action.Hom.ext <| ModuleCat.hom_ext <| Finsupp.lhom_ext' fun x =>
-    LinearMap.ext_ring <| by simpa using (hom_comm_apply f x (Finsupp.single 1 1)).symm
+    LinearMap.ext_ring <| by simp [← hom_comm_apply f]
   right_inv x := by simp
 
 theorem leftRegularHomEquiv_symm_hom_single {A : Rep k G} (x : A) (g : G) :
