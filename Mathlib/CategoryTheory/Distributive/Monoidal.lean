@@ -147,11 +147,6 @@ section IsMonoidalRightDistrib
 
 attribute [instance] IsMonoidalRightDistrib.preservesBinaryCoproducts_tensorRight
 
-instance IsMonoidalRightDistrib.preservesColimit_pair_tensorRight
-    [IsMonoidalRightDistrib C] {X Y Z : C} :
-    PreservesColimit (pair Y Z) (tensorRight X) :=
-  (IsMonoidalRightDistrib.preservesBinaryCoproducts_tensorRight X).preservesColimit
-
 /-- The canonical right distributivity isomorphism -/
 def rightDistrib [IsMonoidalRightDistrib C] (X Y Z : C) : (Y ⊗ X) ⨿ (Z ⊗ X) ≅ (Y ⨿ Z) ⊗ X :=
   PreservesColimitPair.iso (tensorRight X) Y Z
