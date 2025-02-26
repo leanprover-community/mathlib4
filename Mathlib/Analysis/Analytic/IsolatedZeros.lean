@@ -323,8 +323,7 @@ theorem AnalyticAt.preimage_of_nhdsNE {x : 𝕜} {f : 𝕜 → E} {s : Set E} (h
   have : ∀ᶠ (z : 𝕜) in 𝓝 x, f z ∈ insert (f x) s := by
     filter_upwards [hfx.continuousAt.preimage_mem_nhds (insert_mem_nhds_iff.2 hs)]
     tauto
-  by_contra h
-  absurd h₂f
+  contrapose! h₂f with h
   rw [eventuallyConst_iff_exists_eventuallyEq]
   use f x
   rw [EventuallyEq, ← hfx.frequently_eq_iff_eventually_eq analyticAt_const]
