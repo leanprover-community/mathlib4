@@ -317,10 +317,6 @@ instance Subring.continuousSMul (s : Subring α) (X) [TopologicalSpace X] [MulAc
     [ContinuousSMul α X] : ContinuousSMul s X :=
   Subsemiring.continuousSMul s.toSubsemiring X
 
-instance Subring.continuousSMul (s : Subring α) (X) [TopologicalSpace X] [MulAction α X]
-    [ContinuousSMul α X] : ContinuousSMul s X :=
-  Subsemiring.continuousSMul s.toSubsemiring X
-
 /-- The (topological-space) closure of a subring of a topological ring is
 itself a subring. -/
 def Subring.topologicalClosure (S : Subring α) : Subring α :=
