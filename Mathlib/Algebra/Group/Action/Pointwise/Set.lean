@@ -11,6 +11,7 @@ import Mathlib.Data.Set.Pairwise.Basic
 
 /-!
 # Pointwise actions on sets
+
 This file proves that several kinds of actions of a type `α` on another type `β` transfer to actions
 of `α`/`Set α` on `Set β`.
 
@@ -20,27 +21,20 @@ of `α`/`Set α` on `Set β`.
   default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
   since we expect the locale to be open whenever the instances are actually used (and making the
   instances reducible changes the behavior of `simp`.
-
-## Tags
-
-set multiplication, set addition, pointwise addition, pointwise multiplication,
-pointwise subtraction
 -/
 
 assert_not_exists MonoidWithZero OrderedAddCommMonoid
 
 open Function MulOpposite
+open scoped Pointwise
 
 variable {F α β γ : Type*}
 
 namespace Set
 
-/-! ### Set addition/multiplication -/
-
-open scoped Pointwise
+/-! ### Translation/scaling of sets -/
 
 section Mul
-
 variable {ι : Sort*} {κ : ι → Sort*} [Mul α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
 @[to_additive] lemma smul_set_subset_mul : a ∈ s → a • t ⊆ s * t := image_subset_image2_right
@@ -58,11 +52,11 @@ theorem iUnion_op_smul_set (s t : Set α) : ⋃ a ∈ t, MulOpposite.op a • s 
   iUnion_image_right _
 
 @[to_additive]
-lemma mul_subset_iff_left : s * t ⊆ u ↔ ∀ a ∈ s, a • t ⊆ u :=
+theorem mul_subset_iff_left : s * t ⊆ u ↔ ∀ a ∈ s, a • t ⊆ u :=
   image2_subset_iff_left
 
 @[to_additive]
-lemma mul_subset_iff_right : s * t ⊆ u ↔ ∀ b ∈ t, op b • s ⊆ u :=
+theorem mul_subset_iff_right : s * t ⊆ u ↔ ∀ b ∈ t, op b • s ⊆ u :=
   image2_subset_iff_right
 
 @[to_additive] lemma pair_mul (a b : α) (s : Set α) : {a, b} * s = a • s ∪ b • s := by
@@ -300,7 +294,7 @@ lemma disjoint_smul_set : Disjoint (a • s) (a • t) ↔ Disjoint s t :=
 
 @[to_additive]
 lemma disjoint_smul_set_left : Disjoint (a • s) t ↔ Disjoint s (a⁻¹ • t) := by
-  simpa only [smul_inv_smul a t] using disjoint_smul_set (a := a) (t := a⁻¹ • t)
+  simpa using disjoint_smul_set (a := a) (t := a⁻¹ • t)
 
 @[to_additive]
 lemma disjoint_smul_set_right : Disjoint s (a • t) ↔ Disjoint (a⁻¹ • s) t := by
