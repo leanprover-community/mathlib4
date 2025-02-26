@@ -72,7 +72,25 @@ theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R 
       f.sum (fun i r => Q (g i r)) +
       ∑ p ∈ f.support.sym2 with ¬ p.IsDiag,
         polarSym2 Q (p.map fun i => g i (f i))  := by
-  exact Q.map_sum _ _
+  have e1 : Q (f.sum g) = Q (∑ i ∈ f.support, g i (f i)) := rfl
+  rw [e1]
+  rw [Q.map_sum f.support (fun i => g i (f i))]
+  rfl
+
+open Finsupp in
+theorem map_finsuppSum'' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
+    Q (f.sum g) =
+      (f.sum (fun i r => Q (g i r))) +
+      (f.sym2OffDiag.sum fun p i =>
+        polarSym2 Q (p.map fun i => g i (f i))) := by
+  have e1 : Q (f.sum g) = Q (∑ i ∈ f.support, g i (f i)) := rfl
+  rw [e1]
+  rw [Q.map_sum f.support (fun i => g i (f i))]
+  have e2 : (f.sum fun i r ↦ Q (g i r)) = ∑ i ∈ f.support, Q (g i (f i)) := rfl
+  rw [e2]
+  simp only [add_right_inj]
+  rw [Finsupp.sym2OffDiag]
+  apply Finsupp.congr (Finset.filter (fun ij ↦ ¬ij.IsDiag) f.support.sym2) ()
 
 -- c.f. `Finsupp.apply_linearCombination`
 open Finsupp in

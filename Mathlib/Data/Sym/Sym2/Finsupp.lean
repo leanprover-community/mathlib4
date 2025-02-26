@@ -62,4 +62,14 @@ noncomputable def Finsupp.sym2OffDiag (f : α →₀ R) :
     (Sym2.lift ⟨fun a b ↦ if a = b then 0 else f a * f b, by simp [eq_comm, mul_comm]⟩)
     (by simp +contextual [Sym2.forall]; aesop)
 
+@[simp]
+lemma sym2OffDiag_mk (f : α →₀ R) (xy : α × α) :
+    Finsupp.sym2OffDiag f (Sym2.mk xy) = if xy.1 = xy.2 then 0 else f xy.1 * f xy.2 := rfl
+
+lemma support_sym2OffDiag (f : α →₀ R) :
+    f.sym2OffDiag.support ⊆ Finset.filter (fun ij ↦ ¬ij.IsDiag) f.support.sym2 := by
+  intro p hp
+  obtain ⟨a,b⟩ := p
+  aesop
+
 end
