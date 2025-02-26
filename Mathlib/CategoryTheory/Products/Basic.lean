@@ -248,7 +248,7 @@ section
 variable (C)
 
 /-- The diagonal functor. -/
-@[simps! obj obj_fst map map_fst map_snd]
+@[simps! obj obj_fst obj_snd map map_fst map_snd]
 def diag : C ⥤ C × C :=
   (𝟭 C).prod' (𝟭 C)
 
