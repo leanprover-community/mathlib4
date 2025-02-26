@@ -61,11 +61,7 @@ instance : (Action.forget V G).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
       μIso := fun _ _ ↦ Iso.refl _ }
-
-open Functor.LaxMonoidal Functor.OplaxMonoidal
-
 @[simp] lemma forget_ε : ε (Action.forget V G) = 𝟙 _ := rfl
-@[simp] lemma forget_η : ε (Action.forget V G) = 𝟙 _ := rfl
 
 variable {V G}
 
