@@ -13,6 +13,7 @@ import Mathlib.CategoryTheory.Monoidal.Preadditive
 /-!
 # Distributive monoidal categories
 
+
 ## Main definitions
 
 A monoidal category `C` with binary coproducts is left distributive if the left tensor product
