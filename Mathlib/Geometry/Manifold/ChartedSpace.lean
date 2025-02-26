@@ -950,13 +950,13 @@ lemma ChartedSpace.sum_chartAt_inr (x' : M') :
   simp only [chartAt, sum, nonempty_of_chartedSpace x', ↓reduceDIte]
   rfl
 
-@[simp] lemma sum_chartAt_inl_apply {x y : M} :
+@[simp, mfld_simps] lemma sum_chartAt_inl_apply {x y : M} :
     (chartAt H (.inl x : M ⊕ M')) (Sum.inl y) = (chartAt H x) y := by
   haveI : Nonempty H := nonempty_of_chartedSpace x
   rw [ChartedSpace.sum_chartAt_inl]
   exact PartialHomeomorph.lift_openEmbedding_apply _ _
 
-@[simp] lemma sum_chartAt_inr_apply {x y : M'} :
+@[simp, mfld_simps] lemma sum_chartAt_inr_apply {x y : M'} :
     (chartAt H (.inr x : M ⊕ M')) (Sum.inr y) = (chartAt H x) y := by
   haveI : Nonempty H := nonempty_of_chartedSpace x
   rw [ChartedSpace.sum_chartAt_inr]
