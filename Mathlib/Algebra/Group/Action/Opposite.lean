@@ -131,3 +131,59 @@ example [Monoid α] : Monoid.toMulAction αᵐᵒᵖ = MulOpposite.instMulAction
 instance LeftCancelMonoid.toFaithfulSMul_opposite [LeftCancelMonoid α] :
     FaithfulSMul αᵐᵒᵖ α where
   eq_of_smul_eq_smul h := unop_injective <| mul_left_cancel (h 1)
+
+/-!
+### Right actions
+
+In this section we establish `SMul αᵐᵒᵖ β` as the canonical spelling of right scalar multiplication
+of `β` by `α`, and provide convenient notations.
+-/
+
+namespace RightActions
+
+/-- With `open scoped RightActions`, an alternative symbol for left actions, `r • m`.
+
+In lemma names this is still called `smul`. -/
+scoped notation3:74 r:75 " •> " m:74 => r • m
+
+/-- With `open scoped RightActions`, a shorthand for right actions, `op r • m`.
+
+In lemma names this is still called `op_smul`. -/
+scoped notation3:73 m:73 " <• " r:74 => MulOpposite.op r • m
+
+/-- With `open scoped RightActions`, an alternative symbol for left actions, `r • m`.
+
+In lemma names this is still called `vadd`. -/
+scoped notation3:74 r:75 " +ᵥ> " m:74 => r +ᵥ m
+
+/-- With `open scoped RightActions`, a shorthand for right actions, `op r +ᵥ m`.
+
+In lemma names this is still called `op_vadd`. -/
+scoped notation3:73 m:73 " <+ᵥ " r:74 => AddOpposite.op r +ᵥ m
+
+section examples
+variable [SMul α β] [SMul αᵐᵒᵖ β] [VAdd α β] [VAdd αᵃᵒᵖ β] {a a₁ a₂ a₃ a₄ : α} {b : β}
+
+-- Left and right actions are just notation around the general `•` and `+ᵥ` notations
+example : a •> b = a • b := rfl
+example : b <• a = MulOpposite.op a • b := rfl
+
+example : a +ᵥ> b = a +ᵥ b := rfl
+example : b <+ᵥ a = AddOpposite.op a +ᵥ b := rfl
+
+-- Left actions right-associate, right actions left-associate
+example : a₁ •> a₂ •> b = a₁ •> (a₂ •> b) := rfl
+example : b <• a₂ <• a₁ = (b <• a₂) <• a₁ := rfl
+
+example : a₁ +ᵥ> a₂ +ᵥ> b = a₁ +ᵥ> (a₂ +ᵥ> b) := rfl
+example : b <+ᵥ a₂ <+ᵥ a₁ = (b <+ᵥ a₂) <+ᵥ a₁ := rfl
+
+-- When left and right actions coexist, they associate to the left
+example : a₁ •> b <• a₂ = (a₁ •> b) <• a₂ := rfl
+example : a₁ •> a₂ •> b <• a₃ <• a₄ = ((a₁ •> (a₂ •> b)) <• a₃) <• a₄ := rfl
+
+example : a₁ +ᵥ> b <+ᵥ a₂ = (a₁ +ᵥ> b) <+ᵥ a₂ := rfl
+example : a₁ +ᵥ> a₂ +ᵥ> b <+ᵥ a₃ <+ᵥ a₄ = ((a₁ +ᵥ> (a₂ +ᵥ> b)) <+ᵥ a₃) <+ᵥ a₄ := rfl
+
+end examples
+end RightActions
