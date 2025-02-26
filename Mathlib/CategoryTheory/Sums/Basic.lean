@@ -289,22 +289,24 @@ variable (A A') (B)
  functor categories. -/
 @[simps! functor_obj functor_map]
 def functorEquiv : (A ⊕ A') ⥤ B ≌ (A ⥤ B) × (A' ⥤ B) where
-  functor := {
-    obj F := ⟨inl_ _ _ ⋙ F , inr_ _ _ ⋙ F⟩
-    map η := ⟨whiskerLeft _ η, whiskerLeft _ η⟩ }
-  inverse := {
-    obj F := Functor.sum' F.1 F.2
-    map η := NatTrans.sum' η.1 η.2
-    map_id x := by
-      ext x'
-      cases x' <;> rfl }
-  unitIso := NatIso.ofComponents (fun x ↦
-    NatIso.ofComponents (fun t ↦
-      match t with
-      | inl x => Iso.refl _
-      | inr x => Iso.refl _))
-  counitIso := NatIso.ofComponents <| fun _ ↦
-    Iso.prod (NatIso.ofComponents (fun _ ↦ Iso.refl _)) (NatIso.ofComponents (fun _ ↦ Iso.refl _))
+  functor :=
+    { obj F := ⟨inl_ _ _ ⋙ F , inr_ _ _ ⋙ F⟩
+      map η := ⟨whiskerLeft _ η, whiskerLeft _ η⟩ }
+  inverse :=
+    { obj F := Functor.sum' F.1 F.2
+      map η := NatTrans.sum' η.1 η.2
+      map_id x := by
+        ext x'
+        cases x' <;> rfl }
+  unitIso :=
+    NatIso.ofComponents (fun x ↦
+      NatIso.ofComponents (fun t ↦
+        match t with
+        | inl x => Iso.refl _
+        | inr x => Iso.refl _))
+  counitIso :=
+    NatIso.ofComponents <| fun _ ↦
+      Iso.prod (NatIso.ofComponents (fun _ ↦ Iso.refl _)) (NatIso.ofComponents (fun _ ↦ Iso.refl _))
 
 -- generated simps lemma for `functorEquiv` include match arms in the statements, so we rather
 -- state them separately for the two constructors of `A ⊕ A'`.
@@ -420,8 +422,8 @@ def functorEquivInverseCompWhiskeringLeftInRIso :
 def natTransOfNatTransWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
     (η₁ : inl_ _ _ ⋙ F ⟶ inl_ _ _ ⋙ G) (η₂ : inr_ _ _ ⋙ F ⟶ inr_ _ _ ⋙ G) : F ⟶ G :=
   (functorEquiv _ _ _).unit.app _ ≫
-    ((functorEquiv _ _ _).inverse.map
-      (⟨η₁, η₂⟩ : (functorEquiv _ _ _).functor.obj _ ⟶ (functorEquiv _ _ _).functor.obj _)) ≫
+    (functorEquiv _ _ _).inverse.map
+      (⟨η₁, η₂⟩ : (functorEquiv _ _ _).functor.obj _ ⟶ (functorEquiv _ _ _).functor.obj _) ≫
       (functorEquiv _ _ _).unitInv.app _
 
 @[simp]
@@ -444,7 +446,7 @@ lemma natTransOfNatTransWhiskerLeftInlInr_comp {F G H : A ⊕ A' ⥤ B}
 def natIsoOfNatIsoWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
     (η₁ : inl_ _ _ ⋙ F ≅ inl_ _ _ ⋙ G) (η₂ : inr_ _ _ ⋙ F ≅ inr_ _ _ ⋙ G) : F ≅ G :=
   (functorEquiv _ _ _).unitIso.app _ ≪≫
-    ((functorEquiv _ _ _).inverse.mapIso (Iso.prod η₁ η₂)) ≪≫
+    (functorEquiv _ _ _).inverse.mapIso (Iso.prod η₁ η₂) ≪≫
       (functorEquiv _ _ _).unitIso.symm.app _
 
 @[simp]
