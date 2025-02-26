@@ -31,9 +31,9 @@ in this setup.
 * Vanishing of products of analytic functions, `eq_zero_or_eq_zero_of_smul_eq_zero`: If `f, g` are
   analytic on a neighbourhood of the preconnected open set `U`, and `f • g = 0` on `U`, then either
   `f = 0` on `U` or `g = 0` on `U`.
-* Preimages of codiscrete sets, `AnalyticOnNhd.preimage_mem_codiscreteWithin`: if `f` is analytic on a
-  neighbourhood of `U` and not locally constant, then the preimage of any subset codiscrete within
-  `f '' U` is codiscrete within `U`.
+* Preimages of codiscrete sets, `AnalyticOnNhd.preimage_mem_codiscreteWithin`: if `f` is analytic
+  on a neighbourhood of `U` and not locally constant, then the preimage of any subset codiscrete
+  within `f '' U` is codiscrete within `U`.
 -/
 
 open Filter Function Nat FormalMultilinearSeries EMetric Set

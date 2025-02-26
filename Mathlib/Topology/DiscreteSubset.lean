@@ -111,6 +111,17 @@ lemma mem_codiscreteWithin_accPt {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ¬AccPt x (𝓟 (T \ S)) := by
   simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]
 
+/-- If a set is codiscrete within `U`, then it is codiscrete within any subset of `U`. -/
+lemma Filter.codiscreteWithin.mono {T₁ T₂ : Set X} (hU : T₁ ⊆ T₂) :
+   codiscreteWithin T₁ ≤ codiscreteWithin T₂ := by
+  intro s hs
+  simp_rw [mem_codiscreteWithin, disjoint_principal_right] at hs ⊢
+  intro x hx
+  specialize hs x (hU hx)
+  apply mem_of_superset hs
+  rw [Set.compl_subset_compl]
+  exact diff_subset_diff_left hU
+
 /-- In any topological space, the open sets with discrete complement form a filter,
 defined as the supremum of all punctured neighborhoods.
 
@@ -144,17 +155,5 @@ lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
   · suffices Tendsto (↑) (𝓝[≠] (⟨x, hx⟩ : S)) (𝓝[≠] x) by convert tendsto_def.mp this _; ext; simp
     exact tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       continuous_subtype_val.continuousWithinAt <| eventually_mem_nhdsWithin.mono (by simp)
-
-/-- If a set is codiscrete within `U`, then it is codiscrete within any subset of `U`. -/
-lemma Filter.codiscreteWithin.mono {X : Type u_1} [TopologicalSpace X] {U₁ U₂ : Set X}
-    (hU : U₁ ⊆ U₂) :
-   codiscreteWithin U₁ ≤ codiscreteWithin U₂ := by
-  intro s hs
-  simp_rw [mem_codiscreteWithin, disjoint_principal_right] at hs ⊢
-  intro x hx
-  specialize hs x (hU hx)
-  apply mem_of_superset hs
-  rw [Set.compl_subset_compl]
-  exact diff_subset_diff_left hU
 
 end codiscrete_filter
