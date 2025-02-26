@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
 import Mathlib.Control.Basic
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Monad
@@ -452,9 +452,11 @@ theorem head!_mem_self [Inhabited α] {l : List α} (h : l ≠ nil) : l.head! �
   have h' := mem_cons_self l.head! l.tail
   rwa [cons_head!_tail h] at h'
 
-theorem get_eq_get? (l : List α) (i : Fin l.length) :
-    l.get i = (l.get? i).get (by simp [getElem?_eq_getElem]) := by
+theorem get_eq_getElem? (l : List α) (i : Fin l.length) :
+    l.get i = l[i]?.get (by simp [getElem?_eq_getElem]) := by
   simp
+
+@[deprecated (since := "2025-02-15")] alias get_eq_get? := get_eq_getElem?
 
 theorem exists_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∃ x ∈ l, p x) ↔ ∃ (i : ℕ) (_ : i < l.length), p l[i] := by
@@ -609,16 +611,21 @@ theorem get_length_sub_one {l : List α} (h : l.length - 1 < l.length) :
     l.get ⟨l.length - 1, h⟩ = l.getLast (by rintro rfl; exact Nat.lt_irrefl 0 h) :=
   (getLast_eq_getElem l _).symm
 
-theorem ext_get?' {l₁ l₂ : List α} (h' : ∀ n < max l₁.length l₂.length, l₁.get? n = l₂.get? n) :
+theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length) :
+    (l.drop n).take 1 = [l.get ⟨n, h⟩] := by
+  rw [drop_eq_getElem_cons h, take, take]
+  simp
+
+theorem ext_getElem?' {l₁ l₂ : List α} (h' : ∀ n < max l₁.length l₂.length, l₁[n]? = l₂[n]?) :
     l₁ = l₂ := by
-  apply ext_get?
+  apply ext_getElem?
   intro n
   rcases Nat.lt_or_ge n <| max l₁.length l₂.length with hn | hn
   · exact h' n hn
   · simp_all [Nat.max_le, getElem?_eq_none]
 
-theorem ext_get?_iff {l₁ l₂ : List α} : l₁ = l₂ ↔ ∀ n, l₁.get? n = l₂.get? n :=
-  ⟨by rintro rfl _; rfl, ext_get?⟩
+@[deprecated (since := "2025-02-15")] alias ext_get?' := ext_getElem?'
+@[deprecated (since := "2025-02-15")] alias ext_get?_iff := List.ext_getElem?_iff
 
 theorem ext_get_iff {l₁ l₂ : List α} :
     l₁ = l₂ ↔ l₁.length = l₂.length ∧ ∀ n h₁ h₂, get l₁ ⟨n, h₁⟩ = get l₂ ⟨n, h₂⟩ := by
@@ -628,9 +635,11 @@ theorem ext_get_iff {l₁ l₂ : List α} :
   · intro ⟨h₁, h₂⟩
     exact ext_get h₁ h₂
 
-theorem ext_get?_iff' {l₁ l₂ : List α} : l₁ = l₂ ↔
-    ∀ n < max l₁.length l₂.length, l₁.get? n = l₂.get? n :=
-  ⟨by rintro rfl _ _; rfl, ext_get?'⟩
+theorem ext_getElem?_iff' {l₁ l₂ : List α} : l₁ = l₂ ↔
+    ∀ n < max l₁.length l₂.length, l₁[n]? = l₂[n]? :=
+  ⟨by rintro rfl _ _; rfl, ext_getElem?'⟩
+
+@[deprecated (since := "2025-02-15")] alias ext_get?_iff' := ext_getElem?_iff'
 
 /-- If two lists `l₁` and `l₂` are the same length and `l₁[n]! = l₂[n]!` for all `n`,
 then the lists are equal. -/
@@ -660,13 +669,8 @@ theorem getElem?_idxOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
   rw [getElem?_eq_getElem, getElem_idxOf (idxOf_lt_length_iff.2 h)]
 
 @[deprecated (since := "2025-01-30")] alias getElem?_indexOf := getElem?_idxOf
-
--- This is incorrectly named and should be `get?_idxOf`;
--- this already exists, so will require a deprecation dance.
-theorem idxOf_get? [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
-    get? l (idxOf a l) = some a := by simp [h]
-
-@[deprecated (since := "2025-01-30")] alias indexOf_get? := idxOf_get?
+@[deprecated (since := "2025-02-15")] alias idxOf_get? := getElem?_idxOf
+@[deprecated (since := "2025-01-30")] alias indexOf_get? := getElem?_idxOf
 
 theorem idxOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy : y ∈ l) :
     idxOf x l = idxOf y l ↔ x = y :=
@@ -857,11 +861,11 @@ theorem foldl_fixed {a : α} : ∀ l : List β, foldl (fun a _ => a) a l = a :=
 theorem foldr_fixed {b : β} : ∀ l : List α, foldr (fun _ b => b) b l = b :=
   foldr_fixed' fun _ => rfl
 
-theorem foldr_eta : ∀ l : List α, foldr cons [] l = l := by
-  simp only [foldr_cons_eq_append, append_nil, forall_const]
+@[deprecated foldr_cons_nil (since := "2025-02-10")]
+theorem foldr_eta (l : List α) : foldr cons [] l = l := foldr_cons_nil l
 
 theorem reverse_foldl {l : List α} : reverse (foldl (fun t h => h :: t) [] l) = l := by
-  rw [← foldr_reverse]; simp only [foldr_cons_eq_append, append_nil, reverse_reverse]
+  simp
 
 theorem foldl_hom₂ (l : List ι) (f : α → β → γ) (op₁ : α → ι → α) (op₂ : β → ι → β)
     (op₃ : γ → ι → γ) (a : α) (b : β) (h : ∀ a b i, f (op₁ a i) (op₂ b i) = op₃ (f a b) i) :
@@ -1042,7 +1046,7 @@ theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → �
   mp := by
     induction' l with a l ih
     · simp
-    cases' ha : f a with b <;> simp [ha, filterMap_cons]
+    rcases ha : f a with - | b <;> simp [ha, filterMap_cons]
     · intro h
       simpa [show (filterMap f l).length = l.length + 1 from by simp[h], Nat.add_one_le_iff]
         using List.length_filterMap_le f l

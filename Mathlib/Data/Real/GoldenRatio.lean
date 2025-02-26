@@ -204,7 +204,7 @@ theorem Real.coe_fib_eq' :
 theorem Real.coe_fib_eq : ∀ n, (Nat.fib n : ℝ) = (φ ^ n - ψ ^ n) / √5 := by
   rw [← funext_iff, Real.coe_fib_eq']
 
-/-- Relationship between the Fibonacci Sequence, Golden Ratio and its conjugate's exponents --/
+/-- Relationship between the Fibonacci Sequence, Golden Ratio and its conjugate's exponents -/
 theorem fib_golden_conj_exp (n : ℕ) : Nat.fib (n + 1) - φ * Nat.fib n = ψ ^ n := by
   repeat rw [coe_fib_eq]
   rw [mul_div, div_sub_div_same, mul_sub, ← pow_succ']
@@ -212,7 +212,7 @@ theorem fib_golden_conj_exp (n : ℕ) : Nat.fib (n + 1) - φ * Nat.fib n = ψ ^ 
   have nz : sqrt 5 ≠ 0 := by norm_num
   rw [← (mul_inv_cancel₀ nz).symm, one_mul]
 
-/-- Relationship between the Fibonacci Sequence, Golden Ratio and its exponents --/
+/-- Relationship between the Fibonacci Sequence, Golden Ratio and its exponents -/
 theorem fib_golden_exp' (n : ℕ) : φ * Nat.fib (n + 1) + Nat.fib n = φ ^ (n + 1) := by
   induction n with
   | zero => norm_num
