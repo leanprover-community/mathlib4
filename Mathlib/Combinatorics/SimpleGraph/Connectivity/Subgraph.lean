@@ -398,8 +398,10 @@ lemma exists_isCycle_snd_verts_eq {p : G.Walk v v} (h : p.IsCycle) (hadj : p.toS
 end IsCycle
 
 /-- This lemma considers the `SimpleGraph.Walk` until any vertex in a given set. You could
-interpret this as being `takeUntilSet`, but this cannot be defined since we give up the knowledge
-of what the endpoint is, compared to normal `SimpleGraph.Walk.takeUntil` usage. -/
+interpret this as being `takeUntilSet`, but defining this is slightly involved due to not
+knowing what the final vertex is. This could be done by defining a function to obtain
+the first encountered vertex and then use that to define `takeUntilSet`. THat direction
+could be worthwhile if this concept is used a lot more widely. -/
 lemma exists_mem_support_forall_not_adj_toSubgraph_takeUntil {u v} [DecidableEq V] {p : G.Walk u v}
     {s : Set V} (hs : s.Finite) (h : (s ∩ p.support.toFinset).Nonempty) :
     ∃ x ∈ s, ∃ (hx : x ∈ p.support),
