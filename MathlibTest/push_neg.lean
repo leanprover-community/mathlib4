@@ -5,6 +5,7 @@ Authors: Alice Laroche, Frédéric Dupuis, Jireh Loreaux
 -/
 
 import Mathlib.Order.Defs.LinearOrder
+import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Push
 
 private axiom test_sorry : ∀ {α}, α
