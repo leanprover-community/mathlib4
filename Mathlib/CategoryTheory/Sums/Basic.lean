@@ -215,6 +215,24 @@ theorem sum_map_inr (F : A ⥤ B) (G : C ⥤ D) {c c' : C} (f : inr c ⟶ inr c'
     (F.sum G).map f = G.map f :=
   rfl
 
+@[simp]
+theorem sum'_obj_inl (F : A ⥤ B) (G : A' ⥤ B) (a : A) : (F.sum' G).obj (inl a) = (F.obj a) :=
+  rfl
+
+@[simp]
+theorem sum'_obj_inr (F : A ⥤ B) (G : A' ⥤ B) (a' : A') : (F.sum' G).obj (inr a') = (G.obj a') :=
+  rfl
+
+@[simp]
+theorem sum'_map_inl (F : A ⥤ B) (G : A' ⥤ B) {a a' : A} (f : inl a ⟶ inl a') :
+    (F.sum' G).map f = F.map f :=
+  rfl
+
+@[simp]
+theorem sum'_map_inr (F : A ⥤ B) (G : A' ⥤ B) {a a' : A'} (f : inr a ⟶ inr a') :
+    (F.sum' G).map f = G.map f :=
+  rfl
+
 end Functor
 
 namespace NatTrans
@@ -266,9 +284,10 @@ end NatTrans
 namespace Sum
 
 variable (A A') (B) (C)
--- (Impl.) Not marking it as `[simps]` as it is already slow and times out.
+
 /-- The equivalence between functors from a sum and the product of the
  functor categories. -/
+@[simps! functor_obj functor_map]
 def functorEquiv : (A ⊕ A') ⥤ B ≌ (A ⥤ B) × (A' ⥤ B) where
   functor := {
     obj F := ⟨inl_ _ _ ⋙ F , inr_ _ _ ⋙ F⟩
@@ -286,6 +305,84 @@ def functorEquiv : (A ⊕ A') ⥤ B ≌ (A ⥤ B) × (A' ⥤ B) where
       | inr x => Iso.refl _))
   counitIso := NatIso.ofComponents <| fun _ ↦
     Iso.prod (NatIso.ofComponents (fun _ ↦ Iso.refl _)) (NatIso.ofComponents (fun _ ↦ Iso.refl _))
+
+-- generated simps lemma for `functorEquiv` include match arms in the statements, so we rather
+-- state them separately for the two constructors of `A ⊕ A'`.
+
+@[simp]
+lemma functorEquiv_inverse_obj_obj_inl (F : (A ⥤ B) × (A' ⥤ B)) (a : A) :
+    ((functorEquiv A A' B).inverse.obj F).obj (inl a) = F.1.obj a :=
+  rfl
+
+@[simp]
+lemma functorEquiv_inverse_obj_obj_inr (F : (A ⥤ B) × (A' ⥤ B)) (a' : A') :
+    ((functorEquiv A A' B).inverse.obj F).obj (inr a') = F.2.obj a' :=
+  rfl
+
+@[simp]
+lemma functorEquiv_inverse_obj_map_inl (F : (A ⥤ B) × (A' ⥤ B)) {a₀ a₁ : A} (f : a₀ ⟶ a₁) :
+    ((functorEquiv A A' B).inverse.obj F).map (f : inl _ ⟶ inl _) = F.1.map f :=
+  rfl
+
+@[simp]
+lemma functorEquiv_inverse_obj_map_inr (F : (A ⥤ B) × (A' ⥤ B)) {a'₀ a'₁ : A'} (f : a'₀ ⟶ a'₁) :
+    ((functorEquiv A A' B).inverse.obj F).map (f : inr _ ⟶ inr _) = F.2.map f :=
+  rfl
+
+@[simp]
+lemma functorEquiv_inverse_map_app_inl {X Y : (A ⥤ B) × (A' ⥤ B)} (η : X ⟶ Y) (a : A) :
+    ((functorEquiv A A' B).inverse.map η).app (inl a) = η.1.app a :=
+  rfl
+
+@[simp]
+lemma functorEquiv_inverse_map_app_inr {X Y : (A ⥤ B) × (A' ⥤ B)} (η : X ⟶ Y) (a' : A') :
+    ((functorEquiv A A' B).inverse.map η).app (inr a') = η.2.app a' :=
+  rfl
+
+@[simp]
+lemma functorEquiv_counitIso_hom_app (X : (A ⥤ B) × (A' ⥤ B)) :
+    (functorEquiv A A' B).counitIso.hom.app X = 𝟙 X :=
+  rfl
+
+@[simp]
+lemma functorEquiv_counit_hom_app (X : (A ⥤ B) × (A' ⥤ B)) :
+    (functorEquiv A A' B).counit.app X = 𝟙 X :=
+  rfl
+
+@[simp]
+lemma functorEquiv_counitIso_inv_app (X : (A ⥤ B) × (A' ⥤ B)) :
+    (functorEquiv A A' B).counitIso.inv.app X = 𝟙 X :=
+  rfl
+
+@[simp]
+lemma functorEquiv_unitIso_inv_app_app_inl (X : A ⊕ A' ⥤ B) (a : A):
+    ((functorEquiv A A' B).unitIso.inv.app X).app (inl a) = 𝟙 (X.obj (inl a)) :=
+  rfl
+
+@[simp]
+lemma functorEquiv_unitIso_inv_app_app_inr (X : A ⊕ A' ⥤ B) (a' : A'):
+    ((functorEquiv A A' B).unitIso.inv.app X).app (inr a') = 𝟙 (X.obj (inr a')) :=
+  rfl
+
+@[simp]
+lemma functorEquiv_unitIso_hom_app_app_inl (X : A ⊕ A' ⥤ B) (a : A):
+    ((functorEquiv A A' B).unitIso.hom.app X).app (inl a) = 𝟙 (X.obj (inl a)) :=
+  rfl
+
+@[simp]
+lemma functorEquiv_unitIso_hom_app_app_inr (X : A ⊕ A' ⥤ B) (a' : A'):
+    ((functorEquiv A A' B).unitIso.hom.app X).app (inr a') = 𝟙 (X.obj (inr a')) :=
+  rfl
+
+@[simp]
+lemma functorEquiv_unit_app_app_inl (X : A ⊕ A' ⥤ B) (a : A):
+    ((functorEquiv A A' B).unit.app X).app (inl a) = 𝟙 (X.obj (inl a)) :=
+  rfl
+
+@[simp]
+lemma functorEquiv_unit_app_app_inr (X : A ⊕ A' ⥤ B) (a' : A'):
+    ((functorEquiv A A' B).unit.app X).app (inr a') = 𝟙 (X.obj (inr a')) :=
+  rfl
 
 /-- Composing the forward direction of `functorEquiv` with the first projection is the same as
   precomposition with `inl_ A A'`. -/
@@ -314,6 +411,54 @@ def functorEquivInverseCompWhiskeringLeftInLIso :
 def functorEquivInverseCompWhiskeringLeftInRIso :
     (functorEquiv _ _ _).inverse ⋙ (whiskeringLeft _ _ C).obj (inr_ A A') ≅ Prod.snd _ _ :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
+
+variable {A} {A'} {B}
+/-- A restatement `functorEquiv` : we can construct a natural transformation of functors
+`A ⊕ A' ⥤ B` from the data of natural transformations of their whiskering with `inl_` and `inr_`. -/
+@[simps!]
+def natTransOfNatTransWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
+    (η₁ : inl_ _ _ ⋙ F ⟶ inl_ _ _ ⋙ G) (η₂ : inr_ _ _ ⋙ F ⟶ inr_ _ _ ⋙ G) : F ⟶ G :=
+  (functorEquiv _ _ _).unit.app _ ≫
+    ((functorEquiv _ _ _).inverse.map
+      (⟨η₁, η₂⟩ : (functorEquiv _ _ _).functor.obj _ ⟶ (functorEquiv _ _ _).functor.obj _)) ≫
+      (functorEquiv _ _ _).unitInv.app _
+
+@[simp]
+lemma natTransOfNatTransWhiskerLeftInlInr_id {F : A ⊕ A' ⥤ B} :
+    natTransOfNatTransWhiskerLeftInlInr (𝟙 (inl_ _ _ ⋙ F)) (𝟙 (inr_ _ _ ⋙ F)) = 𝟙 _ := by
+  aesop_cat
+
+@[simp]
+lemma natTransOfNatTransWhiskerLeftInlInr_comp {F G H : A ⊕ A' ⥤ B}
+    (η₁ : inl_ _ _ ⋙ F ⟶ inl_ _ _ ⋙ G) (η₂ : inr_ _ _ ⋙ F ⟶ inr_ _ _ ⋙ G)
+    (ν₁ : inl_ _ _ ⋙ G ⟶ inl_ _ _ ⋙ H) (ν₂ : inr_ _ _ ⋙ G ⟶ inr_ _ _ ⋙ H) :
+    natTransOfNatTransWhiskerLeftInlInr (η₁ ≫ ν₁) (η₂ ≫ ν₂) =
+      natTransOfNatTransWhiskerLeftInlInr η₁ η₂ ≫
+        natTransOfNatTransWhiskerLeftInlInr ν₁ ν₂ := by
+  aesop_cat
+
+/-- A restatement `functorEquiv` : we can construct a natural isomorphism of functors
+`A ⊕ A' ⥤ B` from the data of natural isomorphisms of their whiskering with `inl_` and `inr_`. -/
+@[simps!]
+def natIsoOfNatIsoWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
+    (η₁ : inl_ _ _ ⋙ F ≅ inl_ _ _ ⋙ G) (η₂ : inr_ _ _ ⋙ F ≅ inr_ _ _ ⋙ G) : F ≅ G :=
+  (functorEquiv _ _ _).unitIso.app _ ≪≫
+    ((functorEquiv _ _ _).inverse.mapIso (Iso.prod η₁ η₂)) ≪≫
+      (functorEquiv _ _ _).unitIso.symm.app _
+
+@[simp]
+lemma natIsoOfNatIsoWhiskerLeftInlInr_hom {F G : A ⊕ A' ⥤ B}
+    (η₁ : inl_ _ _ ⋙ F ≅ inl_ _ _ ⋙ G) (η₂ : inr_ _ _ ⋙ F ≅ inr_ _ _ ⋙ G) :
+    (natIsoOfNatIsoWhiskerLeftInlInr η₁ η₂).hom =
+      natTransOfNatTransWhiskerLeftInlInr η₁.hom η₂.hom := by
+  aesop_cat
+
+@[simp]
+lemma natIsoOfNatIsoWhiskerLeftInlInr_inv {F G : A ⊕ A' ⥤ B}
+    (η₁ : inl_ _ _ ⋙ F ≅ inl_ _ _ ⋙ G) (η₂ : inr_ _ _ ⋙ F ≅ inr_ _ _ ⋙ G) :
+    (natIsoOfNatIsoWhiskerLeftInlInr η₁ η₂).inv =
+      natTransOfNatTransWhiskerLeftInlInr η₁.inv η₂.inv := by
+  aesop_cat
 
 end Sum
 
