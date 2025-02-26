@@ -157,6 +157,6 @@ theorem Module.length_additive_of_quotient {N : Submodule R M} :
 section field
 
 proof_wanted Module.length_eq_rank_of_field (R M : Type*) [Field R] [AddCommGroup M] [Module R M] :
-    Module.length R M = (Module.rank R M).toENat := sorry
+    Module.length R M = (Module.rank R M).toENat
 
 end field
