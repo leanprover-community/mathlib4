@@ -5131,6 +5131,7 @@ import Mathlib.SetTheory.Ordinal.Rank
 import Mathlib.SetTheory.Ordinal.Topology
 import Mathlib.SetTheory.Ordinal.Veblen
 import Mathlib.SetTheory.Surreal.Basic
+import Mathlib.SetTheory.Surreal.Division
 import Mathlib.SetTheory.Surreal.Dyadic
 import Mathlib.SetTheory.Surreal.Multiplication
 import Mathlib.SetTheory.ZFC.Basic
