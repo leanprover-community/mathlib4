@@ -33,6 +33,8 @@ This file also provides diffeomorphisms related to products and disjoint unions.
 * `Diffeomorph.sumAssoc`: `(M ⊕ N) ⊕ P` is diffeomorphic to `M ⊕ (N ⊕ P)`
 * `Diffeomorph.sumEmpty`: `M ⊕ ∅` is diffeomorphic to `M`
 
+WIP: distributive, working on it now!
+
 ## Notations
 
 * `M ≃ₘ^n⟮I, I'⟯ M'`  := `Diffeomorph I J M N n`
