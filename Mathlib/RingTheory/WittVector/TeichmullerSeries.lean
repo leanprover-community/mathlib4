@@ -12,7 +12,7 @@ import Mathlib.RingTheory.WittVector.Teichmuller
 
 Let `R` be a characteristic `p` perfect ring. In this file, we show that
 every element `x` of the Witt vectors `𝕎 R` can be written as the
-(`p`-adic) summation of Teichmuller Series, namely
+(`p`-adic) summation of Teichmuller series, namely
 `∑ i, (teichmuller p
         (((frobeniusEquiv R p).symm ^ i) (x.coeff i)) * p ^ i)`
 
