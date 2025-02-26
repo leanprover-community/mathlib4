@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 import Mathlib.LinearAlgebra.Matrix.Symmetric
 import Mathlib.Data.Finset.Sym
+import Mathlib.Data.Sym.Sym2.Finsupp
 import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
@@ -274,6 +275,11 @@ theorem polar_sub_left (x x' y : M) : polar Q (x - x') y = polar Q x y - polar Q
 @[simp]
 theorem polar_zero_right (y : M) : polar Q y 0 = 0 := by
   simp only [add_zero, polar, QuadraticMap.map_zero, sub_self]
+
+def symetrizablePolarSym2 : Symetrizable M N where
+  toFun := polar Q
+  comm := polar_comm Q
+  right_zero := Q.polar_zero_right
 
 @[simp]
 theorem polar_add_right (x y y' : M) : polar Q x (y + y') = polar Q x y + polar Q x y' := by
