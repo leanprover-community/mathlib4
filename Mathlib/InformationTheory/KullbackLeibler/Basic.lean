@@ -150,10 +150,14 @@ lemma toReal_kl_of_measure_eq (h : μ ≪ ν) (h_eq : μ univ = ν univ) :
   · simp [toReal_kl h h_int, h_eq]
   · rw [kl_of_not_integrable h_int, integral_undef h_int, ENNReal.top_toReal]
 
-lemma toReal_kl_eq_integral_klFun (h : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
+lemma toReal_kl_eq_integral_klFun (h : μ ≪ ν) :
     (kl μ ν).toReal = ∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν := by
-  rw [kl_eq_integral_klFun, if_pos ⟨h, h_int⟩, ENNReal.toReal_ofReal]
-  exact integral_nonneg fun _ ↦ klFun_nonneg ENNReal.toReal_nonneg
+  by_cases h_int : Integrable (llr μ ν) μ
+  · rw [kl_eq_integral_klFun, if_pos ⟨h, h_int⟩, ENNReal.toReal_ofReal]
+    exact integral_nonneg fun _ ↦ klFun_nonneg ENNReal.toReal_nonneg
+  · rw [integral_undef]
+    · rw [kl_of_not_integrable h_int, ENNReal.top_toReal]
+    · rwa [integrable_klFun_rnDeriv_iff h]
 
 end Real
 
@@ -186,7 +190,7 @@ lemma mul_klFun_le_toReal_kl (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν)
   _ ≤ ∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν := by
     refine mul_le_integral_rnDeriv_of_ac convexOn_klFun continuous_klFun.continuousWithinAt ?_ hμν
     rwa [integrable_klFun_rnDeriv_iff hμν]
-  _ = (kl μ ν).toReal := by rw [toReal_kl_eq_integral_klFun hμν h_int]
+  _ = (kl μ ν).toReal := by rw [toReal_kl_eq_integral_klFun hμν]
 
 lemma mul_log_le_toReal_kl (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
     (μ univ).toReal * log ((μ univ).toReal / (ν univ).toReal) + (ν univ).toReal - (μ univ).toReal
