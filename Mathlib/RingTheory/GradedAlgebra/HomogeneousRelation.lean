@@ -94,8 +94,8 @@ lemma Finset.relation_sum_induction {α : Type*} {s : Finset α} [DecidableEq α
   | empty => simpa
   | insert _ _ => simp_all
 
-lemma coe_mul_sum_support_subset {ι : Type*} {σ : Type*} {R : Type*} [DecidableEq ι] [Semiring R]
-    [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ) [AddMonoid ι]
+lemma coe_mul_sum_support_subset {ι : Type*} {σ : Type*} {R : Type*} [DecidableEq ι]
+    [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
     [(i : ι) → (x : ↥(A i)) → Decidable (x ≠ 0)] (r r' : DirectSum ι fun i ↦ ↥(A i))
     {S T: Finset ι} (hS : DFinsupp.support r ⊆ S) (hT : DFinsupp.support r' ⊆ T)
     (p : ι × ι → Prop) [DecidablePred p] :
@@ -207,7 +207,6 @@ variable [IsHomogeneousRelation 𝒜 rel]
 
 open DirectSum in
 noncomputable instance : GradedRing ((AddSubmonoid.map (RingQuot.mkRingHom rel)).comp 𝒜) := by
-  classical
   apply DirectSum.IsInternal.gradedRing
   set ℬ := (AddSubmonoid.map (RingQuot.mkRingHom rel) ∘ 𝒜) with hb
   set f := RingQuot.mkRingHom rel with hf
@@ -275,7 +274,6 @@ variable [IsHomogeneousRelation 𝒜 rel]
 
 open DirectSum in
 noncomputable instance : GradedAlgebra ((Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜) := by
-  classical
   apply DirectSum.IsInternal.gradedRing
   set ℬ := (Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜 with hb
   set f := RingQuot.mkAlgHom R rel with hf
