@@ -80,7 +80,7 @@ def toLimit (P : ProfiniteGrp.{u}) : P ⟶
   ofHom { toLimit_fun P with
   continuous_toFun := toLimit_fun_continuous P }
 
-/-- An auxiliary result, superceded by `toLimit_surjective`. -/
+/-- An auxiliary result, superceded by `toLimit_surjective` -/
 theorem denseRange_toLimit (P : ProfiniteGrp.{u}) : DenseRange (toLimit P) := by
   apply dense_iff_inter_open.mpr
   rintro U ⟨s, hsO, hsv⟩ ⟨⟨spc, hspc⟩, uDefaultSpec⟩
