@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Tobias Leichtfried. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tobias Leichtfried
+Authors: Tobias Leichtfried, Stefan Hetzl
 -/
 import Mathlib.Computability.ContextFreeGrammar
 
@@ -21,8 +21,7 @@ where in each rewriting step the leftmost nonterminal instead of an arbitrary on
   symbols iff it can be leftmost derived.
 -/
 
-variable {T : Type*}
-variable {N : Type*}
+variable {T N : Type*}
 
 namespace ContextFreeRule
 open Symbol
@@ -100,7 +99,7 @@ theorem RewritesLeftmost.append_right {r : ContextFreeRule T N}
   obtain ⟨s, t, rfl, rfl⟩ := hr.exists_parts
   simpa using rewritesLeftmost_of_exists_parts r s (t ++ p)
 
-theorem rewrites_of_rewritesLeftmost {r : ContextFreeRule T N}
+theorem RewritesLeftmost.rewrites {r : ContextFreeRule T N}
     {u v : List (Symbol T N)} (hr : r.RewritesLeftmost u v) : r.Rewrites u v := by
   induction hr with
   | head s => exact Rewrites.head _
@@ -134,7 +133,7 @@ theorem rewritesLeftmost_append {r : ContextFreeRule T N} {v₁ v₂ u : List (S
   | cons x v₁' ih =>
     rw [List.cons_append] at h
     apply rewritesLeftmost_cons at h
-    obtain ⟨u₁, u₂, h⟩|⟨w₁, u₂, h⟩ := h
+    obtain ⟨u₁, u₂, h⟩ | ⟨w₁, u₂, h⟩ := h
     · left
       use u₁++v₁', v₂
       refine ⟨by simp_all, ?_, rfl⟩
@@ -286,10 +285,10 @@ theorem produces_of_produces_leftmost {u v : List (Symbol T g.NT)} (h : g.Produc
     g.Produces u v := by
   obtain ⟨r,hr⟩ := h
   use r, hr.1
-  apply ContextFreeRule.rewrites_of_rewritesLeftmost
+  apply ContextFreeRule.RewritesLeftmost.rewrites
   exact hr.2
 
-theorem derives_of_derivesLeftmost {u v : List (Symbol T g.NT)} (h : g.DerivesLeftmost u v) :
+theorem DerivesLeftmost.derives {u v : List (Symbol T g.NT)} (h : g.DerivesLeftmost u v) :
     g.Derives u v := by
   induction h using Relation.ReflTransGen.head_induction_on with
   | refl => rfl
@@ -346,30 +345,10 @@ theorem derivesLeftmost_append {v₁ v₂ u : List (Symbol T g.NT)}
         rw [List.map_append]
         exact ⟨by simp_all, (hu.2.1.append_right v₁').trans (hu₂.2.1.append_left w₁), hu₂.2.2⟩
 
-theorem derives_cons {x : Symbol T g.NT} {v u : List (Symbol T g.NT)} (h : g.Derives (x :: v) u) :
-    ∃ (u₁ u₂ : List (Symbol T g.NT)), u = u₁ ++ u₂ ∧ g.Derives [x] u₁ ∧ g.Derives v u₂ := by
-  induction h with
-  | refl =>
-    use [x], v
-    simp_all [Derives.refl]
-  | tail h₁ h₂ ih =>
-    obtain ⟨u₁, u₂, hu₁, hu₂⟩ := ih
-    rw [hu₁] at h₁ h₂
-    obtain ⟨r, hr, huc⟩ := h₂
-    obtain ⟨v₁, v₂, huv⟩ := ContextFreeRule.rewrites_append huc
-    use v₁, v₂
-    use huv.1
-    rcases huv.2 with huv|huv
-    · use hu₂.1.trans_produces ⟨r, hr, huv.1⟩
-      convert hu₂.2
-      exact huv.2.symm
-    · rw [huv.2.symm]
-      exact ⟨hu₂.1, hu₂.2.trans_produces ⟨r, hr, huv.1⟩⟩
-
 theorem derivesLeftmost_iff {w : List T} {α : List (Symbol T g.NT)} :
     g.DerivesLeftmost α (w.map terminal) ↔ g.Derives α (w.map terminal) := by
   constructor
-  · exact derives_of_derivesLeftmost
+  · exact DerivesLeftmost.derives
   · intro h
     induction h using Relation.ReflTransGen.head_induction_on with
     | refl => rfl
