@@ -208,6 +208,14 @@ theorem cycleType_prime_order {σ : Perm α} (hσ : (orderOf σ).Prime) :
   · exact (hσ.eq_one_or_self_of_dvd n (dvd_of_mem_cycleType hn)).resolve_left
       (one_lt_of_mem_cycleType hn).ne'
 
+theorem pow_prime_eq_one_iff {σ : Perm α} {p : ℕ} [hp : Fact (Nat.Prime p)] :
+    σ ^ p = 1 ↔ ∀ c ∈ σ.cycleType, c = p := by
+  rw [← orderOf_dvd_iff_pow_eq_one, ← lcm_cycleType, Multiset.lcm_dvd]
+  apply forall_congr'
+  exact fun c ↦ ⟨fun hc h ↦ Or.resolve_left (hp.elim.eq_one_or_self_of_dvd c (hc h))
+       (Nat.ne_of_lt' (one_lt_of_mem_cycleType h)),
+     fun hc h ↦ by rw [hc h]⟩
+
 theorem isCycle_of_prime_order {σ : Perm α} (h1 : (orderOf σ).Prime)
     (h2 : σ.support.card < 2 * orderOf σ) : σ.IsCycle := by
   obtain ⟨n, hn⟩ := cycleType_prime_order h1
