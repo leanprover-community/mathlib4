@@ -553,7 +553,7 @@ example (a b : Set ι) : Disjoint a (b \ a) := by exact disjoint_sdiff_right
 theorem l (s : Set ι) (hs : s.Finite) (hC : ∀ i ∈ s, IsSetSemiring (C i)) :
     s.Nonempty →  IsSetSemiring (s.pi '' s.pi C) := by
   refine Set.Finite.induction_on_subset s hs ?_ ?_
-  · simp
+  · exact fun h ↦ False.elim <| Set.not_nonempty_empty h
   · intro a t ha hts t_fin h_ind _
     refine (IsSetSemiring.iff _).mpr ⟨?_, ?_, ?_⟩
     · simp only [insert_pi, Set.mem_image, mem_inter_iff, Set.mem_preimage, Function.eval,
@@ -562,60 +562,107 @@ theorem l (s : Set ι) (hs : s.Finite) (hC : ∀ i ∈ s, IsSetSemiring (C i)) :
       simp only [Set.preimage_empty, Set.empty_inter, and_true]
       refine ⟨(hC a ha).empty_mem, fun i hi ↦ (hC i (hts hi)).empty_mem⟩
     · apply IsPiSystem.pi_subset (insert a t) (fun i hi ↦ (hC i ?_).isPiSystem)
-      obtain ⟨h1, h2, h3, h4⟩ := mem_insert_iff.mp hi
+      obtain ⟨_, _⟩ := mem_insert_iff.mp hi
       · exact ha
       · apply hts; assumption
     · intro u hu v hv
-      by_cases h : t.Nonempty
-      · simp_rw [Set.mem_image, Set.mem_pi, Set.mem_insert_iff, insert_pi] at hu hv
-        obtain ⟨x, ⟨hx1, hx2⟩⟩ := hu
-        obtain ⟨y, ⟨hy1, hy2⟩⟩ := hv
-        have hx : t.pi x ∈ t.pi '' t.pi C :=
+      simp_rw [Set.mem_image, Set.mem_pi, Set.mem_insert_iff, insert_pi] at hu hv
+      obtain ⟨x, ⟨hx1, hx2⟩⟩ := hu
+      obtain ⟨y, ⟨hy1, hy2⟩⟩ := hv
+      have hx : t.pi x ∈ t.pi '' t.pi C :=
           Set.mem_image_of_mem t.pi <| Set.mem_pi.mpr fun i hi ↦ hx1 i (Or.inr hi)
-        have hy : t.pi y ∈ t.pi '' t.pi C :=
+      have hy : t.pi y ∈ t.pi '' t.pi C :=
           Set.mem_image_of_mem t.pi <| Set.mem_pi.mpr fun i hi ↦ hy1 i (Or.inr hi)
-        obtain ⟨J, ⟨hJ1, hJ2, hJ3⟩⟩ :=
-          (h_ind h).diff_eq_sUnion' (t.pi x) hx (t.pi y) hy
-        obtain ⟨K, ⟨hK1, hK2, hK3⟩⟩ :=
+      obtain ⟨K, ⟨hK1, hK2, hK3⟩⟩ :=
           (hC a ha).diff_eq_sUnion' (x a) (hx1 a (Or.inl rfl)) (y a) (hy1 a (Or.inl rfl))
-        have hx1 : u \ v = ((t.pi x \ t.pi y) ∩ (Function.eval a ⁻¹' y a ∩ Function.eval a ⁻¹' x a))
-          ∪ (t.pi x ∩ (Function.eval a ⁻¹' x a \ Function.eval a ⁻¹' y a)) :=
-        by
-          ext z
-          refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-          · simp only [mem_diff] at h
-            rw [← hx2, ← hy2] at h
-            simp only [mem_inter_iff, Set.mem_preimage, Function.eval, Set.mem_pi, not_and,
-              not_forall, Classical.not_imp] at h
-            by_cases hz : z a ∉ y a
-            · right
-              simp only [mem_inter_iff, Set.mem_pi, mem_diff, Set.mem_preimage, Function.eval]
-              refine ⟨h.1.2, h.1.1 ,hz⟩
-            · simp at hz
-              left
-              simp only [mem_inter_iff, mem_diff, Set.mem_pi, not_forall, Classical.not_imp,
-                Set.mem_preimage, Function.eval]
-              refine ⟨⟨h.1.2, h.2 hz⟩, hz, h.1.1⟩
-          · simp only [Set.mem_union, mem_inter_iff, mem_diff, Set.mem_pi, not_forall,
-            Classical.not_imp, Set.mem_preimage, Function.eval] at h
-            rw [← hx2, ← hy2]
-            simp only [mem_diff, mem_inter_iff, Set.mem_preimage, Function.eval, Set.mem_pi,
-              not_and, not_forall, Classical.not_imp]
-            rcases h with ⟨⟨h11, h12⟩, h2, h3⟩ | ⟨h1, h2, h3⟩
-            · refine ⟨⟨h3, h11⟩, fun _ ↦ h12⟩
-            · refine ⟨⟨h2, h1⟩, fun h ↦ False.elim <| h3 h⟩
-        have hx2 : Disjoint
+      have h1 : u \ v = ((t.pi x \ t.pi y) ∩ (Function.eval a ⁻¹' y a ∩ Function.eval a ⁻¹' x a))
+          ∪ (t.pi x ∩ (Function.eval a ⁻¹' x a \ Function.eval a ⁻¹' y a)) :=  by
+        ext z
+        refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+        · simp only [mem_diff] at h
+          rw [← hx2, ← hy2] at h
+          simp only [mem_inter_iff, Set.mem_preimage, Function.eval, Set.mem_pi, not_and,
+            not_forall, Classical.not_imp] at h
+          by_cases hz : z a ∉ y a
+          · right
+            simp only [mem_inter_iff, Set.mem_pi, mem_diff, Set.mem_preimage, Function.eval]
+            refine ⟨h.1.2, h.1.1 ,hz⟩
+          · simp at hz
+            left
+            simp only [mem_inter_iff, mem_diff, Set.mem_pi, not_forall, Classical.not_imp,
+              Set.mem_preimage, Function.eval]
+            refine ⟨⟨h.1.2, h.2 hz⟩, hz, h.1.1⟩
+        · simp only [Set.mem_union, mem_inter_iff, mem_diff, Set.mem_pi, not_forall,
+          Classical.not_imp, Set.mem_preimage, Function.eval] at h
+          rw [← hx2, ← hy2]
+          simp only [mem_diff, mem_inter_iff, Set.mem_preimage, Function.eval, Set.mem_pi,
+            not_and, not_forall, Classical.not_imp]
+          rcases h with ⟨⟨h11, h12⟩, h2, h3⟩ | ⟨h1, h2, h3⟩
+          · refine ⟨⟨h3, h11⟩, fun _ ↦ h12⟩
+          · refine ⟨⟨h2, h1⟩, fun h ↦ False.elim <| h3 h⟩
+      have h2 : Disjoint
           ((t.pi x \ t.pi y) ∩ (Function.eval a ⁻¹' y a ∩ Function.eval a ⁻¹' x a))
             (t.pi x ∩ (Function.eval a ⁻¹' x a \ Function.eval a ⁻¹' y a)) := by
-          apply l1 (t.pi x \ t.pi y) (Function.eval a ⁻¹' y a ∩ Function.eval a ⁻¹' x a) (t.pi x)
-             (Function.eval a ⁻¹' x a \ Function.eval a ⁻¹' y a)
-          apply l2
-          exact disjoint_sdiff_right ( s := Function.eval a ⁻¹' y a) (t := Function.eval a ⁻¹' x a)
+        apply l1 (t.pi x \ t.pi y) (Function.eval a ⁻¹' y a ∩ Function.eval a ⁻¹' x a) (t.pi x)
+            (Function.eval a ⁻¹' x a \ Function.eval a ⁻¹' y a)
+        apply l2
+        exact disjoint_sdiff_right ( s := Function.eval a ⁻¹' y a) (t := Function.eval a ⁻¹' x a)
+      let E := ⋃ (k ∈ K), {t.pi x ∩ Function.eval a ⁻¹' k}
+      haveI hE : Fintype E := by sorry
+      by_cases h : t.Nonempty
+      rotate_left
+      · have h : t = ∅ := Set.not_nonempty_iff_eq_empty.mp h
+        clear h_ind hx hy
+        simp_rw [h] at hx1 hx2 hy1 hy2 h1 h2 ⊢
+        simp only [empty_pi, Set.inter_univ] at hx2 hy2 ⊢
+        simp only [empty_pi, sdiff_self, Set.bot_eq_empty, Set.empty_inter, Set.univ_inter,
+          Set.empty_union] at h1 h2
+        simp only [mem_empty_iff_false, or_false, forall_eq] at hx1 hy1
+        have hK4 : E = ⋃ k ∈ K, {Function.eval a ⁻¹' k} := by
+          simp_rw [E, h]
+          simp only [empty_pi, Set.univ_inter, E]
+
+        use E.toFinset
+
+        simp only [E, hK4, coe_toFinset, insert_emptyc_eq, singleton_pi]
+
+        refine ⟨?_, ?_, ?_⟩
+        · simp only [iUnion_subset_iff, Set.singleton_subset_iff, Set.mem_image, Set.mem_preimage,
+          Function.eval, E]
+          intro k hk
+          classical
+          let f : (i : ι) → Set (α i) := fun (i : ι) => dite (a=i) (fun h ↦ h ▸ k) (fun _ ↦ (univ : (Set (α i))))
+          use f
+          simp only [↓reduceDIte, and_true, f, E]
+          exact hK1 hk
+        · intro k' hk' l' hl' hkl'
+
+          simp only [Set.bot_eq_empty, Set.le_eq_subset, subset_empty_iff, E] at *
+          simp at *
+          obtain ⟨k, hk, hk'⟩ := hk'
+          obtain ⟨l, hl, hl'⟩ := hl'
+
+
+
+
+
+          apply?
+          sorry
+        · sorry
+
+        simp only [coe_toFinset, insert_pi, iUnion_subset_iff, Set.singleton_subset_iff,
+          Set.mem_image, mem_inter_iff, Set.mem_preimage, Function.eval, Set.mem_pi, E]
+        refine ⟨fun k hk ↦ ⟨x, ⟨hx1.1, ?_⟩⟩, ?_, ?_⟩
+        · rw [h]
+          simp only [empty_pi, Set.inter_univ, Set.univ_inter, E]
+          sorry
+        · sorry
+        · sorry
+      · obtain ⟨J, ⟨hJ1, hJ2, hJ3⟩⟩ :=
+          (h_ind h).diff_eq_sUnion' (t.pi x) hx (t.pi y) hy
         classical
         let D := ⋃ (j ∈ J), {j ∩ Function.eval a ⁻¹' (x a ∩ y a)}
-        let E := ⋃ (k ∈ K), {t.pi x ∩ Function.eval a ⁻¹' k}
         haveI hD : Fintype D := by sorry
-        haveI hE : Fintype E := by sorry
         use (D.toFinset ∪ E.toFinset)
         simp only [coe_union, coe_toFinset, insert_pi, Set.union_subset_iff]
         refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
