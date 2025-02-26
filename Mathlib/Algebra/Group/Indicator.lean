@@ -152,6 +152,21 @@ theorem mulIndicator_congr (h : EqOn f g s) : mulIndicator s f = mulIndicator s 
     · exact h h_1
     rfl
 
+@[to_additive]
+theorem mulIndicator_const_eq_mulIndicator_const {t : Set β} {b : β} {c : M} (h : a ∈ s ↔ b ∈ t) :
+    s.mulIndicator (fun _ ↦ c) a = t.mulIndicator (fun _ ↦ c) b := by
+  by_cases h' : a ∈ s
+  · simp [h', h.1 h']
+  · simp [h', h.not.1 h']
+
+@[to_additive indicator_const_eq_iff']
+theorem mulIndicator_const_eq_iff {t : Set β} {b : β} {c : M} (hc : c ≠ 1) :
+    s.mulIndicator (fun _ ↦ c) a = t.mulIndicator (fun _ ↦ c) b ↔ (a ∈ s ↔ b ∈ t) where
+  mp h := by
+    by_contra! h'
+    obtain (⟨h1, h2⟩ | ⟨h1, h2⟩) := h' <;> simp_all
+  mpr := mulIndicator_const_eq_mulIndicator_const
+
 @[to_additive (attr := simp)]
 theorem mulIndicator_univ (f : α → M) : mulIndicator (univ : Set α) f = f :=
   mulIndicator_eq_self.2 <| subset_univ _
