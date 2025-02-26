@@ -3,13 +3,13 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Hom.CompleteLattice
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # liminfs and limsups of functions and filters
