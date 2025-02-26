@@ -3,12 +3,12 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
-import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Data.Finite.Prod
 
 /-! # Finiteness lemmas for pointwise operations on sets -/
 
+assert_not_exists MulAction MonoidWithZero
 
 open Pointwise
 
@@ -144,19 +144,6 @@ lemma finite_div : (s / t).Finite ↔ s.Finite ∧ t.Finite ∨ s = ∅ ∨ t = 
 lemma infinite_div : (s / t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty :=
   infinite_image2 (fun _ _ ↦ div_left_injective.injOn) fun _ _ ↦ div_right_injective.injOn
 
-variable [MulAction α β] {a : α} {s : Set β}
-
-@[to_additive (attr := simp)]
-theorem finite_smul_set : (a • s).Finite ↔ s.Finite :=
-  finite_image_iff (MulAction.injective _).injOn
-
-@[to_additive (attr := simp)]
-theorem infinite_smul_set : (a • s).Infinite ↔ s.Infinite :=
-  infinite_image_iff (MulAction.injective _).injOn
-
-@[to_additive] alias ⟨Finite.of_smul_set, _⟩ := finite_smul_set
-@[to_additive] alias ⟨_, Infinite.smul_set⟩ := infinite_smul_set
-
 end Group
 
 end Set
@@ -195,3 +182,4 @@ theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k
   rwa [mul_inv_cancel_right]
 
 end Group
+#min_imports
