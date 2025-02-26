@@ -164,9 +164,9 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
         (a ^ i * b ^ j) := by
         rw [sum_mul_sum]
         apply sum_congr rfl
-        intro n hn
+        intro _ _
         apply sum_congr rfl
-        intro m hm
+        intro _ _
         rw [smul_mul_assoc, Algebra.mul_smul_comm, smul_smul]
       _ = ∑ ij ∈ (range (N + 1)).product (range (N + 1)), ((ij.1.factorial : R)⁻¹ *
           (ij.2.factorial : R)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
