@@ -49,7 +49,7 @@ pointed types and the coproduct given by the wedge sum is distributive.
 
 ## References
 
-[Hans-Joachim Baues, Mamuka Jibladze, Andy Tonks, Cohomology of
+* [Hans-Joachim Baues, Mamuka Jibladze, Andy Tonks, Cohomology of
 monoids in monoidal categories, in: Operads: Proceedings of Renaissance
 Conferences, Contemporary Mathematics 202, AMS (1997) 137-166][MR1268290]
 
