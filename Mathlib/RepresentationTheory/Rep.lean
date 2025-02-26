@@ -131,8 +131,6 @@ open MonoidalCategory in
 @[simp]
 theorem tensor_ρ {A B : Rep k G} : (A ⊗ B).ρ = A.ρ.tprod B.ρ := rfl
 
-end
-
 section Linearization
 
 variable (k G)
