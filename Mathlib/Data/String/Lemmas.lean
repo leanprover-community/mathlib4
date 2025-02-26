@@ -27,8 +27,7 @@ lemma length_eq_list_length (l : List Char) : (String.mk l).length = l.length :=
   to the larger of `n` and `s.length` -/
 @[simp] lemma length_leftpad (n : ℕ) (c : Char) :
     ∀ (s : String), (leftpad n c s).length = max n s.length
-  -- This typo will be fixed in nightly-2025-02-25:
-  | ⟨s⟩ => by simp only [leftpad, String.length, List.length_lengthpad]
+  | ⟨s⟩ => by simp only [leftpad, String.length, List.length_leftpad]
 
 @[deprecated (since := "2025-02-24")]
 alias leftpad_length := length_leftpad
