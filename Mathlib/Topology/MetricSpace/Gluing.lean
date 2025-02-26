@@ -621,14 +621,11 @@ theorem separableSpaceInductiveLimit_of_separableSpace
   refine ⟨s, countable_iUnion (fun n => (hcX n).image _), ?_⟩
   rintro ⟨n, x⟩
   refine mem_closure_iff.mpr (fun ε hε ↦ ?_)
-  obtain ⟨b, hb⟩ := mem_closure_iff.mp (hdX n x) ε hε
+obtain ⟨b, ⟨hb1, hb2⟩⟩ := mem_closure_iff.mp (hdX n x) ε hε
   refine ⟨toInductiveLimit I n b, ?_, ?_⟩
-  · simp only [s, mem_iUnion, mem_image]
-    refine ⟨n, b, hb.1, rfl⟩
-  · convert hb.2
-    change inductiveLimitDist f ⟨n, x⟩ ⟨n, b⟩ = dist x b
-    rw [inductiveLimitDist_eq_dist I ⟨n, x⟩ ⟨n, b⟩ n (le_refl n) (le_refl n), leRecOn_self,
-        leRecOn_self]
+  · simpa only [s, mem_iUnion, mem_image] using ⟨n, b, hb1, rfl⟩
+  · rwa [show dist _ _ = inductiveLimitDist f ⟨n, x⟩ ⟨n, b⟩ by rfl, inductiveLimitDist_eq_dist I
+      ⟨n, x⟩ ⟨n, b⟩ n (le_refl n) (le_refl n), leRecOn_self, leRecOn_self]
 
 
 end InductiveLimit
