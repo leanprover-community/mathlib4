@@ -976,6 +976,18 @@ instance noMinOrder [LT α] [NoMinOrder α] [Nonempty α] : NoMinOrder (WithTop 
 
 end WithTop
 
+section WithBotWithTop
+
+lemma WithBot.forall_ge_iff_eq_top [Preorder α] [Nonempty α] [NoMaxOrder α]
+    {x : WithBot (WithTop α)} :
+    (∀ a : α, a ≤ x) ↔ x = ⊤ := by
+  refine ⟨fun H ↦ ?_, by aesop⟩
+  induction x
+  · simp at H
+  · simpa [WithTop.forall_ge_iff_eq_top] using H
+
+end WithBotWithTop
+
 /-! ### `(WithBot α)ᵒᵈ ≃ WithTop αᵒᵈ`, `(WithTop α)ᵒᵈ ≃ WithBot αᵒᵈ` -/
 
 open OrderDual
