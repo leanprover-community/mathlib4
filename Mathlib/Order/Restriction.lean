@@ -3,8 +3,7 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Data.Finset.Pi
-import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Data.Finset.Update
 import Mathlib.Order.Interval.Finset.Basic
 
 /-!
@@ -79,6 +78,21 @@ theorem frestrictLe₂_comp_frestrictLe {a b : α} (hab : a ≤ b) :
 
 theorem frestrictLe₂_comp_frestrictLe₂ {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) :
     (frestrictLe₂ (π := π) hab) ∘ (frestrictLe₂ hbc) = frestrictLe₂ (hab.trans hbc) := rfl
+
+section updateFinset
+
+open Function
+
+variable [DecidableEq α]
+
+theorem frestrictLe_updateFinset' {a b : α} (hab : a ≤ b) (x : Π c, π c) (y : Π c : Iic b, π c) :
+    frestrictLe a (updateFinset x _ y) = frestrictLe₂ hab y :=
+  restrict_updateFinset' (Iic_subset_Iic.2 hab) ..
+
+lemma frestrictLe_updateFinset {a : α} (x : Π a, π a) (y : Π b : Iic a, π b) :
+    frestrictLe a (updateFinset x _ y) = y := restrict_updateFinset ..
+
+end updateFinset
 
 end Finset
 
