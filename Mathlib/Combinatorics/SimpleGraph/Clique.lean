@@ -413,7 +413,6 @@ protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n)
 lemma cliqueFree_one : G.CliqueFree 1 ↔ IsEmpty α := by
   simp [CliqueFree, isEmpty_iff]
 
-section classical
 open Classical
 @[simp]
 theorem cliqueFree_two : G.CliqueFree 2 ↔ G = ⊥ := by
@@ -438,7 +437,6 @@ lemma IsNClique.exists_not_adj_of_cliqueFree_succ (hc : G.IsNClique n s)
   by_contra! hf
   exact (hc.insert hf).not_cliqueFree h
 
-end classical
 end CliqueFree
 
 section CliqueFreeOn
