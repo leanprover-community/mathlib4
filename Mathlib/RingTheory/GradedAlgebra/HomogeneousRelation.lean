@@ -111,7 +111,7 @@ lemma coe_mul_sum_support_subset {ι : Type*} {σ : Type*} {R : Type*} [Decidabl
     · simp [hx h]
   simp [this]
 
-noncomputable private instance : (i : ι) → (x : ↥(𝒜 i)) → Decidable (x ≠ 0) :=
+private noncomputable instance : (i : ι) → (x : ↥(𝒜 i)) → Decidable (x ≠ 0) :=
     fun _ x ↦ Classical.propDecidable (x ≠ 0)
 
 theorem eqvGen_proj_mul_right {a b c : A} (n : ι)
@@ -170,10 +170,10 @@ instance : IsHomogeneousRelation 𝒜 (Relation.EqvGen rel) := by
   induction h with
   | refl => exact fun i ↦ Quot.eqvGen_exact rfl
   | symm x y _ h1 =>
-    exact fun i ↦ EqvGen.symm ((GradedRing.proj 𝒜 i) x) ((GradedRing.proj 𝒜 i) y) (h1 i)
+    exact fun i ↦ EqvGen.symm ((proj 𝒜 i) x) ((proj 𝒜 i) y) (h1 i)
   | trans j k l _ _ h2 h3 =>
     exact fun i ↦
-      EqvGen.trans ((GradedRing.proj 𝒜 i) j) ((GradedRing.proj 𝒜 i) k) ((GradedRing.proj 𝒜 i) l)
+      EqvGen.trans ((proj 𝒜 i) j) ((proj 𝒜 i) k) ((proj 𝒜 i) l)
         (h2 i) (h3 i)
   | rel _ _ h4 =>
     exact fun i ↦ IsHomogeneousRelation.is_homogeneous' h4 i
