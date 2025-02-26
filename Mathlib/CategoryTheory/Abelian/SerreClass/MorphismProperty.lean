@@ -7,20 +7,31 @@ import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.CategoryTheory.MorphismProperty.Retract
+import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 import Mathlib.CategoryTheory.Subobject.Lattice
 
 /-!
 # The classes of isomorphisms modulo a Serre class
 
+Let `C` be an abelian category and `P : ObjectProperty C` a Serre class.
+We define `P.serreW : MorphismProperty C`, which is the class of
+morphisms `f` such that `kernel f` and `cokernel f` satisfy `P`.
+We show that `P.serreW` is multiplicative, satisfies the two out
+of three property and is stable under retracts.
+
+## TODO
+
+* show that localized category with respect to `P.serreW` is abelian.
+
 -/
 
-universe v u
+universe v v' u u'
 
 namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 namespace Limits
 
@@ -46,7 +57,9 @@ variable (P : ObjectProperty C)
 
 /-- The class of isomorphisms modulo a Serre class: given `P : ObjectProperty C`,
 this is the class of morphisms `f` such that `kernel f` and `cokernel f` satisfy `P`. -/
-def serreW : MorphismProperty C := fun _ _ f ↦ P (kernel f) ∧ P (cokernel f)
+@[nolint unusedArguments]
+def serreW [P.IsSerreClass] : MorphismProperty C :=
+  fun _ _ f ↦ P (kernel f) ∧ P (cokernel f)
 
 variable [P.IsSerreClass]
 
@@ -88,7 +101,11 @@ instance : P.serreW.IsStableUnderRetracts where
     ⟨P.prop_of_mono (kernel.map f' f h.left.i h.right.i (by simp)) hf.1,
       P.prop_of_epi (cokernel.map f f' h.left.r h.right.r (by simp)) hf.2⟩
 
-instance : P.serreW.RespectsIso := inferInstance
+--lemma le_kernel_of_serreW_isInvertedBy (F : C ⥤ D) (hF : P.serreW.IsInvertedBy F) :
+--    P ≤ F.kernel := by
+--  sorry
+
+--lemma isInvertedBy_serreW (F : C ⥤ D) :
 
 end ObjectProperty
 

@@ -268,6 +268,18 @@ instance inhabited : Inhabited R[X] :=
 
 instance instNatCast : NatCast R[X] where natCast n := ofFinsupp n
 
+@[simp]
+theorem ofFinsupp_natCast (n : ℕ) : (⟨n⟩ : R[X]) = n := rfl
+
+@[simp]
+theorem toFinsupp_natCast (n : ℕ) : (n : R[X]).toFinsupp = n := rfl
+
+@[simp]
+theorem ofFinsupp_ofNat (n : ℕ) [n.AtLeastTwo] : (⟨ofNat(n)⟩ : R[X]) = ofNat(n) := rfl
+
+@[simp]
+theorem toFinsupp_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R[X]).toFinsupp = ofNat(n) := rfl
+
 instance semiring : Semiring R[X] :=
   fast_instance% Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero
     toFinsupp_one toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_nsmul _ _) toFinsupp_pow
@@ -1070,6 +1082,12 @@ theorem toFinsupp_zsmul (a : ℤ) (b : R[X]) :
   rfl
 
 instance instIntCast : IntCast R[X] where intCast n := ofFinsupp n
+
+@[simp]
+theorem ofFinsupp_intCast (z : ℤ) : (⟨z⟩ : R[X]) = z := rfl
+
+@[simp]
+theorem toFinsupp_intCast (z : ℤ) : (z : R[X]).toFinsupp = z := rfl
 
 instance ring : Ring R[X] :=
   fast_instance% Function.Injective.ring toFinsupp toFinsupp_injective (toFinsupp_zero (R := R))

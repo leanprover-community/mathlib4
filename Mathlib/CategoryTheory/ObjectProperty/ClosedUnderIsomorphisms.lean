@@ -10,7 +10,11 @@ import Mathlib.Order.Basic
 /-! # Properties of objects which are closed under isomorphisms
 
 Given a category `C` and `P : ObjectProperty C` (i.e. `P : C → Prop`),
+<<<<<<< HEAD
 this file introduces the type class `P.IsClosedUnderIsomorphisms P`.
+=======
+this file introduces the type class `P.IsClosedUnderIsomorphisms`.
+>>>>>>> origin
 
 -/
 
@@ -81,6 +85,7 @@ open ObjectProperty
 @[deprecated (since := "2025-02-25")] alias mem_iff_of_iso := prop_iff_of_iso
 @[deprecated (since := "2025-02-25")] alias mem_of_isIso := prop_of_isIso
 @[deprecated (since := "2025-02-25")] alias mem_iff_of_isIso := prop_iff_of_isIso
+@[deprecated (since := "2025-02-25")] alias isoClosure := isoClosure
 @[deprecated (since := "2025-02-25")] alias mem_isoClosure_iff := prop_isoClosure_iff
 @[deprecated (since := "2025-02-25")] alias mem_isoClosure := prop_isoClosure
 

@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Localization.Adjunction
 /-!
 # Bousfield localization
 
-Given a predicate `P : C → Prop` on the objects of a category `C`,
+Given a predicate `P : ObjectProperty C` on the objects of a category `C`,
 we define `Localization.LeftBousfield.W P : MorphismProperty C`
 as the class of morphisms `f : X ⟶ Y` such that for any `Z : C`
 such that `P Z`, the precomposition with `f` induces a bijection
@@ -44,7 +44,7 @@ section
 
 variable (P : ObjectProperty C)
 
-/-- Given a predicate `P : C → Prop`, this is the class of morphisms `f : X ⟶ Y`
+/-- Given `P : ObjectProperty C`, this is the class of morphisms `f : X ⟶ Y`
 such that for all `Z : C` such that `P Z`, the precomposition with `f` induces
 a bijection `(Y ⟶ Z) ≃ (X ⟶ Z)`. -/
 def W : MorphismProperty C := fun _ _ f =>

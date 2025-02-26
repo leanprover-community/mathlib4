@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.Group.Invertible.Basic
-import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.Logic.Embedding.Basic
 
 /-!
 # More lemmas about group actions
@@ -14,9 +14,9 @@ This file contains lemmas about group actions that require more imports than
 `Mathlib.Algebra.Group.Action.Defs` offers.
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists MonoidWithZero Equiv.Perm.permGroup
 
-variable {α β : Type*}
+variable {M α β : Type*}
 
 section MulAction
 
@@ -37,40 +37,6 @@ add_decl_doc AddAction.toPerm
 lemma MulAction.toPerm_injective [FaithfulSMul α β] :
     Function.Injective (MulAction.toPerm : α → Equiv.Perm β) :=
   (show Function.Injective (Equiv.toFun ∘ MulAction.toPerm) from smul_left_injective').of_comp
-
-variable (α) (β)
-
-/-- Given an action of a group `α` on a set `β`, each `g : α` defines a permutation of `β`. -/
-@[simps]
-def MulAction.toPermHom : α →* Equiv.Perm β where
-  toFun := MulAction.toPerm
-  map_one' := Equiv.ext <| one_smul α
-  map_mul' u₁ u₂ := Equiv.ext <| mul_smul (u₁ : α) u₂
-
-/-- Given an action of an additive group `α` on a set `β`, each `g : α` defines a permutation of
-`β`. -/
-@[simps!]
-def AddAction.toPermHom (α : Type*) [AddGroup α] [AddAction α β] :
-    α →+ Additive (Equiv.Perm β) :=
-  MonoidHom.toAdditive'' <| MulAction.toPermHom (Multiplicative α) β
-
-/-- The tautological action by `Equiv.Perm α` on `α`.
-
-This generalizes `Function.End.applyMulAction`. -/
-instance Equiv.Perm.applyMulAction (α : Type*) : MulAction (Equiv.Perm α) α where
-  smul f a := f a
-  one_smul _ := rfl
-  mul_smul _ _ _ := rfl
-
-@[simp]
-protected lemma Equiv.Perm.smul_def {α : Type*} (f : Equiv.Perm α) (a : α) : f • a = f a :=
-  rfl
-
-/-- `Equiv.Perm.applyMulAction` is faithful. -/
-instance Equiv.Perm.applyFaithfulSMul (α : Type*) : FaithfulSMul (Equiv.Perm α) α :=
-  ⟨Equiv.ext⟩
-
-variable {α} {β}
 
 @[to_additive]
 protected lemma MulAction.bijective (g : α) : Function.Bijective (g • · : β → β) :=
@@ -146,3 +112,18 @@ variable [Group α] [Monoid β] [MulAction α β] [SMulCommClass α β β] [IsSc
   ⟨fun h => inv_smul_smul g m ▸ h.smul g⁻¹, IsUnit.smul g⟩
 
 end SMul
+
+namespace MulAction
+variable [Monoid M] [MulAction M α]
+
+variable (M α) in
+/-- Embedding of `α` into functions `M → α` induced by a multiplicative action of `M` on `α`. -/
+@[to_additive
+"Embedding of `α` into functions `M → α` induced by an additive action of `M` on `α`."]
+def toFun : α ↪ M → α :=
+  ⟨fun y x ↦ x • y, fun y₁ y₂ H ↦ one_smul M y₁ ▸ one_smul M y₂ ▸ by convert congr_fun H 1⟩
+
+@[to_additive (attr := simp)]
+lemma toFun_apply (x : M) (y : α) : MulAction.toFun M α y x = x • y := rfl
+
+end MulAction
