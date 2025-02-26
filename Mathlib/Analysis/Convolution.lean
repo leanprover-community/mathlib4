@@ -80,7 +80,7 @@ The following notations are localized in the locale `Convolution`:
 # To do
 * Existence and (uniform) continuity of the convolution if
   one of the maps is in `ℒ^p` and the other in `ℒ^q` with `1 / p + 1 / q = 1`.
-  This might require a generalization of `MeasureTheory.Memℒp.smul` where `smul` is generalized
+  This might require a generalization of `MeasureTheory.MemLp.smul` where `smul` is generalized
   to a continuous bilinear map.
   (see e.g. [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2], 255K)
 * The convolution is an `AEStronglyMeasurable` function
@@ -583,8 +583,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
   have A : ContinuousOn g'.uncurry (s' ×ˢ univ) := by
     have : g'.uncurry = g.uncurry ∘ (fun w ↦ (w.1.1, w.1.2 - w.2)) := by ext y; rfl
     rw [this]
-    refine hg.comp (continuous_fst.fst.prod_mk (continuous_fst.snd.sub
-      continuous_snd)).continuousOn ?_
+    refine hg.comp (by fun_prop) ?_
     simp +contextual [s', MapsTo]
   have B : ContinuousOn (fun a ↦ ∫ x, L (f x) (g' a x) ∂μ) s' := by
     apply continuousOn_integral_bilinear_of_locally_integrable_of_compact_support L k'_comp A _

@@ -175,10 +175,8 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
 
 instance forget₂AddCommGroup_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ (ModuleCat.{u} R) AddCommGrp.{u}) where
-  preserves_filtered_colimits J _ _ :=
-  { -- Porting note: without the curly braces for `F`
-    -- here we get a confusing error message about universes.
-    preservesColimit := fun {F : J ⥤ ModuleCat.{u} R} =>
+  preserves_filtered_colimits _ _ _ :=
+  { preservesColimit := fun {F} =>
       preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit F)
         (AddCommGrp.FilteredColimits.colimitCoconeIsColimit
           (F ⋙ forget₂ (ModuleCat.{u} R) AddCommGrp.{u})) }

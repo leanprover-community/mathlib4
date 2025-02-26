@@ -145,7 +145,7 @@ Now think of W as defined inductively by the data ⟨a, f', f⟩ where
 - `a  : P.A` is the shape of the top node
 - `f' : P.drop.B a ⟹ α` is the contents of the top node
 - `f  : P.last.B a → P.last.W` are the subtrees
- -/
+-/
 
 
 /-- Constructor for `W` -/

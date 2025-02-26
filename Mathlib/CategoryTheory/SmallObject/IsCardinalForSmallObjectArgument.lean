@@ -74,7 +74,7 @@ class IsCardinalForSmallObjectArgument (κ : Cardinal.{w}) [Fact κ.IsRegular]
   locallySmall : LocallySmall.{w} C := by infer_instance
   hasPushouts : HasPushouts C := by infer_instance
   hasCoproducts : HasCoproducts.{w} C := by infer_instance
-  hasIterationOfShape : HasIterationOfShape κ.ord.toType C
+  hasIterationOfShape : HasIterationOfShape κ.ord.toType C := by infer_instance
   preservesColimit {A B X Y : C} (i : A ⟶ B) (_ : I i) (f : X ⟶ Y)
     (hf : RelativeCellComplex.{w} (fun (_ : κ.ord.toType) ↦ I.homFamily) f) :
     PreservesColimit hf.F (coyoneda.obj (Opposite.op A))
