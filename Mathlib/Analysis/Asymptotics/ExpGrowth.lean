@@ -29,10 +29,10 @@ open ENNReal EReal Filter Function
 
 /-! ### Definition -/
 
-/-- Lower exponential growth of a sequence of extended nonnegative real numbers. -/
+/-- Lower exponential growth of a sequence of extended nonnegative real numbers -/
 noncomputable def expGrowthInf (u : ℕ → ℝ≥0∞) : EReal := atTop.liminf fun n ↦ log (u n) / n
 
-/-- Upper exponential growth of a sequence of extended nonnegative real numbers. -/
+/-- Upper exponential growth of a sequence of extended nonnegative real numbers -/
 noncomputable def expGrowthSup (u : ℕ → ℝ≥0∞) : EReal := atTop.limsup fun n ↦ log (u n) / n
 
 /-! ### Basic properties -/
@@ -246,7 +246,7 @@ lemma expGrowthInf_inf {u v : ℕ → ℝ≥0∞} :
   rw [Pi.inf_apply, log_monotone.map_min]
   exact (monotone_div_right_of_nonneg n.cast_nonneg').map_min
 
-/-- Lower exponential growth as an `InfTopHom`. -/
+/-- Lower exponential growth as an `InfTopHom` -/
 noncomputable def expGrowthInfTopHom : InfTopHom (ℕ → ℝ≥0∞) EReal where
   toFun := expGrowthInf
   map_inf' := fun u v ↦ @expGrowthInf_inf u v
@@ -269,7 +269,7 @@ lemma expGrowthSup_sup {u v : ℕ → ℝ≥0∞} :
   rw [Pi.sup_apply, log_monotone.map_max]
   exact (monotone_div_right_of_nonneg n.cast_nonneg').map_max
 
-/-- Upper exponential growth as a `SupBotHom`. -/
+/-- Upper exponential growth as a `SupBotHom` -/
 noncomputable def expGrowthSupBotHom : SupBotHom (ℕ → ℝ≥0∞) EReal where
   toFun := expGrowthSup
   map_sup' := fun u v ↦ @expGrowthSup_sup u v
