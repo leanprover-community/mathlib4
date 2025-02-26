@@ -66,7 +66,6 @@ lemma σ₀_mk₀_eq (x : C) : (nerve C).σ (0 : Fin 1) (.mk₀ x) = .mk₁ (�
   ComposableArrows.ext₁ rfl rfl (by simp; rfl)
 
 section
-open SimplexCategory
 
 variable {X₀ X₁ X₂ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂)
 
