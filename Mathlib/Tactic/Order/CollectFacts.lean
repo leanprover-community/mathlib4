@@ -46,9 +46,9 @@ instance : ToString AtomicFact where
   | .isSup lhs rhs res => s!"{lhs} ⊔ {rhs} = {res}"
 
 /-- State for `CollectFactsM`. It contains a map where the key `t` maps to a
-pair `(atomToIdx, facts)`. `atomToIdx` maps atomic expressions to their indices,
-and `facts` stores `AtomicFact`s about them. -/
-abbrev CollectFactsState := Std.HashMap Expr <| Std.HashMap Expr Nat × Array AtomicFact
+pair `(atomToIdx, facts)`. `atomToIdx` is a `DiscrTree` containing atomic expressions with their
+indices, and `facts` stores `AtomicFact`s about them. -/
+abbrev CollectFactsState := Std.HashMap Expr <| DiscrTree (Nat × Expr) × Array AtomicFact
 
 /-- Monad for the fact collection procedure. -/
 abbrev CollectFactsM := StateT CollectFactsState MetaM
@@ -103,47 +103,54 @@ def getInfArgs? {u : Level} (type : Q(Type u)) (x : Q($type)) :
   catch _ =>
     return .none
 
-/-- Updates the state with the atom `x`. If `x` is `⊤` or `⊥`, adds the corresponding fact. If `x`
-is `y ⊔ z`, adds a fact about it, then recursively calls `addAtom` on `y` and `z`.
-Similarly for `⊓`. -/
-partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFactsM Nat := do
-  modify fun res => res.insertIfNew type (Std.HashMap.empty, #[])
-  modify fun res => res.modify type fun (atomToIdx, facts) =>
-    let atomToIdx := atomToIdx.insertIfNew x atomToIdx.size
-    (atomToIdx, facts)
-  let idx := (← get).get! type |>.fst.get! x
-  if idx + 1 == ((← get).get! type).fst.size then -- If new atom
-    if ← isTop type x then
-      modify fun res => res.modify type fun (atomToIdx, facts) =>
-        (atomToIdx, facts.push <| .isTop idx)
-    if ← isBot type x then
-      modify fun res => res.modify type fun (atomToIdx, facts) =>
-        (atomToIdx, facts.push <| .isBot idx)
-    if let .some (a, b) := ← getSupArgs? type x then
-      let aIdx ← addAtom type a
-      let bIdx ← addAtom type b
-      modify fun res => res.modify type fun (atomToIdx, facts) =>
-        (atomToIdx, facts.push <| .isSup aIdx bIdx idx)
-    if let .some (a, b) := ← getInfArgs? type x then
-      let aIdx ← addAtom type a
-      let bIdx ← addAtom type b
-      modify fun res => res.modify type fun (atomToIdx, facts) =>
-        (atomToIdx, facts.push <| .isInf aIdx bIdx idx)
-  return idx
-
 /-- Adds `fact` to the state. -/
 def addFact (type : Expr) (fact : AtomicFact) : CollectFactsM Unit :=
   modify fun res => res.modify type fun (atomToIdx, facts) =>
     (atomToIdx, facts.push fact)
 
--- TODO: Split conjunctions.
+/-- Updates the state with the atom `x`. If `x` is `⊤` or `⊥`, adds the corresponding fact. If `x`
+is `y ⊔ z`, adds a fact about it, then recursively calls `addAtom` on `y` and `z`.
+Similarly for `⊓`. -/
+partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFactsM Nat := do
+  modify fun res => res.insertIfNew type (.empty, #[])
+  let (atomToIdx, facts) := (← get).get! type
+  match ← (← atomToIdx.getUnify x).findM? fun (_, e) => isDefEq x e with
+  | some (idx, _) => return idx
+  | none =>
+    let idx := atomToIdx.size
+    let atomToIdx ← atomToIdx.insert x (idx, x)
+    modify fun res => res.insert type (atomToIdx, facts)
+    if ← isTop type x then
+      addFact type (.isTop idx)
+    if ← isBot type x then
+      addFact type (.isBot idx)
+    if let .some (a, b) := ← getSupArgs? type x then
+      let aIdx ← addAtom type a
+      let bIdx ← addAtom type b
+      addFact type (.isSup aIdx bIdx idx)
+    if let .some (a, b) := ← getInfArgs? type x then
+      let aIdx ← addAtom type a
+      let bIdx ← addAtom type b
+      addFact type (.isInf aIdx bIdx idx)
+    return idx
+
+set_option linter.unusedVariables false in
 /-- Implementation for `collectFacts` in `CollectFactsM` monad. -/
-def collectFactsImp (g : MVarId) : CollectFactsM Unit := g.withContext do
+def collectFactsImp (g : MVarId) :
+    CollectFactsM Unit := g.withContext do
   let ctx ← getLCtx
   for ldecl in ctx do
     if ldecl.isImplementationDetail then
       continue
-    let ⟨0, type, expr⟩ := ← inferTypeQ ldecl.toExpr | continue
+    processExpr ldecl.toExpr
+where
+  /-- Extracts facts and atoms from the expression. -/
+  processExpr (expr : Expr) : CollectFactsM Unit := do
+    let type ← inferType expr
+    if !(← isProp type) then
+      return
+    let ⟨u, type, expr⟩ ← inferTypeQ expr
+    let _ : u =QL 0 := ⟨⟩
     match type with
     | ~q(@Eq ($α : Type _) $x $y) =>
       if (← synthInstance? (q(Preorder $α))).isSome then
@@ -173,6 +180,8 @@ def collectFactsImp (g : MVarId) : CollectFactsM Unit := g.withContext do
         let xIdx := ← addAtom α x
         let yIdx := ← addAtom α y
         addFact α <| .nlt xIdx yIdx expr
+      | _ => return
+    | _ => return
 
 /-- Collects facts from the local context. For each occurring type `α`, the returned map contains
 a pair `(idxToAtom, facts)`, where the map `idxToAtom` converts indices to found
@@ -181,8 +190,8 @@ def collectFacts (g : MVarId) :
     MetaM <| Std.HashMap Expr <| Std.HashMap Nat Expr × Array AtomicFact := g.withContext do
   let res := (← (collectFactsImp g).run Std.HashMap.empty).snd
   return res.map fun _ (atomToIdx, facts) =>
-    let idxToAtom : Std.HashMap Nat Expr := atomToIdx.fold (init := .empty) fun acc key value =>
-      acc.insert value key
+    let idxToAtom : Std.HashMap Nat Expr := atomToIdx.fold (init := .empty) fun acc _ value =>
+      acc.insert value.fst value.snd
     (idxToAtom, facts)
 
 end Mathlib.Tactic.Order

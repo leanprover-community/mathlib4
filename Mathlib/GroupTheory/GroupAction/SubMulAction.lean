@@ -274,8 +274,13 @@ protected def subtype : S' →[R] M where
   toFun := Subtype.val; map_smul' _ _ := rfl
 
 @[to_additive (attr := simp)]
-protected theorem coeSubtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
+protected theorem coe_subtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
+
+@[deprecated (since := "2025-02-18")]
+protected alias coeSubtype := SubMulAction.SMulMemClass.coe_subtype
+@[deprecated (since := "2025-02-18")]
+protected alias _root_.SubAddAction.SMulMemClass.coeSubtype := SubAddAction.SMulMemClass.coe_subtype
 
 end SMulMemClass
 

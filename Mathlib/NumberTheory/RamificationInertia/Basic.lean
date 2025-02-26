@@ -92,7 +92,7 @@ theorem ramificationIdx_spec {n : ℕ} (hle : map f p ≤ P ^ n) (hgt : ¬map f 
 
 theorem ramificationIdx_lt {n : ℕ} (hgt : ¬map f p ≤ P ^ n) : ramificationIdx f p P < n := by
   classical
-  cases' n with n n
+  rcases n with - | n
   · simp at hgt
   · rw [Nat.lt_succ_iff]
     have : ∀ k, map f p ≤ P ^ k → k ≤ n := by

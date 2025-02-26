@@ -83,7 +83,18 @@ example {α : Type u} (a b c : α) [Lattice α] : a ⊓ (b ⊔ c) ≥ (a ⊓ b) 
 example {α : Type u} (a b c : Set α) : a ∩ (b ∪ c) ≥ (a ∩ b) ∪ (a ∩ c) := by
   order
 
--- worst case
+example {n : Nat} (A B C : Matrix (Fin n) (Fin n) ℚ) : (A * B * C).rank ≤ A.rank ⊓ C.rank := by
+  have h1 := Matrix.rank_mul_le A B
+  have h2 := Matrix.rank_mul_le (A * B) C
+  have h3 : A.rank ⊓ B.rank ≤ A.rank := inf_le_left
+  have h4 : (A * B).rank ⊓ C.rank ≤ (A * B).rank := inf_le_left
+  have h5 : (A * B).rank ⊓ C.rank ≤ C.rank := inf_le_right
+  simp
+  constructor
+  · order
+  · order
+
+-- worst case for the current algorithm
 example {α : Type u} [PartialOrder α]
     (x1 y1 : α)
     (x2 y2 : α)
