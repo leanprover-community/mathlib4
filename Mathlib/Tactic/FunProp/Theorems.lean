@@ -248,7 +248,7 @@ initialize transitionTheoremsExt : GeneralTheoremsExt ←
 /-- Get transition theorems applicable to `e`.
 
 For example calling on `e` equal to `Continuous f` might return theorems implying continuity
-from linearity over finite dimensional spaces or differentiability.  -/
+from linearity over finite dimensional spaces or differentiability. -/
 def getTransitionTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let ext := transitionTheoremsExt.getState (← getEnv)
   let candidates ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
