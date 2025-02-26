@@ -203,7 +203,7 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
   have h0 (i : 𝒰.J) : (𝒰.map i).appLE _ (W i) (by simp) (φ g) = 0 := by
     rw [← Scheme.Hom.appLE_map _ _ (homOfLE <| hwle i).op, ← Scheme.Hom.map_appLE _ le_rfl w.op]
     simp only [CommRingCat.comp_apply]
-    erw [hg]
+    rw [hg]
     simp only [map_zero]
   have h1 (i : 𝒰.J) : ∃ n, (res i) (φ (s ^ n * g)) = 0 := by
     obtain ⟨n, hn⟩ := exists_of_res_zero_of_qcqs_of_top (s := ((res i) (φ s))) (h0 i)
@@ -251,6 +251,26 @@ theorem isAffine_surjective_of_isAffine [IsClosedImmersion f] :
     (ConcreteCategory.bijective_of_isIso
       ((affineTargetImageFactorization f).appTop)).surjective.comp <|
       affineTargetImageInclusion_app_surjective f⟩
+
+lemma Spec_iff {R : CommRingCat} {f : X ⟶ Spec R} :
+    IsClosedImmersion f ↔ ∃ I : Ideal R, ∃ e : X ≅ Spec (.of <| R ⧸ I),
+      f = e.hom ≫ Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk I)) := by
+  constructor
+  · intro H
+    obtain ⟨h₁, h₂⟩ := IsClosedImmersion.isAffine_surjective_of_isAffine f
+    let φ := (Scheme.ΓSpecIso R).inv ≫ f.appTop
+    refine ⟨RingHom.ker φ.1, Scheme.isoSpec _ ≪≫ Scheme.Spec.mapIso
+        (.op (RingEquiv.ofBijective φ.1.kerLift ?_).toCommRingCatIso), ?_⟩
+    · exact ⟨φ.1.kerLift_injective, Ideal.Quotient.lift_surjective_of_surjective _ _
+        (h₂.comp (Scheme.ΓSpecIso R).commRingCatIsoToRingEquiv.symm.surjective)⟩
+    · simp only [Iso.trans_hom, Functor.mapIso_hom, Iso.op_hom, Scheme.Spec_map,
+        Quiver.Hom.unop_op, Category.assoc, ← Spec.map_comp]
+      show f = X.isoSpec.hom ≫ Spec.map φ
+      simp only [Scheme.isoSpec, asIso_hom, Spec.map_comp, ← Scheme.toSpecΓ_naturality_assoc,
+        ← SpecMap_ΓSpecIso_hom, φ]
+      simp only [← Spec.map_comp, Iso.inv_hom_id, Spec.map_id, Category.comp_id]
+  · rintro ⟨I, e, rfl⟩
+    infer_instance
 
 end IsClosedImmersion
 

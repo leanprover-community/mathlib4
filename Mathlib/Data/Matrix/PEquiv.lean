@@ -32,6 +32,7 @@ inverse of this map, sending anything not in the image to zero.
 This file uses `ᵀ` for `Matrix.transpose`.
 -/
 
+assert_not_exists Field
 
 namespace PEquiv
 
@@ -40,7 +41,7 @@ open Matrix
 universe u v
 
 variable {k l m n : Type*}
-variable {α : Type v}
+variable {α β : Type*}
 
 open Matrix
 
@@ -58,7 +59,7 @@ theorem toMatrix_apply [DecidableEq n] [Zero α] [One α] (f : m ≃. n) (i j) :
 theorem toMatrix_mul_apply [Fintype m] [DecidableEq m] [Semiring α] (f : l ≃. m) (M : Matrix m n α)
     (i j) : (f.toMatrix * M :) i j = Option.casesOn (f i) 0 fun fi => M fi j := by
   dsimp [toMatrix, Matrix.mul_apply]
-  cases' h : f i with fi
+  rcases h : f i with - | fi
   · simp [h]
   · rw [Finset.sum_eq_single fi] <;> simp +contextual [h, eq_comm]
 
@@ -67,7 +68,7 @@ theorem toMatrix_mul_apply [Fintype m] [DecidableEq m] [Semiring α] (f : l ≃.
 theorem mul_toMatrix_apply [Fintype m] [Semiring α] [DecidableEq n] (M : Matrix l m α) (f : m ≃. n)
     (i j) : (M * f.toMatrix :) i j = Option.casesOn (f.symm j) 0 (M i) := by
   dsimp [Matrix.mul_apply, toMatrix_apply]
-  cases' h : f.symm j with fj
+  rcases h : f.symm j with - | fj
   · simp [h, ← f.eq_some_iff]
   · rw [Finset.sum_eq_single fj]
     · simp [h, ← f.eq_some_iff]
@@ -102,20 +103,35 @@ theorem transpose_toMatrix_toPEquiv_apply
   ext
   simp [toMatrix_apply, Pi.single_apply, eq_comm, ← Equiv.apply_eq_iff_eq_symm_apply]
 
-theorem toMatrix_toPEquiv_mul [Fintype m] [DecidableEq m] [Semiring α] (f : m ≃ m)
-    (M : Matrix m n α) : f.toPEquiv.toMatrix * M = M.submatrix f id := by
+theorem toMatrix_toPEquiv_mul [Fintype m] [DecidableEq m]
+    [Semiring α] (f : l ≃ m) (M : Matrix m n α) :
+    f.toPEquiv.toMatrix * M = M.submatrix f id := by
   ext i j
   rw [toMatrix_mul_apply, Equiv.toPEquiv_apply, submatrix_apply, id]
 
 @[deprecated (since := "2025-01-27")] alias toPEquiv_mul_matrix := toMatrix_toPEquiv_mul
 
-theorem mul_toMatrix_toPEquiv {m n α : Type*} [Fintype n] [DecidableEq n] [Semiring α] (f : n ≃ n)
-    (M : Matrix m n α) : M * f.toPEquiv.toMatrix = M.submatrix id f.symm :=
+theorem mul_toMatrix_toPEquiv [Fintype m] [DecidableEq n]
+    [Semiring α] (M : Matrix l m α) (f : m ≃ n) :
+    (M * f.toPEquiv.toMatrix) = M.submatrix id f.symm :=
   Matrix.ext fun i j => by
     rw [PEquiv.mul_toMatrix_apply, ← Equiv.toPEquiv_symm, Equiv.toPEquiv_apply,
       Matrix.submatrix_apply, id]
 
 @[deprecated (since := "2025-01-27")] alias mul_toPEquiv_toMatrix := mul_toMatrix_toPEquiv
+
+lemma toMatrix_toPEquiv_mulVec [DecidableEq n] [Fintype n]
+    [NonAssocSemiring α] (σ : m ≃ n) (a : n → α) :
+    σ.toPEquiv.toMatrix *ᵥ a = a ∘ σ := by
+  ext j
+  simp [toMatrix, mulVec, dotProduct]
+
+lemma vecMul_toMatrix_toPEquiv [DecidableEq n] [Fintype m]
+    [NonAssocSemiring α] (σ : m ≃ n) (a : m → α) :
+    a ᵥ* σ.toPEquiv.toMatrix = a ∘ σ.symm := by
+  classical
+  ext j
+  simp [toMatrix, σ.apply_eq_iff_eq_symm_apply, vecMul, dotProduct]
 
 theorem toMatrix_trans [Fintype m] [DecidableEq m] [DecidableEq n] [Semiring α] (f : l ≃. m)
     (g : m ≃. n) : ((f.trans g).toMatrix : Matrix l n α) = f.toMatrix * g.toMatrix := by
@@ -136,8 +152,8 @@ theorem toMatrix_injective [DecidableEq n] [MonoidWithZero α] [Nontrivial α] :
   simp only [Matrix.ext_iff.symm, toMatrix_apply, PEquiv.ext_iff, not_forall, exists_imp]
   intro i hi
   use i
-  cases' hf : f i with fi
-  · cases' hg : g i with gi
+  rcases hf : f i with - | fi
+  · rcases hg : g i with - | gi
     · rw [hf, hg] at hi; exact (hi rfl).elim
     · use gi
       simp
@@ -177,5 +193,11 @@ theorem toMatrix_toPEquiv_eq [DecidableEq n] [Zero α] [One α] (σ : Equiv.Perm
   Matrix.ext fun _ _ => if_congr Option.some_inj rfl rfl
 
 @[deprecated (since := "2025-01-27")] alias equiv_toPEquiv_toMatrix := toMatrix_toPEquiv_eq
+
+@[simp]
+lemma map_toMatrix [DecidableEq n] [NonAssocSemiring α] [NonAssocSemiring β]
+    (f : α →+* β) (σ : m ≃. n) : σ.toMatrix.map f = σ.toMatrix := by
+  ext i j
+  simp
 
 end PEquiv

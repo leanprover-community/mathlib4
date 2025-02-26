@@ -463,7 +463,27 @@ theorem map_X : map f X = X := by
   ext
   simp [coeff_X, apply_ite f]
 
+theorem map_surjective (f : S →+* T) (hf : Function.Surjective f) :
+    Function.Surjective (PowerSeries.map f) := by
+  intro g
+  use PowerSeries.mk fun k ↦ Function.surjInv hf (PowerSeries.coeff _ k g)
+  ext k
+  simp only [Function.surjInv, coeff_map, coeff_mk]
+  exact Classical.choose_spec (hf ((coeff T k) g))
+
+theorem map_injective (f : S →+* T) (hf : Function.Injective ⇑f) :
+    Function.Injective (PowerSeries.map f) := by
+  intro u v huv
+  ext k
+  apply hf
+  rw [← PowerSeries.coeff_map, ← PowerSeries.coeff_map, huv]
+
 end Map
+
+@[simp]
+theorem map_eq_zero {R S : Type*} [DivisionSemiring R] [Semiring S] [Nontrivial S] (φ : R⟦X⟧)
+    (f : R →+* S) : φ.map f = 0 ↔ φ = 0 :=
+  MvPowerSeries.map_eq_zero _ _
 
 theorem X_pow_dvd_iff {n : ℕ} {φ : R⟦X⟧} :
     (X : R⟦X⟧) ^ n ∣ φ ↔ ∀ m, m < n → coeff R m φ = 0 := by
@@ -818,6 +838,12 @@ theorem coe_C (a : R) : ((C a : R[X]) : PowerSeries R) = PowerSeries.C R a := by
 @[simp, norm_cast]
 theorem coe_X : ((X : R[X]) : PowerSeries R) = PowerSeries.X :=
   coe_monomial _ _
+
+@[simp]
+lemma polynomial_map_coe {U V : Type*} [CommSemiring U] [CommSemiring V] {φ : U →+* V}
+    {f : Polynomial U} : Polynomial.map φ f = PowerSeries.map φ f := by
+  ext
+  simp
 
 @[simp]
 theorem constantCoeff_coe : PowerSeries.constantCoeff R φ = φ.coeff 0 :=

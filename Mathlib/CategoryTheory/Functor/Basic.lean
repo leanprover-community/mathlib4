@@ -5,6 +5,7 @@ Authors: Tim Baumann, Stephen Morgan, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Combinatorics.Quiver.Prefunctor
+import Mathlib.Tactic.CategoryTheory.CheckCompositions
 
 /-!
 # Functors

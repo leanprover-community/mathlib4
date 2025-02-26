@@ -54,6 +54,17 @@ def ιMulti : M [⋀^Fin n]→ₗ[R] (⋀[R]^n M) :=
 
 @[simp] lemma ιMulti_apply_coe (a : Fin n → M) : ιMulti R n a = ExteriorAlgebra.ιMulti R n a := rfl
 
+/-- Given a linearly ordered family `v` of vectors of `M` and a natural number `n`, produce the
+family of `n`fold exterior products of elements of `v`, seen as members of the
+`n`th exterior power. -/
+noncomputable def ιMulti_family {I : Type*} [LinearOrder I] (v : I → M)
+    (s : {s : Finset I // Finset.card s = n}) : ⋀[R]^n M :=
+  ιMulti R n fun i ↦ v <| Finset.orderIsoOfFin s.val s.property i
+
+@[simp] lemma ιMulti_family_apply_coe {I : Type*} [LinearOrder I] (v : I → M)
+  (s : {s : Finset I // Finset.card s = n}) :
+    ιMulti_family R n v s = ExteriorAlgebra.ιMulti_family R n v s := rfl
+
 variable (M)
 /-- The image of `ExteriorAlgebra.ιMulti R n` spans the `n`th exterior power. Variant of
 `ExteriorAlgebra.ιMulti_span_fixedDegree`, useful in rewrites. -/
@@ -221,7 +232,21 @@ theorem map_comp_ιMulti (f : M →ₗ[R] N) :
 @[simp]
 theorem map_apply_ιMulti (f : M →ₗ[R] N) (m : Fin n → M) :
     map n f (ιMulti R n m) = ιMulti R n (f ∘ m) := by
-  simp only [map, alternatingMapLinearEquiv_apply_ιMulti, AlternatingMap.compLinearMap_apply]
+  simp only [map, alternatingMapLinearEquiv_apply_ιMulti, AlternatingMap.compLinearMap_apply,
+    Function.comp_def]
+
+@[simp]
+lemma map_comp_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M →ₗ[R] N) :
+    (map n f) ∘ (ιMulti_family R n v) = ιMulti_family R n (f ∘ v) := by
+  ext ⟨s, hs⟩
+  simp only [ιMulti_family, Function.comp_apply, map_apply_ιMulti]
+  rfl
+
+@[simp]
+lemma map_apply_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M →ₗ[R] N)
+  (s : {s : Finset I // s.card = n}) :
+    (map n f) (ιMulti_family R n v s) = ιMulti_family R n (f ∘ v) s := by
+  simp only [ιMulti_family, map, alternatingMapLinearEquiv_apply_ιMulti]
   rfl
 
 @[simp]
@@ -233,5 +258,56 @@ theorem map_id :
 theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
     map n (g ∘ₗ f) = map n g ∘ₗ map n f := by
   aesop
+
+/-! Linear equivalences in degrees 0 and 1. -/
+
+variable (R M) in
+/-- The linear equivalence ` ⋀[R]^0 M ≃ₗ[R] R`. -/
+@[simps! (config := .lemmasOnly) symm_apply]
+noncomputable def zeroEquiv : ⋀[R]^0 M ≃ₗ[R] R :=
+  LinearEquiv.ofLinear
+    (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
+    { toFun := fun r ↦ r • (ιMulti _ _ (by rintro ⟨i, hi⟩; simp at hi))
+      map_add' := by intros; simp only [add_smul]
+      map_smul' := by intros; simp only [smul_eq_mul, mul_smul, RingHom.id_apply]}
+    (by aesop) (by aesop)
+
+@[simp]
+lemma zeroEquiv_ιMulti (f : Fin 0 → M) :
+    zeroEquiv R M (ιMulti _ _ f) = 1 := by
+  simp [zeroEquiv]
+
+lemma zeroEquiv_naturality (f : M →ₗ[R] N) :
+    (zeroEquiv R N).comp (map 0 f) = zeroEquiv R M := by aesop
+
+variable (R M) in
+/-- The linear equivalence `M ≃ₗ[R] ⋀[R]^1 M`. -/
+@[simps! (config := .lemmasOnly) symm_apply]
+noncomputable def oneEquiv : ⋀[R]^1 M ≃ₗ[R] M :=
+  LinearEquiv.ofLinear
+    (alternatingMapLinearEquiv (AlternatingMap.ofSubsingleton R M M (0 : Fin 1) .id)) (by
+      have h (m : M) : (fun (_ : Fin 1) ↦ m) = update (fun _ ↦ 0) 0 m := by
+        ext i
+        fin_cases i
+        rfl
+      exact
+        { toFun := fun m ↦ ιMulti _ _ (fun _ ↦ m)
+          map_add' := fun m₁ m₂ ↦ by
+            dsimp
+            rw [h]; nth_rw 2 [h]; nth_rw 3 [h]
+            simp only [Fin.isValue, AlternatingMap.map_update_add]
+          map_smul' := fun r m ↦ by
+            dsimp
+            rw [h]; nth_rw 2 [h]
+            simp only [Fin.isValue, AlternatingMap.map_update_smul] })
+    (by aesop) (by aesop)
+
+@[simp]
+lemma oneEquiv_ιMulti (f : Fin 1 → M) :
+    oneEquiv R M (ιMulti _ _ f) = f 0 := by
+  simp [oneEquiv]
+
+lemma oneEquiv_naturality (f : M →ₗ[R] N) :
+    (oneEquiv R N).comp (map 1 f) = f.comp (oneEquiv R M).toLinearMap := by aesop
 
 end exteriorPower

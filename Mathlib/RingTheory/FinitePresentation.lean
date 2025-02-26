@@ -157,20 +157,12 @@ theorem iff_quotient_mvPolynomial' :
     refine
       ⟨ULift (Fin n), inferInstance, f.comp ulift_var.toAlgHom, hfs.comp ulift_var.surjective,
         Ideal.fg_ker_comp _ _ ?_ hfk ulift_var.surjective⟩
-    erw [RingHom.ker_coe_equiv ulift_var.toRingEquiv]
-    exact Submodule.fg_bot
-    -- Porting note: was
-    -- convert Submodule.fg_bot
-    -- exact RingHom.ker_coe_equiv ulift_var.toRingEquiv
+    simpa using Submodule.fg_bot
   · rintro ⟨ι, hfintype, f, hf⟩
     have equiv := MvPolynomial.renameEquiv R (Fintype.equivFin ι)
     use Fintype.card ι, f.comp equiv.symm, hf.1.comp (AlgEquiv.symm equiv).surjective
     refine Ideal.fg_ker_comp (S := MvPolynomial ι R) (A := A) _ f ?_ hf.2 equiv.symm.surjective
-    erw [RingHom.ker_coe_equiv equiv.symm.toRingEquiv]
-    exact Submodule.fg_bot
-    -- Porting note: was
-    -- convert Submodule.fg_bot
-    -- exact RingHom.ker_coe_equiv equiv.symm.toRingEquiv
+    simpa using Submodule.fg_bot
 
 universe v in
 -- Porting note: make universe level explicit to ensure `ι, ι'` has the same universe level
@@ -212,8 +204,8 @@ theorem trans [Algebra A B] [IsScalarTower R A B] [FinitePresentation R A]
 
 open MvPolynomial
 
--- We follow the proof of https://stacks.math.columbia.edu/tag/0561
 -- TODO: extract out helper lemmas and tidy proof.
+@[stacks 0561]
 theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A B]
     [FinitePresentation.{w₁, w₃} R B] [FiniteType R A] :
     FinitePresentation.{w₂, w₃} A B := by
