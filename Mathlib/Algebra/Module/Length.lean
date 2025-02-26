@@ -19,8 +19,6 @@ variable [Module R M] [Module R M']
 
 open Order
 
-noncomputable def Submodule.length (p : Submodule R M) : ℕ∞ := Order.height p
-
 variable (R M) in
 /--
 The length of a module M is defined to be the supremum of lengths of chains of submodules of M. We
@@ -29,50 +27,14 @@ WithBot ℕ∞ in spite of the fact that there is no module with length equal to
 -/
 noncomputable def Module.length : WithBot ℕ∞ := krullDim (α := Submodule R M)
 
-@[simp]
 lemma Module.length_nonneg : 0 ≤ Module.length R M :=
   haveI : Nonempty (Submodule R M) := ⟨⊤⟩
   krullDim_nonneg
 
-@[simp]
 lemma Module.length_ne_bot : Module.length R M ≠ ⊥ := by
   intro h
   rw [Module.length, krullDim_eq_bot_iff] at h
   exact IsEmpty.false (⊤ : Submodule R M)
-
-variable (R M) in
-lemma Submodule.length_top_eq : (⊤ : Submodule R M).length = Module.length R M := by
-  simpa only [Submodule.length, Module.length] using height_top_eq_krullDim
-
-lemma Submodule.length_eq (p : Submodule R M) : p.length = Module.length R p := by
-  rw [Module.length, Submodule.length, Order.krullDim_eq_iSup_height]
-  apply le_antisymm
-  · sorry
-  · sorry
-
-lemma Submodule.sup_lt_length_succ {p : Submodule R M} (hp : ⊥ < p) :
-    (⨆ q < p, q.length) + 1 = p.length := by
-  show (⨆ q < p, q.length) + 1 = (p.length : WithTop ℕ)
-  rw [Submodule.length, height_eq_iSup_lt_height, iSup_subtype', iSup_subtype']
-  by_cases h : Nonempty { q // q < p }
-  · rw [ENat.iSup_add]; rfl
-  haveI :  IsEmpty { q // q < p } := not_nonempty_iff.mp h
-  rw [iSup_of_empty, iSup_of_empty]
-  show 0 + 1 = 0
-  sorry
-
-@[simp]
-lemma Submodule.length_bot : (⊥ : Submodule R M).length = 0 := by
-  simpa only [Submodule.length, height_eq_zero] using isMin_bot
-
-@[gcongr]
-lemma Submodule.length_mono {p q : Submodule R M} (h : p ≤ q) : p.length ≤ q.length := height_mono h
-
-lemma Submodule.length_succ_le_of_lt {p q : Submodule R M} (h : p < q) :
-    p.length + 1 ≤ q.length := by
-  rw [← Submodule.sup_lt_length_succ (lt_of_le_of_lt bot_le h)]
-  refine add_le_add_right ?_ 1
-  sorry
 
 open Classical in
 /--
