@@ -13,7 +13,9 @@ import Mathlib.RingTheory.Perfectoid.FontaineTheta
 # The de Rham Period Ring \(\mathbb{B}_dR^+\) and \(\mathbb{B}_dR\)
 
 In this file, we define the de Rham period ring \(\mathbb{B}_dR^+\) and
-the de Rham ring \(\mathbb{B}_dR\). We define a generalized version of these period rings following Scholze. When `O` is the ring of integers of `ℂ_p`, they coincide with the classical de Rham period rings.
+the de Rham ring \(\mathbb{B}_dR\). We define a generalized version of
+these period rings following Scholze. When `O` is the ring of integers
+of `ℂ_p`, they coincide with the classical de Rham period rings.
 
 ## Main definitions
 
