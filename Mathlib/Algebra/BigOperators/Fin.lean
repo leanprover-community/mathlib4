@@ -310,7 +310,7 @@ theorem finFunctionFinEquiv_single {m n : ℕ} [NeZero m] (i : Fin n) (j : Fin m
     (finFunctionFinEquiv (Pi.single i j) : ℕ) = j * m ^ (i : ℕ) := by
   rw [finFunctionFinEquiv_apply, Fintype.sum_eq_single i, Pi.single_eq_same]
   rintro x hx
-  rw [Pi.single_eq_of_ne hx, Fin.val_zero', zero_mul]
+  rw [Pi.single_eq_of_ne hx, Fin.val_zero, zero_mul]
 
 /-- Equivalence between `∀ i : Fin m, Fin (n i)` and `Fin (∏ i : Fin m, n i)`. -/
 def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃ Fin (∏ i : Fin m, n i) :=
@@ -389,7 +389,7 @@ theorem finPiFinEquiv_single {m : ℕ} {n : Fin m → ℕ} [∀ i, NeZero (n i)]
       j * ∏ j, n (Fin.castLE i.is_lt.le j) := by
   rw [finPiFinEquiv_apply, Fintype.sum_eq_single i, Pi.single_eq_same]
   rintro x hx
-  rw [Pi.single_eq_of_ne hx, Fin.val_zero', zero_mul]
+  rw [Pi.single_eq_of_ne hx, Fin.val_zero, zero_mul]
 
 /-- Equivalence between the Sigma type `(i : Fin m) × Fin (n i)` and `Fin (∑ i : Fin m, n i)`. -/
 def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) ≃ Fin (∑ i : Fin m, n i) :=
