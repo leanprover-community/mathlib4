@@ -34,13 +34,13 @@ lemma prod_comp_right [SFinite ν] {κ : Kernel β γ} [IsSFiniteKernel κ] :
     μ.prod (κ ∘ₘ ν) = (Kernel.id ∥ₖ κ) ∘ₘ (μ.prod ν) := by
   ext s hs
   rw [Measure.prod_apply hs, Measure.bind_apply hs (Kernel.measurable _)]
-  simp_rw [Measure.bind_apply (measurable_prod_mk_left hs) (Kernel.measurable _)]
+  simp_rw [Measure.bind_apply (measurable_prodMk_left hs) (Kernel.measurable _)]
   rw [MeasureTheory.lintegral_prod]
   swap; · exact (Kernel.measurable_coe _ hs).aemeasurable
   congr with a
   congr with b
   rw [Kernel.parallelComp_apply, Kernel.id_apply, Measure.prod_apply hs, lintegral_dirac']
-  exact measurable_measure_prod_mk_left hs
+  exact measurable_measure_prodMk_left hs
 
 lemma prod_comp_left [SFinite μ] [SFinite ν] {κ : Kernel α γ} [IsSFiniteKernel κ] :
     (κ ∘ₘ μ).prod ν = (κ ∥ₖ Kernel.id) ∘ₘ (μ.prod ν) := by
