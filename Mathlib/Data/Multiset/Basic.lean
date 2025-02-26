@@ -2405,7 +2405,7 @@ theorem exists_mem_of_rel_of_mem {r : α → β → Prop} {s : Multiset α} {t :
   induction' h with x y s t hxy _hst ih
   · simp
   · intro a ha
-    cases' mem_cons.1 ha with ha ha
+    rcases mem_cons.1 ha with ha | ha
     · exact ⟨y, mem_cons_self _ _, ha.symm ▸ hxy⟩
     · rcases ih ha with ⟨b, hbt, hab⟩
       exact ⟨b, mem_cons.2 (Or.inr hbt), hab⟩

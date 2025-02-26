@@ -281,8 +281,8 @@ theorem Equiv.trans : ∀ {l₁ l₂ l₃ : Lists α}, l₁ ~ l₂ → l₂ ~ l�
     · exact h₂
     cases' id h₂ with _ _ l₃
     · exact h₁
-    cases' Equiv.antisymm_iff.1 h₁ with hl₁ hr₁
-    cases' Equiv.antisymm_iff.1 h₂ with hl₂ hr₂
+    obtain ⟨hl₁, hr₁⟩ := Equiv.antisymm_iff.1 h₁
+    obtain ⟨hl₂, hr₂⟩ := Equiv.antisymm_iff.1 h₂
     apply Equiv.antisymm_iff.2; constructor <;> apply Lists'.subset_def.2
     · intro a₁ m₁
       rcases Lists'.mem_of_subset' hl₁ m₁ with ⟨a₂, m₂, e₁₂⟩

@@ -6,6 +6,7 @@ Authors: Heather Macbeth
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 import Mathlib.Topology.UrysohnsLemma
+import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 import Mathlib.MeasureTheory.Integral.Bochner
 
 /-!
@@ -106,7 +107,7 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
     intro x
     by_cases hv : x ∈ v
     · rw [← Set.diff_union_of_subset hsv] at hv
-      cases' hv with hsv hs
+      rcases hv with hsv | hs
       · simpa only [hsv.2, Set.indicator_of_not_mem, not_false_iff, sub_zero, hsv,
           Set.indicator_of_mem] using gc_bd0 x
       · simp [hgs hs, hs]

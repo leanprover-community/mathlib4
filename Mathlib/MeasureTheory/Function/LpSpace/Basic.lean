@@ -5,15 +5,11 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NNNorm
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Data.Set.Image
 import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
 import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
 import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
-import Mathlib.MeasureTheory.Measure.OpenPos
-import Mathlib.MeasureTheory.Measure.Typeclasses
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
-import Mathlib.Topology.ContinuousMap.Compact
 import Mathlib.Order.Filter.IndicatorFunction
 
 /-!
@@ -33,10 +29,6 @@ that it is continuous. In particular,
 * `ContinuousLinearMap.compLp` defines the action on `Lp` of a continuous linear map.
 * `Lp.posPart` is the positive part of an `Lp` function.
 * `Lp.negPart` is the negative part of an `Lp` function.
-
-When `α` is a topological space equipped with a finite Borel measure, there is a bounded linear map
-from the normed space of bounded continuous functions (`α →ᵇ E`) to `Lp E p μ`.  We construct this
-as `BoundedContinuousFunction.toLp`.
 
 ## Notations
 
@@ -68,9 +60,9 @@ function coercion from the coercion to almost everywhere defined functions.
 noncomputable section
 
 open TopologicalSpace MeasureTheory Filter
-open scoped NNReal ENNReal Topology MeasureTheory Uniformity symmDiff
+open scoped NNReal ENNReal Topology symmDiff
 
-variable {α E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
+variable {α 𝕜 𝕜' E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
 
 namespace MeasureTheory
@@ -80,7 +72,6 @@ namespace MeasureTheory
 
 The space of equivalence classes of measurable functions for which `eLpNorm f p μ < ∞`.
 -/
-
 
 @[simp]
 theorem eLpNorm_aeeqFun {α E : Type*} [MeasurableSpace α] {μ : Measure α} [NormedAddCommGroup E]
@@ -102,7 +93,6 @@ def Lp {α} (E : Type*) {m : MeasurableSpace α} [NormedAddCommGroup E] (p : ℝ
       eLpNorm_add_lt_top ⟨f.aestronglyMeasurable, hf⟩ ⟨g.aestronglyMeasurable, hg⟩]
   neg_mem' {f} hf := by rwa [Set.mem_setOf_eq, eLpNorm_congr_ae (AEEqFun.coeFn_neg f), eLpNorm_neg]
 
--- Porting note: calling the first argument `α` breaks the `(α := ·)` notation
 scoped notation:25 α' " →₁[" μ "] " E => MeasureTheory.Lp (α := α') E 1 μ
 scoped notation:25 α' " →₂[" μ "] " E => MeasureTheory.Lp (α := α') E 2 μ
 
@@ -165,7 +155,7 @@ protected theorem antitone [IsFiniteMeasure μ] {p q : ℝ≥0∞} (hpq : p ≤ 
 theorem coeFn_mk {f : α →ₘ[μ] E} (hf : eLpNorm f p μ < ∞) : ((⟨f, hf⟩ : Lp E p μ) : α → E) = f :=
   rfl
 
--- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10685): dsimp can prove this
+-- not @[simp] because dsimp can prove this
 theorem coe_mk {f : α →ₘ[μ] E} (hf : eLpNorm f p μ < ∞) : ((⟨f, hf⟩ : Lp E p μ) : α →ₘ[μ] E) = f :=
   rfl
 
@@ -411,7 +401,6 @@ example [Fact (1 ≤ p)] : SeminormedAddGroup.toNNNorm = (Lp.instNNNorm : NNNorm
 
 section BoundedSMul
 
-variable {𝕜 𝕜' : Type*}
 variable [NormedRing 𝕜] [NormedRing 𝕜'] [Module 𝕜 E] [Module 𝕜' E]
 variable [BoundedSMul 𝕜 E] [BoundedSMul 𝕜' E]
 
@@ -419,20 +408,20 @@ theorem const_smul_mem_Lp (c : 𝕜) (f : Lp E p μ) : c • (f : α →ₘ[μ] 
   rw [mem_Lp_iff_eLpNorm_lt_top, eLpNorm_congr_ae (AEEqFun.coeFn_smul _ _)]
   exact eLpNorm_const_smul_le.trans_lt <| ENNReal.mul_lt_top ENNReal.coe_lt_top f.prop
 
-variable (E p μ 𝕜)
+variable (𝕜 E p μ)
 
 /-- The `𝕜`-submodule of elements of `α →ₘ[μ] E` whose `Lp` norm is finite.  This is `Lp E p μ`,
 with extra structure. -/
 def LpSubmodule : Submodule 𝕜 (α →ₘ[μ] E) :=
   { Lp E p μ with smul_mem' := fun c f hf => by simpa using const_smul_mem_Lp c ⟨f, hf⟩ }
 
-variable {E p μ 𝕜}
+variable {𝕜 E p μ}
 
-theorem coe_LpSubmodule : (LpSubmodule E p μ 𝕜).toAddSubgroup = Lp E p μ :=
+theorem coe_LpSubmodule : (LpSubmodule 𝕜 E p μ).toAddSubgroup = Lp E p μ :=
   rfl
 
 instance instModule : Module 𝕜 (Lp E p μ) :=
-  { (LpSubmodule E p μ 𝕜).module with }
+  { (LpSubmodule 𝕜 E p μ).module with }
 
 theorem coeFn_smul (c : 𝕜) (f : Lp E p μ) : ⇑(c • f) =ᵐ[μ] c • ⇑f :=
   AEEqFun.coeFn_smul _ _
@@ -1413,7 +1402,7 @@ theorem cauchy_tendsto_of_tendsto {f : ℕ → α → E} (hf : ∀ n, AEStrongly
     suffices h_tendsto_zero : ∃ N : ℕ, ∀ n : ℕ, N ≤ n → B n ≤ ε from
       ⟨h_tendsto_zero.choose, h_tendsto_zero.choose_spec _ le_rfl⟩
     exact (ENNReal.tendsto_atTop_zero.mp (ENNReal.tendsto_atTop_zero_of_tsum_ne_top hB)) ε hε
-  cases' h_B with N h_B
+  obtain ⟨N, h_B⟩ := h_B
   refine ⟨N, fun n hn => ?_⟩
   have h_sub : eLpNorm (f n - f_lim) p μ ≤ atTop.liminf fun m => eLpNorm (f n - f m) p μ := by
     refine eLpNorm_lim_le_liminf_eLpNorm (fun m => (hf n).sub (hf m)) (f n - f_lim) ?_
@@ -1430,7 +1419,7 @@ theorem memℒp_of_cauchy_tendsto (hp : 1 ≤ p) {f : ℕ → α → E} (hf : �
     (h_tendsto : atTop.Tendsto (fun n => eLpNorm (f n - f_lim) p μ) (𝓝 0)) : Memℒp f_lim p μ := by
   refine ⟨h_lim_meas, ?_⟩
   rw [ENNReal.tendsto_atTop_zero] at h_tendsto
-  cases' h_tendsto 1 zero_lt_one with N h_tendsto_1
+  obtain ⟨N, h_tendsto_1⟩ := h_tendsto 1 zero_lt_one
   specialize h_tendsto_1 N (le_refl N)
   have h_add : f_lim = f_lim - f N + f N := by abel
   rw [h_add]
@@ -1470,198 +1459,6 @@ end MeasureTheory
 
 end CompleteSpace
 
-/-! ### Continuous functions in `Lp` -/
-
-
-open scoped BoundedContinuousFunction
-
-open BoundedContinuousFunction
-
-section
-
-variable [TopologicalSpace α] [BorelSpace α] [SecondCountableTopologyEither α E]
-variable (E p μ)
-
-/-- An additive subgroup of `Lp E p μ`, consisting of the equivalence classes which contain a
-bounded continuous representative. -/
-def MeasureTheory.Lp.boundedContinuousFunction : AddSubgroup (Lp E p μ) :=
-  AddSubgroup.addSubgroupOf
-    ((ContinuousMap.toAEEqFunAddHom μ).comp (toContinuousMapAddHom α E)).range (Lp E p μ)
-
-variable {E p μ}
-
-/-- By definition, the elements of `Lp.boundedContinuousFunction E p μ` are the elements of
-`Lp E p μ` which contain a bounded continuous representative. -/
-theorem MeasureTheory.Lp.mem_boundedContinuousFunction_iff {f : Lp E p μ} :
-    f ∈ MeasureTheory.Lp.boundedContinuousFunction E p μ ↔
-      ∃ f₀ : α →ᵇ E, f₀.toContinuousMap.toAEEqFun μ = (f : α →ₘ[μ] E) :=
-  AddSubgroup.mem_addSubgroupOf
-
-namespace BoundedContinuousFunction
-
-variable [IsFiniteMeasure μ]
-
-/-- A bounded continuous function on a finite-measure space is in `Lp`. -/
-theorem mem_Lp (f : α →ᵇ E) : f.toContinuousMap.toAEEqFun μ ∈ Lp E p μ := by
-  refine Lp.mem_Lp_of_ae_bound ‖f‖ ?_
-  filter_upwards [f.toContinuousMap.coeFn_toAEEqFun μ] with x _
-  convert f.norm_coe_le_norm x using 2
-
-/-- The `Lp`-norm of a bounded continuous function is at most a constant (depending on the measure
-of the whole space) times its sup-norm. -/
-theorem Lp_nnnorm_le (f : α →ᵇ E) :
-    ‖(⟨f.toContinuousMap.toAEEqFun μ, mem_Lp f⟩ : Lp E p μ)‖₊ ≤
-      measureUnivNNReal μ ^ p.toReal⁻¹ * ‖f‖₊ := by
-  apply Lp.nnnorm_le_of_ae_bound
-  refine (f.toContinuousMap.coeFn_toAEEqFun μ).mono ?_
-  intro x hx
-  rw [← NNReal.coe_le_coe, coe_nnnorm, coe_nnnorm]
-  convert f.norm_coe_le_norm x using 2
-
-/-- The `Lp`-norm of a bounded continuous function is at most a constant (depending on the measure
-of the whole space) times its sup-norm. -/
-theorem Lp_norm_le (f : α →ᵇ E) :
-    ‖(⟨f.toContinuousMap.toAEEqFun μ, mem_Lp f⟩ : Lp E p μ)‖ ≤
-      measureUnivNNReal μ ^ p.toReal⁻¹ * ‖f‖ :=
-  Lp_nnnorm_le f
-
-variable (p μ)
-
-/-- The normed group homomorphism of considering a bounded continuous function on a finite-measure
-space as an element of `Lp`. -/
-def toLpHom [Fact (1 ≤ p)] : NormedAddGroupHom (α →ᵇ E) (Lp E p μ) :=
-  { AddMonoidHom.codRestrict ((ContinuousMap.toAEEqFunAddHom μ).comp (toContinuousMapAddHom α E))
-      (Lp E p μ) mem_Lp with
-    bound' := ⟨_, Lp_norm_le⟩ }
-
-theorem range_toLpHom [Fact (1 ≤ p)] :
-    ((toLpHom p μ).range : AddSubgroup (Lp E p μ)) =
-      MeasureTheory.Lp.boundedContinuousFunction E p μ := by
-  symm
-  exact AddMonoidHom.addSubgroupOf_range_eq_of_le
-      ((ContinuousMap.toAEEqFunAddHom μ).comp (toContinuousMapAddHom α E))
-      (by rintro - ⟨f, rfl⟩; exact mem_Lp f : _ ≤ Lp E p μ)
-
-variable (𝕜 : Type*) [Fact (1 ≤ p)]
-
-/-- The bounded linear map of considering a bounded continuous function on a finite-measure space
-as an element of `Lp`. -/
-def toLp [NormedField 𝕜] [NormedSpace 𝕜 E] : (α →ᵇ E) →L[𝕜] Lp E p μ :=
-  LinearMap.mkContinuous
-    (LinearMap.codRestrict (Lp.LpSubmodule E p μ 𝕜)
-      ((ContinuousMap.toAEEqFunLinearMap μ).comp (toContinuousMapLinearMap α E 𝕜)) mem_Lp)
-    _ Lp_norm_le
-
-theorem coeFn_toLp [NormedField 𝕜] [NormedSpace 𝕜 E] (f : α →ᵇ E) :
-    toLp (E := E) p μ 𝕜 f =ᵐ[μ] f :=
-  AEEqFun.coeFn_mk f _
-
-variable {𝕜}
-
-theorem range_toLp [NormedField 𝕜] [NormedSpace 𝕜 E] :
-    (LinearMap.range (toLp p μ 𝕜 : (α →ᵇ E) →L[𝕜] Lp E p μ)).toAddSubgroup =
-      MeasureTheory.Lp.boundedContinuousFunction E p μ :=
-  range_toLpHom p μ
-
-variable {p}
-
-theorem toLp_norm_le [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] :
-    ‖(toLp p μ 𝕜 : (α →ᵇ E) →L[𝕜] Lp E p μ)‖ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ :=
-  LinearMap.mkContinuous_norm_le _ (measureUnivNNReal μ ^ p.toReal⁻¹).coe_nonneg _
-
-theorem toLp_inj {f g : α →ᵇ E} [μ.IsOpenPosMeasure] [NormedField 𝕜] [NormedSpace 𝕜 E] :
-    toLp (E := E) p μ 𝕜 f = toLp (E := E) p μ 𝕜 g ↔ f = g := by
-  refine ⟨fun h => ?_, by tauto⟩
-  rw [← DFunLike.coe_fn_eq, ← (map_continuous f).ae_eq_iff_eq μ (map_continuous g)]
-  refine (coeFn_toLp p μ 𝕜 f).symm.trans (EventuallyEq.trans ?_ <| coeFn_toLp p μ 𝕜 g)
-  rw [h]
-
-theorem toLp_injective [μ.IsOpenPosMeasure] [NormedField 𝕜] [NormedSpace 𝕜 E] :
-    Function.Injective (⇑(toLp p μ 𝕜 : (α →ᵇ E) →L[𝕜] Lp E p μ)) :=
-  fun _f _g hfg => (toLp_inj μ).mp hfg
-
-end BoundedContinuousFunction
-
-namespace ContinuousMap
-
-variable [CompactSpace α] [IsFiniteMeasure μ]
-variable (𝕜 : Type*) (p μ) [Fact (1 ≤ p)]
-
-/-- The bounded linear map of considering a continuous function on a compact finite-measure
-space `α` as an element of `Lp`.  By definition, the norm on `C(α, E)` is the sup-norm, transferred
-from the space `α →ᵇ E` of bounded continuous functions, so this construction is just a matter of
-transferring the structure from `BoundedContinuousFunction.toLp` along the isometry. -/
-def toLp [NormedField 𝕜] [NormedSpace 𝕜 E] : C(α, E) →L[𝕜] Lp E p μ :=
-  (BoundedContinuousFunction.toLp p μ 𝕜).comp
-    (linearIsometryBoundedOfCompact α E 𝕜).toLinearIsometry.toContinuousLinearMap
-
-variable {𝕜}
-
-theorem range_toLp [NormedField 𝕜] [NormedSpace 𝕜 E] :
-    (LinearMap.range (toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ)).toAddSubgroup =
-      MeasureTheory.Lp.boundedContinuousFunction E p μ := by
-  refine SetLike.ext' ?_
-  have := (linearIsometryBoundedOfCompact α E 𝕜).surjective
-  convert Function.Surjective.range_comp this (BoundedContinuousFunction.toLp (E := E) p μ 𝕜)
-  rw [← BoundedContinuousFunction.range_toLp p μ (𝕜 := 𝕜), Submodule.coe_toAddSubgroup,
-    LinearMap.range_coe]
-
-variable {p}
-
-theorem coeFn_toLp [NormedField 𝕜] [NormedSpace 𝕜 E] (f : C(α, E)) :
-    toLp (E := E) p μ 𝕜 f =ᵐ[μ] f :=
-  AEEqFun.coeFn_mk f _
-
-theorem toLp_def [NormedField 𝕜] [NormedSpace 𝕜 E] (f : C(α, E)) :
-    toLp (E := E) p μ 𝕜 f =
-      BoundedContinuousFunction.toLp (E := E) p μ 𝕜 (linearIsometryBoundedOfCompact α E 𝕜 f) :=
-  rfl
-
-@[simp]
-theorem toLp_comp_toContinuousMap [NormedField 𝕜] [NormedSpace 𝕜 E] (f : α →ᵇ E) :
-    toLp (E := E) p μ 𝕜 f.toContinuousMap = BoundedContinuousFunction.toLp (E := E) p μ 𝕜 f :=
-  rfl
-
-@[simp]
-theorem coe_toLp [NormedField 𝕜] [NormedSpace 𝕜 E] (f : C(α, E)) :
-    (toLp (E := E) p μ 𝕜 f : α →ₘ[μ] E) = f.toAEEqFun μ :=
-  rfl
-
-theorem toLp_injective [μ.IsOpenPosMeasure] [NormedField 𝕜] [NormedSpace 𝕜 E] :
-    Function.Injective (⇑(toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ)) :=
-  (BoundedContinuousFunction.toLp_injective _).comp (linearIsometryBoundedOfCompact α E 𝕜).injective
-
-theorem toLp_inj {f g : C(α, E)} [μ.IsOpenPosMeasure] [NormedField 𝕜] [NormedSpace 𝕜 E] :
-    toLp (E := E) p μ 𝕜 f = toLp (E := E) p μ 𝕜 g ↔ f = g :=
-  (toLp_injective μ).eq_iff
-
-variable {μ}
-
-/-- If a sum of continuous functions `g n` is convergent, and the same sum converges in `Lᵖ` to `h`,
-then in fact `g n` converges uniformly to `h`. -/
-theorem hasSum_of_hasSum_Lp {β : Type*} [μ.IsOpenPosMeasure] [NormedField 𝕜] [NormedSpace 𝕜 E]
-    {g : β → C(α, E)} {f : C(α, E)} (hg : Summable g)
-    (hg2 : HasSum (toLp (E := E) p μ 𝕜 ∘ g) (toLp (E := E) p μ 𝕜 f)) : HasSum g f := by
-  convert Summable.hasSum hg
-  exact toLp_injective μ (hg2.unique ((toLp p μ 𝕜).hasSum <| Summable.hasSum hg))
-
-variable (μ) [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
-
-theorem toLp_norm_eq_toLp_norm_coe :
-    ‖(toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ)‖ =
-      ‖(BoundedContinuousFunction.toLp p μ 𝕜 : (α →ᵇ E) →L[𝕜] Lp E p μ)‖ :=
-  ContinuousLinearMap.opNorm_comp_linearIsometryEquiv _ _
-
-/-- Bound for the operator norm of `ContinuousMap.toLp`. -/
-theorem toLp_norm_le :
-    ‖(toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ)‖ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ := by
-  rw [toLp_norm_eq_toLp_norm_coe]
-  exact BoundedContinuousFunction.toLp_norm_le μ
-
-end ContinuousMap
-
-end
-
 namespace MeasureTheory
 
 namespace Lp
@@ -1698,5 +1495,3 @@ theorem meas_ge_le_mul_pow_enorm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_t
 end Lp
 
 end MeasureTheory
-
-set_option linter.style.longFile 1800

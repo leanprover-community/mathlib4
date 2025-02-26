@@ -543,7 +543,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
   · intro hf
     refine Submodule.span_induction ?_ ?_ ?_ ?_ hf
     · intro f hf n
-      cases' (Set.mem_image _ _ _).mp hf with x hx
+      obtain ⟨x, hx⟩ := (Set.mem_image _ _ _).mp hf
       rw [← hx.right, coeff_C]
       by_cases h : n = 0
       · simpa [h] using hx.left
@@ -580,7 +580,7 @@ theorem mem_leadingCoeffNth (n : ℕ) (x) :
       rw [leadingCoeff_zero, eq_comm]
       exact coeff_eq_zero_of_degree_lt hpdeg
     · refine ⟨p, hpI, le_of_eq hpdeg, ?_⟩
-      rw [Polynomial.leadingCoeff, natDegree, hpdeg, Nat.cast_withBot, WithBot.unbot'_coe]
+      rw [Polynomial.leadingCoeff, natDegree, hpdeg, Nat.cast_withBot, WithBot.unbotD_coe]
   · rintro ⟨p, hpI, hpdeg, rfl⟩
     have : natDegree p + (n - natDegree p) = n :=
       add_tsub_cancel_of_le (natDegree_le_of_degree_le hpdeg)
@@ -1119,7 +1119,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
   · intro hf
     refine Submodule.span_induction ?_ ?_ ?_ ?_ hf
     · intro f hf n
-      cases' (Set.mem_image _ _ _).mp hf with x hx
+      obtain ⟨x, hx⟩ := (Set.mem_image _ _ _).mp hf
       rw [← hx.right, coeff_C]
       by_cases h : n = 0
       · simpa [h] using hx.left

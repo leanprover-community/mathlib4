@@ -570,7 +570,7 @@ theorem comap_fst_neBot [Nonempty β] {f : Filter α} [NeBot f] :
 @[simp]
 theorem comap_snd_neBot_iff {f : Filter β} :
     (f.comap (Prod.snd : α × β → β)).NeBot ↔ Nonempty α ∧ f.NeBot := by
-  cases' isEmpty_or_nonempty α with hα hα
+  rcases isEmpty_or_nonempty α with hα | hα
   · rw [filter_eq_bot_of_isEmpty (f.comap _), ← not_iff_not]; simp
   · simp [comap_neBot_iff_frequently, hα]
 
@@ -581,7 +581,7 @@ theorem comap_snd_neBot [Nonempty α] {f : Filter β} [NeBot f] :
 
 theorem comap_eval_neBot_iff' {ι : Type*} {α : ι → Type*} {i : ι} {f : Filter (α i)} :
     (comap (eval i) f).NeBot ↔ (∀ j, Nonempty (α j)) ∧ NeBot f := by
-  cases' isEmpty_or_nonempty (∀ j, α j) with H H
+  rcases isEmpty_or_nonempty (∀ j, α j) with H | H
   · rw [filter_eq_bot_of_isEmpty (f.comap _), ← not_iff_not]
     simp [← Classical.nonempty_pi]
   · have : ∀ j, Nonempty (α j) := Classical.nonempty_pi.1 H

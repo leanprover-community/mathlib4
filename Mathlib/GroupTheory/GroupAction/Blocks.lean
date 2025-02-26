@@ -372,7 +372,7 @@ theorem isBlock_subtypeVal {C : SubMulAction G X} {B : Set C} :
 theorem _root_.AddAction.IsBlock.of_addSubgroup_of_conjugate
     {G : Type*} [AddGroup G] {X : Type*} [AddAction G X] {B : Set X}
     {H : AddSubgroup G} (hB : AddAction.IsBlock H B) (g : G) :
-    AddAction.IsBlock (H.map (AddAut.conj g).toAddMonoidHom) (g +ᵥ B) := by
+    AddAction.IsBlock (H.map (AddAut.conj g).toMul.toAddMonoidHom) (g +ᵥ B) := by
   rw [AddAction.isBlock_iff_vadd_eq_or_disjoint]
   intro h'
   obtain ⟨h, hH, hh⟩ := AddSubgroup.mem_map.mp (SetLike.coe_mem h')
@@ -385,7 +385,6 @@ theorem _root_.AddAction.IsBlock.of_addSubgroup_of_conjugate
   suffices (h' : G) +ᵥ (g +ᵥ B) = g +ᵥ (h +ᵥ B) by
     exact this
   rw [← hh, vadd_vadd, vadd_vadd]
-  erw [AddAut.conj_apply]
   simp
 
 @[to_additive existing]
@@ -742,7 +741,7 @@ is a block (Wielandt, th. 7.3)-/
 theorem of_subset (a : X) (hfB : B.Finite) :
     IsBlock G (⋂ (k : G) (_ : a ∈ k • B), k • B) := by
   let B' := ⋂ (k : G) (_ : a ∈ k • B), k • B
-  cases' Set.eq_empty_or_nonempty B with hfB_e hfB_ne
+  rcases Set.eq_empty_or_nonempty B with hfB_e | hfB_ne
   · simp [hfB_e]
   have hB'₀ : ∀ (k : G) (_ : a ∈ k • B), B' ≤ k • B := by
     intro k hk

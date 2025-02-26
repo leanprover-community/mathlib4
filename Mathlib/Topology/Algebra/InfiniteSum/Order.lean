@@ -163,7 +163,7 @@ end OrderedCommMonoid
 
 section OrderedCommGroup
 
-variable [OrderedCommGroup α] [TopologicalSpace α] [TopologicalGroup α]
+variable [OrderedCommGroup α] [TopologicalSpace α] [IsTopologicalGroup α]
   [OrderClosedTopology α] {f g : ι → α} {a₁ a₂ : α} {i : ι}
 
 @[to_additive]

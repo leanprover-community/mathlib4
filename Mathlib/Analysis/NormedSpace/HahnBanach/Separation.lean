@@ -45,7 +45,7 @@ variable {𝕜 E : Type*}
 /-- Given a set `s` which is a convex neighbourhood of `0` and a point `x₀` outside of it, there is
 a continuous linear functional `f` separating `x₀` and `s`, in the sense that it sends `x₀` to 1 and
 all of `s` to values strictly below `1`. -/
-theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E]
+theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [IsTopologicalAddGroup E]
     [Module ℝ E] [ContinuousSMul ℝ E] {s : Set E} (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s)
     (hs₂ : IsOpen s) {x₀ : E} (hx₀ : x₀ ∉ s) : ∃ f : E →L[ℝ] ℝ, f x₀ = 1 ∧ ∀ x ∈ s, f x < 1 := by
   let f : E →ₗ.[ℝ] ℝ := LinearPMap.mkSpanSingleton x₀ 1 (ne_of_mem_of_not_mem hs₀ hx₀).symm
@@ -80,7 +80,7 @@ variable [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
   {s t : Set E} {x y : E}
 section
 
-variable [TopologicalAddGroup E] [ContinuousSMul ℝ E]
+variable [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
 
 /-- A version of the **Hahn-Banach theorem**: given disjoint convex sets `s`, `t` where `s` is open,
 there is a continuous linear functional which separates them. -/
@@ -231,7 +231,7 @@ lemma re_extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E] (g : E →L[ℝ] ℝ) (x 
   simp only [h , map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im, mul_zero,
     sub_self, sub_zero]
 
-variable [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+variable [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 
 theorem separate_convex_open_set {s : Set E}
     (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) {x₀ : E} (hx₀ : x₀ ∉ s) :

@@ -270,12 +270,12 @@ end SMul
 section
 
 /-- Note that the `SMulCommClass α β β` typeclass argument is usually satisfied by `Algebra α β`. -/
-@[to_additive] -- Porting note: nolint to_additive_doc
+@[to_additive]
 lemma mul_smul_comm [Mul β] [SMul α β] [SMulCommClass α β β] (s : α) (x y : β) :
     x * s • y = s • (x * y) := (smul_comm s x y).symm
 
 /-- Note that the `IsScalarTower α β β` typeclass argument is usually satisfied by `Algebra α β`. -/
-@[to_additive] -- Porting note: nolint to_additive_doc
+@[to_additive]
 lemma smul_mul_assoc [Mul β] [SMul α β] [IsScalarTower α β β] (r : α) (x y : β) :
     r • x * y = r • (x * y) := smul_assoc r x y
 

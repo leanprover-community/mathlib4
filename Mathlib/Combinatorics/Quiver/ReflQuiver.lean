@@ -33,7 +33,7 @@ scoped notation "𝟙rq" => ReflQuiver.id  -- type as \b1
 
 @[simp]
 theorem ReflQuiver.homOfEq_id {V : Type*} [ReflQuiver V] {X X' : V} (hX : X = X') :
-    Quiver.homOfEq (𝟙rq X) hX hX = 𝟙rq X' := by subst hX ; rfl
+    Quiver.homOfEq (𝟙rq X) hX hX = 𝟙rq X' := by subst hX; rfl
 
 instance catToReflQuiver {C : Type u} [inst : Category.{v} C] : ReflQuiver.{v+1, u} C :=
   { inst with }

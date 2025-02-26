@@ -62,7 +62,7 @@ instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*
     [AffineSpace V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 P2 where
   coe := AffineMap.toFun
   coe_injective' := fun ⟨f, f_linear, f_add⟩ ⟨g, g_linear, g_add⟩ => fun (h : f = g) => by
-    cases' (AddTorsor.nonempty : Nonempty P1) with p
+    obtain ⟨p⟩ := (AddTorsor.nonempty : Nonempty P1)
     congr with v
     apply vadd_right_cancel (f p)
     rw [← f_add, h, ← g_add]
@@ -206,8 +206,7 @@ section SMul
 variable {R : Type*} [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 /-- The space of affine maps to a module inherits an `R`-action from the action on its codomain. -/
 instance mulAction : MulAction R (P1 →ᵃ[k] V2) where
-  -- Porting note: `map_vadd` is `simp`, but we still have to pass it explicitly
-  smul c f := ⟨c • ⇑f, c • f.linear, fun p v => by simp [smul_add, map_vadd f]⟩
+  smul c f := ⟨c • ⇑f, c • f.linear, fun p v => by simp [smul_add]⟩
   one_smul _ := ext fun _ => one_smul _ _
   mul_smul _ _ _ := ext fun _ => mul_smul _ _ _
 
@@ -428,8 +427,7 @@ theorem linear_bijective_iff (f : P1 →ᵃ[k] P2) :
 theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
     f '' s -ᵥ f '' t = f.linear '' (s -ᵥ t) := by
   ext v
-  -- Porting note: `simp` needs `Set.mem_vsub` to be an expression
-  simp only [(Set.mem_vsub), Set.mem_image,
+  simp only [Set.mem_vsub, Set.mem_image,
     exists_exists_and_eq_and, exists_and_left, ← f.linearMap_vsub]
   constructor
   · rintro ⟨x, hx, y, hy, hv⟩
@@ -662,10 +660,10 @@ def toConstProdLinearMap : (V1 →ᵃ[k] V2) ≃ₗ[R] V2 × (V1 →ₗ[k] V2) w
   left_inv f := by
     ext
     rw [f.decomp]
-    simp [const_apply _ _]  -- Porting note: `simp` needs `_`s to use this lemma
+    simp [const_apply]
   right_inv := by
     rintro ⟨v, f⟩
-    ext <;> simp [const_apply _ _, const_linear _ _]  -- Porting note: `simp` needs `_`s
+    ext <;> simp [const_apply, const_linear]
   map_add' := by simp
   map_smul' := by simp
 

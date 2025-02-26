@@ -86,26 +86,32 @@ variable {i f}
 
 @[ext (iff := false)]
 theorem ExtensionOf.ext {a b : ExtensionOf i f} (domain_eq : a.domain = b.domain)
-    (to_fun_eq :
-      ∀ ⦃x : a.domain⦄ ⦃y : b.domain⦄, (x : N) = y → a.toLinearPMap x = b.toLinearPMap y) :
+    (to_fun_eq : ∀ ⦃x : N⦄ ⦃ha : x ∈ a.domain⦄ ⦃hb : x ∈ b.domain⦄,
+      a.toLinearPMap ⟨x, ha⟩ = b.toLinearPMap ⟨x, hb⟩) :
     a = b := by
   rcases a with ⟨a, a_le, e1⟩
   rcases b with ⟨b, b_le, e2⟩
   congr
   exact LinearPMap.ext domain_eq to_fun_eq
 
-theorem ExtensionOf.ext_iff {a b : ExtensionOf i f} :
+/-- A dependent version of `ExtensionOf.ext` -/
+theorem ExtensionOf.dExt {a b : ExtensionOf i f} (domain_eq : a.domain = b.domain)
+    (to_fun_eq :
+      ∀ ⦃x : a.domain⦄ ⦃y : b.domain⦄, (x : N) = y → a.toLinearPMap x = b.toLinearPMap y) :
+    a = b :=
+  ext domain_eq fun _ _ _ ↦ to_fun_eq rfl
+
+theorem ExtensionOf.dExt_iff {a b : ExtensionOf i f} :
     a = b ↔ ∃ _ : a.domain = b.domain, ∀ ⦃x : a.domain⦄ ⦃y : b.domain⦄,
     (x : N) = y → a.toLinearPMap x = b.toLinearPMap y :=
   ⟨fun r => r ▸ ⟨rfl, fun _ _ h => congr_arg a.toFun <| mod_cast h⟩, fun ⟨h1, h2⟩ =>
-    ExtensionOf.ext h1 h2⟩
+    ExtensionOf.dExt h1 h2⟩
 
 end Ext
 
 instance : Min (ExtensionOf i f) where
   min X1 X2 :=
-    { X1.toLinearPMap ⊓
-        X2.toLinearPMap with
+    { X1.toLinearPMap ⊓ X2.toLinearPMap with
       le := fun x hx =>
         (by
           rcases hx with ⟨x, rfl⟩
@@ -116,19 +122,12 @@ instance : Min (ExtensionOf i f) where
 
 instance : SemilatticeInf (ExtensionOf i f) :=
   Function.Injective.semilatticeInf ExtensionOf.toLinearPMap
-    (fun X Y h =>
-      ExtensionOf.ext (by rw [h]) fun x y h' => by
-        -- Porting note: induction didn't handle dependent rw like in Lean 3
-        have : {x y : N} → (h'' : x = y) → (hx : x ∈ X.toLinearPMap.domain) →
-          (hy : y ∈ Y.toLinearPMap.domain) → X.toLinearPMap ⟨x,hx⟩ = Y.toLinearPMap ⟨y,hy⟩ := by
-            rw [h]
-            intro _ _ h _ _
-            congr
-        apply this h' _ _)
-    fun X Y =>
-    LinearPMap.ext rfl fun x y h => by
-      congr
-      exact mod_cast h
+    (fun X Y h ↦
+      ExtensionOf.ext (by rw [h]) <| by
+        rw [h]
+        intros
+        rfl)
+    fun X Y ↦ LinearPMap.ext rfl fun x y h => by congr
 
 variable {i f}
 
@@ -142,9 +141,7 @@ theorem chain_linearPMap_of_chain_extensionOf {c : Set (ExtensionOf i f)}
 def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
     (hnonempty : c.Nonempty) : ExtensionOf i f :=
   { LinearPMap.sSup _
-      (IsChain.directedOn <|
-        chain_linearPMap_of_chain_extensionOf
-          hchain) with
+      (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain) with
     le := by
       refine le_trans hnonempty.some.le <|
         (LinearPMap.le_sSup _ <|
@@ -293,7 +290,7 @@ theorem ExtensionOfMaxAdjoin.extensionToFun_wd (h : Module.Baer R Q) {y : N}
     (r : R) (eq1 : ↑x = ↑a + r • y) :
     ExtensionOfMaxAdjoin.extensionToFun i f h x =
       (extensionOfMax i f).toLinearPMap a + ExtensionOfMaxAdjoin.extendIdealTo i f h y r := by
-  cases' a with a ha
+  obtain ⟨a, ha⟩ := a
   have eq2 :
     (ExtensionOfMaxAdjoin.fst i x - a : N) = (r - ExtensionOfMaxAdjoin.snd i x) • y := by
     change x = a + r • y at eq1

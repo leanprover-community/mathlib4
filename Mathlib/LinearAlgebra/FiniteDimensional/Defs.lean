@@ -549,17 +549,18 @@ theorem ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} 
     (s : Finset ι) (comm) (h : s.SupIndep fun i ↦ ker (f i)) :
     ker (s.noncommProd f comm) = ⨆ i ∈ s, ker (f i) := by
   classical
-  induction' s using Finset.induction_on with i s hi ih
-  · simp [one_eq_id]
-  replace ih : ker (Finset.noncommProd s f <| Set.Pairwise.mono (s.subset_insert i) comm) =
-      ⨆ x ∈ s, ker (f x) := ih _ (h.subset (s.subset_insert i))
-  rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, mul_eq_comp,
-    ker_comp_eq_of_commute_of_disjoint_ker]
-  · simp_rw [Finset.mem_insert_coe, iSup_insert, Finset.mem_coe, ih]
-  · exact s.noncommProd_commute _ _ _ fun j hj ↦
-      comm (s.mem_insert_self i) (Finset.mem_insert_of_mem hj) (by aesop)
-  · replace h := Finset.supIndep_iff_disjoint_erase.mp h i (s.mem_insert_self i)
-    simpa [ih, hi, Finset.sup_eq_iSup] using h
+  induction s using Finset.induction_on with
+  | empty => simp [one_eq_id]
+  | @insert i s hi ih =>
+    replace ih : ker (Finset.noncommProd s f <| Set.Pairwise.mono (s.subset_insert i) comm) =
+        ⨆ x ∈ s, ker (f x) := ih _ (h.subset (s.subset_insert i))
+    rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, mul_eq_comp,
+      ker_comp_eq_of_commute_of_disjoint_ker]
+    · simp_rw [Finset.mem_insert_coe, iSup_insert, Finset.mem_coe, ih]
+    · exact s.noncommProd_commute _ _ _ fun j hj ↦
+        comm (s.mem_insert_self i) (Finset.mem_insert_of_mem hj) (by aesop)
+    · replace h := Finset.supIndep_iff_disjoint_erase.mp h i (s.mem_insert_self i)
+      simpa [ih, hi, Finset.sup_eq_iSup] using h
 
 end DivisionRing
 

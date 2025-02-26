@@ -101,7 +101,7 @@ determined. -/
 theorem ext {F F' : MonoFactorisation f} (hI : F.I = F'.I)
     (hm : F.m = eqToHom hI ≫ F'.m) : F = F' := by
   cases' F with _ Fm _ _ Ffac; cases' F' with _ Fm' _ _ Ffac'
-  cases' hI
+  cases hI
   simp? at hm says simp only [eqToHom_refl, Category.id_comp] at hm
   congr
   apply (cancel_mono Fm).1

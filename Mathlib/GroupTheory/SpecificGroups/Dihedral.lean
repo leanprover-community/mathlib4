@@ -99,6 +99,10 @@ theorem inv_r (i : ZMod n) : (r i)⁻¹ = r (-i) :=
 theorem inv_sr (i : ZMod n) : (sr i)⁻¹ = sr i :=
   rfl
 
+@[simp]
+theorem r_zero : r 0 = (1 : DihedralGroup n) :=
+  rfl
+
 theorem one_def : (1 : DihedralGroup n) = r 0 :=
   rfl
 
@@ -147,14 +151,11 @@ theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
 theorem r_one_zpow (k : ℤ) : (r 1 : DihedralGroup n) ^ k = r k := by
   cases k <;> simp
 
--- @[simp] -- Porting note: simp changes the goal to `r 0 = 1`. `r_one_pow_n` is no longer useful.
 theorem r_one_pow_n : r (1 : ZMod n) ^ n = 1 := by
-  rw [r_one_pow, one_def]
-  congr 1
-  exact ZMod.natCast_self _
+  simp
 
--- @[simp] -- Porting note: simp changes the goal to `r 0 = 1`. `sr_mul_self` is no longer useful.
-theorem sr_mul_self (i : ZMod n) : sr i * sr i = 1 := by rw [sr_mul_sr, sub_self, one_def]
+theorem sr_mul_self (i : ZMod n) : sr i * sr i = 1 := by
+  simp
 
 /-- If `0 < n`, then `sr i` has order 2.
 -/
@@ -162,9 +163,7 @@ theorem sr_mul_self (i : ZMod n) : sr i * sr i = 1 := by rw [sr_mul_sr, sub_self
 theorem orderOf_sr (i : ZMod n) : orderOf (sr i) = 2 := by
   apply orderOf_eq_prime
   · rw [sq, sr_mul_self]
-  · -- Porting note: Previous proof was `decide`
-    revert n
-    simp_rw [one_def, ne_eq, reduceCtorEq, forall_const, not_false_eq_true]
+  · simp [← r_zero]
 
 /-- If `0 < n`, then `r 1` has order `n`.
 -/
@@ -243,9 +242,11 @@ def OddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // C
     left_inv := fun
       | ⟨⟨r _, r _⟩, _⟩ => rfl
       | ⟨⟨r i, sr j⟩, h⟩ => by
-        simpa [sub_eq_add_neg, neg_eq_iff_add_eq_zero, hu, eq_comm (a := i) (b := 0)] using h.eq
+        simpa [- r_zero, sub_eq_add_neg, neg_eq_iff_add_eq_zero, hu, eq_comm (a := i) (b := 0)]
+          using h.eq
       | ⟨⟨sr i, r j⟩, h⟩ => by
-        simpa [sub_eq_add_neg, eq_neg_iff_add_eq_zero, hu, eq_comm (a := j) (b := 0)] using h.eq
+        simpa [- r_zero, sub_eq_add_neg, eq_neg_iff_add_eq_zero, hu, eq_comm (a := j) (b := 0)]
+          using h.eq
       | ⟨⟨sr i, sr j⟩, h⟩ => by
         replace h := r.inj h
         rw [← neg_sub, neg_eq_iff_add_eq_zero, hu, sub_eq_zero] at h

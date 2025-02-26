@@ -149,7 +149,7 @@ variable {f : ℝ → E} {a b c d : ℝ} {μ ν : Measure ℝ}
 nonrec theorem symm (h : IntervalIntegrable f μ a b) : IntervalIntegrable f μ b a :=
   h.symm
 
-@[refl, simp] -- Porting note: added `simp`
+@[refl, simp]
 theorem refl : IntervalIntegrable f μ a a := by constructor <;> simp
 
 @[trans]
@@ -697,7 +697,7 @@ theorem integral_comp_mul_right (hc : c ≠ 0) :
   conv_rhs => rw [← Real.smul_map_volume_mul_right hc]
   simp_rw [integral_smul_measure, intervalIntegral, A.setIntegral_map,
     ENNReal.toReal_ofReal (abs_nonneg c)]
-  cases' hc.lt_or_lt with h h
+  rcases hc.lt_or_lt with h | h
   · simp [h, mul_div_cancel_right₀, hc, abs_of_neg,
       Measure.restrict_congr_set (α := ℝ) (μ := volume) Ico_ae_eq_Ioc]
   · simp [h, mul_div_cancel_right₀, hc, abs_of_pos]
@@ -1003,7 +1003,7 @@ integral over `a..b` is positive if and only if `a < b` and the measure of
 theorem integral_pos_iff_support_of_nonneg_ae' (hf : 0 ≤ᵐ[μ.restrict (Ι a b)] f)
     (hfi : IntervalIntegrable f μ a b) :
     (0 < ∫ x in a..b, f x ∂μ) ↔ a < b ∧ 0 < μ (support f ∩ Ioc a b) := by
-  cases' lt_or_le a b with hab hba
+  rcases lt_or_le a b with hab | hba
   · rw [uIoc_of_le hab.le] at hf
     simp only [hab, true_and, integral_of_le hab.le,
       setIntegral_pos_iff_support_of_nonneg_ae hf hfi.1]

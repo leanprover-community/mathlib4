@@ -583,12 +583,39 @@ protected theorem UniqueMDiffOn.eq (U : UniqueMDiffOn I s) (hx : x ∈ s)
 We mimic the API for functions between vector spaces
 -/
 
+@[simp, mfld_simps]
+theorem mfderivWithin_univ : mfderivWithin I I' f univ = mfderiv I I' f := by
+  ext x : 1
+  simp only [mfderivWithin, mfderiv, mfld_simps]
+  rw [mdifferentiableWithinAt_univ]
+
 theorem mfderivWithin_zero_of_not_mdifferentiableWithinAt
     (h : ¬MDifferentiableWithinAt I I' f s x) : mfderivWithin I I' f s x = 0 := by
   simp only [mfderivWithin, h, if_neg, not_false_iff]
 
 theorem mfderiv_zero_of_not_mdifferentiableAt (h : ¬MDifferentiableAt I I' f x) :
     mfderiv I I' f x = 0 := by simp only [mfderiv, h, if_neg, not_false_iff]
+
+theorem mdifferentiable_of_subsingleton [Subsingleton E] : MDifferentiable I I' f := by
+  intro x
+  have : Subsingleton H := I.injective.subsingleton
+  have : DiscreteTopology M := discreteTopology H M
+  simp only [mdifferentiableAt_iff, continuous_of_discreteTopology.continuousAt, true_and]
+  exact (hasFDerivAt_of_subsingleton _ _).differentiableAt.differentiableWithinAt
+
+theorem mdifferentiableWithinAt_of_isInvertible_mfderivWithin
+    (hf : (mfderivWithin I I' f s x).IsInvertible) : MDifferentiableWithinAt I I' f s x := by
+  contrapose hf
+  rw [mfderivWithin_zero_of_not_mdifferentiableWithinAt hf]
+  contrapose! hf
+  rcases ContinuousLinearMap.isInvertible_zero_iff.1 hf with ⟨hE, hF⟩
+  have : Subsingleton E := hE
+  exact mdifferentiable_of_subsingleton.mdifferentiableAt.mdifferentiableWithinAt
+
+theorem mdifferentiableAt_of_isInvertible_mfderiv
+    (hf : (mfderiv I I' f x).IsInvertible) : MDifferentiableAt I I' f x := by
+  simp only [← mdifferentiableWithinAt_univ, ← mfderivWithin_univ] at hf ⊢
+  exact mdifferentiableWithinAt_of_isInvertible_mfderivWithin hf
 
 theorem HasMFDerivWithinAt.mono (h : HasMFDerivWithinAt I I' f t x f') (hst : s ⊆ t) :
     HasMFDerivWithinAt I I' f s x f' :=
@@ -715,12 +742,6 @@ theorem mfderivWithin_subset (st : s ⊆ t) (hs : UniqueMDiffWithinAt I s x)
     (h : MDifferentiableWithinAt I I' f t x) :
     mfderivWithin I I' f s x = mfderivWithin I I' f t x :=
   ((MDifferentiableWithinAt.hasMFDerivWithinAt h).mono st).mfderivWithin hs
-
-@[simp, mfld_simps]
-theorem mfderivWithin_univ : mfderivWithin I I' f univ = mfderiv I I' f := by
-  ext x : 1
-  simp only [mfderivWithin, mfderiv, mfld_simps]
-  rw [mdifferentiableWithinAt_univ]
 
 theorem mfderivWithin_inter (ht : t ∈ 𝓝 x) :
     mfderivWithin I I' f (s ∩ t) x = mfderivWithin I I' f s x := by

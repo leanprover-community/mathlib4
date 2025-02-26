@@ -147,13 +147,13 @@ theorem JoinedIn.refl (h : x ∈ F) : JoinedIn F x x :=
 
 @[symm]
 theorem JoinedIn.symm (h : JoinedIn F x y) : JoinedIn F y x := by
-  cases' h.mem with hx hy
+  obtain ⟨hx, hy⟩ := h.mem
   simp_all only [joinedIn_iff_joined]
   exact h.symm
 
 theorem JoinedIn.trans (hxy : JoinedIn F x y) (hyz : JoinedIn F y z) : JoinedIn F x z := by
-  cases' hxy.mem with hx hy
-  cases' hyz.mem with hx hy
+  obtain ⟨hx, hy⟩ := hxy.mem
+  obtain ⟨hx, hy⟩ := hyz.mem
   simp_all only [joinedIn_iff_joined]
   exact hxy.trans hyz
 
@@ -368,8 +368,9 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
       simp [p', Nat.lt_succ_of_le hi, hp]
     clear_value p'
     clear hp p
-    induction' n with n hn
-    · use Path.refl (p' 0)
+    induction n with
+    | zero =>
+      use Path.refl (p' 0)
       constructor
       · rintro i hi
         rw [Nat.le_zero.mp hi]
@@ -377,7 +378,8 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
       · rw [range_subset_iff]
         rintro _x
         exact hp' 0 le_rfl
-    · rcases hn fun i hi => hp' i <| Nat.le_succ_of_le hi with ⟨γ₀, hγ₀⟩
+    | succ n hn =>
+      rcases hn fun i hi => hp' i <| Nat.le_succ_of_le hi with ⟨γ₀, hγ₀⟩
       rcases h.joinedIn (p' n) (hp' n n.le_succ) (p' <| n + 1) (hp' (n + 1) <| le_rfl) with
         ⟨γ₁, hγ₁⟩
       let γ : Path (p' 0) (p' <| n + 1) := γ₀.trans γ₁
@@ -482,7 +484,7 @@ instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
   Quotient.mk'_surjective.pathConnectedSpace continuous_coinduced_rng
 
 /-- This is a special case of `NormedSpace.instPathConnectedSpace` (and
-`TopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
+`IsTopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
 instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
   joined x y := ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by fun_prop⟩, by simp, by simp⟩⟩
   nonempty := inferInstance

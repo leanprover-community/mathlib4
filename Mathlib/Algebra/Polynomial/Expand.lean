@@ -133,9 +133,7 @@ theorem natDegree_expand (p : ℕ) (f : R[X]) : (expand R p f).natDegree = f.nat
   by_cases hf : f = 0
   · rw [hf, map_zero, natDegree_zero, zero_mul]
   have hf1 : expand R p f ≠ 0 := mt (expand_eq_zero hp).1 hf
-  rw [← WithBot.coe_eq_coe]
-  convert (degree_eq_natDegree hf1).symm
-  symm
+  rw [← Nat.cast_inj (R := WithBot ℕ), ← degree_eq_natDegree hf1]
   refine le_antisymm ((degree_le_iff_coeff_zero _ _).2 fun n hn => ?_) ?_
   · rw [coeff_expand hp]
     split_ifs with hpn
@@ -238,11 +236,11 @@ theorem expand_contract [CharP R p] [NoZeroDivisors R] {f : R[X]} (hf : Polynomi
   rw [coeff_expand hp.bot_lt, coeff_contract hp]
   split_ifs with h
   · rw [Nat.div_mul_cancel h]
-  · cases' n with n
+  · rcases n with - | n
     · exact absurd (dvd_zero p) h
     have := coeff_derivative f n
     rw [hf, coeff_zero, zero_eq_mul] at this
-    cases' this with h'
+    rcases this with h' | _
     · rw [h']
     rename_i _ _ _ h'
     rw [← Nat.cast_succ, CharP.cast_eq_zero_iff R p] at h'

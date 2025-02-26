@@ -905,12 +905,12 @@ theorem map_sInf {A : Set (Ideal R)} {f : F} (hf : Function.Surjective f) :
     (∀ J ∈ A, RingHom.ker f ≤ J) → map f (sInf A) = sInf (map f '' A) := by
   refine fun h => le_antisymm (le_sInf ?_) ?_
   · intro j hj y hy
-    cases' (mem_map_iff_of_surjective f hf).1 hy with x hx
-    cases' (Set.mem_image _ _ _).mp hj with J hJ
+    obtain ⟨x, hx⟩ := (mem_map_iff_of_surjective f hf).1 hy
+    obtain ⟨J, hJ⟩ := (Set.mem_image _ _ _).mp hj
     rw [← hJ.right, ← hx.right]
     exact mem_map_of_mem f (sInf_le_of_le hJ.left (le_of_eq rfl) hx.left)
   · intro y hy
-    cases' hf y with x hx
+    obtain ⟨x, hx⟩ := hf y
     refine hx ▸ mem_map_of_mem f ?_
     have : ∀ I ∈ A, y ∈ map f I := by simpa using hy
     rw [Submodule.mem_sInf]

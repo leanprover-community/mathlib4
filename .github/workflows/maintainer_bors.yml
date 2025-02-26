@@ -59,7 +59,7 @@ jobs:
 
       - name: Check whether user is a mathlib admin
         id: user_permission
-        if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
+        if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' || ! steps.merge_or_delegate.outputs.removeLabels == '' }}
         uses: actions-cool/check-user-permission@v2
         with:
           require: 'admin'

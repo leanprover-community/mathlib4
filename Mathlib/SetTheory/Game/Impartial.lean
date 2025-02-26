@@ -177,13 +177,13 @@ theorem forall_rightMoves_fuzzy_iff_equiv_zero : (∀ j, G.moveRight j ‖ 0) �
 theorem exists_left_move_equiv_iff_fuzzy_zero : (∃ i, G.moveLeft i ≈ 0) ↔ G ‖ 0 := by
   refine ⟨fun ⟨i, hi⟩ => (fuzzy_zero_iff_gf G).2 (lf_of_le_moveLeft hi.2), fun hn => ?_⟩
   rw [fuzzy_zero_iff_gf G, zero_lf_le] at hn
-  cases' hn with i hi
+  obtain ⟨i, hi⟩ := hn
   exact ⟨i, (equiv_zero_iff_ge _).2 hi⟩
 
 theorem exists_right_move_equiv_iff_fuzzy_zero : (∃ j, G.moveRight j ≈ 0) ↔ G ‖ 0 := by
   refine ⟨fun ⟨i, hi⟩ => (fuzzy_zero_iff_lf G).2 (lf_of_moveRight_le hi.1), fun hn => ?_⟩
   rw [fuzzy_zero_iff_lf G, lf_zero_le] at hn
-  cases' hn with i hi
+  obtain ⟨i, hi⟩ := hn
   exact ⟨i, (equiv_zero_iff_le _).2 hi⟩
 
 end Impartial

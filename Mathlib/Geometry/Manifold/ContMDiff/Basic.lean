@@ -180,7 +180,7 @@ end id
 
 /-! ### Constants are `C^n` -/
 
-section id
+section const
 variable {c : M'}
 
 theorem contMDiff_const : ContMDiff I I' n fun _ : M => c := by
@@ -235,7 +235,25 @@ theorem contMDiffWithinAt_one [One M'] : ContMDiffWithinAt I I' n (1 : M → M')
 @[deprecated (since := "2024-11-20")] alias smoothWithinAt_one := contMDiffWithinAt_one
 @[deprecated (since := "2024-11-20")] alias smoothWithinAt_zero := contMDiffWithinAt_zero
 
-end id
+@[nontriviality]
+theorem contMDiff_of_subsingleton [Subsingleton M'] : ContMDiff I I' n f := by
+  intro x
+  rw [Subsingleton.elim f fun _ => (f x)]
+  exact contMDiffAt_const
+
+@[nontriviality]
+theorem contMDiffAt_of_subsingleton [Subsingleton M'] : ContMDiffAt I I' n f x :=
+  contMDiff_of_subsingleton.contMDiffAt
+
+@[nontriviality]
+theorem contMDiffWithinAt_of_subsingleton [Subsingleton M'] : ContMDiffWithinAt I I' n f s x :=
+  contMDiffAt_of_subsingleton.contMDiffWithinAt
+
+@[nontriviality]
+theorem contMDiffOn_of_subsingleton [Subsingleton M'] : ContMDiffOn I I' n f s :=
+  contMDiff_of_subsingleton.contMDiffOn
+
+end const
 
 /-- `f` is continuously differentiable if it is cont. differentiable at
 each `x ∈ mulTSupport f`. -/

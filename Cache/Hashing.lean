@@ -6,32 +6,51 @@ Authors: Arthur Paulino
 
 import Cache.IO
 import Lean.Elab.ParseImportsFast
-import Lake.Build.Trace
 
 namespace Cache.Hashing
 
 open System IO
 
+/--
+The `HashMemo` contains all information `Cache` needs about the modules:
+* the name
+* its imports
+* the file's hash (in `hashMap` and `cache`)
+
+additionally, it contains the `rootHash` which reflects changes to Mathlib's
+Lake project settings.
+-/
 structure HashMemo where
+  /-- Hash of mathlib's lake project settings. -/
   rootHash : UInt64
-  depsMap  : Std.HashMap FilePath (Array FilePath) := {}
-  cache    : Std.HashMap FilePath (Option UInt64) := {}
-  hashMap  : HashMap := {}
+  /-- Maps the `.lean` file of a module to the `.lean` files of its imports. -/
+  depsMap  : Std.HashMap FilePath (Array FilePath) := ∅
+  /--
+  For files with a valid hash (usually Mathlib and upstream),
+  this contains the same information as `hashMap`.
+  Other files have `none` here and do not appear in `hashMap`
+  (e.g. `.lean` source could not be found, imports a file without valid hash).
+  -/
+  cache    : Std.HashMap FilePath (Option UInt64) := ∅
+  /-- Stores the hash of the module's content for modules in Mathlib or upstream. -/
+  hashMap  : ModuleHashMap := ∅
   deriving Inhabited
 
-partial def insertDeps (hashMap : HashMap) (path : FilePath) (hashMemo : HashMemo) : HashMap :=
+partial def insertDeps (hashMap : ModuleHashMap) (path : FilePath) (hashMemo : HashMemo) :
+    ModuleHashMap :=
   if hashMap.contains path then hashMap else
   match (hashMemo.depsMap[path]?, hashMemo.hashMap[path]?) with
   | (some deps, some hash) => deps.foldl (insertDeps · · hashMemo) (hashMap.insert path hash)
   | _ => hashMap
 
 /--
-Filters the `HashMap` of a `HashMemo` so that it only contains key/value pairs such that every key:
+Filters the `hashMap` of a `HashMemo` so that it only contains key/value pairs such that every key:
 * Belongs to the given list of file paths or
 * Corresponds to a file that's imported (transitively of not) by some file in the list of file paths
 -/
-def HashMemo.filterByFilePaths (hashMemo : HashMemo) (filePaths : List FilePath) : IO HashMap := do
-  let mut hashMap := default
+def HashMemo.filterByFilePaths (hashMemo : HashMemo) (filePaths : List FilePath) :
+    IO ModuleHashMap := do
+  let mut hashMap := ∅
   for filePath in filePaths do
     if hashMemo.hashMap.contains filePath then
       hashMap := insertDeps hashMap filePath hashMemo
@@ -60,21 +79,19 @@ Computes the root hash, which mixes the hashes of the content of:
 * `lakefile.lean`
 * `lean-toolchain`
 * `lake-manifest.json`
-and the hash of `Lean.versionString`.
+and the hash of `Lean.githash`.
 
-(We hash `Lean.versionString` in case the toolchain changes even though `lean-toolchain` hasn't.
+(We hash `Lean.githash` in case the toolchain changes even though `lean-toolchain` hasn't.
 This happens with the `lean-pr-testing-NNNN` toolchains when Lean 4 PRs are updated.)
 -/
 def getRootHash : CacheM UInt64 := do
-  let rootFiles : List FilePath := ["lakefile.lean", "lean-toolchain", "lake-manifest.json"]
-  let isMathlibRoot ← isMathlibRoot
-  let qualifyPath ←
-    if isMathlibRoot then
-      pure id
-    else
-      pure ((← mathlibDepPath) / ·)
+  let mathlibDepPath := (← read).mathlibDepPath
+  let rootFiles : List FilePath := [
+    mathlibDepPath / "lakefile.lean",
+    mathlibDepPath / "lean-toolchain",
+    mathlibDepPath / "lake-manifest.json"]
   let hashes ← rootFiles.mapM fun path =>
-    hashFileContents <$> IO.FS.readFile (qualifyPath path)
+    hashFileContents <$> IO.FS.readFile path
   return hash (hash Lean.githash :: hashes)
 
 /--

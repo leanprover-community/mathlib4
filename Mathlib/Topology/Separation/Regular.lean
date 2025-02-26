@@ -608,8 +608,8 @@ theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : 
     have H1 := (hu.union hv).isClosed_compl.isCompact.inter_iInter_nonempty
       (fun s : { s : Set X // IsClopen s ∧ x ∈ s } => s) fun s => s.2.1.1
     rw [← not_disjoint_iff_nonempty_inter, imp_not_comm, not_forall] at H1
-    cases' H1 (disjoint_compl_left_iff_subset.2 <| hab.trans <| union_subset_union hau hbv)
-      with si H2
+    obtain ⟨si, H2⟩ :=
+      H1 (disjoint_compl_left_iff_subset.2 <| hab.trans <| union_subset_union hau hbv)
     refine ⟨⋂ U ∈ si, Subtype.val U, ?_, ?_, ?_⟩
     · exact isClopen_biInter_finset fun s _ => s.2.1
     · exact mem_iInter₂.2 fun s _ => s.2.2
@@ -652,7 +652,7 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
     have h :=
       (isClosed_connectedComponent (α := X)).isCompact.elim_finite_subfamily_closed
         _ (fun s : { s : Set X // IsClopen s ∧ b ∈ s } => s.2.1.1) h
-    cases' h with fin_a ha
+    obtain ⟨fin_a, ha⟩ := h
     -- This clopen and its complement will separate the connected components of `a` and `b`
     set U : Set X := ⋂ (i : { s // IsClopen s ∧ b ∈ s }) (_ : i ∈ fin_a), i
     have hU : IsClopen U := isClopen_biInter_finset fun i _ => i.2.1

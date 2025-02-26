@@ -147,9 +147,9 @@ variable [AddCommGroup F] [Module 𝕜 F]
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
-/-- `WeakBilin B` is a `TopologicalAddGroup`, meaning that addition and negation are
+/-- `WeakBilin B` is a `IsTopologicalAddGroup`, meaning that addition and negation are
 continuous. -/
-instance instTopologicalAddGroup [ContinuousAdd 𝕜] : TopologicalAddGroup (WeakBilin B) where
+instance instIsTopologicalAddGroup [ContinuousAdd 𝕜] : IsTopologicalAddGroup (WeakBilin B) where
   toContinuousAdd := by infer_instance
   continuous_neg := by
     refine continuous_induced_rng.2 (continuous_pi_iff.mpr fun y => ?_)

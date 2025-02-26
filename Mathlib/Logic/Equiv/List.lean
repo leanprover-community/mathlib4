@@ -67,7 +67,7 @@ theorem decode_list_succ (v : ℕ) :
     decode (α := List α) (succ v) =
       (· :: ·) <$> decode (α := α) v.unpair.1 <*> decode (α := List α) v.unpair.2 :=
   show decodeList (succ v) = _ by
-    cases' e : unpair v with v₁ v₂
+    rcases e : unpair v with ⟨v₁, v₂⟩
     simp [decodeList, e]; rfl
 
 theorem length_le_encode : ∀ l : List α, length l ≤ encode l
@@ -216,7 +216,7 @@ section List
 theorem denumerable_list_aux : ∀ n : ℕ, ∃ a ∈ @decodeList α _ n, encodeList a = n
   | 0 => by rw [decodeList]; exact ⟨_, rfl, rfl⟩
   | succ v => by
-    cases' e : unpair v with v₁ v₂
+    rcases e : unpair v with ⟨v₁, v₂⟩
     have h := unpair_right_le v
     rw [e] at h
     rcases have : v₂ < succ v := lt_succ_of_le h
@@ -238,7 +238,7 @@ theorem list_ofNat_succ (v : ℕ) :
     ofNat (List α) (succ v) = ofNat α v.unpair.1 :: ofNat (List α) v.unpair.2 :=
   ofNat_of_decode <|
     show decodeList (succ v) = _ by
-      cases' e : unpair v with v₁ v₂
+      rcases e : unpair v with ⟨v₁, v₂⟩
       simp [decodeList, e]
       rw [show decodeList v₂ = decode (α := List α) v₂ from rfl, decode_eq_ofNat, Option.seq_some]
 
@@ -289,7 +289,7 @@ instance multiset : Denumerable (Multiset α) :=
         raise_lower (List.sorted_cons.2 ⟨fun n _ => Nat.zero_le n, (s.map encode).sort_sorted _⟩)
       simp [-Multiset.map_coe, this],
      fun n => by
-      simp [-Multiset.map_coe, List.mergeSort_eq_self (raise_sorted _ _), lower_raise]⟩
+      simp [-Multiset.map_coe, List.mergeSort_eq_self _ (raise_sorted _ _), lower_raise]⟩
 
 end Multiset
 
@@ -344,7 +344,7 @@ instance finset : Denumerable (Finset α) :=
           raise_lower' (fun n _ => Nat.zero_le n) (Finset.sort_sorted_lt _)],
       fun n => by
       simp [-Multiset.map_coe, Finset.map, raise'Finset, Finset.sort,
-        List.mergeSort_eq_self ((raise'_sorted _ _).imp (@le_of_lt _ _)), lower_raise']⟩
+        List.mergeSort_eq_self _ (raise'_sorted _ _).le_of_lt, lower_raise']⟩
 
 end Finset
 

@@ -165,7 +165,6 @@ private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α �
   revert f
   induction' n with n h
   · intro f hf
-    have : Subsingleton (Fin Nat.zero) := subsingleton_fin_zero -- Porting note: Added this instance
     exact unifTight_of_subsingleton hp_top hf
   intro f hfLp ε hε
   by_cases hε_top : ε = ∞

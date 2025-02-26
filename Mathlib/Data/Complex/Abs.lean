@@ -243,7 +243,7 @@ theorem equiv_limAux (f : CauSeq ℂ Complex.abs) :
   (CauSeq.equiv_lim ⟨_, isCauSeq_re f⟩ _ (half_pos ε0))
         (CauSeq.equiv_lim ⟨_, isCauSeq_im f⟩ _ (half_pos ε0))).imp
     fun _ H j ij => by
-    cases' H _ ij with H₁ H₂
+    obtain ⟨H₁, H₂⟩ := H _ ij
     apply lt_of_le_of_lt (abs_le_abs_re_add_abs_im _)
     dsimp [limAux] at *
     have := add_lt_add H₁ H₂

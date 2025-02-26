@@ -37,9 +37,9 @@ open IsAbsoluteValue Filter
 
 namespace Polynomial
 
-section TopologicalSemiring
+section IsTopologicalSemiring
 
-variable {R S : Type*} [Semiring R] [TopologicalSpace R] [TopologicalSemiring R] (p : R[X])
+variable {R S : Type*} [Semiring R] [TopologicalSpace R] [IsTopologicalSemiring R] (p : R[X])
 
 @[continuity, fun_prop]
 protected theorem continuous_eval₂ [Semiring S] (p : S[X]) (f : S →+* R) :
@@ -63,12 +63,12 @@ protected theorem continuousWithinAt {s a} : ContinuousWithinAt (fun x => p.eval
 protected theorem continuousOn {s} : ContinuousOn (fun x => p.eval x) s :=
   p.continuous.continuousOn
 
-end TopologicalSemiring
+end IsTopologicalSemiring
 
 section TopologicalAlgebra
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [TopologicalSpace A]
-  [TopologicalSemiring A] (p : R[X])
+  [IsTopologicalSemiring A] (p : R[X])
 
 @[continuity, fun_prop]
 protected theorem continuous_aeval : Continuous fun x : A => aeval x p :=

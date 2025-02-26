@@ -39,9 +39,9 @@ section NatPow
 
 @[simp]
 theorem inv_pow' (A : M) (n : ℕ) : A⁻¹ ^ n = (A ^ n)⁻¹ := by
-  induction' n with n ih
-  · simp
-  · rw [pow_succ A, mul_inv_rev, ← ih, ← pow_succ']
+  induction n with
+  | zero => simp
+  | succ n ih => rw [pow_succ A, mul_inv_rev, ← ih, ← pow_succ']
 
 theorem pow_sub' (A : M) {m n : ℕ} (ha : IsUnit A.det) (h : n ≤ m) :
     A ^ (m - n) = A ^ m * (A ^ n)⁻¹ := by
@@ -50,19 +50,20 @@ theorem pow_sub' (A : M) {m n : ℕ} (ha : IsUnit A.det) (h : n ≤ m) :
   simpa using ha.pow n
 
 theorem pow_inv_comm' (A : M) (m n : ℕ) : A⁻¹ ^ m * A ^ n = A ^ n * A⁻¹ ^ m := by
-  induction' n with n IH generalizing m
-  · simp
-  cases' m with m m
-  · simp
-  rcases nonsing_inv_cancel_or_zero A with (⟨h, h'⟩ | h)
-  · calc
-       A⁻¹ ^ (m + 1) * A ^ (n + 1) = A⁻¹ ^ m * (A⁻¹ * A) * A ^ n := by
-        simp only [pow_succ A⁻¹, pow_succ' A, Matrix.mul_assoc]
-      _ = A ^ n * A⁻¹ ^ m := by simp only [h, Matrix.mul_one, Matrix.one_mul, IH m]
-      _ = A ^ n * (A * A⁻¹) * A⁻¹ ^ m := by simp only [h', Matrix.mul_one, Matrix.one_mul]
-      _ = A ^ (n + 1) * A⁻¹ ^ (m + 1) := by
-        simp only [pow_succ A, pow_succ' A⁻¹, Matrix.mul_assoc]
-  · simp [h]
+  induction n generalizing m with
+  | zero => simp
+  | succ n IH =>
+    rcases m with m | m
+    · simp
+    rcases nonsing_inv_cancel_or_zero A with ⟨h, h'⟩ | h
+    · calc
+        A⁻¹ ^ (m + 1) * A ^ (n + 1) = A⁻¹ ^ m * (A⁻¹ * A) * A ^ n := by
+          simp only [pow_succ A⁻¹, pow_succ' A, Matrix.mul_assoc]
+        _ = A ^ n * A⁻¹ ^ m := by simp only [h, Matrix.mul_one, Matrix.one_mul, IH m]
+        _ = A ^ n * (A * A⁻¹) * A⁻¹ ^ m := by simp only [h', Matrix.mul_one, Matrix.one_mul]
+        _ = A ^ (n + 1) * A⁻¹ ^ (m + 1) := by
+          simp only [pow_succ A, pow_succ' A⁻¹, Matrix.mul_assoc]
+    · simp [h]
 
 end NatPow
 
@@ -102,7 +103,7 @@ theorem zpow_neg_natCast (A : M) (n : ℕ) : A ^ (-n : ℤ) = (A ^ n)⁻¹ := by
   · exact DivInvMonoid.zpow_neg' _ _
 
 theorem _root_.IsUnit.det_zpow {A : M} (h : IsUnit A.det) (n : ℤ) : IsUnit (A ^ n).det := by
-  cases' n with n n
+  rcases n with n | n
   · simpa using h.pow n
   · simpa using h.pow n.succ
 

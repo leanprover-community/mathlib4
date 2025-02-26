@@ -3,10 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Image
+import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.Finite.Defs
-import Mathlib.Algebra.Group.TypeTags.Basic
+import Mathlib.Data.Finset.Image
 
 /-!
 # Finite types
@@ -667,6 +668,10 @@ alias ⟨_, toFinset_strict_mono⟩ := toFinset_ssubset_toFinset
 @[simp]
 theorem disjoint_toFinset [Fintype s] [Fintype t] :
     Disjoint s.toFinset t.toFinset ↔ Disjoint s t := by simp only [← disjoint_coe, coe_toFinset]
+
+@[simp]
+theorem toFinset_nontrivial [Fintype s] : s.toFinset.Nontrivial ↔ s.Nontrivial := by
+  rw [Finset.Nontrivial, coe_toFinset]
 
 section DecidableEq
 

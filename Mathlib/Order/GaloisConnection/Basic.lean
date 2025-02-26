@@ -486,9 +486,12 @@ def gci_Ici_sInf [CompleteSemilatticeInf α] :
 
 /-- If `α` is a partial order with bottom element (e.g., `ℕ`, `ℝ≥0`), then `WithBot.unbot' ⊥` and
 coercion form a Galois insertion. -/
-def WithBot.giUnbot'Bot [Preorder α] [OrderBot α] :
-    GaloisInsertion (WithBot.unbot' ⊥) (some : α → WithBot α) where
-  gc _ _ := WithBot.unbot'_le_iff (fun _ ↦ bot_le)
+def WithBot.giUnbotDBot [Preorder α] [OrderBot α] :
+    GaloisInsertion (WithBot.unbotD ⊥) (some : α → WithBot α) where
+  gc _ _ := WithBot.unbotD_le_iff (fun _ ↦ bot_le)
   le_l_u _ := le_rfl
-  choice o _ := o.unbot' ⊥
+  choice o _ := o.unbotD ⊥
   choice_eq _ _ := rfl
+
+@[deprecated (since := "2025-02-06")]
+alias WithBot.giUnbot'Bot := WithBot.giUnbotDBot

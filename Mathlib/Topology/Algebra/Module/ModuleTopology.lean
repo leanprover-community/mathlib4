@@ -68,7 +68,7 @@ is isomorphism-invariant.
 
 ## Main theorems
 
-* `TopologicalSemiring.toIsModuleTopology : IsModuleTopology R R`. The module
+* `IsTopologicalSemiring.toIsModuleTopology : IsModuleTopology R R`. The module
     topology on `R` is `R`'s topology.
 * `IsModuleTopology.iso [IsModuleTopology R A] (e : A ≃L[R] B) : IsModuleTopology R B`. If `A` and
     `B` are `R`-modules with topologies, if `e` is a topological isomorphism between them,
@@ -219,7 +219,7 @@ end iso
 
 section self
 
-variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R]
+variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [IsTopologicalSemiring R]
 
 /-!
 We now fix once and for all a topological semiring `R`.
@@ -230,7 +230,7 @@ is `R`'s topology.
 
 /-- The topology on a topological semiring `R` agrees with the module topology when considering
 `R` as an `R`-module in the obvious way (i.e., via `Semiring.toModule`). -/
-instance _root_.TopologicalSemiring.toIsModuleTopology : IsModuleTopology R R := by
+instance _root_.IsTopologicalSemiring.toIsModuleTopology : IsModuleTopology R R := by
   /- By a previous lemma it suffices to show that the identity from (R,usual) to
   (R, module topology) is continuous. -/
   apply of_continuous_id
@@ -262,11 +262,11 @@ end self
 
 section MulOpposite
 
-variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R]
+variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [IsTopologicalSemiring R]
 
 /-- The module topology coming from the action of the topological ring `Rᵐᵒᵖ` on `R`
   (via `Semiring.toOppositeModule`, i.e. via `(op r) • m = m * r`) is `R`'s topology. -/
-instance _root_.TopologicalSemiring.toOppositeIsModuleTopology : IsModuleTopology Rᵐᵒᵖ R :=
+instance _root_.IsTopologicalSemiring.toOppositeIsModuleTopology : IsModuleTopology Rᵐᵒᵖ R :=
   .iso (MulOpposite.opContinuousLinearEquiv Rᵐᵒᵖ).symm
 
 end MulOpposite
@@ -308,14 +308,14 @@ theorem continuousNeg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpac
 
 variable (R) in
 theorem topologicalAddGroup (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
-    [IsModuleTopology R C] : TopologicalAddGroup C where
+    [IsModuleTopology R C] : IsTopologicalAddGroup C where
   continuous_add := (IsModuleTopology.toContinuousAdd R C).1
   continuous_neg := continuous_neg R C
 
 @[fun_prop, continuity]
 theorem continuous_of_ringHom {R A B} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B]
     [TopologicalSpace R] [TopologicalSpace A] [IsModuleTopology R A] [TopologicalSpace B]
-    [TopologicalSemiring B]
+    [IsTopologicalSemiring B]
     (φ : A →+* B) (hφ : Continuous (φ.comp (algebraMap R A))) : Continuous φ := by
   let inst := Module.compHom B (φ.comp (algebraMap R A))
   let φ' : A →ₗ[R] B := ⟨φ, fun r m ↦ by simp [Algebra.smul_def]; rfl⟩

@@ -236,12 +236,12 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
       specialize H hy
       specialize h fun _ => hy
       rw [not_forall] at h
-      cases' h with hx' h
+      obtain ⟨hx', h⟩ := h
       rw [not_le] at h
       exact h
     · specialize h fun hx' => (hx hx').elim
       rw [not_forall] at h
-      cases' h with hx' h
+      obtain ⟨hx', h⟩ := h
       exact (hx hx').elim
   · rintro ⟨hx, H⟩
     exact ⟨⟨fun _ => hx, fun hy => (H hy).le⟩, fun hxy h => not_lt_of_le (h _) (H _)⟩

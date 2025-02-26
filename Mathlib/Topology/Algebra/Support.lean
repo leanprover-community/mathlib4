@@ -171,7 +171,7 @@ theorem _root_.hasCompactMulSupport_iff_eventuallyEq :
 theorem _root_.isCompact_range_of_mulSupport_subset_isCompact [TopologicalSpace β]
     (hf : Continuous f) {k : Set α} (hk : IsCompact k) (h'f : mulSupport f ⊆ k) :
     IsCompact (range f) := by
-  cases' range_eq_image_or_of_mulSupport_subset h'f with h2 h2 <;> rw [h2]
+  rcases range_eq_image_or_of_mulSupport_subset h'f with h2 | h2 <;> rw [h2]
   exacts [hk.image hf, (hk.image hf).insert 1]
 
 @[to_additive]

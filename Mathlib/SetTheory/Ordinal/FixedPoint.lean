@@ -163,6 +163,10 @@ theorem isNormal_derivFamily [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.
 @[deprecated isNormal_derivFamily (since := "2024-10-11")]
 alias derivFamily_isNormal := isNormal_derivFamily
 
+theorem derivFamily_strictMono [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.{u}) :
+    StrictMono (derivFamily f) :=
+  (isNormal_derivFamily f).strictMono
+
 theorem derivFamily_fp [Small.{u} ι] {i} (H : IsNormal (f i)) (o : Ordinal) :
     f i (derivFamily f o) = derivFamily f o := by
   induction' o using limitRecOn with o _ o l IH
@@ -195,7 +199,7 @@ theorem le_iff_derivFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a} :
       rw [derivFamily_succ]
       exact nfpFamily_le_fp (fun i => (H i).monotone) (succ_le_of_lt h) ha
     · intro h₁
-      cases' eq_or_lt_of_le h₁ with h h
+      rcases eq_or_lt_of_le h₁ with h | h
       · exact ⟨_, h.symm⟩
       rw [derivFamily_limit _ l, ← not_le, Ordinal.iSup_le_iff, not_forall] at h
       obtain ⟨o', h⟩ := h
@@ -538,6 +542,9 @@ theorem isNormal_deriv (f) : IsNormal (deriv f) :=
 @[deprecated isNormal_deriv (since := "2024-10-11")]
 alias deriv_isNormal := isNormal_deriv
 
+theorem deriv_strictMono (f) : StrictMono (deriv f) :=
+  derivFamily_strictMono _
+
 theorem deriv_id_of_nfp_id {f : Ordinal → Ordinal} (h : nfp f = id) : deriv f = id :=
   ((isNormal_deriv _).eq_iff_zero_and_succ IsNormal.refl).2 (by simp [h])
 
@@ -605,7 +612,7 @@ alias nfp_add_eq_mul_omega := nfp_add_eq_mul_omega0
 theorem add_eq_right_iff_mul_omega0_le {a b : Ordinal} : a + b = b ↔ a * ω ≤ b := by
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [← nfp_add_zero a, ← deriv_zero_right]
-    cases' (isNormal_add_right a).fp_iff_deriv.1 h with c hc
+    obtain ⟨c, hc⟩ := (isNormal_add_right a).fp_iff_deriv.1 h
     rw [← hc]
     exact (isNormal_deriv _).monotone (Ordinal.zero_le _)
   · have := Ordinal.add_sub_cancel_of_le h
@@ -689,7 +696,7 @@ theorem mul_eq_right_iff_opow_omega0_dvd {a b : Ordinal} : a * b = b ↔ a ^ ω 
   · rw [dvd_iff_mod_eq_zero]
     rw [← div_add_mod b (a ^ ω), mul_add, ← mul_assoc, ← opow_one_add, one_add_omega0,
       add_left_cancel_iff] at hab
-    cases' eq_zero_or_opow_omega0_le_of_mul_eq_right hab with hab hab
+    rcases eq_zero_or_opow_omega0_le_of_mul_eq_right hab with hab | hab
     · exact hab
     refine (not_lt_of_le hab (mod_lt b (opow_ne_zero ω ?_))).elim
     rwa [← Ordinal.pos_iff_ne_zero]
