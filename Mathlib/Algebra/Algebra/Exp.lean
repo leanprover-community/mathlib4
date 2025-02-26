@@ -85,7 +85,7 @@ theorem exp_add_of_commute (a b : A) (h₁ : Commute a b) (h₂ : IsNilpotent a)
           = ∑ i ∈ range (2 * N + 1), (i.factorial : R)⁻¹ •
             (∑ j ∈ range (i + 1), a ^ j * b ^ (i - j) * i.choose j) := by
         apply sum_congr rfl
-        intros i hi
+        intro i _
         rw [Commute.add_pow h₁ i]
       _ = ∑ i ∈ range (2 * N + 1), (∑ j ∈ range (i + 1), ((j.factorial : R)⁻¹ *
             ((i - j).factorial : R)⁻¹) • (a ^ j * b ^ (i - j))) := by
