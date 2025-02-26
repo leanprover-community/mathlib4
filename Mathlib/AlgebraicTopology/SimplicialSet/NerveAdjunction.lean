@@ -337,17 +337,13 @@ theorem nerve₂Adj.unit.component_eq (X : SSet.Truncated.{u} 2) :
 /-- The 2-truncated nerve adjunction unit. -/
 def nerve₂Adj.unit : 𝟭 (SSet.Truncated.{u} 2) ⟶ hoFunctor₂ ⋙ nerveFunctor₂ where
   app := nerve₂Adj.unit.component
-  naturality := by
-    refine fun V W f ↦ toNerve₂.ext (f ≫ nerve₂Adj.unit.component W)
-      (nerve₂Adj.unit.component V ≫ nerveFunctor₂.map (hoFunctor₂.map f)) ?_
+  naturality _ _ f := toNerve₂.ext _ _ (by
+    have := (OneTruncation₂.ofNerve₂.natIso).inv.naturality (hoFunctor₂.map f)
+    dsimp at this ⊢
     rw [Functor.map_comp, Functor.map_comp, nerve₂Adj.unit.component_eq,
-      nerve₂Adj.unit.component_eq]
-    have nat₁ := (OneTruncation₂.ofNerve₂.natIso).inv.naturality (hoFunctor₂.map f)
-    repeat rw [← ReflQuiv.comp_eq_comp (X := ReflQuiv.of _) (Y := ReflQuiv.of _)]
-    repeat rw [assoc]
-    simp at nat₁
-    rw [← nat₁]
-    rfl
+      nerve₂Adj.unit.component_eq, ← ReflQuiv.comp_eq_comp (Y := ReflQuiv.of _),
+      ← ReflQuiv.comp_eq_comp (Y := ReflQuiv.of _), assoc, ← this]
+    rfl)
 
 /-- The adjunction between the 2-truncated nerve functor and the 2-truncated homotopy category
 functor. -/
