@@ -55,7 +55,7 @@
    "type": "git",
    "subDir": null,
    "scope": "leanprover-community",
-   "rev": "8c2939cbdaf2d972c91cb801cf2f13d8a646c050",
+   "rev": "35f683e2d8c1ff031e52e397efeb9bc0a74d83dd",
    "name": "Qq",
    "manifestFile": "lake-manifest.json",
    "inputRev": "master",
