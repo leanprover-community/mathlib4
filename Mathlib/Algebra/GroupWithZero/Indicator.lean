@@ -78,15 +78,6 @@ lemma indicator_one_inj (h : indicator s (1 : ι → M₀) = indicator t 1) : s 
 
 end MulZeroOneClass
 
-theorem indicator_const_eq_iff [Zero M₀] {s : Set ι} {t : Set κ} {i : ι} {k : κ} {c : M₀}
-    [hc : NeZero c] :
-    s.indicator (fun _ ↦ c) i = t.indicator (fun _ ↦ c) k ↔ (i ∈ s ↔ k ∈ t) :=
-  indicator_const_eq_iff' hc.out
-
-theorem indicator_const_one_eq_iff [MulZeroOneClass M₀] {s : Set ι} {t : Set κ}
-    {i : ι} {k : κ} : s.indicator (1 : ι → M₀) i = t.indicator 1 k ↔ (i ∈ s ↔ k ∈ t) :=
-  indicator_const_eq_iff
-
 end Set
 
 namespace Function
