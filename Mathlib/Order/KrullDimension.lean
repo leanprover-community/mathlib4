@@ -848,6 +848,12 @@ section calculations
   have : p ⟨1, h1⟩ < p ⟨2, h2⟩ := p.step ⟨1, h⟩
   simp_all
 
+lemma orderTop_krullDim_eq_zero_iff {α : Type*} [PartialOrder α] [OrderTop α] :
+    krullDim α = 0 ↔ Subsingleton α := sorry
+
+lemma orderBot_orderTop_krullDim_eq_one_iff {α : Type*} [PartialOrder α] [OrderBot α] [OrderTop α] :
+    krullDim α = 1 ↔ IsSimpleOrder α := sorry
+
 variable {α : Type*} [Preorder α]
 
 /-

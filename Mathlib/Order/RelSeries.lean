@@ -9,6 +9,7 @@ import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Rel
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.Order.Atoms
 
 /-!
 # Series of a relation
@@ -697,10 +698,10 @@ protected noncomputable def withLength [InfiniteDimensionalOrder α] (n : ℕ) :
   RelSeries.length_withLength _ _
 
 /-- if `α` is infinite dimensional, then `α` is nonempty. -/
-lemma nonempty_of_infiniteDimensionalType [InfiniteDimensionalOrder α] : Nonempty α :=
+instance nonempty_of_infiniteDimensionalType [InfiniteDimensionalOrder α] : Nonempty α :=
   ⟨LTSeries.withLength α 0 0⟩
 
-lemma nonempty_of_finiteDimensionalType [FiniteDimensionalOrder α] : Nonempty α := by
+instance nonempty_of_finiteDimensionalType [FiniteDimensionalOrder α] : Nonempty α := by
   obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff _).mp ‹_›
   exact ⟨p 0⟩
 
@@ -878,3 +879,13 @@ lemma infiniteDimensionalOrder_of_strictMono [Preorder α] [Preorder β]
     (f : α → β) (hf : StrictMono f) [InfiniteDimensionalOrder α] :
     InfiniteDimensionalOrder β :=
   ⟨fun n ↦ ⟨(LTSeries.withLength _ n).map f hf, LTSeries.length_withLength α n⟩⟩
+
+lemma finiteDimensionalOrder_of_strictMono [Preorder α] [Preorder β] [Nonempty α] (f : α → β)
+    (hf : StrictMono f) [FiniteDimensionalOrder β] : FiniteDimensionalOrder α := by
+  by_contra h
+  rw [not_finiteDimensionalOrder_iff] at h
+  absurd infiniteDimensionalOrder_of_strictMono f hf
+  rwa [not_infiniteDimensionalOrder_iff (α := β)]
+
+lemma exists_coatom_of_finiteDimensional [Preorder α] [OrderTop α] [FiniteDimensionalOrder α]
+  [Nontrivial α] : ∃ a : α, IsCoatom a := sorry

@@ -102,11 +102,40 @@ instance [IsSemisimpleModule R M] [Module.Finite R M] : IsArtinian R M :=
 
 section length
 
-lemma isSimpleModule_length_eq_one (M : Type*) [AddCommGroup M] [Module R M] [IsSimpleModule R M] :
-    Module.length R M = 1 := sorry
-
 theorem isFiniteLength_iff_length_finite (M : Type*) [AddCommGroup M] [Module R M] :
-    IsFiniteLength R M ↔ Module.length R M ≠ ⊤ := sorry
+    IsFiniteLength R M ↔ Module.length R M ≠ ⊤ := by
+  constructor
+  · intro h
+    induction h with
+    | of_subsingleton =>
+      rw [Module.length, Order.krullDim_eq_zero_of_unique]; trivial
+    | @of_simple_quotient M _ _ N h h' h'' =>
+      rw [Module.length_additive_of_quotient (N := N), isSimpleModule_length_eq_one (M ⧸ N)]
+      intro h; absurd ENat.withBot_of_add_eq_top h; simp only [h'', false_or]; trivial
+  · intro h
+    obtain ⟨n, hn⟩ := WithBot.ne_bot_iff_exists.mp (Module.length_ne_bot (R := R) (M := M))
+    simp only [← hn, ne_eq, WithBot.coe_eq_top] at h
+    obtain ⟨n, rfl⟩ := ENat.ne_top_iff_exists.mp h
+    induction n generalizing M with
+    | zero =>
+      simp only [Nat.cast_zero, WithBot.coe_zero, eq_comm, Module.length_eq_zero_iff] at hn
+      apply IsFiniteLength.of_subsingleton
+    | succ n h =>
+      obtain ⟨N, hN⟩ := exists_maximal_submodule_of_length_ne_zero_top (R := R) M
+        (by rw [← hn]; exact Ne.symm (ne_of_beq_false rfl))
+        (by rw [← hn]; exact Ne.symm (ne_of_beq_false rfl))
+      have := isSimpleModule_iff_isCoatom.mpr hN
+      have h' : Module.length R (M ⧸ N) = 1 := by
+        rw [← isSimpleModule_iff_length_eq_one]; exact this
+      have : Module.length R N = n := by
+        have := Module.length_additive_of_quotient (R := R) (N := N)
+        simp only [← hn, h', Nat.cast_add, Nat.cast_one, WithBot.coe_add, WithBot.coe_one] at this
+        apply ENat.withBot_add_right_inj (n := 1)
+        simp only [Nat.cast_one, ← this]
+        rfl
+      rename_i ih _ _ _
+      have := ih N this.symm (by simp)
+      exact IsFiniteLength.of_simple_quotient (N := N) this
 
 end length
 

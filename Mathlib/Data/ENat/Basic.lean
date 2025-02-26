@@ -467,3 +467,8 @@ lemma WithBot.add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n 
   · simp
   · rw [WithBot.coe_le_coe, ENat.coe_add, ENat.coe_one, ENat.add_one_le_iff (ENat.coe_ne_top n),
       ← WithBot.coe_lt_coe, WithBot.coe_natCast]
+
+lemma ENat.withBot_of_add_eq_top {x y : WithBot ℕ∞} (h : x + y = ⊤) : x = ⊤ ∨ y = ⊤ := by sorry
+
+lemma ENat.withBot_add_right_inj {n : ℕ} : Function.Injective (fun (x : WithBot ℕ∞) ↦ x + n) := by
+  sorry

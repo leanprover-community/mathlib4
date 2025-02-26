@@ -8,6 +8,7 @@ import Mathlib.Order.Hom.Basic
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.Data.ENat.Lattice
+import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # The length of a module
@@ -34,6 +35,32 @@ lemma Module.length_ne_bot : Module.length R M ≠ ⊥ := by
   intro h
   rw [Module.length, krullDim_eq_bot_iff] at h
   exact IsEmpty.false (⊤ : Submodule R M)
+
+@[simp] lemma Module.length_eq_zero_iff : Module.length R M = 0 ↔ Subsingleton M := by
+  rw [Module.length, orderTop_krullDim_eq_zero_iff, Submodule.subsingleton_iff]
+
+lemma isSimpleModule_length_eq_one (M : Type*) [AddCommGroup M] [Module R M] [IsSimpleModule R M] :
+    Module.length R M = 1 := by rw [Module.length]; exact Order.krullDim_isSimpleOrder
+
+lemma isSimpleModule_iff_length_eq_one (M : Type*) [AddCommGroup M] [Module R M] :
+    IsSimpleModule R M ↔ Module.length R M = 1 := by
+  constructor
+  · intro h; exact isSimpleModule_length_eq_one (R := R) M
+  · rw [Module.length, orderBot_orderTop_krullDim_eq_one_iff]
+    intro h; exact h
+
+lemma exists_maximal_submodule_of_length_ne_zero_top (M : Type*) [AddCommGroup M] [Module R M]
+    (h : Module.length R M ≠ 0) (h' : Module.length R M ≠ ⊤) : ∃ N : Submodule R M, IsCoatom N := by
+  have : FiniteDimensionalOrder (Submodule R M) := by
+    apply Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top.mpr
+    refine ⟨Module.length_ne_bot, by exact h'⟩
+  have : Nontrivial (Submodule R M) := by
+    by_contra h'; rw [not_nontrivial_iff_subsingleton] at h'
+    have : Module.length R M ≤ 0 := by
+      rw [Module.length]
+      exact Order.krullDim_nonpos_of_subsingleton
+    exact h (le_antisymm this Module.length_nonneg)
+  exact exists_coatom_of_finiteDimensional
 
 open Classical in
 /--
