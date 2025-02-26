@@ -179,7 +179,7 @@ theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
 section Meta
 
 /-- Some quick attempts to prove that `⦋m⦌` is `n`-truncated (`⦋m⦌.len ≤ n`). -/
-macro "trunc" : tactic =>
+scoped macro "trunc" : tactic =>
   `(tactic| first | decide | assumption |
     dsimp only [SimplexCategory.len_mk]; omega)
 
