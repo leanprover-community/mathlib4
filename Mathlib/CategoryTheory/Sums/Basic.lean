@@ -456,13 +456,6 @@ lemma natIsoOfNatIsoWhiskerLeftInlInr_hom {F G : A ⊕ A' ⥤ B}
       natTransOfNatTransWhiskerLeftInlInr η₁.hom η₂.hom := by
   aesop_cat
 
-@[simp]
-lemma natIsoOfNatIsoWhiskerLeftInlInr_inv {F G : A ⊕ A' ⥤ B}
-    (η₁ : inl_ _ _ ⋙ F ≅ inl_ _ _ ⋙ G) (η₂ : inr_ _ _ ⋙ F ≅ inr_ _ _ ⋙ G) :
-    (natIsoOfNatIsoWhiskerLeftInlInr η₁ η₂).inv =
-      natTransOfNatTransWhiskerLeftInlInr η₁.inv η₂.inv := by
-  aesop_cat
-
 end Sum
 
 end CategoryTheory
