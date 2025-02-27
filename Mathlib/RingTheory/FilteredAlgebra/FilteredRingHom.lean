@@ -181,6 +181,9 @@ def GradedPieceHom (i : ι) : GradedPiece FR FR_lt i →+ GradedPiece FS FS_lt i
     congr
     exact RingHom.map_add f.toRingHom a b
 
+@[inherit_doc]
+scoped[FilteredRingHom] notation:9000 "Gr(" i ")[" f "]" => GradedPieceHom f i
+
 variable (g : FilteredRingHom FS FS_lt FT FT_lt)
 
 omit [DecidableEq ι] in
@@ -217,6 +220,9 @@ noncomputable def AssociatedGradedRingHom :
   map_add' := fun x y ↦ by
     ext i
     simp only [add_apply, AssociatedGradedRingHomAux_apply, map_add]
+
+@[inherit_doc]
+scoped[FilteredRingHom] notation:9000 "Gr[" f "]" => AssociatedGradedRingHom f
 
 theorem AssociatedGradedRingHom_to_GradedPieceHom (x : AssociatedGraded FR FR_lt) (i : ι) :
     (AssociatedGradedRingHom f x) i = GradedPieceHom f i (x i) := by
