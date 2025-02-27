@@ -5,6 +5,7 @@ Authors: Kexing Ying, Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Constructions.Cylinders
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
+import Mathlib.Order.Restriction
 
 /-!
 # Filtrations
@@ -252,13 +253,14 @@ variable [TopologicalSpace β] [MetrizableSpace β] [mβ : MeasurableSpace β] [
 /-- Given a sequence of functions, the natural filtration is the smallest sequence
 of σ-algebras such that that sequence of functions is measurable with respect to
 the filtration. -/
-def natural (u : ι → Ω → β) (hum : ∀ i, StronglyMeasurable (u i)) : Filtration ι m where
-  seq i := ⨆ j ≤ i, MeasurableSpace.comap (u j) mβ
+def natural {β : ι → Type*} [mβ : ∀ i, MeasurableSpace (β i)]
+    (u : (i : ι) → Ω → β i) (hum : ∀ i, Measurable (u i)) : Filtration ι m where
+  seq i := ⨆ j ≤ i, MeasurableSpace.comap (u j) (mβ j)
   mono' _ _ hij := biSup_mono fun _ => ge_trans hij
   le' i := by
     refine iSup₂_le ?_
     rintro j _ s ⟨t, ht, rfl⟩
-    exact (hum j).measurable ht
+    exact hum j ht
 
 section
 
@@ -267,7 +269,7 @@ open MeasurableSpace
 theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι → Set Ω}
     (hsm : ∀ i, MeasurableSet[m] (s i)) :
     filtrationOfSet hsm = natural (fun i => (s i).indicator (fun _ => 1 : Ω → β)) fun i =>
-      stronglyMeasurable_one.indicator (hsm i) := by
+      measurable_const.indicator (hsm i) := by
   simp only [filtrationOfSet, natural, measurableSpace_iSup_eq, exists_prop, mk.injEq]
   ext1 i
   refine le_antisymm (generateFrom_le ?_) (generateFrom_le ?_)
@@ -335,6 +337,19 @@ theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Ty
 alias memℒp_limitProcess_of_eLpNorm_bdd := memLp_limitProcess_of_eLpNorm_bdd
 
 end Limit
+
+section piLE
+
+open Finset Preorder
+
+variable {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
+  {X : ι → Type*} [∀ i, MeasurableSpace (X i)]
+
+/-- The canonical filtration on dependent functions indexed by `ℕ`, where `𝓕 n` consists of
+measurable sets depending only on coordinates `≤ n`. -/
+def piLE := natural (fun i ↦ frestrictLe (π := X) i)
+
+end piLE
 
 variable {α : Type*}
 
