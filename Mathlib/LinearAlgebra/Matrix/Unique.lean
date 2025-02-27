@@ -19,34 +19,34 @@ Matrix, Unique, AlgEquiv
 
 namespace Matrix
 
-variable {ι1 ι2 A R : Type*} [Unique ι1] [Unique ι2]
+variable {m n A R : Type*} [Unique m] [Unique n]
 
 /-- Set of all dimension one matrix is in bijection with the base set under the
   canonical maps. -/
 @[simps]
-def uniqueEquiv : Matrix ι1 ι2 A ≃ A where
+def uniqueEquiv : Matrix m n A ≃ A where
   toFun M := M default default
   invFun a := .of fun _ _ => a
   left_inv M := by ext i j; simp [Subsingleton.elim i default, Subsingleton.elim j default]
   right_inv a := by simp
 
 /-- AddEquiv version of `uniqueEquiv`. -/
-abbrev uniqueAddEquiv [Add A]: Matrix ι1 ι2 A ≃+ A where
+abbrev uniqueAddEquiv [Add A]: Matrix m n A ≃+ A where
   __ := uniqueEquiv
   map_add' := by simp
 
 /-- `M₁(A)` is linearly equivalent to `A` as `R`-modules where `R` is a semiring. -/
-abbrev uniqueLinearEquiv [Semiring R] [AddCommMonoid A] [Module R A] : Matrix ι1 ι2 A ≃ₗ[R] A where
+abbrev uniqueLinearEquiv [Semiring R] [AddCommMonoid A] [Module R A] : Matrix m n A ≃ₗ[R] A where
   __ := uniqueAddEquiv
   map_smul' := by simp
 
 /-- `M₁(A)` is equivalent to `A` as rings. -/
-abbrev uniqueRingEquiv [NonUnitalNonAssocSemiring A] : Matrix ι1 ι1 A ≃+* A where
+abbrev uniqueRingEquiv [NonUnitalNonAssocSemiring A] : Matrix m m A ≃+* A where
   __ := uniqueAddEquiv
   map_mul' := by simp [mul_apply]
 
 /-- `M₁(A)` is equivalent to `A` as `R`-algebras. -/
-abbrev uniqueAlgEquiv [Semiring A] [CommSemiring R] [Algebra R A] : Matrix ι1 ι1 A ≃ₐ[R] A where
+abbrev uniqueAlgEquiv [Semiring A] [CommSemiring R] [Algebra R A] : Matrix m m A ≃ₐ[R] A where
   __ := uniqueRingEquiv
   commutes' r := by aesop
 
