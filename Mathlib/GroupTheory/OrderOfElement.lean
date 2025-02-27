@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
-import Mathlib.Algebra.Group.Semiconj.Basic
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Group.Action
 import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Int.ModEq
 import Mathlib.Dynamics.PeriodicPts.Lemmas
 import Mathlib.GroupTheory.Index
 import Mathlib.NumberTheory.Divisors
@@ -874,7 +875,7 @@ theorem orderOf_dvd_card : orderOf x ∣ Fintype.card G := by
 
 @[to_additive]
 theorem orderOf_dvd_natCard {G : Type*} [Group G] (x : G) : orderOf x ∣ Nat.card G := by
-  cases' fintypeOrInfinite G with h h
+  obtain h | h := fintypeOrInfinite G
   · simp only [Nat.card_eq_fintype_card, orderOf_dvd_card]
   · simp only [card_eq_zero_of_infinite, dvd_zero]
 

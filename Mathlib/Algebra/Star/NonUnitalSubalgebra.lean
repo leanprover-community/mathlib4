@@ -76,8 +76,11 @@ def subtype (s : S) : s →⋆ₙₐ[R] A :=
     map_star' := fun _ => rfl }
 
 @[simp]
-theorem coeSubtype : (subtype s : s → A) = Subtype.val :=
+theorem coe_subtype : (subtype s : s → A) = Subtype.val :=
   rfl
+
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
 
 end NonUnitalStarSubalgebraClass
 
@@ -885,7 +888,7 @@ The map `S → T` when `S` is a non-unital star subalgebra contained in the non-
 algebra `T`.
 
 This is the non-unital star subalgebra version of `Submodule.inclusion`, or
-`NonUnitalSubalgebra.inclusion`  -/
+`NonUnitalSubalgebra.inclusion` -/
 def inclusion {S T : NonUnitalStarSubalgebra R A} (h : S ≤ T) : S →⋆ₙₐ[R] T where
   toNonUnitalAlgHom := NonUnitalSubalgebra.inclusion h
   map_star' _ := rfl

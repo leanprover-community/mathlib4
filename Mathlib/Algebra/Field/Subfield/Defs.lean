@@ -49,8 +49,8 @@ variable {K : Type u} {L : Type v} {M : Type w}
 variable [DivisionRing K] [DivisionRing L] [DivisionRing M]
 
 /-- `SubfieldClass S K` states `S` is a type of subsets `s ⊆ K` closed under field operations. -/
-class SubfieldClass (S K : Type*) [DivisionRing K] [SetLike S K] extends SubringClass S K,
-  InvMemClass S K : Prop
+class SubfieldClass (S K : Type*) [DivisionRing K] [SetLike S K] : Prop
+    extends SubringClass S K, InvMemClass S K
 
 namespace SubfieldClass
 
@@ -61,7 +61,7 @@ variable (S : Type*) [SetLike S K] [h : SubfieldClass S K]
 
 Be assured that we're not actually proving that subfields are subgroups:
 `SubgroupClass` is really an abbreviation of `SubgroupWithOrWithoutZeroClass`.
- -/
+-/
 instance (priority := 100) toSubgroupClass : SubgroupClass S K :=
   { h with }
 

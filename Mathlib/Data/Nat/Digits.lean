@@ -346,7 +346,7 @@ lemma ofDigits_inj_of_len_eq {b : ℕ} (hb : 1 < b) {L1 L2 : List ℕ}
     (h : ofDigits b L1 = ofDigits b L2) : L1 = L2 := by
   induction' L1 with D L ih generalizing L2
   · simp only [List.length_nil] at len
-    exact (List.length_eq_zero.mp len.symm).symm
+    exact (List.length_eq_zero_iff.mp len.symm).symm
   obtain ⟨d, l, rfl⟩ := List.exists_cons_of_length_eq_add_one len.symm
   simp only [List.length_cons, add_left_inj] at len
   simp only [ofDigits_cons] at h
@@ -364,7 +364,7 @@ theorem ofDigits_add_ofDigits_eq_ofDigits_zipWith_of_length_eq {b : ℕ} {l1 l2 
     (h : l1.length = l2.length) :
     ofDigits b l1 + ofDigits b l2 = ofDigits b (l1.zipWith (· + ·) l2) := by
   induction l1 generalizing l2 with
-  | nil => simp_all [eq_comm, List.length_eq_zero, ofDigits]
+  | nil => simp_all [eq_comm, List.length_eq_zero_iff, ofDigits]
   | cons hd₁ tl₁ ih₁ =>
     induction l2 generalizing tl₁ with
     | nil => simp_all
@@ -572,7 +572,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
           ← Nat.one_add] at ih
         have := sum_singleton (fun x ↦ ofDigits p <| tl.drop x) tl.length
         rw [← Ico_succ_singleton, List.drop_length, ofDigits] at this
-        have h₁ : 1 ≤ tl.length := List.length_pos.mpr h'
+        have h₁ : 1 ≤ tl.length := List.length_pos_iff.mpr h'
         rw [← sum_range_add_sum_Ico _ <| h₁, ← add_zero (∑ x ∈ Ico _ _, ofDigits p (tl.drop x)),
             ← this, sum_Ico_consecutive _  h₁ <| (le_add_right tl.length 1),
             ← sum_Ico_add _ 0 tl.length 1,

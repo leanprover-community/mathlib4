@@ -398,8 +398,8 @@ that the division operation `x y ↦ x * y⁻¹` (resp., subtraction) is continu
 -- to match the multiplicative version?
 /-- A topological (additive) group is a group in which the addition and negation operations are
 continuous. -/
-class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] extends
-  ContinuousAdd G, ContinuousNeg G : Prop
+class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] : Prop
+    extends ContinuousAdd G, ContinuousNeg G
 
 /-- A topological group is a group in which the multiplication and inversion operations are
 continuous.
@@ -409,8 +409,8 @@ you should also provide an instance of `UniformSpace` and `UniformGroup` using
 `IsTopologicalGroup.toUniformSpace` and `topologicalCommGroup_isUniform`. -/
 -- Porting note: check that these ↑ names exist once they've been ported in the future.
 @[to_additive]
-class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] extends ContinuousMul G,
-  ContinuousInv G : Prop
+class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] : Prop
+    extends ContinuousMul G, ContinuousInv G
 
 section Conj
 
@@ -1418,7 +1418,7 @@ theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
       rw [preimage_compl, compl_compl] at H
       convert H
       ext x
-      simp only [image_smul, mem_setOf_eq, coeSubtype, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_setOf_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
       exact Set.smul_inter_ne_empty_iff' }
 
 -- attribute [local semireducible] MulOpposite -- Porting note: doesn't work in Lean 4
@@ -1443,11 +1443,11 @@ theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Sub
       have : Continuous fun p : G × G => (p.1⁻¹, p.2) := continuous_inv.prodMap continuous_id
       have H : Set.Finite _ :=
         hS ((hK.prod hL).image (continuous_mul.comp this)).compl_mem_cocompact
-      simp only [preimage_compl, compl_compl, coeSubtype, comp_apply] at H
+      simp only [preimage_compl, compl_compl, coe_subtype, comp_apply] at H
       apply Finite.of_preimage _ (equivOp S).surjective
       convert H using 1
       ext x
-      simp only [image_smul, mem_setOf_eq, coeSubtype, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_setOf_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
       exact Set.op_smul_inter_ne_empty_iff }
 
 end
@@ -1722,9 +1722,9 @@ structure GroupTopology (α : Type u) [Group α] : Type u
   extends TopologicalSpace α, IsTopologicalGroup α
 
 /-- An additive group topology on an additive group `α` is a topology for which addition and
-  negation are continuous. -/
-structure AddGroupTopology (α : Type u) [AddGroup α] extends TopologicalSpace α,
-  IsTopologicalAddGroup α : Type u
+negation are continuous. -/
+structure AddGroupTopology (α : Type u) [AddGroup α] : Type u
+    extends TopologicalSpace α, IsTopologicalAddGroup α
 
 attribute [to_additive] GroupTopology
 

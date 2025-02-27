@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.BigOperators.Group.List.Lemmas
-import Mathlib.Algebra.Group.Action.End
+import Mathlib.Algebra.Group.Action.Hom
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.SetLike.Basic
@@ -523,8 +523,8 @@ theorem SetLike.coe_gMul {S : Type*} [SetLike S R] [Mul R] [Add ι] (A : ι → 
   rfl
 
 /-- A version of `GradedMonoid.GMonoid` for internally graded objects. -/
-class SetLike.GradedMonoid {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (A : ι → S) extends
-  SetLike.GradedOne A, SetLike.GradedMul A : Prop
+class SetLike.GradedMonoid {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (A : ι → S) : Prop
+    extends SetLike.GradedOne A, SetLike.GradedMul A
 
 namespace SetLike
 

@@ -40,7 +40,7 @@ Less basic uses of `ℕ` and `ℤ` should however use the typeclass-mediated dev
 
 The relevant files are:
 * `Mathlib.Data.Nat.Basic` for the continuation of the home-baked development on `ℕ`
-* `Mathlib.Data.Int.Defs` for the continuation of the home-baked development on `ℤ`
+* `Mathlib.Data.Int.Init` for the continuation of the home-baked development on `ℤ`
 * `Mathlib.Algebra.Group.Nat` for the monoid instances on `ℕ`
 * `Mathlib.Algebra.Group.Int` for the group instance on `ℤ`
 * `Mathlib.Algebra.Ring.Nat` for the semiring instance on `ℕ`
@@ -530,8 +530,8 @@ protected lemma mul_le_of_le_div (k x y : ℕ) (h : x ≤ y / k) : x * k ≤ y :
 
 #### TODO
 
-* Rename `Nat.pow_le_pow_left` to `Nat.pow_le_pow_left`, protect it, remove the alias
-* Rename `Nat.pow_le_pow_right` to `Nat.pow_le_pow_right`, protect it, remove the alias
+* Add `protected` to `Nat.pow_le_pow_left`
+* Add `protected` to `Nat.pow_le_pow_right`
 -/
 
 protected lemma pow_lt_pow_left (h : a < b) : ∀ {n : ℕ}, n ≠ 0 → a ^ n < b ^ n
@@ -1064,45 +1064,6 @@ protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
 
 /-- A natural number `m` divides the sum `n + m` if and only if `m` divides `n`. -/
 @[simp] protected lemma dvd_add_self_right : m ∣ n + m ↔ m ∣ n := Nat.dvd_add_left (Nat.dvd_refl m)
-
-lemma succ_div : ∀ a b : ℕ, (a + 1) / b = a / b + if b ∣ a + 1 then 1 else 0
-  | a, 0 => by simp
-  | 0, 1 => by simp
-  | 0, b + 2 => by
-    have hb2 : b + 2 > 1 := by simp
-    simp [ne_of_gt hb2, div_eq_of_lt hb2]
-  | a + 1, b + 1 => by
-    rw [Nat.div_eq]
-    conv =>
-      congr
-      · skip
-      rw [Nat.div_eq]
-    by_cases hb_eq_a : b = a + 1
-    · simp [hb_eq_a, Nat.le_refl, Nat.not_succ_le_self, Nat.dvd_refl]
-    by_cases hb_le_a1 : b ≤ a + 1
-    · have hb_le_a : b ≤ a := le_of_lt_succ (Nat.lt_of_le_of_ne hb_le_a1 hb_eq_a)
-      have h₁ : 0 < b + 1 ∧ b + 1 ≤ a + 1 + 1 := ⟨succ_pos _, Nat.add_le_add_iff_right.2 hb_le_a1⟩
-      have h₂ : 0 < b + 1 ∧ b + 1 ≤ a + 1 := ⟨succ_pos _, Nat.add_le_add_iff_right.2 hb_le_a⟩
-      have dvd_iff : b + 1 ∣ a - b + 1 ↔ b + 1 ∣ a + 1 + 1 := by
-        rw [Nat.dvd_add_iff_left (Nat.dvd_refl (b + 1)), ← Nat.add_sub_add_right a 1 b,
-          Nat.add_comm (_ - _), Nat.add_assoc, Nat.sub_add_cancel (succ_le_succ hb_le_a),
-          Nat.add_comm 1]
-      have wf : a - b < a + 1 := lt_succ_of_le (Nat.sub_le _ _)
-      rw [if_pos h₁, if_pos h₂, Nat.add_sub_add_right, Nat.add_sub_add_right, Nat.add_comm a,
-        Nat.add_sub_assoc hb_le_a, Nat.add_comm 1,
-        have := wf
-        succ_div (a - b)]
-      simp [dvd_iff, Nat.add_comm 1, Nat.add_assoc]
-    · have hba : ¬b ≤ a := Nat.not_le_of_gt
-        (Nat.lt_trans (lt_succ_self a) (Nat.lt_of_not_ge hb_le_a1))
-      have hb_dvd_a : ¬b + 1 ∣ a + 2 := fun h =>
-        hb_le_a1 (le_of_succ_le_succ (le_of_dvd (succ_pos _) h))
-      simp [hba, hb_le_a1, hb_dvd_a]
-
-lemma succ_div_of_dvd (hba : b ∣ a + 1) : (a + 1) / b = a / b + 1 := by rw [succ_div, if_pos hba]
-
-lemma succ_div_of_not_dvd (hba : ¬b ∣ a + 1) : (a + 1) / b = a / b := by
-  rw [succ_div, if_neg hba, Nat.add_zero]
 
 lemma dvd_iff_div_mul_eq (n d : ℕ) : d ∣ n ↔ n / d * d = n :=
   ⟨fun h => Nat.div_mul_cancel h, fun h => by rw [← h]; exact Nat.dvd_mul_left _ _⟩

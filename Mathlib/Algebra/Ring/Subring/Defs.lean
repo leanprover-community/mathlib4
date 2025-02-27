@@ -61,7 +61,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 subring, subrings
 -/
 
-assert_not_exists Even OrderedRing
+assert_not_exists RelIso Even OrderedCommMonoid
 
 universe u v w
 
@@ -71,8 +71,8 @@ section SubringClass
 
 /-- `SubringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative submonoid and an additive subgroup. -/
-class SubringClass (S : Type*) (R : outParam (Type u)) [Ring R] [SetLike S R] extends
-  SubsemiringClass S R, NegMemClass S R : Prop
+class SubringClass (S : Type*) (R : outParam (Type u)) [Ring R] [SetLike S R] : Prop
+    extends SubsemiringClass S R, NegMemClass S R
 
 -- See note [lower instance priority]
 instance (priority := 100) SubringClass.addSubgroupClass (S : Type*) (R : Type u)
@@ -117,8 +117,11 @@ def subtype (s : S) : s →+* R :=
     toFun := (↑) }
 
 @[simp]
-theorem coeSubtype : (subtype s : s → R) = ((↑) : s → R) :=
+theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
   rfl
+
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
 
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : s) : R) = n := rfl
@@ -324,8 +327,11 @@ def subtype (s : Subring R) : s →+* R :=
   { s.toSubmonoid.subtype, s.toAddSubgroup.subtype with toFun := (↑) }
 
 @[simp]
-theorem coeSubtype : ⇑s.subtype = ((↑) : s → R) :=
+theorem coe_subtype : ⇑s.subtype = ((↑) : s → R) :=
   rfl
+
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
 
 @[norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : s) : R) = n := rfl

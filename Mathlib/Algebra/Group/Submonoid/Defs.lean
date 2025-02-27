@@ -46,7 +46,7 @@ numbers. `Submonoid` is implemented by extending `Subsemigroup` requiring `one_m
 submonoid, submonoids
 -/
 
-assert_not_exists CompleteLattice MonoidWithZero
+assert_not_exists RelIso CompleteLattice MonoidWithZero
 
 variable {M : Type*} {N : Type*}
 
@@ -86,8 +86,8 @@ add_decl_doc Submonoid.toSubsemigroup
 
 /-- `SubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `1`
 and are closed under `(*)` -/
-class SubmonoidClass (S : Type*) (M : outParam Type*) [MulOneClass M] [SetLike S M] extends
-  MulMemClass S M, OneMemClass S M : Prop
+class SubmonoidClass (S : Type*) (M : outParam Type*) [MulOneClass M] [SetLike S M] : Prop
+    extends MulMemClass S M, OneMemClass S M
 
 section
 
@@ -105,8 +105,8 @@ add_decl_doc AddSubmonoid.toAddSubsemigroup
 
 /-- `AddSubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `0`
 and are closed under `(+)` -/
-class AddSubmonoidClass (S : Type*) (M : outParam Type*) [AddZeroClass M] [SetLike S M] extends
-  AddMemClass S M, ZeroMemClass S M : Prop
+class AddSubmonoidClass (S : Type*) (M : outParam Type*) [AddZeroClass M] [SetLike S M] : Prop
+  extends AddMemClass S M, ZeroMemClass S M
 
 attribute [to_additive] Submonoid SubmonoidClass
 

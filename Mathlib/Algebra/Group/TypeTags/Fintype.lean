@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Data.Fintype.OfMap
+import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Finite types with addition/multiplications
@@ -50,3 +52,13 @@ instance Additive.fintype : ∀ [Fintype α], Fintype (Additive α) :=
 
 instance Multiplicative.fintype : ∀ [Fintype α], Fintype (Multiplicative α) :=
   Fintype.ofEquiv α Multiplicative.ofAdd
+
+@[simp] lemma Fintype.card_multiplicative (α : Type*) [Fintype α] :
+    card (Multiplicative α) = card α := Finset.card_map _
+
+@[simp] lemma Fintype.card_additive (α : Type*) [Fintype α] : card (Additive α) = card α :=
+  Finset.card_map _
+
+instance instInfiniteProdSubtypeCommute [Mul α] [Infinite α] :
+    Infinite { p : α × α // Commute p.1 p.2 } :=
+  Infinite.of_injective (fun a => ⟨⟨a, a⟩, rfl⟩) (by intro; simp)

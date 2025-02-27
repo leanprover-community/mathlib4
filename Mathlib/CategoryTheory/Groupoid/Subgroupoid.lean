@@ -370,7 +370,7 @@ variable {D : Type*} [Groupoid D] (φ : C ⥤ D)
 
 /-- A functor between groupoid defines a map of subgroupoids in the reverse direction
 by taking preimages.
- -/
+-/
 def comap (S : Subgroupoid D) : Subgroupoid C where
   arrows c d := {f : c ⟶ d | φ.map f ∈ S.arrows (φ.obj c) (φ.obj d)}
   inv hp := by rw [mem_setOf, inv_eq_inv, φ.map_inv, ← inv_eq_inv]; exact S.inv hp

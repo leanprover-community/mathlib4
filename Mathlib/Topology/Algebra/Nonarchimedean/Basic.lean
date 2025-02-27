@@ -30,8 +30,8 @@ open scoped Pointwise
 
 /-- A topological additive group is nonarchimedean if every neighborhood of 0
   contains an open subgroup. -/
-class NonarchimedeanAddGroup (G : Type*) [AddGroup G] [TopologicalSpace G] extends
-  IsTopologicalAddGroup G : Prop where
+class NonarchimedeanAddGroup (G : Type*) [AddGroup G] [TopologicalSpace G] : Prop
+  extends IsTopologicalAddGroup G where
   is_nonarchimedean : ∀ U ∈ 𝓝 (0 : G), ∃ V : OpenAddSubgroup G, (V : Set G) ⊆ U
 
 /-- A topological group is nonarchimedean if every neighborhood of 1 contains an open subgroup. -/

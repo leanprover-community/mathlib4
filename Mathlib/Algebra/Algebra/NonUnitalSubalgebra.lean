@@ -33,8 +33,11 @@ def subtype (s : S) : s →ₙₐ[R] A :=
   { NonUnitalSubsemiringClass.subtype s, SMulMemClass.subtype s with toFun := (↑) }
 
 @[simp]
-theorem coeSubtype : (subtype s : s → A) = ((↑) : s → A) :=
+theorem coe_subtype : (subtype s : s → A) = ((↑) : s → A) :=
   rfl
+
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
 
 end NonUnitalSubalgebraClass
 
@@ -913,7 +916,7 @@ instance _root_.NonUnitalAlgHom.subsingleton [Subsingleton (NonUnitalSubalgebra 
 
 /-- The map `S → T` when `S` is a non-unital subalgebra contained in the non-unital subalgebra `T`.
 
-This is the non-unital subalgebra version of `Submodule.inclusion`, or `Subring.inclusion`  -/
+This is the non-unital subalgebra version of `Submodule.inclusion`, or `Subring.inclusion` -/
 def inclusion {S T : NonUnitalSubalgebra R A} (h : S ≤ T) : S →ₙₐ[R] T where
   toFun := Set.inclusion h
   map_add' _ _ := rfl

@@ -42,7 +42,7 @@ theorem getElem_scanl_zero {h : 0 < (scanl f b l).length} : (scanl f b l)[0] = b
   · simp [scanl_nil]
   · simp [scanl_cons, singleton_append]
 
-theorem get?_succ_scanl {i : ℕ} : (scanl f b l)[i + 1]? =
+theorem getElem?_succ_scanl {i : ℕ} : (scanl f b l)[i + 1]? =
     (scanl f b l)[i]?.bind fun x => l[i]?.map fun y => f x y := by
   induction' l with hd tl hl generalizing b i
   · symm
@@ -51,6 +51,9 @@ theorem get?_succ_scanl {i : ℕ} : (scanl f b l)[i + 1]? =
     cases i
     · simp
     · simp only [hl, getElem?_cons_succ]
+
+@[deprecated (since := "2025-02-21")]
+alias get?_succ_scanl := getElem?_succ_scanl
 
 theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
     (scanl f b l)[i + 1] =

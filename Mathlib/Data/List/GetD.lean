@@ -33,7 +33,7 @@ theorem getD_eq_getElem {n : ℕ} (hn : n < l.length) : l.getD n d = l[n] := by
   | cons head tail ih =>
     cases n
     · exact getD_cons_zero
-    · simpa using ih _
+    · exact ih _
 
 @[deprecated getD_eq_getElem (since := "2024-08-02")]
 theorem getD_eq_get {n : ℕ} (hn : n < l.length) : l.getD n d = l.get ⟨n, hn⟩ :=
@@ -47,7 +47,7 @@ theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
   | cons head tail ih =>
     cases n
     · simp at hn
-    · simpa using ih (Nat.le_of_succ_le_succ hn)
+    · exact ih (Nat.le_of_succ_le_succ hn)
 
 theorem getD_reverse {l : List α} (i) (h : i < length l) :
     getD l.reverse i = getD l (l.length - 1 - i) := by
@@ -105,12 +105,12 @@ theorem getI_nil : getI ([] : List α) n = default :=
   rfl
 
 @[simp]
-theorem getI_cons_zero : getI (x :: xs) 0 = x := by
-  simp [getI]
+theorem getI_cons_zero : getI (x :: xs) 0 = x :=
+  rfl
 
 @[simp]
-theorem getI_cons_succ : getI (x :: xs) (n + 1) = getI xs n := by
-  simp [getI]
+theorem getI_cons_succ : getI (x :: xs) (n + 1) = getI xs n :=
+  rfl
 
 theorem getI_eq_getElem {n : ℕ} (hn : n < l.length) : l.getI n = l[n] :=
   getD_eq_getElem l default hn
@@ -137,7 +137,7 @@ theorem getI_eq_iget_getElem? (n : ℕ) : l.getI n = l[n]?.iget := by
 
 @[deprecated (since := "2025-02-14")] alias getI_eq_iget_get? := getI_eq_iget_getElem?
 
-theorem getI_zero_eq_headI : l.getI 0 = l.headI := by cases l <;> simp
+theorem getI_zero_eq_headI : l.getI 0 = l.headI := by cases l <;> rfl
 
 end getI
 

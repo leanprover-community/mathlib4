@@ -3,6 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Data.List.Chain
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Vector.Basic
 import Mathlib.Logic.Denumerable
@@ -310,7 +311,7 @@ def raise' : List ℕ → ℕ → List ℕ
 
 theorem lower_raise' : ∀ l n, lower' (raise' l n) n = l
   | [], _ => rfl
-  | m :: l, n => by simp [raise', lower', add_tsub_cancel_right, lower_raise']
+  | m :: l, n => by simp [raise', lower', Nat.add_sub_cancel_right, lower_raise']
 
 theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.Sorted (· < ·) l → raise' (lower' l n) n = l
   | [], _, _, _ => rfl

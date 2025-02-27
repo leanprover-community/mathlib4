@@ -511,6 +511,15 @@ lemma _root_.Function.Injective.injective_linearMapComp_left (hf : Injective f) 
     Injective fun g : M₁ →ₛₗ[σ₁₂] M₂ ↦ f.comp g :=
   fun g₁ g₂ (h : f.comp g₁ = f.comp g₂) ↦ ext fun x ↦ hf <| by rw [← comp_apply, h, comp_apply]
 
+theorem surjective_comp_left_of_exists_rightInverse {σ₃₂ : R₃ →+* R₂}
+    [RingHomInvPair σ₂₃ σ₃₂] [RingHomCompTriple σ₁₃ σ₃₂ σ₁₂]
+    (hf : ∃ f' : M₃ →ₛₗ[σ₃₂] M₂, f.comp f' = .id) :
+    Surjective fun g : M₁ →ₛₗ[σ₁₂] M₂ ↦ f.comp g := by
+  intro h
+  obtain ⟨f', hf'⟩ := hf
+  refine ⟨f'.comp h, ?_⟩
+  simp_rw [← comp_assoc, hf', id_comp]
+
 @[simp]
 theorem cancel_left (hf : Injective f) : f.comp g = f.comp g' ↔ g = g' :=
   hf.injective_linearMapComp_left.eq_iff
