@@ -64,7 +64,7 @@ independent over a subring `R` of `K`.
 See also `LinearIndependent.restrict_scalars'` for a verison with more convenient typeclass
 assumptions.
 
-TODO : `LinearIndepOn` version.  -/
+TODO : `LinearIndepOn` version. -/
 theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Module K M]
     [IsScalarTower R K M] (hinj : Injective fun r : R ↦ r • (1 : K))
     (li : LinearIndependent K v) : LinearIndependent R v := by
@@ -91,7 +91,7 @@ such that they are both injective, and compatible with the scalar
 multiplications on `M` and `M'`, then `j` sends linearly independent families of vectors to
 linearly independent families of vectors. As a special case, taking `R = R'`
 it is `LinearIndependent.map_injOn`.
-TODO : `LinearIndepOn` version.  -/
+TODO : `LinearIndepOn` version. -/
 theorem LinearIndependent.map_of_injective_injectiveₛ {R' M' : Type*}
     [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
     (i : R' → R) (j : M →+ M') (hi : Injective i) (hj : Injective j)
@@ -106,7 +106,7 @@ and `j : M →+ M'` is an injective monoid map, such that the scalar multiplicat
 on `M` and `M'` are compatible, then `j` sends linearly independent families
 of vectors to linearly independent families of vectors. As a special case, taking `R = R'`
 it is `LinearIndependent.map_injOn`.
-TODO : `LinearIndepOn` version.  -/
+TODO : `LinearIndepOn` version. -/
 theorem LinearIndependent.map_of_surjective_injectiveₛ {R' M' : Type*}
     [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
     (i : R → R') (j : M →+ M') (hi : Surjective i) (hj : Injective j)

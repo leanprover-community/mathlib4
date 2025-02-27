@@ -299,7 +299,7 @@ an index to an element of the corresponding set.
 This type is primarily useful for definitional control of `s` - if this is not needed, then
 `Setoid.ker index` by itself may be sufficient. -/
 structure IndexedPartition {ι α : Type*} (s : ι → Set α) where
-  /-- two indexes are equal if they are equal in membership  -/
+  /-- two indexes are equal if they are equal in membership -/
   eq_of_mem : ∀ {x i j}, x ∈ s i → x ∈ s j → i = j
   /-- sends an index to an element of the corresponding set -/
   some : ι → α
