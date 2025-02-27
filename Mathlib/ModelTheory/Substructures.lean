@@ -414,7 +414,7 @@ variable {L} {M}
 
 /-!
 ### `comap` and `map`
- -/
+-/
 
 
 /-- The preimage of a substructure along a homomorphism is a substructure. -/
