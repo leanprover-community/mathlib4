@@ -415,7 +415,7 @@ protected theorem LinearIndepOn.insert (hs : LinearIndepOn K id s) (hx : x ∉ s
     LinearIndepOn K id (insert x s) := by
   rw [← union_singleton]
   have x0 : x ≠ 0 := mt (by rintro rfl; apply zero_mem (span K s)) hx
-  apply hs.id_union (LinearIndepOn.singleton x0)
+  apply hs.id_union (LinearIndepOn.id_singleton _ x0)
   rwa [disjoint_span_singleton' x0]
 
 @[deprecated (since := "2025-02-15")] alias LinearIndependent.insert := LinearIndepOn.insert
@@ -493,6 +493,12 @@ theorem linearIndepOn_id_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x 
     mt mem_span_singleton.1 <| not_exists.2 hy
 
 @[deprecated (since := "2025-02-15")] alias linearIndependent_pair := linearIndepOn_id_pair
+
+theorem linearIndepOn_pair_iff {i j : ι} (v : ι → V) (hij : i ≠ j) (hi : v i ≠ 0):
+    LinearIndepOn K v {i, j} ↔ ∀ (c : K), c • v i ≠ v j := by
+  rw [pair_comm]
+  convert linearIndepOn_insert (s := {i}) (a := j) hij.symm
+  simp [hi, mem_span_singleton, linearIndependent_unique_iff]
 
 /-- Also see `LinearIndependent.pair_iff` for the version over arbitrary rings. -/
 theorem LinearIndependent.pair_iff' {x y : V} (hx : x ≠ 0) :

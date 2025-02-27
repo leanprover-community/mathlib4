@@ -470,9 +470,9 @@ theorem LinearIndependent.sum_type {v' : ι' → M} (hv : LinearIndependent R v)
     LinearIndependent R (Sum.elim v v') :=
   linearIndependent_sum.2 ⟨hv, hv', h⟩
 
-theorem LinearIndepOn.union [Nontrivial R] {t : Set ι} (hs : LinearIndepOn R v s)
-    (ht : LinearIndepOn R v t) (hdj : Disjoint (span R (v '' s)) (span R (v '' t))) :
-    LinearIndepOn R v (s ∪ t) := by
+theorem LinearIndepOn.union {t : Set ι} (hs : LinearIndepOn R v s) (ht : LinearIndepOn R v t)
+    (hdj : Disjoint (span R (v '' s)) (span R (v '' t))) : LinearIndepOn R v (s ∪ t) := by
+  nontriviality R
   classical
   have hli := LinearIndependent.sum_type hs ht (by rwa [← image_eq_range, ← image_eq_range])
   have hdj := (Submodule.disjoint_of_disjoint_span₀ hdj hs.zero_not_mem_image).of_image
@@ -481,7 +481,11 @@ theorem LinearIndepOn.union [Nontrivial R] {t : Set ι} (hs : LinearIndepOn R v 
   · rw [comp_apply, Equiv.Set.union_apply_left _ hx, Sum.elim_inl]
   rw [comp_apply, Equiv.Set.union_apply_right _ hx, Sum.elim_inr]
 
-theorem linearIndepOn_union_iff [Nontrivial R] {t : Set ι} (hdj : Disjoint s t) :
+theorem LinearIndepOn.id_union {s t : Set M} (hs : LinearIndepOn R id s) (ht : LinearIndepOn R id t)
+    (hdj : Disjoint (span R s) (span R t)) : LinearIndepOn R id (s ∪ t) :=
+  hs.union ht (by simpa)
+
+theorem linearIndepOn_union_iff {t : Set ι} (hdj : Disjoint s t) :
     LinearIndepOn R v (s ∪ t) ↔
     LinearIndepOn R v s ∧ LinearIndepOn R v t ∧ Disjoint (span R (v '' s)) (span R (v '' t)) := by
   refine ⟨fun h ↦ ⟨h.mono subset_union_left, h.mono subset_union_right, ?_⟩,
@@ -489,9 +493,12 @@ theorem linearIndepOn_union_iff [Nontrivial R] {t : Set ι} (hdj : Disjoint s t)
   convert h.disjoint_span_image (s := (↑) ⁻¹' s) (t := (↑) ⁻¹' t) (hdj.preimage _) <;>
   aesop
 
-@[deprecated (since := "2025-02-14")] alias LinearIndependent.union := LinearIndepOn.union
+theorem linearIndepOn_id_union_iff {s t : Set M} (hdj : Disjoint s t) :
+    LinearIndepOn R id (s ∪ t) ↔
+    LinearIndepOn R id s ∧ LinearIndepOn R id t ∧ Disjoint (span R s) (span R t) := by
+  rw [linearIndepOn_union_iff hdj, image_id, image_id]
 
-@[deprecated (since := "2025-02-27")] alias LinearIndepOn.id_union := LinearIndepOn.union
+@[deprecated (since := "2025-02-14")] alias LinearIndependent.union := LinearIndepOn.union
 
 open LinearMap
 
@@ -616,7 +623,7 @@ alias ⟨_, linearIndependent_unique⟩ := linearIndependent_unique_iff
 
 variable (R) in
 @[simp]
-theorem linearIndepOn_singleton_iff  {i : ι} {v : ι → M} : LinearIndepOn R v {i} ↔ v i ≠ 0 :=
+theorem linearIndepOn_singleton_iff {i : ι} {v : ι → M} : LinearIndepOn R v {i} ↔ v i ≠ 0 :=
   ⟨fun h ↦ h.ne_zero rfl, fun h ↦ linearIndependent_unique _ h⟩
 
 alias ⟨_, LinearIndepOn.singleton⟩ := linearIndepOn_singleton_iff
