@@ -38,6 +38,8 @@ Use `exists_isIntegralCurve_of_isIntegralCurveOn`
 
 -/
 
+-- may have to restate lemmas `UniformTime` to path local flows together, not just local curves
+
 omit [T2Space M] in
 lemma exist_uniform_time (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) :
     ∃ ε > 0, ∀ x, ∃ γ : ℝ → M, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-ε) ε) := by
@@ -71,7 +73,7 @@ lemma exist_uniform_time (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ 
   replace ⟨x₀, hx₀, hx⟩ := hx
   have ⟨γ, hγ⟩ := h x₀
   replace ⟨hγ0, hγ⟩ := hγ x hx
-  refine ⟨γ x, hγ0, ?_⟩
+  refine ⟨fun t ↦ γ ⟨x, t⟩, hγ0, ?_⟩
   apply IsIntegralCurveOn.mono hγ
   replace hle := hle x₀ hx₀
   exact Ioo_subset_Ioo (by linarith) (by linarith)
