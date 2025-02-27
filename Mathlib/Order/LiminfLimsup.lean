@@ -1315,7 +1315,7 @@ theorem eventually_add_neg_lt_of_le_liminf [Preorder β] [AddMonoid α] [AddLeft
   eventually_lt_of_lt_liminf (lt_of_lt_of_le (add_lt_of_neg_right x hε) hu) hu_bdd
 
 /-- If `Filter.limsup u atTop ≤ x`, then for all `ε > 0`, there exists a positive natural
-  number `n` such that `u n < x + ε`.  -/
+number `n` such that `u n < x + ε`. -/
 theorem exists_lt_of_limsup_le [AddMonoid α] [AddLeftStrictMono α] {x ε : α} {u : ℕ → α}
     (hu_bdd : IsBoundedUnder LE.le atTop u) (hu : Filter.limsup u atTop ≤ x) (hε : 0 < ε) :
     ∃ n : PNat, u n < x + ε := by
@@ -1325,7 +1325,7 @@ theorem exists_lt_of_limsup_le [AddMonoid α] [AddLeftStrictMono α] {x ε : α}
   exact ⟨⟨n + 1, Nat.succ_pos _⟩, hn (n + 1) (Nat.le_succ _)⟩
 
 /-- If `x ≤ Filter.liminf u atTop`, then for all `ε < 0`, there exists a positive natural
-  number `n` such that ` x + ε < u n`.  -/
+number `n` such that ` x + ε < u n`. -/
 theorem exists_lt_of_le_liminf [AddMonoid α] [AddLeftStrictMono α] {x ε : α} {u : ℕ → α}
     (hu_bdd : IsBoundedUnder GE.ge atTop u) (hu : x ≤ Filter.liminf u atTop) (hε : ε < 0) :
     ∃ n : PNat, x + ε < u n := by
