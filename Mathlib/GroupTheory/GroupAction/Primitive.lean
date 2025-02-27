@@ -303,20 +303,10 @@ open scoped BigOperators Pointwise
 @[to_additive "A pretransitive action on a set of prime order is preprimitive"]
 theorem of_prime_card [hGX : IsPretransitive M α] (hp : Nat.Prime (Nat.card α)) :
     IsPreprimitive M α := by
-  classical
-  apply IsPreprimitive.mk
-  intro B hB
-  cases' Set.subsingleton_or_nontrivial B with hB' hB'
-  · apply Or.intro_left
-    exact hB'
-  · apply Or.intro_right
-    have : Finite α := (Nat.card_ne_zero.mp (Nat.Prime.ne_zero hp)).2
-    cases (Nat.dvd_prime hp).mp (hB.ncard_dvd_card hB'.nonempty) with
-    | inl h =>
-      exfalso
-      exact ((Set.one_lt_ncard B.toFinite).mpr hB').ne h.symm
-    | inr h =>
-      rwa [Set.eq_univ_iff_ncard]
+  refine ⟨fun {B} hB ↦ B.subsingleton_or_nontrivial.imp id fun hB' ↦ ?_⟩
+  have : Finite α := (Nat.card_ne_zero.mp hp.ne_zero).2
+  rw [Set.eq_univ_iff_ncard, eq_comm, ← hp.dvd_iff_eq ((Set.one_lt_ncard).mpr hB').ne']
+  exact hB.ncard_dvd_card hB'.nonempty
 
 variable {φ : M → N} {f : α →ₑ[φ] β}
 
