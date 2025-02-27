@@ -346,7 +346,7 @@ theorem inr_sub [SubNegZeroMonoid R] [Sub M] (m₁ m₂ : M) :
   ext (sub_zero _).symm rfl
 
 @[simp]
-theorem inr_smul [Zero R] [Zero S] [SMulZeroClass S R] [SMul S M] (r : S) (m : M) :
+theorem inr_smul [Zero R] [SMulZeroClass S R] [SMul S M] (r : S) (m : M) :
     (inr (r • m) : tsze R M) = r • inr m :=
   ext (smul_zero _).symm rfl
 

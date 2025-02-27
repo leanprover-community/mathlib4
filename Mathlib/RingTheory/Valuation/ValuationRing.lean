@@ -58,7 +58,7 @@ of elements `a b : A`, either `a` divides `b` or vice versa. -/
 class ValuationRing (A : Type u) [CommRing A] [IsDomain A] extends PreValuationRing A : Prop
 
 -- Porting note: this lemma is needed since infer kinds are unsupported in Lean 4
-lemma ValuationRing.cond {A : Type u} [CommRing A] [IsDomain A] [PreValuationRing A] (a b : A) :
+lemma ValuationRing.cond {A : Type u} [CommRing A] [PreValuationRing A] (a b : A) :
     ∃ c : A, a * c = b ∨ b * c = a := PreValuationRing.cond _ _
 
 namespace ValuationRing

@@ -381,7 +381,7 @@ instance isScalarTower {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R
   inferInstanceAs (IsScalarTower R K S.toSubalgebra)
 
 @[simp]
-theorem coe_smul {R} [Semiring R] [SMul R K] [SMul R L] [IsScalarTower R K L] (r : R) (x : S) :
+theorem coe_smul {R} [SMul R K] [SMul R L] [IsScalarTower R K L] (r : R) (x : S) :
     ↑(r • x : S) = (r • (x : L)) :=
   rfl
 
