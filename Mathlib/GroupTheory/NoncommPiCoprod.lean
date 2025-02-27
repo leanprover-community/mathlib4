@@ -39,7 +39,6 @@ images of different morphisms commute, we obtain a canonical morphism
 
 -/
 
-
 namespace Subgroup
 
 variable {G : Type*} [Group G]
@@ -128,8 +127,17 @@ theorem noncommPiCoprod_mulSingle [DecidableEq ι] (i : ι) (y : N i) :
     simp only [Finset.mem_erase] at hj
     simp [hj]
 
-/-- The universal property of `MonoidHom.noncommPiCoprod` -/
-@[to_additive "The universal property of `AddMonoidHom.noncommPiCoprod`"]
+/--
+The universal property of `MonoidHom.noncommPiCoprod`
+
+Given monoid morphisms `φᵢ : Nᵢ → M` whose images pairwise commute,
+there exists a unique monoid morphism `φ : Πᵢ Nᵢ → M` that induces the `φᵢ`,
+and it is given by `MonoidHom.noncommPiCoprod`. -/
+@[to_additive "The universal property of `MonoidHom.noncommPiCoprod`
+
+Given monoid morphisms `φᵢ : Nᵢ → M` whose images pairwise commute,
+there exists a unique monoid morphism `φ : Πᵢ Nᵢ → M` that induces the `φᵢ`,
+and it is given by `AddMonoidHom.noncommPiCoprod`."]
 def noncommPiCoprodEquiv [DecidableEq ι] :
     { ϕ : ∀ i, N i →* M // Pairwise fun i j => ∀ x y, Commute (ϕ i x) (ϕ j y) } ≃
       ((∀ i, N i) →* M) where
@@ -173,6 +181,10 @@ lemma noncommPiCoprod_apply (h : (i : ι) → N i) :
       (Pairwise.set_pairwise (fun ⦃i j⦄ a ↦ hcomm a (h i) (h j)) _) := by
   dsimp only [MonoidHom.noncommPiCoprod, MonoidHom.coe_mk, OneHom.coe_mk]
 
+/--
+Given monoid morphisms `φᵢ : Nᵢ → M` and `f : M → P`, if we have sufficient commutativity, then
+`f ∘ (∐ᵢ φᵢ) = ∐ᵢ (f ∘ φᵢ)` -/
+@[to_additive]
 theorem comp_noncommPiCoprod {P : Type*} [Monoid P] {f : M →* P}
     (hcomm' : Pairwise fun i j => ∀ x y, Commute (f.comp (ϕ i) x) (f.comp (ϕ j) y) :=
       Pairwise.mono hcomm (fun i j ↦ forall_imp (fun x h y ↦ by
