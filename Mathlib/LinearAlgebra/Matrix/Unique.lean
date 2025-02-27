@@ -9,7 +9,7 @@ import Mathlib.Data.Matrix.Basic
 # One by one matrices
 
 This file proves that one by one matrices over a base are equivalent to the base itself under the
-canonical map that sends a one by one matrix `[a]` to `a`.
+canonical map that sends a one by one matrix `!![a]` to `a`.
 
 ## Main results
 - `Matrix.uniqueRingEquiv`
