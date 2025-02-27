@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.Setoid.Partition.Card
 import Mathlib.GroupTheory.GroupAction.Blocks
 import Mathlib.GroupTheory.GroupAction.Transitive
@@ -155,7 +155,7 @@ theorem IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints {a : X} (ha : a 
     IsPreprimitive G X :=
   have : IsPretransitive G X := by
     rw [isPretransitive_iff_base a]
-    cases' H (mem_orbit_self a) (IsBlock.orbit a) with H H
+    rcases H (mem_orbit_self a) (IsBlock.orbit a) with H | H
     · exfalso; apply ha
       rw [Set.subsingleton_iff_singleton (mem_orbit_self a)] at H
       simp only [mem_fixedPoints]
@@ -230,7 +230,7 @@ theorem isSimpleOrder_blockMem_iff_isPreprimitive [IsPretransitive G X] [Nontriv
   · intro h; let h_bot_or_top := h.eq_bot_or_eq_top
     apply IsPreprimitive.of_isTrivialBlock_base a
     intro B haB hB
-    cases' h_bot_or_top ⟨B, haB, hB⟩ with hB' hB' <;>
+    rcases h_bot_or_top ⟨B, haB, hB⟩ with hB' | hB' <;>
       simp only [← Subtype.coe_inj, Subtype.coe_mk] at hB'
     · left; rw [hB']; exact Set.subsingleton_singleton
     · right; rw [hB']; rfl
@@ -318,7 +318,7 @@ theorem of_card_lt [Finite β] [IsPretransitive N β] [IsPreprimitive M α]
   classical
   apply IsPreprimitive.mk
   intro B hB
-  cases' B.eq_empty_or_nonempty with hB' hB'
+  rcases B.eq_empty_or_nonempty with hB' | hB'
   · left
     rw [hB']
     apply Set.subsingleton_empty
@@ -357,7 +357,6 @@ theorem of_card_lt [Finite β] [IsPretransitive N β] [IsPreprimitive M α]
       apply lt_of_lt_of_le hf'
       rw [mul_comm, mul_le_mul_right Nat.succ_pos']
       apply le_trans (Set.ncard_le_ncard h) (Set.ncard_image_le B.toFinite)
-  simp only [Set.Finite.coe_toFinset, Set.subset_univ]
 
 /- The finiteness assumption is necessary :
   For G = ℤ acting on itself, no translate of ℕ contains 0 but not 1.
@@ -379,7 +378,7 @@ theorem exists_mem_smul_and_not_mem_smul [hpGX : IsPreprimitive M α]
     simpa only [Set.mem_iInter, not_forall, exists_prop] using this
   suffices B = {a} by rw [this]; rw [Set.mem_singleton_iff]; exact Ne.symm h
   -- B is a block hence is a trivial block
-  cases' hpGX.isTrivialBlock_of_isBlock (IsBlock.of_subset a hfA) with hyp hyp
+  rcases hpGX.isTrivialBlock_of_isBlock (IsBlock.of_subset a hfA) with hyp | hyp
   · -- B.subsingleton
     apply Set.Subsingleton.eq_singleton_of_mem hyp
     rw [Set.mem_iInter]; intro g; simp only [Set.mem_iInter, imp_self]
