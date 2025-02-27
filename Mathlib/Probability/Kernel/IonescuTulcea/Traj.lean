@@ -6,6 +6,8 @@ Authors: Etienne Marion
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
 import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
+import Mathlib.Probability.Kernel.Composition.IntegralCompProd
+import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 import Mathlib.Probability.Kernel.IonescuTulcea.PTraj
 
 /-!
@@ -467,21 +469,15 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
   have mem n : z ∈ A n := by
     have : 0 < χ n z := by
       rw [← lmarginalPTraj_le κ (le_max_right p (a n)) (mχ n),
-        ← updateFinset_frestrictLe (i := a n) z]
+        ← updateFinset_frestrictLe (a := a n) z]
       simpa using lt_of_lt_of_le this.symm.bot_lt (main _ (le_max_left _ _) z n)
     exact Set.mem_of_indicator_ne_zero (ne_of_lt this).symm
   exact (A_inter ▸ Set.mem_iInter.2 mem).elim
 
-theorem addContent_iUnion_le_of_addContent_iUnion_eq_tsum {α : Type*} {C : Set (Set α)}
-    {m : AddContent C} (hC : IsSetRing C)
-    (m_iUnion : ∀ (f : ℕ → Set α) (_ : ∀ i, f i ∈ C) (_ : (⋃ i, f i) ∈ C)
-      (_hf_disj : Pairwise (Function.onFun Disjoint f)), m (⋃ i, f i) = ∑' i, m (f i)) :
-    m.IsSigmaSubadditive := by sorry
-
 /-- The `trajContent` is sigma-subadditive. -/
 theorem isSigmaSubadditive_trajContent {a : ℕ} (x₀ : Π i : Iic a, X i) :
     (trajContent κ x₀).IsSigmaSubadditive := by
-  refine addContent_iUnion_le_of_addContent_iUnion_eq_tsum
+  refine isSigmaSubadditive_of_addContent_iUnion_eq_tsum
     isSetRing_measurableCylinders (fun f hf hf_Union hf' ↦ ?_)
   refine addContent_iUnion_eq_sum_of_tendsto_zero isSetRing_measurableCylinders
     (trajContent κ x₀) (fun _ _ ↦ trajContent_ne_top) ?_ hf hf_Union hf'
@@ -665,13 +661,15 @@ lemma ptraj_comp_ptrajProd_traj {a b : ℕ} (hab : a ≤ b) (u : Π i : Iic a, X
     (traj κ a u).map (fun x ↦ (frestrictLe b x, x)) = (ptraj κ a b u) ⊗ₘ (traj κ b) := by
   ext s ms
   rw [Measure.map_apply, Measure.compProd_apply, ← traj_comp_ptraj _ hab, comp_apply']
-  congr with x
-  rw [← traj_map_updateFinset, Measure.map_apply, Measure.map_apply]
-  congr with y
-  simp only [Set.mem_preimage]
-  congrm (fun i ↦ ?_, fun i ↦ ?_) ∈ s <;> simp [updateFinset]
-  any_goals fun_prop
-  all_goals exact ms.preimage (by fun_prop)
+  · congr with x
+    rw [← traj_map_updateFinset, Measure.map_apply, Measure.map_apply]
+    · congr with y
+      simp only [Set.mem_preimage]
+      congrm (fun i ↦ ?_, fun i ↦ ?_) ∈ s <;> simp [updateFinset]
+    any_goals fun_prop
+    all_goals exact ms.preimage (by fun_prop)
+  any_goals exact ms.preimage (by fun_prop)
+  fun_prop
 
 variable {κ}
 
@@ -685,7 +683,7 @@ theorem integral_traj_ptraj' {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X
   have hf2 := aestronglyMeasurable_traj κ hab hf1.1
   rw [← traj_comp_ptraj κ hab, Kernel.integral_comp]
   · apply integral_congr_ae
-    filter_upwards [hf.1.compProd, hf2] with x h1 h2
+    filter_upwards [hf.1.compProd_mk_left, hf2] with x h1 h2
     rw [integral_traj _ h1]
     nth_rw 2 [integral_traj]
     · simp_rw [frestrictLe_updateFinset]
