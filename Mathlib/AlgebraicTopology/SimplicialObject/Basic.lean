@@ -254,13 +254,14 @@ variable {C}
 
 section Meta
 
-open Mathlib.Tactic (subscriptTerm) in
+open Lean PrettyPrinter.Delaborator SubExpr
+open Mathlib.Tactic (subscriptTerm)
+open SimplexCategory.Truncated.Meta (subscript)
+
 /-- For `X : Truncated C n` and `m ≤ n`, `X _⦋m⦌ₙ` is the `m`-th term of X. The
 proof `p : m ≤ n` can also be provided using the syntax `X _⦋m, p⦌ₙ`. -/
 scoped syntax:max (name := mkNotation)
   term " _⦋" term ("," term)? "⦌" noWs subscriptTerm : term
-
-open scoped SimplexCategory.Truncated in
 scoped macro_rules
   | `($X:term _⦋$m:term⦌$n:subscript) =>
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
@@ -270,8 +271,6 @@ scoped macro_rules
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
       (Opposite.op ⟨SimplexCategory.mk $m, $p⟩))
 
-open SimplexCategory.Truncated.Meta (subscript) in
-open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for the notation `X _⦋m⦌ₙ`. -/
 @[app_delab Prefunctor.obj]
 def delabMkNotation : Delab :=
@@ -728,13 +727,14 @@ variable {C}
 
 section Meta
 
-open Mathlib.Tactic (subscriptTerm) in
+open Lean PrettyPrinter.Delaborator SubExpr
+open Mathlib.Tactic (subscriptTerm)
+open SimplexCategory.Truncated.Meta (subscript)
+
 /-- For `X : Truncated C n` and `m ≤ n`, `X ^⦋m⦌ₙ` is the `m`-th term of X. The
 proof `p : m ≤ n` can also be provided using the syntax `X ^⦋m, p⦌ₙ`. -/
 scoped syntax:max (name := mkNotation)
   term " ^⦋" term ("," term)? "⦌" noWs subscriptTerm : term
-
-open scoped SimplexCategory.Truncated in
 scoped macro_rules
   | `($X:term ^⦋$m:term⦌$n:subscript) =>
     `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
@@ -744,8 +744,6 @@ scoped macro_rules
     `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
       ⟨SimplexCategory.mk $m, $p⟩)
 
-open SimplexCategory.Truncated.Meta (subscript) in
-open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for the notation `X ^⦋m⦌ₙ`. -/
 @[app_delab Prefunctor.obj]
 def delabMkNotation : Delab :=
