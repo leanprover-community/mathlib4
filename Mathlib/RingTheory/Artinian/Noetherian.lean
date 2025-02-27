@@ -92,10 +92,6 @@ lemma isArtinianRing_iff_isNoetherianRing_and_primes_maximal :
       exact ⟨H, fun _ h => h⟩
     · rintro ⟨h₁, h₂⟩
       obtain ⟨n, e⟩ := IsNoetherianRing.isNilpotent_nilradical R
-      -- have hn : n ≠ 0 := by
-      --   intro h
-      --   rw [h] at e
-      --   simp_all
       rwa [← isNoetherian_iff_isArtinian_of_prod_eq_bot
         (n • (minimalPrimes.finite_of_isNoetherianRing R).toFinset.1) _ _]
       · simp_rw [Multiset.mem_nsmul, ← Finset.mem_def, Set.Finite.mem_toFinset]
