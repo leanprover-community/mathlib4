@@ -34,7 +34,7 @@ section absoluteValue
 
 variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
 
-/-- The norm of a maximal ideal is `> 1`  -/
+/-- The norm of a maximal ideal is `> 1` -/
 lemma one_lt_norm : 1 < absNorm v.asIdeal := by
   by_contra! h
   apply IsPrime.ne_top v.isPrime
@@ -44,29 +44,30 @@ lemma one_lt_norm : 1 < absNorm v.asIdeal := by
     exact (v.asIdeal.fintypeQuotientOfFreeOfNeBot v.ne_bot).finite
   omega
 
-/-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1`  -/
+/-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1` -/
 lemma one_lt_norm_nnreal : 1 < (absNorm v.asIdeal : NNReal) := mod_cast one_lt_norm v
 
-/-- The norm of a maximal ideal as an element of `ℝ≥0` is `≠ 0`  -/
+/-- The norm of a maximal ideal as an element of `ℝ≥0` is `≠ 0` -/
 lemma norm_ne_zero : (absNorm v.asIdeal : NNReal) ≠ 0 :=
   ne_zero_of_lt (one_lt_norm_nnreal v)
 
 /-- The `v`-adic absolute value on `K` defined as the norm of `v` raised to negative `v`-adic
-valuation.-/
+valuation -/
 noncomputable def vadicAbv : AbsoluteValue K ℝ where
-  toFun x := toNNReal (norm_ne_zero v) (v.valuation x)
+  toFun x := toNNReal (norm_ne_zero v) (v.valuation K x)
   map_mul' _ _ := by simp only [_root_.map_mul, NNReal.coe_mul]
   nonneg' _ := NNReal.zero_le_coe
   eq_zero' _ := by simp only [NNReal.coe_eq_zero, map_eq_zero]
   add_le' x y := by
     -- the triangle inequality is implied by the ultrametric one
-    apply le_trans _ <| max_le_add_of_nonneg (zero_le ((toNNReal (norm_ne_zero v)) (v.valuation x)))
-      (zero_le ((toNNReal (norm_ne_zero v)) (v.valuation y)))
+    apply le_trans _ <| max_le_add_of_nonneg
+      (zero_le ((toNNReal (norm_ne_zero v)) (v.valuation _ x)))
+      (zero_le ((toNNReal (norm_ne_zero v)) (v.valuation K y)))
     have h_mono := (toNNReal_strictMono (one_lt_norm_nnreal v)).monotone
     rw [← h_mono.map_max] --max goes inside withZeroMultIntToNNReal
-    exact h_mono (v.valuation.map_add x y)
+    exact h_mono ((v.valuation _).map_add x y)
 
-theorem vadicAbv_def {x : K} : vadicAbv v x = toNNReal (norm_ne_zero v) (v.valuation x) := rfl
+theorem vadicAbv_def {x : K} : vadicAbv v x = toNNReal (norm_ne_zero v) (v.valuation K x) := rfl
 
 end absoluteValue
 
@@ -125,7 +126,7 @@ theorem FinitePlace.norm_def (x : K) : ‖embedding v x‖ = vadicAbv v x := by
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/
 theorem FinitePlace.norm_def' (x : K) : ‖embedding v x‖ = toNNReal (norm_ne_zero v)
-    (v.valuation x) := by
+    (v.valuation K x) := by
   rw [norm_def, vadicAbv_def]
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
@@ -279,7 +280,7 @@ lemma embedding_mul_absNorm (v : HeightOneSpectrum (𝓞 K)) {x : 𝓞 K} (h_x_n
     ‖(embedding v) x‖ * absNorm (v.maxPowDividing (span {x})) = 1 := by
   rw [maxPowDividing, map_pow, Nat.cast_pow, norm_def, vadicAbv_def,
     WithZeroMulInt.toNNReal_neg_apply _
-      (v.valuation.ne_zero_iff.mpr (RingOfIntegers.coe_ne_zero_iff.mpr h_x_nezero))]
+      ((v.valuation K).ne_zero_iff.mpr (RingOfIntegers.coe_ne_zero_iff.mpr h_x_nezero))]
   push_cast
   rw [← zpow_natCast, ← zpow_add₀ <| mod_cast (zero_lt_one.trans (one_lt_norm_nnreal v)).ne']
   norm_cast
