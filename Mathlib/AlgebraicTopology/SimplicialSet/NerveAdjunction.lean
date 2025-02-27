@@ -444,7 +444,7 @@ instance nerveFunctor₂.full : nerveFunctor₂.{u, u}.Full where
       have eq1 : (nerveFunctor₂.obj X).map δ1₂.op hk = .mk₁ (h ≫ k) := by
         apply ComposableArrows.ext₁ (by rfl) (by rfl)
         simp [nerveFunctor₂, SSet.truncation, forget₂, HasForget₂.forget₂]; rfl
-      simp at lem0 lem1 lem2
+      dsimp at lem0 lem1 lem2
       rw [eq0] at lem0
       rw [eq1] at lem1
       rw [eq2] at lem2
