@@ -233,7 +233,7 @@ lemma pullback.lift_fst_snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback
   apply hom_ext <;> simp
 
 @[simp]
-lemma pushout.lift_fst_snd {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
+lemma pushout.desc_inl_inr {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
     desc (inl f g) (inr f g) condition = 𝟙 (pushout f g) := by
   apply hom_ext <;> simp
 
