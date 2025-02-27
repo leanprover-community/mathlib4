@@ -352,9 +352,6 @@ def nerve₂Adj.unit : 𝟭 (SSet.Truncated.{u} 2) ⟶ hoFunctor₂ ⋙ nerveFun
   app := nerve₂Adj.unit.app
   naturality _ _ _ := unit.naturality _
 
--- to be moved (if making this a global simp lemma breaks things, it could be made a local simp)
-@[simp]
-lemma Cat.of_coe (C : Cat.{v, u}) : Cat.of C = C := rfl
 
 /-- The adjunction between the 2-truncated nerve functor and the 2-truncated homotopy category
 functor. -/
@@ -411,8 +408,8 @@ nonrec def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ :=
       dsimp at this ⊢
       rw [← assoc, ← this]
       have := ReflQuiv.adj.right_triangle_components C
-      slice_lhs 2 3 => apply ReflQuiv.adj.right_triangle_components
-      simp
+      dsimp [ReflQuiv.forget] at this
+      simp [reassoc_of% this]
   }
 
 instance nerveFunctor₂.faithful : nerveFunctor₂.{u, u}.Faithful := by
