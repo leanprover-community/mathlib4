@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
+Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl, Reid Barton
 -/
 import Mathlib.CategoryTheory.Category.Init
 import Mathlib.Combinatorics.Quiver.Basic
@@ -23,7 +23,7 @@ Introduces notations in the `CategoryTheory` scope
 
 Users may like to add `g ⊚ f` for composition in the standard convention, using
 ```lean
-local notation g ` ⊚ `:80 f:80 := category.comp f g    -- type as \oo
+local notation:80 g " ⊚ " f:80 => CategoryTheory.CategoryStruct.comp f g    -- type as \oo
 ```
 
 ## Porting note
@@ -142,11 +142,8 @@ attribute [aesop safe (rule_sets := [CategoryTheory])] Subsingleton.elim
 
 /-- The typeclass `Category C` describes morphisms associated to objects of type `C`.
 The universe levels of the objects and morphisms are unconstrained, and will often need to be
-specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallCategory`.)
-
-See <https://stacks.math.columbia.edu/tag/0014>.
--/
-@[pp_with_univ]
+specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallCategory`.) -/
+@[pp_with_univ, stacks 0014]
 class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1) where
   /-- Identity morphisms are left identities for composition. -/
   id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by aesop_cat
@@ -235,19 +232,15 @@ theorem dite_comp {P : Prop} [Decidable P]
     (if h : P then f h else f' h) ≫ g = if h : P then f h ≫ g else f' h ≫ g := by aesop
 
 /-- A morphism `f` is an epimorphism if it can be cancelled when precomposed:
-`f ≫ g = f ≫ h` implies `g = h`.
-
-See <https://stacks.math.columbia.edu/tag/003B>.
--/
+`f ≫ g = f ≫ h` implies `g = h`. -/
+@[stacks 003B]
 class Epi (f : X ⟶ Y) : Prop where
   /-- A morphism `f` is an epimorphism if it can be cancelled when precomposed. -/
   left_cancellation : ∀ {Z : C} (g h : Y ⟶ Z), f ≫ g = f ≫ h → g = h
 
 /-- A morphism `f` is a monomorphism if it can be cancelled when postcomposed:
-`g ≫ f = h ≫ f` implies `g = h`.
-
-See <https://stacks.math.columbia.edu/tag/003B>.
--/
+`g ≫ f = h ≫ f` implies `g = h`. -/
+@[stacks 003B]
 class Mono (f : X ⟶ Y) : Prop where
   /-- A morphism `f` is a monomorphism if it can be cancelled when postcomposed. -/
   right_cancellation : ∀ {Z : C} (g h : Z ⟶ X), g ≫ f = h ≫ f → g = h
@@ -281,11 +274,28 @@ theorem cancel_mono_id (f : X ⟶ Y) [Mono f] {g : X ⟶ X} : g ≫ f = f ↔ g 
   convert cancel_mono f
   simp
 
+/-- The composition of epimorphisms is again an epimorphism. This version takes `Epi f` and `Epi g`
+as typeclass arguments. For a version taking them as explicit arguments, see `epi_comp'`. -/
 instance epi_comp {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) [Epi g] : Epi (f ≫ g) :=
   ⟨fun _ _ w => (cancel_epi g).1 <| (cancel_epi_assoc_iff f).1 w⟩
 
+/-- The composition of epimorphisms is again an epimorphism. This version takes `Epi f` and `Epi g`
+as explicit arguments. For a version taking them as typeclass arguments, see `epi_comp`. -/
+theorem epi_comp' {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (hf : Epi f) (hg : Epi g) : Epi (f ≫ g) :=
+  inferInstance
+
+/-- The composition of monomorphisms is again a monomorphism. This version takes `Mono f` and
+`Mono g` as typeclass arguments. For a version taking them as explicit arguments, see `mono_comp'`.
+-/
 instance mono_comp {X Y Z : C} (f : X ⟶ Y) [Mono f] (g : Y ⟶ Z) [Mono g] : Mono (f ≫ g) :=
   ⟨fun _ _ w => (cancel_mono f).1 <| (cancel_mono_assoc_iff g).1 w⟩
+
+/-- The composition of monomorphisms is again a monomorphism. This version takes `Mono f` and
+`Mono g` as explicit arguments. For a version taking them as typeclass arguments, see `mono_comp`.
+-/
+theorem mono_comp' {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (hf : Mono f) (hg : Mono g) :
+    Mono (f ≫ g) :=
+  inferInstance
 
 theorem mono_of_mono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Mono (f ≫ g)] : Mono f :=
   ⟨fun _ _ w => (cancel_mono (f ≫ g)).1 <| by simp only [← Category.assoc, w]⟩

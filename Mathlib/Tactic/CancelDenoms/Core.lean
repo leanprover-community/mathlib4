@@ -219,6 +219,10 @@ def deriveThms : List Name :=
 /-- Helper lemma to chain together a `simp` proof and the result of `mkProdPrf`. -/
 theorem derive_trans {α} [Mul α] {a b c d : α} (h : a = b) (h' : c * b = d) : c * a = d := h ▸ h'
 
+/-- Helper lemma to chain together two `simp` proofs and the result of `mkProdPrf`. -/
+theorem derive_trans₂ {α} [Mul α] {a b c d e : α} (h : a = b) (h' : b = c) (h'' : d * c = e) :
+    d * a = e := h ▸ h' ▸ h''
+
 /--
 Given `e`, a term with rational division, produces a natural number `n` and a proof of `n*e = e'`,
 where `e'` has no division. Assumes "well-behaved" division.
@@ -227,18 +231,20 @@ def derive (e : Expr) : MetaM (ℕ × Expr) := do
   trace[CancelDenoms] "e = {e}"
   let eSimp ← simpOnlyNames (config := Simp.neutralConfig) deriveThms e
   trace[CancelDenoms] "e simplified = {eSimp.expr}"
-  let (n, t) := findCancelFactor eSimp.expr
-  let ⟨u, tp, e⟩ ← inferTypeQ' eSimp.expr
+  let eSimpNormNum ← Mathlib.Meta.NormNum.deriveSimp (← Simp.mkContext) false eSimp.expr
+  trace[CancelDenoms] "e norm_num'd = {eSimpNormNum.expr}"
+  let (n, t) := findCancelFactor eSimpNormNum.expr
+  let ⟨u, tp, e⟩ ← inferTypeQ' eSimpNormNum.expr
   let stp : Q(Field $tp) ← synthInstanceQ q(Field $tp)
   try
     have n' := (← mkOfNat tp q(inferInstance) <| mkRawNatLit <| n).1
     let r ← mkProdPrf tp stp n n' t e
     trace[CancelDenoms] "pf : {← inferType r.pf}"
     let pf' ←
-      if let some pfSimp := eSimp.proof? then
-        mkAppM ``derive_trans #[pfSimp, r.pf]
-      else
-        pure r.pf
+      match eSimp.proof?, eSimpNormNum.proof? with
+      | some pfSimp, some pfSimp' => mkAppM ``derive_trans₂ #[pfSimp, pfSimp', r.pf]
+      | some pfSimp, none | none, some pfSimp => mkAppM ``derive_trans #[pfSimp, r.pf]
+      | none, none => pure r.pf
     return (n, pf')
   catch E => do
     throwError "CancelDenoms.derive failed to normalize {e}.\n{E.toMessageData}"

@@ -24,6 +24,7 @@ This file defines intersecting families and proves their basic properties.
 * [D. J. Kleitman, *Families of non-disjoint subsets*][kleitman1966]
 -/
 
+assert_not_exists Monoid
 
 open Finset
 
@@ -141,7 +142,7 @@ theorem Intersecting.disjoint_map_compl {s : Finset α} (hs : (s : Set α).Inter
   exact hs.not_compl_mem hx' hx
 
 theorem Intersecting.card_le [Fintype α] {s : Finset α} (hs : (s : Set α).Intersecting) :
-    2 * s.card ≤ Fintype.card α := by
+    2 * #s ≤ Fintype.card α := by
   classical
     refine (s.disjUnion _ hs.disjoint_map_compl).card_le_univ.trans_eq' ?_
     rw [Nat.two_mul, card_disjUnion, card_map]
@@ -150,7 +151,7 @@ variable [Nontrivial α] [Fintype α] {s : Finset α}
 
 -- Note, this lemma is false when `α` has exactly one element and boring when `α` is empty.
 theorem Intersecting.is_max_iff_card_eq (hs : (s : Set α).Intersecting) :
-    (∀ t : Finset α, (t : Set α).Intersecting → s ⊆ t → s = t) ↔ 2 * s.card = Fintype.card α := by
+    (∀ t : Finset α, (t : Set α).Intersecting → s ⊆ t → s = t) ↔ 2 * #s = Fintype.card α := by
   classical
     refine ⟨fun h ↦ ?_, fun h t ht hst ↦ Finset.eq_of_subset_of_card_le hst <|
       Nat.le_of_mul_le_mul_left (ht.card_le.trans_eq h.symm) Nat.two_pos⟩
@@ -171,9 +172,9 @@ theorem Intersecting.is_max_iff_card_eq (hs : (s : Set α).Intersecting) :
     exact Finset.singleton_ne_empty _ (this <| Finset.empty_subset _).symm
 
 theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
-    ∃ t, s ⊆ t ∧ 2 * t.card = Fintype.card α ∧ (t : Set α).Intersecting := by
+    ∃ t, s ⊆ t ∧ 2 * #t = Fintype.card α ∧ (t : Set α).Intersecting := by
   have := hs.card_le
-  rw [mul_comm, ← Nat.le_div_iff_mul_le' Nat.two_pos] at this
+  rw [Nat.mul_comm, ← Nat.le_div_iff_mul_le Nat.two_pos] at this
   revert hs
   refine s.strongDownwardInductionOn ?_ this
   rintro s ih _hcard hs
@@ -182,7 +183,7 @@ theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
   push_neg at h
   obtain ⟨t, ht, hst⟩ := h
   refine (ih ?_ (_root_.ssubset_iff_subset_ne.2 hst) ht).imp fun u => And.imp_left hst.1.trans
-  rw [Nat.le_div_iff_mul_le' Nat.two_pos, mul_comm]
+  rw [Nat.le_div_iff_mul_le Nat.two_pos, Nat.mul_comm]
   exact ht.card_le
 
 end Set

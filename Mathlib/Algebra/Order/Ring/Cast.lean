@@ -27,7 +27,7 @@ variable {R : Type*}
 namespace Int
 section OrderedAddCommGroupWithOne
 
-variable [AddCommGroupWithOne R] [PartialOrder R] [CovariantClass R R (· + ·) (· ≤ ·)]
+variable [AddCommGroupWithOne R] [PartialOrder R] [AddLeftMono R]
 variable [ZeroLEOneClass R]
 
 lemma cast_mono : Monotone (Int.cast : ℤ → R) := by
@@ -36,6 +36,8 @@ lemma cast_mono : Monotone (Int.cast : ℤ → R) := by
   lift n - m to ℕ using h with k hk
   rw [← sub_nonneg, ← cast_sub, ← hk, cast_natCast]
   exact k.cast_nonneg'
+
+@[gcongr] protected lemma GCongr.intCast_mono {m n : ℤ} (hmn : m ≤ n) : (m : R) ≤ n := cast_mono hmn
 
 variable [NeZero (1 : R)] {m n : ℤ}
 
@@ -52,6 +54,8 @@ lemma cast_strictMono : StrictMono (fun x : ℤ => (x : R)) :=
   strictMono_of_le_iff_le fun _ _ => cast_le.symm
 
 @[simp, norm_cast] lemma cast_lt : (m : R) < n ↔ m < n := cast_strictMono.lt_iff_lt
+
+@[gcongr] protected alias ⟨_, GCongr.intCast_strictMono⟩ := Int.cast_lt
 
 @[simp] lemma cast_nonpos : (n : R) ≤ 0 ↔ n ≤ 0 := by rw [← cast_zero, cast_le]
 

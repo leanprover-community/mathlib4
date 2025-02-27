@@ -42,7 +42,7 @@ theorem mem_sumLift₂ :
       (∃ a₁ b₁ c₁, a = inl a₁ ∧ b = inl b₁ ∧ c = inl c₁ ∧ c₁ ∈ f a₁ b₁) ∨
         ∃ a₂ b₂ c₂, a = inr a₂ ∧ b = inr b₂ ∧ c = inr c₂ ∧ c₂ ∈ g a₂ b₂ := by
   constructor
-  · cases' a with a a <;> cases' b with b b
+  · rcases a with a | a <;> rcases b with b | b
     · rw [sumLift₂, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩
@@ -191,7 +191,7 @@ lemma sumLexLift_nonempty :
       (∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ (f₁ a₁ b₁).Nonempty) ∨
         (∃ a₁ b₂, a = inl a₁ ∧ b = inr b₂ ∧ ((g₁ a₁ b₂).Nonempty ∨ (g₂ a₁ b₂).Nonempty)) ∨
           ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ (f₂ a₂ b₂).Nonempty := by
-  -- porting note (#10745): was `simp [nonempty_iff_ne_empty, sumLexLift_eq_empty, not_and_or]`.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [nonempty_iff_ne_empty, sumLexLift_eq_empty, not_and_or]`.
   -- Could add `-exists_and_left, -not_and, -exists_and_right` but easier to squeeze.
   simp only [nonempty_iff_ne_empty, Ne, sumLexLift_eq_empty, not_and_or, exists_prop,
     not_forall]
@@ -217,12 +217,12 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (α ⊕ β) where
   finsetIco := sumLift₂ Ico Ico
   finsetIoc := sumLift₂ Ioc Ioc
   finsetIoo := sumLift₂ Ioo Ioo
-  finset_mem_Icc := by rintro (a | a) (b | b) (x | x) <;> simp
-  finset_mem_Ico := by rintro (a | a) (b | b) (x | x) <;> simp
-  finset_mem_Ioc := by rintro (a | a) (b | b) (x | x) <;> simp
-  finset_mem_Ioo := by rintro (a | a) (b | b) (x | x) <;> simp
+  finset_mem_Icc := by simp
+  finset_mem_Ico := by simp
+  finset_mem_Ioc := by simp
+  finset_mem_Ioo := by simp
 
-variable (a₁ a₂ : α) (b₁ b₂ : β) (a b : α ⊕ β)
+variable (a₁ a₂ : α) (b₁ b₂ : β)
 
 theorem Icc_inl_inl : Icc (inl a₁ : α ⊕ β) (inl a₂) = (Icc a₁ a₂).map Embedding.inl :=
   rfl

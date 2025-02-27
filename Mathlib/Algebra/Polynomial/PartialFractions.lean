@@ -5,6 +5,7 @@ Authors: Kevin Buzzard, Sidharth Hariharan
 -/
 import Mathlib.Algebra.Polynomial.Div
 import Mathlib.Logic.Function.Basic
+import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
@@ -48,8 +49,7 @@ variable (K : Type) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
 
 section TwoDenominators
 
--- Porting note: added for scoped `Algebra.cast` instance
-open algebraMap
+open scoped algebraMap
 
 /-- Let R be an integral domain and f, g₁, g₂ ∈ R[X]. Let g₁ and g₂ be monic and coprime.
 Then, ∃ q, r₁, r₂ ∈ R[X] such that f / g₁g₂ = q + r₁/g₁ + r₂/g₂ and deg(r₁) < deg(g₁) and
@@ -80,7 +80,6 @@ end TwoDenominators
 
 section NDenominators
 
--- Porting note: added for scoped `Algebra.cast` instance
 open algebraMap
 
 /-- Let R be an integral domain and f ∈ R[X]. Let s be a finite index set.

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 import Mathlib.CategoryTheory.Linear.Basic
@@ -21,11 +21,6 @@ open CategoryTheory.Limits Linear
 variable {R : Type*} [Semiring R]
 variable {C D : Type*} [Category C] [Category D] [Preadditive D] [Linear R D]
 
-#adaptation_note
-/--
-At nightly-2024-08-08 we needed to significantly increase the maxHeartbeats here.
--/
-set_option maxHeartbeats 800000 in
 instance functorCategoryLinear : Linear R (C ⥤ D) where
   homModule F G :=
     { smul := fun r α =>

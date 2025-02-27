@@ -68,18 +68,16 @@ variable (J : GrothendieckTopology C)
 
 -- We follow https://stacks.math.columbia.edu/tag/00VL definition 00VR
 /-- A sheaf of A is a presheaf P : Cᵒᵖ => A such that for every E : A, the
-presheaf of types given by sending U : C to Hom_{A}(E, P U) is a sheaf of types.
-
-https://stacks.math.columbia.edu/tag/00VR
--/
+presheaf of types given by sending U : C to Hom_{A}(E, P U) is a sheaf of types. -/
+@[stacks 00VR]
 def IsSheaf (P : Cᵒᵖ ⥤ A) : Prop :=
   ∀ E : A, Presieve.IsSheaf J (P ⋙ coyoneda.obj (op E))
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike in
 /-- Condition that a presheaf with values in a concrete category is separated for
 a Grothendieck topology. -/
-def IsSeparated (P : Cᵒᵖ ⥤ A) [ConcreteCategory A] : Prop :=
-  ∀ (X : C) (S : Sieve X) (_ : S ∈ J X) (x y : P.obj (op X)),
+def IsSeparated (P : Cᵒᵖ ⥤ A) {FA : A → A → Type*} {CA : A → Type*}
+    [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA] : Prop :=
+  ∀ (X : C) (S : Sieve X) (_ : S ∈ J X) (x y : ToType (P.obj (op X))),
     (∀ (Y : C) (f : Y ⟶ X) (_ : S f), P.map f.op x = P.map f.op y) → x = y
 
 section LimitSheafCondition
@@ -92,12 +90,11 @@ variable (P : Cᵒᵖ ⥤ A) {X : C} (S : Sieve X) (R : Presieve X) (E : Aᵒᵖ
     the cones over the natural diagram `S.arrows.diagram.op ⋙ P` associated to `S` and `P`
     with cone point `E` are in 1-1 correspondence with sieve_compatible family of elements
     for the sieve `S` and the presheaf of types `Hom (E, P -)`. -/
-@[simps]
 def conesEquivSieveCompatibleFamily :
     (S.arrows.diagram.op ⋙ P).cones.obj E ≃
       { x : FamilyOfElements (P ⋙ coyoneda.obj E) (S : Presieve X) // x.SieveCompatible } where
   toFun π :=
-    ⟨fun Y f h => π.app (op ⟨Over.mk f, h⟩), fun X Y f g hf => by
+    ⟨fun _ f h => π.app (op ⟨Over.mk f, h⟩), fun X Y f g hf => by
       apply (id_comp _).symm.trans
       dsimp
       exact π.naturality (Quiver.Hom.op (Over.homMk _ (by rfl)))⟩
@@ -109,12 +106,8 @@ def conesEquivSieveCompatibleFamily :
         rw [id_comp]
         convert rfl
         rw [Over.w] }
-  left_inv π := rfl
-  right_inv x := rfl
-
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily_apply_coe
-  CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily_symm_apply_app
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 variable {P S E}
 variable {x : FamilyOfElements (P ⋙ coyoneda.obj E) S.arrows} (hx : SieveCompatible x)
@@ -149,12 +142,12 @@ theorem isLimit_iff_isSheafFor :
   · intro hu E x hx
     specialize hu hx.cone
     rw [(homEquivAmalgamation hx).uniqueCongr.nonempty_congr] at hu
-    exact (unique_subtype_iff_exists_unique _).1 hu
+    exact (unique_subtype_iff_existsUnique _).1 hu
   · rintro h ⟨E, π⟩
     let eqv := conesEquivSieveCompatibleFamily P S (op E)
     rw [← eqv.left_inv π]
     erw [(homEquivAmalgamation (eqv π).2).uniqueCongr.nonempty_congr]
-    rw [unique_subtype_iff_exists_unique]
+    rw [unique_subtype_iff_existsUnique]
     exact h _ _ (eqv π).2
 
 /-- Given sieve `S` and presheaf `P : Cᵒᵖ ⥤ A`, their natural associated cone admits at most one
@@ -267,21 +260,24 @@ variable {P : Cᵒᵖ ⥤ A} (hP : Presheaf.IsSheaf J P) {I : Type*} {S : C} {X 
     a ≫ f i = b ≫ f j → x i ≫ P.map a.op = x j ≫ P.map b.op)
 include hP hf hx
 
-lemma IsSheaf.exists_unique_amalgamation_ofArrows :
+lemma IsSheaf.existsUnique_amalgamation_ofArrows :
     ∃! (g : E ⟶ P.obj (op S)), ∀ (i : I), g ≫ P.map (f i).op = x i :=
   (Presieve.isSheafFor_arrows_iff _ _).1
     ((Presieve.isSheafFor_iff_generate _).2 (hP E _ hf)) x (fun _ _ _ _ _ w => hx _ _ w)
+
+@[deprecated (since := "2024-12-17")]
+alias IsSheaf.exists_unique_amalgamation_ofArrows := IsSheaf.existsUnique_amalgamation_ofArrows
 
 /-- If `P : Cᵒᵖ ⥤ A` is a sheaf and `f i : X i ⟶ S` is a covering family, then
 a morphism `E ⟶ P.obj (op S)` can be constructed from a compatible family of
 morphisms `x : E ⟶ P.obj (op (X i))`. -/
 def IsSheaf.amalgamateOfArrows : E ⟶ P.obj (op S) :=
-  (hP.exists_unique_amalgamation_ofArrows f hf x hx).choose
+  (hP.existsUnique_amalgamation_ofArrows f hf x hx).choose
 
 @[reassoc (attr := simp)]
 lemma IsSheaf.amalgamateOfArrows_map (i : I) :
     hP.amalgamateOfArrows f hf x hx ≫ P.map (f i).op = x i :=
-  (hP.exists_unique_amalgamation_ofArrows f hf x hx).choose_spec.1 i
+  (hP.existsUnique_amalgamation_ofArrows f hf x hx).choose_spec.1 i
 
 end
 
@@ -332,7 +328,6 @@ instance instCategorySheaf : Category (Sheaf J A) where
 instance (X : Sheaf J A) : Inhabited (Hom X X) :=
   ⟨𝟙 X⟩
 
--- Porting note: added because `Sheaf.Hom.ext` was not triggered automatically
 @[ext]
 lemma hom_ext {X Y : Sheaf J A} (x y : X ⟶ Y) (h : x.val = y.val) : x = y :=
   Sheaf.Hom.ext h
@@ -377,12 +372,6 @@ theorem Sheaf.Hom.mono_of_presheaf_mono {F G : Sheaf J A} (f : F ⟶ G) [h : Mon
 instance Sheaf.Hom.epi_of_presheaf_epi {F G : Sheaf J A} (f : F ⟶ G) [h : Epi f.1] : Epi f :=
   (sheafToPresheaf J A).epi_of_epi_map h
 
-/-- The sheaf of sections guaranteed by the sheaf condition. -/
-@[simps]
-def sheafOver {A : Type u₂} [Category.{v₂} A] {J : GrothendieckTopology C} (ℱ : Sheaf J A) (E : A) :
-    SheafOfTypes J :=
-  ⟨ℱ.val ⋙ coyoneda.obj (op E), ℱ.cond E⟩
-
 theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
     Presheaf.IsSheaf J P ↔ Presieve.IsSheaf J P := by
   constructor
@@ -403,27 +392,39 @@ theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
       rw [Presieve.IsSheafFor.valid_glue _ _ _ hf, ← hy _ hf]
       rfl
 
+/-- The sheaf of sections guaranteed by the sheaf condition. -/
+@[simps]
+def sheafOver {A : Type u₂} [Category.{v₂} A] {J : GrothendieckTopology C} (ℱ : Sheaf J A) (E : A) :
+    Sheaf J (Type _) where
+  val := ℱ.val ⋙ coyoneda.obj (op E)
+  cond := by
+    rw [isSheaf_iff_isSheaf_of_type]
+    exact ℱ.cond E
+
 variable {J} in
 lemma Presheaf.IsSheaf.isSheafFor {P : Cᵒᵖ ⥤ Type w} (hP : Presheaf.IsSheaf J P)
     {X : C} (S : Sieve X) (hS : S ∈ J X) : Presieve.IsSheafFor P S.arrows := by
   rw [isSheaf_iff_isSheaf_of_type] at hP
   exact hP S hS
 
-/-- The category of sheaves taking values in Type is the same as the category of set-valued sheaves.
+variable {A} in
+lemma Presheaf.isSheaf_bot (P : Cᵒᵖ ⥤ A) : IsSheaf ⊥ P := fun _ ↦ Presieve.isSheaf_bot
+
+/--
+The category of sheaves on the bottom (trivial) Grothendieck topology is
+equivalent to the category of presheaves.
 -/
 @[simps]
-def sheafEquivSheafOfTypes : Sheaf J (Type w) ≌ SheafOfTypes J where
-  functor :=
-    { obj := fun S => ⟨S.val, (isSheaf_iff_isSheaf_of_type _ _).1 S.2⟩
-      map := fun f => ⟨f.val⟩ }
+def sheafBotEquivalence : Sheaf (⊥ : GrothendieckTopology C) A ≌ Cᵒᵖ ⥤ A where
+  functor := sheafToPresheaf _ _
   inverse :=
-    { obj := fun S => ⟨S.val, (isSheaf_iff_isSheaf_of_type _ _).2 S.2⟩
-      map := fun f => ⟨f.val⟩ }
-  unitIso := NatIso.ofComponents fun X => Iso.refl _
-  counitIso := NatIso.ofComponents fun X => Iso.refl _
+    { obj := fun P => ⟨P, Presheaf.isSheaf_bot P⟩
+      map := fun f => ⟨f⟩ }
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 instance : Inhabited (Sheaf (⊥ : GrothendieckTopology C) (Type w)) :=
-  ⟨(sheafEquivSheafOfTypes _).inverse.obj default⟩
+  ⟨(sheafBotEquivalence _).inverse.obj ((Functor.const _).obj default)⟩
 
 variable {J} {A}
 
@@ -446,7 +447,7 @@ instance sheafHomHasZSMul : SMul ℤ (P ⟶ Q) where
     Sheaf.Hom.mk
       { app := fun U => n • f.1.app U
         naturality := fun U V i => by
-          induction' n using Int.induction_on with n ih n ih
+          induction' n with n ih n ih
           · simp only [zero_smul, comp_zero, zero_comp]
           · simpa only [add_zsmul, one_zsmul, comp_add, NatTrans.naturality, add_comp,
               add_left_inj]
@@ -481,7 +482,7 @@ instance Sheaf.Hom.addCommGroup : AddCommGroup (P ⟶ Q) :=
     (fun _ _ => by aesop_cat) (fun _ _ => by aesop_cat)
 
 instance : Preadditive (Sheaf J A) where
-  homGroup P Q := Sheaf.Hom.addCommGroup
+  homGroup _ _ := Sheaf.Hom.addCommGroup
 
 end Preadditive
 
@@ -515,7 +516,7 @@ section MultiequalizerConditions
 
 /-- When `P` is a sheaf and `S` is a cover, the associated multifork is a limit. -/
 def isLimitOfIsSheaf {X : C} (S : J.Cover X) (hP : IsSheaf J P) : IsLimit (S.multifork P) where
-  lift := fun E : Multifork _ => hP.amalgamate S (fun I => E.ι _)
+  lift := fun E : Multifork _ => hP.amalgamate S (fun _ => E.ι _)
     (fun _ _ r => E.condition ⟨_, _, r⟩)
   fac := by
     rintro (E : Multifork _) (a | b)
@@ -574,7 +575,6 @@ theorem isSheaf_iff_multiequalizer [∀ (X : C) (S : J.Cover X), HasMultiequaliz
     · apply (@asIso _ _ _ _ _ h).symm
     · intro a
       symm
-      erw [IsIso.inv_comp_eq]
       simp
 
 end MultiequalizerConditions
@@ -584,34 +584,35 @@ section
 variable [HasProducts.{max u₁ v₁} A]
 variable [HasProducts.{max u₁ v₁} A']
 
-/--
-The middle object of the fork diagram given in Equation (3) of [MM92], as well as the fork diagram
-of <https://stacks.math.columbia.edu/tag/00VM>.
--/
+/-- The middle object of the fork diagram given in Equation (3) of [MM92], as well as the fork
+diagram of the Stacks entry. -/
+@[stacks 00VM "The middle object of the fork diagram there."]
 def firstObj : A :=
   ∏ᶜ fun f : ΣV, { f : V ⟶ U // R f } => P.obj (op f.1)
 
-/--
-The left morphism of the fork diagram given in Equation (3) of [MM92], as well as the fork diagram
-of <https://stacks.math.columbia.edu/tag/00VM>.
--/
+/-- The left morphism of the fork diagram given in Equation (3) of [MM92], as well as the fork
+diagram of the Stacks entry. -/
+@[stacks 00VM "The left morphism the fork diagram there."]
 def forkMap : P.obj (op U) ⟶ firstObj R P :=
   Pi.lift fun f => P.map f.2.1.op
 
 variable [HasPullbacks C]
 
-/-- The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag/00VM, which
+/-- The rightmost object of the fork diagram of the Stacks entry, which
 contains the data used to check a family of elements for a presieve is compatible.
 -/
+@[stacks 00VM "The rightmost object of the fork diagram there."]
 def secondObj : A :=
   ∏ᶜ fun fg : (ΣV, { f : V ⟶ U // R f }) × ΣW, { g : W ⟶ U // R g } =>
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
 
-/-- The map `pr₀*` of <https://stacks.math.columbia.edu/tag/00VM>. -/
+/-- The map `pr₀*` of the Stacks entry. -/
+@[stacks 00VM "The map `pr₀*` there."]
 def firstMap : firstObj R P ⟶ secondObj R P :=
   Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.fst _ _).op
 
-/-- The map `pr₁*` of <https://stacks.math.columbia.edu/tag/00VM>. -/
+/-- The map `pr₁*` of the Stacks entry. -/
+@[stacks 00VM "The map `pr₁*` there."]
 def secondMap : firstObj R P ⟶ secondObj R P :=
   Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 
@@ -671,7 +672,7 @@ theorem isSheaf_iff_isSheaf' : IsSheaf J P' ↔ IsSheaf' J P' := by
     rw [Equalizer.Presieve.sheaf_condition]
     refine ⟨?_⟩
     refine isSheafForIsSheafFor' _ _ _ _ ?_
-    letI := preservesSmallestLimitsOfPreservesLimits (coyoneda.obj (op U))
+    letI := preservesSmallestLimits_of_preservesLimits (coyoneda.obj (op U))
     apply isLimitOfPreserves
     apply Classical.choice (h _ S.arrows _)
     simpa
@@ -693,7 +694,7 @@ theorem isSheaf_comp_of_isSheaf (s : A ⥤ B) [PreservesLimitsOfSize.{v₁, max 
 theorem isSheaf_iff_isSheaf_comp (s : A ⥤ B) [HasLimitsOfSize.{v₁, max v₁ u₁} A]
     [PreservesLimitsOfSize.{v₁, max v₁ u₁} s] [s.ReflectsIsomorphisms] :
     IsSheaf J P ↔ IsSheaf J (P ⋙ s) := by
-  letI : ReflectsLimitsOfSize s := reflectsLimitsOfReflectsIsomorphisms
+  letI : ReflectsLimitsOfSize s := reflectsLimits_of_reflectsIsomorphisms
   exact ⟨isSheaf_comp_of_isSheaf J P s, isSheaf_of_isSheaf_comp J P s⟩
 
 /--
@@ -708,7 +709,7 @@ hold.
 theorem isSheaf_iff_isSheaf_forget (s : A' ⥤ Type max v₁ u₁) [HasLimits A'] [PreservesLimits s]
     [s.ReflectsIsomorphisms] : IsSheaf J P' ↔ IsSheaf J (P' ⋙ s) := by
   have : HasLimitsOfSize.{v₁, max v₁ u₁} A' := hasLimitsOfSizeShrink.{_, _, u₁, 0} A'
-  have : PreservesLimitsOfSize.{v₁, max v₁ u₁} s := preservesLimitsOfSizeShrink.{_, 0, _, u₁} s
+  have : PreservesLimitsOfSize.{v₁, max v₁ u₁} s := preservesLimitsOfSize_shrink.{_, 0, _, u₁} s
   apply isSheaf_iff_isSheaf_comp
 
 end Concrete

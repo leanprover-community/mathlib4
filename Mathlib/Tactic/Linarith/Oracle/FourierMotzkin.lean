@@ -3,8 +3,9 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
+import Mathlib.Std.Data.HashMap
+import Batteries.Lean.HashMap
 import Mathlib.Tactic.Linarith.Datatypes
-import Batteries.Data.HashMap.WF
 
 /-!
 # The Fourier-Motzkin elimination procedure
@@ -46,7 +47,7 @@ they are not shared with other components of `linarith`.
 The atomic source of a comparison is an assumption, indexed by a natural number.
 Two comparisons can be added to produce a new comparison,
 and one comparison can be scaled by a natural number to produce a new comparison.
- -/
+-/
 inductive CompSource : Type
   | assump : Nat → CompSource
   | add : CompSource → CompSource → CompSource
@@ -60,9 +61,9 @@ to the number of copies of that assumption that appear in the history of `cs`.
 For example, suppose `cs` is produced by scaling assumption 2 by 5,
 and adding to that the sum of assumptions 1 and 2.
 `cs.flatten` maps `1 ↦ 1, 2 ↦ 6`.
- -/
-def CompSource.flatten : CompSource → HashMap Nat Nat
-  | (CompSource.assump n) => HashMap.empty.insert n 1
+-/
+def CompSource.flatten : CompSource → Std.HashMap Nat Nat
+  | (CompSource.assump n) => Std.HashMap.empty.insert n 1
   | (CompSource.add c1 c2) =>
       (CompSource.flatten c1).mergeWith (fun _ b b' => b + b') (CompSource.flatten c2)
   | (CompSource.scale n c) => (CompSource.flatten c).mapVal (fun _ v => v * n)
@@ -258,7 +259,7 @@ The linarith monad extends an exceptional monad with a `LinarithData` state.
 An exception produces a contradictory `PComp`.
 -/
 abbrev LinarithM : Type → Type :=
-  StateT LinarithData (ExceptT PComp Id)
+  StateT LinarithData (ExceptT PComp Lean.Core.CoreM)
 
 /-- Returns the current max variable. -/
 def getMaxVar : LinarithM ℕ :=
@@ -272,7 +273,7 @@ def getPCompSet : LinarithM PCompSet :=
 def validate : LinarithM Unit := do
   match (← getPCompSet).toList.find? (fun p : PComp => p.isContr) with
   | none => return ()
-  | some c => throw c
+  | some c => throwThe _ c
 
 /--
 Updates the current state with a new max variable and comparisons,
@@ -304,9 +305,12 @@ from the `linarith` state.
 -/
 def elimVarM (a : ℕ) : LinarithM Unit := do
   let vs ← getMaxVar
-  if (a ≤ vs) then (do
+  if (a ≤ vs) then
+    Lean.Core.checkSystem decl_name%.toString
     let ⟨pos, neg, notPresent⟩ := splitSetByVarSign a (← getPCompSet)
-    update (vs - 1) (pos.foldl (fun s p => s.union (elimWithSet a p neg)) notPresent))
+    update (vs - 1) (← pos.foldlM (fun s p => do
+      Lean.Core.checkSystem decl_name%.toString
+      pure (s.union (elimWithSet a p neg))) notPresent)
   else
     pure ()
 
@@ -323,13 +327,16 @@ def elimAllVarsM : LinarithM Unit := do
 those hypotheses. It produces an initial state for the elimination monad.
 -/
 def mkLinarithData (hyps : List Comp) (maxVar : ℕ) : LinarithData :=
-  ⟨maxVar, .ofList (hyps.enum.map fun ⟨n, cmp⟩ => PComp.assump cmp n) _⟩
+  ⟨maxVar, .ofList (hyps.mapIdx fun n cmp => PComp.assump cmp n) _⟩
 
 /-- An oracle that uses Fourier-Motzkin elimination. -/
 def CertificateOracle.fourierMotzkin : CertificateOracle where
-  produceCertificate hyps maxVar := match ExceptT.run
-      (StateT.run (do validate; elimAllVarsM : LinarithM Unit) (mkLinarithData hyps maxVar)) with
-  | (Except.ok _) => failure
-  | (Except.error contr) => return contr.src.flatten
+  produceCertificate hyps maxVar :=  do
+    let linarithData := mkLinarithData hyps maxVar
+    let result ←
+      (ExceptT.run (StateT.run (do validate; elimAllVarsM : LinarithM Unit) linarithData) :)
+    match result with
+    | (Except.ok _) => failure
+    | (Except.error contr) => return contr.src.flatten
 
 end Linarith

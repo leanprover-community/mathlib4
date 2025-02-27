@@ -60,13 +60,13 @@ open CStarModule CStarRing
 
 namespace WithCStarModule
 
-variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℂ A] [PartialOrder A]
+variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A]
 
 /-! ## A C⋆-algebra as a C⋆-module over itself -/
 
 section Self
 
-variable [CStarRing A] [StarOrderedRing A] [SMulCommClass ℂ A A]
+variable [StarOrderedRing A]
 
 /-- Reinterpret a C⋆-algebra `A` as a `CStarModule` over itself. -/
 instance : CStarModule A A where
@@ -78,7 +78,7 @@ instance : CStarModule A A where
   inner_smul_right_complex := mul_smul_comm ..
   star_inner x y := by simp
   norm_eq_sqrt_norm_inner_self {x} := by
-    rw [← sq_eq_sq (norm_nonneg _) (by positivity)]
+    rw [← sq_eq_sq₀ (norm_nonneg _) (by positivity)]
     simpa [sq] using Eq.symm <| CStarRing.norm_star_mul_self
 
 open scoped InnerProductSpace in
@@ -112,7 +112,7 @@ lemma prod_norm_le_norm_add (x : C⋆ᵐᵒᵈ (E × F)) : ‖x‖ ≤ ‖x.1‖
     _ ≤ ‖x.1‖ ^ 2 + 2 * ‖x.1‖ * ‖x.2‖ + ‖x.2‖ ^ 2 := by gcongr; positivity
     _ = (‖x.1‖ + ‖x.2‖) ^ 2 := by ring
 
-variable [StarModule ℂ A] [StarOrderedRing A]
+variable [StarOrderedRing A]
 
 noncomputable instance : CStarModule A (C⋆ᵐᵒᵈ (E × F)) where
   inner x y := inner x.1 y.1 + inner x.2 y.2
@@ -132,8 +132,6 @@ noncomputable instance : CStarModule A (C⋆ᵐᵒᵈ (E × F)) where
   norm_eq_sqrt_norm_inner_self {x} := by with_reducible_and_instances rfl
 
 lemma prod_inner (x y : C⋆ᵐᵒᵈ (E × F)) : ⟪x, y⟫_A = ⟪x.1, y.1⟫_A + ⟪x.2, y.2⟫_A := rfl
-
-variable [CStarRing A] [SMulCommClass ℂ A A] [IsScalarTower ℂ A A] [CompleteSpace A]
 
 lemma max_le_prod_norm (x : C⋆ᵐᵒᵈ (E × F)) : max ‖x.1‖ ‖x.2‖ ≤ ‖x‖ := by
   rw [prod_norm]
@@ -214,7 +212,7 @@ lemma pi_norm_le_sum_norm (x : C⋆ᵐᵒᵈ (Π i, E i)) : ‖x‖ ≤ ∑ i, �
     _ = ∑ i, ‖x i‖ ^ 2 := by simp only [norm_sq_eq]
     _ ≤ (∑ i, ‖x i‖) ^ 2 := sum_sq_le_sq_sum_of_nonneg (fun _ _ ↦ norm_nonneg _)
 
-variable [StarModule ℂ A] [StarOrderedRing A]
+variable [StarOrderedRing A]
 
 open Finset in
 noncomputable instance : CStarModule A (C⋆ᵐᵒᵈ (Π i, E i)) where
@@ -247,13 +245,11 @@ lemma inner_single_right [DecidableEq ι] (x : C⋆ᵐᵒᵈ (Π i, E i)) {i : �
   rw [Finset.sum_eq_single i]
   all_goals simp_all
 
-variable [CStarRing A] [SMulCommClass ℂ A A] [IsScalarTower ℂ A A] [CompleteSpace A]
-
 @[simp]
 lemma norm_single [DecidableEq ι] (i : ι) (y : E i) :
     ‖equiv _ |>.symm <| Pi.single i y‖ = ‖y‖ := by
   let _ : NormedAddCommGroup (C⋆ᵐᵒᵈ (Π i, E i)) := normedAddCommGroup
-  rw [← sq_eq_sq (by positivity) (by positivity)]
+  rw [← sq_eq_sq₀ (by positivity) (by positivity)]
   simp [norm_sq_eq]
 
 lemma norm_apply_le_norm (x : C⋆ᵐᵒᵈ (Π i, E i)) (i : ι) : ‖x i‖ ≤ ‖x‖ := by
@@ -299,6 +295,13 @@ private lemma isBounded_pi_iff_aux (s : Set (C⋆ᵐᵒᵈ (Π i, E i))) :
   isBounded_iff_of_bilipschitz antilipschitzWith_card_equiv_pi_aux lipschitzWith_one_equiv_pi_aux s
 
 end Aux
+
+noncomputable instance : PseudoMetricSpace (C⋆ᵐᵒᵈ (Π i, E i)) :=
+  .ofSeminormedAddCommGroupCoreReplaceAll
+    normedSpaceCore.toCore uniformity_pi_eq_aux isBounded_pi_iff_aux
+
+noncomputable instance : SeminormedAddCommGroup (C⋆ᵐᵒᵈ (Π i, E i)) :=
+  .ofCoreReplaceAll normedSpaceCore.toCore uniformity_pi_eq_aux isBounded_pi_iff_aux
 
 noncomputable instance : NormedAddCommGroup (C⋆ᵐᵒᵈ (Π i, E i)) :=
   .ofCoreReplaceAll normedSpaceCore uniformity_pi_eq_aux isBounded_pi_iff_aux

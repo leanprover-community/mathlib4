@@ -13,11 +13,13 @@ import Mathlib.Tactic.ApplyFun
 
 This file establishes the bijection between the 2-cells
 
+```
          L₁                  R₁
       C --→ D             C ←-- D
     G ↓  ↗  ↓ H         G ↓  ↘  ↓ H
       E --→ F             E ←-- F
          L₂                  R₂
+```
 
 where `L₁ ⊣ R₁` and `L₂ ⊣ R₂`. The corresponding natural transformations are called mates.
 
@@ -94,13 +96,10 @@ def mateEquiv : (G ⋙ L₂ ⟶ L₁ ⋙ H) ≃ (R₁ ⋙ G ⟶ H ⋙ R₂) wher
     rw [← assoc, ← Functor.comp_map, assoc, ← β.naturality, ← assoc, Functor.comp_map,
       ← G.map_comp, right_triangle_components, map_id, id_comp]
 
-@[deprecated (since := "2024-07-09")] alias transferNatTrans := mateEquiv
-
 /-- A component of a transposed version of the mates correspondence. -/
 theorem mateEquiv_counit (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (d : D) :
     L₂.map ((mateEquiv adj₁ adj₂ α).app _) ≫ adj₂.counit.app _ =
-      α.app _ ≫ H.map (adj₁.counit.app d) := by
-  erw [Functor.map_comp]; simp
+      α.app _ ≫ H.map (adj₁.counit.app d) := by simp
 
 /-- A component of a transposed version of the inverse mates correspondence. -/
 theorem mateEquiv_counit_symm (α : R₁ ⋙ G ⟶ H ⋙ R₂) (d : D) :
@@ -206,9 +205,8 @@ theorem mateEquiv_hcomp
       rightAdjointSquare.hcomp (mateEquiv adj₁ adj₂ α) (mateEquiv adj₃ adj₄ β) := by
   unfold leftAdjointSquare.hcomp rightAdjointSquare.hcomp mateEquiv Adjunction.comp
   ext c
-  simp only [comp_obj, mk'_unit, whiskerLeft_comp, whiskerLeft_twice, mk'_counit, whiskerRight_comp,
-    assoc, Equiv.coe_fn_mk, comp_app, whiskerLeft_app, whiskerRight_app, id_obj, associator_inv_app,
-    Functor.comp_map, associator_hom_app, map_id, id_comp, whiskerRight_twice]
+  dsimp
+  simp only [comp_id, map_comp, id_comp, assoc]
   slice_rhs 2 4 =>
     rw [← R₂.map_comp, ← R₂.map_comp, ← assoc, ← unit_naturality (adj₄)]
   rw [R₂.map_comp, L₄.map_comp, R₄.map_comp, R₂.map_comp]
@@ -247,7 +245,7 @@ theorem leftAdjointSquare.comp_vhcomp
     leftAdjointSquare.comp α β γ δ =
       leftAdjointSquare.vcomp (leftAdjointSquare.hcomp α β) (leftAdjointSquare.hcomp γ δ) := rfl
 
-/-- Horizontal and vertical composition of squares commutes.-/
+/-- Horizontal and vertical composition of squares commutes. -/
 theorem leftAdjointSquare.comp_hvcomp
     (α : G₁ ⋙ L₃ ⟶ L₁ ⋙ H₁) (β : H₁ ⋙ L₄ ⟶ L₂ ⋙ K₁)
     (γ : G₂ ⋙ L₅ ⟶ L₃ ⋙ H₂) (δ : H₂ ⋙ L₆ ⟶ L₄ ⋙ K₂) :
@@ -276,7 +274,7 @@ theorem rightAdjointSquare.comp_vhcomp
     rightAdjointSquare.comp α β γ δ =
     rightAdjointSquare.vcomp (rightAdjointSquare.hcomp α β) (rightAdjointSquare.hcomp γ δ) := rfl
 
-/-- Horizontal and vertical composition of squares commutes.-/
+/-- Horizontal and vertical composition of squares commutes. -/
 theorem rightAdjointSquare.comp_hvcomp
     (α : R₁ ⋙ G₁ ⟶ H₁ ⋙ R₃) (β : R₂ ⋙ H₁ ⟶ K₁ ⋙ R₄)
     (γ : R₃ ⋙ G₂ ⟶ H₂ ⋙ R₅) (δ : R₄ ⋙ H₂ ⟶ K₂ ⋙ R₆) :
@@ -328,13 +326,12 @@ Furthermore, this bijection preserves (and reflects) isomorphisms, i.e. a transf
 iff its image under the bijection is an iso, see eg `CategoryTheory.conjugateIsoEquiv`.
 This is in contrast to the general case `mateEquiv` which does not in general have this property.
 -/
+@[simps!]
 def conjugateEquiv : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
   calc
     (L₂ ⟶ L₁) ≃ _ := (Iso.homCongr L₂.leftUnitor L₁.rightUnitor).symm
     _ ≃ _ := mateEquiv adj₁ adj₂
     _ ≃ (R₁ ⟶ R₂) := R₁.rightUnitor.homCongr R₂.leftUnitor
-
-@[deprecated (since := "2024-07-09")] alias transferNatTransSelf := conjugateEquiv
 
 /-- A component of a transposed form of the conjugation definition. -/
 theorem conjugateEquiv_counit (α : L₂ ⟶ L₁) (d : D) :
@@ -401,6 +398,7 @@ variable [Category.{v₁} C] [Category.{v₂} D]
 variable {L₁ L₂ L₃ : C ⥤ D} {R₁ R₂ R₃ : D ⥤ C}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
+@[simp]
 theorem conjugateEquiv_comp (α : L₂ ⟶ L₁) (β : L₃ ⟶ L₂) :
     conjugateEquiv adj₁ adj₂ α ≫ conjugateEquiv adj₂ adj₃ β =
       conjugateEquiv adj₁ adj₃ (β ≫ α) := by
@@ -414,6 +412,7 @@ theorem conjugateEquiv_comp (α : L₂ ⟶ L₁) (β : L₃ ⟶ L₂) :
   simp only [comp_id, id_comp, assoc, map_comp] at vcompd ⊢
   rw [vcompd]
 
+@[simp]
 theorem conjugateEquiv_symm_comp (α : R₁ ⟶ R₂) (β : R₂ ⟶ R₃) :
     (conjugateEquiv adj₂ adj₃).symm β ≫ (conjugateEquiv adj₁ adj₂).symm α =
       (conjugateEquiv adj₁ adj₃).symm (α ≫ β) := by
@@ -473,9 +472,16 @@ theorem conjugateEquiv_symm_of_iso (α : R₁ ⟶ R₂)
   infer_instance
 
 /-- Thus conjugation defines an equivalence between natural isomorphisms. -/
-noncomputable def conjugateIsoEquiv : (L₂ ≅ L₁) ≃ (R₁ ≅ R₂) where
-  toFun α := asIso (conjugateEquiv adj₁ adj₂ α.hom)
-  invFun β := asIso ((conjugateEquiv adj₁ adj₂).symm β.hom)
+@[simps]
+def conjugateIsoEquiv : (L₂ ≅ L₁) ≃ (R₁ ≅ R₂) where
+  toFun α := {
+    hom := conjugateEquiv adj₁ adj₂ α.hom
+    inv := conjugateEquiv adj₂ adj₁ α.inv
+  }
+  invFun β := {
+    hom := (conjugateEquiv adj₁ adj₂).symm β.hom
+    inv := (conjugateEquiv adj₂ adj₁).symm β.inv
+  }
   left_inv := by aesop_cat
   right_inv := by aesop_cat
 

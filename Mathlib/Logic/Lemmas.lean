@@ -24,7 +24,7 @@ theorem iff_right_comm {a b c : Prop} : ((a ↔ b) ↔ c) ↔ ((a ↔ c) ↔ b) 
 
 protected alias ⟨HEq.eq, Eq.heq⟩ := heq_iff_eq
 
-variable {α : Sort*} {p q r : Prop} [Decidable p] [Decidable q] {a b c : α}
+variable {α : Sort*} {p q : Prop} [Decidable p] [Decidable q] {a b c : α}
 
 theorem dite_dite_distrib_left {a : p → α} {b : ¬p → q → α} {c : ¬p → ¬q → α} :
     (dite p a fun hp ↦ dite q (b hp) (c hp)) =

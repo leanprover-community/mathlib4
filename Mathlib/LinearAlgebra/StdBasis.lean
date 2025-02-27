@@ -3,10 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Matrix.Basis
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.LinearAlgebra.Finsupp.SumProd
+import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+import Mathlib.LinearAlgebra.Pi
 
 /-!
 # The standard basis
@@ -204,7 +204,6 @@ theorem basis_repr_single [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (
   ext ⟨j', i'⟩
   by_cases hj : j = j'
   · subst hj
-    -- Porting note: needed to add more lemmas
     simp only [Pi.basis, LinearEquiv.trans_apply, Basis.repr_self, Pi.single_eq_same,
       LinearEquiv.piCongrRight, Finsupp.sigmaFinsuppLEquivPiFinsupp_symm_apply,
       Basis.repr_symm_apply, LinearEquiv.coe_mk, ne_eq, Sigma.mk.inj_iff, heq_eq_eq, true_and]
@@ -286,37 +285,3 @@ lemma piEquiv_apply_apply (ι R M : Type*) [Fintype ι] [CommSemiring R]
   rw [← LinearMap.range_eq_top, range_piEquiv]
 
 end Module
-
-namespace Matrix
-
-variable (R : Type*) (m n : Type*) [Fintype m] [Finite n] [Semiring R]
-
-/-- The standard basis of `Matrix m n R`. -/
-noncomputable def stdBasis : Basis (m × n) R (Matrix m n R) :=
-  Basis.reindex (Pi.basis fun _ : m => Pi.basisFun R n) (Equiv.sigmaEquivProd _ _)
-
-variable {n m}
-
-theorem stdBasis_eq_stdBasisMatrix (i : m) (j : n) [DecidableEq m] [DecidableEq n] :
-    stdBasis R m n (i, j) = stdBasisMatrix i j (1 : R) := by
-  -- Porting note: `simp` fails to apply `Pi.basis_apply`
-  ext a b
-  by_cases hi : i = a <;> by_cases hj : j = b
-  · simp only [stdBasis, hi, hj, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
-    StdBasisMatrix.apply_same]
-    erw [Pi.basis_apply]
-    simp
-  · simp only [stdBasis, hi, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
-      hj, and_false, not_false_iff, StdBasisMatrix.apply_of_ne]
-    erw [Pi.basis_apply]
-    simp [hj]
-  · simp only [stdBasis, hj, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
-      hi, and_true, not_false_iff, StdBasisMatrix.apply_of_ne]
-    erw [Pi.basis_apply]
-    simp [hi, hj, Ne.symm hi, Pi.single_eq_of_ne]
-  · simp only [stdBasis, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
-      hi, hj, and_self, not_false_iff, StdBasisMatrix.apply_of_ne]
-    erw [Pi.basis_apply]
-    simp [hi, hj, Ne.symm hj, Ne.symm hi, Pi.single_eq_of_ne]
-
-end Matrix

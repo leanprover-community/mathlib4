@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 
@@ -29,12 +29,13 @@ instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) AddCommGrp.{u}
     -- `AddMonoidHom.toIntLinearMap` doesn't work here because `A` and `B` are not
     -- definitionally equal to the canonical `AddCommGroup.toIntModule` module
     -- instances it expects.
-    f := ⟨@LinearMap.mk _ _ _ _ _ _ _ _ _ A.isModule B.isModule
-        { toFun := f,
-          map_add' := AddMonoidHom.map_add (show A.carrier →+ B.carrier from f) }
-        (fun n x => by
-          convert AddMonoidHom.map_zsmul (show A.carrier →+ B.carrier from f) x n <;>
-            ext <;> apply int_smul_eq_zsmul), rfl⟩
+    f := ⟨@ModuleCat.ofHom _ _ _ _ _ A.isModule _ B.isModule <|
+            @LinearMap.mk _ _ _ _ _ _ _ _ _ A.isModule B.isModule
+            { toFun := f,
+              map_add' := AddMonoidHom.map_add f.hom }
+            (fun n x => by
+              convert AddMonoidHom.map_zsmul f.hom x n <;>
+                ext <;> apply int_smul_eq_zsmul), rfl⟩
 
 /-- The forgetful functor from `ℤ` modules to `AddCommGrp` is essentially surjective. -/
 instance forget₂_addCommGrp_essSurj : (forget₂ (ModuleCat ℤ) AddCommGrp.{u}).EssSurj where

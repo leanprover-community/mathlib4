@@ -25,7 +25,8 @@ namespace Polynomial
 variable (R : Type*) [Semiring R]
 variable {M}
 
--- Porting note: changed `(· • ·) m` to `HSMul.hSMul m`
+-- In this statement, we use `HSMul.hSMul m` as LHS instead of `(m • ·)`
+-- to avoid a spurious lambda-expression that complicates rewriting with this lemma.
 theorem smul_eq_map [MulSemiringAction M R] (m : M) :
     HSMul.hSMul m = map (MulSemiringAction.toRingHom M R m) := by
   suffices DistribMulAction.toAddMonoidHom R[X] m =
@@ -95,7 +96,7 @@ theorem prodXSubSMul.eval (x : R) : (prodXSubSMul G R x).eval x = 0 :=
 
 theorem prodXSubSMul.smul (x : R) (g : G) : g • prodXSubSMul G R x = prodXSubSMul G R x :=
   letI := Classical.decEq R
-  Finset.smul_prod.trans <|
+  Finset.smul_prod'.trans <|
     Fintype.prod_bijective _ (MulAction.bijective g) _ _ fun g' ↦ by
       rw [ofQuotientStabilizer_smul, smul_sub, Polynomial.smul_X, Polynomial.smul_C]
 
@@ -126,11 +127,10 @@ protected noncomputable def polynomial (g : P →+*[M] Q) : P[X] →+*[M] Q[X] w
         Polynomial.map_mul, map_C, Polynomial.map_pow,
         map_X, coe_fn_coe, g.map_smul, Polynomial.map_mul, map_C, Polynomial.map_pow, map_X,
         smul_mul', smul_C, smul_pow', smul_X, coe_fn_coe]
-  -- Porting note: added `.toRingHom`
-  map_zero' := Polynomial.map_zero g.toRingHom
-  map_add' p q := Polynomial.map_add g.toRingHom
-  map_one' := Polynomial.map_one g.toRingHom
-  map_mul' p q := Polynomial.map_mul g.toRingHom
+  map_zero' := Polynomial.map_zero (g : P →+* Q)
+  map_add' _ _ := Polynomial.map_add (g : P →+* Q)
+  map_one' := Polynomial.map_one (g : P →+* Q)
+  map_mul' _ _ := Polynomial.map_mul (g : P →+* Q)
 
 @[simp]
 theorem coe_polynomial (g : P →+*[M] Q) : (g.polynomial : P[X] → Q[X]) = map g := rfl

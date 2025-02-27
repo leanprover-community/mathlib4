@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Analysis.Convex.Between
-import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Normed.Group.AddTorsor
+import Mathlib.Analysis.Normed.Module.Convex
 
 /-!
 # Sides of affine subspaces
@@ -333,12 +333,8 @@ theorem _root_.Wbtw.wOppSide₁₃ {s : AffineSubspace R P} {x y z : P} (h : Wbt
   rcases ht0.lt_or_eq with (ht0' | rfl); swap
   · rw [lineMap_apply_zero]; simp
   refine Or.inr (Or.inr ⟨1 - t, t, sub_pos.2 ht1', ht0', ?_⟩)
-  -- TODO: after lean4#2336 "simp made no progress feature"
-  -- had to add `_` to several lemmas here. Not sure why!
-  simp_rw [lineMap_apply _, vadd_vsub_assoc _, vsub_vadd_eq_vsub_sub _,
-    ← neg_vsub_eq_vsub_rev z x, vsub_self _, zero_sub, ← neg_one_smul R (z -ᵥ x),
-    ← add_smul, smul_neg, ← neg_smul, smul_smul]
-  ring_nf
+  rw [lineMap_apply, vadd_vsub_assoc, vsub_vadd_eq_vsub_sub, ← neg_vsub_eq_vsub_rev z, vsub_self]
+  module
 
 theorem _root_.Wbtw.wOppSide₃₁ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z)
     (hy : y ∈ s) : s.WOppSide z x :=
@@ -349,7 +345,6 @@ end StrictOrderedCommRing
 section LinearOrderedField
 
 variable [LinearOrderedField R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 @[simp]
 theorem wOppSide_self_iff {s : AffineSubspace R P} {x : P} : s.WOppSide x x ↔ x ∈ s := by
@@ -411,9 +406,9 @@ theorem wOppSide_iff_exists_left {s : AffineSubspace R P} {x y p₁ : P} (h : p�
       exact SameRay.zero_right _
     · refine Or.inr ⟨(-r₁ / r₂) • (p₁ -ᵥ p₁') +ᵥ p₂', s.smul_vsub_vadd_mem _ h hp₁' hp₂',
         Or.inr (Or.inr ⟨r₁, r₂, hr₁, hr₂, ?_⟩)⟩
-      rw [vadd_vsub_assoc, smul_add, ← hr, smul_smul, neg_div, mul_neg,
-        mul_div_cancel₀ _ hr₂.ne.symm, neg_smul, neg_add_eq_sub, ← smul_sub,
-        vsub_sub_vsub_cancel_right]
+      rw [vadd_vsub_assoc, ← vsub_sub_vsub_cancel_right x p₁ p₁']
+      linear_combination (norm := match_scalars <;> field_simp) hr
+      ring
   · rintro (h' | ⟨h₁, h₂, h₃⟩)
     · exact wOppSide_of_left_mem y h'
     · exact ⟨p₁, h, h₁, h₂, h₃⟩
@@ -584,16 +579,14 @@ theorem wOppSide_iff_exists_wbtw {s : AffineSubspace R P} {x y : P} :
   · refine ⟨lineMap x y (r₂ / (r₁ + r₂)), ?_, ?_⟩
     · have : (r₂ / (r₁ + r₂)) • (y -ᵥ p₂ + (p₂ -ᵥ p₁) - (x -ᵥ p₁)) + (x -ᵥ p₁) =
           (r₂ / (r₁ + r₂)) • (p₂ -ᵥ p₁) := by
-        rw [add_comm (y -ᵥ p₂), smul_sub, smul_add, add_sub_assoc, add_assoc, add_right_eq_self,
-          div_eq_inv_mul, ← neg_vsub_eq_vsub_rev, smul_neg, ← smul_smul, ← h, smul_smul, ← neg_smul,
-          ← sub_smul, ← div_eq_inv_mul, ← div_eq_inv_mul, ← neg_div, ← sub_div, sub_eq_add_neg,
-          ← neg_add, neg_div, div_self (Left.add_pos hr₁ hr₂).ne.symm, neg_one_smul, neg_add_cancel]
+        rw [← neg_vsub_eq_vsub_rev p₂ y]
+        linear_combination (norm := match_scalars <;> field_simp) (r₁ + r₂)⁻¹ • h
       rw [lineMap_apply, ← vsub_vadd x p₁, ← vsub_vadd y p₂, vsub_vadd_eq_vsub_sub, vadd_vsub_assoc,
         ← vadd_assoc, vadd_eq_add, this]
       exact s.smul_vsub_vadd_mem (r₂ / (r₁ + r₂)) hp₂ hp₁ hp₁
     · exact Set.mem_image_of_mem _
-        ⟨div_nonneg hr₂.le (Left.add_pos hr₁ hr₂).le,
-          div_le_one_of_le (le_add_of_nonneg_left hr₁.le) (Left.add_pos hr₁ hr₂).le⟩
+        ⟨by positivity,
+          div_le_one_of_le₀ (le_add_of_nonneg_left hr₁.le) (Left.add_pos hr₁ hr₂).le⟩
 
 theorem SOppSide.exists_sbtw {s : AffineSubspace R P} {x y : P} (h : s.SOppSide x y) :
     ∃ p ∈ s, Sbtw R x p y := by

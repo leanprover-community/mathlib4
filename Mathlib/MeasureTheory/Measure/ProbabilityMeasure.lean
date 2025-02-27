@@ -74,8 +74,8 @@ convergence in distribution, convergence in law, weak convergence of measures, p
 
 noncomputable section
 
-open MeasureTheory Set Filter BoundedContinuousFunction
-open scoped Topology ENNReal NNReal BoundedContinuousFunction
+open Set Filter BoundedContinuousFunction Topology
+open scoped ENNReal NNReal
 
 namespace MeasureTheory
 
@@ -106,8 +106,6 @@ variable {Ω : Type*} [MeasurableSpace Ω]
 instance [Inhabited Ω] : Inhabited (ProbabilityMeasure Ω) :=
   ⟨⟨Measure.dirac default, Measure.dirac.isProbabilityMeasure⟩⟩
 
--- Porting note: as with other subtype synonyms (e.g., `ℝ≥0`), we need a new function for the
--- coercion instead of relying on `Subtype.val`.
 /-- Coercion from `MeasureTheory.ProbabilityMeasure Ω` to `MeasureTheory.Measure Ω`. -/
 @[coe]
 def toMeasure : ProbabilityMeasure Ω → Measure Ω := Subtype.val
@@ -252,16 +250,19 @@ theorem continuous_testAgainstNN_eval (f : Ω →ᵇ ℝ≥0) :
   (FiniteMeasure.continuous_testAgainstNN_eval f).comp toFiniteMeasure_continuous
 
 -- The canonical mapping from probability measures to finite measures is an embedding.
-theorem toFiniteMeasure_embedding (Ω : Type*) [MeasurableSpace Ω] [TopologicalSpace Ω]
+theorem toFiniteMeasure_isEmbedding (Ω : Type*) [MeasurableSpace Ω] [TopologicalSpace Ω]
     [OpensMeasurableSpace Ω] :
-    Embedding (toFiniteMeasure : ProbabilityMeasure Ω → FiniteMeasure Ω) :=
-  { induced := rfl
-    inj := fun _μ _ν h ↦ Subtype.eq <| congr_arg FiniteMeasure.toMeasure h }
+    IsEmbedding (toFiniteMeasure : ProbabilityMeasure Ω → FiniteMeasure Ω) where
+  eq_induced := rfl
+  injective _μ _ν h := Subtype.eq <| congr_arg FiniteMeasure.toMeasure h
+
+@[deprecated (since := "2024-10-26")]
+alias toFiniteMeasure_embedding := toFiniteMeasure_isEmbedding
 
 theorem tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds {δ : Type*} (F : Filter δ)
     {μs : δ → ProbabilityMeasure Ω} {μ₀ : ProbabilityMeasure Ω} :
     Tendsto μs F (𝓝 μ₀) ↔ Tendsto (toFiniteMeasure ∘ μs) F (𝓝 μ₀.toFiniteMeasure) :=
-  Embedding.tendsto_nhds_iff (toFiniteMeasure_embedding Ω)
+  (toFiniteMeasure_isEmbedding Ω).tendsto_nhds_iff
 
 /-- A characterization of weak convergence of probability measures by the condition that the
 integrals of every continuous bounded nonnegative function converge to the integral of the function
@@ -286,6 +287,14 @@ theorem tendsto_iff_forall_integral_tendsto {γ : Type*} {F : Filter γ}
   rw [FiniteMeasure.tendsto_iff_forall_integral_tendsto]
   rfl
 
+lemma continuous_integral_boundedContinuousFunction
+    {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] (f : α →ᵇ ℝ) :
+    Continuous fun μ : ProbabilityMeasure α ↦ ∫ x, f x ∂μ := by
+  rw [continuous_iff_continuousAt]
+  intro μ
+  exact continuousAt_of_tendsto_nhds
+    (ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mp tendsto_id f)
+
 end convergence_in_distribution -- section
 
 section Hausdorff
@@ -296,8 +305,7 @@ variable (Ω)
 /-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
 continuous functions (`HasOuterApproxClosed`), the topology of convergence in distribution of Borel
 probability measures is Hausdorff (`T2Space`). -/
-instance t2Space : T2Space (ProbabilityMeasure Ω) :=
-  Embedding.t2Space (toFiniteMeasure_embedding Ω)
+instance t2Space : T2Space (ProbabilityMeasure Ω) := (toFiniteMeasure_isEmbedding Ω).t2Space
 
 end Hausdorff -- section
 
@@ -330,10 +338,8 @@ def normalize : ProbabilityMeasure Ω :=
     { val := ↑(μ.mass⁻¹ • μ)
       property := by
         refine ⟨?_⟩
-        -- Porting note: paying the price that this isn't `simp` lemma now.
-        rw [FiniteMeasure.toMeasure_smul]
-        simp only [Measure.coe_smul, Pi.smul_apply, Measure.nnreal_smul_coe_apply, ne_eq,
-          mass_zero_iff, ENNReal.coe_inv zero, ennreal_mass]
+        simp only [toMeasure_smul, Measure.coe_smul, Pi.smul_apply, Measure.nnreal_smul_coe_apply,
+          ENNReal.coe_inv zero, ennreal_mass]
         rw [← Ne, ← ENNReal.coe_ne_zero, ennreal_mass] at zero
         exact ENNReal.inv_mul_cancel zero μ.prop.measure_univ_lt_top.ne }
 

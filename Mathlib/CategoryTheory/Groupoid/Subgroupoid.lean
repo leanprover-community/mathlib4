@@ -3,12 +3,11 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli, Junyan Xu
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.CategoryTheory.Groupoid.VertexGroup
 import Mathlib.CategoryTheory.Groupoid.Basic
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.Data.Set.Lattice
-import Mathlib.Order.GaloisConnection
 
 /-!
 # Subgroupoid
@@ -194,7 +193,7 @@ instance : Bot (Subgroupoid C) :=
 instance : Inhabited (Subgroupoid C) :=
   ⟨⊤⟩
 
-instance : Inf (Subgroupoid C) :=
+instance : Min (Subgroupoid C) :=
   ⟨fun S T =>
     { arrows := fun c d => S.arrows c d ∩ T.arrows c d
       inv := fun hp ↦ ⟨S.inv hp.1, T.inv hp.2⟩
@@ -221,13 +220,13 @@ instance : CompleteLattice (Subgroupoid C) :=
       refine fun s => ⟨fun S Ss F => ?_, fun T Tl F fT => ?_⟩ <;> simp only [mem_sInf]
       exacts [fun hp => hp S Ss, fun S Ss => Tl Ss fT]) with
     bot := ⊥
-    bot_le := fun S => empty_subset _
+    bot_le := fun _ => empty_subset _
     top := ⊤
-    le_top := fun S => subset_univ _
+    le_top := fun _ => subset_univ _
     inf := (· ⊓ ·)
-    le_inf := fun R S T RS RT _ pR => ⟨RS pR, RT pR⟩
-    inf_le_left := fun R S _ => And.left
-    inf_le_right := fun R S _ => And.right }
+    le_inf := fun _ _ _ RS RT _ pR => ⟨RS pR, RT pR⟩
+    inf_le_left := fun _ _ _ => And.left
+    inf_le_right := fun _ _ _ => And.right }
 
 theorem le_objs {S T : Subgroupoid C} (h : S ≤ T) : S.objs ⊆ T.objs := fun s ⟨γ, hγ⟩ =>
   ⟨γ, @h ⟨s, s, γ⟩ hγ⟩
@@ -272,7 +271,7 @@ theorem mem_discrete_iff {c d : C} (f : c ⟶ d) :
     f ∈ discrete.arrows c d ↔ ∃ h : c = d, f = eqToHom h :=
   ⟨by rintro ⟨⟩; exact ⟨rfl, rfl⟩, by rintro ⟨rfl, rfl⟩; constructor⟩
 
-/-- A subgroupoid is wide if its carrier set is all of `C`-/
+/-- A subgroupoid is wide if its carrier set is all of `C`. -/
 structure IsWide : Prop where
   wide : ∀ c, 𝟙 c ∈ S.arrows c c
 
@@ -371,7 +370,7 @@ variable {D : Type*} [Groupoid D] (φ : C ⥤ D)
 
 /-- A functor between groupoid defines a map of subgroupoids in the reverse direction
 by taking preimages.
- -/
+-/
 def comap (S : Subgroupoid D) : Subgroupoid C where
   arrows c d := {f : c ⟶ d | φ.map f ∈ S.arrows (φ.obj c) (φ.obj d)}
   inv hp := by rw [mem_setOf, inv_eq_inv, φ.map_inv, ← inv_eq_inv]; exact S.inv hp

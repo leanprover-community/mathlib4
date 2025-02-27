@@ -82,7 +82,7 @@ theorem elim_injective (γ : Type*) (fγ : (Σa : α, β a → γ) → γ)
   | ⟨a₁, f₁⟩, ⟨a₂, f₂⟩, h => by
     obtain ⟨rfl, h⟩ := Sigma.mk.inj_iff.mp (fγ_injective h)
     congr with x
-    exact elim_injective γ fγ fγ_injective (congr_fun (eq_of_heq h) x : _)
+    exact elim_injective γ fγ fγ_injective (congr_fun (eq_of_heq h) x :)
 
 instance [hα : IsEmpty α] : IsEmpty (WType β) :=
   ⟨fun w => WType.recOn w (IsEmpty.elim hα)⟩
@@ -99,11 +99,11 @@ theorem infinite_of_nonempty_of_isEmpty (a b : α) [ha : Nonempty (β a)] [he : 
         ?_
     intro n m h
     induction' n with n ih generalizing m
-    · cases' m with m <;> simp_all
-    · cases' m with m
+    · rcases m with - | m <;> simp_all
+    · rcases m with - | m
       · simp_all
       · refine congr_arg Nat.succ (ih ?_)
-        simp_all [Function.funext_iff]⟩
+        simp_all [funext_iff]⟩
 
 variable [∀ a : α, Fintype (β a)]
 
@@ -133,16 +133,16 @@ private abbrev WType' {α : Type*} (β : α → Type*) [∀ a : α, Fintype (β 
 variable [∀ a : α, Encodable (β a)]
 
 private def encodable_zero : Encodable (WType' β 0) :=
-  let f : WType' β 0 → Empty := fun ⟨x, h⟩ => False.elim <| not_lt_of_ge h (WType.depth_pos _)
+  let f : WType' β 0 → Empty := fun ⟨_, h⟩ => False.elim <| not_lt_of_ge h (WType.depth_pos _)
   let finv : Empty → WType' β 0 := by
     intro x
     cases x
-  have : ∀ x, finv (f x) = x := fun ⟨x, h⟩ => False.elim <| not_lt_of_ge h (WType.depth_pos _)
+  have : ∀ x, finv (f x) = x := fun ⟨_, h⟩ => False.elim <| not_lt_of_ge h (WType.depth_pos _)
   Encodable.ofLeftInverse f finv this
 
 private def f (n : ℕ) : WType' β (n + 1) → Σa : α, β a → WType' β n
   | ⟨t, h⟩ => by
-    cases' t with a f
+    obtain ⟨a, f⟩ := t
     have h₀ : ∀ i : β a, WType.depth (f i) ≤ n := fun i =>
       Nat.le_of_lt_succ (lt_of_lt_of_le (WType.depth_lt_depth_mk a f i) h)
     exact ⟨a, fun i : β a => ⟨f i, h₀ i⟩⟩
@@ -155,7 +155,7 @@ private def finv (n : ℕ) : (Σa : α, β a → WType' β n) → WType' β (n +
 
 variable [Encodable α]
 
-private def encodable_succ (n : Nat) (h : Encodable (WType' β n)) : Encodable (WType' β (n + 1)) :=
+private def encodable_succ (n : Nat) (_ : Encodable (WType' β n)) : Encodable (WType' β (n + 1)) :=
   Encodable.ofLeftInverse (f n) (finv n)
     (by
       rintro ⟨⟨_, _⟩, _⟩

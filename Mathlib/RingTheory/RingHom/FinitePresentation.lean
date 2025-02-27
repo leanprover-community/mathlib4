@@ -58,7 +58,7 @@ theorem finitePresentation_holdsForLocalizationAway :
   introv R _
   suffices Algebra.FinitePresentation R S by
     rw [RingHom.FinitePresentation]
-    convert this; ext;
+    convert this; ext
     rw [Algebra.smul_def]; rfl
   exact IsLocalization.Away.finitePresentation r
 
@@ -96,7 +96,7 @@ theorem finitePresentation_ofLocalizationSpanTarget :
   classical
   letI := f.toAlgebra
   replace H : ∀ r : s, Algebra.FinitePresentation R (Localization.Away (r : S)) := by
-    intro r; simp_rw [RingHom.FinitePresentation] at H;
+    intro r; simp_rw [RingHom.FinitePresentation] at H
     convert H r; ext; simp_rw [Algebra.smul_def]; rfl
   /-
   We already know that `S` is of finite type over `R`, so we have a surjection
@@ -151,7 +151,7 @@ theorem finitePresentation_ofLocalizationSpanTarget :
     have : ∃ (a : S) (hb : a ∈ s), (Ideal.Quotient.mk I) (g' ⟨a, hb⟩) = g.val := by
       obtain ⟨g, hg⟩ := g
       convert hg
-      simp [t]
+      simp [A, f', t]
     obtain ⟨r, hr, hrr⟩ := this
     simp only [f']
     rw [← hrr, Ideal.Quotient.liftₐ_apply, Ideal.Quotient.lift_mk]
@@ -162,17 +162,22 @@ theorem finitePresentation_ofLocalizationSpanTarget :
 
 /-- Being finitely-presented is a local property of rings. -/
 theorem finitePresentation_isLocal : PropertyIsLocal @FinitePresentation :=
-  ⟨finitePresentation_localizationPreserves,
-    finitePresentation_ofLocalizationSpanTarget, finitePresentation_stableUnderComposition,
-    finitePresentation_holdsForLocalizationAway⟩
+  ⟨finitePresentation_localizationPreserves.away,
+    finitePresentation_ofLocalizationSpanTarget,
+    finitePresentation_ofLocalizationSpanTarget.ofLocalizationSpan
+      (finitePresentation_stableUnderComposition.stableUnderCompositionWithLocalizationAway
+        finitePresentation_holdsForLocalizationAway).left,
+    (finitePresentation_stableUnderComposition.stableUnderCompositionWithLocalizationAway
+      finitePresentation_holdsForLocalizationAway).right⟩
 
 /-- Being finitely-presented respects isomorphisms. -/
 theorem finitePresentation_respectsIso : RingHom.RespectsIso @RingHom.FinitePresentation :=
   RingHom.finitePresentation_isLocal.respectsIso
 
 /-- Being finitely-presented is stable under base change. -/
-theorem finitePresentation_stableUnderBaseChange : StableUnderBaseChange @FinitePresentation := by
-  apply StableUnderBaseChange.mk
+theorem finitePresentation_isStableUnderBaseChange :
+    IsStableUnderBaseChange @FinitePresentation := by
+  apply IsStableUnderBaseChange.mk
   · exact finitePresentation_respectsIso
   · introv h
     replace h : Algebra.FinitePresentation R T := by

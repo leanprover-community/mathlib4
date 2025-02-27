@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Johannes Hölzl, Reid Barton, Sean Leather
+Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather
 -/
 import Mathlib.Init
 import Batteries.Tactic.Lint.Misc
@@ -12,9 +12,9 @@ import Batteries.Tactic.Lint.Misc
 `Bundled c` provides a uniform structure for bundling a type equipped with a type class.
 
 We provide `Category` instances for these in
-`Mathlib/CategoryTheory/ConcreteCategory/UnbundledHom.lean`
+`Mathlib/CategoryTheory/HasForget/UnbundledHom.lean`
 (for categories with unbundled homs, e.g. topological spaces)
-and in `Mathlib/CategoryTheory/ConcreteCategory/BundledHom.lean`
+and in `Mathlib/CategoryTheory/HasForget/BundledHom.lean`
 (for categories with bundled homs, e.g. monoids).
 -/
 
@@ -22,7 +22,7 @@ universe u v
 
 namespace CategoryTheory
 
-variable {c d : Type u → Type v} {α : Type u}
+variable {c d : Type u → Type v}
 
 /-- `Bundled` is a type bundled with a type class instance for that type. Only
 the type class is exposed as a parameter. -/

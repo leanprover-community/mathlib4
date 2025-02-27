@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Floris van Doorn
 -/
 import Mathlib.Algebra.Group.Indicator
-import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Order.Filter.AtTopBot.Basic
 import Mathlib.Order.Filter.Subsingleton
 /-!
 # Functions that are eventually constant along a filter
@@ -155,7 +155,7 @@ end EventuallyConst
 
 lemma eventuallyConst_atTop [SemilatticeSup α] [Nonempty α] :
     EventuallyConst f atTop ↔ (∃ i, ∀ j, i ≤ j → f j = f i) :=
-  (atTop_basis.eventuallyConst_iff' fun i _ ↦ left_mem_Ici).trans <| by
+  (atTop_basis.eventuallyConst_iff' fun _ _ ↦ left_mem_Ici).trans <| by
     simp only [true_and, mem_Ici]
 
 lemma eventuallyConst_atTop_nat {f : ℕ → α} :

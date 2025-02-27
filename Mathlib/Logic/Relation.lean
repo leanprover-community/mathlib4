@@ -120,18 +120,28 @@ def Comp (r : α → β → Prop) (p : β → γ → Prop) (a : α) (c : γ) : P
 @[inherit_doc]
 local infixr:80 " ∘r " => Relation.Comp
 
-theorem comp_eq : r ∘r (· = ·) = r :=
-  funext fun _ ↦ funext fun b ↦ propext <|
-  Iff.intro (fun ⟨_, h, Eq⟩ ↦ Eq ▸ h) fun h ↦ ⟨b, h, rfl⟩
+@[simp]
+theorem comp_eq_fun (f : γ → β) : r ∘r (· = f ·) = (r · <| f ·) := by
+  ext x y
+  simp [Comp]
 
-theorem eq_comp : (· = ·) ∘r r = r :=
-  funext fun a ↦ funext fun _ ↦ propext <|
-  Iff.intro (fun ⟨_, Eq, h⟩ ↦ Eq.symm ▸ h) fun h ↦ ⟨a, rfl, h⟩
+@[simp]
+theorem comp_eq : r ∘r (· = ·) = r := comp_eq_fun ..
 
+@[simp]
+theorem fun_eq_comp (f : γ → α) : (f · = ·) ∘r r = (r <| f ·) := by
+  ext x y
+  simp [Comp]
+
+@[simp]
+theorem eq_comp : (· = ·) ∘r r = r := fun_eq_comp ..
+
+@[simp]
 theorem iff_comp {r : Prop → α → Prop} : (· ↔ ·) ∘r r = r := by
   have : (· ↔ ·) = (· = ·) := by funext a b; exact iff_eq_eq
   rw [this, eq_comp]
 
+@[simp]
 theorem comp_iff {r : α → Prop → Prop} : r ∘r (· ↔ ·) = r := by
   have : (· ↔ ·) = (· = ·) := by funext a b; exact iff_eq_eq
   rw [this, comp_eq]
@@ -213,7 +223,7 @@ instance [Decidable (∃ a b, r a b ∧ f a = c ∧ g b = d)] : Decidable (Relat
 
 end Map
 
-variable {r : α → α → Prop} {a b c d : α}
+variable {r : α → α → Prop} {a b c : α}
 
 /-- `ReflTransGen r`: reflexive transitive closure of `r` -/
 @[mk_iff ReflTransGen.cases_tail_iff]
@@ -245,7 +255,7 @@ namespace ReflGen
 
 theorem to_reflTransGen : ∀ {a b}, ReflGen r a b → ReflTransGen r a b
   | a, _, refl => by rfl
-  | a, b, single h => ReflTransGen.tail ReflTransGen.refl h
+  | _, _, single h => ReflTransGen.tail ReflTransGen.refl h
 
 theorem mono {p : α → α → Prop} (hp : ∀ a b, r a b → p a b) : ∀ {a b}, ReflGen r a b → ReflGen p a b
   | a, _, ReflGen.refl => by rfl
@@ -688,15 +698,6 @@ theorem Quot.eqvGen_sound (H : EqvGen r a b) : Quot.mk r a = Quot.mk r b :=
     (fun _ _ _ IH ↦ Eq.symm IH)
     (fun _ _ _ _ _ IH₁ IH₂ ↦ Eq.trans IH₁ IH₂)
     H
-
-instance Quotient.decidableEq {α : Sort*} {s : Setoid α} [d : ∀ a b : α, Decidable (a ≈ b)] :
-    DecidableEq (Quotient s) :=
-  fun q₁ q₂ : Quotient s ↦
-    Quotient.recOnSubsingleton₂ q₁ q₂
-      (fun a₁ a₂ ↦
-        match (d a₁ a₂) with
-        | (isTrue h₁)  => isTrue (Quotient.sound h₁)
-        | (isFalse h₂) => isFalse (fun h ↦ absurd (Quotient.exact h) h₂))
 
 theorem Equivalence.eqvGen_iff (h : Equivalence r) : EqvGen r a b ↔ r a b :=
   Iff.intro

@@ -3,8 +3,8 @@ Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 import Mathlib.MeasureTheory.Integral.ExpDecay
-import Mathlib.Analysis.MellinTransform
 
 /-!
 # The Gamma function
@@ -24,15 +24,12 @@ set it to be `0` by convention.)
 * `Complex.Gamma_eq_integral`: for `0 < re s`, `Γ(s)` agrees with Euler's integral.
 * `Complex.Gamma_add_one`: for all `s : ℂ` with `s ≠ 0`, we have `Γ (s + 1) = s Γ(s)`.
 * `Complex.Gamma_nat_eq_factorial`: for all `n : ℕ` we have `Γ (n + 1) = n!`.
-* `Complex.differentiableAt_Gamma`: `Γ` is complex-differentiable at all `s : ℂ` with
-  `s ∉ {-n : n ∈ ℕ}`.
 
 ## Gamma function: main statements (real case)
 
 * `Real.Gamma`: the `Γ` function (of a real variable).
 * Real counterparts of all the properties of the complex Gamma function listed above:
-  `Real.Gamma_eq_integral`, `Real.Gamma_add_one`, `Real.Gamma_nat_eq_factorial`,
-  `Real.differentiableAt_Gamma`.
+  `Real.Gamma_eq_integral`, `Real.Gamma_add_one`, `Real.Gamma_nat_eq_factorial`.
 
 ## Tags
 
@@ -92,7 +89,7 @@ theorem GammaIntegral_convergent {s : ℂ} (hs : 0 < s.re) :
   constructor
   · refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_Ioi
     apply (continuous_ofReal.comp continuous_neg.rexp).continuousOn.mul
-    apply ContinuousAt.continuousOn
+    apply continuousOn_of_forall_continuousAt
     intro x hx
     have : ContinuousAt (fun x : ℂ => x ^ (s - 1)) ↑x :=
       continuousAt_cpow_const <| ofReal_mem_slitPlane.2 hx
@@ -101,8 +98,8 @@ theorem GammaIntegral_convergent {s : ℂ} (hs : 0 < s.re) :
     refine HasFiniteIntegral.congr (Real.GammaIntegral_convergent hs).2 ?_
     apply (ae_restrict_iff' measurableSet_Ioi).mpr
     filter_upwards with x hx
-    rw [norm_eq_abs, map_mul, abs_of_nonneg <| le_of_lt <| exp_pos <| -x,
-      abs_cpow_eq_rpow_re_of_pos hx _]
+    rw [norm_mul, Complex.norm_of_nonneg <| le_of_lt <| exp_pos <| -x,
+      norm_cpow_eq_rpow_re_of_pos hx _]
     simp
 
 /-- Euler's integral for the `Γ` function (of a complex variable `s`), defined as
@@ -115,7 +112,7 @@ def GammaIntegral (s : ℂ) : ℂ :=
 
 theorem GammaIntegral_conj (s : ℂ) : GammaIntegral (conj s) = conj (GammaIntegral s) := by
   rw [GammaIntegral, GammaIntegral, ← integral_conj]
-  refine setIntegral_congr measurableSet_Ioi fun x hx => ?_
+  refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
   dsimp only
   rw [RingHom.map_mul, conj_ofReal, cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)),
     cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)), ← exp_conj, RingHom.map_mul, ←
@@ -123,10 +120,10 @@ theorem GammaIntegral_conj (s : ℂ) : GammaIntegral (conj s) = conj (GammaInteg
 
 theorem GammaIntegral_ofReal (s : ℝ) :
     GammaIntegral ↑s = ↑(∫ x : ℝ in Ioi 0, Real.exp (-x) * x ^ (s - 1)) := by
-  have : ∀ r : ℝ, Complex.ofReal' r = @RCLike.ofReal ℂ _ r := fun r => rfl
+  have : ∀ r : ℝ, Complex.ofReal r = @RCLike.ofReal ℂ _ r := fun r => rfl
   rw [GammaIntegral]
   conv_rhs => rw [this, ← _root_.integral_ofReal]
-  refine setIntegral_congr measurableSet_Ioi ?_
+  refine setIntegral_congr_fun measurableSet_Ioi ?_
   intro x hx; dsimp only
   conv_rhs => rw [← this]
   rw [ofReal_mul, ofReal_cpow (mem_Ioi.mp hx).le]
@@ -173,17 +170,17 @@ private theorem Gamma_integrand_deriv_integrable_B {s : ℂ} (hs : 0 < s.re) {Y 
   constructor
   · refine (continuousOn_const.mul ?_).aestronglyMeasurable measurableSet_Ioc
     apply (continuous_ofReal.comp continuous_neg.rexp).continuousOn.mul
-    apply ContinuousAt.continuousOn
+    apply continuousOn_of_forall_continuousAt
     intro x hx
     refine (?_ : ContinuousAt (fun x : ℂ => x ^ (s - 1)) _).comp continuous_ofReal.continuousAt
     exact continuousAt_cpow_const <| ofReal_mem_slitPlane.2 hx.1
   rw [← hasFiniteIntegral_norm_iff]
-  simp_rw [norm_eq_abs, map_mul]
+  simp_rw [norm_mul]
   refine (((Real.GammaIntegral_convergent hs).mono_set
     Ioc_subset_Ioi_self).hasFiniteIntegral.congr ?_).const_mul _
   rw [EventuallyEq, ae_restrict_iff']
   · filter_upwards with x hx
-    rw [abs_of_nonneg (exp_pos _).le, abs_cpow_eq_rpow_re_of_pos hx.1]
+    rw [Complex.norm_of_nonneg (exp_pos _).le, norm_cpow_eq_rpow_re_of_pos hx.1]
     simp
   · exact measurableSet_Ioc
 
@@ -239,8 +236,8 @@ theorem GammaIntegral_add_one {s : ℂ} (hs : 0 < s.re) :
       (fun e : ℝ => ‖-(e : ℂ) ^ s * (-e).exp‖) =ᶠ[atTop] fun e : ℝ => e ^ s.re * (-1 * e).exp := by
     refine eventuallyEq_of_mem (Ioi_mem_atTop 0) ?_
     intro x hx; dsimp only
-    rw [norm_eq_abs, map_mul, abs.map_neg, abs_cpow_eq_rpow_re_of_pos hx,
-      abs_of_nonneg (exp_pos (-x)).le, neg_mul, one_mul]
+    rw [norm_mul, norm_neg, norm_cpow_eq_rpow_re_of_pos hx,
+      Complex.norm_of_nonneg (exp_pos (-x)).le, neg_mul, one_mul]
   exact (tendsto_congr' this).mpr (tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero _ _ zero_lt_one)
 
 end GammaRecurrence
@@ -270,7 +267,7 @@ theorem GammaAux_recurrence1 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
 
 theorem GammaAux_recurrence2 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
     GammaAux n s = GammaAux (n + 1) s := by
-  cases' n with n n
+  rcases n with - | n
   · simp only [CharP.cast_eq_zero, Left.neg_neg_iff] at h1
     dsimp only [GammaAux]
     rw [GammaIntegral_add_one h1, mul_div_cancel_left₀]
@@ -333,7 +330,7 @@ theorem Gamma_nat_eq_factorial (n : ℕ) : Gamma (n + 1) = n ! := by
 
 @[simp]
 theorem Gamma_ofNat_eq_factorial (n : ℕ) [(n + 1).AtLeastTwo] :
-    Gamma (no_index (OfNat.ofNat (n + 1) : ℂ)) = n ! :=
+    Gamma (ofNat(n + 1) : ℂ) = n ! :=
   mod_cast Gamma_nat_eq_factorial (n : ℕ)
 
 /-- At `0` the Gamma function is undefined; by convention we assign it the value `0`. -/
@@ -377,7 +374,7 @@ lemma integral_cpow_mul_exp_neg_mul_Ioi {a : ℂ} {r : ℝ} (ha : 0 < a.re) (hr 
     rw [← cpow_add _ _ (one_div_ne_zero <| ofReal_ne_zero.mpr hr.ne'), add_sub_cancel]
   calc
     _ = ∫ (t : ℝ) in Ioi 0, (1 / r) ^ (a - 1) * (r * t) ^ (a - 1) * exp (-(r * t)) := by
-      refine MeasureTheory.setIntegral_congr measurableSet_Ioi (fun x hx ↦ ?_)
+      refine MeasureTheory.setIntegral_congr_fun measurableSet_Ioi (fun x hx ↦ ?_)
       rw [mem_Ioi] at hx
       rw [mul_cpow_ofReal_nonneg hr.le hx.le, ← mul_assoc, one_div, ← ofReal_inv,
         ← mul_cpow_ofReal_nonneg (inv_pos.mpr hr).le hr.le, ← ofReal_mul r⁻¹,
@@ -395,79 +392,6 @@ lemma integral_cpow_mul_exp_neg_mul_Ioi {a : ℂ} {r : ℝ} (ha : 0 < a.re) (hr 
 
 end GammaDef
 
-/-! Now check that the `Γ` function is differentiable, wherever this makes sense. -/
-
-
-section GammaHasDeriv
-
-/-- Rewrite the Gamma integral as an example of a Mellin transform. -/
-theorem GammaIntegral_eq_mellin : GammaIntegral = mellin fun x => ↑(Real.exp (-x)) :=
-  funext fun s => by simp only [mellin, GammaIntegral, smul_eq_mul, mul_comm]
-
-/-- The derivative of the `Γ` integral, at any `s ∈ ℂ` with `1 < re s`, is given by the Mellin
-transform of `log t * exp (-t)`. -/
-theorem hasDerivAt_GammaIntegral {s : ℂ} (hs : 0 < s.re) :
-    HasDerivAt GammaIntegral (∫ t : ℝ in Ioi 0, t ^ (s - 1) * (Real.log t * Real.exp (-t))) s := by
-  rw [GammaIntegral_eq_mellin]
-  convert (mellin_hasDerivAt_of_isBigO_rpow (E := ℂ) _ _ (lt_add_one _) _ hs).2
-  · refine (Continuous.continuousOn ?_).locallyIntegrableOn measurableSet_Ioi
-    exact continuous_ofReal.comp (Real.continuous_exp.comp continuous_neg)
-  · rw [← isBigO_norm_left]
-    simp_rw [Complex.norm_eq_abs, abs_ofReal, ← Real.norm_eq_abs, isBigO_norm_left]
-    simpa only [neg_one_mul] using (isLittleO_exp_neg_mul_rpow_atTop zero_lt_one _).isBigO
-  · simp_rw [neg_zero, rpow_zero]
-    refine isBigO_const_of_tendsto (?_ : Tendsto _ _ (𝓝 (1 : ℂ))) one_ne_zero
-    rw [(by simp : (1 : ℂ) = Real.exp (-0))]
-    exact (continuous_ofReal.comp (Real.continuous_exp.comp continuous_neg)).continuousWithinAt
-
-theorem differentiableAt_GammaAux (s : ℂ) (n : ℕ) (h1 : 1 - s.re < n) (h2 : ∀ m : ℕ, s ≠ -m) :
-    DifferentiableAt ℂ (GammaAux n) s := by
-  induction' n with n hn generalizing s
-  · refine (hasDerivAt_GammaIntegral ?_).differentiableAt
-    rw [Nat.cast_zero] at h1; linarith
-  · dsimp only [GammaAux]
-    specialize hn (s + 1)
-    have a : 1 - (s + 1).re < ↑n := by
-      rw [Nat.cast_succ] at h1; rw [Complex.add_re, Complex.one_re]; linarith
-    have b : ∀ m : ℕ, s + 1 ≠ -m := by
-      intro m; have := h2 (1 + m)
-      contrapose! this
-      rw [← eq_sub_iff_add_eq] at this
-      simpa using this
-    refine DifferentiableAt.div (DifferentiableAt.comp _ (hn a b) ?_) ?_ ?_
-    · rw [differentiableAt_add_const_iff (1 : ℂ)]; exact differentiableAt_id
-    · exact differentiableAt_id
-    · simpa using h2 0
-
-theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : DifferentiableAt ℂ Gamma s := by
-  let n := ⌊1 - s.re⌋₊ + 1
-  have hn : 1 - s.re < n := mod_cast Nat.lt_floor_add_one (1 - s.re)
-  apply (differentiableAt_GammaAux s n hn hs).congr_of_eventuallyEq
-  let S := {t : ℂ | 1 - t.re < n}
-  have : S ∈ 𝓝 s := by
-    rw [mem_nhds_iff]; use S
-    refine ⟨Subset.rfl, ?_, hn⟩
-    have : S = re ⁻¹' Ioi (1 - n : ℝ) := by
-      ext; rw [preimage, Ioi, mem_setOf_eq, mem_setOf_eq, mem_setOf_eq]; exact sub_lt_comm
-    rw [this]
-    exact Continuous.isOpen_preimage continuous_re _ isOpen_Ioi
-  apply eventuallyEq_of_mem this
-  intro t ht; rw [mem_setOf_eq] at ht
-  apply Gamma_eq_GammaAux; linarith
-
-end GammaHasDeriv
-
-/-- At `s = 0`, the Gamma function has a simple pole with residue 1. -/
-theorem tendsto_self_mul_Gamma_nhds_zero : Tendsto (fun z : ℂ => z * Gamma z) (𝓝[≠] 0) (𝓝 1) := by
-  rw [show 𝓝 (1 : ℂ) = 𝓝 (Gamma (0 + 1)) by simp only [zero_add, Complex.Gamma_one]]
-  convert (Tendsto.mono_left _ nhdsWithin_le_nhds).congr'
-    (eventuallyEq_of_mem self_mem_nhdsWithin Complex.Gamma_add_one) using 1
-  refine ContinuousAt.comp (g := Gamma) ?_ (continuous_id.add continuous_const).continuousAt
-  refine (Complex.differentiableAt_Gamma _ fun m => ?_).continuousAt
-  rw [zero_add, ← ofReal_natCast, ← ofReal_neg, ← ofReal_one, Ne, ofReal_inj]
-  refine (lt_of_le_of_lt ?_ zero_lt_one).ne'
-  exact neg_nonpos.mpr (Nat.cast_nonneg _)
-
 end Complex
 
 namespace Real
@@ -484,10 +408,10 @@ theorem Gamma_eq_integral {s : ℝ} (hs : 0 < s) :
   simp_rw [← Complex.ofReal_one, ← Complex.ofReal_sub]
   suffices ∫ x : ℝ in Ioi 0, ↑(exp (-x)) * (x : ℂ) ^ ((s - 1 : ℝ) : ℂ) =
       ∫ x : ℝ in Ioi 0, ((exp (-x) * x ^ (s - 1) : ℝ) : ℂ) by
-    have cc : ∀ r : ℝ, Complex.ofReal' r = @RCLike.ofReal ℂ _ r := fun r => rfl
+    have cc : ∀ r : ℝ, Complex.ofReal r = @RCLike.ofReal ℂ _ r := fun r => rfl
     conv_lhs => rw [this]; enter [1, 2, x]; rw [cc]
     rw [_root_.integral_ofReal, ← cc, Complex.ofReal_re]
-  refine setIntegral_congr measurableSet_Ioi fun x hx => ?_
+  refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
   push_cast
   rw [Complex.ofReal_cpow (le_of_lt hx)]
   push_cast; rfl
@@ -510,7 +434,7 @@ theorem Gamma_nat_eq_factorial (n : ℕ) : Gamma (n + 1) = n ! := by
 
 @[simp]
 theorem Gamma_ofNat_eq_factorial (n : ℕ) [(n + 1).AtLeastTwo] :
-    Gamma (no_index (OfNat.ofNat (n + 1) : ℝ)) = n ! :=
+    Gamma (ofNat(n + 1) : ℝ) = n ! :=
   mod_cast Gamma_nat_eq_factorial (n : ℕ)
 
 /-- At `0` the Gamma function is undefined; by convention we assign it the value `0`. -/
@@ -551,10 +475,9 @@ lemma integral_rpow_mul_exp_neg_mul_Ioi {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
     ∫ t : ℝ in Ioi 0, t ^ (a - 1) * exp (-(r * t)) = (1 / r) ^ a * Gamma a := by
   rw [← ofReal_inj, ofReal_mul, ← Gamma_ofReal, ofReal_cpow (by positivity), ofReal_div]
   convert integral_cpow_mul_exp_neg_mul_Ioi (by rwa [ofReal_re] : 0 < (a : ℂ).re) hr
-  refine _root_.integral_ofReal.symm.trans <| setIntegral_congr measurableSet_Ioi (fun t ht ↦ ?_)
+  refine integral_ofReal.symm.trans <| setIntegral_congr_fun measurableSet_Ioi (fun t ht ↦ ?_)
   norm_cast
-  rw [← ofReal_cpow (le_of_lt ht), RCLike.ofReal_mul]
-  rfl
+  simp_rw [← ofReal_cpow ht.le, RCLike.ofReal_mul, coe_algebraMap]
 
 open Lean.Meta Qq Mathlib.Meta.Positivity in
 /-- The `positivity` extension which identifies expressions of the form `Gamma a`. -/
@@ -606,10 +529,5 @@ theorem Gamma_ne_zero {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
 
 theorem Gamma_eq_zero_iff (s : ℝ) : Gamma s = 0 ↔ ∃ m : ℕ, s = -m :=
   ⟨by contrapose!; exact Gamma_ne_zero, by rintro ⟨m, rfl⟩; exact Gamma_neg_nat_eq_zero m⟩
-
-theorem differentiableAt_Gamma {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : DifferentiableAt ℝ Gamma s := by
-  refine (Complex.differentiableAt_Gamma _ ?_).hasDerivAt.real_of_complex.differentiableAt
-  simp_rw [← Complex.ofReal_natCast, ← Complex.ofReal_neg, Ne, Complex.ofReal_inj]
-  exact hs
 
 end Real

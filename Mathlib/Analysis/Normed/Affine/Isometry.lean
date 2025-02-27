@@ -46,7 +46,7 @@ variable (𝕜 : Type*) {V V₁ V₁' V₂ V₃ V₄ : Type*} {P₁ P₁' : Type
   [SeminormedAddCommGroup V₄] [NormedSpace 𝕜 V₄] [PseudoMetricSpace P₄] [NormedAddTorsor V₄ P₄]
 
 /-- A `𝕜`-affine isometric embedding of one normed add-torsor over a normed `𝕜`-space into
-another. -/
+another, denoted as `f : P →ᵃⁱ[𝕜] P₂`. -/
 structure AffineIsometry extends P →ᵃ[𝕜] P₂ where
   norm_map : ∀ x : V, ‖linear x‖ = ‖x‖
 
@@ -69,9 +69,9 @@ theorem linear_eq_linearIsometry : f.linear = f.linearIsometry.toLinearMap := by
   ext
   rfl
 
-instance : FunLike (P →ᵃⁱ[𝕜] P₂) P P₂ :=
-  { coe := fun f => f.toFun,
-    coe_injective' := fun f g => by cases f; cases g; simp }
+instance : FunLike (P →ᵃⁱ[𝕜] P₂) P P₂ where
+  coe f := f.toFun
+  coe_injective' f g := by cases f; cases g; simp
 
 @[simp]
 theorem coe_toAffineMap : ⇑f.toAffineMap = f := by
@@ -180,7 +180,7 @@ theorem comp_continuous_iff {α : Type*} [TopologicalSpace α] {g : α → P} :
 def id : P →ᵃⁱ[𝕜] P :=
   ⟨AffineMap.id 𝕜 P, fun _ => rfl⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(id : P →ᵃⁱ[𝕜] P) = _root_.id :=
   rfl
 
@@ -260,14 +260,15 @@ end AffineSubspace
 
 variable (𝕜 P P₂)
 
-/-- An affine isometric equivalence between two normed vector spaces. -/
+/-- An affine isometric equivalence between two normed vector spaces,
+denoted `f : P ≃ᵃⁱ[𝕜] P₂`. -/
 structure AffineIsometryEquiv extends P ≃ᵃ[𝕜] P₂ where
   norm_map : ∀ x, ‖linear x‖ = ‖x‖
 
 variable {𝕜 P P₂}
 
 -- `≃ᵃᵢ` would be more consistent with the linear isometry equiv notation, but it is uglier
-notation:25 P " ≃ᵃⁱ[" 𝕜:25 "] " P₂:0 => AffineIsometryEquiv 𝕜 P P₂
+@[inherit_doc] notation:25 P " ≃ᵃⁱ[" 𝕜:25 "] " P₂:0 => AffineIsometryEquiv 𝕜 P P₂
 
 namespace AffineIsometryEquiv
 
@@ -282,16 +283,16 @@ theorem linear_eq_linear_isometry : e.linear = e.linearIsometryEquiv.toLinearEqu
   ext
   rfl
 
-instance : EquivLike (P ≃ᵃⁱ[𝕜] P₂) P P₂ :=
-  { coe := fun f => f.toFun
-    inv := fun f => f.invFun
-    left_inv := fun f => f.left_inv
-    right_inv := fun f => f.right_inv,
-    coe_injective' := fun f g h _ => by
-      cases f
-      cases g
-      congr
-      simpa [DFunLike.coe_injective.eq_iff] using h }
+instance : EquivLike (P ≃ᵃⁱ[𝕜] P₂) P P₂ where
+  coe f := f.toFun
+  inv f := f.invFun
+  left_inv f := f.left_inv
+  right_inv f := f.right_inv
+  coe_injective' f g h _ := by
+    cases f
+    cases g
+    congr
+    simpa [DFunLike.coe_injective.eq_iff] using h
 
 @[simp]
 theorem coe_mk (e : P ≃ᵃ[𝕜] P₂) (he : ∀ x, ‖e.linear x‖ = ‖x‖) : ⇑(mk e he) = e :=
@@ -449,6 +450,9 @@ theorem symm_apply_apply (x : P) : e.symm (e x) = x :=
 @[simp]
 theorem symm_symm : e.symm.symm = e := rfl
 
+theorem symm_bijective : Bijective (AffineIsometryEquiv.symm : (P₂ ≃ᵃⁱ[𝕜] P) → _) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp]
 theorem toAffineEquiv_symm : e.toAffineEquiv.symm = e.symm.toAffineEquiv :=
   rfl
@@ -541,7 +545,6 @@ protected theorem injective : Injective e :=
 protected theorem surjective : Surjective e :=
   e.1.surjective
 
--- @[simp] Porting note (#10618): simp can prove this
 theorem map_eq_iff {x y : P} : e x = e y ↔ x = y :=
   e.injective.eq_iff
 
@@ -573,6 +576,42 @@ theorem comp_continuous_iff {f : α → P} : Continuous (e ∘ f) ↔ Continuous
   e.isometry.comp_continuous_iff
 
 section Constructions
+
+variable (s₁ s₂ : AffineSubspace 𝕜 P) [Nonempty s₁] [Nonempty s₂]
+
+/-- The identity equivalence of an affine subspace equal to `⊤` to the whole space. -/
+def ofTop (h : s₁ = ⊤) : s₁ ≃ᵃⁱ[𝕜] P :=
+  { (AffineEquiv.ofEq s₁ ⊤ h).trans (AffineSubspace.topEquiv 𝕜 V P) with norm_map := fun _ ↦ rfl }
+
+variable {s₁}
+
+@[simp]
+lemma ofTop_apply (h : s₁ = ⊤) (x : s₁) : (ofTop s₁ h x : P) = x :=
+  rfl
+
+@[simp]
+lemma ofTop_symm_apply_coe (h : s₁ = ⊤) (x : P) : (ofTop s₁ h).symm x = x :=
+  rfl
+
+variable (s₁)
+
+/-- `AffineEquiv.ofEq` as an `AffineIsometryEquiv`. -/
+def ofEq (h : s₁ = s₂) : s₁ ≃ᵃⁱ[𝕜] s₂ :=
+  { AffineEquiv.ofEq s₁ s₂ h with norm_map := fun _ ↦ rfl }
+
+variable {s₁ s₂}
+
+@[simp]
+lemma coe_ofEq_apply (h : s₁ = s₂) (x : s₁) : (ofEq s₁ s₂ h x : P) = x :=
+  rfl
+
+@[simp]
+lemma ofEq_symm (h : s₁ = s₂) : (ofEq s₁ s₂ h).symm = ofEq s₂ s₁ h.symm :=
+  rfl
+
+@[simp]
+lemma ofEq_rfl : ofEq s₁ s₁ rfl = refl 𝕜 s₁ :=
+  rfl
 
 variable (𝕜)
 
@@ -651,7 +690,7 @@ def pointReflection (x : P) : P ≃ᵃⁱ[𝕜] P :=
 
 variable {𝕜}
 
-theorem pointReflection_apply (x y : P) : (pointReflection 𝕜 x) y = x -ᵥ y +ᵥ x :=
+theorem pointReflection_apply (x y : P) : (pointReflection 𝕜 x) y = (x -ᵥ y) +ᵥ x :=
   rfl
 
 @[simp]

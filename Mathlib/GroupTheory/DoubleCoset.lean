@@ -19,10 +19,8 @@ this is the usual left or right quotient of a group by a subgroup.
 * `rel`: The double coset relation defined by two subgroups `H K` of `G`.
 * `Doset.quotient`: The quotient of `G` by the double coset relation, i.e, `H \ G / K`.
 -/
--- Porting note: removed import
--- import Mathlib.Tactic.Group
 
-variable {G : Type*} [Group G] {α : Type*} [Mul α] (J : Subgroup G) (g : G)
+variable {G : Type*} [Group G] {α : Type*} [Mul α]
 
 open MulOpposite
 open scoped Pointwise
@@ -72,38 +70,36 @@ def Quotient (H K : Set G) : Type _ :=
   _root_.Quotient (setoid H K)
 
 theorem rel_iff {H K : Subgroup G} {x y : G} :
-    (setoid ↑H ↑K).Rel x y ↔ ∃ a ∈ H, ∃ b ∈ K, y = a * x * b :=
+    setoid ↑H ↑K x y ↔ ∃ a ∈ H, ∃ b ∈ K, y = a * x * b :=
   Iff.trans
     ⟨fun (hxy : doset x H K = doset y H K) => hxy ▸ mem_doset_self H K y,
       fun hxy => (doset_eq_of_mem hxy).symm⟩ mem_doset
 
 theorem bot_rel_eq_leftRel (H : Subgroup G) :
-    (setoid ↑(⊥ : Subgroup G) ↑H).Rel = (QuotientGroup.leftRel H).Rel := by
+    ⇑(setoid ↑(⊥ : Subgroup G) ↑H) = ⇑(QuotientGroup.leftRel H) := by
   ext a b
-  rw [rel_iff, Setoid.Rel, QuotientGroup.leftRel_apply]
+  rw [rel_iff, QuotientGroup.leftRel_apply]
   constructor
   · rintro ⟨a, rfl : a = 1, b, hb, rfl⟩
-    change a⁻¹ * (1 * a * b) ∈ H
     rwa [one_mul, inv_mul_cancel_left]
   · rintro (h : a⁻¹ * b ∈ H)
     exact ⟨1, rfl, a⁻¹ * b, h, by rw [one_mul, mul_inv_cancel_left]⟩
 
 theorem rel_bot_eq_right_group_rel (H : Subgroup G) :
-    (setoid ↑H ↑(⊥ : Subgroup G)).Rel = (QuotientGroup.rightRel H).Rel := by
+    ⇑(setoid ↑H ↑(⊥ : Subgroup G)) = ⇑(QuotientGroup.rightRel H) := by
   ext a b
-  rw [rel_iff, Setoid.Rel, QuotientGroup.rightRel_apply]
+  rw [rel_iff, QuotientGroup.rightRel_apply]
   constructor
   · rintro ⟨b, hb, a, rfl : a = 1, rfl⟩
-    change b * a * 1 * a⁻¹ ∈ H
     rwa [mul_one, mul_inv_cancel_right]
   · rintro (h : b * a⁻¹ ∈ H)
     exact ⟨b * a⁻¹, h, 1, rfl, by rw [mul_one, inv_mul_cancel_right]⟩
 
-/-- Create a doset out of an element of `H \ G / K`-/
+/-- Create a doset out of an element of `H \ G / K` -/
 def quotToDoset (H K : Subgroup G) (q : Quotient (H : Set G) K) : Set G :=
-  doset q.out' H K
+  doset q.out H K
 
-/-- Map from `G` to `H \ G / K`-/
+/-- Map from `G` to `H \ G / K` -/
 abbrev mk (H K : Subgroup G) (a : G) : Quotient (H : Set G) K :=
   Quotient.mk'' a
 
@@ -115,34 +111,38 @@ theorem eq (H K : Subgroup G) (a b : G) :
   rw [Quotient.eq'']
   apply rel_iff
 
-theorem out_eq' (H K : Subgroup G) (q : Quotient ↑H ↑K) : mk H K q.out' = q :=
+theorem out_eq' (H K : Subgroup G) (q : Quotient ↑H ↑K) : mk H K q.out = q :=
   Quotient.out_eq' q
 
-theorem mk_out'_eq_mul (H K : Subgroup G) (g : G) :
-    ∃ h k : G, h ∈ H ∧ k ∈ K ∧ (mk H K g : Quotient ↑H ↑K).out' = h * g * k := by
-  have := eq H K (mk H K g : Quotient ↑H ↑K).out' g
+theorem mk_out_eq_mul (H K : Subgroup G) (g : G) :
+    ∃ h k : G, h ∈ H ∧ k ∈ K ∧ (mk H K g : Quotient ↑H ↑K).out = h * g * k := by
+  have := eq H K (mk H K g : Quotient ↑H ↑K).out g
   rw [out_eq'] at this
   obtain ⟨h, h_h, k, hk, T⟩ := this.1 rfl
   refine ⟨h⁻¹, k⁻¹, H.inv_mem h_h, K.inv_mem hk, eq_mul_inv_of_mul_eq (eq_inv_mul_of_mul_eq ?_)⟩
   rw [← mul_assoc, ← T]
+
+@[deprecated (since := "2024-10-19")] alias mk_out'_eq_mul := mk_out_eq_mul
 
 theorem mk_eq_of_doset_eq {H K : Subgroup G} {a b : G} (h : doset a H K = doset b H K) :
     mk H K a = mk H K b := by
   rw [eq]
   exact mem_doset.mp (h.symm ▸ mem_doset_self H K b)
 
-theorem disjoint_out' {H K : Subgroup G} {a b : Quotient H.1 K} :
-    a ≠ b → Disjoint (doset a.out' H K) (doset b.out' (H : Set G) K) := by
+theorem disjoint_out {H K : Subgroup G} {a b : Quotient H K} :
+    a ≠ b → Disjoint (doset a.out H K) (doset b.out (H : Set G) K) := by
   contrapose!
   intro h
   simpa [out_eq'] using mk_eq_of_doset_eq (eq_of_not_disjoint h)
+
+@[deprecated (since := "2024-10-19")] alias disjoint_out' := disjoint_out
 
 theorem union_quotToDoset (H K : Subgroup G) : ⋃ q, quotToDoset H K q = Set.univ := by
   ext x
   simp only [Set.mem_iUnion, quotToDoset, mem_doset, SetLike.mem_coe, exists_prop, Set.mem_univ,
     iff_true]
   use mk H K x
-  obtain ⟨h, k, h3, h4, h5⟩ := mk_out'_eq_mul H K x
+  obtain ⟨h, k, h3, h4, h5⟩ := mk_out_eq_mul H K x
   refine ⟨h⁻¹, H.inv_mem h3, k⁻¹, K.inv_mem h4, ?_⟩
   simp only [h5, Subgroup.coe_mk, ← mul_assoc, one_mul, inv_mul_cancel, mul_inv_cancel_right]
 
@@ -172,19 +172,17 @@ theorem doset_union_leftCoset (H K : Subgroup G) (a : G) :
     simp only [hxy, ← mul_assoc, hy, one_mul, inv_mul_cancel, Subgroup.coe_mk, inv_mul_cancel_right]
 
 theorem left_bot_eq_left_quot (H : Subgroup G) :
-    Quotient (⊥ : Subgroup G).1 (H : Set G) = (G ⧸ H) := by
+    Quotient (⊥ : Subgroup G) (H : Set G) = (G ⧸ H) := by
   unfold Quotient
   congr
   ext
   simp_rw [← bot_rel_eq_leftRel H]
-  rfl
 
 theorem right_bot_eq_right_quot (H : Subgroup G) :
-    Quotient (H.1 : Set G) (⊥ : Subgroup G) = _root_.Quotient (QuotientGroup.rightRel H) := by
+    Quotient (H : Set G) (⊥ : Subgroup G) = _root_.Quotient (QuotientGroup.rightRel H) := by
   unfold Quotient
   congr
   ext
   simp_rw [← rel_bot_eq_right_group_rel H]
-  rfl
 
 end Doset

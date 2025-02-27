@@ -29,14 +29,14 @@ universe v₅ u₅ v₄ u₄ v₃ u₃ v₂ u₂ v₁ u₁
 
 namespace CategoryTheory
 
-open CategoryTheory Functor Category NatTrans IsHomLift
+open Functor Category NatTrans IsHomLift
 
 variable {𝒮 : Type u₁} [Category.{v₁} 𝒮]
 
 /-- A based category over `𝒮` is a category `𝒳` together with a functor `p : 𝒳 ⥤ 𝒮`. -/
 @[nolint checkUnivs]
 structure BasedCategory (𝒮 : Type u₁) [Category.{v₁} 𝒮] where
-  /-- The type of objects in a `BasedCategory`-/
+  /-- The type of objects in a `BasedCategory` -/
   obj : Type u₂
   /-- The underlying category of a `BasedCategory`. -/
   category : Category.{v₂} obj := by infer_instance
@@ -279,11 +279,11 @@ instance bicategory : Bicategory (BasedCategory.{v₂, u₂} 𝒮) where
   id 𝒳 := 𝟭 𝒳
   comp F G := F ⋙ G
   homCategory 𝒳 𝒴 := homCategory 𝒳 𝒴
-  whiskerLeft {𝒳 𝒴 𝒵} F {G H} α := whiskerLeft F α
-  whiskerRight {𝒳 𝒴 𝒵} F G α H := whiskerRight α H
-  associator F G H := BasedNatIso.id _
-  leftUnitor {𝒳 𝒴} F := BasedNatIso.id F
-  rightUnitor {𝒳 𝒴} F := BasedNatIso.id F
+  whiskerLeft {_ _ _} F {_ _} α := whiskerLeft F α
+  whiskerRight {_ _ _} _ _ α H := whiskerRight α H
+  associator _ _ _ := BasedNatIso.id _
+  leftUnitor {_ _} F := BasedNatIso.id F
+  rightUnitor {_ _} F := BasedNatIso.id F
 
 /-- The bicategory structure on `BasedCategory.{v₂, u₂} 𝒮` is strict. -/
 instance : Bicategory.Strict (BasedCategory.{v₂, u₂} 𝒮) where

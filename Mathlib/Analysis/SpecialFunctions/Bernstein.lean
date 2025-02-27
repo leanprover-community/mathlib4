@@ -1,12 +1,13 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.RingTheory.Polynomial.Bernstein
-import Mathlib.Topology.ContinuousFunction.Polynomial
-import Mathlib.Topology.ContinuousFunction.Compact
+import Mathlib.Topology.ContinuousMap.Polynomial
+import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
 # Bernstein approximations and Weierstrass' theorem
@@ -88,7 +89,7 @@ namespace bernstein
 -/
 def z {n : ℕ} (k : Fin (n + 1)) : I :=
   ⟨(k : ℝ) / n, by
-    cases' n with n
+    rcases n with - | n
     · norm_num
     · have h₁ : 0 < (n.succ : ℝ) := mod_cast Nat.succ_pos _
       have h₂ : ↑k ≤ n.succ := mod_cast Fin.le_last k
@@ -108,8 +109,8 @@ theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) =
 theorem variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
     (∑ k : Fin (n + 1), (x - k/ₙ : ℝ) ^ 2 * bernstein n k x) = (x : ℝ) * (1 - x) / n := by
   have h' : (n : ℝ) ≠ 0 := ne_of_gt h
-  apply_fun fun x : ℝ => x * n using GroupWithZero.mul_right_injective h'
-  apply_fun fun x : ℝ => x * n using GroupWithZero.mul_right_injective h'
+  apply_fun fun x : ℝ => x * n using GroupWithZero.mul_left_injective h'
+  apply_fun fun x : ℝ => x * n using GroupWithZero.mul_left_injective h'
   dsimp
   conv_lhs => simp only [Finset.sum_mul, z]
   conv_rhs => rw [div_mul_cancel₀ _ h']
@@ -252,9 +253,7 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
       _ = ε / 2 * ∑ k ∈ S, bernstein n k x := by rw [Finset.mul_sum]
       -- In this step we increase the sum over `S` back to a sum over all of `Fin (n+1)`,
       -- so that we can use `bernstein.probability`.
-      _ ≤ ε / 2 * ∑ k : Fin (n + 1), bernstein n k x := by
-        gcongr
-        exact Finset.sum_le_univ_sum_of_nonneg fun k => bernstein_nonneg
+      _ ≤ ε / 2 * ∑ k : Fin (n + 1), bernstein n k x := by gcongr; exact S.subset_univ
       _ = ε / 2 := by rw [bernstein.probability, mul_one]
   · -- We now turn to working on `Sᶜ`: we control the difference term just using `‖f‖`,
     -- and then insert a `δ^(-2) * (x - k/n)^2` factor
@@ -271,9 +270,7 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
         exact le_of_mem_S_compl m
       -- Again enlarging the sum from `Sᶜ` to all of `Fin (n+1)`
       _ ≤ 2 * ‖f‖ * ∑ k : Fin (n + 1), δ ^ (-2 : ℤ) * ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x := by
-        gcongr
-        refine Finset.sum_le_univ_sum_of_nonneg fun k => ?_
-        positivity
+        gcongr; exact Sᶜ.subset_univ
       _ = 2 * ‖f‖ * δ ^ (-2 : ℤ) * ∑ k : Fin (n + 1), ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x := by
         conv_rhs =>
           rw [mul_assoc, Finset.mul_sum]

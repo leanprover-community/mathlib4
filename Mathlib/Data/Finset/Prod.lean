@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Oliver Nash
 -/
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Union
 
 /-!
 # Finsets in product types
@@ -43,6 +44,10 @@ instance instSProd : SProd (Finset α) (Finset β) (Finset (α × β)) where
   sprod := Finset.product
 
 @[simp]
+theorem product_eq_sprod : Finset.product s t = s ×ˢ t :=
+  rfl
+
+@[simp]
 theorem product_val : (s ×ˢ t).1 = s.1 ×ˢ t.1 :=
   rfl
 
@@ -59,10 +64,10 @@ theorem coe_product (s : Finset α) (t : Finset β) :
   Set.ext fun _ => Finset.mem_product
 
 theorem subset_product_image_fst [DecidableEq α] : (s ×ˢ t).image Prod.fst ⊆ s := fun i => by
-  simp (config := { contextual := true }) [mem_image]
+  simp +contextual [mem_image]
 
 theorem subset_product_image_snd [DecidableEq β] : (s ×ˢ t).image Prod.snd ⊆ t := fun i => by
-  simp (config := { contextual := true }) [mem_image]
+  simp +contextual [mem_image]
 
 theorem product_image_fst [DecidableEq α] (ht : t.Nonempty) : (s ×ˢ t).image Prod.fst = s := by
   ext i
@@ -87,6 +92,15 @@ theorem product_subset_product_left (hs : s ⊆ s') : s ×ˢ t ⊆ s' ×ˢ t :=
 @[gcongr]
 theorem product_subset_product_right (ht : t ⊆ t') : s ×ˢ t ⊆ s ×ˢ t' :=
   product_subset_product (Subset.refl _) ht
+
+theorem prodMap_image_product {δ : Type*} [DecidableEq β] [DecidableEq δ]
+    (f : α → β) (g : γ → δ) (s : Finset α) (t : Finset γ) :
+    (s ×ˢ t).image (Prod.map f g) = s.image f ×ˢ t.image g :=
+  mod_cast Set.prodMap_image_prod f g s t
+
+theorem prodMap_map_product {δ : Type*} (f : α ↪ β) (g : γ ↪ δ) (s : Finset α) (t : Finset γ) :
+    (s ×ˢ t).map (f.prodMap g) = s.map f ×ˢ t.map g := by
+  simpa [← coe_inj] using Set.prodMap_image_prod f g s t
 
 theorem map_swap_product (s : Finset α) (t : Finset β) :
     (t ×ˢ s).map ⟨Prod.swap, Prod.swap_injective⟩ = s ×ˢ t :=
@@ -168,6 +182,7 @@ theorem empty_product (t : Finset β) : (∅ : Finset α) ×ˢ t = ∅ :=
 theorem product_empty (s : Finset α) : s ×ˢ (∅ : Finset β) = ∅ :=
   eq_empty_of_forall_not_mem fun _ h => not_mem_empty _ (Finset.mem_product.1 h).2
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.product (hs : s.Nonempty) (ht : t.Nonempty) : (s ×ˢ t).Nonempty :=
   let ⟨x, hx⟩ := hs
   let ⟨y, hy⟩ := ht
@@ -181,7 +196,7 @@ theorem Nonempty.snd (h : (s ×ˢ t).Nonempty) : t.Nonempty :=
   let ⟨xy, hxy⟩ := h
   ⟨xy.2, (mem_product.1 hxy).2⟩
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem nonempty_product : (s ×ˢ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.product h.2⟩
 
@@ -261,7 +276,7 @@ variable {s} {x : α × α}
 
 @[simp]
 theorem mem_diag : x ∈ s.diag ↔ x.1 ∈ s ∧ x.1 = x.2 := by
-  simp (config := { contextual := true }) [diag]
+  simp +contextual [diag]
 
 @[simp]
 theorem mem_offDiag : x ∈ s.offDiag ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 := by

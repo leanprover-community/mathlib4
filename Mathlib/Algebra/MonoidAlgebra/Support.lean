@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.LinearAlgebra.Finsupp.Supported
+import Mathlib.Algebra.MonoidAlgebra.Defs
 
 /-!
 #  Lemmas about the support of a finitely supported function

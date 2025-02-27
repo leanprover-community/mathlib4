@@ -13,7 +13,7 @@ open MeasureTheory Filter ENNReal Set
 
 open NNReal ENNReal
 
-variable {α β γ δ : Type*} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α}
+variable {α : Type*} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α}
 
 theorem aemeasurable_withDensity_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E] {f : α → ℝ≥0}
