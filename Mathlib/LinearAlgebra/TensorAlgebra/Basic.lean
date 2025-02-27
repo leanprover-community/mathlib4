@@ -7,7 +7,7 @@ import Mathlib.Algebra.FreeAlgebra
 import Mathlib.Algebra.RingQuot
 import Mathlib.Algebra.TrivSqZeroExt
 import Mathlib.Algebra.Algebra.Operations
-import Mathlib.LinearAlgebra.Multilinear.Curry
+import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Tensor Algebras

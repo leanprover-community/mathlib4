@@ -5,7 +5,7 @@ Authors: Eric Wieser, Sophie Morel
 -/
 import Mathlib.Data.Fintype.Quotient
 import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Multilinear.Curry
+import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Interactions between finitely-supported functions and multilinear maps

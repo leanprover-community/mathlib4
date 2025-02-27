@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.Multilinear.Curry
+import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Interactions between (dependent) functions and multilinear maps
