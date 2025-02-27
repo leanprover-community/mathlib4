@@ -358,6 +358,16 @@ theorem integral_congr {f g : ℂ → E} {c : ℂ} {R : ℝ} (hR : 0 ≤ R) (h :
     (∮ z in C(c, R), f z) = ∮ z in C(c, R), g z :=
   intervalIntegral.integral_congr fun θ _ => by simp only [h (circleMap_mem_sphere _ hR _)]
 
+/-- Circle integrals are invariant when functions change along discrete sets. -/
+theorem circleIntegral_congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → ℂ}
+    (hf : f₁ =ᶠ[codiscreteWithin (Metric.sphere c |R|)] f₂) (hR : R ≠ 0) :
+    (∮ z in C(c, R), f₁ z) = (∮ z in C(c, R), f₂ z) := by
+  apply intervalIntegral.integral_congr_ae_restict
+  apply ae_of_restrVol_le_codiscreteWithin measurableSet_uIoc
+  simp only [deriv_circleMap, smul_eq_mul, mul_eq_mul_left_iff, mul_eq_zero,
+    circleMap_eq_center_iff, hR, Complex.I_ne_zero, or_self, or_false]
+  exact codiscreteWithin.mono (by tauto) (circleMap_preimage_codiscrete hR hf)
+
 theorem integral_sub_inv_smul_sub_smul (f : ℂ → E) (c w : ℂ) (R : ℝ) :
     (∮ z in C(c, R), (z - w)⁻¹ • (z - w) • f z) = ∮ z in C(c, R), f z := by
   rcases eq_or_ne R 0 with (rfl | hR); · simp only [integral_radius_zero]

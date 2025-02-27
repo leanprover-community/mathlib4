@@ -876,19 +876,6 @@ theorem integral_congr {a b : ℝ} (h : EqOn f g [[a, b]]) :
     simpa [hab, integral_of_le, integral_of_ge] using
       setIntegral_congr_fun measurableSet_Ioc (h.mono Ioc_subset_Icc_self)
 
-/-- Integrals are invariant when functions change along sets that are almost
-everywhere for the restricted measure. -/
-theorem integral_congr_ae_restict {a b : ℝ} {f g : ℝ → E} {μ : Measure ℝ}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] (h : f =ᵐ[μ.restrict (Ι a b)] g) :
-    ∫ x in a..b, f x ∂μ = ∫ x in a..b, g x ∂μ :=
-  integral_congr_ae (ae_imp_of_ae_restrict h)
-
-/-- Integrals are invariant when functions change along discrete sets. -/
-theorem integral_congr_codiscreteWithin {a b : ℝ} {f₁ f₂ : ℝ → ℝ}
-    (hf : f₁ =ᶠ[codiscreteWithin (Ι a b)] f₂) :
-    ∫ (x : ℝ) in a..b, f₁ x = ∫ (x : ℝ) in a..b, f₂ x :=
-  integral_congr_ae_restict (ae_of_restrVol_le_codiscreteWithin measurableSet_uIoc hf)
-
 theorem integral_add_adjacent_intervals_cancel (hab : IntervalIntegrable f μ a b)
     (hbc : IntervalIntegrable f μ b c) :
     (((∫ x in a..b, f x ∂μ) + ∫ x in b..c, f x ∂μ) + ∫ x in c..a, f x ∂μ) = 0 := by
@@ -996,6 +983,19 @@ theorem integral_congr_ae' (h : ∀ᵐ x ∂μ, x ∈ Ioc a b → f x = g x)
 theorem integral_congr_ae (h : ∀ᵐ x ∂μ, x ∈ Ι a b → f x = g x) :
     ∫ x in a..b, f x ∂μ = ∫ x in a..b, g x ∂μ :=
   integral_congr_ae' (ae_uIoc_iff.mp h).1 (ae_uIoc_iff.mp h).2
+
+/-- Integrals are invariant when functions change along sets that are almost
+everywhere for the restricted measure. -/
+theorem integral_congr_ae_restict {a b : ℝ} {f g : ℝ → E} {μ : Measure ℝ}
+    (h : f =ᵐ[μ.restrict (Ι a b)] g) :
+    ∫ x in a..b, f x ∂μ = ∫ x in a..b, g x ∂μ :=
+  integral_congr_ae (ae_imp_of_ae_restrict h)
+
+/-- Integrals are invariant when functions change along discrete sets. -/
+theorem integral_congr_codiscreteWithin {a b : ℝ} {f₁ f₂ : ℝ → ℝ}
+    (hf : f₁ =ᶠ[codiscreteWithin (Ι a b)] f₂) :
+    ∫ (x : ℝ) in a..b, f₁ x = ∫ (x : ℝ) in a..b, f₂ x :=
+  integral_congr_ae_restict (ae_of_restrVol_le_codiscreteWithin measurableSet_uIoc hf)
 
 theorem integral_zero_ae (h : ∀ᵐ x ∂μ, x ∈ Ι a b → f x = 0) : ∫ x in a..b, f x ∂μ = 0 :=
   calc
