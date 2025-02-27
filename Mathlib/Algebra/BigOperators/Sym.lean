@@ -3,9 +3,11 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Sym.Sym2.Order
+
+
 
 /-!
 # Lemmas on `Finset.sum` and `Finset.prod` involving `Finset.sym2` or `Finset.sym`.
@@ -26,8 +28,8 @@ theorem sum_sym2_filter_not_isDiag {ι α} [LinearOrder ι] [AddCommMonoid α]
   · rintro ⟨⟨i₁, j₁⟩, hij₁⟩
     simp
 
-theorem range_sym_prop {m n : ℕ} {k : Sym ℕ m} (hk : k ∈ (Finset.range (n + 1)).sym m) :
-    (Finset.sum (range (n + 1)) fun i => count i k) = m := by
+theorem sum_range_count_of_mem_sym {α} [DecidableEq α] {m : ℕ} {k : Sym α m} {s : Finset α}
+    (hk : k ∈ s.sym m) : (∑ i ∈ s, count i k) = m := by
   simp_rw [← k.prop, ← toFinset_sum_count_eq, eq_comm]
   apply sum_subset_zero_on_sdiff _ _ (fun _ _ ↦ rfl)
   · intro i hi
@@ -37,16 +39,5 @@ theorem range_sym_prop {m n : ℕ} {k : Sym ℕ m} (hk : k ∈ (Finset.range (n 
     simp only [Sym.val_eq_coe, mem_sdiff, Finset.mem_range, mem_toFinset, Sym.mem_coe] at hx
     simp only [count_eq_zero, Sym.mem_coe]
     exact hx.2
-
-theorem sum_range_sym_mul_compl {m n : ℕ} {k : Sym ℕ m} (hk : k ∈ (Finset.range (n + 1)).sym m) :
-    (Finset.sum (range (n + 1)) fun i => count i k * (n - i)) =
-      m * n - Finset.sum (range (n + 1)) fun i => count i k * i := by
-  suffices h : (((Finset.range (n + 1)).sum fun i => count i k * (n - i)) +
-        (Finset.range (n + 1)).sum fun i => count i k * i) = m * n by
-    rw [← h, Nat.add_sub_cancel]
-  simp_rw [← sum_add_distrib, ← mul_add]
-  have hn : ∀ x ∈ Finset.range (n + 1), count x ↑k * (n - x + x) = count x ↑k * n := fun _ hx ↦ by
-    rw [Nat.sub_add_cancel (Nat.lt_succ_iff.mp (Finset.mem_range.mp hx))]
-  rw [sum_congr rfl hn, ← sum_mul, range_sym_prop hk]
 
 end Finset
