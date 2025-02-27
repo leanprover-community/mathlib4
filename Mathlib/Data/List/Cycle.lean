@@ -318,7 +318,7 @@ theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
           rw [nodup_iff_injective_get] at h
           apply h; rw [← H]; simp
 
-@[deprecated (since := "2025-02-015")] alias prev_get := prev_getElem
+@[deprecated (since := "2025-02-15")] alias prev_get := prev_getElem
 
 theorem pmap_next_eq_rotate_one (h : Nodup l) : (l.pmap l.next fun _ h => h) = l.rotate 1 := by
   apply List.ext_getElem
@@ -335,7 +335,6 @@ theorem pmap_prev_eq_rotate_length_sub_one (h : Nodup l) :
 
 theorem prev_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
     prev l (next l x hx) (next_mem _ _ _) = x := by
-
   obtain ⟨n, hn, rfl⟩ := getElem_of_mem hx
   simp only [next_getElem, prev_getElem, h, Nat.mod_add_mod]
   rcases l with - | ⟨hd, tl⟩
