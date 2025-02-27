@@ -6,9 +6,9 @@ Authors: Yunzhou Xie
 import Mathlib.Data.Matrix.Basic
 
 /-!
-# Matrix of dimension one
-This file prooves Matrix of dimension one is equivalent to the base itself under the
-canonical maps that sends every element `a` to `[a]` as dimension one matrix.
+# One by one matrices
+This file proves that one by one matrices over a base are equivalent to the base itself under the
+canonical map that sends a one by one matrix `[a]` to `a`.
 
 ## Main results
 - `Matrix.uniqueRingEquiv`
@@ -22,8 +22,7 @@ namespace Matrix
 
 variable {m n A R : Type*} [Unique m] [Unique n]
 
-/-- Set of all dimension one matrix is in bijection with the base set under the
-  canonical maps. -/
+/-- The isomorphism between the type of all one by one matrices and the base type. -/
 @[simps]
 def uniqueEquiv : Matrix m n A ≃ A where
   toFun M := M default default
