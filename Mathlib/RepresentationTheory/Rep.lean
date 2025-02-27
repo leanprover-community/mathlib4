@@ -266,12 +266,10 @@ variable {k G}
 @[simps]
 def leftRegularHom (A : Rep k G) (x : A) : leftRegular k G ⟶ A where
   hom := ModuleCat.ofHom <| Finsupp.lift A k G fun g => A.ρ g x
-  comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring <| by
-    simp [ModuleCat.endRingEquiv]
+  comm _ := by ext; simp [ModuleCat.endRingEquiv]
 
 theorem leftRegularHom_hom_single {A : Rep k G} (g : G) (x : A) (r : k) :
-    (leftRegularHom A x).hom (Finsupp.single g r) = r • A.ρ g x := by
-  simp
+    (leftRegularHom A x).hom (Finsupp.single g r) = r • A.ρ g x := by simp
 
 /-- Given a `k`-linear `G`-representation `A`, there is a `k`-linear isomorphism between
 representation morphisms `Hom(k[G], A)` and `A`. -/
@@ -281,8 +279,7 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (leftRegular k G ⟶ A) �
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun x := leftRegularHom A x
-  left_inv f := Action.Hom.ext <| ModuleCat.hom_ext <| Finsupp.lhom_ext' fun x =>
-    LinearMap.ext_ring <| by simp [← hom_comm_apply f]
+  left_inv f := by ext; simp [← hom_comm_apply f]
   right_inv x := by simp
 
 theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
@@ -306,9 +303,7 @@ protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
   obj B := Rep.of (Representation.linHom A.ρ B.ρ)
   map := fun {X} {Y} f =>
     { hom := ModuleCat.ofHom (LinearMap.llcomp k _ _ _ f.hom.hom)
-      comm := fun g => ModuleCat.hom_ext <| LinearMap.ext fun x => LinearMap.ext fun y => by
-        show f.hom (X.ρ g _) = _
-        simp only [hom_comm_apply]; rfl }
+      comm g := by ext; simp [ModuleCat.endRingEquiv, hom_comm_apply] }
   map_id := fun _ => by ext; rfl
   map_comp := fun _ _ => by ext; rfl
 
@@ -324,13 +319,13 @@ protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
 def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) where
   toFun f :=
     { hom := ModuleCat.ofHom <| (TensorProduct.curry f.hom.hom).flip
-      comm := fun g => ModuleCat.hom_ext <| LinearMap.ext fun x => LinearMap.ext fun y => by
+      comm g := ModuleCat.hom_ext <| LinearMap.ext fun x => LinearMap.ext fun y => by
         simpa [ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj,
           ModuleCat.MonoidalCategory.tensorObj, ModuleCat.endRingEquiv] using
           hom_comm_apply f g (A.ρ g⁻¹ y ⊗ₜ[k] x) }
   invFun f :=
     { hom := ModuleCat.ofHom <| TensorProduct.uncurry k _ _ _ f.hom.hom.flip
-      comm := fun g => ModuleCat.hom_ext <| TensorProduct.ext' fun x y => by
+      comm g := ModuleCat.hom_ext <| TensorProduct.ext' fun x y => by
         simpa using LinearMap.ext_iff.1 (hom_comm_apply f g y) (A.ρ g x) }
   left_inv _ := Action.Hom.ext (ModuleCat.hom_ext <| TensorProduct.ext' fun _ _ => rfl)
   right_inv _ := by ext; rfl
