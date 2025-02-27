@@ -579,6 +579,7 @@ lemma GradedPiece.algebraMap.smul_def [hasGMul F F_lt] (r : R) (i : ι) (a : Gra
     nth_rw 1 [← this]
     rfl
   apply HEq_eq_mk_coe_eq F F_lt _ _ (zero_add i).symm _ eq1 eq2
+  show r • a.out.val = (r • (1 : A)) * a.out.val
   simp
 
 instance [hasGMul F F_lt] : DirectSum.GAlgebra R (GradedPiece F F_lt) where
