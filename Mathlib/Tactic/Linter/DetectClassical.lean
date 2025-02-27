@@ -24,6 +24,7 @@ This is used by the `disallowedAxioms` linter.
 -/
 initialize disallowedAxiomsRef : IO.Ref NameSet ← IO.mkRef ∅
 
+/-- `#disallowed_axioms` shows the axioms that trigger the `disallowedAxioms` linter. -/
 elab "#disallowed_axioms" : command => do
   logInfo m!"{(← disallowedAxiomsRef.get).toArray.qsort (·.toString < ·.toString)}"
 
@@ -93,14 +94,25 @@ register_option linter.unusedDecl : Bool := {
   descr := "enable the unusedDecl linter"
 }
 
+/--
+`UnusedDeclState` contains two fields:
+* `all` -- the declarations that have been introduced in the current file,
+* `used` -- the declarations that have been used by some declaration in the current file.
+-/
 structure UnusedDeclState where
+  /-- `all` -- the declarations that have been introduced in the current file -/
   all : Std.HashSet (String.Range × Name) := ∅
+  /-- `used` -- the declarations that have been used by some declaration in the current file -/
   used : NameSet := ∅
   deriving Inhabited
 
+/-- `unusedDeclRef` is the tracker for the declarations that are unused in the current file. -/
 initialize unusedDeclRef : IO.Ref UnusedDeclState ← IO.mkRef {}
 
-elab "#unused" : command => do
+-- I think that right now this only shows the declarations in the current file,
+-- whether they are used or not.
+/-- `#unused_decls` shows the declarations that have not yet been used in the current file. -/
+elab "#unused_decls" : command => do
   let unusedDecl := ← unusedDeclRef.get
   let allSorted := unusedDecl.all.fold (init := #[]) (·.push ·.2) |>.qsort (·.toString < ·.toString)
   let unused := if 30 < unusedDecl.used.size then m!"{unusedDecl.used.size} used constants!" else
