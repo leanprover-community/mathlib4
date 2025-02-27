@@ -75,18 +75,18 @@ Note that if one of the transformations is an iso, it does not imply the other i
 def mateEquiv : TwoSquare G L₁ L₂ H ≃ TwoSquare R₁ H G R₂ where
   toFun α := .mk _ _ _ _ <|
     whiskerLeft (R₁ ⋙ G) adj₂.unit ≫
-    whiskerRight (whiskerLeft R₁ α.out) R₂ ≫
+    whiskerRight (whiskerLeft R₁ α.natTrans) R₂ ≫
     whiskerRight adj₁.counit (H ⋙ R₂)
   invFun β := .mk _ _ _ _ <|
     whiskerRight adj₁.unit (G ⋙ L₂) ≫
-    whiskerRight (whiskerLeft L₁ β.out) L₂ ≫
+    whiskerRight (whiskerLeft L₁ β.natTrans) L₂ ≫
     whiskerLeft (L₁ ⋙ H) adj₂.counit
   left_inv α := by
     ext
     unfold whiskerRight whiskerLeft
     simp only [comp_obj, id_obj, Functor.comp_map, comp_app, map_comp, assoc, counit_naturality,
       counit_naturality_assoc, left_triangle_components_assoc]
-    rw [← assoc, ← Functor.comp_map, α.naturality, Functor.comp_map, assoc, ← H.map_comp,
+    rw [← assoc, ← Functor.comp_map, α.natTrans.naturality, Functor.comp_map, assoc, ← H.map_comp,
       left_triangle_components, map_id]
     simp only [comp_obj, comp_id]
   right_inv β := by
@@ -94,7 +94,7 @@ def mateEquiv : TwoSquare G L₁ L₂ H ≃ TwoSquare R₁ H G R₂ where
     unfold whiskerLeft whiskerRight
     simp only [comp_obj, id_obj, Functor.comp_map, comp_app, map_comp, assoc,
       unit_naturality_assoc, right_triangle_components_assoc]
-    rw [← assoc, ← Functor.comp_map, assoc, ← β.naturality, ← assoc, Functor.comp_map,
+    rw [← assoc, ← Functor.comp_map, assoc, ← β.natTrans.naturality, ← assoc, Functor.comp_map,
       ← G.map_comp, right_triangle_components, map_id, id_comp]
 
 /-- A component of a transposed version of the mates correspondence. -/
@@ -423,7 +423,7 @@ isomorphism if and only if the original transformation is. This explains why som
 natural transformations are natural isomorphisms.
 -/
 theorem iterated_mateEquiv_conjugateEquiv (α : TwoSquare F₁ L₁ L₂ F₂) :
-    (mateEquiv adj₄ adj₃ (mateEquiv adj₁ adj₂ α)).out =
+    (mateEquiv adj₄ adj₃ (mateEquiv adj₁ adj₂ α)).natTrans =
       conjugateEquiv (adj₁.comp adj₄) (adj₃.comp adj₂) α := by
   ext d
   unfold conjugateEquiv mateEquiv Adjunction.comp

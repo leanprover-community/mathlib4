@@ -33,7 +33,7 @@ provide natural transformations `α : L ⟶ L'` and `β : R' ⟶ R`. -/
 @[simps!]
 def whiskerVertical (α : L ⟶ L') (β : R' ⟶ R) :
     TwoSquare T L' R' B :=
-  whiskerLeft _ β ≫ w ≫ whiskerRight α _
+  (w.whiskerLeft α).whiskerRight β
 
 namespace GuitartExact
 
@@ -59,8 +59,7 @@ lemma whiskerVertical_iff (α : L ≅ L') (β : R ≅ R') :
     (w.whiskerVertical α.hom β.inv).GuitartExact ↔ w.GuitartExact := by
   constructor
   · intro h
-    have : w = TwoSquare.whiskerVertical
-        (TwoSquare.whiskerVertical w α.hom β.inv) α.inv β.hom := by
+    have : w = (w.whiskerVertical α.hom β.inv).whiskerVertical α.inv β.hom := by
       ext X₁
       simp only [Functor.comp_obj, whiskerVertical_app, assoc, Iso.hom_inv_id_app_assoc,
         ← B.map_comp, Iso.hom_inv_id_app, B.map_id, comp_id]
@@ -86,7 +85,7 @@ variable {H₁ : C₁ ⥤ D₁} {L₁ : C₁ ⥤ C₂} {R₁ : D₁ ⥤ D₂} {H
 
 /-- The canonical isomorphism between
 `w.structuredArrowDownwards Y₁ ⋙ w'.structuredArrowDownwards (R₁.obj Y₁)` and
-`(w.vComp w').structuredArrowDownwards Y₁.` -/
+`(w ≫ᵥ w').structuredArrowDownwards Y₁.` -/
 def structuredArrowDownwardsComp (Y₁ : D₁) :
     w.structuredArrowDownwards Y₁ ⋙ w'.structuredArrowDownwards (R₁.obj Y₁) ≅
       (w ≫ᵥ w').structuredArrowDownwards Y₁ :=
@@ -97,12 +96,12 @@ the vertical compositions by isomorphic functors.) -/
 @[simps!]
 def vComp' {L₁₂ : C₁ ⥤ C₃} {R₁₂ : D₁ ⥤ D₃} (eL : L₁ ⋙ L₂ ≅ L₁₂)
     (eR : R₁ ⋙ R₂ ≅ R₁₂) : TwoSquare H₁ L₁₂ R₁₂ H₃ :=
-  (w.vComp w').whiskerVertical eL.hom eR.inv
+  (w ≫ᵥ w').whiskerVertical eL.hom eR.inv
 
 namespace GuitartExact
 
 instance vComp [hw : w.GuitartExact] [hw' : w'.GuitartExact] :
-    (w.vComp w').GuitartExact := by
+    (w ≫ᵥ w').GuitartExact := by
   simp only [TwoSquare.guitartExact_iff_initial]
   intro Y₁
   rw [← Functor.initial_natIso_iff (structuredArrowDownwardsComp w w' Y₁)]

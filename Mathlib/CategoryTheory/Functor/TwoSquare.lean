@@ -51,21 +51,22 @@ abbrev mk (α : T ⋙ R ⟶ L ⋙ B) : TwoSquare T L R B := α
 
 variable {T} {L} {R} {B} in
 /-- The natural transfomration associated to a 2-square. -/
-abbrev out (w : TwoSquare T L R B) : T ⋙ R ⟶ L ⋙ B := w
+abbrev natTrans (w : TwoSquare T L R B) : T ⋙ R ⟶ L ⋙ B := w
 
 /-- The type of 2-squares on functors `T`, `L`, `R`, and `B` is trivially equivalent to
 the type of natural transformations `T ⋙ R ⟶ L ⋙ B`. -/
 @[simps]
 def equivNatTrans : TwoSquare T L R B ≃ (T ⋙ R ⟶ L ⋙ B) where
-  toFun := out
+  toFun := natTrans
   invFun := mk T L R B
-  left_inv := fun _ => rfl
-  right_inv := fun _ => rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 variable {T L R B}
 
 @[ext]
-lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.app X = w'.app X) : w = w' :=
+lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.natTrans.app X = w'.natTrans.app X) :
+    w = w' :=
   NatTrans.ext (funext h)
 
 /-- The hoizontal identity 2-square. -/
@@ -86,26 +87,26 @@ scoped notation "𝟙ᵥ" => vId  -- type as \b1\_v
 
 /-- Whiskering a 2-square with a natural transformation at the top. -/
 @[simps!]
-protected def whiskerTop {T' : C₁ ⥤ C₂} (α : T ⟶ T') (w : TwoSquare T' L R B) : TwoSquare T L R B :=
-  whiskerRight α R ≫ w
+protected def whiskerTop {T' : C₁ ⥤ C₂} (w : TwoSquare T' L R B) (α : T ⟶ T') : TwoSquare T L R B :=
+  .mk _ _ _ _ <| whiskerRight α R ≫ w.natTrans
 
 /-- Whiskering a 2-square with a natural transformation at the left side. -/
 @[simps!]
-protected def whiskerLeft {L' : C₁ ⥤ C₃} (α : L ⟶ L') (w : TwoSquare T L R B) :
+protected def whiskerLeft {L' : C₁ ⥤ C₃} (w : TwoSquare T L R B) (α : L ⟶ L') :
     TwoSquare T L' R B :=
-  w ≫ whiskerRight α B
+  .mk _ _ _ _ <| w.natTrans ≫ whiskerRight α B
 
 /-- Whiskering a 2-square with a natural transformation at the right side. -/
 @[simps!]
-protected def whiskerRight {R' : C₂ ⥤ C₄} (α : R ⟶ R') (w : TwoSquare T L R' B) :
+protected def whiskerRight {R' : C₂ ⥤ C₄} (w : TwoSquare T L R' B) (α : R ⟶ R') :
     TwoSquare T L R B :=
-  whiskerLeft T α ≫ w
+  .mk _ _ _ _ <| whiskerLeft T α ≫ w.natTrans
 
 /-- Whiskering a 2-square with a natural transformation at the bottom. -/
 @[simps!]
-protected def whiskerBottom {B' : C₃ ⥤ C₄} (α : B ⟶ B') (w : TwoSquare T L R B) :
+protected def whiskerBottom {B' : C₃ ⥤ C₄} (w : TwoSquare T L R B) (α : B ⟶ B') :
     TwoSquare T L R B' :=
-  w ≫ whiskerLeft L α
+  .mk _ _ _ _ <| w.natTrans ≫ whiskerLeft L α
 
 variable {C₅ : Type u₅} {C₆ : Type u₆} {C₇ : Type u₇} {C₈ : Type u₈}
   [Category.{v₅} C₅] [Category.{v₆} C₆] [Category.{v₇} C₇] [Category.{v₈} C₈]
@@ -115,8 +116,8 @@ variable {C₅ : Type u₅} {C₆ : Type u₆} {C₇ : Type u₇} {C₈ : Type u
 @[simps!]
 def hComp (w : TwoSquare T L R B) (w' : TwoSquare T' R R' B') :
     TwoSquare (T ⋙ T') L R' (B ⋙ B') :=
-  (Functor.associator _ _ _).hom ≫ (whiskerLeft T w') ≫
-  (Functor.associator _ _ _).inv ≫ (whiskerRight w B') ≫ (Functor.associator _ _ _).hom
+  .mk _ _ _ _ <| (Functor.associator _ _ _).hom ≫ (whiskerLeft T w'.natTrans) ≫
+    (Functor.associator _ _ _).inv ≫ (whiskerRight w.natTrans B') ≫ (Functor.associator _ _ _).hom
 
 /-- Notation for the horizontal composition of 2-squares. -/
 scoped infixr:80 " ≫ₕ " => hComp -- type as \gg\_h
@@ -125,8 +126,8 @@ scoped infixr:80 " ≫ₕ " => hComp -- type as \gg\_h
 @[simps!]
 def vComp (w : TwoSquare T L R B) (w' : TwoSquare B L' R'' B'') :
     TwoSquare T (L ⋙ L') (R ⋙ R'') B'' :=
-  (Functor.associator _ _ _).hom ≫ (whiskerRight w R'') ≫
-  (Functor.associator _ _ _).inv ≫ (whiskerLeft L w') ≫ (Functor.associator _ _ _).hom
+  .mk _ _ _ _ <| (Functor.associator _ _ _).hom ≫ (whiskerRight w.natTrans R'') ≫
+    (Functor.associator _ _ _).inv ≫ (whiskerLeft L w'.natTrans) ≫ (Functor.associator _ _ _).hom
 
 /-- Notation for the vertical composition of 2-squares. -/
 scoped infixr:80 " ≫ᵥ " => vComp -- type as \gg\_v
@@ -140,14 +141,13 @@ same result as composing vertically first. -/
 lemma hCompVCompHComp (w₁ : TwoSquare T L R B) (w₂ : TwoSquare T' R R' B')
     (w₃ : TwoSquare B L' R'' B'') (w₄ : TwoSquare B' R'' R₃ B₃) :
     (w₁ ≫ₕ w₂) ≫ᵥ (w₃ ≫ₕ w₄) = (w₁ ≫ᵥ w₃) ≫ₕ (w₂ ≫ᵥ w₄) := by
-  unfold hComp vComp
-  unfold whiskerLeft whiskerRight
+  unfold hComp vComp whiskerLeft whiskerRight
   ext c
   simp only [Functor.comp_obj, NatTrans.comp_app, Functor.associator_hom_app,
     Functor.associator_inv_app, comp_id, id_comp, Functor.map_comp, assoc]
   slice_rhs 2 3 =>
     rw [← Functor.comp_map _ B₃, ← w₄.naturality]
-  simp only [Functor.comp_obj, Functor.comp_map, assoc]
+  simp
 
 end Interchange
 
