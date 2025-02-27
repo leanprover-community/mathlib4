@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Patrick Massot, Sébastien Gouëzel
 import Mathlib.Order.Interval.Set.Disjoint
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+import Mathlib.MeasureTheory.Measure.Restrict
 import Mathlib.MeasureTheory.Topology
 import Mathlib.Algebra.EuclideanDomain.Basic
 
@@ -874,6 +875,19 @@ theorem integral_congr {a b : ℝ} (h : EqOn f g [[a, b]]) :
   rcases le_total a b with hab | hab <;>
     simpa [hab, integral_of_le, integral_of_ge] using
       setIntegral_congr_fun measurableSet_Ioc (h.mono Ioc_subset_Icc_self)
+
+/-- Integrals are invariant when functions change along sets that are almost
+everywhere for the restricted measure. -/
+theorem integral_congr_ae_restict {a b : ℝ} {f g : ℝ → E} {μ : Measure ℝ}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] (h : f =ᵐ[μ.restrict (Ι a b)] g) :
+    ∫ x in a..b, f x ∂μ = ∫ x in a..b, g x ∂μ :=
+  integral_congr_ae (ae_imp_of_ae_restrict h)
+
+/-- Integrals are invariant when functions change along discrete sets. -/
+theorem integral_congr_codiscreteWithin {a b : ℝ} {f₁ f₂ : ℝ → ℝ}
+    (hf : f₁ =ᶠ[codiscreteWithin (Ι a b)] f₂) :
+    ∫ (x : ℝ) in a..b, f₁ x = ∫ (x : ℝ) in a..b, f₂ x :=
+  integral_congr_ae_restict (ae_of_restrVol_le_codiscreteWithin measurableSet_uIoc hf)
 
 theorem integral_add_adjacent_intervals_cancel (hab : IntervalIntegrable f μ a b)
     (hbc : IntervalIntegrable f μ b c) :
