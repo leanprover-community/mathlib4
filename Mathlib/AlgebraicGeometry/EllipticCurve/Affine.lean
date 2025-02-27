@@ -273,30 +273,19 @@ lemma nonsingular_iff_variableChange (x y : R) :
   simp only [variableChange]
   congr! 3 <;> ring1
 
-lemma equation_zero_iff_nonsingular_zero_of_Δ_ne_zero (hΔ : W'.Δ ≠ 0) :
-    W'.Equation 0 0 ↔ W'.Nonsingular 0 0 := by
-  simp only [equation_zero, nonsingular_zero, iff_self_and]
+lemma nonsingular_zero_of_Δ_ne_zero (h : W'.Equation 0 0) (hΔ : W'.Δ ≠ 0) :
+    W'.Nonsingular 0 0 := by
+  simp only [equation_zero, nonsingular_zero] at *
   contrapose! hΔ
-  simp only [b₂, b₄, b₆, b₈, Δ, hΔ]
+  simp only [b₂, b₄, b₆, b₈, Δ, h, hΔ]
   ring1
 
 /-- A Weierstrass curve is nonsingular at every point if its discriminant is non-zero. -/
-lemma equation_iff_nonsingular_of_Δ_ne_zero {x y : R} (hΔ : W'.Δ ≠ 0) :
-    W'.Equation x y ↔ W'.Nonsingular x y := by
-  rw [equation_iff_variableChange, nonsingular_iff_variableChange,
-    equation_zero_iff_nonsingular_zero_of_Δ_ne_zero <| by
-      rwa [variableChange_Δ, inv_one, Units.val_one, one_pow, one_mul]]
-
-/-- An elliptic curve is nonsingular at every point. -/
-lemma equation_iff_nonsingular [Nontrivial R] [W'.IsElliptic] {x y : R} :
-    W'.toAffine.Equation x y ↔ W'.toAffine.Nonsingular x y :=
-  W'.toAffine.equation_iff_nonsingular_of_Δ_ne_zero <| W'.coe_Δ' ▸ W'.Δ'.ne_zero
-
-@[deprecated (since := "2025-02-01")] alias nonsingular_zero_of_Δ_ne_zero :=
-  equation_zero_iff_nonsingular_zero_of_Δ_ne_zero
-@[deprecated (since := "2025-02-01")] alias nonsingular_of_Δ_ne_zero :=
-  equation_iff_nonsingular_of_Δ_ne_zero
-@[deprecated (since := "2025-02-01")] alias nonsingular := equation_iff_nonsingular
+lemma nonsingular_of_Δ_ne_zero {x y : R} (h : W'.Equation x y) (hΔ : W'.Δ ≠ 0) :
+    W'.Nonsingular x y :=
+  (nonsingular_iff_variableChange x y).mpr <|
+    nonsingular_zero_of_Δ_ne_zero ((equation_iff_variableChange x y).mp h) <| by
+      rwa [variableChange_Δ, inv_one, Units.val_one, one_pow, one_mul]
 
 end Nonsingular
 
@@ -343,23 +332,29 @@ lemma Y_eq_of_Y_ne {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂
     (hy : y₁ ≠ W.negY x₂ y₂) : y₁ = y₂ :=
   (Y_eq_of_X_eq h₁ h₂ hx).resolve_right hy
 
-/-- The negation of an affine point in `W` lies in `W`. -/
-lemma equation_neg (x y : R) : W'.Equation x (W'.negY x y) ↔ W'.Equation x y := by
+lemma equation_neg_iff (x y : R) : W'.Equation x (W'.negY x y) ↔ W'.Equation x y := by
   rw [equation_iff, equation_iff, negY]
   congr! 1
   ring1
 
-@[deprecated (since := "2025-02-01")] alias equation_neg_of := equation_neg
-@[deprecated (since := "2025-02-01")] alias equation_neg_iff := equation_neg
+lemma equation_neg_of {x y : R} (h : W'.Equation x <| W'.negY x y) : W'.Equation x y :=
+  (W'.equation_neg_iff ..).mp h
 
-/-- The negation of a nonsingular affine point in `W` is nonsingular. -/
-lemma nonsingular_neg (x y : R) : W'.Nonsingular x (W'.negY x y) ↔ W'.Nonsingular x y := by
-  rw [nonsingular_iff, equation_neg, ← negY, negY_negY, ← @ne_comm _ y, nonsingular_iff]
+/-- The negation of an affine point in `W` lies in `W`. -/
+lemma equation_neg {x y : R} (h : W'.Equation x y) : W'.Equation x <| W'.negY x y :=
+  (W'.equation_neg_iff ..).mpr h
+
+lemma nonsingular_neg_iff (x y : R) : W'.Nonsingular x (W'.negY x y) ↔ W'.Nonsingular x y := by
+  rw [nonsingular_iff, equation_neg_iff, ← negY, negY_negY, ← @ne_comm _ y, nonsingular_iff]
   exact and_congr_right' <| (iff_congr not_and_or.symm not_and_or.symm).mpr <|
     not_congr <| and_congr_left fun h => by rw [← h]
 
-@[deprecated (since := "2025-02-01")] alias nonsingular_neg_of := nonsingular_neg
-@[deprecated (since := "2025-02-01")] alias nonsingular_neg_iff := nonsingular_neg
+lemma nonsingular_neg_of {x y : R} (h : W'.Nonsingular x <| W'.negY x y) : W'.Nonsingular x y :=
+  (W'.nonsingular_neg_iff ..).mp h
+
+/-- The negation of a nonsingular affine point in `W` is nonsingular. -/
+lemma nonsingular_neg {x y : R} (h : W'.Nonsingular x y) : W'.Nonsingular x <| W'.negY x y :=
+  (W'.nonsingular_neg_iff ..).mpr h
 
 end Negation
 
@@ -548,7 +543,7 @@ lemma equation_negAdd {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h
 lemma equation_add {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     W.Equation (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) (W.addY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) :=
-  (equation_neg ..).mpr <| equation_negAdd h₁ h₂ hxy
+  equation_neg <| equation_negAdd h₁ h₂ hxy
 
 /-- The negated addition of two nonsingular affine points in `W` on a sloped line is nonsingular. -/
 lemma nonsingular_negAdd {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁) (h₂ : W.Nonsingular x₂ y₂)
@@ -572,7 +567,7 @@ lemma nonsingular_negAdd {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y�
 lemma nonsingular_add {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁) (h₂ : W.Nonsingular x₂ y₂)
     (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     W.Nonsingular (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) (W.addY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) :=
-  (nonsingular_neg ..).mpr <| nonsingular_negAdd h₁ h₂ hxy
+  nonsingular_neg <| nonsingular_negAdd h₁ h₂ hxy
 
 /-- The formula x(P₁ + P₂) = x(P₁ - P₂) - ψ(P₁)ψ(P₂) / (x(P₂) - x(P₁))²,
 where ψ(x,y) = 2y + a₁x + a₃. -/
@@ -636,12 +631,12 @@ lemma zero_def : 0 = (.zero : W'.Point) :=
 lemma some_ne_zero {x y : R} (h : W'.Nonsingular x y) : Point.some h ≠ 0 := by
   rintro (_ | _)
 
-/-- The negation of a nonsingular point on `W`.
+/-- The negation of a nonsingular rational point on `W`.
 
-Given a nonsingular point `P` on `W`, use `-P` instead of `neg P`. -/
+Given a nonsingular rational point `P` on `W`, use `-P` instead of `neg P`. -/
 def neg : W'.Point → W'.Point
   | 0 => 0
-  | some h => some <| (nonsingular_neg ..).mpr h
+  | some h => some <| nonsingular_neg h
 
 instance : Neg W'.Point :=
   ⟨neg⟩
@@ -654,7 +649,7 @@ lemma neg_zero : (-0 : W'.Point) = 0 :=
   rfl
 
 @[simp]
-lemma neg_some {x y : R} (h : W'.Nonsingular x y) : -some h = some ((nonsingular_neg ..).mpr h) :=
+lemma neg_some {x y : R} (h : W'.Nonsingular x y) : -some h = some (nonsingular_neg h) :=
   rfl
 
 instance : InvolutiveNeg W'.Point where
@@ -673,10 +668,10 @@ noncomputable def add : W.Point → W.Point → W.Point
   | @some _ _ _ x₁ y₁ h₁, @some _ _ _ x₂ y₂ h₂ =>
     if hxy : x₁ = x₂ ∧ y₁ = W.negY x₂ y₂ then 0 else some <| nonsingular_add h₁ h₂ hxy
 
-noncomputable instance : Add W.Point :=
+noncomputable instance instAddPoint : Add W.Point :=
   ⟨add⟩
 
-noncomputable instance : AddZeroClass W.Point :=
+noncomputable instance instAddZeroClassPoint : AddZeroClass W.Point :=
   ⟨by rintro (_ | _) <;> rfl, by rintro (_ | _) <;> rfl⟩
 
 lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
@@ -888,23 +883,25 @@ variable [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebr
   [IsScalarTower R S K] [Algebra R L] [Algebra S L] [IsScalarTower R S L] (f : F →ₐ[S] K)
   (g : K →ₐ[S] L)
 
+/-- The function from `W⟮F⟯` to `W⟮K⟯` induced by an algebra homomorphism `f : F →ₐ[S] K`,
+where `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
+def mapFun : W'⟮F⟯ → W'⟮K⟯
+  | 0 => 0
+  | some h => some <| (baseChange_nonsingular _ _ f.injective).mpr h
+
 /-- The group homomorphism from `W⟮F⟯` to `W⟮K⟯` induced by an algebra homomorphism `f : F →ₐ[S] K`,
 where `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
 def map : W'⟮F⟯ →+ W'⟮K⟯ where
-  toFun P := match P with
-    | 0 => 0
-    | some h => some <| (baseChange_nonsingular _ _ f.injective).mpr h
+  toFun := mapFun f
   map_zero' := rfl
   map_add' := by
     rintro (_ | @⟨x₁, y₁, _⟩) (_ | @⟨x₂, y₂, _⟩)
     any_goals rfl
     by_cases hxy : x₁ = x₂ ∧ y₁ = (W'.baseChange F).toAffine.negY x₂ y₂
-    · rw [add_of_Y_eq hxy.left hxy.right,
-        add_of_Y_eq (congr_arg _ hxy.left) <| by rw [hxy.right, baseChange_negY]]
-    · simp_rw [add_some hxy, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope]
+    · simp only [add_of_Y_eq hxy.left hxy.right, mapFun]
+      rw [add_of_Y_eq (congr_arg _ hxy.left) <| by rw [hxy.right, baseChange_negY]]
+    · simp only [add_some hxy, mapFun, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope]
       rw [add_some fun h => hxy ⟨f.injective h.1, f.injective (W'.baseChange_negY f .. ▸ h).2⟩]
-
-@[deprecated (since := "2025-02-01")] alias mapFun := map
 
 lemma map_zero : map f (0 : W'⟮F⟯) = 0 :=
   rfl
@@ -939,5 +936,17 @@ lemma map_baseChange [Algebra F K] [IsScalarTower R F K] [Algebra F L] [IsScalar
 end Point
 
 end Affine
+
+/-! ## Elliptic curves -/
+
+section EllipticCurve
+
+variable {R : Type u} [CommRing R] (E : WeierstrassCurve R) [E.IsElliptic]
+
+lemma nonsingular [Nontrivial R] {x y : R} (h : E.toAffine.Equation x y) :
+    E.toAffine.Nonsingular x y :=
+  E.toAffine.nonsingular_of_Δ_ne_zero h <| E.coe_Δ' ▸ E.Δ'.ne_zero
+
+end EllipticCurve
 
 end WeierstrassCurve

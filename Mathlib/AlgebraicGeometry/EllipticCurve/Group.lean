@@ -403,23 +403,21 @@ lemma XYIdeal'_eq {x y : F} (h : W.Nonsingular x y) :
     (XYIdeal' h : FractionalIdeal W.CoordinateRing⁰ W.FunctionField) = XYIdeal W x (C y) :=
   rfl
 
-lemma mk_XYIdeal'_neg_mul {x y : F} (h : W.Nonsingular x y) :
-    ClassGroup.mk (XYIdeal' <| (nonsingular_neg ..).mpr h) * ClassGroup.mk (XYIdeal' h) = 1 := by
+lemma mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq {x y : F} (h : W.Nonsingular x y) :
+    ClassGroup.mk (XYIdeal' <| nonsingular_neg h) * ClassGroup.mk (XYIdeal' h) = 1 := by
   rw [← _root_.map_mul]
-  exact (ClassGroup.mk_eq_one_of_coe_ideal <| (FractionalIdeal.coeIdeal_mul ..).symm.trans <|
-    FractionalIdeal.coeIdeal_inj.mpr <| XYIdeal_neg_mul h).mpr ⟨_, XClass_ne_zero W _, rfl⟩
-
-@[deprecated (since := "2025-02-01")] alias mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq :=
-  mk_XYIdeal'_neg_mul
+  exact
+    (ClassGroup.mk_eq_one_of_coe_ideal <| by exact (FractionalIdeal.coeIdeal_mul ..).symm.trans <|
+      FractionalIdeal.coeIdeal_inj.mpr <| XYIdeal_neg_mul h).mpr ⟨_, XClass_ne_zero W _, rfl⟩
 
 lemma mk_XYIdeal'_mul_mk_XYIdeal' {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
     (h₂ : W.Nonsingular x₂ y₂) (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     ClassGroup.mk (XYIdeal' h₁) * ClassGroup.mk (XYIdeal' h₂) =
       ClassGroup.mk (XYIdeal' <| nonsingular_add h₁ h₂ hxy) := by
   rw [← _root_.map_mul]
-  exact
-    (ClassGroup.mk_eq_mk_of_coe_ideal (FractionalIdeal.coeIdeal_mul ..).symm <| XYIdeal'_eq _).mpr
-      ⟨_, _, XClass_ne_zero W _, YClass_ne_zero W _, XYIdeal_mul_XYIdeal h₁.left h₂.left hxy⟩
+  exact (ClassGroup.mk_eq_mk_of_coe_ideal (by exact (FractionalIdeal.coeIdeal_mul ..).symm) <|
+      XYIdeal'_eq _).mpr
+    ⟨_, _, XClass_ne_zero W _, YClass_ne_zero W _, XYIdeal_mul_XYIdeal h₁.left h₂.left hxy⟩
 
 end Field
 
@@ -503,24 +501,27 @@ namespace Point
 
 variable {F : Type u} [Field F] {W : Affine F}
 
+/-- The set function mapping an affine point $(x, y)$ of `W` to the class of the non-zero fractional
+ideal $\langle X - x, Y - y \rangle$ of $F(W)$ in the class group of $F[W]$. -/
+@[simp]
+noncomputable def toClassFun : W.Point → Additive (ClassGroup W.CoordinateRing)
+  | 0 => 0
+  | some h => Additive.ofMul <| ClassGroup.mk <| CoordinateRing.XYIdeal' h
+
 /-- The group homomorphism mapping an affine point $(x, y)$ of `W` to the class of the non-zero
 fractional ideal $\langle X - x, Y - y \rangle$ of $F(W)$ in the class group of $F[W]$. -/
 @[simps]
 noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) where
-  toFun P := match P with
-    | 0 => 0
-    | some h => Additive.ofMul <| ClassGroup.mk <| CoordinateRing.XYIdeal' h
+  toFun := toClassFun
   map_zero' := rfl
   map_add' := by
     rintro (_ | @⟨x₁, y₁, h₁⟩) (_ | @⟨x₂, y₂, h₂⟩)
-    any_goals simp only [← zero_def, zero_add, add_zero]
+    any_goals simp only [← zero_def, toClassFun, zero_add, add_zero]
     by_cases hxy : x₁ = x₂ ∧ y₁ = W.negY x₂ y₂
     · simp only [hxy.left, hxy.right, add_of_Y_eq rfl rfl]
-      exact (CoordinateRing.mk_XYIdeal'_neg_mul h₂).symm
+      exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq h₂).symm
     · simp only [add_some hxy]
       exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ hxy).symm
-
-@[deprecated (since := "2025-02-01")] alias toClassFun := toClass
 
 lemma toClass_zero : toClass (0 : W.Point) = 0 :=
   rfl
@@ -532,7 +533,7 @@ lemma toClass_some {x y : F} (h : W.Nonsingular x y) :
 private lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
   rcases P, Q with ⟨_ | @⟨x₁, y₁, _⟩, _ | @⟨x₂, y₂, _⟩⟩
   any_goals rfl
-  · rw [← zero_def, zero_add, eq_comm (a := 0), neg_eq_iff_eq_neg, neg_zero]
+  · rw [← zero_def, zero_add, ← neg_eq_iff_eq_neg, neg_zero, eq_comm]
   · rw [neg_some, some.injEq]
     constructor
     · contrapose
@@ -548,14 +549,15 @@ lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
       apply (p.natDegree_norm_ne_one _).elim
       rw [← finrank_quotient_span_eq_natDegree_norm (CoordinateRing.basis W) h0,
         ← (quotientEquivAlgOfEq F hp).toLinearEquiv.finrank_eq,
-        (CoordinateRing.quotientXYIdealEquiv W h).toLinearEquiv.finrank_eq, Module.finrank_self]
+        (CoordinateRing.quotientXYIdealEquiv W h).toLinearEquiv.finrank_eq,
+        Module.finrank_self]
   · exact congr_arg toClass
 
 lemma toClass_injective : Function.Injective <| @toClass _ _ W := by
   rintro (_ | h) _ hP
   all_goals rw [← neg_inj, ← add_eq_zero, ← toClass_eq_zero, map_add, ← hP]
   · exact zero_add 0
-  · exact CoordinateRing.mk_XYIdeal'_neg_mul h
+  · exact CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq h
 
 noncomputable instance : AddCommGroup W.Point where
   nsmul := nsmulRec
@@ -618,6 +620,6 @@ variable {R : Type*} [Nontrivial R] [CommRing R] (E : WeierstrassCurve R) [E.IsE
 
 /-- An affine point on an elliptic curve `E` over `R`. -/
 def mk {x y : R} (h : E.toAffine.Equation x y) : E.toAffine.Point :=
-  .some <| (equation_iff_nonsingular ..).mp h
+  WeierstrassCurve.Affine.Point.some <| nonsingular E h
 
 end WeierstrassCurve.Affine.Point
