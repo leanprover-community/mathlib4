@@ -292,8 +292,7 @@ section PartialOrder
 variable [PartialOrder α] {a b : α}
 
 -- See Note [decidable namespace]
-protected theorem Decidable.le_iff_eq_or_lt [DecidableLE α] :
-    a ≤ b ↔ a = b ∨ a < b :=
+protected theorem Decidable.le_iff_eq_or_lt [DecidableLE α] : a ≤ b ↔ a = b ∨ a < b :=
   Decidable.le_iff_lt_or_eq.trans or_comm
 
 theorem le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := le_iff_lt_or_eq.trans or_comm
@@ -306,8 +305,7 @@ lemma eq_iff_not_lt_of_le (hab : a ≤ b) : a = b ↔ ¬ a < b := by simp [hab, 
 alias LE.le.eq_iff_not_lt := eq_iff_not_lt_of_le
 
 -- See Note [decidable namespace]
-protected theorem Decidable.eq_iff_le_not_lt [DecidableLE α] :
-    a = b ↔ a ≤ b ∧ ¬a < b :=
+protected theorem Decidable.eq_iff_le_not_lt [DecidableLE α] : a = b ↔ a ≤ b ∧ ¬a < b :=
   ⟨fun h ↦ ⟨h.le, h ▸ lt_irrefl _⟩, fun ⟨h₁, h₂⟩ ↦
     h₁.antisymm <| Decidable.byContradiction fun h₃ ↦ h₂ (h₁.lt_of_not_le h₃)⟩
 

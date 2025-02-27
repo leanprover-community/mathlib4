@@ -33,8 +33,8 @@ theorem cmpLE_swap {α} [LE α] [IsTotal α (· ≤ ·)] [DecidableLE α] (x y :
   by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, *, Ordering.swap]
   cases not_or_intro xy yx (total_of _ _ _)
 
-theorem cmpLE_eq_cmp {α} [Preorder α] [IsTotal α (· ≤ ·)] [DecidableLE α]
-    [DecidableLT α] (x y : α) : cmpLE x y = cmp x y := by
+theorem cmpLE_eq_cmp {α} [Preorder α] [IsTotal α (· ≤ ·)] [DecidableLE α] [DecidableLT α]
+    (x y : α) : cmpLE x y = cmp x y := by
   by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, lt_iff_le_not_le, *, cmp, cmpUsing]
   cases not_or_intro xy yx (total_of _ _ _)
 
@@ -132,30 +132,25 @@ theorem Ordering.Compares.cmp_eq [LinearOrder α] {a b : α} {o : Ordering} (h :
   (cmp_compares a b).inj h
 
 @[simp]
-theorem cmp_swap [Preorder α] [DecidableLT α] (a b : α) :
-    (cmp a b).swap = cmp b a := by
+theorem cmp_swap [Preorder α] [DecidableLT α] (a b : α) : (cmp a b).swap = cmp b a := by
   unfold cmp cmpUsing
   by_cases h : a < b <;> by_cases h₂ : b < a <;> simp [h, h₂, Ordering.swap]
   exact lt_asymm h h₂
 
 @[simp]
-theorem cmpLE_toDual [LE α] [DecidableLE α] (x y : α) :
-    cmpLE (toDual x) (toDual y) = cmpLE y x :=
+theorem cmpLE_toDual [LE α] [DecidableLE α] (x y : α) : cmpLE (toDual x) (toDual y) = cmpLE y x :=
   rfl
 
 @[simp]
-theorem cmpLE_ofDual [LE α] [DecidableLE α] (x y : αᵒᵈ) :
-    cmpLE (ofDual x) (ofDual y) = cmpLE y x :=
+theorem cmpLE_ofDual [LE α] [DecidableLE α] (x y : αᵒᵈ) : cmpLE (ofDual x) (ofDual y) = cmpLE y x :=
   rfl
 
 @[simp]
-theorem cmp_toDual [LT α] [DecidableLT α] (x y : α) :
-    cmp (toDual x) (toDual y) = cmp y x :=
+theorem cmp_toDual [LT α] [DecidableLT α] (x y : α) : cmp (toDual x) (toDual y) = cmp y x :=
   rfl
 
 @[simp]
-theorem cmp_ofDual [LT α] [DecidableLT α] (x y : αᵒᵈ) :
-    cmp (ofDual x) (ofDual y) = cmp y x :=
+theorem cmp_ofDual [LT α] [DecidableLT α] (x y : αᵒᵈ) : cmp (ofDual x) (ofDual y) = cmp y x :=
   rfl
 
 /-- Generate a linear order structure from a preorder and `cmp` function. -/

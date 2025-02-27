@@ -366,8 +366,7 @@ and should always be used instead of `Amem`. -/
 def Amem [LE α] (x : α) : Ordnode α → Prop :=
   Any fun y => x ≤ y ∧ y ≤ x
 
-instance Amem.decidable [LE α] [DecidableLE α] (x : α) :
-    ∀ t, Decidable (Amem x t) := by
+instance Amem.decidable [LE α] [DecidableLE α] (x : α) : ∀ t, Decidable (Amem x t) := by
   dsimp [Amem]; infer_instance
 
 /-- O(log n). Return the minimum element of the tree, or the provided default value.

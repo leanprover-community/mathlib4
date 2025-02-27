@@ -574,8 +574,7 @@ section CompleteLattice
 
 variable [CompleteLattice α]
 
-noncomputable instance completeLattice [DecidableLE α] :
-    CompleteLattice (Interval α) := by
+noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Interval α) := by
   classical
   exact
       { Interval.lattice, Interval.boundedOrder with
@@ -659,8 +658,7 @@ noncomputable instance completeLattice [DecidableLE α] :
   }
 
 @[simp, norm_cast]
-theorem coe_sInf [DecidableLE α] (S : Set (Interval α)) :
-    ↑(sInf S) = ⋂ s ∈ S, (s : Set α) := by
+theorem coe_sInf [DecidableLE α] (S : Set (Interval α)) : ↑(sInf S) = ⋂ s ∈ S, (s : Set α) := by
   classical -- Porting note: added
   -- Porting note: this `change` was
   -- change ↑ (dite _ _ _) = _

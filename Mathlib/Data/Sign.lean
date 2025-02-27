@@ -378,8 +378,7 @@ end OrderedSemiring
 section OrderedRing
 
 @[simp]
-lemma sign_intCast {α : Type*} [OrderedRing α] [Nontrivial α]
-    [DecidableLT α] (n : ℤ) :
+lemma sign_intCast {α : Type*} [OrderedRing α] [Nontrivial α] [DecidableLT α] (n : ℤ) :
     sign (n : α) = sign n := by
   simp only [sign_apply, Int.cast_pos, Int.cast_lt_zero]
 

@@ -263,8 +263,7 @@ instance (priority := 200) StrictOrderedSemiring.toMulPosStrictMono : MulPosStri
 -- See note [reducible non-instances]
 /-- A choice-free version of `StrictOrderedSemiring.toOrderedSemiring` to avoid using choice in
 basic `Nat` lemmas. -/
-abbrev StrictOrderedSemiring.toOrderedSemiring' [DecidableLE α] :
-    OrderedSemiring α :=
+abbrev StrictOrderedSemiring.toOrderedSemiring' [DecidableLE α] : OrderedSemiring α :=
   { ‹StrictOrderedSemiring α› with
     mul_le_mul_of_nonneg_left := fun a b c hab hc => by
       obtain rfl | hab := Decidable.eq_or_lt_of_le hab
@@ -307,8 +306,7 @@ variable [StrictOrderedCommSemiring α]
 -- See note [reducible non-instances]
 /-- A choice-free version of `StrictOrderedCommSemiring.toOrderedCommSemiring'` to avoid using
 choice in basic `Nat` lemmas. -/
-abbrev StrictOrderedCommSemiring.toOrderedCommSemiring' [DecidableLE α] :
-    OrderedCommSemiring α :=
+abbrev StrictOrderedCommSemiring.toOrderedCommSemiring' [DecidableLE α] : OrderedCommSemiring α :=
   { ‹StrictOrderedCommSemiring α›, StrictOrderedSemiring.toOrderedSemiring' with }
 
 -- see Note [lower instance priority]
@@ -356,8 +354,7 @@ variable [StrictOrderedCommRing α]
 -- See note [reducible non-instances]
 /-- A choice-free version of `StrictOrderedCommRing.toOrderedCommRing` to avoid using
 choice in basic `Int` lemmas. -/
-abbrev StrictOrderedCommRing.toOrderedCommRing' [DecidableLE α] :
-    OrderedCommRing α :=
+abbrev StrictOrderedCommRing.toOrderedCommRing' [DecidableLE α] : OrderedCommRing α :=
   { ‹StrictOrderedCommRing α›, StrictOrderedRing.toOrderedRing' with }
 
 -- See note [lower instance priority]

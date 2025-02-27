@@ -591,8 +591,8 @@ noncomputable def LocallyFiniteOrder.ofFiniteIcc (h : ∀ a b : α, (Set.Icc a b
 This is not an instance as it would not be defeq to better instances such as
 `Fin.locallyFiniteOrder`.
 -/
-abbrev Fintype.toLocallyFiniteOrder [Fintype α] [DecidableLT α]
-    [DecidableLE α] : LocallyFiniteOrder α where
+abbrev Fintype.toLocallyFiniteOrder [Fintype α] [DecidableLT α] [DecidableLE α] :
+    LocallyFiniteOrder α where
   finsetIcc a b := (Set.Icc a b).toFinset
   finsetIco a b := (Set.Ico a b).toFinset
   finsetIoc a b := (Set.Ioc a b).toFinset
@@ -836,8 +836,7 @@ end LocallyFiniteOrderBot
 end Preorder
 
 section Lattice
-variable [Lattice α] [Lattice β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-  [DecidableLE (α × β)]
+variable [Lattice α] [Lattice β] [LocallyFiniteOrder α] [LocallyFiniteOrder β] [DecidableLE (α × β)]
 
 lemma Finset.uIcc_prod_def (x y : α × β) : uIcc x y = uIcc x.1 y.1 ×ˢ uIcc x.2 y.2 := rfl
 

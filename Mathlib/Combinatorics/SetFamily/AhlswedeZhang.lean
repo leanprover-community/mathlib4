@@ -103,8 +103,7 @@ variable {α β : Type*}
 section SemilatticeSup
 variable [SemilatticeSup α] [SemilatticeSup β] [BoundedOrder β] {s t : Finset α} {a : α}
 
-private lemma sup_aux [DecidableLE α] :
-    a ∈ lowerClosure s → {b ∈ s | a ≤ b}.Nonempty :=
+private lemma sup_aux [DecidableLE α] : a ∈ lowerClosure s → {b ∈ s | a ≤ b}.Nonempty :=
   fun ⟨b, hb, hab⟩ ↦ ⟨b, mem_filter.2 ⟨hb, hab⟩⟩
 
 private lemma lower_aux [DecidableEq α] :
@@ -174,8 +173,7 @@ section SemilatticeInf
 variable [SemilatticeInf α] [SemilatticeInf β]
   [BoundedOrder β] [DecidableLE β] {s t : Finset α} {a : α}
 
-private lemma inf_aux [DecidableLE α] :
-    a ∈ upperClosure s → {b ∈ s | b ≤ a}.Nonempty :=
+private lemma inf_aux [DecidableLE α] : a ∈ upperClosure s → {b ∈ s | b ≤ a}.Nonempty :=
   fun ⟨b, hb, hab⟩ ↦ ⟨b, mem_filter.2 ⟨hb, hab⟩⟩
 
 private lemma upper_aux [DecidableEq α] :
@@ -246,8 +244,7 @@ lemma truncatedInf_union_of_not_mem (hs : a ∉ upperClosure s) (ht : a ∉ uppe
 end SemilatticeInf
 
 section DistribLattice
-variable [DistribLattice α] [DecidableEq α]
-  {s t : Finset α} {a : α}
+variable [DistribLattice α] [DecidableEq α] {s t : Finset α} {a : α}
 
 private lemma infs_aux : a ∈ lowerClosure ↑(s ⊼ t) ↔ a ∈ lowerClosure s ∧ a ∈ lowerClosure t := by
   rw [coe_infs, lowerClosure_infs, LowerSet.mem_inf_iff]

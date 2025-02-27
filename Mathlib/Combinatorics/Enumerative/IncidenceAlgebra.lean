@@ -349,15 +349,14 @@ lemma zeta_of_le (h : a ≤ b) : zeta 𝕜 a b = 1 := if_pos h
 
 end Zeta
 
-lemma zeta_mul_zeta [Semiring 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableLE α]
-    (a b : α) : (zeta 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) a b = (Icc a b).card := by
+lemma zeta_mul_zeta [Semiring 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableLE α] (a b : α) :
+    (zeta 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) a b = (Icc a b).card := by
   rw [mul_apply, card_eq_sum_ones, Nat.cast_sum, Nat.cast_one]
   refine sum_congr rfl fun x hx ↦ ?_
   rw [mem_Icc] at hx
   rw [zeta_of_le hx.1, zeta_of_le hx.2, one_mul]
 
-lemma zeta_mul_kappa [Semiring 𝕜] [Preorder α] [LocallyFiniteOrder α]
-    [DecidableLE α] (a b : α) :
+lemma zeta_mul_kappa [Semiring 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableLE α] (a b : α) :
     (zeta 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) a b = (Icc a b).card := by
   rw [mul_apply, card_eq_sum_ones, Nat.cast_sum, Nat.cast_one]
   refine sum_congr rfl fun x hx ↦ ?_
@@ -622,8 +621,7 @@ lemma prod_mk (a₁ a₂ : α) (b₁ b₂ : β) : f.prod g (a₁, b₁) (a₂, b
 @[simp] lemma prod_apply (x y : α × β) : f.prod g x y = f x.1 y.1 * g x.2 y.2 := rfl
 
 /-- This is a version of `IncidenceAlgebra.prod_mul_prod` that works over non-commutative rings. -/
-lemma prod_mul_prod' [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-    [DecidableLE (α × β)]
+lemma prod_mul_prod' [LocallyFiniteOrder α] [LocallyFiniteOrder β] [DecidableLE (α × β)]
     (h : ∀ a₁ a₂ a₃ b₁ b₂ b₃,
         f₁ a₁ a₂ * g₁ b₁ b₂ * (f₂ a₂ a₃ * g₂ b₂ b₃) = f₁ a₁ a₂ * f₂ a₂ a₃ * (g₁ b₁ b₂ * g₂ b₂ b₃)) :
     f₁.prod g₁ * f₂.prod g₂ = (f₁ * f₂).prod (g₁ * g₂) := by
@@ -654,8 +652,7 @@ end Preorder
 
 section PartialOrder
 variable (𝕜) [Ring 𝕜] [PartialOrder α] [PartialOrder β] [LocallyFiniteOrder α]
-  [LocallyFiniteOrder β] [DecidableEq α] [DecidableEq β] [DecidableLE α]
-  [DecidableLE β]
+  [LocallyFiniteOrder β] [DecidableEq α] [DecidableEq β] [DecidableLE α] [DecidableLE β]
 
 /-- The Möbius function on a product order. Based on lemma 2.1.13 of Incidence Algebras by Spiegel
 and O'Donnell. -/
