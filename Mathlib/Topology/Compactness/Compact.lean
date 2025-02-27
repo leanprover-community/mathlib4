@@ -202,6 +202,13 @@ theorem IsCompact.elim_nhds_subcover (hs : IsCompact s) (U : X → Set X) (hU : 
     ∃ t : Finset X, (∀ x ∈ t, x ∈ s) ∧ s ⊆ ⋃ x ∈ t, U x :=
   (hs.elim_nhds_subcover_nhdsSet hU).imp fun _ h ↦ h.imp_right subset_of_mem_nhdsSet
 
+theorem IsCompact.elim_nhdsWithin_subcover' (hs : IsCompact s) (U : ∀ x ∈ s, Set X)
+    (hU : ∀ x (hx : x ∈ s), U x hx ∈ 𝓝[s] x) : ∃ t : Finset s, s ⊆ ⋃ x ∈ t, U x x.2 := by
+  choose V V_nhds hV using fun x hx => mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (hU x hx)
+  rcases hs.elim_nhds_subcover' V V_nhds with ⟨t, ht⟩
+  refine ⟨t, subset_trans ?_ (biUnion_mono (fun _ => id) fun x _ => hV x x.2)⟩
+  simpa [← iUnion_inter, ← iUnion_coe_set]
+
 theorem IsCompact.elim_nhdsWithin_subcover (hs : IsCompact s) (U : X → Set X)
     (hU : ∀ x ∈ s, U x ∈ 𝓝[s] x) : ∃ t : Finset X, (∀ x ∈ t, x ∈ s) ∧ s ⊆ ⋃ x ∈ t, U x := by
   choose! V V_nhds hV using fun x hx => mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (hU x hx)
