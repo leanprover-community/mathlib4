@@ -8,6 +8,7 @@ import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.NormNum.NatFib
+import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Data.Rat.Floor
@@ -305,6 +306,19 @@ example : @Squarefree ℕ Multiplicative.monoid 1 := by
   · simp only [Nat.succ_add, Nat.add_succ] at h
     cases h
 -/
+
+example : Nat.log 0 0 = 0 := by norm_num1
+example : Nat.log 0 1 = 0 := by norm_num1
+example : Nat.log 0 100 = 0 := by norm_num1
+example : Nat.log 1 0 = 0 := by norm_num1
+example : Nat.log 1 1 = 0 := by norm_num1
+example : Nat.log 1 100 = 0 := by norm_num1
+example : Nat.log 10 0 = 0 := by norm_num1
+example : Nat.log 10 3 = 0 := by norm_num1
+example : Nat.log 2 2 = 1 := by norm_num1
+example : Nat.log 2 256 = 8 := by norm_num1
+example : Nat.log 10 10000000 = 7 := by norm_num1
+example : Nat.log 10 (10 ^ 7 + 2) + Nat.log 2 (2 ^ 30 + 3) = 7 + 30 := by norm_num1
 
 example : Nat.fib 0 = 0 := by norm_num1
 example : Nat.fib 1 = 1 := by norm_num1
