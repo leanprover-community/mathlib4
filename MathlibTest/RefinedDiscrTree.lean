@@ -75,11 +75,19 @@ run_meta do
 #log_keys 2 ≥ 3
 
 
+/-- info: ℕ → @Eq ℕ #0 5 -/
+#guard_msgs in
+#log_keys ∀ x : Nat, x = 5
+
+/-- info: ℕ → ℤ -/
+#guard_msgs in
+#log_keys Nat → Int
+
 /-- info: λ, #0 -/
 #guard_msgs in
 #log_keys fun x : Nat => x
 
-open BigOperators Finset in
+open Finset in
 /-- info: @Finset.sum ℕ ℕ *0 (range 10) (λ, #0) -/
 #guard_msgs in
 #log_keys ∑ i ∈ range 10, i
