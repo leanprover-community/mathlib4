@@ -6,6 +6,7 @@ Authors: Simon Hudon
 import Mathlib.Control.Lawful
 import Mathlib.Control.Monad.Basic
 import Mathlib.Data.Finset.Functor
+import Batteries.Control.Lemmas
 
 /-!
 # Laws for Monads with Failure
@@ -15,8 +16,8 @@ Definitions for monads that also have an `Aleternative` instance while sharing t
 structures are compatible in a natural way. More specifically they satisfy:
 
 * `failure >>= g = failure`
-* `(x <|> failure) = x`
-* `(failure <|> y) = y`
+* `x <|> failure = x`
+* `failure <|> y = y`
 
 `Option`/`OptionT` are the most basic examples, but transformers like `StateT` also preserve
 the lawfullness of this on the underlying monad.
@@ -110,21 +111,11 @@ end OptionT
 
 namespace StateT
 
-variable {m : Type u → Type v} [AlternativeMonad m] {σ α : Type u}
+variable {m : Type u → Type v} [AlternativeMonad m] {σ : Type u}
 
-protected lemma failure_def : (failure : StateT σ m α) = StateT.failure := rfl
+instance : AlternativeMonad (StateT σ m) where
 
-@[simp] lemma run_failure : (failure : StateT σ m α).run = fun _ => failure := rfl
-
-protected lemma orElse_def  (x : StateT σ m α) (y : StateT σ m α) :
-    (x <|> y) = StateT.orElse x (fun _ => y) := rfl
-
-@[simp] lemma run_orElse (x : StateT σ m α) (y : Unit → StateT σ m α) :
-    StateT.run (StateT.orElse x y) = fun s => x.run s <|> (y ()).run s := rfl
-
-instance [AlternativeMonad m] {σ : Type u} : AlternativeMonad (StateT σ m) where
-
-instance [AlternativeMonad m] [LawfulAlternative m] : LawfulAlternative (StateT σ m) where
+instance [LawfulAlternative m] : LawfulAlternative (StateT σ m) where
   failure_bind _ := StateT.ext fun _ => failure_bind _
   mapConst_failure y := StateT.ext fun _ => by simp
   orElse_failure _ := StateT.ext fun _ => orElse_failure _
