@@ -104,8 +104,9 @@ lemma hasMFDerivAt_extChartAt_comp_of_hasDerivAt {v : (x : M) → TangentSpace I
 theorem exists_mem_nhds_isIntegralCurveOn_Ioo_of_contMDiffAt [CompleteSpace E]
     (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) x₀)
     (hx : I.IsInteriorPoint x₀) :
-    ∃ u ∈ 𝓝 x₀, ∃ ε > (0 : ℝ), ∃ γ : M → ℝ → M, ∀ x ∈ u, γ x t₀ = x ∧
-      IsIntegralCurveOn (γ x) v (Ioo (t₀ - ε) (t₀ + ε)) := by
+    ∃ u ∈ 𝓝 x₀, ∃ ε > (0 : ℝ), ∃ γ : M × ℝ → M, ∀ x ∈ u, γ ⟨x, t₀⟩ = x ∧
+      IsIntegralCurveOn (γ ⟨x, ·⟩) v (Ioo (t₀ - ε) (t₀ + ε)) ∧
+      ContinuousOn γ (u ×ˢ Ioo (t₀ - ε) (t₀ + ε)) := by
   -- express the differentiability of the vector field `v` in the local chart
   replace hv := contMDiffAt_iff.mp hv |>.2.contDiffAt (range_mem_nhds_isInteriorPoint hx)
   -- use Picard-Lindelöf theorem to extract a flow in the local chart
@@ -113,6 +114,9 @@ theorem exists_mem_nhds_isIntegralCurveOn_Ioo_of_contMDiffAt [CompleteSpace E]
   clear hv
   simp only [Filter.eventually_and] at hf
   have ⟨hf1, hf2, hf3⟩ := hf
+  have hf3' := hf3
+  rw [nhds_prod_eq, Filter.eventually_prod_iff_exists_mem] at hf3'
+  replace ⟨u0, hu0, s0, hs0, hf3'⟩ := hf3'
   -- `f ⟨x, t⟩` stays within `interior (extChartAt I x₀).target` if `⟨x, t⟩` is close to `⟨x₀, t₀⟩`
   have hnhds : f ⁻¹' (interior (extChartAt I x₀).target) ∈ 𝓝 ⟨extChartAt I x₀ x₀, t₀⟩ := by
     apply hf3.self_of_nhds.preimage_mem_nhds
@@ -127,29 +131,29 @@ theorem exists_mem_nhds_isIntegralCurveOn_Ioo_of_contMDiffAt [CompleteSpace E]
   rw [nhds_prod_eq] at hf
   replace ⟨u, hu, s, hs, hf⟩ := Filter.eventually_prod_iff_exists_mem.mp hf
   -- construct witnesses
-  let U := (extChartAt I x₀) ⁻¹' u ∩ (extChartAt I x₀).source
-  have ⟨ε, hε, hεs⟩ := Metric.mem_nhds_iff.mp hs
+  let U := (extChartAt I x₀) ⁻¹' (u0 ∩ u) ∩ (extChartAt I x₀).source
+  have ⟨ε, hε, hεs⟩ := Metric.mem_nhds_iff.mp <| Filter.inter_mem hs0 hs
   rw [Real.ball_eq_Ioo] at hεs
-  let γ (x) (t) := (extChartAt I x₀).symm <| f ⟨extChartAt I x₀ x, t⟩
+  let γ (xt : M × ℝ) := (extChartAt I x₀).symm <| f ⟨extChartAt I x₀ xt.1, xt.2⟩
   -- collect useful formulas
-  have hmap : MapsTo (extChartAt I x₀) U u := by
+  have hmap : MapsTo (extChartAt I x₀) U (u0 ∩ u) := by
     intro x ⟨hx1, hx2⟩
     rwa [← mem_preimage]
   have ht₀ {x} (hx : x ∈ U) {t} (ht : t ∈ Ioo (t₀ - ε) (t₀ + ε)) :=
-    hf _ (hmap hx) _ (hεs ht) |>.1
+    hf _ (hmap hx).2 _ (hεs ht).2 |>.1
   have hderiv {x} (hx : x ∈ U) {t} (ht : t ∈ Ioo (t₀ - ε) (t₀ + ε)) :=
-    hf _ (hmap hx) _ (hεs ht) |>.2.1
+    hf _ (hmap hx).2 _ (hεs ht).2 |>.2.1
   have hmem {x} (hx : x ∈ U) {t} (ht : t ∈ Ioo (t₀ - ε) (t₀ + ε)) :
       f (extChartAt I x₀ x, t) ∈ interior (extChartAt I x₀).target :=
-    hf _ (hmap hx) _ (hεs ht) |>.2.2
+    hf _ (hmap hx).2 _ (hεs ht).2 |>.2.2
   have hmem' {x} (hx : x ∈ U) {t} (ht : t ∈ Ioo (t₀ - ε) (t₀ + ε)) :
       f (extChartAt I x₀ x, t) ∈ (extChartAt I x₀).target :=
     mem_of_mem_of_subset (hmem hx ht) interior_subset
   -- main proof
   refine ⟨U, ?_, ε, hε, γ, fun x hx ↦
-    ⟨?_, fun t ht ↦ hasMFDerivAt_extChartAt_comp_of_hasDerivAt (hmem hx ht) (hderiv hx ht)⟩⟩
+    ⟨?_, fun t ht ↦ hasMFDerivAt_extChartAt_comp_of_hasDerivAt (hmem hx ht) (hderiv hx ht), ?_⟩⟩
   · apply Filter.inter_mem _ (extChartAt_source_mem_nhds _)
-    exact continuousAt_extChartAt _ |>.preimage_mem_nhds hu
+    exact continuousAt_extChartAt _ |>.preimage_mem_nhds <| Filter.inter_mem hu0 hu
   · symm
     have : t₀ ∈ Ioo (t₀ - ε) (t₀ + ε) := by
       rw [← Real.ball_eq_Ioo]
@@ -157,6 +161,15 @@ theorem exists_mem_nhds_isIntegralCurveOn_Ioo_of_contMDiffAt [CompleteSpace E]
     rw [PartialEquiv.eq_symm_apply _ hx.2 (hmem' hx this)]
     symm
     rw [ht₀ hx this]
+  · apply ContinuousOn.comp' (continuousOn_extChartAt_symm x₀)
+    · intro ⟨x', t'⟩ ⟨hx', ht'⟩
+      apply ContinuousAt.continuousWithinAt
+      apply ContinuousAt.comp₂ _
+        (ContinuousAt.comp (continuousAt_extChartAt' hx'.2) continuousAt_fst) continuousAt_snd
+      simp only [comp_apply]
+      exact hf3' _ (mem_preimage.mp <| (preimage_inter ▸ hx'.1).1) _ (hεs ht').1
+    · intro ⟨x', t'⟩ ⟨hx', ht'⟩
+      exact hmem' hx' ht'
 
 /-- Existence of local integral curves for a $C^1$ vector field at interior points of a $C^1$
 manifold. -/
@@ -165,10 +178,10 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt [CompleteSpace E]
     (hx : I.IsInteriorPoint x₀) :
     ∃ γ : ℝ → M, γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ := by
   have ⟨u, hu, ε, hε, γ, h⟩ := exists_mem_nhds_isIntegralCurveOn_Ioo_of_contMDiffAt t₀ hv hx
-  refine ⟨γ x₀, h _ (mem_of_mem_nhds hu) |>.1, ?_⟩
+  refine ⟨fun t ↦ γ ⟨x₀, t⟩, h _ (mem_of_mem_nhds hu) |>.1, ?_⟩
   rw [isIntegralCurveAt_iff]
   exact ⟨Ioo (t₀ - ε) (t₀ + ε), Ioo_mem_nhds (by linarith) (by linarith),
-    h _ (mem_of_mem_nhds hu) |>.2⟩
+    h _ (mem_of_mem_nhds hu) |>.2.1⟩
 
 /-- Existence of local integral curves for a $C^1$ vector field on a $C^1$ manifold without
 boundary. -/
