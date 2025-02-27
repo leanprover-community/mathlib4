@@ -8,9 +8,11 @@ import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
 /-!
-# Simpleness is preserved by ring isomorphism
+# Simpleness is preserved by ring isomorphism/surjective ring homomorphisms
 
-If `R` is a simple ring then any ring isomorphic to `R` is also simple.
+If `R` is a simple (non-assoc) ring and there exists surjective `f : R →+* S` where `S` is
+nontrivial, then `S` is also simple.
+If `R` is a simple (non-unital non-assoc) ring then any ring isomorphic to `R` is also simple.
 -/
 
 namespace IsSimpleRing
