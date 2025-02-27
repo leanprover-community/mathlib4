@@ -9,6 +9,27 @@ import Mathlib.Tactic.NoncommRing
 import Mathlib.GroupTheory.QuotientGroup.Defs
 import Mathlib.RingTheory.FilteredAlgebra.Basic
 /-!
+# The Associated Graded Ring to a Filtered Ring
+
+In this file we define `GradedPiece` for `IsFiltration F F_lt` on abelian groups with every `F j`
+of some `AddSubgroupClass`, and their direct sum `AssociatedGraded`.
+We also proved that the `AssociatedGraded` over a ring also have a ring structure.
+i.e. the associated graded ring to a filtered ring.
+
+# Main definitions and results
+
+* `GradedPiece` : `GradedPiece i` of the associated graded abelian group to `IsFiltration F F_lt`
+with every `F i` of some `AddSubgroupClass` is defined as `F i` quotient by `F_lt i`
+
+* `AssociatedGraded` : The direct sum of `GradedPiece`
+
+* `hasGMul` : The class of filtrations that can obtain
+  a well defined graded multiplication over `GradedPiece`
+
+* `instGRingGradedPieceOfHasGMul` : `GradedPiece` satisfies `DirectSum.GRing`
+
+* `instRingAssociatedGradedOfHasGMulOfDecidableEq` :
+  `AssociatedGraded` have a ring structure when given `hasGMul` and decidable on the index set.
 
 -/
 
@@ -24,7 +45,8 @@ variable (F : ι → σ) (F_lt : outParam <| ι → σ)
 instance [Preorder ι] [IsFiltration F F_lt] (i : ι) : Setoid (F i) :=
   QuotientAddGroup.leftRel (((F_lt i) : AddSubgroup A).addSubgroupOf ((F i) : AddSubgroup A))
 
-/-- `GradedPiece i` of the associated graded ring is defined as `F i` quotient by `F_lt i`-/
+/-- `GradedPiece i` of the associated graded abelian group to `IsFiltration F F_lt`
+with every `F j` of some `AddSubgroupClass` is defined as `F i` quotient by `F_lt i`. -/
 abbrev GradedPiece (i : ι) :=
   ((F i) : AddSubgroup A) ⧸ ((F_lt i) : AddSubgroup A).addSubgroupOf ((F i) : AddSubgroup A)
 
@@ -41,7 +63,7 @@ abbrev mk [DecidableEq ι] (s : Finset ι) :
 
 variable {F F_lt}
 
-/--Obtaining an associated graded ring from an element of `F i`-/
+/-- Obtaining an associated graded ring from an element of `F i`. -/
 abbrev of [DecidableEq ι] {i : ι} (x : GradedPiece F F_lt i) : AssociatedGraded F F_lt :=
   DirectSum.of (GradedPiece F F_lt) i x
 
@@ -103,7 +125,7 @@ end AssociatedGraded
 
 namespace GradedPiece
 
-/--Obtaining an element of `GradedPiece i` from an element of `F i`-/
+/-- Obtaining an element of `GradedPiece i` from an element of `F i`.-/
 def mk {i : ι} (x : F i) : GradedPiece F F_lt i := ⟦x⟧
 
 section
@@ -162,8 +184,8 @@ variable (F : ι → σ) (F_lt : outParam <| ι → σ)
 
 section HasGMul
 
-/--The class of filtrations that can obtain a well defined `GradedMul`
-from the multiplication `F i → F j → F (i + j)` -/
+/-- The class of filtrations that can obtain a well defined `GradedMul`
+from the multiplication `F i → F j → F (i + j)`. -/
 class hasGMul [OrderedAddCommMonoid ι] extends IsRingFiltration F F_lt : Prop where
   F_lt_mul_mem {i j : ι} {x y} : x ∈ F_lt i → y ∈ F j → x * y ∈ F_lt (i + j)
   mul_F_lt_mem {i j : ι} {x y} : x ∈ F i → y ∈ F_lt j → x * y ∈ F_lt (i + j)
@@ -199,7 +221,7 @@ lemma hasGMul_AddSubgroup (F : ι → AddSubgroup R) (F_lt : outParam <| ι → 
 
 variable [OrderedAddCommMonoid ι] [AddSubgroupClass σ R]
 
-/--The multiplication `F i → F j → F (i + j)` defined as the multiplication of its value. -/
+/-- The multiplication `F i → F j → F (i + j)` defined as the multiplication of its value. -/
 def IsRingFiltration.hMul [IsRingFiltration F F_lt] (i j : ι)
     (x : F i) (y : F j) : F (i + j) where
   val := x * y
@@ -219,8 +241,8 @@ lemma hasGMul.mul_equiv_mul [hasGMul F F_lt] {i j : ι}
   rw [eq]
   exact add_mem (hasGMul.F_lt_mul_mem (F := F) hx y₁.2) (hasGMul.mul_F_lt_mem (F := F) x₂.2 hy)
 
-/--The multiplication `GradedPiece F F_lt i → GradedPiece F F_lt j → GradedPiece F F_lt (i + j)`
-lifted from the multiplication `F i → F j → F (i + j)`-/
+/-- The multiplication `GradedPiece F F_lt i → GradedPiece F F_lt j → GradedPiece F F_lt (i + j)`
+lifted from the multiplication `F i → F j → F (i + j)`. -/
 def hasGMul.gradedMul [hasGMul F F_lt] {i j : ι} (x : GradedPiece F F_lt i)
     (y : GradedPiece F F_lt j) : GradedPiece F F_lt (i + j) :=
   Quotient.map₂ (· * ·) (hasGMul.mul_equiv_mul F F_lt) x y
@@ -316,10 +338,9 @@ lemma Filtration.pow_lift [hasGMul F F_lt] (n : ℕ) {i : ι} (x₁ x₂ : F i) 
     show -(x₁.1 ^ d * x₁.1) + x₂.1 ^ d * x₂.1 ∈ (F_lt ((d + 1) • i))
     have : -(x₁.1 ^ d * x₁.1) + x₂.1 ^ d * x₂.1 =
       x₁.1 ^ d * x₂.1 - x₁.1 ^ d * x₁.1 + (x₂.1 ^ d * x₂.1 - x₁.1 ^ d * x₂.1) := by abel
-    rw [this]
-    exact add_mem mem1 mem2
+    simpa only [this] using add_mem mem1 mem2
 
-/--The graded nat power between graded pieces. -/
+/-- The graded nat power between graded pieces. -/
 def GradedPiece.gnpow [hasGMul F F_lt] (n : ℕ) {i : ι} :
     GradedPiece F F_lt i → GradedPiece F F_lt (n • i) :=
   Quotient.map (fun x ↦ ⟨x.1 ^ n, Filtration.pow_mem F F_lt n x⟩)
@@ -334,15 +355,12 @@ lemma GradedPiece.gnpow_zero' [hasGMul F F_lt] {i : ι} (x : GradedPiece F F_lt 
   let rx := Quotient.out x
   apply HEq_eq_mk_eq F F_lt (zero_nsmul i) (pow_zero rx.1) (Filtration.pow_mem F F_lt 0 rx)
     (1 : F 0).2 _ rfl
-  simp only [gnpow_def F F_lt 0 rx, rx, mk_eq]
-  nth_rw 1 [← Quotient.out_eq x]
+  nth_rw 1 [gnpow_def F F_lt 0 rx, mk_eq, ← Quotient.out_eq x]
 
 lemma GradedPiece.gnpow_succ' [hasGMul F F_lt] (n : ℕ) {i : ι} (x : GradedPiece F F_lt i) :
     HEq (gnpow F F_lt n.succ x) (gnpow F F_lt n x * x) := by
   let rx := Quotient.out x
-  have mk_rx : mk F F_lt rx = x := by
-    nth_rw 1 [← Quotient.out_eq x]
-    rfl
+  have mk_rx : mk F F_lt rx = x := QuotientAddGroup.out_eq' x
   have : rx.1 ^ n * rx.1 ∈ (F (n • i + i)) :=
     IsRingFiltration.toGradedMonoid.mul_mem (Filtration.pow_mem F F_lt n rx) rx.2
   apply HEq_eq_mk_eq F F_lt (succ_nsmul i n) (pow_succ rx.1 n)
@@ -365,8 +383,8 @@ lemma GradedPiece.mul_zero [hasGMul F F_lt] {i j : ι} (a : GradedPiece F F_lt i
   rw [← QuotientAddGroup.mk_zero, ← QuotientAddGroup.mk_zero]
   induction a using Quotient.ind'
   show Quotient.mk'' _ = Quotient.mk'' _
-  rw [Quotient.eq'']
-  simp only [ZeroMemClass.coe_zero, mul_zero, QuotientAddGroup.leftRel_apply, add_zero, neg_mem_iff]
+  simp only [Quotient.eq'', ZeroMemClass.coe_zero, mul_zero, QuotientAddGroup.leftRel_apply,
+    add_zero, neg_mem_iff]
   show _ * (0 : R) ∈ (F_lt (i + j))
   simpa only [MulZeroClass.mul_zero] using zero_mem (F_lt (i + j))
 
@@ -375,8 +393,8 @@ lemma GradedPiece.zero_mul [hasGMul F F_lt] {i j : ι} (a : GradedPiece F F_lt i
   rw [← QuotientAddGroup.mk_zero, ← QuotientAddGroup.mk_zero]
   induction a using Quotient.ind'
   change Quotient.mk'' _ = Quotient.mk'' _
-  rw [Quotient.eq'']
-  simp only [ZeroMemClass.coe_zero, zero_mul, QuotientAddGroup.leftRel_apply, add_zero, neg_mem_iff]
+  simp only [Quotient.eq'', ZeroMemClass.coe_zero, zero_mul, QuotientAddGroup.leftRel_apply,
+    add_zero, neg_mem_iff]
   show (0 : R) * _ ∈ (F_lt (j + i))
   simpa only [MulZeroClass.zero_mul] using zero_mem (F_lt (j + i))
 
@@ -386,15 +404,14 @@ lemma GradedPiece.mul_add [hasGMul F F_lt] {i j : ι} (a : GradedPiece F F_lt i)
   induction b using Quotient.ind'
   induction c using Quotient.ind'
   show Quotient.mk'' _ = Quotient.mk'' _
-  rw [Quotient.eq'']
-  simp [QuotientAddGroup.leftRel_apply, AddSubgroup.mem_addSubgroupOf]
+  simp only [Quotient.eq'', QuotientAddGroup.leftRel_apply, AddSubgroup.mem_addSubgroupOf,
+    AddSubgroup.coe_add, NegMemClass.coe_neg, AddSubgroup.mem_mk, SetLike.mem_coe]
   rename_i a1 a2 a3
   have : -(a1 * (a2 + a3)).1 + ((a1 * a2).1 + (a1 * a3).1) = 0 := by
     have : -(a1.1 * (a2.1 + a3.1)) + (a1.1 * a2.1 + a1.1 * a3.1) = 0 := by noncomm_ring
     rw [← this]
     rfl
-  rw [this]
-  exact zero_mem (F_lt (i + j))
+  simpa only [this] using zero_mem (F_lt (i + j))
 
 lemma GradedPiece.add_mul [hasGMul F F_lt] {i j : ι} (a b : GradedPiece F F_lt i)
     (c : GradedPiece F F_lt j) : (a + b) * c = a * c + b * c := by
@@ -402,18 +419,16 @@ lemma GradedPiece.add_mul [hasGMul F F_lt] {i j : ι} (a b : GradedPiece F F_lt 
   induction b using Quotient.ind'
   induction c using Quotient.ind'
   show Quotient.mk'' _ = Quotient.mk'' _
-  rw [Quotient.eq'']
-  simp only [QuotientAddGroup.leftRel_apply, AddSubgroup.mem_addSubgroupOf, AddSubgroup.coe_add,
-    NegMemClass.coe_neg, AddSubgroup.mem_mk, SetLike.mem_coe]
+  simp only [Quotient.eq'', QuotientAddGroup.leftRel_apply, AddSubgroup.mem_addSubgroupOf,
+    AddSubgroup.coe_add, NegMemClass.coe_neg, AddSubgroup.mem_mk, SetLike.mem_coe]
   rename_i a1 a2 a3
   have : -((a1 + a2) * a3).1 + ((a1 * a3).1 + (a2 * a3).1) = 0 := by
     have : -((a1.1 + a2.1) * a3.1) + (a1.1 * a3.1 + a2.1 * a3.1) = 0 := by noncomm_ring
     rw [← this]
     rfl
-  rw [this]
-  exact zero_mem (F_lt (i + j))
+  simpa only [this] using zero_mem (F_lt (i + j))
 
-/--The nat scalar multiple in `GradedPiece F F_lt 0`-/
+/-- The nat scalar multiple in `GradedPiece F F_lt 0`.-/
 def GradedPiece.natCast [IsRingFiltration F F_lt] (n : ℕ) : GradedPiece F F_lt 0 :=
   mk F F_lt (n • (1 : F 0))
 
@@ -439,7 +454,7 @@ instance [hasGMul F F_lt] : DirectSum.GSemiring (GradedPiece F F_lt) :=
   natCast_zero := GradedPiece.natCast_zero F F_lt
   natCast_succ := GradedPiece.natCast_succ F F_lt }
 
-/--The int scalar multiple in `GradedPiece F F_lt 0`-/
+/-- The int scalar multiple in `GradedPiece F F_lt 0`.-/
 def GradedPiece.intCast [IsRingFiltration F F_lt] (n : ℤ) : GradedPiece F F_lt 0 :=
   mk F F_lt (n • (1 : F 0))
 
