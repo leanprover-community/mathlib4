@@ -7,7 +7,7 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.Analysis.Calculus.Deriv.ZPow
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
-import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.Analytic.IsolatedZeros
 
 /-!
 # Integral over a circle in `ℂ`
@@ -78,7 +78,6 @@ open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptoti
 /-!
 ### `circleMap`, a parametrization of a circle
 -/
-
 
 /-- The exponential map $θ ↦ c + R e^{θi}$. The range of this map is the circle in `ℂ` with center
 `c` and radius `|R|`. -/
@@ -162,6 +161,16 @@ for multiplication in a normed algebra over the base field. -/
 theorem differentiable_circleMap (c : ℂ) (R : ℝ) : Differentiable ℝ (circleMap c R) := fun θ =>
   (hasDerivAt_circleMap c R θ).differentiableAt
 
+open Complex in
+/-- The circleMap is real analytic. -/
+theorem analyticOnNhd_circleMap {c : ℂ} {R : ℝ} :
+    AnalyticOnNhd ℝ (circleMap c R) Set.univ := by
+  intro z hz
+  apply analyticAt_const.add
+  apply analyticAt_const.mul
+  rw [(by rfl : (fun θ ↦ exp (θ * I) : ℝ → ℂ) = cexp ∘ (fun θ : ℝ ↦ (θ * I)))]
+  apply analyticAt_cexp.restrictScalars.comp ((ofRealCLM.analyticAt z).mul (by fun_prop))
+
 @[continuity, fun_prop]
 theorem continuous_circleMap (c : ℂ) (R : ℝ) : Continuous (circleMap c R) :=
   (differentiable_circleMap c R).continuous
@@ -192,6 +201,17 @@ theorem continuous_circleMap_inv {R : ℝ} {z w : ℂ} (hw : w ∈ ball z R) :
     exact fun θ => circleMap_ne_mem_ball hw θ
   -- Porting note: was `continuity`
   exact Continuous.inv₀ (by fun_prop) this
+
+theorem circleMap_preimage_codiscrete {c : ℂ} {R : ℝ} (hR : R ≠ 0) :
+    map (circleMap c R) (codiscrete ℝ) ≤ (codiscreteWithin (Metric.sphere c |R|)) := by
+  intro s hs
+  apply analyticOnNhd_circleMap.preimage_mem_codiscreteWithin
+  · intro x hx
+    by_contra hCon
+    obtain ⟨a, ha⟩ := eventuallyConst_iff_exists_eventuallyEq.1 hCon
+    have := ha.deriv.eq_of_nhds
+    simp [hR] at this
+  · rwa [Set.image_univ, range_circleMap]
 
 /-!
 ### Integrability of a function on a circle
@@ -237,6 +257,18 @@ end CircleIntegrable
 @[simp]
 theorem circleIntegrable_zero_radius {f : ℂ → E} {c : ℂ} : CircleIntegrable f c 0 := by
   simp [CircleIntegrable]
+
+/-- Circle integrability is invariant when functions change along discrete sets. -/
+theorem circleIntegrable_congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → ℂ}
+    (hf : f₁ =ᶠ[codiscreteWithin (Metric.sphere c |R|)] f₂) :
+    CircleIntegrable f₁ c R → CircleIntegrable f₂ c R := by
+  by_cases hR : R = 0
+  · rw [hR]
+    simp
+  apply (intervalIntegrable_congr_codiscreteWithin _).1
+  rw [eventuallyEq_iff_exists_mem]
+  use (circleMap c R)⁻¹' {z | f₁ z = f₂ z}, codiscreteWithin.mono
+    (by simp only [Set.subset_univ]) (circleMap_preimage_codiscrete hR hf), (by tauto)
 
 theorem circleIntegrable_iff [NormedSpace ℂ E] {f : ℂ → E} {c : ℂ} (R : ℝ) :
     CircleIntegrable f c R ↔ IntervalIntegrable (fun θ : ℝ =>
