@@ -236,8 +236,19 @@ noncomputable def AssociatedGradedRingHom [DecidableEq ι] :
     (AssociatedGraded FR FR_lt) →+* (AssociatedGraded FS FS_lt) where
   __ := f.1.AssociatedGradedAddMonoidHom
   map_one' := by
-
-    sorry
+    simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
+    ext i
+    show Gr(i)[f] (((of (GradedPiece FR FR_lt) 0) (1 : GradedPiece FR FR_lt 0)) i) =
+      (of (GradedPiece FS FS_lt) 0) (1 : GradedPiece FS FS_lt 0) i
+    simp only [DirectSum.of_apply]
+    by_cases eq0 : 0 = i
+    · have : Gr(0)[f] 1 = 1 := by
+        show ⟦((f.piece_wise_hom 0) 1)⟧ = ⟦1⟧
+        congr
+        exact Subtype.val_injective f.toRingHom.map_one
+      convert this
+      <;> simp [eq0]
+    · simp [eq0]
   map_mul' x y := by
 
     sorry
