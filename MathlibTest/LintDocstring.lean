@@ -58,3 +58,13 @@ def foo : Bool := by
 
 -/
 example : Nat := 1
+
+/--
+warning: error: doc-strings should not be indented
+note: this linter can be disabled with `set_option linter.style.docString false`
+-/
+#guard_msgs in
+/-- Let's give an example.
+  sorry
+-/
+example : Nat := 1

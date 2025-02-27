@@ -61,6 +61,10 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if tail + 1 != docString.length then
     Linter.logLint linter.style.docString (endRg 3)
       s!"error: doc-strings should end with a single space or newline"
+  let fromFirstLineBreak := docString.dropWhile (· != '\n')
+  if fromFirstLineBreak.get ⟨1⟩ == ' ' then
+    Linter.logLint linter.style.docString (endRg (fromFirstLineBreak.length + 1))
+      s!"error: doc-strings should not be indented"
 
 initialize addLinter docStringLinter
 
