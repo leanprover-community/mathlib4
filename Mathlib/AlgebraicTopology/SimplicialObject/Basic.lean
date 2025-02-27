@@ -262,7 +262,7 @@ open scoped SimplexCategory.Truncated in
 scoped macro_rules
   | `($X:term _⦋$m:term⦌$n:subscript) =>
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
-      (Opposite.op ⟨SimplexCategory.mk $m, by first | trunc |
+      (Opposite.op ⟨SimplexCategory.mk $m, by first | get_elem_tactic |
       fail "Failed to prove truncation property. Try writing `X _⦋m, by ...⦌ₙ`."⟩))
   | `($X:term _⦋$m:term, $p:term⦌$n:subscript) =>
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
@@ -709,7 +709,7 @@ open scoped SimplexCategory.Truncated in
 scoped macro_rules
   | `($X:term ^⦋$m:term⦌$n:subscript) =>
     `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
-      ⟨SimplexCategory.mk $m, by first | trunc |
+      ⟨SimplexCategory.mk $m, by first | get_elem_tactic |
       fail "Failed to prove truncation property. Try writing `X ^⦋m, by ...⦌ₙ`."⟩)
   | `($X:term ^⦋$m:term, $p:term⦌$n:subscript) =>
     `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj

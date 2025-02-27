@@ -176,18 +176,14 @@ noncomputable def inclusion.fullyFaithful (n : ℕ) :
 theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g := SimplexCategory.Hom.ext _ _
 
-/-- Some quick attempts to prove that `⦋m⦌` is `n`-truncated (`⦋m⦌.len ≤ n`). -/
-scoped macro "trunc" : tactic =>
-  `(tactic| first | decide | assumption |
-    dsimp only [SimplexCategory.len_mk]; omega)
-
 open Mathlib.Tactic (subscriptTerm) in
 /-- For `m ≤ n`, `⦋m⦌ₙ` is the `m`-dimensional simplex in `Truncated n`. The
 proof `p : m ≤ n` can also be provided using the syntax `⦋m, p⦌ₙ`. -/
 scoped syntax:max (name := mkNotation)
   "⦋" term ("," term)? "⦌" noWs subscriptTerm : term
 scoped macro_rules
-  | `(⦋$m:term⦌$n:subscript) => `((⟨SimplexCategory.mk $m, by first | trunc |
+  | `(⦋$m:term⦌$n:subscript) =>
+    `((⟨SimplexCategory.mk $m, by first | get_elem_tactic |
       fail "Failed to prove truncation property. Try writing `⦋m, by ...⦌ₙ`."⟩ :
       SimplexCategory.Truncated $n))
   | `(⦋$m:term, $p:term⦌$n:subscript) =>
