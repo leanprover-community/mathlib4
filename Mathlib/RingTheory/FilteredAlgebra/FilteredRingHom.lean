@@ -19,7 +19,7 @@ between two filtered sets `IsFiltration FA FA_lt` and `IsFiltration FB FB_lt` (t
 
 * FilteredHom.comp : Defines the composition of two filtered morphisms
 `f : FilteredHom FA FA_lt FB FB_lt` and `g : FilteredHom FB FB_lt FC FC_lt`, resulting in a new
-morphism `f ∘ g : FilteredHom FA FA_lt FC FC_lt`.
+morphism `f.comp g : FilteredHom FA FA_lt FC FC_lt`.
 
 * `FilteredRingHom` : Defines a morphism between filtered rings that preserves both the ring and
 filtered morphism structures. This class combines the properties of a ring homomorphism and a
@@ -38,11 +38,11 @@ intersection of the image of `f` with the `p`-th filtration layer of `FS` and `F
 
 * `FilteredRingHom.comp` : Defines the composition of filtered ring morphisms. Given two filtered
 morphisms `f : FilteredRingHom FR FR_lt FS FS_lt` and `g : FilteredRingHom FS FS_lt FT FT_lt`, their
-composition `g ∘ f` is defined by composing the underlying ring homomorphisms and ensuring
+composition `g.comp  f` is defined by composing the underlying ring homomorphisms and ensuring
 compatibility with the filtration structures.
 
 * `Gf` : Defines the induced morphism on the `i`-th graded piece of the associated graded ring.
-**Mathematically, it is `(Gf f i) ⟦x⟧ = ⟦f.toRingHom x⟧`**
+(Mathematically, it is `(Gf f i) ⟦x⟧ = ⟦f.toRingHom x⟧`)
 (`x : FR i`, `⟦a⟧ : GradedPiece FR FR_lt i`)
 Given a filtered ring homomorphism `f : FilteredRingHom FR FR_lt FS FS_lt`, this function takes an
 element in the `i`-th graded piece of `FR` (represented as a quotient `FR i / FR_lt i`) and maps it
@@ -51,7 +51,7 @@ result lies within the `i`-th filtration layer of `FS`. The construction respect
 equivalence relation, making it a well-defined additive group homomorphism.
 
 * `G` : Defines the induced graded ring morphism between associated graded rings.
-**Mathematically, it is `G f = ⨁ Gf f i`**
+(Mathematically, it is `G f = ⨁ Gf f i`)
 Specifically, given a filtered ring morphism `f : FilteredRingHom FR FR_lt FS FS_lt`, this function
 constructs an AddSubgroup homomorphism `G f` between the associated graded modules
 `⨁ (FR i / FR_lt i)` and `⨁ (FS i / FS_lt i)` by applying `Gf f i` component-wise to each graded
@@ -81,15 +81,12 @@ variable {FA FB FC FA_lt FB_lt FC_lt} in
 
 /-- Defines the composition of two filtered morphisms `f : FilteredHom FA FA_lt FB FB_lt` and
 `g : FilteredHom FB FB_lt FC FC_lt`, resulting in a new morphism
-`f ∘ g : FilteredHom FA FA_lt FC FC_lt`.-/
+`f.comp g : FilteredHom FA FA_lt FC FC_lt`.-/
 def FilteredHom.comp : FilteredHom FA FA_lt FC FC_lt := {
   toFun := g.1.comp f.1
   pieces_wise := fun i a ha ↦ g.pieces_wise i (f.1 a) (f.pieces_wise i a ha)
   pieces_wise_lt := fun i a ha ↦ g.pieces_wise_lt i (f.1 a) (f.pieces_wise_lt i a ha)
 }
-
-/-- `f ∘ g` denotes the composition defined above. -/
-infixl:100 " ∘ " => FilteredHom.comp
 
 end FilteredHom
 
@@ -127,16 +124,13 @@ variable (g : FilteredRingHom FS FS_lt FT FT_lt) (f : FilteredRingHom FR FR_lt F
 variable {FR FS FT FR_lt FS_lt FT_lt} in
 /-- Defines the composition of filtered ring morphisms. Given two filtered morphisms
 `f : FilteredRingHom FR FR_lt FS FS_lt` and `g : FilteredRingHom FS FS_lt FT FT_lt`, their
-composition `g ∘ f` is defined by composing the underlying ring homomorphisms and ensuring
+composition `g.comp f` is defined by composing the underlying ring homomorphisms and ensuring
 compatibility with the filtration structures.-/
 def FilteredRingHom.comp : FilteredRingHom FR FR_lt FT FT_lt := {
     g.toRingHom.comp f.toRingHom with
   pieces_wise := fun i a ha ↦ g.pieces_wise i (f.toFun a) (f.pieces_wise i a ha)
   pieces_wise_lt := fun i a ha ↦ g.pieces_wise_lt i (f.toFun a) (f.pieces_wise_lt i a ha)
   }
-
-/-- `f ∘ g` denotes the composition defined above. -/
-infixl:100 " ∘ " => FilteredRingHom.comp
 
 end FilteredRingHom
 
@@ -157,8 +151,8 @@ variable [Ring T] (FT : ι → σT) (FT_lt : outParam <| ι → σT) [SetLike σ
 variable (f : FilteredRingHom FR FR_lt FS FS_lt)
 
 /-- Defines the induced morphism on the `i`-th graded piece of the associated graded ring.
-**Mathematically, it is `(Gf f i) ⟦x⟧ = ⟦f.toRingHom x⟧`**
-(`x : FR i`, `⟦a⟧ : GradedPiece FR FR_lt i`)
+(Mathematically, it is `(Gf f i) ⟦x⟧ = ⟦f.toRingHom x⟧`,
+in which `x : FR i`, `⟦a⟧ : GradedPiece FR FR_lt i`)
 Given a filtered ring homomorphism `f : FilteredRingHom FR FR_lt FS FS_lt`, this function takes an
 element in the `i`-th graded piece of `FR` (represented as a quotient `FR i / FR_lt i`) and maps it
 to the corresponding graded piece of `FS` by applying the ring homomorphism `f`, ensuring that the
@@ -192,7 +186,7 @@ variable (g : FilteredRingHom FS FS_lt FT FT_lt)
 omit [DecidableEq ι] in
 lemma GradedPieceHom_comp_apply (x : AssociatedGraded FR FR_lt)(i : ι) :
     GradedPieceHom g i (GradedPieceHom f i (x i)) =
-    GradedPieceHom (g ∘ f) i (x i) := by
+    GradedPieceHom (g.comp f) i (x i) := by
   obtain ⟨a, ha⟩ := Quotient.exists_rep (x i)
   rw [← ha]
   congr
@@ -211,7 +205,7 @@ private lemma AssociatedGradedRingHomAux_apply (x : AssociatedGraded FR FR_lt) (
     rw [DFinsupp.not_mem_support_iff.mp ixsupp, map_zero]
 
 /-- Defines the induced graded ring morphism between associated graded rings.
-**Mathematically, it is `G f = ⨁ Gf f i`**
+(Mathematically, it is `G f = ⨁ Gf f i`)
 Specifically, given a filtered ring morphism `f : FilteredRingHom FR FR_lt FS FS_lt`, this function
 constructs an AddSubgroup homomorphism `G f` between the associated graded modules
 `⨁ (FR i / FR_lt i)` and `⨁ (FS i / FS_lt i)` by applying `Gf f i` component-wise to each graded
@@ -224,15 +218,15 @@ noncomputable def AssociatedGradedRingHom :
     ext i
     simp only [add_apply, AssociatedGradedRingHomAux_apply, map_add]
 
-theorem G_to_Gf (x : AssociatedGraded FR FR_lt) (i : ι) :
+theorem AssociatedGradedRingHom_to_GradedPieceHom (x : AssociatedGraded FR FR_lt) (i : ι) :
     (AssociatedGradedRingHom f x) i = GradedPieceHom f i (x i) := by
   simp [AssociatedGradedRingHom, AssociatedGradedRingHomAux_apply]
 
-theorem G_comp: (AssociatedGradedRingHom g) ∘ (AssociatedGradedRingHom f) =
-    AssociatedGradedRingHom (g ∘ f) := by
+theorem AssociatedGradedRingHom_comp: (AssociatedGradedRingHom g).comp (AssociatedGradedRingHom f) =
+    AssociatedGradedRingHom (g.comp f) := by
   ext x i
   simpa [AssociatedGradedRingHom, AssociatedGradedRingHomAux_apply]
-    using GradedPieceHom_comp_apply FT FT_lt f g x i
+    using GradedPieceHom_comp_apply FT FT_lt f g _ _
 
 end FilteredRingHom
 
