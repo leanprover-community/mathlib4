@@ -27,7 +27,7 @@ variable {R' : Type*} {Mᵢ N₁ N₂ : Type*} [CommSemiring R'] [AddCommGroup N
 
 namespace Equiv.Perm
 
-/-- Elements which are considered equivalent if they differ only by swaps within α or β  -/
+/-- Elements which are considered equivalent if they differ only by swaps within α or β -/
 abbrev ModSumCongr (α β : Type*) :=
   _ ⧸ (Equiv.Perm.sumCongrHom α β).range
 
