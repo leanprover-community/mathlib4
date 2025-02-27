@@ -10,9 +10,11 @@ import Mathlib.CategoryTheory.Monad.Limits
 /-!
 # The category of small categories has all small colimits.
 
-A reflective subcategory inherits any colimits present in the ambient category, constructed
-by applying the reflector. Thus the fully faithful nerve embedding into simplicial sets and
-its left adjoint provide a construction of colimits in the category of small categories.
+In this file, the existence of colimits in `Cat` is deduced from the existence of
+colimits in the category of simplicial sets. Indeed, `Cat` identifies to a reflective
+subcategory of the category of simplicial sets (see `AlgebraicTopology.SimplicialSet.NerveAdjunction`),
+so that colimits in `Cat` can be computed by passing to nerves, taking the colimit
+in `SSet` and finally applying the homotopy category functor `SSet ⥤ Cat`. 
 -/
 
 
