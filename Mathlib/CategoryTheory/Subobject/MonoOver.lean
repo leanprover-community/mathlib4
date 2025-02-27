@@ -134,6 +134,18 @@ def isoMk {f g : MonoOver X} (h : f.obj.left ≅ g.obj.left)
 def mk'ArrowIso {X : C} (f : MonoOver X) : mk' f.arrow ≅ f :=
   isoMk (Iso.refl _)
 
+instance {A B : MonoOver X} (f : A ⟶ B) [IsIso f] : IsIso f.left :=
+  inferInstanceAs (IsIso ((MonoOver.forget _ ⋙ Over.forget _).map f))
+
+lemma isIso_iff_isIso_left {A B : MonoOver X} (f : A ⟶ B) :
+    IsIso f ↔ IsIso f.left := by
+  constructor
+  · intro
+    infer_instance
+  · intro
+    exact ⟨MonoOver.homMk (inv f.left) (by simpa using (MonoOver.w f).symm),
+      Subsingleton.elim _ _, Subsingleton.elim _ _⟩
+
 /-- Lift a functor between over categories to a functor between `MonoOver` categories,
 given suitable evidence that morphisms are taken to monomorphisms.
 -/

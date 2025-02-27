@@ -28,4 +28,19 @@ namespace CategoryTheory
 @[nolint unusedArguments]
 abbrev ObjectProperty (C : Type u) [Category.{v} C] : Type u := C → Prop
 
+namespace ObjectProperty
+
+variable {C : Type u} [Category.{v} C] (P : ObjectProperty C)
+
+/-- The typeclass associated to `P : ObjectProperty C`. -/
+@[mk_iff]
+class Is (X : C) : Prop where
+  prop : P X
+
+lemma prop_of_is (X : C) [P.Is X] : P X := by rwa [← P.is_iff]
+
+lemma is_of_prop {X : C} (hX : P X) : P.Is X := by rwa [P.is_iff]
+
+end ObjectProperty
+
 end CategoryTheory
