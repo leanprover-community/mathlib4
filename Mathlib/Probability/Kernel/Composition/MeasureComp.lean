@@ -33,6 +33,11 @@ lemma snd_compProd (μ : Measure α) [SFinite μ] (κ : Kernel α β) [IsSFinite
   · rfl
   · exact measurable_snd hs
 
+lemma ae_ae_of_ae_comp [SFinite μ] [IsSFiniteKernel κ] {p : β → Prop} (h : ∀ᵐ ω ∂(κ ∘ₘ μ), p ω) :
+    ∀ᵐ ω' ∂μ, ∀ᵐ ω ∂(κ ω'), p ω := by
+  rw [← snd_compProd] at h
+  exact Measure.ae_ae_of_ae_compProd (ae_of_ae_map measurable_snd.aemeasurable h)
+
 instance [SFinite μ] [IsSFiniteKernel κ] : SFinite (κ ∘ₘ μ) := by
   rw [← snd_compProd]; infer_instance
 
@@ -63,7 +68,43 @@ lemma compProd_eq_comp_prod (μ : Measure α) [SFinite μ] (κ : Kernel α β) [
 lemma compProd_id_eq_copy_comp [SFinite μ] : μ ⊗ₘ Kernel.id = Kernel.copy α ∘ₘ μ := by
   rw [compProd_id, Kernel.copy, deterministic_comp_eq_map]
 
+lemma comp_compProd_comm {η : Kernel (α × β) γ}
+    [SFinite μ] [IsSFiniteKernel κ] [IsSFiniteKernel η] :
+    η ∘ₘ (μ ⊗ₘ κ) = ((κ ⊗ₖ η) ∘ₘ μ).snd := by
+  ext s hs
+  rw [Measure.bind_apply hs η.measurable, Measure.snd_apply hs,
+    Measure.bind_apply _ (Kernel.measurable _), Measure.lintegral_compProd (η.measurable_coe hs)]
+  swap; · exact measurable_snd hs
+  congr with a
+  rw [Kernel.compProd_apply]
+  · rfl
+  · exact measurable_snd hs
+
 end CompProd
+
+section Integrable
+
+variable {E : Type*} [NormedAddCommGroup E] {f : β → E} [SFinite μ] [IsSFiniteKernel κ]
+
+lemma integrable_compProd_snd_iff (hf : AEStronglyMeasurable f (κ ∘ₘ μ)) :
+    Integrable (fun p ↦ f p.2) (μ ⊗ₘ κ) ↔ Integrable f (κ ∘ₘ μ) := by
+  rw [← snd_compProd, Measure.snd, integrable_map_measure _ measurable_snd.aemeasurable]
+  · rfl
+  · rwa [← Measure.snd, snd_compProd]
+
+lemma ae_integrable_of_integrable_comp (h_int : Integrable f (κ ∘ₘ μ)) :
+    ∀ᵐ x ∂μ, Integrable f (κ x) := by
+  rw [← Measure.integrable_compProd_snd_iff h_int.1, Measure.integrable_compProd_iff h_int.1]
+    at h_int
+  exact h_int.1
+
+lemma integrable_integral_norm_of_integrable_comp (h_int : Integrable f (κ ∘ₘ μ)) :
+    Integrable (fun x ↦ ∫ y, ‖f y‖ ∂κ x) μ := by
+  rw [← Measure.integrable_compProd_snd_iff h_int.1, Measure.integrable_compProd_iff h_int.1]
+    at h_int
+  exact h_int.2
+
+end Integrable
 
 section AddSMul
 
