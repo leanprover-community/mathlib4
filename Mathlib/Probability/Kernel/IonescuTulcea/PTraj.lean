@@ -300,15 +300,13 @@ first one being the identity. It allows to compute integrals. -/
 lemma ptraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) : ptraj κ a b =
     (Kernel.id ×ₖ (ptraj κ a b).map (restrict₂ Ioc_subset_Iic_self)).map (IicProdIoc a b) := by
   obtain hba | hab := le_total b a
-  · rw [ptraj_le hba, IicProdIoc_le hba, map_comp_right, ← fst_eq, @fst_prod _ _ _ _ _ _ _ _ _ ?_,
+  · rw [ptraj_le hba, IicProdIoc_le hba, map_comp_right, ← fst_eq, deterministic_map, fst_prod,
       id_map]
-    · exact IsMarkovKernel.map _ (measurable_restrict₂ _)
     all_goals fun_prop
   induction b, hab using Nat.le_induction with
   | base =>
     ext1 x
-    rw [ptraj_self, id_map, map_apply, prod_apply, IicProdIoc_self, ← Measure.fst,
-      Measure.fst_prod]
+    rw [ptraj_self, id_map, map_apply, prod_apply, IicProdIoc_self, ← Measure.fst, Measure.fst_prod]
     all_goals fun_prop
   | succ k h hk =>
     have : (IicProdIoc (X := X) k (k + 1)) ∘ (Prod.map (IicProdIoc a k) id) =
