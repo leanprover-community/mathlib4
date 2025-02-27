@@ -585,7 +585,7 @@ noncomputable def Function.ExtendByZero.linearMap : (ι → R) →ₗ[R] η → 
 end Extend
 
 variable (R) in
-/-- `Fin.consEquiv` as a continuous linear equivalence.  -/
+/-- `Fin.consEquiv` as a continuous linear equivalence. -/
 @[simps]
 def Fin.consLinearEquiv
     {n : ℕ} (M : Fin n.succ → Type*) [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] :
