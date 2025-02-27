@@ -95,8 +95,7 @@ structure Context where
   /-- current transition depth -/
   transitionDepth := 0
 
-/-- General theorem about function property
-  used for transition and morphism theorems -/
+/-- General theorem about a function property used for transition and morphism theorems -/
 structure GeneralTheorem where
   /-- function property name -/
   funPropName   : Name
