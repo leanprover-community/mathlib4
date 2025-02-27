@@ -195,11 +195,17 @@ lemma exp_cgf_of_neZero [hμ : NeZero μ] (hX : Integrable (fun ω ↦ exp (t * 
 lemma exp_cgf [IsProbabilityMeasure μ] (hX : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     exp (cgf X μ t) = mgf X μ t := by rw [cgf, exp_log (mgf_pos hX)]
 
+lemma mgf_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'} {Y : Ω' → Ω} {X : Ω → ℝ}
+    (hY : AEMeasurable Y μ) {t : ℝ} (hX : AEStronglyMeasurable (fun ω ↦ exp (t * X ω)) (μ.map Y)) :
+    mgf X (μ.map Y) t = mgf (X ∘ Y) μ t := by rw [mgf, integral_map hY hX]; rfl
+
 lemma mgf_id_map (hX : AEMeasurable X μ) : mgf id (μ.map X) = mgf X μ := by
   ext t
-  rw [mgf, integral_map hX]
-  · rfl
-  · exact (measurable_const_mul _).exp.aestronglyMeasurable
+  rw [mgf_map hX, Function.id_comp]
+  exact (measurable_const_mul _).exp.aestronglyMeasurable
+
+lemma mgf_congr {Y : Ω → ℝ} (h : X =ᵐ[μ] Y) : mgf X μ t = mgf Y μ t :=
+  integral_congr_ae <| by filter_upwards [h] with ω hω using by rw [hω]
 
 lemma mgf_congr_identDistrib {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ' : Measure Ω'}
     {Y : Ω' → ℝ} (h : IdentDistrib X Y μ μ') :
