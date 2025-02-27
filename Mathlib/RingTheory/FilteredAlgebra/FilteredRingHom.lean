@@ -170,8 +170,11 @@ omit [Preorder ι] [IsFiltration FA FA_lt] [IsFiltration FB FB_lt] in
 private lemma AssociatedGradedAddMonoidHom_apply (x : AssociatedGraded FA FA_lt) (i : ι) :
     (Gr[f] x) i = Gr(i)[f] (x i) := rfl
 
+omit [Preorder ι] [IsFiltration FA FA_lt] [IsFiltration FB FB_lt] [IsFiltration FC FC_lt] in
 theorem AssociatedGradedAddMonoidHom_comp: Gr[g].comp Gr[f] = Gr[g.comp f] := by
-  sorry
+  ext x i
+  simpa [AssociatedGradedAddMonoidHom, AssociatedGradedAddMonoidHom_apply]
+    using GradedPieceHom_comp_apply g f _ _
 
 end FilteredAddMonoidHom
 
@@ -248,8 +251,10 @@ set_option linter.unusedSectionVars false in
 theorem AssociatedGradedRingHom_apply (x : AssociatedGraded FR FR_lt) (i : ι) :
     (Gr[f] x) i = Gr(i)[f] (x i) := rfl
 
-theorem AssociatedGradedRingHom_comp: Gr[g].comp Gr[f] = Gr[g.comp f] := by
-  sorry
+set_option linter.unusedSectionVars false in
+theorem AssociatedGradedRingHom_comp: Gr[g].comp Gr[f] = Gr[g.comp f] :=
+  RingHom.ext <| fun x ↦ congrFun
+  (congrArg DFunLike.coe (FilteredAddMonoidHom.AssociatedGradedAddMonoidHom_comp g.1 f.1)) x
 
 end DirectSum
 
