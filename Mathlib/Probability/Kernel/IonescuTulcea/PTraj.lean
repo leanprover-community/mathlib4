@@ -284,6 +284,17 @@ theorem ptraj_comp_ptraj (hab : a ≤ b) (hbc : b ≤ c) :
   | base => simp
   | succ k h hk => rw [ptraj_succ_eq_comp h, comp_assoc, hk, ← ptraj_succ_eq_comp (hab.trans h)]
 
+lemma fst_prod_comp_id_prod {X Y Z : Type*} {mX : MeasurableSpace X}
+    {mY : MeasurableSpace Y} {mZ : MeasurableSpace Z} (κ : Kernel X Y) [IsSFiniteKernel κ]
+    (η : Kernel (X × Y) Z) [IsSFiniteKernel η] :
+    ((deterministic Prod.fst measurable_fst) ×ₖ η) ∘ₖ (Kernel.id ×ₖ κ) =
+    Kernel.id ×ₖ (η ∘ₖ (Kernel.id ×ₖ κ)) := by
+  ext x s ms
+  simp_rw [comp_apply' _ _ _ ms, lintegral_id_prod (Kernel.measurable_coe _ ms),
+    deterministic_prod_apply' _ _ _ ms, id_prod_apply' _ _ ms,
+    comp_apply' _ _ _ (measurable_prod_mk_left ms),
+    lintegral_id_prod (η.measurable_coe (measurable_prod_mk_left ms))]
+
 /-- This is a technical lemma saying that `ptraj κ a b` consists of two independent parts, the
 first one being the identity. It allows to compute integrals. -/
 lemma ptraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) : ptraj κ a b =
@@ -310,12 +321,12 @@ lemma ptraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) : ptraj κ a b =
       split_ifs <;> try rfl
       omega
     nth_rw 1 [← ptraj_comp_ptraj h k.le_succ, hk, ptraj_succ_self, comp_map, comap_map_comm,
-      prod_comap, ← id_map_eq_id_comap, map_prod_eq, ← map_comp_right, this, map_comp_right,
+      comap_prod, id_comap, ← id_map, map_prod_eq, ← map_comp_right, this, map_comp_right,
       id_prod_eq, prodAssoc_prod, map_comp_right, ← map_prod_map, map_id, ← map_comp,
       map_apply_eq_iff_map_symm_apply_eq, fst_prod_comp_id_prod, ← map_comp_right,
       ← coe_IicProdIoc (h.trans k.le_succ), symm_comp_self, map_id,
       deterministic_congr IicProdIoc_comp_restrict₂.symm, ← deterministic_comp_deterministic,
-      comp_deterministic_eq_comap, ← prod_comap, ← map_comp, ← comp_map, ← hk,
+      comp_deterministic_eq_comap, ← comap_prod, ← map_comp, ← comp_map, ← hk,
       ← ptraj_comp_ptraj h k.le_succ, ptraj_succ_self, map_comp, map_comp, ← map_comp_right,
       ← id_map, map_prod_eq, ← map_comp_right]
     · rfl
