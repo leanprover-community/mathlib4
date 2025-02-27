@@ -231,7 +231,7 @@ def refl [Module R M] : M ≃ₗ[R] M :=
 end
 
 @[simp]
-theorem refl_apply [SMul R M] (x : M) : refl R M x = x :=
+theorem refl_apply [Module R M] (x : M) : refl R M x = x :=
   rfl
 
 /-- Linear equivalences are symmetric. -/
@@ -404,7 +404,7 @@ theorem eq_comp_toLinearMap_iff (f g : M₂ →ₛₗ[σ₂₃] M₃) :
   rw [(eq_comp_toLinearMap_symm g (f.comp e₁₂.toLinearMap)).mpr h.symm, eq_comp_toLinearMap_symm]
 
 @[simp]
-theorem refl_symm [SMul R M] : (refl R M).symm = LinearEquiv.refl R M :=
+theorem refl_symm [Module R M] : (refl R M).symm = LinearEquiv.refl R M :=
   rfl
 
 @[simp]
@@ -418,7 +418,7 @@ theorem symm_trans_self (f : M₁ ≃ₛₗ[σ₁₂] M₂) : f.symm.trans f = L
   simp
 
 @[simp]
-theorem refl_toLinearMap [SMul R M] : (LinearEquiv.refl R M : M →ₗ[R] M) = LinearMap.id :=
+theorem refl_toLinearMap [Module R M] : (LinearEquiv.refl R M : M →ₗ[R] M) = LinearMap.id :=
   rfl
 
 @[simp]
@@ -451,7 +451,7 @@ theorem map_ne_zero_iff {x : M} : e x ≠ 0 ↔ x ≠ 0 :=
 @[simp]
 theorem symm_symm (e : M ≃ₛₗ[σ] M₂) : e.symm.symm = e := rfl
 
-theorem symm_bijective [SMul R M] [SMul S M₂] [RingHomInvPair σ' σ] [RingHomInvPair σ σ'] :
+theorem symm_bijective [Module R M] [Module S M₂] [RingHomInvPair σ' σ] [RingHomInvPair σ σ'] :
     Function.Bijective (symm : (M ≃ₛₗ[σ] M₂) → M₂ ≃ₛₗ[σ'] M) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
