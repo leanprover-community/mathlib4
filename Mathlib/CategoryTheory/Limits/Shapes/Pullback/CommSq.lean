@@ -370,6 +370,35 @@ lemma of_iso (h : IsPullback fst snd f g)
               rw [← reassoc_of% commfst, e₂.hom_inv_id, Category.comp_id]
             · change snd = e₁.hom ≫ snd' ≫ e₃.inv
               rw [← reassoc_of% commsnd, e₃.hom_inv_id, Category.comp_id]))⟩
+
+lemma of_iso1 {P P' X Y Z : C}
+    {f : X ⟶ Z} {g : Y ⟶ Z} {fst : P ⟶ X} {snd : P ⟶ Y}
+    {fst' : P' ⟶ X} {snd' : P' ⟶ Y}
+    (h : IsPullback fst snd f g) (i₁ : P ≅ P')
+    (commfst : fst = i₁.hom ≫ fst')
+    (commsnd : snd = i₁.hom ≫ snd') :
+    IsPullback fst' snd' f g := by
+  apply IsPullback.of_iso h i₁ (Iso.refl _) (Iso.refl _) (Iso.refl _) <;> aesop_cat
+
+lemma of_iso2 {P X X' Y Z : C}
+    {f : X ⟶ Z} {g : Y ⟶ Z} {fst : P ⟶ X} {snd : P ⟶ Y}
+    {f' : X' ⟶ Z} {fst' : P ⟶ X'}
+    (h : IsPullback fst snd f g) (i₂ : X ≅ X')
+    (commfst : fst ≫ i₂.hom = fst')
+    (commf : f = i₂.hom ≫ f') :
+    IsPullback fst' snd f' g := by
+  apply IsPullback.of_iso h (Iso.refl _) i₂ (Iso.refl _) (Iso.refl _) <;> aesop_cat
+
+lemma of_iso12 {P P' X X' Y Z : C}
+    {f : X ⟶ Z} {g : Y ⟶ Z} {fst : P ⟶ X} {snd : P ⟶ Y}
+    {f' : X' ⟶ Z} {fst' : P' ⟶ X'} {snd' : P' ⟶ Y}
+    (h : IsPullback fst snd f g) (i₁ : P ≅ P') (i₂ : X ≅ X')
+    (commfst : fst ≫ i₂.hom = i₁.hom ≫ fst')
+    (commsnd : snd = i₁.hom ≫ snd')
+    (commf : f = i₂.hom ≫ f') :
+    IsPullback fst' snd' f' g := by
+  apply IsPullback.of_iso h i₁ i₂ (Iso.refl _) (Iso.refl _) <;> aesop_cat
+
 section
 
 variable {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y} [Mono f]
