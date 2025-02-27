@@ -45,7 +45,7 @@ abbrev uniqueRingEquiv [NonUnitalNonAssocSemiring A] : Matrix ι1 ι1 A ≃+* A 
   map_mul' := by simp [mul_apply]
 
 /-- `M₁(A)` is equivalent to `A` as `R`-algebras. -/
-abbrev uniqueAlgEquiv [Semiring A] [CommSemiring R] [Algebra R A]: Matrix ι1 ι1 A ≃ₐ[R] A where
+abbrev uniqueAlgEquiv [Semiring A] [CommSemiring R] [Algebra R A] : Matrix ι1 ι1 A ≃ₐ[R] A where
   __ := uniqueRingEquiv
   commutes' r := by aesop
 
