@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Topology.EMetricSpace.Defs
+import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 
@@ -328,3 +329,12 @@ theorem IsSeparable.separableSpace {s : Set α} (hs : IsSeparable s) :
 end Compact
 
 end TopologicalSpace
+
+theorem lebesgue_number_lemma_of_emetric {s : Set α} {ι : Sort*} {c : ι → Set α} (hs : IsCompact s)
+    (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) : ∃ δ > 0, ∀ x ∈ s, ∃ i, ball x δ ⊆ c i := by
+  simpa only [ball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
+    using uniformity_basis_edist.lebesgue_number_lemma hs hc₁ hc₂
+
+theorem lebesgue_number_lemma_of_emetric_sUnion {s : Set α} {c : Set (Set α)} (hs : IsCompact s)
+    (hc₁ : ∀ t ∈ c, IsOpen t) (hc₂ : s ⊆ ⋃₀ c) : ∃ δ > 0, ∀ x ∈ s, ∃ t ∈ c, ball x δ ⊆ t := by
+  rw [sUnion_eq_iUnion] at hc₂; simpa using lebesgue_number_lemma_of_emetric hs (by simpa) hc₂
