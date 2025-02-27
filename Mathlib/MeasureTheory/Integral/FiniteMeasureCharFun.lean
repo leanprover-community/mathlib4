@@ -6,7 +6,6 @@ Authors: Jakob Stiefel
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
-
 /-!
 # Characteristic Function of a Finite Measure
 
@@ -48,13 +47,13 @@ We show:
   determined by the integrals of the form `∫ v, exp (Complex.I * ⟨v, w⟩) ∂P` for all `w : ℝ ^ d`.
 -/
 
+open MeasureTheory Filter
+
 section probChar
 
 variable {V : Type*} [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
     {W : Type*} [TopologicalSpace W] [AddCommGroup W] [Module ℝ W]
     {e : AddChar ℝ Circle} {L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ}
-
-open MeasureTheory Filter
 
 /-- define probChar, as continuous mapping from V to ℂ -/
 noncomputable def probChar (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
