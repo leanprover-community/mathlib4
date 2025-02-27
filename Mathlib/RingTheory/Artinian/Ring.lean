@@ -61,7 +61,6 @@ lemma jacobson_eq_radical (I : Ideal R) : I.jacobson = I.radical := by
 lemma jacobson_eq_nilradical : (⊥ : Ideal R).jacobson = nilradical R :=
     jacobson_eq_radical _
 
-variable (R) in
 theorem isNilpotent_nilradical : IsNilpotent (nilradical R) := by
   rw [nilradical, ← jacobson_eq_radical]
   exact isNilpotent_jacobson_bot
@@ -128,7 +127,7 @@ lemma exists_multiset_ideal_is_maximal_and_prod_eq_bot :
     ∃ s : Multiset (Ideal R), (∀ I ∈ s, Ideal.IsMaximal I) ∧ s.prod = ⊥ := by
   cases' subsingleton_or_nontrivial R with h h
   · exact ⟨∅, by simp; exact eq_bot_of_subsingleton⟩
-  · obtain ⟨n, e⟩ := IsArtinianRing.isNilpotent_nilradical R
+  · obtain ⟨n, e⟩ := IsArtinianRing.isNilpotent_nilradical (R := R)
     have hn : n ≠ 0 := by intro h; rw [h] at e; simp_all
     refine ⟨n • (IsArtinianRing.setOf_isPrime_finite R).toFinset.1, ?_, ?_⟩
     · intro I hI

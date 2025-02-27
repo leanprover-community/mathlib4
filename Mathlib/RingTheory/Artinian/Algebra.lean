@@ -6,7 +6,6 @@ Authors: Michal Staromiejski
 import Mathlib.RingTheory.Artinian.Ring
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
-
 /-!
 # Algebras over artinian rings
 

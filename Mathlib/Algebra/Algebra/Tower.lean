@@ -324,6 +324,9 @@ end Algebra
 
 section OrderIso
 
+/-- If `S` is an `R`-algebra with the homomorphism from `R` to `S` is surjective, suppose `M` is an
+`R`-module and a `S`-module with the two structures compatible, then there is a order preserving
+bijection on the `R`-submodules of `M` and `S`-submodules of `M`. -/
 def orderIsoOfSurjective {R S} (M) [CommSemiring R] [Semiring S] [AddCommMonoid M]
     [Algebra R S] [Module S M] [Module R M] [IsScalarTower R S M]
     (h : Function.Surjective (algebraMap R S)) : Submodule S M ≃o Submodule R M := {
