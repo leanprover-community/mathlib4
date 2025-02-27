@@ -305,6 +305,15 @@ theorem isNoetherian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsNoetherian R M) : IsNoetherian S M :=
   isNoetherian_mk ⟨(Submodule.restrictScalarsEmbedding R S M).dual.wellFounded h.wf⟩
 
+theorem isNoetherian_iff_tower_of_surjective {R S} (M) [CommSemiring R] [Semiring S]
+    [AddCommMonoid M] [Algebra R S] [Module S M] [Module R M] [IsScalarTower R S M]
+    (h : Function.Surjective (algebraMap R S)) :
+  IsNoetherian R M ↔ IsNoetherian S M := by
+  refine ⟨isNoetherian_of_tower R, fun h' ↦ ?_⟩
+  simp_rw [isNoetherian_iff'] at h' ⊢
+  haveI : WellFoundedGT (Submodule S M) := h'
+  exact (Submodule.orderIsoOfSurjective M h).symm.toOrderEmbedding.wellFoundedGT
+
 instance isNoetherian_of_isNoetherianRing_of_finite (R M : Type*)
     [Ring R] [AddCommGroup M] [Module R M] [IsNoetherianRing R] [Module.Finite R M] :
     IsNoetherian R M :=

@@ -34,8 +34,8 @@ lemma isNoetherian_iff_isArtinian_of_mul {R : Type*} [CommRing R] (I J : Ideal R
   have : Function.Surjective (algebraMap R (R ⧸ I)) := Ideal.Quotient.mk_surjective
   have tfae_out := (IsArtinianRing.tfae (R ⧸ I) (J ⧸ IJ)).out 1 2
   have : IsNoetherian R (J ⧸ IJ) ↔ IsArtinian R (J ⧸ IJ) := by
-    rw [isNoetherian_of_tower_of_surjective (J ⧸ IJ) this, tfae_out,
-        ← isArtinian_of_tower_of_surjective (J ⧸ IJ) this]
+    rw [isNoetherian_iff_tower_of_surjective (J ⧸ IJ) this, tfae_out,
+        ← isArtinian_iff_tower_of_surjective (J ⧸ IJ) this]
   constructor
   · intro hNoetherianJ
     haveI := this.mp inferInstance
