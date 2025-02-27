@@ -520,8 +520,8 @@ def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
 
 /-- Sum of two homeomorphisms. -/
 def sumCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X ⊕ Y ≃ₜ X' ⊕ Y' where
-  continuous_toFun := h₁.continuous.sum_map h₂.continuous
-  continuous_invFun := h₁.symm.continuous.sum_map h₂.symm.continuous
+  continuous_toFun := h₁.continuous.sumMap h₂.continuous
+  continuous_invFun := h₁.symm.continuous.sumMap h₂.symm.continuous
   toEquiv := h₁.toEquiv.sumCongr h₂.toEquiv
 
 @[simp]
@@ -782,7 +782,7 @@ theorem _root_.Fin.continuous_append (m n : ℕ) :
   exact Homeomorph.continuous_toFun _
 
 /-- The natural homeomorphism between `(Fin m → X) × (Fin n → X)` and `Fin (m + n) → X`.
-`Fin.appendEquiv` as a homeomorphism.-/
+`Fin.appendEquiv` as a homeomorphism -/
 @[simps!]
 def _root_.Fin.appendHomeomorph (m n : ℕ) : (Fin m → X) × (Fin n → X) ≃ₜ (Fin (m + n) → X) where
   toEquiv := Fin.appendEquiv m n
@@ -1073,7 +1073,7 @@ lemma IsHomeomorph.comp {g : Y → Z} (hg : IsHomeomorph g) (hf : IsHomeomorph f
     IsHomeomorph (g ∘ f) := ⟨hg.1.comp hf.1, hg.2.comp hf.2, hg.3.comp hf.3⟩
 
 lemma IsHomeomorph.sumMap {g : Z → W} (hf : IsHomeomorph f) (hg : IsHomeomorph g) :
-    IsHomeomorph (Sum.map f g) := ⟨hf.1.sum_map hg.1, hf.2.sumMap hg.2, hf.3.sumMap hg.3⟩
+    IsHomeomorph (Sum.map f g) := ⟨hf.1.sumMap hg.1, hf.2.sumMap hg.2, hf.3.sumMap hg.3⟩
 
 lemma IsHomeomorph.prodMap {g : Z → W} (hf : IsHomeomorph f) (hg : IsHomeomorph g) :
     IsHomeomorph (Prod.map f g) := ⟨hf.1.prodMap hg.1, hf.2.prodMap hg.2, hf.3.prodMap hg.3⟩
@@ -1090,7 +1090,7 @@ lemma IsHomeomorph.pi_map {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalS
     IsHomeomorph (fun (x : ∀ i, X i) i ↦ f i (x i)) :=
   (Homeomorph.piCongrRight fun i ↦ (h i).homeomorph (f i)).isHomeomorph
 
-/-- `HomeomorphClass F A B` states that `F` is a type of homeomorphisms.-/
+/-- `HomeomorphClass F A B` states that `F` is a type of homeomorphisms. -/
 class HomeomorphClass (F : Type*) (A B : outParam Type*)
     [TopologicalSpace A] [TopologicalSpace B] [h : EquivLike F A B] : Prop where
   map_continuous : ∀ (f : F), Continuous f
