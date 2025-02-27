@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-import Mathlib.Probability.Kernel.Composition
 
 /-!
 # Monoidal composition `⊗≫` (composition up to associators)
@@ -31,48 +30,59 @@ are completed as `𝟙 (V₁ ⊗ V₂ ⊗ V₃ ⊗ V₄ ⊗ V₅)` and `𝟙 (V�
 
 -/
 
-open ProbabilityTheory
-
 namespace MeasureTheory
+
+section Move
+
+def Equiv.prodUnit_right (α : Type*) : α × Unit ≃ α where
+  toFun := Prod.fst
+  invFun := fun a ↦ (a, ())
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+def Equiv.prodUnit_left (α : Type*) : Unit × α ≃ α where
+  toFun := Prod.snd
+  invFun := fun a ↦ ((), a)
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+def MeasurableEquiv.prodUnit_right (α : Type*) [MeasurableSpace α] : α × Unit ≃ᵐ α where
+  toEquiv := Equiv.prodUnit_right α
+  measurable_toFun := measurable_fst
+  measurable_invFun := measurable_prod_mk_right
+
+def MeasurableEquiv.prodUnit_left (α : Type*) [MeasurableSpace α] : Unit × α ≃ᵐ α where
+  toEquiv := Equiv.prodUnit_left α
+  measurable_toFun := measurable_snd
+  measurable_invFun := measurable_prod_mk_left
+
+end Move
 
 variable {α β γ δ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
   {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ}
 
-/--
-A typeclass carrying a choice of monoidal structural isomorphism between two objects.
-Used by the `⊗≫` monoidal composition operator, and the `coherence` tactic.
--/
--- We could likely turn this into a `Prop` valued existential if that proves useful.
+/-- A typeclass carrying a choice of monoidal structural isomorphism between two objects.
+Used by the `⊗≫` monoidal composition operator, and the `coherence` tactic. -/
 class MeasurableCoherence (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] where
   /-- A monoidal structural isomorphism between two objects. -/
   measurableEquiv : α ≃ᵐ β
 
 /-- Notation for identities up to unitors and associators. -/
-scoped[MeasureTheory] notation " ⊗ₘ𝟙 " =>
-  MeasureTheory.MeasurableCoherence.measurableEquiv -- type as \ot 𝟙
+scoped[MeasureTheory] notation " ⊗𝟙ₘ " => MeasureTheory.MeasurableCoherence.measurableEquiv
 
 /-- Construct an isomorphism between two objects in a monoidal category
 out of unitors and associators. -/
-abbrev monoidalEquiv (α β : Type*) [MeasurableSpace α] [MeasurableSpace β]
+abbrev measurableEquiv (α β : Type*) [MeasurableSpace α] [MeasurableSpace β]
     [MeasurableCoherence α β] :
     α ≃ᵐ β := MeasurableCoherence.measurableEquiv
 
-/-- Compose two morphisms in a monoidal category,
-inserting unitors and associators between as necessary. -/
-noncomputable
-def monoidalComp [MeasurableCoherence β γ] (f : Kernel α β) (g : Kernel γ δ) : Kernel α δ :=
-  g ∘ₖ (Kernel.deterministic ⊗ₘ𝟙 (monoidalEquiv β γ).measurable) ∘ₖ f
-
-@[inherit_doc MeasureTheory.monoidalComp]
-scoped[ProbabilityTheory] infixr:80 " ⊗ₘ≫ " => MeasureTheory.monoidalComp
-
 /-- Compose two isomorphisms in a monoidal category,
 inserting unitors and associators between as necessary. -/
-def monoidalIsoComp [MeasurableCoherence β γ] (f : α ≃ᵐ β) (g : γ ≃ᵐ δ) : α ≃ᵐ δ :=
-  f.trans (⊗ₘ𝟙.trans g)
+def measurableEquivComp [MeasurableCoherence β γ] (f : α ≃ᵐ β) (g : γ ≃ᵐ δ) : α ≃ᵐ δ :=
+  f.trans (⊗𝟙ₘ.trans g)
 
-@[inherit_doc monoidalIsoComp]
-scoped[MeasureTheory] infixr:80 " ≪⊗ₘ≫ " => monoidalIsoComp
+@[inherit_doc measurableEquivComp]
+scoped[MeasureTheory] infixr:80 " ⊗≃ᵐ " => MeasureTheory.measurableEquivComp
 
 namespace MeasurableCoherence
 
@@ -83,80 +93,60 @@ instance refl (α : Type*) [MeasurableSpace α] : MeasurableCoherence α α := �
 instance whiskerLeft (α β γ : Type*) [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
     [MeasurableCoherence β γ] :
     MeasurableCoherence (α × β) (α × γ) :=
-  ⟨MeasurableEquiv.prodCongr (MeasurableEquiv.refl α) ⊗ₘ𝟙⟩
+  ⟨MeasurableEquiv.prodCongr (MeasurableEquiv.refl α) ⊗𝟙ₘ⟩
 
 @[simps]
 instance whiskerRight (α β γ : Type*) [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
     [MeasurableCoherence α β] :
     MeasurableCoherence (α × γ) (β × γ) :=
-  ⟨MeasurableEquiv.prodCongr ⊗ₘ𝟙 (MeasurableEquiv.refl γ)⟩
-
-def rightUnitor (α : Type*) [MeasurableSpace α] : α × Unit ≃ᵐ α where
-  toFun := Prod.fst
-  invFun := fun a ↦ (a, ())
-  left_inv _ := rfl
-  right_inv _ := rfl
-  measurable_toFun := measurable_fst
-  measurable_invFun := measurable_prod_mk_right
-
-def leftUnitor (α : Type*) [MeasurableSpace α] : Unit × α ≃ᵐ α where
-  toFun := Prod.snd
-  invFun := fun a ↦ ((), a)
-  left_inv _ := rfl
-  right_inv _ := rfl
-  measurable_toFun := measurable_snd
-  measurable_invFun := measurable_prod_mk_left
+  ⟨MeasurableEquiv.prodCongr ⊗𝟙ₘ (MeasurableEquiv.refl γ)⟩
 
 @[simps]
 instance tensor_right (α β : Type*) [MeasurableSpace α] [MeasurableSpace β]
     [MeasurableCoherence Unit β] :
     MeasurableCoherence α (α × β) :=
-  ⟨(rightUnitor α).symm.trans (MeasurableEquiv.prodCongr (MeasurableEquiv.refl α) ⊗ₘ𝟙)⟩
+  ⟨(MeasurableEquiv.prodUnit_right α).symm.trans
+    (MeasurableEquiv.prodCongr (MeasurableEquiv.refl α) ⊗𝟙ₘ)⟩
 
 @[simps]
 instance tensor_right' (α β : Type*) [MeasurableSpace α] [MeasurableSpace β]
     [MeasurableCoherence β Unit] :
     MeasurableCoherence (α × β) α :=
-  ⟨(MeasurableEquiv.prodCongr (MeasurableEquiv.refl α) ⊗ₘ𝟙).trans (rightUnitor α)⟩
+  ⟨(MeasurableEquiv.prodCongr (MeasurableEquiv.refl α) ⊗𝟙ₘ).trans
+    (MeasurableEquiv.prodUnit_right α)⟩
 
 @[simps]
 instance left (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] [MeasurableCoherence α β] :
     MeasurableCoherence (Unit × α) β :=
-  ⟨(leftUnitor α).trans ⊗ₘ𝟙⟩
+  ⟨(MeasurableEquiv.prodUnit_left α).trans ⊗𝟙ₘ⟩
 
 @[simps]
 instance left' (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] [MeasurableCoherence α β] :
     MeasurableCoherence α (Unit × β) :=
-  ⟨⊗ₘ𝟙.trans (leftUnitor β).symm⟩
+  ⟨⊗𝟙ₘ.trans (MeasurableEquiv.prodUnit_left β).symm⟩
 
 @[simps]
 instance right (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] [MeasurableCoherence α β] :
     MeasurableCoherence (α × Unit) β :=
-  ⟨(rightUnitor α).trans ⊗ₘ𝟙⟩
+  ⟨(MeasurableEquiv.prodUnit_right α).trans ⊗𝟙ₘ⟩
 
 @[simps]
 instance right' (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] [MeasurableCoherence α β] :
     MeasurableCoherence α (β × Unit) :=
-  ⟨⊗ₘ𝟙.trans (rightUnitor β).symm⟩
+  ⟨⊗𝟙ₘ.trans (MeasurableEquiv.prodUnit_right β).symm⟩
 
 @[simps]
 instance assoc (α β γ δ : Type*) [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
     [MeasurableSpace δ] [MeasurableCoherence (α × (β × γ)) δ] :
     MeasurableCoherence ((α × β) × γ) δ :=
-  ⟨MeasurableEquiv.prodAssoc.trans ⊗ₘ𝟙⟩
+  ⟨MeasurableEquiv.prodAssoc.trans ⊗𝟙ₘ⟩
 
 @[simps]
 instance assoc' (α β γ δ : Type*) [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
     [MeasurableSpace δ] [MeasurableCoherence δ (α × (β × γ))] :
     MeasurableCoherence δ ((α × β) × γ) :=
-  ⟨⊗ₘ𝟙.trans MeasurableEquiv.prodAssoc.symm⟩
+  ⟨⊗𝟙ₘ.trans MeasurableEquiv.prodAssoc.symm⟩
 
 end MeasurableCoherence
-
-@[simp] lemma monoidalComp_refl (f : Kernel α β) (g : Kernel β γ) :
-    f ⊗ₘ≫ g = g ∘ₖ f := by
-  simp [monoidalComp] -- todo: add simp lemmas such that the proof is already done here
-  congr 1
-  sorry
 
 end MeasureTheory
