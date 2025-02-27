@@ -167,7 +167,7 @@ lemma setLIntegral_compProd [SFinite μ] [IsSFiniteKernel κ]
   rw [compProd, Kernel.setLIntegral_compProd _ _ _ hf hs ht]
   simp
 
-lemma AEStronglyMeasurable.compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
+lemma _root_.MeasureTheory.AEStronglyMeasurable.compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
     [NormedAddCommGroup E] {f : α → β → E} (hf : AEStronglyMeasurable f.uncurry (μ ⊗ₘ κ)) :
     ∀ᵐ x ∂μ, AEStronglyMeasurable (f x) (κ x) := by
   simpa using hf.compProd_mk_left
