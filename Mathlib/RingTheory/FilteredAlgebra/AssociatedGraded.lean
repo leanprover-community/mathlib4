@@ -200,20 +200,18 @@ lemma hasGMul.mk_int (F : ℤ → σ) (mono : Monotone F) [SetLike.GradedMonoid 
 
 lemma hasGMul_AddSubgroup (F : ι → AddSubgroup R) (F_lt : outParam <| ι → AddSubgroup R)
     [OrderedCancelAddCommMonoid ι] [IsRingFiltration F F_lt] : hasGMul F F_lt where
-  F_lt_mul_mem := by
-    intro i j x y hx hy
+  F_lt_mul_mem {i j x y} hx hy := by
     let S : AddSubgroup R := {
       carrier := {z | z * y ∈ F_lt (i + j)}
-      add_mem' := fun ha hb ↦ by simp [add_mul, add_mem ha.out hb.out]
+      add_mem' ha hb :=  by simp [add_mul, add_mem ha.out hb.out]
       zero_mem' := by simp [zero_mem]
       neg_mem' := by simp }
     exact IsFiltration.is_sup S i (fun k hk z hz ↦
       IsFiltration.is_le (add_lt_add_right hk j) (IsRingFiltration.toGradedMonoid.mul_mem hz hy)) hx
-  mul_F_lt_mem := by
-    intro i j x y hx hy
+  mul_F_lt_mem {i j x y} hx hy := by
     let S : AddSubgroup R := {
       carrier := {z | x * z ∈ F_lt (i + j)}
-      add_mem' := fun ha hb ↦ by simp [mul_add, add_mem ha.out hb.out]
+      add_mem' ha hb := by simp [mul_add, add_mem ha.out hb.out]
       zero_mem' := by simp [zero_mem]
       neg_mem' := by simp }
     exact IsFiltration.is_sup S j (fun k hk z hz ↦
@@ -222,13 +220,11 @@ lemma hasGMul_AddSubgroup (F : ι → AddSubgroup R) (F_lt : outParam <| ι → 
 variable [OrderedAddCommMonoid ι] [AddSubgroupClass σ R]
 
 /-- The multiplication `F i → F j → F (i + j)` defined as the multiplication of its value. -/
-def IsRingFiltration.hMul [IsRingFiltration F F_lt] (i j : ι)
-    (x : F i) (y : F j) : F (i + j) where
+def IsRingFiltration.hMul [IsRingFiltration F F_lt] (i j : ι) (x : F i) (y : F j) : F (i + j) where
   val := x * y
   property := by simp [IsRingFiltration.toGradedMonoid.mul_mem x.2 y.2]
 
-instance [IsRingFiltration F F_lt] {i j : ι} :
-    HMul (F i) (F j) (F (i + j)) where
+instance [IsRingFiltration F F_lt] {i j : ι} : HMul (F i) (F j) (F (i + j)) where
   hMul := IsRingFiltration.hMul F F_lt i j
 
 lemma hasGMul.mul_equiv_mul [hasGMul F F_lt] {i j : ι}
@@ -239,7 +235,7 @@ lemma hasGMul.mul_equiv_mul [hasGMul F F_lt] {i j : ι}
   have eq : - (x₁ * y₁) + (x₂ * y₂) = (- x₁ + x₂) * y₁ + x₂ * (- y₁ + y₂) :=
     SetLike.coe_eq_coe.mp eq
   rw [eq]
-  exact add_mem (hasGMul.F_lt_mul_mem (F := F) hx y₁.2) (hasGMul.mul_F_lt_mem (F := F) x₂.2 hy)
+  exact add_mem (hasGMul.F_lt_mul_mem hx y₁.2) (hasGMul.mul_F_lt_mem x₂.2 hy)
 
 /-- The multiplication `GradedPiece F F_lt i → GradedPiece F F_lt j → GradedPiece F F_lt (i + j)`
 lifted from the multiplication `F i → F j → F (i + j)`. -/
@@ -319,8 +315,7 @@ lemma Filtration.pow_mem [IsRingFiltration F F_lt] (n : ℕ) {i : ι}
     (x : F i) : (x : R) ^ n ∈ (F (n • i)) := by
   induction' n with d hd
   · simpa using IsRingFiltration.toGradedMonoid.one_mem
-  · rw [pow_succ]
-    simpa [succ_nsmul i d] using (IsRingFiltration.toGradedMonoid.mul_mem hd x.2)
+  · simpa [pow_succ, succ_nsmul i d] using (IsRingFiltration.toGradedMonoid.mul_mem hd x.2)
 
 lemma Filtration.pow_lift [hasGMul F F_lt] (n : ℕ) {i : ι} (x₁ x₂ : F i) (h : x₁ ≈ x₂) :
     (⟨x₁ ^ n, Filtration.pow_mem F F_lt n x₁⟩ : (F (n • i))) ≈
@@ -333,7 +328,7 @@ lemma Filtration.pow_lift [hasGMul F F_lt] (n : ℕ) {i : ι} (x₁ x₂ : F i) 
       simpa [succ_nsmul i d] using hasGMul.mul_F_lt_mem (Filtration.pow_mem F F_lt d x₁) h
     have mem2 : x₂.1 ^ d * x₂.1 - x₁.1 ^ d * x₂.1 ∈ F_lt ((d + 1) • i) := by
       rw [← sub_mul, sub_eq_neg_add]
-      simp only [succ_nsmul i d]
+      simp only [← sub_mul, sub_eq_neg_add, succ_nsmul i d]
       exact hasGMul.F_lt_mul_mem hd x₂.2
     show -(x₁.1 ^ d * x₁.1) + x₂.1 ^ d * x₂.1 ∈ (F_lt ((d + 1) • i))
     have : -(x₁.1 ^ d * x₁.1) + x₂.1 ^ d * x₂.1 =
