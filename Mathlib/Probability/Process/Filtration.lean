@@ -5,7 +5,7 @@ Authors: Kexing Ying, Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Constructions.Cylinders
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
-import Mathlib.Order.Restriction
+import Mathlib.MeasureTheory.MeasurableSpace.PreorderRestrict
 
 /-!
 # Filtrations
@@ -340,14 +340,21 @@ end Limit
 
 section piLE
 
-open Finset Preorder
+open Finset MeasurableSpace Preorder
 
 variable {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
-  {X : ι → Type*} [∀ i, MeasurableSpace (X i)]
+  (X : ι → Type*) [∀ i, MeasurableSpace (X i)]
 
 /-- The canonical filtration on dependent functions indexed by `ℕ`, where `𝓕 n` consists of
 measurable sets depending only on coordinates `≤ n`. -/
-def piLE := natural (fun i ↦ frestrictLe (π := X) i)
+def piLE := natural (fun i ↦ frestrictLe (π := X) i) fun i ↦ measurable_frestrictLe i
+
+lemma piLE_apply (i : ι) : piLE X i = MeasurableSpace.pi.comap (frestrictLe i) := by
+  simp_rw [piLE, natural]
+  refine le_antisymm (iSup₂_le fun j hj ↦ ?_) ?_
+  · rw [← frestrictLe₂_comp_frestrictLe hj, ← comap_comp]
+    exact comap_mono (measurable_frestrictLe₂ hj).comap_le
+  · exact le_biSup (fun j ↦ MeasurableSpace.pi.comap (frestrictLe j)) le_rfl
 
 end piLE
 
