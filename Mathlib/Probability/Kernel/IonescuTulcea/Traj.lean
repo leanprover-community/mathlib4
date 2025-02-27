@@ -5,6 +5,7 @@ Authors: Etienne Marion
 -/
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
+import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
 import Mathlib.Probability.Kernel.IonescuTulcea.PTraj
 
 /-!
@@ -471,11 +472,17 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
     exact Set.mem_of_indicator_ne_zero (ne_of_lt this).symm
   exact (A_inter ▸ Set.mem_iInter.2 mem).elim
 
+theorem addContent_iUnion_le_of_addContent_iUnion_eq_tsum {α : Type*} {C : Set (Set α)}
+    {m : AddContent C} (hC : IsSetRing C)
+    (m_iUnion : ∀ (f : ℕ → Set α) (_ : ∀ i, f i ∈ C) (_ : (⋃ i, f i) ∈ C)
+      (_hf_disj : Pairwise (Function.onFun Disjoint f)), m (⋃ i, f i) = ∑' i, m (f i)) :
+    m.IsSigmaSubadditive := by sorry
+
 /-- The `trajContent` is sigma-subadditive. -/
 theorem isSigmaSubadditive_trajContent {a : ℕ} (x₀ : Π i : Iic a, X i) :
     (trajContent κ x₀).IsSigmaSubadditive := by
   refine addContent_iUnion_le_of_addContent_iUnion_eq_tsum
-    isSetRing_measurableCylinders (fun f hf hf_Union hf' ↦ ?_) f hf hf_Union
+    isSetRing_measurableCylinders (fun f hf hf_Union hf' ↦ ?_)
   refine addContent_iUnion_eq_sum_of_tendsto_zero isSetRing_measurableCylinders
     (trajContent κ x₀) (fun _ _ ↦ trajContent_ne_top) ?_ hf hf_Union hf'
   exact fun s hs anti_s inter_s ↦ trajContent_tendsto_zero κ hs anti_s inter_s x₀
@@ -484,7 +491,7 @@ theorem isSigmaSubadditive_trajContent {a : ℕ} (x₀ : Π i : Iic a, X i) :
 noncomputable def trajFun (a : ℕ) (x₀ : Π i : Iic a, X i) :
     Measure (Π n, X n) :=
   (trajContent κ x₀).measure isSetSemiring_measurableCylinders generateFrom_measurableCylinders.ge
-    (trajContent_sigma_subadditive κ x₀)
+    (isSigmaSubadditive_trajContent κ x₀)
 
 theorem isProbabilityMeasure_trajFun (a : ℕ) (x₀ : Π i : Iic a, X i) :
     IsProbabilityMeasure (trajFun κ a x₀) where
@@ -599,12 +606,13 @@ with respect to this kernel. -/
 theorem traj_eq_prod (a : ℕ) :
     traj κ a = (Kernel.id ×ₖ (traj κ a).map (Set.Ioi a).restrict).map (IicProdIoi a) := by
   refine (eq_traj' _ (a + 1) _ fun b hb ↦ ?_).symm
-  rw [map_map]
+  rw [← map_comp_right]
   conv_lhs => enter [2]; change (IicProdIoc a b) ∘
     (Prod.map id (restrictf (coe_Ioc a b ▸ Set.Ioc_subset_Ioi_self)))
-  rw [← map_map, Kernel.map_prod, map_map, restrictf_comp_restrict,
-    ← restrict₂_comp_restrict Ioc_subset_Iic_self, ← frestrictLe, ← map_map, traj_map_frestrictLe,
-    map_id, ← ptraj_eq_prod]
+  · rw [map_comp_right, ← map_prod_map, ← map_comp_right, restrictf_comp_restrict,
+      ← restrict₂_comp_restrict Ioc_subset_Iic_self, ← frestrictLe, map_comp_right,
+      traj_map_frestrictLe, map_id, ← ptraj_eq_prod]
+    all_goals fun_prop
   all_goals fun_prop
 
 theorem traj_map_updateFinset {n : ℕ} (x : Π i : Iic n, X i) :
