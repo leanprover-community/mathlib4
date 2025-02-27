@@ -23,7 +23,8 @@ variable {ι1 ι2 A R : Type*} [Unique ι1] [Unique ι2]
 
 /-- Set of all dimension one matrix is in bijection with the base set under the
   canonical maps. -/
-abbrev uniqueEquiv : Matrix ι1 ι2 A ≃ A where
+@[simps]
+def uniqueEquiv : Matrix ι1 ι2 A ≃ A where
   toFun M := M default default
   invFun a := .of fun _ _ => a
   left_inv M := by ext i j; simp [Subsingleton.elim i default, Subsingleton.elim j default]
