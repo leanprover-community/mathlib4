@@ -15,6 +15,11 @@ If `R` is a simple ring then any ring isomorphic to `R` is also simple.
 
 namespace IsSimpleRing
 
+lemma of_surjective {R S : Type*} [NonAssocRing R] [NonAssocRing S] [Nontrivial S]
+    (f : R →+* S) (h : IsSimpleRing R) (hf : Function.Surjective f) : IsSimpleRing S where
+  simple := OrderIso.isSimpleOrder (TwoSidedIdeal.orderIsoOfRingEquiv
+    (RingEquiv.ofBijective f ⟨RingHom.injective f, hf⟩).symm)
+
 lemma of_ringEquiv {R S : Type*} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
     (f : R ≃+* S) (h : IsSimpleRing R) : IsSimpleRing S where
   simple := OrderIso.isSimpleOrder (TwoSidedIdeal.orderIsoOfRingEquiv f.symm)
