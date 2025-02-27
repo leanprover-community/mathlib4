@@ -46,7 +46,7 @@ If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have
 disjoint sets defines an additive content
 * `addContent_iUnion_eq_sum_of_tendsto_zero`: if an additive content is continuous at `∅`, then
 its value on a countable disjoint union is the sum of the values
-* `MeasureTheory.addContent_iUnion_le_of_addContent_iUnion_eq_tsum`: if an `AddContent` is
+* `MeasureTheory.isSigmaSubadditive_of_addContent_iUnion_eq_tsum`: if an `AddContent` is
   σ-additive on a set ring, then it is σ-subadditive.
 
 -/
@@ -435,7 +435,7 @@ theorem tendsto_atTop_addContent_iUnion_of_addContent_iUnion_eq_tsum (hC : IsSet
   exact ENNReal.tendsto_nat_tsum _
 
 /-- If an additive content is σ-additive on a set ring, then it is σ-subadditive. -/
-theorem addContent_iUnion_le_of_addContent_iUnion_eq_tsum (hC : IsSetRing C)
+theorem isSigmaSubadditive_of_addContent_iUnion_eq_tsum (hC : IsSetRing C)
     (m_iUnion : ∀ (f : ℕ → Set α) (_ : ∀ i, f i ∈ C) (_ : (⋃ i, f i) ∈ C)
       (_hf_disj : Pairwise (Disjoint on f)), m (⋃ i, f i) = ∑' i, m (f i)) :
     m.IsSigmaSubadditive := by
