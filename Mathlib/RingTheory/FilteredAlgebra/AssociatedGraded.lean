@@ -480,10 +480,10 @@ end GradedMul
 
 /-!
 
-# The Associated Graded Algebra
+# The Associated Graded Algebra to a Filtered Algebra
 
-In this section we define the associated graded algebra to an algebra, which is a special case
-of associated graded ring with every filter a submodule.
+In this section we define the associated graded algebra to a filtered algebra,
+which is a special case of associated graded ring with every filter a submodule.
 
 # Main Result
 
