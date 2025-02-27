@@ -14,9 +14,9 @@ may get rid of the dependency on some variables (see `Function.updateFinset` or
 as having a different domain with fewer points is not comfortable in Lean, as it requires the use
 of subtypes and can lead to tedious writing.
 
-On the other hand one wants to be able for example to call some function constant with respect to
-some variables and be able to infer this when applying transformations mentioned above.
-This is why introduce the predicate `DependsOn f s`, which states that if `x` and `y` coincide over
+On the other hand one wants to be able for example to describe some function as constant with respect to
+some variables, and be able to deduce this when applying transformations mentioned above.
+This is why we introduce the predicate `DependsOn f s`, which states that if `x` and `y` coincide over
 the set `s`, then `f x = f y`. This is equivalent to `Function.FactorsThrough f s.restrict`.
 
 ## Main definition
