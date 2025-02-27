@@ -3590,11 +3590,12 @@ import Mathlib.Lean.PrettyPrinter.Delaborator
 import Mathlib.Lean.Thunk
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
-import Mathlib.LinearAlgebra.AffineSpace.Basic
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 import Mathlib.LinearAlgebra.AffineSpace.Basis
 import Mathlib.LinearAlgebra.AffineSpace.Combination
 import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
+import Mathlib.LinearAlgebra.AffineSpace.Defs
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.LinearAlgebra.AffineSpace.Independent
 import Mathlib.LinearAlgebra.AffineSpace.Matrix

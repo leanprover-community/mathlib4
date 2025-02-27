@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.LinearAlgebra.AffineSpace.Basic
+import Mathlib.LinearAlgebra.AffineSpace.Defs
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Prod
