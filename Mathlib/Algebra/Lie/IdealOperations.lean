@@ -176,8 +176,7 @@ theorem lie_sup : ⁅I, N ⊔ N'⁆ = ⁅I, N⁆ ⊔ ⁅I, N'⁆ := by
   rw [lieIdeal_oper_eq_span, lieSpan_le]
   rintro m ⟨x, ⟨n, hn⟩, h⟩
   simp only [SetLike.mem_coe]
-  rw [LieSubmodule.mem_sup]
-  rw [LieSubmodule.mem_sup] at hn
+  rw [LieSubmodule.mem_sup] at hn ⊢
   rcases hn with ⟨n₁, hn₁, n₂, hn₂, hn'⟩
   use ⁅(x : L), (⟨n₁, hn₁⟩ : N)⁆; constructor; · apply lie_coe_mem_lie
   use ⁅(x : L), (⟨n₂, hn₂⟩ : N')⁆; constructor; · apply lie_coe_mem_lie
@@ -192,8 +191,7 @@ theorem sup_lie : ⁅I ⊔ J, N⁆ = ⁅I, N⁆ ⊔ ⁅J, N⁆ := by
   rw [lieIdeal_oper_eq_span, lieSpan_le]
   rintro m ⟨⟨x, hx⟩, n, h⟩
   simp only [SetLike.mem_coe]
-  rw [LieSubmodule.mem_sup]
-  rw [LieSubmodule.mem_sup] at hx
+  rw [LieSubmodule.mem_sup] at hx ⊢
   rcases hx with ⟨x₁, hx₁, x₂, hx₂, hx'⟩
   use ⁅((⟨x₁, hx₁⟩ : I) : L), (n : N)⁆; constructor; · apply lie_coe_mem_lie
   use ⁅((⟨x₂, hx₂⟩ : J) : L), (n : N)⁆; constructor; · apply lie_coe_mem_lie
