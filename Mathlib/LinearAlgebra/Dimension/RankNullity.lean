@@ -104,7 +104,7 @@ theorem exists_linearIndepOn_of_lt_rank [StrongRankCondition R]
   · rw [Cardinal.mk_union_of_disjoint hst, Cardinal.mk_image_eq, ht,
       ← rank_quotient_add_rank (Submodule.span R s), add_comm, rank_span_set hs]
     exact HasLeftInverse.injective ⟨Submodule.Quotient.mk, hsec⟩
-  · apply LinearIndepOn.union_of_quotient Submodule.subset_span hs
+  · apply LinearIndepOn.union_id_of_quotient Submodule.subset_span hs
     rwa [linearIndepOn_iff_image (hsec'.symm ▸ injective_id).injOn.image_of_comp,
       ← image_comp, hsec', image_id]
 
