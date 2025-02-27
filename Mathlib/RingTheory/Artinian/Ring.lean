@@ -56,6 +56,9 @@ variable {R : Type*} [CommRing R] [IsArtinianRing R]
 lemma jacobson_eq_radical (I : Ideal R) : I.jacobson = I.radical := by
   simp_rw [Ideal.jacobson, Ideal.radical_eq_sInf, IsArtinianRing.isPrime_iff_isMaximal]
 
+lemma jacobson_eq_nilradical : (⊥ : Ideal R).jacobson = nilradical R :=
+    jacobson_eq_radical _
+
 theorem isNilpotent_nilradical : IsNilpotent (nilradical R) := by
   rw [nilradical, ← jacobson_eq_radical]
   exact isNilpotent_jacobson_bot
@@ -115,5 +118,26 @@ instance : IsArtinianRing (Localization S) :=
   localization_artinian S _
 
 end Localization
+
+section Ideal
+
+lemma exists_multiset_ideal_is_maximal_and_prod_eq_bot :
+    ∃ s : Multiset (Ideal R), (∀ I ∈ s, Ideal.IsMaximal I) ∧ s.prod = ⊥ := by
+  cases' subsingleton_or_nontrivial R with h h
+  · exact ⟨∅, by simp; exact eq_bot_of_subsingleton⟩
+  · obtain ⟨n, e⟩ := IsArtinianRing.isNilpotent_nilradical (R := R)
+    have hn : n ≠ 0 := by intro h; rw [h] at e; simp_all
+    refine ⟨n • (IsArtinianRing.setOf_isPrime_finite R).toFinset.1, ?_, ?_⟩
+    · intro I hI
+      simp only [Multiset.mem_nsmul, ne_eq, hn, not_false_eq_true, Finset.mem_val,
+        Finite.mem_toFinset, mem_setOf_eq, true_and] at hI
+      rwa [← IsArtinianRing.isPrime_iff_isMaximal I]
+    · rw [Multiset.prod_nsmul, eq_bot_iff, ← Ideal.zero_eq_bot, ← e,
+        nilradical_eq_sInf, Finset.prod_val]
+      apply Ideal.pow_right_mono
+      refine Ideal.prod_le_inf.trans (le_sInf fun I hI => Finset.inf_le ?_)
+      rwa [Set.Finite.mem_toFinset]
+
+end Ideal
 
 end IsArtinianRing
