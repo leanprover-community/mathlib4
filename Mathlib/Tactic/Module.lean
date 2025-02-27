@@ -41,7 +41,7 @@ synonym for a list of ordered pairs in `R × M`, where typically `M` is an `R`-m
 form to which the tactics reduce module expressions.
 
 (It is not a full "normal form" because the scalars, i.e. `R` components, are not themselves
-ring-normalized.  But this partial normal form is more convenient for our purposes.)  -/
+ring-normalized. But this partial normal form is more convenient for our purposes.) -/
 def NF (R : Type*) (M : Type*) := List (R × M)
 
 namespace NF
@@ -276,7 +276,7 @@ def add (iR : Q(Semiring $R)) : qNF R M → qNF R M → qNF R M
 /-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
 and a natural number), recursively construct a proof that in the `$R`-module `$M`, the sum of the
 "linear combinations" represented by `l₁` and `l₂` is the linear combination represented by
-`Module.qNF.add iR l₁ l₁`.-/
+`Module.qNF.add iR l₁ l₁`. -/
 def mkAddProof {iR : Q(Semiring $R)} {iM : Q(AddCommMonoid $M)} (iRM : Q(Module $R $M))
     (l₁ l₂ : qNF R M) :
     Q(NF.eval $(l₁.toNF) + NF.eval $(l₂.toNF) = NF.eval $((qNF.add iR l₁ l₂).toNF)) :=
@@ -321,7 +321,7 @@ def sub (iR : Q(Ring $R)) : qNF R M → qNF R M → qNF R M
 /-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
 and a natural number), recursively construct a proof that in the `$R`-module `$M`, the difference
 of the "linear combinations" represented by `l₁` and `l₂` is the linear combination represented by
-`Module.qNF.sub iR l₁ l₁`.-/
+`Module.qNF.sub iR l₁ l₁`. -/
 def mkSubProof (iR : Q(Ring $R)) (iM : Q(AddCommGroup $M)) (iRM : Q(Module $R $M))
     (l₁ l₂ : qNF R M) :
     Q(NF.eval $(l₁.toNF) - NF.eval $(l₂.toNF) = NF.eval $((qNF.sub iR l₁ l₂).toNF)) :=
