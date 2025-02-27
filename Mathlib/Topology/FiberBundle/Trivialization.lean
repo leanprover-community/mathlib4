@@ -262,7 +262,6 @@ variable [TopologicalSpace Z] [TopologicalSpace (TotalSpace F E)]
 `proj : Z → B` with fiber `F`, as a partial homeomorphism between `Z` and `B × F` defined between
 two sets of the form `proj ⁻¹' baseSet` and `baseSet × F`, acting trivially on the first coordinate.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure Trivialization (proj : Z → B) extends PartialHomeomorph Z (B × F) where
   baseSet : Set B
   open_baseSet : IsOpen baseSet
@@ -623,7 +622,7 @@ theorem continuous_coordChange (e₁ e₂ : Trivialization F proj) {b : B} (h₁
     (h₂ : b ∈ e₂.baseSet) : Continuous (e₁.coordChange e₂ b) := by
   refine continuous_snd.comp (e₂.toPartialHomeomorph.continuousOn.comp_continuous
     (e₁.toPartialHomeomorph.continuousOn_symm.comp_continuous ?_ ?_) ?_)
-  · exact continuous_const.prod_mk continuous_id
+  · fun_prop
   · exact fun x => e₁.mem_target.2 h₁
   · intro x
     rwa [e₂.mem_source, e₁.proj_symm_apply' h₁]
@@ -763,14 +762,14 @@ def liftCM (T : Trivialization F proj) : C(T.source × T.baseSet, T.source) wher
   continuous_toFun := by
     apply Continuous.subtype_mk
     refine T.continuousOn_invFun.comp_continuous ?_ (by simp [mem_target])
-    apply continuous_prod_mk.mpr ⟨by fun_prop, continuous_snd.comp ?_⟩
+    refine .prod_mk (by fun_prop) (.snd ?_)
     exact T.continuousOn_toFun.comp_continuous (by fun_prop) (by simp)
 
 variable {ι : Type*} [TopologicalSpace ι] [LocallyCompactPair ι T.baseSet]
   {γ : C(ι, T.baseSet)} {i : ι} {e : T.source}
 
 /-- Extension of `liftCM` to continuous maps taking values in `T.baseSet` (local version of
-homotopy lifting).-/
+homotopy lifting) -/
 def clift (T : Trivialization F proj) [LocallyCompactPair ι T.baseSet] :
     C(T.source × C(ι, T.baseSet), C(ι, T.source)) := by
   let Ψ : C((T.source × C(ι, T.baseSet)) × ι, C(ι, T.baseSet) × ι) :=

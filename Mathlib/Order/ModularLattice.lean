@@ -5,7 +5,7 @@ Authors: Aaron Anderson, Yaël Dillies
 -/
 import Mathlib.Order.Cover
 import Mathlib.Order.LatticeIntervals
-import Mathlib.Order.GaloisConnection
+import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Modular Lattices
@@ -82,7 +82,7 @@ class IsLowerModularLattice (α : Type*) [Lattice α] : Prop where
 
 /-- A modular lattice is one with a limited associativity between `⊓` and `⊔`. -/
 class IsModularLattice (α : Type*) [Lattice α] : Prop where
-/-- Whenever `x ≤ z`, then for any `y`, `(x ⊔ y) ⊓ z ≤ x ⊔ (y ⊓ z)`  -/
+/-- Whenever `x ≤ z`, then for any `y`, `(x ⊔ y) ⊓ z ≤ x ⊔ (y ⊓ z)` -/
   sup_inf_le_assoc_of_le : ∀ {x : α} (y : α) {z : α}, x ≤ z → (x ⊔ y) ⊓ z ≤ x ⊔ y ⊓ z
 
 section WeakUpperModular

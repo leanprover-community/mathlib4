@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Data.DFinsupp.Module
-import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.SMul
 
 /-!
 # Conversion between `Finsupp` and homogeneous `DFinsupp`
@@ -220,8 +220,6 @@ variable (R)
 
 /-- The additive version of `Finsupp.toFinsupp`. Note that this is `noncomputable` because
 `Finsupp.add` is noncomputable. -/
--- Porting note: `simps` generated lemmas that did not pass `simpNF` lints, manually added below
---@[simps? (config := .asFn)]
 def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] : (ι →₀ M) ≃ₗ[R] Π₀ _ : ι, M :=
   { finsuppEquivDFinsupp with
@@ -230,7 +228,6 @@ def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     map_smul' := Finsupp.toDFinsupp_smul
     map_add' := Finsupp.toDFinsupp_add }
 
--- Porting note: `simps` generated as `↑(finsuppLequivDFinsupp R).toLinearMap = Finsupp.toDFinsupp`
 @[simp]
 theorem finsuppLequivDFinsupp_apply_apply [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] :

@@ -522,8 +522,6 @@ theorem equiv_fst_eq_one_of_mem_of_one_mem {g : G} (h1 : 1 ∈ S) (hg : g ∈ T)
   ext
   rw [equiv_fst_eq_mul_inv, equiv_snd_eq_self_of_mem_of_one_mem _ h1 hg, mul_inv_cancel]
 
--- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[simp, nolint simpNF]
 theorem equiv_mul_right (g : G) (k : K) :
     hSK.equiv (g * k) = ((hSK.equiv g).fst, (hSK.equiv g).snd * k) := by
   have : (hSK.equiv (g * k)).fst = (hSK.equiv g).fst :=
@@ -537,8 +535,6 @@ theorem equiv_mul_right_of_mem {g k : G} (h : k ∈ K) :
     hSK.equiv (g * k) = ((hSK.equiv g).fst, (hSK.equiv g).snd * ⟨k, h⟩) :=
   equiv_mul_right _ g ⟨k, h⟩
 
--- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[simp, nolint simpNF]
 theorem equiv_mul_left (h : H) (g : G) :
     hHT.equiv (h * g) = (h * (hHT.equiv g).fst, (hHT.equiv g).snd) := by
   have : (hHT.equiv (h * g)).2 = (hHT.equiv g).2 := hHT.equiv_snd_eq_iff_rightCosetEquivalence.2 ?_
@@ -589,7 +585,7 @@ noncomputable def leftQuotientEquiv (hS : IsComplement S H) : G ⧸ H ≃ S :=
 @[deprecated (since := "2024-12-28")]
 alias _root_.Subgroup.MemLeftTransversals.toEquiv := leftQuotientEquiv
 
-/-- A left transversal is finite iff the subgroup has finite index.-/
+/-- A left transversal is finite iff the subgroup has finite index. -/
 @[to_additive "A left transversal is finite iff the subgroup has finite index."]
 theorem finite_left_iff (h : IsComplement S H) : Finite S ↔ H.FiniteIndex := by
   rw [← h.leftQuotientEquiv.finite_iff]
@@ -714,11 +710,11 @@ section Action
 
 open Pointwise MulAction MemLeftTransversals
 
-/-- The collection of left transversals of a subgroup.-/
+/-- The collection of left transversals of a subgroup -/
 @[to_additive "The collection of left transversals of a subgroup."]
 abbrev LeftTransversal (H : Subgroup G) := {S : Set G // IsComplement S H}
 
-/-- The collection of right transversals of a subgroup.-/
+/-- The collection of right transversals of a subgroup -/
 @[to_additive "The collection of right transversals of a subgroup."]
 abbrev RightTransversal (H : Subgroup G) := {T : Set G // IsComplement H T}
 

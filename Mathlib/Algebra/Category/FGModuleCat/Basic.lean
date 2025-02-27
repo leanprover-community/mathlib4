@@ -46,7 +46,7 @@ def FGModuleCat :=
   FullSubcategory fun V : ModuleCat.{u} R => Module.Finite R V
 -- Porting note: still no derive handler via `dsimp`.
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
--- deriving LargeCategory, ConcreteCategory,Preadditive
+-- deriving LargeCategory, HasForget,Preadditive
 
 variable {R}
 
@@ -72,7 +72,7 @@ instance : LargeCategory (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
 
-instance : ConcreteCategory (FGModuleCat R) := by
+instance : ConcreteCategory (FGModuleCat R) (· →ₗ[R] ·) := by
   dsimp [FGModuleCat]
   infer_instance
 
@@ -204,9 +204,7 @@ instance closedPredicateModuleFinite :
 
 instance : MonoidalClosed (FGModuleCat K) := by
   dsimp [FGModuleCat]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11187): was `infer_instance`
-  exact MonoidalCategory.fullMonoidalClosedSubcategory
-    (fun V : ModuleCat.{u} K => Module.Finite K V)
+  infer_instance
 
 variable (V W : FGModuleCat K)
 

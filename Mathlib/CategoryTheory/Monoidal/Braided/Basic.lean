@@ -342,10 +342,8 @@ theorem braiding_inv_tensorUnit_right (X : C) : (β_ X (𝟙_ C)).inv = (λ_ X).
 end
 
 /--
-A symmetric monoidal category is a braided monoidal category for which the braiding is symmetric.
-
-See <https://stacks.math.columbia.edu/tag/0FFW>.
--/
+A symmetric monoidal category is a braided monoidal category for which the braiding is symmetric. -/
+@[stacks 0FFW]
 class SymmetricCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] extends
     BraidedCategory.{v} C where
   -- braiding symmetric:

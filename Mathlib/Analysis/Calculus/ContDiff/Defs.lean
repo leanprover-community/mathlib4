@@ -96,17 +96,8 @@ derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor ser
 
 noncomputable section
 
-open NNReal Topology Filter
-
-/-
-Porting note: These lines are not required in Mathlib4.
-attribute [local instance 1001]
-  NormedAddCommGroup.toAddCommGroup AddCommGroup.toAddCommMonoid
--/
-
 open Set Fin Filter Function
-
-open scoped ContDiff
+open scoped NNReal Topology ContDiff
 
 universe u uE uF uG uX
 
@@ -413,9 +404,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞) :
       · change
           HasFDerivWithinAt (fun z => (continuousMultilinearCurryFin0 𝕜 E F).symm (f z))
             (FormalMultilinearSeries.unshift (p' y) (f y) 1).curryLeft (v ∩ u) y
-        -- Porting note: needed `erw` here.
-        -- https://github.com/leanprover-community/mathlib4/issues/5164
-        erw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff']
+        rw [← Function.comp_def _ f, LinearIsometryEquiv.comp_hasFDerivWithinAt_iff']
         convert (f'_eq_deriv y hy.2).mono inter_subset_right
         rw [← Hp'.zero_eq y hy.1]
         ext z
@@ -707,7 +696,7 @@ theorem ContDiffWithinAt.eventually_hasFTaylorSeriesUpToOn {f : E → F} {s : Se
 
 /-- On a set with unique differentiability, an analytic function is automatically `C^ω`, as its
 successive derivatives are also analytic. This does not require completeness of the space. See
-also `AnalyticOn.contDiffOn_of_completeSpace`.-/
+also `AnalyticOn.contDiffOn_of_completeSpace`. -/
 theorem AnalyticOn.contDiffOn (h : AnalyticOn 𝕜 f s) (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 n f s := by
   suffices ContDiffOn 𝕜 ω f s from this.of_le le_top
@@ -826,7 +815,7 @@ theorem contDiffOn_nat_iff_continuousOn_differentiableOn {n : ℕ} (hs : UniqueD
     ContDiffOn 𝕜 n f s ↔
       (∀ m : ℕ, m ≤ n → ContinuousOn (fun x => iteratedFDerivWithin 𝕜 m f s x) s) ∧
         ∀ m : ℕ, m < n → DifferentiableOn 𝕜 (fun x => iteratedFDerivWithin 𝕜 m f s x) s := by
-  rw [show n = ((n : ℕ∞) : WithTop ℕ∞) from rfl, contDiffOn_iff_continuousOn_differentiableOn hs]
+  rw [← WithTop.coe_natCast, contDiffOn_iff_continuousOn_differentiableOn hs]
   simp
 
 theorem contDiffOn_succ_of_fderivWithin (hf : DifferentiableOn 𝕜 f s)
@@ -895,7 +884,7 @@ alias contDiffOn_succ_iff_hasFDerivWithin := contDiffOn_succ_iff_hasFDerivWithin
 
 theorem contDiffOn_infty_iff_fderivWithin (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 ∞ f s ↔ DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 ∞ (fderivWithin 𝕜 f s) s := by
-  rw [show ∞ = ∞ + 1 from rfl, contDiffOn_succ_iff_fderivWithin hs]
+  rw [← ENat.coe_top_add_one, contDiffOn_succ_iff_fderivWithin hs]
   simp
 
 @[deprecated (since := "2024-11-27")]
@@ -907,12 +896,12 @@ theorem contDiffOn_succ_iff_fderiv_of_isOpen (hs : IsOpen s) :
     ContDiffOn 𝕜 (n + 1) f s ↔
       DifferentiableOn 𝕜 f s ∧ (n = ω → AnalyticOn 𝕜 f s) ∧
       ContDiffOn 𝕜 n (fderiv 𝕜 f) s := by
-  rw [contDiffOn_succ_iff_fderivWithin hs.uniqueDiffOn]
-  exact Iff.rfl.and (Iff.rfl.and (contDiffOn_congr fun x hx ↦ fderivWithin_of_isOpen hs hx))
+  rw [contDiffOn_succ_iff_fderivWithin hs.uniqueDiffOn,
+    contDiffOn_congr fun x hx ↦ fderivWithin_of_isOpen hs hx]
 
 theorem contDiffOn_infty_iff_fderiv_of_isOpen (hs : IsOpen s) :
     ContDiffOn 𝕜 ∞ f s ↔ DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 ∞ (fderiv 𝕜 f) s := by
-  rw [show ∞ = ∞ + 1 from rfl, contDiffOn_succ_iff_fderiv_of_isOpen hs]
+  rw [← ENat.coe_top_add_one, contDiffOn_succ_iff_fderiv_of_isOpen hs]
   simp
 
 @[deprecated (since := "2024-11-27")]
@@ -1202,7 +1191,7 @@ theorem contDiff_nat_iff_continuous_differentiable {n : ℕ} :
     ContDiff 𝕜 n f ↔
       (∀ m : ℕ, m ≤ n → Continuous fun x => iteratedFDeriv 𝕜 m f x) ∧
         ∀ m : ℕ, m < n → Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x := by
-  rw [show n = ((n : ℕ∞) : WithTop ℕ∞) from rfl, contDiff_iff_continuous_differentiable]
+  rw [← WithTop.coe_natCast, contDiff_iff_continuous_differentiable]
   simp
 
 /-- If `f` is `C^n` then its `m`-times iterated derivative is continuous for `m ≤ n`. -/
@@ -1231,12 +1220,12 @@ theorem contDiff_succ_iff_fderiv :
 
 theorem contDiff_one_iff_fderiv :
     ContDiff 𝕜 1 f ↔ Differentiable 𝕜 f ∧ Continuous (fderiv 𝕜 f) := by
-  rw [show (1 : WithTop ℕ∞) = 0 + 1 from rfl, contDiff_succ_iff_fderiv]
+  rw [← zero_add 1, contDiff_succ_iff_fderiv]
   simp
 
 theorem contDiff_infty_iff_fderiv :
     ContDiff 𝕜 ∞ f ↔ Differentiable 𝕜 f ∧ ContDiff 𝕜 ∞ (fderiv 𝕜 f) := by
-  rw [show ∞ = ∞ + 1 from rfl, contDiff_succ_iff_fderiv]
+  rw [← ENat.coe_top_add_one, contDiff_succ_iff_fderiv]
   simp
 
 @[deprecated (since := "2024-11-27")] alias contDiff_top_iff_fderiv := contDiff_infty_iff_fderiv

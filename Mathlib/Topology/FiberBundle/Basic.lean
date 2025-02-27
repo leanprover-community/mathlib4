@@ -320,7 +320,7 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
   obtain ⟨ea, hea⟩ : ∃ ea : Trivialization F (π F E), a ∈ ea.baseSet :=
     ⟨trivializationAt F E a, mem_baseSet_trivializationAt F E a⟩
   -- If `a < b`, then `[a, b] = ∅`, and the statement is trivial
-  cases' lt_or_le b a with hab hab
+  rcases lt_or_le b a with _ | hab
   · exact ⟨ea, by simp [*]⟩
   /- Let `s` be the set of points `x ∈ [a, b]` such that `E` is trivializable over `[a, x]`.
     We need to show that `b ∈ s`. Let `c = Sup s`. We will show that `c ∈ s` and `c = b`. -/
@@ -391,7 +391,6 @@ Trivialization changes from `i` to `j` are given by continuous maps `coordChange
 `baseSet i ∩ baseSet j` to the set of homeomorphisms of `F`, but we express them as maps
 `B → F → F` and require continuity on `(baseSet i ∩ baseSet j) × F` to avoid the topology on the
 space of continuous maps on `F`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure FiberBundleCore (ι : Type*) (B : Type*) [TopologicalSpace B] (F : Type*)
     [TopologicalSpace F] where
   baseSet : ι → Set B
@@ -410,7 +409,7 @@ namespace FiberBundleCore
 variable [TopologicalSpace B] [TopologicalSpace F] (Z : FiberBundleCore ι B F)
 
 /-- The index set of a fiber bundle core, as a convenience function for dot notation -/
-@[nolint unusedArguments] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was has_nonempty_instance
+@[nolint unusedArguments]
 def Index (_Z : FiberBundleCore ι B F) := ι
 
 /-- The base space of a fiber bundle core, as a convenience function for dot notation -/
@@ -419,7 +418,7 @@ def Base (_Z : FiberBundleCore ι B F) := B
 
 /-- The fiber of a fiber bundle core, as a convenience function for dot notation and
 typeclass inference -/
-@[nolint unusedArguments] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was has_nonempty_instance
+@[nolint unusedArguments]
 def Fiber (_ : FiberBundleCore ι B F) (_x : B) := F
 
 instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) := ‹_›
@@ -720,7 +719,6 @@ variable (E : B → Type*) [TopologicalSpace B] [TopologicalSpace F]
 equivalences but there is not yet a topology on the total space. The total space is hence given a
 topology in such a way that there is a fiber bundle structure for which the partial equivalences
 are also partial homeomorphisms and hence local trivializations. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure FiberPrebundle where
   pretrivializationAtlas : Set (Pretrivialization F (π F E))
   pretrivializationAt : B → Pretrivialization F (π F E)

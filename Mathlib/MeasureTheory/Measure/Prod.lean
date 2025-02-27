@@ -86,14 +86,19 @@ theorem measurable_measure_prod_mk_left_finite [IsFiniteMeasure ν] {s : Set (α
     simpa only [this] using Measurable.ennreal_tsum ihf
 
 /-- If `ν` is an s-finite measure, and `s ⊆ α × β` is measurable, then `x ↦ ν { y | (x, y) ∈ s }`
-  is a measurable function. -/
+is a measurable function.
+
+Not true without the s-finite assumption: on `ℝ × ℝ` with the product sigma-algebra, let `s` be the
+diagonal and let `ν` be an uncountable sum of Dirac measures (all Dirac measures for points in a
+set `t`). Then `ν (Prod.mk x ⁻¹' s) = ν {x} = if x ∈ t then 1 else 0`. If `t` is chosen
+non-measurable, this will not be measurable. -/
 theorem measurable_measure_prod_mk_left [SFinite ν] {s : Set (α × β)} (hs : MeasurableSet s) :
     Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
   rw [← sum_sfiniteSeq ν]
   simp_rw [Measure.sum_apply_of_countable]
   exact Measurable.ennreal_tsum (fun i ↦ measurable_measure_prod_mk_left_finite hs)
 
-/-- If `μ` is a σ-finite measure, and `s ⊆ α × β` is measurable, then `y ↦ μ { x | (x, y) ∈ s }` is
+/-- If `μ` is an s-finite measure, and `s ⊆ α × β` is measurable, then `y ↦ μ { x | (x, y) ∈ s }` is
   a measurable function. -/
 theorem measurable_measure_prod_mk_right {μ : Measure α} [SFinite μ] {s : Set (α × β)}
     (hs : MeasurableSet s) : Measurable fun y => μ ((fun x => (x, y)) ⁻¹' s) :=
@@ -784,6 +789,14 @@ theorem lintegral_prod (f : α × β → ℝ≥0∞) (hf : AEMeasurable f (μ.pr
     filter_upwards [ae_ae_of_ae_prod hf.ae_eq_mk] with _ ha using lintegral_congr_ae ha
   rw [A, B, lintegral_prod_of_measurable _ hf.measurable_mk]
 
+/-- **Tonelli's Theorem for set integrals**: For `ℝ≥0∞`-valued almost everywhere measurable
+  functions on `s ×ˢ t`, the integral of `f` on `s ×ˢ t` is equal to the iterated integral on `s`
+  and `t` respectively. -/
+theorem setLIntegral_prod [SFinite μ] {s : Set α} (t : Set β) (f : α × β → ENNReal)
+    (hf : AEMeasurable f ((μ.prod ν).restrict (s ×ˢ t))) :
+    ∫⁻ z in s ×ˢ t, f z ∂μ.prod ν = ∫⁻ x in s, ∫⁻ y in t, f (x, y) ∂ν ∂μ := by
+  rw [← Measure.prod_restrict, lintegral_prod _ (by rwa [Measure.prod_restrict])]
+
 /-- The symmetric version of Tonelli's Theorem: For `ℝ≥0∞`-valued almost everywhere measurable
 functions on `α × β`, the integral of `f` is equal to the iterated integral, in reverse order. -/
 theorem lintegral_prod_symm [SFinite μ] (f : α × β → ℝ≥0∞) (hf : AEMeasurable f (μ.prod ν)) :
@@ -851,6 +864,13 @@ instance fst.instIsProbabilityMeasure [IsProbabilityMeasure ρ] : IsProbabilityM
     rw [fst_univ]
     exact measure_univ
 
+instance fst.instIsZeroOrProbabilityMeasure [IsZeroOrProbabilityMeasure ρ] :
+    IsZeroOrProbabilityMeasure ρ.fst := by
+  rcases eq_zero_or_isProbabilityMeasure ρ with h | h
+  · simp only [h, fst_zero]
+    infer_instance
+  · infer_instance
+
 @[simp]
 lemma fst_prod [IsProbabilityMeasure ν] : (μ.prod ν).fst = μ := by
   ext1 s hs
@@ -908,6 +928,13 @@ instance snd.instIsProbabilityMeasure [IsProbabilityMeasure ρ] : IsProbabilityM
   measure_univ := by
     rw [snd_univ]
     exact measure_univ
+
+instance snd.instIsZeroOrProbabilityMeasure [IsZeroOrProbabilityMeasure ρ] :
+    IsZeroOrProbabilityMeasure ρ.snd := by
+  rcases eq_zero_or_isProbabilityMeasure ρ with h | h
+  · simp only [h, snd_zero]
+    infer_instance
+  · infer_instance
 
 @[simp]
 lemma snd_prod [IsProbabilityMeasure μ] : (μ.prod ν).snd = ν := by

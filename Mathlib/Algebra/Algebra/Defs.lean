@@ -95,10 +95,9 @@ section Prio
 
 See the implementation notes in this file for discussion of the details of this definition.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): unsupported @[nolint has_nonempty_instance]
 class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SMul R A where
   /-- Embedding `R →+* A` given by `Algebra` structure.
-  Use `algebraMap` from the root namespace instead.-/
+  Use `algebraMap` from the root namespace instead. -/
   protected algebraMap : R →+* A
   commutes' : ∀ r x, algebraMap r * x = x * algebraMap r
   smul_def' : ∀ r x, r • x = algebraMap r * x
@@ -192,6 +191,11 @@ theorem RingHom.algebraMap_toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R
 def RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) : Algebra R S :=
   i.toAlgebra' fun _ => mul_comm _
 
+theorem RingHom.smul_toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S)
+    (r : R) (s : S) :
+    let _ := RingHom.toAlgebra i
+    r • s = i r * s := rfl
+
 theorem RingHom.algebraMap_toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) :
     @algebraMap R S _ _ i.toAlgebra = i :=
   rfl
@@ -231,8 +235,6 @@ section Semiring
 
 variable [CommSemiring R] [CommSemiring S]
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-
--- Porting note: deleted a private lemma
 
 -- We'll later use this to show `Algebra ℤ M` is a subsingleton.
 /-- To prove two algebra structures on a fixed `[CommSemiring R] [Semiring A]` agree,

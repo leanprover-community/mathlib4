@@ -6,6 +6,7 @@ Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 
 import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.Int.Basic
 import Mathlib.Order.Minimal
 import Mathlib.Order.RelSeries
 import Mathlib.Tactic.FinCases
@@ -76,14 +77,18 @@ noncomputable def krullDim (α : Type*) [Preorder α] : WithBot ℕ∞ :=
 
 /--
 The **height** of an element `a` in a preorder `α` is the supremum of the rightmost index of all
-relation series of `α` ordered by `<` and ending below or at `a`.
+relation series of `α` ordered by `<` and ending below or at `a`. In other words, it is
+the largest `n` such that there's a series `a₀ < a₁ < ... < aₙ = a` (or `∞` if there is
+no largest `n`).
 -/
 noncomputable def height {α : Type*} [Preorder α] (a : α) : ℕ∞ :=
   ⨆ (p : LTSeries α) (_ : p.last ≤ a), p.length
 
 /--
 The **coheight** of an element `a` in a preorder `α` is the supremum of the rightmost index of all
-relation series of `α` ordered by `<` and beginning with `a`.
+relation series of `α` ordered by `<` and beginning with `a`. In other words, it is
+the largest `n` such that there's a series `a = a₀ < a₁ < ... < aₙ` (or `∞` if there is
+no largest `n`).
 
 The definition of `coheight` is via the `height` in the dual order, in order to easily transfer
 theorems between `height` and `coheight`. See `coheight_eq` for the definition with a
@@ -275,10 +280,36 @@ private lemma height_add_const (a : α) (n : ℕ∞) :
   have := length_le_height_last (p := p.snoc y (by simp [*]))
   simpa using this
 
+lemma height_add_one_le {a b : α} (hab : a < b) : height a + 1 ≤ height b := by
+  cases hfin : height a with
+  | top =>
+    have : ⊤ ≤ height b := by
+      rw [← hfin]
+      gcongr
+    simp [this]
+  | coe n =>
+    apply Order.add_one_le_of_lt
+    rw [← hfin]
+    gcongr
+    simp [hfin]
+
 /- For elements of finite height, `coheight` is strictly antitone. -/
 @[gcongr] lemma coheight_strictAnti {x y : α} (hyx : y < x) (hfin : coheight x < ⊤) :
     coheight x < coheight y :=
   height_strictMono (α := αᵒᵈ) hyx hfin
+
+lemma coheight_add_one_le {a b : α} (hab : b < a) : coheight a + 1 ≤ coheight b := by
+  cases hfin : coheight a with
+  | top =>
+    have : ⊤ ≤ coheight b := by
+      rw [← hfin]
+      gcongr
+    simp [this]
+  | coe n =>
+    apply Order.add_one_le_of_lt
+    rw [← hfin]
+    gcongr
+    simp [hfin]
 
 lemma height_le_height_apply_of_strictMono (f : α → β) (hf : StrictMono f) (x : α) :
     height x ≤ height (f x) := by
@@ -307,7 +338,7 @@ private lemma exists_eq_iSup_of_iSup_eq_coe {α : Type*} [Nonempty α] {f : α �
   use x
   simpa [hx] using h
 
-/-- There exist a series ending in a element for any length up to the element’s height.  -/
+/-- There exist a series ending in a element for any length up to the element’s height. -/
 lemma exists_series_of_le_height (a : α) {n : ℕ} (h : n ≤ height a) :
     ∃ p : LTSeries α, p.last = a ∧ p.length = n := by
   have hne : Nonempty { p : LTSeries α // p.last = a } := ⟨RelSeries.singleton _ a, rfl⟩
@@ -625,7 +656,7 @@ lemma krullDim_eq_iSup_length [Nonempty α] :
 
 lemma krullDim_lt_coe_iff {n : ℕ} : krullDim α < n ↔ ∀ l : LTSeries α, l.length < n := by
   rw [krullDim, ← WithBot.coe_natCast]
-  cases' n with n
+  rcases n with - | n
   · rw [ENat.coe_zero, ← bot_eq_zero, WithBot.lt_coe_bot]
     simp
   · simp [WithBot.lt_add_one_iff, WithBot.coe_natCast, Nat.lt_succ]
@@ -668,8 +699,7 @@ lemma krullDim_eq_iSup_height_of_nonempty [Nonempty α] : krullDim α = ↑(⨆ 
   apply le_antisymm
   · apply iSup_le
     intro p
-    suffices p.length ≤ ⨆ (a : α), height a by
-      exact (WithBot.unbot'_le_iff fun _ => this).mp this
+    suffices p.length ≤ ⨆ (a : α), height a from (WithBot.unbotD_le_iff fun _ => this).mp this
     apply le_iSup_of_le p.last (length_le_height_last (p := p))
   · rw [WithBot.coe_iSup (by bddDefault)]
     apply iSup_le
@@ -749,6 +779,19 @@ lemma coheight_bot_eq_krullDim [OrderBot α] : coheight (⊥ : α) = krullDim α
   exact height_top_eq_krullDim (α := αᵒᵈ)
 
 end krullDim
+
+section typeclass
+
+/-- Typeclass for orders with krull dimension at most `n`. -/
+@[mk_iff]
+class KrullDimLE (n : ℕ) (α : Type*) [Preorder α] : Prop where
+  krullDim_le : krullDim α ≤ n
+
+lemma KrullDimLE.mono {n m : ℕ} (e : n ≤ m) (α : Type*) [Preorder α] [KrullDimLE n α] :
+    KrullDimLE m α :=
+  ⟨KrullDimLE.krullDim_le (n := n).trans (Nat.cast_le.mpr e)⟩
+
+end typeclass
 
 /-!
 ## Concrete calculations

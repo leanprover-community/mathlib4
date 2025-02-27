@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Order.Interval.Basic
 import Mathlib.Tactic.Positivity.Core
 
@@ -52,7 +54,6 @@ theorem fst_one : (1 : NonemptyInterval α).fst = 1 :=
 theorem snd_one : (1 : NonemptyInterval α).snd = 1 :=
   rfl
 
--- Porting note: Originally `@[simp, norm_cast, to_additive]`
 @[to_additive (attr := push_cast, simp)]
 theorem coe_one_interval : ((1 : NonemptyInterval α) : Interval α) = 1 :=
   rfl
@@ -262,6 +263,40 @@ theorem bot_pow : ∀ {n : ℕ}, n ≠ 0 → (⊥ : Interval α) ^ n = ⊥
   | Nat.succ n, _ => mul_bot (⊥ ^ n)
 
 end Interval
+
+/-!
+### Semiring structure
+
+When `α` is a canonically `OrderedCommSemiring`, the previous `+` and `*` on `NonemptyInterval α`
+form a `CommSemiring`.
+-/
+
+section NatCast
+variable [Preorder α] [NatCast α]
+
+namespace NonemptyInterval
+
+instance : NatCast (NonemptyInterval α) where
+  natCast n := pure <| Nat.cast n
+
+theorem fst_natCast (n : ℕ) : (n : NonemptyInterval α).fst = n := rfl
+
+theorem snd_natCast (n : ℕ) : (n : NonemptyInterval α).snd = n := rfl
+
+@[simp]
+theorem pure_natCast (n : ℕ) : pure (n : α) = n := rfl
+
+end NonemptyInterval
+
+end NatCast
+
+namespace NonemptyInterval
+
+instance [OrderedCommSemiring α] [CanonicallyOrderedAdd α] : CommSemiring (NonemptyInterval α) :=
+  NonemptyInterval.toProd_injective.commSemiring _
+    toProd_zero toProd_one toProd_add toProd_mul (swap toProd_nsmul) toProd_pow (fun _ => rfl)
+
+end NonemptyInterval
 
 /-!
 ### Subtraction
