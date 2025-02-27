@@ -7,10 +7,10 @@ import Lean.Util.CollectAxioms
 import Mathlib.Init
 
 /-!
-#  The "detectClassical" linter
+#  The "disallowedAxioms" linter
 
-The "detectClassical" linter emits a warning on declarations that depend on the `Classical.choice`
-axiom.
+The "disallowedAxioms" linter emits a warning on declarations that depend on any axiom
+listed in the `disallowedAxiomsRef` `IO.Ref`.
 -/
 
 open Lean Elab Command
@@ -18,33 +18,53 @@ open Lean Elab Command
 namespace Mathlib.Linter
 
 /--
-The "detectClassical" linter emits a warning on declarations that depend on the `Classical.choice`
-axiom.
+`disallowedAxiomsRef` contains the names of the disallowed axioms.
+This is used by the `disallowedAxioms` linter.
 -/
-register_option linter.detectClassical : Bool := {
+initialize disallowedAxiomsRef : IO.Ref NameSet ← IO.mkRef ∅
+
+/--
+`disallow_axiom axiom` extends the list of axioms that trigger the `disallowedAxioms` linter,
+by disallowing `axiom` as well.
+-/
+elab "disallow_axiom " id:ident : command => do
+  let id ← resolveGlobalConstNoOverload id
+  let some cinfo := ← (pure <| (← getEnv).find? id) | throwError "unknown constant '{id}'"
+  if cinfo.isAxiom then
+    disallowedAxiomsRef.modify (·.insert id)
+  else
+    throwError "'{id}' is not an axiom"
+
+/--
+The "disallowedAxioms" linter emits a warning on declarations that depend on any axiom in the
+`disallowedAxiomsRef` counter.
+
+To increase the list of disallowed axioms, use `disallow_axiom axiom`.
+-/
+register_option linter.disallowedAxioms : Bool := {
   defValue := true
-  descr := "enable the detectClassical linter"
+  descr := "enable the disallowedAxioms linter"
 }
 
 /--
-The `linter.verbose.detectClassical` option is a flag to make the `detectClassical` linter emit
+The `linter.verbose.disallowedAxioms` option is a flag to make the `disallowedAxioms` linter emit
 a confirmation on declarations that depend *not* on the `Classical.choice` axiom.
 -/
-register_option linter.verbose.detectClassical : Bool := {
+register_option linter.verbose.disallowedAxioms : Bool := {
   defValue := false
-  descr := "enable the verbose setting for the detectClassical linter"
+  descr := "enable the verbose setting for the disallowedAxioms linter"
 }
 
 namespace DetectClassical
 
-@[inherit_doc Mathlib.Linter.linter.detectClassical]
-def detectClassicalLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.detectClassical (← getOptions) do
+@[inherit_doc Mathlib.Linter.linter.disallowedAxioms]
+def disallowedAxiomsLinter : Linter where run := withSetOptionIn fun stx ↦ do
+  unless Linter.getLinterValue linter.disallowedAxioms (← getOptions) do
     return
   if (← get).messages.hasErrors then
     return
   let nms := (← getNamesFrom (stx.getPos?.getD default)).filter (! ·.getId.isInternal)
-  let verbose? := Linter.getLinterValue linter.verbose.detectClassical (← getOptions)
+  let verbose? := Linter.getLinterValue linter.verbose.disallowedAxioms (← getOptions)
   for constStx in nms do
     let constName := constStx.getId
     let axioms ← collectAxioms constName
@@ -52,15 +72,15 @@ def detectClassicalLinter : Linter where run := withSetOptionIn fun stx ↦ do
       if verbose? then
         logInfoAt constStx m!"'{constName}' does not depend on any axioms"
       return
-    if !axioms.contains `Classical.choice then
-      if verbose? then
-        logInfoAt constStx
-          m!"'{constName}' is non-classical and depends on axioms:\n{axioms.toList}"
-    else
-      Linter.logLint linter.detectClassical constStx
-        m!"'{constName}' depends on 'Classical.choice'.\n\nAll axioms: {axioms.toList}\n"
+    let disallowedAxioms ← disallowedAxiomsRef.get
+    let presentDisallowedAxioms := axioms.filter disallowedAxioms.contains
+    if !presentDisallowedAxioms.isEmpty then
+      logInfoAt constStx
+        m!"'{constName}' depends on the following disallowed axioms:\n\
+          {presentDisallowedAxioms.toList}\n\
+          All axioms on which '{constName}' depends: {axioms.toList}"
 
-initialize addLinter detectClassicalLinter
+initialize addLinter disallowedAxiomsLinter
 
 end DetectClassical
 
@@ -73,7 +93,7 @@ register_option linter.unusedDecl : Bool := {
 }
 
 structure UnusedDeclState where
-  all : Array Syntax := ∅
+  all : Std.HashSet (String.Range × Name) := ∅
   used : NameSet := ∅
   deriving Inhabited
 
@@ -81,7 +101,13 @@ initialize unusedDeclRef : IO.Ref UnusedDeclState ← IO.mkRef {}
 
 elab "#unused" : command => do
   let unusedDecl := ← unusedDeclRef.get
-  logInfo m!"all: {unusedDecl.all}\nused: {unusedDecl.used.toArray.qsort (·.toString < ·.toString)}"
+  let allSorted := unusedDecl.all.fold (init := #[]) (·.push ·.2) |>.qsort (·.toString < ·.toString)
+  let unused := if 30 < unusedDecl.used.size then m!"{unusedDecl.used.size} used constants!" else
+    m!"{unusedDecl.used.toArray.qsort (·.toString < ·.toString)}"
+  logInfo m!"all: {allSorted}\nused: {unused}"
+
+elab "#disallowed_axioms" : command => do
+  logInfo m!"{(← disallowedAxiomsRef.get).toArray.qsort (·.toString < ·.toString)}"
 
 namespace UnusedDecl
 
@@ -95,16 +121,18 @@ def unusedDeclLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let env ← getEnv
   for constStx in nms do
     let constName := constStx.getId
-    let some constInfo ← (pure <| env.find? constName : CommandElabM _ ) |
+    let some constInfo ← pure <| env.find? constName |
       throwError s!"unknown declaration '{constName}'"
     let decls := constInfo.getUsedConstantsAsSet
-    unusedDeclRef.modify (fun {all, used} =>
-      {all := all.push constStx, used := used.union (decls.erase constName)})
+    unusedDeclRef.modify fun {all, used} => {
+        all := all.insert (constStx.getRange?.getD default, constName)
+        used := used.union (decls.erase constName)
+      }
   if Parser.isTerminalCommand stx then
     let {all, used} ← unusedDeclRef.get
-    let unused := all.filter (! used.contains ·.getId)
-    for cst in unused do
-      Linter.logLint linter.unusedDecl cst m!"'{cst}' is unused in this file"
+    let unused := all.filter (! used.contains ·.2)
+    for (rg, cst) in unused do
+      Linter.logLint linter.unusedDecl (.ofRange rg) m!"'{cst}' is unused in this file"
 
 initialize addLinter unusedDeclLinter
 
