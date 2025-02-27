@@ -17,29 +17,30 @@ open Lean Elab Command
 
 namespace Mathlib.Linter
 
+-- should be made into an environment extension
 /--
 `disallowedAxiomsRef` contains the names of the disallowed axioms.
 This is used by the `disallowedAxioms` linter.
 -/
 initialize disallowedAxiomsRef : IO.Ref NameSet ← IO.mkRef ∅
 
-/--
-`disallow_axiom axiom` extends the list of axioms that trigger the `disallowedAxioms` linter,
-by disallowing `axiom` as well.
--/
-elab "disallow_axiom " id:ident : command => do
-  let id ← resolveGlobalConstNoOverload id
-  let some cinfo := ← (pure <| (← getEnv).find? id) | throwError "unknown constant '{id}'"
-  if cinfo.isAxiom then
-    disallowedAxiomsRef.modify (·.insert id)
-  else
-    throwError "'{id}' is not an axiom"
+elab "#disallowed_axioms" : command => do
+  logInfo m!"{(← disallowedAxiomsRef.get).toArray.qsort (·.toString < ·.toString)}"
+
+initialize registerBuiltinAttribute {
+    name := `disallowed_axiom
+    descr := "An axiom that triggers the `disallowedAxioms` linter"
+    add := fun decl attrStx kind ↦ do
+      let some cinfo := ← (pure <| (← getEnv).find? decl) | throwError "unknown constant '{decl}'"
+      unless cinfo.isAxiom do
+        throwError "'{decl}' is not an axiom"
+      disallowedAxiomsRef.modify (·.insert decl)
+    applicationTime := .afterCompilation
+  }
 
 /--
-The "disallowedAxioms" linter emits a warning on declarations that depend on any axiom in the
-`disallowedAxiomsRef` counter.
-
-To increase the list of disallowed axioms, use `disallow_axiom axiom`.
+The "disallowedAxioms" linter emits a warning on declarations that depend on any axiom
+with the `disallowed_axiom` attribute.
 -/
 register_option linter.disallowedAxioms : Bool := {
   defValue := true
@@ -105,9 +106,6 @@ elab "#unused" : command => do
   let unused := if 30 < unusedDecl.used.size then m!"{unusedDecl.used.size} used constants!" else
     m!"{unusedDecl.used.toArray.qsort (·.toString < ·.toString)}"
   logInfo m!"all: {allSorted}\nused: {unused}"
-
-elab "#disallowed_axioms" : command => do
-  logInfo m!"{(← disallowedAxiomsRef.get).toArray.qsort (·.toString < ·.toString)}"
 
 namespace UnusedDecl
 
