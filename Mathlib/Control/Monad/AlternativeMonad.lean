@@ -6,7 +6,6 @@ Authors: Simon Hudon
 import Mathlib.Control.Lawful
 import Mathlib.Control.Monad.Basic
 import Mathlib.Data.Finset.Functor
-import Batteries.Control.Lemmas
 
 /-!
 # Laws for Monads with Failure
@@ -90,12 +89,7 @@ namespace OptionT
 
 variable {m : Type u → Type v} [Monad m] {α β : Type u}
 
-protected lemma failure_def : (failure : OptionT m α) = OptionT.fail := rfl
-
 @[simp] lemma run_failure : (failure : OptionT m α).run = pure none := rfl
-
-protected lemma orElse_def (x : OptionT m α) (y : OptionT m α) :
-    (x <|> y) = OptionT.orElse x (fun _ => y) := rfl
 
 @[simp] lemma run_orElse (x : OptionT m α) (y : OptionT m α) : (x <|> y).run =
     (do match ← x.run with | some a => pure (some a) | _  => y.run) := rfl
@@ -119,7 +113,7 @@ instance : AlternativeMonad (StateT σ m) where
 
 instance [LawfulAlternative m] : LawfulAlternative (StateT σ m) where
   failure_bind _ := StateT.ext fun _ => failure_bind _
-  mapConst_failure y := StateT.ext fun _ => by simp
+  mapConst_failure _ := StateT.ext fun _ => (run_mapConst _ _ _).trans (map_failure _)
   orElse_failure _ := StateT.ext fun _ => orElse_failure _
   failure_orElse _ := StateT.ext fun _ => failure_orElse _
 
