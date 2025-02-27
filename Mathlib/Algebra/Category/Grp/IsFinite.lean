@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Category.Grp.Abelian
 import Mathlib.Algebra.Category.Grp.EpiMono
+import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.Algebra.Homology.ShortComplex.Ab
 import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
 import Mathlib.Data.Finite.Prod
@@ -21,17 +22,19 @@ universe u
 
 open CategoryTheory Limits ZeroObject
 
-namespace Ab
+namespace AddCommGrp
 
-/-- The Serre class of finite abelian groups in the category `Ab`. -/
-def isFinite : ObjectProperty Ab.{u} :=
+/-- The Serre class of finite abelian groups
+in the category of abelian groups. -/
+def isFinite : ObjectProperty AddCommGrp.{u} :=
   fun M ↦ Finite M
 
 @[simp]
-lemma prop_isFinite_iff (M : Ab.{u}) : isFinite M ↔ Finite M := Iff.rfl
+lemma prop_isFinite_iff (M : AddCommGrp.{u}) : isFinite M ↔ Finite M := Iff.rfl
 
 instance : isFinite.{u}.IsSerreClass where
-  exists_zero := ⟨.of PUnit, isZero_of_subsingleton _, by rw [prop_isFinite_iff]; infer_instance⟩
+  exists_zero := ⟨.of PUnit, isZero_of_subsingleton _,
+    by rw [prop_isFinite_iff]; infer_instance⟩
   prop_of_mono {M N} f hf hN := by
     rw [AddCommGrp.mono_iff_injective] at hf
     simp only [prop_isFinite_iff] at hN ⊢
@@ -51,4 +54,4 @@ instance : isFinite.{u}.IsSerreClass where
       exact ⟨⟨x₁, S.g x₂⟩, by simp [hx₁]⟩
     exact Finite.of_surjective _ hφ
 
-end Ab
+end AddCommGrp
