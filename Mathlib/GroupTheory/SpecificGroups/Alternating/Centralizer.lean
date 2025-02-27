@@ -255,7 +255,7 @@ theorem kerParam_range_eq_centralizer_of_count_le_one (h_count : ∀ i, g.cycleT
   · apply kerParam_range_le_centralizer
   · intro hx
     rw [kerParam_range_eq]
-    simp only [Subgroup.mem_map, MonoidHom.mem_ker, Subgroup.coeSubtype, Subtype.exists,
+    simp only [Subgroup.mem_map, MonoidHom.mem_ker, Subgroup.coe_subtype, Subtype.exists,
       exists_and_right, exists_eq_right]
     use hx
     ext1 c
