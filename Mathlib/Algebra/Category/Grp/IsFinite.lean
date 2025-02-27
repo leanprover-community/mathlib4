@@ -13,7 +13,7 @@ import Mathlib.Data.Finite.Prod
 /-!
 # The Serre class of finite abelian groups
 
-In this file, we define `isFinite : ObjectProperty Ab` and show
+In this file, we define `isFinite : ObjectProperty AddCommGrp` and show
 that it is a Serre class.
 
 -/
