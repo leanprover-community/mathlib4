@@ -85,11 +85,15 @@ lemma eqvGen_ringQuot_mul_right {a b c : A} (h : EqvGen (RingQuot.Rel rel) a b) 
   | trans x y z _ _ h1 h2 =>
     exact EqvGen.trans (c * x) (c * y) (c * z) h1 h2
 
-lemma Finset.relation_sum_induction {α : Type*} {s : Finset α} [DecidableEq α]
-    {M : Type*} [AddCommMonoid M] (f : α → M) (g : α → M) (r : M → M → Prop)
-    (hom : ∀ (a b c d : M), r a b → r c d → r (a + c) (b + d)) (unit : r 0 0)
+/-- To prove a relation between two products, it suffices to prove that
+the relation is multiplicative and holds on factors. -/
+@[to_additive "To prove a relation between two sums, it suffices to prove that
+the relation is additive and holds on summands."]
+lemma Finset.relation_prod_induction {α : Type*} {s : Finset α} [DecidableEq α]
+    {M : Type*} [CommMonoid M] (f : α → M) (g : α → M) (r : M → M → Prop)
+    (hom : ∀ (a b c d : M), r a b → r c d → r (a * c) (b * d)) (unit : r 1 1)
     (base : ∀ x ∈ s, r (f x) (g x)) :
-    r (∑ x ∈ s, f x) (∑ x ∈ s, g x) := by
+    r (∏ x ∈ s, f x) (∏ x ∈ s, g x) := by
   induction s using Finset.induction with
   | empty => simpa
   | insert _ _ => simp_all
@@ -121,7 +125,7 @@ theorem eqvGen_proj_mul_right {a b c : A} (n : ι)
   simp only [proj_apply, DirectSum.decompose_mul, DirectSum.coe_mul_apply]
   rw [coe_mul_sum_support_subset 𝒜 _ _ Finset.subset_union_left (Set.Subset.refl _),
     coe_mul_sum_support_subset 𝒜 _ _ Finset.subset_union_right (Set.Subset.refl _)]
-  apply Finset.relation_sum_induction _ _ (EqvGen (RingQuot.Rel rel))
+  apply Finset.relation_sum_induction
   · intro _ _ _ _ hab hcd
     rw [RingQuot.eqvGen_rel_eq] at hab hcd ⊢
     exact RingConGen.Rel.add hab hcd
@@ -136,7 +140,7 @@ theorem eqvGen_proj_mul_left {a b c : A} (n : ι)
   simp only [proj_apply, DirectSum.decompose_mul, DirectSum.coe_mul_apply]
   rw [coe_mul_sum_support_subset 𝒜 _ _ (Set.Subset.refl _) Finset.subset_union_left,
     coe_mul_sum_support_subset 𝒜 _ _ (Set.Subset.refl _) Finset.subset_union_right]
-  apply Finset.relation_sum_induction _ _ (EqvGen (RingQuot.Rel rel))
+  apply Finset.relation_sum_induction
   · intro _ _ _ _ hab hcd
     rw [RingQuot.eqvGen_rel_eq] at hab hcd ⊢
     exact RingConGen.Rel.add hab hcd
