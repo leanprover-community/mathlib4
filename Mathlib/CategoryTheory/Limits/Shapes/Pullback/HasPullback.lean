@@ -227,6 +227,16 @@ def pushoutIsPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
   PushoutCocone.IsColimit.mk _ (fun s => pushout.desc s.inl s.inr s.condition) (by simp) (by simp)
     (by aesop_cat)
 
+@[simp]
+lemma pullback.lift_fst_snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
+    lift (fst f g) (snd f g) condition = 𝟙 (pullback f g) := by
+  apply hom_ext <;> simp
+
+@[simp]
+lemma pushout.desc_inl_inr {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
+    desc (inl f g) (inr f g) condition = 𝟙 (pushout f g) := by
+  apply hom_ext <;> simp
+
 /-- Given such a diagram, then there is a natural morphism `W ×ₛ X ⟶ Y ×ₜ Z`.
 
 ```
