@@ -100,13 +100,13 @@ local macro "map_simp" : tactic =>
     Polynomial.map_mul, Polynomial.map_pow, Polynomial.map_div, coe_mapRingHom,
     WeierstrassCurve.map])
 
-universe r s u v
+universe r s u v w
 
 /-! ## Weierstrass curves -/
 
 namespace WeierstrassCurve
 
-variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v}
+variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} {L : Type w}
 
 variable (R) in
 /-- An abbreviation for a Weierstrass curve in affine coordinates. -/
@@ -119,8 +119,8 @@ abbrev toAffine (W : WeierstrassCurve R) : Affine R :=
 
 namespace Affine
 
-variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K] {W' : Affine R}
-  {W : Affine F}
+variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K] [Field L]
+  {W' : Affine R} {W : Affine F}
 
 section Equation
 
@@ -305,7 +305,7 @@ section Negation
 /-! ### Negation formulae -/
 
 variable (W') in
-/-- The polynomial `-Y - a₁X - a₃` associated to negation. -/
+/-- The polynomial $-Y - a_1X - a_3$ associated to negation. -/
 noncomputable def negPolynomial : R[X][Y] :=
   -(Y : R[X][Y]) - C (C W'.a₁ * X + C W'.a₃)
 
@@ -318,8 +318,9 @@ lemma Y_sub_negPolynomial : Y - W'.negPolynomial = W'.polynomialY := by
   rw [← Y_sub_polynomialY, sub_sub_cancel]
 
 variable (W') in
-/-- The `Y`-coordinate of the negation of an affine point in `W`.
-This depends on `W`, and has argument order: `x`, `y`. -/
+/-- The $Y$-coordinate of the negation of an affine point in `W`.
+
+This depends on `W`, and has argument order: $x$, $y$. -/
 @[simp]
 def negY (x y : R) : R :=
   -y - W'.a₁ * x - W'.a₃
@@ -367,20 +368,23 @@ section Slope
 /-! ### Slope formulae -/
 
 variable (W') in
-/-- The polynomial `ℓ(X - x) + y` associated to the line `Y = ℓ(X - x) + y`, with a slope of `ℓ`
-that passes through an affine point `(x, y)`.
-This does not depend on `W`, and has argument order: `x`, `y`, `ℓ`. -/
+/-- The polynomial $L(X - x) + y$ associated to the line $Y = L(X - x) + y$,
+with a slope of $L$ that passes through an affine point $(x, y)$.
+
+This does not depend on `W`, and has argument order: $x$, $y$, $L$. -/
 noncomputable def linePolynomial (x y ℓ : R) : R[X] :=
   C ℓ * (X - C x) + C y
 
 open Classical in
 variable (W) in
-/-- The slope of the line through two affine points `(x₁, y₁)` and `(x₂, y₂)` in `W`. If `x₁ ≠ x₂`,
-then this line is the secant of `W` through `(x₁, y₁)` and `(x₂, y₂)`, and has slope
-`(y₁ - y₂) / (x₁ - x₂)`. Otherwise, if `y₁ ≠ -y₁ - a₁x₁ - a₃`, then this line is the tangent of `W`
-at `(x₁, y₁) = (x₂, y₂)`, and has slope `(3x₁² + 2a₂x₁ + a₄ - a₁y₁) / (2y₁ + a₁x₁ + a₃)`.
-Otherwise, this line is vertical, in which case this function returns the value `0`.
-This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `y₂`. -/
+/-- The slope of the line through two affine points $(x_1, y_1)$ and $(x_2, y_2)$ in `W`.
+If $x_1 \ne x_2$, then this line is the secant of `W` through $(x_1, y_1)$ and $(x_2, y_2)$,
+and has slope $(y_1 - y_2) / (x_1 - x_2)$. Otherwise, if $y_1 \ne -y_1 - a_1x_1 - a_3$,
+then this line is the tangent of `W` at $(x_1, y_1) = (x_2, y_2)$, and has slope
+$(3x_1^2 + 2a_2x_1 + a_4 - a_1y_1) / (2y_1 + a_1x_1 + a_3)$. Otherwise, this line is vertical,
+and has undefined slope, in which case this function returns the value 0.
+
+This depends on `W`, and has argument order: $x_1$, $x_2$, $y_1$, $y_2$. -/
 noncomputable def slope (x₁ x₂ y₁ y₂ : F) : F :=
   if x₁ = x₂ then if y₁ = W.negY x₂ y₂ then 0
     else (3 * x₁ ^ 2 + 2 * W.a₂ * x₁ + W.a₄ - W.a₁ * y₁) / (y₁ - W.negY x₁ y₁)
@@ -416,11 +420,12 @@ section Addition
 /-! ### Addition formulae -/
 
 variable (W') in
-/-- The polynomial obtained by substituting the line `Y = ℓ*(X - x) + y`, with a slope of `ℓ` that
-passes through an affine point `(x, y)`, into the polynomial `W(X, Y)` associated to `W`. If such a
-line intersects `W` at another point `(x', y')`, then the roots of this polynomial are precisely
-`x`, `x'`, and the `X`-coordinate of the addition of `(x, y)` and `(x', y')`.
-This depends on `W`, and has argument order: `x`, `y`, `ℓ`. -/
+/-- The polynomial obtained by substituting the line $Y = L*(X - x) + y$, with a slope of $L$
+that passes through an affine point $(x, y)$, into the polynomial $W(X, Y)$ associated to `W`.
+If such a line intersects `W` at another point $(x', y')$, then the roots of this polynomial are
+precisely $x$, $x'$, and the $X$-coordinate of the addition of $(x, y)$ and $(x', y')$.
+
+This depends on `W`, and has argument order: $x$, $y$, $L$. -/
 noncomputable def addPolynomial (x y ℓ : R) : R[X] :=
   W'.polynomial.eval <| linePolynomial x y ℓ
 
@@ -442,25 +447,28 @@ lemma addPolynomial_eq (x y ℓ : R) : W'.addPolynomial x y ℓ = -Cubic.toPoly
   ring1
 
 variable (W') in
-/-- The `X`-coordinate of the addition of two affine points `(x₁, y₁)` and `(x₂, y₂)` in `W`, where
-the line through them is not vertical and has a slope of `ℓ`.
-This depends on `W`, and has argument order: `x₁`, `x₂`, `ℓ`. -/
+/-- The $X$-coordinate of the addition of two affine points $(x_1, y_1)$ and $(x_2, y_2)$ in `W`,
+where the line through them is not vertical and has a slope of $L$.
+
+This depends on `W`, and has argument order: $x_1$, $x_2$, $L$. -/
 @[simp]
 def addX (x₁ x₂ ℓ : R) : R :=
   ℓ ^ 2 + W'.a₁ * ℓ - W'.a₂ - x₁ - x₂
 
 variable (W') in
-/-- The `Y`-coordinate of the negated addition of two affine points `(x₁, y₁)` and `(x₂, y₂)`, where
-the line through them is not vertical and has a slope of `ℓ`.
-This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `ℓ`. -/
+/-- The $Y$-coordinate of the negated addition of two affine points $(x_1, y_1)$ and $(x_2, y_2)$,
+where the line through them is not vertical and has a slope of $L$.
+
+This depends on `W`, and has argument order: $x_1$, $x_2$, $y_1$, $L$. -/
 @[simp]
 def negAddY (x₁ x₂ y₁ ℓ : R) : R :=
   ℓ * (W'.addX x₁ x₂ ℓ - x₁) + y₁
 
 variable (W') in
-/-- The `Y`-coordinate of the addition of two affine points `(x₁, y₁)` and `(x₂, y₂)` in `W`, where
-the line through them is not vertical and has a slope of `ℓ`.
-This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `ℓ`. -/
+/-- The $Y$-coordinate of the addition of two affine points $(x_1, y_1)$ and $(x_2, y_2)$ in `W`,
+where the line through them is not vertical and has a slope of $L$.
+
+This depends on `W`, and has argument order: $x_1$, $x_2$, $y_1$, $L$. -/
 @[simp]
 def addY (x₁ x₂ y₁ ℓ : R) : R :=
   W'.negY (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ)
@@ -566,8 +574,8 @@ lemma nonsingular_add {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
     W.Nonsingular (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) (W.addY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) :=
   (nonsingular_neg ..).mpr <| nonsingular_negAdd h₁ h₂ hxy
 
-/-- The formula `x(P₁ + P₂) = x(P₁ - P₂) - ψ(P₁)ψ(P₂) / (x(P₂) - x(P₁))²`,
-where `ψ(x,y) = 2y + a₁x + a₃`. -/
+/-- The formula x(P₁ + P₂) = x(P₁ - P₂) - ψ(P₁)ψ(P₂) / (x(P₂) - x(P₁))²,
+where ψ(x,y) = 2y + a₁x + a₃. -/
 lemma addX_eq_addX_negY_sub {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
     W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂) = W.addX x₁ x₂ (W.slope x₁ x₂ y₁ <| W.negY x₂ y₂) -
       (y₁ - W.negY x₁ y₁) * (y₂ - W.negY x₂ y₂) / (x₂ - x₁) ^ 2 := by
@@ -575,8 +583,8 @@ lemma addX_eq_addX_negY_sub {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂)
   field_simp [sub_ne_zero.mpr hx]
   ring1
 
-/-- The formula `y(P₁)(x(P₂) - x(P₃)) + y(P₂)(x(P₃) - x(P₁)) + y(P₃)(x(P₁) - x(P₂)) = 0`,
-assuming that `P₁ + P₂ + P₃ = O`. -/
+/-- The formula y(P₁)(x(P₂) - x(P₃)) + y(P₂)(x(P₃) - x(P₁)) + y(P₃)(x(P₁) - x(P₂)) = 0,
+assuming that P₁ + P₂ + P₃ = O. -/
 lemma cyclic_sum_Y_mul_X_sub_X {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
     let x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
     y₁ * (x₂ - x₃) + y₂ * (x₃ - x₁) + W.negAddY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂) * (x₁ - x₂) = 0 := by
@@ -584,8 +592,9 @@ lemma cyclic_sum_Y_mul_X_sub_X {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x�
   field_simp [sub_ne_zero.mpr hx]
   ring1
 
-/-- The formula `ψ(P₁ + P₂) = (ψ(P₂)(x(P₁) - x(P₃)) - ψ(P₁)(x(P₂) - x(P₃))) / (x(P₂) - x(P₁))`,
-where `ψ(x,y) = 2y + a₁x + a₃`. -/
+/-- The formula
+ψ(P₁ + P₂) = (ψ(P₂)(x(P₁) - x(P₃)) - ψ(P₁)(x(P₂) - x(P₃))) / (x(P₂) - x(P₁)),
+where ψ(x,y) = 2y + a₁x + a₃. -/
 lemma addY_sub_negY_addY {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
     let x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
     let y₃ := W.addY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂)
@@ -601,14 +610,14 @@ section Group
 /-! ### Nonsingular points -/
 
 variable (W') in
-/-- A nonsingular point on a Weierstrass curve `W` in affine coordinates. This is either the unique
-point at infinity `WeierstrassCurve.Affine.Point.zero` or the nonsingular affine points
-`WeierstrassCurve.Affine.Point.some` `(x, y)` satisfying the Weierstrass equation of `W`. -/
+/-- A nonsingular rational point on a Weierstrass curve `W` in affine coordinates. This is either
+the unique point at infinity `WeierstrassCurve.Affine.Point.zero` or the nonsingular affine points
+`WeierstrassCurve.Affine.Point.some` $(x, y)$ satisfying the Weierstrass equation of `W`. -/
 inductive Point
   | zero
   | some {x y : R} (h : W'.Nonsingular x y)
 
-/-- For an algebraic extension `S` of `R`, the type of nonsingular `S`-points on `W`. -/
+/-- For an algebraic extension `S` of `R`, the type of nonsingular `S`-rational points on `W`. -/
 scoped notation3:max W' "⟮" S "⟯" => Affine.Point <| baseChange W' S
 
 namespace Point
@@ -628,6 +637,7 @@ lemma some_ne_zero {x y : R} (h : W'.Nonsingular x y) : Point.some h ≠ 0 := by
   rintro (_ | _)
 
 /-- The negation of a nonsingular point on `W`.
+
 Given a nonsingular point `P` on `W`, use `-P` instead of `neg P`. -/
 def neg : W'.Point → W'.Point
   | 0 => 0
@@ -655,6 +665,7 @@ instance : InvolutiveNeg W'.Point where
 
 open Classical in
 /-- The addition of two nonsingular points on `W`.
+
 Given two nonsingular points `P` and `Q` on `W`, use `P + Q` instead of `add P Q`. -/
 noncomputable def add : W.Point → W.Point → W.Point
   | 0, P => P
@@ -873,11 +884,9 @@ end BaseChange
 
 namespace Point
 
-universe w
-
-variable {L : Type w} [Field L] [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R S F]
-  [Algebra R K] [Algebra S K] [IsScalarTower R S K] [Algebra R L] [Algebra S L]
-  [IsScalarTower R S L] (f : F →ₐ[S] K) (g : K →ₐ[S] L)
+variable [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebra R K] [Algebra S K]
+  [IsScalarTower R S K] [Algebra R L] [Algebra S L] [IsScalarTower R S L] (f : F →ₐ[S] K)
+  (g : K →ₐ[S] L)
 
 /-- The group homomorphism from `W⟮F⟯` to `W⟮K⟯` induced by an algebra homomorphism `f : F →ₐ[S] K`,
 where `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
