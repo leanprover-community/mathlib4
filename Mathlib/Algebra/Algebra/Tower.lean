@@ -248,6 +248,10 @@ theorem coe_span_eq_span_of_surjective (h : Function.Surjective (algebraMap R A)
     (Submodule.span A s : Set M) = Submodule.span R s :=
   congr_arg ((↑) : Submodule R M → Set M) (Submodule.restrictScalars_span R A h s)
 
+lemma range_restrictScalars {N : Type*} [AddCommMonoid N] [Module R N] [Module A N]
+    [IsScalarTower R A N] (f : M →ₗ[A] N) :
+    LinearMap.range (f.restrictScalars R) = f.range.restrictScalars R := rfl
+
 end Submodule
 
 section Semiring
@@ -317,6 +321,23 @@ theorem map_mem_span_algebraMap_image {S T : Type*} [CommSemiring S] [Semiring T
   exact ⟨x, hx, rfl⟩
 
 end Algebra
+
+section OrderIso
+
+/-- If `S` is an `R`-algebra with the homomorphism from `R` to `S` is surjective, suppose `M` is an
+`R`-module and a `S`-module with the two structures compatible, then there is a order preserving
+bijection on the `R`-submodules of `M` and `S`-submodules of `M`. -/
+def orderIsoOfSurjective {R S} (M) [CommSemiring R] [Semiring S] [AddCommMonoid M]
+    [Algebra R S] [Module S M] [Module R M] [IsScalarTower R S M]
+    (h : Function.Surjective (algebraMap R S)) : Submodule S M ≃o Submodule R M := {
+      Submodule.restrictScalarsEmbedding R S M with
+      invFun := fun p ↦
+        {smul_mem' := fun c x hx ↦ (by obtain ⟨c, rfl⟩ := h c; simpa using p.smul_mem c hx), ..}
+      left_inv := fun x ↦ Submodule.ext fun _ ↦ Iff.rfl
+      right_inv := fun x ↦ Submodule.ext fun _ ↦ Iff.rfl
+    }
+
+end OrderIso
 
 end Submodule
 
