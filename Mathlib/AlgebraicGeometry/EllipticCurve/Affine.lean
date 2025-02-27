@@ -291,7 +291,7 @@ end Nonsingular
 
 section Ring
 
-/-! ### Group operations over a ring -/
+/-! ### Group operation polynomials over a ring -/
 
 variable (W') in
 /-- The polynomial $-Y - a_1X - a_3$ associated to negation. -/
@@ -388,17 +388,22 @@ lemma equation_neg_iff (x y : R) : W'.Equation x (W'.negY x y) ↔ W'.Equation x
   congr! 1
   ring1
 
+lemma nonsingular_neg_iff (x y : R) : W'.Nonsingular x (W'.negY x y) ↔ W'.Nonsingular x y := by
+  rw [nonsingular_iff, equation_neg_iff, ← negY, negY_negY, ← @ne_comm _ y, nonsingular_iff]
+  exact and_congr_right' <| (iff_congr not_and_or.symm not_and_or.symm).mpr <|
+    not_congr <| and_congr_left fun h => by rw [← h]
+
+lemma equation_add_iff (x₁ x₂ y₁ ℓ : R) : W'.Equation (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ) ↔
+    (W'.addPolynomial x₁ y₁ ℓ).eval (W'.addX x₁ x₂ ℓ) = 0 := by
+  rw [Equation, negAddY, addPolynomial, linePolynomial, polynomial]
+  eval_simp
+
 lemma equation_neg_of {x y : R} (h : W'.Equation x <| W'.negY x y) : W'.Equation x y :=
   (W'.equation_neg_iff ..).mp h
 
 /-- The negation of an affine point in `W` lies in `W`. -/
 lemma equation_neg {x y : R} (h : W'.Equation x y) : W'.Equation x <| W'.negY x y :=
   (W'.equation_neg_iff ..).mpr h
-
-lemma nonsingular_neg_iff (x y : R) : W'.Nonsingular x (W'.negY x y) ↔ W'.Nonsingular x y := by
-  rw [nonsingular_iff, equation_neg_iff, ← negY, negY_negY, ← @ne_comm _ y, nonsingular_iff]
-  exact and_congr_right' <| (iff_congr not_and_or.symm not_and_or.symm).mpr <|
-    not_congr <| and_congr_left fun h => by rw [← h]
 
 lemma nonsingular_neg_of {x y : R} (h : W'.Nonsingular x <| W'.negY x y) : W'.Nonsingular x y :=
   (W'.nonsingular_neg_iff ..).mp h
@@ -407,11 +412,25 @@ lemma nonsingular_neg_of {x y : R} (h : W'.Nonsingular x <| W'.negY x y) : W'.No
 lemma nonsingular_neg {x y : R} (h : W'.Nonsingular x y) : W'.Nonsingular x <| W'.negY x y :=
   (W'.nonsingular_neg_iff ..).mpr h
 
+lemma nonsingular_negAdd_of_eval_derivative_ne_zero {x₁ x₂ y₁ ℓ : R}
+    (hx' : W'.Equation (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ))
+    (hx : (W'.addPolynomial x₁ y₁ ℓ).derivative.eval (W'.addX x₁ x₂ ℓ) ≠ 0) :
+    W'.Nonsingular (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ) := by
+  rw [Nonsingular, and_iff_right hx', negAddY, polynomialX, polynomialY]
+  eval_simp
+  contrapose! hx
+  rw [addPolynomial, linePolynomial, polynomial]
+  eval_simp
+  derivative_simp
+  simp only [zero_add, add_zero, sub_zero, zero_mul, mul_one]
+  eval_simp
+  linear_combination (norm := (norm_num1; ring1)) hx.left + ℓ * hx.right
+
 end Ring
 
 section Field
 
-/-! ### Group operations over a field -/
+/-! ### Group operation polynomials over a field -/
 
 open Classical in
 variable (W) in
@@ -489,6 +508,20 @@ lemma addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
     · apply mul_right_injective₀ hx
       linear_combination (norm := (field_simp [hx]; ring1)) x₂ * h₁ - x₁ * h₂
 
+/-- The negated addition of two affine points in `W` on a sloped line lies in `W`. -/
+lemma equation_negAdd {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
+    (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) : W.Equation
+      (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) (W.negAddY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
+  rw [equation_add_iff, addPolynomial_slope h₁ h₂ hxy]
+  eval_simp
+  rw [neg_eq_zero, sub_self, mul_zero]
+
+/-- The addition of two affine points in `W` on a sloped line lies in `W`. -/
+lemma equation_add {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
+    (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) :
+    W.Equation (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) (W.addY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) :=
+  equation_neg <| equation_negAdd h₁ h₂ hxy
+
 lemma C_addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) : C (W.addPolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) =
       -(C (X - C x₁) * C (X - C x₂) * C (X - C (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂))) := by
@@ -503,39 +536,6 @@ lemma derivative_addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equatio
   rw [addPolynomial_slope h₁ h₂ hxy]
   derivative_simp
   ring1
-
-lemma nonsingular_negAdd_of_eval_derivative_ne_zero {x₁ x₂ y₁ ℓ : R}
-    (hx' : W'.Equation (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ))
-    (hx : (W'.addPolynomial x₁ y₁ ℓ).derivative.eval (W'.addX x₁ x₂ ℓ) ≠ 0) :
-    W'.Nonsingular (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ) := by
-  rw [Nonsingular, and_iff_right hx', negAddY, polynomialX, polynomialY]
-  eval_simp
-  contrapose! hx
-  rw [addPolynomial, linePolynomial, polynomial]
-  eval_simp
-  derivative_simp
-  simp only [zero_add, add_zero, sub_zero, zero_mul, mul_one]
-  eval_simp
-  linear_combination (norm := (norm_num1; ring1)) hx.left + ℓ * hx.right
-
-lemma equation_add_iff (x₁ x₂ y₁ ℓ : R) : W'.Equation (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ) ↔
-    (W'.addPolynomial x₁ y₁ ℓ).eval (W'.addX x₁ x₂ ℓ) = 0 := by
-  rw [Equation, negAddY, addPolynomial, linePolynomial, polynomial]
-  eval_simp
-
-/-- The negated addition of two affine points in `W` on a sloped line lies in `W`. -/
-lemma equation_negAdd {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
-    (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) : W.Equation
-      (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) (W.negAddY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
-  rw [equation_add_iff, addPolynomial_slope h₁ h₂ hxy]
-  eval_simp
-  rw [neg_eq_zero, sub_self, mul_zero]
-
-/-- The addition of two affine points in `W` on a sloped line lies in `W`. -/
-lemma equation_add {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
-    (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) :
-    W.Equation (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) (W.addY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) :=
-  equation_neg <| equation_negAdd h₁ h₂ hxy
 
 /-- The negated addition of two nonsingular affine points in `W` on a sloped line is nonsingular. -/
 lemma nonsingular_negAdd {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁) (h₂ : W.Nonsingular x₂ y₂)
@@ -728,6 +728,10 @@ lemma map_polynomial : (W'.map f).toAffine.polynomial = W'.polynomial.map (mapRi
   simp only [polynomial]
   map_simp
 
+lemma evalEval_baseChange_polynomial_X_Y :
+    (W'.baseChange R[X][Y]).toAffine.polynomial.evalEval (C X) Y = W'.polynomial := by
+  rw [map_polynomial, evalEval, eval_map, eval_C_X_eval₂_map_C_X]
+
 variable {x y} in
 lemma Equation.map {x y : R} (h : W'.Equation x y) : (W'.map f).toAffine.Equation (f x) (f y) := by
   rw [Equation, map_polynomial, map_mapRingHom_evalEval, h, map_zero]
@@ -806,13 +810,6 @@ variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebr
 lemma baseChange_polynomial : (W'.baseChange B).toAffine.polynomial =
     (W'.baseChange A).toAffine.polynomial.map (mapRingHom f) := by
   rw [← map_polynomial, map_baseChange]
-
-lemma eval_baseChange_polynomial :
-    (W'.baseChange R[X][Y]).toAffine.polynomial.evalEval (C X) Y = W'.polynomial := by
-  rw [map_polynomial, evalEval, eval_map, eval_C_X_eval₂_map_C_X]
-
-@[deprecated (since := "2025-02-01")] alias evalEval_baseChange_polynomial_X_Y :=
-  eval_baseChange_polynomial
 
 variable {x y} in
 lemma Equation.baseChange (h : (W'.baseChange A).toAffine.Equation x y) :
