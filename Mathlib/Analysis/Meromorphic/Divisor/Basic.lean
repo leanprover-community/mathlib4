@@ -38,15 +38,13 @@ the textbook definition, which requires the support of `f` to be locally finite
 within `U`.
 -/
 
-/-- A divisor on `U` is a triple.
-
-- `toFun`: A function `𝕜 → ℤ`
-- `supportInU`: A proof that the support of `toFun` is contained in `U`
-- `supportDiscreteWithinU`: A proof the the support is discrete within `U`
--/
+/-- A divisor on `U` is a triple specified below. -/
 structure Divisor (U : Set 𝕜) where
+  /-- A function `𝕜 → ℤ` -/
   toFun : 𝕜 → ℤ
+  /-- A proof that the support of `toFun` is contained in `U` -/
   supportWithinDomain : toFun.support ⊆ U
+  /-- A proof the the support is discrete within `U` -/
   supportDiscreteWithinDomain : toFun =ᶠ[codiscreteWithin U] 0
 
 /-- The condition `supportDiscreteWithinU` in a divisor is equivalent to saying
