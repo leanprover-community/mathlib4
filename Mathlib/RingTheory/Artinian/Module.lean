@@ -607,3 +607,15 @@ instance : IsSemiprimaryRing R where
 end Ring
 
 end IsArtinianRing
+
+section Algebra
+
+lemma isArtinian_iff_tower_of_surjective {R S} (M) [CommRing R] [CommRing S]
+    [AddCommGroup M] [Algebra R S] [Module S M] [Module R M] [IsScalarTower R S M]
+    (h : Function.Surjective (algebraMap R S)) :
+  IsArtinian R M ↔ IsArtinian S M := by
+  refine ⟨isArtinian_of_tower R, ?_⟩
+  simp_rw [isArtinian_iff]
+  exact (Submodule.orderIsoOfSurjective M h).symm.toOrderEmbedding.wellFounded
+
+end Algebra

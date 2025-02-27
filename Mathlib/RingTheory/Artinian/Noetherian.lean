@@ -15,18 +15,6 @@ In this file, we establish several results linking Artinian property and Noether
 -/
 open Set Submodule
 
-section Algebra
-
-lemma isArtinian_of_tower_of_surjective {R S} (M) [CommRing R] [CommRing S]
-    [AddCommGroup M] [Algebra R S] [Module S M] [Module R M] [IsScalarTower R S M]
-    (h : Function.Surjective (algebraMap R S)) :
-  IsArtinian R M ↔ IsArtinian S M := by
-  refine ⟨isArtinian_of_tower R, ?_⟩
-  simp_rw [isArtinian_iff]
-  exact (Submodule.orderIsoOfSurjective M h).symm.toOrderEmbedding.wellFounded
-
-end Algebra
-
 section Ideal
 
 lemma isNoetherian_iff_isArtinian_of_mul {R : Type*} [CommRing R] (I J : Ideal R) [I.IsMaximal]
