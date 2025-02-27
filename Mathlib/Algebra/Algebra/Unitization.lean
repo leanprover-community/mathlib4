@@ -293,7 +293,7 @@ theorem inr_sub [AddGroup R] [AddGroup A] (m₁ m₂ : A) : (↑(m₁ - m₂) : 
   ext (sub_zero 0).symm rfl
 
 @[simp]
-theorem inr_smul [Zero R] [Zero S] [SMulZeroClass S R] [SMul S A] (r : S) (m : A) :
+theorem inr_smul [Zero R] [SMulZeroClass S R] [SMul S A] (r : S) (m : A) :
     (↑(r • m) : Unitization R A) = r • (m : Unitization R A) :=
   ext (smul_zero _).symm rfl
 
