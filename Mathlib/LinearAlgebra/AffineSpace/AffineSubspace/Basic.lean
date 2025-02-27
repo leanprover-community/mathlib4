@@ -179,9 +179,6 @@ variable (P)
 
 attribute [local instance] toAddTorsor
 
--- An instance with better keys for the context
-instance : Nonempty (⊤ : AffineSubspace k P) := inferInstanceAs (Nonempty (⊤ : Set P))
-
 /-- The top affine subspace is linearly equivalent to the affine space.
 This is the affine version of `Submodule.topEquiv`. -/
 @[simps! linear apply symm_apply_coe]
