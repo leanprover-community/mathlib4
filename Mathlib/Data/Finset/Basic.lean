@@ -657,14 +657,27 @@ def Finset.union (s t : Finset α) (h : Disjoint s t) :
   Equiv.Set.ofEq (coe_union _ _) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
 
 @[simp]
-theorem Finset.union_symm_inl (h : Disjoint s t) (x : s) :
+theorem Finset.union_inl (h : Disjoint s t) (x : s) :
     Equiv.Finset.union s t h (Sum.inl x) = ⟨x, Finset.mem_union.mpr <| Or.inl x.2⟩ :=
   rfl
 
 @[simp]
-theorem Finset.union_symm_inr (h : Disjoint s t) (y : t) :
+theorem Finset.union_inr (h : Disjoint s t) (y : t) :
     Equiv.Finset.union s t h (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ :=
   rfl
+
+@[deprecated (since := "2024-06-07")] alias Finset.union_symm_inl := Finset.union_inl
+@[deprecated (since := "2024-06-07")] alias Finset.union_symm_inr := Finset.union_inr
+
+@[simp]
+theorem Finset.union_symm_left (h : Disjoint s t) {i : α} (hi : i ∈ s)
+    (hi' : i ∈ s ∪ t) : (Equiv.Finset.union s t h).symm ⟨i, hi'⟩ = Sum.inl ⟨i, hi⟩ := by
+  simp [Equiv.symm_apply_eq]
+
+@[simp]
+theorem Finset.union_symm_right (h : Disjoint s t) {i : α} (hi : i ∈ t)
+    (hi' : i ∈ s ∪ t) : (Equiv.Finset.union s t h).symm ⟨i, hi'⟩ = Sum.inr ⟨i, hi⟩ := by
+  simp [Equiv.symm_apply_eq]
 
 /-- The type of dependent functions on the disjoint union of finsets `s ∪ t` is equivalent to the
   type of pairs of functions on `s` and on `t`. This is similar to `Equiv.sumPiEquivProdPi`. -/
@@ -672,6 +685,33 @@ def piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h
     ((∀ i : s, α i) × ∀ i : t, α i) ≃ ∀ i : (s ∪ t : Finset ι), α i :=
   let e := Equiv.Finset.union s t h
   sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans (.piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e)
+
+lemma piFinsetUnion_left {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι}
+    (h : Disjoint s t) {f g} {i : ι} (hi : i ∈ s) (hi' : i ∈ s ∪ t) :
+    Equiv.piFinsetUnion α h (f, g) ⟨i, hi'⟩ = f ⟨i, hi⟩ := by
+  simp [Equiv.piFinsetUnion, eqRec_eq_cast]
+  -- painful dependent type manipulations. `set` doesn't work properly, which makes it more painful
+  -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/set.20tactic.20doesn't.20work.20with.20dependent.20functions
+  generalize_proofs h'
+  set x := (Finset.union s t h).symm ⟨i, hi'⟩
+  have : x = Sum.inl ⟨i, hi⟩ := Finset.union_symm_left h hi hi'
+  show cast h' ((sumPiEquivProdPi fun b ↦ α (Finset.union s t h b)).symm (f, g) x) = _
+  clear_value x
+  subst this
+  rfl
+
+lemma piFinsetUnion_right {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι}
+    (h : Disjoint s t) {f g} {i : ι} (hi : i ∈ t) (hi' : i ∈ s ∪ t) :
+    Equiv.piFinsetUnion α h (f, g) ⟨i, hi'⟩ = g ⟨i, hi⟩ := by
+  simp [Equiv.piFinsetUnion, eqRec_eq_cast]
+  -- painful dependent type manipulations.
+  generalize_proofs h'
+  set x := (Finset.union s t h).symm ⟨i, hi'⟩
+  have : x = Sum.inr ⟨i, hi⟩ := Finset.union_symm_right h hi hi'
+  show cast h' ((sumPiEquivProdPi fun b ↦ α (Finset.union s t h b)).symm (f, g) x) = _
+  clear_value x
+  subst this
+  rfl
 
 end Equiv
 
