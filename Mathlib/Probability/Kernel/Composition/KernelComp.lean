@@ -3,8 +3,8 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.ParallelComp
 import Mathlib.MeasureTheory.MeasurableSpace.Coherence
+import Mathlib.Probability.Kernel.Composition.CompMap
 
 /-!
 # Monoidal composition `⊗≫` (composition up to associators)
