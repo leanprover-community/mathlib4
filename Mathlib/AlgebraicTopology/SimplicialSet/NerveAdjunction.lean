@@ -527,7 +527,7 @@ instance nerveFunctor.full : nerveFunctor.{u, u}.Full :=
 noncomputable def nerveFunctor.fullyfaithful : nerveFunctor.FullyFaithful :=
   FullyFaithful.ofFullyFaithful nerveFunctor
 
-instance nerveCounit_isIso : IsIso nerveAdjunction.counit :=
+instance nerveAdjunction.isIso_counit : IsIso nerveAdjunction.counit :=
   Adjunction.counit_isIso_of_R_fully_faithful _
 
 /-- The counit map of `nerveAdjunction` is an isomorphism since the nerve functor is fully
