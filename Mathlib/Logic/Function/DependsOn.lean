@@ -14,10 +14,11 @@ may get rid of the dependency on some variables (see `Function.updateFinset` or
 as having a different domain with fewer points is not comfortable in Lean, as it requires the use
 of subtypes and can lead to tedious writing.
 
-On the other hand one wants to be able for example to describe some function as constant with respect to
-some variables, and be able to deduce this when applying transformations mentioned above.
-This is why we introduce the predicate `DependsOn f s`, which states that if `x` and `y` coincide over
-the set `s`, then `f x = f y`. This is equivalent to `Function.FactorsThrough f s.restrict`.
+On the other hand one wants to be able for example to describe some function as constant
+with respect to some variables, and be able to deduce this when applying transformations
+mentioned above. This is why we introduce the predicate `DependsOn f s`, which states that
+if `x` and `y` coincide over the set `s`, then `f x = f y`.
+This is equivalent to `Function.FactorsThrough f s.restrict`.
 
 ## Main definition
 
@@ -32,8 +33,8 @@ the set `s`, then `f x = f y`. This is equivalent to `Function.FactorsThrough f 
 
 When we write `DependsOn f s`, i.e. `f` only depends on `s`, it should be interpreted as
 "`f` _potentially_ depends only on variables in `s`". However it might be the case
-that `f` does not depend at all on variables in `s`, for example if `f` is constant`. On the other
-hand, `DependsOn f univ` is always true, see `dependsOn_univ`.
+that `f` does not depend at all on variables in `s`, for example if `f` is constant.
+As a consequence, `DependsOn f univ` is always true, see `dependsOn_univ`.
 
 The predicate `DependsOn f s` can also be interpreted as saying that `f` is independent of all
 the variables which are not in `s`. Although this phrasing might seem more natural, we choose to go
@@ -53,7 +54,7 @@ variable {ι : Type*} {α : ι → Type*} {β : Type*}
 
 It should be interpreted as "`f` _potentially_ depends only on variables in `s`".
 However it might be the case that `f` does not depend at all on variables in `s`,
-for example if `f` is constant. On the other hand `DependsOn f univ` is always true,
+for example if `f` is constant. As a consequence, `DependsOn f univ` is always true,
 see `dependsOn_univ`. -/
 def DependsOn (f : (Π i, α i) → β) (s : Set ι) : Prop :=
   ∀ ⦃x y⦄, (∀ i ∈ s, x i = y i) → f x = f y
