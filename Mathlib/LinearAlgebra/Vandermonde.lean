@@ -267,7 +267,7 @@ lemma det_vandermondeTop_of_unique {v : Fin (n+1) → WithTop R} {i₀ : Fin (n+
     simp
   exact fun i hi ↦ by simp [vandermondeTop_apply_top_eq_ite hi₀, if_neg hi]
 
-lemma det_vandermondeTop_eq_zero_iff [IsDomain R] {v : Fin n → WithTop R} :
+lemma det_vandermondeTop_ne_zero_iff [IsDomain R] {v : Fin n → WithTop R} :
     det (vandermondeTop v) ≠ 0 ↔ Function.Injective v := by
   obtain rfl | n := n
   · simp [Function.injective_of_subsingleton v]
