@@ -7,7 +7,9 @@ import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
 import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
 import Mathlib.Probability.Kernel.Composition.IntegralCompProd
+import Mathlib.Probability.Kernel.Composition.MeasureComp
 import Mathlib.Probability.Kernel.Composition.MeasureCompProd
+import Mathlib.Probability.Kernel.Integral
 import Mathlib.Probability.Kernel.IonescuTulcea.PTraj
 
 /-!
@@ -683,7 +685,7 @@ theorem integral_traj_ptraj' {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X
   have hf2 := aestronglyMeasurable_traj κ hab hf1.1
   rw [← traj_comp_ptraj κ hab, Kernel.integral_comp]
   · apply integral_congr_ae
-    filter_upwards [hf.1.compProd_mk_left, hf2] with x h1 h2
+    filter_upwards [hf.1.compProd, hf2] with x h1 h2
     rw [integral_traj _ h1]
     nth_rw 2 [integral_traj]
     · simp_rw [frestrictLe_updateFinset]
@@ -694,7 +696,7 @@ theorem integral_traj_ptraj {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X 
     {f : (Π n : ℕ, X n) → E} (hf : Integrable f (traj κ a x₀)) :
     ∫ x, ∫ y, f y ∂traj κ b x ∂ptraj κ a b x₀ = ∫ x, f x ∂traj κ a x₀ := by
   apply integral_traj_ptraj' hab
-  rw [← traj_comp_ptraj κ hab, ← snd_compProd_kernel] at hf
+  rw [← traj_comp_ptraj κ hab, comp_apply, ← Measure.snd_compProd] at hf
   exact hf.comp_measurable measurable_snd
 
 theorem setIntegral_traj_ptraj' {a b : ℕ} (hab : a ≤ b) {u : (Π i : Iic a, X i)}
@@ -703,10 +705,9 @@ theorem setIntegral_traj_ptraj' {a b : ℕ} (hab : a ≤ b) {u : (Π i : Iic a, 
     {A : Set (Π i : Iic b, X i)} (hA : MeasurableSet A) :
     ∫ x in A, ∫ y, f x y ∂traj κ b x ∂ptraj κ a b u =
       ∫ y in frestrictLe b ⁻¹' A, f (frestrictLe b y) y ∂traj κ a u := by
-  simp_rw [← integral_indicator hA, ← integral_indicator'']
-  rw [integral_traj_ptraj' hab]
-  simp_rw [← preimage_indicator, ← integral_indicator (hA.preimage (measurable_frestrictLe b))]
-  · rfl
+  rw [← integral_integral_indicator _ hA, integral_traj_ptraj' hab]
+  · simp_rw [← Set.indicator_comp_right, ← integral_indicator (measurable_frestrictLe b hA)]
+    rfl
   convert hf.indicator (hA.prod .univ)
   ext ⟨x, y⟩
   by_cases hx : x ∈ A <;> simp [uncurry_def, hx]
@@ -717,7 +718,7 @@ theorem setIntegral_traj_ptraj {a b : ℕ} (hab : a ≤ b) {x₀ : (Π i : Iic a
     ∫ x in A, ∫ y, f y ∂traj κ b x ∂ptraj κ a b x₀ =
       ∫ y in frestrictLe b ⁻¹' A, f y ∂traj κ a x₀ := by
   refine setIntegral_traj_ptraj' hab ?_ hA
-  rw [← traj_comp_ptraj κ hab, ← snd_compProd_kernel] at hf
+  rw [← traj_comp_ptraj κ hab, comp_apply, ← Measure.snd_compProd] at hf
   exact hf.comp_measurable measurable_snd
 
 variable [CompleteSpace E]
