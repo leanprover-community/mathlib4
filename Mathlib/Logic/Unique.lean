@@ -114,6 +114,9 @@ theorem eq_default (a : α) : a = default :=
 theorem default_eq (a : α) : default = a :=
   (uniq _ a).symm
 
+theorem eq (a b : α) : a = b :=
+  Eq.trans (eq_default a) (default_eq b)
+
 -- see Note [lower instance priority]
 instance (priority := 100) instSubsingleton : Subsingleton α :=
   subsingleton_of_forall_eq _ eq_default
