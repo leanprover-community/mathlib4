@@ -276,12 +276,10 @@ theorem _root_.MeasureTheory.StronglyMeasurable.integral_kernel [NormedSpace ℝ
   by_cases hE : CompleteSpace E; swap
   · simp [integral, hE, stronglyMeasurable_const]
   borelize E
-  haveI : TopologicalSpace.SeparableSpace (range f ∪ {0} : Set E) :=
+  have : TopologicalSpace.SeparableSpace (range f ∪ {0} : Set E) :=
     hf.separableSpace_range_union_singleton
-  let s : ℕ → SimpleFunc β E :=
-    SimpleFunc.approxOn _ hf.measurable (range f ∪ {0}) 0 (by simp)
-  let f' : ℕ → α → E := fun n ↦
-    {x | Integrable f (κ x)}.indicator fun x ↦ (s n).integral (κ x)
+  let s : ℕ → SimpleFunc β E := SimpleFunc.approxOn _ hf.measurable (range f ∪ {0}) 0 (by simp)
+  let f' n : α → E := {x | Integrable f (κ x)}.indicator fun x ↦ (s n).integral (κ x)
   refine stronglyMeasurable_of_tendsto (f := f') atTop (fun n ↦ ?_) ?_
   · refine StronglyMeasurable.indicator ?_ (measurableSet_integrable hf)
     simp_rw [SimpleFunc.integral_eq]
@@ -297,8 +295,8 @@ theorem _root_.MeasureTheory.StronglyMeasurable.integral_kernel [NormedSpace ℝ
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_kernel_comp [NormedSpace ℝ E]
     ⦃f : γ → E⦄ (hf : AEStronglyMeasurable f ((η ∘ₖ κ) a)) :
-    AEStronglyMeasurable (fun x => ∫ y, f y ∂η x) (κ a) :=
-  ⟨fun x => ∫ y, hf.mk f y ∂η x, hf.stronglyMeasurable_mk.integral_kernel, by
+    AEStronglyMeasurable (fun x ↦ ∫ y, f y ∂η x) (κ a) :=
+  ⟨fun x ↦ ∫ y, hf.mk f y ∂η x, hf.stronglyMeasurable_mk.integral_kernel, by
     filter_upwards [ae_ae_of_ae_comp hf.ae_eq_mk] with _ hx using integral_congr_ae hx⟩
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.comp {δ : Type*} [TopologicalSpace δ]
@@ -307,18 +305,14 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp {δ : Type*} [Topological
   filter_upwards [ae_ae_of_ae_comp hf.ae_eq_mk] with x hx using
     ⟨hf.mk f, hf.stronglyMeasurable_mk, hx⟩
 
-
 /-! ### Integrability with respect to composition -/
-
 
 theorem hasFiniteIntegral_comp_iff ⦃f : γ → E⦄ (hf : StronglyMeasurable f) :
     HasFiniteIntegral f ((η ∘ₖ κ) a) ↔
-      (∀ᵐ x ∂κ a, HasFiniteIntegral f (η x)) ∧
-        HasFiniteIntegral (fun x ↦ ∫ y, ‖f y‖ ∂η x) (κ a) := by
+    (∀ᵐ x ∂κ a, HasFiniteIntegral f (η x)) ∧ HasFiniteIntegral (fun x ↦ ∫ y, ‖f y‖ ∂η x) (κ a) := by
   simp_rw [hasFiniteIntegral_iff_enorm, lintegral_comp _ _ _ hf.enorm]
-  have (x) : ∀ᵐ y ∂η x, 0 ≤ ‖f y‖ := ae_of_all _ fun y ↦ norm_nonneg _
-  simp_rw [integral_eq_lintegral_of_nonneg_ae (this _) hf.norm.aestronglyMeasurable,
-    enorm_eq_ofReal toReal_nonneg, ofReal_norm_eq_enorm]
+  simp_rw [integral_eq_lintegral_of_nonneg_ae (ae_of_all _ fun y ↦ norm_nonneg _)
+      hf.norm.aestronglyMeasurable, enorm_eq_ofReal toReal_nonneg, ofReal_norm_eq_enorm]
   have : ∀ {p q r : Prop} (_ : r → p), (r ↔ p ∧ q) ↔ p → (r ↔ q) := fun h ↦ by
     rw [← and_congr_right_iff, and_iff_right_of_imp h]
   rw [this]
@@ -331,8 +325,7 @@ theorem hasFiniteIntegral_comp_iff ⦃f : γ → E⦄ (hf : StronglyMeasurable f
 
 theorem hasFiniteIntegral_comp_iff' ⦃f : γ → E⦄ (hf : AEStronglyMeasurable f ((η ∘ₖ κ) a)) :
     HasFiniteIntegral f ((η ∘ₖ κ) a) ↔
-      (∀ᵐ x ∂κ a, HasFiniteIntegral f (η x)) ∧
-        HasFiniteIntegral (fun x ↦ ∫ y, ‖f y‖ ∂η x) (κ a) := by
+    (∀ᵐ x ∂κ a, HasFiniteIntegral f (η x)) ∧ HasFiniteIntegral (fun x ↦ ∫ y, ‖f y‖ ∂η x) (κ a) := by
   rw [hasFiniteIntegral_congr hf.ae_eq_mk, hasFiniteIntegral_comp_iff hf.stronglyMeasurable_mk]
   refine and_congr (eventually_congr ?_) (hasFiniteIntegral_congr ?_)
   · filter_upwards [ae_ae_of_ae_comp hf.ae_eq_mk.symm] with _ hx using
@@ -342,7 +335,7 @@ theorem hasFiniteIntegral_comp_iff' ⦃f : γ → E⦄ (hf : AEStronglyMeasurabl
 
 theorem integrable_comp_iff ⦃f : γ → E⦄ (hf : AEStronglyMeasurable f ((η ∘ₖ κ) a)) :
     Integrable f ((η ∘ₖ κ) a) ↔
-      (∀ᵐ y ∂κ a, Integrable f (η y)) ∧ Integrable (fun y ↦ ∫ z, ‖f z‖ ∂η y) (κ a) := by
+    (∀ᵐ y ∂κ a, Integrable f (η y)) ∧ Integrable (fun y ↦ ∫ z, ‖f z‖ ∂η y) (κ a) := by
   simp only [Integrable, hf, hasFiniteIntegral_comp_iff' hf, true_and, eventually_and, hf.comp,
     hf.norm.integral_kernel_comp]
 
@@ -359,9 +352,7 @@ theorem _root_.MeasureTheory.Integrable.integral_comp [NormedSpace ℝ E] ⦃f :
     ae_of_all _ fun _ ↦ (norm_integral_le_integral_norm _).trans_eq
     (norm_of_nonneg <| integral_nonneg_of_ae <| ae_of_all _ fun _ ↦ norm_nonneg _).symm
 
-
 /-! ### Bochner integral with respect to the composition -/
-
 
 variable [NormedSpace ℝ E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
 
@@ -416,7 +407,7 @@ theorem continuous_integral_integral_comp :
   simp_rw [← lintegral_fn_integral_sub_comp (‖·‖ₑ) (L1.integrable_coeFn _) (L1.integrable_coeFn g)]
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le
     (h := fun i ↦ ∫⁻ x, ∫⁻ y, ‖i y - g y‖ₑ ∂η x ∂κ a)
-    tendsto_const_nhds ?_ (fun i => zero_le _) ?_
+    tendsto_const_nhds ?_ (fun _ ↦ zero_le _) ?_
   swap; · exact fun _ ↦ lintegral_mono fun _ ↦ enorm_integral_le_lintegral_enorm _
   have (i : γ →₁[(η ∘ₖ κ) a] E) : Measurable fun z ↦ ‖i z - g z‖ₑ :=
     ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).enorm
