@@ -118,6 +118,20 @@ def iic (j : J) :
     replace eq := congr_arg h.F.mapArrow.obj eq
     convert this using 1
 
+/-- A transfinite composition of shape `J` of morphisms in `W` induces a transfinite
+composition of shape `Set.Ici j` (for any `j : J`). -/
+noncomputable def ici (j : J) :
+    W.TransfiniteCompositionOfShape (Set.Ici j) (h.incl.app j) where
+  __ := h.toTransfiniteCompositionOfShape.ici j
+  map_mem i hi := by
+    have := h.map_mem i.1 (Set.not_isMax_coe _ hi)
+    rw [← W.arrow_mk_mem_toSet_iff] at this ⊢
+    have eq : Arrow.mk ((Subtype.mono_coe _).functor.map (homOfLE (Order.le_succ i))) =
+      Arrow.mk (homOfLE (Order.le_succ i.1)) :=
+        Arrow.ext rfl (coe_succ_of_mem (i.2.trans (Order.le_succ _))) rfl
+    replace eq := congr_arg h.F.mapArrow.obj eq
+    convert this using 1
+
 end
 
 /-- If `F : ComposableArrows C n` and all maps `F.obj i.castSucc ⟶ F.obj i.succ`
