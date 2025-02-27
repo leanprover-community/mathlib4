@@ -483,18 +483,58 @@ instance [hasGMul F F_lt] [DecidableEq ι] : Ring (AssociatedGraded F F_lt) :=
 
 end GradedMul
 
+/-!
+
+# The Associated Graded Algebra
+
+In this section we define the associated graded algebra to an algebra, which is a special case
+of associated graded ring with every filter a submodule.
+
+# Main Result
+
+* `instHasGMulSubmoduleOfIsRingFiltration` : The graded multiplication can be well defined
+  when index set satisfy `OrderedCancelAddCommMonoid`.
+
+* `instGAlgebraGradedPieceSubmodule` :
+  `GradedPiece` satisfies `DirectSum.GAlgebra`
+
+* `instAlgebraAssociatedGradedSubmodule` :
+  `AssociatedGraded` have a algebra structure when given `hasGMul` and decidable on the index set.
+
+-/
+
 section GradedAlgebra
 
 open GradedPiece
 
-variable {R : Type*} [CommRing R] {A : Type*} [Ring A] [Algebra R A]
-
-variable {ι : Type*} [OrderedAddCommMonoid ι]
+variable {R A ι : Type*} [CommRing R] [Ring A] [Algebra R A]
 
 variable (F : ι → Submodule R A) (F_lt : outParam <| ι → Submodule R A)
 
 instance (i : ι) : Module R (GradedPiece F F_lt i) :=
   inferInstanceAs (Module R ((F i)⧸(Submodule.comap (F i).subtype (F_lt i))))
+
+instance [OrderedCancelAddCommMonoid ι] [IsRingFiltration F F_lt] : hasGMul F F_lt where
+  F_lt_mul_mem := by
+    intro i j x y hx hy
+    let S : Submodule R A := {
+      carrier := {z | z * y ∈ F_lt (i + j)}
+      add_mem' ha hb := by simp [add_mul, add_mem ha.out hb.out]
+      zero_mem' := by simp [zero_mem]
+      smul_mem' c x hx := by simp [Submodule.smul_mem _ _ hx]}
+    exact IsFiltration.is_sup S i (fun k hk z hz ↦
+      IsFiltration.is_le (add_lt_add_right hk j) (IsRingFiltration.toGradedMonoid.mul_mem hz hy)) hx
+  mul_F_lt_mem := by
+    intro i j x y hx hy
+    let S : Submodule R A := {
+      carrier := {z | x * z ∈ F_lt (i + j)}
+      add_mem' ha hb := by simp [mul_add, add_mem ha.out hb.out]
+      zero_mem' := by simp [zero_mem]
+      smul_mem' c x hx := by simp [Submodule.smul_mem _ _ hx] }
+    exact IsFiltration.is_sup S j (fun k hk z hz ↦
+      IsFiltration.is_le (add_lt_add_left hk i) (IsRingFiltration.toGradedMonoid.mul_mem hx hz)) hy
+
+variable [OrderedAddCommMonoid ι]
 
 /--The `algebraMap` for associated graded algebra. -/
 def GradedPiece.algebraMap [IsRingFiltration F F_lt] : R →+ GradedPiece F F_lt 0 where
@@ -519,15 +559,12 @@ lemma GradedPiece.algebraMap.map_mul [hasGMul F F_lt] (r s : R) : GradedMonoid.m
       (IsRingFiltration.toGradedMonoid.mul_mem (r • (1 : F 0)).2 (s • (1 : F 0)).2) rfl rfl
 
 lemma GradedPiece.algebraMap.commutes [hasGMul F F_lt] (r : R) (i : ι) (a : GradedPiece F F_lt i) :
-    HEq ((mk F F_lt (r • (1 : F 0))) * a)
-    (a * (mk F F_lt (r • (1 : F 0)))) := by
+    HEq ((mk F F_lt (r • (1 : F 0))) * a) (a * (mk F F_lt (r • (1 : F 0)))) := by
   have : mk F F_lt a.out = a := by simp only [mk_eq, Quotient.out_eq]
-  have eq1 : (mk F F_lt (r • (1 : F 0))) * a =
-    (mk F F_lt ((r • (1 : F 0)) * a.out)) := by
+  have eq1 : (mk F F_lt (r • (1 : F 0))) * a = (mk F F_lt ((r • (1 : F 0)) * a.out)) := by
     nth_rw 1 [← this]
     rfl
-  have eq2 : a * (mk F F_lt (r • (1 : F 0))) =
-    (mk F F_lt (a.out * (r • (1 : F 0)))) := by
+  have eq2 : a * (mk F F_lt (r • (1 : F 0))) = (mk F F_lt (a.out * (r • (1 : F 0)))) := by
     nth_rw 1 [← this]
     rfl
   apply HEq_eq_mk_coe_eq F F_lt _ _ (add_comm 0 i) _ eq1 eq2
@@ -559,7 +596,8 @@ instance [hasGMul F F_lt] : DirectSum.GAlgebra R (GradedPiece F F_lt) where
   smul_def r := fun ⟨i, a⟩ ↦ Sigma.ext (by
     --missing simp lemma
     have : (GradedMonoid.mk 0 ((GradedPiece.algebraMap F F_lt) r)).fst = 0 := rfl
-    simp [this]) (GradedPiece.algebraMap.smul_def F F_lt r i a)
+    simp [this])
+    (GradedPiece.algebraMap.smul_def F F_lt r i a)
 
 open DirectSum in
 instance [hasGMul F F_lt] [DecidableEq ι] : Algebra R (AssociatedGraded F F_lt) :=
