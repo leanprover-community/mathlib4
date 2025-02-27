@@ -724,13 +724,13 @@ lemma sup'_Iic (a : α) : (Iic a).sup' nonempty_Iic id = a :=
 @[simp] lemma sup_Iic [OrderBot α] (a : α) : (Iic a).sup id = a :=
   le_antisymm (Finset.sup_le fun _ ↦ mem_Iic.1) <| le_sup (f := id) <| mem_Iic.2 <| le_refl a
 
-lemma subset_Iic_sup [OrderBot α] [DecidableEq α] (f : ι → α) (s : Finset ι) :
-    s.image f ⊆ (Iic (s.sup f)) := by
+lemma image_subset_Iic_sup [OrderBot α] [DecidableEq α] (f : ι → α) (s : Finset ι) :
+    s.image f ⊆ Iic (s.sup f) := by
   refine fun i hi ↦ mem_Iic.2 ?_
   obtain ⟨j, hj, rfl⟩ := mem_image.1 hi
   exact le_sup hj
 
-lemma subset_Iic_sup_id [OrderBot α] (s : Finset α) : s ⊆ (Iic (s.sup id)) :=
+lemma subset_Iic_sup_id [OrderBot α] (s : Finset α) : s ⊆ Iic (s.sup id) :=
   fun _ h ↦ mem_Iic.2 <| le_sup (f := id) h
 
 end SemilatticeSup
