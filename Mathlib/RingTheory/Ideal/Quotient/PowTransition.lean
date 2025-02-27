@@ -106,3 +106,47 @@ abbrev factorPowSucc (n : ℕ) : R ⧸ I ^ (n + 1) →+* R ⧸ I ^ n :=
 end Quotient
 
 end Ideal
+
+namespace factorPow
+
+variable {R : Type*} [CommRing R] (I : Ideal R)
+
+lemma ideal_comap {a b : ℕ} (apos : a > 0) (le : a ≤ b) :
+    I.map (mk (I ^ b)) = (I.map (mk (I ^ a))).comap (factorPow I le)  := by
+  ext x
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rcases mem_image_of_mem_map_of_surjective (mk (I ^ b))
+      Ideal.Quotient.mk_surjective h with ⟨r, hr, eq⟩
+    simp only [← eq, Ideal.mem_comap, Quotient.factor_mk]
+    exact Ideal.mem_map_of_mem (mk (I ^ a)) hr
+  · rcases mem_image_of_mem_map_of_surjective (mk (I ^ a))
+      Ideal.Quotient.mk_surjective h with ⟨r, hr, eq⟩
+    rw [← factor_mk (pow_le_pow_right le) _] at eq
+    have : x - ((mk (I ^ b)) r) ∈ (I ^ a).map (mk (I ^ b)) := by
+      simp [← factor_ker (pow_le_pow_right le), ← eq]
+    rcases mem_image_of_mem_map_of_surjective (mk (I ^ b))
+      Ideal.Quotient.mk_surjective this with ⟨s, hs, eq'⟩
+    rw [← add_sub_cancel ((mk (I ^ b)) r) x, ← eq', ← map_add]
+    exact mem_map_of_mem _ (Submodule.add_mem _ hr (pow_le_self (Nat.not_eq_zero_of_lt apos) hs))
+
+variable {I} in
+lemma IsUnit_of_IsUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I ^ (n + 1)}
+    (h : IsUnit ((factorPow I n.le_succ) a)) : IsUnit a := by
+  rcases isUnit_iff_exists.mp h with ⟨b, hb, _⟩
+  rcases factor_surjective (pow_le_pow_right n.le_succ) b with ⟨b', hb'⟩
+  rw [← hb', ← map_one (factorPow I n.le_succ), ← _root_.map_mul] at hb
+  apply (RingHom.sub_mem_ker_iff (factorPow I n.le_succ)).mpr at hb
+  rw [factor_ker (pow_le_pow_right n.le_succ)] at hb
+  rcases Ideal.mem_image_of_mem_map_of_surjective (Ideal.Quotient.mk (I ^ (n + 1)))
+    Ideal.Quotient.mk_surjective hb with ⟨c, hc, eq⟩
+  apply isUnit_of_mul_eq_one _ (b' * (1 - ((Ideal.Quotient.mk (I ^ (n + 1))) c)))
+  calc
+    _ = (a * b' - 1) * (1 - ((Ideal.Quotient.mk (I ^ (n + 1))) c)) +
+        (1 - ((Ideal.Quotient.mk (I ^ (n + 1))) c)) := by ring
+    _ = 1 := by
+      rw [← eq, mul_sub, mul_one, sub_add_sub_cancel', sub_eq_self, ← _root_.map_mul,
+        Ideal.Quotient.eq_zero_iff_mem, pow_add]
+      apply Ideal.mul_mem_mul hc (Ideal.mul_le_left (I := I ^ (n - 1)) _)
+      simpa only [← pow_add, Nat.sub_add_cancel npos] using hc
+
+end factorPow
