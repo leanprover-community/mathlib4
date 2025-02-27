@@ -177,4 +177,5 @@ theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g := SimplexCategory.Hom.ext _ _
 
 end Truncated
+
 end SimplexCategory
