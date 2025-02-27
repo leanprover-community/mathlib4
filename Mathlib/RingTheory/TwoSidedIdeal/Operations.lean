@@ -109,15 +109,15 @@ lemma mem_comap {I : TwoSidedIdeal S} {x : R} :
 If `R` and `S` are isomorphic as rings, then two-sided ideals of `R` and two-sided ideals of `S` are
 order isomorphic.
 -/
-def orderIsoOfRingEquiv (e : R ≃+* S) : TwoSidedIdeal R ≃o TwoSidedIdeal S :=
+def _root_.RingEquiv.mapTwoSidedIdeal (e : R ≃+* S) : TwoSidedIdeal R ≃o TwoSidedIdeal S :=
   OrderIso.ofHomInv (comap e.symm) (comap e) (by ext; simp [mem_comap])
     (by ext; simp [mem_comap])
 
-lemma orderIsoOfRingEquiv_apply (e : R ≃+* S) (I : TwoSidedIdeal R) :
-    orderIsoOfRingEquiv e I = I.comap e.symm := rfl
+lemma _root_.RingEquiv.mapTwoSidedIdeal_apply (e : R ≃+* S) (I : TwoSidedIdeal R) :
+    e.mapTwoSidedIdeal I = I.comap e.symm := rfl
 
-lemma orderIsoOfRingEquiv_symm_apply (e : R ≃+* S) (I : TwoSidedIdeal S) :
-    (orderIsoOfRingEquiv e).symm I = I.comap e := rfl
+lemma _root_.RingEquiv.mapTwoSidedIdeal_symm (e : R ≃+* S) :
+    e.mapTwoSidedIdeal.symm = e.symm.mapTwoSidedIdeal := rfl
 
 end NonUnitalNonAssocRing
 
