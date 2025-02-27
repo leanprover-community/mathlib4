@@ -483,11 +483,27 @@ end HasGMul
 
 end GradedRing
 
+/-!
+
+# The Associated Graded Module to a Filtered Module
+
+In this section we define the associated graded module to a filtered module.
+
+# Main definitions and results
+
+* `hasGSMul` : The class of filtrations that can obtain
+  a well defined graded scalar multiplication over two `GradedPiece`.
+
+* `instGmoduleGradedPiece` : Two `GradedPiece` satisfies `DirectSum.GModule`
+
+* `instModuleDirectSumGradedPieceOfDecidableEq` : `AssociatedGraded` have a module structure when
+  given `hasGSMul`, `hasGMul` on base ring and decidable on the index set.
+
+-/
+
 section GradedModule
 
-variable {ι : Type*} [OrderedCancelAddCommMonoid ι]
-
-variable {R : Type*} [Ring R] {σ : Type*} [SetLike σ R]
+variable {R ι σ : Type*} [OrderedCancelAddCommMonoid ι] [Ring R] [SetLike σ R]
 
 variable (F : ι → σ) (F_lt : outParam <| ι → σ)
 
@@ -543,7 +559,7 @@ lemma hasGSMul_AddSubgroup [IsOrderedCancelVAdd ι ιM] (F : ι → AddSubgroup 
 
 variable [IsRingFiltration F F_lt] (FM : ιM → σM) (FM_lt : outParam <| ιM → σM)
 
-/--The scalar multiplication `F i → FM j → FM (i +ᵥ j)` defined as
+/-- The scalar multiplication `F i → FM j → FM (i +ᵥ j)` defined as
 the scalar multiplication of its value. -/
 def IsModuleFiltration.hSMul [IsModuleFiltration F F_lt FM FM_lt] (i : ι) (j : ιM)
     (x : F i) (y : FM j) : FM (i +ᵥ j) where
@@ -568,7 +584,7 @@ theorem hasGSMul.mul_equiv_mul {i : ι} {j : ιM} ⦃x₁ x₂ : F i⦄
   exact add_mem (hasGSMul.F_lt_smul_mem (F := F) (FM := FM) hx y₁.2)
     (hasGSMul.smul_F_lt_mem (F := F) (FM := FM) x₂.2 hy)
 
-/--The scalar multiplication
+/-- The scalar multiplication
 `GradedPiece F F_lt i → GradedPiece FM FM_lt j → GradedPiece FM FM_lt (i +ᵥ j)`
 lifted from the multiplication `F i → FM j → F (i +ᵥ j)`-/
 def hasGSMul.gradedSMul {i : ι} {j : ιM} : GradedPiece F F_lt i → GradedPiece FM FM_lt j →
@@ -620,12 +636,11 @@ theorem GradedPiece.smul_add {i : ι} {j : ιM} (a : GradedPiece F F_lt i)
   rename_i a1 a2 a3
   have : -(a1 • (a2 + a3)).1 + ((a1 • a2).1 + (a1 • a3).1) = 0 := by
     have : -(a1.1 • (a2.1 + a3.1)) + (a1.1 • a2.1 + a1.1 • a3.1) = 0 := by
-      simp only [_root_.smul_add, neg_add_rev]
+      simp only [_root_.smul_add]
       abel
     rw [← this]
     rfl
-  rw [this]
-  exact zero_mem (FM_lt (i +ᵥ j))
+  simpa only [this] using zero_mem (FM_lt (i +ᵥ j))
 
 theorem GradedPiece.add_smul {i : ι} {j : ιM} (a b : GradedPiece F F_lt i)
     (c : GradedPiece FM FM_lt j) : (a + b) • c = a • c + b • c := by
@@ -642,8 +657,7 @@ theorem GradedPiece.add_smul {i : ι} {j : ιM} (a b : GradedPiece F F_lt i)
       abel
     rw [← this]
     rfl
-  rw [this]
-  exact zero_mem (FM_lt (i +ᵥ j))
+  simpa only [this] using zero_mem (FM_lt (i +ᵥ j))
 
 theorem GradedPiece.smul_zero {i : ι} {j : ιM} (a : GradedPiece F F_lt i) :
     a • (0 : GradedPiece FM FM_lt j) = (0 : GradedPiece FM FM_lt (i +ᵥ j)) := by
