@@ -134,9 +134,7 @@ theorem Ioc_succ_singleton : Ioc b (b + 1) = {b + 1} := by rw [← Nat.Icc_succ_
 
 variable {a b c}
 
-@[simp]
-lemma mem_Ioc_succ : a ∈ Ioc b (b + 1) ↔ a = b + 1 :=
-  Ioc_succ_singleton b ▸ mem_singleton
+lemma mem_Ioc_succ : a ∈ Ioc b (b + 1) ↔ a = b + 1 := by simp
 
 lemma mem_Ioc_succ' (a : Ioc b (b + 1)) : a = ⟨b + 1, mem_Ioc.2 (by omega)⟩ :=
   Subtype.val_inj.1 (mem_Ioc_succ.1 a.2)
