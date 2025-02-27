@@ -67,12 +67,12 @@ def toΓSpecFun : X → PrimeSpectrum (Γ.obj (op X)) := fun x =>
 
 theorem not_mem_prime_iff_unit_in_stalk (r : Γ.obj (op X)) (x : X) :
     r ∉ (X.toΓSpecFun x).asIdeal ↔ IsUnit (X.presheaf.Γgerm x r) := by
-  erw [IsLocalRing.mem_maximalIdeal, Classical.not_not]
+  simp [toΓSpecFun, IsLocalRing.closedPoint]
 
 /-- The preimage of a basic open in `Spec Γ(X)` under the unit is the basic
 open in `X` defined by the same element (they are equal as sets). -/
 theorem toΓSpec_preimage_basicOpen_eq (r : Γ.obj (op X)) :
-    X.toΓSpecFun ⁻¹' (basicOpen r).1 = (X.toRingedSpace.basicOpen r).1 := by
+    X.toΓSpecFun ⁻¹' basicOpen r = SetLike.coe (X.toRingedSpace.basicOpen r) := by
       ext
       dsimp
       simp only [Set.mem_preimage, SetLike.mem_coe]
@@ -83,7 +83,7 @@ theorem toΓSpec_preimage_basicOpen_eq (r : Γ.obj (op X)) :
 theorem toΓSpec_continuous : Continuous X.toΓSpecFun := by
   rw [isTopologicalBasis_basic_opens.continuous_iff]
   rintro _ ⟨r, rfl⟩
-  erw [X.toΓSpec_preimage_basicOpen_eq r]
+  rw [X.toΓSpec_preimage_basicOpen_eq r]
   exact (X.toRingedSpace.basicOpen r).2
 
 /-- The canonical (bundled) continuous map from the underlying topological
@@ -113,8 +113,7 @@ theorem isUnit_res_toΓSpecMapBasicOpen : IsUnit (X.toToΓSpecMapBasicOpen r r) 
   convert
     (X.presheaf.map <| (eqToHom <| X.toΓSpecMapBasicOpen_eq r).op).hom.isUnit_map
       (X.toRingedSpace.isUnit_res_basicOpen r)
-  -- Porting note: `rw [comp_apply]` to `erw [comp_apply]`
-  erw [← CommRingCat.comp_apply, ← Functor.map_comp]
+  rw [← CommRingCat.comp_apply, ← Functor.map_comp]
   congr
 
 /-- Define the sheaf hom on individual basic opens for the unit. -/
@@ -217,8 +216,8 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
     rw [he]
     refine IsLocalization.map_units S (⟨r, ?_⟩ : p.asIdeal.primeCompl)
     apply (not_mem_prime_iff_unit_in_stalk _ _ _).mpr
-    rw [← toStalk_stalkMap_toΓSpec]
-    erw [CommRingCat.comp_apply, ← he]
+    rw [← toStalk_stalkMap_toΓSpec, CommRingCat.comp_apply]
+    erw [← he]
     rw [RingHom.map_mul]
     exact ht.mul <| (IsLocalization.map_units (R := Γ.obj (op X)) S s).map _
 
@@ -229,10 +228,11 @@ lemma toΓSpec_preimage_zeroLocus_eq {X : LocallyRingedSpace.{u}}
     X.toΓSpec.base ⁻¹' PrimeSpectrum.zeroLocus s = X.toRingedSpace.zeroLocus s := by
   simp only [RingedSpace.zeroLocus]
   have (i : LocallyRingedSpace.Γ.obj (op X)) (_ : i ∈ s) :
-      ((X.toRingedSpace.basicOpen i).carrier)ᶜ =
-        X.toΓSpec.base ⁻¹' (PrimeSpectrum.basicOpen i).carrierᶜ := by
+      (SetLike.coe (X.toRingedSpace.basicOpen i))ᶜ =
+        X.toΓSpec.base ⁻¹' ((PrimeSpectrum.basicOpen i).carrier)ᶜ := by
     symm
-    erw [Set.preimage_compl, X.toΓSpec_preimage_basicOpen_eq i]
+    rw [Set.preimage_compl, Opens.carrier_eq_coe]
+    erw [X.toΓSpec_preimage_basicOpen_eq i]
   erw [Set.iInter₂_congr this]
   simp_rw [← Set.preimage_iInter₂, Opens.carrier_eq_coe, PrimeSpectrum.basicOpen_eq_zeroLocus_compl,
     compl_compl]
@@ -248,7 +248,6 @@ theorem comp_ring_hom_ext {X : LocallyRingedSpace.{u}} {R : CommRingCat.{u}} {f 
           toOpen R (basicOpen r) ≫ β.c.app (op (basicOpen r))) :
     X.toΓSpec ≫ Spec.locallyRingedSpaceMap f = β := by
   ext1
-  -- Porting note: was `apply Spec.basicOpen_hom_ext`
   refine Spec.basicOpen_hom_ext w ?_
   intro r U
   rw [LocallyRingedSpace.comp_c_app]
@@ -302,7 +301,7 @@ theorem right_triangle (R : CommRingCat) :
   · ext (p : PrimeSpectrum R)
     dsimp
     refine PrimeSpectrum.ext (Ideal.ext fun x => ?_)
-    erw [← IsLocalization.AtPrime.to_map_mem_maximal_iff ((structureSheaf R).presheaf.stalk p)
+    rw [← IsLocalization.AtPrime.to_map_mem_maximal_iff ((structureSheaf R).presheaf.stalk p)
         p.asIdeal x]
     rfl
   · intro r; apply toOpen_res
@@ -489,7 +488,7 @@ instance Spec.preservesLimits : Limits.PreservesLimits Scheme.Spec :=
   ΓSpec.adjunction.rightAdjoint_preservesLimits
 
 /-- The functor `Spec.toLocallyRingedSpace : CommRingCatᵒᵖ ⥤ LocallyRingedSpace`
-is fully faithful.-/
+is fully faithful. -/
 def Spec.fullyFaithfulToLocallyRingedSpace : Spec.toLocallyRingedSpace.FullyFaithful :=
   ΓSpec.locallyRingedSpaceAdjunction.fullyFaithfulROfIsIsoCounit
 
@@ -501,7 +500,7 @@ instance : Spec.toLocallyRingedSpace.Full :=
 instance : Spec.toLocallyRingedSpace.Faithful :=
   Spec.fullyFaithfulToLocallyRingedSpace.faithful
 
-/-- The functor `Spec : CommRingCatᵒᵖ ⥤ Scheme` is fully faithful.-/
+/-- The functor `Spec : CommRingCatᵒᵖ ⥤ Scheme` is fully faithful. -/
 def Spec.fullyFaithful : Scheme.Spec.FullyFaithful :=
   ΓSpec.adjunction.fullyFaithfulROfIsIsoCounit
 

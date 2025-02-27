@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Jeremy Avigad
 -/
 import Mathlib.Order.SetNotation
 import Mathlib.Order.Bounds.Defs
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Insert
 
 /-!
 # Definitions about filters
@@ -58,6 +58,8 @@ at the cost of including the assumption `[NeBot f]` in a number of lemmas and de
 
 *  [N. Bourbaki, *General Topology*][bourbaki1966]
 -/
+
+assert_not_exists RelIso
 
 open Set
 

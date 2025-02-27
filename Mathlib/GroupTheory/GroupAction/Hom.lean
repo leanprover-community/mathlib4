@@ -85,7 +85,7 @@ structure MulActionHom where
 /- Porting note: local notation given a name, conflict with Algebra.Hom.GroupAction
  see https://github.com/leanprover/lean4/issues/2000 -/
 /-- `φ`-equivariant functions `X → Y`,
-where `φ : M → N`, where `M` and `N` act on `X` and `Y` respectively.-/
+where `φ : M → N`, where `M` and `N` act on `X` and `Y` respectively. -/
 notation:25 (name := «MulActionHomLocal≺») X " →ₑ[" φ:25 "] " Y:0 => MulActionHom φ X Y
 
 /-- `M`-equivariant functions `X → Y` with respect to the action of `M`.
@@ -216,6 +216,11 @@ theorem ofEq_apply {φ' : M → N} (h : φ = φ') (f : X →ₑ[φ] Y) (a : X) :
     (f.ofEq h) a = f a :=
   rfl
 
+lemma _root_.FaithfulSMul.of_injective
+    [FaithfulSMul M' X] [MulActionHomClass F M' X Y] (f : F)
+    (hf : Function.Injective f) :
+    FaithfulSMul M' Y where
+  eq_of_smul_eq_smul {_ _} h := eq_of_smul_eq_smul fun m ↦ hf <| by simp_rw [map_smul, h]
 
 variable {ψ χ} (M N)
 
@@ -571,8 +576,7 @@ variable {σ : R →* S}
 @[ext]
 theorem ext_ring {f g : R →ₑ+[σ] N'} (h : f 1 = g 1) : f = g := by
   ext x
-  rw [← mul_one x, ← smul_eq_mul R, f.map_smulₑ, g.map_smulₑ, h]
-
+  rw [← mul_one x, ← smul_eq_mul, f.map_smulₑ, g.map_smulₑ, h]
 
 end Semiring
 
@@ -628,7 +632,7 @@ class MulSemiringActionSemiHomClass (F : Type*)
 
 /-- `MulSemiringActionHomClass F M R S` states that `F` is a type of morphisms preserving
 the ring structure and equivariant with respect to a `DistribMulAction`of `M` on `R` and `S` .
- -/
+-/
 abbrev MulSemiringActionHomClass
     (F : Type*)
     {M : outParam Type*} [Monoid M]

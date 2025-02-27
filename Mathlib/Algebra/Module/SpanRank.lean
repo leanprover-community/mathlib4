@@ -40,6 +40,11 @@ implemented as `spanFinrank` and `spanRank`.
 
 ## Tags
 submodule, generating subset, span rank
+
+## Remark
+Note that the corresponding API - `Module.rank` is only defined for a module rather than a
+submodule, so there is some asymmetry here. Further refactoring might be needed if this difference
+creates a friction later on.
 -/
 
 namespace Submodule

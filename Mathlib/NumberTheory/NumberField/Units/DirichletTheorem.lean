@@ -33,7 +33,7 @@ fundamental system `fundSystem`.
 
 ## Tags
 number field, units, Dirichlet unit theorem
- -/
+-/
 
 open scoped NumberField
 
@@ -151,7 +151,7 @@ theorem log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r)
         (fun w _ => logEmbedding_component_le hr h w)).trans ?_
       rw [nsmul_eq_mul]
       refine mul_le_mul ?_ le_rfl hr (Fintype.card (InfinitePlace K)).cast_nonneg
-      simp [card_univ]
+      simp
   · have hyp := logEmbedding_component_le hr h ⟨w, hw⟩
     rw [logEmbedding_component, abs_mul, Nat.abs_cast] at hyp
     refine (le_trans ?_ hyp).trans ?_
