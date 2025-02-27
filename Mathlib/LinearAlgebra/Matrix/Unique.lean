@@ -31,7 +31,7 @@ def uniqueEquiv : Matrix m n A ≃ A where
   left_inv M := by ext i j; simp [Subsingleton.elim i default, Subsingleton.elim j default]
   right_inv a := by simp
 
-/-- AddEquiv version of `uniqueEquiv`. -/
+/-- The obvious additive isomorphism between M₁(A) and A, if A has an addition. -/
 abbrev uniqueAddEquiv [Add A]: Matrix m n A ≃+ A where
   __ := uniqueEquiv
   map_add' := by simp
