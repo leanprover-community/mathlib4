@@ -5,7 +5,7 @@ Authors: Jujian Zhang
 -/
 
 import Mathlib.Algebra.Colimit.Module
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Associator
 
 /-!
 # Tensor product and direct limits commute with each other.
