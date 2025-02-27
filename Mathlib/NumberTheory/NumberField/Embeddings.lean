@@ -472,9 +472,9 @@ noncomputable instance NumberField.InfinitePlace.fintype [NumberField K] :
 
 open scoped Classical in
 @[to_additive]
-theorem prod_infinitePlaces {α : Type*} [CommMonoid α] [NumberField K] (f : InfinitePlace K → α) :
+theorem prod_eq_prod_mul_prod {α : Type*} [CommMonoid α] [NumberField K] (f : InfinitePlace K → α) :
     ∏ w, f w = (∏ w : {w // IsReal w}, f w.1) * (∏ w : {w // IsComplex w}, f w.1) := by
-  rw [← Equiv.prod_comp (Equiv.subtypeEquivRight (fun _ ↦ not_isReal_iff_isComplex))]
+  rw [← (Equiv.subtypeEquivRight (fun _ ↦ not_isReal_iff_isComplex)).prod_comp ]
   simp [Fintype.prod_subtype_mul_prod_subtype]
 
 theorem sum_mult_eq [NumberField K] :

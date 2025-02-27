@@ -106,7 +106,7 @@ theorem convexBodyLT_volume :
       simp_rw [convexBodyLTFactor, coe_mul, ENNReal.coe_pow]
       ring
     _ = (convexBodyLTFactor K) * ∏ w, (f w) ^ (mult w) := by
-      simp_rw [prod_infinitePlaces, coe_mul, coe_finset_prod, mult_ofIsReal, mult_ofIsComplex,
+      simp_rw [prod_eq_prod_mul_prod, coe_mul, coe_finset_prod, mult_ofIsReal, mult_ofIsComplex,
         pow_one, ENNReal.coe_pow, ofReal_coe_nnreal]
 
 variable {f}
@@ -237,7 +237,7 @@ theorem convexBodyLT'_volume :
       simp_rw [coe_mul, ENNReal.coe_pow]
       ring
     _ = convexBodyLT'Factor K * ∏ w, (f w) ^ (mult w) := by
-      simp_rw [prod_infinitePlaces, coe_mul, coe_finset_prod, mult_ofIsReal, mult_ofIsComplex,
+      simp_rw [prod_eq_prod_mul_prod, coe_mul, coe_finset_prod, mult_ofIsReal, mult_ofIsComplex,
         pow_one, ENNReal.coe_pow, ofReal_coe_nnreal, mul_assoc]
 
 end convexBodyLT'
@@ -261,7 +261,7 @@ theorem convexBodySumFun_apply (x : mixedSpace K) :
 open scoped Classical in
 theorem convexBodySumFun_apply' (x : mixedSpace K) :
     convexBodySumFun x = ∑ w, ‖x.1 w‖ + 2 * ∑ w, ‖x.2 w‖ := by
-  simp_rw [convexBodySumFun_apply, sum_infinitePlaces, mult_ofIsReal, mult_ofIsComplex,
+  simp_rw [convexBodySumFun_apply, sum_eq_sum_add_sum, mult_ofIsReal, mult_ofIsComplex,
     Nat.cast_one, one_mul, Nat.cast_ofNat, normAtPlace_apply_of_isReal (Subtype.prop _),
     normAtPlace_apply_of_isComplex (Subtype.prop _), Finset.mul_sum]
 
