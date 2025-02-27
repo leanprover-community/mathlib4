@@ -480,8 +480,7 @@ partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
 
 end MkDTExpr
 
-set_option linter.style.docString false in
-/-- -/
+/-- Returns true if the `DTExpr` is not of the form `*` or `Eq * * *`". -/
 def DTExpr.isSpecific : DTExpr → Bool
   | .star _
   | .const ``Eq #[.star _, .star _, .star _] => false
