@@ -22,10 +22,10 @@ TODO: Show that the character is continuous.
 
 ## Main Declarations
 
-* `modularCharacterFun`: Define the modular character, which is `g ↦ haarScalarFactor
-  (map (· * g) ν) ν`, where ν is the Haar measure given by (the noncomputable)
-  `MeasureTheory.Measure.haar`. The result that this does not depend on the measure chosen is
-  `modularCharacterFun_eq_haarScalarFactor`.
+* `modularCharacterFun`: Define the modular character function. If `μ` is a left Haar measure on `G`
+  and `g : G`, the measure `A ↦ μ (A g⁻¹)` is also a left Haar measure, so by uniqueness is of the
+  form `Δ(g) μ`, for `Δ(g) ∈ ℝ≥0`. This `Δ` is the modular character. The result that this does not
+  depend on the measure chosen is `modularCharacterFun_eq_haarScalarFactor`.
 * `modularCharacter`: The homomorphism G →* ℝ≥0 whose toFun is `modularCharacterFun`.
 -/
 
@@ -38,15 +38,13 @@ namespace Measure
 
 variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G] [LocallyCompactSpace G]
 
-/-- The modular character as a map is `g ↦ haarScalarFactor (map (· * g) ν) ν`, where `ν` is
-  the Haar measure given by (the noncomputable) `MeasureTheory.Measure.haar`.
+/-- The modular character as a map is `g ↦ μ (· * g⁻¹) / μ`, where `μ` is a left Haar measure.
 
   See also `modularCharacter` that defines the map as a homomorphism. -/
-@[to_additive "The additive modular character as a map is `g ↦ haarScalarFactor
-  (map (· + g) ν) ν`, where `ν` is the additive Haar measure given by (the noncomputable)
-  `MeasureTheory.Measure.haar`.
+@[to_additive "The additive modular character as a map is `g ↦ μ (· + -g) / μ`, where `μ` is an
+  left additive Haar measure.
 
-  See also `modularCharacter` that defines the map as a homomorphism.."]
+  See also `modularCharacter` that defines the map as a multiplicative homomorphism.."]
 noncomputable def modularCharacterFun (g : G) : ℝ≥0 :=
   letI : MeasurableSpace G := borel G
   haveI : BorelSpace G := ⟨rfl⟩
@@ -132,8 +130,7 @@ lemma modularCharacterFun_map_mul' (g h : G) : modularCharacterFun (g * h) =
 
 
 /-- The modular character homomorphism. The underlying function is `modularCharacterFun`, which is
-  `g ↦ haarScalarFactor (map (· * g) ν) ν`, where `ν` is the Haar measure given by (the
-  noncomputable) `MeasureTheory.Measure.haar`.
+  `g ↦ μ (· * g⁻¹) / μ`, where `μ` is a left Haar measure.
  -/
 noncomputable def modularCharacter : G →* ℝ≥0 where
   toFun := modularCharacterFun
