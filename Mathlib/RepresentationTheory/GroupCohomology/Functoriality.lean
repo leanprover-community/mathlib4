@@ -196,7 +196,8 @@ theorem H0Map_id_eq_invariantsFunctor_map {A B : Rep k G} (f : A ⟶ B) :
 
 instance mono_H0Map_of_mono {A B : Rep k G} (f : A ⟶ B) [Mono f] :
     Mono (H0Map (MonoidHom.id G) f) :=
-  inferInstanceAs (Mono <| (invariantsFunctor k G).map f)
+  (ModuleCat.mono_iff_injective _).2 fun _ _ hxy => Subtype.ext <|
+    (mono_iff_injective f).1 ‹_› (Subtype.ext_iff.1 hxy)
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem cocyclesMap_comp_isoZeroCocycles_hom :
