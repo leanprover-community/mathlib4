@@ -31,12 +31,7 @@ def isFinite : ObjectProperty Ab.{u} :=
 lemma prop_isFinite_iff (M : Ab.{u}) : isFinite M ↔ Finite M := Iff.rfl
 
 instance : isFinite.{u}.IsSerreClass where
-  exists_zero := by
-    refine ⟨.of (ULift.{u} (Fin 1)), ?_, by rw [prop_isFinite_iff]; infer_instance⟩
-    rw [IsZero.iff_id_eq_zero]
-    ext x
-    fin_cases x
-    rfl
+  exists_zero := ⟨.of PUnit, isZero_of_subsingleton _, by rw [prop_isFinite_iff]; infer_instance⟩
   prop_of_mono {M N} f hf hN := by
     rw [AddCommGrp.mono_iff_injective] at hf
     simp only [prop_isFinite_iff] at hN ⊢
