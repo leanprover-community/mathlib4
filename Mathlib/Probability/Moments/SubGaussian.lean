@@ -84,19 +84,19 @@ open scoped ENNReal NNReal Topology
 
 namespace ProbabilityTheory
 
-variable {Ω Ω' : Type*} (m : MeasurableSpace Ω) {m1 m2 mΩ : MeasurableSpace Ω} (hm : m ≤ mΩ)
-  {mΩ' : MeasurableSpace Ω'}
-  {μ : Measure Ω} {ν : Measure Ω'} {κ : Kernel Ω' Ω} {X : Ω → ℝ} {c : ℝ≥0} {ε : ℝ}
-
 @[simp]
-lemma prodMkLeft_comp_compProd {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''}
-    {η : Kernel Ω Ω''} [SFinite ν] [IsSFiniteKernel κ] :
-    (η.prodMkLeft Ω') ∘ₘ ν ⊗ₘ κ = η ∘ₘ κ ∘ₘ ν := by
+lemma prodMkLeft_comp_compProd {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+    {mγ : MeasurableSpace γ}
+    {ν : Measure α} {κ : Kernel α β} {η : Kernel β γ} [SFinite ν] [IsSFiniteKernel κ] :
+    (η.prodMkLeft α) ∘ₘ ν ⊗ₘ κ = η ∘ₘ κ ∘ₘ ν := by
   conv_rhs => rw [← Measure.snd_compProd (μ := ν)]
   rw [Kernel.prodMkLeft, Measure.snd, ← Measure.deterministic_comp_eq_map measurable_snd,
     Measure.comp_assoc, Kernel.comp_deterministic_eq_comap]
 
 section Kernel
+
+variable {Ω Ω' : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSpace Ω'}
+  {ν : Measure Ω'} {κ : Kernel Ω' Ω} {X : Ω → ℝ} {c : ℝ≥0}
 
 /-! ### Sub-Gaussian with respect to a kernel and a measure -/
 
@@ -280,7 +280,8 @@ lemma measure_ge_le [SFinite ν] [IsFiniteKernel κ] (h : HasSubgaussianMGF X c 
   _ ≤ exp (- (ε / c) * ε + c * (ε / c) ^ 2 / 2) := h (ε / c) (by positivity)
   _ = exp (- ε ^ 2 / (2 * c)) := by congr; field_simp; ring
 
-lemma prob_ge_le [SFinite ν] [IsMarkovKernel κ] (h : HasSubgaussianMGF X c κ ν) (hε : 0 ≤ ε) :
+lemma prob_ge_le [SFinite ν] [IsMarkovKernel κ] (h : HasSubgaussianMGF X c κ ν)
+    {ε : ℝ} (hε : 0 ≤ ε) :
     ∀ᵐ ω' ∂ν, (κ ω' {ω | ε ≤ X ω}).toReal ≤ exp (- ε ^ 2 / (2 * c)) := by
   by_cases hc0 : c = 0
   · refine ae_of_all _ fun ω' ↦ ?_
@@ -293,11 +294,12 @@ variable {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {Y : Ω'' → ℝ} {cY : 
   [SFinite ν] [IsSFiniteKernel κ]
 
 lemma prodMkLeft_compProd {η : Kernel Ω Ω''} (h : HasSubgaussianMGF Y cY η (κ ∘ₘ ν)) :
-    HasSubgaussianMGF Y cY (prodMkLeft Ω' η) (ν ⊗ₘ κ) := by
-  constructor
-  · convert h.integrable_exp_mul
+    HasSubgaussianMGF Y cY (prodMkLeft Ω' η) (ν ⊗ₘ κ) where
+  integrable_exp_mul := by
+    convert h.integrable_exp_mul
     simp
-  · have h2 := h.mgf_le
+  mgf_le := by
+    have h2 := h.mgf_le
     simp only [prodMkLeft_apply] at h2
     rw [← Measure.snd_compProd, Measure.snd] at h2
     refine ae_of_ae_map ?_ h2
@@ -355,7 +357,9 @@ end Kernel
 
 section Conditional
 
-variable [StandardBorelSpace Ω] [IsFiniteMeasure μ]
+variable {Ω : Type*} (m : MeasurableSpace Ω) {mΩ : MeasurableSpace Ω}
+  (hm : m ≤ mΩ) [StandardBorelSpace Ω]
+  {μ : Measure Ω} [IsFiniteMeasure μ] {X : Ω → ℝ} {c : ℝ≥0}
 
 /-- A random variable `X` has a conditionally sub-Gaussian moment generating function
 with parameter `c` with respect to a sigma-algebra `m` and a measure `μ` if for all `t : ℝ`,
@@ -395,6 +399,8 @@ lemma HasCondSubgaussianMGF.integrable_exp_mul
   condExpKernel_comp_trim (μ := μ) hm ▸ Kernel.HasSubgaussianMGF.integrable_exp_mul h t
 
 end Conditional
+
+variable {Ω : Type*} {m mΩ : MeasurableSpace Ω} {μ : Measure Ω} {X : Ω → ℝ} {c : ℝ≥0}
 
 /-- A random variable `X` has a sub-Gaussian moment generating function with parameter `c`
 with respect to a measure `μ` if for all `t : ℝ`, `exp (t * X)` is `μ`-integrable and
@@ -472,7 +478,7 @@ lemma measure_ge_le [IsFiniteMeasure μ] (h : HasSubgaussianMGF X c μ) {ε : �
   rw [HasSubgaussianMGF_iff_kernel] at h
   simpa using h.measure_ge_le hc hε
 
-lemma prob_ge_le [IsProbabilityMeasure μ] (h : HasSubgaussianMGF X c μ) (hε : 0 ≤ ε) :
+lemma prob_ge_le [IsProbabilityMeasure μ] (h : HasSubgaussianMGF X c μ) {ε : ℝ} (hε : 0 ≤ ε) :
     (μ {ω | ε ≤ X ω}).toReal ≤ exp (- ε ^ 2 / (2 * c)) := by
   rw [HasSubgaussianMGF_iff_kernel] at h
   simpa using h.prob_ge_le hε
@@ -513,8 +519,8 @@ lemma sum_of_iIndepFun {ι : Type*} [IsZeroOrProbabilityMeasure μ]
 
 end HasSubgaussianMGF
 
-lemma HasSubgaussianMGF_of_map {μ : Measure Ω'} {Y : Ω' → Ω} {X : Ω → ℝ} (hY : AEMeasurable Y μ)
-    (h : HasSubgaussianMGF X c (μ.map Y)) :
+lemma HasSubgaussianMGF_of_map  {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
+    {Y : Ω' → Ω} {X : Ω → ℝ} (hY : AEMeasurable Y μ) (h : HasSubgaussianMGF X c (μ.map Y)) :
     HasSubgaussianMGF (X ∘ Y) c μ where
   integrable_exp_mul t := by
     have h1 := h.integrable_exp_mul t
@@ -557,8 +563,8 @@ lemma HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF [StandardBorelSpace Ω]
   | zero => simp
   | succ n hn =>
     simp_rw [Finset.sum_range_succ]
-    refine HasSubgaussianMGF_add_of_HasCondSubgaussianMGF (ℱ n) (ℱ.le n) ?_ (h_subG n)
-    refine HasSubgaussianMGF.trim (ℱ n) (ℱ.le n) ?_ hn
+    refine HasSubgaussianMGF_add_of_HasCondSubgaussianMGF (ℱ.le n) ?_ (h_subG n)
+    refine HasSubgaussianMGF.trim (ℱ.le n) ?_ hn
     exact Finset.measurable_sum (Finset.range n) fun m hm ↦
       ((h_adapted m).mono (ℱ.mono (Finset.mem_range_le hm))).measurable
 
