@@ -6,8 +6,6 @@ Authors: Alexander Hicks
 import Mathlib.Algebra.Polynomial.Div
 import Mathlib.Algebra.Polynomial.Derivative
 
-open Polynomial
-
 /-!
 # An analogue of L'Hôpital's Rule for Polynomials over Arbitrary Fields
 
@@ -22,6 +20,8 @@ there exists a unique polynomial q such that f(x) = (x - α) * q(x) and f'(α) =
 [Chalkias et al., *Improved Polynomial Division in Cryptography* (Appendix A)][chalkias2024improved]
 
 -/
+
+open Polynomial
 
 variable {F : Type*} [Field F]
 
