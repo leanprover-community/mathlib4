@@ -11,7 +11,7 @@ import Batteries.Control.Lemmas
 /-!
 # Laws for Monads with Failure
 
-Definitions for monads that also have an `Aleternative` instance while sharing the underlying
+Definitions for monads that also have an `Alternative` instance while sharing the underlying
 `Applicative` instance, and a class `LawfulAlternative` for types where the failure and monad
 structures are compatible in a natural way. More specifically they satisfy:
 
@@ -53,21 +53,23 @@ attribute [simp] failure_bind mapConst_failure orElse_failure failure_orElse
 
 section LawfulAlternative
 
-variable {m : Type _ → Type _} [AlternativeMonad m] [LawfulAlternative m] {α β σ : Type _}
+variable {m : Type u → Type v} [AlternativeMonad m] [LawfulAlternative m]
+    {n : Type → Type v} [AlternativeMonad n] [LawfulAlternative n]
 
-@[simp] lemma map_failure (f : α → β) : f <$> (failure : m α) = failure := by
+
+@[simp] lemma map_failure {α β} (f : α → β) : f <$> (failure : m α) = failure := by
   rw [map_eq_bind_pure_comp, failure_bind]
 
-@[simp] lemma failure_seq (x : m α) : (failure : m (α → β)) <*> x = failure := by
+@[simp] lemma failure_seq {α β} (x : m α) : (failure : m (α → β)) <*> x = failure := by
   rw [seq_eq_bind, failure_bind]
 
-@[simp] lemma succeeds_failure : (succeeds (failure : m α)) = pure false := by
+@[simp] lemma succeeds_failure {α} : (succeeds (failure : n α)) = pure false := by
   rw [succeeds, mapConst_failure, failure_orElse]
 
-@[simp] lemma tryM_failure : tryM (failure : m α) = pure () := by
+@[simp] lemma tryM_failure {α} : tryM (failure : n α) = pure () := by
   rw [tryM, mapConst_failure, failure_orElse]
 
-@[simp] lemma try?_failure : try? (failure : m α) = pure none := by
+@[simp] lemma try?_failure {α} : try? (failure : n α) = pure none := by
   rw [try?, map_failure, failure_orElse]
 
 end LawfulAlternative
