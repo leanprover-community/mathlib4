@@ -357,10 +357,10 @@ end Kernel
 
 section Conditional
 
-variable {Ω : Type*} (m : MeasurableSpace Ω) {mΩ : MeasurableSpace Ω}
-  (hm : m ≤ mΩ) [StandardBorelSpace Ω]
+variable {Ω : Type*} {m mΩ : MeasurableSpace Ω} {hm : m ≤ mΩ} [StandardBorelSpace Ω]
   {μ : Measure Ω} [IsFiniteMeasure μ] {X : Ω → ℝ} {c : ℝ≥0}
 
+variable (m) (hm) in
 /-- A random variable `X` has a conditionally sub-Gaussian moment generating function
 with parameter `c` with respect to a sigma-algebra `m` and a measure `μ` if for all `t : ℝ`,
 `exp (t * X)` is `μ`-integrable and the moment generating function of `X` contioned on `m` is
@@ -444,8 +444,7 @@ protected lemma of_rat (h_int : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X �
   integrable_exp_mul := h_int
   mgf_le t := by
     refine Rat.denseRange_cast.induction_on t ?_ h_mgf
-    refine isClosed_le ?_ (by fun_prop)
-    exact continuous_mgf fun u ↦ h_int _
+    exact isClosed_le (continuous_mgf h_int) (by fun_prop)
 
 lemma id_map (hX : AEMeasurable X μ) :
     HasSubgaussianMGF id c (μ.map X) ↔ HasSubgaussianMGF X c μ := by
@@ -486,7 +485,6 @@ lemma prob_ge_le [IsProbabilityMeasure μ] (h : HasSubgaussianMGF X c μ) {ε : 
 lemma add_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX μ)
     (hY : HasSubgaussianMGF Y cY μ) (hindep : IndepFun X Y μ) :
     HasSubgaussianMGF (X + Y) (cX + cY) μ where
-  -- we don't use the kernel version because it would require `SFinite μ`
   integrable_exp_mul t := by
     simp_rw [Pi.add_apply, mul_add, exp_add]
     convert MemLp.integrable_mul (hX.memLp t 2) (hY.memLp t 2)
