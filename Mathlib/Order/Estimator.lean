@@ -40,7 +40,7 @@ Given `[EstimatorData a ε]`
 * we can ask for an improved lower bound via `improve a e : Option ε`.
 
 The value `a` in `α` that we are estimating is hidden inside a `Thunk` to avoid evaluation.
- -/
+-/
 class EstimatorData (a : Thunk α) (ε : Type*) where
   /-- The value of the bound for `a` representation by a term of `ε`. -/
   bound : ε → α
