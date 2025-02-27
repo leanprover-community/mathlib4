@@ -340,7 +340,6 @@ places and the natural map `ℝ → ℂ` at complex places. -/
 def mixedSpaceOfRealSpace : realSpace K →L[ℝ] mixedSpace K :=
   .prod (.pi fun w ↦ .proj w.1) (.pi fun w ↦ Complex.ofRealCLM.comp (.proj w.1))
 
-@[simp]
 theorem mixedSpaceOfRealSpace_apply (x : realSpace K) :
     mixedSpaceOfRealSpace x = ⟨fun w ↦ x w.1, fun w ↦ x w.1⟩ := rfl
 
@@ -504,10 +503,16 @@ theorem normAtAllPlaces_image_preimage_of_nonneg {s : Set (realSpace K)}
   refine ⟨mixedSpaceOfRealSpace x, funext fun w ↦ ?_⟩
   rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace (hs x hx w)]
 
-theorem normAtAllPlaces_normAtAllPlaces (x : mixedSpace K) :
-    normAtAllPlaces (mixedSpaceOfRealSpace (normAtAllPlaces x)) = normAtAllPlaces x := by
+theorem normAtAllPlaces_mixedSpaceOfRealSpace {x : realSpace K} (hx : ∀ w, 0 ≤ x w) :
+    normAtAllPlaces (mixedSpaceOfRealSpace x) = x := by
   ext
-  rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace (normAtAllPlaces_nonneg _ _)]
+  rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace (hx _)]
+
+-- theorem mixedSpaceOfRealSpace_normAtAllPlaces {x : mixedSpace K} (hx : )
+
+theorem normAtAllPlaces_normAtAllPlaces (x : mixedSpace K) :
+    normAtAllPlaces (mixedSpaceOfRealSpace (normAtAllPlaces x)) = normAtAllPlaces x :=
+  normAtAllPlaces_mixedSpaceOfRealSpace fun _ ↦ (normAtAllPlaces_nonneg _ _)
 
 theorem forall_mem_iff_normAtAllPlaces_mem {s : Set (realSpace K)}
     (hs : A = normAtAllPlaces ⁻¹' s) :

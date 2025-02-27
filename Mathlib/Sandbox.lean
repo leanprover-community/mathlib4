@@ -65,6 +65,7 @@ theorem hasDerivAt_const_mul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {x : 
     HasDerivAt (fun (x : 𝕜) => c * x) c x := by
   simpa only [mul_comm] using hasDerivAt_mul_const c
 
+
 variable (G : Type*) [LinearOrderedAddCommGroup G]
 
 @[simps]
@@ -232,7 +233,7 @@ theorem expMap_apply' (x : realSpace K) :
 
 @[simp]
 theorem expMap_symm_apply (x : realSpace K) (w : InfinitePlace K) :
-      expMap.symm x w = ↑w.mult * Real.log (x w) := rfl
+    expMap.symm x w = ↑w.mult * Real.log (x w) := rfl
 
 theorem expMap_pos (x : realSpace K) (w : InfinitePlace K) :
     0 < expMap x w :=
@@ -544,14 +545,22 @@ theorem expMapBasis_symm_apply (x : realSpace K) :
   rfl
 
 theorem expMapBasis_source :
-    expMapBasis.source = (Set.univ :  Set (realSpace K)) := by
+    expMapBasis.source = (Set.univ : Set (realSpace K)) := by
   simp [expMapBasis, expMap_source]
 
 theorem expMapBasis_target :
     expMapBasis.target = Set.univ.pi fun (_ : InfinitePlace K) ↦ Set.Ioi 0 := rfl
 
+theorem expMapBasis_left_inv (x : realSpace K) :
+    expMapBasis.symm (expMapBasis x) = x := by
+  rw [expMapBasis.left_inv]
+  simp [expMapBasis_source]
+
 theorem expMapBasis_pos (x : realSpace K) (w : InfinitePlace K) :
     0 < expMapBasis x w := expMap_pos _ _
+
+theorem expMapBasis_nonneg (x : realSpace K) (w : InfinitePlace K) :
+    0 ≤ expMapBasis x w := (expMap_pos _ _).le
 
 -- theorem prod_expMapBasis₀_pow (x : realSpace K) :
 --     ∏ w, (expMapBasis₀ x w) ^ w.mult = x w₀ ^ Module.finrank ℚ K := by
@@ -578,21 +587,21 @@ theorem norm_expMapBasis_ne_zero (x : realSpace K) :
     mixedEmbedding.norm (mixedSpaceOfRealSpace (expMapBasis x)) ≠ 0 :=
   norm_expMapBasis x ▸ pow_ne_zero _ (Real.exp_ne_zero _)
 
-theorem expMapBasis_symm_normAtAllPlaces {x : mixedSpace K} (hx : mixedEmbedding.norm x ≠ 0) :
-    expMapBasis.symm (normAtAllPlaces x) w₀ =
-      (Module.finrank ℚ K : ℝ)⁻¹ * Real.log (mixedEmbedding.norm x) := by
-  rw [norm_eq_prod_normAtAllPlaces, ← expMapBasis.right_inv (x := normAtAllPlaces x),
-    prod_expMapBasis_pow, expMapBasis.left_inv, Real.log_pow, Real.log_exp, inv_mul_cancel_left₀]
-  · rw [Nat.cast_ne_zero]
-    exact Module.finrank_pos.ne'
-  · rw [expMapBasis_source]
-    trivial
-  · rw [expMapBasis_target]
-    intro w _
-    rw [normAtAllPlaces]
-    rw [mixedEmbedding.norm_ne_zero_iff] at hx
-    specialize hx w
-    refine lt_of_le_of_ne' (normAtPlace_nonneg w x) hx
+-- theorem expMapBasis_symm_normAtAllPlaces {x : mixedSpace K} (hx : mixedEmbedding.norm x ≠ 0) :
+--     expMapBasis.symm (normAtAllPlaces x) w₀ =
+--       (Module.finrank ℚ K : ℝ)⁻¹ * Real.log (mixedEmbedding.norm x) := by
+--   rw [norm_eq_prod_normAtAllPlaces, ← expMapBasis.right_inv (x := normAtAllPlaces x),
+--     prod_expMapBasis_pow, expMapBasis.left_inv, Real.log_pow, Real.log_exp, inv_mul_cancel_left₀]
+--   · rw [Nat.cast_ne_zero]
+--     exact Module.finrank_pos.ne'
+--   · rw [expMapBasis_source]
+--     trivial
+--   · rw [expMapBasis_target]
+--     intro w _
+--     rw [normAtAllPlaces]
+--     rw [mixedEmbedding.norm_ne_zero_iff] at hx
+--     specialize hx w
+--     refine lt_of_le_of_ne' (normAtPlace_nonneg w x) hx
 
 -- open Classical in
 -- theorem logMap₀_expMapBasis (x : realSpace K) :
@@ -606,17 +615,17 @@ theorem expMapBasis_symm_normAtAllPlaces {x : mixedSpace K} (hx : mixedEmbedding
 --   simp_rw [mixedEmbedding.norm_apply, normAtPlace_mixedSpaceOfRealSpace sorry, expMap_apply,
 --     mul_comm, ← Real.rpow_natCast, ← Real.exp_mul, inv_mul_cancel_right₀ sorry, ← Real.exp_sum]
 
-open scoped Classical in
-theorem main (x : realSpace K) (w : {w // w ≠ w₀}) :
-    ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K)).equivFun
-      (logMap (mixedSpaceOfRealSpace (expMapBasis x))) (equivFinRank.symm w) = x w.1 := by
-  rw [expMapBasis_apply'', _root_.map_smul, logMap_real_smul (norm_expMapBasis_ne_zero _)
-    (Real.exp_ne_zero _), expMapBasis_apply, logMap_expMap]
-  · conv_lhs =>
-      enter [2, w]
-      rw [completeBasis_equivFun_symm_apply (by rw [if_pos rfl])]
-    rw [LinearEquiv.apply_symm_apply, Equiv.apply_symm_apply, if_neg w.prop]
-  · rw [← expMapBasis_apply, norm_expMapBasis, if_pos rfl, Real.exp_zero, one_pow]
+-- open scoped Classical in
+-- theorem main (x : realSpace K) (w : {w // w ≠ w₀}) :
+--     ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K)).equivFun
+--       (logMap (mixedSpaceOfRealSpace (expMapBasis x))) (equivFinRank.symm w) = x w.1 := by
+--   rw [expMapBasis_apply'', _root_.map_smul, logMap_real_smul (norm_expMapBasis_ne_zero _)
+--     (Real.exp_ne_zero _), expMapBasis_apply, logMap_expMap]
+--   · conv_lhs =>
+--       enter [2, w]
+--       rw [completeBasis_equivFun_symm_apply (by rw [if_pos rfl])]
+--     rw [LinearEquiv.apply_symm_apply, Equiv.apply_symm_apply, if_neg w.prop]
+--   · rw [← expMapBasis_apply, norm_expMapBasis, if_pos rfl, Real.exp_zero, one_pow]
 
 open ENNReal MeasureTheory.Measure
 
@@ -724,45 +733,217 @@ theorem mem_Ico_of_mem_paramSet {x : realSpace K} (hx : x ∈ paramSet K)
   replace hx := hx w (Set.mem_univ _)
   simpa only [if_neg w.prop, Set.mem_Iic] using hx
 
+-- def realSpaceNorm (x : realSpace K) : ℝ :=
+--     mixedEmbedding.norm (mixedSpaceOfRealSpace x)
+
+-- theorem toto₀ (x : mixedSpace K) {a : realSpace K} :
+--     normAtAllPlaces x = expMapBasis a ↔ x = mixedSpaceOfRealSpace (expMapBasis a) := by
+--   refine ⟨?_, ?_⟩
+--   · intro h
+--     rw [← h, mixedSpaceOfRealSpace_apply]
+--     sorry
+--   · intro h
+--     rw [h, normAtAllPlaces_of_nonneg (fun _ ↦ expMapBasis_nonneg _ _)]
+
+
+-- theorem toto₁ (x : realSpace K) :
+--     x ∈ normAtAllPlaces '' (normLeOne K) ↔
+--       x ∈ normAtAllPlaces '' (fundamentalCone K) ∧
+--         mixedEmbedding.norm (mixedSpaceOfRealSpace x) ≤ 1 := by
+--   simp_rw [Set.mem_image, Set.mem_setOf_eq]
+--   refine ⟨?_, ?_⟩
+--   · rintro ⟨x, ⟨hx₁, hx₂⟩, rfl⟩
+--     exact ⟨⟨x, hx₁, rfl⟩, norm_normAtAllPlaces x ▸ hx₂⟩
+--   · rintro ⟨⟨x, ⟨hx₁, rfl⟩⟩, hx₂⟩
+--     exact ⟨x, ⟨hx₁, norm_normAtAllPlaces x ▸ hx₂⟩, rfl⟩
+
+theorem zap (u : (𝓞 K)ˣ) :
+    (fun i ↦ expMap.symm (fun w ↦ w (u : K)) i.1) = logEmbedding K (Additive.ofMul u) := by
+  ext
+  simp
+
+-- open scoped Classical in
+-- theorem toto₀ (x : realSpace K) :
+--     x ∈ normAtAllPlaces '' (fundamentalCone K) ↔
+--       logMap (mixedSpaceOfRealSpace x) ∈
+--         ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K)) ∧
+--         mixedEmbedding.norm (mixedSpaceOfRealSpace x) ≠ 0 := by
+--   simp_rw (config := {singlePass := true}) [Set.mem_image, fundamentalCone, Set.mem_diff,
+--     Set.mem_preimage, Set.mem_setOf_eq]
+--   refine ⟨?_, ?_⟩
+--   · rintro ⟨x, hx, rfl⟩
+--     rwa [logMap_normAtAllPlaces, norm_normAtAllPlaces]
+--   · intro h
+--     refine ⟨?_, ?_, ?_⟩
+
+--     sorry
+
+open scoped Classical in
+theorem normAtAllPlaces_normLeOne' :
+    normAtAllPlaces '' (normLeOne K) = {x | (∀ w, 0 ≤ x w) ∧
+      logMap (mixedSpaceOfRealSpace x) ∈
+      ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K)) ∧
+      mixedEmbedding.norm (mixedSpaceOfRealSpace x) ≠ 0 ∧
+      mixedEmbedding.norm (mixedSpaceOfRealSpace x) ≤ 1} := by
+  ext x
+  refine ⟨?_, fun ⟨hx₁, hx₂, hx₃, hx₄⟩ ↦ ?_⟩
+  · rintro ⟨a, ⟨⟨ha₁, ha₂⟩, ha₃⟩, rfl⟩
+    refine ⟨fun w ↦ normAtPlace_nonneg w a, ?_⟩
+    exact (logMap_normAtAllPlaces a) ▸ (norm_normAtAllPlaces a) ▸ ⟨ha₁, ha₂, ha₃⟩
+  · exact ⟨mixedSpaceOfRealSpace x, ⟨⟨hx₂, hx₃⟩, hx₄⟩, normAtAllPlaces_mixedSpaceOfRealSpace hx₁⟩
+
+open scoped Classical in
+theorem logMap_expMapBasis (x : realSpace K) :
+    logMap (mixedSpaceOfRealSpace (expMapBasis x)) ∈
+        ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K))
+      ↔ ∀ w, w ≠ w₀ → x w ∈ Set.Ico 0 1 := by
+  classical
+  simp_rw [ZSpan.mem_fundamentalDomain, equivFinRank.forall_congr_left, Subtype.forall]
+  refine forall₂_congr fun w hw ↦ ?_
+  rw [expMapBasis_apply'', _root_.map_smul, logMap_real_smul (norm_expMapBasis_ne_zero _)
+    (Real.exp_ne_zero _), expMapBasis_apply, logMap_expMap (by rw [← expMapBasis_apply,
+    norm_expMapBasis, if_pos rfl, Real.exp_zero, one_pow]), Basis.equivFun_symm_apply,
+    Fintype.sum_eq_add_sum_fintype_ne _ w₀, if_pos rfl, zero_smul, zero_add]
+  conv_lhs =>
+    enter [2, 1, 2, w, 2, i]
+    rw [if_neg i.prop]
+  simp_rw [Finset.sum_apply, ← sum_fn, _root_.map_sum, Pi.smul_apply, ← Pi.smul_def,
+    _root_.map_smul, completeBasis_apply_of_ne, zap, logEmbedding_fundSystem,
+    Finsupp.coe_finset_sum, Finsupp.coe_smul, Finset.sum_apply, Pi.smul_apply,
+    Basis.ofZLatticeBasis_repr_apply, Basis.repr_self, Finsupp.single_apply,
+    EmbeddingLike.apply_eq_iff_eq, Int.cast_ite, Int.cast_one, Int.cast_zero, smul_ite,
+    smul_eq_mul, mul_one, mul_zero, Fintype.sum_ite_eq']
+
 variable (K) in
 theorem normAtAllPlaces_normLeOne :
     normAtAllPlaces '' (normLeOne K) = expMapBasis '' (paramSet K) := by
+  ext x
+  by_cases hx : ∀ w, 0 < x w
+  · rw [← expMapBasis.right_inv (Set.mem_univ_pi.mpr hx), (injective_expMapBasis K).mem_set_image]
+    simp only [normAtAllPlaces_normLeOne', ne_eq, Set.mem_setOf_eq, expMapBasis_nonneg,
+      implies_true, logMap_expMapBasis, norm_expMapBasis, pow_eq_zero_iff', Real.exp_ne_zero,
+      false_and, not_false_eq_true, pow_le_one_iff_of_nonneg (Real.exp_nonneg _)
+      Module.finrank_pos.ne', Real.exp_le_one_iff, true_and, Set.mem_univ_pi]
+    refine ⟨fun ⟨h₁, h₂⟩ w ↦ ?_, fun h ↦ ⟨fun w hw ↦ by simpa [hw] using h w, by simpa using h w₀⟩⟩
+    split_ifs with hw
+    · exact hw ▸ h₂
+    · exact h₁ w hw
+  · refine ⟨?_, ?_⟩
+    · rintro ⟨a, ⟨ha, _⟩, rfl⟩
+      exact (hx fun w ↦ fundamentalCone.normAtPlace_pos_of_mem ha w).elim
+    · rintro ⟨a, _, rfl⟩
+      exact (hx fun w ↦ expMapBasis_pos a w).elim
+
+
+
+
+
+
+
+
+
+theorem toto₂ (x : realSpace K) :
+    expMapBasis x ∈ normAtAllPlaces '' (fundamentalCone K) ↔
+      ∀ w, w ≠ w₀ → x w ∈ Set.Ico 0 1 := by
   classical
-  ext
-  simp only [Set.mem_image, Set.mem_setOf_eq, fundamentalCone, Set.mem_diff, Set.mem_preimage,
-    ZSpan.mem_fundamentalDomain, equivFinRank.forall_congr_left]
-  refine ⟨?_, ?_⟩
-  · rintro ⟨x, ⟨⟨hx₁, hx₂⟩, hx₃⟩, rfl⟩
-    have hx₄ : normAtAllPlaces x ∈ expMapBasis.target :=
-      fun w _ ↦ lt_of_le_of_ne' (normAtPlace_nonneg w x) (mixedEmbedding.norm_ne_zero_iff.mp hx₂ w)
-    refine ⟨?_, ?_, ?_⟩
-    · exact expMapBasis.symm (normAtAllPlaces x)
-    · intro w _
-      by_cases hw : w = w₀
-      · simp_rw [hw, expMapBasis_symm_normAtAllPlaces hx₂, if_true, Set.mem_Iic]
-        have : 0 < (Module.finrank ℚ K : ℝ)⁻¹ :=
-          inv_pos.mpr <| Nat.cast_pos.mpr Module.finrank_pos
-        simpa [mul_nonpos_iff_pos_imp_nonpos, this,
-          Real.log_nonpos_iff (mixedEmbedding.norm_nonneg _)] using hx₃
-      · rw [← main (expMapBasis.symm (normAtAllPlaces x)) ⟨w, hw⟩, expMapBasis.right_inv hx₄,
-          logMap_normAtAllPlaces]
-        simp_rw [if_neg hw]
-        exact hx₁ _
-    · rw [expMapBasis.right_inv hx₄]
-  · rintro ⟨x, hx, rfl⟩
-    refine ⟨mixedSpaceOfRealSpace (expMapBasis x), ⟨⟨?_, norm_expMapBasis_ne_zero x⟩, ?_⟩, ?_⟩
-    · intro w
-      simp_rw [← Basis.equivFun_apply, main]
-      exact mem_Ico_of_mem_paramSet hx w
-    · rw [norm_expMapBasis]
-      refine (pow_le_one_iff_of_nonneg ?_ ?_).mpr ?_
-      · exact Real.exp_nonneg _
-      · exact Module.finrank_pos.ne'
-      · rw [Real.exp_le_one_iff]
-        exact le_of_mem_paramSet hx
-    · ext
-      rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace]
-      exact (expMapBasis_pos _ _).le
+  simp_rw [toto₀, Set.mem_setOf_eq, expMapBasis_nonneg, ne_eq, norm_expMapBasis_ne_zero,
+    implies_true, not_false_eq_true, and_true, true_and, ZSpan.mem_fundamentalDomain,
+    equivFinRank.forall_congr_left, Subtype.forall]
+--  simp_rw [toto₀, ne_eq, norm_expMapBasis_ne_zero, not_false_eq_true, and_true,
+--    ZSpan.mem_fundamentalDomain, equivFinRank.forall_congr_left, Subtype.forall]
+  -- simp_rw [Set.mem_image, fundamentalCone, Set.mem_diff, Set.mem_preimage, Set.mem_setOf_eq,
+  --   toto₀, exists_eq_right,
+  --   Set.mem_setOf_eq, norm_expMapBasis_ne_zero, not_false_eq_true, and_true,
+  --   ZSpan.mem_fundamentalDomain, equivFinRank.forall_congr_left, Subtype.forall]
+  refine forall₂_congr fun w hw ↦ ?_
+  rw [expMapBasis_apply'', _root_.map_smul, logMap_real_smul (norm_expMapBasis_ne_zero _)
+    (Real.exp_ne_zero _), expMapBasis_apply, logMap_expMap (by rw [← expMapBasis_apply,
+    norm_expMapBasis, if_pos rfl, Real.exp_zero, one_pow]), Basis.equivFun_symm_apply,
+    Fintype.sum_eq_add_sum_fintype_ne _ w₀, if_pos rfl, zero_smul, zero_add]
+  conv_lhs =>
+    enter [2, 1, 2, w, 2, i]
+    rw [if_neg i.prop]
+  simp_rw [Finset.sum_apply, ← sum_fn, _root_.map_sum, Pi.smul_apply, ← Pi.smul_def,
+    _root_.map_smul, completeBasis_apply_of_ne, zap, logEmbedding_fundSystem,
+    Finsupp.coe_finset_sum, Finsupp.coe_smul, Finset.sum_apply, Pi.smul_apply,
+    Basis.ofZLatticeBasis_repr_apply, Basis.repr_self, Finsupp.single_apply,
+    EmbeddingLike.apply_eq_iff_eq, Int.cast_ite, Int.cast_one, Int.cast_zero, smul_ite,
+    smul_eq_mul, mul_one, mul_zero, Fintype.sum_ite_eq']
+
+theorem toto₃ (x : realSpace K) :
+    mixedEmbedding.norm (mixedSpaceOfRealSpace (expMapBasis x)) ≤ 1 ↔ x w₀ ≤ 0 := by
+  sorry
+--  rw [realSpaceNorm, mixedEmbedding.norm_apply]
+--  simp_rw [normAtPlace_mixedSpaceOfRealSpace sorry]
+--  rw [prod_expMapBasis_pow]
+--  sorry
+
+variable (K) in
+theorem normAtAllPlaces_normLeOne :
+    normAtAllPlaces '' (normLeOne K) = expMapBasis '' (paramSet K) := by
+  ext x
+  by_cases hx : ∀ w, 0 < x w
+  · replace hx : x = expMapBasis (expMapBasis.symm x) := by
+      rw [expMapBasis.right_inv]
+      rw [expMapBasis_target, Set.mem_univ_pi]
+      exact hx
+    rw [toto₁, hx, toto₂, toto₃, Function.Injective.mem_set_image, paramSet, Set.mem_univ_pi]
+    · refine ⟨?_, ?_⟩
+      · intro ⟨h₁, h₂⟩ w
+        split_ifs with h
+        · rwa [h]
+        · exact h₁ w h
+      · intro h
+        refine ⟨?_, ?_⟩
+        · intro w hw
+          simpa [hw] using h w
+        · simpa using h w₀
+    · exact injective_expMapBasis K
+  · refine ⟨?_, ?_⟩
+    · rintro ⟨a, ⟨ha, _⟩, rfl⟩
+      exact (hx fun w ↦ fundamentalCone.normAtPlace_pos_of_mem ha w).elim
+    · rintro ⟨a, _, rfl⟩
+      exact (hx fun w ↦ expMapBasis_pos a w).elim
+
+-- variable (K) in
+-- theorem normAtAllPlaces_normLeOne :
+--     normAtAllPlaces '' (normLeOne K) = expMapBasis '' (paramSet K) := by
+--   classical
+--   ext a
+--   simp only [Set.mem_image, Set.mem_setOf_eq, fundamentalCone, Set.mem_diff, Set.mem_preimage,
+--     ZSpan.mem_fundamentalDomain, equivFinRank.forall_congr_left]
+--   refine ⟨?_, ?_⟩
+--   · rintro ⟨x, ⟨⟨hx₁, hx₂⟩, hx₃⟩, rfl⟩
+--     have hx₄ : normAtAllPlaces x ∈ expMapBasis.target :=
+--       fun w _ ↦ lt_of_le_of_ne' (normAtPlace_nonneg w x) (mixedEmbedding.norm_ne_zero_iff.mp hx₂ w)
+--     refine ⟨?_, ?_, ?_⟩
+--     · exact expMapBasis.symm (normAtAllPlaces x)
+--     · intro w _
+--       by_cases hw : w = w₀
+--       · simp_rw [hw, expMapBasis_symm_normAtAllPlaces hx₂, if_true, Set.mem_Iic]
+--         have : 0 < (Module.finrank ℚ K : ℝ)⁻¹ :=
+--           inv_pos.mpr <| Nat.cast_pos.mpr Module.finrank_pos
+--         simpa [mul_nonpos_iff_pos_imp_nonpos, this,
+--           Real.log_nonpos_iff (mixedEmbedding.norm_nonneg _)] using hx₃
+--       · rw [← main (expMapBasis.symm (normAtAllPlaces x)) ⟨w, hw⟩, expMapBasis.right_inv hx₄,
+--           logMap_normAtAllPlaces]
+--         simp_rw [if_neg hw]
+--         exact hx₁ _
+--     · rw [expMapBasis.right_inv hx₄]
+--   · rintro ⟨x, hx, rfl⟩
+--     refine ⟨mixedSpaceOfRealSpace (expMapBasis x), ⟨⟨?_, norm_expMapBasis_ne_zero x⟩, ?_⟩, ?_⟩
+--     · intro w
+--       simp_rw [← Basis.equivFun_apply, main]
+--       exact mem_Ico_of_mem_paramSet hx w
+--     · rw [norm_expMapBasis]
+--       refine (pow_le_one_iff_of_nonneg ?_ ?_).mpr ?_
+--       · exact Real.exp_nonneg _
+--       · exact Module.finrank_pos.ne'
+--       · rw [Real.exp_le_one_iff]
+--         exact le_of_mem_paramSet hx
+--     · ext
+--       rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace]
+--       exact (expMapBasis_pos _ _).le
 
 theorem mem_normLeOne_iff (x : mixedSpace K):
     x ∈ normLeOne K ↔ mixedSpaceOfRealSpace (normAtAllPlaces x) ∈ normLeOne K := by

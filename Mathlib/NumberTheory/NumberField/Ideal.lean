@@ -1,9 +1,9 @@
 /-
-Copyright (c) 2024 Xavier Roblot. All rights reserved.
+Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.NormLessThanOne
+import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.NormLeOne
 import Mathlib.NumberTheory.NumberField.ClassNumber
 
 /-!
@@ -77,7 +77,7 @@ theorem ideal.tendsto_mk_eq_norm_le_div_atop (C : ClassGroup (𝓞 K)) :
         (toMixed K).toLinearMap)
       (F := fun x ↦ mixedEmbedding.norm (toMixed K x))
       (X := (toMixed K)⁻¹' (fundamentalCone K)) (fun _ _ _ h ↦ ?_) (fun _ _ h ↦ ?_)
-      (isBounded_normLessThanOne K) ?_ ?_).mul (tendsto_const_nhds
+      (isBounded_normLeOne K) ?_ ?_).mul (tendsto_const_nhds
         (x := (absNorm (J : Ideal (𝓞 K)) : ℝ) * (torsionOrder K : ℝ)⁻¹))).comp
       (tendsto_id.atTop_mul_const' <| Nat.cast_pos.mpr (absNorm_pos_of_nonZeroDivisors J))
     using 2 with s
@@ -87,20 +87,20 @@ theorem ideal.tendsto_mk_eq_norm_le_div_atop (C : ClassGroup (𝓞 K)) :
     rw [inv_mul_cancel_right₀ (Nat.cast_ne_zero.mpr (absNorm_ne_zero_of_nonZeroDivisors J)),
       mul_right_comm, mul_inv_cancel_right₀ (Nat.cast_ne_zero.mpr (torsionOrder K).ne_zero)]
   · simp_rw [h, (volumePreserving_toMixed K).measure_preimage
-      (measurableSet_normLessThanOne K).nullMeasurableSet, volume_normLessThanOne,
+      (measurableSet_normLeOne K).nullMeasurableSet, volume_normLeOne,
       ZLattice.covolume_comap _ _ _ (volumePreserving_toMixed K), covolume_idealLattice,
       ENNReal.toReal_mul, ENNReal.toReal_pow, ENNReal.toReal_ofNat, ENNReal.coe_toReal,
-      NNReal.coe_real_pi, Real.coe_toNNReal _ (regulator_pos K).le, FractionalIdeal.coe_mk0,
+      NNReal.coe_real_pi, ENNReal.toReal_ofReal (regulator_pos K).le, FractionalIdeal.coe_mk0,
       FractionalIdeal.coeIdeal_absNorm, Rat.cast_natCast, inv_pow, div_eq_mul_inv, mul_inv,
       inv_inv, mul_assoc, mul_comm (absNorm J.1 : ℝ), mul_comm (absNorm J.1 : ℝ)⁻¹, mul_assoc]
     rw [mul_inv_cancel₀ (Nat.cast_ne_zero.mpr (absNorm_ne_zero_of_nonZeroDivisors J)), mul_one]
     ring
   · rwa [Set.mem_preimage, map_smul, smul_mem_iff_mem h.ne']
   · simp_rw [map_smul, mixedEmbedding.norm_smul, euclidean.finrank, abs_of_nonneg h]
-  · exact (toMixed K).continuous.measurable (measurableSet_normLessThanOne K)
+  · exact (toMixed K).continuous.measurable (measurableSet_normLeOne K)
   · rw [h, ← ContinuousLinearEquiv.coe_toHomeomorph, ← Homeomorph.preimage_frontier,
       ContinuousLinearEquiv.coe_toHomeomorph, (volumePreserving_toMixed K).measure_preimage
-      measurableSet_frontier.nullMeasurableSet, volume_frontier_normLessThanOne]
+      measurableSet_frontier.nullMeasurableSet, volume_frontier_normLeOne]
 
 theorem ideal.tendsto_norm_le_div_atop₀ :
     Tendsto (fun s : ℝ ↦
