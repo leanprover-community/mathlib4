@@ -55,6 +55,7 @@ lemma cochainsMap_id_f_eq_compLeft {A B : Rep k G} (f : A ⟶ B) (i : ℕ) :
   ext
   rfl
 
+@[reassoc]
 lemma cochainsMap_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k K} {B : Rep k H} {C : Rep k G} (f : H →* K) (g : G →* H)
     (φ : (Action.res _ f).obj A ⟶ B) (ψ : (Action.res _ g).obj B ⟶ C) :
@@ -62,6 +63,7 @@ lemma cochainsMap_comp {G H K : Type u} [Group G] [Group H] [Group K]
       cochainsMap f φ ≫ cochainsMap g ψ := by
   rfl
 
+@[reassoc]
 lemma cochainsMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     cochainsMap (MonoidHom.id G) (φ ≫ ψ) =
       cochainsMap (MonoidHom.id G) φ ≫ cochainsMap (MonoidHom.id G) ψ := by
@@ -97,6 +99,7 @@ noncomputable abbrev cocyclesMap (n : ℕ) :
     groupCohomology.cocycles A n ⟶ groupCohomology.cocycles B n :=
   HomologicalComplex.cyclesMap (cochainsMap f φ) n
 
+@[reassoc]
 theorem cocyclesMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
     cocyclesMap (MonoidHom.id G) (φ ≫ ψ) n =
       cocyclesMap (MonoidHom.id G) φ n ≫ cocyclesMap (MonoidHom.id G) ψ n := by
@@ -109,6 +112,7 @@ noncomputable abbrev map (n : ℕ) :
     groupCohomology A n ⟶ groupCohomology B n :=
   HomologicalComplex.homologyMap (cochainsMap f φ) n
 
+@[reassoc]
 theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
     map (MonoidHom.id G) (φ ≫ ψ) n =
       map (MonoidHom.id G) φ n ≫ map (MonoidHom.id G) ψ n := by
