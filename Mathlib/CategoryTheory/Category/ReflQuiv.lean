@@ -217,7 +217,7 @@ def adj.counit.app (C : Type u) [Category.{max u v} C] :
 
 /-- The counit of `ReflQuiv.adj` is closely related to the counit of `Quiv.adj`. -/
 @[simp]
-theorem adj.counit.app_eq (C : Type u) [Category C] :
+theorem adj.counit.comp_app_eq (C : Type u) [Category C] :
     Cat.FreeRefl.quotientFunctor C ⋙ adj.counit.app C = Quiv.adj.counit.app (Cat.of C) := rfl
 
 /--
