@@ -437,7 +437,7 @@ theorem tendsto_atTop_addContent_iUnion_of_addContent_iUnion_eq_tsum (hC : IsSet
 /-- If an additive content is σ-additive on a set ring, then it is σ-subadditive. -/
 theorem addContent_iUnion_le_of_addContent_iUnion_eq_tsum (hC : IsSetRing C)
     (m_iUnion : ∀ (f : ℕ → Set α) (_ : ∀ i, f i ∈ C) (_ : (⋃ i, f i) ∈ C)
-      (_hf_disj : Pairwise (Function.onFun Disjoint f)), m (⋃ i, f i) = ∑' i, m (f i)) :
+      (_hf_disj : Pairwise (Disjoint on f)), m (⋃ i, f i) = ∑' i, m (f i)) :
     m.IsSigmaSubadditive := by
   intro f hf hf_Union
   have h_tendsto : Tendsto (fun n ↦ m (partialSups f n)) atTop (𝓝 (m (⋃ i, f i))) := by
