@@ -75,10 +75,11 @@ theorem arcsin_inj {x y : ℝ} (hx₁ : -1 ≤ x) (hx₂ : x ≤ 1) (hy₁ : -1 
     arcsin x = arcsin y ↔ x = y :=
   injOn_arcsin.eq_iff ⟨hx₁, hx₂⟩ ⟨hy₁, hy₂⟩
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_arcsin : Continuous arcsin :=
   continuous_subtype_val.comp sinOrderIso.symm.continuous.Icc_extend'
 
+@[fun_prop]
 theorem continuousAt_arcsin {x : ℝ} : ContinuousAt arcsin x :=
   continuous_arcsin.continuousAt
 
@@ -123,7 +124,7 @@ theorem arcsin_le_iff_le_sin' {x y : ℝ} (hy : y ∈ Ico (-(π / 2)) (π / 2)) 
     arcsin x ≤ y ↔ x ≤ sin y := by
   rcases le_total x (-1) with hx₁ | hx₁
   · simp [arcsin_of_le_neg_one hx₁, hy.1, hx₁.trans (neg_one_le_sin _)]
-  cases' lt_or_le 1 x with hx₂ hx₂
+  rcases lt_or_le 1 x with hx₂ | hx₂
   · simp [arcsin_of_one_le hx₂.le, hy.2.not_le, (sin_le_one y).trans_lt hx₂]
   exact arcsin_le_iff_le_sin ⟨hx₁, hx₂⟩ (mem_Icc_of_Ico hy)
 
@@ -365,7 +366,7 @@ theorem arccos_le_pi_div_four {x} : arccos x ≤ π / 4 ↔ √2 / 2 ≤ x := by
     · intro
       linarith
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_arccos : Continuous arccos :=
   continuous_const.sub continuous_arcsin
 

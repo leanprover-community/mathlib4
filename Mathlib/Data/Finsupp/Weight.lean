@@ -75,14 +75,8 @@ with respect to `w : σ → M` is the sum `∑ i, f i • w i`. -/
 noncomputable def weight : (σ →₀ R) →+ M :=
   (Finsupp.linearCombination R w).toAddMonoidHom
 
-@[deprecated weight (since := "2024-07-20")]
-alias _root_.MvPolynomial.weightedDegree := weight
-
 theorem weight_apply (f : σ →₀ R) :
     weight w f = Finsupp.sum f (fun i c => c • w i) := rfl
-
-@[deprecated weight_apply (since := "2024-07-20")]
-alias _root_.MvPolynomial.weightedDegree_apply := weight_apply
 
 theorem weight_single_index [DecidableEq σ] (s : σ) (c : M) (f : σ →₀ R) :
     weight (Pi.single s c) f = f s • c :=
@@ -213,9 +207,6 @@ variable {R : Type*} [AddCommMonoid R]
 /-- The degree of a finsupp function. -/
 def degree (d : σ →₀ R) : R := ∑ i ∈ d.support, d i
 
-@[deprecated degree (since := "2024-07-20")]
-alias _root_.MvPolynomial.degree := degree
-
 @[simp]
 theorem degree_add (a b : σ →₀ R) : (a + b).degree = a.degree + b.degree :=
   sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
@@ -233,9 +224,6 @@ lemma degree_eq_zero_iff {R : Type*} [OrderedAddCommMonoid R] [CanonicallyOrdere
   simp only [degree, Finset.sum_eq_zero_iff, mem_support_iff, ne_eq, _root_.not_imp_self,
     DFunLike.ext_iff, coe_zero, Pi.zero_apply]
 
-@[deprecated degree_eq_zero_iff (since := "2024-07-20")]
-alias _root_.MvPolynomial.degree_eq_zero_iff := degree_eq_zero_iff
-
 theorem le_degree {R : Type*} [OrderedAddCommMonoid R] [CanonicallyOrderedAdd R]
     (s : σ) (f : σ →₀ R) :
     f s ≤ degree f := by
@@ -248,9 +236,6 @@ theorem degree_eq_weight_one {R : Type*} [Semiring R] :
     degree (R := R) (σ := σ) = weight (fun _ ↦ 1) := by
   ext d
   simp only [degree, weight_apply, Pi.one_apply, smul_eq_mul, mul_one, Finsupp.sum]
-
-@[deprecated degree_eq_weight_one (since := "2024-07-20")]
-alias _root_.MvPolynomial.weightedDegree_one := degree_eq_weight_one
 
 theorem finite_of_degree_le [Finite σ] (n : ℕ) :
     {f : σ →₀ ℕ | degree f ≤ n}.Finite := by

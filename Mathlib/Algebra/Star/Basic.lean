@@ -332,7 +332,7 @@ simp can prove this:
   by simp only [RingHomCompTriple.comp_apply, RingHom.id_apply]
 One of the lemmas above could be a duplicate.
 If that's not the case try reordering lemmas or adding @[priority].
- -/
+-/
 -- @[simp]
 theorem starRingEnd_self_apply (x : R) : starRingEnd R (starRingEnd R x) = x := star_star x
 

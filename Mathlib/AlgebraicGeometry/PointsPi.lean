@@ -76,14 +76,14 @@ lemma isIso_of_comp_eq_sigmaSpec {V : Scheme}
   have : g.coborderRange = ⊤ := by
     apply eq_top_of_sigmaSpec_subset_of_isCompact (hVU := subset_coborder)
     · simpa only [← hU'] using Set.range_comp_subset_range f.base g.base
-    · exact isCompact_range g.base.2
+    · exact isCompact_range g.base.hom.2
   have : IsClosedImmersion g := by
     have : IsIso g.coborderRange.ι := by rw [this, ← Scheme.topIso_hom]; infer_instance
     rw [← g.liftCoborder_ι]
     infer_instance
   obtain ⟨I, e, rfl⟩ := IsClosedImmersion.Spec_iff.mp this
   obtain rfl := eq_bot_of_comp_quotientMk_eq_sigmaSpec R I (f ≫ e.hom) (by rwa [Category.assoc])
-  show IsIso (e.hom ≫ Spec.map (RingEquiv.quotientBot _).toCommRingCatIso.inv)
+  convert_to IsIso (e.hom ≫ Spec.map (RingEquiv.quotientBot _).toCommRingCatIso.inv)
   infer_instance
 
 variable (X : Scheme)
@@ -118,7 +118,7 @@ lemma pointsPi_surjective [CompactSpace X] [∀ i, IsLocalRing (R i)] :
   have (i) : ∃ j, Set.range (f i).base ⊆ (𝒰.map j).opensRange := by
     refine ⟨𝒰.f ((f i).base (IsLocalRing.closedPoint (R i))), ?_⟩
     rintro _ ⟨x, rfl⟩
-    exact ((IsLocalRing.specializes_closedPoint x).map (f i).base.2).mem_open
+    exact ((IsLocalRing.specializes_closedPoint x).map (f i).base.hom.2).mem_open
       (𝒰.map _).opensRange.2 (𝒰.covers _)
   choose j hj using this
   have (j₀) := pointsPi_surjective_of_isAffine (ι := { i // j i = j₀ }) (R ·) (𝒰.obj j₀)

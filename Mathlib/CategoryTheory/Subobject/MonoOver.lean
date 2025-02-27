@@ -3,7 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Adjunction.Over
+import Mathlib.CategoryTheory.Comma.Over.Pullback
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.CategoryTheory.Limits.Shapes.Images
@@ -56,6 +56,8 @@ instance (X : C) : Category (MonoOver X) :=
   FullSubcategory.category _
 
 namespace MonoOver
+
+instance mono_obj_hom (S : MonoOver X) : Mono S.obj.hom := S.2
 
 /-- Construct a `MonoOver X`. -/
 @[simps]
@@ -128,7 +130,7 @@ def isoMk {f g : MonoOver X} (h : f.obj.left ≅ g.obj.left)
 
 /-- If `f : MonoOver X`, then `mk' f.arrow` is of course just `f`, but not definitionally, so we
     package it as an isomorphism. -/
-@[simp]
+@[simps!]
 def mk'ArrowIso {X : C} (f : MonoOver X) : mk' f.arrow ≅ f :=
   isoMk (Iso.refl _)
 

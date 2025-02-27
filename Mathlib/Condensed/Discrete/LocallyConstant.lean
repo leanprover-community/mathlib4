@@ -69,8 +69,6 @@ universe u w
 
 open CategoryTheory Limits LocallyConstant TopologicalSpace.Fiber Opposite Function Fiber
 
-attribute [local instance] HasForget.instFunLike
-
 variable {P : TopCat.{u} → Prop}
 
 namespace CompHausLike.LocallyConstant
@@ -83,7 +81,7 @@ maps.
 def functorToPresheaves : Type (max u w) ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w) where
   obj X := {
     obj := fun ⟨S⟩ ↦ LocallyConstant S X
-    map := fun f g ↦ g.comap f.unop }
+    map := fun f g ↦ g.comap f.unop.hom }
   map f := { app := fun _ t ↦ t.map f }
 
 /--
@@ -112,12 +110,12 @@ def fiber : CompHausLike.{u} P := CompHausLike.of P a.val
 instance : HasProp P (fiber r a) := inferInstanceAs (HasProp P (Subtype _))
 
 /-- The inclusion map from a component of the coproduct induced by `f` into `S`. -/
-def sigmaIncl : fiber r a ⟶ Q := TopologicalSpace.Fiber.sigmaIncl _ a
+def sigmaIncl : fiber r a ⟶ Q := ofHom _ (TopologicalSpace.Fiber.sigmaIncl _ a)
 
 /-- The canonical map from the coproduct induced by `f` to `S` as an isomorphism in
 `CompHausLike P`. -/
 noncomputable def sigmaIso [HasExplicitFiniteCoproducts.{u} P] : (finiteCoproduct (fiber r)) ≅ Q :=
-  isoOfBijective (sigmaIsoHom r) ⟨sigmaIsoHom_inj r, sigmaIsoHom_surj r⟩
+  isoOfBijective (ofHom _ (sigmaIsoHom r)) ⟨sigmaIsoHom_inj r, sigmaIsoHom_surj r⟩
 
 lemma sigmaComparison_comp_sigmaIso [HasExplicitFiniteCoproducts.{u} P]
     (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w) :
@@ -180,19 +178,21 @@ variable {T : CompHausLike.{u} P} (g : T ⟶ S)
 This is an auxiliary definition, the details do not matter. What's important is that this map exists
 so that the lemma `incl_comap` works.
 -/
-def componentHom (a : Fiber (f.comap g)) :
-    fiber _ a ⟶ fiber _ (Fiber.mk f (g a.preimage)) where
-  toFun x := ⟨g x.val, by
-    simp only [Fiber.mk, Set.mem_preimage, Set.mem_singleton_iff]
-    convert map_eq_image _ _ x
-    exact map_preimage_eq_image_map _ _ a⟩
-  continuous_toFun := by exact Continuous.subtype_mk (g.continuous.comp continuous_subtype_val) _
-    -- term mode gives "unknown free variable" error.
+def componentHom (a : Fiber (f.comap g.hom)) :
+    fiber _ a ⟶ fiber _ (Fiber.mk f (g a.preimage)) :=
+  TopCat.ofHom
+  { toFun x := ⟨g x.val, by
+      simp only [Fiber.mk, Set.mem_preimage, Set.mem_singleton_iff]
+      convert map_eq_image _ _ x
+      exact map_preimage_eq_image_map _ _ a⟩
+    continuous_toFun := by
+      exact Continuous.subtype_mk (g.hom.continuous.comp continuous_subtype_val) _ }
+      -- term mode gives "unknown free variable" error.
 
 lemma incl_comap {S T : (CompHausLike P)ᵒᵖ}
     (f : LocallyConstant S.unop (Y.obj (op (CompHausLike.of P PUnit.{u+1}))))
-      (g : S ⟶ T) (a : Fiber (f.comap g.unop)) :
-        g ≫ (sigmaIncl (f.comap g.unop) a).op =
+      (g : S ⟶ T) (a : Fiber (f.comap g.unop.hom)) :
+        g ≫ (sigmaIncl (f.comap g.unop.hom) a).op =
           (sigmaIncl f _).op ≫ (componentHom f g.unop a).op :=
   rfl
 
@@ -205,7 +205,7 @@ noncomputable def counitApp [HasExplicitFiniteCoproducts.{u} P]
   naturality := by
     intro S T g
     ext f
-    apply presheaf_ext (f.comap g.unop)
+    apply presheaf_ext (f.comap g.unop.hom)
     intro a
     simp only [op_unop, functorToPresheaves_obj_obj, types_comp_apply, functorToPresheaves_obj_map,
       incl_of_counitAppApp, ← FunctorToTypes.map_comp_apply, incl_comap]
@@ -264,14 +264,15 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     apply presheaf_ext (f.map (g.val.app (op (CompHausLike.of P PUnit.{u+1}))))
     intro a
     simp only [op_unop, functorToPresheaves_map_app, incl_of_counitAppApp]
-    apply presheaf_ext (f.comap (sigmaIncl _ _))
+    apply presheaf_ext (f.comap (sigmaIncl _ _).hom)
     intro b
     simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp, CompHausLike.coe_of,
       map_apply, IsTerminal.comp_from, ← map_preimage_eq_image_map]
     change (_ ≫ Y.val.map _) _ = (_ ≫ Y.val.map _) _
-    simp only [← g.val.naturality,
-      show sigmaIncl (f.comap (sigmaIncl (f.map _) a)) b ≫ sigmaIncl (f.map _) a =
-        (sigmaInclIncl f _ a b) ≫ sigmaIncl f (Fiber.mk f _) from rfl]
+    simp only [← g.val.naturality]
+    rw [show sigmaIncl (f.comap (sigmaIncl (f.map _) a).hom) b ≫ sigmaIncl (f.map _) a =
+        CompHausLike.ofHom P (X := fiber _ b) (sigmaInclIncl f _ a b) ≫ sigmaIncl f (Fiber.mk f _)
+      by ext; rfl]
     simp only [op_comp, Functor.map_comp, types_comp_apply, incl_of_counitAppApp]
     simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp, terminal.comp_from]
     rw [mk_image]
@@ -369,6 +370,7 @@ abbrev functor : Type (u+1) ⥤ CondensedSet.{u} :=
   CompHausLike.LocallyConstant.functor.{u, u+1} (P := fun _ ↦ True)
     (hs := fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /--
 `CondensedSet.LocallyConstant.functor` is isomorphic to `Condensed.discrete`
 (by uniqueness of adjoints).
@@ -384,8 +386,10 @@ noncomputable instance : functor.Faithful := functorFullyFaithful.faithful
 
 noncomputable instance : functor.Full := functorFullyFaithful.full
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : (discrete (Type _)).Faithful := Functor.Faithful.of_iso iso
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 noncomputable instance : (discrete (Type _)).Full := Functor.Full.of_iso iso
 
 end CondensedSet.LocallyConstant
@@ -403,6 +407,7 @@ instance (S : LightProfinite.{u}) (p : S → Prop) :
   ⟨⟨(inferInstance : TotallyDisconnectedSpace (Subtype p)),
     (inferInstance : SecondCountableTopology {s | p s})⟩⟩
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /--
 `LightCondSet.LocallyConstant.functor` is isomorphic to `LightCondensed.discrete`
 (by uniqueness of adjoints).
@@ -418,8 +423,10 @@ instance : functor.{u}.Faithful := functorFullyFaithful.faithful
 
 instance : LightCondSet.LocallyConstant.functor.Full := functorFullyFaithful.full
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : (LightCondensed.discrete (Type u)).Faithful := Functor.Faithful.of_iso iso.{u}
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : (LightCondensed.discrete (Type u)).Full := Functor.Full.of_iso iso.{u}
 
 end LightCondSet.LocallyConstant

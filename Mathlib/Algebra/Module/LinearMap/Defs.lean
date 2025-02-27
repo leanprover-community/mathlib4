@@ -243,7 +243,6 @@ theorem coe_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
     ((LinearMap.mk f h : M →ₛₗ[σ] M₃) : M → M₃) = f :=
   rfl
 
--- Porting note: This theorem is new.
 @[simp]
 theorem coe_addHom_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
     ((LinearMap.mk f h : M →ₛₗ[σ] M₃) : AddHom M M₃) = f :=
@@ -410,7 +409,6 @@ See also `LinearMap.map_smul_of_tower`. -/
   map_add' := fₗ.map_add
   map_smul' := fₗ.map_smul_of_tower
 
--- Porting note: generalized from `Algebra` to `CompatibleSMul`
 instance coeIsScalarTower : CoeHTCT (M →ₗ[S] M₂) (M →ₗ[R] M₂) :=
   ⟨restrictScalars R⟩
 
@@ -448,6 +446,8 @@ end
 def _root_.RingHom.toSemilinearMap (f : R →+* S) : R →ₛₗ[f] S :=
   { f with
     map_smul' := f.map_mul }
+
+@[simp] theorem _root_.RingHom.coe_toSemilinearMap (f : R →+* S) : ⇑f.toSemilinearMap = f := rfl
 
 section
 
@@ -511,6 +511,15 @@ lemma _root_.Function.Injective.injective_linearMapComp_left (hf : Injective f) 
     Injective fun g : M₁ →ₛₗ[σ₁₂] M₂ ↦ f.comp g :=
   fun g₁ g₂ (h : f.comp g₁ = f.comp g₂) ↦ ext fun x ↦ hf <| by rw [← comp_apply, h, comp_apply]
 
+theorem surjective_comp_left_of_exists_rightInverse {σ₃₂ : R₃ →+* R₂}
+    [RingHomInvPair σ₂₃ σ₃₂] [RingHomCompTriple σ₁₃ σ₃₂ σ₁₂]
+    (hf : ∃ f' : M₃ →ₛₗ[σ₃₂] M₂, f.comp f' = .id) :
+    Surjective fun g : M₁ →ₛₗ[σ₁₂] M₂ ↦ f.comp g := by
+  intro h
+  obtain ⟨f', hf'⟩ := hf
+  refine ⟨f'.comp h, ?_⟩
+  simp_rw [← comp_assoc, hf', id_comp]
+
 @[simp]
 theorem cancel_left (hf : Injective f) : f.comp g = f.comp g' ↔ g = g' :=
   hf.injective_linearMapComp_left.eq_iff
@@ -559,7 +568,7 @@ protected theorem map_sub (x y : M) : f (x - y) = f x - f y :=
 instance CompatibleSMul.intModule {S : Type*} [Semiring S] [Module S M] [Module S M₂] :
     CompatibleSMul M M₂ ℤ S :=
   ⟨fun fₗ c x ↦ by
-    induction c using Int.induction_on with
+    induction c with
     | hz => simp
     | hp n ih => simp [add_smul, ih]
     | hn n ih => simp [sub_smul, ih]⟩
@@ -606,10 +615,6 @@ def toLinearMap (fₗ : M →+[R] M₃) : M →ₗ[R] M₃ :=
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
 instance : LinearMapClass (M →+[R] M₃) R M M₃ where
 
--- Porting note: because coercions get unfolded, there is no need for this rewrite
-
--- Porting note: removed @[norm_cast] attribute due to error:
--- norm_cast: badly shaped lemma, rhs can't start with coe
 @[simp]
 theorem coe_toLinearMap (f : M →ₑ+[σ.toMonoidHom] M₂) : ((f : M →ₛₗ[σ] M₂) : M → M₂) = f :=
   rfl

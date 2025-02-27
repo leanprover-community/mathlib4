@@ -3,12 +3,9 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Data.Fintype.Perm
+import Mathlib.Data.Finite.Perm
 import Mathlib.Data.Nat.Prime.Factorial
 import Mathlib.GroupTheory.Index
-import Mathlib.Data.Finite.Perm
-
-import Mathlib.Data.Nat.Prime.Basic
 
 /-! # Subgroups of small index are normal
 
@@ -20,11 +17,13 @@ import Mathlib.Data.Nat.Prime.Basic
 
 -/
 
+assert_not_exists Field
+
+open MulAction MonoidHom Nat
+
 variable {G : Type*} [Group G] {H : Subgroup G} {p : ℕ}
 
 namespace Subgroup
-
-open MulAction MonoidHom Nat
 
 /-- A subgroup of index 1 is normal (does not require finiteness of G) -/
 theorem normal_of_index_eq_one (hH : H.index = 1) : H.Normal := by

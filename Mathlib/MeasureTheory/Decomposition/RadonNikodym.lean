@@ -302,9 +302,6 @@ lemma setLIntegral_rnDeriv_le (s : Set α) :
     ∫⁻ x in s, μ.rnDeriv ν x ∂ν ≤ μ s :=
   (withDensity_apply_le _ _).trans (Measure.le_iff'.1 (withDensity_rnDeriv_le μ ν) s)
 
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_rnDeriv_le := setLIntegral_rnDeriv_le
-
 lemma lintegral_rnDeriv_le : ∫⁻ x, μ.rnDeriv ν x ∂ν ≤ μ Set.univ :=
   (setLIntegral_univ _).symm ▸ Measure.setLIntegral_rnDeriv_le Set.univ
 
@@ -313,16 +310,10 @@ lemma setLIntegral_rnDeriv' [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν
     ∫⁻ x in s, μ.rnDeriv ν x ∂ν = μ s := by
   rw [← withDensity_apply _ hs, Measure.withDensity_rnDeriv_eq _ _ hμν]
 
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_rnDeriv' := setLIntegral_rnDeriv'
-
 lemma setLIntegral_rnDeriv [HaveLebesgueDecomposition μ ν] [SFinite ν]
     (hμν : μ ≪ ν) (s : Set α) :
     ∫⁻ x in s, μ.rnDeriv ν x ∂ν = μ s := by
   rw [← withDensity_apply' _ s, Measure.withDensity_rnDeriv_eq _ _ hμν]
-
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_rnDeriv := setLIntegral_rnDeriv
 
 lemma lintegral_rnDeriv [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) :
     ∫⁻ x, μ.rnDeriv ν x ∂ν = μ Set.univ := by
@@ -341,18 +332,12 @@ lemma setIntegral_toReal_rnDeriv_eq_withDensity' [SigmaFinite μ]
     simp
   · exact ae_restrict_of_ae (Measure.rnDeriv_lt_top _ _)
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_toReal_rnDeriv_eq_withDensity' := setIntegral_toReal_rnDeriv_eq_withDensity'
-
 lemma setIntegral_toReal_rnDeriv_eq_withDensity [SigmaFinite μ] [SFinite ν] (s : Set α) :
     ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (ν.withDensity (μ.rnDeriv ν) s).toReal := by
   rw [integral_toReal (Measure.measurable_rnDeriv _ _).aemeasurable]
   · rw [ENNReal.toReal_eq_toReal_iff, ← withDensity_apply' _ s]
     simp
   · exact ae_restrict_of_ae (Measure.rnDeriv_lt_top _ _)
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_toReal_rnDeriv_eq_withDensity := setIntegral_toReal_rnDeriv_eq_withDensity
 
 lemma setIntegral_toReal_rnDeriv_le [SigmaFinite μ] {s : Set α} (hμs : μ s ≠ ∞) :
     ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν ≤ (μ s).toReal := by
@@ -371,23 +356,14 @@ lemma setIntegral_toReal_rnDeriv_le [SigmaFinite μ] {s : Set α} (hμs : μ s �
         · apply withDensity_rnDeriv_le
   _ = (μ s).toReal := by rw [measure_toMeasurable s]
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_toReal_rnDeriv_le := setIntegral_toReal_rnDeriv_le
-
 lemma setIntegral_toReal_rnDeriv' [SigmaFinite μ] [HaveLebesgueDecomposition μ ν]
     (hμν : μ ≪ ν) {s : Set α} (hs : MeasurableSet s) :
     ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (μ s).toReal := by
   rw [setIntegral_toReal_rnDeriv_eq_withDensity' hs, Measure.withDensity_rnDeriv_eq _ _ hμν]
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_toReal_rnDeriv' := setIntegral_toReal_rnDeriv'
-
 lemma setIntegral_toReal_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) (s : Set α) :
     ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (μ s).toReal := by
   rw [setIntegral_toReal_rnDeriv_eq_withDensity s, Measure.withDensity_rnDeriv_eq _ _ hμν]
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_toReal_rnDeriv := setIntegral_toReal_rnDeriv
 
 lemma integral_toReal_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     ∫ x, (μ.rnDeriv ν x).toReal ∂ν = (μ Set.univ).toReal := by
@@ -535,7 +511,7 @@ theorem lintegral_rnDeriv_mul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ 
     (hf : AEMeasurable f ν) : ∫⁻ x, μ.rnDeriv ν x * f x ∂ν = ∫⁻ x, f x ∂μ := by
   nth_rw 2 [← withDensity_rnDeriv_eq μ ν hμν]
   rw [lintegral_withDensity_eq_lintegral_mul₀ (measurable_rnDeriv μ ν).aemeasurable hf]
-  rfl
+  simp only [Pi.mul_apply]
 
 lemma setLIntegral_rnDeriv_mul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) {f : α → ℝ≥0∞}
     (hf : AEMeasurable f ν) {s : Set α} (hs : MeasurableSet s) :
@@ -543,9 +519,6 @@ lemma setLIntegral_rnDeriv_mul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪
   nth_rw 2 [← Measure.withDensity_rnDeriv_eq μ ν hμν]
   rw [setLIntegral_withDensity_eq_lintegral_mul₀ (measurable_rnDeriv μ ν).aemeasurable hf hs]
   simp only [Pi.mul_apply]
-
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_rnDeriv_mul := setLIntegral_rnDeriv_mul
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [HaveLebesgueDecomposition μ ν]
   [SigmaFinite μ] {f : α → E}

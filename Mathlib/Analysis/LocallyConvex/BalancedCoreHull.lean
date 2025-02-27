@@ -55,7 +55,7 @@ variable (𝕜) [SMul 𝕜 E] {s t : Set E} {x : E}
 def balancedCore (s : Set E) :=
   ⋃₀ { t : Set E | Balanced 𝕜 t ∧ t ⊆ s }
 
-/-- Helper definition to prove `balanced_core_eq_iInter`-/
+/-- Helper definition to prove `balanced_core_eq_iInter` -/
 def balancedCoreAux (s : Set E) :=
   ⋂ (r : 𝕜) (_ : 1 ≤ ‖r‖), r • s
 
