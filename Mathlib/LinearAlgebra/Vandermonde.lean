@@ -13,6 +13,17 @@ import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 # Vandermonde matrix
 
 This file defines the `vandermonde` matrix and gives its determinant.
+For each `CommRing R`, and function `v : Fin n → R` the matrix `vandermonde v`
+is defined to be `Fin n` by `Fin n` matrix `V` whose `i`th row is `[1, (v i), (v i)^2, ...]`.
+This matrix has determinant equal to the product of `v i - v j` over all unordered pairs `i,j`,
+and therefore is nonsingular if and only if `v` is injective.
+
+We also define a variant `vandermondeTop v`, where `v : Fin n → WithTop R` is allowed to take
+infinite values. If `v i = ⊤`, then the `i`th row of `vandermondeTop` is `[0,0, ..., 1]`,
+which can be thought of as a normalization of the row `[1, ∞, ∞^2, ... ∞^(n-1)]`.
+These extensions of Vandermonde matrices retain the injectivity property of the simpler form.
+They arise in the study of complete arcs in finite geometry,
+coding theory, and representations of uniform matroids over finite fields.
 
 ## Main definitions
 
@@ -205,8 +216,8 @@ variable {n : ℕ} {i j : Fin n} {v : Fin n → WithTop R}
 
 /-- The `n × n` matrix whose `i`th row is `[1, a, a^2, ...]` if `v i = ↑a`,
 and `[0, 0, ..., 1]` if `v i = ⊤`.
-The exceptional type of row can be thought of as a normalization of the regular type row,
-with `a = ∞`.-/
+The exceptional type of row can be thought of as a normalization of the regular type of row,
+with `a = ⊤`.-/
 def vandermondeTop (v : Fin n → WithTop R) : Matrix (Fin n) (Fin n) R :=
   .of fun i j => (v i).recTopCoe (if j.1 + 1 = n then 1 else 0) (· ^ (j : ℕ))
 
@@ -236,6 +247,9 @@ lemma vandermondeTop_eq_vandermonde (hv : ∀ i, (v i ≠ ⊤)) :
   ext i j
   exact vandermondeTop_apply_ne_top (hv i)
 
+/-- If a `vandermondeTop` matrix has exactly one 'infinity' row,
+then its determinant is (up to sign) equal to that of the `vandermonde` matrix obtained by removing
+this infinity row and the last column. -/
 lemma det_vandermondeTop_of_unique {v : Fin (n+1) → WithTop R} {i₀ : Fin (n+1)}
     (hv : ∀ i, v i = ⊤ ↔ i = i₀) :
     (vandermondeTop v).det = (-1) ^ (i₀.1 + n) *
@@ -253,7 +267,7 @@ lemma det_vandermondeTop_of_unique {v : Fin (n+1) → WithTop R} {i₀ : Fin (n+
     simp
   exact fun i hi ↦ by simp [vandermondeTop_apply_top_eq_ite hi₀, if_neg hi]
 
-lemma det_vandermondeTop_eq_zero_iff [IsDomain R] {n : ℕ} {v : Fin n → WithTop R} :
+lemma det_vandermondeTop_eq_zero_iff [IsDomain R] {v : Fin n → WithTop R} :
     det (vandermondeTop v) ≠ 0 ↔ Function.Injective v := by
   obtain rfl | n := n
   · simp [Function.injective_of_subsingleton v]
