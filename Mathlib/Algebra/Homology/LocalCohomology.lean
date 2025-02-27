@@ -64,7 +64,7 @@ section
 variable {R : Type u} [CommRing R] {D : Type v} [SmallCategory D]
 
 /-- The directed system of `R`-modules of the form `R/J`, where `J` is an ideal of `R`,
-determined by the functor `I`  -/
+determined by the functor `I` -/
 def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
   obj t := ModuleCat.of R <| R ⧸ I.obj t
   map w := ModuleCat.ofHom <| Submodule.mapQ _ _ LinearMap.id (I.map w).down.down

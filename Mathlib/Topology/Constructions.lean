@@ -564,6 +564,18 @@ theorem Filter.Eventually.prod_nhds {p : X → Prop} {q : Y → Prop} {x : X} {y
     (hx : ∀ᶠ x in 𝓝 x, p x) (hy : ∀ᶠ y in 𝓝 y, q y) : ∀ᶠ z : X × Y in 𝓝 (x, y), p z.1 ∧ q z.2 :=
   prod_mem_nhds hx hy
 
+theorem Filter.EventuallyEq.prodMap_nhds {α β : Type*} {f₁ f₂ : X → α} {g₁ g₂ : Y → β}
+    {x : X} {y : Y} (hf : f₁ =ᶠ[𝓝 x] f₂) (hg : g₁ =ᶠ[𝓝 y] g₂) :
+    Prod.map f₁ g₁ =ᶠ[𝓝 (x, y)] Prod.map f₂ g₂ := by
+  rw [nhds_prod_eq]
+  exact hf.prod_map hg
+
+theorem Filter.EventuallyLE.prodMap_nhds {α β : Type*} [LE α] [LE β] {f₁ f₂ : X → α} {g₁ g₂ : Y → β}
+    {x : X} {y : Y} (hf : f₁ ≤ᶠ[𝓝 x] f₂) (hg : g₁ ≤ᶠ[𝓝 y] g₂) :
+    Prod.map f₁ g₁ ≤ᶠ[𝓝 (x, y)] Prod.map f₂ g₂ := by
+  rw [nhds_prod_eq]
+  exact hf.prod_map hg
+
 theorem nhds_swap (x : X) (y : Y) : 𝓝 (x, y) = (𝓝 (y, x)).map Prod.swap := by
   rw [nhds_prod_eq, Filter.prod_comm, nhds_prod_eq]; rfl
 
@@ -571,6 +583,12 @@ theorem Filter.Tendsto.prod_mk_nhds {γ} {x : X} {y : Y} {f : Filter γ} {mx : �
     (hx : Tendsto mx f (𝓝 x)) (hy : Tendsto my f (𝓝 y)) :
     Tendsto (fun c => (mx c, my c)) f (𝓝 (x, y)) := by
   rw [nhds_prod_eq]; exact Filter.Tendsto.prod_mk hx hy
+
+theorem Filter.Tendsto.prodMap_nhds {x : X} {y : Y} {z : Z} {w : W} {f : X → Y} {g : Z → W}
+    (hf : Tendsto f (𝓝 x) (𝓝 y)) (hg : Tendsto g (𝓝 z) (𝓝 w)) :
+    Tendsto (Prod.map f g) (𝓝 (x, z)) (𝓝 (y, w)) := by
+  rw [nhds_prod_eq, nhds_prod_eq]
+  exact hf.prod_map hg
 
 theorem Filter.Eventually.curry_nhds {p : X × Y → Prop} {x : X} {y : Y}
     (h : ∀ᶠ x in 𝓝 (x, y), p x) : ∀ᶠ x' in 𝓝 x, ∀ᶠ y' in 𝓝 y, p (x', y') := by
@@ -1075,8 +1093,7 @@ lemma Topology.IsInducing.of_codRestrict {f : X → Y} {t : Set Y} (ht : ∀ x, 
 lemma Topology.IsEmbedding.subtypeVal : IsEmbedding ((↑) : Subtype p → X) :=
   ⟨.subtypeVal, Subtype.coe_injective⟩
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_subtype_val := IsEmbedding.subtypeVal
+@[deprecated (since := "2024-10-26")] alias embedding_subtype_val := IsEmbedding.subtypeVal
 
 theorem Topology.IsClosedEmbedding.subtypeVal (h : IsClosed {a | p a}) :
     IsClosedEmbedding ((↑) : Subtype p → X) :=
@@ -1255,6 +1272,28 @@ theorem frontier_inter_open_inter {s t : Set X} (ht : IsOpen t) :
   simp only [Set.inter_comm _ t, ← Subtype.preimage_coe_eq_preimage_coe_iff,
     ht.isOpenMap_subtype_val.preimage_frontier_eq_frontier_preimage continuous_subtype_val,
     Subtype.preimage_coe_self_inter]
+
+section SetNotation
+
+open scoped Set.Notation
+
+lemma IsOpen.preimage_val {s t : Set X} (ht : IsOpen t) : IsOpen (s ↓∩ t) :=
+  ht.preimage continuous_subtype_val
+
+lemma IsClosed.preimage_val {s t : Set X} (ht : IsClosed t) : IsClosed (s ↓∩ t) :=
+  ht.preimage continuous_subtype_val
+
+@[simp] lemma IsOpen.inter_preimage_val_iff {s t : Set X} (hs : IsOpen s) :
+    IsOpen (s ↓∩ t) ↔ IsOpen (s ∩ t) :=
+  ⟨fun h ↦ by simpa using hs.isOpenMap_subtype_val _ h,
+    fun h ↦ (Subtype.preimage_coe_self_inter _ _).symm ▸ h.preimage_val⟩
+
+@[simp] lemma IsClosed.inter_preimage_val_iff {s t : Set X} (hs : IsClosed s) :
+    IsClosed (s ↓∩ t) ↔ IsClosed (s ∩ t) :=
+  ⟨fun h ↦ by simpa using hs.isClosedMap_subtype_val _ h,
+    fun h ↦ (Subtype.preimage_coe_self_inter _ _).symm ▸ h.preimage_val⟩
+
+end SetNotation
 
 end Subtype
 

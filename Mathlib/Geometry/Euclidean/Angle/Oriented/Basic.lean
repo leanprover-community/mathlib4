@@ -539,7 +539,7 @@ theorem inner_eq_norm_mul_norm_mul_cos_oangle (x y : V) :
     ⟪x, y⟫ = ‖x‖ * ‖y‖ * Real.Angle.cos (o.oangle x y) := by
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
-  rw [oangle, Real.Angle.cos_coe, Complex.cos_arg, o.abs_kahler]
+  rw [oangle, Real.Angle.cos_coe, Complex.cos_arg, o.norm_kahler]
   · simp only [kahler_apply_apply, real_smul, add_re, ofReal_re, mul_re, I_re, ofReal_im]
     -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp`; replaced by `simp only ...` to speed up
     -- Reinstate `field_simp` once it is faster.
