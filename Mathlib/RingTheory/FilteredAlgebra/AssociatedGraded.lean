@@ -552,8 +552,6 @@ lemma GradedPiece.algebraMap.map_mul [hasGMul F F_lt] (r s : R) : GradedMonoid.m
   · show HEq (mk F F_lt ((r * s) • 1)) _
     rw [mul_comm r s]
     have : ((s * r) • (1 : F 0)).1 = (r • (1 : F 0)).1 * (s • (1 : F 0)).1 := by
-      simp only [SetLike.val_smul, Algebra.mul_smul_comm, Algebra.smul_mul_assoc]
-      show (s * r) • (1 : A) = s • r • ((1 : A) * (1 : A))
       simpa using mul_smul s r (1 : A)
     apply HEq_eq_mk_eq F F_lt (AddZeroClass.zero_add 0).symm this ((s * r) • (1 : F 0)).2
       (IsRingFiltration.toGradedMonoid.mul_mem (r • (1 : F 0)).2 (s • (1 : F 0)).2) rfl rfl
@@ -581,7 +579,6 @@ lemma GradedPiece.algebraMap.smul_def [hasGMul F F_lt] (r : R) (i : ι) (a : Gra
     nth_rw 1 [← this]
     rfl
   apply HEq_eq_mk_coe_eq F F_lt _ _ (zero_add i).symm _ eq1 eq2
-  show r • a.out.val = (r • (1 : A)) * a.out.val
   simp
 
 instance [hasGMul F F_lt] : DirectSum.GAlgebra R (GradedPiece F F_lt) where
