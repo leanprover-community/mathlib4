@@ -85,8 +85,7 @@ variable {FA FB FC FA_lt FB_lt FC_lt} in
 def FilteredHom.comp : FilteredHom FA FA_lt FC FC_lt := {
   toFun := g.1.comp f.1
   pieces_wise := fun i a ha ↦ g.pieces_wise i (f.1 a) (f.pieces_wise i a ha)
-  pieces_wise_lt := fun i a ha ↦ g.pieces_wise_lt i (f.1 a) (f.pieces_wise_lt i a ha)
-}
+  pieces_wise_lt := fun i a ha ↦ g.pieces_wise_lt i (f.1 a) (f.pieces_wise_lt i a ha) }
 
 end FilteredHom
 
@@ -129,8 +128,7 @@ compatibility with the filtration structures.-/
 def FilteredRingHom.comp : FilteredRingHom FR FR_lt FT FT_lt := {
     g.toRingHom.comp f.toRingHom with
   pieces_wise := fun i a ha ↦ g.pieces_wise i (f.toFun a) (f.pieces_wise i a ha)
-  pieces_wise_lt := fun i a ha ↦ g.pieces_wise_lt i (f.toFun a) (f.pieces_wise_lt i a ha)
-  }
+  pieces_wise_lt := fun i a ha ↦ g.pieces_wise_lt i (f.toFun a) (f.pieces_wise_lt i a ha) }
 
 end FilteredRingHom
 
@@ -170,13 +168,13 @@ def GradedPieceHom (i : ι) : GradedPiece FR FR_lt i →+ GradedPiece FS FS_lt i
     exact QuotientAddGroup.eq.mpr this
   map_zero' := by
     have : (0 : GradedPiece FR FR_lt i) = ⟦0⟧ := rfl
-    simp only[this, Quotient.lift_mk, ZeroMemClass.coe_zero, map_zero, QuotientAddGroup.eq_zero_iff]
+    simp only [this, Quotient.lift_mk, ZeroMemClass.coe_zero, map_zero]
     rfl
   map_add' := fun x y ↦ by
     obtain ⟨a, ha⟩ := Quotient.exists_rep x
     obtain ⟨b, hb⟩ := Quotient.exists_rep y
     have : x + y = ⟦a + b⟧ := by simp [← ha, ← hb]
-    rw[this, ← ha, ← hb]
+    rw [this, ← ha, ← hb]
     simp only [GradedPiece.mk_eq, Quotient.lift_mk]
     congr
     exact RingHom.map_add f.toRingHom a b
@@ -188,16 +186,14 @@ variable (g : FilteredRingHom FS FS_lt FT FT_lt)
 
 omit [DecidableEq ι] in
 lemma GradedPieceHom_comp_apply (x : AssociatedGraded FR FR_lt)(i : ι) :
-    GradedPieceHom g i (GradedPieceHom f i (x i)) =
-    GradedPieceHom (g.comp f) i (x i) := by
+    Gr(i)[g] (GradedPieceHom f i (x i)) = Gr(i)[g.comp f] (x i) := by
   obtain ⟨a, ha⟩ := Quotient.exists_rep (x i)
   rw [← ha]
   congr
 
 private noncomputable def AssociatedGradedRingHomAux :
     (AssociatedGraded FR FR_lt) → (AssociatedGraded FS FS_lt) :=
-  fun a ↦ DirectSum.mk (GradedPiece FS FS_lt) (DFinsupp.support a)
-    (fun i ↦ (GradedPieceHom f i) (a i))
+  fun a ↦ DirectSum.mk (GradedPiece FS FS_lt) (DFinsupp.support a) (fun i ↦ Gr(i)[f] (a i))
 
 private lemma AssociatedGradedRingHomAux_apply (x : AssociatedGraded FR FR_lt) (i : ι) :
     (AssociatedGradedRingHomAux f x) i = GradedPieceHom f i (x i) := by
