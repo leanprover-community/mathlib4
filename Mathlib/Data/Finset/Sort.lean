@@ -8,6 +8,7 @@ import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Construct a sorted list from a finset.

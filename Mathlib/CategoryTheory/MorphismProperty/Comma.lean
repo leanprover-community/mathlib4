@@ -3,7 +3,7 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Comma.Over
+import Mathlib.CategoryTheory.Comma.Over.Basic
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
@@ -155,7 +155,7 @@ instance [Q.RespectsIso] [W.RespectsIso] {X Y : P.Comma L R Q W} (i : X.toComma 
   constructor <;> ext : 1 <;> simp
 
 /-- Any isomorphism between objects of `P.Comma L R Q W` in `Comma L R` is also an isomorphism
-in `P.Comma L R Q W`.  -/
+in `P.Comma L R Q W`. -/
 @[simps]
 def isoFromComma [Q.RespectsIso] [W.RespectsIso] {X Y : P.Comma L R Q W}
     (i : X.toComma ≅ Y.toComma) : X ≅ Y where

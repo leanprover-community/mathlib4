@@ -132,7 +132,7 @@ theorem disjoint_splitLower_splitUpper (I : Box ι) (i : ι) (x : ℝ) :
 
 theorem splitLower_ne_splitUpper (I : Box ι) (i : ι) (x : ℝ) :
     I.splitLower i x ≠ I.splitUpper i x := by
-  cases' le_or_lt x (I.lower i) with h
+  rcases le_or_lt x (I.lower i) with h | _
   · rw [splitUpper_eq_self.2 h, splitLower_eq_bot.2 h]
     exact WithBot.bot_ne_coe
   · refine (disjoint_splitLower_splitUpper I i x).ne ?_

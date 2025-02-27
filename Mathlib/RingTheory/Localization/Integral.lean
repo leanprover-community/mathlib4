@@ -261,7 +261,7 @@ theorem IsLocalization.scaleRoots_commonDenom_mem_lifts (p : Rₘ[X])
 
 theorem IsIntegral.exists_multiple_integral_of_isLocalization [Algebra Rₘ S] [IsScalarTower R Rₘ S]
     (x : S) (hx : IsIntegral Rₘ x) : ∃ m : M, IsIntegral R (m • x) := by
-  cases' subsingleton_or_nontrivial Rₘ with _ nontriv
+  rcases subsingleton_or_nontrivial Rₘ with _ | nontriv
   · haveI := (_root_.algebraMap Rₘ S).codomain_trivial
     exact ⟨1, Polynomial.X, Polynomial.monic_X, Subsingleton.elim _ _⟩
   obtain ⟨p, hp₁, hp₂⟩ := hx
@@ -301,7 +301,6 @@ theorem isFractionRing_of_algebraic [Algebra.IsAlgebraic A L]
             ((injective_iff_map_eq_zero (algebraMap C L)).mp (algebraMap_injective C A L) _ h))
     surj' := fun z =>
       let ⟨x, hx, int⟩ := (Algebra.IsAlgebraic.isAlgebraic z).exists_integral_multiple
-        ((injective_iff_map_eq_zero _).mpr inj)
       ⟨⟨mk' C _ int, algebraMap _ _ x, mem_nonZeroDivisors_of_ne_zero fun h ↦
         hx (inj _ <| by rw [IsScalarTower.algebraMap_apply A C L, h, RingHom.map_zero])⟩, by
         rw [algebraMap_mk', ← IsScalarTower.algebraMap_apply A C L, Algebra.smul_def, mul_comm]⟩

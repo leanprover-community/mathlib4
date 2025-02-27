@@ -50,7 +50,7 @@ instance tensoringRight_linear (X : C) : ((tensoringRight C).obj X).Linear R whe
 ensures that the domain is linear monoidal. -/
 theorem monoidalLinearOfFaithful {D : Type*} [Category D] [Preadditive D] [Linear R D]
     [MonoidalCategory D] [MonoidalPreadditive D] (F : D ⥤ C) [F.Monoidal] [F.Faithful]
-    [F.Additive] [F.Linear R] : MonoidalLinear R D :=
+    [F.Linear R] : MonoidalLinear R D :=
   { whiskerLeft_smul := by
       intros X Y Z r f
       apply F.map_injective
