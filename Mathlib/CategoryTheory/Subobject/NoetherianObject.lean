@@ -13,7 +13,7 @@ import Mathlib.Order.OrderIsoNat
 # Noetherian objects
 
 We shall say that an object `X` in a category `C` is Noetherian
-(type class `IsNoetherianObkect X`) iff the ordered type `Subobject X`
+(type class `IsNoetherianObject X`) if the ordered type `Subobject X`
 satisfies the ascending chain condition. The corresponding property of
 objects `isNoetherianObject : ObjectProperty C` is always
 closed under subobjects.
