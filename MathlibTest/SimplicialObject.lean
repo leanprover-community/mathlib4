@@ -30,7 +30,7 @@ variable {x} (hx : x = X _⦋m⦌ₙ) (n : True)
 
 /- The delaborator should fail because `n` is now shadowed and `✝` cannot be
 subscripted. -/
-/-- info: hx : x = X.obj (Opposite.op { obj := SimplexCategory.mk m, property := h }) -/
+/-- info: hx : x = X.obj (Opposite.op { obj := SimplexCategory.mk m, property := ⋯ }) -/
 #guard_msgs in #check hx
 
 end no_subscript
@@ -53,9 +53,6 @@ end mvars
 
 section proofs
 set_option pp.proofs true
-
-/-- info: X _⦋m,h⦌ₙ : C -/
-#guard_msgs in #check X _⦋m⦌ₙ
 
 /-- info: X _⦋m,h⦌ₙ : C -/
 #guard_msgs in #check X _⦋m, h⦌ₙ
@@ -96,7 +93,7 @@ variable {x} (hx : x = X ^⦋m⦌ₙ) (n : True)
 
 /- The delaborator should fail because `n` is now shadowed and `✝` cannot be
 subscripted. -/
-/-- info: hx : x = X.obj { obj := SimplexCategory.mk m, property := h } -/
+/-- info: hx : x = X.obj { obj := SimplexCategory.mk m, property := ⋯ } -/
 #guard_msgs in #check hx
 
 end no_subscript
@@ -117,9 +114,6 @@ end mvars
 
 section proofs
 set_option pp.proofs true
-
-/-- info: X ^⦋m,h⦌ₙ : C -/
-#guard_msgs in #check X ^⦋m⦌ₙ
 
 /-- info: X ^⦋m,h⦌ₙ : C -/
 #guard_msgs in #check X ^⦋m, h⦌ₙ

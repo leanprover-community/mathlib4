@@ -19,13 +19,17 @@ namespace SimplexCategory.Truncated
 open CategoryTheory
 open Mathlib.Tactic (subscriptTerm)
 
+/-- A quick attempt to prove that `⦋m⦌` is `n`-truncated (`⦋m⦌.len ≤ n`). -/
+scoped macro "trunc" : tactic =>
+  `(tactic| dsimp only [SimplexCategory.len_mk] <;> omega)
+
 /-- For `m ≤ n`, `⦋m⦌ₙ` is the `m`-dimensional simplex in `Truncated n`. The
 proof `p : m ≤ n` can also be provided using the syntax `⦋m, p⦌ₙ`. -/
 scoped syntax:max (name := mkNotation)
   "⦋" term ("," term)? "⦌" noWs subscriptTerm : term
 scoped macro_rules
   | `(⦋$m:term⦌$n:subscript) =>
-    `((⟨SimplexCategory.mk $m, by first | get_elem_tactic |
+    `((⟨SimplexCategory.mk $m, by first | trunc |
       fail "Failed to prove truncation property. Try writing `⦋m, by ...⦌ₙ`."⟩ :
       SimplexCategory.Truncated $n))
   | `(⦋$m:term, $p:term⦌$n:subscript) =>

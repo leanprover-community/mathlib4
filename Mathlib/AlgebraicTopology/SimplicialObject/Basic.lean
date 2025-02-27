@@ -258,9 +258,9 @@ section Meta
 notation `X _⦋m⦌ₙ`. An analogous macro/delaborator pair for the truncated
 cosimplicial object notation `X ^⦋m⦌ₙ` is defined later in this file. -/
 
-open Lean PrettyPrinter.Delaborator SubExpr
-open Mathlib.Tactic (subscriptTerm)
+open SimplexCategory.Truncated Lean PrettyPrinter.Delaborator SubExpr
 open SimplexCategory.Truncated.Meta (subscript)
+open Mathlib.Tactic (subscriptTerm)
 
 /-- For `X : Truncated C n` and `m ≤ n`, `X _⦋m⦌ₙ` is the `m`-th term of X. The
 proof `p : m ≤ n` can also be provided using the syntax `X _⦋m, p⦌ₙ`. Access
@@ -270,7 +270,7 @@ scoped syntax:max (name := mkNotation)
 scoped macro_rules
   | `($X:term _⦋$m:term⦌$n:subscript) =>
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
-      (Opposite.op ⟨SimplexCategory.mk $m, by first | get_elem_tactic |
+      (Opposite.op ⟨SimplexCategory.mk $m, by first | trunc |
       fail "Failed to prove truncation property. Try writing `X _⦋m, by ...⦌ₙ`."⟩))
   | `($X:term _⦋$m:term, $p:term⦌$n:subscript) =>
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
@@ -735,9 +735,9 @@ section Meta
 notation `X ^⦋m⦌ₙ`. An analogous macro/delaborator pair for the truncated
 simplicial object notation `X _⦋m⦌ₙ` is defined earlier in this file. -/
 
-open Lean PrettyPrinter.Delaborator SubExpr
-open Mathlib.Tactic (subscriptTerm)
+open SimplexCategory.Truncated Lean PrettyPrinter.Delaborator SubExpr
 open SimplexCategory.Truncated.Meta (subscript)
+open Mathlib.Tactic (subscriptTerm)
 
 /-- For `X : Truncated C n` and `m ≤ n`, `X ^⦋m⦌ₙ` is the `m`-th term of X. The
 proof `p : m ≤ n` can also be provided using the syntax `X ^⦋m, p⦌ₙ`. Access
@@ -747,7 +747,7 @@ scoped syntax:max (name := mkNotation)
 scoped macro_rules
   | `($X:term ^⦋$m:term⦌$n:subscript) =>
     `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
-      ⟨SimplexCategory.mk $m, by first | get_elem_tactic |
+      ⟨SimplexCategory.mk $m, by first | trunc |
       fail "Failed to prove truncation property. Try writing `X ^⦋m, by ...⦌ₙ`."⟩)
   | `($X:term ^⦋$m:term, $p:term⦌$n:subscript) =>
     `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj

@@ -1,4 +1,4 @@
-import Mathlib.AlgebraicTopology.SimplexCategory.Defs
+import Mathlib.Tactic.SimplexCategory
 open SimplexCategory.Truncated
 
 variable (n : ℕ) (m : ℕ) (h : m ≤ n)
@@ -39,7 +39,7 @@ variable {x} (hx : x = ⦋m⦌ₙ) (n : True)
 
 /- The delaborator should fail because `n` is now shadowed and `✝` cannot be
 subscripted. -/
-/-- info: hx : x = { obj := SimplexCategory.mk m, property := h } -/
+/-- info: hx : x = { obj := SimplexCategory.mk m, property := ⋯ } -/
 #guard_msgs in #check hx
 
 end no_subscript
@@ -60,9 +60,6 @@ end mvars
 
 section proofs
 set_option pp.proofs true
-
-/-- info: ⦋m,h⦌ₙ : CategoryTheory.FullSubcategory fun a => a.len ≤ n -/
-#guard_msgs in #check ⦋m⦌ₙ
 
 /-- info: ⦋m,h⦌ₙ : CategoryTheory.FullSubcategory fun a => a.len ≤ n -/
 #guard_msgs in #check ⦋m, h⦌ₙ
