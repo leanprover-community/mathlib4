@@ -432,12 +432,9 @@ instance nerveFunctor₂.full : nerveFunctor₂.{u, u}.Full where
       let Fk : ComposableArrows Y 1 := F.app (op ⦋1⦌₂) (.mk₁ k)
       let Fhk' : ComposableArrows Y 1 := F.app (op ⦋1⦌₂) (.mk₁ (h ≫ k))
       let Fhk : ComposableArrows Y 2 := F.app (op ⦋2⦌₂) hk
-      have lem0 := congr_fun (F.naturality δ0₂.op) hk
-      have lem1 := congr_fun (F.naturality δ1₂.op) hk
-      have lem2 := congr_fun (F.naturality δ2₂.op) hk
-      replace lem0 := congr_arg_heq (·.map' 0 1) lem0
-      replace lem1 := congr_arg_heq (·.map' 0 1) lem1
-      replace lem2 := congr_arg_heq (·.map' 0 1) lem2
+      have lem0 := congr_arg_heq (·.map' 0 1) (congr_fun (F.naturality δ0₂.op) hk)
+      have lem1 := congr_arg_heq (·.map' 0 1) (congr_fun (F.naturality δ1₂.op) hk)
+      have lem2 := congr_arg_heq (·.map' 0 1) (congr_fun (F.naturality δ2₂.op) hk)
       have eq0 : (nerveFunctor₂.obj X).map δ0₂.op hk = .mk₁ k := by
         apply ComposableArrows.ext₁ rfl rfl
         simp [nerveFunctor₂, SSet.truncation, forget₂, HasForget₂.forget₂]
