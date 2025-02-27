@@ -141,6 +141,11 @@ theorem LinearIndepOn.ne_zero [Nontrivial R] {i : ι} (hv : LinearIndepOn R v s)
     v i ≠ 0 :=
   LinearIndependent.ne_zero ⟨i, hi⟩ hv
 
+theorem LinearIndepOn.zero_not_mem_image [Nontrivial R] (hs : LinearIndepOn R v s) : 0 ∉ v '' s :=
+  fun ⟨_, hi, h0⟩ ↦ hs.ne_zero hi h0
+
+-- done
+
 theorem linearIndependent_empty_type [IsEmpty ι] : LinearIndependent R v :=
   injective_of_subsingleton _
 
@@ -148,6 +153,10 @@ theorem linearIndependent_empty_type [IsEmpty ι] : LinearIndependent R v :=
 theorem linearIndependent_zero_iff [Nontrivial R] : LinearIndependent R (0 : ι → M) ↔ IsEmpty ι :=
   ⟨fun h ↦ not_nonempty_iff.1 fun ⟨i⟩ ↦ (h.ne_zero i rfl).elim,
     fun _ ↦ linearIndependent_empty_type⟩
+
+@[simp]
+theorem linearIndepOn_zero_iff [Nontrivial R] : LinearIndepOn R (0 : ι → M) s ↔ s = ∅ :=
+  linearIndependent_zero_iff.trans isEmpty_coe_sort
 
 variable (R M) in
 theorem linearIndependent_empty : LinearIndependent R (fun x => x : (∅ : Set M) → M) :=

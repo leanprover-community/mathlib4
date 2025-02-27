@@ -458,6 +458,35 @@ theorem linearIndepOn_id_insert (hxs : x ∉ s) :
 
 @[deprecated (since := "2025-02-15")] alias linearIndependent_insert := linearIndepOn_insert
 
+theorem linearIndepOn_insert_iff {s : Set ι} {a : ι} {f : ι → V} :
+    LinearIndepOn K f (insert a s) ↔ LinearIndepOn K f s ∧ (f a ∈ span K (f '' s) → a ∈ s) := by
+  by_cases has : a ∈ s
+  · simp [insert_eq_of_mem has, has]
+  simp [linearIndepOn_insert has, has]
+
+theorem linearIndepOn_id_insert_iff {a : V} {s : Set V} :
+    LinearIndepOn K id (insert a s) ↔ LinearIndepOn K id s ∧ (a ∈ span K s → a ∈ s) := by
+  simpa using linearIndepOn_insert_iff (a := a) (f := id)
+
+theorem LinearIndepOn.mem_span_iff {s : Set ι} {a : ι} {f : ι → V} (h : LinearIndepOn K f s) :
+    f a ∈ Submodule.span K (f '' s) ↔ (LinearIndepOn K f (insert a s) → a ∈ s) := by
+  by_cases has : a ∈ s
+  · exact iff_of_true (subset_span <| mem_image_of_mem f has) fun _ ↦ has
+  simp [linearIndepOn_insert_iff, h, has]
+
+/-- A shortcut to a convenient form for the negation in `LinearIndepOn.mem_span_iff`. -/
+theorem LinearIndepOn.not_mem_span_iff {s : Set ι} {a : ι} {f : ι → V} (h : LinearIndepOn K f s) :
+    f a ∉ Submodule.span K (f '' s) ↔ LinearIndepOn K f (insert a s) ∧ a ∉ s := by
+  rw [h.mem_span_iff, _root_.not_imp]
+
+theorem LinearIndepOn.mem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn K id s) :
+    a ∈ Submodule.span K s ↔ (LinearIndepOn K id (insert a s) → a ∈ s) := by
+  simpa using h.mem_span_iff (a := a)
+
+theorem LinearIndepOn.not_mem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn K id s) :
+    a ∉ Submodule.span K s ↔ LinearIndepOn K id (insert a s) ∧ a ∉ s := by
+  rw [h.mem_span_iff_id, _root_.not_imp]
+
 theorem linearIndepOn_id_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x ≠ y) :
     LinearIndepOn K id {x, y} :=
   pair_comm y x ▸ (LinearIndepOn.id_singleton K hx).insert (x := y) <|

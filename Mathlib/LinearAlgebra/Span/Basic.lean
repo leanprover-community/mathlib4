@@ -393,6 +393,17 @@ lemma _root_.LinearMap.BilinMap.apply_apply_mem_of_mem_span {R M N P : Type*} [C
   | smul_left t u v hu hv huv => simpa using Submodule.smul_mem _ _ huv
   | smul_right t u v hu hv huv => simpa using Submodule.smul_mem _ _ huv
 
+theorem disjoint_of_disjoint_span (hst : Disjoint (span R s) (span R t)) :
+    Disjoint (s \ {0}) t := by
+  rw [disjoint_iff_forall_ne]
+  rintro v ⟨hvs, hv0 : v ≠ 0⟩ _ hvt rfl
+  exact hv0 <| (disjoint_def.1 hst) v (subset_span hvs) (subset_span hvt)
+
+theorem disjoint_of_disjoint_span₀ (hst : Disjoint (span R s) (span R t)) (h0s : 0 ∉ s) :
+    Disjoint s t := by
+  rw [← diff_singleton_eq_self h0s]
+  exact disjoint_of_disjoint_span hst
+
 end AddCommMonoid
 
 section AddCommGroup
