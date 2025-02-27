@@ -36,20 +36,6 @@ namespace Kernel
 
 /-! ### Push-forward of measures along a kernel -/
 
-
-@[simp]
-theorem bind_add (μ ν : Measure α) (κ : Kernel α β) : (μ + ν).bind κ = μ.bind κ + ν.bind κ := by
-  ext1 s hs
-  rw [Measure.bind_apply hs (Kernel.measurable _), lintegral_add_measure, Measure.coe_add,
-    Pi.add_apply, Measure.bind_apply hs (Kernel.measurable _),
-    Measure.bind_apply hs (Kernel.measurable _)]
-
-@[simp]
-theorem bind_smul (κ : Kernel α β) (μ : Measure α) (r : ℝ≥0∞) : (r • μ).bind κ = r • μ.bind κ := by
-  ext1 s hs
-  rw [Measure.bind_apply hs (Kernel.measurable _), lintegral_smul_measure, Measure.coe_smul,
-    Pi.smul_apply, Measure.bind_apply hs (Kernel.measurable _), smul_eq_mul]
-
 theorem const_bind_eq_comp_const (κ : Kernel α β) (μ : Measure α) :
     const α (μ.bind κ) = κ ∘ₖ const α μ := by
   ext a s hs

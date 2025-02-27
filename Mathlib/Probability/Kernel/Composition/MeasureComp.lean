@@ -25,6 +25,8 @@ variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β
 lemma comp_assoc {η : Kernel β γ} : η ∘ₘ (κ ∘ₘ μ) = (η ∘ₖ κ) ∘ₘ μ :=
   Measure.bind_bind κ.measurable η.measurable
 
+/-- This lemma allows to rewrite the compostion of a measure and a kernel as the composition
+of two kernels, which allows to transfer properties of `∘ₖ` to `∘ₘ`. -/
 lemma comp_eq_comp_const_apply : κ ∘ₘ μ = (κ ∘ₖ (Kernel.const Unit μ)) () := by
   rw [Kernel.comp_apply, Kernel.const_apply]
 
@@ -124,6 +126,7 @@ a simp-normal form on the left of the equality. -/
 @[simp]
 lemma add_comp' : (⇑κ + ⇑η) ∘ₘ μ = κ ∘ₘ μ + η ∘ₘ μ := by rw [← Kernel.coe_add, add_comp]
 
+@[simp]
 lemma comp_smul (a : ℝ≥0∞) : κ ∘ₘ (a • μ) = a • (κ ∘ₘ μ) := by
   ext s hs
   simp only [bind_apply hs κ.measurable, lintegral_smul_measure, smul_apply, smul_eq_mul]
