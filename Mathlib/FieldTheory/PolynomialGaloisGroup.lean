@@ -264,7 +264,7 @@ theorem restrictProd_injective : Function.Injective (restrictProd p q) := by
   simp only [dif_neg hpq, MonoidHom.prod_apply, Prod.mk.inj_iff] at hfg
   ext (x hx)
   rw [rootSet_def, aroots_mul hpq] at hx
-  cases' Multiset.mem_add.mp (Multiset.mem_toFinset.mp hx) with h h
+  rcases Multiset.mem_add.mp (Multiset.mem_toFinset.mp hx) with h | h
   · haveI : Fact (p.Splits (algebraMap F (p * q).SplittingField)) :=
       ⟨splits_of_splits_of_dvd _ hpq (SplittingField.splits (p * q)) (dvd_mul_right p q)⟩
     have key :
@@ -325,20 +325,20 @@ theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
   have key2 : ∀ {p₁ p₂ : F[X]}, P p₁ → P p₂ → P (p₁ * p₂) := by
     intro p₁ p₂ hp₁ hp₂
     by_cases h₁ : p₁.comp q = 0
-    · cases' comp_eq_zero_iff.mp h₁ with h h
+    · rcases comp_eq_zero_iff.mp h₁ with h | h
       · rw [h, zero_mul]
         exact splits_zero _
       · exact False.elim (hq (by rw [h.2, natDegree_C]))
     by_cases h₂ : p₂.comp q = 0
-    · cases' comp_eq_zero_iff.mp h₂ with h h
+    · rcases comp_eq_zero_iff.mp h₂ with h | h
       · rw [h, mul_zero]
         exact splits_zero _
       · exact False.elim (hq (by rw [h.2, natDegree_C]))
     have key := mul_splits_in_splittingField_of_mul h₁ h₂ hp₁ hp₂
     rwa [← mul_comp] at key
   exact
-   WfDvdMonoid.induction_on_irreducible p (splits_zero _) (fun _ => splits_of_isUnit _)
-     fun _ _ _ h => key2 (key1 h)
+    WfDvdMonoid.induction_on_irreducible p (splits_zero _) (fun _ => splits_of_isUnit _)
+      fun _ _ _ h => key2 (key1 h)
 
 /-- `Polynomial.Gal.restrict` for the composition of polynomials. -/
 def restrictComp (hq : q.natDegree ≠ 0) : (p.comp q).Gal →* p.Gal :=

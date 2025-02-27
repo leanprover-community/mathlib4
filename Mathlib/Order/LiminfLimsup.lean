@@ -99,6 +99,16 @@ theorem IsBoundedUnder.comp {l : Filter γ} {q : β → β → Prop} {u : γ →
     (hv : ∀ a₀ a₁, r a₀ a₁ → q (v a₀) (v a₁)) : l.IsBoundedUnder r u → l.IsBoundedUnder q (v ∘ u)
   | ⟨a, h⟩ => ⟨v a, show ∀ᶠ x in map u l, q (v x) (v a) from h.mono fun x => hv x a⟩
 
+lemma isBoundedUnder_map_iff {ι κ X : Type*} {r : X → X → Prop} {f : ι → X} {φ : κ → ι}
+    {𝓕 : Filter κ} :
+    (map φ 𝓕).IsBoundedUnder r f ↔ 𝓕.IsBoundedUnder r (f ∘ φ) :=
+  Iff.rfl
+
+lemma Tendsto.isBoundedUnder_comp {ι κ X : Type*} {r : X → X → Prop} {f : ι → X} {φ : κ → ι}
+    {𝓕 : Filter ι} {𝓖 : Filter κ} (φ_tendsto : Tendsto φ 𝓖 𝓕) (𝓕_bounded : 𝓕.IsBoundedUnder r f) :
+    𝓖.IsBoundedUnder r (f ∘ φ) :=
+  isBoundedUnder_map_iff.mp (𝓕_bounded.mono φ_tendsto)
+
 section Preorder
 variable [Preorder α] {f : Filter β} {u : β → α} {s : Set β}
 
@@ -1305,7 +1315,7 @@ theorem eventually_add_neg_lt_of_le_liminf [Preorder β] [AddMonoid α] [AddLeft
   eventually_lt_of_lt_liminf (lt_of_lt_of_le (add_lt_of_neg_right x hε) hu) hu_bdd
 
 /-- If `Filter.limsup u atTop ≤ x`, then for all `ε > 0`, there exists a positive natural
-  number `n` such that `u n < x + ε`.  -/
+number `n` such that `u n < x + ε`. -/
 theorem exists_lt_of_limsup_le [AddMonoid α] [AddLeftStrictMono α] {x ε : α} {u : ℕ → α}
     (hu_bdd : IsBoundedUnder LE.le atTop u) (hu : Filter.limsup u atTop ≤ x) (hε : 0 < ε) :
     ∃ n : PNat, u n < x + ε := by
@@ -1315,7 +1325,7 @@ theorem exists_lt_of_limsup_le [AddMonoid α] [AddLeftStrictMono α] {x ε : α}
   exact ⟨⟨n + 1, Nat.succ_pos _⟩, hn (n + 1) (Nat.le_succ _)⟩
 
 /-- If `x ≤ Filter.liminf u atTop`, then for all `ε < 0`, there exists a positive natural
-  number `n` such that ` x + ε < u n`.  -/
+number `n` such that ` x + ε < u n`. -/
 theorem exists_lt_of_le_liminf [AddMonoid α] [AddLeftStrictMono α] {x ε : α} {u : ℕ → α}
     (hu_bdd : IsBoundedUnder GE.ge atTop u) (hu : x ≤ Filter.liminf u atTop) (hε : ε < 0) :
     ∃ n : PNat, x + ε < u n := by

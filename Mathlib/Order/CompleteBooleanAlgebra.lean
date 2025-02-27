@@ -85,7 +85,7 @@ class Order.Coframe (α : Type*) extends CompleteLattice α, CoheytingAlgebra α
 
 /-- `⊔` distributes over `⨅`. -/
 theorem sup_sInf_eq {α : Type*} [Order.Coframe α] {s : Set α} {a : α} :
-    a ⊔ sInf s  = ⨅ b ∈ s, a ⊔ b:=
+    a ⊔ sInf s = ⨅ b ∈ s, a ⊔ b :=
   gc_sdiff_sup.u_sInf
 
 open Order

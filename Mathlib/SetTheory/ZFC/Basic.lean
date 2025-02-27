@@ -147,8 +147,8 @@ instance : IsRefl PSet (· ⊆ ·) :=
 
 instance : IsTrans PSet (· ⊆ ·) :=
   ⟨fun x y z hxy hyz a => by
-    cases' hxy a with b hb
-    cases' hyz b with c hc
+    obtain ⟨b, hb⟩ := hxy a
+    obtain ⟨c, hc⟩ := hyz b
     exact ⟨c, hb.trans hc⟩⟩
 
 theorem Equiv.ext : ∀ x y : PSet, Equiv x y ↔ x ⊆ y ∧ y ⊆ x
@@ -234,7 +234,7 @@ private theorem mem_wf_aux : ∀ {x y : PSet.{u}}, Equiv x y → Acc (· ∈ ·)
   | ⟨α, A⟩, ⟨β, B⟩, H =>
     ⟨_, by
       rintro ⟨γ, C⟩ ⟨b, hc⟩
-      cases' H.exists_right b with a ha
+      obtain ⟨a, ha⟩ := H.exists_right b
       have H := ha.trans hc.symm
       rw [mk_func] at H
       exact mem_wf_aux H⟩
@@ -762,7 +762,7 @@ instance small_toSet (x : ZFSet.{u}) : Small.{u} x.toSet :=
     suffices Function.Surjective f by exact small_of_surjective this
     rintro ⟨y, hb⟩
     induction y using Quotient.inductionOn
-    cases' hb with i h
+    obtain ⟨i, h⟩ := hb
     exact ⟨i, Subtype.coe_injective (Quotient.sound h.symm)⟩
 
 /-- A nonempty set is one that contains some element. -/
@@ -1008,7 +1008,7 @@ theorem sUnion_lem {α β : Type u} (A : α → PSet) (B : β → PSet) (αβ : 
     induction' ea : A a with γ Γ
     induction' eb : B b with δ Δ
     rw [ea, eb] at hb
-    cases' hb with γδ δγ
+    obtain ⟨γδ, δγ⟩ := hb
     let c : (A a).Type := c
     let ⟨d, hd⟩ := γδ (by rwa [ea] at c)
     use ⟨b, Eq.ndrec d (Eq.symm eb)⟩
