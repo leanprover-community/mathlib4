@@ -22,8 +22,8 @@ variable {R : Type*} [CancelCommMonoidWithZero R]
 open Finset
 
 /-- If `x * y = a * ∏ i ∈ s, p i` where `p i` is always prime, then
-  `x` and `y` can both be written as a divisor of `a` multiplied by
-  a product over a subset of `s`  -/
+`x` and `y` can both be written as a divisor of `a` multiplied by
+a product over a subset of `s` -/
 theorem mul_eq_mul_prime_prod {α : Type*} [DecidableEq α] {x y a : R} {s : Finset α} {p : α → R}
     (hp : ∀ i ∈ s, Prime (p i)) (hx : x * y = a * ∏ i ∈ s, p i) :
     ∃ (t u : Finset α) (b c : R),

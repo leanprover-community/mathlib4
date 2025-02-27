@@ -5,8 +5,8 @@ Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Algebra.Group.Commute.Basic
+import Mathlib.Algebra.Group.End
 import Mathlib.Data.Finset.NoncommProd
-import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 # support of a permutation

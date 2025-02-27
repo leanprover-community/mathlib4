@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Order.Group.Multiset
 import Mathlib.Data.Finset.Basic
+import Mathlib.Algebra.Group.Action.Basic
 
 /-!
 # Lemmas about group actions on big operators

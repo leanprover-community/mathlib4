@@ -523,3 +523,25 @@ instance (priority := 100) FloorRing.archimedean (α) [LinearOrderedField α] [F
 instance Units.instMulArchimedean (α) [OrderedCommMonoid α] [MulArchimedean α] :
     MulArchimedean αˣ :=
   ⟨fun x {_} h ↦ MulArchimedean.arch x.val h⟩
+
+instance WithBot.instArchimedean (α) [OrderedAddCommMonoid α] [Archimedean α] :
+    Archimedean (WithBot α) := by
+  constructor
+  intro x y hxy
+  induction y with
+  | bot => exact absurd hxy bot_le.not_lt
+  | coe y =>
+    induction x with
+    | bot => refine ⟨0, bot_le⟩
+    | coe x => simpa [← WithBot.coe_nsmul] using (Archimedean.arch x (by simpa using hxy))
+
+instance WithZero.instMulArchimedean (α) [OrderedCommMonoid α] [MulArchimedean α] :
+    MulArchimedean (WithZero α) := by
+  constructor
+  intro x y hxy
+  induction y with
+  | h₁ => exact absurd hxy (zero_le _).not_lt
+  | h₂ y =>
+    induction x with
+    | h₁ => refine ⟨0, zero_le _⟩
+    | h₂ x => simpa [← WithZero.coe_pow] using (MulArchimedean.arch x (by simpa using hxy))

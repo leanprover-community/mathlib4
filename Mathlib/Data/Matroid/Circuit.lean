@@ -382,7 +382,7 @@ lemma ext_iff_isCircuit {M₁ M₂ : Matroid α} :
 
 section Elimination
 
-/-! ### IsCircuit Elimination -/
+/-! ### Circuit Elimination -/
 
 variable {ι : Type*} {J C₀ C₁ C₂ : Set α}
 
@@ -508,7 +508,7 @@ lemma finitary_iff_forall_isCircuit_finite : M.Finitary ↔ ∀ C, M.IsCircuit C
   simpa using (hI {x} (by simpa) (finite_singleton _)).subset_ground
 
 /-- In a finitary matroid, every element spanned by a set `X` is in fact
-spanned by a finite independent subset of `X`.  -/
+spanned by a finite independent subset of `X`. -/
 lemma exists_mem_finite_closure_of_mem_closure [M.Finitary] (he : e ∈ M.closure X) :
     ∃ I ⊆ X, I.Finite ∧ M.Indep I ∧ e ∈ M.closure I := by
   by_cases heY : e ∈ X
@@ -545,15 +545,15 @@ abbrev IsCocircuit (M : Matroid α) (K : Set α) : Prop := M✶.IsCircuit K
 
 lemma isCocircuit_def : M.IsCocircuit K ↔ M✶.IsCircuit K := Iff.rfl
 
-lemma IsCocircuit.circuit (hK : M.IsCocircuit K) : M✶.IsCircuit K :=
+lemma IsCocircuit.isCircuit (hK : M.IsCocircuit K) : M✶.IsCircuit K :=
   hK
 
-lemma Circuit.isCocircuit (hC : M.IsCircuit C) : M✶.IsCocircuit C := by
+lemma IsCircuit.isCocircuit (hC : M.IsCircuit C) : M✶.IsCocircuit C := by
   rwa [isCocircuit_def, dual_dual]
 
 @[aesop unsafe 10% (rule_sets := [Matroid])]
 lemma IsCocircuit.subset_ground (hC : M.IsCocircuit C) : C ⊆ M.E :=
-  hC.circuit.subset_ground
+  hC.isCircuit.subset_ground
 
 @[simp] lemma dual_isCocircuit_iff : M✶.IsCocircuit C ↔ M.IsCircuit C := by
   rw [isCocircuit_def, dual_dual]
@@ -636,19 +636,19 @@ lemma IsCircuit.isCocircuit_disjoint_or_nontrivial_inter (hC : M.IsCircuit C)
   rw [or_iff_not_imp_left, disjoint_iff_inter_eq_empty, ← ne_eq, ← nonempty_iff_ne_empty]
   exact hC.isCocircuit_inter_nontrivial hK
 
-lemma dual_rankPos_iff_exists_circuit : M✶.RankPos ↔ ∃ C, M.IsCircuit C := by
+lemma dual_rankPos_iff_exists_isCircuit : M✶.RankPos ↔ ∃ C, M.IsCircuit C := by
   rw [rankPos_iff, dual_isBase_iff, diff_empty, not_iff_comm, not_exists,
     ← ground_indep_iff_isBase, indep_iff_forall_subset_not_isCircuit]
   exact ⟨fun h C _ ↦ h C, fun h C hC ↦ h C hC.subset_ground hC⟩
 
 lemma IsCircuit.dual_rankPos (hC : M.IsCircuit C) : M✶.RankPos :=
-  dual_rankPos_iff_exists_circuit.mpr ⟨C, hC⟩
+  dual_rankPos_iff_exists_isCircuit.mpr ⟨C, hC⟩
 
-lemma exists_circuit [RankPos M✶] : ∃ C, M.IsCircuit C :=
-  dual_rankPos_iff_exists_circuit.1 (by assumption)
+lemma exists_isCircuit [RankPos M✶] : ∃ C, M.IsCircuit C :=
+  dual_rankPos_iff_exists_isCircuit.1 (by assumption)
 
 lemma rankPos_iff_exists_isCocircuit : M.RankPos ↔ ∃ K, M.IsCocircuit K := by
-  rw [← dual_dual M, dual_rankPos_iff_exists_circuit, dual_dual M]
+  rw [← dual_dual M, dual_rankPos_iff_exists_isCircuit, dual_dual M]
 
 /-- The fundamental cocircuit for `B` and `e`:
 that is, the unique cocircuit `K` of `M` for which `K ∩ B = {e}`.
