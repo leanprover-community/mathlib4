@@ -7,7 +7,7 @@ import Mathlib.Data.Matrix.Basic
 
 /-!
 # One by one matrices
-This file prooves Matrix of dimension one is equivalent to the base itself under the
+This file proves that one by one matrices over a base are equivalent to the base itself under the
 canonical maps that sends every element `a` to `[a]` as dimension one matrix.
 
 ## Main results
