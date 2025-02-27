@@ -333,15 +333,12 @@ theorem of_card_lt [Finite β] [IsPretransitive N β] [IsPreprimitive M α]
   simp only [← Nat.card_eq_fintype_card, ← hB.ncard_block_mul_ncard_orbit_eq hB']
   apply Nat.mul_le_mul_left
   -- We reduce to proving that (Set.range f ∩ g • B).ncard ≤ 1 for every g
-  rw [(hB.isBlockSystem hB').left.ncard_eq_finsum]
-  rw [finsum_eq_finset_sum_of_support_subset]
-  · apply le_trans (Finset.sum_le_card_nsmul _ _ 1 _)
-    · simp only [smul_eq_mul, mul_one]
-      conv_rhs => rw [← Set.ncard_coe]
-      apply le_of_eq
-      rw [← Set.ncard_eq_toFinset_card]
-    · rintro ⟨x, ⟨g, hg⟩⟩ _
-      simp only [← hg]
+  have hfin := Fintype.ofFinite (Set.range fun g : N ↦ g • B)
+  rw [(hB.isBlockSystem hB').left.ncard_eq_finsum, finsum_eq_sum_of_fintype]
+  apply le_trans (Finset.sum_le_card_nsmul _ _ 1 _)
+  · rw [nsmul_one, Finset.card_univ, ← Set.toFinset_card, ← Set.ncard_eq_toFinset_card',
+      orbit, Nat.cast_id]
+  · · rintro ⟨x, ⟨g, rfl⟩⟩ _
       suffices Set.Subsingleton (Set.range f ∩ g • B) by
         rw [Set.ncard_le_one_iff]
         exact fun {a b} a_1 a_2 ↦ this a_1 a_2
