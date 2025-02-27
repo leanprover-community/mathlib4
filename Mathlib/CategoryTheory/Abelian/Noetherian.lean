@@ -5,10 +5,12 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
+import Mathlib.CategoryTheory.Abelian.Refinements
+import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 import Mathlib.Order.OrderIsoNat
 
 /-!
-# Noetherian objects in an abelian category
+# Noetherian objects in an abelian category form a Serre class
 
 -/
 
@@ -54,6 +56,10 @@ lemma isIso_left_iff_subobjectMk_eq :
   · intro h
     exact ⟨Subobject.ofMkLEMk _ _ h.symm.le, by simp [← cancel_mono A.1.hom],
       by simp [← cancel_mono B.1.hom]⟩
+
+lemma isIso_iff_subobjectMk_eq :
+    IsIso f ↔ Subobject.mk A.1.hom = Subobject.mk B.1.hom := by
+  rw [isIso_iff_isIso_left, isIso_left_iff_subobjectMk_eq]
 
 end MonoOver
 
@@ -141,6 +147,7 @@ lemma isNoetherianObject_iff_not_strictMono :
     isWellFounded_iff, RelEmbedding.wellFounded_iff_no_descending_seq]
   exact ⟨fun f ↦ h f.toFun (fun a b h ↦ f.map_rel_iff.2 h)⟩
 
+variable {X} in
 lemma not_strictMono_of_isNoetherianObject
     [IsNoetherianObject X] (f : ℕ → Subobject X) :
     ¬ StrictMono f :=
@@ -148,20 +155,24 @@ lemma not_strictMono_of_isNoetherianObject
 
 lemma isNoetherianObject_iff_monoOver_chain_condition :
     IsNoetherianObject X ↔ ∀ (F : ℕ ⥤ MonoOver X),
-      ∃ (n : ℕ), ∀ (m : ℕ) (a : n ⟶ m), IsIso (F.map a).left := by
+      IsFiltered.IsEventuallyConstant F := by
   rw [isNoetherianObject_iff_monotone_chain_condition]
   constructor
   · intro h G
     obtain ⟨n, hn⟩ := h ⟨_, (G ⋙ (Subobject.equivMonoOver _).inverse).monotone⟩
     refine ⟨n, fun m hm ↦ ?_⟩
-    rw [MonoOver.isIso_left_iff_subobjectMk_eq]
+    rw [MonoOver.isIso_iff_subobjectMk_eq]
     exact hn m (leOfHom hm)
   · intro h F
     obtain ⟨n, hn⟩ := h (F.monotone.functor ⋙ Subobject.representative)
     refine ⟨n, fun m hm ↦ ?_⟩
-    have := hn m (homOfLE hm)
     simpa [← MonoOver.isIso_iff_isIso_left, isIso_iff_of_reflects_iso,
-      PartialOrder.isIso_iff_eq] using hn m (homOfLE hm)
+      PartialOrder.isIso_iff_eq] using hn (homOfLE hm)
+
+variable {X} in
+lemma monoOver_chain_condition_of_isNoetherianObject [IsNoetherianObject X]
+    (F : ℕ ⥤ MonoOver X) : IsFiltered.IsEventuallyConstant F :=
+  (isNoetherianObject_iff_monoOver_chain_condition X).1 inferInstance F
 
 variable {X Y}
 
@@ -189,7 +200,7 @@ instance : (isNoetherianObject (C := C)).IsClosedUnderSubobjects where
     rw [← isNoetherianObject.is_iff] at hY ⊢
     exact isNoetherianObject_of_mono f
 
-@[simps]
+@[simps (config := .lemmasOnly)]
 noncomputable def MonoOver.abelianImage [Abelian C] (f : X ⟶ Y) :
     MonoOver X ⥤ MonoOver Y where
   obj A := MonoOver.mk' (Abelian.image.ι (A.1.hom ≫ f))
@@ -248,7 +259,85 @@ instance : (isNoetherianObject (C := C)).IsClosedUnderQuotients where
     rw [← isNoetherianObject.is_iff] at hX ⊢
     exact isNoetherianObject_of_epi f
 
-instance : (isNoetherianObject (C := C)).IsClosedUnderExtensions := sorry
+section
+
+variable (S : ShortComplex C)
+
+@[simps]
+noncomputable def fromMonoOverOfShortComplex :
+    MonoOver S.X₂ ⥤ ShortComplex C where
+  obj A :=
+    { X₁ := pullback A.1.hom S.f
+      X₂ := A.1.left
+      X₃ := Abelian.image (A.1.hom ≫ S.g)
+      f := pullback.fst _ _
+      g := Abelian.factorThruImage _
+      zero := by ext; simp [pullback.condition_assoc] }
+  map {A B} φ :=
+    { τ₁ := ((MonoOver.pullback S.f).map φ).left
+      τ₂ := φ.left
+      τ₃ := ((MonoOver.abelianImage S.g).map φ).left
+      comm₁₂ := by simp [MonoOver.pullback, MonoOver.forget]
+      comm₂₃ := by ext; simp [MonoOver.abelianImage] }
+
+variable {S}
+
+lemma shortExact_fromMonoOverOfShortComplex_obj
+    (hS : S.ShortExact) (A : MonoOver S.X₂) :
+    ((fromMonoOverOfShortComplex S).obj A).ShortExact := by
+  have := hS.mono_f
+  have := hS.epi_g
+  dsimp [fromMonoOverOfShortComplex]
+  exact
+    { exact := by
+        rw [ShortComplex.exact_iff_exact_up_to_refinements]
+        intro Y x₂ hx₂
+        dsimp at x₂ hx₂ ⊢
+        rw [← cancel_mono (Abelian.image.ι _), Category.assoc,
+          kernel.lift_ι, zero_comp] at hx₂
+        obtain ⟨A', π, _, x₁, hx₁⟩  :=
+          hS.exact.exact_up_to_refinements (x₂ ≫ A.obj.hom) (by simpa using hx₂)
+        exact ⟨A', π, inferInstance, pullback.lift (π ≫ x₂) x₁ (by simpa),
+          by simp⟩}
+
+end
+
+lemma isIso_monoOver_iff_of_shortExact
+    {S : ShortComplex C} (hS : S.ShortExact)
+    {A B : MonoOver S.X₂} (φ : A ⟶ B) :
+    IsIso φ ↔ IsIso ((MonoOver.pullback S.f).map φ) ∧
+      IsIso ((MonoOver.abelianImage S.g).map φ):= by
+  constructor
+  · intro
+    constructor <;> infer_instance
+  · rintro ⟨h₁, h₃⟩
+    rw [MonoOver.isIso_iff_isIso_left] at h₁ h₃ ⊢
+    let ψ := ((fromMonoOverOfShortComplex S).map φ)
+    have : IsIso ψ.τ₁ := h₁
+    have : IsIso ψ.τ₃ := h₃
+    exact ShortComplex.isIso₂_of_shortExact_of_isIso₁₃ ψ
+      (shortExact_fromMonoOverOfShortComplex_obj hS _)
+      (shortExact_fromMonoOverOfShortComplex_obj hS _)
+
+lemma isNoetherianObject_of_shortExact {S : ShortComplex C}
+    (hS : S.ShortExact) (h₁ : IsNoetherianObject S.X₁)
+    (h₃ : IsNoetherianObject S.X₃) :
+    IsNoetherianObject S.X₂ := by
+  rw [isNoetherianObject_iff_monoOver_chain_condition]
+  intro F₂
+  obtain ⟨n₁, hn₁⟩ := monoOver_chain_condition_of_isNoetherianObject
+    (F₂ ⋙ MonoOver.pullback S.f)
+  obtain ⟨n₃, hn₃⟩ := monoOver_chain_condition_of_isNoetherianObject
+    (F₂ ⋙ MonoOver.abelianImage S.g)
+  refine ⟨max n₁ n₃, fun m hm ↦ ?_⟩
+  rw [isIso_monoOver_iff_of_shortExact hS]
+  exact ⟨hn₁.isIso_map _ (homOfLE (le_max_left n₁ n₃)),
+    hn₃.isIso_map _ (homOfLE (le_max_right n₁ n₃))⟩
+
+instance : (isNoetherianObject (C := C)).IsClosedUnderExtensions where
+  prop_X₂_of_shortExact hS h₁ h₃ := by
+    rw [← isNoetherianObject.is_iff] at h₁ h₃ ⊢
+    exact isNoetherianObject_of_shortExact hS h₁ h₃
 
 instance : (isNoetherianObject (C := C)).IsSerreClass where
 
