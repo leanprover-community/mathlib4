@@ -17,18 +17,19 @@ import Mathlib.Util.Superscript
 A simplicial object in a category `C` is a `C`-valued presheaf on `SimplexCategory`.
 (Similarly, a cosimplicial object is a functor `SimplexCategory ⥤ C`.)
 
-## Notation
+## Notations
 
 The following notations can be enabled via `open Simplicial`.
 
 - `X _⦋n⦌` denotes the `n`-th term of a simplicial object `X`, where `n : ℕ`.
 - `X ^⦋n⦌` denotes the `n`-th term of a cosimplicial object `X`, where `n : ℕ`.
 
-The following notations can be enabled via
-`open CategoryTheory.SimplicialObject.Truncated`.
+The following notations can be enabled via the respective `Truncated` namespace.
 
 - `X _⦋m⦌ₙ` denotes the `m`-th term of an `n`-truncated simplicial object `X`.
+  Access this notation with `open CategoryTheory.SimplicialObject.Truncated`.
 - `X ^⦋m⦌ₙ` denotes the `m`-th term of an `n`-truncated cosimplicial object `X`.
+  Access this notation with `open CategoryTheory.CosimplicialObject.Truncated`.
 -/
 
 open Opposite
@@ -253,13 +254,17 @@ def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Tr
 variable {C}
 
 section Meta
+/-! We provide a macro and a delaborator for the truncated simplicial object
+notation `X _⦋m⦌ₙ`. An analogous macro/delaborator pair for the truncated
+cosimplicial object notation `X ^⦋m⦌ₙ` is defined later in this file. -/
 
 open Lean PrettyPrinter.Delaborator SubExpr
 open Mathlib.Tactic (subscriptTerm)
 open SimplexCategory.Truncated.Meta (subscript)
 
 /-- For `X : Truncated C n` and `m ≤ n`, `X _⦋m⦌ₙ` is the `m`-th term of X. The
-proof `p : m ≤ n` can also be provided using the syntax `X _⦋m, p⦌ₙ`. -/
+proof `p : m ≤ n` can also be provided using the syntax `X _⦋m, p⦌ₙ`. Access
+this notation with `open CategoryTheory.SimplicialObject.Truncated`. -/
 scoped syntax:max (name := mkNotation)
   term " _⦋" term ("," term)? "⦌" noWs subscriptTerm : term
 scoped macro_rules
@@ -726,13 +731,17 @@ def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Tr
 variable {C}
 
 section Meta
+/-! We provide a macro and a delaborator for the truncated cosimplicial object
+notation `X ^⦋m⦌ₙ`. An analogous macro/delaborator pair for the truncated
+simplicial object notation `X _⦋m⦌ₙ` is defined earlier in this file. -/
 
 open Lean PrettyPrinter.Delaborator SubExpr
 open Mathlib.Tactic (subscriptTerm)
 open SimplexCategory.Truncated.Meta (subscript)
 
 /-- For `X : Truncated C n` and `m ≤ n`, `X ^⦋m⦌ₙ` is the `m`-th term of X. The
-proof `p : m ≤ n` can also be provided using the syntax `X ^⦋m, p⦌ₙ`. -/
+proof `p : m ≤ n` can also be provided using the syntax `X ^⦋m, p⦌ₙ`. Access
+this notation with `open CategoryTheory.CosimplicialObject.Truncated`. -/
 scoped syntax:max (name := mkNotation)
   term " ^⦋" term ("," term)? "⦌" noWs subscriptTerm : term
 scoped macro_rules
