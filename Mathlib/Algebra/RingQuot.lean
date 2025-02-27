@@ -397,7 +397,7 @@ theorem mkRingHom_eq_iff (r : R → R → Prop) (x y : R) :
 
 theorem mkRingHom_eq_iff' (r : R → R → Prop) (x y : R) :
     mkRingHom r x = mkRingHom r y ↔ (RingConGen.Rel r) x y := by
-  rw [← eqvGen_rel_eq]; exact mkRingHom_eq_iff r x y
+  rw [← eqvGen_rel_eq, mkRingHom_eq_iff]
 
 theorem mkRingHom_rel {r : R → R → Prop} {x y : R} (w : r x y) : mkRingHom r x = mkRingHom r y := by
   simp [mkRingHom_def, Quot.sound (Rel.of w)]
@@ -554,7 +554,7 @@ theorem mkAlgHom_eq_iff (s : A → A → Prop) (x y : A) :
 
 theorem mkAlgHom_eq_iff' (s : A → A → Prop) (x y : A) :
     mkAlgHom S s x = mkAlgHom S s y ↔ (RingConGen.Rel s) x y := by
-  rw [← eqvGen_rel_eq]; exact mkAlgHom_eq_iff S s x y
+  rw [← eqvGen_rel_eq, mkAlgHom_eq_iff]
 
 theorem mkAlgHom_rel {s : A → A → Prop} {x y : A} (w : s x y) :
     mkAlgHom S s x = mkAlgHom S s y := by
