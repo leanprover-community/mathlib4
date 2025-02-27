@@ -1218,12 +1218,6 @@ theorem comp_eq_snd_compProd (η : Kernel β γ) [IsSFiniteKernel η] (κ : Kern
   · exact measurable_snd hs
   simp only [Set.mem_setOf_eq, Set.setOf_mem_eq, prodMkLeft_apply' _ _ s]
 
-lemma ae_ae_of_ae_comp {κ : Kernel α β} {η : Kernel β γ} [IsSFiniteKernel κ] [IsSFiniteKernel η]
-    {p : γ → Prop} {a : α} (h : ∀ᵐ c ∂(η ∘ₖ κ) a, p c) :
-    ∀ᵐ b ∂κ a, ∀ᵐ c ∂η b, p c := by
-  rw [Kernel.comp_eq_snd_compProd] at h
-  convert Kernel.ae_ae_of_ae_compProd (ae_of_ae_map (measurable_snd.aemeasurable) h)
-
 theorem lintegral_comp (η : Kernel β γ) (κ : Kernel α β) (a : α) {g : γ → ℝ≥0∞}
     (hg : Measurable g) : ∫⁻ c, g c ∂(η ∘ₖ κ) a = ∫⁻ b, ∫⁻ c, g c ∂η b ∂κ a := by
   rw [comp_apply, Measure.lintegral_bind (Kernel.measurable _) hg]
@@ -1318,6 +1312,56 @@ lemma snd_comp (κ : Kernel α β) (η : Kernel β (γ × δ)) : (η ∘ₖ κ).
   rw [snd_apply' _ _ hs, compProd_apply, comp_apply' _ _ _ hs]
   · rfl
   · exact measurable_snd hs
+
+section Ae
+
+/-! ### `ae` filter of the composition -/
+
+variable {κ : Kernel α β} {η : Kernel β γ} {a : α} {s : Set γ}
+
+theorem ae_lt_top_of_comp_ne_top (a : α) (hs : (η ∘ₖ κ) a s ≠ ∞) : ∀ᵐ b ∂κ a, η b s < ∞ := by
+  have h : ∀ᵐ b ∂κ a, η b (toMeasurable ((η ∘ₖ κ) a) s) < ∞ := by
+    refine ae_lt_top (Kernel.measurable_coe η (measurableSet_toMeasurable ..)) ?_
+    rwa [← Kernel.comp_apply' _ _ _ (measurableSet_toMeasurable ..), measure_toMeasurable]
+  filter_upwards [h] with b hb using (measure_mono (subset_toMeasurable _ _)).trans_lt hb
+
+theorem comp_null (a : α) (hs : MeasurableSet s) :
+    (η ∘ₖ κ) a s = 0 ↔ (fun y ↦ η y s) =ᵐ[κ a] 0 := by
+  rw [comp_apply' _ _ _ hs, lintegral_eq_zero_iff (η.measurable_coe hs)]
+
+theorem ae_null_of_comp_null (h : (η ∘ₖ κ) a s = 0) : (η · s) =ᵐ[κ a] 0 := by
+  obtain ⟨t, hst, mt, ht⟩ := exists_measurable_superset_of_null h
+  simp_rw [comp_null a mt] at ht
+  rw [Filter.eventuallyLE_antisymm_iff]
+  exact ⟨Filter.EventuallyLE.trans_eq (ae_of_all _ fun _ ↦ measure_mono hst) ht,
+    ae_of_all _ fun _ ↦ zero_le _⟩
+
+variable {p : γ → Prop}
+
+theorem ae_ae_of_ae_comp (h : ∀ᵐ z ∂(η ∘ₖ κ) a, p z) :
+    ∀ᵐ y ∂κ a, ∀ᵐ z ∂η y, p z := ae_null_of_comp_null h
+
+lemma ae_comp_of_ae_ae (hp : MeasurableSet {z | p z})
+    (h : ∀ᵐ y ∂κ a, ∀ᵐ z ∂η y, p z) : ∀ᵐ z ∂(η ∘ₖ κ) a, p z := by
+  rwa [ae_iff, comp_null] at *
+  exact hp.compl
+
+lemma ae_comp_iff (hp : MeasurableSet {z | p z}) :
+    (∀ᵐ z ∂(η ∘ₖ κ) a, p z) ↔ ∀ᵐ y ∂κ a, ∀ᵐ z ∂η y, p z :=
+  ⟨ae_ae_of_ae_comp, ae_comp_of_ae_ae hp⟩
+
+end Ae
+
+section Restrict
+
+variable {κ : Kernel α β} {η : Kernel β γ}
+
+theorem comp_restrict {s : Set γ} (hs : MeasurableSet s) :
+    η.restrict hs ∘ₖ κ = (η ∘ₖ κ).restrict hs := by
+  ext a t ht
+  simp_rw [comp_apply' _ _ _ ht, restrict_apply' _ _ _ ht, comp_apply' _ _ _ (ht.inter hs)]
+
+end Restrict
 
 end Comp
 
