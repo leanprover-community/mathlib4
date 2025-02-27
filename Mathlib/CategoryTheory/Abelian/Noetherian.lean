@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.CategoryTheory.ObjectProperty.Basic
-import Mathlib.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
 import Mathlib.Order.OrderIsoNat
 
 /-!
@@ -15,7 +14,7 @@ import Mathlib.Order.OrderIsoNat
 
 universe v u
 
-open CategoryTheory
+open CategoryTheory ZeroObject
 
 lemma PartialOrder.isIso_iff_eq {C : Type u} [PartialOrder C]
     {X Y : C} (f : X ⟶ Y) : IsIso f ↔ X = Y := by
@@ -60,9 +59,24 @@ end MonoOver
 
 namespace Subobject
 
+lemma mk_surjective {X : C} (S : Subobject X) :
+    ∃ (A : C) (i : A ⟶ X) (_ : Mono i), S = Subobject.mk i :=
+  ⟨_, S.arrow, inferInstance, by simp⟩
+
 instance (X : C) : (representative (X := X)).IsEquivalence := by
   dsimp only [representative]
   infer_instance
+
+lemma subsingleton_of_isZero {X : C} (hX : IsZero X) : Subsingleton (Subobject X) := by
+  suffices ∀ (S : Subobject X), S = .mk (𝟙 _) from ⟨fun S₁ S₂ ↦ by simp [this]⟩
+  intro S
+  obtain ⟨A, i, _, rfl⟩ := S.mk_surjective
+  let e : A ≅ X :=
+    { hom := i
+      inv := hX.to_ A
+      hom_inv_id := by rw [← cancel_mono i]; apply hX.eq_of_tgt
+      inv_hom_id := hX.eq_of_tgt _ _ }
+  exact mk_eq_mk_of_comm i (𝟙 X) e (by simp [e])
 
 end Subobject
 
@@ -151,6 +165,17 @@ lemma isNoetherianObject_iff_monoOver_chain_condition :
 
 variable {X Y}
 
+lemma isNoetherianObject_of_isZero (hX : IsZero X) : IsNoetherianObject X := by
+  rw [isNoetherianObject_iff_monotone_chain_condition]
+  have := Subobject.subsingleton_of_isZero hX
+  intro f
+  exact ⟨0, fun m hm ↦ Subsingleton.elim _ _⟩
+
+instance [HasZeroObject C] : (isNoetherianObject (C := C)).ContainsZero where
+  exists_zero := ⟨0, isZero_zero _, by
+    rw [← isNoetherianObject.is_iff]
+    exact isNoetherianObject_of_isZero (isZero_zero C)⟩
+
 lemma isNoetherianObject_of_mono (i : X ⟶ Y) [Mono i] [IsNoetherianObject Y] :
     IsNoetherianObject X := by
   rw [isNoetherianObject_iff_monotone_chain_condition]
@@ -158,6 +183,11 @@ lemma isNoetherianObject_of_mono (i : X ⟶ Y) [Mono i] [IsNoetherianObject Y] :
   obtain ⟨n, hn⟩ := monotone_chain_condition_of_isNoetherianObject
     ⟨_, (Subobject.map i).monotone.comp f.2⟩
   exact ⟨n, fun m hm ↦ Subobject.map_obj_injective i (hn m hm)⟩
+
+instance : (isNoetherianObject (C := C)).IsClosedUnderSubobjects where
+  prop_of_mono f _ hY := by
+    rw [← isNoetherianObject.is_iff] at hY ⊢
+    exact isNoetherianObject_of_mono f
 
 @[simps]
 noncomputable def MonoOver.abelianImage [Abelian C] (f : X ⟶ Y) :
@@ -212,6 +242,15 @@ lemma isNoetherianObject_of_epi (p : X ⟶ Y) [Epi p] [IsNoetherianObject X] :
   obtain ⟨n, hn⟩ := monotone_chain_condition_of_isNoetherianObject
     ⟨_, (Subobject.pullback p).monotone.comp f.2⟩
   exact ⟨n, fun m hm ↦ Subobject.pullback_obj_injective p (hn m hm)⟩
+
+instance : (isNoetherianObject (C := C)).IsClosedUnderQuotients where
+  prop_of_epi f _ hX := by
+    rw [← isNoetherianObject.is_iff] at hX ⊢
+    exact isNoetherianObject_of_epi f
+
+instance : (isNoetherianObject (C := C)).IsClosedUnderExtensions := sorry
+
+instance : (isNoetherianObject (C := C)).IsSerreClass where
 
 end Abelian
 
