@@ -7,8 +7,10 @@ Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Int.Basic
+import Mathlib.Order.Atoms
 import Mathlib.Order.Minimal
 import Mathlib.Order.RelSeries
+import Mathlib.Order.LatticeIntervals
 import Mathlib.Tactic.FinCases
 
 /-!
@@ -542,6 +544,7 @@ variable [Preorder α] [Preorder β]
 
 lemma LTSeries.length_le_krullDim (p : LTSeries α) : p.length ≤ krullDim α := le_sSup ⟨_, rfl⟩
 
+@[simp]
 lemma krullDim_eq_bot_iff : krullDim α = ⊥ ↔ IsEmpty α := by
   rw [eq_bot_iff, krullDim, iSup_le_iff]
   simp only [le_bot_iff, WithBot.natCast_ne_bot, isEmpty_iff]
@@ -778,7 +781,120 @@ lemma coheight_bot_eq_krullDim [OrderBot α] : coheight (⊥ : α) = krullDim α
   rw [← krullDim_orderDual]
   exact height_top_eq_krullDim (α := αᵒᵈ)
 
+lemma height_eq_krullDim_Iic (x : α) : (height x : ℕ∞) = krullDim (Set.Iic x) := by
+  rw [← height_top_eq_krullDim, height, height, WithBot.coe_inj]
+  apply le_antisymm
+  · apply iSup_le; intro p; apply iSup_le; intro hp
+    let q := LTSeries.mk p.length (fun i ↦ (⟨p.toFun i, le_trans (p.monotone (Fin.le_last _)) hp⟩
+     : Set.Iic x)) (fun _ _ h ↦ p.strictMono h)
+    simp only [le_top, iSup_pos, ge_iff_le]
+    exact le_iSup (fun p ↦ (p.length : ℕ∞)) q
+  · apply iSup_le; intro p; apply iSup_le; intro _
+    have mono : StrictMono (fun (y : Set.Iic x) ↦ y.1) := fun _ _ h ↦ h
+    rw [← LTSeries.map_length p (fun x ↦ x.1) mono, ]
+    refine le_iSup₂ (f := fun p hp ↦ (p.length : ℕ∞)) (p.map (fun x ↦ x.1) mono) ?_
+    exact (p.toFun (Fin.last p.length)).2
+
+lemma coheight_eq_krullDim_Ici {α : Type*} [Preorder α] (x : α) :
+    (coheight x : ℕ∞) = krullDim (Set.Ici x) := by
+  rw [coheight, ← krullDim_orderDual, Order.krullDim_eq_of_orderIso (OrderIso.refl _)]
+  exact height_eq_krullDim_Iic _
+
 end krullDim
+
+section zero_or_one
+
+lemma orderTop_krullDim_eq_zero_iff {α : Type*} [PartialOrder α] [OrderTop α] :
+    krullDim α = 0 ↔ Subsingleton α := by
+  constructor
+  · intro h;
+    have : ¬ ∃ x y : α, x < y := by rw [← Order.one_le_krullDim_iff, h]; trivial
+    exact subsingleton_of_forall_eq ⊤ fun y ↦ (by
+      by_contra h; rw [← ne_eq, ← lt_top_iff_ne_top] at h; exact this ⟨y, ⊤, h⟩)
+  · intro h; exact le_antisymm Order.krullDim_nonpos_of_subsingleton Order.krullDim_nonneg
+
+@[simp] lemma krullDim_isSimpleOrder {α : Type*} [PartialOrder α] [BoundedOrder α]
+    [IsSimpleOrder α] : krullDim α = 1 := by
+  rw [krullDim]
+  let q : LTSeries α := ⟨1, (fun n ↦ if n == 0 then ⊥ else ⊤), by simp [Fin.fin_one_eq_zero]⟩
+  refine le_antisymm (iSup_le fun p ↦ ?_) (le_iSup (fun p ↦ (p.length : WithBot ℕ∞)) q)
+  by_contra h; simp only [Nat.cast_le_one, not_le] at h
+  have h2 : 2 < p.length + 1 := add_lt_add_of_lt_of_le h (le_refl 1)
+  have h0' : 0 < p.length := lt_trans (show 0 < 1 by decide) h
+  have h1 : 1 < p.length + 1 := lt_of_le_of_lt (show 1 ≤ 2 by decide) h2
+  have : p ⟨1, h1⟩ = ⊤ := IsSimpleOrder.eq_top_of_lt (p.step ⟨0, h0'⟩)
+  have : p ⟨1, h1⟩ < p ⟨2, h2⟩ := p.step ⟨1, h⟩
+  simp_all
+
+lemma orderBot_orderTop_krullDim_eq_one_iff {α : Type*} [PartialOrder α] [OrderBot α] [OrderTop α] :
+    krullDim α = 1 ↔ IsSimpleOrder α := by
+  constructor
+  · intro h;
+    have : ⊥ ≠ (⊤ : α) := by
+      by_contra h'
+      have : Subsingleton α := by exact subsingleton_of_bot_eq_top h'
+      absurd orderTop_krullDim_eq_zero_iff.mpr this; rw [h]; trivial
+    exact {
+      exists_pair_ne := ⟨⊥, ⊤, this⟩
+      eq_bot_or_eq_top := fun a ↦ by
+        by_contra h'; push_neg at h'
+        have : a < ⊤ := lt_top_iff_ne_top.mpr h'.2
+        have : a > ⊥ := bot_lt_iff_ne_bot.mpr h'.1
+        let p : LTSeries α := ⟨2, fun i ↦ match i with | 0 => ⊥ | 1 => a | 2 => ⊤
+          , by intro i; fin_cases i; all_goals simpa⟩
+        absurd Order.LTSeries.length_le_krullDim p
+        rw [h]; show ¬ 2 ≤ 1; trivial
+    }
+  · intro _; exact krullDim_isSimpleOrder
+
+end zero_or_one
+
+section finiteDimensional
+
+variable {α : Type*}
+
+lemma finiteDimensionalOrder_iff_krullDim_ne_bot_and_top [Preorder α] :
+    FiniteDimensionalOrder α ↔ (krullDim α ≠ ⊥ ∧ krullDim α ≠ ⊤) := by
+  by_cases h : Nonempty α
+  · simp [← not_infiniteDimensionalOrder_iff, ← krullDim_eq_top_iff]
+  · constructor
+    · exact (fun h1 ↦ False.elim (h (LTSeries.nonempty_of_finiteDimensionalType α)))
+    · exact (fun h1 ↦ False.elim (h1.1 (krullDim_eq_bot_iff.mpr (not_nonempty_iff.mp h))))
+
+lemma exists_coatom_of_finiteDimensional [PartialOrder α] [OrderTop α] [FiniteDimensionalOrder α]
+    [Nontrivial α] : ∃ a : α, IsCoatom a := by
+  set p := LTSeries.longestOf α with hp
+  have : p.length ≥ 1 := by
+    by_contra h; rw [not_le, Nat.lt_one_iff] at h
+    have : krullDim α = 0 := by
+      rw [Order.krullDim_eq_length_of_finiteDimensionalOrder (α := α), ← hp, h]; rfl
+    rw [orderTop_krullDim_eq_zero_iff (α := α), ← not_nontrivial_iff_subsingleton] at this
+    exact this ‹_›
+  set u := p ⟨p.length - 1, by omega⟩ with hu
+  use u
+  constructor
+  · apply ne_top_of_lt (p.step ⟨p.length - 1, by omega⟩)
+  · intro b hb
+    by_contra hb'; rw [← ne_eq, ← lt_top_iff_ne_top] at hb'
+    have h1 : Order.height u ≥ ((p.length - 1) : ℕ) := by rw [hu]; exact Order.index_le_height _ _
+    have h2 : Order.coheight u ≥ (2 : ℕ) := by
+      let q : LTSeries α := ⟨2, fun i ↦ match i with | 0 => u | 1 => b | 2 => ⊤, by
+        intro i; fin_cases i; all_goals simpa⟩
+      exact Order.length_le_coheight_head (p := q)
+    have h3 : (p.length : WithBot ℕ∞) < Order.height u + Order.coheight u := by
+      show ((p.length : ℕ∞) : WithBot ℕ∞) < _
+      rw [← WithBot.coe_add, WithBot.coe_lt_coe]
+      calc
+      (p.length : ℕ∞) < ((p.length - 1) : ℕ) + (2 : ℕ) := by
+        rw [← ENat.coe_add]; gcongr; omega
+      _ ≤ Order.height u + Order.coheight u := add_le_add h1 h2
+    rw [hp, ← Order.krullDim_eq_length_of_finiteDimensionalOrder (α := α)] at h3
+    apply not_le_of_lt h3
+    rw [Order.krullDim_eq_iSup_height_add_coheight_of_nonempty]
+    norm_cast
+    exact le_iSup (fun x ↦ height x + coheight x) u
+
+end finiteDimensional
 
 section typeclass
 

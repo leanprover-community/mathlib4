@@ -9,6 +9,7 @@ import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Rel
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.Order.Atoms
 
 /-!
 # Series of a relation
@@ -72,6 +73,10 @@ lemma rel_of_lt [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h :
 lemma rel_or_eq_of_le [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i ≤ j) :
     r (x i) (x j) ∨ x i = x j :=
   (Fin.lt_or_eq_of_le h).imp (x.rel_of_lt ·) (by rw [·])
+
+lemma rel_of_le [IsTrans α r] [IsRefl α r] (x : RelSeries r)
+  {i j : Fin (x.length + 1)} (h : i ≤ j) : r (x i) (x j) :=
+  Or.casesOn (rel_or_eq_of_le x h) (by tauto) (by intro l; rw[l]; apply refl)
 
 /--
 Given two relations `r, s` on `α` such that `r ≤ s`, any relation series of `r` induces a relation
@@ -170,6 +175,10 @@ variable {r} {s : RelSeries r} {x : α}
 /-- If a relation on `α` is infinite dimensional, then `α` is nonempty. -/
 lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
   ⟨RelSeries.withLength r 0 0⟩
+
+lemma nonempty_of_finiteDimensional [r.FiniteDimensional] : Nonempty α := by
+  obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff r).mp ‹_›
+  exact ⟨p 0⟩
 
 instance membership : Membership α (RelSeries r) :=
   ⟨Function.swap (· ∈ Set.range ·)⟩
@@ -689,8 +698,12 @@ protected noncomputable def withLength [InfiniteDimensionalOrder α] (n : ℕ) :
   RelSeries.length_withLength _ _
 
 /-- if `α` is infinite dimensional, then `α` is nonempty. -/
-lemma nonempty_of_infiniteDimensionalType [InfiniteDimensionalOrder α] : Nonempty α :=
+instance nonempty_of_infiniteDimensionalType [InfiniteDimensionalOrder α] : Nonempty α :=
   ⟨LTSeries.withLength α 0 0⟩
+
+instance nonempty_of_finiteDimensionalType [FiniteDimensionalOrder α] : Nonempty α := by
+  obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff _).mp ‹_›
+  exact ⟨p 0⟩
 
 variable {α}
 
@@ -866,3 +879,10 @@ lemma infiniteDimensionalOrder_of_strictMono [Preorder α] [Preorder β]
     (f : α → β) (hf : StrictMono f) [InfiniteDimensionalOrder α] :
     InfiniteDimensionalOrder β :=
   ⟨fun n ↦ ⟨(LTSeries.withLength _ n).map f hf, LTSeries.length_withLength α n⟩⟩
+
+lemma finiteDimensionalOrder_of_strictMono [Preorder α] [Preorder β] [Nonempty α] (f : α → β)
+    (hf : StrictMono f) [FiniteDimensionalOrder β] : FiniteDimensionalOrder α := by
+  by_contra h
+  rw [not_finiteDimensionalOrder_iff] at h
+  absurd infiniteDimensionalOrder_of_strictMono f hf
+  rwa [not_infiniteDimensionalOrder_iff (α := β)]

@@ -319,6 +319,15 @@ protected lemma le_sub_of_add_le_left (ha : a ≠ ⊤) : a + b ≤ c → b ≤ c
 protected lemma sub_sub_cancel (h : a ≠ ⊤) (h2 : b ≤ a) : a - (a - b) = b :=
   (addLECancellable_of_ne_top <| ne_top_of_le_ne_top h tsub_le_self).tsub_tsub_cancel_of_le h2
 
+lemma add_left_injective_of_ne_top {n : ℕ∞} (hn : n ≠ ⊤) : Function.Injective (· + n) := by
+  intro a b e
+  exact le_antisymm
+    ((WithTop.add_le_add_iff_right hn).mp e.le)
+    ((WithTop.add_le_add_iff_right hn).mp e.ge)
+
+lemma add_right_injective_of_ne_top {n : ℕ∞} (hn : n ≠ ⊤) : Function.Injective (n + ·) := by
+  simp_rw [add_comm n _]; exact add_left_injective_of_ne_top hn
+
 section withTop_enat
 
 lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n) : (m + 1 : ℕ) ≤ n := by
@@ -452,6 +461,8 @@ protected def _root_.RingHom.ENatMap {S : Type*} [OrderedCommSemiring S] [Canoni
     [DecidableEq S] [Nontrivial S] (f : ℕ →+* S) (hf : Function.Injective f) : ℕ∞ →+* WithTop S :=
   {MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with}
 
+lemma add_eq_top {x y : ℕ∞} : x + y = ⊤ ↔ x = ⊤ ∨ y = ⊤ := WithTop.add_eq_top
+
 end ENat
 
 lemma WithBot.lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := by
@@ -467,3 +478,16 @@ lemma WithBot.add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n 
   · simp
   · rw [WithBot.coe_le_coe, ENat.coe_add, ENat.coe_one, ENat.add_one_le_iff (ENat.coe_ne_top n),
       ← WithBot.coe_lt_coe, WithBot.coe_natCast]
+
+lemma ENat.withBot_of_add_eq_top {x y : WithBot ℕ∞} (h : x + y = ⊤) : x = ⊤ ∨ y = ⊤ := by
+  cases x <;> cases y; all_goals (first | rw [WithBot.coe_eq_top, WithBot.coe_eq_top,
+    ← ENat.add_eq_top, ← WithBot.coe_inj, WithBot.coe_add, h, WithBot.coe_top] | simp_all)
+
+lemma ENat.withBot_add_right_inj {n : ℕ} : Function.Injective (fun (x : WithBot ℕ∞) ↦ x + n) := by
+  intro x y h; simp only at h
+  cases x
+  · rw [WithBot.bot_add, eq_comm, WithBot.add_eq_bot] at h; simp_all
+  · cases y
+    · rw [WithBot.bot_add, WithBot.add_eq_bot] at h; simp_all
+    · norm_cast at h; congr 1
+      exact ENat.add_left_injective_of_ne_top (coe_ne_top n) h
