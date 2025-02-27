@@ -209,13 +209,12 @@ lemma Derives.append_right {v w : List (Symbol T g.NT)}
   | refl => rfl
   | tail _ last ih => exact ih.trans_produces <| last.append_right p
 
-lemma produces_nonterminal {g : ContextFreeGrammar T}
-    {u v : List (Symbol T g.NT)} (hguv : g.Produces u v) :
+lemma produces_nonterminal {u v : List (Symbol T g.NT)} (hguv : g.Produces u v) :
     ∃ r ∈ g.rules, .nonterminal r.input ∈ u := by
   obtain ⟨w, l, r⟩ := hguv
   exact ⟨w, l, ContextFreeRule.has_nonterminal_if_rewrite r⟩
 
-lemma derives_nonterminal {g : ContextFreeGrammar T} {t : g.NT} (hgt : ∀ r ∈ g.rules, r.input ≠ t) :
+lemma derives_nonterminal {t : g.NT} (hgt : ∀ r ∈ g.rules, r.input ≠ t) :
     ∀ s ≠ [.nonterminal t], ¬g.Derives [.nonterminal t] s := fun _ hs ↦ by
   rw [Derives.iff_eq_or_head]
   push_neg
@@ -224,7 +223,7 @@ lemma derives_nonterminal {g : ContextFreeGrammar T} {t : g.NT} (hgt : ∀ r ∈
   simp_rw [List.mem_singleton, Symbol.nonterminal.injEq] at hxr
   tauto
 
-lemma noninitial_empty {g : ContextFreeGrammar T} (hg : ∀ r ∈ g.rules, r.input ≠ g.initial) :
+lemma noninitial_empty (hg : ∀ r ∈ g.rules, r.input ≠ g.initial) :
     g.language = 0 :=
   Language.ext fun _ ↦ ⟨
     (absurd · (derives_nonterminal hg _ (by simp))),
