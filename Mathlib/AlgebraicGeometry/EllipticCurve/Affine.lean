@@ -289,9 +289,9 @@ lemma nonsingular_of_Δ_ne_zero {x y : R} (h : W'.Equation x y) (hΔ : W'.Δ ≠
 
 end Nonsingular
 
-section Negation
+section Ring
 
-/-! ### Negation formulae -/
+/-! ### Group operations over a ring -/
 
 variable (W') in
 /-- The polynomial $-Y - a_1X - a_3$ associated to negation. -/
@@ -322,97 +322,12 @@ lemma eval_negPolynomial (x y : R) : W'.negPolynomial.evalEval x y = W'.negY x y
   rw [negY, sub_sub, negPolynomial]
   eval_simp
 
-lemma Y_eq_of_X_eq {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
-    (hx : x₁ = x₂) : y₁ = y₂ ∨ y₁ = W.negY x₂ y₂ := by
-  rw [equation_iff] at h₁ h₂
-  rw [← sub_eq_zero, ← sub_eq_zero (a := y₁), ← mul_eq_zero, negY]
-  linear_combination (norm := (rw [hx]; ring1)) h₁ - h₂
-
-lemma Y_eq_of_Y_ne {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂) (hx : x₁ = x₂)
-    (hy : y₁ ≠ W.negY x₂ y₂) : y₁ = y₂ :=
-  (Y_eq_of_X_eq h₁ h₂ hx).resolve_right hy
-
-lemma equation_neg_iff (x y : R) : W'.Equation x (W'.negY x y) ↔ W'.Equation x y := by
-  rw [equation_iff, equation_iff, negY]
-  congr! 1
-  ring1
-
-lemma equation_neg_of {x y : R} (h : W'.Equation x <| W'.negY x y) : W'.Equation x y :=
-  (W'.equation_neg_iff ..).mp h
-
-/-- The negation of an affine point in `W` lies in `W`. -/
-lemma equation_neg {x y : R} (h : W'.Equation x y) : W'.Equation x <| W'.negY x y :=
-  (W'.equation_neg_iff ..).mpr h
-
-lemma nonsingular_neg_iff (x y : R) : W'.Nonsingular x (W'.negY x y) ↔ W'.Nonsingular x y := by
-  rw [nonsingular_iff, equation_neg_iff, ← negY, negY_negY, ← @ne_comm _ y, nonsingular_iff]
-  exact and_congr_right' <| (iff_congr not_and_or.symm not_and_or.symm).mpr <|
-    not_congr <| and_congr_left fun h => by rw [← h]
-
-lemma nonsingular_neg_of {x y : R} (h : W'.Nonsingular x <| W'.negY x y) : W'.Nonsingular x y :=
-  (W'.nonsingular_neg_iff ..).mp h
-
-/-- The negation of a nonsingular affine point in `W` is nonsingular. -/
-lemma nonsingular_neg {x y : R} (h : W'.Nonsingular x y) : W'.Nonsingular x <| W'.negY x y :=
-  (W'.nonsingular_neg_iff ..).mpr h
-
-end Negation
-
-section Slope
-
-/-! ### Slope formulae -/
-
-variable (W') in
 /-- The polynomial $L(X - x) + y$ associated to the line $Y = L(X - x) + y$,
 with a slope of $L$ that passes through an affine point $(x, y)$.
 
 This does not depend on `W`, and has argument order: $x$, $y$, $L$. -/
 noncomputable def linePolynomial (x y ℓ : R) : R[X] :=
   C ℓ * (X - C x) + C y
-
-open Classical in
-variable (W) in
-/-- The slope of the line through two affine points $(x_1, y_1)$ and $(x_2, y_2)$ in `W`.
-If $x_1 \ne x_2$, then this line is the secant of `W` through $(x_1, y_1)$ and $(x_2, y_2)$,
-and has slope $(y_1 - y_2) / (x_1 - x_2)$. Otherwise, if $y_1 \ne -y_1 - a_1x_1 - a_3$,
-then this line is the tangent of `W` at $(x_1, y_1) = (x_2, y_2)$, and has slope
-$(3x_1^2 + 2a_2x_1 + a_4 - a_1y_1) / (2y_1 + a_1x_1 + a_3)$. Otherwise, this line is vertical,
-and has undefined slope, in which case this function returns the value 0.
-
-This depends on `W`, and has argument order: $x_1$, $x_2$, $y_1$, $y_2$. -/
-noncomputable def slope (x₁ x₂ y₁ y₂ : F) : F :=
-  if x₁ = x₂ then if y₁ = W.negY x₂ y₂ then 0
-    else (3 * x₁ ^ 2 + 2 * W.a₂ * x₁ + W.a₄ - W.a₁ * y₁) / (y₁ - W.negY x₁ y₁)
-  else (y₁ - y₂) / (x₁ - x₂)
-
-@[simp]
-lemma slope_of_Y_eq {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy : y₁ = W.negY x₂ y₂) :
-    W.slope x₁ x₂ y₁ y₂ = 0 := by
-  rw [slope, if_pos hx, if_pos hy]
-
-@[simp]
-lemma slope_of_Y_ne {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy : y₁ ≠ W.negY x₂ y₂) :
-    W.slope x₁ x₂ y₁ y₂ =
-      (3 * x₁ ^ 2 + 2 * W.a₂ * x₁ + W.a₄ - W.a₁ * y₁) / (y₁ - W.negY x₁ y₁) := by
-  rw [slope, if_pos hx, if_neg hy]
-
-@[simp]
-lemma slope_of_X_ne {x₁ x₂ y₁ y₂ : F} (hx : x₁ ≠ x₂) :
-    W.slope x₁ x₂ y₁ y₂ = (y₁ - y₂) / (x₁ - x₂) := by
-  rw [slope, if_neg hx]
-
-lemma slope_of_Y_ne_eq_eval {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy : y₁ ≠ W.negY x₂ y₂) :
-    W.slope x₁ x₂ y₁ y₂ = -W.polynomialX.evalEval x₁ y₁ / W.polynomialY.evalEval x₁ y₁ := by
-  rw [slope_of_Y_ne hx hy, evalEval_polynomialX, neg_sub]
-  congr 1
-  rw [negY, evalEval_polynomialY]
-  ring1
-
-end Slope
-
-section Addition
-
-/-! ### Addition formulae -/
 
 variable (W') in
 /-- The polynomial obtained by substituting the line $Y = L*(X - x) + y$, with a slope of $L$
@@ -467,6 +382,84 @@ This depends on `W`, and has argument order: $x_1$, $x_2$, $y_1$, $L$. -/
 @[simp]
 def addY (x₁ x₂ y₁ ℓ : R) : R :=
   W'.negY (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ)
+
+lemma equation_neg_iff (x y : R) : W'.Equation x (W'.negY x y) ↔ W'.Equation x y := by
+  rw [equation_iff, equation_iff, negY]
+  congr! 1
+  ring1
+
+lemma equation_neg_of {x y : R} (h : W'.Equation x <| W'.negY x y) : W'.Equation x y :=
+  (W'.equation_neg_iff ..).mp h
+
+/-- The negation of an affine point in `W` lies in `W`. -/
+lemma equation_neg {x y : R} (h : W'.Equation x y) : W'.Equation x <| W'.negY x y :=
+  (W'.equation_neg_iff ..).mpr h
+
+lemma nonsingular_neg_iff (x y : R) : W'.Nonsingular x (W'.negY x y) ↔ W'.Nonsingular x y := by
+  rw [nonsingular_iff, equation_neg_iff, ← negY, negY_negY, ← @ne_comm _ y, nonsingular_iff]
+  exact and_congr_right' <| (iff_congr not_and_or.symm not_and_or.symm).mpr <|
+    not_congr <| and_congr_left fun h => by rw [← h]
+
+lemma nonsingular_neg_of {x y : R} (h : W'.Nonsingular x <| W'.negY x y) : W'.Nonsingular x y :=
+  (W'.nonsingular_neg_iff ..).mp h
+
+/-- The negation of a nonsingular affine point in `W` is nonsingular. -/
+lemma nonsingular_neg {x y : R} (h : W'.Nonsingular x y) : W'.Nonsingular x <| W'.negY x y :=
+  (W'.nonsingular_neg_iff ..).mpr h
+
+end Ring
+
+section Field
+
+/-! ### Group operations over a field -/
+
+open Classical in
+variable (W) in
+/-- The slope of the line through two affine points $(x_1, y_1)$ and $(x_2, y_2)$ in `W`.
+If $x_1 \ne x_2$, then this line is the secant of `W` through $(x_1, y_1)$ and $(x_2, y_2)$,
+and has slope $(y_1 - y_2) / (x_1 - x_2)$. Otherwise, if $y_1 \ne -y_1 - a_1x_1 - a_3$,
+then this line is the tangent of `W` at $(x_1, y_1) = (x_2, y_2)$, and has slope
+$(3x_1^2 + 2a_2x_1 + a_4 - a_1y_1) / (2y_1 + a_1x_1 + a_3)$. Otherwise, this line is vertical,
+and has undefined slope, in which case this function returns the value 0.
+
+This depends on `W`, and has argument order: $x_1$, $x_2$, $y_1$, $y_2$. -/
+noncomputable def slope (x₁ x₂ y₁ y₂ : F) : F :=
+  if x₁ = x₂ then if y₁ = W.negY x₂ y₂ then 0
+    else (3 * x₁ ^ 2 + 2 * W.a₂ * x₁ + W.a₄ - W.a₁ * y₁) / (y₁ - W.negY x₁ y₁)
+  else (y₁ - y₂) / (x₁ - x₂)
+
+@[simp]
+lemma slope_of_Y_eq {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy : y₁ = W.negY x₂ y₂) :
+    W.slope x₁ x₂ y₁ y₂ = 0 := by
+  rw [slope, if_pos hx, if_pos hy]
+
+@[simp]
+lemma slope_of_Y_ne {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy : y₁ ≠ W.negY x₂ y₂) :
+    W.slope x₁ x₂ y₁ y₂ =
+      (3 * x₁ ^ 2 + 2 * W.a₂ * x₁ + W.a₄ - W.a₁ * y₁) / (y₁ - W.negY x₁ y₁) := by
+  rw [slope, if_pos hx, if_neg hy]
+
+@[simp]
+lemma slope_of_X_ne {x₁ x₂ y₁ y₂ : F} (hx : x₁ ≠ x₂) :
+    W.slope x₁ x₂ y₁ y₂ = (y₁ - y₂) / (x₁ - x₂) := by
+  rw [slope, if_neg hx]
+
+lemma slope_of_Y_ne_eq_eval {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy : y₁ ≠ W.negY x₂ y₂) :
+    W.slope x₁ x₂ y₁ y₂ = -W.polynomialX.evalEval x₁ y₁ / W.polynomialY.evalEval x₁ y₁ := by
+  rw [slope_of_Y_ne hx hy, evalEval_polynomialX, neg_sub]
+  congr 1
+  rw [negY, evalEval_polynomialY]
+  ring1
+
+lemma Y_eq_of_X_eq {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
+    (hx : x₁ = x₂) : y₁ = y₂ ∨ y₁ = W.negY x₂ y₂ := by
+  rw [equation_iff] at h₁ h₂
+  rw [← sub_eq_zero, ← sub_eq_zero (a := y₁), ← mul_eq_zero, negY]
+  linear_combination (norm := (rw [hx]; ring1)) h₁ - h₂
+
+lemma Y_eq_of_Y_ne {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂) (hx : x₁ = x₂)
+    (hy : y₁ ≠ W.negY x₂ y₂) : y₁ = y₂ :=
+  (Y_eq_of_X_eq h₁ h₂ hx).resolve_right hy
 
 lemma addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) : W.addPolynomial x₁ y₁ (W.slope x₁ x₂ y₁ y₂) =
@@ -597,7 +590,7 @@ lemma addY_sub_negY_addY {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
   simp_rw [addY, negY, eq_div_iff (sub_ne_zero.mpr hx.symm)]
   linear_combination (norm := ring1) 2 * cyclic_sum_Y_mul_X_sub_X y₁ y₂ hx
 
-end Addition
+end Field
 
 section Group
 
