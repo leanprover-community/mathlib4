@@ -31,7 +31,7 @@ initialize registerBuiltinAttribute {
     name := `disallowed_axiom
     descr := "An axiom that triggers the `disallowedAxioms` linter"
     add := fun decl attrStx kind ↦ do
-      let some cinfo := ← (pure <| (← getEnv).find? decl) | throwError "unknown constant '{decl}'"
+      let some cinfo := (← getEnv).find? decl | throwError "unknown constant '{decl}'"
       unless cinfo.isAxiom do
         throwError "'{decl}' is not an axiom"
       disallowedAxiomsRef.modify (·.insert decl)
@@ -119,8 +119,7 @@ def unusedDeclLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let env ← getEnv
   for constStx in nms do
     let constName := constStx.getId
-    let some constInfo ← pure <| env.find? constName |
-      throwError s!"unknown declaration '{constName}'"
+    let some constInfo := env.find? constName | throwError s!"unknown declaration '{constName}'"
     let decls := constInfo.getUsedConstantsAsSet
     unusedDeclRef.modify fun {all, used} => {
         all := all.insert (constStx.getRange?.getD default, constName)
