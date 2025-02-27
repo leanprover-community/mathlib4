@@ -25,7 +25,7 @@ run_meta do
   for keys in ← encodeExpr q(Function.Bijective fun x : Int => Int.succ ($m x)) do
       logInfo m! "{← keysAsPattern keys}"
 
--- caching the way in which eta reduction is done:
+-- caching the way in which eta reduction is done (so we get 2 instead of 4 results):
 /--
 info: And (@Function.Bijective ℤ ℤ Int.succ) (@Function.Bijective ℤ ℤ Int.succ)
 ---
@@ -111,13 +111,30 @@ open BigOperators Finset in
 
 
 /--
-info: @Function.Bijective ℕ ℕ (λ, @HAdd.hAdd ℕ ℕ *0 *1 (@HMul.hMul ℕ ℕ *2 *3 #0 3) (@HDiv.hDiv ℕ ℕ *4 *5 4 (@HPow.hPow ℕ ℕ *6 *7 (@HVAdd.hVAdd ℕ ℕ *8 *9 3 (@HSMul.hSMul ℕ ℕ *10 *11 2 5)) #0)))
+info: @Function.Bijective
+  ℕ
+  ℕ
+  (λ, @HAdd.hAdd
+     ℕ
+     ℕ
+     *0
+     *1
+     (@HMul.hMul ℕ ℕ *2 *3 #0 3)
+     (@HDiv.hDiv ℕ ℕ *4 *5 4 (@HPow.hPow ℕ ℕ *6 *7 (@HVAdd.hVAdd ℕ ℕ *8 *9 3 (@HSMul.hSMul ℕ ℕ *10 *11 2 5)) #0)))
 -/
 #guard_msgs in
 #log_keys Function.Bijective fun x => x*3+4/(3+ᵥ2•5)^x
 
 /--
-info: Nat.sqrt (@HAdd.hAdd (ℕ → ℕ) (ℕ → ℕ) *0 *1 (@HVAdd.hVAdd ℕ (ℕ → ℕ) *2 *3 (@HSMul.hSMul ℕ ℕ *4 *5 2 1) (@id ℕ)) (@HDiv.hDiv (ℕ → ℕ) (ℕ → ℕ) *6 *7 (@HMul.hMul (ℕ → ℕ) (ℕ → ℕ) *8 *9 4 5) (@HPow.hPow (ℕ → ℕ) ℕ *10 *11 (@id ℕ) 9)) 5)
+info: Nat.sqrt
+  (@HAdd.hAdd
+     (ℕ → ℕ)
+     (ℕ → ℕ)
+     *0
+     *1
+     (@HVAdd.hVAdd ℕ (ℕ → ℕ) *2 *3 (@HSMul.hSMul ℕ ℕ *4 *5 2 1) (@id ℕ))
+     (@HDiv.hDiv (ℕ → ℕ) (ℕ → ℕ) *6 *7 (@HMul.hMul (ℕ → ℕ) (ℕ → ℕ) *8 *9 4 5) (@HPow.hPow (ℕ → ℕ) ℕ *10 *11 (@id ℕ) 9))
+     5)
 -/
 #guard_msgs in
 #log_keys Nat.sqrt $ ((2•1+ᵥid)+4*5/id^9 : Nat → Nat) 5
@@ -144,28 +161,40 @@ info: Nat.sqrt (@HAdd.hAdd (ℕ → ℕ) (ℕ → ℕ) *0 *1 (@HVAdd.hVAdd ℕ (
 #log_keys id fun (α : Type) [Ring α] => (2•3 : α)
 
 
-
 /-- info: @Function.Bijective ℕ ℕ (λ, 4) -/
 #guard_msgs in
 #log_keys Function.Bijective fun _ : Nat => 4
 
--- but not at the root:
 /-- info: λ, @OfNat.ofNat ℕ 4 *0 -/
 #guard_msgs in
 #log_keys fun _ : Nat => 4
 
--- index metavariable constant functions as just a star pattern:
-/-- info: @Function.Bijective ℕ ℕ *0 -/
+
+-- metavariables in a lambda body
+/-- info: @Function.Bijective ℕ ℕ (λ, *0) -/
 #guard_msgs in
 run_meta do
   let m ← mkFreshExprMVarQ q(ℕ)
   for keys in ← encodeExpr q(Function.Bijective fun _ : Nat => $m) do
     logInfo m! "{← keysAsPattern keys}"
 
--- but not at the root:
 /-- info: λ, *0 -/
 #guard_msgs in
 run_meta do
   let m ← mkFreshExprMVarQ q(ℕ)
   for keys in ← encodeExpr q(fun _ : Nat => $m) do
+    logInfo m! "{← keysAsPattern keys}"
+
+/-- info: @Function.Bijective ℕ ℕ *0 -/
+#guard_msgs in
+run_meta do
+  let m ← mkFreshExprMVarQ q(ℕ → ℕ → ℕ)
+  for keys in ← encodeExpr q(Function.Bijective fun x : Nat => $m x x) do
+    logInfo m! "{← keysAsPattern keys}"
+
+/-- info: *0 -/
+#guard_msgs in
+run_meta do
+  let m ← mkFreshExprMVarQ q(ℕ → ℕ → ℕ)
+  for keys in ← encodeExpr q(fun x : Nat => $m x x) do
     logInfo m! "{← keysAsPattern keys}"
