@@ -251,12 +251,16 @@ noncomputable def AssociatedGradedRingHom [DecidableEq ι] :
     · simp [eq0]
   map_mul' a b := DirectSum.induction_on a (by simp)
     (DirectSum.induction_on b (by simp)
-      (by sorry)
+      (by intro i x j y
+          simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
+          sorry)
       (by intro x y h1 h2 i z
           simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, map_add] at h1 h2 ⊢
           rw [mul_add, map_add, mul_add, h1 i z, h2 i z]))
     (DirectSum.induction_on b (by simp)
-      (by sorry)
+      (by intro i z x y h1 h2
+          simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, map_add] at h1 h2 ⊢
+          rw [add_mul, map_add, add_mul, h1, h2])
       (by intro x y h1 h2 u v
           simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, map_add]
           intro h3 h4
