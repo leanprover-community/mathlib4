@@ -106,7 +106,7 @@ def toNerve₂.mk.app (n : SimplexCategory.Truncated 2) :
     mk.app F ⦋2⦌₂ φ = .mk₂ (F.map (ev01₂ φ)) (F.map (ev12₂ φ)) := rfl
 
 /-- This is similar to one of the famous Segal maps, except valued in a product rather than a
-pullback.-/
+pullback. -/
 noncomputable def nerve₂.seagull (C : Type u) [Category C] :
     (nerveFunctor₂.obj (Cat.of C)).obj (op ⦋2⦌₂) ⟶
     (nerveFunctor₂.obj (Cat.of C)).obj (op ⦋1⦌₂) ⨯ (nerveFunctor₂.obj (Cat.of C)).obj (op ⦋1⦌₂) :=
