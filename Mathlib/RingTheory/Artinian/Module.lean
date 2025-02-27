@@ -117,14 +117,6 @@ theorem LinearEquiv.isArtinian_iff (f : M ≃ₗ[R] P) : IsArtinian R M ↔ IsAr
 instance (priority := 100) isArtinian_of_finite [Finite M] : IsArtinian R M :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
 
-lemma isArtinian_top_iff {M} [AddCommGroup M] [Module R M] :
-  IsArtinian R (⊤ : Submodule R M) ↔ IsArtinian R M := by
-  constructor
-  · intro h; haveI := h
-    exact isArtinian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
-  · intro h; haveI := h
-    exact isArtinian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl).symm
-
 -- Porting note: elab_as_elim can only be global and cannot be changed on an imported decl
 -- attribute [local elab_as_elim] Finite.induction_empty_option
 
