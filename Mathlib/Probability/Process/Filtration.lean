@@ -340,21 +340,44 @@ end Limit
 
 section piLE
 
-open Finset MeasurableSpace Preorder
+/-! ### Filtration of the first events -/
 
-variable {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
-  (X : ι → Type*) [∀ i, MeasurableSpace (X i)]
+open MeasurableSpace Preorder
 
-/-- The canonical filtration on dependent functions indexed by `ℕ`, where `𝓕 n` consists of
-measurable sets depending only on coordinates `≤ n`. -/
-def piLE := natural (fun i ↦ frestrictLe (π := X) i) fun i ↦ measurable_frestrictLe i
+variable {ι : Type*} [Preorder ι] (X : ι → Type*) [∀ i, MeasurableSpace (X i)]
 
-lemma piLE_apply (i : ι) : piLE X i = MeasurableSpace.pi.comap (frestrictLe i) := by
+section Set
+
+/-- The canonical filtration on the pi space `Π i, X i`, where `piLE X i` consists of
+measurable sets depending only on coordinates `≤ i`. -/
+def piLE := natural (fun i ↦ restrictLe (π := X) i) fun i ↦ measurable_restrictLe i
+
+lemma piLE_apply (i : ι) : piLE X i = pi.comap (restrictLe i) := by
   simp_rw [piLE, natural]
+  refine le_antisymm (iSup₂_le fun j hj ↦ ?_) ?_
+  · rw [← restrictLe₂_comp_restrictLe hj, ← comap_comp]
+    exact comap_mono (measurable_restrictLe₂ hj).comap_le
+  · exact le_biSup (fun j ↦ pi.comap (restrictLe j)) le_rfl
+
+end Set
+
+section Finset
+
+variable [LocallyFiniteOrderBot ι]
+
+/-- The canonical filtration on the pi space `Π i, X i`, where `piLE X i` consists of
+measurable sets depending only on coordinates `≤ i`, version where there are only finitely
+many coordinates. -/
+def fpiLE := natural (fun i ↦ frestrictLe (π := X) i) fun i ↦ measurable_frestrictLe i
+
+lemma fpiLE_apply (i : ι) : fpiLE X i = pi.comap (frestrictLe i) := by
+  simp_rw [fpiLE, natural]
   refine le_antisymm (iSup₂_le fun j hj ↦ ?_) ?_
   · rw [← frestrictLe₂_comp_frestrictLe hj, ← comap_comp]
     exact comap_mono (measurable_frestrictLe₂ hj).comap_le
-  · exact le_biSup (fun j ↦ MeasurableSpace.pi.comap (frestrictLe j)) le_rfl
+  · exact le_biSup (fun j ↦ pi.comap (frestrictLe j)) le_rfl
+
+end Finset
 
 end piLE
 
