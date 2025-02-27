@@ -532,7 +532,7 @@ instance nerveAdjunction.isIso_counit : IsIso nerveAdjunction.counit :=
 
 /-- The counit map of `nerveAdjunction` is an isomorphism since the nerve functor is fully
 faithful. -/
-noncomputable def nerveCounitNatIso : nerveFunctor.{u, u} ⋙ hoFunctor ≅ 𝟭 Cat :=
+noncomputable def nerveFunctorCompHoFunctorIso : nerveFunctor.{u, u} ⋙ hoFunctor ≅ 𝟭 Cat :=
   asIso (nerveAdjunction.counit)
 
 noncomputable instance : Reflective nerveFunctor where
