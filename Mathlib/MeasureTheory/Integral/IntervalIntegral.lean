@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Patrick Massot, Sébastien Gouëzel
 import Mathlib.Order.Interval.Set.Disjoint
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+import Mathlib.MeasureTheory.Topology
 import Mathlib.Algebra.EuclideanDomain.Basic
 
 /-!
@@ -89,6 +90,23 @@ theorem IntervalIntegrable.congr {g : ℝ → E} (hf : IntervalIntegrable f μ a
     (h : f =ᵐ[μ.restrict (Ι a b)] g) :
     IntervalIntegrable g μ a b := by
   rwa [intervalIntegrable_iff, ← integrableOn_congr_fun_ae h, ← intervalIntegrable_iff]
+
+/-- Interval integrability is invariant when functions change along discrete sets. -/
+theorem intervalIntegrable_congr_codiscreteWithin {g : ℝ → E}
+    (h : f =ᶠ[codiscreteWithin (Ι a b)] g) :
+    IntervalIntegrable f volume a b ↔ IntervalIntegrable g volume a b := by
+  constructor
+  · intro hf
+    apply hf.congr
+    rw [eventuallyEq_iff_exists_mem] at *
+    obtain ⟨s, h₁s, h₂s⟩ := h
+    use s, ae_of_restrVol_le_codiscreteWithin measurableSet_Ioc h₁s, h₂s
+  · rw [eventuallyEq_comm] at h
+    intro hg
+    apply hg.congr
+    rw [eventuallyEq_iff_exists_mem] at *
+    obtain ⟨s, h₁s, h₂s⟩ := h
+    use s, ae_of_restrVol_le_codiscreteWithin measurableSet_Ioc h₁s, h₂s
 
 theorem intervalIntegrable_iff_integrableOn_Ioc_of_le (hab : a ≤ b) :
     IntervalIntegrable f μ a b ↔ IntegrableOn f (Ioc a b) μ := by
