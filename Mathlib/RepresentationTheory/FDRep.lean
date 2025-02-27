@@ -27,6 +27,14 @@ We verify that `FDRep k G` is a `k`-linear monoidal category, and rigid when `G`
 
 `FDRep k G` has all finite limits.
 
+## Implementation notes
+
+We define `FDRep R G` for any ring `R` and monoid `G`,
+as the category of finitely generated `R`-linear representations of `G`.
+
+The main case of interest is when `R = k` is a field and `G` is a group,
+and this is reflected in the documentaton.
+
 ## TODO
 * `FdRep k G ≌ FullSubcategory (FiniteDimensional k)`
 * `FdRep k G` has all finite colimits.
@@ -44,7 +52,10 @@ open CategoryTheory
 open CategoryTheory.Limits
 
 
-/-- The category of finite dimensional `k`-linear representations of a monoid `G`. -/
+/-- The category of finitely generated `R`-linear representations of a monoid `G`.
+
+Note that `R` can be any ring,
+but the main case of interest is when `R = k` is a field and `G` is a group. -/
 abbrev FDRep (R G : Type u) [Ring R] [Monoid G] :=
   Action (FGModuleCat.{u} R) (MonCat.of G)
 
@@ -80,7 +91,7 @@ instance (V W : FDRep k G) : FiniteDimensional k (V ⟶ W) :=
   FiniteDimensional.of_injective ((forget₂ (FDRep k G) (FGModuleCat k)).mapLinearMap k)
     (Functor.map_injective (forget₂ (FDRep k G) (FGModuleCat k)))
 
-/-- The monoid homomorphism corresponding to the action of `G` onto `V : FDRep k G`. -/
+/-- The monoid homomorphism corresponding to the action of `G` onto `V : FDRep R G`. -/
 def ρ (V : FDRep R G) : G →* V →ₗ[R] V :=
   (ModuleCat.endRingEquiv _).toMonoidHom.comp (Action.ρ V).hom
 
