@@ -196,7 +196,7 @@ private noncomputable def AssociatedGradedRingHomAux :
   fun a ↦ DirectSum.mk (GradedPiece FS FS_lt) (DFinsupp.support a) (fun i ↦ Gr(i)[f] (a i))
 
 private lemma AssociatedGradedRingHomAux_apply (x : AssociatedGraded FR FR_lt) (i : ι) :
-    (AssociatedGradedRingHomAux f x) i = GradedPieceHom f i (x i) := by
+    (AssociatedGradedRingHomAux f x) i = Gr(i)[f] (x i) := by
   dsimp only [AssociatedGradedRingHomAux]
   by_cases ixsupp : i ∈ DFinsupp.support x
   · simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, mk_apply_of_mem ixsupp]
@@ -221,11 +221,10 @@ noncomputable def AssociatedGradedRingHom :
 scoped[FilteredRingHom] notation:9000 "Gr[" f "]" => AssociatedGradedRingHom f
 
 theorem AssociatedGradedRingHom_to_GradedPieceHom (x : AssociatedGraded FR FR_lt) (i : ι) :
-    (AssociatedGradedRingHom f x) i = GradedPieceHom f i (x i) := by
+    (Gr[f] x) i = Gr(i)[f] (x i) := by
   simp [AssociatedGradedRingHom, AssociatedGradedRingHomAux_apply]
 
-theorem AssociatedGradedRingHom_comp: (AssociatedGradedRingHom g).comp (AssociatedGradedRingHom f) =
-    AssociatedGradedRingHom (g.comp f) := by
+theorem AssociatedGradedRingHom_comp: Gr[g].comp Gr[f] = Gr[g.comp f] := by
   ext x i
   simpa [AssociatedGradedRingHom, AssociatedGradedRingHomAux_apply]
     using GradedPieceHom_comp_apply FT FT_lt f g _ _
