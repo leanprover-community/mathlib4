@@ -575,6 +575,12 @@ lemma pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
   | 0 => by simp
   | n + 1 => by rw [pow_succ _ n, pow_succ, pow_succ', mul_assoc]
 
+@[to_additive] lemma mul_pow_mul (a b : M) (n : ℕ) :
+    (a * b) ^ n * a = a * (b * a) ^ n := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp [pow_succ', ← ih, Nat.mul_add, mul_assoc]
+
 @[to_additive]
 lemma pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n := by rw [← pow_succ, pow_succ']
 
@@ -905,7 +911,7 @@ attribute [to_additive existing (attr := simp) negSucc_zsmul] zpow_negSucc
 This is a duplicate of `DivInvMonoid.div_eq_mul_inv` ensuring that the types unfold better.
 -/
 @[to_additive "Subtracting an element is the same as adding by its negative.
-This is a duplicate of `SubNegMonoid.sub_eq_mul_neg` ensuring that the types unfold better."]
+This is a duplicate of `SubNegMonoid.sub_eq_add_neg` ensuring that the types unfold better."]
 theorem div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ :=
   DivInvMonoid.div_eq_mul_inv _ _
 

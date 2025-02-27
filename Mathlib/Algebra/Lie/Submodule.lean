@@ -85,9 +85,10 @@ instance : CanLift (Submodule R M) (LieSubmodule R L M) (·)
 theorem coe_toSubmodule : ((N : Submodule R M) : Set M) = N :=
   rfl
 
--- `simp` can prove this after `mem_toSubmodule` is added to the simp set,
--- but `dsimp` can't.
-@[simp, nolint simpNF]
+-- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
+-- If that were still the case, this would useful as a `@[simp]` lemma,
+-- despite the fact that it is provable by `simp` (by not `dsimp`).
+@[simp, nolint simpNF] -- See https://github.com/leanprover-community/mathlib4/issues/10675
 theorem mem_carrier {x : M} : x ∈ N.carrier ↔ x ∈ (N : Set M) :=
   Iff.rfl
 
@@ -149,8 +150,7 @@ theorem toSubmodule_inj : (N : Submodule R M) = (N' : Submodule R M) ↔ N = N' 
 equalities. -/
 protected def copy (s : Set M) (hs : s = ↑N) : LieSubmodule R L M where
   carrier := s
-  -- Porting note: all the proofs below were in term mode
-  zero_mem' := by exact hs.symm ▸ N.zero_mem'
+  zero_mem' := by simp [hs]
   add_mem' x y := by rw [hs] at x y ⊢; exact N.add_mem' x y
   smul_mem' := by exact hs.symm ▸ N.smul_mem'
   lie_mem := by exact hs.symm ▸ N.lie_mem
@@ -1242,7 +1242,6 @@ theorem inclusion_injective {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) :
   fun x y ↦ by
   simp only [inclusion_apply, imp_self, Subtype.mk_eq_mk, SetLike.coe_eq_coe]
 
--- Porting note: LHS simplifies, so moved @[simp] to new theorem `map_sup_ker_eq_map'`
 theorem map_sup_ker_eq_map : LieIdeal.map f (I ⊔ f.ker) = LieIdeal.map f I := by
   suffices LieIdeal.map f (I ⊔ f.ker) ≤ LieIdeal.map f I by
     exact le_antisymm this (LieIdeal.map_mono le_sup_left)
@@ -1455,7 +1454,8 @@ def LieModuleEquiv.ofTop : (⊤ : LieSubmodule R L M) ≃ₗ⁅R,L⁆ M :=
 variable {R L}
 
 -- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-@[simp, nolint simpNF] lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
+@[simp, nolint simpNF]
+lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
     LieModuleEquiv.ofTop R L M x = x :=
   rfl
 

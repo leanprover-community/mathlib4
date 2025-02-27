@@ -132,7 +132,7 @@ variable {R S : Type*} [Ring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
 protected theorem sub_le (a b c : R) : abv (a - c) ≤ abv (a - b) + abv (b - c) := by
   simpa [sub_eq_add_neg, add_assoc] using abv.add_le (a - b) (b - c)
 
-@[simp high] -- Porting note: added `high` to apply it before `AbsoluteValue.eq_zero`
+@[simp high] -- added `high` to apply it before `AbsoluteValue.eq_zero`
 theorem map_sub_eq_zero_iff (a b : R) : abv (a - b) = 0 ↔ a = b :=
   abv.eq_zero.trans sub_eq_zero
 
@@ -368,9 +368,6 @@ lemma IsNontrivial.exists_abv_lt_one {F S : Type*} [Field F] [LinearOrderedField
 end nontrivial
 
 end AbsoluteValue
-
--- Porting note: Removed [] in fields, see
--- leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Infer.20kinds.20are.20unsupported
 
 /-- A function `f` is an absolute value if it is nonnegative, zero only at 0, additive, and
 multiplicative.
