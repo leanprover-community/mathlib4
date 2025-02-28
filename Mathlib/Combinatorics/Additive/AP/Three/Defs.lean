@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Interval.Finset
+import Mathlib.Algebra.Order.Interval.Finset.Basic
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Combinatorics.Additive.FreimanHom
 import Mathlib.Order.Interval.Finset.Fin

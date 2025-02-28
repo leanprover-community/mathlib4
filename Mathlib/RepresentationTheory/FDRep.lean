@@ -27,6 +27,14 @@ We verify that `FDRep k G` is a `k`-linear monoidal category, and rigid when `G`
 
 `FDRep k G` has all finite limits.
 
+## Implementation notes
+
+We define `FDRep R G` for any ring `R` and monoid `G`,
+as the category of finitely generated `R`-linear representations of `G`.
+
+The main case of interest is when `R = k` is a field and `G` is a group,
+and this is reflected in the documentaton.
+
 ## TODO
 * `FdRep k G ≌ FullSubcategory (FiniteDimensional k)`
 * `FdRep k G` has all finite colimits.
@@ -44,9 +52,12 @@ open CategoryTheory
 open CategoryTheory.Limits
 
 
-/-- The category of finite dimensional `k`-linear representations of a monoid `G`. -/
+/-- The category of finitely generated `R`-linear representations of a monoid `G`.
+
+Note that `R` can be any ring,
+but the main case of interest is when `R = k` is a field and `G` is a group. -/
 abbrev FDRep (R G : Type u) [Ring R] [Monoid G] :=
-  Action (FGModuleCat.{u} R) (MonCat.of G)
+  Action (FGModuleCat R) G
 
 namespace FDRep
 
@@ -80,43 +91,42 @@ instance (V W : FDRep k G) : FiniteDimensional k (V ⟶ W) :=
   FiniteDimensional.of_injective ((forget₂ (FDRep k G) (FGModuleCat k)).mapLinearMap k)
     (Functor.map_injective (forget₂ (FDRep k G) (FGModuleCat k)))
 
-/-- The monoid homomorphism corresponding to the action of `G` onto `V : FDRep k G`. -/
+/-- The monoid homomorphism corresponding to the action of `G` onto `V : FDRep R G`. -/
 def ρ (V : FDRep R G) : G →* V →ₗ[R] V :=
-  (ModuleCat.endRingEquiv _).toMonoidHom.comp (Action.ρ V).hom
+  (ModuleCat.endRingEquiv _).toMonoidHom.comp (Action.ρ V)
 
 @[simp]
 lemma endRingEquiv_symm_comp_ρ (V : FDRep R G) :
     (MonoidHomClass.toMonoidHom (ModuleCat.endRingEquiv V.V.obj).symm).comp (ρ V) =
-      (Action.ρ V).hom :=
+      (Action.ρ V) :=
   rfl
 
 @[simp]
 lemma endRingEquiv_comp_ρ (V : FDRep R G) :
-    (MonoidHomClass.toMonoidHom (ModuleCat.endRingEquiv V.V.obj)).comp (Action.ρ V).hom = ρ V := rfl
+    (MonoidHomClass.toMonoidHom (ModuleCat.endRingEquiv V.V.obj)).comp (Action.ρ V) = ρ V := rfl
 
 @[simp]
 lemma hom_action_ρ (V : FDRep R G) (g : G) : (Action.ρ V g).hom = ρ V g := rfl
 
 /-- The underlying `LinearEquiv` of an isomorphism of representations. -/
 def isoToLinearEquiv {V W : FDRep R G} (i : V ≅ W) : V ≃ₗ[R] W :=
-  FGModuleCat.isoToLinearEquiv ((Action.forget (FGModuleCat R) (MonCat.of G)).mapIso i)
+  FGModuleCat.isoToLinearEquiv ((Action.forget (FGModuleCat R) G).mapIso i)
 
 theorem Iso.conj_ρ {V W : FDRep R G} (i : V ≅ W) (g : G) :
     W.ρ g = (FDRep.isoToLinearEquiv i).conj (V.ρ g) := by
   rw [FDRep.isoToLinearEquiv, ← hom_action_ρ V, ← FGModuleCat.Iso.conj_hom_eq_conj, Iso.conj_apply,
       ← ModuleCat.hom_ofHom (W.ρ g), ← ModuleCat.hom_ext_iff,
-      Iso.eq_inv_comp ((Action.forget (FGModuleCat R) (MonCat.of G)).mapIso i)]
+      Iso.eq_inv_comp ((Action.forget (FGModuleCat R) G).mapIso i)]
   exact (i.hom.comm g).symm
 
 /-- Lift an unbundled representation to `FDRep`. -/
 @[simps ρ]
 abbrev of {V : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V]
     (ρ : Representation R G V) : FDRep R G :=
-  ⟨FGModuleCat.of R V, MonCat.ofHom ρ ≫ MonCat.ofHom
-    (ModuleCat.endRingEquiv (ModuleCat.of R V)).symm.toMonoidHom⟩
+  ⟨FGModuleCat.of R V, (ModuleCat.endRingEquiv _).symm.toMonoidHom.comp ρ⟩
 
 instance : HasForget₂ (FDRep R G) (Rep R G) where
-  forget₂ := (forget₂ (FGModuleCat R) (ModuleCat R)).mapAction (MonCat.of G)
+  forget₂ := (forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G
 
 theorem forget₂_ρ (V : FDRep R G) : ((forget₂ (FDRep R G) (Rep R G)).obj V).ρ = V.ρ := by
   ext g v; rfl
@@ -160,7 +170,7 @@ variable {k G : Type u} [Field k] [Group G]
 
 -- Verify that the right rigid structure is available when the monoid is a group.
 noncomputable instance : RightRigidCategory (FDRep k G) := by
-  change RightRigidCategory (Action (FGModuleCat k) (Grp.of G)); infer_instance
+  change RightRigidCategory (Action (FGModuleCat k) G); infer_instance
 
 example : RigidCategory (FDRep k G) := by infer_instance
 

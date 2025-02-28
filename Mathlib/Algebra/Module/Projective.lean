@@ -114,6 +114,12 @@ theorem _root_.LinearMap.exists_rightInverse_of_surjective [Projective R P]
     (f : M →ₗ[R] P) (hf_surj : range f = ⊤) : ∃ g : P →ₗ[R] M, f ∘ₗ g = LinearMap.id :=
   projective_lifting_property f (.id : P →ₗ[R] P) (LinearMap.range_eq_top.1 hf_surj)
 
+open Function in
+theorem _root_.Function.Surjective.surjective_linearMapComp_left [Projective R P]
+    {f : M →ₗ[R] P} (hf_surj : Surjective f) : Surjective (fun g : N →ₗ[R] M ↦ f.comp g) :=
+  surjective_comp_left_of_exists_rightInverse <|
+    f.exists_rightInverse_of_surjective <| range_eq_top_of_surjective f hf_surj
+
 /-- A module which satisfies the universal property is projective: If all surjections of
 `R`-modules `(P →₀ R) →ₗ[R] P` have `R`-linear left inverse maps, then `P` is
 projective. -/
