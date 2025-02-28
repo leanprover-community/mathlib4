@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Units.Defs
 
 /-!
