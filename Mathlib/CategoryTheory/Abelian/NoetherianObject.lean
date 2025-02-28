@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Subobject.Lattice
+import Mathlib.CategoryTheory.Subobject.NoetherianObject
 import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
 import Mathlib.CategoryTheory.Abelian.Refinements
 import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
@@ -18,73 +19,11 @@ universe v u
 
 open CategoryTheory ZeroObject
 
-lemma PartialOrder.isIso_iff_eq {C : Type u} [PartialOrder C]
-    {X Y : C} (f : X ⟶ Y) : IsIso f ↔ X = Y := by
-  constructor
-  · intro _
-    exact _root_.le_antisymm (leOfHom f) (leOfHom (inv f))
-  · rintro rfl
-    obtain rfl : f = 𝟙 _ := rfl
-    infer_instance
-
 namespace CategoryTheory
 
 open Limits
 
 variable {C : Type u} [Category.{v} C]
-
-namespace MonoOver
-
-variable {X : C} {A B : MonoOver X} (f : A ⟶ B)
-
-instance [IsIso f] : IsIso f.left :=
-  inferInstanceAs (IsIso ((MonoOver.forget _ ⋙ Over.forget _).map f))
-
-lemma isIso_iff_isIso_left : IsIso f ↔ IsIso f.left := by
-  constructor
-  · intro
-    infer_instance
-  · intro
-    exact ⟨MonoOver.homMk (inv f.left) (by simpa using (MonoOver.w f).symm),
-      Subsingleton.elim _ _, Subsingleton.elim _ _⟩
-
-lemma isIso_left_iff_subobjectMk_eq :
-    IsIso f.left ↔ Subobject.mk A.1.hom = Subobject.mk B.1.hom := by
-  constructor
-  · intro
-    exact Subobject.mk_eq_mk_of_comm _ _ (asIso f.left) (by simp)
-  · intro h
-    exact ⟨Subobject.ofMkLEMk _ _ h.symm.le, by simp [← cancel_mono A.1.hom],
-      by simp [← cancel_mono B.1.hom]⟩
-
-lemma isIso_iff_subobjectMk_eq :
-    IsIso f ↔ Subobject.mk A.1.hom = Subobject.mk B.1.hom := by
-  rw [isIso_iff_isIso_left, isIso_left_iff_subobjectMk_eq]
-
-end MonoOver
-
-namespace Subobject
-
-lemma mk_surjective {X : C} (S : Subobject X) :
-    ∃ (A : C) (i : A ⟶ X) (_ : Mono i), S = Subobject.mk i :=
-  ⟨_, S.arrow, inferInstance, by simp⟩
-
-instance (X : C) : (representative (X := X)).IsEquivalence := by
-  dsimp only [representative]
-  infer_instance
-
-lemma subsingleton_of_isZero {X : C} (hX : IsZero X) : Subsingleton (Subobject X) := by
-  suffices ∀ (S : Subobject X), S = .mk (𝟙 _) from ⟨fun S₁ S₂ ↦ by simp [this]⟩
-  intro S
-  obtain ⟨A, i, _, rfl⟩ := S.mk_surjective
-  let e : A ≅ X :=
-    { hom := i
-      inv := hX.to_ A
-      hom_inv_id := by rw [← cancel_mono i]; apply hX.eq_of_tgt
-      inv_hom_id := hX.eq_of_tgt _ _ }
-  exact mk_eq_mk_of_comm i (𝟙 X) e (by simp [e])
-
-end Subobject
 
 namespace Abelian
 
@@ -101,104 +40,7 @@ lemma image.map_ι :
 
 end Abelian
 
--- to be moved
-namespace ObjectProperty
-
-variable (P : ObjectProperty C)
-
-@[mk_iff]
-class Is (X : C) : Prop where
-  prop : P X
-
-lemma prop_of_is (X : C) [P.Is X] : P X := by rwa [← P.is_iff]
-
-lemma is_of_prop {X : C} (hX : P X) : P.Is X := by rwa [P.is_iff]
-
-end ObjectProperty
-
-def isNoetherianObject : ObjectProperty C :=
-  fun X ↦ WellFoundedGT (Subobject X)
-
-variable (X Y : C)
-
-abbrev IsNoetherianObject : Prop := isNoetherianObject.Is X
-
-instance [IsNoetherianObject X] : WellFoundedGT (Subobject X) :=
-  isNoetherianObject.prop_of_is X
-
-lemma isNoetherianObject_iff_monotone_chain_condition :
-    IsNoetherianObject X ↔ ∀ (f : ℕ →o Subobject X),
-      ∃ (n : ℕ), ∀ (m : ℕ), n ≤ m → f n = f m := by
-  dsimp only [IsNoetherianObject]
-  rw [ObjectProperty.is_iff, isNoetherianObject,
-    wellFoundedGT_iff_monotone_chain_condition]
-
-variable {X} in
-lemma monotone_chain_condition_of_isNoetherianObject
-    [IsNoetherianObject X] (f : ℕ →o Subobject X) :
-    ∃ (n : ℕ), ∀ (m : ℕ), n ≤ m → f n = f m :=
-  (isNoetherianObject_iff_monotone_chain_condition X).1 inferInstance f
-
-lemma isNoetherianObject_iff_not_strictMono :
-    IsNoetherianObject X ↔ ∀ (f : ℕ → Subobject X), ¬ StrictMono f := by
-  refine ⟨fun _ ↦ not_strictMono_of_wellFoundedGT, fun h ↦ ?_⟩
-  dsimp only [IsNoetherianObject]
-  rw [ObjectProperty.is_iff, isNoetherianObject, WellFoundedGT,
-    isWellFounded_iff, RelEmbedding.wellFounded_iff_no_descending_seq]
-  exact ⟨fun f ↦ h f.toFun (fun a b h ↦ f.map_rel_iff.2 h)⟩
-
-variable {X} in
-lemma not_strictMono_of_isNoetherianObject
-    [IsNoetherianObject X] (f : ℕ → Subobject X) :
-    ¬ StrictMono f :=
-  (isNoetherianObject_iff_not_strictMono X).1 inferInstance f
-
-lemma isNoetherianObject_iff_monoOver_chain_condition :
-    IsNoetherianObject X ↔ ∀ (F : ℕ ⥤ MonoOver X),
-      IsFiltered.IsEventuallyConstant F := by
-  rw [isNoetherianObject_iff_monotone_chain_condition]
-  constructor
-  · intro h G
-    obtain ⟨n, hn⟩ := h ⟨_, (G ⋙ (Subobject.equivMonoOver _).inverse).monotone⟩
-    refine ⟨n, fun m hm ↦ ?_⟩
-    rw [MonoOver.isIso_iff_subobjectMk_eq]
-    exact hn m (leOfHom hm)
-  · intro h F
-    obtain ⟨n, hn⟩ := h (F.monotone.functor ⋙ Subobject.representative)
-    refine ⟨n, fun m hm ↦ ?_⟩
-    simpa [← MonoOver.isIso_iff_isIso_left, isIso_iff_of_reflects_iso,
-      PartialOrder.isIso_iff_eq] using hn (homOfLE hm)
-
-variable {X} in
-lemma monoOver_chain_condition_of_isNoetherianObject [IsNoetherianObject X]
-    (F : ℕ ⥤ MonoOver X) : IsFiltered.IsEventuallyConstant F :=
-  (isNoetherianObject_iff_monoOver_chain_condition X).1 inferInstance F
-
-variable {X Y}
-
-lemma isNoetherianObject_of_isZero (hX : IsZero X) : IsNoetherianObject X := by
-  rw [isNoetherianObject_iff_monotone_chain_condition]
-  have := Subobject.subsingleton_of_isZero hX
-  intro f
-  exact ⟨0, fun m hm ↦ Subsingleton.elim _ _⟩
-
-instance [HasZeroObject C] : (isNoetherianObject (C := C)).ContainsZero where
-  exists_zero := ⟨0, isZero_zero _, by
-    rw [← isNoetherianObject.is_iff]
-    exact isNoetherianObject_of_isZero (isZero_zero C)⟩
-
-lemma isNoetherianObject_of_mono (i : X ⟶ Y) [Mono i] [IsNoetherianObject Y] :
-    IsNoetherianObject X := by
-  rw [isNoetherianObject_iff_monotone_chain_condition]
-  intro f
-  obtain ⟨n, hn⟩ := monotone_chain_condition_of_isNoetherianObject
-    ⟨_, (Subobject.map i).monotone.comp f.2⟩
-  exact ⟨n, fun m hm ↦ Subobject.map_obj_injective i (hn m hm)⟩
-
-instance : (isNoetherianObject (C := C)).IsClosedUnderSubobjects where
-  prop_of_mono f _ hY := by
-    rw [← isNoetherianObject.is_iff] at hY ⊢
-    exact isNoetherianObject_of_mono f
+variable {X Y : C}
 
 @[simps (config := .lemmasOnly)]
 noncomputable def MonoOver.abelianImage [Abelian C] (f : X ⟶ Y) :
@@ -323,11 +165,11 @@ lemma isNoetherianObject_of_shortExact {S : ShortComplex C}
     (hS : S.ShortExact) (h₁ : IsNoetherianObject S.X₁)
     (h₃ : IsNoetherianObject S.X₃) :
     IsNoetherianObject S.X₂ := by
-  rw [isNoetherianObject_iff_monoOver_chain_condition]
+  rw [isNoetherianObject_iff_isEventuallyConstant]
   intro F₂
-  obtain ⟨n₁, hn₁⟩ := monoOver_chain_condition_of_isNoetherianObject
+  obtain ⟨n₁, hn₁⟩ := isEventuallyConstant_of_isNoetherianObject
     (F₂ ⋙ MonoOver.pullback S.f)
-  obtain ⟨n₃, hn₃⟩ := monoOver_chain_condition_of_isNoetherianObject
+  obtain ⟨n₃, hn₃⟩ := isEventuallyConstant_of_isNoetherianObject
     (F₂ ⋙ MonoOver.abelianImage S.g)
   refine ⟨max n₁ n₃, fun m hm ↦ ?_⟩
   rw [isIso_monoOver_iff_of_shortExact hS]
