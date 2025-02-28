@@ -25,21 +25,40 @@ def process_file_in_place(file_path, line_numbers):
 
             # Modify the "variable" line before the input line (if found)
             if before_index is not None:
+                # Append " in" to the line
                 lines[before_index] = lines[before_index].strip() + " in\n"
 
-            # Remove the "variable" line after the input line (if found)
-            if after_index is not None:
-                lines[after_index] = None
+                # Remove the "variable" line after the current one (if found)
+                if after_index is not None:
+                    lines[after_index] = None  # Mark for removal
+
+                # Handle the empty lines: ensure exactly one empty line before the modified "variable" line
+                # Remove all empty lines that precede the modified "variable" line
+                while before_index - 1 >= 0 and lines[before_index - 1] and lines[before_index - 1].strip() == '':
+                    lines[before_index - 1] = None  # Remove preceding empty lines
+                    before_index -= 1
+
+                # Ensure exactly one empty line before the "variable in" line
+                if before_index - 1 >= 0 and lines[before_index - 1] and lines[before_index - 1].strip() != '':
+                    lines.insert(before_index, '\n')  # Insert a single empty line before it
+
+                # Remove all empty lines after the modified "variable in" line
+                next_index = before_index + 3
+                while next_index < len(lines) and (lines[next_index] is None or lines[next_index].strip() == ''):
+                    lines[next_index] = None  # Remove empty lines after the "variable in" line
+                    next_index += 1
 
     # Write the modified content back to the file
     with open(file_path, 'w') as outfile:
-        # Filter out any None values (which represent deleted lines)
-        outfile.writelines([line for line in lines if line is not None])
+        for line in lines:
+            # Avoid writing None lines (those marked for removal)
+            if line is not None:
+                outfile.write(line)
 
     print(f"File '{file_path}' has been modified in place.")
 
 # Example usage
-line_numbers = [186, 232]  # Example line numbers
+line_numbers = [186, 234]  # Example line numbers
 process_file_in_place("Mathlib/Algebra/ContinuedFractions/Basic.lean", line_numbers)
 
 # code -r -g  ././././Mathlib/Algebra/ContinuedFractions/Basic.lean:186
