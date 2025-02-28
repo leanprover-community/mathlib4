@@ -16,9 +16,9 @@ given negation and addition operations defined by an analogue of the secant-and-
 homogeneous, so any instances of division become multiplication in the `Z`-coordinate. Most
 computational proofs are immediate from their analogous proofs for affine coordinates.
 
-This file defines polynomials associated to negation, doubling, and addition of nonsingular
-projective points. The group operations and the group law on actual nonsingular projective points
-will be defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Point.lean`.
+This file defines polynomials associated to negation, doubling, and addition of projective point
+representatives. The group operations and the group law on actual nonsingular projective points will
+be defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Point.lean`.
 
 ## Main definitions
 
@@ -82,7 +82,8 @@ variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} [CommRing R] [C
 /-! ### Negation formulae -/
 
 variable (W') in
-/-- The `Y`-coordinate of a representative of `-P` for a point `P`. -/
+/-- The `Y`-coordinate of a representative of `-P` for a projective point representative `P` on a
+Weierstrass curve. -/
 def negY (P : Fin 3 → R) : R :=
   -P y - W'.a₁ * P x - W'.a₃ * P z
 
@@ -156,8 +157,10 @@ lemma nonsingular_iff_of_Y_eq_negY {P : Fin 3 → F} (hPz : P z ≠ 0) (hy : P y
 /-! ### Doubling formulae -/
 
 variable (W) in
-/-- The unit associated to the doubling of a 2-torsion point `P`. More specifically, the unit `u`
-such that `W.add P P = u • ![0, 1, 0]` where `P = W.neg P`. -/
+/-- The unit associated to a representative of `2 • P` for a projective point representative `P` on
+a Weierstrass curve `W` that is `2`-torsion.
+
+More specifically, the unit `u` such that `W.add P P = u • ![0, 1, 0]` where `P = W.neg P`. -/
 noncomputable def dblU (P : Fin 3 → F) : F :=
   eval P W.polynomialX ^ 3 / P z ^ 2
 
@@ -186,7 +189,8 @@ lemma isUnit_dblU_of_Y_eq {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z 
   (dblU_ne_zero_of_Y_eq hP hPz hQz hx hy hy').isUnit
 
 variable (W') in
-/-- The `Z`-coordinate of a representative of `2 • P` for a point `P`. -/
+/-- The `Z`-coordinate of a representative of `2 • P` for a projective point representative `P` on a
+Weierstrass curve. -/
 def dblZ (P : Fin 3 → R) : R :=
   P z * (P y - W'.negY P) ^ 3
 
@@ -231,7 +235,8 @@ private lemma toAffine_slope_of_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hQ :
   ring1
 
 variable (W') in
-/-- The `X`-coordinate of a representative of `2 • P` for a point `P`. -/
+/-- The `X`-coordinate of a representative of `2 • P` for a projective point representative `P` on a
+Weierstrass curve. -/
 noncomputable def dblX (P : Fin 3 → R) : R :=
   2 * P x * P y ^ 3 + 3 * W'.a₁ * P x ^ 2 * P y ^ 2 + 6 * W'.a₂ * P x ^ 3 * P y
     - 8 * W'.a₂ * P y ^ 3 * P z + 9 * W'.a₃ * P x ^ 4 - 6 * W'.a₃ * P x * P y ^ 2 * P z
@@ -301,7 +306,8 @@ lemma dblX_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
     toAffine_addX_of_eq hPz <| sub_ne_zero.mpr <| Y_ne_negY_of_Y_ne' hP hQ hPz hQz hx hy]
 
 variable (W') in
-/-- The `Y`-coordinate of a representative of `-(2 • P)` for a point `P`. -/
+/-- The `Y`-coordinate of a representative of `-(2 • P)` for a projective point representative `P`
+on a Weierstrass curve. -/
 noncomputable def negDblY (P : Fin 3 → R) : R :=
   -P y ^ 4 - 3 * W'.a₁ * P x * P y ^ 3 - 9 * W'.a₃ * P x ^ 3 * P y + 3 * W'.a₃ * P y ^ 3 * P z
     - 3 * W'.a₄ * P x * P y ^ 2 * P z - 27 * W'.a₆ * P x ^ 3 * P z + 9 * W'.a₆ * P y ^ 2 * P z ^ 2
@@ -386,7 +392,8 @@ lemma negDblY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equat
     toAffine_negAddY_of_eq hPz <| sub_ne_zero.mpr <| Y_ne_negY_of_Y_ne' hP hQ hPz hQz hx hy]
 
 variable (W') in
-/-- The `Y`-coordinate of a representative of `2 • P` for a point `P`. -/
+/-- The `Y`-coordinate of a representative of `2 • P` for a projective point representative `P` on a
+Weierstrass curve. -/
 noncomputable def dblY (P : Fin 3 → R) : R :=
   W'.negY ![W'.dblX P, W'.negDblY P, W'.dblZ P]
 
@@ -418,7 +425,8 @@ lemma dblY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
     dblX_of_Z_ne_zero hP hQ hPz hQz hx hy, negDblY_of_Z_ne_zero hP hQ hPz hQz hx hy, Affine.addY]
 
 variable (W') in
-/-- The coordinates of a representative of `2 • P` for a point `P`. -/
+/-- The coordinates of a representative of `2 • P` for a projective point representative `P` on a
+Weierstrass curve. -/
 noncomputable def dblXYZ (P : Fin 3 → R) : Fin 3 → R :=
   ![W'.dblX P, W'.dblY P, W'.dblZ P]
 
@@ -458,9 +466,11 @@ lemma dblXYZ_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equati
 
 /-! ### Addition formulae -/
 
-/-- The unit associated to the addition of a non-2-torsion point `P` with its negation. More
-specifically, the unit `u` such that `W.add P Q = u • ![0, 1, 0]` where `P x / P z = Q x / Q z` but
-`P ≠ W.neg P`. -/
+/-- The unit associated to a representative of `P + Q` for two projective point representatives `P`
+and `Q` on a Weierstrass curve `W` that are not `2`-torsion.
+
+More specifically, the unit `u` such that `W.add P Q = u • ![0, 1, 0]` where `P x / P z = Q x / Q z`
+but `P ≠ W.neg P`. -/
 def addU (P Q : Fin 3 → F) : F :=
   -(P y * Q z - Q y * P z) ^ 3 / (P z * Q z)
 
@@ -484,8 +494,10 @@ lemma isUnit_addU_of_Y_ne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0
   (addU_ne_zero_of_Y_ne hPz hQz hy).isUnit
 
 variable (W') in
-/-- The `Z`-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`. Note that
-this returns the value `0` if the representatives of `P` and `Q` are equal. -/
+/-- The `Z`-coordinate of a representative of `P + Q` for two distinct projective point
+representatives `P` and `Q` on a Weierstrass curve.
+
+If the representatives of `P` and `Q` are equal, then this returns the value `0`. -/
 def addZ (P Q : Fin 3 → R) : R :=
   -3 * P x ^ 2 * Q x * Q z + 3 * P x * Q x ^ 2 * P z + P y ^ 2 * Q z ^ 2 - Q y ^ 2 * P z ^ 2
     + W'.a₁ * P x * P y * Q z ^ 2 - W'.a₁ * Q x * Q y * P z ^ 2 - W'.a₂ * P x ^ 2 * Q z ^ 2
@@ -541,8 +553,10 @@ private lemma toAffine_slope_of_ne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : 
   ring1
 
 variable (W') in
-/-- The `X`-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`. Note that
-this returns the value `0` if the representatives of `P` and `Q` are equal. -/
+/-- The `X`-coordinate of a representative of `P + Q` for two distinct projective point
+representatives `P` and `Q` on a Weierstrass curve.
+
+If the representatives of `P` and `Q` are equal, then this returns the value `0`. -/
 def addX (P Q : Fin 3 → R) : R :=
   -P x * Q y ^ 2 * P z + Q x * P y ^ 2 * Q z - 2 * P x * P y * Q y * Q z + 2 * Q x * P y * Q y * P z
     - W'.a₁ * P x ^ 2 * Q y * Q z + W'.a₁ * Q x ^ 2 * P y * P z + W'.a₂ * P x ^ 2 * Q x * Q z
@@ -609,8 +623,10 @@ lemma addX_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
     toAffine_addX_of_ne hPz hQz <| sub_ne_zero.mpr hx]
 
 variable (W') in
-/-- The `Y`-coordinate of a representative of `-(P + Q)` for two distinct points `P` and `Q`. Note
-that this returns the value `0` if the representatives of `P` and `Q` are equal. -/
+/-- The `Y`-coordinate of a representative of `-(P + Q)` for two distinct projective point
+representatives `P` and `Q` on a Weierstrass curve.
+
+If the representatives of `P` and `Q` are equal, then this returns the value `0`. -/
 def negAddY (P Q : Fin 3 → R) : R :=
   -3 * P x ^ 2 * Q x * Q y + 3 * P x * Q x ^ 2 * P y - P y ^ 2 * Q y * Q z + P y * Q y ^ 2 * P z
     + W'.a₁ * P x * Q y ^ 2 * P z - W'.a₁ * Q x * P y ^ 2 * Q z - W'.a₂ * P x ^ 2 * Q y * Q z
@@ -688,8 +704,10 @@ lemma negAddY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equat
     toAffine_negAddY_of_ne hPz hQz <| sub_ne_zero.mpr hx]
 
 variable (W') in
-/-- The `Y`-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`. Note that
-this returns the value `0` if the representatives of `P` and `Q` are equal. -/
+/-- The `Y`-coordinate of a representative of `P + Q` for two distinct projective point
+representatives `P` and `Q` on a Weierstrass curve.
+
+If the representatives of `P` and `Q` are equal, then this returns the value `0`. -/
 def addY (P Q : Fin 3 → R) : R :=
   W'.negY ![W'.addX P Q, W'.negAddY P Q, W'.addZ P Q]
 
@@ -733,8 +751,10 @@ lemma addY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
     negAddY_of_Z_ne_zero hP hQ hPz hQz hx, Affine.addY]
 
 variable (W') in
-/-- The coordinates of a representative of `P + Q` for two distinct points `P` and `Q`. Note that
-this returns the value `![0, 0, 0]` if the representatives of `P` and `Q` are equal. -/
+/-- The coordinates of a representative of `P + Q` for two distinct projective point representatives
+`P` and `Q` on a Weierstrass curve.
+
+If the representatives of `P` and `Q` are equal, then this returns the value `![0, 0, 0]`. -/
 noncomputable def addXYZ (P Q : Fin 3 → R) : Fin 3 → R :=
   ![W'.addX P Q, W'.addY P Q, W'.addZ P Q]
 

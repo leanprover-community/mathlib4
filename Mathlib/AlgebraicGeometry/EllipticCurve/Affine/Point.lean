@@ -92,11 +92,11 @@ variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} {L : Type w} [C
 -- `local attribute [irreducible] coordinate_ring.comm_ring` to block this type-level unification.
 -- In Lean 4, this is no longer an issue and is now an `abbrev`. See Zulip thread:
 -- https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/.E2.9C.94.20class_group.2Emk
-/-- The affine coordinate ring `R[W] := R[X, Y] / ⟨W(X, Y)⟩` of `W`. -/
+/-- The affine coordinate ring `R[W] := R[X, Y] / ⟨W(X, Y)⟩` of a Weierstrass curve `W`. -/
 abbrev CoordinateRing : Type r :=
   AdjoinRoot W'.polynomial
 
-/-- The function field `R(W) := Frac(R[W])` of `W`. -/
+/-- The function field `R(W) := Frac(R[W])` of a Weierstrass curve `W`. -/
 abbrev FunctionField : Type r :=
   FractionRing W'.CoordinateRing
 
@@ -117,13 +117,13 @@ instance [Subsingleton R] : Subsingleton W'.CoordinateRing :=
   Module.subsingleton R[X] _
 
 variable (W') in
-/-- The natural ring homomorphism mapping an element of `R[X][Y]` to an element of `R[W]`. -/
+/-- The natural ring homomorphism mapping `R[X][Y]` to `R[W]`. -/
 noncomputable abbrev mk : R[X][Y] →+* W'.CoordinateRing :=
   AdjoinRoot.mk W'.polynomial
 
 open scoped Classical in
 variable (W') in
-/-- The basis `{1, Y}` for the affine coordinate ring `R[W]` over the polynomial ring `R[X]`. -/
+/-- The power basis `{1, Y}` for `R[W]` over `R[X]`. -/
 protected noncomputable def basis : Basis (Fin 2) R[X] W'.CoordinateRing :=
   (subsingleton_or_nontrivial R).by_cases (fun _ => default) fun _ =>
     (AdjoinRoot.powerBasis' monic_polynomial).basis.reindex <| finCongr natDegree_polynomial
@@ -465,13 +465,14 @@ end CoordinateRing
 
 variable (W') in
 /-- A nonsingular point on a Weierstrass curve `W` in affine coordinates. This is either the unique
-point at infinity `WeierstrassCurve.Affine.Point.zero` or the nonsingular affine points
-`WeierstrassCurve.Affine.Point.some` `(x, y)` satisfying the Weierstrass equation of `W`. -/
+point at infinity `WeierstrassCurve.Affine.Point.zero` or a nonsingular affine point
+`WeierstrassCurve.Affine.Point.some (x, y)` satisfying the Weierstrass equation of `W`. -/
 inductive Point
   | zero
   | some {x y : R} (h : W'.Nonsingular x y)
 
-/-- For an algebraic extension `S` of `R`, the type of nonsingular `S`-points on `W`. -/
+/-- For an algebraic extension `S` of a ring `R`, the type of nonsingular `S`-points on a
+Weierstrass curve `W` over `R` in affine coordinates. -/
 scoped notation3:max W' "⟮" S "⟯" => Affine.Point <| baseChange W' S
 
 namespace Point
@@ -490,9 +491,9 @@ lemma zero_def : 0 = (.zero : W'.Point) :=
 lemma some_ne_zero {x y : R} (h : W'.Nonsingular x y) : Point.some h ≠ 0 := by
   rintro (_ | _)
 
-/-- The negation of a nonsingular point on `W`.
+/-- The negation of a nonsingular point on a Weierstrass curve in affine coordinates.
 
-Given a nonsingular point `P` on `W`, use `-P` instead of `neg P`. -/
+Given a nonsingular point `P` in affine coordinates, use `-P` instead of `neg P`. -/
 def neg : W'.Point → W'.Point
   | 0 => 0
   | some h => some <| (nonsingular_neg ..).mpr h
@@ -518,9 +519,9 @@ instance : InvolutiveNeg W'.Point where
     · simp only [neg_some, negY_negY]
 
 open scoped Classical in
-/-- The addition of two nonsingular points on `W`.
+/-- The addition of two nonsingular points on a Weierstrass curve in affine coordinates.
 
-Given two nonsingular points `P` and `Q` on `W`, use `P + Q` instead of `add P Q`. -/
+Given two nonsingular points `P` and `Q` in affine coordinates, use `P + Q` instead of `add P Q`. -/
 noncomputable def add : W.Point → W.Point → W.Point
   | 0, P => P
   | P, 0 => P
@@ -581,8 +582,8 @@ lemma add_of_X_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h
 
 /-! ### Group law -/
 
-/-- The group homomorphism mapping an affine point `(x, y)` of `W` to the class of the non-zero
-fractional ideal `⟨X - x, Y - y⟩` of `F(W)` in the class group of `F[W]`. -/
+/-- The group homomorphism mapping a nonsingular affine point `(x, y)` of a Weierstrass curve `W` to
+the class of the non-zero fractional ideal `⟨X - x, Y - y⟩` in the ideal class group of `F[W]`. -/
 @[simps]
 noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) where
   toFun P := match P with

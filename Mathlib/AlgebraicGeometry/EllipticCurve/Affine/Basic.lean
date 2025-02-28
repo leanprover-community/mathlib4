@@ -71,7 +71,7 @@ variable (R) in
 abbrev Affine : Type r :=
   WeierstrassCurve R
 
-/-- The coercion to a Weierstrass curve in affine coordinates. -/
+/-- The conversion from a Weierstrass curve to affine coordinates. -/
 abbrev toAffine (W : WeierstrassCurve R) : Affine R :=
   W
 
@@ -83,10 +83,12 @@ variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] {W : Affine R}
 
 variable (W) in
 /-- The polynomial `W(X, Y) := Y² + a₁XY + a₃Y - (X³ + a₂X² + a₄X + a₆)` associated to a Weierstrass
-curve `W` over `R`. For ease of polynomial manipulation, this is represented as a term of type
-`R[X][X]`, where the inner variable represents `X` and the outer variable represents `Y`. For
-clarity, the alternative notations `Y` and `R[X][Y]` are provided in the `Polynomial.Bivariate`
-scope to represent the outer variable and the bivariate polynomial ring `R[X][X]` respectively. -/
+curve `W` over a ring `R` in affine coordinates.
+
+For ease of polynomial manipulation, this is represented as a term of type `R[X][X]`, where the
+inner variable represents `X` and the outer variable represents `Y`. For clarity, the alternative
+notations `Y` and `R[X][Y]` are provided in the `Polynomial.Bivariate` scope to represent the outer
+variable and the bivariate polynomial ring `R[X][X]` respectively. -/
 noncomputable def polynomial : R[X][Y] :=
   Y ^ 2 + C (C W.a₁ * X + C W.a₃) * Y - C (X ^ 3 + C W.a₂ * X ^ 2 + C W.a₄ * X + C W.a₆)
 
@@ -138,7 +140,9 @@ lemma evalEval_polynomial_zero : W.polynomial.evalEval 0 0 = -W.a₆ := by
   simp only [evalEval_polynomial, zero_add, zero_sub, mul_zero, zero_pow <| Nat.succ_ne_zero _]
 
 variable (W) in
-/-- The proposition that an affine point `(x, y)` lies in `W`. In other words, `W(x, y) = 0`. -/
+/-- The proposition that an affine point `(x, y)` lies in a Weierstrass curve `W`.
+
+In other words, it satisfies the Weierstrass equation `W(X, Y) = 0`. -/
 def Equation (x y : R) : Prop :=
   W.polynomial.evalEval x y = 0
 
@@ -163,7 +167,8 @@ lemma equation_iff_variableChange (x y : R) :
 /-! ### Nonsingular Weierstrass equations -/
 
 variable (W) in
-/-- The partial derivative `W_X(X, Y)` of `W(X, Y)` with respect to `X`. -/
+/-- The partial derivative `W_X(X, Y)` with respect to `X` of the polynomial `W(X, Y)` associated to
+a Weierstrass curve `W` in affine coordinates. -/
 -- TODO: define this in terms of `Polynomial.derivative`.
 noncomputable def polynomialX : R[X][Y] :=
   C (C W.a₁) * Y - C (C 3 * X ^ 2 + C (2 * W.a₂) * X + C W.a₄)
@@ -178,7 +183,8 @@ lemma evalEval_polynomialX_zero : W.polynomialX.evalEval 0 0 = -W.a₄ := by
   simp only [evalEval_polynomialX, zero_add, zero_sub, mul_zero, zero_pow <| Nat.succ_ne_zero _]
 
 variable (W) in
-/-- The partial derivative `W_Y(X, Y)` of `W(X, Y)` with respect to `Y`. -/
+/-- The partial derivative `W_Y(X, Y)` with respect to `Y` of the polynomial `W(X, Y)` associated to
+a Weierstrass curve `W` in affine coordinates. -/
 -- TODO: define this in terms of `Polynomial.derivative`.
 noncomputable def polynomialY : R[X][Y] :=
   C (C 2) * Y + C (C W.a₁ * X + C W.a₃)
@@ -193,8 +199,9 @@ lemma evalEval_polynomialY_zero : W.polynomialY.evalEval 0 0 = W.a₃ := by
   simp only [evalEval_polynomialY, zero_add, mul_zero]
 
 variable (W) in
-/-- The proposition that an affine point `(x, y)` in `W` is nonsingular. In other words, either
-`W_X(x, y) ≠ 0` or `W_Y(x, y) ≠ 0`.
+/-- The proposition that an affine point `(x, y)` on a Weierstrass curve `W` is nonsingular.
+
+In other words, either `W_X(x, y) ≠ 0` or `W_Y(x, y) ≠ 0`.
 
 Note that this definition is only mathematically accurate for fields. -/
 -- TODO: generalise this definition to be mathematically accurate for a larger class of rings.
@@ -230,14 +237,12 @@ lemma equation_zero_iff_nonsingular_zero_of_Δ_ne_zero (hΔ : W.Δ ≠ 0) :
   simp only [b₂, b₄, b₆, b₈, Δ, hΔ]
   ring1
 
-/-- A Weierstrass curve is nonsingular at every point if its discriminant is non-zero. -/
 lemma equation_iff_nonsingular_of_Δ_ne_zero {x y : R} (hΔ : W.Δ ≠ 0) :
     W.Equation x y ↔ W.Nonsingular x y := by
   rw [equation_iff_variableChange, nonsingular_iff_variableChange,
     equation_zero_iff_nonsingular_zero_of_Δ_ne_zero <| by
       rwa [variableChange_Δ, inv_one, Units.val_one, one_pow, one_mul]]
 
-/-- An elliptic curve is nonsingular at every point. -/
 lemma equation_iff_nonsingular [Nontrivial R] [W.IsElliptic] {x y : R} :
     W.toAffine.Equation x y ↔ W.toAffine.Nonsingular x y :=
   W.toAffine.equation_iff_nonsingular_of_Δ_ne_zero <| W.coe_Δ' ▸ W.Δ'.ne_zero

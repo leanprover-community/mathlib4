@@ -104,14 +104,14 @@ variable (R) in
 abbrev Projective : Type r :=
   WeierstrassCurve R
 
-/-- The coercion to a Weierstrass curve in projective coordinates. -/
+/-- The conversion from a Weierstrass curve to projective coordinates. -/
 abbrev toProjective (W : WeierstrassCurve R) : Projective R :=
   W
 
 namespace Projective
 
 variable (W') in
-/-- The coercion to a Weierstrass curve in affine coordinates. -/
+/-- The conversion from a Weierstrass curve in projective coordinates to affine coordinates. -/
 abbrev toAffine : Affine R :=
   W'
 
@@ -139,13 +139,13 @@ lemma smul_fin3_ext (P : Fin 3 → R) (u : R) :
 lemma comp_smul (f : R →+* S) (P : Fin 3 → R) (u : R) : f ∘ (u • P) = f u • f ∘ P := by
   ext n; fin_cases n <;> simp only [smul_fin3, comp_fin3] <;> map_simp
 
-/-- The equivalence setoid for a point representative. -/
+/-- The equivalence setoid for a projective point representative on a Weierstrass curve. -/
 @[reducible]
 scoped instance : Setoid <| Fin 3 → R :=
   MulAction.orbitRel Rˣ <| Fin 3 → R
 
 variable (R) in
-/-- The equivalence class of a point representative. -/
+/-- The equivalence class of a projective point representative on a Weierstrass curve. -/
 abbrev PointClass : Type r :=
   MulAction.orbitRel.Quotient Rˣ <| Fin 3 → R
 
@@ -220,8 +220,10 @@ lemma Y_eq_iff {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
 
 variable (W') in
 /-- The polynomial `W(X, Y, Z) := Y²Z + a₁XYZ + a₃YZ² - (X³ + a₂X²Z + a₄XZ² + a₆Z³)` associated to a
-Weierstrass curve `W'` over `R`. This is represented as a term of type `MvPolynomial (Fin 3) R`,
-where `X 0`, `X 1`, and `X 2` represent `X`, `Y`, and `Z` respectively. -/
+Weierstrass curve `W` over a ring `R` in projective coordinates.
+
+This is represented as a term of type `MvPolynomial (Fin 3) R`, where `X 0`, `X 1`, and `X 2`
+represent `X`, `Y`, and `Z` respectively. -/
 noncomputable def polynomial : MvPolynomial (Fin 3) R :=
   X 1 ^ 2 * X 2 + C W'.a₁ * X 0 * X 1 * X 2 + C W'.a₃ * X 1 * X 2 ^ 2
     - (X 0 ^ 3 + C W'.a₂ * X 0 ^ 2 * X 2 + C W'.a₄ * X 0 * X 2 ^ 2 + C W'.a₆ * X 2 ^ 3)
@@ -240,8 +242,10 @@ lemma eval_polynomial_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : eval P 
       - W.a₄ * P x / P z * div_self (pow_ne_zero 2 hPz) - W.a₆ * div_self (pow_ne_zero 3 hPz)
 
 variable (W') in
-/-- The proposition that a point representative `(x, y, z)` lies in `W'`. In other words,
-`W(x, y, z) = 0`. -/
+/-- The proposition that a projective point representative `(x, y, z)` lies in a Weierstrass curve
+`W`.
+
+In other words, it satisfies the homogeneous Weierstrass equation `W(X, Y, Z) = 0`. -/
 def Equation (P : Fin 3 → R) : Prop :=
   eval P W'.polynomial = 0
 
@@ -281,7 +285,8 @@ lemma X_eq_zero_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Equat
 /-! ### Nonsingular Weierstrass equations -/
 
 variable (W') in
-/-- The partial derivative `W_X(X, Y, Z)` of `W(X, Y, Z)` with respect to `X`. -/
+/-- The partial derivative `W_X(X, Y, Z)` with respect to `X` of the polynomial `W(X, Y, Z)`
+associated to a Weierstrass curve `W` in projective coordinates. -/
 noncomputable def polynomialX : MvPolynomial (Fin 3) R :=
   pderiv x W'.polynomial
 
@@ -303,7 +308,8 @@ lemma eval_polynomialX_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
       - W.a₄ * div_self (pow_ne_zero 2 hPz)
 
 variable (W') in
-/-- The partial derivative `W_Y(X, Y, Z)` of `W(X, Y, Z)` with respect to `Y`. -/
+/-- The partial derivative `W_Y(X, Y, Z)` with respect to `Y` of the polynomial `W(X, Y, Z)`
+associated to a Weierstrass curve `W` in projective coordinates. -/
 noncomputable def polynomialY : MvPolynomial (Fin 3) R :=
   pderiv y W'.polynomial
 
@@ -325,7 +331,8 @@ lemma eval_polynomialY_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
       + W.a₃ * div_self (pow_ne_zero 2 hPz)
 
 variable (W') in
-/-- The partial derivative `W_Z(X, Y, Z)` of `W(X, Y, Z)` with respect to `Z`. -/
+/-- The partial derivative `W_Z(X, Y, Z)` with respect to `Z` of the polynomial `W(X, Y, Z)`
+associated to a Weierstrass curve `W` in projective coordinates. -/
 noncomputable def polynomialZ : MvPolynomial (Fin 3) R :=
   pderiv z W'.polynomial
 
@@ -342,15 +349,17 @@ lemma eval_polynomialZ (P : Fin 3 → R) : eval P W'.polynomialZ =
   rw [polynomialZ_eq]
   eval_simp
 
-/-- Euler's homogeneous function theorem. -/
+/-- Euler's homogeneous function theorem in projective coordinates. -/
 theorem polynomial_relation (P : Fin 3 → R) : 3 * eval P W'.polynomial =
     P x * eval P W'.polynomialX + P y * eval P W'.polynomialY + P z * eval P W'.polynomialZ := by
   rw [eval_polynomial, eval_polynomialX, eval_polynomialY, eval_polynomialZ]
   ring1
 
 variable (W') in
-/-- The proposition that a point representative `(x, y, z)` in `W'` is nonsingular. In other words,
-either `W_X(x, y, z) ≠ 0`, `W_Y(x, y, z) ≠ 0`, or `W_Z(x, y, z) ≠ 0`.
+/-- The proposition that a projective point representative `(x, y, z)` on a Weierstrass curve `W` is
+nonsingular.
+
+In other words, either `W_X(x, y, z) ≠ 0`, `W_Y(x, y, z) ≠ 0`, or `W_Z(x, y, z) ≠ 0`.
 
 Note that this definition is only mathematically accurate for fields. -/
 -- TODO: generalise this definition to be mathematically accurate for a larger class of rings.
@@ -443,8 +452,12 @@ lemma comp_equiv_comp (f : F →+* K) {P Q : Fin 3 → F} (hP : W.Nonsingular P)
     exact ⟨Units.map f u, (comp_smul ..).symm⟩
 
 variable (W') in
-/-- The proposition that a point class on `W'` is nonsingular. If `P` is a point representative,
-then `W.NonsingularLift ⟦P⟧` is definitionally equivalent to `W.Nonsingular P`. -/
+/-- The proposition that a projective point class on a Weierstrass curve `W` is nonsingular.
+
+If `P` is a projective point representative on `W`, then `W.NonsingularLift ⟦P⟧` is definitionally
+equivalent to `W.Nonsingular P`.
+
+Note that this definition is only mathematically accurate for fields. -/
 def NonsingularLift (P : PointClass R) : Prop :=
   P.lift W'.Nonsingular fun _ _ => propext ∘ nonsingular_of_equiv
 
