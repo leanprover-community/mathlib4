@@ -109,14 +109,14 @@ end
 
 section
 
-variable {ι A B C α β γ: Type*} [Preorder ι] [SetLike α A] [SetLike β B] [SetLike γ C]
+variable {ι A B C α β γ: Type*} [SetLike α A] [SetLike β B] [SetLike γ C]
 
 variable [AddCommGroup A] [AddCommGroup B] [AddCommGroup C]
 
-variable (FA : ι → α) (FA_lt : outParam <| ι → α) [IsFiltration FA FA_lt]
-variable (FB : ι → β) (FB_lt : outParam <| ι → β) [IsFiltration FB FB_lt]
-variable (FC : ι → γ) (FC_lt : outParam <| ι → γ) [IsFiltration FC FC_lt]
-
+variable (FA : ι → α) (FA_lt : outParam <| ι → α)
+variable (FB : ι → β) (FB_lt : outParam <| ι → β)
+variable (FC : ι → γ) (FC_lt : outParam <| ι → γ)
+--[IsFiltration FA FA_lt] [IsFiltration FB FB_lt] [IsFiltration FC FC_lt]
 /-- -/
 class FilteredAddMonoidHom extends FilteredHom FA FA_lt FB FB_lt, A →+ B
 
@@ -150,7 +150,6 @@ def GradedPieceHom (i : ι) : GradedPiece FA FA_lt i →+ GradedPiece FB FB_lt i
 @[inherit_doc]
 scoped[FilteredAddMonoidHom] notation:9000 "Gr(" i ")[" f "]" => GradedPieceHom f i
 
-omit [Preorder ι] [IsFiltration FA FA_lt] [IsFiltration FB FB_lt] [IsFiltration FC FC_lt] in
 lemma GradedPieceHom_comp_apply (x : AssociatedGraded FA FA_lt) (i : ι) :
     Gr(i)[g] (Gr(i)[f] (x i)) = Gr(i)[g.comp f] (x i) := QuotientAddGroup.induction_on (x i) <|
   fun y ↦ by
@@ -165,19 +164,16 @@ noncomputable def AssociatedGradedAddMonoidHom :
 @[inherit_doc]
 scoped[FilteredAddMonoidHom] notation:9000 "Gr[" f "]" => AssociatedGradedAddMonoidHom f
 
-omit [Preorder ι] [IsFiltration FA FA_lt] [IsFiltration FB FB_lt] in
 @[simp]
 lemma AssociatedGradedAddMonoidHom_apply (x : AssociatedGraded FA FA_lt) (i : ι) :
     (Gr[f] x) i = Gr(i)[f] (x i) := rfl
 
-omit [Preorder ι] [IsFiltration FA FA_lt] [IsFiltration FB FB_lt] in
 @[simp]
 lemma AssociatedGradedAddMonoidHom_apply_of [DecidableEq ι] (i : ι) (x : GradedPiece FA FA_lt i) :
     (Gr[f] (AssociatedGraded.of x)) = AssociatedGraded.of (Gr(i)[f] x) := by
   convert DFinsupp.mapRange_single
   simp
 
-omit [Preorder ι] [IsFiltration FA FA_lt] [IsFiltration FB FB_lt] [IsFiltration FC FC_lt] in
 theorem AssociatedGradedAddMonoidHom_comp: Gr[g].comp Gr[f] = Gr[g.comp f] := by
   ext x i
   simpa [AssociatedGradedAddMonoidHom, AssociatedGradedAddMonoidHom_apply]
@@ -189,7 +185,7 @@ end
 
 section
 
-variable {ι R S T γ σ τ : Type*} [OrderedAddCommMonoid ι]
+variable {ι R S T γ σ τ : Type*}
 
 variable [Ring R] (FR : ι → γ) (FR_lt : outParam <| ι → γ) [SetLike γ R]
 variable [Ring S] (FS : ι → σ) (FS_lt : outParam <| ι → σ) [SetLike σ S]
@@ -226,7 +222,6 @@ abbrev GradedPieceHom (i : ι) : GradedPiece FR FR_lt i →+ GradedPiece FS FS_l
 @[inherit_doc]
 scoped[FilteredRingHom] notation:9000 "Gr(" i ")[" f "]" => GradedPieceHom f i
 
-omit [OrderedAddCommMonoid ι] in
 lemma GradedPieceHom_comp_apply (x : AssociatedGraded FR FR_lt) (i : ι) :
     Gr(i)[g] (Gr(i)[f] (x i)) = Gr(i)[g.comp f] (x i) :=
   FilteredAddMonoidHom.GradedPieceHom_comp_apply g.1 f.1 x i
@@ -235,7 +230,7 @@ section DirectSum
 
 open DirectSum
 
-variable [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt]
+variable [OrderedAddCommMonoid ι] [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt]
 
 /-- -/
 noncomputable def AssociatedGradedRingHom [DecidableEq ι] :
@@ -279,11 +274,9 @@ scoped[FilteredRingHom] notation:9000 "Gr[" f "]" => AssociatedGradedRingHom f
 
 variable [DecidableEq ι]
 
-set_option linter.unusedSectionVars false in
 theorem AssociatedGradedRingHom_apply (x : AssociatedGraded FR FR_lt) (i : ι) :
     (Gr[f] x) i = Gr(i)[f] (x i) := rfl
 
-set_option linter.unusedSectionVars false in
 theorem AssociatedGradedRingHom_comp: Gr[g].comp Gr[f] = Gr[g.comp f] :=
   RingHom.ext <| fun x ↦ congrFun
   (congrArg DFunLike.coe (FilteredAddMonoidHom.AssociatedGradedAddMonoidHom_comp g.1 f.1)) x
