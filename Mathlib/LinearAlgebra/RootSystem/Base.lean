@@ -50,7 +50,7 @@ namespace RootPairing
 
 For reduced root pairings this definition is equivalent to the usual definition appearing in the
 informal literature but not for non-reduced root pairings it is more restrictive. See the module
-doc string for further remarks.  -/
+doc string for further remarks. -/
 structure Base (P : RootPairing ι R M N) where
   /-- The set of roots / coroots belonging to the base. -/
   support : Set ι
@@ -157,6 +157,56 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem [Finite ι] [CharZero R]
   norm_cast at this
   rw [Int.mul_eq_one_iff_eq_one_or_neg_one] at this
   tauto
+
+lemma pos_or_neg_of_sum_smul_root_mem [CharZero R] [Fintype ι] (f : ι → ℤ)
+    (hf : ∑ j, f j • P.root j ∈ range P.root) (hf₀ : f.support ⊆ b.support) :
+    0 ≤ f ∨ f ≤ 0 := by
+  suffices ∀ (f : ι → ℤ)
+      (hf : ∑ j, f j • P.root j ∈ AddSubmonoid.closure (P.root '' b.support))
+      (hf₀ : f.support ⊆ b.support), 0 ≤ f by
+    obtain ⟨k, hk⟩ := hf
+    rcases b.root_mem_or_neg_mem k with hk' | hk' <;> rw [hk] at hk'
+    · left; exact this f hk' hf₀
+    · right; simpa using this (-f) (by convert hk'; simp) (by simpa only [support_neg'])
+  intro f hf hf₀
+  have _i : Fintype b.support := Fintype.ofFinite b.support
+  let f' : b.support → ℤ := fun i ↦ f i
+  replace hf : ∑ j, f' j • P.root j ∈ AddSubmonoid.closure (P.root '' b.support) := by
+    suffices ∑ j, f' j • P.root j = ∑ j, f j • P.root j by rwa [this]
+    rw [← Fintype.sum_subset (s := b.support.toFinset) (by aesop), ← Finset.sum_set_coe]
+  rw [← span_nat_eq_addSubmonoid_closure, mem_toAddSubmonoid,
+    Fintype.mem_span_image_iff_exists_fun] at hf
+  obtain ⟨c, hc⟩ := hf
+  replace hc (i : b.support) : c i = f' i := Fintype.linearIndependent_iffₛ.mp
+    (b.linInd_root.restrict_scalars' ℤ) (Int.ofNat ∘ c) f' (by simpa) i
+  intro i
+  by_cases hi : i ∈ b.support
+  · change 0 ≤ f' ⟨i, hi⟩
+    simp [← hc]
+  · replace hi : i ∉ f.support := by contrapose! hi; exact hf₀ hi
+    aesop
+
+lemma sub_nmem_range_root [CharZero R] [Finite ι]
+    {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) :
+    P.root i - P.root j ∉ range P.root := by
+  rcases eq_or_ne j i with rfl | hij
+  · simpa only [sub_self, mem_range, not_exists] using fun k ↦ P.ne_zero k
+  classical
+  have _i : Fintype ι := Fintype.ofFinite ι
+  let f : ι → ℤ := fun k ↦ if k = i then 1 else if k = j then -1 else 0
+  have hf : ∑ k, f k • P.root k = P.root i - P.root j := by
+    rw [← Fintype.sum_subset (s := {i, j}) (by aesop), Finset.sum_insert (by aesop),
+      Finset.sum_singleton]
+    simp [f, hij, sub_eq_add_neg]
+  intro contra
+  rcases b.pos_or_neg_of_sum_smul_root_mem f (by rwa [hf]) (by aesop) with pos | neg
+  · simpa [hij, f] using pos j
+  · simpa [hij, f] using neg i
+
+lemma sub_nmem_range_coroot [CharZero R] [Finite ι]
+    {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) :
+    P.coroot i - P.coroot j ∉ range P.coroot :=
+  b.flip.sub_nmem_range_root hi hj
 
 end RootPairing
 
