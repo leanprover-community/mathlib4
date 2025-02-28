@@ -201,36 +201,4 @@ abbrev antidiagonalOfLocallyFinite : HasAntidiagonal A where
 
 end CanonicallyOrdered
 
-section Fourth
-
-variable {A : Type*} [AddMonoid A] [HasAntidiagonal A]
-
--- Partition.lean
-
-def antidiagonalTwoTwo (n : A) : Finset ((A × A) × (A × A)) :=
-  (antidiagonal n).disjiUnion (fun k ↦ (antidiagonal k.1) ×ˢ (antidiagonal k.2))
-  (fun k _ l _ hkl ↦ by
-    simp_rw [disjoint_iff_ne]
-    intro x hx y hy hxy
-    simp only [mem_product, mem_antidiagonal] at hx hy
-    apply hkl
-    ext
-    · simp only [← hx.1, ← hy.1, hxy]
-    · simp only [← hx.2, ← hy.2, hxy])
-
-theorem mem_antidiagonalTwoTwo {n : A} {x : (A × A) × (A × A)} :
-    x ∈ antidiagonalTwoTwo n ↔ x.1.1 + x.1.2 + x.2.1 + x.2.2 = n := by
-  simp only [antidiagonalTwoTwo, mem_disjiUnion, mem_antidiagonal, mem_product]
-  exact ⟨fun ⟨u, hu, hx⟩ ↦ by rw [add_assoc, hx.2, hx.1, hu], fun hx ↦
-    ⟨(x.1.1 + x.1.2, x.2.1 + x.2.2), by simp only [← add_assoc, hx],
-     Prod.mk.inj_iff.mp rfl⟩⟩
-
--- TODO: add import or create new file.
-theorem sum_antidiagonalTwoTwo_eq {β : Type*} [AddCommMonoid β] (f : (α × α) × (α × α) → β) (n : α) :
-    ∑ x ∈ antidiagonalTwoTwo n, f x =
-      ∑ m ∈ antidiagonal n, ∑ x ∈ antidiagonal m.1, ∑ y ∈ antidiagonal m.2, f (x, y) := by
-  simp_rw [antidiagonalTwoTwo, sum_disjiUnion, Finset.sum_product]
-
-end Fourth
-
 end Finset
