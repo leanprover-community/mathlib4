@@ -209,6 +209,14 @@ theorem exists_le_prime_nmem_of_isIdempotentElem (a : α) (ha : IsIdempotentElem
   have ⟨p, h1, h2, h3⟩ := exists_le_prime_disjoint _ _ this
   ⟨p, h1, h2, Set.disjoint_right.mp h3 (Submonoid.mem_powers a)⟩
 
+lemma isMaximal_iff_forall_isPrime :
+    I.IsMaximal ↔ I ≠ ⊤ ∧ ∀ J, Ideal.IsPrime J → I ≤ J → I = J := by
+  constructor
+  · exact fun H ↦ ⟨H.ne_top, fun J hJ e => H.eq_of_le hJ.ne_top e⟩
+  · intro H
+    obtain ⟨m, hm, hm'⟩ := Ideal.exists_le_maximal _ H.1
+    rwa [H.2 m hm.isPrime hm']
+
 end Ideal
 
 end CommSemiring

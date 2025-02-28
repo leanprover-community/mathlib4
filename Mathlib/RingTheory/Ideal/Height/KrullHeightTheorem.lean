@@ -5,61 +5,28 @@ Authors: Wanyi He, Jiedong Jiang, Jingting Wang, Andrew Yang, Shouxin Zhang
 -/
 import Mathlib.RingTheory.Artinian.Noetherian
 import Mathlib.RingTheory.Ideal.Height.Basic
+import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.Order.KrullDimension
 import Mathlib.RingTheory.Nakayama
 /-!
 # Krull Height Theorem
 -/
 
-variable {R : Type*} [CommRing R] (I : Ideal R)
+#check IsLocalization.isNoetherianRing
 
-lemma Ideal.isMaximal_iff_forall_isPrime {I : Ideal R} :
-    I.IsMaximal ↔ I ≠ ⊤ ∧ ∀ J, Ideal.IsPrime J → I ≤ J → I = J := by
-  constructor
-  · intro H
-    exact ⟨H.ne_top, fun J hJ e => H.eq_of_le hJ.ne_top e⟩
-  · intro H
-    obtain ⟨m, hm, hm'⟩ := Ideal.exists_le_maximal _ H.1
-    rwa [H.2 m hm.isPrime hm']
+variable {R : Type*} [CommRing R] (I : Ideal R)
 
 lemma IsLocalization.isNoetherianRing (I : Ideal R) [I.IsPrime] (A : Type*) [CommRing A]
     [Algebra R A] [IsLocalization.AtPrime A I] [hR : IsNoetherianRing R] : IsNoetherianRing A := by
-  rw [isNoetherianRing_iff, isNoetherian_iff] at hR ⊢
-  exact OrderEmbedding.wellFounded (IsLocalization.orderEmbedding I.primeCompl A).dual hR
+  infer_instance
+  -- sorry
+  -- rw [isNoetherianRing_iff, isNoetherian_iff] at hR ⊢
+  -- exact OrderEmbedding.wellFounded (IsLocalization.orderEmbedding I.primeCompl A).dual hR
+
+#find_home! IsLocalization.isNoetherianRing
 
 instance (I : Ideal R) [I.IsPrime] [IsNoetherianRing R] :
     IsNoetherianRing (Localization.AtPrime I) := IsLocalization.isNoetherianRing I _
-
-lemma IsArtinianRing.eq_maximalIdeal_of_isPrime [IsArtinianRing R] [IsLocalRing R]
-    (I : Ideal R) [I.IsPrime] : I = IsLocalRing.maximalIdeal R :=
-  IsLocalRing.eq_maximalIdeal <|
-    ((isArtinianRing_iff_isNoetherianRing_and_primes_maximal).mp ‹_›).2 _ ‹_›
-
-lemma IsArtinianRing.radical_eq_maximalIdeal [IsArtinianRing R] [IsLocalRing R]
-    (I : Ideal R) (hI : I ≠ ⊤) : I.radical = IsLocalRing.maximalIdeal R := by
-  rw [Ideal.radical_eq_sInf]
-  refine (sInf_le ?_).antisymm (le_sInf ?_)
-  · exact ⟨IsLocalRing.le_maximalIdeal hI, inferInstance⟩
-  · rintro J ⟨h₁, h₂⟩
-    exact (IsArtinianRing.eq_maximalIdeal_of_isPrime J).ge
-
-lemma isArtinianRing_iff_isNilpotent_maximalIdeal [IsNoetherianRing R] [IsLocalRing R] :
-  IsArtinianRing R ↔ IsNilpotent (IsLocalRing.maximalIdeal R) := by
-  constructor
-  · intro h
-    rw [← IsArtinianRing.radical_eq_maximalIdeal (⊥ : Ideal R) bot_ne_top]
-    exact IsArtinianRing.isNilpotent_nilradical
-  · rintro ⟨n, hn⟩
-    rcases eq_or_ne n 0 with (rfl|hn')
-    · rw [pow_zero] at hn
-      exact (one_ne_zero hn).elim
-    · rw [isArtinianRing_iff_isNoetherianRing_and_primes_maximal]
-      refine ⟨inferInstance, fun I hI => ?_⟩
-      suffices IsLocalRing.maximalIdeal R ≤ I by
-        rw [← (IsLocalRing.maximalIdeal.isMaximal R).eq_of_le hI.ne_top this]
-        infer_instance
-      rw [← hI.pow_le_iff hn', hn]
-      exact bot_le
 
 lemma Ideal.exists_pow_le_of_fg {R : Type*} [CommSemiring R] (I J : Ideal R) (h : I.FG)
     (h' : I ≤ J.radical) : ∃ n : ℕ, I ^ n ≤ J := by
