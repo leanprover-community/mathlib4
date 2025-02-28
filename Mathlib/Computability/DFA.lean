@@ -236,6 +236,21 @@ theorem intersect_accepts_iff (M₁ : DFA α σ) (M₂ : DFA α σ') (x : List �
     x ∈ (M₁.intersect M₂).accepts ↔ x ∈ M₁.accepts ∧ x ∈ M₂.accepts := by
   simp [intersect, product_accepts_iff]
 
+/--
+ Constructs a DFA for the union of the languages of two DFAs.
+
+ There is no instance for this to provide the `M₁ ∪ M₂` syntax, because M₁ and M₂ have
+ different state types. -/
+def union (M₁ : DFA α σ) (M₂ : DFA α σ') : DFA α (σ × σ') := product M₁ M₂ Or
+
+theorem union_accept_iff (M₁ : DFA α σ) (M₂ : DFA α σ') (s : σ × σ') :
+    s ∈ (M₁.union M₂).accept ↔ s.fst ∈ M₁.accept ∨ s.snd ∈ M₂.accept := by
+  simp [union, product_accept_iff]
+
+theorem union_accepts_iff (M₁ : DFA α σ) (M₂ : DFA α σ') (x : List α) :
+    x ∈ (M₁.union M₂).accepts ↔ x ∈ M₁.accepts ∨ x ∈ M₂.accepts := by
+  simp [union, product_accepts_iff]
+
 end SetClosure
 
 section Maps
