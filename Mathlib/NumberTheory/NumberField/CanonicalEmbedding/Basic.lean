@@ -360,6 +360,10 @@ theorem normAtPlace_apply_of_isComplex {w : InfinitePlace K} (hw : IsComplex w) 
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
     dif_neg (not_isReal_iff_isComplex.mpr hw)]
 
+@[deprecated (since := "2025-02-28")] alias normAtPlace_apply_isReal := normAtPlace_apply_of_isReal
+@[deprecated (since := "2025-02-28")] alias normAtPlace_apply_isComplex :=
+  normAtPlace_apply_of_isComplex
+
 @[simp]
 theorem normAtPlace_apply (w : InfinitePlace K) (x : K) :
     normAtPlace w (mixedEmbedding K x) = w x := by
@@ -916,11 +920,11 @@ theorem negAt_apply_isReal_and_not_mem (x : mixedSpace K) {w : {w // IsReal w}} 
 theorem negAt_apply_isComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
     (negAt s x).2 w = x.2 w := rfl
 
-@[deprecated (since := "2025-02-28")] alias negAt_apply_ofIsReal_and_mem :=
+@[deprecated (since := "2025-02-28")] alias negAt_apply_of_isReal_and_mem :=
   negAt_apply_isReal_and_mem
-@[deprecated (since := "2025-02-28")] alias negAt_apply_ofIsReal_and_not_mem :=
+@[deprecated (since := "2025-02-28")] alias negAt_apply_of_isReal_and_not_mem :=
   negAt_apply_isReal_and_not_mem
-@[deprecated (since := "2025-02-28")] alias negAt_apply_ofIsComplex := negAt_apply_isComplex
+@[deprecated (since := "2025-02-28")] alias negAt_apply_of_isComplex := negAt_apply_isComplex
 
 @[simp]
 theorem negAt_apply_snd (x : mixedSpace K) :
@@ -931,7 +935,7 @@ theorem negAt_apply_abs_isReal (x : mixedSpace K) (w : {w // IsReal w}) :
     |(negAt s x).1 w| = |x.1 w| := by
   by_cases hw : w ∈ s <;> simp [hw]
 
-@[deprecated (since := "2025-02-28")] alias negAt_apply_abs_ofIsReal := negAt_apply_abs_isReal
+@[deprecated (since := "2025-02-28")] alias negAt_apply_abs_of_isReal := negAt_apply_abs_isReal
 
 open MeasureTheory Classical in
 /-- `negAt` preserves the volume . -/
@@ -985,9 +989,9 @@ theorem negAt_signSet_apply_isReal (x : mixedSpace K) (w : {w // IsReal w}) :
 theorem negAt_signSet_apply_isComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
     (negAt (signSet x) x).2 w = x.2 w := rfl
 
-@[deprecated (since := "2025-02-28")] alias negAt_signSet_apply_ofIsReal :=
+@[deprecated (since := "2025-02-28")] alias negAt_signSet_apply_of_isReal :=
   negAt_signSet_apply_isReal
-@[deprecated (since := "2025-02-28")] alias negAt_signSet_apply_ofIsComplex :=
+@[deprecated (since := "2025-02-28")] alias negAt_signSet_apply_of_isComplex :=
   negAt_signSet_apply_isComplex
 
 variable (A : Set (mixedSpace K)) {x : mixedSpace K}
