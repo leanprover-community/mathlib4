@@ -290,8 +290,7 @@ def coeFnMonoidHom [Monoid β] [ContinuousMul β] : C(α, β) →* α → β whe
   map_one' := coe_one
   map_mul' := coe_mul
 
-variable (α)
-
+variable (α) in
 /-- Composition on the left by a (continuous) homomorphism of topological monoids, as a
 `MonoidHom`. Similar to `MonoidHom.compLeft`. -/
 @[to_additive (attr := simps)
@@ -303,8 +302,6 @@ protected def _root_.MonoidHom.compLeftContinuous {γ : Type*} [Monoid β] [Cont
   toFun f := (⟨g, hg⟩ : C(β, γ)).comp f
   map_one' := ext fun _ => g.map_one
   map_mul' _ _ := ext fun _ => g.map_mul _ _
-
-variable {α}
 
 /-- Composition on the right as a `MonoidHom`. Similar to `MonoidHom.compHom'`. -/
 @[to_additive (attr := simps)

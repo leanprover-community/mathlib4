@@ -54,8 +54,7 @@ protected theorem ext ⦃q₁ q₂ : Basis A c₁ c₂ c₃⦄ (hi : q₁.i = q�
   rw [← q₁_i_mul_j, ← q₂_i_mul_j]
   congr
 
-variable (R)
-
+variable (R) in
 /-- There is a natural quaternionic basis for the `QuaternionAlgebra`. -/
 @[simps i j k]
 protected def self : Basis ℍ[R,c₁,c₂,c₃] c₁ c₂ c₃ where
@@ -66,8 +65,6 @@ protected def self : Basis ℍ[R,c₁,c₂,c₃] c₁ c₂ c₃ where
   k := ⟨0, 0, 0, 1⟩
   i_mul_j := by ext <;> simp
   j_mul_i := by ext <;> simp
-
-variable {R}
 
 instance : Inhabited (Basis ℍ[R,c₁,c₂,c₃] c₁ c₂ c₃) :=
   ⟨Basis.self R⟩

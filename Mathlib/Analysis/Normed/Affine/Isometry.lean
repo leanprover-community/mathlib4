@@ -613,13 +613,10 @@ lemma ofEq_symm (h : s₁ = s₂) : (ofEq s₁ s₂ h).symm = ofEq s₂ s₁ h.s
 lemma ofEq_rfl : ofEq s₁ s₁ rfl = refl 𝕜 s₁ :=
   rfl
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- The map `v ↦ v +ᵥ p` as an affine isometric equivalence between `V` and `P`. -/
 def vaddConst (p : P) : V ≃ᵃⁱ[𝕜] P :=
   { AffineEquiv.vaddConst 𝕜 p with norm_map := fun _ => rfl }
-
-variable {𝕜}
 
 @[simp]
 theorem coe_vaddConst (p : P) : ⇑(vaddConst 𝕜 p) = fun v => v +ᵥ p :=
@@ -638,13 +635,10 @@ theorem vaddConst_toAffineEquiv (p : P) :
     (vaddConst 𝕜 p).toAffineEquiv = AffineEquiv.vaddConst 𝕜 p :=
   rfl
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- `p' ↦ p -ᵥ p'` as an affine isometric equivalence. -/
 def constVSub (p : P) : P ≃ᵃⁱ[𝕜] V :=
   { AffineEquiv.constVSub 𝕜 p with norm_map := norm_neg }
-
-variable {𝕜}
 
 @[simp]
 theorem coe_constVSub (p : P) : ⇑(constVSub 𝕜 p) = (p -ᵥ ·) :=
@@ -664,8 +658,7 @@ variable (𝕜 P)
 def constVAdd (v : V) : P ≃ᵃⁱ[𝕜] P :=
   { AffineEquiv.constVAdd 𝕜 P v with norm_map := fun _ => rfl }
 
-variable {𝕜 P}
-
+variable {𝕜 P} in
 @[simp]
 theorem coe_constVAdd (v : V) : ⇑(constVAdd 𝕜 P v : P ≃ᵃⁱ[𝕜] P) = (v +ᵥ ·) :=
   rfl
@@ -687,8 +680,6 @@ variable (𝕜)
 /-- Point reflection in `x` as an affine isometric automorphism. -/
 def pointReflection (x : P) : P ≃ᵃⁱ[𝕜] P :=
   (constVSub 𝕜 x).trans (vaddConst 𝕜 x)
-
-variable {𝕜}
 
 theorem pointReflection_apply (x y : P) : (pointReflection 𝕜 x) y = (x -ᵥ y) +ᵥ x :=
   rfl

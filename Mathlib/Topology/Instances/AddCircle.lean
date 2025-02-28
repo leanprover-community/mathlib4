@@ -370,8 +370,7 @@ end FloorRing
 
 section FiniteOrderPoints
 
-variable {p}
-
+variable {p} in in
 theorem addOrderOf_period_div {n : ℕ} (h : 0 < n) : addOrderOf ((p / n : 𝕜) : AddCircle p) = n := by
   rw [addOrderOf_eq_iff h]
   replace h : 0 < (n : 𝕜) := Nat.cast_pos.2 h
@@ -383,16 +382,12 @@ theorem addOrderOf_period_div {n : ℕ} (h : 0 < n) : addOrderOf ((p / n : 𝕜)
     (mul_left_injective₀ hp.out.ne').eq_iff, Nat.cast_inj, mul_comm] at hk
   exact (Nat.le_of_dvd h0 ⟨_, hk.symm⟩).not_lt hn
 
-variable (p)
-
 theorem gcd_mul_addOrderOf_div_eq {n : ℕ} (m : ℕ) (hn : 0 < n) :
     m.gcd n * addOrderOf (↑(↑m / ↑n * p) : AddCircle p) = n := by
   rw [mul_comm_div, ← nsmul_eq_mul, coe_nsmul, IsOfFinAddOrder.addOrderOf_nsmul]
   · rw [addOrderOf_period_div hn, Nat.gcd_comm, Nat.mul_div_cancel']
     exact n.gcd_dvd_left m
   · rwa [← addOrderOf_pos_iff, addOrderOf_period_div hn]
-
-variable {p}
 
 theorem addOrderOf_div_of_gcd_eq_one {m n : ℕ} (hn : 0 < n) (h : m.gcd n = 1) :
     addOrderOf (↑(↑m / ↑n * p) : AddCircle p) = n := by

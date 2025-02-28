@@ -83,15 +83,13 @@ theorem diagramNatTrans_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ 
   refine Multiequalizer.hom_ext _ _ _ (fun i => ?_)
   simp
 
-variable (D)
-
+variable (D) in
 /-- `J.diagram P`, as a functor in `P`. -/
 @[simps]
 def diagramFunctor (X : C) : (Cᵒᵖ ⥤ D) ⥤ (J.Cover X)ᵒᵖ ⥤ D where
   obj P := J.diagram P X
   map η := J.diagramNatTrans η X
 
-variable {D}
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 
 /-- The plus construction, associating a presheaf to any presheaf.
@@ -168,15 +166,12 @@ theorem plusMap_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) :
   refine colimit.hom_ext (fun S => ?_)
   simp [plusMap, J.diagramNatTrans_comp]
 
-variable (D)
-
+variable (D) in in
 /-- The plus construction, a functor sending `P` to `J.plusObj P`. -/
 @[simps]
 def plusFunctor : (Cᵒᵖ ⥤ D) ⥤ Cᵒᵖ ⥤ D where
   obj P := J.plusObj P
   map η := J.plusMap η
-
-variable {D}
 
 /-- The canonical map from `P` to `J.plusObj P`.
 See `toPlusNatTrans` for a functorial version. -/
@@ -213,8 +208,6 @@ variable (D)
 @[simps]
 def toPlusNatTrans : 𝟭 (Cᵒᵖ ⥤ D) ⟶ J.plusFunctor D where
   app P := J.toPlus P
-
-variable {D}
 
 /-- `(P ⟶ P⁺)⁺ = P⁺ ⟶ P⁺⁺` -/
 @[simp]

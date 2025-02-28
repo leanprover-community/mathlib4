@@ -333,8 +333,7 @@ instance finite_quotient_of_pretransitive_of_finite_quotient [IsPretransitive α
     exact Finite.of_surjective f ((Quotient.surjective_liftOn' _).2
       (Quotient.mk''_surjective.comp (MulAction.surjective_smul _ _)))
 
-variable {β}
-
+variable {β} in in
 /-- A bijection between the quotient of the action of a subgroup `H` on an orbit, and a
 corresponding quotient expressed in terms of `Setoid.comap Subtype.val`. -/
 @[to_additive "A bijection between the quotient of the action of an additive subgroup `H` on an
@@ -368,8 +367,6 @@ noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup α) (ω : Ω) :
     induction q using Quotient.inductionOn'
     rfl
 
-variable (β)
-
 /-- A bijection between the orbits under the action of a subgroup `H` on `β`, and the orbits
 under the action of `H` on each orbit under the action of `G`. -/
 @[to_additive "A bijection between the orbits under the action of an additive subgroup `H` on `β`,
@@ -378,8 +375,6 @@ noncomputable def equivSubgroupOrbits (H : Subgroup α) :
     orbitRel.Quotient H β ≃ Σω : Ω, orbitRel.Quotient H (orbitRel.Quotient.orbit ω) :=
   (Setoid.sigmaQuotientEquivOfLe (orbitRel_subgroup_le H)).symm.trans
     (Equiv.sigmaCongrRight fun ω ↦ (equivSubgroupOrbitsSetoidComap H ω).symm)
-
-variable {β}
 
 @[to_additive]
 instance finite_quotient_of_finite_quotient_of_finite_quotient {H : Subgroup α}
