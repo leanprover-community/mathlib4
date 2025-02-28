@@ -6,6 +6,7 @@ Authors: Wanyi He, Jiedong Jiang, Jingting Wang, Andrew Yang, Shouxin Zhang
 import Mathlib.RingTheory.Artinian.Noetherian
 import Mathlib.RingTheory.Ideal.Height.Basic
 import Mathlib.RingTheory.Localization.Submodule
+import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.Order.KrullDimension
 import Mathlib.RingTheory.Nakayama
 /-!
@@ -27,31 +28,6 @@ lemma IsLocalization.isNoetherianRing (I : Ideal R) [I.IsPrime] (A : Type*) [Com
 
 instance (I : Ideal R) [I.IsPrime] [IsNoetherianRing R] :
     IsNoetherianRing (Localization.AtPrime I) := IsLocalization.isNoetherianRing I _
-
-lemma Ideal.exists_pow_le_of_fg {R : Type*} [CommSemiring R] (I J : Ideal R) (h : I.FG)
-    (h' : I ≤ J.radical) : ∃ n : ℕ, I ^ n ≤ J := by
-  revert h'
-  refine Submodule.fg_induction _ _ (fun I => I ≤ J.radical → ∃ n : ℕ, I ^ n ≤ J) ?_ ?_ _ h
-  · intro x hx
-    obtain ⟨n, hn⟩ := hx (Ideal.subset_span (Set.mem_singleton x))
-    exact ⟨n, by rwa [← Ideal.span, Ideal.span_singleton_pow, Ideal.span_le,
-      Set.singleton_subset_iff]⟩
-  · intros J K hJ hK hJK
-    obtain ⟨n, hn⟩ := hJ (fun x hx => hJK <| Ideal.mem_sup_left hx)
-    obtain ⟨m, hm⟩ := hK (fun x hx => hJK <| Ideal.mem_sup_right hx)
-    use n + m
-    rw [← Ideal.add_eq_sup, add_pow, Ideal.sum_eq_sup, Finset.sup_le_iff]
-    refine fun i hi => Ideal.mul_le_right.trans ?_
-    obtain h | h := le_or_lt n i
-    · exact Ideal.mul_le_right.trans ((Ideal.pow_le_pow_right h).trans hn)
-    · refine Ideal.mul_le_left.trans ((Ideal.pow_le_pow_right ?_).trans hm)
-      rw [add_comm, Nat.add_sub_assoc h.le]
-      apply Nat.le_add_right
-
-lemma Ideal.isNilpotent_iff_le_nilradical {I : Ideal R} (hI : I.FG) :
-  IsNilpotent I ↔ I ≤ nilradical R :=
-⟨fun ⟨n, hn⟩ _ hx => ⟨n, hn ▸ Ideal.pow_mem_pow hx n⟩,
-  fun h => let ⟨n, hn⟩ := Ideal.exists_pow_le_of_fg I ⊥ hI h; ⟨n, le_bot_iff.mp hn⟩⟩
 
 namespace Submodule
 

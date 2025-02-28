@@ -142,39 +142,4 @@ lemma exists_multiset_ideal_is_maximal_and_prod_eq_bot :
 
 end Ideal
 
-section LocalRing
-
-lemma eq_maximalIdeal_of_isPrime [IsArtinianRing R] [IsLocalRing R]
-    (I : Ideal R) [I.IsPrime] : I = IsLocalRing.maximalIdeal R :=
-  IsLocalRing.eq_maximalIdeal <|
-    ((isArtinianRing_iff_isNoetherianRing_and_primes_maximal).mp ‹_›).2 _ ‹_›
-
-lemma radical_eq_maximalIdeal [IsArtinianRing R] [IsLocalRing R]
-    (I : Ideal R) (hI : I ≠ ⊤) : I.radical = IsLocalRing.maximalIdeal R := by
-  rw [Ideal.radical_eq_sInf]
-  refine (sInf_le ?_).antisymm (le_sInf ?_)
-  · exact ⟨IsLocalRing.le_maximalIdeal hI, inferInstance⟩
-  · rintro J ⟨h₁, h₂⟩
-    exact (eq_maximalIdeal_of_isPrime J).ge
-
-end LocalRing
-
 end IsArtinianRing
-
-lemma isArtinianRing_iff_isNilpotent_maximalIdeal {R : Type*} [CommRing R] [IsNoetherianRing R]
-    [IsLocalRing R] : IsArtinianRing R ↔ IsNilpotent (IsLocalRing.maximalIdeal R) := by
-  constructor
-  · intro h
-    rw [← IsArtinianRing.radical_eq_maximalIdeal (⊥ : Ideal R) bot_ne_top]
-    exact IsArtinianRing.isNilpotent_nilradical
-  · rintro ⟨n, hn⟩
-    rcases eq_or_ne n 0 with (rfl|hn')
-    · rw [pow_zero] at hn
-      exact (one_ne_zero hn).elim
-    · rw [isArtinianRing_iff_isNoetherianRing_and_primes_maximal]
-      refine ⟨inferInstance, fun I hI => ?_⟩
-      suffices IsLocalRing.maximalIdeal R ≤ I by
-        rw [← (IsLocalRing.maximalIdeal.isMaximal R).eq_of_le hI.ne_top this]
-        infer_instance
-      rw [← hI.pow_le_iff hn', hn]
-      exact bot_le
