@@ -43,7 +43,7 @@ theorem IsTopologicalRing.of_norm {R 𝕜 : Type*} [NonUnitalNonAssocRing R] [Li
     refine ⟨(1, ε), ⟨one_pos, ε0⟩, fun (x, y) ⟨hx, hy⟩ => ?_⟩
     simp only [sub_zero] at *
     calc norm (x * y) ≤ norm x * norm y := norm_mul_le _ _
-    _ < ε := mul_lt_of_le_one_of_lt_of_nonneg hx.le hy (norm_nonneg _)
+    _ < ε := (mul_le_of_le_one_left (norm_nonneg _) hx.le).trans_lt hy
   case hmul_left => exact fun x => h0 _ (norm x) (norm_nonneg _) (norm_mul_le x)
   case hmul_right =>
     exact fun y => h0 (· * y) (norm y) (norm_nonneg y) fun x =>
