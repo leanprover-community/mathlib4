@@ -28,10 +28,9 @@ We verify that `FDRep k G` is a `k`-linear monoidal category, and rigid when `G`
 `FDRep k G` has all finite limits.
 
 ## TODO
-* `FdRep k G ≌ FullSubcategory (FiniteDimensional k)`
-* `FdRep k G` has all finite colimits.
-* `FdRep k G` is abelian.
-* `FdRep k G ≌ FGModuleCat (MonoidAlgebra k G)`.
+* `FDRep k G` has all finite colimits.
+* `FDRep k G` is abelian.
+* `FDRep k G ≌ FGModuleCat (MonoidAlgebra k G)`.
 
 -/
 
@@ -115,7 +114,9 @@ instance : HasForget₂ (FDRep k G) (Rep k G) where
   forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction G
 
 theorem forget₂_ρ (V : FDRep k G) : ((forget₂ (FDRep k G) (Rep k G)).obj V).ρ = V.ρ := by
-  ext g v; rfl
+  rfl
+set_option linter.uppercaseLean3 false in
+#align fdRep.forget₂_ρ FDRep.forget₂_ρ
 
 -- Verify that the monoidal structure is available.
 example : MonoidalCategory (FDRep k G) := by infer_instance
@@ -139,12 +140,12 @@ theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FDRep k G) [Simple V] [
 
 /-- The forgetful functor to `Rep k G` preserves hom-sets and their vector space structure. -/
 def forget₂HomLinearEquiv (X Y : FDRep k G) :
-    ((forget₂ (FDRep k G) (Rep k G)).obj X ⟶
-      (forget₂ (FDRep k G) (Rep k G)).obj Y) ≃ₗ[k] X ⟶ Y where
+    (((forget₂ (FDRep k G) (Rep k G)).obj X) ⟶ (forget₂ (FDRep k G) (Rep k G)).obj Y)
+      ≃ₗ[k] X ⟶ Y where
   toFun f := ⟨f.hom, f.comm⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  invFun f := ⟨(forget₂ (FGModuleCat k) (ModuleCat k)).map f.hom, f.comm⟩
+  invFun f := ⟨_, f.comm⟩
   left_inv _ := by ext; rfl
   right_inv _ := by ext; rfl
 
@@ -197,3 +198,41 @@ theorem dualTensorIsoLinHom_hom_hom :
   rfl
 
 end FDRep
+
+noncomputable section equivFullSubcategory
+
+namespace FDRep
+
+variable {k G : Type u} [Field k] [Monoid G] {V W : FDRep k G}
+
+/- TODO: Unify how to phrase lemmas/theorems - Use V or (forget₂ ... V) or V.ρ.asModule? -/
+instance forget₂_finiteDimensional : FiniteDimensional k ((forget₂ (FDRep k G) (Rep k G)).obj V) :=
+  FGModuleCat.instFiniteCarrier k _
+
+/-- Bundles Rep with a FiniteDimensional into a FDRep. -/
+def ofRep (V : Rep k G) [hV : FiniteDimensional k V] : FDRep k G :=
+  ⟨⟨V.V, hV⟩, V.ρ⟩
+
+/-- Functor from `FDRep` to the full subcategory of finite dimensional `Rep`. Also see
+`equivalenceFiniteDimensional` for an equivalence of category. -/
+def toFiniteDimensional :
+    FDRep k G ⥤ FullSubcategory (fun V : Rep k G ↦ FiniteDimensional k V) :=
+  FullSubcategory.lift _ (forget₂ _ _) inferInstance
+
+/-- Functor from the full subcategory of finite dimensional `Rep` to `FDRep`. Also see
+`equivalenceFiniteDimensional` for an equivalence of category. -/
+def ofFiniteDimensional :
+    FullSubcategory (fun V : Rep k G ↦ FiniteDimensional k V) ⥤ FDRep k G where
+  obj := fun ⟨V, _⟩ ↦ FDRep.ofRep V
+  map := fun f ↦ ⟨f.hom, f.comm⟩
+
+/-- Equivalence between `FDRep` and the full subcategory of finite dimensional `Rep`. -/
+def equivalenceFiniteDimensional :
+    FDRep k G ≌ FullSubcategory (fun V : Rep k G ↦ FiniteDimensional k V) where
+  functor := toFiniteDimensional
+  inverse := ofFiniteDimensional
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
+end FDRep
+end equivFullSubcategory
