@@ -179,6 +179,12 @@ noncomputable def AssociatedGradedAddMonoidHom :
 scoped[FilteredAddGroupHom] notation:9000 "Gr[" f "]" => AssociatedGradedAddMonoidHom f
 
 @[simp]
+lemma AssociatedGradedAddMonoidHom_lift (i : ι) (x : FA i) : Gr(i)[f] (⟦x⟧ : GradedPiece FA FA_lt i)
+   = ⟦⟨f.toFun x, FilteredHom.pieces_wise (SetLike.coe_mem x)⟩⟧ := by
+  dsimp[GradedPieceHom]
+  rfl
+
+@[simp]
 lemma AssociatedGradedAddMonoidHom_apply (x : AssociatedGraded FA FA_lt) (i : ι) :
     (Gr[f] x) i = Gr(i)[f] (x i) := rfl
 
@@ -241,6 +247,12 @@ abbrev GradedPieceHom (i : ι) : GradedPiece FR FR_lt i →+ GradedPiece FS FS_l
 
 @[inherit_doc]
 scoped[FilteredRingHom] notation:9000 "Gr(" i ")[" f "]" => GradedPieceHom f i
+
+@[simp]
+lemma AssociatedGradedRingHom_lift (i : ι) (x : FR i) : Gr(i)[f] (⟦x⟧ : GradedPiece FR FR_lt i)
+   = ⟦⟨f.toRingHom x, FilteredHom.pieces_wise (SetLike.coe_mem x)⟩⟧ := by
+  simp only [FilteredAddGroupHom.AssociatedGradedAddMonoidHom_lift, RingHom.coe_mk,
+    MonoidHom.coe_mk, OneHom.coe_mk]
 
 lemma GradedPieceHom_comp_apply (x : AssociatedGraded FR FR_lt) (i : ι) :
     Gr(i)[g] (Gr(i)[f] (x i)) = Gr(i)[g.comp f] (x i) :=
