@@ -189,11 +189,8 @@ instance completeSpace : CompleteSpace ℤ_[p] :=
 
 instance : Norm ℤ_[p] := ⟨fun z => ‖(z : ℚ_[p])‖⟩
 
-variable {p}
-
+variable {p} in
 theorem norm_def {z : ℤ_[p]} : ‖z‖ = ‖(z : ℚ_[p])‖ := rfl
-
-variable (p)
 
 instance : NormedCommRing ℤ_[p] :=
   { PadicInt.instCommRing with
