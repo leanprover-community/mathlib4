@@ -34,10 +34,10 @@ jobs:
           printf '%s' "${COMMENT}" | hexdump -cC
           printf 'Comment:"%s"\n' "${COMMENT}"
           m_or_d="$(printf '%s' "${COMMENT}" |
-            sed -n 's=^bors  *\(merge\|r+\) *$=ready-to-merge=p; s=^bors  *d.*=delegated=p' | head -1)"
+            sed -n 's=^bors  *\(merge\|r+\) *$=ready-to-merge=p; s=^bors  *\(delegate\|d+\|d\=\).*=delegated=p' | head -1)"
 
           remove_labels="$(printf '%s' "${COMMENT}" |
-            sed -n 's=^bors  *\(r\|d\)- *$=remove-labels' | head -1)"
+            sed -n 's=^bors  *\(merge\|r\|d\)- *$=remove-labels=p' | head -1)"
 
           printf $'"bors delegate" or "bors merge" found? \'%s\'\n' "${m_or_d}"
           printf $'"bors r-" or "bors d-" found? \'%s\'\n' "${remove_labels}"
@@ -59,7 +59,7 @@ jobs:
 
       - name: Check whether user is a mathlib admin
         id: user_permission
-        if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
+        if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' || ! steps.merge_or_delegate.outputs.removeLabels == '' }}
         uses: actions-cool/check-user-permission@v2
         with:
           require: 'admin'

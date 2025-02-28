@@ -130,8 +130,7 @@ def PrelocalPredicate.sheafify {T : X → Type v} (P : PrelocalPredicate T) : Lo
   res {V U} i f w x := by
     specialize w (i x)
     rcases w with ⟨V', m', i', p⟩
-    refine ⟨V ⊓ V', ⟨x.2, m'⟩, Opens.infLELeft _ _, ?_⟩
-    convert P.res (Opens.infLERight V V') _ p
+    exact ⟨V ⊓ V', ⟨x.2, m'⟩, V.infLELeft _, P.res (V.infLERight V') _ p⟩
   locality {U} f w x := by
     specialize w x
     rcases w with ⟨V, m, i, p⟩

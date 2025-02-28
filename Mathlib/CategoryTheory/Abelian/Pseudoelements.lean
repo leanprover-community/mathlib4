@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.Comma.Over
+import Mathlib.CategoryTheory.Comma.Over.Basic
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 /-!
@@ -29,9 +29,10 @@ their action on pseudoelements. Thus, a usual style of proofs in abelian categor
 First, we construct some morphism using universal properties, and then we use diagram chasing
 of pseudoelements to verify that is has some desirable property such as exactness.
 
-It should be noted that the Freyd-Mitchell embedding theorem gives a vastly stronger notion of
-pseudoelement (in particular one that gives extensionality). However, this theorem is quite
-difficult to prove and probably out of reach for a formal proof for the time being.
+It should be noted that the Freyd-Mitchell embedding theorem
+(see `CategoryTheory.Abelian.FreydMitchell`) gives a vastly stronger notion of
+pseudoelement (in particular one that gives extensionality) and this file should be updated to
+go use that instead!
 
 ## Main results
 

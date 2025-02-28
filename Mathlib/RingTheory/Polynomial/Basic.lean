@@ -214,8 +214,8 @@ theorem exists_degree_le_of_mem_span {s : Set R[X]} {p : R[X]}
       Nat.cast_withBot, lt_self_iff_false] at this
 
 /-- A stronger version of `Polynomial.exists_degree_le_of_mem_span` under the assumption that the
-  set `s : R[X]` is finite. There exists a polynomial `p' ∈ s` whose degree dominates the degree of
-  every element of `p ∈ span R s`-/
+set `s : R[X]` is finite. There exists a polynomial `p' ∈ s` whose degree dominates the degree of
+every element of `p ∈ span R s`. -/
 theorem exists_degree_le_of_mem_span_of_finite {s : Set R[X]} (s_fin : s.Finite) (hs : s.Nonempty) :
     ∃ p' ∈ s, ∀ (p : R[X]), p ∈ Submodule.span R s → degree p ≤ degree p' := by
   rcases Set.Finite.exists_maximal_wrt degree s s_fin hs with ⟨a, has, hmax⟩
@@ -253,32 +253,6 @@ theorem not_finite [Nontrivial R] : ¬ Module.Finite R R[X] := by
     exact hn Submodule.mem_top
   rw [mem_degreeLE, degree_X_pow, Nat.cast_le, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
   exact one_ne_zero this
-
-/-- The finset of nonzero coefficients of a polynomial. -/
-def coeffs (p : R[X]) : Finset R :=
-  letI := Classical.decEq R
-  Finset.image (fun n => p.coeff n) p.support
-
-@[simp]
-theorem coeffs_zero : coeffs (0 : R[X]) = ∅ :=
-  rfl
-
-theorem mem_coeffs_iff {p : R[X]} {c : R} : c ∈ p.coeffs ↔ ∃ n ∈ p.support, c = p.coeff n := by
-  simp [coeffs, eq_comm, (Finset.mem_image)]
-
-theorem coeffs_one : coeffs (1 : R[X]) ⊆ {1} := by
-  classical
-    simp_rw [coeffs, Finset.image_subset_iff]
-    simp_all [coeff_one]
-
-theorem coeff_mem_coeffs (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n ∈ p.coeffs := by
-  classical
-  simp only [coeffs, exists_prop, mem_support_iff, Finset.mem_image, Ne]
-  exact ⟨n, h, rfl⟩
-
-theorem coeffs_monomial (n : ℕ) {c : R} (hc : c ≠ 0) : (monomial n c).coeffs = {c} := by
-  rw [coeffs, support_monomial n hc]
-  simp
 
 theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
     (∑ i ∈ range n, (X : R[X]) ^ i).comp (X + 1) =
@@ -389,7 +363,7 @@ theorem eval₂_restriction {p : R[X]} :
     eval₂ f x p =
       eval₂ (f.comp (Subring.subtype (Subring.closure (p.coeffs : Set R)))) x p.restriction := by
   simp only [eval₂_eq_sum, sum, support_restriction, ← @coeff_restriction _ _ p, RingHom.comp_apply,
-    Subring.coeSubtype]
+    Subring.coe_subtype]
 
 section ToSubring
 
@@ -543,7 +517,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
   · intro hf
     refine Submodule.span_induction ?_ ?_ ?_ ?_ hf
     · intro f hf n
-      cases' (Set.mem_image _ _ _).mp hf with x hx
+      obtain ⟨x, hx⟩ := (Set.mem_image _ _ _).mp hf
       rw [← hx.right, coeff_C]
       by_cases h : n = 0
       · simpa [h] using hx.left
@@ -580,7 +554,7 @@ theorem mem_leadingCoeffNth (n : ℕ) (x) :
       rw [leadingCoeff_zero, eq_comm]
       exact coeff_eq_zero_of_degree_lt hpdeg
     · refine ⟨p, hpI, le_of_eq hpdeg, ?_⟩
-      rw [Polynomial.leadingCoeff, natDegree, hpdeg, Nat.cast_withBot, WithBot.unbot'_coe]
+      rw [Polynomial.leadingCoeff, natDegree, hpdeg, Nat.cast_withBot, WithBot.unbotD_coe]
   · rintro ⟨p, hpI, hpdeg, rfl⟩
     have : natDegree p + (n - natDegree p) = n :=
       add_tsub_cancel_of_le (natDegree_le_of_degree_le hpdeg)
@@ -1119,7 +1093,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
   · intro hf
     refine Submodule.span_induction ?_ ?_ ?_ ?_ hf
     · intro f hf n
-      cases' (Set.mem_image _ _ _).mp hf with x hx
+      obtain ⟨x, hx⟩ := (Set.mem_image _ _ _).mp hf
       rw [← hx.right, coeff_C]
       by_cases h : n = 0
       · simpa [h] using hx.left

@@ -20,8 +20,6 @@ variable {F R S : Type*}
 
 namespace RingHom
 
--- Porting note: changed `[Ring R] [Ring S]` to `[Semiring R] [Semiring S]`
--- otherwise, Lean failed to find a `Subsingleton (ℚ →+* S)` instance
 @[simp]
 theorem map_rat_algebraMap [Semiring R] [Semiring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S)
     (r : ℚ) : f (algebraMap ℚ R r) = algebraMap ℚ S r :=

@@ -6,7 +6,7 @@ Authors: Aaron Anderson
 import Mathlib.ModelTheory.Ultraproducts
 import Mathlib.ModelTheory.Bundled
 import Mathlib.ModelTheory.Skolem
-import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # First-Order Satisfiability
@@ -193,7 +193,7 @@ variable (L)
 /-- A version of The Downward Löwenheim–Skolem theorem where the structure `N` elementarily embeds
 into `M`, but is not by type a substructure of `M`, and thus can be chosen to belong to the universe
 of the cardinal `κ`.
- -/
+-/
 theorem exists_elementaryEmbedding_card_eq_of_le (M : Type w') [L.Structure M] [Nonempty M]
     (κ : Cardinal.{w}) (h1 : ℵ₀ ≤ κ) (h2 : lift.{w} L.card ≤ Cardinal.lift.{max u v} κ)
     (h3 : lift.{w'} κ ≤ Cardinal.lift.{w} #M) :
@@ -392,7 +392,7 @@ def IsComplete (T : L.Theory) : Prop :=
 namespace IsComplete
 
 theorem models_not_iff (h : T.IsComplete) (φ : L.Sentence) : T ⊨ᵇ φ.not ↔ ¬T ⊨ᵇ φ := by
-  cases' h.2 φ with hφ hφn
+  rcases h.2 φ with hφ | hφn
   · simp only [hφ, not_true, iff_false]
     rw [models_sentence_iff, not_forall]
     refine ⟨h.1.some, ?_⟩
@@ -405,7 +405,7 @@ theorem models_not_iff (h : T.IsComplete) (φ : L.Sentence) : T ⊨ᵇ φ.not �
 
 theorem realize_sentence_iff (h : T.IsComplete) (φ : L.Sentence) (M : Type*) [L.Structure M]
     [M ⊨ T] [Nonempty M] : M ⊨ φ ↔ T ⊨ᵇ φ := by
-  cases' h.2 φ with hφ hφn
+  rcases h.2 φ with hφ | hφn
   · exact iff_of_true (hφ.realize_sentence M) hφ
   · exact
       iff_of_false ((Sentence.realize_not M).1 (hφn.realize_sentence M))

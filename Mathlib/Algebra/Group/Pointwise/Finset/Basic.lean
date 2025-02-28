@@ -3,7 +3,6 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
@@ -11,6 +10,8 @@ import Mathlib.Data.Finset.Density
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Data.Finset.Preimage
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Pointwise operations of finsets
@@ -1219,12 +1220,6 @@ theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=
 theorem isUnit_singleton (a : α) : IsUnit ({a} : Finset α) :=
   (Group.isUnit a).finset
 
-/- Porting note: not in simp nf; Added non-simpable part as `isUnit_iff_singleton_aux` below
-Left-hand side simplifies from
-  IsUnit s
-to
-  ∃ a, s = {a} ∧ IsUnit a -/
--- @[simp]
 theorem isUnit_iff_singleton : IsUnit s ↔ ∃ a, s = {a} := by
   simp only [isUnit_iff, Group.isUnit, and_true]
 
@@ -1834,7 +1829,7 @@ variable [One α]
 theorem toFinset_one : (1 : Set α).toFinset = 1 :=
   rfl
 
--- Porting note: should take priority over `Finite.toFinset_singleton`
+-- should take simp priority over `Finite.toFinset_singleton`
 @[to_additive (attr := simp high)]
 theorem Finite.toFinset_one (h : (1 : Set α).Finite := finite_one) : h.toFinset = 1 :=
   Finite.toFinset_singleton _

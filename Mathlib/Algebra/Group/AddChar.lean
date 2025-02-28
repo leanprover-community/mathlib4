@@ -6,7 +6,7 @@ Authors: Michael Stoll
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 
 /-!
 # Characters from additive to multiplicative monoids
@@ -61,7 +61,7 @@ monoid, which intertwine addition in `A` with multiplication in `M`.
 
 We only put the typeclasses needed for the definition, although in practice we are usually
 interested in much more specific cases (e.g. when `A` is a group and `M` a commutative ring).
- -/
+-/
 structure AddChar where
   /-- The underlying function.
 

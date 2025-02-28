@@ -48,7 +48,8 @@ def affineCover (X : Scheme.{u}) : OpenCover X where
   f x := x
   covers := by
     intro x
-    erw [TopCat.coe_comp] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
+    simp only [LocallyRingedSpace.comp_toShHom, SheafedSpace.comp_base, TopCat.hom_comp,
+      ContinuousMap.coe_comp]
     rw [Set.range_comp, Set.range_eq_univ.mpr, Set.image_univ]
     · erw [Subtype.range_coe_subtype]
       exact (X.local_affine x).choose.2
@@ -120,7 +121,7 @@ instance {X : Scheme.{u}} (𝒰 : X.AffineOpenCover) (j : 𝒰.J) : IsOpenImmers
   𝒰.map_prop j
 
 /-- The open cover associated to an affine open cover. -/
-@[simps! J obj map f covers]
+@[simps! J obj map f]
 def openCover {X : Scheme.{u}} (𝒰 : X.AffineOpenCover) : X.OpenCover :=
   AffineCover.cover 𝒰
 
@@ -256,10 +257,7 @@ def affineBasisCoverOfAffine (R : CommRingCat.{u}) : OpenCover (Spec R) where
   covers r := by
     rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp _)]
     · exact trivial
-    · -- Porting note: need more hand holding here because Lean knows that
-      -- `CommRing.ofHom ...` is iso, but without `ofHom` Lean does not know what to do
-      change Epi (Spec.map (CommRingCat.ofHom (algebraMap _ _))).base
-      infer_instance
+    · infer_instance
   map_prop x := AlgebraicGeometry.Scheme.basic_open_isOpenImmersion x
 
 /-- We may bind the basic open sets of an open affine cover to form an affine cover that is also
@@ -279,7 +277,8 @@ theorem affineBasisCover_map_range (X : Scheme.{u}) (x : X)
     (r : (X.local_affine x).choose_spec.choose) :
     Set.range (X.affineBasisCover.map ⟨x, r⟩).base =
       (X.affineCover.map x).base '' (PrimeSpectrum.basicOpen r).1 := by
-  erw [TopCat.coe_comp, Set.range_comp]
+  simp only [affineBasisCover, Cover.bind_map, comp_coeBase, TopCat.hom_comp,
+    ContinuousMap.coe_comp, Set.range_comp]
   -- Porting note: `congr` fails to see the goal is comparing image of the same function
   refine congr_arg (_ '' ·) ?_
   exact (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r :)

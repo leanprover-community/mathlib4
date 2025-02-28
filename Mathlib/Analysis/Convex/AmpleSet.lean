@@ -3,7 +3,8 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Floris van Doorn
 -/
-import Mathlib.Analysis.Convex.Normed
+import Mathlib.Algebra.CharP.Invertible
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Analysis.NormedSpace.Connected
 import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
 
@@ -117,7 +118,7 @@ section Codimension
 
 /-- Let `E` be a linear subspace in a real vector space.
 If `E` has codimension at least two, its complement is ample. -/
-theorem of_one_lt_codim [TopologicalAddGroup F] [ContinuousSMul ℝ F] {E : Submodule ℝ F}
+theorem of_one_lt_codim [IsTopologicalAddGroup F] [ContinuousSMul ℝ F] {E : Submodule ℝ F}
     (hcodim : 1 < Module.rank ℝ (F ⧸ E)) :
     AmpleSet (Eᶜ : Set F) := fun x hx ↦ by
   rw [E.connectedComponentIn_eq_self_of_one_lt_codim hcodim hx, eq_univ_iff_forall]

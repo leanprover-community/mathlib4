@@ -14,3 +14,4 @@ We may add lemmas from other files imported by `Mathlib/Tactic/GCongr/Core` late
 
 attribute [gcongr] List.Sublist.append List.Sublist.append_left List.Sublist.append_right
   List.Sublist.reverse List.drop_sublist_drop_left List.Sublist.drop Nat.succ_le_succ
+  List.Perm.append_left List.Perm.append_right List.Perm.append List.Perm.map
