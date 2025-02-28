@@ -248,7 +248,6 @@ variable [SeminormedAddCommGroup E] [StarAddMonoid E] [NormedStarGroup E]
 variable [Module 𝕜 E] [StarModule 𝕜 E]
 
 variable (𝕜) in
-
 /-- `star` bundled as a linear isometric equivalence -/
 def starₗᵢ : E ≃ₗᵢ⋆[𝕜] E :=
   { starAddEquiv with

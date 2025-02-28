@@ -25,7 +25,6 @@ namespace Polynomial
 variable (R : Type*) [Semiring R]
 
 variable {M} in
-
 -- In this statement, we use `HSMul.hSMul m` as LHS instead of `(m • ·)`
 -- to avoid a spurious lambda-expression that complicates rewriting with this lemma.
 theorem smul_eq_map [MulSemiringAction M R] (m : M) :

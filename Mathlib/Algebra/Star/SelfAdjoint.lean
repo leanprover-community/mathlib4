@@ -111,7 +111,6 @@ section AddMonoid
 variable [AddMonoid R] [StarAddMonoid R]
 
 variable (R) in
-
 @[simp] protected theorem zero : IsSelfAdjoint (0 : R) := star_zero R
 
 @[aesop 90% apply]
