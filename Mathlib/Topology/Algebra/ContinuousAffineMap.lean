@@ -75,17 +75,15 @@ theorem congr_fun {f g : P →ᴬ[R] Q} (h : f = g) (x : P) : f x = g x :=
 def toContinuousMap (f : P →ᴬ[R] Q) : C(P, Q) :=
   ⟨f, f.cont⟩
 
--- Porting note: changed to CoeHead due to difficulty with synthesization order
 instance : CoeHead (P →ᴬ[R] Q) C(P, Q) :=
   ⟨toContinuousMap⟩
 
 @[simp]
 theorem toContinuousMap_coe (f : P →ᴬ[R] Q) : f.toContinuousMap = ↑f := rfl
 
-@[simp] -- Porting note: removed `norm_cast`
+@[simp]
 theorem coe_to_affineMap (f : P →ᴬ[R] Q) : ((f : P →ᵃ[R] Q) : P → Q) = f := rfl
 
--- Porting note: removed `norm_cast` and `simp` since proof is `simp only [ContinuousMap.coe_mk]`
 theorem coe_to_continuousMap (f : P →ᴬ[R] Q) : ((f : C(P, Q)) : P → Q) = f := rfl
 
 theorem to_continuousMap_injective {f g : P →ᴬ[R] Q} (h : (f : C(P, Q)) = (g : C(P, Q))) :
@@ -93,7 +91,6 @@ theorem to_continuousMap_injective {f g : P →ᴬ[R] Q} (h : (f : C(P, Q)) = (g
   ext a
   exact ContinuousMap.congr_fun h a
 
--- Porting note: removed `norm_cast`
 theorem coe_affineMap_mk (f : P →ᵃ[R] Q) (h) : ((⟨f, h⟩ : P →ᴬ[R] Q) : P →ᵃ[R] Q) = f := rfl
 
 @[norm_cast]

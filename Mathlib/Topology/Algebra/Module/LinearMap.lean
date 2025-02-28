@@ -632,7 +632,7 @@ theorem _root_.Submodule.coe_subtypeL (p : Submodule R₁ M₁) :
 theorem _root_.Submodule.coe_subtypeL' (p : Submodule R₁ M₁) : ⇑p.subtypeL = p.subtype :=
   rfl
 
-@[simp] -- @[norm_cast] -- Porting note: A theorem with this can't have a rhs starting with `↑`.
+@[simp]
 theorem _root_.Submodule.subtypeL_apply (p : Submodule R₁ M₁) (x : p) : p.subtypeL x = x :=
   rfl
 
@@ -1021,7 +1021,7 @@ def restrictScalars (f : M →L[A] M₂) : M →L[R] M₂ :=
 
 variable {R}
 
-@[simp] -- @[norm_cast] -- Porting note: This theorem can't be a `norm_cast` theorem.
+@[simp]
 theorem coe_restrictScalars (f : M →L[A] M₂) :
     (f.restrictScalars R : M →ₗ[R] M₂) = (f : M →ₗ[A] M₂).restrictScalars R :=
   rfl
