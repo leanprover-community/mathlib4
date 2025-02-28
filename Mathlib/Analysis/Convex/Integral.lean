@@ -312,8 +312,8 @@ theorem ae_eq_const_or_norm_average_lt_of_norm_le_const [StrictConvexSpace ℝ E
   haveI : IsFiniteMeasure μ := ⟨hμt⟩
   replace h_le : ∀ᵐ x ∂μ, f x ∈ closedBall (0 : E) C := by simpa only [mem_closedBall_zero_iff]
   simpa only [interior_closedBall _ hC0.ne', mem_ball_zero_iff] using
-    (strictConvex_closedBall ℝ (0 : E) C).ae_eq_const_or_average_mem_interior isClosed_ball h_le
-      hfi
+    (strictConvex_closedBall ℝ (0 : E) C).ae_eq_const_or_average_mem_interior isClosed_closedBall
+      h_le hfi
 
 /-- If `E` is a strictly convex normed space and `f : α → E` is a function such that `‖f x‖ ≤ C`
 a.e., then either this function is a.e. equal to its average value, or the norm of its integral is
@@ -337,7 +337,3 @@ theorem ae_eq_const_or_norm_setIntegral_lt_of_norm_le_const [StrictConvexSpace �
   haveI := Fact.mk ht.lt_top
   rw [← restrict_apply_univ]
   exact ae_eq_const_or_norm_integral_lt_of_norm_le_const h_le
-
-@[deprecated (since := "2024-04-17")]
-alias ae_eq_const_or_norm_set_integral_lt_of_norm_le_const :=
-  ae_eq_const_or_norm_setIntegral_lt_of_norm_le_const

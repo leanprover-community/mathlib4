@@ -99,8 +99,6 @@ theorem val_inj {a b : Subtype p} : a.val = b.val ↔ a = b :=
 
 lemma coe_ne_coe {a b : Subtype p} : (a : α) ≠ b ↔ a ≠ b := coe_injective.ne_iff
 
-@[deprecated (since := "2024-04-04")] alias ⟨ne_of_val_ne, _⟩ := coe_ne_coe
-
 @[simp]
 theorem _root_.exists_eq_subtype_mk_iff {a : Subtype p} {b : α} :
     (∃ h : p b, a = Subtype.mk b h) ↔ ↑a = b :=
@@ -133,7 +131,7 @@ theorem surjective_restrict {α} {β : α → Type*} [ne : ∀ a, Nonempty (β a
   rintro ⟨x, hx⟩
   exact dif_pos hx
 
-/-- Defining a map into a subtype, this can be seen as a "coinduction principle" of `Subtype`-/
+/-- Defining a map into a subtype, this can be seen as a "coinduction principle" of `Subtype` -/
 @[simps]
 def coind {α β} (f : α → β) {p : β → Prop} (h : ∀ a, p (f a)) : α → Subtype p := fun a ↦ ⟨f a, h a⟩
 

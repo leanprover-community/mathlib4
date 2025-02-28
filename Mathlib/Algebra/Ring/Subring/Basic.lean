@@ -927,7 +927,7 @@ protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s
   induction' hd with hd tl ih
   · exact ⟨[], List.forall_mem_nil _, Or.inl rfl⟩
   rw [List.forall_mem_cons] at HL
-  rcases ih HL.2 with ⟨L, HL', HP | HP⟩ <;> cases' HL.1 with hhd hhd
+  rcases ih HL.2 with ⟨L, HL', HP | HP⟩ <;> rcases HL.1 with hhd | hhd
   · exact
       ⟨hd::L, List.forall_mem_cons.2 ⟨hhd, HL'⟩,
         Or.inl <| by rw [List.prod_cons, List.prod_cons, HP]⟩
@@ -1071,3 +1071,8 @@ theorem comap_map_eq_self_of_injective
   SetLike.coe_injective (Set.preimage_image_eq _ hf)
 
 end Subring
+
+theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
+    (k : R) * g ∈ G := by
+  convert AddSubgroup.zsmul_mem G h k using 1
+  rw [zsmul_eq_mul]

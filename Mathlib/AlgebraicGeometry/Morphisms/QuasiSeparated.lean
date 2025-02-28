@@ -85,8 +85,7 @@ theorem quasiCompact_affineProperty_iff_quasiSeparatedSpace {X Y : Scheme} [IsAf
     haveI : IsAffine _ := U.2
     haveI : IsAffine _ := V.2
     let g : pullback U.1.ι V.1.ι ⟶ X := pullback.fst _ _ ≫ U.1.ι
-    -- Porting note: `inferInstance` does not work here
-    have : IsOpenImmersion g := PresheafedSpace.IsOpenImmersion.comp _ _
+    have : IsOpenImmersion g := inferInstance
     have e := Homeomorph.ofIsEmbedding _ this.base_open.isEmbedding
     rw [IsOpenImmersion.range_pullback_to_base_of_left] at e
     erw [Subtype.range_coe, Subtype.range_coe] at e
@@ -94,8 +93,7 @@ theorem quasiCompact_affineProperty_iff_quasiSeparatedSpace {X Y : Scheme} [IsAf
     exact @Homeomorph.compactSpace _ _ _ _ (H _ _) e
   · introv H h₁ h₂
     let g : pullback f₁ f₂ ⟶ X := pullback.fst _ _ ≫ f₁
-    -- Porting note: `inferInstance` does not work here
-    have : IsOpenImmersion g := PresheafedSpace.IsOpenImmersion.comp _ _
+    have : IsOpenImmersion g := inferInstance
     have e := Homeomorph.ofIsEmbedding _ this.base_open.isEmbedding
     rw [IsOpenImmersion.range_pullback_to_base_of_left] at e
     simp_rw [isCompact_iff_compactSpace] at H
@@ -150,21 +148,8 @@ theorem quasiSeparatedSpace_of_quasiSeparated {X Y : Scheme} (f : X ⟶ Y)
   rw [← terminalIsTerminal.hom_ext (f ≫ terminal.from Y) (terminal.from X)]
   infer_instance
 
-instance quasiSeparatedSpace_of_isAffine (X : Scheme) [IsAffine X] :
-    QuasiSeparatedSpace X := by
-  constructor
-  intro U V hU hU' hV hV'
-  obtain ⟨s, hs, e⟩ := (isCompactOpen_iff_eq_basicOpen_union _).mp ⟨hU', hU⟩
-  obtain ⟨s', hs', e'⟩ := (isCompactOpen_iff_eq_basicOpen_union _).mp ⟨hV', hV⟩
-  rw [e, e', Set.iUnion₂_inter]
-  simp_rw [Set.inter_iUnion₂]
-  apply hs.isCompact_biUnion
-  intro i _
-  apply hs'.isCompact_biUnion
-  intro i' _
-  change IsCompact (X.basicOpen i ⊓ X.basicOpen i').1
-  rw [← Scheme.basicOpen_mul]
-  exact ((isAffineOpen_top _).basicOpen _).isCompact
+instance quasiSeparatedSpace_of_isAffine (X : Scheme) [IsAffine X] : QuasiSeparatedSpace X :=
+  (quasiSeparatedSpace_congr X.isoSpec.hom.homeomorph).2 PrimeSpectrum.instQuasiSeparatedSpace
 
 theorem IsAffineOpen.isQuasiSeparated {X : Scheme} {U : X.Opens} (hU : IsAffineOpen U) :
     IsQuasiSeparated (U : Set X) := by
@@ -296,14 +281,12 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
       intro i; change (i : X.Opens) ≤ S
       refine le_trans ?_ (inf_le_left (b := U.1))
       rw [hs]
-      -- Porting note: have to add argument explicitly
-      exact @le_iSup X.Opens s _ (fun (i : s) => (i : X.Opens)) i
+      exact le_iSup (fun (i : s) => (i : X.Opens)) i
     have hs₂ : ∀ i : s, i.1.1 ≤ U.1 := by
       intro i; change (i : X.Opens) ≤ U
       refine le_trans ?_ (inf_le_right (a := S))
       rw [hs]
-      -- Porting note: have to add argument explicitly
-      exact @le_iSup X.Opens s _ (fun (i : s) => (i : X.Opens)) i
+      exact le_iSup (fun (i : s) => (i : X.Opens)) i
     -- On each affine open in the intersection, we have `f ^ (n + n₂) * y₁ = f ^ (n + n₁) * y₂`
     -- for some `n` since `f ^ n₂ * y₁ = f ^ (n₁ + n₂) * x = f ^ n₁ * y₂` on `X_f`.
     have := fun i ↦ exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux
@@ -318,11 +301,10 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
           (X.presheaf.map (homOfLE le_sup_right).op f ^ (Finset.univ.sup n + n₁) * y₂) := by
       fapply X.sheaf.eq_of_locally_eq' fun i : s => i.1.1
       · refine fun i => homOfLE ?_; rw [hs]
-        -- Porting note: have to add argument explicitly
-        exact @le_iSup X.Opens s _ (fun (i : s) => (i : X.Opens)) i
+        exact le_iSup (fun (i : s) => (i : X.Opens)) i
       · exact le_of_eq hs
       · intro i
-        -- This unfolds `X.sheaf` and ensures we use `CommRingCat.hom` to apply the morphism
+        -- This unfolds `X.sheaf`
         show (X.presheaf.map _) _ = (X.presheaf.map _) _
         simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp]
         apply hn
@@ -333,12 +315,12 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     use (X.sheaf.objSupIsoProdEqLocus S U.1).inv ⟨⟨_ * _, _ * _⟩, this⟩
     refine (X.sheaf.objSupIsoProdEqLocus_inv_eq_iff _ _ _ (X.basicOpen_res _
       (homOfLE le_sup_left).op) (X.basicOpen_res _ (homOfLE le_sup_right).op)).mpr ⟨?_, ?_⟩
-    · -- This unfolds `X.sheaf` and ensures we use `CommRingCat.hom` to apply the morphism
+    · -- This unfolds `X.sheaf`
       show (X.presheaf.map _) _ = (X.presheaf.map _) _
       rw [add_assoc, add_comm n₁]
       simp only [pow_add, map_pow, map_mul, hy₁, ← CommRingCat.comp_apply, ← mul_assoc,
         ← Functor.map_comp, ← op_comp, homOfLE_comp]
-    · -- This unfolds `X.sheaf` and ensures we use `CommRingCat.hom` to apply the morphism
+    · -- This unfolds `X.sheaf`
       show (X.presheaf.map _) _ = (X.presheaf.map _) _
       simp only [pow_add, map_pow, map_mul, hy₂, ← CommRingCat.comp_apply, ← mul_assoc,
         ← Functor.map_comp, ← op_comp, homOfLE_comp]
@@ -398,15 +380,13 @@ theorem isIso_ΓSpec_adjunction_unit_app_basicOpen {X : Scheme} [CompactSpace X]
     IsIso ((ΓSpec.adjunction.unit.app X).c.app (op (PrimeSpectrum.basicOpen f))) := by
   refine @IsIso.of_isIso_comp_right _ _ _ _ _ _ (X.presheaf.map
     (eqToHom (Scheme.toSpecΓ_preimage_basicOpen _ _).symm).op) _ ?_
-  rw [ConcreteCategory.isIso_iff_bijective, CommRingCat.forget_map]
+  rw [ConcreteCategory.isIso_iff_bijective]
   apply (config := { allowSynthFailures := true }) IsLocalization.bijective
   · exact StructureSheaf.IsLocalization.to_basicOpen _ _
   · refine is_localization_basicOpen_of_qcqs ?_ ?_ _
     · exact isCompact_univ
     · exact isQuasiSeparated_univ
-  · simp only [RingHom.algebraMap_toAlgebra]
-    -- This `rw` doesn't fire as a `simp` (`only`).
-    rw [← CommRingCat.hom_comp]
-    simp [RingHom.algebraMap_toAlgebra, ← Functor.map_comp]
+  · simp [RingHom.algebraMap_toAlgebra, ← CommRingCat.hom_comp, RingHom.algebraMap_toAlgebra,
+      ← Functor.map_comp]
 
 end AlgebraicGeometry

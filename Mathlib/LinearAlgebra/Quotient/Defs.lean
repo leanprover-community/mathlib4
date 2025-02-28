@@ -107,6 +107,10 @@ theorem mk_sub : (mk (x - y) : M ⧸ p) = mk x - mk y :=
 
 protected nonrec lemma «forall» {P : M ⧸ p → Prop} : (∀ a, P a) ↔ ∀ a, P (mk a) := Quotient.forall
 
+theorem subsingleton_iff : Subsingleton (M ⧸ p) ↔ ∀ x : M, x ∈ p := by
+  rw [subsingleton_iff_forall_eq 0, Submodule.Quotient.forall]
+  simp_rw [Submodule.Quotient.mk_eq_zero]
+
 section SMul
 
 variable {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] (P : Submodule R M)

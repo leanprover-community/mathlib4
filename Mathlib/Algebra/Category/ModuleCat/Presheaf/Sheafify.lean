@@ -32,8 +32,6 @@ namespace CategoryTheory
 
 namespace Presieve.FamilyOfElements
 
-attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
-
 section smul
 
 variable {R : Cᵒᵖ ⥤ RingCat.{u}} {M : PresheafOfModules.{v} R} {X : C} {P : Presieve X}
@@ -67,8 +65,8 @@ lemma _root_.PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective
     · exact Presheaf.equalizerSieve_mem J α _ _ hr₀
     · exact Presheaf.equalizerSieve_mem J φ _ _ hm₀
   · intro Z g hg
-    erw [← NatTrans.naturality_apply, ← NatTrans.naturality_apply, M₀.map_smul, M₀.map_smul,
-      hg.1, hg.2]
+    rw [← NatTrans.naturality_apply (D := Ab), ← NatTrans.naturality_apply (D := Ab)]
+    erw [M₀.map_smul, M₀.map_smul, hg.1, hg.2]
     rfl
 
 lemma isCompatible_map_smul_aux {Y Z : C} (f : Y ⟶ X) (g : Z ⟶ Y)
@@ -83,7 +81,6 @@ lemma isCompatible_map_smul_aux {Y Z : C} (f : Y ⟶ X) (g : Z ⟶ Y)
       RingCat.comp_apply]
   · rw [hm₀', A.map_comp, AddCommGrp.coe_comp, Function.comp_apply, ← hm₀]
     erw [NatTrans.naturality_apply φ]
-    rfl -- `ConcreteCategory`/`HasForget` mismatch workaround
 
 variable (hr₀ : (r₀.map (whiskerRight α (forget _))).IsAmalgamation r)
   (hm₀ : (m₀.map (whiskerRight φ (forget _))).IsAmalgamation m)
@@ -108,7 +105,6 @@ lemma isCompatible_map_smul : ((r₀.smul m₀).map (whiskerRight φ (forget _))
   have hb₀ : (φ.app (Opposite.op Z)) b₀ = (A.map (f₁.op ≫ g₁.op)) m := by
     dsimp [b₀]
     erw [NatTrans.naturality_apply φ, hb₁, Functor.map_comp, ConcreteCategory.comp_apply]
-    rfl -- `ConcreteCategory`/`HasForget` mismatch workaround
   have ha₀' : (α.app (Opposite.op Z)) a₀ = (R.map (f₂.op ≫ g₂.op)) r := by
     rw [ha₀, ← op_comp, fac, op_comp]
   have hb₀' : (φ.app (Opposite.op Z)) b₀ = (A.map (f₂.op ≫ g₂.op)) m := by
@@ -163,11 +159,12 @@ def SMulCandidate.mk' (S : Sieve X.unop) (hS : S ∈ J X.unop)
     apply A.isSeparated _ _ (J.pullback_stable f.unop hS)
     rintro Z g hg
     dsimp at hg
-    erw [← CategoryTheory.comp_apply, ← A.val.map_comp, ← NatTrans.naturality_apply, M₀.map_smul]
+    rw [← ConcreteCategory.comp_apply, ← A.val.map_comp, ← NatTrans.naturality_apply (D := Ab)]
+    erw [M₀.map_smul] -- Mismatch between `M₀.map` and `M₀.presheaf.map`
     refine (ha _ hg).trans (app_eq_of_isLocallyInjective α φ A.isSeparated _ _ _ _ ?_ ?_)
     · rw [← RingCat.comp_apply, NatTrans.naturality, RingCat.comp_apply, ha₀]
       apply (hr₀ _ hg).symm.trans
-      simp [RingCat.forget_map]
+      simp
     · erw [NatTrans.naturality_apply φ, hb₀]
       apply (hm₀ _ hg).symm.trans
       dsimp
@@ -205,7 +202,6 @@ instance : Subsingleton (SMulCandidate α φ r m) where
       all_goals apply Presheaf.imageSieve_mem
     apply A.isSeparated _ _ hS
     intro Y f ⟨⟨r₀, hr₀⟩, ⟨m₀, hm₀⟩⟩
-    show A.val.map f.op _ = A.val.map f.op _ -- `ConcreteCategory`/`HasForget` mismatch workaround
     rw [h₁ f.op r₀ hr₀ m₀ hm₀, h₂ f.op r₀ hr₀ m₀ hm₀]
 
 noncomputable instance : Unique (SMulCandidate α φ r m) :=
@@ -225,21 +221,17 @@ lemma map_smul_eq {Y : Cᵒᵖ} (f : X ⟶ Y) (r₀ : R₀.obj Y) (hr₀ : α.ap
 protected lemma one_smul : smul α φ 1 m = m := by
   apply A.isSeparated _ _ (Presheaf.imageSieve_mem J φ m)
   rintro Y f ⟨m₀, hm₀⟩
-  show A.val.map f.op _ = _ -- `ConcreteCategory`/`HasForget` mismatch workaround
   rw [← hm₀, map_smul_eq α φ 1 m f.op 1 (by simp) m₀ hm₀, one_smul]
-  rfl -- `ConcreteCategory`/`HasForget` mismatch workaround
 
 protected lemma zero_smul : smul α φ 0 m = 0 := by
   apply A.isSeparated _ _ (Presheaf.imageSieve_mem J φ m)
   rintro Y f ⟨m₀, hm₀⟩
-  show A.val.map f.op _ = A.val.map f.op _ -- `ConcreteCategory`/`HasForget` mismatch workaround
   rw [map_smul_eq α φ 0 m f.op 0 (by simp) m₀ hm₀, zero_smul, map_zero,
     (A.val.map f.op).hom.map_zero]
 
 protected lemma smul_zero : smul α φ r 0 = 0 := by
   apply A.isSeparated _ _ (Presheaf.imageSieve_mem J α r)
   rintro Y f ⟨r₀, hr₀⟩
-  show A.val.map f.op _ = A.val.map f.op _ -- `ConcreteCategory`/`HasForget` mismatch workaround
   rw [(A.val.map f.op).hom.map_zero, map_smul_eq α φ r 0 f.op r₀ hr₀ 0 (by simp),
     smul_zero, map_zero]
 
@@ -251,11 +243,10 @@ protected lemma smul_add : smul α φ r (m + m') = smul α φ r m + smul α φ r
   apply A.isSeparated _ _ hS
   rintro Y f ⟨⟨⟨r₀, hr₀⟩, ⟨m₀ : M₀.obj _, hm₀ : (φ.app _) _ = _⟩⟩,
     ⟨m₀' : M₀.obj _, hm₀' : (φ.app _) _ = _⟩⟩
-  show A.val.map f.op _ = A.val.map f.op _ -- `ConcreteCategory`/`HasForget` mismatch workaround
   rw [(A.val.map f.op).hom.map_add, map_smul_eq α φ r m f.op r₀ hr₀ m₀ hm₀,
     map_smul_eq α φ r m' f.op r₀ hr₀ m₀' hm₀',
     map_smul_eq α φ r (m + m') f.op r₀ hr₀ (m₀ + m₀')
-      (by rw [map_add, map_add, hm₀, hm₀']; rfl),
+      (by rw [map_add, map_add, hm₀, hm₀']),
     smul_add, map_add]
 
 protected lemma add_smul : smul α φ (r + r') m = smul α φ r m + smul α φ r' m := by
@@ -266,7 +257,6 @@ protected lemma add_smul : smul α φ (r + r') m = smul α φ r m + smul α φ r
   apply A.isSeparated _ _ hS
   rintro Y f ⟨⟨⟨r₀ : R₀.obj _, (hr₀ : (α.app (Opposite.op Y)) r₀ = (R.val.map f.op) r)⟩,
     ⟨r₀' : R₀.obj _, (hr₀' : (α.app (Opposite.op Y)) r₀' = (R.val.map f.op) r')⟩⟩, ⟨m₀, hm₀⟩⟩
-  show A.val.map f.op _ = A.val.map f.op _ -- `ConcreteCategory`/`HasForget` mismatch workaround
   rw [(A.val.map f.op).hom.map_add, map_smul_eq α φ r m f.op r₀ hr₀ m₀ hm₀,
     map_smul_eq α φ r' m f.op r₀' hr₀' m₀ hm₀,
     map_smul_eq α φ (r + r') m f.op (r₀ + r₀') (by rw [map_add, map_add, hr₀, hr₀'])
@@ -281,7 +271,6 @@ protected lemma mul_smul : smul α φ (r * r') m = smul α φ r (smul α φ r' m
   rintro Y f ⟨⟨⟨r₀ : R₀.obj _, (hr₀ : (α.app (Opposite.op Y)) r₀ = (R.val.map f.op) r)⟩,
     ⟨r₀' : R₀.obj _, (hr₀' : (α.app (Opposite.op Y)) r₀' = (R.val.map f.op) r')⟩⟩,
     ⟨m₀ : M₀.obj _, hm₀⟩⟩
-  show A.val.map f.op _ = A.val.map f.op _ -- `ConcreteCategory`/`HasForget` mismatch workaround
   rw [map_smul_eq α φ (r * r') m f.op (r₀ * r₀')
     (by rw [map_mul, map_mul, hr₀, hr₀']) m₀ hm₀, mul_smul,
     map_smul_eq α φ r (smul α φ r' m) f.op r₀ hr₀ (r₀' • m₀)
@@ -310,10 +299,9 @@ lemma map_smul :
   rintro Y f ⟨⟨r₀,
     (hr₀ : (α.app (Opposite.op Y)).hom r₀ = (R.val.map f.op).hom ((R.val.map π).hom r))⟩,
     ⟨m₀, (hm₀ : (φ.app _) _ = _)⟩⟩
-  show A.val.map f.op _ = A.val.map f.op _ -- `ConcreteCategory`/`HasForget` mismatch workaround
   rw [← ConcreteCategory.comp_apply, ← Functor.map_comp,
     map_smul_eq α φ r m (π ≫ f.op) r₀ (by rw [hr₀, Functor.map_comp, RingCat.comp_apply]) m₀
-      (by rw [hm₀, Functor.map_comp, ConcreteCategory.comp_apply]; rfl),
+      (by rw [hm₀, Functor.map_comp, ConcreteCategory.comp_apply]),
     map_smul_eq α φ (R.val.map π r) (A.val.map π m) f.op r₀ hr₀ m₀ hm₀]
 
 end Sheafify
