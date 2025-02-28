@@ -164,8 +164,8 @@ def GradedPieceHom (i : ι) : GradedPiece FA FA_lt i →+ GradedPiece FB FB_lt i
 scoped[FilteredAddGroupHom] notation:9000 "Gr(" i ")[" f "]" => GradedPieceHom f i
 
 @[simp]
-lemma AssociatedGradedGroupHom_lift (i : ι) (x : FA i) : Gr(i)[f] (GradedPiece.mk FA FA_lt x)
-    = (GradedPiece.mk FB FB_lt ⟨f.toFun x, FilteredHom.pieces_wise (SetLike.coe_mem x)⟩) := by
+lemma AssociatedGradedGroupHom_lift (i : ι) (x : FA i) : Gr(i)[f] (⟦x⟧ : GradedPiece FA FA_lt i)
+   = ⟦⟨f.toFun x, FilteredHom.pieces_wise (SetLike.coe_mem x)⟩⟧ := by
   dsimp[GradedPieceHom]
   rfl
 
