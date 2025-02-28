@@ -943,3 +943,12 @@ end OrderMonoidWithZeroHom
 def OrderMonoidIso.unitsWithZero {α : Type*} [Group α] [Preorder α] : (WithZero α)ˣ ≃*o α where
   toMulEquiv := WithZero.unitsWithZeroEquiv
   map_le_map_iff' {a b} := by simp [WithZero.unitsWithZeroEquiv]
+
+/-- A version of `Equiv.optionCongr` for `WithZero` on `OrderMonoidIso`. -/
+@[simps!]
+def OrderMonoidIso.withZero {α β : Type*} [OrderedCommGroup α] [OrderedCommGroup β]
+    (e : α ≃*o β) : WithZero α ≃*o WithZero β where
+  toMulEquiv := e.toMulEquiv.withZero
+  map_le_map_iff' {a b} := by
+    cases a <;> cases b <;>
+    simp [WithZero.zero_le, (WithZero.zero_lt_coe _).not_le]

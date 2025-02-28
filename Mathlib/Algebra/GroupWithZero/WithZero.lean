@@ -91,7 +91,7 @@ theorem monoidWithZeroHom_ext ⦃f g : WithZero α →*₀ β⦄
 
 /-- The (multiplicative) universal property of `WithZero`. -/
 @[simps! symm_apply_apply]
-noncomputable nonrec def lift' : (α →* β) ≃ (WithZero α →*₀ β) where
+nonrec def lift' : (α →* β) ≃ (WithZero α →*₀ β) where
   toFun f :=
     { toFun := fun
         | 0 => 0
@@ -119,7 +119,7 @@ variable [MulOneClass β] [MulOneClass γ]
 
 /-- The `MonoidWithZero` homomorphism `WithZero α →* WithZero β` induced by a monoid homomorphism
   `f : α →* β`. -/
-noncomputable def map' (f : α →* β) : WithZero α →*₀ WithZero β := lift' (coeMonoidHom.comp f)
+def map' (f : α →* β) : WithZero α →*₀ WithZero β := lift' (coeMonoidHom.comp f)
 
 lemma map'_zero (f : α →* β) : map' f 0 = 0 := rfl
 
@@ -259,6 +259,7 @@ instance groupWithZero : GroupWithZero (WithZero α) where
     apply mul_inv_cancel
 
 /-- Any group is isomorphic to the units of itself adjoined with `0`. -/
+@[simps]
 def unitsWithZeroEquiv : (WithZero α)ˣ ≃* α where
   toFun a := unzero a.ne_zero
   invFun a := Units.mk0 a coe_ne_zero
@@ -271,6 +272,7 @@ theorem coe_unitsWithZeroEquiv_eq_units_val (γ : (WithZero α)ˣ) :
   simp only [WithZero.unitsWithZeroEquiv, MulEquiv.coe_mk, Equiv.coe_fn_mk, WithZero.coe_unzero]
 
 /-- Any group with zero is isomorphic to adjoining `0` to the units of itself. -/
+@[simps]
 def withZeroUnitsEquiv {G : Type*} [GroupWithZero G]
     [DecidablePred (fun a : G ↦ a = 0)] :
     WithZero Gˣ ≃* G where
@@ -281,7 +283,8 @@ def withZeroUnitsEquiv {G : Type*} [GroupWithZero G]
   map_mul' := (by induction · <;> induction · <;> simp [← WithZero.coe_mul])
 
 /-- A version of `Equiv.optionCongr` for `WithZero`. -/
-noncomputable def _root_.MulEquiv.withZero [Group β] (e : α ≃* β) :
+@[simps]
+def _root_.MulEquiv.withZero [Group β] (e : α ≃* β) :
     WithZero α ≃* WithZero β where
   toFun := map' e.toMonoidHom
   invFun := map' e.symm.toMonoidHom
@@ -290,7 +293,7 @@ noncomputable def _root_.MulEquiv.withZero [Group β] (e : α ≃* β) :
   map_mul' := (by induction · <;> induction · <;> simp)
 
 /-- The inverse of `MulEquiv.withZero`. -/
-protected noncomputable def _root_.MulEquiv.unzero [Group β] (e : WithZero α ≃* WithZero β) :
+protected def _root_.MulEquiv.unzero [Group β] (e : WithZero α ≃* WithZero β) :
     α ≃* β where
   toFun x := unzero (x := e x) (by simp [ne_eq, ← e.eq_symm_apply])
   invFun x := unzero (x := e.symm x) (by simp [e.symm_apply_eq])
