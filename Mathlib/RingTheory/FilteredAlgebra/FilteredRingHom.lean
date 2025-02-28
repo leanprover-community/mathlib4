@@ -99,8 +99,8 @@ def piece_wise_hom (i : ι) : FA i → FB i :=
 obtained from the composition of the underlying function.-/
 def comp : FilteredHom FA FA_lt FC FC_lt := {
   toFun := g.1.comp f.1
-  pieces_wise := fun ha ↦ g.pieces_wise (f.pieces_wise ha)
-  pieces_wise_lt := fun ha ↦ g.pieces_wise_lt (f.pieces_wise_lt ha) }
+  pieces_wise ha := g.pieces_wise (f.pieces_wise ha)
+  pieces_wise_lt ha := g.pieces_wise_lt (f.pieces_wise_lt ha) }
 
 /-- A filtered morphism `f : FilteredHom FA FA_lt FB FB_lt` `IsStrict` if it strictly map
 the `p`-th filtration layer of `FA` and `FA_lt` to intersection of the image of `f` with the `p`-th
@@ -143,8 +143,8 @@ variable {FA FB FC FA_lt FB_lt FC_lt}
 obtained from the composition of underlying group homomorphisms.-/
 def comp : FilteredAddGroupHom FA FA_lt FC FC_lt where
   __ := g.toAddMonoidHom.comp f.toAddMonoidHom
-  pieces_wise := fun ha ↦ g.pieces_wise (f.pieces_wise ha)
-  pieces_wise_lt := fun ha ↦ g.pieces_wise_lt (f.pieces_wise_lt ha)
+  pieces_wise ha := g.pieces_wise (f.pieces_wise ha)
+  pieces_wise_lt ha := g.pieces_wise_lt (f.pieces_wise_lt ha)
 
 variable [AddSubgroupClass α A] [AddSubgroupClass β B] [AddSubgroupClass γ C]
 
@@ -225,8 +225,8 @@ variable {FR FS FT FR_lt FS_lt FT_lt}
 obtained from the composition of the underlying ring homomorphisms.-/
 def comp : FilteredRingHom FR FR_lt FT FT_lt where
   __ := g.toRingHom.comp f.toRingHom
-  pieces_wise := fun ha ↦ g.pieces_wise (f.pieces_wise ha)
-  pieces_wise_lt := fun ha ↦ g.pieces_wise_lt (f.pieces_wise_lt ha)
+  pieces_wise ha := g.pieces_wise (f.pieces_wise ha)
+  pieces_wise_lt ha := g.pieces_wise_lt (f.pieces_wise_lt ha)
 
 variable [AddSubgroupClass γ R] [AddSubgroupClass σ S] [AddSubgroupClass τ T]
 
@@ -295,6 +295,7 @@ scoped[FilteredRingHom] notation:9000 "Gr[" f "]" => AssociatedGradedRingHom f
 
 variable [DecidableEq ι]
 
+@[simp]
 theorem AssociatedGradedRingHom_apply (x : AssociatedGraded FR FR_lt) (i : ι) :
     (Gr[f] x) i = Gr(i)[f] (x i) := rfl
 
