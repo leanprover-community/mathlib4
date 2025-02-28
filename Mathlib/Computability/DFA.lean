@@ -193,11 +193,10 @@ theorem compl_accepts_iff (x : List α) : x ∈ Mᶜ.accepts ↔ x ∉ M.accepts
 
  This is a generalization of the intersection of two DFAs to arbitrary binary set operations.
 -/
-def product (M₁ : DFA α σ) (M₂ : DFA α σ') (p : Prop → Prop → Prop) : DFA α (σ × σ') := {
-  step := fun ⟨s₁, s₂⟩ a => (M₁.step s₁ a, M₂.step s₂ a),
-  start := (M₁.start, M₂.start),
+def product (M₁ : DFA α σ) (M₂ : DFA α σ') (p : Prop → Prop → Prop) : DFA α (σ × σ') where
+  step := fun ⟨s₁, s₂⟩ a => (M₁.step s₁ a, M₂.step s₂ a)
+  start := (M₁.start, M₂.start)
   accept := {s | p (s.fst ∈ M₁.accept) (s.snd ∈ M₂.accept)}
-}
 
 theorem product_accept_iff
     (p : Prop → Prop → Prop) (M₁ : DFA α σ) (M₂ : DFA α σ') (s : σ × σ') :
