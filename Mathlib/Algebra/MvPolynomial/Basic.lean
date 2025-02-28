@@ -822,20 +822,16 @@ def constantCoeff : MvPolynomial σ R →+* R where
 theorem constantCoeff_eq : (constantCoeff : MvPolynomial σ R → R) = coeff 0 :=
   rfl
 
-variable (σ)
-
+variable (σ) in
 @[simp]
 theorem constantCoeff_C (r : R) : constantCoeff (C r : MvPolynomial σ R) = r := by
   classical simp [constantCoeff_eq]
 
-variable {σ}
-variable (R)
+variable (R) in
 
 @[simp]
 theorem constantCoeff_X (i : σ) : constantCoeff (X i : MvPolynomial σ R) = 0 := by
   simp [constantCoeff_eq]
-
-variable {R}
 
 @[simp]
 theorem constantCoeff_smul {R : Type*} [SMulZeroClass R S₁] (a : R) (f : MvPolynomial σ S₁) :
