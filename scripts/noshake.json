@@ -375,8 +375,13 @@
   "Mathlib.LinearAlgebra.DFinsupp": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.LinearAlgebra.Basic": ["Mathlib.Algebra.BigOperators.Group.Finset"],
   "Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional": ["Mathlib.Init.Core"],
+  "Mathlib.LinearAlgebra.AffineSpace.Defs": ["Mathlib.Algebra.AddTorsor.Defs"],
   "Mathlib.LinearAlgebra.AffineSpace.Basic":
   ["Mathlib.Algebra.AddTorsor", "Mathlib.Algebra.AddTorsor.Defs"],
+  "Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs":
+  ["Mathlib.LinearAlgebra.AffineSpace.Defs"],
+  "Mathlib.LinearAlgebra.AffineSpace.AffineMap":
+  ["Mathlib.LinearAlgebra.AffineSpace.Defs"],
   "Mathlib.Lean.Meta.RefinedDiscrTree.Pi": ["Mathlib.Algebra.Group.Pi.Basic"],
   "Mathlib.Lean.Meta": ["Batteries.Logic"],
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Operations"],
