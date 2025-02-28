@@ -235,7 +235,7 @@ section DirectSum
 
 open DirectSum
 
-variable [OrderedAddCommMonoid ι] [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt]
+variable [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt]
 
 /-- -/
 noncomputable def AssociatedGradedRingHom [DecidableEq ι] :
