@@ -74,8 +74,6 @@ namespace WeierstrassCurve.Projective
 variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} [CommRing R] [CommRing S]
   [CommRing A] [CommRing B] [Field F] [Field K] {W' : Projective R} {W : Projective F}
 
-section Negation
-
 /-! ### Negation on point representatives -/
 
 variable (W') in
@@ -164,10 +162,6 @@ lemma nonsingularLift_negMap {P : PointClass F} (hP : W.NonsingularLift P) :
     W.NonsingularLift <| W.negMap P := by
   rcases P with ⟨_⟩
   exact nonsingular_neg hP
-
-end Negation
-
-section Addition
 
 /-! ### Addition on point representatives -/
 
@@ -340,8 +334,6 @@ lemma nonsingularLift_addMap {P Q : PointClass F} (hP : W.NonsingularLift P)
   rcases P; rcases Q
   exact nonsingular_add hP hQ
 
-end Addition
-
 /-! ### Nonsingular points -/
 
 variable (W') in
@@ -419,13 +411,7 @@ lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
 lemma add_point (P Q : W.Point) : (P + Q).point = W.addMap P.point Q.point :=
   rfl
 
-end Point
-
-section Affine
-
 /-! ### Equivalence with affine coordinates -/
-
-namespace Point
 
 open scoped Classical in
 variable (W) in
@@ -581,10 +567,6 @@ noncomputable instance : AddCommGroup W.Point where
 
 end Point
 
-end Affine
-
-section Map
-
 /-! ### Maps and base changes -/
 
 @[simp]
@@ -612,8 +594,6 @@ lemma baseChange_add [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R 
     (W'.baseChange K).toProjective.add (f ∘ P) (f ∘ Q) =
       f ∘ (W'.baseChange F).toProjective.add P Q := by
   rw [← RingHom.coe_coe, ← WeierstrassCurve.Projective.map_add _ hP hQ, map_baseChange]
-
-end Map
 
 end WeierstrassCurve.Projective
 

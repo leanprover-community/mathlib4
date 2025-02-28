@@ -118,8 +118,6 @@ lemma comp_fin3 (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] 
 variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K] {W' : Jacobian R}
   {W : Jacobian F}
 
-section Jacobian
-
 /-! ### Jacobian coordinates -/
 
 /-- The scalar multiplication on a point representative. -/
@@ -144,7 +142,8 @@ scoped instance : MulAction R <| Fin 3 → R where
   mul_smul _ _ _ := by simp only [smul_fin3, mul_pow, mul_assoc, fin3_def_ext]
 
 /-- The equivalence setoid for a point representative. -/
-@[reducible] scoped instance : Setoid <| Fin 3 → R :=
+@[reducible]
+scoped instance : Setoid <| Fin 3 → R :=
   MulAction.orbitRel Rˣ <| Fin 3 → R
 
 variable (R) in
@@ -226,10 +225,6 @@ lemma Y_eq_iff {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
     P y * Q z ^ 3 = Q y * P z ^ 3 ↔ P y / P z ^ 3 = Q y / Q z ^ 3 :=
   (div_eq_div_iff (pow_ne_zero 3 hPz) (pow_ne_zero 3 hQz)).symm
 
-end Jacobian
-
-section Equation
-
 /-! ### Weierstrass equations -/
 
 variable (W') in
@@ -287,10 +282,6 @@ lemma equation_some (X Y : R) : W'.Equation ![X, Y, 1] ↔ W'.toAffine.Equation 
 lemma equation_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.Equation P ↔ W.toAffine.Equation (P x / P z ^ 2) (P y / P z ^ 3) :=
   (equation_of_equiv <| equiv_some_of_Z_ne_zero hPz).trans <| equation_some ..
-
-end Equation
-
-section Nonsingular
 
 /-! ### Nonsingular Weierstrass equations -/
 
@@ -492,10 +483,6 @@ lemma nonsingularLift_some (X Y : R) :
     W'.NonsingularLift ⟦![X, Y, 1]⟧ ↔ W'.toAffine.Nonsingular X Y :=
   nonsingular_some X Y
 
-end Nonsingular
-
-section Map
-
 /-! ### Maps and base changes -/
 
 variable (f : R →+* S) (P : Fin 3 → R)
@@ -569,8 +556,6 @@ lemma baseChange_nonsingular (hf : Function.Injective f) :
     (W'.baseChange B).toJacobian.Nonsingular (f ∘ P) ↔
       (W'.baseChange A).toJacobian.Nonsingular P := by
   rw [← RingHom.coe_coe, ← map_nonsingular P hf, AlgHom.toRingHom_eq_coe, map_baseChange]
-
-end Map
 
 end Jacobian
 

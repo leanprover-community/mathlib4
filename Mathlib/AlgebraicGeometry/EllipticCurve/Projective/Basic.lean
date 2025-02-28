@@ -118,8 +118,6 @@ lemma comp_fin3 (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] 
 variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K] {W' : Projective R}
   {W : Projective F}
 
-section Projective
-
 /-! ### Projective coordinates -/
 
 lemma smul_fin3 (P : Fin 3 → R) (u : R) : u • P = ![u * P x, u * P y, u * P z] := by
@@ -133,6 +131,7 @@ lemma comp_smul (f : R →+* S) (P : Fin 3 → R) (u : R) : f ∘ (u • P) = f 
   ext n; fin_cases n <;> simp only [smul_fin3, comp_fin3] <;> map_simp
 
 /-- The equivalence setoid for a point representative. -/
+@[reducible]
 scoped instance : Setoid <| Fin 3 → R :=
   MulAction.orbitRel Rˣ <| Fin 3 → R
 
@@ -150,8 +149,7 @@ lemma smul_eq (P : Fin 3 → R) {u : R} (hu : IsUnit u) : (⟦u • P⟧ : Point
 
 lemma smul_equiv_smul (P Q : Fin 3 → R) {u v : R} (hu : IsUnit u) (hv : IsUnit v) :
     u • P ≈ v • Q ↔ P ≈ Q := by
-  erw [← Quotient.eq_iff_equiv, ← Quotient.eq_iff_equiv, smul_eq P hu, smul_eq Q hv]
-  rfl
+  rw [← Quotient.eq_iff_equiv, ← Quotient.eq_iff_equiv, smul_eq P hu, smul_eq Q hv]
 
 variable (W') in
 /-- The coercion to a Weierstrass curve in affine coordinates. -/
@@ -214,10 +212,6 @@ lemma Y_eq_iff {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
     P y * Q z = Q y * P z ↔ P y / P z = Q y / Q z :=
   (div_eq_div_iff hPz hQz).symm
 
-end Projective
-
-section Equation
-
 /-! ### Weierstrass equations -/
 
 variable (W') in
@@ -279,10 +273,6 @@ lemma equation_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
 lemma X_eq_zero_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Equation P)
     (hPz : P z = 0) : P x = 0 :=
   pow_eq_zero <| (equation_of_Z_eq_zero hPz).mp hP
-
-end Equation
-
-section Nonsingular
 
 /-! ### Nonsingular Weierstrass equations -/
 
@@ -464,8 +454,6 @@ lemma nonsingularLift_some (X Y : R) :
     W'.NonsingularLift ⟦![X, Y, 1]⟧ ↔ W'.toAffine.Nonsingular X Y :=
   nonsingular_some X Y
 
-end Nonsingular
-
 @[deprecated (since := "2024-08-27")] alias equation_smul_iff := equation_smul
 @[deprecated (since := "2024-08-27")] alias nonsingularLift_zero' := nonsingularLift_zero
 @[deprecated (since := "2024-08-27")] alias nonsingular_affine_of_Z_ne_zero :=
@@ -476,8 +464,6 @@ end Nonsingular
   nonsingular_of_Z_ne_zero
 @[deprecated (since := "2024-08-27")] alias nonsingular_smul_iff := nonsingular_smul
 @[deprecated (since := "2024-08-27")] alias nonsingular_zero' := nonsingular_zero
-
-section Map
 
 /-! ### Maps and base changes -/
 
@@ -556,8 +542,6 @@ lemma baseChange_nonsingular (hf : Function.Injective f) :
     (W'.baseChange B).toProjective.Nonsingular (f ∘ P) ↔
       (W'.baseChange A).toProjective.Nonsingular P := by
   rw [← RingHom.coe_coe, ← map_nonsingular P hf, AlgHom.toRingHom_eq_coe, map_baseChange]
-
-end Map
 
 end Projective
 

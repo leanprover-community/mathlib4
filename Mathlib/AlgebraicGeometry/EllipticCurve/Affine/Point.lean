@@ -102,8 +102,6 @@ abbrev FunctionField : Type r :=
 
 namespace CoordinateRing
 
-section Algebra
-
 /-! ### The affine coordinate ring as an `R[X]`-algebra -/
 
 noncomputable instance : Algebra R W'.CoordinateRing :=
@@ -209,13 +207,9 @@ instance [IsDomain R] : IsDomain W'.CoordinateRing :=
     AdjoinRoot.isDomain_of_prime irreducible_polynomial.prime
   (map_injective <| IsFractionRing.injective R <| FractionRing R).isDomain
 
-end Algebra
-
-section Ideal
-
 /-! ### Ideals in the affine coordinate ring -/
 
-variable (W')
+variable (W') in
 /-- The class of the element `X - x` in `R[W]` for some `x` in `R`. -/
 noncomputable def XClass (x : R) : W'.CoordinateRing :=
   mk W' <| C <| X - C x
@@ -224,6 +218,7 @@ lemma XClass_ne_zero [Nontrivial R] (x : R) : XClass W' x ≠ 0 :=
   AdjoinRoot.mk_ne_zero_of_natDegree_lt monic_polynomial (C_ne_zero.mpr <| X_sub_C_ne_zero x) <|
     by rw [natDegree_polynomial, natDegree_C]; norm_num1
 
+variable (W') in
 /-- The class of the element `Y - y(X)` in `R[W]` for some `y(X)` in `R[X]`. -/
 noncomputable def YClass (y : R[X]) : W'.CoordinateRing :=
   mk W' <| Y - C y
@@ -242,14 +237,17 @@ lemma C_addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y�
       -(XClass W x₁ * XClass W x₂ * XClass W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂)) :=
   congr_arg (mk W) <| W.C_addPolynomial_slope h₁ h₂ hxy
 
+variable (W') in
 /-- The ideal `⟨X - x⟩` of `R[W]` for some `x` in `R`. -/
 noncomputable def XIdeal (x : R) : Ideal W'.CoordinateRing :=
   .span {XClass W' x}
 
+variable (W') in
 /-- The ideal `⟨Y - y(X)⟩` of `R[W]` for some `y(X)` in `R[X]`. -/
 noncomputable def YIdeal (y : R[X]) : Ideal W'.CoordinateRing :=
   .span {YClass W' y}
 
+variable (W') in
 /-- The ideal `⟨X - x, Y - y(X)⟩` of `R[W]` for some `x` in `R` and `y(X)` in `R[X]`. -/
 noncomputable def XYIdeal (x : R) (y : R[X]) : Ideal W'.CoordinateRing :=
   .span {XClass W' x, YClass W' y}
@@ -337,7 +335,7 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
           (C <| W.addY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
   have sup_rw : ∀ a b c d : Ideal W.CoordinateRing, a ⊔ (b ⊔ (c ⊔ d)) = a ⊔ d ⊔ b ⊔ c :=
     fun _ _ c _ => by rw [← sup_assoc, sup_comm c, sup_sup_sup_comm, ← sup_assoc]
-  rw [XYIdeal_add_eq, XIdeal, mul_comm, XYIdeal_eq₁ W x₁ y₁ <| W.slope x₁ x₂ y₁ y₂, XYIdeal,
+  rw [XYIdeal_add_eq, XIdeal, mul_comm, XYIdeal_eq₁ x₁ y₁ <| W.slope x₁ x₂ y₁ y₂, XYIdeal,
     XYIdeal_eq₂ h₁ h₂ hxy, XYIdeal, span_pair_mul_span_pair]
   simp_rw [span_insert, sup_rw, Ideal.sup_mul, span_singleton_mul_span_singleton]
   rw [← neg_eq_iff_eq_neg.mpr <| C_addPolynomial_slope h₁ h₂ hxy, span_singleton_neg,
@@ -377,7 +375,7 @@ noncomputable def XYIdeal' {x y : F} (h : W.Nonsingular x y) :
     (FractionalIdeal W.CoordinateRing⁰ W.FunctionField)ˣ :=
   Units.mkOfMulEqOne _ _ <| by
     rw [← mul_assoc, ← coeIdeal_mul, mul_comm <| XYIdeal W .., XYIdeal_neg_mul h, XIdeal,
-      FractionalIdeal.coe_ideal_span_singleton_mul_inv W.FunctionField <| XClass_ne_zero W x]
+      FractionalIdeal.coe_ideal_span_singleton_mul_inv W.FunctionField <| XClass_ne_zero x]
 
 lemma XYIdeal'_eq {x y : F} (h : W.Nonsingular x y) :
     (XYIdeal' h : FractionalIdeal W.CoordinateRing⁰ W.FunctionField) = XYIdeal W x (C y) :=
@@ -387,7 +385,7 @@ lemma mk_XYIdeal'_neg_mul {x y : F} (h : W.Nonsingular x y) :
     ClassGroup.mk (XYIdeal' <| (nonsingular_neg ..).mpr h) * ClassGroup.mk (XYIdeal' h) = 1 := by
   rw [← map_mul]
   exact (ClassGroup.mk_eq_one_of_coe_ideal <| (coeIdeal_mul ..).symm.trans <|
-    FractionalIdeal.coeIdeal_inj.mpr <| XYIdeal_neg_mul h).mpr ⟨_, XClass_ne_zero W _, rfl⟩
+    FractionalIdeal.coeIdeal_inj.mpr <| XYIdeal_neg_mul h).mpr ⟨_, XClass_ne_zero x, rfl⟩
 
 @[deprecated (since := "2025-02-01")] alias mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq :=
   mk_XYIdeal'_neg_mul
@@ -398,11 +396,7 @@ lemma mk_XYIdeal'_mul_mk_XYIdeal' {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingula
       ClassGroup.mk (XYIdeal' <| nonsingular_add h₁ h₂ hxy) := by
   rw [← map_mul]
   exact (ClassGroup.mk_eq_mk_of_coe_ideal (coeIdeal_mul ..).symm <| XYIdeal'_eq _).mpr
-    ⟨_, _, XClass_ne_zero W _, YClass_ne_zero W _, XYIdeal_mul_XYIdeal h₁.left h₂.left hxy⟩
-
-end Ideal
-
-section Norm
+    ⟨_, _, XClass_ne_zero _, YClass_ne_zero _, XYIdeal_mul_XYIdeal h₁.left h₂.left hxy⟩
 
 /-! ### Norms on the affine coordinate ring -/
 
@@ -465,8 +459,6 @@ lemma natDegree_norm_ne_one [IsDomain R] (x : W'.CoordinateRing) :
     (Algebra.norm R[X] x).natDegree ≠ 1 :=
   degree_norm_ne_one x ∘ (degree_eq_iff_natDegree_eq_of_pos zero_lt_one).mpr
 
-end Norm
-
 end CoordinateRing
 
 /-! ### Nonsingular points -/
@@ -483,8 +475,6 @@ inductive Point
 scoped notation3:max W' "⟮" S "⟯" => Affine.Point <| baseChange W' S
 
 namespace Point
-
-section Point
 
 /-! ### Group operations -/
 
@@ -589,10 +579,6 @@ lemma add_of_X_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h
     (hx : x₁ ≠ x₂) : some h₁ + some h₂ = -some (nonsingular_negAdd h₁ h₂ fun hxy => hx hxy.left) :=
   add_of_X_ne hx
 
-end Point
-
-section Group
-
 /-! ### Group law -/
 
 /-- The group homomorphism mapping an affine point `(x, y)` of `W` to the class of the non-zero
@@ -640,7 +626,7 @@ lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
       apply (p.natDegree_norm_ne_one _).elim
       rw [← finrank_quotient_span_eq_natDegree_norm (CoordinateRing.basis W) h0,
         ← (quotientEquivAlgOfEq F hp).toLinearEquiv.finrank_eq,
-        (CoordinateRing.quotientXYIdealEquiv W h).toLinearEquiv.finrank_eq, Module.finrank_self]
+        (CoordinateRing.quotientXYIdealEquiv h).toLinearEquiv.finrank_eq, Module.finrank_self]
   · exact congr_arg toClass
 
 lemma toClass_injective : Function.Injective <| @toClass _ _ W := by
@@ -658,17 +644,12 @@ noncomputable instance : AddCommGroup W.Point where
   add_comm _ _ := toClass_injective <| by simp only [map_add, add_comm]
   add_assoc _ _ _ := toClass_injective <| by simp only [map_add, add_assoc]
 
-end Group
-
-section Map
-
 /-! ### Maps and base changes -/
 
 variable [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebra R K] [Algebra S K]
   [IsScalarTower R S K] [Algebra R L] [Algebra S L] [IsScalarTower R S L] (f : F →ₐ[S] K)
   (g : K →ₐ[S] L)
 
-variable (W) in
 /-- The group homomorphism from `W⟮F⟯` to `W⟮K⟯` induced by an algebra homomorphism `f : F →ₐ[S] K`,
 where `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
 def map : W'⟮F⟯ →+ W'⟮K⟯ where
@@ -682,7 +663,7 @@ def map : W'⟮F⟯ →+ W'⟮K⟯ where
     by_cases hxy : x₁ = x₂ ∧ y₁ = (W'.baseChange F).toAffine.negY x₂ y₂
     · rw [add_of_Y_eq hxy.left hxy.right,
         add_of_Y_eq (congr_arg _ hxy.left) <| by rw [hxy.right, baseChange_negY]]
-    · simp_rw [add_some hxy, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope]
+    · simp only [add_some hxy, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope]
       rw [add_some fun h => hxy ⟨f.injective h.1, f.injective (W'.baseChange_negY f .. ▸ h).2⟩]
 
 @[deprecated (since := "2025-02-01")] alias mapFun := map
@@ -716,8 +697,6 @@ lemma map_baseChange [Algebra F K] [IsScalarTower R F K] [Algebra F L] [IsScalar
     (f : K →ₐ[F] L) (P : W'⟮F⟯) : map f (baseChange F K P) = baseChange F L P := by
   have : Subsingleton (F →ₐ[F] L) := inferInstance
   convert map_map (Algebra.ofId F K) f P
-
-end Map
 
 end Point
 

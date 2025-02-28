@@ -61,7 +61,7 @@ namespace WeierstrassCurve
 variable {R : Type r} {S : Type s} {A : Type u} {B : Type v}
 
 variable (R) in
-/-- An abbreviation for a Weierstrass curve in affine  coordinates. -/
+/-- An abbreviation for a Weierstrass curve in affine coordinates. -/
 abbrev Affine : Type r :=
   WeierstrassCurve R
 
@@ -72,8 +72,6 @@ abbrev toAffine (W : WeierstrassCurve R) : Affine R :=
 namespace Affine
 
 variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] {W : Affine R}
-
-section Equation
 
 /-! ### Weierstrass equations -/
 
@@ -155,10 +153,6 @@ lemma equation_iff_variableChange (x y : R) :
   rw [equation_iff', ← neg_eq_zero, equation_zero, variableChange_a₆, inv_one, Units.val_one]
   congr! 1
   ring1
-
-end Equation
-
-section Nonsingular
 
 /-! ### Nonsingular Weierstrass equations -/
 
@@ -248,10 +242,6 @@ lemma equation_iff_nonsingular [Nontrivial R] [W.IsElliptic] {x y : R} :
   equation_iff_nonsingular_of_Δ_ne_zero
 @[deprecated (since := "2025-02-01")] alias nonsingular := equation_iff_nonsingular
 
-end Nonsingular
-
-section Map
-
 /-! ### Maps and base changes -/
 
 variable (f : R →+* S) (x y : R)
@@ -321,8 +311,6 @@ lemma baseChange_nonsingular (hf : Function.Injective f) :
     (W.baseChange B).toAffine.Nonsingular (f x) (f y) ↔
       (W.baseChange A).toAffine.Nonsingular x y := by
   rw [← map_nonsingular _ _ hf, AlgHom.toRingHom_eq_coe, map_baseChange, RingHom.coe_coe]
-
-end Map
 
 end Affine
 
