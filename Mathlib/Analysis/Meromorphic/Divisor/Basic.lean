@@ -128,19 +128,17 @@ theorem zero_fun : (0 : Divisor U).toFun = 0 := rfl
 
 /-- Divisors can be added -/
 instance : Add (Divisor U) where
-  add := by
-    intro D₁ D₂
-    exact {
-      toFun := D₁ + D₂
-      supportWithinDomain := by
-        intro x
-        contrapose
-        intro hx
-        simp [Function.nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
-          Function.nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
-      supportDiscreteWithinDomain := D₁.supportDiscreteWithinDomain.add
-        D₂.supportDiscreteWithinDomain
-    }
+  add D₁ D₂ := {
+    toFun := D₁ + D₂
+    supportWithinDomain := by
+      intro x
+      contrapose
+      intro hx
+      simp [Function.nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
+        Function.nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
+    supportDiscreteWithinDomain := D₁.supportDiscreteWithinDomain.add
+      D₂.supportDiscreteWithinDomain
+  }
 
 /-- Helper lemma for the `simp` tactic: the function of the sum of two divisors
 is the sum of the associated functions. -/
@@ -149,16 +147,14 @@ lemma add_fun {D₁ D₂ : Divisor U} : (D₁ + D₂).toFun = D₁.toFun + D₂.
 
 /-- Divisors have a negative -/
 instance : Neg (Divisor U) where
-  neg := by
-    intro D
-    exact {
-      toFun := -D
-      supportWithinDomain := by
-        intro x hx
-        rw [Function.support_neg', Function.mem_support, ne_eq] at hx
-        exact D.supportWithinDomain hx
-      supportDiscreteWithinDomain := D.supportDiscreteWithinDomain.neg
-    }
+  neg D := {
+    toFun := -D
+    supportWithinDomain := by
+      intro x hx
+      rw [Function.support_neg', Function.mem_support, ne_eq] at hx
+      exact D.supportWithinDomain hx
+    supportDiscreteWithinDomain := D.supportDiscreteWithinDomain.neg
+  }
 
 /-- Helper lemma for the `simp` tactic: the function of the negative divisor
 is the negative of the associated function. -/
@@ -167,19 +163,17 @@ lemma neg_fun {D : Divisor U} : (-D).toFun = -(D.toFun) := rfl
 
 /-- Divisors have scalar multiplication with natural numbers -/
 instance : SMul ℕ (Divisor U) where
-  smul := by
-    intro n D
-    exact {
-      toFun := fun z ↦ n * D z
-      supportWithinDomain := by
-        intro x hx
-        simp at hx
-        exact D.supportWithinDomain hx.2
-      supportDiscreteWithinDomain := by
-        filter_upwards [D.supportDiscreteWithinDomain]
-        intro x hx
-        simp [hx]
-    }
+  smul n D := {
+    toFun := fun z ↦ n * D z
+    supportWithinDomain := by
+      intro x hx
+      simp at hx
+      exact D.supportWithinDomain hx.2
+    supportDiscreteWithinDomain := by
+      filter_upwards [D.supportDiscreteWithinDomain]
+      intro x hx
+      simp [hx]
+  }
 
 /-- Helper lemma for the `simp` tactic: the function of a scalar product
 (natural number)·divisor is the scalar product of the natural number with the
@@ -189,18 +183,17 @@ lemma nsmul_fun {D : Divisor U} {n : ℕ} : (n • D).toFun = n • (D.toFun) :=
 
 /-- Divisors have scalar multiplication with integers -/
 instance : SMul ℤ (Divisor U) where
-  smul := fun n D ↦
-    {
-      toFun := fun z ↦ n * D z
-      supportWithinDomain := by
-        intro x hx
-        simp at hx
-        exact D.supportWithinDomain hx.2
-      supportDiscreteWithinDomain := by
-        filter_upwards [D.supportDiscreteWithinDomain]
-        intro _ hx
-        simp [hx]
-    }
+  smul n D := {
+    toFun := fun z ↦ n * D z
+    supportWithinDomain := by
+      intro x hx
+      simp at hx
+      exact D.supportWithinDomain hx.2
+    supportDiscreteWithinDomain := by
+      filter_upwards [D.supportDiscreteWithinDomain]
+      intro _ hx
+      simp [hx]
+  }
 
 /-- Helper lemma for the `simp` tactic: the function of a scalar product
 (integer)·divisor is the scalar product of the integer with the associated
@@ -254,20 +247,19 @@ lemma lt_fun {D₁ D₂ : Divisor U} : D₁ < D₂ ↔ D₁.toFun < D₂.toFun :
 
 /-- Divisors have a max. -/
 instance : Max (Divisor U) where
-  max := fun D₁ D₂ ↦
-    {
-      toFun := fun z ↦ max (D₁ z) (D₂ z)
-      supportWithinDomain := by
-        intro x
-        contrapose
-        intro hx
-        simp [Function.nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
-          Function.nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
-      supportDiscreteWithinDomain := by
-        filter_upwards [D₁.supportDiscreteWithinDomain, D₂.supportDiscreteWithinDomain]
-        intro _ h₁ h₂
-        simp [h₁, h₂]
-    }
+  max D₁ D₂ := {
+    toFun := fun z ↦ max (D₁ z) (D₂ z)
+    supportWithinDomain := by
+      intro x
+      contrapose
+      intro hx
+      simp [Function.nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
+        Function.nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
+    supportDiscreteWithinDomain := by
+      filter_upwards [D₁.supportDiscreteWithinDomain, D₂.supportDiscreteWithinDomain]
+      intro _ h₁ h₂
+      simp [h₁, h₂]
+  }
 
 /-- Helper lemma for the `simp` tactic: the function associated with the max of
 two divisors is the pointwise max of the associated functions. -/
@@ -276,20 +268,19 @@ lemma max_fun {D₁ D₂ : Divisor U} {x : 𝕜} : max D₁ D₂ x = max (D₁ x
 
 /-- Divisors have a min. -/
 instance : Min (Divisor U) where
-  min := fun D₁ D₂ ↦
-    {
-      toFun := fun z ↦ min (D₁ z) (D₂ z)
-      supportWithinDomain := by
-        intro x
-        contrapose
-        intro hx
-        simp [Function.nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
-          Function.nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
-      supportDiscreteWithinDomain := by
-        filter_upwards [D₁.supportDiscreteWithinDomain, D₂.supportDiscreteWithinDomain]
-        intro _ h₁ h₂
-        simp [h₁, h₂]
-    }
+  min D₁ D₂ := {
+    toFun := fun z ↦ min (D₁ z) (D₂ z)
+    supportWithinDomain := by
+      intro x
+      contrapose
+      intro hx
+      simp [Function.nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
+        Function.nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
+    supportDiscreteWithinDomain := by
+      filter_upwards [D₁.supportDiscreteWithinDomain, D₂.supportDiscreteWithinDomain]
+      intro _ h₁ h₂
+      simp [h₁, h₂]
+  }
 
 /-- Helper lemma for the `simp` tactic: the function associated with the max of
 two divisors is the pointwise max of the associated functions. -/
