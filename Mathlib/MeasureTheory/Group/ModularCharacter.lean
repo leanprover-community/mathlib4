@@ -41,7 +41,7 @@ variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G] [Loca
 /-- The modular character as a map is `g ↦ μ (· * g⁻¹) / μ`, where `μ` is a left Haar measure.
 
   See also `modularCharacter` that defines the map as a homomorphism. -/
-@[to_additive "The additive modular character as a map is `g ↦ μ (· + -g) / μ`, where `μ` is an
+@[to_additive "The additive modular character as a map is `g ↦ μ (· - g) / μ`, where `μ` is an
   left additive Haar measure.
 
   See also `modularCharacter` that defines the map as a multiplicative homomorphism.."]
@@ -105,12 +105,11 @@ lemma modularCharacterFun_pos (g : G) : 0 < modularCharacterFun g := by
   exact haarScalarFactor_pos_of_isHaarMeasure _ _
 
 @[to_additive]
-lemma modularCharacterFun_map_one' : modularCharacterFun (1 : G) = 1 := by
+lemma modularCharacterFun_map_one : modularCharacterFun (1 : G) = 1 := by
   simp [modularCharacterFun, haarScalarFactor_self]
 
-
 @[to_additive]
-lemma modularCharacterFun_map_mul' (g h : G) : modularCharacterFun (g * h) =
+lemma modularCharacterFun_map_mul (g h : G) : modularCharacterFun (g * h) =
     modularCharacterFun g * modularCharacterFun h := by
   borelize G
   have mul_g_meas : Measurable (· * g) := Measurable.mul_const (fun ⦃_⦄ a ↦ a) g
@@ -128,14 +127,13 @@ lemma modularCharacterFun_map_mul' (g h : G) : modularCharacterFun (g * h) =
     _ = haarScalarFactor (map (· * (g * h)) ν) ν := by simp only [map_map mul_h_meas mul_g_meas,
       comp_mul_right, ← haarScalarFactor_eq_mul]
 
-
 /-- The modular character homomorphism. The underlying function is `modularCharacterFun`, which is
   `g ↦ μ (· * g⁻¹) / μ`, where `μ` is a left Haar measure.
  -/
 noncomputable def modularCharacter : G →* ℝ≥0 where
   toFun := modularCharacterFun
-  map_one' := modularCharacterFun_map_one'
-  map_mul' := modularCharacterFun_map_mul'
+  map_one' := modularCharacterFun_map_one
+  map_mul' := modularCharacterFun_map_mul
 
 end Measure
 
