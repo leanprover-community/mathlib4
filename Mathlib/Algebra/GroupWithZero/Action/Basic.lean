@@ -97,17 +97,8 @@ def smulMonoidWithZeroHom [MonoidWithZero M₀] [MulZeroOneClass N₀] [MulActio
 
 section MulDistribMulAction
 variable [Group G] [Monoid M] [MulDistribMulAction G M]
-variable (M)
 
-/-- Each element of the group defines a multiplicative monoid isomorphism.
-
-This is a stronger version of `MulAction.toPerm`. -/
-@[simps (config := { simpRhs := true })]
-def MulDistribMulAction.toMulEquiv (x : G) : M ≃* M :=
-  { MulDistribMulAction.toMonoidHom M x, MulAction.toPermHom G M x with }
-
-variable (G)
-
+variable (M G) in
 /-- Each element of the group defines a multiplicative monoid isomorphism.
 
 This is a stronger version of `MulAction.toPermHom`. -/

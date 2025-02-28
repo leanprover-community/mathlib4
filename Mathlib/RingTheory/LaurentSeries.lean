@@ -104,9 +104,7 @@ namespace LaurentSeries
 
 section
 
-/--
-`R⸨X⸩` is notation for `LaurentSeries R`,
--/
+/-- `R⸨X⸩` is notation for `LaurentSeries R`. -/
 scoped notation:9000 R "⸨X⸩" => LaurentSeries R
 
 end
