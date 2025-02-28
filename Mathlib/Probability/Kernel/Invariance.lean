@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.Probability.Kernel.Composition.Basic
+import Mathlib.Probability.Kernel.Composition.MeasureComp
 
 /-!
 # Invariance of measures along a kernel
@@ -35,6 +36,12 @@ variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 namespace Kernel
 
 /-! ### Push-forward of measures along a kernel -/
+
+@[deprecated (since := "2025-02-28")]
+alias bind_add := MeasureTheory.Measure.comp_add
+
+@[deprecated (since := "2025-02-28")]
+alias bind_smul := MeasureTheory.Measure.comp_smul
 
 theorem const_bind_eq_comp_const (κ : Kernel α β) (μ : Measure α) :
     const α (μ.bind κ) = κ ∘ₖ const α μ := by

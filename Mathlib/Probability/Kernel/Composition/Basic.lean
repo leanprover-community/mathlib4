@@ -1401,10 +1401,10 @@ lemma snd_comp (κ : Kernel α β) (η : Kernel β (γ × δ)) : (η ∘ₖ κ).
   · rfl
   · exact measurable_snd hs
 
-lemma comp_add_left (μ κ : Kernel α β) (η : Kernel β γ) :
+lemma comp_add_right (μ κ : Kernel α β) (η : Kernel β γ) :
     η ∘ₖ (μ + κ) = η ∘ₖ μ + η ∘ₖ κ := by ext _ _ hs; simp [comp_apply' _ _ _ hs]
 
-lemma comp_add_right (μ : Kernel α β) (κ η : Kernel β γ) :
+lemma comp_add_left (μ : Kernel α β) (κ η : Kernel β γ) :
     (κ + η) ∘ₖ μ = κ ∘ₖ μ + η ∘ₖ μ := by
   ext a s hs
   simp_rw [comp_apply' _ _ _ hs, add_apply, Measure.add_apply, comp_apply' _ _ _ hs,
