@@ -32,7 +32,6 @@ section CommSemiring
 variable [CommSemiring R] {p : MvPolynomial σ R}
 
 variable (R) in
-
 /-- The set of polynomials whose variables are contained in `s` as a `Subalgebra` over `R`. -/
 noncomputable def supported (s : Set σ) : Subalgebra R (MvPolynomial σ R) :=
   Algebra.adjoin R (X '' s)

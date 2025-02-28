@@ -527,7 +527,6 @@ end Orbit
 section Stabilizer
 
 variable (G) in
-
 /-- The stabilizer of an element under an action, i.e. what sends the element to itself.
 A subgroup. -/
 @[to_additive
