@@ -441,58 +441,6 @@ variable {A B C D : Type _} [CommGroup A] [TopologicalSpace A] [CommGroup B] [To
 
 @[to_additive] lemma mem_ker (φ : A →ₜ* B) (a : A) : a ∈ φ.ker ↔ φ a = 1 := by rfl
 
-variable {X : Type} [TopologicalSpace X] [TopologicalGroup A] [TopologicalGroup B]
-  [TopologicalGroup C]
-
-/--
-The continuous homomorphism `A →ₜ* C(X,A)`, taking an element of `A` to the constant function.
--/
-@[to_additive "The continuous homomorphism `A →ₜ+ C(X,A)`, taking an element of `A` to
-  the constant function."]
-def constₜ : A →ₜ* C(X,A) where
-  toFun             := ContinuousMap.const X
-  map_one'          := rfl
-  map_mul' _ _      := rfl
-  continuous_toFun  := ContinuousMap.continuous_const'
-
-@[to_additive, simp] lemma constₜ_apply₂ (m : A) (x : X) : constₜ m x = m := rfl
-
-/--
-Multiplicative functoriality of `C(X,A)` in `A`.
--/
-@[to_additive "Additive functoriality of `C(X,A)` in `A`."]
-def mapₜ : (A →ₜ* B) →* (C(X,A) →ₜ* C(X,B)) where
-  toFun φ := {
-    toFun             := φ.toContinuousMap.comp
-    map_one'          := by ext; simp
-    map_mul' _ _      := by ext; simp
-    continuous_toFun  := ContinuousMap.continuous_postcomp φ.toContinuousMap
-  }
-  map_one'     := rfl
-  map_mul' _ _  := rfl
-
-variable (X)
-
-@[to_additive] lemma mapₜ_apply₂ (φ : A →ₜ* B) (f : C(X,A)) : mapₜ φ f = φ.toContinuousMap.comp f :=
-  rfl
-
-@[to_additive,simp] lemma mapₜ_apply₃ (φ : A →ₜ* B) (f : C(X,A)) (x : X) : mapₜ φ f x = φ (f x) :=
-  rfl
-
-@[to_additive] lemma mapₜ_comp  (φ : A →ₜ* B) (ψ : B →ₜ* C) :
-    mapₜ (ψ.comp φ) = (mapₜ ψ).comp (mapₜ φ (X := X)) := rfl
-
-@[to_additive,simp] lemma mapₜ_id : mapₜ (id A) = id C(X,A) := rfl
-
-/--
-For any continuous group homomorphism $φ : M \to N$ and any topological space `X`,
-we have a commutative square
-$$\begin{matrix} M & \to & N \\ \downarrow && \downarrow \\ C(X,M) & \to & C(X,N)$$.
-The vertical maps are `constₜ` and the lower horizontal map is `mapₜ G φ`.
--/
-@[to_additive]
-lemma mapₜ_comp_constₜ (φ : A →ₜ* B) : (mapₜ φ).comp constₜ = constₜ (X := X).comp φ := rfl
-
 section LocallyCompact
 
 variable {X Y : Type*} [TopologicalSpace X] [Group X] [TopologicalGroup X]
