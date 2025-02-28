@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.Probability.Kernel.Composition.Basic
-import Mathlib.Probability.Kernel.Composition.MeasureComp
 
 /-!
 # Invariance of measures along a kernel
@@ -37,11 +36,18 @@ namespace Kernel
 
 /-! ### Push-forward of measures along a kernel -/
 
-@[deprecated (since := "2025-02-28")]
-alias bind_add := MeasureTheory.Measure.comp_add
+@[deprecated "Use comp_add in Composition/MeasureComp" (since := "2025-02-28")]
+theorem bind_add (μ ν : Measure α) (κ : Kernel α β) : (μ + ν).bind κ = μ.bind κ + ν.bind κ := by
+  ext1 s hs
+  rw [Measure.bind_apply hs (Kernel.measurable _), lintegral_add_measure, Measure.coe_add,
+    Pi.add_apply, Measure.bind_apply hs (Kernel.measurable _),
+    Measure.bind_apply hs (Kernel.measurable _)]
 
-@[deprecated (since := "2025-02-28")]
-alias bind_smul := MeasureTheory.Measure.comp_smul
+@[deprecated "Use comp_smul in Composition/MeasureComp" (since := "2025-02-28")]
+theorem bind_smul (κ : Kernel α β) (μ : Measure α) (r : ℝ≥0∞) : (r • μ).bind κ = r • μ.bind κ := by
+  ext1 s hs
+  rw [Measure.bind_apply hs (Kernel.measurable _), lintegral_smul_measure, Measure.coe_smul,
+    Pi.smul_apply, Measure.bind_apply hs (Kernel.measurable _), smul_eq_mul]
 
 theorem const_bind_eq_comp_const (κ : Kernel α β) (μ : Measure α) :
     const α (μ.bind κ) = κ ∘ₖ const α μ := by
