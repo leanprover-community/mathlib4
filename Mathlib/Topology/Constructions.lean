@@ -10,7 +10,7 @@ import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Filter.Curry
 import Mathlib.Topology.Maps.Basic
 import Mathlib.Topology.NhdsSet
-import Mathlib.Topology.Separation.SeparatedNhds -- increase?
+import Mathlib.Topology.Separation.SeparatedNhds
 
 /-!
 # Constructions of new topological spaces from old ones
