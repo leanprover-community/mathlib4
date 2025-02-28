@@ -40,7 +40,7 @@ to the composition-product of two kernels.
 
 The composition of kernels can also be expressed easily with the composition-product and therefore
 the proofs about the composition are only simplified versions of the ones for the
-composition-product. However it is necessary to do all the proofs one again because the
+composition-product. However it is necessary to do all the proofs once again because the
 composition-product requires s-finiteness while the composition does not.
 -/
 
