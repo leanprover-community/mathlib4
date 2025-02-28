@@ -651,14 +651,12 @@ theorem symm_constVSub (p : P) :
   ext
   rfl
 
-variable (𝕜 P)
-
+variable (𝕜 P) in
 /-- Translation by `v` (that is, the map `p ↦ v +ᵥ p`) as an affine isometric automorphism of `P`.
 -/
 def constVAdd (v : V) : P ≃ᵃⁱ[𝕜] P :=
   { AffineEquiv.constVAdd 𝕜 P v with norm_map := fun _ => rfl }
 
-variable {𝕜 P} in
 @[simp]
 theorem coe_constVAdd (v : V) : ⇑(constVAdd 𝕜 P v : P ≃ᵃⁱ[𝕜] P) = (v +ᵥ ·) :=
   rfl
@@ -675,8 +673,7 @@ theorem vadd_vsub {f : P → P₂} (hf : Isometry f) {p : P} {g : V → V₂}
   convert (vaddConst 𝕜 (f p)).symm.isometry.comp (hf.comp (vaddConst 𝕜 p).isometry)
   exact funext hg
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- Point reflection in `x` as an affine isometric automorphism. -/
 def pointReflection (x : P) : P ≃ᵃⁱ[𝕜] P :=
   (constVSub 𝕜 x).trans (vaddConst 𝕜 x)

@@ -665,7 +665,8 @@ variable {k : Type*} {V : Type*} {P : Type*}
 
 open AffineSubspace Module Module
 
-variable [DivisionRing k] [AddCommGroup V] [Module k V] [AffineSpace V P] in
+variable [DivisionRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+
 /-- Adding a point to a finite-dimensional subspace increases the dimension by at most one. -/
 theorem finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
     finrank k (vectorSpan k (insert p (s : Set P))) ≤ finrank k s.direction + 1 := by
@@ -697,8 +698,7 @@ theorem finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
     ext
     exact hc
 
-variable (k)
-
+variable (k) in
 /-- Adding a point to a set with a finite-dimensional span increases the dimension by at most
 one. -/
 theorem finrank_vectorSpan_insert_le_set (s : Set P) (p : P) :

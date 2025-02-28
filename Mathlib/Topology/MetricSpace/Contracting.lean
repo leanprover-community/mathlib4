@@ -262,9 +262,9 @@ theorem dist_fixedPoint_fixedPoint_of_dist_le' (g : α → α) {x y} (hx : IsFix
     _ = dist (f y) (g y) / (1 - K) := by rw [hy.eq, dist_comm]
     _ ≤ C / (1 - K) := (div_le_div_iff_of_pos_right hf.one_sub_K_pos).2 (hfg y)
 
-variable [Nonempty α] [CompleteSpace α] in
-variable (f)
+variable [Nonempty α] [CompleteSpace α]
 
+variable (f) in
 /-- The unique fixed point of a contracting map in a nonempty complete metric space. -/
 noncomputable def fixedPoint : α :=
   efixedPoint f hf _ (edist_ne_top (Classical.choice ‹Nonempty α›) _)
