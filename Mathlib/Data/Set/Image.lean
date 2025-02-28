@@ -814,8 +814,7 @@ theorem sumElim_preimage_eq {f : α → γ} {g : β → γ} (S : Set γ) :
 
 theorem image_preimage_inl_union_image_preimage_inr (s : Set (α ⊕ β)) :
     Sum.inl '' (Sum.inl ⁻¹' s) ∪ Sum.inr '' (Sum.inr ⁻¹' s) = s := by
-  rw [image_preimage_eq_inter_range, image_preimage_eq_inter_range, ← inter_union_distrib_left,
-    range_inl_union_range_inr, inter_univ]
+  rw [← sumElim_preimage_eq, Sum.elim_inl_inr, preimage_id]
 
 open Sum in
 /-- Sets on sum types are equivalent to pairs of sets on each summand. -/
