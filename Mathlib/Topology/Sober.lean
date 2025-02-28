@@ -232,7 +232,7 @@ lemma TopologicalSpace.IsOpenCover.quasiSober {ι : Type*} {U : ι → Opens α}
     (hU : TopologicalSpace.IsOpenCover U) [∀ i, QuasiSober (U i)] : QuasiSober α :=
   hU.quasiSober_iff_forall.mpr ‹_›
 
-/-- A space is quasi sober if it can be covered by open quasi sober subsets. -/
+/-- A space is quasi-sober if it can be covered by open quasi-sober subsets. -/
 theorem quasiSober_of_open_cover (S : Set (Set α)) (hS : ∀ s : S, IsOpen (s : Set α))
     [∀ s : S, QuasiSober s] (hS' : ⋃₀ S = ⊤) : QuasiSober α :=
   TopologicalSpace.IsOpenCover.quasiSober (U := fun s : S ↦ ⟨s, hS s⟩) <| by
