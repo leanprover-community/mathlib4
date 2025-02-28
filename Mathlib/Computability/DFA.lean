@@ -205,7 +205,7 @@ theorem product_accept_iff
 
 theorem product_evalFrom
     (p : Prop → Prop → Prop) (M₁ : DFA α σ) (M₂ : DFA α σ') (x : List α) (s : σ × σ') :
-      (M₁.product M₂ p).evalFrom s x = ⟨M₁.evalFrom s.1 x, M₂.evalFrom s.2 x⟩ := by
+    (M₁.product M₂ p).evalFrom s x = ⟨M₁.evalFrom s.1 x, M₂.evalFrom s.2 x⟩ := by
   revert s
   dsimp [evalFrom, product]
   induction x with
