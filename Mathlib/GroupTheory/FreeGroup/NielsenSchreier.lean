@@ -93,12 +93,8 @@ theorem ext_functor {G} [Groupoid.{v} G] [IsFreeGroupoid G] {X : Type v} [Group 
   let ⟨_, _, u⟩ := @unique_lift G _ _ X _ fun (a b : Generators G) (e : a ⟶ b) => g.map (of e)
   _root_.trans (u _ h) (u _ fun _ _ _ => rfl).symm
 
-#adaptation_note
-/--
-The new unused variable linter in
-https://github.com/leanprover/lean4/pull/5338
-flags `{ e // _ }`.
--/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
+The new unused variable linter flags `{ e // _ }`. -/
 set_option linter.unusedVariables false in
 /-- An action groupoid over a free group is free. More generally, one could show that the groupoid
 of elements over a free groupoid is free, but this version is easier to prove and suffices for our
@@ -186,7 +182,7 @@ def loopOfHom {a b : G} (p : a ⟶ b) : End (root' T) :=
 theorem loopOfHom_eq_id {a b : Generators G} (e) (H : e ∈ wideSubquiverSymmetrify T a b) :
     loopOfHom T (of e) = 𝟙 (root' T) := by
   rw [loopOfHom, ← Category.assoc, IsIso.comp_inv_eq, Category.id_comp]
-  cases' H with H H
+  rcases H with H | H
   · rw [treeHom_eq T (Path.cons default ⟨Sum.inl e, H⟩), homOfPath]
     rfl
   · rw [treeHom_eq T (Path.cons default ⟨Sum.inr e, H⟩), homOfPath]

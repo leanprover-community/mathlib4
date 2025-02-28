@@ -5,6 +5,8 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
 
 import Mathlib.Analysis.InnerProductSpace.LinearMap
+import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Orthonormal sets
@@ -198,7 +200,7 @@ theorem Orthonormal.orthonormal_of_forall_eq_or_eq_neg {v w : ι → E} (hv : Or
   classical
   rw [orthonormal_iff_ite] at *
   intro i j
-  cases' hw i with hi hi <;> cases' hw j with hj hj <;>
+  rcases hw i with hi | hi <;> rcases hw j with hj | hj <;>
     replace hv := hv i j <;> split_ifs at hv ⊢ with h <;>
     simpa only [hi, hj, h, inner_neg_right, inner_neg_left, neg_neg, eq_self_iff_true,
       neg_eq_zero] using hv

@@ -95,6 +95,10 @@ theorem zero_eq_top {n : ℕ} [NeZero n] : (0 : Fin n) = ⊤ ↔ n = 1 := by
 theorem top_eq_zero {n : ℕ} [NeZero n] : (⊤ : Fin n) = 0 ↔ n = 1 :=
   eq_comm.trans zero_eq_top
 
+@[simp]
+theorem cast_top {m n : ℕ} [NeZero m] [NeZero n] (h : m = n) : (⊤ : Fin m).cast h = ⊤ := by
+  simp [← val_inj, h]
+
 section ToFin
 variable {α : Type*} [Preorder α] {f : α → Fin (n + 1)}
 
@@ -192,7 +196,7 @@ lemma predAbove_left_monotone (i : Fin (n + 1)) : Monotone fun p ↦ predAbove p
     exact absurd H this.not_le
   · rfl
 
-/--  `Fin.predAbove p` as an `OrderHom`. -/
+/-- `Fin.predAbove p` as an `OrderHom`. -/
 @[simps!] def predAboveOrderHom (p : Fin n) : Fin (n + 1) →o Fin n :=
   ⟨p.predAbove, p.predAbove_right_monotone⟩
 
@@ -211,24 +215,16 @@ def castOrderIso (eq : n = m) : Fin n ≃o Fin m where
   toEquiv := ⟨Fin.cast eq, Fin.cast eq.symm, leftInverse_cast eq, rightInverse_cast eq⟩
   map_rel_iff' := cast_le_cast eq
 
-@[deprecated (since := "2024-05-23")] alias castIso := castOrderIso
-
 @[simp]
 lemma symm_castOrderIso (h : n = m) : (castOrderIso h).symm = castOrderIso h.symm := by subst h; rfl
 
-@[deprecated (since := "2024-05-23")] alias symm_castIso := symm_castOrderIso
-
 @[simp]
 lemma castOrderIso_refl (h : n = n := rfl) : castOrderIso h = OrderIso.refl (Fin n) := by ext; simp
-
-@[deprecated (since := "2024-05-23")] alias castIso_refl := castOrderIso_refl
 
 /-- While in many cases `Fin.castOrderIso` is better than `Equiv.cast`/`cast`, sometimes we want to
 apply a generic lemma about `cast`. -/
 lemma castOrderIso_toEquiv (h : n = m) : (castOrderIso h).toEquiv = Equiv.cast (h ▸ rfl) := by
   subst h; rfl
-
-@[deprecated (since := "2024-05-23")] alias castIso_to_equiv := castOrderIso_toEquiv
 
 /-- `Fin.rev n` as an order-reversing isomorphism. -/
 @[simps! apply toEquiv]
@@ -283,7 +279,7 @@ def addNatOrderEmb (m) : Fin n ↪o Fin (n + m) := .ofStrictMono (addNat · m) (
 @[simps! apply toEmbedding]
 def natAddOrderEmb (n) : Fin m ↪o Fin (n + m) := .ofStrictMono (natAdd n) (strictMono_natAdd n)
 
-/--  `Fin.succAbove p` as an `OrderEmbedding`. -/
+/-- `Fin.succAbove p` as an `OrderEmbedding`. -/
 @[simps! apply toEmbedding]
 def succAboveOrderEmb (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=
   OrderEmbedding.ofStrictMono (succAbove p) (strictMono_succAbove p)

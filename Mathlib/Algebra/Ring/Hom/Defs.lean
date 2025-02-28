@@ -113,8 +113,6 @@ instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
   map_zero := NonUnitalRingHom.map_zero'
   map_mul f := f.map_mul'
 
--- Porting note: removed due to new `coe` in Lean4
-
 initialize_simps_projections NonUnitalRingHom (toFun → apply)
 
 @[simp]
@@ -372,11 +370,6 @@ instance instRingHomClass : RingHomClass (α →+* β) α β where
 
 initialize_simps_projections RingHom (toFun → apply)
 
--- Porting note: is this lemma still needed in Lean4?
--- Porting note: because `f.toFun` really means `f.toMonoidHom.toOneHom.toFun` and
--- `toMonoidHom_eq_coe` wants to simplify `f.toMonoidHom` to `(↑f : M →* N)`, this can't
--- be a simp lemma anymore
--- @[simp]
 theorem toFun_eq_coe (f : α →+* β) : f.toFun = f :=
   rfl
 
@@ -394,22 +387,16 @@ attribute [coe] RingHom.toMonoidHom
 instance coeToMonoidHom : Coe (α →+* β) (α →* β) :=
   ⟨RingHom.toMonoidHom⟩
 
--- Porting note: `dsimp only` can prove this
-
 @[simp]
 theorem toMonoidHom_eq_coe (f : α →+* β) : f.toMonoidHom = f :=
   rfl
 
--- Porting note: this can't be a simp lemma anymore
--- @[simp]
 theorem toMonoidWithZeroHom_eq_coe (f : α →+* β) : (f.toMonoidWithZeroHom : α → β) = f := by
   rfl
 
 @[simp]
 theorem coe_monoidHom_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α →* β) = f :=
   rfl
-
--- Porting note: `dsimp only` can prove this
 
 @[simp]
 theorem toAddMonoidHom_eq_coe (f : α →+* β) : f.toAddMonoidHom = f :=
@@ -624,9 +611,6 @@ namespace AddMonoidHom
 
 variable [CommRing α] [IsDomain α] [CommRing β] (f : β →+ α)
 
--- Porting note: there's some disagreement over the naming scheme here.
--- This could perhaps be `mkRingHom_of_mul_self_of_two_ne_zero`.
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/naming.20conventions/near/315558410
 /-- Make a ring homomorphism from an additive group homomorphism from a commutative ring to an
 integral domain that commutes with self multiplication, assumes that two is nonzero and `1` is sent
 to `1`. -/

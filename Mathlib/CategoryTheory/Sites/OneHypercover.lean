@@ -46,7 +46,7 @@ structure PreOneHypercover (S : C) where
   f (i : I₀) : X i ⟶ S
   /-- the index type of the coverings of the fibre products -/
   I₁ (i₁ i₂ : I₀) : Type w
-  /-- the objects in the coverings of the fibre products  -/
+  /-- the objects in the coverings of the fibre products -/
   Y ⦃i₁ i₂ : I₀⦄ (j : I₁ i₁ i₂) : C
   /-- the first projection `Y j ⟶ X i₁` -/
   p₁ ⦃i₁ i₂ : I₀⦄ (j : I₁ i₁ i₂) : Y j ⟶ X i₁
@@ -114,14 +114,18 @@ end
 /-- The sigma type of all `E.I₁ i₁ i₂` for `⟨i₁, i₂⟩ : E.I₀ × E.I₀`. -/
 abbrev I₁' : Type w := Sigma (fun (i : E.I₀ × E.I₀) => E.I₁ i.1 i.2)
 
+/-- The shape of the multiforks attached to `E : PreOneHypercover S`. -/
+@[simps]
+def multicospanShape : MulticospanShape where
+  L := E.I₀
+  R := E.I₁'
+  fst j := j.1.1
+  snd j := j.1.2
+
 /-- The diagram of the multifork attached to a presheaf
 `F : Cᵒᵖ ⥤ A`, `S : C` and `E : PreOneHypercover S`. -/
 @[simps]
-def multicospanIndex (F : Cᵒᵖ ⥤ A) : MulticospanIndex A where
-  L := E.I₀
-  R := E.I₁'
-  fstTo j := j.1.1
-  sndTo j := j.1.2
+def multicospanIndex (F : Cᵒᵖ ⥤ A) : MulticospanIndex E.multicospanShape A where
   left i := F.obj (Opposite.op (E.X i))
   right j := F.obj (Opposite.op (E.Y j.2))
   fst j := F.map ((E.p₁ j.2).op)

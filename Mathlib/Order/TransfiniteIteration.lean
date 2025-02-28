@@ -12,7 +12,7 @@ import Mathlib.Order.SuccPred.Limit
 Given `φ : I → I` where `[SupSet I]`, we define the `j`th transfinite iteration of `φ`
 for any `j : J`, with `J` a well-ordered type: this is `transfiniteIterate φ j : I → I`.
 If `i₀ : I`, then `transfiniteIterate φ ⊥ i₀ = i₀`; if `j` is a non maximal element,
-than `transfiniteIterate φ (Order.succ j) i₀ = φ (transfiniteIterate φ j i₀)`; and
+then `transfiniteIterate φ (Order.succ j) i₀ = φ (transfiniteIterate φ j i₀)`; and
 if `j` is a limit element, `transfiniteIterate φ j i₀` is the supremum
 of the `transfiniteIterate φ l i₀` for `l < j`.
 
@@ -94,7 +94,7 @@ lemma monotone_transfiniteIterate (hφ : ∀ (i : I), i ≤ φ i) :
       · rfl
 
 lemma top_mem_range_transfiniteIterate
-    (hφ' : ∀ (i : I) (_ : i ≠ ⊤), i < φ i) (φtop : φ ⊤ = ⊤)
+    (hφ' : ∀ i ≠ (⊤ : I), i < φ i) (φtop : φ ⊤ = ⊤)
     (H : ¬ Function.Injective (fun (j : J) ↦ transfiniteIterate φ j i₀)) :
     ∃ (j : J), transfiniteIterate φ j i₀ = ⊤ := by
   have hφ (i : I) : i ≤ φ i := by

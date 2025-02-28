@@ -144,7 +144,7 @@ def ofNatCode : ℕ → Code
     | true , false => prec (ofNatCode m.unpair.1) (ofNatCode m.unpair.2)
     | true , true  => rfind' (ofNatCode m)
 
-/-- Proof that `Nat.Partrec.Code.ofNatCode` is the inverse of `Nat.Partrec.Code.encodeCode`-/
+/-- Proof that `Nat.Partrec.Code.ofNatCode` is the inverse of `Nat.Partrec.Code.encodeCode` -/
 private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n
   | 0 => by simp [ofNatCode, encodeCode]
   | 1 => by simp [ofNatCode, encodeCode]
@@ -308,7 +308,7 @@ theorem rec_prim' {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (h
       snd.pair <| nat_div2.comp <| nat_div2.comp snd
   refine (nat_strong_rec (fun a n => F a (ofNat Code n)) this.to₂ fun a n => ?_)
     |>.comp .id (encode_iff.2 hc) |>.of_eq fun a => by simp
-  iterate 4 cases' n with n; · simp [ofNatCode_eq, ofNatCode]; rfl
+  iterate 4 rcases n with - | n; · simp [ofNatCode_eq, ofNatCode]; rfl
   simp only [G]; rw [List.length_map, List.length_range]
   let m := n.div2.div2
   show G₁ ((a, (List.range (n + 4)).map fun n => F a (ofNat Code n)), n, m)
@@ -418,7 +418,7 @@ theorem rec_computable {α σ} [Primcodable α] [Primcodable σ] {c : α → Cod
       snd.pair <| nat_div2.comp <| nat_div2.comp snd
   refine (nat_strong_rec (fun a n => F a (ofNat Code n)) this.to₂ fun a n => ?_)
     |>.comp .id (encode_iff.2 hc) |>.of_eq fun a => by simp
-  iterate 4 cases' n with n; · simp [ofNatCode_eq, ofNatCode]; rfl
+  iterate 4 rcases n with - | n; · simp [ofNatCode_eq, ofNatCode]; rfl
   simp only [G]; rw [List.length_map, List.length_range]
   let m := n.div2.div2
   show G₁ ((a, (List.range (n + 4)).map fun n => F a (ofNat Code n)), n, m)
@@ -643,7 +643,7 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
   | k + 1, c, n, x, h => by
     induction' c with cf cg hf hg cf cg hf hg cf cg hf hg cf hf generalizing x n <;>
         simp [eval, evaln, Option.bind_eq_some, Seq.seq] at h ⊢ <;>
-      cases' h with _ h
+      obtain ⟨_, h⟩ := h
     iterate 4 simpa [pure, PFun.pure, eq_comm] using h
     · -- pair cf cg
       rcases h with ⟨y, ef, z, eg, rfl⟩
@@ -671,7 +671,7 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
         refine
           ⟨y + 1, ⟨by simpa [add_comm, add_left_comm] using hy₁, fun {i} im => ?_⟩, by
             simp [add_comm, add_left_comm]⟩
-        cases' i with i
+        rcases i with - | i
         · exact ⟨m, by simpa using hf _ _ h₁, m0⟩
         · rcases hy₂ (Nat.lt_of_succ_lt_succ im) with ⟨z, hz, z0⟩
           exact ⟨z, by simpa [add_comm, add_left_comm] using hz, z0⟩
@@ -918,7 +918,7 @@ theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a
       generalize p.unpair.1 = k
       generalize ofNat Code p.unpair.2 = c
       intro nk
-      cases' k with k'
+      rcases k with - | k'
       · simp [evaln]
       let k := k' + 1
       simp only [show k'.succ = k from rfl]
@@ -931,19 +931,19 @@ theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a
             evaln k' c' n := by
         intro k₁ c₁ n₁ hl
         simp [lup, List.getElem?_range hl, evaln_map, Bind.bind, Option.bind_map]
-      cases' c with cf cg cf cg cf cg cf <;>
+      obtain - | - | - | - | ⟨cf, cg⟩ | ⟨cf, cg⟩ | ⟨cf, cg⟩ | cf := c <;>
         simp [evaln, nk, Bind.bind, Functor.map, Seq.seq, pure]
-      · cases' encode_lt_pair cf cg with lf lg
+      · obtain ⟨lf, lg⟩ := encode_lt_pair cf cg
         rw [hg (Nat.pair_lt_pair_right _ lf), hg (Nat.pair_lt_pair_right _ lg)]
         cases evaln k cf n
         · rfl
         cases evaln k cg n <;> rfl
-      · cases' encode_lt_comp cf cg with lf lg
+      · obtain ⟨lf, lg⟩ := encode_lt_comp cf cg
         rw [hg (Nat.pair_lt_pair_right _ lg)]
         cases evaln k cg n
         · rfl
         simp [k, hg (Nat.pair_lt_pair_right _ lf)]
-      · cases' encode_lt_prec cf cg with lf lg
+      · obtain ⟨lf, lg⟩ := encode_lt_prec cf cg
         rw [hg (Nat.pair_lt_pair_right _ lf)]
         cases n.unpair.2
         · rfl
@@ -954,7 +954,7 @@ theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a
         simp [k, hg (Nat.pair_lt_pair_right _ lg)]
       · have lf := encode_lt_rfind' cf
         rw [hg (Nat.pair_lt_pair_right _ lf)]
-        cases' evaln k cf n with x
+        rcases evaln k cf n with - | x
         · rfl
         simp only [decode_eq_ofNat, Option.some.injEq, Option.some_bind]
         cases x <;> simp [Nat.succ_ne_zero]
