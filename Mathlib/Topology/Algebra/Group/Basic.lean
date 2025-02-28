@@ -1657,10 +1657,10 @@ instance [ContinuousMul α] : IsTopologicalGroup αˣ where
 
 /-- The topological group isomorphism between the units of a product of two monoids, and the product
 of the units of each monoid. -/
-@[to_additive
+@[to_additive prodAddUnits
   "The topological group isomorphism between the additive units of a product of two
   additive monoids, and the product of the additive units of each additive monoid."]
-def Homeomorph.prodUnits : (α × β)ˣ ≃ₜ αˣ × βˣ where
+def _root_.Homeomorph.prodUnits : (α × β)ˣ ≃ₜ αˣ × βˣ where
   continuous_toFun :=
     (continuous_fst.units_map (MonoidHom.fst α β)).prod_mk
       (continuous_snd.units_map (MonoidHom.snd α β))
@@ -1669,6 +1669,12 @@ def Homeomorph.prodUnits : (α × β)ˣ ≃ₜ αˣ × βˣ where
       ⟨continuous_val.fst'.prod_mk continuous_val.snd',
         continuous_coe_inv.fst'.prod_mk continuous_coe_inv.snd'⟩
   toEquiv := MulEquiv.prodUnits.toEquiv
+
+@[deprecated (since := "2025-02-21")]
+alias Homeomorph.sumAddUnits := Homeomorph.prodAddUnits
+
+@[deprecated (since := "2025-02-21")]
+protected alias Homeomorph.prodUnits := Homeomorph.prodUnits
 
 end Units
 
