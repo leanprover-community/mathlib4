@@ -236,14 +236,11 @@ instance {n} {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
 instance {n} [HasColimits C] : HasColimits (SimplicialObject.Truncated C n) :=
   ⟨inferInstance⟩
 
-variable (C)
-
+variable (C) in
 /-- Functor composition induces a functor on truncated simplicial objects. -/
 @[simps!]
 def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
-
-variable {C}
 
 end Truncated
 
@@ -667,14 +664,11 @@ instance {n} {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
 instance {n} [HasColimits C] : HasColimits (CosimplicialObject.Truncated C n) :=
   ⟨inferInstance⟩
 
-variable (C)
-
+variable (C) in
 /-- Functor composition induces a functor on truncated cosimplicial objects. -/
 @[simps!]
 def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
-
-variable {C}
 
 end Truncated
 
