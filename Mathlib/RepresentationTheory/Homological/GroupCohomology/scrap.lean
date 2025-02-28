@@ -23,29 +23,20 @@ theorem pOpcycles_comp_moduleCatOpcyclesIso_hom :
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem moduleCatOpcyclesIso_inv_comp_fromOpcycles :
-    S.moduleCatOpcyclesIso.inv ≫ S.fromOpcycles = ModuleCat.ofHom (Submodule.liftQ _ S.g.hom sorry) := sorry
+    S.moduleCatOpcyclesIso.inv ≫ S.fromOpcycles = ModuleCat.ofHom (Submodule.liftQ
+      (LinearMap.range S.f.hom) S.g.hom <|
+      LinearMap.range_le_ker_iff.2 <| ModuleCat.hom_ext_iff.1 S.zero) := by
+  have : Epi (ModuleCat.ofHom <| Submodule.mkQ (LinearMap.range S.f.hom)) :=
+    (ModuleCat.epi_iff_surjective _).2 <| Submodule.Quotient.mk_surjective _
+  simp only [← cancel_epi (ModuleCat.ofHom <| Submodule.mkQ <| LinearMap.range S.f.hom),
+    moduleCatOpcyclesIso, Iso.trans_inv, ← Category.assoc]
+  simp [← ModuleCat.ofHom_comp, Submodule.liftQ_mkQ]
 
 theorem moduleCat_pOpcycles_eq_iff (x y : S.X₂) :
-    S.pOpcycles x = S.pOpcycles y ↔ x - y ∈ LinearMap.range S.f.hom := by
-  rw [← Submodule.Quotient.eq]
-  constructor
-  · intro h
-    replace h := congr(S.moduleCatOpcyclesIso.hom $h)
-    simp_all
-  · intro h
-    apply_fun S.moduleCatOpcyclesIso.hom using (ModuleCat.mono_iff_injective _).1 inferInstance
-    simp_all
-
-def moduleCatRightHomologyData : S.RightHomologyData where
-  Q := ModuleCat.of R (S.X₂ ⧸ LinearMap.range S.f.hom)
-  H := ModuleCat.of R <| LinearMap.ker
-    (Submodule.liftQ (LinearMap.range S.f.hom) S.g.hom sorry)
-  p := ModuleCat.ofHom <| Submodule.mkQ _
-  ι := ModuleCat.ofHom <| Submodule.subtype _
-  wp := sorry
-  hp := sorry
-  wι := sorry
-  hι := sorry
+    S.pOpcycles x = S.pOpcycles y ↔ x - y ∈ LinearMap.range S.f.hom :=
+  Iff.trans ⟨fun h => by simpa using congr(S.moduleCatOpcyclesIso.hom $h),
+    fun h => (ModuleCat.mono_iff_injective S.moduleCatOpcyclesIso.hom).1 inferInstance (by simpa)⟩
+    (Submodule.Quotient.eq _)
 
 end CategoryTheory.ShortComplex
 namespace Representation
@@ -55,48 +46,59 @@ variable {k G V : Type*} [CommRing k] [Group G] [AddCommGroup V] [Module k V]
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` which is trivial on `S` factors
 through `G ⧸ S`. -/
-noncomputable def ofQuotientGroup [IsTrivial (ρ.comp S.subtype)] :
+noncomputable def ofQuotient [IsTrivial (ρ.comp S.subtype)] :
     Representation k (G ⧸ S) V :=
   (QuotientGroup.con S).lift ρ <| by
     rintro x y ⟨⟨z, hz⟩, rfl⟩
     ext w
     have : ρ y (ρ z.unop _) = _ :=
-      congr((ρ y) ($(IsTrivial.out (ρ := ρ.comp S.subtype) (⟨z.unop, hz⟩)) w))
+      congr(ρ y ($(IsTrivial.out (ρ := ρ.comp S.subtype) ⟨z.unop, hz⟩) w))
     simpa [← LinearMap.mul_apply, ← map_mul] using this
 
 @[simp]
-lemma ofQuotientGroup_coe_apply [IsTrivial (ρ.comp S.subtype)] (g : G) (x : V) :
-    ofQuotientGroup ρ S (g : G ⧸ S) x = ρ g x :=
+lemma ofQuotient_coe_apply [IsTrivial (ρ.comp S.subtype)] (g : G) (x : V) :
+    ofQuotient ρ S (g : G ⧸ S) x = ρ g x :=
   rfl
+
+@[simps]
+def subrepresentation (W : Submodule k V) (le_comap : ∀ g, W ≤ W.comap (ρ g)) :
+    Representation k G W where
+  toFun g := (ρ g).restrict <| le_comap g
+  map_one' := by ext; simp
+  map_mul' _ _ := by ext; simp
+
+@[simps]
+def quotient (W : Submodule k V) (le_comap : ∀ g, W ≤ W.comap (ρ g)) :
+    Representation k G (V ⧸ W) where
+  toFun g := Submodule.mapQ _ _ (ρ g) <| le_comap g
+  map_one' := by ext; simp
+  map_mul' _ _ := by ext; simp
 
 section QuotientGroup
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
 the invariants of `ρ|_S`. -/
-@[simps]
-noncomputable def toInvariantsOfNormal :
-    Representation k G (invariants (ρ.comp S.subtype)) where
-  toFun g := ((ρ g).comp (Submodule.subtype _)).codRestrict _ (fun ⟨x, hx⟩ ⟨s, hs⟩ => by
-    simpa using congr(ρ g $(hx ⟨(g⁻¹ * s * g), Subgroup.Normal.conj_mem' ‹_› s hs g⟩)))
-  map_one' := by ext; simp
-  map_mul' _ _ := by ext; simp
+noncomputable abbrev toInvariantsOfNormal :
+    Representation k G (invariants (ρ.comp S.subtype)) :=
+  subrepresentation ρ _ fun g x hx ⟨s, hs⟩ => by
+    simpa using congr(ρ g $(hx ⟨(g⁻¹ * s * g), Subgroup.Normal.conj_mem' ‹_› s hs g⟩))
 
-instance wtf : IsTrivial ((toInvariantsOfNormal ρ S).comp S.subtype) where
-  out g := LinearMap.ext fun ⟨x, hx⟩ => Subtype.ext <| by
-    simpa using (hx g)
+instance : IsTrivial ((toInvariantsOfNormal ρ S).comp S.subtype) where
+  out g := LinearMap.ext fun ⟨x, hx⟩ => Subtype.ext <| by simpa using (hx g)
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the invariants of `ρ|_S`. -/
-noncomputable abbrev quotientGroupToInvariants :
+noncomputable abbrev quotientToInvariants :
     Representation k (G ⧸ S) (invariants (ρ.comp S.subtype)) :=
-  ofQuotientGroup (toInvariantsOfNormal ρ S) S
-
+  ofQuotient (toInvariantsOfNormal ρ S) S
+/-
 @[simp]
 lemma mk_ρ_apply_eq_mk (g : G) (x : V) :
     Submodule.Quotient.mk (p := augmentationSubmodule ρ) (ρ g x) = Submodule.Quotient.mk x :=
   (Submodule.Quotient.eq _).2 <| mem_augmentationSubmodule_of_eq g x _ rfl
+-/
 
-lemma augmentationSubmodule_eq_comap_ρ_of_normal (g : G) :
+lemma comap_augmentationSubmodule_of_normal_eq (g : G) :
     (augmentationSubmodule <| ρ.comp S.subtype).comap (ρ g) =
       augmentationSubmodule (ρ.comp S.subtype) := by
   have H : ∀ g, augmentationSubmodule (ρ.comp S.subtype) ≤
@@ -107,36 +109,25 @@ lemma augmentationSubmodule_eq_comap_ρ_of_normal (g : G) :
   refine le_antisymm ?_ (H g)
   simpa [← Submodule.comap_comp, ← LinearMap.mul_eq_comp, ← map_mul] using
     Submodule.comap_mono (f := ρ g) (H g⁻¹)
-
+/-
 lemma mk_ρ_eq_zero_of_normal_iff (g : G) (x : V) :
     Submodule.Quotient.mk (p := augmentationSubmodule (ρ.comp S.subtype)) (ρ g x) = 0 ↔
       Submodule.Quotient.mk (p := augmentationSubmodule (ρ.comp S.subtype)) x = 0 := by
   simp_rw [Submodule.Quotient.mk_eq_zero]
-  nth_rw 2 [← augmentationSubmodule_eq_comap_ρ_of_normal ρ S g]
+  nth_rw 2 [← comap_augmentationSubmodule_of_normal_eq ρ S g]
   rfl
-
+-/
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
 the augmentation submodule of `ρ|_S`. -/
-@[simps]
-noncomputable def toAugmentationSubmoduleOfNormal :
-    Representation k G (augmentationSubmodule <| ρ.comp S.subtype) where
-  toFun g := LinearMap.restrict (ρ g) <| le_of_eq
-    (augmentationSubmodule_eq_comap_ρ_of_normal ρ S g).symm
-  map_one' := by ext; simp
-  map_mul' _ _ := by ext; simp
+noncomputable abbrev toAugmentationSubmoduleOfNormal :=
+  subrepresentation ρ (augmentationSubmodule <| ρ.comp S.subtype)
+    fun g => le_of_eq (comap_augmentationSubmodule_of_normal_eq ρ S g).symm
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G`-representation on the
 coinvariants of `ρ|_S`. -/
-@[simps]
-noncomputable def toCoinvariantsOfNormal :
-    Representation k G (coinvariants (ρ.comp S.subtype)) where
-  toFun g := coinvariantsLift (ρ.comp S.subtype) ((augmentationSubmodule _).mkQ ∘ₗ ρ g)
-    fun ⟨s, hs⟩ => by
-      ext x
-      simpa [Submodule.Quotient.eq] using mem_augmentationSubmodule_of_eq
-        (ρ := ρ.comp S.subtype) ⟨g * s * g⁻¹, Subgroup.Normal.conj_mem ‹_› s hs g⟩ (ρ g x)
-  map_one' := by ext; simp
-  map_mul' _ _ := by ext; simp
+noncomputable abbrev toCoinvariantsOfNormal :=
+  quotient ρ (augmentationSubmodule <| ρ.comp S.subtype)
+    fun g => le_of_eq (comap_augmentationSubmodule_of_normal_eq ρ S g).symm
 
 instance : IsTrivial ((toCoinvariantsOfNormal ρ S).comp S.subtype) where
   out g := Submodule.linearMap_qext _ <| by
@@ -145,9 +136,9 @@ instance : IsTrivial ((toCoinvariantsOfNormal ρ S).comp S.subtype) where
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the coinvariants of `ρ|_S`. -/
-noncomputable abbrev quotientGroupToCoinvariants :
+noncomputable abbrev quotientToCoinvariants :
     Representation k (G ⧸ S) (coinvariants (ρ.comp S.subtype)) :=
-  ofQuotientGroup (toCoinvariantsOfNormal ρ S) S
+  ofQuotient (toCoinvariantsOfNormal ρ S) S
 
 end QuotientGroup
 
@@ -160,13 +151,32 @@ namespace Rep
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` which is trivial on `S` factors
 through `G ⧸ S`. -/
-noncomputable abbrev ofQuotientGroup [Representation.IsTrivial (A.ρ.comp S.subtype)] :
-    Rep k (G ⧸ S) := Rep.of (A.ρ.ofQuotientGroup S)
+noncomputable abbrev ofQuotient [Representation.IsTrivial (A.ρ.comp S.subtype)] :
+    Rep k (G ⧸ S) := Rep.of (A.ρ.ofQuotient S)
+
+noncomputable abbrev subrepresentation (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
+    Rep k G :=
+  Rep.of (A.ρ.subrepresentation W le_comap)
+
+@[simps]
+def subtype (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
+    subrepresentation A W le_comap ⟶ A where
+  hom := ModuleCat.ofHom W.subtype
+  comm _ := rfl
+
+noncomputable abbrev quotient (W) (le_comap) :=
+  Rep.of (A.ρ.quotient W le_comap)
+
+@[simps]
+def mkQ (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
+    A ⟶ quotient A W le_comap where
+  hom := ModuleCat.ofHom <| Submodule.mkQ _
+  comm _ := rfl
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the invariants of `ρ|_S`. -/
-abbrev quotientGroupToInvariants (S : Subgroup G) [S.Normal] :=
-  Rep.of (A.ρ.quotientGroupToInvariants S)
+abbrev quotientToInvariants (S : Subgroup G) [S.Normal] :=
+  Rep.of (A.ρ.quotientToInvariants S)
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
 the augmentation submodule of `ρ|_S`. -/
@@ -178,16 +188,27 @@ coinvariants of `ρ|_S`. -/
 abbrev toCoinvariantsOfNormal :=
   Rep.of (A.ρ.toCoinvariantsOfNormal S)
 
+/-
+@[simps]
+def augmentationSubmoduleOfNormalSubtypeHom :
+    A.toAugmentationSubmoduleOfNormal S ⟶ A where
+  hom := ModuleCat.ofHom (Submodule.subtype _)
+
+@[simps]
+def coinvariantsMkQHom : A ⟶ toCoinvariantsOfNormal A S where
+  hom := ModuleCat.ofHom <| Submodule.mkQ _
+-/
+
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` induces a short exact sequence of
-`G`-representations `0 ⟶ (I_S)A ⟶ A ⟶ A_S ⟶ 0` where `(I_S)A` is the submodule of `A`
+`G`-representations `0 ⟶ ℐ(S)A ⟶ A ⟶ A_S ⟶ 0` where `ℐ(S)A` is the submodule of `A`
 generated by elements of the form `ρ(s)(x) - x` for `s ∈ S, x ∈ A`. -/
 @[simps]
 def coinvariantsShortComplex : ShortComplex (Rep k G) where
   X₁ := toAugmentationSubmoduleOfNormal A S
   X₂ := A
   X₃ := toCoinvariantsOfNormal A S
-  f := ⟨ModuleCat.ofHom (Submodule.subtype _), fun _ => rfl⟩
-  g := ⟨ModuleCat.ofHom (Submodule.mkQ _), fun _ => rfl⟩
+  f := subtype _ _ _
+  g := mkQ _ _ _
   zero := by ext x; exact (Submodule.Quotient.mk_eq_zero _).2 x.2
 
 lemma coinvariantsShortComplex_shortExact : (coinvariantsShortComplex A S).ShortExact where
@@ -208,8 +229,8 @@ instance : Representation.IsTrivial (MonoidHom.comp (A.toCoinvariantsOfNormal S)
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the coinvariants of `ρ|_S`. -/
-abbrev quotientGroupToCoinvariants :=
-  ofQuotientGroup (toCoinvariantsOfNormal A S) S
+abbrev quotientToCoinvariants :=
+  ofQuotient (toCoinvariantsOfNormal A S) S
 
 end Rep
 namespace groupCohomology
@@ -241,7 +262,7 @@ theorem H1Map_one {H : Type u} [Group H] {A : Rep k H} {B : Rep k G}
 @[simps X₁ X₂ X₃ f g]
 def H1InfRes₁ (A : Rep k G) (H : Subgroup G) [H.Normal] :
      ShortComplex (ModuleCat k) where
-  X₁ := H1 (A.quotientGroupToInvariants H)
+  X₁ := H1 (A.quotientToInvariants H)
   X₂ := H1 A
   X₃ := H1 ((Action.res _ H.subtype).obj A)
   f := H1Map (QuotientGroup.mk' H) ⟨ModuleCat.ofHom (Submodule.subtype _), fun _ => rfl⟩
@@ -361,7 +382,7 @@ theorem dZero_augmentationSubmoduleToFinsupp
 
 @[simps]
 def toResMkOfQuotientGroup [IsTrivial (A.ρ.comp S.subtype)] :
-    A ⟶ (Action.res _ (QuotientGroup.mk' S)).obj (A.ofQuotientGroup S) where
+    A ⟶ (Action.res _ (QuotientGroup.mk' S)).obj (A.ofQuotient S) where
   hom := 𝟙 _
   comm _ := rfl
 
@@ -380,20 +401,17 @@ lemma H1Map_one {G H : Type u} [Group G] [Group H] [DecidableEq G] [DecidableEq 
     exact single_one_mem_oneBoundaries _
   · simp
 
-@[simps]
-def coinvariantsMkQHom : A ⟶ toCoinvariantsOfNormal A S where
-  hom := ModuleCat.ofHom <| Submodule.mkQ _
 
 @[simps]
 def resCoinvariantsMkQHom :
-    A ⟶ (Action.res _ (QuotientGroup.mk' S)).obj (Rep.quotientGroupToCoinvariants A S) where
+    A ⟶ (Action.res _ (QuotientGroup.mk' S)).obj (Rep.quotientToCoinvariants A S) where
   hom := ModuleCat.ofHom <| Submodule.mkQ _
 
 abbrev corestriction₁ :
     H1 ((Action.res _ S.subtype).obj A) ⟶ H1 A := H1Map S.subtype (𝟙 _)
 
 abbrev coinflation₁ [DecidableEq (G ⧸ S)] :
-    H1 A ⟶ H1 (quotientGroupToCoinvariants A S) :=
+    H1 A ⟶ H1 (quotientToCoinvariants A S) :=
   H1Map (QuotientGroup.mk' S) (resCoinvariantsMkQHom A S)
 
 @[simps X₁ X₂ X₃ f g]
@@ -401,7 +419,7 @@ def corestrictionCoinflation₁ [DecidableEq (G ⧸ S)] :
     ShortComplex (ModuleCat k) where
   X₁ := H1 ((Action.res _ S.subtype).obj A)
   X₂ := H1 A
-  X₃ := H1 (quotientGroupToCoinvariants A S)
+  X₃ := H1 (quotientToCoinvariants A S)
   f := corestriction₁ A S
   g := coinflation₁ A S
   zero := by rw [← H1Map_comp, congr (QuotientGroup.mk'_comp_subtype S) H1Map, H1Map_one]
@@ -411,7 +429,7 @@ def H1ResToOfQuotientGroup [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subty
     ShortComplex (ModuleCat k) where
   X₁ := H1 ((Action.res _ S.subtype).obj A)
   X₂ := H1 A
-  X₃ := H1 (ofQuotientGroup A S)
+  X₃ := H1 (ofQuotient A S)
   f := corestriction₁ A S
   g := H1Map (QuotientGroup.mk' S) <| toResMkOfQuotientGroup A S
   zero := by rw [← H1Map_comp, congr (QuotientGroup.mk'_comp_subtype S) H1Map, H1Map_one]
@@ -462,7 +480,7 @@ theorem H1ResToOfQuotientGroup_exact [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.co
 /- Let `z := ∑ y(σ, τ)·(s(σ), s(τ))`. -/
   let z : G × G →₀ A := lmapDomain _ k (Prod.map s s) y
 /- We have that `C₂(π)(z) = y`: -/
-  have hz : lmapDomain _ k (QuotientGroup.mk' S) (dOne A z) = dOne (A.ofQuotientGroup S) y := by
+  have hz : lmapDomain _ k (QuotientGroup.mk' S) (dOne A z) = dOne (A.ofQuotient S) y := by
     have := congr($((mapShortComplexH1 (QuotientGroup.mk' S)
       (toResMkOfQuotientGroup A S)).comm₁₂.symm) z)
     simp_all [shortComplexH1, toResMkOfQuotientGroup, z, ← mapDomain_comp, Prod.map_comp_map]
@@ -652,7 +670,7 @@ lemma _root_.Rep.res_obj_ρ {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H)
 
 
 instance mapOneCycles_mk'_id_epi [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)] :
-    Epi (mapOneCycles (B := A.ofQuotientGroup S) (QuotientGroup.mk' S) (𝟙 _)) := by
+    Epi (mapOneCycles (B := A.ofQuotient S) (QuotientGroup.mk' S) (𝟙 _)) := by
   rw [ModuleCat.epi_iff_surjective]
   rintro ⟨x, hx⟩
   choose! s hs using QuotientGroup.mk_surjective (s := S)
@@ -664,7 +682,7 @@ instance mapOneCycles_mk'_id_epi [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S
 
 instance H1Map_mk'_id_epi [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)] :
     Epi (H1Map (QuotientGroup.mk' S) (𝟙 (Action.res (ModuleCat k) (QuotientGroup.mk' S)).obj
-      (A.ofQuotientGroup S))) := by
+      (A.ofQuotient S))) := by
   convert epi_of_epi (H1π A) _
   rw [H1π_comp_H1Map]
   exact @epi_comp _ _ _ _ _ _ (mapOneCycles_mk'_id_epi A S) (H1π _) inferInstance
@@ -706,4 +724,6 @@ making it a boundary. -/
   simpa [map_sub, mapRange_sub, hY, ← mapDomain_comp, ← mapDomain_mapRange, Function.comp_def]
       using Submodule.finsupp_sum_mem _ _ _ _ fun _ _ => single_one_mem_oneBoundaries _
 
+end NotMap
+end
 end groupHomology
