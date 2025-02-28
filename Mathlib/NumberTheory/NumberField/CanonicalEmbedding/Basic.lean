@@ -199,10 +199,10 @@ theorem mixedEmbedding_apply_isComplex (x : K) (w : {w // IsComplex w}) :
     (mixedEmbedding K x).2 w = w.val.embedding x := by
   simp_rw [mixedEmbedding, RingHom.prod_apply, Pi.ringHom_apply]
 
-@[deprecated (since := "2025-02-28")] alias
-  mixedEmbedding_apply_ofIsReal  := mixedEmbedding_apply_isReal
-@[deprecated (since := "2025-02-28")] alias
-  mixedEmbedding_apply_ofIsComplex  := mixedEmbedding_apply_isComplex
+@[deprecated (since := "2025-02-28")] alias mixedEmbedding_apply_ofIsReal :=
+  mixedEmbedding_apply_isReal
+@[deprecated (since := "2025-02-28")] alias mixedEmbedding_apply_ofIsComplex :=
+  mixedEmbedding_apply_isComplex
 
 instance [NumberField K] : Nontrivial (mixedSpace K) := by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
@@ -498,10 +498,10 @@ theorem stdBasis_apply_isComplex_snd (x : mixedSpace K)
     (stdBasis K).repr x (Sum.inr ⟨w, 1⟩) = (x.2 w).im := rfl
 
 @[deprecated (since := "2025-02-28")] alias stdBasis_apply_ofIsReal := stdBasis_apply_isReal
-@[deprecated (since := "2025-02-28")] alias
-  stdBasis_apply_ofIsComplex_fst := stdBasis_apply_isComplex_fst
-@[deprecated (since := "2025-02-28")] alias
-  stdBasis_apply_ofIsComplex_snd := stdBasis_apply_isComplex_snd
+@[deprecated (since := "2025-02-28")] alias stdBasis_apply_ofIsComplex_fst :=
+  stdBasis_apply_isComplex_fst
+@[deprecated (since := "2025-02-28")] alias stdBasis_apply_ofIsComplex_snd :=
+  stdBasis_apply_isComplex_snd
 
 variable (K)
 
@@ -557,10 +557,10 @@ theorem indexEquiv_apply_isComplex_snd (w : {w : InfinitePlace K // IsComplex w}
     (indexEquiv K) (Sum.inr ⟨w, 1⟩) = ComplexEmbedding.conjugate w.val.embedding := rfl
 
 @[deprecated (since := "2025-02-28")] alias indexEquiv_apply_ofIsReal := indexEquiv_apply_isReal
-@[deprecated (since := "2025-02-28")] alias
-  indexEquiv_apply_ofIsComplex_fst := indexEquiv_apply_isComplex_fst
-@[deprecated (since := "2025-02-28")] alias
-  indexEquiv_apply_ofIsComplex_snd := indexEquiv_apply_isComplex_snd
+@[deprecated (since := "2025-02-28")] alias indexEquiv_apply_ofIsComplex_fst :=
+  indexEquiv_apply_isComplex_fst
+@[deprecated (since := "2025-02-28")] alias indexEquiv_apply_ofIsComplex_snd :=
+  indexEquiv_apply_isComplex_snd
 
 variable (K)
 
@@ -916,10 +916,10 @@ theorem negAt_apply_isReal_and_not_mem (x : mixedSpace K) {w : {w // IsReal w}} 
 theorem negAt_apply_isComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
     (negAt s x).2 w = x.2 w := rfl
 
-@[deprecated (since := "2025-02-28")] alias
-  negAt_apply_ofIsReal_and_mem := negAt_apply_isReal_and_mem
-@[deprecated (since := "2025-02-28")] alias
-  negAt_apply_ofIsReal_and_not_mem := negAt_apply_isReal_and_not_mem
+@[deprecated (since := "2025-02-28")] alias negAt_apply_ofIsReal_and_mem :=
+  negAt_apply_isReal_and_mem
+@[deprecated (since := "2025-02-28")] alias negAt_apply_ofIsReal_and_not_mem :=
+  negAt_apply_isReal_and_not_mem
 @[deprecated (since := "2025-02-28")] alias negAt_apply_ofIsComplex := negAt_apply_isComplex
 
 @[simp]
@@ -985,10 +985,10 @@ theorem negAt_signSet_apply_isReal (x : mixedSpace K) (w : {w // IsReal w}) :
 theorem negAt_signSet_apply_isComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
     (negAt (signSet x) x).2 w = x.2 w := rfl
 
-@[deprecated (since := "2025-02-28")] alias
-  negAt_signSet_apply_ofIsReal := negAt_signSet_apply_isReal
-@[deprecated (since := "2025-02-28")] alias
-  negAt_signSet_apply_ofIsComplex := negAt_signSet_apply_isComplex
+@[deprecated (since := "2025-02-28")] alias negAt_signSet_apply_ofIsReal :=
+  negAt_signSet_apply_isReal
+@[deprecated (since := "2025-02-28")] alias negAt_signSet_apply_ofIsComplex :=
+  negAt_signSet_apply_isComplex
 
 variable (A : Set (mixedSpace K)) {x : mixedSpace K}
 
