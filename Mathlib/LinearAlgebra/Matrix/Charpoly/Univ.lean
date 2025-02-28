@@ -35,7 +35,6 @@ variable {R S : Type*} (n : Type*) [CommRing R] [CommRing S] [Fintype n] [Decida
 variable (f : R →+* S)
 
 variable (R) in
-
 /-- The universal characteristic polynomial for `n × n`-matrices,
 is the charactistic polynomial of `Matrix.mvPolynomialX n n ℤ` with entries `Xᵢⱼ`.
 
