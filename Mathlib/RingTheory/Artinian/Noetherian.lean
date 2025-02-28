@@ -103,7 +103,11 @@ lemma isArtinianRing_iff_isNoetherianRing_and_primes_maximal :
         rwa [Set.Finite.mem_toFinset]
 
 lemma isArtinianRing_iff_ringKrullDim_eq_zero [IsNoetherianRing R] [Nontrivial R] :
-    IsArtinianRing R ↔ ringKrullDim R = 0 := sorry
+    IsArtinianRing R ↔ ringKrullDim R = 0 := by
+  rw [isArtinianRing_iff_isNoetherianRing_and_primes_maximal, and_iff_right ‹IsNoetherianRing R›,
+    ← Ring.krullDimLE_zero_iff, Ring.KrullDimLE, Order.krullDimLE_iff, ringKrullDim,
+    le_antisymm_iff, CharP.cast_eq_zero, iff_self_and]
+  exact fun _ ↦ ringKrullDim_nonneg_of_nontrivial
 
 end Noetherian
 
