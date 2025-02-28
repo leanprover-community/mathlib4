@@ -170,10 +170,13 @@ def starMulAut [CommSemigroup R] [StarMul R] : MulAut R :=
     toFun := star
     map_mul' := star_mul' }
 
-variable (R) in
+variable (R)
+
 @[simp]
 theorem star_one [MulOneClass R] [StarMul R] : star (1 : R) = 1 :=
   op_injective <| (starMulEquiv : R ≃* Rᵐᵒᵖ).map_one.trans op_one.symm
+
+variable {R}
 
 @[simp]
 theorem star_pow [Monoid R] [StarMul R] (x : R) (n : ℕ) : star (x ^ n) = star x ^ n :=
@@ -230,10 +233,13 @@ def starAddEquiv [AddMonoid R] [StarAddMonoid R] : R ≃+ R :=
     toFun := star
     map_add' := star_add }
 
-variable (R) in
+variable (R)
+
 @[simp]
 theorem star_zero [AddMonoid R] [StarAddMonoid R] : star (0 : R) = 0 :=
   (starAddEquiv : R ≃+ R).map_zero
+
+variable {R}
 
 @[simp]
 theorem star_eq_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x = 0 ↔ x = 0 :=
@@ -294,14 +300,13 @@ end
 
 section CommSemiring
 
-variable [CommSemiring R] [StarRing R] in
+variable [CommSemiring R] [StarRing R]
 
 /-- `star` as a ring automorphism, for commutative `R`. -/
 @[simps apply]
 def starRingAut : RingAut R := { starAddEquiv, starMulAut (R := R) with toFun := star }
 
-variable (R)
-
+variable (R) in
 /-- `star` as a ring endomorphism, for commutative `R`. This is used to denote complex
 conjugation, and is available under the notation `conj` in the locale `ComplexConjugate`.
 
