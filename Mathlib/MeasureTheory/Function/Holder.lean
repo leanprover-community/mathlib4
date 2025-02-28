@@ -231,7 +231,7 @@ protected lemma neg_smul_neg (f : Lp 𝕜 p μ) (g : Lp E q μ) :
 
 variable [NormedRing 𝕜'] [Module 𝕜' E] [Module 𝕜' 𝕜] [BoundedSMul 𝕜' E] [BoundedSMul 𝕜' 𝕜]
 
-protected lemma smul_smul_assoc [IsScalarTower 𝕜' 𝕜 E]
+protected lemma smul_assoc [IsScalarTower 𝕜' 𝕜 E]
     (c : 𝕜') (f : Lp 𝕜 p μ) (g : Lp E q μ) :
     (c • f) • g = c • (f • g) := by
   simp only [smul_def, ← Memℒp.toLp_const_smul]
