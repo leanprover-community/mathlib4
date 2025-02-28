@@ -267,6 +267,10 @@ def twoCycles : Submodule k (G × G →₀ A) := LinearMap.ker (dOne A)
 
 variable {A}
 
+@[simp]
+theorem oneCycles.dZero_apply (f : oneCycles A) :
+    dZero A f = 0 := f.2
+
 theorem mem_oneCycles_iff (x : G →₀ A) :
     x ∈ oneCycles A ↔ x.sum (fun g a => A.ρ g⁻¹ a) = x.sum (fun _ a => a) := by
   show x.sum (fun g a => A.ρ g⁻¹ a - a) = 0 ↔ _
@@ -294,6 +298,10 @@ on `A` is trivial. -/
 abbrev oneCyclesLequivOfIsTrivial [A.IsTrivial] :
     oneCycles A ≃ₗ[k] (G →₀ A) :=
   LinearEquiv.ofTop _ (oneCycles_eq_top_of_isTrivial A)
+
+@[simp]
+theorem twoCycles.dOne_apply (f : twoCycles A) :
+    dOne A f = 0 := f.2
 
 theorem mem_twoCycles_iff (x : G × G →₀ A) :
     x ∈ twoCycles A ↔ x.sum (fun g a => single g.2 (A.ρ g.1⁻¹ a) + single g.1 a) =

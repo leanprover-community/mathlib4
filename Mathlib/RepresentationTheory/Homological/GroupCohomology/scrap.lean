@@ -18,7 +18,8 @@ def moduleCatOpcyclesIso : S.opcycles ≅ ModuleCat.of R (S.X₂ ⧸ LinearMap.r
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem pOpcycles_comp_moduleCatOpcyclesIso_hom :
-    S.pOpcycles ≫ S.moduleCatOpcyclesIso.hom = ModuleCat.ofHom (Submodule.mkQ _) := sorry
+    S.pOpcycles ≫ S.moduleCatOpcyclesIso.hom = ModuleCat.ofHom (Submodule.mkQ _) := by
+  simp [moduleCatOpcyclesIso]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem moduleCatOpcyclesIso_inv_comp_fromOpcycles :
@@ -672,36 +673,37 @@ instance [DecidableEq (G ⧸ S)] :
     Epi (coinflation₁ A S) := by
   rw [ModuleCat.epi_iff_surjective]
   intro x
-  induction' x using Quotient.inductionOn' with x
+  induction' x using H1_induction_on with x
+/- Let `x : Z₁(G ⧸ S, A_S)`. We know `Z₁(G, A_S) ⟶ Z₁(G ⧸ S, A_S)` is surjective, so pick
+`y : Z₁(G, A_S)` in the preimage of `x`. -/
   rcases (ModuleCat.epi_iff_surjective _).1
-    (mapOneCycles_mk'_id_epi (A.toCoinvariantsOfNormal S) S) x with ⟨⟨y, hdy⟩, hy⟩
+    (mapOneCycles_mk'_id_epi (A.toCoinvariantsOfNormal S) S) x with ⟨y, hy⟩
+/- We know `C₁(G, A) ⟶ C₁(G, A_S)` is surjective, so pick `Y` in the preimage of `y`. -/
   rcases mapRange_surjective _ (map_zero _) (Submodule.mkQ_surjective
-    (augmentationSubmodule (A.ρ.comp S.subtype))) y with ⟨Y, hY⟩
-  have hdY : coinvariantsMkQ _ (dZero _ Y) =
-      dZero (A.toCoinvariantsOfNormal S) (mapRange (Submodule.mkQ _) (map_zero _) Y) := by
-    simp [dZero, map_finsupp_sum, sum_mapRange_index]
+    (augmentationSubmodule (A.ρ.comp S.subtype))) y.1 with ⟨Y, hY⟩
+/- Then `d(Y) ∈ ℐ(S)A,` since `d(y) = 0` and `C₁(G, A) ⟶ C₁(G, A_S)` makes a commutative square
+with the differentials. -/
   have : dZero _ Y ∈ augmentationSubmodule (A.ρ.comp S.subtype) := by
-    simp only [← Submodule.Quotient.mk_eq_zero, Submodule.mkQ_apply,
-      mapRange.linearMap_apply] at hdY ⊢
-    simpa [hdY, hY] using hdy
+    have h' := congr($((mapShortComplexH1 (B := toCoinvariantsOfNormal A S) (MonoidHom.id G)
+      (resCoinvariantsMkQHom A S)).comm₂₃) Y)
+    simp_all [shortComplexH1, ← Submodule.Quotient.mk_eq_zero]
+/- Thus we can pick a representation of `d(Y)` as a sum `∑ ρ(sᵢ)(aᵢ) - aᵢ`, `sᵢ ∈ S, aᵢ ∈ A`,
+and `Y - ∑ aᵢ·sᵢ⁻¹` is a cycle. -/
   have H : dZero A (Y - mapDomain S.subtype
       (augmentationSubmoduleToFinsupp _ ⟨dZero _ Y, this⟩)) = 0 := by
     rw [map_sub, sub_eq_zero]
     refine (dZero_augmentationSubmoduleToFinsupp (Rep.of <| A.ρ.comp S.subtype)
       ⟨dZero A Y, this⟩).symm.trans ?_
     simp [- LinearMap.sub_apply, dZero, sum_mapDomain_index_inj, Subtype.val_injective]
+/- So `Y - ∑ aᵢ·sᵢ⁻¹` is a cycle whose image under `Z₁(π, π)` differs from `x` by a boundary: -/
   use H1π A ⟨Y - mapDomain S.subtype (augmentationSubmoduleToFinsupp _ ⟨dZero _ Y, this⟩), H⟩
-  show (H1π A ≫ H1Map _ _) _ = _
-  rw [H1π_comp_H1Map]
+  simp only [← ConcreteCategory.comp_apply, H1π_comp_H1Map, ModuleCat.hom_comp]
   refine (H1π_eq_iff _ _).2 ?_
-  sorry
-/-
-  rw [← hy, mapOneCycles_comp_subtype_apply, coe_mapOneCycles, fOne, map_sub, sub_sub, add_comm, ← sub_sub]
-  convert Submodule.sub_mem _ (Submodule.zero_mem _) _
-  · simp [fOne, moduleCat_simps, hY, ← mapDomain_mapRange]
-  · simpa [← mapDomain_comp, ← mapDomain_mapRange, Function.comp_def,
-      (QuotientGroup.eq_one_iff _).2 (Subtype.prop _)]
-      using Submodule.finsupp_sum_mem _ _ _ (fun _ _ => single_one_mem_oneBoundaries _)
--/
+  rw [← hy, mapOneCycles_comp_subtype_apply, mapOneCycles_comp_subtype_apply,
+    ← lmapDomain_apply _ k]
+/- Indeed, `Z₁(π, π)(Y) = x`, and `Z₁(π, π)(∑ aᵢ·sᵢ⁻¹)` is supported only at 1,
+making it a boundary. -/
+  simpa [map_sub, mapRange_sub, hY, ← mapDomain_comp, ← mapDomain_mapRange, Function.comp_def]
+      using Submodule.finsupp_sum_mem _ _ _ _ fun _ _ => single_one_mem_oneBoundaries _
 
 end groupHomology
