@@ -231,4 +231,12 @@ lemma exists_spanRank_eq_and_height_eq [IsNoetherianRing R] (I : Ideal R) (hI : 
   · rintro rfl; exact hI (top_le_iff.mp hJ₁)
 
 lemma Ideal.height_le_iff_exists_minimal_primes [IsNoetherianRing R] (p : Ideal R) [p.IsPrime]
-    (n : ℕ∞) : p.height ≤ n ↔ ∃ I : Ideal R, p ∈ I.minimalPrimes ∧ I.spanRank ≤ n := sorry
+    (n : ℕ∞) : p.height ≤ n ↔ ∃ I : Ideal R, p ∈ I.minimalPrimes ∧ I.spanRank ≤ n := by
+  constructor
+  · intro h;
+    obtain ⟨I, hI, e₁, e₂⟩ := exists_spanRank_eq_and_height_eq p (IsPrime.ne_top ‹_›)
+    refine ⟨I, Ideal.mem_minimalPrimes_of_height_eq hI e₂.ge, e₁.symm ▸ ?_⟩
+    norm_cast
+  · rintro ⟨I, hp, hI⟩; exact le_trans
+      (Ideal.height_le_spanRank_toENat_of_mem_minimal_primes I p hp)
+      (by simpa using (Cardinal.toENat.monotone' hI))
