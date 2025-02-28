@@ -9,6 +9,7 @@ import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.Tactic.Abel
+import Mathlib.Algebra.AddTorsor.Basic
 
 /-!
 # Affine maps
