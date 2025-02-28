@@ -138,7 +138,7 @@ lemma measurable_IocProdIoc {a b c : ℕ} : Measurable (IocProdIoc (X := X) a b 
 
 /-- Identifying `{n + 1}` with `Ioc n (n + 1)`, as a measurable equiv on dependent functions. -/
 def MeasurableEquiv.piSingleton (a : ℕ) : (X (a + 1)) ≃ᵐ ((i : Ioc a (a + 1)) → X i) where
-  toFun x i := (Nat.mem_Ioc_succ i.2).symm ▸ x
+  toFun x i := (Nat.mem_Ioc_succ.1 i.2).symm ▸ x
   invFun x := x ⟨a + 1, right_mem_Ioc.2 a.lt_succ_self⟩
   left_inv := fun x ↦ by simp
   right_inv := fun x ↦ funext fun i ↦ by cases Nat.mem_Ioc_succ' i; rfl
