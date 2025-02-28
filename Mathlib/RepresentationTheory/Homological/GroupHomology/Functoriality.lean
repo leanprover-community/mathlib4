@@ -278,14 +278,14 @@ noncomputable abbrev mapOneCycles :
   ShortComplex.cyclesMap' (mapShortComplexH1 f φ) (shortComplexH1 A).moduleCatLeftHomologyData
     (shortComplexH1 B).moduleCatLeftHomologyData
 
-@[reassoc (attr := simp), elementwise]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma mapOneCycles_comp_subtype :
     mapOneCycles f φ ≫ ModuleCat.ofHom (oneCycles B).subtype =
       ModuleCat.ofHom (fOne f φ ∘ₗ (oneCycles A).subtype) :=
   ShortComplex.cyclesMap'_i (mapShortComplexH1 f φ) (moduleCatLeftHomologyData _)
     (moduleCatLeftHomologyData _)
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cyclesMap_comp_isoOneCycles_hom :
     cyclesMap f φ 1 ≫ (isoOneCycles B).hom =
       (isoOneCycles A).hom ≫ mapOneCycles f φ := by
@@ -315,12 +315,12 @@ theorem H1Map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     H1Map (MonoidHom.id G) (φ ≫ ψ) = H1Map (MonoidHom.id G) φ ≫ H1Map (MonoidHom.id G) ψ :=
   H1Map_comp (MonoidHom.id G) (MonoidHom.id G) _ _
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma H1π_comp_H1Map :
     H1π A ≫ H1Map f φ = mapOneCycles f φ ≫ H1π B :=
   leftHomologyπ_naturality' (mapShortComplexH1 f φ) _ _
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma map_comp_isoH1_hom :
     map f φ 1 ≫ (isoH1 B).hom = (isoH1 A).hom ≫ H1Map f φ := by
   simp [← cancel_epi (groupHomologyπ _ _), H1Map, Category.assoc, (leftHomologyπ_naturality'
