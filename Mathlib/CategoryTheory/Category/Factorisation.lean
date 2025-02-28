@@ -5,6 +5,7 @@ Authors: Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Comma.Arrow
+import Mathlib.CategoryTheory.Comma.Over.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
@@ -14,7 +15,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 We show that `Factorisation f` always has an initial and a terminal object.
 
-TODO: Show that `Factorisation f` is isomorphic to a comma category in two ways.
+we also show that `Factorisation f` is isomorphic to a comma category in two ways,
+both as iterated comma categories. Given `f : X ⟶ Y`, `(X/C)/f ≌ Factorisation f ≌ f/(C/Y)`.
 
 TODO: Make `MonoFactorisation f` a special case of a `Factorisation f`.
 -/
@@ -73,6 +75,127 @@ instance : Category.{max u v} (Factorisation f) where
   Hom d e := Factorisation.Hom d e
   id d := Factorisation.Hom.id d
   comp f g := Factorisation.Hom.comp f g
+
+/- We now aim to show that `Factorisation f` is equivalent to iterated comma categories
+in two different ways.
+Namely, given `f : X ⟶ Y`, we will have `(X/C)/f` ≌ `Factorisation f` ≌ `f/(C/Y)`.
+
+To give an idea of how the proof works:
+
+Both
+1. an object in `C/Y`
+2. an object in `X/C`
+can be viewed as a morphism `f : X ⟶ Y` in Category `C`
+from the perspective of over/under categories.
+
+Let's first consider `(X/C)/f`
+
+Similarly, an object `α` in `(X/C)/f` can be viewed as a morphism `f₁ : f₀ ⟶ f` in Category `X/C`
+where `f₀` and `f` are both objects of `X/C`,
+thus morphisms of form `X ⟶ ?` in Category `C` (morphisms with domain X).
+We know `f : X ⟶ Y`. Take `f₀ : X ⟶ Z₁`.
+Then `α` is determined by the object-morphism pair of `(f₀, f₁)`.
+By definitions of Under Categories, we can know that the morphism `f₁` will satisfy:
+`f₀ ≫ f₁ = f`.
+
+Assume another similar object-morphism pair in `X/C`, `(g₀, g₁)` determines
+another object `β` in `(X / C) / f`, with `g₀ : X ⟶ Z₂`.
+
+A morphism `κ : α ⟶ β` in `(X / C) / f`, by definition of Over Categories,
+is a morphism in `X/C` making the following diagram commute:
+           κ
+    α  ---------> β
+    |             |
+f₁  |             | g₁
+    ∨             ∨
+    f      ==     f
+
+so f₁ = κ ≫ g₁.
+
+As we have discussed, `α` can be determined by the pair `(f₀, f₁)`, where the latter could be used
+to formulate objects in the factorisation category.
+
+Given `f₀ : X ⟶ Z`, and `f₀ ≫ f₁ = f`, we can see that the pair `(f₀, f₁)` can also be used to
+structure a factorisation.
+The map `κ : α ⟶ β` could thus be transferred to a map `κ' : ⟨ f₀, f₁ ⟩ ⟶ ⟨ g₀, g₁ ⟩` in `Fact f`.
+Such assignment of mapping and object would form a functor, and evidently this functor is an iso if
+we try to construct the `α`s and `β`s in the reversed direction from factorisations.
+Thus we have conceptually shown `Factorisation f` is equivalent to one iterated comma category
+`(X/C)/f` (being an over category on an under category),
+and we can show similar results for `f/(C/Y)` (an under category on an over category).
+-/
+section IteratedCommaCategories
+
+variable (f : X ⟶ Y)
+
+/- `Factorisation f ≌ (X/C)/f` -/
+section OverOfUnder
+
+/-- The functor from `Factorisation f` to `(X/C)/f` -/
+def fromFactToOverOfUnder : Factorisation f ⥤ Over (Under.mk f) where
+  obj α := Over.mk (Under.homMk α.π : Under.mk α.ι ⟶ Under.mk f)
+  map κ := Over.homMk (Under.homMk κ.h κ.ι_h) (Under.UnderMorphism.ext (by simp))
+
+/-- The functor from `(X/C)/f` to `Factorisation f` -/
+def fromOverOfUndertoFact : Over (Under.mk f) ⥤ Factorisation f where
+  obj α := {
+    mid := α.left.right,
+    ι := α.left.hom,
+    π := α.hom.right
+  }
+  map κ := {
+    h := κ.left.right,
+    ι_h := Under.w κ.left,
+    h_π := by (rw [← Under.comp_right, Over.w])
+  }
+
+/-- We aim to show `Factorisation f` ≌ `(X/C)/f`. That is to say,
+we aim to show the two functors we defined above are inverses of each other.
+-/
+def factEqOverOfUnder : Factorisation f ≌ Over (Under.mk f) where
+  functor := fromFactToOverOfUnder f
+  inverse := fromOverOfUndertoFact f
+  unitIso := NatIso.ofComponents (fun g => {
+    hom := 𝟙 g
+    inv := 𝟙 g
+  })
+  counitIso := NatIso.ofComponents (fun g => {
+    hom := 𝟙 (fromOverOfUndertoFact f ⋙ fromFactToOverOfUnder f).obj g
+    inv := 𝟙 (fromOverOfUndertoFact f ⋙ fromFactToOverOfUnder f).obj g
+  })
+
+end OverOfUnder
+
+/- `Factorisation f ≌ f/(C/Y)` -/
+section UnderOfOver
+
+/-- The functor turning `Factorisation f` into `f/(C/Y)` -/
+def fromFactToUnderOfOver : Factorisation f ⥤ Under (Over.mk f) where
+  obj α := Under.mk (Over.homMk α.ι : Over.mk f ⟶ Over.mk α.π)
+  map κ := Under.homMk (Over.homMk κ.h κ.h_π) (Over.OverMorphism.ext (by simp))
+
+/-- The functor turning `f/(C/Y)` into `Factorisation f` -/
+def fromUnderOfOvertoFact : Under (Over.mk f) ⥤ Factorisation f where
+  obj α := { mid := α.right.left, ι := α.hom.left, π := α.right.hom}
+  map κ := {h := κ.right.left, ι_h := by (rw [← Over.comp_left, Under.w]), h_π := Over.w κ.right}
+
+/-- proving that the two functors above are inverses of each other.
+Thus formulating the ≌ relationship. -/
+def factEqUnderOfOver : Factorisation f ≌ Under (Over.mk f) where
+  functor := fromFactToUnderOfOver f
+  inverse := fromUnderOfOvertoFact f
+  unitIso := NatIso.ofComponents (fun g => {
+    hom := 𝟙 g
+    inv := 𝟙 g
+  })
+  counitIso := NatIso.ofComponents (fun g => {
+    hom := 𝟙 (fromUnderOfOvertoFact f ⋙ fromFactToUnderOfOver f).obj g
+    inv := 𝟙 (fromUnderOfOvertoFact f ⋙ fromFactToUnderOfOver f).obj g
+  })
+
+end UnderOfOver
+
+end IteratedCommaCategories
 
 variable (d : Factorisation f)
 
