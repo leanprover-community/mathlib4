@@ -15,6 +15,10 @@ import Mathlib.RingTheory.Nakayama
 
 variable {R : Type*} [CommRing R]
 
+lemma Ideal.minimalPrimes_map_of_surjective {S : Type*} [CommRing S] {f : R →+* S}
+    (hf : Function.Surjective f) (I : Ideal R) :
+    (I.map f).minimalPrimes = Ideal.map f '' (I ⊔ (RingHom.ker f)).minimalPrimes := sorry
+
 lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing [IsNoetherianRing R]
     [IsLocalRing R] (I : Ideal R) (hI : I.IsPrincipal)
     (hp : (IsLocalRing.maximalIdeal R) ∈ I.minimalPrimes) :
@@ -210,34 +214,29 @@ lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes [IsNoetherianRing R]
       rw [Ideal.finiteHeight_iff, ← lt_top_iff_ne_top]
       exact Or.inr (h.trans_lt (WithTop.coe_lt_top 1))
     rw [Ideal.height_eq_primeHeight] at h
-    -- have := (Ideal.primeHeight_strict_mono (I := p'.map f) h_lt).trans_le h
-    -- rw [WithTop.lt_one_iff_eq_zero, Ideal.primeHeight_eq_zero_iff, minimalPrimes,
-    --   ← @Ideal.map_bot A' (A' ⧸ I') _ _ _ _ f, Ideal.minimalPrimes_map_of_surjective hf,
-    --   bot_sup_eq, Ideal.mk_ker] at this
-    -- obtain ⟨q', hq₁, hq₂⟩ := this
-    -- obtain rfl : q = q' := by
-    --   apply_fun Ideal.comap f at hq₂
-    --   simp_rw [Ideal.comap_map_of_surjective f hf, ← RingHom.ker_eq_comap_bot, Ideal.mk_ker] at hq₂
-    --   rwa [sup_eq_left.mpr hI'q, sup_eq_left.mpr hq₁.1.2, eq_comm] at hq₂
-    -- have : s.Finite := ht.subset (Set.subset_insert _ _)
-    -- haveI := this.fintype
-    -- have H' : (@Set.Finite.range y this.to_subtype).toFinset.card ≤ n := by
-    --   transitivity this.toFinset.card
-    --   · convert @Finset.card_image_le s _ Finset.univ y _ using 1
-    --     · congr! 1
-    --       ext
-    --       simp
-    --     · rw [(Finset.card_eq_iff_eq_univ Finset.univ).mpr rfl, Fintype.card_of_finset']
-    --       simp
-    --   · rw [← Nat.lt_add_one_iff]
-    --     refine lt_of_lt_of_le ?_ hn
-    --     rw [Set.Finite.toFinset_insert, Finset.card_insert_of_not_mem, Nat.lt_add_one_iff]
-    --     simpa using hxs
-    -- refine (H _ _ _ _ hq₁ _ (@Set.Finite.range _ this.to_subtype) rfl rfl).trans
-    --   (WithTop.coe_le_coe.mpr H')
-    -- rwa [Nat.succ_eq_add_one, Nat.lt_add_one_iff]
-
-    sorry
+    have := (Ideal.primeHeight_strict_mono h_lt).trans_le h
+    rw [ENat.lt_one_iff_eq_zero, Ideal.primeHeight_eq_zero_iff, minimalPrimes,
+      ← @Ideal.map_bot A' (A' ⧸ I') _ _ _ _ f, Ideal.minimalPrimes_map_of_surjective hf,
+      bot_sup_eq, Ideal.mk_ker] at this
+    obtain ⟨q', hq₁, hq₂⟩ := this
+    obtain rfl : q = q' := by
+      apply_fun Ideal.comap f at hq₂
+      simp_rw [Ideal.comap_map_of_surjective f hf, ← RingHom.ker_eq_comap_bot,
+        f, Ideal.mk_ker] at hq₂
+      rwa [sup_eq_left.mpr hI'q, sup_eq_left.mpr hq₁.1.2, eq_comm] at hq₂
+    have hs : s.Finite := ht.subset (Set.subset_insert _ _)
+    haveI := hs.fintype
+    suffices h' : (Set.finite_range y).toFinset.card ≤ n by
+      apply le_trans (H (Set.finite_range y).toFinset.card ?_ _ _ hq₁ (Set.range y)
+        (Set.finite_range y) rfl rfl) ?_
+      · rwa [Nat.lt_add_one_iff]
+      · norm_cast
+    trans hs.toFinset.card
+    · convert Finset.card_image_le (s := Finset.univ) (f := y) <;> simp
+    · apply Nat.le_of_lt_succ; show hs.toFinset.card + 1 ≤ n + 1
+      rw [← Finset.card_insert_of_not_mem (a := x)]; swap
+      · simpa
+      · simpa using hn
 
 lemma Ideal.height_le_spanRank_toENat [IsNoetherianRing R] (I : Ideal R) (hI : I ≠ ⊤) :
     I.height ≤ Cardinal.toENat I.spanRank := by

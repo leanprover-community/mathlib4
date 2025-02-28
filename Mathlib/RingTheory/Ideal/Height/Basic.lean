@@ -90,18 +90,22 @@ lemma Ideal.primeHeight_add_one_le_of_lt {I J : Ideal R} [I.IsPrime] [J.IsPrime]
   unfold primeHeight
   exact Order.height_add_one_le h
 
-@[gcongr]
-lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
-    (h : I < J) [I.FiniteHeight] :
-    I.primeHeight < J.primeHeight := by
-  unfold primeHeight
-  gcongr
-  · exact I.primeHeight_ne_top.lt_top
-  · exact h
-
 @[simp]
 theorem Ideal.height_top : (⊤ : Ideal R).height = ⊤ := by
   simp [height, minimalPrimes_top, iInf₂_eq_top]
+
+@[gcongr]
+lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
+    (h : I < J) [J.FiniteHeight] :
+    I.primeHeight < J.primeHeight := by
+  rw [primeHeight]
+  haveI : I.FiniteHeight := by
+    rw [Ideal.finiteHeight_iff]; right; rw [← lt_top_iff_ne_top];
+    rcases (Ideal.finiteHeight_iff J).mp ‹_› with (hl | hr)
+    · absurd hl; exact IsPrime.ne_top ‹_›
+    · rw [Ideal.height_eq_primeHeight] at hr ⊢
+      apply lt_of_le_of_lt (Ideal.primeHeight_mono (le_of_lt h)) (by rwa [lt_top_iff_ne_top])
+  refine Order.height_strictMono h (Ideal.primeHeight_lt_top _)
 
 @[gcongr]
 theorem Ideal.height_mono {I J : Ideal R} (h : I ≤ J) : I.height ≤ J.height := by
