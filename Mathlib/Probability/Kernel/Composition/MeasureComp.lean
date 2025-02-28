@@ -116,10 +116,10 @@ section AddSMul
 
 @[simp]
 lemma comp_add : κ ∘ₘ (μ + ν) = κ ∘ₘ μ + κ ∘ₘ ν := by
-  simp_rw [comp_eq_comp_const_apply, Kernel.const_add, Kernel.comp_add_left, Kernel.add_apply]
+  simp_rw [comp_eq_comp_const_apply, Kernel.const_add, Kernel.comp_add_right, Kernel.add_apply]
 
 lemma add_comp : (κ + η) ∘ₘ μ = κ ∘ₘ μ + η ∘ₘ μ := by
-  simp_rw [comp_eq_comp_const_apply, Kernel.comp_add_right, Kernel.add_apply]
+  simp_rw [comp_eq_comp_const_apply, Kernel.comp_add_left, Kernel.add_apply]
 
 /-- Same as `add_comp` except that it uses `⇑κ + ⇑η` instead of `⇑(κ + η)` in order to have
 a simp-normal form on the left of the equality. -/
