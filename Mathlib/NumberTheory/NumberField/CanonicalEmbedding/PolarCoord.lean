@@ -340,7 +340,6 @@ places and the natural map `ℝ → ℂ` at complex places. -/
 def mixedSpaceOfRealSpace : realSpace K →L[ℝ] mixedSpace K :=
   .prod (.pi fun w ↦ .proj w.1) (.pi fun w ↦ Complex.ofRealCLM.comp (.proj w.1))
 
-@[simp]
 theorem mixedSpaceOfRealSpace_apply (x : realSpace K) :
     mixedSpaceOfRealSpace x = ⟨fun w ↦ x w.1, fun w ↦ x w.1⟩ := rfl
 
@@ -407,8 +406,8 @@ theorem normMapComplex_polarSpaceCoord [NumberField K] {x : polarSpace K} :
   · rw [normAtComplexPlaces_apply_ofIsReal ⟨w, hw⟩,
       realSpaceNormAtComplexPlaces_apply_ofIsReal ⟨w, hw⟩]
   · simp_rw [normAtComplexPlaces_apply_ofIsComplex ⟨w, hw⟩,
-      realSpaceNormAtComplexPlaces_apply_ofIsComplex ⟨w, hw⟩, Pi.map_apply, Complex.norm_eq_abs,
-      Complex.polarCoord_symm_abs, Real.norm_eq_abs]
+      realSpaceNormAtComplexPlaces_apply_ofIsComplex ⟨w, hw⟩, Pi.map_apply,
+      Complex.norm_polarCoord_symm, Real.norm_eq_abs]
 
 variable {A : Set (mixedSpace K)}
 
@@ -489,22 +488,26 @@ theorem normAtPlace_mixedSpaceOfRealSpace {x : realSpace K} {w : InfinitePlace K
   simp only [mixedSpaceOfRealSpace_apply]
   obtain hw | hw := isReal_or_isComplex w
   · rw [normAtPlace_apply_of_isReal hw, Real.norm_of_nonneg hx]
-  · rw [normAtPlace_apply_of_isComplex hw, Complex.norm_eq_abs, Complex.abs_of_nonneg hx]
+  · rw [normAtPlace_apply_of_isComplex hw, Complex.norm_of_nonneg hx]
+
+theorem normAtAllPlaces_mixedSpaceOfRealSpace {x : realSpace K} (hx : ∀ w, 0 ≤ x w) :
+    normAtAllPlaces (mixedSpaceOfRealSpace x) = x := by
+  ext
+  rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace (hx _)]
 
 theorem normAtAllPlaces_normAtAllPlaces (x : mixedSpace K) :
-    normAtAllPlaces (mixedSpaceOfRealSpace (normAtAllPlaces x)) = normAtAllPlaces x := by
-  ext
-  rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace (normAtAllPlaces_nonneg _ _)]
+    normAtAllPlaces (mixedSpaceOfRealSpace (normAtAllPlaces x)) = normAtAllPlaces x :=
+  normAtAllPlaces_mixedSpaceOfRealSpace fun _ ↦ (normAtAllPlaces_nonneg _ _)
 
-theorem mem_iff_normAtAllPlaces_mem {s : Set (realSpace K)}
-    (hs : A = normAtAllPlaces ⁻¹' s) (x : mixedSpace K) :
-    x ∈ A ↔ mixedSpaceOfRealSpace (normAtAllPlaces x) ∈ A := by
+theorem forall_mem_iff_normAtAllPlaces_mem {s : Set (realSpace K)}
+    (hs : A = normAtAllPlaces ⁻¹' s) :
+    ∀ x, x ∈ A ↔ mixedSpaceOfRealSpace (normAtAllPlaces x) ∈ A := fun _ ↦ by
   rw [hs, Set.mem_preimage, Set.mem_preimage, normAtAllPlaces_normAtAllPlaces]
 
 theorem mem_iff_normAtAllPlaces_mem_iff :
     (∀ x, x ∈ A ↔ mixedSpaceOfRealSpace (normAtAllPlaces x) ∈ A) ↔
       A = normAtAllPlaces ⁻¹' (normAtAllPlaces '' A) := by
-  refine ⟨fun h ↦ ?_, fun h x ↦ mem_iff_normAtAllPlaces_mem h x⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ forall_mem_iff_normAtAllPlaces_mem h⟩
   exact subset_antisymm (Set.subset_preimage_image _ _) fun  x ⟨_, _, h₁⟩ ↦ by rwa [h, ← h₁, ← h]
 
 /-- The set of points in the `realSpace` that are equal to `0` at a fixed place has volume zero. -/
