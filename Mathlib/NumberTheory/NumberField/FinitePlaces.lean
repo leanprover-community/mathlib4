@@ -267,6 +267,12 @@ noncomputable def equivHeightOneSpectrum :
   left_inv := mk_maximalIdeal
   right_inv := maximalIdeal_mk
 
+lemma maximalIdeal_injective : (fun w : FinitePlace K ↦ maximalIdeal w).Injective :=
+  equivHeightOneSpectrum.injective
+
+lemma maximalIdeal_inj (w₁ w₂ : FinitePlace K) : maximalIdeal w₁ = maximalIdeal w₂ ↔ w₁ = w₂ :=
+  equivHeightOneSpectrum.injective.eq_iff
+
 theorem mulSupport_finite_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
     (Function.mulSupport fun w : FinitePlace K ↦ w x).Finite := by
   have (w : FinitePlace K) : w x ≠ 1 ↔ w x < 1 :=
