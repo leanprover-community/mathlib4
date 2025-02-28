@@ -71,6 +71,11 @@ lemma surjective_smul (x : α) : Surjective fun c : M ↦ c • x := exists_smul
 instance Regular.isPretransitive [Group G] : IsPretransitive G G :=
   ⟨fun x y ↦ ⟨y * x⁻¹, inv_mul_cancel_right _ _⟩⟩
 
+/-- The right regular action of a group on itself is transitive. -/
+@[to_additive "The right regular action of an additive group on itself is transitive."]
+instance Regular.isPretransitive_mulOpposite {G : Type*} [Group G] : IsPretransitive Gᵐᵒᵖ G :=
+  ⟨fun x y ↦ ⟨.op (x⁻¹ * y), mul_inv_cancel_left _ _⟩⟩
+
 end MulAction
 
 namespace MulAction
