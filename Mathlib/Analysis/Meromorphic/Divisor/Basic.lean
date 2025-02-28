@@ -63,8 +63,7 @@ namespace Divisor
 instance (U : Set 𝕜) : CoeFun (Divisor U) (fun _ ↦ 𝕜 → ℤ) where
   coe := Divisor.toFun
 
-attribute [coe] Divisor.toFun
-
+-- This allows writing `D.support` instead of `Function.support D`
 abbrev support (D : Divisor U)  := Function.support D
 
 /-- Divisors are `FunLike`: the coercion from divisors to functions is injective. -/
