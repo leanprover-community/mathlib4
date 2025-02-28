@@ -1139,52 +1139,15 @@ lemma inr_image_eq_preimage_elim (S : Set Z) :
   sorry -- missing lemma, should be easy
 
 lemma Topology.IsInducing.sumElim_of_separatedNhds
-    (hf : IsInducing f) (hg : IsInducing g) {U' V' : Set Z} (hsep : SeparatedNhds U' V')
-    (hfU : Set.range f ⊆ U') (hgV : Set.range g ⊆ V') : IsInducing (Sum.elim f g) := by
-  rw [isInducing_iff_nhds] at hf hg ⊢
-  choose U V hU hV hUU' hVV' _ using hsep
-  intro s
-  cases s with
-  | inl x =>
-    simp only [Sum.elim_inl, nhds_inl, hf x]
-    apply Filter.filter_eq
-    ext s
-    have hU : U ∈ 𝓝 (f x) := hU.mem_nhds (hUU' (hfU (mem_range_self x)))
-    constructor <;> intro h
-    · choose t ht hst using h
-      refine ⟨t ∩ U, Filter.inter_mem ht hU, ?_⟩
-      rw [← image_subset_iff] at hst
-      rw [preimage_inter, ← inl_image_eq_preimage_elim]
-      trans inl '' (f ⁻¹' t)
-      exacts [inter_subset_left, hst]
-    · choose t ht hst using h
-      refine ⟨t ∩ U, Filter.inter_mem ht hU, ?_⟩
-      rw [← inl_image_eq_preimage_elim, image_subset_iff] at hst
-      trans f ⁻¹' t
-      exacts [inter_subset_left, hst]
-  | inr x =>
-    simp only [Sum.elim_inr, nhds_inr, hg x]
-    apply Filter.filter_eq
-    ext s
-    have hV : V ∈ 𝓝 (g x) := hV.mem_nhds (hVV' (hgV (mem_range_self x)))
-    constructor <;> intro h
-    · choose t ht hst using h
-      refine ⟨t ∩ V, Filter.inter_mem ht hV, ?_⟩
-      rw [← image_subset_iff] at hst
-      rw [preimage_inter, ← inr_image_eq_preimage_elim]
-      trans inr '' (g ⁻¹' t)
-      exacts [inter_subset_left, hst]
-    · choose t ht hst using h
-      refine ⟨t ∩ V, Filter.inter_mem ht hV, ?_⟩
-      rw [← inr_image_eq_preimage_elim, image_subset_iff] at hst
-      trans g ⁻¹' t
-      exacts [inter_subset_left, hst]
+    (hf : IsInducing f) (hg : IsInducing g) (hsep : SeparatedNhds (range f) (range g)) :
+    IsInducing (Sum.elim f g) :=
+  isInducing_sumElim.mpr ⟨hf, hg, hsep.disjoint_closure_left, hsep.disjoint_closure_right⟩
 
 lemma Topology.IsEmbedding.sumElim_of_separatedNhds
     (hf : IsEmbedding f) (hg : IsEmbedding g) (h : Function.Injective (Sum.elim f g))
-    {U V : Set Z} (hsep : SeparatedNhds U V) (hfU : Set.range f ⊆ U) (hgV : Set.range g ⊆ V) :
+    (hsep : SeparatedNhds (range f) (range g)) :
     IsEmbedding (Sum.elim f g) :=
-  ⟨hf.isInducing.sumElim_of_separatedNhds hg.isInducing hsep hfU hgV, h⟩
+  ⟨hf.isInducing.sumElim_of_separatedNhds hg.isInducing hsep, h⟩
 
 end IsInducing
 
