@@ -121,12 +121,6 @@ instance {V : Type u} [AddCommGroup V] [Module k V] :
 instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
     IsTrivial (Rep.of ρ) where
 
-/-- The functor equipping a module with the trivial representation. -/
-@[simps]
-noncomputable def trivialFunctor : ModuleCat k ⥤ Rep k G where
-  obj V := trivial k G V
-  map f := { hom := f, comm := fun _ => rfl }
-
 -- Porting note: the two following instances were found automatically in mathlib3
 noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.preservesLimits_forget.{u} _ _
@@ -151,17 +145,6 @@ theorem tensor_ρ {A B : Rep k G} : (A ⊗ B).ρ = A.ρ.tprod B.ρ := rfl
 @[simp]
 lemma res_obj_ρ {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H) (g : G) :
     DFunLike.coe (F := G →* (A →ₗ[k] A)) (ρ ((Action.res _ f).obj A)) g = A.ρ (f g) := rfl
-
-section Res
-
-variable {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H)
-
-@[simp]
-lemma coe_res_obj_ρ (g : G) :
-    @DFunLike.coe (no_index G →* (A →ₗ[k] A)) _ _ _
-      (Rep.ρ ((Action.res _ f).obj A)) g = A.ρ (f g) := rfl
-
-end Res
 
 section Linearization
 
