@@ -39,13 +39,16 @@ within `U`.
 -/
 
 /-- A divisor on `U` is a triple specified below. -/
-structure Divisor (U : Set 𝕜) where
+structure DivisorOn (U : Set 𝕜) where
   /-- A function `𝕜 → ℤ` -/
   toFun : 𝕜 → ℤ
   /-- A proof that the support of `toFun` is contained in `U` -/
   supportWithinDomain : toFun.support ⊆ U
   /-- A proof the the support is discrete within `U` -/
   supportDiscreteWithinDomain : toFun =ᶠ[codiscreteWithin U] 0
+
+/-- A divisor is a divisor on `⊤ : Set 𝕜`. -/
+def Divisor (𝕜 : Type*) [NontriviallyNormedField 𝕜] := DivisorOn (⊤ : Set 𝕜)
 
 /-- The condition `supportDiscreteWithinU` in a divisor is equivalent to saying
 that the support is locally finite near every point of `U`. -/
@@ -57,31 +60,31 @@ theorem supportDiscreteWithin_iff_locallyFiniteWithin {f : 𝕜 → ℤ} (h : f.
     exact (h ·)
   rw [EventuallyEq, Filter.Eventually, codiscreteWithin_iff_locallyFiniteComplementWithin, this]
 
-namespace Divisor
+namespace DivisorOn
 
 /-- A divisor can be coerced into a function 𝕜 → ℤ -/
-instance (U : Set 𝕜) : CoeFun (Divisor U) (fun _ ↦ 𝕜 → ℤ) where
-  coe := Divisor.toFun
+instance (U : Set 𝕜) : CoeFun (DivisorOn U) (fun _ ↦ 𝕜 → ℤ) where
+  coe := DivisorOn.toFun
 
 /-- This allows writing `D.support` instead of `Function.support D` -/
-abbrev support (D : Divisor U)  := Function.support D
+abbrev support (D : DivisorOn U)  := Function.support D
 
 /-- Divisors are `FunLike`: the coercion from divisors to functions is injective. -/
-instance : FunLike (Divisor U) 𝕜 ℤ where
+instance : FunLike (DivisorOn U) 𝕜 ℤ where
   coe := fun D ↦ D
   coe_injective' := fun ⟨_, _, _⟩ ⟨_, _, _⟩ ↦ by simp
 
 /-- Helper lemma for the `ext` tactic: two divisors are equal if their
 associated functions agree. -/
 @[ext]
-theorem ext {D₁ D₂ : Divisor U} (h : ∀ a, D₁ a = D₂ a) : D₁ = D₂ := DFunLike.ext _ _ h
+theorem ext {D₁ D₂ : DivisorOn U} (h : ∀ a, D₁ a = D₂ a) : D₁ = D₂ := DFunLike.ext _ _ h
 
 /-!
 ## Elementary properties of the support
 -/
 
 /-- The support of a divisor is discrete. -/
-theorem discreteSupport (D : Divisor U) : DiscreteTopology D.support := by
+theorem discreteSupport (D : DivisorOn U) : DiscreteTopology D.support := by
   have : Function.support D = {x | D x = 0}ᶜ ∩ U := by
     ext x
     constructor
@@ -92,7 +95,7 @@ theorem discreteSupport (D : Divisor U) : DiscreteTopology D.support := by
   convert discreteTopology_of_codiscreteWithin (D.supportDiscreteWithinDomain)
 
 /-- If `U` is closed, the the support of a divisor on `U` is also closed. -/
-theorem closedSupport (D : Divisor U) (hU : IsClosed U) :
+theorem closedSupport (D : DivisorOn U) (hU : IsClosed U) :
     IsClosed D.support := by
   convert closed_compl_of_codiscreteWithin D.supportDiscreteWithinDomain hU
   ext x
@@ -103,7 +106,7 @@ theorem closedSupport (D : Divisor U) (hU : IsClosed U) :
     simp_all
 
 /-- If `U` is closed, the the support of a divisor on `U` is finite. -/
-theorem finiteSupport (D : Divisor U) (hU : IsCompact U) :
+theorem finiteSupport (D : DivisorOn U) (hU : IsCompact U) :
     Set.Finite D.support :=
   (hU.of_isClosed_subset (D.closedSupport hU.isClosed)
     D.supportWithinDomain).finite D.discreteSupport
@@ -117,16 +120,16 @@ pointwise.
 -/
 
 /-- Divisors have a zero -/
-instance : Zero (Divisor U) where
+instance : Zero (DivisorOn U) where
   zero := ⟨fun _ ↦ 0, by simp, Eq.eventuallyEq rfl⟩
 
 /-- Helper lemma for the `simp` tactic: the function of the zero-divisor is the
 zero function. -/
 @[simp]
-theorem zero_fun : (0 : Divisor U).toFun = 0 := rfl
+theorem zero_fun : (0 : DivisorOn U).toFun = 0 := rfl
 
 /-- Divisors can be added -/
-instance : Add (Divisor U) where
+instance : Add (DivisorOn U) where
   add D₁ D₂ := {
     toFun := D₁ + D₂
     supportWithinDomain := by
@@ -142,10 +145,10 @@ instance : Add (Divisor U) where
 /-- Helper lemma for the `simp` tactic: the function of the sum of two divisors
 is the sum of the associated functions. -/
 @[simp]
-lemma add_fun {D₁ D₂ : Divisor U} : (D₁ + D₂).toFun = D₁.toFun + D₂.toFun := rfl
+lemma add_fun {D₁ D₂ : DivisorOn U} : (D₁ + D₂).toFun = D₁.toFun + D₂.toFun := rfl
 
 /-- Divisors have a negative -/
-instance : Neg (Divisor U) where
+instance : Neg (DivisorOn U) where
   neg D := {
     toFun := -D
     supportWithinDomain := by
@@ -158,10 +161,10 @@ instance : Neg (Divisor U) where
 /-- Helper lemma for the `simp` tactic: the function of the negative divisor
 is the negative of the associated function. -/
 @[simp]
-lemma neg_fun {D : Divisor U} : (-D).toFun = -(D.toFun) := rfl
+lemma neg_fun {D : DivisorOn U} : (-D).toFun = -(D.toFun) := rfl
 
 /-- Divisors have scalar multiplication with natural numbers -/
-instance : SMul ℕ (Divisor U) where
+instance : SMul ℕ (DivisorOn U) where
   smul n D := {
     toFun := fun z ↦ n * D z
     supportWithinDomain := by
@@ -178,10 +181,10 @@ instance : SMul ℕ (Divisor U) where
 (natural number)·divisor is the scalar product of the natural number with the
 associated function of the divisor. -/
 @[simp]
-lemma nsmul_fun {D : Divisor U} {n : ℕ} : (n • D).toFun = n • (D.toFun) := rfl
+lemma nsmul_fun {D : DivisorOn U} {n : ℕ} : (n • D).toFun = n • (D.toFun) := rfl
 
 /-- Divisors have scalar multiplication with integers -/
-instance : SMul ℤ (Divisor U) where
+instance : SMul ℤ (DivisorOn U) where
   smul n D := {
     toFun := fun z ↦ n * D z
     supportWithinDomain := by
@@ -198,20 +201,20 @@ instance : SMul ℤ (Divisor U) where
 (integer)·divisor is the scalar product of the integer with the associated
 function of the divisor. -/
 @[simp]
-lemma zsmul_fun {D : Divisor U} {n : ℤ} : (n • D).toFun = n • (D.toFun) := rfl
+lemma zsmul_fun {D : DivisorOn U} {n : ℤ} : (n • D).toFun = n • (D.toFun) := rfl
 
 /-- Divisors have a partial ordering by pointwise comparison of the associated
 functions. -/
-instance : LE (Divisor U) where
+instance : LE (DivisorOn U) where
   le := fun D₁ D₂ ↦ D₁.toFun ≤ D₂.toFun
 
 /-- Helper lemma for the `simp` tactic: a divisor is smaller than another one
 if the same relation holds with the associated functions. -/
 @[simp]
-lemma le_fun {D₁ D₂ : Divisor U} : D₁ ≤ D₂ ↔ D₁.toFun ≤ D₂.toFun := ⟨(·),(·)⟩
+lemma le_fun {D₁ D₂ : DivisorOn U} : D₁ ≤ D₂ ↔ D₁.toFun ≤ D₂.toFun := ⟨(·),(·)⟩
 
 /-- Divisors form an ordered commutative group -/
-instance : OrderedAddCommGroup (Divisor U) where
+instance : OrderedAddCommGroup (DivisorOn U) where
   add := (· + · )
   add_assoc := fun _ _ _ ↦ by ext; simp [add_assoc]
   zero := 0
@@ -236,16 +239,16 @@ instance : OrderedAddCommGroup (Divisor U) where
 
 /-- Divisors have a partial ordering by pointwise comparison of the associated
 functions. -/
-instance : LT (Divisor U) where
+instance : LT (DivisorOn U) where
   lt := fun D₁ D₂ ↦ D₁.toFun < D₂.toFun
 
 /-- Helper lemma for the `simp` tactic: a divisor is smaller than another one
 if the same relation holds with the associated functions. -/
 @[simp]
-lemma lt_fun {D₁ D₂ : Divisor U} : D₁ < D₂ ↔ D₁.toFun < D₂.toFun := ⟨(·),(·)⟩
+lemma lt_fun {D₁ D₂ : DivisorOn U} : D₁ < D₂ ↔ D₁.toFun < D₂.toFun := ⟨(·),(·)⟩
 
 /-- Divisors have a max. -/
-instance : Max (Divisor U) where
+instance : Max (DivisorOn U) where
   max D₁ D₂ := {
     toFun := fun z ↦ max (D₁ z) (D₂ z)
     supportWithinDomain := by
@@ -263,10 +266,10 @@ instance : Max (Divisor U) where
 /-- Helper lemma for the `simp` tactic: the function associated with the max of
 two divisors is the pointwise max of the associated functions. -/
 @[simp]
-lemma max_fun {D₁ D₂ : Divisor U} {x : 𝕜} : max D₁ D₂ x = max (D₁ x) (D₂ x) := rfl
+lemma max_fun {D₁ D₂ : DivisorOn U} {x : 𝕜} : max D₁ D₂ x = max (D₁ x) (D₂ x) := rfl
 
 /-- Divisors have a min. -/
-instance : Min (Divisor U) where
+instance : Min (DivisorOn U) where
   min D₁ D₂ := {
     toFun := fun z ↦ min (D₁ z) (D₂ z)
     supportWithinDomain := by
@@ -284,10 +287,10 @@ instance : Min (Divisor U) where
 /-- Helper lemma for the `simp` tactic: the function associated with the max of
 two divisors is the pointwise max of the associated functions. -/
 @[simp]
-lemma min_fun {D₁ D₂ : Divisor U} {x : 𝕜} : min D₁ D₂ x = min (D₁ x) (D₂ x) := rfl
+lemma min_fun {D₁ D₂ : DivisorOn U} {x : 𝕜} : min D₁ D₂ x = min (D₁ x) (D₂ x) := rfl
 
 /-- Divisors form a lattice. -/
-instance : Lattice (Divisor U) where
+instance : Lattice (DivisorOn U) where
   le := (· ≤ ·)
   le_refl := by simp
   le_trans := by exact fun D₁ D₂ D₃ h₁₂ h₂₃ x ↦ (h₁₂ x).trans (h₂₃ x)
@@ -310,8 +313,8 @@ instance : Lattice (Divisor U) where
 
 /-- If `V` is a subset of `U`, then a divisor on `U` restricts to a divisor in `V` by
 setting its values to zero outside of `V`. -/
-noncomputable def restrict {V : Set 𝕜} (D : Divisor U) (h : V ⊆ U) :
-    Divisor V where
+noncomputable def restrict {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
+    DivisorOn V where
   toFun := by
     classical
     exact fun z ↦ if hz : z ∈ V then D z else 0
@@ -329,7 +332,7 @@ noncomputable def restrict {V : Set 𝕜} (D : Divisor U) (h : V ⊆ U) :
 /-- Helper lemma for the `simp` tactic: restricting a divisor from `U` to a
 subset `V` does not change its values on `V`. -/
 @[simp]
-lemma restrict_fun_on_V {V : Set 𝕜} (D : Divisor U) (h : V ⊆ U) :
+lemma restrict_fun_on_V {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
     Set.EqOn (D.restrict h) D V := by
   intro _ _
   simp_all [restrict, dite_eq_ite, ite_eq_left_iff]
@@ -337,28 +340,28 @@ lemma restrict_fun_on_V {V : Set 𝕜} (D : Divisor U) (h : V ⊆ U) :
 /-- Helper lemma for the `simp` tactic: restricting a divisor from `U` to a
 subset `V` makes it zero outside of `V`. -/
 @[simp]
-lemma restrict_fun_on_V_compl {V : Set 𝕜} (D : Divisor U) (h : V ⊆ U) :
+lemma restrict_fun_on_V_compl {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
     Set.EqOn (D.restrict h) 0 Vᶜ := by
   intro _ hx
   simp_all [restrict, dite_eq_ite, ite_eq_left_iff, hx]
 
 /-- Restriction as an order-preserving morphism -/
-noncomputable def restrict_orderHom {V : Set 𝕜} (h : V ⊆ U) : Divisor U →o Divisor V where
+noncomputable def restrict_orderHom {V : Set 𝕜} (h : V ⊆ U) : DivisorOn U →o DivisorOn V where
   toFun := fun D ↦ D.restrict h
   monotone' := by
     intro D₁ D₂ h₁₂
-    simp only [le_fun, Divisor.restrict]
+    simp only [le_fun, DivisorOn.restrict]
     intro x
     by_cases hx : x ∈ V
     <;> simp [hx, reduceDIte, h₁₂ x]
 
 /-- Helper lemma for the `simp` tactic: `restrict_orderHom` restricts divisors. -/
 @[simp]
-lemma restrict_orderHom_fun {V : Set 𝕜} (D : Divisor U) (h : V ⊆ U) :
+lemma restrict_orderHom_fun {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
     restrict_orderHom h D = D.restrict h := by rfl
 
 /-- Restriction as a group morphism -/
-noncomputable def restrict_groupHom {V : Set 𝕜} (h : V ⊆ U) : Divisor U →+ Divisor V where
+noncomputable def restrict_groupHom {V : Set 𝕜} (h : V ⊆ U) : DivisorOn U →+ DivisorOn V where
   toFun := fun D ↦ D.restrict h
   map_zero' := by
     ext x
@@ -371,45 +374,42 @@ noncomputable def restrict_groupHom {V : Set 𝕜} (h : V ⊆ U) : Divisor U →
 
 /-- Helper lemma for the `simp` tactic: `restrict_groupHom` restricts divisors. -/
 @[simp]
-lemma restrict_groupHom_fun {V : Set 𝕜} (D : Divisor U) (h : V ⊆ U) :
+lemma restrict_groupHom_fun {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
     restrict_groupHom h D = D.restrict h := by rfl
 
 /-- Restriction as a lattice morphism -/
 noncomputable def restrict_latticeHom {V : Set 𝕜} (h : V ⊆ U) :
-    LatticeHom (Divisor U) (Divisor V) where
+    LatticeHom (DivisorOn U) (DivisorOn V) where
   toFun := fun D ↦ D.restrict h
   map_sup' := by
     intro D₁ D₂
     ext x
     by_cases hx : x ∈ V
-    <;> simp [Divisor.restrict, hx]
+    <;> simp [DivisorOn.restrict, hx]
   map_inf' := by
     intro D₁ D₂
     ext x
     by_cases hx : x ∈ V
-    <;> simp [Divisor.restrict, hx]
+    <;> simp [DivisorOn.restrict, hx]
 
 /-- Helper lemma for the `simp` tactic: `restrict_latticeHom` restricts divisors. -/
 @[simp]
-lemma restrict_latticeHom_fun {V : Set 𝕜} (D : Divisor U) (h : V ⊆ U) :
+lemma restrict_latticeHom_fun {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
     restrict_latticeHom h D = D.restrict h := by rfl
 
 /-!
 ## Derived invariants
 -/
 
-/-- The degree of a divisor is the sum of its values, or 0 if the support is
-infinite. -/
-noncomputable def deg (D : Divisor U) : ℤ := ∑ᶠ z, D z
+/-- The degree of a divisor on U is the sum of its values, or 0 if the support is infinite. -/
+noncomputable def deg (D : DivisorOn U) : ℤ := ∑ᶠ z, D z
 
-/-- The counting function for a divisor defined on ⊤ -/
-noncomputable def counting (D : Divisor (⊤ : Set 𝕜)) :
-    ℝ → ℝ :=
+end DivisorOn
+
+/-- The counting function for a divisor -/
+noncomputable def Divisor.counting (D : Divisor 𝕜) : ℝ → ℝ :=
   fun r ↦ ∑ᶠ z, D.restrict (by tauto : closedBall (0 : 𝕜) |r| ⊆ ⊤) z
 
-/-- The logarithmic counting function for a divisor defined on ⊤ -/
-noncomputable def logCounting (D : Divisor (⊤ : Set 𝕜)) :
-    ℝ → ℝ :=
+/-- The logarithmic counting function for a divisor -/
+noncomputable def Divisor.logCounting (D : Divisor 𝕜) : ℝ → ℝ :=
   fun r ↦ ∑ᶠ z, D.restrict (by tauto : closedBall (0 : 𝕜) |r| ⊆ ⊤) z * (log r - log ‖z‖)
-
-end Divisor
