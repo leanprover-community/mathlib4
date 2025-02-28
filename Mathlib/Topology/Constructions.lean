@@ -1054,17 +1054,91 @@ lemma IsClosedEmbedding.sumElim {f : X → Z} {g : Y → Z}
   rw [IsClosedEmbedding.isClosedEmbedding_iff_continuous_injective_isClosedMap] at hf hg ⊢
   exact ⟨hf.1.sumElim hg.1, h, hf.2.2.sumElim hg.2.2⟩
 
-lemma inl_image_eq_preimage_elim {f : X → Z} {g : Y → Z} (S : Set Z) :
+section IsInducing
+
+variable {f : X → Z} {g : Y → Z}
+
+lemma Topology.IsInducing.sumElim_left (h : IsInducing (Sum.elim f g)) : IsInducing f := by
+  rw [← elim_comp_inl f g]
+  exact h.comp IsEmbedding.inl.isInducing
+
+lemma Topology.IsInducing.sumElim_right (h : IsInducing (Sum.elim f g)) : IsInducing g := by
+  rw [← elim_comp_inr f g]
+  exact h.comp IsEmbedding.inr.isInducing
+
+theorem Topology.IsInducing.sumElim (hf : IsInducing f) (hg : IsInducing g)
+    (hFg : Disjoint (closure (range f)) (range g)) (hfG : Disjoint (range f) (closure (range g))) :
+    IsInducing (Sum.elim f g) := by
+  apply isInducing_iff_nhds.mpr
+  intro x
+  apply le_antisymm ((hf.continuous.sumElim hg.continuous).tendsto x).le_comap
+  intro s hs
+  rw [mem_comap_iff_compl, ← image_preimage_inl_union_image_preimage_inr sᶜ,
+    image_union, ← image_comp, ← image_comp, elim_comp_inl, elim_comp_inr,
+    preimage_compl, preimage_compl, compl_union, inter_mem_iff,
+    ← mem_comap_iff_compl, ← mem_comap_iff_compl]
+  rw [← disjoint_principal_nhdsSet] at hFg
+  rw [← disjoint_nhdsSet_principal] at hfG
+  obtain x | x := x <;>
+  simp only [nhds_inl, nhds_inr, mem_map] at hs <;>
+  simp only [elim_inl, elim_inr, ← hf.nhds_eq_comap, ← hg.nhds_eq_comap, hs, true_and, and_true] <;>
+  convert mem_bot <;>
+  rw [comap_eq_bot_iff_compl_range] <;>
+  [(rw [← disjoint_principal_right]
+    apply hfG.mono_left);
+   (rw [← disjoint_principal_left]
+    apply hFg.mono_right)] <;>
+  exact nhds_le_nhdsSet (mem_range_self x)
+
+theorem isInducing_sumElim :
+    IsInducing (Sum.elim f g) ↔ IsInducing f ∧ IsInducing g ∧
+    Disjoint (closure (range f)) (range g) ∧
+    Disjoint (range f) (closure (range g)) := by
+  constructor
+  · intro h
+    use h.sumElim_left, h.sumElim_right
+    conv at h =>
+      rw [isInducing_iff_nhds]
+      intro x
+      rw [Filter.ext_iff]
+      conv =>
+        enter [s, 2]
+        rw [mem_comap_iff_compl, ← image_preimage_inl_union_image_preimage_inr sᶜ, image_union]
+        simp only [image_image, elim_inl, elim_inr, preimage_compl, compl_union, inter_mem_iff]
+        simp only [← mem_comap_iff_compl, ← mem_map, ← mem_sup]
+      rw [← Filter.ext_iff, eq_comm]
+    have hlr (u : Filter X) (v : Filter Y) : map inl u ⊓ map inr v = ⊥ := by
+      apply le_bot_iff.mp
+      trans map inl ⊤ ⊓ map inr ⊤
+      · apply inf_le_inf <;> simp
+      · simp
+    constructor <;>
+    simp only [disjoint_principal_left, disjoint_principal_right,
+      ← disjoint_principal_nhdsSet, ← disjoint_nhdsSet_principal, mem_nhdsSet_iff_forall] <;>
+    rintro _ ⟨x, rfl⟩ <;>
+    rw [← comap_eq_bot_iff_compl_range] <;>
+    [(specialize h (inr x)
+      rw [nhds_inr, elim_inr] at h
+      apply_fun (map inl ⊤ ⊓ ·) at h);
+     (specialize h (inl x)
+      rw [nhds_inl, elim_inl] at h
+      apply_fun (· ⊓ map Sum.inr ⊤) at h)] <;>
+    simpa only [hlr, inf_sup_left, inf_sup_right, sup_bot_eq, bot_sup_eq, ← map_inf,
+      inl_injective, inr_injective, top_inf_eq, inf_top_eq, map_eq_bot_iff] using h
+  · intro ⟨hf, hg, hFg, hfG⟩
+    exact hf.sumElim hg hFg hfG
+
+lemma inl_image_eq_preimage_elim (S : Set Z) :
     Sum.inl '' (f ⁻¹' S) = Sum.elim f g ⁻¹' S := by
   ext x
   sorry -- missing lemma, should be easy
 
-lemma inr_image_eq_preimage_elim {f : X → Z} {g : Y → Z} (S : Set Z) :
+lemma inr_image_eq_preimage_elim (S : Set Z) :
     Sum.inr '' (g ⁻¹' S) = Sum.elim f g ⁻¹' S := by
   ext x
   sorry -- missing lemma, should be easy
 
-lemma Topology.IsInducing.sumElim_of_separatedNhds {f : X → Z} {g : Y → Z}
+lemma Topology.IsInducing.sumElim_of_separatedNhds
     (hf : IsInducing f) (hg : IsInducing g) {U' V' : Set Z} (hsep : SeparatedNhds U' V')
     (hfU : Set.range f ⊆ U') (hgV : Set.range g ⊆ V') : IsInducing (Sum.elim f g) := by
   rw [isInducing_iff_nhds] at hf hg ⊢
@@ -1106,11 +1180,13 @@ lemma Topology.IsInducing.sumElim_of_separatedNhds {f : X → Z} {g : Y → Z}
       trans g ⁻¹' t
       exacts [inter_subset_left, hst]
 
-lemma IsEmbedding.sumElim_of_separatedNhds {f : X → Z} {g : Y → Z}
+lemma IsEmbedding.sumElim_of_separatedNhds
     (hf : IsEmbedding f) (hg : IsEmbedding g) (h : Function.Injective (Sum.elim f g))
     {U V : Set Z} (hsep : SeparatedNhds U V) (hfU : Set.range f ⊆ U) (hgV : Set.range g ⊆ V) :
     IsEmbedding (Sum.elim f g) :=
   ⟨hf.isInducing.sumElim_of_separatedNhds hg.isInducing hsep hfU hgV, h⟩
+
+end IsInducing
 
 end Sum
 
