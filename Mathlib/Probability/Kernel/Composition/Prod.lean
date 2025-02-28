@@ -10,50 +10,22 @@ import Mathlib.Probability.Kernel.Composition.CompMap
 /-!
 # Product and composition of kernels
 
-We define
-* the composition-product `κ ⊗ₖ η` of two s-finite kernels `κ : Kernel α β` and
-  `η : Kernel (α × β) γ`, a kernel from `α` to `β × γ`.
-* the map and comap of a kernel along a measurable function.
-* the composition `η ∘ₖ κ` of kernels `κ : Kernel α β` and `η : Kernel β γ`, kernel from `α` to
-  `γ`.
-* the product `κ ×ₖ η` of s-finite kernels `κ : Kernel α β` and `η : Kernel α γ`,
-  a kernel from `α` to `β × γ`.
-
-A note on names:
-The composition-product `Kernel α β → Kernel (α × β) γ → Kernel α (β × γ)` is named composition in
-[kallenberg2021] and product on the wikipedia article on transition kernels.
-Most papers studying categories of kernels call composition the map we call composition. We adopt
-that convention because it fits better with the use of the name `comp` elsewhere in mathlib.
+We define the product `κ ×ₖ η` of s-finite kernels `κ : Kernel α β` and `η : Kernel α γ`, which is
+a kernel from `α` to `β × γ`.
 
 ## Main definitions
 
-Kernels built from other kernels:
-* `compProd (κ : Kernel α β) (η : Kernel (α × β) γ) : Kernel α (β × γ)`: composition-product of 2
-  s-finite kernels. We define a notation `κ ⊗ₖ η = compProd κ η`.
-  `∫⁻ bc, f bc ∂((κ ⊗ₖ η) a) = ∫⁻ b, ∫⁻ c, f (b, c) ∂(η (a, b)) ∂(κ a)`
-* `map (κ : Kernel α β) (f : β → γ) : Kernel α γ`
-  `∫⁻ c, g c ∂(map κ f a) = ∫⁻ b, g (f b) ∂(κ a)`
-* `comap (κ : Kernel α β) (f : γ → α) (hf : Measurable f) : Kernel γ β`
-  `∫⁻ b, g b ∂(comap κ f hf c) = ∫⁻ b, g b ∂(κ (f c))`
-* `comp (η : Kernel β γ) (κ : Kernel α β) : Kernel α γ`: composition of 2 kernels.
-  We define a notation `η ∘ₖ κ = comp η κ`.
-  `∫⁻ c, g c ∂((η ∘ₖ κ) a) = ∫⁻ b, ∫⁻ c, g c ∂(η b) ∂(κ a)`
 * `prod (κ : Kernel α β) (η : Kernel α γ) : Kernel α (β × γ)`: product of 2 s-finite kernels.
   `∫⁻ bc, f bc ∂((κ ×ₖ η) a) = ∫⁻ b, ∫⁻ c, f (b, c) ∂(η a) ∂(κ a)`
 
 ## Main statements
 
-* `lintegral_compProd`, `lintegral_map`, `lintegral_comap`, `lintegral_comp`, `lintegral_prod`:
-  Lebesgue integral of a function against a composition-product/map/comap/composition/product of
-  kernels.
-* Instances of the form `<class>.<operation>` where class is one of `IsMarkovKernel`,
-  `IsFiniteKernel`, `IsSFiniteKernel` and operation is one of `compProd`, `map`, `comap`,
-  `comp`, `prod`. These instances state that the three classes are stable by the various operations.
+* `lintegral_prod`: Lebesgue integral of a function against a product of   kernels.
+* Instances stating that `IsMarkovKernel`, `IsZeroOrMarkovKernel`, `IsFiniteKernel` and
+  `IsSFiniteKernel` are stable by product.
 
 ## Notations
 
-* `κ ⊗ₖ η = ProbabilityTheory.Kernel.compProd κ η`
-* `η ∘ₖ κ = ProbabilityTheory.Kernel.comp η κ`
 * `κ ×ₖ η = ProbabilityTheory.Kernel.prod κ η`
 
 -/
@@ -214,6 +186,22 @@ lemma id_prod_eq : @Kernel.id (α × β) inferInstance =
     (deterministic Prod.fst measurable_fst) ×ₖ (deterministic Prod.snd measurable_snd) := by
   rw [deterministic_prod_deterministic]
   rfl
+
+theorem comp_eq_snd_compProd (η : Kernel β γ) [IsSFiniteKernel η] (κ : Kernel α β)
+    [IsSFiniteKernel κ] : η ∘ₖ κ = snd (κ ⊗ₖ prodMkLeft α η) := by
+  ext a s hs
+  rw [comp_apply' _ _ _ hs, snd_apply' _ _ hs, compProd_apply]
+  swap
+  · exact measurable_snd hs
+  simp only [Set.mem_setOf_eq, Set.setOf_mem_eq, prodMkLeft_apply' _ _ s]
+
+@[simp] lemma snd_compProd_prodMkLeft
+    (κ : Kernel α β) (η : Kernel β γ) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
+    snd (κ ⊗ₖ prodMkLeft α η) = η ∘ₖ κ := by
+  ext a s hs
+  rw [snd_apply' _ _ hs, compProd_apply, comp_apply' _ _ _ hs]
+  · rfl
+  · exact measurable_snd hs
 
 lemma compProd_prodMkLeft_eq_comp
     (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel β γ) [IsSFiniteKernel η] :
