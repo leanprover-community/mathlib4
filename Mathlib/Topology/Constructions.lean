@@ -1131,15 +1131,37 @@ theorem isInducing_sumElim :
 lemma Topology.IsInducing.sumElim_of_separatedNhds
     (hf : IsInducing f) (hg : IsInducing g) (hsep : SeparatedNhds (range f) (range g)) :
     IsInducing (Sum.elim f g) :=
-  isInducing_sumElim.mpr ⟨hf, hg, hsep.disjoint_closure_left, hsep.disjoint_closure_right⟩
+  hf.sumElim hg hsep.disjoint_closure_left hsep.disjoint_closure_right
+
+theorem isEmbedding_sumElim :
+    IsEmbedding (Sum.elim f g) ↔ IsEmbedding f ∧ IsEmbedding g ∧
+    Disjoint (closure (range f)) (range g) ∧
+    Disjoint (range f) (closure (range g)) := by
+  rw [isEmbedding_iff, isEmbedding_iff, isEmbedding_iff, isInducing_sumElim]
+  constructor
+  · intro ⟨⟨hf₁, hg₁, hFg, hfG⟩, hfg⟩
+    have hf₂ : Injective f := by
+      rw [← Sum.elim_comp_inl f g]
+      exact hfg.comp inl_injective
+    have hg₂ : Injective g := by
+      rw [← Sum.elim_comp_inr f g]
+      exact hfg.comp inr_injective
+    exact ⟨⟨hf₁, hf₂⟩, ⟨hg₁, hg₂⟩, ⟨hFg, hfG⟩⟩
+  · intro ⟨⟨hf₁, hf₂⟩, ⟨hg₁, hg₂⟩, hFg, hfG⟩
+    use ⟨hf₁, hg₁, hFg, hfG⟩
+    apply hf₂.sumElim hg₂
+    intro a b
+    exact hfG.ne_of_mem (mem_range_self a) (subset_closure (mem_range_self b))
+
+theorem Topology.IsEmbedding.sumElim (hf : IsEmbedding f) (hg : IsEmbedding g)
+    (hFg : Disjoint (closure (range f)) (range g)) (hfG : Disjoint (range f) (closure (range g))) :
+    IsEmbedding (Sum.elim f g) :=
+  isEmbedding_sumElim.mpr ⟨hf, hg, hFg, hfG⟩
 
 lemma Topology.IsEmbedding.sumElim_of_separatedNhds
     (hf : IsEmbedding f) (hg : IsEmbedding g) (hsep : SeparatedNhds (range f) (range g)) :
-    IsEmbedding (Sum.elim f g) := by
-  use hf.isInducing.sumElim_of_separatedNhds hg.isInducing hsep
-  apply hf.injective.sumElim hg.injective
-  intro a b
-  exact hsep.disjoint.ne_of_mem (mem_range_self a) (mem_range_self b)
+    IsEmbedding (Sum.elim f g) :=
+  hf.sumElim hg hsep.disjoint_closure_left hsep.disjoint_closure_right
 
 end IsInducing
 
