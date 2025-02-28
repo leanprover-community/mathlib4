@@ -167,8 +167,15 @@ scoped[FilteredAddMonoidHom] notation:9000 "Gr[" f "]" => AssociatedGradedAddMon
 
 omit [Preorder ι] [IsFiltration FA FA_lt] [IsFiltration FB FB_lt] in
 @[simp]
-private lemma AssociatedGradedAddMonoidHom_apply (x : AssociatedGraded FA FA_lt) (i : ι) :
+lemma AssociatedGradedAddMonoidHom_apply (x : AssociatedGraded FA FA_lt) (i : ι) :
     (Gr[f] x) i = Gr(i)[f] (x i) := rfl
+
+omit [Preorder ι] [IsFiltration FA FA_lt] [IsFiltration FB FB_lt] in
+@[simp]
+lemma AssociatedGradedAddMonoidHom_apply_of [DecidableEq ι] (i : ι) (x : GradedPiece FA FA_lt i) :
+    (Gr[f] (AssociatedGraded.of x)) = AssociatedGraded.of (Gr(i)[f] x) := by
+  convert DFinsupp.mapRange_single
+  simp
 
 omit [Preorder ι] [IsFiltration FA FA_lt] [IsFiltration FB FB_lt] [IsFiltration FC FC_lt] in
 theorem AssociatedGradedAddMonoidHom_comp: Gr[g].comp Gr[f] = Gr[g.comp f] := by
@@ -214,8 +221,7 @@ abbrev piece_wise_hom (i : ι) : FR i →+ FS i :=
 
 /-- -/
 abbrev GradedPieceHom (i : ι) : GradedPiece FR FR_lt i →+ GradedPiece FS FS_lt i :=
-  QuotientAddGroup.map _ _ (piece_wise_hom f i)
-    (fun x hx ↦ by simpa using f.pieces_wise_lt hx)
+  f.1.GradedPieceHom i
 
 @[inherit_doc]
 scoped[FilteredRingHom] notation:9000 "Gr(" i ")[" f "]" => GradedPieceHom f i
@@ -237,23 +243,25 @@ noncomputable def AssociatedGradedRingHom [DecidableEq ι] :
   __ := f.1.AssociatedGradedAddMonoidHom
   map_one' := by
     simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
-    ext i
-    show Gr(i)[f] (((of (GradedPiece FR FR_lt) 0) (1 : GradedPiece FR FR_lt 0)) i) =
-      (of (GradedPiece FS FS_lt) 0) (1 : GradedPiece FS FS_lt 0) i
-    simp only [DirectSum.of_apply]
-    by_cases eq0 : 0 = i
-    · have : Gr(0)[f] 1 = 1 := by
-        show ⟦((f.piece_wise_hom 0) 1)⟧ = ⟦1⟧
-        congr
-        exact Subtype.val_injective f.toRingHom.map_one
-      convert this
-      <;> simp [eq0]
-    · simp [eq0]
+    show (FilteredAddMonoidHom.AssociatedGradedAddMonoidHom f.1)
+      (AssociatedGraded.of (1 : GradedPiece FR FR_lt 0)) =
+      AssociatedGraded.of (1 : GradedPiece FS FS_lt 0)
+    rw [FilteredAddMonoidHom.AssociatedGradedAddMonoidHom_apply_of]
+    show AssociatedGraded.of ⟦(⟨f.toRingHom 1, _⟩ : FS 0)⟧ = AssociatedGraded.of ⟦⟨1, _⟩⟧
+    simp [RingHom.map_one f.toRingHom]
   map_mul' a b := DirectSum.induction_on a (by simp)
     (DirectSum.induction_on b (by simp)
-      (by intro i x j y
-          simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
-          sorry)
+      (fun j y' i x' ↦ QuotientAddGroup.induction_on x' <| QuotientAddGroup.induction_on y' <|
+          fun y x ↦ by
+          simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, DirectSum.of_mul_of,
+            FilteredAddMonoidHom.AssociatedGradedAddMonoidHom_apply_of]
+          congr
+          show Gr(i + j)[f] (GradedPiece.mk FR FR_lt ⟨x.1 * y.1, _⟩) =
+            GradedPiece.mk FS FS_lt ⟨f.toRingHom x.1 * f.toRingHom y.1, _⟩
+          simp only [FilteredAddMonoidHom.GradedPieceHom, GradedPiece.mk_eq,
+            QuotientAddGroup.map_mk]
+          congr
+          exact SetCoe.ext (map_mul f.toRingHom x.1 y.1))
       (by intro x y h1 h2 i z
           simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, map_add] at h1 h2 ⊢
           rw [mul_add, map_add, mul_add, h1 i z, h2 i z]))
