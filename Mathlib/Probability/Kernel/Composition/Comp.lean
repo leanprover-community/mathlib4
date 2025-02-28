@@ -6,53 +6,26 @@ Authors: Rémy Degenne
 import Mathlib.Probability.Kernel.MeasurableLIntegral
 
 /-!
-# Product and composition of kernels
+# Composition of kernels
 
-We define
-* the composition-product `κ ⊗ₖ η` of two s-finite kernels `κ : Kernel α β` and
-  `η : Kernel (α × β) γ`, a kernel from `α` to `β × γ`.
-* the map and comap of a kernel along a measurable function.
-* the composition `η ∘ₖ κ` of kernels `κ : Kernel α β` and `η : Kernel β γ`, kernel from `α` to
-  `γ`.
-* the product `κ ×ₖ η` of s-finite kernels `κ : Kernel α β` and `η : Kernel α γ`,
-  a kernel from `α` to `β × γ`.
-
-A note on names:
-The composition-product `Kernel α β → Kernel (α × β) γ → Kernel α (β × γ)` is named composition in
-[kallenberg2021] and product on the wikipedia article on transition kernels.
-Most papers studying categories of kernels call composition the map we call composition. We adopt
-that convention because it fits better with the use of the name `comp` elsewhere in mathlib.
+We define the composition `η ∘ₖ κ` of kernels `κ : Kernel α β` and `η : Kernel β γ`, which is
+a kernel from `α` to `γ`.
 
 ## Main definitions
 
-Kernels built from other kernels:
-* `compProd (κ : Kernel α β) (η : Kernel (α × β) γ) : Kernel α (β × γ)`: composition-product of 2
-  s-finite kernels. We define a notation `κ ⊗ₖ η = compProd κ η`.
-  `∫⁻ bc, f bc ∂((κ ⊗ₖ η) a) = ∫⁻ b, ∫⁻ c, f (b, c) ∂(η (a, b)) ∂(κ a)`
-* `map (κ : Kernel α β) (f : β → γ) : Kernel α γ`
-  `∫⁻ c, g c ∂(map κ f a) = ∫⁻ b, g (f b) ∂(κ a)`
-* `comap (κ : Kernel α β) (f : γ → α) (hf : Measurable f) : Kernel γ β`
-  `∫⁻ b, g b ∂(comap κ f hf c) = ∫⁻ b, g b ∂(κ (f c))`
 * `comp (η : Kernel β γ) (κ : Kernel α β) : Kernel α γ`: composition of 2 kernels.
   We define a notation `η ∘ₖ κ = comp η κ`.
   `∫⁻ c, g c ∂((η ∘ₖ κ) a) = ∫⁻ b, ∫⁻ c, g c ∂(η b) ∂(κ a)`
-* `prod (κ : Kernel α β) (η : Kernel α γ) : Kernel α (β × γ)`: product of 2 s-finite kernels.
-  `∫⁻ bc, f bc ∂((κ ×ₖ η) a) = ∫⁻ b, ∫⁻ c, f (b, c) ∂(η a) ∂(κ a)`
 
 ## Main statements
 
-* `lintegral_compProd`, `lintegral_map`, `lintegral_comap`, `lintegral_comp`, `lintegral_prod`:
-  Lebesgue integral of a function against a composition-product/map/comap/composition/product of
-  kernels.
-* Instances of the form `<class>.<operation>` where class is one of `IsMarkovKernel`,
-  `IsFiniteKernel`, `IsSFiniteKernel` and operation is one of `compProd`, `map`, `comap`,
-  `comp`, `prod`. These instances state that the three classes are stable by the various operations.
+* `lintegral_comp`: Lebesgue integral of a function against a composition of kernels.
+* Instances stating that `IsMarkovKernel`, `IsZeroOrMarkovKernel`, `IsFiniteKernel` and
+  `IsSFiniteKernel` are stable by composition.
 
 ## Notations
 
-* `κ ⊗ₖ η = ProbabilityTheory.Kernel.compProd κ η`
 * `η ∘ₖ κ = ProbabilityTheory.Kernel.comp η κ`
-* `κ ×ₖ η = ProbabilityTheory.Kernel.prod κ η`
 
 -/
 
@@ -66,13 +39,6 @@ namespace ProbabilityTheory
 namespace Kernel
 
 variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
-
-section Comp
-
-/-! ### Composition of two kernels -/
-
-
-variable {γ δ : Type*} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ} {f : β → γ} {g : γ → α}
 
 /-- Composition of two kernels. -/
 noncomputable def comp (η : Kernel β γ) (κ : Kernel α β) : Kernel α γ where
@@ -88,6 +54,16 @@ theorem comp_apply (η : Kernel β γ) (κ : Kernel α β) (a : α) : (η ∘ₖ
 theorem comp_apply' (η : Kernel β γ) (κ : Kernel α β) (a : α) {s : Set γ} (hs : MeasurableSet s) :
     (η ∘ₖ κ) a s = ∫⁻ b, η b s ∂κ a := by
   rw [comp_apply, Measure.bind_apply hs (Kernel.measurable _)]
+
+theorem comp_apply_univ_le (κ : Kernel α β) (η : Kernel β γ) [IsFiniteKernel η] (a : α) :
+    (η ∘ₖ κ) a Set.univ ≤ κ a Set.univ * IsFiniteKernel.bound η := by
+  rw [comp_apply' _ _ _ .univ]
+  let Cη := IsFiniteKernel.bound η
+  calc
+    ∫⁻ b, η b Set.univ ∂κ a ≤ ∫⁻ _, Cη ∂κ a :=
+      lintegral_mono fun b => measure_le_bound η b Set.univ
+    _ = Cη * κ a Set.univ := MeasureTheory.lintegral_const Cη
+    _ = κ a Set.univ * Cη := mul_comm _ _
 
 @[simp] lemma zero_comp (κ : Kernel α β) : (0 : Kernel β γ) ∘ₖ κ = 0 := by ext; simp [comp_apply]
 
@@ -184,7 +160,47 @@ lemma comp_add_left (μ : Kernel α β) (κ η : Kernel β γ) :
   simp_rw [comp_apply' _ _ _ hs, add_apply, Measure.add_apply, comp_apply' _ _ _ hs,
     lintegral_add_left (Kernel.measurable_coe κ hs)]
 
-end Comp
+lemma comp_sum_right {ι : Type*} [Countable ι] (κ : ι → Kernel α β) (η : Kernel β γ) :
+    η ∘ₖ Kernel.sum κ = Kernel.sum fun i ↦ η ∘ₖ (κ i) := by
+  ext _ _ hs
+  simp_rw [sum_apply, comp_apply' _ _ _ hs, Measure.sum_apply _ hs, sum_apply,
+    lintegral_sum_measure, comp_apply' _ _ _ hs]
+
+lemma comp_sum_left {ι : Type*} [Countable ι] (κ : Kernel α β) (η : ι → Kernel β γ) :
+    (Kernel.sum η) ∘ₖ κ = Kernel.sum (fun i ↦ (η i) ∘ₖ κ) := by
+  ext _ _ hs
+  simp_rw [sum_apply, comp_apply' _ _ _ hs, sum_apply, Measure.sum_apply _ hs,
+    comp_apply' _ _ _ hs]
+  rw [lintegral_tsum]
+  exact fun _ ↦ (Kernel.measurable_coe _ hs).aemeasurable
+
+instance IsMarkovKernel.comp (η : Kernel β γ) [IsMarkovKernel η] (κ : Kernel α β)
+    [IsMarkovKernel κ] : IsMarkovKernel (η ∘ₖ κ) where
+  isProbabilityMeasure a := by
+    rw [comp_apply]
+    constructor
+    rw [Measure.bind_apply .univ η.measurable]
+    simp
+
+instance IsZeroOrMarkovKernel.comp (κ : Kernel α β) [IsZeroOrMarkovKernel κ]
+    (η : Kernel β γ) [IsZeroOrMarkovKernel η] : IsZeroOrMarkovKernel (η ∘ₖ κ) := by
+  obtain rfl | _ := eq_zero_or_isMarkovKernel κ <;> obtain rfl | _ := eq_zero_or_isMarkovKernel η
+  all_goals simpa using by infer_instance
+
+instance IsFiniteKernel.comp (η : Kernel β γ) [IsFiniteKernel η] (κ : Kernel α β)
+    [IsFiniteKernel κ] : IsFiniteKernel (η ∘ₖ κ) := by
+  refine ⟨⟨IsFiniteKernel.bound κ * IsFiniteKernel.bound η,
+    ENNReal.mul_lt_top (IsFiniteKernel.bound_lt_top κ) (IsFiniteKernel.bound_lt_top η),
+    fun a ↦ ?_⟩⟩
+  calc (η ∘ₖ κ) a Set.univ
+  _ ≤ κ a Set.univ * IsFiniteKernel.bound η := comp_apply_univ_le κ η a
+  _ ≤ IsFiniteKernel.bound κ * IsFiniteKernel.bound η :=
+    mul_le_mul (measure_le_bound κ a Set.univ) le_rfl (zero_le _) (zero_le _)
+
+instance IsSFiniteKernel.comp (η : Kernel β γ) [IsSFiniteKernel η] (κ : Kernel α β)
+    [IsSFiniteKernel κ] : IsSFiniteKernel (η ∘ₖ κ) := by
+  simp_rw [← kernel_sum_seq κ, ← kernel_sum_seq η, comp_sum_left, comp_sum_right]
+  infer_instance
 
 end Kernel
 end ProbabilityTheory
