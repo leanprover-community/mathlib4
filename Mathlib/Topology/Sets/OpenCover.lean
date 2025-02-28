@@ -29,6 +29,10 @@ namespace IsOpenCover
 
 lemma mk (h : iSup u = ⊤) : IsOpenCover u := h
 
+lemma of_sets {v : ι → Set X} (h_open : ∀ i, IsOpen (v i)) (h_iUnion : ⋃ i, v i = univ) :
+    IsOpenCover (fun i ↦ ⟨v i, h_open i⟩) := by
+  simp [IsOpenCover, h_iUnion]
+
 lemma iSup_eq_top (hu : IsOpenCover u) : ⨆ i, u i = ⊤ := hu
 
 lemma iSup_set_eq_univ (hu : IsOpenCover u) : ⋃ i, (u i : Set X) = univ := by
