@@ -181,7 +181,7 @@ def GenContFract.IsSimpContFract (g : GenContFract α)
     [One α] : Prop :=
   ∀ (n : ℕ) (aₙ : α), g.partNums.get? n = some aₙ → aₙ = 1
 
-variable (α) in in
+variable (α) in
 /-- A *simple continued fraction* (scf) is a generalized continued fraction (gcf) whose partial
 numerators are equal to one.
 $$
@@ -199,6 +199,8 @@ def SimpContFract [One α] :=
 
 -- Interlude: define some expected coercions.
 namespace SimpContFract
+
+variable [One α]
 
 /-- Constructs a simple continued fraction without fractional part. -/
 def ofInteger (a : α) : SimpContFract α :=
@@ -222,7 +224,7 @@ def SimpContFract.IsContFract [One α] [Zero α] [LT α]
   ∀ (n : ℕ) (bₙ : α),
     (↑s : GenContFract α).partDens.get? n = some bₙ → 0 < bₙ
 
-variable (α) in in
+variable (α) in
 /-- A *(regular) continued fraction* ((r)cf) is a simple continued fraction (scf) whose partial
 denominators are all positive. It is the subtype of scfs that satisfy `SimpContFract.IsContFract`.
 -/
@@ -232,6 +234,8 @@ def ContFract [One α] [Zero α] [LT α] :=
 /-! Interlude: define some expected coercions. -/
 
 namespace ContFract
+
+variable [One α] [Zero α] [LT α]
 
 /-- Constructs a continued fraction without fractional part. -/
 def ofInteger (a : α) : ContFract α :=

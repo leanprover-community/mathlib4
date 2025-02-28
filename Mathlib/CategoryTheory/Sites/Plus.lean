@@ -166,7 +166,7 @@ theorem plusMap_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) :
   refine colimit.hom_ext (fun S => ?_)
   simp [plusMap, J.diagramNatTrans_comp]
 
-variable (D) in in
+variable (D) in
 /-- The plus construction, a functor sending `P` to `J.plusObj P`. -/
 @[simps]
 def plusFunctor : (Cᵒᵖ ⥤ D) ⥤ Cᵒᵖ ⥤ D where
@@ -202,8 +202,7 @@ theorem toPlus_naturality {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   congr 1
   exact Multiequalizer.hom_ext _ _ _ (fun I => by dsimp; simp)
 
-variable (D)
-
+variable (D) in
 /-- The natural transformation from the identity functor to `plus`. -/
 @[simps]
 def toPlusNatTrans : 𝟭 (Cᵒᵖ ⥤ D) ⟶ J.plusFunctor D where

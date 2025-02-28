@@ -672,7 +672,7 @@ theorem span_iUnion {ι : Type*} (s : ι → Set P) :
     affineSpan k (⋃ i, s i) = ⨆ i, affineSpan k (s i) :=
   (AffineSubspace.gi k V P).gc.l_iSup
 
-variable (P) in in
+variable (P) in
 /-- `⊤`, coerced to a set, is the whole set of points. -/
 @[simp]
 theorem top_coe : ((⊤ : AffineSubspace k P) : Set P) = Set.univ :=
@@ -682,6 +682,8 @@ theorem top_coe : ((⊤ : AffineSubspace k P) : Set P) = Set.univ :=
 @[simp]
 theorem mem_top (p : P) : p ∈ (⊤ : AffineSubspace k P) :=
   Set.mem_univ p
+
+variable (P)
 
 /-- The direction of `⊤` is the whole module as a submodule. -/
 @[simp]
