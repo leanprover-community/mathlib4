@@ -338,7 +338,6 @@ lemma subtype_injective (s : Subring R) :
     Function.Injective s.subtype :=
   s.toSubmonoid.subtype_injective
 
-@[simp]
 lemma subtype_inj {s : Subring R} {x y : s} :
     s.subtype x = s.subtype y ↔ x = y :=
   s.subtype_injective.eq_iff

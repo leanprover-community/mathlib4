@@ -454,7 +454,6 @@ lemma subtype_injective (s : Submonoid M) :
     Function.Injective s.subtype := fun _ ↦ by
   simp
 
-@[to_additive (attr := simp)]
 lemma subtype_inj {s : Submonoid M} {x y : s} :
     s.subtype x = s.subtype y ↔ x = y :=
   s.subtype_injective.eq_iff
