@@ -108,20 +108,18 @@ section IsLocalRing
 
 variable {R : Type*} [CommRing R] [IsLocalRing R]
 
-
-lemma eq_maximalIdeal_of_isPrime [IsArtinianRing R]
+lemma IsArtinianRing.eq_maximalIdeal_of_isPrime [IsArtinianRing R]
     (I : Ideal R) [I.IsPrime] : I = IsLocalRing.maximalIdeal R :=
   IsLocalRing.eq_maximalIdeal <|
     ((isArtinianRing_iff_isNoetherianRing_and_primes_maximal).mp ‹_›).2 _ ‹_›
 
-lemma radical_eq_maximalIdeal [IsArtinianRing R]
+lemma IsArtinianRing.radical_eq_maximalIdeal [IsArtinianRing R]
     (I : Ideal R) (hI : I ≠ ⊤) : I.radical = IsLocalRing.maximalIdeal R := by
   rw [Ideal.radical_eq_sInf]
   refine (sInf_le ?_).antisymm (le_sInf ?_)
   · exact ⟨IsLocalRing.le_maximalIdeal hI, inferInstance⟩
   · rintro J ⟨h₁, h₂⟩
     exact (eq_maximalIdeal_of_isPrime J).ge
-
 
 lemma isArtinianRing_iff_isNilpotent_maximalIdeal [IsNoetherianRing R] :
     IsArtinianRing R ↔ IsNilpotent (IsLocalRing.maximalIdeal R) := by
