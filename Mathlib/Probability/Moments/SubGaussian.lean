@@ -116,20 +116,18 @@ lemma aestronglyMeasurable (h : HasSubgaussianMGF X c κ ν) :
   simp only [one_mul] at h_int
   exact (aemeasurable_of_aemeasurable_exp h_int.1.aemeasurable).aestronglyMeasurable
 
-lemma ae_integrable_exp_mul [SFinite ν] [IsSFiniteKernel κ]
-    (h : HasSubgaussianMGF X c κ ν) (t : ℝ) :
+lemma ae_integrable_exp_mul (h : HasSubgaussianMGF X c κ ν) (t : ℝ) :
     ∀ᵐ ω' ∂ν, Integrable (fun y ↦ exp (t * X y)) (κ ω') :=
   Measure.ae_integrable_of_integrable_comp (h.integrable_exp_mul t)
 
-lemma ae_aestronglyMeasurable [SFinite ν] [IsSFiniteKernel κ] (h : HasSubgaussianMGF X c κ ν) :
+lemma ae_aestronglyMeasurable (h : HasSubgaussianMGF X c κ ν) :
     ∀ᵐ ω' ∂ν, AEStronglyMeasurable X (κ ω') := by
   have h_int := h.ae_integrable_exp_mul 1
   simp only [one_mul] at h_int
   filter_upwards [h_int] with ω h_int
   exact (aemeasurable_of_aemeasurable_exp h_int.1.aemeasurable).aestronglyMeasurable
 
-lemma ae_forall_integrable_exp_mul [SFinite ν] [IsSFiniteKernel κ]
-    (h : HasSubgaussianMGF X c κ ν) :
+lemma ae_forall_integrable_exp_mul (h : HasSubgaussianMGF X c κ ν) :
     ∀ᵐ ω' ∂ν, ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X ω)) (κ ω') := by
   have h_int : ∀ n : ℤ, ∀ᵐ ω' ∂ν, Integrable (fun ω ↦ exp (n * X ω)) (κ ω') :=
     fun _ ↦ h.ae_integrable_exp_mul _
@@ -137,7 +135,7 @@ lemma ae_forall_integrable_exp_mul [SFinite ν] [IsSFiniteKernel κ]
   filter_upwards [h_int] with ω' h_int t
   exact integrable_exp_mul_of_le_of_le (h_int _) (h_int _) (Int.floor_le t) (Int.le_ceil t)
 
-lemma integrableExpSet_eq_univ [SFinite ν] [IsSFiniteKernel κ] (h : HasSubgaussianMGF X c κ ν) :
+lemma integrableExpSet_eq_univ (h : HasSubgaussianMGF X c κ ν) :
     ∀ᵐ ω' ∂ν, integrableExpSet X (κ ω') = Set.univ := by
   filter_upwards [h.ae_forall_integrable_exp_mul] with ω' h_int
   ext t
@@ -150,8 +148,7 @@ lemma integrable_exp_mul_of_int
   filter_upwards [h_int] with ω' h_int t
   exact integrable_exp_mul_of_le_of_le (h_int _) (h_int _) (Int.floor_le t) (Int.le_ceil t)
 
-protected lemma of_rat [SFinite ν] [IsSFiniteKernel κ]
-    (h_int : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X ω)) (κ ∘ₘ ν))
+protected lemma of_rat (h_int : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X ω)) (κ ∘ₘ ν))
     (h_mgf : ∀ q : ℚ, ∀ᵐ ω' ∂ν, mgf X (κ ω') q ≤ exp (c * q ^ 2 / 2)) :
     Kernel.HasSubgaussianMGF X c κ ν where
   integrable_exp_mul := h_int
@@ -182,7 +179,7 @@ protected lemma memLp (h : HasSubgaussianMGF X c κ ν) (t : ℝ) (p : ℝ≥0) 
       ENNReal.ofReal_rpow_of_nonneg (by positivity), ← exp_mul, mul_comm, ← mul_assoc]
     simp
 
-lemma cgf_le [SFinite ν] [IsSFiniteKernel κ] (h : HasSubgaussianMGF X c κ ν) (t : ℝ) :
+lemma cgf_le (h : HasSubgaussianMGF X c κ ν) (t : ℝ) :
     ∀ᵐ ω' ∂ν, cgf X (κ ω') t ≤ c * t ^ 2 / 2 := by
   filter_upwards [h.mgf_le, h.ae_forall_integrable_exp_mul] with ω' h h_int
   calc cgf X (κ ω') t
@@ -208,8 +205,7 @@ lemma zero [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] :
 @[simp]
 lemma zero' [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] : HasSubgaussianMGF 0 0 κ ν := zero
 
-lemma congr [SFinite ν] [IsSFiniteKernel κ] {Y : Ω → ℝ} (h : HasSubgaussianMGF X c κ ν)
-    (h' : X =ᵐ[κ ∘ₘ ν] Y) :
+lemma congr {Y : Ω → ℝ} (h : HasSubgaussianMGF X c κ ν) (h' : X =ᵐ[κ ∘ₘ ν] Y) :
     HasSubgaussianMGF Y c κ ν where
   integrable_exp_mul t := by
     refine (integrable_congr ?_).mpr (h.integrable_exp_mul t)
@@ -221,14 +217,12 @@ lemma congr [SFinite ν] [IsSFiniteKernel κ] {Y : Ω → ℝ} (h : HasSubgaussi
     rw [mgf_congr (Filter.EventuallyEq.symm h')]
     exact h_mgf t
 
-lemma _root_.ProbabilityTheory.Kernel.HasSubgaussianMGF_congr [SFinite ν] [IsSFiniteKernel κ]
-    {Y : Ω → ℝ} (h : X =ᵐ[κ ∘ₘ ν] Y) :
+lemma _root_.ProbabilityTheory.Kernel.HasSubgaussianMGF_congr {Y : Ω → ℝ} (h : X =ᵐ[κ ∘ₘ ν] Y) :
     HasSubgaussianMGF X c κ ν ↔ HasSubgaussianMGF Y c κ ν :=
   ⟨fun hX ↦ congr hX h, fun hY ↦ congr hY <| by filter_upwards [h] with ω' hω' using hω'.symm⟩
 
-protected lemma of_map {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''}
-    [SFinite ν] {κ : Kernel Ω' Ω''} [IsSFiniteKernel κ] {Y : Ω'' → Ω} {X : Ω → ℝ}
-    (hY : Measurable Y) (h : HasSubgaussianMGF X c (κ.map Y) ν) :
+protected lemma of_map {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {κ : Kernel Ω' Ω''}
+    {Y : Ω'' → Ω} {X : Ω → ℝ} (hY : Measurable Y) (h : HasSubgaussianMGF X c (κ.map Y) ν) :
     HasSubgaussianMGF (X ∘ Y) c κ ν where
   integrable_exp_mul t := by
     have h1 := h.integrable_exp_mul t
@@ -259,8 +253,7 @@ lemma id_map (hX : Measurable X) :
     · fun_prop
   · simpa [Kernel.map_apply _ hX, mgf_id_map hX.aemeasurable] using h2
 
-lemma measure_ge_le_exp_add [SFinite ν] [IsFiniteKernel κ]
-    (h : HasSubgaussianMGF X c κ ν) (ε : ℝ) :
+lemma measure_ge_le_exp_add [IsFiniteKernel κ] (h : HasSubgaussianMGF X c κ ν) (ε : ℝ) :
     ∀ᵐ ω' ∂ν, ∀ t, 0 ≤ t → (κ ω' {ω | ε ≤ X ω}).toReal ≤ exp (- t * ε + c * t ^ 2 / 2) := by
   filter_upwards [h.mgf_le, h.ae_forall_integrable_exp_mul] with ω' h1 h2 t ht
   calc (κ ω' {ω | ε ≤ X ω}).toReal
@@ -271,7 +264,7 @@ lemma measure_ge_le_exp_add [SFinite ν] [IsFiniteKernel κ]
     exact h1 t
 
 /-- Chernoff bound on the right tail of a sub-Gaussian random variable. -/
-lemma measure_ge_le [SFinite ν] [IsFiniteKernel κ] (h : HasSubgaussianMGF X c κ ν) {ε : ℝ}
+lemma measure_ge_le [IsFiniteKernel κ] (h : HasSubgaussianMGF X c κ ν) {ε : ℝ}
     (hc : 0 < c) (hε : 0 ≤ ε) :
     ∀ᵐ ω' ∂ν, (κ ω' {ω | ε ≤ X ω}).toReal ≤ exp (- ε ^ 2 / (2 * c)) := by
   filter_upwards [measure_ge_le_exp_add h ε] with ω' h
@@ -280,7 +273,7 @@ lemma measure_ge_le [SFinite ν] [IsFiniteKernel κ] (h : HasSubgaussianMGF X c 
   _ ≤ exp (- (ε / c) * ε + c * (ε / c) ^ 2 / 2) := h (ε / c) (by positivity)
   _ = exp (- ε ^ 2 / (2 * c)) := by congr; field_simp; ring
 
-lemma prob_ge_le [SFinite ν] [IsMarkovKernel κ] (h : HasSubgaussianMGF X c κ ν)
+lemma prob_ge_le [IsMarkovKernel κ] (h : HasSubgaussianMGF X c κ ν)
     {ε : ℝ} (hε : 0 ≤ ε) :
     ∀ᵐ ω' ∂ν, (κ ω' {ω | ε ≤ X ω}).toReal ≤ exp (- ε ^ 2 / (2 * c)) := by
   by_cases hc0 : c = 0
@@ -426,7 +419,7 @@ lemma memLp (h : HasSubgaussianMGF X c μ) (t : ℝ) (p : ℝ≥0) :
   rw [HasSubgaussianMGF_iff_kernel] at h
   simpa using h.memLp t p
 
-lemma cgf_le [SFinite μ] (h : HasSubgaussianMGF X c μ) (t : ℝ) : cgf X μ t ≤ c * t ^ 2 / 2 := by
+lemma cgf_le (h : HasSubgaussianMGF X c μ) (t : ℝ) : cgf X μ t ≤ c * t ^ 2 / 2 := by
   rw [HasSubgaussianMGF_iff_kernel] at h
   simpa using h.cgf_le t
 
@@ -440,7 +433,6 @@ lemma zero' [IsZeroOrProbabilityMeasure μ] : HasSubgaussianMGF 0 0 μ := zero
 protected lemma of_rat (h_int : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X ω)) μ)
     (h_mgf : ∀ q : ℚ, mgf X μ q ≤ exp (c * q ^ 2 / 2)) :
     HasSubgaussianMGF X c μ where
-  -- we don't use the `Kernel.HasSubgaussianMGF` version here because it would require `SFinite μ`
   integrable_exp_mul := h_int
   mgf_le t := by
     refine Rat.denseRange_cast.induction_on t ?_ h_mgf
