@@ -680,7 +680,6 @@ def commRingCatIsoToRingEquiv {R S : CommRingCat.{u}} (e : R ≅ S) : R ≃+* S 
 
 end CategoryTheory.Iso
 
--- Porting note: typemax hacks to fix universe complaints
 /-- An alias for `SemiringCat.{max u v}`, to deal around unification issues. -/
 @[nolint checkUnivs]
 abbrev SemiRingCatMax.{u1, u2} := SemiRingCat.{max u1 u2}
