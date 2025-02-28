@@ -59,6 +59,13 @@ namespace MonoOver
 
 instance mono_obj_hom (S : MonoOver X) : Mono S.obj.hom := S.2
 
+@[simp]
+lemma id_left (S : MonoOver X) : CommaMorphism.left (𝟙 S) = 𝟙 _ := rfl
+
+@[reassoc, simp]
+lemma comp_left {S₁ S₂ S₃ : MonoOver X} (f : S₁ ⟶ S₂) (g : S₂ ⟶ S₃) :
+    (f ≫ g).left = f.left ≫ g.left := rfl
+
 /-- Construct a `MonoOver X`. -/
 @[simps]
 def mk' {X A : C} (f : A ⟶ X) [hf : Mono f] : MonoOver X where
@@ -133,6 +140,9 @@ def isoMk {f g : MonoOver X} (h : f.obj.left ≅ g.obj.left)
 @[simps!]
 def mk'ArrowIso {X : C} (f : MonoOver X) : mk' f.arrow ≅ f :=
   isoMk (Iso.refl _)
+
+instance {A B : MonoOver X} (f : A ⟶ B) : Mono f.left :=
+  mono_of_mono_fac (MonoOver.w f)
 
 instance {A B : MonoOver X} (f : A ⟶ B) [IsIso f] : IsIso f.left :=
   inferInstanceAs (IsIso ((MonoOver.forget _ ⋙ Over.forget _).map f))
@@ -228,6 +238,17 @@ theorem pullback_obj_left (f : X ⟶ Y) (g : MonoOver Y) :
 theorem pullback_obj_arrow (f : X ⟶ Y) (g : MonoOver Y) :
     ((pullback f).obj g).arrow = pullback.snd _ _ :=
   rfl
+
+@[reassoc (attr := simp)]
+theorem pullback_map_left_fst (f : X ⟶ Y) {g g' : MonoOver Y} (φ : g ⟶ g') :
+    ((pullback f).map φ).left ≫ pullback.fst g'.arrow f =
+      pullback.fst g.arrow f ≫ φ.left :=
+  pullback.lift_fst _ _ _
+
+@[reassoc (attr := simp)]
+theorem pullback_map_left_snd (f : X ⟶ Y) {g g' : MonoOver Y} (φ : g ⟶ g') :
+    ((pullback f).map φ).left ≫ pullback.snd g'.arrow f = pullback.snd _ _ :=
+  pullback.lift_snd _ _ _
 
 end Pullback
 
@@ -339,15 +360,13 @@ variable [HasImages C]
 @[simps]
 def image : Over X ⥤ MonoOver X where
   obj f := imageMonoOver f.hom
-  map {f g} k := by
-    apply (forget X).preimage _
-    apply Over.homMk _ _
-    · exact
-        image.lift
-          { I := Limits.image _
-            m := image.ι g.hom
-            e := k.left ≫ factorThruImage g.hom }
-    · apply image.lift_fac
+  map {f g} k :=
+    MonoOver.homMk
+      (image.lift
+        { I := Limits.image _
+          m := image.ι g.hom
+          e := k.left ≫ factorThruImage g.hom })
+      (by apply image.lift_fac)
 
 /-- `MonoOver.image : Over X ⥤ MonoOver X` is left adjoint to
 `MonoOver.forget : MonoOver X ⥤ Over X`
@@ -400,6 +419,17 @@ we can still take the "forward map" under it, which agrees with `MonoOver.map f`
 def «exists» (f : X ⟶ Y) : MonoOver X ⥤ MonoOver Y :=
   forget _ ⋙ Over.map f ⋙ image
 
+@[simp]
+lemma exists_obj_arrow (f : X ⟶ Y) (A : MonoOver X) :
+    ((MonoOver.exists f).obj A).arrow = image.ι (A.arrow ≫ f) :=
+  rfl
+
+@[reassoc (attr := simp)]
+lemma exists_map_left_ι (f : X ⟶ Y) {A B : MonoOver X} (φ : A ⟶ B) :
+    ((MonoOver.exists f).map φ).left ≫ image.ι (B.arrow ≫ f) =
+      image.ι (A.arrow ≫ f) :=
+  image.lift_fac _
+
 instance faithful_exists (f : X ⟶ Y) : Functor.Faithful («exists» f) where
 
 /-- When `f : X ⟶ Y` is a monomorphism, `exists f` agrees with `map f`.
@@ -419,6 +449,31 @@ def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : «exists» f ⊣ pullback
     (fullyFaithfulForget X) (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)
 
 end Exists
+
+section HasStrongEpiMonoFactorisations
+
+variable [HasStrongEpiMonoFactorisations C] [StrongEpiCategory C]
+
+attribute [local instance] StrongEpiCategory.strongEpi_of_epi
+
+/-- Given `f : Over X`, an epi-mono factorization of `f.hom` allows to compute
+`MonoOver.image.obj f` (up to an isomorphism). -/
+@[simps!]
+def imageObjIso (f : Over X)
+    {Z : C} (π : f.left ⟶ Z) [Epi π] (ι : Z ⟶ X) [Mono ι] (fac : π ≫ ι = f.hom) :
+    image.obj f ≅ MonoOver.mk' ι :=
+  MonoOver.isoMk (image.isoStrongEpiMono _ _ fac).symm (by simp)
+
+/-- The `p : X ⟶ Y` and `f : MonoOver X`, an epi-mono factorization of
+`f.arrow ≫ p` allows to compute `(MonoOver.exists p).obj f` (up to an isomorphism). -/
+@[simps!]
+noncomputable def existsObjIso (p : X ⟶ Y) (f : MonoOver X)
+    {B : C} (π : f.1.left ⟶ B) [Epi π] (ι : B ⟶ Y) [Mono ι]
+    (fac : f.arrow ≫ p = π ≫ ι) :
+    (MonoOver.exists p).obj f ≅ MonoOver.mk' ι :=
+  imageObjIso (Over.mk (f.arrow ≫ p)) π ι fac.symm
+
+end HasStrongEpiMonoFactorisations
 
 end MonoOver
 
