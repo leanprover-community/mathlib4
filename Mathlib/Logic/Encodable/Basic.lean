@@ -163,8 +163,7 @@ def decode₂ (α) [Encodable α] (n : ℕ) : Option α :=
 
 theorem mem_decode₂' [Encodable α] {n : ℕ} {a : α} :
     a ∈ decode₂ α n ↔ a ∈ decode n ∧ encode a = n := by
-  simpa [decode₂, bind_eq_some] using
-    ⟨fun ⟨_, h₁, rfl, h₂⟩ => ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨_, h₁, rfl, h₂⟩⟩
+  simp [decode₂, bind_eq_some]
 
 theorem mem_decode₂ [Encodable α] {n : ℕ} {a : α} : a ∈ decode₂ α n ↔ encode a = n :=
   mem_decode₂'.trans (and_iff_right_of_imp fun e => e ▸ encodek _)
