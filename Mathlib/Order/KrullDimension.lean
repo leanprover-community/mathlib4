@@ -807,7 +807,7 @@ section finiteDimensional
 variable {α : Type*} [Preorder α]
 
 lemma finiteDimensionalOrder_iff_krullDim_ne_bot_and_top :
-    FiniteDimensionalOrder α ↔ (krullDim α ≠ ⊥ ∧ krullDim α ≠ ⊤) := by
+    FiniteDimensionalOrder α ↔ krullDim α ≠ ⊥ ∧ krullDim α ≠ ⊤ := by
   by_cases h : Nonempty α
   · simp [← not_infiniteDimensionalOrder_iff, ← krullDim_eq_top_iff]
   · constructor
