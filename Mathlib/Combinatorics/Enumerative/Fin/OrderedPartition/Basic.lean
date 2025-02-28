@@ -1,14 +1,76 @@
 import Mathlib.Algebra.GroupWithZero.Nat
 import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Logic.Equiv.Fin
 import Mathlib.Data.Finset.Sort
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Fintype.Inv
+import Mathlib.Logic.Equiv.Fin
+import Mathlib.Data.List.Indexes
+import Mathlib.Combinatorics.Enumerative.Composition
 
 open Set Function List
+open scoped Finset
+
+namespace OrderEmbedding
+
+variable {α β : Type*} [Preorder α] [Preorder β]
+
+@[simp]
+theorem sorted_le_listMap (e : α ↪o β) {l : List α} :
+    (l.map e).Sorted (· ≤ ·) ↔ l.Sorted (· ≤ ·) := by
+  simp [Sorted, pairwise_map, e.le_iff_le]
+
+@[simp]
+theorem sorted_lt_listMap (e : α ↪o β) {l : List α} :
+    (l.map e).Sorted (· < ·) ↔ l.Sorted (· < ·) := by
+  simp [Sorted, pairwise_map]
+
+end OrderEmbedding
+
+namespace OrderIso
+
+variable {α β : Type*} [Preorder α] [Preorder β]
+
+@[simp]
+theorem sorted_le_listMap (e : α ≃o β) {l : List α} :
+    (l.map e).Sorted (· ≤ ·) ↔ l.Sorted (· ≤ ·) :=
+  e.toOrderEmbedding.sorted_le_listMap
+
+@[simp]
+theorem sorted_lt_listMap (e : α ≃o β) {l : List α} :
+    (l.map e).Sorted (· < ·) ↔ l.Sorted (· < ·) :=
+  e.toOrderEmbedding.sorted_lt_listMap
+
+end OrderIso
 
 namespace List
 
 variable {α β γ : Type*}
+
+@[simp]
+lemma count_finRange {n : ℕ} (a : Fin n) : count a (finRange n) = 1 := by
+  simp [count_eq_of_nodup (nodup_finRange n)]
+
+theorem Pairwise.rel_dropLast_getLast {R : α → α → Prop} {l : List α} {a : α} (h : l.Pairwise R)
+    (ha : a ∈ l.dropLast) : R a (l.getLast <| ne_nil_of_mem <| dropLast_subset _ ha) := by
+  rw [← List.pairwise_reverse] at h
+  rw [getLast_eq_head_reverse]
+  exact h.rel_head_tail (by rwa [tail_reverse, mem_reverse])
+
+theorem Pairwise.rel_getLast_of_rel_getLast_getLast {R : α → α → Prop} {l : List α} {a : α}
+    (h₁ : l.Pairwise R) (ha : a ∈ l)
+    (hlast : R (l.getLast <| ne_nil_of_mem ha) (l.getLast <| ne_nil_of_mem ha)) :
+    R a (l.getLast <| ne_nil_of_mem ha) := by
+  rw [← dropLast_concat_getLast (ne_nil_of_mem ha), mem_append, List.mem_singleton] at ha
+  exact ha.elim h₁.rel_dropLast_getLast (· ▸ hlast)
+
+theorem Pairwise.rel_getLast {R : α → α → Prop} {l : List α} {a : α}
+    [IsRefl α R] (h₁ : l.Pairwise R) (ha : a ∈ l) :
+    R a (l.getLast <| ne_nil_of_mem ha) :=
+  h₁.rel_getLast_of_rel_getLast_getLast ha (refl_of ..)
+
+@[simp]
+theorem map_getElem_finRange (l : List α) : map (l[·]) (finRange l.length) = l := by
+  apply ext_getElem <;> simp
 
 theorem mem_unattach {p : α → Prop} {l : List (Subtype p)} {x : α} :
     x ∈ l.unattach ↔ ∃ y ∈ l, y.1 = x :=
@@ -78,6 +140,215 @@ theorem modify_perm_cons_eraseIdx {l : List α} {n : ℕ} (h : n < l.length) (f 
   exact set_perm_cons_eraseIdx h _
 
 end List
+namespace Finset
+
+theorem val_univ_fin (n : ℕ) : (Finset.univ : Finset (Fin n)).val = finRange n := rfl
+
+variable {α : Type*} [LinearOrder α]
+
+@[simp]
+theorem map_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
+    Finset.map (s.orderEmbOfFin h).toEmbedding Finset.univ = s := by
+  apply Finset.coe_injective
+  simp
+
+@[simp]
+theorem image_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
+    Finset.image (s.orderEmbOfFin h) Finset.univ = s := by
+  apply Finset.coe_injective
+  simp
+
+@[simp]
+theorem listMap_orderEmbOfFin_finRange (s : Finset α) {k : ℕ} (h : s.card = k) :
+    (finRange k).map (s.orderEmbOfFin h) = s.sort (· ≤ ·) := by
+  obtain rfl : k = (s.sort (· ≤ ·)).length := by simp [h]
+  exact List.map_getElem_finRange  (s.sort (· ≤ ·))
+
+end Finset
+
+namespace Fin
+
+variable {n m : ℕ}
+
+/-- If `i ≤ Fin.castSucc j`, then `Fin.castPred i _ ≤ j`.
+This is one implication of `Fin.castPred_le_iff`,
+with the assumption `i ≠ Fin.last _` deduced from `i ≤ Fin.castSucc j`. -/
+lemma castPred_le_of_le_castSucc {j : Fin n} {i : Fin (n + 1)} (h : i ≤ castSucc j) :
+    i.castPred (fun h' ↦ h.not_lt <| h' ▸ j.castSucc_lt_last) ≤ j :=
+  h
+
+lemma castLT_le_of_le_castLE {j : Fin m} {i : Fin n} (h₁ : m ≤ n) (h₂ : i ≤ castLE h₁ j) :
+    i.castLT ((le_def.mp h₂).trans_lt j.is_lt) ≤ j :=
+  h₂
+
+@[simp]
+lemma image_castLE_setIic (i : Fin n) (h : n ≤ m) :
+    castLE h '' Set.Iic i = Set.Iic (i.castLE h) := by
+  aesop (add unsafe castLT_le_of_le_castLE)
+
+@[simp]
+lemma image_castAdd_setIic (m) (i : Fin n) :
+    castAdd m '' Set.Iic i = Set.Iic (i.castAdd m) :=
+  image_castLE_setIic i _
+  
+@[simp]
+lemma image_castSucc_setIic (i : Fin n) : castSucc '' Set.Iic i = Set.Iic i.castSucc :=
+  image_castAdd_setIic _ _
+
+@[simp]
+lemma image_cast_setIic (i : Fin n) (h : n = m) : Fin.cast h '' Set.Iic i = Set.Iic (i.cast h) :=
+  image_castLE_setIic i h.le
+
+@[simp]
+lemma image_castLE_finsetIic (i : Fin n) (h : n ≤ m) :
+    (Finset.Iic i).image (castLE h) = Finset.Iic (i.castLE h) := by
+  simp [← Finset.coe_inj]
+
+@[simp]
+lemma image_castAdd_finsetIic (m) (i : Fin n) :
+    (Finset.Iic i).image (castAdd m) = Finset.Iic (i.castAdd m) :=
+  image_castLE_finsetIic _ _
+
+@[simp]
+lemma image_castSucc_finsetIic (i : Fin n) :
+    (Finset.Iic i).image castSucc = Finset.Iic i.castSucc :=
+  image_castAdd_finsetIic _ _
+
+@[simp]
+lemma image_cast_finsetIic (i : Fin n) (h : n = m) :
+    (Finset.Iic i).image (Fin.cast h) = Finset.Iic (i.cast h) :=
+  image_castLE_finsetIic _ h.le
+
+@[simp]
+lemma map_castLEEmb_finsetIic (i : Fin n) (h : n ≤ m) :
+    (Finset.Iic i).map (Fin.castLEEmb h) = .Iic (i.castLE h) := by
+  simp [Finset.map_eq_image]
+
+@[simp]
+lemma map_castAddEmb_finsetIic (m) (i : Fin n) :
+    (Finset.Iic i).map (Fin.castAddEmb m) = .Iic (i.castAdd m) :=
+  map_castLEEmb_finsetIic _ _
+
+@[simp]
+lemma map_castSuccEmb_finsetIic (i : Fin n) :
+    (Finset.Iic i).map castSuccEmb = Finset.Iic i.castSucc :=
+  map_castAddEmb_finsetIic _ _
+
+variable {M : Type*} [CommMonoid M]
+
+@[to_additive]
+lemma prod_Iic_castLE (f : Fin m → M) (i : Fin n) (h : n ≤ m) :
+    ∏ j ∈ .Iic (i.castLE h), f j = ∏ j ∈ .Iic i, f (j.castLE h) := by
+  rw [← map_castLEEmb_finsetIic, Finset.prod_map, coe_castLEEmb]
+
+@[to_additive]
+lemma prod_Iic_castAdd (f : Fin (n + m) → M) (i : Fin n) :
+    ∏ j ∈ .Iic (i.castAdd m), f j = ∏ j ∈ .Iic i, f (j.castAdd m) :=
+  prod_Iic_castLE ..
+
+@[to_additive]
+lemma prod_Iic_castSucc (f : Fin (n + 1) → M) (i : Fin n) :
+    ∏ j ∈ .Iic i.castSucc, f j = ∏ j ∈ .Iic i, f j.castSucc :=
+  prod_Iic_castAdd ..
+
+@[to_additive]
+lemma prod_Iic_cast (f : Fin m → M) (i : Fin n) (h : n = m) :
+    ∏ j ∈ .Iic (i.cast h), f j = ∏ j ∈ .Iic i, f (j.cast h) :=
+  prod_Iic_castLE _ _ h.le
+
+end Fin
+
+attribute [simp] List.prod_reverse List.sum_reverse
+
+namespace Composition
+
+attribute [simp] blocks_sum
+
+variable {m n : ℕ}
+
+@[simps]
+def cast (c : Composition m) (hmn : m = n) : Composition n where
+  __ := c
+  blocks_sum := c.blocks_sum.trans hmn
+
+@[simp]
+theorem cast_rfl (c : Composition n) : c.cast rfl = c := rfl
+
+theorem cast_heq (c : Composition m) (hmn : m = n) : HEq (c.cast hmn) c := by subst m; rfl
+
+@[simps]
+def append (c₁ : Composition m) (c₂ : Composition n) : Composition (m + n) where
+  blocks := c₁.blocks ++ c₂.blocks
+  blocks_pos := by
+    intro i hi
+    rw [mem_append] at hi
+    exact hi.elim c₁.blocks_pos c₂.blocks_pos
+  blocks_sum := by simp
+
+@[simps]
+def reverse (c : Composition n) : Composition n where
+  blocks := c.blocks.reverse
+  blocks_pos hi := c.blocks_pos (mem_reverse.mp hi)
+  blocks_sum := by simp
+
+@[simp]
+lemma reverse_reverse (c : Composition n) : c.reverse.reverse = c :=
+  Composition.ext <| List.reverse_reverse _
+
+lemma reverse_involutive : Function.Involutive (@reverse n) := reverse_reverse
+lemma reverse_bijective : Function.Bijective (@reverse n) := reverse_involutive.bijective
+lemma reverse_injective : Function.Injective (@reverse n) := reverse_involutive.injective
+lemma reverse_surjective : Function.Surjective (@reverse n) := reverse_involutive.surjective
+
+@[simp]
+lemma reverse_inj {c₁ c₂ : Composition n} : c₁.reverse = c₂.reverse ↔ c₁ = c₂ :=
+  reverse_injective.eq_iff
+
+@[simp]
+lemma reverse_ones : (ones n).reverse = ones n := by ext1; simp
+
+@[simp]
+lemma reverse_single (hn : 0 < n) : (single n hn).reverse = single n hn := by ext1; simp
+
+@[simp]
+lemma reverse_eq_ones {c : Composition n} : c.reverse = ones n ↔ c = ones n :=
+  reverse_injective.eq_iff' reverse_ones
+
+@[simp]
+lemma reverse_eq_single {hn : 0 < n} {c : Composition n} :
+    c.reverse = single n hn ↔ c = single n hn :=
+  reverse_injective.eq_iff' <| reverse_single _
+
+lemma reverse_append (c₁ : Composition m) (c₂ : Composition n) :
+    reverse (append c₁ c₂) = (append c₂.reverse c₁.reverse).cast (add_comm _ _) :=
+  Composition.ext <| by simp
+
+@[elab_as_elim]
+def recOnSingleAppend {motive : ∀ n, Composition n → Sort*} {n : ℕ} (c : Composition n)
+    (zero : motive 0 (ones 0))
+    (single_append : ∀ k n c, motive n c →
+      motive (k + 1 + n) (append (single (k + 1) k.succ_pos) c)) :
+    motive n c :=
+  match n, c with
+  | _, ⟨[], _, rfl⟩ => zero
+  | _, ⟨0 :: _, h, rfl⟩ => by simp at h
+  | _, ⟨(k + 1) :: l, h, rfl⟩ =>
+    single_append k l.sum ⟨l, fun hi ↦ h <| mem_cons_of_mem _ hi, rfl⟩ <|
+      recOnSingleAppend _ zero single_append
+
+@[elab_as_elim]
+def recOnAppendSingle {motive : ∀ n, Composition n → Sort*} {n : ℕ} (c : Composition n)
+    (zero : motive 0 (ones 0))
+    (append_single : ∀ k n c, motive n c →
+      motive (n + (k + 1)) (append c (single (k + 1) k.succ_pos))) :
+    motive n c :=
+  reverse_reverse c ▸ c.reverse.recOnSingleAppend zero fun k n c ih ↦ by
+    convert append_single k n c.reverse ih using 1
+    · apply add_comm
+    · rw [reverse_append, reverse_single]
+      apply cast_heq
+
+end Composition
 
 namespace Fin
 
@@ -176,7 +447,7 @@ theorem getElem_bijective₂ (c : OrderedPartition n) :
 def equivSigma (c : OrderedPartition n) :
     Fin n ≃ (i : Fin c.parts.length) × Fin c.parts[i.1].length where
   toFun := Fintype.bijInv c.getElem_bijective₂
-  invFun x := c.parts[x.1][x.2]
+  invFun x := c.parts[x.1.1][x.2.1]
   left_inv := Fintype.rightInverse_bijInv _
   right_inv := Fintype.leftInverse_bijInv _
 
@@ -225,10 +496,21 @@ theorem parts_eq_nil (c : OrderedPartition n) : c.parts = [] ↔ n = 0 := by
   rw [eq_nil_iff_forall_not_mem, Unique.forall_iff]
   exact c.not_nil_mem_parts
 
+theorem parts_ne_nil [NeZero n] (c : OrderedPartition n) : c.parts ≠ [] :=
+  c.parts_eq_nil.not.mpr (NeZero.ne n)
+
 theorem length_parts_neZero [NeZero n] (c : OrderedPartition n) : NeZero c.parts.length :=
   ⟨(length_eq_zero.trans c.parts_eq_nil).not.mpr (NeZero.ne n)⟩
 
 attribute [scoped instance] length_parts_neZero
+
+@[simp]
+theorem getLast_getLast_parts (c : OrderedPartition (n + 1)) :
+    (c.parts.getLast c.parts_ne_nil).getLast (c.ne_nil_of_mem_parts <| getLast_mem _) = .last n :=
+  top_unique <| calc
+    ⊤ ≤ c.parts[c.index ⊤].getLast (by simp) :=
+      (c.sorted_le_of_mem_parts <| getElem_mem _).rel_getLast <| c.mem_getElem_index ⊤
+    _ ≤ _ := by simpa using c.sorted_getLast_le.rel_getLast (by aesop)
 
 @[irreducible]
 def extendLeft (c : OrderedPartition n) : OrderedPartition (n + 1) where
@@ -472,6 +754,16 @@ instance instUniqueOne : Unique (OrderedPartition 1) :=
     simp
   Unique.mk' _
 
+@[simp]
+theorem coe_flatten_parts (c : OrderedPartition n) :
+    (c.parts.flatten : Multiset (Fin n)) = finRange n :=
+  Multiset.coe_eq_coe.mpr c.perm_finRange
+
+@[simp]
+theorem multisetBind_parts (c : OrderedPartition n) :
+    (c.parts : Multiset (List (Fin n))).bind (↑) = (finRange n : Multiset (Fin n)) := by
+  rw [Multiset.coe_bind, flatMap_id', coe_flatten_parts]
+
 def ofUnsortedGetLast (L : List (List (Fin n))) (sorted : ∀ l ∈ L, l.Sorted (· ≤ ·))
     (not_nil : [] ∉ L) (perm : L.flatten ~ finRange n) : OrderedPartition n where
   parts := L.pmap Subtype.mk (fun _ h ↦ ne_of_mem_of_not_mem h not_nil)
@@ -489,7 +781,6 @@ def ofUnsortedGetLast (L : List (List (Fin n))) (sorted : ∀ l ∈ L, l.Sorted 
 def bindRight (c : OrderedPartition n)
     (cs : ∀ i : Fin c.parts.length, OrderedPartition c.parts[i.1].length) :
     OrderedPartition n := by
-  -- TODO: use `mapFinIdx` here?
   apply ofUnsortedGetLast
     ((finRange c.parts.length).flatMap fun i ↦ (cs i).parts.map <| map (c.parts[i.1][·]))
   · simp only [mem_flatMap, mem_map]
@@ -498,19 +789,26 @@ def bindRight (c : OrderedPartition n)
     exact ((cs i).sorted_le_of_mem_parts hl).imp fun h ↦
       (c.sorted_le_of_mem_parts (getElem_mem ..)).get_mono h
   · simp
-  · sorry
+  · simp only [← Multiset.coe_eq_coe, ← Multiset.coe_join, ← Multiset.map_coe, ← Multiset.coe_bind]
+    rw [← Multiset.bind, Multiset.bind_assoc]
+    simp only [Multiset.bind_map, ← Multiset.map_coe, ← Multiset.map_bind, multisetBind_parts]
+    simp only [Multiset.map_coe, map_getElem_finRange]
+    conv_rhs => rw [← c.multisetBind_parts, ← map_getElem_finRange c.parts, ← Multiset.map_coe,
+      Multiset.bind_map]
+    rfl
 
+def ofNodup.orderIso {m : ℕ} (L : List (List (Fin n))) (nodup : L.flatten.Nodup)
+    (hm : L.flatten.length = m) : Fin m ≃o {x // x ∈ L.flatten} :=
+  Finset.orderIsoOfFin ⟨(L.flatten : Multiset (Fin n)), nodup⟩ hm
 
-
-
+open ofNodup in
 def ofNodup {m : ℕ} (L : List (List (Fin n))) (sorted₁ : ∀ l ∈ L, l.Sorted (· ≤ ·))
     (not_nil : [] ∉ L)
     (sorted₂ : (L.pmap getLast fun _l hl ↦ ne_of_mem_of_not_mem hl not_nil).Sorted (· ≤ ·))
     (nodup : L.flatten.Nodup) (hm : L.flatten.length = m) : OrderedPartition m where
   parts :=
-    let e : Fin m ≃o {x // x ∈ L.flatten} := Finset.orderIsoOfFin ⟨⟦L.flatten⟧, nodup⟩ hm
-    L.pmap (fun l hl ↦ l.pmap (fun x hx ↦ e.symm ⟨x, hx⟩) fun x hx ↦ hl hx) fun _ ↦
-      subset_flatten_of_mem
+    L.pmap (fun l hl ↦ l.pmap (fun x hx ↦ (orderIso L nodup hm).symm ⟨x, hx⟩) fun x hx ↦ hl hx)
+      fun _ ↦ subset_flatten_of_mem
   sorted_le_of_mem_parts := by
     simp only [mem_pmap, Sorted, forall_exists_index, @forall_swap (List (Fin m)),
       forall_apply_eq_imp_iff, pairwise_pmap, OrderIso.le_iff_le, Subtype.mk_le_mk]
@@ -537,30 +835,264 @@ def dropLast {m : ℕ} (c : OrderedPartition n) (hm : c.parts.dropLast.flatten.l
     (c.nodup_flatten_parts.sublist <| .flatten (dropLast_sublist _))
     hm
 
+def appendLast.lastPart (l : List (Fin n)) : List (Fin (n + 1)) := l.map castSucc ++ [.last _]
+
+@[simp]
+theorem appendLast.lastPart_inj {l₁ l₂ : List (Fin n)} : lastPart l₁ = lastPart l₂ ↔ l₁ = l₂ := by
+  simp [lastPart, map_inj_right (Fin.castSucc_injective _)]
+
+@[simp]
+theorem appendLast.length_lastPart (l : List (Fin n)) : (lastPart l).length = l.length + 1 := by
+  simp [lastPart]
+
+@[simp]
+theorem appendLast.sorted_lastPart {l : List (Fin n)} :
+    (lastPart l).Sorted (· < ·) ↔ l.Sorted (· < ·) := by
+  simp [lastPart, Sorted, pairwise_append, pairwise_map, castSucc_lt_last]
+
+@[simp]
+theorem appendLast.getLast_lastPart (l : List (Fin n)) :
+    (lastPart l).getLast (by simp [lastPart]) = .last n := by
+  simp [lastPart]
+
+def appendLast.lastPartFinset (l : List (Fin n)) (hl : l.Sorted (· < ·)) : Finset (Fin (n + 1)) :=
+  .mk (lastPart l) (sorted_lastPart.mpr hl).nodup
+
+@[simp]
+theorem appendLast.mem_lastPartFinset {l : List (Fin n)} {hl : l.Sorted (· < ·)} {a : Fin (n + 1)} :
+    a ∈ lastPartFinset l hl ↔ a ∈ lastPart l :=
+  .rfl
+
+@[simp]
+theorem appendLast.val_lastPartFinset (l : List (Fin n)) (hl : l.Sorted (· < ·)) :
+    (lastPartFinset l hl).val = lastPart l := rfl
+
+@[simp]
+theorem appendLast.card_lastPartFinset (l : List (Fin n)) (hl : l.Sorted (· < ·)) :
+    (lastPartFinset l hl).card = l.length + 1 := by
+  simp [lastPartFinset]
+
+def appendLast.emb (l : List (Fin n)) (hl : l.Sorted (· < ·)) {m : ℕ} (hm : m = n - l.length) :
+    Fin m ↪o Fin (n + 1) :=
+  (lastPartFinset l hl)ᶜ.orderEmbOfFin <| by simp [Finset.card_compl, hm]
+
+@[simp]
+theorem appendLast.range_emb  (l : List (Fin n)) (hl : l.Sorted (· < ·)) {m : ℕ}
+    (hm : m = n - l.length) : Set.range (emb l hl hm) = {x | x ∉ lastPart l} := by
+  ext
+  simp [emb, lastPartFinset]
+
+open appendLast in
 def appendLast {m : ℕ} (c : OrderedPartition m) (l : List (Fin n)) (hl : l.Sorted (· < ·))
-    (hm : m + l.length = n) : OrderedPartition (n + 1) := by
-  set l' := l.map castSucc ++ [Fin.last n]
-  set s : Finset (Fin (n + 1)) := .mk l' <| by
-    simp [(castSucc_lt_last _).ne, nodup_map_iff (castSucc_injective _), hl.nodup, l',
-      nodup_append]
-  set e : Fin m ↪o Fin (n + 1) := sᶜ.orderEmbOfFin <| by simp [Finset.card_compl, s, l', ← hm]
-  use c.parts.map (map e) ++ [l']
-  · simp only [List.forall_mem_append, List.forall_mem_map, List.forall_mem_singleton,
-      Sorted, pairwise_map, OrderEmbedding.le_iff_le, List.pairwise_append, l']
-    simpa [le_last] using And.intro c.sorted_le_of_mem_parts hl.le_of_lt
-  · simp [l']
-  · simpa [Sorted, pairwise_append, le_last, pairwise_pmap, pmap_map, l']
+    (hm : m = n - l.length) : OrderedPartition (n + 1) where
+  parts := c.parts.map (map (emb l hl hm)) ++ [lastPart l]
+  sorted_le_of_mem_parts := by
+    simpa [or_imp, forall_and, (sorted_lastPart.mpr hl).le_of_lt] using c.sorted_le_of_mem_parts
+  not_nil_mem_parts := by simp [lastPart]
+  sorted_getLast_le := by
+    simpa [Sorted, pairwise_append, le_last, pairwise_pmap, pmap_map]
       using (pairwise_pmap _).1 c.sorted_getLast_le
-  · calc
-      (map (map ⇑e) c.parts ++ [l']).flatten ~ map e c.parts.flatten ++ l' := by
-        rw [flatten_append, map_flatten, flatten_singleton]
-      _ ~ map e (finRange m) ++ l' := by rel [c.perm_finRange]
-      _ ~ (finRange (n + 1)).diff l' ++ l' := by
-        gcongr
-        sorry
-      _ ~ finRange (n + 1) := by
-        rw [← Multiset.coe_eq_coe]
-        exact tsub_add_cancel_of_le (Finset.val_le_iff.mpr (le_top : s ≤ ⊤))
+  perm_finRange := calc
+    (map (map (emb l hl hm)) c.parts ++ [lastPart l]).flatten
+      = map (emb l hl hm) c.parts.flatten ++ lastPart l := by
+      rw [flatten_append, map_flatten, flatten_singleton]
+    _ ~ map (emb l hl hm) (finRange m) ++ lastPart l := by rel [c.perm_finRange]
+    _ ~ (finRange (n + 1)).diff (lastPart l) ++ lastPart l := by
+      gcongr
+      rw [emb, Finset.listMap_orderEmbOfFin_finRange, ← Multiset.coe_eq_coe,
+        ← Multiset.coe_sub, ← Finset.val_univ_fin, ← val_lastPartFinset l hl,
+        ← Finset.sdiff_val, ← Finset.compl_eq_univ_sdiff, Finset.sort_eq]
+    _ ~ finRange (n + 1) := by
+      rw [← Multiset.coe_eq_coe]
+      exact tsub_add_cancel_of_le (Finset.val_le_iff.mpr (le_top : lastPartFinset l hl ≤ ⊤))
+
+@[simp]
+theorem getLast_parts_appendLast {m : ℕ} (c : OrderedPartition m) {l : List (Fin n)}
+    (hl : l.Sorted (· < ·)) (hm : m = n - l.length) :
+    (c.appendLast l hl hm).parts.getLast (by simp) = appendLast.lastPart l :=
+  getLast_concat ..
+
+@[simp]
+theorem dropLast_parts_appendLast {m : ℕ} (c : OrderedPartition m) {l : List (Fin n)}
+    (hl : l.Sorted (· < ·)) (hm : m = n - l.length) :
+    (c.appendLast l hl hm).parts.dropLast = c.parts.map (map (appendLast.emb l hl hm)) := by
+  simp [appendLast]
+
+@[simp]
+theorem dropLast_appendLast {m : ℕ} (c : OrderedPartition m) (l : List (Fin n))
+    (hl : l.Sorted (· < ·)) (hm : m = n - l.length) :
+    (c.appendLast l hl hm).dropLast (by simp [Function.comp_def]) = c := by
+  ext1
+  simp only [dropLast, ofNodup, Multiset.quot_mk_to_coe, dropLast_parts_appendLast, pmap_map,
+    pmap_eq_self, OrderIso.symm_apply_eq, Subtype.ext_iff]
+  rintro - _ i _
+  erw [Finset.coe_orderIsoOfFin_apply ⟨_, _⟩ _ i] -- TODO: fix
+  simp only [appendLast.emb]
+  congr with x
+  simp [← map_flatten, ← Multiset.map_coe, ← Set.mem_range]
+
+theorem dropLast_appendLast_heq {m m' : ℕ} (c : OrderedPartition m) (l : List (Fin n))
+    (hl : l.Sorted (· < ·)) (hm : m = n - l.length)
+    (hm' : (c.appendLast l hl hm).parts.dropLast.flatten.length = m') :
+    HEq ((c.appendLast l hl hm).dropLast hm') c := by
+  obtain rfl : m = m' := by simp [← hm', Function.comp_def]
+  rw [dropLast_appendLast]
+
+def appendLastDropLastList (c : OrderedPartition (n + 1)) : List (Fin n) :=
+  (c.parts.getLast c.parts_ne_nil).dropLast.pmap Fin.castPred fun _a ha ↦ ne_of_lt <|
+    ((c.sorted_lt_of_mem_parts (getLast_mem _)).rel_dropLast_getLast ha).lt_top
+
+@[simp]
+theorem appendLastDropLastList_appendLast {m : ℕ} (c : OrderedPartition m) (l : List (Fin n))
+    (hl : l.Sorted (· < ·)) (hm : m = n - l.length) :
+    (c.appendLast l hl hm).appendLastDropLastList = l := by
+  simp [appendLast, appendLastDropLastList, appendLast.lastPart, pmap_map]
+
+theorem sorted_lt_appendLastDropLastList (c : OrderedPartition (n + 1)) :
+    c.appendLastDropLastList.Sorted (· < ·) := by
+  have := c.sorted_lt_of_mem_parts (getLast_mem (by simp))
+  unfold appendLastDropLastList
+  aesop (add simp [Sorted, pairwise_iff_getElem, Fin.castPred_lt_castPred_iff, ])
+
+@[simp]
+theorem mergeSort_appendLastDropLastList (c : OrderedPartition (n + 1)) :
+    c.appendLastDropLastList.mergeSort (· ≤ ·) = c.appendLastDropLastList :=
+  mergeSort_eq_self _ c.sorted_lt_appendLastDropLastList.le_of_lt
+
+theorem nodup_appendLastDropLastList (c : OrderedPartition (n + 1)) :
+    c.appendLastDropLastList.Nodup :=
+  c.sorted_lt_appendLastDropLastList.nodup
+
+theorem length_appendLastDropLastList (c : OrderedPartition (n + 1)) :
+    c.appendLastDropLastList.length = (c.parts.getLast c.parts_ne_nil).length - 1 := by
+  simp [appendLastDropLastList]
+
+theorem length_flatten_dropLast_add_length_appendLastDropLastList (c : OrderedPartition (n + 1)) :
+    c.parts.dropLast.flatten.length + c.appendLastDropLastList.length = n := by
+  rw [length_appendLastDropLastList, ← Nat.add_sub_assoc]
+  · apply tsub_eq_of_eq_add
+    simpa using congrArg (length ∘ flatten) (dropLast_concat_getLast c.parts_ne_nil)
+  · exact length_pos.2 <| c.ne_nil_of_mem_parts <| getLast_mem _
+
+theorem length_flatten_dropLast_eq_sub (c : OrderedPartition (n + 1)) :
+    c.parts.dropLast.flatten.length = n - c.appendLastDropLastList.length :=
+  eq_tsub_of_add_eq c.length_flatten_dropLast_add_length_appendLastDropLastList
+
+theorem sub_length_flatten_dropLast_eq (c : OrderedPartition (n + 1)) :
+    n - c.parts.dropLast.flatten.length = c.appendLastDropLastList.length :=
+  tsub_eq_of_eq_add <| .symm <| (add_comm _ _).trans <|
+    c.length_flatten_dropLast_add_length_appendLastDropLastList
+
+@[simp]
+theorem appendLast.lastPart_appendLastDropLastList (c : OrderedPartition (n + 1)) :
+    appendLast.lastPart c.appendLastDropLastList = c.parts.getLast c.parts_ne_nil := by
+  simpa [lastPart, appendLastDropLastList, map_pmap]
+    using dropLast_concat_getLast <| c.ne_nil_of_mem_parts <| getLast_mem _
+
+theorem appendLast_dropLast {m} (c : OrderedPartition (n + 1)) (hm : _ = m) :
+    (c.dropLast hm).appendLast c.appendLastDropLastList c.sorted_lt_appendLastDropLastList
+      (by rw [← hm, c.length_flatten_dropLast_eq_sub]) = c := by
+  ext1
+  simp only [appendLast, dropLast, ofNodup, map_pmap, appendLast.lastPart_appendLastDropLastList]
+  conv_rhs => rw [← dropLast_concat_getLast c.parts_ne_nil]
+  congr 1
+  simp only [pmap_eq_self]
+  intro l hl i hi
+  generalize_proofs H₁ H₂ H₃ H₄
+  lift i to {i // i ∈ c.parts.dropLast.flatten} using id H₄
+  simp only [Subtype.coe_eta]
+  clear hi H₄
+  revert i
+  rw [← funext_iff, ← StrictMono.range_inj (by intro _ _ _; simpa) (Subtype.strictMono_coe _),
+    Set.range_comp', (EquivLike.surjective _).range_eq, image_univ, appendLast.range_emb,
+    Subtype.range_coe_subtype, appendLast.lastPart_appendLastDropLastList]
+  ext x
+  simp only [mem_setOf_eq, ← count_pos_iff]
+  have : count x c.parts.dropLast.flatten + count x (c.parts.getLast c.parts_ne_nil) = 1 := by
+    conv_rhs =>
+      rw [← count_finRange x, ← c.perm_finRange.count_eq, ← dropLast_concat_getLast c.parts_ne_nil]
+    simp
+  omega
+
+def appendLastEquiv :
+    ((s : Finset (Fin n)) × OrderedPartition (n - s.card)) ≃ OrderedPartition (n + 1) where
+  toFun c := c.2.appendLast (c.1.sort (· ≤ ·)) (Finset.sort_sorted_lt _) <| by simp
+  invFun c := .mk ⟨c.appendLastDropLastList, c.nodup_appendLastDropLastList⟩ <|
+    c.dropLast <| by simp [← length_flatten_dropLast_eq_sub]
+  left_inv := by
+    rintro ⟨s, c⟩
+    simp [dropLast_appendLast_heq]
+  right_inv c := by
+    convert c.appendLast_dropLast _
+    simp [Finset.sort]
+
+@[simps]
+def toComposition (c : OrderedPartition n) : Composition n where
+  blocks := c.parts.map length
+  blocks_pos := by
+    rw [List.forall_mem_map]
+    exact fun l hl ↦ length_pos.mpr <| c.ne_nil_of_mem_parts hl
+  blocks_sum := c.sum_length_parts
+
+@[simp]
+lemma toComposition_atomic : (atomic n).toComposition = .ones n := by
+  ext1
+  simp [atomic, Function.comp_def]
+
+def fiberToCompositionConcatEquiv {m} (c : Composition m) (k : ℕ) :
+    {c' : OrderedPartition (m + k + 1) //
+      c'.toComposition = c.append (.single (k + 1) k.succ_pos)} ≃
+      ({c' : OrderedPartition m // c'.toComposition = c} ×
+        {s : Finset (Fin (m + k)) // s.card = k}) where
+  toFun c' := by
+    have : c'.1.parts.map length = c.blocks ++ [k + 1] :=
+        congrArg Composition.blocks c'.2
+    refine ⟨⟨c'.1.dropLast ?_, ?_⟩, ⟨⟨c'.1.appendLastDropLastList,
+      c'.1.nodup_appendLastDropLastList⟩, ?_⟩⟩
+    · simp [this, c.blocks_sum]
+    · ext1
+      simp [this, dropLast, ofNodup, map_pmap]
+    · calc
+        _ = (c'.1.parts.map length).getLast (by simp) - 1 := by
+          simp [length_appendLastDropLastList]
+        _ = _ := by simp [this]
+  invFun c' := by
+    refine ⟨c'.1.1.appendLast (c'.2.1.sort (· ≤ ·)) (Finset.sort_sorted_lt _) ?_, ?_⟩
+    · simp [c'.2.2]
+    · simpa [Composition.ext_iff, appendLast, Function.comp_def, c'.2.2] using c'.1.2
+  left_inv := by
+    rintro ⟨c', hc'⟩
+    ext1
+    convert appendLast_dropLast _ _
+    simp [Finset.sort]
+  right_inv := by
+    rintro ⟨⟨c', hc'⟩, s, hs⟩
+    simp
+
+/-- The number of ordered partitions that map to a given composition `c`
+is given by the formula TODO LaTeX version. -/
+theorem card_fiber_toComposition (c : Composition n) :
+    #{c' : OrderedPartition n | c'.toComposition = c} =
+      ∏ i : Fin c.length, Nat.choose (∑ j ∈ .Iic i, c.blocks[j] - 1) (c.blocks[i] - 1) := by
+  have step : ∀ m k, ∀ c : Composition m,
+      #{c' : OrderedPartition (m + (k + 1)) |
+        c'.toComposition = c.append (.single (k + 1) k.succ_pos)} =
+        #{c' : OrderedPartition m | c'.toComposition = c} * (m + k).choose k := by
+    intro m k c
+    simpa [Fintype.card_subtype]
+      using Fintype.card_congr (fiberToCompositionConcatEquiv c k)
+  induction c using Composition.recOnAppendSingle with
+  | zero => simp [Composition.length, Finset.filter_singleton]
+  | append_single k n c ih =>
+    rw [step, ih]
+    clear step ih
+    set s := Composition.single (k + 1) k.succ_pos
+    have hlen : c.length + 1 = (c.append s).length := by
+      simp [s, Composition.length]
+    simp only [← (finCongr hlen).prod_comp, Fin.prod_univ_castSucc, finCongr_apply]
+    simp [Fin.sum_Iic_cast, Fin.sum_Iic_castSucc, ← Fin.top_eq_last, getElem_append_left,
+      Fin.sum_univ_castSucc, s]
+
 
 
 end OrderedPartition

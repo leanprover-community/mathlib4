@@ -101,6 +101,7 @@ structure Composition (n : ℕ) where
   blocks_pos : ∀ {i}, i ∈ blocks → 0 < i
   /-- Proof that `blocks` sums to `n` -/
   blocks_sum : blocks.sum = n
+  deriving DecidableEq
 
 /-- Combinatorial viewpoint on a composition of `n`, by seeing it as non-empty blocks of
 consecutive integers in `{0, ..., n-1}`. We register every block by its left end-point, yielding
