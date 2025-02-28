@@ -253,14 +253,13 @@ variable [TopologicalSpace β] [MetrizableSpace β] [mβ : MeasurableSpace β] [
 /-- Given a sequence of functions, the natural filtration is the smallest sequence
 of σ-algebras such that that sequence of functions is measurable with respect to
 the filtration. -/
-def natural {β : ι → Type*} [mβ : ∀ i, MeasurableSpace (β i)]
-    (u : (i : ι) → Ω → β i) (hum : ∀ i, Measurable (u i)) : Filtration ι m where
-  seq i := ⨆ j ≤ i, MeasurableSpace.comap (u j) (mβ j)
+def natural (u : ι → Ω → β) (hum : ∀ i, StronglyMeasurable (u i)) : Filtration ι m where
+  seq i := ⨆ j ≤ i, MeasurableSpace.comap (u j) mβ
   mono' _ _ hij := biSup_mono fun _ => ge_trans hij
   le' i := by
     refine iSup₂_le ?_
     rintro j _ s ⟨t, ht, rfl⟩
-    exact hum j ht
+    exact (hum j).measurable ht
 
 section
 
@@ -269,7 +268,7 @@ open MeasurableSpace
 theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι → Set Ω}
     (hsm : ∀ i, MeasurableSet[m] (s i)) :
     filtrationOfSet hsm = natural (fun i => (s i).indicator (fun _ => 1 : Ω → β)) fun i =>
-      measurable_const.indicator (hsm i) := by
+      stronglyMeasurable_const.indicator (hsm i) := by
   simp only [filtrationOfSet, natural, measurableSpace_iSup_eq, exists_prop, mk.injEq]
   ext1 i
   refine le_antisymm (generateFrom_le ?_) (generateFrom_le ?_)
@@ -350,14 +349,13 @@ section Set
 
 /-- The canonical filtration on the pi space `Π i, X i`, where `piLE X i` consists of
 measurable sets depending only on coordinates `≤ i`. -/
-def piLE := natural (fun i ↦ restrictLe (π := X) i) fun i ↦ measurable_restrictLe i
-
-lemma piLE_apply (i : ι) : piLE X i = pi.comap (restrictLe i) := by
-  simp_rw [piLE, natural]
-  refine le_antisymm (iSup₂_le fun j hj ↦ ?_) ?_
-  · rw [← restrictLe₂_comp_restrictLe hj, ← comap_comp]
-    exact comap_mono (measurable_restrictLe₂ hj).comap_le
-  · exact le_biSup (fun j ↦ pi.comap (restrictLe j)) le_rfl
+def piLE : @Filtration ((i : ι) → X i) ι _ inferInstance where
+  seq n := pi.comap (restrictLe n)
+  mono' i j hij := by
+    simp only
+    rw [← restrictLe₂_comp_restrictLe hij, ← comap_comp]
+    exact comap_mono (measurable_restrictLe₂ _).comap_le
+  le' n := (measurable_restrictLe n).comap_le
 
 end Set
 
@@ -368,14 +366,27 @@ variable [LocallyFiniteOrderBot ι]
 /-- The canonical filtration on the pi space `Π i, X i`, where `piLE X i` consists of
 measurable sets depending only on coordinates `≤ i`, version where there are only finitely
 many coordinates. -/
-def fpiLE := natural (fun i ↦ frestrictLe (π := X) i) fun i ↦ measurable_frestrictLe i
+def fpiLE : @Filtration ((i : ι) → X i) ι _ inferInstance where
+  seq n := pi.comap (frestrictLe n)
+  mono' i j hij := by
+    simp only
+    rw [← frestrictLe₂_comp_frestrictLe hij, ← comap_comp]
+    exact comap_mono (measurable_frestrictLe₂ _).comap_le
+  le' n := (measurable_frestrictLe n).comap_le
 
-lemma fpiLE_apply (i : ι) : fpiLE X i = pi.comap (frestrictLe i) := by
-  simp_rw [fpiLE, natural]
-  refine le_antisymm (iSup₂_le fun j hj ↦ ?_) ?_
-  · rw [← frestrictLe₂_comp_frestrictLe hj, ← comap_comp]
-    exact comap_mono (measurable_frestrictLe₂ hj).comap_le
-  · exact le_biSup (fun j ↦ pi.comap (frestrictLe j)) le_rfl
+lemma piLE_eq_fpiLE (i : ι) : piLE X i = fpiLE X i := by
+  let e : Finset.Iic i ≃ Set.Iic i :=
+    { toFun j := ⟨j.1, Finset.coe_Iic i ▸ Finset.mem_coe.2 j.2⟩
+      invFun j := ⟨j.1, by rw [← Finset.mem_coe, Finset.coe_Iic i]; exact j.2⟩
+      left_inv := fun _ ↦ rfl
+      right_inv := fun _ ↦ rfl }
+  apply le_antisymm
+  · rintro - ⟨t, ht, rfl⟩
+    exact ⟨MeasurableEquiv.piCongrLeft (fun j : Set.Iic i ↦ X j) e ⁻¹' t,
+      ht.preimage (by fun_prop), rfl⟩
+  · rintro - ⟨t, ht, rfl⟩
+    exact ⟨MeasurableEquiv.piCongrLeft (fun j : Finset.Iic i ↦ X j) e.symm ⁻¹' t,
+      ht.preimage (by fun_prop), rfl⟩
 
 end Finset
 
