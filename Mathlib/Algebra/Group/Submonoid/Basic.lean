@@ -50,8 +50,6 @@ submonoid, submonoids
 
 assert_not_exists MonoidWithZero
 
--- Only needed for notation
--- Only needed for notation
 variable {M : Type*} {N : Type*}
 variable {A : Type*}
 

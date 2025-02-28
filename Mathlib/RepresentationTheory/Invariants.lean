@@ -83,7 +83,7 @@ theorem invariants_eq_inter : (invariants ρ).carrier = ⋂ g : G, Function.fixe
 
 theorem invariants_eq_top [ρ.IsTrivial] :
     invariants ρ = ⊤ :=
-eq_top_iff.2 (fun x _ g => ρ.apply_eq_self g x)
+eq_top_iff.2 (fun x _ g => ρ.isTrivial_apply g x)
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
@@ -180,23 +180,5 @@ noncomputable def invariantsFunctor : Rep k G ⥤ ModuleCat k where
 instance : (invariantsFunctor k G).PreservesZeroMorphisms where
 
 instance : (invariantsFunctor k G).Additive where
-
-/-- The adjunction between the functor equipping a module with the trivial representation, and
-the functor sending a representation to its submodule of invariants. -/
-noncomputable abbrev invariantsAdjunction : trivialFunctor ⊣ invariantsFunctor k G :=
-  Adjunction.mkOfHomEquiv {
-    homEquiv := fun _ _ => {
-      toFun := fun f => ModuleCat.ofHom <|
-        LinearMap.codRestrict _ f.hom.hom fun x g => (hom_comm_apply f _ _).symm
-      invFun := fun f => {
-        hom := ModuleCat.ofHom (Submodule.subtype _ ∘ₗ f.hom)
-        comm := fun g => by ext x; exact ((f x).2 g).symm }
-      left_inv := by intro; rfl
-      right_inv := by intro; rfl }
-    homEquiv_naturality_left_symm := by intros; rfl
-    homEquiv_naturality_right := by intros; rfl }
-
-noncomputable instance : Limits.PreservesLimits (invariantsFunctor k G) :=
-  (invariantsAdjunction k G).rightAdjoint_preservesLimits
 
 end Rep
