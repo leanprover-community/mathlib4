@@ -694,7 +694,7 @@ theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1)
     simp only [hrx, sub_self, orderTop_zero, WithTop.top_pos]
   · have hr' : IsRegular r := IsUnit.isRegular <| isUnit_of_mul_eq_one r x.leadingCoeff hr
     have hy' : 0 < (single (IsAddUnit.addUnit hxo).neg r * y).order := by
-      rw [(order_mul_single_of_isRegular hr' hy)]
+      rw [(order_single_mul_of_isRegular hr' hy)]
       refine pos_of_lt_add_right (a := x.order) ?_
       rw [← add_assoc, add_comm x.order, AddUnits.neg_eq_val_neg, IsAddUnit.val_neg_add, zero_add]
       exact order_lt_order_of_eq_add_single (sub_add_cancel x _).symm hy

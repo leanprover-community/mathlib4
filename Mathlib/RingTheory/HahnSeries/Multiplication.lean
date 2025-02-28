@@ -514,17 +514,12 @@ theorem order_mul_of_nonzero {x y : HahnSeries Γ R}
     order_of_ne <| ne_zero_of_coeff_ne_zero hxy, ← Set.IsWF.min_add]
   exact Set.IsWF.min_le_min_of_subset support_mul_subset_add_support
 
-theorem order_mul_single_of_isRegular {g : Γ} {r : R} (hr : IsRegular r)
+theorem order_single_mul_of_isRegular {g : Γ} {r : R} (hr : IsRegular r)
     {x : HahnSeries Γ R} (hx : x ≠ 0) : (((single g) r) * x).order = g + x.order := by
-  have : Nontrivial R := by
-    by_contra h
-    have : Subsingleton R := not_nontrivial_iff_subsingleton.mp h
-    have : Subsingleton (HahnSeries Γ R) := instSubsingleton
-    apply hx <| Subsingleton.eq_zero x
+  obtain _|_ := subsingleton_or_nontrivial R
+  · exact (hx <| Subsingleton.eq_zero x).elim
   have hrx : ((single g) r).leadingCoeff * x.leadingCoeff ≠ 0 := by
-    rw [leadingCoeff_of_single]
-    intro h
-    apply (leadingCoeff_ne_iff.mpr hx) ((IsLeftRegular.mul_left_eq_zero_iff hr.left).mp h)
+    rwa [leadingCoeff_of_single, ne_eq, hr.left.mul_left_eq_zero_iff, leadingCoeff_eq_iff]
   rw [order_mul_of_nonzero hrx, order_single <| IsRegular.ne_zero hr]
 
 end orderLemmas
