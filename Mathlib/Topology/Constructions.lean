@@ -1134,10 +1134,12 @@ lemma Topology.IsInducing.sumElim_of_separatedNhds
   isInducing_sumElim.mpr ⟨hf, hg, hsep.disjoint_closure_left, hsep.disjoint_closure_right⟩
 
 lemma Topology.IsEmbedding.sumElim_of_separatedNhds
-    (hf : IsEmbedding f) (hg : IsEmbedding g) (h : Function.Injective (Sum.elim f g))
-    (hsep : SeparatedNhds (range f) (range g)) :
-    IsEmbedding (Sum.elim f g) :=
-  ⟨hf.isInducing.sumElim_of_separatedNhds hg.isInducing hsep, h⟩
+    (hf : IsEmbedding f) (hg : IsEmbedding g) (hsep : SeparatedNhds (range f) (range g)) :
+    IsEmbedding (Sum.elim f g) := by
+  use hf.isInducing.sumElim_of_separatedNhds hg.isInducing hsep
+  apply hf.injective.sumElim hg.injective
+  intro a b
+  exact hsep.disjoint.ne_of_mem (mem_range_self a) (mem_range_self b)
 
 end IsInducing
 
