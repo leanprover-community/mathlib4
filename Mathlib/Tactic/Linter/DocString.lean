@@ -46,15 +46,14 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     | _ => default
   let start := startSubstring.toString
   if !#["\n", " "].contains start then
-    let startRg := {start := startSubstring.startPos, stop := startSubstring.stopPos}
-    Linter.logLint linter.style.docString (.ofRange startRg)
+    let startRange := {start := startSubstring.startPos, stop := startSubstring.stopPos}
+    Linter.logLint linter.style.docString (.ofRange startRange)
       s!"error: doc-strings should start with a single space or newline"
   let docTrim := docString.trimRight
   let tail := docTrim.length
-  let tailSubstr : Substring :=
-    {str := docString, startPos := ⟨tail⟩, stopPos := ⟨docString.length⟩}
+  -- endRg creates an 0-wide range `n` characters from the end of `docStx`
   let endRg (n : Nat) : Syntax := .ofRange
-    {start := docStx.getTailPos?.getD 0 - ⟨n⟩, stop := docStx.getTailPos?.getD 0 - ⟨n⟩}
+    {start := docStx.getTailPos?.get! - ⟨n⟩, stop := docStx.getTailPos?.get! - ⟨n⟩}
   if docTrim.takeRight 1 == "," then
     Linter.logLint linter.style.docString (endRg (docString.length - tail + 3))
       s!"error: doc-strings should not end with a comma"
