@@ -53,7 +53,6 @@ section SMul
 variable [SMul 𝕜 E] {s A B : Set E}
 
 variable (𝕜) in
-
 /-- A set `A` is balanced if `a • A` is contained in `A` whenever `a` has norm at most `1`. -/
 def Balanced (A : Set E) :=
   ∀ a : 𝕜, ‖a‖ ≤ 1 → a • A ⊆ A

@@ -828,7 +828,6 @@ theorem constantCoeff_C (r : R) : constantCoeff (C r : MvPolynomial σ R) = r :=
   classical simp [constantCoeff_eq]
 
 variable (R) in
-
 @[simp]
 theorem constantCoeff_X (i : σ) : constantCoeff (X i : MvPolynomial σ R) = 0 := by
   simp [constantCoeff_eq]

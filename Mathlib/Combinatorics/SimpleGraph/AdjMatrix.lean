@@ -136,7 +136,6 @@ namespace SimpleGraph
 variable (G : SimpleGraph V) [DecidableRel G.Adj]
 
 variable (α) in
-
 /-- `adjMatrix G α` is the matrix `A` such that `A i j = (1 : α)` if `i` and `j` are
   adjacent in the simple graph `G`, and otherwise `A i j = 0`. -/
 def adjMatrix [Zero α] [One α] : Matrix V V α :=
