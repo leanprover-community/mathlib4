@@ -115,7 +115,7 @@ theorem mk'_x_ne_mk'_y : (⟦x⟧ : Quotient <| Pseudoelement.setoid _) ≠ ⟦y
 /-- There are two pseudoelements `x y : ℚ ⊞ ℚ` such that `x ≠ y`, `biprod.fst x = biprod.fst y` and
  `biprod.snd x = biprod.snd y`. -/
 theorem exist_ne_and_fst_eq_fst_and_snd_eq_snd :
-    ∃ x y : , -- Porting note: removed type ascription `: of ℤ ℚ ⊞ of ℤ ℚ`, it gave an error about
+    ∃ x y, -- Porting note: removed type ascription `: of ℤ ℚ ⊞ of ℤ ℚ`, it gave an error about
            -- `Type` not having zero morphisms. jmc: I don't understand where the error came from
       x ≠ y ∧
         pseudoApply (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) x = pseudoApply biprod.fst y ∧
