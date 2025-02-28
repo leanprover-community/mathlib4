@@ -107,6 +107,17 @@ theorem r_zero : r 0 = (1 : DihedralGroup n) :=
 theorem one_def : (1 : DihedralGroup n) = r 0 :=
   rfl
 
+@[simp]
+theorem r_pow (i : ZMod n) (k : ℕ) : (r i)^k = r (i * k : ZMod n) := by
+  induction k with
+  | zero => simp only [pow_zero, Nat.cast_zero, mul_zero, r_zero]
+  | succ k IH =>
+    rw [pow_add, pow_one, IH, r_mul_r, Nat.cast_add, Nat.cast_one, r.injEq, mul_add, mul_one]
+
+@[simp]
+theorem r_zpow (i : ZMod n) (k : ℤ) : (r i)^k = r (i * k : ZMod n) := by
+  cases k <;> simp [r_pow, neg_mul_eq_mul_neg]
+
 private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where
   invFun
     | r j => .inl j
@@ -138,19 +149,11 @@ theorem nat_card : Nat.card (DihedralGroup n) = 2 * n := by
   · rw [Nat.card_eq_zero_of_infinite]
   · rw [Nat.card_eq_fintype_card, card]
 
-@[simp]
 theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
-  induction' k with k IH
-  · rw [Nat.cast_zero]
-    rfl
-  · rw [pow_succ', IH, r_mul_r]
-    congr 1
-    norm_cast
-    rw [Nat.one_add]
+  simp only [r_pow, one_mul]
 
-@[simp]
 theorem r_one_zpow (k : ℤ) : (r 1 : DihedralGroup n) ^ k = r k := by
-  cases k <;> simp
+  simp only [r_zpow, one_mul]
 
 theorem r_one_pow_n : r (1 : ZMod n) ^ n = 1 := by
   simp

@@ -9,6 +9,7 @@ import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Vector
 import Mathlib.Algebra.BigOperators.Option
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 
 /-!
 Results about "big operations" over a `Fintype`, and consequent
@@ -233,9 +234,12 @@ open Finset
 variable {α₁ : Type*} {α₂ : Type*} {M : Type*} [Fintype α₁] [Fintype α₂] [CommMonoid M]
 
 @[to_additive]
-theorem Fintype.prod_sum_elim (f : α₁ → M) (g : α₂ → M) :
+theorem Fintype.prod_sumElim (f : α₁ → M) (g : α₂ → M) :
     ∏ x, Sum.elim f g x = (∏ a₁, f a₁) * ∏ a₂, g a₂ :=
   prod_disj_sum _ _ _
+
+@[deprecated (since := "2025-02-20")] alias prod_sum_elim := prod_sumElim
+@[deprecated (since := "2025-02-20")] alias sum_sum_elim := sum_sumElim
 
 @[to_additive (attr := simp)]
 theorem Fintype.prod_sum_type (f : α₁ ⊕ α₂ → M) :

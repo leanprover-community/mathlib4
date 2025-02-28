@@ -34,7 +34,7 @@ variable (F G F' G' : C ⥤ D)
 
 /-- (An auxiliary definition for `functorCategoryMonoidal`.)
 Tensor product of functors `C ⥤ D`, when `D` is monoidal.
- -/
+-/
 @[simps]
 def tensorObj : C ⥤ D where
   obj X := F.obj X ⊗ G.obj X
