@@ -17,7 +17,7 @@ them.
 both the main and auxiliary filtered structures. This class describes a structure-preserving map
 between two filtered sets `IsFiltration FA FA_lt` and `IsFiltration FB FB_lt` (types `A` and `B`).
 
-* FilteredHom.comp : Defines the composition of two filtered morphisms
+* `FilteredHom.comp` : Defines the composition of two filtered morphisms
 `f : FilteredHom FA FA_lt FB FB_lt` and `g : FilteredHom FB FB_lt FC FC_lt`, resulting in a new
 morphism `f.comp g : FilteredHom FA FA_lt FC FC_lt`.
 
@@ -37,8 +37,8 @@ between filtered rings `IsRingFiltration FR FR_lt` and `IsRingFiltration FS FS_l
 intersection of the image of `f` with the `p`-th filtration layer of `FS` and `FS_lt`, respectively.
 
 * `FilteredRingHom.comp` : Defines the composition of filtered ring morphisms. Given two filtered
-morphisms `f : FilteredRingHom FR FR_lt FS FS_lt` and `g : FilteredRingHom FS FS_lt FT FT_lt`, their
-composition `g.comp  f` is defined by composing the underlying ring homomorphisms and ensuring
+ring morphisms `f : FilteredRingHom FR FR_lt FS FS_lt` and `g : FilteredRingHom FS FS_lt FT FT_lt`,
+their composition `g.comp  f` is defined by composing the underlying ring homomorphisms and ensuring
 compatibility with the filtration structures.
 
 * `Gf` : Defines the induced morphism on the `i`-th graded piece of the associated graded ring.
@@ -89,16 +89,22 @@ variable (g : FilteredHom FB FB_lt FC FC_lt) (f : FilteredHom FA FA_lt FB FB_lt)
 
 variable {FA FB FC FA_lt FB_lt FC_lt} in
 
+/-- Restricting a filtered morphism to its `i`-th filtration layer.-/
 def piece_wise_hom (i : ι) : FA i → FB i :=
   fun a ↦ ⟨f.toFun a, f.pieces_wise a.2⟩
 
-/-- -/
+/-- Defines the composition of two filtered morphisms
+`f : FilteredHom FA FA_lt FB FB_lt` and `g : FilteredHom FB FB_lt FC FC_lt`, resulting in a new
+morphism `f.comp g : FilteredHom FA FA_lt FC FC_lt`.-/
 def comp : FilteredHom FA FA_lt FC FC_lt := {
   toFun := g.1.comp f.1
   pieces_wise := fun ha ↦ g.pieces_wise (f.pieces_wise ha)
   pieces_wise_lt := fun ha ↦ g.pieces_wise_lt (f.pieces_wise_lt ha) }
 
-/-- -/
+/-- A filtered morphism `f` between `IsFiltration FA FA_lt` and `IsFiltration FB FB_lt` is
+called strict if `∀ p : ι`, the image of the `p`-th filtration layer of `FA` and `FA_lt` under
+`f` is exactly the intersection of the image of `f` with the `p`-th filtration layer
+of `FB` and `FB_lt` respectively.-/
 class IsStrict (f : outParam <| FilteredHom FA FA_lt FB FB_lt) : Prop where
   strict {p y} : y ∈ (FB p) → y ∈ Set.range f.toFun → y ∈ f.toFun '' (FA p)
   strict_lt {p y} : y ∈ (FB_lt p) → y ∈ Set.range f.toFun → y ∈ f.toFun '' (FA_lt p)
@@ -117,38 +123,45 @@ variable (FA : ι → α) (FA_lt : outParam <| ι → α) [IsFiltration FA FA_lt
 variable (FB : ι → β) (FB_lt : outParam <| ι → β) [IsFiltration FB FB_lt]
 variable (FC : ι → γ) (FC_lt : outParam <| ι → γ) [IsFiltration FC FC_lt]
 
-/-- -/
-class FilteredAddMonoidHom extends FilteredHom FA FA_lt FB FB_lt, A →+ B
+/-- Defines a morphism between filtered additive commutative groups that preserves both the
+group and filtered morphism structures. -/
+class FilteredAddGroupHom extends FilteredHom FA FA_lt FB FB_lt, A →+ B
 
-instance : Coe (FilteredAddMonoidHom FA FA_lt FB FB_lt) (FilteredHom FA FA_lt FB FB_lt) :=
+instance : Coe (FilteredAddGroupHom FA FA_lt FB FB_lt) (FilteredHom FA FA_lt FB FB_lt) :=
   ⟨fun a ↦ a.toFilteredHom⟩
 
-namespace FilteredAddMonoidHom
+namespace FilteredAddGroupHom
 
-variable  (g : FilteredAddMonoidHom FB FB_lt FC FC_lt) (f : FilteredAddMonoidHom FA FA_lt FB FB_lt)
+variable  (g : FilteredAddGroupHom FB FB_lt FC FC_lt) (f : FilteredAddGroupHom FA FA_lt FB FB_lt)
 
 variable {FA FB FC FA_lt FB_lt FC_lt}
 
-/-- -/
-def comp : FilteredAddMonoidHom FA FA_lt FC FC_lt where
+/-- Defines the composition of filtered additive commutative group morphisms.
+Given two filtered morphisms `f : FilteredAddGroupHom FA FA_lt FB FB_lt` and
+`g : FilteredAddGroupHom FB FB_lt FC FC_lt`, their composition `g.comp  f` is defined by
+composing the underlying group homomorphisms and ensuring
+compatibility with the filtration structures.-/
+def comp : FilteredAddGroupHom FA FA_lt FC FC_lt where
   __ := g.toAddMonoidHom.comp f.toAddMonoidHom
   pieces_wise := fun ha ↦ g.pieces_wise (f.pieces_wise ha)
   pieces_wise_lt := fun ha ↦ g.pieces_wise_lt (f.pieces_wise_lt ha)
 
 variable [AddSubgroupClass α A] [AddSubgroupClass β B] [AddSubgroupClass γ C]
 
+/-- Restricting a filtered additive commutative group morphism to its `i`-th filtration layer.-/
 abbrev piece_wise_hom (i : ι) : FA i →+ FB i where
   toFun := FilteredHom.piece_wise_hom f.toFilteredHom i
   map_zero' := SetCoe.ext f.toAddMonoidHom.map_zero
   map_add' a b := SetCoe.ext (f.toAddMonoidHom.map_add a b)
 
-/-- -/
+/-- Defines additive group homomorphism (between graded pieces) induced by
+`f : FilteredAddGroupHom FA FA_lt FB FB_lt`. -/
 def GradedPieceHom (i : ι) : GradedPiece FA FA_lt i →+ GradedPiece FB FB_lt i :=
   QuotientAddGroup.map _ _ (f.piece_wise_hom i)
     (fun x hx ↦ by simpa using f.pieces_wise_lt hx)
 
 @[inherit_doc]
-scoped[FilteredAddMonoidHom] notation:9000 "Gr(" i ")[" f "]" => GradedPieceHom f i
+scoped[FilteredAddGroupHom] notation:9000 "Gr(" i ")[" f "]" => GradedPieceHom f i
 
 omit [Preorder ι] [IsFiltration FA FA_lt] [IsFiltration FB FB_lt] [IsFiltration FC FC_lt] in
 lemma GradedPieceHom_comp_apply (x : AssociatedGraded FA FA_lt) (i : ι) :
@@ -157,13 +170,14 @@ lemma GradedPieceHom_comp_apply (x : AssociatedGraded FA FA_lt) (i : ι) :
   simp only [GradedPieceHom, QuotientAddGroup.map_mk]
   rfl
 
-/-- -/
+/-- Defines additive group homomorphism (between direct sum of graded pieces) induced by
+`f : FilteredAddGroupHom FA FA_lt FB FB_lt`. -/
 noncomputable def AssociatedGradedAddMonoidHom :
     (AssociatedGraded FA FA_lt) →+ (AssociatedGraded FB FB_lt) :=
   DFinsupp.mapRange.addMonoidHom (GradedPieceHom f)
 
 @[inherit_doc]
-scoped[FilteredAddMonoidHom] notation:9000 "Gr[" f "]" => AssociatedGradedAddMonoidHom f
+scoped[FilteredAddGroupHom] notation:9000 "Gr[" f "]" => AssociatedGradedAddMonoidHom f
 
 omit [Preorder ι] [IsFiltration FA FA_lt] [IsFiltration FB FB_lt] in
 @[simp]
@@ -183,7 +197,7 @@ theorem AssociatedGradedAddMonoidHom_comp: Gr[g].comp Gr[f] = Gr[g.comp f] := by
   simpa [AssociatedGradedAddMonoidHom, AssociatedGradedAddMonoidHom_apply]
     using GradedPieceHom_comp_apply g f _ _
 
-end FilteredAddMonoidHom
+end FilteredAddGroupHom
 
 end
 
@@ -195,11 +209,14 @@ variable [Ring R] (FR : ι → γ) (FR_lt : outParam <| ι → γ) [SetLike γ R
 variable [Ring S] (FS : ι → σ) (FS_lt : outParam <| ι → σ) [SetLike σ S]
 variable [Ring T] (FT : ι → τ) (FT_lt : outParam <| ι → τ) [SetLike τ T]
 
-/-- -/
-class FilteredRingHom extends FilteredAddMonoidHom FR FR_lt FS FS_lt, R →+* S
+/-- Defines a morphism between filtered rings that preserves both the ring and
+filtered morphism structures. This class combines the properties of a ring homomorphism and a
+filtered morphism, ensuring that both the structure of the ring and its filtration are maintained
+under the morphism.-/
+class FilteredRingHom extends FilteredAddGroupHom FR FR_lt FS FS_lt, R →+* S
 
-instance : Coe (FilteredRingHom FR FR_lt FS FS_lt) (FilteredAddMonoidHom FR FR_lt FS FS_lt) :=
-  ⟨fun a ↦ a.toFilteredAddMonoidHom⟩
+instance : Coe (FilteredRingHom FR FR_lt FS FS_lt) (FilteredAddGroupHom FR FR_lt FS FS_lt) :=
+  ⟨fun a ↦ a.toFilteredAddGroupHom⟩
 
 namespace FilteredRingHom
 
@@ -207,7 +224,10 @@ variable (g : FilteredRingHom FS FS_lt FT FT_lt) (f : FilteredRingHom FR FR_lt F
 
 variable {FR FS FT FR_lt FS_lt FT_lt}
 
-/-- -/
+/-- Defines the composition of filtered ring morphisms. Given two filtered ring
+morphisms `f : FilteredRingHom FR FR_lt FS FS_lt` and `g : FilteredRingHom FS FS_lt FT FT_lt`, their
+composition `g.comp  f` is defined by composing the underlying ring homomorphisms and ensuring
+compatibility with the filtration structures.-/
 def comp : FilteredRingHom FR FR_lt FT FT_lt where
   __ := g.toRingHom.comp f.toRingHom
   pieces_wise := fun ha ↦ g.pieces_wise (f.pieces_wise ha)
@@ -215,11 +235,12 @@ def comp : FilteredRingHom FR FR_lt FT FT_lt where
 
 variable [AddSubgroupClass γ R] [AddSubgroupClass σ S] [AddSubgroupClass τ T]
 
-/-- -/
+/-- Restricting a filtered ring morphism to its `i`-th filtration layer.-/
 abbrev piece_wise_hom (i : ι) : FR i →+ FS i :=
-  FilteredAddMonoidHom.piece_wise_hom f.toFilteredAddMonoidHom i
+  FilteredAddGroupHom.piece_wise_hom f.toFilteredAddGroupHom i
 
-/-- -/
+/-- Defines additive group homomorphism (between graded pieces) induced by
+`f : FilteredRingHom FR FR_lt FS FS_lt`. -/
 abbrev GradedPieceHom (i : ι) : GradedPiece FR FR_lt i →+ GradedPiece FS FS_lt i :=
   f.1.GradedPieceHom i
 
@@ -229,7 +250,7 @@ scoped[FilteredRingHom] notation:9000 "Gr(" i ")[" f "]" => GradedPieceHom f i
 omit [OrderedAddCommMonoid ι] in
 lemma GradedPieceHom_comp_apply (x : AssociatedGraded FR FR_lt) (i : ι) :
     Gr(i)[g] (Gr(i)[f] (x i)) = Gr(i)[g.comp f] (x i) :=
-  FilteredAddMonoidHom.GradedPieceHom_comp_apply g.1 f.1 x i
+  FilteredAddGroupHom.GradedPieceHom_comp_apply g.1 f.1 x i
 
 section DirectSum
 
@@ -237,16 +258,17 @@ open DirectSum
 
 variable [OrderedAddCommMonoid ι] [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt]
 
-/-- -/
+/-- Defines ring homomorphism (between direct sum of graded pieces) induced by
+`f : FilteredRingHom FR FR_lt FS FS_lt`. -/
 noncomputable def AssociatedGradedRingHom [DecidableEq ι] :
     (AssociatedGraded FR FR_lt) →+* (AssociatedGraded FS FS_lt) where
   __ := f.1.AssociatedGradedAddMonoidHom
   map_one' := by
     simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
-    show (FilteredAddMonoidHom.AssociatedGradedAddMonoidHom f.1)
+    show (FilteredAddGroupHom.AssociatedGradedAddMonoidHom f.1)
       (AssociatedGraded.of (1 : GradedPiece FR FR_lt 0)) =
       AssociatedGraded.of (1 : GradedPiece FS FS_lt 0)
-    rw [FilteredAddMonoidHom.AssociatedGradedAddMonoidHom_apply_of]
+    rw [FilteredAddGroupHom.AssociatedGradedAddMonoidHom_apply_of]
     show AssociatedGraded.of ⟦(⟨f.toRingHom 1, _⟩ : FS 0)⟧ = AssociatedGraded.of ⟦⟨1, _⟩⟧
     simp [RingHom.map_one f.toRingHom]
   map_mul' a b := DirectSum.induction_on a (by simp)
@@ -254,11 +276,11 @@ noncomputable def AssociatedGradedRingHom [DecidableEq ι] :
       (fun j y' i x' ↦ QuotientAddGroup.induction_on x' <| QuotientAddGroup.induction_on y' <|
           fun y x ↦ by
           simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, DirectSum.of_mul_of,
-            FilteredAddMonoidHom.AssociatedGradedAddMonoidHom_apply_of]
+            FilteredAddGroupHom.AssociatedGradedAddMonoidHom_apply_of]
           congr
           show Gr(i + j)[f] (GradedPiece.mk FR FR_lt ⟨x.1 * y.1, _⟩) =
             GradedPiece.mk FS FS_lt ⟨f.toRingHom x.1 * f.toRingHom y.1, _⟩
-          simp only [FilteredAddMonoidHom.GradedPieceHom, GradedPiece.mk_eq,
+          simp only [FilteredAddGroupHom.GradedPieceHom, GradedPiece.mk_eq,
             QuotientAddGroup.map_mk]
           congr
           exact SetCoe.ext (map_mul f.toRingHom x.1 y.1))
@@ -286,7 +308,7 @@ theorem AssociatedGradedRingHom_apply (x : AssociatedGraded FR FR_lt) (i : ι) :
 set_option linter.unusedSectionVars false in
 theorem AssociatedGradedRingHom_comp: Gr[g].comp Gr[f] = Gr[g.comp f] :=
   RingHom.ext <| fun x ↦ congrFun
-  (congrArg DFunLike.coe (FilteredAddMonoidHom.AssociatedGradedAddMonoidHom_comp g.1 f.1)) x
+  (congrArg DFunLike.coe (FilteredAddGroupHom.AssociatedGradedAddMonoidHom_comp g.1 f.1)) x
 
 end DirectSum
 
