@@ -42,9 +42,7 @@ variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G] [Loca
 
   See also `modularCharacter` that defines the map as a homomorphism. -/
 @[to_additive "The additive modular character as a map is `g ↦ μ (· - g) / μ`, where `μ` is an
-  left additive Haar measure.
-
-  See also `modularCharacter` that defines the map as a multiplicative homomorphism.."]
+  left additive Haar measure."]
 noncomputable def modularCharacterFun (g : G) : ℝ≥0 :=
   letI : MeasurableSpace G := borel G
   haveI : BorelSpace G := ⟨rfl⟩
