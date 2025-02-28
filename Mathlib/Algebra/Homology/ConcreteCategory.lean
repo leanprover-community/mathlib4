@@ -74,7 +74,8 @@ theorem d_eq_zero_of_f_eq_d_apply
   apply (Preadditive.mono_iff_injective (S.f.f k)).1 inferInstance
   rw [← ConcreteCategory.forget₂_comp_apply, ← HomologicalComplex.Hom.comm,
     ConcreteCategory.forget₂_comp_apply, hx₁, ← ConcreteCategory.forget₂_comp_apply,
-    HomologicalComplex.d_comp_d, Functor.map_zero, map_zero]; rfl
+    HomologicalComplex.d_comp_d, Functor.map_zero, map_zero]
+  rfl
 
 lemma δ_apply (x₃ : (forget₂ C Ab).obj (S.X₃.X i))
     (hx₃ : (forget₂ C Ab).map (S.X₃.d i j) x₃ = 0)
