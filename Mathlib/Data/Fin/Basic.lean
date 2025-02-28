@@ -750,7 +750,7 @@ theorem castSucc_pred_eq_pred_castSucc {a : Fin (n + 1)} (ha : a ≠ 0)
 
 theorem castSucc_pred_add_one_eq {a : Fin (n + 1)} (ha : a ≠ 0) :
     (a.pred ha).castSucc + 1 = a := by
-  cases' a using cases with a
+  cases a using cases
   · exact (ha rfl).elim
   · rw [pred_succ, coeSucc_eq_succ]
 
@@ -854,7 +854,7 @@ theorem succ_castPred_eq_castPred_succ {a : Fin (n + 1)} (ha : a ≠ last n)
 
 theorem succ_castPred_eq_add_one {a : Fin (n + 1)} (ha : a ≠ last n) :
     (a.castPred ha).succ = a + 1 := by
-  cases' a using lastCases with a
+  cases a using lastCases
   · exact (ha rfl).elim
   · rw [castPred_castSucc, coeSucc_eq_succ]
 
@@ -984,7 +984,7 @@ lemma succAbove_right_injective : Injective p.succAbove := by
 lemma succAbove_right_inj : p.succAbove i = p.succAbove j ↔ i = j :=
   succAbove_right_injective.eq_iff
 
-/--  `Fin.succAbove p` as an `Embedding`. -/
+/-- `Fin.succAbove p` as an `Embedding`. -/
 @[simps!]
 def succAboveEmb (p : Fin (n + 1)) : Fin n ↪ Fin (n + 1) := ⟨p.succAbove, succAbove_right_injective⟩
 

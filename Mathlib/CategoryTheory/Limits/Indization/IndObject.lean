@@ -6,7 +6,7 @@ Authors: Markus Himmel
 import Mathlib.CategoryTheory.Limits.FinallySmall
 import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Filtered.Small
-import Mathlib.CategoryTheory.ClosedUnderIsomorphisms
+import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
 
@@ -141,7 +141,7 @@ theorem map {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A
 theorem iff_of_iso {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A ↔ IsIndObject B :=
   ⟨.map η, .map (inv η)⟩
 
-instance : ClosedUnderIsomorphisms (IsIndObject (C := C)) where
+instance : ObjectProperty.IsClosedUnderIsomorphisms (IsIndObject (C := C)) where
   of_iso i h := h.map i.hom
 
 /-- Pick a presentation for an ind-object using choice. -/

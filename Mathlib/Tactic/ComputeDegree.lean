@@ -134,7 +134,7 @@ theorem coeff_smul {n : ℕ} {a : R} {f : R[X]} : (a • f).coeff n = a * f.coef
 
 section congr_lemmas
 
-/--  The following two lemmas should be viewed as a hand-made "congr"-lemmas.
+/-- The following two lemmas should be viewed as a hand-made "congr"-lemmas.
 They achieve the following goals.
 * They introduce *two* fresh metavariables replacing the given one `deg`,
   one for the `natDegree ≤` computation and one for the `coeff =` computation.

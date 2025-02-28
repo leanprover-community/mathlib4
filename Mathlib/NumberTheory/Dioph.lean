@@ -287,16 +287,13 @@ theorem inject_dummies (f : β → γ) (g : γ → Option β) (inv : ∀ x, g (f
     ∃ q : Poly (α ⊕ γ), ∀ v, S v ↔ ∃ t, q (v ⊗ t) = 0 :=
   ⟨p.map (inl ⊗ inr ∘ f), fun v => (h v).trans <| inject_dummies_lem f g inv _ _⟩
 
-variable (β)
-
+variable (β) in
 theorem reindex_dioph (f : α → β) : Dioph S → Dioph {v | v ∘ f ∈ S}
   | ⟨γ, p, pe⟩ => ⟨γ, p.map (inl ∘ f ⊗ inr), fun v =>
       (pe _).trans <|
         exists_congr fun t =>
           suffices v ∘ f ⊗ t = (v ⊗ t) ∘ (inl ∘ f ⊗ inr) by simp [this]
           funext fun s => by rcases s with a | b <;> rfl⟩
-
-variable {β}
 
 theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
     Dioph {v | l.Forall fun S : Set (α → ℕ) => v ∈ S} := by
