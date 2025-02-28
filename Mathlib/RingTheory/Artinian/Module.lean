@@ -74,7 +74,7 @@ variable {R M P N : Type*}
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid P] [AddCommMonoid N]
 variable [Module R M] [Module R P] [Module R N]
 
-theorem LinearMap.isArtinian_iff_of_bijective {S P} [Ring S] [AddCommGroup P] [Module S P]
+theorem LinearMap.isArtinian_iff_of_bijective {S P} [Semiring S] [AddCommMonoid P] [Module S P]
     {σ : R →+* S} [RingHomSurjective σ] (l : M →ₛₗ[σ] P) (hl : Function.Bijective l) :
     IsArtinian R M ↔ IsArtinian S P :=
   let e := Submodule.orderIsoMapComapOfBijective l hl

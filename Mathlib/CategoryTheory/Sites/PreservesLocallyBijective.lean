@@ -46,10 +46,7 @@ lemma isLocallyInjective_of_whisker (hH : CoverPreserving J K H)
     · intro W q hq
       simpa using hq
     · simp only [comp_obj, op_obj, whiskerLeft_app, Opposite.op_unop]
-      rw [
-        -- Manually insert `elementwise_of%` to generate a `ConcreteCategory` lemma
-        elementwise_of% NatTrans.naturality (D := A), elementwise_of% NatTrans.naturality (D := A),
-        h]
+      rw [NatTrans.naturality_apply, NatTrans.naturality_apply, h]
 
 lemma isLocallyInjective_whisker_iff (hH : CoverPreserving J K H) [H.IsCocontinuous J K]
     [H.IsCoverDense K] : IsLocallyInjective J (whiskerLeft H.op f) ↔ IsLocallyInjective K f :=
