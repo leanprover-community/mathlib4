@@ -13,8 +13,6 @@ import Mathlib.RingTheory.Nakayama
 # Krull Height Theorem
 -/
 
-variable {R : Type*} [CommRing R] (I : Ideal R)
-
 variable {R : Type*} [CommRing R]
 
 lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing [IsNoetherianRing R]
