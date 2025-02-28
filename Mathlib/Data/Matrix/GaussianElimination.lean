@@ -25,40 +25,114 @@ import Mathlib.Data.Matrix.ElementaryRowOperations
 - type variable `m` is used for rows
 - type variable `n` is used for columns
 - type variable `α` is used for the entries of the matrix
-- type variable `R` is used for scalar multiplication on matrices
 - variables `i`, `j`, and `k` are used to represent rows
 - variable `l` is used to represent columns
-- variable `x` is used to represent a scalar
-- variables `y` and `z` are used in ext and intro cases
+- ADD ISUCC, IPREV
 
 ## Tags
 
-matrix, elementary matrices, matrix operations, elementary row operations, linear algebra
+matrix, gaussian elimination, elementary row operations, linear algebra, algorithm
 -/
 
-variable {m n α R : Type*}
-variable [DecidableEq m]
+variable {α : Type*}
 
 open Matrix
 
 namespace Matrix
 
--- /-- -/
--- theorem addMulRowToZero [DecidableEq α] [DivisionRing α] {y : ℕ} {z : ℕ}
---     (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (j : Fin z) (k : Fin y) (h : M i j ≠ 0) :
---     (addMulRow M k i (-(M k j)*(1/(M i j)))) k j = 0 := by
---   unfold addMulRow
---   simp
---   rw [mul_assoc]
---   rw [inv_mul_cancel]
---   · simp
---   · exact h
+/-! ### Basic Properties of Fin -/
+
+/-- For any `i : Fin m`, if `i + 1` is not equal to `m`, then `i + 1` is strictly less than `m`. -/
+theorem lessSucc {m : ℕ} (i : Fin m) (h : (i + 1: ℕ) ≠ m) : i + 1 < m := by
+  omega
+
+/-- For any `i : Fin m`, `i - 1` is strictly less than `m`. -/
+theorem morePrev {m : ℕ} (i : Fin m) : i - 1 < m := by
+  omega
+
+/-! ### Properties about the maximum of a column -/
+
+-- TODO: I DON'T KNOW WHAT TO DO HERE IN TERMS OF CONVENTION
+/-- Returns the row index of the highest value between the element at row `i` and column `l` of
+matrix `M` and the element at row `j` and column `l`. -/
+def maxMatCol [LinearOrder α] [AddGroup α] {m : ℕ} {n : ℕ} (M : Matrix (Fin m) (Fin n) α)
+    (i : Fin m) (j : Fin m) (l : Fin n) : Fin m :=
+  if |M i l| ≥ |M j l| then i else j
+
+/-- The row index of the highest value between the element at row `i` and column `l` of matrix `M`
+and the element at row `j` and column `l` is either row `i` or row `j`. -/
+theorem maxMatColEither [LinearOrder α] [AddGroup α] {m : ℕ} {n : ℕ} (M : Matrix (Fin m) (Fin n) α)
+    (i : Fin m) (j : Fin m) (l : Fin n) :
+    maxMatCol M i j l = i ∨ maxMatCol M i j l = j := by
+  unfold maxMatCol
+  split
+  · simp
+  · simp
+
+/-- The element at column `l` of matrix `M` and the row index of the highest value between the
+element at row `i` and column `l` and the element at row `j` and column `l` is greater than or
+equal to the element at row `i` and column `l`. -/
+theorem maxMatColGreaterLeft [LinearOrder α] [AddGroup α] {m : ℕ} {n : ℕ}
+    (M : Matrix (Fin m) (Fin n) α) (i : Fin m) (j : Fin m) (l : Fin n) :
+    |M (maxMatCol M i j l) l| ≥ |M i l| := by
+  unfold maxMatCol
+  split_ifs with h
+  · simp
+  · rw [not_le] at h
+    exact le_of_lt h
+
+/-- The element at column `l` of matrix `M` and the row index of the highest value between the
+element at row `i` and column `l` and the element at row `j` and column `l` is greater than or
+equal to the element at row `j` and column `l`. -/
+theorem maxMatColGreaterRight [LinearOrder α] [AddGroup α] {m : ℕ} {n : ℕ}
+    (M : Matrix (Fin m) (Fin n) α) (i : Fin m) (j : Fin m) (l : Fin n) :
+    |M (maxMatCol M i j l) l| ≥ |M j l| := by
+  unfold maxMatCol
+  split_ifs with h
+  · exact h
+  · simp
+
+/-- Returns the row index of the highest value in column `l` of matrix `M`. Row `i` is the first
+row in the matrix and `m` is the index of the last one. -/
+def maxColVal_RowPos [LinearOrder α] [AddGroup α] {m : ℕ} {n : ℕ} (M : Matrix (Fin m) (Fin n) α)
+    (i : Fin m) (l : Fin n) : Fin m :=
+  if h1 : i + 1 = m then i
+  else
+    let isucc := (⟨i+1,lessSucc i h1⟩ : Fin m)
+    let k := maxColVal_RowPos M isucc l
+    maxMatCol M i k l
+  termination_by m - i
+
+/-- The row index of the highest value in column `l` of matrix `M` is greater than or equal to the
+index of row `i`, which is the first row in the matrix. -/
+theorem maxColVal_RowPos_Max2 [LinearOrder α] [AddGroup α] {y : ℕ} {z : ℕ}
+    (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (j : Fin z) :
+    maxColVal_RowPos M i j ≥ i := by
+  unfold maxColVal_RowPos
+  split_ifs with h
+  · exact Preorder.le_refl i
+  · let isucc := (⟨i+1,lessSucc i h⟩ : Fin y)
+    let k := maxColVal_RowPos M isucc j
+    cases' (maxMatColEither M i k j) with h1 h2
+    · rw [h1]
+    · rw [h2]
+      have h3 : isucc ≤ maxColVal_RowPos M isucc j := by
+        apply maxColVal_RowPos_Max2
+      have h4 : i ≤ isucc := by
+        rw [Fin.mk_le_mk]
+        simp
+      apply Preorder.le_trans i isucc k
+      · exact h4
+      · exact h3
+      termination_by y - i
+
+/-! ### Turning elements into zero from a pivot -/
 
 /-- Adding row `j` of matrix `M` times scalar `-(M i l) * (1 / (M j l)` to row `i` will make the
 element at row `i` and column `l` be `0`. `M i l` stands for the element at row `i` and column `l`,
 and `M j l` stands for the element at row `j` and column `l`. -/
-theorem addMulRowToZero [DivisionRing α] (M : Matrix m n α) (i : m) (j : m) (l : n)
-    (h : M j l ≠ 0) :
+theorem addMulRowToZero [DivisionRing α] {m : ℕ} {n : ℕ}
+    (M : Matrix (Fin m) (Fin n) α) (i : Fin m) (j : Fin m) (l : Fin n) (h : M j l ≠ 0) :
     (addMulRow M i j (-(M i l) * (1 / (M j l)))) i l = 0 := by
   unfold addMulRow
   simp only [one_div, neg_mul, neg_smul, updateRow_self, Pi.add_apply, Pi.neg_apply, Pi.smul_apply,
@@ -68,211 +142,38 @@ theorem addMulRowToZero [DivisionRing α] (M : Matrix m n α) (i : m) (j : m) (l
   · simp only [mul_one, add_neg_cancel]
   · exact h
 
-/-- -/
-theorem lessSucc {y : ℕ} (i : Fin y) (hi : (i + 1: ℕ) ≠ y) : i + 1 < y := by
-  omega
-
-/-- -/
-theorem morePrev {y : ℕ} (i : Fin y) : i - 1 < y := by
-  omega
-
--- returns row index between 2 elements
--- /-- Returns the row index of the highest value between the element at row `i` and column `l` of
--- matrix `M` and the element at row `j` and column `l`. -/
--- def maxMatCol [LinearOrder α] [AddGroup α] {y : ℕ} {z : ℕ} (M : Matrix (Fin y) (Fin z) α)
---     (i : Fin y) (k : Fin y) (j : Fin z) [Decidable (|M i j| ≥ |M k j|)] :
---   Fin y := if |M i j| ≥ |M k j| then i else k
-
-/-- Returns the row index of the highest value between the element at row `i` and column `l` of
-matrix `M` and the element at row `j` and column `l`. -/
-def maxMatCol [Lattice α] [AddGroup α] (M : Matrix m n α)
-    (i : m) (j : m) (l : n) [Decidable (|M i l| ≥ |M j l|)] :=
-    if |M i l| ≥ |M j l| then i else j
-
-/-- Returns the row index of the highest value between the element at row `i` and column `l` of
-matrix `M` and the element at row `j` and column `l`. -/
-def maxMatCol1 [LinearOrder α] [AddGroup α] (M : Matrix m n α)
-    (i : m) (j : m) (l : n) :=
-    if |M i l| ≥ |M j l| then i else j
-
--- /-- The row index of the highest value between the element at row `i` and column `l` of matrix `M`
--- and the element at row `j` and column `l` is either row `i` or row `j`. -/
--- theorem maxMatColEither [LinearOrder α] [AddGroup α] {y : ℕ} {z : ℕ} (M : Matrix (Fin y) (Fin z) α)
---     (i : Fin y) (k : Fin y) (j : Fin z) [Decidable (|M i j| ≥ |M k j|)] :
---     maxMatCol M i k j = i ∨ maxMatCol M i k j = k := by
---   unfold maxMatCol
---   split
---   simp
---   simp
-
-/-- The row index of the highest value between the element at row `i` and column `l` of matrix `M`
-and the element at row `j` and column `l` is either row `i` or row `j`. -/
-theorem maxMatColEither [LinearOrder α] [AddGroup α] (M : Matrix m n α)
-    (i : m) (j : m) (l : n) :
-    maxMatCol M i j l = i ∨ maxMatCol M i j l = j := by
-  unfold maxMatCol
-  split
-  · simp
-  · simp
-
--- /-- The element at column `l` of matrix `M` and the row index of the highest value between the
--- element at row `i` and column `l` and the element at row `j` and column `l` is greater than or
--- equal to the element at row `i` and column `l`. -/
--- theorem maxMatColGreaterLeft [LinearOrder α] [AddGroup α] {y : ℕ} {z : ℕ}
---     (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (k : Fin y) (j : Fin z)
---     [Decidable (|M i j| ≥ |M k j|)] : |M (maxMatCol M i k j) j| ≥ |M i j| := by
---   unfold maxMatCol
---   split_ifs with h
---   · simp
---   · rw [not_le] at h
---     exact le_of_lt h
-
-/-- The element at column `l` of matrix `M` and the row index of the highest value between the
-element at row `i` and column `l` and the element at row `j` and column `l` is greater than or
-equal to the element at row `i` and column `l`. -/
-theorem maxMatColGreaterLeft [LinearOrder α] [AddGroup α] (M : Matrix m n α) (i : m) (j : m)
-    (l : n) :
-    |M (maxMatCol M i j l) l| ≥ |M i l| := by
-  unfold maxMatCol
-  split_ifs with h
-  · simp
-  · rw [not_le] at h
-    exact le_of_lt h
-
--- /-- The element at column `l` of matrix `M` and the row index of the highest value between the
--- element at row `i` and column `l` and the element at row `j` and column `l` is greater than or
--- equal to the element at row `j` and column `l`. -/
--- theorem maxMatColGreaterRight [LinearOrder α] [AddGroup α] {y : ℕ} {z : ℕ}
---     (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (k : Fin y) (j : Fin z)
---     [Decidable (|M i j| ≥ |M k j|)] : |M (maxMatCol M i k j) j| ≥ |M k j| := by
---   unfold maxMatCol
---   split_ifs with h
---   · exact h
---   · simp
-
-/-- The element at column `l` of matrix `M` and the row index of the highest value between the
-element at row `i` and column `l` and the element at row `j` and column `l` is greater than or
-equal to the element at row `j` and column `l`. -/
-theorem maxMatColGreaterRight [LinearOrder α] [AddGroup α] (M : Matrix m n α) (i : m) (j : m)
-    (l : n) :
-    |M (maxMatCol M i j l) l| ≥ |M j l| := by
-  unfold maxMatCol
-  split_ifs with h
-  · exact h
-  · simp
-
--- returns row index with the max value of the column
-/-- -/
-def maxColVal_RowPos [LinearOrder α][AddGroup α] {y : ℕ} {z : ℕ} (M : Matrix (Fin y) (Fin z) α)
-  (i : Fin y) (j : Fin z) [∀ (x : α)  (y : α), Decidable (|x| ≥ |y|)] :
-  Fin y := if h1 : i + 1 = y then i
-     else
-     let isucc := (⟨i+1,lessSucc i h1⟩ : Fin y)
-     let k := maxColVal_RowPos M isucc j
-     maxMatCol M i k j
-  termination_by y - i
-
-/-- -/
-theorem maxColVal_RowPos_Max [LinearOrder α] [AddGroup α] {y : ℕ} {z : ℕ}
-    (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (j : Fin z)
-    [∀ (x : α)  (y : α), Decidable (|x| ≥ |y|)] : maxColVal_RowPos M i j ≥ i := by
-  unfold maxColVal_RowPos
-  --intro i
-  split_ifs with h1
-  exact Preorder.le_refl i
-  --rw [maxColVal_RowPos_Max]
-  unfold_let
-  unfold maxMatCol
-  split_ifs with h2
-  exact Preorder.le_refl i
-  let isucc := (⟨i+1,lessSucc i h1⟩ : Fin y)
-  have h3 : isucc ≤ maxColVal_RowPos M isucc j
-    := by apply maxColVal_RowPos_Max
-  have h4 : i ≤ isucc
-    := by unfold_let ; rw [Fin.mk_le_mk] ; simp
-  apply Preorder.le_trans i isucc (maxColVal_RowPos M isucc j)
-  exact h4
-  exact h3
-termination_by y - i
-
--- theorem maxColVal_RowPos_Max2
---   [LinearOrder α] [AddGroup α]
---   {y : ℕ} {z : ℕ}
---   (M : Matrix (Fin y) (Fin z) α)
---   (i : Fin y)
---   (j : Fin z)
---   [∀ (x : α)  (y : α), Decidable (|x| ≥ |y|)]
---   : maxColVal_RowPos M i j ≥ i := by
---   unfold maxColVal_RowPos
---   split_ifs with h1
---   exact Preorder.le_refl i
---   --unfold_let
---   let isucc := (⟨i+1,lessSucc i h1⟩ : Fin y)
---   let k := maxColVal_RowPos M isucc j
---   cases' (maxMatColEither M i k j) with h1 h2
---   rw [h1]
---   rw [h2]
---   have h3 : isucc ≤ maxColVal_RowPos M isucc j
---     := by apply maxColVal_RowPos_Max2
---   have h4 : i ≤ isucc
---     := by unfold_let ; rw [Fin.mk_le_mk] ; simp
---   apply Preorder.le_trans i isucc k
---   exact h4
---   exact h3
--- termination_by y - i
-
--- p stands for the row of the pivot, i stands for below p row, j stands for specified column
--- turns all numbers on column j below p into 0
-/-- -/
-def turnBelowIntoZero [DecidableEq α] [DivisionRing α] {y : ℕ} {z : ℕ}
-    (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (j : Fin z) (p : Fin y) : Matrix (Fin y) (Fin z) α :=
-  if h1 : i + 1 = y then addMulRow M i p (-(M i j)*(1/(M p j)))
+/-- Uses the pivot, located at row `i` and column `l` of matrix `M`, to turn the elements below
+into 0, starting by the row below it, `j`, and going all the way down to the last row. This is done
+by adding row `i` of matrix `M` times scalar `-(M i l) * (1 / (M j l)` to row `j`. -/
+def turnBelowIntoZero [DecidableEq α] [DivisionRing α] {m : ℕ} {n : ℕ}
+    (M : Matrix (Fin m) (Fin n) α) (i : Fin m) (j : Fin m) (l : Fin n) :
+    Matrix (Fin m) (Fin n) α :=
+  if h1 : i + 1 = m then addMulRow M i j (-(M i l) * (1 / (M j l)))
   else
-    let isucc := (⟨i+1, lessSucc i h1⟩ : Fin y)
-    if M i j = 0 then turnBelowIntoZero M isucc j p
+    let isucc := (⟨i+1, lessSucc i h1⟩ : Fin m)
+    if M i l = 0 then turnBelowIntoZero M isucc j l
     else
-      let M' := addMulRow M i p (-(M i j)*(1/(M p j)))
-      turnBelowIntoZero M' isucc j p
-termination_by y - i
+      let M' := addMulRow M i j (-(M i l) * (1 / (M j l)))
+      turnBelowIntoZero M' isucc j l
+termination_by m - i
 
+-- NOT DONE, pretty sure the statement is wrong too
 /-- -/
-theorem turnBelowIntoZeroProof [DecidableEq α] [DivisionRing α] {y : ℕ} {z : ℕ}
-    (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (j : Fin z) (p : Fin y) (h1 : i = (p : ℕ) + 1)
-    (h2 : M p j ≠ 0) :
-    (turnBelowIntoZero M i j p) i j = 0 := by
+theorem turnBelowIntoZeroProof [DecidableEq α] [DivisionRing α] {m : ℕ} {n : ℕ}
+    (M : Matrix (Fin m) (Fin n) α) (i : Fin m) (j : Fin m) (l : Fin n) (h1 : i = (j : ℕ) + 1)
+    (h2 : M j l ≠ 0) :
+    (turnBelowIntoZero M i j l) i l = 0 := by
   unfold turnBelowIntoZero
   split_ifs with h3
   · apply addMulRowToZero
     exact h2
-  · let isucc := (⟨i+1,lessSucc i h1⟩ : Fin y)
+  · let isucc := (⟨i+1,lessSucc i h1⟩ : Fin m)
     unfold_let
     unfold turnBelowIntoZero
 
     · done
     · done
   · done
-
-/-- -/
-theorem maxColVal_RowPos_Max2 [LinearOrder α] [AddGroup α] {y : ℕ} {z : ℕ}
-    (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (j : Fin z)
-    [∀ (x : α)  (y : α), Decidable (|x| ≥ |y|)] :
-    maxColVal_RowPos M i j ≥ i := by
-  unfold maxColVal_RowPos
-  split_ifs with h1
-  · exact Preorder.le_refl i
-  · let isucc := (⟨i+1,lessSucc i h1⟩ : Fin y)
-    let k := maxColVal_RowPos M isucc j
-    cases' (maxMatColEither M i k j) with h1 h2
-    · rw [h1]
-    · rw [h2]
-      have h3 : isucc ≤ maxColVal_RowPos M isucc j
-        := by apply maxColVal_RowPos_Max2
-      have h4 : i ≤ isucc
-        := by unfold_let ; rw [Fin.mk_le_mk] ; simp
-      apply Preorder.le_trans i isucc k
-      exact h4
-      exact h3
-      termination_by y - i
 
 -- theorem turnBelowIntoZeroProof [DecidableEq α] [DivisionRing α] {y : ℕ} {z : ℕ}
 --   (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (j : Fin z) (p : Fin y) :
@@ -287,118 +188,200 @@ theorem maxColVal_RowPos_Max2 [LinearOrder α] [AddGroup α] {y : ℕ} {z : ℕ}
 --     · done
 --   ·
 
--- p for the row of the pivot, i stands for row below p, j for specified column
--- turns all numbers on column j below  p into 0
-/-- -/
-def turnAboveIntoZero [DecidableEq α] [DivisionRing α] {y : ℕ} {z : ℕ}
-    (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (j : Fin z) (p : Fin y) :
-    Matrix (Fin y) (Fin z) α := if h: (i : ℕ) = 0 then addMulRow M i p (-(M i j)*(1/(M p j)))
+/-- Uses the pivot, located at row `i` and column `l` of matrix `M`, to turn the elements above
+into 0, starting by the row above it, `j`, and going all the way up to the top row. This is done by
+adding row `i` of matrix `M` times scalar `-(M i l) * (1 / (M j l)` to row `j`. -/
+def turnAboveIntoZero [DecidableEq α] [DivisionRing α] {m : ℕ} {n : ℕ}
+    (M : Matrix (Fin m) (Fin n) α) (i : Fin m) (j : Fin m) (l : Fin n) :
+    Matrix (Fin m) (Fin n) α :=
+  if h: (i : ℕ) = 0 then addMulRow M i j (-(M i l) * (1 / (M j l)))
   else
-    let iprev := (⟨i-1, morePrev i⟩ : Fin y)
+    let iprev := (⟨i-1, morePrev i⟩ : Fin m)
     have : iprev < i := by
-      unfold_let iprev
+      unfold iprev
       rw [Fin.mk_lt_mk]
       omega
-    if M i j = 0 then turnAboveIntoZero M iprev j p
+    if M i l = 0 then turnAboveIntoZero M iprev j l
     else
-      let M' := addMulRow M i p (-(M i j)*(1/(M p j)))
-      turnAboveIntoZero M' iprev j p
+      let M' := addMulRow M i j (-(M i l)*(1/(M j l)))
+      turnAboveIntoZero M' iprev j l
 termination_by (i : ℕ)
 
-#eval turnBelowIntoZero (!![1,1,2;1,2,1;2,1,1] : Matrix _ _ ℚ) 1 0 0
-#eval turnBelowIntoZero (!![1,1,2,1;1,2,1,1;2,1,1,1;1,1,1,2] : Matrix _ _ ℚ) 1 0 0
+-- PROBABLY NEED TO ADD HYPOTHESIS
+/-- -/
+theorem turnAboveIntoZeroProof [DecidableEq α] [DivisionRing α] {m : ℕ} {n : ℕ}
+    (M : Matrix (Fin m) (Fin n) α) (i : Fin m) (j : Fin m) (l : Fin n) :
+    (turnBelowIntoZero M i j l) i l = 0 := by sorry
 
-#eval turnAboveIntoZero (!![1,1,2;1,2,1;2,1,1] : Matrix _ _ ℚ) 0 2 1
-#eval turnAboveIntoZero (!![1,1,2,1;1,2,1,1;2,1,1,1;1,1,1,2] : Matrix _ _ ℚ) 2 3 3
+/-! ### Gaussian Elimination algorithms -/
 
 -- does not turn pivots into 1s
 /-- -/
-def gaussForward [DecidableEq α] [DivisionRing α] [LinearOrder α] {y : ℕ} {z : ℕ}
-    (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (j : Fin z)
-    [∀ (x : α) (y : α), Decidable (|x| ≥ |y|)] :
-    Matrix (Fin y) (Fin z) α :=
-  if h1: i + 1 = y then M
+def gaussForward [DecidableEq α] [DivisionRing α] [LinearOrder α] {m : ℕ} {n : ℕ}
+    (M : Matrix (Fin m) (Fin n) α) (i : Fin m) (l : Fin n) :
+    Matrix (Fin m) (Fin n) α :=
+  if h1: i + 1 = m then M
   else
-    let isucc := (⟨i+1,lessSucc i h1⟩ : Fin y)
-    if h2 : j + 1 = z then M
+    let isucc := (⟨i+1,lessSucc i h1⟩ : Fin m)
+    if h2 : l + 1 = n then M
     else
-      let jsucc := (⟨j+1,lessSucc j h2⟩ : Fin z)
-      let k := maxColVal_RowPos M i j
-      if M k j = 0 then gaussForward M i jsucc
+      let lsucc := (⟨l+1,lessSucc l h2⟩ : Fin n)
+      let k := maxColVal_RowPos M i l
+      if M k l = 0 then gaussForward M i lsucc
       else
         let M' := swapRow M i k
-        let M'' := turnBelowIntoZero M' isucc j i
-        gaussForward M'' isucc jsucc
-termination_by (y - i) + (z - j)
-
-#eval gaussForward (!![1,1,2;1,2,1;2,1,1] : Matrix _ _ ℚ) 0 0
-#eval gaussForward (!![1,1,2,1;1,2,1,1;2,1,1,1;1,1,1,2] : Matrix _ _ ℚ) 0 0
-
+        let M'' := turnBelowIntoZero M' isucc i l
+        gaussForward M'' isucc lsucc
+termination_by (m - i) + (n - l)
 
 -- includes turning pivots into 1s
 /-- -/
-def gaussForwardPivot [DecidableEq α] [DivisionRing α] [LinearOrder α] {y : ℕ} {z : ℕ}
-    (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (j : Fin z)
-    [∀ (x : α) (y : α), Decidable (|x| ≥ |y|)] :
-    Matrix (Fin y) (Fin z) α :=
-  if h1: i + 1 = y then M
+def gaussForwardPivot [DecidableEq α] [DivisionRing α] [LinearOrder α] {m : ℕ} {n : ℕ}
+    (M : Matrix (Fin m) (Fin n) α) (i : Fin m) (l : Fin n) :
+    Matrix (Fin m) (Fin n) α :=
+  if h1: i + 1 = m then M
   else
-    let isucc := (⟨i+1,lessSucc i h1⟩ : Fin y)
-    if h2 : j + 1 = z then M
+    let isucc := (⟨i+1,lessSucc i h1⟩ : Fin m)
+    if h2 : l + 1 = n then M
     else
-      let jsucc := (⟨j+1,lessSucc j h2⟩ : Fin z)
-      let k := maxColVal_RowPos M i j
-      if M k j = 0 then gaussForwardPivot M i jsucc
+      let lsucc := (⟨l+1,lessSucc l h2⟩ : Fin n)
+      let k := maxColVal_RowPos M i l
+      if M k l = 0 then gaussForwardPivot M i lsucc
       else
         let M' := swapRow M i k
-        let M'' := mulRow M' i (1/(M' i j))
-        let M''' := turnBelowIntoZero M'' isucc j i
-        gaussForwardPivot M''' isucc jsucc
-termination_by (y - i) + (z - j)
-
-#eval gaussForwardPivot (!![1,1,2;1,2,1;2,1,1] : Matrix _ _ ℚ) 0 0
-#eval gaussForwardPivot (!![1,1,2,1;1,2,1,1;2,1,1,1;1,1,1,2] : Matrix _ _ ℚ) 0 0
-
+        let M'' := mulRow M' i (1/(M' i l))
+        let M''' := turnBelowIntoZero M'' isucc i l
+        gaussForwardPivot M''' isucc lsucc
+termination_by (m - i) + (n - l)
 
 -- full gaussian elimination
 /-- -/
-def gauss [DecidableEq α] [DivisionRing α] [LinearOrder α] {y : ℕ} {z : ℕ}
-    (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (j : Fin z)
-    [∀ (x : α) (y : α), Decidable (|x| ≥ |y|)] :
-    Matrix (Fin y) (Fin z) α :=
-  let iprev := (⟨i-1, morePrev i⟩ : Fin y)
+def gauss [DecidableEq α] [DivisionRing α] [LinearOrder α] {m : ℕ} {n : ℕ}
+    (M : Matrix (Fin m) (Fin n) α) (i : Fin m) (l : Fin n) :
+    Matrix (Fin m) (Fin n) α :=
+  let iprev := (⟨i-1, morePrev i⟩ : Fin m)
   -- if at the end row, then make pivot into 0 and turn everything above into 0
-  if h1: i + 1 = y then
-  let Mi := mulRow M i (1/(M i j))
-  turnAboveIntoZero Mi iprev j i
+  if h1: i + 1 = m then
+  let Mi := mulRow M i (1 / (M i l))
+  turnAboveIntoZero Mi iprev i l
   else
-    let isucc := (⟨i+1,lessSucc i h1⟩ : Fin y)
+    let isucc := (⟨i+1,lessSucc i h1⟩ : Fin m)
     -- if at the last column, then return
-    if h2 : j + 1 = z then M
+    if h2 : l + 1 = n then M
     else
-      let jsucc := (⟨j+1,lessSucc j h2⟩ : Fin z)
+      let lsucc := (⟨l+1,lessSucc l h2⟩ : Fin n)
       -- k is the row of the max abs value in column
-      let k := maxColVal_RowPos M i j
+      let k := maxColVal_RowPos M i l
       -- if the max value is zero, then skip to next column
-      if M k j = 0 then gauss M i jsucc
+      if M k l = 0 then gauss M i lsucc
       else
         let M' := swapRow M i k
-        let M'' := mulRow M' i (1/(M' i j))
-        let M''' := turnBelowIntoZero M'' isucc j i
+        let M'' := mulRow M' i (1 / (M' i l))
+        let M''' := turnBelowIntoZero M'' isucc i l
         -- if it is the first row, can't do turnAboveIntoZero
-        if (i : ℕ) = 0 then gauss M''' isucc jsucc
+        if (i : ℕ) = 0 then gauss M''' isucc lsucc
         else
-          let M'''' := turnAboveIntoZero M''' iprev j i
-          gauss M'''' isucc jsucc
-termination_by (y - i) + (z - j)
+          let M'''' := turnAboveIntoZero M''' iprev i l
+          gauss M'''' isucc lsucc
+termination_by (m - i) + (n - l)
 
-#eval gauss (!![1,1,2;1,2,1;2,1,1] : Matrix _ _ ℚ) 0 0
-#eval gauss (!![1,1,2,1;1,2,1,1;2,1,1,1;1,1,1,2] : Matrix _ _ ℚ) 0 0
+/-! ### Testing -/
+
+-- #eval turnBelowIntoZero (!![1,1,2;1,2,1;2,1,1] : Matrix _ _ ℚ) 1 0 0
+-- #eval turnBelowIntoZero (!![1,1,2,1;1,2,1,1;2,1,1,1;1,1,1,2] : Matrix _ _ ℚ) 1 0 0
+
+-- #eval turnAboveIntoZero (!![1,1,2;1,2,1;2,1,1] : Matrix _ _ ℚ) 0 2 1
+-- #eval turnAboveIntoZero (!![1,1,2,1;1,2,1,1;2,1,1,1;1,1,1,2] : Matrix _ _ ℚ) 2 3 3
+
+-- #eval gaussForward (!![1,1,2;1,2,1;2,1,1] : Matrix _ _ ℚ) 0 0
+-- #eval gaussForward (!![1,1,2,1;1,2,1,1;2,1,1,1;1,1,1,2] : Matrix _ _ ℚ) 0 0
+
+-- #eval gaussForwardPivot (!![1,1,2;1,2,1;2,1,1] : Matrix _ _ ℚ) 0 0
+-- #eval gaussForwardPivot (!![1,1,2,1;1,2,1,1;2,1,1,1;1,1,1,2] : Matrix _ _ ℚ) 0 0
+
+-- #eval gauss (!![1,1,2;1,2,1;2,1,1] : Matrix _ _ ℚ) 0 0
+-- #eval gauss (!![1,1,2,1;1,2,1,1;2,1,1,1;1,1,1,2] : Matrix _ _ ℚ) 0 0
 
 
+-- Non-natural numbers attempt:
+
+-- theorem lessSucc1 [LinearOrder m] [AddGroupWithOne m]  {y : m} (i : m) (h1 : i < y) (h2 : i + 1 ≠ y) : i + 1 < y := by
+--   apply lt_or_gt_of_ne at h2
+--   obtain h2a | h2b := h2
+--   · exact h2a
+--   · by_contra h2bn
+--     rw [← not_le] at h1
+--     rw [not_lt] at h2bn
+--     have h1i : i < i + 1 :=
+--     -- somehow rewrite h1 from y ≤ i to y ≤ i + 1
+--     sorry
+
+-- /-- Adding row `j` of matrix `M` times scalar `-(M i l) * (1 / (M j l)` to row `i` will make the
+-- -- element at row `i` and column `l` be `0`. `M i l` stands for the element at row `i` and column `l`,
+-- -- and `M j l` stands for the element at row `j` and column `l`. -/
+-- theorem addMulRowToZero [DivisionRing α] (M : Matrix m n α) (i : m) (j : m) (l : n)
+--     (h : M j l ≠ 0) :
+--     (addMulRow M i j (-(M i l) * (1 / (M j l)))) i l = 0 := by
+--   unfold addMulRow
+--   simp only [one_div, neg_mul, neg_smul, updateRow_self, Pi.add_apply, Pi.neg_apply, Pi.smul_apply,
+--     smul_eq_mul]
+--   rw [mul_assoc]
+--   rw [inv_mul_cancel₀]
+--   · simp only [mul_one, add_neg_cancel]
+--   · exact h
 
 
--- old gauss (index ahead)
+-- /-- Returns the row index of the highest value between the element at row `i` and column `l` of
+-- matrix `M` and the element at row `j` and column `l`. -/
+-- def maxMatCol [LinearOrder α] [AddGroup α] (M : Matrix m n α)
+--     (i : m) (j : m) (l : n) :=
+--     if |M i l| ≥ |M j l| then i else j
+
+-- /-- The row index of the highest value between the element at row `i` and column `l` of matrix `M`
+-- -- and the element at row `j` and column `l` is either row `i` or row `j`. -/
+-- theorem maxMatColEither [LinearOrder α] [AddGroup α] (M : Matrix m n α)
+--     (i : m) (j : m) (l : n) :
+--     maxMatCol M i j l = i ∨ maxMatCol M i j l = j := by
+--   unfold maxMatCol
+--   split
+--   · simp
+--   · simp
+
+-- /-- The element at column `l` of matrix `M` and the row index of the highest value between the
+-- -- element at row `i` and column `l` and the element at row `j` and column `l` is greater than or
+-- -- equal to the element at row `i` and column `l`. -/
+-- theorem maxMatColGreaterLeft [LinearOrder α] [AddGroup α] (M : Matrix m n α) (i : m) (j : m)
+--     (l : n) :
+--     |M (maxMatCol M i j l) l| ≥ |M i l| := by
+--   unfold maxMatCol
+--   split_ifs with h
+--   · simp
+--   · rw [not_le] at h
+--     exact le_of_lt h
+
+/-- The element at column `l` of matrix `M` and the row index of the highest value between the
+-- element at row `i` and column `l` and the element at row `j` and column `l` is greater than or
+-- equal to the element at row `j` and column `l`. -/
+-- theorem maxMatColGreaterRight [LinearOrder α] [AddGroup α] (M : Matrix m n α) (i : m) (j : m)
+--     (l : n) :
+--     |M (maxMatCol M i j l) l| ≥ |M j l| := by
+--   unfold maxMatCol
+--   split_ifs with h
+--   · exact h
+--   · simp
+
+-- -- returns row index with the max value of the column
+-- /-- Returns the row index of the highest value in column `l`. -/
+-- def maxColVal_RowPos [LinearOrder α] [AddGroup α] (M : Matrix m n α) (i : m) (j : m) (l : n) :=
+--     if h1 : i + 1 = j then i
+--      else
+--      let isucc := (⟨i+1,lessSucc i h1⟩ : Fin y)
+--      let k := maxColVal_RowPos M isucc j
+--      maxMatCol M i k j
+--   termination_by y - i
+
+
+-- OLD GAUSS (index ahead)
 
 -- -- i stands for current row, j stands for specified column, y stands for the last row + 1, p stands for the row of the pivot
 -- -- turns all numbers on column j below row i or p into 0
