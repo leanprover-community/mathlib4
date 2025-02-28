@@ -21,8 +21,8 @@ the additive and multiplicative structures of `A` for commuting nilpotent elemen
 Furthermore, in case `A` is a ring and `a` is nilpotent, `Algebra.exp_of_nilpotent_is_unit` shows
 that `Algebra.exp a` is a unit in `A`.
 
-Note: Although the definition works with `ℚ`-algebras, the results apply to any algebra over a
-characteristic zero field.
+Note: Although the definition works with `ℚ`-algebras, the results can be applied to any algebra
+over a characteristic zero field.
 
 ## Main definitions
 
