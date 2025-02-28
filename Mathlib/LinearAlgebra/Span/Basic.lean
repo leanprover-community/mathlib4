@@ -468,7 +468,6 @@ theorem map_iInf_of_ker_le {f : F} (hf : Surjective f) {ι} {p : ι → Submodul
   conv_rhs => rw [← map_comap_eq_of_surjective hf (⨅ _, _), comap_iInf]
   simp_rw [fun i ↦ comap_map_eq_self (le_iInf_iff.mp h i)]
 
-
 lemma _root_.LinearMap.range_domRestrict_eq_range_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
     LinearMap.range (f.domRestrict S) = LinearMap.range f ↔ S ⊔ (LinearMap.ker f) = ⊤ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -649,28 +648,25 @@ end
 
 section AddCommGroup
 
-variable {R M M' : Type*}
-         [Ring R]
-         [AddCommGroup M]
-         [AddCommGroup M']
-         [Module R M]
-         [Module R M']
-         {A B : Submodule R M}
+variable [Ring R] [AddCommGroup M] [AddCommGroup M₂]
+variable [Module R M] [Module R M₂] {A B : Submodule R M}
+variable {F : Type*} [FunLike F M M₂] [LinearMapClass F R M M₂] (f : F)
 
-theorem map_lt_map_or (f : M →ₗ[R] M') (hab : A < B) :
+theorem map_lt_map_or (hab : A < B) :
     Submodule.map f A < Submodule.map f B ∨ LinearMap.ker f ⊓ A < LinearMap.ker f ⊓ B := by
   obtain (⟨h, -⟩ | ⟨-, h⟩) := Prod.mk_lt_mk.mp <| strictMono_inf_prod_sup (z := LinearMap.ker f) hab
   · exact .inr <| by simpa [inf_comm]
   · simp_rw [← Submodule.comap_map_eq] at h
     exact Or.inl <| lt_of_le_of_ne (Submodule.map_mono hab.le) fun _ ↦ h.ne <| by congr
 
-theorem ker_inf_lt_ker_inf {f :  M →ₗ[R] M'} (hab : A < B)
+variable {f}
+theorem ker_inf_lt_ker_inf (hab : A < B)
     (q : Submodule.map f A = Submodule.map f B) : LinearMap.ker f ⊓ A < LinearMap.ker f ⊓ B :=
-  f.map_lt_map_or hab |>.resolve_left q.not_lt
+  map_lt_map_or f hab |>.resolve_left q.not_lt
 
-theorem map_lt_map_of_ker_inf_eq {f :  M →ₗ[R] M'} (hab : A < B)
+theorem map_lt_map_of_ker_inf_eq (hab : A < B)
     (q : LinearMap.ker f ⊓ A = LinearMap.ker f ⊓ B) : Submodule.map f A < Submodule.map f B :=
-  f.map_lt_map_or hab |>.resolve_right q.not_lt
+  map_lt_map_or f hab |>.resolve_right q.not_lt
 
 end AddCommGroup
 
