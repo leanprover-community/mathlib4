@@ -429,12 +429,12 @@ define it, see `card_filter_mk_eq`. -/
 noncomputable def mult (w : InfinitePlace K) : ℕ := if (IsReal w) then 1 else 2
 
 @[simp]
-theorem mult_IsReal (w : {w : InfinitePlace K // IsReal w}) :
+theorem mult_isReal (w : {w : InfinitePlace K // IsReal w}) :
     mult w.1 = 1 := by
   rw [mult, if_pos w.prop]
 
 @[simp]
-theorem mult_IsComplex (w : {w : InfinitePlace K // IsComplex w}) :
+theorem mult_isComplex (w : {w : InfinitePlace K // IsComplex w}) :
     mult w.1 = 2 := by
   rw [mult, if_neg (not_isReal_iff_isComplex.mpr w.prop)]
 
