@@ -73,7 +73,7 @@ instance : FunLike (Divisor U) 𝕜 ℤ where
 /-- Helper lemma for the `ext` tactic: two divisors are equal if their
 associated functions agree. -/
 @[ext]
-theorem ext {D₁ D₂ : Divisor U} (h : ∀ a, D₁.toFun a = D₂.toFun a) : D₁ = D₂ := DFunLike.ext _ _ h
+theorem ext {D₁ D₂ : Divisor U} (h : ∀ a, D₁ a = D₂ a) : D₁ = D₂ := DFunLike.ext _ _ h
 
 /-!
 ## Elementary properties of the support
