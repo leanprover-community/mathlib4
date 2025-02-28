@@ -37,7 +37,7 @@ We define ideal sheaves of schemes and provide various constructors for it.
 Ideal sheaves are not yet defined in this file as actual subsheaves of `𝒪ₓ`.
 Instead, for the ease of development and application,
 we define the structure `IdealSheafData` containing all necessary data to uniquely define an
-ideal sheaf. This should be refectored as a constructor for ideal sheaves once they are introduced
+ideal sheaf. This should be refactored as a constructor for ideal sheaves once they are introduced
 into mathlib.
 
 -/
@@ -715,7 +715,7 @@ lemma glueDataObjMap_glueDataObjι {U V : X.affineOpens} (h : U ≤ V) :
     Ideal.quotientMap_comp_mk, CommRingCat.ofHom_comp, Spec.map_comp_assoc, glueDataObjι,
     Category.assoc]
   congr 1
-  rw [Iso.eq_inv_comp, IsAffineOpen.isoSpec_hom]
+  rw [Iso.eq_inv_comp, IsAffineOpen.isoSpec_hom, CommRingCat.ofHom_hom]
   erw [Scheme.Opens.toSpecΓ_SpecMap_map_assoc U.1 V.1 h]
   rw [← IsAffineOpen.isoSpec_hom, Iso.hom_inv_id, Category.comp_id]
 

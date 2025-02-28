@@ -3,11 +3,12 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Joachim Breitner
 -/
+import Mathlib.Algebra.Group.Action.End
 import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
 # The coproduct (a.k.a. the free product) of groups or monoids
@@ -316,7 +317,7 @@ instance (i : ι) : Inhabited (Pair M i) :=
 variable {M}
 
 /-- Construct a new `Word` without any reduction. The underlying list of
-`cons m w _ _` is `⟨_, m⟩::w`  -/
+`cons m w _ _` is `⟨_, m⟩::w` -/
 @[simps]
 def cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) : Word M :=
   { toList := ⟨i, m⟩ :: w.toList,
