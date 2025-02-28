@@ -51,14 +51,14 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
       s!"error: doc-strings should start with a single space or newline"
   let docTrim := docString.trimRight
   let tail := docTrim.length
-  -- endRg creates an 0-wide range `n` characters from the end of `docStx`
-  let endRg (n : Nat) : Syntax := .ofRange
+  -- `endRange` creates an 0-wide range `n` characters from the end of `docStx`
+  let endRange (n : Nat) : Syntax := .ofRange
     {start := docStx.getTailPos?.get! - ⟨n⟩, stop := docStx.getTailPos?.get! - ⟨n⟩}
   if docTrim.takeRight 1 == "," then
-    Linter.logLint linter.style.docString (endRg (docString.length - tail + 3))
+    Linter.logLint linter.style.docString (endRange (docString.length - tail + 3))
       s!"error: doc-strings should not end with a comma"
   if tail + 1 != docString.length then
-    Linter.logLint linter.style.docString (endRg 3)
+    Linter.logLint linter.style.docString (endRange 3)
       s!"error: doc-strings should end with a single space or newline"
 
 initialize addLinter docStringLinter
