@@ -11,16 +11,18 @@ import Mathlib.RingTheory.Nilpotent.Basic
 /-!
 # Exponential map on algebras
 
-This file defines the exponential map `Algebra.exp` on algebras. The definition of `Algebra.exp a`
-applies to any `R`-algebra `A` and any element `a`, though it yields meaningful (non-junk)
-values only when `a` is nilpotent.
+This file defines the exponential map `Algebra.exp` on `ℚ`-algebras. The definition of
+`Algebra.exp a` applies to any element `a` in an algebra over `ℚ`, though it yields meaningful
+(non-junk) values only when `a` is nilpotent.
 
-When `R` is a characteristic zero field, the theorem `Algebra.exp_add_of_commute` establishes
-the expected connection between the additive and multiplicative structures of `A` for commuting
-nilpotent elements.
+The main result is `Algebra.exp_add_of_commute`, which establishes the expected connection between
+the additive and multiplicative structures of `A` for commuting nilpotent elements.
 
-Furthermore, in case `A` is a ring (rather than a general semiring) and `a` is nilpotent,
-`Algebra.exp_of_nilpotent_is_unit` shows that `Algebra.exp a` is a unit in `A`.
+Furthermore, in case `A` is a ring and `a` is nilpotent, `Algebra.exp_of_nilpotent_is_unit` shows
+that `Algebra.exp a` is a unit in `A`.
+
+Note: Although the definition works with `ℚ`-algebras, the results apply to any algebra over a
+characteristic zero field.
 
 ## Main definitions
 
