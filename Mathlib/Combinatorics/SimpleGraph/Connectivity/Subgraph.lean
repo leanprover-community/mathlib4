@@ -400,7 +400,7 @@ end IsCycle
 /-- This lemma considers the `SimpleGraph.Walk` until any vertex in a given set. You could
 interpret this as being `takeUntilSet`, but defining this is slightly involved due to not
 knowing what the final vertex is. This could be done by defining a function to obtain
-the first encountered vertex and then use that to define `takeUntilSet`. THat direction
+the first encountered vertex and then use that to define `takeUntilSet`. That direction
 could be worthwhile if this concept is used a lot more widely. -/
 lemma exists_mem_support_forall_not_adj_toSubgraph_takeUntil {u v} [DecidableEq V] {p : G.Walk u v}
     {s : Set V} (hs : s.Finite) (h : (s ∩ p.support.toFinset).Nonempty) :
