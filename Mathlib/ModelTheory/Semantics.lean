@@ -164,13 +164,13 @@ theorem realize_constantsToVars [L[[α]].Structure M] [(lhomWithConstants L α).
     · cases f
       · simp only [realize, ih, constantsOn, constantsOnFunc, constantsToVars]
         -- Porting note: below lemma does not work with simp for some reason
-        rw [withConstants_funMap_sum_inl]
+        rw [withConstants_funMap_sumInl]
       · simp only [realize, constantsToVars, Sum.elim_inl, funMap_eq_coe_constants]
         rfl
     · cases' f with _ f
       · simp only [realize, ih, constantsOn, constantsOnFunc, constantsToVars]
         -- Porting note: below lemma does not work with simp for some reason
-        rw [withConstants_funMap_sum_inl]
+        rw [withConstants_funMap_sumInl]
       · exact isEmptyElim f
 
 @[simp]
@@ -181,7 +181,7 @@ theorem realize_varsToConstants [L[[α]].Structure M] [(lhomWithConstants L α).
   · rcases ab with a | b <;> simp [Language.con]
   · simp only [realize, constantsOn, constantsOnFunc, ih, varsToConstants]
     -- Porting note: below lemma does not work with simp for some reason
-    rw [withConstants_funMap_sum_inl]
+    rw [withConstants_funMap_sumInl]
 
 theorem realize_constantsVarsEquivLeft [L[[α]].Structure M]
     [(lhomWithConstants L α).IsExpansionOn M] {n} {t : L[[α]].Term (β ⊕ (Fin n))} {v : β → M}
@@ -554,11 +554,13 @@ theorem realize_relabel {φ : L.Formula α} {g : α → β} {v : β → M} :
   rw [Realize, Realize, relabel, BoundedFormula.realize_relabel, iff_eq_eq, Fin.castAdd_zero]
   exact congr rfl (funext finZeroElim)
 
-theorem realize_relabel_sum_inr (φ : L.Formula (Fin n)) {v : Empty → M} {x : Fin n → M} :
+theorem realize_relabel_sumInr (φ : L.Formula (Fin n)) {v : Empty → M} {x : Fin n → M} :
     (BoundedFormula.relabel Sum.inr φ).Realize v x ↔ φ.Realize x := by
   rw [BoundedFormula.realize_relabel, Formula.Realize, Sum.elim_comp_inr, Fin.castAdd_zero,
     cast_refl, Function.comp_id,
     Subsingleton.elim (x ∘ (natAdd n : Fin 0 → Fin n)) default]
+
+@[deprecated (since := "2025-02-21")] alias realize_relabel_sum_inr := realize_relabel_sumInr
 
 @[simp]
 theorem realize_equal {t₁ t₂ : L.Term α} {x : α → M} :
@@ -833,18 +835,37 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : α ⊕ (Fin n) → M
     · exact Fin.elim0 x
 
 @[simp]
-theorem realize_iSup [Finite β] (f : β → L.BoundedFormula α n)
-    (v : α → M) (v' : Fin n → M) :
+theorem realize_iSup [Finite β] {f : β → L.BoundedFormula α n}
+    {v : α → M} {v' : Fin n → M} :
     (iSup f).Realize v v' ↔ ∃ b, (f b).Realize v v' := by
   simp only [iSup, realize_foldr_sup, List.mem_map, Finset.mem_toList, Finset.mem_univ, true_and,
     exists_exists_eq_and]
 
 @[simp]
-theorem realize_iInf [Finite β] (f : β → L.BoundedFormula α n)
-    (v : α → M) (v' : Fin n → M) :
+theorem realize_iInf [Finite β] {f : β → L.BoundedFormula α n}
+    {v : α → M} {v' : Fin n → M} :
     (iInf f).Realize v v' ↔ ∀ b, (f b).Realize v v' := by
   simp only [iInf, realize_foldr_inf, List.mem_map, Finset.mem_toList, Finset.mem_univ, true_and,
     forall_exists_index, forall_apply_eq_imp_iff]
+
+@[simp]
+theorem _root_.FirstOrder.Language.Formula.realize_iExsUnique [Finite γ]
+    {φ : L.Formula (α ⊕ γ)} {v : α → M} : (φ.iExsUnique γ).Realize v ↔
+      ∃! (i : γ → M), φ.Realize (Sum.elim v i) := by
+  rw [Formula.iExsUnique, ExistsUnique]
+  simp only [Formula.realize_iExs, Formula.realize_inf, Formula.realize_iAlls, Formula.realize_imp,
+    Formula.realize_relabel]
+  simp only [Formula.Realize, Function.comp_def, Term.equal, Term.relabel, realize_iInf,
+    realize_bdEqual, Term.realize_var, Sum.elim_inl, Sum.elim_inr, funext_iff]
+  refine exists_congr (fun i => and_congr_right' (forall_congr' (fun y => ?_)))
+  rw [iff_iff_eq]; congr with x
+  cases x <;> simp
+
+@[simp]
+theorem realize_iExsUnique [Finite γ] {φ : L.Formula (α ⊕ γ)} {v : α → M} {v' : Fin 0 → M} :
+    BoundedFormula.Realize (φ.iExsUnique γ) v v' ↔
+      ∃! (i : γ → M), φ.Realize (Sum.elim v i) := by
+  rw [← Formula.realize_iExsUnique, iff_iff_eq]; congr; simp [eq_iff_true_of_subsingleton]
 
 end BoundedFormula
 

@@ -96,7 +96,7 @@ variable {c : 𝕜} {m n : WithTop ℕ∞} {t : Set M'} {y₀ : M'}
 
 variable (I I') in
 /-- The pullback of a vector field under a map between manifolds, within a set `s`. If the
-derivative of the map within `s` is not invertible, then pullback is given the junk value zero.-/
+derivative of the map within `s` is not invertible, then pullback is given the junk value zero. -/
 def mpullbackWithin (f : M → M') (V : Π (x : M'), TangentSpace I' x) (s : Set M) (x : M) :
     TangentSpace I x :=
   (mfderivWithin I I' f s x).inverse (V (f x))
@@ -201,9 +201,8 @@ lemma mpullbackWithin_comp_of_left
   simp only [mpullbackWithin, comp_apply]
   have hg : MDifferentiableWithinAt I' I'' g t (f x₀) :=
     mdifferentiableWithinAt_of_isInvertible_mfderivWithin hg'
-  rw [mfderivWithin_comp _ hg hf h hu, IsInvertible.inverse_comp_apply_of_left]
-  · rfl
-  · exact hg'
+  rw [mfderivWithin_comp _ hg hf h hu, Function.comp_apply,
+    IsInvertible.inverse_comp_apply_of_left hg']
 
 lemma mpullbackWithin_comp_of_right
     {g : M' → M''} {f : M → M'} {V : Π (x : M''), TangentSpace I'' x} {s : Set M} {t : Set M'}
@@ -214,8 +213,8 @@ lemma mpullbackWithin_comp_of_right
   simp only [mpullbackWithin, comp_apply]
   have hf : MDifferentiableWithinAt I I' f s x₀ :=
     mdifferentiableWithinAt_of_isInvertible_mfderivWithin hf'
-  rw [mfderivWithin_comp _ hg hf h hu, IsInvertible.inverse_comp_apply_of_right hf']
-  rfl
+  rw [mfderivWithin_comp _ hg hf h hu, IsInvertible.inverse_comp_apply_of_right hf',
+    Function.comp_apply]
 
 
 /-! ### Regularity of pullback of vector fields
@@ -241,7 +240,7 @@ protected lemma _root_.MDifferentiableWithinAt.mpullbackWithin_vectorField_inter
   /- We want to apply the theorem `MDifferentiableWithinAt.clm_apply_of_inCoordinates`,
   stating that applying linear maps to vector fields gives a smooth result when the linear map and
   the vector field are smooth. This theorem is general, we will apply it to
-  `b₁ = f`, `b₂ = id`, `v = V ∘ f`, `ϕ = fun x ↦ (mfderivWithin I I' f s x).inverse`-/
+  `b₁ = f`, `b₂ = id`, `v = V ∘ f`, `ϕ = fun x ↦ (mfderivWithin I I' f s x).inverse` -/
   let b₁ := f
   let b₂ : M → M := id
   let v : Π (x : M), TangentSpace I' (f x) := V ∘ f
@@ -391,7 +390,7 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_inter
   /- We want to apply the theorem `ContMDiffWithinAt.clm_apply_of_inCoordinates`, stating
   that applying linear maps to vector fields gives a smooth result when the linear map and the
   vector field are smooth. This theorem is general, we will apply it to
-  `b₁ = f`, `b₂ = id`, `v = V ∘ f`, `ϕ = fun x ↦ (mfderivWithin I I' f s x).inverse`-/
+  `b₁ = f`, `b₂ = id`, `v = V ∘ f`, `ϕ = fun x ↦ (mfderivWithin I I' f s x).inverse` -/
   let b₁ := f
   let b₂ : M → M := id
   let v : Π (x : M), TangentSpace I' (f x) := V ∘ f
@@ -704,7 +703,7 @@ variable (I I') in
 def mlieBracket (V W : Π (x : M), TangentSpace I x) (x₀ : M) : TangentSpace I x₀ :=
   mlieBracketWithin I V W univ x₀
 
-lemma mlieBracketWithin_def  :
+lemma mlieBracketWithin_def :
     mlieBracketWithin I V W s = fun x₀ ↦
     mpullback I 𝓘(𝕜, E) (extChartAt I x₀)
     (lieBracketWithin 𝕜
@@ -721,13 +720,11 @@ lemma mlieBracketWithin_apply :
       ((extChartAt I x₀).symm ⁻¹' s ∩ range I)) ((extChartAt I x₀ x₀))) := rfl
 
 lemma mlieBracketWithin_eq_lieBracketWithin {V W : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {s : Set E} :
-    mlieBracketWithin 𝓘(𝕜, E) V W s  = lieBracketWithin 𝕜 V W s := by
+    mlieBracketWithin 𝓘(𝕜, E) V W s = lieBracketWithin 𝕜 V W s := by
   ext x
   simp [mlieBracketWithin_apply]
 
-/-********************************************************************************
-Copy of the `lieBracket` API in manifolds
--/
+/- Copy of the `lieBracket` API to manifolds -/
 
 @[simp] lemma mlieBracketWithin_univ :
     mlieBracketWithin I V W univ = mlieBracket I V W := rfl
@@ -782,9 +779,8 @@ theorem mlieBracketWithin_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
   obtain ⟨u, u_mem, hu⟩ : ∃ u ∈ 𝓝 x, u ∩ {x}ᶜ ⊆ {y | (y ∈ s) = (y ∈ t)} :=
     mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (nhdsWithin_compl_singleton_le x y h)
   rw [← extChartAt_to_inv (I := I) x] at u_mem
-  have B : (extChartAt I x).target ∪ (range I)ᶜ ∈ 𝓝 (extChartAt I x x) := by
-    rw [← nhdsWithin_univ, ← union_compl_self (range I), nhdsWithin_union]
-    apply Filter.union_mem_sup (extChartAt_target_mem_nhdsWithin x) self_mem_nhdsWithin
+  have B : (extChartAt I x).target ∪ (range I)ᶜ ∈ 𝓝 (extChartAt I x x) :=
+    extChartAt_target_union_compl_range_mem_nhds_of_mem (mem_extChartAt_target x)
   apply mem_nhdsWithin_iff_exists_mem_nhds_inter.2
     ⟨_, Filter.inter_mem ((continuousAt_extChartAt_symm x).preimage_mem_nhds u_mem) B, ?_⟩
   rintro z ⟨hz, h'z⟩
@@ -819,7 +815,7 @@ theorem mlieBracketWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) :
   mlieBracketWithin_of_mem_nhds (hs.mem_nhds hx)
 
 /-- Variant of `mlieBracketWithin_eventually_congr_set` where one requires the sets to coincide only
-in  the complement of a point. -/
+in the complement of a point. -/
 theorem mlieBracketWithin_eventually_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     mlieBracketWithin I V W s =ᶠ[𝓝 x] mlieBracketWithin I V W t :=
   (eventually_nhds_nhdsWithin.2 h).mono fun _ => mlieBracketWithin_congr_set' y
@@ -917,7 +913,7 @@ protected theorem _root_.Filter.EventuallyEq.mlieBracket_vectorField
   filter_upwards [hV.eventuallyEq_nhds, hW.eventuallyEq_nhds] with y hVy hWy
   exact hVy.mlieBracket_vectorField_eq hWy
 
-section C2
+section
 
 variable {c : 𝕜}
 variable [IsManifold I 2 M] [CompleteSpace E]
@@ -946,7 +942,7 @@ lemma mlieBracketWithin_smul_left
 
 lemma mlieBracket_smul_left
     (hV : MDifferentiableAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) x) :
-    mlieBracket I (c • V) W  x = c • mlieBracket I V W x := by
+    mlieBracket I (c • V) W x = c • mlieBracket I V W x := by
   simp only [← mlieBracketWithin_univ, ← contMDiffWithinAt_univ] at hV ⊢
   exact mlieBracketWithin_smul_left hV (uniqueMDiffWithinAt_univ _)
 
@@ -980,7 +976,7 @@ lemma mlieBracketWithin_add_left
 lemma mlieBracket_add_left
     (hV : MDifferentiableAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) x)
     (hV₁ : MDifferentiableAt I I.tangent (fun x ↦ (V₁ x : TangentBundle I M)) x) :
-    mlieBracket I (V + V₁) W  x =
+    mlieBracket I (V + V₁) W x =
       mlieBracket I V W x + mlieBracket I V₁ W x := by
   simp only [← mlieBracketWithin_univ, ← contMDiffWithinAt_univ] at hV hV₁ ⊢
   exact mlieBracketWithin_add_left hV hV₁ (uniqueMDiffWithinAt_univ _)
@@ -1043,7 +1039,7 @@ theorem _root_.DifferentiableWithinAt.mlieBracketWithin_congr_mono
   rw [mlieBracketWithin_congr hVs hVx hWs hWx]
   exact mlieBracketWithin_subset h₁ hxt hV hW
 
-end C2
+end
 
 section Invariance_IsSymmSndFDerivWithinAt
 
