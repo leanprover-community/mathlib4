@@ -173,70 +173,68 @@ variable {σ' : Type v}
 
  Use `Mᶜ` rather than directly using this function.
  -/
-def compl (M : DFA α σ) : DFA α σ := {
-  step := M.step,
-  start := M.start,
-  accept := M.acceptᶜ,
-}
+def compl (M : DFA α σ) : DFA α σ where
+  step := M.step
+  start := M.start
+  accept := M.acceptᶜ
 
 instance : HasCompl (DFA α σ) := ⟨compl⟩
 
-theorem invert_accept_iff (s : σ) : s ∈ Mᶜ.accept ↔ s ∉ M.accept := by
+theorem compl_accept_iff (s : σ) : s ∈ Mᶜ.accept ↔ s ∉ M.accept := by
   simp [HasCompl.compl, compl]
 
-theorem invert_accepts_iff (x : List α) : x ∈ Mᶜ.accepts ↔ x ∉ M.accepts := by
-  apply invert_accept_iff
+theorem compl_accepts_iff (x : List α) : x ∈ Mᶜ.accepts ↔ x ∉ M.accepts := by
+  apply compl_accept_iff
 
 /--
  Cartesian product of two DFAs with an arbitrary acceptance condition given by the binary Boolean
- algebra operation `p`.  `p` takes in whether `M₁` and `M₂` accept their respective inputs and
+ algebra operation `p`. `p` takes in whether `M₁` and `M₂` accept their respective inputs and
  returns whether the product of the two DFAs should accept the pair of inputs.
 
  This is a generalization of the intersection of two DFAs to arbitrary binary set operations.
 -/
-def cartesian_product (p : Prop → Prop → Prop) (M₁ : DFA α σ) (M₂ : DFA α σ') : DFA α (σ × σ') := {
+def product (M₁ : DFA α σ) (M₂ : DFA α σ') (p : Prop → Prop → Prop) : DFA α (σ × σ') := {
   step := fun ⟨s₁, s₂⟩ a => (M₁.step s₁ a, M₂.step s₂ a),
   start := (M₁.start, M₂.start),
   accept := {s | p (s.fst ∈ M₁.accept) (s.snd ∈ M₂.accept)}
 }
 
-theorem cartesian_product_accept_iff
+theorem product_accept_iff
     (p : Prop → Prop → Prop) (M₁ : DFA α σ) (M₂ : DFA α σ') (s : σ × σ') :
-    s ∈ (cartesian_product p M₁ M₂).accept ↔ p (s.fst ∈ M₁.accept) (s.snd ∈ M₂.accept) := by
-  simp [cartesian_product]
+    s ∈ (M₁.product M₂ p).accept ↔ p (s.fst ∈ M₁.accept) (s.snd ∈ M₂.accept) := by
+  simp [product]
 
-theorem cartesian_product_eval_from
-    (p : Prop → Prop → Prop) (M₁ : DFA α σ) (M₂ : DFA α σ') (x : List α) :
-    ∀ s : σ × σ',
-      (cartesian_product p M₁ M₂).evalFrom s x = ⟨M₁.evalFrom s.1 x, M₂.evalFrom s.2 x⟩ := by
-  dsimp [DFA.evalFrom, cartesian_product]
+theorem product_evalFrom
+    (p : Prop → Prop → Prop) (M₁ : DFA α σ) (M₂ : DFA α σ') (x : List α) (s : σ × σ') :
+      (M₁.product M₂ p).evalFrom s x = ⟨M₁.evalFrom s.1 x, M₂.evalFrom s.2 x⟩ := by
+  revert s
+  dsimp [evalFrom, product]
   induction' x with a x' ih
   · simp
   · intro s
     simp [List.foldl, ih, DFA.step]
 
-theorem cartesian_product_accepts_iff
+theorem product_accepts_iff
     (p : Prop → Prop → Prop) (M₁ : DFA α σ) (M₂ : DFA α σ') (x : List α) :
-    x ∈ (cartesian_product p M₁ M₂).accepts ↔ p (x ∈ M₁.accepts) (x ∈ M₂.accepts) := by
-  simp [DFA.accepts]
-  simp [DFA.acceptsFrom, cartesian_product_eval_from]
-  simp [cartesian_product]
+    x ∈ (M₁.product M₂ p).accepts ↔ p (x ∈ M₁.accepts) (x ∈ M₂.accepts) := by
+  simp only [accepts, acceptsFrom, product_evalFrom]
+  simp only [product]
   repeat rw [Set.mem_setOf_eq]
 
 /--
  Constructs a DFA for the intersection of the languages of two DFAs.
 
- There is no Infer instance for this to provide the `M₁ ∩ M₂` syntax, because M₁ and M₂ have
+ There is no instance for this to provide the `M₁ ∩ M₂` syntax, because M₁ and M₂ have
  different state types. -/
-def intersect (M₁ : DFA α σ) (M₂ : DFA α σ') : DFA α (σ × σ') := cartesian_product And M₁ M₂
+def intersect (M₁ : DFA α σ) (M₂ : DFA α σ') : DFA α (σ × σ') := product M₁ M₂ And
 
 theorem intersect_accept_iff (M₁ : DFA α σ) (M₂ : DFA α σ') (s : σ × σ') :
-    s ∈ (intersect M₁ M₂).accept ↔ s.fst ∈ M₁.accept ∧ s.snd ∈ M₂.accept := by
-  simp [intersect, cartesian_product_accept_iff]
+    s ∈ (M₁.intersect M₂).accept ↔ s.fst ∈ M₁.accept ∧ s.snd ∈ M₂.accept := by
+  simp [intersect, product_accept_iff]
 
 theorem intersect_accepts_iff (M₁ : DFA α σ) (M₂ : DFA α σ') (x : List α) :
-    x ∈ (intersect M₁ M₂).accepts ↔ x ∈ M₁.accepts ∧ x ∈ M₂.accepts := by
-  simp [intersect, cartesian_product_accepts_iff]
+    x ∈ (M₁.intersect M₂).accepts ↔ x ∈ M₁.accepts ∧ x ∈ M₂.accepts := by
+  simp [intersect, product_accepts_iff]
 
 end SetClosure
 
