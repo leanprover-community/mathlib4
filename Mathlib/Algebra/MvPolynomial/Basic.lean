@@ -143,7 +143,7 @@ end Instances
 
 variable [CommSemiring R] [CommSemiring S₁] {p q : MvPolynomial σ R}
 
-/-- `monomial s a` is the monomial with coefficient `a` and exponents given by `s`  -/
+/-- `monomial s a` is the monomial with coefficient `a` and exponents given by `s` -/
 def monomial (s : σ →₀ ℕ) : R →ₗ[R] MvPolynomial σ R :=
   AddMonoidAlgebra.lsingle s
 

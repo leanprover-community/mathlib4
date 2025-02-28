@@ -984,7 +984,7 @@ lemma succAbove_right_injective : Injective p.succAbove := by
 lemma succAbove_right_inj : p.succAbove i = p.succAbove j ↔ i = j :=
   succAbove_right_injective.eq_iff
 
-/--  `Fin.succAbove p` as an `Embedding`. -/
+/-- `Fin.succAbove p` as an `Embedding`. -/
 @[simps!]
 def succAboveEmb (p : Fin (n + 1)) : Fin n ↪ Fin (n + 1) := ⟨p.succAbove, succAbove_right_injective⟩
 

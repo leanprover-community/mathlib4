@@ -782,7 +782,7 @@ theorem _root_.Fin.continuous_append (m n : ℕ) :
   exact Homeomorph.continuous_toFun _
 
 /-- The natural homeomorphism between `(Fin m → X) × (Fin n → X)` and `Fin (m + n) → X`.
-`Fin.appendEquiv` as a homeomorphism.-/
+`Fin.appendEquiv` as a homeomorphism -/
 @[simps!]
 def _root_.Fin.appendHomeomorph (m n : ℕ) : (Fin m → X) × (Fin n → X) ≃ₜ (Fin (m + n) → X) where
   toEquiv := Fin.appendEquiv m n
@@ -1090,7 +1090,7 @@ lemma IsHomeomorph.pi_map {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalS
     IsHomeomorph (fun (x : ∀ i, X i) i ↦ f i (x i)) :=
   (Homeomorph.piCongrRight fun i ↦ (h i).homeomorph (f i)).isHomeomorph
 
-/-- `HomeomorphClass F A B` states that `F` is a type of homeomorphisms.-/
+/-- `HomeomorphClass F A B` states that `F` is a type of homeomorphisms. -/
 class HomeomorphClass (F : Type*) (A B : outParam Type*)
     [TopologicalSpace A] [TopologicalSpace B] [h : EquivLike F A B] : Prop where
   map_continuous : ∀ (f : F), Continuous f
