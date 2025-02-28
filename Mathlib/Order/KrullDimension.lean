@@ -835,7 +835,7 @@ end typeclass
 
 section calculations
 
-@[simp] lemma krullDim_isSimpleOrder {α : Type*} [PartialOrder α] [BoundedOrder α]
+@[simp] lemma krullDim_of_isSimpleOrder {α : Type*} [PartialOrder α] [BoundedOrder α]
     [IsSimpleOrder α] : krullDim α = 1 := by
   rw [krullDim]
   let q : LTSeries α := ⟨1, (fun n ↦ if n == 0 then ⊥ else ⊤), by simp [Fin.fin_one_eq_zero]⟩
