@@ -407,68 +407,69 @@ def lookup (hashMap : ModuleHashMap) (paths : List FilePath) : IO Unit := do
   if err then IO.Process.exit 1
 
 /--
-Parse command line arguments.
-Position `0` (i.e. the command `get`, `clean`, etc.) is ignored.
-The remaining arguments take one of the following forms:
+Parse a string as either a path or a Lean module name. If the argument describes a folder,
+use `walkDir` to find all `.lean` files within.
+
+Return tuples of the form ("module name", "path to .lean file").
+
+The input string `arg` takes one of the following forms:
+
 1. `Mathlib.Algebra.Fields.Basic`: there exists such a Lean file
 2. `Mathlib.Algebra.Fields`: no Lean file exists but a folder
 3. `Mathlib/Algebra/Fields/Basic.lean`: the file exists (note potentially `\` on Windows)
 4. `Mathlib/Algebra/Fields/`: the folder exists
-5. (`Aesop/Builder.lean`: the file does not exist, it's
-    actually somewhere in `.lake`. (not supported currently!))
-An argument like `Archive` is treated as module, not a path.
--/
-def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
-  match args with
-  | [] => pure ∅
-  | _ :: args₀ =>
-    let sp := (← read).srcSearchPath
-    args₀.foldlM (init := ∅) fun acc (argₛ : String) => do
-      let arg : FilePath := argₛ
-      if arg.components.length > 1 || arg.extension == "lean" then
-        -- provided file name of a Lean file
-        let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
-        let srcDir ← getSrcDir arg
-        if !(← arg.pathExists) then
-          IO.eprintln s!"Invalid argument: non-existing path {arg}"
-          IO.Process.exit 1
-        if arg.extension == "lean" then
-          -- provided existing `.lean` file
-          pure <| acc.insert mod argₛ
-        else
-          -- provided existing directory: walk it
-          IO.println s!"Searching directory {arg} for .lean files"
-          let leanModulesInFolder ← walkDir arg srcDir
-          pure <| acc.insertMany leanModulesInFolder
-      else
-        -- provided a module
-        let mod := argₛ.toName
-        let sourceFile ← Lean.findLean sp mod
 
-        if ← sourceFile.pathExists then
-          -- provided valid module
-          pure <| acc.insert mod sourceFile
-        else
-          -- provided "pseudo-module" like `Mathlib.Data` which
-          -- does not correspond to a Lean file, but to an existing folder
-          -- `Mathlib/Data/`
-          let folder := sourceFile.withExtension ""
-          IO.println s!"Searching directory {folder} for .lean files"
-          if ← folder.pathExists then
-            -- provided "module name" of an existing folder: walk dir
-            IO.eprintln <| "Entering a part of a module name " ++
-            "(i.e. `Mathlib.Data` when only the fold `Mathlib/Data/` but no " ++
-            "file `Mathlib/Data.lean` exists) is not supported yet!"
-            IO.Process.exit 1
-          else
-            IO.eprintln s!"Invalid argument: non-existing module {mod}"
-            IO.Process.exit 1
+Not supported yet:
+
+5. `Aesop/Builder.lean`: the file does not exist, it's actually somewhere in `.lake`.
+
+Note: An argument like `Archive` is treated as module, not a path.
+-/
+def leanModulesFromSpec (argₛ : String) (sp : SearchPath) : CacheM <| Except String <| Array (Name × FilePath) := do
+  let arg : FilePath := argₛ
+  if arg.components.length > 1 || arg.extension == "lean" then
+    -- provided file name of a Lean file
+    let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
+    let srcDir ← getSrcDir arg
+    if !(← arg.pathExists) then
+      -- TODO: (5.) We could use `srcDir` to allow arguments like `Aesop/Builder.lean` which
+      -- refer to a file located under `.lake/packages/...`
+      return .error "Invalid argument: non-existing path {arg}"
+    if arg.extension == "lean" then
+      -- (3.) provided existing `.lean` file
+      return .ok #[(mod, arg)]
+    else
+      -- (4.) provided existing directory: walk it
+      IO.println s!"Searching directory {arg} for .lean files"
+      let leanModulesInFolder ← walkDir arg srcDir
+      return .ok leanModulesInFolder
+  else
+    -- provided a module
+    let mod := argₛ.toName
+    let sourceFile ← Lean.findLean sp mod
+    if ← sourceFile.pathExists then
+      -- (1.) provided valid module
+      return .ok #[(mod, sourceFile)]
+    else
+      -- provided "pseudo-module" (like `Mathlib.Data`) which
+      -- does not correspond to a Lean file, but to an existing folder
+      -- `Mathlib/Data/`
+      let folder := sourceFile.withExtension ""
+      IO.println s!"Searching directory {folder} for .lean files"
+      if ← folder.pathExists then
+        -- (2.) provided "module name" of an existing folder: walk dir
+        -- TODO: will be implemented in #21838
+        return .error "Entering a part of a module name \
+          (i.e. `Mathlib.Data` when only the fold `Mathlib/Data/` but no \
+          file `Mathlib/Data.lean` exists) is not supported yet!"
+      else
+        return .error "Invalid argument: non-existing module {mod}"
 where
   /-- assumes the folder exists -/
   walkDir (folder : FilePath) (srcDir : FilePath) : CacheM <| Array (Name × FilePath) := do
     -- find all Lean files in the folder, skipping hidden folders/files
     let files ← folder.walkDir fun p => match p.fileName with
-      | some s => pure <| !(s.startsWith ".")
+      | some s => pure !(s.startsWith ".")
       | none => pure false
     let leanFiles := files.filter (·.extension == some "lean")
     let mut leanModulesInFolder : Array (Name × FilePath) := #[]
@@ -476,6 +477,24 @@ where
       let path := file.withoutParent srcDir
       let mod : Name := path.withExtension "" |>.components.foldl .str .anonymous
       leanModulesInFolder := leanModulesInFolder.push (mod, file)
-    pure leanModulesInFolder
+    return leanModulesInFolder
+
+/--
+Parse command line arguments.
+Position `0` (i.e. the command `get`, `clean`, etc.) is ignored.
+
+The remaining arguments are parsed as either module name or file path, see `leanModulesFromSpec`.
+-/
+def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
+  match args with
+  | [] => pure ∅
+  | _ :: args₀ => args₀.foldlM (init := ∅) fun acc (arg : String) => do
+    match ← leanModulesFromSpec arg with
+    | .ok mods =>
+      dbg_trace s!"{mods}"
+      pure <| acc.insertMany mods
+    | .error msg =>
+      IO.eprintln msg
+      IO.Process.exit 1
 
 end Cache.IO
