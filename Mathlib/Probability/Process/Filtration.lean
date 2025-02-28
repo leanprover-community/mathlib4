@@ -268,7 +268,7 @@ open MeasurableSpace
 theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι → Set Ω}
     (hsm : ∀ i, MeasurableSet[m] (s i)) :
     filtrationOfSet hsm = natural (fun i => (s i).indicator (fun _ => 1 : Ω → β)) fun i =>
-      stronglyMeasurable_const.indicator (hsm i) := by
+      stronglyMeasurable_one.indicator (hsm i) := by
   simp only [filtrationOfSet, natural, measurableSpace_iSup_eq, exists_prop, mk.injEq]
   ext1 i
   refine le_antisymm (generateFrom_le ?_) (generateFrom_le ?_)
