@@ -126,7 +126,7 @@ lemma Filter.codiscreteWithin.mono {U₁ U : Set X} (hU : U₁ ⊆ U) :
 theorem discreteTopology_of_codiscreteWithin
     {X : Type u_1} [TopologicalSpace X]
     {U s : Set X}
-    (h: s ∈ Filter.codiscreteWithin U) :
+    (h : s ∈ Filter.codiscreteWithin U) :
   DiscreteTopology ((sᶜ ∩ U) : Set X) := by
   rw [(by simp : ((sᶜ ∩ U) : Set X) = ((s ∪ Uᶜ)ᶜ : Set X)), discreteTopology_subtype_iff]
   simp_rw [mem_codiscreteWithin, Filter.disjoint_principal_right] at h
