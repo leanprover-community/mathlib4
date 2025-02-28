@@ -243,6 +243,10 @@ variable (C)
 def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 
+/-- Further truncation of truncated simplicial objects. -/
+def trunc (n m : ℕ) (h : m ≤ n := by omega) : Truncated C n ⥤ Truncated C m :=
+  (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.incl m n).op
+
 variable {C}
 
 end Truncated
@@ -252,6 +256,11 @@ section Truncation
 /-- The truncation functor from simplicial objects to truncated simplicial objects. -/
 def truncation (n : ℕ) : SimplicialObject C ⥤ SimplicialObject.Truncated C n :=
   (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.inclusion n).op
+
+/-- For all `m ≤ n`, `truncation m` factors through `Truncated n`. -/
+lemma truncation_comp_trunc {n m : ℕ} (h : m ≤ n) :
+    truncation n ⋙ Truncated.trunc C n m = truncation m :=
+  rfl
 
 end Truncation
 
@@ -674,6 +683,10 @@ variable (C)
 def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 
+/-- Further truncation of truncated cosimplicial objects. -/
+def trunc (n m : ℕ) (h : m ≤ n := by omega) : Truncated C n ⥤ Truncated C m :=
+  (whiskeringLeft _ _ _).obj <| SimplexCategory.Truncated.incl m n
+
 variable {C}
 
 end Truncated
@@ -683,6 +696,11 @@ section Truncation
 /-- The truncation functor from cosimplicial objects to truncated cosimplicial objects. -/
 def truncation (n : ℕ) : CosimplicialObject C ⥤ CosimplicialObject.Truncated C n :=
   (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.inclusion n)
+
+/-- For all `m ≤ n`, `truncation m` factors through `Truncated n`. -/
+lemma truncation_comp_trunc {n m : ℕ} (h : m ≤ n) :
+    truncation n ⋙ Truncated.trunc C n m = truncation m :=
+  rfl
 
 end Truncation
 
