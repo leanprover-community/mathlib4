@@ -205,7 +205,8 @@ variable [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 
 section HelperDefinitions
 
-variable (E) in in
+variable (E)
+
 theorem u_exists :
     ∃ u : E → ℝ,
       ContDiff ℝ ∞ u ∧ (∀ x, u x ∈ Icc (0 : ℝ) 1) ∧ support u = ball 0 1 ∧ ∀ x, u (-x) = u x := by
@@ -235,6 +236,7 @@ theorem u_exists :
       simp only [I1, I2, add_zero, zero_div]
   · intro x; simp only [add_comm, neg_neg]
 
+variable {E} in
 /-- An auxiliary function to construct partitions of unity on finite-dimensional real vector spaces,
 which is smooth, symmetric, and with support equal to the unit ball. -/
 def u (x : E) : ℝ :=
