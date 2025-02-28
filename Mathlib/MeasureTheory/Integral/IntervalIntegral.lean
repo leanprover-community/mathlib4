@@ -984,8 +984,7 @@ theorem integral_congr_ae (h : ∀ᵐ x ∂μ, x ∈ Ι a b → f x = g x) :
     ∫ x in a..b, f x ∂μ = ∫ x in a..b, g x ∂μ :=
   integral_congr_ae' (ae_uIoc_iff.mp h).1 (ae_uIoc_iff.mp h).2
 
-/-- Integrals are invariant when functions change along sets that are almost
-everywhere for the restricted measure. -/
+/-- Integrals are equal for functions that agree almost everywhere for the restricted measure. -/
 theorem integral_congr_ae_restrict {a b : ℝ} {f g : ℝ → E} {μ : Measure ℝ}
     (h : f =ᵐ[μ.restrict (Ι a b)] g) :
     ∫ x in a..b, f x ∂μ = ∫ x in a..b, g x ∂μ :=
@@ -995,7 +994,7 @@ theorem integral_congr_ae_restrict {a b : ℝ} {f g : ℝ → E} {μ : Measure �
 theorem integral_congr_codiscreteWithin {a b : ℝ} {f₁ f₂ : ℝ → ℝ}
     (hf : f₁ =ᶠ[codiscreteWithin (Ι a b)] f₂) :
     ∫ (x : ℝ) in a..b, f₁ x = ∫ (x : ℝ) in a..b, f₂ x :=
-  integral_congr_ae_restict (ae_of_restrVol_le_codiscreteWithin measurableSet_uIoc hf)
+  integral_congr_ae_restrict (ae_of_restrVol_le_codiscreteWithin measurableSet_uIoc hf)
 
 theorem integral_zero_ae (h : ∀ᵐ x ∂μ, x ∈ Ι a b → f x = 0) : ∫ x in a..b, f x ∂μ = 0 :=
   calc

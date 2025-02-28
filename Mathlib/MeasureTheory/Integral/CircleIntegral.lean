@@ -362,7 +362,7 @@ theorem integral_congr {f g : ℂ → E} {c : ℂ} {R : ℝ} (hR : 0 ≤ R) (h :
 theorem circleIntegral_congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → ℂ}
     (hf : f₁ =ᶠ[codiscreteWithin (Metric.sphere c |R|)] f₂) (hR : R ≠ 0) :
     (∮ z in C(c, R), f₁ z) = (∮ z in C(c, R), f₂ z) := by
-  apply intervalIntegral.integral_congr_ae_restict
+  apply intervalIntegral.integral_congr_ae_restrict
   apply ae_of_restrVol_le_codiscreteWithin measurableSet_uIoc
   simp only [deriv_circleMap, smul_eq_mul, mul_eq_mul_left_iff, mul_eq_zero,
     circleMap_eq_center_iff, hR, Complex.I_ne_zero, or_self, or_false]

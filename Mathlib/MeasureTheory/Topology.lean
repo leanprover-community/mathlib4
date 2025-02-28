@@ -14,8 +14,8 @@ the existing files without introducing massive dependencies between the subjects
 -/
 open Filter MeasureTheory
 
-/-- Under reasonable assumptions, sets that are codiscrete within `U` are almost
-everywhere with respect to the restricted measure. -/
+/-- Under reasonable assumptions, sets that are codiscrete within `U` are contained in the “almost
+everywhere” filter of co-null sets. -/
 theorem ae_of_restrVol_le_codiscreteWithin
     {α : Type*} [MeasureSpace α] [TopologicalSpace α] [SecondCountableTopology α]
     {μ : Measure α} [NoAtoms μ] {U : Set α} (hU : MeasurableSet U) :
