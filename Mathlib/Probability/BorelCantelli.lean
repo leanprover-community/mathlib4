@@ -33,22 +33,21 @@ variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω}
 
 section BorelCantelli
 
-variable {ι β : Type*} [LinearOrder ι] [mβ : MeasurableSpace β]
-    {f : ι → Ω → β} {i j : ι} {s : ι → Set Ω}
+variable {ι β : Type*} [LinearOrder ι] [mβ : MeasurableSpace β] [NormedAddCommGroup β]
+  [BorelSpace β] {f : ι → Ω → β} {i j : ι} {s : ι → Set Ω}
 
-theorem iIndepFun.indep_comap_natural_of_lt [TopologicalSpace β] (hf : ∀ i, Measurable (f i))
+theorem iIndepFun.indep_comap_natural_of_lt (hf : ∀ i, StronglyMeasurable (f i))
     (hfi : iIndepFun (fun _ => mβ) f μ) (hij : i < j) :
     Indep (MeasurableSpace.comap (f j) mβ) (Filtration.natural f hf i) μ := by
   suffices Indep (⨆ k ∈ ({j} : Set ι), MeasurableSpace.comap (f k) mβ)
       (⨆ k ∈ {k | k ≤ i}, MeasurableSpace.comap (f k) mβ) μ by rwa [iSup_singleton] at this
-  exact indep_iSup_of_disjoint (fun k => (hf k).comap_le) hfi (by simpa)
+  exact indep_iSup_of_disjoint (fun k => (hf k).measurable.comap_le) hfi (by simpa)
 
-theorem iIndepFun.condExp_natural_ae_eq_of_lt [NormedAddCommGroup β] [NormedSpace ℝ β]
-    [CompleteSpace β] [SecondCountableTopology β] [OpensMeasurableSpace β]
-    (hf : ∀ i, Measurable (f i)) (hfi : iIndepFun (fun _ => mβ) f μ)
+theorem iIndepFun.condExp_natural_ae_eq_of_lt [SecondCountableTopology β] [CompleteSpace β]
+    [NormedSpace ℝ β] (hf : ∀ i, StronglyMeasurable (f i)) (hfi : iIndepFun (fun _ => mβ) f μ)
     (hij : i < j) : μ[f j|Filtration.natural f hf i] =ᵐ[μ] fun _ => μ[f j] := by
   have : IsProbabilityMeasure μ := hfi.isProbabilityMeasure
-  exact condExp_indep_eq (hf j).comap_le (Filtration.le _ _)
+  exact condExp_indep_eq (hf j).measurable.comap_le (Filtration.le _ _)
     (comap_measurable <| f j).stronglyMeasurable (hfi.indep_comap_natural_of_lt hf hij)
 
 @[deprecated (since := "2025-01-21")]
