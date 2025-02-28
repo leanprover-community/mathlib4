@@ -180,8 +180,13 @@ def compl (M : DFA α σ) : DFA α σ where
 
 instance : HasCompl (DFA α σ) := ⟨compl⟩
 
-theorem compl_accept_iff (s : σ) : s ∈ Mᶜ.accept ↔ s ∉ M.accept := by
-  simp [HasCompl.compl, compl]
+@[simp]
+theorem compl_accept_eq_accept_compl : Mᶜ.accept = M.acceptᶜ := rfl
+
+@[simp]
+theorem compl_accepts_eq_accepts_compl : Mᶜ.accepts = M.acceptsᶜ := rfl
+
+theorem compl_accept_iff (s : σ) : s ∈ Mᶜ.accept ↔ s ∉ M.accept := by simp
 
 theorem compl_accepts_iff (x : List α) : x ∈ Mᶜ.accepts ↔ x ∉ M.accepts := by
   apply compl_accept_iff
