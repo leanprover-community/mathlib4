@@ -223,6 +223,12 @@ end HasseDerivative
 
 section Binomial
 
+def unitSub {σ : Type*} [LinearOrder σ] {i j : σ} : HahnSeries (σ → ℤ) R :=
+  HahnSeries.single (fun k ↦ if k = i then 1 else 0) 1 -
+    HahnSeries.single (fun k ↦ if k = j then 1 else 0) 1
+
+
+
 /-!
 Given a totally ordered fintype `σ`, we consider binomials in `HahnSeries (PiLex σ Z) R`.
 Define binomials `X i - X j` as `varMinus hij` for `hij : i < j`.

@@ -160,6 +160,11 @@ theorem coeff_hsum {s : SummableFamily Γ R α} {g : Γ} : s.hsum.coeff g = ∑�
 
 @[deprecated (since := "2025-01-31")] alias hsum_coeff := coeff_hsum
 
+@[simp]
+theorem hsum_zero : (0 : SummableFamily Γ R α).hsum = 0 := by
+  ext
+  simp
+
 theorem support_hsum_subset {s : SummableFamily Γ R α} : s.hsum.support ⊆ ⋃ a : α, (s a).support :=
   fun g hg => by
   rw [mem_support, coeff_hsum, finsum_eq_sum _ (s.finite_co_support _)] at hg
@@ -910,35 +915,51 @@ theorem pow_finite_co_support {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (g : �
       simp only [mem_coe, mem_addAntidiagonal, mem_support, ne_eq, Set.mem_iUnion]
       exact ⟨hj, ⟨n, hi⟩, add_comm j i⟩
 
-/-- The powers of an element of positive valuation form a summable family. -/
+/-- A summable family of powers of a Hahn series `x`. If `x` has non-positive orderTop, then we
+return the junk value zero. -/
 @[simps]
-def powers (x : HahnSeries Γ R) (hx : 0 < x.orderTop) : SummableFamily Γ R ℕ where
-  toFun n := x ^ n
-  isPWO_iUnion_support' := isPWO_iUnion_support_powers (zero_le_orderTop_iff.mp <| le_of_lt hx)
-  finite_co_support' g := pow_finite_co_support hx g
+def powers (x : HahnSeries Γ R) : SummableFamily Γ R ℕ where
+  toFun n := if 0 < x.orderTop then x ^ n else 0
+  isPWO_iUnion_support' := by
+    by_cases h : 0 < x.orderTop
+    · simp only [h, ↓reduceIte]
+      exact isPWO_iUnion_support_powers (zero_le_orderTop_iff.mp <| le_of_lt h)
+    · simp [h]
+  finite_co_support' g := by
+    by_cases h : 0 < x.orderTop
+    · simp only [h, ↓reduceIte]
+      exact pow_finite_co_support h g
+    · simp [h]
 
 variable {x : HahnSeries Γ R} (hx : 0 < x.orderTop)
 
+include hx in
 @[simp]
-theorem coe_powers : ⇑(powers x hx) = HPow.hPow x :=
-  rfl
+theorem coe_powers : ⇑(powers x) = HPow.hPow x := by
+  ext1 n
+  simp [hx]
 
+include hx in
 theorem embDomain_succ_smul_powers :
-    (x • powers x hx).embDomain ⟨Nat.succ, Nat.succ_injective⟩ =
-      powers x hx - ofFinsupp (Finsupp.single 0 1) := by
+    (x • powers x).embDomain ⟨Nat.succ, Nat.succ_injective⟩ =
+      powers x - ofFinsupp (Finsupp.single 0 1) := by
   apply SummableFamily.ext
   rintro (_ | n)
-  · rw [embDomain_notin_range, sub_apply, coe_powers, pow_zero, coe_ofFinsupp,
-      Finsupp.single_eq_same, sub_self]
-    rw [Set.mem_range, not_exists]
-    exact Nat.succ_ne_zero
-  · refine Eq.trans (embDomain_image _ ⟨Nat.succ, Nat.succ_injective⟩) ?_
-    rw [smul_apply, powers_toFun, coe_sub, coe_powers, Pi.sub_apply, coe_ofFinsupp, pow_succ',
-      Finsupp.single_eq_of_ne (Nat.zero_ne_add_one n), sub_zero, of_symm_smul_of_eq_mul]
+  · simp [hx]
+  · simp only [coe_sub, coe_ofFinsupp, Pi.sub_apply, powers_toFun, ne_eq, self_eq_add_left,
+    AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, not_false_eq_true,
+    Finsupp.single_eq_of_ne, sub_zero]
+    simp only [embDomain_apply, Embedding.coeFn_mk, Nat.range_succ, Set.mem_setOf_eq,
+      lt_add_iff_pos_left, add_pos_iff, Nat.lt_one_iff, pos_of_gt, or_true, ↓reduceDIte,
+      Nat.succ_eq_add_one, add_left_inj, Classical.choose_eq, smul_apply, powers_toFun, hx,
+      ↓reduceIte, smul_eq_mul]
+    rw [add_comm, pow_add, pow_one]
+    exact rfl
 
-theorem one_sub_self_mul_hsum_powers : (1 - x) * (powers x hx).hsum = 1 := by
-  rw [← hsum_smul, sub_smul 1 x (powers x hx), one_smul, hsum_sub, ←
-    hsum_embDomain (x • powers x hx) ⟨Nat.succ, Nat.succ_injective⟩, embDomain_succ_smul_powers]
+include hx in
+theorem one_sub_self_mul_hsum_powers : (1 - x) * (powers x).hsum = 1 := by
+  rw [← hsum_smul, sub_smul 1 x (powers x), one_smul, hsum_sub, ←
+    hsum_embDomain (x • powers x) ⟨Nat.succ, Nat.succ_injective⟩, embDomain_succ_smul_powers hx]
   simp
 
 end powers
@@ -980,7 +1001,7 @@ theorem one_minus_single_mul_addUnit {x y : HahnSeries Γ R} (r : R) (hr : r * x
     IsAddUnit.val_neg_add, sub_add_eq_sub_sub_swap, sub_eq_neg_self, sub_eq_zero_of_eq]
   exact rfl
 
-theorem unit_aux_addUnit (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1)
+theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1)
     (hxo : IsAddUnit x.order) : 0 < (1 - single (IsAddUnit.addUnit hxo).neg r * x).orderTop := by
   let y := (x - x.leadingTerm)
   by_cases hy : y = 0
@@ -1004,7 +1025,7 @@ theorem isUnit_of_isUnit_leadingCoeff_AddUnitOrder {x : HahnSeries Γ R} (hx : I
   let ⟨⟨u, i, ui, iu⟩, h⟩ := hx
   rw [Units.val_mk] at h
   rw [h] at iu
-  have h' := SummableFamily.one_sub_self_mul_hsum_powers (unit_aux_addUnit x iu hxo)
+  have h' := SummableFamily.one_sub_self_mul_hsum_powers (unit_aux x iu hxo)
   rw [sub_sub_cancel] at h'
   exact isUnit_of_mul_isUnit_right (isUnit_of_mul_eq_one _ _ h')
 
@@ -1025,11 +1046,6 @@ theorem one_minus_single_mul (x y : HahnSeries Γ R) (r : R) (hr : r * x.leading
     (hxy : x = y + x.leadingTerm) : 1 - single (-order x) r * x = -(single (-x.order) r * y) := by
   rw [neg_eq_addUnit_neg]
   exact one_minus_single_mul_addUnit r hr hxy (AddGroup.isAddUnit x.order)
-
-theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1) :
-    0 < (1 - single (-x.order) r * x).orderTop := by
-  rw [neg_eq_addUnit_neg]
-  exact unit_aux_addUnit x hr (AddGroup.isAddUnit x.order)
 
 theorem isUnit_of_isUnit_leadingCoeff {x : HahnSeries Γ R} (hx : IsUnit x.leadingCoeff) :
     IsUnit x := by
@@ -1053,13 +1069,13 @@ instance instField [Field R] : Field (HahnSeries Γ R) where
   inv x :=
     if x0 : x = 0 then 0
     else
-      (single (-x.order)) (x.leadingCoeff)⁻¹ *
-        (SummableFamily.powers _ (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)))).hsum
+      (single (IsAddUnit.addUnit (AddGroup.isAddUnit x.order)).neg) (x.leadingCoeff)⁻¹ *
+        (SummableFamily.powers _).hsum
   inv_zero := dif_pos rfl
   mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans <| by
     have h :=
       SummableFamily.one_sub_self_mul_hsum_powers
-        (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)))
+        (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)) (AddGroup.isAddUnit x.order))
     rw [sub_sub_cancel] at h
     rw [← mul_assoc, mul_comm x, h]
   nnqsmul := _

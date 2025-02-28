@@ -3,23 +3,28 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.Eval
+import Mathlib.RingTheory.PowerSeries.WellKnown
 import Mathlib.RingTheory.Binomial
 
 /-!
 # Binomial Power Series
-We introduce formal power series of the form `(1 + X f(X)) ^ r`, where `r` is an element of a
-commutative binomial ring `R`, and `f(X)` is a formal power series with coefficients in a
-commutative `R`-algebra. This formal exponentiation operation makes the group `1 + XR[[X]]` into an
-`R`-module.
+We introduce formal power series of the form `(1 + X) ^ r`, where `r` is an element of a
+commutative binomial ring `R`.
+
+-- also, substitute `f(X)` for `X`.
+--This formal exponentiation operation makes the group `1 + XR[[X]]` into an `R`-module.
 
 ## Main Definitions
-  * `BinomialPow`?
+ * `PowerSeries.binomialSeries`: A power series expansion of `(1 + X) ^ r`, where `r` is an element
+  of a commutative binomial ring `R`.
 
 ## Main results
 
-  * coefficients of powers of binomials
+ * `PowerSeries.binomial_add`: Adding exponents yields multiplication of series.
+ * `PowerSeries.binomialSeries_nat`: when `r` is a natural number, we get `(1 + X) ^ r`.
+ * `PowerSeries.rescale_neg_one_invOneSubPow`: The image of `(1 - X) ^ (-d)` under the map
+   `X ↦ (-X)` is `(1 + X) ^ (-d)`
 
 ## To do
 
@@ -41,16 +46,17 @@ namespace PowerSeries
 variable [CommRing R] [BinomialRing R]
 
 /-- The power series for `(1 + X) ^ r`. -/
-def BinomialSeries (r : R) : PowerSeries R :=
-  mk fun n => Ring.choose r n
+def binomialSeries (A) [One A] [SMul R A] (r : R) : PowerSeries A :=
+  mk fun n => Ring.choose r n • 1
 
 @[simp]
-lemma binomial_coeff (r : R) (n : ℕ) : (coeff R n) (BinomialSeries r) = Ring.choose r n := by
-  dsimp only [BinomialSeries]
-  exact coeff_mk n fun n ↦ Ring.choose r n
+lemma binomialSeries_coeff [Semiring A] [SMul R A] (r : R) (n : ℕ) :
+    (coeff A n) (binomialSeries A r) = Ring.choose r n • 1 :=
+  coeff_mk n fun n ↦ Ring.choose r n • 1
 
 @[simp]
-lemma binomial_add (r s : R) : BinomialSeries (r + s) = BinomialSeries r * BinomialSeries s := by
+lemma binomialSeries_add [Semiring A] [Algebra R A] (r s : R) :
+    binomialSeries A (r + s) = binomialSeries A r * binomialSeries A s := by
   ext n
   simp only [binomialSeries_coeff, Ring.add_choose_eq n (Commute.all r s), coeff_mul,
     Algebra.mul_smul_comm, mul_one, sum_smul]
@@ -92,4 +98,21 @@ lemma rescale_neg_one_invOneSubPow [CommRing A] (d : ℕ) :
       show (d : ℤ) + 1 + n - 1 = d + n by omega, ← Nat.cast_add, Ring.choose_eq_nat_choose]
     norm_cast
 
+/-!
+lemma binomialSeries_mul (r : R) : -- need mvPowerSeries
+    (1 + (X 1)) ^ r * (1 + (X 2)) ^ r = (1 + (X 1) + (X 2) + (X 1) * (X 2)) ^ r := by
+-/
+
+/-- The power series given by `(1 + X * f X) ^ r`. -/
+def BinomialEval (f : PowerSeries R) (r : R) : PowerSeries R :=
+  eval f (binomialSeries R r)
+
+/-!
+/-- `(1 + X) ^ (r * s) = ((1 + X) ^ r) ^ s` -/
+lemma binomial_mul (r s : R) :
+    BinomialSeries (r * s) = BinomialEval (mk fun n => Ring.choose r (n + 1)) s := by
+
+  simp only [binomial_coeff, BinomialEval, eval_coeff, smul_eq_mul]
+  rw [some_theorem_about_(r*s).choose]
+-/
 end PowerSeries
