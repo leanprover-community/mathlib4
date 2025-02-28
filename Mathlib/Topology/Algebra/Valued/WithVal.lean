@@ -14,7 +14,7 @@ For a given valuation `v : Valuation R Γ₀` on a ring `R` taking values in `Γ
 defines the type synonym `WithVal v` of `R`. By assigning a `Valued (WithVal v) Γ₀` instance,
 `WithVal v` represents the ring `R` equipped with the topology coming from `v`. The type
 synonym `WithVal v` is in isomorphism to `R` as rings via `WithVal.equiv v`. This
-isomorphism should be used to explicitly map terms of `WithVal v` with terms of `R`.
+isomorphism should be used to explicitly map terms of `WithVal v` to terms of `R`.
 
 The `WithVal` type synonym is used to define the completion of `R` with respect to `v` in
 `Valuation.Completion`. An example application of this is
@@ -66,8 +66,6 @@ instance (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ := Valued.mk' v
 
 /-- Canonical ring equivalence between `WithValuation v` and `R`. -/
 def equiv : WithVal v ≃+* R := RingEquiv.refl _
-
-theorem apply (r : WithVal v) : v r = v (WithVal.equiv v r) := rfl
 
 end WithVal
 
