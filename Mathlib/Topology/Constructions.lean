@@ -1180,7 +1180,7 @@ lemma Topology.IsInducing.sumElim_of_separatedNhds
       trans g ⁻¹' t
       exacts [inter_subset_left, hst]
 
-lemma IsEmbedding.sumElim_of_separatedNhds
+lemma Topology.IsEmbedding.sumElim_of_separatedNhds
     (hf : IsEmbedding f) (hg : IsEmbedding g) (h : Function.Injective (Sum.elim f g))
     {U V : Set Z} (hsep : SeparatedNhds U V) (hfU : Set.range f ⊆ U) (hgV : Set.range g ⊆ V) :
     IsEmbedding (Sum.elim f g) :=
