@@ -65,9 +65,11 @@ instance (U : Set 𝕜) : CoeFun (Divisor U) (fun _ ↦ 𝕜 → ℤ) where
 
 attribute [coe] Divisor.toFun
 
+abbrev support (D : Divisor U)  := Function.support D
+
 /-- Divisors are `FunLike`: the coercion from divisors to functions is injective. -/
 instance : FunLike (Divisor U) 𝕜 ℤ where
-  coe := fun D ↦ D.toFun
+  coe := fun D ↦ D
   coe_injective' := fun ⟨_, _, _⟩ ⟨_, _, _⟩ ↦ by simp
 
 /-- Helper lemma for the `ext` tactic: two divisors are equal if their
@@ -80,8 +82,7 @@ theorem ext {D₁ D₂ : Divisor U} (h : ∀ a, D₁ a = D₂ a) : D₁ = D₂ :
 -/
 
 /-- The support of a divisor is discrete. -/
-theorem discreteSupport (D : Divisor U) :
-    DiscreteTopology D.toFun.support := by
+theorem discreteSupport (D : Divisor U) : DiscreteTopology D.support := by
   have : Function.support D = {x | D x = 0}ᶜ ∩ U := by
     ext x
     constructor
@@ -93,7 +94,7 @@ theorem discreteSupport (D : Divisor U) :
 
 /-- If `U` is closed, the the support of a divisor on `U` is also closed. -/
 theorem closedSupport (D : Divisor U) (hU : IsClosed U) :
-    IsClosed D.toFun.support := by
+    IsClosed D.support := by
   convert closed_compl_of_codiscreteWithin D.supportDiscreteWithinDomain hU
   ext x
   constructor
@@ -104,7 +105,7 @@ theorem closedSupport (D : Divisor U) (hU : IsClosed U) :
 
 /-- If `U` is closed, the the support of a divisor on `U` is finite. -/
 theorem finiteSupport (D : Divisor U) (hU : IsCompact U) :
-    Set.Finite D.toFun.support :=
+    Set.Finite D.support :=
   (hU.of_isClosed_subset (D.closedSupport hU.isClosed)
     D.supportWithinDomain).finite D.discreteSupport
 
@@ -130,7 +131,7 @@ instance : Add (Divisor U) where
   add := by
     intro D₁ D₂
     exact {
-      toFun := D₁.toFun + D₂.toFun
+      toFun := D₁ + D₂
       supportWithinDomain := by
         intro x
         contrapose
@@ -151,7 +152,7 @@ instance : Neg (Divisor U) where
   neg := by
     intro D
     exact {
-      toFun := -D.toFun
+      toFun := -D
       supportWithinDomain := by
         intro x hx
         rw [Function.support_neg', Function.mem_support, ne_eq] at hx
