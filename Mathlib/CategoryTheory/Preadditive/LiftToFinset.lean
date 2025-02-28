@@ -50,16 +50,8 @@ def myOtherCocone (f : α → C) :
   pt := ∐ f
   ι :=
   { app S :=  ∑ a : S, Sigma.π _ a ≫ Sigma.ι f a.1.as
-    naturality S₁ S₂ f := by {
-      rcases f with ⟨⟨f⟩⟩
-      change _ ⊆ _ at f
-      simp only [CoproductsFromFiniteFiltered.liftToFinsetObj_obj, Discrete.functor_obj_eq_as,
-        Functor.const_obj_obj, Finset.le_eq_subset,
-        CoproductsFromFiniteFiltered.liftToFinsetObj_map, Finset.univ_eq_attach,
-        Functor.const_obj_map, Category.comp_id]
-      ext ⟨b, hb⟩
-      simp [Preadditive.comp_sum, Sigma.ι_π_assoc, dite_comp, zero_comp, Finset.sum_dite_eq]
-    } }
+    naturality S₁ S₂ f := Sigma.hom_ext _ _ fun ⟨b, hb⟩ => by
+      simp [Preadditive.comp_sum, Sigma.ι_π_assoc, dite_comp, zero_comp, Finset.sum_dite_eq] }
 
 def isColimit (f : α → C) : IsColimit (myOtherCocone f) := sorry
 
