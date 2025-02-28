@@ -14,7 +14,7 @@ import Mathlib.RingTheory.Nakayama
 variable {R : Type*} [CommRing R] (I : Ideal R)
 
 lemma Ideal.isMaximal_iff_forall_isPrime {I : Ideal R} :
-  I.IsMaximal ↔ I ≠ ⊤ ∧ ∀ J, Ideal.IsPrime J → I ≤ J → I = J := by
+    I.IsMaximal ↔ I ≠ ⊤ ∧ ∀ J, Ideal.IsPrime J → I ≤ J → I = J := by
   constructor
   · intro H
     exact ⟨H.ne_top, fun J hJ e => H.eq_of_le hJ.ne_top e⟩
@@ -23,22 +23,20 @@ lemma Ideal.isMaximal_iff_forall_isPrime {I : Ideal R} :
     rwa [H.2 m hm.isPrime hm']
 
 lemma IsLocalization.isNoetherianRing (I : Ideal R) [I.IsPrime] (A : Type*) [CommRing A]
-  [Algebra R A] [IsLocalization.AtPrime A I] [hR : IsNoetherianRing R] :
-  IsNoetherianRing A := by
+    [Algebra R A] [IsLocalization.AtPrime A I] [hR : IsNoetherianRing R] : IsNoetherianRing A := by
   rw [isNoetherianRing_iff, isNoetherian_iff] at hR ⊢
   exact OrderEmbedding.wellFounded (IsLocalization.orderEmbedding I.primeCompl A).dual hR
 
 instance (I : Ideal R) [I.IsPrime] [IsNoetherianRing R] :
-  IsNoetherianRing (Localization.AtPrime I) :=
-  IsLocalization.isNoetherianRing I _
+    IsNoetherianRing (Localization.AtPrime I) := IsLocalization.isNoetherianRing I _
 
 lemma IsArtinianRing.eq_maximalIdeal_of_isPrime [IsArtinianRing R] [IsLocalRing R]
-  (I : Ideal R) [I.IsPrime] : I = IsLocalRing.maximalIdeal R :=
+    (I : Ideal R) [I.IsPrime] : I = IsLocalRing.maximalIdeal R :=
   IsLocalRing.eq_maximalIdeal <|
     ((isArtinianRing_iff_isNoetherianRing_and_primes_maximal).mp ‹_›).2 _ ‹_›
 
 lemma IsArtinianRing.radical_eq_maximalIdeal [IsArtinianRing R] [IsLocalRing R]
-  (I : Ideal R) (hI : I ≠ ⊤) : I.radical = IsLocalRing.maximalIdeal R := by
+    (I : Ideal R) (hI : I ≠ ⊤) : I.radical = IsLocalRing.maximalIdeal R := by
   rw [Ideal.radical_eq_sInf]
   refine (sInf_le ?_).antisymm (le_sInf ?_)
   · exact ⟨IsLocalRing.le_maximalIdeal hI, inferInstance⟩
@@ -64,8 +62,7 @@ lemma isArtinianRing_iff_isNilpotent_maximalIdeal [IsNoetherianRing R] [IsLocalR
       exact bot_le
 
 lemma Ideal.exists_pow_le_of_fg {R : Type*} [CommSemiring R] (I J : Ideal R) (h : I.FG)
-  (h' : I ≤ J.radical) :
-  ∃ n : ℕ, I ^ n ≤ J := by
+    (h' : I ≤ J.radical) : ∃ n : ℕ, I ^ n ≤ J := by
   revert h'
   refine Submodule.fg_induction _ _ (fun I => I ≤ J.radical → ∃ n : ℕ, I ^ n ≤ J) ?_ ?_ _ h
   · intro x hx
@@ -93,7 +90,7 @@ namespace Submodule
 
 open Ideal
 
-variables {M : Type*} [AddCommGroup M] [Module R M]
+variable {M : Type*} [AddCommGroup M] [Module R M]
 
 /-- *Nakayama's Lemma** - A slightly more general version of (4) in
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
@@ -198,7 +195,16 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes [IsNoetherianRing 
 /-- Krull height theorem -/
 lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes [IsNoetherianRing R]
     (I : Ideal R) (p : Ideal R) (hp : p ∈ I.minimalPrimes) :
-    p.height ≤ Cardinal.toENat I.spanRank := sorry
+    p.height ≤ Cardinal.toENat I.spanRank := by
+  rw [I.spanRank_toENat_eq_iInf_finset_card]
+  apply le_iInf; rintro ⟨s, hs, hspan⟩
+  induction' hn : hs.toFinset.card using Nat.strong_induction_on with n H generalizing R
+  cases n
+  · rw [CharP.cast_eq_zero, nonpos_iff_eq_zero, @Ideal.height_eq_primeHeight _ _ p hp.1.1,
+      @Ideal.primeHeight_eq_zero_iff, minimalPrimes]
+    simp_all
+  · rename ℕ => n
+    sorry
 
 lemma Ideal.height_le_spanRank_toENat [IsNoetherianRing R] (I : Ideal R) (hI : I ≠ ⊤) :
     I.height ≤ Cardinal.toENat I.spanRank := by
