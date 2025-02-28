@@ -758,7 +758,8 @@ variable [Semiring C] [Algebra R C]
 variable [Semiring D] [Algebra R D]
 variable [Semiring E] [Algebra R E]
 variable [Semiring F] [Algebra R F]
-
+variable (R' : Type*) [CommSemiring R'] [Algebra R R'] [Algebra R' A]
+  [Algebra R' C] [IsScalarTower R R' A] [IsScalarTower R R' C]
 section
 
 variable (R A)
@@ -1056,29 +1057,40 @@ theorem leftComm_toLinearEquiv :
     (leftComm R A B C : _ ≃ₗ[R] _) = _root_.TensorProduct.leftComm R A B C := rfl
 
 variable (R A B C D) in
+set_option maxSynthPendingDepth 2 in
 /-- Tensor product of algebras analogue of `mul_mul_mul_comm`.
 
-This is the algebra version of `TensorProduct.tensorTensorTensorComm`. -/
-def tensorTensorTensorComm : (A ⊗[R] B) ⊗[R] C ⊗[R] D ≃ₐ[R] (A ⊗[R] C) ⊗[R] B ⊗[R] D :=
-  let e₁ := Algebra.TensorProduct.assoc R A B (C ⊗[R] D)
-  let e₂ := congr (1 : A ≃ₐ[R] A) (leftComm R B C D)
-  let e₃ := (Algebra.TensorProduct.assoc R A C (B ⊗[R] D)).symm
-  e₁.trans (e₂.trans e₃)
+This is the algebra version of `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`. -/
+def tensorTensorTensorComm : (A ⊗[R] B) ⊗[R'] C ⊗[R] D ≃ₐ[R'] (A ⊗[R'] C) ⊗[R] B ⊗[R] D :=
+  AlgEquiv.ofLinearEquiv (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm _ _ _ _ _ _)
+    rfl (LinearMap.map_mul_iff _|>.2 <| by ext; simp)
 
 @[simp]
 theorem tensorTensorTensorComm_tmul (m : A) (n : B) (p : C) (q : D) :
-    tensorTensorTensorComm R A B C D (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
+    tensorTensorTensorComm R A B C D R' (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
   rfl
 
+set_option maxSynthPendingDepth 2 in
 @[simp]
+theorem tensorTensorTensorComm_symm_tmul (m : A) (n : C) (p : B) (q : D) :
+    (tensorTensorTensorComm R A B C D R').symm (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
+  rfl
+
 theorem tensorTensorTensorComm_symm :
-    (tensorTensorTensorComm R A B C D).symm = tensorTensorTensorComm R A C B D := by
+    (tensorTensorTensorComm R A B C D R).symm = tensorTensorTensorComm R A C B D R := by
   ext; rfl
 
-@[simp]
+set_option maxSynthPendingDepth 2 in
 theorem tensorTensorTensorComm_toLinearEquiv :
-    (tensorTensorTensorComm R A B C D : _ ≃ₗ[R] _) =
-      _root_.TensorProduct.tensorTensorTensorComm R A B C D := rfl
+    (tensorTensorTensorComm R A B C D R').toLinearEquiv =
+      TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R R' A B C D := rfl
+
+@[simp]
+theorem tensorTensorTensorComm_eq_tensorTensorTensorComm :
+    (tensorTensorTensorComm R A B C D R).toLinearEquiv =
+      _root_.TensorProduct.tensorTensorTensorComm R A B C D := by
+  apply LinearEquiv.toLinearMap_injective
+  ext; simp
 
 end
 
