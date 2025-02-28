@@ -113,7 +113,7 @@ variable (R) in
 abbrev Affine : Type r :=
   WeierstrassCurve R
 
-/-- The coercion to a Weierstrass curve in affine coordinates. -/
+/-- The conversion from a Weierstrass curve to affine coordinates. -/
 abbrev toAffine (W : WeierstrassCurve R) : Affine R :=
   W
 
@@ -127,11 +127,13 @@ section Equation
 /-! ### Weierstrass equations -/
 
 variable (W') in
-/-- The polynomial $W(X, Y) := Y^2 + a_1XY + a_3Y - (X^3 + a_2X^2 + a_4X + a_6)$ associated to a
-Weierstrass curve `W` over `R`. For ease of polynomial manipulation, this is represented as a term
-of type `R[X][X]`, where the inner variable represents $X$ and the outer variable represents $Y$.
-For clarity, the alternative notations `Y` and `R[X][Y]` are provided in the `Polynomial`
-scope to represent the outer variable and the bivariate polynomial ring `R[X][X]` respectively. -/
+/-- The polynomial `W(X, Y) := Y² + a₁XY + a₃Y - (X³ + a₂X² + a₄X + a₆)` associated to a Weierstrass
+curve `W` over a ring `R` in affine coordinates.
+
+For ease of polynomial manipulation, this is represented as a term of type `R[X][X]`, where the
+inner variable represents `X` and the outer variable represents `Y`. For clarity, the alternative
+notations `Y` and `R[X][Y]` are provided in the `Polynomial.Bivariate` scope to represent the outer
+variable and the bivariate polynomial ring `R[X][X]` respectively. -/
 noncomputable def polynomial : R[X][Y] :=
   Y ^ 2 + C (C W'.a₁ * X + C W'.a₃) * Y - C (X ^ 3 + C W'.a₂ * X ^ 2 + C W'.a₄ * X + C W'.a₆)
 
@@ -182,7 +184,9 @@ lemma evalEval_polynomial_zero : W'.polynomial.evalEval 0 0 = -W'.a₆ := by
   simp only [evalEval_polynomial, zero_add, zero_sub, mul_zero, zero_pow <| Nat.succ_ne_zero _]
 
 variable (W') in
-/-- The proposition that an affine point $(x, y)$ lies in `W`. In other words, $W(x, y) = 0$. -/
+/-- The proposition that an affine point `(x, y)` lies in a Weierstrass curve `W`.
+
+In other words, it satisfies the Weierstrass equation `W(X, Y) = 0`. -/
 def Equation (x y : R) : Prop :=
   W'.polynomial.evalEval x y = 0
 
@@ -211,9 +215,9 @@ section Nonsingular
 /-! ### Nonsingular Weierstrass equations -/
 
 variable (W') in
-/-- The partial derivative $W_X(X, Y)$ of $W(X, Y)$ with respect to $X$.
-
-TODO: define this in terms of `Polynomial.derivative`. -/
+/-- The partial derivative `W_X(X, Y)` with respect to `X` of the polynomial `W(X, Y)` associated to
+a Weierstrass curve `W` in affine coordinates. -/
+-- TODO: define this in terms of `Polynomial.derivative`.
 noncomputable def polynomialX : R[X][Y] :=
   C (C W'.a₁) * Y - C (C 3 * X ^ 2 + C (2 * W'.a₂) * X + C W'.a₄)
 
@@ -227,9 +231,9 @@ lemma evalEval_polynomialX_zero : W'.polynomialX.evalEval 0 0 = -W'.a₄ := by
   simp only [evalEval_polynomialX, zero_add, zero_sub, mul_zero, zero_pow <| Nat.succ_ne_zero _]
 
 variable (W') in
-/-- The partial derivative $W_Y(X, Y)$ of $W(X, Y)$ with respect to $Y$.
-
-TODO: define this in terms of `Polynomial.derivative`. -/
+/-- The partial derivative `W_Y(X, Y)` with respect to `Y` of the polynomial `W(X, Y)` associated to
+a Weierstrass curve `W` in affine coordinates. -/
+-- TODO: define this in terms of `Polynomial.derivative`.
 noncomputable def polynomialY : R[X][Y] :=
   C (C 2) * Y + C (C W'.a₁ * X + C W'.a₃)
 
@@ -243,11 +247,12 @@ lemma evalEval_polynomialY_zero : W'.polynomialY.evalEval 0 0 = W'.a₃ := by
   simp only [evalEval_polynomialY, zero_add, mul_zero]
 
 variable (W') in
-/-- The proposition that an affine point $(x, y)$ in `W` is nonsingular.
-In other words, either $W_X(x, y) \ne 0$ or $W_Y(x, y) \ne 0$.
+/-- The proposition that an affine point `(x, y)` on a Weierstrass curve `W` is nonsingular.
 
-Note that this definition is only mathematically accurate for fields.
-TODO: generalise this definition to be mathematically accurate for a larger class of rings. -/
+In other words, either `W_X(x, y) ≠ 0` or `W_Y(x, y) ≠ 0`.
+
+Note that this definition is only mathematically accurate for fields. -/
+-- TODO: generalise this definition to be mathematically accurate for a larger class of rings.
 def Nonsingular (x y : R) : Prop :=
   W'.Equation x y ∧ (W'.polynomialX.evalEval x y ≠ 0 ∨ W'.polynomialY.evalEval x y ≠ 0)
 
@@ -294,7 +299,8 @@ section Ring
 /-! ### Group operation polynomials over a ring -/
 
 variable (W') in
-/-- The polynomial $-Y - a_1X - a_3$ associated to negation. -/
+/-- The negation polynomial `-Y - a₁X - a₃` associated to the negation of a nonsingular affine point
+on a Weierstrass curve. -/
 noncomputable def negPolynomial : R[X][Y] :=
   -(Y : R[X][Y]) - C (C W'.a₁ * X + C W'.a₃)
 
@@ -307,9 +313,10 @@ lemma Y_sub_negPolynomial : Y - W'.negPolynomial = W'.polynomialY := by
   rw [← Y_sub_polynomialY, sub_sub_cancel]
 
 variable (W') in
-/-- The $Y$-coordinate of the negation of an affine point in `W`.
+/-- The `Y`-coordinate of `-(x, y)` for a nonsingular affine point `(x, y)` on a Weierstrass curve
+`W`.
 
-This depends on `W`, and has argument order: $x$, $y$. -/
+This depends on `W`, and has argument order: `x`, `y`. -/
 @[simp]
 def negY (x y : R) : R :=
   -y - W'.a₁ * x - W'.a₃
@@ -322,20 +329,20 @@ lemma eval_negPolynomial (x y : R) : W'.negPolynomial.evalEval x y = W'.negY x y
   rw [negY, sub_sub, negPolynomial]
   eval_simp
 
-/-- The polynomial $L(X - x) + y$ associated to the line $Y = L(X - x) + y$,
-with a slope of $L$ that passes through an affine point $(x, y)$.
+/-- The line polynomial `ℓ(X - x) + y` associated to the line `Y = ℓ(X - x) + y` that passes through
+a nonsingular affine point `(x, y)` on a Weierstrass curve `W` with a slope of `ℓ`.
 
-This does not depend on `W`, and has argument order: $x$, $y$, $L$. -/
+This does not depend on `W`, and has argument order: `x`, `y`, `ℓ`. -/
 noncomputable def linePolynomial (x y ℓ : R) : R[X] :=
   C ℓ * (X - C x) + C y
 
 variable (W') in
-/-- The polynomial obtained by substituting the line $Y = L*(X - x) + y$, with a slope of $L$
-that passes through an affine point $(x, y)$, into the polynomial $W(X, Y)$ associated to `W`.
-If such a line intersects `W` at another point $(x', y')$, then the roots of this polynomial are
-precisely $x$, $x'$, and the $X$-coordinate of the addition of $(x, y)$ and $(x', y')$.
+/-- The addition polynomial obtained by substituting the line `Y = ℓ(X - x) + y` into the polynomial
+`W(X, Y)` associated to a Weierstrass curve `W`. If such a line intersects `W` at another
+nonsingular affine point `(x', y')` on `W`, then the roots of this polynomial are precisely `x`,
+`x'`, and the `X`-coordinate of the addition of `(x, y)` and `(x', y')`.
 
-This depends on `W`, and has argument order: $x$, $y$, $L$. -/
+This depends on `W`, and has argument order: `x`, `y`, `ℓ`. -/
 noncomputable def addPolynomial (x y ℓ : R) : R[X] :=
   W'.polynomial.eval <| linePolynomial x y ℓ
 
@@ -357,28 +364,28 @@ lemma addPolynomial_eq (x y ℓ : R) : W'.addPolynomial x y ℓ = -Cubic.toPoly
   ring1
 
 variable (W') in
-/-- The $X$-coordinate of the addition of two affine points $(x_1, y_1)$ and $(x_2, y_2)$ in `W`,
-where the line through them is not vertical and has a slope of $L$.
+/-- The `X`-coordinate of `(x₁, y₁) + (x₂, y₂)` for two nonsingular affine points `(x₁, y₁)` and
+`(x₂, y₂)` on a Weierstrass curve `W`, where the line through them has a slope of `ℓ`.
 
-This depends on `W`, and has argument order: $x_1$, $x_2$, $L$. -/
+This depends on `W`, and has argument order: `x₁`, `x₂`, `ℓ`. -/
 @[simp]
 def addX (x₁ x₂ ℓ : R) : R :=
   ℓ ^ 2 + W'.a₁ * ℓ - W'.a₂ - x₁ - x₂
 
 variable (W') in
-/-- The $Y$-coordinate of the negated addition of two affine points $(x_1, y_1)$ and $(x_2, y_2)$,
-where the line through them is not vertical and has a slope of $L$.
+/-- The `Y`-coordinate of `-((x₁, y₁) + (x₂, y₂))` for two nonsingular affine points `(x₁, y₁)` and
+`(x₂, y₂)` on a Weierstrass curve `W`, where the line through them has a slope of `ℓ`.
 
-This depends on `W`, and has argument order: $x_1$, $x_2$, $y_1$, $L$. -/
+This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `ℓ`. -/
 @[simp]
 def negAddY (x₁ x₂ y₁ ℓ : R) : R :=
   ℓ * (W'.addX x₁ x₂ ℓ - x₁) + y₁
 
 variable (W') in
-/-- The $Y$-coordinate of the addition of two affine points $(x_1, y_1)$ and $(x_2, y_2)$ in `W`,
-where the line through them is not vertical and has a slope of $L$.
+/-- The `Y`-coordinate of `(x₁, y₁) + (x₂, y₂)` for two nonsingular affine points `(x₁, y₁)` and
+`(x₂, y₂)` on a Weierstrass curve `W`, where the line through them has a slope of `ℓ`.
 
-This depends on `W`, and has argument order: $x_1$, $x_2$, $y_1$, $L$. -/
+This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `ℓ`. -/
 @[simp]
 def addY (x₁ x₂ y₁ ℓ : R) : R :=
   W'.negY (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ)
@@ -434,14 +441,15 @@ section Field
 
 open Classical in
 variable (W) in
-/-- The slope of the line through two affine points $(x_1, y_1)$ and $(x_2, y_2)$ in `W`.
-If $x_1 \ne x_2$, then this line is the secant of `W` through $(x_1, y_1)$ and $(x_2, y_2)$,
-and has slope $(y_1 - y_2) / (x_1 - x_2)$. Otherwise, if $y_1 \ne -y_1 - a_1x_1 - a_3$,
-then this line is the tangent of `W` at $(x_1, y_1) = (x_2, y_2)$, and has slope
-$(3x_1^2 + 2a_2x_1 + a_4 - a_1y_1) / (2y_1 + a_1x_1 + a_3)$. Otherwise, this line is vertical,
-and has undefined slope, in which case this function returns the value 0.
+/-- The slope of the line through two nonsingular affine points `(x₁, y₁)` and `(x₂, y₂)` on a
+Weierstrass curve `W`.
 
-This depends on `W`, and has argument order: $x_1$, $x_2$, $y_1$, $y_2$. -/
+If `x₁ ≠ x₂`, then this line is the secant of `W` through `(x₁, y₁)` and `(x₂, y₂)`, and has slope
+`(y₁ - y₂) / (x₁ - x₂)`. Otherwise, if `y₁ ≠ -y₁ - a₁x₁ - a₃`, then this line is the tangent of `W`
+at `(x₁, y₁) = (x₂, y₂)`, and has slope `(3x₁² + 2a₂x₁ + a₄ - a₁y₁) / (2y₁ + a₁x₁ + a₃)`. Otherwise,
+this line is vertical, in which case this returns the value `0`.
+
+This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `y₂`. -/
 noncomputable def slope (x₁ x₂ y₁ y₂ : F) : F :=
   if x₁ = x₂ then if y₁ = W.negY x₂ y₂ then 0
     else (3 * x₁ ^ 2 + 2 * W.a₂ * x₁ + W.a₄ - W.a₁ * y₁) / (y₁ - W.negY x₁ y₁)
@@ -561,8 +569,8 @@ lemma nonsingular_add {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
     W.Nonsingular (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) (W.addY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) :=
   nonsingular_neg <| nonsingular_negAdd h₁ h₂ hxy
 
-/-- The formula x(P₁ + P₂) = x(P₁ - P₂) - ψ(P₁)ψ(P₂) / (x(P₂) - x(P₁))²,
-where ψ(x,y) = 2y + a₁x + a₃. -/
+/-- The formula `x(P₁ + P₂) = x(P₁ - P₂) - ψ(P₁)ψ(P₂) / (x(P₂) - x(P₁))²`,
+where `ψ(x,y) = 2y + a₁x + a₃`. -/
 lemma addX_eq_addX_negY_sub {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
     W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂) = W.addX x₁ x₂ (W.slope x₁ x₂ y₁ <| W.negY x₂ y₂) -
       (y₁ - W.negY x₁ y₁) * (y₂ - W.negY x₂ y₂) / (x₂ - x₁) ^ 2 := by
@@ -570,8 +578,8 @@ lemma addX_eq_addX_negY_sub {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂)
   field_simp [sub_ne_zero.mpr hx]
   ring1
 
-/-- The formula y(P₁)(x(P₂) - x(P₃)) + y(P₂)(x(P₃) - x(P₁)) + y(P₃)(x(P₁) - x(P₂)) = 0,
-assuming that P₁ + P₂ + P₃ = O. -/
+/-- The formula `y(P₁)(x(P₂) - x(P₃)) + y(P₂)(x(P₃) - x(P₁)) + y(P₃)(x(P₁) - x(P₂)) = 0`,
+assuming that `P₁ + P₂ + P₃ = O`. -/
 lemma cyclic_sum_Y_mul_X_sub_X {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
     let x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
     y₁ * (x₂ - x₃) + y₂ * (x₃ - x₁) + W.negAddY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂) * (x₁ - x₂) = 0 := by
@@ -579,9 +587,8 @@ lemma cyclic_sum_Y_mul_X_sub_X {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x�
   field_simp [sub_ne_zero.mpr hx]
   ring1
 
-/-- The formula
-ψ(P₁ + P₂) = (ψ(P₂)(x(P₁) - x(P₃)) - ψ(P₁)(x(P₂) - x(P₃))) / (x(P₂) - x(P₁)),
-where ψ(x,y) = 2y + a₁x + a₃. -/
+/-- The formula `ψ(P₁ + P₂) = (ψ(P₂)(x(P₁) - x(P₃)) - ψ(P₁)(x(P₂) - x(P₃))) / (x(P₂) - x(P₁))`,
+where `ψ(x,y) = 2y + a₁x + a₃`. -/
 lemma addY_sub_negY_addY {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
     let x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
     let y₃ := W.addY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂)
@@ -597,14 +604,15 @@ section Group
 /-! ### Nonsingular points -/
 
 variable (W') in
-/-- A nonsingular rational point on a Weierstrass curve `W` in affine coordinates. This is either
-the unique point at infinity `WeierstrassCurve.Affine.Point.zero` or the nonsingular affine points
-`WeierstrassCurve.Affine.Point.some` $(x, y)$ satisfying the Weierstrass equation of `W`. -/
+/-- A nonsingular point on a Weierstrass curve `W` in affine coordinates. This is either the unique
+point at infinity `WeierstrassCurve.Affine.Point.zero` or a nonsingular affine point
+`WeierstrassCurve.Affine.Point.some (x, y)` satisfying the Weierstrass equation of `W`. -/
 inductive Point
   | zero
   | some {x y : R} (h : W'.Nonsingular x y)
 
-/-- For an algebraic extension `S` of `R`, the type of nonsingular `S`-rational points on `W`. -/
+/-- For an algebraic extension `S` of a ring `R`, the type of nonsingular `S`-points on a
+Weierstrass curve `W` over `R` in affine coordinates. -/
 scoped notation3:max W' "⟮" S "⟯" => Affine.Point <| baseChange W' S
 
 namespace Point
@@ -623,9 +631,9 @@ lemma zero_def : 0 = (.zero : W'.Point) :=
 lemma some_ne_zero {x y : R} (h : W'.Nonsingular x y) : Point.some h ≠ 0 := by
   rintro (_ | _)
 
-/-- The negation of a nonsingular rational point on `W`.
+/-- The negation of a nonsingular point on a Weierstrass curve in affine coordinates.
 
-Given a nonsingular rational point `P` on `W`, use `-P` instead of `neg P`. -/
+Given a nonsingular point `P` in affine coordinates, use `-P` instead of `neg P`. -/
 def neg : W'.Point → W'.Point
   | 0 => 0
   | some h => some <| nonsingular_neg h
@@ -651,9 +659,9 @@ instance : InvolutiveNeg W'.Point where
     · simp only [neg_some, negY_negY]
 
 open Classical in
-/-- The addition of two nonsingular points on `W`.
+/-- The addition of two nonsingular points on a Weierstrass curve in affine coordinates.
 
-Given two nonsingular points `P` and `Q` on `W`, use `P + Q` instead of `add P Q`. -/
+Given two nonsingular points `P` and `Q` in affine coordinates, use `P + Q` instead of `add P Q`. -/
 noncomputable def add : W.Point → W.Point → W.Point
   | 0, P => P
   | P, 0 => P
@@ -919,8 +927,8 @@ lemma map_injective : Function.Injective <| map (W' := W') f := by
   · simpa only [some.injEq] using ⟨f.injective (some.inj h).left, f.injective (some.inj h).right⟩
 
 variable (F K) in
-/-- The group homomorphism from `W⟮F⟯` to `W⟮K⟯` induced by the base change from `F` to `K`,
-where `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
+/-- The group homomorphism from `W⟮F⟯` to `W⟮K⟯` induced by the base change from `F` to `K`, where
+`W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
 abbrev baseChange [Algebra F K] [IsScalarTower R F K] : W'⟮F⟯ →+ W'⟮K⟯ :=
   map <| Algebra.ofId F K
 
