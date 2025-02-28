@@ -140,11 +140,6 @@ end
 
 open MulOpposite
 
-/-- The right regular action of a group on itself is transitive. -/
-@[to_additive "The right regular action of an additive group on itself is transitive."]
-instance MulAction.OppositeRegular.isPretransitive {G : Type*} [Group G] : IsPretransitive Gᵐᵒᵖ G :=
-  ⟨fun x y => ⟨op (x⁻¹ * y), mul_inv_cancel_left _ _⟩⟩
-
 @[to_additive]
 instance Semigroup.opposite_smulCommClass [Semigroup α] : SMulCommClass αᵐᵒᵖ α α where
   smul_comm _ _ _ := mul_assoc _ _ _
@@ -180,9 +175,3 @@ instance SMulCommClass.opposite_mid {M N} [Mul N] [SMul M N] [IsScalarTower M N 
 -- `MulAction αᵐᵒᵖ αᵐᵒᵖ` are defeq.
 example [Monoid α] : Monoid.toMulAction αᵐᵒᵖ = MulOpposite.instMulAction := by
   with_reducible_and_instances rfl
-
-/-- `Monoid.toOppositeMulAction` is faithful on cancellative monoids. -/
-@[to_additive "`AddMonoid.toOppositeAddAction` is faithful on cancellative monoids."]
-instance LeftCancelMonoid.toFaithfulSMul_opposite [LeftCancelMonoid α] :
-    FaithfulSMul αᵐᵒᵖ α where
-  eq_of_smul_eq_smul h := unop_injective <| mul_left_cancel (h 1)

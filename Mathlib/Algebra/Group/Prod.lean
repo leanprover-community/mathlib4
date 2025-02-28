@@ -3,6 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.ZeroOne.Prod
