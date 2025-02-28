@@ -195,7 +195,7 @@ theorem Convex.gauge_le (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorbs : Ab
     Convex ℝ { x | gauge s x ≤ a } := by
   by_cases ha : 0 ≤ a
   · rw [gauge_le_eq (hs.starConvex h₀) absorbs ha]
-    exact convex_iInter fun i => convex_iInter fun _ => hs.smul _
+    exact convex_iInter₂ fun i _ => hs.smul i
   · -- Porting note: `convert` needed help
     convert convex_empty (𝕜 := ℝ) (E := E)
     exact eq_empty_iff_forall_not_mem.2 fun x hx => ha <| (gauge_nonneg _).trans hx
@@ -204,9 +204,7 @@ theorem StarConvex.gauge_le (hs : StarConvex ℝ 0 s) (absorbs : Absorbent ℝ s
     StarConvex ℝ 0 { x | gauge s x ≤ a } := by
   by_cases ha : 0 ≤ a
   · rw [gauge_le_eq hs absorbs ha]
-    refine starConvex_iInter fun i => starConvex_iInter fun _ => ?_
-    rw [← smul_zero i]
-    exact hs.smul i
+    exact starConvex_iInter₂ fun i _ => hs.smul_zero i
   · convert starConvex_empty (0 : E)
     exact eq_empty_iff_forall_not_mem.2 fun x hx => ha <| (gauge_nonneg _).trans hx
 
