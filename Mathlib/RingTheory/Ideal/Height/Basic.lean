@@ -208,6 +208,15 @@ theorem Ideal.primeHeight_eq_ringKrullDim_iff [FiniteRingKrullDim R] [IsLocalRin
     simp_rw [h]
     exact IsLocalRing.maximalIdeal_primeHeight_eq_ringKrullDim
 
+lemma Ideal.height_le_iff {p : Ideal R} {n : ℕ} [p.IsPrime] :
+    p.height ≤ n ↔ ∀ q : Ideal R, q.IsPrime → q < p → q.height < n := by
+  constructor
+  · intro h q hq hqp; rw [Ideal.height_eq_primeHeight, Ideal.primeHeight] at h ⊢
+    apply (Order.height_le_coe_iff (x := (⟨p, ‹_›⟩ : (PrimeSpectrum R))) (n := n)).mp <;> assumption
+  · intro h; rw [Ideal.height_eq_primeHeight, Ideal.primeHeight]
+    apply Order.height_le_coe_iff.mpr; rintro ⟨q, hq⟩ hqp
+    convert h q hq hqp; rw [Ideal.height_eq_primeHeight, Ideal.primeHeight]
+
 theorem IsLocalization.primeHeight_comap (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
     [IsLocalization S A] (J : Ideal A) [J.IsPrime] :
     (J.comap (algebraMap R A)).primeHeight = J.primeHeight := by

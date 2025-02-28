@@ -102,6 +102,9 @@ lemma isArtinianRing_iff_isNoetherianRing_and_primes_maximal :
         refine Ideal.prod_le_inf.trans (le_sInf fun I hI => Finset.inf_le ?_)
         rwa [Set.Finite.mem_toFinset]
 
+lemma isArtinianRing_iff_ringKrullDim_eq_zero [IsNoetherianRing R] [Nontrivial R] :
+    IsArtinianRing R ↔ ringKrullDim R = 0 := sorry
+
 end Noetherian
 
 section IsLocalRing
