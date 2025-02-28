@@ -1731,7 +1731,7 @@ import Mathlib.CategoryTheory.Abelian.Injective.Basic
 import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 import Mathlib.CategoryTheory.Abelian.LeftDerived
 import Mathlib.CategoryTheory.Abelian.Monomorphisms
-import Mathlib.CategoryTheory.Abelian.Noetherian
+import Mathlib.CategoryTheory.Abelian.NoetherianObject
 import Mathlib.CategoryTheory.Abelian.NonPreadditive
 import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Abelian.Projective.Basic
