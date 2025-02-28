@@ -446,6 +446,20 @@ def subtype : S →* M where
   toFun := Subtype.val; map_one' := rfl; map_mul' _ _ := by simp
 
 @[to_additive (attr := simp)]
+lemma subtype_apply {s : Submonoid M} (x : s) :
+    s.subtype x = x := rfl
+
+@[to_additive]
+lemma subtype_injective (s : Submonoid M) :
+    Function.Injective s.subtype := fun _ ↦ by
+  simp
+
+@[to_additive (attr := simp)]
+lemma subtype_inj {s : Submonoid M} {x y : s} :
+    s.subtype x = s.subtype y ↔ x = y :=
+  s.subtype_injective.eq_iff
+
+@[to_additive (attr := simp)]
 theorem coe_subtype : ⇑S.subtype = Subtype.val :=
   rfl
 
