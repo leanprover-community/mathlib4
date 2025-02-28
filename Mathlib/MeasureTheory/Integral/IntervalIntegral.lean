@@ -986,7 +986,7 @@ theorem integral_congr_ae (h : ∀ᵐ x ∂μ, x ∈ Ι a b → f x = g x) :
 
 /-- Integrals are invariant when functions change along sets that are almost
 everywhere for the restricted measure. -/
-theorem integral_congr_ae_restict {a b : ℝ} {f g : ℝ → E} {μ : Measure ℝ}
+theorem integral_congr_ae_restrict {a b : ℝ} {f g : ℝ → E} {μ : Measure ℝ}
     (h : f =ᵐ[μ.restrict (Ι a b)] g) :
     ∫ x in a..b, f x ∂μ = ∫ x in a..b, g x ∂μ :=
   integral_congr_ae (ae_imp_of_ae_restrict h)
