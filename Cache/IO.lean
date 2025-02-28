@@ -367,12 +367,23 @@ def isFromMathlib (mod : Name) : Bool :=
   mod.getRoot == `Mathlib
 
 /-- Decompresses build files into their respective folders -/
+def unpackCacheSingle (cacheFile : String) (pkgDir : String) (force : Bool) : IO Unit := do
+  let args := (if force then #["-f"] else #[]) ++ #["-x", "--delete-corrupted", "-j", "-"]
+  let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
+  let (stdin, child) ← child.takeStdin
+  -- let pathStr := s!"{CACHEDIR / hash.asLTar}"
+  let config : Array Lean.Json := #[.mkObj [("file", cacheFile), ("base", pkgDir)]]
+  stdin.putStr <| Lean.Json.compress <| .arr config
+  let exitCode ← child.wait
+  if exitCode != 0 then throw <| IO.userError s!"leantar failed with error code {exitCode}"
+
+/-- Decompresses build files into their respective folders -/
 def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
   let hashMap ← hashMap.filterExists true
   let size := hashMap.size
   if size > 0 then
     let now ← IO.monoMsNow
-    IO.println s!"Decompressing {size} file(s)"
+    IO.println s!"Decompressing remaining {size} file(s)"
     let args := (if force then #["-f"] else #[]) ++ #["-x", "--delete-corrupted", "-j", "-"]
     let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
     let (stdin, child) ← child.takeStdin
@@ -403,9 +414,7 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait
     if exitCode != 0 then throw <| IO.userError s!"leantar failed with error code {exitCode}"
-    IO.println s!"Unpacked in {(← IO.monoMsNow) - now} ms"
-    IO.println "Completed successfully!"
-  else IO.println "No cache files to decompress"
+    IO.println s!"Unpacked remaining in {(← IO.monoMsNow) - now} ms"
 
 instance : Ord FilePath where
   compare x y := compare x.toString y.toString
