@@ -811,6 +811,12 @@ lemma isoZeroCocycles_hom_comp_subtype :
   dsimp [isoZeroCocycles]
   apply KernelFork.mapOfIsLimit_ι
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma isoZeroCocycles_inv_comp_iCocycles :
+    (isoZeroCocycles A).inv ≫ iCocycles A 0 =
+        ModuleCat.ofHom A.ρ.invariants.subtype ≫ (zeroCochainsLequiv A).toModuleIso.inv := by
+  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoZeroCocycles_hom_comp_subtype]
+
 /-- The 0th group cohomology of `A`, defined as the 0th cohomology of the complex of inhomogeneous
 cochains, is isomorphic to the invariants of the representation on `A`. -/
 def isoH0 : groupCohomology A 0 ≅ H0 A :=

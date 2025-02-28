@@ -65,7 +65,7 @@ private lemma lt_up (vlt : ∀ i, v i < up) : ∀ l ∈ ofFn v, l < up := by
   obtain ⟨y, rfl⟩ := h
   exact vlt y
 
-/-- `r` maps `(i : Fin (n + 1))` to `up ^ i`-/
+/-- `r` maps `(i : Fin (n + 1))` to `up ^ i`. -/
 local notation3 "r" => fun (i : Fin (n + 1)) ↦ up ^ i.1
 
 /-- We construct an algebra map `T1 f c` which maps `X_i` into `X_i + c • X_0 ^ r_i` when `i ≠ 0`
@@ -80,7 +80,7 @@ private lemma t1_comp_t1_neg (c : k) : (T1 f c).comp (T1 f (-c)) = AlgHom.id _ _
   cases i using Fin.cases <;>
   simp [Fin.succ_ne_zero]
 
-/- `T1 f 1` leads to an algebra equiv `T f`.-/
+/- `T1 f 1` leads to an algebra equiv `T f`. -/
 private noncomputable abbrev T := AlgEquiv.ofAlgHom (T1 f 1) (T1 f (-1))
   (t1_comp_t1_neg f 1) (by simpa using t1_comp_t1_neg f (-1))
 
@@ -176,7 +176,7 @@ private noncomputable abbrev hom1 : MvPolynomial (Fin n) k →ₐ[MvPolynomial (
   (Quotient.mkₐ (MvPolynomial (Fin n) k) (map (finSuccEquiv k n) (map (T f) I))).comp
   (Algebra.ofId (MvPolynomial (Fin n) k) ((MvPolynomial (Fin n) k)[X]))
 
-/- `hom1 f I` is integral.-/
+/- `hom1 f I` is integral. -/
 private lemma hom1_isIntegral (fne : f ≠ 0) (fi : f ∈ I): (hom1 f I).IsIntegral := by
   obtain u := T_leadingcoeff_isUnit f fne
   exact (monic_of_isUnit_leadingCoeff_inv_smul u).quotient_isIntegral <|
@@ -229,7 +229,7 @@ section mainthm
 open NoetherNormalization
 
 /-- There exists some `s ≤ n` and an integral injective algebra homomorphism
-from `k[X_0,...,X_(s-1)]` to `k[X_0,...,X_(n-1)]/I` if `I ≠ ⊤`.-/
+from `k[X_0,...,X_(s-1)]` to `k[X_0,...,X_(n-1)]/I` if `I ≠ ⊤`. -/
 theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) k))
     (hi : I ≠ ⊤) : ∃ s ≤ n, ∃ g : (MvPolynomial (Fin s) k) →ₐ[k] ((MvPolynomial (Fin n) k) ⧸ I),
     Function.Injective g ∧ g.IsIntegral := by
