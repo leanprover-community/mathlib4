@@ -13,58 +13,7 @@ import Mathlib.RingTheory.Nakayama
 # Krull Height Theorem
 -/
 
-#check IsLocalization.isNoetherianRing
-
 variable {R : Type*} [CommRing R] (I : Ideal R)
-
-lemma IsLocalization.isNoetherianRing (I : Ideal R) [I.IsPrime] (A : Type*) [CommRing A]
-    [Algebra R A] [IsLocalization.AtPrime A I] [hR : IsNoetherianRing R] : IsNoetherianRing A := by
-  infer_instance
-  -- sorry
-  -- rw [isNoetherianRing_iff, isNoetherian_iff] at hR ⊢
-  -- exact OrderEmbedding.wellFounded (IsLocalization.orderEmbedding I.primeCompl A).dual hR
-
-#find_home! IsLocalization.isNoetherianRing
-
-instance (I : Ideal R) [I.IsPrime] [IsNoetherianRing R] :
-    IsNoetherianRing (Localization.AtPrime I) := IsLocalization.isNoetherianRing I _
-
-namespace Submodule
-
-open Ideal
-
-variable {M : Type*} [AddCommGroup M] [Module R M]
-
-/-- *Nakayama's Lemma** - A slightly more general version of (4) in
-[Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
-See also `smul_sup_eq_of_le_smul_of_le_jacobson_bot` for the special case when `J = ⊥`. -/
-lemma smul_sup_eq_smul_sup_of_le_smul_of_le_jacobson' {I J : Ideal R}
-  {N N' : Submodule R M} (hN' : N'.FG) (hIJ : I ≤ jacobson J)
-  (hNN : N' ≤ N ⊔ I • N') : N ⊔ N' = N ⊔ J • N' := by
-  replace hNN : N ⊔ N' ≤ N ⊔ I • N' := sup_le le_sup_left hNN
-  have hNN' : N ⊔ N' = N ⊔ I • N' :=
-    le_antisymm hNN (sup_le_sup_left (Submodule.smul_le.2 fun _ _ _ => Submodule.smul_mem _ _) _)
-  have h_comap := Submodule.comap_injective_of_surjective (LinearMap.range_eq_top.1 (N.range_mkQ))
-  have : (I • N').map N.mkQ = N'.map N.mkQ := by
-    simp_rw [←h_comap.eq_iff, comap_map_eq]
-    rwa [ker_mkQ, eq_comm, sup_comm (I • N'), sup_comm N']
-  have := @Submodule.eq_smul_of_le_smul_of_le_jacobson _ _ _ _ _ I J
-    (N'.map N.mkQ) (hN'.map _) (by rw [← map_smul'', this]) hIJ
-  rw [← map_smul'', ←h_comap.eq_iff, comap_map_eq, comap_map_eq, Submodule.ker_mkQ,
-    sup_comm] at this
-  rw [this, sup_comm]
-
-/-- *Nakayama's Lemma** - Statement (4) in
-[Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
-See also `smul_sup_eq_smul_sup_of_le_smul_of_le_jacobson` for a generalisation
-to the `jacobson` of any ideal -/
-lemma smul_sup_le_of_le_smul_of_le_jacobson_bot' {I : Ideal R}
-  {N N' : Submodule R M} (hN' : N'.FG) (hIJ : I ≤ jacobson ⊥)
-  (hNN : N' ≤ N ⊔ I • N') : N' ≤ N := by
-  rw [← sup_eq_left, smul_sup_eq_smul_sup_of_le_smul_of_le_jacobson' hN' hIJ hNN,
-    bot_smul, sup_bot_eq]
-
-end Submodule
 
 variable {R : Type*} [CommRing R]
 
