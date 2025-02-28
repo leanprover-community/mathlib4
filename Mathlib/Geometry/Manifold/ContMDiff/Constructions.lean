@@ -383,7 +383,7 @@ lemma ContMDiff.inr : ContMDiff I I n (@Sum.inr M M') := by
   refine ⟨continuous_inr.continuousAt, ?_⟩
   -- In extended charts, .inl equals the identity (on the chart sources).
   apply contDiffWithinAt_id.congr_of_eventuallyEq; swap
-  · simp only [mfld_simps, sum_chartAt_inr, PartialHomeomorph.lift_openEmbedding_toFun]
+  · simp only [mfld_simps, sum_chartAt_inr]
     congr
     apply Sum.inr_injective.extend_apply (chartAt _ x)
   set C := chartAt H x with hC
@@ -452,7 +452,7 @@ lemma contMDiff_of_contMDiff_inl {f : M → N}
   nontriviality N
   inhabit N
   let aux : N ⊕ N' → N := Sum.elim (@id N) (fun _ ↦ inhabited_h.default)
-  have : aux ∘ (@Sum.inl N N') ∘ f = f := by simp only [aux, Function.comp_apply]; rfl
+  have : aux ∘ (@Sum.inl N N') ∘ f = f := by simp only [aux]; rfl
   rw [← this]
   rw [← contMDiffOn_univ] at h ⊢
   apply (contMDiff_id.sumElim contMDiff_const).contMDiffOn (s := @Sum.inl N N' '' univ).comp h
@@ -465,7 +465,7 @@ lemma contMDiff_of_contMDiff_inr {g : M' → N'}
   nontriviality N'
   inhabit N'
   let aux : N ⊕ N' → N' := Sum.elim (fun _ ↦ inhabited_h.default) (@id N')
-  have : aux ∘ (@Sum.inr N N') ∘ g = g := by simp only [aux, Function.comp_apply]; rfl
+  have : aux ∘ (@Sum.inr N N') ∘ g = g := by simp only [aux]; rfl
   rw [← this]
   rw [← contMDiffOn_univ] at h ⊢
   apply ((contMDiff_const.sumElim contMDiff_id).contMDiffOn (s := Sum.inr '' univ)).comp h

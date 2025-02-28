@@ -100,9 +100,12 @@ def getLeanTar : IO String := do
 `CacheM` stores the following information:
 * the source directory where `Mathlib.lean` lies
 * the Lean search path. This contains
-  paths to the source directory of each imported package. The build files (e.g. `.olean`)
-  of a package should then be in a `.lake`-folder inside this root directory
-  (see `LIBDIR` and `IRDIR`).
+  paths to the source directory of each imported package, i.e. where the `.lean` files
+  can be found.
+  (Note: in a standard setup these might also be the paths where the correpsponding `.lake`
+  folders are located. However, `lake` has multiple options to customise these paths, like
+  setting `srcDir` in a `lean_lib`. See `mkBuildPaths` below which currently assumes
+  that no such options are set in any mathlib dependency)
 * the build directory for proofwidgets
 -/
 structure CacheM.Context where

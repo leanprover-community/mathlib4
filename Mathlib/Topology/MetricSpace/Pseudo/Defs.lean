@@ -251,17 +251,17 @@ export NNDist (nndist)
 instance (priority := 100) PseudoMetricSpace.toNNDist : NNDist α :=
   ⟨fun a b => ⟨dist a b, dist_nonneg⟩⟩
 
-/-- Express `dist` in terms of `nndist`-/
+/-- Express `dist` in terms of `nndist` -/
 theorem dist_nndist (x y : α) : dist x y = nndist x y := rfl
 
 @[simp, norm_cast]
 theorem coe_nndist (x y : α) : ↑(nndist x y) = dist x y := rfl
 
-/-- Express `edist` in terms of `nndist`-/
+/-- Express `edist` in terms of `nndist` -/
 theorem edist_nndist (x y : α) : edist x y = nndist x y := by
   rw [edist_dist, dist_nndist, ENNReal.ofReal_coe_nnreal]
 
-/-- Express `nndist` in terms of `edist`-/
+/-- Express `nndist` in terms of `edist` -/
 theorem nndist_edist (x y : α) : nndist x y = (edist x y).toNNReal := by
   simp [edist_nndist]
 
@@ -307,7 +307,7 @@ theorem edist_le_ofReal {x y : α} {r : ℝ} (hr : 0 ≤ r) :
     edist x y ≤ ENNReal.ofReal r ↔ dist x y ≤ r := by
   rw [edist_dist, ENNReal.ofReal_le_ofReal_iff hr]
 
-/-- Express `nndist` in terms of `dist`-/
+/-- Express `nndist` in terms of `dist` -/
 theorem nndist_dist (x y : α) : nndist x y = Real.toNNReal (dist x y) := by
   rw [dist_nndist, Real.toNNReal_coe]
 
@@ -323,7 +323,7 @@ theorem nndist_triangle_left (x y z : α) : nndist x y ≤ nndist z x + nndist z
 theorem nndist_triangle_right (x y z : α) : nndist x y ≤ nndist x z + nndist y z :=
   dist_triangle_right _ _ _
 
-/-- Express `dist` in terms of `edist`-/
+/-- Express `dist` in terms of `edist` -/
 theorem dist_edist (x y : α) : dist x y = (edist x y).toReal := by
   rw [edist_dist, ENNReal.toReal_ofReal dist_nonneg]
 
@@ -1153,6 +1153,36 @@ theorem denseRange_iff {f : β → α} : DenseRange f ↔ ∀ x, ∀ r > 0, ∃ 
 
 end Metric
 
+open Additive Multiplicative
+
 instance : PseudoMetricSpace (Additive α) := ‹_›
 instance : PseudoMetricSpace (Multiplicative α) := ‹_›
+
+section
+
+variable [PseudoMetricSpace X]
+
+@[simp] theorem nndist_ofMul (a b : X) : nndist (ofMul a) (ofMul b) = nndist a b := rfl
+
+@[simp] theorem nndist_ofAdd (a b : X) : nndist (ofAdd a) (ofAdd b) = nndist a b := rfl
+
+@[simp] theorem nndist_toMul (a b : Additive X) : nndist a.toMul b.toMul = nndist a b := rfl
+
+@[simp]
+theorem nndist_toAdd (a b : Multiplicative X) : nndist a.toAdd b.toAdd = nndist a b := rfl
+
+end
+
+open OrderDual
+
 instance : PseudoMetricSpace αᵒᵈ := ‹_›
+
+section
+
+variable [PseudoMetricSpace X]
+
+@[simp] theorem nndist_toDual (a b : X) : nndist (toDual a) (toDual b) = nndist a b := rfl
+
+@[simp] theorem nndist_ofDual (a b : Xᵒᵈ) : nndist (ofDual a) (ofDual b) = nndist a b := rfl
+
+end
