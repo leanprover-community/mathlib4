@@ -48,6 +48,14 @@ def process_file_in_place(file_path, line_numbers):
                     lines[next_index] = None  # Remove empty lines after the "variable in" line
                     next_index += 1
 
+                # Remove all empty lines after the removed "variable" line
+                next_index = after_index+1
+                print(next_index)
+                print(lines[next_index])
+                while next_index < len(lines) and (lines[next_index] is None or lines[next_index].strip() == ''):
+                    lines[next_index] = None  # Remove empty lines after the "variable in" line
+                    next_index += 1
+
     # Write the modified content back to the file
     with open(file_path, 'w') as outfile:
         for line in lines:
