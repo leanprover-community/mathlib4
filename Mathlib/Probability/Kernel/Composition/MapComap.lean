@@ -238,7 +238,19 @@ lemma comap_map_comm (κ : Kernel β γ) {f : α → β} {g : γ → δ}
 
 end MapComap
 
-open scoped ProbabilityTheory
+@[simp]
+lemma id_map {f : α → β} (hf : Measurable f) : Kernel.id.map f = deterministic f hf := by
+  ext
+  rw [Kernel.map_apply _ hf, Kernel.deterministic_apply, Kernel.id_apply, Measure.map_dirac hf]
+
+@[simp]
+lemma id_comap {f : α → β} (hf : Measurable f) : Kernel.id.comap f hf = deterministic f hf := by
+  ext
+  rw [Kernel.comap_apply _ hf, Kernel.deterministic_apply, Kernel.id_apply]
+
+lemma deterministic_map {f : α → β} (hf : Measurable f) {g : β → γ} (hg : Measurable g) :
+    (deterministic f hf).map g = deterministic (g ∘ f) (hg.comp hf) := by
+  rw [← id_map, ← map_comp_right _ hf hg, id_map]
 
 section FstSnd
 
@@ -634,29 +646,6 @@ lemma sectR_prodMkRight (β : Type*) [MeasurableSpace β] (κ : Kernel α γ) (b
 @[simp] lemma sectR_swapRight (κ : Kernel (α × β) γ) : sectR (swapLeft κ) = sectL κ := rfl
 
 end sectLsectR
-
-section Comp
-
-/-! ### Composition of two kernels -/
-
-
-variable {γ δ : Type*} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ} {f : β → γ} {g : γ → α}
-
-@[simp]
-lemma id_map {f : α → β} (hf : Measurable f) : Kernel.id.map f = deterministic f hf := by
-  ext
-  rw [Kernel.map_apply _ hf, Kernel.deterministic_apply, Kernel.id_apply, Measure.map_dirac hf]
-
-@[simp]
-lemma id_comap {f : α → β} (hf : Measurable f) : Kernel.id.comap f hf = deterministic f hf := by
-  ext
-  rw [Kernel.comap_apply _ hf, Kernel.deterministic_apply, Kernel.id_apply]
-
-lemma deterministic_map {f : α → β} (hf : Measurable f) {g : β → γ} (hg : Measurable g) :
-    (deterministic f hf).map g = deterministic (g ∘ f) (hg.comp hf) := by
-  rw [← id_map, ← map_comp_right _ hf hg, id_map]
-
-end Comp
 
 end Kernel
 end ProbabilityTheory
