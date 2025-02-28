@@ -16,9 +16,9 @@ given negation and addition operations defined by an analogue of the secant-and-
 homogeneous, so any instances of division become multiplication in the `Z`-coordinate. Most
 computational proofs are immediate from their analogous proofs for affine coordinates.
 
-This file defines polynomials associated to negation, doubling, and addition of nonsingular points
-in projective coordinates. The group operations and the group law on actual nonsingular points will
-be defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Point.lean`.
+This file defines polynomials associated to negation, doubling, and addition of nonsingular
+projective points. The group operations and the group law on actual nonsingular projective points
+will be defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Point.lean`.
 
 ## Main definitions
 

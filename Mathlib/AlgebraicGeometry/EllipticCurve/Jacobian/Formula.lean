@@ -16,9 +16,9 @@ negation and addition operations defined by an analogue of the secant-and-tangen
 `(2, 3, 1)`-homogeneous, so any instances of division become multiplication in the `Z`-coordinate.
 Most computational proofs are immediate from their analogous proofs for affine coordinates.
 
-This file defines polynomials associated to negation, doubling, and addition of nonsingular points
-in Jacobian coordinates. The group operations and the group law on actual nonsingular points will be
-defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Point.lean`.
+This file defines polynomials associated to negation, doubling, and addition of nonsingular Jacobian
+points. The group operations and the group law on actual nonsingular Jacobian points will be defined
+in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Point.lean`.
 
 ## Main definitions
 

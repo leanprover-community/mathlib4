@@ -22,14 +22,13 @@ partial derivatives `W_X(x, y, z)`, `W_Y(x, y, z)`, and `W_Z(x, y, z)` do not va
 
 This file gives an explicit implementation of equivalence classes of triples up to scaling by units,
 and defines polynomials associated to Weierstrass equations and the nonsingular condition in
-projective coordinates. The group law on the actual type of nonsingular points will be defined in
-`Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Point.lean`, based on the formulae for group
-operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Formula.lean`.
+projective coordinates. The group law on the actual type of nonsingular projective points will be
+defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Point.lean`, based on the formulae
+for group operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Formula.lean`.
 
 ## Main definitions
 
  * `WeierstrassCurve.Projective.PointClass`: the equivalence class of a point representative.
- * `WeierstrassCurve.Projective.toAffine`: the Weierstrass curve in affine coordinates.
  * `WeierstrassCurve.Projective.Nonsingular`: the nonsingular condition on a point representative.
  * `WeierstrassCurve.Projective.NonsingularLift`: the nonsingular condition on a point class.
 
@@ -38,6 +37,11 @@ operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Formula.lean`.
  * `WeierstrassCurve.Projective.polynomial_relation`: Euler's homogeneous function theorem.
 
 ## Implementation notes
+
+All definitions and lemmas for Weierstrass curves in projective coordinates live in the namespace
+`WeierstrassCurve.Projective` to distinguish them from those in other coordinates. This is simply an
+abbreviation for `WeierstrassCurve` that can be converted using `WeierstrassCurve.toProjective`.
+This can be converted into `WeierstrassCurve.Affine` using `WeierstrassCurve.Projective.toAffine`.
 
 A point representative is implemented as a term `P` of type `Fin 3 → R`, which allows for the vector
 notation `![x, y, z]`. However, `P` is not definitionally equivalent to the expanded vector
@@ -106,6 +110,11 @@ abbrev toProjective (W : WeierstrassCurve R) : Projective R :=
 
 namespace Projective
 
+variable (W') in
+/-- The coercion to a Weierstrass curve in affine coordinates. -/
+abbrev toAffine : Affine R :=
+  W'
+
 lemma fin3_def (P : Fin 3 → R) : ![P x, P y, P z] = P := by
   ext n; fin_cases n <;> rfl
 
@@ -150,11 +159,6 @@ lemma smul_eq (P : Fin 3 → R) {u : R} (hu : IsUnit u) : (⟦u • P⟧ : Point
 lemma smul_equiv_smul (P Q : Fin 3 → R) {u v : R} (hu : IsUnit u) (hv : IsUnit v) :
     u • P ≈ v • Q ↔ P ≈ Q := by
   rw [← Quotient.eq_iff_equiv, ← Quotient.eq_iff_equiv, smul_eq P hu, smul_eq Q hv]
-
-variable (W') in
-/-- The coercion to a Weierstrass curve in affine coordinates. -/
-abbrev toAffine : Affine R :=
-  W'
 
 lemma equiv_iff_eq_of_Z_eq' {P Q : Fin 3 → R} (hz : P z = Q z) (hQz : Q z ∈ nonZeroDivisors R) :
     P ≈ Q ↔ P = Q := by

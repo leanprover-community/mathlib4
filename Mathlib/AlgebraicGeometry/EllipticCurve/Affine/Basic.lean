@@ -16,9 +16,9 @@ on `W` is a tuple `(x, y)` of elements in `R` satisfying the *Weierstrass equati
 *nonsingular* if its partial derivatives `W_X(x, y)` and `W_Y(x, y)` do not vanish simultaneously.
 
 This file defines polynomials associated to Weierstrass equations and the nonsingular condition in
-affine coordinates. The group law on the actual type of nonsingular points will be defined in
-`Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Point.lean`, based on the formulae for group
-operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean`.
+affine coordinates. The group law on the actual type of nonsingular points in affine coordinates
+will be defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Point.lean`, based on the
+formulae for group operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean`.
 
 ## Main definitions
 
@@ -29,6 +29,12 @@ operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean`.
 
  * `WeierstrassCurve.Affine.equation_iff_nonsingular`: an elliptic curve in affine coordinates is
     nonsingular at every point.
+
+## Implementation notes
+
+All definitions and lemmas for Weierstrass curves in affine coordinates live in the namespace
+`WeierstrassCurve.Affine` to distinguish them from those in other coordinates. This is simply an
+abbreviation for `WeierstrassCurve` that can be converted using `WeierstrassCurve.toAffine`.
 
 ## References
 
