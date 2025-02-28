@@ -267,6 +267,8 @@ theorem le_of_lt_add_one (h : m < n + 1) : m ≤ n :=
 theorem lt_add_one_iff (hm : n ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
   Order.lt_add_one_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
 
+theorem lt_coe_add_one_iff {n : ℕ} : m < n + 1 ↔ m ≤ n := lt_add_one_iff (coe_ne_top n)
+
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
 
