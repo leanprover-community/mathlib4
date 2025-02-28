@@ -1128,16 +1128,6 @@ theorem isInducing_sumElim :
   · intro ⟨hf, hg, hFg, hfG⟩
     exact hf.sumElim hg hFg hfG
 
-lemma inl_image_eq_preimage_elim (S : Set Z) :
-    Sum.inl '' (f ⁻¹' S) = Sum.elim f g ⁻¹' S := by
-  ext x
-  sorry -- missing lemma, should be easy
-
-lemma inr_image_eq_preimage_elim (S : Set Z) :
-    Sum.inr '' (g ⁻¹' S) = Sum.elim f g ⁻¹' S := by
-  ext x
-  sorry -- missing lemma, should be easy
-
 lemma Topology.IsInducing.sumElim_of_separatedNhds
     (hf : IsInducing f) (hg : IsInducing g) (hsep : SeparatedNhds (range f) (range g)) :
     IsInducing (Sum.elim f g) :=

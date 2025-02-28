@@ -807,6 +807,11 @@ theorem compl_range_inl : (range (Sum.inl : α → α ⊕ β))ᶜ = range (Sum.i
 theorem compl_range_inr : (range (Sum.inr : β → α ⊕ β))ᶜ = range (Sum.inl : α → α ⊕ β) :=
   IsCompl.compl_eq isCompl_range_inl_range_inr.symm
 
+theorem sumElim_preimage_eq {f : α → γ} {g : β → γ} (S : Set γ) :
+    Sum.elim f g ⁻¹' S = Sum.inl '' (f ⁻¹' S) ∪ Sum.inr '' (g ⁻¹' S) := by
+  ext x
+  cases x <;> simp
+
 theorem image_preimage_inl_union_image_preimage_inr (s : Set (α ⊕ β)) :
     Sum.inl '' (Sum.inl ⁻¹' s) ∪ Sum.inr '' (Sum.inr ⁻¹' s) = s := by
   rw [image_preimage_eq_inter_range, image_preimage_eq_inter_range, ← inter_union_distrib_left,
