@@ -208,9 +208,10 @@ theorem product_evalFrom
       (M₁.product M₂ p).evalFrom s x = ⟨M₁.evalFrom s.1 x, M₂.evalFrom s.2 x⟩ := by
   revert s
   dsimp [evalFrom, product]
-  induction' x with a x' ih
-  · simp
-  · intro s
+  induction x with
+  | nil => simp
+  | cons a x ih =>
+    intro s
     simp [List.foldl, ih, DFA.step]
 
 theorem product_accepts_iff
