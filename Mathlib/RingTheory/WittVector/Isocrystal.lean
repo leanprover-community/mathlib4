@@ -115,15 +115,13 @@ open WittVector
 
 variable (V : Type*) [AddCommGroup V] [Isocrystal p k V]
 variable (V₂ : Type*) [AddCommGroup V₂] [Isocrystal p k V₂]
-variable {V}
 
+variable {V} in
 /--
 Project the Frobenius automorphism from an isocrystal. Denoted by `Φ(p, k)` when V can be inferred.
 -/
 def Isocrystal.frobenius : V ≃ᶠˡ[p, k] V :=
   Isocrystal.frob (p := p) (k := k) (V := V)
-
-variable (V)
 
 @[inherit_doc] scoped[Isocrystal] notation "Φ(" p ", " k ")" => WittVector.Isocrystal.frobenius p k
 
