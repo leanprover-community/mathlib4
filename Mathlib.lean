@@ -4209,6 +4209,7 @@ import Mathlib.Order.Closure
 import Mathlib.Order.Cofinal
 import Mathlib.Order.CompactlyGenerated.Basic
 import Mathlib.Order.CompactlyGenerated.Intervals
+import Mathlib.Order.Comparable
 import Mathlib.Order.Compare
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.CompleteLattice
@@ -4302,7 +4303,6 @@ import Mathlib.Order.Hom.Lattice
 import Mathlib.Order.Hom.Order
 import Mathlib.Order.Hom.Set
 import Mathlib.Order.Ideal
-import Mathlib.Order.Incomparable
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.Interval.Basic
 import Mathlib.Order.Interval.Finset.Basic
