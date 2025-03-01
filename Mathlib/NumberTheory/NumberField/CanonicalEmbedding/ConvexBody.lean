@@ -276,9 +276,9 @@ theorem convexBodySumFun_apply' (x : mixedSpace K) :
     ← Finset.univ.sum_subtype_eq_sum_filter, Finset.mul_sum]
   congr
   · ext w
-    rw [mult, if_pos w.prop, normAtPlace_apply_isReal, Nat.cast_one, one_mul]
+    rw [mult, if_pos w.prop, normAtPlace_apply_of_isReal, Nat.cast_one, one_mul]
   · ext w
-    rw [mult, if_neg (not_isReal_iff_isComplex.mpr w.prop), normAtPlace_apply_isComplex,
+    rw [mult, if_neg (not_isReal_iff_isComplex.mpr w.prop), normAtPlace_apply_of_isComplex,
       Nat.cast_ofNat]
 
 theorem convexBodySumFun_nonneg (x : mixedSpace K) :
@@ -326,7 +326,7 @@ theorem convexBodySumFun_continuous :
   refine continuous_finset_sum Finset.univ fun w ↦ ?_
   obtain hw | hw := isReal_or_isComplex w
   all_goals
-  · simp only [normAtPlace_apply_isReal, normAtPlace_apply_isComplex, hw]
+  · simp only [normAtPlace_apply_of_isReal, normAtPlace_apply_of_isComplex, hw]
     fun_prop
 
 /-- The convex body equal to the set of points `x : mixedSpace K` such that
