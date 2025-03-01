@@ -53,10 +53,10 @@ import Mathlib.GroupTheory.GroupAction.Transitive
 
 ## Particular results for actions on finite types
 
-- `MulAction.isPreprimitive_of_primeCard` :
+- `MulAction.IsPreprimitive.of_prime_card` :
   A pretransitive action on a finite type of prime cardinal is preprimitive.
 
-- `IsPreprimitive.of_card_lt`
+- `MulAction.IsPreprimitive.of_card_lt`
   Given an equivariant map from a preprimitive action,
   if the image is at least twice the codomain, then the codomain is preprimitive.
 
@@ -294,10 +294,7 @@ section Finite
 
 namespace IsPreprimitive
 
-variable {M : Type*} [Group M] {α : Type*} [MulAction M α]
-variable {N β : Type*} [Group N] [MulAction N β]
-
-open scoped BigOperators Pointwise
+variable {H Y : Type*} [Group H] [MulAction H Y]
 
 /-- A pretransitive action on a set of prime order is preprimitive -/
 @[to_additive "A pretransitive action on a set of prime order is preprimitive"]
@@ -310,18 +307,13 @@ theorem of_prime_card [hGX : IsPretransitive M α] (hp : Nat.Prime (Nat.card α)
 
 variable {φ : M → N} {f : α →ₑ[φ] β}
 
-/-- The target of an equivariant map of large image is preprimitive if the source is -/
-@[to_additive "The target of an equivariant map of large image is preprimitive if the source is"]
+/-- The codomain of an equivariant map of large image is preprimitive if the domain is -/
+@[to_additive "The codomain of an equivariant map of large image is preprimitive if the domain is"]
 theorem of_card_lt [Finite β] [IsPretransitive N β] [IsPreprimitive M α]
     (hf' : Nat.card β < 2 * (Set.range f).ncard) :
     IsPreprimitive N β :=  by
-  classical
-  apply IsPreprimitive.mk
-  intro B hB
-  rcases B.eq_empty_or_nonempty with hB' | hB'
-  · left
-    rw [hB']
-    apply Set.subsingleton_empty
+  refine ⟨fun {B} hB ↦ ?_⟩
+  rcases B.eq_empty_or_nonempty with hB' | hB'; · simp [IsTrivialBlock, hB']
   rw [IsTrivialBlock, or_iff_not_imp_right]
   intro hB_ne_top
   -- we need Set.Subsingleton B ↔ Set.ncard B ≤ 1
