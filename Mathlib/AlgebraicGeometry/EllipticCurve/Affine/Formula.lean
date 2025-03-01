@@ -77,14 +77,14 @@ local macro "map_simp" : tactic =>
 
 universe r s u v w
 
-/-! ## Weierstrass curves -/
-
-namespace WeierstrassCurve.Affine
+namespace WeierstrassCurve
 
 variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} [CommRing R] [CommRing S]
   [CommRing A] [CommRing B] [Field F] [Field K] {W' : Affine R} {W : Affine F}
 
-/-! ### Negation formulae -/
+namespace Affine
+
+/-! ## Negation formulae in affine coordinates -/
 
 variable (W') in
 /-- The negation polynomial `-Y - a₁X - a₃` associated to the negation of a nonsingular affine point
@@ -143,7 +143,7 @@ lemma nonsingular_neg (x y : R) : W'.Nonsingular x (W'.negY x y) ↔ W'.Nonsingu
 @[deprecated (since := "2025-02-01")] alias nonsingular_neg_of := nonsingular_neg
 @[deprecated (since := "2025-02-01")] alias nonsingular_neg_iff := nonsingular_neg
 
-/-! ### Slope formulae -/
+/-! ## Slope formulae in affine coordinates -/
 
 variable (W') in
 /-- The line polynomial `ℓ(X - x) + y` associated to the line `Y = ℓ(X - x) + y` that passes through
@@ -192,10 +192,10 @@ lemma slope_of_Y_ne_eq_eval {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy : y
   rw [negY, evalEval_polynomialY]
   ring1
 
-/-! ### Addition formulae -/
+/-! ## Addition formulae in affine coordinates -/
 
 variable (W') in
-/-- The polynomial obtained by substituting the line `Y = ℓ(X - x) + y` into the polynomial
+/-- The addition polynomial obtained by substituting the line `Y = ℓ(X - x) + y` into the polynomial
 `W(X, Y)` associated to a Weierstrass curve `W`. If such a line intersects `W` at another
 nonsingular affine point `(x', y')` on `W`, then the roots of this polynomial are precisely `x`,
 `x'`, and the `X`-coordinate of the addition of `(x, y)` and `(x', y')`.
@@ -373,7 +373,7 @@ lemma addY_sub_negY_addY {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
   simp_rw [addY, negY, eq_div_iff (sub_ne_zero.mpr hx.symm)]
   linear_combination (norm := ring1) 2 * cyclic_sum_Y_mul_X_sub_X y₁ y₂ hx
 
-/-! ### Maps and base changes -/
+/-! ## Maps and base changes -/
 
 variable (f : R →+* S) (x y x₁ y₁ x₂ y₂ ℓ : R)
 
@@ -453,4 +453,6 @@ lemma baseChange_slope [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebr
     f ((W'.baseChange F).toAffine.slope x₁ x₂ y₁ y₂) := by
   rw [← RingHom.coe_coe, ← map_slope, map_baseChange]
 
-end WeierstrassCurve.Affine
+end Affine
+
+end WeierstrassCurve

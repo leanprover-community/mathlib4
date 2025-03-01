@@ -71,14 +71,14 @@ local macro "map_simp" : tactic =>
 
 universe r s u v
 
-/-! ## Weierstrass curves -/
-
-namespace WeierstrassCurve.Jacobian
+namespace WeierstrassCurve
 
 variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} [CommRing R] [CommRing S]
   [CommRing A] [CommRing B] [Field F] [Field K] {W' : Jacobian R} {W : Jacobian F}
 
-/-! ### Negation formulae -/
+namespace Jacobian
+
+/-! ## Negation formulae in Jacobian coordinates -/
 
 variable (W') in
 /-- The `Y`-coordinate of a representative of `-P` for a Jacobian point representative `P` on a
@@ -157,7 +157,7 @@ lemma nonsingular_iff_of_Y_eq_negY {P : Fin 3 → F} (hPz : P z ≠ 0) (hy : P y
   have hy' : eval P W.polynomialY = P y - W.negY P := by rw [negY, eval_polynomialY]; ring1
   rw [nonsingular_iff_of_Z_ne_zero hPz, hy', hy, sub_self, ne_self_iff_false, or_false]
 
-/-! ### Doubling formulae -/
+/-! ## Doubling formulae in Jacobian coordinates -/
 
 variable (W') in
 /-- The unit associated to a representative of `2 • P` for a Jacobian point representative `P` on a
@@ -384,7 +384,7 @@ lemma dblXYZ_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equati
   erw [dblXYZ, smul_fin3, ← dblX_of_Z_ne_zero hP hQ hPz hQz hx hy, hZ.mul_div_cancel,
     ← dblY_of_Z_ne_zero hP hQ hPz hQz hx hy, hZ.mul_div_cancel, mul_one]
 
-/-! ### Addition formulae -/
+/-! ## Addition formulae in Jacobian coordinates -/
 
 /-- The unit associated to a representative of `P + Q` for two Jacobian point representatives `P`
 and `Q` on a Weierstrass curve `W` that are not `2`-torsion.
@@ -702,7 +702,7 @@ lemma addXYZ_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equati
   erw [addXYZ, smul_fin3, ← addX_of_Z_ne_zero hP hQ hPz hQz hx, hZ.mul_div_cancel,
     ← addY_of_Z_ne_zero hP hQ hPz hQz hx, hZ.mul_div_cancel, mul_one]
 
-/-! ### Maps and base changes -/
+/-! ## Maps and base changes -/
 
 variable (f : R →+* S) (P Q : Fin 3 → R)
 
@@ -816,4 +816,6 @@ lemma baseChange_addXYZ : (W'.baseChange B).toJacobian.addXYZ (f ∘ P) (f ∘ Q
     f ∘ (W'.baseChange A).toJacobian.addXYZ P Q := by
   rw [← RingHom.coe_coe, ← map_addXYZ, map_baseChange]
 
-end WeierstrassCurve.Jacobian
+end Jacobian
+
+end WeierstrassCurve

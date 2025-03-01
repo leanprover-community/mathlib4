@@ -16,7 +16,7 @@ A point on the unweighted projective plane over a commutative ring `R` is an equ
 
 Let `W` be a Weierstrass curve over a commutative ring `R` with coefficients `aᵢ`. A
 *projective point* is a point on the unweighted projective plane over `R` satisfying the
-*homogeneous Weierstrass equation* `W(x, y, z) = 0` in *projective coordinates*, where
+*homogeneous Weierstrass equation* `W(X, Y, Z) = 0` in *projective coordinates*, where
 `W(X, Y, Z) := Y²Z + a₁XYZ + a₃YZ² - (X³ + a₂X²Z + a₄XZ² + a₆Z³)`. It is *nonsingular* if its
 partial derivatives `W_X(x, y, z)`, `W_Y(x, y, z)`, and `W_Z(x, y, z)` do not vanish simultaneously.
 
@@ -93,11 +93,11 @@ local macro "pderiv_simp" : tactic =>
 
 universe r s u v
 
-/-! ## Weierstrass curves -/
+variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v}
 
 namespace WeierstrassCurve
 
-variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v}
+/-! ## Projective coordinates -/
 
 variable (R) in
 /-- An abbreviation for a Weierstrass curve in projective coordinates. -/
@@ -126,8 +126,6 @@ lemma comp_fin3 (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] 
 
 variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K] {W' : Projective R}
   {W : Projective F}
-
-/-! ### Projective coordinates -/
 
 lemma smul_fin3 (P : Fin 3 → R) (u : R) : u • P = ![u * P x, u * P y, u * P z] := by
   simp [← List.ofFn_inj]
@@ -216,7 +214,7 @@ lemma Y_eq_iff {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
     P y * Q z = Q y * P z ↔ P y / P z = Q y / Q z :=
   (div_eq_div_iff hPz hQz).symm
 
-/-! ### Weierstrass equations -/
+/-! ## Weierstrass equations in projective coordinates -/
 
 variable (W') in
 /-- The polynomial `W(X, Y, Z) := Y²Z + a₁XYZ + a₃YZ² - (X³ + a₂X²Z + a₄XZ² + a₆Z³)` associated to a
@@ -282,7 +280,7 @@ lemma X_eq_zero_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Equat
     (hPz : P z = 0) : P x = 0 :=
   pow_eq_zero <| (equation_of_Z_eq_zero hPz).mp hP
 
-/-! ### Nonsingular Weierstrass equations -/
+/-! ## The nonsingular condition in projective coordinates -/
 
 variable (W') in
 /-- The partial derivative `W_X(X, Y, Z)` with respect to `X` of the polynomial `W(X, Y, Z)`
@@ -482,7 +480,7 @@ lemma nonsingularLift_some (X Y : R) :
 @[deprecated (since := "2024-08-27")] alias nonsingular_smul_iff := nonsingular_smul
 @[deprecated (since := "2024-08-27")] alias nonsingular_zero' := nonsingular_zero
 
-/-! ### Maps and base changes -/
+/-! ## Maps and base changes -/
 
 variable (f : R →+* S) (P : Fin 3 → R)
 

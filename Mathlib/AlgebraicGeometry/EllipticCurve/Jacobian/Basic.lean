@@ -16,7 +16,7 @@ equivalence class `[x : y : z]` of triples `(x, y, z) ≠ (0, 0, 0)` of elements
 
 Let `W` be a Weierstrass curve over a commutative ring `R` with coefficients `aᵢ`. A
 *Jacobian point* is a point on the projective plane over `R` with weights `(2, 3, 1)` satisfying the
-*`(2, 3, 1)`-homogeneous Weierstrass equation* `W(x, y, z) = 0` in *Jacobian coordinates*, where
+*`(2, 3, 1)`-homogeneous Weierstrass equation* `W(X, Y, Z) = 0` in *Jacobian coordinates*, where
 `W(X, Y, Z) := Y² + a₁XYZ + a₃YZ³ - (X³ + a₂X²Z² + a₄XZ⁴ + a₆Z⁶)`. It is *nonsingular* if its
 partial derivatives `W_X(x, y, z)`, `W_Y(x, y, z)`, and `W_Z(x, y, z)` do not vanish simultaneously.
 
@@ -93,11 +93,11 @@ local macro "pderiv_simp" : tactic =>
 
 universe r s u v
 
-/-! ## Weierstrass curves -/
+variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v}
 
 namespace WeierstrassCurve
 
-variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v}
+/-! ## Jacobian coordinates -/
 
 variable (R) in
 /-- An abbreviation for a Weierstrass curve in Jacobian coordinates. -/
@@ -126,8 +126,6 @@ lemma comp_fin3 (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] 
 
 variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K] {W' : Jacobian R}
   {W : Jacobian F}
-
-/-! ### Jacobian coordinates -/
 
 /-- The scalar multiplication for a Jacobian point representative on a Weierstrass curve. -/
 scoped instance : SMul R <| Fin 3 → R :=
@@ -229,7 +227,7 @@ lemma Y_eq_iff {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
     P y * Q z ^ 3 = Q y * P z ^ 3 ↔ P y / P z ^ 3 = Q y / Q z ^ 3 :=
   (div_eq_div_iff (pow_ne_zero 3 hPz) (pow_ne_zero 3 hQz)).symm
 
-/-! ### Weierstrass equations -/
+/-! ## Weierstrass equations in Jacobian coordinates -/
 
 variable (W') in
 /-- The polynomial `W(X, Y, Z) := Y² + a₁XYZ + a₃YZ³ - (X³ + a₂X²Z² + a₄XZ⁴ + a₆Z⁶)` associated to a
@@ -291,7 +289,7 @@ lemma equation_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.Equation P ↔ W.toAffine.Equation (P x / P z ^ 2) (P y / P z ^ 3) :=
   (equation_of_equiv <| equiv_some_of_Z_ne_zero hPz).trans <| equation_some ..
 
-/-! ### Nonsingular Weierstrass equations -/
+/-! ## The nonsingular condition in Jacobian coordinates -/
 
 variable (W') in
 /-- The partial derivative `W_X(X, Y, Z)` with respect to `X` of the polynomial `W(X, Y, Z)`
@@ -500,7 +498,7 @@ lemma nonsingularLift_some (X Y : R) :
     W'.NonsingularLift ⟦![X, Y, 1]⟧ ↔ W'.toAffine.Nonsingular X Y :=
   nonsingular_some X Y
 
-/-! ### Maps and base changes -/
+/-! ## Maps and base changes -/
 
 variable (f : R →+* S) (P : Fin 3 → R)
 

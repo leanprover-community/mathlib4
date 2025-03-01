@@ -73,14 +73,14 @@ local macro "map_simp" : tactic =>
 
 universe r s u v
 
-/-! ## Weierstrass curves -/
-
-namespace WeierstrassCurve.Jacobian
+namespace WeierstrassCurve
 
 variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} [CommRing R] [CommRing S]
   [CommRing A] [CommRing B] [Field F] [Field K] {W' : Jacobian R} {W : Jacobian F}
 
-/-! ### Negation on point representatives -/
+namespace Jacobian
+
+/-! ## Negation on Jacobian point representatives -/
 
 variable (W') in
 /-- The negation of a Jacobian point representative on a Weierstrass curve. -/
@@ -180,7 +180,7 @@ lemma nonsingularLift_negMap {P : PointClass F} (hP : W.NonsingularLift P) :
   rcases P with ⟨_⟩
   exact nonsingular_neg hP
 
-/-! ### Addition on point representatives -/
+/-! ## Addition on Jacobian point representatives -/
 
 open scoped Classical in
 variable (W') in
@@ -355,7 +355,7 @@ lemma nonsingularLift_addMap {P Q : PointClass F} (hP : W.NonsingularLift P)
   rcases P; rcases Q
   exact nonsingular_add hP hQ
 
-/-! ### Nonsingular points -/
+/-! ## Nonsingular Jacobian points -/
 
 variable (W') in
 /-- A nonsingular Jacobian point on a Weierstrass curve `W`. -/
@@ -432,7 +432,7 @@ lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
 lemma add_point (P Q : W.Point) : (P + Q).point = W.addMap P.point Q.point :=
   rfl
 
-/-! ### Equivalence with affine coordinates -/
+/-! ## Equivalence between Jacobian and affine coordinates -/
 
 open scoped Classical in
 variable (W) in
@@ -591,7 +591,7 @@ noncomputable instance : AddCommGroup W.Point where
 
 end Point
 
-/-! ### Maps and base changes -/
+/-! ## Maps and base changes -/
 
 @[simp]
 protected lemma map_neg (f : R →+* S) (P : Fin 3 → R) :
@@ -619,9 +619,11 @@ lemma baseChange_add [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R 
       f ∘ (W'.baseChange F).toJacobian.add P Q := by
   rw [← RingHom.coe_coe, ← WeierstrassCurve.Jacobian.map_add _ hP hQ, map_baseChange]
 
-end WeierstrassCurve.Jacobian
+end Jacobian
 
 /-- An abbreviation for `WeierstrassCurve.Jacobian.Point.fromAffine` for dot notation. -/
-abbrev WeierstrassCurve.Affine.Point.toJacobian {R : Type r} [CommRing R] [Nontrivial R]
-    {W : Affine R} (P : W.Point) : W.toJacobian.Point :=
+abbrev Affine.Point.toJacobian {R : Type r} [CommRing R] [Nontrivial R] {W : Affine R}
+    (P : W.Point) : W.toJacobian.Point :=
   Jacobian.Point.fromAffine P
+
+end WeierstrassCurve

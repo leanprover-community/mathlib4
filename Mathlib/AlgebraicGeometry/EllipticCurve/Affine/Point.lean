@@ -75,15 +75,15 @@ local macro "C_simp" : tactic =>
 
 universe r s u v w
 
-/-! ## Weierstrass curves -/
-
-namespace WeierstrassCurve.Affine
+namespace WeierstrassCurve
 
 variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} {L : Type w} [CommRing R]
   [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K] [Field L] {W' : Affine R}
   {W : Affine F}
 
-/-! ### The affine coordinate ring -/
+namespace Affine
+
+/-! ## The affine coordinate ring -/
 
 -- Porting note: in Lean 3, this is a `def` under a `derive comm_ring` tag.
 -- This generates a reducible instance of `comm_ring` for `coordinate_ring`. In certain
@@ -101,8 +101,6 @@ abbrev FunctionField : Type r :=
   FractionRing W'.CoordinateRing
 
 namespace CoordinateRing
-
-/-! ### The affine coordinate ring as an `R[X]`-algebra -/
 
 noncomputable instance : Algebra R W'.CoordinateRing :=
   Quotient.algebra R
@@ -207,7 +205,7 @@ instance [IsDomain R] : IsDomain W'.CoordinateRing :=
     AdjoinRoot.isDomain_of_prime irreducible_polynomial.prime
   (map_injective <| IsFractionRing.injective R <| FractionRing R).isDomain
 
-/-! ### Ideals in the affine coordinate ring -/
+/-! ## Ideals in the affine coordinate ring -/
 
 variable (W') in
 /-- The class of the element `X - x` in `R[W]` for some `x` in `R`. -/
@@ -398,7 +396,7 @@ lemma mk_XYIdeal'_mul_mk_XYIdeal' {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingula
   exact (ClassGroup.mk_eq_mk_of_coe_ideal (coeIdeal_mul ..).symm <| XYIdeal'_eq _).mpr
     ⟨_, _, XClass_ne_zero _, YClass_ne_zero _, XYIdeal_mul_XYIdeal h₁.left h₂.left hxy⟩
 
-/-! ### Norms on the affine coordinate ring -/
+/-! ## Norms on the affine coordinate ring -/
 
 lemma norm_smul_basis (p q : R[X]) : Algebra.norm R[X] (p • (1 : W'.CoordinateRing) + q • mk W' Y) =
     p ^ 2 - p * q * (C W'.a₁ * X + C W'.a₃) -
@@ -461,7 +459,7 @@ lemma natDegree_norm_ne_one [IsDomain R] (x : W'.CoordinateRing) :
 
 end CoordinateRing
 
-/-! ### Nonsingular points -/
+/-! ## Nonsingular points in affine coordinates -/
 
 variable (W') in
 /-- A nonsingular point on a Weierstrass curve `W` in affine coordinates. This is either the unique
@@ -476,8 +474,6 @@ Weierstrass curve `W` over `R` in affine coordinates. -/
 scoped notation3:max W' "⟮" S "⟯" => Affine.Point <| baseChange W' S
 
 namespace Point
-
-/-! ### Group operations -/
 
 instance : Inhabited W'.Point :=
   ⟨.zero⟩
@@ -580,7 +576,7 @@ lemma add_of_X_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h
     (hx : x₁ ≠ x₂) : some h₁ + some h₂ = -some (nonsingular_negAdd h₁ h₂ fun hxy => hx hxy.left) :=
   add_of_X_ne hx
 
-/-! ### Group law -/
+/-! ## Group law in affine coordinates -/
 
 /-- The group homomorphism mapping a nonsingular affine point `(x, y)` of a Weierstrass curve `W` to
 the class of the non-zero fractional ideal `⟨X - x, Y - y⟩` in the ideal class group of `F[W]`. -/
@@ -645,7 +641,7 @@ noncomputable instance : AddCommGroup W.Point where
   add_comm _ _ := toClass_injective <| by simp only [map_add, add_comm]
   add_assoc _ _ _ := toClass_injective <| by simp only [map_add, add_assoc]
 
-/-! ### Maps and base changes -/
+/-! ## Maps and base changes -/
 
 variable [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebra R K] [Algebra S K]
   [IsScalarTower R S K] [Algebra R L] [Algebra S L] [IsScalarTower R S L] (f : F →ₐ[S] K)
@@ -701,4 +697,6 @@ lemma map_baseChange [Algebra F K] [IsScalarTower R F K] [Algebra F L] [IsScalar
 
 end Point
 
-end WeierstrassCurve.Affine
+end Affine
+
+end WeierstrassCurve

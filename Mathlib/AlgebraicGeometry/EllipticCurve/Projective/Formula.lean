@@ -72,14 +72,14 @@ local macro "map_simp" : tactic =>
 
 universe r s u v
 
-/-! ## Weierstrass curves -/
-
-namespace WeierstrassCurve.Projective
+namespace WeierstrassCurve
 
 variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} [CommRing R] [CommRing S]
   [CommRing A] [CommRing B] [Field F] [Field K] {W' : Projective R} {W : Projective F}
 
-/-! ### Negation formulae -/
+namespace Projective
+
+/-! ## Negation formulae in projective coordinates -/
 
 variable (W') in
 /-- The `Y`-coordinate of a representative of `-P` for a projective point representative `P` on a
@@ -154,7 +154,7 @@ lemma nonsingular_iff_of_Y_eq_negY {P : Fin 3 → F} (hPz : P z ≠ 0) (hy : P y
   have hy' : eval P W.polynomialY = (P y - W.negY P) * P z := by rw [negY, eval_polynomialY]; ring1
   rw [nonsingular_iff_of_Z_ne_zero hPz, hy', hy, sub_self, zero_mul, ne_self_iff_false, or_false]
 
-/-! ### Doubling formulae -/
+/-! ## Doubling formulae in projective coordinates -/
 
 variable (W) in
 /-- The unit associated to a representative of `2 • P` for a projective point representative `P` on
@@ -464,7 +464,7 @@ lemma dblXYZ_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equati
   erw [dblXYZ, smul_fin3, ← dblX_of_Z_ne_zero hP hQ hPz hQz hx hy, hZ.mul_div_cancel,
     ← dblY_of_Z_ne_zero hP hQ hPz hQz hx hy, hZ.mul_div_cancel, mul_one]
 
-/-! ### Addition formulae -/
+/-! ## Addition formulae in projective coordinates -/
 
 /-- The unit associated to a representative of `P + Q` for two projective point representatives `P`
 and `Q` on a Weierstrass curve `W` that are not `2`-torsion.
@@ -799,7 +799,7 @@ lemma addXYZ_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equati
   erw [addXYZ, smul_fin3, ← addX_of_Z_ne_zero hP hQ hPz hQz hx, hZ.mul_div_cancel,
     ← addY_of_Z_ne_zero hP hQ hPz hQz hx, hZ.mul_div_cancel, mul_one]
 
-/-! ### Maps and base changes -/
+/-! ## Maps and base changes -/
 
 variable (f : R →+* S) (P Q : Fin 3 → R)
 
@@ -915,4 +915,6 @@ lemma baseChange_addXYZ : (W'.baseChange B).toProjective.addXYZ (f ∘ P) (f ∘
     f ∘ (W'.baseChange A).toProjective.addXYZ P Q := by
   rw [← RingHom.coe_coe, ← map_addXYZ, map_baseChange]
 
-end WeierstrassCurve.Projective
+end Projective
+
+end WeierstrassCurve

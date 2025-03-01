@@ -73,14 +73,14 @@ local macro "map_simp" : tactic =>
 
 universe r s u v
 
-/-! ## Weierstrass curves -/
-
-namespace WeierstrassCurve.Projective
+namespace WeierstrassCurve
 
 variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} [CommRing R] [CommRing S]
   [CommRing A] [CommRing B] [Field F] [Field K] {W' : Projective R} {W : Projective F}
 
-/-! ### Negation on point representatives -/
+namespace Projective
+
+/-! ## Negation on projective point representatives -/
 
 variable (W') in
 /-- The negation of a projective point representative on a Weierstrass curve. -/
@@ -171,7 +171,7 @@ lemma nonsingularLift_negMap {P : PointClass F} (hP : W.NonsingularLift P) :
   rcases P with ⟨_⟩
   exact nonsingular_neg hP
 
-/-! ### Addition on point representatives -/
+/-! ## Addition on projective point representatives -/
 
 open scoped Classical in
 variable (W') in
@@ -344,7 +344,7 @@ lemma nonsingularLift_addMap {P Q : PointClass F} (hP : W.NonsingularLift P)
   rcases P; rcases Q
   exact nonsingular_add hP hQ
 
-/-! ### Nonsingular points -/
+/-! ## Nonsingular projective points -/
 
 variable (W') in
 /-- A nonsingular projective point on a Weierstrass curve `W`. -/
@@ -421,7 +421,7 @@ lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
 lemma add_point (P Q : W.Point) : (P + Q).point = W.addMap P.point Q.point :=
   rfl
 
-/-! ### Equivalence with affine coordinates -/
+/-! ## Equivalence between projective and affine coordinates -/
 
 open scoped Classical in
 variable (W) in
@@ -580,7 +580,7 @@ noncomputable instance : AddCommGroup W.Point where
 
 end Point
 
-/-! ### Maps and base changes -/
+/-! ## Maps and base changes -/
 
 @[simp]
 protected lemma map_neg (f : R →+* S) (P : Fin 3 → R) :
@@ -608,9 +608,11 @@ lemma baseChange_add [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R 
       f ∘ (W'.baseChange F).toProjective.add P Q := by
   rw [← RingHom.coe_coe, ← WeierstrassCurve.Projective.map_add _ hP hQ, map_baseChange]
 
-end WeierstrassCurve.Projective
+end Projective
 
 /-- An abbreviation for `WeierstrassCurve.Projective.Point.fromAffine` for dot notation. -/
-abbrev WeierstrassCurve.Affine.Point.toProjective {R : Type r} [CommRing R] [Nontrivial R]
-    {W : Affine R} (P : W.Point) : W.toProjective.Point :=
+abbrev Affine.Point.toProjective {R : Type r} [CommRing R] [Nontrivial R] {W : Affine R}
+    (P : W.Point) : W.toProjective.Point :=
   Projective.Point.fromAffine P
+
+end WeierstrassCurve

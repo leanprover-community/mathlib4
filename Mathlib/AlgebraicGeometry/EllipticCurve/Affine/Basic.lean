@@ -11,7 +11,7 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 # Weierstrass equations and the nonsingular condition in affine coordinates
 
 Let `W` be a Weierstrass curve over a commutative ring `R` with coefficients `aᵢ`. An *affine point*
-on `W` is a tuple `(x, y)` of elements in `R` satisfying the *Weierstrass equation* `W(x, y) = 0` in
+on `W` is a tuple `(x, y)` of elements in `R` satisfying the *Weierstrass equation* `W(X, Y) = 0` in
 *affine coordinates*, where `W(X, Y) := Y² + a₁XY + a₃Y - (X³ + a₂X² + a₄X + a₆)`. It is
 *nonsingular* if its partial derivatives `W_X(x, y)` and `W_Y(x, y)` do not vanish simultaneously.
 
@@ -60,11 +60,11 @@ local macro "map_simp" : tactic =>
 
 universe r s u v
 
-/-! ## Weierstrass curves -/
+variable {R : Type r} {S : Type s} {A : Type u} {B : Type v}
 
 namespace WeierstrassCurve
 
-variable {R : Type r} {S : Type s} {A : Type u} {B : Type v}
+/-! ## Affine coordinates -/
 
 variable (R) in
 /-- An abbreviation for a Weierstrass curve in affine coordinates. -/
@@ -75,11 +75,11 @@ abbrev Affine : Type r :=
 abbrev toAffine (W : WeierstrassCurve R) : Affine R :=
   W
 
-namespace Affine
-
 variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] {W : Affine R}
 
-/-! ### Weierstrass equations -/
+namespace Affine
+
+/-! ## Weierstrass equations in affine coordinates -/
 
 variable (W) in
 /-- The polynomial `W(X, Y) := Y² + a₁XY + a₃Y - (X³ + a₂X² + a₄X + a₆)` associated to a Weierstrass
@@ -164,7 +164,7 @@ lemma equation_iff_variableChange (x y : R) :
   congr! 1
   ring1
 
-/-! ### Nonsingular Weierstrass equations -/
+/-! ## The nonsingular condition in affine coordinates -/
 
 variable (W) in
 /-- The partial derivative `W_X(X, Y)` with respect to `X` of the polynomial `W(X, Y)` associated to
@@ -253,7 +253,7 @@ lemma equation_iff_nonsingular [Nontrivial R] [W.IsElliptic] {x y : R} :
   equation_iff_nonsingular_of_Δ_ne_zero
 @[deprecated (since := "2025-02-01")] alias nonsingular := equation_iff_nonsingular
 
-/-! ### Maps and base changes -/
+/-! ## Maps and base changes -/
 
 variable (f : R →+* S) (x y : R)
 
