@@ -116,6 +116,15 @@ def subtype (s : S) : s →+* R :=
   { SubmonoidClass.subtype s, AddSubgroupClass.subtype s with
     toFun := (↑) }
 
+variable {s} in
+@[simp]
+lemma subtype_apply (x : s) :
+    SubringClass.subtype s x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (subtype s) :=
+  Subtype.coe_injective
+
 @[simp]
 theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
   rfl
@@ -327,10 +336,6 @@ def subtype (s : Subring R) : s →+* R :=
   { s.toSubmonoid.subtype, s.toAddSubgroup.subtype with toFun := (↑) }
 
 @[simp]
-theorem coe_subtype : ⇑s.subtype = ((↑) : s → R) :=
-  rfl
-
-@[simp]
 lemma subtype_apply {s : Subring R} (x : s) :
     s.subtype x = x := rfl
 
@@ -338,9 +343,9 @@ lemma subtype_injective (s : Subring R) :
     Function.Injective s.subtype :=
   s.toSubmonoid.subtype_injective
 
-lemma subtype_inj {s : Subring R} {x y : s} :
-    s.subtype x = s.subtype y ↔ x = y :=
-  s.subtype_injective.eq_iff
+@[simp]
+theorem coe_subtype : ⇑s.subtype = ((↑) : s → R) :=
+  rfl
 
 @[deprecated (since := "2025-02-18")]
 alias coeSubtype := coe_subtype

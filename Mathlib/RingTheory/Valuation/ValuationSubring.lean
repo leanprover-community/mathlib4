@@ -234,9 +234,9 @@ lemma subtype_injective (R : ValuationSubring K) :
     Function.Injective R.subtype :=
   R.toSubring.subtype_injective
 
-lemma subtype_inj {R : ValuationSubring K} {x y : R} :
-    R.subtype x = R.subtype y ↔ x = y :=
-  R.subtype_injective.eq_iff
+@[simp]
+theorem coe_subtype (R : ValuationSubring K) : ⇑(subtype R) = Subtype.val :=
+  rfl
 
 /-- The canonical map on value groups induced by a coarsening of valuation rings. -/
 def mapOfLE (R S : ValuationSubring K) (h : R ≤ S) : R.ValueGroup →*₀ S.ValueGroup where

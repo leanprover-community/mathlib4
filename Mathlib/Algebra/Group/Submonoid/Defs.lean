@@ -374,6 +374,16 @@ instance (priority := 75) toCommMonoid {M} [CommMonoid M] {A : Type*} [SetLike A
 def subtype : S' →* M where
   toFun := Subtype.val; map_one' := rfl; map_mul' _ _ := by simp
 
+variable {S'} in
+@[to_additive (attr := simp)]
+lemma subtype_apply (x : S') :
+    SubmonoidClass.subtype S' x = x := rfl
+
+@[to_additive]
+lemma subtype_injective :
+    Function.Injective (SubmonoidClass.subtype S') :=
+  Subtype.coe_injective
+
 @[to_additive (attr := simp)]
 theorem coe_subtype : (SubmonoidClass.subtype S' : S' → M) = Subtype.val :=
   rfl
@@ -451,12 +461,8 @@ lemma subtype_apply {s : Submonoid M} (x : s) :
 
 @[to_additive]
 lemma subtype_injective (s : Submonoid M) :
-    Function.Injective s.subtype := fun _ ↦ by
-  simp
-
-lemma subtype_inj {s : Submonoid M} {x y : s} :
-    s.subtype x = s.subtype y ↔ x = y :=
-  s.subtype_injective.eq_iff
+    Function.Injective s.subtype :=
+  Subtype.coe_injective
 
 @[to_additive (attr := simp)]
 theorem coe_subtype : ⇑S.subtype = Subtype.val :=
