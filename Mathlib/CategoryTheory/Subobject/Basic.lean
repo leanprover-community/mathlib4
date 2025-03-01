@@ -538,7 +538,7 @@ end Pullback
 
 section IsPullback
 
-lemma isPullback_eq {X Y Z : C} {x x' : Subobject X}
+lemma eqOfIsPullback {X Y Z : C} {x x' : Subobject X}
     {f : X ⟶ Z} {g : Y ⟶ Z} {k : (x : C) ⟶ Y} {k' : (x' : C) ⟶ Y}
     (h : IsPullback k x.arrow g f) (h' : IsPullback k' x'.arrow g f) :
     x = x' := by
@@ -553,14 +553,6 @@ lemma isPullback_mk {X Y Z : C}
   apply IsPullback.of_iso (IsPullback.of_hasPullback f g)
     (underlyingIso π₂).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
     <;> simp [π₁, π₂]
-
-lemma isPullback_eq_mk {X Y Z : C} {x : Subobject X}
-    {f : Y ⟶ Z} {g : X ⟶ Z} [HasPullback f g] [Mono f]
-    {fst : (x : C) ⟶ Y}
-    (h : IsPullback fst x.arrow f g) :
-    x = mk (pullback.snd f g) := by
-  have h' := isPullback_mk f g
-  apply isPullback_eq h h'
 
 end IsPullback
 
