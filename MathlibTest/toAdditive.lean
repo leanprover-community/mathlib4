@@ -226,9 +226,7 @@ run_cmd do liftCoreM <| successIfFail (getConstInfo `Test.add_some_def.in_namesp
 
 section
 
-set_option linter.unusedVariables false
--- Porting note: not sure what the tests do, but the linter complains.
-
+set_option linter.unusedVariables false in
 def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f i)]
   [Add I] [Mul L] : true := by trivial
 
@@ -301,7 +299,7 @@ theorem isUnit_iff_exists_inv [Mul M] {a : M} : IsUnit a ↔ ∃ _ : α, a ≠ a
   ⟨fun h => absurd rfl h, fun ⟨_, hab⟩ => hab⟩
 
 /-! Test that `@[to_additive]` correctly translates auxiliary declarations that do not have the
-original declaration name as prefix.-/
+original declaration name as prefix. -/
 @[to_additive]
 def IsUnit' [Monoid M] (a : M) : Prop := ∃ b : M, a * b = 1
 
@@ -324,7 +322,7 @@ def Ones : ℕ → Q(Nat)
   | (n+1) => q($(Ones n) + $(Ones n))
 
 
--- this test just exists to see if this finishes in finite time. It should take <100ms.
+-- This test just exists to see if this finishes in finite time. It should take <100ms.
 -- #time
 run_cmd do
   let e : Expr := Ones 300
@@ -424,7 +422,9 @@ run_cmd do
   unless findTranslation? (← getEnv) `localize.s == some `add_localize.s do throwError "3"
 
 /--
-warning: The source declaration one_eq_one was given the simp-attribute(s) reduce_mod_char, simp before calling @[to_additive]. The preferred method is to use something like `@[to_additive (attr := reduce_mod_char, simp)]` to apply the attribute to both one_eq_one and the target declaration zero_eq_zero.
+warning: The source declaration one_eq_one was given the simp-attribute(s) simp, reduce_mod_char before calling @[to_additive].
+The preferred method is to use something like `@[to_additive (attr := simp, reduce_mod_char)]`
+to apply the attribute to both one_eq_one and the target declaration zero_eq_zero.
 note: this linter can be disabled with `set_option linter.existingAttributeWarning false`
 -/
 #guard_msgs in
@@ -433,3 +433,16 @@ lemma one_eq_one {α : Type*} [One α] : (1 : α) = 1 := rfl
 
 @[to_additive (attr := reduce_mod_char, simp)]
 lemma one_eq_one' {α : Type*} [One α] : (1 : α) = 1 := rfl
+
+-- Test the error message for a name that cannot be additivised.
+
+/--
+warning: declaration uses 'sorry'
+---
+error: to_additive: the generated additivised name equals the original name 'foo', meaning that no part of the name was additivised.
+Check that your declaration name is correct (if your declaration is an instance, try naming it)
+or provide an additivised name using the '@[to_additive my_add_name]' syntax.
+-/
+#guard_msgs in
+@[to_additive]
+instance foo {α : Type*} [Semigroup α] : Monoid α := sorry

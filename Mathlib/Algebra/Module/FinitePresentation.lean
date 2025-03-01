@@ -3,6 +3,7 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.Algebra.Small.Module
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.LinearAlgebra.Isomorphisms
@@ -73,21 +74,33 @@ end Semiring
 
 section Ring
 
-variable (R M N) [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+section
 
-universe u in
-variable (R M : Type u) [Ring R] [AddCommGroup M] [Module R M] in
+universe u v
+variable (R : Type u) (M : Type*) [Ring R] [AddCommGroup M] [Module R M]
+
+theorem Module.FinitePresentation.exists_fin [fp : Module.FinitePresentation R M] :
+    ∃ (n : ℕ) (K : Submodule R (Fin n → R)) (_ : M ≃ₗ[R] (Fin n → R) ⧸ K), K.FG := by
+  have ⟨ι, ⟨hι₁, hι₂⟩⟩ := fp
+  refine ⟨_, LinearMap.ker (linearCombination R Subtype.val ∘ₗ
+    (lcongr ι.equivFin (.refl ..) ≪≫ₗ linearEquivFunOnFinite R R _).symm.toLinearMap),
+    (LinearMap.quotKerEquivOfSurjective _ <| LinearMap.range_eq_top.mp ?_).symm, ?_⟩
+  · simpa [range_linearCombination] using hι₁
+  · simpa [LinearMap.ker_comp, Submodule.comap_equiv_eq_map_symm] using hι₂.map _
+
 /-- A finitely presented module is isomorphic to the quotient of a finite free module by a finitely
 generated submodule. -/
-theorem Module.FinitePresentation.equiv_quotient [fp : Module.FinitePresentation R M] :
-    ∃ (L : Type u) (_ : AddCommGroup L) (_ : Module R L) (K : Submodule R L) (_ : M ≃ₗ[R] L ⧸ K),
-      Module.Free R L ∧ Module.Finite R L ∧ K.FG := by
-  obtain ⟨ι, ⟨hι₁, hι₂⟩⟩ := fp
-  use ι →₀ R, inferInstance, inferInstance
-  use LinearMap.ker (Finsupp.linearCombination R Subtype.val)
-  refine ⟨(LinearMap.quotKerEquivOfSurjective _ ?_).symm, inferInstance, inferInstance, hι₂⟩
-  apply LinearMap.range_eq_top.mp
-  simpa only [Finsupp.range_linearCombination, Subtype.range_coe_subtype, Finset.setOf_mem]
+theorem Module.FinitePresentation.equiv_quotient [Module.FinitePresentation R M] [Small.{v} R] :
+    ∃ (L : Type v) (_ : AddCommGroup L) (_ : Module R L) (K : Submodule R L)
+      (_ : M ≃ₗ[R] L ⧸ K), Module.Free R L ∧ Module.Finite R L ∧ K.FG :=
+  have ⟨_n, _K, e, fg⟩ := Module.FinitePresentation.exists_fin R M
+  let es := linearEquivShrink
+  ⟨_, inferInstance, inferInstance, _, e ≪≫ₗ Submodule.Quotient.equiv _ _ (es ..) rfl,
+    .of_equiv (es ..), .equiv (es ..), fg.map (es ..).toLinearMap⟩
+
+end
+
+variable (R M N) [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 -- Ideally this should be an instance but it makes mathlib much slower.
 lemma Module.finitePresentation_of_finite [IsNoetherianRing R] [h : Module.Finite R M] :
@@ -187,7 +200,7 @@ lemma Module.FinitePresentation.fg_ker [Module.Finite R M]
     exact ⟨_, hy, by simp⟩
   apply Submodule.fg_of_fg_map_of_fg_inf_ker f.range.mkQ
   · rw [this]
-    exact Module.Finite.out
+    exact Module.Finite.fg_top
   · rw [Submodule.ker_mkQ, inf_comm, ← Submodule.map_comap_eq, ← LinearMap.ker_comp, hf]
     exact hs'.map f
 
@@ -201,8 +214,8 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
     Module.FinitePresentation R M := by
   obtain ⟨s, hs⟩ : (⊤ : Submodule R M).FG := by
     apply Submodule.fg_of_fg_map_of_fg_inf_ker l
-    · rw [Submodule.map_top, LinearMap.range_eq_top.mpr hl]; exact Module.Finite.out
-    · rw [top_inf_eq, ← Submodule.fg_top]; exact Module.Finite.out
+    · rw [Submodule.map_top, LinearMap.range_eq_top.mpr hl]; exact Module.Finite.fg_top
+    · rw [top_inf_eq, ← Submodule.fg_top]; exact Module.Finite.fg_top
   refine ⟨s, hs, ?_⟩
   let π := Finsupp.linearCombination R ((↑) : s → M)
   have H : Function.Surjective π :=
@@ -228,6 +241,35 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
     LinearMap.ker_eq_bot.mpr (Submodule.injective_subtype (LinearMap.ker l)), Submodule.comap_bot]
   exact (Module.FinitePresentation.fg_ker f hf).map (Submodule.subtype _)
 
+/-- Given a split exact sequence `0 → M → N → P → 0` with `N` finitely presented,
+then `M` is also finitely presented. -/
+lemma Module.finitePresentation_of_split_exact
+    {P : Type*} [AddCommGroup P] [Module R P]
+    [Module.FinitePresentation R N]
+    (f : M →ₗ[R] N) (g : N →ₗ[R] P) (l : P →ₗ[R] N) (hl : g ∘ₗ l = .id)
+    (hf : Function.Injective f) (H : Function.Exact f g) :
+    Module.FinitePresentation R M := by
+  have hg : Function.Surjective g := Function.LeftInverse.surjective (DFunLike.congr_fun hl)
+  have := Module.Finite.of_surjective g hg
+  obtain ⟨e, rfl, rfl⟩ := ((Function.Exact.split_tfae' H).out 0 2 rfl rfl).mp
+    ⟨hf, l, hl⟩
+  refine Module.finitePresentation_of_surjective (LinearMap.fst _ _ _ ∘ₗ e.toLinearMap)
+    (Prod.fst_surjective.comp e.surjective) ?_
+  rw [LinearMap.ker_comp, Submodule.comap_equiv_eq_map_symm,
+    LinearMap.exact_iff.mp Function.Exact.inr_fst, ← Submodule.map_top]
+  exact .map _ (.map _ (Module.Finite.fg_top))
+
+/-- Given an exact sequence `0 → M → N → P → 0`
+with `N` finitely presented and `P` projective, then `M` is also finitely presented. -/
+lemma Module.finitePresentation_of_projective_of_exact
+    {P : Type*} [AddCommGroup P] [Module R P]
+    [Module.FinitePresentation R N] [Module.Projective R P]
+    (f : M →ₗ[R] N) (g : N →ₗ[R] P)
+    (hf : Function.Injective f) (hg : Function.Surjective g) (H : Function.Exact f g) :
+    Module.FinitePresentation R M :=
+  have ⟨l, hl⟩ := Module.projective_lifting_property g .id hg
+  Module.finitePresentation_of_split_exact f g l hl hf H
+
 end Ring
 
 section CommRing
@@ -250,7 +292,7 @@ instance {A} [CommRing A] [Algebra R A] [Module.FinitePresentation R M] :
   apply Submodule.FG.map
   have : Module.Finite R (LinearMap.ker f) :=
     ⟨(Submodule.fg_top _).mpr (Module.FinitePresentation.fg_ker f hf)⟩
-  exact Module.Finite.out (R := A) (M := A ⊗[R] LinearMap.ker f)
+  exact Module.Finite.fg_top (R := A) (M := A ⊗[R] LinearMap.ker f)
 
 open TensorProduct in
 lemma FinitePresentation.of_isBaseChange
@@ -446,7 +488,7 @@ lemma Module.FinitePresentation.exists_lift_equiv_of_isLocalizedModule
     inv_one, Units.val_one, LinearMap.one_apply, this]
 
 instance Module.FinitePresentation.isLocalizedModule_map [Module.FinitePresentation R M] :
-      IsLocalizedModule S (IsLocalizedModule.map S f g) := by
+    IsLocalizedModule S (IsLocalizedModule.map S f g) := by
   constructor
   · intro s
     rw [Module.End_isUnit_iff]

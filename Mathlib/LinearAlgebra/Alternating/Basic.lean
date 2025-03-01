@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Zhangir Azerbayev
 -/
 import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.Data.Fintype.Perm
+import Mathlib.LinearAlgebra.LinearIndependent.Defs
 import Mathlib.LinearAlgebra.Multilinear.Basis
-import Mathlib.LinearAlgebra.LinearIndependent
 
 /-!
 # Alternating Maps
@@ -637,10 +636,11 @@ theorem map_swap [DecidableEq ι] {i j : ι} (hij : i ≠ j) : g (v ∘ Equiv.sw
 
 theorem map_perm [DecidableEq ι] [Fintype ι] (v : ι → M) (σ : Equiv.Perm ι) :
     g (v ∘ σ) = Equiv.Perm.sign σ • g v := by
-  -- Porting note: `apply` → `induction'`
-  induction' σ using Equiv.Perm.swap_induction_on' with s x y hxy hI
+  -- Porting note: `apply` → `induction`
+  induction σ using Equiv.Perm.swap_induction_on'
   · simp
-  · -- Porting note: `← Function.comp_assoc` & `-Equiv.Perm.sign_swap'` are required.
+  · rename_i s x y hxy hI
+    -- Porting note: `← Function.comp_assoc` & `-Equiv.Perm.sign_swap'` are required.
     simpa [← Function.comp_assoc, g.map_swap (v ∘ s) hxy,
       Equiv.Perm.sign_swap hxy, -Equiv.Perm.sign_swap'] using hI
 
@@ -820,11 +820,11 @@ def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→�
       zero_apply, smul_zero, Finset.sum_const_zero, AlternatingMap.zero_apply]
 
 theorem alternatization_def (m : MultilinearMap R (fun _ : ι => M) N') :
-    ⇑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ : _) :=
+    ⇑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ :) :=
   rfl
 
 theorem alternatization_coe (m : MultilinearMap R (fun _ : ι => M) N') :
-    ↑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ : _) :=
+    ↑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ :) :=
   coe_injective rfl
 
 theorem alternatization_apply (m : MultilinearMap R (fun _ : ι => M) N') (v : ι → M) :

@@ -155,6 +155,26 @@ instance compactSpace_Icc (a b : α) : CompactSpace (Icc a b) :=
 
 end
 
+section openIntervals
+variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α] [DenselyOrdered α]
+
+/-- `Set.Ico a b` is only compact if it is empty. -/
+@[simp]
+theorem isCompact_Ico_iff {a b : α} : IsCompact (Set.Ico a b) ↔ b ≤ a :=
+  ⟨fun h => isClosed_Ico_iff.mp h.isClosed, by simp_all⟩
+
+/-- `Set.Ioc a b` is only compact if it is empty. -/
+@[simp]
+theorem isCompact_Ioc_iff {a b : α} : IsCompact (Set.Ioc a b) ↔ b ≤ a :=
+  ⟨fun h => isClosed_Ioc_iff.mp h.isClosed, by simp_all⟩
+
+/-- `Set.Ioo a b` is only compact if it is empty. -/
+@[simp]
+theorem isCompact_Ioo_iff {a b : α} : IsCompact (Set.Ioo a b) ↔ b ≤ a :=
+  ⟨fun h => isClosed_Ioo_iff.mp h.isClosed, by simp_all⟩
+
+end openIntervals
+
 /-!
 ### Extreme value theorem
 -/
@@ -355,13 +375,13 @@ theorem IsCompact.bddAbove_image [ClosedIciTopology α] [Nonempty α] {f : β �
   IsCompact.bddBelow_image (α := αᵒᵈ) hK hf
 
 /-- A continuous function with compact support is bounded below. -/
-@[to_additive " A continuous function with compact support is bounded below. "]
+@[to_additive "A continuous function with compact support is bounded below."]
 theorem Continuous.bddBelow_range_of_hasCompactMulSupport [ClosedIicTopology α] [One α]
     {f : β → α} (hf : Continuous f) (h : HasCompactMulSupport f) : BddBelow (range f) :=
   (h.isCompact_range hf).bddBelow
 
 /-- A continuous function with compact support is bounded above. -/
-@[to_additive " A continuous function with compact support is bounded above. "]
+@[to_additive "A continuous function with compact support is bounded above."]
 theorem Continuous.bddAbove_range_of_hasCompactMulSupport [ClosedIciTopology α] [One α]
     {f : β → α} (hf : Continuous f) (h : HasCompactMulSupport f) : BddAbove (range f) :=
   Continuous.bddBelow_range_of_hasCompactMulSupport (α := αᵒᵈ) hf h

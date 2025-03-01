@@ -106,6 +106,7 @@ structure OrderedFinpartition (n : ℕ) where
   disjoint : PairwiseDisjoint univ fun m ↦ range (emb m)
   /-- The parts cover everything -/
   cover x : ∃ m, x ∈ range (emb m)
+  deriving DecidableEq
 
 namespace OrderedFinpartition
 
@@ -246,7 +247,7 @@ lemma one_lt_partSize_index_zero (c : OrderedFinpartition (n + 1)) (hc : range (
     have : {c.emb (c.index 0) 0,
         c.emb (c.index 0) ⟨c.partSize (c.index 0) - 1, Nat.sub_one_lt_of_lt (c.partSize_pos _)⟩}
           ⊆ range (c.emb (c.index 0)) := by simp [insert_subset]
-    simp [emb_zero] at this
+    simp only [emb_zero] at this
     convert Nat.card_mono Subtype.finite this
     simp only [Nat.card_eq_fintype_card, Fintype.card_ofFinset, toFinset_singleton]
     apply (Finset.card_pair ?_).symm
@@ -401,10 +402,10 @@ def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpart
       rcases eq_or_ne (c.index i) k with rfl | hi
       · have A : update c.partSize (c.index i) (c.partSize (c.index i) + 1) (c.index i) =
           c.partSize (c.index i) + 1 := by simp
-        exact ⟨c.index i, cast A.symm (succ (c.invEmbedding i)), by simp⟩
+        exact ⟨c.index i, (succ (c.invEmbedding i)).cast A.symm , by simp⟩
       · have A : update c.partSize k (c.partSize k + 1) (c.index i) = c.partSize (c.index i) := by
           simp [hi]
-        exact ⟨c.index i, cast A.symm (c.invEmbedding i), by simp [hi]⟩
+        exact ⟨c.index i, (c.invEmbedding i).cast A.symm, by simp [hi]⟩
 
 lemma index_extendMiddle_zero (c : OrderedFinpartition n) (i : Fin c.length) :
     (c.extendMiddle i).index 0 = i := by
@@ -678,8 +679,8 @@ def extendEquiv (n : ℕ) :
           · simp only [↓reduceDIte, comp_apply]
             rcases eq_or_ne j 0 with rfl | hj
             · simpa using c.emb_zero
-            · let j' := Fin.pred (cast B.symm j) (by simpa using hj)
-              have : j = cast B (succ j') := by simp [j']
+            · let j' := Fin.pred (j.cast B.symm) (by simpa using hj)
+              have : j = (succ j').cast B := by simp [j']
               simp only [this, coe_cast, val_succ, cast_mk, cases_succ', comp_apply, succ_mk,
                 Nat.succ_eq_add_one, succ_pred]
               rfl
@@ -773,7 +774,7 @@ theorem norm_compAlongOrderedFinpartition_le (f : F [×c.length]→L[𝕜] G)
   exact f.le_opNorm_mul_prod_of_le <| c.norm_applyOrderedFinpartition_le _ _
 
 /-- Bundled version of `compAlongOrderedFinpartition`, depending linearly on `f`
-and multilinearly on `p`.-/
+and multilinearly on `p`. -/
 @[simps apply_apply]
 def compAlongOrderedFinpartitionₗ :
     (F [×c.length]→L[𝕜] G) →ₗ[𝕜]
@@ -795,7 +796,7 @@ def compAlongOrderedFinpartitionₗ :
 
 variable (𝕜 E F G) in
 /-- Bundled version of `compAlongOrderedFinpartition`, depending continuously linearly on `f`
-and continuously multilinearly on `p`.-/
+and continuously multilinearly on `p`. -/
 noncomputable def compAlongOrderedFinpartitionL :
     (F [×c.length]→L[𝕜] G) →L[𝕜]
       ContinuousMultilinearMap 𝕜 (fun i ↦ E[×c.partSize i]→L[𝕜] F) (E[×n]→L[𝕜] G) := by

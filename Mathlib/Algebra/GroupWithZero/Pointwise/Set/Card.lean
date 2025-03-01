@@ -11,6 +11,8 @@ import Mathlib.SetTheory.Cardinal.Finite
 # Cardinality of sets under pointwise group with zero operations
 -/
 
+assert_not_exists Field
+
 open scoped Cardinal Pointwise
 
 variable {G₀ M₀ : Type*}

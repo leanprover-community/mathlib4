@@ -6,6 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Algebra.Lie.Submodule
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Quotients of Lie algebras and Lie modules
@@ -68,7 +69,6 @@ lie_submodule of the lie_module `N`. -/
 abbrev mk : M → M ⧸ N :=
   Submodule.Quotient.mk
 
--- Porting note: added to replace `mk_eq_zero` as simp lemma.
 @[simp]
 theorem mk_eq_zero' {m : M} : mk (N := N) m = 0 ↔ m ∈ N :=
   Submodule.Quotient.mk_eq_zero N.toSubmodule
@@ -180,7 +180,6 @@ theorem range_mk' : LieModuleHom.range (mk' N) = ⊤ := by
 instance isNoetherian [IsNoetherian R M] : IsNoetherian R (M ⧸ N) :=
   inferInstanceAs (IsNoetherian R (M ⧸ (N : Submodule R M)))
 
--- Porting note: LHS simplifies @[simp]
 theorem mk_eq_zero {m : M} : mk' N m = 0 ↔ m ∈ N :=
   Submodule.Quotient.mk_eq_zero N.toSubmodule
 

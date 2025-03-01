@@ -3,8 +3,8 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Tactic.AdaptationNote
 
 /-!
@@ -40,7 +40,6 @@ sphere. -/
 def inversion (c : P) (R : ℝ) (x : P) : P :=
   (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c
 
-#adaptation_note /-- nightly-2024-03-16: added to replace simp [inversion] -/
 theorem inversion_def :
     inversion = fun (c : P) (R : ℝ) (x : P) => (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c :=
   rfl

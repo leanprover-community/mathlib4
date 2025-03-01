@@ -4,12 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.Deriv.AffineMap
-import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.Analysis.Calculus.LocalExtr.Rolle
-import Mathlib.Analysis.Convex.Normed
+import Mathlib.Analysis.Normed.Group.AddTorsor
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Analysis.RCLike.Basic
+import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.Topology.Instances.RealVectorSpace
+import Mathlib.Topology.LocallyConstant.Basic
 
 /-!
 # The mean value inequality and equalities
@@ -101,7 +105,7 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
     exact A.preimage_isClosed_of_isClosed isClosed_Icc OrderClosedTopology.isClosed_le'
   apply this.Icc_subset_of_forall_exists_gt ha
   rintro x ⟨hxB : f x ≤ B x, xab⟩ y hy
-  cases' hxB.lt_or_eq with hxB hxB
+  rcases hxB.lt_or_eq with hxB | hxB
   · -- If `f x < B x`, then all we need is continuity of both sides
     refine nonempty_of_mem (inter_mem ?_ (Ioc_mem_nhdsGT hy))
     have : ∀ᶠ x in 𝓝[Icc a b] x, f x < B x :=
@@ -590,11 +594,68 @@ theorem _root_.is_const_of_fderiv_eq_zero
 one point in that set, then they are equal on that set. -/
 theorem eqOn_of_fderivWithin_eq (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 f s)
     (hg : DifferentiableOn 𝕜 g s) (hs' : UniqueDiffOn 𝕜 s)
-    (hf' : ∀ x ∈ s, fderivWithin 𝕜 f s x = fderivWithin 𝕜 g s x) (hx : x ∈ s) (hfgx : f x = g x) :
+    (hf' : s.EqOn (fderivWithin 𝕜 f s) (fderivWithin 𝕜 g s)) (hx : x ∈ s) (hfgx : f x = g x) :
     s.EqOn f g := fun y hy => by
   suffices f x - g x = f y - g y by rwa [hfgx, sub_self, eq_comm, sub_eq_zero] at this
   refine hs.is_const_of_fderivWithin_eq_zero (hf.sub hg) (fun z hz => ?_) hx hy
-  rw [fderivWithin_sub (hs' _ hz) (hf _ hz) (hg _ hz), sub_eq_zero, hf' _ hz]
+  rw [fderivWithin_sub (hs' _ hz) (hf _ hz) (hg _ hz), sub_eq_zero, hf' hz]
+
+/-- If `f` has zero derivative on an open set, then `f` is locally constant on `s`. -/
+-- TODO: change the spelling once we have `IsLocallyConstantOn`.
+theorem _root_.IsOpen.isOpen_inter_preimage_of_fderiv_eq_zero
+    (hs : IsOpen s) (hf : DifferentiableOn 𝕜 f s)
+    (hf' : s.EqOn (fderiv 𝕜 f) 0) (t : Set G) : IsOpen (s ∩ f ⁻¹' t) := by
+  refine Metric.isOpen_iff.mpr fun y ⟨hy, hy'⟩ ↦ ?_
+  obtain ⟨r, hr, h⟩ := Metric.isOpen_iff.mp hs y hy
+  refine ⟨r, hr, Set.subset_inter h fun x hx ↦ ?_⟩
+  have := (convex_ball y r).is_const_of_fderivWithin_eq_zero (hf.mono h) ?_ hx (mem_ball_self hr)
+  · simpa [this]
+  · intro z hz
+    simpa only [fderivWithin_of_isOpen Metric.isOpen_ball hz] using hf' (h hz)
+
+theorem _root_.isLocallyConstant_of_fderiv_eq_zero (h₁ : Differentiable 𝕜 f)
+    (h₂ : ∀ x, fderiv 𝕜 f x = 0) : IsLocallyConstant f := by
+  simpa using isOpen_univ.isOpen_inter_preimage_of_fderiv_eq_zero h₁.differentiableOn fun _ _ ↦ h₂ _
+
+/-- If `f` has zero derivative on a connected open set, then `f` is constant on `s`. -/
+theorem _root_.IsOpen.exists_is_const_of_fderiv_eq_zero
+    (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)
+    (hf' : s.EqOn (fderiv 𝕜 f) 0) : ∃ a, ∀ x ∈ s, f x = a := by
+  obtain (rfl|⟨y, hy⟩) := s.eq_empty_or_nonempty
+  · exact ⟨0, by simp⟩
+  · refine ⟨f y, fun x hx ↦ ?_⟩
+    have h₁ := hs.isOpen_inter_preimage_of_fderiv_eq_zero hf hf' {f y}
+    have h₂ := hf.continuousOn.comp_continuous continuous_subtype_val (fun x ↦ x.2)
+    by_contra h₃
+    obtain ⟨t, ht, ht'⟩ := (isClosed_singleton (x := f y)).preimage h₂
+    have ht'' : ∀ a ∈ s, a ∈ t ↔ f a ≠ f y := by simpa [Set.ext_iff] using ht'
+    obtain ⟨z, H₁, H₂, H₃⟩ := hs' _ _ h₁ ht (fun x h ↦ by simp [h, ht'', eq_or_ne]) ⟨y, by simpa⟩
+      ⟨x, by simp [ht'' _ hx, hx, h₃]⟩
+    exact (ht'' _ H₁).mp H₃ H₂.2
+
+theorem _root_.IsOpen.is_const_of_fderiv_eq_zero
+    (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)
+    (hf' : s.EqOn (fderiv 𝕜 f) 0) {x y : E} (hx : x ∈ s) (hy : y ∈ s) : f x = f y := by
+  obtain ⟨a, ha⟩ := hs.exists_is_const_of_fderiv_eq_zero hs' hf hf'
+  rw [ha x hx, ha y hy]
+
+theorem _root_.IsOpen.exists_eq_add_of_fderiv_eq (hs : IsOpen s) (hs' : IsPreconnected s)
+    (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
+    (hf' : s.EqOn (fderiv 𝕜 f) (fderiv 𝕜 g)) : ∃ a, s.EqOn f (g · + a) := by
+  simp_rw [Set.EqOn, ← sub_eq_iff_eq_add']
+  refine hs.exists_is_const_of_fderiv_eq_zero hs' (hf.sub hg) fun x hx ↦ ?_
+  rw [fderiv_sub (hf.differentiableAt (hs.mem_nhds hx)) (hg.differentiableAt (hs.mem_nhds hx)),
+    hf' hx, sub_self, Pi.zero_apply]
+
+/-- If two functions have equal Fréchet derivatives at every point of a connected open set,
+and are equal at one point in that set, then they are equal on that set. -/
+theorem _root_.IsOpen.eqOn_of_fderiv_eq (hs : IsOpen s) (hs' : IsPreconnected s)
+    (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
+    (hf' : ∀ x ∈ s, fderiv 𝕜 f x = fderiv 𝕜 g x) (hx : x ∈ s) (hfgx : f x = g x) :
+    s.EqOn f g := by
+  obtain ⟨a, ha⟩ := hs.exists_eq_add_of_fderiv_eq hs' hf hg hf'
+  obtain rfl := self_eq_add_right.mp (hfgx.symm.trans (ha hx))
+  simpa using ha
 
 theorem _root_.eq_of_fderiv_eq
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f g : E → G}
@@ -674,6 +735,34 @@ then it is a constant function. -/
 theorem _root_.is_const_of_deriv_eq_zero (hf : Differentiable 𝕜 f) (hf' : ∀ x, deriv f x = 0)
     (x y : 𝕜) : f x = f y :=
   is_const_of_fderiv_eq_zero hf (fun z => by ext; simp [← deriv_fderiv, hf']) _ _
+
+theorem _root_.IsOpen.isOpen_inter_preimage_of_deriv_eq_zero
+    (hs : IsOpen s) (hf : DifferentiableOn 𝕜 f s)
+    (hf' : s.EqOn (deriv f) 0) (t : Set G) : IsOpen (s ∩ f ⁻¹' t) :=
+  hs.isOpen_inter_preimage_of_fderiv_eq_zero hf
+    (fun x hx ↦ by ext; simp [← deriv_fderiv, hf' hx]) t
+
+theorem _root_.IsOpen.exists_is_const_of_deriv_eq_zero
+    (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)
+    (hf' : s.EqOn (deriv f) 0) : ∃ a, ∀ x ∈ s, f x = a :=
+  hs.exists_is_const_of_fderiv_eq_zero hs' hf (fun {x} hx ↦ by ext; simp [← deriv_fderiv, hf' hx])
+
+theorem _root_.IsOpen.is_const_of_deriv_eq_zero
+    (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)
+    (hf' : s.EqOn (deriv f) 0) {x y : 𝕜} (hx : x ∈ s) (hy : y ∈ s) : f x = f y :=
+  hs.is_const_of_fderiv_eq_zero hs' hf (fun a ha ↦ by ext; simp [← deriv_fderiv, hf' ha]) hx hy
+
+theorem _root_.IsOpen.exists_eq_add_of_deriv_eq {f g : 𝕜 → G} (hs : IsOpen s)
+    (hs' : IsPreconnected s)
+    (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
+    (hf' : s.EqOn (deriv f) (deriv g)) : ∃ a, s.EqOn f (g · + a) :=
+  hs.exists_eq_add_of_fderiv_eq hs' hf hg (fun x hx ↦ by ext; simp [← deriv_fderiv, hf' hx])
+
+theorem _root_.IsOpen.eqOn_of_deriv_eq {f g : 𝕜 → G} (hs : IsOpen s)
+    (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
+    (hf' : s.EqOn (deriv f) (deriv g)) (hx : x ∈ s) (hfgx : f x = g x) :
+    s.EqOn f g :=
+  hs.eqOn_of_fderiv_eq hs' hf hg (fun _ hx ↦ ContinuousLinearMap.ext_ring (hf' hx)) hx hfgx
 
 end Convex
 
@@ -920,7 +1009,7 @@ theorem Convex.mul_sub_le_image_sub_of_le_deriv {D : Set ℝ} (hD : Convex ℝ D
     (hf'_ge : ∀ x ∈ interior D, C ≤ deriv f x) :
     ∀ᵉ (x ∈ D) (y ∈ D), x ≤ y → C * (y - x) ≤ f y - f x := by
   intro x hx y hy hxy
-  cases' eq_or_lt_of_le hxy with hxy' hxy'
+  rcases eq_or_lt_of_le hxy with hxy' | hxy'
   · rw [hxy', sub_self, sub_self, mul_zero]
   have hxyD : Icc x y ⊆ D := hD.ordConnected.out hx hy
   have hxyD' : Ioo x y ⊆ interior D :=
@@ -1008,9 +1097,6 @@ lemma strictMonoOn_of_hasDerivWithinAt_pos {D : Set ℝ} (hD : Convex ℝ D) {f 
   strictMonoOn_of_deriv_pos hD hf fun x hx ↦ by
     rw [deriv_eqOn isOpen_interior hf' hx]; exact hf'₀ _ hx
 
-@[deprecated (since := "2024-03-02")]
-alias StrictMonoOn_of_hasDerivWithinAt_pos := strictMonoOn_of_hasDerivWithinAt_pos
-
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `f'` is strictly positive, then
 `f` is a strictly monotone function. -/
 lemma strictMono_of_hasDerivAt_pos {f f' : ℝ → ℝ} (hf : ∀ x, HasDerivAt f (f' x) x)
@@ -1080,17 +1166,11 @@ lemma strictAntiOn_of_hasDerivWithinAt_neg {D : Set ℝ} (hD : Convex ℝ D) {f 
   strictAntiOn_of_deriv_neg hD hf fun x hx ↦ by
     rw [deriv_eqOn isOpen_interior hf' hx]; exact hf'₀ _ hx
 
-@[deprecated (since := "2024-03-02")]
-alias StrictAntiOn_of_hasDerivWithinAt_pos := strictAntiOn_of_hasDerivWithinAt_neg
-
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `f'` is strictly positive, then
 `f` is a strictly monotone function. -/
 lemma strictAnti_of_hasDerivAt_neg {f f' : ℝ → ℝ} (hf : ∀ x, HasDerivAt f (f' x) x)
     (hf' : ∀ x, f' x < 0) : StrictAnti f :=
   strictAnti_of_deriv_neg fun x ↦ by rw [(hf _).deriv]; exact hf' _
-
-@[deprecated (since := "2024-03-02")]
-alias strictAnti_of_hasDerivAt_pos := strictAnti_of_hasDerivAt_neg
 
 /-- Let `f` be a function continuous on a convex (or, equivalently, connected) subset `D`
 of the real line. If `f` is differentiable on the interior of `D` and `f'` is nonpositive, then

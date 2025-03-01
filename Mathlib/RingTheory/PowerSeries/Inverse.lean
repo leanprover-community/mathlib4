@@ -201,7 +201,7 @@ theorem smul_inv (r : k) (φ : k⟦X⟧) : (r • φ)⁻¹ = r⁻¹ • φ⁻¹ 
   MvPowerSeries.smul_inv _ _
 
 /-- `firstUnitCoeff` is the non-zero coefficient whose index is `f.order`, seen as a unit of the
-  field. It is obtained using `divided_by_X_pow_order`, defined in `PowerSeries.Order`-/
+  field. It is obtained using `divided_by_X_pow_order`, defined in `PowerSeries.Order`. -/
 def firstUnitCoeff {f : k⟦X⟧} (hf : f ≠ 0) : kˣ :=
   let d := f.order.lift (order_finite_iff_ne_zero.mpr hf)
   have f_const : coeff k d f ≠ 0 := by apply coeff_order
@@ -231,8 +231,7 @@ theorem Inv_divided_by_X_pow_order_leftInv {f : k⟦X⟧} (hf : f ≠ 0) :
   rw [mul_comm]
   exact mul_invOfUnit (divided_by_X_pow_order hf) (firstUnitCoeff hf) rfl
 
-open scoped Classical
-
+open scoped Classical in
 /-- `Unit_of_divided_by_X_pow_order` is the unit power series obtained by dividing a non-zero
 power series by the largest power of `X` that divides it. -/
 def Unit_of_divided_by_X_pow_order (f : k⟦X⟧) : k⟦X⟧ˣ :=
@@ -352,8 +351,9 @@ theorem normUnit_X : normUnit (X : k⟦X⟧) = 1 := by
 theorem X_eq_normalizeX : (X : k⟦X⟧) = normalize X := by
   simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
 
-open UniqueFactorizationMonoid Classical
+open UniqueFactorizationMonoid
 
+open scoped Classical in
 theorem normalized_count_X_eq_of_coe {P : k[X]} (hP : P ≠ 0) :
     Multiset.count PowerSeries.X (normalizedFactors (P : k⟦X⟧)) =
       Multiset.count Polynomial.X (normalizedFactors P) := by

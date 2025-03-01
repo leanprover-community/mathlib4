@@ -3,7 +3,9 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.ZeroOne.Prod
 import Mathlib.Order.Cover
 
 /-!
@@ -110,8 +112,6 @@ theorem disjoint_mulSupport_iff {f : α → M} {s : Set α} :
 
 @[to_additive (attr := simp)]
 theorem mulSupport_eq_empty_iff {f : α → M} : mulSupport f = ∅ ↔ f = 1 := by
-  #adaptation_note /-- This used to be `simp_rw` rather than `rw`,
-  but this broke `to_additive` as of `nightly-2024-03-07` -/
   rw [← subset_empty_iff, mulSupport_subset_iff', funext_iff]
   simp
 

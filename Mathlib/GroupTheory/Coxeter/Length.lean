@@ -5,6 +5,7 @@ Authors: Mitchell Lee
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.Coxeter.Basic
+import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Zify
 
 /-!
@@ -46,9 +47,11 @@ prove analogous results.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace CoxeterSystem
 
-open List Matrix Function Classical
+open List Matrix Function
 
 variable {B : Type*}
 variable {W : Type*} [Group W]
@@ -63,6 +66,7 @@ private theorem exists_word_with_prod (w : W) : ∃ n ω, ω.length = n ∧ π �
   rcases cs.wordProd_surjective w with ⟨ω, rfl⟩
   use ω.length, ω
 
+open scoped Classical in
 /-- The length of `w`; i.e., the minimum number of simple reflections that
 must be multiplied to form `w`. -/
 noncomputable def length (w : W) : ℕ := Nat.find (cs.exists_word_with_prod w)
@@ -70,9 +74,11 @@ noncomputable def length (w : W) : ℕ := Nat.find (cs.exists_word_with_prod w)
 local prefix:100 "ℓ" => cs.length
 
 theorem exists_reduced_word (w : W) : ∃ ω, ω.length = ℓ w ∧ w = π ω := by
+  classical
   have := Nat.find_spec (cs.exists_word_with_prod w)
   tauto
 
+open scoped Classical in
 theorem length_wordProd_le (ω : List B) : ℓ (π ω) ≤ ω.length :=
   Nat.find_min' (cs.exists_word_with_prod (π ω)) ⟨ω, by tauto⟩
 

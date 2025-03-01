@@ -1,49 +1,55 @@
+# This file tracks the formalisation status of theorems from Freek Wiedijk's "Formalizing 100
+# Theorems" list at https://www.cs.ru.nl/~freek/100/
+#
+# See yaml_check.py for documentation about the allowed fields in this file.
+# The structure of this file is checked by `scripts/yaml_check.py` in this repo
+# and by `make_site.py` in the leanprover-community.github.io repo.
+
 1:
   title  : The Irrationality of the Square Root of 2
   decl   : irrational_sqrt_two
-  author : mathlib
+  authors: mathlib
 2:
   title  : Fundamental Theorem of Algebra
   decl   : Complex.exists_root
-  author : Chris Hughes
+  authors: Chris Hughes
 3:
   title  : The Denumerability of the Rational Numbers
   decl   : Rat.instDenumerable
-  author : Chris Hughes
+  authors: Chris Hughes
 4:
   title  : Pythagorean Theorem
   decl   : EuclideanGeometry.dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two
-  author : Joseph Myers
+  authors: Joseph Myers
 5:
   title  : Prime Number Theorem
 6:
   title  : Gödel’s Incompleteness Theorem
-  author : Shogo Saito
+  authors: Shogo Saito
   links  :
-    results :
-    - First: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/First.lean
-    - Second: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/Second.lean
+    First incompleteness theorem: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/First.lean
+    Second incompleteness theorem: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/Second.lean
     website: https://formalizedformallogic.github.io/Book/
 7:
   title  : Law of Quadratic Reciprocity
   decls  :
     - legendreSym.quadratic_reciprocity
     - jacobiSym.quadratic_reciprocity
-  author : Chris Hughes (first) and Michael Stoll (second)
+  authors: Chris Hughes (first) and Michael Stoll (second)
 8:
   title  : The Impossibility of Trisecting the Angle and Doubling the Cube
 9:
   title  : The Area of a Circle
   decl   : Theorems100.area_disc
-  author : James Arthur and Benjamin Davidson and Andrew Souther
+  authors: James Arthur and Benjamin Davidson and Andrew Souther
 10:
   title  : Euler’s Generalization of Fermat’s Little Theorem
   decl   : Nat.ModEq.pow_totient
-  author : Chris Hughes
+  authors: Chris Hughes
 11:
   title  : The Infinitude of Primes
   decl   : Nat.exists_infinite_primes
-  author : Jeremy Avigad
+  authors: Jeremy Avigad
 12:
   title  : The Independence of the Parallel Postulate
 13:
@@ -51,46 +57,46 @@
 14:
   title  : Euler’s Summation of 1 + (1/2)^2 + (1/3)^2 + ….
   decl   : hasSum_zeta_two
-  author : Marc Masdeu and David Loeffler
+  authors: Marc Masdeu and David Loeffler
 15:
   title  : Fundamental Theorem of Integral Calculus
   decls  :
     - intervalIntegral.integral_hasStrictDerivAt_of_tendsto_ae_right
     - intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le
-  author : Yury G. Kudryashov (first) and Benjamin Davidson (second)
+  authors: Yury G. Kudryashov (first) and Benjamin Davidson (second)
 16:
   title  : Insolvability of General Higher Degree Equations (Abel-Ruffini Theorem)
-  author : Thomas Browning
+  authors: Thomas Browning
   decl   : AbelRuffini.exists_not_solvable_by_rad
 17:
   title  : De Moivre’s Formula
   decl   : Complex.cos_add_sin_mul_I_pow
-  author : Abhimanyu Pallavi Sudhir
+  authors: Abhimanyu Pallavi Sudhir
 18:
   title  : Liouville’s Theorem and the Construction of Transcendental Numbers
-  author : Jujian Zhang
+  authors: Jujian Zhang
   decl   :  Liouville.transcendental
 19:
   title  : Four Squares Theorem
   decl   : Nat.sum_four_squares
-  author : Chris Hughes
+  authors: Chris Hughes
 20:
   title  : All Primes (1 mod 4) Equal the Sum of Two Squares
   decl   : Nat.Prime.sq_add_sq
-  author : Chris Hughes
+  authors: Chris Hughes
 21:
   title  : Green’s Theorem
 22:
   title  : The Non-Denumerability of the Continuum
   decl   : Cardinal.not_countable_real
-  author : Floris van Doorn
+  authors: Floris van Doorn
 23:
   title  : Formula for Pythagorean Triples
   decl   : PythagoreanTriple.classification
-  author : Paul van Wamelen
+  authors: Paul van Wamelen
 24:
   title  : The Independence of the Continuum Hypothesis
-  author : Jesse Michael Han and Floris van Doorn
+  authors: Jesse Michael Han and Floris van Doorn
   links  :
     result: https://github.com/flypitch/flypitch/blob/master/src/summary.lean
     website: https://flypitch.github.io/
@@ -98,185 +104,187 @@
 25:
   title  : Schroeder-Bernstein Theorem
   decl   : Function.Embedding.schroeder_bernstein
-  author : Mario Carneiro
+  authors: Mario Carneiro
 26:
   title  : Leibniz’s Series for Pi
   decl   : Real.tendsto_sum_pi_div_four
-  author : Benjamin Davidson
+  authors: Benjamin Davidson
 27:
   title  : Sum of the Angles of a Triangle
   decl   : EuclideanGeometry.angle_add_angle_add_angle_eq_pi
-  author : Joseph Myers
+  authors: Joseph Myers
 28:
   title  : Pascal’s Hexagon Theorem
 29:
   title  : Feuerbach’s Theorem
 30:
   title  : The Ballot Problem
-  author : Bhavik Mehta and Kexing Ying
+  authors: Bhavik Mehta and Kexing Ying
   decl   : Ballot.ballot_problem
 31:
   title  : Ramsey’s Theorem
-  author : Bhavik Mehta
+  authors: Bhavik Mehta
   links  :
     result: https://github.com/b-mehta/combinatorics/blob/extras/src/inf_ramsey.lean
 32:
   title  : The Four Color Problem
 33:
   title  : Fermat’s Last Theorem
+  statement: FermatLastTheorem
+  note: "Formalisation of the proof is on-going in https://imperialcollegelondon.github.io/FLT/."
 34:
   title  : Divergence of the Harmonic Series
   decl   : Real.tendsto_sum_range_one_div_nat_succ_atTop
-  author : Anatole Dedecker and Yury Kudryashov
+  authors: Anatole Dedecker and Yury Kudryashov
 35:
   title  : Taylor’s Theorem
   decls  :
     - taylor_mean_remainder_lagrange
     - taylor_mean_remainder_cauchy
-  author : Moritz Doll
+  authors: Moritz Doll
 36:
   title  : Brouwer Fixed Point Theorem
-  author : Brendan Seamas Murphy
+  authors: Brendan Seamas Murphy
   links  :
     result: https://github.com/Shamrock-Frost/BrouwerFixedPoint/blob/master/src/brouwer_fixed_point.lean
 37:
   title  : The Solution of a Cubic
-  author : Jeoff Lee
+  authors: Jeoff Lee
   decl   : Theorems100.cubic_eq_zero_iff
 38:
   title  : Arithmetic Mean/Geometric Mean
   decl   : Real.geom_mean_le_arith_mean_weighted
-  author : Yury G. Kudryashov
+  authors: Yury G. Kudryashov
 39:
   title  : Solutions to Pell’s Equation
   decls  :
     - Pell.eq_pell
     - Pell.exists_of_not_isSquare
-  author : Mario Carneiro (first), Michael Stoll (second)
+  authors: Mario Carneiro (first), Michael Stoll (second)
   note   : "In `pell.eq_pell`, `d` is defined to be `a*a - 1` for an arbitrary `a > 1`."
 40:
   title  : Minkowski’s Fundamental Theorem
   decl   : MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
-  author : Alex J. Best and Yaël Dillies
+  authors: Alex J. Best and Yaël Dillies
 41:
   title  : Puiseux’s Theorem
 42:
   title  : Sum of the Reciprocals of the Triangular Numbers
-  author : Jalex Stark and Yury Kudryashov
+  authors: Jalex Stark and Yury Kudryashov
   decl   : Theorems100.inverse_triangle_sum
 43:
   title  : The Isoperimetric Theorem
 44:
   title  : The Binomial Theorem
   decl   : add_pow
-  author : Chris Hughes
+  authors: Chris Hughes
 45:
   title  : The Partition Theorem
-  author : Bhavik Mehta and Aaron Anderson
+  authors: Bhavik Mehta and Aaron Anderson
   decl   : Theorems100.partition_theorem
 46:
   title  : The Solution of the General Quartic Equation
   decl   : Theorems100.quartic_eq_zero_iff
-  author : Thomas Zhu
+  authors: Thomas Zhu
 47:
   title  : The Central Limit Theorem
 48:
   title  : Dirichlet’s Theorem
   decl   : Nat.setOf_prime_and_eq_mod_infinite
-  author : David Loeffler, Michael Stoll
+  authors: David Loeffler, Michael Stoll
 49:
   title  : The Cayley-Hamilton Theorem
   decl   : Matrix.aeval_self_charpoly
-  author : Kim Morrison
+  authors: Kim Morrison
 50:
   title  : The Number of Platonic Solids
 51:
   title  : Wilson’s Lemma
   decl   : ZMod.wilsons_lemma
-  author : Chris Hughes
+  authors: Chris Hughes
 52:
   title  : The Number of Subsets of a Set
   decl   : Finset.card_powerset
-  author : mathlib
+  authors: mathlib
 53:
   title  : Pi is Transcendental
 54:
   title  : Königsberg Bridges Problem
   decl   : Konigsberg.not_isEulerian
-  author : Kyle Miller
+  authors: Kyle Miller
 55:
   title  : Product of Segments of Chords
   decl   : EuclideanGeometry.mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_pi
-  author : Manuel Candales
+  authors: Manuel Candales
 56:
   title  : The Hermite-Lindemann Transcendence Theorem
 57:
   title  : Heron’s Formula
   decl   : Theorems100.heron
-  author : Matt Kempster
+  authors: Matt Kempster
 58:
   title  : Formula for the Number of Combinations
   decls  :
     - Finset.card_powersetCard
     - Finset.mem_powersetCard
-  author : mathlib <!--Jeremy Avigad in lean 2-->
+  authors: mathlib <!--Jeremy Avigad in lean 2-->
 59:
   title  : The Laws of Large Numbers
   decl   : ProbabilityTheory.strong_law_ae
-  author : Sébastien Gouëzel
+  authors: Sébastien Gouëzel
 60:
   title  : Bezout’s Theorem
   decl   : Nat.gcd_eq_gcd_ab
-  author : mathlib
+  authors: mathlib
 61:
   title  : Theorem of Ceva
 62:
   title  : Fair Games Theorem
   decl   : MeasureTheory.submartingale_iff_expected_stoppedValue_mono
-  author : Kexing Ying
+  authors: Kexing Ying
 63:
   title  : Cantor’s Theorem
   decl: Function.cantor_surjective
-  author : Johannes Hölzl and Mario Carneiro
+  authors: Johannes Hölzl and Mario Carneiro
 64:
   title  : L’Hopital’s Rule
   decl   : deriv.lhopital_zero_nhds
-  author : Anatole Dedecker
+  authors: Anatole Dedecker
 65:
   title  : Isosceles Triangle Theorem
   decl   : EuclideanGeometry.angle_eq_angle_of_dist_eq
-  author : Joseph Myers
+  authors: Joseph Myers
 66:
   title  : Sum of a Geometric Series
   decls  :
     - geom_sum_Ico
     - NNReal.hasSum_geometric
-  author : Sander R. Dahmen (finite) and Johannes Hölzl (infinite)
+  authors: Sander R. Dahmen (finite) and Johannes Hölzl (infinite)
 67:
   title  : e is Transcendental
-  author : Jujian Zhang
+  authors: Jujian Zhang
   links  :
     result: https://github.com/jjaassoonn/transcendental/blob/master/src/e_transcendental.lean
     website: https://jjaassoonn.github.io/transcendental/
 68:
   title  : Sum of an arithmetic series
   decl   : Finset.sum_range_id
-  author : Johannes Hölzl
+  authors: Johannes Hölzl
 69:
   title  : Greatest Common Divisor Algorithm
   decls  :
     - EuclideanDomain.gcd
     - EuclideanDomain.gcd_dvd
     - EuclideanDomain.dvd_gcd
-  author : mathlib
+  authors: mathlib
 70:
   title  : The Perfect Number Theorem
   decl   : Theorems100.Nat.eq_two_pow_mul_prime_mersenne_of_even_perfect
-  author : Aaron Anderson
+  authors: Aaron Anderson
 71:
   title  : Order of a Subgroup
   decl   : Subgroup.card_subgroup_dvd_card
-  author : mathlib
+  authors: mathlib
 72:
   title  : Sylow’s Theorem
   decls  :
@@ -284,42 +292,42 @@
     - Sylow.isPretransitive_of_finite
     - Sylow.card_dvd_index
     - card_sylow_modEq_one
-  author : Chris Hughes
+  authors: Chris Hughes
 73:
   title  : Ascending or Descending Sequences (Erdős–Szekeres Theorem)
   decl   : Theorems100.erdos_szekeres
-  author : Bhavik Mehta
+  authors: Bhavik Mehta
 74:
   title  : The Principle of Mathematical Induction
   decl   : Nat
   note   : Automatically generated when defining the natural numbers
-  author : Leonardo de Moura
+  authors: Leonardo de Moura
 75:
   title  : The Mean Value Theorem
   decl   : exists_deriv_eq_slope
-  author : Yury G. Kudryashov
+  authors: Yury G. Kudryashov
 76:
   title  : Fourier Series
   decls  :
     - fourierCoeff
     - hasSum_fourier_series_L2
-  author : Heather Macbeth
+  authors: Heather Macbeth
 77:
   title  : Sum of kth powers
   decls  :
     - sum_range_pow
     - sum_Ico_pow
-  author : Moritz Firsching and Fabian Kruse and Ashvni Narayanan
+  authors: Moritz Firsching and Fabian Kruse and Ashvni Narayanan
 78:
   title  : The Cauchy-Schwarz Inequality
   decls  :
     - inner_mul_inner_self_le
     - norm_inner_le_norm
-  author : Zhouhang Zhou
+  authors: Zhouhang Zhou
 79:
   title  : The Intermediate Value Theorem
   decl   : intermediate_value_Icc
-  author : Rob Lewis and Chris Hughes
+  authors: Rob Lewis and Chris Hughes
 80:
   title  : The Fundamental Theorem of Arithmetic
   decls  :
@@ -328,33 +336,33 @@
     - EuclideanDomain.to_principal_ideal_domain
     - UniqueFactorizationMonoid
     - UniqueFactorizationMonoid.factors_unique
-  author : Chris Hughes
+  authors: Chris Hughes
   note   : "it also has a generalized version, by showing that every Euclidean domain is a unique factorization domain, and showing that the integers form a Euclidean domain."
 81:
   title  : Divergence of the Prime Reciprocal Series
   decls  :
     - Theorems100.Real.tendsto_sum_one_div_prime_atTop
     - not_summable_one_div_on_primes
-  author : Manuel Candales (archive), Michael Stoll (mathlib)
+  authors: Manuel Candales (archive), Michael Stoll (mathlib)
 82:
   title  : Dissection of Cubes (J.E. Littlewood’s ‘elegant’ proof)
   decl   : Theorems100.«82».cannot_cube_a_cube
-  author : Floris van Doorn
+  authors: Floris van Doorn
 83:
   title  : The Friendship Theorem
   decl   : Theorems100.friendship_theorem
-  author : Aaron Anderson and Jalex Stark and Kyle Miller
+  authors: Aaron Anderson and Jalex Stark and Kyle Miller
 84:
   title  : Morley’s Theorem
 85:
   title  : Divisibility by 3 Rule
-  author : Kim Morrison
+  authors: Kim Morrison
   decls  :
     - Nat.three_dvd_iff
 86:
   title  : Lebesgue Measure and Integration
   decl   : MeasureTheory.lintegral
-  author : Johannes Hölzl
+  authors: Johannes Hölzl
 87:
   title  : Desargues’s Theorem
 88:
@@ -362,22 +370,22 @@
   decls  :
     - card_derangements_eq_numDerangements
     - numDerangements_sum
-  author : Henry Swanson
+  authors: Henry Swanson
 89:
   title  : The Factor and Remainder Theorems
   decls  :
     - Polynomial.dvd_iff_isRoot
     - Polynomial.mod_X_sub_C_eq_C_eval
-  author : Chris Hughes
+  authors: Chris Hughes
 90:
   title  : Stirling’s Formula
   decls  :
     - Stirling.tendsto_stirlingSeq_sqrt_pi
-  author : Moritz Firsching and Fabian Kruse and Nikolas Kuhn and Heather Macbeth
+  authors: Moritz Firsching and Fabian Kruse and Nikolas Kuhn and Heather Macbeth
 91:
   title  : The Triangle Inequality
   decl   : norm_add_le
-  author : Zhouhang Zhou
+  authors: Zhouhang Zhou
 92:
   title  : Pick’s Theorem
 93:
@@ -385,15 +393,15 @@
   decls  :
     - Theorems100.birthday
     - Theorems100.birthday_measure
-  author : Eric Rodriguez
+  authors: Eric Rodriguez
 94:
   title  : The Law of Cosines
   decl   : EuclideanGeometry.dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle
-  author : Joseph Myers
+  authors: Joseph Myers
 95:
   title  : Ptolemy’s Theorem
   decl   : EuclideanGeometry.mul_dist_add_mul_dist_eq_mul_dist_of_cospherical
-  author : Manuel Candales
+  authors: Manuel Candales
 96:
   title  : Principle of Inclusion/Exclusion
   decls  :
@@ -403,24 +411,24 @@
     - Finset.inclusion_exclusion_card_inf_compl
   links  :
     github : https://github.com/NeilStrickland/lean_lib/blob/f88d162da2f990b87c4d34f5f46bbca2bbc5948e/src/combinatorics/matching.lean#L304
-  author : Neil Strickland (outside mathlib), Yaël Dillies (in mathlib)
+  authors: Neil Strickland (outside mathlib), Yaël Dillies (in mathlib)
 97:
   title  : Cramer’s Rule
   decl   : Matrix.mulVec_cramer
-  author : Anne Baanen
+  authors: Anne Baanen
 98:
   title  : Bertrand’s Postulate
   decl   : Nat.bertrand
-  author : Bolton Bailey and Patrick Stevens
+  authors: Bolton Bailey and Patrick Stevens
 99:
   title  : Buffon Needle Problem
   links  :
   decls  :
     - BuffonsNeedle.buffon_short
     - BuffonsNeedle.buffon_long
-  author : Enrico Z. Borba
+  authors: Enrico Z. Borba
 100:
   title  : Descartes Rule of Signs
   links  :
     github : https://github.com/Timeroot/lean-descartes-signs/
-  author : Alex Meiburg
+  authors: Alex Meiburg

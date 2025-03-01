@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Vector.Basic
+import Mathlib.Data.List.Chain
 import Mathlib.Logic.Denumerable
 
 /-!
@@ -14,7 +14,9 @@ This file defines some additional constructive equivalences using `Encodable` an
 function on `ℕ`.
 -/
 
-open List (Vector)
+assert_not_exists Monoid
+
+open List
 open Nat List
 
 namespace Encodable
@@ -67,7 +69,7 @@ theorem decode_list_succ (v : ℕ) :
     decode (α := List α) (succ v) =
       (· :: ·) <$> decode (α := α) v.unpair.1 <*> decode (α := List α) v.unpair.2 :=
   show decodeList (succ v) = _ by
-    cases' e : unpair v with v₁ v₂
+    rcases e : unpair v with ⟨v₁, v₂⟩
     simp [decodeList, e]; rfl
 
 theorem length_le_encode : ∀ l : List α, length l ≤ encode l
@@ -112,7 +114,7 @@ end Finset
 
 /-- A listable type with decidable equality is encodable. -/
 def encodableOfList [DecidableEq α] (l : List α) (H : ∀ x, x ∈ l) : Encodable α :=
-  ⟨fun a => indexOf a l, l.get?, fun _ => indexOf_get? (H _)⟩
+  ⟨fun a => idxOf a l, (l[·]?), fun _ => getElem?_idxOf (H _)⟩
 
 /-- A finite type is encodable. Because the encoding is not unique, we wrap it in `Trunc` to
 preserve computability. -/
@@ -126,21 +128,6 @@ This can be locally made into an instance with `attribute [local instance] Finty
 noncomputable def _root_.Fintype.toEncodable (α : Type*) [Fintype α] : Encodable α := by
   classical exact (Fintype.truncEncodable α).out
 
-/-- If `α` is encodable, then so is `Vector α n`. -/
-instance List.Vector.encodable [Encodable α] {n} : Encodable (List.Vector α n) :=
-  Subtype.encodable
-
-/-- If `α` is countable, then so is `Vector α n`. -/
-instance List.Vector.countable [Countable α] {n} : Countable (List.Vector α n) :=
-  Subtype.countable
-
-/-- If `α` is encodable, then so is `Fin n → α`. -/
-instance finArrow [Encodable α] {n} : Encodable (Fin n → α) :=
-  ofEquiv _ (Equiv.vectorEquivFin _ _).symm
-
-instance finPi (n) (π : Fin n → Type*) [∀ i, Encodable (π i)] : Encodable (∀ i, π i) :=
-  ofEquiv _ (Equiv.piEquivSubtypeSigma (Fin n) π)
-
 /-- If `α` is encodable, then so is `Finset α`. -/
 instance _root_.Finset.encodable [Encodable α] : Encodable (Finset α) :=
   haveI := decidableEqOfEncodable α
@@ -150,24 +137,6 @@ instance _root_.Finset.encodable [Encodable α] : Encodable (Finset α) :=
 /-- If `α` is countable, then so is `Finset α`. -/
 instance _root_.Finset.countable [Countable α] : Countable (Finset α) :=
   Finset.val_injective.countable
-
--- TODO: Unify with `fintypePi` and find a better name
-/-- When `α` is finite and `β` is encodable, `α → β` is encodable too. Because the encoding is not
-unique, we wrap it in `Trunc` to preserve computability. -/
-def fintypeArrow (α : Type*) (β : Type*) [DecidableEq α] [Fintype α] [Encodable β] :
-    Trunc (Encodable (α → β)) :=
-  (Fintype.truncEquivFin α).map fun f =>
-    Encodable.ofEquiv (Fin (Fintype.card α) → β) <| Equiv.arrowCongr f (Equiv.refl _)
-
-/-- When `α` is finite and all `π a` are encodable, `Π a, π a` is encodable too. Because the
-encoding is not unique, we wrap it in `Trunc` to preserve computability. -/
-def fintypePi (α : Type*) (π : α → Type*) [DecidableEq α] [Fintype α] [∀ a, Encodable (π a)] :
-    Trunc (Encodable (∀ a, π a)) :=
-  (Fintype.truncEncodable α).bind fun a =>
-    (@fintypeArrow α (Σa, π a) _ _ (@Sigma.encodable _ _ a _)).bind fun f =>
-      Trunc.mk <|
-        @Encodable.ofEquiv _ _ (@Subtype.encodable _ _ f _)
-          (Equiv.piEquivSubtypeSigma α π)
 
 /-- The elements of a `Fintype` as a sorted list. -/
 def sortedUniv (α) [Fintype α] [Encodable α] : List α :=
@@ -197,11 +166,6 @@ def fintypeEquivFin {α} [Fintype α] [Encodable α] : α ≃ Fin (Fintype.card 
   ((sortedUniv_nodup α).getEquivOfForallMemList _ mem_sortedUniv).symm.trans <|
     Equiv.cast (congr_arg _ (length_sortedUniv α))
 
-/-- If `α` and `β` are encodable and `α` is a fintype, then `α → β` is encodable as well. -/
-instance fintypeArrowOfEncodable {α β : Type*} [Encodable α] [Fintype α] [Encodable β] :
-    Encodable (α → β) :=
-  ofEquiv (Fin (Fintype.card α) → β) <| Equiv.arrowCongr fintypeEquivFin (Equiv.refl _)
-
 end Encodable
 
 namespace Denumerable
@@ -216,7 +180,7 @@ section List
 theorem denumerable_list_aux : ∀ n : ℕ, ∃ a ∈ @decodeList α _ n, encodeList a = n
   | 0 => by rw [decodeList]; exact ⟨_, rfl, rfl⟩
   | succ v => by
-    cases' e : unpair v with v₁ v₂
+    rcases e : unpair v with ⟨v₁, v₂⟩
     have h := unpair_right_le v
     rw [e] at h
     rcases have : v₂ < succ v := lt_succ_of_le h
@@ -238,7 +202,7 @@ theorem list_ofNat_succ (v : ℕ) :
     ofNat (List α) (succ v) = ofNat α v.unpair.1 :: ofNat (List α) v.unpair.2 :=
   ofNat_of_decode <|
     show decodeList (succ v) = _ by
-      cases' e : unpair v with v₁ v₂
+      rcases e : unpair v with ⟨v₁, v₂⟩
       simp [decodeList, e]
       rw [show decodeList v₂ = decode (α := List α) v₂ from rfl, decode_eq_ofNat, Option.seq_some]
 
@@ -289,7 +253,7 @@ instance multiset : Denumerable (Multiset α) :=
         raise_lower (List.sorted_cons.2 ⟨fun n _ => Nat.zero_le n, (s.map encode).sort_sorted _⟩)
       simp [-Multiset.map_coe, this],
      fun n => by
-      simp [-Multiset.map_coe, List.mergeSort_eq_self (raise_sorted _ _), lower_raise]⟩
+      simp [-Multiset.map_coe, List.mergeSort_eq_self _ (raise_sorted _ _), lower_raise]⟩
 
 end Multiset
 
@@ -310,7 +274,7 @@ def raise' : List ℕ → ℕ → List ℕ
 
 theorem lower_raise' : ∀ l n, lower' (raise' l n) n = l
   | [], _ => rfl
-  | m :: l, n => by simp [raise', lower', add_tsub_cancel_right, lower_raise']
+  | m :: l, n => by simp [raise', lower', Nat.add_sub_cancel_right, lower_raise']
 
 theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.Sorted (· < ·) l → raise' (lower' l n) n = l
   | [], _, _, _ => rfl
@@ -344,7 +308,7 @@ instance finset : Denumerable (Finset α) :=
           raise_lower' (fun n _ => Nat.zero_le n) (Finset.sort_sorted_lt _)],
       fun n => by
       simp [-Multiset.map_coe, Finset.map, raise'Finset, Finset.sort,
-        List.mergeSort_eq_self ((raise'_sorted _ _).imp (@le_of_lt _ _)), lower_raise']⟩
+        List.mergeSort_eq_self _ (raise'_sorted _ _).le_of_lt, lower_raise']⟩
 
 end Finset
 
@@ -352,12 +316,18 @@ end Denumerable
 
 namespace Equiv
 
-/-- The type lists on unit is canonically equivalent to the natural numbers. -/
-def listUnitEquiv : List Unit ≃ ℕ where
+/-- A list on a unique type is equivalent to ℕ by sending each list to its length. -/
+@[simps!]
+def listUniqueEquiv (α : Type*) [Unique α] : List α ≃ ℕ where
   toFun := List.length
-  invFun n := List.replicate n ()
+  invFun n := List.replicate n default
   left_inv u := List.length_injective (by simp)
-  right_inv n := List.length_replicate n ()
+  right_inv n := List.length_replicate n _
+
+/-- The type lists on unit is canonically equivalent to the natural numbers. -/
+@[deprecated listUniqueEquiv (since := "2025-02-17")]
+def listUnitEquiv : List Unit ≃ ℕ :=
+  listUniqueEquiv _
 
 /-- `List ℕ` is equivalent to `ℕ`. -/
 def listNatEquivNat : List ℕ ≃ ℕ :=

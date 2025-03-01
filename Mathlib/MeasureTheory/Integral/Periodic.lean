@@ -27,6 +27,10 @@ open Set Function MeasureTheory MeasureTheory.Measure TopologicalSpace AddSubgro
 
 open scoped MeasureTheory NNReal ENNReal
 
+/-!
+## Measures and integrability on ℝ and on the circle
+-/
+
 @[measurability]
 protected theorem AddCircle.measurable_mk' {a : ℝ} :
     Measurable (β := AddCircle a) ((↑) : ℝ → AddCircle a) :=
@@ -221,13 +225,60 @@ protected theorem intervalIntegral_preimage (t : ℝ) (f : UnitAddCircle → E) 
 
 end UnitAddCircle
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-
+/-!
+## Interval integrability of periodic functions
+-/
 namespace Function
 
 namespace Periodic
 
+variable {E : Type*} [NormedAddCommGroup E]
+
 variable {f : ℝ → E} {T : ℝ}
+
+/-- A periodic function is interval integrable over every interval if it is interval integrable
+over one period. -/
+theorem intervalIntegrable {t : ℝ} (h₁f : Function.Periodic f T) (hT : 0 < T)
+    (h₂f : IntervalIntegrable f MeasureTheory.volume t (t + T)) (a₁ a₂ : ℝ) :
+    IntervalIntegrable f MeasureTheory.volume a₁ a₂ := by
+  -- Replace [a₁, a₂] by [t - n₁ * T, t + n₂ * T], where n₁ and n₂ are natural numbers
+  obtain ⟨n₁, hn₁⟩ := exists_nat_ge ((t - min a₁ a₂) / T)
+  obtain ⟨n₂, hn₂⟩ := exists_nat_ge ((max a₁ a₂ - t) / T)
+  have : Set.uIcc a₁ a₂ ⊆ Set.uIcc (t - n₁ * T) (t + n₂ * T) := by
+    rw [Set.uIcc_subset_uIcc_iff_le]
+    constructor
+    · calc min (t - n₁ * T) (t + n₂ * T)
+      _ ≤ (t - n₁ * T) := by apply min_le_left
+      _ ≤ min a₁ a₂ := by linarith [(div_le_iff₀ hT).1 hn₁]
+    · calc max a₁ a₂
+      _ ≤ t + n₂ * T := by linarith [(div_le_iff₀ hT).1 hn₂]
+      _ ≤ max (t - n₁ * T) (t + n₂ * T) := by apply le_max_right
+  apply IntervalIntegrable.mono_set _ this
+  -- Suffices to show integrability over shifted periods
+  let a : ℕ → ℝ := fun n ↦ t + (n - n₁) * T
+  rw [(by ring : t - n₁ * T = a 0), (by simp [a] : t + n₂ * T = a (n₁ + n₂))]
+  apply IntervalIntegrable.trans_iterate
+  -- Show integrability over a shifted period
+  intro k hk
+  convert (IntervalIntegrable.comp_sub_right h₂f ((k - n₁) * T)) using 1
+  · funext x
+    simpa using (h₁f.sub_int_mul_eq (k - n₁)).symm
+  · simp [a, Nat.cast_add]
+    ring
+
+/-- Special case of Function.Periodic.intervalIntegrable: A periodic function is interval integrable
+over every interval if it is interval integrable over the period starting from zero. -/
+theorem intervalIntegrable₀ (h₁f : Function.Periodic f T) (hT : 0 < T)
+    (h₂f : IntervalIntegrable f MeasureTheory.volume 0 T) (a₁ a₂ : ℝ) :
+    IntervalIntegrable f MeasureTheory.volume a₁ a₂ := by
+  apply h₁f.intervalIntegrable hT (t := 0)
+  simpa
+
+/-!
+## Interval integrals of periodic functions
+-/
+
+variable [NormedSpace ℝ E]
 
 /-- An auxiliary lemma for a more general `Function.Periodic.intervalIntegral_add_eq`. -/
 theorem intervalIntegral_add_eq_of_pos (hf : Periodic f T) (hT : 0 < T) (t s : ℝ) :
@@ -271,7 +322,7 @@ theorem intervalIntegral_add_zsmul_eq (hf : Periodic f T) (n : ℤ) (t : ℝ)
     · simp
     · simp only [succ_nsmul, hf.intervalIntegral_add_eq_add 0 (m • T) h_int, ih, zero_add]
   -- Then prove it for all integers
-  cases' n with n n
+  rcases n with n | n
   · simp [← this n]
   · conv_rhs => rw [negSucc_zsmul]
     have h₀ : Int.negSucc n • T + (n + 1) • T = 0 := by simp; linarith
@@ -284,43 +335,48 @@ section RealValued
 open Filter
 
 variable {g : ℝ → ℝ}
-variable (hg : Periodic g T) (h_int : ∀ t₁ t₂, IntervalIntegrable g MeasureSpace.volume t₁ t₂)
-include hg h_int
+variable (hg : Periodic g T)
+include hg
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0`, then for any `t : ℝ`, the function
 `t ↦ ∫ x in 0..t, g x` is bounded below by `t ↦ X + ⌊t/T⌋ • Y` for appropriate constants `X` and
 `Y`. -/
-theorem sInf_add_zsmul_le_integral_of_pos (hT : 0 < T) (t : ℝ) :
+theorem sInf_add_zsmul_le_integral_of_pos (h_int : IntervalIntegrable g MeasureSpace.volume 0 T)
+    (hT : 0 < T) (t : ℝ) :
     (sInf ((fun t => ∫ x in (0)..t, g x) '' Icc 0 T) + ⌊t / T⌋ • ∫ x in (0)..T, g x) ≤
       ∫ x in (0)..t, g x := by
+  let h'_int := hg.intervalIntegrable₀ hT h_int
   let ε := Int.fract (t / T) * T
   conv_rhs =>
-    rw [← Int.fract_div_mul_self_add_zsmul_eq T t (by linarith), ←
-      integral_add_adjacent_intervals (h_int 0 ε) (h_int _ _)]
-  rw [hg.intervalIntegral_add_zsmul_eq ⌊t / T⌋ ε h_int, hg.intervalIntegral_add_eq ε 0, zero_add,
-    add_le_add_iff_right]
-  exact (continuous_primitive h_int 0).continuousOn.sInf_image_Icc_le <|
+    rw [← Int.fract_div_mul_self_add_zsmul_eq T t (by linarith),
+      ← integral_add_adjacent_intervals (h'_int 0 ε) (h'_int _ _)]
+  rw [hg.intervalIntegral_add_zsmul_eq ⌊t / T⌋ ε (hg.intervalIntegrable₀ hT h_int),
+    hg.intervalIntegral_add_eq ε 0, zero_add, add_le_add_iff_right]
+  exact (continuous_primitive h'_int 0).continuousOn.sInf_image_Icc_le <|
     mem_Icc_of_Ico (Int.fract_div_mul_self_mem_Ico T t hT)
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0`, then for any `t : ℝ`, the function
 `t ↦ ∫ x in 0..t, g x` is bounded above by `t ↦ X + ⌊t/T⌋ • Y` for appropriate constants `X` and
 `Y`. -/
-theorem integral_le_sSup_add_zsmul_of_pos (hT : 0 < T) (t : ℝ) :
+theorem integral_le_sSup_add_zsmul_of_pos (h_int : IntervalIntegrable g MeasureSpace.volume 0 T)
+    (hT : 0 < T) (t : ℝ) :
     (∫ x in (0)..t, g x) ≤
       sSup ((fun t => ∫ x in (0)..t, g x) '' Icc 0 T) + ⌊t / T⌋ • ∫ x in (0)..T, g x := by
+  let h'_int := hg.intervalIntegrable₀ hT h_int
   let ε := Int.fract (t / T) * T
   conv_lhs =>
     rw [← Int.fract_div_mul_self_add_zsmul_eq T t (by linarith), ←
-      integral_add_adjacent_intervals (h_int 0 ε) (h_int _ _)]
-  rw [hg.intervalIntegral_add_zsmul_eq ⌊t / T⌋ ε h_int, hg.intervalIntegral_add_eq ε 0, zero_add,
+      integral_add_adjacent_intervals (h'_int 0 ε) (h'_int _ _)]
+  rw [hg.intervalIntegral_add_zsmul_eq ⌊t / T⌋ ε h'_int, hg.intervalIntegral_add_eq ε 0, zero_add,
     add_le_add_iff_right]
-  exact (continuous_primitive h_int 0).continuousOn.le_sSup_image_Icc
+  exact (continuous_primitive h'_int 0).continuousOn.le_sSup_image_Icc
     (mem_Icc_of_Ico (Int.fract_div_mul_self_mem_Ico T t hT))
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0` and `0 < ∫ x in 0..T, g x`, then
 `t ↦ ∫ x in 0..t, g x` tends to `∞` as `t` tends to `∞`. -/
 theorem tendsto_atTop_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) (hT : 0 < T) :
     Tendsto (fun t => ∫ x in (0)..t, g x) atTop atTop := by
+  have h_int := intervalIntegrable_of_integral_ne_zero h₀.ne'
   apply tendsto_atTop_mono (hg.sInf_add_zsmul_le_integral_of_pos h_int hT)
   apply atTop.tendsto_atTop_add_const_left (sInf <| (fun t => ∫ x in (0)..t, g x) '' Icc 0 T)
   apply Tendsto.atTop_zsmul_const h₀
@@ -330,6 +386,7 @@ theorem tendsto_atTop_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) 
 `t ↦ ∫ x in 0..t, g x` tends to `-∞` as `t` tends to `-∞`. -/
 theorem tendsto_atBot_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) (hT : 0 < T) :
     Tendsto (fun t => ∫ x in (0)..t, g x) atBot atBot := by
+  have h_int := intervalIntegrable_of_integral_ne_zero h₀.ne'
   apply tendsto_atBot_mono (hg.integral_le_sSup_add_zsmul_of_pos h_int hT)
   apply atBot.tendsto_atBot_add_const_left (sSup <| (fun t => ∫ x in (0)..t, g x) '' Icc 0 T)
   apply Tendsto.atBot_zsmul_const h₀
@@ -337,15 +394,17 @@ theorem tendsto_atBot_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) 
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0` and `∀ x, 0 < g x`, then `t ↦ ∫ x in 0..t, g x`
 tends to `∞` as `t` tends to `∞`. -/
-theorem tendsto_atTop_intervalIntegral_of_pos' (h₀ : ∀ x, 0 < g x) (hT : 0 < T) :
+theorem tendsto_atTop_intervalIntegral_of_pos'
+    (h_int : IntervalIntegrable g MeasureSpace.volume 0 T) (h₀ : ∀ x, 0 < g x) (hT : 0 < T) :
     Tendsto (fun t => ∫ x in (0)..t, g x) atTop atTop :=
-  hg.tendsto_atTop_intervalIntegral_of_pos h_int (intervalIntegral_pos_of_pos (h_int 0 T) h₀ hT) hT
+  hg.tendsto_atTop_intervalIntegral_of_pos (intervalIntegral_pos_of_pos h_int h₀ hT) hT
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0` and `∀ x, 0 < g x`, then `t ↦ ∫ x in 0..t, g x`
 tends to `-∞` as `t` tends to `-∞`. -/
-theorem tendsto_atBot_intervalIntegral_of_pos' (h₀ : ∀ x, 0 < g x) (hT : 0 < T) :
-    Tendsto (fun t => ∫ x in (0)..t, g x) atBot atBot :=
-  hg.tendsto_atBot_intervalIntegral_of_pos h_int (intervalIntegral_pos_of_pos (h_int 0 T) h₀ hT) hT
+theorem tendsto_atBot_intervalIntegral_of_pos'
+    (h_int : IntervalIntegrable g MeasureSpace.volume 0 T) (h₀ : ∀ x, 0 < g x) (hT : 0 < T) :
+    Tendsto (fun t => ∫ x in (0)..t, g x) atBot atBot := by
+  exact hg.tendsto_atBot_intervalIntegral_of_pos (intervalIntegral_pos_of_pos h_int h₀ hT) hT
 
 end RealValued
 

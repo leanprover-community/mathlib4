@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric W
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Group.Graph
 import Mathlib.LinearAlgebra.Span.Basic
-import Mathlib.Order.PartialSups
 
 /-! ### Products of modules
 
@@ -824,132 +823,6 @@ later, when we assume `M` is noetherian, this implies that `N` must be trivial,
 and establishes the strong rank condition for any left-noetherian ring.
 -/
 
-
-noncomputable section Tunnel
-
--- (This doesn't work over a semiring: we need to use that `Submodule R M` is a modular lattice,
--- which requires cancellation.)
-variable [Ring R]
-variable {N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-
-open Function
-
-set_option linter.deprecated false in
-/-- An auxiliary construction for `tunnel`.
-The composition of `f`, followed by the isomorphism back to `K`,
-followed by the inclusion of this submodule back into `M`. -/
-@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
-def tunnelAux (f : M × N →ₗ[R] M) (Kφ : ΣK : Submodule R M, K ≃ₗ[R] M) : M × N →ₗ[R] M :=
-  (Kφ.1.subtype.comp Kφ.2.symm.toLinearMap).comp f
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
-theorem tunnelAux_injective (f : M × N →ₗ[R] M) (i : Injective f)
-    (Kφ : ΣK : Submodule R M, K ≃ₗ[R] M) : Injective (tunnelAux f Kφ) :=
-  (Subtype.val_injective.comp Kφ.2.symm.injective).comp i
-
-set_option linter.deprecated false in
-/-- Auxiliary definition for `tunnel`. -/
-@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
-def tunnel' (f : M × N →ₗ[R] M) (i : Injective f) : ℕ → ΣK : Submodule R M, K ≃ₗ[R] M
-  | 0 => ⟨⊤, LinearEquiv.ofTop ⊤ rfl⟩
-  | n + 1 =>
-    ⟨(Submodule.fst R M N).map (tunnelAux f (tunnel' f i n)),
-      ((Submodule.fst R M N).equivMapOfInjective _
-        (tunnelAux_injective f i (tunnel' f i n))).symm.trans (Submodule.fstEquiv R M N)⟩
-
-set_option linter.deprecated false in
-/-- Give an injective map `f : M × N →ₗ[R] M` we can find a nested sequence of submodules
-all isomorphic to `M`.
--/
-@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
-def tunnel (f : M × N →ₗ[R] M) (i : Injective f) : ℕ →o (Submodule R M)ᵒᵈ :=
-  -- Note: the hint `(α := _)` had to be added in https://github.com/leanprover-community/mathlib4/pull/8386
-  ⟨fun n => OrderDual.toDual (α := Submodule R M) (tunnel' f i n).1,
-    monotone_nat_of_le_succ fun n => by
-      dsimp [tunnel', tunnelAux]
-      rw [Submodule.map_comp, Submodule.map_comp]
-      apply Submodule.map_subtype_le⟩
-
-set_option linter.deprecated false in
-/-- Give an injective map `f : M × N →ₗ[R] M` we can find a sequence of submodules
-all isomorphic to `N`.
--/
-@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
-def tailing (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) : Submodule R M :=
-  (Submodule.snd R M N).map (tunnelAux f (tunnel' f i n))
-
-set_option linter.deprecated false in
-/-- Each `tailing f i n` is a copy of `N`. -/
-@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
-def tailingLinearEquiv (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) : tailing f i n ≃ₗ[R] N :=
-  ((Submodule.snd R M N).equivMapOfInjective _ (tunnelAux_injective f i (tunnel' f i n))).symm.trans
-    (Submodule.sndEquiv R M N)
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
-theorem tailing_le_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-    tailing f i n ≤ OrderDual.ofDual (α := Submodule R M) (tunnel f i n) := by
-  dsimp [tailing, tunnelAux]
-  rw [Submodule.map_comp, Submodule.map_comp]
-  apply Submodule.map_subtype_le
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
-theorem tailing_disjoint_tunnel_succ (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-    Disjoint (tailing f i n) (OrderDual.ofDual (α := Submodule R M) <| tunnel f i (n + 1)) := by
-  rw [disjoint_iff]
-  dsimp [tailing, tunnel, tunnel']
-  rw [Submodule.map_inf_eq_map_inf_comap,
-    Submodule.comap_map_eq_of_injective (tunnelAux_injective _ i _), inf_comm,
-    Submodule.fst_inf_snd, Submodule.map_bot]
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
-theorem tailing_sup_tunnel_succ_le_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-    tailing f i n ⊔ (OrderDual.ofDual (α := Submodule R M) <| tunnel f i (n + 1)) ≤
-      (OrderDual.ofDual (α := Submodule R M) <| tunnel f i n) := by
-  dsimp [tailing, tunnel, tunnel', tunnelAux]
-  rw [← Submodule.map_sup, sup_comm, Submodule.fst_sup_snd, Submodule.map_comp, Submodule.map_comp]
-  apply Submodule.map_subtype_le
-
-set_option linter.deprecated false in
-/-- The supremum of all the copies of `N` found inside the tunnel. -/
-@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
-def tailings (f : M × N →ₗ[R] M) (i : Injective f) : ℕ → Submodule R M :=
-  partialSups (tailing f i)
-
-set_option linter.deprecated false in
-@[simp, deprecated "No deprecation message was provided."  (since := "2024-06-05")]
-theorem tailings_zero (f : M × N →ₗ[R] M) (i : Injective f) : tailings f i 0 = tailing f i 0 := by
-  simp [tailings]
-
-set_option linter.deprecated false in
-@[simp, deprecated "No deprecation message was provided."  (since := "2024-06-05")]
-theorem tailings_succ (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-    tailings f i (n + 1) = tailings f i n ⊔ tailing f i (n + 1) := by simp [tailings]
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
-theorem tailings_disjoint_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-    Disjoint (tailings f i n) (OrderDual.ofDual (α := Submodule R M) <| tunnel f i (n + 1)) := by
-  induction' n with n ih
-  · simp only [tailings_zero]
-    apply tailing_disjoint_tunnel_succ
-  · simp only [tailings_succ]
-    refine Disjoint.disjoint_sup_left_of_disjoint_sup_right ?_ ?_
-    · apply tailing_disjoint_tunnel_succ
-    · apply Disjoint.mono_right _ ih
-      apply tailing_sup_tunnel_succ_le_tunnel
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
-theorem tailings_disjoint_tailing (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-    Disjoint (tailings f i n) (tailing f i (n + 1)) :=
-  Disjoint.mono_right (tailing_le_tunnel f i _) (tailings_disjoint_tunnel f i _)
-
-end Tunnel
-
 section Graph
 
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommGroup M₃] [AddCommGroup M₄]
@@ -993,7 +866,7 @@ variable {R S G H I : Type*}
   [AddCommMonoid H] [Module S H]
   [AddCommMonoid I] [Module S I]
 
-/-- **Vertical line test** for module homomorphisms.
+/-- **Vertical line test** for linear maps.
 
 Let `f : G → H × I` be a linear (or semilinear) map to a product. Assume that `f` is surjective on
 the first factor and that the image of `f` intersects every "vertical line" `{(h, i) | i : I}` at
@@ -1019,10 +892,10 @@ lemma LinearMap.exists_range_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ : Surj
   simpa only [mem_range, Eq.comm, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, mem_graph_iff,
     coe_mk, AddHom.coe_mk, AddMonoidHom.coe_coe, Set.mem_range] using hf' x
 
-/-- **Vertical line test** for module homomorphisms.
+/-- **Vertical line test** for linear maps.
 
 Let `G ≤ H × I` be a submodule of a product of modules. Assume that `G` maps bijectively to the
-first factor. Then `G` is the graph of some module homomorphism `f : H →ₗ[R] I`. -/
+first factor. Then `G` is the graph of some linear map `f : H →ₗ[R] I`. -/
 lemma Submodule.exists_eq_graph {G : Submodule S (H × I)} (hf₁ : Bijective (Prod.fst ∘ G.subtype)) :
     ∃ f : H →ₗ[S] I, G = LinearMap.graph f := by
   simpa only [range_subtype] using LinearMap.exists_range_eq_graph hf₁.surjective
@@ -1030,10 +903,10 @@ lemma Submodule.exists_eq_graph {G : Submodule S (H × I)} (hf₁ : Bijective (P
 
 /-- **Line test** for module isomorphisms.
 
-Let `f : G → H × I` be a homomorphism to a product of modules. Assume that `f` is surjective onto
-both factors and that the image of `f` intersects every "vertical line" `{(h, i) | i : I}` and every
-"horizontal line" `{(h, i) | h : H}` at most once. Then the image of `f` is the graph of some
-module isomorphism `f' : H ≃ I`. -/
+Let `f : G → H × I` be a linear (or semilinear) map to a product of modules. Assume that `f` is
+surjective onto both factors and that the image of `f` intersects every "vertical line"
+`{(h, i) | i : I}` and every "horizontal line" `{(h, i) | h : H}` at most once. Then the image of
+`f` is the graph of some module isomorphism `f' : H ≃ I`. -/
 lemma LinearMap.exists_linearEquiv_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ : Surjective (Prod.fst ∘ f))
     (hf₂ : Surjective (Prod.snd ∘ f)) (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 ↔ (f g₁).2 = (f g₂).2) :
     ∃ e : H ≃ₗ[S] I, range f = e.toLinearMap.graph := by

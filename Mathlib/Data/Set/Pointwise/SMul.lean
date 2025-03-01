@@ -8,7 +8,6 @@ import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Set.Pairwise.Basic
 
 /-!
@@ -202,6 +201,31 @@ theorem image_smul_distrib [MulOneClass α] [MulOneClass β] [FunLike F α β] [
     f '' (a • s) = f a • f '' s :=
   image_comm <| map_mul _ _
 
+open scoped RightActions in
+@[to_additive]
+lemma image_op_smul_distrib [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
+    (f : F) (a : α) (s : Set α) : f '' (s <• a) = f '' s <• f a := image_comm fun _ ↦ map_mul _ _ _
+
+@[to_additive]
+theorem smul_set_prod {M : Type*} [SMul M α] [SMul M β] (c : M) (s : Set α) (t : Set β) :
+    c • (s ×ˢ t) = (c • s) ×ˢ (c • t) :=
+  prodMap_image_prod (c • ·) (c • ·) s t
+
+@[to_additive]
+theorem smul_set_pi {G ι : Type*} {α : ι → Type*} [Group G] [∀ i, MulAction G (α i)]
+    (c : G) (I : Set ι) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi fun i ↦ c • s i :=
+  smul_set_pi_of_surjective c I s fun _ _ ↦ (MulAction.bijective c).surjective
+
+@[to_additive]
+theorem smul_set_pi_of_isUnit {M ι : Type*} {α : ι → Type*} [Monoid M] [∀ i, MulAction M (α i)]
+    {c : M} (hc : IsUnit c) (I : Set ι) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi (c • s ·) := by
+  lift c to Mˣ using hc
+  exact smul_set_pi c I s
+
+theorem smul_set_pi₀ {M ι : Type*} {α : ι → Type*} [GroupWithZero M] [∀ i, MulAction M (α i)]
+    {c : M} (hc : c ≠ 0) (I : Set ι) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi (c • s ·) :=
+  smul_set_pi_of_isUnit (.mk0 _ hc) I s
+
 section SMul
 
 variable [SMul αᵐᵒᵖ β] [SMul β γ] [SMul α γ]
@@ -325,19 +349,27 @@ theorem preimage_smul_inv (a : α) (t : Set β) : (fun x ↦ a⁻¹ • x) ⁻¹
   preimage_smul (toUnits a)⁻¹ t
 
 @[to_additive (attr := simp)]
-theorem set_smul_subset_set_smul_iff : a • A ⊆ a • B ↔ A ⊆ B :=
+theorem smul_set_subset_smul_set_iff : a • A ⊆ a • B ↔ A ⊆ B :=
   image_subset_image_iff <| MulAction.injective _
 
+@[deprecated (since := "2024-12-28")]
+alias set_smul_subset_set_smul_iff := smul_set_subset_smul_set_iff
+
 @[to_additive]
-theorem set_smul_subset_iff : a • A ⊆ B ↔ A ⊆ a⁻¹ • B :=
+theorem smul_set_subset_iff_subset_inv_smul_set : a • A ⊆ B ↔ A ⊆ a⁻¹ • B :=
   image_subset_iff.trans <|
     iff_of_eq <| congr_arg _ <| preimage_equiv_eq_image_symm _ <| MulAction.toPerm _
 
+@[deprecated (since := "2024-12-28")]
+alias set_smul_subset_iff := smul_set_subset_iff_subset_inv_smul_set
+
 @[to_additive]
-theorem subset_set_smul_iff : A ⊆ a • B ↔ a⁻¹ • A ⊆ B :=
+theorem subset_smul_set_iff : A ⊆ a • B ↔ a⁻¹ • A ⊆ B :=
   Iff.symm <|
     image_subset_iff.trans <|
       Iff.symm <| iff_of_eq <| congr_arg _ <| image_equiv_eq_preimage_symm _ <| MulAction.toPerm _
+
+@[deprecated (since := "2024-12-28")] alias subset_set_smul_iff := subset_smul_set_iff
 
 @[to_additive]
 theorem smul_set_inter : a • (s ∩ t) = a • s ∩ a • t :=
@@ -510,14 +542,21 @@ theorem preimage_smul_inv₀ (ha : a ≠ 0) (t : Set β) : (fun x ↦ a⁻¹ •
   preimage_smul (Units.mk0 a ha)⁻¹ t
 
 @[simp]
-theorem set_smul_subset_set_smul_iff₀ (ha : a ≠ 0) {A B : Set β} : a • A ⊆ a • B ↔ A ⊆ B :=
-  show Units.mk0 a ha • _ ⊆ _ ↔ _ from set_smul_subset_set_smul_iff
+theorem smul_set_subset_smul_set_iff₀ (ha : a ≠ 0) {A B : Set β} : a • A ⊆ a • B ↔ A ⊆ B :=
+  show Units.mk0 a ha • _ ⊆ _ ↔ _ from smul_set_subset_smul_set_iff
 
-theorem set_smul_subset_iff₀ (ha : a ≠ 0) {A B : Set β} : a • A ⊆ B ↔ A ⊆ a⁻¹ • B :=
-  show Units.mk0 a ha • _ ⊆ _ ↔ _ from set_smul_subset_iff
+@[deprecated (since := "2024-12-28")]
+alias set_smul_subset_set_smul_iff₀ := smul_set_subset_smul_set_iff₀
 
-theorem subset_set_smul_iff₀ (ha : a ≠ 0) {A B : Set β} : A ⊆ a • B ↔ a⁻¹ • A ⊆ B :=
-  show _ ⊆ Units.mk0 a ha • _ ↔ _ from subset_set_smul_iff
+theorem smul_set_subset_iff₀ (ha : a ≠ 0) {A B : Set β} : a • A ⊆ B ↔ A ⊆ a⁻¹ • B :=
+  show Units.mk0 a ha • _ ⊆ _ ↔ _ from smul_set_subset_iff_subset_inv_smul_set
+
+@[deprecated (since := "2024-12-28")] alias set_smul_subset_iff₀ := smul_set_subset_iff₀
+
+theorem subset_smul_set_iff₀ (ha : a ≠ 0) {A B : Set β} : A ⊆ a • B ↔ a⁻¹ • A ⊆ B :=
+  show _ ⊆ Units.mk0 a ha • _ ↔ _ from subset_smul_set_iff
+
+@[deprecated (since := "2024-12-28")] alias subset_set_smul_iff₀ := subset_smul_set_iff₀
 
 theorem smul_set_inter₀ (ha : a ≠ 0) : a • (s ∩ t) = a • s ∩ a • t :=
   show Units.mk0 a ha • _ = _ from smul_set_inter

@@ -27,8 +27,6 @@ universe u w
 
 open CategoryTheory Limits FintypeCat Functor
 
-attribute [local instance] ConcreteCategory.instFunLike
-
 namespace Profinite
 
 variable {I : Type u} [SmallCategory I] [IsCofiltered I]
@@ -43,7 +41,7 @@ lemma exists_hom (hc : IsLimit c) {X : FintypeCat} (f : c.pt ⟶ toProfinite.obj
   let _ : TopologicalSpace X := ⊥
   have : DiscreteTopology (toProfinite.obj X) := ⟨rfl⟩
   let f' : LocallyConstant c.pt (toProfinite.obj X) :=
-    ⟨f, (IsLocallyConstant.iff_continuous _).mpr f.continuous⟩
+    ⟨f, (IsLocallyConstant.iff_continuous _).mpr f.hom.continuous⟩
   obtain ⟨i, g, h⟩ := exists_locallyConstant.{_, u} c hc f'
   refine ⟨i, (g : _ → _), ?_⟩
   ext x

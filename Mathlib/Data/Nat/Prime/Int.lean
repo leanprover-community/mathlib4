@@ -5,6 +5,8 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Algebra.Group.Int.Units
+import Mathlib.Data.Int.Basic
 
 /-!
 # Prime numbers in the naturals and the integers
@@ -38,10 +40,9 @@ end Nat
 
 namespace Int
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem prime_ofNat_iff {n : ℕ} :
-    Prime (no_index (OfNat.ofNat n : ℤ)) ↔ Nat.Prime (OfNat.ofNat n) :=
+    Prime (ofNat(n) : ℤ) ↔ Nat.Prime (OfNat.ofNat n) :=
   Nat.prime_iff_prime_int.symm
 
 theorem prime_two : Prime (2 : ℤ) :=

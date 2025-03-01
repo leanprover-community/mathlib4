@@ -71,48 +71,14 @@ protected theorem Commute.inv_add_inv (hab : Commute a b) (ha : a ≠ 0) (hb : b
     a⁻¹ + b⁻¹ = (a + b) / (a * b) := by
   rw [inv_eq_one_div, inv_eq_one_div, hab.one_div_add_one_div ha hb]
 
+variable [NeZero (2 : K)]
+
+@[simp] lemma add_self_div_two (a : K) : (a + a) / 2 = a := by
+  rw [← mul_two, mul_div_cancel_right₀ a two_ne_zero]
+
+@[simp] lemma add_halves (a : K) : a / 2 + a / 2 = a := by rw [← add_div, add_self_div_two]
+
 end DivisionSemiring
-
-section DivisionMonoid
-
-variable [DivisionMonoid K] [HasDistribNeg K] {a b : K}
-
-theorem one_div_neg_one_eq_neg_one : (1 : K) / -1 = -1 :=
-  have : -1 * -1 = (1 : K) := by rw [neg_mul_neg, one_mul]
-  Eq.symm (eq_one_div_of_mul_eq_one_right this)
-
-theorem one_div_neg_eq_neg_one_div (a : K) : 1 / -a = -(1 / a) :=
-  calc
-    1 / -a = 1 / (-1 * a) := by rw [neg_eq_neg_one_mul]
-    _ = 1 / a * (1 / -1) := by rw [one_div_mul_one_div_rev]
-    _ = 1 / a * -1 := by rw [one_div_neg_one_eq_neg_one]
-    _ = -(1 / a) := by rw [mul_neg, mul_one]
-
-theorem div_neg_eq_neg_div (a b : K) : b / -a = -(b / a) :=
-  calc
-    b / -a = b * (1 / -a) := by rw [← inv_eq_one_div, division_def]
-    _ = b * -(1 / a) := by rw [one_div_neg_eq_neg_one_div]
-    _ = -(b * (1 / a)) := by rw [neg_mul_eq_mul_neg]
-    _ = -(b / a) := by rw [mul_one_div]
-
-theorem neg_div (a b : K) : -b / a = -(b / a) := by
-  rw [neg_eq_neg_one_mul, mul_div_assoc, ← neg_eq_neg_one_mul]
-
-@[field_simps]
-theorem neg_div' (a b : K) : -(b / a) = -b / a := by simp [neg_div]
-
-@[simp]
-theorem neg_div_neg_eq (a b : K) : -a / -b = a / b := by rw [div_neg_eq_neg_div, neg_div, neg_neg]
-
-theorem neg_inv : -a⁻¹ = (-a)⁻¹ := by rw [inv_eq_one_div, inv_eq_one_div, div_neg_eq_neg_div]
-
-theorem div_neg (a : K) : a / -b = -(a / b) := by rw [← div_neg_eq_neg_div]
-
-theorem inv_neg : (-a)⁻¹ = -a⁻¹ := by rw [neg_inv]
-
-theorem inv_neg_one : (-1 : K)⁻¹ = -1 := by rw [← neg_inv, inv_one]
-
-end DivisionMonoid
 
 section DivisionRing
 
@@ -162,6 +128,11 @@ protected theorem Commute.inv_sub_inv (hab : Commute a b) (ha : a ≠ 0) (hb : b
     a⁻¹ - b⁻¹ = (b - a) / (a * b) := by
   simp only [inv_eq_one_div, (Commute.one_right a).div_sub_div hab ha hb, one_mul, mul_one]
 
+variable [NeZero (2 : K)]
+
+lemma sub_half (a : K) : a - a / 2 = a / 2 := by rw [sub_eq_iff_eq_add, add_halves]
+lemma half_sub (a : K) : a / 2 - a = -(a / 2) := by rw [← neg_sub, sub_half]
+
 end DivisionRing
 
 section Semifield
@@ -195,11 +166,11 @@ theorem inv_sub_inv {a b : K} (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ - b⁻¹ = 
   rw [inv_eq_one_div, inv_eq_one_div, div_sub_div _ _ ha hb, one_mul, mul_one]
 
 @[field_simps]
-theorem sub_div' (a b c : K) (hc : c ≠ 0) : b - a / c = (b * c - a) / c := by
+theorem sub_div' {a b c : K} (hc : c ≠ 0) : b - a / c = (b * c - a) / c := by
   simpa using div_sub_div b a one_ne_zero hc
 
 @[field_simps]
-theorem div_sub' (a b c : K) (hc : c ≠ 0) : a / c - b = (a - c * b) / c := by
+theorem div_sub' {a b c : K} (hc : c ≠ 0) : a / c - b = (a - c * b) / c := by
   simpa using div_sub_div a b hc one_ne_zero
 
 -- see Note [lower instance priority]
