@@ -291,8 +291,7 @@ theorem mem_oneCocycles_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
       oneCocycles_map_mul_of_isTrivial, isTrivial_apply A.ρ g (f (Additive.ofMul h)),
       add_comm (f (Additive.ofMul g))]
 
-variable (A)
-
+variable (A) in
 /-- When `A : Rep k G` is a trivial representation of `G`, `Z¹(G, A)` is isomorphic to the
 group homs `G → A`. -/
 @[simps] def oneCocyclesLequivOfIsTrivial [hA : A.IsTrivial] :
@@ -308,8 +307,6 @@ group homs `G → A`. -/
       property := mem_oneCocycles_of_addMonoidHom f }
   left_inv f := by ext; rfl
   right_inv f := by ext; rfl
-
-variable {A}
 
 instance : FunLike (twoCocycles A) (G × G) A := ⟨Subtype.val, Subtype.val_injective⟩
 
