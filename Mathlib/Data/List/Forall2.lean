@@ -20,7 +20,7 @@ namespace List
 
 variable {α β γ δ : Type*} {R S : α → β → Prop} {P : γ → δ → Prop} {Rₐ : α → α → Prop}
 
-open scoped Relator
+open Relator
 
 mk_iff_of_inductive_prop List.Forall₂ List.forall₂_iff
 
