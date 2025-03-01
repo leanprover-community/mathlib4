@@ -224,6 +224,9 @@ theorem finiteType_isLocal : PropertyIsLocal @FiniteType :=
     (finiteType_stableUnderComposition.stableUnderCompositionWithLocalizationAway
       finiteType_holdsForLocalizationAway).right⟩
 
+@[deprecated (since := "2025-03-01")]
+alias finiteType_is_local := finiteType_isLocal
+
 theorem finiteType_respectsIso : RingHom.RespectsIso @RingHom.FiniteType :=
   RingHom.finiteType_isLocal.respectsIso
 
