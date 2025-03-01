@@ -10,9 +10,11 @@ import Mathlib.Data.Prod.TProd
 import Mathlib.Data.Set.UnionLift
 import Mathlib.GroupTheory.Coset.Defs
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
+import Mathlib.Order.Disjointed
+import Mathlib.Order.Filter.AtTopBot.CompleteLattice
+import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.LiminfLimsup
-import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 import Mathlib.Tactic.FinCases
 
 /-!
@@ -51,7 +53,6 @@ defined in terms of the Galois connection induced by f.
 
 measurable space, σ-algebra, measurable function, dynkin system, π-λ theorem, π-system
 -/
-
 
 open Set Encodable Function Equiv Filter MeasureTheory
 
@@ -423,6 +424,11 @@ theorem measurable_findGreatest {p : α → ℕ → Prop} [∀ x, DecidablePred 
   simp only [Nat.findGreatest_eq_iff, setOf_and, setOf_forall, ← compl_setOf]
   repeat' apply_rules [MeasurableSet.inter, MeasurableSet.const, MeasurableSet.iInter,
     MeasurableSet.compl, hN] <;> try intros
+
+@[simp, measurability]
+protected theorem MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, MeasurableSet (f i)) (n) :
+    MeasurableSet (disjointed f n) :=
+  disjointedRec (fun _ _ ht => MeasurableSet.diff ht <| h _) (h n)
 
 theorem measurable_find {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] (hp : ∀ x, ∃ N, p x N)
     (hm : ∀ k, MeasurableSet { x | p x k }) : Measurable fun x => Nat.find (hp x) := by
@@ -865,11 +871,21 @@ theorem measurable_uniqueElim [Unique δ] :
   simp_rw [measurable_pi_iff, Unique.forall_iff, uniqueElim_default]; exact measurable_id
 
 @[measurability, fun_prop]
-theorem measurable_updateFinset [DecidableEq δ] {s : Finset δ} {x : ∀ i, π i} :
-    Measurable (updateFinset x s) := by
-  simp (config := { unfoldPartialApp := true }) only [updateFinset, measurable_pi_iff]
+theorem measurable_updateFinset' [DecidableEq δ] {s : Finset δ} :
+    Measurable (fun p : (Π i, π i) × (Π i : s, π i) ↦ updateFinset p.1 s p.2) := by
+  simp only [updateFinset, measurable_pi_iff]
   intro i
-  by_cases h : i ∈ s <;> simp [h, measurable_pi_apply]
+  by_cases h : i ∈ s <;> simp [h, Measurable.eval, measurable_fst, measurable_snd]
+
+@[measurability, fun_prop]
+theorem measurable_updateFinset [DecidableEq δ] {s : Finset δ} {x : Π i, π i} :
+    Measurable (updateFinset x s) :=
+  measurable_updateFinset'.comp measurable_prod_mk_left
+
+@[measurability, fun_prop]
+theorem measurable_updateFinset_left [DecidableEq δ] {s : Finset δ} {x : Π i : s, π i} :
+    Measurable (updateFinset · s x) :=
+  measurable_updateFinset'.comp measurable_prod_mk_right
 
 /-- The function `update f a : π a → Π a, π a` is always measurable.
   This doesn't require `f` to be measurable.
@@ -929,6 +945,7 @@ theorem Measurable.eq_mp {β} [MeasurableSpace β] {i i' : δ} (h : i = i') {f :
     (hf : Measurable f) : Measurable fun x => (congr_arg π h).mp (f x) :=
   (measurable_eq_mp π h).comp hf
 
+@[measurability, fun_prop]
 theorem measurable_piCongrLeft (f : δ' ≃ δ) : Measurable (piCongrLeft π f) := by
   rw [measurable_pi_iff]
   intro i

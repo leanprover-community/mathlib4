@@ -203,7 +203,7 @@ noncomputable def lTensor.toFun (hfg : Exact f g) :
     rw [LinearMap.range_le_iff_comap, ← LinearMap.ker_comp,
       ← lTensor_comp, hfg.linearMap_comp_eq_zero, lTensor_zero, ker_zero]
 
-/-- The inverse map in `lTensor.equiv_of_rightInverse` (computably, given a right inverse)-/
+/-- The inverse map in `lTensor.equiv_of_rightInverse` (computably, given a right inverse) -/
 noncomputable def lTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
     (hgh : Function.RightInverse h g) :
     Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ LinearMap.range (lTensor Q f) :=
@@ -616,9 +616,10 @@ theorem Algebra.TensorProduct.map_ker (hf : Function.Surjective f) (hg : Functio
   have : map f g = (map f (AlgHom.id R D)).comp (map (AlgHom.id R A) g) := ext rfl rfl
   rw [this]
   -- this needs some rewriting to RingHom
-  simp only [AlgHom.coe_ker, AlgHom.comp_toRingHom]
+  -- TODO: can `RingHom.comap_ker` take an arbitrary `RingHomClass`, rather than just `RingHom`?
+  simp only [AlgHom.ker_coe, AlgHom.comp_toRingHom]
   rw [← RingHom.comap_ker]
-  simp only [← AlgHom.coe_ker]
+  simp only [← AlgHom.ker_coe]
   -- apply one step of exactness
   rw [← Algebra.TensorProduct.lTensor_ker _ hg, RingHom.ker_eq_comap_bot (map (AlgHom.id R A) g)]
   rw [← Ideal.comap_map_of_surjective (map (AlgHom.id R A) g) (LinearMap.lTensor_surjective A hg)]

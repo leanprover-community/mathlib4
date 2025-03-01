@@ -61,7 +61,7 @@ variable (Y : SimplicialObject C)
 /-- The differential on the alternating face map complex is the alternate
 sum of the face maps -/
 @[simp]
-def objD (n : ℕ) : X _[n + 1] ⟶ X _[n] :=
+def objD (n : ℕ) : X _⦋n + 1⦌ ⟶ X _⦋n⦌ :=
   ∑ i : Fin (n + 2), (-1 : ℤ) ^ (i : ℕ) • X.δ i
 
 /-!
@@ -119,10 +119,10 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
 
 /-- The alternating face map complex, on objects -/
 def obj : ChainComplex C ℕ :=
-  ChainComplex.of (fun n => X _[n]) (objD X) (d_squared X)
+  ChainComplex.of (fun n => X _⦋n⦌) (objD X) (d_squared X)
 
 @[simp]
-theorem obj_X (X : SimplicialObject C) (n : ℕ) : (AlternatingFaceMapComplex.obj X).X n = X _[n] :=
+theorem obj_X (X : SimplicialObject C) (n : ℕ) : (AlternatingFaceMapComplex.obj X).X n = X _⦋n⦌ :=
   rfl
 
 @[simp]
@@ -161,7 +161,7 @@ variable {C}
 
 @[simp]
 theorem alternatingFaceMapComplex_obj_X (X : SimplicialObject C) (n : ℕ) :
-    ((alternatingFaceMapComplex C).obj X).X n = X _[n] :=
+    ((alternatingFaceMapComplex C).obj X).X n = X _⦋n⦌ :=
   rfl
 
 @[simp]

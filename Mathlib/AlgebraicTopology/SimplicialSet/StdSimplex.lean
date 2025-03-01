@@ -71,7 +71,7 @@ def _root_.SSet.yonedaEquiv (X : SSet.{u}) (n : SimplexCategory) :
   yonedaCompUliftFunctorEquiv X n
 
 /-- The unique non-degenerate `n`-simplex in `Δ[n]`. -/
-def id (n : ℕ) : Δ[n] _[n] := yonedaEquiv Δ[n] ⦋n⦌ (𝟙 Δ[n])
+def id (n : ℕ) : Δ[n] _⦋n⦌ := yonedaEquiv Δ[n] ⦋n⦌ (𝟙 Δ[n])
 
 lemma id_eq_objEquiv_symm (n : ℕ) : id n = (objEquiv _ _).symm (𝟙 _) := rfl
 
@@ -87,7 +87,7 @@ lemma const_down_toOrderHom (n : ℕ) (k : Fin (n+1)) (m : SimplexCategoryᵒᵖ
   rfl
 
 /-- The edge of the standard simplex with endpoints `a` and `b`. -/
-def edge (n : ℕ) (a b : Fin (n+1)) (hab : a ≤ b) : Δ[n] _[1] := by
+def edge (n : ℕ) (a b : Fin (n+1)) (hab : a ≤ b) : Δ[n] _⦋1⦌ := by
   refine objMk ⟨![a, b], ?_⟩
   rw [Fin.monotone_iff_le_succ]
   simp only [unop_op, len_mk, Fin.forall_fin_one]
@@ -98,7 +98,7 @@ lemma coe_edge_down_toOrderHom (n : ℕ) (a b : Fin (n+1)) (hab : a ≤ b) :
   rfl
 
 /-- The triangle in the standard simplex with vertices `a`, `b`, and `c`. -/
-def triangle {n : ℕ} (a b c : Fin (n+1)) (hab : a ≤ b) (hbc : b ≤ c) : Δ[n] _[2] := by
+def triangle {n : ℕ} (a b c : Fin (n+1)) (hab : a ≤ b) (hbc : b ≤ c) : Δ[n] _⦋2⦌ := by
   refine objMk ⟨![a, b, c], ?_⟩
   rw [Fin.monotone_iff_le_succ]
   simp only [unop_op, len_mk, Fin.forall_fin_two]

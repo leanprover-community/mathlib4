@@ -3,7 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory
+import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
@@ -20,8 +20,8 @@ A simplicial object in a category `C` is a `C`-valued presheaf on `SimplexCatego
 
 The following notations can be enabled via `open Simplicial`.
 
-- `X _[n]` denotes the `n`-th term of a simplicial object `X`, where `n : ℕ`.
-- `X ^[n]` denotes the `n`-th term of a cosimplicial object `X`, where `n : ℕ`.
+- `X _⦋n⦌` denotes the `n`-th term of a simplicial object `X`, where `n : ℕ`.
+- `X ^⦋n⦌` denotes the `n`-th term of a cosimplicial object `X`, where `n : ℕ`.
 -/
 
 open Opposite
@@ -49,9 +49,9 @@ instance : Category (SimplicialObject C) := by
 namespace SimplicialObject
 
 set_option quotPrecheck false in
-/-- `X _[n]` denotes the `n`th-term of the simplicial object X -/
+/-- `X _⦋n⦌` denotes the `n`th-term of the simplicial object X -/
 scoped[Simplicial]
-  notation3:1000 X " _[" n "]" =>
+  notation3:1000 X " _⦋" n "⦌" =>
       (X : CategoryTheory.SimplicialObject _).obj (Opposite.op (SimplexCategory.mk n))
 
 open Simplicial
@@ -83,18 +83,18 @@ lemma hom_ext {X Y : SimplicialObject C} (f g : X ⟶ Y)
 variable (X : SimplicialObject C)
 
 /-- Face maps for a simplicial object. -/
-def δ {n} (i : Fin (n + 2)) : X _[n + 1] ⟶ X _[n] :=
+def δ {n} (i : Fin (n + 2)) : X _⦋n + 1⦌ ⟶ X _⦋n⦌ :=
   X.map (SimplexCategory.δ i).op
 
 /-- Degeneracy maps for a simplicial object. -/
-def σ {n} (i : Fin (n + 1)) : X _[n] ⟶ X _[n + 1] :=
+def σ {n} (i : Fin (n + 1)) : X _⦋n⦌ ⟶ X _⦋n + 1⦌ :=
   X.map (SimplexCategory.σ i).op
 
-/-- The diagonal of a simplex is the long edge of the simplex.-/
-def diagonal {n : ℕ} : X _[n] ⟶ X _[1] := X.map ((SimplexCategory.diag n).op)
+/-- The diagonal of a simplex is the long edge of the simplex. -/
+def diagonal {n : ℕ} : X _⦋n⦌ ⟶ X _⦋1⦌ := X.map ((SimplexCategory.diag n).op)
 
 /-- Isomorphisms from identities in ℕ. -/
-def eqToIso {n m : ℕ} (h : n = m) : X _[n] ≅ X _[m] :=
+def eqToIso {n m : ℕ} (h : n = m) : X _⦋n⦌ ≅ X _⦋m⦌ :=
   X.mapIso (CategoryTheory.eqToIso (by congr))
 
 @[simp]
@@ -236,14 +236,11 @@ instance {n} {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
 instance {n} [HasColimits C] : HasColimits (SimplicialObject.Truncated C n) :=
   ⟨inferInstance⟩
 
-variable (C)
-
+variable (C) in
 /-- Functor composition induces a functor on truncated simplicial objects. -/
 @[simps!]
 def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
-
-variable {C}
 
 end Truncated
 
@@ -284,7 +281,7 @@ end
 
 section adjunctions
 /- When the left and right Kan extensions exist, `Truncated.sk n` and `Truncated.cosk n`
-respectively define left and right adjoints to `truncation n`.-/
+respectively define left and right adjoints to `truncation n`. -/
 
 
 variable (n : ℕ)
@@ -293,11 +290,11 @@ variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
 variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     (SimplexCategory.Truncated.inclusion n).op.HasLeftKanExtension F]
 
-/-- The adjunction between the n-skeleton and n-truncation.-/
+/-- The adjunction between the n-skeleton and n-truncation. -/
 noncomputable def skAdj : Truncated.sk (C := C) n ⊣ truncation n :=
   lanAdjunction _ _
 
-/-- The adjunction between n-truncation and the n-coskeleton.-/
+/-- The adjunction between n-truncation and the n-coskeleton. -/
 noncomputable def coskAdj : truncation (C := C) n ⊣ Truncated.cosk n :=
   ranAdjunction _ _
 
@@ -313,7 +310,7 @@ instance : ((cosk n).obj X).IsRightKanExtension ((coskAdj n).counit.app _) := by
 
 namespace Truncated
 /- When the left and right Kan extensions exist and are pointwise Kan extensions,
-`skAdj n` and `coskAdj n` are respectively coreflective and reflective.-/
+`skAdj n` and `coskAdj n` are respectively coreflective and reflective. -/
 
 variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     (SimplexCategory.Truncated.inclusion n).op.HasPointwiseRightKanExtension F]
@@ -326,7 +323,7 @@ instance cosk_reflective : IsIso (coskAdj (C := C) n).counit :=
 instance sk_coreflective : IsIso (skAdj (C := C) n).unit :=
   coreflective' (SimplexCategory.Truncated.inclusion n).op
 
-/-- Since `Truncated.inclusion` is fully faithful, so is right Kan extension along it.-/
+/-- Since `Truncated.inclusion` is fully faithful, so is right Kan extension along it. -/
 noncomputable def cosk.fullyFaithful :
     (Truncated.cosk (C := C) n).FullyFaithful := by
   apply Adjunction.fullyFaithfulROfIsIsoCounit (coskAdj n)
@@ -339,7 +336,7 @@ instance cosk.faithful : (Truncated.cosk (C := C) n).Faithful :=
 noncomputable instance coskAdj.reflective : Reflective (Truncated.cosk (C := C) n) :=
   Reflective.mk (truncation _) (coskAdj _)
 
-/-- Since `Truncated.inclusion` is fully faithful, so is left Kan extension along it.-/
+/-- Since `Truncated.inclusion` is fully faithful, so is left Kan extension along it. -/
 noncomputable def sk.fullyFaithful : (Truncated.sk (C := C) n).FullyFaithful :=
   Adjunction.fullyFaithfulLOfIsIsoUnit (skAdj n)
 
@@ -394,7 +391,7 @@ def point : Augmented C ⥤ C :=
 @[simps]
 def toArrow : Augmented C ⥤ Arrow C where
   obj X :=
-    { left := drop.obj X _[0]
+    { left := drop.obj X _⦋0⦌
       right := point.obj X
       hom := X.hom.app _ }
   map η :=
@@ -452,7 +449,7 @@ end Augmented
 
 /-- Augment a simplicial object with an object. -/
 @[simps]
-def augment (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X₀)
+def augment (X : SimplicialObject C) (X₀ : C) (f : X _⦋0⦌ ⟶ X₀)
     (w : ∀ (i : SimplexCategory) (g₁ g₂ : ⦋0⦌ ⟶ i),
       X.map g₁.op ≫ f = X.map g₂.op ≫ f) :
     SimplicialObject.Augmented C where
@@ -467,7 +464,7 @@ def augment (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X₀)
         simpa only [← X.map_comp, ← Category.assoc, Category.comp_id, ← op_comp] using w _ _ _ }
 
 -- Porting note: removed @[simp] as the linter complains
-theorem augment_hom_zero (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X₀) (w) :
+theorem augment_hom_zero (X : SimplicialObject C) (X₀ : C) (f : X _⦋0⦌ ⟶ X₀) (w) :
     (X.augment X₀ f w).hom.app (op ⦋0⦌) = f := by simp
 
 end SimplicialObject
@@ -483,9 +480,9 @@ instance : Category (CosimplicialObject C) := by
 
 namespace CosimplicialObject
 
-/-- `X ^[n]` denotes the `n`th-term of the cosimplicial object X -/
+/-- `X ^⦋n⦌` denotes the `n`th-term of the cosimplicial object X -/
 scoped[Simplicial]
-  notation3:1000 X " ^[" n "]" =>
+  notation3:1000 X " ^⦋" n "⦌" =>
     (X : CategoryTheory.CosimplicialObject _).obj (SimplexCategory.mk n)
 
 instance {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
@@ -517,15 +514,15 @@ variable (X : CosimplicialObject C)
 open Simplicial
 
 /-- Coface maps for a cosimplicial object. -/
-def δ {n} (i : Fin (n + 2)) : X ^[n] ⟶ X ^[n + 1] :=
+def δ {n} (i : Fin (n + 2)) : X ^⦋n⦌ ⟶ X ^⦋n + 1⦌ :=
   X.map (SimplexCategory.δ i)
 
 /-- Codegeneracy maps for a cosimplicial object. -/
-def σ {n} (i : Fin (n + 1)) : X ^[n + 1] ⟶ X ^[n] :=
+def σ {n} (i : Fin (n + 1)) : X ^⦋n + 1⦌ ⟶ X ^⦋n⦌ :=
   X.map (SimplexCategory.σ i)
 
 /-- Isomorphisms from identities in ℕ. -/
-def eqToIso {n m : ℕ} (h : n = m) : X ^[n] ≅ X ^[m] :=
+def eqToIso {n m : ℕ} (h : n = m) : X ^⦋n⦌ ≅ X ^⦋m⦌ :=
   X.mapIso (CategoryTheory.eqToIso (by rw [h]))
 
 @[simp]
@@ -667,14 +664,11 @@ instance {n} {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
 instance {n} [HasColimits C] : HasColimits (CosimplicialObject.Truncated C n) :=
   ⟨inferInstance⟩
 
-variable (C)
-
+variable (C) in
 /-- Functor composition induces a functor on truncated cosimplicial objects. -/
 @[simps!]
 def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
-
-variable {C}
 
 end Truncated
 
@@ -726,7 +720,7 @@ def point : Augmented C ⥤ C :=
 def toArrow : Augmented C ⥤ Arrow C where
   obj X :=
     { left := point.obj X
-      right := (drop.obj X) ^[0]
+      right := (drop.obj X) ^⦋0⦌
       hom := X.hom.app _ }
   map η :=
     { left := point.map η

@@ -109,6 +109,10 @@ theorem starConvex_iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, StarConvex
     StarConvex 𝕜 x (⋂ i, s i) :=
   sInter_range s ▸ starConvex_sInter <| forall_mem_range.2 h
 
+theorem starConvex_iInter₂ {ι : Sort*} {κ : ι → Sort*} {s : (i : ι) → κ i → Set E}
+    (h : ∀ i j, StarConvex 𝕜 x (s i j)) : StarConvex 𝕜 x (⋂ (i) (j), s i j) :=
+  starConvex_iInter fun i => starConvex_iInter (h i)
+
 theorem StarConvex.union (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 x t) :
     StarConvex 𝕜 x (s ∪ t) := by
   rintro y (hy | hy) a b ha hb hab
@@ -121,6 +125,10 @@ theorem starConvex_iUnion {ι : Sort*} {s : ι → Set E} (hs : ∀ i, StarConve
   rw [mem_iUnion] at hy ⊢
   obtain ⟨i, hy⟩ := hy
   exact ⟨i, hs i hy ha hb hab⟩
+
+theorem starConvex_iUnion₂ {ι : Sort*} {κ : ι → Sort*} {s : (i : ι) → κ i → Set E}
+    (h : ∀ i j, StarConvex 𝕜 x (s i j)) : StarConvex 𝕜 x (⋃ (i) (j), s i j) :=
+  starConvex_iUnion fun i => starConvex_iUnion (h i)
 
 theorem starConvex_sUnion {S : Set (Set E)} (hS : ∀ s ∈ S, StarConvex 𝕜 x s) :
     StarConvex 𝕜 x (⋃₀ S) := by

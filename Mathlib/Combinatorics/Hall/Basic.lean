@@ -62,7 +62,7 @@ def hallMatchingsOn {ι : Type u} {α : Type v} (t : ι → Finset α) (ι' : Fi
 def hallMatchingsOn.restrict {ι : Type u} {α : Type v} (t : ι → Finset α) {ι' ι'' : Finset ι}
     (h : ι' ⊆ ι'') (f : hallMatchingsOn t ι'') : hallMatchingsOn t ι' := by
   refine ⟨fun i => f.val ⟨i, h i.property⟩, ?_⟩
-  cases' f.property with hinj hc
+  obtain ⟨hinj, hc⟩ := f.property
   refine ⟨?_, fun i => hc ⟨i, h i.property⟩⟩
   rintro ⟨i, hi⟩ ⟨j, hj⟩ hh
   simpa only [Subtype.mk_eq_mk] using hinj hh

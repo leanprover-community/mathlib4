@@ -51,7 +51,7 @@ lemma IsLocalizedModule.linearIndependent_lift {ι} {v : ι → N} (hf : LinearI
 
 lemma IsLocalizedModule.lift_rank_eq :
     Cardinal.lift.{v} (Module.rank S N) = Cardinal.lift.{v'} (Module.rank R M) := by
-  cases' subsingleton_or_nontrivial R
+  cases subsingleton_or_nontrivial R
   · have := (algebraMap R S).codomain_trivial; simp only [rank_subsingleton, lift_one]
   have := (IsLocalization.injective S hp).nontrivial
   apply le_antisymm <;>
@@ -61,6 +61,7 @@ lemma IsLocalizedModule.lift_rank_eq :
   · exact (IsLocalizedModule.linearIndependent_lift p f hp hs).choose_spec.cardinal_lift_le_rank
   · choose sec hsec using IsLocalization.surj p (S := S)
     refine LinearIndependent.cardinal_lift_le_rank (ι := s) (v := fun i ↦ f i) ?_
+    rw [LinearIndepOn] at hs
     rw [linearIndependent_iff'] at hs ⊢
     intro t g hg i hit
     apply (IsLocalization.map_units S (sec (g i)).2).mul_left_injective
@@ -90,11 +91,11 @@ end
 
 variable (R M) in
 theorem exists_set_linearIndependent_of_isDomain [IsDomain R] :
-    ∃ s : Set M, #s = Module.rank R M ∧ LinearIndependent (ι := s) R Subtype.val := by
+    ∃ s : Set M, #s = Module.rank R M ∧ LinearIndepOn R id s := by
   obtain ⟨w, hw⟩ :=
     IsLocalizedModule.linearIndependent_lift R⁰ (LocalizedModule.mkLinearMap R⁰ M) le_rfl
       (Module.Free.chooseBasis (FractionRing R) (LocalizedModule R⁰ M)).linearIndependent
-  refine ⟨Set.range w, ?_, (linearIndependent_subtype_range hw.injective).mpr hw⟩
+  refine ⟨Set.range w, ?_, (linearIndepOn_id_range_iff hw.injective).mpr hw⟩
   apply Cardinal.lift_injective.{max u v}
   rw [Cardinal.mk_range_eq_of_injective hw.injective, ← Module.Free.rank_eq_card_chooseBasisIndex,
   IsLocalizedModule.lift_rank_eq (FractionRing R) R⁰ (LocalizedModule.mkLinearMap R⁰ M) le_rfl]
@@ -136,9 +137,10 @@ lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R�
     simpa only [dif_pos i.prop] using this (fun i ↦ if h : i < n then g ⟨i, h⟩ else 0) 0
       (by simp [← Fin.sum_univ_eq_sum_range, ← hg]) i i.prop
   intro g x hg i hin
-  induction' n with n IH generalizing g x i
-  · exact (hin.not_le (zero_le i)).elim
-  · rw [Finset.sum_range_succ'] at hg
+  induction n generalizing g x i with
+  | zero => exact (hin.not_le (zero_le i)).elim
+  | succ n IH =>
+    rw [Finset.sum_range_succ'] at hg
     by_cases hg0 : g 0 = 0
     · simp only [hg0, zero_smul, add_zero, add_assoc] at hg
       cases i; exacts [hg0, IH _ _ hg _ (Nat.succ_lt_succ_iff.mp hin)]
