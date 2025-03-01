@@ -11,20 +11,17 @@ import Mathlib.GroupTheory.SpecificGroups.Alternating
 Given a finite type `α`, our goal is to compute the cardinality of conjugacy classes
 in `alternatingGroup α`.
 
-* `AlternatingGroup.of_cycleType_eq m` and `AlternatingGroup.card_of_cycleType m`
+* `AlternatingGroup.card_of_cycleType_mul_eq m` and `AlternatingGroup.card_of_cycleType m`
 compute the number of even permutations of given cycle type.
 
-* `Equiv.Perm.OnCycleFactors.sign_kerParam_apply_apply` computes the signature
-of the permutation induced given by `Equiv.Perm.OnCycleFactors.kerParam`.
-
-* `Equiv.Perm.OnCycleFactors.odd_of_centralizer_le_alternatingGroup` :
+* `Equiv.Perm.odd_of_centralizer_le_alternatingGroup` :
 if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then all members of the `g.cycleType` are odd.
 
-* `Equiv.Perm.OnCycleFactors.card_le_of_centralizer_le_alternating` :
+* `Equiv.Perm.card_le_of_centralizer_le_alternating` :
 if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then the cardinality of α
 is at most `g.cycleType.sum` plus one.
 
-* `Equiv.Perm.OnCycleFactors.count_le_one_of_centralizer_le_alternating` :
+* `Equiv.Perm.count_le_one_of_centralizer_le_alternating` :
 if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then `g.cycleType` has no repetitions.
 
 * `Equiv.Perm.centralizer_le_alternating_iff` :
@@ -38,37 +35,10 @@ and conjugacy classes in `alternatingGroup α`.
 
 open Equiv Finset Function MulAction
 
-variable {α : Type*} [Fintype α] [DecidableEq α] (g : Perm α)
+variable {α : Type*} [Fintype α] [DecidableEq α] {g : Perm α}
 
 namespace Equiv.Perm.OnCycleFactors
 
-variable (k : Perm (fixedPoints g))
-    (v : (c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α))
-
-theorem sign_kerParam_apply_apply :
-    sign (kerParam g ⟨k, v⟩) = sign k * ∏ c, sign (v c).val := by
-  rw [kerParam, MonoidHom.noncommCoprod_apply, ← Prod.fst_mul_snd ⟨k, v⟩, Prod.mk_mul_mk, mul_one,
-    one_mul, map_mul, sign_ofSubtype, Finset.univ_eq_attach, mul_right_inj, ← MonoidHom.comp_apply,
-    Subgroup.noncommPiCoprod, MonoidHom.comp_noncommPiCoprod _, MonoidHom.noncommPiCoprod_apply,
-    univ_eq_attach, noncommProd_eq_prod]
-  simp
-
-theorem cycleType_kerParam_apply_apply :
-    cycleType (kerParam g ⟨k, v⟩) = cycleType k + ∑ c, (v c).val.cycleType := by
-  let U := (Finset.univ : Finset { x // x ∈ g.cycleFactorsFinset }).toSet
-  have hU : U.Pairwise fun i j ↦ (v i).val.Disjoint (v j).val := fun c _ d _ h ↦ by
-    obtain ⟨m, hm⟩ := (v c).prop
-    obtain ⟨n, hn⟩ := (v d).prop
-    simp only [← hm, ← hn]
-    apply Disjoint.zpow_disjoint_zpow
-    apply cycleFactorsFinset_pairwise_disjoint g c.prop d.prop
-    exact Subtype.coe_ne_coe.mpr h
-  rw [kerParam, MonoidHom.noncommCoprod_apply, ← Prod.fst_mul_snd ⟨k, v⟩, Prod.mk_mul_mk, mul_one,
-    one_mul, univ_eq_attach, Disjoint.cycleType (disjoint_ofSubtype_noncommPiCoprod g k v),
-    Subgroup.noncommPiCoprod_apply, Disjoint.cycleType_noncommProd hU, univ_eq_attach]
-  exact congr_arg₂ _ cycleType_ofSubtype rfl
-
-variable {g} in
 theorem odd_of_centralizer_le_alternatingGroup (h : Subgroup.centralizer {g} ≤ alternatingGroup α)
     (i : ℕ) (hi : i ∈ g.cycleType) :
     Odd i := by
@@ -91,7 +61,7 @@ namespace AlternatingGroup
 
 open Nat Equiv.Perm.OnCycleFactors Equiv.Perm
 
-private theorem of_cycleType_aux (m : Multiset ℕ) :
+theorem map_subtype_of_cycleType (m : Multiset ℕ) :
     ({g | (g : Perm α).cycleType = m} : Finset (alternatingGroup α)).map (Embedding.subtype _) =
       if Even (m.sum + m.card) then ({g | g.cycleType = m} : Finset (Perm α)) else ∅ := by
   split_ifs with hm
@@ -110,28 +80,20 @@ private theorem of_cycleType_aux (m : Multiset ℕ) :
     rw [g.sign_of_cycleType, hg, neg_one_pow_eq_one_iff_even (by simp)] at hs
     contradiction
 
+variable (α) in
 /-- The cardinality of even permutations of given `cycleType` -/
 theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
     #({ g |  g.val.cycleType = m} : Finset (alternatingGroup α)) *
-        ((Fintype.card α - m.sum)! * (m.prod * (∏ n ∈ m.toFinset, (m.count n)!))) =
+        ((Fintype.card α - m.sum)! * m.prod * (∏ n ∈ m.toFinset, (m.count n)!)) =
           if ((m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a) ∧ Even (m.sum + Multiset.card m))
           then (Fintype.card α)!
           else 0 := by
-  split_ifs with hm
-  · -- m is an even cycle_type
-    rw [← Finset.card_map, AlternatingGroup.of_cycleType_aux, if_pos hm.2]
-    simp only [← mul_assoc, Equiv.Perm.card_of_cycleType_mul_eq α m, if_pos hm.1]
-  · -- m does not correspond to a permutation, or corresponds to an odd one,
-    rw [← Finset.card_map, AlternatingGroup.of_cycleType_aux,
-      apply_ite Finset.card, Finset.card_empty]
-    rw [not_and_or] at hm
-    split_ifs with hm'
-    · rw [Equiv.Perm.card_of_cycleType, if_neg, zero_mul]
-      cases' hm with hm hm
-      · exact hm
-      · exfalso; exact hm hm'
-    · rw [zero_mul]
+  rw [← Finset.card_map, map_subtype_of_cycleType, apply_ite Finset.card,
+    Finset.card_empty, ite_mul, zero_mul]
+  simp only [and_comm (b := Even _)]
+  rw [ite_and, Equiv.Perm.card_of_cycleType_mul_eq]
 
+variable (α) in
 /-- The cardinality of even permutations of given `cycleType` -/
 theorem card_of_cycleType (m : Multiset ℕ) :
     (Finset.univ.filter fun g : alternatingGroup α => (g : Equiv.Perm α).cycleType = m).card =
@@ -142,11 +104,11 @@ theorem card_of_cycleType (m : Multiset ℕ) :
       else 0 := by
   split_ifs with hm
   · -- m is an even cycle_type
-    rw [← Finset.card_map, AlternatingGroup.of_cycleType_aux, if_pos hm.2,
+    rw [← Finset.card_map, map_subtype_of_cycleType, if_pos hm.2,
     Equiv.Perm.card_of_cycleType α m]
     rw [if_pos hm.1, mul_assoc]
   · -- m does not correspond to a permutation, or to an odd one,
-    rw [← Finset.card_map, AlternatingGroup.of_cycleType_aux]
+    rw [← Finset.card_map, map_subtype_of_cycleType]
     rw [apply_ite Finset.card, Finset.card_empty]
     split_ifs with hm'
     · rw [Equiv.Perm.card_of_cycleType, if_neg]
@@ -155,16 +117,23 @@ theorem card_of_cycleType (m : Multiset ℕ) :
       · contradiction
     · rfl
 
+open Fintype in
+/-- The number of cycles of given length -/
+lemma card_of_cycleType_singleton {n : ℕ} (hn : 2 ≤ n) (hα : n ≤ card α) :
+    #({g | g.val.cycleType = {n}} : Finset (alternatingGroup α)) =
+      if Odd n then (n - 1)! * (choose (card α) n) else 0 := by
+  rw [← card_map, map_subtype_of_cycleType, apply_ite Finset.card]
+  simp only [Multiset.sum_singleton, Multiset.card_singleton, Finset.card_empty]
+  simp_rw [← Nat.not_odd_iff_even, Nat.odd_add_one, not_not,
+    Perm.card_of_cycleType_singleton hn hα]
+
 end AlternatingGroup
 
 namespace Equiv.Perm
 
-namespace OnCycleFactors
+open Basis OnCycleFactors
 
-open Basis
-
-theorem card_le_of_centralizer_le_alternating
-    (h : Subgroup.centralizer {g} ≤ alternatingGroup α) :
+theorem card_le_of_centralizer_le_alternating (h : Subgroup.centralizer {g} ≤ alternatingGroup α) :
     Fintype.card α ≤ g.cycleType.sum + 1 := by
   by_contra! hm
   replace hm : 2 + g.cycleType.sum ≤ Fintype.card α := by omega
@@ -188,67 +157,50 @@ theorem count_le_one_of_centralizer_le_alternating
   obtain ⟨c, hc, d, hd, hm, hm'⟩ := hm
   let τ : Equiv.Perm g.cycleFactorsFinset := Equiv.swap ⟨c, hc⟩ ⟨d, hd⟩
   obtain ⟨a⟩ := Equiv.Perm.Basis.nonempty g
-  suffices hτ : τ ∈ range_toPermHom' g by
-    set k := toCentralizer a ⟨τ, hτ⟩ with hk
-    suffices hsign_k : Equiv.Perm.sign (k : Perm α) = -1 by
-      rw [h _, ← Units.eq_iff] at hsign_k
-      exact Int.noConfusion hsign_k
-      exact (toCentralizer a ⟨τ, hτ⟩).prop
-    /- to prove that `sign k = -1`,
-      we could prove that it is the product
-      of the transpositions with disjoint supports
-      [(g ^ n) (a c), (g ^ n) (a d)], for 0 ≤ n < c.support.card,
-      which are in odd number by `odd_of_centralizer_le_alternatingGroup`,
-      but it will be sufficient to observe that `k ^ 2 = 1`
-      (which implies that `k.cycleType` is of the form (2,2,…))
-      and to control its support. -/
-    suffices ∀ b ∈ (k : Perm α).cycleType, b = 2 by
-      let this' := Multiset.eq_replicate_card.mpr this
-      rw [sign_of_cycleType, this', Multiset.sum_replicate, smul_eq_mul, Multiset.card_replicate]
-      rw [Odd.neg_one_pow]
-      rw [Nat.odd_add']
-      simp only [even_two, Even.mul_left, iff_true]
-      apply odd_of_centralizer_le_alternatingGroup h
-      suffices that : Multiset.card (k : Perm α).cycleType = (c : Perm α).support.card by
-        rw [that]
-        simp only [cycleType_def, Multiset.mem_map]
-        exact ⟨c , hc, by simp only [Function.comp_apply]⟩
-      have this'' : (k : Perm α).cycleType.sum = (k : Perm α).support.card :=
-        sum_cycleType _
-      rw [this', Multiset.sum_replicate, smul_eq_mul] at this''
-      rw [← mul_left_inj' (c := 2) (by norm_num), this'']
-      simp only [hk, toCentralizer, MonoidHom.coe_mk, OneHom.coe_mk, card_ofPermHom_support]
-      have H : (⟨c, hc⟩ : g.cycleFactorsFinset) ≠ ⟨d, hd⟩ := Subtype.coe_ne_coe.mp hm'
-      simp only [τ, support_swap H]
-      rw [Finset.sum_insert (by simp only [mem_singleton, H, not_false_eq_true]),
-        Finset.sum_singleton]
-      rw [Equiv.Perm.OnCycleFactors.mem_range_toPermHom'_iff] at hτ
-      specialize hτ ⟨c, hc⟩
-      simp only [τ, Equiv.swap_apply_left] at hτ
-      rw [hτ, mul_two]
-    rw [← pow_prime_eq_one_iff, ← Subgroup.coe_pow, ← Subgroup.coe_one, Subtype.coe_inj]
-    simp only [k, ← map_pow]
-    suffices (⟨τ, hτ⟩ : range_toPermHom' g) ^ 2 = 1 by
-      simp only [this, map_one, OneMemClass.coe_one]
+  have hτ : τ ∈ range_toPermHom' g := fun x ↦ by
+    by_cases hx : x = ⟨c, hc⟩
+    · rw [hx, Equiv.swap_apply_left]; exact hm.symm
+    by_cases hx' : x = ⟨d, hd⟩
+    · rw [hx', Equiv.swap_apply_right]; exact hm
+    · rw [Equiv.swap_apply_of_ne_of_ne hx hx']
+  set k := toCentralizer a ⟨τ, hτ⟩ with hk
+  suffices hsign_k : k.val.sign = -1 by
+    apply units_ne_neg_self (1 : ℤˣ)
+    rw [← hsign_k, h (toCentralizer a ⟨τ, hτ⟩).prop]
+  /- to prove that `hsign_k : sign k = -1` below,
+  we could prove that it is the product of the transpositions with disjoint supports
+  [(g ^ n) (a c), (g ^ n) (a d)], for 0 ≤ n < c.support.card,
+  which are in odd number by `odd_of_centralizer_le_alternatingGroup`,
+  but it will be sufficient to observe that `k ^ 2 = 1`
+  (which implies that `k.cycleType` is of the form (2,2,…))
+  and to control its support. -/
+  have hk_cT : k.val.cycleType = Multiset.replicate k.val.cycleType.card 2 := by
+    rw [Multiset.eq_replicate_card, ← pow_prime_eq_one_iff, ← Subgroup.coe_pow,
+      ← Subgroup.coe_one, Subtype.coe_inj, hk, ← map_pow]
+    convert MonoidHom.map_one _
     rw [← Subtype.coe_inj]
-    simp only [SubmonoidClass.mk_pow, OneMemClass.coe_one, τ]
-    simp only [pow_two, Equiv.swap_mul_self]
-  intro x
-  by_cases hx : x = ⟨c, hc⟩
-  · rw [hx, Equiv.swap_apply_left]; exact hm.symm
-  by_cases hx' : x = ⟨d, hd⟩
-  · rw [hx', Equiv.swap_apply_right]; exact hm
-  · rw [Equiv.swap_apply_of_ne_of_ne hx hx']
+    apply Equiv.swap_mul_self
+  rw [sign_of_cycleType, hk_cT]
+  simp only [Multiset.sum_replicate, smul_eq_mul, Multiset.card_replicate, pow_add,
+    even_two, Even.mul_left, Even.neg_pow, one_pow, one_mul]
+  apply Odd.neg_one_pow
+  apply odd_of_centralizer_le_alternatingGroup h
+  have this : (k : Perm α).cycleType.card * 2 = (k : Perm α).support.card := by
+    rw [← sum_cycleType, hk_cT]
+    simp
+  have that : Multiset.card (k : Perm α).cycleType = (c : Perm α).support.card := by
+    rw [← Nat.mul_left_inj (a := 2) (by norm_num), this]
+    simp only [hk, toCentralizer, MonoidHom.coe_mk, OneHom.coe_mk, card_ofPermHom_support]
+    have H : (⟨c, hc⟩ : g.cycleFactorsFinset) ≠ ⟨d, hd⟩ := Subtype.coe_ne_coe.mp hm'
+    simp only [τ, support_swap H]
+    rw [Finset.sum_insert (by simp only [mem_singleton, H, not_false_eq_true]),
+      Finset.sum_singleton, hm, mul_two]
+  rw [that]
+  simp only [cycleType_def, Multiset.mem_map]
+  exact ⟨c , hc, by simp only [Function.comp_apply]⟩
 
-end OnCycleFactors
-
-end AlternatingGroup
-
-namespace Equiv.Perm
-
-open OnCycleFactors AlternatingGroup.OnCycleFactors
-
-theorem kerParam_range_eq_centralizer_of_count_le_one (h_count : ∀ i, g.cycleType.count i ≤ 1) :
+theorem OnCycleFactors.kerParam_range_eq_centralizer_of_count_le_one
+    (h_count : ∀ i, g.cycleType.count i ≤ 1) :
     (kerParam g).range = Subgroup.centralizer {g} := by
   ext x
   refine ⟨fun hx ↦ kerParam_range_le_centralizer hx, fun hx ↦ ?_⟩
@@ -261,7 +213,7 @@ theorem kerParam_range_eq_centralizer_of_count_le_one (h_count : ∀ i, g.cycleT
   exact h_count _ (by simp) _ c.prop ((mem_range_toPermHom_iff).mp (by simp) c)
 
 /-- The centralizer of a permutation is contained in the alternating group if and only if
-all cycles have odd length, with at most one of each, and there is at most one fixed point. -/
+its cycles have odd length, with at most one of each, and there is at most one fixed point. -/
 theorem centralizer_le_alternating_iff :
     Subgroup.centralizer {g} ≤ alternatingGroup α ↔
       (∀ c ∈ g.cycleType, Odd c) ∧ Fintype.card α ≤ g.cycleType.sum + 1 ∧
@@ -270,10 +222,10 @@ theorem centralizer_le_alternating_iff :
   constructor
   · intro h
     exact ⟨odd_of_centralizer_le_alternatingGroup h,
-      card_le_of_centralizer_le_alternating g h,
-      count_le_one_of_centralizer_le_alternating g h⟩
+      card_le_of_centralizer_le_alternating h,
+      count_le_one_of_centralizer_le_alternating h⟩
   · rintro ⟨h_odd, h_fixed, h_count⟩ x hx
-    rw [← kerParam_range_eq_centralizer_of_count_le_one g h_count] at hx
+    rw [← kerParam_range_eq_centralizer_of_count_le_one h_count] at hx
     obtain ⟨⟨y, uv⟩, rfl⟩ := MonoidHom.mem_range.mp hx
     rw [mem_alternatingGroup, sign_kerParam_apply_apply (g := g) y uv]
     convert mul_one _

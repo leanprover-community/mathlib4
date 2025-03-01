@@ -77,6 +77,9 @@ injectivity `Equiv.Perm.OnCycleFactors.kerParam_injective`, its range
 `Equiv.Perm.OnCycleFactors.kerParam_range_eq`, and its cardinality
 `Equiv.Perm.OnCycleFactors.kerParam_range_card`.
 
+* `Equiv.Perm.OnCycleFactors.sign_kerParam_apply_apply` computes the signature
+  of the permutation induced given by `Equiv.Perm.OnCycleFactors.kerParam`.
+
 * `Equiv.Perm.nat_card_centralizer g` computes the cardinality
   of the centralizer of `g`.
 
@@ -588,6 +591,38 @@ theorem kerParam_range_card (g : Equiv.Perm α) :
 
 end Kernel
 
+section Sign
+
+open Equiv Function MulAction Finset
+
+variable {a : Type*} (g : Perm α) (k : Perm (fixedPoints g))
+    (v : (c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α))
+
+theorem sign_kerParam_apply_apply :
+    sign (kerParam g ⟨k, v⟩) = sign k * ∏ c, sign (v c).val := by
+  rw [kerParam, MonoidHom.noncommCoprod_apply, ← Prod.fst_mul_snd ⟨k, v⟩, Prod.mk_mul_mk, mul_one,
+    one_mul, map_mul, sign_ofSubtype, Finset.univ_eq_attach, mul_right_inj, ← MonoidHom.comp_apply,
+    Subgroup.noncommPiCoprod, MonoidHom.comp_noncommPiCoprod _, MonoidHom.noncommPiCoprod_apply,
+    Finset.univ_eq_attach, Finset.noncommProd_eq_prod]
+  simp
+
+theorem cycleType_kerParam_apply_apply :
+    cycleType (kerParam g ⟨k, v⟩) = cycleType k + ∑ c, (v c).val.cycleType := by
+  let U := (Finset.univ : Finset { x // x ∈ g.cycleFactorsFinset }).toSet
+  have hU : U.Pairwise fun i j ↦ (v i).val.Disjoint (v j).val := fun c _ d _ h ↦ by
+    obtain ⟨m, hm⟩ := (v c).prop
+    obtain ⟨n, hn⟩ := (v d).prop
+    simp only [← hm, ← hn]
+    apply Disjoint.zpow_disjoint_zpow
+    apply cycleFactorsFinset_pairwise_disjoint g c.prop d.prop
+    exact Subtype.coe_ne_coe.mpr h
+  rw [kerParam, MonoidHom.noncommCoprod_apply, ← Prod.fst_mul_snd ⟨k, v⟩, Prod.mk_mul_mk, mul_one,
+    one_mul, Finset.univ_eq_attach, Disjoint.cycleType (disjoint_ofSubtype_noncommPiCoprod g k v),
+    Subgroup.noncommPiCoprod_apply, Disjoint.cycleType_noncommProd hU, Finset.univ_eq_attach]
+  exact congr_arg₂ _ cycleType_ofSubtype rfl
+
+end Sign
+
 end OnCycleFactors
 
 open Nat
@@ -640,8 +675,8 @@ theorem card_of_cycleType_eq_zero_iff {m : Multiset ℕ} :
   aesop
 
 theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
-    ({g | g.cycleType = m} : Finset (Perm α)).card * ((Fintype.card α - m.sum)! * m.prod *
-          (∏ n ∈ m.toFinset, (m.count n)!)) =
+    ({g | g.cycleType = m} : Finset (Perm α)).card *
+      ((Fintype.card α - m.sum)! * m.prod * (∏ n ∈ m.toFinset, (m.count n)!)) =
       if (m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a) then (Fintype.card α)! else 0 := by
   split_ifs with hm
   · -- nonempty case
@@ -670,5 +705,17 @@ theorem card_of_cycleType (m : Multiset ℕ) :
     rw [card_of_cycleType_mul_eq, if_pos hm]
   · -- empty case
     exact (card_of_cycleType_eq_zero_iff α).mpr hm
+
+open Fintype in
+variable {α} in
+/-- The number of cycles of given length -/
+lemma card_of_cycleType_singleton {n : ℕ} (hn' : 2 ≤ n) (hα : n ≤ card α) :
+    ({g | g.cycleType = {n}} : Finset (Perm α)).card = (n - 1)! * (choose (card α) n) := by
+  have hn₀ : n ≠ 0 := by omega
+  have aux : n ! = (n - 1)! * n := by rw [mul_comm, mul_factorial_pred (by omega)]
+  rw [mul_comm, ← Nat.mul_left_inj hn₀, mul_assoc, ← aux, ← Nat.mul_left_inj (factorial_ne_zero _),
+    Nat.choose_mul_factorial_mul_factorial hα, mul_assoc]
+  simpa [ite_and, if_pos hα, if_pos hn', mul_comm _ n, mul_assoc]
+    using card_of_cycleType_mul_eq α {n}
 
 end Equiv.Perm
