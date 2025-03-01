@@ -219,7 +219,7 @@ noncomputable instance : GradedRing ((AddSubmonoid.map (RingQuot.mkRingHom rel))
     map_zero' := by simp
     map_add' := by simp
   } with hg'
-  set g := DirectSum.map g' with hg
+  set g := DirectSum.mapRange.addHom g' with hg
   set e := DirectSum.decomposeRingEquiv 𝒜 with he
   set u := DirectSum.coeAddMonoidHom ℬ with hu
   have h_comp : f.toAddMonoidHom.compHom e.symm.toAddMonoidHom = u.comp g := by
@@ -286,7 +286,7 @@ noncomputable instance : GradedAlgebra ((Submodule.map (RingQuot.mkAlgHom R rel)
     map_zero' := by simp
     map_add' := by simp
   } with hg'
-  set g := DirectSum.map g' with hg
+  set g := DirectSum.mapRange.addHom g' with hg
   set e := DirectSum.decomposeRingEquiv 𝒜 with he
   set u := DirectSum.coeAddMonoidHom ℬ with hu
   have h_comp : f.toAddMonoidHom.compHom e.symm.toAddMonoidHom = u.comp g := by
