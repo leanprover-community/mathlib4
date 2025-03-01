@@ -216,7 +216,7 @@ by induction on the word using `consRecOn`.
 variable (φ)
 
 /-- The data we need to pick a normal form for words in the pushout. We need to pick a
-canonical element of each coset. We also need all the maps in the diagram to be injective  -/
+canonical element of each coset. We also need all the maps in the diagram to be injective -/
 structure Transversal : Type _ where
   /-- All maps in the diagram are injective -/
   injective : ∀ i, Injective (φ i)
@@ -611,13 +611,10 @@ section Reduced
 
 open NormalWord
 
-variable (φ)
-
+variable (φ) in
 /-- A word in `CoprodI` is reduced if none of its letters are in the base group. -/
 def Reduced (w : Word G) : Prop :=
   ∀ g, g ∈ w.toList → g.2 ∉ (φ g.1).range
-
-variable {φ}
 
 theorem Reduced.exists_normalWord_prod_eq (d : Transversal φ) {w : Word G} (hw : Reduced φ w) :
     ∃ w' : NormalWord d, w'.prod = ofCoprodI w.prod ∧

@@ -130,8 +130,7 @@ end NormalizedMooreComplex
 
 open NormalizedMooreComplex
 
-variable (C)
-
+variable (C) in
 /-- The (normalized) Moore complex of a simplicial object `X` in an abelian category `C`.
 
 The `n`-th object is intersection of
@@ -147,8 +146,6 @@ def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
   -- Porting note: Why `aesop_cat` can't do `dsimp` steps?
   map_id X := by ext (_ | _) <;> dsimp <;> aesop_cat
   map_comp f g := by ext (_ | _) <;> apply Subobject.eq_of_comp_arrow_eq <;> dsimp <;> aesop_cat
-
-variable {C}
 
 -- Porting note: removed @[simp] as it is not in normal form
 theorem normalizedMooreComplex_objD (X : SimplicialObject C) (n : ℕ) :

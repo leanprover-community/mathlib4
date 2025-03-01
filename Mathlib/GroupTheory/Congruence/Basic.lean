@@ -5,7 +5,6 @@ Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.Congruence.Hom
 
