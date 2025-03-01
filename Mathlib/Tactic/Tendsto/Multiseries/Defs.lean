@@ -3,7 +3,7 @@ Copyright (c) 2024 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-import Mathlib.Tactic.Tendsto.Multiseries.SeqLemmas
+import Mathlib.Data.Seq.Seq
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
@@ -127,7 +127,7 @@ private theorem lt_iff_lt {basis} {exp1 exp2 : ℝ} {coef1 coef2 : PreMS basis} 
 /-- Multiseries `ms` is `WellOrdered` when at each its level exponents are Pairwise by TODO. -/
 inductive WellOrdered : {basis : Basis} → (PreMS basis) → Prop
 | const (ms : PreMS []) : WellOrdered ms
-| colist {hd} {tl} (ms : PreMS (hd :: tl))
+| seq {hd} {tl} (ms : PreMS (hd :: tl))
     (h_coef : ∀ i x, ms.get? i = .some x → x.2.WellOrdered)
     (h_Pairwise : Seq.Pairwise (· > ·) ms) : ms.WellOrdered
 
@@ -168,7 +168,7 @@ theorem WellOrdered.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_
     (h_comp : tl.leadingExp < exp)
     (h_tl : tl.WellOrdered) :
     @WellOrdered (basis_hd :: basis_tl) (.cons (exp, coef) tl) := by
-  cases h_tl with | colist _ h_tl_coef h_tl_tl =>
+  cases h_tl with | seq _ h_tl_coef h_tl_tl =>
   constructor
   · intro i x h
     cases i with
@@ -180,29 +180,27 @@ theorem WellOrdered.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_
       simp at h
       simp at h_tl_coef
       solve_by_elim
-  · apply Seq.Pairwise.cons
-    · cases tl
-      · simp
-      · simp at h_comp ⊢
-        rwa [lt_iff_lt]
-    · exact h_tl_tl
+  · cases tl
+    · exact Pairwise_cons_nil
+    apply Seq.Pairwise.cons_cons_of_trans _ h_tl_tl
+    simpa [lt_iff_lt] using h_comp
 
 /-- The fact `WellOrdered (cons (exp, coef) tl)` implies that `coef` and `tl` are `WellOrdered`, and
 leading exponent of `tl` is less than `exp`. -/
 theorem WellOrdered_cons {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
     (h : @WellOrdered (basis_hd :: basis_tl) (.cons (exp, coef) tl)) :
     coef.WellOrdered ∧ tl.leadingExp < exp ∧ tl.WellOrdered := by
-  cases h with | colist _ h_coef h_Pairwise =>
-  apply Seq.Pairwise_cons at h_Pairwise
+  cases h with | seq _ h_coef h_Pairwise =>
   constructor
   · specialize h_coef 0 (exp, coef)
     simpa using h_coef
+  cases' tl with tl_exp tl_coef tl_tl
+  · simp [WellOrdered.nil]
+  apply Pairwise.cons_cons_elim_of_trans at h_Pairwise
   constructor
-  · cases' tl with tl_exp tl_coef tl_tl
-    · simp
-    · simp [lt_iff_lt] at h_Pairwise
-      simp
-      exact h_Pairwise.left
+  · simp [lt_iff_lt] at h_Pairwise
+    simp
+    exact h_Pairwise.left
   · constructor
     · intro i x hx
       specialize h_coef (i + 1) x
@@ -257,7 +255,7 @@ theorem WellOrdered.coind {ms : PreMS (basis_hd :: basis_tl)}
       rw [h_ms_eq] at hx
       simp at hx
       simpa [← hx]
-  · apply Seq.Pairwise.coind motive h_base
+  · apply Seq.Pairwise.coind_trans motive h_base
     intro hd tl ih
     specialize h_step _ ih
     simp [Seq.cons_eq_cons] at h_step
@@ -425,7 +423,7 @@ theorem partialSumsFrom_eq_map {Cs : Seq (ℝ → ℝ)} {exps : Seq ℝ} {basis_
         (y = (partialSumsFrom Cs exps basis_fun init).map fun fG => fD + fG)
       ) ∨
       (x = .nil ∧ y = .nil)
-  apply Seq.Eq.coind motive
+  apply eq_of_bisim' motive
   · simp [motive]
     use Cs, exps, 0, init
     left
@@ -449,7 +447,7 @@ theorem partialSumsFrom_eq_map {Cs : Seq (ℝ → ℝ)} {exps : Seq ℝ} {basis_
         constructor
         · assumption
         simp [motive]
-      · obtain ⟨Cs_hd, Cs_tl, h_Cs⟩ := Seq.AtLeastAsLongAs_cons h_alal
+      · obtain ⟨Cs_hd, Cs_tl, h_Cs⟩ := Seq.AtLeastAsLongAs.cons_elim h_alal
         subst h_Cs
         simp [partialSums, partialSumsFrom_cons] at h_x_eq h_y_eq
         use fD + init',
@@ -529,9 +527,9 @@ theorem Approximates.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis
     · exact h_maj
     -- copypaste from `Approximates_cons`
     · rw [partialSumsFrom_eq_map (Seq.AtLeastAsLongAs_map h_tl_alal)]
-      rw [Seq.map_zip_left]
-      apply Seq.map_all_iff.mpr
-      apply Seq.all_mp _ h_tl_maj
+      rw [Seq.zip_map_left]
+      apply Seq.map_All_iff.mpr
+      apply Seq.All_mp _ h_tl_maj
       intro (fC', exp?)
       simp
       intro h
@@ -584,7 +582,7 @@ theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
   constructor
   · let motive' : Seq (ℝ → ℝ) → Seq (ℝ × PreMS basis_tl) → Prop := fun Cs ms =>
       ∃ f h, Cs = (Seq.corec g ⟨ms, f, h⟩)
-    apply Seq.atLeastAsLong.coind motive'
+    apply Seq.AtLeastAsLongAs.coind motive'
     · simp only [motive']
       use f, h_base
     · intro Cs ms ih (exp, coef) tl h_ms_eq
@@ -717,10 +715,11 @@ theorem Approximates_nil (h : @Approximates (basis_hd :: basis_tl) Seq.nil f) :
   unfold Approximates at h
   obtain ⟨Cs, _, _, h_maj⟩ := h
   simp at h_maj
-  apply Seq.all_get at h_maj
-  unfold Seq.All at h_maj
-  specialize h_maj (n := 0)
-  simpa [partialSums, partialSumsFrom] using h_maj
+  apply Seq.All_get at h_maj
+  simp [partialSums, partialSumsFrom] at h_maj
+  -- unfold Seq.All at h_maj
+  specialize h_maj (n := 0) 0 none
+  simpa using h_maj
 
 /-- If `cons (exp, coef) tl` approximates `f`, then `f` can be majorated with exponent `exp`, and
 there exists function `fC` such that `coef` approximates `fC` and `tl` approximates
@@ -734,7 +733,7 @@ theorem Approximates_cons {exp : ℝ}
       tl.Approximates (fun t ↦ f t - (basis_hd t)^exp * (fC t)) := by
   unfold Approximates at h
   obtain ⟨Cs, h_alal, h_coef, h_maj⟩ := h
-  obtain ⟨fC, Cs_tl, h_alal⟩ := Seq.AtLeastAsLongAs_cons h_alal
+  obtain ⟨fC, Cs_tl, h_alal⟩ := Seq.AtLeastAsLongAs.cons_elim h_alal
   subst h_alal
   use fC
   simp at h_coef
@@ -753,8 +752,8 @@ theorem Approximates_cons {exp : ℝ}
         · simp [partialSums, partialSumsFrom_cons] at h_maj
           apply And.right at h_maj
           rw [partialSumsFrom_eq_map (Seq.AtLeastAsLongAs_map h_alal)] at h_maj
-          rw [Seq.map_zip_left] at h_maj
-          apply Seq.all_mp _ (Seq.map_all_iff.mp h_maj)
+          rw [Seq.zip_map_left] at h_maj
+          apply Seq.All_mp _ (Seq.map_All_iff.mp h_maj)
           intro (fC', exp?)
           simp
           intro h

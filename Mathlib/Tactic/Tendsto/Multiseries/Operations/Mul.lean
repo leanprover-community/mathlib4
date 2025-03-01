@@ -106,7 +106,7 @@ theorem mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_exp : ℝ} {X_co
   let motive : Seq (PreMS (basis_hd :: basis_tl)) → Prop := fun s =>
     ∃ (X : PreMS (basis_hd :: basis_tl)), s = (Seq.map (fun p ↦ Y.mulMonomial p.2 p.1) X) ∧
     X.WellOrdered
-  apply Seq.Pairwise.coind motive (r := fun x1 x2 ↦ x1 > x2)
+  apply Seq.Pairwise.coind_trans motive (R := fun x1 x2 ↦ x1 > x2)
   · simp [motive]
     use X
   · intro hd tl ih
@@ -157,7 +157,7 @@ theorem mul_one' {basis : Basis} {ms : PreMS basis} : mul ms (one basis) = ms :=
   | cons basis_hd basis_tl =>
     let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun X Y =>
       X = Y.mul (one (basis_hd :: basis_tl))
-    apply Seq.Eq.coind motive
+    apply Seq.eq_of_bisim' motive
     · simp only [motive]
     · intro A (B : PreMS (basis_hd :: basis_tl)) ih
       simp only [motive] at ih
@@ -182,7 +182,7 @@ theorem one_mul' {basis : Basis} {ms : PreMS basis} : mul (one basis) ms = ms :=
     simp [one, const, mul]
     let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun X Y =>
       X = Y.mulMonomial (const basis_tl 1) 0
-    apply Seq.Eq.coind motive
+    apply Seq.eq_of_bisim' motive
     · simp only [motive]
     · intro X (Y : PreMS (basis_hd :: basis_tl)) ih
       subst ih
@@ -209,7 +209,7 @@ mutual
       ∃ (B : PreMS (basis_hd :: basis_tl)),
         X = B.mulMonomial (M_coef.mulConst c) M_exp ∧
         Y = (B.mulMonomial M_coef M_exp).mulConst c
-    apply Seq.Eq.coind motive
+    apply Seq.eq_of_bisim' motive
     · simp only [motive]
       use B
     · intro X Y ih
@@ -238,7 +238,7 @@ mutual
       let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun A B =>
         ∃ (X Y S : PreMS (basis_hd :: basis_tl)), A = S + (X.mulConst c).mul Y ∧
           B = S + (X.mul Y).mulConst c
-      apply Seq.Eq.coind_strong motive
+      apply Seq.eq_of_bisim_strong motive
       · simp only [motive]
         use X, Y, 0
         simp
@@ -307,8 +307,6 @@ mutual
             rw [add_mulConst, mulMonomial_mulConst_left]
 end
 
-#check mul_cons_cons
-
 mutual
   theorem mulMonomial_mulConst_right {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       {B : PreMS (basis_hd :: basis_tl)} {M_coef : PreMS basis_tl} {M_exp c : ℝ} :
@@ -318,7 +316,7 @@ mutual
       ∃ (B : PreMS (basis_hd :: basis_tl)),
         X = (B.mulConst c).mulMonomial M_coef M_exp ∧
         Y = (B.mulMonomial M_coef M_exp).mulConst c
-    apply Seq.Eq.coind motive
+    apply Seq.eq_of_bisim' motive
     · simp only [motive]
       use B
     · intro X Y ih
@@ -348,7 +346,7 @@ mutual
       let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun A B =>
         ∃ (X S : PreMS (basis_hd :: basis_tl)), A = S + X.mul (Y.mulConst c) ∧
           B = S + (X.mul Y).mulConst c
-      apply Seq.Eq.coind_strong motive
+      apply Seq.eq_of_bisim_strong motive
       · simp only [motive]
         use X, 0
         simp
@@ -446,7 +444,7 @@ mutual
       ∃ (B : PreMS (basis_hd :: basis_tl)),
       X = B.mulMonomial (M_coef1 + M_coef2) M_exp ∧
       Y = B.mulMonomial M_coef1 M_exp + B.mulMonomial M_coef2 M_exp
-    apply Seq.Eq.coind motive
+    apply Seq.eq_of_bisim' motive
     · simp [motive]
       use B
     · intro X Y ih
@@ -488,7 +486,7 @@ mutual
         ∃ (S X Y : PreMS (basis_hd :: basis_tl)),
           A = S + ((X + Y).mul (.cons (Z_exp, Z_coef) Z_tl)) ∧
           B = S + ((X.mul (.cons (Z_exp, Z_coef) Z_tl)) + (Y.mul (.cons (Z_exp, Z_coef) Z_tl)))
-      apply Seq.Eq.coind_strong motive
+      apply Seq.eq_of_bisim_strong motive
       · simp only [motive]
         use 0, X, Y
         simp
@@ -735,7 +733,7 @@ mutual
       ∃ (A B : PreMS (basis_hd :: basis_tl)),
       X = (A + B).mulMonomial M_coef M_exp ∧
       Y = A.mulMonomial M_coef M_exp + B.mulMonomial M_coef M_exp
-    apply Seq.Eq.coind_strong motive
+    apply Seq.eq_of_bisim_strong motive
     · simp [motive]
       use A, B
     · intro X Y ih
@@ -823,7 +821,7 @@ mutual
             (Seq.cons (X_exp, X_coef) X_tl) (Seq.cons (Y_exp, Y_coef) Y_tl)) ∧
           B = S + (Z.mul (Seq.cons (X_exp, X_coef) X_tl)) + Z.mul (Seq.cons (Y_exp, Y_coef) Y_tl) ∧
           Z.WellOrdered
-      apply Seq.Eq.coind_strong motive
+      apply Seq.eq_of_bisim_strong motive
       · simp only [motive]
         use Z, 0
         simpa
@@ -1071,7 +1069,7 @@ mutual
       ∃ (S A : PreMS (basis_hd :: basis_tl)),
         X = S + (A.mulMonomial M_coef M_exp).mul (Seq.cons (B_exp, B_coef) B_tl) ∧
         Y = S + (A.mul (Seq.cons (B_exp, B_coef) B_tl)).mulMonomial M_coef M_exp
-    apply Seq.Eq.coind_strong motive
+    apply Seq.eq_of_bisim_strong motive
     · use 0, A
       simp
     · intro X Y ih
@@ -1175,7 +1173,7 @@ mutual
           A = S + (X.mul (Seq.cons (Y_exp, Y_coef) Y_tl)).mul (Seq.cons (Z_exp, Z_coef) Z_tl) ∧
           B = S + X.mul (mul (Seq.cons (Y_exp, Y_coef) Y_tl) (Seq.cons (Z_exp, Z_coef) Z_tl)) ∧
           X.WellOrdered
-      apply Seq.Eq.coind_strong motive
+      apply Seq.eq_of_bisim_strong motive
       · simp only [motive]
         use X, 0
         simp
@@ -1272,7 +1270,7 @@ theorem merge1_mul_comm_right {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     ∃ Y s,
       A = Y + merge1 (Seq.map (fun X ↦ X.mul (.cons (X_exp, X_coef) X_tl)) s) ∧
       B = Y + (merge1 s).mul (.cons (X_exp, X_coef) X_tl)
-  apply Seq.Eq.coind_strong motive
+  apply Seq.eq_of_bisim_strong motive
   · simp only [motive]
     use 0, s
     simp

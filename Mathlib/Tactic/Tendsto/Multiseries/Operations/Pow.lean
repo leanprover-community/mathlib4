@@ -115,7 +115,7 @@ theorem powSeries_zero_eq : powSeries 0 = Seq.cons 1 zeros := by
   let motive : LazySeries → LazySeries → Prop := fun a b =>
     b = zeros ∧
     ∃ n, a = Seq.corec (fun (p : ℝ × ℕ) ↦ some (p.1, -(p.1 * ↑p.2) / (↑p.2 + 1), p.2 + 1)) (0, n)
-  apply Eq.coind motive
+  apply eq_of_bisim' motive
   · simp [motive]
     use 1
   · intro a b ih

@@ -75,7 +75,7 @@ theorem nil_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
     HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) Seq.nil ms = ms := by
   let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun X Y =>
     X = HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) Seq.nil Y
-  apply Seq.Eq.coind motive
+  apply Seq.eq_of_bisim' motive
   · simp only [motive]
   · intro X Y ih
     simp [motive] at ih
@@ -110,7 +110,7 @@ theorem add_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
     HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) ms Seq.nil = ms := by
   let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun X Y =>
     X = HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) Y Seq.nil
-  apply Seq.Eq.coind motive
+  apply Seq.eq_of_bisim' motive
   · simp only [motive]
   · intro X Y ih
     simp [motive] at ih
@@ -224,7 +224,7 @@ theorem add_mulConst {basis : Basis} {X Y : PreMS basis} {c : ℝ} :
     let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
       ∃ (X Y : PreMS (basis_hd :: basis_tl)), a = (X + Y).mulConst c ∧
       b = X.mulConst c + Y.mulConst c
-    apply Seq.Eq.coind_strong motive
+    apply Seq.eq_of_bisim_strong motive
     · simp only [motive]
       use X, Y
     · intro a b ih
@@ -289,7 +289,7 @@ private theorem add_comm' {basis : Basis} {X Y : PreMS basis} :
   | cons basis_hd basis_tl =>
   let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
     ∃ (X Y : PreMS (basis_hd :: basis_tl)), a = (X + Y) ∧ b = Y + X
-  apply Seq.Eq.coind_strong motive
+  apply Seq.eq_of_bisim_strong motive
   · simp only [motive]
     use X, Y
   · intro a b ih
@@ -345,7 +345,7 @@ private theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
   | cons basis_hd basis_tl =>
   let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
     ∃ (X Y Z : PreMS (basis_hd :: basis_tl)), a = X + (Y + Z) ∧ b = (X + Y) + Z
-  apply Seq.Eq.coind_strong motive
+  apply Seq.eq_of_bisim_strong motive
   · simp only [motive]
     use X, Y, Z
   · intro a b ih

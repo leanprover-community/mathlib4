@@ -221,7 +221,7 @@ theorem tail_eq_nil_of_nil_head {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (h_Pairwise : (Seq.cons .nil tl).Pairwise (· > ·)) : tl = .nil := by
   cases tl
   · simp
-  · replace h_Pairwise := (Seq.Pairwise_cons h_Pairwise).left
+  · replace h_Pairwise := (Seq.Pairwise.cons_elim h_Pairwise).left
     simp [LT.lt, leadingExp] at h_Pairwise
 
 @[simp]
@@ -239,7 +239,7 @@ theorem merge1_cons_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd : PreMS 
     merge1 (basis_hd := basis_hd) (basis_tl := basis_tl) (.cons hd .nil) = hd := by
   let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun X Y =>
     ∃ m, X = merge m (.cons Y .nil)
-  apply Seq.Eq.coind motive
+  apply Seq.eq_of_bisim' motive
   · simp only [motive, merge1]
     use 0
   · intro X Y ih
@@ -325,7 +325,7 @@ theorem merge_aux_liNew_aux {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : �
         Seq (PreMS (basis_hd :: basis_tl)) := (fun idx curLi elem ↦
       match elem.destruct with
       | none => curLi
-      | some ((exp', _), tl) => if exp' = exp then Seq.set idx curLi tl else curLi);
+      | some ((exp', _), tl) => if exp' = exp then curLi.set idx tl else curLi);
     List.foldlIdx f (Seq.cons s_hd s_tl) firsts 1 =
     .cons s_hd (List.foldlIdx f s_tl firsts 0) := by
   generalize h_offset : 0 = offset
@@ -412,7 +412,7 @@ theorem merge_aux_liNew_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} 
     (hs : s.All WellOrdered) :
     (merge_aux_liNew (s.take m) exp s).All WellOrdered := by
   simp [merge_aux_liNew]
-  have h_firsts : ∀ X ∈ s.take m, X.WellOrdered := Seq.take_all hs
+  have h_firsts : ∀ X ∈ s.take m, X.WellOrdered := Seq.take_All hs
   generalize s.take m = firsts at h_firsts
   generalize 0 = offset
   induction firsts generalizing offset s with
@@ -425,7 +425,7 @@ theorem merge_aux_liNew_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} 
     · simpa
     · simp
       split_ifs
-      · apply Seq.set_all hs
+      · apply Seq.set_All hs
         exact (WellOrdered_cons h_firsts.left).right.right
       · assumption
 
@@ -475,17 +475,16 @@ theorem merge_aux_tail_stable {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp :
             cases s' <;> simp
             exact Eq.symm
           simp [merge_aux_kNew, h_get, h_exp]
-          rw [← Seq.drop.eq_2]
           apply Seq.set_dropn_stable_of_lt
           simp
         | inr h_offset_lt =>
-          specialize ih (s := (Seq.set offset s hd_tl)) (offset + 1)
-          have : tl = (Seq.take (m + 1) (Seq.set offset s hd_tl)).drop (offset + 1) := by
+          specialize ih (s := (s.set offset hd_tl)) (offset + 1)
+          have : tl = (Seq.take (m + 1) (s.set offset hd_tl)).drop (offset + 1) := by
             rw [Seq.take_drop, Seq.set_dropn_stable_of_lt (by simp), ← Seq.take_drop]
             apply_fun List.tail at h_offset
             simpa using h_offset
           specialize ih this (by linarith)
-          have : merge_aux_kNew exp m (Seq.set offset s hd_tl) = merge_aux_kNew exp m s := by
+          have : merge_aux_kNew exp m (s.set offset hd_tl) = merge_aux_kNew exp m s := by
             simp only [merge_aux_kNew]
             rw [Seq.set_get_stable]
             omega
@@ -548,7 +547,7 @@ theorem merge_succ_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd : PreM
     ∃ m s_hd s_tl,
       X = merge (m + 1) (Seq.cons s_hd s_tl) ∧
       Y = s_hd + (merge m s_tl)
-  apply Seq.Eq.coind motive
+  apply Seq.eq_of_bisim' motive
   · simp only [motive]
     use m, s_hd, s_tl
   · intro X Y ih
@@ -754,7 +753,7 @@ theorem merge1_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     · apply merge1_cons_head_cons
     · cases' s_tl with s_tl_hd s_tl_tl
       · simp
-      · apply Seq.Pairwise_cons at h_Pairwise
+      · apply Seq.Pairwise.cons_cons_elim_of_trans at h_Pairwise
         simp at h_Pairwise
         simp
         exact lt_iff_lt.mp h_Pairwise.left
@@ -787,11 +786,29 @@ theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       · simp
       simp at h_wo
       obtain ⟨h_hd_wo, h_tl_wo⟩ := h_wo
-      obtain ⟨h_Pairwise_hd, h_Pairwise_tl⟩ := Seq.Pairwise_cons h_Pairwise
       cases' s_hd with s_hd_exp s_hd_coef s_hd_tl
       · simp
-      obtain ⟨h_hd_coef_wo, h_hd_comp, h_hd_tl_wo⟩ := WellOrdered_cons h_hd_wo
       right
+      obtain ⟨h_hd_coef_wo, h_hd_comp, h_hd_tl_wo⟩ := WellOrdered_cons h_hd_wo
+      cases' s_tl with s_tl_hd s_tl_tl
+      · simp
+        use ?_, ?_, ?_
+        constructor
+        · exact Eq.refl _
+        apply WellOrdered_cons at h_hd_wo
+        constructor
+        · assumption
+        constructor
+        · assumption
+        use s_hd_tl, .nil
+        constructor
+        · simp
+        constructor
+        · assumption
+        constructor
+        · simp
+        · simp
+      obtain ⟨h_Pairwise_hd, h_Pairwise_tl⟩ := Seq.Pairwise.cons_cons_elim_of_trans h_Pairwise
       use ?_, ?_, ?_
       constructor
       · rw [nil_add, merge1_cons_head_cons]
@@ -802,9 +819,7 @@ theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       · simp
         constructor
         · exact h_hd_comp
-        · cases s_tl
-          · simp
-          · simpa [lt_iff_lt] using h_Pairwise_hd
+        · simpa [lt_iff_lt] using h_Pairwise_hd
       use ?_, ?_
       constructor
       · exact Eq.refl _
@@ -831,10 +846,9 @@ theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         constructor
         · exact hX_tl_wo
         · simp
-          apply Seq.Pairwise.nil
       simp at h_wo
       obtain ⟨h_hd_wo, h_tl_wo⟩ := h_wo
-      obtain ⟨h_Pairwise_hd, h_Pairwise_tl⟩ := Seq.Pairwise_cons h_Pairwise
+      -- obtain ⟨h_Pairwise_hd, h_Pairwise_tl⟩ := Seq.Pairwise.cons_elim h_Pairwise
       cases' s_hd with s_hd_exp s_hd_coef s_hd_tl
       · use ?_, ?_, ?_  -- Copypaste
         constructor
@@ -851,7 +865,6 @@ theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         constructor
         · exact hX_tl_wo
         · simp
-          apply Seq.Pairwise.nil
       obtain ⟨h_hd_coef_wo, h_hd_comp, h_hd_tl_wo⟩ := WellOrdered_cons h_hd_wo
       rw [merge1_cons_head_cons, add_cons_cons]
       split_ifs with h1 h2
@@ -874,9 +887,7 @@ theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         constructor
         · simp
           tauto
-        · apply Seq.Pairwise.cons
-          · assumption
-          · assumption
+        · assumption
       · use ?_, ?_, ?_
         constructor
         · exact Eq.refl _
@@ -890,7 +901,8 @@ theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
           · exact h_hd_comp
           · cases s_tl
             · simp
-            · simpa [lt_iff_lt] using h_Pairwise_hd
+            · obtain ⟨h_Pairwise_hd, h_Pairwise_tl⟩ := Seq.Pairwise.cons_cons_elim_of_trans h_Pairwise
+              simpa [lt_iff_lt] using h_Pairwise_hd
         use ?_, s_tl
         constructor
         · rw [← add_assoc]
@@ -901,7 +913,7 @@ theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
           · exact h_hd_tl_wo
         constructor
         · exact h_tl_wo
-        · exact h_Pairwise_tl
+        · exact h_Pairwise.cons_elim.right
       · have : X_exp = s_hd_exp := by linarith
         subst this
         use ?_, ?_, ?_
@@ -919,7 +931,8 @@ theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
           · exact h_hd_comp
           · cases s_tl
             · simp
-            · simpa [lt_iff_lt] using h_Pairwise_hd
+            · obtain ⟨h_Pairwise_hd, h_Pairwise_tl⟩ := Seq.Pairwise.cons_cons_elim_of_trans h_Pairwise
+              simpa [lt_iff_lt] using h_Pairwise_hd
         use ?_, s_tl
         constructor
         · rw [← add_assoc]
@@ -930,7 +943,7 @@ theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
           · exact h_hd_tl_wo
         constructor
         · exact h_tl_wo
-        · exact h_Pairwise_tl
+        · exact h_Pairwise.cons_elim.right
 
 end PreMS
 

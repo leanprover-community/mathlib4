@@ -215,7 +215,7 @@ theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
     ∃ (X : PreMS (basis_hd :: basis_tl)), ∃ s,
       x = Seq.corec (apply_aux ms) (X.mul ms, s) ∧
       y = Seq.map (fun X ↦ X.mul ms) (Seq.corec (apply_aux ms) (X, s))
-  apply Seq.Eq.coind motive
+  apply Seq.eq_of_bisim' motive
   · simp [motive]
     use const (basis_hd :: basis_tl) 1, s_tl
   · intro x y ih
@@ -316,7 +316,7 @@ theorem apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : 
       · exact mul_WellOrdered hX_wo h_wo
   · let motive : Seq (PreMS (basis_hd :: basis_tl)) → Prop := fun a =>
       ∃ X s, a = Seq.corec (apply_aux ms) (X, s) ∧ X ≠ .nil
-    apply Seq.Pairwise.coind (r := (fun x1 x2 ↦ x1 > x2)) motive
+    apply Seq.Pairwise.coind_trans (R := (fun x1 x2 ↦ x1 > x2)) motive
     · simp only [motive]
       use one _, s
       constructor
@@ -731,12 +731,10 @@ theorem analytic_of_all_le_one {s : LazySeries} (h : s.All fun x ↦ |x| ≤ 1) 
   apply FormalMultilinearSeries.le_radius_of_bound (C := 1)
   simp only [toFormalMultilinearSeries_norm]
   intro n
-  have := Seq.all_get h (n := n)
-  generalize s.get? n = t? at *
-  cases t? with
-  | none => simp
-  | some =>
-    simpa using this
+  cases' h_get : s.get? n with val
+  · simp
+  have := Seq.All_get h h_get
+  simpa
 
 section Zeros
 

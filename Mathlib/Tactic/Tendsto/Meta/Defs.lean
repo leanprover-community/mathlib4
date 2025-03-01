@@ -16,7 +16,7 @@ open Stream'.Seq
 theorem nil_of_destruct {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
     (h_destruct : destruct ms = .none) :
     ms = PreMS.nil :=
-  Stream'.Seq.destruct_eq_nil h_destruct
+  Stream'.Seq.destruct_eq_none h_destruct
 
 theorem cons_of_destruct {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
     {hd : ℝ × PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
