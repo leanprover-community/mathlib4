@@ -222,11 +222,17 @@ end Pullback
 
 section IsPullback
 
+/-- Two monomorphisms are isomorphic if they both form a pullback square on the same cospan. -/
 def isoOfIsPullback {X Y Z : C} (S S' : MonoOver X)
     {f : X ⟶ Z} {g : Y ⟶ Z} {k : S.obj.left ⟶ Y} {k' : S'.obj.left ⟶ Y}
     (h : IsPullback k S.arrow g f) (h' : IsPullback k' S'.arrow g f) :
     S ≅ S' :=
   MonoOver.isoMk (IsPullback.isoIsPullback _ _ h h') (by simp)
+
+theorem arrow_isPullback {X Y Z : C}
+    (f : Y ⟶ Z) (g : X ⟶ Z) [HasPullback f g] [Mono f] :
+    IsPullback (pullback.fst f g) (mk' (pullback.snd f g)).arrow f g :=
+  IsPullback.of_hasPullback _ _
 
 end IsPullback
 

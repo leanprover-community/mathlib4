@@ -544,7 +544,7 @@ theorem eqOfIsPullback {X Y Z : C} {x x' : Subobject X}
     x = x' :=
   eq_of_comm (IsPullback.isoIsPullback _ _ h h') (by simp)
 
-theorem isPullback_mk {X Y Z : C}
+theorem arrow_isPullback {X Y Z : C}
     (f : Y ⟶ Z) (g : X ⟶ Z) [HasPullback f g] [Mono f] :
     IsPullback ((underlyingIso _).hom ≫ pullback.fst f g) (mk (pullback.snd f g)).arrow f g :=
   IsPullback.of_iso (IsPullback.of_hasPullback f g)
