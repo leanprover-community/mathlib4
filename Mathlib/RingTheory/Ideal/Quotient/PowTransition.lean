@@ -31,9 +31,9 @@ to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
 --the first isomophism theorem and Chinese remainder theorem, we put these pure technical lemmas
 --that involves both `Submodule.mapQ` and `Ideal.Quotient.factor` in this file.
 
-open Submodule Ideal Quotient
+open Ideal Quotient
 
-variable {R : Type*} [Ring R] {I J : Ideal R}
+variable {R : Type*} [Ring R] {I J K : Ideal R}
     {M : Type*} [AddCommGroup M] [Module R M]
 
 lemma Ideal.Quotient.factor_ker (H : I ≤ J) [I.IsTwoSided] [J.IsTwoSided] :
@@ -47,7 +47,22 @@ lemma Ideal.Quotient.factor_ker (H : I ≤ J) [I.IsTwoSided] [J.IsTwoSided] :
   · rcases mem_image_of_mem_map_of_surjective _ Ideal.Quotient.mk_surjective h with ⟨r, hr, eq⟩
     simpa [← eq, Ideal.Quotient.eq_zero_iff_mem] using hr
 
+lemma Ideal.map_mk_comap_factor [I.IsTwoSided] [J.IsTwoSided] [K.IsTwoSided]
+    (hIJ : J ≤ I) (hJK : K ≤ J) : (I.map (mk J)).comap (factor hJK) = I.map (mk K) := by
+  ext x
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rcases mem_image_of_mem_map_of_surjective (mk J) Quotient.mk_surjective h with ⟨r, hr, eq⟩
+    have : x - ((mk K) r) ∈ J.map (mk K) := by
+      simp [← factor_ker hJK, ← eq]
+    rcases mem_image_of_mem_map_of_surjective (mk K) Quotient.mk_surjective this with ⟨s, hs, eq'⟩
+    rw [← add_sub_cancel ((mk K) r) x, ← eq', ← map_add]
+    exact mem_map_of_mem (mk K) (Submodule.add_mem _ hr (hIJ hs))
+  · rcases mem_image_of_mem_map_of_surjective (mk K) Quotient.mk_surjective h with ⟨r, hr, eq⟩
+    simpa only [← eq] using mem_map_of_mem (mk J) hr
+
 namespace Submodule
+
+open Submodule
 
 section
 
@@ -107,31 +122,16 @@ end Quotient
 
 end Ideal
 
-namespace factorPow
-
 variable {R : Type*} [CommRing R] (I : Ideal R)
 
-lemma ideal_comap {a b : ℕ} (apos : a > 0) (le : a ≤ b) :
-    I.map (mk (I ^ b)) = (I.map (mk (I ^ a))).comap (factorPow I le)  := by
-  ext x
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rcases mem_image_of_mem_map_of_surjective (mk (I ^ b))
-      Ideal.Quotient.mk_surjective h with ⟨r, hr, eq⟩
-    simp only [← eq, Ideal.mem_comap, Quotient.factor_mk]
-    exact Ideal.mem_map_of_mem (mk (I ^ a)) hr
-  · rcases mem_image_of_mem_map_of_surjective (mk (I ^ a))
-      Ideal.Quotient.mk_surjective h with ⟨r, hr, eq⟩
-    rw [← factor_mk (pow_le_pow_right le) _] at eq
-    have : x - ((mk (I ^ b)) r) ∈ (I ^ a).map (mk (I ^ b)) := by
-      simp [← factor_ker (pow_le_pow_right le), ← eq]
-    rcases mem_image_of_mem_map_of_surjective (mk (I ^ b))
-      Ideal.Quotient.mk_surjective this with ⟨s, hs, eq'⟩
-    rw [← add_sub_cancel ((mk (I ^ b)) r) x, ← eq', ← map_add]
-    exact mem_map_of_mem _ (Submodule.add_mem _ hr (pow_le_self (Nat.not_eq_zero_of_lt apos) hs))
+lemma Ideal.map_mk_comap_factorPow {a b : ℕ} (apos : 0 < a) (le : a ≤ b) :
+    (I.map (mk (I ^ a))).comap (factorPow I le) = I.map (mk (I ^ b))  := by
+  apply Ideal.map_mk_comap_factor
+  exact pow_le_self (Nat.not_eq_zero_of_lt apos)
 
 variable {I} in
-lemma IsUnit_of_IsUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I ^ (n + 1)}
-    (h : IsUnit ((factorPow I n.le_succ) a)) : IsUnit a := by
+lemma factorPowSucc.isUnit_of_IsUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I ^ (n + 1)}
+    (h : IsUnit (factorPow I n.le_succ a)) : IsUnit a := by
   rcases isUnit_iff_exists.mp h with ⟨b, hb, _⟩
   rcases factor_surjective (pow_le_pow_right n.le_succ) b with ⟨b', hb'⟩
   rw [← hb', ← map_one (factorPow I n.le_succ), ← _root_.map_mul] at hb
@@ -148,5 +148,3 @@ lemma IsUnit_of_IsUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I ^ (n + 1)}
         Ideal.Quotient.eq_zero_iff_mem, pow_add]
       apply Ideal.mul_mem_mul hc (Ideal.mul_le_left (I := I ^ (n - 1)) _)
       simpa only [← pow_add, Nat.sub_add_cancel npos] using hc
-
-end factorPow
