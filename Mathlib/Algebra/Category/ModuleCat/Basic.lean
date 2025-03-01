@@ -495,8 +495,7 @@ lemma smul_naturality {M N : ModuleCat.{v} R} (f : M ⟶ N) (r : R) :
   ext x
   exact (f.hom.map_smul r x).symm
 
-variable (R)
-
+variable (R) in
 /-- The scalar multiplication on `ModuleCat R` considered as a morphism of rings
 to the endomorphisms of the forgetful functor to `AddCommGrp)`. -/
 @[simps]
@@ -508,8 +507,6 @@ def smulNatTrans : R →+* End (forget₂ (ModuleCat R) AddCommGrp) where
   map_zero' := NatTrans.ext (by aesop_cat)
   map_mul' _ _ := NatTrans.ext (by aesop_cat)
   map_add' _ _ := NatTrans.ext (by aesop_cat)
-
-variable {R}
 
 /-- Given `A : AddCommGrp` and a ring morphism `R →+* End A`, this is a type synonym
 for `A`, on which we shall define a structure of `R`-module. -/
