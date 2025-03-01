@@ -128,11 +128,13 @@ import hierarchy.
 -/
 
 /-!
-# Register tactics with `hint`.
+# Register tactics with `hint`. Tactics are tried in reverse registration order.
 -/
 
 section Hint
 
+register_hint trivial
+register_hint tauto
 register_hint split
 register_hint intro
 register_hint aesop
