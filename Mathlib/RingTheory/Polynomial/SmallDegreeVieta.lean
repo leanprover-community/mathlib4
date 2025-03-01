@@ -35,14 +35,9 @@ lemma quadratic_vieta {R : Type*} [CommRing R] [IsDomain R] {a b c x1 x2 : R}
     (by simpa [hroots] using p.card_roots')
   have hp_roots_card : p.roots.card = p.natDegree := by
     rw [hp_natDegree, hroots, Multiset.card_pair]
-  have hp_coeff2 : p.coeff 2 = a := by simp [p]
-  constructor
-  · convert coeff_eq_esymm_roots_of_card hp_roots_card (k := 1) (by norm_num [hp_natDegree]) using 1
-    · simp [p]
-    · rw [leadingCoeff, hp_natDegree, hroots, hp_coeff2, Multiset.esymm_one_of_pair]; ring
-  · convert coeff_eq_esymm_roots_of_card hp_roots_card (k := 0) (by norm_num) using 1
-    · simp [p]
-    · rw [leadingCoeff, hp_natDegree, hroots, hp_coeff2, Multiset.esymm_two_of_pair]; ring
+  simpa [leadingCoeff, hp_natDegree, p, hroots, mul_assoc, add_comm x1] using
+    And.intro (coeff_eq_esymm_roots_of_card hp_roots_card (k := 1) (by norm_num [hp_natDegree]))
+      (coeff_eq_esymm_roots_of_card hp_roots_card (k := 0) (by norm_num [hp_natDegree]))
 
 /-- **Vieta's formula** for quadratic in term of `Polynomial.roots`. -/
 lemma quadratic_vieta' {R : Type*} [Field R] {a b c x1 x2 : R} (ha : a ≠ 0)
