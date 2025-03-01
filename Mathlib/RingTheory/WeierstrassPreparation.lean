@@ -522,7 +522,7 @@ theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : I
     rw [← h_series_spec npos]
     ext i
     convert SModEq.sub_mem.mp (h_spec i n).symm
-    simp only [smul_eq_mul, Ideal.mul_top, coeff_map, mk_eq_mk_iff_sub_mem]
+    simp [mk_eq_mk_iff_sub_mem]
   have hu : IsUnit h := by
     apply isUnit_iff_constantCoeff.mpr ((isUnit_iff_nmem m _).mpr _)
     by_contra mem
@@ -533,7 +533,7 @@ theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : I
     absurd isUnit_iff_constantCoeff.mp (h_series' ⟨1, Nat.one_pos⟩).isUnit
     dsimp at this
     let _ : Nontrivial (R ⧸ m ^ 1) := R_ntriv' Nat.one_pos
-    simpa only [PNat.mk_ofNat, Positive.val_one, this, isUnit_zero_iff] using zero_ne_one' _
+    simp [this]
   have g_coeff_series_mod (i : ℕ) : ∀ {a b : ℕ}, a ≤ b → (g_series a).coeff i ≡
     (g_series b).coeff i [SMOD m ^ a • (⊤ : Submodule R R)] := by
     intro a b le
