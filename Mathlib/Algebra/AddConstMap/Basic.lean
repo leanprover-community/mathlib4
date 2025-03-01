@@ -234,6 +234,7 @@ theorem map_fract {R : Type*} [LinearOrderedRing R] [FloorRing R] [AddGroup H]
     f (Int.fract x) = f x - ⌊x⌋ • b :=
   map_sub_int' ..
 
+open scoped Relator in
 /-- Auxiliary lemmas for the "monotonicity on a fundamental interval implies monotonicity" lemmas.
 We formulate it for any relation so that the proof works both for `Monotone` and `StrictMono`. -/
 protected theorem rel_map_of_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [AddGroup H]

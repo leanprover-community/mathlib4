@@ -611,13 +611,10 @@ section Reduced
 
 open NormalWord
 
-variable (φ)
-
+variable (φ) in
 /-- A word in `CoprodI` is reduced if none of its letters are in the base group. -/
 def Reduced (w : Word G) : Prop :=
   ∀ g, g ∈ w.toList → g.2 ∉ (φ g.1).range
-
-variable {φ}
 
 theorem Reduced.exists_normalWord_prod_eq (d : Transversal φ) {w : Word G} (hw : Reduced φ w) :
     ∃ w' : NormalWord d, w'.prod = ofCoprodI w.prod ∧
