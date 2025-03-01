@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.GuitartExact.VerticalComposition
 /-!
 # The opposite of a Guitart exact square
 
-A `2`-square is Guitart exact iff the opposite (transposed) square
+A `2`-square is Guitart exact iff the opposite (transposed) `2`-square
 is Guitart exact.
 
 -/
