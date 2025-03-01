@@ -528,9 +528,7 @@ lemma isPullback_eq {X Y Z : C} {x x' : Subobject X}
     {f : X ⟶ Z} {g : Y ⟶ Z} {k : (x : C) ⟶ Y} {k' : (x' : C) ⟶ Y}
     (h : IsPullback k x.arrow g f) (h' : IsPullback k' x'.arrow g f) :
     x = x' := by
-  let i := @IsPullback.isoIsPullback _ _ _ _ _ _ _ _ _ _ _ _ _ h h'
-  apply eq_of_comm i
-  simp [i]
+  exact eq_of_comm (IsPullback.isoIsPullback _ _ h h') (by simp)
 
 lemma isPullback_mk {X Y Z : C}
     (f : Y ⟶ Z) (g : X ⟶ Z) [HasPullback f g] [Mono f] :
