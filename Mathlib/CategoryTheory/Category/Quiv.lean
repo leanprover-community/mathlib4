@@ -78,6 +78,11 @@ def free : Quiv.{v, u} ⥤ Cat.{max u v, u} where
     · rfl
     · exact eq_conj_eqToHom _
 
+/-- A partially unbundled version of `Cat.free.map_comp`. -/
+@[simp]
+theorem free.map_comp' {X Y Z : Quiv} (F : X ⟶ Y) (G : Y ⟶ Z) :
+    free.map (F ⋙q G) = free.map F ⋙ free.map G := free.map_comp F G
+
 end Cat
 
 namespace Quiv
@@ -177,6 +182,31 @@ def adj : Cat.free ⊣ Quiv.forget :=
         ext
         · rfl
         · apply eq_conj_eqToHom }
+
+/-- An unbundled version of the unit of `Quiv.adj : Cat.free ⊣ Quiv.forget`. -/
+nonrec def adj.unit.app (V : Type u) [Quiver.{max u v + 1} V] : V ⥤q Paths V :=
+  adj.unit.app (Quiv.of V)
+
+theorem adj.unit.app_eq_pathsOf (V : Type u) [Quiver.{max u v + 1} V] :
+    adj.unit.app V = Paths.of := by
+  refine Prefunctor.ext (fun _ ↦ Eq.refl _) ?_
+  intro X Y f
+  unfold app adj
+  simp only [Adjunction.mkOfHomEquiv_unit_app, Equiv.coe_fn_mk, Prefunctor.comp_map, Cat.id_map]
+
+/-- An unbundled version of the counit of `Quiv.adj : Cat.free ⊣ Quiv.forget`. -/
+nonrec def adj.counit.app (C : Type u) [Category.{max u v} C] : Paths C ⥤ C :=
+  adj.counit.app (Cat.of C)
+
+theorem adj.counit.app_eq_pathComposition (C : Type u) [Category.{max u v} C] :
+    adj.counit.app C = pathComposition C := by
+  refine Functor.ext (fun _ ↦ Eq.refl _) ?_
+  intro X Y f
+  unfold app adj
+  simp only [eqToHom_refl, Category.comp_id, Category.id_comp]
+  show composePath (Prefunctor.mapPath (𝟭q _) f) = composePath f
+  simp only [Prefunctor.id_obj, Prefunctor.mapPath_id]
+
 
 end Quiv
 
