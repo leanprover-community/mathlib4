@@ -67,6 +67,8 @@ instance (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ := Valued.mk' v
 /-- Canonical ring equivalence between `WithValuation v` and `R`. -/
 def equiv : WithVal v ≃+* R := RingEquiv.refl _
 
+theorem apply_equiv (r : WithVal v) : v (WithVal.equiv v r) = v r := rfl
+
 end WithVal
 
 /-! The completion of a field with respect to a valuation. -/
