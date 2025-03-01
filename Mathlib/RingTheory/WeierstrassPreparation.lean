@@ -12,6 +12,16 @@ import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
 /-!
 
+# Weierstrass Preparation Theorem for Formal Power Series
+
+In this file we proved the Weierstrass prepation theorem for formal power series.
+
+# Main results
+
+* `CompleteLocalRing.weierstrass_preparation` : The Weierstarss preparation theorem for complete
+  local ring, stating that every formal power series with some coefficient not in the unique
+  maximal ideal can be uniquely written as the product of a distinguish polynomial and an unit.
+
 -/
 
 open scoped Polynomial
