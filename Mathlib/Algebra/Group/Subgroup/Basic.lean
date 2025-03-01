@@ -96,6 +96,7 @@ theorem coe_prod (H : Subgroup G) (K : Subgroup N) :
 theorem mem_prod {H : Subgroup G} {K : Subgroup N} {p : G × N} : p ∈ H.prod K ↔ p.1 ∈ H ∧ p.2 ∈ K :=
   Iff.rfl
 
+open scoped Relator in
 @[to_additive prod_mono]
 theorem prod_mono : ((· ≤ ·) ⇒ (· ≤ ·) ⇒ (· ≤ ·)) (@prod G _ N _) (@prod G _ N _) :=
   fun _s _s' hs _t _t' ht => Set.prod_mono hs ht
