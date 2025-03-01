@@ -65,13 +65,10 @@ protected theorem le (f : Filtration ι m) (i : ι) : f i ≤ m :=
 protected theorem ext {f g : Filtration ι m} (h : (f : ι → MeasurableSpace Ω) = g) : f = g := by
   cases f; cases g; congr
 
-variable (ι)
-
+variable (ι) in
 /-- The constant filtration which is equal to `m` for all `i : ι`. -/
 def const (m' : MeasurableSpace Ω) (hm' : m' ≤ m) : Filtration ι m :=
   ⟨fun _ => m', monotone_const, fun _ => hm'⟩
-
-variable {ι}
 
 @[simp]
 theorem const_apply {m' : MeasurableSpace Ω} {hm' : m' ≤ m} (i : ι) : const ι m' hm' i = m' :=

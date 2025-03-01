@@ -3858,6 +3858,7 @@ import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Embedding.Set
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Logic.Encodable.Lattice
+import Mathlib.Logic.Encodable.Pi
 import Mathlib.Logic.Equiv.Array
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Logic.Equiv.Defs
@@ -5400,6 +5401,7 @@ import Mathlib.Tactic.Set
 import Mathlib.Tactic.SetLike
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Simproc.ExistsAndEq
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SplitIfs
@@ -5861,6 +5863,7 @@ import Mathlib.Topology.Separation.SeparatedNhds
 import Mathlib.Topology.Sequences
 import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.Sets.Compacts
+import Mathlib.Topology.Sets.OpenCover
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Topology.Sets.Order
 import Mathlib.Topology.Sheaves.Alexandrov
