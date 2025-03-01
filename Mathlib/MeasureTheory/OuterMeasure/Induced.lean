@@ -3,6 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Data.ENNReal.Action
+import Mathlib.MeasureTheory.MeasurableSpace.Basic
 import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
 
 /-!
@@ -110,7 +112,7 @@ theorem extend_iUnion_le_tsum_nat' (s : ℕ → Set α) :
     · apply msU h
     funext i
     apply extend_eq _ (h i)
-  · cases' not_forall.1 h with i hi
+  · obtain ⟨i, hi⟩ := not_forall.1 h
     exact le_trans (le_iInf fun h => hi.elim h) (ENNReal.le_tsum i)
 
 end Subadditive
@@ -297,7 +299,7 @@ variable {α : Type*} [MeasurableSpace α] (m : OuterMeasure α)
 /-- Given an outer measure `m` we can forget its value on non-measurable sets, and then consider
   `m.trim`, the unique maximal outer measure less than that function. -/
 def trim : OuterMeasure α :=
-  inducedOuterMeasure (fun s _ => m s) MeasurableSet.empty m.empty
+  inducedOuterMeasure (P := MeasurableSet) (fun s _ => m s) .empty m.empty
 
 theorem le_trim_iff {m₁ m₂ : OuterMeasure α} :
     m₁ ≤ m₂.trim ↔ ∀ s, MeasurableSet s → m₁ s ≤ m₂ s :=
@@ -305,14 +307,14 @@ theorem le_trim_iff {m₁ m₂ : OuterMeasure α} :
 
 theorem le_trim : m ≤ m.trim := le_trim_iff.2 fun _ _ ↦ le_rfl
 
-@[simp] -- Porting note: added `simp`
+@[simp]
 theorem trim_eq {s : Set α} (hs : MeasurableSet s) : m.trim s = m s :=
   inducedOuterMeasure_eq' MeasurableSet.iUnion (fun f _hf => measure_iUnion_le f)
     (fun _ _ _ _ h => measure_mono h) hs
 
 theorem trim_congr {m₁ m₂ : OuterMeasure α} (H : ∀ {s : Set α}, MeasurableSet s → m₁ s = m₂ s) :
     m₁.trim = m₂.trim := by
-  simp (config := { contextual := true }) only [trim, H]
+  simp +contextual only [trim, H]
 
 @[mono]
 theorem trim_mono : Monotone (trim : OuterMeasure α → OuterMeasure α) := fun _m₁ _m₂ H _s =>
@@ -409,7 +411,7 @@ and `m₃ s`. -/
 theorem trim_binop {m₁ m₂ m₃ : OuterMeasure α} {op : ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞}
     (h : ∀ s, m₁ s = op (m₂ s) (m₃ s)) (s : Set α) : m₁.trim s = op (m₂.trim s) (m₃.trim s) := by
   rcases exists_measurable_superset_forall_eq_trim ![m₁, m₂, m₃] s with ⟨t, _hst, _ht, htm⟩
-  simp only [Fin.forall_fin_succ, Matrix.cons_val_zero, Matrix.cons_val_succ] at htm
+  simp only [Fin.forall_iff_succ, Matrix.cons_val_zero, Matrix.cons_val_succ] at htm
   rw [← htm.1, ← htm.2.1, ← htm.2.2.1, h]
 
 /-- If `m₁ s = op (m₂ s)` for all `s`, then the same is true for `m₁.trim` and `m₂.trim`. -/

@@ -3,7 +3,7 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.NumberTheory.Divisors
 import Mathlib.Data.Nat.Squarefree
@@ -92,7 +92,6 @@ section Zero
 
 variable [Zero R]
 
---  porting note: used to be `CoeFun`
 instance : FunLike (ArithmeticFunction R) ℕ R :=
   inferInstanceAs (FunLike (ZeroHom ℕ R) ℕ R)
 
@@ -300,7 +299,7 @@ theorem one_smul' (b : ArithmeticFunction M) : (1 : ArithmeticFunction R) • b 
   intro y ymem ynmem
   have y1ne : y.fst ≠ 1 := by
     intro con
-    simp only [Con, mem_divisorsAntidiagonal, one_mul, Ne] at ymem
+    simp only [mem_divisorsAntidiagonal, one_mul, Ne] at ymem
     simp only [mem_singleton, Prod.ext_iff] at ynmem
     -- Porting note: `tauto` worked from here.
     cases y
@@ -332,7 +331,7 @@ instance instMonoid : Monoid (ArithmeticFunction R) :=
       have y2ne : y.snd ≠ 1 := by
         intro con
         cases y; subst con -- Porting note: added
-        simp only [Con, mem_divisorsAntidiagonal, mul_one, Ne] at ymem
+        simp only [mem_divisorsAntidiagonal, mul_one, Ne] at ymem
         simp only [mem_singleton, Prod.ext_iff] at ynmem
         tauto
       simp [y2ne]
@@ -390,7 +389,7 @@ instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
 
 section Zeta
 
-/-- `ζ 0 = 0`, otherwise `ζ x = 1`. The Dirichlet Series is the Riemann `ζ`.  -/
+/-- `ζ 0 = 0`, otherwise `ζ x = 1`. The Dirichlet Series is the Riemann `ζ`. -/
 def zeta : ArithmeticFunction ℕ :=
   ⟨fun x => ite (x = 0) 0 1, rfl⟩
 
@@ -569,15 +568,17 @@ theorem map_mul_of_coprime {f : ArithmeticFunction R} (hf : f.IsMultiplicative) 
 
 end MonoidWithZero
 
+open scoped Function in -- required for scoped `on` notation
 theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : ArithmeticFunction R}
     (hf : f.IsMultiplicative) (s : Finset ι) (hs : (s : Set ι).Pairwise (Coprime on g)) :
     f (∏ i ∈ s, g i) = ∏ i ∈ s, f (g i) := by
   classical
-    induction' s using Finset.induction_on with a s has ih hs
-    · simp [hf]
-    rw [coe_insert, Set.pairwise_insert_of_symmetric (Coprime.symmetric.comap g)] at hs
-    rw [prod_insert has, prod_insert has, hf.map_mul_of_coprime, ih hs.1]
-    exact .prod_right fun i hi => hs.2 _ hi (hi.ne_of_not_mem has).symm
+    induction s using Finset.induction_on with
+    | empty => simp [hf]
+    | insert has ih =>
+      rw [coe_insert, Set.pairwise_insert_of_symmetric (Coprime.symmetric.comap g)] at hs
+      rw [prod_insert has, prod_insert has, hf.map_mul_of_coprime, ih hs.1]
+      exact .prod_right fun i hi => hs.2 _ hi (hi.ne_of_not_mem has).symm
 
 theorem map_prod_of_prime [CommSemiring R] {f : ArithmeticFunction R}
     (h_mult : ArithmeticFunction.IsMultiplicative f)
@@ -591,23 +592,23 @@ theorem map_prod_of_subset_primeFactors [CommSemiring R] {f : ArithmeticFunction
     f (∏ a ∈ t, a) = ∏ a ∈ t, f a :=
   map_prod_of_prime h_mult t fun _ a => prime_of_mem_primeFactors (ht a)
 
+theorem map_div_of_coprime [CommGroupWithZero R] {f : ArithmeticFunction R}
+    (hf : IsMultiplicative f) {l d : ℕ} (hdl : d ∣ l) (hl : (l/d).Coprime d) (hd : f d ≠ 0) :
+    f (l / d) = f l / f d := by
+  apply (div_eq_of_eq_mul hd ..).symm
+  rw [← hf.right hl, Nat.div_mul_cancel hdl]
+
 @[arith_mult]
 theorem natCast {f : ArithmeticFunction ℕ} [Semiring R] (h : f.IsMultiplicative) :
     IsMultiplicative (f : ArithmeticFunction R) :=
                                  -- Porting note: was `by simp [cop, h]`
   ⟨by simp [h], fun {m n} cop => by simp [h.2 cop]⟩
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast := natCast
-
 @[arith_mult]
 theorem intCast {f : ArithmeticFunction ℤ} [Ring R] (h : f.IsMultiplicative) :
     IsMultiplicative (f : ArithmeticFunction R) :=
                                  -- Porting note: was `by simp [cop, h]`
   ⟨by simp [h], fun {m n} cop => by simp [h.2 cop]⟩
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast := intCast
 
 @[arith_mult]
 theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicative)
@@ -625,7 +626,7 @@ theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicati
     constructor
     · ring
     rw [Nat.mul_eq_zero] at *
-    apply not_or_of_not ha hb
+    apply not_or_intro ha hb
   · simp only [Set.InjOn, mem_coe, mem_divisorsAntidiagonal, Ne, mem_product, Prod.mk.inj_iff]
     rintro ⟨⟨a1, a2⟩, ⟨b1, b2⟩⟩ ⟨⟨rfl, ha⟩, ⟨rfl, hb⟩⟩ ⟨⟨c1, c2⟩, ⟨d1, d2⟩⟩ hcd h
     simp only [Prod.mk.inj_iff] at h
@@ -772,12 +773,30 @@ theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R
     apply Finset.inter_subset_union
   · simp [factorization_lcm hx hy]
 
+theorem map_gcd [CommGroupWithZero R] {f : ArithmeticFunction R}
+    (hf : f.IsMultiplicative) {x y : ℕ} (hf_lcm : f (x.lcm y) ≠ 0) :
+    f (x.gcd y) = f x * f y / f (x.lcm y) := by
+  rw [←hf.lcm_apply_mul_gcd_apply, mul_div_cancel_left₀ _ hf_lcm]
+
+theorem map_lcm [CommGroupWithZero R] {f : ArithmeticFunction R}
+    (hf : f.IsMultiplicative) {x y : ℕ} (hf_gcd : f (x.gcd y) ≠ 0) :
+    f (x.lcm y) = f x * f y / f (x.gcd y) := by
+  rw [←hf.lcm_apply_mul_gcd_apply, mul_div_cancel_right₀ _ hf_gcd]
+
+theorem eq_zero_of_squarefree_of_dvd_eq_zero [CommMonoidWithZero R] {f : ArithmeticFunction R}
+    (hf : IsMultiplicative f) {m n : ℕ} (hn : Squarefree n) (hmn : m ∣ n)
+    (h_zero : f m = 0) :
+    f n = 0 := by
+  rcases hmn with ⟨k, rfl⟩
+  simp only [MulZeroClass.zero_mul, eq_self_iff_true, hf.map_mul_of_coprime
+    (coprime_of_squarefree_mul hn), h_zero]
+
 end IsMultiplicative
 
 section SpecialFunctions
 
-/-- The identity on `ℕ` as an `ArithmeticFunction`.  -/
-nonrec  -- Porting note (#11445): added
+/-- The identity on `ℕ` as an `ArithmeticFunction`. -/
+nonrec  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): added
 def id : ArithmeticFunction ℕ :=
   ⟨id, rfl⟩
 
@@ -791,10 +810,7 @@ def pow (k : ℕ) : ArithmeticFunction ℕ :=
 
 @[simp]
 theorem pow_apply {k n : ℕ} : pow k n = if k = 0 ∧ n = 0 then 0 else n ^ k := by
-  cases k
-  · simp [pow]
-  rename_i k  -- Porting note: added
-  simp [pow, k.succ_pos.ne']
+  cases k <;> simp [pow]
 
 theorem pow_zero_eq_zeta : pow 0 = ζ := by
   ext n
@@ -814,16 +830,16 @@ theorem sigma_apply {k n : ℕ} : σ k n = ∑ d ∈ divisors n, d ^ k :=
   rfl
 
 theorem sigma_apply_prime_pow {k p i : ℕ} (hp : p.Prime) :
-    σ k (p ^ i) = ∑ j in .range (i + 1), p ^ (j * k) := by
+    σ k (p ^ i) = ∑ j ∈ .range (i + 1), p ^ (j * k) := by
   simp [sigma_apply, divisors_prime_pow hp, Nat.pow_mul]
 
 theorem sigma_one_apply (n : ℕ) : σ 1 n = ∑ d ∈ divisors n, d := by simp [sigma_apply]
 
 theorem sigma_one_apply_prime_pow {p i : ℕ} (hp : p.Prime) :
-    σ 1 (p ^ i) = ∑ k in .range (i + 1), p ^ k := by
+    σ 1 (p ^ i) = ∑ k ∈ .range (i + 1), p ^ k := by
   simp [sigma_apply_prime_pow hp]
 
-theorem sigma_zero_apply (n : ℕ) : σ 0 n = (divisors n).card := by simp [sigma_apply]
+theorem sigma_zero_apply (n : ℕ) : σ 0 n = #n.divisors := by simp [sigma_apply]
 
 theorem sigma_zero_apply_prime_pow {p i : ℕ} (hp : p.Prime) : σ 0 (p ^ i) = i + 1 := by
   simp [sigma_apply_prime_pow hp]
@@ -850,7 +866,7 @@ theorem isMultiplicative_one [MonoidWithZero R] : IsMultiplicative (1 : Arithmet
 
 @[arith_mult]
 theorem isMultiplicative_zeta : IsMultiplicative ζ :=
-  IsMultiplicative.iff_ne_zero.2 ⟨by simp, by simp (config := { contextual := true })⟩
+  IsMultiplicative.iff_ne_zero.2 ⟨by simp, by simp +contextual⟩
 
 @[arith_mult]
 theorem isMultiplicative_id : IsMultiplicative ArithmeticFunction.id :=
@@ -859,10 +875,9 @@ theorem isMultiplicative_id : IsMultiplicative ArithmeticFunction.id :=
 @[arith_mult]
 theorem IsMultiplicative.ppow [CommSemiring R] {f : ArithmeticFunction R} (hf : f.IsMultiplicative)
     {k : ℕ} : IsMultiplicative (f.ppow k) := by
-  induction' k with k hi
-  · exact isMultiplicative_zeta.natCast
-  · rw [ppow_succ']
-    apply hf.pmul hi
+  induction k with
+  | zero => exact isMultiplicative_zeta.natCast
+  | succ k hi => rw [ppow_succ']; apply hf.pmul hi
 
 @[arith_mult]
 theorem isMultiplicative_pow {k : ℕ} : IsMultiplicative (pow k) :=
@@ -893,8 +908,7 @@ lemma cardFactors_zero : Ω 0 = 0 := by simp
 @[simp]
 theorem cardFactors_eq_one_iff_prime {n : ℕ} : Ω n = 1 ↔ n.Prime := by
   refine ⟨fun h => ?_, fun h => List.length_eq_one.2 ⟨n, primeFactorsList_prime h⟩⟩
-  cases' n with n
-  · simp at h
+  cases n with | zero => simp at h | succ n =>
   rcases List.length_eq_one.1 h with ⟨x, hx⟩
   rw [← prod_primeFactorsList n.add_one_ne_zero, hx, List.prod_singleton]
   apply prime_of_mem_primeFactorsList
@@ -1287,13 +1301,10 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero [CommGroupWithZero R]
 end SpecialFunctions
 
 theorem _root_.Nat.card_divisors {n : ℕ} (hn : n ≠ 0) :
-    n.divisors.card = n.primeFactors.prod (n.factorization · + 1) := by
+    #n.divisors = n.primeFactors.prod (n.factorization · + 1) := by
   rw [← sigma_zero_apply, isMultiplicative_sigma.multiplicative_factorization _ hn]
   exact Finset.prod_congr n.support_factorization fun _ h =>
     sigma_zero_apply_prime_pow <| Nat.prime_of_mem_primeFactors h
-
-@[deprecated (since := "2024-06-09")] theorem card_divisors (n : ℕ) (hn : n ≠ 0) :
-    n.divisors.card = n.primeFactors.prod (n.factorization · + 1) := Nat.card_divisors hn
 
 theorem _root_.Nat.sum_divisors {n : ℕ} (hn : n ≠ 0) :
     ∑ d ∈ n.divisors, d = ∏ p ∈ n.primeFactors, ∑ k ∈ .range (n.factorization p + 1), p ^ k := by
@@ -1308,7 +1319,7 @@ namespace Nat.Coprime
 open ArithmeticFunction
 
 theorem card_divisors_mul {m n : ℕ} (hmn : m.Coprime n) :
-    (m * n).divisors.card = m.divisors.card * n.divisors.card := by
+    #(m * n).divisors = #m.divisors * #n.divisors := by
   simp only [← sigma_zero_apply, isMultiplicative_sigma.map_mul_of_coprime hmn]
 
 theorem sum_divisors_mul {m n : ℕ} (hmn : m.Coprime n) :

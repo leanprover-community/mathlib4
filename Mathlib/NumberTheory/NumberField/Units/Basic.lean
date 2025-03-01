@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.NumberTheory.NumberField.Embeddings
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.GroupTheory.Torsion
 
 /-!
 # Units of a number field
@@ -25,7 +27,7 @@ places `w` of `K`.
 
 ## Tags
 number field, units
- -/
+-/
 
 open scoped NumberField
 
@@ -121,7 +123,7 @@ instance [NumberField K] : Fintype (torsion K) := by
 
 instance : Nonempty (torsion K) := One.instNonempty
 
-/-- The torsion subgroup is cylic. -/
+/-- The torsion subgroup is cyclic. -/
 instance [NumberField K] : IsCyclic (torsion K) := subgroup_units_cyclic _
 
 /-- The order of the torsion subgroup as a positive integer. -/

@@ -1,9 +1,10 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Defs
+import Batteries.Data.List.Basic
 
 /-!
 # Levenshtein distances
@@ -266,9 +267,9 @@ theorem suffixLevenshtein_eq_tails_map (xs ys) :
     (suffixLevenshtein C xs ys).1 = xs.tails.map fun xs' => levenshtein C xs' ys := by
   induction xs with
   | nil =>
-    simp only [List.map, suffixLevenshtein_nil']
+    simp only [suffixLevenshtein_nil', List.tails, List.map_cons, List.map]
   | cons x xs ih =>
-    simp only [List.map, suffixLevenshtein_cons₁, ih]
+    simp only [suffixLevenshtein_cons₁, ih, List.tails, List.map_cons]
 
 @[simp]
 theorem levenshtein_nil_nil : levenshtein C [] [] = 0 := by

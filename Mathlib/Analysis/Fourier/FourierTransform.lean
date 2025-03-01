@@ -3,13 +3,13 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+import Mathlib.Algebra.Group.AddChar
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.MeasureTheory.Group.Integral
+import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.MeasureTheory.Integral.SetIntegral
-import Mathlib.MeasureTheory.Measure.Haar.OfBasis
-import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
-import Mathlib.Algebra.Group.AddChar
+import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # The Fourier transform
@@ -78,7 +78,7 @@ def fourierIntegral (e : AddChar 𝕜 𝕊) (μ : Measure V) (L : V →ₗ[𝕜]
     (w : W) : E :=
   ∫ v, e (-L v w) • f v ∂μ
 
-theorem fourierIntegral_smul_const (e : AddChar 𝕜 𝕊) (μ : Measure V)
+theorem fourierIntegral_const_smul (e : AddChar 𝕜 𝕊) (μ : Measure V)
     (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (r : ℂ) :
     fourierIntegral e μ L (r • f) = r • fourierIntegral e μ L f := by
   ext1 w
@@ -115,7 +115,7 @@ section Continuous
    a topology); but it seems hard to imagine cases where this extra generality would be useful, and
    allowing it would complicate matters in the most important use cases.
 -/
-variable [TopologicalSpace 𝕜] [TopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
+variable [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
   [TopologicalSpace W] {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
 
 /-- For any `w`, the Fourier integral is convergent iff `f` is integrable. -/
@@ -136,12 +136,9 @@ theorem fourierIntegral_convergent_iff (he : Continuous e)
     e.map_zero_eq_one, one_smul] at this -- the `(e _)` speeds up elaboration considerably
   exact this
 
-@[deprecated (since := "2024-03-29")]
-alias fourier_integral_convergent_iff := VectorFourier.fourierIntegral_convergent_iff
-
 theorem fourierIntegral_add (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
     {f g : V → E} (hf : Integrable f μ) (hg : Integrable g μ) :
-    fourierIntegral e μ L f + fourierIntegral e μ L g = fourierIntegral e μ L (f + g) := by
+    fourierIntegral e μ L (f + g) = fourierIntegral e μ L f + fourierIntegral e μ L g := by
   ext1 w
   dsimp only [Pi.add_apply, fourierIntegral]
   simp_rw [smul_add]
@@ -164,7 +161,7 @@ end Continuous
 
 section Fubini
 
-variable [TopologicalSpace 𝕜] [TopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
+variable [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
   [TopologicalSpace W] [MeasurableSpace W] [BorelSpace W]
   {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
   {ν : Measure W} [SigmaFinite μ] [SigmaFinite ν] [SecondCountableTopology V]
@@ -277,9 +274,9 @@ theorem fourierIntegral_def (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜) (f : �
     fourierIntegral e μ f w = ∫ v : 𝕜, e (-(v * w)) • f v ∂μ :=
   rfl
 
-theorem fourierIntegral_smul_const (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜) (f : 𝕜 → E) (r : ℂ) :
+theorem fourierIntegral_const_smul (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜) (f : 𝕜 → E) (r : ℂ) :
     fourierIntegral e μ (r • f) = r • fourierIntegral e μ f :=
-  VectorFourier.fourierIntegral_smul_const _ _ _ _ _
+  VectorFourier.fourierIntegral_const_smul _ _ _ _ _
 
 /-- The uniform norm of the Fourier transform of `f` is bounded by the `L¹` norm of `f`. -/
 theorem norm_fourierIntegral_le_integral_norm (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜)
@@ -301,7 +298,8 @@ open scoped Real
 
 namespace Real
 
-/-- The standard additive character of `ℝ`, given by `fun x ↦ exp (2 * π * x * I)`. -/
+/-- The standard additive character of `ℝ`, given by `fun x ↦ exp (2 * π * x * I)`.
+Denoted as `𝐞` within the `Real.FourierTransform` namespace. -/
 def fourierChar : AddChar ℝ 𝕊 where
   toFun z := .exp (2 * π * z)
   map_zero_eq_one' := by simp only; rw [mul_zero, Circle.exp_zero]
@@ -375,12 +373,14 @@ open scoped RealInnerProductSpace
 variable [FiniteDimensional ℝ V]
 
 /-- The Fourier transform of a function on an inner product space, with respect to the standard
-additive character `ω ↦ exp (2 i π ω)`. -/
+additive character `ω ↦ exp (2 i π ω)`.
+Denoted as `𝓕` within the `Real.FourierTransform` namespace. -/
 def fourierIntegral (f : V → E) (w : V) : E :=
   VectorFourier.fourierIntegral 𝐞 volume (innerₗ V) f w
 
 /-- The inverse Fourier transform of a function on an inner product space, defined as the Fourier
-transform but with opposite sign in the exponential. -/
+transform but with opposite sign in the exponential.
+Denoted as `𝓕⁻¹` within the `Real.FourierTransform` namespace. -/
 def fourierIntegralInv (f : V → E) (w : V) : E :=
   VectorFourier.fourierIntegral 𝐞 volume (-innerₗ V) f w
 
@@ -431,15 +431,10 @@ theorem fourierIntegral_real_eq (f : ℝ → E) (w : ℝ) :
     fourierIntegral f w = ∫ v : ℝ, 𝐞 (-(v * w)) • f v :=
   rfl
 
-@[deprecated (since := "2024-02-21")] alias fourierIntegral_def := fourierIntegral_real_eq
-
 theorem fourierIntegral_real_eq_integral_exp_smul (f : ℝ → E) (w : ℝ) :
     𝓕 f w = ∫ v : ℝ, Complex.exp (↑(-2 * π * v * w) * Complex.I) • f v := by
   simp_rw [fourierIntegral_real_eq, Circle.smul_def, Real.fourierChar_apply, mul_neg, neg_mul,
     mul_assoc]
-
-@[deprecated (since := "2024-02-21")]
-alias fourierIntegral_eq_integral_exp_smul := fourierIntegral_real_eq_integral_exp_smul
 
 theorem fourierIntegral_continuousLinearMap_apply
     {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]

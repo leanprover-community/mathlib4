@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral
 # Derivatives of interval integrals depending on parameters
 
 In this file we restate theorems about derivatives of integrals depending on parameters for interval
-integrals.  -/
+integrals. -/
 
 
 open TopologicalSpace MeasureTheory Filter Metric

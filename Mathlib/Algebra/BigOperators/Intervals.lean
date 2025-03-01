@@ -3,8 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Interval.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Order.Interval.Finset.Basic
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Tactic.Linarith
 
@@ -99,6 +100,12 @@ theorem prod_Ico_add [OrderedCancelAddCommMonoid α] [ExistsAddOfLE α] [Locally
   convert prod_Ico_add' f a b c using 2
   rw [add_comm]
 
+@[to_additive (attr := simp)]
+theorem prod_Ico_add_right_sub_eq [OrderedCancelAddCommMonoid α] [ExistsAddOfLE α]
+    [LocallyFiniteOrder α] [Sub α] [OrderedSub α] (a b c : α) :
+    ∏ x ∈ Ico (a + c) (b + c), f (x - c) = ∏ x ∈ Ico a b, f x := by
+  simp only [← map_add_right_Ico, prod_map, addRightEmbedding_apply, add_tsub_cancel_right]
+
 @[to_additive]
 theorem prod_Ico_succ_top {a b : ℕ} (hab : a ≤ b) (f : ℕ → M) :
     (∏ k ∈ Ico a (b + 1), f k) = (∏ k ∈ Ico a b, f k) * f b := by
@@ -130,13 +137,18 @@ theorem prod_Ioc_succ_top {a b : ℕ} (hab : a ≤ b) (f : ℕ → M) :
 
 @[to_additive]
 theorem prod_Icc_succ_top {a b : ℕ} (hab : a ≤ b + 1) (f : ℕ → M) :
-    (∏ k in Icc a (b + 1), f k) = (∏ k in Icc a b, f k) * f (b + 1) := by
+    (∏ k ∈ Icc a (b + 1), f k) = (∏ k ∈ Icc a b, f k) * f (b + 1) := by
   rw [← Nat.Ico_succ_right, prod_Ico_succ_top hab, Nat.Ico_succ_right]
 
 @[to_additive]
 theorem prod_range_mul_prod_Ico (f : ℕ → M) {m n : ℕ} (h : m ≤ n) :
     ((∏ k ∈ range m, f k) * ∏ k ∈ Ico m n, f k) = ∏ k ∈ range n, f k :=
   Nat.Ico_zero_eq_range ▸ Nat.Ico_zero_eq_range ▸ prod_Ico_consecutive f m.zero_le h
+
+@[to_additive]
+theorem prod_range_eq_mul_Ico (f : ℕ → M) {n : ℕ} (hn : 0 < n) :
+    ∏ x ∈ Finset.range n, f x = f 0 * ∏ x ∈ Ico 1 n, f x :=
+  Finset.range_eq_Ico ▸ Finset.prod_eq_prod_Ico_succ_bot hn f
 
 @[to_additive]
 theorem prod_Ico_eq_mul_inv {δ : Type*} [CommGroup δ] (f : ℕ → δ) {m n : ℕ} (h : m ≤ n) :
@@ -193,7 +205,7 @@ theorem prod_Ico_reflect (f : ℕ → M) (k : ℕ) {m n : ℕ} (h : m ≤ n + 1)
   have : ∀ i < m, i ≤ n := by
     intro i hi
     exact (add_le_add_iff_right 1).1 (le_trans (Nat.lt_iff_add_one_le.1 hi) h)
-  cases' lt_or_le k m with hkm hkm
+  rcases lt_or_le k m with hkm | hkm
   · rw [← Nat.Ico_image_const_sub_eq_Ico (this _ hkm)]
     refine (prod_image ?_).symm
     simp only [mem_Ico]
@@ -241,8 +253,8 @@ theorem sum_range_id_mul_two (n : ℕ) : (∑ i ∈ range n, i) * 2 = n * (n - 1
     (∑ i ∈ range n, i) * 2 = (∑ i ∈ range n, i) + ∑ i ∈ range n, (n - 1 - i) := by
       rw [sum_range_reflect (fun i => i) n, mul_two]
     _ = ∑ i ∈ range n, (i + (n - 1 - i)) := sum_add_distrib.symm
-    _ = ∑ i ∈ range n, (n - 1) :=
-      sum_congr rfl fun i hi => add_tsub_cancel_of_le <| Nat.le_sub_one_of_lt <| mem_range.1 hi
+    _ = ∑ _ ∈ range n, (n - 1) :=
+      sum_congr rfl fun _ hi => add_tsub_cancel_of_le <| Nat.le_sub_one_of_lt <| mem_range.1 hi
     _ = n * (n - 1) := by rw [sum_const, card_range, Nat.nsmul_eq_mul]
 
 /-- Gauss' summation formula -/
@@ -257,7 +269,7 @@ lemma prod_range_diag_flip (n : ℕ) (f : ℕ → ℕ → M) :
       ∏ m ∈ range n, ∏ k ∈ range (n - m), f m k := by
   rw [prod_sigma', prod_sigma']
   refine prod_nbij' (fun a ↦ ⟨a.2, a.1 - a.2⟩) (fun a ↦ ⟨a.1 + a.2, a.1⟩) ?_ ?_ ?_ ?_ ?_ <;>
-    simp (config := { contextual := true }) only [mem_sigma, mem_range, lt_tsub_iff_left,
+    simp +contextual only [mem_sigma, mem_range, lt_tsub_iff_left,
       Nat.lt_succ_iff, le_add_iff_nonneg_right, Nat.zero_le, and_true, and_imp, imp_self,
       implies_true, Sigma.forall, forall_const, add_tsub_cancel_of_le, Sigma.mk.inj_iff,
       add_tsub_cancel_left, heq_eq_eq]

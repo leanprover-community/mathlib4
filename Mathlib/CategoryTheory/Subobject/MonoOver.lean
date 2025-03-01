@@ -1,9 +1,9 @@
 /-
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, Scott Morrison
+Authors: Bhavik Mehta, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Adjunction.Over
+import Mathlib.CategoryTheory.Comma.Over.Pullback
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.CategoryTheory.Limits.Shapes.Images
@@ -28,7 +28,7 @@ and prove their basic properties and relationships.
 ## Notes
 
 This development originally appeared in Bhavik Mehta's "Topos theory for Lean" repository,
-and was ported to mathlib by Scott Morrison.
+and was ported to mathlib by Kim Morrison.
 
 -/
 
@@ -56,6 +56,8 @@ instance (X : C) : Category (MonoOver X) :=
   FullSubcategory.category _
 
 namespace MonoOver
+
+instance mono_obj_hom (S : MonoOver X) : Mono S.obj.hom := S.2
 
 /-- Construct a `MonoOver X`. -/
 @[simps]
@@ -128,7 +130,7 @@ def isoMk {f g : MonoOver X} (h : f.obj.left ≅ g.obj.left)
 
 /-- If `f : MonoOver X`, then `mk' f.arrow` is of course just `f`, but not definitionally, so we
     package it as an isomorphism. -/
-@[simp]
+@[simps!]
 def mk'ArrowIso {X : C} (f : MonoOver X) : mk' f.arrow ≅ f :=
   isoMk (Iso.refl _)
 
@@ -219,25 +221,20 @@ end Pullback
 
 section Map
 
-attribute [instance] mono_comp
-
 /-- We can map monomorphisms over `X` to monomorphisms over `Y`
 by post-composition with a monomorphism `f : X ⟶ Y`.
 -/
 def map (f : X ⟶ Y) [Mono f] : MonoOver X ⥤ MonoOver Y :=
-  lift (Over.map f) fun g => by apply mono_comp g.arrow f
+  lift (Over.map f) fun g => mono_comp g.arrow f
 
 /-- `MonoOver.map` commutes with composition (up to a natural isomorphism). -/
 def mapComp (f : X ⟶ Y) (g : Y ⟶ Z) [Mono f] [Mono g] : map (f ≫ g) ≅ map f ⋙ map g :=
   liftIso _ _ (Over.mapComp _ _) ≪≫ (liftComp _ _ _ _).symm
 
-variable (X)
-
+variable (X) in
 /-- `MonoOver.map` preserves the identity (up to a natural isomorphism). -/
 def mapId : map (𝟙 X) ≅ 𝟭 _ :=
   liftIso _ _ (Over.mapId X) ≪≫ liftId
-
-variable {X}
 
 @[simp]
 theorem map_obj_left (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g : C) = g.obj.left :=
@@ -357,7 +354,7 @@ def imageForgetAdj : image ⊣ forget X :=
                     e := k.left
                     fac := Over.w k }
             · apply image.lift_fac
-          left_inv := fun k => Subsingleton.elim _ _
+          left_inv := fun _ => Subsingleton.elim _ _
           right_inv := fun k => by
             ext1
             change factorThruImage _ ≫ image.lift _ = _

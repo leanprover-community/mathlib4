@@ -3,9 +3,8 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Order.CompleteLattice
-import Mathlib.Order.GaloisConnection
 import Mathlib.Data.Set.Lattice
+import Mathlib.Order.CompleteLattice
 import Mathlib.Tactic.AdaptationNote
 
 /-!
@@ -137,12 +136,10 @@ theorem inv_comp (r : Rel α β) (s : Rel β γ) : inv (r • s) = inv s • inv
 
 @[simp]
 theorem inv_bot : (⊥ : Rel α β).inv = (⊥ : Rel β α) := by
-  #adaptation_note /-- nightly-2024-03-16: simp was `simp [Bot.bot, inv, flip]` -/
   simp [Bot.bot, inv, Function.flip_def]
 
 @[simp]
 theorem inv_top : (⊤ : Rel α β).inv = (⊤ : Rel β α) := by
-  #adaptation_note /-- nightly-2024-03-16: simp was `simp [Top.top, inv, flip]` -/
   simp [Top.top, inv, Function.flip_def]
 
 /-- Image of a set under a relation -/
@@ -151,6 +148,7 @@ def image (s : Set α) : Set β := { y | ∃ x ∈ s, r x y }
 theorem mem_image (y : β) (s : Set α) : y ∈ image r s ↔ ∃ x ∈ s, r x y :=
   Iff.rfl
 
+open scoped Relator in
 theorem image_subset : ((· ⊆ ·) ⇒ (· ⊆ ·)) r.image r.image := fun _ _ h _ ⟨x, xs, rxy⟩ =>
   ⟨x, h xs, rxy⟩
 
@@ -194,7 +192,7 @@ theorem image_bot (s : Set α) : (⊥ : Rel α β).image s = ∅ := by
 @[simp]
 theorem image_top {s : Set α} (h : Set.Nonempty s) :
     (⊤ : Rel α β).image s = Set.univ :=
-  Set.eq_univ_of_forall fun x ↦ ⟨h.some, by simp [h.some_mem, Top.top]⟩
+  Set.eq_univ_of_forall fun _ ↦ ⟨h.some, by simp [h.some_mem, Top.top]⟩
 
 /-- Preimage of a set under a relation `r`. Same as the image of `s` under `r.inv` -/
 def preimage (s : Set β) : Set α :=
@@ -284,6 +282,7 @@ def core (s : Set β) := { x | ∀ y, r x y → y ∈ s }
 theorem mem_core (x : α) (s : Set β) : x ∈ r.core s ↔ ∀ y, r x y → y ∈ s :=
   Iff.rfl
 
+open scoped Relator in
 theorem core_subset : ((· ⊆ ·) ⇒ (· ⊆ ·)) r.core r.core := fun _s _t h _x h' y rxy => h (h' y rxy)
 
 theorem core_mono : Monotone r.core :=
@@ -333,7 +332,7 @@ theorem graph_injective : Injective (graph : (α → β) → Rel α β) := by
 
 @[simp] lemma graph_inj {f g : α → β} : f.graph = g.graph ↔ f = g := graph_injective.eq_iff
 
-theorem graph_id : graph id = @Eq α := by simp  (config := { unfoldPartialApp := true }) [graph]
+theorem graph_id : graph id = @Eq α := by simp (config := { unfoldPartialApp := true }) [graph]
 
 theorem graph_comp {f : β → γ} {g : α → β} : graph (f ∘ g) = Rel.comp (graph g) (graph f) := by
   ext x y

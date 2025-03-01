@@ -30,10 +30,8 @@ namespace CategoryTheory
 
 open Localization
 
-variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃}
-  {D₁ : Type u₄} {D₂ : Type u₅} {D₃ : Type u₆}
-  [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃]
-  [Category.{v₄} D₁] [Category.{v₅} D₂] [Category.{v₆} D₃]
+variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {D₁ : Type u₄} {D₂ : Type u₅}
+  [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} D₁] [Category.{v₅} D₂]
   (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) (W₃ : MorphismProperty C₃)
 
 /-- If `W₁ : MorphismProperty C₁` and `W₂ : MorphismProperty C₂`, a `LocalizerMorphism W₁ W₂`
@@ -77,7 +75,7 @@ lemma inverts : W₁.IsInvertedBy (Φ.functor ⋙ L₂) :=
 
 /-- When `Φ : LocalizerMorphism W₁ W₂` and that `L₁` and `L₂` are localization functors
 for `W₁` and `W₂`, then `Φ.localizedFunctor L₁ L₂` is the induced functor on the
-localized categories. --/
+localized categories. -/
 noncomputable def localizedFunctor : D₁ ⥤ D₂ :=
   lift (Φ.functor ⋙ L₂) (Φ.inverts _) L₁
 
@@ -87,7 +85,7 @@ noncomputable instance liftingLocalizedFunctor :
   infer_instance
 
 /-- The 2-commutative square expressing that `Φ.localizedFunctor L₁ L₂` lifts the
-functor `Φ.functor`  -/
+functor `Φ.functor` -/
 noncomputable instance catCommSq : CatCommSq Φ.functor L₁ L₂ (Φ.localizedFunctor L₁ L₂) :=
   CatCommSq.mk (Lifting.iso _ W₁ _ _).symm
 
@@ -128,7 +126,7 @@ lemma isEquivalence_iff : G.IsEquivalence ↔ G'.IsEquivalence :=
 end
 
 /-- Condition that a `LocalizerMorphism` induces an equivalence on the localized categories -/
-class IsLocalizedEquivalence : Prop :=
+class IsLocalizedEquivalence : Prop where
   /-- the induced functor on the constructed localized categories is an equivalence -/
   isEquivalence : (Φ.localizedFunctor W₁.Q W₂.Q).IsEquivalence
 

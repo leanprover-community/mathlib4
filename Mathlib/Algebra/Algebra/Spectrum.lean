@@ -3,8 +3,10 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Star.Subalgebra
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Star.Pointwise
 import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Ideal.Nonunits
 import Mathlib.Tactic.NoncommRing
 
 /-!
@@ -26,7 +28,7 @@ This theory will serve as the foundation for spectral theory in Banach algebras.
 * `spectrum.unit_smul_eq_smul` and `spectrum.smul_eq_smul`: units in the scalar ring commute
   (multiplication) with the spectrum, and over a field even `0` commutes with the spectrum.
 * `spectrum.left_add_coset_eq`: elements of the scalar ring commute (addition) with the spectrum.
-* `spectrum.unit_mem_mul_iff_mem_swap_mul` and `spectrum.preimage_units_mul_eq_swap_mul`: the
+* `spectrum.unit_mem_mul_comm` and `spectrum.preimage_units_mul_comm`: the
   units (of `R`) in `σ (a*b)` coincide with those in `σ (b*a)`.
 * `spectrum.scalar_eq`: in a nontrivial algebra over a field, the spectrum of a scalar is
   a singleton.
@@ -53,7 +55,7 @@ local notation "↑ₐ" => algebraMap R A
 -- definition and basic properties
 /-- Given a commutative ring `R` and an `R`-algebra `A`, the *resolvent set* of `a : A`
 is the `Set R` consisting of those `r : R` for which `r•1 - a` is a unit of the
-algebra `A`.  -/
+algebra `A`. -/
 def resolventSet (a : A) : Set R :=
   {r : R | IsUnit (↑ₐ r - a)}
 
@@ -61,7 +63,7 @@ def resolventSet (a : A) : Set R :=
 is the `Set R` consisting of those `r : R` for which `r•1 - a` is not a unit of the
 algebra `A`.
 
-The spectrum is simply the complement of the resolvent set.  -/
+The spectrum is simply the complement of the resolvent set. -/
 def spectrum (a : A) : Set R :=
   (resolventSet R a)ᶜ
 
@@ -112,6 +114,10 @@ theorem zero_not_mem_iff {a : A} : (0 : R) ∉ σ a ↔ IsUnit a := by
   rw [zero_mem_iff, Classical.not_not]
 
 alias ⟨isUnit_of_zero_not_mem, zero_not_mem⟩ := spectrum.zero_not_mem_iff
+
+@[simp]
+lemma _root_.Units.zero_not_mem_spectrum (a : Aˣ) : 0 ∉ spectrum R (a : A) :=
+  spectrum.zero_not_mem R a.isUnit
 
 lemma subset_singleton_zero_compl {a : A} (ha : IsUnit a) : spectrum R a ⊆ {0}ᶜ :=
   Set.subset_compl_singleton_iff.mpr <| spectrum.zero_not_mem R ha
@@ -216,7 +222,7 @@ theorem unit_smul_eq_smul (a : A) (r : Rˣ) : σ (r • a) = r • σ a := by
     simpa [← x'_eq ]
 
 -- `r ∈ σ(a*b) ↔ r ∈ σ(b*a)` for any `r : Rˣ`
-theorem unit_mem_mul_iff_mem_swap_mul {a b : A} {r : Rˣ} : ↑r ∈ σ (a * b) ↔ ↑r ∈ σ (b * a) := by
+theorem unit_mem_mul_comm {a b : A} {r : Rˣ} : ↑r ∈ σ (a * b) ↔ ↑r ∈ σ (b * a) := by
   have h₁ : ∀ x y : A, IsUnit (1 - x * y) → IsUnit (1 - y * x) := by
     refine fun x y h => ⟨⟨1 - y * x, 1 + y * h.unit.inv * x, ?_, ?_⟩, rfl⟩
     · calc
@@ -232,9 +238,19 @@ theorem unit_mem_mul_iff_mem_swap_mul {a b : A} {r : Rˣ} : ↑r ∈ σ (a * b) 
   simpa only [mem_iff, not_iff_not, Algebra.algebraMap_eq_smul_one, ← Units.smul_def,
     IsUnit.smul_sub_iff_sub_inv_smul, smul_mul_assoc]
 
-theorem preimage_units_mul_eq_swap_mul {a b : A} :
+@[deprecated (since := "2025-01-29")] alias unit_mem_mul_iff_mem_swap_mul := unit_mem_mul_comm
+
+theorem preimage_units_mul_comm (a b : A) :
     ((↑) : Rˣ → R) ⁻¹' σ (a * b) = (↑) ⁻¹' σ (b * a) :=
-  Set.ext fun _ => unit_mem_mul_iff_mem_swap_mul
+  Set.ext fun _ => unit_mem_mul_comm
+
+@[deprecated (since := "2025-01-29")]
+alias preimage_units_mul_eq_swap_mul := preimage_units_mul_comm
+
+theorem setOf_isUnit_inter_mul_comm (a b : A) :
+    {r | IsUnit r} ∩ σ (a * b) = {r | IsUnit r} ∩ σ (b * a) := by
+  ext r
+  simpa using fun hr : IsUnit r ↦ unit_mem_mul_comm (r := hr.unit)
 
 section Star
 
@@ -267,11 +283,6 @@ theorem subset_subalgebra {S R A : Type*} [CommSemiring R] [Ring A] [Algebra R A
     [SetLike S A] [SubringClass S A] [SMulMemClass S R A] {s : S} (a : s) :
     spectrum R (a : A) ⊆ spectrum R a :=
   Set.compl_subset_compl.mpr fun _ ↦ IsUnit.map (SubalgebraClass.val s)
-
-@[deprecated subset_subalgebra (since := "2024-07-19")]
-theorem subset_starSubalgebra [StarRing R] [StarRing A] [StarModule R A] {S : StarSubalgebra R A}
-    (a : S) : spectrum R (a : A) ⊆ spectrum R a :=
-  subset_subalgebra a
 
 theorem singleton_add_eq (a : A) (r : R) : {r} + σ a = σ (↑ₐ r + a) :=
   ext fun x => by
@@ -353,12 +364,12 @@ theorem smul_eq_smul [Nontrivial A] (k : 𝕜) (a : A) (ha : (σ a).Nonempty) :
   · simpa [ha, zero_smul_set] using (show {(0 : 𝕜)} = (0 : Set 𝕜) from rfl)
   · exact unit_smul_eq_smul a (Units.mk0 k h)
 
-theorem nonzero_mul_eq_swap_mul (a b : A) : σ (a * b) \ {0} = σ (b * a) \ {0} := by
+theorem nonzero_mul_comm (a b : A) : σ (a * b) \ {0} = σ (b * a) \ {0} := by
   suffices h : ∀ x y : A, σ (x * y) \ {0} ⊆ σ (y * x) \ {0} from
     Set.eq_of_subset_of_subset (h a b) (h b a)
   rintro _ _ k ⟨k_mem, k_neq⟩
   change ((Units.mk0 k k_neq) : 𝕜) ∈ _ at k_mem
-  exact ⟨unit_mem_mul_iff_mem_swap_mul.mp k_mem, k_neq⟩
+  exact ⟨unit_mem_mul_comm.mp k_mem, k_neq⟩
 
 protected theorem map_inv (a : Aˣ) : (σ (a : A))⁻¹ = σ (↑a⁻¹ : A) := by
   refine Set.eq_of_subset_of_subset (fun k hk => ?_) fun k hk => ?_
@@ -396,7 +407,7 @@ end CommSemiring
 
 section CommRing
 
-variable {F R A B : Type*} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable {F R A : Type*} [CommRing R] [Ring A] [Algebra R A]
 variable [FunLike F A R] [AlgHomClass F R A R]
 
 local notation "σ" => spectrum R

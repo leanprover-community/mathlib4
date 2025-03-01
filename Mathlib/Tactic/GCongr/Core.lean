@@ -3,11 +3,12 @@ Copyright (c) 2023 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Order.Defs
-import Mathlib.Tactic.Core
-import Mathlib.Tactic.GCongr.ForwardAttr
+import Lean
 import Batteries.Lean.Except
 import Batteries.Tactic.Exact
+import Mathlib.Tactic.Core
+import Mathlib.Tactic.GCongr.ForwardAttr
+import Mathlib.Order.Defs.PartialOrder
 
 /-!
 # The `gcongr` ("generalized congruence") tactic
@@ -78,8 +79,8 @@ functions which have different theories when different typeclass assumptions app
 the following lemma is stored with the same `@[gcongr]` data as `mul_le_mul` above, and the two
 lemmas are simply tried in succession to determine which has the typeclasses relevant to the goal:
 ```
-theorem mul_le_mul' [Mul α] [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)]
-    [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ d) :
+theorem mul_le_mul' [Mul α] [Preorder α] [MulLeftMono α]
+    [MulRightMono α] {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ d) :
     a * c ≤ b * d
 ```
 
@@ -134,9 +135,9 @@ structure GCongrLemma where
 
 /-- Environment extension for "generalized congruence" (`gcongr`) lemmas. -/
 initialize gcongrExt : SimpleScopedEnvExtension ((Name × Name × Array Bool) × GCongrLemma)
-    (HashMap (Name × Name × Array Bool) (Array GCongrLemma)) ←
+    (Std.HashMap (Name × Name × Array Bool) (Array GCongrLemma)) ←
   registerSimpleScopedEnvExtension {
-    addEntry := fun m (n, lem) => m.insert n ((m.findD n #[]).push lem)
+    addEntry := fun m (n, lem) => m.insert n ((m.getD n #[]).push lem)
     initial := {}
   }
 
@@ -363,10 +364,10 @@ partial def _root_.Lean.MVarId.gcongr
   -- Look up the `@[gcongr]` lemmas whose conclusion has the same relation and head function as
   -- the goal and whether the boolean-array of varying/nonvarying arguments of such
   -- a lemma matches `varyingArgs`.
-  for lem in (gcongrExt.getState (← getEnv)).findD (relName, lhsHead, varyingArgs) #[] do
+  for lem in (gcongrExt.getState (← getEnv)).getD (relName, lhsHead, varyingArgs) #[] do
     let gs ← try
       -- Try `apply`-ing such a lemma to the goal.
-      Except.ok <$> g.apply (← mkConstWithFreshMVarLevels lem.declName)
+      Except.ok <$> withReducibleAndInstances (g.apply (← mkConstWithFreshMVarLevels lem.declName))
     catch e => pure (Except.error e)
     match gs with
     | .error e =>
@@ -406,8 +407,13 @@ partial def _root_.Lean.MVarId.gcongr
       -- by the `apply`.
       for g in gs do
         if !(← g.isAssigned) && !subgoals.contains g then
-          try sideGoalDischarger g
-          catch _ => out := out.push g
+          let s ← saveState
+          try
+            let (_, g') ← g.intros
+            sideGoalDischarger g'
+          catch _ =>
+            s.restore
+            out := out.push g
       -- Return all unresolved subgoals, "main" or "side"
       return (true, names, out ++ subgoals)
   -- A. If there is no template, and there was no `@[gcongr]` lemma which matched the goal,

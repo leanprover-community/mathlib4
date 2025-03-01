@@ -1,10 +1,10 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Adam Topaz, Johan Commelin, Joël Riou
+Authors: Kim Morrison, Adam Topaz, Johan Commelin, Joël Riou
 -/
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Algebra.Equiv.TransferInstance
 
 /-!
 # If `C` is preadditive, `Cᵒᵖ` has a natural preadditive structure.
@@ -23,7 +23,7 @@ instance : Preadditive Cᵒᵖ where
   add_comp _ _ _ f f' g := Quiver.Hom.unop_inj (Preadditive.comp_add _ _ _ g.unop f.unop f'.unop)
   comp_add _ _ _ f g g' := Quiver.Hom.unop_inj (Preadditive.add_comp _ _ _ g.unop g'.unop f.unop)
 
-instance moduleEndLeft {X : Cᵒᵖ} {Y : C} : Module (End X) (unop X ⟶ Y) where
+instance moduleEndLeft {X Y : C} : Module (End X)ᵐᵒᵖ (X ⟶ Y) where
   smul_add _ _ _ := Preadditive.comp_add _ _ _ _ _ _
   smul_zero _ := Limits.comp_zero
   add_smul _ _ _ := Preadditive.add_comp _ _ _ _ _ _

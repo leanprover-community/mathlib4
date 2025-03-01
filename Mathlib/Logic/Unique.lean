@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Logic.IsEmpty
-import Mathlib.Init.Logic
 import Mathlib.Tactic.Inhabit
 
 /-!
@@ -42,6 +41,8 @@ for good definitional properties of the default term.
 
 universe u v w
 
+-- Don't generate injectivity lemmas, which the `simpNF` linter will complain about.
+set_option genInjectivity false in
 /-- `Unique α` expresses that `α` is a type with a unique term `default`.
 
 This is implemented as a type, rather than a `Prop`-valued predicate,
@@ -52,19 +53,22 @@ structure Unique (α : Sort u) extends Inhabited α where
   uniq : ∀ a : α, a = default
 
 attribute [class] Unique
--- The simplifier can already prove this using `eq_iff_true_of_subsingleton`
-attribute [nolint simpNF] Unique.mk.injEq
 
-theorem unique_iff_exists_unique (α : Sort u) : Nonempty (Unique α) ↔ ∃! _ : α, True :=
+theorem unique_iff_existsUnique (α : Sort u) : Nonempty (Unique α) ↔ ∃! _ : α, True :=
   ⟨fun ⟨u⟩ ↦ ⟨u.default, trivial, fun a _ ↦ u.uniq a⟩,
    fun ⟨a, _, h⟩ ↦ ⟨⟨⟨a⟩, fun _ ↦ h _ trivial⟩⟩⟩
 
-theorem unique_subtype_iff_exists_unique {α} (p : α → Prop) :
+@[deprecated (since := "2024-12-17")] alias unique_iff_exists_unique := unique_iff_existsUnique
+
+theorem unique_subtype_iff_existsUnique {α} (p : α → Prop) :
     Nonempty (Unique (Subtype p)) ↔ ∃! a, p a :=
   ⟨fun ⟨u⟩ ↦ ⟨u.default.1, u.default.2, fun a h ↦ congr_arg Subtype.val (u.uniq ⟨a, h⟩)⟩,
    fun ⟨a, ha, he⟩ ↦ ⟨⟨⟨⟨a, ha⟩⟩, fun ⟨b, hb⟩ ↦ by
       congr
       exact he b hb⟩⟩⟩
+
+@[deprecated (since := "2024-12-17")]
+alias unique_subtype_iff_exists_unique := unique_subtype_iff_existsUnique
 
 /-- Given an explicit `a : α` with `Subsingleton α`, we can construct
 a `Unique α` instance. This is a def because the typeclass search cannot
@@ -76,15 +80,11 @@ abbrev uniqueOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Unique α 
   default := a
   uniq _ := Subsingleton.elim _ _
 
-instance PUnit.unique : Unique PUnit.{u} where
+instance PUnit.instUnique : Unique PUnit.{u} where
   default := PUnit.unit
   uniq x := subsingleton x _
 
--- Porting note:
--- This should not require a nolint,
--- but it is currently failing due to a problem in the linter discussed at
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60simpNF.60.20error.20.22unknown.20metavariable.22
-@[simp, nolint simpNF]
+@[simp]
 theorem PUnit.default_eq_unit : (default : PUnit) = PUnit.unit :=
   rfl
 
@@ -142,10 +142,14 @@ abbrev mk' (α : Sort u) [h₁ : Inhabited α] [Subsingleton α] : Unique α :=
 
 end Unique
 
+theorem nonempty_unique (α : Sort u) [Subsingleton α] [Nonempty α] : Nonempty (Unique α) := by
+  inhabit α
+  exact ⟨Unique.mk' α⟩
+
 theorem unique_iff_subsingleton_and_nonempty (α : Sort u) :
     Nonempty (Unique α) ↔ Subsingleton α ∧ Nonempty α :=
   ⟨fun ⟨u⟩ ↦ by constructor <;> exact inferInstance,
-   fun ⟨hs, hn⟩ ↦ ⟨by inhabit α; exact Unique.mk' α⟩⟩
+   fun ⟨hs, hn⟩ ↦ nonempty_unique α⟩
 
 variable {α : Sort*}
 
@@ -248,7 +252,6 @@ instance {α} [IsEmpty α] : Unique (Option α) :=
 end Option
 
 section Subtype
-variable {α : Sort u}
 
 instance Unique.subtypeEq (y : α) : Unique { x // x = y } where
   default := ⟨y, rfl⟩
@@ -259,3 +262,5 @@ instance Unique.subtypeEq' (y : α) : Unique { x // y = x } where
   uniq := fun ⟨x, hx⟩ ↦ by subst hx; congr
 
 end Subtype
+
+instance Fin.instUnique : Unique (Fin 1) where uniq _ := Subsingleton.elim _ _

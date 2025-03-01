@@ -21,6 +21,7 @@ bicomplex `(((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂)`.
 
 -/
 
+assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Limits
 
@@ -160,7 +161,7 @@ variable {K₁ K₂ F c} in
 lemma hom_ext {Y : D} {j : J} {f g : (mapBifunctor K₁ K₂ F c).X j ⟶ Y}
     (h : ∀ (i₁ : I₁) (i₂ : I₂) (h : ComplexShape.π c₁ c₂ c ⟨i₁, i₂⟩ = j),
       ιMapBifunctor K₁ K₂ F c i₁ i₂ j h ≫ f = ιMapBifunctor K₁ K₂ F c i₁ i₂ j h ≫ g) :
-      f = g :=
+    f = g :=
   HomologicalComplex₂.total.hom_ext _ h
 
 section

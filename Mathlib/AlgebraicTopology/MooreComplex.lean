@@ -1,10 +1,10 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.AlgebraicTopology.SimplicialObject
+import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
@@ -59,15 +59,12 @@ def objX : ∀ n : ℕ, Subobject (X.obj (op (SimplexCategory.mk n)))
   | 0 => ⊤
   | n + 1 => Finset.univ.inf fun k : Fin (n + 1) => kernelSubobject (X.δ k.succ)
 
-theorem objX_zero : objX X 0 = ⊤ :=
+@[simp] theorem objX_zero : objX X 0 = ⊤ :=
   rfl
 
-theorem objX_add_one (n) :
+@[simp] theorem objX_add_one (n) :
     objX X (n + 1) = Finset.univ.inf fun k : Fin (n + 1) => kernelSubobject (X.δ k.succ) :=
   rfl
-
-attribute [eqns objX_zero objX_add_one] objX
-attribute [simp] objX
 
 /-- The differentials in the normalized Moore complex.
 -/
@@ -133,8 +130,7 @@ end NormalizedMooreComplex
 
 open NormalizedMooreComplex
 
-variable (C)
-
+variable (C) in
 /-- The (normalized) Moore complex of a simplicial object `X` in an abelian category `C`.
 
 The `n`-th object is intersection of
@@ -150,8 +146,6 @@ def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
   -- Porting note: Why `aesop_cat` can't do `dsimp` steps?
   map_id X := by ext (_ | _) <;> dsimp <;> aesop_cat
   map_comp f g := by ext (_ | _) <;> apply Subobject.eq_of_comp_arrow_eq <;> dsimp <;> aesop_cat
-
-variable {C}
 
 -- Porting note: removed @[simp] as it is not in normal form
 theorem normalizedMooreComplex_objD (X : SimplicialObject C) (n : ℕ) :

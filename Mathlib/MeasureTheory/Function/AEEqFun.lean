@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Zhouhang Zhou
 -/
 import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.Order.Filter.Germ.Basic
-import Mathlib.Topology.ContinuousFunction.Algebra
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+import Mathlib.Topology.ContinuousMap.Algebra
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 
 /-!
 
@@ -93,7 +93,7 @@ variable (α)
 
 /-- The space of equivalence classes of almost everywhere strongly measurable functions, where two
     strongly measurable functions are equivalent if they agree almost everywhere, i.e.,
-    they differ on a set of measure `0`.  -/
+    they differ on a set of measure `0`. -/
 def AEEqFun (μ : Measure α) : Type _ :=
   Quotient (μ.aeEqSetoid β)
 
@@ -124,7 +124,7 @@ then we choose that one. -/
 def cast (f : α →ₘ[μ] β) : α → β :=
   if h : ∃ (b : β), f = mk (const α b) aestronglyMeasurable_const then
     const α <| Classical.choose h else
-    AEStronglyMeasurable.mk _ (Quotient.out' f : { f : α → β // AEStronglyMeasurable f μ }).2
+    AEStronglyMeasurable.mk _ (Quotient.out f : { f : α → β // AEStronglyMeasurable f μ }).2
 
 /-- A measurable representative of an `AEEqFun` [f] -/
 instance instCoeFun : CoeFun (α →ₘ[μ] β) fun _ => α → β := ⟨cast⟩
@@ -235,7 +235,7 @@ variable [TopologicalSpace γ] [MeasurableSpace β] {ν : MeasureTheory.Measure 
 /-- Composition of an almost everywhere equal function and a quasi measure preserving function.
 
 This is an important special case of `AEEqFun.compQuasiMeasurePreserving`. We use a separate
-definition so that lemmas that need `f` to be measure preserving can be `@[simp]` lemmas.  -/
+definition so that lemmas that need `f` to be measure preserving can be `@[simp]` lemmas. -/
 def compMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : MeasurePreserving f μ ν) : α →ₘ[μ] γ :=
   g.compQuasiMeasurePreserving f hf.quasiMeasurePreserving
 
@@ -493,7 +493,7 @@ section Sup
 
 variable [SemilatticeSup β] [ContinuousSup β]
 
-instance instSup : Sup (α →ₘ[μ] β) where sup f g := AEEqFun.comp₂ (· ⊔ ·) continuous_sup f g
+instance instSup : Max (α →ₘ[μ] β) where max f g := AEEqFun.comp₂ (· ⊔ ·) continuous_sup f g
 
 theorem coeFn_sup (f g : α →ₘ[μ] β) : ⇑(f ⊔ g) =ᵐ[μ] fun x => f x ⊔ g x :=
   coeFn_comp₂ _ _ _ _
@@ -522,7 +522,7 @@ section Inf
 
 variable [SemilatticeInf β] [ContinuousInf β]
 
-instance instInf : Inf (α →ₘ[μ] β) where inf f g := AEEqFun.comp₂ (· ⊓ ·) continuous_inf f g
+instance instInf : Min (α →ₘ[μ] β) where min f g := AEEqFun.comp₂ (· ⊓ ·) continuous_inf f g
 
 theorem coeFn_inf (f g : α →ₘ[μ] β) : ⇑(f ⊓ g) =ᵐ[μ] fun x => f x ⊓ g x :=
   coeFn_comp₂ _ _ _ _
@@ -549,11 +549,11 @@ end Inf
 
 instance instLattice [Lattice β] [TopologicalLattice β] : Lattice (α →ₘ[μ] β) :=
   { AEEqFun.instPartialOrder with
-    sup := Sup.sup
+    sup := max
     le_sup_left := AEEqFun.le_sup_left
     le_sup_right := AEEqFun.le_sup_right
     sup_le := AEEqFun.sup_le
-    inf := Inf.inf
+    inf := min
     inf_le_left := AEEqFun.inf_le_left
     inf_le_right := AEEqFun.inf_le_right
     le_inf := AEEqFun.le_inf }
@@ -576,7 +576,7 @@ theorem coeFn_const (b : β) : (const α b : α →ₘ[μ] β) =ᵐ[μ] Function
 @[simp]
 theorem coeFn_const_eq [NeZero μ] (b : β) (x : α) : (const α b : α →ₘ[μ] β) x = b := by
   simp only [cast]
-  split_ifs with h; swap; exact h.elim ⟨b, rfl⟩
+  split_ifs with h; swap; · exact h.elim ⟨b, rfl⟩
   have := Classical.choose_spec h
   set b' := Classical.choose h
   simp_rw [const, mk_eq_mk, EventuallyEq, ← const_def, eventually_const] at this
@@ -708,7 +708,7 @@ instance instCommMonoid [CommMonoid γ] [ContinuousMul γ] : CommMonoid (α →�
 
 section Group
 
-variable [Group γ] [TopologicalGroup γ]
+variable [Group γ] [IsTopologicalGroup γ]
 
 section Inv
 
@@ -772,19 +772,19 @@ end ZPow
 
 end Group
 
-instance instAddGroup [AddGroup γ] [TopologicalAddGroup γ] : AddGroup (α →ₘ[μ] γ) :=
+instance instAddGroup [AddGroup γ] [IsTopologicalAddGroup γ] : AddGroup (α →ₘ[μ] γ) :=
   toGerm_injective.addGroup toGerm zero_toGerm add_toGerm neg_toGerm sub_toGerm
     (fun _ _ => smul_toGerm _ _) fun _ _ => smul_toGerm _ _
 
-instance instAddCommGroup [AddCommGroup γ] [TopologicalAddGroup γ] : AddCommGroup (α →ₘ[μ] γ) :=
+instance instAddCommGroup [AddCommGroup γ] [IsTopologicalAddGroup γ] : AddCommGroup (α →ₘ[μ] γ) :=
   { add_comm := add_comm }
 
 @[to_additive existing]
-instance instGroup [Group γ] [TopologicalGroup γ] : Group (α →ₘ[μ] γ) :=
+instance instGroup [Group γ] [IsTopologicalGroup γ] : Group (α →ₘ[μ] γ) :=
   toGerm_injective.group _ one_toGerm mul_toGerm inv_toGerm div_toGerm pow_toGerm zpow_toGerm
 
 @[to_additive existing]
-instance instCommGroup [CommGroup γ] [TopologicalGroup γ] : CommGroup (α →ₘ[μ] γ) :=
+instance instCommGroup [CommGroup γ] [IsTopologicalGroup γ] : CommGroup (α →ₘ[μ] γ) :=
   { mul_comm := mul_comm }
 
 section Module
@@ -836,7 +836,7 @@ theorem lintegral_mono {f g : α →ₘ[μ] ℝ≥0∞} : f ≤ g → lintegral 
 section Abs
 
 theorem coeFn_abs {β} [TopologicalSpace β] [Lattice β] [TopologicalLattice β] [AddGroup β]
-    [TopologicalAddGroup β] (f : α →ₘ[μ] β) : ⇑|f| =ᵐ[μ] fun x => |f x| := by
+    [IsTopologicalAddGroup β] (f : α →ₘ[μ] β) : ⇑|f| =ᵐ[μ] fun x => |f x| := by
   simp_rw [abs]
   filter_upwards [AEEqFun.coeFn_sup f (-f), AEEqFun.coeFn_neg f] with x hx_sup hx_neg
   rw [hx_sup, hx_neg, Pi.neg_apply]
@@ -863,6 +863,17 @@ theorem coeFn_posPart (f : α →ₘ[μ] γ) : ⇑(posPart f) =ᵐ[μ] fun a => 
 
 end PosPart
 
+section AELimit
+
+/-- The ae-limit is ae-unique. -/
+theorem tendsto_ae_unique {ι : Type*} [T2Space β]
+    {g h : α → β} {f : ι → α → β} {l : Filter ι} [l.NeBot]
+    (hg : ∀ᵐ ω ∂μ, Tendsto (fun i => f i ω) l (𝓝 (g ω)))
+    (hh : ∀ᵐ ω ∂μ, Tendsto (fun i => f i ω) l (𝓝 (h ω))) : g =ᵐ[μ] h := by
+  filter_upwards [hg, hh] with ω hg1 hh1 using tendsto_nhds_unique hg1 hh1
+
+end AELimit
+
 end AEEqFun
 
 end MeasureTheory
@@ -882,7 +893,7 @@ def toAEEqFun (f : C(α, β)) : α →ₘ[μ] β :=
 theorem coeFn_toAEEqFun (f : C(α, β)) : f.toAEEqFun μ =ᵐ[μ] f :=
   AEEqFun.coeFn_mk f _
 
-variable [Group β] [TopologicalGroup β]
+variable [Group β] [IsTopologicalGroup β]
 
 /-- The `MulHom` from the group of continuous maps from `α` to `β` to the group of equivalence
 classes of `μ`-almost-everywhere measurable functions. -/
@@ -896,7 +907,7 @@ def toAEEqFunMulHom : C(α, β) →* α →ₘ[μ] β where
 
 variable {𝕜 : Type*} [Semiring 𝕜]
 variable [TopologicalSpace γ] [PseudoMetrizableSpace γ] [AddCommGroup γ] [Module 𝕜 γ]
-  [TopologicalAddGroup γ] [ContinuousConstSMul 𝕜 γ] [SecondCountableTopologyEither α γ]
+  [IsTopologicalAddGroup γ] [ContinuousConstSMul 𝕜 γ] [SecondCountableTopologyEither α γ]
 
 /-- The linear map from the group of continuous maps from `α` to `β` to the group of equivalence
 classes of `μ`-almost-everywhere measurable functions. -/

@@ -3,11 +3,12 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Joachim Breitner
 -/
+import Mathlib.Algebra.Group.Action.End
 import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
 # The coproduct (a.k.a. the free product) of groups or monoids
@@ -132,7 +133,7 @@ variable {N : Type*} [Monoid N]
 theorem ext_hom (f g : CoprodI M →* N) (h : ∀ i, f.comp (of : M i →* _) = g.comp of) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
     FreeMonoid.hom_eq fun ⟨i, x⟩ => by
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
       erw [MonoidHom.comp_apply, MonoidHom.comp_apply, ← of_apply, ← MonoidHom.comp_apply, ←
         MonoidHom.comp_apply, h]; rfl
 
@@ -151,11 +152,11 @@ def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
             FreeMonoid.lift _ (FreeMonoid.of _ * FreeMonoid.of _) =
               FreeMonoid.lift _ (FreeMonoid.of _)
           simp only [MonoidHom.map_mul, FreeMonoid.lift_eval_of]
-  invFun f i := f.comp of
+  invFun f _ := f.comp of
   left_inv := by
     intro fi
     ext i x
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidHom.comp_apply, of_apply, Con.lift_mk', FreeMonoid.lift_eval_of]
   right_inv := by
     intro f
@@ -316,7 +317,7 @@ instance (i : ι) : Inhabited (Pair M i) :=
 variable {M}
 
 /-- Construct a new `Word` without any reduction. The underlying list of
-`cons m w _ _` is `⟨_, m⟩::w`  -/
+`cons m w _ _` is `⟨_, m⟩::w` -/
 @[simps]
 def cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) : Word M :=
   { toList := ⟨i, m⟩ :: w.toList,
@@ -364,7 +365,7 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
     rw [← he] at h'
     exact h' rfl
   · have : m = m' ∧ w.toList = w'.toList := by
-      simpa [cons, rcons, dif_neg hm, dif_neg hm', true_and_iff, eq_self_iff_true, Subtype.mk_eq_mk,
+      simpa [cons, rcons, dif_neg hm, dif_neg hm', eq_self_iff_true, Subtype.mk_eq_mk,
         heq_iff_eq, ← Subtype.ext_iff_val] using he
     rcases this with ⟨rfl, h⟩
     congr
@@ -616,17 +617,13 @@ instance : DecidableEq (CoprodI M) :=
 
 end Word
 
-variable (M)
-
+variable (M) in
 /-- A `NeWord M i j` is a representation of a non-empty reduced words where the first letter comes
 from `M i` and the last letter comes from `M j`. It can be constructed from singletons and via
 concatenation, and thus provides a useful induction principle. -/
---@[nolint has_nonempty_instance] Porting note(#5171): commented out
 inductive NeWord : ι → ι → Type _
   | singleton : ∀ {i : ι} (x : M i), x ≠ 1 → NeWord i i
   | append : ∀ {i j k l} (_w₁ : NeWord i j) (_hne : j ≠ k) (_w₂ : NeWord k l), NeWord i l
-
-variable {M}
 
 namespace NeWord
 
@@ -699,11 +696,11 @@ theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i 
     refine ⟨i, j, w, ?_⟩
     ext
     rw [h]
-  cases' w with l hnot1 hchain
+  obtain ⟨l, hnot1, hchain⟩ := w
   induction' l with x l hi
   · contradiction
   · rw [List.forall_mem_cons] at hnot1
-    cases' l with y l
+    rcases l with - | ⟨y, l⟩
     · refine ⟨x.1, x.1, singleton x.2 hnot1.1, ?_⟩
       simp [toWord]
     · rw [List.chain'_cons] at hchain
@@ -754,7 +751,7 @@ theorem replaceHead_head {i j : ι} (x : M i) (hnotone : x ≠ 1) (w : NeWord M 
     (replaceHead x hnotone w).head = x := by
   induction w
   · rfl
-  · simp [*]
+  · simp [*, replaceHead]
 
 /-- One can multiply an element from the left to a non-empty reduced word if it does not cancel
 with the first element in the word. -/
@@ -766,15 +763,16 @@ theorem mulHead_head {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.he
     (mulHead w x hnotone).head = x * w.head := by
   induction w
   · rfl
-  · simp [*]
+  · simp [*, mulHead]
 
 @[simp]
 theorem mulHead_prod {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.head ≠ 1) :
     (mulHead w x hnotone).prod = of x * w.prod := by
   unfold mulHead
-  induction' w with _ _ _ _ _ _ _ _ _ _ w_ih_w₁ w_ih_w₂
-  · simp [mulHead, replaceHead]
-  · specialize w_ih_w₁ _ hnotone
+  induction w with
+  | singleton => simp [mulHead, replaceHead]
+  | append _ _ _ w_ih_w₁ w_ih_w₂ =>
+    specialize w_ih_w₁ _ hnotone
     clear w_ih_w₂
     simp? [replaceHead, ← mul_assoc] at * says
       simp only [replaceHead, head, append_prod, ← mul_assoc] at *
@@ -811,6 +809,8 @@ open Pointwise
 
 open Cardinal
 
+open scoped Function -- required for scoped `on` notation
+
 variable {G : Type*} [Group G]
 variable {H : ι → Type*} [∀ i, Group (H i)]
 variable (f : ∀ i, H i →* G)
@@ -822,7 +822,7 @@ variable (hcard : 3 ≤ #ι ∨ ∃ i, 3 ≤ #(H i))
 variable {α : Type*} [MulAction G α]
 variable (X : ι → Set α)
 variable (hXnonempty : ∀ i, (X i).Nonempty)
-variable (hXdisj : Pairwise fun i j => Disjoint (X i) (X j))
+variable (hXdisj : Pairwise (Disjoint on X))
 variable (hpp : Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X j ⊆ X i)
 include hpp
 
@@ -833,7 +833,7 @@ theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
   · calc
       lift f (NeWord.append w₁ hne w₂).prod • X k = lift f w₁.prod • lift f w₂.prod • X k := by
         simp [MulAction.mul_smul]
-      _ ⊆ lift f w₁.prod • X _ := set_smul_subset_set_smul_iff.mpr (hIw₂ hk)
+      _ ⊆ lift f w₁.prod • X _ := smul_set_subset_smul_set_iff.mpr (hIw₂ hk)
       _ ⊆ X i := hIw₁ hne
 
 include hXnonempty hXdisj
@@ -871,10 +871,10 @@ include hcard in
 theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) :
     lift f w.prod ≠ 1 := by
   classical
-    cases' hcard with hcard hcard
+    rcases hcard with hcard | hcard
     · obtain ⟨i, h1, h2⟩ := Cardinal.three_le hcard i j
       exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w h1 h2
-    · cases' hcard with k hcard
+    · obtain ⟨k, hcard⟩ := hcard
       by_cases hh : i = k <;> by_cases hl : j = k
       · subst hh
         subst hl
@@ -891,15 +891,7 @@ theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) :
         simpa using heq
       · change i ≠ k at hh
         change j ≠ k at hl
-        obtain ⟨h, hn1, -⟩ := Cardinal.three_le hcard 1 1
-        let w' : NeWord H k k :=
-          NeWord.append (NeWord.append (NeWord.singleton h hn1) hh.symm w) hl
-            (NeWord.singleton h⁻¹ (inv_ne_one.mpr hn1))
-        have hw' : lift f w'.prod ≠ 1 :=
-          lift_word_prod_nontrivial_of_head_eq_last f X hXnonempty hXdisj hpp w'
-        intro heq1
-        apply hw'
-        simp [w', heq1]
+        exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w hh.symm hl.symm
 
 include hcard in
 theorem empty_of_word_prod_eq_one {w : Word H} (h : lift f w.prod = 1) :
@@ -965,6 +957,8 @@ section PingPongLemma
 
 open Pointwise Cardinal
 
+open scoped Function -- required for scoped `on` notation
+
 variable [Nontrivial ι]
 variable {G : Type u_1} [Group G] (a : ι → G)
 
@@ -972,8 +966,8 @@ variable {G : Type u_1} [Group G] (a : ι → G)
 variable {α : Type*} [MulAction G α]
 variable (X Y : ι → Set α)
 variable (hXnonempty : ∀ i, (X i).Nonempty)
-variable (hXdisj : Pairwise fun i j => Disjoint (X i) (X j))
-variable (hYdisj : Pairwise fun i j => Disjoint (Y i) (Y j))
+variable (hXdisj : Pairwise (Disjoint on X))
+variable (hYdisj : Pairwise (Disjoint on Y))
 variable (hXYdisj : ∀ i j, Disjoint (X i) (Y j))
 variable (hX : ∀ i, a i • (Y i)ᶜ ⊆ X i)
 variable (hY : ∀ i, a⁻¹ i • (X i)ᶜ ⊆ Y i)
@@ -1008,7 +1002,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   apply lift_injective_of_ping_pong f _ X'
   · show ∀ i, (X' i).Nonempty
     exact fun i => Set.Nonempty.inl (hXnonempty i)
-  · show Pairwise fun i j => Disjoint (X' i) (X' j)
+  · show Pairwise (Disjoint on X')
     intro i j hij
     simp only [X']
     apply Disjoint.union_left <;> apply Disjoint.union_right
@@ -1031,7 +1025,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
     clear hne1
     simp only [X']
     -- Positive and negative powers separately
-    cases' (lt_or_gt_of_ne hnne0).symm with hlt hgt
+    rcases (lt_or_gt_of_ne hnne0).symm with hlt | hgt
     · have h1n : 1 ≤ n := hlt
       calc
         a i ^ n • X' j ⊆ a i ^ n • (Y i)ᶜ :=

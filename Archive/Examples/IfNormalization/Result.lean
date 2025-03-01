@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Archive.Examples.IfNormalization.Statement
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Data.List.AList
 import Mathlib.Tactic.Recall
 
@@ -14,8 +12,6 @@ import Mathlib.Tactic.Recall
 
 See `Statement.lean` for background.
 -/
-
-set_option autoImplicit true
 
 macro "◾" : tactic => `(tactic| aesop)
 macro "◾" : term => `(term| by aesop)
@@ -30,17 +26,19 @@ attribute [local simp] normalized hasNestedIf hasConstantIf hasRedundantIf disjo
 
 attribute [local simp] apply_ite ite_eq_iff'
 
+variable {b : Bool} {f : ℕ → Bool} {i : ℕ} {t e : IfExpr}
+
 /-!
 Simp lemmas for `eval`.
 We don't want a `simp` lemma for `(ite i t e).eval` in general, only once we know the shape of `i`.
 -/
-@[simp] theorem eval_lit : (lit b).eval f  = b := rfl
-@[simp] theorem eval_var : (var i).eval f  = f i := rfl
+@[simp] theorem eval_lit : (lit b).eval f = b := rfl
+@[simp] theorem eval_var : (var i).eval f = f i := rfl
 @[simp] theorem eval_ite_lit :
     (ite (.lit b) t e).eval f = bif b then t.eval f else e.eval f := rfl
 @[simp] theorem eval_ite_var :
     (ite (.var i) t e).eval f = bif f i then t.eval f else e.eval f := rfl
-@[simp] theorem eval_ite_ite :
+@[simp] theorem eval_ite_ite {a b c d e : IfExpr} :
     (ite (ite a b c) d e).eval f = (ite a (ite b d e) (ite c d e)).eval f := by
   cases h : eval f a <;> simp_all [eval]
 
@@ -54,7 +52,7 @@ We don't want a `simp` lemma for `(ite i t e).eval` in general, only once we kno
 `e` to the literal booleans given by `l` -/
 def normalize (l : AList (fun _ : ℕ => Bool)) :
     (e : IfExpr) → { e' : IfExpr //
-        (∀ f, e'.eval f = e.eval (fun w => (l.lookup w).elim (f w) (fun b => b)))
+        (∀ f, e'.eval f = e.eval (fun w => (l.lookup w).elim (f w) id))
         ∧ e'.normalized
         ∧ ∀ (v : ℕ), v ∈ vars e' → l.lookup v = none }
   | lit b => ⟨lit b, ◾⟩

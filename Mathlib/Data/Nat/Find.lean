@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 import Batteries.WF
 
 /-!
 # `Nat.find` and `Nat.findGreatest`
 -/
 
-variable {a b c d m n k : ℕ} {p q : ℕ → Prop}
+variable {m n k : ℕ} {p q : ℕ → Prop}
 
 namespace Nat
 
@@ -26,10 +26,10 @@ variable [DecidablePred p] (H : ∃ n, p n)
 
 private def wf_lbp : WellFounded (@lbp p) :=
   ⟨let ⟨n, pn⟩ := H
-    suffices ∀ m k, n ≤ k + m → Acc lbp k from fun a => this _ _ (Nat.le_add_left _ _)
+    suffices ∀ m k, n ≤ k + m → Acc lbp k from fun _ => this _ _ (Nat.le_add_left _ _)
     fun m =>
     Nat.recOn m
-      (fun k kn =>
+      (fun _ kn =>
         ⟨_, fun y r =>
           match y, r with
           | _, ⟨rfl, a⟩ => absurd pn (a _ kn)⟩)
@@ -46,7 +46,7 @@ protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
         have : ∀ n ≤ m, ¬p n := fun n h =>
           Or.elim (Nat.lt_or_eq_of_le h) (al n) fun e => by rw [e]; exact pm
         IH _ ⟨rfl, this⟩ fun n h => this n <| Nat.le_of_succ_le_succ h)
-    0 fun n h => absurd h (Nat.not_lt_zero _)
+    0 fun _ h => absurd h (Nat.not_lt_zero _)
 
 /-- If `p` is a (decidable) predicate on `ℕ` and `hp : ∃ (n : ℕ), p n` is a proof that
 there exists some natural number satisfying `p`, then `Nat.find hp` is the
@@ -106,7 +106,6 @@ lemma find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬ p 0)
   cases n
   exacts [h0, @Nat.find_min (fun n ↦ p (n + 1)) _ h₂ _ (succ_lt_succ_iff.1 hn)]
 
--- Porting note (#10618): removing `simp` attribute as `simp` can prove it
 lemma find_pos (h : ∃ n : ℕ, p n) : 0 < Nat.find h ↔ ¬p 0 :=
   Nat.pos_iff_ne_zero.trans (Nat.find_eq_zero _).not
 
@@ -150,12 +149,14 @@ lemma findGreatest_of_not (h : ¬ P (n + 1)) : findGreatest P (n + 1) = findGrea
 
 lemma findGreatest_eq_iff :
     Nat.findGreatest P k = m ↔ m ≤ k ∧ (m ≠ 0 → P m) ∧ ∀ ⦃n⦄, m < n → n ≤ k → ¬P n := by
-  induction' k with k ihk generalizing m
-  · rw [eq_comm, Iff.comm]
+  induction k generalizing m with
+  | zero =>
+    rw [eq_comm, Iff.comm]
     simp only [zero_eq, Nat.le_zero, ne_eq, findGreatest_zero, and_iff_left_iff_imp]
     rintro rfl
     exact ⟨fun h ↦ (h rfl).elim, fun n hlt heq ↦ by omega⟩
-  · by_cases hk : P (k + 1)
+  | succ k ihk =>
+    by_cases hk : P (k + 1)
     · rw [findGreatest_eq hk]
       constructor
       · rintro rfl
@@ -196,21 +197,23 @@ lemma le_findGreatest (hmb : m ≤ n) (hm : P m) : m ≤ Nat.findGreatest P n :=
 
 lemma findGreatest_mono_right (P : ℕ → Prop) [DecidablePred P] {m n} (hmn : m ≤ n) :
     Nat.findGreatest P m ≤ Nat.findGreatest P n := by
-  induction' hmn with k hmk ih
-  · simp
-  rw [findGreatest_succ]
-  split_ifs
-  · exact le_trans ih <| le_trans (findGreatest_le _) (le_succ _)
-  · exact ih
+  induction hmn with
+  | refl => simp
+  | step hmk ih =>
+    rw [findGreatest_succ]
+    split_ifs
+    · exact le_trans ih <| le_trans (findGreatest_le _) (le_succ _)
+    · exact ih
 
 lemma findGreatest_mono_left [DecidablePred Q] (hPQ : ∀ n, P n → Q n) (n : ℕ) :
     Nat.findGreatest P n ≤ Nat.findGreatest Q n := by
-  induction' n with n hn
-  · rfl
-  by_cases h : P (n + 1)
-  · rw [findGreatest_eq h, findGreatest_eq (hPQ _ h)]
-  · rw [findGreatest_of_not h]
-    exact le_trans hn (Nat.findGreatest_mono_right _ <| le_succ _)
+  induction n with
+  | zero => rfl
+  | succ n hn =>
+    by_cases h : P (n + 1)
+    · rw [findGreatest_eq h, findGreatest_eq (hPQ _ h)]
+    · rw [findGreatest_of_not h]
+      exact le_trans hn (Nat.findGreatest_mono_right _ <| le_succ _)
 
 lemma findGreatest_mono [DecidablePred Q] (hPQ : ∀ n, P n → Q n) (hmn : m ≤ n) :
     Nat.findGreatest P m ≤ Nat.findGreatest Q n :=

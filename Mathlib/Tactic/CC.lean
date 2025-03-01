@@ -125,7 +125,7 @@ def proofFor (ccs : CCState) (e : Expr) : MetaM Expr := do
 def refutationFor (ccs : CCState) (e : Expr) : MetaM Expr := do
   let (some r, _) ← CCM.run (CCM.getEqProof e (.const ``False [])) { ccs with }
     | throwError "CCState.refutationFor failed to build proof"
-  mkAppM ``not_of_eq_false #[r]
+  mkAppM ``of_eq_false #[r]
 
 /-- If the given state is inconsistent, return a proof for `False`. Otherwise fail. -/
 def proofForFalse (ccs : CCState) : MetaM Expr := do
@@ -251,8 +251,8 @@ example (f : ℕ → ℕ) (x : ℕ)
     f x = x := by
   cc
 ``` -/
-elab (name := _root_.Mathlib.Tactic.cc) "cc" cfg:(config)? : tactic => do
-  let cfg ← elabCCConfig (mkOptionalNode cfg)
+elab (name := _root_.Mathlib.Tactic.cc) "cc" cfg:optConfig : tactic => do
+  let cfg ← elabCCConfig cfg
   withMainContext <| liftMetaFinishingTactic (·.cc cfg)
 
 end Mathlib.Tactic.CC

@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.Operations
 
 /-!
 # Partial values of a type
@@ -42,6 +42,8 @@ For `a : α`, `o : Part α`, `a ∈ o` means that `o` is defined and equal to `a
 `o.Dom` and `o.get _ = a`.
 -/
 
+assert_not_exists RelIso
+
 open Function
 
 /-- `Part α` is the type of "partial values" of type `α`. It
@@ -67,8 +69,6 @@ def toOption (o : Part α) [Decidable o.Dom] : Option α :=
 @[simp] lemma toOption_eq_none (o : Part α) [Decidable o.Dom] : o.toOption = none ↔ ¬o.Dom := by
   by_cases h : o.Dom <;> simp [h, toOption]
 
-@[deprecated (since := "2024-06-20")] alias toOption_isNone := toOption_eq_none
-
 /-- `Part` extensionality -/
 theorem ext' : ∀ {o p : Part α}, (o.Dom ↔ p.Dom) → (∀ h₁ h₂, o.get h₁ = p.get h₂) → o = p
   | ⟨od, o⟩, ⟨pd, p⟩, H1, H2 => by
@@ -81,7 +81,7 @@ theorem eta : ∀ o : Part α, (⟨o.Dom, fun h => o.get h⟩ : Part α) = o
   | ⟨_, _⟩ => rfl
 
 /-- `a ∈ o` means that `o` is defined and equal to `a` -/
-protected def Mem (a : α) (o : Part α) : Prop :=
+protected def Mem (o : Part α) (a : α) : Prop :=
   ∃ h, o.get h = a
 
 instance : Membership α (Part α) :=
@@ -330,9 +330,9 @@ noncomputable def equivOption : Part α ≃ Option α :=
 instance : PartialOrder (Part
         α) where
   le x y := ∀ i, i ∈ x → i ∈ y
-  le_refl x y := id
-  le_trans x y z f g i := g _ ∘ f _
-  le_antisymm x y f g := Part.ext fun z => ⟨f _, g _⟩
+  le_refl _ _ := id
+  le_trans _ _ _ f g _ := g _ ∘ f _
+  le_antisymm _ _ f g := Part.ext fun _ => ⟨f _, g _⟩
 
 instance : OrderBot (Part α) where
   bot := none
@@ -397,7 +397,7 @@ theorem assert_pos {p : Prop} {f : p → Part α} (h : p) : assert p f = f h := 
   simp only [h', mk.injEq, h, exists_prop_of_true, true_and]
   apply Function.hfunext
   · simp only [h, h', exists_prop_of_true]
-  · aesop
+  · simp
 
 theorem assert_neg {p : Prop} {f : p → Part α} (h : ¬p) : assert p f = none := by
   dsimp [assert, none]; congr
@@ -436,7 +436,7 @@ theorem bind_some (a : α) (f : α → Part β) : (some a).bind f = f a :=
 theorem bind_of_mem {o : Part α} {a : α} (h : a ∈ o) (f : α → Part β) : o.bind f = f a := by
   rw [eq_some_iff.2 h, bind_some]
 
-theorem bind_some_eq_map (f : α → β) (x : Part α) : x.bind (some ∘ f) = map f x :=
+theorem bind_some_eq_map (f : α → β) (x : Part α) : x.bind (fun y => some (f y)) = map f x :=
   ext <| by simp [eq_comm]
 
 theorem bind_toOption (f : α → Part β) (o : Part α) [Decidable o.Dom] [∀ a, Decidable (f a).Dom]
@@ -592,10 +592,18 @@ instance [SDiff α] : SDiff (Part α) where sdiff a b := (· \ ·) <$> a <*> b
 
 section
 
+@[to_additive]
 theorem mul_def [Mul α] (a b : Part α) : a * b = bind a fun y ↦ map (y * ·) b := rfl
+
+@[to_additive]
 theorem one_def [One α] : (1 : Part α) = some 1 := rfl
+
+@[to_additive]
 theorem inv_def [Inv α] (a : Part α) : a⁻¹ = Part.map (· ⁻¹) a := rfl
+
+@[to_additive]
 theorem div_def [Div α] (a b : Part α) : a / b = bind a fun y => map (y / ·) b := rfl
+
 theorem mod_def [Mod α] (a b : Part α) : a % b = bind a fun y => map (y % ·) b := rfl
 theorem append_def [Append α] (a b : Part α) : a ++ b = bind a fun y => map (y ++ ·) b := rfl
 theorem inter_def [Inter α] (a b : Part α) : a ∩ b = bind a fun y => map (y ∩ ·) b := rfl

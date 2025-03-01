@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Lean.Elab.Tactic.Induction
 import Batteries.Tactic.OpenPrivate
 import Mathlib.Lean.Expr.Basic
+import Batteries.Data.List.Basic
 
 /-!
 # Backward compatible implementation of lean 3 `cases` tactic
@@ -89,7 +90,7 @@ example (n : ℕ) : 0 < factorial n := by
     rw [factorial_succ]
     apply mul_pos (succ_pos n) ih
 ```
- -/
+-/
 elab (name := induction') "induction' " tgts:(Parser.Tactic.casesTarget,+)
     usingArg:((" using " ident)?)
     withArg:((" with" (ppSpace colGt binderIdent)+)?)

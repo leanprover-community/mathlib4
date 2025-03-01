@@ -112,8 +112,8 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   have N0 : ∀ {x}, N x = 0 ↔ f x = 0 := by simp [N]
   have : ∀ n, ∃ U, N ⁻¹' {n} ⊆ U ∧ IsOpen U ∧ μ.restrict I U < δ n / n := fun n ↦ by
     refine (N ⁻¹' {n}).exists_isOpen_lt_of_lt _ ?_
-    cases' n with n
-    · simpa [ENNReal.div_zero (ENNReal.coe_pos.2 (δ0 _)).ne'] using measure_lt_top (μ.restrict I) _
+    rcases n with - | n
+    · simp [ENNReal.div_zero (ENNReal.coe_pos.2 (δ0 _)).ne']
     · refine (measure_mono_null ?_ hf).le.trans_lt ?_
       · exact fun x hxN hxf => n.succ_ne_zero ((Eq.symm hxN).trans <| N0.2 hxf)
       · simp [(δ0 _).ne']
@@ -152,7 +152,7 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   exact (mul_le_mul_left' this.le _).trans ENNReal.mul_div_le
 
 /-- If `f` has integral `y` on a box `I` with respect to a locally finite measure `μ` and `g` is
-a.e. equal to `f` on `I`, then `g` has the same integral on `I`.  -/
+a.e. equal to `f` on `I`, then `g` has the same integral on `I`. -/
 theorem HasIntegral.congr_ae {l : IntegrationParams} {I : Box ι} {y : E} {f g : (ι → ℝ) → E}
     {μ : Measure (ι → ℝ)} [IsLocallyFiniteMeasure μ]
     (hf : HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul y) (hfg : f =ᵐ[μ.restrict I] g)
@@ -191,7 +191,7 @@ end SimpleFunc
 open TopologicalSpace
 
 /-- If `f : ℝⁿ → E` is Bochner integrable w.r.t. a locally finite measure `μ` on a rectangular box
-`I`, then it is McShane integrable on `I` with the same integral.  -/
+`I`, then it is McShane integrable on `I` with the same integral. -/
 theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {μ : Measure (ι → ℝ)}
     [IsLocallyFiniteMeasure μ] {I : Box ι} (hf : IntegrableOn f I μ) (l : IntegrationParams)
     (hl : l.bRiemann = false) :
@@ -223,7 +223,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
   -- Choose `N` such that the integral of `‖f N x - g x‖` is less than or equal to `ε`.
   obtain ⟨N₀, hN₀⟩ : ∃ N : ℕ, ∫ x in I, ‖f N x - g x‖ ∂μ ≤ ε := by
     have : Tendsto (fun n => ∫⁻ x in I, ‖f n x - g x‖₊ ∂μ) atTop (𝓝 0) :=
-      SimpleFunc.tendsto_approxOn_range_L1_nnnorm hg.measurable hgi
+      SimpleFunc.tendsto_approxOn_range_L1_enorm hg.measurable hgi
     refine (this.eventually (ge_mem_nhds ε0')).exists.imp fun N hN => ?_
     exact integral_coe_le_of_lintegral_coe_le hN
   -- For each `x`, we choose `Nx x ≥ N₀` such that `dist (f Nx x) (g x) ≤ ε`.
@@ -321,7 +321,8 @@ theorem AEContinuous.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (
   constructor
   · let v := {x : (ι → ℝ) | ContinuousAt f x}
     have : AEStronglyMeasurable f (μ.restrict v) :=
-      (ContinuousAt.continuousOn fun _ h ↦ h).aestronglyMeasurable (measurableSet_of_continuousAt f)
+      (continuousOn_of_forall_continuousAt fun _ h ↦ h).aestronglyMeasurable
+      (measurableSet_of_continuousAt f)
     refine this.mono_measure (Measure.le_iff.2 fun s hs ↦ ?_)
     repeat rw [μ.restrict_apply hs]
     apply le_of_le_of_eq <| μ.mono s.inter_subset_left

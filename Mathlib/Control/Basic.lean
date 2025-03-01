@@ -18,12 +18,7 @@ variable {α β γ : Type u}
 
 section Functor
 
-variable {f : Type u → Type v} [Functor f] [LawfulFunctor f]
-@[functor_norm]
-theorem Functor.map_map (m : α → β) (g : β → γ) (x : f α) : g <$> m <$> x = (g ∘ m) <$> x :=
-  (comp_map _ _ _).symm
--- order of implicits
--- order of implicits
+attribute [functor_norm] Functor.map_map
 
 end Functor
 
@@ -54,6 +49,7 @@ theorem seq_map_assoc (x : F (α → β)) (f : γ → α) (y : F γ) :
   simp only [← pure_seq]
   simp only [seq_assoc, Function.comp, seq_pure, ← comp_map]
   simp [pure_seq]
+  rfl
 
 @[functor_norm]
 theorem map_seq (f : β → γ) (x : F (α → β)) (y : F α) :
@@ -65,10 +61,6 @@ end Applicative
 section Monad
 
 variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
-
-theorem map_bind (x : m α) {g : α → m β} {f : β → γ} :
-    f <$> (x >>= g) = x >>= fun a => f <$> g a := by
-  rw [← bind_pure_comp, bind_assoc]; simp [bind_pure_comp]
 
 theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
     f <$> x >>= g = x >>= g ∘ f :=
@@ -213,8 +205,6 @@ class CommApplicative (m : Type u → Type v) [Applicative m] extends LawfulAppl
 
 open Functor
 
-variable {m}
-
 theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative m]
     [CommApplicative m] {α β γ} (a : m α) (b : m β) {f : α → β → γ} :
   f <$> a <*> b = flip f <$> b <*> a :=
@@ -224,3 +214,4 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
     _ = (fun b a => f a b) <$> b <*> a := by
       rw [@CommApplicative.commutative_prod m h]
       simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]
+      rfl

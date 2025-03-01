@@ -63,7 +63,7 @@ theorem conformalAt_const_smul {c : ℝ} (h : c ≠ 0) (x : X) : ConformalAt (fu
 theorem Subsingleton.conformalAt [Subsingleton X] (f : X → Y) (x : X) : ConformalAt f x :=
   ⟨0, hasFDerivAt_of_subsingleton _ _, isConformalMap_of_subsingleton _⟩
 
-/-- A function is a conformal map if and only if its differential is a conformal linear map-/
+/-- A function is a conformal map if and only if its differential is a conformal linear map -/
 theorem conformalAt_iff_isConformalMap_fderiv {f : X → Y} {x : X} :
     ConformalAt f x ↔ IsConformalMap (fderiv ℝ f x) := by
   constructor

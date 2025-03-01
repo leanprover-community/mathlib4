@@ -1,12 +1,13 @@
 /-
 Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Adam Topaz, Eric Wieser
+Authors: Kim Morrison, Adam Topaz, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.MonoidAlgebra.Basic
 
 /-!
 # Free Algebras
@@ -95,9 +96,7 @@ attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre
   Pre.hasZero Pre.hasOne Pre.hasSMul
 
 /-- Given a function from `X` to an `R`-algebra `A`, `lift_fun` provides a lift of `f` to a function
-from `Pre R X` to `A`. This is mainly used in the construction of `FreeAlgebra.lift`.
--/
--- Porting note: recOn was replaced to preserve computability, see lean4#2049
+from `Pre R X` to `A`. This is mainly used in the construction of `FreeAlgebra.lift`. -/
 def liftFun {A : Type*} [Semiring A] [Algebra R A] (f : X → A) :
     Pre R X → A
   | .of t => f t
@@ -151,7 +150,7 @@ namespace FreeAlgebra
 attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre.hasAdd
   Pre.hasZero Pre.hasOne Pre.hasSMul
 
-/-! Define the basic operations-/
+/-! Define the basic operations -/
 
 instance instSMul {A} [CommSemiring A] [Algebra R A] : SMul R (FreeAlgebra A X) where
   smul r := Quot.map (HMul.hMul (algebraMap R A r : Pre A X)) fun _ _ ↦ Rel.mul_compat_right
@@ -240,7 +239,7 @@ instance : Inhabited (FreeAlgebra R X) :=
   ⟨0⟩
 
 instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra A X) where
-  toRingHom := ({
+  algebraMap := ({
       toFun := fun r => Quot.mk _ r
       map_one' := rfl
       map_mul' := fun _ _ => Quot.sound Rel.mul_scalar
@@ -253,7 +252,7 @@ instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra
   smul_def' _ _ := rfl
 
 -- verify there is no diamond at `default` transparency but we will need
--- `reducible_and_instances` which currently fails #10906
+-- `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906
 variable (S : Type) [CommSemiring S] in
 example : (Semiring.toNatAlgebra : Algebra ℕ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
@@ -275,7 +274,7 @@ instance {S : Type*} [CommRing S] : Ring (FreeAlgebra S X) :=
   Algebra.semiringToRing S
 
 -- verify there is no diamond but we will need
--- `reducible_and_instances` which currently fails #10906
+-- `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906
 variable (S : Type) [CommRing S] in
 example : (Ring.toIntAlgebra _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
@@ -294,7 +293,7 @@ variable {A : Type*} [Semiring A] [Algebra R A]
 private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
   toFun a :=
     Quot.liftOn a (liftFun _ _ f) fun a b h ↦ by
-      induction' h
+      induction h
       · exact (algebraMap R A).map_add _ _
       · exact (algebraMap R A).map_mul _ _
       · apply Algebra.commutes
@@ -342,8 +341,7 @@ private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
   commutes' := by tauto
 
 /-- Given a function `f : X → A` where `A` is an `R`-algebra, `lift R f` is the unique lift
-of `f` to a morphism of `R`-algebras `FreeAlgebra R X → A`.
--/
+of `f` to a morphism of `R`-algebras `FreeAlgebra R X → A`. -/
 @[irreducible]
 def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
   { toFun := liftAux R
@@ -567,7 +565,7 @@ variable {A : Type*} [Semiring A] [Algebra R A]
 theorem _root_.Algebra.adjoin_range_eq_range_freeAlgebra_lift (f : X → A) :
     Algebra.adjoin R (Set.range f) = (FreeAlgebra.lift R f).range := by
   simp only [← Algebra.map_top, ← adjoin_range_ι, AlgHom.map_adjoin, ← Set.range_comp,
-    (· ∘ ·), lift_ι_apply]
+    Function.comp_def, lift_ι_apply]
 
 /-- Noncommutative version of `Algebra.adjoin_range_eq_range`. -/
 theorem _root_.Algebra.adjoin_eq_range_freeAlgebra_lift (s : Set A) :

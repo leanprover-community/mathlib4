@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-! # Free modules over PID
 
@@ -234,7 +235,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
     rw [LinearMap.mem_ker] at hx'
     have hc' : (c • ⟨y', y'M⟩ + ⟨x, xM⟩ : M) = 0 := by exact @Subtype.coe_injective O (· ∈ M) _ _ hc
     simpa only [LinearMap.map_add, LinearMap.map_zero, LinearMap.map_smul, smul_eq_mul, add_zero,
-      mul_eq_zero, ϕy'_ne_zero, hx', or_false_iff] using congr_arg ϕ hc'
+      mul_eq_zero, ϕy'_ne_zero, hx', or_false] using congr_arg ϕ hc'
   -- And `a • y'` is orthogonal to `N'`.
   have ay'_ortho_N' : ∀ (c : R), ∀ z ∈ N', c • a • y' + z = 0 → c = 0 := by
     intro c z zN' hc
@@ -251,7 +252,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
       refine ⟨-b, Submodule.mem_map.mpr ⟨⟨_, N.sub_mem zN (N.smul_mem b yN)⟩, ?_, ?_⟩⟩
       · refine LinearMap.mem_ker.mpr (show ϕ (⟨z, N_le_M zN⟩ - b • ⟨y, N_le_M yN⟩) = 0 from ?_)
         rw [LinearMap.map_sub, LinearMap.map_smul, hb, ϕy_eq, smul_eq_mul, mul_comm, sub_self]
-      · simp only [sub_eq_add_neg, neg_smul, coeSubtype]
+      · simp only [sub_eq_add_neg, neg_smul, coe_subtype]
   -- And extend a basis for `M'` with `y'`
   intro m' hn'm' bM'
   refine ⟨Nat.succ_le_succ hn'm', ?_, ?_⟩
@@ -270,7 +271,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
   · simp only [Fin.cons_zero, Fin.castLE_zero]
     exact a_smul_y'.symm
   · rw [Fin.castLE_succ]
-    simp only [Fin.cons_succ, Function.comp_apply, coe_inclusion, map_coe, coeSubtype, h i]
+    simp only [Fin.cons_succ, Function.comp_apply, coe_inclusion, map_coe, coe_subtype, h i]
 
 /-- A submodule of a free `R`-module of finite rank is also a free `R`-module of finite rank,
 if `R` is a principal ideal domain.
@@ -333,7 +334,7 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
     (hs : span R (range s) = ⊤) [NoZeroSMulDivisors R M] : Σn : ℕ, Basis (Fin n) R M := by
   classical
     -- We define `N` as the submodule spanned by a maximal linear independent subfamily of `s`
-    have := exists_maximal_independent R s
+    have := exists_maximal_linearIndepOn R s
     let I : Set ι := this.choose
     obtain
       ⟨indepI : LinearIndependent R (s ∘ (fun x => x) : I → M), hI :
@@ -369,9 +370,8 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
         apply this
       intro i
       calc
-        (∏ j, a j) • s i = (∏ j ∈ {i}ᶜ, a j) • a i • s i := by
-          rw [Fintype.prod_eq_prod_compl_mul i, mul_smul]
-        _ ∈ N := N.smul_mem _ (ha' i)
+        (∏ j ∈ {i}ᶜ, a j) • a i • s i ∈ N := N.smul_mem _ (ha' i)
+        _ = (∏ j, a j) • s i := by rw [Fintype.prod_eq_prod_compl_mul i, mul_smul]
 
     -- Since a submodule of a free `R`-module is free, we get that `A • M` is free
     obtain ⟨n, b : Basis (Fin n) R (LinearMap.range φ)⟩ := Submodule.basisOfPidOfLE this sI_basis
@@ -412,7 +412,6 @@ section SmithNormal
 /-- A Smith normal form basis for a submodule `N` of a module `M` consists of
 bases for `M` and `N` such that the inclusion map `N → M` can be written as a
 (rectangular) matrix with `a` along the diagonal: in Smith normal form. -/
--- Porting note(#5171): @[nolint has_nonempty_instance]
 structure Basis.SmithNormalForm (N : Submodule R M) (ι : Type*) (n : ℕ) where
   /-- The basis of M. -/
   bM : Basis ι R M
@@ -650,18 +649,8 @@ theorem Ideal.smithCoeffs_ne_zero (b : Basis ι R S) (I : Ideal S) (hI : I ≠ �
   refine Subtype.coe_injective ?_
   simp [hi]
 
--- Porting note: can be inferred in Lean 4 so no longer necessary
-
 end Ideal
 
 end SmithNormal
 
 end PrincipalIdealDomain
-
-/-- A set of linearly independent vectors in a module `M` over a semiring `S` is also linearly
-independent over a subring `R` of `K`. -/
-theorem LinearIndependent.restrict_scalars_algebras {R S M ι : Type*} [CommSemiring R] [Semiring S]
-    [AddCommMonoid M] [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
-    (hinj : Function.Injective (algebraMap R S)) {v : ι → M} (li : LinearIndependent S v) :
-    LinearIndependent R v :=
-  LinearIndependent.restrict_scalars (by rwa [Algebra.algebraMap_eq_smul_one'] at hinj) li

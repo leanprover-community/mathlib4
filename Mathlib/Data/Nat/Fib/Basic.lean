@@ -3,14 +3,13 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Nat.Bits
-import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Fibonacci Numbers
@@ -202,12 +201,12 @@ theorem fast_fib_aux_bit_tt (n : ℕ) :
   · simp
 
 theorem fast_fib_aux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) := by
-  apply Nat.binaryRec _ (fun b n' ih => _) n
+  refine Nat.binaryRec ?_ ?_ n
   · simp [fastFibAux]
   · rintro (_|_) n' ih <;>
-          simp only [fast_fib_aux_bit_ff, fast_fib_aux_bit_tt, congr_arg Prod.fst ih,
-            congr_arg Prod.snd ih, Prod.mk.inj_iff] <;>
-          simp [bit, fib_two_mul, fib_two_mul_add_one, fib_two_mul_add_two]
+      simp only [fast_fib_aux_bit_ff, fast_fib_aux_bit_tt, congr_arg Prod.fst ih,
+        congr_arg Prod.snd ih, Prod.mk.inj_iff] <;>
+      simp [bit, fib_two_mul, fib_two_mul_add_one, fib_two_mul_add_two]
 
 theorem fast_fib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fast_fib_aux_eq]
 

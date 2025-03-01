@@ -1,9 +1,10 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Category.ULift
+import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Logic.UnivLE
 import Mathlib.Logic.Small.Basic
@@ -22,7 +23,7 @@ the type `Skeleton C` is `w`-small, and `C` is `w`-locally small.
 -/
 
 
-universe w v v' u u'
+universe w w' v v' u u'
 
 open CategoryTheory
 
@@ -44,7 +45,6 @@ theorem EssentiallySmall.mk' {C : Type u} [Category.{v} C] {S : Type w} [SmallCa
 
 /-- An arbitrarily chosen small model for an essentially small category.
 -/
--- Porting note(#5171) removed @[nolint has_nonempty_instance]
 @[pp_with_univ]
 def SmallModel (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C] : Type w :=
   Classical.choose (@EssentiallySmall.equiv_smallCategory C _ _)
@@ -91,6 +91,9 @@ class LocallySmall (C : Type u) [Category.{v} C] : Prop where
 instance (C : Type u) [Category.{v} C] [LocallySmall.{w} C] (X Y : C) : Small.{w, v} (X ⟶ Y) :=
   LocallySmall.hom_small X Y
 
+instance (C : Type u) [Category.{v} C] [LocallySmall.{w} C] : LocallySmall.{w} Cᵒᵖ where
+  hom_small X Y := small_of_injective (opEquiv X Y).injective
+
 theorem locallySmall_of_faithful {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
     (F : C ⥤ D) [F.Faithful] [LocallySmall.{w} D] : LocallySmall.{w} C where
   hom_small {_ _} := small_of_injective F.map_injective
@@ -115,7 +118,6 @@ instance (priority := 100) locallySmall_of_essentiallySmall (C : Type u) [Catego
 /-- We define a type alias `ShrinkHoms C` for `C`. When we have `LocallySmall.{w} C`,
 we'll put a `Category.{w}` instance on `ShrinkHoms C`.
 -/
--- Porting note(#5171): removed @[nolint has_nonempty_instance]
 @[pp_with_univ]
 def ShrinkHoms (C : Type u) :=
   C
@@ -174,6 +176,9 @@ noncomputable def equivalence : C ≌ ShrinkHoms C where
   unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
   counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
+instance : (functor C).IsEquivalence := (equivalence C).isEquivalence_functor
+instance : (inverse C).IsEquivalence := (equivalence C).isEquivalence_inverse
+
 end ShrinkHoms
 
 namespace Shrink
@@ -183,7 +188,11 @@ noncomputable instance [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
 
 /-- The categorical equivalence between `C` and `Shrink C`, when `C` is small. -/
 noncomputable def equivalence [Small.{w} C] : C ≌ Shrink.{w} C :=
-  (inducedFunctor (equivShrink C).symm).asEquivalence.symm
+  (Equivalence.induced _).symm
+
+instance [Small.{w'} C] [LocallySmall.{w} C] :
+    LocallySmall.{w} (Shrink.{w'} C) :=
+  locallySmall_of_faithful.{w} (equivalence.{w'} C).inverse
 
 end Shrink
 

@@ -3,8 +3,9 @@ Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Data.Real.IsNonarchimedean
 
 /-!
 # Seminorms and norms on rings
@@ -22,6 +23,8 @@ For a ring `R`:
 * `MulRingSeminorm`: A multiplicative seminorm on a ring `R` is a ring seminorm that preserves
   multiplication.
 * `MulRingNorm`: A multiplicative norm on a ring `R` is a ring norm that preserves multiplication.
+  `MulRingNorm R` is essentially the same as `AbsoluteValue R ℝ`, and it is recommended to
+  use the latter instead to avoid duplicating results.
 
 ## Notes
 
@@ -39,7 +42,7 @@ ring_seminorm, ring_norm
 
 open NNReal
 
-variable {F R S : Type*} (x y : R) (r : ℝ)
+variable {R : Type*}
 
 /-- A seminorm on a ring `R` is a function `f : R → ℝ` that preserves zero, takes nonnegative
   values, is subadditive and submultiplicative and such that `f (-x) = f x` for all `x ∈ R`. -/
@@ -59,7 +62,10 @@ structure MulRingSeminorm (R : Type*) [NonAssocRing R] extends AddGroupSeminorm 
   MonoidWithZeroHom R ℝ
 
 /-- A multiplicative norm on a ring `R` is a multiplicative ring seminorm such that `f x = 0`
-implies `x = 0`. -/
+implies `x = 0`.
+
+It is recommended to use `AbsoluteValue R ℝ` instead (which works for `Semiring R`
+and is equivalent to `MulRingNorm R` for a nontrivial `Ring R`). -/
 structure MulRingNorm (R : Type*) [NonAssocRing R] extends MulRingSeminorm R, AddGroupNorm R
 
 attribute [nolint docBlame]
@@ -134,11 +140,7 @@ variable [Ring R] (p : RingSeminorm R)
 
 theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 := by
   refine
-    ⟨fun h =>
-      ne_zero_iff.mpr
-        ⟨1, by
-          rw [h]
-          exact one_ne_zero⟩,
+    ⟨fun h => ne_zero_iff.mpr ⟨1, by rw [h]; exact one_ne_zero⟩,
       fun h => ?_⟩
   obtain hp0 | hp0 := (apply_nonneg p (1 : R)).eq_or_gt
   · exfalso
@@ -149,13 +151,73 @@ theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 :
 
 end Ring
 
+section CommRing
+
+variable [CommRing R] (p : RingSeminorm R)
+
+theorem exists_index_pow_le (hna : IsNonarchimedean p) (x y : R) (n : ℕ) :
+    ∃ (m : ℕ), m < n + 1 ∧ p ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤
+      (p (x ^ m) * p (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)) := by
+  obtain ⟨m, hm_lt, hm⟩ := IsNonarchimedean.add_pow_le hna n x y
+  exact ⟨m, hm_lt, Real.rpow_le_rpow (apply_nonneg p _) hm (one_div_nonneg.mpr n.cast_nonneg')⟩
+
+end CommRing
+
 end RingSeminorm
+
+/-- If `f` is a ring seminorm on `a`, then `∀ {n : ℕ}, n ≠ 0 → f (a ^ n) ≤ f a ^ n`. -/
+theorem map_pow_le_pow {F α : Type*} [Ring α] [FunLike F α ℝ] [RingSeminormClass F α ℝ] (f : F)
+    (a : α) : ∀ {n : ℕ}, n ≠ 0 → f (a ^ n) ≤ f a ^ n
+  | 0, h => absurd rfl h
+  | 1, _ => by simp only [pow_one, le_refl]
+  | n + 2, _ => by
+    simp only [pow_succ _ (n + 1)]
+    exact
+      le_trans (map_mul_le_mul f _ a)
+        (mul_le_mul_of_nonneg_right (map_pow_le_pow _ _ n.succ_ne_zero) (apply_nonneg f a))
+
+/-- If `f` is a ring seminorm on `a` with `f 1 ≤ 1`, then `∀ (n : ℕ), f (a ^ n) ≤ f a ^ n`. -/
+theorem map_pow_le_pow' {F α : Type*} [Ring α] [FunLike F α ℝ] [RingSeminormClass F α ℝ] {f : F}
+    (hf1 : f 1 ≤ 1) (a : α) : ∀ n : ℕ, f (a ^ n) ≤ f a ^ n
+  | 0 => by simp only [pow_zero, hf1]
+  | n + 1 => by
+    simp only [pow_succ _ n]
+    exact le_trans (map_mul_le_mul f _ a)
+      (mul_le_mul_of_nonneg_right (map_pow_le_pow' hf1 _ n) (apply_nonneg f a))
 
 /-- The norm of a `NonUnitalSeminormedRing` as a `RingSeminorm`. -/
 def normRingSeminorm (R : Type*) [NonUnitalSeminormedRing R] : RingSeminorm R :=
   { normAddGroupSeminorm R with
     toFun := norm
     mul_le' := norm_mul_le }
+
+namespace RingSeminorm
+
+variable [Ring R] (p : RingSeminorm R)
+
+open Filter Nat Real
+
+/-- If `f` is a ring seminorm on `R` with `f 1 ≤ 1` and `s : ℕ → ℕ` is bounded by `n`, then
+  `f (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ))` is eventually bounded. -/
+theorem isBoundedUnder (hp : p 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x : R} (ψ : ℕ → ℕ) :
+    IsBoundedUnder LE.le atTop fun n : ℕ => p (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ)) := by
+  have h_le : ∀ m : ℕ, p (x ^ s (ψ m)) ^ (1 / (ψ m : ℝ)) ≤ p x ^ ((s (ψ m) : ℝ) / (ψ m : ℝ)) := by
+    intro m
+    rw [← mul_one_div (s (ψ m) : ℝ), rpow_mul (apply_nonneg p x), rpow_natCast]
+    exact rpow_le_rpow (apply_nonneg _ _) (map_pow_le_pow' hp x _)
+      (one_div_nonneg.mpr (cast_nonneg _))
+  apply isBoundedUnder_of
+  by_cases hfx : p x ≤ 1
+  · use 1, fun m => le_trans (h_le m)
+      (rpow_le_one (apply_nonneg _ _) hfx (div_nonneg (cast_nonneg _) (cast_nonneg _)))
+  · use p x
+    intro m
+    apply le_trans (h_le m)
+    conv_rhs => rw [← rpow_one (p x)]
+    exact rpow_le_rpow_of_exponent_le (le_of_lt (not_le.mp hfx))
+      (div_le_one_of_le₀ (cast_le.mpr (hs_le _)) (cast_nonneg _))
+
+end RingSeminorm
 
 namespace RingNorm
 
@@ -294,20 +356,56 @@ theorem apply_one (x : R) : (1 : MulRingNorm R) x = if x = 0 then 0 else 1 :=
 instance : Inhabited (MulRingNorm R) :=
   ⟨1⟩
 
+section MulRingNorm_equiv_AbsoluteValue
+
+variable {R : Type*} [Ring R] [Nontrivial R]
+
+/-- The equivalence of `MulRingNorm R` and `AbsoluteValue R ℝ` when `R` is a nontrivial ring. -/
+def mulRingNormEquivAbsoluteValue : MulRingNorm R ≃ AbsoluteValue R ℝ where
+  toFun N := {
+    toFun := N.toFun
+    map_mul' := N.map_mul'
+    nonneg' := apply_nonneg N
+    eq_zero' x := ⟨N.eq_zero_of_map_eq_zero' x, fun h ↦ h ▸ N.map_zero'⟩
+    add_le' := N.add_le'
+  }
+  invFun v := {
+    toFun := v.toFun
+    map_zero' := (v.eq_zero' 0).mpr rfl
+    add_le' := v.add_le'
+    neg' := v.map_neg
+    map_one' := v.map_one
+    map_mul' := v.map_mul'
+    eq_zero_of_map_eq_zero' x := (v.eq_zero' x).mp
+  }
+  left_inv N := by ext1 x; simp only [MulRingSeminorm.toFun_eq_coe] -- `simp` does not work
+  right_inv v := by ext1 x; simp
+
+lemma mulRingNormEquivAbsoluteValue_apply (N : MulRingNorm R) (x : R) :
+    mulRingNormEquivAbsoluteValue N x = N x := rfl
+
+lemma mulRingNormEquivAbsoluteValue_symm_apply (v : AbsoluteValue R ℝ) (x : R) :
+    mulRingNormEquivAbsoluteValue.symm v x = v x := rfl
+
+end MulRingNorm_equiv_AbsoluteValue
 
 variable {R : Type*} [Ring R]
 
 /-- Two multiplicative ring norms `f, g` on `R` are equivalent if there exists a positive constant
-  `c` such that for all `x ∈ R`, `(f x)^c = g x`.  -/
-
+  `c` such that for all `x ∈ R`, `(f x)^c = g x`. -/
+@[deprecated "Use AbsoluteValue.IsEquiv instead" (since := "2025-01-07")]
 def equiv (f : MulRingNorm R) (g : MulRingNorm R) :=
   ∃ c : ℝ, 0 < c ∧ (fun x => (f x) ^ c) = g
 
+set_option linter.deprecated false in
 /-- Equivalence of multiplicative ring norms is reflexive. -/
+@[deprecated "Use AbsoluteValue.isEquiv_refl instead" (since := "2025-01-07")]
 lemma equiv_refl (f : MulRingNorm R) : equiv f f := by
     exact ⟨1, Real.zero_lt_one, by simp only [Real.rpow_one]⟩
 
+set_option linter.deprecated false in
 /-- Equivalence of multiplicative ring norms is symmetric. -/
+@[deprecated "Use AbsoluteValue.isEquiv_symm instead" (since := "2025-01-07")]
 lemma equiv_symm {f g : MulRingNorm R} (hfg : equiv f g) : equiv g f := by
   rcases hfg with ⟨c, hcpos, h⟩
   use 1/c
@@ -316,7 +414,9 @@ lemma equiv_symm {f g : MulRingNorm R} (hfg : equiv f g) : equiv g f := by
   ext x
   simpa [← congr_fun h x] using Real.rpow_rpow_inv (apply_nonneg f x) (ne_of_lt hcpos).symm
 
+set_option linter.deprecated false in
 /-- Equivalence of multiplicative ring norms is transitive. -/
+@[deprecated "Use AbsoluteValue.isEquiv_trans instead" (since := "2025-01-07")]
 lemma equiv_trans {f g k : MulRingNorm R} (hfg : equiv f g) (hgk : equiv g k) :
     equiv f k := by
   rcases hfg with ⟨c, hcPos, hfg⟩
@@ -351,6 +451,7 @@ def normRingNorm (R : Type*) [NonUnitalNormedRing R] : RingNorm R :=
 
 
 /-- A multiplicative ring norm satisfies `f n ≤ n` for every `n : ℕ`. -/
+@[deprecated "Use AbsoluteValue.apply_nat_le_self instead" (since := "2025-01-07")]
 lemma MulRingNorm_nat_le_nat {R : Type*} [Ring R] (n : ℕ) (f : MulRingNorm R) : f n ≤ n := by
   induction n with
   | zero => simp only [Nat.cast_zero, map_zero, le_refl]
@@ -364,7 +465,60 @@ lemma MulRingNorm_nat_le_nat {R : Type*} [Ring R] (n : ℕ) (f : MulRingNorm R) 
 open Int
 
 /-- A multiplicative norm composed with the absolute value on integers equals the norm itself. -/
+@[deprecated "Use AbsoluteValue.apply_natAbs_eq instead" (since := "2025-01-07")]
 lemma MulRingNorm.apply_natAbs_eq {R : Type*} [Ring R] (x : ℤ) (f : MulRingNorm R) : f (natAbs x) =
     f x := by
   obtain ⟨n, rfl | rfl⟩ := eq_nat_or_neg x <;>
   simp only [natAbs_neg, natAbs_ofNat, cast_neg, cast_natCast, map_neg_eq_map]
+
+/-- The seminorm on a `SeminormedRing`, as a `RingSeminorm`. -/
+def SeminormedRing.toRingSeminorm (R : Type*) [SeminormedRing R] : RingSeminorm R where
+  toFun     := norm
+  map_zero' := norm_zero
+  add_le'   := norm_add_le
+  mul_le'   := norm_mul_le
+  neg'      := norm_neg
+
+/-- The norm on a `NormedRing`, as a `RingNorm`. -/
+@[simps]
+def NormedRing.toRingNorm (R : Type*) [NormedRing R] : RingNorm R where
+  toFun     := norm
+  map_zero' := norm_zero
+  add_le'   := norm_add_le
+  mul_le'   := norm_mul_le
+  neg'      := norm_neg
+  eq_zero_of_map_eq_zero' x hx := by rw [← norm_eq_zero]; exact hx
+
+@[simp]
+theorem NormedRing.toRingNorm_apply (R : Type*) [NormedRing R] (x : R) :
+    (NormedRing.toRingNorm R) x = ‖x‖ :=
+  rfl
+
+/-- The norm on a `NormedField`, as a `MulRingNorm`. -/
+def NormedField.toMulRingNorm (R : Type*) [NormedField R] : MulRingNorm R where
+  toFun     := norm
+  map_zero' := norm_zero
+  map_one'  := norm_one
+  add_le'   := norm_add_le
+  map_mul'  := norm_mul
+  neg'      := norm_neg
+  eq_zero_of_map_eq_zero' x hx := by rw [← norm_eq_zero]; exact hx
+
+/-- The norm on a `NormedField`, as an `AbsoluteValue`. -/
+def NormedField.toAbsoluteValue (R : Type*) [NormedField R] : AbsoluteValue R ℝ where
+  toFun     := norm
+  map_mul'  := norm_mul
+  nonneg'   := norm_nonneg
+  eq_zero' _ := norm_eq_zero
+  add_le'   := norm_add_le
+
+/-- Triangle inequality for `MulRingNorm` applied to a list. -/
+@[deprecated "Use AbsoluteValue.listSum_le instead" (since := "2025-01-07")]
+lemma mulRingNorm_sum_le_sum_mulRingNorm {R : Type*} [NonAssocRing R] (l : List R)
+    (f : MulRingNorm R) : f l.sum ≤ (l.map f).sum := by
+  induction l with
+  | nil => simp only [List.sum_nil, map_zero, List.map_nil, le_refl]
+  | cons head tail ih =>
+    simp only [List.sum_cons, List.map_cons]
+    calc f (head + List.sum tail) ≤ f head + f (List.sum tail) := by apply f.add_le'
+      _ ≤ f head + List.sum (List.map f tail) := by simp only [add_le_add_iff_left, ih]

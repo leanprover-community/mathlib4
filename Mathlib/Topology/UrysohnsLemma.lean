@@ -3,12 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Analysis.Normed.Affine.AddTorsor
-import Mathlib.LinearAlgebra.AffineSpace.Ordered
-import Mathlib.Topology.ContinuousFunction.Basic
-import Mathlib.Topology.GDelta
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.LinearAlgebra.AffineSpace.Ordered
+import Mathlib.Topology.ContinuousMap.Algebra
+import Mathlib.Topology.GDelta.Basic
 
 /-!
 # Urysohn's lemma
@@ -92,7 +93,7 @@ open neighborhood `U`, together with the assumption that `C` satisfies the prope
 latter assumption will make it possible to prove simultaneously both versions of Urysohn's lemma,
 in normal spaces (with `P` always true) and in locally compact spaces (with `P = IsCompact`).
 We put also in the structure the assumption that, for any such pair, one may find an intermediate
-pair inbetween satisfying `P`, to avoid carrying it around in the argument. -/
+pair in between satisfying `P`, to avoid carrying it around in the argument. -/
 structure CU {X : Type*} [TopologicalSpace X] (P : Set X → Prop) where
   /-- The inner set in the inductive construction towards Urysohn's lemma -/
   protected C : Set X
@@ -197,19 +198,23 @@ theorem approx_le_approx_of_U_sub_C {c₁ c₂ : CU P} (h : c₁.U ⊆ c₂.C) (
 
 theorem approx_mem_Icc_right_left (c : CU P) (n : ℕ) (x : X) :
     c.approx n x ∈ Icc (c.right.approx n x) (c.left.approx n x) := by
-  induction' n with n ihn generalizing c
-  · exact ⟨le_rfl, indicator_le_indicator_of_subset (compl_subset_compl.2 c.left_U_subset)
+  induction n generalizing c with
+  | zero =>
+    exact ⟨le_rfl, indicator_le_indicator_of_subset (compl_subset_compl.2 c.left_U_subset)
       (fun _ => zero_le_one) _⟩
-  · simp only [approx, mem_Icc]
+  | succ n ihn =>
+    simp only [approx, mem_Icc]
     refine ⟨midpoint_le_midpoint ?_ (ihn _).1, midpoint_le_midpoint (ihn _).2 ?_⟩ <;>
       apply approx_le_approx_of_U_sub_C
     exacts [subset_closure, subset_closure]
 
 theorem approx_le_succ (c : CU P) (n : ℕ) (x : X) : c.approx n x ≤ c.approx (n + 1) x := by
-  induction' n with n ihn generalizing c
-  · simp only [approx, right_U, right_le_midpoint]
+  induction n generalizing c with
+  | zero =>
+    simp only [approx, right_U, right_le_midpoint]
     exact (approx_mem_Icc_right_left c 0 x).2
-  · rw [approx, approx]
+  | succ n ihn =>
+    rw [approx, approx]
     exact midpoint_le_midpoint (ihn _) (ihn _)
 
 theorem approx_mono (c : CU P) (x : X) : Monotone fun n => c.approx n x :=
@@ -261,11 +266,13 @@ theorem continuous_lim (c : CU P) : Continuous c.lim := by
     continuous_iff_continuousAt.2 fun x =>
       (Metric.nhds_basis_closedBall_pow (h0.trans h1234) h1).tendsto_right_iff.2 fun n _ => ?_
   simp only [Metric.mem_closedBall]
-  induction' n with n ihn generalizing c
-  · filter_upwards with y
+  induction n generalizing c with
+  | zero =>
+    filter_upwards with y
     rw [pow_zero]
     exact Real.dist_le_of_mem_Icc_01 (c.lim_mem_Icc _) (c.lim_mem_Icc _)
-  · by_cases hxl : x ∈ c.left.U
+  | succ n ihn =>
+    by_cases hxl : x ∈ c.left.U
     · filter_upwards [IsOpen.mem_nhds c.left.open_U hxl, ihn c.left] with _ hyl hyd
       rw [pow_succ', c.lim_eq_midpoint, c.lim_eq_midpoint,
         c.right.lim_of_mem_C _ (c.left_U_subset_right_C hyl),
@@ -353,6 +360,30 @@ theorem exists_continuous_zero_one_of_isCompact [RegularSpace X] [LocallyCompact
     fun x hx => c.lim_of_nmem_U _ fun h => h hx, c.lim_mem_Icc⟩
 
 /-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
+space `X`, with `s` compact and `t` closed, then there exists a continuous
+function `f : X → ℝ` such that
+
+* `f` equals zero on `t`;
+* `f` equals one on `s`;
+* `0 ≤ f x ≤ 1` for all `x`.
+-/
+theorem exists_continuous_zero_one_of_isCompact' [RegularSpace X] [LocallyCompactSpace X]
+    {s t : Set X} (hs : IsCompact s) (ht : IsClosed t) (hd : Disjoint s t) :
+    ∃ f : C(X, ℝ), EqOn f 0 t ∧ EqOn f 1 s ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
+  obtain ⟨g, hgs, hgt, (hicc : ∀ x, 0 ≤ g x ∧ g x ≤ 1)⟩ := exists_continuous_zero_one_of_isCompact
+    hs ht hd
+  use 1 - g
+  refine ⟨?_, ?_, ?_⟩
+  · intro x hx
+    simp only [ContinuousMap.sub_apply, ContinuousMap.one_apply, Pi.zero_apply]
+    exact sub_eq_zero_of_eq (id (EqOn.symm hgt) hx)
+  · intro x hx
+    simp only [ContinuousMap.sub_apply, ContinuousMap.one_apply, Pi.one_apply, sub_eq_self]
+    exact hgs hx
+  · intro x
+    simpa [and_comm] using hicc x
+
+/-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
 space `X`, with `s` compact and `t` closed, then there exists a continuous compactly supported
 function `f : X → ℝ` such that
 
@@ -438,8 +469,8 @@ theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [Local
 compact open set `s` such that `t ⊆ s`, there is a continuous function `f` supported in `s`,
 `f x = 1` on `t` and `0 ≤ f x ≤ 1`. -/
 lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
-    (hs : IsOpen s) (hscp : IsCompact (closure s)) (ht : IsClosed t) (hst : t ⊆ s) : ∃ f : C(X, ℝ),
-    tsupport f ⊆ s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
+    (hs : IsOpen s) (hscp : IsCompact (closure s)) (ht : IsClosed t) (hst : t ⊆ s) :
+    ∃ f : C(X, ℝ), tsupport f ⊆ s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
 -- separate `sᶜ` and `t` by `u` and `v`.
   rw [← compl_compl s] at hscp
   obtain ⟨u, v, huIsOpen, hvIsOpen, hscompl_subset_u, ht_subset_v, hDjsjointuv⟩ :=

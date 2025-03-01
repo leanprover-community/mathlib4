@@ -3,7 +3,7 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Algebra.Polynomial.Eval
+import Mathlib.Algebra.Polynomial.Eval.Defs
 import Mathlib.LinearAlgebra.Dimension.Constructions
 
 /-!
@@ -45,7 +45,9 @@ open Polynomial
 /-- A "linear recurrence relation" over a commutative semiring is given by its
   order `n` and `n` coefficients. -/
 structure LinearRecurrence (α : Type*) [CommSemiring α] where
+  /-- Order of the linear recurrence -/
   order : ℕ
+  /-- Coefficients of the linear recurrence -/
   coeffs : Fin order → α
 
 instance (α : Type*) [CommSemiring α] : Inhabited (LinearRecurrence α) :=
@@ -69,11 +71,7 @@ def mkSol (init : Fin E.order → α) : ℕ → α
     if h : n < E.order then init ⟨n, h⟩
     else
       ∑ k : Fin E.order,
-        have _ : n - E.order + k < n := by
-          rw [add_comm, ← add_tsub_assoc_of_le (not_lt.mp h), tsub_lt_iff_left]
-          · exact add_lt_add_right k.is_lt n
-          · convert add_le_add (zero_le (k : ℕ)) (not_lt.mp h)
-            simp only [zero_add]
+        have _ : n - E.order + k < n := by omega
         E.coeffs k * mkSol init (n - E.order + k)
 
 /-- `E.mkSol` indeed gives solutions to `E`. -/
@@ -96,16 +94,12 @@ theorem eq_mk_of_is_sol_of_eq_init {u : ℕ → α} {init : Fin E.order → α} 
   rw [mkSol]
   split_ifs with h'
   · exact mod_cast heq ⟨n, h'⟩
-  simp only
-  rw [← tsub_add_cancel_of_le (le_of_not_lt h'), h (n - E.order)]
-  congr with k
-  have : n - E.order + k < n := by
-    rw [add_comm, ← add_tsub_assoc_of_le (not_lt.mp h'), tsub_lt_iff_left]
-    · exact add_lt_add_right k.is_lt n
-    · convert add_le_add (zero_le (k : ℕ)) (not_lt.mp h')
-      simp only [zero_add]
-  rw [eq_mk_of_is_sol_of_eq_init h heq (n - E.order + k)]
-  simp
+  · dsimp only
+    rw [← tsub_add_cancel_of_le (le_of_not_lt h'), h (n - E.order)]
+    congr with k
+    have : n - E.order + k < n := by omega
+    rw [eq_mk_of_is_sol_of_eq_init h heq (n - E.order + k)]
+    simp
 
 /-- If `u` is a solution to `E` and `init` designates its first `E.order` values,
   then `u = E.mkSol init`. This proves that `E.mkSol init` is the only solution
@@ -138,7 +132,7 @@ def toInit : E.solSpace ≃ₗ[α] Fin E.order → α where
     simp
   invFun u := ⟨E.mkSol u, E.is_sol_mkSol u⟩
   left_inv u := by ext n; symm; apply E.eq_mk_of_is_sol_of_eq_init u.2; intro k; rfl
-  right_inv u := Function.funext_iff.mpr fun n ↦ E.mkSol_eq_init u n
+  right_inv u := funext_iff.mpr fun n ↦ E.mkSol_eq_init u n
 
 /-- Two solutions are equal iff they are equal on `range E.order`. -/
 theorem sol_eq_of_eq_init (u v : ℕ → α) (hu : E.IsSolution u) (hv : E.IsSolution v) :

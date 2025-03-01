@@ -50,7 +50,6 @@ namespace Localization
 
 namespace Construction
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- If `W : MorphismProperty C`, `LocQuiver W` is a quiver with the same objects
 as `C`, and whose morphisms are those in `C` and placeholders for formal
 inverses of the morphisms in `W`. -/
@@ -90,7 +89,6 @@ namespace MorphismProperty
 
 open Localization.Construction
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The localized category obtained by formally inverting the morphisms
 in `W : MorphismProperty C` -/
 def Localization :=
@@ -125,12 +123,10 @@ def wIso {X Y : C} (w : X ⟶ Y) (hw : W w) : Iso (W.Q.obj X) (W.Q.obj Y) where
 abbrev wInv {X Y : C} (w : X ⟶ Y) (hw : W w) :=
   (wIso w hw).inv
 
-variable (W)
-
+variable (W) in
 theorem _root_.CategoryTheory.MorphismProperty.Q_inverts : W.IsInvertedBy W.Q := fun _ _ w hw =>
   (Localization.Construction.wIso w hw).isIso_hom
 
-variable {W}
 variable (G : C ⥤ D) (hG : W.IsInvertedBy G)
 
 /-- The lifting of a functor to the path category of `LocQuiver W` -/
@@ -154,7 +150,7 @@ def lift : W.Localization ⥤ D :=
       -- Porting note: rest of proof was `rcases r with ⟨⟩; tidy`
       rcases r with (_|_|⟨f,hf⟩|⟨f,hf⟩)
       · aesop_cat
-      · aesop_cat
+      · simp
       all_goals
         dsimp
         haveI := hG f hf
@@ -163,7 +159,7 @@ def lift : W.Localization ⥤ D :=
 
 @[simp]
 theorem fac : W.Q ⋙ lift G hG = G :=
-  Functor.ext (fun X => rfl)
+  Functor.ext (fun _ => rfl)
     (by
       intro X Y f
       simp only [Functor.comp_map, eqToHom_refl, comp_id, id_comp]
@@ -189,20 +185,17 @@ theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂
       refine Functor.congr_inv_of_congr_hom _ _ _ ?_ ?_ hw'
       all_goals apply Functor.congr_obj h
 
-variable (W)
-
+variable (W) in
 /-- The canonical bijection between objects in a category and its
 localization with respect to a morphism_property `W` -/
 @[simps]
 def objEquiv : C ≃ W.Localization where
   toFun := W.Q.obj
   invFun X := X.as.obj
-  left_inv X := rfl
+  left_inv _ := rfl
   right_inv := by
     rintro ⟨⟨X⟩⟩
     rfl
-
-variable {W}
 
 /-- A `MorphismProperty` in `W.Localization` is satisfied by all
 morphisms in the localized category if it contains the image of the

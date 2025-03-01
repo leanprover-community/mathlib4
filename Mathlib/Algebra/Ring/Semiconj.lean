@@ -19,9 +19,9 @@ For the definitions of semirings and rings see `Mathlib.Algebra.Ring.Defs`.
 -/
 
 
-universe u v w x
+universe u
 
-variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
+variable {R : Type u}
 
 open Function
 
@@ -59,15 +59,11 @@ end
 
 section
 
-variable [MulOneClass R] [HasDistribNeg R] {a x y : R}
+variable [MulOneClass R] [HasDistribNeg R]
 
--- Porting note: `simpNF` told me to remove `simp` attribute
-theorem neg_one_right (a : R) : SemiconjBy a (-1) (-1) :=
-  (one_right a).neg_right
+theorem neg_one_right (a : R) : SemiconjBy a (-1) (-1) := by simp
 
--- Porting note: `simpNF` told me to remove `simp` attribute
-theorem neg_one_left (x : R) : SemiconjBy (-1) x x :=
-  (SemiconjBy.one_left x).neg_left
+theorem neg_one_left (x : R) : SemiconjBy (-1) x x := by simp
 
 end
 

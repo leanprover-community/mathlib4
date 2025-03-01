@@ -27,7 +27,7 @@ This is ultimately converted into a `Linexp` in the obvious way.
 `linearFormsAndMaxVar` is the main entry point into this file. Everything else is contained.
 -/
 
-open Linarith.Ineq Batteries
+open Mathlib.Ineq Batteries
 
 section
 open Lean Elab Tactic Meta
@@ -192,7 +192,7 @@ partial def linearFormOfExpr (red : TransparencyMode) (m : ExprMap) (e : Expr) :
 The output `RBMap ℕ ℤ` has the same structure as `s : Sum`,
 but each monomial key is replaced with its index according to `map`.
 If any new monomials are encountered, they are assigned variable numbers and `map` is updated.
- -/
+-/
 def elimMonom (s : Sum) (m : Map Monom ℕ) : Map Monom ℕ × Map ℕ ℤ :=
   s.foldr (fun mn coeff ⟨map, out⟩ ↦
     match map.find? mn with
@@ -220,7 +220,7 @@ def toComp (red : TransparencyMode) (e : Expr) (e_map : ExprMap) (monom_map : Ma
 /--
 `toCompFold red e_map exprs monom_map` folds `toComp` over `exprs`,
 updating `e_map` and `monom_map` as it goes.
- -/
+-/
 def toCompFold (red : TransparencyMode) : ExprMap → List Expr → Map Monom ℕ →
     MetaM (List Comp × ExprMap × Map Monom ℕ)
 | m, [],     mm => return ([], m, mm)

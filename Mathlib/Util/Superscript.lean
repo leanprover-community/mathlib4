@@ -29,7 +29,7 @@ universe u
 
 namespace Mathlib.Tactic
 
-open Lean Parser PrettyPrinter
+open Lean Parser PrettyPrinter Std
 
 namespace Superscript
 
@@ -38,9 +38,9 @@ instance : Hashable Char := ⟨fun c => hash c.1⟩
 /-- A bidirectional character mapping. -/
 structure Mapping where
   /-- Map from "special" (e.g. superscript) characters to "normal" characters. -/
-  toNormal : HashMap Char Char := {}
+  toNormal : Std.HashMap Char Char := {}
   /-- Map from "normal" text to "special" (e.g. superscript) characters. -/
-  toSpecial : HashMap Char Char := {}
+  toSpecial : Std.HashMap Char Char := {}
   deriving Inhabited
 
 /-- Constructs a mapping (intended for compile time use). Panics on violated invariants. -/
@@ -95,7 +95,8 @@ partial def satisfyTokensFn (p : Char → Bool) (errorMsg : String) (many := tru
 variable {α : Type u} [Inhabited α] (as : Array α) (leftOfPartition : α → Bool) in
 /-- Given a predicate `leftOfPartition` which is true for indexes `< i` and false for `≥ i`,
 returns `i`, by binary search. -/
-@[specialize] partial def partitionPoint (lo := 0) (hi := as.size) : Nat :=
+@[specialize]
+def partitionPoint (lo := 0) (hi := as.size) : Nat :=
   if lo < hi then
     let m := (lo + hi)/2
     let a := as.get! m
@@ -104,6 +105,7 @@ returns `i`, by binary search. -/
     else
       partitionPoint lo m
   else lo
+  termination_by hi - lo
 
 /-- The core function for super/subscript parsing. It consists of three stages:
 
@@ -128,7 +130,7 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
       let mut pos := start
       while pos < stopTk do
         let c := input.get pos
-        let c' := m.toNormal.find! c
+        let c' := m.toNormal[c]!
         newStr := newStr.push c'
         pos := pos + c
         if c.utf8Size != c'.utf8Size then
@@ -213,7 +215,7 @@ def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p
   Formatter.node.formatter k p
   let st ← get
   let transformed : Except String _ := st.stack.mapM (·.mapStringsM fun s => do
-    let .some s := s.toList.mapM (m.toSpecial.insert ' ' ' ').find? | .error s
+    let .some s := s.toList.mapM (m.toSpecial.insert ' ' ' ').get? | .error s
     .ok ⟨s⟩)
   match transformed with
   | .error err =>
@@ -249,6 +251,17 @@ def superscript.parenthesizer := Superscript.scriptParser.parenthesizer ``supers
 def superscript.formatter :=
   Superscript.scriptParser.formatter "superscript" .superscript ``superscript
 
+/-- Shorthand for `superscript(term)`.
+
+This is needed because the initializer below does not always run, and if it has not run then
+downstream parsers using the combinators will crash.
+
+See https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Non-builtin.20parser.20aliases/near/365125476
+for some context. -/
+@[term_parser]
+def superscriptTerm := leading_parser (withAnonymousAntiquot := false) superscript termParser
+
+initialize register_parser_alias superscript
 
 /--
 The parser `subscript(term)` parses a subscript. Basic usage is:
@@ -274,12 +287,16 @@ def subscript.parenthesizer := Superscript.scriptParser.parenthesizer ``subscrip
 @[combinator_formatter subscript]
 def subscript.formatter := Superscript.scriptParser.formatter "subscript" .subscript ``subscript
 
-initialize
-  registerAlias `superscript ``superscript superscript
-  registerAliasCore Formatter.formatterAliasesRef `superscript superscript.formatter
-  registerAliasCore Parenthesizer.parenthesizerAliasesRef `superscript superscript.parenthesizer
-  registerAlias `subscript ``subscript subscript
-  registerAliasCore Formatter.formatterAliasesRef `subscript subscript.formatter
-  registerAliasCore Parenthesizer.parenthesizerAliasesRef `subscript subscript.parenthesizer
+/-- Shorthand for `subscript(term)`.
+
+This is needed because the initializer below does not always run, and if it has not run then
+downstream parsers using the combinators will crash.
+
+See https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Non-builtin.20parser.20aliases/near/365125476
+for some context. -/
+@[term_parser]
+def subscriptTerm := leading_parser (withAnonymousAntiquot := false) subscript termParser
+
+initialize register_parser_alias subscript
 
 end Mathlib.Tactic

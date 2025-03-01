@@ -7,7 +7,7 @@ import Mathlib.Order.Lattice
 import Mathlib.Data.List.Sort
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Logic.Equiv.Functor
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Order.RelSeries
 
 /-!
@@ -194,7 +194,7 @@ theorem head_le_of_mem {s : CompositionSeries X} {x : X} (hx : x ∈ s) : s.head
   hi ▸ head_le _
 
 theorem last_eraseLast_le (s : CompositionSeries X) : s.eraseLast.last ≤ s.last := by
-  simp [eraseLast, last, s.strictMono.le_iff_le, Fin.le_iff_val_le_val, tsub_le_self]
+  simp [eraseLast, last, s.strictMono.le_iff_le, Fin.le_iff_val_le_val]
 
 theorem mem_eraseLast_of_ne_of_mem {s : CompositionSeries X} {x : X}
     (hx : x ≠ s.last) (hxs : x ∈ s) : x ∈ s.eraseLast := by
@@ -214,7 +214,7 @@ theorem mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
     have hi : (i : ℕ) < s.length := by
       conv_rhs => rw [← Nat.add_one_sub_one s.length, Nat.succ_sub h]
       exact i.2
-    -- porting note (#10745): was `simp [top, Fin.ext_iff, ne_of_lt hi]`.
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [top, Fin.ext_iff, ne_of_lt hi]`.
     simp [last, Fin.ext_iff, ne_of_lt hi, -Set.mem_range, Set.mem_range_self]
   · intro h
     exact mem_eraseLast_of_ne_of_mem h.1 h.2

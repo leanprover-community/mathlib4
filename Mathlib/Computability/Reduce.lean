@@ -106,8 +106,7 @@ theorem transitive_oneOneReducible {α} [Primcodable α] : Transitive (@OneOneRe
 
 namespace ComputablePred
 
-variable {α : Type*} {β : Type*} {σ : Type*}
-variable [Primcodable α] [Primcodable β] [Primcodable σ]
+variable {α : Type*} {β : Type*} [Primcodable α] [Primcodable β]
 
 open Computable
 
@@ -246,17 +245,17 @@ open Nat.Primrec
 
 theorem OneOneReducible.disjoin_left {α β} [Primcodable α] [Primcodable β] {p : α → Prop}
     {q : β → Prop} : p ≤₁ p ⊕' q :=
-  ⟨Sum.inl, Computable.sum_inl, fun _ _ => Sum.inl.inj_iff.1, fun _ => Iff.rfl⟩
+  ⟨Sum.inl, Computable.sumInl, fun _ _ => Sum.inl.inj_iff.1, fun _ => Iff.rfl⟩
 
 theorem OneOneReducible.disjoin_right {α β} [Primcodable α] [Primcodable β] {p : α → Prop}
     {q : β → Prop} : q ≤₁ p ⊕' q :=
-  ⟨Sum.inr, Computable.sum_inr, fun _ _ => Sum.inr.inj_iff.1, fun _ => Iff.rfl⟩
+  ⟨Sum.inr, Computable.sumInr, fun _ _ => Sum.inr.inj_iff.1, fun _ => Iff.rfl⟩
 
 theorem disjoin_manyOneReducible {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ]
     {p : α → Prop} {q : β → Prop} {r : γ → Prop} : p ≤₀ r → q ≤₀ r → (p ⊕' q) ≤₀ r
   | ⟨f, c₁, h₁⟩, ⟨g, c₂, h₂⟩ =>
     ⟨Sum.elim f g,
-      Computable.id.sum_casesOn (c₁.comp Computable.snd).to₂ (c₂.comp Computable.snd).to₂,
+      Computable.id.sumCasesOn (c₁.comp Computable.snd).to₂ (c₂.comp Computable.snd).to₂,
       fun x => by cases x <;> [apply h₁; apply h₂]⟩
 
 theorem disjoin_le {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ] {p : α → Prop}
@@ -266,9 +265,7 @@ theorem disjoin_le {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ]
       OneOneReducible.disjoin_right.to_many_one.trans h⟩,
     fun ⟨h₁, h₂⟩ => disjoin_manyOneReducible h₁ h₂⟩
 
-variable {α : Type u} [Primcodable α] [Inhabited α]
-variable {β : Type v} [Primcodable β] [Inhabited β]
-variable {γ : Type w} [Primcodable γ] [Inhabited γ]
+variable {α : Type u} [Primcodable α] [Inhabited α] {β : Type v} [Primcodable β] [Inhabited β]
 
 /-- Computable and injective mapping of predicates to sets of natural numbers.
 -/
@@ -311,9 +308,7 @@ protected theorem ind_on {C : ManyOneDegree → Prop} (d : ManyOneDegree)
     (h : ∀ p : Set ℕ, C (of p)) : C d :=
   Quotient.inductionOn' d h
 
-/-- Lifts a function on sets of natural numbers to many-one degrees.
--/
--- @[elab_as_elim] -- Porting note: unexpected eliminator resulting type
+/-- Lifts a function on sets of natural numbers to many-one degrees. -/
 protected abbrev liftOn {φ} (d : ManyOneDegree) (f : Set ℕ → φ)
     (h : ∀ p q, ManyOneEquiv p q → f p = f q) : φ :=
   Quotient.liftOn' d f h
@@ -323,12 +318,11 @@ protected theorem liftOn_eq {φ} (p : Set ℕ) (f : Set ℕ → φ)
     (h : ∀ p q, ManyOneEquiv p q → f p = f q) : (of p).liftOn f h = f p :=
   rfl
 
-/-- Lifts a binary function on sets of natural numbers to many-one degrees.
--/
-@[reducible, simp] -- @[elab_as_elim] -- Porting note: unexpected eliminator resulting type
+/-- Lifts a binary function on sets of natural numbers to many-one degrees. -/
+@[reducible, simp]
 protected def liftOn₂ {φ} (d₁ d₂ : ManyOneDegree) (f : Set ℕ → Set ℕ → φ)
     (h : ∀ p₁ p₂ q₁ q₂, ManyOneEquiv p₁ p₂ → ManyOneEquiv q₁ q₂ → f p₁ q₁ = f p₂ q₂) : φ :=
-  d₁.liftOn (fun p => d₂.liftOn (f p) fun q₁ q₂ hq => h _ _ _ _ (by rfl) hq)
+  d₁.liftOn (fun p => d₂.liftOn (f p) fun _ _ hq => h _ _ _ _ (by rfl) hq)
     (by
       intro p₁ p₂ hp
       induction d₂ using ManyOneDegree.ind_on
@@ -345,7 +339,6 @@ protected theorem liftOn₂_eq {φ} (p q : Set ℕ) (f : Set ℕ → Set ℕ →
 @[simp]
 theorem of_eq_of {p : α → Prop} {q : β → Prop} : of p = of q ↔ ManyOneEquiv p q := by
   rw [of, of, Quotient.eq'']
-  unfold Setoid.r
   simp
 
 instance instInhabited : Inhabited ManyOneDegree :=
@@ -370,7 +363,7 @@ private theorem le_antisymm {d₁ d₂ : ManyOneDegree} : d₁ ≤ d₂ → d₂
   induction d₁ using ManyOneDegree.ind_on
   induction d₂ using ManyOneDegree.ind_on
   intro hp hq
-  simp_all only [ManyOneEquiv, of_le_of, of_eq_of, true_and_iff]
+  simp_all only [ManyOneEquiv, of_le_of, of_eq_of, true_and]
 
 private theorem le_trans {d₁ d₂ d₃ : ManyOneDegree} : d₁ ≤ d₂ → d₂ ≤ d₃ → d₁ ≤ d₃ := by
   induction d₁ using ManyOneDegree.ind_on

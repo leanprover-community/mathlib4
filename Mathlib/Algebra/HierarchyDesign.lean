@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Eric Wieser
+Authors: Kim Morrison, Eric Wieser
 -/
 import Mathlib.Init
 import Batteries.Util.LibraryNote
@@ -139,7 +139,7 @@ etc., we also define "bundled" versions, which carry `category` instances.
 
 These bundled versions are usually named by appending `Cat`,
 so for example we have `AddCommGrp` as a bundled `AddCommGroup`, and `TopCommRingCat`
-(which bundles together `CommRing`, `TopologicalSpace`, and `TopologicalRing`).
+(which bundles together `CommRing`, `TopologicalSpace`, and `IsTopologicalRing`).
 
 These bundled versions have many appealing features:
 * a uniform notation for morphisms `X ⟶ Y`
@@ -182,8 +182,6 @@ briefly listing the parts of the API which still need to be provided.
 Hopefully this document makes it easy to assemble this list.
 
 Another alternative to a TODO list in the doc-strings is adding Github issues.
-
-
 -/
 
 

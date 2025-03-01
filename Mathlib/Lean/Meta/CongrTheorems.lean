@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Lean.Meta.Tactic.Cleanup
-import Lean.Meta.Tactic.Cases
 import Lean.Meta.Tactic.Refl
 import Mathlib.Logic.IsEmpty
 
@@ -105,6 +104,11 @@ class FastIsEmpty (α : Sort u) : Prop where
 
 protected theorem FastSubsingleton.elim {α : Sort u} [h : FastSubsingleton α] : (a b : α) → a = b :=
   h.inst.allEq
+
+protected theorem FastSubsingleton.helim {α β : Sort u} [FastSubsingleton α]
+    (h₂ : α = β) (a : α) (b : β) : HEq a b := by
+  have : Subsingleton α := FastSubsingleton.inst
+  exact Subsingleton.helim h₂ a b
 
 instance (priority := 100) {α : Type u} [inst : FastIsEmpty α] : FastSubsingleton α where
   inst := have := inst.inst; inferInstance
@@ -285,8 +289,8 @@ where
     let rec loop (i : Nat)
         (ftyx ftyy : Expr) (xs ys : Array Expr) (fixed' : Array Bool) : MetaM α := do
       if i < numVars then
-        let ftyx ← whnf ftyx
-        let ftyy ← whnf ftyy
+        let ftyx ← whnfD ftyx
+        let ftyy ← whnfD ftyy
         unless ftyx.isForall do
           throwError "doubleTelescope: function doesn't have enough parameters"
         withLocalDeclD ftyx.bindingName! ftyx.bindingDomain! fun fvarx => do

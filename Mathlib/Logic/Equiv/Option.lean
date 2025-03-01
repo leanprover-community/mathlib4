@@ -7,7 +7,6 @@ import Mathlib.Control.EquivFunctor
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Cases
 
 /-!
 # Equivalences for `Option α`
@@ -125,13 +124,13 @@ theorem option_symm_apply_none_iff : e.symm none = none ↔ e none = none :=
   ⟨fun h => by simpa using (congr_arg e h).symm, fun h => by simpa using (congr_arg e.symm h).symm⟩
 
 theorem some_removeNone_iff {x : α} : some (removeNone e x) = e none ↔ e.symm none = some x := by
-  cases' h : e (some x) with a
+  rcases h : e (some x) with a | a
   · rw [removeNone_none _ h]
     simpa using (congr_arg e.symm h).symm
   · rw [removeNone_some _ ⟨a, h⟩]
     have h1 := congr_arg e.symm h
     rw [symm_apply_apply] at h1
-    simp only [false_iff_iff, apply_eq_iff_eq]
+    simp only [apply_eq_iff_eq, reduceCtorEq]
     simp [h1, apply_eq_iff_eq]
 
 @[simp]
@@ -178,10 +177,7 @@ def optionSubtype [DecidableEq β] (x : β) :
     ext a
     cases a
     · simpa using e.property.symm
-    -- Porting note: this cases had been by `simpa`,
-    -- but `simp` here is mysteriously slow, even after squeezing.
-    -- `rfl` closes the goal quickly, so we use that.
-    · rfl
+    · simp
   right_inv e := by
     ext a
     rfl

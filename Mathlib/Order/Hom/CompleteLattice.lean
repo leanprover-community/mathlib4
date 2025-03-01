@@ -36,7 +36,7 @@ be satisfied by itself and all stricter types.
 
 Frame homs are Heyting homs.
 -/
-
+assert_not_exists Monoid
 
 open Function OrderDual Set
 
@@ -118,13 +118,13 @@ section Hom
 variable [FunLike F α β]
 
 @[simp] theorem map_iSup [SupSet α] [SupSet β] [sSupHomClass F α β] (f : F) (g : ι → α) :
-    f (⨆ i, g i) = ⨆ i, f (g i) := by simp [iSup, ← Set.range_comp, Function.comp]
+    f (⨆ i, g i) = ⨆ i, f (g i) := by simp [iSup, ← Set.range_comp, Function.comp_def]
 
 theorem map_iSup₂ [SupSet α] [SupSet β] [sSupHomClass F α β] (f : F) (g : ∀ i, κ i → α) :
     f (⨆ (i) (j), g i j) = ⨆ (i) (j), f (g i j) := by simp_rw [map_iSup]
 
 @[simp] theorem map_iInf [InfSet α] [InfSet β] [sInfHomClass F α β] (f : F) (g : ι → α) :
-    f (⨅ i, g i) = ⨅ i, f (g i) := by simp [iInf, ← Set.range_comp, Function.comp]
+    f (⨅ i, g i) = ⨅ i, f (g i) := by simp [iInf, ← Set.range_comp, Function.comp_def]
 
 theorem map_iInf₂ [InfSet α] [InfSet β] [sInfHomClass F α β] (f : F) (g : ∀ i, κ i → α) :
     f (⨅ (i) (j), g i j) = ⨅ (i) (j), f (g i j) := by simp_rw [map_iInf]
@@ -271,7 +271,7 @@ protected def id : sSupHom α α :=
 instance : Inhabited (sSupHom α α) :=
   ⟨sSupHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(sSupHom.id α) = id :=
   rfl
 
@@ -392,7 +392,7 @@ protected def id : sInfHom α α :=
 instance : Inhabited (sInfHom α α) :=
   ⟨sInfHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(sInfHom.id α) = id :=
   rfl
 
@@ -519,7 +519,7 @@ protected def id : FrameHom α α :=
 instance : Inhabited (FrameHom α α) :=
   ⟨FrameHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(FrameHom.id α) = id :=
   rfl
 
@@ -592,12 +592,6 @@ def tosSupHom (f : CompleteLatticeHom α β) : sSupHom α β :=
 def toBoundedLatticeHom (f : CompleteLatticeHom α β) : BoundedLatticeHom α β :=
   f
 
--- Porting note: We do not want CoeFun for this in lean 4
--- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`
--- directly. -/
--- instance : CoeFun (CompleteLatticeHom α β) fun _ => α → β :=
---   DFunLike.hasCoeToFun
-
 lemma toFun_eq_coe (f : CompleteLatticeHom α β) : f.toFun = f := rfl
 
 @[simp] lemma coe_tosInfHom (f : CompleteLatticeHom α β) : ⇑f.tosInfHom = f := rfl
@@ -632,7 +626,7 @@ protected def id : CompleteLatticeHom α α :=
 instance : Inhabited (CompleteLatticeHom α α) :=
   ⟨CompleteLatticeHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(CompleteLatticeHom.id α) = id :=
   rfl
 

@@ -5,7 +5,7 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 
 import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
@@ -17,8 +17,8 @@ functions, started in `Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic`.
 
 ## References
 
-* Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
-  Springer, 2016.
+* [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
+  Springer, 2016.][Hytönen_VanNeerven_Veraar_Wies_2016]
 
 -/
 
@@ -46,7 +46,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 theorem aestronglyMeasurable_smul_const_iff {f : α → 𝕜} {c : E} (hc : c ≠ 0) :
     AEStronglyMeasurable (fun x => f x • c) μ ↔ AEStronglyMeasurable f μ :=
-  (closedEmbedding_smul_left hc).toEmbedding.aestronglyMeasurable_comp_iff
+  (isClosedEmbedding_smul_left hc).isEmbedding.aestronglyMeasurable_comp_iff
 
 end NormedSpace
 

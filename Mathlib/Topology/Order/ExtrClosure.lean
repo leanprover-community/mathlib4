@@ -20,7 +20,7 @@ open Filter Set
 open Topology
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [Preorder Y]
-  [OrderClosedTopology Y] {f g : X → Y} {s : Set X} {a : X}
+  [OrderClosedTopology Y] {f : X → Y} {s : Set X} {a : X}
 
 protected theorem IsMaxOn.closure (h : IsMaxOn f s a) (hc : ContinuousOn f (closure s)) :
     IsMaxOn f (closure s) a := fun x hx =>

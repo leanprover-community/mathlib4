@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
 -/
 import Mathlib.Algebra.Polynomial.Splits
-import Mathlib.RingTheory.MvPolynomial.Symmetric
+import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 
 /-!
 # Vieta's Formula
@@ -22,12 +22,9 @@ we derive `Polynomial.coeff_eq_esymm_roots_of_card`, the relationship between th
 the roots of `p` for a polynomial `p` that splits (i.e. having as many roots as its degree).
 -/
 
-
-open Polynomial
+open Finset Polynomial
 
 namespace Multiset
-
-open Polynomial
 
 section Semiring
 
@@ -70,8 +67,8 @@ theorem prod_X_add_C_coeff' {σ} (s : Multiset σ) (r : σ → R) {k : ℕ} (h :
     (s.map fun i => X + C (r i)).prod.coeff k = (s.map r).esymm (Multiset.card s - k) := by
   erw [← map_map (fun r => X + C r) r, prod_X_add_C_coeff] <;> rw [s.card_map r]; assumption
 
-theorem _root_.Finset.prod_X_add_C_coeff {σ} (s : Finset σ) (r : σ → R) {k : ℕ} (h : k ≤ s.card) :
-    (∏ i ∈ s, (X + C (r i))).coeff k = ∑ t ∈ s.powersetCard (s.card - k), ∏ i ∈ t, r i := by
+theorem _root_.Finset.prod_X_add_C_coeff {σ} (s : Finset σ) (r : σ → R) {k : ℕ} (h : k ≤ #s) :
+    (∏ i ∈ s, (X + C (r i))).coeff k = ∑ t ∈ s.powersetCard (#s - k), ∏ i ∈ t, r i := by
   rw [Finset.prod, prod_X_add_C_coeff' _ r h, Finset.esymm_map_val]
   rfl
 

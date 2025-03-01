@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Group.Support
+import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Order.WellFoundedSet
 
 /-!
@@ -25,6 +26,8 @@ in the file `RingTheory/LaurentSeries`.
   coefficient if `x ≠ 0`, and is `⊤` when `x = 0`.
 * `order x` is a minimal element of `Γ` where `x` has a nonzero coefficient if `x ≠ 0`, and is zero
   when `x = 0`.
+* `map` takes each coefficient of a Hahn series to its target under a zero-preserving map.
+* `embDomain` preserves coefficients, but embeds the index set `Γ` in a larger poset.
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
@@ -43,7 +46,7 @@ structure HahnSeries (Γ : Type*) (R : Type*) [PartialOrder Γ] [Zero R] where
   coeff : Γ → R
   isPWO_support' : (Function.support coeff).IsPWO
 
-variable {Γ : Type*} {R : Type*}
+variable {Γ Γ' R S : Type*}
 
 namespace HahnSeries
 
@@ -86,15 +89,17 @@ instance [Subsingleton R] : Subsingleton (HahnSeries Γ R) :=
   ⟨fun _ _ => HahnSeries.ext (by subsingleton)⟩
 
 @[simp]
-theorem zero_coeff {a : Γ} : (0 : HahnSeries Γ R).coeff a = 0 :=
+theorem coeff_zero {a : Γ} : (0 : HahnSeries Γ R).coeff a = 0 :=
   rfl
+
+@[deprecated (since := "2025-01-31")] alias zero_coeff := coeff_zero
 
 @[simp]
 theorem coeff_fun_eq_zero_iff {x : HahnSeries Γ R} : x.coeff = 0 ↔ x = 0 :=
   coeff_injective.eq_iff' rfl
 
 theorem ne_zero_of_coeff_ne_zero {x : HahnSeries Γ R} {g : Γ} (h : x.coeff g ≠ 0) : x ≠ 0 :=
-  mt (fun x0 => (x0.symm ▸ zero_coeff : x.coeff g = 0)) h
+  mt (fun x0 => (x0.symm ▸ coeff_zero : x.coeff g = 0)) h
 
 @[simp]
 theorem support_zero : support (0 : HahnSeries Γ R) = ∅ :=
@@ -108,8 +113,20 @@ nonrec theorem support_nonempty_iff {x : HahnSeries Γ R} : x.support.Nonempty �
 theorem support_eq_empty_iff {x : HahnSeries Γ R} : x.support = ∅ ↔ x = 0 :=
   Function.support_eq_empty_iff.trans coeff_fun_eq_zero_iff
 
+/-- The map of Hahn series induced by applying a zero-preserving map to each coefficient. -/
+@[simps]
+def map [Zero S] (x : HahnSeries Γ R) {F : Type*} [FunLike F R S] [ZeroHomClass F R S] (f : F) :
+    HahnSeries Γ S where
+  coeff g := f (x.coeff g)
+  isPWO_support' := x.isPWO_support.mono <| Function.support_comp_subset (ZeroHomClass.map_zero f) _
+
+@[simp]
+protected lemma map_zero [Zero S] (f : ZeroHom R S) :
+    (0 : HahnSeries Γ R).map f = 0 := by
+  ext; simp
+
 /-- Change a HahnSeries with coefficients in HahnSeries to a HahnSeries on the Lex product. -/
-def ofIterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ' R)) :
+def ofIterate [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ' R)) :
     HahnSeries (Γ ×ₗ Γ') R where
   coeff := fun g => coeff (coeff x g.1) g.2
   isPWO_support' := by
@@ -125,7 +142,7 @@ lemma mk_eq_zero (f : Γ → R) (h) : HahnSeries.mk f h = 0 ↔ f = 0 := by
   rfl
 
 /-- Change a Hahn series on a lex product to a Hahn series with coefficients in a Hahn series. -/
-def toIterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R) :
+def toIterate [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R) :
     HahnSeries Γ (HahnSeries Γ' R) where
   coeff := fun g => {
     coeff := fun g' => coeff x (g, g')
@@ -141,7 +158,7 @@ def toIterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R)
 
 /-- The equivalence between iterated Hahn series and Hahn series on the lex product. -/
 @[simps]
-def iterateEquiv {Γ' : Type*} [PartialOrder Γ'] :
+def iterateEquiv [PartialOrder Γ'] :
     HahnSeries Γ (HahnSeries Γ' R) ≃ HahnSeries (Γ ×ₗ Γ') R where
   toFun := ofIterate
   invFun := toIterate
@@ -159,16 +176,22 @@ def single (a : Γ) : ZeroHom R (HahnSeries Γ R) where
 variable {a b : Γ} {r : R}
 
 @[simp]
-theorem single_coeff_same (a : Γ) (r : R) : (single a r).coeff a = r := by
+theorem coeff_single_same (a : Γ) (r : R) : (single a r).coeff a = r := by
   classical exact Pi.single_eq_same (f := fun _ => R) a r
 
+@[deprecated (since := "2025-01-31")] alias single_coeff_same := coeff_single_same
+
 @[simp]
-theorem single_coeff_of_ne (h : b ≠ a) : (single a r).coeff b = 0 := by
+theorem coeff_single_of_ne (h : b ≠ a) : (single a r).coeff b = 0 := by
   classical exact Pi.single_eq_of_ne (f := fun _ => R) h r
 
+@[deprecated (since := "2025-01-31")] alias single_coeff_of_ne := coeff_single_of_ne
+
 open Classical in
-theorem single_coeff : (single a r).coeff b = if b = a then r else 0 := by
+theorem coeff_single : (single a r).coeff b = if b = a then r else 0 := by
   split_ifs with h <;> simp [h]
+
+@[deprecated (since := "2025-01-31")] alias single_coeff := coeff_single
 
 @[simp]
 theorem support_single_of_ne (h : r ≠ 0) : support (single a r) = {a} := by
@@ -180,12 +203,11 @@ theorem support_single_subset : support (single a r) ⊆ {a} := by
 theorem eq_of_mem_support_single {b : Γ} (h : b ∈ support (single a r)) : b = a :=
   support_single_subset h
 
---@[simp] Porting note (#10618): simp can prove it
 theorem single_eq_zero : single a (0 : R) = 0 :=
   (single a).map_zero
 
 theorem single_injective (a : Γ) : Function.Injective (single a : R → HahnSeries Γ R) :=
-  fun r s rs => by rw [← single_coeff_same a r, ← single_coeff_same a s, rs]
+  fun r s rs => by rw [← coeff_single_same a r, ← coeff_single_same a s, rs]
 
 theorem single_ne_zero (h : r ≠ 0) : single a r ≠ 0 := fun con =>
   h (single_injective a (con.trans single_eq_zero.symm))
@@ -194,12 +216,17 @@ theorem single_ne_zero (h : r ≠ 0) : single a r ≠ 0 := fun con =>
 theorem single_eq_zero_iff {a : Γ} {r : R} : single a r = 0 ↔ r = 0 :=
   map_eq_zero_iff _ <| single_injective a
 
+@[simp]
+protected lemma map_single [Zero S] (f : ZeroHom R S) : (single a r).map f = single a (f r) := by
+  ext g
+  by_cases h : g = a <;> simp [h]
+
 instance [Nonempty Γ] [Nontrivial R] : Nontrivial (HahnSeries Γ R) :=
   ⟨by
     obtain ⟨r, s, rs⟩ := exists_pair_ne R
     inhabit Γ
     refine ⟨single default r, single default s, fun con => rs ?_⟩
-    rw [← single_coeff_same (default : Γ) r, con, single_coeff_same]⟩
+    rw [← coeff_single_same (default : Γ) r, con, coeff_single_same]⟩
 
 section Order
 
@@ -212,6 +239,10 @@ def orderTop (x : HahnSeries Γ R) : WithTop Γ :=
 @[simp]
 theorem orderTop_zero : orderTop (0 : HahnSeries Γ R) = ⊤ :=
   dif_pos rfl
+
+@[simp]
+theorem orderTop_of_Subsingleton [Subsingleton R] {x : HahnSeries Γ R} : x.orderTop = ⊤ :=
+  (Subsingleton.eq_zero x) ▸ orderTop_zero
 
 theorem orderTop_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) :
     orderTop x = x.isWF_support.min (support_nonempty_iff.2 hx) :=
@@ -229,6 +260,11 @@ theorem orderTop_eq_top_iff {x : HahnSeries Γ R} : orderTop x = ⊤ ↔ x = 0 :
   · contrapose!
     exact ne_zero_iff_orderTop.mp
   · simp_all only [orderTop_zero, implies_true]
+
+theorem orderTop_eq_of_le {x : HahnSeries Γ R} {g : Γ} (hg : g ∈ x.support)
+    (hx : ∀ g' ∈ x.support, g ≤ g') : orderTop x = g := by
+  rw [orderTop_of_ne <| support_nonempty_iff.mp <| Set.nonempty_of_mem hg,
+    x.isWF_support.min_eq_of_le hg hx]
 
 theorem untop_orderTop_of_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) :
     WithTop.untop x.orderTop (ne_zero_iff_orderTop.mp hx) =
@@ -266,7 +302,7 @@ theorem lt_orderTop_single {g g' : Γ} (hgg' : g < g') : g < (single g' r).order
 theorem coeff_eq_zero_of_lt_orderTop {x : HahnSeries Γ R} {i : Γ} (hi : i < x.orderTop) :
     x.coeff i = 0 := by
   rcases eq_or_ne x 0 with (rfl | hx)
-  · exact zero_coeff
+  · exact coeff_zero
   contrapose! hi
   rw [← mem_support] at hi
   rw [orderTop_of_ne hx, WithTop.coe_lt_coe]
@@ -357,14 +393,14 @@ theorem zero_le_orderTop_iff {x : HahnSeries Γ R} : 0 ≤ x.orderTop ↔ 0 ≤ 
 
 theorem leadingCoeff_eq {x : HahnSeries Γ R} : x.leadingCoeff = x.coeff x.order := by
   by_cases h : x = 0
-  · rw [h, leadingCoeff_zero, zero_coeff]
+  · rw [h, leadingCoeff_zero, coeff_zero]
   · rw [leadingCoeff_of_ne h, order_of_ne h]
 
 end Order
 
 section Domain
 
-variable {Γ' : Type*} [PartialOrder Γ']
+variable [PartialOrder Γ']
 
 open Classical in
 /-- Extends the domain of a `HahnSeries` by an `OrderEmbedding`. -/
@@ -419,7 +455,7 @@ theorem embDomain_single {f : Γ ↪o Γ'} {g : Γ} {r : R} :
   ext g'
   by_cases h : g' = f g
   · simp [h]
-  rw [embDomain_notin_image_support, single_coeff_of_ne h]
+  rw [embDomain_notin_image_support, coeff_single_of_ne h]
   by_cases hr : r = 0
   · simp [hr]
   rwa [support_single_of_ne hr, Set.image_singleton, Set.mem_singleton_iff]
@@ -427,7 +463,7 @@ theorem embDomain_single {f : Γ ↪o Γ'} {g : Γ} {r : R} :
 theorem embDomain_injective {f : Γ ↪o Γ'} :
     Function.Injective (embDomain f : HahnSeries Γ R → HahnSeries Γ' R) := fun x y xy => by
   ext g
-  rw [HahnSeries.ext_iff, Function.funext_iff] at xy
+  rw [HahnSeries.ext_iff, funext_iff] at xy
   have xyg := xy (f g)
   rwa [embDomain_coeff, embDomain_coeff] at xyg
 
@@ -452,10 +488,9 @@ theorem BddBelow_zero [Nonempty Γ] : BddBelow (Function.support (0 : Γ → R))
 
 variable [LocallyFiniteOrder Γ]
 
-theorem suppBddBelow_supp_PWO (f : Γ → R)
-    (hf : BddBelow (Function.support f)) :
+theorem suppBddBelow_supp_PWO (f : Γ → R) (hf : BddBelow (Function.support f)) :
     (Function.support f).IsPWO :=
-  Set.isWF_iff_isPWO.mp hf.wellFoundedOn_lt
+  hf.isWF.isPWO
 
 /-- Construct a Hahn series from any function whose support is bounded below. -/
 @[simps]

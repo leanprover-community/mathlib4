@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Analysis.Normed.Group.Int
+import Mathlib.Analysis.Normed.Group.Subgroup
 import Mathlib.Analysis.Normed.Group.Uniform
 
 /-!
@@ -82,7 +83,7 @@ def ofLipschitz (f : V₁ →+ V₂) {K : ℝ≥0} (h : LipschitzWith K f) : Nor
 
 instance funLike : FunLike (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   coe := toFun
-  coe_injective' := fun f g h => by cases f; cases g; congr
+  coe_injective' f g h := by cases f; cases g; congr
 
 -- Porting note: moved this declaration up so we could get a `FunLike` instance sooner.
 instance toAddMonoidHomClass : AddMonoidHomClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
@@ -110,7 +111,6 @@ variable (f g)
 theorem toFun_eq_coe : f.toFun = f :=
   rfl
 
--- Porting note: removed `simp` because `simpNF` complains the LHS doesn't simplify.
 theorem coe_mk (f) (h₁) (h₂) (h₃) : ⇑(⟨f, h₁, h₂, h₃⟩ : NormedAddGroupHom V₁ V₂) = f :=
   rfl
 
@@ -230,8 +230,11 @@ protected theorem uniformContinuous (f : NormedAddGroupHom V₁ V₂) : UniformC
 protected theorem continuous (f : NormedAddGroupHom V₁ V₂) : Continuous f :=
   f.uniformContinuous.continuous
 
+instance : ContinuousMapClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
+  map_continuous := fun f => f.continuous
+
 theorem ratio_le_opNorm (x : V₁) : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
-  div_le_of_nonneg_of_le_mul (norm_nonneg _) f.opNorm_nonneg (le_opNorm _ _)
+  div_le_of_le_mul₀ (norm_nonneg _) f.opNorm_nonneg (le_opNorm _ _)
 
 /-- If one controls the norm of every `f x`, then one controls the norm of `f`. -/
 theorem opNorm_le_bound {M : ℝ} (hMp : 0 ≤ M) (hM : ∀ x, ‖f x‖ ≤ M * ‖x‖) : ‖f‖ ≤ M :=
@@ -476,7 +479,7 @@ instance nsmul : SMul ℕ (NormedAddGroupHom V₁ V₂) where
         let ⟨b, hb⟩ := f.bound'
         ⟨n • b, fun v => by
           rw [Pi.smul_apply, nsmul_eq_mul, mul_assoc]
-          exact (norm_nsmul_le _ _).trans (by gcongr; apply hb)⟩ }
+          exact norm_nsmul_le.trans (by gcongr; apply hb)⟩ }
 
 @[simp]
 theorem coe_nsmul (r : ℕ) (f : NormedAddGroupHom V₁ V₂) : ⇑(r • f) = r • ⇑f :=
@@ -532,7 +535,7 @@ instance toNormedAddCommGroup {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [Nor
       add_le' := opNorm_add_le
       eq_zero_of_map_eq_zero' := fun _f => opNorm_zero_iff.1 }
 
-/-- Coercion of a `NormedAddGroupHom` is an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`.  -/
+/-- Coercion of a `NormedAddGroupHom` is an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`. -/
 @[simps]
 def coeAddHom : NormedAddGroupHom V₁ V₂ →+ V₁ → V₂ where
   toFun := DFunLike.coe
@@ -630,7 +633,7 @@ variable {V W V₁ V₂ V₃ : Type*} [SeminormedAddCommGroup V] [SeminormedAddC
 @[simps!]
 def incl (s : AddSubgroup V) : NormedAddGroupHom s V where
   toFun := (Subtype.val : s → V)
-  map_add' v w := AddSubgroup.coe_add _ _ _
+  map_add' _ _ := AddSubgroup.coe_add _ _ _
   bound' := ⟨1, fun v => by rw [one_mul, AddSubgroup.coe_norm]⟩
 
 theorem norm_incl {V' : AddSubgroup V} (x : V') : ‖incl _ x‖ = ‖x‖ :=
@@ -656,7 +659,7 @@ theorem mem_ker (v : V₁) : v ∈ f.ker ↔ f v = 0 := by
 @[simps]
 def ker.lift (h : g.comp f = 0) : NormedAddGroupHom V₁ g.ker where
   toFun v := ⟨f v, by rw [g.mem_ker, ← comp_apply g f, h, zero_apply]⟩
-  map_add' v w := by simp only [map_add, AddSubmonoid.mk_add_mk]
+  map_add' v w := by simp only [map_add, AddMemClass.mk_add_mk]
   bound' := f.bound'
 
 @[simp]

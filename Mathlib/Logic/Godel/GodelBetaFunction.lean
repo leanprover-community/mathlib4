@@ -8,6 +8,10 @@ import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.ChineseRemainder
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Nat.Pairing
+import Mathlib.Order.Fin.Basic
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
 # Gödel's Beta Function Lemma
@@ -68,6 +72,7 @@ lemma coprimes_lt (a : Fin m → ℕ) (i) : a i < coprimes a i := by
       (le_add_right _ _))
   simpa only [coprimes] using lt_of_lt_of_le h₁ h₂
 
+open scoped Function in -- required for scoped `on` notation
 private lemma pairwise_coprime_coprimes (a : Fin m → ℕ) : Pairwise (Coprime on coprimes a) := by
   intro i j hij
   wlog ltij : i < j
@@ -76,28 +81,27 @@ private lemma pairwise_coprime_coprimes (a : Fin m → ℕ) : Pairwise (Coprime 
   have hja : j < supOfSeq a := lt_of_lt_of_le j.prop (le_step (le_max_left _ _))
   exact coprime_mul_succ
     (Nat.succ_le_succ <| le_of_lt ltij)
-    (Nat.dvd_factorial
-      (by simp [Nat.succ_sub_succ, ltij])
+    (Nat.dvd_factorial (by omega)
       (by simpa only [Nat.succ_sub_succ] using le_of_lt (lt_of_le_of_lt (sub_le j i) hja)))
 
-/-- Gödel's Beta Function. This is similar to `(Encodable.decodeList).get i`, but it is easier to
+/-- Gödel's Beta Function. This is similar to `(Encodable.decodeList)[i]`, but it is easier to
 prove that it is arithmetically definable. -/
 def beta (n i : ℕ) : ℕ := n.unpair.1 % ((i + 1) * n.unpair.2 + 1)
 
 /-- Inverse of Gödel's Beta Function. This is similar to `Encodable.encodeList`, but it is easier
 to prove that it is arithmetically definable. -/
 def unbeta (l : List ℕ) : ℕ :=
-  (chineseRemainderOfFinset l.get (coprimes l.get) Finset.univ
+  (chineseRemainderOfFinset (l[·]) (coprimes (l[·])) Finset.univ
     (by simp [coprimes])
     (by simpa using Set.pairwise_univ.mpr (pairwise_coprime_coprimes _)) : ℕ).pair
-  (supOfSeq l.get)!
+  (supOfSeq (l[·]))!
 
 /-- **Gödel's Beta Function Lemma** -/
-lemma beta_unbeta_coe (l : List ℕ) (i : Fin l.length) : beta (unbeta l) i = l.get i := by
+lemma beta_unbeta_coe (l : List ℕ) (i : Fin l.length) : beta (unbeta l) i = l[i] := by
   simpa [beta, unbeta, coprimes] using mod_eq_of_modEq
-    ((chineseRemainderOfFinset l.get (coprimes l.get) Finset.univ
+    ((chineseRemainderOfFinset (l[·]) (coprimes (l[·])) Finset.univ
       (by simp [coprimes])
       (by simpa using Set.pairwise_univ.mpr (pairwise_coprime_coprimes _))).prop i (by simp))
-    (coprimes_lt l.get _)
+    (coprimes_lt _ _)
 
 end Nat

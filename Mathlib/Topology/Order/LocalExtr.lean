@@ -62,7 +62,7 @@ def IsLocalMin :=
 def IsLocalMax :=
   IsMaxFilter f (𝓝 a) a
 
-/-- `IsLocalExtrOn f s a` means `IsLocalMinOn f s a ∨ IsLocalMaxOn f s a`. -/
+/-- `IsLocalExtr f s a` means `IsLocalMin f s a ∨ IsLocalMax f s a`. -/
 def IsLocalExtr :=
   IsExtrFilter f (𝓝 a) a
 
@@ -221,6 +221,8 @@ nonrec theorem IsLocalMaxOn.comp_antitone (hf : IsLocalMaxOn f s a) {g : β → 
 nonrec theorem IsLocalExtrOn.comp_antitone (hf : IsLocalExtrOn f s a) {g : β → γ}
     (hg : Antitone g) : IsLocalExtrOn (g ∘ f) s a :=
   hf.comp_antitone hg
+
+open scoped Relator
 
 nonrec theorem IsLocalMin.bicomp_mono [Preorder δ] {op : β → γ → δ}
     (hop : ((· ≤ ·) ⇒ (· ≤ ·) ⇒ (· ≤ ·)) op op) (hf : IsLocalMin f a) {g : α → γ}
@@ -520,3 +522,21 @@ theorem Filter.EventuallyEq.isLocalExtr_iff {f g : α → β} {a : α} (heq : f 
   heq.isExtrFilter_iff heq.eq_of_nhds
 
 end Eventually
+
+/-- If `f` is monotone to the left and antitone to the right, then it has a local maximum. -/
+lemma isLocalMax_of_mono_anti' {α : Type*} [TopologicalSpace α] [LinearOrder α]
+    {β : Type*} [Preorder β] {b : α} {f : α → β}
+    {a : Set α} (ha : a ∈ 𝓝[≤] b) {c : Set α} (hc : c ∈ 𝓝[≥] b)
+    (h₀ : MonotoneOn f a) (h₁ : AntitoneOn f c) : IsLocalMax f b :=
+  have : b ∈ a := mem_of_mem_nhdsWithin (by simp) ha
+  have : b ∈ c := mem_of_mem_nhdsWithin (by simp) hc
+  mem_of_superset (nhds_of_Ici_Iic ha hc) (fun x _ => by rcases le_total x b <;> aesop)
+
+/-- If `f` is antitone to the left and monotone to the right, then it has a local minimum. -/
+lemma isLocalMin_of_anti_mono' {α : Type*} [TopologicalSpace α] [LinearOrder α]
+    {β : Type*} [Preorder β] {b : α} {f : α → β}
+    {a : Set α} (ha : a ∈ 𝓝[≤] b) {c : Set α} (hc : c ∈ 𝓝[≥] b)
+    (h₀ : AntitoneOn f a) (h₁ : MonotoneOn f c) : IsLocalMin f b :=
+  have : b ∈ a := mem_of_mem_nhdsWithin (by simp) ha
+  have : b ∈ c := mem_of_mem_nhdsWithin (by simp) hc
+  mem_of_superset (nhds_of_Ici_Iic ha hc) (fun x _ => by rcases le_total x b <;> aesop)

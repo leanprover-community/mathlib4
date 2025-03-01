@@ -7,6 +7,7 @@ import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.Perm.Option
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Equiv.Option
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Derangements on types
@@ -95,9 +96,8 @@ def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
       · rw [Set.eq_empty_iff_forall_not_mem]
         exact ⟨fun h x hx => h.2 (h.1 hx ▸ hx), fun h => ⟨fun x hx => (h _ hx).elim, h _⟩⟩
     _ ≃ derangements ({a}ᶜ : Set α) ⊕ derangements α := by
-      -- Porting note: was `subtypeEquiv _` but now needs the placeholder to be provided explicitly
       refine
-        Equiv.sumCongr ((derangements.subtypeEquiv (· ∈ ({a}ᶜ : Set α))).trans <|
+        Equiv.sumCongr ((derangements.subtypeEquiv _).trans <|
             subtypeEquivRight fun x => ?_).symm
           (subtypeEquivRight fun f => mem_derangements_iff_fixedPoints_eq_empty.symm)
       rw [eq_comm, Set.ext_iff]
@@ -134,7 +134,7 @@ theorem RemoveNone.fiber_some (a : α) :
     rintro ⟨F, F_derangement, F_none, rfl⟩ x x_fixed
     rw [mem_fixedPoints_iff] at x_fixed
     apply_fun some at x_fixed
-    cases' Fx : F (some x) with y
+    rcases Fx : F (some x) with - | y
     · rwa [removeNone_none F Fx, F_none, Option.some_inj, eq_comm] at x_fixed
     · exfalso
       rw [removeNone_some F ⟨y, Fx⟩] at x_fixed
@@ -145,7 +145,7 @@ theorem RemoveNone.fiber_some (a : α) :
     · intro x
       apply_fun fun x => Equiv.swap none (some a) x
       simp only [Perm.decomposeOption_symm_apply, swap_apply_self, Perm.coe_mul]
-      cases' x with x
+      rcases x with - | x
       · simp
       simp only [comp, optionCongr_apply, Option.map_some', swap_apply_self]
       by_cases x_vs_a : x = a

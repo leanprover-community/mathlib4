@@ -50,7 +50,7 @@ universe u v w z
 
 open scoped Matrix
 
-open Matrix FiniteDimensional Fintype Polynomial Finset IntermediateField
+open Matrix Module Fintype Polynomial Finset IntermediateField
 
 namespace Algebra
 
@@ -190,7 +190,7 @@ theorem discr_powerBasis_eq_prod'' [Algebra.IsSeparable K L] (e : Fin pb.dim ≃
   have h₂ : 2 ∣ pb.dim * (pb.dim - 1) := pb.dim.even_mul_pred_self.two_dvd
   have hne : ((2 : ℕ) : ℚ) ≠ 0 := by simp
   have hle : 1 ≤ pb.dim := by
-    rw [← hn, Nat.one_le_iff_ne_zero, ← zero_lt_iff, FiniteDimensional.finrank_pos_iff]
+    rw [← hn, Nat.one_le_iff_ne_zero, ← zero_lt_iff, Module.finrank_pos_iff]
     infer_instance
   rw [hn, Nat.cast_div h₂ hne, Nat.cast_mul, Nat.cast_sub hle]
   field_simp
@@ -227,7 +227,7 @@ theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
       aeval_root_derivative_of_splits (minpoly.monic (Algebra.IsSeparable.isIntegral K pb.gen))
         (IsAlgClosed.splits_codomain _) (hroots σ),
       ← Finset.prod_mk _ (hnodup.erase _)]
-  rw [prod_sigma', prod_sigma']
+  rw [Finset.prod_sigma', Finset.prod_sigma']
   refine prod_bij' (fun i _ ↦ ⟨e i.2, e i.1 pb.gen⟩)
     (fun σ hσ ↦ ⟨e.symm (PowerBasis.lift pb σ.2 ?_), e.symm σ.1⟩) ?_ ?_ ?_ ?_ (fun i _ ↦ by simp)
   -- Porting note: `@mem_compl` was not necessary.
@@ -288,9 +288,9 @@ theorem discr_mul_isIntegral_mem_adjoin [Algebra.IsSeparable K L] [IsIntegrallyC
   refine
     Subalgebra.sum_mem _ fun σ _ => Subalgebra.zsmul_mem _ (Subalgebra.prod_mem _ fun j _ => ?_) _
   by_cases hji : j = i
-  · simp only [updateColumn_apply, hji, eq_self_iff_true, PowerBasis.coe_basis]
+  · simp only [updateCol_apply, hji, eq_self_iff_true, PowerBasis.coe_basis]
     exact mem_bot.2 (IsIntegrallyClosed.isIntegral_iff.1 <| isIntegral_trace (hz.mul <| hint.pow _))
-  · simp only [updateColumn_apply, hji, PowerBasis.coe_basis]
+  · simp only [updateCol_apply, hji, PowerBasis.coe_basis]
     exact mem_bot.2
       (IsIntegrallyClosed.isIntegral_iff.1 <| isIntegral_trace <| (hint.pow _).mul (hint.pow _))
 

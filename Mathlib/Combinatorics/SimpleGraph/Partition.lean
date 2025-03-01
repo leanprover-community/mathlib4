@@ -42,6 +42,7 @@ graph colorings and back is the identity.
 
 -/
 
+assert_not_exists Field
 
 universe u v
 

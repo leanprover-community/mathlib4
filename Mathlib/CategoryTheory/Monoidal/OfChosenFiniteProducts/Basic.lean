@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Simon Hudon
+Authors: Kim Morrison, Simon Hudon
 -/
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
@@ -77,6 +77,28 @@ pair, these isomorphisms constitute a braiding.
 def BinaryFan.braiding {X Y : C} {s : BinaryFan X Y} (P : IsLimit s) {t : BinaryFan Y X}
     (Q : IsLimit t) : s.pt ≅ t.pt :=
   IsLimit.conePointUniqueUpToIso P Q.swapBinaryFan
+
+section
+
+variable {X Y : C} {s : BinaryFan X Y} (P : IsLimit s) {t : BinaryFan Y X} (Q : IsLimit t)
+
+@[reassoc (attr := simp)]
+theorem BinaryFan.braiding_hom_fst : (braiding P Q).hom ≫ t.fst = s.snd :=
+  IsLimit.conePointUniqueUpToIso_hom_comp P _ ⟨WalkingPair.right⟩
+
+@[reassoc (attr := simp)]
+theorem BinaryFan.braiding_hom_snd : (braiding P Q).hom ≫ t.snd = s.fst :=
+  IsLimit.conePointUniqueUpToIso_hom_comp P _ ⟨WalkingPair.left⟩
+
+@[reassoc (attr := simp)]
+theorem BinaryFan.braiding_inv_fst : (braiding P Q).inv ≫ s.fst = t.snd :=
+  IsLimit.conePointUniqueUpToIso_inv_comp P _ ⟨WalkingPair.left⟩
+
+@[reassoc (attr := simp)]
+theorem BinaryFan.braiding_inv_snd : (braiding P Q).inv ≫ s.snd = t.fst :=
+  IsLimit.conePointUniqueUpToIso_inv_comp P _ ⟨WalkingPair.right⟩
+
+end
 
 /-- Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s` over `sXY.X Z`,
 if `sYZ` is a limit cone we can construct a binary fan over `X sYZ.X`.
@@ -311,8 +333,6 @@ a fixed choice of limit data for the empty functor, and for `pair X Y` for every
 
 This is an implementation detail for `SymmetricOfChosenFiniteProducts`.
 -/
--- Porting note(#5171): linter `has_nonempty_instance` not ported yet
--- @[nolint has_nonempty_instance]
 @[nolint unusedArguments]
 def MonoidalOfChosenFiniteProductsSynonym (_𝒯 : LimitCone (Functor.empty.{0} C))
     (_ℬ : ∀ X Y : C, LimitCone (pair X Y)) :=
