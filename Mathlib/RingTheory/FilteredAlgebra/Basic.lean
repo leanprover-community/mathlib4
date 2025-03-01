@@ -81,15 +81,15 @@ a `R` module `M`, an increasing series `FM` in `σM` is a module filtration if `
 and the pointwise scalar multiplication of `F i` and `FM j` is in `F (i +ᵥ j)`.
 
 The index set `ιM` for the module can be more general, however usually we take `ιM = ι`. -/
-class IsModuleFiltration (F : ι → σ) (F_lt : outParam <| ι → σ) [isfil : IsRingFiltration F F_lt]
+class IsModuleFiltration (F : ι → σ) (F_lt : outParam <| ι → σ) [IsRingFiltration F F_lt]
     (F' : ιM → σM) (F'_lt : outParam <| ιM → σM)
     extends IsFiltration F' F'_lt, SetLike.GradedSMul F F' : Prop
 
 /-- A convenience constructor for `IsModuleFiltration` when the index is the integers. -/
 lemma IsModuleFiltration.mk_int (F : ℤ → σ) (mono : Monotone F) [SetLike.GradedMonoid F]
     (F' : ℤ → σM) (mono' : Monotone F') [SetLike.GradedSMul F F']:
-    IsModuleFiltration (isfil := IsRingFiltration.mk_int F mono)
-      F (fun n ↦ F (n - 1)) F' (fun n ↦ F' (n - 1)) :=
+    letI := IsRingFiltration.mk_int F mono
+    IsModuleFiltration F (fun n ↦ F (n - 1)) F' (fun n ↦ F' (n - 1)) :=
   letI := IsRingFiltration.mk_int F mono
   { IsFiltration.mk_int F' mono' with }
 
