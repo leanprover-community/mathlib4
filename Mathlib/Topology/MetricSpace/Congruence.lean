@@ -56,16 +56,19 @@ lemma congruent_iff_pairwise_edist_eq :
 
 namespace Congruent
 
-/-- A congruence preserves extended distance. -/
+/-- A congruence preserves extended distance. Forward direction of `congruent_iff_edist_eq`. -/
 alias ⟨edist_eq, _⟩ := congruent_iff_edist_eq
 
-/-- A congruence follows from preserved extended distance. -/
+/-- A congruence follows from preserved extended distance. Backward direction of
+`congruent_iff_edist_eq`. -/
 alias ⟨_, of_edist_eq⟩ := congruent_iff_edist_eq
 
-/-- A congruence pairwise preserves extended distance. -/
+/-- A congruence pairwise preserves extended distance. Forward direction of
+`congruent_iff_pairwise_edist_eq`. -/
 alias ⟨pairwise_edist_eq, _⟩ := congruent_iff_pairwise_edist_eq
 
-/-- A congruence follows from pairwise preserved extended distance. -/
+/-- A congruence follows from pairwise preserved extended distance. Backward direction of
+`congruent_iff_pairwise_edist_eq`. -/
 alias ⟨_, of_pairwise_edist_eq⟩ := congruent_iff_pairwise_edist_eq
 
 @[refl] protected lemma refl (v₁ : ι → P₁): v₁ ≅ v₁ := fun _ _ ↦ rfl
@@ -124,28 +127,33 @@ lemma congruent_iff_pairwise_dist_eq :
 
 namespace Congruent
 
-/-- A congruence preserves non-negative distance. -/
+/-- A congruence preserves non-negative distance. Forward direction of `congruent_iff_nndist_eq`. -/
 alias ⟨nndist_eq, _⟩ := congruent_iff_nndist_eq
 
-/-- A congruence follows from preserved non-negative distance. -/
+/-- A congruence follows from preserved non-negative distance. Backward direction of
+`congruent_iff_nndist_eq`. -/
 alias ⟨_, of_nndist_eq⟩ := congruent_iff_nndist_eq
 
-/-- A congruence preserves distance. -/
+/-- A congruence preserves distance. Forward direction of `congruent_iff_dist_eq`. -/
 alias ⟨dist_eq, _⟩ := congruent_iff_dist_eq
 
-/-- A congruence follows from preserved distance. -/
+/-- A congruence follows from preserved distance. Backward direction of `congruent_iff_dist_eq`. -/
 alias ⟨_, of_dist_eq⟩ := congruent_iff_dist_eq
 
-/-- A congruence pairwise preserves non-negative distance. -/
+/-- A congruence pairwise preserves non-negative distance. Forward direction of
+`congruent_iff_pairwise_nndist_eq`. -/
 alias ⟨pairwise_nndist_eq, _⟩ := congruent_iff_pairwise_nndist_eq
 
-/-- A congruence follows from pairwise preserved non-negative distance. -/
+/-- A congruence follows from pairwise preserved non-negative distance. Backward direction of
+`congruent_iff_pairwise_nndist_eq`. -/
 alias ⟨_, of_pairwise_nndist_eq⟩ := congruent_iff_pairwise_nndist_eq
 
-/-- A congruence pairwise preserves distance. -/
+/-- A congruence pairwise preserves distance. Forward direction of
+`congruent_iff_pairwise_dist_eq`. -/
 alias ⟨pairwise_dist_eq, _⟩ := congruent_iff_pairwise_dist_eq
 
-/-- A congruence follows from pairwise preserved distance. -/
+/-- A congruence follows from pairwise preserved distance. Backward direction of
+`congruent_iff_pairwise_dist_eq`. -/
 alias ⟨_, of_pairwise_dist_eq⟩ := congruent_iff_pairwise_dist_eq
 
 end Congruent
