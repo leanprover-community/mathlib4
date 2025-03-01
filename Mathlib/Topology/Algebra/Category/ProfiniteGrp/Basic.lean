@@ -350,14 +350,28 @@ instance : Limits.HasLimit F where
     { cone := limitCone F
       isLimit := limitConeIsLimit F }
 
---TODO : Change the definition into `ProfiniteGrp.of (limitConePtAux F)` and add simp lemmas.
-/-- The abbreviation for the limit of `ProfiniteGrp`s. -/
-abbrev limit : ProfiniteGrp := (ProfiniteGrp.limitCone F).pt
-
 instance : Limits.PreservesLimits (forget₂ ProfiniteGrp Profinite) where
   preservesLimitsOfShape := {
     preservesLimit := fun {F} ↦ CategoryTheory.Limits.preservesLimit_of_preserves_limit_cone
       (limitConeIsLimit F) (Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))) }
+
+instance : CompactSpace (limitConePtAux F) :=
+  inferInstanceAs (CompactSpace (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt)
+
+/-- The abbreviation for the limit of `ProfiniteGrp`s. -/
+abbrev limit : ProfiniteGrp := ProfiniteGrp.of (ProfiniteGrp.limitConePtAux F)
+
+@[ext]
+lemma limit_ext (x y : limit F) (hxy : ∀ j, x.val j = y.val j) : x = y :=
+  Subtype.ext (funext hxy)
+
+@[simp]
+lemma limit_one_val (j : J) : (1 : limit F).val j = 1 :=
+  rfl
+
+@[simp]
+lemma limit_mul_val (x y : limit F) (j : J) : (x * y).val j = x.val j * y.val j :=
+  rfl
 
 end ProfiniteGrp
 
