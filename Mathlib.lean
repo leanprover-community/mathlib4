@@ -4657,7 +4657,6 @@ import Mathlib.Tactic.Tendsto.Multiseries.Operations.Merge
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Mul
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Pow
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Powser
-import Mathlib.Tactic.Tendsto.Multiseries.SeqLemmas
 import Mathlib.Tactic.Tendsto.Multiseries.Term
 import Mathlib.Tactic.Tendsto.Multiseries.Trimming
 import Mathlib.Tactic.TermCongr
