@@ -32,8 +32,9 @@ lemma quadratic_vieta {R : Type*} [CommRing R] [IsDomain R] {a b c x1 x2 : R}
     (hroots : (C a * X ^ 2 + C b * X + C c).roots = {x1, x2}) :
     b = -a * (x1 + x2) ∧ c = a * x1 * x2 := by
   let p : R[X] := C a * X ^ 2 + C b * X + C c
+  have := p.card_roots'
   have hp_natDegree : p.natDegree = 2 := le_antisymm natDegree_quadratic_le
-    (by simpa [hroots] using p.card_roots')
+    (by convert p.card_roots'; rw [hroots, Multiset.card_pair])
   have hp_roots_card : p.roots.card = p.natDegree := by
     rw [hp_natDegree, hroots, Multiset.card_pair]
   simpa [leadingCoeff, hp_natDegree, p, hroots, mul_assoc, add_comm x1] using
