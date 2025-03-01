@@ -351,13 +351,10 @@ theorem incl_range : K.incl.range = K := by
 codomain. -/
 def map : LieSubalgebra R L₂ :=
   { (K : Submodule R L).map (f : L →ₗ[R] L₂) with
-    lie_mem' := @fun x y hx hy ↦ by
-      simp only [AddSubsemigroup.mem_carrier] at hx
-      rcases hx with ⟨x', hx', hx⟩
-      rw [← hx]
-      simp only [AddSubsemigroup.mem_carrier] at hy
-      rcases hy with ⟨y', hy', hy⟩
-      rw [← hy]
+    lie_mem' {x y} hx hy := by
+      simp only [AddSubsemigroup.mem_carrier] at hx hy
+      rcases hx with ⟨x', hx', rfl⟩
+      rcases hy with ⟨y', hy', rfl⟩
       simpa using ⟨⁅x', y'⁆, K.lie_mem hx' hy', f.map_lie x' y'⟩ }
 
 @[simp]
