@@ -11,19 +11,6 @@ import Mathlib.RingTheory.Polynomial.Vieta
 # Vieta's Formula for polynomial of small degrees.
 -/
 
-namespace Multiset
-
--- TODO: `Multiset.insert_eq_cons` being simp means that `esymm {x1, x2}` is not simp normal form
-@[simp] lemma esymm_pair_one {R : Type*} [CommSemiring R] (x1 x2 : R) :
-    esymm (x1 ::ₘ {x2}) 1 = x2 + x1 := by
-  simp [esymm, powersetCard_one]
-
-@[simp] lemma esymm_pair_two {R : Type*} [CommSemiring R] (x1 x2 : R) :
-    esymm (x1 ::ₘ {x2}) 2 = x1 * x2 := by
-  simp [esymm, powersetCard_one]
-
-end Multiset
-
 namespace Polynomial
 
 /-- **Vieta's formula** for quadratic in term of `Polynomial.roots`.
