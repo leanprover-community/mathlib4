@@ -226,7 +226,7 @@ noncomputable instance : GradedRing ((AddSubmonoid.map (RingQuot.mkRingHom rel))
     ext i x
     simp [hg, hu, he, hg', decomposeRingEquiv]
   have h_g_surj : Function.Surjective g := by
-    refine map_surjective _ (fun i ↦ hg' ▸ ?_)
+    refine mapRange.addHom_surjective _ (fun i ↦ hg' ▸ ?_)
     intro x; simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, Subtype.exists];
     obtain ⟨x, hx, hx'⟩ := x.2; exact ⟨x, hx, by ext; exact hx'⟩
   simp only [RingHom.toAddMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe,
@@ -238,7 +238,7 @@ noncomputable instance : GradedRing ((AddSubmonoid.map (RingQuot.mkRingHom rel))
     change (u.comp g) (e x) = (u.comp g) (e y) at hxy
     simp only [← h_comp, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe, RingHom.coe_coe,
       Function.comp_apply, RingEquiv.symm_apply_apply] at hxy
-    ext i; simp only [hg, Function.comp_apply, map_apply, SetLike.coe_eq_coe, hg']
+    ext i; simp only [hg, Function.comp_apply, mapRange.addHom_apply, SetLike.coe_eq_coe, hg']
     ext; simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk]
     show f (GradedRing.proj 𝒜 i x) = f (GradedRing.proj 𝒜 i y)
     rw [hf, RingQuot.mkRingHom_eq_iff'] at hxy ⊢
@@ -293,7 +293,7 @@ noncomputable instance : GradedAlgebra ((Submodule.map (RingQuot.mkAlgHom R rel)
     ext i x
     simp [hg, hu, he, hg', decomposeRingEquiv]
   have h_g_surj : Function.Surjective g := by
-    refine map_surjective _ (fun i ↦ hg' ▸ ?_)
+    refine mapRange.addHom_surjective _ (fun i ↦ hg' ▸ ?_)
     intro x; simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, Subtype.exists];
     obtain ⟨x, hx, hx'⟩ := x.2; exact ⟨x, hx, by ext; exact hx'⟩
   simp only [RingHom.toAddMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe,
@@ -306,7 +306,7 @@ noncomputable instance : GradedAlgebra ((Submodule.map (RingQuot.mkAlgHom R rel)
     simp only [← h_comp, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe, RingHom.coe_coe,
       Function.comp_apply, RingEquiv.symm_apply_apply] at hxy
     change f x = f y at hxy
-    ext i; simp only [hg, Function.comp_apply, map_apply, SetLike.coe_eq_coe, hg']
+    ext i; simp only [hg, Function.comp_apply, mapRange.addHom_apply, SetLike.coe_eq_coe, hg']
     ext; simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk]
     show f (GradedRing.proj 𝒜 i x) = f (GradedRing.proj 𝒜 i y)
     rw [hf, RingQuot.mkAlgHom_eq_iff' R] at hxy ⊢
