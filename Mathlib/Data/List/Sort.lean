@@ -28,7 +28,6 @@ namespace List
 ### The predicate `List.Sorted`
 -/
 
-
 section Sorted
 
 variable {α : Type u} {r : α → α → Prop} {a : α} {l : List α}
@@ -191,6 +190,86 @@ strictly monotone. -/
 alias ⟨_, _root_.Monotone.ofFn_sorted⟩ := sorted_le_ofFn_iff
 
 end Monotone
+
+end List
+
+open List
+
+namespace StrictMono
+
+variable {α β : Type*} [LinearOrder α] [Preorder β] {f : α → β} {l : List α}
+
+theorem sorted_le_listMap (hf : StrictMono f) :
+    (l.map f).Sorted (· ≤ ·) ↔ l.Sorted (· ≤ ·) := by
+  simp only [Sorted, pairwise_map, hf.le_iff_le]
+
+theorem sorted_ge_listMap (hf : StrictMono f) :
+    (l.map f).Sorted (· ≥ ·) ↔ l.Sorted (· ≥ ·) := by
+  simp only [Sorted, pairwise_map, hf.le_iff_le]
+
+theorem sorted_lt_listMap (hf : StrictMono f) :
+    (l.map f).Sorted (· < ·) ↔ l.Sorted (· < ·) := by
+  simp only [Sorted, pairwise_map, hf.lt_iff_lt]
+
+theorem sorted_gt_listMap (hf : StrictMono f) :
+    (l.map f).Sorted (· > ·) ↔ l.Sorted (· > ·) := by
+  simp only [Sorted, pairwise_map, hf.lt_iff_lt]
+
+end StrictMono
+
+namespace OrderEmbedding
+
+variable {α β : Type*} [Preorder α] [Preorder β]
+
+@[simp]
+theorem sorted_le_listMap (e : α ↪o β) {l : List α} :
+    (l.map e).Sorted (· ≤ ·) ↔ l.Sorted (· ≤ ·) := by
+  simp [Sorted, pairwise_map]
+
+@[simp]
+theorem sorted_ge_listMap (e : α ↪o β) {l : List α} :
+    (l.map e).Sorted (· ≥ ·) ↔ l.Sorted (· ≥ ·) := by
+  simp [Sorted, pairwise_map]
+
+@[simp]
+theorem sorted_lt_listMap (e : α ↪o β) {l : List α} :
+    (l.map e).Sorted (· < ·) ↔ l.Sorted (· < ·) := by
+  simp [Sorted, pairwise_map]
+
+@[simp]
+theorem sorted_gt_listMap (e : α ↪o β) {l : List α} :
+    (l.map e).Sorted (· > ·) ↔ l.Sorted (· > ·) := by
+  simp [Sorted, pairwise_map]
+
+end OrderEmbedding
+
+namespace OrderIso
+
+variable {α β : Type*} [Preorder α] [Preorder β]
+
+@[simp]
+theorem sorted_le_listMap (e : α ≃o β) {l : List α} :
+    (l.map e).Sorted (· ≤ ·) ↔ l.Sorted (· ≤ ·) :=
+  e.toOrderEmbedding.sorted_le_listMap
+
+@[simp]
+theorem sorted_ge_listMap (e : α ≃o β) {l : List α} :
+    (l.map e).Sorted (· ≥ ·) ↔ l.Sorted (· ≥ ·) :=
+  e.toOrderEmbedding.sorted_ge_listMap
+
+@[simp]
+theorem sorted_lt_listMap (e : α ≃o β) {l : List α} :
+    (l.map e).Sorted (· < ·) ↔ l.Sorted (· < ·) :=
+  e.toOrderEmbedding.sorted_lt_listMap
+
+@[simp]
+theorem sorted_gt_listMap (e : α ≃o β) {l : List α} :
+    (l.map e).Sorted (· > ·) ↔ l.Sorted (· > ·) :=
+  e.toOrderEmbedding.sorted_gt_listMap
+
+end OrderIso
+
+namespace List
 
 section sort
 
