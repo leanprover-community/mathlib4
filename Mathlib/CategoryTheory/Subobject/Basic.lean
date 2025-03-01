@@ -538,21 +538,18 @@ end Pullback
 
 section IsPullback
 
-lemma eqOfIsPullback {X Y Z : C} {x x' : Subobject X}
+theorem eqOfIsPullback {X Y Z : C} {x x' : Subobject X}
     {f : X ⟶ Z} {g : Y ⟶ Z} {k : (x : C) ⟶ Y} {k' : (x' : C) ⟶ Y}
     (h : IsPullback k x.arrow g f) (h' : IsPullback k' x'.arrow g f) :
-    x = x' := by
-  exact eq_of_comm (IsPullback.isoIsPullback _ _ h h') (by simp)
+    x = x' :=
+  eq_of_comm (IsPullback.isoIsPullback _ _ h h') (by simp)
 
-lemma isPullback_mk {X Y Z : C}
+theorem isPullback_mk {X Y Z : C}
     (f : Y ⟶ Z) (g : X ⟶ Z) [HasPullback f g] [Mono f] :
-    let π₁ := pullback.fst f g;
-    let π₂ := pullback.snd f g;
-    IsPullback ((underlyingIso π₂).hom ≫ π₁) (mk π₂).arrow f g := by
-  intro π₁ π₂
-  apply IsPullback.of_iso (IsPullback.of_hasPullback f g)
-    (underlyingIso π₂).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
-    <;> simp [π₁, π₂]
+    IsPullback ((underlyingIso _).hom ≫ pullback.fst f g) (mk (pullback.snd f g)).arrow f g :=
+  IsPullback.of_iso (IsPullback.of_hasPullback f g)
+    (underlyingIso _).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
+    (by simp) (by simp) (by simp) (by simp)
 
 end IsPullback
 
