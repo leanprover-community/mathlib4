@@ -12,16 +12,16 @@ import Mathlib.RingTheory.FilteredAlgebra.Basic
 # The Associated Graded Ring to a Filtered Ring
 
 In this file we define `GradedPiece` for `IsFiltration F F_lt` on abelian groups with every `F j`
-of some `AddSubgroupClass`, and their direct sum `AssociatedGraded`.
-We also proved that the `AssociatedGraded` over a ring also have a ring structure.
-i.e. the associated graded ring to a filtered ring.
+`AddSubgroup`s, and their direct sum `AssociatedGraded`.
+We also proved that when the filtration appropriate condition `hasGMul`, the `AssociatedGraded`
+over a ring also have a ring structure. i.e. the associated graded ring to a filtered ring.
 
 # Main definitions and results
 
 * `GradedPiece` : `GradedPiece i` of the associated graded abelian group to `IsFiltration F F_lt`
 with every `F i` of some `AddSubgroupClass` is defined as `F i` quotient by `F_lt i`
 
-* `AssociatedGraded` : The direct sum of `GradedPiece`
+* `AssociatedGraded` : The direct sum of `GradedPiece`s
 
 * `hasGMul` : The class of filtrations that can obtain
   a well defined graded multiplication over `GradedPiece`
@@ -46,26 +46,26 @@ instance [Preorder ι] [IsFiltration F F_lt] (i : ι) : Setoid (F i) :=
   QuotientAddGroup.leftRel (((F_lt i) : AddSubgroup A).addSubgroupOf ((F i) : AddSubgroup A))
 
 /-- `GradedPiece i` of the associated graded abelian group to `IsFiltration F F_lt`
-with every `F j` of some `AddSubgroupClass` is defined as `F i` quotient by `F_lt i`. -/
+with every `F j` `AddSubgroup`s is defined as `F i` quotient by `F_lt i`. -/
 abbrev GradedPiece (i : ι) :=
   ((F i) : AddSubgroup A) ⧸ ((F_lt i) : AddSubgroup A).addSubgroupOf ((F i) : AddSubgroup A)
 
-/-- Direct sum of `GradedPiece`-/
+/-- Direct sum of `GradedPiece`s.-/
 abbrev AssociatedGraded := DirectSum ι (GradedPiece F F_lt)
 
 namespace AssociatedGraded
 
-/-- `mk F F_lt s x` is the element of `Graded F F_lt` that is zero outside `s`
-and has coefficient `x i` for `i` in `s`. -/
+/-- `AssociatedGraded.mk F F_lt s x` is the element of `AssociatedGraded F F_lt` that is zero
+outside `s` and has coefficient `x i` for `i` in `s`. -/
 abbrev mk [DecidableEq ι] (s : Finset ι) :
     (∀ i : (s : Set ι), GradedPiece F F_lt i.val) →+ AssociatedGraded F F_lt :=
   DirectSum.mk (GradedPiece F F_lt) s
 
 variable {F F_lt}
 
-/-- Obtaining an associated graded ring from an element of `F i`. -/
-abbrev of [DecidableEq ι] {i : ι} (x : GradedPiece F F_lt i) : AssociatedGraded F F_lt :=
-  DirectSum.of (GradedPiece F F_lt) i x
+/-- The natrual inclusion map from `GradedPiece F F_lt i` to `AssociatedGraded F F_lt`-/
+abbrev of [DecidableEq ι] {i : ι} : GradedPiece F F_lt i →+ AssociatedGraded F F_lt :=
+  DirectSum.of (GradedPiece F F_lt) i
 
 @[ext]
 theorem ext {x y : AssociatedGraded F F_lt} (w : ∀ i, x i = y i) : x = y := by
@@ -184,7 +184,7 @@ variable (F : ι → σ) (F_lt : outParam <| ι → σ)
 
 section HasGMul
 
-/-- The class of filtrations that can obtain a well defined `GradedMul`
+/-- The class of ring filtrations that can obtain a well defined `GradedMul`
 from the multiplication `F i → F j → F (i + j)`. -/
 class hasGMul [OrderedAddCommMonoid ι] extends IsRingFiltration F F_lt : Prop where
   F_lt_mul_mem {i j : ι} {x y} : x ∈ F_lt i → y ∈ F j → x * y ∈ F_lt (i + j)
