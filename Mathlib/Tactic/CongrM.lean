@@ -59,9 +59,17 @@ syntax (name := congrM) "congrm " term : tactic
 elab_rules : tactic
   | `(tactic| congrm $expr:term) => do
     -- Wrap all synthetic holes `?m` as `c(?m)` to form `congr(...)` pattern
-    let pattern ← expr.raw.replaceM fun stx =>
+    let pattern ← expr.raw.replaceM fun stx => do
       if stx.isOfKind ``Parser.Term.syntheticHole then
-        pure <| stx.mkAntiquotNode `term
+        -- if an explicit name is given to the metavar, as in `?h`, replace `h` by a fresh name
+        match stx with
+        | `(Lean.Parser.Term.syntheticHole| ?$a) =>
+          --dbg_trace "here {a}, {a.getId}, {← mkFreshUserName a.getId}"
+          if a.getId.isAnonymous then
+            pure <| stx.mkAntiquotNode `term
+          else
+            pure <| (← `(?$(mkIdent (← mkFreshUserName a.getId)))).raw.mkAntiquotNode `term
+        | _ => pure <| stx.mkAntiquotNode `term
       else if stx.isAntiquots then
         -- Don't look into `$(..)` expressions
         pure stx
