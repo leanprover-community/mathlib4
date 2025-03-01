@@ -49,7 +49,7 @@ def uniqueRingEquiv [NonUnitalNonAssocSemiring A] : Matrix m m A ≃+* A where
   __ := uniqueAddEquiv
   map_mul' := by simp [mul_apply]
 
-/-- `M₁(A)` is equivalent to `A` as `R`-algebras. -/
+/-- `M₁(A)` is equivalent to `A` as an `R`-algebra. -/
 @[simps!]
 def uniqueAlgEquiv [Semiring A] [CommSemiring R] [Algebra R A] : Matrix m m A ≃ₐ[R] A where
   __ := uniqueRingEquiv
