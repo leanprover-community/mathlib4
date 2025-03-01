@@ -15,17 +15,18 @@ In this file, we define the concept of filtration for abelian groups, rings, and
 
 # Main definitions
 
-* `IsFiltration` : For `σ` satisfying `SetLike σ A`, an increasing series of `F` in `σ`
-  is a filtration if there is another series `F_lt` equal to the supremum of `F` with smaller index.
+* `IsFiltration` : For a family of subsets `σ` of `A`, an increasing series of `F` in `σ` is a
+  filtration if there is another series `F_lt` in `σ` equal to the
+  supremum of `F` with smaller index.
 
-* `IsRingFiltration` : For `σ` satisfying `SetLike σ R` where `R` is a semiring,
-  an increasing series `F` in `σ` is a ring filtration if `IsFiltration F F_lt` and
-  the pointwise multiplication of `F i` and `F j` is in `F (i + j)`.
+* `IsRingFiltration` : For a family of subsets `σ` of semiring `R`, an increasing series `F` in `σ`
+  is a ring filtration if `IsFiltration F F_lt` and the pointwise multiplication of `F i` and `F j`
+  is in `F (i + j)`.
 
-* `IsModuleFiltration` : For `F` satisfying `IsRingFiltration F F_lt` in a semiring `R` and `σM`
-  satisfying `SetLike σ M` where `M` is a module over `R`, an increasing series `FM` in `σM` is
-  a module filtration if `IsFiltration F F_lt` and the pointwise scalar multiplication of
-  `F i` and `FM j` is in `F (i +ᵥ j)`.
+* `IsModuleFiltration` : For `F` satisfying `IsRingFiltration F F_lt` in a semiring `R` and `σM` a
+  family of subsets of a `R` module `M`, an increasing series `FM` in `σM` is a module filtration
+  if `IsFiltration F F_lt` and the pointwise scalar multiplication of `F i` and `FM j`
+  is in `F (i +ᵥ j)`.
 
 -/
 
