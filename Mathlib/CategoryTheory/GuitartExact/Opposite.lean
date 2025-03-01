@@ -99,6 +99,11 @@ lemma guitartExact_op_iff : w.op.GuitartExact ↔ w.GuitartExact := by
   · intro
     infer_instance
 
+instance guitartExact_id' (F : C₁ ⥤ C₂) :
+    GuitartExact (TwoSquare.mk F (𝟭 C₁) (𝟭 C₂) F (𝟙 F)) := by
+  rw [← guitartExact_op_iff]
+  apply guitartExact_id
+
 end TwoSquare
 
 end CategoryTheory

@@ -241,6 +241,12 @@ lemma hasRightResolutions_iff_op : Φ.HasRightResolutions ↔ Φ.op.HasLeftResol
   ⟨fun _ X₂ => ⟨(Classical.arbitrary (Φ.RightResolution X₂.unop)).op⟩,
     fun _ X₂ => ⟨(Classical.arbitrary (Φ.op.LeftResolution (Opposite.op X₂))).unop⟩⟩
 
+instance [Φ.HasRightResolutions] : Φ.op.HasLeftResolutions := by
+  rwa [← hasRightResolutions_iff_op]
+
+instance [Φ.HasLeftResolutions] : Φ.op.HasRightResolutions := by
+  rwa [← hasLeftResolutions_iff_op]
+
 /-- The functor `(Φ.LeftResolution X₂)ᵒᵖ ⥤ Φ.op.RightResolution (Opposite.op X₂)`. -/
 @[simps]
 def LeftResolution.opFunctor (X₂ : C₂) [W₁.IsMultiplicative] :
