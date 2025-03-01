@@ -40,9 +40,11 @@ lemma isNat_realSqrt_of_isRat_negOfNat {x : ℝ} {num : ℕ} {denom : ℕ}
 lemma isRat_realSqrt_of_isRat_ofNat {x : ℝ} {n sn : ℕ} {d sd : ℕ} (hn : sn * sn = n)
     (hd : sd * sd = d) (h : IsRat x (.ofNat n) d) :
     IsRat √x (.ofNat sn) sd := by
-  obtain ⟨inv, rfl⟩ := h
+  obtain ⟨_, rfl⟩ := h
   refine ⟨?_, ?out⟩
-  · exact invertibleOfNonzero <| by rw [← mul_self_ne_zero, ← Nat.cast_mul, hd]; exact inv.ne_zero
+  · apply invertibleOfNonzero
+    rw [← mul_self_ne_zero, ← Nat.cast_mul, hd]
+    exact Invertible.ne_zero _
   · simp [← hn, ← hd, Real.sqrt_mul (mul_self_nonneg ↑sn)]
 
 /-- `norm_num` extension that evaluates the function `Real.sqrt`. -/
