@@ -29,14 +29,6 @@ Two kernels `κ : Kernel α β` and `η : Kernel γ δ` can be applied in parall
 
 * `κ ∥ₖ η = ProbabilityTheory.Kernel.parallelComp κ η`
 
-## Implementation notes
-
-Our formalization of kernels is centered around the composition-product: the product and then the
-parallel composition are defined as special cases of the composition-product.
-We could have alternatively used the building blocks of kernels seen as a Markov category:
-composition, parallel composition (or tensor product) and the deterministic kernels `id`, `copy`,
-`swap` and `discard`. The product and composition-product could then be built from these.
-
 -/
 
 open MeasureTheory
@@ -47,9 +39,7 @@ namespace ProbabilityTheory.Kernel
 
 variable {α β γ δ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
   {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ}
-  {κ : Kernel α β} {η : Kernel γ δ}
-
-section ParallelComp
+  {κ : Kernel α β} {η : Kernel γ δ} {x : α × γ}
 
 open Classical in
 /-- Parallel product of two kernels. -/
@@ -73,12 +63,14 @@ def parallelComp (κ : Kernel α β) (η : Kernel γ δ) : Kernel (α × γ) (β
 @[inherit_doc]
 scoped[ProbabilityTheory] infixl:100 " ∥ₖ " => ProbabilityTheory.Kernel.parallelComp
 
-theorem parallelComp_of_not_isSFiniteKernel_left (η : Kernel γ δ) (h : ¬ IsSFiniteKernel κ) :
+@[simp]
+lemma parallelComp_of_not_isSFiniteKernel_left (η : Kernel γ δ) (h : ¬ IsSFiniteKernel κ) :
     κ ∥ₖ η = 0 := by
   rw [parallelComp, dif_neg]
   simp [h]
 
-theorem parallelComp_of_not_isSFiniteKernel_right (κ : Kernel α β) (h : ¬ IsSFiniteKernel η) :
+@[simp]
+lemma parallelComp_of_not_isSFiniteKernel_right (κ : Kernel α β) (h : ¬ IsSFiniteKernel η) :
     κ ∥ₖ η = 0 := by
   rw [parallelComp, dif_neg]
   simp [h]
@@ -90,12 +82,12 @@ lemma parallelComp_apply (κ : Kernel α β) [IsSFiniteKernel κ]
   rfl
 
 lemma parallelComp_apply' [IsSFiniteKernel κ] [IsSFiniteKernel η]
-    {x : α × γ} {s : Set (β × δ)} (hs : MeasurableSet s) :
+    {s : Set (β × δ)} (hs : MeasurableSet s) :
     (κ ∥ₖ η) x s = ∫⁻ b, η x.2 (Prod.mk b ⁻¹' s) ∂κ x.1 := by
   rw [parallelComp_apply, Measure.prod_apply hs]
 
 @[simp]
-lemma parallelComp_apply_univ [IsSFiniteKernel κ] [IsSFiniteKernel η] {x : α × γ} :
+lemma parallelComp_apply_univ [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     (κ ∥ₖ η) x Set.univ = κ x.1 Set.univ * η x.2 Set.univ := by
   rw [parallelComp_apply, Measure.prod_apply .univ, mul_comm]
   simp
@@ -117,11 +109,16 @@ lemma lintegral_parallelComp [IsSFiniteKernel κ] [IsSFiniteKernel η]
     ∫⁻ bd, g bd ∂(κ ∥ₖ η) ac = ∫⁻ b, ∫⁻ d, g (b, d) ∂η ac.2 ∂κ ac.1 := by
   rw [parallelComp_apply, MeasureTheory.lintegral_prod _ hg.aemeasurable]
 
+lemma lintegral_parallelComp_symm [IsSFiniteKernel κ] [IsSFiniteKernel η]
+    (ac : α × γ) {g : β × δ → ℝ≥0∞} (hg : Measurable g) :
+    ∫⁻ bd, g bd ∂(κ ∥ₖ η) ac = ∫⁻ d, ∫⁻ b, g (b, d) ∂κ ac.1 ∂η ac.2 := by
+  rw [parallelComp_apply, MeasureTheory.lintegral_prod_symm _ hg.aemeasurable]
+
 lemma parallelComp_sum_left {ι : Type*} [Countable ι] (κ : ι → Kernel α β)
     [∀ i, IsSFiniteKernel (κ i)] (η : Kernel γ δ) :
     Kernel.sum κ ∥ₖ η = Kernel.sum fun i ↦ κ i ∥ₖ η := by
   by_cases h : IsSFiniteKernel η
-  swap; · simp [parallelComp_of_not_isSFiniteKernel_right _ h]
+  swap; · simp [h]
   ext x
   simp_rw [Kernel.sum_apply, parallelComp_apply, Kernel.sum_apply, Measure.prod_sum_left]
 
@@ -129,19 +126,14 @@ lemma parallelComp_sum_right {ι : Type*} [Countable ι] (κ : Kernel α β)
     (η : ι → Kernel γ δ) [∀ i, IsSFiniteKernel (η i)] :
     κ ∥ₖ Kernel.sum η = Kernel.sum fun i ↦ κ ∥ₖ η i := by
   by_cases h : IsSFiniteKernel κ
-  swap; · simp [parallelComp_of_not_isSFiniteKernel_left _ h]
+  swap; · simp [h]
   ext x
   simp_rw [Kernel.sum_apply, parallelComp_apply, Kernel.sum_apply, Measure.prod_sum_right]
 
-instance (κ : Kernel α β) [IsMarkovKernel κ] (η : Kernel γ δ) [IsMarkovKernel η] :
-    IsMarkovKernel (κ ∥ₖ η) where
-  isProbabilityMeasure x := by
-    constructor
-    rw [parallelComp_apply' .univ]
-    simp
+instance [IsMarkovKernel κ] [IsMarkovKernel η] : IsMarkovKernel (κ ∥ₖ η) :=
+  ⟨fun x ↦ ⟨by simp [parallelComp_apply_univ]⟩⟩
 
-instance (κ : Kernel α β) [IsZeroOrMarkovKernel κ] (η : Kernel γ δ) [IsZeroOrMarkovKernel η] :
-    IsZeroOrMarkovKernel (κ ∥ₖ η) := by
+instance [IsZeroOrMarkovKernel κ] [IsZeroOrMarkovKernel η] : IsZeroOrMarkovKernel (κ ∥ₖ η) := by
   obtain rfl | _ := eq_zero_or_isMarkovKernel κ <;> obtain rfl | _ := eq_zero_or_isMarkovKernel η
   all_goals simpa using by infer_instance
 
@@ -156,8 +148,7 @@ instance [IsFiniteKernel κ] [IsFiniteKernel η] : IsFiniteKernel (κ ∥ₖ η)
     · exact measure_le_bound κ a.1 Set.univ
     · exact measure_le_bound η a.2 Set.univ
 
-instance (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel γ δ) [IsSFiniteKernel η] :
-    IsSFiniteKernel (κ ∥ₖ η) := by
+instance [IsSFiniteKernel κ] [IsSFiniteKernel η] : IsSFiniteKernel (κ ∥ₖ η) := by
   simp_rw [← kernel_sum_seq κ, ← kernel_sum_seq η, parallelComp_sum_left, parallelComp_sum_right]
   infer_instance
 
@@ -172,11 +163,9 @@ lemma parallelComp_comp_copy (κ : Kernel α β) [IsSFiniteKernel κ]
 
 lemma swap_parallelComp : swap β δ ∘ₖ (κ ∥ₖ η) = η ∥ₖ κ ∘ₖ swap α γ := by
   by_cases hκ : IsSFiniteKernel κ
-  swap; · simp [parallelComp_of_not_isSFiniteKernel_left _ hκ,
-    parallelComp_of_not_isSFiniteKernel_right _ hκ]
+  swap; · simp [hκ]
   by_cases hη : IsSFiniteKernel η
-  swap; · simp [parallelComp_of_not_isSFiniteKernel_left _ hη,
-    parallelComp_of_not_isSFiniteKernel_right _ hη]
+  swap; · simp [hη]
   ext ac s hs
   simp_rw [comp_apply, parallelComp_apply, Measure.bind_apply hs (Kernel.measurable _), swap_apply,
     lintegral_dirac' _ (Kernel.measurable_coe _ hs), parallelComp_apply' hs, Prod.fst_swap,
@@ -199,7 +188,5 @@ lemma deterministic_comp_copy {f : α → β} (hf : Measurable f) :
       = Kernel.copy β ∘ₖ Kernel.deterministic f hf := by
   simp_rw [Kernel.parallelComp_comp_copy, Kernel.deterministic_prod_deterministic,
     Kernel.copy, Kernel.deterministic_comp_deterministic, Function.comp_def]
-
-end ParallelComp
 
 end ProbabilityTheory.Kernel
