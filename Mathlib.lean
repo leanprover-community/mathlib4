@@ -3223,6 +3223,7 @@ import Mathlib.Data.Tree.Get
 import Mathlib.Data.Tree.RBMap
 import Mathlib.Data.Tree.Traversable
 import Mathlib.Data.TwoPointing
+import Mathlib.Data.TypeFun
 import Mathlib.Data.TypeMax
 import Mathlib.Data.TypeVec
 import Mathlib.Data.UInt
