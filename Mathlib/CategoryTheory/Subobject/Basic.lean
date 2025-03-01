@@ -518,6 +518,16 @@ theorem pullback_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject Z) :
   induction' x using Quotient.inductionOn' with t
   exact Quotient.sound ⟨(MonoOver.pullbackComp _ _).app t⟩
 
+lemma pullback_obj_representative {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
+    (pullback f).obj x = mk ((MonoOver.pullback f).obj (representative.obj x)).arrow := by
+  induction' x using Quotient.inductionOn' with m
+  exact Quotient.sound ⟨Functor.mapIso _ (representativeIso _).symm⟩
+
+theorem pullback_obj {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
+    (pullback f).obj x = mk (pullback.snd x.arrow f) := by
+  rw [pullback_obj_representative]
+  rfl
+
 instance (f : X ⟶ Y) : (pullback f).Faithful where
 
 end Pullback
