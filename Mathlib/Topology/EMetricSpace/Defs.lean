@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
 import Mathlib.Data.ENNReal.Inv
+import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.UniformSpace.OfFun
-import Mathlib.Topology.Bases
 
 /-!
 # Extended metric spaces
@@ -46,6 +46,7 @@ open scoped Uniformity Topology Filter NNReal ENNReal Pointwise
 /-- `EDist α` means that `α` is equipped with an extended distance. -/
 @[ext]
 class EDist (α : Type*) where
+  /-- Extended distance between two points -/
   edist : α → α → ℝ≥0∞
 
 export EDist (edist)
@@ -89,8 +90,8 @@ namespace, while notions associated to metric spaces are mostly in the root name
 @[ext]
 protected theorem PseudoEMetricSpace.ext {α : Type*} {m m' : PseudoEMetricSpace α}
     (h : m.toEDist = m'.toEDist) : m = m' := by
-  cases' m with ed  _ _ _ U hU
-  cases' m' with ed' _ _ _ U' hU'
+  obtain ⟨_, _, _, U, hU⟩ := m; rename EDist α => ed
+  obtain ⟨_, _, _, U', hU'⟩ := m'; rename EDist α => ed'
   congr 1
   exact UniformSpace.ext (((show ed = ed' from h) ▸ hU).trans hU'.symm)
 
@@ -533,30 +534,6 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
   calc
     edist x (f n⁻¹ y) ≤ (n : ℝ≥0∞)⁻¹ * 2 := hf _ _ ⟨hyx, hx⟩
     _ < ε := ENNReal.mul_lt_of_lt_div hn
-
-open TopologicalSpace in
-/-- If a set `s` is separable in a (pseudo extended) metric space, then it admits a countable dense
-subset. This is not obvious, as the countable set whose closure covers `s` given by the definition
-of separability does not need in general to be contained in `s`. -/
-theorem _root_.TopologicalSpace.IsSeparable.exists_countable_dense_subset
-    {s : Set α} (hs : IsSeparable s) : ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
-  have : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, closedBall x ε := fun ε ε0 => by
-    rcases hs with ⟨t, htc, hst⟩
-    refine ⟨t, htc, hst.trans fun x hx => ?_⟩
-    rcases mem_closure_iff.1 hx ε ε0 with ⟨y, hyt, hxy⟩
-    exact mem_iUnion₂.2 ⟨y, hyt, mem_closedBall.2 hxy.le⟩
-  exact subset_countable_closure_of_almost_dense_set _ this
-
-open TopologicalSpace in
-/-- If a set `s` is separable, then the corresponding subtype is separable in a (pseudo extended)
-metric space.  This is not obvious, as the countable set whose closure covers `s` does not need in
-general to be contained in `s`. -/
-theorem _root_.TopologicalSpace.IsSeparable.separableSpace {s : Set α} (hs : IsSeparable s) :
-    SeparableSpace s := by
-  rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, hst⟩
-  lift t to Set s using hts
-  refine ⟨⟨t, countable_of_injective_of_countable_image Subtype.coe_injective.injOn htc, ?_⟩⟩
-  rwa [IsInducing.subtypeVal.dense_iff, Subtype.forall]
 
 end Compact
 

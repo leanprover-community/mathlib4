@@ -44,7 +44,7 @@ theorem measurableSet_ball : MeasurableSet (Metric.ball x ε) :=
 
 @[measurability]
 theorem measurableSet_closedBall : MeasurableSet (Metric.closedBall x ε) :=
-  Metric.isClosed_ball.measurableSet
+  Metric.isClosed_closedBall.measurableSet
 
 @[measurability]
 theorem measurable_infDist {s : Set α} : Measurable fun x => infDist x s :=

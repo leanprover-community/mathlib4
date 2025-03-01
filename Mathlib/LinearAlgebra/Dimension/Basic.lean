@@ -3,7 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 -/
-import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.Algebra.Algebra.Tower
+import Mathlib.LinearAlgebra.LinearIndependent.Basic
 import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
@@ -57,13 +58,13 @@ this is the same as the dimension of the space (i.e. the cardinality of any basi
 In particular this agrees with the usual notion of the dimension of a vector space. -/
 @[stacks 09G3 "first part"]
 protected irreducible_def Module.rank : Cardinal :=
-  ⨆ ι : { s : Set M // LinearIndependent R ((↑) : s → M) }, (#ι.1)
+  ⨆ ι : { s : Set M // LinearIndepOn R id s }, (#ι.1)
 
 theorem rank_le_card : Module.rank R M ≤ #M :=
   (Module.rank_def _ _).trans_le (ciSup_le' fun _ ↦ mk_set_le _)
 
-lemma nonempty_linearIndependent_set : Nonempty {s : Set M // LinearIndependent R ((↑) : s → M)} :=
-  ⟨⟨∅, linearIndependent_empty _ _⟩⟩
+lemma nonempty_linearIndependent_set : Nonempty {s : Set M // LinearIndepOn R id s } :=
+  ⟨⟨∅, linearIndepOn_empty _ _⟩⟩
 
 end
 
@@ -77,7 +78,7 @@ theorem cardinal_lift_le_rank {ι : Type w} {v : ι → M}
     (hv : LinearIndependent R v) :
     Cardinal.lift.{v} #ι ≤ Cardinal.lift.{w} (Module.rank R M) := by
   rw [Module.rank]
-  refine le_trans ?_ (lift_le.mpr <| le_ciSup (bddAbove_range _) ⟨_, hv.coe_range⟩)
+  refine le_trans ?_ (lift_le.mpr <| le_ciSup (bddAbove_range _) ⟨_, hv.linearIndepOn_id⟩)
   exact lift_mk_le'.mpr ⟨(Equiv.ofInjective _ hv.injective).toEmbedding⟩
 
 lemma aleph0_le_rank {ι : Type w} [Infinite ι] {v : ι → M}
@@ -113,8 +114,8 @@ theorem lift_rank_le_of_injective_injectiveₛ (i : R' → R) (j : M →+ M')
     lift.{v'} (Module.rank R M) ≤ lift.{v} (Module.rank R' M') := by
   simp_rw [Module.rank, lift_iSup (bddAbove_range _)]
   exact ciSup_mono' (bddAbove_range _) fun ⟨s, h⟩ ↦ ⟨⟨j '' s,
-    (h.map_of_injective_injectiveₛ i j hi hj hc).image⟩,
-      lift_mk_le'.mpr ⟨(Equiv.Set.image j s hj).toEmbedding⟩⟩
+    LinearIndepOn.id_image (h.linearIndependent.map_of_injective_injectiveₛ i j hi hj hc)⟩,
+    lift_mk_le'.mpr ⟨(Equiv.Set.image j s hj).toEmbedding⟩⟩
 
 /-- If `M / R` and `M' / R'` are modules, `i : R → R'` is a surjective map, and
 `j : M →+ M'` is an injective monoid homomorphism, such that the scalar multiplications on `M` and
@@ -180,9 +181,10 @@ theorem lift_rank_le_of_injective_injective [AddCommGroup M'] [Module R' M']
     (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) :
     lift.{v'} (Module.rank R M) ≤ lift.{v} (Module.rank R' M') := by
   simp_rw [Module.rank, lift_iSup (bddAbove_range _)]
-  exact ciSup_mono' (bddAbove_range _) fun ⟨s, h⟩ ↦ ⟨⟨j '' s,
-    (h.map_of_injective_injective i j hi (fun _ _ ↦ hj <| by rwa [j.map_zero]) hc).image⟩,
-      lift_mk_le'.mpr ⟨(Equiv.Set.image j s hj).toEmbedding⟩⟩
+  exact ciSup_mono' (bddAbove_range _) fun ⟨s, h⟩ ↦
+    ⟨⟨j '' s, LinearIndepOn.id_image <| h.linearIndependent.map_of_injective_injective i j hi
+      (fun _ _ ↦ hj <| by rwa [j.map_zero]) hc⟩,
+    lift_mk_le'.mpr ⟨(Equiv.Set.image j s hj).toEmbedding⟩⟩
 
 /-- The same-universe version of `lift_rank_le_of_injective_injective`. -/
 theorem rank_le_of_injective_injective [AddCommGroup M₁] [Module R' M₁]
@@ -367,17 +369,13 @@ theorem LinearMap.rank_le_of_surjective (f : M →ₗ[R] M₁) (h : Surjective f
 @[nontriviality, simp]
 theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
   haveI := Module.subsingleton R M
-  have : Nonempty { s : Set M // LinearIndependent R ((↑) : s → M) } :=
-    ⟨⟨∅, linearIndependent_empty _ _⟩⟩
+  have : Nonempty { s : Set M // LinearIndepOn R id s} := ⟨⟨∅, linearIndepOn_empty _ _⟩⟩
   rw [Module.rank_def, ciSup_eq_of_forall_le_of_forall_lt_exists_gt]
   · rintro ⟨s, hs⟩
     rw [Cardinal.mk_le_one_iff_set_subsingleton]
     apply subsingleton_of_subsingleton
   intro w hw
-  refine ⟨⟨{0}, ?_⟩, ?_⟩
-  · rw [linearIndependent_iff'ₛ]
-    subsingleton
-  · exact hw.trans_eq (Cardinal.mk_singleton _).symm
+  exact ⟨⟨{0}, LinearIndepOn.of_subsingleton⟩, hw.trans_eq (Cardinal.mk_singleton _).symm⟩
 
 lemma rank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R] [Module S M]
     [IsScalarTower S R M] (L L' : Submodule R M) {s : S} (hr : IsSMulRegular M s)

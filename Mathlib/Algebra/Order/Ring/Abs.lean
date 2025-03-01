@@ -31,7 +31,7 @@ variable [LinearOrderedCommGroup α]
 end LinearOrderedAddCommGroup
 
 lemma odd_abs [LinearOrder α] [Ring α] {a : α} : Odd (abs a) ↔ Odd a := by
-  cases' abs_choice a with h h <;> simp only [h, odd_neg]
+  rcases abs_choice a with h | h <;> simp only [h, odd_neg]
 
 section LinearOrderedRing
 
@@ -89,7 +89,6 @@ lemma abs_le_iff_mul_self_le : |a| ≤ |b| ↔ a * a ≤ b * b := by
 lemma abs_le_one_iff_mul_self_le_one : |a| ≤ 1 ↔ a * a ≤ 1 := by
   simpa only [abs_one, one_mul] using @abs_le_iff_mul_self_le α _ a 1
 
--- Porting note: added `simp` to replace `pow_bit0_abs`
 @[simp] lemma sq_abs (a : α) : |a| ^ 2 = a ^ 2 := by simpa only [sq] using abs_mul_abs_self a
 
 lemma abs_sq (x : α) : |x ^ 2| = x ^ 2 := by simpa only [sq] using abs_mul_self x
@@ -185,14 +184,14 @@ variable [Ring α] [LinearOrder α]
 
 @[simp]
 theorem abs_dvd (a b : α) : |a| ∣ b ↔ a ∣ b := by
-  cases' abs_choice a with h h <;> simp only [h, neg_dvd]
+  rcases abs_choice a with h | h <;> simp only [h, neg_dvd]
 
 theorem abs_dvd_self (a : α) : |a| ∣ a :=
   (abs_dvd a a).mpr (dvd_refl a)
 
 @[simp]
 theorem dvd_abs (a b : α) : a ∣ |b| ↔ a ∣ b := by
-  cases' abs_choice b with h h <;> simp only [h, dvd_neg]
+  rcases abs_choice b with h | h <;> simp only [h, dvd_neg]
 
 theorem self_dvd_abs (a : α) : a ∣ |a| :=
   (dvd_abs a a).mpr (dvd_refl a)

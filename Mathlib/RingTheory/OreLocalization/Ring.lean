@@ -19,6 +19,8 @@ The `Monoid` and `DistribMulAction` instances and additive versions are provided
 
 -/
 
+assert_not_exists Subgroup
+
 universe u
 
 namespace OreLocalization

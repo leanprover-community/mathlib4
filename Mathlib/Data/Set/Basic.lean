@@ -61,6 +61,8 @@ set, sets, subset, subsets, union, intersection, insert, singleton, complement, 
 
 -/
 
+assert_not_exists RelIso
+
 /-! ### Set coercion to a type -/
 
 open Function
@@ -318,6 +320,9 @@ theorem not_mem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
 theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
   simp only [subset_def, not_forall, exists_prop]
 
+theorem not_top_subset : ¬⊤ ⊆ s ↔ ∃ a, a ∉ s := by
+  simp [not_subset]
+
 lemma eq_of_forall_subset_iff (h : ∀ u, s ⊆ u ↔ t ⊆ u) : s = t := eq_of_forall_ge_iff h
 
 /-! ### Definition of strict subsets `s ⊂ t` and basic properties. -/
@@ -333,6 +338,9 @@ protected theorem ssubset_iff_subset_ne {s t : Set α} : s ⊂ t ↔ s ⊆ t ∧
 
 theorem ssubset_iff_of_subset {s t : Set α} (h : s ⊆ t) : s ⊂ t ↔ ∃ x ∈ t, x ∉ s :=
   ⟨exists_of_ssubset, fun ⟨_, hxt, hxs⟩ => ⟨h, fun h => hxs <| h hxt⟩⟩
+
+theorem ssubset_iff_exists {s t : Set α} : s ⊂ t ↔ s ⊆ t ∧ ∃ x ∈ t, x ∉ s :=
+  ⟨fun h ↦ ⟨h.le, Set.exists_of_ssubset h⟩, fun ⟨h1, h2⟩ ↦ (Set.ssubset_iff_of_subset h1).mpr h2⟩
 
 protected theorem ssubset_of_ssubset_of_subset {s₁ s₂ s₃ : Set α} (hs₁s₂ : s₁ ⊂ s₂)
     (hs₂s₃ : s₂ ⊆ s₃) : s₁ ⊂ s₃ :=
@@ -944,7 +952,11 @@ theorem _root_.Disjoint.inter_eq : Disjoint s t → s ∩ t = ∅ :=
 theorem disjoint_left : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → a ∉ t :=
   disjoint_iff_inf_le.trans <| forall_congr' fun _ => not_and
 
+alias ⟨_root_.Disjoint.not_mem_of_mem_left, _⟩ := disjoint_left
+
 theorem disjoint_right : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ t → a ∉ s := by rw [disjoint_comm, disjoint_left]
+
+alias ⟨_root_.Disjoint.not_mem_of_mem_right, _⟩ := disjoint_right
 
 lemma not_disjoint_iff : ¬Disjoint s t ↔ ∃ x, x ∈ s ∧ x ∈ t :=
   Set.disjoint_iff.not.trans <| not_forall.trans <| exists_congr fun _ ↦ not_not
@@ -1250,6 +1262,9 @@ theorem diff_inter_diff {s t u : Set α} : s \ t ∩ (s \ u) = s \ (t ∪ u) :=
 
 theorem diff_compl : s \ tᶜ = s ∩ t :=
   sdiff_compl
+
+theorem compl_diff : (t \ s)ᶜ = s ∪ tᶜ :=
+  Eq.trans compl_sdiff himp_eq
 
 theorem diff_diff_right {s t u : Set α} : s \ (t \ u) = s \ t ∪ s ∩ u :=
   sdiff_sdiff_right'

@@ -59,15 +59,13 @@ variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
 variable [Module R M] [Module R N] [Module R P]
 variable (r : R) (f g : M →ₗ[R] N)
-variable (A)
 
+variable (A) in
 /-- `baseChange A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`.
 
 This "base change" operation is also known as "extension of scalars". -/
 def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N :=
   AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) f
-
-variable {A}
 
 @[simp]
 theorem baseChange_tmul (a : A) (x : M) : f.baseChange A (a ⊗ₜ x) = a ⊗ₜ f x :=
@@ -1190,6 +1188,17 @@ theorem productMap_range : (productMap f g).range = f.range ⊔ g.range := by
 
 end
 
+variable [CommSemiring R] [CommSemiring S] [Algebra R S]
+
+/-- If `M` is a `B`-module that is also an `A`-module, the canonical map
+`M →ₗ[A] B ⊗[A] M` is injective. -/
+lemma mk_one_injective_of_isScalarTower (M : Type*) [AddCommGroup M]
+    [Module R M] [Module S M] [IsScalarTower R S M] :
+    Function.Injective (TensorProduct.mk R S M 1) := by
+  apply Function.RightInverse.injective (g := LinearMap.liftBaseChange S LinearMap.id)
+  intro m
+  simp
+
 end TensorProduct
 
 end Algebra
@@ -1362,5 +1371,24 @@ attribute [local instance] TensorProduct.Algebra.module
 
 theorem smul_def (a : A) (b : B) (m : M) : a ⊗ₜ[R] b • m = a • b • m :=
   rfl
+
+section Lemmas
+
+theorem linearMap_comp_mul' :
+    Algebra.linearMap R (A ⊗[R] B) ∘ₗ LinearMap.mul' R R =
+      map (Algebra.linearMap R A) (Algebra.linearMap R B) := by
+  ext
+  simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars, map_tmul,
+    Algebra.linearMap_apply, _root_.map_one, LinearMap.coe_comp, Function.comp_apply,
+    LinearMap.mul'_apply, mul_one, Algebra.TensorProduct.one_def]
+
+@[simp]
+theorem mul'_comp_tensorTensorTensorComm :
+    LinearMap.mul' R (A ⊗[R] B) ∘ₗ tensorTensorTensorComm R A A B B =
+      map (LinearMap.mul' R A) (LinearMap.mul' R B) := by
+  ext
+  simp
+
+end Lemmas
 
 end TensorProduct.Algebra

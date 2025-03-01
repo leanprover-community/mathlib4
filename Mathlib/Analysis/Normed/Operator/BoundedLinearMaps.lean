@@ -70,6 +70,10 @@ structure IsBoundedLinearMap (𝕜 : Type*) [NormedField 𝕜] {E : Type*} [Semi
   IsLinearMap 𝕜 f : Prop where
   bound : ∃ M, 0 < M ∧ ∀ x : E, ‖f x‖ ≤ M * ‖x‖
 
+lemma isBoundedLinearMap_iff {f : E → F} :
+    IsBoundedLinearMap 𝕜 f ↔ IsLinearMap 𝕜 f ∧ ∃ M, 0 < M ∧ ∀ x : E, ‖f x‖ ≤ M * ‖x‖ :=
+  ⟨fun hf ↦ ⟨hf.toIsLinearMap, hf.bound⟩, fun ⟨hl, hm⟩ ↦ ⟨hl, hm⟩⟩
+
 theorem IsLinearMap.with_bound {f : E → F} (hf : IsLinearMap 𝕜 f) (M : ℝ)
     (h : ∀ x : E, ‖f x‖ ≤ M * ‖x‖) : IsBoundedLinearMap 𝕜 f :=
   ⟨hf,
@@ -156,6 +160,13 @@ protected theorem tendsto (x : E) (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (
 
 theorem continuous (hf : IsBoundedLinearMap 𝕜 f) : Continuous f :=
   continuous_iff_continuousAt.2 fun _ => hf.tendsto _
+
+/-- A map between normed spaces is linear and continuous if and only if it is bounded. -/
+theorem isLinearMap_and_continuous_iff_isBoundedLinearMap (f : E → F) :
+    IsLinearMap 𝕜 f ∧ Continuous f ↔ IsBoundedLinearMap 𝕜 f :=
+  ⟨fun ⟨hlin, hcont⟩ ↦ ContinuousLinearMap.isBoundedLinearMap
+      ⟨⟨⟨f, IsLinearMap.map_add hlin⟩, IsLinearMap.map_smul hlin⟩, hcont⟩,
+        fun h_bdd ↦ ⟨h_bdd.toIsLinearMap, h_bdd.continuous⟩⟩
 
 theorem lim_zero_bounded_linear_map (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (𝓝 0) (𝓝 0) :=
   (hf.1.mk' _).map_zero ▸ continuous_iff_continuousAt.1 hf.continuous 0
@@ -259,8 +270,7 @@ theorem map_smul₂ (f : E →L[𝕜] F →L[𝕜] G) (c : 𝕜) (x : E) (y : F)
 
 end ContinuousLinearMap
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- A map `f : E × F → G` satisfies `IsBoundedBilinearMap 𝕜 f` if it is bilinear and
 continuous. -/
 structure IsBoundedBilinearMap (f : E × F → G) : Prop where
@@ -270,7 +280,6 @@ structure IsBoundedBilinearMap (f : E × F → G) : Prop where
   smul_right : ∀ (c : 𝕜) (x : E) (y : F), f (x, c • y) = c • f (x, y)
   bound : ∃ C > 0, ∀ (x : E) (y : F), ‖f (x, y)‖ ≤ C * ‖x‖ * ‖y‖
 
-variable {𝕜}
 variable {f : E × F → G}
 
 theorem ContinuousLinearMap.isBoundedBilinearMap (f : E →L[𝕜] F →L[𝕜] G) :
@@ -412,16 +421,13 @@ theorem IsBoundedBilinearMap.deriv_apply (h : IsBoundedBilinearMap 𝕜 f) (p q 
     h.deriv p q = f (p.1, q.2) + f (q.1, p.2) :=
   rfl
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- The function `ContinuousLinearMap.mulLeftRight : 𝕜' × 𝕜' → (𝕜' →L[𝕜] 𝕜')` is a bounded
 bilinear map. -/
 theorem ContinuousLinearMap.mulLeftRight_isBoundedBilinear (𝕜' : Type*) [SeminormedRing 𝕜']
     [NormedAlgebra 𝕜 𝕜'] :
     IsBoundedBilinearMap 𝕜 fun p : 𝕜' × 𝕜' => ContinuousLinearMap.mulLeftRight 𝕜 𝕜' p.1 p.2 :=
   (ContinuousLinearMap.mulLeftRight 𝕜 𝕜').isBoundedBilinearMap
-
-variable {𝕜}
 
 /-- Given a bounded bilinear map `f`, the map associating to a point `p` the derivative of `f` at
 `p` is itself a bounded linear map. -/

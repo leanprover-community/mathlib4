@@ -44,7 +44,7 @@ theorem natDegree_det_X_add_C_le (A B : Matrix n n α) :
   calc
     natDegree (sign g • ∏ i : n, (X • A.map C + B.map C : Matrix n n α[X]) (g i) i) ≤
         natDegree (∏ i : n, (X • A.map C + B.map C : Matrix n n α[X]) (g i) i) := by
-      cases' Int.units_eq_one_or (sign g) with sg sg
+      rcases Int.units_eq_one_or (sign g) with sg | sg
       · rw [sg, one_smul]
       · rw [sg, Units.neg_smul, one_smul, natDegree_neg]
     _ ≤ ∑ i : n, natDegree (((X : α[X]) • A.map C + B.map C : Matrix n n α[X]) (g i) i) :=

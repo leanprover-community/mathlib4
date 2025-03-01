@@ -64,9 +64,9 @@ theorem continuous_mul : Continuous fun p : M × M => p.1 * p.2 :=
 @[to_additive]
 instance : ContinuousMul (ULift.{u} M) := by
   constructor
-  apply continuous_uLift_up.comp
-  exact continuous_mul.comp₂ (continuous_uLift_down.comp continuous_fst)
-    (continuous_uLift_down.comp continuous_snd)
+  apply continuous_uliftUp.comp
+  exact continuous_mul.comp₂ (continuous_uliftDown.comp continuous_fst)
+    (continuous_uliftDown.comp continuous_snd)
 
 @[to_additive]
 instance ContinuousMul.to_continuousSMul : ContinuousSMul M M :=
@@ -221,8 +221,7 @@ theorem ContinuousWithinAt.mul {f g : X → M} {s : Set X} {x : X} (hf : Continu
 @[to_additive]
 instance Prod.continuousMul [TopologicalSpace N] [Mul N] [ContinuousMul N] :
     ContinuousMul (M × N) :=
-  ⟨(continuous_fst.fst'.mul continuous_fst.snd').prod_mk
-      (continuous_snd.fst'.mul continuous_snd.snd')⟩
+  ⟨by apply Continuous.prod_mk <;> fun_prop⟩
 
 @[to_additive]
 instance Pi.continuousMul {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Mul (C i)]
@@ -794,7 +793,6 @@ theorem Filter.tendsto_cocompact_mul_right {a b : M} (ha : a * b = 1) :
   refine Filter.Tendsto.of_tendsto_comp ?_ (Filter.comap_cocompact_le (continuous_mul_right b))
   simp only [comp_mul_right, ha, mul_one]
   exact Filter.tendsto_id
-  -- Porting note: changed proof
 
 /-- If `R` acts on `A` via `A`, then continuous multiplication implies continuous scalar
 multiplication by constants.
@@ -853,7 +851,7 @@ instance : ContinuousMul αˣ := isInducing_embedProduct.continuousMul (embedPro
 
 end Units
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem Continuous.units_map [Monoid M] [Monoid N] [TopologicalSpace M] [TopologicalSpace N]
     (f : M →* N) (hf : Continuous f) : Continuous (Units.map f) :=
   Units.continuous_iff.2 ⟨hf.comp Units.continuous_val, hf.comp Units.continuous_coe_inv⟩

@@ -118,6 +118,7 @@ theorem Kernel.measurable_lintegral_indicator_const {t : Set (α × β)} (ht : M
 /-- For an s-finite kernel `κ` and a function `f : α → β → ℝ≥0∞` which is measurable when seen as a
 map from `α × β` (hypothesis `Measurable (uncurry f)`), the integral `a ↦ ∫⁻ b, f a b ∂(κ a)` is
 measurable. -/
+@[fun_prop]
 theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0∞}
     (hf : Measurable (uncurry f)) : Measurable fun a => ∫⁻ b, f a b ∂κ a := by
   let F : ℕ → SimpleFunc (α × β) ℝ≥0∞ := SimpleFunc.eapprox (uncurry f)
@@ -150,13 +151,11 @@ theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0
     rw [h_add]
     exact Measurable.add hm₁ hm₂
 
+@[fun_prop]
 theorem _root_.Measurable.lintegral_kernel_prod_right' {f : α × β → ℝ≥0∞} (hf : Measurable f) :
-    Measurable fun a => ∫⁻ b, f (a, b) ∂κ a := by
-  refine Measurable.lintegral_kernel_prod_right ?_
-  have : (uncurry fun (a : α) (b : β) => f (a, b)) = f := by
-    ext x; rw [uncurry_apply_pair]
-  rwa [this]
+    Measurable fun a => ∫⁻ b, f (a, b) ∂κ a := by fun_prop
 
+@[fun_prop]
 theorem _root_.Measurable.lintegral_kernel_prod_right'' {f : β × γ → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun x => ∫⁻ y, f (x, y) ∂η (a, x) := by
   -- Porting note: used `Prod.mk a` instead of `fun x => (a, x)` below
@@ -166,35 +165,35 @@ theorem _root_.Measurable.lintegral_kernel_prod_right'' {f : β × γ → ℝ≥
   -- Porting note: specified `κ`, `f`.
   refine (Measurable.lintegral_kernel_prod_right' (κ := η)
     (f := (fun u ↦ f (u.fst.snd, u.snd))) ?_).comp measurable_prod_mk_left
-  exact hf.comp (measurable_fst.snd.prod_mk measurable_snd)
+  fun_prop
 
 theorem _root_.Measurable.setLIntegral_kernel_prod_right {f : α → β → ℝ≥0∞}
     (hf : Measurable (uncurry f)) {s : Set β} (hs : MeasurableSet s) :
     Measurable fun a => ∫⁻ b in s, f a b ∂κ a := by
-  simp_rw [← lintegral_restrict κ hs]; exact hf.lintegral_kernel_prod_right
+  simp_rw [← lintegral_restrict κ hs]; fun_prop
 
+@[fun_prop]
 theorem _root_.Measurable.lintegral_kernel_prod_left' {f : β × α → ℝ≥0∞} (hf : Measurable f) :
-    Measurable fun y => ∫⁻ x, f (x, y) ∂κ y :=
-  (measurable_swap_iff.mpr hf).lintegral_kernel_prod_right'
+    Measurable fun y => ∫⁻ x, f (x, y) ∂κ y := by fun_prop
 
+@[fun_prop]
 theorem _root_.Measurable.lintegral_kernel_prod_left {f : β → α → ℝ≥0∞}
-    (hf : Measurable (uncurry f)) : Measurable fun y => ∫⁻ x, f x y ∂κ y :=
-  hf.lintegral_kernel_prod_left'
+    (hf : Measurable (uncurry f)) : Measurable fun y => ∫⁻ x, f x y ∂κ y := by fun_prop
 
 theorem _root_.Measurable.setLIntegral_kernel_prod_left {f : β → α → ℝ≥0∞}
     (hf : Measurable (uncurry f)) {s : Set β} (hs : MeasurableSet s) :
     Measurable fun b => ∫⁻ a in s, f a b ∂κ b := by
-  simp_rw [← lintegral_restrict κ hs]; exact hf.lintegral_kernel_prod_left
+  simp_rw [← lintegral_restrict κ hs]; fun_prop
 
-theorem _root_.Measurable.lintegral_kernel {f : β → ℝ≥0∞} (hf : Measurable f) :
-    Measurable fun a => ∫⁻ b, f b ∂κ a :=
-  Measurable.lintegral_kernel_prod_right (hf.comp measurable_snd)
+@[fun_prop]
+theorem _root_.Measurable.lintegral_kernel {κ : Kernel α β} {f : β → ℝ≥0∞} (hf : Measurable f) :
+    Measurable fun a => ∫⁻ b, f b ∂κ a := by fun_prop
 
 theorem _root_.Measurable.setLIntegral_kernel {f : β → ℝ≥0∞} (hf : Measurable f) {s : Set β}
     (hs : MeasurableSet s) : Measurable fun a => ∫⁻ b in s, f b ∂κ a := by
   -- Porting note: was term mode proof (`Function.comp` reducibility)
   refine Measurable.setLIntegral_kernel_prod_right ?_ hs
-  convert hf.comp measurable_snd
+  fun_prop
 
 end Lintegral
 

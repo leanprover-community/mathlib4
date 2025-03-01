@@ -337,9 +337,9 @@ noncomputable instance commGroup : CommGroup (MulChar R R') :=
 
 /-- If `a` is a unit and `n : ℕ`, then `(χ ^ n) a = (χ a) ^ n`. -/
 theorem pow_apply_coe (χ : MulChar R R') (n : ℕ) (a : Rˣ) : (χ ^ n) a = χ a ^ n := by
-  induction' n with n ih
-  · rw [pow_zero, pow_zero, one_apply_coe]
-  · rw [pow_succ, pow_succ, mul_apply, ih]
+  induction n with
+  | zero => rw [pow_zero, pow_zero, one_apply_coe]
+  | succ n ih => rw [pow_succ, pow_succ, mul_apply, ih]
 
 /-- If `n` is positive, then `(χ ^ n) a = (χ a) ^ n`. -/
 theorem pow_apply' (χ : MulChar R R') {n : ℕ} (hn : n ≠ 0) (a : R) : (χ ^ n) a = χ a ^ n := by
@@ -456,7 +456,7 @@ theorem IsQuadratic.comp {χ : MulChar R R'} (hχ : χ.IsQuadratic) (f : R' →+
   intro a
   rcases hχ a with (ha | ha | ha) <;> simp [ha]
 
-/-- The inverse of a quadratic character is itself. →  -/
+/-- The inverse of a quadratic character is itself. → -/
 theorem IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = χ := by
   ext x
   rw [inv_apply_eq_inv]
