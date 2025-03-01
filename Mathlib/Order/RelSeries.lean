@@ -693,10 +693,10 @@ protected noncomputable def withLength [InfiniteDimensionalOrder α] (n : ℕ) :
   RelSeries.length_withLength _ _
 
 /-- if `α` is infinite dimensional, then `α` is nonempty. -/
-lemma nonempty_of_infiniteDimensionalType [InfiniteDimensionalOrder α] : Nonempty α :=
+lemma nonempty_of_infiniteDimensionalOrder [InfiniteDimensionalOrder α] : Nonempty α :=
   ⟨LTSeries.withLength α 0 0⟩
 
-lemma nonempty_of_finiteDimensionalType [FiniteDimensionalOrder α] : Nonempty α := by
+lemma nonempty_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : Nonempty α := by
   obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff _).mp ‹_›
   exact ⟨p 0⟩
 
