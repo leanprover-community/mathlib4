@@ -100,7 +100,7 @@ alias ⟨_, Perm.eraseIdx_of_getElem?_eq⟩ := perm_eraseIdx_of_getElem?_eq
 
 section Rel
 
-open Relator
+open scoped Relator
 
 variable {r : α → β → Prop}
 

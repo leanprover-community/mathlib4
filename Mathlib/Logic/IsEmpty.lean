@@ -205,7 +205,7 @@ theorem Function.extend_of_isEmpty [IsEmpty α] (f : α → β) (g : α → γ) 
     Function.extend f g h = h :=
   funext fun _ ↦ (Function.extend_apply' _ _ _) fun ⟨a, _⟩ ↦ isEmptyElim a
 
-open Relator
+open scoped Relator
 
 variable {α β : Type*} (R : α → β → Prop)
 
