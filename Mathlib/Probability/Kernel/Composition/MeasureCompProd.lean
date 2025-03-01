@@ -134,14 +134,14 @@ lemma compProd_add_left (μ ν : Measure α) [SFinite μ] [SFinite ν] (κ : Ker
     (μ + ν) ⊗ₘ κ = μ ⊗ₘ κ + ν ⊗ₘ κ := by
   by_cases hκ : IsSFiniteKernel κ
   · simp_rw [Measure.compProd, Kernel.const_add, Kernel.compProd_add_left, Kernel.add_apply]
-  · simp [compProd_of_not_isSFiniteKernel _ _ hκ]
+  · simp [hκ]
 
 lemma compProd_add_right (μ : Measure α) (κ η : Kernel α β)
     [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     μ ⊗ₘ (κ + η) = μ ⊗ₘ κ + μ ⊗ₘ η := by
   by_cases hμ : SFinite μ
   · simp_rw [Measure.compProd, Kernel.prodMkLeft_add, Kernel.compProd_add_right, Kernel.add_apply]
-  · simp [compProd_of_not_sfinite _ _ hμ]
+  · simp [hμ]
 
 lemma compProd_sum_left {ι : Type*} [Countable ι] {μ : ι → Measure α} [∀ i, SFinite (μ i)] :
     (sum μ) ⊗ₘ κ = sum (fun i ↦ (μ i) ⊗ₘ κ) := by
