@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yiming Fu, Zhenyan Fu, Raphael Douglas Giles, Jiedong Jiang, Jingting Wang
+Authors: Zhixuan Dai, Yiming Fu, Zhenyan Fu, Raphael Douglas Giles, Jiedong Jiang, Jingting Wang
 -/
 import Mathlib.Algebra.RingQuot
 import Mathlib.RingTheory.GradedAlgebra.Basic
