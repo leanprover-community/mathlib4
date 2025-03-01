@@ -14,6 +14,10 @@ Two values in a preorder are comparable whenever `a ≤ b` or `b ≤ a`.
 
 * `CompRel`: The comparability relation. `CompRel r a b` means that `a` and `b` is related in
   either direction by `r`.
+
+## Todo
+
+This definition should be linked to `IsChain` and `IsAntichain`.
 -/
 
 open Function OrderDual
