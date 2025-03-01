@@ -576,7 +576,8 @@ alias tendsto_inv_nhdsWithin_Iic_inv := tendsto_inv_nhdsLE_inv
 end OrderedCommGroup
 
 @[to_additive]
-instance [TopologicalSpace H] [Group H] [IsTopologicalGroup H] : IsTopologicalGroup (G × H) where
+instance Prod.instIsTopologicalGroup [TopologicalSpace H] [Group H] [IsTopologicalGroup H] :
+    IsTopologicalGroup (G × H) where
   continuous_inv := continuous_inv.prodMap continuous_inv
 
 @[to_additive]
