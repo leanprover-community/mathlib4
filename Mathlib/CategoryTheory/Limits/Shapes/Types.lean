@@ -331,9 +331,9 @@ noncomputable def isCoprodOfMono {X Y : Type u} (f : X ⟶ Y) [Mono f] :
   exact Subtype.range_val
 
 /--
-The category of types has `Π j, f j` as the product of a type family `f : J → TypeMax.{v, u}`.
+The category of types has `Π j, f j` as the product of a type family `f : J → Type max v u`.
 -/
-def productLimitCone {J : Type v} (F : J → TypeMax.{v, u}) :
+def productLimitCone {J : Type v} (F : J → Type max v u) :
     Limits.LimitCone (Discrete.functor F) where
   cone :=
     { pt := ∀ j, F j
@@ -342,24 +342,24 @@ def productLimitCone {J : Type v} (F : J → TypeMax.{v, u}) :
     { lift := fun s x j => s.π.app ⟨j⟩ x
       uniq := fun _ _ w => funext fun x => funext fun j => (congr_fun (w ⟨j⟩) x :) }
 
-/-- The categorical product in `TypeMax.{v, u}` is the type theoretic product `Π j, F j`. -/
-noncomputable def productIso {J : Type v} (F : J → TypeMax.{v, u}) : ∏ᶜ F ≅ ∀ j, F j :=
+/-- The categorical product in `Type max v u` is the type theoretic product `Π j, F j`. -/
+noncomputable def productIso {J : Type v} (F : J → Type max v u) : ∏ᶜ F ≅ ∀ j, F j :=
   limit.isoLimitCone (productLimitCone.{v, u} F)
 
 -- Porting note: was `@[elementwise (attr := simp)]`, but it produces a trivial lemma
 -- It should produce the lemma below.
 @[simp]
-theorem productIso_hom_comp_eval {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :
+theorem productIso_hom_comp_eval {J : Type v} (F : J → Type max v u) (j : J) :
     ((productIso.{v, u} F).hom ≫ fun f => f j) = Pi.π F j :=
   rfl
 
 @[simp]
-theorem productIso_hom_comp_eval_apply {J : Type v} (F : J → TypeMax.{v, u}) (j : J) (x) :
+theorem productIso_hom_comp_eval_apply {J : Type v} (F : J → Type max v u) (j : J) (x) :
     ((productIso.{v, u} F).hom x) j = Pi.π F j x :=
   rfl
 
 @[elementwise (attr := simp)]
-theorem productIso_inv_comp_π {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :
+theorem productIso_inv_comp_π {J : Type v} (F : J → Type max v u) (j : J) :
     (productIso.{v, u} F).inv ≫ Pi.π F j = fun f => f j :=
   limit.isoLimitCone_inv_π (productLimitCone.{v, u} F) ⟨j⟩
 
@@ -368,7 +368,7 @@ namespace Small
 variable {J : Type v} (F : J → Type u) [Small.{u} J]
 
 /--
-A variant of `productLimitCone` using a `Small` hypothesis rather than a function to `TypeMax`.
+A variant of `productLimitCone` using a `Small` hypothesis rather than a function to `Type`.
 -/
 noncomputable def productLimitCone :
     Limits.LimitCone (Discrete.functor F) where
@@ -408,7 +408,7 @@ end Small
 
 /-- The category of types has `Σ j, f j` as the coproduct of a type family `f : J → Type`.
 -/
-def coproductColimitCocone {J : Type v} (F : J → TypeMax.{v, u}) :
+def coproductColimitCocone {J : Type v} (F : J → Type max v u) :
     Limits.ColimitCocone (Discrete.functor F) where
   cocone :=
     { pt := Σj, F j
@@ -420,17 +420,17 @@ def coproductColimitCocone {J : Type v} (F : J → TypeMax.{v, u}) :
         exact congr_fun (w ⟨j⟩) x }
 
 /-- The categorical coproduct in `Type u` is the type theoretic coproduct `Σ j, F j`. -/
-noncomputable def coproductIso {J : Type v} (F : J → TypeMax.{v, u}) : ∐ F ≅ Σj, F j :=
+noncomputable def coproductIso {J : Type v} (F : J → Type max v u) : ∐ F ≅ Σj, F j :=
   colimit.isoColimitCocone (coproductColimitCocone F)
 
 @[elementwise (attr := simp)]
-theorem coproductIso_ι_comp_hom {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :
+theorem coproductIso_ι_comp_hom {J : Type v} (F : J → Type max v u) (j : J) :
     Sigma.ι F j ≫ (coproductIso F).hom = fun x : F j => (⟨j, x⟩ : Σj, F j) :=
   colimit.isoColimitCocone_ι_hom (coproductColimitCocone F) ⟨j⟩
 
 -- Porting note: was @[elementwise (attr := simp)], but it produces a trivial lemma
 -- removed simp attribute because it seems it never applies
-theorem coproductIso_mk_comp_inv {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :
+theorem coproductIso_mk_comp_inv {J : Type v} (F : J → Type max v u) (j : J) :
     (↾fun x : F j => (⟨j, x⟩ : Σj, F j)) ≫ (coproductIso F).inv = Sigma.ι F j :=
   rfl
 
