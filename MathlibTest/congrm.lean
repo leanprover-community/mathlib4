@@ -4,7 +4,7 @@ import Mathlib.Tactic.CongrM
 
 example (a b : ℤ) : (a - b + b) + a + b = a + (a - b + b) + (b - a + a) := by
   congrm ?h1 + ?h2
-  · congrm ?h1 + ?h2 <;> rw [Int.sub_add_cancel]
+  case H1 => congrm ?h1 + ?h2 <;> rw [Int.sub_add_cancel]
   · rw [Int.sub_add_cancel]
 
 private axiom test_sorry : ∀ {α}, α
