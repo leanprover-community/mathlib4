@@ -984,7 +984,7 @@ lemma succAbove_right_injective : Injective p.succAbove := by
 lemma succAbove_right_inj : p.succAbove i = p.succAbove j ↔ i = j :=
   succAbove_right_injective.eq_iff
 
-/--  `Fin.succAbove p` as an `Embedding`. -/
+/-- `Fin.succAbove p` as an `Embedding`. -/
 @[simps!]
 def succAboveEmb (p : Fin (n + 1)) : Fin n ↪ Fin (n + 1) := ⟨p.succAbove, succAbove_right_injective⟩
 
@@ -1333,6 +1333,7 @@ section Rec
 
 end Rec
 
+open scoped Relator in
 theorem liftFun_iff_succ {α : Type*} (r : α → α → Prop) [IsTrans α r] {f : Fin (n + 1) → α} :
     ((· < ·) ⇒ r) f f ↔ ∀ i : Fin n, r (f (castSucc i)) (f i.succ) := by
   constructor

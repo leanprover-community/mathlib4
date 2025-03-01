@@ -310,7 +310,7 @@ theorem convexBodySumFun_continuous :
   refine continuous_finset_sum Finset.univ fun w ↦ ?_
   obtain hw | hw := isReal_or_isComplex w
   all_goals
-  · simp only [normAtPlace_apply_isReal, normAtPlace_apply_isComplex, hw]
+  · simp only [normAtPlace_apply_of_isReal, normAtPlace_apply_of_isComplex, hw]
     fun_prop
 
 /-- The convex body equal to the set of points `x : mixedSpace K` such that

@@ -68,14 +68,11 @@ theorem vectorSpan_def (s : Set P) : vectorSpan k s = Submodule.span k (s -ᵥ s
 theorem vectorSpan_mono {s₁ s₂ : Set P} (h : s₁ ⊆ s₂) : vectorSpan k s₁ ≤ vectorSpan k s₂ :=
   Submodule.span_mono (vsub_self_mono h)
 
-variable (P)
-
+variable (P) in
 /-- The `vectorSpan` of the empty set is `⊥`. -/
 @[simp]
 theorem vectorSpan_empty : vectorSpan k (∅ : Set P) = (⊥ : Submodule k V) := by
   rw [vectorSpan_def, vsub_empty, Submodule.span_empty]
-
-variable {P}
 
 /-- The `vectorSpan` of a single point is `⊥`. -/
 @[simp]
@@ -675,14 +672,11 @@ theorem span_iUnion {ι : Type*} (s : ι → Set P) :
     affineSpan k (⋃ i, s i) = ⨆ i, affineSpan k (s i) :=
   (AffineSubspace.gi k V P).gc.l_iSup
 
-variable (P)
-
+variable (P) in
 /-- `⊤`, coerced to a set, is the whole set of points. -/
 @[simp]
 theorem top_coe : ((⊤ : AffineSubspace k P) : Set P) = Set.univ :=
   rfl
-
-variable {P}
 
 /-- All points are in `⊤`. -/
 @[simp]

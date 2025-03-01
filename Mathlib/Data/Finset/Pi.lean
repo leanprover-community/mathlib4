@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Union
 import Mathlib.Data.Multiset.Pi
+import Mathlib.Logic.Function.DependsOn
 
 /-!
 # The cartesian product of finsets
@@ -178,6 +179,9 @@ theorem restrict₂_comp_restrict {s t : Finset ι} (hst : s ⊆ t) :
 
 theorem restrict₂_comp_restrict₂ {s t u : Finset ι} (hst : s ⊆ t) (htu : t ⊆ u) :
     (restrict₂ (π := π) hst) ∘ (restrict₂ htu) = restrict₂ (hst.trans htu) := rfl
+
+lemma dependsOn_restrict (s : Finset ι) : DependsOn (s.restrict (π := π)) s :=
+  (s : Set ι).dependsOn_restrict
 
 end Pi
 

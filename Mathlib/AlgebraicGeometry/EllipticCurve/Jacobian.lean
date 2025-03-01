@@ -88,24 +88,6 @@ local notation3 "y" => (1 : Fin 3)
 
 local notation3 "z" => (2 : Fin 3)
 
-local macro "matrix_simp" : tactic =>
-  `(tactic| simp only [Matrix.head_cons, Matrix.tail_cons, Matrix.smul_empty, Matrix.smul_cons,
-    Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_two])
-
-universe r s u v w
-
-/-! ## Weierstrass curves -/
-
-/-- An abbreviation for a Weierstrass curve in Jacobian coordinates. -/
-abbrev WeierstrassCurve.Jacobian (R : Type u) : Type u :=
-  WeierstrassCurve R
-
-/-- The coercion to a Weierstrass curve in Jacobian coordinates. -/
-abbrev WeierstrassCurve.toJacobian {R : Type u} (W : WeierstrassCurve R) : Jacobian R :=
-  W
-
-namespace WeierstrassCurve.Jacobian
-
 open MvPolynomial
 
 local macro "eval_simp" : tactic =>
@@ -115,17 +97,39 @@ local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_C, map_X, map_neg, map_add, map_sub, map_mul, map_pow,
     map_div₀, WeierstrassCurve.map, Function.comp_apply])
 
+local macro "matrix_simp" : tactic =>
+  `(tactic| simp only [Matrix.head_cons, Matrix.tail_cons, Matrix.smul_empty, Matrix.smul_cons,
+    Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_two])
+
 local macro "pderiv_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, pderiv_mul, pderiv_pow,
     pderiv_C, pderiv_X_self, pderiv_X_of_ne one_ne_zero, pderiv_X_of_ne one_ne_zero.symm,
     pderiv_X_of_ne (by decide : z ≠ x), pderiv_X_of_ne (by decide : x ≠ z),
     pderiv_X_of_ne (by decide : z ≠ y), pderiv_X_of_ne (by decide : y ≠ z)])
 
-variable {R : Type u} {W' : Jacobian R} {F : Type v} [Field F] {W : Jacobian F}
+universe r s u v
 
-section Jacobian
+/-! ## Weierstrass curves -/
 
-/-! ### Jacobian coordinates -/
+namespace WeierstrassCurve
+
+variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v}
+
+variable (R) in
+/-- An abbreviation for a Weierstrass curve in Jacobian coordinates. -/
+abbrev Jacobian : Type r :=
+  WeierstrassCurve R
+
+/-- The coercion to a Weierstrass curve in Jacobian coordinates. -/
+abbrev toJacobian (W : WeierstrassCurve R) : Jacobian R :=
+  W
+
+namespace Jacobian
+
+variable (W') in
+/-- The coercion to a Weierstrass curve in affine coordinates. -/
+abbrev toAffine : Affine R :=
+  W'
 
 lemma fin3_def (P : Fin 3 → R) : ![P x, P y, P z] = P := by
   ext n; fin_cases n <;> rfl
@@ -133,10 +137,15 @@ lemma fin3_def (P : Fin 3 → R) : ![P x, P y, P z] = P := by
 lemma fin3_def_ext (X Y Z : R) : ![X, Y, Z] x = X ∧ ![X, Y, Z] y = Y ∧ ![X, Y, Z] z = Z :=
   ⟨rfl, rfl, rfl⟩
 
-lemma comp_fin3 {S : Type v} (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] :=
+lemma comp_fin3 (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] :=
   (FinVec.map_eq ..).symm
 
-variable [CommRing R]
+variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K] {W' : Jacobian R}
+  {W : Jacobian F}
+
+section Jacobian
+
+/-! ### Jacobian coordinates -/
 
 /-- The scalar multiplication on a point representative. -/
 scoped instance instSMulPoint : SMul R <| Fin 3 → R :=
@@ -149,9 +158,10 @@ lemma smul_fin3_ext (P : Fin 3 → R) (u : R) :
     (u • P) x = u ^ 2 * P x ∧ (u • P) y = u ^ 3 * P y ∧ (u • P) z = u * P z :=
   ⟨rfl, rfl, rfl⟩
 
-lemma comp_smul {S : Type v} [CommRing S] (f : R →+* S) (P : Fin 3 → R) (u : R) :
-    f ∘ (u • P) = f u • f ∘ P := by
+lemma comp_smul (f : R →+* S) (P : Fin 3 → R) (u : R) : f ∘ (u • P) = f u • f ∘ P := by
   ext n; fin_cases n <;> simp only [smul_fin3, comp_fin3] <;> map_simp
+
+@[deprecated (since := "2025-01-30")] alias map_smul := comp_smul
 
 /-- The multiplicative action on a point representative. -/
 scoped instance instMulActionPoint : MulAction R <| Fin 3 → R where
@@ -164,7 +174,7 @@ scoped instance instMulActionPoint : MulAction R <| Fin 3 → R where
 
 variable (R) in
 /-- The equivalence class of a point representative. -/
-abbrev PointClass : Type u :=
+abbrev PointClass : Type r :=
   MulAction.orbitRel.Quotient Rˣ <| Fin 3 → R
 
 lemma smul_equiv (P : Fin 3 → R) {u : R} (hu : IsUnit u) : u • P ≈ P :=
@@ -177,11 +187,6 @@ lemma smul_eq (P : Fin 3 → R) {u : R} (hu : IsUnit u) : (⟦u • P⟧ : Point
 lemma smul_equiv_smul (P Q : Fin 3 → R) {u v : R} (hu : IsUnit u) (hv : IsUnit v) :
     u • P ≈ v • Q ↔ P ≈ Q := by
   rw [← Quotient.eq_iff_equiv, ← Quotient.eq_iff_equiv, smul_eq P hu, smul_eq Q hv]
-
-variable (W') in
-/-- The coercion to a Weierstrass curve in affine coordinates. -/
-abbrev toAffine : Affine R :=
-  W'
 
 lemma equiv_iff_eq_of_Z_eq' {P Q : Fin 3 → R} (hz : P z = Q z) (mem : Q z ∈ nonZeroDivisors R) :
     P ≈ Q ↔ P = Q := by
@@ -243,8 +248,6 @@ lemma Y_eq_iff {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
 
 end Jacobian
 
-variable [CommRing R]
-
 section Equation
 
 /-! ### Weierstrass equations -/
@@ -285,7 +288,7 @@ lemma equation_smul (P : Fin 3 → R) {u : R} (hu : IsUnit u) : W'.Equation (u �
   have hP (u : R) {P : Fin 3 → R} (hP : W'.Equation P) : W'.Equation <| u • P := by
     rw [equation_iff] at hP ⊢
     linear_combination (norm := (simp only [smul_fin3_ext]; ring1)) u ^ 6 * hP
-  ⟨fun h => by convert hP hu.unit.inv h; simp [smul_smul], hP u⟩
+  ⟨fun h => by convert hP ↑hu.unit⁻¹ h; rw [smul_smul, hu.val_inv_mul, one_smul], hP u⟩
 
 lemma equation_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.Equation P ↔ W'.Equation Q := by
   rcases h with ⟨u, rfl⟩
@@ -473,7 +476,7 @@ lemma equiv_zero_of_Z_eq_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P 
     P ≈ ![1, 1, 0] :=
   equiv_of_Z_eq_zero hP nonsingular_zero hPz rfl
 
-lemma comp_equiv_comp {K : Type v} [Field K] (f : F →+* K) {P Q : Fin 3 → F} (hP : W.Nonsingular P)
+lemma comp_equiv_comp (f : F →+* K) {P Q : Fin 3 → F} (hP : W.Nonsingular P)
     (hQ : W.Nonsingular Q) : f ∘ P ≈ f ∘ Q ↔ P ≈ Q := by
   refine ⟨fun h => ?_, fun h => ?_⟩
   · by_cases hz : f (P z) = 0
@@ -1296,8 +1299,7 @@ lemma add_of_Y_ne' {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (
     dblXYZ_of_Z_ne_zero hP hQ hPz hQz hx hy]
 
 lemma add_of_X_ne {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 ≠ Q x * P z ^ 2) :
-    W.add P Q = addZ P Q •
+    (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 ≠ Q x * P z ^ 2) : W.add P Q = addZ P Q •
       ![W.toAffine.addX (P x / P z ^ 2) (Q x / Q z ^ 2)
           (W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3)),
         W.toAffine.addY (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3)
@@ -1749,8 +1751,6 @@ protected lemma map_add {K : Type v} [Field K] (f : F →+* K) {P Q : Fin 3 → 
   · rw [add_of_not_equiv <| h.comp (comp_equiv_comp f hP hQ).mp, add_of_not_equiv h, map_addXYZ]
 
 end Map
-
-@[deprecated (since := "2025-30-01")] alias map_smul := comp_smul
 
 section BaseChange
 

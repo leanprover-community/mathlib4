@@ -29,14 +29,14 @@ def DegLex (α : Type*) := α
 
 variable {α : Type*}
 
-/-- `toDegLex` is the identity function to the `DegLex` of a type.  -/
+/-- `toDegLex` is the identity function to the `DegLex` of a type. -/
 @[match_pattern] def toDegLex : α ≃ DegLex α := Equiv.refl _
 
 theorem toDegLex_injective : Function.Injective (toDegLex (α := α)) := fun _ _ ↦ _root_.id
 
 theorem toDegLex_inj {a b : α} : toDegLex a = toDegLex b ↔ a = b := Iff.rfl
 
-/-- `ofDegLex` is the identity function from the `DegLex` of a type.  -/
+/-- `ofDegLex` is the identity function from the `DegLex` of a type. -/
 @[match_pattern] def ofDegLex : DegLex α ≃ α := Equiv.refl _
 
 theorem ofDegLex_injective : Function.Injective (ofDegLex (α := α)) := fun _ _ ↦ _root_.id

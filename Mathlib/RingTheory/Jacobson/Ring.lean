@@ -150,8 +150,7 @@ open IsLocalization Submonoid
 variable {R S : Type*} [CommRing R] [CommRing S]
 variable (y : R) [Algebra R S] [IsLocalization.Away y S]
 
-variable (S)
-
+variable (S) in
 /-- If `R` is a Jacobson ring, then maximal ideals in the localization at `y`
 correspond to maximal ideals in the original ring `R` that don't contain `y`.
 This lemma gives the correspondence in the particular case of an ideal and its comap.
@@ -183,8 +182,6 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
       refine fun hI' => hI.right ?_
       rw [← map_comap (powers y) S I, ← map_comap (powers y) S J]
       exact map_mono hI'
-
-variable {S}
 
 /-- If `R` is a Jacobson ring, then maximal ideals in the localization at `y`
 correspond to maximal ideals in the original ring `R` that don't contain `y`.
@@ -696,6 +693,7 @@ lemma RingHom.FiniteType.isJacobsonRing {A B : Type*} [CommRing A] [CommRing B]
     {f : A →+* B} [IsJacobsonRing A] (H : f.FiniteType) : IsJacobsonRing B :=
   @isJacobsonRing_of_finiteType A B _ _ f.toAlgebra _ H
 
+@[stacks 0CY7 "See also https://en.wikipedia.org/wiki/Zariski%27s_lemma."]
 lemma finite_of_finite_type_of_isJacobsonRing (R S : Type*) [CommRing R] [Field S]
     [Algebra R S] [IsJacobsonRing R] [Algebra.FiniteType R S] :
     Module.Finite R S := by
