@@ -204,7 +204,7 @@ theorem StarConvex.gauge_le (hs : StarConvex ℝ 0 s) (absorbs : Absorbent ℝ s
     StarConvex ℝ 0 { x | gauge s x ≤ a } := by
   by_cases ha : 0 ≤ a
   · rw [gauge_le_eq hs absorbs ha]
-    exact starConvex_iInter₂ fun i _ => hs.smul_zero i
+    exact starConvex_iInter₂ fun i _ => hs.zero_smul i
   · convert starConvex_empty (0 : E)
     exact eq_empty_iff_forall_not_mem.2 fun x hx => ha <| (gauge_nonneg _).trans hx
 
