@@ -6,6 +6,7 @@ Authors: Bhavik Mehta, Kim Morrison
 import Mathlib.CategoryTheory.Subobject.MonoOver
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.CategoryTheory.Elementwise
 
@@ -520,6 +521,36 @@ theorem pullback_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject Z) :
 instance (f : X ⟶ Y) : (pullback f).Faithful where
 
 end Pullback
+
+section IsPullback
+
+lemma isPullback_eq {X Y Z : C} {x x' : Subobject X}
+    {f : X ⟶ Z} {g : Y ⟶ Z} {k : (x : C) ⟶ Y} {k' : (x' : C) ⟶ Y}
+    (h : IsPullback k x.arrow g f) (h' : IsPullback k' x'.arrow g f) :
+    x = x' := by
+  let i := @IsPullback.isoIsPullback _ _ _ _ _ _ _ _ _ _ _ _ _ h h'
+  apply eq_of_comm i
+  simp [i]
+
+lemma isPullback_mk {X Y Z : C}
+    (f : Y ⟶ Z) (g : X ⟶ Z) [HasPullback f g] [Mono f] :
+    let π₁ := pullback.fst f g;
+    let π₂ := pullback.snd f g;
+    IsPullback ((underlyingIso π₂).hom ≫ π₁) (mk π₂).arrow f g := by
+  intro π₁ π₂
+  apply IsPullback.of_iso (IsPullback.of_hasPullback f g)
+    (underlyingIso π₂).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
+    <;> simp [π₁, π₂]
+
+lemma isPullback_eq_mk {X Y Z : C} {x : Subobject X}
+    {f : Y ⟶ Z} {g : X ⟶ Z} [HasPullback f g] [Mono f]
+    {fst : (x : C) ⟶ Y}
+    (h : IsPullback fst x.arrow f g) :
+    x = mk (pullback.snd f g) := by
+  have h' := isPullback_mk f g
+  apply isPullback_eq h h'
+
+end IsPullback
 
 section Map
 
