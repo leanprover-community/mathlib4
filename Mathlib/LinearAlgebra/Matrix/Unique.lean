@@ -32,22 +32,26 @@ def uniqueEquiv : Matrix m n A ≃ A where
   right_inv a := by simp
 
 /-- The obvious additive isomorphism between M₁(A) and A, if A has an addition. -/
-abbrev uniqueAddEquiv [Add A] : Matrix m n A ≃+ A where
+@[simps]
+def uniqueAddEquiv [Add A] : Matrix m n A ≃+ A where
   __ := uniqueEquiv
   map_add' := by simp
 
 /-- `M₁(A)` is linearly equivalent to `A` as `R`-modules where `R` is a semiring. -/
-abbrev uniqueLinearEquiv [Semiring R] [AddCommMonoid A] [Module R A] : Matrix m n A ≃ₗ[R] A where
+@[simps]
+def uniqueLinearEquiv [Semiring R] [AddCommMonoid A] [Module R A] : Matrix m n A ≃ₗ[R] A where
   __ := uniqueAddEquiv
   map_smul' := by simp
 
 /-- `M₁(A)` is equivalent to `A` as rings. -/
-abbrev uniqueRingEquiv [NonUnitalNonAssocSemiring A] : Matrix m m A ≃+* A where
+@[simps!]
+def uniqueRingEquiv [NonUnitalNonAssocSemiring A] : Matrix m m A ≃+* A where
   __ := uniqueAddEquiv
   map_mul' := by simp [mul_apply]
 
 /-- `M₁(A)` is equivalent to `A` as `R`-algebras. -/
-abbrev uniqueAlgEquiv [Semiring A] [CommSemiring R] [Algebra R A] : Matrix m m A ≃ₐ[R] A where
+@[simps!]
+def uniqueAlgEquiv [Semiring A] [CommSemiring R] [Algebra R A] : Matrix m m A ≃ₐ[R] A where
   __ := uniqueRingEquiv
   commutes' r := by aesop
 
