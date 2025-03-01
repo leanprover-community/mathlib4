@@ -229,7 +229,7 @@ end
 
 variable [SuccOrder J] [OrderBot J] [HasIterationOfShape J C]
 
-/-- The category of `j`th iterations of a succesor structure `Φ : SuccStruct C`.
+/-- The category of `j`th iterations of a successor structure `Φ : SuccStruct C`.
 An object consists of the data of all iterations of `Φ` for `i : J` such
 that `i ≤ j` (this is the field `F`). Such objects are
 equipped with data and properties which characterizes uniquely the iterations

@@ -470,7 +470,7 @@ structure CCState extends CCConfig where
   /-- Records equality between `ACApps`. -/
   acR : RBACAppsMap (ACApps × DelayedExpr) := ∅
   /-- Returns true if the `CCState` is inconsistent. For example if it had both `a = b` and `a ≠ b`
-      in it.-/
+      in it. -/
   inconsistent : Bool := false
   /-- "Global Modification Time". gmt is a number stored on the `CCState`,
       it is compared with the modification time of a cc_entry in e-matching. See `CCState.mt`. -/

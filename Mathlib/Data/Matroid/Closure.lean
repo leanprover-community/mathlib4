@@ -13,6 +13,9 @@ import Mathlib.Order.CompleteLatticeIntervals
 A `IsFlat` of a matroid `M` is a combinatorial analogue of a subspace of a vector space,
 and is defined to be a subset `F` of the ground set of `M` such that for each isBasis
 `I` for `M`, every set having `I` as a isBasis is contained in `F`.
+A `IsFlat` of a matroid `M` is a combinatorial analogue of a subspace of a vector space,
+and is defined to be a subset `F` of the ground set of `M` such that for each isBasis
+`I` for `M`, every set having `I` as a isBasis is contained in `F`.
 
 The *closure* of a set `X` in a matroid `M` is the intersection of all flats of `M` containing `X`.
 This is a combinatorial analogue of the linear span of a set of vectors.
@@ -85,7 +88,7 @@ variable {ι α : Type*} {M : Matroid α} {F X Y : Set α} {e f : α}
 
 section IsFlat
 
-/-- A flat is a maximal set having a given basis  -/
+/-- A flat is a maximal set having a given basis -/
 @[mk_iff]
 structure IsFlat (M : Matroid α) (F : Set α) : Prop where
   subset_of_isBasis_of_isBasis : ∀ ⦃I X⦄, M.IsBasis I F → M.IsBasis I X → X ⊆ F
@@ -404,7 +407,8 @@ lemma insert_indep_iff : M.Indep (insert e I) ↔ M.Indep I ∧ (e ∉ I → e �
   · rw [hI.insert_indep_iff, and_iff_right hI, or_iff_not_imp_right]
   simp [hI, show ¬ M.Indep (insert e I) from fun h ↦ hI <| h.subset <| subset_insert _ _]
 
-/-- This can be used for rewriting if the LHS is inside a binder and whether `f = e` is unknown.-/
+/-- This can be used for rewriting if the LHS is inside a binder and it is unknown
+whether `f = e`. -/
 lemma Indep.insert_diff_indep_iff (hI : M.Indep (I \ {e})) (heI : e ∈ I) :
     M.Indep (insert f I \ {e}) ↔ f ∈ M.E \ M.closure (I \ {e}) ∨ f ∈ I := by
   obtain rfl | hne := eq_or_ne e f
@@ -434,6 +438,15 @@ lemma isBase_iff_indep_closure_eq : M.IsBase B ↔ M.Indep B ∧ M.closure B = M
   rw [← isBasis_ground_iff, isBasis_iff_indep_subset_closure, and_congr_right_iff]
   exact fun hI ↦ ⟨fun h ↦ (M.closure_subset_ground _).antisymm h.2,
     fun h ↦ ⟨(M.subset_closure B).trans_eq h, h.symm.subset⟩⟩
+
+lemma IsBase.exchange_base_of_not_mem_closure (hB : M.IsBase B) (he : e ∈ B)
+    (hf : f ∉ M.closure (B \ {e})) (hfE : f ∈ M.E := by aesop_mat) :
+    M.IsBase (insert f (B \ {e})) := by
+  obtain rfl | hne := eq_or_ne f e
+  · simpa [he]
+  have ⟨hi, hfB⟩ : M.Indep (insert f (B \ {e})) ∧ f ∉ B := by
+    simpa [(hB.indep.diff _).not_mem_closure_iff, hne] using hf
+  exact hB.exchange_isBase_of_indep hfB hi
 
 lemma Indep.isBase_iff_ground_subset_closure (hI : M.Indep I) : M.IsBase I ↔ M.E ⊆ M.closure I :=
   ⟨fun h ↦ h.closure_eq.symm.subset, hI.isBase_of_ground_subset_closure⟩

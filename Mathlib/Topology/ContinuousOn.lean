@@ -405,6 +405,12 @@ theorem dense_pi {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i
   simp only [dense_iff_closure_eq, closure_pi_set, pi_congr rfl fun i hi => (hs i hi).closure_eq,
     pi_univ]
 
+theorem DenseRange.piMap {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalSpace (Y i)]
+    {f : (i : ι) → (X i) → (Y i)} (hf : ∀ i, DenseRange (f i)):
+    DenseRange (Pi.map f) := by
+  rw [DenseRange, Set.range_piMap]
+  exact dense_pi Set.univ (fun i _ => hf i)
+
 theorem eventuallyEq_nhdsWithin_iff {f g : α → β} {s : Set α} {a : α} :
     f =ᶠ[𝓝[s] a] g ↔ ∀ᶠ x in 𝓝 a, x ∈ s → f x = g x :=
   mem_inf_principal
