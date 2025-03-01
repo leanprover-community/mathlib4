@@ -335,6 +335,7 @@ theorem bot_lt_ker_of_det_eq_zero {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] {f
 
 lemma det_mulLeft (a : R) : (mulLeft R a).det = a := by simp
 lemma det_mulRight (a : R) : (mulRight R a).det = a := by simp
+protected lemma det_mul (a : R) : (mul R R a).det = a := by simp
 
 omit [DecidableEq ι] in
 theorem det_pi [Module.Free R M] [Module.Finite R M] (f : ι → M →ₗ[R] M) :
