@@ -302,14 +302,11 @@ lemma comp₀_rel [W.HasLeftCalculusOfFractions]
   · simp only [comp₀, assoc, ← reassoc_of% fac]
     exact W.comp_mem _ _ z₂.hs (W.comp_mem _ _ z₃'.hs (W.comp_mem _ _ z₄.hs ht))
 
-variable (W)
-
+variable (W) in
 /-- The morphisms in the constructed localized category for a morphism property `W`
 that has left calculus of fractions are equivalence classes of left fractions. -/
 def Localization.Hom (X Y : C) :=
   Quot (LeftFractionRel : W.LeftFraction X Y → W.LeftFraction X Y → Prop)
-
-variable {W}
 
 /-- The morphism in the constructed localized category that is induced by a left fraction. -/
 def Localization.Hom.mk {X Y : C} (z : W.LeftFraction X Y) : Localization.Hom W X Y :=
@@ -469,8 +466,7 @@ noncomputable instance : Category (Localization W) where
         (by dsimp; rw [assoc, ← reassoc_of% fac₁₂, fac])]
     simp
 
-variable (W)
-
+variable (W) in
 /-- The localization functor to the constructed localized category for a morphism property
 that has left calculus of fractions. -/
 @[simps obj]
@@ -482,8 +478,6 @@ def Q : C ⥤ Localization W where
     change _ = Hom.comp _ _
     rw [Hom.comp_eq, comp_eq (ofHom W f) (ofHom W g) (ofHom W g) (by simp)]
     simp only [ofHom, comp₀, comp_id]
-
-variable {W}
 
 /-- The morphism on `Localization W` that is induced by a left fraction. -/
 abbrev homMk {X Y : C} (f : W.LeftFraction X Y) : (Q W).obj X ⟶ (Q W).obj Y := Hom.mk f
