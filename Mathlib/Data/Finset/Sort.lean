@@ -38,7 +38,7 @@ theorem sort_val (s : Finset α) : Multiset.sort r s.val = sort r s :=
   rfl
 
 @[simp]
-theorem sort_mk (s : Multiset α) (h : s.Nodup) : sort r ⟨s, h⟩ = s.sort r := rfl
+theorem sort_mk {s : Multiset α} (h : s.Nodup) : sort r ⟨s, h⟩ = s.sort r := rfl
 
 @[simp]
 theorem sort_sorted (s : Finset α) : List.Sorted r (sort r s) :=
