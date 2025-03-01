@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Sven Manthe
 -/
 import Mathlib.Init
-import Lean.Elab.Tactic.Simp
+import Lean.Meta.Closure
 
 /-! # The `abstract` tactic -/
 
