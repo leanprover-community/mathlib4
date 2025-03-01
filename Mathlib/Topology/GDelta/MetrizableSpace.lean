@@ -22,7 +22,7 @@ open TopologicalSpace Metric Set
 
 section Metrizable
 
-instance (priority := 500) [PseudoMetrizableSpace X] : PerfectlyNormalSpace X where
+instance (priority := 100) [PseudoMetrizableSpace X] : NormalSpace X where
   normal s t hs ht hst := by
     letI := pseudoMetrizableSpacePseudoMetric
     by_cases hee : s = ∅ ∨ t = ∅
@@ -46,6 +46,8 @@ instance (priority := 500) [PseudoMetrizableSpace X] : PerfectlyNormalSpace X wh
       rw [mem_preimage, infDist_zero_of_mem hx, zero_sub,
         mem_Iio, neg_neg_iff_pos, ← hs.not_mem_iff_infDist_pos hse]
       exact hst.not_mem_of_mem_right hx
+
+instance (priority := 500) [PseudoMetrizableSpace X] : PerfectlyNormalSpace X where
   closed_gdelta s hs := by
     letI := pseudoMetrizableSpacePseudoMetric
     by_cases he : s = ∅
@@ -79,6 +81,8 @@ instance (priority := 500) [PseudoMetrizableSpace X] : PerfectlyNormalSpace X wh
           have hcf := Nat.ceil_le_floor_add_one (Metric.infDist x s)⁻¹
           rw [← @Nat.cast_le ℝ, Nat.cast_add, Nat.cast_one] at hcf
           exact (not_le_of_lt (hcf.trans_lt hx) (Nat.le_ceil _))
+
+instance (priority := 100) [MetrizableSpace X] : T4Space X where
 
 instance (priority := 500) [MetrizableSpace X] : T6Space X where
 
