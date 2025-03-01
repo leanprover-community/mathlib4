@@ -200,8 +200,8 @@ theorem add_cons_right {basis_hd : ℝ → ℝ} {basis_tl : Basis} {Y_exp : ℝ}
     · rfl
 
 theorem add_cons_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {X_tl Y_tl: PreMS (basis_hd :: basis_tl)} {X_exp Y_exp : ℝ} {X_coef Y_coef : PreMS basis_tl}
-    : HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (X_exp, X_coef) X_tl)
+    {X_tl Y_tl: PreMS (basis_hd :: basis_tl)} {X_exp Y_exp : ℝ} {X_coef Y_coef : PreMS basis_tl} :
+    HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (X_exp, X_coef) X_tl)
       (Seq.cons (Y_exp, Y_coef) Y_tl) =
     if Y_exp < X_exp then
       Seq.cons (X_exp, X_coef) (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) X_tl
@@ -210,8 +210,8 @@ theorem add_cons_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       Seq.cons (Y_exp, Y_coef) (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl))
         (Seq.cons (X_exp, X_coef) X_tl) Y_tl)
     else
-      Seq.cons (X_exp, X_coef + Y_coef) (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) X_tl Y_tl)
-    := by
+      Seq.cons (X_exp, X_coef + Y_coef)
+        (HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) X_tl Y_tl) := by
   rw [add_unfold, add']
   simp
 

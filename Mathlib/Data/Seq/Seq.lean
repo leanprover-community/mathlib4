@@ -890,7 +890,7 @@ theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
       simp
     obtain ⟨y, hy⟩ := this
     rw [take, head_eq_some hy]
-    simp
+    simp only [destruct_cons, List.mem_cons]
     right
     apply ih (by omega)
     rwa [get?_tail]
@@ -1308,7 +1308,7 @@ theorem zipWith_map_right (s₁ : Seq α) (s₂ : Seq β) (f : β → β') (g : 
 theorem zip_map (s₁ : Seq α) (s₂ : Seq β) (f₁ : α → α') (f₂ : β → β') :
     (s₁.map f₁).zip (s₂.map f₂) = (s₁.zip s₂).map (Prod.map f₁ f₂) := by
   ext1 n
-  simp
+  simp only [get?_zip, map_get?]
   cases s₁.get? n <;> cases s₂.get? n <;> simp
 
 theorem zip_map_left (s₁ : Seq α) (s₂ : Seq β) (f : α → α') :
@@ -1408,7 +1408,7 @@ theorem set_dropn_stable_of_lt {s : Seq α} {m n : ℕ} {x : α}
     (h : m < n) :
     (s.set m x).drop n = s.drop n := by
   ext1 i
-  simp
+  simp only [drop_get?]
   rw [set_get_stable]
   omega
 
@@ -1444,8 +1444,7 @@ theorem All_of_get {p : α → Prop} {s : Seq α} (h : ∀ n x, s.get? n = .some
 /-- Coinductive principle for `All`. -/
 theorem All.coind {s : Seq α} {p : α → Prop}
     (motive : Seq α → Prop) (h_base : motive s)
-    (h_cons : ∀ hd tl, motive (.cons hd tl) → p hd ∧ motive tl)
-    : s.All p := by
+    (h_cons : ∀ hd tl, motive (.cons hd tl) → p hd ∧ motive tl) : s.All p := by
   apply All_of_get
   intro n
   have : (s.get? n).elim True p ∧ motive (s.drop n) := by
@@ -1457,7 +1456,7 @@ theorem All.coind {s : Seq α} {p : α → Prop}
         · simp
         · simpa
       | some hd =>
-        simp
+        simp only [Option.elim_some, drop_zero]
         have := head_eq_some h1
         specialize h_cons hd s.tail (this ▸ h_base)
         constructor
@@ -1480,7 +1479,7 @@ theorem All.coind {s : Seq α} {p : α → Prop}
           | some tl_hd =>
             have h_tl_cons := head_eq_some h_head
             specialize h_cons tl_hd tl.tail (h_tl_cons ▸ this)
-            simp
+            simp only [Option.elim_some]
             exact h_cons.left
         · assumption
   intro x hx
@@ -1598,8 +1597,7 @@ theorem Pairwise.cons_cons_of_trans {R : α → α → Prop} [IsTrans _ R] {hd t
 /-- Coinductive principle for `Pairwise`. -/
 theorem Pairwise.coind {R : α → α → Prop} {s : Seq α}
     (motive : Seq α → Prop) (h_base : motive s)
-    (h_step : ∀ hd tl, motive (.cons hd tl) → tl.All (R hd ·) ∧ motive tl)
-    : Pairwise R s := by
+    (h_step : ∀ hd tl, motive (.cons hd tl) → tl.All (R hd ·) ∧ motive tl) : Pairwise R s := by
   have h_all : ∀ n, motive (s.drop n) := by
     intro n
     induction n with
@@ -1627,8 +1625,8 @@ theorem Pairwise.coind {R : α → α → Prop} {s : Seq α}
 `R hd tl.head` instead of `tl.All (R hd ·)` in `h_step`. -/
 theorem Pairwise.coind_trans {R : α → α → Prop} [IsTrans _ R] {s : Seq α}
     (motive : Seq α → Prop) (h_base : motive s)
-    (h_step : ∀ hd tl, motive (.cons hd tl) → tl.head.elim True (R hd ·) ∧ motive tl)
-    : Pairwise R s := by
+    (h_step : ∀ hd tl, motive (.cons hd tl) → tl.head.elim True (R hd ·) ∧ motive tl) :
+    Pairwise R s := by
   have h_all : ∀ n, motive (s.drop n) := by
     intro n
     induction n with
@@ -1723,8 +1721,8 @@ theorem AtLeastAsLongAs_map {α : Type v} {γ : Type w} {f : β → γ} {a : Seq
 theorem AtLeastAsLongAs.coind {a : Seq α} {b : Seq β}
     (motive : Seq α → Seq β → Prop) (h_base : motive a b)
     (h_step : ∀ a b, motive a b →
-      (∀ b_hd b_tl, (b = .cons b_hd b_tl) → ∃ a_hd a_tl, a = .cons a_hd a_tl ∧ motive a_tl b_tl))
-    : a.AtLeastAsLongAs b := by
+      (∀ b_hd b_tl, (b = .cons b_hd b_tl) → ∃ a_hd a_tl, a = .cons a_hd a_tl ∧ motive a_tl b_tl)) :
+      a.AtLeastAsLongAs b := by
   simp only [AtLeastAsLongAs, TerminatedAt, ← head_dropn]
   intro n
   have : b.drop n ≠ .nil → motive (a.drop n) (b.drop n) := by

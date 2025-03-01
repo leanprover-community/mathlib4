@@ -31,8 +31,7 @@ mutual
 
   /-- Multiplication by monomial, i.e. `M_coef * basis_hd ^ M_exp * B`. -/
   noncomputable def mulMonomial {basis_hd} {basis_tl} (B : PreMS (basis_hd :: basis_tl))
-      (M_coef : PreMS basis_tl) (M_exp : ℝ)
-      : PreMS (basis_hd :: basis_tl) :=
+      (M_coef : PreMS basis_tl) (M_exp : ℝ) : PreMS (basis_hd :: basis_tl) :=
     B.map fun (exp, coef) => (M_exp + exp, M_coef.mul coef)
 end
 
@@ -1845,14 +1844,13 @@ noncomputable def addMany_mulMonomial_tail_fB {basis_hd} {basis_tl} {k : ℕ}
           linarith
       exact leadingExp_eq_coe this
     fun i ↦
-      if h : ((BM i).1.mulMonomial (BM i).2.1 (BM i).2.2).leadingExp = ↑exp then
-        by
-          have h' := (h_BM_cons i h).choose_spec
-          specialize hB_approx i
-          rw [h'] at hB_approx
-          apply Approximates_cons at hB_approx
-          let fC := hB_approx.choose
-          exact fun t ↦ fB i t - basis_hd t ^ (exp - (BM i).2.2) * fC t
+      if h : ((BM i).1.mulMonomial (BM i).2.1 (BM i).2.2).leadingExp = ↑exp then by
+        have h' := (h_BM_cons i h).choose_spec
+        specialize hB_approx i
+        rw [h'] at hB_approx
+        apply Approximates_cons at hB_approx
+        let fC := hB_approx.choose
+        exact fun t ↦ fB i t - basis_hd t ^ (exp - (BM i).2.2) * fC t
       else
         fB i
 
@@ -1896,14 +1894,13 @@ noncomputable def addMany_mulMonomial_fC {basis_hd} {basis_tl} {k : ℕ}
           linarith
       exact leadingExp_eq_coe this
     fun t ↦ ∑ i, (
-      if h : ((BM i).1.mulMonomial (BM i).2.1 (BM i).2.2).leadingExp = ↑exp then
-        by
-          have h' := (h_BM_cons i h).choose_spec
-          specialize hB_approx i
-          rw [h'] at hB_approx
-          apply Approximates_cons at hB_approx
-          let fBC := hB_approx.choose
-          exact (fM i t) * (fBC t)
+      if h : ((BM i).1.mulMonomial (BM i).2.1 (BM i).2.2).leadingExp = ↑exp then by
+        have h' := (h_BM_cons i h).choose_spec
+        specialize hB_approx i
+        rw [h'] at hB_approx
+        apply Approximates_cons at hB_approx
+        let fBC := hB_approx.choose
+        exact (fM i t) * (fBC t)
       else
         0
     )

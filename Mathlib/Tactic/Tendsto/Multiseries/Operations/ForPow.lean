@@ -153,8 +153,7 @@ open ContinuousLinearMap FormalMultilinearSeries
 theorem binomialSeries_ODE {a : ℝ} :
     let dSeries := (binomialSeries ℝ a).derivSeries
     a • binomialSeries ℝ a = (compFormalMultilinearSeries (.apply ℝ ℝ 1) dSeries) +
-      dSeries.unshift 0
-    := by
+      dSeries.unshift 0 := by
   have h_coeff : ∀ k, (binomialSeries ℝ a).coeff k = (Ring.choose a k) := by
     intro k
     unfold binomialSeries

@@ -177,8 +177,8 @@ mutual
   theorem IsEquivalent_leadingTerm {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
       (h_wo : ms.WellOrdered)
       (h_approx : ms.Approximates f) (h_trimmed : ms.Trimmed)
-      (h_basis : WellFormedBasis basis)
-      : f ~[atTop] ms.leadingTerm.toFun basis := by
+      (h_basis : WellFormedBasis basis) :
+      f ~[atTop] ms.leadingTerm.toFun basis := by
     cases basis with
     | nil =>
       simp [Approximates] at h_approx

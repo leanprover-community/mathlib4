@@ -224,8 +224,8 @@ theorem WellOrdered.coind {ms : PreMS (basis_hd :: basis_tl)}
         tl.leadingExp < exp ∧
         motive tl
       )
-    )
-    : ms.WellOrdered := by
+    ) :
+    ms.WellOrdered := by
   have h_all : ∀ n, motive (ms.drop n) := by
     intro n
     induction n with
@@ -330,8 +330,7 @@ theorem majorated_tendsto_zero_of_neg {f basis_hd : ℝ → ℝ} {exp : ℝ}
 
 /-- Constants can be majorated with `exp = 0`. -/
 theorem const_majorated {basis_hd : ℝ → ℝ} (h_tendsto : Tendsto basis_hd atTop atTop)
-    {c : ℝ}
-    : majorated (fun _ ↦ c) basis_hd 0 := by
+    {c : ℝ} : majorated (fun _ ↦ c) basis_hd 0 := by
   intro exp h_exp
   apply Asymptotics.isLittleO_const_left.mpr
   right
@@ -340,15 +339,13 @@ theorem const_majorated {basis_hd : ℝ → ℝ} (h_tendsto : Tendsto basis_hd a
   exact h_tendsto
 
 /-- Zero can be majorated with any exponent. -/
-theorem zero_majorated {basis_hd : ℝ → ℝ} {exp : ℝ}
-    : majorated (fun _ ↦ 0) basis_hd exp := by
+theorem zero_majorated {basis_hd : ℝ → ℝ} {exp : ℝ} : majorated (fun _ ↦ 0) basis_hd exp := by
   intro exp h_exp
   apply Asymptotics.isLittleO_zero
 
 /-- `f * c` can be majorated with the same exponent as `f` for any constant `c`. -/
 theorem mul_const_majorated {f basis_hd : ℝ → ℝ} {exp : ℝ} (h : majorated f basis_hd exp)
-    {c : ℝ}
-    : majorated (fun t ↦ (f t) * c) basis_hd exp := by
+    {c : ℝ} : majorated (fun t ↦ (f t) * c) basis_hd exp := by
   intro exp h_exp
   simp_rw [mul_comm]
   apply IsLittleO.const_mul_left (h exp h_exp)
@@ -356,8 +353,7 @@ theorem mul_const_majorated {f basis_hd : ℝ → ℝ} {exp : ℝ} (h : majorate
 /-- Sum of two function, that can be majorated with exponents `f_exp` and `g_exp`, can be
 majorated with exponent `f_exp ⊔ g_exp`. -/
 theorem add_majorated {f g basis_hd : ℝ → ℝ} {f_exp g_exp : ℝ} (hf : majorated f basis_hd f_exp)
-    (hg : majorated g basis_hd g_exp)
-    : majorated (f + g) basis_hd (f_exp ⊔ g_exp) := by
+    (hg : majorated g basis_hd g_exp) : majorated (f + g) basis_hd (f_exp ⊔ g_exp) := by
   simp only [majorated] at *
   intro exp h_exp
   simp at h_exp
@@ -368,8 +364,8 @@ theorem add_majorated {f g basis_hd : ℝ → ℝ} {f_exp g_exp : ℝ} (hf : maj
 /-- Product of two function, that can be majorated with exponents `f_exp` and `g_exp`, can be
 majorated with exponent `f_exp + g_exp`. -/
 theorem mul_majorated {f g basis_hd : ℝ → ℝ} {f_exp g_exp : ℝ} (hf : majorated f basis_hd f_exp)
-    (hg : majorated g basis_hd g_exp) (h_pos : ∀ᶠ t in atTop, 0 < basis_hd t)
-    : majorated (f * g) basis_hd (f_exp + g_exp) := by
+    (hg : majorated g basis_hd g_exp) (h_pos : ∀ᶠ t in atTop, 0 < basis_hd t) :
+    majorated (f * g) basis_hd (f_exp + g_exp) := by
   simp only [majorated] at *
   intro exp h_exp
   let ε := (exp - f_exp - g_exp) / 2
@@ -555,8 +551,8 @@ theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
         majorated f basis_hd exp ∧
         (motive (fun t ↦ f t - (basis_hd t)^exp * (fC t)) tl)
       )
-    )
-    : ms.Approximates f := by
+    ) :
+    ms.Approximates f := by
   simp [Approximates]
   let T := Approximates.coind.AuxT motive
   let g : T → Option ((ℝ → ℝ) × T) := fun ⟨val, f, h⟩ =>
@@ -763,7 +759,7 @@ theorem Approximates_cons {exp : ℝ}
 
 /-- One can replace `f` in `Approximates` with the funcion that eventually equals `f`. -/
 theorem Approximates_of_EventuallyEq {basis : Basis} {ms : PreMS basis} {f f' : ℝ → ℝ}
-     (h_equiv : f =ᶠ[atTop] f') (h_approx : ms.Approximates f) :
+    (h_equiv : f =ᶠ[atTop] f') (h_approx : ms.Approximates f) :
     ms.Approximates f' :=
   match basis with
   | [] => by

@@ -101,10 +101,8 @@ structure TrimmingResult {basis : Q(Basis)} (ms : Q(PreMS $basis)) where
   h_approx : Q(∀ f, PreMS.Approximates $ms f → PreMS.Approximates $val f)
   h_trimmed : Q(PreMS.Trimmed $val)
 
-def trim {basis : Q(Basis)} (ms : Q(PreMS $basis))
-    (h_wo : Q(PreMS.WellOrdered $ms))
-    (destructStepsLeft := 20)
-    : TacticM (TrimmingResult ms) := do
+def trim {basis : Q(Basis)} (ms : Q(PreMS $basis)) (h_wo : Q(PreMS.WellOrdered $ms))
+    (destructStepsLeft := 20) : TacticM (TrimmingResult ms) := do
   match destructStepsLeft with
   | 0 => throwError "No destruction steps left"
   | destructStepsLeftNext + 1 =>
@@ -210,10 +208,8 @@ structure PartialTrimmingResult {basis : Q(Basis)} (ms : Q(PreMS $basis)) where
 /-- Same as `trim` but stops when it is clear that `FirstIsNeg ms.leadingTerm.exps` is true. In such
 case we can prove that the limit is zero without `ms.Trimmed`. -/
 def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
-    (h_wo : Q(PreMS.WellOrdered $ms))
-    (allZero := true)
-    (destructStepsLeft := 20)
-    : TacticM (PartialTrimmingResult ms) := do
+    (h_wo : Q(PreMS.WellOrdered $ms)) (allZero := true) (destructStepsLeft := 20) :
+    TacticM (PartialTrimmingResult ms) := do
   match destructStepsLeft with
   | 0 => throwError "No destruction steps left"
   | destructStepsLeftNext + 1 =>

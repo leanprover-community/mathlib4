@@ -229,8 +229,8 @@ theorem div_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
     (h_basis : WellFormedBasis basis)
     (hY_wo : Y.WellOrdered)
     (hY_trimmed : Y.Trimmed)
-    (hX_approx : X.Approximates fX) (hY_approx : Y.Approximates fY)
-    : (X.div Y).Approximates (fX / fY) := by
+    (hX_approx : X.Approximates fX) (hY_approx : Y.Approximates fY) :
+    (X.div Y).Approximates (fX / fY) := by
   unfold div
   apply mul_Approximates h_basis hX_approx
   exact inv_Approximates h_basis hY_wo hY_approx hY_trimmed
