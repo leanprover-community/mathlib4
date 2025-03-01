@@ -70,6 +70,7 @@ end structuredArrowRightwardsOpEquivalence
 /-- If `w : TwoSquare T L R B`, and `g : B.op.obj X₃ ⟶ R.op.obj X₂`, this is
 the obvious equivalence of categories between
 `(w.op.StructuredArrowRightwards g)ᵒᵖ` and `w.CostructuredArrowDownwards g.unop`. -/
+@[simps]
 def structuredArrowRightwardsOpEquivalence :
     (w.op.StructuredArrowRightwards g)ᵒᵖ ≌
       w.CostructuredArrowDownwards g.unop where
