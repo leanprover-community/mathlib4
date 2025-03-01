@@ -237,6 +237,10 @@ theorem mk_arrow (P : Subobject X) : mk P.arrow = P :=
     obtain ⟨e⟩ := @Quotient.mk_out' _ (isIsomorphicSetoid _) Q
     exact Quotient.sound' ⟨MonoOver.isoMk (Iso.refl _) ≪≫ e⟩
 
+@[simp]
+lemma mk_arrow_mk {X : C} (m : MonoOver X) : mk m.arrow = ⟦m⟧ :=
+  rfl
+
 theorem le_of_comm {B : C} {X Y : Subobject B} (f : (X : C) ⟶ (Y : C)) (w : f ≫ Y.arrow = X.arrow) :
     X ≤ Y := by
   convert mk_le_mk_of_comm _ w <;> simp
