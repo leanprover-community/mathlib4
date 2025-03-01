@@ -413,17 +413,36 @@ noncomputable def mapLeftHomologyIso [S.HasLeftHomology] [F.PreservesLeftHomolog
     (S.map F).leftHomology ≅ F.obj S.leftHomology :=
   (S.leftHomologyData.map F).leftHomologyIso
 
+@[reassoc (attr := simp)]
+lemma leftHomologyπ_mapLeftHomologyIso_hom [S.HasLeftHomology]
+    [F.PreservesLeftHomologyOf S] :
+    (S.map F).leftHomologyπ ≫ (S.mapLeftHomologyIso F).hom =
+      (S.mapCyclesIso F).hom ≫ F.map S.leftHomologyπ :=
+  (S.leftHomologyData.map F).leftHomologyπ_comp_leftHomologyIso_hom
+
 /-- When a functor `F` preserves the right homology of a short complex `S`, this is the
 canonical isomorphism `(S.map F).opcycles ≅ F.obj S.opcycles`. -/
 noncomputable def mapOpcyclesIso [S.HasRightHomology] [F.PreservesRightHomologyOf S] :
     (S.map F).opcycles ≅ F.obj S.opcycles :=
   (S.rightHomologyData.map F).opcyclesIso
 
+@[reassoc (attr := simp)]
+lemma pOpcycles_mapOpcyclesIso_hom [S.HasRightHomology] [F.PreservesRightHomologyOf S] :
+    F.map S.pOpcycles ≫ (S.mapOpcyclesIso F).inv = (S.map F).pOpcycles :=
+  (S.rightHomologyData.map F).p_comp_opcyclesIso_inv
+
 /-- When a functor `F` preserves the right homology of a short complex `S`, this is the
 canonical isomorphism `(S.map F).rightHomology ≅ F.obj S.rightHomology`. -/
 noncomputable def mapRightHomologyIso [S.HasRightHomology] [F.PreservesRightHomologyOf S] :
     (S.map F).rightHomology ≅ F.obj S.rightHomology :=
   (S.rightHomologyData.map F).rightHomologyIso
+
+@[reassoc (attr := simp)]
+lemma mapRightHomologyIso_inv_comp_rightHomologyι [S.HasRightHomology]
+    [F.PreservesRightHomologyOf S] :
+    (S.mapRightHomologyIso F).inv ≫ (S.map F).rightHomologyι =
+       F.map S.rightHomologyι ≫ (S.mapOpcyclesIso F).inv :=
+  (S.rightHomologyData.map F).rightHomologyIso_inv_comp_rightHomologyι
 
 /-- When a functor `F` preserves the left homology of a short complex `S`, this is the
 canonical isomorphism `(S.map F).homology ≅ F.obj S.homology`. -/
@@ -432,12 +451,44 @@ noncomputable def mapHomologyIso [S.HasHomology] [(S.map F).HasHomology]
     (S.map F).homology ≅ F.obj S.homology :=
   (S.homologyData.left.map F).homologyIso
 
+@[reassoc]
+lemma mapHomologyIso_hom_map_leftHomologyIso_inv [S.HasHomology] [(S.map F).HasHomology]
+    [F.PreservesLeftHomologyOf S] :
+    (S.mapHomologyIso F).hom ≫ F.map S.leftHomologyIso.inv =
+      (S.map F).leftHomologyIso.inv ≫ (S.mapLeftHomologyIso F).hom := sorry
+
+@[reassoc (attr := simp)]
+lemma homologyπ_mapHomologyIso_hom [S.HasHomology] [(S.map F).HasHomology]
+    [F.PreservesLeftHomologyOf S] :
+    (S.map F).homologyπ ≫ (S.mapHomologyIso F).hom =
+      (S.mapCyclesIso F).hom ≫ F.map S.homologyπ := by
+  rw [← cancel_mono (F.map S.leftHomologyIso.inv), assoc, assoc,
+    mapHomologyIso_hom_map_leftHomologyIso_inv,
+    homologyπ_comp_leftHomologyIso_inv_assoc, leftHomologyπ_mapLeftHomologyIso_hom,
+    ← F.map_comp, homologyπ_comp_leftHomologyIso_inv]
+
 /-- When a functor `F` preserves the right homology of a short complex `S`, this is the
 canonical isomorphism `(S.map F).homology ≅ F.obj S.homology`. -/
 noncomputable def mapHomologyIso' [S.HasHomology] [(S.map F).HasHomology]
     [F.PreservesRightHomologyOf S] :
     (S.map F).homology ≅ F.obj S.homology :=
   (S.homologyData.right.map F).homologyIso ≪≫ F.mapIso S.homologyData.right.homologyIso.symm
+
+@[reassoc]
+lemma map_rightHomologyIso_hom_mapHomologyIso'_inv [S.HasHomology] [(S.map F).HasHomology]
+    [F.PreservesRightHomologyOf S] :
+      F.map S.rightHomologyIso.hom ≫ (S.mapHomologyIso' F).inv =
+      (S.mapRightHomologyIso F).inv ≫ (S.map F).rightHomologyIso.hom := sorry
+
+@[reassoc (attr := simp)]
+lemma mapHomologyIso'_hom_homologyι [S.HasHomology] [(S.map F).HasHomology]
+    [F.PreservesRightHomologyOf S] :
+    (S.mapHomologyIso' F).inv ≫ (S.map F).homologyι  =
+      F.map S.homologyι ≫ (S.mapOpcyclesIso F).inv := by
+  rw [← cancel_epi (F.map S.rightHomologyIso.hom),
+    map_rightHomologyIso_hom_mapHomologyIso'_inv_assoc,
+    rightHomologyIso_hom_comp_homologyι, mapRightHomologyIso_inv_comp_rightHomologyι,
+    ← F.map_comp_assoc, rightHomologyIso_hom_comp_homologyι]
 
 variable {S}
 
