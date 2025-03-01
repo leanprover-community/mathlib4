@@ -335,7 +335,7 @@ example :
   let f := fun (x : ℝ) ↦ 1 / (1 + Real.pi * x) - 1 / (1 + 3 * x);
   Tendsto f atTop (nhds 0) := by
   simp only
-  have : 0 < Real.pi := Real.pi_pos -- TODO: should not be necessary
+  have : 0 < Real.pi := Real.pi_pos
   compute_asymptotics
 
 example :
@@ -346,8 +346,6 @@ example :
   have : Real.pi⁻¹ < 1/3 := by
     rw [inv_lt_comm₀] <;> try linarith
     simp; linarith
-  -- have : 1 * ((Real.pi * 1)⁻¹ * 1) + -(1 / 3) < 0 := by
-  --   norm_num1
   compute_asymptotics
   rfl
 
