@@ -10,75 +10,9 @@ import Mathlib.Combinatorics.Enumerative.Composition
 open Set Function List
 open scoped Finset
 
-namespace StrictMono
-
-variable {α β : Type*} [LinearOrder α] [Preorder β] {f : α → β} {l : List α}
-
-@[simp]
-theorem sorted_le_listMap (hf : StrictMono f) :
-    (l.map f).Sorted (· ≤ ·) ↔ l.Sorted (· ≤ ·) := by
-  simp only [Sorted, pairwise_map, hf.le_iff_le]
-
-@[simp]
-theorem sorted_lt_listMap (hf : StrictMono f) :
-    (l.map f).Sorted (· < ·) ↔ l.Sorted (· < ·) := by
-  simp only [Sorted, pairwise_map, hf.lt_iff_lt]
-
-end StrictMono
-
-namespace OrderEmbedding
-
-variable {α β : Type*} [Preorder α] [Preorder β]
-
-@[simp]
-theorem sorted_le_listMap (e : α ↪o β) {l : List α} :
-    (l.map e).Sorted (· ≤ ·) ↔ l.Sorted (· ≤ ·) := by
-  simp only [Sorted, pairwise_map, e.le_iff_le]
-
-@[simp]
-theorem sorted_lt_listMap (e : α ↪o β) {l : List α} :
-    (l.map e).Sorted (· < ·) ↔ l.Sorted (· < ·) := by
-  simp [Sorted, pairwise_map]
-
-end OrderEmbedding
-
-namespace OrderIso
-
-variable {α β : Type*} [Preorder α] [Preorder β]
-
-@[simp]
-theorem sorted_le_listMap (e : α ≃o β) {l : List α} :
-    (l.map e).Sorted (· ≤ ·) ↔ l.Sorted (· ≤ ·) :=
-  e.toOrderEmbedding.sorted_le_listMap
-
-@[simp]
-theorem sorted_lt_listMap (e : α ≃o β) {l : List α} :
-    (l.map e).Sorted (· < ·) ↔ l.Sorted (· < ·) :=
-  e.toOrderEmbedding.sorted_lt_listMap
-
-end OrderIso
-
 namespace List
 
 variable {α β γ : Type*}
-
-theorem Pairwise.rel_dropLast_getLast {R : α → α → Prop} {l : List α} {a : α} (h : l.Pairwise R)
-    (ha : a ∈ l.dropLast) : R a (l.getLast <| ne_nil_of_mem <| dropLast_subset _ ha) := by
-  rw [← List.pairwise_reverse] at h
-  rw [getLast_eq_head_reverse]
-  exact h.rel_head_tail (by rwa [tail_reverse, mem_reverse])
-
-theorem Pairwise.rel_getLast_of_rel_getLast_getLast {R : α → α → Prop} {l : List α} {a : α}
-    (h₁ : l.Pairwise R) (ha : a ∈ l)
-    (hlast : R (l.getLast <| ne_nil_of_mem ha) (l.getLast <| ne_nil_of_mem ha)) :
-    R a (l.getLast <| ne_nil_of_mem ha) := by
-  rw [← dropLast_concat_getLast (ne_nil_of_mem ha), mem_append, List.mem_singleton] at ha
-  exact ha.elim h₁.rel_dropLast_getLast (· ▸ hlast)
-
-theorem Pairwise.rel_getLast {R : α → α → Prop} {l : List α} {a : α}
-    [IsRefl α R] (h₁ : l.Pairwise R) (ha : a ∈ l) :
-    R a (l.getLast <| ne_nil_of_mem ha) :=
-  h₁.rel_getLast_of_rel_getLast_getLast ha (refl_of ..)
 
 theorem mem_unattach {p : α → Prop} {l : List (Subtype p)} {x : α} :
     x ∈ l.unattach ↔ ∃ y ∈ l, y.1 = x :=
