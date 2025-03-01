@@ -147,6 +147,16 @@ theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
 theorem mk_eq_mk {a h a' h'} : @mk n a h = @mk n a' h' ↔ a = a' :=
   Fin.ext_iff
 
+@[norm_cast]
+lemma val_ne_zero_iff {n : ℕ} [NeZero n] (k : Fin n) : (k : ℕ) ≠ 0 ↔ k ≠ 0 := by
+  rw [←Fin.val_ne_iff, Fin.val_zero]
+
+--Not a `simp` lemma since creates conflicts with `Fin.ext_iff`.
+--TODO(Paul-Lez): should this be a `simp` lemma?
+@[norm_cast]
+lemma val_eq_zero_iff {n : ℕ} [NeZero n] (k : Fin n) : (k : ℕ) = 0 ↔ k = 0 := by
+  rw [←Fin.val_eq_val, Fin.val_zero]
+
 -- syntactic tautologies now
 
 /-- Assume `k = l`. If two functions defined on `Fin k` and `Fin l` are equal on each element,
@@ -261,7 +271,8 @@ theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
 @[simp] lemma cast_eq_self (a : Fin n) : a.cast rfl = a := rfl
 
 @[simp] theorem cast_eq_zero {k l : ℕ} [NeZero k] [NeZero l]
-    (h : k = l) (x : Fin k) : Fin.cast h x = 0 ↔ x = 0 := by simp [← val_eq_val]
+    (h : k = l) (x : Fin k) : Fin.cast h x = 0 ↔ x = 0 := by
+  simp only [← val_eq_val, coe_cast, val_zero]
 
 lemma cast_injective {k l : ℕ} (h : k = l) : Injective (Fin.cast h) :=
   fun a b hab ↦ by simpa [← val_eq_val] using hab
@@ -377,6 +388,17 @@ theorem val_add_eq_of_add_lt {n : ℕ} {a b : Fin n} (huv : a.val + b.val < n) :
 lemma intCast_val_sub_eq_sub_add_ite {n : ℕ} (a b : Fin n) :
     ((a - b).val : ℤ) = a.val - b.val + if b ≤ a then 0 else n := by
   split <;> fin_omega
+
+lemma one_le_of_ne_zero {n : ℕ} [NeZero n] {k : Fin n} (hk : k ≠ 0) : 1 ≤ k := by
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
+  cases n with
+  | zero => simp only [Nat.reduceAdd, Fin.isValue, Fin.zero_le]
+  | succ n => rwa [Fin.le_iff_val_le_val, Fin.val_one, Nat.one_le_iff_ne_zero, val_ne_zero_iff]
+
+lemma val_sub_one_of_ne_zero [NeZero n] {i : Fin n} (hi : i ≠ 0) : (i - 1).val = i - 1 := by
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
+  rw [Fin.sub_val_of_le (one_le_of_ne_zero hi), Fin.val_one', Nat.mod_eq_of_lt
+    (Nat.succ_le_iff.mpr (nontrivial_iff_two_le.mp <| nontrivial_of_ne i 0 hi))]
 
 section OfNatCoe
 

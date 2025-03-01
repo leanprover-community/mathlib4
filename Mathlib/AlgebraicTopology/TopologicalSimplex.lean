@@ -44,7 +44,7 @@ lemma toTopObj_one_add_eq_one (f : ⦋1⦌.toTopObj) : f 0 + f 1 = 1 := by
 
 lemma toTopObj_one_coe_add_coe_eq_one (f : ⦋1⦌.toTopObj) : (f 0 : ℝ) + f 1 = 1 := by
   norm_cast
-  rw [toTopObj_one_add_eq_one]
+  simp [toTopObj_one_add_eq_one]
 
 instance (x : SimplexCategory) : Nonempty x.toTopObj :=
   ⟨⟨Pi.single (I := Fin _) 0 1, (show ∑ _, _ = _ by simp)⟩⟩
