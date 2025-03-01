@@ -34,9 +34,7 @@ The following notations are scoped to the `Cardinal` namespace.
   `Mathlib.SetTheory.Cardinal.Continuum`.
 -/
 
-assert_not_exists Module
-assert_not_exists Finsupp
-assert_not_exists Cardinal.mul_eq_self
+assert_not_exists Field Finsupp Module Cardinal.mul_eq_self
 
 noncomputable section
 
@@ -139,9 +137,8 @@ theorem preOmega_natCast (n : ℕ) : preOmega n = n := by
     rw [Nat.cast_lt]
     exact lt_succ n
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem preOmega_ofNat (n : ℕ) [n.AtLeastTwo] : preOmega (no_index (OfNat.ofNat n)) = n :=
+theorem preOmega_ofNat (n : ℕ) [n.AtLeastTwo] : preOmega ofNat(n) = n :=
   preOmega_natCast n
 
 theorem preOmega_le_of_forall_lt {o a : Ordinal} (ha : IsInitial a) (H : ∀ b < o, preOmega b < a) :
@@ -427,10 +424,6 @@ theorem aleph_toNat (o : Ordinal) : toNat (ℵ_ o) = 0 :=
 theorem aleph_toENat (o : Ordinal) : toENat (ℵ_ o) = ⊤ :=
   (toENat_eq_top.2 (aleph0_le_aleph o))
 
-instance nonempty_toType_aleph (o : Ordinal) : Nonempty (ℵ_ o).ord.toType := by
-  rw [toType_nonempty_iff_ne_zero, ← ord_zero]
-  exact fun h => (ord_injective h).not_gt (aleph_pos o)
-
 theorem isLimit_omega (o : Ordinal) : Ordinal.IsLimit (ω_ o) := by
   rw [← ord_aleph]
   exact isLimit_ord (aleph0_le_aleph _)
@@ -501,6 +494,9 @@ theorem aleph1_eq_lift {c : Cardinal.{u}} : ℵ₁ = lift.{v} c ↔ ℵ₁ = c :
 @[simp]
 theorem lift_eq_aleph1 {c : Cardinal.{u}} : lift.{v} c = ℵ₁ ↔ c = ℵ₁ := by
   simpa using lift_inj (b := ℵ₁)
+
+theorem lt_omega_iff_card_lt {x o : Ordinal} : x < ω_ o ↔ x.card < ℵ_ o := by
+  rw [← (isInitial_omega o).card_lt_card, card_omega]
 
 section deprecated
 
@@ -682,7 +678,7 @@ set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided."  (since := "2024-09-24")]
 theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω ≤ o) :
     ∃ a, (ℵ_ a).ord = o := by
-  cases' eq_aleph'_of_eq_card_ord ho with a ha
+  obtain ⟨a, ha⟩ := eq_aleph'_of_eq_card_ord ho
   use a - ω
   rwa [aleph_eq_aleph', Ordinal.add_sub_cancel_of_le]
   rwa [← aleph0_le_aleph', ← ord_le_ord, ha, ord_aleph0]

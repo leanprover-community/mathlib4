@@ -92,7 +92,7 @@ theorem eventually_prod_principal_iff {p : α × β → Prop} {s : Set β} :
 
 theorem comap_prod (f : α → β × γ) (b : Filter β) (c : Filter γ) :
     comap f (b ×ˢ c) = comap (Prod.fst ∘ f) b ⊓ comap (Prod.snd ∘ f) c := by
-  erw [comap_inf, Filter.comap_comap, Filter.comap_comap]
+  rw [prod_eq_inf, comap_inf, Filter.comap_comap, Filter.comap_comap]
 
 theorem comap_prodMap_prod (f : α → β) (g : γ → δ) (lb : Filter β) (ld : Filter δ) :
     comap (Prod.map f g) (lb ×ˢ ld) = comap f lb ×ˢ comap g ld := by
@@ -326,7 +326,7 @@ theorem le_prod_map_fst_snd {f : Filter (α × β)} : f ≤ map Prod.fst f ×ˢ 
 theorem Tendsto.prod_map {δ : Type*} {f : α → γ} {g : β → δ} {a : Filter α} {b : Filter β}
     {c : Filter γ} {d : Filter δ} (hf : Tendsto f a c) (hg : Tendsto g b d) :
     Tendsto (Prod.map f g) (a ×ˢ b) (c ×ˢ d) := by
-  erw [Tendsto, ← prod_map_map_eq]
+  rw [Tendsto, Prod.map_def, ← prod_map_map_eq]
   exact Filter.prod_mono hf hg
 
 protected theorem map_prod (m : α × β → γ) (f : Filter α) (g : Filter β) :

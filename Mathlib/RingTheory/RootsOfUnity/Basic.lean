@@ -34,8 +34,6 @@ Note that `rootsOfUnity 0 M` is the top subgroup of `Mˣ` (as the condition `ζ^
 satisfied for all units).
 -/
 
-open scoped Classical
-
 noncomputable section
 
 open Polynomial
@@ -197,13 +195,15 @@ theorem rootsOfUnityEquivNthRoots_symm_apply (x : { x // x ∈ nthRoots k (1 : R
 
 variable (k R)
 
-instance rootsOfUnity.fintype : Fintype (rootsOfUnity k R) :=
-  Fintype.ofEquiv { x // x ∈ nthRoots k (1 : R) } (rootsOfUnityEquivNthRoots R k).symm
+instance rootsOfUnity.fintype : Fintype (rootsOfUnity k R) := by
+  classical
+  exact Fintype.ofEquiv { x // x ∈ nthRoots k (1 : R) } (rootsOfUnityEquivNthRoots R k).symm
 
 instance rootsOfUnity.isCyclic : IsCyclic (rootsOfUnity k R) :=
   isCyclic_of_subgroup_isDomain ((Units.coeHom R).comp (rootsOfUnity k R).subtype) coe_injective
 
-theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k :=
+theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k := by
+  classical
   calc
     Fintype.card (rootsOfUnity k R) = Fintype.card { x // x ∈ nthRoots k (1 : R) } :=
       Fintype.card_congr (rootsOfUnityEquivNthRoots R k)
@@ -233,7 +233,7 @@ theorem mem_rootsOfUnity_prime_pow_mul_iff (p k : ℕ) (m : ℕ) [ExpChar R p] {
     ζ ∈ rootsOfUnity (p ^ k * m) R ↔ ζ ∈ rootsOfUnity m R := by
   simp only [mem_rootsOfUnity', ExpChar.pow_prime_pow_mul_eq_one_iff]
 
-/-- A variant of `mem_rootsOfUnity_prime_pow_mul_iff` in terms of `ζ ^ _`.-/
+/-- A variant of `mem_rootsOfUnity_prime_pow_mul_iff` in terms of `ζ ^ _` -/
 @[simp]
 theorem mem_rootsOfUnity_prime_pow_mul_iff' (p k : ℕ) (m : ℕ) [ExpChar R p] {ζ : Rˣ} :
     ζ ^ (p ^ k * m) = 1 ↔ ζ ∈ rootsOfUnity m R := by

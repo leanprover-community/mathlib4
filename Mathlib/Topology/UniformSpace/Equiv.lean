@@ -30,7 +30,6 @@ variable {α : Type u} {β : Type*} {γ : Type*} {δ : Type*}
 
 -- not all spaces are homeomorphic to each other
 /-- Uniform isomorphism between `α` and `β` -/
---@[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not yet ported
 structure UniformEquiv (α : Type*) (β : Type*) [UniformSpace α] [UniformSpace β] extends
   α ≃ β where
   /-- Uniform continuity of the function -/
@@ -130,7 +129,6 @@ protected theorem continuous_symm (h : α ≃ᵤ β) : Continuous h.symm :=
   h.uniformContinuous_symm.continuous
 
 /-- A uniform isomorphism as a homeomorphism. -/
--- @[simps] -- Porting note: removed, `simps?` produced no `simp` lemmas
 protected def toHomeomorph (e : α ≃ᵤ β) : α ≃ₜ β :=
   { e.toEquiv with
     continuous_toFun := e.continuous
@@ -372,7 +370,6 @@ def image (e : α ≃ᵤ β) (s : Set α) : s ≃ᵤ e '' s where
 end UniformEquiv
 
 /-- A uniform inducing equiv between uniform spaces is a uniform isomorphism. -/
--- @[simps] -- Porting note: removed, `simps?` produced no `simp` lemmas
 def Equiv.toUniformEquivOfIsUniformInducing [UniformSpace α] [UniformSpace β] (f : α ≃ β)
     (hf : IsUniformInducing f) : α ≃ᵤ β :=
   { f with

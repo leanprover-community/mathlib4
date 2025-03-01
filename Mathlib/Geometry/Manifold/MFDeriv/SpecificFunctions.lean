@@ -198,9 +198,9 @@ theorem mfderiv_const :
     mfderiv I I' (fun _ : M => c) x = (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) :=
   HasMFDerivAt.mfderiv (hasMFDerivAt_const c x)
 
-theorem mfderivWithin_const (hxs : UniqueMDiffWithinAt I s x) :
+theorem mfderivWithin_const :
     mfderivWithin I I' (fun _ : M => c) s x = (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) :=
-  (hasMFDerivWithinAt_const _ _ _).mfderivWithin hxs
+  (hasMFDerivWithinAt_const _ _ _).mfderivWithin_eq_zero
 
 end Const
 
@@ -548,7 +548,7 @@ section Arithmetic
 Note that in the `HasMFDerivAt` lemmas there is an abuse of the defeq between `E'` and
 `TangentSpace 𝓘(𝕜, E') (f z)` (similarly for `g',F',p',q'`). In general this defeq is not
 canonical, but in this case (the tangent space of a vector space) it is canonical.
- -/
+-/
 
 section Group
 

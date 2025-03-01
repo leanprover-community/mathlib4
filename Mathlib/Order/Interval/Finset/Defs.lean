@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Finset.Prod
 import Mathlib.Order.Interval.Set.Image
 import Mathlib.Order.Interval.Set.UnorderedInterval
 
@@ -603,10 +604,10 @@ abbrev Fintype.toLocallyFiniteOrder [Fintype α] [DecidableRel (α := α) (· < 
 
 instance : Subsingleton (LocallyFiniteOrder α) :=
   Subsingleton.intro fun h₀ h₁ => by
-    cases' h₀ with h₀_finset_Icc h₀_finset_Ico h₀_finset_Ioc h₀_finset_Ioo
-      h₀_finset_mem_Icc h₀_finset_mem_Ico h₀_finset_mem_Ioc h₀_finset_mem_Ioo
-    cases' h₁ with h₁_finset_Icc h₁_finset_Ico h₁_finset_Ioc h₁_finset_Ioo
-      h₁_finset_mem_Icc h₁_finset_mem_Ico h₁_finset_mem_Ioc h₁_finset_mem_Ioo
+    obtain ⟨h₀_finset_Icc, h₀_finset_Ico, h₀_finset_Ioc, h₀_finset_Ioo,
+      h₀_finset_mem_Icc, h₀_finset_mem_Ico, h₀_finset_mem_Ioc, h₀_finset_mem_Ioo⟩ := h₀
+    obtain ⟨h₁_finset_Icc, h₁_finset_Ico, h₁_finset_Ioc, h₁_finset_Ioo,
+      h₁_finset_mem_Icc, h₁_finset_mem_Ico, h₁_finset_mem_Ioc, h₁_finset_mem_Ioo⟩ := h₁
     have hIcc : h₀_finset_Icc = h₁_finset_Icc := by
       ext a b x
       rw [h₀_finset_mem_Icc, h₁_finset_mem_Icc]
@@ -623,8 +624,8 @@ instance : Subsingleton (LocallyFiniteOrder α) :=
 
 instance : Subsingleton (LocallyFiniteOrderTop α) :=
   Subsingleton.intro fun h₀ h₁ => by
-    cases' h₀ with h₀_finset_Ioi h₀_finset_Ici h₀_finset_mem_Ici h₀_finset_mem_Ioi
-    cases' h₁ with h₁_finset_Ioi h₁_finset_Ici h₁_finset_mem_Ici h₁_finset_mem_Ioi
+    obtain ⟨h₀_finset_Ioi, h₀_finset_Ici, h₀_finset_mem_Ici, h₀_finset_mem_Ioi⟩ := h₀
+    obtain ⟨h₁_finset_Ioi, h₁_finset_Ici, h₁_finset_mem_Ici, h₁_finset_mem_Ioi⟩ := h₁
     have hIci : h₀_finset_Ici = h₁_finset_Ici := by
       ext a b
       rw [h₀_finset_mem_Ici, h₁_finset_mem_Ici]
@@ -635,8 +636,8 @@ instance : Subsingleton (LocallyFiniteOrderTop α) :=
 
 instance : Subsingleton (LocallyFiniteOrderBot α) :=
   Subsingleton.intro fun h₀ h₁ => by
-    cases' h₀ with h₀_finset_Iio h₀_finset_Iic h₀_finset_mem_Iic h₀_finset_mem_Iio
-    cases' h₁ with h₁_finset_Iio h₁_finset_Iic h₁_finset_mem_Iic h₁_finset_mem_Iio
+    obtain ⟨h₀_finset_Iio, h₀_finset_Iic, h₀_finset_mem_Iic, h₀_finset_mem_Iio⟩ := h₀
+    obtain ⟨h₁_finset_Iio, h₁_finset_Iic, h₁_finset_mem_Iic, h₁_finset_mem_Iio⟩ := h₁
     have hIic : h₀_finset_Iic = h₁_finset_Iic := by
       ext a b
       rw [h₀_finset_mem_Iic, h₁_finset_mem_Iic]
@@ -670,7 +671,7 @@ variable [LocallyFiniteOrder α] (a b : α)
 `Finset αᵒᵈ`!) instead of `(Icc b a).map toDual.toEmbedding` as this means the
 following is defeq:
 ```
-lemma this : (Icc (toDual (toDual a)) (toDual (toDual b)) : _) = (Icc a b : _) := rfl
+lemma this : (Icc (toDual (toDual a)) (toDual (toDual b)) :) = (Icc a b :) := rfl
 ```
 -/
 instance OrderDual.instLocallyFiniteOrder : LocallyFiniteOrder αᵒᵈ where
@@ -728,7 +729,7 @@ variable [LocallyFiniteOrderTop α]
 /-- Note we define `Iic (toDual a)` as `Ici a` (which has type `Finset α` not `Finset αᵒᵈ`!)
 instead of `(Ici a).map toDual.toEmbedding` as this means the following is defeq:
 ```
-lemma this : (Iic (toDual (toDual a)) : _) = (Iic a : _) := rfl
+lemma this : (Iic (toDual (toDual a)) :) = (Iic a :) := rfl
 ```
 -/
 instance OrderDual.instLocallyFiniteOrderBot : LocallyFiniteOrderBot αᵒᵈ where
@@ -761,7 +762,7 @@ variable [LocallyFiniteOrderBot α]
 /-- Note we define `Ici (toDual a)` as `Iic a` (which has type `Finset α` not `Finset αᵒᵈ`!)
 instead of `(Iic a).map toDual.toEmbedding` as this means the following is defeq:
 ```
-lemma this : (Ici (toDual (toDual a)) : _) = (Ici a : _) := rfl
+lemma this : (Ici (toDual (toDual a)) :) = (Ici a :) := rfl
 ```
 -/
 instance OrderDual.instLocallyFiniteOrderTop : LocallyFiniteOrderTop αᵒᵈ where

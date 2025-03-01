@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Data.Finsupp.Ext
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.Data.Finsupp.Indicator
 
@@ -16,6 +17,7 @@ import Mathlib.Data.Finsupp.Indicator
 This file contains theorems relevant to big operators in finitely supported functions.
 -/
 
+assert_not_exists Field
 
 noncomputable section
 
@@ -115,10 +117,15 @@ theorem sum_ite_self_eq' [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α 
     convert f.sum_ite_eq' a fun _ => id
     simp [ite_eq_right_iff.2 Eq.symm]
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem prod_pow [Fintype α] (f : α →₀ ℕ) (g : α → N) :
     (f.prod fun a b => g a ^ b) = ∏ a, g a ^ f a :=
   f.prod_fintype _ fun _ ↦ pow_zero _
+
+@[to_additive (attr := simp)]
+theorem prod_zpow {N} [CommGroup N] [Fintype α] (f : α →₀ ℤ) (g : α → N) :
+    (f.prod fun a b => g a ^ b) = ∏ a, g a ^ f a :=
+  f.prod_fintype _ fun _ ↦ zpow_zero _
 
 /-- If `g` maps a second argument of 0 to 1, then multiplying it over the
 result of `onFinset` is the same as multiplying it over the original `Finset`. -/

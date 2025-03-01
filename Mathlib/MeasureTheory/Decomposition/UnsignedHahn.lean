@@ -26,10 +26,10 @@ open Set Filter Topology ENNReal
 
 namespace MeasureTheory
 
-variable {α : Type*} [MeasurableSpace α] {μ ν : Measure α}
+variable {α : Type*} {mα : MeasurableSpace α}
 
 /-- **Hahn decomposition theorem** -/
-theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     ∃ s, MeasurableSet s ∧ (∀ t, MeasurableSet t → t ⊆ s → ν t ≤ μ t) ∧
       ∀ t, MeasurableSet t → t ⊆ sᶜ → μ t ≤ ν t := by
   let d : Set α → ℝ := fun s => ((μ s).toNNReal : ℝ) - (ν s).toNNReal

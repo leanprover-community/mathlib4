@@ -5,6 +5,7 @@ Authors: Arthur Paulino, Damiano Testa
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Lean.Meta
+import Mathlib.Order.Defs.LinearOrder
 
 /-!
 
@@ -85,7 +86,7 @@ Currently, `move_oper` supports `HAdd.hAdd`, `HMul.hMul`, `And`, `Or`, `Max.max`
 
 These lemmas should be added to `Mathlib.MoveAdd.move_oper_simpCtx`.
 
-See `test/MoveAdd.lean` for sample usage of `move_oper`.
+See `MathlibTest/MoveAdd.lean` for sample usage of `move_oper`.
 
 ## Implementation notes
 
@@ -169,7 +170,7 @@ similarly for the pairs with second coordinate equal to `false`.
 def weight (L : List (α × Bool)) (a : α) : ℤ :=
   let l := L.length
   match L.find? (Prod.fst · == a) with
-    | some (_, b) => if b then - l + (L.indexOf (a, b) : ℤ) else (L.indexOf (a, b) + 1 : ℤ)
+    | some (_, b) => if b then - l + (L.idxOf (a, b) : ℤ) else (L.idxOf (a, b) + 1 : ℤ)
     | none => 0
 
 /-- `reorderUsing toReorder instructions` produces a reordering of `toReorder : List α`,
@@ -196,7 +197,7 @@ def reorderUsing (toReorder : List α) (instructions : List (α × Bool)) : List
   let reorder := uToReorder.qsort fun x y =>
     match uInstructions.find? (Prod.fst · == x), uInstructions.find? (Prod.fst · == y) with
       | none, none =>
-        ((uToReorder.indexOf? x).map Fin.val).get! ≤ ((uToReorder.indexOf? y).map Fin.val).get!
+        (uToReorder.idxOf? x).get! ≤ (uToReorder.idxOf? y).get!
       | _, _ => weight uInstructions x ≤ weight uInstructions y
   (reorder.map Prod.fst).toList
 

@@ -212,7 +212,6 @@ universe v u
 we will equip with a category structure where the morphisms are formal `R`-linear combinations
 of the morphisms in `C`.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/pull/5171): Removed has_nonempty_instance nolint; linter not ported yet
 @[nolint unusedArguments]
 def Free (_ : Type*) (C : Type u) :=
   C
@@ -247,9 +246,6 @@ instance categoryFree : Category (Free R C) where
 namespace Free
 
 section
-
--- Porting note: removed local reducible attribute for categoryFree, adjusted dsimp invocations
--- accordingly
 
 instance : Preadditive (Free R C) where
   homGroup _ _ := Finsupp.instAddCommGroup
@@ -290,7 +286,6 @@ def embedding : C ⥤ Free R C where
   map_id _ := rfl
   map_comp {X Y Z} f g := by
     -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10959): simp used to be able to close this goal
-    dsimp only []
     rw [single_comp_single, one_mul]
 
 variable {C} {D : Type u} [Category.{v} D] [Preadditive D] [Linear R D]

@@ -4,13 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.TensorProduct
+import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
 import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Morphisms surjective on stalks
 
-We define the classe of morphisms between schemes that are surjective on stalks.
+We define the class of morphisms between schemes that are surjective on stalks.
 We show that this class is stable under composition and base change.
 
 We also show that (`AlgebraicGeometry.SurjectiveOnStalks.isEmbedding_pullback`)
@@ -63,7 +63,7 @@ instance : IsLocalAtSource @SurjectiveOnStalks :=
   eq_stalkwise ▸ stalkwise_isLocalAtSource_of_respectsIso RingHom.surjective_respectsIso
 
 lemma Spec_iff {R S : CommRingCat.{u}} {φ : R ⟶ S} :
-    SurjectiveOnStalks (Spec.map φ) ↔ RingHom.SurjectiveOnStalks φ := by
+    SurjectiveOnStalks (Spec.map φ) ↔ RingHom.SurjectiveOnStalks φ.hom := by
   rw [eq_stalkwise, stalkwise_Spec_map_iff RingHom.surjective_respectsIso,
     RingHom.SurjectiveOnStalks]
 
@@ -72,7 +72,7 @@ instance : HasRingHomProperty @SurjectiveOnStalks RingHom.SurjectiveOnStalks :=
 
 variable {f} in
 lemma iff_of_isAffine [IsAffine X] [IsAffine Y] :
-    SurjectiveOnStalks f ↔ RingHom.SurjectiveOnStalks (f.app ⊤) := by
+    SurjectiveOnStalks f ↔ RingHom.SurjectiveOnStalks (f.app ⊤).hom := by
   rw [← Spec_iff, MorphismProperty.arrow_mk_iso_iff @SurjectiveOnStalks (arrowIsoSpecΓOfIsAffine f)]
 
 theorem of_comp [SurjectiveOnStalks (f ≫ g)] : SurjectiveOnStalks f := by
@@ -103,8 +103,7 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
       .of_comp _ iS
     obtain ⟨φ, rfl⟩ : ∃ φ, Spec.map φ = f' := ⟨_, Spec.map_preimage _⟩
     obtain ⟨ψ, rfl⟩ : ∃ ψ, Spec.map ψ = g' := ⟨_, Spec.map_preimage _⟩
-    letI := φ.toAlgebra
-    letI := ψ.toAlgebra
+    algebraize [φ.hom, ψ.hom]
     rw [HasRingHomProperty.Spec_iff (P := @SurjectiveOnStalks)] at H
     convert ((iX.isOpenEmbedding.prodMap iY.isOpenEmbedding).isEmbedding.comp
       (PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks R A B H)).comp
@@ -130,7 +129,7 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
       (continuous_fst.1 _ ((𝒱 ijk.1).map ijk.2.1 ≫
       (𝒰.pullbackCover f).map ijk.1).opensRange.2).inter (continuous_snd.1 _
       ((𝒲 ijk.1).map ijk.2.2 ≫ (𝒰.pullbackCover g).map ijk.1).opensRange.2)⟩
-  have : Set.range L ⊆ (iSup U : _) := by
+  have : Set.range L ⊆ (iSup U :) := by
     simp only [Scheme.Cover.pullbackCover_J, Scheme.Cover.pullbackCover_obj, Set.range_subset_iff]
     intro z
     simp only [SetLike.mem_coe, TopologicalSpace.Opens.mem_iSup, Sigma.exists, Prod.exists]
@@ -167,7 +166,7 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
     · dsimp only
       rw [← hx₁', ← hz, ← Scheme.comp_base_apply]
       erw [← Scheme.comp_base_apply]
-      congr 4
+      congr 5
       apply pullback.hom_ext <;> simp [𝓤, ← pullback.condition, ← pullback.condition_assoc]
   · intro i
     have := H (S.affineOpenCover.obj i.1) (((𝒰.pullbackCover f).obj i.1).affineOpenCover.obj i.2.1)
@@ -178,7 +177,7 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
         ((𝒲 i.1).map i.2.2 ≫ (𝒰.pullbackCover g).map i.1)
         (𝒰.map i.1) (by simp [pullback.condition]) (by simp [pullback.condition])
         inferInstance inferInstance inferInstance
-    convert this using 6
+    convert this using 7
     apply pullback.hom_ext <;>
       simp [𝓤, ← pullback.condition, ← pullback.condition_assoc,
         Scheme.Cover.pullbackHom]

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Felix Weilacher
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-import Mathlib.Topology.CountableSeparatingOn
 import Mathlib.Topology.MetricSpace.Perfect
+import Mathlib.Topology.Separation.CountableSeparatingOn
 
 /-!
 # The Borel sigma-algebra on Polish spaces
@@ -203,7 +203,7 @@ theorem analyticSet_iff_exists_polishSpace_range {s : Set α} :
   constructor
   · intro h
     rw [AnalyticSet] at h
-    cases' h with h h
+    rcases h with h | h
     · refine ⟨Empty, inferInstance, inferInstance, Empty.elim, continuous_bot, ?_⟩
       rw [h]
       exact range_eq_empty _
@@ -251,7 +251,7 @@ theorem AnalyticSet.iInter [hι : Nonempty ι] [Countable ι] [T2Space α] {s : 
     apply Subset.antisymm
     · rintro y ⟨x, rfl⟩
       refine mem_iInter.2 fun n => ?_
-      have : f n ((x : γ) n) = F x := (mem_iInter.1 x.2 n : _)
+      have : f n ((x : γ) n) = F x := (mem_iInter.1 x.2 n :)
       rw [← this, ← f_range n]
       exact mem_range_self _
     · intro y hy
@@ -629,7 +629,7 @@ instance CosetSpace.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] 
 
 @[to_additive]
 instance QuotientGroup.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] [Group G]
-    [TopologicalGroup G] [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [N.Normal]
+    [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [N.Normal]
     [IsClosed (N : Set G)] : BorelSpace (G ⧸ N) :=
   ⟨continuous_mk.map_eq_borel mk_surjective⟩
 
@@ -740,10 +740,10 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
       by_contra! h
       have A : x ∈ q ⟨(s m, s n), h⟩ \ q ⟨(s n, s m), h.symm⟩ :=
         haveI := mem_iInter.1 (hxs m).2 (s n)
-        (mem_iInter.1 this h : _)
+        (mem_iInter.1 this h :)
       have B : x ∈ q ⟨(s n, s m), h.symm⟩ \ q ⟨(s m, s n), h⟩ :=
         haveI := mem_iInter.1 (hxs n).2 (s m)
-        (mem_iInter.1 this h.symm : _)
+        (mem_iInter.1 this h.symm :)
       exact A.2 B.1
     -- the points `y n` are nearby, and therefore they form a Cauchy sequence.
     have cauchy_y : CauchySeq y := by

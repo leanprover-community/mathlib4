@@ -12,7 +12,9 @@ as well as tactics that use the former and allow to develop the latter.
 ## Installation
 
 You can find detailed instructions to install Lean, mathlib, and supporting tools on [our website](https://leanprover-community.github.io/get_started.html).
-Alternatively, click on the button below to open a Gitpod workspace containing the project.
+Alternatively, click on one of the buttons below to open a GitHub Codespace or a Gitpod workspace containing the project.
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/leanprover-community/mathlib4)
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/leanprover-community/mathlib4)
 

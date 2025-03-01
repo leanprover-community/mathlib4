@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
@@ -86,7 +86,7 @@ variable {J : Type w} (f : J → ModuleCat.{max w v} R)
 /-- The map from an arbitrary cone over an indexed family of abelian groups
 to the cartesian product of those groups.
 -/
-@[simps]
+@[simps!]
 def lift (s : Fan f) : s.pt ⟶ ModuleCat.of R (∀ j, f j) :=
   ofHom
   { toFun := fun x j => s.π.app ⟨j⟩ x

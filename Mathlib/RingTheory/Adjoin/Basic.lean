@@ -393,6 +393,11 @@ theorem pow_smul_mem_adjoin_smul (r : R) (s : Set A) {x : A} (hx : x ∈ adjoin 
     ∃ n₀ : ℕ, ∀ n ≥ n₀, r ^ n • x ∈ adjoin R (r • s) :=
   pow_smul_mem_of_smul_subset_of_mem_adjoin r s _ subset_adjoin hx (Subalgebra.algebraMap_mem _ _)
 
+lemma adjoin_nonUnitalSubalgebra_eq_span (s : NonUnitalSubalgebra R A) :
+    Subalgebra.toSubmodule (adjoin R (s : Set A)) = span R {1} ⊔ s.toSubmodule := by
+  rw [adjoin_eq_span, Submonoid.closure_eq_one_union, span_union, ← NonUnitalAlgebra.adjoin_eq_span,
+      NonUnitalAlgebra.adjoin_eq]
+
 end CommSemiring
 
 section Ring
@@ -541,6 +546,20 @@ theorem Algebra.restrictScalars_adjoin_of_algEquiv
   erw [hi, Set.range_comp, i.toEquiv.range_eq_univ, Set.image_univ]
 
 end
+
+section CommSemiring
+variable (R) [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+
+lemma NonUnitalAlgebra.adjoin_le_algebra_adjoin (s : Set A) :
+    adjoin R s ≤ (Algebra.adjoin R s).toNonUnitalSubalgebra := adjoin_le Algebra.subset_adjoin
+
+lemma Algebra.adjoin_nonUnitalSubalgebra (s : Set A) :
+    adjoin R (NonUnitalAlgebra.adjoin R s : Set A) = adjoin R s :=
+  le_antisymm
+    (adjoin_le <| NonUnitalAlgebra.adjoin_le_algebra_adjoin R s)
+    (adjoin_le <| (NonUnitalAlgebra.subset_adjoin R).trans subset_adjoin)
+
+end CommSemiring
 
 namespace Subalgebra
 

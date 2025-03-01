@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Floor
-import Mathlib.Algebra.Order.Ring.Unbundled.Nonneg
+import Mathlib.Algebra.Order.Nonneg.Basic
+import Mathlib.Algebra.Order.Nonneg.Lattice
 
 /-!
 # Nonnegative elements are archimedean

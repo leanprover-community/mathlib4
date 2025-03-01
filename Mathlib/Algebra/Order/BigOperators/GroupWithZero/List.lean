@@ -3,8 +3,8 @@ Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell, Daniel Weber
 -/
-import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
+import Mathlib.Algebra.BigOperators.Group.List.Defs
 
 /-!
 # Big operators on a list in ordered groups with zeros

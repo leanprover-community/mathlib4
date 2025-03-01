@@ -130,7 +130,7 @@ lemma levyProkhorovEDist_triangle [OpensMeasurableSpace Ω] (μ ν κ : Measure 
   · simp [LPνκ_finite]
   apply levyProkhorovEDist_le_of_forall_add_pos_le
   intro ε B ε_pos ε_lt_top B_mble
-  have half_ε_pos : 0 < ε / 2 := ENNReal.div_pos ε_pos.ne' two_ne_top
+  have half_ε_pos : 0 < ε / 2 := ENNReal.div_pos ε_pos.ne' ofNat_ne_top
   have half_ε_lt_top : ε / 2 < ∞ := ENNReal.div_lt_top ε_lt_top.ne two_ne_zero
   let r := levyProkhorovEDist μ ν + ε / 2
   let s := levyProkhorovEDist ν κ + ε / 2
@@ -222,7 +222,7 @@ lemma measure_le_measure_closure_of_levyProkhorovEDist_eq_zero {μ ν : Measure 
     have aux : Tendsto ENNReal.toReal (𝓝[>] 0) (𝓝[>] 0) := by
       apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within (s := Ioi 0) ENNReal.toReal
       · exact tendsto_nhdsWithin_of_tendsto_nhds (continuousAt_toReal zero_ne_top).tendsto
-      · filter_upwards [Ioo_mem_nhdsWithin_Ioi ⟨le_rfl, zero_lt_one⟩] with x hx
+      · filter_upwards [Ioo_mem_nhdsGT zero_lt_one] with x hx
         exact toReal_pos hx.1.ne.symm <| ne_top_of_lt hx.2
     exact (tendsto_measure_thickening h_finite).comp aux
   have obs := Tendsto.add key (tendsto_nhdsWithin_of_tendsto_nhds tendsto_id)
@@ -614,7 +614,7 @@ lemma LevyProkhorov.continuous_equiv_symm_probabilityMeasure :
       simp only [mem_Iio, compl_iUnion, mem_iInter, mem_compl_iff, not_forall, not_not,
                   exists_prop] at con
       obtain ⟨j, j_small, ω_in_Esj⟩ := con
-      exact disjoint_left.mp (Es_disjoint (show j ≠ i by linarith)) ω_in_Esj ω_in_Esi
+      exact disjoint_left.mp (Es_disjoint (show j ≠ i by omega)) ω_in_Esj ω_in_Esi
     intro ω ω_in_B
     obtain ⟨i, hi⟩ := show ∃ n, ω ∈ Es n by simp only [← mem_iUnion, Es_cover, mem_univ]
     simp only [mem_Ici, mem_union, mem_iUnion, exists_prop]

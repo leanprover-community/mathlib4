@@ -15,29 +15,29 @@ differentiability.
 
 -/
 
-open Set ChartedSpace SmoothManifoldWithCorners
+open Set ChartedSpace IsManifold
 open scoped Topology Manifold
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   -- declare a charted space `M` over the pair `(E, H)`.
   {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  -- declare a smooth manifold `M'` over the pair `(E', H')`.
+  -- declare a `C^n` manifold `M'` over the pair `(E', H')`.
   {E' : Type*}
   [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  [SmoothManifoldWithCorners I' M']
-  -- declare a smooth manifold `N` over the pair `(F, G)`.
+  [IsManifold I' n M']
+  -- declare a `C^n` manifold `N` over the pair `(F, G)`.
   {F : Type*}
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
   {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
-  [SmoothManifoldWithCorners J N]
-  -- declare a smooth manifold `N'` over the pair `(F', G')`.
+  [IsManifold J n N]
+  -- declare a `C^n` manifold `N'` over the pair `(F', G')`.
   {F' : Type*}
   [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
   {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
-  [SmoothManifoldWithCorners J' N']
+  [IsManifold J' n N']
   -- F₁, F₂, F₃, F₄ are normed spaces
   {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddCommGroup F₂]
   [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
@@ -81,12 +81,9 @@ end Module
 
 /-! ### Linear maps between normed spaces are differentiable -/
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/6024
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
 we needed to add the named arguments `𝕜 := 𝕜` and `F := ((F₂ →L[𝕜] F₃) →L[𝕜] F₁ →L[𝕜] F₃))`
-to `ContinuousLinearMap.differentiable`.
--/
+to `ContinuousLinearMap.differentiable`. -/
 theorem MDifferentiableWithinAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s : Set M} {x : M}
     (hf : MDifferentiableWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) f s x) :
     MDifferentiableWithinAt I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃))
@@ -95,12 +92,9 @@ theorem MDifferentiableWithinAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s 
     (ContinuousLinearMap.differentiable (𝕜 := 𝕜) (F := ((F₂ →L[𝕜] F₃) →L[𝕜] F₁ →L[𝕜] F₃))
       (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).flip) hf
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/6024
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
 we needed to add the named arguments `𝕜 := 𝕜` and `F := ((F₂ →L[𝕜] F₃) →L[𝕜] F₁ →L[𝕜] F₃))`
-to `ContinuousLinearMap.differentiable`.
--/
+to `ContinuousLinearMap.differentiable`. -/
 nonrec theorem MDifferentiableAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {x : M}
     (hf : MDifferentiableAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) f x) :
     MDifferentiableAt I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃))
@@ -121,12 +115,9 @@ theorem MDifferentiable.clm_precomp
       (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) := fun x ↦
   (hf x).clm_precomp
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/6024
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
 we needed to add the named arguments `𝕜 := 𝕜` and `F := ((F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))`
-to `ContinuousLinearMap.differentiable`.
--/
+to `ContinuousLinearMap.differentiable`. -/
 theorem MDifferentiableWithinAt.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {s : Set M} {x : M}
     (hf : MDifferentiableWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) f s x) :
     MDifferentiableWithinAt I 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))
@@ -136,12 +127,9 @@ theorem MDifferentiableWithinAt.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {s
     (ContinuousLinearMap.differentiable (𝕜 := 𝕜) (F := ((F₁ →L[𝕜] F₂) →L[𝕜] F₁ →L[𝕜] F₃))
       (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃)) hf
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/6024
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
 we needed to add the named arguments `𝕜 := 𝕜` and `F := ((F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))`
-to `ContinuousLinearMap.differentiable`.
--/
+to `ContinuousLinearMap.differentiable`. -/
 theorem MDifferentiableAt.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {x : M}
     (hf : MDifferentiableAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) f x) :
     MDifferentiableAt I 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))

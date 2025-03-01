@@ -38,8 +38,8 @@ variable {ι : Type u} (P : ι → Under R)
 
 /-- The canonical fan on `P : ι → Under R` given by `∀ i, P i`. -/
 def piFan : Fan P :=
-  Fan.mk (Under.mk <| ofHom <| Pi.ringHom (fun i ↦ (P i).hom))
-    (fun i ↦ Under.homMk (Pi.evalRingHom _ i))
+  Fan.mk (Under.mk <| ofHom <| Pi.ringHom (fun i ↦ (P i).hom.hom))
+    (fun i ↦ Under.homMk (ofHom <| Pi.evalRingHom _ i))
 
 /-- The canonical fan is limiting. -/
 def piFanIsLimit : IsLimit (piFan P) :=
@@ -204,14 +204,14 @@ variable (f : R ⟶ S)
 /-- `Under.pushout f` preserves finite products. -/
 instance : PreservesFiniteProducts (Under.pushout f) where
   preserves _ :=
-    letI : Algebra R S := RingHom.toAlgebra f
+    letI : Algebra R S := f.hom.toAlgebra
     preservesLimitsOfShape_of_natIso (tensorProdIsoPushout R S)
 
 /-- `Under.pushout f` preserves finite limits if `f` is flat. -/
-lemma preservesFiniteLimits_of_flat (hf : RingHom.Flat f) :
+lemma preservesFiniteLimits_of_flat (hf : RingHom.Flat f.hom) :
     PreservesFiniteLimits (Under.pushout f) where
   preservesFiniteLimits _ :=
-    letI : Algebra R S := RingHom.toAlgebra f
+    letI : Algebra R S := f.hom.toAlgebra
     haveI : Module.Flat R S := hf
     preservesLimitsOfShape_of_natIso (tensorProdIsoPushout R S)
 
