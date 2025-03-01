@@ -3,7 +3,8 @@ Copyright (c) 2024 Rida Hamadani. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rida Hamadani, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
+import Mathlib.Geometry.Manifold.IsManifold.Basic
+import Mathlib.Topology.Algebra.Module.Determinant
 
 /-!
 # Orientable Manifolds
@@ -259,7 +260,7 @@ class OrientableManifold {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
 /-- `0`-dimensional manifolds are always orientable. -/
 lemma orientableManifold_of_zero_dim {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [TopologicalSpace H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-    (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] (h : FiniteDimensional.finrank ℝ E = 0) :
+    (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] (h : Module.finrank ℝ E = 0) :
     OrientableManifold I M where
   compatible {e₁ e₂} _ _ := by
     refine ⟨⟨orientationPreserving_of_zero_dim _ _ h, ?_⟩,
