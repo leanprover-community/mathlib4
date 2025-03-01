@@ -2215,6 +2215,9 @@ the Burali-Forti paradox. -/
 theorem not_small_ordinal : ¬Small.{u} Ordinal.{max u v} := fun h =>
   @not_injective_of_ordinal_of_small _ h _ fun _a _b => Ordinal.lift_inj.{v, u}.1
 
+instance Ordinal.uncountable : Uncountable Ordinal.{u} :=
+  Uncountable.of_not_small not_small_ordinal.{u}
+
 theorem Ordinal.not_bddAbove_compl_of_small (s : Set Ordinal.{u}) [hs : Small.{u} s] :
     ¬BddAbove sᶜ := by
   rw [bddAbove_iff_small]

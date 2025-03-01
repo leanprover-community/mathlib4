@@ -259,14 +259,11 @@ theorem isEmbedding_coeFn : IsEmbedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ
 @[deprecated (since := "2024-10-26")]
 alias embedding_coeFn := isEmbedding_coeFn
 
-variable (α)
-
+variable (α) in
 /-- Constant as a continuous bounded function. -/
 @[simps! (config := .asFn)]
 def const (b : β) : α →ᵇ β :=
   ⟨ContinuousMap.const α b, 0, by simp⟩
-
-variable {α}
 
 theorem const_apply' (a : α) (b : β) : (const α b : α → β) a = b := rfl
 

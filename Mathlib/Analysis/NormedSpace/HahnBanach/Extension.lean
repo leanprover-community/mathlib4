@@ -26,7 +26,6 @@ satisfying `RCLike 𝕜`.
 In this setting, `exists_dual_vector` states that, for any nonzero `x`, there exists a continuous
 linear form `g` of norm `1` with `g x = ‖x‖` (where the norm has to be interpreted as an element
 of `𝕜`).
-
 -/
 
 
