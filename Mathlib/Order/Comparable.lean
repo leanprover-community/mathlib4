@@ -48,7 +48,7 @@ theorem compRel_swap_apply (r : α → α → Prop) : CompRel (swap r) a b ↔ C
 theorem CompRel.refl (r : α → α → Prop) [IsRefl α r] (a : α) : CompRel r a a :=
   .of_rel (_root_.refl _)
 
-theorem CompRel.rfl [IsRefl α r] {a : α} : CompRel r a a := .refl ..
+theorem CompRel.rfl [IsRefl α r] : CompRel r a a := .refl ..
 
 instance [IsRefl α r] : IsRefl α (CompRel r) where
   refl := .refl r
