@@ -3,11 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Lift
-import Mathlib.Topology.Defs.Filter
-import Mathlib.Topology.Defs.Basic
 import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Filter.Lift
+import Mathlib.Topology.Defs.Basic
+import Mathlib.Topology.Defs.Filter
 
 /-!
 # Basic theory of topological spaces.
@@ -137,7 +137,7 @@ theorem isOpen_biInter_finset {s : Finset α} {f : α → Set X} (h : ∀ i ∈ 
     IsOpen (⋂ i ∈ s, f i) :=
   s.finite_toSet.isOpen_biInter h
 
-@[simp] -- Porting note: added `simp`
+@[simp]
 theorem isOpen_const {p : Prop} : IsOpen { _x : X | p } := by by_cases p <;> simp [*]
 
 theorem IsOpen.and : IsOpen { x | p₁ x } → IsOpen { x | p₂ x } → IsOpen { x | p₁ x ∧ p₂ x } :=

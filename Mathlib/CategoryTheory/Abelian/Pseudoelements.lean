@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.Comma.Over
+import Mathlib.CategoryTheory.Comma.Over.Basic
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 /-!
@@ -29,9 +29,10 @@ their action on pseudoelements. Thus, a usual style of proofs in abelian categor
 First, we construct some morphism using universal properties, and then we use diagram chasing
 of pseudoelements to verify that is has some desirable property such as exactness.
 
-It should be noted that the Freyd-Mitchell embedding theorem gives a vastly stronger notion of
-pseudoelement (in particular one that gives extensionality). However, this theorem is quite
-difficult to prove and probably out of reach for a formal proof for the time being.
+It should be noted that the Freyd-Mitchell embedding theorem
+(see `CategoryTheory.Abelian.FreydMitchell`) gives a vastly stronger notion of
+pseudoelement (in particular one that gives extensionality) and this file should be updated to
+go use that instead!
 
 ## Main results
 
@@ -389,7 +390,7 @@ theorem sub_of_eq_image {P Q : C} (f : P ⟶ Q) (x y : P) :
   Quotient.inductionOn₂ x y fun a a' h =>
     match Quotient.exact h with
     | ⟨R, p, q, ep, _, comm⟩ =>
-      let a'' : R ⟶ P := ↑(p ≫ a.hom) - ↑(q ≫ a'.hom)
+      let a'' : R ⟶ P := (p ≫ a.hom : R ⟶ P) - (q ≫ a'.hom : R ⟶ P)
       ⟨a'',
         ⟨show ⟦(a'' ≫ f : Over Q)⟧ = ⟦↑(0 : Q ⟶ Q)⟧ by
             dsimp at comm

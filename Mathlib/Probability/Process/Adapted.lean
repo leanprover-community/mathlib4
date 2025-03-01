@@ -58,7 +58,7 @@ protected theorem div [Div β] [ContinuousDiv β] (hu : Adapted f u) (hv : Adapt
     Adapted f (u / v) := fun i => (hu i).div (hv i)
 
 @[to_additive]
-protected theorem inv [Group β] [TopologicalGroup β] (hu : Adapted f u) :
+protected theorem inv [Group β] [IsTopologicalGroup β] (hu : Adapted f u) :
     Adapted f u⁻¹ := fun i => (hu i).inv
 
 protected theorem smul [SMul ℝ β] [ContinuousSMul ℝ β] (c : ℝ) (hu : Adapted f u) :
@@ -75,12 +75,9 @@ end Adapted
 theorem adapted_const (f : Filtration ι m) (x : β) : Adapted f fun _ _ => x := fun _ =>
   stronglyMeasurable_const
 
-variable (β)
-
+variable (β) in
 theorem adapted_zero [Zero β] (f : Filtration ι m) : Adapted f (0 : ι → Ω → β) := fun i =>
   @stronglyMeasurable_zero Ω β (f i) _ _
-
-variable {β}
 
 theorem Filtration.adapted_natural [MetrizableSpace β] [mβ : MeasurableSpace β] [BorelSpace β]
     {u : ι → Ω → β} (hum : ∀ i, StronglyMeasurable[m] (u i)) :
@@ -144,11 +141,11 @@ protected theorem finset_prod {γ} [CommMonoid β] [ContinuousMul β] {U : γ �
   convert ProgMeasurable.finset_prod' h using 1; ext (i a); simp only [Finset.prod_apply]
 
 @[to_additive]
-protected theorem inv [Group β] [TopologicalGroup β] (hu : ProgMeasurable f u) :
+protected theorem inv [Group β] [IsTopologicalGroup β] (hu : ProgMeasurable f u) :
     ProgMeasurable f fun i ω => (u i ω)⁻¹ := fun i => (hu i).inv
 
 @[to_additive]
-protected theorem div [Group β] [TopologicalGroup β] (hu : ProgMeasurable f u)
+protected theorem div [Group β] [IsTopologicalGroup β] (hu : ProgMeasurable f u)
     (hv : ProgMeasurable f v) : ProgMeasurable f fun i ω => u i ω / v i ω := fun i =>
   (hu i).div (hv i)
 

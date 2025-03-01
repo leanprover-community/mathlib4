@@ -37,9 +37,8 @@ def QuotientDiff :=
       ⟨fun α => diff_self (MonoidHom.id H) α, fun h => by rw [← diff_inv, h, inv_one],
         fun h h' => by rw [← diff_mul_diff, h, h', one_mul]⟩)
 
-instance : Inhabited H.QuotientDiff := by
-  dsimp [QuotientDiff] -- Porting note: Added `dsimp`
-  infer_instance
+instance : Inhabited H.QuotientDiff :=
+  inferInstanceAs (Inhabited <| Quotient _)
 
 theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
     diff (MonoidHom.id H) (g • α) (g • β) =
@@ -116,8 +115,6 @@ private theorem exists_right_complement'_of_coprime_aux (hH : Nat.Coprime (Nat.c
   ne.elim fun α => ⟨stabilizer G α, isComplement'_stabilizer_of_coprime hH⟩
 
 end SchurZassenhausAbelian
-
-open scoped Classical
 
 universe u
 

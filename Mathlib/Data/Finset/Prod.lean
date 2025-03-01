@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Oliver Nash
 -/
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Union
 
 /-!
 # Finsets in product types
@@ -91,6 +92,15 @@ theorem product_subset_product_left (hs : s ⊆ s') : s ×ˢ t ⊆ s' ×ˢ t :=
 @[gcongr]
 theorem product_subset_product_right (ht : t ⊆ t') : s ×ˢ t ⊆ s ×ˢ t' :=
   product_subset_product (Subset.refl _) ht
+
+theorem prodMap_image_product {δ : Type*} [DecidableEq β] [DecidableEq δ]
+    (f : α → β) (g : γ → δ) (s : Finset α) (t : Finset γ) :
+    (s ×ˢ t).image (Prod.map f g) = s.image f ×ˢ t.image g :=
+  mod_cast Set.prodMap_image_prod f g s t
+
+theorem prodMap_map_product {δ : Type*} (f : α ↪ β) (g : γ ↪ δ) (s : Finset α) (t : Finset γ) :
+    (s ×ˢ t).map (f.prodMap g) = s.map f ×ˢ t.map g := by
+  simpa [← coe_inj] using Set.prodMap_image_prod f g s t
 
 theorem map_swap_product (s : Finset α) (t : Finset β) :
     (t ×ˢ s).map ⟨Prod.swap, Prod.swap_injective⟩ = s ×ˢ t :=

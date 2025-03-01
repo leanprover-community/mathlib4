@@ -414,7 +414,7 @@ variable {L} {M}
 
 /-!
 ### `comap` and `map`
- -/
+-/
 
 
 /-- The preimage of a substructure along a homomorphism is a substructure. -/
@@ -628,8 +628,11 @@ def subtype (S : L.Substructure M) : S ↪[L] M where
   inj' := Subtype.coe_injective
 
 @[simp]
-theorem coeSubtype : ⇑S.subtype = ((↑) : S → M) :=
+theorem coe_subtype : ⇑S.subtype = ((↑) : S → M) :=
   rfl
+
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
 
 /-- The equivalence between the maximal substructure of a structure and the structure itself. -/
 def topEquiv : (⊤ : L.Substructure M) ≃[L] M where
@@ -948,7 +951,7 @@ theorem coe_inclusion {S T : L.Substructure M} (h : S ≤ T) :
 
 theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
   ext x
-  simp only [Hom.mem_range, Embedding.coe_toHom, coeSubtype]
+  simp only [Hom.mem_range, Embedding.coe_toHom, coe_subtype]
   refine ⟨?_, fun h => ⟨⟨x, h⟩, rfl⟩⟩
   rintro ⟨⟨y, hy⟩, rfl⟩
   exact hy

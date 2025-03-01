@@ -170,15 +170,11 @@ def toPreimages : J ⥤ Type v where
     rw [← mem_preimage, preimage_preimage, mem_preimage]
     convert h (g ≫ f); rw [F.map_comp]; rfl
   map_id j := by
-    #adaptation_note /-- nightly-2024-03-16: simp was
-    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_id] -/
-    simp only [MapsTo.restrict, Subtype.map_def, F.map_id]
+    simp +unfoldPartialApp only [MapsTo.restrict, Subtype.map, F.map_id]
     ext
     rfl
   map_comp f g := by
-    #adaptation_note /-- nightly-2024-03-16: simp was
-    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_comp] -/
-    simp only [MapsTo.restrict, Subtype.map_def, F.map_comp]
+    simp +unfoldPartialApp only [MapsTo.restrict, Subtype.map, F.map_comp]
     rfl
 
 instance toPreimages_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite ((F.toPreimages s).obj j) :=
@@ -253,15 +249,11 @@ def toEventualRanges : J ⥤ Type v where
   obj j := F.eventualRange j
   map f := (F.eventualRange_mapsTo f).restrict _ _ _
   map_id i := by
-    #adaptation_note /--- nightly-2024-03-16: simp was
-    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_id] -/
-    simp only [MapsTo.restrict, Subtype.map_def, F.map_id]
+    simp +unfoldPartialApp only [MapsTo.restrict, Subtype.map, F.map_id]
     ext
     rfl
   map_comp _ _ := by
-    #adaptation_note /-- nightly-2024-03-16: simp was
-    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_comp] -/
-    simp only [MapsTo.restrict, Subtype.map_def, F.map_comp]
+    simp +unfoldPartialApp only [MapsTo.restrict, Subtype.map, F.map_comp]
     rfl
 
 instance toEventualRanges_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite (F.toEventualRanges.obj j) :=

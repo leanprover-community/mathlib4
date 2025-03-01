@@ -34,7 +34,6 @@ by a sequence of simple functions.
 
 open Set Function Filter TopologicalSpace ENNReal EMetric Finset
 
-open scoped Classical
 open Topology ENNReal MeasureTheory
 
 variable {α β ι E F 𝕜 : Type*}
