@@ -37,13 +37,13 @@ def uniqueAddEquiv [Add A] : Matrix m n A ≃+ A where
   __ := uniqueEquiv
   map_add' := by simp
 
-/-- `M₁(A)` is linearly equivalent to `A` as `R`-modules where `R` is a semiring. -/
+/-- `M₁(A)` is linearly equivalent to `A` as an `R`-module where `R` is a semiring. -/
 @[simps]
 def uniqueLinearEquiv [Semiring R] [AddCommMonoid A] [Module R A] : Matrix m n A ≃ₗ[R] A where
   __ := uniqueAddEquiv
   map_smul' := by simp
 
-/-- `M₁(A)` is equivalent to `A` as rings. -/
+/-- `M₁(A)` and `A` are equivalent as rings. -/
 @[simps!]
 def uniqueRingEquiv [NonUnitalNonAssocSemiring A] : Matrix m m A ≃+* A where
   __ := uniqueAddEquiv
