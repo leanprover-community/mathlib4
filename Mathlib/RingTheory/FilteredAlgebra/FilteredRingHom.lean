@@ -163,19 +163,16 @@ def GradedPieceHom (i : ι) : GradedPiece FA FA_lt i →+ GradedPiece FB FB_lt i
 @[inherit_doc]
 scoped[FilteredAddGroupHom] notation:9000 "Gr(" i ")[" f "]" => GradedPieceHom f i
 
-lemma AssociatedGradedGroupHom_lift (i : ι) (x : FA i) : Gr(i)[f] (GradedPiece.mk FA FA_lt x)
-    = (GradedPiece.mk FB FB_lt ⟨f.toFun x, FilteredHom.pieces_wise (SetLike.coe_mem x)⟩) := by
-  dsimp[GradedPieceHom]
+lemma GradedPieceHom_apply_mk_eq_mk_piece_wise_hom {i : ι} (x : FA i) :
+    Gr(i)[f] (GradedPiece.mk FA FA_lt x) = (GradedPiece.mk FB FB_lt (f.piece_wise_hom i x)) :=
   rfl
 
 lemma GradedPieceHom_comp_apply (x : AssociatedGraded FA FA_lt) (i : ι) :
     Gr(i)[g] (Gr(i)[f] (x i)) = Gr(i)[g.comp f] (x i) := QuotientAddGroup.induction_on (x i) <|
-  fun y ↦ by
-  simp only [GradedPieceHom, QuotientAddGroup.map_mk]
-  rfl
+  fun _ ↦ rfl
 
 /-- Additive group homomorphism (between direct sum of graded pieces) induced by
-`f : FilteredAddGroupHom FA FA_lt FB FB_lt`. -/
+`GradedPieceHom i f` where `f : FilteredAddGroupHom FA FA_lt FB FB_lt`. -/
 noncomputable def AssociatedGradedAddMonoidHom :
     (AssociatedGraded FA FA_lt) →+ (AssociatedGraded FB FB_lt) :=
   DFinsupp.mapRange.addMonoidHom (GradedPieceHom f)
@@ -188,12 +185,12 @@ lemma AssociatedGradedAddMonoidHom_apply (x : AssociatedGraded FA FA_lt) (i : ι
     (Gr[f] x) i = Gr(i)[f] (x i) := rfl
 
 @[simp]
-lemma AssociatedGradedAddMonoidHom_apply_of [DecidableEq ι] (i : ι) (x : GradedPiece FA FA_lt i) :
+lemma AssociatedGradedAddMonoidHom_apply_of [DecidableEq ι] {i : ι} (x : GradedPiece FA FA_lt i) :
     (Gr[f] (AssociatedGraded.of x)) = AssociatedGraded.of (Gr(i)[f] x) := by
   convert DFinsupp.mapRange_single
   simp
 
-theorem AssociatedGradedAddMonoidHom_comp: Gr[g].comp Gr[f] = Gr[g.comp f] := by
+theorem AssociatedGradedAddMonoidHom_comp_eq_comp: Gr[g].comp Gr[f] = Gr[g.comp f] := by
   ext x i
   simpa [AssociatedGradedAddMonoidHom, AssociatedGradedAddMonoidHom_apply]
     using GradedPieceHom_comp_apply g f _ _
@@ -306,7 +303,7 @@ theorem AssociatedGradedRingHom_apply (x : AssociatedGraded FR FR_lt) (i : ι) :
 
 theorem AssociatedGradedRingHom_comp: Gr[g].comp Gr[f] = Gr[g.comp f] :=
   RingHom.ext <| fun x ↦ congrFun
-  (congrArg DFunLike.coe (FilteredAddGroupHom.AssociatedGradedAddMonoidHom_comp g.1 f.1)) x
+  (congrArg DFunLike.coe (FilteredAddGroupHom.AssociatedGradedAddMonoidHom_comp_eq_comp g.1 f.1)) x
 
 end DirectSum
 
