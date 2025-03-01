@@ -71,7 +71,7 @@ theorem algebraMap_apply (x : K) (v : InfinitePlace K) :
     algebraMap K (InfiniteAdeleRing K) x v = x := rfl
 
 /-- The infinite adele ring is locally compact. -/
-instance locallyCompactSpace [NumberField K] : LocallyCompactSpace (InfiniteAdeleRing K) :=
+instance [NumberField K] : LocallyCompactSpace (InfiniteAdeleRing K) :=
   Pi.locallyCompactSpace_of_finite
 
 open scoped Classical in
@@ -155,6 +155,9 @@ theorem algebraMap_injective [NumberField K] : Function.Injective (algebraMap K 
 
 /-- The subgroup of principal adeles `(x)ᵥ` where `x ∈ K`. -/
 abbrev principalSubgroup : AddSubgroup (AdeleRing R K) := (algebraMap K _).range.toAddSubgroup
+
+instance [NumberField K] : LocallyCompactSpace (AdeleRing R K) :=
+  Prod.locallyCompactSpace _ _
 
 end AdeleRing
 
