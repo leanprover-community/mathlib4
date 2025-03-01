@@ -148,7 +148,7 @@ lemma preparation_lift {n : ℕ} (npos : n > 0) [hmax : m.IsMaximal] (f : PowerS
           have := isUnit_iff_constantCoeff.mp h.isUnit
           rw [← hh'', ← coeff_zero_eq_constantCoeff_apply] at this
           simp only [coeff_map, coeff_zero_eq_constantCoeff] at this
-          exact factorPowSucc.isUnit_of_IsUnit_image (Nat.zero_lt_of_ne_zero neq0) this
+          exact factorPowSucc.isUnit_of_isUnit_image (Nat.zero_lt_of_ne_zero neq0) this
         let h' : (R ⧸ m ^ (n + 1))⟦X⟧ˣ := IsUnit.unit this
         have val : h'.1 = h'' := rfl
         let nontriv : Nontrivial (R ⧸ m ^ n) := nontriv_all (Nat.zero_lt_of_ne_zero neq0)
@@ -164,7 +164,7 @@ lemma preparation_lift {n : ℕ} (npos : n > 0) [hmax : m.IsMaximal] (f : PowerS
         let γ := (mk fun i ↦ coeff (R ⧸ m ^ (n + 1)) (i + (Nat.find ntriv)) c)
         have hu1 : IsUnit (1 + γ) := by
           apply isUnit_iff_constantCoeff.mpr
-          apply factorPowSucc.isUnit_of_IsUnit_image (Nat.zero_lt_of_ne_zero neq0)
+          apply factorPowSucc.isUnit_of_isUnit_image (Nat.zero_lt_of_ne_zero neq0)
           convert isUnit_one
           simp [γ, ← coeff_map, map0]
         have hu2 : IsUnit (h'.1 * (1 + γ)) := h'.isUnit.mul hu1
@@ -354,7 +354,7 @@ lemma isUnit_iff_nmem [hmax : m.IsMaximal] [comp : IsAdicComplete m R] (r : R) :
         · let max' : (m ^ (n + 1)).IsMaximal := by simpa only [neq0, zero_add, pow_one] using hmax
           let hField : Field (R ⧸ m ^ (n + 1)) := Ideal.Quotient.field (m ^ (n + 1))
           simpa [isUnit_iff_ne_zero, ne_eq, Ideal.Quotient.eq_zero_iff_mem.not, neq0] using h
-        · apply factorPowSucc.isUnit_of_IsUnit_image (Nat.zero_lt_of_ne_zero neq0)
+        · apply factorPowSucc.isUnit_of_isUnit_image (Nat.zero_lt_of_ne_zero neq0)
           simpa using (ih (Nat.zero_lt_of_ne_zero neq0))
     choose inv_series' inv_series_spec' using fun (n : {n : ℕ // n > 0}) ↦
       (IsUnit.exists_left_inv (mapu n.2))

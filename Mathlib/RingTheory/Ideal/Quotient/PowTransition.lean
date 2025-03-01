@@ -130,7 +130,7 @@ lemma Ideal.map_mk_comap_factorPow {a b : ℕ} (apos : 0 < a) (le : a ≤ b) :
   exact pow_le_self (Nat.not_eq_zero_of_lt apos)
 
 variable {I} in
-lemma factorPowSucc.isUnit_of_IsUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I ^ (n + 1)}
+lemma factorPowSucc.isUnit_of_isUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I ^ (n + 1)}
     (h : IsUnit (factorPow I n.le_succ a)) : IsUnit a := by
   rcases isUnit_iff_exists.mp h with ⟨b, hb, _⟩
   rcases factor_surjective (pow_le_pow_right n.le_succ) b with ⟨b', hb'⟩
