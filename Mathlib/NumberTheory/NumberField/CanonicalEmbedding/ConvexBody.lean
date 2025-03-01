@@ -262,8 +262,8 @@ open scoped Classical in
 theorem convexBodySumFun_apply' (x : mixedSpace K) :
     convexBodySumFun x = ∑ w, ‖x.1 w‖ + 2 * ∑ w, ‖x.2 w‖ := by
   simp_rw [convexBodySumFun_apply, sum_eq_sum_add_sum, mult_isReal, mult_isComplex,
-    Nat.cast_one, one_mul, Nat.cast_ofNat, normAtPlace_apply_isReal (Subtype.prop _),
-    normAtPlace_apply_isComplex (Subtype.prop _), Finset.mul_sum]
+    Nat.cast_one, one_mul, Nat.cast_ofNat, normAtPlace_apply_of_isReal (Subtype.prop _),
+    normAtPlace_apply_of_isComplex (Subtype.prop _), Finset.mul_sum]
 
 theorem convexBodySumFun_nonneg (x : mixedSpace K) :
     0 ≤ convexBodySumFun x :=
