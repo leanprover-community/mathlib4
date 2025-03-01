@@ -124,7 +124,7 @@ Finally, the last ball is chosen after all the other ones, meaning that `h` can 
 by keeping only one side of the alternative in `hlast`.
 -/
 structure Besicovitch.SatelliteConfig (α : Type*) [MetricSpace α] (N : ℕ) (τ : ℝ) where
-  /-- Centres of the balls -/
+  /-- Centers of the balls -/
   c : Fin N.succ → α
   /-- Radii of the balls -/
   r : Fin N.succ → ℝ
@@ -195,7 +195,7 @@ end SatelliteConfig
 
 /-- A ball package is a family of balls in a metric space with positive bounded radii. -/
 structure BallPackage (β : Type*) (α : Type*) where
-  /-- Centres of the balls -/
+  /-- Centers of the balls -/
   c : β → α
   /-- Radii of the balls -/
   r : β → ℝ
