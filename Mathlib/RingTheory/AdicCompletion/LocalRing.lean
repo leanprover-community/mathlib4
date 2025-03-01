@@ -34,7 +34,7 @@ lemma isUnit_iff_nmem_of_isAdicComplete_maximal [IsAdicComplete m R] (r : R) :
         · let max' : (m ^ (n + 1)).IsMaximal := by simpa only [neq0, zero_add, pow_one] using hmax
           let hField : Field (R ⧸ m ^ (n + 1)) := Ideal.Quotient.field (m ^ (n + 1))
           simpa [isUnit_iff_ne_zero, ne_eq, Ideal.Quotient.eq_zero_iff_mem.not, neq0] using h
-        · apply factorPowSucc.isUnit_of_IsUnit_image (Nat.zero_lt_of_ne_zero neq0)
+        · apply factorPowSucc.isUnit_of_isUnit_image (Nat.zero_lt_of_ne_zero neq0)
           simpa using (ih (Nat.zero_lt_of_ne_zero neq0))
     choose inv_series' inv_series_spec' using fun (n : {n : ℕ // n > 0}) ↦
       (IsUnit.exists_left_inv (mapu n.2))
