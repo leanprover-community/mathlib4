@@ -18,36 +18,35 @@ abelian group is proven in `Mathlib/AlgebraicGeometry/EllipticCurve/Group.lean`.
 
 ## Mathematical background
 
-Let `W` be a Weierstrass curve over a field `F`. A rational point on `W` is simply a point
-$[X:Y:Z]$ defined over `F` in the projective plane satisfying the homogeneous cubic equation
-$Y^2Z + a_1XYZ + a_3YZ^2 = X^3 + a_2X^2Z + a_4XZ^2 + a_6Z^3$. Any such point either lies in the
-affine chart $Z \ne 0$ and satisfies the Weierstrass equation obtained by replacing $X/Z$ with $X$
-and $Y/Z$ with $Y$, or is the unique point at infinity $0 := [0:1:0]$ when $Z = 0$. With this new
-description, a nonsingular rational point on `W` is either $0$ or an affine point $(x, y)$ where
-the partial derivatives $W_X(X, Y)$ and $W_Y(X, Y)$ do not vanish simultaneously. For a field
-extension `K` of `F`, a `K`-rational point is simply a rational point on `W` base changed to `K`.
+Let `W` be a Weierstrass curve over a field `F` with coefficients `aᵢ`. An *affine point*
+on `W` is a tuple `(x, y)` of elements in `R` satisfying the *Weierstrass equation* `W(X, Y) = 0` in
+*affine coordinates*, where `W(X, Y) := Y² + a₁XY + a₃Y - (X³ + a₂X² + a₄X + a₆)`. It is
+*nonsingular* if its partial derivatives `W_X(x, y)` and `W_Y(x, y)` do not vanish simultaneously.
 
-The set of nonsingular rational points forms an abelian group under a secant-and-tangent process.
- * The identity rational point is `0`.
- * Given a nonsingular rational point `P`, its negation `-P` is defined to be the unique third
-    point of intersection between `W` and the line through `0` and `P`.
-    Explicitly, if `P` is $(x, y)$, then `-P` is $(x, -y - a_1x - a_3)$.
- * Given two points `P` and `Q`, their addition `P + Q` is defined to be the negation of the unique
-    third point of intersection between `W` and the line `L` through `P` and `Q`.
-    Explicitly, let `P` be $(x_1, y_1)$ and let `Q` be $(x_2, y_2)$.
-      * If $x_1 = x_2$ and $y_1 = -y_2 - a_1x_2 - a_3$, then `L` is vertical and `P + Q` is `0`.
-      * If $x_1 = x_2$ and $y_1 \ne -y_2 - a_1x_2 - a_3$, then `L` is the tangent of `W` at `P = Q`,
-        and has slope $\ell := (3x_1^2 + 2a_2x_1 + a_4 - a_1y_1) / (2y_1 + a_1x_1 + a_3)$.
-      * Otherwise $x_1 \ne x_2$, then `L` is the secant of `W` through `P` and `Q`, and has slope
-        $\ell := (y_1 - y_2) / (x_1 - x_2)$.
+The nonsingular affine points on `W` can be given negation and addition operations defined by a
+secant-and-tangent process.
+ * Given a nonsingular affine point `P`, its *negation* `-P` is defined to be the unique third
+    nonsingular point of intersection between `W` and the vertical line through `P`.
+    Explicitly, if `P` is `(x, y)`, then `-P` is `(x, -y - a₁x - a₃)`.
+ * Given two nonsingular affine points `P` and `Q`, their *addition* `P + Q` is defined to be the
+    negation of the unique third nonsingular point of intersection between `W` and the line `L`
+    through `P` and `Q`. Explicitly, let `P` be `(x₁, y₁)` and let `Q` be `(x₂, y₂)`.
+      * If `x₁ = x₂` and `y₁ = -y₂ - a₁x₂ - a₃`, then `L` is vertical.
+      * If `x₁ = x₂` and `y₁ ≠ -y₂ - a₁x₂ - a₃`, then `L` is the tangent of `W` at `P = Q`, and has
+        slope `ℓ := (3x₁² + 2a₂x₁ + a₄ - a₁y₁) / (2y₁ + a₁x₁ + a₃)`.
+      * Otherwise `x₁ ≠ x₂`, then `L` is the secant of `W` through `P` and `Q`, and has slope
+        `ℓ := (y₁ - y₂) / (x₁ - x₂)`.
 
-    In the latter two cases, the $X$-coordinate of `P + Q` is then the unique third solution of the
-    equation obtained by substituting the line $Y = \ell(X - x_1) + y_1$ into the Weierstrass
-    equation, and can be written down explicitly as $x := \ell^2 + a_1\ell - a_2 - x_1 - x_2$ by
-    inspecting the $X^2$ terms. The $Y$-coordinate of `P + Q`, after applying the final negation
-    that maps $Y$ to $-Y - a_1X - a_3$, is precisely $y := -(\ell(x - x_1) + y_1) - a_1x - a_3$.
+    In the last two cases, the `X`-coordinate of `P + Q` is then the unique third solution of the
+    equation obtained by substituting the line `Y = ℓ(X - x₁) + y₁` into the Weierstrass equation,
+    and can be written down explicitly as `x := ℓ² + a₁ℓ - a₂ - x₁ - x₂` by inspecting the
+    coefficients of `X²`. The `Y`-coordinate of `P + Q`, after applying the final negation that maps
+    `Y` to `-Y - a₁X - a₃`, is precisely `y := -(ℓ(x - x₁) + y₁) - a₁x - a₃`.
 
-The group law on this set is then uniquely determined by these constructions.
+The type of nonsingular points `W⟮F⟯` in affine coordinates is an inductive, consisting of the
+unique point at infinity `𝓞` and nonsingular affine points `(x, y)`. Then `W⟮F⟯` can be endowed with
+a group law, with `𝓞` as the identity nonsingular point, which is uniquely determined by these
+formulae.
 
 ## Main definitions
 

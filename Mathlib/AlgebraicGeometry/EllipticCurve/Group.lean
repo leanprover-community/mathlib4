@@ -23,17 +23,17 @@ Let `W` be a Weierstrass curve over a field `F` given by a Weierstrass equation 
 affine coordinates. As in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`, the set of
 nonsingular rational points `W⟮F⟯` of `W` consist of the unique point at infinity `𝓞` and
 nonsingular affine points `(x, y)`. With this description, there is an addition-preserving injection
-between `W⟮F⟯` and the ideal class group of the coordinate ring `F[W] := F[X, Y] / ⟨W(X, Y)⟩` of
-`W`. This is defined by mapping the point at infinity `𝓞` to the trivial ideal class and an affine
-point `(x, y)` to the ideal class of the invertible fractional ideal `⟨X - x, Y - y⟩`. Proving that
-this is well-defined and preserves addition reduce to checking several equalities of integral
-ideals, which is done in `WeierstrassCurve.Affine.CoordinateRing.XYIdeal_neg_mul` and in
-`WeierstrassCurve.Affine.CoordinateRing.XYIdeal_mul_XYIdeal` via explicit ideal computations. Now
-`F[W]` is a free rank two `F[X]`-algebra with basis `{1, Y}`, so every element of `F[W]` is of the
-form `p + qY` for some `p, q ∈ F[X]`, and there is an algebra norm `N : F[W] → F[X]`. Injectivity
-can then be shown by computing the degree of such a norm `N(p + qY)` in two different ways, which is
-done in `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis` and in the auxiliary lemmas
-in the proof of `WeierstrassCurve.Affine.Point.instAddCommGroup`.
+between `W⟮F⟯` and the ideal class group of the *affine coordinate ring*
+`F[W] := F[X, Y] / ⟨W(X, Y)⟩` of `W`. This is given by mapping `𝓞` to the trivial ideal class and a
+nonsingular affine point `(x, y)` to the ideal class of the invertible ideal `⟨X - x, Y - y⟩`.
+Proving that this is well-defined and preserves addition reduces to equalities of integral ideals
+checked in `WeierstrassCurve.Affine.CoordinateRing.XYIdeal_neg_mul` and in
+`WeierstrassCurve.Affine.CoordinateRing.XYIdeal_mul_XYIdeal` via explicit ideal computations.
+Now `F[W]` is a free rank two `F[X]`-algebra with basis `{1, Y}`, so every element of `F[W]` is of
+the form `p + qY` for some `p, q` in `F[X]`, and there is an algebra norm `N : F[W] → F[X]`.
+Injectivity can then be shown by computing the degree of such a norm `N(p + qY)` in two different
+ways, which is done in `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis` and in the
+auxiliary lemmas in the proof of `WeierstrassCurve.Affine.Point.instAddCommGroup`.
 
 When `W` is given in Jacobian coordinates, `WeierstrassCurve.Jacobian.Point.toAffineAddEquiv` pulls
 back the group law on `WeierstrassCurve.Affine.Point` to `WeierstrassCurve.Jacobian.Point`.
@@ -48,16 +48,16 @@ pulls back the group law on `WeierstrassCurve.Affine.Point` to `WeierstrassCurve
 
 ## Main statements
 
- * `WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing`: the coordinate ring of an
-    affine Weierstrass curve is an integral domain.
+ * `WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing`: the affine coordinate ring
+    of a Weierstrass curve is an integral domain.
  * `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis`: the degree of the norm of an
-    element in the coordinate ring of an affine Weierstrass curve in terms of the power basis.
- * `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular rational points on
-    an affine Weierstrass curve forms an abelian group under addition.
- * `WeierstrassCurve.Jacobian.Point.instAddCommGroup`: the type of nonsingular rational points on a
-    Jacobian Weierstrass curve forms an abelian group under addition.
- * `WeierstrassCurve.Projective.Point.instAddCommGroup`: the type of nonsingular rational points on
-    a projective Weierstrass curve forms an abelian group under addition.
+    element in the affine coordinate ring in terms of its power basis.
+ * `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular points `W⟮F⟯` in affine
+    coordinates forms an abelian group under addition.
+ * `WeierstrassCurve.Jacobian.Point.instAddCommGroup`: the type of nonsingular points on a
+    Weierstrass curve in Jacobian coordinates forms an abelian group under addition.
+ * `WeierstrassCurve.Projective.Point.instAddCommGroup`: the type of nonsingular points on a
+    Weierstrass curve in projective coordinates forms an abelian group under addition.
 
 ## References
 

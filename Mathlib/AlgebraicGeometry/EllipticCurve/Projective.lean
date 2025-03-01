@@ -20,45 +20,67 @@ that they form an abelian group is proven in `Mathlib/AlgebraicGeometry/Elliptic
 
 ## Mathematical background
 
-Let `W` be a Weierstrass curve over a field `F`. A point on the projective plane is an equivalence
-class of triples $[x:y:z]$ with coordinates in `F` such that $(x, y, z) \sim (x', y', z')$ precisely
-if there is some unit `u` of `F` such that $(x, y, z) = (ux', uy', uz')$, with an extra condition
-that $(x, y, z) \ne (0, 0, 0)$. As described in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine`, a
-rational point is a point on the projective plane satisfying a homogeneous Weierstrass equation, and
-being nonsingular means the partial derivatives $W_X(X, Y, Z)$, $W_Y(X, Y, Z)$, and $W_Z(X, Y, Z)$
-do not vanish simultaneously. Note that the vanishing of the Weierstrass equation and its partial
-derivatives are independent of the representative for $[x:y:z]$, and the nonsingularity condition
-already implies that $(x, y, z) \ne (0, 0, 0)$, so a nonsingular rational point on `W` can simply be
-given by a tuple consisting of $[x:y:z]$ and the nonsingular condition on any representative.
+A point on the unweighted projective plane over a commutative ring `R` is an equivalence class
+`[x : y : z]` of triples `(x, y, z) ≠ (0, 0, 0)` of elements in `R` such that
+`(x, y, z) ∼ (x', y', z')` if there is some unit `u` in `Rˣ` with `(x, y, z) = (ux', uy', uz')`.
 
-As in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine`, the set of nonsingular rational points forms
-an abelian group under the same secant-and-tangent process, but the polynomials involved are
-homogeneous, and any instances of division become multiplication in the $Z$-coordinate.
-Note that most computational proofs follow from their analogous proofs for affine coordinates.
+Let `W` be a Weierstrass curve over a field `F` with coefficients `aᵢ`. A *projective point* is a
+point on the unweighted projective plane over `F` satisfying the *homogeneous Weierstrass equation*
+`W(X, Y, Z) = 0` in *projective coordinates*, where
+`W(X, Y, Z) := Y²Z + a₁XYZ + a₃YZ² - (X³ + a₂X²Z + a₄XZ² + a₆Z³)`. It is *nonsingular* if its
+partial derivatives `W_X(x, y, z)`, `W_Y(x, y, z)`, and `W_Z(x, y, z)` do not vanish simultaneously.
+
+The nonsingular projective points on `W` can be given negation and addition operations defined by an
+analogue of the secant-and-tangent process in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`,
+but the polynomials involved are homogeneous, so any instances of division become multiplication in
+the `Z`-coordinate. Most computational proofs are immediate from their analogous proofs for affine
+coordinates. They can be endowed with an group law, which is uniquely determined by these formulae
+and follows from an equivalence with the nonsingular points `W⟮F⟯` in affine coordinates.
 
 ## Main definitions
 
  * `WeierstrassCurve.Projective.PointClass`: the equivalence class of a point representative.
- * `WeierstrassCurve.Projective.toAffine`: the Weierstrass curve in affine coordinates.
  * `WeierstrassCurve.Projective.Nonsingular`: the nonsingular condition on a point representative.
  * `WeierstrassCurve.Projective.NonsingularLift`: the nonsingular condition on a point class.
- * `WeierstrassCurve.Projective.neg`: the negation operation on a point representative.
- * `WeierstrassCurve.Projective.negMap`: the negation operation on a point class.
- * `WeierstrassCurve.Projective.add`: the addition operation on a point representative.
- * `WeierstrassCurve.Projective.addMap`: the addition operation on a point class.
- * `WeierstrassCurve.Projective.Point`: a nonsingular rational point.
- * `WeierstrassCurve.Projective.Point.neg`: the negation operation on a nonsingular rational point.
- * `WeierstrassCurve.Projective.Point.add`: the addition operation on a nonsingular rational point.
- * `WeierstrassCurve.Projective.Point.toAffineAddEquiv`: the equivalence between the nonsingular
-    rational points on a projective Weierstrass curve with those on an affine Weierstrass curve.
+
+ * `WeierstrassCurve.Projective.negY`: the `Y`-coordinate of `-P`.
+ * `WeierstrassCurve.Projective.dblZ`: the `Z`-coordinate of `2 • P`.
+ * `WeierstrassCurve.Projective.dblX`: the `X`-coordinate of `2 • P`.
+ * `WeierstrassCurve.Projective.negDblY`: the `Y`-coordinate of `-(2 • P)`.
+ * `WeierstrassCurve.Projective.dblY`: the `Y`-coordinate of `2 • P`.
+ * `WeierstrassCurve.Projective.addZ`: the `Z`-coordinate of `P + Q`.
+ * `WeierstrassCurve.Projective.addX`: the `X`-coordinate of `P + Q`.
+ * `WeierstrassCurve.Projective.negAddY`: the `Y`-coordinate of `-(P + Q)`.
+ * `WeierstrassCurve.Projective.addY`: the `Y`-coordinate of `P + Q`.
+
+ * `WeierstrassCurve.Projective.neg`: the negation of a point representative.
+ * `WeierstrassCurve.Projective.negMap`: the negation of a point class.
+ * `WeierstrassCurve.Projective.add`: the addition of two point representatives.
+ * `WeierstrassCurve.Projective.addMap`: the addition of two point classes.
+ * `WeierstrassCurve.Projective.Point`: a nonsingular projective point.
+ * `WeierstrassCurve.Projective.Point.neg`: the negation of a nonsingular projective point.
+ * `WeierstrassCurve.Projective.Point.add`: the addition of two nonsingular projective points.
+ * `WeierstrassCurve.Projective.Point.toAffineAddEquiv`: the equivalence between the type of
+    nonsingular projective points with the type of nonsingular points `W⟮F⟯` in affine coordinates.
 
 ## Main statements
 
  * `WeierstrassCurve.Projective.polynomial_relation`: Euler's homogeneous function theorem.
+
  * `WeierstrassCurve.Projective.nonsingular_neg`: negation preserves the nonsingular condition.
  * `WeierstrassCurve.Projective.nonsingular_add`: addition preserves the nonsingular condition.
 
 ## Implementation notes
+
+All definitions and lemmas for Weierstrass curves in projective coordinates live in the namespace
+`WeierstrassCurve.Projective` to distinguish them from those in other coordinates. This is simply an
+abbreviation for `WeierstrassCurve` that can be converted using `WeierstrassCurve.toProjective`.
+This can be converted into `WeierstrassCurve.Affine` using `WeierstrassCurve.Projective.toAffine`.
+A nonsingular projective point representative can be converted to a nonsingular point in affine
+coordinates using `WeiestrassCurve.Projective.Point.toAffine`, which lifts to a map on nonsingular
+projective points using `WeiestrassCurve.Projective.Point.toAffineLift`. Conversely, a nonsingular
+point in affine coordinates can be converted to a nonsingular projective point using
+`WeierstrassCurve.Projective.Point.fromAffine` or `WeierstrassCurve.Affine.Point.toProjective`.
 
 A point representative is implemented as a term `P` of type `Fin 3 → R`, which allows for the vector
 notation `![x, y, z]`. However, `P` is not definitionally equivalent to the expanded vector
@@ -67,10 +89,27 @@ two forms. The equivalence of two point representatives `P` and `Q` is implement
 of orbits of the action of `Rˣ`, or equivalently that there is some unit `u` of `R` such that
 `P = u • Q`. However, `u • Q` is not definitionally equal to `![u * Q x, u * Q y, u * Q z]`, so the
 lemmas `smul_fin3` and `smul_fin3_ext` can be used to convert between the two forms.
-
 This file makes extensive use of `erw` to get around this problem.
 While `erw` is often an indication of a problem, in this case it is self-contained and should not
 cause any issues. It would alternatively be possible to add some automation to assist here.
+Note that `W(X, Y, Z)` and its partial derivatives are independent of the point representative, and
+the nonsingularity condition already implies `(x, y, z) ≠ (0, 0, 0)`, so a nonsingular projective
+point on `W` can be given by `[x : y : z]` and the nonsingular condition on any representative.
+
+The definitions of `WeierstrassCurve.Projective.dblX`, `WeierstrassCurve.Projective.negDblY`,
+`WeierstrassCurve.Projective.addZ`, `WeierstrassCurve.Projective.addX`, and
+`WeierstrassCurve.Projective.negAddY` are given explicitly by large polynomials that are homogeneous
+of degree `4`. Clearing the denominators of their corresponding affine rational functions in
+`Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean` would give polynomials that are
+homogeneous of degrees `5`, `6`, `6`, `8`, and `8` respectively, so their actual definitions are off
+by powers of certain polynomial factors that are homogeneous of degree `1` or `2`. These factors
+divide their corresponding affine polynomials only modulo the homogeneous Weierstrass equation, so
+their large quotient polynomials are calculated explicitly in a computer algebra system. All of this
+is done to ensure that the definitions of both `WeierstrassCurve.Projective.dblXYZ` and
+`WeierstrassCurve.Projective.addXYZ` are homogeneous of degree `4`.
+
+Whenever possible, all changes to documentation and naming of definitions and theorems should be
+mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian.lean`.
 
 ## References
 
