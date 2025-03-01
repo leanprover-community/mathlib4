@@ -36,7 +36,7 @@ section
 
 -- Porting note: mathlib 3 used `parameters` here, mainly so we can have the abbreviations `M` and
 -- `M.mk` below, without passing around `F` all the time.
-variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCatMax.{v, u})
+variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCat.{max v u})
 
 /-- The colimit of `F ⋙ forget MonCat` in the category of types.
 In the following, we will construct a monoid structure on `M`.
