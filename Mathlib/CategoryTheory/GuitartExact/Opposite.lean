@@ -52,7 +52,7 @@ def functor :
 /-- Auxiliary definition for `structuredArrowRightwardsOpEquivalence`. -/
 def inverse :
     w.CostructuredArrowDownwards g.unop ⥤
-    (w.op.StructuredArrowRightwards g)ᵒᵖ where
+      (w.op.StructuredArrowRightwards g)ᵒᵖ where
   obj f := Opposite.op
     (StructuredArrowRightwards.mk _ _ (Opposite.op f.left.right)
       f.hom.right.op f.left.hom.op (Quiver.Hom.unop_inj (StructuredArrow.w f.hom)))
