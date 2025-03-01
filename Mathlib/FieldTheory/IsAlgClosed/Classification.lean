@@ -84,7 +84,7 @@ the maximum of of the cardinality of `R`, the cardinality of a transcendence bas
 `ℵ₀`
 
 For a simpler, but less universe-polymorphic statement, see
-`IsAlgClosed.cardinal_le_max_transcendence_basis'`  -/
+`IsAlgClosed.cardinal_le_max_transcendence_basis'` -/
 theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
     Cardinal.lift.{max u w} #K ≤ max (max (Cardinal.lift.{max v w} #R)
       (Cardinal.lift.{max u v} #ι)) ℵ₀ :=
@@ -105,7 +105,7 @@ the maximum of of the cardinality of `R`, the cardinality of a transcendence bas
 `ℵ₀`
 
 A less-universe polymorphic, but simpler statement of
-`IsAlgClosed.cardinal_le_max_transcendence_basis`  -/
+`IsAlgClosed.cardinal_le_max_transcendence_basis` -/
 theorem cardinal_le_max_transcendence_basis' (hv : IsTranscendenceBasis R v') :
     #K' ≤ max (max #R #ι') ℵ₀ := by
   simpa using cardinal_le_max_transcendence_basis v' hv

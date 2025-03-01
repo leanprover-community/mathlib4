@@ -9,6 +9,7 @@ import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Vector
 import Mathlib.Algebra.BigOperators.Option
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 
 /-!
 Results about "big operations" over a `Fintype`, and consequent

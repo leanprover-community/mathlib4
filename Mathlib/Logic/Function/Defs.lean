@@ -137,6 +137,27 @@ theorem surjective_id : Surjective (@id α) := fun a => ⟨a, rfl⟩
 theorem bijective_id : Bijective (@id α) :=
   ⟨injective_id, surjective_id⟩
 
+variable {f : α → β}
+
+theorem Injective.eq_iff (I : Injective f) {a b : α} : f a = f b ↔ a = b :=
+  ⟨@I _ _, congr_arg f⟩
+
+theorem Injective.beq_eq {α β : Type*} [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {f : α → β}
+    (I : Injective f) {a b : α} : (f a == f b) = (a == b) := by
+  by_cases h : a == b <;> simp [h] <;> simpa [I.eq_iff] using h
+
+theorem Injective.eq_iff' (I : Injective f) {a b : α} {c : β} (h : f b = c) : f a = c ↔ a = b :=
+  h ▸ I.eq_iff
+
+theorem Injective.ne (hf : Injective f) {a₁ a₂ : α} : a₁ ≠ a₂ → f a₁ ≠ f a₂ :=
+  mt fun h ↦ hf h
+
+theorem Injective.ne_iff (hf : Injective f) {x y : α} : f x ≠ f y ↔ x ≠ y :=
+  ⟨mt <| congr_arg f, hf.ne⟩
+
+theorem Injective.ne_iff' (hf : Injective f) {x y : α} {z : β} (h : f y = z) : f x ≠ z ↔ x ≠ y :=
+  h ▸ hf.ne_iff
+
 end Function
 
 namespace Function
