@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Comma.Over.Pullback
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.CategoryTheory.Limits.Shapes.Images
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 # Monomorphisms over a fixed object
@@ -218,6 +219,16 @@ theorem pullback_obj_arrow (f : X ⟶ Y) (g : MonoOver Y) :
   rfl
 
 end Pullback
+
+section IsPullback
+
+def isoOfIsPullback {X Y Z : C} (S S' : MonoOver X)
+    {f : X ⟶ Z} {g : Y ⟶ Z} {k : S.obj.left ⟶ Y} {k' : S'.obj.left ⟶ Y}
+    (h : IsPullback k S.arrow g f) (h' : IsPullback k' S'.arrow g f) :
+    S ≅ S' :=
+  MonoOver.isoMk (IsPullback.isoIsPullback _ _ h h') (by simp)
+
+end IsPullback
 
 section Map
 
