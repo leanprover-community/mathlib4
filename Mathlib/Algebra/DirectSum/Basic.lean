@@ -394,49 +394,67 @@ theorem finite_support (A : ι → S) (x : DirectSum ι fun i => A i) :
   classical
   exact (DFinsupp.support x).finite_toSet.subset (DirectSum.support_subset _ x)
 
-section map
+namespace mapRange
 
-variable {ι : Type*} [DecidableEq ι] {α : ι → Type*} {β : ι → Type*} [∀ i, AddCommMonoid (α i)]
-variable [∀ i, AddCommMonoid (β i)] (f : ∀(i : ι), α i →+ β i)
+variable {ι : Type*} {α : ι → Type*} {β : ι → Type*} [∀ i, AddCommMonoid (α i)]
+variable [∀ i, AddCommMonoid (β i)]
+
+section addHom
+
+variable (f : ∀(i : ι), α i →+ β i)
 
 /-- create a homomorphism from `⨁ i, α i` to `⨁ i, β i` by giving the component-wise map `f`. -/
-def map : (⨁ i, α i) →+ ⨁ i, β i :=
-  DirectSum.toAddMonoid (fun i : ι ↦ (of β i).comp (f i))
+def addHom : (⨁ i, α i) →+ ⨁ i, β i :=  DFinsupp.mapRange.addMonoidHom f
 
-@[simp] lemma map_of (i : ι) (x : α i) : (map f) (of α i x) = of β i (f i x) := by
-  simp [map]
+variable [DecidableEq ι]
 
-@[simp] lemma map_apply (i : ι) (x : ⨁ i, α i) : (map f) x i = f i (x i) := by
-  apply DirectSum.induction_on (C := fun x ↦ (map f) x i = f i (x i)) x
-  · simp
-  · intro j x; rw [map_of, of_apply, of_apply]
-    by_cases h : j = i
-    · simp [h]; subst h; rfl
-    · simp [h]
-  · simp +contextual
+@[simp] lemma addHom_of (i : ι) (x : α i) : (addHom f) (of α i x) = of β i (f i x) := by
+  show DFinsupp.mapRange.addMonoidHom f (DFinsupp.single i x) = DFinsupp.single i (f i x)
+  simp
 
-@[simp] lemma map_id : (map (fun i ↦ AddMonoidHom.id (α i))) = AddMonoidHom.id (⨁ i, α i) := by
+@[simp] lemma addHom_apply (i : ι) (x : ⨁ i, α i) : (addHom f) x i = f i (x i) := by
+  induction x using DirectSum.induction_on with
+  | H_zero => simp
+  | H_basic j x =>
+    rw [addHom_of, of_apply, of_apply]
+    obtain rfl | h := eq_or_ne j i
+    · simp
+    · simp [of_apply, h]
+  | H_plus _ _ hx hy => simp [hx, hy]
+
+@[simp] lemma addHom_id :
+    (addHom (fun i ↦ AddMonoidHom.id (α i))) = AddMonoidHom.id (⨁ i, α i) := by
   ext i x; simp
 
-@[simp] lemma map_comp {γ : ι → Type*} [∀ i, AddCommMonoid (γ i)] (g : ∀ (i : ι), β i →+ γ i) :
-    (map (fun i ↦ (g i).comp (f i))) = (map g).comp (map f) := by
+@[simp] lemma addHom_comp {γ : ι → Type*} [∀ i, AddCommMonoid (γ i)]
+    (g : ∀ (i : ι), β i →+ γ i) :
+    (addHom (fun i ↦ (g i).comp (f i))) = (addHom g).comp (addHom f) := by
   ext i x; simp
 
-lemma map_surjective (h : ∀ i, Function.Surjective (f i)) : Function.Surjective (map f) := by
+lemma addHom_surjective (h : ∀ i, Function.Surjective (f i)) :
+    Function.Surjective (addHom f) := by
   intro x
-  apply DirectSum.induction_on (C := fun x ↦ ∃ a, (map f) a = x) x
-  · use 0; rfl
-  · intro i x; obtain ⟨y, hy⟩ := h i x; use of α i y; simp [hy]
-  · rintro x y ⟨u, hu⟩ ⟨v, hv⟩; use (u + v); simp [hu, hv]
+  induction x using DirectSum.induction_on with
+  | H_zero => exact ⟨0, by simp⟩
+  | H_basic i x =>
+    obtain ⟨y, rfl⟩ := h i x
+    exact ⟨of α i y, by simp⟩
+  | H_plus x y hx hy =>
+    obtain ⟨u, rfl⟩ := hx
+    obtain ⟨v, rfl⟩ := hy
+    exact ⟨u + v, by simp⟩
 
-lemma map_eq_iff (x y : ⨁ i, α i) : map f x = map f y ↔ ∀ i, f i (x i) = f i (y i) := by
+lemma addHom_eq_iff (x y : ⨁ i, α i) :
+    addHom f x = addHom f y ↔ ∀ i, f i (x i) = f i (y i) := by
   constructor
   · intro h i
-    have : (map f) x i = (map f) y i := by rw [h]
-    simpa using this
-  · intro h; ext i; simpa using h i
+    simpa using congr($h i)
+  · intro h; ext i
+    simpa using h i
 
-end map
+end addHom
+
+end mapRange
 
 end DirectSum
 

@@ -200,8 +200,9 @@ theorem subset_comp_self {s : Set (α × α)} (h : idRel ⊆ s) : s ⊆ s ○ s 
 
 theorem subset_iterate_compRel {s t : Set (α × α)} (h : idRel ⊆ s) (n : ℕ) :
     t ⊆ (s ○ ·)^[n] t := by
-  induction' n with n ihn generalizing t
-  exacts [Subset.rfl, (right_subset_compRel h).trans ihn]
+  induction n generalizing t with
+  | zero => exact Subset.rfl
+  | succ n ihn => exact (right_subset_compRel h).trans ihn
 
 /-- The relation is invariant under swapping factors. -/
 def SymmetricRel (V : Set (α × α)) : Prop :=
@@ -571,7 +572,7 @@ theorem mem_comp_of_mem_ball {V W : Set (β × β)} {x y z : β} (hV : Symmetric
 
 theorem mem_comp_comp {V W M : Set (β × β)} (hW' : SymmetricRel W) {p : β × β} :
     p ∈ V ○ M ○ W ↔ (ball p.1 V ×ˢ ball p.2 W ∩ M).Nonempty := by
-  cases' p with x y
+  obtain ⟨x, y⟩ := p
   constructor
   · rintro ⟨z, ⟨w, hpw, hwz⟩, hzy⟩
     exact ⟨(w, z), ⟨hpw, by rwa [mem_ball_symmetry hW']⟩, hwz⟩
@@ -750,8 +751,8 @@ nonrec theorem UniformContinuous.comp [UniformSpace β] [UniformSpace γ] {g : �
     (hg : UniformContinuous g) (hf : UniformContinuous f) : UniformContinuous (g ∘ f) :=
   hg.comp hf
 
-/--If a function `T` is uniformly continuous in a uniform space `β`,
-then its `n`-th iterate `T^[n]` is also uniformly continuous.-/
+/-- If a function `T` is uniformly continuous in a uniform space `β`,
+then its `n`-th iterate `T^[n]` is also uniformly continuous. -/
 theorem UniformContinuous.iterate [UniformSpace β] (T : β → β) (n : ℕ) (h : UniformContinuous T) :
     UniformContinuous T^[n] := by
   induction n with

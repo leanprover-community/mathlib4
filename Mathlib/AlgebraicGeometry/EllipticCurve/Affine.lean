@@ -161,7 +161,6 @@ lemma irreducible_polynomial [IsDomain R] : Irreducible W.polynomial := by
   rw [Cubic.degree_of_a_ne_zero' <| neg_ne_zero.mpr <| one_ne_zero' R, degree_mul] at h0
   apply (h1.symm.le.trans Cubic.degree_of_b_eq_zero').not_lt
   rcases Nat.WithBot.add_eq_three_iff.mp h0.symm with h | h | h | h
-  -- Porting note: replaced two `any_goals` proofs with two `iterate 2` proofs
   iterate 2 rw [degree_add_eq_right_of_degree_lt] <;> simp only [h] <;> decide
   iterate 2 rw [degree_add_eq_left_of_degree_lt] <;> simp only [h] <;> decide
 
@@ -795,8 +794,7 @@ lemma baseChange_polynomial : (W.baseChange B).toAffine.polynomial =
 
 lemma baseChange_equation (hf : Function.Injective f) (x y : A) :
     (W.baseChange B).toAffine.Equation (f x) (f y) ↔ (W.baseChange A).toAffine.Equation x y := by
-  erw [← map_equation _ hf, map_baseChange]
-  rfl
+  simp [← map_equation _ hf]
 
 lemma baseChange_polynomialX : (W.baseChange B).toAffine.polynomialX =
     (W.baseChange A).toAffine.polynomialX.map (mapRingHom f) := by
@@ -810,8 +808,7 @@ variable {f} in
 lemma baseChange_nonsingular (hf : Function.Injective f) (x y : A) :
     (W.baseChange B).toAffine.Nonsingular (f x) (f y) ↔
       (W.baseChange A).toAffine.Nonsingular x y := by
-  erw [← map_nonsingular _ hf, map_baseChange]
-  rfl
+  simp [← map_nonsingular _ hf]
 
 lemma baseChange_negPolynomial :
     (W.baseChange B).toAffine.negPolynomial =
@@ -846,8 +843,7 @@ variable {F : Type u} [Field F] [Algebra R F] [Algebra S F] [IsScalarTower R S F
 lemma baseChange_slope (x₁ x₂ y₁ y₂ : F) :
     (W.baseChange K).toAffine.slope (f x₁) (f x₂) (f y₁) (f y₂) =
       f ((W.baseChange F).toAffine.slope x₁ x₂ y₁ y₂) := by
-  erw [← map_slope, map_baseChange]
-  rfl
+  rw [← f.coe_toRingHom, ← map_slope, map_baseChange]
 
 namespace Point
 

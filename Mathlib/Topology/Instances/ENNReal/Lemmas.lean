@@ -382,15 +382,16 @@ theorem tendsto_finset_prod_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞
     (s : Finset ι) (h : ∀ i ∈ s, Tendsto (f i) x (𝓝 (a i))) (h' : ∀ i ∈ s, a i ≠ ∞) :
     Tendsto (fun b => ∏ c ∈ s, f c b) x (𝓝 (∏ c ∈ s, a c)) := by
   classical
-  induction' s using Finset.induction with a s has IH
-  · simp [tendsto_const_nhds]
-  simp only [Finset.prod_insert has]
-  apply Tendsto.mul (h _ (Finset.mem_insert_self _ _))
-  · right
-    exact prod_ne_top fun i hi => h' _ (Finset.mem_insert_of_mem hi)
-  · exact IH (fun i hi => h _ (Finset.mem_insert_of_mem hi)) fun i hi =>
-      h' _ (Finset.mem_insert_of_mem hi)
-  · exact Or.inr (h' _ (Finset.mem_insert_self _ _))
+  induction s using Finset.induction with
+  | empty => simp [tendsto_const_nhds]
+  | insert has IH =>
+    simp only [Finset.prod_insert has]
+    apply Tendsto.mul (h _ (Finset.mem_insert_self _ _))
+    · right
+      exact prod_ne_top fun i hi => h' _ (Finset.mem_insert_of_mem hi)
+    · exact IH (fun i hi => h _ (Finset.mem_insert_of_mem hi)) fun i hi =>
+        h' _ (Finset.mem_insert_of_mem hi)
+    · exact Or.inr (h' _ (Finset.mem_insert_self _ _))
 
 protected theorem continuousAt_const_mul {a b : ℝ≥0∞} (h : a ≠ ∞ ∨ b ≠ 0) :
     ContinuousAt (a * ·) b :=
@@ -415,16 +416,17 @@ protected theorem continuous_div_const (c : ℝ≥0∞) (c_ne_zero : c ≠ 0) :
 
 @[continuity, fun_prop]
 protected theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a ^ n := by
-  induction' n with n IH
-  · simp [continuous_const]
-  simp_rw [pow_add, pow_one, continuous_iff_continuousAt]
-  intro x
-  refine ENNReal.Tendsto.mul (IH.tendsto _) ?_ tendsto_id ?_ <;> by_cases H : x = 0
-  · simp only [H, zero_ne_top, Ne, or_true, not_false_iff]
-  · exact Or.inl fun h => H (pow_eq_zero h)
-  · simp only [H, pow_eq_top_iff, zero_ne_top, false_or, eq_self_iff_true, not_true, Ne,
-      not_false_iff, false_and]
-  · simp only [H, true_or, Ne, not_false_iff]
+  induction n with
+  | zero => simp [continuous_const]
+  | succ n IH =>
+    simp_rw [pow_add, pow_one, continuous_iff_continuousAt]
+    intro x
+    refine ENNReal.Tendsto.mul (IH.tendsto _) ?_ tendsto_id ?_ <;> by_cases H : x = 0
+    · simp only [H, zero_ne_top, Ne, or_true, not_false_iff]
+    · exact Or.inl fun h => H (pow_eq_zero h)
+    · simp only [H, pow_eq_top_iff, zero_ne_top, false_or, eq_self_iff_true, not_true, Ne,
+        not_false_iff, false_and]
+    · simp only [H, true_or, Ne, not_false_iff]
 
 theorem continuousOn_sub :
     ContinuousOn (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) { p : ℝ≥0∞ × ℝ≥0∞ | p ≠ ⟨∞, ∞⟩ } := by
@@ -443,7 +445,7 @@ theorem continuous_nnreal_sub {a : ℝ≥0} : Continuous fun x : ℝ≥0∞ => (
 
 theorem continuousOn_sub_left (a : ℝ≥0∞) : ContinuousOn (a - ·) { x : ℝ≥0∞ | x ≠ ∞ } := by
   rw [show (fun x => a - x) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨a, x⟩ by rfl]
-  apply ContinuousOn.comp continuousOn_sub (Continuous.continuousOn (Continuous.Prod.mk a))
+  apply continuousOn_sub.comp (by fun_prop)
   rintro _ h (_ | _)
   exact h none_eq_top
 
@@ -451,7 +453,7 @@ theorem continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ =>
   by_cases a_infty : a = ∞
   · simp [a_infty, continuous_const, tsub_eq_zero_of_le]
   · rw [show (fun x => x - a) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨x, a⟩ by rfl]
-    apply ContinuousOn.comp_continuous continuousOn_sub (continuous_id'.prod_mk continuous_const)
+    apply continuousOn_sub.comp_continuous (by fun_prop)
     intro x
     simp only [a_infty, Ne, mem_setOf_eq, Prod.mk.inj_iff, and_false, not_false_iff]
 
@@ -1353,8 +1355,9 @@ lemma monotone_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) : Monotone
   exact ne_top_of_le_ne_top t_ne_top (min_le_left _ _)
 
 /-- The truncated cast `ENNReal.truncateToReal t : ℝ≥0∞ → ℝ` is continuous when `t ≠ ∞`. -/
+@[fun_prop]
 lemma continuous_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) : Continuous (truncateToReal t) := by
-  apply continuousOn_toReal.comp_continuous (continuous_min.comp (Continuous.Prod.mk t))
+  apply continuousOn_toReal.comp_continuous (by fun_prop)
   simp [t_ne_top]
 
 end truncateToReal
@@ -1393,7 +1396,7 @@ lemma le_limsup_mul {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞} :
     Frequently.mono (Frequently.and_eventually ((frequently_lt_of_lt_limsup) a_u)
     ((eventually_lt_of_lt_liminf) b_v)) fun _ ab_x ↦ c_ab.trans (mul_lt_mul ab_x.1 ab_x.2)
 
-/-- See also `ENNReal.limsup_mul_le`.-/
+/-- See also `ENNReal.limsup_mul_le`. -/
 lemma limsup_mul_le' {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞}
     (h : limsup u f ≠ 0 ∨ limsup v f ≠ ∞) (h' : limsup u f ≠ ∞ ∨ limsup v f ≠ 0) :
     limsup (u * v) f ≤ limsup u f * limsup v f := by
