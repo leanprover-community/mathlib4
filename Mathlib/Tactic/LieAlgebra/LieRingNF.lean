@@ -49,7 +49,7 @@ private structure Context where
 private abbrev M := ReaderT Context CanonAtomM
 
 private partial def rewrite (parent : Expr) (root := true) : M Simp.Result :=
-  fun nctx rctx s ↦ do
+  fun nctx rctx s red s' ↦ do
     let pre : Simp.Simproc := fun e =>
       try
         guard <| root || parent != e -- recursion guard
@@ -59,7 +59,7 @@ private partial def rewrite (parent : Expr) (root := true) : M Simp.Result :=
         let ⟨u, α, e⟩ ← inferTypeQ' e
         let sα ← synthInstanceQ (q(LieRing $α) : Q(Type u))
         -- dbg_trace "rewrite {repr e}"
-        let ⟨a, _, pa⟩ ← match ← isAtom α e rctx s with
+        let ⟨a, _, pa⟩ ← match ← isAtom α e rctx s red s' with
         | false =>
           -- notice that in our design,
           -- when we come across `u • ⁅a, b⁆ + v • ⁅c, d⁆`, we pass `⁅a, b⁆` and `⁅c, d⁆` to `eval`
@@ -68,7 +68,7 @@ private partial def rewrite (parent : Expr) (root := true) : M Simp.Result :=
           let .const n _ := (← withReducible <| whnf e).getAppFn | failure
           match n with
           | ``Bracket.bracket =>
-            eval sα e rctx s
+            eval sα e rctx s red s'
           | _ =>
             -- if it is not a lie bracket, recursively rewrite the arguments
             -- after failure, the simp process automatically continues into subexpressions
@@ -109,7 +109,8 @@ private theorem rat_rawCast_neg {R} [DivisionRing R] :
 end SimpLemmas
 
 private partial def M.run
-    {α : Type} (s : IO.Ref CanonAtomM.State) (cfg : LieRingNF.Config) (x : M α) : MetaM α := do
+    {α : Type} (s : IO.Ref CanonAtomM.State) (cfg : LieRingNF.Config) (red : TransparencyMode)
+    (s' : IO.Ref Canonicalizer.State)(x : M α) : MetaM α := do
   let ctx ← Simp.mkContext { singlePass := cfg.strategy matches .raw}
     (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
     (congrTheorems := ← getSimpCongrTheorems)
@@ -133,17 +134,18 @@ private partial def M.run
     /-- The atom evaluator calls either `LieRingNF.rewrite` recursively,
     or nothing depending on `cfg.recursive`. -/
     evalAtom := if cfg.recursive
-      then fun e ↦ rewrite e false nctx rctx s
+      then fun e ↦ rewrite e false nctx rctx s red s'
       else fun e ↦ pure { expr := e }
-  x nctx rctx s
+  x nctx rctx s red s'
 
 open Elab.Tactic Parser.Tactic
 /-- Use `liering_nf` to rewrite the main goal. -/
 private def lieRingNFTarget
-    (s : IO.Ref CanonAtomM.State) (cfg : Config) : TacticM Unit := withMainContext do
+    (s : IO.Ref CanonAtomM.State) (red : TransparencyMode) (s' : IO.Ref Canonicalizer.State)
+    (cfg : Config) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let tgt ← instantiateMVars (← goal.getType)
-  let r ← M.run s cfg <| rewrite tgt
+  let r ← M.run s cfg red s' <| rewrite tgt
   if r.expr.consumeMData.isConstOf ``True then
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
@@ -151,11 +153,12 @@ private def lieRingNFTarget
     replaceMainGoal [← applySimpResultToTarget goal tgt r]
 
 /-- Use `liering_nf` to rewrite hypothesis `h`. -/
-private def lieRingNFLocalDecl (s : IO.Ref CanonAtomM.State) (cfg : Config) (fvarId : FVarId) :
+private def lieRingNFLocalDecl (s : IO.Ref CanonAtomM.State) (red : TransparencyMode)
+    (s' : IO.Ref Canonicalizer.State) (cfg : Config) (fvarId : FVarId) :
     TacticM Unit := withMainContext do
   let tgt ← instantiateMVars (← fvarId.getType)
   let goal ← getMainGoal
-  let myres ← M.run s cfg <| rewrite tgt
+  let myres ← M.run s cfg red s' <| rewrite tgt
   match ← applySimpResultToLocalDecl goal fvarId myres false with
   | none => replaceMainGoal []
   | some (_, newGoal) => replaceMainGoal [newGoal]
@@ -179,7 +182,8 @@ elab (name := lie_ringNF) "lie_ring_nf" tk:"!"? cfg:optConfig loc:(location)? : 
   if tk.isSome then cfg := { cfg with red := .default }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
-  withLocation loc (lieRingNFLocalDecl s cfg) (lieRingNFTarget s cfg)
+  let s' ← IO.mkRef {}
+  withLocation loc (lieRingNFLocalDecl s cfg.red s' cfg) (lieRingNFTarget s cfg.red s' cfg)
     fun _ ↦ throwError "lie_ring_nf failed"
 
 @[inherit_doc lie_ringNF] macro "lie_ring_nf!" cfg:optConfig loc:(location)? : tactic =>
@@ -198,7 +202,8 @@ elab (name := lie_ring1NF) "lie_ring1_nf" tk:"!"? cfg:optConfig : tactic => do
   let mut cfg ← elabConfig cfg
   if tk.isSome then cfg := { cfg with red := .default }
   let s ← IO.mkRef {}
-  liftMetaMAtMain fun g ↦ M.run s cfg <| proveEq g
+  let s' ← IO.mkRef {}
+  liftMetaMAtMain fun g ↦ M.run s cfg cfg.red s' <| proveEq g
 
 @[inherit_doc lie_ring1NF] macro "lie_ring1_nf!" cfg:optConfig : tactic =>
   `(tactic| lie_ring1_nf ! $cfg:optConfig)
