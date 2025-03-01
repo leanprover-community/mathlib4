@@ -96,14 +96,11 @@ namespace IsHausdorff
 instance bot : IsHausdorff (⊥ : Ideal R) M :=
   ⟨fun x hx => by simpa only [pow_one ⊥, bot_smul, SModEq.bot] using hx 1⟩
 
-variable {M}
-
+variable {M} in
 protected theorem subsingleton (h : IsHausdorff (⊤ : Ideal R) M) : Subsingleton M :=
   ⟨fun x y => eq_of_sub_eq_zero <| h.haus (x - y) fun n => by
     rw [Ideal.top_pow, top_smul]
     exact SModEq.top⟩
-
-variable (M)
 
 instance (priority := 100) of_subsingleton [Subsingleton M] : IsHausdorff I M :=
   ⟨fun _ _ => Subsingleton.elim _ _⟩

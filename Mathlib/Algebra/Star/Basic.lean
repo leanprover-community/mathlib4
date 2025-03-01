@@ -299,14 +299,14 @@ theorem star_intCast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=
 end
 
 section CommSemiring
+
 variable [CommSemiring R] [StarRing R]
 
 /-- `star` as a ring automorphism, for commutative `R`. -/
 @[simps apply]
 def starRingAut : RingAut R := { starAddEquiv, starMulAut (R := R) with toFun := star }
 
-variable (R)
-
+variable (R) in
 /-- `star` as a ring endomorphism, for commutative `R`. This is used to denote complex
 conjugation, and is available under the notation `conj` in the locale `ComplexConjugate`.
 
@@ -315,8 +315,6 @@ because the notation `E →ₗ⋆[R] F` for an `R`-conjugate-linear map (short f
 `E →ₛₗ[starRingEnd R] F`) does not pretty-print if there is a coercion involved, as would be the
 case for `(↑starRingAut : R →* R)`. -/
 def starRingEnd : R →+* R := @starRingAut R _ _
-
-variable {R}
 
 @[inherit_doc]
 scoped[ComplexConjugate] notation "conj" => starRingEnd _
