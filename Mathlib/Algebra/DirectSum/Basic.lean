@@ -394,38 +394,45 @@ theorem finite_support (A : ι → S) (x : DirectSum ι fun i => A i) :
   classical
   exact (DFinsupp.support x).finite_toSet.subset (DirectSum.support_subset _ x)
 
-section map
+namespace mapRange
 
 variable {ι : Type*} {α : ι → Type*} {β : ι → Type*} [∀ i, AddCommMonoid (α i)]
-variable [∀ i, AddCommMonoid (β i)] (f : ∀(i : ι), α i →+ β i)
+variable [∀ i, AddCommMonoid (β i)]
+
+section addHom
+
+variable (f : ∀(i : ι), α i →+ β i)
 
 /-- create a homomorphism from `⨁ i, α i` to `⨁ i, β i` by giving the component-wise map `f`. -/
-def map : (⨁ i, α i) →+ ⨁ i, β i :=  DFinsupp.mapRange.addMonoidHom f
+def addHom : (⨁ i, α i) →+ ⨁ i, β i :=  DFinsupp.mapRange.addMonoidHom f
 
 variable [DecidableEq ι]
 
-@[simp] lemma map_of (i : ι) (x : α i) : (map f) (of α i x) = of β i (f i x) := by
+@[simp] lemma addHom_of (i : ι) (x : α i) : (addHom f) (of α i x) = of β i (f i x) := by
   show DFinsupp.mapRange.addMonoidHom f (DFinsupp.single i x) = DFinsupp.single i (f i x)
   simp
 
-@[simp] lemma map_apply (i : ι) (x : ⨁ i, α i) : (map f) x i = f i (x i) := by
+@[simp] lemma addHom_apply (i : ι) (x : ⨁ i, α i) : (addHom f) x i = f i (x i) := by
   induction x using DirectSum.induction_on with
   | H_zero => simp
   | H_basic j x =>
-    rw [map_of, of_apply, of_apply]
+    rw [addHom_of, of_apply, of_apply]
     obtain rfl | h := eq_or_ne j i
     · simp
     · simp [of_apply, h]
   | H_plus _ _ hx hy => simp [hx, hy]
 
-@[simp] lemma map_id : (map (fun i ↦ AddMonoidHom.id (α i))) = AddMonoidHom.id (⨁ i, α i) := by
+@[simp] lemma addHom_id :
+    (addHom (fun i ↦ AddMonoidHom.id (α i))) = AddMonoidHom.id (⨁ i, α i) := by
   ext i x; simp
 
-@[simp] lemma map_comp {γ : ι → Type*} [∀ i, AddCommMonoid (γ i)] (g : ∀ (i : ι), β i →+ γ i) :
-    (map (fun i ↦ (g i).comp (f i))) = (map g).comp (map f) := by
+@[simp] lemma addHom_comp {γ : ι → Type*} [∀ i, AddCommMonoid (γ i)]
+    (g : ∀ (i : ι), β i →+ γ i) :
+    (addHom (fun i ↦ (g i).comp (f i))) = (addHom g).comp (addHom f) := by
   ext i x; simp
 
-lemma map_surjective (h : ∀ i, Function.Surjective (f i)) : Function.Surjective (map f) := by
+lemma addHom_surjective (h : ∀ i, Function.Surjective (f i)) :
+    Function.Surjective (addHom f) := by
   intro x
   induction x using DirectSum.induction_on with
   | H_zero => exact ⟨0, by simp⟩
@@ -437,14 +444,17 @@ lemma map_surjective (h : ∀ i, Function.Surjective (f i)) : Function.Surjectiv
     obtain ⟨v, rfl⟩ := hy
     exact ⟨u + v, by simp⟩
 
-lemma map_eq_iff (x y : ⨁ i, α i) : map f x = map f y ↔ ∀ i, f i (x i) = f i (y i) := by
+lemma addHom_eq_iff (x y : ⨁ i, α i) :
+    addHom f x = addHom f y ↔ ∀ i, f i (x i) = f i (y i) := by
   constructor
   · intro h i
     simpa using congr($h i)
   · intro h; ext i
     simpa using h i
 
-end map
+end addHom
+
+end mapRange
 
 end DirectSum
 
