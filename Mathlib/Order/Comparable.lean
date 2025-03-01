@@ -35,7 +35,7 @@ def CompRel (r : α → α → Prop) (a b : α) : Prop :=
 theorem CompRel.of_rel (h : r a b) : CompRel r a b :=
   Or.inl h
 
-theorem CompRel.of_rel_symm {a b : α} (h : r b a) : CompRel r a b :=
+theorem CompRel.of_rel_symm (h : r b a) : CompRel r a b :=
   Or.inr h
 
 theorem compRel_swap (r : α → α → Prop) : CompRel (swap r) = CompRel r :=
