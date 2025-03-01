@@ -13,12 +13,13 @@ import Mathlib.RingTheory.Polynomial.Vieta
 
 namespace Multiset
 
-lemma esymm_one_of_pair {R : Type*} [CommSemiring R] (x1 x2 : R) :
-    esymm {x1, x2} 1 = x2 + x1 := by
+-- TODO: `Multiset.insert_eq_cons` being simp means that `esymm {x1, x2}` is not simp normal form
+@[simp] lemma esymm_pair_one {R : Type*} [CommSemiring R] (x1 x2 : R) :
+    esymm (x1 ::ₘ {x2}) 1 = x2 + x1 := by
   simp [esymm, powersetCard_one]
 
-lemma esymm_two_of_pair {R : Type*} [CommSemiring R] (x1 x2 : R) :
-    esymm {x1, x2} 2 = x1 * x2 := by
+@[simp] lemma esymm_pair_two {R : Type*} [CommSemiring R] (x1 x2 : R) :
+    esymm (x1 ::ₘ {x2}) 2 = x1 * x2 := by
   simp [esymm, powersetCard_one]
 
 end Multiset
