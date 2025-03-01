@@ -20,9 +20,54 @@ the other files in this directory, because they involve several types of composi
 
 open MeasureTheory ProbabilityTheory
 
+open scoped ENNReal
+
 variable {α β γ δ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
   {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ}
   {μ : Measure α} {ν : Measure β} {κ : Kernel α β}
+
+namespace ProbabilityTheory.Kernel
+
+variable {η : Kernel γ δ}
+
+lemma parallelComp_comp_copy (κ : Kernel α β) [IsSFiniteKernel κ]
+    (η : Kernel α γ) [IsSFiniteKernel η] :
+    (κ ∥ₖ η) ∘ₖ (copy α) = κ ×ₖ η := by
+  ext a s hs
+  simp_rw [prod_apply, comp_apply, copy_apply, Measure.bind_apply hs (Kernel.measurable _)]
+  rw [lintegral_dirac']
+  swap; · exact Kernel.measurable_coe _ hs
+  rw [parallelComp_apply]
+
+lemma swap_parallelComp : swap β δ ∘ₖ (κ ∥ₖ η) = η ∥ₖ κ ∘ₖ swap α γ := by
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [hκ]
+  by_cases hη : IsSFiniteKernel η
+  swap; · simp [hη]
+  ext ac s hs
+  simp_rw [comp_apply, parallelComp_apply, Measure.bind_apply hs (Kernel.measurable _), swap_apply,
+    lintegral_dirac' _ (Kernel.measurable_coe _ hs), parallelComp_apply' hs, Prod.fst_swap,
+    Prod.snd_swap]
+  rw [MeasureTheory.lintegral_prod_symm]
+  swap; · exact ((Kernel.id.measurable_coe hs).comp measurable_swap).aemeasurable
+  congr with d
+  simp_rw [Prod.swap_prod_mk, Measure.dirac_apply' _ hs]
+  have h_eq (x : β) : s.indicator (1 : δ × β → ℝ≥0∞) (d, x) = (Prod.mk d ⁻¹' s).indicator 1 x := by
+    by_cases h : (d, x) ∈ s <;> simp [h]
+  simp_rw [h_eq]
+  rw [lintegral_indicator]
+  · simp
+  · exact measurable_prod_mk_left hs
+
+/-- For a deterministic kernel, copying then applying the kernel to the two copies is the same
+as first applying the kernel then copying. -/
+lemma deterministic_comp_copy {f : α → β} (hf : Measurable f) :
+    (Kernel.deterministic f hf ∥ₖ Kernel.deterministic f hf) ∘ₖ Kernel.copy α
+      = Kernel.copy β ∘ₖ Kernel.deterministic f hf := by
+  simp_rw [Kernel.parallelComp_comp_copy, Kernel.deterministic_prod_deterministic,
+    Kernel.copy, Kernel.deterministic_comp_deterministic, Function.comp_def]
+
+end ProbabilityTheory.Kernel
 
 namespace MeasureTheory.Measure
 
