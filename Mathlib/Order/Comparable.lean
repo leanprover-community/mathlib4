@@ -32,7 +32,7 @@ variable {r : α → α → Prop}
 def CompRel (r : α → α → Prop) (a b : α) : Prop :=
   r a b ∨ r b a
 
-theorem CompRel.of_rel {a b : α} (h : r a b) : CompRel r a b :=
+theorem CompRel.of_rel (h : r a b) : CompRel r a b :=
   Or.inl h
 
 theorem CompRel.of_rel_symm {a b : α} (h : r b a) : CompRel r a b :=
