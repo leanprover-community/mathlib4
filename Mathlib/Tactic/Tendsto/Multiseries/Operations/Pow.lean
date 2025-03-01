@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Vasily Nesterov. All rights reserved.
+Copyright (c) 2024 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Vasily Nesterov
+Authors: Vasilii Nesterov
 -/
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.Analytic.Constructions
@@ -10,8 +10,6 @@ import Mathlib.Tactic.Tendsto.Multiseries.Operations.Inv
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.ForPow
 import Mathlib.Tactic.Tendsto.Multiseries.Trimming
 import Mathlib.Tactic.Tendsto.Multiseries.LeadingTerm
-
-set_option linter.style.longLine false
 
 /-!
 # Powers for multiseries
@@ -75,7 +73,8 @@ theorem powSeriesFrom_get {a acc : ℝ} {n m : ℕ} : (powSeriesFrom a acc n).ge
 theorem powSeries_get {a : ℝ} {n : ℕ} : (powSeries a).get? n = .some (Ring.choose a n) := by
   field_simp [powSeries, powSeriesFrom_get, Ring.choose_eq_div]
 
-theorem powSeries_eq_binomialSeries {a : ℝ} : (powSeries a).toFormalMultilinearSeries = binomialSeries ℝ a := by
+theorem powSeries_eq_binomialSeries {a : ℝ} :
+    (powSeries a).toFormalMultilinearSeries = binomialSeries ℝ a := by
   ext n f
   simp [binomialSeries, toFormalMultilinearSeries_coeff, powSeries_get]
   rw [mul_comm]
@@ -207,7 +206,9 @@ theorem pow_zero_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basi
         apply mulMonomial_Approximates h_basis
         swap
         · exact pow_zero_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
-        conv => arg 2; ext t; rw [← zero_mul (fC⁻¹ t * basis_hd t ^ (-exp) * (f t - basis_hd t ^ exp * fC t))]
+        conv =>
+          arg 2; ext t
+          rw [← zero_mul (fC⁻¹ t * basis_hd t ^ (-exp) * (f t - basis_hd t ^ exp * fC t))]
         apply mul_Approximates h_basis
         pick_goal 2
         · apply mulMonomial_Approximates h_basis h_tl
@@ -240,7 +241,8 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
     simp
     apply EventuallyEq.pow_const h_approx
   | cons basis_hd basis_tl =>
-    have hF_pos : ∀ᶠ t in atTop, 0 < f t := eventually_pos_of_coef_pos h_pos h_wo h_approx h_trimmed h_basis
+    have hF_pos : ∀ᶠ t in atTop, 0 < f t :=
+      eventually_pos_of_coef_pos h_pos h_wo h_approx h_trimmed h_basis
     cases' ms with exp coef tl
     · apply Approximates_nil at h_approx
       simp [pow]
@@ -262,7 +264,8 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
         basis_head_eventually_pos h_basis
       have hC_pos : ∀ᶠ t in atTop, 0 < fC t := by
         have hC_equiv : fC ~[atTop] f / (fun t ↦ (basis_hd t)^exp) := by
-          have hF_equiv := IsEquivalent_coef h_coef h_coef_wo h_coef_trimmed h_coef_ne_zero h_tl h_comp h_basis
+          have hF_equiv :=
+            IsEquivalent_coef h_coef h_coef_wo h_coef_trimmed h_coef_ne_zero h_tl h_comp h_basis
           have : fC =ᶠ[atTop] (fun t ↦ (basis_hd t)^exp * fC t) / (fun t ↦ (basis_hd t)^exp) := by
             simp only [EventuallyEq]
             apply Eventually.mono h_basis_hd_pos
@@ -317,7 +320,8 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
         apply Eventually.mono <| hF_pos.and (hC_pos.and h_basis_hd_pos)
         intro t ⟨hF_pos, hC_pos, h_basis_hd_pos⟩
         simp
-        rw [Real.mul_rpow _ hF_pos.le, Real.mul_rpow, Real.inv_rpow hC_pos.le, Real.rpow_neg hC_pos.le, ← Real.rpow_mul h_basis_hd_pos.le, neg_mul]
+        rw [Real.mul_rpow _ hF_pos.le, Real.mul_rpow, Real.inv_rpow hC_pos.le,
+          Real.rpow_neg hC_pos.le, ← Real.rpow_mul h_basis_hd_pos.le, neg_mul]
         · apply inv_nonneg_of_nonneg
           linarith
         · apply Real.rpow_nonneg

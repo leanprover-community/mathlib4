@@ -1,4 +1,13 @@
+/-
+Copyright (c) 2024 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Tactic.Tendsto.Multiseries
+
+/-!
+# TODO
+-/
 
 open Lean Qq TendstoTactic
 
@@ -39,6 +48,7 @@ def neg (x : MS) : MS where
   h_approx := q(PreMS.neg_Approximates $x.h_approx)
   h_basis := x.h_basis
 
+set_option linter.unusedVariables false in
 def add (x y : MS) (h_basis_eq : $x.basis =Q $y.basis) : MS where
   basis := x.basis
   val := q(PreMS.add $x.val $y.val)
@@ -47,6 +57,7 @@ def add (x y : MS) (h_basis_eq : $x.basis =Q $y.basis) : MS where
   h_approx := q(PreMS.add_Approximates $x.h_approx $y.h_approx)
   h_basis := x.h_basis
 
+set_option linter.unusedVariables false in
 def sub (x y : MS) (h_basis_eq : $x.basis =Q $y.basis) : MS where
   basis := x.basis
   val := q(PreMS.add $x.val (PreMS.neg $y.val))
@@ -55,6 +66,7 @@ def sub (x y : MS) (h_basis_eq : $x.basis =Q $y.basis) : MS where
   h_approx := q(PreMS.sub_Approximates $x.h_approx $y.h_approx)
   h_basis := x.h_basis
 
+set_option linter.unusedVariables false in
 def mul (x y : MS) (h_basis_eq : $x.basis =Q $y.basis) : MS where
   basis := x.basis
   val := q(PreMS.mul $x.val $y.val)
@@ -71,7 +83,9 @@ def inv (x : MS) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
   h_approx := q(PreMS.inv_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
   h_basis := x.h_basis
 
-def div (x y : MS) (h_trimmed : Q(PreMS.Trimmed $y.val)) (h_basis_eq : $x.basis =Q $y.basis) : MS where
+set_option linter.unusedVariables false in
+def div (x y : MS) (h_trimmed : Q(PreMS.Trimmed $y.val)) (h_basis_eq : $x.basis =Q $y.basis) :
+    MS where
   basis := x.basis
   val := q(PreMS.mul $x.val (PreMS.inv $y.val))
   f := q($x.f / $y.f)
@@ -95,7 +109,8 @@ def zpow (x : MS) (a : Q(ℤ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
   h_approx := q(PreMS.zpow_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
   h_basis := x.h_basis
 
-def rpow (x : MS) (a : Q(ℝ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) (h_pos : Q(0 < (PreMS.leadingTerm $x.val).coef)) : MS where
+def rpow (x : MS) (a : Q(ℝ)) (h_trimmed : Q(PreMS.Trimmed $x.val))
+    (h_pos : Q(0 < (PreMS.leadingTerm $x.val).coef)) : MS where
   basis := x.basis
   val := q(PreMS.pow $x.val $a)
   f := q($x.f ^ $a)

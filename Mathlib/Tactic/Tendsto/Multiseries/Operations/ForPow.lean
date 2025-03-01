@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
@@ -8,7 +13,9 @@ import Mathlib.Analysis.ODE.Gronwall
 import Mathlib.RingTheory.Binomial
 import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
 
-set_option linter.style.longLine false
+/-!
+# TODO
+-/
 
 namespace TendstoTactic
 
@@ -93,7 +100,8 @@ theorem binomialSeries_radius_ge_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type 
     | succ l ih =>
       simp [← add_assoc, Nat.factorial, pow_succ, ascPochhammer_succ_right, Polynomial.smeval_mul,
         Polynomial.smeval_natCast] at ih ⊢
-      convert_to (ascPochhammer ℕ (M + l)).smeval ‖a‖ * ((M + l)! : ℝ)⁻¹ * ↑r ^ l * (r * (‖a‖ + (↑M + ↑l)) * (M + l + 1 : ℝ)⁻¹) ≤ (ascPochhammer ℕ M).smeval ‖a‖ * (M ! : ℝ)⁻¹
+      convert_to (ascPochhammer ℕ (M + l)).smeval ‖a‖ * ((M + l)! : ℝ)⁻¹ * ↑r ^ l *
+        (r * (‖a‖ + (↑M + ↑l)) * (M + l + 1 : ℝ)⁻¹) ≤ (ascPochhammer ℕ M).smeval ‖a‖ * (M ! : ℝ)⁻¹
       · ring_nf
       trans
       swap
@@ -120,7 +128,8 @@ theorem binomialSeries_radius_ge_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type 
   replace hb := Nat.exists_eq_add_of_le hb
   obtain ⟨k, hk⟩ := hb
   subst hk
-  trans ‖Ring.choose a (M + k)‖ * ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 (M + k) 𝔸‖ * ↑r ^ (M + k)
+  trans ‖Ring.choose a (M + k)‖ * ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 (M + k) 𝔸‖ *
+    r ^ (M + k)
   · rw [mul_le_mul_right]
     · apply ContinuousMultilinearMap.opNorm_smul_le
     · apply pow_pos
@@ -153,7 +162,8 @@ theorem binomialSeries_ODE {a : ℝ} :
     rw [List.prod_eq_one] -- cringe
     · simp
     · simp [List.forall_mem_ofFn_iff]
-  have h_deriv_coeff : ∀ k, ((binomialSeries ℝ a).derivSeries.coeff k) 1 = (Ring.choose a (k + 1)) * (k + 1) := by
+  have h_deriv_coeff : ∀ k, ((binomialSeries ℝ a).derivSeries.coeff k) 1 =
+      (Ring.choose a (k + 1)) * (k + 1) := by
     intro k
     simp [derivSeries]
     unfold coeff
@@ -189,7 +199,8 @@ theorem binomialSeries_ODE {a : ℝ} :
     simp only [map_smul, Algebra.mul_smul_comm]
     simp [smul_eq_mul]
     ring_nf
-    rw [show m (Fin.last k) * ∏ i : Fin k, Fin.init m i = ∏ i : Fin (k + 1), m i by rw [Fin.prod_univ_castSucc, mul_comm]; rfl]
+    rw [show m (Fin.last k) * ∏ i : Fin k, Fin.init m i = ∏ i : Fin (k + 1), m i by
+      rw [Fin.prod_univ_castSucc, mul_comm]; rfl]
     trans (∏ i : Fin (k + 1), m i) * (((binomialSeries ℝ a).derivSeries.coeff (1 + k)) 1 +
         ((binomialSeries ℝ a).derivSeries.coeff k) 1)
     swap
@@ -203,8 +214,8 @@ theorem binomialSeries_ODE {a : ℝ} :
     rw [add_comm 1 k]
     move_mul [← (descPochhammer ℤ (k + 1)).smeval a]
     conv => lhs; rw [mul_assoc]
-    trans (descPochhammer ℤ (k + 1)).smeval a * ((a - (1 + ↑k)) * ((k + 1 + 1)! : ℝ)⁻¹ * (1 + ↑k + 1) +
-        ((k + 1)! : ℝ)⁻¹ * (↑k + 1))
+    trans (descPochhammer ℤ (k + 1)).smeval a * ((a - (1 + ↑k)) * ((k + 1 + 1)! : ℝ)⁻¹ *
+      (1 + ↑k + 1) + ((k + 1)! : ℝ)⁻¹ * (↑k + 1))
     swap
     · ring_nf
     rw [mul_assoc, mul_eq_mul_left_iff]
@@ -224,7 +235,8 @@ theorem binomialSeries_ODE {a : ℝ} :
 noncomputable def binomialSum (a : ℝ) (x : ℝ) := (binomialSeries ℝ a).sum x
 
 -- TODO: move
-theorem HasFPowerSeriesOnBall.unique {𝕜 : Type u} {E : Type v} {F : Type w} [NontriviallyNormedField 𝕜]
+theorem HasFPowerSeriesOnBall.unique {𝕜 : Type u} {E : Type v} {F : Type w}
+    [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f g : E → F}
     {p : FormalMultilinearSeries 𝕜 E F} {x : E} {r : ENNReal}
     (hf : HasFPowerSeriesOnBall f p x r)
@@ -272,7 +284,8 @@ theorem HasFPowerSeriesOnBall.smul {𝕜 : Type u} [NontriviallyNormedField 𝕜
 -- TODO: move
 theorem HasFPowerSeriesOnBall.unshift {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type u}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    {p : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)} {r : ENNReal} {f : E → (E →L[𝕜] F)} {x : E} [CompleteSpace F]
+    [CompleteSpace F]
+    {p : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)} {r : ENNReal} {f : E → (E →L[𝕜] F)} {x : E}
     (h : HasFPowerSeriesOnBall f p x r) {z : F} :
     HasFPowerSeriesOnBall (fun y ↦ z + f y (y - x)) (p.unshift z) x r := by
   constructor
@@ -328,11 +341,13 @@ theorem binomialSum_ODE {a : ℝ} {x : ℝ} (hx : |x| < 1) :
     (compFormalMultilinearSeries (.apply ℝ ℝ 1) (binomialSeries ℝ a).derivSeries) 0 1 := by
     convert comp_hasFPowerSeriesOnBall _ h_fderiv
     rfl
-  have h_xfderiv : HasFPowerSeriesOnBall (fun x ↦ fderiv ℝ (binomialSum a) x x) ((binomialSeries ℝ a).derivSeries.unshift 0) 0 1 := by
+  have h_xfderiv : HasFPowerSeriesOnBall (fun x ↦ fderiv ℝ (binomialSum a) x x)
+      ((binomialSeries ℝ a).derivSeries.unshift 0) 0 1 := by
     convert HasFPowerSeriesOnBall.unshift h_fderiv using 1
     ext y
     simp
-  have h_xderiv : HasFPowerSeriesOnBall (fun x ↦ x * deriv (binomialSum a) x) ((binomialSeries ℝ a).derivSeries.unshift 0) 0 1 := by
+  have h_xderiv : HasFPowerSeriesOnBall (fun x ↦ x * deriv (binomialSum a) x)
+      ((binomialSeries ℝ a).derivSeries.unshift 0) 0 1 := by
     convert h_xfderiv using 1
     ext x
     conv => rhs; arg 2; rw [show x = x • 1 by simp]
@@ -364,6 +379,7 @@ theorem binomialSum_ODE {a : ℝ} {x : ℝ} (hx : |x| < 1) :
   exact h_fun
 
 -- TODO: move
+/-- TODO -/
 theorem ODE_solution_unique_of_mem_Icc' {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {v : ℝ → E → E} {s : ℝ → Set E} {K : NNReal} {f g : ℝ → E} {a b t₀ : ℝ}
     (hv : ∀ t ∈ Set.Ioo a b, LipschitzOnWith K (v t) (s t)) (ht : t₀ ∈ Set.Ioo a b)
@@ -393,7 +409,8 @@ theorem ODE_solution_unique_of_mem_Icc' {E : Type u} [NormedAddCommGroup E] [Nor
     simp
     apply hg' _ ht
 
-theorem binomialSum_eq_rpow_aux {a : ℝ} {ε : ℝ} (hε : 0 < ε) : Set.EqOn (binomialSum a) (fun x ↦ (1 + x)^a) (Set.Icc (-1 + ε) (1 - ε)) := by
+theorem binomialSum_eq_rpow_aux {a : ℝ} {ε : ℝ} (hε : 0 < ε) :
+    Set.EqOn (binomialSum a) (fun x ↦ (1 + x)^a) (Set.Icc (-1 + ε) (1 - ε)) := by
   have binomialSum_zero : binomialSum a 0 = 1 := by
     simp [binomialSum, FormalMultilinearSeries.sum]
     rw [tsum_eq_zero_add']
@@ -409,7 +426,8 @@ theorem binomialSum_eq_rpow_aux {a : ℝ} {ε : ℝ} (hε : 0 < ε) : Set.EqOn (
     apply Set.Icc_eq_empty
     linarith
   have h_sum_analytic : AnalyticOnNhd ℝ (binomialSum a) (EMetric.ball 0 1) := by
-    apply AnalyticOnNhd.mono _ (EMetric.ball_subset_ball (binomialSeries_radius_ge_one (𝔸 := ℝ) (a := a)))
+    apply AnalyticOnNhd.mono _
+      (EMetric.ball_subset_ball (binomialSeries_radius_ge_one (𝔸 := ℝ) (a := a)))
     apply HasFPowerSeriesOnBall.analyticOnNhd (p := binomialSeries ℝ a)
     apply FormalMultilinearSeries.hasFPowerSeriesOnBall
     apply lt_of_lt_of_le _ binomialSeries_radius_ge_one

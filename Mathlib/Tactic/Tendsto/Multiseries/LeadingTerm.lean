@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Vasily Nesterov. All rights reserved.
+Copyright (c) 2024 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Vasily Nesterov
+Authors: Vasilii Nesterov
 -/
 import Mathlib.Tactic.Tendsto.Multiseries.Term
 import Mathlib.Tactic.Tendsto.Multiseries.Trimming
@@ -260,7 +260,8 @@ theorem tendsto_zero_of_zero_coef {basis : Basis} {ms : PreMS basis} {f : ℝ �
     (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
     (h_coef : t_coef = 0) :
     Tendsto f atTop (nhds 0) := by
-  apply (IsEquivalent.tendsto_nhds_iff (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
+  apply (IsEquivalent.tendsto_nhds_iff
+    (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
   rw [h_eq]
   apply Term.tendsto_zero_of_coef_zero _ h_coef
 
@@ -273,7 +274,8 @@ theorem tendsto_const_of_AllZero {basis : Basis} {ms : PreMS basis} {f : ℝ →
     (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
     (h_exps : Term.AllZero t_exps) :
     Tendsto f atTop (nhds t_coef) := by
-  apply (IsEquivalent.tendsto_nhds_iff (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
+  apply (IsEquivalent.tendsto_nhds_iff
+    (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
   rw [h_eq]
   apply Term.tendsto_const_of_AllZero _ h_exps
   · convert leadingTerm_length (ms := ms)
@@ -322,7 +324,8 @@ theorem tendsto_top_of_FirstIsPos {basis : Basis} {ms : PreMS basis} {f : ℝ �
     (h_exps : Term.FirstIsPos t_exps)
     (h_coef : 0 < t_coef) :
     Tendsto f atTop atTop := by
-  apply (IsEquivalent.tendsto_atTop_iff (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
+  apply (IsEquivalent.tendsto_atTop_iff
+    (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
   apply Term.tendsto_top_of_FirstIsPos h_basis leadingTerm_length
   all_goals simpa [h_eq]
 
@@ -336,7 +339,8 @@ theorem tendsto_bot_of_FirstIsPos {basis : Basis} {ms : PreMS basis} {f : ℝ �
     (h_exps : Term.FirstIsPos t_exps)
     (h_coef : t_coef < 0) :
     Tendsto f atTop atBot := by
-  apply (IsEquivalent.tendsto_atBot_iff (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
+  apply (IsEquivalent.tendsto_atBot_iff
+    (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
   apply Term.tendsto_bot_of_FirstIsPos h_basis leadingTerm_length
   all_goals simpa [h_eq]
 

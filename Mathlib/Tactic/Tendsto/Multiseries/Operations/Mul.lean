@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Vasily Nesterov. All rights reserved.
+Copyright (c) 2024 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Vasily Nesterov
+Authors: Vasilii Nesterov
 -/
 import Mathlib.Tactic.MoveAdd
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Merge
@@ -13,7 +13,6 @@ import Mathlib.Tactic.Tendsto.Multiseries.Operations.Merge
 
 set_option linter.style.longFile 0 -- TODO: split the file
 set_option linter.style.multiGoal false
-set_option linter.docPrime false
 
 namespace TendstoTactic
 
@@ -150,6 +149,7 @@ theorem mul_eq_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   simp at h
 
 -- TODO : can be proven without coinduction?
+/-- TODO -/
 @[simp]
 theorem mul_one' {basis : Basis} {ms : PreMS basis} : mul ms (one basis) = ms := by
   cases basis with
@@ -174,6 +174,7 @@ theorem mul_one' {basis : Basis} {ms : PreMS basis} : mul ms (one basis) = ms :=
         · simp [one, const, Seq.cons_eq_cons]
           exact mul_one'
 
+/-- TODO -/
 @[simp]
 theorem one_mul' {basis : Basis} {ms : PreMS basis} : mul (one basis) ms = ms := by
   cases basis with
@@ -1369,6 +1370,7 @@ theorem addMany_nils {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ} :
     addMany (fun (_ : Fin k) ↦ Seq.nil) = (0 : PreMS (basis_hd :: basis_tl)) := by
   rw [show Seq.nil = (0 : PreMS (basis_hd :: basis_tl)) by rfl, addMany_zeros]
 
+/-- TODO -/
 noncomputable def addMany' {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
     (args : Fin k → PreMS (basis_hd :: basis_tl)) : PreMS (basis_hd :: basis_tl) :=
   match k with

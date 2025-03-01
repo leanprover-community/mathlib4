@@ -1,7 +1,16 @@
+/-
+Copyright (c) 2024 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Tactic.Tendsto.Multiseries
 import Mathlib.Tactic.Tendsto.Meta.MS
 import Mathlib.Tactic.Tendsto.Meta.ElimDestruct
 import Mathlib.Tactic.Tendsto.Meta.CompareReal
+
+/-!
+# TODO
+-/
 
 open Lean Meta Elab Tactic Qq
 

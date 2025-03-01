@@ -1,5 +1,14 @@
+/-
+Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Tactic.Tendsto.Multiseries.Defs
 import Mathlib.Tactic.Tendsto.Multiseries.Basis
+
+/-!
+# TODO
+-/
 
 namespace TendstoTactic
 
@@ -38,7 +47,7 @@ theorem noConfusion_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd : ℝ �
   simp
 
 @[simp]
-theorem noConfusion_zero' {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd : ℝ × PreMS basis_tl}
+theorem noConfusion_zero_symm {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd : ℝ × PreMS basis_tl}
     {tl : PreMS (basis_hd :: basis_tl)} :
     (0 : PreMS (basis_hd :: basis_tl)) ≠ (Seq.cons hd tl) := by
   exact noConfusion_zero.symm

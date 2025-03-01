@@ -1,12 +1,16 @@
+/-
+Copyright (c) 2024 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Tendsto.Meta.Defs
 import Mathlib.Tactic.Tendsto.Meta.ConstSimp
 import Qq
 
-set_option linter.style.header false
-set_option linter.all false
-set_option linter.style.longLine false
-
+/-!
+# TODO
+-/
 
 open Filter Asymptotics TendstoTactic Stream' Seq
 
@@ -58,7 +62,8 @@ theorem monomial_succ_destruct (m : ℕ) : destruct (PreMS.monomial (basis_hd ::
 theorem neg_destruct (ms : PreMS (basis_hd :: basis_tl)) : destruct ms.neg =
     match destruct ms with
     | none => none
-    | some ((exp, coef), tl) => .some ((exp, coef.neg), PreMS.neg (basis := basis_hd :: basis_tl) tl) := by
+    | some ((exp, coef), tl) => .some ((exp, coef.neg),
+        PreMS.neg (basis := basis_hd :: basis_tl) tl) := by
   cases ms <;> simp
 
 theorem add_destruct (x y : PreMS (basis_hd :: basis_tl)) : destruct (x + y) =
@@ -94,7 +99,8 @@ theorem mulMonomial_destruct (b : PreMS (basis_hd :: basis_tl)) (m_coef : PreMS 
     match destruct b with
     | none => none
     | some ((b_exp, b_coef), b_tl) =>
-      some ((m_exp + b_exp, m_coef.mul b_coef), PreMS.mulMonomial (basis_hd := basis_hd) b_tl m_coef m_exp) := by
+      some ((m_exp + b_exp, m_coef.mul b_coef),
+          PreMS.mulMonomial (basis_hd := basis_hd) b_tl m_coef m_exp) := by
   cases b <;> simp
 
 theorem apply_destruct (s : PreMS.LazySeries) (ms : PreMS (basis_hd :: basis_tl)) :
@@ -109,7 +115,8 @@ theorem inv_destruct (ms : PreMS (basis_hd :: basis_tl)) : destruct ms.inv =
     match destruct ms with
     | none => none
     | some ((exp, coef), tl) => destruct (PreMS.mulMonomial (basis_hd := basis_hd)
-      (PreMS.invSeries.apply (PreMS.mulMonomial (PreMS.neg tl) coef.inv (-exp))) coef.inv (-exp)) := by
+      (PreMS.invSeries.apply (PreMS.mulMonomial (PreMS.neg tl) coef.inv (-exp)))
+      coef.inv (-exp)) := by
   cases ms
   · simp [PreMS.inv]
   · conv => lhs; unfold PreMS.inv
@@ -123,7 +130,8 @@ theorem pow_destruct (ms : PreMS (basis_hd :: basis_tl)) (a : ℝ) : destruct (m
       else
         .none
     | some ((exp, coef), tl) => destruct <| PreMS.mulMonomial (basis_hd := basis_hd)
-      ((PreMS.powSeries a).apply (PreMS.mulMonomial tl coef.inv (-exp))) (coef.pow a) (exp * a) := by
+      ((PreMS.powSeries a).apply (PreMS.mulMonomial tl coef.inv (-exp))) (coef.pow a)
+      (exp * a) := by
   cases' ms with exp coef tl
   · simp [PreMS.pow]
     split_ifs
@@ -139,7 +147,8 @@ theorem powSeriesFrom_destruct (x : ℝ) (acc : ℝ) (n : ℕ) : destruct (PreMS
   conv => lhs; rw [PreMS.powSeriesFrom_eq_cons]
   simp
 
-theorem powSeries_destruct (x : ℝ) : destruct (PreMS.powSeries x) = .some (1, PreMS.powSeriesFrom x x 1) := by
+theorem powSeries_destruct (x : ℝ) :
+    destruct (PreMS.powSeries x) = .some (1, PreMS.powSeriesFrom x x 1) := by
   unfold PreMS.powSeries
   simp [powSeriesFrom_destruct]
 
@@ -204,6 +213,4 @@ macro_rules
 
 end ElimDestruct
 
-namespace Test
-
-end Test
+end TendstoTactic

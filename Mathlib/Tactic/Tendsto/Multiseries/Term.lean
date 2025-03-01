@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Vasily Nesterov. All rights reserved.
+Copyright (c) 2024 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Vasily Nesterov
+Authors: Vasilii Nesterov
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Tactic.Tendsto.Multiseries.Basis
@@ -409,7 +409,8 @@ def AllZero (x : List ℝ) : Prop := match x with
 theorem AllZero_of_nil : AllZero [] := by
   simp [AllZero]
 
-theorem AllZero_of_tail {hd : ℝ} {tl : List ℝ} (h_hd : hd = 0) (h_tl : AllZero tl) : AllZero (hd :: tl) := by
+theorem AllZero_of_tail {hd : ℝ} {tl : List ℝ} (h_hd : hd = 0) (h_tl : AllZero tl) :
+    AllZero (hd :: tl) := by
   simp [AllZero]
   tauto
 

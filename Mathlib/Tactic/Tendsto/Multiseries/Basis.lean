@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Vasily Nesterov. All rights reserved.
+Copyright (c) 2024 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Vasily Nesterov
+Authors: Vasilii Nesterov
 -/
 import Mathlib.Tactic.Tendsto.Multiseries.Defs
 import Mathlib.Data.Real.Basic

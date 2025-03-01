@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Vasily Nesterov. All rights reserved.
+Copyright (c) 2024 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Vasily Nesterov
+Authors: Vasilii Nesterov
 -/
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.Analytic.Constructions
@@ -405,7 +405,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
         left
         constructor
         · simpa using h_ms_eq
-        · trans; exact hf_eq
+        · trans; · exact hf_eq
           conv =>
             rhs
             ext
@@ -422,7 +422,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
         · left
           constructor
           · simpa [apply_nil] using h_ms_eq
-          · trans; exact hf_eq
+          · trans; · exact hf_eq
             simpa [toFun_nil]
         · right
           simp [-apply_cons] at h_ms_eq -- TODO: rewrite
@@ -443,7 +443,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
               · exact hY_coef
             · constructor
               · apply majorated_of_EventuallyEq (f := fY * toFun (Seq.cons s_hd s_tl) ∘ f)
-                · trans; exact hf_eq
+                · trans; · exact hf_eq
                   apply eventuallyEq_iff_sub.mpr
                   simpa
                 · apply mul_bounded_majorated hY_maj
@@ -770,9 +770,10 @@ theorem zeros_analytic : analytic zeros := by
     simp
 
 -- I am almost sure we don't really need `h_wo` and `h_approx`
-theorem zeros_apply_Approximates {basis_hd} {basis_tl} {ms : PreMS (basis_hd :: basis_tl)} {f : ℝ → ℝ}
-    (h_basis : WellFormedBasis (basis_hd :: basis_tl)) (h_wo : ms.WellOrdered) (h_approx : ms.Approximates f)
-    (h_neg : ms.leadingExp < 0) : (zeros.apply ms).Approximates 0 := by
+theorem zeros_apply_Approximates {basis_hd} {basis_tl} {ms : PreMS (basis_hd :: basis_tl)}
+    {f : ℝ → ℝ} (h_basis : WellFormedBasis (basis_hd :: basis_tl)) (h_wo : ms.WellOrdered)
+    (h_approx : ms.Approximates f) (h_neg : ms.leadingExp < 0) :
+    (zeros.apply ms).Approximates 0 := by
   rw [show 0 = zeros.toFun ∘ f by rw [zeros_toFun]; rfl]
   apply apply_Approximates zeros_analytic h_basis h_wo h_neg h_approx
 

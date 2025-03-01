@@ -1,8 +1,17 @@
+/-
+Copyright (c) 2024 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Tactic.Tendsto.Multiseries
 import Mathlib.Tactic.Tendsto.Meta.MS
 import Mathlib.Tactic.Tendsto.Meta.ElimDestruct
 import Mathlib.Tactic.Tendsto.Meta.CompareReal
 import Qq
+
+/-!
+# TODO
+-/
 
 open Filter Asymptotics Stream' Seq TendstoTactic ElimDestruct
 
@@ -11,7 +20,8 @@ open Lean Elab Meta Tactic Qq
 namespace TendstoTactic
 
 /-- brings `ms` to normal form: `const`, `nil`, or `cons` with proof of equality. -/
-def extractMS (basis : Q(Basis)) (ms : Q(PreMS $basis)) : TacticM ((ms' : Q(PreMS $basis)) × Q($ms = $ms')) := do
+def extractMS (basis : Q(Basis)) (ms : Q(PreMS $basis)) :
+    TacticM ((ms' : Q(PreMS $basis)) × Q($ms = $ms')) := do
   match basis with
   | ~q(List.nil) => return ⟨ms, q(Eq.refl $ms)⟩ -- const
   | ~q(List.cons $basis_hd $basis_tl) =>
@@ -26,9 +36,11 @@ def extractMS (basis : Q(Basis)) (ms : Q(PreMS $basis)) : TacticM ((ms' : Q(PreM
     match destruct_res with
     | ~q(Option.none) =>
       return ⟨q(@PreMS.nil $basis_hd $basis_tl), q(PreMS.nil_of_destruct $h_eq)⟩
-    | ~q(@Option.some ((Seq1 (ℝ × PreMS «$basis_tl»))) ($hd, $tl)) => -- why do i need explicitly put the type?
+    | ~q(@Option.some ((Seq1 (ℝ × PreMS «$basis_tl»))) ($hd, $tl)) =>
+      -- why do i need explicitly put the type?
       return ⟨q(PreMS.cons $hd $tl), q(PreMS.cons_of_destruct $h_eq)⟩
-    | _ => throwError f!"Unexpected destruct_res in extractMS:\n{← ppExpr destruct_res.consumeMData}"
+    | _ =>
+      throwError f!"Unexpected destruct_res in extractMS:\n{← ppExpr destruct_res.consumeMData}"
   | _ => throwError "Unexpected basis in extractMS"
 
 section Trimming
@@ -155,7 +167,8 @@ def trim {basis : Q(Basis)} (ms : Q(PreMS $basis))
             h_wo := tl_trimmed.h_wo
             h_approx :=
               q(fun f h ↦ $tl_trimmed.h_approx f
-                (approx_cons_zero $pf (Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h)))
+                (approx_cons_zero $pf
+                  (Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h)))
             h_trimmed := tl_trimmed.h_trimmed
           }
       | ~q(List.cons $basis_tl_hd $basis_tl_tl) =>
@@ -167,7 +180,9 @@ def trim {basis : Q(Basis)} (ms : Q(PreMS $basis))
             val := tl_trimmed.val
             h_wo := tl_trimmed.h_wo
             h_approx := q(fun f h ↦ $tl_trimmed.h_approx f
-              (approx_cons_nil (Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h) $coef_trimmed.h_approx))
+              (approx_cons_nil
+                (Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h)
+                $coef_trimmed.h_approx))
             h_trimmed := tl_trimmed.h_trimmed
           }
         | ~q(PreMS.cons $coef_hd $coef_tl) =>
@@ -176,7 +191,9 @@ def trim {basis : Q(Basis)} (ms : Q(PreMS $basis))
             val := q(PreMS.cons ($exp, $coef_trimmed.val) $tl)
             h_wo := q(PreMS.WellOrdered.cons $coef_trimmed.h_wo $h_comp $h_tl_wo)
             h_approx :=
-              q(fun f h ↦ approx_cons_aux f (Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h) $coef_trimmed.h_approx)
+              q(fun f h ↦ approx_cons_aux f
+                (Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h)
+                $coef_trimmed.h_approx)
             h_trimmed := q(PreMS.Trimmed.cons $coef_trimmed.h_trimmed $h_coef_ne_zero)
           }
         | _ => throwError "trim returned wrong ms"
@@ -274,7 +291,8 @@ def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
             h_wo := tl_trimmed.h_wo
             h_approx :=
               q(fun f h ↦ $tl_trimmed.h_approx f
-                (approx_cons_zero $pf (Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h)))
+                (approx_cons_zero $pf
+                  (Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h)))
             h_trimmed := tl_trimmed.h_trimmed
           }
       | ~q(List.cons $basis_tl_hd $basis_tl_tl) =>
@@ -286,7 +304,9 @@ def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
             val := tl_trimmed.val
             h_wo := tl_trimmed.h_wo
             h_approx := q(fun f h ↦ $tl_trimmed.h_approx f
-              (approx_cons_nil (Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h) $coef_trimmed.h_approx))
+              (approx_cons_nil
+                (Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h)
+                $coef_trimmed.h_approx))
             h_trimmed := tl_trimmed.h_trimmed
           }
         | ~q(PreMS.cons $coef_hd $coef_tl) =>
@@ -295,8 +315,11 @@ def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
             val := q(PreMS.cons ($exp, $coef_trimmed.val) $tl)
             h_wo := q(PreMS.WellOrdered.cons $coef_trimmed.h_wo $h_comp $h_tl_wo)
             h_approx :=
-              q(fun f h ↦ approx_cons_aux f (Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h) $coef_trimmed.h_approx)
-            h_trimmed := coef_trimmed.h_trimmed.map fun h_trimmed ↦ q(PreMS.Trimmed.cons $h_trimmed $h_coef_ne_zero)
+              q(fun f h ↦ approx_cons_aux f
+                (Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h)
+                $coef_trimmed.h_approx)
+            h_trimmed := coef_trimmed.h_trimmed.map fun h_trimmed ↦
+              q(PreMS.Trimmed.cons $h_trimmed $h_coef_ne_zero)
           }
         | _ => throwError "trim returned wrong ms"
       | _ => throwError "Unexpected basis_tl in trim"

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Vasily Nesterov. All rights reserved.
+Copyright (c) 2024 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Vasily Nesterov
+Authors: Vasilii Nesterov
 -/
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Add
 
@@ -161,6 +161,7 @@ theorem maxExp_eq_bot_iff {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       simp [Option.bind]
       rfl
 
+/-- TODO -/
 noncomputable def merge' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (n : ℕ) (s : Seq (PreMS (basis_hd :: basis_tl))) : PreMS (basis_hd :: basis_tl) :=
   let firsts := s.take (n + 1)
@@ -262,7 +263,6 @@ theorem merge1_cons_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd : PreMS 
       · exact Eq.refl _
       simp only [motive]
       use ?_
-      congr
       exact Eq.refl _
 
 @[simp]
@@ -901,7 +901,8 @@ theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
           · exact h_hd_comp
           · cases s_tl
             · simp
-            · obtain ⟨h_Pairwise_hd, h_Pairwise_tl⟩ := Seq.Pairwise.cons_cons_elim_of_trans h_Pairwise
+            · obtain ⟨h_Pairwise_hd, h_Pairwise_tl⟩ :=
+                Seq.Pairwise.cons_cons_elim_of_trans h_Pairwise
               simpa [lt_iff_lt] using h_Pairwise_hd
         use ?_, s_tl
         constructor
@@ -931,7 +932,8 @@ theorem merge1_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
           · exact h_hd_comp
           · cases s_tl
             · simp
-            · obtain ⟨h_Pairwise_hd, h_Pairwise_tl⟩ := Seq.Pairwise.cons_cons_elim_of_trans h_Pairwise
+            · obtain ⟨h_Pairwise_hd, h_Pairwise_tl⟩ :=
+                Seq.Pairwise.cons_cons_elim_of_trans h_Pairwise
               simpa [lt_iff_lt] using h_Pairwise_hd
         use ?_, s_tl
         constructor

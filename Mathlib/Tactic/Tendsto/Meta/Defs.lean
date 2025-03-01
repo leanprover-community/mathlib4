@@ -1,4 +1,13 @@
+/-
+Copyright (c) 2024 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Tactic.Tendsto.Multiseries
+
+/-!
+# TODO
+-/
 
 namespace TendstoTactic.PreMS
 

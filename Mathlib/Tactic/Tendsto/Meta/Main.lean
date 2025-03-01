@@ -1,9 +1,16 @@
+/-
+Copyright (c) 2024 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Tactic.Tendsto.Multiseries
 import Mathlib.Tactic.Tendsto.Lemmas
 import Mathlib.Tactic.Tendsto.Meta.Trimming
 import Mathlib.Tactic.Tendsto.Meta.LeadingTerm
 
-set_option linter.style.longLine false
+/-!
+# TODO
+-/
 
 open Filter Topology Asymptotics TendstoTactic Stream'.Seq ElimDestruct
 
@@ -69,7 +76,8 @@ partial def createMS (body : Expr) : TacticM MS := do
     else
       return MS.const basis body basis_wo
 
-def computeTendsto (f : Q(ℝ → ℝ)) : TacticM ((limit : Q(Filter ℝ)) × Q(Tendsto $f atTop $limit)) := do
+def computeTendsto (f : Q(ℝ → ℝ)) :
+    TacticM ((limit : Q(Filter ℝ)) × Q(Tendsto $f atTop $limit)) := do
   match f with
   | .lam _ _ b _ =>
     let ms ← createMS b
@@ -78,7 +86,8 @@ def computeTendsto (f : Q(ℝ → ℝ)) : TacticM ((limit : Q(Filter ℝ)) × Q(
     let hf_eq ← mkFreshExprMVarQ q($ms.f = $f)
     hf_eq.mvarId!.applyRfl
 
-    let ~q(List.cons $basis_hd $basis_tl) := ms_trimmed.basis | throwError "Unexpected basis in computeTendsto"
+    let ~q(List.cons $basis_hd $basis_tl) := ms_trimmed.basis
+      | throwError "Unexpected basis in computeTendsto"
     -- I don't how to avoid Expr here.
     let h_tendsto : Expr ← match ms_trimmed.val with
     | ~q(PreMS.nil) =>
@@ -90,17 +99,22 @@ def computeTendsto (f : Q(ℝ → ℝ)) : TacticM ((limit : Q(Filter ℝ)) × Q(
       | .pos h_exps =>
         match ← compareReal coef with
         | .neg h_coef =>
-          pure (q(PreMS.tendsto_bot_of_FirstIsPos $ms_trimmed.h_wo $ms_trimmed.h_approx $h_trimmed.get! $ms_trimmed.h_basis $h_leading_eq $h_exps $h_coef) : Expr)
+          pure (q(PreMS.tendsto_bot_of_FirstIsPos $ms_trimmed.h_wo $ms_trimmed.h_approx
+            $h_trimmed.get! $ms_trimmed.h_basis $h_leading_eq $h_exps $h_coef) : Expr)
         | .pos h_coef =>
-          pure (q(PreMS.tendsto_top_of_FirstIsPos $ms_trimmed.h_wo $ms_trimmed.h_approx $h_trimmed.get! $ms_trimmed.h_basis $h_leading_eq $h_exps $h_coef) : Expr)
+          pure (q(PreMS.tendsto_top_of_FirstIsPos $ms_trimmed.h_wo $ms_trimmed.h_approx
+            $h_trimmed.get! $ms_trimmed.h_basis $h_leading_eq $h_exps $h_coef) : Expr)
         | .zero _ => throwError "Unexpected zero coef with FirstIsPos"
       | .neg h_exps =>
-        pure (q(PreMS.tendsto_zero_of_FirstIsNeg $ms_trimmed.h_wo $ms_trimmed.h_approx $h_leading_eq $h_exps) : Expr)
+        pure (q(PreMS.tendsto_zero_of_FirstIsNeg $ms_trimmed.h_wo $ms_trimmed.h_approx
+          $h_leading_eq $h_exps) : Expr)
       | .zero h_exps =>
-        pure (q(PreMS.tendsto_const_of_AllZero $ms_trimmed.h_wo $ms_trimmed.h_approx $h_trimmed.get! $ms_trimmed.h_basis $h_leading_eq $h_exps) : Expr)
+        pure (q(PreMS.tendsto_const_of_AllZero $ms_trimmed.h_wo $ms_trimmed.h_approx
+          $h_trimmed.get! $ms_trimmed.h_basis $h_leading_eq $h_exps) : Expr)
     | _ => throwError "Unexpected result of trimMS"
 
-    let ⟨0, t, h_tendsto⟩ ← inferTypeQ h_tendsto | throwError "Unexpected h_tendsto's universe level"
+    let ⟨0, t, h_tendsto⟩ ← inferTypeQ h_tendsto
+      | throwError "Unexpected h_tendsto's universe level"
     let ~q(@Tendsto ℝ ℝ $g atTop $limit) := t | throwError "Unexpected h_tendsto's type"
     haveI' : $g =Q $ms.f := ⟨⟩
 
@@ -121,10 +135,12 @@ def convertFilter (f : Q(ℝ → ℝ)) (limit : Q(Filter ℝ)) : MetaM (Option N
 elab "compute_asymptotics" : tactic =>
   Lean.Elab.Tactic.withMainContext do
     let target : Q(Prop) ← getMainTarget
-    let ~q(@Filter.Tendsto ℝ ℝ $f $filter $targetLimit) := target | throwError "The goal must me in the form Tendsto (fun x ↦ ...) atTop ..."
+    let ~q(@Filter.Tendsto ℝ ℝ $f $filter $targetLimit) := target
+      | throwError "The goal must me in the form Tendsto (fun x ↦ ...) atTop ..."
     let (convertLemma?, convertedFs) ← convertFilter f filter
     let proofs : List (Expr) ← convertedFs.mapM fun f => do
-      let ⟨1, fType, f⟩ ← inferTypeQ f | throwError "Unexpected universe level of function in compute_asymptotics"
+      let ⟨1, fType, f⟩ ← inferTypeQ f
+        | throwError "Unexpected universe level of function in compute_asymptotics"
       let ~q(ℝ → ℝ) := fType | throwError "Only real functions are supported"
       let ⟨limit, h_tendsto⟩ ← computeTendsto f
       if !(← isDefEq limit targetLimit) then
@@ -133,9 +149,11 @@ elab "compute_asymptotics" : tactic =>
           let h_eq : Q($b = $a) ← mkFreshExprMVarQ q($b = $a)
           let extraGoals ← evalTacticAt (← `(tactic| try norm_num)) h_eq.mvarId!
           appendGoals extraGoals
-          pure q(Eq.subst (motive := fun x ↦ Filter.Tendsto $f atTop (nhds (X := ℝ) x)) $h_eq $h_tendsto)
+          pure q(Eq.subst
+            (motive := fun x ↦ Filter.Tendsto $f atTop (nhds (X := ℝ) x)) $h_eq $h_tendsto)
         | _ =>
-          throwError m!"The tactic proved that the function tends to {← ppExpr limit}, not {← ppExpr targetLimit}."
+          throwError m!"The tactic proved that the function tends to {← ppExpr limit},
+            not {← ppExpr targetLimit}."
       else
         pure h_tendsto
     let pf ← match convertLemma? with

@@ -1,7 +1,16 @@
+/-
+Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Maps.Basic
+
+/-!
+# TODO
+-/
 
 universe u v
 
@@ -9,13 +18,15 @@ open Filter Topology
 
 namespace TendstoTactic
 
-variable {α : Type v} {𝕜 : Type u} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+variable {α : Type v} {𝕜 : Type u} [LinearOrderedField 𝕜]
   {l : Filter α} (f : 𝕜 → α)
 
 theorem tendsto_bot_of_tendsto_top (h : Tendsto (fun x ↦ f (-x)) atTop l) :
     Tendsto f atBot l := by
   rw [show f = (f ∘ Neg.neg) ∘ Neg.neg by eta_expand; simp]
   exact Tendsto.comp h tendsto_neg_atBot_atTop
+
+variable [TopologicalSpace 𝕜] [OrderTopology 𝕜]
 
 theorem tendsto_zero_right_of_tendsto_top (h : Tendsto (fun x ↦ f x⁻¹) atTop l) :
     Tendsto f (𝓝[>] 0) l := by

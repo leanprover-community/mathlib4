@@ -1,6 +1,15 @@
+/-
+Copyright (c) 2024 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Linarith
 import Mathlib.Data.Real.Basic
+
+/-!
+# TODO
+-/
 
 open Qq Lean Elab Meta Tactic
 
