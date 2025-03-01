@@ -112,7 +112,7 @@ instance : ConcreteCategory ProfiniteGrp (fun X Y => ContinuousMonoidHom X Y) wh
   hom f := f.hom'
   ofHom f := ⟨f⟩
 
-  /-- The underlying `ContinuousMonoidHom`. -/
+/-- The underlying `ContinuousMonoidHom`. -/
 @[to_additive "The underlying `ContinuousAddMonoidHom`."]
 abbrev ProfiniteGrp.Hom.hom {M N : ProfiniteGrp.{u}} (f : ProfiniteGrp.Hom M N) :
     ContinuousMonoidHom M N :=
