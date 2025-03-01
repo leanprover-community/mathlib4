@@ -14,13 +14,7 @@ intervals as Finsets and Fintypes.
 
 assert_not_exists MonoidWithZero
 
-namespace Fin
-
-variable {n : ℕ} (a b : Fin n)
-
-end Fin
-
-open Finset Fin Function
+open Finset Function
 
 namespace Fin
 
