@@ -29,8 +29,11 @@ universe u v
   Note the transition function sends a state to a `Set` of states. These are the states that it
   may be sent to. -/
 structure NFA (α : Type u) (σ : Type v) where
+  /-- The NFA's transition function -/
   step : σ → α → Set σ
+  /-- Set of starting states -/
   start : Set σ
+  /-- Set of accepting states -/
   accept : Set σ
 
 variable {α : Type u} {σ σ' : Type v} (M : NFA α σ)

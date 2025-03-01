@@ -120,7 +120,7 @@ variable (M) {S}
 theorem surj : ∀ z : S, ∃ x : R × M, z * algebraMap R S x.2 = algebraMap R S x.1 :=
   IsLocalization.surj'
 
-variable (S)
+variable (S) in
 @[inherit_doc IsLocalization.exists_of_eq]
 theorem eq_iff_exists {x y} : algebraMap R S x = algebraMap R S y ↔ ∃ c : M, ↑c * x = ↑c * y :=
   Iff.intro IsLocalization.exists_of_eq fun ⟨c, h⟩ ↦ by
@@ -128,7 +128,6 @@ theorem eq_iff_exists {x y} : algebraMap R S x = algebraMap R S y ↔ ∃ c : M,
     rw [map_mul, map_mul] at h
     exact (IsLocalization.map_units S c).mul_right_inj.mp h
 
-variable {S}
 theorem of_le (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ r ∈ N, IsUnit (algebraMap R S r)) :
     IsLocalization N S where
   map_units' r := h₂ r r.2
