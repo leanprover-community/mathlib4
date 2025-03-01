@@ -931,13 +931,10 @@ theorem coe_ofLinearIsometry_symm (f : E →ₛₗᵢ[σ₁₂] E₂) (g : E₂ 
     ((ofLinearIsometry f g h₁ h₂).symm : E₂ → E) = (g : E₂ → E) :=
   rfl
 
-variable (R)
-
+variable (R) in
 /-- The negation operation on a normed space `E`, considered as a linear isometry equivalence. -/
 def neg : E ≃ₗᵢ[R] E :=
   { LinearEquiv.neg R with norm_map' := norm_neg }
-
-variable {R}
 
 @[simp]
 theorem coe_neg : (neg R : E → E) = fun x => -x :=
