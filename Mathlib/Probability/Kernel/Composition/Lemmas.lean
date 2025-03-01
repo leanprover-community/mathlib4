@@ -15,7 +15,10 @@ the other files in this directory, because they involve several types of composi
 ## Main statements
 
 * `parallelComp_comp_parallelComp`: `(η ∥ₖ η') ∘ₖ (κ ∥ₖ κ') = (η ∘ₖ κ) ∥ₖ (η' ∘ₖ κ')`
-
+* `parallelComp_comp_copy`: `(κ ∥ₖ η) ∘ₖ (copy α) = κ ×ₖ η`
+* `deterministic_comp_copy`: for a deterministic kernel, copying then applying the kernel to
+  the two copies is the same as first applying the kernel then copying. That is, if `κ` is
+  a deterministic kernel, `(κ ∥ₖ κ) ∘ₖ copy α = copy β ∘ₖ κ`.
 -/
 
 open MeasureTheory ProbabilityTheory

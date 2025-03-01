@@ -20,13 +20,6 @@ Two kernels `κ : Kernel α β` and `η : Kernel γ δ` can be applied in parall
   of two s-finite kernels. We define a notation `κ ∥ₖ η = parallelComp κ η`.
   `∫⁻ bd, g bd ∂(κ ∥ₖ η) ac = ∫⁻ b, ∫⁻ d, g (b, d) ∂η ac.2 ∂κ ac.1`
 
-## Main statements
-
-* `parallelComp_comp_copy`: `(κ ∥ₖ η) ∘ₖ (copy α) = κ ×ₖ η`
-* `deterministic_comp_copy`: for a deterministic kernel, copying then applying the kernel to
-  the two copies is the same as first applying the kernel then copying. That is, if `κ` is
-  a deterministic kernel, `(κ ∥ₖ κ) ∘ₖ copy α = copy β ∘ₖ κ`.
-
 ## Notations
 
 * `κ ∥ₖ η = ProbabilityTheory.Kernel.parallelComp κ η`
