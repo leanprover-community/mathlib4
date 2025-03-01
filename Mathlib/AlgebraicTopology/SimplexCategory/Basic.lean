@@ -810,8 +810,8 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
     ext x : 3
     dsimp [δ, σ]
     simp_rw [Fin.succAbove_last, Fin.predAbove_last_apply]
-    erw [dif_neg (hi x)]
-    rw [Fin.castSucc_castPred]
+    rw [dif_neg, Fin.castSucc_castPred]
+    · exact hi x
 
 theorem eq_comp_δ_of_not_surjective {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ mk (n + 1))
     (hθ : ¬Function.Surjective θ.toOrderHom) :
