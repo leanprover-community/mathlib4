@@ -126,18 +126,18 @@ alias AntisymmRel.trans_compRel := compRel_of_antisymmRel_of_compRel
 instance : @Trans α α α (AntisymmRel (· ≤ ·)) (CompRel (· ≤ ·)) (CompRel (· ≤ ·)) where
   trans := compRel_of_antisymmRel_of_compRel
 
-theorem AntisymmRel.incompRel_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) c d) :
+theorem AntisymmRel.compRel_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) c d) :
     CompRel (· ≤ ·) a c ↔ CompRel (· ≤ ·) b d where
   mp h := (h₁.symm.trans_compRel h).trans_antisymmRel h₂
   mpr h := (h₁.trans_compRel h).trans_antisymmRel h₂.symm
 
-theorem AntisymmRel.incompRel_congr_left (h : AntisymmRel (· ≤ ·) a b) :
+theorem AntisymmRel.compRel_congr_left (h : AntisymmRel (· ≤ ·) a b) :
     CompRel (· ≤ ·) a c ↔ CompRel (· ≤ ·) b c :=
-  h.incompRel_congr .rfl
+  h.compRel_congr .rfl
 
-theorem AntisymmRel.incompRel_congr_right (h : AntisymmRel (· ≤ ·) b c) :
+theorem AntisymmRel.compRel_congr_right (h : AntisymmRel (· ≤ ·) b c) :
     CompRel (· ≤ ·) a b ↔ CompRel (· ≤ ·) a c :=
-  AntisymmRel.rfl.incompRel_congr h
+  AntisymmRel.rfl.compRel_congr h
 
 end Preorder
 
