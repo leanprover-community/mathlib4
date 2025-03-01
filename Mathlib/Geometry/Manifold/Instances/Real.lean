@@ -12,9 +12,10 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 
 We introduce the necessary bits to be able to define manifolds modelled over `ℝ^n`, boundaryless
 or with boundary or with corners. As a concrete example, we construct explicitly the manifold with
-boundary structure on the real interval `[x, y]`, and prove that it is orientable and its boundary is indeed `{x,y}`
-whenever `x < y`. As a corollary, a product `M × [x, y]` with a manifold `M` without boundary
-has boundary `M × {x, y}`.
+boundary structure on the real interval `[x, y]`, and prove that it is orientable and its boundary
+is indeed `{x,y}` whenever `x < y`.
+As a corollary, a product `M × [x, y]` with a manifold `M` without boundary has
+boundary `M × {x, y}`.
 
 More specifically, we introduce
 * `modelWithCornersEuclideanHalfSpace n :
@@ -496,7 +497,7 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
       PiLp.neg_apply, update_self, max_eq_left, hz₀, hz₁.le, mfld_simps]
     abel
   ·-- `e = right chart`, `e' = right chart`
-    exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _ _ _)).1
+    exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
 /-- The manifold structure on `[x, y]` is orientable. -/
 instance Icc_orientable_manifold (x y : ℝ) [Fact (x < y)] :
@@ -531,8 +532,6 @@ instance Icc_orientable_manifold (x y : ℝ) [Fact (x < y)] :
     · sorry -- similar, with left and right swapped
     · exact mem_groupoid_of_pregroupoid.mpr
       <| symm_trans_mem_orientationPreservingGroupoid (𝓡∂ 1) (IccRightChart x y)
-
-    exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
 /-! Register the manifold structure on `Icc 0 1`. These are merely special cases of
 `instIccChartedSpace` and `instIsManifoldIcc`. -/

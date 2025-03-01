@@ -3,7 +3,7 @@ Copyright (c) 2024 Rida Hamadani. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rida Hamadani, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
+import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 
 /-!
 # Orientable Manifolds
@@ -80,7 +80,7 @@ def OrientationReversing (f : H → H) (s : Set H) : Prop :=
   ∀ x ∈ s, (fderiv ℝ f x).det < 0
 
 lemma orientationPreserving_of_zero_dim (f : H → H) (s : Set H)
-    (h : FiniteDimensional.finrank ℝ H = 0) : OrientationPreserving f s := by
+    (h : Module.finrank ℝ H = 0) : OrientationPreserving f s := by
   intro _ _
   simp [LinearMap.det_eq_one_of_finrank_eq_zero h]
 
@@ -93,7 +93,7 @@ lemma OrientationPreserving.differentiableAt [FiniteDimensional ℝ H] {f : H �
     contrapose! h
     use x, hs
     rw [fderiv_zero_of_not_differentiableAt h, ContinuousLinearMap.det]
-    simp [ne_of_gt FiniteDimensional.finrank_pos]
+    simp [ne_of_gt Module.finrank_pos]
 
 lemma OrientationReversing.differentiableAt {f : H → H} {s : Set H} (h : OrientationReversing f s)
     {x : H} (hs : x ∈ s) : DifferentiableAt ℝ f x := by
@@ -101,7 +101,7 @@ lemma OrientationReversing.differentiableAt {f : H → H} {s : Set H} (h : Orien
   contrapose! h
   use x, hs
   rw [fderiv_zero_of_not_differentiableAt h, ContinuousLinearMap.det]
-  simp [ne_of_gt FiniteDimensional.finrank_pos]
+  simp [ne_of_gt Module.finrank_pos]
 
 lemma orientationPreserving_id (s : Set H) : OrientationPreserving id s := by
   intro
@@ -111,7 +111,7 @@ lemma orientationPreserving_comp [FiniteDimensional ℝ H] {f g : H → H} {u v 
     (hf : OrientationPreserving f u) (hg : OrientationPreserving g v) :
     OrientationPreserving (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
-  rw [fderiv.comp x (hg.differentiableAt hxv) (hf.differentiableAt hxu)]
+  rw [fderiv_comp x (hg.differentiableAt hxv) (hf.differentiableAt hxu)]
   simpa only [ContinuousLinearMap.det, ContinuousLinearMap.coe_comp, LinearMap.det_comp]
     using mul_pos (hg (f x) hxv) (hf x hxu)
 
@@ -119,21 +119,21 @@ lemma orientationReversing_comp_orientationPreserving [FiniteDimensional ℝ H]
     {f g : H → H} {u v : Set H} (hf : OrientationPreserving f u) (hg : OrientationReversing g v) :
     OrientationReversing (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
-  rw [fderiv.comp x (hg.differentiableAt hxv) (hf.differentiableAt hxu)]
+  rw [fderiv_comp x (hg.differentiableAt hxv) (hf.differentiableAt hxu)]
   simpa [ContinuousLinearMap.det] using mul_neg_of_neg_of_pos (hg (f x) hxv) (hf x hxu)
 
 lemma orientationPreserving_comp_orientationReversing [FiniteDimensional ℝ H]
     {f g : H → H} {u v : Set H} (hf : OrientationReversing f u) (hg : OrientationPreserving g v) :
     OrientationReversing (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
-  rw [fderiv.comp x (hg.differentiableAt hxv) (hf.differentiableAt hxu)]
+  rw [fderiv_comp x (hg.differentiableAt hxv) (hf.differentiableAt hxu)]
   simpa [ContinuousLinearMap.det] using mul_neg_of_pos_of_neg (hg (f x) hxv) (hf x hxu)
 
 lemma orientationReversing_comp {f g : H → H} {u v : Set H}
     (hf : OrientationReversing f u) (hg : OrientationReversing g v) :
     OrientationPreserving (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
-  rw [fderiv.comp x (hg.differentiableAt hxv) (hf.differentiableAt hxu)]
+  rw [fderiv_comp x (hg.differentiableAt hxv) (hf.differentiableAt hxu)]
   simpa only [ContinuousLinearMap.det, ContinuousLinearMap.coe_comp, LinearMap.det_comp]
     using mul_pos_of_neg_of_neg (hg (f x) hxv) (hf x hxu)
 
@@ -157,7 +157,7 @@ def orientationPreservingPregroupoid [FiniteDimensional ℝ E] : Pregroupoid H w
           I ∘ f ∘ I.symm ⁻¹' (I.symm ⁻¹' V ∩ interior (range I)) :=
         ⟨⟨mem_of_mem_inter_left hx₁, hx₂⟩, by simp_all, by aesop⟩
       convert orientationPreserving_comp hf.1 hg.1 x hx'
-      simp [Function.comp]
+      aesop
     · have : x ∈ I.symm ⁻¹' U ∩ interior (range I) :=
         ⟨mem_of_mem_inter_left (mem_of_mem_inter_left hx), mem_of_mem_inter_right hx⟩
       have : I (f (I.symm x)) ∈ I.symm ⁻¹' V ∩ interior (range I) :=
@@ -273,7 +273,7 @@ lemma orientableManifold_of_zero_dim {E H : Type*} [NormedAddCommGroup E] [Norme
         obtain ⟨x, hx⟩ := hE
         let s := I ∘ (e₁.symm.trans e₂) ∘ I.symm ''
           (I.symm ⁻¹' (e₁.symm.trans e₂).source ∩ interior (Set.range I))
-        simp_all [(fun _ _ _ ↦ (FiniteDimensional.finrank_zero_iff.mp h).elim x y) s y hy]
+        simp_all [(fun _ _ _ ↦ (Module.finrank_zero_iff.mp h).elim x y) s y hy]
     · by_cases hE : interior (Set.range I) = ∅
       · simp [hE]
       · rw [Set.subset_def]
@@ -283,7 +283,7 @@ lemma orientableManifold_of_zero_dim {E H : Type*} [NormedAddCommGroup E] [Norme
         obtain ⟨x, hx⟩ := hE
         let s := I ∘ (e₁.symm.trans e₂).symm ∘ I.symm ''
           (I.symm ⁻¹' (e₁.symm.trans e₂).target ∩ interior (Set.range I))
-        simp_all [(fun _ _ _ ↦ (FiniteDimensional.finrank_zero_iff.mp h).elim x y) s y hy]
+        simp_all [(fun _ _ _ ↦ (Module.finrank_zero_iff.mp h).elim x y) s y hy]
 
 /-- Typeclass defining orientable smooth manifolds: a smooth manifold is orientable
 if and only if it admits an atlas which is both smooth and orientable -/
