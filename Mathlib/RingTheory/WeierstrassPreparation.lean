@@ -683,8 +683,7 @@ lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m
   let f' : R⟦X⟧ := PowerSeries.mk fun j ↦ Classical.choose (Ideal.mem_span_singleton.mp (this j))
   have f'_spec : (π ^ k) • f' = f := by
     ext i
-    simpa only [map_smul, coeff_mk, smul_eq_mul, f']
-      using (Classical.choose_spec (Ideal.mem_span_singleton.mp (this i))).symm
+    simpa [f'] using (Classical.choose_spec (Ideal.mem_span_singleton.mp (this i))).symm
   have ntriv : ∃ (i : ℕ), f'.coeff R i ∉ m := by
     rcases Nat.find_spec exist_nmem with ⟨i, hi⟩
     use i
@@ -697,14 +696,12 @@ lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m
     intro eq
     ext i
     have : (π ^ k • g).coeff R i = (π ^ k • f').coeff R i := by rw [eq, f'_spec]
-    simpa only [map_smul, smul_eq_mul, mul_eq_mul_left_iff, pow_eq_zero_iff', pi_ne0, ne_eq,
-      false_and, or_false]
+    simpa [pow_eq_zero_iff', pi_ne0, ne_eq]
   rcases CompleteLocalRing.weierstrass_preparation f' ntriv with ⟨h, ⟨g, mon, degg, hg, eq⟩, uniq⟩
   use (k, h, g)
   constructor
   · exact ⟨mon, hg, by rw [← eq, f'_spec]⟩
   · intro (k', h', g') h_khg'
-    dsimp at h_khg'
     rcases h_khg' with ⟨mon', hg', eq'⟩
     have keq : k' = k := by
       have : Nat.find exist_nmem = k' + 1 := by
@@ -714,27 +711,24 @@ lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m
           simp only [eq', map_smul, smul_eq_mul]
           have nmem : (g' * h'.1).coeff R g'.natDegree ∉ m := by
             apply Ideal.Quotient.eq_zero_iff_mem.not.mp
-            have mapg : Polynomial.map (Ideal.Quotient.mk m) g' = Polynomial.X ^ g'.natDegree := by
+            have mapg : g'.map (Ideal.Quotient.mk m) = Polynomial.X ^ g'.natDegree := by
               ext i
               by_cases ne : i = g'.natDegree
               · simp [ne, mon']
               · rcases lt_or_gt_of_ne ne with lt|gt
-                · simpa only [Polynomial.coeff_map, Polynomial.coeff_X_pow, ne, ↓reduceIte]
-                    using eq_zero_iff_mem.mpr (hg' i (Polynomial.coe_lt_degree.mpr lt))
+                · simpa [ne] using eq_zero_iff_mem.mpr (hg' i (Polynomial.coe_lt_degree.mpr lt))
                 · simp [ne, Polynomial.coeff_eq_zero_of_natDegree_lt gt]
             simp only [← coeff_map, _root_.map_mul, ← Polynomial.polynomial_map_coe, mapg,
               Polynomial.coe_pow, Polynomial.coe_X, coeff_X_pow_mul', le_refl, ↓reduceIte]
             simpa only [coeff_map, coeff_zero_eq_constantCoeff, tsub_self]
-              using IsUnit.ne_zero (RingHom.isUnit_map (Ideal.Quotient.mk m)
-                (isUnit_constantCoeff h'.1 h'.isUnit))
+              using ((Ideal.Quotient.mk m).isUnit_map (isUnit_constantCoeff h'.1 h'.isUnit)).ne_zero
           by_contra h
           rw [← prin, Ideal.span_singleton_pow] at h
           rcases Ideal.mem_span_singleton.mp h with ⟨r, hr⟩
           simp only [pow_add, pow_one, mul_assoc, mul_eq_mul_left_iff, pow_eq_zero_iff', pi_ne0,
             ne_eq, false_and, or_false] at hr
           absurd nmem
-          rw [← prin]
-          apply Ideal.mem_span_singleton.mpr
+          rw [← prin, Ideal.mem_span_singleton]
           use r
         · simp only [not_exists, Decidable.not_not]
           intro k hk i
