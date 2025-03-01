@@ -20,6 +20,8 @@ Two values in a preorder are comparable whenever `a ≤ b` or `b ≤ a`.
 This definition should be linked to `IsChain` and `IsAntichain`.
 -/
 
+open Function
+
 variable {α : Type*} {a b c d : α}
 
 section Relation
