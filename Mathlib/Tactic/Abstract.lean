@@ -29,10 +29,7 @@ elab "abstract" tacs:ppDedent(tacticSeq) : tactic => do
   evalTactic tacs
   let newGoal ← instantiateMVars newGoal
   if newGoal.hasMVar then
-    let newMVars ← getMVars newGoal
-    _ ← goal.assign newGoal
-    setGoals newMVars.toList
-    return
+    goal.assign newGoal -- makes sure we get the correct error message
   else
     setGoals [goal]
     let auxName ← mkAuxName ((← getDeclName?).getD .anonymous ++ `abstract) 1
