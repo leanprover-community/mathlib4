@@ -3,6 +3,7 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
+import Mathlib.MeasureTheory.Measure.Prod
 import Mathlib.Probability.Kernel.Basic
 
 /-!
