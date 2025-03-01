@@ -15,7 +15,7 @@ in `alternatingGroup α`.
 compute the number of even permutations of given cycle type.
 
 * `Equiv.Perm.OnCycleFactors.sign_kerParam_apply_apply` computes the signature
-of the permutation induced given by `Equiv.Perm.Basis.kerParam`.
+of the permutation induced given by `Equiv.Perm.OnCycleFactors.kerParam`.
 
 * `Equiv.Perm.OnCycleFactors.odd_of_centralizer_le_alternatingGroup` :
 if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then all members of the `g.cycleType` are odd.
@@ -24,7 +24,7 @@ if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then all members of the `
 if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then the cardinality of α
 is at most `g.cycleType.sum` plus one.
 
-* `Equiv.Perm.OnCycleFactors.cont_le_one_of_centralizer_le_alternating` :
+* `Equiv.Perm.OnCycleFactors.count_le_one_of_centralizer_le_alternating` :
 if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then `g.cycleType` has no repetitions.
 
 * `Equiv.Perm.centralizer_le_alternating_iff` :
@@ -107,9 +107,8 @@ private theorem of_cycleType_aux (m : Multiset ℕ) :
       Embedding.coe_subtype, Subtype.exists, mem_alternatingGroup, exists_and_left,
       exists_prop, exists_eq_right_right] at hg
     rcases hg with ⟨hg, hs⟩
-    apply hm
-    rwa [g.sign_of_cycleType, hg, neg_one_pow_eq_one_iff_even] at hs
-    exact neg_units_ne_self 1
+    rw [g.sign_of_cycleType, hg, neg_one_pow_eq_one_iff_even (by simp)] at hs
+    contradiction
 
 /-- The cardinality of even permutations of given `cycleType` -/
 theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
@@ -156,6 +155,10 @@ theorem card_of_cycleType (m : Multiset ℕ) :
       · contradiction
     · rfl
 
+end AlternatingGroup
+
+namespace Equiv.Perm
+
 namespace OnCycleFactors
 
 open Basis
@@ -163,10 +166,8 @@ open Basis
 theorem card_le_of_centralizer_le_alternating
     (h : Subgroup.centralizer {g} ≤ alternatingGroup α) :
     Fintype.card α ≤ g.cycleType.sum + 1 := by
-  rw [← not_lt]
-  intro hm
-  rw [Nat.lt_iff_add_one_le, add_assoc, add_comm] at hm
-  change 2 + g.cycleType.sum ≤ _ at hm
+  by_contra! hm
+  replace hm : 2 + g.cycleType.sum ≤ Fintype.card α := by omega
   suffices 1 < Fintype.card (Function.fixedPoints g) by
     obtain ⟨a, b, hab⟩ := Fintype.exists_pair_of_one_lt_card this
     suffices sign (kerParam g ⟨swap a b, 1⟩) ≠ 1 by
@@ -203,8 +204,7 @@ theorem count_le_one_of_centralizer_le_alternating
       and to control its support. -/
     suffices ∀ b ∈ (k : Perm α).cycleType, b = 2 by
       let this' := Multiset.eq_replicate_card.mpr this
-      rw [sign_of_cycleType, this']
-      simp only [Multiset.sum_replicate, smul_eq_mul, Multiset.card_replicate]
+      rw [sign_of_cycleType, this', Multiset.sum_replicate, smul_eq_mul, Multiset.card_replicate]
       rw [Odd.neg_one_pow]
       rw [Nat.odd_add']
       simp only [even_two, Even.mul_left, iff_true]
@@ -251,18 +251,14 @@ open OnCycleFactors AlternatingGroup.OnCycleFactors
 theorem kerParam_range_eq_centralizer_of_count_le_one (h_count : ∀ i, g.cycleType.count i ≤ 1) :
     (kerParam g).range = Subgroup.centralizer {g} := by
   ext x
-  constructor
-  · apply kerParam_range_le_centralizer
-  · intro hx
-    rw [kerParam_range_eq]
-    simp only [Subgroup.mem_map, MonoidHom.mem_ker, Subgroup.coe_subtype, Subtype.exists,
-      exists_and_right, exists_eq_right]
-    use hx
-    ext1 c
-    rw [coe_one, id_eq, ← Subtype.coe_inj]
-    rw [← Multiset.nodup_iff_count_le_one, cycleType_def,
-      Multiset.nodup_map_iff_inj_on (cycleFactorsFinset g).nodup] at h_count
-    exact h_count _ (by simp) _ c.prop ((mem_range_toPermHom_iff).mp (by simp) c)
+  refine ⟨fun hx ↦ kerParam_range_le_centralizer hx, fun hx ↦ ?_⟩
+  simp_rw [kerParam_range_eq, Subgroup.mem_map, MonoidHom.mem_ker, Subgroup.coe_subtype,
+    Subtype.exists, exists_and_right, exists_eq_right]
+  use hx
+  ext c : 2
+  rw [← Multiset.nodup_iff_count_le_one, cycleType_def,
+    Multiset.nodup_map_iff_inj_on (cycleFactorsFinset g).nodup] at h_count
+  exact h_count _ (by simp) _ c.prop ((mem_range_toPermHom_iff).mp (by simp) c)
 
 /-- The centralizer of a permutation is contained in the alternating group if and only if
 all cycles have odd length, with at most one of each, and there is at most one fixed point. -/
@@ -292,11 +288,8 @@ theorem centralizer_le_alternating_iff :
         exact ⟨c, hc, rfl⟩
       · rw [mem_cycleFactorsFinset_iff] at hc
         exact hc.left
-    · apply symm
-      convert sign_one
-      rw [← card_support_le_one]
-      apply le_trans (Finset.card_le_univ _)
-      rw [card_fixedPoints g, tsub_le_iff_left]
-      exact h_fixed
+    · suffices y = 1 by simp [this]
+      have := card_fixedPoints g
+      exact card_support_le_one.mp <| le_trans (Finset.card_le_univ _) (by omega)
 
 end Equiv.Perm
