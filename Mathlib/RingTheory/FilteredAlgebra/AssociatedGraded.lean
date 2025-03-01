@@ -587,7 +587,7 @@ instance [hasGMul F F_lt] : DirectSum.GAlgebra R (GradedPiece F F_lt) where
   commutes r := fun ⟨i, a⟩ ↦ Sigma.ext (by simp [add_comm])
     (GradedPiece.algebraMap.commutes F F_lt r i a)
   smul_def r := fun ⟨i, a⟩ ↦ Sigma.ext (by
-    --missing simp lemma
+    --note : this hints some missing simp lemma
     have : (GradedMonoid.mk 0 ((GradedPiece.algebraMap F F_lt) r)).fst = 0 := rfl
     simp [this])
     (GradedPiece.algebraMap.smul_def F F_lt r i a)
