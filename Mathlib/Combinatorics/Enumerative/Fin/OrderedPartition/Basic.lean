@@ -10,6 +10,22 @@ import Mathlib.Combinatorics.Enumerative.Composition
 open Set Function List
 open scoped Finset
 
+namespace StrictMono
+
+variable {α β : Type*} [LinearOrder α] [Preorder β] {f : α → β} {l : List α}
+
+@[simp]
+theorem sorted_le_listMap (hf : StrictMono f) :
+    (l.map f).Sorted (· ≤ ·) ↔ l.Sorted (· ≤ ·) := by
+  simp only [Sorted, pairwise_map, hf.le_iff_le]
+
+@[simp]
+theorem sorted_lt_listMap (hf : StrictMono f) :
+    (l.map f).Sorted (· < ·) ↔ l.Sorted (· < ·) := by
+  simp only [Sorted, pairwise_map, hf.lt_iff_lt]
+
+end StrictMono
+
 namespace OrderEmbedding
 
 variable {α β : Type*} [Preorder α] [Preorder β]
@@ -17,7 +33,7 @@ variable {α β : Type*} [Preorder α] [Preorder β]
 @[simp]
 theorem sorted_le_listMap (e : α ↪o β) {l : List α} :
     (l.map e).Sorted (· ≤ ·) ↔ l.Sorted (· ≤ ·) := by
-  simp [Sorted, pairwise_map, e.le_iff_le]
+  simp only [Sorted, pairwise_map, e.le_iff_le]
 
 @[simp]
 theorem sorted_lt_listMap (e : α ↪o β) {l : List α} :
@@ -46,10 +62,6 @@ namespace List
 
 variable {α β γ : Type*}
 
-@[simp]
-lemma count_finRange {n : ℕ} (a : Fin n) : count a (finRange n) = 1 := by
-  simp [count_eq_of_nodup (nodup_finRange n)]
-
 theorem Pairwise.rel_dropLast_getLast {R : α → α → Prop} {l : List α} {a : α} (h : l.Pairwise R)
     (ha : a ∈ l.dropLast) : R a (l.getLast <| ne_nil_of_mem <| dropLast_subset _ ha) := by
   rw [← List.pairwise_reverse] at h
@@ -67,10 +79,6 @@ theorem Pairwise.rel_getLast {R : α → α → Prop} {l : List α} {a : α}
     [IsRefl α R] (h₁ : l.Pairwise R) (ha : a ∈ l) :
     R a (l.getLast <| ne_nil_of_mem ha) :=
   h₁.rel_getLast_of_rel_getLast_getLast ha (refl_of ..)
-
-@[simp]
-theorem map_getElem_finRange (l : List α) : map (l[·]) (finRange l.length) = l := by
-  apply ext_getElem <;> simp
 
 theorem mem_unattach {p : α → Prop} {l : List (Subtype p)} {x : α} :
     x ∈ l.unattach ↔ ∃ y ∈ l, y.1 = x :=
@@ -140,31 +148,6 @@ theorem modify_perm_cons_eraseIdx {l : List α} {n : ℕ} (h : n < l.length) (f 
   exact set_perm_cons_eraseIdx h _
 
 end List
-namespace Finset
-
-theorem val_univ_fin (n : ℕ) : (Finset.univ : Finset (Fin n)).val = finRange n := rfl
-
-variable {α : Type*} [LinearOrder α]
-
-@[simp]
-theorem map_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
-    Finset.map (s.orderEmbOfFin h).toEmbedding Finset.univ = s := by
-  apply Finset.coe_injective
-  simp
-
-@[simp]
-theorem image_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
-    Finset.image (s.orderEmbOfFin h) Finset.univ = s := by
-  apply Finset.coe_injective
-  simp
-
-@[simp]
-theorem listMap_orderEmbOfFin_finRange (s : Finset α) {k : ℕ} (h : s.card = k) :
-    (finRange k).map (s.orderEmbOfFin h) = s.sort (· ≤ ·) := by
-  obtain rfl : k = (s.sort (· ≤ ·)).length := by simp [h]
-  exact List.map_getElem_finRange  (s.sort (· ≤ ·))
-
-end Finset
 
 namespace Fin
 
@@ -1092,8 +1075,6 @@ theorem card_fiber_toComposition (c : Composition n) :
     simp only [← (finCongr hlen).prod_comp, Fin.prod_univ_castSucc, finCongr_apply]
     simp [Fin.sum_Iic_cast, Fin.sum_Iic_castSucc, ← Fin.top_eq_last, getElem_append_left,
       Fin.sum_univ_castSucc, s]
-
-
 
 end OrderedPartition
 

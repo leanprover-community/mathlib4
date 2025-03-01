@@ -191,6 +191,23 @@ theorem range_orderEmbOfFin (s : Finset α) {k : ℕ} (h : s.card = k) :
     OrderEmbedding.subtype_apply, OrderIso.coe_toOrderEmbedding, eq_self_iff_true,
     Subtype.range_coe_subtype, Finset.setOf_mem, Finset.coe_inj]
 
+@[simp]
+theorem image_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
+    Finset.image (s.orderEmbOfFin h) Finset.univ = s := by
+  apply Finset.coe_injective
+  simp
+
+@[simp]
+theorem map_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
+    Finset.map (s.orderEmbOfFin h).toEmbedding Finset.univ = s := by
+  simp [map_eq_image]
+
+@[simp]
+theorem listMap_orderEmbOfFin_finRange (s : Finset α) {k : ℕ} (h : s.card = k) :
+    (List.finRange k).map (s.orderEmbOfFin h) = s.sort (· ≤ ·) := by
+  obtain rfl : k = (s.sort (· ≤ ·)).length := by simp [h]
+  exact List.finRange_map_getElem  (s.sort (· ≤ ·))
+
 /-- The bijection `orderEmbOfFin s h` sends `0` to the minimum of `s`. -/
 theorem orderEmbOfFin_zero {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < k) :
     orderEmbOfFin s h ⟨0, hz⟩ = s.min' (card_pos.mp (h.symm ▸ hz)) := by
