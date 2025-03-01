@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Nailin Guan. All rights reserved.
+Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
@@ -11,8 +11,7 @@ import Mathlib.Algebra.GradedMulAction
 /-!
 # The filtration on abelian groups and rings
 
-In this file, we define the fitration on abelian groups,
-and extend it to get the filtration on rings.
+In this file, we define the concept of filtration for abelian groups, rings, and modules.
 
 # Main definitions
 
@@ -34,8 +33,8 @@ section GeneralFiltration
 
 variable {ι A σ : Type*} [Preorder ι] [SetLike σ A]
 
-/-- For `σ` satisfying `SetLike σ A`, an increasing series of `F` in `σ` is a filtration if
-there is another series `F_lt` equal to the supremum of `F` with smaller index.
+/-- For a family of subsets `σ` of `A`, an increasing series of `F` in `σ` is a filtration if
+there is another series `F_lt` in `σ` equal to the supremum of `F` with smaller index.
 
 In fact `F_lt j = ⨆ i < j, F i`, the design of `F_lt` can handle different conditions in the
 same structure, it avoid adding `CompleteLattice` to `σ`, also providing convenience when the index
@@ -45,7 +44,7 @@ class IsFiltration (F : ι → σ) (F_lt : outParam <| ι → σ) : Prop where
   is_le {i j} : i < j → F i ≤ F_lt j
   is_sup (B : σ) (j : ι) : (∀ i < j, F i ≤ B) → F_lt j ≤ B
 
-/-- A special case of `IsFiltration` when index is integer. -/
+/-- A convenience constructor for `IsFiltration` when the index is the integers. -/
 lemma IsFiltration.mk_int (F : ℤ → σ) (mono : Monotone F) :
     IsFiltration F (fun n ↦ F (n - 1)) where
   mono := mono
@@ -58,36 +57,34 @@ section FilteredRing
 
 variable {ι R σ : Type*} [OrderedAddCommMonoid ι] [Semiring R] [SetLike σ R]
 
-/-- For `σ` satisfying `SetLike σ R` where `R` is a semiring, an increasing series `F` in `σ` is
+/-- For a family of subsets `σ` of semiring `R`, an increasing series `F` in `σ` is
 a ring filtration if `IsFiltration F F_lt` and the pointwise multiplication of `F i` and `F j`
 is in `F (i + j)`. -/
 class IsRingFiltration (F : ι → σ) (F_lt : outParam <| ι → σ)
     extends IsFiltration F F_lt, SetLike.GradedMonoid F : Prop
 
-/-- A special case of `IsRingFiltration` when index is integer. -/
+/-- A convenience constructor for `IsRingFiltration` when the index is the integers. -/
 lemma IsRingFiltration.mk_int (F : ℤ → σ) (mono : Monotone F) [SetLike.GradedMonoid F] :
     IsRingFiltration F (fun n ↦ F (n - 1)) where
   __ := IsFiltration.mk_int F mono
 
 end FilteredRing
 
-
 section FilteredModule
 
 variable {ι ιM R M σ σM : Type*} [OrderedAddCommMonoid ι] [OrderedAddCommMonoid ιM]
 variable [Semiring R] [SetLike σ R] [AddCommMonoid M] [Module R M] [VAdd ι ιM] [SetLike σM M]
 
-/-- For `F` satisfying `IsRingFiltration F F_lt` in a semiring `R` and `σM` satisfying
-`SetLike σ M` where `M` is a module over `R`, an increasing series `FM` in `σM` is
-a module filtration if `IsFiltration F F_lt` and the pointwise scalar multiplication of
-`F i` and `FM j` is in `F (i +ᵥ j)`.
+/-- For `F` satisfying `IsRingFiltration F F_lt` in a semiring `R` and `σM` a family of subsets of
+a `R` module `M`, an increasing series `FM` in `σM` is a module filtration if `IsFiltration F F_lt`
+and the pointwise scalar multiplication of `F i` and `FM j` is in `F (i +ᵥ j)`.
 
 The index set `ιM` for the module can be more general, however usually we take `ιM = ι`. -/
 class IsModuleFiltration (F : ι → σ) (F_lt : outParam <| ι → σ) [isfil : IsRingFiltration F F_lt]
     (F' : ιM → σM) (F'_lt : outParam <| ιM → σM)
     extends IsFiltration F' F'_lt, SetLike.GradedSMul F F' : Prop
 
-/-- A special case of `IsModuleFiltration` when index is both integer. -/
+/-- A convenience constructor for `IsModuleFiltration` when the index is the integers. -/
 lemma IsModuleFiltration.mk_int (F : ℤ → σ) (mono : Monotone F) [SetLike.GradedMonoid F]
     (F' : ℤ → σM) (mono' : Monotone F') [SetLike.GradedSMul F F']:
     IsModuleFiltration (isfil := IsRingFiltration.mk_int F mono)
