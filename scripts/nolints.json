@@ -514,6 +514,7 @@
  ["docBlame", "Mathlib.Tactic.GCongr.GCongrLemma.mainSubgoals"],
  ["docBlame", "Mathlib.Tactic.GCongr.GCongrLemma.varyingArgs"],
  ["docBlame", "Mathlib.Tactic.Monotonicity.mono.side"],
+ ["docBlame", "Mathlib.Tactic.Sat.buildReify.mkPS"],
  ["docBlame", "Mathlib.Meta.NormNum.evalAdd.core.intArm"],
  ["docBlame", "Mathlib.Meta.NormNum.evalAdd.core.ratArm"],
  ["docBlame", "Mathlib.Meta.NormNum.evalLE.core.intArm"],

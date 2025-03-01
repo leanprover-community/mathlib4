@@ -439,7 +439,7 @@ partial def buildReify (ctx ctx' proof : Expr) (nvars : Nat) : Expr × Expr := I
   let mut e := e.lowerLooseBVars (nvars+1) (nvars+1)
   let cons := mkApp (mkConst ``List.cons [levelZero]) (mkSort levelZero)
   let nil := mkApp (mkConst ``List.nil [levelZero]) (mkSort levelZero)
-  let rec /-- Make the expression `ps`. -/ mkPS depth e
+  let rec mkPS depth e
   | 0 => e
   | n+1 => mkPS (depth+1) (mkApp2 cons (mkBVar depth) e) n
   pr := mkApp5 (mkConst ``Sat.Fmla.refute) e (mkPS 0 nil nvars) ctx proof pr
