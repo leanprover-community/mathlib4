@@ -47,8 +47,8 @@ lemma Ideal.Quotient.factor_ker (H : I ≤ J) [I.IsTwoSided] [J.IsTwoSided] :
   · rcases mem_image_of_mem_map_of_surjective _ Ideal.Quotient.mk_surjective h with ⟨r, hr, eq⟩
     simpa [← eq, Ideal.Quotient.eq_zero_iff_mem] using hr
 
-lemma Ideal.map_mk_comap_factor [I.IsTwoSided] [J.IsTwoSided] [K.IsTwoSided]
-    (hIJ : J ≤ I) (hJK : K ≤ J) : (I.map (mk J)).comap (factor hJK) = I.map (mk K) := by
+lemma Ideal.map_mk_comap_factor [J.IsTwoSided] [K.IsTwoSided] (hIJ : J ≤ I) (hJK : K ≤ J) :
+    (I.map (mk J)).comap (factor hJK) = I.map (mk K) := by
   ext x
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases mem_image_of_mem_map_of_surjective (mk J) Quotient.mk_surjective h with ⟨r, hr, eq⟩
