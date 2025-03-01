@@ -231,15 +231,12 @@ theorem smul_mem (r : R) (h : x ∈ p) : r • x ∈ p :=
 @[to_additive]
 instance : SMul R p where smul c x := ⟨c • x.1, smul_mem _ c x.2⟩
 
-variable {p}
-
+variable {p} in
 @[to_additive (attr := norm_cast, simp)]
 theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
   rfl
 
 -- Porting note: no longer needed because of defeq structure eta
-
-variable (p)
 
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
 @[to_additive "Embedding of a submodule `p` to the ambient space `M`."]
