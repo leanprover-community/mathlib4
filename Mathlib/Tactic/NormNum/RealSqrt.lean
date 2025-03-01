@@ -27,13 +27,13 @@ lemma isNat_nnrealSqrt {x : ℝ≥0} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * n
     IsNat (NNReal.sqrt x) ny := ⟨by simp [h.out, ← hy]⟩
 
 lemma isNat_realSqrt_neg {x : ℝ} {nx : ℕ} (h : IsInt x (Int.negOfNat nx)) :
-    IsNat √x 0 := ⟨by simp [Real.sqrt_eq_zero', h.out]⟩
+    IsNat √x (nat_lit 0) := ⟨by simp [Real.sqrt_eq_zero', h.out]⟩
 
 lemma isNat_realSqrt_of_isRat_negOfNat {x : ℝ} {num : ℕ} {denom : ℕ}
-    (h : IsRat x (.negOfNat num) denom) : IsNat √x 0 := by
+    (h : IsRat x (.negOfNat num) denom) : IsNat √x (nat_lit 0) := by
   refine ⟨?_⟩
   obtain ⟨inv, rfl⟩ := h
-  have h₁ : 0 ≤ (num : ℚ) * inv.invOf :=
+  have h₁ : 0 ≤ (num : ℚ) * ⅟(denom : ℝ) :=
     mul_nonneg (Nat.cast_nonneg' _) (invOf_nonneg.2 <| Nat.cast_nonneg' _)
   simpa [Nat.cast_zero, Real.sqrt_eq_zero', Int.cast_negOfNat, neg_mul, neg_nonpos] using h₁
 
@@ -55,21 +55,20 @@ def evalRealSqrt : NormNumExt where eval {u α} e := do
     | .isNat sℝ ex pf =>
         let x := ex.natLit!
         let y := Nat.sqrt x
-        if y * y = x then
-          have ey : Q(ℕ) := mkRawNatLit y
-          have pf₁ : Q($ey * $ey = $ex) := (q(Eq.refl $ex) : Expr)
-          assumeInstancesCommute
-          return .isNat sℝ ey q(isNat_realSqrt $pf $pf₁)
-        else failure
+        unless y * y = x do failure
+        have ey : Q(ℕ) := mkRawNatLit y
+        have pf₁ : Q($ey * $ey = $ex) := (q(Eq.refl $ex) : Expr)
+        assumeInstancesCommute
+        return .isNat q($sℝ) q($ey) q(isNat_realSqrt $pf $pf₁)
     | .isNegNat _ ex pf =>
         -- Recall that `Real.sqrt` returns 0 for negative inputs
         assumeInstancesCommute
-        return .isNat q(inferInstance) (mkRawNatLit 0) q(isNat_realSqrt_neg $pf)
+        return .isNat q(inferInstance) q(nat_lit 0) q(isNat_realSqrt_neg $pf)
     | .isRat sℝ eq en ed pf =>
         match en with
         | .app (.const ``Int.negOfNat []) (n : Q(ℕ)) =>
           assumeInstancesCommute
-          return .isNat q(inferInstance) (mkRawNatLit 0) q(isNat_realSqrt_of_isRat_negOfNat $pf)
+          return .isNat q(inferInstance) q(nat_lit 0) q(isNat_realSqrt_of_isRat_negOfNat $pf)
         | .app (.const ``Int.ofNat []) (n' : Q(ℕ)) =>
           let n : ℕ := n'.natLit!
           let d : ℕ := ed.natLit!
@@ -81,7 +80,7 @@ def evalRealSqrt : NormNumExt where eval {u α} e := do
           have hn : Q($esn * $esn = $n') := (q(Eq.refl $n') : Expr)
           have hd : Q($esd * $esd = $ed) := (q(Eq.refl $ed) : Expr)
           assumeInstancesCommute
-          return .isRat sℝ (sn / sd) _ esd q(isRat_realSqrt_of_isRat_ofNat $hn $hd $pf)
+          return .isRat q($sℝ) (sn / sd) _ q($esd) q(isRat_realSqrt_of_isRat_ofNat $hn $hd $pf)
         | _ => failure
   | _ => failure
 
@@ -95,12 +94,11 @@ def evalNNRealSqrt : NormNumExt where eval {u α} e := do
     | .isNat sℝ ex pf =>
         let x := ex.natLit!
         let y := Nat.sqrt x
-        if y * y = x then
-          have ey : Q(ℕ) := mkRawNatLit y
-          have pf₁ : Q($ey * $ey = $ex) := (q(Eq.refl $ex) : Expr)
-          assumeInstancesCommute
-          return .isNat sℝ ey q(isNat_nnrealSqrt $pf $pf₁)
-        else failure
+        unless y * y = x do failure
+        have ey : Q(ℕ) := mkRawNatLit y
+        have pf₁ : Q($ey * $ey = $ex) := (q(Eq.refl $ex) : Expr)
+        assumeInstancesCommute
+        return .isNat sℝ ey q(isNat_nnrealSqrt $pf $pf₁)
     | .isNegNat _ ex pf => failure
     | .isRat sℝ eq en ed pf =>
         -- `IsRat` only works on types with a `Ring` instance, so it can't work on `ℝ≥0`.
