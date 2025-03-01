@@ -86,4 +86,7 @@ example (a b : L) : ⁅a, b⁆ = -⁅b, a⁆ := by
 example (a b c : L) : ⁅a, ⁅b, c⁆⁆ - ⁅b, ⁅a, c⁆⁆ = ⁅⁅a, b⁆, c⁆ := by
   lie_algebra
 
+example (a : L) : (1 : R) • a + (-1 : R) • a = 0:= by
+  module
+
 end tests

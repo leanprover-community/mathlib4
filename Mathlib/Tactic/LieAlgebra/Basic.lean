@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Zixun Guo, Wanyi He, Jingting Wang
 -/
 import Mathlib.Algebra.Lie.Basic
-import Mathlib.Util.CanonAtomM
 import Qq
 
 /-!
@@ -279,8 +278,8 @@ private theorem atom_pf {L : Type*} [AddCommGroup L] (a : L) :
     a = (1 : ℤ) • a + 0 := by simp
 
 /-- Evaluation function of expression that has been identified as an atom. -/
-def evalAtom (sα : Q(LieRing ($α))) (e : Q($α)) : CanonAtomM (Result (ExSum sα) e) := do
-  let (i, ⟨a', _⟩) ← CanonAtomM.addAtomQ e
+def evalAtom (sα : Q(LieRing ($α))) (e : Q($α)) : AtomM (Result (ExSum sα) e) := do
+  let (i, ⟨a', _⟩) ← AtomM.addAtomQ e
   let ve' := (ExLie.atom i (e := a')).toExSum
   return ⟨_, ve', q(atom_pf $e)⟩
 
@@ -308,7 +307,7 @@ private lemma zsmul_congr {L : Type*} [AddCommGroup L] {a a' b : L} {n : ℤ} :
     a = a' → (-n) • a' = b → (-n) • a = b := by intros; subst_vars; rfl
 
 /-- This function is used in the `nf` version of this tactic for identifying atoms. -/
-def isAtom {u} (α : Q(Type u)) (e : Q($α)) : CanonAtomM Bool := do
+def isAtom {u} (α : Q(Type u)) (e : Q($α)) : AtomM Bool := do
   let .const n _ := (← withReducible <| whnf e).getAppFn | return true
   match n with
   | ``HAdd.hAdd | ``Add.add | ``HSMul.hSMul | ``Neg.neg
@@ -324,7 +323,7 @@ because this function is designed to only handle lie bracket expression like `�
 (literal) `ℤ`-coefficients produced in the process.
 -/
 partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(LieRing $α))
-    (e : Q($α)) : CanonAtomM (Result (ExSum sα) e) := Lean.withIncRecDepth do
+    (e : Q($α)) : AtomM (Result (ExSum sα) e) := Lean.withIncRecDepth do
   /- the function evaluates to this `els` part if no applicable operator has been identified.
   In which case, this function will check if the expression is zero, and make the expression into
   an atom if it's not zero. -/
@@ -395,7 +394,7 @@ partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(LieRing $α))
 private theorem eq_aux {α} {a b c : α} (_ : (a : α) = c) (_ : b = c) : a = b := by subst_vars; rfl
 
 /-- Prove an equality in a LieRing by reducing two sides of the equation to Lyndon normal form. -/
-def proveEq (g : MVarId) : CanonAtomM Unit := do
+def proveEq (g : MVarId) : AtomM Unit := do
   let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
     | throwError "lie_ring failed: not an equality"
   let .sort u ← whnf (← inferType α) | unreachable!
@@ -412,7 +411,7 @@ def proveEq (g : MVarId) : CanonAtomM Unit := do
 where
   /-- Reducing two side of equation to the normal form and determine whether they are equal. -/
   lieCore {v : Level} {α : Q(Type v)} (sα : Q(LieRing $α))
-      (e₁ e₂ : Q($α)) : CanonAtomM Q($e₁ = $e₂) := do
+      (e₁ e₂ : Q($α)) : AtomM Q($e₁ = $e₂) := do
     profileitM Exception "lie_ring" (← getOptions) do
       let ⟨a, va, pa⟩ ← eval sα e₁
       let ⟨_b, vb, pb⟩ ← eval sα e₂
@@ -434,7 +433,7 @@ elab (name := lie_ring) "lie_ring" : tactic =>
     let s ← saveState
     try
       liftMetaMAtMain fun g ↦ do
-        CanonAtomM.run .reducible (proveEq g)
+        AtomM.run .reducible (proveEq g)
     catch e =>
       restoreState s
       throw e
@@ -460,7 +459,7 @@ open Command in
         let v ← try u.dec catch _ => throwError "not a type {indentExpr α}"
         have α : Q(Type v) := α
         let sα ← synthInstanceQ q(LieRing $α)
-        let ⟨a, _, _⟩ ← Mathlib.Tactic.CanonAtomM.run .reducible (eval sα e)
+        let ⟨a, _, _⟩ ← Mathlib.Tactic.AtomM.run .reducible (eval sα e)
         -- TryThis.addTermSuggestion stx a
         logInfo m!"the term is reduced to {a}"
         return
@@ -483,7 +482,7 @@ syntax (name := lie_reduce_term) "lie_reduce%" term : term
   have α : Q(Type v) := α
   let sα ← synthInstanceQ q(LieRing $α)
   -- logInfo m!"the expression is {e}"
-  let ⟨a, _, _⟩ ← Mathlib.Tactic.CanonAtomM.run .reducible (eval sα e)
+  let ⟨a, _, _⟩ ← Mathlib.Tactic.AtomM.run .reducible (eval sα e)
   -- logInfo m!"the expression is simplified into {a}, with inner expression {repr va}"
   TryThis.addTermSuggestion stx a
   return a
