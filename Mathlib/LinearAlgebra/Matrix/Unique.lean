@@ -32,7 +32,7 @@ def uniqueEquiv : Matrix m n A ≃ A where
   right_inv a := by simp
 
 /-- The obvious additive isomorphism between M₁(A) and A, if A has an addition. -/
-@[simps]
+@[simps!]
 def uniqueAddEquiv [Add A] : Matrix m n A ≃+ A where
   __ := uniqueEquiv
   map_add' := by simp
