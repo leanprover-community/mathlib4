@@ -397,9 +397,9 @@ theorem eventually_mabs_div_lt (a : α) {ε : α} (hε : 1 < ε) : ∀ᶠ x in �
 
 /-- In a linearly ordered commutative group with the order topology,
 if `f` tends to `C` and `g` tends to `atTop` then `f * g` tends to `atTop`. -/
-@[to_additive "In a linearly ordered additive commutative group with the order topology,
+@[to_additive add_atTop "In a linearly ordered additive commutative group with the order topology,
 if `f` tends to `C` and `g` tends to `atTop` then `f + g` tends to `atTop`."]
-theorem Filter.Tendsto.mul_atTop {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tendsto g l atTop) :
+theorem Filter.Tendsto.mul_atTop' {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x * g x) l atTop := by
   nontriviality α
   obtain ⟨C', hC'⟩ : ∃ C', C' < C := exists_lt C
@@ -408,29 +408,29 @@ theorem Filter.Tendsto.mul_atTop {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tend
 
 /-- In a linearly ordered commutative group with the order topology,
 if `f` tends to `C` and `g` tends to `atBot` then `f * g` tends to `atBot`. -/
-@[to_additive "In a linearly ordered additive commutative group with the order topology,
+@[to_additive add_atBot "In a linearly ordered additive commutative group with the order topology,
 if `f` tends to `C` and `g` tends to `atBot` then `f + g` tends to `atBot`."]
-theorem Filter.Tendsto.mul_atBot {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tendsto g l atBot) :
+theorem Filter.Tendsto.mul_atBot' {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x * g x) l atBot :=
-  Filter.Tendsto.mul_atTop (α := αᵒᵈ) hf hg
+  Filter.Tendsto.mul_atTop' (α := αᵒᵈ) hf hg
 
 /-- In a linearly ordered commutative group with the order topology,
  if `f` tends to `atTop` and `g` tends to `C` then `f * g` tends to `atTop`. -/
-@[to_additive "In a linearly ordered additive commutative group with the order topology,
+@[to_additive atTop_add "In a linearly ordered additive commutative group with the order topology,
 if `f` tends to `atTop` and `g` tends to `C` then `f + g` tends to `atTop`."]
-theorem Filter.Tendsto.atTop_mul {C : α} (hf : Tendsto f l atTop) (hg : Tendsto g l (𝓝 C)) :
+theorem Filter.Tendsto.atTop_mul' {C : α} (hf : Tendsto f l atTop) (hg : Tendsto g l (𝓝 C)) :
     Tendsto (fun x => f x * g x) l atTop := by
   conv in _ * _ => rw [mul_comm]
-  exact hg.mul_atTop hf
+  exact hg.mul_atTop' hf
 
 /-- In a linearly ordered commutative group with the order topology,
 if `f` tends to `atBot` and `g` tends to `C` then `f * g` tends to `atBot`. -/
-@[to_additive "In a linearly ordered additive commutative group with the order topology,
+@[to_additive atBot_add "In a linearly ordered additive commutative group with the order topology,
 if `f` tends to `atBot` and `g` tends to `C` then `f + g` tends to `atBot`."]
-theorem Filter.Tendsto.atBot_mul {C : α} (hf : Tendsto f l atBot) (hg : Tendsto g l (𝓝 C)) :
+theorem Filter.Tendsto.atBot_mul' {C : α} (hf : Tendsto f l atBot) (hg : Tendsto g l (𝓝 C)) :
     Tendsto (fun x => f x * g x) l atBot := by
   conv in _ * _ => rw [mul_comm]
-  exact hg.mul_atBot hf
+  exact hg.mul_atBot' hf
 
 @[to_additive]
 theorem nhds_basis_mabs_div_lt [NoMaxOrder α] (a : α) :
