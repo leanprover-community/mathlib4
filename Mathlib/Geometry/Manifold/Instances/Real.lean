@@ -176,12 +176,12 @@ end
 Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanHalfSpace n)`, used as
 a model for manifolds with boundary. In the locale `Manifold`, use the shortcut `𝓡∂ n`.
 -/
-def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
-    ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n) where
+def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] (ε : SignType) :
+    ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n ε) where
   toFun := Subtype.val
-  invFun x := ⟨update x 0 (max (x 0) 0), by simp [le_refl]⟩
+  invFun x := ⟨update x 0 (ε * max (x 0) 0), by cases ε <;> simp⟩
   source := univ
-  target := { x | 0 ≤ x 0 }
+  target := { x | 0 ≤ ε * x 0 }
   map_source' x _ := x.property
   map_target' _ _ := mem_univ _
   left_inv' := fun ⟨xval, xprop⟩ _ => by
