@@ -612,8 +612,7 @@ lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m
     (∀ i : ℕ, i < khg.2.2.degree → (khg.2.2.coeff i) ∈ m) ∧ f =
     (π ^ khg.1) • (khg.2.2 * khg.2.1) := by
   have exist_nmem : ∃ n : ℕ, ∃ i, f.coeff R i ∉ m ^ n := by
-    by_contra h
-    push_neg at h
+    by_contra! h
     absurd ne0
     ext i
     have (n : ℕ): f.coeff R i ≡ 0 [SMOD m ^ n • (⊤ : Submodule R R)] := by simp [SModEq.zero, h n i]
@@ -692,8 +691,8 @@ lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m
     simp only [keq, heq, Prod.mk.injEq, true_and]
     apply Polynomial.coe_inj.mp
     calc
-     g' = f' * h'⁻¹ := by simp [← (muleq eq'.symm)]
-     _ = _ := by simp [heq, eq]
+      g' = f' * h'⁻¹ := by simp [← (muleq eq'.symm)]
+      _ = _ := by simp [heq, eq]
 
 --note : the conditions needed for `R` in `weierstrass_preparation_aux` actually implies DVR
 theorem IsDiscreteValuationRing.weierstrass_preparation [IsDomain R] [IsDiscreteValuationRing R]
