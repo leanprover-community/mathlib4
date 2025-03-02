@@ -58,10 +58,6 @@ instance : Inhabited (Language α) := ⟨(∅ : Set _)⟩
 instance : Add (Language α) :=
   ⟨((· ∪ ·) : Set (List α) → Set (List α) → Set (List α))⟩
 
-/-- Language union is just set union. -/
-instance : Union (Language α) :=
-  ⟨((· ∪ ·) : Set (List α) → Set (List α) → Set (List α))⟩
-
 /-- Language intersection is just set intersection. -/
 instance : Inter (Language α) :=
   ⟨((· ∩ ·) : Set (List α) → Set (List α) → Set (List α))⟩

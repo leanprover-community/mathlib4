@@ -267,7 +267,7 @@ theorem union_accepts_iff (M₁ : DFA α σ) (M₂ : DFA α σ') (x : List α) :
   simp [union, product_accepts_iff]
 
 theorem union_accepts_union (M₁ : DFA α σ) (M₂ : DFA α σ') :
-    (M₁.union M₂).accepts = M₁.accepts ∪ M₂.accepts := by
+    (M₁.union M₂).accepts = M₁.accepts + M₂.accepts := by
   ext x
   simp only [union_accepts_iff]
   rfl
