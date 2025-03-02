@@ -229,6 +229,9 @@ jobs:
             exit 1
           fi
 
+      - name: Declarations diff -- Lean implementation
+        run: ./scripts/declDiff_shell_glue.sh
+
       - name: check for noisy stdout lines
         id: noisy
         run: |
