@@ -345,11 +345,11 @@ section piLE
 
 open MeasurableSpace Preorder
 
-variable {ι : Type*} [Preorder ι] (X : ι → Type*) [∀ i, MeasurableSpace (X i)]
+variable {ι : Type*} [Preorder ι] {X : ι → Type*} [∀ i, MeasurableSpace (X i)]
 
 /-- The canonical filtration on the pi space `Π i, X i`, where `piLE X i` consists of
 measurable sets depending only on coordinates `≤ i`. -/
-def piLE : @Filtration ((i : ι) → X i) ι _ inferInstance where
+def piLE : @Filtration (Π i, X i) ι _ pi where
   seq i := pi.comap (restrictLe i)
   mono' i j hij := by
     simp only
@@ -359,7 +359,7 @@ def piLE : @Filtration ((i : ι) → X i) ι _ inferInstance where
 
 variable [LocallyFiniteOrderBot ι]
 
-lemma piLE_eq_comap_frestrictLe (i : ι) : piLE X i = pi.comap (frestrictLe i) := by
+lemma piLE_eq_comap_frestrictLe (i : ι) : piLE (X := X) i = pi.comap (frestrictLe i) := by
   apply le_antisymm
   · simp_rw [piLE, ← piCongrLeft_comp_frestrictLe, ← MeasurableEquiv.coe_piCongrLeft, ← comap_comp]
     exact MeasurableSpace.comap_mono <| Measurable.comap_le (by fun_prop)
