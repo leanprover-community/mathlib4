@@ -230,25 +230,25 @@ theorem product_accepts_iff
 
  There is no instance for this to provide the `M₁ ∩ M₂` syntax, because M₁ and M₂ have
  different state types. -/
-def intersect (M₁ : DFA α σ) (M₂ : DFA α σ') : DFA α (σ × σ') := product M₁ M₂ And
+def inter (M₁ : DFA α σ) (M₂ : DFA α σ') : DFA α (σ × σ') := product M₁ M₂ And
 
-theorem intersect_accept_iff (M₁ : DFA α σ) (M₂ : DFA α σ') (s : σ × σ') :
-    s ∈ (M₁.intersect M₂).accept ↔ s.fst ∈ M₁.accept ∧ s.snd ∈ M₂.accept := by
-  simp [intersect, product_accept_iff]
+theorem inter_accept_iff (M₁ : DFA α σ) (M₂ : DFA α σ') (s : σ × σ') :
+    s ∈ (M₁.inter M₂).accept ↔ s.fst ∈ M₁.accept ∧ s.snd ∈ M₂.accept := by
+  simp [inter, product_accept_iff]
 
-theorem intersect_accepts_iff (M₁ : DFA α σ) (M₂ : DFA α σ') (x : List α) :
-    x ∈ (M₁.intersect M₂).accepts ↔ x ∈ M₁.accepts ∧ x ∈ M₂.accepts := by
-  simp [intersect, product_accepts_iff]
+theorem inter_accepts_iff (M₁ : DFA α σ) (M₂ : DFA α σ') (x : List α) :
+    x ∈ (M₁.inter M₂).accepts ↔ x ∈ M₁.accepts ∧ x ∈ M₂.accepts := by
+  simp [inter, product_accepts_iff]
 
-theorem intersect_accept_eq_product_accept (M₁ : DFA α σ) (M₂ : DFA α σ') :
-    (M₁.intersect M₂).accept = M₁.accept ×ˢ M₂.accept := by
+theorem inter_accept_eq_product_accept (M₁ : DFA α σ) (M₂ : DFA α σ') :
+    (M₁.inter M₂).accept = M₁.accept ×ˢ M₂.accept := by
   ext ⟨s₁, s₂⟩
-  simp [intersect_accept_iff]
+  simp [inter_accept_iff]
 
-theorem intersect_accepts_intersect (M₁ : DFA α σ) (M₂ : DFA α σ') :
-    (M₁.intersect M₂).accepts = M₁.accepts ∩ M₂.accepts := by
+theorem inter_accepts_inter (M₁ : DFA α σ) (M₂ : DFA α σ') :
+    (M₁.inter M₂).accepts = M₁.accepts ∩ M₂.accepts := by
   ext x
-  simp only [intersect_accepts_iff]
+  simp only [inter_accepts_iff]
   rfl
 
 /--
