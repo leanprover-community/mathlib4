@@ -87,7 +87,7 @@ theorem cutExpand_add_single {a' a : α} (s : Multiset α) (h : r a' a) :
   (cutExpand_add_left s).2 <| cutExpand_singleton_singleton h
 
 theorem cutExpand_single_add {a' a : α} (h : r a' a) (s : Multiset α) :
-    CutExpand r ({a'} +  s) ({a} + s) :=
+    CutExpand r ({a'} + s) ({a} + s) :=
   (cutExpand_add_right s).2 <| cutExpand_singleton_singleton h
 
 theorem cutExpand_iff [DecidableEq α] [IsIrrefl α r] {s' s : Multiset α} :
