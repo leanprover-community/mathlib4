@@ -5,6 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Analysis.Convex.StrictConvexBetween
 import Mathlib.Analysis.InnerProductSpace.Convex
+import Mathlib.Analysis.Normed.Affine.Convex
 import Mathlib.Geometry.Euclidean.Basic
 
 /-!
