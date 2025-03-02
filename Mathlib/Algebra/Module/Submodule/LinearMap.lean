@@ -47,6 +47,15 @@ protected def subtype : S' →ₗ[R] M where
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
+variable {S'} in
+@[simp]
+lemma subtype_apply (x : S') :
+    SMulMemClass.subtype S' x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (SMulMemClass.subtype S') :=
+  Subtype.coe_injective
+
 @[simp]
 protected theorem coe_subtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
@@ -75,8 +84,14 @@ protected def subtype : p →ₗ[R] M where
   map_add' := by simp [coe_smul]
   map_smul' := by simp [coe_smul]
 
+variable {p} in
+@[simp]
 theorem subtype_apply (x : p) : p.subtype x = x :=
   rfl
+
+lemma subtype_injective :
+    Function.Injective p.subtype :=
+  Subtype.coe_injective
 
 @[simp]
 theorem coe_subtype : (Submodule.subtype p : p → M) = Subtype.val :=
