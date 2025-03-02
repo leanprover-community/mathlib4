@@ -8,8 +8,9 @@ import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Algebra.Order.Group.Multiset
 import Mathlib.Data.Vector.Basic
-import Mathlib.Data.Setoid.Basic
 import Mathlib.Tactic.ApplyFun
+import Mathlib.Data.ULift
+import Mathlib.Data.Set.NAry
 
 /-!
 # Finiteness of products
