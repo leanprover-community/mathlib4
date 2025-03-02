@@ -350,34 +350,51 @@ theorem not_primrec_ack_self : ¬Primrec fun n => ack n n := by
 theorem not_primrec₂_ack : ¬Primrec₂ ack := fun h =>
   not_primrec_ack_self <| h.comp Primrec.id Primrec.id
 
-open Nat.Partrec (Code) in
+namespace Nat.Partrec.Code
+
+/-- The code for the partial applied Ackermann function.
+This is used to prove that the Ackermann function is computable. -/
+def pappAck : ℕ → Code
+  | 0 => .succ
+  | n + 1 => step (pappAck n)
+where
+  /-- Yields single recursion step on `pappAck`. -/
+  step (c : Code) : Code :=
+    .curry (.prec (.comp c (.const 1)) (.comp c (.comp .right .right))) 0
+
+lemma pappAck_step_prim : Primrec pappAck.step := by
+  apply_rules
+    [Code.curry_prim.comp, Code.prec_prim.comp, Code.comp_prim.comp,
+      _root_.Primrec.id, Primrec.const]
+
+@[simp]
+lemma eval_pappAck_step_zero (c : Code) : (pappAck.step c).eval 0 = c.eval 1 := by
+  simp [pappAck.step, Code.eval]
+
+@[simp]
+lemma eval_pappAck_step_succ (c : Code) (n) :
+    (pappAck.step c).eval (n + 1) = ((pappAck.step c).eval n).bind c.eval := by
+  simp [pappAck.step, Code.eval]
+
+lemma pappAck_prim : Primrec pappAck := by
+  suffices Primrec (Nat.rec Code.succ (fun _ c => pappAck.step c)) by
+    convert this using 2 with n; induction n <;> simp [pappAck, *]
+  apply_rules [Primrec.nat_rec₁, pappAck_step_prim.comp, Primrec.snd]
+
+@[simp]
+lemma eval_pappAck (m n) : (pappAck m).eval n = Part.some (ack m n) := by
+  induction m, n using ack.induct with
+    | case1 n => simp [Code.eval, pappAck]
+    | case2 m hm => simp [pappAck, hm]
+    | case3 m n hmn₁ hmn₂ => dsimp only [pappAck] at *; simp [hmn₁, hmn₂]
+
 /-- The Ackermann function is computable. -/
-theorem computable₂_ack : Computable₂ ack := by
-  suffices ∃ (ackCode : ℕ → Code), Primrec ackCode ∧
-      ∀ m n, ack m n ∈ (ackCode m).eval n by
-    obtain ⟨ackCode, prim_ackCode, eval_ackCode⟩ := this
-    apply Partrec.of_eq_tot
-      (f := fun p : ℕ × ℕ => (ackCode p.1).eval p.2) (g := fun p : ℕ × ℕ => ack p.1 p.2)
-    · change Partrec₂ (fun m n => (ackCode m).eval n)
-      apply_rules only
-        [Code.eval_part.comp₂, Computable.fst, Computable.snd, prim_ackCode.to_comp.comp]
-    · rwa [Prod.forall]
-  suffices ∃ (ackStep : Code → Code), Primrec ackStep ∧
-      ∀ c, (ackStep c).eval 0 = c.eval 1 ∧
-        ∀ n, (ackStep c).eval (n + 1) = ((ackStep c).eval n).bind c.eval by
-    obtain ⟨ackStep, prim_ackStep, eval_ackStep⟩ := this
-    let ackCode : ℕ → Code := Nat.rec Code.succ (fun _ c => ackStep c)
-    use ackCode
-    use by apply_rules only [Primrec.nat_rec₁, prim_ackStep.comp, Primrec.snd]
-    intro m n; rw [← Part.eq_some_iff]
-    induction m, n using ack.induct with
-      | case1 n => simp [Code.eval, ackCode]
-      | case2 m hm => simp [(eval_ackStep (ackCode m)).left, ackCode, hm]
-      | case3 m n hmn₁ hmn₂ =>
-        simp [(eval_ackStep (ackCode m)).right, ackCode, hmn₁, hmn₂]
-  let ackStep : Code → Code :=
-    fun c => .curry (.prec (.comp c (.const 1)) (.comp c (.comp .right .right))) 0
-  use ackStep
-  use by apply_rules only
-    [Code.curry_prim.comp, Code.prec_prim.comp, Code.comp_prim.comp, Primrec.id, Primrec.const]
-  simp [ackStep, Code.eval]
+theorem _root_.computable₂_ack : Computable₂ ack := by
+  apply _root_.Partrec.of_eq_tot
+    (f := fun p : ℕ × ℕ => (pappAck p.1).eval p.2) (g := fun p : ℕ × ℕ => ack p.1 p.2)
+  · change Partrec₂ (fun m n => (pappAck m).eval n)
+    apply_rules only
+      [Code.eval_part.comp₂, Computable.fst, Computable.snd, pappAck_prim.to_comp.comp]
+  · simp
+
+end Nat.Partrec.Code
