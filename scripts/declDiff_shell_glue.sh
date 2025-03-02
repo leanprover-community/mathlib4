@@ -1,4 +1,4 @@
-#!/usr/bin/bash env
+#!/usr/bin/env bash
 
 script_file=scripts/declarations_diff.lean
 
