@@ -46,6 +46,7 @@ open scoped Uniformity Topology Filter NNReal ENNReal Pointwise
 /-- `EDist α` means that `α` is equipped with an extended distance. -/
 @[ext]
 class EDist (α : Type*) where
+  /-- Extended distance between two points -/
   edist : α → α → ℝ≥0∞
 
 export EDist (edist)

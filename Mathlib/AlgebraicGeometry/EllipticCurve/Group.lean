@@ -214,7 +214,7 @@ lemma map_injective (hf : Function.Injective f) : Function.Injective <| map W f 
 
 instance [IsDomain R] : IsDomain W.CoordinateRing :=
   have : IsDomain (W.map <| algebraMap R <| FractionRing R).toAffine.CoordinateRing :=
-    AdjoinRoot.isDomain_of_prime (irreducible_polynomial _).prime
+    AdjoinRoot.isDomain_of_prime irreducible_polynomial.prime
   (map_injective W <| IsFractionRing.injective R <| FractionRing R).isDomain
 
 end Algebra
@@ -514,7 +514,7 @@ noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) 
   map_zero' := rfl
   map_add' := by
     rintro (_ | @⟨x₁, y₁, h₁⟩) (_ | @⟨x₂, y₂, h₂⟩)
-    any_goals simp only [zero_def, toClassFun, zero_add, add_zero]
+    any_goals simp only [← zero_def, toClassFun, zero_add, add_zero]
     obtain ⟨rfl, rfl⟩ | h := em (x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)
     · rw [add_of_Y_eq rfl rfl]
       exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq h₂).symm
@@ -532,7 +532,7 @@ lemma toClass_some {x y : F} (h : W.Nonsingular x y) :
 private lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
   rcases P, Q with ⟨_ | @⟨x₁, y₁, _⟩, _ | @⟨x₂, y₂, _⟩⟩
   any_goals rfl
-  · rw [zero_def, zero_add, ← neg_eq_iff_eq_neg, neg_zero, eq_comm]
+  · rw [← zero_def, zero_add, ← neg_eq_iff_eq_neg, neg_zero, eq_comm]
   · rw [neg_some, some.injEq]
     constructor
     · contrapose!; intro h; rw [add_of_imp h]; exact some_ne_zero _
