@@ -416,16 +416,14 @@ variable (w)
 theorem pos_of_pos {a : F} (hv : 0 < v a) : 0 < w a := by
   rwa [AbsoluteValue.pos_iff] at hv ⊢
 
-variable {R S : Type*} [OrderedRing S] [Semiring R] (v : AbsoluteValue R S) [IsDomain S]
-  [Nontrivial R]
-
-theorem one_add_pow_le (a : R) (n : ℕ) : v (1 + a ^ n) ≤ 1 + v a ^ n :=
+theorem one_add_pow_le {R S : Type*} [OrderedRing S] [Semiring R] [IsDomain S] [Nontrivial R]
+    (a : R) (n : ℕ) (v : AbsoluteValue R S) :
+    v (1 + a ^ n) ≤ 1 + v a ^ n :=
   le_trans (v.add_le _ _) (by rw [map_one, map_pow])
 
-variable {R S : Type*} [OrderedCommRing S] [Ring R] (v : AbsoluteValue R S) [NoZeroDivisors S]
-  [IsDomain S] [Nontrivial R]
-
-theorem one_sub_pow_le (a : R) (n : ℕ) : 1 - v a ^ n ≤ v (1 + a ^ n) :=
+theorem one_sub_pow_le {R S : Type*} [OrderedCommRing S] [Ring R] [NoZeroDivisors S] [IsDomain S]
+    [Nontrivial R] (a : R) (n : ℕ) (v : AbsoluteValue R S) :
+    1 - v a ^ n ≤ v (1 + a ^ n) :=
   le_trans (by rw [map_one, map_pow]) (v.le_add 1 (a ^ n))
 
 end nontrivial
