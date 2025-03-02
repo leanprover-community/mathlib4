@@ -170,11 +170,41 @@ lemma strictMono_succAbove (p : Fin (n + 1)) : StrictMono (succAbove p) :=
 
 variable {p : Fin (n + 1)} {i j : Fin n}
 
+@[simp]
+lemma succAbove_eq_succAbove_iff : succAbove p i = succAbove p j ↔ i = j :=
+  (strictMono_succAbove p).injective.eq_iff
+
+@[simp]
+lemma succAbove_le_succAbove_iff : succAbove p i ≤ succAbove p j ↔ i ≤ j :=
+  (strictMono_succAbove p).le_iff_le
+
+@[simp]
 lemma succAbove_lt_succAbove_iff : succAbove p i < succAbove p j ↔ i < j :=
   (strictMono_succAbove p).lt_iff_lt
 
-lemma succAbove_le_succAbove_iff : succAbove p i ≤ succAbove p j ↔ i ≤ j :=
-  (strictMono_succAbove p).le_iff_le
+@[simp]
+theorem natAdd_eq_natAdd_iff (m) {i j : Fin n} : natAdd m i = natAdd m j ↔ i = j :=
+  (strictMono_natAdd _).injective.eq_iff
+
+@[simp]
+theorem natAdd_le_natAdd_iff (m) {i j : Fin n} : natAdd m i ≤ natAdd m j ↔ i ≤ j :=
+  (strictMono_natAdd _).le_iff_le
+
+@[simp]
+theorem natAdd_lt_natAdd_iff (m) {i j : Fin n} : natAdd m i < natAdd m j ↔ i < j :=
+  (strictMono_natAdd _).lt_iff_lt
+
+@[simp]
+theorem addNat_eq_addNat_iff (m) {i j : Fin n} : i.addNat m = j.addNat m ↔ i = j :=
+  (strictMono_addNat _).injective.eq_iff
+
+@[simp]
+theorem addNat_le_addNat_iff (m) {i j : Fin n} : i.addNat m ≤ j.addNat m ↔ i ≤ j :=
+  (strictMono_addNat _).le_iff_le
+
+@[simp]
+theorem addNat_lt_addNat_iff (m) {i j : Fin n} : i.addNat m < j.addNat m ↔ i < j :=
+  (strictMono_addNat _).lt_iff_lt
 
 lemma predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H => by
   dsimp [predAbove]
