@@ -99,8 +99,8 @@ protected theorem norm [NumberField K] (x : (𝓞 K)ˣ) :
 variable {K} in
 theorem sum_mult_mul_log [NumberField K] (x : (𝓞 K)ˣ) :
     ∑ w : InfinitePlace K, w.mult * Real.log (w x) = 0 := by
-  have h := congr_arg Real.log (prod_eq_abs_norm (x : K))
-  simpa [Units.norm, Real.log_prod, Real.log_pow] using h
+  simpa [Units.norm, Real.log_prod, Real.log_pow] using
+    congr_arg Real.log (prod_eq_abs_norm (x : K))
 
 section torsion
 

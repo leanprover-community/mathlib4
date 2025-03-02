@@ -68,8 +68,8 @@ theorem regulator_eq_det' (e : {w : InfinitePlace K // w ≠ w₀} ≃ Fin (rank
 open scoped Classical in
 /--
 Let `u : Fin (rank K) → (𝓞 K)ˣ` be a family of units and let `w₁` and `w₂` be two infinite
-places. Then, the two square matrices with entries `(mult w * log w (u i))_i, {w ≠ w_i}`,
-`i = 1, 2`, have the same determinant in absolute value.
+places. Then, the two square matrices with entries `(mult w * log w (u i))_i` where `w ≠ w_j` for
+`j = 1, 2` have the same determinant in absolute value.
 -/
 theorem abs_det_eq_abs_det (u : Fin (rank K) → (𝓞 K)ˣ)
     {w₁ w₂ : InfinitePlace K} (e₁ : {w // w ≠ w₁} ≃ Fin (rank K))
@@ -106,7 +106,7 @@ theorem abs_det_eq_abs_det (u : Fin (rank K) → (𝓞 K)ˣ)
 open scoped Classical in
 /--
 For any infinite place `w'`, the regulator is equal to the absolute value of the determinant
-of the matrix `(mult w * log w (fundSystem K i))_i, {w ≠ w'}`.
+of the matrix with entries `(mult w * log w (fundSystem K i))_i` for `w ≠ w'`.
 -/
 theorem regulator_eq_det (w' : InfinitePlace K) (e : {w // w ≠ w'} ≃ Fin (rank K)) :
     regulator K =
