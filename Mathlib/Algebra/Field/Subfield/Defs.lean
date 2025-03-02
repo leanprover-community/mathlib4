@@ -61,7 +61,7 @@ variable (S : Type*) [SetLike S K] [h : SubfieldClass S K]
 
 Be assured that we're not actually proving that subfields are subgroups:
 `SubgroupClass` is really an abbreviation of `SubgroupWithOrWithoutZeroClass`.
- -/
+-/
 instance (priority := 100) toSubgroupClass : SubgroupClass S K :=
   { h with }
 

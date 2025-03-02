@@ -125,8 +125,12 @@ theorem congr_map {U V : Type*} [Quiver U] [Quiver V] (F : U ⥤q V) {X Y : U} {
 
 end ReflPrefunctor
 
-/-- A functor has an underlying refl prefunctor.-/
+/-- A functor has an underlying refl prefunctor. -/
 def Functor.toReflPrefunctor {C D} [Category C] [Category D] (F : C ⥤ D) : C ⥤rq D := { F with }
+
+theorem Functor.toReflPrefunctor.map_comp {C D E} [Category C] [Category D] [Category E]
+    (F : C ⥤ D) (G : D ⥤ E) :
+    toReflPrefunctor (F ⋙ G) = toReflPrefunctor F ⋙rq toReflPrefunctor G := rfl
 
 @[simp]
 theorem Functor.toReflPrefunctor_toPrefunctor {C D : Cat} (F : C ⥤ D) :

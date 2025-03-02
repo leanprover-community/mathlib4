@@ -165,7 +165,7 @@ example [L.Structure M] [M ⊨ L.linearOrderTheory] (S : L.Substructure M) :
     S ⊨ L.linearOrderTheory := inferInstance
 
 /-- A sentence indicating that an order has no top element:
-$\forall x, \exists y, \neg y \le x$.   -/
+$\forall x, \exists y, \neg y \le x$. -/
 def noTopOrderSentence : L.Sentence :=
   ∀'∃'∼((&1).le &0)
 
@@ -438,8 +438,8 @@ lemma strictMono [EmbeddingLike F M N] [PartialOrder M] [L.OrderedStructure M]
 end HomClass
 
 /-- This is not an instance because it would form a loop with
-  `FirstOrder.Language.order.instStrongHomClassOfOrderIsoClass`.
-  As both types are `Prop`s, it would only cause a slowdown.  -/
+`FirstOrder.Language.order.instStrongHomClassOfOrderIsoClass`.
+As both types are `Prop`s, it would only cause a slowdown. -/
 lemma StrongHomClass.toOrderIsoClass
     (L : Language) [L.IsOrdered] (M : Type*) [L.Structure M] [LE M] [L.OrderedStructure M]
     (N : Type*) [L.Structure N] [LE N] [L.OrderedStructure N]

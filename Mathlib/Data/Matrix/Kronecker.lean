@@ -7,7 +7,7 @@ import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Associator
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!

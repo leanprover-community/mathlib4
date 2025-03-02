@@ -76,7 +76,7 @@ instance abelian : Abelian (ModuleCat.{v} R) where
 
 section ReflectsLimits
 
--- Porting note: added to make the following definitions work
+/-- Add this instance to help Lean with universe levels. -/
 instance : HasLimitsOfSize.{v,v} (ModuleCatMax.{v, w} R) :=
   ModuleCat.hasLimitsOfSize.{v, v, max v w}
 

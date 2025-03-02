@@ -247,7 +247,7 @@ lemma one_lt_partSize_index_zero (c : OrderedFinpartition (n + 1)) (hc : range (
     have : {c.emb (c.index 0) 0,
         c.emb (c.index 0) ⟨c.partSize (c.index 0) - 1, Nat.sub_one_lt_of_lt (c.partSize_pos _)⟩}
           ⊆ range (c.emb (c.index 0)) := by simp [insert_subset]
-    simp [emb_zero] at this
+    simp only [emb_zero] at this
     convert Nat.card_mono Subtype.finite this
     simp only [Nat.card_eq_fintype_card, Fintype.card_ofFinset, toFinset_singleton]
     apply (Finset.card_pair ?_).symm
@@ -774,7 +774,7 @@ theorem norm_compAlongOrderedFinpartition_le (f : F [×c.length]→L[𝕜] G)
   exact f.le_opNorm_mul_prod_of_le <| c.norm_applyOrderedFinpartition_le _ _
 
 /-- Bundled version of `compAlongOrderedFinpartition`, depending linearly on `f`
-and multilinearly on `p`.-/
+and multilinearly on `p`. -/
 @[simps apply_apply]
 def compAlongOrderedFinpartitionₗ :
     (F [×c.length]→L[𝕜] G) →ₗ[𝕜]
@@ -796,7 +796,7 @@ def compAlongOrderedFinpartitionₗ :
 
 variable (𝕜 E F G) in
 /-- Bundled version of `compAlongOrderedFinpartition`, depending continuously linearly on `f`
-and continuously multilinearly on `p`.-/
+and continuously multilinearly on `p`. -/
 noncomputable def compAlongOrderedFinpartitionL :
     (F [×c.length]→L[𝕜] G) →L[𝕜]
       ContinuousMultilinearMap 𝕜 (fun i ↦ E[×c.partSize i]→L[𝕜] F) (E[×n]→L[𝕜] G) := by

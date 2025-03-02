@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
 import Mathlib.Order.Basic
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Set
 

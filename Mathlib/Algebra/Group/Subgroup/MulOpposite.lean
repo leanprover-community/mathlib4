@@ -18,7 +18,7 @@ variable {ι : Sort*} {G : Type*} [Group G]
 
 namespace Subgroup
 
-/-- Pull a subgroup back to an opposite subgroup along `MulOpposite.unop`-/
+/-- Pull a subgroup back to an opposite subgroup along `MulOpposite.unop` -/
 @[to_additive (attr := simps)
 "Pull an additive subgroup back to an opposite additive subgroup along `AddOpposite.unop`"]
 protected def op (H : Subgroup G) : Subgroup Gᵐᵒᵖ where
@@ -34,7 +34,7 @@ theorem mem_op {x : Gᵐᵒᵖ} {S : Subgroup G} : x ∈ S.op ↔ x.unop ∈ S :
     H.op.toSubmonoid = H.toSubmonoid.op :=
   rfl
 
-/-- Pull an opposite subgroup back to a subgroup along `MulOpposite.op`-/
+/-- Pull an opposite subgroup back to a subgroup along `MulOpposite.op` -/
 @[to_additive (attr := simps)
 "Pull an opposite additive subgroup back to an additive subgroup along `AddOpposite.op`"]
 protected def unop (H : Subgroup Gᵐᵒᵖ) : Subgroup G where

@@ -500,9 +500,9 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
         --   `≤ ‖f - bf‖ₚ + ‖g - bg‖ₚ`
         --   `< ε/2 + ε/2 = ε`.
         calc
-          ‖Memℒp.toLp f hf + Memℒp.toLp g hg - (bf + bg)‖
-            = ‖(Memℒp.toLp f hf) - bf + ((Memℒp.toLp g hg) - bg)‖ := by congr; abel
-          _ ≤ ‖(Memℒp.toLp f hf) - bf‖ + ‖(Memℒp.toLp g hg) - bg‖ := norm_add_le ..
+          ‖MemLp.toLp f hf + MemLp.toLp g hg - (bf + bg)‖
+            = ‖(MemLp.toLp f hf) - bf + ((MemLp.toLp g hg) - bg)‖ := by congr; abel
+          _ ≤ ‖(MemLp.toLp f hf) - bf‖ + ‖(MemLp.toLp g hg) - bg‖ := norm_add_le ..
           _ < ε := by linarith [hbf, hbg]
 
 end SecondCountableLp

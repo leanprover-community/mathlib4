@@ -158,8 +158,7 @@ theorem mem_nonZeroDivisors_of_ne_zero (hx : x ≠ 0) : x ∈ M₀⁰ := fun _ �
 
 theorem le_nonZeroDivisors_of_noZeroDivisors {S : Submonoid M₀} (hS : (0 : M₀) ∉ S) :
     S ≤ M₀⁰ := fun _ hx _ hy ↦
-  Or.recOn (eq_zero_or_eq_zero_of_mul_eq_zero hy) id fun h ↦
-    absurd (h ▸ hx : (0 : M₀) ∈ S) hS
+  (eq_zero_or_eq_zero_of_mul_eq_zero hy).resolve_right (ne_of_mem_of_not_mem hx hS)
 
 theorem powers_le_nonZeroDivisors_of_noZeroDivisors (hx : x ≠ 0) : Submonoid.powers x ≤ M₀⁰ :=
   le_nonZeroDivisors_of_noZeroDivisors fun h ↦ hx (h.recOn fun _ ↦ pow_eq_zero)
@@ -192,7 +191,7 @@ theorem map_le_nonZeroDivisors_of_injective [NoZeroDivisors M₀'] [MonoidWithZe
   · simp [Subsingleton.elim S ⊥]
   · refine le_nonZeroDivisors_of_noZeroDivisors ?_
     rintro ⟨x, hx, hx0⟩
-    exact one_ne_zero <| hS (hf (hx0.trans (map_zero f).symm) ▸ hx : 0 ∈ S) 1 (mul_zero 1)
+    exact zero_not_mem_nonZeroDivisors <| hS <| map_eq_zero_iff f hf |>.mp hx0 ▸ hx
 
 theorem nonZeroDivisors_le_comap_nonZeroDivisors_of_injective [NoZeroDivisors M₀']
     [MonoidWithZeroHomClass F M₀ M₀'] (f : F) (hf : Injective f) : M₀⁰ ≤ M₀'⁰.comap f :=

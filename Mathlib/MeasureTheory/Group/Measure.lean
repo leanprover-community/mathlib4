@@ -99,7 +99,7 @@ instance Subgroup.smulInvariantMeasure {G α : Type*} [Group G] [MulAction G α]
   ⟨fun y s hs => by convert SMulInvariantMeasure.measure_preimage_smul (μ := μ) (y : G) hs⟩
 
 /-- An alternative way to prove that `μ` is left invariant under multiplication. -/
-@[to_additive " An alternative way to prove that `μ` is left invariant under addition. "]
+@[to_additive "An alternative way to prove that `μ` is left invariant under addition."]
 theorem forall_measure_preimage_mul_iff (μ : Measure G) :
     (∀ (g : G) (A : Set G), MeasurableSet A → μ ((fun h => g * h) ⁻¹' A) = μ A) ↔
       IsMulLeftInvariant μ := by
@@ -110,7 +110,7 @@ theorem forall_measure_preimage_mul_iff (μ : Measure G) :
   exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
 
 /-- An alternative way to prove that `μ` is right invariant under multiplication. -/
-@[to_additive " An alternative way to prove that `μ` is right invariant under addition. "]
+@[to_additive "An alternative way to prove that `μ` is right invariant under addition."]
 theorem forall_measure_preimage_mul_right_iff (μ : Measure G) :
     (∀ (g : G) (A : Set G), MeasurableSet A → μ ((fun h => h * g) ⁻¹' A) = μ A) ↔
       IsMulRightInvariant μ := by

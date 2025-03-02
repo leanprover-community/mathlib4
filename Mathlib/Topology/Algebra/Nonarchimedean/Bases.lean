@@ -169,7 +169,6 @@ theorem hasBasis_nhds (a : A) :
 /-- Given a subgroups basis, the basis elements as open additive subgroups in the associated
 topology. -/
 def openAddSubgroup (i : ι) : @OpenAddSubgroup A _ hB.topology :=
-  -- Porting note: failed to synthesize instance `TopologicalSpace A`
   let _ := hB.topology
   { B i with
     isOpen' := by
@@ -304,7 +303,7 @@ def topology : TopologicalSpace M :=
 /-- Given a submodules basis, the basis elements as open additive subgroups in the associated
 topology. -/
 def openAddSubgroup (i : ι) : @OpenAddSubgroup M _ hB.topology :=
-  let _ := hB.topology -- Porting note: failed to synthesize instance `TopologicalSpace A`
+  let _ := hB.topology
   { (B i).toAddSubgroup with
     isOpen' := by
       letI := hB.topology
@@ -369,7 +368,7 @@ structure RingFilterBasis.SubmodulesBasis (BR : RingFilterBasis R) (B : ι → S
 
 theorem RingFilterBasis.submodulesBasisIsBasis (BR : RingFilterBasis R) {B : ι → Submodule R M}
     (hB : BR.SubmodulesBasis B) : @_root_.SubmodulesBasis ι R _ M _ _ BR.topology B :=
-  let _ := BR.topology -- Porting note: failed to synthesize instance `TopologicalSpace R`
+  let _ := BR.topology
   { inter := hB.inter
     smul := by
       letI := BR.topology

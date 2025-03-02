@@ -10,6 +10,7 @@ import Mathlib.Data.Set.Operations
 import Mathlib.Order.Basic
 import Mathlib.Order.Bounds.Defs
 import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Data.Int.Basic
 
 /-!
 # Extended GCD and divisibility over ℤ

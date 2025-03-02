@@ -119,7 +119,7 @@ theorem adjoin_of_disjoint {s t : Set ι} (h : Disjoint s t) :
   rw [Set.image_eq_range, AlgebraicIndependent, ← AlgHom.coe_restrictScalars' R, ← e.injective_comp]
   show Injective ((AlgHom.restrictScalars R <| aeval _).comp e.toAlgHom)
   rw [this, AlgHom.coe_comp]
-  exact .comp hx (rename_injective _ <| Subtype.val_injective.sum_elim
+  exact .comp hx (rename_injective _ <| Subtype.val_injective.sumElim
     Subtype.val_injective fun i j eq ↦ h.ne_of_mem j.2 i.2 eq.symm)
 
 theorem adjoin_iff_disjoint [Nontrivial A] {s t : Set ι} :

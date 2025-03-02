@@ -86,7 +86,7 @@ and obviates the hassle of `AddSubmonoid.closure_induction` when creating those 
 
 If you are working with a `NonUnitalRing` and not a `NonUnitalSemiring`, see
 `StarOrderedRing.of_nonneg_iff` for a more convenient version.
- -/
+-/
 lemma of_le_iff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
     (h_le_iff : ∀ x y : R, x ≤ y ↔ ∃ s, y = x + star s * s) : StarOrderedRing R where
   le_iff x y := by

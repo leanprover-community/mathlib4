@@ -190,7 +190,7 @@ open scoped RightActions
       MulOpposite.op_inv, inv_eq_zero, MulOpposite.op_eq_zero_iff, inv_inv,
       MulOpposite.smul_eq_mul_unop, MulOpposite.unop_op, mul_inv_rev, ha]
 
-@[simp] lemma inv_op_smul_finset_distrib₀ (a : α) (s : Finset α) : (s <• a)⁻¹ = a⁻¹ • s⁻¹ := by
+lemma inv_op_smul_finset_distrib₀ (a : α) (s : Finset α) : (s <• a)⁻¹ = a⁻¹ • s⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
   · obtain rfl | hs := s.eq_empty_or_nonempty <;> simp [*]
   -- was `simp` and very slow (https://github.com/leanprover-community/mathlib4/issues/19751)

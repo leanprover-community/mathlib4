@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
 import Mathlib.Algebra.Group.Action.Faithful
+import Mathlib.Algebra.Group.Action.Hom
 import Mathlib.Algebra.Group.Prod
 
 /-!

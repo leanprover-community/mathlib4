@@ -296,7 +296,7 @@ theorem mdifferentiableWithinAt_iff_of_mem_maximalAtlas {x : M} (he : e ∈ maxi
   differentiableWithinAt_localInvariantProp.liftPropWithinAt_indep_chart he hx he' hy
 
 /-- An alternative formulation of `mdifferentiableWithinAt_iff_of_mem_maximalAtlas`
-  if the set if `s` lies in `e.source`. -/
+if the set if `s` lies in `e.source`. -/
 theorem mdifferentiableWithinAt_iff_image {x : M} (he : e ∈ maximalAtlas I 1 M)
     (he' : e' ∈ maximalAtlas I' 1 M') (hs : s ⊆ e.source) (hx : x ∈ e.source)
     (hy : f x ∈ e'.source) :
@@ -365,10 +365,10 @@ theorem mdifferentiableOn_iff_of_mem_maximalAtlas' (he : e ∈ maximalAtlas I 1 
     (e.continuousOn_writtenInExtend_iff hs h2s).1 h.continuousOn
 
 /-- If the set where you want `f` to be smooth lies entirely in a single chart, and `f` maps it
-  into a single chart, the smoothness of `f` on that set can be expressed by purely looking in
-  these charts.
-  Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
-  that this set lies in `(extChartAt I x).target`. -/
+into a single chart, the smoothness of `f` on that set can be expressed by purely looking in
+these charts.
+Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
+that this set lies in `(extChartAt I x).target`. -/
 theorem mdifferentiableOn_iff_of_subset_source {x : M} {y : M'} (hs : s ⊆ (chartAt H x).source)
     (h2s : MapsTo f s (chartAt H' y).source) :
     MDifferentiableOn I I' f s ↔
@@ -378,10 +378,10 @@ theorem mdifferentiableOn_iff_of_subset_source {x : M} {y : M'} (hs : s ⊆ (cha
     (chart_mem_maximalAtlas y) hs h2s
 
 /-- If the set where you want `f` to be smooth lies entirely in a single chart, and `f` maps it
-  into a single chart, the smoothness of `f` on that set can be expressed by purely looking in
-  these charts.
-  Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
-  that this set lies in `(extChartAt I x).target`. -/
+into a single chart, the smoothness of `f` on that set can be expressed by purely looking in
+these charts.
+Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
+that this set lies in `(extChartAt I x).target`. -/
 theorem mdifferentiableOn_iff_of_subset_source' {x : M} {y : M'} (hs : s ⊆ (extChartAt I x).source)
     (h2s : MapsTo f s (extChartAt I' y).source) :
     MDifferentiableOn I I' f s ↔

@@ -302,7 +302,7 @@ A  → X
 ↓i   Y             --> A → Y
      ↓g                ↓i  ↓g
 B  → Z                 B → Z
- -/
+-/
 @[simps]
 def squareToSnd {X Y Z : C} {i : Arrow C} {f : X ⟶ Y} {g : Y ⟶ Z} (sq : i ⟶ Arrow.mk (f ≫ g)) :
     i ⟶ Arrow.mk g where

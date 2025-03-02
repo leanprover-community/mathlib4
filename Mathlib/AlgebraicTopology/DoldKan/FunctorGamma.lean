@@ -92,13 +92,10 @@ def mapMono (K : ChainComplex C ℕ) {Δ' Δ : SimplexCategory} (i : Δ' ⟶ Δ)
     · exact K.d Δ.len Δ'.len
     · exact 0
 
-variable (Δ)
-
+variable (Δ) in
 theorem mapMono_id : mapMono K (𝟙 Δ) = 𝟙 _ := by
   unfold mapMono
   simp only [eq_self_iff_true, eqToHom_refl, dite_eq_ite, if_true]
-
-variable {Δ}
 
 theorem mapMono_δ₀' (i : Δ' ⟶ Δ) [Mono i] (hi : Isδ₀ i) : mapMono K i = K.d Δ.len Δ'.len := by
   unfold mapMono

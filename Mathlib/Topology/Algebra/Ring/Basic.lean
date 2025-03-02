@@ -126,7 +126,6 @@ instance : IsTopologicalSemiring (ULift α) where
 
 namespace Subsemiring
 
--- Porting note: named instance because generated name was huge
 instance topologicalSemiring (S : Subsemiring α) : IsTopologicalSemiring S :=
   { S.toSubmonoid.continuousMul, S.toAddSubmonoid.continuousAdd with }
 

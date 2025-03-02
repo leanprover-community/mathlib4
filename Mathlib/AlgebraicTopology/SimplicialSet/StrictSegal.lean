@@ -38,17 +38,17 @@ variable (X : SSet.{u})
 /-- A simplicial set `X` satisfies the strict Segal condition if its simplices are uniquely
 determined by their spine. -/
 class StrictSegal where
-  /-- The inverse to `X.spine n`.-/
+  /-- The inverse to `X.spine n`. -/
   spineToSimplex {n : ℕ} : Path X n → X _⦋n⦌
-  /-- `spineToSimplex` is a right inverse to `X.spine n`.-/
+  /-- `spineToSimplex` is a right inverse to `X.spine n`. -/
   spine_spineToSimplex {n : ℕ} (f : Path X n) : X.spine n (spineToSimplex f) = f
-  /-- `spineToSimplex` is a left inverse to `X.spine n`.-/
+  /-- `spineToSimplex` is a left inverse to `X.spine n`. -/
   spineToSimplex_spine {n : ℕ} (Δ : X _⦋n⦌) : spineToSimplex (X.spine n Δ) = Δ
 
 namespace StrictSegal
 variable {X : SSet.{u}} [StrictSegal X] {n : ℕ}
 
-/-- The fields of `StrictSegal` define an equivalence between `X _⦋n⦌` and `Path X n`.-/
+/-- The fields of `StrictSegal` define an equivalence between `X _⦋n⦌` and `Path X n`. -/
 def spineEquiv (n : ℕ) : X _⦋n⦌ ≃ Path X n where
   toFun := spine X n
   invFun := spineToSimplex
@@ -165,7 +165,7 @@ namespace CategoryTheory.Nerve
 open SSet
 
 /-- Simplices in the nerve of categories are uniquely determined by their spine. Indeed, this
-property describes the essential image of the nerve functor.-/
+property describes the essential image of the nerve functor. -/
 noncomputable instance strictSegal (C : Type u) [Category.{v} C] : StrictSegal (nerve C) where
   spineToSimplex {n} F :=
     ComposableArrows.mkOfObjOfMapSucc (fun i ↦ (F.vertex i).obj 0)

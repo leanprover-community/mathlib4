@@ -253,7 +253,7 @@ alias AnalyticOn.fderiv := AnalyticOnNhd.fderiv
 
 /-- If a function is analytic on a set `s`, so are its successive Fréchet derivative. See also
 `AnalyticOnNhd.iteratedFDeriv_of_isOpen`, removing the completeness assumption but requiring the set
-to be open.-/
+to be open. -/
 protected theorem AnalyticOnNhd.iteratedFDeriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) (n : ℕ) :
     AnalyticOnNhd 𝕜 (iteratedFDeriv 𝕜 n f) s := by
   induction n with
@@ -297,7 +297,7 @@ lemma AnalyticWithinAt.exists_hasFTaylorSeriesUpToOn [CompleteSpace F]
 
 /-- If a function has a power series `p` within a set of unique differentiability, inside a ball,
 and is differentiable at a point, then the derivative series of `p` is summable at a point, with
-sum the given differential. Note that this theorem does not require completeness of the space.-/
+sum the given differential. Note that this theorem does not require completeness of the space. -/
 theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
     (h : HasFPowerSeriesWithinOnBall f p s x r)
     {f' : E →L[𝕜] F}

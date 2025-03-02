@@ -514,16 +514,13 @@ def closureNonUnitalCommRingOfComm {R : Type u} [NonUnitalRing R] {s : Set R}
       | neg_left _ _ _ _ h => exact Commute.neg_left h
       | neg_right _ _ _ _ h => exact Commute.neg_right h }
 
-variable (R)
-
+variable (R) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/
 protected def gi : GaloisInsertion (@closure R _) SetLike.coe where
   choice s _ := closure s
   gc _s _t := closure_le
   le_l_u _s := subset_closure
   choice_eq _s _h := rfl
-
-variable {R}
 
 /-- Closure of a `NonUnitalSubring` `S` equals `S`. -/
 @[simp]

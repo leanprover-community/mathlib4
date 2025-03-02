@@ -1356,7 +1356,7 @@ theorem tendsto_setToFun_of_L1 (hT : DominatedFinMeasAdditive μ T C) {ι} (f : 
     let f_lp := hfi.toL1 f
     let F_lp i := if hFi : Integrable (fs i) μ then hFi.toL1 (fs i) else 0
     have tendsto_L1 : Tendsto F_lp l (𝓝 f_lp) := by
-      rw [Lp.tendsto_Lp_iff_tendsto_ℒp']
+      rw [Lp.tendsto_Lp_iff_tendsto_eLpNorm']
       simp_rw [eLpNorm_one_eq_lintegral_enorm, Pi.sub_apply]
       refine (tendsto_congr' ?_).mp hfs
       filter_upwards [hfsi] with i hi

@@ -233,7 +233,7 @@ theorem mem_rootsOfUnity_prime_pow_mul_iff (p k : ℕ) (m : ℕ) [ExpChar R p] {
     ζ ∈ rootsOfUnity (p ^ k * m) R ↔ ζ ∈ rootsOfUnity m R := by
   simp only [mem_rootsOfUnity', ExpChar.pow_prime_pow_mul_eq_one_iff]
 
-/-- A variant of `mem_rootsOfUnity_prime_pow_mul_iff` in terms of `ζ ^ _`.-/
+/-- A variant of `mem_rootsOfUnity_prime_pow_mul_iff` in terms of `ζ ^ _` -/
 @[simp]
 theorem mem_rootsOfUnity_prime_pow_mul_iff' (p k : ℕ) (m : ℕ) [ExpChar R p] {ζ : Rˣ} :
     ζ ^ (p ^ k * m) = 1 ↔ ζ ∈ rootsOfUnity m R := by

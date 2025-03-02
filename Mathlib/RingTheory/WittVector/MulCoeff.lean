@@ -257,7 +257,7 @@ theorem nth_mul_coeff' (n : ℕ) :
   rw [← hf₀]
   congr
   ext a
-  cases' a with a ha
+  obtain ⟨a, ha⟩ := a
   obtain ⟨i, m⟩ := a
   fin_cases i <;> rfl -- surely this case split is not necessary
 

@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Algebra.Order.BigOperators.Group.List
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Set.Pointwise.SMul
@@ -134,7 +133,7 @@ theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [Is
 variable [Group G]
 
 /-- The submonoid with every element inverted. -/
-@[to_additive " The additive submonoid with every element negated. "]
+@[to_additive "The additive submonoid with every element negated."]
 protected def inv : Inv (Submonoid G) where
   inv S :=
     { carrier := (S : Set G)⁻¹

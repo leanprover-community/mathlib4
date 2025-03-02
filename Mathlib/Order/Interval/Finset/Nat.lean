@@ -134,6 +134,11 @@ theorem Ioc_succ_singleton : Ioc b (b + 1) = {b + 1} := by rw [← Nat.Icc_succ_
 
 variable {a b c}
 
+lemma mem_Ioc_succ : a ∈ Ioc b (b + 1) ↔ a = b + 1 := by simp
+
+lemma mem_Ioc_succ' (a : Ioc b (b + 1)) : a = ⟨b + 1, mem_Ioc.2 (by omega)⟩ :=
+  Subtype.val_inj.1 (mem_Ioc_succ.1 a.2)
+
 theorem Ico_succ_right_eq_insert_Ico (h : a ≤ b) : Ico a (b + 1) = insert b (Ico a b) := by
   rw [Ico_succ_right, ← Ico_insert_right h]
 

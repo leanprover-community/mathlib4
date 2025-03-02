@@ -332,7 +332,7 @@ and is an intermediate result used to prove it. -/
 private theorem LinearIndependent.map_pow_expChar_pow_of_fd_isSeparable
     [FiniteDimensional F E] [Algebra.IsSeparable F E]
     (h : LinearIndependent F v) : LinearIndependent F (v · ^ q ^ n) := by
-  have h' := h.coe_range
+  have h' := h.linearIndepOn_id
   let ι' := h'.extend (Set.range v).subset_univ
   let b : Basis ι' F E := Basis.extend h'
   letI : Fintype ι' := FiniteDimensional.fintypeBasisIndex b

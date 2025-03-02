@@ -46,7 +46,7 @@ numbers. `Submonoid` is implemented by extending `Subsemigroup` requiring `one_m
 submonoid, submonoids
 -/
 
-assert_not_exists CompleteLattice MonoidWithZero
+assert_not_exists RelIso CompleteLattice MonoidWithZero
 
 variable {M : Type*} {N : Type*}
 

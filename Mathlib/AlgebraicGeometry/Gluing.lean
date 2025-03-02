@@ -125,8 +125,8 @@ def gluedScheme : Scheme := by
   refine ⟨_, ((D.U i).affineCover.map y).toLRSHom ≫
     D.toLocallyRingedSpaceGlueData.toGlueData.ι i, ?_⟩
   constructor
-  · erw [TopCat.coe_comp] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
-    rw [Set.range_comp]
+  · simp only [LocallyRingedSpace.comp_toShHom, SheafedSpace.comp_base, TopCat.hom_comp,
+      ContinuousMap.coe_comp, Set.range_comp]
     refine Set.mem_image_of_mem _ ?_
     exact (D.U i).affineCover.covers y
   · infer_instance
@@ -167,7 +167,7 @@ theorem ι_jointly_surjective (x : 𝖣.glued.carrier) :
     ∃ (i : D.J) (y : (D.U i).carrier), (D.ι i).base y = x :=
   𝖣.ι_jointly_surjective (forgetToTop ⋙ forget TopCat) x
 
--- Porting note: promote to higher priority to short circuit simplifier
+/-- Promoted to higher priority to short circuit simplifier. -/
 @[simp (high), reassoc]
 theorem glue_condition (i j : D.J) : D.t i j ≫ D.f j i ≫ D.ι j = D.f i j ≫ D.ι i :=
   𝖣.glue_condition i j
@@ -374,7 +374,8 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.base := by
   · rw [← Set.image_preimage_eq_inter_range]
     apply (show IsOpenImmersion (𝒰.map (𝒰.f x)) from inferInstance).base_open.isOpenMap
     convert hU (𝒰.f x) using 1
-    rw [← ι_fromGlued]; erw [TopCat.coe_comp]; rw [Set.preimage_comp]
+    simp only [← ι_fromGlued, gluedCover_U, comp_coeBase, TopCat.hom_comp, ContinuousMap.coe_comp,
+      Set.preimage_comp]
     congr! 1
     exact Set.preimage_image_eq _ 𝒰.fromGlued_injective
   · exact ⟨hx, 𝒰.covers x⟩
@@ -420,22 +421,21 @@ def glueMorphisms {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
   · exact f
   rintro ⟨i, j⟩
   change pullback.fst _ _ ≫ f i = (_ ≫ _) ≫ f j
-  erw [pullbackSymmetry_hom_comp_fst]
+  simp [pullbackSymmetry_hom_comp_fst]
   exact hf i j
 
 @[simp, reassoc]
 theorem ι_glueMorphisms {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
     (hf : ∀ x y, pullback.fst (𝒰.map x) (𝒰.map y) ≫ f x = pullback.snd _ _ ≫ f y)
     (x : 𝒰.J) : 𝒰.map x ≫ 𝒰.glueMorphisms f hf = f x := by
-  rw [← ι_fromGlued, Category.assoc]
-  erw [IsIso.hom_inv_id_assoc, Multicoequalizer.π_desc]
+  rw [← ι_fromGlued, Category.assoc, glueMorphisms, IsIso.hom_inv_id_assoc]
+  erw [Multicoequalizer.π_desc]
 
 theorem hom_ext {Y : Scheme} (f₁ f₂ : X ⟶ Y) (h : ∀ x, 𝒰.map x ≫ f₁ = 𝒰.map x ≫ f₂) : f₁ = f₂ := by
   rw [← cancel_epi 𝒰.fromGlued]
   apply Multicoequalizer.hom_ext
   intro x
-  erw [Multicoequalizer.π_desc_assoc]
-  erw [Multicoequalizer.π_desc_assoc]
+  rw [fromGlued, Multicoequalizer.π_desc_assoc, Multicoequalizer.π_desc_assoc]
   exact h x
 
 end Cover

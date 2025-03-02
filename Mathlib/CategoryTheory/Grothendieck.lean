@@ -256,7 +256,7 @@ theorem map_map {α : F ⟶ G} {X Y : Grothendieck F} {f : X ⟶ Y} :
     (Grothendieck.map α).map f =
     ⟨f.base, (eqToHom (α.naturality f.base).symm).app X.fiber ≫ (α.app Y.base).map f.fiber⟩ := rfl
 
-/-- The functor `Grothendieck.map α : Grothendieck F ⥤ Grothendieck G` lies over `C`.-/
+/-- The functor `Grothendieck.map α : Grothendieck F ⥤ Grothendieck G` lies over `C`. -/
 theorem functor_comp_forget {α : F ⟶ G} :
     Grothendieck.map α ⋙ Grothendieck.forget G = Grothendieck.forget F := rfl
 
@@ -526,7 +526,7 @@ variable {E : Type*} [Category E]
 
 variable (F) in
 /-- The inclusion of a fiber `F.obj c` of a functor `F : C ⥤ Cat` into its Grothendieck
-construction.-/
+construction. -/
 @[simps obj map]
 def ι (c : C) : F.obj c ⥤ Grothendieck F where
   obj d := ⟨c, d⟩

@@ -600,7 +600,7 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
         abel
   termination_by (x, y, z)
 
-/-- `x * (y + z)` is equivalent to `x * y + x * z.`-/
+/-- `x * (y + z)` is equivalent to `x * y + x * z`. -/
 theorem left_distrib_equiv (x y z : PGame) : x * (y + z) ≈ x * y + x * z :=
   Quotient.exact <| quot_left_distrib _ _ _
 
@@ -613,7 +613,7 @@ theorem quot_left_distrib_sub (x y z : PGame) : (⟦x * (y - z)⟧ : Game) = ⟦
 theorem quot_right_distrib (x y z : PGame) : (⟦(x + y) * z⟧ : Game) = ⟦x * z⟧ + ⟦y * z⟧ := by
   simp only [quot_mul_comm, quot_left_distrib]
 
-/-- `(x + y) * z` is equivalent to `x * z + y * z.`-/
+/-- `(x + y) * z` is equivalent to `x * z + y * z`. -/
 theorem right_distrib_equiv (x y z : PGame) : (x + y) * z ≈ x * z + y * z :=
   Quotient.exact <| quot_right_distrib _ _ _
 
@@ -821,7 +821,7 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
         abel
   termination_by (x, y, z)
 
-/-- `x * y * z` is equivalent to `x * (y * z).`-/
+/-- `x * y * z` is equivalent to `x * (y * z)`. -/
 theorem mul_assoc_equiv (x y z : PGame) : x * y * z ≈ x * (y * z) :=
   Quotient.exact <| quot_mul_assoc _ _ _
 

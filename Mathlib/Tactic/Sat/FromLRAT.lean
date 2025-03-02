@@ -70,7 +70,10 @@ instance : ToExpr Literal where
 /-- A clause is a list of literals, thought of as a disjunction like `a ∨ b ∨ ¬c`. -/
 def Clause := List Literal
 
+/-- The empty clause -/
 def Clause.nil : Clause := []
+
+/-- Append a literal to a clause. -/
 def Clause.cons : Literal → Clause → Clause := List.cons
 
 /-- A formula is a list of clauses, thought of as a conjunction like `(a ∨ b) ∧ c ∧ (¬c ∨ ¬d)`. -/

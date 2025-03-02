@@ -230,12 +230,12 @@ end CartesianClosed
 open CartesianClosed
 
 /-- The exponential with the terminal object is naturally isomorphic to the identity. The typeclass
-argument is explicit: any instance can be used.-/
+argument is explicit: any instance can be used. -/
 def expUnitNatIso [Exponentiable (𝟙_ C)] : 𝟭 C ≅ exp (𝟙_ C) :=
   MonoidalClosed.unitNatIso (C := C)
 
 /-- The exponential of any object with the terminal object is isomorphic to itself, i.e. `X^1 ≅ X`.
-The typeclass argument is explicit: any instance can be used.-/
+The typeclass argument is explicit: any instance can be used. -/
 def expUnitIsoSelf [Exponentiable (𝟙_ C)] : (𝟙_ C) ⟹ X ≅ X :=
   (expUnitNatIso.app X).symm
 

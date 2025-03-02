@@ -62,14 +62,11 @@ theorem traceAux_eq : traceAux R b = traceAux R c :=
         rw [LinearMap.toMatrix_comp _ b, LinearMap.toMatrix_comp _ c]
       _ = Matrix.trace (LinearMap.toMatrix c c f) := by rw [LinearMap.comp_id, LinearMap.comp_id]
 
-variable (M)
-
+variable (M) in
 open Classical in
 /-- Trace of an endomorphism independent of basis. -/
 def trace : (M →ₗ[R] M) →ₗ[R] R :=
   if H : ∃ s : Finset M, Nonempty (Basis s R M) then traceAux R H.choose_spec.some else 0
-
-variable {M}
 
 open Classical in
 /-- Auxiliary lemma for `trace_eq_matrix_trace`. -/
@@ -124,7 +121,7 @@ variable (N P : Type*) [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R 
 variable {ι : Type*}
 
 /-- The trace of a linear map correspond to the contraction pairing under the isomorphism
- `End(M) ≃ M* ⊗ M`-/
+ `End(M) ≃ M* ⊗ M` -/
 theorem trace_eq_contract_of_basis [Finite ι] (b : Basis ι R M) :
     LinearMap.trace R M ∘ₗ dualTensorHom R M M = contractLeft R M := by
   classical
@@ -139,8 +136,8 @@ theorem trace_eq_contract_of_basis [Finite ι] (b : Basis ι R M) :
     rw [Matrix.StdBasisMatrix.trace_zero j i (1 : R) hij]
     simp [Finsupp.single_eq_pi_single, hij]
 
-/-- The trace of a linear map correspond to the contraction pairing under the isomorphism
- `End(M) ≃ M* ⊗ M`-/
+/-- The trace of a linear map corresponds to the contraction pairing under the isomorphism
+`End(M) ≃ M* ⊗ M`. -/
 theorem trace_eq_contract_of_basis' [Fintype ι] [DecidableEq ι] (b : Basis ι R M) :
     LinearMap.trace R M = contractLeft R M ∘ₗ (dualTensorHomEquivOfBasis b).symm.toLinearMap := by
   simp [LinearEquiv.eq_comp_toLinearMap_symm, trace_eq_contract_of_basis b]
@@ -149,8 +146,8 @@ section
 variable (R M)
 variable [Module.Free R M] [Module.Finite R M] [Module.Free R N] [Module.Finite R N]
 
-/-- When `M` is finite free, the trace of a linear map correspond to the contraction pairing under
-the isomorphism `End(M) ≃ M* ⊗ M`-/
+/-- When `M` is finite free, the trace of a linear map corresponds to the contraction pairing under
+the isomorphism `End(M) ≃ M* ⊗ M`. -/
 @[simp]
 theorem trace_eq_contract : LinearMap.trace R M ∘ₗ dualTensorHom R M M = contractLeft R M :=
   trace_eq_contract_of_basis (Module.Free.chooseBasis R M)
@@ -160,13 +157,13 @@ theorem trace_eq_contract_apply (x : Module.Dual R M ⊗[R] M) :
     (LinearMap.trace R M) ((dualTensorHom R M M) x) = contractLeft R M x := by
   rw [← comp_apply, trace_eq_contract]
 
-/-- When `M` is finite free, the trace of a linear map correspond to the contraction pairing under
-the isomorphism `End(M) ≃ M* ⊗ M`-/
+/-- When `M` is finite free, the trace of a linear map corresponds to the contraction pairing under
+the isomorphism `End(M) ≃ M* ⊗ M`. -/
 theorem trace_eq_contract' :
     LinearMap.trace R M = contractLeft R M ∘ₗ (dualTensorHomEquiv R M M).symm.toLinearMap :=
   trace_eq_contract_of_basis' (Module.Free.chooseBasis R M)
 
-/-- The trace of the identity endomorphism is the dimension of the free module -/
+/-- The trace of the identity endomorphism is the dimension of the free module. -/
 @[simp]
 theorem trace_one : trace R M 1 = (finrank R M : R) := by
   cases subsingleton_or_nontrivial R
@@ -175,7 +172,7 @@ theorem trace_one : trace R M 1 = (finrank R M : R) := by
   rw [trace_eq_matrix_trace R b, toMatrix_one, finrank_eq_card_chooseBasisIndex]
   simp
 
-/-- The trace of the identity endomorphism is the dimension of the free module -/
+/-- The trace of the identity endomorphism is the dimension of the free module. -/
 @[simp]
 theorem trace_id : trace R M id = (finrank R M : R) := by rw [← one_eq_id, trace_one]
 

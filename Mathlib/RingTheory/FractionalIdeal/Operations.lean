@@ -180,13 +180,10 @@ theorem mem_span_mul_finite_of_mem_mul {I J : FractionalIdeal S P} {x : P} (hx :
     ∃ T T' : Finset P, (T : Set P) ⊆ I ∧ (T' : Set P) ⊆ J ∧ x ∈ span R (T * T' : Set P) :=
   Submodule.mem_span_mul_finite_of_mem_mul (by simpa using mem_coe.mpr hx)
 
-variable (S)
-
+variable (S) in
 theorem coeIdeal_fg (inj : Function.Injective (algebraMap R P)) (I : Ideal R) :
     FG ((I : FractionalIdeal S P) : Submodule R P) ↔ I.FG :=
   coeSubmodule_fg _ inj _
-
-variable {S}
 
 theorem fg_unit (I : (FractionalIdeal S P)ˣ) : FG (I : Submodule R P) :=
   Submodule.fg_unit <| Units.map (coeSubmoduleHom S P).toMonoidHom I
@@ -690,8 +687,7 @@ theorem mem_singleton_mul {x y : P} {I : FractionalIdeal S P} :
   · rintro ⟨y', hy', rfl⟩
     exact mul_mem_mul ((mem_spanSingleton S).mpr ⟨1, one_smul _ _⟩) hy'
 
-variable (K)
-
+variable (K) in
 theorem mk'_mul_coeIdeal_eq_coeIdeal {I J : Ideal R₁} {x y : R₁} (hy : y ∈ R₁⁰) :
     spanSingleton R₁⁰ (IsLocalization.mk' K x ⟨y, hy⟩) * I = (J : FractionalIdeal R₁⁰ K) ↔
       Ideal.span {x} * I = Ideal.span {y} * J := by
@@ -708,8 +704,6 @@ theorem mk'_mul_coeIdeal_eq_coeIdeal {I J : Ideal R₁} {x y : R₁} (hy : y ∈
     mul_assoc, spanSingleton_mul_spanSingleton, ← mul_assoc, spanSingleton_mul_spanSingleton,
     mul_comm (mk' _ _ _), ← IsLocalization.mk'_eq_mul_mk'_one, mul_comm (mk' _ _ _), ←
     IsLocalization.mk'_eq_mul_mk'_one, IsLocalization.mk'_self, spanSingleton_one, one_mul]
-
-variable {K}
 
 theorem spanSingleton_mul_coeIdeal_eq_coeIdeal {I J : Ideal R₁} {z : K} :
     spanSingleton R₁⁰ z * (I : FractionalIdeal R₁⁰ K) = J ↔

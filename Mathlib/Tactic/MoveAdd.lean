@@ -5,6 +5,7 @@ Authors: Arthur Paulino, Damiano Testa
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Lean.Meta
+import Mathlib.Order.Defs.LinearOrder
 
 /-!
 

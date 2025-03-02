@@ -58,7 +58,7 @@ def mulEnergy (s t : Finset α) : ℕ :=
 scoped[Combinatorics.Additive] notation3:max "Eₘ[" s ", " t "]" => Finset.mulEnergy s t
 
 /-- The additive energy of two finsets `s` and `t` in a group is the number of quadruples
-`(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ + b₁ = a₂ + b₂`.-/
+`(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ + b₁ = a₂ + b₂`. -/
 scoped[Combinatorics.Additive] notation3:max "E[" s ", " t "]" => Finset.addEnergy s t
 
 /-- The multiplicative energy of a finset `s` in a group is the number of quadruples

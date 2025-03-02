@@ -47,7 +47,7 @@ lemma zagierSet_lower_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) : 0 < 
   · apply_fun (· % 4) at h
     simp [mul_assoc, Nat.add_mod] at h
   all_goals
-    cases' (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e e
+    rcases (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e | e
     all_goals
       simp only [e, self_eq_add_left, ne_eq, add_eq_zero, and_false, not_false_eq_true,
         mul_eq_left₀, reduceCtorEq] at h
@@ -158,7 +158,7 @@ theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (comple
     replace mem := (mul_left_cancel₀ two_ne_zero mem).symm
     subst mem
     rw [show x * x + 4 * x * z = x * (x + 4 * z) by linarith] at h
-    cases' (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e e
+    rcases (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e | e
     · rw [e, mul_one] at h
       simp_all [h, show z = 0 by linarith [e]]
     · simp only [e, mul_left_eq_self₀, add_eq_zero, and_false, or_false, reduceCtorEq] at h

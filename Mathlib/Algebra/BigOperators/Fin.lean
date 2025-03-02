@@ -427,7 +427,7 @@ theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) ×
     simp
     rfl
 
-/-- `finSigmaFinEquiv` on `Fin 1 × f` is just `f`-/
+/-- `finSigmaFinEquiv` on `Fin 1 × f` is just `f` -/
 theorem finSigmaFinEquiv_one {n : Fin 1 → ℕ} (ij : (i : Fin 1) × Fin (n i)) :
     (finSigmaFinEquiv ij : ℕ) = ij.2 := by
   rw [finSigmaFinEquiv_apply, add_left_eq_self]

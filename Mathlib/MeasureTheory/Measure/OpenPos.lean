@@ -132,13 +132,10 @@ theorem eqOn_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict s] g) (hf : Contin
         (hg.mono this)).of_subset_closure
     hf hg this hU
 
-variable (μ)
-
+variable (μ) in
 theorem _root_.Continuous.ae_eq_iff_eq {f g : X → Y} (hf : Continuous f) (hg : Continuous g) :
     f =ᵐ[μ] g ↔ f = g :=
   ⟨fun h => eq_of_ae_eq h hf hg, fun h => h ▸ EventuallyEq.rfl⟩
-
-variable {μ}
 
 theorem _root_.Continuous.isOpenPosMeasure_map [OpensMeasurableSpace X]
     {Z : Type*} [TopologicalSpace Z] [MeasurableSpace Z] [BorelSpace Z]

@@ -56,12 +56,30 @@ def nerveEquiv (C : Type u) [Category.{v} C] : nerve C _⦋0⦌ ≃ C where
   left_inv f := ComposableArrows.ext₀ rfl
   right_inv f := rfl
 
-namespace Nerve
+namespace nerve
 
 variable {C : Type*} [Category C] {n : ℕ}
 
 lemma δ₀_eq {x : nerve C _⦋n + 1⦌} : (nerve C).δ (0 : Fin (n + 2)) x = x.δ₀ := rfl
 
-end Nerve
+lemma σ₀_mk₀_eq (x : C) : (nerve C).σ (0 : Fin 1) (.mk₀ x) = .mk₁ (𝟙 x) :=
+  ComposableArrows.ext₁ rfl rfl (by simp; rfl)
+
+section
+
+variable {X₀ X₁ X₂ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂)
+
+theorem δ₂_mk₂_eq : (nerve C).δ 2 (ComposableArrows.mk₂ f g) = ComposableArrows.mk₁ f :=
+  ComposableArrows.ext₁ rfl rfl (by simp; rfl)
+
+theorem δ₀_mk₂_eq : (nerve C).δ 0 (ComposableArrows.mk₂ f g) = ComposableArrows.mk₁ g :=
+  ComposableArrows.ext₁ rfl rfl (by simp; rfl)
+
+theorem δ₁_mk₂_eq : (nerve C).δ 1 (ComposableArrows.mk₂ f g) = ComposableArrows.mk₁ (f ≫ g) :=
+  ComposableArrows.ext₁ rfl rfl (by simp; rfl)
+
+end
+
+end nerve
 
 end CategoryTheory

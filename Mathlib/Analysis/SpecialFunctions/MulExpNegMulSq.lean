@@ -33,7 +33,7 @@ open scoped Topology
 
 namespace Real
 
-/-! ### Definition and properties of `fun x => x * Real.exp (- (ε * x * x))`-/
+/-! ### Definition and properties of `fun x => x * Real.exp (- (ε * x * x))` -/
 
 /--
 Mapping `fun ε x => x * Real.exp (- (ε * x * x))`. By composition, it can be used to transform

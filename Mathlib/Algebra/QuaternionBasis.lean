@@ -33,7 +33,12 @@ namespace QuaternionAlgebra
 Note that for definitional convenience, `k` is provided as a field even though `i_mul_j` fully
 determines it. -/
 structure Basis {R : Type*} (A : Type*) [CommRing R] [Ring A] [Algebra R A] (c₁ c₂ c₃ : R) where
-  (i j k : A)
+  /-- The first imaginary unit -/
+  i : A
+  /-- The second imaginary unit -/
+  j : A
+  /-- The third imaginary unit -/
+  k : A
   i_mul_i : i * i = c₁ • (1 : A) + c₂ • i
   j_mul_j : j * j = c₃ • (1 : A)
   i_mul_j : i * j = k
@@ -54,8 +59,7 @@ protected theorem ext ⦃q₁ q₂ : Basis A c₁ c₂ c₃⦄ (hi : q₁.i = q�
   rw [← q₁_i_mul_j, ← q₂_i_mul_j]
   congr
 
-variable (R)
-
+variable (R) in
 /-- There is a natural quaternionic basis for the `QuaternionAlgebra`. -/
 @[simps i j k]
 protected def self : Basis ℍ[R,c₁,c₂,c₃] c₁ c₂ c₃ where
@@ -66,8 +70,6 @@ protected def self : Basis ℍ[R,c₁,c₂,c₃] c₁ c₂ c₃ where
   k := ⟨0, 0, 0, 1⟩
   i_mul_j := by ext <;> simp
   j_mul_i := by ext <;> simp
-
-variable {R}
 
 instance : Inhabited (Basis ℍ[R,c₁,c₂,c₃] c₁ c₂ c₃) :=
   ⟨Basis.self R⟩

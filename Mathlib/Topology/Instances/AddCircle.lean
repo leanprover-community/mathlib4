@@ -137,6 +137,10 @@ theorem coe_sub (x y : 𝕜) : (↑(x - y) : AddCircle p) = (x : AddCircle p) - 
 theorem coe_neg {x : 𝕜} : (↑(-x) : AddCircle p) = -(x : AddCircle p) :=
   rfl
 
+@[norm_cast]
+theorem coe_zero : ↑(0 : 𝕜) = (0 : AddCircle p) :=
+  rfl
+
 theorem coe_eq_zero_iff {x : 𝕜} : (x : AddCircle p) = 0 ↔ ∃ n : ℤ, n • p = x := by
   simp [AddSubgroup.mem_zmultiples_iff]
 
@@ -397,7 +401,7 @@ theorem addOrderOf_div_of_gcd_eq_one {m n : ℕ} (hn : 0 < n) (h : m.gcd n = 1) 
 
 theorem addOrderOf_div_of_gcd_eq_one' {m : ℤ} {n : ℕ} (hn : 0 < n) (h : m.natAbs.gcd n = 1) :
     addOrderOf (↑(↑m / ↑n * p) : AddCircle p) = n := by
-  induction m
+  cases m
   · simp only [Int.ofNat_eq_coe, Int.cast_natCast, Int.natAbs_ofNat] at h ⊢
     exact addOrderOf_div_of_gcd_eq_one hn h
   · simp only [Int.cast_negSucc, neg_div, neg_mul, coe_neg, addOrderOf_neg]

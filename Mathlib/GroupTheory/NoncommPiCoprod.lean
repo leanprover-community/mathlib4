@@ -326,7 +326,7 @@ theorem noncommPiCoprod_apply (comm) (u : (i : ι) → H i) :
     Subgroup.noncommPiCoprod comm u = Finset.noncommProd Finset.univ (fun i ↦ u i)
       (fun i _ j _ h ↦ comm h _ _ (u i).prop (u j).prop) := by
   simp only [Subgroup.noncommPiCoprod, MonoidHom.noncommPiCoprod,
-    coeSubtype, MonoidHom.coe_mk, OneHom.coe_mk]
+    coe_subtype, MonoidHom.coe_mk, OneHom.coe_mk]
 
 end CommutingSubgroups
 

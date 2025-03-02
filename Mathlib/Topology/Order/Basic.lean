@@ -489,6 +489,22 @@ theorem Dense.topology_eq_generateFrom [OrderTopology α] [DenselyOrdered α] {s
       let _ := generateFrom (Ioi '' s ∪ Iio '' s)
       exact isOpen_iUnion fun x ↦ isOpen_iUnion fun h ↦ .basic _ <| .inr <| mem_image_of_mem _ h.1
 
+theorem PredOrder.hasBasis_nhds_Ioc_of_exists_gt [OrderTopology α] [PredOrder α] {a : α}
+    (ha : ∃ u, a < u) : (𝓝 a).HasBasis (a < ·) (Set.Ico a ·) :=
+  PredOrder.nhdsGE_eq_nhds a ▸ nhdsGE_basis_of_exists_gt ha
+
+theorem PredOrder.hasBasis_nhds_Ioc [OrderTopology α] [PredOrder α] [NoMaxOrder α] {a : α} :
+    (𝓝 a).HasBasis (a < ·) (Set.Ico a ·) :=
+  PredOrder.hasBasis_nhds_Ioc_of_exists_gt (exists_gt a)
+
+theorem SuccOrder.hasBasis_nhds_Ioc_of_exists_lt [OrderTopology α] [SuccOrder α] {a : α}
+    (ha : ∃ l, l < a) : (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
+  SuccOrder.nhdsLE_eq_nhds a ▸ nhdsLE_basis_of_exists_lt ha
+
+theorem SuccOrder.hasBasis_nhds_Ioc [OrderTopology α] [SuccOrder α] {a : α} [NoMinOrder α] :
+    (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
+  SuccOrder.hasBasis_nhds_Ioc_of_exists_lt (exists_lt a)
+
 variable (α)
 
 /-- Let `α` be a densely ordered linear order with order topology. If `α` is a separable space, then

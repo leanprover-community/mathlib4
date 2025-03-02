@@ -397,6 +397,27 @@ lemma coroot_eq_neg_iff :
     P.coroot i = - P.coroot j ↔ j = P.reflection_perm i i :=
   P.flip.root_eq_neg_iff
 
+lemma neg_mem_range_root_iff {x : M} :
+    -x ∈ range P.root ↔ x ∈ range P.root := by
+  suffices ∀ x : M, -x ∈ range P.root → x ∈ range P.root by
+    refine ⟨this x, fun h ↦ ?_⟩
+    rw [← neg_neg x] at h
+    exact this (-x) h
+  intro y ⟨i, hi⟩
+  exact ⟨P.reflection_perm i i, by simp [neg_eq_iff_eq_neg.mpr hi]⟩
+
+lemma neg_mem_range_coroot_iff {x : N} :
+    -x ∈ range P.coroot ↔ x ∈ range P.coroot :=
+  P.flip.neg_mem_range_root_iff
+
+lemma neg_root_mem :
+    - P.root i ∈ range P.root :=
+  ⟨P.reflection_perm i i, by simp⟩
+
+lemma neg_coroot_mem :
+    - P.coroot i ∈ range P.coroot :=
+  P.flip.neg_root_mem i
+
 /-- If `R` is an `S`-algebra, a root pairing over `R` is said to be valued in `S` if the pairing
 between a root and coroot always belongs to `S`.
 
@@ -444,6 +465,16 @@ lemma algebraMap_pairingIn [P.IsValuedIn S] (i j : ι) :
 lemma pairingIn_same [FaithfulSMul S R] [P.IsValuedIn S] (i : ι) :
     P.pairingIn S i i = 2 :=
   FaithfulSMul.algebraMap_injective S R <| by simp [map_ofNat]
+
+@[simp]
+lemma pairingIn_reflection_perm_self_left [FaithfulSMul S R] [P.IsValuedIn S] (i j : ι) :
+    P.pairingIn S (P.reflection_perm i i) j = - P.pairingIn S i j := by
+  simp [← (FaithfulSMul.algebraMap_injective S R).eq_iff]
+
+@[simp]
+lemma pairingIn_reflection_perm_self_right [FaithfulSMul S R] [P.IsValuedIn S] (i j : ι) :
+    P.pairingIn S i (P.reflection_perm j j) = - P.pairingIn S i j := by
+  simp [← (FaithfulSMul.algebraMap_injective S R).eq_iff]
 
 lemma IsValuedIn.trans (T : Type*) [CommRing T] [Algebra T S] [Algebra T R] [IsScalarTower T S R]
     [P.IsValuedIn T] :
@@ -496,6 +527,10 @@ abbrev rootSpan := span R (range P.root)
 
 /-- The linear span of coroots. -/
 abbrev corootSpan := span R (range P.coroot)
+
+instance [Finite ι] : Module.Finite R P.rootSpan := Finite.span_of_finite R <| finite_range _
+
+instance [Finite ι] : Module.Finite R P.corootSpan := Finite.span_of_finite R <| finite_range _
 
 lemma coe_rootSpan_dualAnnihilator_map :
     P.rootSpan.dualAnnihilator.map P.toDualRight.symm = {x | ∀ i, P.root' i x = 0} := by
