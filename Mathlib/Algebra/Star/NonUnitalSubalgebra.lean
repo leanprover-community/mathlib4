@@ -75,6 +75,14 @@ def subtype (s : S) : s →⋆ₙₐ[R] A :=
     toFun := Subtype.val
     map_star' := fun _ => rfl }
 
+variable {s} in
+@[simp]
+lemma subtype_apply (x : s) : subtype s x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (subtype s) :=
+  Subtype.coe_injective
+
 @[simp]
 theorem coe_subtype : (subtype s : s → A) = Subtype.val :=
   rfl

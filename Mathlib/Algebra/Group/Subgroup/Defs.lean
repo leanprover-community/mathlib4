@@ -194,6 +194,16 @@ instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [S
 protected def subtype : H →* G where
   toFun := ((↑) : H → G); map_one' := rfl; map_mul' := fun _ _ => rfl
 
+variable {H} in
+@[to_additive (attr := simp)]
+lemma subtype_apply (x : H) :
+    SubgroupClass.subtype H x = x := rfl
+
+@[to_additive]
+lemma subtype_injective :
+    Function.Injective (SubgroupClass.subtype H) :=
+  Subtype.coe_injective
+
 @[to_additive (attr := simp)]
 theorem coe_subtype : (SubgroupClass.subtype H : H → G) = ((↑) : H → G) := by
   rfl
@@ -522,6 +532,15 @@ protected def subtype : H →* G where
   toFun := ((↑) : H → G); map_one' := rfl; map_mul' _ _ := rfl
 
 @[to_additive (attr := simp)]
+lemma subtype_apply {s : Subgroup G} (x : s) :
+    s.subtype x = x := rfl
+
+@[to_additive]
+lemma subtype_injective (s : Subgroup G) :
+    Function.Injective s.subtype :=
+  Subtype.coe_injective
+
+@[to_additive (attr := simp)]
 theorem coe_subtype : ⇑ H.subtype = ((↑) : H → G) :=
   rfl
 
@@ -529,10 +548,6 @@ theorem coe_subtype : ⇑ H.subtype = ((↑) : H → G) :=
 alias coeSubtype := coe_subtype
 @[deprecated (since := "2025-02-18")]
 alias _root_.AddSubgroup.coeSubtype := AddSubgroup.coe_subtype
-
-@[to_additive]
-theorem subtype_injective : Function.Injective (Subgroup.subtype H) :=
-  Subtype.coe_injective
 
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive "The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`."]
