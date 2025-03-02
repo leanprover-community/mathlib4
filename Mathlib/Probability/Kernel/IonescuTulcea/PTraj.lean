@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
 import Mathlib.MeasureTheory.MeasurableSpace.PreorderRestrict
-import Mathlib.Probability.Kernel.Composition.CompProd
+import Mathlib.Probability.Kernel.Composition.Prod
 
 /-!
 # Consecutive composition of kernels
@@ -138,7 +138,7 @@ lemma measurable_IocProdIoc {a b c : ℕ} : Measurable (IocProdIoc (X := X) a b 
 
 /-- Identifying `{n + 1}` with `Ioc n (n + 1)`, as a measurable equiv on dependent functions. -/
 def MeasurableEquiv.piSingleton (a : ℕ) : (X (a + 1)) ≃ᵐ ((i : Ioc a (a + 1)) → X i) where
-  toFun x i := (Nat.mem_Ioc_succ i.2).symm ▸ x
+  toFun x i := (Nat.mem_Ioc_succ.1 i.2).symm ▸ x
   invFun x := x ⟨a + 1, right_mem_Ioc.2 a.lt_succ_self⟩
   left_inv := fun x ↦ by simp
   right_inv := fun x ↦ funext fun i ↦ by cases Nat.mem_Ioc_succ' i; rfl
@@ -300,15 +300,13 @@ first one being the identity. It allows to compute integrals. -/
 lemma ptraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) : ptraj κ a b =
     (Kernel.id ×ₖ (ptraj κ a b).map (restrict₂ Ioc_subset_Iic_self)).map (IicProdIoc a b) := by
   obtain hba | hab := le_total b a
-  · rw [ptraj_le hba, IicProdIoc_le hba, map_comp_right, ← fst_eq, @fst_prod _ _ _ _ _ _ _ _ _ ?_,
+  · rw [ptraj_le hba, IicProdIoc_le hba, map_comp_right, ← fst_eq, deterministic_map, fst_prod,
       id_map]
-    · exact IsMarkovKernel.map _ (measurable_restrict₂ _)
     all_goals fun_prop
   induction b, hab using Nat.le_induction with
   | base =>
     ext1 x
-    rw [ptraj_self, id_map, map_apply, prod_apply, IicProdIoc_self, ← Measure.fst,
-      Measure.fst_prod]
+    rw [ptraj_self, id_map, map_apply, prod_apply, IicProdIoc_self, ← Measure.fst, Measure.fst_prod]
     all_goals fun_prop
   | succ k h hk =>
     have : (IicProdIoc (X := X) k (k + 1)) ∘ (Prod.map (IicProdIoc a k) id) =
