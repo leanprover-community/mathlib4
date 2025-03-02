@@ -25,7 +25,13 @@ a morphism in `I`, then the functor `Hom(A, _)` should commute
 with the filtering colimits corresponding to relative
 `I`-cell complexes. (This last condition shall hold when `κ`
 is the successor of an infinite cardinal `c` such that all
-these objects `A` are `c`-presentable, see the file `Presentable.Basic`.)
+these objects `A` are `c`-presentable, see the file `Mathlib.CategoryTheory.Presentable.Basic`.)
+
+Given `I : MorphismProperty C`, we shall say that `I` permits
+the small object argument if there exists `κ` such that
+`IsCardinalForSmallObjectArgument I κ` holds. See the file
+`Mathlib.CategoryTheory.SmallObject.Basic` for the definition of this typeclass
+`HasSmallObjectArgument` and an outline of the proof.
 
 ## Main results
 
@@ -35,8 +41,13 @@ is a relative `I`-cell complex (see `SmallObject.relativeCellComplexιObj`)
 and that `πObj I κ f` has the right lifting property with respect to `I`
 (see `SmallObject.rlp_πObj`). This construction is obtained by
 iterating to the power `κ.ord.toType` the functor `Arrow C ⥤ Arrow C` defined
-in the file `SmallObject.Construction`. This factorization is functorial in `f`
+in the file `Mathlib.CategoryTheory.SmallObject.Construction`.
+This factorization is functorial in `f`
 and gives the property `HasFunctorialFactorization I.rlp.llp I.rlp`.
+Finally, the lemma `llp_rlp_of_isCardinalForSmallObjectArgument`
+(and its primed version) shows that the morphisms in `I.rlp.llp` are exactly
+the retracts of the transfinite compositions (of shape `κ.ord.toType`) of
+pushouts of coproducts of morphisms in `I`.
 
 ## References
 - https://ncatlab.org/nlab/show/small+object+argument
@@ -63,7 +74,7 @@ class IsCardinalForSmallObjectArgument (κ : Cardinal.{w}) [Fact κ.IsRegular]
   locallySmall : LocallySmall.{w} C := by infer_instance
   hasPushouts : HasPushouts C := by infer_instance
   hasCoproducts : HasCoproducts.{w} C := by infer_instance
-  hasIterationOfShape : HasIterationOfShape κ.ord.toType C
+  hasIterationOfShape : HasIterationOfShape κ.ord.toType C := by infer_instance
   preservesColimit {A B X Y : C} (i : A ⟶ B) (_ : I i) (f : X ⟶ Y)
     (hf : RelativeCellComplex.{w} (fun (_ : κ.ord.toType) ↦ I.homFamily) f) :
     PreservesColimit hf.F (coyoneda.obj (Opposite.op A))
@@ -435,6 +446,35 @@ lemma hasFunctorialFactorization :
     HasFunctorialFactorization I.rlp.llp I.rlp where
   nonempty_functorialFactorizationData :=
     ⟨functorialFactorizationData I κ⟩
+
+/-- If `κ` is a suitable cardinal for the small object argument for `I : MorphismProperty C`,
+then the class `I.rlp.llp` is exactly the class of morphisms that are retracts
+of transfinite compositions (of shape `κ.ord.toType`) of pushouts of coproducts
+of maps in `I`. -/
+lemma llp_rlp_of_isCardinalForSmallObjectArgument' :
+    I.rlp.llp = (transfiniteCompositionsOfShape
+      (coproducts.{w} I).pushouts κ.ord.toType).retracts := by
+  refine le_antisymm ?_
+    (retracts_transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp I κ.ord.toType)
+  intro X Y f hf
+  have sq : CommSq (ιObj I κ f) f (πObj I κ f) (𝟙 _) := ⟨by simp⟩
+  have := hf _ (rlp_πObj I κ f)
+  refine ⟨_, _, _, ?_, transfiniteCompositionsOfShape_ιObj I κ f⟩
+  exact
+    { i := Arrow.homMk (𝟙 _) sq.lift
+      r := Arrow.homMk (𝟙 _) (πObj I κ f) }
+
+/-- If `κ` is a suitable cardinal for the small object argument for `I : MorphismProperty C`,
+then the class `I.rlp.llp` is exactly the class of morphisms that are retracts
+of transfinite compositions of pushouts of coproducts of maps in `I`. -/
+lemma llp_rlp_of_isCardinalForSmallObjectArgument :
+    I.rlp.llp =
+      (transfiniteCompositions.{w} (coproducts.{w} I).pushouts).retracts := by
+  refine le_antisymm ?_
+    (retracts_transfiniteComposition_pushouts_coproducts_le_llp_rlp I)
+  rw [llp_rlp_of_isCardinalForSmallObjectArgument' I κ]
+  apply retracts_monotone
+  apply transfiniteCompositionsOfShape_le_transfiniteCompositions
 
 end SmallObject
 

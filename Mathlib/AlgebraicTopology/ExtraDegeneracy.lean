@@ -51,8 +51,6 @@ namespace Augmented
 
 variable {C : Type*} [Category C]
 
--- Porting note: in the formulation of the axioms `s_comp_δ₀`, etc, `drop.obj X` has been
--- replaced by `X.left` in order to have lemmas with LHS/RHS in normal form
 /-- The datum of an extra degeneracy is a technical condition on
 augmented simplicial objects. The morphisms `s'` and `s n` of the
 structure formally behave like extra degeneracies `σ (-1)`. -/
@@ -170,8 +168,8 @@ def shift {n : ℕ} {Δ : SimplexCategory} (f : ⦋n⦌ ⟶ Δ) : ⦋n + 1⦌ �
             intro h₂
             subst h₂
             exact h₁ (le_antisymm hi (Fin.zero_le _))
-          cases' Fin.eq_succ_of_ne_zero h₁ with j₁ hj₁
-          cases' Fin.eq_succ_of_ne_zero h₂ with j₂ hj₂
+          obtain ⟨j₁, hj₁⟩ := Fin.eq_succ_of_ne_zero h₁
+          obtain ⟨j₂, hj₂⟩ := Fin.eq_succ_of_ne_zero h₂
           substs hj₁ hj₂
           simpa only [shiftFun_succ] using f.toOrderHom.monotone (Fin.succ_le_succ_iff.mp hi) }
 
@@ -318,7 +316,7 @@ noncomputable def extraDegeneracy :
         erw [Fin.succ_succAbove_zero, ExtraDegeneracy.s_comp_π_0, ExtraDegeneracy.s_comp_π_0]
         dsimp
         simp only [WidePullback.lift_base_assoc]
-      · cases' Fin.eq_succ_of_ne_zero h with k hk
+      · obtain ⟨k, hk⟩ := Fin.eq_succ_of_ne_zero h
         subst hk
         erw [Fin.succ_succAbove_succ, ExtraDegeneracy.s_comp_π_succ,
           ExtraDegeneracy.s_comp_π_succ]
@@ -336,7 +334,7 @@ noncomputable def extraDegeneracy :
         erw [ExtraDegeneracy.s_comp_π_0, ExtraDegeneracy.s_comp_π_0]
         dsimp
         simp only [WidePullback.lift_base_assoc]
-      · cases' Fin.eq_succ_of_ne_zero h with k hk
+      · obtain ⟨k, hk⟩ := Fin.eq_succ_of_ne_zero h
         subst hk
         erw [Fin.succ_predAbove_succ, ExtraDegeneracy.s_comp_π_succ,
           ExtraDegeneracy.s_comp_π_succ]
