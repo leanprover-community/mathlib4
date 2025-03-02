@@ -286,18 +286,19 @@ section Field
 variable {F : Type u} [Field F] {W : Affine F}
 
 lemma C_addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
-    (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) : mk W (C <| W.addPolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) =
-      -(XClass W x₁ * XClass W x₂ * XClass W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂)) := by
-  simp only [addPolynomial_slope h₁ h₂ hxy, C_neg, mk, map_neg, neg_inj, _root_.map_mul]
-  rfl
+    (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
+    mk W (C <| W.addPolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) =
+      -(XClass W x₁ * XClass W x₂ * XClass W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂)) :=
+  congr_arg (mk W) <| W.C_addPolynomial_slope h₁ h₂ hxy
 
 lemma XYIdeal_eq₂ {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁)
-    (h₂ : W.Equation x₂ y₂) (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) :
+    (h₂ : W.Equation x₂ y₂) (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     XYIdeal W x₂ (C y₂) = XYIdeal W x₂ (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
   have hy₂ : y₂ = (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂).eval x₂ := by
     by_cases hx : x₁ = x₂
-    · rcases hx, Y_eq_of_Y_ne h₁ h₂ hx <| hxy hx with ⟨rfl, rfl⟩
-      field_simp [linePolynomial, sub_ne_zero_of_ne <| hxy rfl]
+    · have hy : y₁ ≠ W.negY x₂ y₂ := fun h => hxy ⟨hx, h⟩
+      rcases hx, Y_eq_of_Y_ne h₁ h₂ hx hy with ⟨rfl, rfl⟩
+      field_simp [linePolynomial, sub_ne_zero_of_ne hy]
     · field_simp [linePolynomial, slope_of_X_ne hx, sub_ne_zero_of_ne hx]
       ring1
   nth_rw 1 [hy₂]
@@ -346,7 +347,7 @@ private lemma XYIdeal'_mul_inv {x y : F} (h : W.Nonsingular x y) :
     XIdeal, FractionalIdeal.coe_ideal_span_singleton_mul_inv W.FunctionField <| XClass_ne_zero W x]
 
 lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
-    (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) :
+    (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     XIdeal W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) * (XYIdeal W x₁ (C y₁) * XYIdeal W x₂ (C y₂)) =
       YIdeal W (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) *
         XYIdeal W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂)
@@ -369,9 +370,10 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
     mem_map_iff_of_surjective _ AdjoinRoot.mk_surjective, ← span_insert, mem_span_insert',
     mem_span_singleton']
   by_cases hx : x₁ = x₂
-  · rcases hx, Y_eq_of_Y_ne h₁ h₂ hx (hxy hx) with ⟨rfl, rfl⟩
+  · have hy : y₁ ≠ W.negY x₂ y₂ := fun h => hxy ⟨hx, h⟩
+    rcases hx, Y_eq_of_Y_ne h₁ h₂ hx hy with ⟨rfl, rfl⟩
     let y := (y₁ - W.negY x₁ y₁) ^ 2
-    replace hxy := pow_ne_zero 2 <| sub_ne_zero_of_ne <| hxy rfl
+    replace hxy := pow_ne_zero 2 <| sub_ne_zero_of_ne hy
     refine ⟨1 + C (C <| y⁻¹ * 4) * W.polynomial,
       ⟨C <| C y⁻¹ * (C 4 * X ^ 2 + C (4 * x₁ + W.b₂) * X + C (4 * x₁ ^ 2 + W.b₂ * x₁ + 2 * W.b₄)),
         0, C (C y⁻¹) * (Y - W.negPolynomial), ?_⟩, by
@@ -404,7 +406,7 @@ lemma mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq {x y : F} (h : W.Nonsingular x y) :
       FractionalIdeal.coeIdeal_inj.mpr <| XYIdeal_neg_mul h).mpr ⟨_, XClass_ne_zero W _, rfl⟩
 
 lemma mk_XYIdeal'_mul_mk_XYIdeal' {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
-    (h₂ : W.Nonsingular x₂ y₂) (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) :
+    (h₂ : W.Nonsingular x₂ y₂) (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     ClassGroup.mk (XYIdeal' h₁) * ClassGroup.mk (XYIdeal' h₂) =
       ClassGroup.mk (XYIdeal' <| nonsingular_add h₁ h₂ hxy) := by
   rw [← _root_.map_mul]
@@ -509,13 +511,12 @@ noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) 
   map_zero' := rfl
   map_add' := by
     rintro (_ | @⟨x₁, y₁, h₁⟩) (_ | @⟨x₂, y₂, h₂⟩)
-    any_goals simp only [← zero_def, toClassFun, zero_add, add_zero]
-    obtain ⟨rfl, rfl⟩ | h := em (x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)
-    · rw [add_of_Y_eq rfl rfl]
+    any_goals simp only [toClassFun, ← zero_def, zero_add, add_zero]
+    by_cases hxy : x₁ = x₂ ∧ y₁ = W.negY x₂ y₂
+    · simp only [hxy.left, hxy.right, add_of_Y_eq rfl rfl]
       exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq h₂).symm
-    · have h hx hy := h ⟨hx, hy⟩
-      rw [add_of_imp h]
-      exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ h).symm
+    · simp only [add_some hxy]
+      exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ hxy).symm
 
 lemma toClass_zero : toClass (0 : W.Point) = 0 :=
   rfl
@@ -530,8 +531,9 @@ private lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
   · rw [← zero_def, zero_add, ← neg_eq_iff_eq_neg, neg_zero, eq_comm]
   · rw [neg_some, some.injEq]
     constructor
-    · contrapose!; intro h; rw [add_of_imp h]; exact some_ne_zero _
-    · exact fun ⟨hx, hy⟩ ↦ add_of_Y_eq hx hy
+    · contrapose
+      exact fun hxy => by simpa only [add_some hxy] using some_ne_zero _
+    · exact fun ⟨hx, hy⟩ => add_of_Y_eq hx hy
 
 lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
   constructor
