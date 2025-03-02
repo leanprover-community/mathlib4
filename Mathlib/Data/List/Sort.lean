@@ -217,6 +217,28 @@ theorem sorted_gt_listMap (hf : StrictMono f) :
 
 end StrictMono
 
+namespace StrictAnti
+
+variable {α β : Type*} [LinearOrder α] [Preorder β] {f : α → β} {l : List α}
+
+theorem sorted_le_listMap (hf : StrictAnti f) :
+    (l.map f).Sorted (· ≤ ·) ↔ l.Sorted (· ≥ ·) := by
+  simp only [Sorted, pairwise_map, hf.le_iff_le]
+
+theorem sorted_ge_listMap (hf : StrictAnti f) :
+    (l.map f).Sorted (· ≥ ·) ↔ l.Sorted (· ≤ ·) := by
+  simp only [Sorted, pairwise_map, hf.le_iff_le]
+
+theorem sorted_lt_listMap (hf : StrictAnti f) :
+    (l.map f).Sorted (· < ·) ↔ l.Sorted (· > ·) := by
+  simp only [Sorted, pairwise_map, hf.lt_iff_lt]
+
+theorem sorted_gt_listMap (hf : StrictAnti f) :
+    (l.map f).Sorted (· > ·) ↔ l.Sorted (· < ·) := by
+  simp only [Sorted, pairwise_map, hf.lt_iff_lt]
+
+end StrictAnti
+
 namespace OrderEmbedding
 
 variable {α β : Type*} [Preorder α] [Preorder β]
