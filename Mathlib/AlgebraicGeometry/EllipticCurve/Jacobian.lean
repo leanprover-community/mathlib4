@@ -148,7 +148,7 @@ section Jacobian
 /-! ### Jacobian coordinates -/
 
 /-- The scalar multiplication on a point representative. -/
-scoped instance instSMulPoint : SMul R <| Fin 3 → R :=
+scoped instance : SMul R <| Fin 3 → R :=
   ⟨fun u P => ![u ^ 2 * P x, u ^ 3 * P y, u * P z]⟩
 
 lemma smul_fin3 (P : Fin 3 → R) (u : R) : u • P = ![u ^ 2 * P x, u ^ 3 * P y, u * P z] :=
@@ -164,12 +164,13 @@ lemma comp_smul (f : R →+* S) (P : Fin 3 → R) (u : R) : f ∘ (u • P) = f 
 @[deprecated (since := "2025-01-30")] alias map_smul := comp_smul
 
 /-- The multiplicative action on a point representative. -/
-scoped instance instMulActionPoint : MulAction R <| Fin 3 → R where
+scoped instance : MulAction R <| Fin 3 → R where
   one_smul _ := by simp_rw [smul_fin3, one_pow, one_mul, fin3_def]
   mul_smul _ _ _ := by simp_rw [smul_fin3, mul_pow, mul_assoc, fin3_def_ext]
 
 /-- The equivalence setoid for a point representative. -/
-@[reducible] scoped instance instSetoidPoint : Setoid <| Fin 3 → R :=
+@[reducible]
+scoped instance : Setoid <| Fin 3 → R :=
   MulAction.orbitRel Rˣ <| Fin 3 → R
 
 variable (R) in
@@ -1169,7 +1170,8 @@ lemma neg_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
 
 private lemma nonsingular_neg_of_Z_ne_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z ≠ 0) :
     W.Nonsingular ![P x / P z ^ 2, W.toAffine.negY (P x / P z ^ 2) (P y / P z ^ 3), 1] :=
-  (nonsingular_some ..).mpr <| Affine.nonsingular_neg <| (nonsingular_of_Z_ne_zero hPz).mp hP
+  (nonsingular_some ..).mpr <| (Affine.nonsingular_neg ..).mpr <|
+    (nonsingular_of_Z_ne_zero hPz).mp hP
 
 lemma nonsingular_neg {P : Fin 3 → F} (hP : W.Nonsingular P) : W.Nonsingular <| W.neg P := by
   by_cases hPz : P z = 0
@@ -1417,7 +1419,7 @@ namespace Point
 lemma mk_point {P : PointClass R} (h : W'.NonsingularLift P) : (mk h).point = P :=
   rfl
 
-instance instZeroPoint [Nontrivial R] : Zero W'.Point :=
+instance [Nontrivial R] : Zero W'.Point :=
   ⟨⟨nonsingularLift_zero⟩⟩
 
 lemma zero_def [Nontrivial R] : (0 : W'.Point) = ⟨nonsingularLift_zero⟩ :=
@@ -1449,7 +1451,7 @@ Given a nonsingular rational point `P` on `W`, use `-P` instead of `neg P`. -/
 def neg (P : W.Point) : W.Point :=
   ⟨nonsingularLift_negMap P.nonsingular⟩
 
-instance instNegPoint : Neg W.Point :=
+instance : Neg W.Point :=
   ⟨neg⟩
 
 lemma neg_def (P : W.Point) : -P = P.neg :=
@@ -1463,7 +1465,7 @@ Given two nonsingular rational points `P` and `Q` on `W`, use `P + Q` instead of
 noncomputable def add (P Q : W.Point) : W.Point :=
   ⟨nonsingularLift_addMap P.nonsingular Q.nonsingular⟩
 
-noncomputable instance instAddPoint : Add W.Point :=
+noncomputable instance : Add W.Point :=
   ⟨add⟩
 
 lemma add_def (P Q : W.Point) : P + Q = P.add Q :=

@@ -157,7 +157,7 @@ lemma comp_smul (f : R →+* S) (P : Fin 3 → R) (u : R) : f ∘ (u • P) = f 
   ext n; fin_cases n <;> simp only [smul_fin3, comp_fin3] <;> map_simp
 
 /-- The equivalence setoid for a point representative. -/
-scoped instance instSetoidPoint : Setoid <| Fin 3 → R :=
+scoped instance : Setoid <| Fin 3 → R :=
   MulAction.orbitRel Rˣ <| Fin 3 → R
 
 variable (R) in
@@ -1248,7 +1248,8 @@ lemma neg_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
 
 private lemma nonsingular_neg_of_Z_ne_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z ≠ 0) :
     W.Nonsingular ![P x / P z, W.toAffine.negY (P x / P z) (P y / P z), 1] :=
-  (nonsingular_some ..).mpr <| Affine.nonsingular_neg <| (nonsingular_of_Z_ne_zero hPz).mp hP
+  (nonsingular_some ..).mpr <| (Affine.nonsingular_neg ..).mpr <|
+    (nonsingular_of_Z_ne_zero hPz).mp hP
 
 lemma nonsingular_neg {P : Fin 3 → F} (hP : W.Nonsingular P) : W.Nonsingular <| W.neg P := by
   by_cases hPz : P z = 0
@@ -1491,7 +1492,7 @@ namespace Point
 lemma mk_point {P : PointClass R} (h : W'.NonsingularLift P) : (mk h).point = P :=
   rfl
 
-instance instZeroPoint [Nontrivial R] : Zero W'.Point :=
+instance [Nontrivial R] : Zero W'.Point :=
   ⟨⟨nonsingularLift_zero⟩⟩
 
 lemma zero_def [Nontrivial R] : (0 : W'.Point) = ⟨nonsingularLift_zero⟩ :=
@@ -1523,7 +1524,7 @@ Given a nonsingular rational point `P` on `W`, use `-P` instead of `neg P`. -/
 def neg (P : W.Point) : W.Point :=
   ⟨nonsingularLift_negMap P.nonsingular⟩
 
-instance instNegPoint : Neg W.Point :=
+instance : Neg W.Point :=
   ⟨neg⟩
 
 lemma neg_def (P : W.Point) : -P = P.neg :=
@@ -1537,7 +1538,7 @@ Given two nonsingular rational points `P` and `Q` on `W`, use `P + Q` instead of
 noncomputable def add (P Q : W.Point) : W.Point :=
   ⟨nonsingularLift_addMap P.nonsingular Q.nonsingular⟩
 
-noncomputable instance instAddPoint : Add W.Point :=
+noncomputable instance : Add W.Point :=
   ⟨add⟩
 
 lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
