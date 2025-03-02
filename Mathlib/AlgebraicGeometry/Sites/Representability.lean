@@ -57,8 +57,7 @@ variable (F : Sheaf Scheme.zariskiTopology.{u} (Type u))
 
 namespace LocalRepresentability
 
-variable {F f}
-variable (i j k : ι)
+variable {F f} (i j k : ι)
 
 open Functor.relativelyRepresentable in
 /-- We get a family of gluing data by taking `U i = X i` and `V i j = (hf i).rep.pullback (f j)`. -/
