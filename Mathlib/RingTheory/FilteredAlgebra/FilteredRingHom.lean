@@ -5,6 +5,7 @@ Authors: HuanYu Zheng, Yi Yuan, Weichen Jiao
 -/
 import Mathlib.RingTheory.FilteredAlgebra.AssociatedGraded
 import Mathlib.Algebra.Ring.Hom.Defs
+import Mathlib.LinearAlgebra.Quotient.Basic
 /-!
 # The filtered ring morphisms on rings
 
@@ -301,12 +302,96 @@ variable [DecidableEq ι]
 theorem AssociatedGradedRingHom_apply (x : AssociatedGraded FR FR_lt) (i : ι) :
     (Gr[f] x) i = Gr(i)[f] (x i) := rfl
 
-theorem AssociatedGradedRingHom_comp: Gr[g].comp Gr[f] = Gr[g.comp f] :=
+theorem AssociatedGradedRingHom_comp_eq_comp : Gr[g].comp Gr[f] = Gr[g.comp f] :=
   RingHom.ext <| fun x ↦ congrFun
   (congrArg DFunLike.coe (FilteredAddGroupHom.AssociatedGradedAddMonoidHom_comp_eq_comp g.1 f.1)) x
 
 end DirectSum
 
 end FilteredRingHom
+
+end
+
+section
+
+variable {ι R A B C : Type*}
+
+variable [CommRing R] [Ring A] [Ring B] [Ring C] [Algebra R A] [Algebra R B] [Algebra R C]
+variable (FA : ι → Submodule R A) (FA_lt : outParam <| ι → Submodule R A)
+variable (FB : ι → Submodule R B) (FB_lt : outParam <| ι → Submodule R B)
+variable (FC : ι → Submodule R C) (FC_lt : outParam <| ι → Submodule R C)
+
+/-- A morphism between filtered rings that preserves both the algebra and
+filtered morphism structures.-/
+class FilteredAlgHom extends FilteredRingHom FA FA_lt FB FB_lt, A →ₐ[R] B
+
+/-- Reinterpret a `FilteredAlgHom` as a `AlgHom`. -/
+add_decl_doc FilteredAlgHom.toAlgHom
+
+instance : Coe (FilteredAlgHom FA FA_lt FB FB_lt) (FilteredRingHom FA FA_lt FB FB_lt) :=
+  ⟨fun a ↦ a.toFilteredRingHom⟩
+
+namespace FilteredAlgHom
+
+variable (g : FilteredAlgHom FB FB_lt FC FC_lt) (f : FilteredAlgHom FA FA_lt FB FB_lt)
+
+variable {FA FB FC FA_lt FB_lt FC_lt}
+
+/-- The composition of filtered ring morphisms,
+obtained from the composition of the underlying ring homomorphisms.-/
+def comp : FilteredAlgHom FA FA_lt FC FC_lt where
+  __ := g.toAlgHom.comp f.toAlgHom
+  pieces_wise ha := g.pieces_wise (f.pieces_wise ha)
+  pieces_wise_lt ha := g.pieces_wise_lt (f.pieces_wise_lt ha)
+
+/-- A filtered ring morphism restricted to its `i`-th filtration layer.-/
+abbrev piece_wise_hom (i : ι) : FA i →ₗ[R] FB i where
+  __ := f.1.piece_wise_hom i
+  map_smul' r x := SetCoe.ext (f.toAlgHom.map_smul_of_tower r x)
+
+/-- Additive group homomorphism (between direct sum of graded pieces) induced by
+`f : FilteredAddGroupHom FA FA_lt FB FB_lt`. -/
+abbrev GradedPieceHom (i : ι) : GradedPiece FA FA_lt i →ₗ[R] GradedPiece FB FB_lt i :=
+  Submodule.mapQ ((FA_lt i).comap (FA i).subtype) ((FB_lt i).comap (FB i).subtype)
+    (f.piece_wise_hom i) (fun x hx ↦ by simpa using f.pieces_wise_lt hx)
+
+@[inherit_doc]
+scoped[FilteredAlgHom] notation:9000 "Gr(" i ")[" f "]" => GradedPieceHom f i
+
+lemma GradedPieceHom_comp_apply (x : AssociatedGraded FA FA_lt) (i : ι) :
+    Gr(i)[g] (Gr(i)[f] (x i)) = Gr(i)[g.comp f] (x i) :=
+  FilteredRingHom.GradedPieceHom_comp_apply g.1 f.1 x i
+
+variable [OrderedAddCommMonoid ι] [hasGMul FA FA_lt] [hasGMul FB FB_lt] [hasGMul FC FC_lt]
+
+open FilteredAddGroupHom in
+/-- The induced graded algebra morphism between associated graded algebras
+from a filtered algebra morphism `f : FilteredRingHom FR FR_lt FS FS_lt`.-/
+noncomputable def AssociatedGradedAlgHom [DecidableEq ι] :
+    (AssociatedGraded FA FA_lt) →ₐ[R] (AssociatedGraded FB FB_lt) where
+  __ := f.1.AssociatedGradedRingHom
+  commutes' r := by
+    simp only [FilteredRingHom.AssociatedGradedRingHom, ZeroHom.toFun_eq_coe, AddMonoidHom.coe_mk,
+      AddMonoidHom.toZeroHom_coe, RingHom.toMonoidHom_eq_coe, RingHom.coe_monoidHom_mk,
+      DirectSum.algebraMap_apply, DirectSum.GAlgebra.toFun, GradedPiece.algebraMap, ZeroHom.coe_mk,
+      AssociatedGradedAddMonoidHom_apply_of, GradedPieceHom_apply_mk_eq_mk_piece_wise_hom]
+    congr
+    convert (f.piece_wise_hom 0).map_smul r 1
+    exact SetCoe.ext f.map_one.symm
+
+@[inherit_doc]
+scoped[FilteredAlgHom] notation:9000 "Gr[" f "]" => AssociatedGradedAlgHom f
+
+variable [DecidableEq ι]
+
+@[simp]
+theorem AssociatedGradedRingHom_apply (x : AssociatedGraded FA FA_lt) (i : ι) :
+    (Gr[f] x) i = Gr(i)[f] (x i) := rfl
+
+theorem AssociatedGradedRingHom_comp: Gr[g].comp Gr[f] = Gr[g.comp f] :=
+  AlgHom.ext <| fun x ↦ congrFun
+    (congrArg DFunLike.coe (FilteredRingHom.AssociatedGradedRingHom_comp_eq_comp g.1 f.1)) x
+
+end FilteredAlgHom
 
 end
