@@ -237,6 +237,7 @@ theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a :=
 
 @[gcongr] alias ⟨_, _root_.GCongr.Ici_subset_Ici_of_le⟩ := Ici_subset_Ici
 
+@[simp]
 theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b :=
   @Ici_subset_Ici αᵒᵈ _ _ _
 
