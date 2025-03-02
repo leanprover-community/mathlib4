@@ -2,6 +2,9 @@
 
 script_file=scripts/declarations_diff.lean
 
+git checkout master
+git checkout -
+
 getDeclarations () {
   # download the cache
   lake exe cache get Archive.lean Counterexamples.lean Mathlib.lean &&
