@@ -130,8 +130,7 @@ end NormalizedMooreComplex
 
 open NormalizedMooreComplex
 
-variable (C)
-
+variable (C) in
 /-- The (normalized) Moore complex of a simplicial object `X` in an abelian category `C`.
 
 The `n`-th object is intersection of
@@ -144,8 +143,6 @@ which maps each of these intersections of kernels to the next.
 def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
   obj := obj
   map f := map f
-
-variable {C}
 
 -- Porting note: removed @[simp] as it is not in normal form
 theorem normalizedMooreComplex_objD (X : SimplicialObject C) (n : ℕ) :
