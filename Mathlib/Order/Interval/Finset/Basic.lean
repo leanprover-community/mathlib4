@@ -402,6 +402,12 @@ theorem Ico_subset_Iic_self : Ico a b ⊆ Iic b :=
 theorem Ioo_subset_Iic_self : Ioo a b ⊆ Iic b :=
   Ioo_subset_Ioc_self.trans Ioc_subset_Iic_self
 
+def _root_.Equiv.Iic (a : α) : Iic a ≃ Set.Iic a :=
+    { toFun b := ⟨b.1, coe_Iic a ▸ mem_coe.2 b.2⟩
+      invFun b := ⟨b.1, by rw [← mem_coe, coe_Iic a]; exact b.2⟩
+      left_inv := fun _ ↦ rfl
+      right_inv := fun _ ↦ rfl }
+
 end LocallyFiniteOrderBot
 
 section LocallyFiniteOrderTop
