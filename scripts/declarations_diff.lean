@@ -7,7 +7,11 @@ import Lean.Elab.Command
 
 open Lean
 
-/-- Prints each declaration in the environment that is not an internal detail. -/
+/--
+Prints each declaration in the environment that is not an internal detail.
+
+CI uses the name of this command: if you change it, make sure to update the CI configuration.
+-/
 elab "#all_declarations" : command => do
   let sorted : Array String := (← getEnv).constants.map₁.fold (init := ∅) fun tot nm _ =>
     if nm.isInternalDetail then
@@ -17,7 +21,3 @@ elab "#all_declarations" : command => do
   --for n in sorted do
   --  dbg_trace n
   dbg_trace sorted
-
--- CI removes the initial `--` from the following line:
--- if you change it, make sure to update the CI configuration.
---#all_declarations
