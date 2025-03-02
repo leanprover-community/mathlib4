@@ -28,7 +28,7 @@ class Functor.PreservesInjectiveObjects (F : C ⥤ D) : Prop where
 
 /-- See `Functor.injective_obj_of_injective` for a variant taking `Injective X` as an explicit
 argument. -/
-theorem Functor.injective_obj (F : C ⥤ D) [F.PreservesInjectiveObjects] (X : C) [Injective X] :
+instance Functor.injective_obj (F : C ⥤ D) [F.PreservesInjectiveObjects] (X : C) [Injective X] :
     Injective (F.obj X) :=
   Functor.PreservesInjectiveObjects.injective_obj inferInstance
 

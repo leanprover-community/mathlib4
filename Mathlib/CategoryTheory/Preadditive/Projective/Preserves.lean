@@ -28,7 +28,7 @@ class Functor.PreservesProjectiveObjects (F : C ⥤ D) : Prop where
 
 /-- See `Functor.projective_obj_of_projective` for a variant taking `Projective X` as an explicit
 argument. -/
-theorem Functor.projective_obj (F : C ⥤ D) [F.PreservesProjectiveObjects] (X : C) [Projective X] :
+instance Functor.projective_obj (F : C ⥤ D) [F.PreservesProjectiveObjects] (X : C) [Projective X] :
     Projective (F.obj X) :=
   Functor.PreservesProjectiveObjects.projective_obj inferInstance
 
