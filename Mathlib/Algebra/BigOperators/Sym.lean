@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Sym.Sym2.Order
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 
 /-!
 # Lemmas on `Finset.sum` and `Finset.prod` involving `Finset.sym2`

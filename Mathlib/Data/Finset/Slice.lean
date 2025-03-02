@@ -6,7 +6,7 @@ Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Order.Antichain
 import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 
 /-!
 # `r`-sets and slice

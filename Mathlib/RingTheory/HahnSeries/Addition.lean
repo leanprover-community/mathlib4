@@ -6,7 +6,7 @@ Authors: Aaron Anderson
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.RingTheory.HahnSeries.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 
 /-!
 # Additive properties of Hahn series

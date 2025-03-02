@@ -5,7 +5,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Algebra.Group.Commute.Hom
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 
 /-!
 # Products (respectively, sums) over a finset or a multiset.

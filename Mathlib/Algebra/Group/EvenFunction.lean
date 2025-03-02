@@ -5,7 +5,7 @@ Authors: David Loeffler
 -/
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 
 /-!
 # Even and odd functions

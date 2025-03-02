@@ -9,7 +9,7 @@ import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 
 /-!
 # Fibonacci Numbers

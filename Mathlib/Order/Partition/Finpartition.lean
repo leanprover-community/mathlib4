@@ -9,7 +9,7 @@ import Mathlib.Data.Setoid.Basic
 import Mathlib.Order.Atoms
 import Mathlib.Order.SupIndep
 import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 
 /-!
 # Finite partitions

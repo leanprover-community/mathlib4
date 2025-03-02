@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.GroupTheory.OreLocalization.Basic
 import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 
 /-!
 # Localizations of commutative monoids

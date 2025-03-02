@@ -5,7 +5,7 @@ Authors: Anne Baanen, Floris van Doorn
 -/
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Data.List.FinRange
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 
 /-!
 # `norm_num` plugin for big operators
