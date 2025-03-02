@@ -405,6 +405,9 @@ theorem Ioo_subset_Iic_self : Ioo a b ⊆ Iic b :=
 theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
   disjoint_left.2 fun _ hax hbcx ↦ (mem_Iic.1 hax).not_lt <| lt_of_le_of_lt h (mem_Ioc.1 hbcx).1
 
+/-- An equivalence between `Finset.Iic a` and `Set.Iic a`. Can be used jointly with
+`Equiv.piCongrLeft` for instance to get an equiv
+`(Π i : Finset.Iic a, π i) ≃ (Π i : Set.Iic a, π i)`. -/
 def _root_.Equiv.Iic (a : α) : Iic a ≃ Set.Iic a :=
     { toFun b := ⟨b.1, coe_Iic a ▸ mem_coe.2 b.2⟩
       invFun b := ⟨b.1, by rw [← mem_coe, coe_Iic a]; exact b.2⟩
