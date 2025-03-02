@@ -214,12 +214,32 @@ def lmap : (⨁ i, M i) →ₗ[R] ⨁ i, N i := DFinsupp.mapRange.linearMap f
 
 @[simp] theorem lmap_apply (x i) : lmap f x i = f i (x i) := rfl
 
+@[simp] lemma lmap_of [DecidableEq ι] (i : ι) (x : M i) :
+    lmap f (of M i x) = of N i (f i x) :=
+  DFinsupp.mapRange_single (hf := fun _ => map_zero _)
+
 @[simp] theorem lmap_lof [DecidableEq ι] (i) (x : M i) :
     lmap f (lof R _ _ _ x) = lof R _ _ _ (f i x) :=
   DFinsupp.mapRange_single (hf := fun _ ↦ map_zero _)
 
+@[simp] lemma lmap_id :
+    (lmap (fun i ↦ LinearMap.id (R := R) (M := M i))) = LinearMap.id :=
+  DFinsupp.mapRange.linearMap_id
+
+@[simp] lemma lmap_comp {K : ι → Type*} [∀ i, AddCommMonoid (K i)] [∀ i, Module R (K i)]
+    (g : ∀ (i : ι), N i →ₗ[R] K i) :
+    (lmap (fun i ↦ (g i).comp (f i))) = (lmap g).comp (lmap f) :=
+  DFinsupp.mapRange.linearMap_comp _ _
+
 theorem lmap_injective : Function.Injective (lmap f) ↔ ∀ i, Function.Injective (f i) := by
   classical exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
+
+theorem lmap_surjective : Function.Surjective (lmap f) ↔ (∀ i, Function.Surjective (f i)) := by
+  classical exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
+
+lemma lmap_eq_iff (x y : ⨁ i, M i) :
+    lmap f x = lmap f y ↔ ∀ i, f i (x i) = f i (y i) :=
+  map_eq_iff (fun i => (f i).toAddMonoidHom) _ _
 
 end map
 
@@ -489,46 +509,5 @@ alias IsInternal.addSubgroup_independent := IsInternal.addSubgroup_iSupIndep
 end Ring
 
 end Submodule
-
-namespace mapRange
-
-section linearMap
-
-variable {ι : Type*} {α : ι → Type*} {β : ι → Type*} {R : Type*} [Semiring R]
-variable [∀ i, AddCommMonoid (α i)] [∀ i, AddCommMonoid (β i)]
-variable [∀ i, Module R (α i)] [∀ i, Module R (β i)]
-
-variable (f : ∀ (i : ι), α i →ₗ[R] β i)
-
-/-- create a linear map from `⨁ i, α i` to `⨁ i, β i` by giving the component-wise map `f`. -/
-def linearMap : (⨁ i, α i) →ₗ[R] ⨁ i, β i :=  DFinsupp.mapRange.linearMap f
-
-@[simp] lemma linearMap_of [DecidableEq ι] (i : ι) (x : α i) :
-    linearMap f (of α i x) = of β i (f i x) :=
-  DFinsupp.mapRange_single (hf := fun _ => map_zero _)
-
-@[simp] lemma linearMap_apply (i : ι) (x : ⨁ i, α i) : (linearMap f) x i = f i (x i) :=
-  DFinsupp.mapRange_apply (hf := fun _ => map_zero _) _ _ _
-
-@[simp] lemma linearMap_id :
-    (linearMap (fun i ↦ LinearMap.id (R := R) (M := α i))) = LinearMap.id :=
-  DFinsupp.mapRange.linearMap_id
-
-@[simp] lemma linearMap_comp {γ : ι → Type*} [∀ i, AddCommMonoid (γ i)] [∀ i, Module R (γ i)]
-    (g : ∀ (i : ι), β i →ₗ[R] γ i) :
-    (linearMap (fun i ↦ (g i).comp (f i))) = (linearMap g).comp (linearMap f) :=
-  DFinsupp.mapRange.linearMap_comp _ _
-
-lemma linearMap_surjective (h : ∀ i, Function.Surjective (f i)) :
-    Function.Surjective (linearMap f) :=
-  addHom_surjective (fun i => (f i).toAddMonoidHom) h
-
-lemma linearMap_eq_iff (x y : ⨁ i, α i) :
-    linearMap f x = linearMap f y ↔ ∀ i, f i (x i) = f i (y i) :=
-  addHom_eq_iff (fun i => (f i).toAddMonoidHom) _ _
-
-end linearMap
-
-end mapRange
 
 end DirectSum

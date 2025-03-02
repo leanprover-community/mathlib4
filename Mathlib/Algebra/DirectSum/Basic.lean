@@ -394,54 +394,40 @@ theorem finite_support (A : ι → S) (x : DirectSum ι fun i => A i) :
   classical
   exact (DFinsupp.support x).finite_toSet.subset (DirectSum.support_subset _ x)
 
-namespace mapRange
+section map
 
 variable {ι : Type*} {α : ι → Type*} {β : ι → Type*} [∀ i, AddCommMonoid (α i)]
-variable [∀ i, AddCommMonoid (β i)]
-
-section addHom
-
-variable (f : ∀(i : ι), α i →+ β i)
+variable [∀ i, AddCommMonoid (β i)] (f : ∀(i : ι), α i →+ β i)
 
 /-- create a homomorphism from `⨁ i, α i` to `⨁ i, β i` by giving the component-wise map `f`. -/
-def addHom : (⨁ i, α i) →+ ⨁ i, β i :=  DFinsupp.mapRange.addMonoidHom f
+def map : (⨁ i, α i) →+ ⨁ i, β i :=  DFinsupp.mapRange.addMonoidHom f
 
-@[simp] lemma addHom_of [DecidableEq ι] (i : ι) (x : α i) : addHom f (of α i x) = of β i (f i x) :=
+@[simp] lemma map_of [DecidableEq ι] (i : ι) (x : α i) : map f (of α i x) = of β i (f i x) :=
   DFinsupp.mapRange_single (hf := fun _ => map_zero _)
 
-@[simp] lemma addHom_apply (i : ι) (x : ⨁ i, α i) : addHom f x i = f i (x i) :=
+@[simp] lemma map_apply (i : ι) (x : ⨁ i, α i) : map f x i = f i (x i) :=
   DFinsupp.mapRange_apply (hf := fun _ => map_zero _) _ _ _
 
-@[simp] lemma addHom_id :
-    (addHom (fun i ↦ AddMonoidHom.id (α i))) = AddMonoidHom.id (⨁ i, α i) :=
+@[simp] lemma map_id :
+    (map (fun i ↦ AddMonoidHom.id (α i))) = AddMonoidHom.id (⨁ i, α i) :=
   DFinsupp.mapRange.addMonoidHom_id
 
-@[simp] lemma addHom_comp {γ : ι → Type*} [∀ i, AddCommMonoid (γ i)]
+@[simp] lemma map_comp {γ : ι → Type*} [∀ i, AddCommMonoid (γ i)]
     (g : ∀ (i : ι), β i →+ γ i) :
-    (addHom (fun i ↦ (g i).comp (f i))) = (addHom g).comp (addHom f) :=
+    (map (fun i ↦ (g i).comp (f i))) = (map g).comp (map f) :=
   DFinsupp.mapRange.addMonoidHom_comp _ _
 
-lemma addHom_surjective (h : ∀ i, Function.Surjective (f i)) :
-    Function.Surjective (addHom f) := by
-  intro x
-  classical
-  induction x using DirectSum.induction_on with
-  | H_zero => exact ⟨0, by simp⟩
-  | H_basic i x =>
-    obtain ⟨y, rfl⟩ := h i x
-    exact ⟨of α i y, by simp⟩
-  | H_plus x y hx hy =>
-    obtain ⟨u, rfl⟩ := hx
-    obtain ⟨v, rfl⟩ := hy
-    exact ⟨u + v, by simp⟩
+lemma map_injective : Function.Injective (map f) ↔ ∀ i, Function.Injective (f i) := by
+  classical exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
 
-lemma addHom_eq_iff (x y : ⨁ i, α i) :
-    addHom f x = addHom f y ↔ ∀ i, f i (x i) = f i (y i) := by
-  simp_rw [DirectSum.ext_iff, addHom_apply]
+lemma map_surjective : Function.Surjective (map f) ↔ (∀ i, Function.Surjective (f i)) := by
+  classical exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
 
-end addHom
+lemma map_eq_iff (x y : ⨁ i, α i) :
+    map f x = map f y ↔ ∀ i, f i (x i) = f i (y i) := by
+  simp_rw [DirectSum.ext_iff, map_apply]
 
-end mapRange
+end map
 
 end DirectSum
 
