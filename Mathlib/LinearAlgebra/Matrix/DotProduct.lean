@@ -33,18 +33,6 @@ section Semiring
 
 variable [Semiring R] [Fintype n]
 
-set_option linter.deprecated false in
-@[simp, deprecated Matrix.dotProduct_single (since := "2024-08-09")]
-theorem dotProduct_stdBasis_eq_mul [DecidableEq n] (v : n → R) (c : R) (i : n) :
-    dotProduct v (LinearMap.stdBasis R (fun _ => R) i c) = v i * c :=
-  dotProduct_single ..
-
-set_option linter.deprecated false in
-@[deprecated Matrix.dotProduct_single_one (since := "2024-08-09")]
-theorem dotProduct_stdBasis_one [DecidableEq n] (v : n → R) (i : n) :
-    dotProduct v (LinearMap.stdBasis R (fun _ => R) i 1) = v i :=
-  dotProduct_single_one ..
-
 theorem dotProduct_eq (v w : n → R) (h : ∀ u, dotProduct v u = dotProduct w u) : v = w := by
   funext x
   classical rw [← dotProduct_single_one v x, ← dotProduct_single_one w x, h]

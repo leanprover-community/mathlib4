@@ -130,8 +130,6 @@ theorem tendsto_one {a : Filter β} {f : β → α} : Tendsto f a 1 ↔ ∀ᶠ x
 theorem one_prod_one [One β] : (1 : Filter α) ×ˢ (1 : Filter β) = 1 :=
   prod_pure_pure
 
-@[deprecated (since := "2024-08-16")] alias zero_sum_zero := zero_prod_zero
-
 /-- `pure` as a `OneHom`. -/
 @[to_additive "`pure` as a `ZeroHom`."]
 def pureOneHom : OneHom α (Filter α) where

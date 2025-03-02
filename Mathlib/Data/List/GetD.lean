@@ -35,10 +35,6 @@ theorem getD_eq_getElem {n : ℕ} (hn : n < l.length) : l.getD n d = l[n] := by
     · exact getD_cons_zero
     · exact ih _
 
-@[deprecated getD_eq_getElem (since := "2024-08-02")]
-theorem getD_eq_get {n : ℕ} (hn : n < l.length) : l.getD n d = l.get ⟨n, hn⟩ :=
-  getD_eq_getElem l d hn
-
 theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD n d) := by simp
 
 theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
@@ -113,10 +109,6 @@ theorem getI_cons_succ : getI (x :: xs) (n + 1) = getI xs n :=
   rfl
 
 theorem getI_eq_getElem {n : ℕ} (hn : n < l.length) : l.getI n = l[n] :=
-  getD_eq_getElem l default hn
-
-@[deprecated getI_eq_getElem (since := "2024-08-02")]
-theorem getI_eq_get {n : ℕ} (hn : n < l.length) : l.getI n = l.get ⟨n, hn⟩ :=
   getD_eq_getElem l default hn
 
 theorem getI_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getI n = default :=

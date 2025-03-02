@@ -159,10 +159,4 @@ theorem equivFun_symm_single [Finite n] (b : Basis n R M) (i : n) :
   cases nonempty_fintype n
   simp [Pi.single_apply]
 
-set_option linter.deprecated false in
-@[deprecated equivFun_symm_single (since := "2024-08-09")]
-theorem equivFun_symm_stdBasis [Finite n] (b : Basis n R M) (i : n) :
-    b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i :=
-  equivFun_symm_single ..
-
 end Basis

@@ -1558,9 +1558,6 @@ lemma div_le_div_of_nonneg_right (hab : a ≤ b) (hc : 0 ≤ c) : a / c ≤ b / 
   rw [div_eq_mul_one_div a c, div_eq_mul_one_div b c]
   exact mul_le_mul_of_nonneg_right hab (one_div_nonneg.2 hc)
 
-@[deprecated (since := "2024-08-21")] alias le_div_iff := le_div_iff₀
-@[deprecated (since := "2024-08-21")] alias div_le_iff := div_le_iff₀
-
 variable [PosMulMono G₀]
 
 /-- See `inv_anti₀` for the implication from right-to-left with one fewer assumption. -/
@@ -1900,9 +1897,6 @@ lemma le_div_comm₀ (ha : 0 < a) (hc : 0 < c) : a ≤ b / c ↔ c ≤ b / a := 
 lemma div_le_comm₀ (hb : 0 < b) (hc : 0 < c) : a / b ≤ c ↔ a / c ≤ b := by
   have := posMulMono_iff_mulPosMono.1 ‹_›
   rw [div_le_iff₀ hb, div_le_iff₀' hc]
-
-@[deprecated (since := "2024-08-21")] alias le_div_iff' := le_div_iff₀'
-@[deprecated (since := "2024-08-21")] alias div_le_iff' := div_le_iff₀'
 
 end PosMulMono
 
