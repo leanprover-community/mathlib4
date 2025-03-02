@@ -51,7 +51,7 @@ Consider the following setup:
 Later, we will also assume:
 * The family f is locally surjective with respect to the Zariski topology
 -/
-variable (F : Sheaf (Scheme.zariskiTopology.{u}) (Type u))
+variable (F : Sheaf Scheme.zariskiTopology.{u} (Type u))
   {ι : Type u} {X : ι → Scheme.{u}}
   (f : (i : ι) → yoneda.obj (X i) ⟶ F.1) (hf : ∀ i, IsOpenImmersion.presheaf (f i))
 
