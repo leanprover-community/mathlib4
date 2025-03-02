@@ -123,6 +123,8 @@ jobs:
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: If using a lean-pr-release toolchain, uninstall
         run: |
