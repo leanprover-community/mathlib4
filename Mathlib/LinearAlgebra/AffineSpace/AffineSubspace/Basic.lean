@@ -9,40 +9,14 @@ import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 /-!
 # Affine spaces
 
-This file defines affine subspaces (over modules) and the affine span of a set of points.
+This file gives further properties of affine subspaces (over modules)
+and the affine span of a set of points.
 
 ## Main definitions
 
-* `AffineSubspace k P` is the type of affine subspaces. Unlike affine spaces, affine subspaces are
-  allowed to be empty, and lemmas that do not apply to empty affine subspaces have `Nonempty`
-  hypotheses. There is a `CompleteLattice` structure on affine subspaces.
-* `AffineSubspace.direction` gives the `Submodule` spanned by the pairwise differences of points
-  in an `AffineSubspace`. There are various lemmas relating to the set of vectors in the
-  `direction`, and relating the lattice structure on affine subspaces to that on their directions.
-* `AffineSubspace.parallel`, notation `∥`, gives the property of two affine subspaces being
+* `AffineSubspace.Parallel`, notation `∥`, gives the property of two affine subspaces being
   parallel (one being a translate of the other).
-* `affineSpan` gives the affine subspace spanned by a set of points, with `vectorSpan` giving its
-  direction. The `affineSpan` is defined in terms of `spanPoints`, which gives an explicit
-  description of the points contained in the affine span; `spanPoints` itself should generally only
-  be used when that description is required, with `affineSpan` being the main definition for other
-  purposes. Two other descriptions of the affine span are proved equivalent: it is the `sInf` of
-  affine subspaces containing the points, and (if `[Nontrivial k]`) it contains exactly those points
-  that are affine combinations of points in the given set.
 
-## Implementation notes
-
-`outParam` is used in the definition of `AddTorsor V P` to make `V` an implicit argument (deduced
-from `P`) in most cases. As for modules, `k` is an explicit argument rather than implied by `P` or
-`V`.
-
-This file only provides purely algebraic definitions and results. Those depending on analysis or
-topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
-`Topology.Algebra.Affine`.
-
-## References
-
-* https://en.wikipedia.org/wiki/Affine_space
-* https://en.wikipedia.org/wiki/Principal_homogeneous_space
 -/
 
 noncomputable section
@@ -85,7 +59,6 @@ theorem vsub_left_mem_direction_iff_mem {s : AffineSubspace k P} {p : P} (hp : p
   rw [mem_direction_iff_eq_vsub_left hp]
   simp
 
-
 -- See note [reducible non instances]
 /-- This is not an instance because it loops with `AddTorsor.nonempty`. -/
 abbrev toAddTorsor (s : AffineSubspace k P) [Nonempty s] : AddTorsor s.direction s where
@@ -125,8 +98,12 @@ protected def subtype (s : AffineSubspace k P) [Nonempty s] : s →ᵃ[k] P wher
 theorem subtype_linear (s : AffineSubspace k P) [Nonempty s] :
     s.subtype.linear = s.direction.subtype := rfl
 
-theorem subtype_apply (s : AffineSubspace k P) [Nonempty s] (p : s) : s.subtype p = p :=
+@[simp]
+theorem subtype_apply {s : AffineSubspace k P} [Nonempty s] (p : s) : s.subtype p = p :=
   rfl
+
+theorem subtype_injective (s : AffineSubspace k P) [Nonempty s] : Function.Injective s.subtype :=
+  Subtype.coe_injective
 
 @[simp]
 theorem coe_subtype (s : AffineSubspace k P) [Nonempty s] : (s.subtype : s → P) = ((↑) : s → P) :=

@@ -428,6 +428,16 @@ open scoped Classical in
 define it, see `card_filter_mk_eq`. -/
 noncomputable def mult (w : InfinitePlace K) : ℕ := if (IsReal w) then 1 else 2
 
+@[simp]
+theorem mult_isReal (w : {w : InfinitePlace K // IsReal w}) :
+    mult w.1 = 1 := by
+  rw [mult, if_pos w.prop]
+
+@[simp]
+theorem mult_isComplex (w : {w : InfinitePlace K // IsComplex w}) :
+    mult w.1 = 2 := by
+  rw [mult, if_neg (not_isReal_iff_isComplex.mpr w.prop)]
+
 theorem mult_pos {w : InfinitePlace K} : 0 < mult w := by
   rw [mult]
   split_ifs <;> norm_num
@@ -456,6 +466,13 @@ theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) : #{φ | mk φ =
 open scoped Classical in
 noncomputable instance NumberField.InfinitePlace.fintype [NumberField K] :
     Fintype (InfinitePlace K) := Set.fintypeRange _
+
+open scoped Classical in
+@[to_additive]
+theorem prod_eq_prod_mul_prod {α : Type*} [CommMonoid α] [NumberField K] (f : InfinitePlace K → α) :
+    ∏ w, f w = (∏ w : {w // IsReal w}, f w.1) * (∏ w : {w // IsComplex w}, f w.1) := by
+  rw [← Equiv.prod_comp (Equiv.subtypeEquivRight (fun _ ↦ not_isReal_iff_isComplex))]
+  simp [Fintype.prod_subtype_mul_prod_subtype]
 
 theorem sum_mult_eq [NumberField K] :
     ∑ w : InfinitePlace K, mult w = Module.finrank ℚ K := by

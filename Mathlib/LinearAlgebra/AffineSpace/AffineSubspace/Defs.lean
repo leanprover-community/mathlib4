@@ -20,8 +20,6 @@ This file defines affine subspaces (over modules) and the affine span of a set o
 * `AffineSubspace.direction` gives the `Submodule` spanned by the pairwise differences of points
   in an `AffineSubspace`. There are various lemmas relating to the set of vectors in the
   `direction`, and relating the lattice structure on affine subspaces to that on their directions.
-* `AffineSubspace.parallel`, notation `∥`, gives the property of two affine subspaces being
-  parallel (one being a translate of the other).
 * `affineSpan` gives the affine subspace spanned by a set of points, with `vectorSpan` giving its
   direction. The `affineSpan` is defined in terms of `spanPoints`, which gives an explicit
   description of the points contained in the affine span; `spanPoints` itself should generally only
