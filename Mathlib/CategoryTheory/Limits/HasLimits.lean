@@ -562,7 +562,7 @@ theorem hasLimitsOfShape_of_equivalence {J' : Type u₂} [Category.{v₂} J'] (e
     [HasLimitsOfShape J C] : HasLimitsOfShape J' C := by
   constructor
   intro F
-  apply hasLimitOfEquivalenceComp e
+  apply hasLimit_of_equivalence_comp e
 
 variable (C)
 
