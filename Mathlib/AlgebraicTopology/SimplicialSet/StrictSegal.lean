@@ -12,13 +12,17 @@ import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 # Strict Segal simplicial sets
 
 A simplicial set `X` satisfies the `StrictSegal` condition if for all `n`, the map
-`X.spine n : X _[n] → X.Path n` is an equivalence, with equivalence inverse
-`spineToSimplex {n : ℕ} : Path X n → X _[n]`.
+`X.spine n : X _⦋n⦌ → X.Path n` is an equivalence, with equivalence inverse
+`spineToSimplex {n : ℕ} : Path X n → X _⦋n⦌`.
 
 Examples of `StrictSegal` simplicial sets are given by nerves of categories.
 
 TODO: Show that these are the only examples: that a `StrictSegal` simplicial set is isomorphic to
 the nerve of its homotopy category.
+
+`StrictSegal` simplicial sets have an important property of being 2-coskeletal which is proven
+in `Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal`.
+
 -/
 
 universe v u
@@ -34,18 +38,18 @@ variable (X : SSet.{u})
 /-- A simplicial set `X` satisfies the strict Segal condition if its simplices are uniquely
 determined by their spine. -/
 class StrictSegal where
-  /-- The inverse to `X.spine n`.-/
-  spineToSimplex {n : ℕ} : Path X n → X _[n]
-  /-- `spineToSimplex` is a right inverse to `X.spine n`.-/
+  /-- The inverse to `X.spine n`. -/
+  spineToSimplex {n : ℕ} : Path X n → X _⦋n⦌
+  /-- `spineToSimplex` is a right inverse to `X.spine n`. -/
   spine_spineToSimplex {n : ℕ} (f : Path X n) : X.spine n (spineToSimplex f) = f
-  /-- `spineToSimplex` is a left inverse to `X.spine n`.-/
-  spineToSimplex_spine {n : ℕ} (Δ : X _[n]) : spineToSimplex (X.spine n Δ) = Δ
+  /-- `spineToSimplex` is a left inverse to `X.spine n`. -/
+  spineToSimplex_spine {n : ℕ} (Δ : X _⦋n⦌) : spineToSimplex (X.spine n Δ) = Δ
 
 namespace StrictSegal
 variable {X : SSet.{u}} [StrictSegal X] {n : ℕ}
 
-/-- The fields of `StrictSegal` define an equivalence between `X _[n]` and `Path X n`.-/
-def spineEquiv (n : ℕ) : X _[n] ≃ Path X n where
+/-- The fields of `StrictSegal` define an equivalence between `X _⦋n⦌` and `Path X n`. -/
+def spineEquiv (n : ℕ) : X _⦋n⦌ ≃ Path X n where
   toFun := spine X n
   invFun := spineToSimplex
   left_inv := spineToSimplex_spine
@@ -55,7 +59,7 @@ theorem spineInjective {n : ℕ} : Function.Injective (spineEquiv (X := X) n) :=
 
 @[simp]
 theorem spineToSimplex_vertex (i : Fin (n + 1)) (f : Path X n) :
-    X.map (const [0] [n] i).op (spineToSimplex f) = f.vertex i := by
+    X.map (const ⦋0⦌ ⦋n⦌ i).op (spineToSimplex f) = f.vertex i := by
   rw [← spine_vertex, spine_spineToSimplex]
 
 @[simp]
@@ -65,7 +69,7 @@ theorem spineToSimplex_arrow (i : Fin n) (f : Path X n) :
 
 /-- In the presence of the strict Segal condition, a path of length `n` can be "composed" by taking
 the diagonal edge of the resulting `n`-simplex. -/
-def spineToDiagonal (f : Path X n) : X _[1] := diagonal X (spineToSimplex f)
+def spineToDiagonal (f : Path X n) : X _⦋1⦌ := diagonal X (spineToSimplex f)
 
 @[simp]
 theorem spineToSimplex_interval (f : Path X n) (j l : ℕ) (hjl : j + l ≤  n)  :
@@ -161,7 +165,7 @@ namespace CategoryTheory.Nerve
 open SSet
 
 /-- Simplices in the nerve of categories are uniquely determined by their spine. Indeed, this
-property describes the essential image of the nerve functor.-/
+property describes the essential image of the nerve functor. -/
 noncomputable instance strictSegal (C : Type u) [Category.{v} C] : StrictSegal (nerve C) where
   spineToSimplex {n} F :=
     ComposableArrows.mkOfObjOfMapSucc (fun i ↦ (F.vertex i).obj 0)

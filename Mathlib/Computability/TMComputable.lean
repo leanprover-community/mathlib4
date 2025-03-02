@@ -82,7 +82,6 @@ instance inhabitedσ : Inhabited tm.σ :=
 def Stmt : Type :=
   Turing.TM2.Stmt tm.Γ tm.Λ tm.σ
 
--- Porting note: The `deriving Inhabited` handler couldn't derive this.
 instance inhabitedStmt : Inhabited (Stmt tm) :=
   inferInstanceAs (Inhabited (Turing.TM2.Stmt tm.Γ tm.Λ tm.σ))
 
@@ -135,8 +134,7 @@ structure EvalsToInTime {σ : Type*} (f : σ → Option σ) (a : σ) (b : Option
   steps_le_m : steps ≤ m
 
 /-- Reflexivity of `EvalsTo` in 0 steps. -/
--- @[refl] -- Porting note: `@[refl]` attribute only applies to lemmas proving `x ∼ x` in Lean4.
-def EvalsTo.refl {σ : Type*} (f : σ → Option σ) (a : σ) : EvalsTo f a a :=
+def EvalsTo.refl {σ : Type*} (f : σ → Option σ) (a : σ) : EvalsTo f a (some a) :=
   ⟨0, rfl⟩
 
 /-- Transitivity of `EvalsTo` in the sum of the numbers of steps. -/
@@ -146,8 +144,7 @@ def EvalsTo.trans {σ : Type*} (f : σ → Option σ) (a : σ) (b : σ) (c : Opt
   ⟨h₂.steps + h₁.steps, by rw [Function.iterate_add_apply, h₁.evals_in_steps, h₂.evals_in_steps]⟩
 
 /-- Reflexivity of `EvalsToInTime` in 0 steps. -/
--- @[refl] -- Porting note: `@[refl]` attribute only applies to lemmas proving `x ∼ x` in Lean4.
-def EvalsToInTime.refl {σ : Type*} (f : σ → Option σ) (a : σ) : EvalsToInTime f a a 0 :=
+def EvalsToInTime.refl {σ : Type*} (f : σ → Option σ) (a : σ) : EvalsToInTime f a (some a) 0 :=
   ⟨EvalsTo.refl f a, le_refl 0⟩
 
 /-- Transitivity of `EvalsToInTime` in the sum of the numbers of steps. -/

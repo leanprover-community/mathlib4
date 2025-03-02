@@ -565,7 +565,7 @@ instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
   exists_limit := Nonempty.intro
     { cone := Fan.mk (∏ᶜ fun i => ∏ᶜ g i) (fun X => Pi.π (fun i => ∏ᶜ g i) X.1 ≫ Pi.π (g X.1) X.2)
       isLimit := mkFanLimit _ (fun s => Pi.lift fun b => Pi.lift fun c => s.proj ⟨b, c⟩)
-        (by aesop_cat)
+        (by simp)
         (by intro s m w; simp only [Fan.mk_pt]; symm; ext i x; simp_all [Sigma.forall]) }
 
 /-- An iterated product is a product over a sigma type. -/
@@ -586,7 +586,7 @@ instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
         (fun X => Sigma.ι (g X.1) X.2 ≫ Sigma.ι (fun i => ∐ g i) X.1)
       isColimit := mkCofanColimit _
         (fun s => Sigma.desc fun b => Sigma.desc fun c => s.inj ⟨b, c⟩)
-        (by aesop_cat)
+        (by simp)
         (by intro s m w; simp only [Cofan.mk_pt]; symm; ext i x; simp_all [Sigma.forall]) }
 
 /-- An iterated coproduct is a coproduct over a sigma type. -/
@@ -653,12 +653,17 @@ abbrev HasCoproducts :=
 
 variable {C}
 
-theorem has_smallest_products_of_hasProducts [HasProducts.{w} C] : HasProducts.{0} C := fun J =>
-  hasLimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift : Discrete (ULift.{w} J) ≌ _)
+lemma hasProducts_shrink [HasProducts.{max w w'} C] : HasProducts.{w} C := fun J =>
+  hasLimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift : Discrete (ULift.{w'} J) ≌ _)
+
+lemma hasCoproducts_shrink [HasCoproducts.{max w w'} C] : HasCoproducts.{w} C := fun J =>
+  hasColimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift : Discrete (ULift.{w'} J) ≌ _)
+
+theorem has_smallest_products_of_hasProducts [HasProducts.{w} C] : HasProducts.{0} C :=
+  hasProducts_shrink
 
 theorem has_smallest_coproducts_of_hasCoproducts [HasCoproducts.{w} C] : HasCoproducts.{0} C :=
-  fun J =>
-  hasColimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift : Discrete (ULift.{w} J) ≌ _)
+  hasCoproducts_shrink
 
 theorem hasProducts_of_limit_fans (lf : ∀ {J : Type w} (f : J → C), Fan f)
     (lf_isLimit : ∀ {J : Type w} (f : J → C), IsLimit (lf f)) : HasProducts.{w} C :=
@@ -673,6 +678,34 @@ instance (priority := 100) hasProductsOfShape_of_hasProducts [HasProducts.{w} C]
 
 instance (priority := 100) hasCoproductsOfShape_of_hasCoproducts [HasCoproducts.{w} C]
     (J : Type w) : HasCoproductsOfShape J C := inferInstance
+
+open Opposite in
+/-- The functor sending `(X, n)` to the product of copies of `X` indexed by `n`. -/
+@[simps]
+def piConst [Limits.HasProducts.{w} C] : C ⥤ Type wᵒᵖ ⥤ C where
+  obj X := { obj n := ∏ᶜ fun _ : (unop n) ↦ X, map f := Limits.Pi.map' f.unop fun _ ↦ 𝟙 _ }
+  map f := { app n := Limits.Pi.map fun _ ↦ f }
+
+/-- `n ↦ ∏ₙ X` is left adjoint to `Hom(-, X)`. -/
+def piConstAdj [Limits.HasProducts.{v} C] (X : C) :
+    (piConst.obj X).rightOp ⊣ yoneda.obj X where
+  unit := { app n i := Limits.Pi.π (fun _ : n ↦ X) i }
+  counit :=
+  { app Y := (Limits.Pi.lift id).op,
+    naturality _ _ _ := by apply Quiver.Hom.unop_inj; aesop_cat }
+  left_triangle_components _ := by apply Quiver.Hom.unop_inj; aesop_cat
+
+/-- The functor sending `(X, n)` to the coproduct of copies of `X` indexed by `n`. -/
+@[simps]
+def sigmaConst [Limits.HasCoproducts.{w} C] : C ⥤ Type w ⥤ C where
+  obj X := { obj n := ∐ fun _ : n ↦ X, map f := Limits.Sigma.map' f fun _ ↦ 𝟙 _ }
+  map f := { app n := Limits.Sigma.map fun _ ↦ f }
+
+/-- `n ↦ ∐ₙ X` is left adjoint to `Hom(X, -)`. -/
+def sigmaConstAdj [Limits.HasCoproducts.{v} C] (X : C) :
+    sigmaConst.obj X ⊣ coyoneda.obj (Opposite.op X) where
+  unit := { app n i := Limits.Sigma.ι (fun _ : n ↦ X) i }
+  counit := { app Y := Limits.Sigma.desc id }
 
 /-!
 (Co)products over a type with a unique term.

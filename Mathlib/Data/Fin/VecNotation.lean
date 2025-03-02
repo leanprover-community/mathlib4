@@ -31,7 +31,7 @@ The main new notation is `![a, b]`, which gets expanded to `vecCons a (vecCons b
 
 ## Examples
 
-Examples of usage can be found in the `test/matrix.lean` file.
+Examples of usage can be found in the `MathlibTest/matrix.lean` file.
 -/
 
 
@@ -143,7 +143,6 @@ theorem tail_cons (x : α) (u : Fin m → α) : vecTail (vecCons x u) = u := by
   ext
   simp [vecTail]
 
-@[simp]
 theorem empty_val' {n' : Type*} (j : n') : (fun i => (![] : Fin 0 → n' → α) i j) = ![] :=
   empty_eq _
 
@@ -167,7 +166,6 @@ theorem range_cons_cons_empty (x y : α) (u : Fin 0 → α) :
     Set.range (vecCons x <| vecCons y u) = {x, y} := by
   rw [range_cons, range_cons_empty, Set.singleton_union]
 
-@[simp]
 theorem vecCons_const (a : α) : (vecCons a fun _ : Fin n => a) = fun _ => a :=
   funext <| Fin.forall_iff_succ.2 ⟨rfl, cons_val_succ _ _⟩
 
@@ -313,7 +311,7 @@ theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) :
   simp_rw [Function.comp, vecAlt1, vecAppend_eq_ite]
   cases n with
   | zero =>
-    cases' i with i hi
+    obtain ⟨i, hi⟩ := i
     simp only [Nat.zero_add, Nat.lt_one_iff] at hi; subst i; rfl
   | succ n =>
     split_ifs with h <;> congr

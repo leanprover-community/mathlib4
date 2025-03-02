@@ -46,20 +46,20 @@ instance [Monoid M] [SMul M α] [FaithfulSMul M α] : FaithfulSMul Mˣ α where
 
 @[to_additive]
 instance instMulAction [Monoid M] [MulAction M α] : MulAction Mˣ α where
-  one_smul := (one_smul M : _)
+  one_smul := one_smul M
   mul_smul m n := mul_smul (m : M) n
 
 @[to_additive]
 instance smulCommClass_left [Monoid M] [SMul M α] [SMul N α] [SMulCommClass M N α] :
-    SMulCommClass Mˣ N α where smul_comm m n := (smul_comm (m : M) n : _)
+    SMulCommClass Mˣ N α where smul_comm m n := smul_comm (m : M) n
 
 @[to_additive]
 instance smulCommClass_right [Monoid N] [SMul M α] [SMul N α] [SMulCommClass M N α] :
-    SMulCommClass M Nˣ α where smul_comm m n := (smul_comm m (n : N) : _)
+    SMulCommClass M Nˣ α where smul_comm m n := smul_comm m (n : N)
 
 @[to_additive]
 instance [Monoid M] [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
-    IsScalarTower Mˣ N α where smul_assoc m n := (smul_assoc (m : M) n : _)
+    IsScalarTower Mˣ N α where smul_assoc m n := smul_assoc (m : M) n
 
 /-! ### Action of a group `G` on units of `M` -/
 
@@ -102,7 +102,7 @@ instance isScalarTower' [SMul G H] [Group G] [Group H] [Monoid M] [MulAction G M
 @[to_additive "Transfer `VAddAssocClass G M α` to `VAddAssocClass G (AddUnits M) α`."]
 instance isScalarTower'_left [Group G] [Monoid M] [MulAction G M] [SMul M α] [SMul G α]
     [SMulCommClass G M M] [IsScalarTower G M M] [IsScalarTower G M α] :
-    IsScalarTower G Mˣ α where smul_assoc g m := (smul_assoc g (m : M) : _)
+    IsScalarTower G Mˣ α where smul_assoc g m := smul_assoc g (m : M)
 
 -- Just to prove this transfers a particularly useful instance.
 example [Monoid M] [Monoid N] [MulAction M N] [SMulCommClass M N N] [IsScalarTower M N N] :

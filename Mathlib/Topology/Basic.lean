@@ -3,11 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Lift
-import Mathlib.Topology.Defs.Filter
-import Mathlib.Topology.Defs.Basic
 import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Filter.Lift
+import Mathlib.Topology.Defs.Basic
+import Mathlib.Topology.Defs.Filter
 
 /-!
 # Basic theory of topological spaces.
@@ -120,7 +120,7 @@ lemma isOpen_iff_of_cover {f : α → Set X} (ho : ∀ i, IsOpen (f i)) (hU : (�
 
 theorem Set.Finite.isOpen_sInter {s : Set (Set X)} (hs : s.Finite) :
     (∀ t ∈ s, IsOpen t) → IsOpen (⋂₀ s) :=
-  Finite.induction_on hs (fun _ => by rw [sInter_empty]; exact isOpen_univ) fun _ _ ih h => by
+  Finite.induction_on _ hs (fun _ => by rw [sInter_empty]; exact isOpen_univ) fun _ _ ih h => by
     simp only [sInter_insert, forall_mem_insert] at h ⊢
     exact h.1.inter (ih h.2)
 
@@ -137,7 +137,7 @@ theorem isOpen_biInter_finset {s : Finset α} {f : α → Set X} (h : ∀ i ∈ 
     IsOpen (⋂ i ∈ s, f i) :=
   s.finite_toSet.isOpen_biInter h
 
-@[simp] -- Porting note: added `simp`
+@[simp]
 theorem isOpen_const {p : Prop} : IsOpen { _x : X | p } := by by_cases p <;> simp [*]
 
 theorem IsOpen.and : IsOpen { x | p₁ x } → IsOpen { x | p₂ x } → IsOpen { x | p₁ x ∧ p₂ x } :=
@@ -281,7 +281,7 @@ theorem interior_inter : interior (s ∩ t) = interior s ∩ interior t :=
 
 theorem Set.Finite.interior_biInter {ι : Type*} {s : Set ι} (hs : s.Finite) (f : ι → Set X) :
     interior (⋂ i ∈ s, f i) = ⋂ i ∈ s, interior (f i) :=
-  hs.induction_on (by simp) <| by intros; simp [*]
+  hs.induction_on _ (by simp) <| by intros; simp [*]
 
 theorem Set.Finite.interior_sInter {S : Set (Set X)} (hS : S.Finite) :
     interior (⋂₀ S) = ⋂ s ∈ S, interior s := by
@@ -569,6 +569,12 @@ theorem dense_compl_singleton_iff_not_open :
   · refine fun ho => dense_iff_inter_open.2 fun U hU hne => inter_compl_nonempty_iff.2 fun hUx => ?_
     obtain rfl : U = {x} := eq_singleton_iff_nonempty_unique_mem.2 ⟨hne, hUx⟩
     exact ho hU
+
+/-- If a closed property holds for a dense subset, it holds for the whole space. -/
+@[elab_as_elim]
+lemma Dense.induction (hs : Dense s) {P : X → Prop}
+    (mem : ∀ x ∈ s, P x) (isClosed : IsClosed { x | P x }) (x : X) : P x :=
+  hs.closure_eq.symm.subset.trans (isClosed.closure_subset_iff.mpr mem) trivial
 
 theorem IsOpen.subset_interior_closure {s : Set X} (s_open : IsOpen s) :
     s ⊆ interior (closure s) := s_open.subset_interior_iff.mpr subset_closure
@@ -1359,6 +1365,12 @@ theorem IsOpen.preimage (hf : Continuous f) {t : Set Y} (h : IsOpen t) :
     IsOpen (f ⁻¹' t) :=
   hf.isOpen_preimage t h
 
+lemma Equiv.continuous_symm_iff (e : X ≃ Y) : Continuous e.symm ↔ IsOpenMap e := by
+  simp_rw [continuous_def, ← Set.image_equiv_eq_preimage_symm, IsOpenMap]
+
+lemma Equiv.isOpenMap_symm_iff (e : X ≃ Y) : IsOpenMap e.symm ↔ Continuous e := by
+  simp_rw [← Equiv.continuous_symm_iff, Equiv.symm_symm]
+
 theorem continuous_congr {g : X → Y} (h : ∀ x, f x = g x) :
     Continuous f ↔ Continuous g :=
   .of_eq <| congrArg _ <| funext h
@@ -1653,7 +1665,7 @@ However, lemmas with this conclusion are not nice to use in practice because
     continuous_add.comp (continuous_id.prod_mk continuous_id)
   ```
   The second is a valid proof, which is accepted if you write it as
-  `continuous_add.comp (continuous_id.prod_mk continuous_id : _)`
+  `continuous_add.comp (continuous_id.prod_mk continuous_id :)`
 
 2. If the operation has more than 2 arguments, they are impractical to use, because in your
   application the arguments in the domain might be in a different order or associated differently.

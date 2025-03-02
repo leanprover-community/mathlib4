@@ -51,7 +51,7 @@ theorem norm_deriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {f : ℂ → F
     (hf : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖deriv f c‖ ≤ C / R := by
   have : ∀ z ∈ sphere c R, ‖(z - c) ^ (-2 : ℤ) • f z‖ ≤ C / (R * R) :=
-    fun z (hz : abs (z - c) = R) => by
+    fun z (hz : ‖z - c‖ = R) => by
     simpa [-mul_inv_rev, norm_smul, hz, zpow_two, ← div_eq_inv_mul] using
       (div_le_div_iff_of_pos_right (mul_pos hR hR)).2 (hC z hz)
   calc
@@ -89,7 +89,7 @@ theorem liouville_theorem_aux {f : ℂ → F} (hf : Differentiable ℂ f) (hb : 
     exact
       ⟨max C 1, lt_max_iff.2 (Or.inr zero_lt_one), fun z =>
         (hC (f z) (mem_range_self _)).trans (le_max_left _ _)⟩
-  refine norm_le_zero_iff.1 (le_of_forall_le_of_dense fun ε ε₀ => ?_)
+  refine norm_le_zero_iff.1 (le_of_forall_gt_imp_ge_of_dense fun ε ε₀ => ?_)
   calc
     ‖deriv f c‖ ≤ C / (C / ε) :=
       norm_deriv_le_of_forall_mem_sphere_norm_le (div_pos C₀ ε₀) hf.diffContOnCl fun z _ => hC z

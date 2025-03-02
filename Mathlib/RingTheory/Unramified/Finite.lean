@@ -109,13 +109,14 @@ lemma finite_of_free_aux (I) [DecidableEq I] (b : Basis I R S)
     · intros; simp only [add_smul]
   have h₂ : ∀ (x : S), ((b.repr x).support.sum fun a ↦ b.repr x a • b a) = x := by
     simpa only [Finsupp.linearCombination_apply, Finsupp.sum] using b.linearCombination_repr
+  simp only [a] at h₁
   simp_rw [map_finsupp_sum, map_smul, h₁, Finsupp.sum, Finset.sum_comm (t := f.support),
     TensorProduct.smul_tmul', ← TensorProduct.sum_tmul, ← Finset.smul_sum, h₂]
   apply Finset.sum_congr rfl
   intros i hi
   apply Finset.sum_subset_zero_on_sdiff
   · exact Finset.subset_biUnion_of_mem (fun i ↦ (a i).support) hi
-  · simp only [Finset.mem_sdiff, Finset.mem_biUnion, Finsupp.mem_support_iff, ne_eq, not_not,
+  · simp only [a, Finset.mem_sdiff, Finset.mem_biUnion, Finsupp.mem_support_iff, ne_eq, not_not,
       and_imp, forall_exists_index]
     simp (config := {contextual := true})
   · exact fun _ _ ↦ rfl
@@ -271,7 +272,7 @@ lemma comp_sec :
 
 /-- If `S` is an unramified `R`-algebra, then `R`-flat implies `S`-flat. Iversen I.2.7 -/
 lemma flat_of_restrictScalars [Module.Flat R M] : Module.Flat S M :=
-  Module.Flat.of_retract _ _ _ _ _ (comp_sec R S M)
+  Module.Flat.of_retract _ _ (comp_sec R S M)
 
 /-- If `S` is an unramified `R`-algebra, then `R`-projective implies `S`-projective. -/
 lemma projective_of_restrictScalars [Module.Projective R M] : Module.Projective S M :=

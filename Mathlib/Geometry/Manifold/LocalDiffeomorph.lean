@@ -64,7 +64,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {G : Type*} [TopologicalSpace G]
   (I : ModelWithCorners 𝕜 E H) (J : ModelWithCorners 𝕜 F G)
   (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-  (N : Type*) [TopologicalSpace N] [ChartedSpace G N] (n : ℕ∞)
+  (N : Type*) [TopologicalSpace N] [ChartedSpace G N] (n : WithTop ℕ∞)
 
 section PartialDiffeomorph
 /-- A partial diffeomorphism on `s` is a function `f : M → N` such that `f` restricts to a
@@ -133,12 +133,12 @@ end PartialDiffeomorph
 variable {M N}
 
 /-- `f : M → N` is called a **`C^n` local diffeomorphism at *x*** iff there exist
-  open sets `U ∋ x` and `V ∋ f x` and a diffeomorphism `Φ : U → V` such that `f = Φ` on `U`. -/
+open sets `U ∋ x` and `V ∋ f x` and a diffeomorphism `Φ : U → V` such that `f = Φ` on `U`. -/
 def IsLocalDiffeomorphAt (f : M → N) (x : M) : Prop :=
   ∃ Φ : PartialDiffeomorph I J M N n, x ∈ Φ.source ∧ EqOn f Φ Φ.source
 
 /-- `f : M → N` is called a **`C^n` local diffeomorphism on *s*** iff it is a local diffeomorphism
-  at each `x : s`. -/
+at each `x : s`. -/
 def IsLocalDiffeomorphOn (f : M → N) (s : Set M) : Prop :=
   ∀ x : s, IsLocalDiffeomorphAt I J n f x
 

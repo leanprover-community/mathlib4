@@ -94,7 +94,7 @@ theorem convex_iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, Convex 𝕜 (s
     Convex 𝕜 (⋂ i, s i) :=
   sInter_range s ▸ convex_sInter <| forall_mem_range.2 h
 
-theorem convex_iInter₂ {ι : Sort*} {κ : ι → Sort*} {s : ∀ i, κ i → Set E}
+theorem convex_iInter₂ {ι : Sort*} {κ : ι → Sort*} {s : (i : ι) → κ i → Set E}
     (h : ∀ i j, Convex 𝕜 (s i j)) : Convex 𝕜 (⋂ (i) (j), s i j) :=
   convex_iInter fun i => convex_iInter <| h i
 
@@ -624,8 +624,8 @@ theorem single_mem_stdSimplex (i : ι) : Pi.single i 1 ∈ stdSimplex 𝕜 ι :=
 theorem ite_eq_mem_stdSimplex (i : ι) : (if i = · then (1 : 𝕜) else 0) ∈ stdSimplex 𝕜 ι := by
   simpa only [@eq_comm _ i, ← Pi.single_apply] using single_mem_stdSimplex 𝕜 i
 
-#adaptation_note /-- as of `nightly-2024-03-11`, we need a type annotation on the segment in the
-following two lemmas. -/
+#adaptation_note /-- nightly-2024-03-11
+we need a type annotation on the segment in the following two lemmas. -/
 
 /-- The edges are contained in the simplex. -/
 lemma segment_single_subset_stdSimplex (i j : ι) :

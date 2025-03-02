@@ -63,10 +63,10 @@ local notation "absR" => abs
 -- FIXME this monolithic proof causes a deterministic timeout with `-T50000`
 -- It should be broken in a sequence of more manageable pieces,
 -- perhaps with individual statements for the three steps below.
-/-- Existence of minimizers
+/-- **Existence of minimizers**, aka the **Hilbert projection theorem**.
+
 Let `u` be a point in a real inner product space, and let `K` be a nonempty complete convex subset.
-Then there exists a (unique) `v` in `K` that minimizes the distance `‖u - v‖` to `u`.
- -/
+Then there exists a (unique) `v` in `K` that minimizes the distance `‖u - v‖` to `u`. -/
 theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h₁ : IsComplete K)
     (h₂ : Convex ℝ K) : ∀ u : F, ∃ v ∈ K, ‖u - v‖ = ⨅ w : K, ‖u - w‖ := fun u => by
   let δ := ⨅ w : K, ‖u - w‖
@@ -119,7 +119,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
           _ =
               absR (2 : ℝ) * ‖u - half • (wq + wp)‖ * (absR (2 : ℝ) * ‖u - half • (wq + wp)‖) +
                 ‖wp - wq‖ * ‖wp - wq‖ := by
-            rw [_root_.abs_of_nonneg]
+            rw [abs_of_nonneg]
             exact zero_le_two
           _ =
               ‖(2 : ℝ) • (u - half • (wq + wp))‖ * ‖(2 : ℝ) • (u - half • (wq + wp))‖ +
@@ -744,14 +744,11 @@ theorem Submodule.sup_orthogonal_inf_of_completeSpace {K₁ K₂ : Submodule �
     exact K₂.add_mem (h hy) hz.2
   · exact fun hx => ⟨v, v.prop, x - v, ⟨hvm, K₂.sub_mem hx (h v.prop)⟩, add_sub_cancel _ _⟩
 
-variable {K}
-
+variable {K} in
 /-- If `K` is complete, `K` and `Kᗮ` span the whole space. -/
 theorem Submodule.sup_orthogonal_of_completeSpace [HasOrthogonalProjection K] : K ⊔ Kᗮ = ⊤ := by
   convert Submodule.sup_orthogonal_inf_of_completeSpace (le_top : K ≤ ⊤) using 2
   simp
-
-variable (K)
 
 /-- If `K` is complete, any `v` in `E` can be expressed as a sum of elements of `K` and `Kᗮ`. -/
 theorem Submodule.exists_add_mem_mem_orthogonal [HasOrthogonalProjection K] (v : E) :
@@ -1288,7 +1285,7 @@ abbrev OrthogonalFamily.decomposition [DecidableEq ι] [Fintype ι] {V : ι → 
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [DFinsupp.sumAddHom_apply]; rw [DFinsupp.sum_eq_sum_fintype]
     · simp_rw [Equiv.apply_symm_apply, AddSubmonoidClass.coe_subtype]
-      exact hV.sum_projection_of_mem_iSup _ ((h.ge : _) Submodule.mem_top)
+      exact hV.sum_projection_of_mem_iSup _ ((h.ge :) Submodule.mem_top)
     · intro i
       exact map_zero _
   right_inv x := by
@@ -1314,7 +1311,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
     rintro ⟨x, hx', hx⟩
     -- take a nonzero vector and normalize it
     let e := (‖x‖⁻¹ : 𝕜) • x
-    have he : ‖e‖ = 1 := by simp [norm_smul_inv_norm hx]
+    have he : ‖e‖ = 1 := by simp [e, norm_smul_inv_norm hx]
     have he' : e ∈ (span 𝕜 v)ᗮ := smul_mem' _ _ hx'
     have he'' : e ∉ v := by
       intro hev
@@ -1327,7 +1324,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
     refine ⟨insert e v, v.subset_insert e, ⟨?_, ?_⟩, (ne_insert_of_not_mem v he'').symm⟩
     · -- show that the elements of `insert e v` have unit length
       rintro ⟨a, ha'⟩
-      cases' eq_or_mem_of_mem_insert ha' with ha ha
+      rcases eq_or_mem_of_mem_insert ha' with ha | ha
       · simp [ha, he]
       · exact hv.1 ⟨a, ha⟩
     · -- show that the elements of `insert e v` are orthogonal
@@ -1335,7 +1332,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
         intro a ha
         exact he' a (Submodule.subset_span ha)
       rintro ⟨a, ha'⟩
-      cases' eq_or_mem_of_mem_insert ha' with ha ha
+      rcases eq_or_mem_of_mem_insert ha' with ha | ha
       · rintro ⟨b, hb'⟩ hab'
         have hb : b ∈ v := by
           refine mem_of_mem_insert_of_ne hb' ?_
@@ -1345,7 +1342,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
         rw [inner_eq_zero_symm]
         simpa [ha] using h_end b hb
       rintro ⟨b, hb'⟩ hab'
-      cases' eq_or_mem_of_mem_insert hb' with hb hb
+      rcases eq_or_mem_of_mem_insert hb' with hb | hb
       · simpa [hb] using h_end a ha
       have : (⟨a, ha⟩ : v) ≠ ⟨b, hb⟩ := by
         intro hab''

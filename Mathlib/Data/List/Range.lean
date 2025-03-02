@@ -82,7 +82,7 @@ theorem ranges_length (l : List ℕ) :
   induction l with
   | nil => simp only [ranges, map_nil]
   | cons a l hl => -- (a :: l)
-    simp only [map, length_range, map_map, cons.injEq, true_and]
+    simp only [ranges, map_cons, length_range, map_map, cons.injEq, true_and]
     conv_rhs => rw [← hl]
     apply map_congr_left
     intro s _
@@ -93,7 +93,8 @@ set_option linter.deprecated false in
 @[deprecated "Use `List.ranges_flatten`." (since := "2024-10-17")]
 lemma ranges_flatten' : ∀ l : List ℕ, l.ranges.flatten = range (Nat.sum l)
   | [] => rfl
-  | a :: l => by simp only [Nat.sum_cons, flatten, ← map_flatten, ranges_flatten', range_add]
+  | a :: l => by
+    simp only [ranges, flatten_cons, ← map_flatten, ranges_flatten', Nat.sum_cons, range_add]
 
 @[deprecated (since := "2024-10-15")] alias ranges_join' := ranges_flatten'
 

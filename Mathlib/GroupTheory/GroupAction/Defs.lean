@@ -3,10 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.Group.Submonoid.MulAction
 
 /-!
 # Definition of `orbit`, `fixedPoints` and `stabilizer`
@@ -101,19 +102,16 @@ section FixedPoints
 def fixedPoints : Set α :=
   { a : α | ∀ m : M, m • a = a }
 
-variable {M}
-
+variable {M} in
 /-- `fixedBy m` is the set of elements fixed by `m`. -/
 @[to_additive "`fixedBy m` is the set of elements fixed by `m`."]
 def fixedBy (m : M) : Set α :=
   { x | m • x = x }
 
-variable (M)
-
 @[to_additive]
 theorem fixed_eq_iInter_fixedBy : fixedPoints M α = ⋂ m : M, fixedBy α m :=
   Set.ext fun _ =>
-    ⟨fun hx => Set.mem_iInter.2 fun m => hx m, fun hx m => (Set.mem_iInter.1 hx m : _)⟩
+    ⟨fun hx => Set.mem_iInter.2 fun m => hx m, fun hx m => (Set.mem_iInter.1 hx m :)⟩
 
 variable {M α}
 
@@ -527,8 +525,8 @@ lemma univ_eq_iUnion_orbit :
 end Orbit
 
 section Stabilizer
-variable (G)
 
+variable (G) in
 /-- The stabilizer of an element under an action, i.e. what sends the element to itself.
 A subgroup. -/
 @[to_additive
@@ -537,8 +535,6 @@ A subgroup. -/
 def stabilizer (a : α) : Subgroup G :=
   { stabilizerSubmonoid G a with
     inv_mem' := fun {m} (ha : m • a = a) => show m⁻¹ • a = a by rw [inv_smul_eq_iff, ha] }
-
-variable {G}
 
 @[to_additive]
 instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizer G a) :=

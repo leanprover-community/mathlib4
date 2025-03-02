@@ -79,10 +79,8 @@ def functorialityAdjunction : Cocones.functoriality K F ⊣ functorialityRightAd
   counit := functorialityCounit adj K
 
 include adj in
-/-- A left adjoint preserves colimits.
-
-See <https://stacks.math.columbia.edu/tag/0038>.
--/
+/-- A left adjoint preserves colimits. -/
+@[stacks 0038]
 lemma leftAdjoint_preservesColimits : PreservesColimitsOfSize.{v, u} F where
   preservesColimitsOfShape :=
     { preservesColimit :=
@@ -203,10 +201,8 @@ def functorialityAdjunction' : functorialityLeftAdjoint adj K ⊣ Cones.functori
   counit := functorialityCounit' adj K
 
 include adj in
-/-- A right adjoint preserves limits.
-
-See <https://stacks.math.columbia.edu/tag/0038>.
--/
+/-- A right adjoint preserves limits. -/
+@[stacks 0038]
 lemma rightAdjoint_preservesLimits : PreservesLimitsOfSize.{v, u} G where
   preservesLimitsOfShape :=
     { preservesLimit :=

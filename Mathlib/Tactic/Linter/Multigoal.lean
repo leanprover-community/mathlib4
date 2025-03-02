@@ -61,7 +61,7 @@ There is some overlap in scope between `ignoreBranch` and `exclusions`.
 
 Tactic combinators like `repeat` or `try` are a mix of both.
 -/
-abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofList [
+abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofArray #[
     -- structuring a proof
     ``Lean.Parser.Term.cdot,
     ``cdot,
@@ -112,7 +112,7 @@ Reasons for ignoring these tactics include
 
 There is some overlap in scope between `exclusions` and `ignoreBranch`.
 -/
-abbrev ignoreBranch : Std.HashSet SyntaxNodeKind := .ofList [
+abbrev ignoreBranch : Std.HashSet SyntaxNodeKind := .ofArray #[
     ``Lean.Parser.Tactic.Conv.conv,
     `Mathlib.Tactic.Conv.convLHS,
     `Mathlib.Tactic.Conv.convRHS,
@@ -161,7 +161,7 @@ def multiGoalLinter : Linter where run := withSetOptionIn fun _stx ↦ do
     if (← get).messages.hasErrors then
       return
     let trees ← getInfoTrees
-    for t in trees.toArray do
+    for t in trees do
       for (s, before, after, n) in getManyGoals t do
         let goals (k : Nat) := if k == 1 then f!"1 goal" else f!"{k} goals"
         let fmt ← Command.liftCoreM

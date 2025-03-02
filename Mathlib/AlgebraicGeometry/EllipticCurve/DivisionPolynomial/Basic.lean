@@ -401,11 +401,11 @@ lemma Φ_ofNat (n : ℕ) : W.Φ (n + 1) =
 @[simp]
 lemma Φ_zero : W.Φ 0 = 1 := by
   rw [Φ, ΨSq_zero, mul_zero, zero_sub, zero_add, preΨ_one, one_mul, zero_sub, preΨ_neg, preΨ_one,
-    neg_one_mul, neg_neg, if_pos even_zero]
+    neg_one_mul, neg_neg, if_pos Even.zero]
 
 @[simp]
 lemma Φ_one : W.Φ 1 = X := by
-  rw [show 1 = ((0 : ℕ) + 1 : ℤ) by rfl, Φ_ofNat, preΨ'_one, one_pow, mul_one, if_pos even_zero,
+  rw [show 1 = ((0 : ℕ) + 1 : ℤ) by rfl, Φ_ofNat, preΨ'_one, one_pow, mul_one, if_pos Even.zero,
     mul_one, preΨ'_zero, mul_zero, zero_mul, sub_zero]
 
 @[simp]
@@ -423,8 +423,8 @@ lemma Φ_three : W.Φ 3 = X * W.Ψ₃ ^ 2 - W.preΨ₄ * W.Ψ₂Sq := by
 @[simp]
 lemma Φ_four : W.Φ 4 = X * W.preΨ₄ ^ 2 * W.Ψ₂Sq - W.Ψ₃ * (W.preΨ₄ * W.Ψ₂Sq ^ 2 - W.Ψ₃ ^ 3) := by
   rw [show 4 = ((3 : ℕ) + 1 : ℤ) by rfl, Φ_ofNat, preΨ'_four, if_neg <| by decide,
-    show 3 + 2 = 2 * 2 + 1 by rfl, preΨ'_odd, preΨ'_four, preΨ'_two, if_pos even_zero, preΨ'_one,
-    preΨ'_three, if_pos even_zero, if_neg <| by decide]
+    show 3 + 2 = 2 * 2 + 1 by rfl, preΨ'_odd, preΨ'_four, preΨ'_two, if_pos Even.zero, preΨ'_one,
+    preΨ'_three, if_pos Even.zero, if_neg <| by decide]
   ring1
 
 @[simp]

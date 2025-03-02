@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
-import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
@@ -79,7 +78,7 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     -- Porting note: added a second `by apply`
     lift Q ⟨by apply GradedAlgebra.ι Q, by apply GradedAlgebra.ι_sq_scalar Q⟩ x' =
       DirectSum.of (fun i => evenOdd Q i) i' x' := by
-  cases' x' with x' hx'
+  obtain ⟨x', hx'⟩ := x'
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
   induction hx' using Submodule.iSup_induction' with
   | mem i x hx =>
@@ -99,8 +98,7 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
       · rw [Nat.succ_eq_add_one, add_comm, Nat.cast_add, Nat.cast_one]
       rfl
   | zero =>
-    set_option linter.deprecated false in
-    rw [AlgHom.map_zero]
+    rw [map_zero]
     apply Eq.symm
     apply DFinsupp.single_eq_zero.mpr; rfl
   | add x y hx hy ihx ihy =>

@@ -115,24 +115,30 @@ theorem integralNormalization_degree : (integralNormalization p).degree = p.degr
   · rw [← degree_scaleRoots, ← integralNormalization_mul_C_leadingCoeff]
     exact (degree_mul_le _ _).trans (add_le_of_nonpos_right degree_C_le)
 
-variable [CommSemiring S]
+variable {A : Type*} [CommSemiring S] [Semiring A]
 
 theorem leadingCoeff_smul_integralNormalization (p : S[X]) :
     p.leadingCoeff • integralNormalization p = scaleRoots p p.leadingCoeff := by
   rw [Algebra.smul_def, algebraMap_eq, mul_comm, integralNormalization_mul_C_leadingCoeff]
 
-theorem integralNormalization_eval₂_leadingCoeff_mul (h : 1 ≤ p.natDegree) (f : R →+* S) (x : S) :
+theorem integralNormalization_eval₂_leadingCoeff_mul_of_commute (h : 1 ≤ p.natDegree) (f : R →+* A)
+    (x : A) (h₁ : Commute (f p.leadingCoeff) x) (h₂ : ∀ {r r'}, Commute (f r) (f r')) :
     (integralNormalization p).eval₂ f (f p.leadingCoeff * x) =
       f p.leadingCoeff ^ (p.natDegree - 1) * p.eval₂ f x := by
   rw [eval₂_eq_sum_range, eval₂_eq_sum_range, Finset.mul_sum]
   apply Finset.sum_congr
   · rw [natDegree_eq_of_degree_eq p.integralNormalization_degree]
   intro n _hn
-  rw [mul_pow, ← mul_assoc, ← f.map_pow, ← f.map_mul,
-    integralNormalization_coeff_mul_leadingCoeff_pow _ h, f.map_mul, f.map_pow]
-  ring
+  rw [h₁.mul_pow, ← mul_assoc, ← f.map_pow, ← f.map_mul,
+    integralNormalization_coeff_mul_leadingCoeff_pow _ h, f.map_mul, h₂.eq, f.map_pow, mul_assoc]
 
-theorem integralNormalization_eval₂_eq_zero {p : R[X]} (f : R →+* S) {z : S} (hz : eval₂ f z p = 0)
+theorem integralNormalization_eval₂_leadingCoeff_mul (h : 1 ≤ p.natDegree) (f : R →+* S) (x : S) :
+    (integralNormalization p).eval₂ f (f p.leadingCoeff * x) =
+      f p.leadingCoeff ^ (p.natDegree - 1) * p.eval₂ f x :=
+  integralNormalization_eval₂_leadingCoeff_mul_of_commute h _ _ (.all _ _) (.all _ _)
+
+theorem integralNormalization_eval₂_eq_zero_of_commute {p : R[X]} (f : R →+* A) {z : A}
+    (hz : eval₂ f z p = 0) (h₁ : Commute (f p.leadingCoeff) z) (h₂ : ∀ {r r'}, Commute (f r) (f r'))
     (inj : ∀ x : R, f x = 0 → x = 0) :
     eval₂ f (f p.leadingCoeff * z) (integralNormalization p) = 0 := by
   obtain (h | h) := p.natDegree.eq_zero_or_pos
@@ -141,20 +147,20 @@ theorem integralNormalization_eval₂_eq_zero {p : R[X]} (f : R →+* S) {z : S}
       simp [h0]
     · rw [eq_C_of_natDegree_eq_zero h, eval₂_C] at hz
       exact absurd (inj _ hz) h0
-  · rw [integralNormalization_eval₂_leadingCoeff_mul h, hz, mul_zero]
+  · rw [integralNormalization_eval₂_leadingCoeff_mul_of_commute h _ _ h₁ h₂, hz, mul_zero]
+
+theorem integralNormalization_eval₂_eq_zero {p : R[X]} (f : R →+* S) {z : S} (hz : eval₂ f z p = 0)
+    (inj : ∀ x : R, f x = 0 → x = 0) :
+    eval₂ f (f p.leadingCoeff * z) (integralNormalization p) = 0 :=
+  integralNormalization_eval₂_eq_zero_of_commute _ hz (.all _ _) (.all _ _) inj
+
+theorem integralNormalization_aeval_eq_zero [Algebra S A] {f : S[X]} {z : A} (hz : aeval z f = 0)
+    (inj : ∀ x : S, algebraMap S A x = 0 → x = 0) :
+    aeval (algebraMap S A f.leadingCoeff * z) (integralNormalization f) = 0 :=
+  integralNormalization_eval₂_eq_zero_of_commute (algebraMap S A) hz
+    (Algebra.commute_algebraMap_left _ _) (.map (.all _ _) _) inj
 
 end Semiring
-
-section CommSemiring
-
-variable [CommSemiring R] [CommSemiring S]
-
-theorem integralNormalization_aeval_eq_zero [Algebra R S] {f : R[X]} {z : S} (hz : aeval z f = 0)
-    (inj : ∀ x : R, algebraMap R S x = 0 → x = 0) :
-    aeval (algebraMap R S f.leadingCoeff * z) (integralNormalization f) = 0 :=
-  integralNormalization_eval₂_eq_zero (algebraMap R S) hz inj
-
-end CommSemiring
 
 section IsCancelMulZero
 

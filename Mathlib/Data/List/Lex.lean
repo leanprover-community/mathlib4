@@ -35,24 +35,13 @@ variable {α : Type u}
 
 /-! ### lexicographic ordering -/
 
-
-/-- Given a strict order `<` on `α`, the lexicographic strict order on `List α`, for which
-`[a0, ..., an] < [b0, ..., b_k]` if `a0 < b0` or `a0 = b0` and `[a1, ..., an] < [b1, ..., bk]`.
-The definition is given for any relation `r`, not only strict orders. -/
-inductive Lex (r : α → α → Prop) : List α → List α → Prop
-  | nil {a l} : Lex r [] (a :: l)
-  | cons {a l₁ l₂} (h : Lex r l₁ l₂) : Lex r (a :: l₁) (a :: l₂)
-  | rel {a₁ l₁ a₂ l₂} (h : r a₁ a₂) : Lex r (a₁ :: l₁) (a₂ :: l₂)
-
 namespace Lex
 
 theorem cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
     Lex r (a :: l₁) (a :: l₂) ↔ Lex r l₁ l₂ :=
-  ⟨fun h => by cases' h with _ _ _ _ _ h _ _ _ _ h; exacts [h, (irrefl_of r a h).elim], Lex.cons⟩
+  ⟨fun h => by obtain - | h | h := h; exacts [h, (irrefl_of r a h).elim], Lex.cons⟩
 
-@[simp]
-theorem not_nil_right (r : α → α → Prop) (l : List α) : ¬Lex r l [] :=
-  nofun
+@[deprecated (since := "2024-12-21")] alias not_nil_right := not_lex_nil
 
 theorem nil_left_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r [] l ∨ l = [] :=
   match l with
@@ -99,11 +88,6 @@ instance isAsymm (r : α → α → Prop) [IsAsymm α r] : IsAsymm (List α) (Le
     | _, _, Lex.cons _, Lex.rel h₂ => asymm h₂ h₂
     | _, _, Lex.cons h₁, Lex.cons h₂ => aux _ _ h₁ h₂
 
-@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
-instance isStrictTotalOrder (r : α → α → Prop) [IsStrictTotalOrder α r] :
-    IsStrictTotalOrder (List α) (Lex r) :=
-  { isStrictWeakOrder_of_isOrderConnected with }
-
 instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r] : DecidableRel (Lex r)
   | l₁, [] => isFalse fun h => by cases h
   | [], _ :: _ => isTrue Lex.nil
@@ -138,7 +122,7 @@ theorem to_ne : ∀ {l₁ l₂ : List α}, Lex (· ≠ ·) l₁ l₂ → l₁ �
 theorem _root_.Decidable.List.Lex.ne_iff [DecidableEq α] {l₁ l₂ : List α}
     (H : length l₁ ≤ length l₂) : Lex (· ≠ ·) l₁ l₂ ↔ l₁ ≠ l₂ :=
   ⟨to_ne, fun h => by
-    induction' l₁ with a l₁ IH generalizing l₂ <;> cases' l₂ with b l₂
+    induction' l₁ with a l₁ IH generalizing l₂ <;> rcases l₂ with - | ⟨b, l₂⟩
     · contradiction
     · apply nil
     · exact (not_lt_of_ge H).elim (succ_pos _)
@@ -158,8 +142,11 @@ end Lex
 instance LT' [LT α] : LT (List α) :=
   ⟨Lex (· < ·)⟩
 
-theorem nil_lt_cons [LT α] (a : α) (l : List α) : [] < a :: l :=
-  Lex.nil
+-- TODO: This deprecated instance is still used (by the instance just below)
+@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
+instance isStrictTotalOrder (r : α → α → Prop) [IsStrictTotalOrder α r] :
+    IsStrictTotalOrder (List α) (Lex r) :=
+  { isStrictWeakOrder_of_isOrderConnected with }
 
 instance [LinearOrder α] : LinearOrder (List α) :=
   linearOrderOfSTO (Lex (· < ·))
@@ -168,25 +155,8 @@ instance [LinearOrder α] : LinearOrder (List α) :=
 instance LE' [LinearOrder α] : LE (List α) :=
   Preorder.toLE
 
-theorem lt_iff_lex_lt [LinearOrder α] (l l' : List α) : lt l l' ↔ Lex (· < ·) l l' := by
-  constructor <;>
-  intro h
-  · induction h with
-    | nil b bs => exact Lex.nil
-    | @head a as b bs hab => apply Lex.rel; assumption
-    | @tail a as b bs hab hba _ ih =>
-      have heq : a = b := _root_.le_antisymm (le_of_not_lt hba) (le_of_not_lt hab)
-      subst b; apply Lex.cons; assumption
-  · induction h with
-    | @nil a as => apply lt.nil
-    | @cons a as bs _ ih => apply lt.tail <;> simp [ih]
-    | @rel a as b bs h => apply lt.head; assumption
-
-@[simp]
-theorem nil_le {α} [LinearOrder α] {l : List α} : [] ≤ l :=
-  match l with
-  | [] => le_rfl
-  | _ :: _ => le_of_lt <| nil_lt_cons _ _
+theorem lt_iff_lex_lt [LinearOrder α] (l l' : List α) : List.lt l l' ↔ Lex (· < ·) l l' := by
+  rw [List.lt]
 
 theorem head_le_of_lt [Preorder α] {a a' : α} {l l' : List α} (h : (a' :: l') < (a :: l)) :
     a' ≤ a :=

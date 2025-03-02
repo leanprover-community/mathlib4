@@ -128,7 +128,7 @@ instance (priority := 100) uniqueFactorizationMonoid :
   exact
     ⟨w.map (rename (↑)), fun b hb =>
       let ⟨b', hb', he⟩ := Multiset.mem_map.1 hb
-      he ▸ (prime_rename_iff ↑s).2 (h b' hb'),
+      he ▸ (prime_rename_iff (σ := σ) ↑s).2 (h b' hb'),
       Units.map (@rename s σ D _ (↑)).toRingHom.toMonoidHom u, by
       erw [Multiset.prod_hom, ← map_mul, hw]⟩
 

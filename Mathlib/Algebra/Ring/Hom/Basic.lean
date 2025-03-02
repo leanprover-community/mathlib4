@@ -6,7 +6,7 @@ Authors: Amelia Livingston, Jireh Loreaux
 import Mathlib.Algebra.Divisibility.Hom
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Insert
 
 /-!
 # Additional lemmas about homomorphisms of semirings and rings
@@ -17,6 +17,7 @@ These lemmas have been banished here to avoid unnecessary imports in
 They could be moved to more natural homes.
 -/
 
+assert_not_exists RelIso Field
 
 open Function
 
@@ -49,9 +50,7 @@ end Semiring
 end RingHom
 
 /-- Pullback `IsDomain` instance along an injective function. -/
-protected theorem Function.Injective.isDomain [Ring α] [IsDomain α] [Ring β] (f : β →+* α)
-    (hf : Injective f) : IsDomain β := by
-  haveI := pullback_nonzero f f.map_zero f.map_one
-  haveI := IsRightCancelMulZero.to_noZeroDivisors α
-  haveI := hf.noZeroDivisors f f.map_zero f.map_mul
-  exact NoZeroDivisors.to_isDomain β
+protected theorem Function.Injective.isDomain [Semiring α] [IsDomain α] [Semiring β] {F}
+    [FunLike F β α] [MonoidWithZeroHomClass F β α] (f : F) (hf : Injective f) : IsDomain β where
+  __ := domain_nontrivial f (map_zero _) (map_one _)
+  __ := hf.isCancelMulZero f (map_zero _) (map_mul _)

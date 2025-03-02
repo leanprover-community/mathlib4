@@ -3,8 +3,8 @@ Copyright (c) 2017 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 -/
-import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Image
@@ -18,8 +18,7 @@ of characteristic zero. The result that the complex numbers are algebraically cl
 `FieldTheory.AlgebraicClosure`.
 -/
 
-assert_not_exists Multiset
-assert_not_exists Algebra
+assert_not_exists Multiset Algebra
 
 open Set Function
 
@@ -59,6 +58,9 @@ theorem ext : ∀ {z w : ℂ}, z.re = w.re → z.im = w.im → z = w
   | ⟨_, _⟩, ⟨_, _⟩, rfl, rfl => rfl
 
 attribute [local ext] Complex.ext
+
+lemma «forall» {p : ℂ → Prop} : (∀ x, p x) ↔ ∀ a b, p ⟨a, b⟩ := by aesop
+lemma «exists» {p : ℂ → Prop} : (∃ x, p x) ↔ ∃ a b, p ⟨a, b⟩ := by aesop
 
 theorem re_surjective : Surjective re := fun x => ⟨⟨x, 0⟩, rfl⟩
 
@@ -106,11 +108,13 @@ instance canLift : CanLift ℂ ℝ (↑) fun z => z.im = 0 where
 
 /-- The product of a set on the real axis and a set on the imaginary axis of the complex plane,
 denoted by `s ×ℂ t`. -/
-def Set.reProdIm (s t : Set ℝ) : Set ℂ :=
+def reProdIm (s t : Set ℝ) : Set ℂ :=
   re ⁻¹' s ∩ im ⁻¹' t
 
+@[deprecated (since := "2024-12-03")] protected alias Set.reProdIm := reProdIm
+
 @[inherit_doc]
-infixl:72 " ×ℂ " => Set.reProdIm
+infixl:72 " ×ℂ " => reProdIm
 
 theorem mem_reProdIm {z : ℂ} {s t : Set ℝ} : z ∈ s ×ℂ t ↔ z.re ∈ s ∧ z.im ∈ t :=
   Iff.rfl
@@ -283,7 +287,7 @@ theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
 diamond from the other actions they inherit through the `ℝ`-action on `ℂ` and action transitivity
 defined in `Data.Complex.Module`. -/
 instance : Nontrivial ℂ :=
-  pullback_nonzero re rfl rfl
+  domain_nontrivial re rfl rfl
 
 -- Porting note: moved from `Module/Data/Complex/Basic.lean`
 namespace SMul
@@ -418,21 +422,15 @@ end
 noncomputable instance instNNRatCast : NNRatCast ℂ where nnratCast q := ofReal q
 noncomputable instance instRatCast : RatCast ℂ where ratCast q := ofReal q
 
--- See note [no_index around OfNat.ofNat]
-@[simp, norm_cast] lemma ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ofReal (no_index (OfNat.ofNat n)) = OfNat.ofNat n := rfl
+@[simp, norm_cast] lemma ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ofReal ofNat(n) = ofNat(n) := rfl
 @[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ofReal n = n := rfl
 @[simp, norm_cast] lemma ofReal_intCast (n : ℤ) : ofReal n = n := rfl
 @[simp, norm_cast] lemma ofReal_nnratCast (q : ℚ≥0) : ofReal q = q := rfl
 @[simp, norm_cast] lemma ofReal_ratCast (q : ℚ) : ofReal q = q := rfl
 
-@[deprecated (since := "2024-04-17")]
-alias ofReal_rat_cast := ofReal_ratCast
-
--- See note [no_index around OfNat.ofNat]
 @[simp]
-lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).re = OfNat.ofNat n := rfl
-@[simp] lemma im_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).im = 0 := rfl
+lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).re = ofNat(n) := rfl
+@[simp] lemma im_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).im = 0 := rfl
 @[simp, norm_cast] lemma natCast_re (n : ℕ) : (n : ℂ).re = n := rfl
 @[simp, norm_cast] lemma natCast_im (n : ℕ) : (n : ℂ).im = 0 := rfl
 @[simp, norm_cast] lemma intCast_re (n : ℤ) : (n : ℂ).re = n := rfl
@@ -450,9 +448,6 @@ lemma im_zsmul (n : ℤ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
 @[simp] lemma im_nnqsmul (q : ℚ≥0) (z : ℂ) : (q • z).im = q • z.im := smul_im ..
 @[simp] lemma re_qsmul (q : ℚ) (z : ℂ) : (q • z).re = q • z.re := smul_re ..
 @[simp] lemma im_qsmul (q : ℚ) (z : ℂ) : (q • z).im = q • z.im := smul_im ..
-
-@[deprecated (since := "2024-04-17")]
-alias rat_cast_im := ratCast_im
 
 @[norm_cast] lemma ofReal_nsmul (n : ℕ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
 @[norm_cast] lemma ofReal_zsmul (n : ℤ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
@@ -487,11 +482,7 @@ theorem conj_I : conj I = -I :=
 
 theorem conj_natCast (n : ℕ) : conj (n : ℂ) = n := map_natCast _ _
 
-@[deprecated (since := "2024-04-17")]
-alias conj_nat_cast := conj_natCast
-
--- See note [no_index around OfNat.ofNat]
-theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n :=
+theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (ofNat(n) : ℂ) = ofNat(n) :=
   map_ofNat _ _
 
 -- @[simp]
@@ -542,25 +533,15 @@ theorem normSq_ofReal (r : ℝ) : normSq r = r * r := by
 @[simp]
 theorem normSq_natCast (n : ℕ) : normSq n = n * n := normSq_ofReal _
 
-@[deprecated (since := "2024-04-17")]
-alias normSq_nat_cast := normSq_natCast
-
 @[simp]
 theorem normSq_intCast (z : ℤ) : normSq z = z * z := normSq_ofReal _
-
-@[deprecated (since := "2024-04-17")]
-alias normSq_int_cast := normSq_intCast
 
 @[simp]
 theorem normSq_ratCast (q : ℚ) : normSq q = q * q := normSq_ofReal _
 
-@[deprecated (since := "2024-04-17")]
-alias normSq_rat_cast := normSq_ratCast
-
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem normSq_ofNat (n : ℕ) [n.AtLeastTwo] :
-    normSq (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n * OfNat.ofNat n :=
+    normSq (ofNat(n) : ℂ) = ofNat(n) * ofNat(n) :=
   normSq_natCast _
 
 @[simp]
@@ -775,23 +756,14 @@ lemma div_ofReal (z : ℂ) (x : ℝ) : z / x = ⟨z.re / x, z.im / x⟩ := by
 lemma div_natCast (z : ℂ) (n : ℕ) : z / n = ⟨z.re / n, z.im / n⟩ :=
   mod_cast div_ofReal z n
 
-@[deprecated (since := "2024-04-17")]
-alias div_nat_cast := div_natCast
-
 lemma div_intCast (z : ℂ) (n : ℤ) : z / n = ⟨z.re / n, z.im / n⟩ :=
   mod_cast div_ofReal z n
-
-@[deprecated (since := "2024-04-17")]
-alias div_int_cast := div_intCast
 
 lemma div_ratCast (z : ℂ) (x : ℚ) : z / x = ⟨z.re / x, z.im / x⟩ :=
   mod_cast div_ofReal z x
 
-@[deprecated (since := "2024-04-17")]
-alias div_rat_cast := div_ratCast
-
 lemma div_ofNat (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
-    z / OfNat.ofNat n = ⟨z.re / OfNat.ofNat n, z.im / OfNat.ofNat n⟩ :=
+    z / ofNat(n) = ⟨z.re / ofNat(n), z.im / ofNat(n)⟩ :=
   div_natCast z n
 
 @[simp] lemma div_ofReal_re (z : ℂ) (x : ℝ) : (z / x).re = z.re / x := by rw [div_ofReal]
@@ -803,16 +775,13 @@ lemma div_ofNat (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
 @[simp] lemma div_ratCast_re (z : ℂ) (x : ℚ) : (z / x).re = z.re / x := by rw [div_ratCast]
 @[simp] lemma div_ratCast_im (z : ℂ) (x : ℚ) : (z / x).im = z.im / x := by rw [div_ratCast]
 
-@[deprecated (since := "2024-04-17")]
-alias div_rat_cast_im := div_ratCast_im
-
 @[simp]
 lemma div_ofNat_re (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
-    (z / no_index (OfNat.ofNat n)).re = z.re / OfNat.ofNat n := div_natCast_re z n
+    (z / ofNat(n)).re = z.re / ofNat(n) := div_natCast_re z n
 
 @[simp]
 lemma div_ofNat_im (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
-    (z / no_index (OfNat.ofNat n)).im = z.im / OfNat.ofNat n := div_natCast_im z n
+    (z / ofNat(n)).im = z.im / ofNat(n) := div_natCast_im z n
 
 /-! ### Characteristic zero -/
 
@@ -854,6 +823,14 @@ lemma reProdIm_subset_iff' {s s₁ t t₁ : Set ℝ} :
     s ×ℂ t ⊆ s₁ ×ℂ t₁ ↔ s ⊆ s₁ ∧ t ⊆ t₁ ∨ s = ∅ ∨ t = ∅ := by
   convert prod_subset_prod_iff
   exact reProdIm_subset_iff
+
+variable {s t : Set ℝ}
+
+@[simp] lemma reProdIm_nonempty : (s ×ℂ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty := by
+  simp [Set.Nonempty, reProdIm, Complex.exists]
+
+@[simp] lemma reProdIm_eq_empty : s ×ℂ t = ∅ ↔ s = ∅ ∨ t = ∅ := by
+  simp [← not_nonempty_iff_eq_empty, reProdIm_nonempty, -not_and, not_and_or]
 
 end reProdIm
 
