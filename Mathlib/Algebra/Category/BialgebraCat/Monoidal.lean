@@ -67,4 +67,4 @@ noncomputable instance : (forget₂ (BialgebraCat R) (CoalgebraCat R)).Monoidal 
     εIso := Iso.refl _
     μIso _ _ := Iso.refl _ }
 
- end BialgebraCat
+end BialgebraCat
