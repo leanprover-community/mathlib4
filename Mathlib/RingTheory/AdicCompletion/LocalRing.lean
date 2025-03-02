@@ -5,6 +5,7 @@ Authors: Nailin Guan
 -/
 
 import Mathlib.RingTheory.AdicCompletion.Basic
+import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.LocalRing.Defs
 
 /-!
@@ -77,3 +78,14 @@ theorem isLocalRing_of_isAdicComplete_maximal [IsAdicComplete m R] : IsLocalRing
     by_contra! h
     absurd m.add_mem h.1 h.2
     simpa [hab] using m.ne_top_iff_one.mp (Ideal.IsMaximal.ne_top hmax)
+
+theorem DiscreteValuationRing_of_IsAdicComplete_principal [IsDomain R] [IsAdicComplete m R]
+    (ne_bot : m ≠ ⊥) (principal : m.IsPrincipal) : IsDiscreteValuationRing R where
+  __ := isLocalRing_of_isAdicComplete_maximal m
+  principal I := by
+    rcases principal with ⟨π, hπ⟩
+    by_cases ne_zero : ∃ r ∈ I, r ≠ 0
+    · sorry
+    · push_neg at ne_zero
+      simpa only [I.eq_bot_iff.mpr ne_zero] using bot_isPrincipal
+  not_a_field' := by simpa only [← IsLocalRing.eq_maximalIdeal hmax] using ne_bot
