@@ -11,6 +11,7 @@ import Mathlib.Probability.Kernel.Composition.MeasureComp
 import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 import Mathlib.Probability.Kernel.Integral
 import Mathlib.Probability.Kernel.IonescuTulcea.PTraj
+import Mathlib.Probability.Process.Filtration
 
 /-!
 # Ionescu-Tulcea theorem
@@ -723,29 +724,34 @@ theorem setIntegral_traj_ptraj {a b : ℕ} (hab : a ≤ b) {x₀ : (Π i : Iic a
 
 variable [CompleteSpace E]
 
+open Filtration
+
 theorem condExp_traj {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
     {f : (Π n, X n) → E} (i_f : Integrable f (traj κ a x₀)) :
-    (traj κ a x₀)[f|piPreorder b] =ᵐ[traj κ a x₀]
+    (traj κ a x₀)[f|piLE X b] =ᵐ[traj κ a x₀]
       fun x ↦ ∫ y, f y ∂traj κ b (frestrictLe b x) := by
   have i_f' : Integrable (fun x ↦ ∫ y, f y ∂(traj κ b) x)
       (((traj κ a) x₀).map (frestrictLe b)) := by
     rw [← map_apply _ (measurable_frestrictLe _), traj_map_frestrictLe _ _]
     rw [← traj_comp_ptraj _ hab] at i_f
     exact i_f.integral_comp
-  refine ae_eq_condExp_of_forall_setIntegral_eq (piPreorder.le _) i_f
+
+  refine ae_eq_condExp_of_forall_setIntegral_eq ((piLE X).le _) i_f
     (fun s _ _ ↦ i_f'.comp_aemeasurable (measurable_frestrictLe b).aemeasurable |>.integrableOn)
-    ?_ (i_f'.1.comp_ae_measurable' (measurable_frestrictLe b).aemeasurable) |>.symm
-  rintro - ⟨t, mt, rfl⟩ -
-  simp_rw [Function.comp_apply]
-  rw [← setIntegral_map mt i_f'.1, ← map_apply, traj_map_frestrictLe,
-    setIntegral_traj_ptraj hab i_f mt]
-  all_goals fun_prop
+    ?_ ?_ |>.symm <;> rw [piLE_eq_comap_frestrictLe]
+  · rintro - ⟨t, mt, rfl⟩ -
+    simp_rw [Function.comp_apply]
+    rw [← setIntegral_map mt i_f'.1, ← map_apply, traj_map_frestrictLe,
+      setIntegral_traj_ptraj hab i_f mt]
+    all_goals fun_prop
+  · exact (i_f'.1.comp_ae_measurable' (measurable_frestrictLe b).aemeasurable)
+
 
 variable (κ)
 
 theorem condExp_traj' {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c)
     (x₀ : Π i : Iic a, X i) (f : (Π n, X n) → E) :
-    (traj κ a x₀)[f|piPreorder b] =ᵐ[traj κ a x₀]
+    (traj κ a x₀)[f|piLE X b] =ᵐ[traj κ a x₀]
       fun x ↦ ∫ y, ((traj κ a x₀)[f|piPreorder c]) (updateFinset x _ y)
         ∂ptraj κ b c (frestrictLe b x) := by
   have i_cf : Integrable ((traj κ a x₀)[f|piPreorder c]) (traj κ a x₀) :=
