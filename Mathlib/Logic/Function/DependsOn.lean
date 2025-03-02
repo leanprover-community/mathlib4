@@ -11,13 +11,14 @@ import Mathlib.Data.Set.Function
 When dealing with a function `f : Π i, α i` depending on many variables, some operations
 may get rid of the dependency on some variables (see `Function.updateFinset` or
 `MeasureTheory.lmarginal` for example). However considering this new function
-as having a different domain with fewer points is not comfortable in lean, as it requires the use
+as having a different domain with fewer points is not comfortable in Lean, as it requires the use
 of subtypes and can lead to tedious writing.
 
-On the other hand one wants to be able for example to call some function constant with respect to
-some variables and be able to infer this when applying transformations mentioned above.
-This is why introduce the predicate `DependsOn f s`, which states that if `x` and `y` coincide over
-the set `s`, then `f x = f y`. This is equivalent to `Function.FactorsThrough f s.restrict`.
+On the other hand one wants to be able for example to describe some function as constant
+with respect to some variables, and be able to deduce this when applying transformations
+mentioned above. This is why we introduce the predicate `DependsOn f s`, which states that
+if `x` and `y` coincide over the set `s`, then `f x = f y`.
+This is equivalent to `Function.FactorsThrough f s.restrict`.
 
 ## Main definition
 
@@ -28,23 +29,44 @@ the set `s`, then `f x = f y`. This is equivalent to `Function.FactorsThrough f 
 * `dependsOn_iff_factorsThrough`: A function `f` depends on `s` if and only if it factors
   through `s.restrict`.
 
+## Implementation notes
+
+When we write `DependsOn f s`, i.e. `f` only depends on `s`, it should be interpreted as
+"`f` _potentially_ depends only on variables in `s`". However it might be the case
+that `f` does not depend at all on variables in `s`, for example if `f` is constant.
+As a consequence, `DependsOn f univ` is always true, see `dependsOn_univ`.
+
+The predicate `DependsOn f s` can also be interpreted as saying that `f` is independent of all
+the variables which are not in `s`. Although this phrasing might seem more natural, we choose to go
+with `DependsOn` because writing mathematically "independent of variables in `s`" would boil down to
+`∀ x y, (∀ i ∉ s, x i = y i) → f x = f y`, which is the same as `DependsOn f sᶜ`.
+
 ## Tags
 
 depends on
 -/
 
-open Set
+open Function Set
 
 variable {ι : Type*} {α : ι → Type*} {β : Type*}
 
-/-- A function `f` depends on `s` if, whenever `x` and `y` coincide over `s`, `f x = f y`. -/
+/-- A function `f` depends on `s` if, whenever `x` and `y` coincide over `s`, `f x = f y`.
+
+It should be interpreted as "`f` _potentially_ depends only on variables in `s`".
+However it might be the case that `f` does not depend at all on variables in `s`,
+for example if `f` is constant. As a consequence, `DependsOn f univ` is always true,
+see `dependsOn_univ`. -/
 def DependsOn (f : (Π i, α i) → β) (s : Set ι) : Prop :=
   ∀ ⦃x y⦄, (∀ i ∈ s, x i = y i) → f x = f y
 
 lemma dependsOn_iff_factorsThrough {f : (Π i, α i) → β} {s : Set ι} :
-    DependsOn f s ↔ Function.FactorsThrough f s.restrict := by
-  rw [DependsOn, Function.FactorsThrough]
+    DependsOn f s ↔ FactorsThrough f s.restrict := by
+  rw [DependsOn, FactorsThrough]
   simp [funext_iff]
+
+lemma dependsOn_iff_exists_comp [Nonempty β] {f : (Π i, α i) → β} {s : Set ι} :
+    DependsOn f s ↔ ∃ g : (Π i : s, α i) → β, f = g ∘ s.restrict := by
+  rw [dependsOn_iff_factorsThrough, factorsThrough_iff]
 
 lemma dependsOn_univ (f : (Π i, α i) → β) : DependsOn f univ :=
   fun _ _ h ↦ congrArg _ <| funext fun i ↦ h i trivial

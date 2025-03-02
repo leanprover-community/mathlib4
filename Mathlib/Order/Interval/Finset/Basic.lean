@@ -405,6 +405,12 @@ theorem Ioo_subset_Iic_self : Ioo a b ⊆ Iic b :=
 theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
   disjoint_left.2 fun _ hax hbcx ↦ (mem_Iic.1 hax).not_lt <| lt_of_le_of_lt h (mem_Ioc.1 hbcx).1
 
+def _root_.Equiv.Iic (a : α) : Iic a ≃ Set.Iic a :=
+    { toFun b := ⟨b.1, coe_Iic a ▸ mem_coe.2 b.2⟩
+      invFun b := ⟨b.1, by rw [← mem_coe, coe_Iic a]; exact b.2⟩
+      left_inv := fun _ ↦ rfl
+      right_inv := fun _ ↦ rfl }
+
 end LocallyFiniteOrderBot
 
 section LocallyFiniteOrderTop
@@ -724,13 +730,13 @@ lemma sup'_Iic (a : α) : (Iic a).sup' nonempty_Iic id = a :=
 @[simp] lemma sup_Iic [OrderBot α] (a : α) : (Iic a).sup id = a :=
   le_antisymm (Finset.sup_le fun _ ↦ mem_Iic.1) <| le_sup (f := id) <| mem_Iic.2 <| le_refl a
 
-lemma subset_Iic_sup [OrderBot α] [DecidableEq α] (f : ι → α) (s : Finset ι) :
-    s.image f ⊆ (Iic (s.sup f)) := by
+lemma image_subset_Iic_sup [OrderBot α] [DecidableEq α] (f : ι → α) (s : Finset ι) :
+    s.image f ⊆ Iic (s.sup f) := by
   refine fun i hi ↦ mem_Iic.2 ?_
   obtain ⟨j, hj, rfl⟩ := mem_image.1 hi
   exact le_sup hj
 
-lemma subset_Iic_sup_id [OrderBot α] (s : Finset α) : s ⊆ (Iic (s.sup id)) :=
+lemma subset_Iic_sup_id [OrderBot α] (s : Finset α) : s ⊆ Iic (s.sup id) :=
   fun _ h ↦ mem_Iic.2 <| le_sup (f := id) h
 
 end SemilatticeSup

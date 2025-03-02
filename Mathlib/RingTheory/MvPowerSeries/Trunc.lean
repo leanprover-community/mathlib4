@@ -73,8 +73,7 @@ theorem coeff_truncFun (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
   classical
   simp [truncFun, MvPolynomial.coeff_sum]
 
-variable (R)
-
+variable (R) in
 /-- The `n`th truncation of a multivariate formal power series to a multivariate polynomial
 
 If `f : MvPowerSeries σ R` and `n : σ →₀ ℕ` is a (finitely-supported) function from `σ`
@@ -92,8 +91,6 @@ def trunc : MvPowerSeries σ R →+ MvPolynomial σ R where
     intros x y
     ext m
     simp only [coeff_truncFun, MvPolynomial.coeff_add, ite_add_ite, ← map_add, add_zero]
-
-variable {R}
 
 theorem coeff_trunc (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (trunc R n φ).coeff m = if m < n then coeff R m φ else 0 := by
@@ -151,8 +148,7 @@ theorem coeff_truncFun' (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
   classical
   simp [truncFun', MvPolynomial.coeff_sum]
 
-variable (R)
-
+variable (R) in
 /--
 The `n`th truncation of a multivariate formal power series to a multivariate polynomial.
 
@@ -168,8 +164,6 @@ def trunc' : MvPowerSeries σ R →+ MvPolynomial σ R where
     ext m
     simp only [coeff_truncFun', MvPolynomial.coeff_add]
     rw [ite_add_ite, ← map_add, zero_add]
-
-variable {R}
 
 /-- Coefficients of the truncation of a multivariate power series. -/
 theorem coeff_trunc' (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :

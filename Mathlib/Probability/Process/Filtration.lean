@@ -5,6 +5,7 @@ Authors: Kexing Ying, Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Constructions.Cylinders
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
+import Mathlib.MeasureTheory.MeasurableSpace.PreorderRestrict
 
 /-!
 # Filtrations
@@ -65,13 +66,10 @@ protected theorem le (f : Filtration ι m) (i : ι) : f i ≤ m :=
 protected theorem ext {f g : Filtration ι m} (h : (f : ι → MeasurableSpace Ω) = g) : f = g := by
   cases f; cases g; congr
 
-variable (ι)
-
+variable (ι) in
 /-- The constant filtration which is equal to `m` for all `i : ι`. -/
 def const (m' : MeasurableSpace Ω) (hm' : m' ≤ m) : Filtration ι m :=
   ⟨fun _ => m', monotone_const, fun _ => hm'⟩
-
-variable {ι}
 
 @[simp]
 theorem const_apply {m' : MeasurableSpace Ω} {hm' : m' ≤ m} (i : ι) : const ι m' hm' i = m' :=
@@ -335,6 +333,35 @@ theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Ty
 alias memℒp_limitProcess_of_eLpNorm_bdd := memLp_limitProcess_of_eLpNorm_bdd
 
 end Limit
+
+section piLE
+
+/-! ### Filtration of the first events -/
+
+open MeasurableSpace Preorder
+
+variable {ι : Type*} [Preorder ι] (X : ι → Type*) [∀ i, MeasurableSpace (X i)]
+
+/-- The canonical filtration on the pi space `Π i, X i`, where `piLE X i` consists of
+measurable sets depending only on coordinates `≤ i`. -/
+def piLE : @Filtration ((i : ι) → X i) ι _ inferInstance where
+  seq i := pi.comap (restrictLe i)
+  mono' i j hij := by
+    simp only
+    rw [← restrictLe₂_comp_restrictLe hij, ← comap_comp]
+    exact comap_mono (measurable_restrictLe₂ _).comap_le
+  le' i := (measurable_restrictLe i).comap_le
+
+variable [LocallyFiniteOrderBot ι]
+
+lemma piLE_eq_comap_frestrictLe (i : ι) : piLE X i = pi.comap (frestrictLe i) := by
+  apply le_antisymm
+  · simp_rw [piLE, ← piCongrLeft_comp_frestrictLe, ← MeasurableEquiv.coe_piCongrLeft, ← comap_comp]
+    exact MeasurableSpace.comap_mono <| Measurable.comap_le (by fun_prop)
+  · rw [← piCongrLeft_comp_restrictLe, ← MeasurableEquiv.coe_piCongrLeft, ← comap_comp]
+    exact MeasurableSpace.comap_mono <| Measurable.comap_le (by fun_prop)
+
+end piLE
 
 variable {α : Type*}
 

@@ -82,8 +82,15 @@ theorem frestrictLe₂_comp_frestrictLe {a b : α} (hab : a ≤ b) :
 theorem frestrictLe₂_comp_frestrictLe₂ {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) :
     (frestrictLe₂ (π := π) hab) ∘ (frestrictLe₂ hbc) = frestrictLe₂ (hab.trans hbc) := rfl
 
+theorem piCongrLeft_comp_restrictLe {a : α} :
+    ((Equiv.Iic a).symm.piCongrLeft (fun i : Iic a ↦ π i)) ∘ (restrictLe a) = frestrictLe a := rfl
+
+theorem piCongrLeft_comp_frestrictLe {a : α} :
+    ((Equiv.Iic a).piCongrLeft (fun i : Set.Iic a ↦ π i)) ∘ (frestrictLe a) = restrictLe a := rfl
+
 lemma dependsOn_frestrictLe (a : α) : DependsOn (frestrictLe (π := π) a) (Set.Iic a) :=
   coe_Iic a ▸ (Finset.Iic a).dependsOn_restrict
+
 section updateFinset
 
 open Function
