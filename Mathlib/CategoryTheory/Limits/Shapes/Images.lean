@@ -100,7 +100,7 @@ determined. -/
 @[ext (iff := false)]
 theorem ext {F F' : MonoFactorisation f} (hI : F.I = F'.I)
     (hm : F.m = eqToHom hI ≫ F'.m) : F = F' := by
-  cases' F with _ Fm _ _ Ffac; cases' F' with _ Fm' _ _ Ffac'
+  obtain ⟨_, Fm, _, Ffac⟩ := F; obtain ⟨_, Fm', _, Ffac'⟩ := F'
   cases hI
   simp? at hm says simp only [eqToHom_refl, Category.id_comp] at hm
   congr
@@ -506,7 +506,7 @@ instance image.preComp_mono [HasImage g] [HasImage (f ≫ g)] : Mono (image.preC
   `image (f ≫ (g ≫ h)) ⟶ image (g ≫ h) ⟶ image h`
 agrees with the one step comparison map
   `image (f ≫ (g ≫ h)) ≅ image ((f ≫ g) ≫ h) ⟶ image h`.
- -/
+-/
 theorem image.preComp_comp {W : C} (h : Z ⟶ W) [HasImage (g ≫ h)] [HasImage (f ≫ g ≫ h)]
     [HasImage h] [HasImage ((f ≫ g) ≫ h)] :
     image.preComp f (g ≫ h) ≫ image.preComp g h =

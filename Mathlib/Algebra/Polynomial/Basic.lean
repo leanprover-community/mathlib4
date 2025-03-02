@@ -268,6 +268,18 @@ instance inhabited : Inhabited R[X] :=
 
 instance instNatCast : NatCast R[X] where natCast n := ofFinsupp n
 
+@[simp]
+theorem ofFinsupp_natCast (n : ℕ) : (⟨n⟩ : R[X]) = n := rfl
+
+@[simp]
+theorem toFinsupp_natCast (n : ℕ) : (n : R[X]).toFinsupp = n := rfl
+
+@[simp]
+theorem ofFinsupp_ofNat (n : ℕ) [n.AtLeastTwo] : (⟨ofNat(n)⟩ : R[X]) = ofNat(n) := rfl
+
+@[simp]
+theorem toFinsupp_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R[X]).toFinsupp = ofNat(n) := rfl
+
 instance semiring : Semiring R[X] :=
   fast_instance% Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero
     toFinsupp_one toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_nsmul _ _) toFinsupp_pow
@@ -545,7 +557,7 @@ theorem commute_X_pow (p : R[X]) (n : ℕ) : Commute (X ^ n) p :=
 
 @[simp]
 theorem monomial_mul_X (n : ℕ) (r : R) : monomial n r * X = monomial (n + 1) r := by
-  erw [monomial_mul_monomial, mul_one]
+  rw [X, monomial_mul_monomial, mul_one]
 
 @[simp]
 theorem monomial_mul_X_pow (n : ℕ) (r : R) (k : ℕ) :
@@ -1014,6 +1026,32 @@ theorem support_update_ne_zero (p : R[X]) (n : ℕ) {a : R} (ha : a ≠ 0) :
 
 end Update
 
+/-- The finset of nonzero coefficients of a polynomial. -/
+def coeffs (p : R[X]) : Finset R :=
+  letI := Classical.decEq R
+  Finset.image (fun n => p.coeff n) p.support
+
+@[simp]
+theorem coeffs_zero : coeffs (0 : R[X]) = ∅ :=
+  rfl
+
+theorem mem_coeffs_iff {p : R[X]} {c : R} : c ∈ p.coeffs ↔ ∃ n ∈ p.support, c = p.coeff n := by
+  simp [coeffs, eq_comm, (Finset.mem_image)]
+
+theorem coeffs_one : coeffs (1 : R[X]) ⊆ {1} := by
+  classical
+  simp_rw [coeffs, Finset.image_subset_iff]
+  simp_all [coeff_one]
+
+theorem coeff_mem_coeffs (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n ∈ p.coeffs := by
+  classical
+  simp only [coeffs, exists_prop, mem_support_iff, Finset.mem_image, Ne]
+  exact ⟨n, h, rfl⟩
+
+theorem coeffs_monomial (n : ℕ) {c : R} (hc : c ≠ 0) : (monomial n c).coeffs = {c} := by
+  rw [coeffs, support_monomial n hc]
+  simp
+
 end Semiring
 
 section CommSemiring
@@ -1044,6 +1082,12 @@ theorem toFinsupp_zsmul (a : ℤ) (b : R[X]) :
   rfl
 
 instance instIntCast : IntCast R[X] where intCast n := ofFinsupp n
+
+@[simp]
+theorem ofFinsupp_intCast (z : ℤ) : (⟨z⟩ : R[X]) = z := rfl
+
+@[simp]
+theorem toFinsupp_intCast (z : ℤ) : (z : R[X]).toFinsupp = z := rfl
 
 instance ring : Ring R[X] :=
   fast_instance% Function.Injective.ring toFinsupp toFinsupp_injective (toFinsupp_zero (R := R))

@@ -134,7 +134,7 @@ using smoothness of `ϕ` read in coordinates.
 Version for `ContMDiffWithinAt`. We also give a version for `ContMDiffAt`, but no version for
 `ContMDiffOn` or `ContMDiff` as our assumption, written in coordinates, only makes sense around
 a point.
- -/
+-/
 lemma ContMDiffWithinAt.clm_apply_of_inCoordinates
     (hϕ : ContMDiffWithinAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
       (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) s m₀)
@@ -172,7 +172,7 @@ using smoothness of `ϕ` read in coordinates.
 Version for `ContMDiffAt`. We also give a version for `ContMDiffWithinAt`, but no version for
 `ContMDiffOn` or `ContMDiff` as our assumption, written in coordinates, only makes sense around
 a point.
- -/
+-/
 lemma ContMDiffAt.clm_apply_of_inCoordinates
     (hϕ : ContMDiffAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
       (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)

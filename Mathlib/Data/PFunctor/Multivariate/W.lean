@@ -102,7 +102,7 @@ theorem comp_wPathCasesOn {α β : TypeVec n} (h : α ⟹ β) {a : P.A} {f : P.l
 /-- Polynomial functor for the W-type of `P`. `A` is a data-less well-founded
 tree whereas, for a given `a : A`, `B a` is a valid path in tree `a` so
 that `Wp.obj α` is made of a tree and a function from its valid paths to
-the values it contains  -/
+the values it contains -/
 def wp : MvPFunctor n where
   A := P.last.W
   B := P.WPath
@@ -145,7 +145,7 @@ Now think of W as defined inductively by the data ⟨a, f', f⟩ where
 - `a  : P.A` is the shape of the top node
 - `f' : P.drop.B a ⟹ α` is the contents of the top node
 - `f  : P.last.B a → P.last.W` are the subtrees
- -/
+-/
 
 
 /-- Constructor for `W` -/
@@ -177,7 +177,7 @@ theorem w_ind {α : TypeVec n} {C : P.W α → Prop}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α),
         (∀ i, C (f i)) → C (P.wMk a f' f)) :
     ∀ x, C x := by
-  intro x; cases' x with a f
+  intro x; obtain ⟨a, f⟩ := x
   apply @wp_ind n P α fun a f => C ⟨a, f⟩
   intro a f f' ih'
   dsimp [wMk] at ih
@@ -249,6 +249,6 @@ theorem wDest'_wMk {α : TypeVec n} (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.la
     P.wDest' (P.wMk a f' f) = ⟨a, splitFun f' f⟩ := by rw [wDest', wRec_eq]
 
 theorem wDest'_wMk' {α : TypeVec n} (x : P (α.append1 (P.W α))) : P.wDest' (P.wMk' x) = x := by
-  cases' x with a f; rw [wMk', wDest'_wMk, split_dropFun_lastFun]
+  obtain ⟨a, f⟩ := x; rw [wMk', wDest'_wMk, split_dropFun_lastFun]
 
 end MvPFunctor

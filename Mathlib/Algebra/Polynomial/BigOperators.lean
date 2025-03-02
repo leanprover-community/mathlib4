@@ -217,7 +217,7 @@ theorem coeff_multiset_prod_of_natDegree_le (n : ℕ) (hl : ∀ p ∈ t, natDegr
 
 theorem coeff_prod_of_natDegree_le (f : ι → R[X]) (n : ℕ) (h : ∀ p ∈ s, natDegree (f p) ≤ n) :
     coeff (∏ i ∈ s, f i) (#s * n) = ∏ i ∈ s, coeff (f i) n := by
-  cases' s with l hl
+  obtain ⟨l, hl⟩ := s
   convert coeff_multiset_prod_of_natDegree_le (l.map f) n ?_
   · simp
   · simp

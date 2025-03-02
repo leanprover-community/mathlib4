@@ -5,8 +5,9 @@ Authors: Kim Morrison, Joël Riou, Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 
 /-!
 # Pullback and pushout squares, and bicartesian squares
@@ -382,6 +383,20 @@ lemma isIso_snd_iso_of_mono {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X �
 
 end
 
+section
+
+lemma isIso_fst_of_isIso (h : IsPullback fst snd f g) [IsIso g] : IsIso fst := by
+  have := h.hasPullback
+  rw [← h.isoPullback_hom_fst]
+  infer_instance
+
+lemma isIso_snd_of_isIso (h : IsPullback fst snd f g) [IsIso f] : IsIso snd := by
+  have := h.hasPullback
+  rw [← h.isoPullback_hom_snd]
+  infer_instance
+
+end
+
 end IsPullback
 
 namespace IsPushout
@@ -578,6 +593,20 @@ lemma isIso_inl_iso_of_epi (h : IsPushout f f inl inr) : IsIso inl :=
 
 lemma isIso_inr_iso_of_epi (h : IsPushout f f inl inr) : IsIso inr :=
   h.cocone.isIso_inr_of_epi_of_isColimit h.isColimit
+
+end
+
+section
+
+lemma isIso_inl_of_isIso (h : IsPushout f g inl inr) [IsIso g] : IsIso inl := by
+  have := h.hasPushout
+  rw [← h.inl_isoPushout_inv]
+  infer_instance
+
+lemma isIso_inr_of_isIso (h : IsPushout f g inl inr) [IsIso f] : IsIso inr := by
+  have := h.hasPushout
+  rw [← h.inr_isoPushout_inv]
+  infer_instance
 
 end
 

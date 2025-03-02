@@ -55,7 +55,7 @@ variable (𝕜) [SMul 𝕜 E] {s t : Set E} {x : E}
 def balancedCore (s : Set E) :=
   ⋃₀ { t : Set E | Balanced 𝕜 t ∧ t ⊆ s }
 
-/-- Helper definition to prove `balanced_core_eq_iInter`-/
+/-- Helper definition to prove `balanced_core_eq_iInter` -/
 def balancedCoreAux (s : Set E) :=
   ⋂ (r : 𝕜) (_ : 1 ≤ ‖r‖), r • s
 
@@ -127,12 +127,9 @@ theorem balancedCore_nonempty_iff : (balancedCore 𝕜 s).Nonempty ↔ (0 : E) �
       balancedCore_subset _,
     fun h => ⟨0, balancedCore_zero_mem h⟩⟩
 
-variable (𝕜)
-
+variable (𝕜) in
 theorem subset_balancedHull [NormOneClass 𝕜] {s : Set E} : s ⊆ balancedHull 𝕜 s := fun _ hx =>
   mem_balancedHull_iff.2 ⟨1, norm_one.le, _, hx, one_smul _ _⟩
-
-variable {𝕜}
 
 theorem balancedHull.balanced (s : Set E) : Balanced 𝕜 (balancedHull 𝕜 s) := by
   intro a ha

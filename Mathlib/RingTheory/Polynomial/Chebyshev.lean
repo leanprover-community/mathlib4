@@ -454,7 +454,7 @@ theorem S_neg (n : ℤ) : S R (-n) = -S R (n - 2) := by simpa [sub_sub] using S_
 theorem S_neg_sub_two (n : ℤ) : S R (-n - 2) = -S R n := by
   simpa [sub_eq_add_neg, add_comm] using S_neg R (n + 2)
 
-  @[simp]
+@[simp]
 theorem S_eval_two (n : ℤ) : (S R n).eval 2 = n + 1 := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -497,7 +497,7 @@ theorem S_comp_two_mul_X (n : ℤ) : (S R n).comp (2 * X) = U R n := by
   | neg_add_one n ih1 ih2 => simp_rw [U_sub_one, S_sub_one, sub_comp, mul_comp, X_comp, ih1, ih2]
 
 theorem S_sq_add_S_sq (n : ℤ) : S R n ^ 2 + S R (n + 1) ^ 2 - X * S R n * S R (n + 1) = 1 := by
-  induction n using Int.induction_on with
+  induction n with
   | hz => simp; ring
   | hp n ih =>
     have h₁ := S_add_two R n

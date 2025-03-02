@@ -459,3 +459,21 @@ instance initial_snd [IsCofiltered C] [IsCofilteredOrEmpty D] : (Prod.snd C D).I
 end Prod
 
 end CategoryTheory
+
+open CategoryTheory
+
+lemma Monotone.final_functor_iff {J₁ J₂ : Type*} [Preorder J₁] [Preorder J₂]
+    [IsDirected J₁ (· ≤ · )] {f : J₁ → J₂} (hf : Monotone f) :
+    hf.functor.Final ↔ ∀ (j₂ : J₂), ∃ (j₁ : J₁), j₂ ≤ f j₁ := by
+  rw [Functor.final_iff_of_isFiltered]
+  constructor
+  · rintro ⟨h, _⟩ j₂
+    obtain ⟨j₁, ⟨φ⟩⟩ := h j₂
+    exact ⟨j₁, leOfHom φ⟩
+  · intro h
+    constructor
+    · intro j₂
+      obtain ⟨j₁, h₁⟩ := h j₂
+      exact ⟨j₁, ⟨homOfLE h₁⟩⟩
+    · intro _ c _ _
+      exact ⟨c, 𝟙 _, rfl⟩

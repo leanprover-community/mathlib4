@@ -32,7 +32,7 @@ def LiftFun (f : α → γ) (g : β → δ) : Prop :=
   ∀⦃a b⦄, R a b → S (f a) (g b)
 
 /-- `(R ⇒ S) f g` means `LiftFun R S f g`. -/
-infixr:40 " ⇒ " => LiftFun
+scoped infixr:40 " ⇒ " => LiftFun
 
 end
 

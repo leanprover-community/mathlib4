@@ -200,13 +200,10 @@ theorem mem_span_iff_linearCombination (s : Set M) (x : M) :
 
 @[deprecated (since := "2024-08-29")] alias mem_span_iff_total := mem_span_iff_linearCombination
 
-variable {R}
-
+variable {R} in
 theorem mem_span_range_iff_exists_finsupp {v : α → M} {x : M} :
     x ∈ span R (range v) ↔ ∃ c : α →₀ R, (c.sum fun i a => a • v i) = x := by
   simp only [← Finsupp.range_linearCombination, LinearMap.mem_range, linearCombination_apply]
-
-variable (R)
 
 theorem span_image_eq_map_linearCombination (s : Set α) :
     span R (v '' s) = Submodule.map (linearCombination R v) (supported R R s) := by
@@ -418,6 +415,22 @@ theorem top_le_span_range_iff_forall_exists_fun :
     ⊤ ≤ span R (range v) ↔ ∀ x, ∃ c : α → R, ∑ i, c i • v i = x := by
   simp_rw [← mem_span_range_iff_exists_fun]
   exact ⟨fun h x => h trivial, fun h x _ => h x⟩
+
+omit [Fintype α]
+
+theorem mem_span_image_iff_exists_fun {s : Set α} :
+    x ∈ span R (v '' s) ↔ ∃ t : Finset α, ↑t ⊆ s ∧ ∃ c : t → R, ∑ i, c i • v i = x := by
+  refine ⟨fun h ↦ ?_, fun ⟨t, ht, c, hx⟩ ↦ ?_⟩
+  · obtain ⟨l, hl, hx⟩ := (Finsupp.mem_span_image_iff_linearCombination R).mp h
+    refine ⟨l.support, hl, l ∘ (↑), ?_⟩
+    rw [← hx]
+    exact l.support.sum_coe_sort fun a ↦ l a • v a
+  · rw [← hx]
+    exact sum_smul_mem (span R (v '' s)) c fun a _ ↦ subset_span <| by aesop
+
+theorem Fintype.mem_span_image_iff_exists_fun {s : Set α} [Fintype s] :
+    x ∈ span R (v '' s) ↔ ∃ c : s → R, ∑ i, c i • v i = x := by
+  rw [← mem_span_range_iff_exists_fun, image_eq_range]
 
 end SpanRange
 

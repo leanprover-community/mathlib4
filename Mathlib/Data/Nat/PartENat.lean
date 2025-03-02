@@ -106,7 +106,7 @@ theorem some_eq_natCast (n : ℕ) : some n = n :=
 instance : CharZero PartENat where
   cast_injective := Part.some_injective
 
-/-- Alias of `Nat.cast_inj` specialized to `PartENat` --/
+/-- Alias of `Nat.cast_inj` specialized to `PartENat` -/
 theorem natCast_inj {x y : ℕ} : (x : PartENat) = y ↔ x = y :=
   Nat.cast_inj
 
@@ -272,10 +272,10 @@ instance orderTop : OrderTop PartENat where
 instance : ZeroLEOneClass PartENat where
   zero_le_one := bot_le
 
-/-- Alias of `Nat.cast_le` specialized to `PartENat` --/
+/-- Alias of `Nat.cast_le` specialized to `PartENat` -/
 theorem coe_le_coe {x y : ℕ} : (x : PartENat) ≤ y ↔ x ≤ y := Nat.cast_le
 
-/-- Alias of `Nat.cast_lt` specialized to `PartENat` --/
+/-- Alias of `Nat.cast_lt` specialized to `PartENat` -/
 theorem coe_lt_coe {x y : ℕ} : (x : PartENat) < y ↔ x < y := Nat.cast_lt
 
 @[simp]

@@ -116,7 +116,9 @@ theorem Spec.sheafedSpaceMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S
     -- Porting note: was one liner
     -- `dsimp, rw category_theory.functor.map_id, rw category.comp_id, erw comap_comp f g, refl`
     rw [NatTrans.comp_app, sheafedSpaceMap_c_app, whiskerRight_app, eqToHom_refl]
-    erw [(sheafedSpaceObj T).presheaf.map_id, Category.comp_id, comap_comp]
+    erw [(sheafedSpaceObj T).presheaf.map_id]
+    dsimp only [CommRingCat.hom_comp, RingHom.coe_comp, Function.comp_apply]
+    rw [comap_comp]
     rfl
 
 /-- Spec, as a contravariant functor from commutative rings to sheafed spaces.
@@ -219,8 +221,8 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Pr
       Localization.localRingHom_unique _ _ _ (PrimeSpectrum.comap_asIdeal _ _) fun x => by
         -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644 and https://github.com/leanprover-community/mathlib4/pull/8386
         rw [stalkIso_hom, stalkIso_inv, CommRingCat.comp_apply, CommRingCat.comp_apply,
-            localizationToStalk_of]
-        erw [stalkMap_toStalk_apply f p x, stalkToFiberRingHom_toStalk]
+            localizationToStalk_of, stalkMap_toStalk_apply f p x]
+        erw [stalkToFiberRingHom_toStalk]
         rfl
 
 /-- Version of `localRingHom_comp_stalkIso_apply` using `CommRingCat.Hom.hom` -/
@@ -310,7 +312,8 @@ theorem Spec_map_localization_isIso (R : CommRingCat.{u}) (M : Submonoid R)
     IsIso
       ((Spec.toPresheafedSpace.map
         (CommRingCat.ofHom (algebraMap R (Localization M))).op).stalkMap x) := by
-  erw [← localRingHom_comp_stalkIso]
+  dsimp only [Spec.toPresheafedSpace_map, Quiver.Hom.unop_op]
+  rw [← localRingHom_comp_stalkIso]
   -- Porting note: replaced `apply (config := { instances := false })`.
   -- See https://github.com/leanprover/lean4/issues/2273
   refine IsIso.comp_isIso' inferInstance (IsIso.comp_isIso' ?_ inferInstance)
@@ -362,9 +365,7 @@ def toPushforwardStalkAlgHom :
 
 theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
     ∃ x : S × p.asIdeal.primeCompl, x.2 • y = toPushforwardStalkAlgHom R S p x.1 := by
-  obtain ⟨U, hp, s, e⟩ := TopCat.Presheaf.germ_exist
-    -- Porting note: originally the first variable does not need to be explicit
-    (Spec.topMap (CommRingCat.ofHom (algebraMap ↑R ↑S)) _* (structureSheaf S).val) _ y
+  obtain ⟨U, hp, s, e⟩ := TopCat.Presheaf.germ_exist _ _ y
   obtain ⟨_, ⟨r, rfl⟩, hpr : p ∈ PrimeSpectrum.basicOpen r, hrU : PrimeSpectrum.basicOpen r ≤ U⟩ :=
     PrimeSpectrum.isTopologicalBasis_basic_opens.exists_subset_of_mem_open (show p ∈ U from hp) U.2
   change PrimeSpectrum.basicOpen r ≤ U at hrU
@@ -387,10 +388,8 @@ theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
     erw [← (Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _* (structureSheaf S).1).germ_res_apply
       (homOfLE le_top) p hpr]
   rw [← e]
-  -- Porting note: without this `change`, Lean doesn't know how to rewrite `map_mul`
   let f := TopCat.Presheaf.germ (Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _*
       (structureSheaf S).val) _ p hpr
-  change f _ * f _ = f _
   rw [← map_mul, mul_comm]
   dsimp only [Subtype.coe_mk] at hsn
   rw [← map_pow (algebraMap R S)] at hsn

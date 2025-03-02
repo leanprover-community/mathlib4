@@ -67,7 +67,7 @@ inductive homRel : HomRel (Paths FreeSimplexQuiver)
 end FreeSimplexQuiver
 
 /-- SimplexCategory is the category presented by generators and relation by the simplicial
-identities.-/
+identities. -/
 def SimplexCategoryGenRel := Quotient FreeSimplexQuiver.homRel
   deriving Category
 
@@ -174,8 +174,8 @@ lemma hom_induction' (P : MorphismProperty SimplexCategoryGenRel)
     · simpa using (δ_comp g i hrec)
     · simpa using (σ_comp g i hrec)
 
-/-- An induction principle for reasonning about objects in SimplexCategoryGenRel. This should be
-used instead of identifying an object with `mk` of its len.-/
+/-- An induction principle for reasonning about objects in `SimplexCategoryGenRel`. This should be
+used instead of identifying an object with `mk` of its `len`. -/
 @[elab_as_elim, cases_eliminator]
 protected def rec {P : SimplexCategoryGenRel → Sort*}
     (H : ∀ n : ℕ, P (.mk n)) :
@@ -183,7 +183,7 @@ protected def rec {P : SimplexCategoryGenRel → Sort*}
   intro x
   exact H x.len
 
-/-- A basic ext lemma for objects of SimplexCategoryGenRel --/
+/-- A basic `ext` lemma for objects of `SimplexCategoryGenRel`. -/
 @[ext]
 lemma ext {x y : SimplexCategoryGenRel} (h : x.len = y.len) : x = y := by
   cases x

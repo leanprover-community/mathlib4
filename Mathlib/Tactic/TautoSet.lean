@@ -10,6 +10,8 @@ import Mathlib.Data.Set.SymmDiff
 # The `tauto_set` tactic
 -/
 
+assert_not_exists RelIso
+
 namespace Mathlib.Tactic.TautoSet
 
 open Lean Elab.Tactic
@@ -23,19 +25,19 @@ elab (name := specialize_all) "specialize_all" x:term : tactic => withMainContex
 
 
 /--
-  `tauto_set` attempts to prove tautologies involving hypotheses and goals of the form `X ⊆ Y`
-  or `X = Y`, where `X`, `Y` are expressions built using ∪, ∩, \, and ᶜ from finitely many
-  variables of type `Set α`. It also unfolds expressions of the form `Disjoint A B` and
-  `symmDiff A B`.
+`tauto_set` attempts to prove tautologies involving hypotheses and goals of the form `X ⊆ Y`
+or `X = Y`, where `X`, `Y` are expressions built using ∪, ∩, \, and ᶜ from finitely many
+variables of type `Set α`. It also unfolds expressions of the form `Disjoint A B` and
+`symmDiff A B`.
 
-  Examples:
-  ```lean
-  example {α} (A B C D : Set α) (h1 : A ⊆ B) (h2 : C ⊆ D) : C \ B ⊆ D \ A := by
-    tauto_set
+Examples:
+```lean
+example {α} (A B C D : Set α) (h1 : A ⊆ B) (h2 : C ⊆ D) : C \ B ⊆ D \ A := by
+  tauto_set
 
-  example {α} (A B C : Set α) (h1 : A ⊆ B ∪ C) : (A ∩ B) ∪ (A ∩ C) = A := by
-    tauto_set
-  ```
+example {α} (A B C : Set α) (h1 : A ⊆ B ∪ C) : (A ∩ B) ∪ (A ∩ C) = A := by
+  tauto_set
+```
 -/
 macro "tauto_set" : tactic => `(tactic|
   · simp_all only [

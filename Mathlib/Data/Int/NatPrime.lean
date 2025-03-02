@@ -5,6 +5,7 @@ Authors: Kevin Lacker, Bryan Gin-ge Chen
 -/
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Data.Int.Basic
 
 /-!
 # Lemmas about `Nat.Prime` using `Int`s

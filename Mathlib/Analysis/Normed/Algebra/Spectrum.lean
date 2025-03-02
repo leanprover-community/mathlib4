@@ -278,8 +278,8 @@ open ContinuousMultilinearMap ENNReal FormalMultilinearSeries
 open scoped NNReal ENNReal
 
 variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
-variable (𝕜)
 
+variable (𝕜) in
 /-- In a Banach algebra `A` over a nontrivially normed field `𝕜`, for any `a : A` the
 power series with coefficients `a ^ n` represents the function `(1 - z • a)⁻¹` in a disk of
 radius `‖a‖₊⁻¹`. -/
@@ -310,8 +310,6 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a 
             ← NNReal.lt_inv_iff_mul_lt h]
       simpa [← smul_pow, (summable_geometric_of_norm_lt_one norm_lt).hasSum_iff] using
         (NormedRing.inverse_one_sub _ norm_lt).symm }
-
-variable {𝕜}
 
 theorem isUnit_one_sub_smul_of_lt_inv_radius {a : A} {z : 𝕜} (h : ↑‖z‖₊ < (spectralRadius 𝕜 a)⁻¹) :
     IsUnit (1 - z • a) := by

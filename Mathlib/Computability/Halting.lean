@@ -120,13 +120,15 @@ theorem cond {c : α → Bool} {f : α →. σ} {g : α →. σ} (hc : Computabl
     ((@Computable.decode σ _).comp snd).ofOption.to₂).of_eq
     fun a => by cases c a <;> simp [ef, eg, encodek]
 
-nonrec theorem sum_casesOn {f : α → β ⊕ γ} {g : α → β →. σ} {h : α → γ →. σ} (hf : Computable f)
+nonrec theorem sumCasesOn {f : α → β ⊕ γ} {g : α → β →. σ} {h : α → γ →. σ} (hf : Computable f)
     (hg : Partrec₂ g) (hh : Partrec₂ h) : @Partrec _ σ _ _ fun a => Sum.casesOn (f a) (g a) (h a) :=
   option_some_iff.1 <|
-    (cond (sum_casesOn hf (const true).to₂ (const false).to₂)
-          (sum_casesOn_left hf (option_some_iff.2 hg).to₂ (const Option.none).to₂)
-          (sum_casesOn_right hf (const Option.none).to₂ (option_some_iff.2 hh).to₂)).of_eq
+    (cond (sumCasesOn hf (const true).to₂ (const false).to₂)
+          (sumCasesOn_left hf (option_some_iff.2 hg).to₂ (const Option.none).to₂)
+          (sumCasesOn_right hf (const Option.none).to₂ (option_some_iff.2 hh).to₂)).of_eq
       fun a => by cases f a <;> simp only [Bool.cond_true, Bool.cond_false]
+
+@[deprecated (since := "2025-02-21")] alias sum_casesOn := Partrec.sumCasesOn
 
 end Partrec
 
@@ -135,7 +137,7 @@ def ComputablePred {α} [Primcodable α] (p : α → Prop) :=
   ∃ _ : DecidablePred p, Computable fun a => decide (p a)
 
 /-- A recursively enumerable predicate is one which is the domain of a computable partial function.
- -/
+-/
 def REPred {α} [Primcodable α] (p : α → Prop) :=
   Partrec fun a => Part.assert (p a) fun _ => Part.some ()
 
@@ -197,7 +199,7 @@ theorem to_re {p : α → Prop} (hp : ComputablePred p) : REPred p := by
 /-- **Rice's Theorem** -/
 theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C) {f g} (hf : Nat.Partrec f)
     (hg : Nat.Partrec g) (fC : f ∈ C) : g ∈ C := by
-  cases' h with _ h
+  obtain ⟨_, h⟩ := h
   obtain ⟨c, e⟩ :=
     fixed_point₂
       (Partrec.cond (h.comp fst) ((Partrec.nat_iff.2 hg).comp snd).to₂

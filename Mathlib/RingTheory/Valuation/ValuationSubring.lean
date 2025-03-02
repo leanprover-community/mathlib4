@@ -473,7 +473,7 @@ end UnitGroup
 
 section nonunits
 
-/-- The nonunits of a valuation subring of `K`, as a subsemigroup of `K`-/
+/-- The nonunits of a valuation subring of `K`, as a subsemigroup of `K` -/
 def nonunits : Subsemigroup K where
   carrier := {x | A.valuation x < 1}
   -- Porting note: added `Set.mem_setOf.mp`
@@ -510,7 +510,7 @@ variable {A}
 
 See also `mem_nonunits_iff_exists_mem_maximalIdeal`, which gets rid of the coercion to `K`,
 at the expense of a more complicated right hand side.
- -/
+-/
 theorem coe_mem_nonunits_iff {a : A} : (a : K) ∈ A.nonunits ↔ a ∈ IsLocalRing.maximalIdeal A :=
   (valuation_lt_one_iff _ _).symm
 
@@ -524,7 +524,7 @@ theorem nonunits_subset : (A.nonunits : Set K) ⊆ A :=
 
 See also `coe_mem_nonunits_iff`, which has a simpler right hand side but requires the element
 to be in `A` already.
- -/
+-/
 theorem mem_nonunits_iff_exists_mem_maximalIdeal {a : K} :
     a ∈ A.nonunits ↔ ∃ ha, (⟨a, ha⟩ : A) ∈ IsLocalRing.maximalIdeal A :=
   ⟨fun h => ⟨nonunits_subset h, coe_mem_nonunits_iff.mp h⟩, fun ⟨_, h⟩ =>
@@ -643,10 +643,10 @@ theorem ker_unitGroupToResidueFieldUnits :
   ext
   -- Porting note: simp fails but rw works
   -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  -- simp [Subgroup.mem_comap, Subgroup.coeSubtype, coe_mem_principalUnitGroup_iff]
-  rw [Subgroup.mem_comap, Subgroup.coeSubtype, coe_mem_principalUnitGroup_iff]
+  -- simp [Subgroup.mem_comap, Subgroup.coe_subtype, coe_mem_principalUnitGroup_iff]
+  rw [Subgroup.mem_comap, Subgroup.coe_subtype, coe_mem_principalUnitGroup_iff]
   rfl
-  -- simp [Subgroup.mem_comap, Subgroup.coeSubtype, coe_mem_principalUnitGroup_iff]
+  -- simp [Subgroup.mem_comap, Subgroup.coe_subtype, coe_mem_principalUnitGroup_iff]
 
 theorem surjective_unitGroupToResidueFieldUnits :
     Function.Surjective A.unitGroupToResidueFieldUnits :=

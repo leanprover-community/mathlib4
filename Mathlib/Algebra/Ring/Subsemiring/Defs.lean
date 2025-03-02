@@ -12,6 +12,7 @@ We define bundled subsemirings and some standard constructions: `subtype` and `i
 ring homomorphisms.
 -/
 
+assert_not_exists RelIso
 
 universe u v w
 

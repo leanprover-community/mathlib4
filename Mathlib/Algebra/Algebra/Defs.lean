@@ -97,7 +97,7 @@ See the implementation notes in this file for discussion of the details of this 
 -/
 class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SMul R A where
   /-- Embedding `R →+* A` given by `Algebra` structure.
-  Use `algebraMap` from the root namespace instead.-/
+  Use `algebraMap` from the root namespace instead. -/
   protected algebraMap : R →+* A
   commutes' : ∀ r x, algebraMap r * x = x * algebraMap r
   smul_def' : ∀ r x, r • x = algebraMap r * x
@@ -190,6 +190,11 @@ theorem RingHom.algebraMap_toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R
 /-- Creating an algebra from a morphism to a commutative semiring. -/
 def RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) : Algebra R S :=
   i.toAlgebra' fun _ => mul_comm _
+
+theorem RingHom.smul_toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S)
+    (r : R) (s : S) :
+    let _ := RingHom.toAlgebra i
+    r • s = i r * s := rfl
 
 theorem RingHom.algebraMap_toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) :
     @algebraMap R S _ _ i.toAlgebra = i :=

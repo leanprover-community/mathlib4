@@ -189,14 +189,14 @@ theorem symm_inv {G} [MeasurableSpace G] [InvolutiveInv G] [MeasurableInv G] :
   rfl
 
 /-- `equiv.divRight` as a `MeasurableEquiv`. -/
-@[to_additive " `equiv.subRight` as a `MeasurableEquiv` "]
+@[to_additive "`equiv.subRight` as a `MeasurableEquiv`"]
 def divRight [MeasurableMul G] (g : G) : G ≃ᵐ G where
   toEquiv := Equiv.divRight g
   measurable_toFun := measurable_div_const' g
   measurable_invFun := measurable_mul_const g
 
 /-- `equiv.divLeft` as a `MeasurableEquiv` -/
-@[to_additive " `equiv.subLeft` as a `MeasurableEquiv` "]
+@[to_additive "`equiv.subLeft` as a `MeasurableEquiv`"]
 def divLeft [MeasurableMul G] [MeasurableInv G] (g : G) : G ≃ᵐ G where
   toEquiv := Equiv.divLeft g
   measurable_toFun := measurable_id.const_div g

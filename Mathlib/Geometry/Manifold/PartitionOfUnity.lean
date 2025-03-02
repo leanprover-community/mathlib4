@@ -213,7 +213,7 @@ section finsupport
 variable {s : Set M} (ρ : SmoothPartitionOfUnity ι I M s) (x₀ : M)
 
 /-- The support of a smooth partition of unity at a point `x₀` as a `Finset`.
-  This is the set of `i : ι` such that `x₀ ∈ support f i`, i.e. `f i ≠ x₀`. -/
+This is the set of `i : ι` such that `x₀ ∈ support f i`, i.e. `f i ≠ x₀`. -/
 def finsupport : Finset ι := ρ.toPartitionOfUnity.finsupport x₀
 
 @[simp]
@@ -245,7 +245,7 @@ theorem finite_tsupport : {i | x₀ ∈ tsupport (ρ i)}.Finite :=
   ρ.toPartitionOfUnity.finite_tsupport _
 
 /-- The tsupport of a partition of unity at a point `x₀` as a `Finset`.
-  This is the set of `i : ι` such that `x₀ ∈ tsupport f i`. -/
+This is the set of `i : ι` such that `x₀ ∈ tsupport f i`. -/
 def fintsupport (x : M) : Finset ι :=
   (ρ.finite_tsupport x).toFinset
 

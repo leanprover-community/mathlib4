@@ -222,15 +222,12 @@ theorem transfer_center_eq_pow [FiniteIndex (center G)] (g : G) :
   transfer_eq_pow (id (center G)) g fun k _ hk => by rw [← mul_right_inj, ← hk.comm,
     mul_inv_cancel_right]
 
-variable (G)
-
+variable (G) in
 /-- The transfer homomorphism `G →* center G`. -/
 noncomputable def transferCenterPow [FiniteIndex (center G)] : G →* center G where
   toFun g := ⟨g ^ (center G).index, (center G).pow_index_mem g⟩
   map_one' := Subtype.ext (one_pow (center G).index)
   map_mul' a b := by simp_rw [← show ∀ _, (_ : center G) = _ from transfer_center_eq_pow, map_mul]
-
-variable {G}
 
 @[simp]
 theorem transferCenterPow_apply [FiniteIndex (center G)] (g : G) :

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Jujian Zhang
 -/
 
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Associator
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.RingTheory.Ideal.Operations
@@ -176,7 +176,7 @@ lemma quotTensorEquivQuotSMul_mk_tmul (I : Ideal R) (r : R) (x : M) :
   (quotTensorEquivQuotSMul M I).eq_symm_apply.mp <|
     Eq.trans (congrArg (· ⊗ₜ[R] x) <|
         Eq.trans (congrArg (Ideal.Quotient.mk I)
-                    (Eq.trans (smul_eq_mul R) (mul_one r))).symm <|
+                    (Eq.trans (smul_eq_mul ..) (mul_one r))).symm <|
           Submodule.Quotient.mk_smul I r 1) <|
       smul_tmul r _ x
 

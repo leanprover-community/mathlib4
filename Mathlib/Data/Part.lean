@@ -42,6 +42,8 @@ For `a : α`, `o : Part α`, `a ∈ o` means that `o` is defined and equal to `a
 `o.Dom` and `o.get _ = a`.
 -/
 
+assert_not_exists RelIso
+
 open Function
 
 /-- `Part α` is the type of "partial values" of type `α`. It
@@ -590,10 +592,18 @@ instance [SDiff α] : SDiff (Part α) where sdiff a b := (· \ ·) <$> a <*> b
 
 section
 
+@[to_additive]
 theorem mul_def [Mul α] (a b : Part α) : a * b = bind a fun y ↦ map (y * ·) b := rfl
+
+@[to_additive]
 theorem one_def [One α] : (1 : Part α) = some 1 := rfl
+
+@[to_additive]
 theorem inv_def [Inv α] (a : Part α) : a⁻¹ = Part.map (· ⁻¹) a := rfl
+
+@[to_additive]
 theorem div_def [Div α] (a b : Part α) : a / b = bind a fun y => map (y / ·) b := rfl
+
 theorem mod_def [Mod α] (a b : Part α) : a % b = bind a fun y => map (y % ·) b := rfl
 theorem append_def [Append α] (a b : Part α) : a ++ b = bind a fun y => map (y ++ ·) b := rfl
 theorem inter_def [Inter α] (a b : Part α) : a ∩ b = bind a fun y => map (y ∩ ·) b := rfl

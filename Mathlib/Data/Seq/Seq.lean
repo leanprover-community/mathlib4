@@ -123,10 +123,10 @@ def head (s : Seq α) : Option α :=
 /-- Get the tail of a sequence (or `nil` if the sequence is `nil`) -/
 def tail (s : Seq α) : Seq α :=
   ⟨s.1.tail, fun n' => by
-    cases' s with f al
+    obtain ⟨f, al⟩ := s
     exact al n'⟩
 
-/-- member definition for `Seq`-/
+/-- member definition for `Seq` -/
 protected def Mem (s : Seq α) (a : α) :=
   some a ∈ s.1
 
@@ -134,7 +134,7 @@ instance : Membership α (Seq α) :=
   ⟨Seq.Mem⟩
 
 theorem le_stable (s : Seq α) {m n} (h : m ≤ n) : s.get? m = none → s.get? n = none := by
-  cases' s with f al
+  obtain ⟨f, al⟩ := s
   induction' h with n _ IH
   exacts [id, fun h2 => al (IH h2)]
 
@@ -184,7 +184,7 @@ theorem destruct_eq_cons {s : Seq α} {a s'} : destruct s = some (a, s') → s =
   dsimp [destruct]
   induction' f0 : get? s 0 with a' <;> intro h
   · contradiction
-  · cases' s with f al
+  · obtain ⟨f, al⟩ := s
     injections _ h1 h2
     rw [← h2]
     apply Subtype.eq
@@ -222,7 +222,7 @@ theorem tail_nil : tail (nil : Seq α) = nil :=
 
 @[simp]
 theorem tail_cons (a : α) (s) : tail (cons a s) = s := by
-  cases' s with f al
+  obtain ⟨f, al⟩ := s
   apply Subtype.eq
   dsimp [tail, cons]
 
@@ -238,7 +238,7 @@ def recOn {motive : Seq α → Sort v} (s : Seq α) (nil : motive nil)
   rcases H : destruct s with - | v
   · rw [destruct_eq_nil H]
     apply nil
-  · cases' v with a s'
+  · obtain ⟨a, s'⟩ := v
     rw [destruct_eq_cons H]
     apply cons
 
@@ -310,7 +310,7 @@ variable (R : Seq α → Seq α → Prop)
 
 local infixl:50 " ~ " => R
 
-/-- Bisimilarity relation over `Option` of `Seq1 α`-/
+/-- Bisimilarity relation over `Option` of `Seq1 α` -/
 def BisimO : Option (Seq1 α) → Option (Seq1 α) → Prop
   | none, none => True
   | some (a, s), some (a', s') => a = a' ∧ R s s'
@@ -350,7 +350,7 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
       · intro _ this
         rw [destruct_cons, destruct_cons] at this
         rw [head_cons, head_cons, tail_cons, tail_cons]
-        cases' this with h1 h2
+        obtain ⟨h1, h2⟩ := this
         constructor
         · rw [h1]
         · exact h2
@@ -847,9 +847,9 @@ theorem join_append (S T : Seq (Seq1 α)) : join (append S T) = append (join S) 
         · cases' S with s S <;> simp
           · cases' T with s T
             · simp
-            · cases' s with a s; simp only [join_cons, destruct_cons, true_and]
+            · obtain ⟨a, s⟩ := s; simp only [join_cons, destruct_cons, true_and]
               refine ⟨s, nil, T, ?_, ?_⟩ <;> simp
-          · cases' s with a s
+          · obtain ⟨a, s⟩ := s
             simpa using ⟨s, S, T, rfl, rfl⟩
         · exact ⟨s, S, T, rfl, rfl⟩
   · refine ⟨nil, S, T, ?_, ?_⟩ <;> simp
@@ -1001,7 +1001,7 @@ theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
 @[simp]
 theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
   simp only [bind, map, ret.eq_1, map_nil]
-  cases' f a with a s
+  obtain ⟨a, s⟩ := f a
   cases s <;> simp
 
 @[simp]
@@ -1016,7 +1016,7 @@ theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.m
       | _, _, ⟨s, S, rfl, rfl⟩ => by
         cases' s with _ s <;> simp
         · cases' S with x S <;> simp
-          · cases' x with a s
+          · obtain ⟨a, s⟩ := x
             simpa [map] using ⟨_, _, rfl, rfl⟩
         · exact ⟨s, S, rfl, rfl⟩
   · refine ⟨nil, S, ?_, ?_⟩ <;> simp
@@ -1038,7 +1038,7 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
       | _, _, ⟨s, SS, rfl, rfl⟩ => by
         cases' s with _ s <;> simp
         · cases' SS with S SS <;> simp
-          · cases' S with s S; cases' s with x s
+          · obtain ⟨s, S⟩ := S; obtain ⟨x, s⟩ := s
             simp only [Seq.join_cons, join_append, destruct_cons]
             cases' s with x s <;> simp
             · exact ⟨_, _, rfl, rfl⟩
@@ -1049,7 +1049,7 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
 @[simp]
 theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
     bind (bind s f) g = bind s fun x : α => bind (f x) g := by
-  cases' s with a s
+  obtain ⟨a, s⟩ := s
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [bind, map]`.
   simp only [bind, map_pair, map_join]
   rw [← map_comp]
@@ -1060,9 +1060,9 @@ theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
   -- Porting note: Instead of `apply recOn s <;> intros`, `induction'` are used to
   --   give names to variables.
   induction' s using recOn with x s_1 <;> induction' S using recOn with x_1 s_2 <;> simp
-  · cases' x_1 with x t
+  · obtain ⟨x, t⟩ := x_1
     cases t <;> simp
-  · cases' x_1 with y t; simp
+  · obtain ⟨y, t⟩ := x_1; simp
 
 instance monad : Monad Seq1 where
   map := @map

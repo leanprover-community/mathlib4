@@ -15,6 +15,7 @@ import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Data.Finset.Sigma
 
 /-!
 # Sign of a permutation
@@ -429,14 +430,11 @@ theorem sign_abs (f : Perm α) :
     |(Equiv.Perm.sign f : ℤ)| = 1 := by
   rw [Int.abs_eq_natAbs, Int.units_natAbs, Nat.cast_one]
 
-variable (α)
-
+variable (α) in
 theorem sign_surjective [Nontrivial α] : Function.Surjective (sign : Perm α → ℤˣ) := fun a =>
   (Int.units_eq_one_or a).elim (fun h => ⟨1, by simp [h]⟩) fun h =>
     let ⟨x, y, hxy⟩ := exists_pair_ne α
     ⟨swap x y, by rw [sign_swap hxy, h]⟩
-
-variable {α}
 
 theorem eq_sign_of_surjective_hom {s : Perm α →* ℤˣ} (hs : Surjective s) : s = sign :=
   have : ∀ {f}, IsSwap f → s f = -1 := fun {f} ⟨x, y, hxy, hxy'⟩ =>

@@ -265,7 +265,8 @@ def ExProd.mkNegNat (_ : Q(Ring $α)) (n : ℕ) : (e : Q($α)) × ExProd sα e :
   ⟨q((Int.negOfNat $lit).rawCast : $α), .const (-n) none⟩
 
 /--
-Constructs the expression corresponding to `.const (-n)`.
+Constructs the expression corresponding to `.const q h` for `q = n / d`
+and `h` a proof that `(d : α) ≠ 0`.
 (The `.const` constructor does not check that the expression is correct.)
 -/
 def ExProd.mkRat (_ : Q(DivisionRing $α)) (q : ℚ) (n : Q(ℤ)) (d : Q(ℕ)) (h : Expr) :

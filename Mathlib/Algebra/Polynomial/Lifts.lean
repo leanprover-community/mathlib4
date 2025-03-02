@@ -69,6 +69,18 @@ theorem lifts_iff_coeff_lifts (p : S[X]) : p ∈ lifts f ↔ ∀ n : ℕ, p.coef
   rw [lifts_iff_ringHom_rangeS, mem_map_rangeS f]
   rfl
 
+theorem lifts_iff_coeffs_subset_range (p : S[X]) :
+    p ∈ lifts f ↔ (p.coeffs : Set S) ⊆ Set.range f := by
+  rw [lifts_iff_coeff_lifts]
+  constructor
+  · intro h _ hc
+    obtain ⟨n, ⟨-, hn⟩⟩ := mem_coeffs_iff.mp hc
+    exact hn ▸ h n
+  · intro h n
+    by_cases hn : p.coeff n = 0
+    · exact ⟨0, by simp [hn]⟩
+    · exact h <| coeff_mem_coeffs _ _ hn
+
 /-- If `(r : R)`, then `C (f r)` lifts. -/
 theorem C_mem_lifts (f : R →+* S) (r : R) : C (f r) ∈ lifts f :=
   ⟨C r, by

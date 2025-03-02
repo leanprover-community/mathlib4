@@ -3,7 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Nodup
+import Aesop
+import Mathlib.Data.Multiset.Defs
+import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Order.Hom.Basic
 
 /-!
 # Finite sets
@@ -344,16 +347,6 @@ theorem coe_coeEmb : ⇑(coeEmb : Finset α ↪o Set α) = ((↑) : Finset α �
 These results can be defined using the current imports, but deserve to be given a nicer home.
 -/
 
-set_option linter.deprecated false in
-@[deprecated "Deprecated without replacement." (since := "2025-02-07")]
-theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {s : Finset α} (hx : x ∈ s) :
-    SizeOf.sizeOf x < SizeOf.sizeOf s := by
-  cases s
-  dsimp [SizeOf.sizeOf, SizeOf.sizeOf, Multiset.sizeOf]
-  rw [Nat.add_comm]
-  refine lt_trans ?_ (Nat.lt_succ_self _)
-  exact Multiset.sizeOf_lt_sizeOf_of_mem hx
-
 section DecidablePiExists
 
 variable {s : Finset α}
@@ -398,17 +391,11 @@ namespace List
 
 variable [DecidableEq α] {a : α} {f : α → β} {s : Finset α} {t : Set β} {t' : Finset β}
 
-instance [DecidableEq β] : Decidable (Set.InjOn f s) :=
-  inferInstanceAs (Decidable (∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y))
-
 instance [DecidablePred (· ∈ t)] : Decidable (Set.MapsTo f s t) :=
   inferInstanceAs (Decidable (∀ x ∈ s, f x ∈ t))
 
 instance [DecidableEq β] : Decidable (Set.SurjOn f s t') :=
   inferInstanceAs (Decidable (∀ x ∈ t', ∃ y ∈ s, f y = x))
-
-instance [DecidableEq β] : Decidable (Set.BijOn f s t') :=
-  inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
 end List
 

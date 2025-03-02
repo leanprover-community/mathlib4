@@ -246,15 +246,13 @@ section starₗᵢ
 variable [CommSemiring 𝕜] [StarRing 𝕜]
 variable [SeminormedAddCommGroup E] [StarAddMonoid E] [NormedStarGroup E]
 variable [Module 𝕜 E] [StarModule 𝕜 E]
-variable (𝕜)
 
+variable (𝕜) in
 /-- `star` bundled as a linear isometric equivalence -/
 def starₗᵢ : E ≃ₗᵢ⋆[𝕜] E :=
   { starAddEquiv with
     map_smul' := star_smul
     norm_map' := norm_star }
-
-variable {𝕜}
 
 @[simp]
 theorem coe_starₗᵢ : (starₗᵢ 𝕜 : E → E) = star :=

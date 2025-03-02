@@ -811,7 +811,7 @@ slope of any secant line with right endpoint at `y` is strictly less than the de
 within `S` at `y`.
 
 This is fractionally weaker than `StrictConvexOn.slope_lt_of_hasDerivWithinAt_Iio` but simpler to
-apply under a `DifferentiableOn S` hypothesis.-/
+apply under a `DifferentiableOn S` hypothesis. -/
 lemma slope_lt_of_hasDerivWithinAt (hfc : StrictConvexOn ℝ S f)
     (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' S y) :
     slope f x y < f' :=

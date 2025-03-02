@@ -284,12 +284,11 @@ theorem Equiv.swap_mem_stabilizer {α : Type*} [DecidableEq α] {S : Set α} {a 
   simp_rw [Set.mem_inv_smul_set_iff, Perm.smul_def, swap_apply_def]
   exact ⟨fun h ↦ by simpa [Iff.comm] using h a, by intros; split_ifs <;> simp [*]⟩
 
-
 namespace MulAction
 
 variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
-/-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions.-/
+/-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions. -/
 @[to_additive
   "To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions."]
 theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :

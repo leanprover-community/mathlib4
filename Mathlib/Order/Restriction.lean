@@ -52,6 +52,9 @@ theorem restrictLe₂_comp_restrictLe {a b : α} (hab : a ≤ b) :
 theorem restrictLe₂_comp_restrictLe₂ {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) :
     (restrictLe₂ (π := π) hab) ∘ (restrictLe₂ hbc) = restrictLe₂ (hab.trans hbc) := rfl
 
+lemma dependsOn_restrictLe (a : α) : DependsOn (restrictLe (π := π) a) (Iic a) :=
+  (Iic a).dependsOn_restrict
+
 end Set
 
 section Finset
@@ -68,7 +71,7 @@ lemma frestrictLe_apply (a : α) (f : (a : α) → π a) (i : Iic a) : frestrict
 
 /-- If a function `f` indexed by `α` is restricted to elements `≤ b`, and `a ≤ b`,
 this is the restriction to elements `≤ b`. Intervals are seen as finite sets. -/
-def frestrictLe₂ {a b : α} (hab : a ≤ b) := Finset.restrict₂ (π := π) (Iic_subset_Iic.2 hab)
+def frestrictLe₂ {a b : α} (hab : a ≤ b) := restrict₂ (π := π) (Iic_subset_Iic.2 hab)
 
 @[simp]
 lemma frestrictLe₂_apply {a b : α} (hab : a ≤ b) (f : (i : Iic b) → π i) (i : Iic a) :
@@ -79,6 +82,9 @@ theorem frestrictLe₂_comp_frestrictLe {a b : α} (hab : a ≤ b) :
 
 theorem frestrictLe₂_comp_frestrictLe₂ {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) :
     (frestrictLe₂ (π := π) hab) ∘ (frestrictLe₂ hbc) = frestrictLe₂ (hab.trans hbc) := rfl
+
+lemma dependsOn_frestrictLe (a : α) : DependsOn (frestrictLe (π := π) a) (Set.Iic a) :=
+  coe_Iic a ▸ (Finset.Iic a).dependsOn_restrict
 
 end Finset
 

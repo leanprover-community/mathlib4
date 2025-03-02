@@ -115,7 +115,7 @@ private lemma card_S_eq [DecidableEq α] : #(Finset.Icc N P) = ∏ i : α, (P i 
   rw [Int.card_Icc_of_le (N i) (P i) (N_le_P_add_one A i)]
   exact add_sub_right_comm (P i) 1 (N i)
 
-/-- The sup norm of a non-zero integer matrix is at least one  -/
+/-- The sup norm of a non-zero integer matrix is at least one -/
 lemma one_le_norm_A_of_ne_zero (hA : A ≠ 0) : 1 ≤ ‖A‖ := by
   by_contra! h
   apply hA

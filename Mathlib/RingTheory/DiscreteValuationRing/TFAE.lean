@@ -36,7 +36,8 @@ theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [IsLocalRin
     (h' : (maximalIdeal R).IsPrincipal) (I : Ideal R) (hI : I ≠ ⊥) :
     ∃ n : ℕ, I = maximalIdeal R ^ n := by
   by_cases h : IsField R
-  · exact ⟨0, by simp [letI := h.toField; (eq_bot_or_eq_top I).resolve_left hI]⟩
+  · let _ := h.toField
+    exact ⟨0, by simp [(eq_bot_or_eq_top I).resolve_left hI]⟩
   classical
   obtain ⟨x, hx : _ = Ideal.span _⟩ := h'
   by_cases hI' : I = ⊤
@@ -166,7 +167,7 @@ theorem tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain
         IsIntegrallyClosed R ∧ ∀ P : Ideal R, P ≠ ⊥ → P.IsPrime → P = maximalIdeal R,
         (maximalIdeal R).IsPrincipal,
         finrank (ResidueField R) (CotangentSpace R) ≤ 1,
-        ∀ (I) (_ : I ≠ ⊥), ∃ n : ℕ, I = maximalIdeal R ^ n] := by
+        ∀ I ≠ ⊥, ∃ n : ℕ, I = maximalIdeal R ^ n] := by
   tfae_have 1 → 2 := fun _ ↦ inferInstance
   tfae_have 2 → 1 := fun _ ↦ ((IsBezout.TFAE (R := R)).out 0 1).mp ‹_›
   tfae_have 1 → 4
@@ -181,12 +182,6 @@ theorem tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain
     intro H
     constructor
     intro I J
-    -- `by_cases` should invoke `classical` by itself if it can't find a `Decidable` instance,
-    -- however the `tfae` hypotheses trigger a looping instance search.
-    -- See also:
-    -- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/.60by_cases.60.20trying.20to.20find.20a.20weird.20instance
-    -- As a workaround, add the desired instance ourselves.
-    let _ := Classical.decEq (Ideal R)
     by_cases hI : I = ⊥; · subst hI; left; exact bot_le
     by_cases hJ : J = ⊥; · subst hJ; right; exact bot_le
     obtain ⟨n, rfl⟩ := H I hI

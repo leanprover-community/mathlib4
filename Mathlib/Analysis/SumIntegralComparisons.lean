@@ -232,7 +232,7 @@ lemma sum_mul_Ico_le_integral_of_monotone_antitone
   · apply Integrable.mono_measure _ (Measure.restrict_mono_set _ Ico_subset_Icc_self)
     apply Integrable.mul_of_top_left
     · exact hf.integrableOn_isCompact isCompact_Icc
-    · apply AntitoneOn.memℒp_isCompact isCompact_Icc
+    · apply AntitoneOn.memLp_isCompact isCompact_Icc
       intro x hx y hy hxy
       apply hg
       · simpa using hx
@@ -277,7 +277,7 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
   · apply Integrable.mono_measure _ (Measure.restrict_mono_set _ Ico_subset_Icc_self)
     apply Integrable.mul_of_top_left
     · exact hf.integrableOn_isCompact isCompact_Icc
-    · apply MonotoneOn.memℒp_isCompact isCompact_Icc
+    · apply MonotoneOn.memLp_isCompact isCompact_Icc
       intro x hx y hy hxy
       apply hg
       · simpa using hx

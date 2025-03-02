@@ -176,7 +176,7 @@ section specialUnitaryGroup
 variable (n) (α)
 
 /-- `Matrix.specialUnitaryGroup` is the group of unitary `n` by `n` matrices where the determinant
-is 1. (This definition is only correct if 2 is invertible.)-/
+is 1. (This definition is only correct if 2 is invertible.) -/
 abbrev specialUnitaryGroup := unitaryGroup n α ⊓ MonoidHom.mker detMonoidHom
 
 variable {n} {α}
@@ -219,7 +219,7 @@ variable (n) (β : Type v) [CommRing β]
 attribute [local instance] starRingOfComm
 
 /-- `Matrix.specialOrthogonalGroup n` is the group of orthogonal `n` by `n` where the determinant
-is one. (This definition is only correct if 2 is invertible.)-/
+is one. (This definition is only correct if 2 is invertible.) -/
 abbrev specialOrthogonalGroup := specialUnitaryGroup n β
 
 variable {n} {β} {A : Matrix n n β}

@@ -102,12 +102,6 @@ noncomputable section
 
 open ENat NNReal Topology Filter Set Fin Filter Function
 
-/-
-Porting note: These lines are not required in Mathlib4.
-attribute [local instance 1001]
-  NormedAddCommGroup.toAddCommGroup AddCommGroup.toAddCommMonoid
--/
-
 /-- Smoothness exponent for analytic functions. -/
 scoped [ContDiff] notation3 "ω" => (⊤ : WithTop ℕ∞)
 /-- Smoothness exponent for infinitely differentiable functions. -/

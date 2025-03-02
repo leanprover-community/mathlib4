@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.GroupPower.IterateHom
+import Mathlib.Algebra.Group.End
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Group.Instances
-import Mathlib.Logic.Function.Iterate
 
 /-!
 # Maps (semi)conjugating a shift to a shift
@@ -235,6 +234,7 @@ theorem map_fract {R : Type*} [LinearOrderedRing R] [FloorRing R] [AddGroup H]
     f (Int.fract x) = f x - ⌊x⌋ • b :=
   map_sub_int' ..
 
+open scoped Relator in
 /-- Auxiliary lemmas for the "monotonicity on a fundamental interval implies monotonicity" lemmas.
 We formulate it for any relation so that the proof works both for `Monotone` and `StrictMono`. -/
 protected theorem rel_map_of_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [AddGroup H]

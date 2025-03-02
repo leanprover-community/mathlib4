@@ -143,7 +143,7 @@ private theorem le_pow2_and_pow2_eq_mod3' (c : ℕ) (x : ℕ) (h : c = 1 ∨ c =
     ∃ m : ℕ, c + 3 * x ≤ 2 ^ m ∧ 2 ^ m % 3 = c % 3 := by
   induction' x with k hk
   · use c + 1
-    cases' h with hc hc <;> · rw [hc]; norm_num
+    rcases h with hc | hc <;> · rw [hc]; norm_num
   rcases hk with ⟨g, hkg, hgmod⟩
   by_cases hp : c + 3 * (k + 1) ≤ 2 ^ g
   · use g, hp, hgmod
@@ -180,7 +180,7 @@ theorem der_replicate_I_of_mod3 (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) :
   -- From `der_cons_replicate`, we can derive the `Miustr` `M::w` described in the introduction.
   obtain ⟨m, hm⟩ := le_pow2_and_pow2_eq_mod3 c h -- `2^m` will be the number of `I`s in `M::w`
   have hw₂ : Derivable (M :: replicate (2 ^ m) I ++ replicate ((2 ^ m - c) / 3 % 2) U) := by
-    cases' mod_two_eq_zero_or_one ((2 ^ m - c) / 3) with h_zero h_one
+    rcases mod_two_eq_zero_or_one ((2 ^ m - c) / 3) with h_zero | h_one
     · -- `(2^m - c)/3 ≡ 0 [MOD 2]`
       simp only [der_cons_replicate m, append_nil, List.replicate, h_zero]
     · -- case `(2^m - c)/3 ≡ 1 [MOD 2]`
@@ -206,7 +206,7 @@ example (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) : Derivable (M :: replicate c I)
   -- From `der_cons_replicate`, we can derive the `Miustr` `M::w` described in the introduction.
   obtain ⟨m, hm⟩ := le_pow2_and_pow2_eq_mod3 c h -- `2^m` will be the number of `I`s in `M::w`
   have hw₂ : Derivable (M :: replicate (2 ^ m) I ++ replicate ((2 ^ m - c) / 3 % 2) U) := by
-    cases' mod_two_eq_zero_or_one ((2 ^ m - c) / 3) with h_zero h_one
+    rcases mod_two_eq_zero_or_one ((2 ^ m - c) / 3) with h_zero | h_one
     · -- `(2^m - c)/3 ≡ 0 [MOD 2]`
       simp only [der_cons_replicate m, append_nil, List.replicate, h_zero]
     · -- case `(2^m - c)/3 ≡ 1 [MOD 2]`

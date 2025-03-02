@@ -33,8 +33,8 @@ namespace Matrix.charpoly
 
 variable {R S : Type*} (n : Type*) [CommRing R] [CommRing S] [Fintype n] [DecidableEq n]
 variable (f : R →+* S)
-variable (R)
 
+variable (R) in
 /-- The universal characteristic polynomial for `n × n`-matrices,
 is the charactistic polynomial of `Matrix.mvPolynomialX n n ℤ` with entries `Xᵢⱼ`.
 
@@ -47,8 +47,6 @@ see `Matrix.charpoly.univ_map_eval₂Hom`. -/
 noncomputable
 abbrev univ : Polynomial (MvPolynomial (n × n) R) :=
   charpoly <| mvPolynomialX n n R
-
-variable {R}
 
 open MvPolynomial RingHomClass in
 @[simp]

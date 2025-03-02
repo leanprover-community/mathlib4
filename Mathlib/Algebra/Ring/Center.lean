@@ -11,8 +11,7 @@ import Mathlib.Data.Int.Cast.Lemmas
 
 -/
 
--- Guard against import creep
-assert_not_exists Finset Subsemigroup
+assert_not_exists RelIso Finset Subsemigroup Field
 
 variable {M : Type*}
 

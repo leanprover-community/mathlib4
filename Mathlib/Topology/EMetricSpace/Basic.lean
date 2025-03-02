@@ -206,8 +206,7 @@ section SecondCountable
 
 open TopologicalSpace
 
-variable (α)
-
+variable (α) in
 /-- A sigma compact pseudo emetric space has second countable topology. -/
 instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace α] :
     SecondCountableTopology α := by
@@ -217,8 +216,6 @@ instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace α]
   refine ⟨⟨⋃ n, T n, countable_iUnion hTc, fun x => ?_⟩⟩
   rcases iUnion_eq_univ_iff.1 (iUnion_compactCovering α) x with ⟨n, hn⟩
   exact closure_mono (subset_iUnion _ n) (hsubT _ hn)
-
-variable {α}
 
 theorem secondCountable_of_almost_dense_set
     (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ ⋃ x ∈ t, closedBall x ε = univ) :

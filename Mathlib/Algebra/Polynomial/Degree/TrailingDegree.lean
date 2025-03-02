@@ -52,7 +52,7 @@ theorem trailingDegree_lt_wf : WellFounded fun p q : R[X] => trailingDegree p < 
 def natTrailingDegree (p : R[X]) : ℕ :=
   ENat.toNat (trailingDegree p)
 
-/-- `trailingCoeff p` gives the coefficient of the smallest power of `X` in `p`-/
+/-- `trailingCoeff p` gives the coefficient of the smallest power of `X` in `p`. -/
 def trailingCoeff (p : R[X]) : R :=
   coeff p (natTrailingDegree p)
 

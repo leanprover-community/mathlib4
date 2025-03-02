@@ -156,7 +156,7 @@ theorem le_of_mem_primeFactorsList {n p : ℕ} (h : p ∈ n.primeFactorsList) : 
     cases h
   · exact le_of_dvd hn (dvd_of_mem_primeFactorsList h)
 
-/-- **Fundamental theorem of arithmetic**-/
+/-- **Fundamental theorem of arithmetic** -/
 theorem primeFactorsList_unique {n : ℕ} {l : List ℕ} (h₁ : prod l = n) (h₂ : ∀ p ∈ l, Prime p) :
     l ~ primeFactorsList n := by
   refine perm_of_prod_eq_prod ?_ ?_ ?_

@@ -53,15 +53,12 @@ def spanNorm (I : Ideal S) : Ideal R :=
 theorem spanNorm_bot :
     spanNorm R (⊥ : Ideal S) = ⊥ := span_eq_bot.mpr fun x hx => by simpa using hx
 
-variable {R}
-
+variable {R} in
 @[simp]
 theorem spanNorm_eq_bot_iff {I : Ideal S} : spanNorm R I = ⊥ ↔ I = ⊥ := by
   simp only [spanNorm, span_eq_bot, Set.mem_image, SetLike.mem_coe, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂, Algebra.intNorm_eq_zero, @eq_bot_iff _ _ _ I, SetLike.le_def, map,
     mem_bot]
-
-variable (R)
 
 theorem intNorm_mem_spanNorm {I : Ideal S} {x : S} (hx : x ∈ I) :
     Algebra.intNorm R S x ∈ I.spanNorm R :=
@@ -259,13 +256,10 @@ theorem relNorm_bot : relNorm R (⊥ : Ideal S) = ⊥ := by
 theorem relNorm_top : relNorm R (⊤ : Ideal S) = ⊤ := by
   simpa only [one_eq_top] using map_one (relNorm R : Ideal S →*₀ _)
 
-variable {R}
-
+variable {R} in
 @[simp]
 theorem relNorm_eq_bot_iff {I : Ideal S} : relNorm R I = ⊥ ↔ I = ⊥ :=
   spanNorm_eq_bot_iff
-
-variable (R)
 
 theorem norm_mem_relNorm [Module.Free R S] (I : Ideal S) {x : S} (hx : x ∈ I) :
     Algebra.norm R x ∈ relNorm R I :=

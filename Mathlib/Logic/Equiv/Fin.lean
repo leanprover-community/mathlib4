@@ -3,10 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.Int.Defs
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Logic.Embedding.Set
 import Mathlib.Logic.Equiv.Option
+import Mathlib.Data.Int.Init
 
 /-!
 # Equivalences for `Fin n`
@@ -415,7 +415,7 @@ instance subsingleton_fin_zero : Subsingleton (Fin 0) :=
 instance subsingleton_fin_one : Subsingleton (Fin 1) :=
   finOneEquiv.subsingleton
 
-/-- The natural `Equiv` between `(Fin m → α) × (Fin n → α)` and `Fin (m + n) → α`.-/
+/-- The natural `Equiv` between `(Fin m → α) × (Fin n → α)` and `Fin (m + n) → α` -/
 @[simps]
 def Fin.appendEquiv {α : Type*} (m n : ℕ) :
     (Fin m → α) × (Fin n → α) ≃ (Fin (m + n) → α) where

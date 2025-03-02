@@ -9,7 +9,7 @@ import Mathlib.Data.ENNReal.Inv
 
 This file defines a new class: `ENNReal.HolderTriple` which takes arguments `p q r : ℝ≥0∞`,
 with `r` marked as a `semiOutParam`, and states that `p⁻¹ + q⁻¹ = r⁻¹`. This is exactly the
-condition for which **Hölder's inequality** is valid (see `MeasureTheory.Memℒp.smul`).
+condition for which **Hölder's inequality** is valid (see `MeasureTheory.MemLp.smul`).
 This allows us to declare a heterogeneous scalar multiplication (`HSMul`) instance on
 `MeasureTheory.Lp` spaces.
 
@@ -25,7 +25,7 @@ namespace ENNReal
 
 /-- A class stating that `p q r : ℝ≥0∞` satisfy `p⁻¹ + q⁻¹ = r⁻¹`.
 This is exactly the condition for which **Hölder's inequality** is valid
-(see `MeasureTheory.Memℒp.smul`).
+(see `MeasureTheory.MemLp.smul`).
 
 When `r := 1`, one generally says that `p q` are **Hölder conjugate**.
 

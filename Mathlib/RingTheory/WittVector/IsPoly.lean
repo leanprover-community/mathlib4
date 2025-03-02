@@ -328,8 +328,7 @@ theorem IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : �
   ext n
   simp only [map_coeff, hf, map_aeval]
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
-  ext  -- Porting note: this `ext` was not present in the mathport output
-  simp only [map_coeff]
+  rfl
 
 namespace IsPoly₂
 

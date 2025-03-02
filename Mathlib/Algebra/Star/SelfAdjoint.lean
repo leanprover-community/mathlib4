@@ -109,11 +109,9 @@ theorem _root_.isSelfAdjoint_map {F R S : Type*} [Star R] [Star S] [FunLike F R 
 section AddMonoid
 
 variable [AddMonoid R] [StarAddMonoid R]
-variable (R)
 
+variable (R) in
 @[simp] protected theorem zero : IsSelfAdjoint (0 : R) := star_zero R
-
-variable {R}
 
 @[aesop 90% apply]
 theorem add {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x + y) := by

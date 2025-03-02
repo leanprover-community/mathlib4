@@ -252,7 +252,7 @@ lemma _root_.Set.abs_projIcc_sub_projIcc : (|projIcc a b h c - projIcc a b h d| 
   · exact (abs_eq_self.mpr hdc).le
 
 /-- When `h : a ≤ b` and `δ > 0`, `addNSMul h δ` is a sequence of points in the closed interval
-  `[a,b]`, which is initially equally spaced but eventually stays at the right endpoint `b`. -/
+`[a,b]`, which is initially equally spaced but eventually stays at the right endpoint `b`. -/
 def addNSMul (δ : α) (n : ℕ) : Icc a b := projIcc a b h (a + n • δ)
 
 lemma addNSMul_zero : addNSMul h δ 0 = a := by
@@ -284,8 +284,8 @@ end Set.Icc
 
 open scoped unitInterval
 
-/-- Any open cover `c` of a closed interval `[a, b]` in ℝ can be refined to
-  a finite partition into subintervals. -/
+/-- Any open cover `c` of a closed interval `[a, b]` in ℝ
+can be refined to a finite partition into subintervals. -/
 lemma exists_monotone_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b) {c : ι → Set (Icc a b)}
     (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : univ ⊆ ⋃ i, c i) : ∃ t : ℕ → Icc a b, t 0 = a ∧
       Monotone t ∧ (∃ m, ∀ n ≥ m, t n = b) ∧ ∀ n, ∃ i, Icc (t n) (t (n + 1)) ⊆ c i := by
@@ -329,7 +329,6 @@ theorem projIcc_eq_one {x : ℝ} : projIcc (0 : ℝ) 1 zero_le_one x = 1 ↔ 1 �
 
 namespace Tactic.Interactive
 
--- Porting note: This replaces an unsafe def tactic
 /-- A tactic that solves `0 ≤ ↑x`, `0 ≤ 1 - ↑x`, `↑x ≤ 1`, and `1 - ↑x ≤ 1` for `x : I`. -/
 macro "unit_interval" : tactic =>
   `(tactic| (first

@@ -51,13 +51,11 @@ variable [SeminormedRing 𝕜]
 section SMul
 
 variable [SMul 𝕜 E] {s A B : Set E}
-variable (𝕜)
 
+variable (𝕜) in
 /-- A set `A` is balanced if `a • A` is contained in `A` whenever `a` has norm at most `1`. -/
 def Balanced (A : Set E) :=
   ∀ a : 𝕜, ‖a‖ ≤ 1 → a • A ⊆ A
-
-variable {𝕜}
 
 lemma absorbs_iff_norm : Absorbs 𝕜 A B ↔ ∃ r, ∀ c : 𝕜, r ≤ ‖c‖ → B ⊆ c • A :=
   Filter.atTop_basis.cobounded_of_norm.eventually_iff.trans <| by simp only [true_and]; rfl

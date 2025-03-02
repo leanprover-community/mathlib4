@@ -29,7 +29,7 @@ section Identities
   These belong somewhere else. But not in group_power because they depend on tactic.ring_exp
 
   Maybe use `Data.Nat.Choose` to prove it.
- -/
+-/
 /-- `(x + y)^n` can be expressed as `x^n + n*x^(n-1)*y + k * y^2` for some `k` in the ring.
 -/
 def powAddExpansion {R : Type*} [CommSemiring R] (x y : R) :

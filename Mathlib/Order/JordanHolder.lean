@@ -7,7 +7,7 @@ import Mathlib.Order.Lattice
 import Mathlib.Data.List.Sort
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Logic.Equiv.Functor
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Order.RelSeries
 
 /-!

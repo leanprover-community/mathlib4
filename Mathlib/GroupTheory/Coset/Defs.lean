@@ -58,8 +58,7 @@ of a subgroup. -/
 def leftRel : Setoid α :=
   MulAction.orbitRel s.op α
 
-variable {s}
-
+variable {s} in
 @[to_additive]
 theorem leftRel_apply {x y : α} : leftRel s x y ↔ x⁻¹ * y ∈ s :=
   calc
@@ -68,8 +67,6 @@ theorem leftRel_apply {x y : α} : leftRel s x y ↔ x⁻¹ * y ∈ s :=
     _ ↔ ∃ a : s, x⁻¹ * y = a⁻¹ := by
       simp only [inv_mul_eq_iff_eq_mul, Subgroup.coe_inv, eq_mul_inv_iff_mul_eq]
     _ ↔ x⁻¹ * y ∈ s := by simp [exists_inv_mem_iff_exists_mem]
-
-variable (s)
 
 @[to_additive]
 theorem leftRel_eq : ⇑(leftRel s) = fun x y => x⁻¹ * y ∈ s :=
@@ -100,16 +97,13 @@ subgroup. -/
 def rightRel : Setoid α :=
   MulAction.orbitRel s α
 
-variable {s}
-
+variable {s} in
 @[to_additive]
 theorem rightRel_apply {x y : α} : rightRel s x y ↔ y * x⁻¹ ∈ s :=
   calc
     (∃ a : s, (a : α) * y = x) ↔ ∃ a : s, y * x⁻¹ = a⁻¹ := by
       simp only [mul_inv_eq_iff_eq_mul, Subgroup.coe_inv, eq_inv_mul_iff_mul_eq]
     _ ↔ y * x⁻¹ ∈ s := by simp [exists_inv_mem_iff_exists_mem]
-
-variable (s)
 
 @[to_additive]
 theorem rightRel_eq : ⇑(rightRel s) = fun x y => y * x⁻¹ ∈ s :=

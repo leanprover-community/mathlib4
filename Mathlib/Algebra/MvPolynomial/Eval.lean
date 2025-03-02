@@ -752,13 +752,15 @@ end EvalMem
 variable {S T : Type*} [CommSemiring S] [Algebra R S] [CommSemiring T] [Algebra R T] [Algebra S T]
   [IsScalarTower R S T]
 
-lemma aeval_sum_elim {σ τ : Type*} (p : MvPolynomial (σ ⊕ τ) R) (f : τ → S) (g : σ → T) :
+lemma aeval_sumElim {σ τ : Type*} (p : MvPolynomial (σ ⊕ τ) R) (f : τ → S) (g : σ → T) :
     (aeval (Sum.elim g (algebraMap S T ∘ f))) p =
       (aeval g) ((aeval (Sum.elim X (C ∘ f))) p) := by
   induction' p using MvPolynomial.induction_on with r p q hp hq p i h
   · simp [← IsScalarTower.algebraMap_apply]
   · simp [hp, hq]
   · cases i <;> simp [h]
+
+@[deprecated (since := "2025-02-21")] alias aeval_sum_elim := aeval_sumElim
 
 end CommSemiring
 

@@ -27,7 +27,7 @@ places `w` of `K`.
 
 ## Tags
 number field, units
- -/
+-/
 
 open scoped NumberField
 
