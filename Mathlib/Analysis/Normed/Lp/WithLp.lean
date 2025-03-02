@@ -74,8 +74,8 @@ instance instAddCommSemigroup [AddCommSemigroup V] : AddCommSemigroup (WithLp p 
   ‹AddCommSemigroup V›
 instance instAddCommMonoid [AddCommMonoid V] : AddCommMonoid (WithLp p V) := ‹AddCommMonoid V›
 instance instAddCommGroup [AddCommGroup V] : AddCommGroup (WithLp p V) := ‹AddCommGroup V›
-instance instSMul [SMul K V] : SMul K (WithLp p V) := ‹SMul K V›
-instance instMulAction [Monoid K] [MulAction K V] : MulAction K V := ‹MulAction K V›
+@[to_additive] instance instSMul [SMul K V] : SMul K (WithLp p V) := ‹SMul K V›
+@[to_additive] instance instMulAction [Monoid K] [MulAction K V] : MulAction K V := ‹MulAction K V›
 instance instDistribMulAction [Monoid K] [AddMonoid V] [DistribMulAction K V] :
     DistribMulAction K (WithLp p V) := ‹DistribMulAction K V›
 instance instModule [Semiring K] [AddCommMonoid V] [Module K V] : Module K (WithLp p V) :=
@@ -85,11 +85,13 @@ section
 
 variable [Semiring K] [Semiring K'] [AddGroup V]
 
+@[to_additive]
 instance instIsScalarTower
     [AddCommMonoid V] [SMul K K'] [Module K V] [Module K' V] [IsScalarTower K K' V] :
     IsScalarTower K K' (WithLp p V) :=
   ‹IsScalarTower K K' V›
 
+@[to_additive]
 instance instSMulCommClass
     [AddCommMonoid V] [Module K V] [Module K' V] [SMulCommClass K K' V] :
     SMulCommClass K K' (WithLp p V) :=
@@ -141,12 +143,12 @@ theorem equiv_neg [Neg V] : WithLp.equiv p V (-x) = -WithLp.equiv p V x :=
 theorem equiv_symm_neg [Neg V] : (WithLp.equiv p V).symm (-x') = -(WithLp.equiv p V).symm x' :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem equiv_smul [SMul K V] :
     WithLp.equiv p V (c • x) = c • WithLp.equiv p V x :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem equiv_symm_smul [SMul K V] :
     (WithLp.equiv p V).symm (c • x') = c • (WithLp.equiv p V).symm x' :=
   rfl
