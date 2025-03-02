@@ -125,6 +125,12 @@ theorem dist_center_eq_dist_center_of_mem_sphere' {p₁ p₂ : P} {s : Sphere P}
     (hp₂ : p₂ ∈ s) : dist s.center p₁ = dist s.center p₂ := by
   rw [mem_sphere'.1 hp₁, mem_sphere'.1 hp₂]
 
+lemma Sphere.radius_nonneg_of_mem {s : Sphere P} {p : P} (h : p ∈ s) : 0 ≤ s.radius :=
+  Metric.nonneg_of_mem_sphere h
+
+@[simp] lemma Sphere.center_mem_iff {s : Sphere P} : s.center ∈ s ↔ s.radius = 0 := by
+  simp [mem_sphere, eq_comm]
+
 /-- A set of points is cospherical if they are equidistant from some
 point. In two dimensions, this is the same thing as being
 concyclic. -/
@@ -170,6 +176,12 @@ end MetricSpace
 section NormedSpace
 
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+
+lemma Sphere.exists_mem_iff [Nontrivial V] {s : Sphere P} : (∃ p, p ∈ s) ↔ 0 ≤ s.radius := by
+  refine ⟨fun ⟨p, hp⟩ ↦ radius_nonneg_of_mem hp, fun h ↦ ?_⟩
+  obtain ⟨v, hv⟩ := (NormedSpace.sphere_nonempty (x := (0 : V)) (r := s.radius)).2 h
+  refine ⟨v +ᵥ s.center, ?_⟩
+  simpa [mem_sphere] using hv
 
 include V in
 /-- Two points are cospherical. -/
