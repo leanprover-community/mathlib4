@@ -243,7 +243,7 @@ lemma lmap_eq_iff (x y : ⨁ i, M i) :
 
 lemma toAddMonoidHom_lmap :
     (lmap f).toAddMonoidHom = map (fun i => (f i).toAddMonoidHom) :=
-  ext _ fun i ↦ (by simp)
+  rfl
 
 end map
 
