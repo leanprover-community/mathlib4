@@ -133,23 +133,20 @@ $w$ are equivalent if and only if $v(x) < 1$ exactly when $w(x) < 1$.
 -/
 theorem isEquiv_iff_lt_one_iff {v : AbsoluteValue F ℝ} (w : AbsoluteValue F ℝ)
     (hv : v.IsNontrivial) : w.IsEquiv v ↔ (∀ x, v x < 1 ↔ w x < 1) := by
-  simp only [IsEquiv]
   refine ⟨fun ⟨t, ht, h⟩ x => h ▸ (Real.rpow_lt_one_iff' (w.nonneg x) ht), fun h => ?_⟩
-  suffices ∃ (t : ℝ) (_ : t > 0), ∀ x, 1 < v x → w x ^ t = v x by
-    obtain ⟨t, ht, hsuff⟩ := this
-    refine ⟨t, ht, funext fun x => ?_⟩
-    by_cases h₀ : v x = 0
-    · rw [(map_eq_zero v).1 h₀, map_zero, map_zero, zero_rpow (by linarith)]
-    · by_cases h₁ : v x = 1
-      · rw [h₁, (eq_one_iff_of_lt_one_iff h x).1 h₁, one_rpow]
-      · by_cases h₂ : 0 < v x ∧ v x < 1
-        · rw [← inv_inj, ← map_inv₀ v, ← hsuff _ (map_inv₀ v _ ▸ one_lt_inv_iff₀.2 h₂), map_inv₀,
-            inv_rpow (w.nonneg _)]
-        · rw [← one_lt_inv_iff₀, ← map_inv₀, not_lt] at h₂
-          rw [← ne_eq, ← inv_ne_one, ← map_inv₀] at h₁
-          exact hsuff _ <| (inv_lt_one_iff.1 <| lt_of_le_of_ne h₂ h₁).resolve_left
-            ((map_ne_zero v).1 h₀)
-  exact exists_rpow_of_one_lt hv h
+  obtain ⟨t, ht, hsuff⟩ := exists_rpow_of_one_lt hv h
+  refine ⟨t, ht, funext fun x => ?_⟩
+  by_cases h₀ : v x = 0
+  · rw [(map_eq_zero v).1 h₀, map_zero, map_zero, zero_rpow (by linarith)]
+  · by_cases h₁ : v x = 1
+    · rw [h₁, (eq_one_iff_of_lt_one_iff h x).1 h₁, one_rpow]
+    · by_cases h₂ : 0 < v x ∧ v x < 1
+      · rw [← inv_inj, ← map_inv₀ v, ← hsuff _ (map_inv₀ v _ ▸ one_lt_inv_iff₀.2 h₂), map_inv₀,
+          inv_rpow (w.nonneg _)]
+      · rw [← one_lt_inv_iff₀, ← map_inv₀, not_lt] at h₂
+        rw [← ne_eq, ← inv_ne_one, ← map_inv₀] at h₁
+        exact hsuff _ <| (inv_lt_one_iff.1 <| lt_of_le_of_ne h₂ h₁).resolve_left
+          ((map_ne_zero v).1 h₀)
 
 /--
 If $v$ and $w$ are inequivalent absolute values and $v$ is non-trivial, then we can find an $a ∈ F$
