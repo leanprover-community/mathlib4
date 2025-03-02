@@ -5,6 +5,7 @@ Authors: Etienne Marion
 -/
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
+import Mathlib.MeasureTheory.Function.FactorsThrough
 import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
 import Mathlib.Probability.Kernel.Composition.IntegralCompProd
 import Mathlib.Probability.Kernel.Composition.MeasureComp
@@ -728,7 +729,7 @@ open Filtration
 
 theorem condExp_traj {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
     {f : (Π n, X n) → E} (i_f : Integrable f (traj κ a x₀)) :
-    (traj κ a x₀)[f|piLE X b] =ᵐ[traj κ a x₀]
+    (traj κ a x₀)[f|piLE b] =ᵐ[traj κ a x₀]
       fun x ↦ ∫ y, f y ∂traj κ b (frestrictLe b x) := by
   have i_f' : Integrable (fun x ↦ ∫ y, f y ∂(traj κ b) x)
       (((traj κ a) x₀).map (frestrictLe b)) := by
@@ -736,7 +737,7 @@ theorem condExp_traj {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
     rw [← traj_comp_ptraj _ hab] at i_f
     exact i_f.integral_comp
 
-  refine ae_eq_condExp_of_forall_setIntegral_eq ((piLE X).le _) i_f
+  refine ae_eq_condExp_of_forall_setIntegral_eq (piLE.le _) i_f
     (fun s _ _ ↦ i_f'.comp_aemeasurable (measurable_frestrictLe b).aemeasurable |>.integrableOn)
     ?_ ?_ |>.symm <;> rw [piLE_eq_comap_frestrictLe]
   · rintro - ⟨t, mt, rfl⟩ -
@@ -751,21 +752,21 @@ variable (κ)
 
 theorem condExp_traj' {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c)
     (x₀ : Π i : Iic a, X i) (f : (Π n, X n) → E) :
-    (traj κ a x₀)[f|piLE X b] =ᵐ[traj κ a x₀]
-      fun x ↦ ∫ y, ((traj κ a x₀)[f|piLE X c]) (updateFinset x _ y)
+    (traj κ a x₀)[f|piLE b] =ᵐ[traj κ a x₀]
+      fun x ↦ ∫ y, ((traj κ a x₀)[f|piLE c]) (updateFinset x _ y)
         ∂ptraj κ b c (frestrictLe b x) := by
-  have i_cf : Integrable ((traj κ a x₀)[f|piLE X c]) (traj κ a x₀) :=
+  have i_cf : Integrable ((traj κ a x₀)[f|piLE c]) (traj κ a x₀) :=
     integrable_condExp
-  have mcf : StronglyMeasurable ((traj κ a x₀)[f|piLE X c]) :=
-    stronglyMeasurable_condExp.mono ((piLE X).le c)
-  filter_upwards [(piLE X).condExp_condExp f hbc, condExp_traj hab i_cf] with x h1 h2
+  have mcf : StronglyMeasurable ((traj κ a x₀)[f|piLE c]) :=
+    stronglyMeasurable_condExp.mono (piLE.le c)
+  filter_upwards [piLE.condExp_condExp f hbc, condExp_traj hab i_cf] with x h1 h2
   rw [← h1, h2, ← traj_map_frestrictLe, Kernel.map_apply, integral_map]
   · congr with y
-    apply dependsOn_of_stronglyMeasurable stronglyMeasurable_condExp
+    apply stronglyMeasurable_condExp.dependsOn
     simp only [Set.mem_Iic, updateFinset, mem_Iic, frestrictLe_apply, dite_eq_ite]
     exact fun i hi ↦ (if_pos hi).symm
   any_goals fun_prop
-  · exact (mcf.comp_measurable measurable_updateFinset).aestronglyMeasurable
+  exact (mcf.comp_measurable measurable_updateFinset).aestronglyMeasurable
 
 end integral
 
