@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.RingTheory.Nilpotent.Basic
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Exponential map on algebras
@@ -38,6 +39,7 @@ namespace Algebra
 variable {A : Type*} [Ring A] [Algebra ℚ A]
 
 open Finset
+open scoped Nat
 
 /-- The exponential map on algebras, defined in analogy with the usual exponential series.
 It provides meaningful (non-junk) values for nilpotent elements. -/
