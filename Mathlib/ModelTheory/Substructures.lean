@@ -414,7 +414,7 @@ variable {L} {M}
 
 /-!
 ### `comap` and `map`
- -/
+-/
 
 
 /-- The preimage of a substructure along a homomorphism is a substructure. -/
@@ -626,6 +626,13 @@ instance inducedStructure {S : L.Substructure M} : L.Structure S where
 def subtype (S : L.Substructure M) : S ↪[L] M where
   toFun := (↑)
   inj' := Subtype.coe_injective
+
+@[simp]
+theorem subtype_apply {S : L.Substructure M} {x : S} : subtype S x = x :=
+  rfl
+
+theorem subtype_injective (S : L.Substructure M): Function.Injective (subtype S) :=
+  Subtype.coe_injective
 
 @[simp]
 theorem coe_subtype : ⇑S.subtype = ((↑) : S → M) :=

@@ -1745,8 +1745,8 @@ theorem GoodProducts.P0 : P I 0 := fun _ C _ hsC ↦ by
 theorem GoodProducts.Plimit (o : Ordinal) (ho : Ordinal.IsLimit o) :
     (∀ (o' : Ordinal), o' < o → P I o') → P I o := by
   intro h hho C hC hsC
-  rw [linearIndependent_iff_union_smaller C ho hsC]
-  exact linearIndependent_iUnion_of_directed
+  rw [linearIndependent_iff_union_smaller C ho hsC, linearIndependent_subtype_iff]
+  exact linearIndepOn_iUnion_of_directed
     (Monotone.directed_le fun _ _ h ↦ GoodProducts.smaller_mono C h) fun ⟨o', ho'⟩ ↦
     (linearIndependent_iff_smaller _ _).mp (h o' ho' (le_of_lt (lt_of_lt_of_le ho' hho))
     (π C (ord I · < o')) (isClosed_proj _ _ hC) (contained_proj _ _))

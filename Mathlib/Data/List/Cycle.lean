@@ -164,9 +164,9 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
   rw [next, get, ← dropLast_append_getLast (cons_ne_nil y l), hx, nextOr_concat]
   subst hx
   intro H
-  obtain ⟨⟨_ | k, hk⟩, hk'⟩ := get_of_mem H
+  obtain ⟨_ | k, hk, hk'⟩ := getElem_of_mem H
   · rw [← Option.some_inj] at hk'
-    rw [← get?_eq_get, dropLast_eq_take, get?_eq_getElem?, getElem?_take_of_lt, getElem?_cons_zero,
+    rw [← getElem?_eq_getElem, dropLast_eq_take, getElem?_take_of_lt, getElem?_cons_zero,
       Option.some_inj] at hk'
     · exact hy (Eq.symm hk')
     rw [length_cons]
@@ -179,7 +179,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
     refine Fin.val_eq_of_eq <| @hl ⟨k, Nat.lt_of_succ_lt <| by simpa using hk⟩
       ⟨tl.length, by simp⟩ ?_
     rw [← Option.some_inj] at hk'
-    rw [← get?_eq_get, dropLast_eq_take, get?_eq_getElem?, getElem?_take_of_lt, getElem?_cons_succ,
+    rw [← getElem?_eq_getElem, dropLast_eq_take, getElem?_take_of_lt, getElem?_cons_succ,
       getElem?_eq_getElem, Option.some_inj] at hk'
     · rw [get_eq_getElem, hk']
       simp only [getLast_eq_getElem, length_cons, Nat.succ_eq_add_one, Nat.succ_sub_succ_eq_sub,
@@ -233,18 +233,18 @@ theorem prev_mem (h : x ∈ l) : l.prev x h ∈ l := by
       · exact mem_cons_self _ _
       · exact mem_cons_of_mem _ (hl _ _)
 
-theorem next_get (l : List α) (h : Nodup l) (i : Fin l.length) :
-    next l (l.get i) (get_mem _ _) =
-      l.get ⟨(i + 1) % l.length, Nat.mod_lt _ (i.1.zero_le.trans_lt i.2)⟩ :=
-  match l, h, i with
-  | [], _, i => by simpa using i.2
-  | [_], _, _ => by simp
-  | x::y::l, _h, ⟨0, h0⟩ => by
-    have h₁ : get (x :: y :: l) ⟨0, h0⟩ = x := by simp
+theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
+    next l l[i] (get_mem _ _) =
+      (l[(i + 1) % l.length]'(Nat.mod_lt _ (i.zero_le.trans_lt hi))) :=
+  match l, h, i, hi with
+  | [], _, i, hi => by simp at hi
+  | [_], _, _, _ => by simp
+  | x::y::l, _h, 0, h0 => by
+    have h₁ : (x :: y :: l)[0] = x := by simp
     rw [next_cons_cons_eq' _ _ _ _ _ h₁]
     simp
-  | x::y::l, hn, ⟨i+1, hi⟩ => by
-    have hx' : (x :: y :: l).get ⟨i+1, hi⟩ ≠ x := by
+  | x::y::l, hn, i+1, hi => by
+    have hx' : (x :: y :: l)[i+1] ≠ x := by
       intro H
       suffices (i + 1 : ℕ) = 0 by simpa
       rw [nodup_iff_injective_get] at hn
@@ -255,13 +255,13 @@ theorem next_get (l : List α) (h : Nodup l) (i : Fin l.length) :
     · subst hi'
       rw [next_getLast_cons]
       · simp [hi', get]
-      · rw [get_cons_succ]; exact get_mem _ _
+      · rw [getElem_cons_succ]; exact get_mem _ _
       · exact hx'
       · simp [getLast_eq_getElem]
       · exact hn.of_cons
     · rw [next_ne_head_ne_getLast _ _ _ _ _ hx']
-      · simp only [get_cons_succ]
-        rw [next_get (y::l), ← get_cons_succ (a := x)]
+      · simp only [getElem_cons_succ]
+        rw [next_getElem (y::l), ← getElem_cons_succ (a := x)]
         · congr
           dsimp
           rw [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'),
@@ -272,67 +272,71 @@ theorem next_get (l : List α) (h : Nodup l) (i : Fin l.length) :
         intro h
         have := nodup_iff_injective_get.1 hn h
         simp at this; simp [this] at hi'
-      · rw [get_cons_succ]; exact get_mem _ _
+      · rw [getElem_cons_succ]; exact get_mem _ _
+
+@[deprecated (since := "2025-02-015")] alias next_get := next_getElem
 
 -- Unused variable linter incorrectly reports that `h` is unused here.
 set_option linter.unusedVariables false in
-theorem prev_get (l : List α) (h : Nodup l) (i : Fin l.length) :
-    prev l (l.get i) (get_mem _ _) =
-      l.get ⟨(i + (l.length - 1)) % l.length, Nat.mod_lt _ i.pos⟩ :=
+theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
+    prev l l[i] (get_mem _ _) =
+      (l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by omega))) :=
   match l with
-  | [] => by simpa using i.2
+  | [] => by simp at hi
   | x::l => by
-    obtain ⟨n, hn⟩ := i
-    induction l generalizing n x with
+    induction l generalizing i x with
     | nil => simp
     | cons y l hl =>
-      rcases n with (_ | _ | n)
+      rcases i with (_ | _ | i)
       · simp [getLast_eq_getElem]
       · simp only [mem_cons, nodup_cons] at h
         push_neg at h
-        simp only [List.prev_cons_cons_of_ne _ _ _ _ h.left.left.symm, List.length,
-          List.get, add_comm, Nat.succ_add_sub_one, Nat.mod_self, zero_add]
+        simp only [zero_add, getElem_cons_succ, getElem_cons_zero,
+          List.prev_cons_cons_of_ne _ _ _ _ h.left.left.symm, length, add_comm,
+          Nat.add_sub_cancel_left, Nat.mod_self]
       · rw [prev_ne_cons_cons]
-        · convert hl y h.of_cons n.succ (Nat.le_of_succ_le_succ hn) using 1
-          have : ∀ k hk, (y :: l).get ⟨k, hk⟩ = (x :: y :: l).get ⟨k + 1, Nat.succ_lt_succ hk⟩ := by
-            simp [List.get]
+        · convert hl i.succ y h.of_cons (Nat.le_of_succ_le_succ hi) using 1
+          have : ∀ k hk, (y :: l)[k] = (x :: y :: l)[k + 1]'(Nat.succ_lt_succ hk) := by
+            simp
           rw [this]
           congr
           simp only [Nat.add_succ_sub_one, add_zero, length]
-          simp only [length, Nat.succ_lt_succ_iff] at hn
+          simp only [length, Nat.succ_lt_succ_iff] at hi
           set k := l.length
           rw [Nat.succ_add, ← Nat.add_succ, Nat.add_mod_right, Nat.succ_add, ← Nat.add_succ _ k,
             Nat.add_mod_right, Nat.mod_eq_of_lt, Nat.mod_eq_of_lt]
-          · exact Nat.lt_succ_of_lt hn
-          · exact Nat.succ_lt_succ (Nat.lt_succ_of_lt hn)
+          · exact Nat.lt_succ_of_lt hi
+          · exact Nat.succ_lt_succ (Nat.lt_succ_of_lt hi)
         · intro H
-          suffices n.succ.succ = 0 by simpa
-          suffices Fin.mk _ hn = ⟨0, by omega⟩ by rwa [Fin.mk.inj_iff] at this
+          suffices i.succ.succ = 0 by simpa
+          suffices Fin.mk _ hi = ⟨0, by omega⟩ by rwa [Fin.mk.inj_iff] at this
           rw [nodup_iff_injective_get] at h
           apply h; rw [← H]; simp
         · intro H
-          suffices n.succ.succ = 1 by simpa
-          suffices Fin.mk _ hn = ⟨1, by omega⟩ by rwa [Fin.mk.inj_iff] at this
+          suffices i.succ.succ = 1 by simpa
+          suffices Fin.mk _ hi = ⟨1, by omega⟩ by rwa [Fin.mk.inj_iff] at this
           rw [nodup_iff_injective_get] at h
           apply h; rw [← H]; simp
 
+@[deprecated (since := "2025-02-21")] alias prev_get := prev_getElem
+
 theorem pmap_next_eq_rotate_one (h : Nodup l) : (l.pmap l.next fun _ h => h) = l.rotate 1 := by
-  apply List.ext_get
+  apply List.ext_getElem
   · simp
   · intros
-    rw [get_pmap, get_rotate, next_get _ h]
+    rw [getElem_pmap, getElem_rotate, next_getElem _ h]
 
 theorem pmap_prev_eq_rotate_length_sub_one (h : Nodup l) :
     (l.pmap l.prev fun _ h => h) = l.rotate (l.length - 1) := by
-  apply List.ext_get
+  apply List.ext_getElem
   · simp
   · intro n hn hn'
-    rw [get_rotate, get_pmap, prev_get _ h]
+    rw [getElem_rotate, getElem_pmap, prev_getElem _ h]
 
 theorem prev_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
     prev l (next l x hx) (next_mem _ _ _) = x := by
-  obtain ⟨⟨n, hn⟩, rfl⟩ := get_of_mem hx
-  simp only [next_get, prev_get, h, Nat.mod_add_mod]
+  obtain ⟨n, hn, rfl⟩ := getElem_of_mem hx
+  simp only [next_getElem, prev_getElem, h, Nat.mod_add_mod]
   rcases l with - | ⟨hd, tl⟩
   · simp at hn
   · have : (n + 1 + length tl) % (length tl + 1) = n := by
@@ -342,8 +346,8 @@ theorem prev_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
 
 theorem next_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
     next l (prev l x hx) (prev_mem _ _ _) = x := by
-  obtain ⟨⟨n, hn⟩, rfl⟩ := get_of_mem hx
-  simp only [next_get, prev_get, h, Nat.mod_add_mod]
+  obtain ⟨n, hn, rfl⟩ := getElem_of_mem hx
+  simp only [next_getElem, prev_getElem, h, Nat.mod_add_mod]
   rcases l with - | ⟨hd, tl⟩
   · simp at hn
   · have : (n + length tl + 1) % (length tl + 1) = n := by
@@ -373,11 +377,11 @@ theorem next_reverse_eq_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
 
 theorem isRotated_next_eq {l l' : List α} (h : l ~r l') (hn : Nodup l) {x : α} (hx : x ∈ l) :
     l.next x hx = l'.next x (h.mem_iff.mp hx) := by
-  obtain ⟨k, hk, rfl⟩ := get_of_mem hx
+  obtain ⟨k, hk, rfl⟩ := getElem_of_mem hx
   obtain ⟨n, rfl⟩ := id h
-  rw [next_get _ hn]
-  simp_rw [get_eq_get_rotate _ n k]
-  rw [next_get _ (h.nodup_iff.mp hn), get_eq_get_rotate _ n]
+  rw [next_getElem _ hn]
+  simp_rw [getElem_eq_getElem_rotate _ n k]
+  rw [next_getElem _ (h.nodup_iff.mp hn), getElem_eq_getElem_rotate _ n]
   simp [add_assoc]
 
 theorem isRotated_prev_eq {l l' : List α} (h : l ~r l') (hn : Nodup l) {x : α} (hx : x ∈ l) :

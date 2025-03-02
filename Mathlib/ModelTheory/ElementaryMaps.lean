@@ -22,7 +22,7 @@ import Mathlib.ModelTheory.Substructures
 
 - The Tarski-Vaught Test for embeddings: `FirstOrder.Language.Embedding.isElementary_of_exists`
   gives a simple criterion for an embedding to be elementary.
- -/
+-/
 
 
 open FirstOrder
@@ -241,7 +241,7 @@ theorem isElementary_of_exists (f : M ↪[L] N)
   suffices h : ∀ (n : ℕ) (φ : L.BoundedFormula Empty n) (xs : Fin n → M),
       φ.Realize (f ∘ default) (f ∘ xs) ↔ φ.Realize default xs by
     intro n φ x
-    exact φ.realize_relabel_sum_inr.symm.trans (_root_.trans (h n _ _) φ.realize_relabel_sum_inr)
+    exact φ.realize_relabel_sumInr.symm.trans (_root_.trans (h n _ _) φ.realize_relabel_sumInr)
   refine fun n φ => φ.recOn ?_ ?_ ?_ ?_ ?_
   · exact fun {_} _ => Iff.rfl
   · intros
