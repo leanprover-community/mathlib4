@@ -344,6 +344,9 @@ theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder
 theorem toType_noMax_of_succ_lt {o : Ordinal} (ho : ∀ a < o, succ a < o) : NoMaxOrder o.toType :=
   ⟨has_succ_of_type_succ_lt (type_toType _ ▸ ho)⟩
 
+@[deprecated toType_noMax_of_succ_lt (since := "2024-08-26")]
+alias out_no_max_of_succ_lt := toType_noMax_of_succ_lt
+
 theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : (type r).IsLimit) (x) :
     Bounded r {x} := by
   refine ⟨enum r ⟨succ (typein r x), hr.succ_lt (typein_lt_type r x)⟩, ?_⟩
@@ -1193,7 +1196,11 @@ theorem comp_familyOfBFamily {o} (f : ∀ a < o, α) (g : α → β) :
 
 /-! ### Supremum of a family of ordinals -/
 
+-- FIXME There is undeprecated material below still depending on this?!
 /-- The supremum of a family of ordinals -/
+@[deprecated iSup (since := "2024-08-27")]
+def sup {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal.{max u v} :=
+  iSup f
 
 /-- The range of an indexed ordinal function, whose outputs live in a higher universe than the
     inputs, is always bounded above. See `Ordinal.lsub` for an explicit bound. -/
@@ -1228,15 +1235,33 @@ fails to infer `f` in simple cases and needs it to be given explicitly. -/
 protected theorem le_iSup {ι} (f : ι → Ordinal.{u}) [Small.{u} ι] : ∀ i, f i ≤ iSup f :=
   le_ciSup (bddAbove_of_small _)
 
+-- FIXME There is undeprecated material below still depending on this?!
+set_option linter.deprecated false in
+@[deprecated Ordinal.le_iSup (since := "2024-08-27")]
+theorem le_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≤ sup.{_, v} f := fun i =>
+  Ordinal.le_iSup f i
+
 /-- `ciSup_le_iff'` whenever the input type is small in the output universe. -/
 protected theorem iSup_le_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
     iSup f ≤ a ↔ ∀ i, f i ≤ a :=
   ciSup_le_iff' (bddAbove_of_small _)
 
+-- FIXME There is undeprecated material below still depending on this?!
+set_option linter.deprecated false in
+@[deprecated Ordinal.iSup_le_iff (since := "2024-08-27")]
+theorem sup_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : sup.{_, v} f ≤ a ↔ ∀ i, f i ≤ a :=
+  Ordinal.iSup_le_iff
+
 /-- An alias of `ciSup_le'` for discoverability. -/
 protected theorem iSup_le {ι} {f : ι → Ordinal} {a} :
     (∀ i, f i ≤ a) → iSup f ≤ a :=
   ciSup_le'
+
+-- FIXME There is undeprecated material below still depending on this?!
+set_option linter.deprecated false in
+@[deprecated Ordinal.iSup_le (since := "2024-08-27")]
+theorem sup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : (∀ i, f i ≤ a) → sup.{_, v} f ≤ a :=
+  Ordinal.iSup_le
 
 /-- `lt_ciSup_iff'` whenever the input type is small in the output universe. -/
 protected theorem lt_iSup_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
@@ -1246,12 +1271,34 @@ protected theorem lt_iSup_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [S
 @[deprecated "No deprecation message was provided." (since := "2024-11-12")]
 alias lt_iSup := lt_iSup_iff
 
+-- FIXME There is undeprecated material below still depending on this?!
+@[deprecated "No deprecation message was provided."  (since := "2024-08-27")]
+theorem ne_iSup_iff_lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} :
+    (∀ i, f i ≠ iSup f) ↔ ∀ i, f i < iSup f :=
+  forall_congr' fun i => (Ordinal.le_iSup f i).lt_iff_ne.symm
+
+-- FIXME There is undeprecated material below still depending on this?!
+set_option linter.deprecated false in
+@[deprecated ne_iSup_iff_lt_iSup (since := "2024-08-27")]
+theorem ne_sup_iff_lt_sup {ι : Type u} {f : ι → Ordinal.{max u v}} :
+    (∀ i, f i ≠ sup.{_, v} f) ↔ ∀ i, f i < sup.{_, v} f :=
+  ne_iSup_iff_lt_iSup
+
 -- TODO: state in terms of `IsSuccLimit`.
 theorem succ_lt_iSup_of_ne_iSup {ι} {f : ι → Ordinal.{u}} [Small.{u} ι]
     (hf : ∀ i, f i ≠ iSup f) {a} (hao : a < iSup f) : succ a < iSup f := by
   by_contra! hoa
   exact hao.not_le (Ordinal.iSup_le fun i => le_of_lt_succ <|
     (lt_of_le_of_ne (Ordinal.le_iSup _ _) (hf i)).trans_le hoa)
+
+-- FIXME There is undeprecated material below still depending on this?!
+set_option linter.deprecated false in
+@[deprecated succ_lt_iSup_of_ne_iSup (since := "2024-08-27")]
+theorem sup_not_succ_of_ne_sup {ι : Type u} {f : ι → Ordinal.{max u v}}
+    (hf : ∀ i, f i ≠ sup.{_, v} f) {a} (hao : a < sup.{_, v} f) : succ a < sup.{_, v} f := by
+  by_contra! hoa
+  exact
+    hao.not_le (sup_le fun i => le_of_lt_succ <| (lt_of_le_of_ne (le_sup _ _) (hf i)).trans_le hoa)
 
 -- TODO: generalize to conditionally complete lattices.
 theorem iSup_eq_zero_iff {ι} {f : ι → Ordinal.{u}} [Small.{u} ι] :
@@ -1262,10 +1309,37 @@ theorem iSup_eq_zero_iff {ι} {f : ι → Ordinal.{u}} [Small.{u} ι] :
   rw [← Ordinal.le_zero, ← h]
   exact Ordinal.le_iSup f i
 
+-- FIXME There is undeprecated material below still depending on this?!
+set_option linter.deprecated false in
+@[deprecated ciSup_const (since := "2024-08-27")]
+theorem sup_const {ι} [_hι : Nonempty ι] (o : Ordinal) : (sup fun _ : ι => o) = o :=
+  ciSup_const
+
+-- FIXME There is undeprecated material below still depending on this?!
+set_option linter.deprecated false in
+@[deprecated ciSup_unique (since := "2024-08-27")]
+theorem sup_unique {ι} [Unique ι] (f : ι → Ordinal) : sup f = f default :=
+  ciSup_unique
+
+-- FIXME There is undeprecated material below still depending on this?!
+set_option linter.deprecated false in
+@[deprecated csSup_le_csSup' (since := "2024-08-27")]
+theorem sup_le_of_range_subset {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
+    (h : Set.range f ⊆ Set.range g) : sup.{u, max v w} f ≤ sup.{v, max u w} g :=
+  csSup_le_csSup' (bddAbove_range.{v, max u w} _) h
+
 -- TODO: generalize or remove
 theorem iSup_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f = Set.range g) : iSup f = iSup g :=
   congr_arg _ h
+
+-- FIXME There is undeprecated material below still depending on this?!
+set_option linter.deprecated false in
+@[deprecated iSup_eq_of_range_eq (since := "2024-08-27")]
+theorem sup_eq_of_range_eq {ι : Type u} {ι' : Type v}
+    {f : ι → Ordinal.{max u v w}} {g : ι' → Ordinal.{max u v w}}
+    (h : Set.range f = Set.range g) : sup.{u, max v w} f = sup.{v, max u w} g :=
+  Ordinal.iSup_eq_of_range_eq h
 
 theorem iSup_succ (o : Ordinal) : ⨆ a : Iio o, succ a.1 = o := by
   apply (le_of_forall_lt _).antisymm'
@@ -1281,6 +1355,21 @@ theorem iSup_sum {α β} (f : α ⊕ β → Ordinal.{u}) [Small.{u} α] [Small.{
     · exact le_max_of_le_right (Ordinal.le_iSup (fun x ↦ f (Sum.inr x)) i)
   all_goals
     apply csSup_le_csSup' (bddAbove_of_small _)
+    rintro i ⟨a, rfl⟩
+    apply mem_range_self
+
+-- FIXME There is undeprecated material below still depending on this?!
+set_option linter.deprecated false in
+@[deprecated iSup_sum (since := "2024-08-27")]
+theorem sup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal) :
+    sup.{max u v, w} f =
+      max (sup.{u, max v w} fun a => f (Sum.inl a)) (sup.{v, max u w} fun b => f (Sum.inr b)) := by
+  apply (sup_le_iff.2 _).antisymm (max_le_iff.2 ⟨_, _⟩)
+  · rintro (i | i)
+    · exact le_max_of_le_left (le_sup _ i)
+    · exact le_max_of_le_right (le_sup _ i)
+  all_goals
+    apply sup_le_of_range_subset.{_, max u v, w}
     rintro i ⟨a, rfl⟩
     apply mem_range_self
 
@@ -1317,6 +1406,13 @@ theorem IsNormal.map_sSup_of_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsN
 theorem IsNormal.map_sSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {s : Set Ordinal.{u}} (hn : s.Nonempty) [Small.{u} s] : f (sSup s) = sSup (f '' s) :=
   H.map_sSup_of_bddAbove (bddAbove_of_small s) hn
+
+-- FIXME There is undeprecated material below still depending on this?!
+set_option linter.deprecated false in
+@[deprecated IsNormal.map_iSup (since := "2024-08-27")]
+theorem IsNormal.sup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal f) {ι : Type u}
+    (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (sup.{_, v} g) = sup.{_, w} (f ∘ g) :=
+  H.map_iSup g
 
 theorem IsNormal.apply_of_isLimit {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f) {o : Ordinal}
     (ho : IsLimit o) : f o = ⨆ a : Iio o, f a := by
