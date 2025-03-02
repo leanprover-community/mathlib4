@@ -50,7 +50,6 @@ def inl : α →*o WithZero (Lex (αˣ × βˣ)) where
     · simp [*] at hxy
     · simp [Prod.Lex.toLex_le_toLex, ← Units.val_lt_val, lt_or_eq_of_le hxy]
 
-@[simp]
 lemma inl_zero : inl (β := β) (0 : α) = 0 := dif_pos rfl
 
 /-- Given linearly ordered groups with zero M, N, the natural inclusion ordered homomorphism from
@@ -77,7 +76,6 @@ def inr : β →*o WithZero (Lex (αˣ × βˣ)) where
     · simp [*] at hxy
     · simp [Prod.Lex.toLex_le_toLex, ← Units.val_le_val, hxy]
 
-@[simp]
 lemma inr_zero : inr (α := α) (0 : β) = 0 := dif_pos rfl
 
 /-- Given linearly ordered groups with zero M, N, the natural projection ordered homomorphism from
