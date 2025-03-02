@@ -112,9 +112,6 @@ theorem coe_subtype (s : AffineSubspace k P) [Nonempty s] : (s.subtype : s → P
 @[deprecated (since := "2025-02-18")]
 alias coeSubtype := coe_subtype
 
-theorem injective_subtype (s : AffineSubspace k P) [Nonempty s] : Function.Injective s.subtype :=
-  Subtype.coe_injective
-
 end AffineSubspace
 
 theorem AffineMap.lineMap_mem {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
