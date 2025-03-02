@@ -14,8 +14,9 @@ elab "#all_declarations" : command => do
       tot
     else
       tot.binInsert (· < ·) nm.toString
-  for n in sorted do
-    dbg_trace n
+  --for n in sorted do
+  --  dbg_trace n
+  dbg_trace sorted
 
 -- CI removes the initial `--` from the following line:
 -- if you change it, make sure to update the CI configuration.
