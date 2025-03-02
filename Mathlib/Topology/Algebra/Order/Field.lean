@@ -65,6 +65,9 @@ theorem Filter.Tendsto.atTop_mul_pos {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l a
   filter_upwards [hg.eventually (lt_mem_nhds (half_lt_self hC)), hf.eventually_ge_atTop 0] with x hg
     hf using mul_le_mul_of_nonneg_left hg.le hf
 
+-- TODO: after removing this deprecated alias,
+-- rename `Filter.Tendsto.atTop_mul'` to `Filter.Tendsto.atTop_mul`.
+-- Same for the other 3 similar aliases below.
 @[deprecated (since := "2025-03-02")]
 alias Filter.Tendsto.atTop_mul := Filter.Tendsto.atTop_mul_pos
 
