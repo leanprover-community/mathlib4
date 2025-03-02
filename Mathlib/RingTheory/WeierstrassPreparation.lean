@@ -8,6 +8,7 @@ import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.Order.CompletePartialOrder
+import Mathlib.RingTheory.AdicCompletion.LocalRing
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
 /-!
@@ -338,58 +339,6 @@ lemma preparation_lift_strong_uniq {n : ℕ} (npos : n > 0) [hmax : m.IsMaximal]
 
 section
 
-variable (m) in
-lemma isUnit_iff_nmem [hmax : m.IsMaximal] [comp : IsAdicComplete m R] (r : R) :
-    IsUnit r ↔ r ∉ m := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · by_contra mem
-    rcases IsUnit.exists_left_inv h with ⟨s, hs⟩
-    absurd m.ne_top_iff_one.mp (Ideal.IsMaximal.ne_top hmax)
-    simp [← hs, Ideal.mul_mem_left m s mem]
-  · have mapu {n : ℕ} (npos : n > 0) : IsUnit (Ideal.Quotient.mk (m ^ n) r) := by
-      induction' n with n ih
-      · absurd npos
-        exact Nat.not_lt_zero 0
-      · by_cases neq0 : n = 0
-        · let max' : (m ^ (n + 1)).IsMaximal := by simpa only [neq0, zero_add, pow_one] using hmax
-          let hField : Field (R ⧸ m ^ (n + 1)) := Ideal.Quotient.field (m ^ (n + 1))
-          simpa [isUnit_iff_ne_zero, ne_eq, Ideal.Quotient.eq_zero_iff_mem.not, neq0] using h
-        · apply factorPowSucc.isUnit_of_isUnit_image (Nat.zero_lt_of_ne_zero neq0)
-          simpa using (ih (Nat.zero_lt_of_ne_zero neq0))
-    choose inv_series' inv_series_spec' using fun (n : {n : ℕ // n > 0}) ↦
-      (IsUnit.exists_left_inv (mapu n.2))
-    let inv_series : ℕ → R := fun n ↦ if h : n = 0 then 0 else Classical.choose <|
-      (Ideal.Quotient.mk_surjective (I := m ^ n)) <| inv_series' ⟨n, (Nat.zero_lt_of_ne_zero h)⟩
-    have inv_series_spec {n : ℕ} (npos : n > 0): (Ideal.Quotient.mk (m ^ n)) (inv_series n) =
-      inv_series' ⟨n, npos⟩ := by
-      simpa only [Nat.not_eq_zero_of_lt npos, inv_series]
-      using Classical.choose_spec (Ideal.Quotient.mk_surjective (inv_series' ⟨n, npos⟩))
-    have mod : ∀ {a b : ℕ}, a ≤ b → inv_series a ≡ inv_series b
-      [SMOD m ^ a • (⊤ : Submodule R R)] := by
-      intro a b le
-      by_cases apos : a > 0
-      · simp only [smul_eq_mul, Ideal.mul_top]
-        rw [SModEq.sub_mem, ← eq_zero_iff_mem, map_sub, ← (mapu apos).mul_right_inj,
-          mul_zero, mul_sub]
-        nth_rw 3 [← factor_mk (pow_le_pow_right le), ← factor_mk (pow_le_pow_right le)]
-        simp only [inv_series_spec apos, inv_series_spec (Nat.lt_of_lt_of_le apos le)]
-        rw [← _root_.map_mul, mul_comm, inv_series_spec', mul_comm, inv_series_spec',
-          map_one, sub_self]
-      · simp [Nat.eq_zero_of_not_pos apos]
-    rcases IsPrecomplete.prec IsAdicComplete.toIsPrecomplete mod with ⟨inv, hinv⟩
-    have eq (n : ℕ): inv * r - 1 ≡ 0 [SMOD m ^ n • (⊤ : Submodule R R)] := by
-      by_cases npos : n > 0
-      · apply SModEq.sub_mem.mpr
-        simp only [smul_eq_mul, Ideal.mul_top, sub_zero, ← eq_zero_iff_mem]
-        rw [map_sub, map_one, _root_.map_mul, ← sub_add_cancel inv (inv_series n), map_add]
-        have := SModEq.sub_mem.mp (hinv n).symm
-        simp only [smul_eq_mul, Ideal.mul_top] at this
-        simp [Ideal.Quotient.eq_zero_iff_mem.mpr this, inv_series_spec npos, inv_series_spec']
-      · simp [Nat.eq_zero_of_not_pos npos]
-    apply isUnit_iff_exists_inv'.mpr
-    use inv
-    exact sub_eq_zero.mp <| IsHausdorff.haus IsAdicComplete.toIsHausdorff (inv * r - 1) eq
-
 lemma map_ntriv' {n : ℕ} (npos : n > 0) {f : PowerSeries R} (ntriv : ∃ k, f.coeff R k ∉ m) :
     ∃ (k : ℕ),
     (f.map (Ideal.Quotient.mk (m ^ n))).coeff _ k ∉ m.map (Ideal.Quotient.mk (m ^ n)) := by
@@ -524,16 +473,14 @@ theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : I
     convert SModEq.sub_mem.mp (h_spec i n).symm
     simp [mk_eq_mk_iff_sub_mem]
   have hu : IsUnit h := by
-    apply isUnit_iff_constantCoeff.mpr ((isUnit_iff_nmem m _).mpr _)
+    rw [isUnit_iff_constantCoeff, isUnit_iff_nmem_of_isAdicComplete_maximal m]
     by_contra mem
-    rw [← pow_one m] at mem
-    have := Ideal.Quotient.eq_zero_iff_mem.mpr mem
-    rw [← coeff_zero_eq_constantCoeff_apply, ← coeff_map,
-      h_spec' Nat.one_pos, coeff_zero_eq_constantCoeff_apply] at this
+    rw [← pow_one m, ← Ideal.Quotient.eq_zero_iff_mem, ← coeff_zero_eq_constantCoeff_apply,
+      ← coeff_map, h_spec' Nat.one_pos, coeff_zero_eq_constantCoeff_apply] at mem
     absurd isUnit_iff_constantCoeff.mp (h_series' ⟨1, Nat.one_pos⟩).isUnit
-    dsimp at this
     let _ : Nontrivial (R ⧸ m ^ 1) := R_ntriv' Nat.one_pos
-    simp [this]
+    dsimp at mem
+    simp [mem]
   have g_coeff_series_mod (i : ℕ) : ∀ {a b : ℕ}, a ≤ b → (g_series a).coeff i ≡
     (g_series b).coeff i [SMOD m ^ a • (⊤ : Submodule R R)] := by
     intro a b le
