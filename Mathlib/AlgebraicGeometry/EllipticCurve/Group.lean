@@ -119,12 +119,10 @@ instance : IsScalarTower R R[X] W.CoordinateRing :=
 instance [Subsingleton R] : Subsingleton W.CoordinateRing :=
   Module.subsingleton R[X] _
 
--- Porting note: added the abbreviation `mk` for `AdjoinRoot.mk W.polynomial`
 /-- The natural ring homomorphism mapping an element of `R[X][Y]` to an element of `R[W]`. -/
 noncomputable abbrev mk : R[X][Y] →+* W.CoordinateRing :=
   AdjoinRoot.mk W.polynomial
 
--- Porting note: added `classical` explicitly
 /-- The basis $\{1, Y\}$ for the coordinate ring $R[W]$ over the polynomial ring $R[X]$. -/
 protected noncomputable def basis : Basis (Fin 2) R[X] W.CoordinateRing := by
   classical exact (subsingleton_or_nontrivial R).by_cases (fun _ => default) fun _ =>
@@ -138,17 +136,14 @@ lemma basis_apply (n : Fin 2) :
     PowerBasis.basis_eq_pow]
   rfl
 
--- Porting note: added `@[simp]` in lieu of `coe_basis`
 @[simp]
 lemma basis_zero : CoordinateRing.basis W 0 = 1 := by
   simpa only [basis_apply] using pow_zero _
 
--- Porting note: added `@[simp]` in lieu of `coe_basis`
 @[simp]
 lemma basis_one : CoordinateRing.basis W 1 = mk W Y := by
   simpa only [basis_apply] using pow_one _
 
--- Porting note: removed `@[simp]` in lieu of `basis_zero` and `basis_one`
 lemma coe_basis : (CoordinateRing.basis W : Fin 2 → W.CoordinateRing) = ![1, mk W Y] := by
   ext n
   fin_cases n

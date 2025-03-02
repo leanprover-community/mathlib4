@@ -51,8 +51,6 @@ namespace Augmented
 
 variable {C : Type*} [Category C]
 
--- Porting note: in the formulation of the axioms `s_comp_δ₀`, etc, `drop.obj X` has been
--- replaced by `X.left` in order to have lemmas with LHS/RHS in normal form
 /-- The datum of an extra degeneracy is a technical condition on
 augmented simplicial objects. The morphisms `s'` and `s n` of the
 structure formally behave like extra degeneracies `σ (-1)`. -/

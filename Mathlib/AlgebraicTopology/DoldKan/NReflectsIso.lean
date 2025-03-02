@@ -110,7 +110,6 @@ instance : (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)
     -- could this be fixed by setting better instance priorities?
     haveI : F₁.ReflectsIsomorphisms := reflectsIsomorphisms_of_full_and_faithful _
     haveI : F₂.ReflectsIsomorphisms := by infer_instance
-    haveI : F₃.ReflectsIsomorphisms := reflectsIsomorphisms_of_full_and_faithful _
     haveI : ((KaroubiKaroubi.equivalence C).inverse).ReflectsIsomorphisms :=
       reflectsIsomorphisms_of_full_and_faithful _
     have : IsIso (F.map f) := by
