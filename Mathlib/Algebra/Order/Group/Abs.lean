@@ -56,21 +56,25 @@ variable [LinearOrderedCommGroup α] {a b : α}
   · exact mabs_mul_eq_mul_mabs_le ab
   · simpa only [mul_comm, and_comm] using mabs_mul_eq_mul_mabs_le ab
 
+@[to_additive]
+theorem mabs_le : |a|ₘ ≤ b ↔ b⁻¹ ≤ a ∧ a ≤ b := by rw [mabs_le', and_comm, inv_le']
+
+@[to_additive]
+theorem le_mabs' : a ≤ |b|ₘ ↔ b ≤ a⁻¹ ∨ a ≤ b := by rw [le_mabs, or_comm, le_inv']
+
+@[to_additive]
+theorem inv_le_of_mabs_le (h : |a|ₘ ≤ b) : b⁻¹ ≤ a :=
+  (mabs_le.mp h).1
+
+@[to_additive]
+theorem le_of_mabs_le (h : |a|ₘ ≤ b) : a ≤ b :=
+  (mabs_le.mp h).2
+
 end LinearOrderedCommGroup
 
 section LinearOrderedAddCommGroup
 
 variable [LinearOrderedAddCommGroup α] {a b c : α}
-
-theorem abs_le : |a| ≤ b ↔ -b ≤ a ∧ a ≤ b := by rw [abs_le', and_comm, neg_le]
-
-theorem le_abs' : a ≤ |b| ↔ b ≤ -a ∨ a ≤ b := by rw [le_abs, or_comm, le_neg]
-
-theorem neg_le_of_abs_le (h : |a| ≤ b) : -b ≤ a :=
-  (abs_le.mp h).1
-
-theorem le_of_abs_le (h : |a| ≤ b) : a ≤ b :=
-  (abs_le.mp h).2
 
 @[to_additive]
 theorem apply_abs_le_mul_of_one_le' {β : Type*} [MulOneClass β] [Preorder β]
