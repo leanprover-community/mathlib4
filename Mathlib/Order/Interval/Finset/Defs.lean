@@ -871,22 +871,22 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | ⊤, ⊤ => {⊤}
     | ⊤, (b : α) => ∅
     | (a : α), ⊤ => insertNone (Ici a)
-    | (a : α), (b : α) => (Icc a b).map Embedding.some
+    | (a : α), (b : α) => (Icc a b).map Function.Embedding.coeWithTop
   finsetIco a b :=
     match a, b with
     | ⊤, _ => ∅
-    | (a : α), ⊤ => (Ici a).map Embedding.some
-    | (a : α), (b : α) => (Ico a b).map Embedding.some
+    | (a : α), ⊤ => (Ici a).map Function.Embedding.coeWithTop
+    | (a : α), (b : α) => (Ico a b).map Function.Embedding.coeWithTop
   finsetIoc a b :=
     match a, b with
     | ⊤, _ => ∅
     | (a : α), ⊤ => insertNone (Ioi a)
-    | (a : α), (b : α) => (Ioc a b).map Embedding.some
+    | (a : α), (b : α) => (Ioc a b).map Function.Embedding.coeWithTop
   finsetIoo a b :=
     match a, b with
     | ⊤, _ => ∅
-    | (a : α), ⊤ => (Ioi a).map Embedding.some
-    | (a : α), (b : α) => (Ioo a b).map Embedding.some
+    | (a : α), ⊤ => (Ioi a).map Function.Embedding.coeWithTop
+    | (a : α), (b : α) => (Ioo a b).map Function.Embedding.coeWithTop
   -- Porting note: the proofs below got much worse
   finset_mem_Icc a b x :=
     match a, b, x with
@@ -897,27 +897,15 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | (a : α), ⊤, (x : α) => by
         simp only [le_eq_subset, coe_le_coe, le_top, and_true]
         rw [← some_eq_coe, some_mem_insertNone, mem_Ici]
-    | (a : α), (b : α), ⊤ => by
-        simp only [Embedding.some, mem_map, mem_Icc, and_false, exists_const, some, le_top,
-          top_le_iff, reduceCtorEq]
-    | (a : α), (b : α), (x : α) => by
-        simp only [le_eq_subset, Embedding.some, mem_map, mem_Icc, Embedding.coeFn_mk, coe_le_coe]
-        -- This used to be in the above `simp` before https://github.com/leanprover/lean4/pull/2644
-        erw [aux]
+    | (a : α), (b : α), ⊤ => by simp
+    | (a : α), (b : α), (x : α) => by simp
   finset_mem_Ico a b x :=
     match a, b, x with
     | ⊤, _, _ => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_lt h.2
-    | (a : α), ⊤, ⊤ => by simp [some, Embedding.some]
-    | (a : α), ⊤, (x : α) => by
-        simp only [Embedding.some, mem_map, mem_Ici, Embedding.coeFn_mk, coe_le_coe, aux,
-          coe_lt_top, and_true]
-        -- This used to be in the above `simp` before https://github.com/leanprover/lean4/pull/2644
-        erw [aux]
-    | (a : α), (b : α), ⊤ => by simp [some, Embedding.some]
-    | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, aux]
-                                      -- This used to be in the above `simp` before
-                                      -- https://github.com/leanprover/lean4/pull/2644
-                                      erw [aux]
+    | (a : α), ⊤, ⊤ => by simp
+    | (a : α), ⊤, (x : α) => by simp
+    | (a : α), (b : α), ⊤ => by simp
+    | (a : α), (b : α), (x : α) => by simp
   finset_mem_Ioc a b x :=
     match a, b, x with
     | ⊤, _, _ => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_le h.2
@@ -926,25 +914,18 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
                                 -- This used to be in the above `simp` before
                                 -- https://github.com/leanprover/lean4/pull/2644
                                 erw [aux]
-    | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
-    | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, insertNone, aux]
-                                      -- This used to be in the above `simp` before
-                                      -- https://github.com/leanprover/lean4/pull/2644
-                                      erw [aux]
+    | (a : α), (b : α), ⊤ => by simp
+    | (a : α), (b : α), (x : α) => by simp
   finset_mem_Ioo a b x :=
     match a, b, x with
     | ⊤, _, _ => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans h.2
-    | (a : α), ⊤, ⊤ => by simp [some, Embedding.some, insertNone]
+    | (a : α), ⊤, ⊤ => by simp
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux, top]
                                 -- This used to be in the above `simp` before
                                 -- https://github.com/leanprover/lean4/pull/2644
                                 erw [aux]
-    | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
-    | (a : α), (b : α), (x : α) => by
-      simp [some, Embedding.some, insertNone, aux]
-      -- This used to be in the above `simp` before
-      -- https://github.com/leanprover/lean4/pull/2644
-      erw [aux]
+    | (a : α), (b : α), ⊤ => by simp
+    | (a : α), (b : α), (x : α) => by simp
 
 variable (a b : α)
 
