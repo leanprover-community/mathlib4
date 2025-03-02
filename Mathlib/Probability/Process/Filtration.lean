@@ -221,6 +221,11 @@ theorem Integrable.uniformIntegrable_condExp_filtration [Preorder ι] {μ : Meas
 alias Integrable.uniformIntegrable_condexp_filtration :=
   Integrable.uniformIntegrable_condExp_filtration
 
+theorem Filtration.condExp_condExp [Preorder ι] {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] [CompleteSpace E] (f : Ω → E) {μ : Measure Ω} (ℱ : Filtration ι m)
+    {i j : ι} (hij : i ≤ j) [SigmaFinite (μ.trim (ℱ.le j))] :
+    μ[μ[f|ℱ j]|ℱ i] =ᵐ[μ] μ[f|ℱ i] := condExp_condExp_of_le (ℱ.mono hij) (ℱ.le j)
+
 section OfSet
 
 variable [Preorder ι]
