@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.Data.Finset.Basic
+import Mathlib.Logic.Function.DependsOn
 
 /-!
 # Update a function on a set of values
@@ -48,6 +49,23 @@ theorem update_eq_updateFinset {i y} :
     simp only [dif_pos, Finset.mem_singleton, update_self, updateFinset]
     exact uniqueElim_default (α := fun j : ({i} : Finset ι) => π j) y
   · simp [hj, updateFinset]
+
+/-- If one replaces the variables indexed by a finite set `t`, then `f` no longer depends on
+those variables. -/
+theorem _root_.DependsOn.updateFinset {α : Type*} {f : (Π i, π i) → α} {s : Set ι}
+    (hf : DependsOn f s) {t : Finset ι} (y : Π i : t, π i) :
+    DependsOn (fun x ↦ f (updateFinset x t y)) (s \ t) := by
+  refine fun x₁ x₂ h ↦ hf (fun i hi ↦ ?_)
+  simp only [Function.updateFinset]
+  split_ifs; · rfl
+  simp_all
+
+/-- If one replaces the variable indexed by `i`, then `f` no longer depends on
+this variable. -/
+theorem _root_.DependsOn.update {α : Type*} {f : (Π i, π i) → α} {s : Finset ι} (hf : DependsOn f s)
+    (i : ι) (y : π i) : DependsOn (fun x ↦ f (Function.update x i y)) (s.erase i) := by
+  simp_rw [Function.update_eq_updateFinset, erase_eq, coe_sdiff]
+  exact hf.updateFinset _
 
 theorem updateFinset_updateFinset {s t : Finset ι} (hst : Disjoint s t)
     {y : ∀ i : ↥s, π i} {z : ∀ i : ↥t, π i} :

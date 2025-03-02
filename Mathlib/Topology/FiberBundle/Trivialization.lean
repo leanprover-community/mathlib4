@@ -769,7 +769,7 @@ variable {ι : Type*} [TopologicalSpace ι] [LocallyCompactPair ι T.baseSet]
   {γ : C(ι, T.baseSet)} {i : ι} {e : T.source}
 
 /-- Extension of `liftCM` to continuous maps taking values in `T.baseSet` (local version of
-homotopy lifting).-/
+homotopy lifting) -/
 def clift (T : Trivialization F proj) [LocallyCompactPair ι T.baseSet] :
     C(T.source × C(ι, T.baseSet), C(ι, T.source)) := by
   let Ψ : C((T.source × C(ι, T.baseSet)) × ι, C(ι, T.baseSet) × ι) :=

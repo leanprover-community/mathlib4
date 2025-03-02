@@ -290,8 +290,7 @@ def coeFnMonoidHom [Monoid β] [ContinuousMul β] : C(α, β) →* α → β whe
   map_one' := coe_one
   map_mul' := coe_mul
 
-variable (α)
-
+variable (α) in
 /-- Composition on the left by a (continuous) homomorphism of topological monoids, as a
 `MonoidHom`. Similar to `MonoidHom.compLeft`. -/
 @[to_additive (attr := simps)
@@ -303,8 +302,6 @@ protected def _root_.MonoidHom.compLeftContinuous {γ : Type*} [Monoid β] [Cont
   toFun f := (⟨g, hg⟩ : C(β, γ)).comp f
   map_one' := ext fun _ => g.map_one
   map_mul' _ _ := ext fun _ => g.map_mul _ _
-
-variable {α}
 
 /-- Composition on the right as a `MonoidHom`. Similar to `MonoidHom.compHom'`. -/
 @[to_additive (attr := simps)
@@ -336,7 +333,7 @@ instance instCommGroupContinuousMap [CommGroup β] [IsTopologicalGroup β] : Com
 instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) where
   continuous_mul := by
     letI : UniformSpace β := IsTopologicalGroup.toUniformSpace β
-    have : UniformGroup β := comm_topologicalGroup_is_uniform
+    have : UniformGroup β := uniformGroup_of_commGroup
     rw [continuous_iff_continuousAt]
     rintro ⟨f, g⟩
     rw [ContinuousAt, tendsto_iff_forall_isCompact_tendstoUniformlyOn, nhds_prod_eq]
@@ -346,7 +343,7 @@ instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) w
           (tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK))
   continuous_inv := by
     letI : UniformSpace β := IsTopologicalGroup.toUniformSpace β
-    have : UniformGroup β := comm_topologicalGroup_is_uniform
+    have : UniformGroup β := uniformGroup_of_commGroup
     rw [continuous_iff_continuousAt]
     intro f
     rw [ContinuousAt, tendsto_iff_forall_isCompact_tendstoUniformlyOn]

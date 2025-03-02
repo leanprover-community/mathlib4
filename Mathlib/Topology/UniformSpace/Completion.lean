@@ -331,13 +331,10 @@ theorem comap_coe_eq_uniformity :
     ((𝓤 _).comap fun p : α × α => ((p.1 : Completion α), (p.2 : Completion α))) = 𝓤 α :=
   (isUniformInducing_coe _).1
 
-variable {α}
-
+variable {α} in
 theorem denseRange_coe : DenseRange ((↑) : α → Completion α) :=
   SeparationQuotient.surjective_mk.denseRange.comp denseRange_pureCauchy
     SeparationQuotient.continuous_mk
-
-variable (α)
 
 /-- The Haudorff completion as an abstract completion. -/
 def cPkg {α : Type*} [UniformSpace α] : AbstractCompletion α where
