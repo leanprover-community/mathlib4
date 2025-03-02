@@ -80,7 +80,7 @@ where
             simp_rw [Finset.mem_map, Embedding.coeFn_mk] at hti htj
             obtain ⟨ai, hai, hij'⟩ := hti
             obtain ⟨aj, haj, rfl⟩ := htj
-            rw [Fin.cons_eq_cons] at hij'
+            rw [Fin.cons_inj] at hij'
             ext
             · exact hij'.1
             · obtain ⟨-, rfl⟩ := hij'
@@ -189,7 +189,8 @@ lemma piAntidiag_insert [DecidableEq (ι → μ)] (hi : i ∉ s) (n : μ) :
 end AddCancelCommMonoid
 
 section CanonicallyOrderedAddCommMonoid
-variable [DecidableEq ι] [CanonicallyOrderedAddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ]
+variable [DecidableEq ι] [OrderedAddCommMonoid μ] [CanonicallyOrderedAdd μ]
+  [HasAntidiagonal μ] [DecidableEq μ]
 
 @[simp] lemma piAntidiag_zero (s : Finset ι) : piAntidiag s (0 : μ) = {0} := by
   ext; simp [Fintype.sum_eq_zero_iff_of_nonneg, funext_iff, not_imp_comm, ← forall_and]

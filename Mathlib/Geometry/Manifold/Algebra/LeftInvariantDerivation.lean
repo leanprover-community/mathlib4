@@ -22,14 +22,11 @@ implementing one of the possible definitions of the Lie algebra attached to a Li
 
 noncomputable section
 
-open scoped LieGroup Manifold Derivation
-/- Next line is necessary while the manifold smoothness class is not extended to `ω`.
-Later, replace with `open scoped ContDiff`. -/
-local notation "∞" => (⊤ : ℕ∞)
+open scoped LieGroup Manifold Derivation ContDiff
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) (G : Type*)
-  [TopologicalSpace G] [ChartedSpace H G] [Monoid G] [SmoothMul I G] (g h : G)
+  [TopologicalSpace G] [ChartedSpace H G] [Monoid G] [ContMDiffMul I ∞ G] (g h : G)
 
 -- Generate trivial has_sizeof instance. It prevents weird type class inference timeout problems
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12096): removed @[nolint instance_priority], linter not ported yet
@@ -93,20 +90,15 @@ theorem left_invariant' :
     𝒅ₕ (smoothLeftMul_one I g) (Derivation.evalAt (1 : G) ↑X) = Derivation.evalAt g ↑X :=
   left_invariant'' X g
 
--- Porting note: was `@[simp]` but `_root_.map_add` can prove it now
-protected theorem map_add : X (f + f') = X f + X f' := map_add X f f'
+protected theorem map_add : X (f + f') = X f + X f' := by simp
 
--- Porting note: was `@[simp]` but `_root_.map_zero` can prove it now
-protected theorem map_zero : X 0 = 0 := map_zero X
+protected theorem map_zero : X 0 = 0 := by simp
 
--- Porting note: was `@[simp]` but `_root_.map_neg` can prove it now
-protected theorem map_neg : X (-f) = -X f := map_neg X f
+protected theorem map_neg : X (-f) = -X f := by simp
 
--- Porting note: was `@[simp]` but `_root_.map_sub` can prove it now
-protected theorem map_sub : X (f - f') = X f - X f' := map_sub X f f'
+protected theorem map_sub : X (f - f') = X f - X f' := by simp
 
--- Porting note: was `@[simp]` but `_root_.map_smul` can prove it now
-protected theorem map_smul : X (r • f) = r • X f := map_smul X r f
+protected theorem map_smul : X (r • f) = r • X f := by simp
 
 @[simp]
 theorem leibniz : X (f * f') = f • X f' + f' • X f :=
@@ -227,7 +219,7 @@ instance : Bracket (LeftInvariantDerivation I G) (LeftInvariantDerivation I G) w
       have hY := Derivation.congr_fun (left_invariant' g Y) (X f)
       rw [hfdifferential_apply, fdifferential_apply, Derivation.evalAt_apply] at hX hY ⊢
       rw [comp_L] at hX hY
-      rw [Derivation.commutator_apply, SmoothMap.coe_sub, Pi.sub_apply, coe_derivation]
+      rw [Derivation.commutator_apply, ContMDiffMap.coe_sub, Pi.sub_apply, coe_derivation]
       rw [coe_derivation] at hX hY ⊢
       rw [hX, hY]
       rfl⟩

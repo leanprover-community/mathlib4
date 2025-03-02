@@ -228,4 +228,14 @@ lemma comp_div (f : G →* H) (g h : M →* G) : f.comp (g / h) = f.comp g / f.c
 
 end InvDiv
 
+/-- If `H` is commutative and `G →* H` is injective, then `G` is commutative. -/
+def commGroupOfInjective [Group G] [CommGroup H] (f : G →* H) (hf : Function.Injective f) :
+    CommGroup G :=
+  ⟨by simp_rw [← hf.eq_iff, map_mul, mul_comm, implies_true]⟩
+
+/-- If `G` is commutative and `G →* H` is surjective, then `H` is commutative. -/
+def commGroupOfSurjective [CommGroup G] [Group H] (f : G →* H) (hf : Function.Surjective f) :
+    CommGroup H :=
+  ⟨by simp_rw [hf.forall₂, ← map_mul, mul_comm, implies_true]⟩
+
 end MonoidHom

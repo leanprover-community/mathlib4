@@ -23,10 +23,7 @@ The fact that the real numbers are a (trivial) *-ring has similarly been deferre
 -/
 
 
-assert_not_exists Finset
-assert_not_exists Module
-assert_not_exists Submonoid
-assert_not_exists FloorRing
+assert_not_exists Finset Module Submonoid FloorRing
 
 /-- The type `ℝ` of real numbers constructed as equivalence classes of Cauchy sequences of rational
 numbers. -/
@@ -301,7 +298,7 @@ theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by
 
 @[elab_as_elim]
 protected theorem ind_mk {C : Real → Prop} (x : Real) (h : ∀ y, C (mk y)) : C x := by
-  cases' x with x
+  obtain ⟨x⟩ := x
   induction' x using Quot.induction_on with x
   exact h x
 
@@ -483,8 +480,6 @@ instance : SemilatticeInf ℝ :=
 instance : SemilatticeSup ℝ :=
   inferInstance
 
-open scoped Classical
-
 instance leTotal_R : IsTotal ℝ (· ≤ ·) :=
   ⟨by
     intros a b
@@ -492,6 +487,7 @@ instance leTotal_R : IsTotal ℝ (· ≤ ·) :=
     induction' b using Real.ind_mk with b
     simpa using le_total a b⟩
 
+open scoped Classical in
 noncomputable instance linearOrder : LinearOrder ℝ :=
   Lattice.toLinearOrder ℝ
 
@@ -547,7 +543,8 @@ noncomputable instance decidableEq (a b : ℝ) : Decidable (a = b) := by infer_i
 The representative chosen is the one passed in the VM to `Quot.mk`, so two cauchy sequences
 converging to the same number may be printed differently.
 -/
-unsafe instance : Repr ℝ where reprPrec r _ := "Real.ofCauchy " ++ repr r.cauchy
+unsafe instance : Repr ℝ where
+  reprPrec r p := Repr.addAppParen ("Real.ofCauchy " ++ repr r.cauchy) p
 
 theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j) → x ≤ mk f := by
   intro h
@@ -564,7 +561,7 @@ theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j
 
 theorem mk_le_of_forall_le {f : CauSeq ℚ abs} {x : ℝ} (h : ∃ i, ∀ j ≥ i, (f j : ℝ) ≤ x) :
     mk f ≤ x := by
-  cases' h with i H
+  obtain ⟨i, H⟩ := h
   rw [← neg_le_neg_iff, ← mk_neg]
   exact le_mk_of_forall_le ⟨i, fun j ij => by simp [H _ ij]⟩
 

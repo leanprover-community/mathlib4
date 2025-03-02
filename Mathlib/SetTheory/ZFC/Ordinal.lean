@@ -118,13 +118,13 @@ theorem subset_of_mem (h : x.IsOrdinal) : y ∈ x → y ⊆ x :=
 theorem mem_trans (h : z.IsOrdinal) : x ∈ y → y ∈ z → x ∈ z :=
   h.isTransitive.mem_trans
 
-protected theorem isTrans (h : x.IsOrdinal) : IsTrans x.toSet (Subrel (· ∈ ·) _) :=
+protected theorem isTrans (h : x.IsOrdinal) : IsTrans _ (Subrel (· ∈ ·) (· ∈ x)) :=
   ⟨fun _ _ c hab hbc => h.mem_trans' hab hbc c.2⟩
 
 /-- The simplified form of transitivity used within `IsOrdinal` yields an equivalent definition to
 the standard one. -/
 theorem _root_.ZFSet.isOrdinal_iff_isTrans :
-    x.IsOrdinal ↔ x.IsTransitive ∧ IsTrans x.toSet (Subrel (· ∈ ·) _) where
+    x.IsOrdinal ↔ x.IsTransitive ∧ IsTrans _ (Subrel (· ∈ ·) (· ∈ x)) where
   mp h := ⟨h.isTransitive, h.isTrans⟩
   mpr := by
     rintro ⟨h₁, ⟨h₂⟩⟩
@@ -134,8 +134,7 @@ theorem _root_.ZFSet.isOrdinal_iff_isTrans :
 
 protected theorem mem (hx : x.IsOrdinal) (hy : y ∈ x) : y.IsOrdinal :=
   have := hx.isTrans
-  let f : Subrel (· ∈ ·) y.toSet ↪r Subrel (· ∈ ·) x.toSet :=
-    Subrel.inclusionEmbedding (· ∈ ·) (hx.subset_of_mem hy)
+  let f : _ ↪r Subrel (· ∈ ·) (· ∈ x) := Subrel.inclusionEmbedding (· ∈ ·) (hx.subset_of_mem hy)
   isOrdinal_iff_isTrans.2 ⟨fun _ hz _ ha ↦ hx.mem_trans' ha hz hy, f.isTrans⟩
 
 /-- An ordinal is a transitive set of transitive sets. -/
@@ -203,30 +202,30 @@ theorem mem_trichotomous (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ∈ y ∨ x =
   rw [eq_comm, ← subset_iff_eq_or_mem hy hx]
   exact mem_or_subset hx hy
 
-protected theorem isTrichotomous (h : x.IsOrdinal) : IsTrichotomous x.toSet (Subrel (· ∈ ·) _) :=
+protected theorem isTrichotomous (h : x.IsOrdinal) : IsTrichotomous _ (Subrel (· ∈ ·) (· ∈ x)) :=
   ⟨fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ by simpa using mem_trichotomous (h.mem ha) (h.mem hb)⟩
 
 /-- An ordinal is a transitive set, trichotomous under membership. -/
 theorem _root_.ZFSet.isOrdinal_iff_isTrichotomous :
-    x.IsOrdinal ↔ x.IsTransitive ∧ IsTrichotomous x.toSet (Subrel (· ∈ ·) _) where
+    x.IsOrdinal ↔ x.IsTransitive ∧ IsTrichotomous _ (Subrel (· ∈ ·) (· ∈ x)) where
   mp h := ⟨h.isTransitive, h.isTrichotomous⟩
   mpr := by
     rintro ⟨h₁, h₂⟩
     rw [isOrdinal_iff_isTrans]
     refine ⟨h₁, ⟨@fun y z w hyz hzw ↦ ?_⟩⟩
-    obtain hyw | rfl | hwy := trichotomous_of (Subrel (· ∈ ·) _) y w
+    obtain hyw | rfl | hwy := trichotomous_of (Subrel (· ∈ ·) (· ∈ x)) y w
     · exact hyw
     · cases asymm hyz hzw
     · cases mem_wf.asymmetric₃ _ _ _ hyz hzw hwy
 
-protected theorem isWellOrder (h : x.IsOrdinal) : IsWellOrder x.toSet (Subrel (· ∈ ·) _) where
+protected theorem isWellOrder (h : x.IsOrdinal) : IsWellOrder _ (Subrel (· ∈ ·) (· ∈ x)) where
   wf := (Subrel.relEmbedding _ _).wellFounded mem_wf
   trans := h.isTrans.1
   trichotomous := h.isTrichotomous.1
 
 /-- An ordinal is a transitive set, well-ordered under membership. -/
 theorem _root_.ZFSet.isOrdinal_iff_isWellOrder : x.IsOrdinal ↔
-    x.IsTransitive ∧ IsWellOrder x.toSet (Subrel (· ∈ ·) _) := by
+    x.IsTransitive ∧ IsWellOrder _ (Subrel (· ∈ ·) (· ∈ x)) := by
   use fun h ↦ ⟨h.isTransitive, h.isWellOrder⟩
   rintro ⟨h₁, h₂⟩
   refine isOrdinal_iff_isTrans.2 ⟨h₁, ?_⟩

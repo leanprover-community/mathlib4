@@ -213,9 +213,11 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
       haveI' w : decide ($n < 0) =Q true := ⟨⟩
       pure (.nonzero q(nz_of_isRat $p $w))
 
-/-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAddCommMonoid`. -/
+/-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAdd` monoid. -/
 def positivityCanon (e : Q($α)) : MetaM (Strictness zα pα e) := do
-  let _i ← synthInstanceQ (q(CanonicallyOrderedAddCommMonoid $α) : Q(Type u))
+  let _add ← synthInstanceQ (q(AddMonoid $α) : Q(Type u))
+  let _le ← synthInstanceQ (q(PartialOrder $α) : Q(Type u))
+  let _i ← synthInstanceQ (q(CanonicallyOrderedAdd $α) : Q(Prop))
   assumeInstancesCommute
   pure (.nonnegative q(zero_le $e))
 

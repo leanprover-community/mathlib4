@@ -54,8 +54,7 @@ for the empty set by convention.
 * `ω` is a notation for the first infinite ordinal in the locale `Ordinal`.
 -/
 
-assert_not_exists Module
-assert_not_exists Field
+assert_not_exists Module Field
 
 noncomputable section
 
@@ -122,6 +121,9 @@ instance wellFoundedLT_toType_lt (o : Ordinal) : WellFoundedLT o.toType :=
 
 namespace Ordinal
 
+noncomputable instance (o : Ordinal) : SuccOrder o.toType :=
+  SuccOrder.ofLinearWellFoundedLT o.toType
+
 /-! ### Basic properties of the order type -/
 
 /-- The order type of a well order is an ordinal. -/
@@ -143,7 +145,6 @@ instance one : One Ordinal :=
 @[deprecated "Avoid using `Quotient.mk` to construct an `Ordinal` directly."
   (since := "2024-10-24")]
 theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r := rfl
-
 
 @[deprecated "Avoid using `Quotient.mk` to construct an `Ordinal` directly."
   (since := "2024-10-24")]
@@ -192,7 +193,7 @@ theorem type_empty : type (@EmptyRelation Empty) = 0 :=
 
 theorem type_eq_one_of_unique (r) [IsWellOrder α r] [Nonempty α] [Subsingleton α] : type r = 1 := by
   cases nonempty_unique α
-  exact (RelIso.relIsoOfUniqueOfIrrefl r _).ordinal_type_eq
+  exact (RelIso.ofUniqueOfIrrefl r _).ordinal_type_eq
 
 @[simp]
 theorem type_eq_one_iff_unique [IsWellOrder α r] : type r = 1 ↔ Nonempty (Unique α) :=
@@ -358,6 +359,9 @@ instance : OrderBot Ordinal where
 theorem bot_eq_zero : (⊥ : Ordinal) = 0 :=
   rfl
 
+instance instIsEmptyIioZero : IsEmpty (Iio (0 : Ordinal)) := by
+  simp [← bot_eq_zero]
+
 @[simp]
 protected theorem le_zero {o : Ordinal} : o ≤ 0 ↔ o = 0 :=
   le_bot_iff
@@ -435,7 +439,7 @@ theorem typein.principalSeg_coe (r : α → α → Prop) [IsWellOrder α r] :
 
 @[simp]
 theorem type_subrel (r : α → α → Prop) [IsWellOrder α r] (a : α) :
-    type (Subrel r { b | r b a }) = typein r a :=
+    type (Subrel r (r · a)) = typein r a :=
   rfl
 
 @[simp]
@@ -487,10 +491,8 @@ theorem typein_surjOn (r : α → α → Prop) [IsWellOrder α r] :
 
 That is, `enum` maps an initial segment of the ordinals, those less than the order type of `r`, to
 the elements of `α`. -/
--- The explicit typing is required in order for `simp` to work properly.
 @[simps! symm_apply_coe]
-def enum (r : α → α → Prop) [IsWellOrder α r] :
-    @RelIso { o // o < type r } α (Subrel (· < ·) { o | o < type r }) r :=
+def enum (r : α → α → Prop) [IsWellOrder α r] : (· < · : Iio (type r) → Iio (type r) → Prop) ≃r r :=
   (typein r).subrelIso
 
 @[simp]
@@ -507,20 +509,21 @@ theorem enum_typein (r : α → α → Prop) [IsWellOrder α r] (a : α) :
     enum r ⟨typein r a, typein_lt_type r a⟩ = a :=
   enum_type (PrincipalSeg.ofElement r a)
 
-theorem enum_lt_enum {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
+theorem enum_lt_enum {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Iio (type r)} :
     r (enum r o₁) (enum r o₂) ↔ o₁ < o₂ :=
   (enum _).map_rel_iff
 
-theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
+theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o₁ o₂ : Iio (type r)} :
     ¬r (enum r o₁) (enum r o₂) ↔ o₂ ≤ o₁ := by
   rw [enum_lt_enum (r := r), not_lt]
 
+-- TODO: generalize to other well-orders
 @[simp]
-theorem enum_le_enum' (a : Ordinal) {o₁ o₂ : {o // o < type (· < ·)}} :
+theorem enum_le_enum' (a : Ordinal) {o₁ o₂ : Iio (type (· < ·))} :
     enum (· < ·) o₁ ≤ enum (α := a.toType) (· < ·) o₂ ↔ o₁ ≤ o₂ := by
   rw [← enum_le_enum, not_lt]
 
-theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
+theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Iio (type r)} :
     enum r o₁ = enum r o₂ ↔ o₁ = o₂ :=
   EmbeddingLike.apply_eq_iff_eq _
 
@@ -569,7 +572,12 @@ instance small_Icc (a b : Ordinal.{u}) : Small.{u} (Icc a b) := small_subset Icc
 instance small_Ioo (a b : Ordinal.{u}) : Small.{u} (Ioo a b) := small_subset Ioo_subset_Iio_self
 instance small_Ioc (a b : Ordinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc_subset_Iic_self
 
+/-- `o.toType` is an `OrderBot` whenever `o ≠ 0`. -/
+def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.toType where
+  bot_le := enum_zero_le' (by rwa [Ordinal.pos_iff_ne_zero])
+
 /-- `o.toType` is an `OrderBot` whenever `0 < o`. -/
+@[deprecated "use toTypeOrderBot" (since := "2025-02-13")]
 def toTypeOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.toType where
   bot_le := enum_zero_le' ho
 
@@ -578,7 +586,7 @@ noncomputable alias outOrderBotOfPos := toTypeOrderBotOfPos
 
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
     enum (α := o.toType) (· < ·) ⟨0, by rwa [type_toType]⟩ =
-      have H := toTypeOrderBotOfPos ho
+      have H := toTypeOrderBot (o := o) (by rintro rfl; simp at ho)
       (⊥ : o.toType) :=
   rfl
 
@@ -869,10 +877,9 @@ theorem type_sum_lex {α β : Type u} (r : α → α → Prop) (s : β → β �
 theorem card_nat (n : ℕ) : card.{u} n = n := by
   induction n <;> [simp; simp only [card_add, card_one, Nat.cast_succ, *]]
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem card_ofNat (n : ℕ) [n.AtLeastTwo] :
-    card.{u} (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+    card.{u} ofNat(n) = OfNat.ofNat n :=
   card_nat n
 
 instance instAddLeftMono : AddLeftMono Ordinal.{u} where
@@ -966,12 +973,13 @@ theorem card_succ (o : Ordinal) : card (succ o) = card o + 1 := by
 theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
   rfl
 
-@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
-alias nat_cast_succ := natCast_succ
-
 instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
-  default := ⟨0, by simp⟩
+  default := ⟨0, zero_lt_one' Ordinal⟩
   uniq a := Subtype.ext <| lt_one_iff_zero.1 a.2
+
+@[simp]
+theorem Iio_one_default_eq : (default : Iio (1 : Ordinal)) = ⟨0, zero_lt_one' Ordinal⟩ :=
+  rfl
 
 instance uniqueToTypeOne : Unique (toType 1) where
   default := enum (α := toType 1) (· < ·) ⟨0, by simp⟩
@@ -1034,14 +1042,14 @@ def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
   ⟨↑liftInitialSeg.{max (u + 1) v, u}, univ.{u, v}, by
     refine fun b => inductionOn b ?_; intro β s _
     rw [univ, ← lift_umax]; constructor <;> intro h
-    · cases' h with a e
+    · obtain ⟨a, e⟩ := h
       rw [← e]
       refine inductionOn a ?_
       intro α r _
       exact lift_type_lt.{u, u + 1, max (u + 1) v}.2 ⟨typein r⟩
     · rw [← lift_id (type s)] at h ⊢
-      cases' lift_type_lt.{_,_,v}.1 h with f
-      cases' f with f a hf
+      obtain ⟨f⟩ := lift_type_lt.{_,_,v}.1 h
+      obtain ⟨f, a, hf⟩ := f
       exists a
       revert hf
       -- Porting note: apply inductionOn does not work, refine does
@@ -1054,7 +1062,7 @@ def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
         rw [typein_enum, typein_enum]
         exact f.map_rel_iff.2 h
       · intro a'
-        cases' (hf _).2 (typein_lt_type _ a') with b e
+        obtain ⟨b, e⟩ := (hf _).2 (typein_lt_type _ a')
         exists b
         simp only [RelEmbedding.ofMonotone_coe]
         simp [e]⟩
@@ -1142,7 +1150,7 @@ theorem ord_le {c o} : ord c ≤ o ↔ c ≤ o.card :=
         exact
           let ⟨f⟩ := h
           ⟨f.toEmbedding⟩
-      · cases' h with f
+      · obtain ⟨f⟩ := h
         have g := RelEmbedding.preimage f s
         haveI := RelEmbedding.isWellOrder g
         exact le_trans (ord_le_type _) g.ordinal_type_le
@@ -1213,9 +1221,8 @@ theorem ord_nat (n : ℕ) : ord n = n :=
 @[simp]
 theorem ord_one : ord 1 = 1 := by simpa using ord_nat 1
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord ofNat(n) = OfNat.ofNat n :=
   ord_nat n
 
 @[simp]
@@ -1343,7 +1350,7 @@ theorem lt_univ {c} : c < univ.{u, u + 1} ↔ ∃ c', c = lift.{u + 1, u} c' :=
   ⟨fun h => by
     have := ord_lt_ord.2 h
     rw [ord_univ] at this
-    cases' liftPrincipalSeg.mem_range_of_rel_top (by simpa only [liftPrincipalSeg_top]) with o e
+    obtain ⟨o, e⟩ := liftPrincipalSeg.mem_range_of_rel_top (by simpa only [liftPrincipalSeg_top])
     have := card_ord c
     rw [← e, liftPrincipalSeg_coe, ← lift_card] at this
     exact ⟨_, this.symm⟩, fun ⟨_, e⟩ => e.symm ▸ lift_lt_univ _⟩
@@ -1364,6 +1371,11 @@ theorem small_iff_lift_mk_lt_univ {α : Type u} :
   · rintro ⟨c, hc⟩
     exact ⟨⟨c.out, lift_mk_eq.{u, _, v + 1}.1 (hc.trans (congr rfl c.mk_out.symm))⟩⟩
 
+/-- If a cardinal `c` is non zero, then `c.ord.toType` has a least element. -/
+noncomputable def toTypeOrderBot {c : Cardinal} (hc : c ≠ 0) :
+    OrderBot c.ord.toType :=
+  Ordinal.toTypeOrderBot (fun h ↦ hc (ord_injective (by simpa using h)))
+
 end Cardinal
 
 namespace Ordinal
@@ -1380,10 +1392,9 @@ theorem nat_le_card {o} {n : ℕ} : (n : Cardinal) ≤ card o ↔ (n : Ordinal) 
 theorem one_le_card {o} : 1 ≤ card o ↔ 1 ≤ o := by
   simpa using nat_le_card (n := 1)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_le_card {o} {n : ℕ} [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n : Cardinal)) ≤ card o ↔ (OfNat.ofNat n : Ordinal) ≤ o :=
+    (ofNat(n) : Cardinal) ≤ card o ↔ (OfNat.ofNat n : Ordinal) ≤ o :=
   nat_le_card
 
 @[simp]
@@ -1407,20 +1418,18 @@ theorem zero_lt_card {o} : 0 < card o ↔ 0 < o := by
 theorem one_lt_card {o} : 1 < card o ↔ 1 < o := by
   simpa using nat_lt_card (n := 1)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_lt_card {o} {n : ℕ} [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n : Cardinal)) < card o ↔ (OfNat.ofNat n : Ordinal) < o :=
+    (ofNat(n) : Cardinal) < card o ↔ (OfNat.ofNat n : Ordinal) < o :=
   nat_lt_card
 
 @[simp]
 theorem card_lt_nat {o} {n : ℕ} : card o < n ↔ o < n :=
   lt_iff_lt_of_le_iff_le nat_le_card
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem card_lt_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
-    card o < (no_index (OfNat.ofNat n)) ↔ o < OfNat.ofNat n :=
+    card o < ofNat(n) ↔ o < OfNat.ofNat n :=
   card_lt_nat
 
 @[simp]
@@ -1431,10 +1440,9 @@ theorem card_le_nat {o} {n : ℕ} : card o ≤ n ↔ o ≤ n :=
 theorem card_le_one {o} : card o ≤ 1 ↔ o ≤ 1 := by
   simpa using card_le_nat (n := 1)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem card_le_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
-    card o ≤ (no_index (OfNat.ofNat n)) ↔ o ≤ OfNat.ofNat n :=
+    card o ≤ ofNat(n) ↔ o ≤ OfNat.ofNat n :=
   card_le_nat
 
 @[simp]
@@ -1459,10 +1467,9 @@ theorem lift_down' {a : Cardinal.{u}} {b : Ordinal.{max u v}}
     (h : card.{max u v} b ≤ Cardinal.lift.{v, u} a) : ∃ a', lift.{v, u} a' = b :=
   mem_range_lift_of_card_le h
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem card_eq_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
-    card o = (no_index (OfNat.ofNat n)) ↔ o = OfNat.ofNat n :=
+    card o = ofNat(n) ↔ o = OfNat.ofNat n :=
   card_eq_nat
 
 @[simp]
@@ -1492,3 +1499,5 @@ theorem List.Sorted.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : List
       | head as => exact List.head_le_of_lt hmltl
       | tail b hi => exact le_of_lt (lt_of_lt_of_le (List.rel_of_sorted_cons hm _ hi)
           (List.head_le_of_lt hmltl))
+
+set_option linter.style.longFile 1700

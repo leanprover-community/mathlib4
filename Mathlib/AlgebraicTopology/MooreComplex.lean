@@ -130,8 +130,7 @@ end NormalizedMooreComplex
 
 open NormalizedMooreComplex
 
-variable (C)
-
+variable (C) in
 /-- The (normalized) Moore complex of a simplicial object `X` in an abelian category `C`.
 
 The `n`-th object is intersection of
@@ -144,16 +143,10 @@ which maps each of these intersections of kernels to the next.
 def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
   obj := obj
   map f := map f
-  -- Porting note: Why `aesop_cat` can't do `dsimp` steps?
-  map_id X := by ext (_ | _) <;> dsimp <;> aesop_cat
-  map_comp f g := by ext (_ | _) <;> apply Subobject.eq_of_comp_arrow_eq <;> dsimp <;> aesop_cat
-
-variable {C}
 
 -- Porting note: removed @[simp] as it is not in normal form
 theorem normalizedMooreComplex_objD (X : SimplicialObject C) (n : ℕ) :
     ((normalizedMooreComplex C).obj X).d (n + 1) n = NormalizedMooreComplex.objD X n :=
--- Porting note: in mathlib, `apply ChainComplex.of_d` was enough
   ChainComplex.of_d _ _ (d_squared X) n
 
 end AlgebraicTopology

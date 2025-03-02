@@ -67,10 +67,10 @@ instance (F : J ⥤ Cat.{v, v}) : Category (limit (F ⋙ Cat.objects)) where
         ← congr_fun (limit.w (homDiagram Y Z) h) g]
   id_comp _ := by
     apply Types.limit_ext.{v, v}
-    aesop_cat
+    simp
   comp_id _ := by
     apply Types.limit_ext.{v, v}
-    aesop_cat
+    simp
 
 /-- Auxiliary definition: the limit category. -/
 @[simps]

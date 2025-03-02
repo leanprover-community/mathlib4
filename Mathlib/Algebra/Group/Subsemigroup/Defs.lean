@@ -7,6 +7,7 @@ Amelia Livingston, Yury Kudryashov, Yakov Pechersky
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Data.SetLike.Basic
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Subsemigroups: definition
@@ -45,8 +46,7 @@ numbers.
 subsemigroup, subsemigroups
 -/
 
-assert_not_exists CompleteLattice
-assert_not_exists MonoidWithZero
+assert_not_exists RelIso CompleteLattice MonoidWithZero
 
 variable {M : Type*} {N : Type*}
 
@@ -97,8 +97,8 @@ instance : SetLike (Subsemigroup M) M :=
 @[to_additive]
 instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
 
-initialize_simps_projections Subsemigroup (carrier → coe)
-initialize_simps_projections AddSubsemigroup (carrier → coe)
+initialize_simps_projections Subsemigroup (carrier → coe, as_prefix coe)
+initialize_simps_projections AddSubsemigroup (carrier → coe, as_prefix coe)
 
 @[to_additive (attr := simp)]
 theorem mem_carrier {s : Subsemigroup M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
@@ -255,13 +255,13 @@ theorem mul_def (x y : S') : x * y = ⟨x * y, mul_mem x.2 y.2⟩ :=
 /-- A subsemigroup of a semigroup inherits a semigroup structure. -/
 @[to_additive "An `AddSubsemigroup` of an `AddSemigroup` inherits an `AddSemigroup` structure."]
 instance toSemigroup {M : Type*} [Semigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
-    (S : A) : Semigroup S :=
+    (S : A) : Semigroup S := fast_instance%
   Subtype.coe_injective.semigroup Subtype.val fun _ _ => rfl
 
 /-- A subsemigroup of a `CommSemigroup` is a `CommSemigroup`. -/
 @[to_additive "An `AddSubsemigroup` of an `AddCommSemigroup` is an `AddCommSemigroup`."]
 instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
-    (S : A) : CommSemigroup S :=
+    (S : A) : CommSemigroup S := fast_instance%
   Subtype.coe_injective.commSemigroup Subtype.val fun _ _ => rfl
 
 /-- The natural semigroup hom from a subsemigroup of semigroup `M` to `M`. -/
@@ -269,6 +269,16 @@ instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMem
 `AddSubsemigroup` `M` to `M`."]
 def subtype : S' →ₙ* M where
   toFun := Subtype.val; map_mul' := fun _ _ => rfl
+
+variable {S'} in
+@[to_additive (attr := simp)]
+lemma subtype_apply (x : S') :
+    MulMemClass.subtype S' x = x := rfl
+
+@[to_additive]
+lemma subtype_injective :
+    Function.Injective (MulMemClass.subtype S') :=
+  Subtype.coe_injective
 
 @[to_additive (attr := simp)]
 theorem coe_subtype : (MulMemClass.subtype S' : S' → M) = Subtype.val :=

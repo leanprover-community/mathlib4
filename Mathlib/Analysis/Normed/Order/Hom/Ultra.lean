@@ -23,7 +23,7 @@ the argument is an autoparam that resolves by definitional equality when using t
 variable {F α : Type*} [FunLike F α ℝ]
 
 /-- Proves that when a `SeminormedAddGroup` structure is constructed from an
-`AddGroupSeminormClass` that satifies `IsNonarchimedean`, the group has an `IsUltrametricDist`. -/
+`AddGroupSeminormClass` that satisfies `IsNonarchimedean`, the group has an `IsUltrametricDist`. -/
 lemma AddGroupSeminormClass.isUltrametricDist [AddGroup α] [AddGroupSeminormClass F α ℝ]
     [inst : Dist α] {f : F} (hna : IsNonarchimedean f)
     (hd : inst = (AddGroupSeminormClass.toSeminormedAddGroup f).toDist := by rfl) :

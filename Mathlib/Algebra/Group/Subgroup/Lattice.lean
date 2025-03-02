@@ -42,9 +42,7 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
-assert_not_exists OrderedAddCommMonoid
-assert_not_exists Multiset
-assert_not_exists Ring
+assert_not_exists OrderedAddCommMonoid Multiset Ring
 
 open Function
 open scoped Int
@@ -388,8 +386,7 @@ theorem closure_closure_coe_preimage {k : Set G} : closure (((↑) : closure k �
     closure_induction (fun _ h ↦ subset_closure h) (one_mem _) (fun _ _ _ _ ↦ mul_mem)
       (fun _ _ ↦ inv_mem) hx'
 
-variable (G)
-
+variable (G) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/
 @[to_additive "`closure` forms a Galois insertion with the coercion to set."]
 protected def gi : GaloisInsertion (@closure G _) (↑) where
@@ -397,8 +394,6 @@ protected def gi : GaloisInsertion (@closure G _) (↑) where
   gc s t := @closure_le _ _ t s
   le_l_u _s := subset_closure
   choice_eq _s _h := rfl
-
-variable {G}
 
 /-- Subgroup closure of a set is monotone in its argument: if `h ⊆ k`,
 then `closure h ≤ closure k`. -/

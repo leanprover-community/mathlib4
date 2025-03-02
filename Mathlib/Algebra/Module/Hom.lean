@@ -69,7 +69,9 @@ instance instDomMulActModule
   add_smul s s' f := AddMonoidHom.ext fun m ↦ by
     simp_rw [AddMonoidHom.add_apply, DomMulAct.smul_addMonoidHom_apply, ← map_add, ← add_smul]; rfl
   zero_smul _ := AddMonoidHom.ext fun _ ↦ by
-    erw [DomMulAct.smul_addMonoidHom_apply, zero_smul, map_zero]; rfl
+    rw [DomMulAct.smul_addMonoidHom_apply]
+    -- TODO there should be a simp lemma for `DomMulAct.mk.symm 0`
+    simp [DomMulAct.mk, MulOpposite.opEquiv]
 
 end AddMonoidHom
 

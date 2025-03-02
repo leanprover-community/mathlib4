@@ -20,7 +20,7 @@ element of the lattice of uniformities on a type (see `bot_uniformity`).
 
 The theorem `discreteTopology_of_discrete_uniformity` shows that the topology induced by the
 discrete uniformity is the discrete one, but it is well-known that the converse might not hold in
-general, along the lines of the above discussion. We explicitely produce a metric and a uniform
+general, along the lines of the above discussion. We explicitly produce a metric and a uniform
 structure on a space (on `ℕ`, actually) that are not discrete, yet induce the discrete topology.
 
 To check that a certain uniformity is not discrete, recall that once a type `α` is endowed with a
@@ -31,7 +31,7 @@ declaration `UniformSpace.DiscreteUnif.eq_const_of_cauchy` in Mathlib.
 
 A special case of this result is the intuitive observation that a sequence `a : ℕ → ℕ` can be a
 Cauchy sequence if and only if it is eventually constant: when claiming this equivalence, one is
-implicitely endowing `ℕ` with the metric inherited from `ℝ`, that induces the discrete uniformity
+implicitly endowing `ℕ` with the metric inherited from `ℝ`, that induces the discrete uniformity
 on `ℕ`. Hence, the intuition suggesting that a Cauchy sequence, whose
 terms are "closer and closer to each other", valued in `ℕ` must be eventually constant for
 *topological* reasons, namely the fact that `ℕ` is a discrete topological space, is *wrong* in the
@@ -41,7 +41,7 @@ the identity `id : ℕ → ℕ` is Cauchy, then the uniformity is certainly *not
 ## The counterexamples
 
 We produce two counterexamples: in the first section `Metric` we construct a metric and in the
-second section `SetPointUniformity` we construct a uniformity, explicitely as a filter on `ℕ × ℕ`.
+second section `SetPointUniformity` we construct a uniformity, explicitly as a filter on `ℕ × ℕ`.
 They basically coincide, and the difference of the examples lies in their flavours.
 
 ### The metric
@@ -82,7 +82,7 @@ inequality) to explicit subsets, many proofs are easily closed by `aesop` or `om
 open Set Function Filter Metric
 
 /- We remove the "usual" instances of (discrete) topological space and of (discrete) uniform space
-from `ℕ`-/
+from `ℕ`. -/
 attribute [-instance] instTopologicalSpaceNat instUniformSpaceNat
 
 section Metric
@@ -170,7 +170,7 @@ discrete. -/
 
 /-- The fundamental entourages (index by `n : ℕ`) used to construct a basis of the uniformity: for
 each `n`, the set `fundamentalEntourage n : Set (ℕ × ℕ)` consists of the `n+1` points
-`{(0,0),(1,1)...(n,n)}` on the diagonal; together with the half plane `{(x,y) | n ≤ x ∧ n ≤ y}`-/
+`{(0,0),(1,1)...(n,n)}` on the diagonal; together with the half plane `{(x,y) | n ≤ x ∧ n ≤ y}`. -/
 def fundamentalEntourage (n : ℕ) : Set (ℕ × ℕ) :=
   (⋃ i : Icc 0 n, {((i : ℕ), (i : ℕ))}) ∪ Set.Ici (n , n)
 
@@ -201,7 +201,7 @@ lemma mem_fundamentalEntourage (n : ℕ) (P : ℕ × ℕ) : P ∈ fundamentalEnt
       | inr h_le => exact Or.inl ⟨P.1, ⟨h_le, congrArg _ h⟩⟩
 
 /-- The collection `fundamentalEntourage` satisfies the axioms to be a basis for a filter on
- `ℕ × ℕ` and gives rise to a term in the relevant type.-/
+ `ℕ × ℕ` and gives rise to a term in the relevant type. -/
 def counterBasis : FilterBasis (ℕ × ℕ) where
   sets := range fundamentalEntourage
   nonempty := range_nonempty _
@@ -211,15 +211,15 @@ def counterBasis : FilterBasis (ℕ × ℕ) where
     obtain ⟨t, ht⟩ := hT
     simp only [mem_range, subset_inter_iff, exists_exists_eq_and, fundamentalEntourage]
     use max t s
-    refine ⟨fun ⟨P1, P2⟩ hP ↦ ?_, fun ⟨P1, P2⟩ hP ↦ ?_⟩ <;>
-    cases' hP with h h <;>
-    simp only [iUnion_singleton_eq_range, mem_range, Prod.mk.injEq, Subtype.exists, mem_Icc,
-      zero_le, le_max_iff, true_and, exists_and_left, exists_prop', nonempty_prop,
-      exists_eq_left] at h
-    · simpa only [← hs, mem_fundamentalEntourage] using Or.inr h.2
+    refine ⟨fun ⟨P1, P2⟩ hP ↦ ?_, fun ⟨P1, P2⟩ hP ↦ ?_⟩ <;> rcases hP with h | h
+    · simp only [iUnion_singleton_eq_range, mem_range, Prod.mk.injEq, Subtype.exists,
+        exists_and_left, exists_eq_left] at h
+      simpa only [← hs, mem_fundamentalEntourage] using Or.inr h.2
     · simpa only [← hs, mem_fundamentalEntourage] using Or.inl
         ⟨le_trans (by omega) h.1, le_trans (by omega) h.2⟩
-    · simpa only [← ht, mem_fundamentalEntourage] using Or.inr h.2
+    · simp only [iUnion_singleton_eq_range, mem_range, Prod.mk.injEq, Subtype.exists,
+        exists_and_left, exists_eq_left] at h
+      simpa only [← ht, mem_fundamentalEntourage] using Or.inr h.2
     · simp only [mem_Ici, Prod.mk_le_mk] at h
       simpa only [← ht, mem_fundamentalEntourage] using Or.inl ⟨le_trans
          (by omega) h.1, le_trans (by omega) h.2⟩
@@ -232,8 +232,8 @@ lemma mem_counterBasis_iff (S : Set (ℕ × ℕ)) :
 
 /-- The "crude" uniform structure, without topology, simply as a the filter generated by `Basis`
 and satisfying the axioms for being a uniformity. We later extract the topology `counterTopology`
-generated by it and bundle `counterCoreUniformity` and `counterTopology` in a uniform strucutre
-on `ℕ`, proving in passing that `counterTopology = ⊥`-/
+generated by it and bundle `counterCoreUniformity` and `counterTopology` in a uniform structure
+on `ℕ`, proving in passing that `counterTopology = ⊥`. -/
 def counterCoreUniformity : UniformSpace.Core ℕ := by
   apply UniformSpace.Core.mkOfBasis counterBasis <;>
   intro S hS
@@ -261,10 +261,10 @@ def counterCoreUniformity : UniformSpace.Core ℕ := by
       exists_and_left, exists_prop', nonempty_prop, exists_eq_left, mem_Ici, Prod.mk_le_mk] at h1 h2
     aesop
 
-/--The topology on `ℕ` induced by the "crude" uniformity-/
+/-- The topology on `ℕ` induced by the "crude" uniformity -/
 instance counterTopology : TopologicalSpace ℕ := counterCoreUniformity.toTopologicalSpace
 
-/-- The uniform structure on `ℕ` bundling together the "crude" uniformity and the topology-/
+/-- The uniform structure on `ℕ` bundling together the "crude" uniformity and the topology -/
 instance counterUniformity : UniformSpace ℕ := UniformSpace.ofCore counterCoreUniformity
 
 lemma HasBasis_counterUniformity :
@@ -276,7 +276,7 @@ lemma HasBasis_counterUniformity :
   exact (@FilterBasis.mem_filter_iff _ counterBasis T).mpr ⟨fundamentalEntourage n, by simp, hn⟩
 
 /-- A proof that the topology on `ℕ` induced by the "crude" uniformity `counterCoreUniformity`
-(or by `counterUniformity` tout-court, since they are `defeq`) is discrete.-/
+(or by `counterUniformity` tout-court, since they are `defeq`) is discrete -/
 theorem TopIsDiscrete' : DiscreteTopology ℕ := by
   rw [discreteTopology_iff_nhds]
   intro n
@@ -301,7 +301,7 @@ theorem TopIsDiscrete' : DiscreteTopology ℕ := by
 
 /- With respect to the above uniformity, the `atTop` filter is Cauchy; in particular, it is not of
 the form `𝓟 {x}` for any `x`, although the topology is discrete. This implies in passing that this
-uniformity is not discrete-/
+uniformity is not discrete. -/
 lemma atTopIsCauchy : Cauchy (atTop : Filter ℕ) := by
   rw [HasBasis_counterUniformity.cauchy_iff]
   refine ⟨atTop_neBot, fun i _ ↦ ?_⟩

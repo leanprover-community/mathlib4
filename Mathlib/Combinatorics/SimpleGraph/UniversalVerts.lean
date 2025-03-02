@@ -20,6 +20,8 @@ in the proof of Tutte's Theorem.
 * `G.deleteUniversalVerts` is the subgraph of `G` with the universal vertices removed.
 -/
 
+assert_not_exists Field TwoSidedIdeal
+
 namespace SimpleGraph
 variable {V : Type*} {G : SimpleGraph V}
 
@@ -38,7 +40,7 @@ The subgraph of `G` with the universal vertices removed.
 def deleteUniversalVerts (G : SimpleGraph V) : Subgraph G :=
   (⊤ : Subgraph G).deleteVerts G.universalVerts
 
-lemma Subgraph.IsMatching.exists_of_universalVerts [Fintype V] {s : Set V}
+lemma Subgraph.IsMatching.exists_of_universalVerts [Finite V] {s : Set V}
     (h : Disjoint G.universalVerts s) (hc : s.ncard ≤ G.universalVerts.ncard) :
     ∃ t ⊆ G.universalVerts, ∃ (M : Subgraph G), M.verts = s ∪ t ∧ M.IsMatching := by
   obtain ⟨t, ht⟩ := Set.exists_subset_card_eq hc

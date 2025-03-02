@@ -26,7 +26,6 @@ satisfying `RCLike 𝕜`.
 In this setting, `exists_dual_vector` states that, for any nonzero `x`, there exists a continuous
 linear form `g` of norm `1` with `g x = ‖x‖` (where the norm has to be interpreted as an element
 of `𝕜`).
-
 -/
 
 
@@ -145,8 +144,7 @@ variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 open ContinuousLinearEquiv Submodule
 
 theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x h‖ = 1 := by
-  #adaptation_note
-  /--
+  #adaptation_note /-- https://github.com/leanprover/lean4/pull/4119
   `set_option maxSynthPendingDepth 2` required after https://github.com/leanprover/lean4/pull/4119
   Alternatively, we can add:
   ```
