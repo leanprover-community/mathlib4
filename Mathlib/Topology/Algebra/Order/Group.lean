@@ -59,6 +59,7 @@ protected theorem Filter.Tendsto.mabs {a : G} (h : Tendsto f l (𝓝 a)) :
     Tendsto (fun x => |f x|ₘ) l (𝓝 |a|ₘ) :=
   (continuous_mabs.tendsto _).comp h
 
+@[to_additive]
 theorem tendsto_one_iff_mabs_tendsto_one (f : α → G) :
     Tendsto f l (𝓝 1) ↔ Tendsto (mabs ∘ f) l (𝓝 1) := by
   refine ⟨fun h => (mabs_one : |(1 : G)|ₘ = 1) ▸ h.mabs, fun h => ?_⟩
