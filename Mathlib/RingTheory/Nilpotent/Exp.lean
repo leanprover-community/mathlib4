@@ -12,29 +12,29 @@ import Mathlib.Tactic.FieldSimp
 /-!
 # Exponential map on algebras
 
-This file defines the exponential map `Algebra.exp` on `ℚ`-algebras. The definition of
-`Algebra.exp a` applies to any element `a` in an algebra over `ℚ`, though it yields meaningful
+This file defines the exponential map `IsNilpotent.exp` on `ℚ`-algebras. The definition of
+`IsNilpotent.exp a` applies to any element `a` in an algebra over `ℚ`, though it yields meaningful
 (non-junk) values only when `a` is nilpotent.
 
-The main result is `Algebra.exp_add_of_commute`, which establishes the expected connection between
-the additive and multiplicative structures of `A` for commuting nilpotent elements.
+The main result is `IsNilpotent.exp_add_of_commute`, which establishes the expected connection
+between the additive and multiplicative structures of `A` for commuting nilpotent elements.
 
-Furthermore, in case `A` is a ring and `a` is nilpotent, `Algebra.exp_of_nilpotent_is_unit` shows
-that `Algebra.exp a` is a unit in `A`.
+Additionally, `IsNilpotent.exp_of_nilpotent_is_unit` shows that if `a` is nilpotent in `A`, then
+`IsNilpotent.exp a` is a unit in `A`.
 
 Note: Although the definition works with `ℚ`-algebras, the results can be applied to any algebra
 over a characteristic zero field.
 
 ## Main definitions
 
-  * `Algebra.exp`
+  * `IsNilpotent.exp`
 
 ## Tags
 
 algebra, exponential map, nilpotent
 -/
 
-namespace Algebra
+namespace IsNilpotent
 
 variable {A : Type*} [Ring A] [Algebra ℚ A]
 
@@ -164,4 +164,4 @@ theorem exp_of_nilpotent_is_unit {a : A} (h : IsNilpotent a) : IsUnit (exp a) :=
   refine ⟨exp (-a), h₃.symm, ?_⟩
   rw [← exp_add_of_commute h₁.symm h₂ h, neg_add_cancel a, exp_zero_eq_one]
 
-end Algebra
+end IsNilpotent
