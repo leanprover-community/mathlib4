@@ -344,7 +344,8 @@ theorem LinearIndependent.linearIndepOn_id (i : LinearIndependent R v) :
 @[deprecated (since := "2025-02-14")] alias
   LinearIndependent.coe_range := LinearIndependent.linearIndepOn_id
 
-/-- A version of `LinearIndependent.linearIndepOn_id` with the set range equality as a hypothesis.-/
+/-- A version of `LinearIndependent.linearIndepOn_id` with the set range equality as a hypothesis.
+-/
 theorem LinearIndependent.linearIndepOn_id' (hv : LinearIndependent R v) {t : Set M}
     (ht : Set.range v = t) : LinearIndepOn R id t :=
   ht ▸ hv.linearIndepOn_id
