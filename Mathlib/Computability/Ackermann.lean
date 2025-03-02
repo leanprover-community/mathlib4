@@ -3,7 +3,7 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Computability.Primrec
+import Mathlib.Computability.PartrecCode
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
 
@@ -18,6 +18,7 @@ definition, we show that this isn't a primitive recursive function.
 - `exists_lt_ack_of_nat_primrec`: any primitive recursive function is pointwise bounded above by
   `ack m` for some `m`.
 - `not_primrec₂_ack`: the two-argument Ackermann function is not primitive recursive.
+- `computable₂_ack`: the two-argument Ackermann function is computable.
 
 ## Proof approach
 
@@ -348,3 +349,35 @@ theorem not_primrec_ack_self : ¬Primrec fun n => ack n n := by
 /-- The Ackermann function is not primitive recursive. -/
 theorem not_primrec₂_ack : ¬Primrec₂ ack := fun h =>
   not_primrec_ack_self <| h.comp Primrec.id Primrec.id
+
+open Nat.Partrec (Code) in
+/-- The Ackermann function is computable. -/
+theorem computable₂_ack : Computable₂ ack := by
+  suffices ∃ (ackCode : ℕ → Code), Primrec ackCode ∧
+      ∀ m n, ack m n ∈ (ackCode m).eval n by
+    obtain ⟨ackCode, prim_ackCode, eval_ackCode⟩ := this
+    apply Partrec.of_eq_tot
+      (f := fun p : ℕ × ℕ => (ackCode p.1).eval p.2) (g := fun p : ℕ × ℕ => ack p.1 p.2)
+    · change Partrec₂ (fun m n => (ackCode m).eval n)
+      apply_rules only
+        [Code.eval_part.comp₂, Computable.fst, Computable.snd, prim_ackCode.to_comp.comp]
+    · rwa [Prod.forall]
+  suffices ∃ (ackStep : Code → Code), Primrec ackStep ∧
+      ∀ c, (ackStep c).eval 0 = c.eval 1 ∧
+        ∀ n, (ackStep c).eval (n + 1) = ((ackStep c).eval n).bind c.eval by
+    obtain ⟨ackStep, prim_ackStep, eval_ackStep⟩ := this
+    let ackCode : ℕ → Code := Nat.rec Code.succ (fun _ c => ackStep c)
+    use ackCode
+    use by apply_rules only [Primrec.nat_rec₁, prim_ackStep.comp, Primrec.snd]
+    intro m n; rw [← Part.eq_some_iff]
+    induction m, n using ack.induct with
+      | case1 n => simp [Code.eval, ackCode]
+      | case2 m hm => simp [(eval_ackStep (ackCode m)).left, ackCode, hm]
+      | case3 m n hmn₁ hmn₂ =>
+        simp [(eval_ackStep (ackCode m)).right, ackCode, hmn₁, hmn₂]
+  let ackStep : Code → Code :=
+    fun c => .curry (.prec (.comp c (.const 1)) (.comp c (.comp .right .right))) 0
+  use ackStep
+  use by apply_rules only
+    [Code.curry_prim.comp, Code.prec_prim.comp, Code.comp_prim.comp, Primrec.id, Primrec.const]
+  simp [ackStep, Code.eval]
