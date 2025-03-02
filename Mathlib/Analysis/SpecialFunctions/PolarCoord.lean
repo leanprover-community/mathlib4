@@ -66,9 +66,9 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
       ring
   left_inv' := by
     rintro ⟨x, y⟩ _
-    have A : √(x ^ 2 + y ^ 2) = Complex.abs (x + y * Complex.I) := by
-      rw [Complex.abs_apply, Complex.normSq_add_mul_I]
-    have Z := Complex.abs_mul_cos_add_sin_mul_I (x + y * Complex.I)
+    have A : √(x ^ 2 + y ^ 2) = ‖x + y * Complex.I‖ := by
+      rw [Complex.norm_def, Complex.normSq_add_mul_I]
+    have Z := Complex.norm_mul_cos_add_sin_mul_I (x + y * Complex.I)
     simp only [← Complex.ofReal_cos, ← Complex.ofReal_sin, mul_add, ← Complex.ofReal_mul, ←
       mul_assoc] at Z
     simp [A]
@@ -176,8 +176,8 @@ protected noncomputable def polarCoord : PartialHomeomorph ℂ (ℝ × ℝ) :=
   equivRealProdCLM.toHomeomorph.transPartialHomeomorph polarCoord
 
 protected theorem polarCoord_apply (a : ℂ) :
-    Complex.polarCoord a = (Complex.abs a, Complex.arg a) := by
-  simp_rw [Complex.abs_def, Complex.normSq_apply, ← pow_two]
+    Complex.polarCoord a = (‖a‖, Complex.arg a) := by
+  simp_rw [Complex.norm_def, Complex.normSq_apply, ← pow_two]
   rfl
 
 protected theorem polarCoord_source : Complex.polarCoord.source = slitPlane := rfl
@@ -193,8 +193,10 @@ protected theorem polarCoord_symm_apply (p : ℝ × ℝ) :
 theorem measurableEquivRealProd_symm_polarCoord_symm_apply (p : ℝ × ℝ) :
     (measurableEquivRealProd.symm (polarCoord.symm p)) = Complex.polarCoord.symm p := rfl
 
-theorem polarCoord_symm_abs (p : ℝ × ℝ) :
-    Complex.abs (Complex.polarCoord.symm p) = |p.1| := by simp
+theorem norm_polarCoord_symm (p : ℝ × ℝ) :
+    ‖Complex.polarCoord.symm p‖ = |p.1| := by simp
+
+@[deprecated (since := "2025-02-17")] alias polarCoord_symm_abs := norm_polarCoord_symm
 
 protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : ℂ → E) :
