@@ -928,7 +928,6 @@ theorem negAt_apply_isComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
 theorem negAt_apply_snd (x : mixedSpace K) :
     (negAt s x).2 = x.2 := rfl
 
-@[simp]
 theorem negAt_apply_norm_isReal (x : mixedSpace K) (w : {w // IsReal w}) :
     ‖(negAt s x).1 w‖ = ‖x.1 w‖ := by
   by_cases hw : w ∈ s <;> simp [hw]
