@@ -752,13 +752,13 @@ variable (κ)
 theorem condExp_traj' {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c)
     (x₀ : Π i : Iic a, X i) (f : (Π n, X n) → E) :
     (traj κ a x₀)[f|piLE X b] =ᵐ[traj κ a x₀]
-      fun x ↦ ∫ y, ((traj κ a x₀)[f|piPreorder c]) (updateFinset x _ y)
+      fun x ↦ ∫ y, ((traj κ a x₀)[f|piLE X c]) (updateFinset x _ y)
         ∂ptraj κ b c (frestrictLe b x) := by
-  have i_cf : Integrable ((traj κ a x₀)[f|piPreorder c]) (traj κ a x₀) :=
+  have i_cf : Integrable ((traj κ a x₀)[f|piLE X c]) (traj κ a x₀) :=
     integrable_condExp
-  have mcf : StronglyMeasurable ((traj κ a x₀)[f|piPreorder c]) :=
-    stronglyMeasurable_condExp.mono (piPreorder.le c)
-  filter_upwards [piPreorder.condExp_condExp f hbc, condExp_traj hab i_cf] with x h1 h2
+  have mcf : StronglyMeasurable ((traj κ a x₀)[f|piLE X c]) :=
+    stronglyMeasurable_condExp.mono ((piLE X).le c)
+  filter_upwards [(piLE X).condExp_condExp f hbc, condExp_traj hab i_cf] with x h1 h2
   rw [← h1, h2, ← traj_map_frestrictLe, Kernel.map_apply, integral_map]
   · congr with y
     apply dependsOn_of_stronglyMeasurable stronglyMeasurable_condExp
