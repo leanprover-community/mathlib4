@@ -181,9 +181,7 @@ theorem symm_comp_self (h : X ≃ₜ Y) : h.symm ∘ h = id :=
 theorem self_comp_symm (h : X ≃ₜ Y) : h ∘ h.symm = id :=
   funext h.apply_symm_apply
 
-@[simp]
-theorem range_coe (h : X ≃ₜ Y) : range h = univ :=
-  h.surjective.range_eq
+theorem range_coe (h : X ≃ₜ Y) : range h = univ := by simp
 
 theorem image_symm (h : X ≃ₜ Y) : image h.symm = preimage h :=
   funext h.symm.toEquiv.image_eq_preimage
