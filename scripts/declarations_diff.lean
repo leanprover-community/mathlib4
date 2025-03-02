@@ -1,6 +1,6 @@
 import Lean
 import Batteries -- technically not needed, since `Mathlib` already imports it
-import Mathlib
+--import Mathlib
 --import Archive
 --import Counterexamples
 import Lean.Elab.Command
@@ -12,7 +12,7 @@ Prints each declaration in the environment that is not an internal detail.
 
 CI uses the name of this command: if you change it, make sure to update the CI configuration.
 -/
-elab "#all_declarations" : command => do
+elab "#all_declarations " branch:str : command => do
   let sorted : Array String := (← getEnv).constants.map₁.fold (init := ∅) fun tot nm _ =>
     if nm.isInternalDetail then
       tot
@@ -20,4 +20,4 @@ elab "#all_declarations" : command => do
       tot.binInsert (· < ·) nm.toString
   --for n in sorted do
   --  dbg_trace n
-  dbg_trace sorted
+  IO.FS.writeFile branch.getString <| .intercalate "\n" sorted.toList
