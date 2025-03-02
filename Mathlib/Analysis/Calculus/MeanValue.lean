@@ -331,7 +331,7 @@ theorem norm_image_sub_le_of_norm_deriv_right_le_segment {f' : ℝ → E} {C : �
   have hg : ContinuousOn g (Icc a b) := hf.sub continuousOn_const
   have hg' : ∀ x ∈ Ico a b, HasDerivWithinAt g (f' x) (Ici x) x := by
     intro x hx
-    simpa using (hf' x hx).sub (hasDerivWithinAt_const _ _ _)
+    simp [g, hf' x hx]
   let B x := C * (x - a)
   have hB : ∀ x, HasDerivAt B C x := by
     intro x
