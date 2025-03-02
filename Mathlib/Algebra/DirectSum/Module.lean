@@ -245,6 +245,9 @@ lemma toAddMonoidHom_lmap :
     (lmap f).toAddMonoidHom = map (fun i => (f i).toAddMonoidHom) :=
   rfl
 
+lemma lmap_eq_map (x : ⨁ i, M i) : lmap f x = map (fun i => (f i).toAddMonoidHom) x :=
+  rfl
+
 end map
 
 section CongrLeft
