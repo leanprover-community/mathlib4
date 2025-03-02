@@ -859,9 +859,22 @@ Adding a `⊥` to a locally finite `OrderBot` keeps it locally finite.
 
 namespace WithTop
 
-private lemma aux (x : α) (p : α → Prop) :
-    (∃ a : α, p a ∧ WithTop.some a = WithTop.some x) ↔ p x := by
-  simp
+-- TODO: where should this live?
+-- TODO: WithBot variant
+/-- Given a finset on `α`, lift it to being a finset on `WithTop α`
+using `WithTop.some` and then insert `⊤`. -/
+def insertTop : Finset α ↪o Finset (WithTop α) :=
+  OrderEmbedding.ofMapLEIff
+    (fun s => cons ⊤ (s.map Embedding.coeWithTop) <| by simp)
+    (fun s t => by rw [le_iff_subset, cons_subset_cons, map_subset_map, le_iff_subset])
+
+@[simp]
+theorem some_mem_insertTop {s : Finset α} {a : α} : ↑a ∈ insertTop s ↔ a ∈ s := by
+  simp [insertTop]
+
+@[simp]
+theorem top_mem_insertTop {s : Finset α} : ⊤ ∈ insertTop s := by
+  simp [insertTop]
 
 variable (α) [PartialOrder α] [OrderTop α] [LocallyFiniteOrder α]
 
@@ -870,7 +883,7 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     match a, b with
     | ⊤, ⊤ => {⊤}
     | ⊤, (b : α) => ∅
-    | (a : α), ⊤ => insertNone (Ici a)
+    | (a : α), ⊤ => insertTop (Ici a)
     | (a : α), (b : α) => (Icc a b).map Function.Embedding.coeWithTop
   finsetIco a b :=
     match a, b with
@@ -880,7 +893,7 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
   finsetIoc a b :=
     match a, b with
     | ⊤, _ => ∅
-    | (a : α), ⊤ => insertNone (Ioi a)
+    | (a : α), ⊤ => insertTop (Ioi a)
     | (a : α), (b : α) => (Ioc a b).map Function.Embedding.coeWithTop
   finsetIoo a b :=
     match a, b with
@@ -893,10 +906,8 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | ⊤, ⊤, _ => mem_singleton.trans (le_antisymm_iff.trans and_comm)
     | ⊤, (b : α), _ =>
       iff_of_false (not_mem_empty _) fun h => (h.1.trans h.2).not_lt <| coe_lt_top _
-    | (a : α), ⊤, ⊤ => by simp [WithTop.some, WithTop.top, insertNone]
-    | (a : α), ⊤, (x : α) => by
-        simp only [le_eq_subset, coe_le_coe, le_top, and_true]
-        rw [← some_eq_coe, some_mem_insertNone, mem_Ici]
+    | (a : α), ⊤, ⊤ => by simp
+    | (a : α), ⊤, (x : α) => by simp
     | (a : α), (b : α), ⊤ => by simp
     | (a : α), (b : α), (x : α) => by simp
   finset_mem_Ico a b x :=
@@ -909,21 +920,15 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
   finset_mem_Ioc a b x :=
     match a, b, x with
     | ⊤, _, _ => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_le h.2
-    | (a : α), ⊤, ⊤ => by simp [some, insertNone, top]
-    | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux]
-                                -- This used to be in the above `simp` before
-                                -- https://github.com/leanprover/lean4/pull/2644
-                                erw [aux]
+    | (a : α), ⊤, ⊤ => by simp [some, insertTop, top]
+    | (a : α), ⊤, (x : α) => by simp
     | (a : α), (b : α), ⊤ => by simp
     | (a : α), (b : α), (x : α) => by simp
   finset_mem_Ioo a b x :=
     match a, b, x with
     | ⊤, _, _ => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans h.2
     | (a : α), ⊤, ⊤ => by simp
-    | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux, top]
-                                -- This used to be in the above `simp` before
-                                -- https://github.com/leanprover/lean4/pull/2644
-                                erw [aux]
+    | (a : α), ⊤, (x : α) => by simp
     | (a : α), (b : α), ⊤ => by simp
     | (a : α), (b : α), (x : α) => by simp
 
