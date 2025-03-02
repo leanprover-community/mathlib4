@@ -9,7 +9,7 @@ import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # liminfs and limsups of functions and filters

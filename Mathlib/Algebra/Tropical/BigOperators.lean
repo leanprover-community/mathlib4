@@ -6,7 +6,7 @@ Authors: Yakov Pechersky
 import Mathlib.Data.List.MinMax
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
-import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 

@@ -6,7 +6,7 @@ Authors: David Wärn
 import Mathlib.Data.Stream.Init
 import Mathlib.Topology.Algebra.Semigroup
 import Mathlib.Topology.StoneCech
-import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Hindman's theorem on finite sums

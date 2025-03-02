@@ -5,7 +5,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finset.Pairwise
-import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 

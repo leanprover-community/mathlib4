@@ -7,7 +7,7 @@ import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Prime.Defs
 import Mathlib.Algebra.Ring.Units
-import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Prime elements in rings

@@ -10,7 +10,7 @@ import Mathlib.Data.List.FinRange
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Sigma.Basic
 import Lean.Elab.Tactic
-import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Additively-graded multiplicative structures

@@ -7,7 +7,7 @@ import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Shrink
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Finite.Prod
-import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # The Hales-Jewett theorem

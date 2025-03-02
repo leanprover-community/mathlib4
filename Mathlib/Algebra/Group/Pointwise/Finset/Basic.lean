@@ -11,7 +11,7 @@ import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Finset.Preimage
-import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Pointwise operations of finsets
