@@ -3,16 +3,13 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
 import Mathlib.MeasureTheory.Function.FactorsThrough
+import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
-import Mathlib.Probability.Kernel.Composition.IntegralCompProd
 import Mathlib.Probability.Kernel.Composition.MeasureComp
-import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 import Mathlib.Probability.Kernel.Integral
 import Mathlib.Probability.Kernel.IonescuTulcea.PTraj
-import Mathlib.Probability.Process.Filtration
 
 /-!
 # Ionescu-Tulcea theorem
@@ -34,7 +31,7 @@ In this file we construct this "limit" kernel given the family `κ`. More precis
 we construct the kernel `traj κ a : Kernel (Π i : Iic a, X i) (Π n, X n)`, which takes as input
 the trajectory in `X 0 × ... × X a` and outputs the distribution of the whole trajectory. The name
 `traj` thus stands for "trajectory". We build a kernel with output in `Π n, X n` instead of
-`Π i : Iic a, X i` to make manipulations easier. The first coordinates are deterministic.
+`Π i ≥ a, X i` to make manipulations easier. The first coordinates are deterministic.
 
 We also provide to compute integrals against `traj κ a` and an expression for the conditional
 expectation.
