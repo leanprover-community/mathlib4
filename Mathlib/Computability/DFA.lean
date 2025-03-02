@@ -223,8 +223,7 @@ theorem product_accepts_iff
     (p : Prop → Prop → Prop) (M₁ : DFA α σ) (M₂ : DFA α σ') (x : List α) :
     x ∈ (M₁.product M₂ p).accepts ↔ p (x ∈ M₁.accepts) (x ∈ M₂.accepts) := by
   simp only [accepts, acceptsFrom, product_evalFrom]
-  simp only [product]
-  repeat rw [Set.mem_setOf_eq]
+  rfl
 
 /--
  Constructs a DFA for the intersection of the languages of two DFAs.
@@ -250,7 +249,7 @@ theorem intersect_accepts_intersect (M₁ : DFA α σ) (M₂ : DFA α σ') :
     (M₁.intersect M₂).accepts = M₁.accepts ∩ M₂.accepts := by
   ext x
   simp only [intersect_accepts_iff]
-  rw [Set.mem_inter_iff]
+  rfl
 
 /--
  Constructs a DFA for the union of the languages of two DFAs.
@@ -271,7 +270,7 @@ theorem union_accepts_union (M₁ : DFA α σ) (M₂ : DFA α σ') :
     (M₁.union M₂).accepts = M₁.accepts ∪ M₂.accepts := by
   ext x
   simp only [union_accepts_iff]
-  rw [Set.mem_union]
+  rfl
 
 end SetClosure
 
