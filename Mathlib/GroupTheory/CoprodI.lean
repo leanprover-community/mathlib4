@@ -317,7 +317,7 @@ instance (i : ι) : Inhabited (Pair M i) :=
 variable {M}
 
 /-- Construct a new `Word` without any reduction. The underlying list of
-`cons m w _ _` is `⟨_, m⟩::w`  -/
+`cons m w _ _` is `⟨_, m⟩::w` -/
 @[simps]
 def cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) : Word M :=
   { toList := ⟨i, m⟩ :: w.toList,
@@ -617,16 +617,13 @@ instance : DecidableEq (CoprodI M) :=
 
 end Word
 
-variable (M)
-
+variable (M) in
 /-- A `NeWord M i j` is a representation of a non-empty reduced words where the first letter comes
 from `M i` and the last letter comes from `M j`. It can be constructed from singletons and via
 concatenation, and thus provides a useful induction principle. -/
 inductive NeWord : ι → ι → Type _
   | singleton : ∀ {i : ι} (x : M i), x ≠ 1 → NeWord i i
   | append : ∀ {i j k l} (_w₁ : NeWord i j) (_hne : j ≠ k) (_w₂ : NeWord k l), NeWord i l
-
-variable {M}
 
 namespace NeWord
 

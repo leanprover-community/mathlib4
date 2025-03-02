@@ -44,8 +44,8 @@ assert_not_exists Finset.prod Submonoid
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
 variable {ι : Type u} {γ : Type w} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
-variable (β)
 
+variable (β) in
 /-- A dependent function `Π i, β i` with finite support, with notation `Π₀ i, β i`.
 
 Note that `DFinsupp.support` is the preferred API for accessing the support of the function,
@@ -56,8 +56,6 @@ structure DFinsupp [∀ i, Zero (β i)] : Type max u v where mk' ::
   toFun : ∀ i, β i
   /-- The support of a dependent function with finite support (aka `DFinsupp`). -/
   support' : Trunc { s : Multiset ι // ∀ i, i ∈ s ∨ toFun i = 0 }
-
-variable {β}
 
 /-- `Π₀ i, β i` denotes the type of dependent functions with finite support `DFinsupp β`. -/
 notation3 "Π₀ "(...)", "r:(scoped f => DFinsupp f) => r

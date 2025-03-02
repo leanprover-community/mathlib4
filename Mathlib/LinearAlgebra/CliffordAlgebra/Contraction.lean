@@ -121,14 +121,14 @@ local infixl:70 "⌊" => contractRight (R := R) (M := M) (Q := Q)
 -- next result times out
 instance : SMul R (CliffordAlgebra Q) := inferInstance
 
-/-- This is [grinberg_clifford_2016][] Theorem 6  -/
+/-- This is [grinberg_clifford_2016][] Theorem 6 -/
 theorem contractLeft_ι_mul (a : M) (b : CliffordAlgebra Q) :
     d⌋(ι Q a * b) = d a • b - ι Q a * (d⌋b) := by
 -- Porting note: Lean cannot figure out anymore the third argument
   refine foldr'_ι_mul _ _ ?_ _ _ _
   exact fun m x fx ↦ contractLeftAux_contractLeftAux Q d m x fx
 
-/-- This is [grinberg_clifford_2016][] Theorem 12  -/
+/-- This is [grinberg_clifford_2016][] Theorem 12 -/
 theorem contractRight_mul_ι (a : M) (b : CliffordAlgebra Q) :
     b * ι Q a⌊d = d a • b - b⌊d * ι Q a := by
   rw [contractRight_eq, reverse.map_mul, reverse_ι, contractLeft_ι_mul, map_sub, map_smul,
