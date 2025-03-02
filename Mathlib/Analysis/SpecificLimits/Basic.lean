@@ -117,7 +117,7 @@ theorem Tendsto.num {α K : Type*} [LinearOrderedField K] [TopologicalSpace K] [
     {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) {a : K} (ha : 0 < a)
     (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
     Tendsto f l atTop :=
-  (hlim.pos_mul_atTop ha hg).congr' (EventuallyEq.div_mul_cancel_atTop hg) 
+  (hlim.pos_mul_atTop ha hg).congr' (EventuallyEq.div_mul_cancel_atTop hg)
 
 /-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
   constant, then `f` tends to `∞`. -/
