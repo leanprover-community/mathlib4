@@ -22,7 +22,7 @@ namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {E : Type v₃} [Category.{v₃} E]
 
-/-- A functor preserves injective objects if it maps injective objects to injective objects. -/
+/-- A functor preserves projective objects if it maps projective objects to projective objects. -/
 class Functor.PreservesProjectiveObjects (F : C ⥤ D) : Prop where
   projective_obj {X : C} : Projective X → Projective (F.obj X)
 
