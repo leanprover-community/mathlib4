@@ -368,23 +368,18 @@ theorem exists_mem_smul_and_not_mem_smul [IsPreprimitive G X]
     rw [Set.mem_iInter] at this
     simpa only [Set.mem_iInter, not_forall, exists_prop] using this
   suffices B = {a} by rw [this]; rw [Set.mem_singleton_iff]; exact Ne.symm h
+  suffices B.Subsingleton by
+    apply Set.Subsingleton.eq_singleton_of_mem this
+    simp [B, Set.mem_iInter]
   -- B is a block hence is a trivial block
-  rcases isTrivialBlock_of_isBlock (G := G) (IsBlock.of_subset a hfA) with hyp | hyp
-  · -- B.subsingleton
-    apply Set.Subsingleton.eq_singleton_of_mem hyp
-    rw [Set.mem_iInter]; intro g; simp only [Set.mem_iInter, imp_self]
-  · -- B = ⊤ : contradiction
-    change B = ⊤ at hyp
-    exfalso; apply hA'
-    suffices ∃ g : G, a ∈ g • A by
-      obtain ⟨g, hg⟩ := this
-      have : B ≤ g • A := Set.biInter_subset_of_mem hg
-      rw [hyp, top_le_iff, ← eq_inv_smul_iff] at this
-      rw [this, Set.top_eq_univ, Set.smul_set_univ]
-    -- ∃ (g : M), a ∈ g • A
-    obtain ⟨x, hx⟩ := hA
-    obtain ⟨g, hg⟩ := MulAction.exists_smul_eq G x a
-    use g, x
+  refine (isTrivialBlock_of_isBlock (.of_subset a hfA)).resolve_right ?_
+  -- B = ⊤ : contradiction
+  obtain ⟨x, hx⟩ := hA
+  obtain ⟨g, hg⟩ := MulAction.exists_smul_eq G x a
+  have : B ⊆ g • A := Set.biInter_subset_of_mem ⟨x, hx, hg⟩
+  intro (hyp : B = Set.univ)
+  apply hA'
+  rwa [hyp, Set.univ_subset_iff, ← eq_inv_smul_iff, Set.smul_set_univ] at this
 
 end IsPreprimitive
 
