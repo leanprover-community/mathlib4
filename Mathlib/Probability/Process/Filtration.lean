@@ -345,50 +345,24 @@ open MeasurableSpace Preorder
 
 variable {ι : Type*} [Preorder ι] (X : ι → Type*) [∀ i, MeasurableSpace (X i)]
 
-section Set
-
 /-- The canonical filtration on the pi space `Π i, X i`, where `piLE X i` consists of
 measurable sets depending only on coordinates `≤ i`. -/
 def piLE : @Filtration ((i : ι) → X i) ι _ inferInstance where
-  seq n := pi.comap (restrictLe n)
+  seq i := pi.comap (restrictLe i)
   mono' i j hij := by
     simp only
     rw [← restrictLe₂_comp_restrictLe hij, ← comap_comp]
     exact comap_mono (measurable_restrictLe₂ _).comap_le
-  le' n := (measurable_restrictLe n).comap_le
-
-end Set
-
-section Finset
+  le' i := (measurable_restrictLe i).comap_le
 
 variable [LocallyFiniteOrderBot ι]
 
-/-- The canonical filtration on the pi space `Π i, X i`, where `piLE X i` consists of
-measurable sets depending only on coordinates `≤ i`, version where there are only finitely
-many coordinates. -/
-def fpiLE : @Filtration ((i : ι) → X i) ι _ inferInstance where
-  seq n := pi.comap (frestrictLe n)
-  mono' i j hij := by
-    simp only
-    rw [← frestrictLe₂_comp_frestrictLe hij, ← comap_comp]
-    exact comap_mono (measurable_frestrictLe₂ _).comap_le
-  le' n := (measurable_frestrictLe n).comap_le
-
-lemma piLE_eq_fpiLE (i : ι) : piLE X i = fpiLE X i := by
-  let e : Finset.Iic i ≃ Set.Iic i :=
-    { toFun j := ⟨j.1, Finset.coe_Iic i ▸ Finset.mem_coe.2 j.2⟩
-      invFun j := ⟨j.1, by rw [← Finset.mem_coe, Finset.coe_Iic i]; exact j.2⟩
-      left_inv := fun _ ↦ rfl
-      right_inv := fun _ ↦ rfl }
+lemma piLE_eq_comap_frestrictLe (i : ι) : piLE X i = pi.comap (frestrictLe i) := by
   apply le_antisymm
-  · rintro - ⟨t, ht, rfl⟩
-    exact ⟨MeasurableEquiv.piCongrLeft (fun j : Set.Iic i ↦ X j) e ⁻¹' t,
-      ht.preimage (by fun_prop), rfl⟩
-  · rintro - ⟨t, ht, rfl⟩
-    exact ⟨MeasurableEquiv.piCongrLeft (fun j : Finset.Iic i ↦ X j) e.symm ⁻¹' t,
-      ht.preimage (by fun_prop), rfl⟩
-
-end Finset
+  · simp_rw [piLE, ← piCongrLeft_comp_frestrictLe, ← MeasurableEquiv.coe_piCongrLeft, ← comap_comp]
+    exact MeasurableSpace.comap_mono <| Measurable.comap_le (by fun_prop)
+  · rw [← piCongrLeft_comp_restrictLe, ← MeasurableEquiv.coe_piCongrLeft, ← comap_comp]
+    exact MeasurableSpace.comap_mono <| Measurable.comap_le (by fun_prop)
 
 end piLE
 
