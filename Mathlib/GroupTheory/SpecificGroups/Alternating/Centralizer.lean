@@ -110,14 +110,10 @@ theorem card_of_cycleType (m : Multiset ℕ) :
     rw [← Finset.card_map, map_subtype_of_cycleType, if_pos hm.2,
       Equiv.Perm.card_of_cycleType α m, if_pos hm.1, mul_assoc]
   · -- m does not correspond to a permutation, or to an odd one,
-    rw [← Finset.card_map, map_subtype_of_cycleType]
-    rw [apply_ite Finset.card, Finset.card_empty]
-    split_ifs with hm'
-    · rw [Equiv.Perm.card_of_cycleType, if_neg]
-      obtain hm | hm := not_and_or.mp hm
-      · exact hm
-      · contradiction
-    · rfl
+    rw [← Finset.card_map, map_subtype_of_cycleType, apply_ite Finset.card, Finset.card_empty,
+      ite_eq_right_iff, Equiv.Perm.card_of_cycleType]
+    intro hm'
+    rw [if_neg ((not_and_or.mp hm).neg_resolve_right hm')]
 
 open Fintype in
 /-- The number of cycles of given length -/
