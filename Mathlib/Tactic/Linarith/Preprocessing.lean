@@ -313,18 +313,16 @@ private def nlinarithGetProductsProofs (ls : List Expr) : MetaM (List Expr) :=
   let with_comps ← ls.filterMapM (fun e => do
     let ⟨0, _P, e⟩ ← inferTypeQ e | throwError "nlinarith preprocessor got a non-prop"
     observing? <| parseCompAndExprQ q($e))
-  let products : List (Option <|
-      (u : Level) × (α : Q(Type u)) × (inst : _) × IneqZeroResult α inst)
+  let products : List (Option <| (u : Level) × (α : Q(Type u)) × (inst : _) × IneqZeroResult α inst)
     ← with_comps.mapDiagM fun ⟨ua, αa, ia, ha⟩ ⟨ub, αb, ib, hb⟩ => do
-    bif ua == ub then
-      have hu : ub =QL ua := ⟨⟩
-      withNewMCtxDepth do
-        let .defEq _hα := ← isDefEqQ (u := ub.succ.succ) q($αb) q($αa) | pure none
-        let .defEq _hi := ← isDefEqQ (u := ub.succ) q($ib) q($ia) | pure none
-        -- TODO: why don't `hα` and `hi` work here? Do we need `QuotedDefEq.cast`?
-        return some ⟨ua, αa, ia, ← ha.mul <| hb.cast hu .unsafeIntro .unsafeIntro⟩
-    else
-      return none
+      bif ua == ub then
+        have hu : ub =QL ua := ⟨⟩
+        withNewMCtxDepth do
+          let .defEq _hα := ← isDefEqQ q($αb) q($αa) | pure none
+          let .defEq _hi := ← isDefEqQ q($ib) q($ia) | pure none
+          return some ⟨ua, αa, ia, ← ha.mul <| hb.cast hu⟩
+      else
+        return none
   return products.reduceOption.map fun ⟨_u, _α, _i, h⟩ => h.pf.raw
 
 /--
