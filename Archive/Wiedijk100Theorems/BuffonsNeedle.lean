@@ -249,7 +249,7 @@ lemma short_needle_inter_eq (h : l ≤ d) (θ : ℝ) :
     Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2) := by
   rw [Set.Icc_inter_Icc, max_div_div_right zero_le_two,
     min_div_div_right zero_le_two, neg_mul, max_neg_neg, mul_comm,
-    min_eq_right (mul_le_of_le_of_le_one_of_nonneg h θ.sin_le_one hl.le)]
+    min_eq_right ((mul_le_of_le_one_right hl.le θ.sin_le_one).trans h)]
 
 include hd hBₘ hB hl in
 /--
