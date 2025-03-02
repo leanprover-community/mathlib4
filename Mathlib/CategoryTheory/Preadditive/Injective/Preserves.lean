@@ -20,7 +20,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 namespace CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-  {E : Type v₃} [Category.{v₃} E]
+  {E : Type u₃} [Category.{v₃} E]
 
 /-- A functor preserves injective objects if it maps injective objects to injective objects. -/
 class Functor.PreservesInjectiveObjects (F : C ⥤ D) : Prop where
