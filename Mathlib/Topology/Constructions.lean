@@ -604,7 +604,7 @@ theorem Filter.Tendsto.prodMap_nhds {x : X} {y : Y} {z : Z} {w : W} {f : X → Y
     (hf : Tendsto f (𝓝 x) (𝓝 y)) (hg : Tendsto g (𝓝 z) (𝓝 w)) :
     Tendsto (Prod.map f g) (𝓝 (x, z)) (𝓝 (y, w)) := by
   rw [nhds_prod_eq, nhds_prod_eq]
-  exact hf.prod_map hg
+  exact hf.prodMap hg
 
 theorem Filter.Eventually.curry_nhds {p : X × Y → Prop} {x : X} {y : Y}
     (h : ∀ᶠ x in 𝓝 (x, y), p x) : ∀ᶠ x' in 𝓝 x, ∀ᶠ y' in 𝓝 y, p (x', y') := by

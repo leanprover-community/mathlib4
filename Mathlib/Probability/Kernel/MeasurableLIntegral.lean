@@ -78,8 +78,7 @@ theorem measurable_kernel_prodMk_left_of_finite {t : Set (α × β)} (ht : Measu
     simpa only [this] using Measurable.ennreal_tsum hf
 
 @[deprecated (since := "2025-02-22")]
-alias ProbabilityTheory.Kernel.measurable_kernel_prod_mk_left_of_finite :=
-  measurable_kernel_prodMk_left_of_finite
+alias measurable_kernel_prod_mk_left_of_finite := measurable_kernel_prodMk_left_of_finite
 
 theorem measurable_kernel_prodMk_left [IsSFiniteKernel κ] {t : Set (α × β)} (ht : MeasurableSet t) :
     Measurable fun a => κ a (Prod.mk a ⁻¹' t) := by
@@ -92,7 +91,7 @@ theorem measurable_kernel_prodMk_left [IsSFiniteKernel κ] {t : Set (α × β)} 
   exact measurable_kernel_prodMk_left_of_finite ht inferInstance
 
 @[deprecated (since := "2025-02-22")]
-alias ProbabilityTheory.Kernel.measurable_kernel_prod_mk_left := measurable_kernel_prodMk_left
+alias measurable_kernel_prod_mk_left := measurable_kernel_prodMk_left
 
 theorem measurable_kernel_prodMk_left' [IsSFiniteKernel η] {s : Set (β × γ)} (hs : MeasurableSet s)
     (a : α) : Measurable fun b => η (a, b) (Prod.mk b ⁻¹' s) := by
@@ -103,7 +102,7 @@ theorem measurable_kernel_prodMk_left' [IsSFiniteKernel η] {s : Set (β × γ)}
   exact (measurable_fst.snd.prodMk measurable_snd) hs
 
 @[deprecated (since := "2025-02-22")]
-alias ProbabilityTheory.Kernel.measurable_kernel_prod_mk_left' := measurable_kernel_prodMk_left'
+alias measurable_kernel_prod_mk_left' := measurable_kernel_prodMk_left'
 
 theorem measurable_kernel_prod_mk_right [IsSFiniteKernel κ] {s : Set (β × α)}
     (hs : MeasurableSet s) : Measurable fun y => κ y ((fun x => (x, y)) ⁻¹' s) :=
