@@ -83,19 +83,19 @@ instance instModule [Semiring K] [AddCommMonoid V] [Module K V] : Module K (With
 
 section
 
-variable [Semiring K] [Semiring K'] [AddGroup V]
-
-@[to_additive]
+@[to_additive instVAddAssocClass]
 instance instIsScalarTower
-    [AddCommMonoid V] [SMul K K'] [Module K V] [Module K' V] [IsScalarTower K K' V] :
+    [SMul K K'] [SMul K V] [SMul K' V] [IsScalarTower K K' V] :
     IsScalarTower K K' (WithLp p V) :=
   ‹IsScalarTower K K' V›
 
 @[to_additive]
 instance instSMulCommClass
-    [AddCommMonoid V] [Module K V] [Module K' V] [SMulCommClass K K' V] :
+    [SMul K V] [SMul K' V] [SMulCommClass K K' V] :
     SMulCommClass K K' (WithLp p V) :=
   ‹SMulCommClass K K' V›
+
+variable [Semiring K] [Semiring K'] [AddGroup V]
 
 instance instModuleFinite
     [AddCommMonoid V] [Module K V] [Module.Finite K V] :
