@@ -241,6 +241,9 @@ lemma lmap_eq_iff (x y : ⨁ i, M i) :
     lmap f x = lmap f y ↔ ∀ i, f i (x i) = f i (y i) :=
   map_eq_iff (fun i => (f i).toAddMonoidHom) _ _
 
+lemma map_eq_lmap (x : ⨁ i, M i) : map (fun i => (f i).toAddMonoidHom) x = lmap f x :=
+  ext _ fun i ↦ (by simp)
+
 end map
 
 section CongrLeft
