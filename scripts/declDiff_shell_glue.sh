@@ -7,8 +7,8 @@ cat "${script_file}"
 
 getDeclarations () {
   # download the cache
-  lake exe cache get Archive.lean Counterexamples.lean Mathlib.lean
-  lake build "${script_file}"
+  lake exe cache get Archive.lean Counterexamples.lean Mathlib.lean &&
+  lake env lean "${script_file}"
 }
 
 printf 'Save the declarations in the PR branch\n'
