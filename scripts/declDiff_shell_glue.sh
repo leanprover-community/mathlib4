@@ -19,8 +19,10 @@ getDeclarations () {
 printf 'Save the declarations in the PR branch\n'
 
 getDeclarations decls_in_PR.txt
+currentHash="$(git rev-parse HEAD)"
 git checkout master...HEAD
 
+git checkout "${currentHash}" "${script_file}"
 printf 'Save the declarations in the master branch\n'
 getDeclarations decls_in_master.txt
 
