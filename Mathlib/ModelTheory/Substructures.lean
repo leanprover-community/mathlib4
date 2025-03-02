@@ -628,6 +628,13 @@ def subtype (S : L.Substructure M) : S ↪[L] M where
   inj' := Subtype.coe_injective
 
 @[simp]
+theorem subtype_apply {S : L.Substructure M} {x : S} : subtype S x = x :=
+  rfl
+
+theorem subtype_injective (S : L.Substructure M): Function.Injective (subtype S) :=
+  Subtype.coe_injective
+
+@[simp]
 theorem coe_subtype : ⇑S.subtype = ((↑) : S → M) :=
   rfl
 
