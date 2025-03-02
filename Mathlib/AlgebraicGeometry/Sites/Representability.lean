@@ -84,9 +84,8 @@ noncomputable def glueData : GlueData where
 noncomputable def toGlued (i : ι) : X i ⟶ (glueData hf).glued :=
   (glueData hf).ι i
 
-instance : IsOpenImmersion (toGlued hf i) := by
-  unfold toGlued
-  infer_instance
+instance : IsOpenImmersion (toGlued hf i) :=
+  inferInstanceAs (IsOpenImmersion ((glueData hf).ι i))
 
 /-- The map from the glued scheme `(glueData hf).glued`, treated as a sheaf, to `F`. -/
 noncomputable def yonedaGluedToSheaf :
@@ -96,8 +95,8 @@ noncomputable def yonedaGluedToSheaf :
   -- This section is obtained from gluing the section corresponding to `f i : Hom(-, X i) ⟶ F`.
     ((glueData hf).sheafValGluedMk (fun i ↦ yonedaEquiv (f i)) (by
       intro i j
-      dsimp
       apply yonedaEquiv.symm.injective
+      dsimp only [glueData_V, glueData_J, glueData_U, glueData_f, glueData_t]
       rw [yonedaEquiv_naturality, Equiv.symm_apply_apply,
         FunctorToTypes.map_comp_apply, yonedaEquiv_naturality, yonedaEquiv_naturality,
         Equiv.symm_apply_apply, ← Functor.map_comp_assoc,
@@ -106,18 +105,16 @@ noncomputable def yonedaGluedToSheaf :
 @[reassoc (attr := simp)]
 lemma yoneda_toGlued_yonedaGluedToSheaf (i : ι) :
     yoneda.map (toGlued hf i) ≫ (yonedaGluedToSheaf hf).val = f i := by
-  dsimp [yonedaGluedToSheaf, Sheaf.homEquiv, Functor.FullyFaithful.homEquiv]
   apply yonedaEquiv.injective
-  rw [yonedaEquiv_apply, yonedaEquiv_apply]
-  dsimp
-  simp only [comp_id]
+  rw [yonedaGluedToSheaf, yonedaEquiv_apply, yonedaEquiv_apply,
+    FunctorToTypes.comp, yoneda_map_app, id_comp, yonedaEquiv_symm_app_apply]
   apply GlueData.sheafValGluedMk_val
 
 @[simp]
 lemma yonedaGluedToSheaf_app_toGlued {i : ι}  :
     (yonedaGluedToSheaf hf).val.app _ (toGlued hf i) = yonedaEquiv (f i) := by
-  rw [← yoneda_toGlued_yonedaGluedToSheaf hf i]
-  rfl
+  rw [← yoneda_toGlued_yonedaGluedToSheaf hf i, yonedaEquiv_comp,
+    yonedaEquiv_yoneda_map]
 
 @[simp]
 lemma yonedaGluedToSheaf_app_comp {V U : Scheme.{u}} (γ : V ⟶ U) (α : U ⟶ (glueData hf).glued) :
