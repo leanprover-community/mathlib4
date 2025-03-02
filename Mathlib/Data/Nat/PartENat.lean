@@ -106,7 +106,7 @@ theorem some_eq_natCast (n : ℕ) : some n = n :=
 instance : CharZero PartENat where
   cast_injective := Part.some_injective
 
-/-- Alias of `Nat.cast_inj` specialized to `PartENat` --/
+/-- Alias of `Nat.cast_inj` specialized to `PartENat` -/
 theorem natCast_inj {x y : ℕ} : (x : PartENat) = y ↔ x = y :=
   Nat.cast_inj
 
@@ -236,12 +236,12 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
       specialize H hy
       specialize h fun _ => hy
       rw [not_forall] at h
-      cases' h with hx' h
+      obtain ⟨hx', h⟩ := h
       rw [not_le] at h
       exact h
     · specialize h fun hx' => (hx hx').elim
       rw [not_forall] at h
-      cases' h with hx' h
+      obtain ⟨hx', h⟩ := h
       exact (hx hx').elim
   · rintro ⟨hx, H⟩
     exact ⟨⟨fun _ => hx, fun hy => (H hy).le⟩, fun hxy h => not_lt_of_le (h _) (H _)⟩
@@ -272,10 +272,10 @@ instance orderTop : OrderTop PartENat where
 instance : ZeroLEOneClass PartENat where
   zero_le_one := bot_le
 
-/-- Alias of `Nat.cast_le` specialized to `PartENat` --/
+/-- Alias of `Nat.cast_le` specialized to `PartENat` -/
 theorem coe_le_coe {x y : ℕ} : (x : PartENat) ≤ y ↔ x ≤ y := Nat.cast_le
 
-/-- Alias of `Nat.cast_lt` specialized to `PartENat` --/
+/-- Alias of `Nat.cast_lt` specialized to `PartENat` -/
 theorem coe_lt_coe {x y : ℕ} : (x : PartENat) < y ↔ x < y := Nat.cast_lt
 
 @[simp]

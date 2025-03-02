@@ -40,7 +40,7 @@ theorem smul_Lp_ae_eq (c : Mᵈᵐᵃ) (f : Lp E p μ) : c • f =ᵐ[μ] (f <| 
   Lp.coeFn_compMeasurePreserving _ _
 
 @[to_additive]
-theorem mk_smul_toLp (c : M) {f : α → E} (hf : Memℒp f p μ) :
+theorem mk_smul_toLp (c : M) {f : α → E} (hf : MemLp f p μ) :
     mk c • hf.toLp f =
       (hf.comp_measurePreserving <| measurePreserving_smul c μ).toLp (f <| c • ·) :=
   rfl

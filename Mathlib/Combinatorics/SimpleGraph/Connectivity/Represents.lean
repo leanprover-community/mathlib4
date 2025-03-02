@@ -45,6 +45,10 @@ lemma existsUnique_rep (hrep : Represents s C) (h : c ∈ C) : ∃! x, x ∈ s �
   simp only [Set.mem_inter_iff, hx, SetLike.mem_coe, mem_supp_iff, and_self, and_imp, true_and]
   exact fun y hy hyx ↦ hrep.2.1 hy hx hyx
 
+lemma exists_inter_eq_singleton (hrep : Represents s C) (h : c ∈ C) : ∃ x, s ∩ c.supp = {x} := by
+  obtain ⟨a, ha⟩ := existsUnique_rep hrep h
+  aesop
+
 lemma disjoint_supp_of_not_mem (hrep : Represents s C) (h : c ∉ C) : Disjoint s c.supp := by
   rw [Set.disjoint_left]
   intro a ha hc
@@ -54,17 +58,16 @@ lemma disjoint_supp_of_not_mem (hrep : Represents s C) (h : c ∉ C) : Disjoint 
 
 lemma ncard_inter (hrep : Represents s C) (h : c ∈ C) : (s ∩ c.supp).ncard = 1 := by
   rw [Set.ncard_eq_one]
-  obtain ⟨a, ha⟩ := hrep.existsUnique_rep h
-  aesop
+  exact exists_inter_eq_singleton hrep h
 
-lemma ncard_sdiff_of_mem [Fintype V] (hrep : Represents s C) (h : c ∈ C) :
+lemma ncard_sdiff_of_mem (hrep : Represents s C) (h : c ∈ C) :
     (c.supp \ s).ncard = c.supp.ncard - 1 := by
-  simp [← Set.ncard_inter_add_ncard_diff_eq_ncard c.supp s (Set.toFinite _), Set.inter_comm,
-    ncard_inter hrep h]
+  obtain ⟨a, ha⟩ := exists_inter_eq_singleton hrep h
+  rw [← Set.diff_inter_self_eq_diff, ha, Set.ncard_diff, Set.ncard_singleton]
+  simp [← ha]
 
-lemma ncard_sdiff_of_not_mem [Fintype V] (hrep : Represents s C) (h : c ∉ C) :
+lemma ncard_sdiff_of_not_mem (hrep : Represents s C) (h : c ∉ C) :
     (c.supp \ s).ncard = c.supp.ncard := by
-  simp [← Set.ncard_inter_add_ncard_diff_eq_ncard c.supp s (Set.toFinite _), Set.inter_comm,
-    Set.disjoint_iff_inter_eq_empty.mp (hrep.disjoint_supp_of_not_mem h)]
+  rw [(disjoint_supp_of_not_mem hrep h).sdiff_eq_right]
 
 end SimpleGraph.ConnectedComponent.Represents
