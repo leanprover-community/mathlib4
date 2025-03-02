@@ -56,9 +56,9 @@ abbrev sHom (K L : C) : SSet.{v} := K ⟶[SSet] L
 /-- Abbreviation for the enriched composition in a simplicial category. -/
 abbrev sHomComp (K L M : C) : sHom K L ⊗ sHom L M ⟶ sHom K M := eComp SSet K L M
 
-/-- The bijection `(K ⟶ L) ≃ sHom K L _[0]` for all objects `K` and `L`
+/-- The bijection `(K ⟶ L) ≃ sHom K L _⦋0⦌` for all objects `K` and `L`
 in a simplicial category. -/
-def homEquiv' (K L : C) : (K ⟶ L) ≃ sHom K L _[0] :=
+def homEquiv' (K L : C) : (K ⟶ L) ≃ sHom K L _⦋0⦌ :=
   (eHomEquiv SSet).trans (sHom K L).unitHomEquiv
 
 variable (C) in

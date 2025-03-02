@@ -12,6 +12,7 @@ We define bundled subsemirings and some standard constructions: `subtype` and `i
 ring homomorphisms.
 -/
 
+assert_not_exists RelIso
 
 universe u v w
 
@@ -86,6 +87,15 @@ def subtype : s →+* R :=
 @[simp]
 theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
   rfl
+
+variable {s} in
+@[simp]
+lemma subtype_apply (x : s) :
+    SubsemiringClass.subtype s x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (SubsemiringClass.subtype s) := fun _ ↦ by
+  simp
 
 -- Prefer subclasses of `Semiring` over subclasses of `SubsemiringClass`.
 /-- A subsemiring of a `Semiring` is a `Semiring`. -/
@@ -238,7 +248,6 @@ protected theorem add_mem {x y : R} : x ∈ s → y ∈ s → x + y ∈ s :=
 
 /-- A subsemiring of a `NonAssocSemiring` inherits a `NonAssocSemiring` structure -/
 instance toNonAssocSemiring : NonAssocSemiring s :=
-  -- Porting note: this used to be a specialized instance which needed to be expensively unified.
   SubsemiringClass.toNonAssocSemiring _
 
 @[simp, norm_cast]
@@ -287,11 +296,18 @@ instance toCommSemiring {R} [CommSemiring R] (s : Subsemiring R) : CommSemiring 
 def subtype : s →+* R :=
   { s.toSubmonoid.subtype, s.toAddSubmonoid.subtype with toFun := (↑) }
 
+variable {s} in
+@[simp]
+lemma subtype_apply (x : s) :
+    s.subtype x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective s.subtype :=
+  Subtype.coe_injective
+
 @[simp]
 theorem coe_subtype : ⇑s.subtype = ((↑) : s → R) :=
   rfl
-
-theorem subtype_injective : Function.Injective s.subtype := Subtype.coe_injective
 
 protected theorem nsmul_mem {x : R} (hx : x ∈ s) (n : ℕ) : n • x ∈ s :=
   nsmul_mem hx n
@@ -300,16 +316,13 @@ protected theorem nsmul_mem {x : R} (hx : x ∈ s) (n : ℕ) : n • x ∈ s :=
 theorem coe_toSubmonoid (s : Subsemiring R) : (s.toSubmonoid : Set R) = s :=
   rfl
 
--- Porting note: adding this as `simp`-normal form for `coe_toAddSubmonoid`
 @[simp]
 theorem coe_carrier_toSubmonoid (s : Subsemiring R) : (s.toSubmonoid.carrier : Set R) = s :=
   rfl
 
--- Porting note: can be proven using `SetLike` so removing `@[simp]`
 theorem mem_toAddSubmonoid {s : Subsemiring R} {x : R} : x ∈ s.toAddSubmonoid ↔ x ∈ s :=
   Iff.rfl
 
--- Porting note: new normal form is `coe_carrier_toSubmonoid` so removing `@[simp]`
 theorem coe_toAddSubmonoid (s : Subsemiring R) : (s.toAddSubmonoid : Set R) = s :=
   rfl
 

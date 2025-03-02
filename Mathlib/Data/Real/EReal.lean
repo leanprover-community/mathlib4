@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.ENNReal.Inv
 import Mathlib.Data.Sign
 
 /-!
@@ -1246,7 +1246,7 @@ theorem sub_le_of_le_add {a b c : EReal} (h : a ≤ b + c) : a - c ≤ b := by
   | h_real c => exact (sub_le_iff_le_add (.inl (coe_ne_bot c)) (.inl (coe_ne_top c))).2 h
   | h_top => simp only [sub_top, bot_le]
 
-/-- See also `EReal.sub_le_of_le_add`.-/
+/-- See also `EReal.sub_le_of_le_add`. -/
 theorem sub_le_of_le_add' {a b c : EReal} (h : a ≤ b + c) : a - b ≤ c :=
   sub_le_of_le_add (add_comm b c ▸ h)
 
@@ -1265,7 +1265,7 @@ lemma add_lt_of_lt_sub {a b c : EReal} (h : a < b - c) : a + c < b := by
 lemma sub_lt_of_lt_add {a b c : EReal} (h : a < b + c) : a - c < b :=
   add_lt_of_lt_sub <| by rwa [sub_eq_add_neg, neg_neg]
 
-/-- See also `EReal.sub_lt_of_lt_add`.-/
+/-- See also `EReal.sub_lt_of_lt_add`. -/
 lemma sub_lt_of_lt_add' {a b c : EReal} (h : a < b + c) : a - b < c :=
   sub_lt_of_lt_add <| by rwa [add_comm]
 
@@ -1762,8 +1762,12 @@ instance : MulPosMono EReal := posMulMono_iff_mulPosMono.1 inferInstance
 
 instance : PosMulReflectLT EReal := PosMulMono.toPosMulReflectLT
 
-instance : MulPosReflectLT EReal :=
-  MulPosMono.toMulPosReflectLT
+instance : MulPosReflectLT EReal := MulPosMono.toMulPosReflectLT
+
+lemma mul_le_mul_of_nonpos_right {a b c : EReal} (h : b ≤ a) (hc : c ≤ 0) : a * c ≤ b * c := by
+  rw [mul_comm a c, mul_comm b c, ← neg_le_neg_iff, ← neg_mul c b, ← neg_mul c a]
+  rw [← neg_zero, EReal.le_neg] at hc
+  exact mul_le_mul_of_nonneg_left h hc
 
 @[simp, norm_cast]
 theorem coe_pow (x : ℝ) (n : ℕ) : (↑(x ^ n) : EReal) = (x : EReal) ^ n :=
@@ -1945,46 +1949,44 @@ lemma mul_div (a b c : EReal) : a * (b / c) = (a * b) / c := by
   change a * (b * c⁻¹) = (a * b) * c⁻¹
   rw [mul_assoc]
 
-lemma mul_div_right (a b c : EReal) : (a / b) * c = (a * c) / b := by
+lemma mul_div_right (a b c : EReal) : a / b * c = a * c / b := by
   rw [mul_comm, EReal.mul_div, mul_comm]
+
+lemma mul_div_left_comm (a b c : EReal) : a * (b / c) = b * (a / c) := by
+  rw [mul_div a b c, mul_comm a b, ← mul_div b a c]
 
 lemma div_div (a b c : EReal) : a / b / c = a / (b * c) := by
   change (a * b⁻¹) * c⁻¹ = a * (b * c)⁻¹
   rw [mul_assoc a b⁻¹, mul_inv]
 
-lemma div_mul_cancel {a b : EReal} (h₁ : b ≠ ⊥) (h₂ : b ≠ ⊤) (h₃ : b ≠ 0) : (a / b) * b = a := by
-  change (a * b⁻¹) * b = a
-  rw [mul_assoc, mul_comm b⁻¹ b]
-  change a * (b / b) = a
-  rw [div_self h₁ h₂ h₃, mul_one]
+lemma div_mul_div_comm (a b c d : EReal) : a / b * (c / d) = a * c / (b * d) := by
+  rw [← mul_div a, mul_comm b d, ← div_div c, ← mul_div_left_comm (c / d), mul_comm (a / b)]
 
-lemma mul_div_cancel {a b : EReal} (h₁ : b ≠ ⊥) (h₂ : b ≠ ⊤) (h₃ : b ≠ 0) : b * (a / b) = a := by
+variable {a b c : EReal}
+
+lemma div_mul_cancel (h₁ : b ≠ ⊥) (h₂ : b ≠ ⊤) (h₃ : b ≠ 0) : a / b * b = a := by
+  rw [mul_comm (a / b) b, ← mul_div_left_comm a b b, div_self h₁ h₂ h₃, mul_one]
+
+lemma mul_div_cancel (h₁ : b ≠ ⊥) (h₂ : b ≠ ⊤) (h₃ : b ≠ 0) : b * (a / b) = a := by
   rw [mul_comm, div_mul_cancel h₁ h₂ h₃]
 
-lemma mul_div_mul_cancel {a b c : EReal} (h₁ : c ≠ ⊥) (h₂ : c ≠ ⊤) (h₃ : c ≠ 0) :
-    (a * c) / (b * c) = a / b := by
-  change (a * c) * (b * c)⁻¹ = a * b⁻¹
-  rw [mul_assoc, mul_inv b c]
-  congr
-  exact mul_div_cancel h₁ h₂ h₃
+lemma mul_div_mul_cancel (h₁ : c ≠ ⊥) (h₂ : c ≠ ⊤) (h₃ : c ≠ 0) : a * c / (b * c) = a / b := by
+  rw [← mul_div_right a (b * c) c, ← div_div a b c, div_mul_cancel h₁ h₂ h₃]
 
-lemma div_eq_iff {a b c : EReal} (hbot : b ≠ ⊥) (htop : b ≠ ⊤) (hzero : b ≠ 0) :
-    c / b = a ↔ c = a * b := by
+lemma div_eq_iff (hbot : b ≠ ⊥) (htop : b ≠ ⊤) (hzero : b ≠ 0) : c / b = a ↔ c = a * b := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [← @mul_div_cancel c b hbot htop hzero, h, mul_comm a b]
   · rw [h, mul_comm a b, ← mul_div b a b, @mul_div_cancel a b hbot htop hzero]
 
 /-! #### Division and Order -/
 
-lemma monotone_div_right_of_nonneg {b : EReal} (h : 0 ≤ b) : Monotone fun a ↦ a / b :=
+lemma monotone_div_right_of_nonneg (h : 0 ≤ b) : Monotone fun a ↦ a / b :=
   fun _ _ h' ↦ mul_le_mul_of_nonneg_right h' (inv_nonneg_of_nonneg h)
 
-lemma div_le_div_right_of_nonneg {a a' b : EReal} (h : 0 ≤ b) (h' : a ≤ a') :
-    a / b ≤ a' / b :=
+lemma div_le_div_right_of_nonneg (h : 0 ≤ c) (h' : a ≤ b) : a / c ≤ b / c :=
   monotone_div_right_of_nonneg h h'
 
-lemma strictMono_div_right_of_pos {b : EReal} (h : 0 < b) (h' : b ≠ ⊤) :
-    StrictMono fun a ↦ a / b := by
+lemma strictMono_div_right_of_pos (h : 0 < b) (h' : b ≠ ⊤) : StrictMono fun a ↦ a / b := by
   intro a a' a_lt_a'
   apply lt_of_le_of_ne <| div_le_div_right_of_nonneg (le_of_lt h) (le_of_lt a_lt_a')
   intro hyp
@@ -1992,11 +1994,10 @@ lemma strictMono_div_right_of_pos {b : EReal} (h : 0 < b) (h' : b ≠ ⊤) :
   rw [← @EReal.mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h), hyp,
     @EReal.mul_div_cancel a' b (ne_bot_of_gt h) h' (ne_of_gt h)]
 
-lemma div_lt_div_right_of_pos {a a' b : EReal} (h₁ : 0 < b) (h₂ : b ≠ ⊤)
-    (h₃ : a < a') : a / b < a' / b :=
+lemma div_lt_div_right_of_pos (h₁ : 0 < c) (h₂ : c ≠ ⊤) (h₃ : a < b) : a / c < b / c :=
   strictMono_div_right_of_pos h₁ h₂ h₃
 
-lemma antitone_div_right_of_nonpos {b : EReal} (h : b ≤ 0) : Antitone fun a ↦ a / b := by
+lemma antitone_div_right_of_nonpos (h : b ≤ 0) : Antitone fun a ↦ a / b := by
   intro a a' h'
   change a' * b⁻¹ ≤ a * b⁻¹
   rw [← neg_neg (a * b⁻¹), ← neg_neg (a' * b⁻¹), neg_le_neg_iff, mul_comm a b⁻¹, mul_comm a' b⁻¹,
@@ -2004,12 +2005,10 @@ lemma antitone_div_right_of_nonpos {b : EReal} (h : b ≤ 0) : Antitone fun a �
   have : 0 ≤ -b := by apply EReal.le_neg_of_le_neg; simp [h]
   exact div_le_div_right_of_nonneg this h'
 
-lemma div_le_div_right_of_nonpos {a a' b : EReal} (h : b ≤ 0) (h' : a ≤ a') :
-    a' / b ≤ a / b :=
+lemma div_le_div_right_of_nonpos (h : c ≤ 0) (h' : a ≤ b) : b / c ≤ a / c :=
   antitone_div_right_of_nonpos h h'
 
-lemma strictAnti_div_right_of_neg {b : EReal} (h : b < 0) (h' : b ≠ ⊥) :
-    StrictAnti fun a ↦ a / b := by
+lemma strictAnti_div_right_of_neg (h : b < 0) (h' : b ≠ ⊥) : StrictAnti fun a ↦ a / b := by
   intro a a' a_lt_a'
   simp only
   apply lt_of_le_of_ne <| div_le_div_right_of_nonpos (le_of_lt h) (le_of_lt a_lt_a')
@@ -2018,53 +2017,111 @@ lemma strictAnti_div_right_of_neg {b : EReal} (h : b < 0) (h' : b ≠ ⊥) :
   rw [← @EReal.mul_div_cancel a b h' (ne_top_of_lt h) (ne_of_lt h), ← hyp,
     @EReal.mul_div_cancel a' b h' (ne_top_of_lt h) (ne_of_lt h)]
 
-lemma div_lt_div_right_of_neg {a a' b : EReal} (h₁ : b < 0) (h₂ : b ≠ ⊥)
-    (h₃ : a < a') : a' / b < a / b :=
+lemma div_lt_div_right_of_neg (h₁ : c < 0) (h₂ : c ≠ ⊥) (h₃ : a < b) : b / c < a / c :=
   strictAnti_div_right_of_neg h₁ h₂ h₃
 
-lemma le_div_iff_mul_le {a b c : EReal} (h : b > 0) (h' : b ≠ ⊤) :
-    a ≤ c / b ↔ a * b ≤ c := by
+lemma le_div_iff_mul_le (h : b > 0) (h' : b ≠ ⊤) : a ≤ c / b ↔ a * b ≤ c := by
   nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h)]
   rw [mul_div b a b, mul_comm a b]
   exact StrictMono.le_iff_le (strictMono_div_right_of_pos h h')
 
-lemma div_le_iff_le_mul {a b c : EReal} (h : 0 < b) (h' : b ≠ ⊤) :
-    a / b ≤ c ↔ a ≤ b * c := by
+lemma div_le_iff_le_mul (h : 0 < b) (h' : b ≠ ⊤) : a / b ≤ c ↔ a ≤ b * c := by
   nth_rw 1 [← @mul_div_cancel c b (ne_bot_of_gt h) h' (ne_of_gt h)]
   rw [mul_div b c b, mul_comm b]
   exact StrictMono.le_iff_le (strictMono_div_right_of_pos h h')
 
-lemma lt_div_iff {a b c : EReal} (h : 0 < b) (h' : b ≠ ⊤) :
-    a < c / b ↔ a * b < c := by
+lemma lt_div_iff (h : 0 < b) (h' : b ≠ ⊤) : a < c / b ↔ a * b < c := by
   nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h)]
   rw [EReal.mul_div b a b, mul_comm a b]
   exact (strictMono_div_right_of_pos h h').lt_iff_lt
 
-lemma div_lt_iff {a b c : EReal} (h : 0 < b) (h' : b ≠ ⊤) :
-    c / b < a ↔ c < a * b := by
-  nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h)]
-  rw [EReal.mul_div b a b, mul_comm a b]
+lemma div_lt_iff (h : 0 < c) (h' : c ≠ ⊤) :  b / c < a ↔ b < a * c := by
+  nth_rw 1 [← @mul_div_cancel a c (ne_bot_of_gt h) h' (ne_of_gt h)]
+  rw [EReal.mul_div c a c, mul_comm a c]
   exact (strictMono_div_right_of_pos h h').lt_iff_lt
 
-lemma div_nonneg {a b : EReal} (h : 0 ≤ a) (h' : 0 ≤ b) : 0 ≤ a / b :=
+lemma div_nonneg (h : 0 ≤ a) (h' : 0 ≤ b) : 0 ≤ a / b :=
   mul_nonneg h (inv_nonneg_of_nonneg h')
 
-lemma div_nonpos_of_nonpos_of_nonneg {a b : EReal} (h : a ≤ 0) (h' : 0 ≤ b) : a / b ≤ 0 :=
+lemma div_pos (ha : 0 < a) (hb : 0 < b) (hb' : b ≠ ⊤) : 0 < a / b :=
+  mul_pos ha (inv_pos_of_pos_ne_top hb hb')
+
+lemma div_nonpos_of_nonpos_of_nonneg (h : a ≤ 0) (h' : 0 ≤ b) : a / b ≤ 0 :=
   mul_nonpos_of_nonpos_of_nonneg h (inv_nonneg_of_nonneg h')
 
-lemma div_nonpos_of_nonneg_of_nonpos {a b : EReal} (h : 0 ≤ a) (h' : b ≤ 0) : a / b ≤ 0 :=
+lemma div_nonpos_of_nonneg_of_nonpos (h : 0 ≤ a) (h' : b ≤ 0) : a / b ≤ 0 :=
   mul_nonpos_of_nonneg_of_nonpos h (inv_nonpos_of_nonpos h')
 
-lemma div_nonneg_of_nonpos_of_nonpos {a b : EReal} (h : a ≤ 0) (h' : b ≤ 0) : 0 ≤ a / b :=
-  le_of_eq_of_le (Eq.symm zero_div) (div_le_div_right_of_nonpos h' h)
+lemma div_nonneg_of_nonpos_of_nonpos (h : a ≤ 0) (h' : b ≤ 0) : 0 ≤ a / b :=
+  le_of_eq_of_le zero_div.symm (div_le_div_right_of_nonpos h' h)
+
+private lemma exists_lt_mul_left_of_nonneg (ha : 0 ≤ a) (hc : 0 ≤ c) (h : c < a * b) :
+    ∃ a' ∈ Ico 0 a, c < a' * b := by
+  rcases eq_or_ne b ⊤ with rfl | b_top
+  · rcases eq_or_lt_of_le ha with rfl | ha
+    · rw [zero_mul] at h
+      exact (not_le_of_lt h hc).rec
+    · obtain ⟨a', a0', aa'⟩ := exists_between ha
+      use a', mem_Ico.2 ⟨a0'.le, aa'⟩
+      rw [mul_top_of_pos ha] at h
+      rwa [mul_top_of_pos a0']
+  · have b0 : 0 < b := pos_of_mul_pos_right (hc.trans_lt h) ha
+    obtain ⟨a', ha', aa'⟩ := exists_between ((div_lt_iff b0 b_top).2 h)
+    exact ⟨a', ⟨(div_nonneg hc b0.le).trans ha'.le, aa'⟩, (div_lt_iff b0 b_top).1 ha'⟩
+
+private lemma exists_lt_mul_right_of_nonneg (ha : 0 ≤ a) (hc : 0 ≤ c) (h : c < a * b) :
+    ∃ b' ∈ Ico 0 b, c < a * b' := by
+  have hb : 0 < b := pos_of_mul_pos_right (hc.trans_lt h) ha
+  simp_rw [mul_comm a] at h ⊢
+  exact exists_lt_mul_left_of_nonneg hb.le hc h
+
+private lemma exists_mul_left_lt (h₁ : a ≠ 0 ∨ b ≠ ⊤) (h₂ : a ≠ ⊤ ∨ 0 < b) (hc : a * b < c) :
+    ∃ a' ∈ Ioo a ⊤, a' * b < c := by
+  rcases eq_top_or_lt_top a with rfl | a_top
+  · rw [ne_self_iff_false, false_or] at h₂; rw [top_mul_of_pos h₂] at hc; exact (not_top_lt hc).rec
+  rcases le_or_lt b 0 with b0 | b0
+  · obtain ⟨a', aa', a_top'⟩ := exists_between a_top
+    exact ⟨a', mem_Ioo.2 ⟨aa', a_top'⟩, lt_of_le_of_lt (mul_le_mul_of_nonpos_right aa'.le b0) hc⟩
+  rcases eq_top_or_lt_top b with rfl | b_top
+  · rcases lt_trichotomy a 0 with a0 | rfl | a0
+    · obtain ⟨a', aa', a0'⟩ := exists_between a0
+      rw [mul_top_of_neg a0] at hc
+      refine ⟨a', mem_Ioo.2 ⟨aa', lt_top_of_lt a0'⟩, mul_top_of_neg a0' ▸ hc⟩
+    · rw [ne_self_iff_false, ne_self_iff_false, false_or] at h₁; exact h₁.rec
+    · rw [mul_top_of_pos a0] at hc; exact (not_top_lt hc).rec
+  · obtain ⟨a', aa', hc'⟩ := exists_between ((lt_div_iff b0 b_top.ne).2 hc)
+    exact ⟨a', mem_Ioo.2 ⟨aa', lt_top_of_lt hc'⟩, (lt_div_iff b0 b_top.ne).1 hc'⟩
+
+private lemma exists_mul_right_lt (h₁ : 0 < a ∨ b ≠ ⊤) (h₂ : a ≠ ⊤ ∨ b ≠ 0) (hc : a * b < c) :
+    ∃ b' ∈ Ioo b ⊤, a * b' < c := by
+  simp_rw [mul_comm a] at hc ⊢
+  exact exists_mul_left_lt h₂.symm h₁.symm hc
+
+lemma le_mul_of_forall_lt (h₁ : 0 < a ∨ b ≠ ⊤) (h₂ : a ≠ ⊤ ∨ 0 < b)
+    (h : ∀ a' > a, ∀ b' > b, c ≤ a' * b') : c ≤ a * b := by
+  refine le_of_forall_gt_imp_ge_of_dense fun d hd ↦ ?_
+  obtain ⟨a', aa', hd⟩ := exists_mul_left_lt (h₁.imp_left ne_of_gt) h₂ hd
+  replace h₁ : 0 < a' ∨ b ≠ ⊤ := h₁.imp_left fun a0 ↦ a0.trans (mem_Ioo.1 aa').1
+  replace h₂ : a' ≠ ⊤ ∨ b ≠ 0 := Or.inl (mem_Ioo.1 aa').2.ne
+  obtain ⟨b', bb', hd⟩ := exists_mul_right_lt h₁ h₂ hd
+  exact (h a' (mem_Ioo.1 aa').1 b' (mem_Ioo.1 bb').1).trans hd.le
+
+lemma mul_le_of_forall_lt_of_nonneg (ha : 0 ≤ a) (hc : 0 ≤ c)
+    (h : ∀ a' ∈ Ico 0 a, ∀ b' ∈ Ico 0 b, a' * b' ≤ c) : a * b ≤ c := by
+  refine le_of_forall_lt_imp_le_of_dense fun d dab ↦ ?_
+  rcases lt_or_le d 0 with d0 | d0
+  · exact d0.le.trans hc
+  obtain ⟨a', aa', dab⟩ := exists_lt_mul_left_of_nonneg ha d0 dab
+  obtain ⟨b', bb', dab⟩ := exists_lt_mul_right_of_nonneg aa'.1 d0 dab
+  exact dab.le.trans (h a' aa' b' bb')
 
 /-! #### Division Distributivity -/
 
-lemma div_right_distrib_of_nonneg {a b c : EReal} (h : 0 ≤ a) (h' : 0 ≤ b) :
-    (a + b) / c = (a / c) + (b / c) :=
+lemma div_right_distrib_of_nonneg (h : 0 ≤ a) (h' : 0 ≤ b) :
+    (a + b) / c = a / c + b / c :=
   EReal.right_distrib_of_nonneg h h'
 
-lemma add_div_of_nonneg_right {a b c : EReal} (h : 0 ≤ c) :
+lemma add_div_of_nonneg_right (h : 0 ≤ c) :
     (a + b) / c = a / c + b / c := by
   apply right_distrib_of_nonneg_of_ne_top (inv_nonneg_of_nonneg h) (inv_lt_top c).ne
 

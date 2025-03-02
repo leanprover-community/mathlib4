@@ -48,7 +48,7 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
-assert_not_exists OrderedAddCommMonoid Multiset Ring
+assert_not_exists RelIso OrderedCommMonoid Multiset MonoidWithZero
 
 open Function
 open scoped Int
@@ -108,7 +108,7 @@ theorem zpow_mem {x : M} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K
 
 variable [SetLike S G] [SubgroupClass S G]
 
-@[to_additive /-(attr := simp)-/] -- Porting note: `simp` cannot simplify LHS
+@[to_additive]
 theorem exists_inv_mem_iff_exists_mem {P : G → Prop} :
     (∃ x : G, x ∈ H ∧ P x⁻¹) ↔ ∃ x ∈ H, P x := by
   constructor <;>
@@ -194,9 +194,24 @@ instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [S
 protected def subtype : H →* G where
   toFun := ((↑) : H → G); map_one' := rfl; map_mul' := fun _ _ => rfl
 
+variable {H} in
 @[to_additive (attr := simp)]
-theorem coeSubtype : (SubgroupClass.subtype H : H → G) = ((↑) : H → G) := by
+lemma subtype_apply (x : H) :
+    SubgroupClass.subtype H x = x := rfl
+
+@[to_additive]
+lemma subtype_injective :
+    Function.Injective (SubgroupClass.subtype H) :=
+  Subtype.coe_injective
+
+@[to_additive (attr := simp)]
+theorem coe_subtype : (SubgroupClass.subtype H : H → G) = ((↑) : H → G) := by
   rfl
+
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
+@[deprecated (since := "2025-02-18")]
+alias _root_.AddSubgroupClass.coeSubtype := _root_.AddSubgroupClass.coe_subtype
 
 variable {H}
 
@@ -242,7 +257,7 @@ theorem coe_inclusion {H K : S} {h : H ≤ K} (a : H) : (inclusion h a : G) = a 
 theorem subtype_comp_inclusion {H K : S} (hH : H ≤ K) :
     (SubgroupClass.subtype K).comp (inclusion hH) = SubgroupClass.subtype H := by
   ext
-  simp only [MonoidHom.comp_apply, coeSubtype, coe_inclusion]
+  simp only [MonoidHom.comp_apply, coe_subtype, coe_inclusion]
 
 end SubgroupClass
 
@@ -262,9 +277,6 @@ structure AddSubgroup (G : Type*) [AddGroup G] extends AddSubmonoid G where
 
 attribute [to_additive] Subgroup
 
--- Porting note: Removed, translation already exists
--- attribute [to_additive AddSubgroup.toAddSubmonoid] Subgroup.toSubmonoid
-
 /-- Reinterpret a `Subgroup` as a `Submonoid`. -/
 add_decl_doc Subgroup.toSubmonoid
 
@@ -281,7 +293,7 @@ instance : SetLike (Subgroup G) G where
     obtain ⟨⟨⟨hq,_⟩,_⟩,_⟩ := q
     congr
 
--- Porting note: Below can probably be written more uniformly
+-- TODO: Below can probably be written more uniformly
 @[to_additive]
 instance : SubgroupClass (Subgroup G) G where
   inv_mem := Subgroup.inv_mem' _
@@ -364,7 +376,7 @@ protected def copy (K : Subgroup G) (s : Set G) (hs : s = K) : Subgroup G where
   carrier := s
   one_mem' := hs.symm ▸ K.one_mem'
   mul_mem' := hs.symm ▸ K.mul_mem'
-  inv_mem' hx := by simpa [hs] using hx -- Porting note: `▸` didn't work here
+  inv_mem' hx := by simpa [hs] using hx
 
 @[to_additive]
 theorem copy_eq (K : Subgroup G) (s : Set G) (hs : s = ↑K) : K.copy s hs = K :=
@@ -487,7 +499,6 @@ theorem coe_inv (x : H) : ↑(x⁻¹ : H) = (x⁻¹ : G) :=
 theorem coe_div (x y : H) : (↑(x / y) : G) = ↑x / ↑y :=
   rfl
 
--- Porting note: removed simp, theorem has variable as head symbol
 @[to_additive (attr := norm_cast)]
 theorem coe_mk (x : G) (hx : x ∈ H) : ((⟨x, hx⟩ : H) : G) = x :=
   rfl
@@ -496,9 +507,9 @@ theorem coe_mk (x : G) (hx : x ∈ H) : ((⟨x, hx⟩ : H) : G) = x :=
 theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 
-@[to_additive (attr := norm_cast)] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10685): dsimp can prove this
-theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
-  rfl
+@[to_additive (attr := norm_cast)]
+theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n := by
+  dsimp
 
 @[to_additive (attr := simp)]
 theorem mk_eq_one {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 := Submonoid.mk_eq_one ..
@@ -521,12 +532,22 @@ protected def subtype : H →* G where
   toFun := ((↑) : H → G); map_one' := rfl; map_mul' _ _ := rfl
 
 @[to_additive (attr := simp)]
-theorem coeSubtype : ⇑ H.subtype = ((↑) : H → G) :=
-  rfl
+lemma subtype_apply {s : Subgroup G} (x : s) :
+    s.subtype x = x := rfl
 
 @[to_additive]
-theorem subtype_injective : Function.Injective (Subgroup.subtype H) :=
+lemma subtype_injective (s : Subgroup G) :
+    Function.Injective s.subtype :=
   Subtype.coe_injective
+
+@[to_additive (attr := simp)]
+theorem coe_subtype : ⇑ H.subtype = ((↑) : H → G) :=
+  rfl
+
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
+@[deprecated (since := "2025-02-18")]
+alias _root_.AddSubgroup.coeSubtype := AddSubgroup.coe_subtype
 
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive "The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`."]
@@ -595,9 +616,7 @@ theorem conj_mem' (nH : H.Normal) (n : G) (hn : n ∈ H) (g : G) :
 @[to_additive]
 theorem mem_comm (nH : H.Normal) {a b : G} (h : a * b ∈ H) : b * a ∈ H := by
   have : a⁻¹ * (a * b) * a⁻¹⁻¹ ∈ H := nH.conj_mem (a * b) h a⁻¹
-  -- Porting note: Previous code was:
-  -- simpa
-  simp_all only [inv_mul_cancel_left, inv_inv]
+  simpa
 
 @[to_additive]
 theorem mem_comm_iff (nH : H.Normal) {a b : G} : a * b ∈ H ↔ b * a ∈ H :=

@@ -59,11 +59,13 @@ variable (Y : SimplicialObject C)
 /-- The differential on the alternating face map complex is the alternate
 sum of the face maps -/
 @[simp]
-def objD (n : ℕ) : X _[n + 1] ⟶ X _[n] :=
+def objD (n : ℕ) : X _⦋n + 1⦌ ⟶ X _⦋n⦌ :=
   ∑ i : Fin (n + 2), (-1 : ℤ) ^ (i : ℕ) • X.δ i
 
-/-- ## The chain complex relation `d ≫ d`
+/-!
+## The chain complex relation `d ≫ d`
 -/
+
 theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   -- we start by expanding d ≫ d as a double sum
   dsimp
@@ -115,10 +117,10 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
 
 /-- The alternating face map complex, on objects -/
 def obj : ChainComplex C ℕ :=
-  ChainComplex.of (fun n => X _[n]) (objD X) (d_squared X)
+  ChainComplex.of (fun n => X _⦋n⦌) (objD X) (d_squared X)
 
 @[simp]
-theorem obj_X (X : SimplicialObject C) (n : ℕ) : (AlternatingFaceMapComplex.obj X).X n = X _[n] :=
+theorem obj_X (X : SimplicialObject C) (n : ℕ) : (AlternatingFaceMapComplex.obj X).X n = X _⦋n⦌ :=
   rfl
 
 @[simp]
@@ -131,7 +133,7 @@ variable {X} {Y}
 
 /-- The alternating face map complex, on morphisms -/
 def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
-  ChainComplex.ofHom _ _ _ _ _ _ (fun n => f.app (op [n])) fun n => by
+  ChainComplex.ofHom _ _ _ _ _ _ (fun n => f.app (op ⦋n⦌)) fun n => by
     dsimp
     rw [comp_sum, sum_comp]
     refine Finset.sum_congr rfl fun _ _ => ?_
@@ -141,7 +143,7 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
     apply f.naturality
 
 @[simp]
-theorem map_f (f : X ⟶ Y) (n : ℕ) : (map f).f n = f.app (op [n]) :=
+theorem map_f (f : X ⟶ Y) (n : ℕ) : (map f).f n = f.app (op ⦋n⦌) :=
   rfl
 
 end AlternatingFaceMapComplex
@@ -157,7 +159,7 @@ variable {C}
 
 @[simp]
 theorem alternatingFaceMapComplex_obj_X (X : SimplicialObject C) (n : ℕ) :
-    ((alternatingFaceMapComplex C).obj X).X n = X _[n] :=
+    ((alternatingFaceMapComplex C).obj X).X n = X _⦋n⦌ :=
   rfl
 
 @[simp]
@@ -168,7 +170,7 @@ theorem alternatingFaceMapComplex_obj_d (X : SimplicialObject C) (n : ℕ) :
 
 @[simp]
 theorem alternatingFaceMapComplex_map_f {X Y : SimplicialObject C} (f : X ⟶ Y) (n : ℕ) :
-    ((alternatingFaceMapComplex C).map f).f n = f.app (op [n]) :=
+    ((alternatingFaceMapComplex C).map f).f n = f.app (op ⦋n⦌) :=
   rfl
 
 theorem map_alternatingFaceMapComplex {D : Type*} [Category D] [Preadditive D] (F : C ⥤ D)
@@ -194,7 +196,7 @@ theorem map_alternatingFaceMapComplex {D : Type*} [Category D] [Preadditive D] (
 
 theorem karoubi_alternatingFaceMapComplex_d (P : Karoubi (SimplicialObject C)) (n : ℕ) :
     ((AlternatingFaceMapComplex.obj (KaroubiFunctorCategoryEmbedding.obj P)).d (n + 1) n).f =
-      P.p.app (op [n + 1]) ≫ (AlternatingFaceMapComplex.obj P.X).d (n + 1) n := by
+      P.p.app (op ⦋n + 1⦌) ≫ (AlternatingFaceMapComplex.obj P.X).d (n + 1) n := by
   dsimp
   simp only [AlternatingFaceMapComplex.obj_d_eq, Karoubi.sum_hom, Preadditive.comp_sum,
     Karoubi.zsmul_hom, Preadditive.comp_zsmul]
@@ -209,7 +211,7 @@ def ε [Limits.HasZeroObject C] :
       SimplicialObject.Augmented.point ⋙ ChainComplex.single₀ C where
   app X := by
     refine (ChainComplex.toSingle₀Equiv _ _).symm ?_
-    refine ⟨X.hom.app (op [0]), ?_⟩
+    refine ⟨X.hom.app (op ⦋0⦌), ?_⟩
     dsimp
     rw [alternatingFaceMapComplex_obj_d, objD, Fin.sum_univ_two, Fin.val_zero,
       pow_zero, one_smul, Fin.val_one, pow_one, neg_smul, one_smul, add_comp,
@@ -225,7 +227,7 @@ def ε [Limits.HasZeroObject C] :
 
 @[simp]
 lemma ε_app_f_zero [Limits.HasZeroObject C] (X : SimplicialObject.Augmented C) :
-    (ε.app X).f 0 = X.hom.app (op [0]) :=
+    (ε.app X).f 0 = X.hom.app (op ⦋0⦌) :=
   ChainComplex.toSingle₀Equiv_symm_apply_f_zero _ _
 
 @[simp]
@@ -284,7 +286,7 @@ variable (X Y : CosimplicialObject C)
 /-- The differential on the alternating coface map complex is the alternate
 sum of the coface maps -/
 @[simp]
-def objD (n : ℕ) : X.obj [n] ⟶ X.obj [n + 1] :=
+def objD (n : ℕ) : X.obj ⦋n⦌ ⟶ X.obj ⦋n + 1⦌ :=
   ∑ i : Fin (n + 2), (-1 : ℤ) ^ (i : ℕ) • X.δ i
 
 theorem d_eq_unop_d (n : ℕ) :
@@ -299,14 +301,14 @@ theorem d_squared (n : ℕ) : objD X n ≫ objD X (n + 1) = 0 := by
 
 /-- The alternating coface map complex, on objects -/
 def obj : CochainComplex C ℕ :=
-  CochainComplex.of (fun n => X.obj [n]) (objD X) (d_squared X)
+  CochainComplex.of (fun n => X.obj ⦋n⦌) (objD X) (d_squared X)
 
 variable {X} {Y}
 
 /-- The alternating face map complex, on morphisms -/
 @[simp]
 def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
-  CochainComplex.ofHom _ _ _ _ _ _ (fun n => f.app [n]) fun n => by
+  CochainComplex.ofHom _ _ _ _ _ _ (fun n => f.app ⦋n⦌) fun n => by
     dsimp
     rw [comp_sum, sum_comp]
     refine Finset.sum_congr rfl fun x _ => ?_

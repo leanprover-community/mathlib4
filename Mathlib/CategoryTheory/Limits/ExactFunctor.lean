@@ -215,7 +215,7 @@ section
 variable (C D E)
 
 /-- Whiskering a left exact functor by a left exact functor yields a left exact functor. -/
-@[simps!]
+@[simps! obj_obj obj_map map_app_app]
 def LeftExactFunctor.whiskeringLeft : (C ⥤ₗ D) ⥤ (D ⥤ₗ E) ⥤ (C ⥤ₗ E) where
   obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringLeft C D E).obj F.obj)
     (fun G => by dsimp; exact comp_preservesFiniteLimits _ _)
@@ -230,7 +230,7 @@ def LeftExactFunctor.whiskeringLeft : (C ⥤ₗ D) ⥤ (D ⥤ₗ E) ⥤ (C ⥤�
     aesop_cat
 
 /-- Whiskering a left exact functor by a left exact functor yields a left exact functor. -/
-@[simps!]
+@[simps! obj_obj obj_map map_app_app]
 def LeftExactFunctor.whiskeringRight : (D ⥤ₗ E) ⥤ (C ⥤ₗ D) ⥤ (C ⥤ₗ E) where
   obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringRight C D E).obj F.obj)
     (fun G => by dsimp; exact comp_preservesFiniteLimits _ _)
@@ -245,7 +245,7 @@ def LeftExactFunctor.whiskeringRight : (D ⥤ₗ E) ⥤ (C ⥤ₗ D) ⥤ (C ⥤�
     aesop_cat
 
 /-- Whiskering a right exact functor by a right exact functor yields a right exact functor. -/
-@[simps!]
+@[simps! obj_obj obj_map map_app_app]
 def RightExactFunctor.whiskeringLeft : (C ⥤ᵣ D) ⥤ (D ⥤ᵣ E) ⥤ (C ⥤ᵣ E) where
   obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringLeft C D E).obj F.obj)
     (fun G => by dsimp; exact comp_preservesFiniteColimits _ _)
@@ -260,7 +260,7 @@ def RightExactFunctor.whiskeringLeft : (C ⥤ᵣ D) ⥤ (D ⥤ᵣ E) ⥤ (C ⥤�
     aesop_cat
 
 /-- Whiskering a right exact functor by a right exact functor yields a right exact functor. -/
-@[simps!]
+@[simps! obj_obj obj_map map_app_app]
 def RightExactFunctor.whiskeringRight : (D ⥤ᵣ E) ⥤ (C ⥤ᵣ D) ⥤ (C ⥤ᵣ E) where
   obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringRight C D E).obj F.obj)
     (fun G => by dsimp; exact comp_preservesFiniteColimits _ _)
@@ -275,7 +275,7 @@ def RightExactFunctor.whiskeringRight : (D ⥤ᵣ E) ⥤ (C ⥤ᵣ D) ⥤ (C ⥤
     aesop_cat
 
 /-- Whiskering an exact functor by an exact functor yields an exact functor. -/
-@[simps!]
+@[simps! obj_obj obj_map map_app_app]
 def ExactFunctor.whiskeringLeft : (C ⥤ₑ D) ⥤ (D ⥤ₑ E) ⥤ (C ⥤ₑ E) where
   obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringLeft C D E).obj F.obj)
     (fun G => ⟨by dsimp; exact comp_preservesFiniteLimits _ _,
@@ -291,7 +291,7 @@ def ExactFunctor.whiskeringLeft : (C ⥤ₑ D) ⥤ (D ⥤ₑ E) ⥤ (C ⥤ₑ E)
     aesop_cat
 
 /-- Whiskering an exact functor by an exact functor yields an exact functor. -/
-@[simps!]
+@[simps! obj_obj obj_map map_app_app]
 def ExactFunctor.whiskeringRight : (D ⥤ₑ E) ⥤ (C ⥤ₑ D) ⥤ (C ⥤ₑ E) where
   obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringRight C D E).obj F.obj)
     (fun G => ⟨by dsimp; exact comp_preservesFiniteLimits _ _,
