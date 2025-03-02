@@ -150,8 +150,7 @@ open IsLocalization Submonoid
 variable {R S : Type*} [CommRing R] [CommRing S]
 variable (y : R) [Algebra R S] [IsLocalization.Away y S]
 
-variable (S)
-
+variable (S) in
 /-- If `R` is a Jacobson ring, then maximal ideals in the localization at `y`
 correspond to maximal ideals in the original ring `R` that don't contain `y`.
 This lemma gives the correspondence in the particular case of an ideal and its comap.
@@ -183,8 +182,6 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
       refine fun hI' => hI.right ?_
       rw [← map_comap (powers y) S I, ← map_comap (powers y) S J]
       exact map_mono hI'
-
-variable {S}
 
 /-- If `R` is a Jacobson ring, then maximal ideals in the localization at `y`
 correspond to maximal ideals in the original ring `R` that don't contain `y`.

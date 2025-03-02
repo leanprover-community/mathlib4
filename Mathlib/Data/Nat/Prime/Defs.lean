@@ -43,11 +43,23 @@ def Prime (p : ℕ) :=
 theorem irreducible_iff_nat_prime (a : ℕ) : Irreducible a ↔ Nat.Prime a :=
   Iff.rfl
 
-@[aesop safe destruct] theorem not_prime_zero : ¬Prime 0
+theorem not_prime_zero : ¬ Prime 0
   | h => h.ne_zero rfl
 
-@[aesop safe destruct] theorem not_prime_one : ¬Prime 1
+/-- A copy of `not_prime_zero` stated in a way that works for `aesop`.
+
+See https://github.com/leanprover-community/aesop/issues/197 for an explanation. -/
+@[aesop safe destruct] theorem prime_zero_false : Prime 0 → False :=
+  not_prime_zero
+
+theorem not_prime_one : ¬ Prime 1
   | h => h.ne_one rfl
+
+/-- A copy of `not_prime_one` stated in a way that works for `aesop`.
+
+See https://github.com/leanprover-community/aesop/issues/197 for an explanation. -/
+@[aesop safe destruct] theorem prime_one_false : Prime 1 → False :=
+  not_prime_one
 
 theorem Prime.ne_zero {n : ℕ} (h : Prime n) : n ≠ 0 :=
   Irreducible.ne_zero h

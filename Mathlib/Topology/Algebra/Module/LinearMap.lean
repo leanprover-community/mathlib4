@@ -632,7 +632,7 @@ theorem _root_.Submodule.coe_subtypeL (p : Submodule R₁ M₁) :
 theorem _root_.Submodule.coe_subtypeL' (p : Submodule R₁ M₁) : ⇑p.subtypeL = p.subtype :=
   rfl
 
-@[simp] -- @[norm_cast] -- Porting note: A theorem with this can't have a rhs starting with `↑`.
+@[simp]
 theorem _root_.Submodule.subtypeL_apply (p : Submodule R₁ M₁) (x : p) : p.subtypeL x = x :=
   rfl
 
