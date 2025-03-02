@@ -12,6 +12,8 @@ getDeclarations () {
   cat "${script_file}"
 
   lake env lean "${script_file}"
+  # undo the local changes
+  git restore .
 }
 
 printf 'Save the declarations in the PR branch\n'
