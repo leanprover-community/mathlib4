@@ -44,8 +44,7 @@ instance : CoeOut X.Subcomplex SSet.{u} where
 /-- If `A : Subcomplex X`, this is the inclusion `A ⟶ X` in the category `SSet`. -/
 abbrev Subcomplex.ι (A : Subcomplex X) : Quiver.Hom (V := SSet) A X := Subpresheaf.ι A
 
-instance (A : X.Subcomplex) :
-    Mono A.ι :=
+instance (A : X.Subcomplex) : Mono A.ι :=
   inferInstanceAs (Mono (Subpresheaf.ι A))
 
 end SSet
