@@ -56,11 +56,11 @@ lemma isLoop_tfae (M : Matroid α) (e : α) : List.TFAE [
     M.IsCircuit {e},
     M.Dep {e},
     ∀ ⦃B⦄, M.IsBase B → e ∈ M.E \ B] := by
-  tfae_have 1 <-> 2 := Iff.rfl
-  tfae_have 2 <-> 3 := by simp [M.empty_indep.mem_closure_iff_of_not_mem (not_mem_empty e),
+  tfae_have 1 ↔ 2 := Iff.rfl
+  tfae_have 2 ↔ 3 := by simp [M.empty_indep.mem_closure_iff_of_not_mem (not_mem_empty e),
     isCircuit_def, minimal_iff_forall_ssubset, ssubset_singleton_iff]
-  tfae_have 2 <-> 4 := by simp [M.empty_indep.mem_closure_iff_of_not_mem (not_mem_empty e)]
-  tfae_have 4 <-> 5 := by
+  tfae_have 2 ↔ 4 := by simp [M.empty_indep.mem_closure_iff_of_not_mem (not_mem_empty e)]
+  tfae_have 4 ↔ 5 := by
     simp only [dep_iff, singleton_subset_iff, mem_diff, forall_and]
     refine ⟨fun h ↦ ⟨fun _ _ ↦ h.2, fun B hB heB ↦ h.1 (hB.indep.subset (by simpa))⟩,
       fun h ↦ ⟨fun hi ↦ ?_, h.1 _ M.exists_isBase.choose_spec⟩⟩
@@ -137,9 +137,10 @@ lemma IsLoop.closure (he : M.IsLoop e) : M.closure {e} = M.loops :=
   closure_eq_loops_of_subset (singleton_subset_iff.mpr he)
 
 lemma isLoop_iff_closure_eq_loops_and_mem_ground :
-    M.IsLoop e ↔ M.closure {e} = M.loops ∧ e ∈ M.E :=
-  ⟨fun h ↦ ⟨h.closure, h.mem_ground⟩, fun h ↦ by rw [isLoop_iff, ← singleton_subset_iff,
-     ← closure_subset_closure_iff_subset_closure, h.1]⟩
+    M.IsLoop e ↔ M.closure {e} = M.loops ∧ e ∈ M.E where
+  mp h := ⟨h.closure, h.mem_ground⟩
+  mpr h := by
+    rw [isLoop_iff, ← singleton_subset_iff, ← closure_subset_closure_iff_subset_closure, h.1]
 
 lemma isLoop_iff_closure_eq_loops (he : e ∈ M.E := by aesop_mat) :
     M.IsLoop e ↔ M.closure {e} = M.loops := by
