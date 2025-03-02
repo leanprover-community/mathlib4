@@ -445,6 +445,17 @@ def whiskering (D : Type u') [Category.{v'} D] : (C ⥤ D) ⥤ Augmented C ⥤ A
 
 variable {C}
 
+/-- The constant augmented simplicial object functor. -/
+@[simps]
+def const : C ⥤ Augmented C where
+  obj X :=
+    { left := (SimplicialObject.const C).obj X
+      right := X
+      hom := 𝟙 _ }
+  map f :=
+    { left := (SimplicialObject.const C).map f
+      right := f }
+
 end Augmented
 
 /-- Augment a simplicial object with an object. -/
@@ -764,6 +775,17 @@ def whiskering (D : Type u') [Category.{v'} D] : (C ⥤ D) ⥤ Augmented C ⥤ A
       naturality := fun _ _ f => by ext <;> dsimp <;> simp }
 
 variable {C}
+
+/-- The constant augmented cosimplicial object functor. -/
+@[simps]
+def const : C ⥤ Augmented C where
+  obj X :=
+    { left := X
+      right := (CosimplicialObject.const C).obj X
+      hom := 𝟙 _ }
+  map f :=
+    { left := f
+      right := (CosimplicialObject.const C).map f }
 
 end Augmented
 
