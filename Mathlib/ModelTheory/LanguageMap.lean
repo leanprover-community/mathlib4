@@ -283,14 +283,11 @@ structure LEquiv (L L' : Language) where
 -- \^L
 namespace LEquiv
 
-variable (L)
-
+variable (L) in
 /-- The identity equivalence from a first-order language to itself. -/
 @[simps]
 protected def refl : L ≃ᴸ L :=
   ⟨LHom.id L, LHom.id L, LHom.comp_id _, LHom.comp_id _⟩
-
-variable {L}
 
 instance : Inhabited (L ≃ᴸ L) :=
   ⟨LEquiv.refl L⟩
@@ -426,14 +423,19 @@ def LEquiv.addEmptyConstants [ie : IsEmpty α] : L ≃ᴸ L[[α]] where
 variable {α} {β : Type*}
 
 @[simp]
-theorem withConstants_funMap_sum_inl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
+theorem withConstants_funMap_sumInl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {n} {f : L.Functions n} {x : Fin n → M} : @funMap (L[[α]]) M _ n (Sum.inl f) x = funMap f x :=
   (lhomWithConstants L α).map_onFunction f x
 
 @[simp]
-theorem withConstants_relMap_sum_inl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
+theorem withConstants_relMap_sumInl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {n} {R : L.Relations n} {x : Fin n → M} : @RelMap (L[[α]]) M _ n (Sum.inl R) x = RelMap R x :=
   (lhomWithConstants L α).map_onRelation R x
+
+@[deprecated (since := "2025-02-21")] alias
+withConstants_funMap_sum_inl := withConstants_funMap_sumInl
+@[deprecated (since := "2025-02-21")] alias
+withConstants_relMap_sum_inl := withConstants_relMap_sumInl
 
 /-- The language map extending the constant set. -/
 def lhomWithConstantsMap (f : α → β) : L[[α]] →ᴸ L[[β]] :=
@@ -477,10 +479,13 @@ instance addConstants_expansion {L' : Language} [L'.Structure M] (φ : L →ᴸ 
   LHom.sumMap_isExpansionOn _ _ M
 
 @[simp]
-theorem withConstants_funMap_sum_inr {a : α} {x : Fin 0 → M} :
+theorem withConstants_funMap_sumInr {a : α} {x : Fin 0 → M} :
     @funMap (L[[α]]) M _ 0 (Sum.inr a : L[[α]].Functions 0) x = L.con a := by
   rw [Unique.eq_default x]
   exact (LHom.sumInr : constantsOn α →ᴸ L.sum _).map_onFunction _ _
+
+@[deprecated (since := "2025-02-21")] alias
+withConstants_funMap_sum_inr := withConstants_funMap_sumInr
 
 variable {α} (A : Set M)
 

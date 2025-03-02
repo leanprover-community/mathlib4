@@ -247,7 +247,7 @@ lemma one_lt_partSize_index_zero (c : OrderedFinpartition (n + 1)) (hc : range (
     have : {c.emb (c.index 0) 0,
         c.emb (c.index 0) ⟨c.partSize (c.index 0) - 1, Nat.sub_one_lt_of_lt (c.partSize_pos _)⟩}
           ⊆ range (c.emb (c.index 0)) := by simp [insert_subset]
-    simp [emb_zero] at this
+    simp only [emb_zero] at this
     convert Nat.card_mono Subtype.finite this
     simp only [Nat.card_eq_fintype_card, Fintype.card_ofFinset, toFinset_singleton]
     apply (Finset.card_pair ?_).symm
@@ -576,7 +576,7 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
         rintro rfl
         simp only [c.emb_zero] at hij
         exact (Fin.succ_ne_zero _).symm hij
-      have je_ne' : (j : ℕ) ≠ 0 := by simpa [← val_eq_val] using j_ne
+      have je_ne' : (j : ℕ) ≠ 0 := by simpa
       simp only [↓reduceDIte, Nat.succ_eq_add_one]
       have A : c.partSize (c.index 0) - 1 + 1 = c.partSize (c.index 0) :=
         Nat.sub_add_cancel (c.partSize_pos _)

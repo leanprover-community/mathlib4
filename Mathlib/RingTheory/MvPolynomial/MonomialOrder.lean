@@ -166,12 +166,9 @@ theorem degree_X [Nontrivial R] {s : σ} :
   rw [degree_monomial, if_neg one_ne_zero]
 
 @[simp] theorem degree_one : m.degree (1 : MvPolynomial σ R) = 0 := by
-  obtain h | h' := subsingleton_or_nontrivial R
-  · rw [Subsingleton.eq_zero 1, degree_zero]
-  · change m.degree (monomial 0 1) = 0
-    classical
-    rw [degree_monomial]
-    simp
+  nontriviality R
+  classical rw [MvPolynomial.one_def, degree_monomial]
+  simp
 
 @[simp]
 theorem leadingCoeff_monomial {d : σ →₀ ℕ} (c : R) :

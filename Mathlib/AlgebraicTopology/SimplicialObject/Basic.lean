@@ -17,7 +17,7 @@ import Mathlib.Util.Superscript
 A simplicial object in a category `C` is a `C`-valued presheaf on `SimplexCategory`.
 (Similarly, a cosimplicial object is a functor `SimplexCategory ⥤ C`.)
 
-## Notations
+## Notation
 
 The following notations can be enabled via `open Simplicial`.
 
@@ -244,14 +244,11 @@ instance {n} {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
 instance {n} [HasColimits C] : HasColimits (SimplicialObject.Truncated C n) :=
   ⟨inferInstance⟩
 
-variable (C)
-
+variable (C) in
 /-- Functor composition induces a functor on truncated simplicial objects. -/
 @[simps!]
 def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
-
-variable {C}
 
 section Meta
 /-! We provide a macro and a delaborator for the truncated simplicial object
@@ -520,7 +517,6 @@ def augment (X : SimplicialObject C) (X₀ : C) (f : X _⦋0⦌ ⟶ X₀)
         rw [← g.op_unop]
         simpa only [← X.map_comp, ← Category.assoc, Category.comp_id, ← op_comp] using w _ _ _ }
 
--- Porting note: removed @[simp] as the linter complains
 theorem augment_hom_zero (X : SimplicialObject C) (X₀ : C) (f : X _⦋0⦌ ⟶ X₀) (w) :
     (X.augment X₀ f w).hom.app (op ⦋0⦌) = f := by simp
 
@@ -721,14 +717,11 @@ instance {n} {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
 instance {n} [HasColimits C] : HasColimits (CosimplicialObject.Truncated C n) :=
   ⟨inferInstance⟩
 
-variable (C)
-
+variable (C) in
 /-- Functor composition induces a functor on truncated cosimplicial objects. -/
 @[simps!]
 def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
-
-variable {C}
 
 section Meta
 /-! We provide a macro and a delaborator for the truncated cosimplicial object
@@ -888,7 +881,6 @@ def augment (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj ⦋0⦌)
         dsimp
         rw [Category.id_comp, Category.assoc, ← X.map_comp, w] }
 
--- Porting note: removed @[simp] as the linter complains
 theorem augment_hom_zero (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj ⦋0⦌) (w) :
     (X.augment X₀ f w).hom.app ⦋0⦌ = f := by simp
 
