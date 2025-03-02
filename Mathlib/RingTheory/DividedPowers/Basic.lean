@@ -232,7 +232,7 @@ Proposition 1.2.7 of [Berthelot-1974], part (i). -/
 theorem nilpotent_of_mem_dpIdeal {n : ℕ} (hn : n ≠ 0) (hnI : ∀ {y}, y ∈ I → n • y = 0)
     (hI : DividedPowers I) (ha : a ∈ I) : a ^ n = 0 := by
   have h_fac : (n ! : A) * hI.dpow n a = n • ((n - 1)! : A) * hI.dpow n a := by
-    rw [nsmul_eq_mul, ← cast_mul, mul_factorial_pred (Nat.pos_of_ne_zero hn)]
+    rw [nsmul_eq_mul, ← cast_mul, mul_factorial_pred hn]
   rw [← hI.factorial_mul_dpow_eq_pow ha, h_fac, smul_mul_assoc]
   exact hnI (I.mul_mem_left ((n - 1)! : A) (hI.dpow_mem hn ha))
 
