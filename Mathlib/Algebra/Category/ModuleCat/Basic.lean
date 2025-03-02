@@ -180,14 +180,10 @@ lemma ofHom_comp {M N O : Type v} [AddCommGroup M] [AddCommGroup N] [AddCommGrou
 lemma ofHom_apply {M N : Type v} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
     (f : M →ₗ[R] N) (x : M) : ofHom f x = f x := rfl
 
-@[simp]
 lemma inv_hom_apply {M N : ModuleCat.{v} R} (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {M N : ModuleCat.{v} R} (e : M ≅ N) (x : N) : e.hom (e.inv x) = x := by
-  rw [← comp_apply]
   simp
 
 /-- `ModuleCat.Hom.hom` bundled as an `Equiv`. -/
@@ -221,11 +217,6 @@ theorem forget₂_obj (X : ModuleCat R) :
     (forget₂ (ModuleCat R) AddCommGrp).obj X = AddCommGrp.of X :=
   rfl
 
--- Porting note: the simpNF linter correctly doesn't like this.
--- I'm not sure what this is for, actually.
--- If it is really needed, better might be a simp lemma that says
--- `AddCommGrp.of (ModuleCat.of R X) = AddCommGrp.of X`.
--- @[simp 900]
 theorem forget₂_obj_moduleCat_of (X : Type v) [AddCommGroup X] [Module R X] :
     (forget₂ (ModuleCat R) AddCommGrp).obj (of R X) = AddCommGrp.of X :=
   rfl
@@ -504,8 +495,7 @@ lemma smul_naturality {M N : ModuleCat.{v} R} (f : M ⟶ N) (r : R) :
   ext x
   exact (f.hom.map_smul r x).symm
 
-variable (R)
-
+variable (R) in
 /-- The scalar multiplication on `ModuleCat R` considered as a morphism of rings
 to the endomorphisms of the forgetful functor to `AddCommGrp)`. -/
 @[simps]
@@ -517,8 +507,6 @@ def smulNatTrans : R →+* End (forget₂ (ModuleCat R) AddCommGrp) where
   map_zero' := NatTrans.ext (by aesop_cat)
   map_mul' _ _ := NatTrans.ext (by aesop_cat)
   map_add' _ _ := NatTrans.ext (by aesop_cat)
-
-variable {R}
 
 /-- Given `A : AddCommGrp` and a ring morphism `R →+* End A`, this is a type synonym
 for `A`, on which we shall define a structure of `R`-module. -/

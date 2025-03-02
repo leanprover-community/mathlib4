@@ -521,7 +521,7 @@ theorem kerParam_range_eq :
       refine ⟨⟨i, mem_centralizer_singleton_iff.mpr (self_mem_cycle_factors_commute i.2)⟩, ?_, rfl⟩
       exact Perm.ext fun x ↦ Subtype.ext (cycleFactorsFinset_mem_commute' g i.2 x.2).mul_inv_cancel
   · rintro - ⟨p, hp, rfl⟩
-    simp only [coeSubtype]
+    simp only [coe_subtype]
     set u : Perm (Function.fixedPoints g) :=
       subtypePerm p (fun x ↦ mem_fixedPoints_iff_apply_mem_of_mem_centralizer p.2)
     simp only [SetLike.mem_coe, mem_ker_toPermHom_iff, IsCycle.forall_commute_iff] at hp

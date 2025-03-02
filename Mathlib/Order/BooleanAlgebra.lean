@@ -53,6 +53,7 @@ that for all `a, b : α` where `a ≤ b`, the equations `x ⊔ a = b` and `x ⊓
 generalized Boolean algebras, Boolean algebras, lattices, sdiff, compl
 -/
 
+assert_not_exists RelIso
 
 open Function OrderDual
 

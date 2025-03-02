@@ -26,7 +26,7 @@ This file concerns modules where the scalars are the natural numbers or the inte
 semimodule, module, vector space
 -/
 
-assert_not_exists Field Invertible Multiset Pi.single_smul₀ Set.indicator
+assert_not_exists RelIso Field Invertible Multiset Pi.single_smul₀ Set.indicator
 
 open Function Set
 
@@ -62,8 +62,7 @@ instance AddCommGroup.toIntModule : Module ℤ M where
 
 end AddCommGroup
 
-variable (R)
-
+variable (R) in
 /-- An `AddCommMonoid` that is a `Module` over a `Ring` carries a natural `AddCommGroup`
 structure.
 See note [reducible non-instances]. -/
@@ -79,8 +78,6 @@ abbrev Module.addCommMonoidToAddCommGroup
     zsmul_zero' := fun a => by simpa only [Int.cast_zero] using zero_smul R a
     zsmul_succ' := fun z a => by simp [add_comm, add_smul]
     zsmul_neg' := fun z a => by simp [← smul_assoc, neg_one_smul] }
-
-variable {R}
 
 section AddCommMonoid
 
