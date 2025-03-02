@@ -8,7 +8,7 @@ import Mathlib.MeasureTheory.Function.FactorsThrough
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
 import Mathlib.Probability.Kernel.Composition.MeasureComp
-import Mathlib.Probability.Kernel.Integral
+import Mathlib.Probability.Kernel.SetIntegral
 import Mathlib.Probability.Kernel.IonescuTulcea.PTraj
 
 /-!
@@ -694,7 +694,7 @@ theorem setIntegral_traj_ptraj' {a b : ℕ} (hab : a ≤ b) {u : (Π i : Iic a, 
     {A : Set (Π i : Iic b, X i)} (hA : MeasurableSet A) :
     ∫ x in A, ∫ y, f x y ∂traj κ b x ∂ptraj κ a b u =
       ∫ y in frestrictLe b ⁻¹' A, f (frestrictLe b y) y ∂traj κ a u := by
-  rw [← integral_integral_indicator _ hA, integral_traj_ptraj' hab]
+  rw [← integral_integral_indicator _ _ _ hA, integral_traj_ptraj' hab]
   · simp_rw [← Set.indicator_comp_right, ← integral_indicator (measurable_frestrictLe b hA)]
     rfl
   convert hf.indicator (hA.prod .univ)
