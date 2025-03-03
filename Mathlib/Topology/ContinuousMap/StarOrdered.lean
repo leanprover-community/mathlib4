@@ -17,7 +17,9 @@ by `ℝ≥0`, `ℝ`, and `ℂ`, and the instances can be found in the file
 
 ## Implementation notes
 
-Instead of asking for a well-behaved square root on `{x : R | 0 ≤ x}` in the obvious way, we instead require that, for every `x y  : R` such that `x ≤ y`, there exist some `s` such that `x + s*s = y`. This is because we need this type class to work for `ℝ≥0` for the
+Instead of asking for a well-behaved square root on `{x : R | 0 ≤ x}` in the obvious way, we instead
+require that, for every `x y  : R` such that `x ≤ y`, there exist some `s` such that `x + s*s = y`.
+This is because we need this type class to work for `ℝ≥0` for the
 continuous functional calculus. We could instead assume `[OrderedSub R] [ContinuousSub R]`, but that
 would lead to a proliferation of type class assumptions in the general case of the continuous
 functional calculus, which we want to avoid because there is *already* a proliferation of type
