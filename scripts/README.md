@@ -52,6 +52,13 @@ to learn about it as well!
 - `declarations_diff.sh`
   Attempts to find which declarations have been removed and which have been added in the current PR
   with respect to `master`, and posts a comment on github with the result.
+- `declarations_diff.lean`
+  Creates an environment containing all declarations in `Mathlib`, `Archive` and `Counterexamples`
+  and contains a lean command that saved the names of all declarations to a file.
+  This is a Lean implementation of the `declarations_diff.sh` script.
+- `declDiff_shell_glue.sh`
+  Runs the command in `declarations_diff.lean` from the shell and is used by CI to produce a
+  PR comment with the declaration diff.
 - `autolabel.lean` is the Lean script in charge of automatically adding a `t-`label on eligible PRs.
   Autolabelling is inferred by which directories the current PR modifies.
 
