@@ -19,7 +19,7 @@ In this file we proved the Weierstrass prepation theorem for formal power series
 
 # Main results
 
-* `CompleteLocalRing.weierstrass_preparation` : The Weierstarss preparation theorem for complete
+* `CompleteLocalRing.weierstrass_preparation` : The Weierstrass preparation theorem for complete
   local ring, stating that every formal power series with some coefficient not in the unique
   maximal ideal can be uniquely written as the product of a distinguish polynomial and an unit.
 
