@@ -602,6 +602,7 @@ import Mathlib.Algebra.Module.GradedModule
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Module.Lattice
+import Mathlib.Algebra.Module.Length
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Algebra.Module.LinearMap.End
@@ -4544,6 +4545,7 @@ import Mathlib.Order.SupIndep
 import Mathlib.Order.SymmDiff
 import Mathlib.Order.Synonym
 import Mathlib.Order.TransfiniteIteration
+import Mathlib.Order.TrimmedLength
 import Mathlib.Order.TypeTags
 import Mathlib.Order.ULift
 import Mathlib.Order.UpperLower.Basic
@@ -4675,6 +4677,7 @@ import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 import Mathlib.RingTheory.Artinian.Algebra
 import Mathlib.RingTheory.Artinian.Instances
 import Mathlib.RingTheory.Artinian.Module
+import Mathlib.RingTheory.Artinian.Noetherian
 import Mathlib.RingTheory.Artinian.Ring
 import Mathlib.RingTheory.Bezout
 import Mathlib.RingTheory.Bialgebra.Basic
@@ -4791,7 +4794,8 @@ import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.RingTheory.Ideal.GoingDown
 import Mathlib.RingTheory.Ideal.GoingUp
-import Mathlib.RingTheory.Ideal.Height
+import Mathlib.RingTheory.Ideal.Height.Basic
+import Mathlib.RingTheory.Ideal.Height.KrullHeightTheorem
 import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.IsPrimary
 import Mathlib.RingTheory.Ideal.IsPrincipal

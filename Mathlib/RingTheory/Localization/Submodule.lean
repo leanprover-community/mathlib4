@@ -5,6 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Ideal
+import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
@@ -186,3 +187,16 @@ theorem coeSubmodule_isPrincipal {I : Ideal R} : (coeSubmodule K I).IsPrincipal 
 end CommRing
 
 end IsFractionRing
+
+section AtPrime
+
+lemma IsLocalization.AtPrime.isNoetherianRing {R : Type*} [CommSemiring R] (I : Ideal R) [I.IsPrime]
+    (A : Type*) [CommSemiring A] [Algebra R A] [IsLocalization.AtPrime A I]
+    [hR : IsNoetherianRing R] : IsNoetherianRing A := by
+  rw [isNoetherianRing_iff, isNoetherian_iff] at hR ⊢
+  exact OrderEmbedding.wellFounded (IsLocalization.orderEmbedding I.primeCompl A).dual hR
+
+instance {R : Type*} [CommSemiring R] (I : Ideal R) [I.IsPrime] [IsNoetherianRing R] :
+    IsNoetherianRing (Localization.AtPrime I) := IsLocalization.AtPrime.isNoetherianRing I _
+
+end AtPrime
