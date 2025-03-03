@@ -246,6 +246,8 @@ jobs:
           ./scripts/declDiff_shell_glue.sh
 
       - name: Report diff in Lean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           printf $'%s\n' "${{ steps.diff_in_lean.outputs.LeanDiff }}"
           diff decls_in_master.txt decls_in_PR.txt || echo "--- END of diff ---"
