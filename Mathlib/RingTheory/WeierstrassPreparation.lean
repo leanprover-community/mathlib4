@@ -23,6 +23,11 @@ In this file we proved the Weierstrass prepation theorem for formal power series
   local ring, stating that every formal power series with some coefficient not in the unique
   maximal ideal can be uniquely written as the product of a distinguish polynomial and an unit.
 
+* `IsDiscreteValuationRing.weierstrass_preparation` : The Weierstrass preparation theorem for
+  complete discrete valuation ring, stating that when given an irreducible element,
+  every nonzero formal power series can be uniquely written as the product of some power of
+  the given irreducible element, a distinguish polynomial and an unit.
+
 -/
 
 open scoped Polynomial
