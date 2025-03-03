@@ -80,11 +80,12 @@ end Monoid
 end MulAction
 
 section Arrow
+variable {G A B : Type*} [DivisionMonoid G] [MulAction G A]
 
 /-- If `G` acts on `A`, then it acts also on `A → B`, by `(g • F) a = F (g⁻¹ • a)`. -/
 @[to_additive (attr := simps) arrowAddAction
-      "If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)`"]
-def arrowAction {G A B : Type*} [DivisionMonoid G] [MulAction G A] : MulAction G (A → B) where
+"If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)`"]
+def arrowAction : MulAction G (A → B) where
   smul g F a := F (g⁻¹ • a)
   one_smul f := by
     show (fun x => f ((1 : G)⁻¹ • x)) = f
@@ -92,6 +93,15 @@ def arrowAction {G A B : Type*} [DivisionMonoid G] [MulAction G A] : MulAction G
   mul_smul x y f := by
     show (fun a => f ((x*y)⁻¹ • a)) = (fun a => f (y⁻¹ • x⁻¹ • a))
     simp only [mul_smul, mul_inv_rev]
+
+attribute [local instance] arrowAction
+
+variable [Monoid M]
+
+/-- When `M` is a monoid, `ArrowAction` is additionally a `MulDistribMulAction`. -/
+def arrowMulDistribMulAction : MulDistribMulAction G (A → M) where
+  smul_one _ := rfl
+  smul_mul _ _ _ := rfl
 
 end Arrow
 
@@ -179,15 +189,3 @@ lemma smul_div' (r : M) (x y : A) : r • (x / y) = r • x / r • y :=
   map_div (MulDistribMulAction.toMonoidHom A r) x y
 
 end MulDistribMulAction
-
-section Arrow
-variable [Group G] [MulAction G A] [Monoid M]
-
-attribute [local instance] arrowAction
-
-/-- When `M` is a monoid, `ArrowAction` is additionally a `MulDistribMulAction`. -/
-def arrowMulDistribMulAction : MulDistribMulAction G (A → M) where
-  smul_one _ := rfl
-  smul_mul _ _ _ := rfl
-
-end Arrow
