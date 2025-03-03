@@ -452,7 +452,7 @@ theorem lmarginalPTraj_self (hab : a ≤ b) (hbc : b ≤ c)
   · rw [lmarginalPTraj_le κ le_rfl (measurable_lmarginalPTraj _ _ hf)]
   · rw [lmarginalPTraj_le κ le_rfl hf]
   simp_rw [lmarginalPTraj, frestrictLe, restrict_updateFinset,
-    updateFinset_updateFinset_subset (Iic_subset_Iic.2 hbc.le)]
+    updateFinset_updateFinset_of_subset (Iic_subset_Iic.2 hbc.le)]
   rw [← lintegral_comp, ptraj_comp_ptraj hab.le hbc.le]
   fun_prop
 
