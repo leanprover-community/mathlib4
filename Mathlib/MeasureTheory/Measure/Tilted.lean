@@ -306,7 +306,7 @@ lemma integrable_tilted_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ 
     congr! 2 with a
     rw [smul_smul, div_eq_inv_mul]
   _ ↔ Integrable (fun x ↦ exp (f x) • g x) μ := by
-    rw [integrable_smul_iff']
+    rw [integrable_fun_smul_iff]
     simp only [ne_eq, inv_eq_zero]
     have : NeZero μ := ⟨hμ⟩
     exact (integral_exp_pos hf).ne'

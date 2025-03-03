@@ -810,8 +810,8 @@ theorem integrable_smul_iff [NormedDivisionRing 𝕜] [Module 𝕜 β] [BoundedS
     (hc : c ≠ 0) (f : α → β) : Integrable (c • f) μ ↔ Integrable f μ :=
   (IsUnit.mk0 _ hc).integrable_smul_iff f
 
-theorem integrable_smul_iff' [NormedDivisionRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β] {c : 𝕜}
-    (hc : c ≠ 0) (f : α → β) :
+theorem integrable_fun_smul_iff [NormedDivisionRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β]
+    {c : 𝕜} (hc : c ≠ 0) (f : α → β) :
     Integrable (fun x ↦ c • f x) μ ↔ Integrable f μ :=
   integrable_smul_iff hc f
 
