@@ -5,6 +5,7 @@ Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
 import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Action.End
+import Mathlib.Algebra.GroupWithZero.Prod
 
 /-!
 # Prod instances for multiplicative actions with zero
@@ -20,7 +21,13 @@ This file defines instances for `MulActionWithZero` and related structures on `�
 
 assert_not_exists Ring
 
-variable {M N α β : Type*}
+variable {M₀ N₀ M N α β : Type*}
+
+/-- Scalar multiplication as a monoid homomorphism with zero. -/
+@[simps]
+def smulMonoidWithZeroHom [MonoidWithZero M₀] [MulZeroOneClass N₀] [MulActionWithZero M₀ N₀]
+    [IsScalarTower M₀ N₀ N₀] [SMulCommClass M₀ N₀ N₀] : M₀ × N₀ →*₀ N₀ :=
+  { smulMonoidHom with map_zero' := smul_zero _ }
 
 namespace Prod
 
