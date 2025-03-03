@@ -138,10 +138,6 @@ theorem ne_iff {l₁ l₂ : List α} (H : length l₁ ≤ length l₂) : Lex (·
 
 end Lex
 
---Note: this overrides an instance in core lean
-instance LT' [LT α] : LT (List α) :=
-  ⟨Lex (· < ·)⟩
-
 instance [LinearOrder α] : LinearOrder (List α) :=
   have : ∀ {r} [IsStrictTotalOrder α r], IsStrictTotalOrder (List α) (Lex r) :=
     { isStrictWeakOrder_of_isOrderConnected with }
