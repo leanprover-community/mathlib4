@@ -473,6 +473,9 @@ theorem volume_eq_two_pi_pow_mul_integral [NumberField K]
   · exact (Measurable.mul (by fun_prop)
       <| measurable_const.indicator <| hm.preimage (measurable_polarSpaceCoord_symm K)).aemeasurable
 
+/--
+Docstring.
+-/
 abbrev normAtAllPlaces (x : mixedSpace K) : realSpace K :=
     fun w ↦ normAtPlace w x
 
