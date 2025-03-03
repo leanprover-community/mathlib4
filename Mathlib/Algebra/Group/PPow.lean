@@ -3,7 +3,7 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.PNat.Basic
 
 /-!
