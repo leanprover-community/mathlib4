@@ -16,10 +16,8 @@ getDeclarations () {
   lake exe cache get Archive.lean Counterexamples.lean Mathlib.lean &&
 
   printf $'* Save the declarations to \'%s\'\n' "${1}"
-  printf $'def %s := 0\n#all_declarations "%s"\n' "${1}" "${1}" >> "${script_file}"
+  printf $'#all_declarations "%s"\n' "${1}" "${1}" >> "${script_file}"
   #printf $'#all_declarations "%s"\n' "${1}" >> "${script_file}"
-
-  cat "${script_file}"
 
   lake env lean "${script_file}"
 
