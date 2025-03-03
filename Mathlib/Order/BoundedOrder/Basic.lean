@@ -332,6 +332,9 @@ theorem OrderBot.ext_bot {α} {hA : PartialOrder α} (A : OrderBot α) {hB : Par
   denoted `⊤` and `⊥` respectively. -/
 class BoundedOrder (α : Type u) [LE α] extends OrderTop α, OrderBot α
 
+instance (α : Type u) [LE α] [OrderTop α] [OrderBot α] : BoundedOrder α := by
+  constructor
+
 instance OrderDual.instBoundedOrder (α : Type u) [LE α] [BoundedOrder α] : BoundedOrder αᵒᵈ where
   __ := inferInstanceAs (OrderTop αᵒᵈ)
   __ := inferInstanceAs (OrderBot αᵒᵈ)

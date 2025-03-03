@@ -115,6 +115,14 @@ instance (priority := 100) isArtinian_of_finite [Finite M] : IsArtinian R M :=
 -- Porting note: elab_as_elim can only be global and cannot be changed on an imported decl
 -- attribute [local elab_as_elim] Finite.induction_empty_option
 
+lemma isArtinian_top_iff {M} [AddCommGroup M] [Module R M] :
+  IsArtinian R (⊤ : Submodule R M) ↔ IsArtinian R M := by
+  constructor
+  · intro h; haveI := h
+    exact isArtinian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
+  · intro h; haveI := h
+    exact isArtinian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl).symm
+
 open Submodule
 
 theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [h : IsArtinian R M] {s : Set M}
@@ -596,3 +604,15 @@ instance : IsSemiprimaryRing R where
 end Ring
 
 end IsArtinianRing
+
+section Algebra
+
+lemma isArtinian_iff_tower_of_surjective {R S} (M) [CommRing R] [CommRing S]
+    [AddCommGroup M] [Algebra R S] [Module S M] [Module R M] [IsScalarTower R S M]
+    (h : Function.Surjective (algebraMap R S)) :
+  IsArtinian R M ↔ IsArtinian S M := by
+  refine ⟨isArtinian_of_tower R, ?_⟩
+  simp_rw [isArtinian_iff]
+  exact (Submodule.orderIsoOfSurjective M h).symm.toOrderEmbedding.wellFounded
+
+end Algebra
