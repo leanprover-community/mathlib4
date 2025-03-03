@@ -34,6 +34,8 @@ getDeclarations decls_in_master.txt
 
 printf 'Diff the declarations\n'
 
+diff decls_in_master.txt decls_in_PR.txt || echo true
+
 printf $'LeanDiff<<EOF\n<details><summary> <b>Declaration diff in Lean</b></summary>\n\n@@@diff\n%s\n@@@\n</details>\nEOF' "$(diff decls_in_master.txt decls_in_PR.txt | grep "^[<>]")" |
   # show result in stdout and also store it in `GITHUB_OUTPUT`
   tee >(cat) >> "${GITHUB_OUTPUT}"
