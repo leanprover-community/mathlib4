@@ -98,7 +98,7 @@ instance : IsDedekindDomain (𝓞 (WithVal v)) := inferInstanceAs (IsDedekindDom
 instance (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
     IsIntegralClosure R ℤ (WithVal v) := ‹IsIntegralClosure R ℤ K›
 
-/-- Canonical ring equivalence between `𝓞 (WithVal v)` and an integral closure of
+/-- The ring equivalence between `𝓞 (WithVal v)` and an integral closure of
 `ℤ` in `K`. -/
 def withValEquiv (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
     𝓞 (WithVal v) ≃+* R := NumberField.RingOfIntegers.equiv R
@@ -106,5 +106,7 @@ def withValEquiv (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ
 end NumberField.RingOfIntegers
 
 open scoped NumberField in
+/-- The ring of integers of `WithVal v`, when `v` is a valuation on `ℚ`, is
+equivalent to `ℤ`. -/
 def Rat.ringOfIntegersWithValEquiv (v : Valuation ℚ Γ₀) : 𝓞 (WithVal v) ≃+* ℤ :=
   NumberField.RingOfIntegers.withValEquiv v ℤ
