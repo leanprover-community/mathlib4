@@ -33,4 +33,9 @@ getDeclarations decls_in_master.txt
 
 printf 'Diff the declarations\n'
 
-printf '<details><summary> <b>Declaration diff in Lean</b></summary>\n\n```diff\n%s\n```\n</details>' "$(diff decls_in_master.txt decls_in_PR.txt | grep "^[<>]")"
+printf $'<details><summary> <b>Declaration diff in Lean</b></summary>
+
+```diff
+%s
+```
+</details>\n' "$(diff decls_in_master.txt decls_in_PR.txt | grep "^[<>]")"
