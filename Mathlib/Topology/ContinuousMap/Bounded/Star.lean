@@ -49,9 +49,6 @@ variable {𝕜 : Type*} [NormedField 𝕜] [StarRing 𝕜] [TopologicalSpace α]
 
 variable [NormedSpace 𝕜 β] [StarModule 𝕜 β]
 
-instance instStar : Star (α →ᵇ β) where
-  star f := f.comp star starNormedAddGroupHom.lipschitz
-
 instance instStarAddMonoid : StarAddMonoid (α →ᵇ β) where
   star f := f.comp star starNormedAddGroupHom.lipschitz
   star_involutive f := ext fun x => star_star (f x)
@@ -100,11 +97,11 @@ variable (𝕜 : Type*) [NormedField 𝕜] [TopologicalSpace α]
 
 /-- The ⋆-algebra-homomorphism forgetting that a bounded continuous function is bounded. -/
 @[simps!]
-def toContinuousMap_starₐ : (α →ᵇ β) →⋆ₐ[𝕜] C(α, β) := { toContinuousMapₐ 𝕜 with
+def toContinuousMapStarₐ : (α →ᵇ β) →⋆ₐ[𝕜] C(α, β) := { toContinuousMapₐ 𝕜 with
   map_star' _ := rfl }
 
 @[simp]
-theorem coe_toContinuousMap_starₐ (f : α →ᵇ β) : (f.toContinuousMap_starₐ 𝕜 : α → β) = f := rfl
+theorem coe_toContinuousMapStarₐ (f : α →ᵇ β) : (f.toContinuousMapStarₐ 𝕜 : α → β) = f := rfl
 
 end NormedAlgebra
 
