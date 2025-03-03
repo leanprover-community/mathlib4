@@ -36,7 +36,7 @@ the end of the day we get kernels which still cannot be composed together.
 
 To tackle this issue, we decide here to only consider kernels of the form
 `Kernel (Π i : Iic a, X i) (Π i : Iic b, X i)`. In other words these kernels take as input
-a trajectory up to time `a` and outputs the distribution of the full trajectory up to time `b`.
+a trajectory up to time `a` and output the distribution of the full trajectory up to time `b`.
 This is captured in the definition `ptraj κ a b` (`ptraj` stands for "partial trajectory").
 The advantage of this approach is that it allows us to write for instance
 `ptraj κ b c ∘ₖ ptraj κ a b = ptraj κ a c` (see `ptraj_comp_ptraj`.)
