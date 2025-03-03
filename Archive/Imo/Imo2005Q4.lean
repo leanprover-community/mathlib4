@@ -5,8 +5,6 @@ Authors: Heather Macbeth
 -/
 import Mathlib.FieldTheory.Finite.Basic
 
-#align_import imo.imo2005_q4 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
-
 /-!
 # IMO 2005 Q4
 
@@ -22,7 +20,6 @@ namespace IMO2005Q4
 /-- The sequence considered in the problem, `2 ^ n + 3 ^ n + 6 ^ n - 1`. -/
 def a (n : ℕ) : ℤ :=
   2 ^ n + 3 ^ n + 6 ^ n - 1
-#align imo2005_q4.a IMO2005Q4.a
 
 /-- Key lemma (a modular arithmetic calculation):  Given a prime `p` other than `2` or `3`, the
 `(p - 2)`th term of the sequence has `p` as a factor. -/
@@ -44,7 +41,6 @@ theorem find_specified_factor {p : ℕ} (hp : Nat.Prime p) (hp2 : p ≠ 2) (hp3 
       gcongr <;> apply Int.ModEq.pow_card_sub_one_eq_one hp <;>
         rwa [Int.isCoprime_iff_gcd_eq_one, Int.gcd_comm]
     _ = 0 := rfl
-#align imo2005_q4.find_specified_factor IMO2005Q4.find_specified_factorₓ
 
 end IMO2005Q4
 
@@ -80,4 +76,3 @@ theorem imo2005_q4 {k : ℕ} (hk : 0 < k) : (∀ n : ℕ, 1 ≤ n → IsCoprime 
   calc
     1 = 3 - 2 := by norm_num
     _ ≤ p - 2 := tsub_le_tsub_right (Nat.succ_le_of_lt <| hp.two_le.lt_of_ne' hp2) _
-#align imo2005_q4 imo2005_q4

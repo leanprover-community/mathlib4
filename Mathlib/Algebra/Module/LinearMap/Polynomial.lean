@@ -5,9 +5,10 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.LinearAlgebra.Charpoly.ToMatrix
-import Mathlib.LinearAlgebra.Dimension.Finrank
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
+import Mathlib.RingTheory.Finiteness.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
 # Characteristic polynomials of linear families of endomorphisms
@@ -61,7 +62,7 @@ The proof concludes because characteristic polynomials are independent of the ch
 
 -/
 
-open scoped BigOperators Matrix
+open scoped Matrix
 
 namespace Matrix
 
@@ -93,7 +94,7 @@ lemma toMvPolynomial_isHomogeneous (M : Matrix m n R) (i : m) :
   apply MvPolynomial.IsHomogeneous.sum
   rintro j -
   apply MvPolynomial.isHomogeneous_monomial _ _
-  rw [degree, Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton,
+  simp [Finsupp.degree, Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton,
     Finsupp.single_eq_same]
 
 lemma toMvPolynomial_totalDegree_le (M : Matrix m n R) (i : m) :
@@ -136,14 +137,16 @@ end Matrix
 
 namespace LinearMap
 
-variable {R M₁ M₂ M₃ ι₁ ι₂ ι₃ : Type*}
-variable [CommRing R] [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
-variable [Module R M₁] [Module R M₂] [Module R M₃]
-variable [Fintype ι₁] [Fintype ι₂] [Fintype ι₃]
-variable [DecidableEq ι₁] [DecidableEq ι₂] [DecidableEq ι₃]
-variable (b₁ : Basis ι₁ R M₁) (b₂ : Basis ι₂ R M₂) (b₃ : Basis ι₃ R M₃)
-
 open MvPolynomial
+
+section
+
+variable {R M₁ M₂ ι₁ ι₂ : Type*}
+variable [CommRing R] [AddCommGroup M₁] [AddCommGroup M₂]
+variable [Module R M₁] [Module R M₂]
+variable [Fintype ι₁] [Finite ι₂]
+variable [DecidableEq ι₁]
+variable (b₁ : Basis ι₁ R M₁) (b₂ : Basis ι₂ R M₂)
 
 /-- Let `f : M₁ →ₗ[R] M₂` be an `R`-linear map
 between modules `M₁` and `M₂` with bases `b₁` and `b₂` respectively.
@@ -190,6 +193,15 @@ lemma toMvPolynomial_id : (id : M₁ →ₗ[R] M₁).toMvPolynomial b₁ b₁ = 
 lemma toMvPolynomial_add (f g : M₁ →ₗ[R] M₂) :
     (f + g).toMvPolynomial b₁ b₂ = f.toMvPolynomial b₁ b₂ + g.toMvPolynomial b₁ b₂ := by
   unfold toMvPolynomial; simp only [map_add, Matrix.toMvPolynomial_add]
+
+end
+
+variable {R M₁ M₂ M₃ ι₁ ι₂ ι₃ : Type*}
+variable [CommRing R] [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
+variable [Module R M₁] [Module R M₂] [Module R M₃]
+variable [Fintype ι₁] [Fintype ι₂] [Finite ι₃]
+variable [DecidableEq ι₁] [DecidableEq ι₂]
+variable (b₁ : Basis ι₁ R M₁) (b₂ : Basis ι₂ R M₂) (b₃ : Basis ι₃ R M₃)
 
 lemma toMvPolynomial_comp (g : M₂ →ₗ[R] M₃) (f : M₁ →ₗ[R] M₂) (i : ι₃) :
     (g ∘ₗ f).toMvPolynomial b₁ b₃ i =
@@ -241,7 +253,10 @@ lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
     simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_X, bind₁_X_right]
     classical
     rw [toMvPolynomial_comp _ (basis A (Basis.end bₘ)), ← toMvPolynomial_baseChange]
-    suffices toMvPolynomial (basis A bₘ.end) (basis A bₘ).end (tensorProduct R A M M) ij = X ij by
+    #adaptation_note /-- https://github.com/leanprover/lean4/pull/4119
+    we either need to specify the `M₂` argument, or use `set_option maxSynthPendingDepth 2 in`. -/
+    suffices toMvPolynomial (M₂ := (Module.End A (TensorProduct R A M)))
+        (basis A bₘ.end) (basis A bₘ).end (tensorProduct R A M M) ij = X ij by
       rw [this, bind₁_X_right]
     simp only [toMvPolynomial, Matrix.toMvPolynomial]
     suffices ∀ kl,
@@ -263,7 +278,8 @@ open LinearMap in
 lemma polyCharpolyAux_map_eq_toMatrix_charpoly (x : L) :
     (polyCharpolyAux φ b bₘ).map (MvPolynomial.eval (b.repr x)) =
       (toMatrix bₘ bₘ (φ x)).charpoly := by
-  erw [polyCharpolyAux, Polynomial.map_map, MvPolynomial.comp_eval₂Hom, charpoly.univ_map_eval₂Hom]
+  rw [polyCharpolyAux, Polynomial.map_map, ← MvPolynomial.eval₂Hom_C_eq_bind₁,
+    MvPolynomial.comp_eval₂Hom, charpoly.univ_map_eval₂Hom]
   congr
   ext
   rw [of_apply, Function.curry_apply, toMvPolynomial_eval_eq_apply, LinearEquiv.symm_apply_apply]
@@ -333,7 +349,7 @@ lemma polyCharpolyAux_basisIndep {ιM' : Type*} [Fintype ιM'] [DecidableEq ιM'
 
 end aux
 
-open FiniteDimensional Matrix
+open Module Matrix
 
 variable [Module.Free R M] [Module.Finite R M] (b : Basis ι R L)
 
@@ -381,7 +397,7 @@ lemma polyCharpoly_baseChange (A : Type*) [CommRing A] [Algebra R A] :
   apply polyCharpolyAux_basisIndep
 
 @[simp]
-lemma polyCharpoly_coeff_map (x : L) :
+lemma polyCharpoly_map_eq_charpoly (x : L) :
     (polyCharpoly φ b).map (MvPolynomial.eval (b.repr x)) = (φ x).charpoly := by
   rw [polyCharpoly, polyCharpolyAux_map_eq_charpoly]
 
@@ -427,7 +443,7 @@ lemma polyCharpoly_coeff_nilRankAux_ne_zero [Nontrivial R] :
 lemma nilRankAux_le [Nontrivial R] (b : Basis ι R L) (b' : Basis ι' R L) :
     nilRankAux φ b ≤ nilRankAux φ b' := by
   apply Polynomial.natTrailingDegree_le_of_ne_zero
-  rw [Ne.def, (polyCharpoly_coeff_eq_zero_iff_of_basis φ b b' _).not]
+  rw [Ne, (polyCharpoly_coeff_eq_zero_iff_of_basis φ b b' _).not]
   apply polyCharpoly_coeff_nilRankAux_ne_zero
 
 lemma nilRankAux_basis_indep [Nontrivial R] (b : Basis ι R L) (b' : Basis ι' R L) :
@@ -449,6 +465,7 @@ noncomputable
 def nilRank (φ : L →ₗ[R] Module.End R M) : ℕ :=
   nilRankAux φ (Module.Free.chooseBasis R L)
 
+section
 variable [Nontrivial R]
 
 lemma nilRank_eq_polyCharpoly_natTrailingDegree (b : Basis ι R L) :
@@ -460,11 +477,11 @@ lemma polyCharpoly_coeff_nilRank_ne_zero :
   rw [nilRank_eq_polyCharpoly_natTrailingDegree _ b]
   apply polyCharpoly_coeff_nilRankAux_ne_zero
 
-open FiniteDimensional Module.Free
+open Module Module.Free
 
-lemma nilRank_le_card (b : Basis ι R M) : nilRank φ ≤ Fintype.card ι := by
+lemma nilRank_le_card {ι : Type*} [Fintype ι] (b : Basis ι R M) : nilRank φ ≤ Fintype.card ι := by
   apply Polynomial.natTrailingDegree_le_of_ne_zero
-  rw [← FiniteDimensional.finrank_eq_card_basis b, ← polyCharpoly_natDegree φ (chooseBasis R L),
+  rw [← Module.finrank_eq_card_basis b, ← polyCharpoly_natDegree φ (chooseBasis R L),
     Polynomial.coeff_natDegree, (polyCharpoly_monic _ _).leadingCoeff]
   apply one_ne_zero
 
@@ -479,6 +496,8 @@ lemma nilRank_le_natTrailingDegree_charpoly (x : L) :
   rw [polyCharpoly_coeff_eval, map_zero] at h
   apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr _ h
   apply (LinearMap.charpoly_monic _).ne_zero
+
+end
 
 /-- Let `L` and `M` be finite free modules over `R`,
 and let `φ : L →ₗ[R] Module.End R M` be a linear family of endomorphisms,
@@ -500,7 +519,7 @@ lemma isNilRegular_iff_coeff_polyCharpoly_nilRank_ne_zero :
       ((polyCharpoly φ b).coeff (nilRank φ)) ≠ 0 := by
   rw [IsNilRegular, polyCharpoly_coeff_eval]
 
-lemma isNilRegular_iff_natTrailingDegree_charpoly_eq_nilRank :
+lemma isNilRegular_iff_natTrailingDegree_charpoly_eq_nilRank [Nontrivial R] :
     IsNilRegular φ x ↔ (φ x).charpoly.natTrailingDegree = nilRank φ := by
   rw [isNilRegular_def]
   constructor
@@ -517,7 +536,7 @@ section IsDomain
 
 variable [IsDomain R]
 
-open Cardinal FiniteDimensional MvPolynomial in
+open Cardinal Module MvPolynomial Module.Free in
 lemma exists_isNilRegular_of_finrank_le_card (h : finrank R M ≤ #R) :
     ∃ x : L, IsNilRegular φ x := by
   let b := chooseBasis R L
@@ -526,12 +545,12 @@ lemma exists_isNilRegular_of_finrank_le_card (h : finrank R M ≤ #R) :
   have aux :
     ((polyCharpoly φ b).coeff (nilRank φ)).IsHomogeneous (n - nilRank φ) :=
     polyCharpoly_coeff_isHomogeneous _ b (nilRank φ) (n - nilRank φ)
-      (by simp [nilRank_le_card φ bₘ, finrank_eq_card_chooseBasisIndex])
+      (by simp [n, nilRank_le_card φ bₘ, finrank_eq_card_chooseBasisIndex])
   obtain ⟨x, hx⟩ : ∃ r, eval r ((polyCharpoly _ b).coeff (nilRank φ)) ≠ 0 := by
     by_contra! h₀
     apply polyCharpoly_coeff_nilRank_ne_zero φ b
     apply aux.eq_zero_of_forall_eval_eq_zero_of_le_card h₀ (le_trans _ h)
-    simp only [finrank_eq_card_chooseBasisIndex, Nat.cast_le, Nat.sub_le]
+    simp only [n, finrank_eq_card_chooseBasisIndex, Nat.cast_le, Nat.sub_le]
   let c := Finsupp.equivFunOnFinite.symm x
   use b.repr.symm c
   rwa [isNilRegular_iff_coeff_polyCharpoly_nilRank_ne_zero _ b, LinearEquiv.apply_symm_apply]

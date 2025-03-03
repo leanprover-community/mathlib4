@@ -77,7 +77,7 @@ lemma ι_mapBifunctorAssociator_inv (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j
     ((associator.inv.app (X₁ i₁)).app (X₂ i₂)).app (X₃ i₃) ≫
       ιMapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j h := by
   rw [← cancel_mono ((mapBifunctorAssociator associator ρ₁₂ ρ₂₃ X₁ X₂ X₃).hom j),
-    assoc, assoc, iso_inv_hom_id_apply, comp_id, ι_mapBifunctorAssociator_hom,
+    assoc, assoc, Iso.inv_hom_id_eval, comp_id, ι_mapBifunctorAssociator_hom,
     ← NatTrans.comp_app_assoc, ← NatTrans.comp_app, Iso.inv_hom_id_app,
     NatTrans.id_app, NatTrans.id_app, id_comp]
 

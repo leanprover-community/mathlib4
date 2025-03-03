@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Basic
+import Batteries.Tactic.Lint.Misc
 
 /-!
 # The `extract_lets at` tactic
@@ -43,7 +44,7 @@ where
     -- Lift the let
     withLetDecl n' t' v' fun fvar => do
       let b' := b'.instantiate1 fvar
-      let ty' ← mkLetFVars #[fvar] <| mk b'
+      let ty' ← mkLetFVars (usedLetOnly := false) #[fvar] <| mk b'
       mvarId.change ty'
 
 /-- A more limited version of `Lean.MVarId.introN` that ensures the goal is a

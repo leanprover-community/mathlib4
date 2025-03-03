@@ -3,8 +3,7 @@ Copyright (c) 2021 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-import Lean
-import Std.Tactic.OpenPrivate
+import Mathlib.Init
 
 /-!
 Defines a command wrapper that prints the changes the command makes to the
@@ -117,3 +116,5 @@ elab "whatsnew " "in" ppLine cmd:command : command => do
   finally
     let newEnv ← getEnv
     logInfo (← liftCoreM <| whatsNew oldEnv newEnv)
+
+end Mathlib.WhatsNew

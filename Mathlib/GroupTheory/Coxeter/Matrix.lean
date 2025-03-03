@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Newell Jensen
+Authors: Newell Jensen, Mitchell Lee
 -/
 import Mathlib.Data.Matrix.Notation
 import Mathlib.LinearAlgebra.Matrix.Symmetric
@@ -9,12 +9,31 @@ import Mathlib.LinearAlgebra.Matrix.Symmetric
 /-!
 # Coxeter matrices
 
-This file defines some standard Coxeter matrices.
+Let us say that a matrix (possibly an infinite matrix) is a *Coxeter matrix* (`CoxeterMatrix`) if
+its entries are natural numbers, it is symmetric, its diagonal entries are equal to 1, and its
+off-diagonal entries are not equal to 1. In this file, we define Coxeter matrices and provide some
+ways of constructing them.
+
+We also define the Coxeter matrices `CoxeterMatrix.Aₙ` (`n : ℕ`), `CoxeterMatrix.Bₙ` (`n : ℕ`),
+`CoxeterMatrix.Dₙ` (`n : ℕ`), `CoxeterMatrix.I₂ₘ` (`m : ℕ`), `CoxeterMatrix.E₆`, `CoxeterMatrix.E₇`,
+`CoxeterMatrix.E₈`, `CoxeterMatrix.F₄`, `CoxeterMatrix.G₂`, `CoxeterMatrix.H₃`, and
+`CoxeterMatrix.H₄`. Up to reindexing, these are exactly the Coxeter matrices whose corresponding
+Coxeter group (`CoxeterMatrix.coxeterGroup`) is finite and irreducible, although we do not prove
+that in this file.
+
+## Implementation details
+
+In some texts on Coxeter groups, each entry $M_{i,i'}$ of a Coxeter matrix can be either a
+positive integer or $\infty$. In our treatment of Coxeter matrices, we use the value $0$ instead of
+$\infty$. This will turn out to have some fortunate consequences when defining the Coxeter group of
+a Coxeter matrix and the standard geometric representation of a Coxeter group.
 
 ## Main definitions
 
-* `Matrix.IsCoxeter` : A matrix `IsCoxeter` if it is a symmetric matrix with diagonal
-  entries equal to one and off-diagonal entries distinct from one.
+* `CoxeterMatrix` : The type of symmetric matrices of natural numbers, with rows and columns
+  indexed by a type `B`, whose diagonal entries are equal to 1 and whose off-diagonal entries are
+  not equal to 1.
+* `CoxeterMatrix.reindex` : Reindexes a Coxeter matrix by a bijection on the index type.
 * `CoxeterMatrix.Aₙ` : Coxeter matrix for the symmetry group of the regular n-simplex.
 * `CoxeterMatrix.Bₙ` : Coxeter matrix for the symmetry group of the regular n-hypercube
   and its dual, the regular n-orthoplex (or n-cross-polytope).
@@ -31,48 +50,65 @@ This file defines some standard Coxeter matrices.
 * `CoxeterMatrix.H₄` : Coxeter matrix for the symmetry group of the regular 4-polytopes,
   the 120-cell and 600-cell.
 
+## References
+
+* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 4--6*](bourbaki1968) chapter IV
+  pages 4--5, 13--15
+
+* [J. Baez, *Coxeter and Dynkin Diagrams*](https://math.ucr.edu/home/baez/twf_dynkin.pdf)
+
 -/
 
-section
-
-variable {B : Type*} [DecidableEq B]
-variable (M : Matrix B B ℕ)
-
-/-- A matrix `IsCoxeter` if it is a symmetric matrix with diagonal entries equal to one
-and off-diagonal entries distinct from one. -/
-@[mk_iff]
-structure Matrix.IsCoxeter : Prop where
-  symmetric : M.IsSymm := by aesop
-  diagonal : ∀ b : B, M b b = 1 := by aesop
-  off_diagonal : ∀ b₁ b₂ : B, b₁ ≠ b₂ → M b₁ b₂ ≠ 1 := by aesop
-
-instance [Fintype B] [DecidableEq B] : DecidablePred (Matrix.IsCoxeter (B := B)) :=
-  fun M => decidable_of_iff' _ M.isCoxeter_iff
-
-end
+/-- A *Coxeter matrix* is a symmetric matrix of natural numbers whose diagonal entries are equal to
+1 and whose off-diagonal entries are not equal to 1. -/
+@[ext]
+structure CoxeterMatrix (B : Type*) where
+  /-- The underlying matrix of the Coxeter matrix. -/
+  M : Matrix B B ℕ
+  isSymm : M.IsSymm := by decide
+  diagonal i : M i i = 1 := by decide
+  off_diagonal i i' : i ≠ i' → M i i' ≠ 1 := by decide
 
 namespace CoxeterMatrix
 
-open Matrix
+variable {B : Type*}
+
+/-- A Coxeter matrix can be coerced to a matrix. -/
+instance : CoeFun (CoxeterMatrix B) fun _ ↦ (Matrix B B ℕ) := ⟨M⟩
+
+variable {B' : Type*} (e : B ≃ B') (M : CoxeterMatrix B)
+
+attribute [simp] diagonal
+
+theorem symmetric (i i' : B) : M i i' = M i' i := M.isSymm.apply i' i
+
+/-- The Coxeter matrix formed by reindexing via the bijection `e : B ≃ B'`. -/
+protected def reindex : CoxeterMatrix B' where
+  M := Matrix.reindex e e M
+  isSymm := M.isSymm.submatrix _
+  diagonal i := M.diagonal (e.symm i)
+  off_diagonal i i' h := M.off_diagonal (e.symm i) (e.symm i') (e.symm.injective.ne h)
+
+theorem reindex_apply (i i' : B') : M.reindex e i i' = M (e.symm i) (e.symm i') := rfl
 
 variable (n : ℕ)
 
-/-- The Coxeter matrix of family A(n).
+/-- The Coxeter matrix of type Aₙ.
 
 The corresponding Coxeter-Dynkin diagram is:
 ```
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-abbrev Aₙ : Matrix (Fin n) (Fin n) ℕ :=
-  Matrix.of fun i j : Fin n =>
+def Aₙ : CoxeterMatrix (Fin n) where
+  M := Matrix.of fun i j : Fin n ↦
     if i = j then 1
       else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2)
+  isSymm := by unfold Matrix.IsSymm; aesop
+  diagonal := by simp
+  off_diagonal := by aesop
 
-theorem AₙIsCoxeter : IsCoxeter (Aₙ n) where
-  symmetric := by simp only [Matrix.IsSymm]; aesop
-
-/-- The Coxeter matrix of family Bₙ.
+/-- The Coxeter matrix of type Bₙ.
 
 The corresponding Coxeter-Dynkin diagram is:
 ```
@@ -80,16 +116,16 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-abbrev Bₙ : Matrix (Fin n) (Fin n) ℕ :=
-  Matrix.of fun i j : Fin n =>
+def Bₙ : CoxeterMatrix (Fin n) where
+  M := Matrix.of fun i j : Fin n ↦
     if i = j then 1
       else (if i = n - 1 ∧ j = n - 2 ∨ j = n - 1 ∧ i = n - 2 then 4
         else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2))
+  isSymm := by unfold Matrix.IsSymm; aesop
+  diagonal := by simp
+  off_diagonal := by aesop
 
-theorem BₙIsCoxeter : IsCoxeter (Bₙ n) where
-  symmetric := by simp only [Matrix.IsSymm]; aesop
-
-/-- The Coxeter matrix of family Dₙ.
+/-- The Coxeter matrix of type Dₙ.
 
 The corresponding Coxeter-Dynkin diagram is:
 ```
@@ -100,16 +136,16 @@ The corresponding Coxeter-Dynkin diagram is:
     o
 ```
 -/
-abbrev Dₙ : Matrix (Fin n) (Fin n) ℕ :=
-  Matrix.of fun i j : Fin n =>
+def Dₙ : CoxeterMatrix (Fin n) where
+  M := Matrix.of fun i j : Fin n ↦
     if i = j then 1
       else (if i = n - 1 ∧ j = n - 3 ∨ j = n - 1 ∧ i = n - 3 then 3
         else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2))
+  isSymm := by unfold Matrix.IsSymm; aesop
+  diagonal := by simp
+  off_diagonal := by aesop
 
-theorem DₙIsCoxeter : IsCoxeter (Dₙ n) where
-  symmetric := by simp only [Matrix.IsSymm]; aesop
-
-/-- The Coxeter matrix of m-indexed family I₂(m).
+/-- The Coxeter matrix of type I₂(m).
 
 The corresponding Coxeter-Dynkin diagram is:
 ```
@@ -117,13 +153,13 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o
 ```
 -/
-abbrev I₂ₘ (m : ℕ) : Matrix (Fin 2) (Fin 2) ℕ :=
-  Matrix.of fun i j => if i = j then 1 else m + 2
+def I₂ₘ (m : ℕ) : CoxeterMatrix (Fin 2) where
+  M := Matrix.of fun i j => if i = j then 1 else m + 2
+  isSymm := by unfold Matrix.IsSymm; aesop
+  diagonal := by simp
+  off_diagonal := by simp
 
-theorem I₂ₘIsCoxeter (m : ℕ) : IsCoxeter (I₂ₘ m) where
-  symmetric := by simp only [Matrix.IsSymm]; aesop
-
-/-- The Coxeter matrix of system E₆.
+/-- The Coxeter matrix of type E₆.
 
 The corresponding Coxeter-Dynkin diagram is:
 ```
@@ -132,17 +168,15 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o --- o --- o
 ```
 -/
-def E₆ : Matrix (Fin 6) (Fin 6) ℕ :=
-  !![1, 2, 3, 2, 2, 2;
-     2, 1, 2, 3, 2, 2;
-     3, 2, 1, 3, 2, 2;
-     2, 3, 3, 1, 3, 2;
-     2, 2, 2, 3, 1, 3;
-     2, 2, 2, 2, 3, 1]
+def E₆ : CoxeterMatrix (Fin 6) where
+  M := !![1, 2, 3, 2, 2, 2;
+          2, 1, 2, 3, 2, 2;
+          3, 2, 1, 3, 2, 2;
+          2, 3, 3, 1, 3, 2;
+          2, 2, 2, 3, 1, 3;
+          2, 2, 2, 2, 3, 1]
 
-theorem E₆IsCoxeter : IsCoxeter E₆ := by decide
-
-/-- The Coxeter matrix of system E₇.
+/-- The Coxeter matrix of type E₇.
 
 The corresponding Coxeter-Dynkin diagram is:
 ```
@@ -151,18 +185,16 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o --- o --- o --- o
 ```
 -/
-def E₇ : Matrix (Fin 7) (Fin 7) ℕ :=
-  !![1, 2, 3, 2, 2, 2, 2;
-     2, 1, 2, 3, 2, 2, 2;
-     3, 2, 1, 3, 2, 2, 2;
-     2, 3, 3, 1, 3, 2, 2;
-     2, 2, 2, 3, 1, 3, 2;
-     2, 2, 2, 2, 3, 1, 3;
-     2, 2, 2, 2, 2, 3, 1]
+def E₇ : CoxeterMatrix (Fin 7) where
+  M := !![1, 2, 3, 2, 2, 2, 2;
+          2, 1, 2, 3, 2, 2, 2;
+          3, 2, 1, 3, 2, 2, 2;
+          2, 3, 3, 1, 3, 2, 2;
+          2, 2, 2, 3, 1, 3, 2;
+          2, 2, 2, 2, 3, 1, 3;
+          2, 2, 2, 2, 2, 3, 1]
 
-theorem E₇IsCoxeter : IsCoxeter E₇ := by decide
-
-/-- The Coxeter matrix of system E₈.
+/-- The Coxeter matrix of type E₈.
 
 The corresponding Coxeter-Dynkin diagram is:
 ```
@@ -171,19 +203,17 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o --- o --- o --- o --- o
 ```
 -/
-def E₈ : Matrix (Fin 8) (Fin 8) ℕ :=
-  !![1, 2, 3, 2, 2, 2, 2, 2;
-     2, 1, 2, 3, 2, 2, 2, 2;
-     3, 2, 1, 3, 2, 2, 2, 2;
-     2, 3, 3, 1, 3, 2, 2, 2;
-     2, 2, 2, 3, 1, 3, 2, 2;
-     2, 2, 2, 2, 3, 1, 3, 2;
-     2, 2, 2, 2, 2, 3, 1, 3;
-     2, 2, 2, 2, 2, 2, 3, 1]
+def E₈ : CoxeterMatrix (Fin 8) where
+  M := !![1, 2, 3, 2, 2, 2, 2, 2;
+          2, 1, 2, 3, 2, 2, 2, 2;
+          3, 2, 1, 3, 2, 2, 2, 2;
+          2, 3, 3, 1, 3, 2, 2, 2;
+          2, 2, 2, 3, 1, 3, 2, 2;
+          2, 2, 2, 2, 3, 1, 3, 2;
+          2, 2, 2, 2, 2, 3, 1, 3;
+          2, 2, 2, 2, 2, 2, 3, 1]
 
-theorem E₈IsCoxeter : IsCoxeter E₈ := by decide
-
-/-- The Coxeter matrix of system F₄.
+/-- The Coxeter matrix of type F₄.
 
 The corresponding Coxeter-Dynkin diagram is:
 ```
@@ -191,15 +221,13 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o --- o
 ```
 -/
-def F₄ : Matrix (Fin 4) (Fin 4) ℕ :=
-  !![1, 3, 2, 2;
-     3, 1, 4, 2;
-     2, 4, 1, 3;
-     2, 2, 3, 1]
+def F₄ : CoxeterMatrix (Fin 4) where
+  M := !![1, 3, 2, 2;
+          3, 1, 4, 2;
+          2, 4, 1, 3;
+          2, 2, 3, 1]
 
-theorem F₄IsCoxeter : IsCoxeter F₄ := by decide
-
-/-- The Coxeter matrix of system G₂.
+/-- The Coxeter matrix of type G₂.
 
 The corresponding Coxeter-Dynkin diagram is:
 ```
@@ -207,13 +235,11 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o
 ```
 -/
-def G₂ : Matrix (Fin 2) (Fin 2) ℕ :=
-  !![1, 6;
-     6, 1]
+def G₂ : CoxeterMatrix (Fin 2) where
+  M := !![1, 6;
+          6, 1]
 
-theorem G₂IsCoxeter : IsCoxeter G₂ := by decide
-
-/-- The Coxeter matrix of system H₃.
+/-- The Coxeter matrix of type H₃.
 
 The corresponding Coxeter-Dynkin diagram is:
 ```
@@ -221,14 +247,12 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o
 ```
 -/
-def H₃ : Matrix (Fin 3) (Fin 3) ℕ :=
-  !![1, 3, 2;
-     3, 1, 5;
-     2, 5, 1]
+def H₃ : CoxeterMatrix (Fin 3) where
+  M := !![1, 3, 2;
+          3, 1, 5;
+          2, 5, 1]
 
-theorem H₃IsCoxeter : IsCoxeter H₃ := by decide
-
-/-- The Coxeter matrix of system H₄.
+/-- The Coxeter matrix of type H₄.
 
 The corresponding Coxeter-Dynkin diagram is:
 ```
@@ -236,12 +260,10 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o --- o
 ```
 -/
-def H₄ : Matrix (Fin 4) (Fin 4) ℕ :=
-  !![1, 3, 2, 2;
-     3, 1, 3, 2;
-     2, 3, 1, 5;
-     2, 2, 5, 1]
-
-theorem H₄IsCoxeter : IsCoxeter H₄ := by decide
+def H₄ : CoxeterMatrix (Fin 4) where
+  M := !![1, 3, 2, 2;
+          3, 1, 3, 2;
+          2, 3, 1, 5;
+          2, 2, 5, 1]
 
 end CoxeterMatrix
