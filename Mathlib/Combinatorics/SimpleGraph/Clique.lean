@@ -161,8 +161,7 @@ lemma IsClique.sdiff_of_sup_edge {v w : α} {s : Set α} (hc : (G ⊔ edge v w).
     G.IsClique (s \ {v}) := by
   intro x hx y hy hxy
   have := hc hx.1 hy.1 hxy
-  rw [sup_adj, edge_adj] at this
-  aesop
+  simp_all [sup_adj, edge_adj]
 
 end Clique
 
@@ -433,7 +432,7 @@ open Classical in
 protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
    (G ⊔ edge v w).CliqueFree (n + 1) :=
   fun _ hs ↦ (hs.erase_of_sup_edge_of_mem <|
-    (h.mono <| Nat.le_succ n).mem_of_sup_edge_isNClique hs).not_cliqueFree h
+    (h.mono n.le_succ).mem_of_sup_edge_isNClique hs).not_cliqueFree h
 
 end CliqueFree
 
