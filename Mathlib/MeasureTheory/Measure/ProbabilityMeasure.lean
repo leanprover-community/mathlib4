@@ -572,7 +572,8 @@ https://doi.org/10.1016/j.aim.2020.107239.
 theorem ProbabilityMeasure.measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     Measurable (fun (μ : ProbabilityMeasure α × ProbabilityMeasure β)
       ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
-  apply Measurable.measure_of_isPiSystem generateFrom_prod.symm isPiSystem_prod _ (by simp)
+  apply Measurable.measure_of_isPiSystem_of_isProbabilityMeasure generateFrom_prod.symm
+    isPiSystem_prod _
   simp only [mem_image2, mem_setOf_eq, forall_exists_index, and_imp]
   intros _ u Hu v Hv Heq
   simp_rw [← Heq, prod_prod]
