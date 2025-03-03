@@ -212,15 +212,12 @@ noncomputable def compContinuousMap (ψ : A →⋆ₐ[𝕜] B) :
     Continuous.subtype_mk
       (continuous_of_continuous_eval fun a => map_continuous <| gelfandTransform 𝕜 B (ψ a)) _
 
-variable (A)
-
+variable (A) in
 /-- `WeakDual.CharacterSpace.compContinuousMap` sends the identity to the identity. -/
 @[simp]
 theorem compContinuousMap_id :
     compContinuousMap (StarAlgHom.id 𝕜 A) = ContinuousMap.id (characterSpace 𝕜 A) :=
   ContinuousMap.ext fun _a => ext fun _x => rfl
-
-variable {A}
 
 /-- `WeakDual.CharacterSpace.compContinuousMap` is functorial. -/
 @[simp]

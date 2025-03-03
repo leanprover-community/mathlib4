@@ -55,7 +55,7 @@ add_decl_doc NonUnitalStarRingHom.toNonUnitalRingHom
 You should also extend this typeclass when you extend `NonUnitalStarRingHom`. -/
 class NonUnitalStarRingHomClass (F : Type*) (A B : outParam Type*)
     [NonUnitalNonAssocSemiring A] [Star A] [NonUnitalNonAssocSemiring B] [Star B]
-    [FunLike F A B] [NonUnitalRingHomClass F A B] extends StarHomClass F A B : Prop
+    [FunLike F A B] [NonUnitalRingHomClass F A B] : Prop extends StarHomClass F A B
 
 namespace NonUnitalStarRingHomClass
 
@@ -248,8 +248,8 @@ add_decl_doc StarRingEquiv.toRingEquiv
 `B`.
 You should also extend this typeclass when you extend `StarRingEquiv`. -/
 class StarRingEquivClass (F : Type*) (A B : outParam Type*)
-    [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B] [EquivLike F A B]
-    extends RingEquivClass F A B : Prop where
+    [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B] [EquivLike F A B] : Prop
+    extends RingEquivClass F A B where
   /-- By definition, a ⋆-ring equivalence preserves the `star` operation. -/
   map_star : ∀ (f : F) (a : A), f (star a) = star (f a)
 

@@ -24,13 +24,14 @@ theorem length_iterate (f : α → α) (a : α) (n : ℕ) : length (iterate f a 
 
 @[simp]
 theorem iterate_eq_nil {f : α → α} {a : α} {n : ℕ} : iterate f a n = [] ↔ n = 0 := by
-  rw [← length_eq_zero, length_iterate]
+  rw [← length_eq_zero_iff, length_iterate]
 
 theorem getElem?_iterate (f : α → α) (a : α) :
     ∀ (n i : ℕ), i < n → (iterate f a n)[i]? = f^[i] a
   | n + 1, 0    , _ => by simp
   | n + 1, i + 1, h => by simp [getElem?_iterate f (f a) n i (by simpa using h)]
 
+set_option linter.deprecated false in
 @[deprecated getElem?_iterate (since := "2024-08-23")]
 theorem get?_iterate (f : α → α) (a : α) (n i : ℕ) (h : i < n) :
     get? (iterate f a n) i = f^[i] a := by

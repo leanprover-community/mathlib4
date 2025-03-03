@@ -99,7 +99,7 @@ instance Subgroup.smulInvariantMeasure {G α : Type*} [Group G] [MulAction G α]
   ⟨fun y s hs => by convert SMulInvariantMeasure.measure_preimage_smul (μ := μ) (y : G) hs⟩
 
 /-- An alternative way to prove that `μ` is left invariant under multiplication. -/
-@[to_additive " An alternative way to prove that `μ` is left invariant under addition. "]
+@[to_additive "An alternative way to prove that `μ` is left invariant under addition."]
 theorem forall_measure_preimage_mul_iff (μ : Measure G) :
     (∀ (g : G) (A : Set G), MeasurableSet A → μ ((fun h => g * h) ⁻¹' A) = μ A) ↔
       IsMulLeftInvariant μ := by
@@ -110,7 +110,7 @@ theorem forall_measure_preimage_mul_iff (μ : Measure G) :
   exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
 
 /-- An alternative way to prove that `μ` is right invariant under multiplication. -/
-@[to_additive " An alternative way to prove that `μ` is right invariant under addition. "]
+@[to_additive "An alternative way to prove that `μ` is right invariant under addition."]
 theorem forall_measure_preimage_mul_right_iff (μ : Measure G) :
     (∀ (g : G) (A : Set G), MeasurableSet A → μ ((fun h => h * g) ⁻¹' A) = μ A) ↔
       IsMulRightInvariant μ := by
@@ -695,8 +695,8 @@ arbitrary locally compact groups. Use `[IsAddHaarMeasure μ] [Regular μ]` or
 sense is automatically regular and inner regular on second countable locally compact groups, as
 checked just below this definition. -/
 class IsAddHaarMeasure {G : Type*} [AddGroup G] [TopologicalSpace G] [MeasurableSpace G]
-  (μ : Measure G) extends IsFiniteMeasureOnCompacts μ, IsAddLeftInvariant μ, IsOpenPosMeasure μ :
-  Prop
+    (μ : Measure G) : Prop
+    extends IsFiniteMeasureOnCompacts μ, IsAddLeftInvariant μ, IsOpenPosMeasure μ
 
 /-- A measure on a group is a Haar measure if it is left-invariant, and gives finite mass to
 compact sets and positive mass to open sets.
@@ -708,8 +708,8 @@ sense is automatically regular and inner regular on second countable locally com
 checked just below this definition. -/
 @[to_additive existing]
 class IsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] [MeasurableSpace G]
-  (μ : Measure G) extends IsFiniteMeasureOnCompacts μ, IsMulLeftInvariant μ, IsOpenPosMeasure μ :
-  Prop
+    (μ : Measure G) : Prop
+    extends IsFiniteMeasureOnCompacts μ, IsMulLeftInvariant μ, IsOpenPosMeasure μ
 
 variable [Group G] [TopologicalSpace G] (μ : Measure G) [IsHaarMeasure μ]
 

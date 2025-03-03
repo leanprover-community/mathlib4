@@ -57,6 +57,7 @@ MonoidHom, AddMonoidHom
 
 -/
 
+open Function
 
 variable {ι α β M N P : Type*}
 
@@ -150,8 +151,8 @@ homomorphisms.
 You should also extend this typeclass when you extend `AddMonoidHom`.
 -/
 class AddMonoidHomClass (F : Type*) (M N : outParam Type*)
-    [AddZeroClass M] [AddZeroClass N] [FunLike F M N]
-    extends AddHomClass F M N, ZeroHomClass F M N : Prop
+    [AddZeroClass M] [AddZeroClass N] [FunLike F M N] : Prop
+    extends AddHomClass F M N, ZeroHomClass F M N
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
 end add_zero
@@ -359,8 +360,8 @@ infixr:25 " →* " => MonoidHom
 You should also extend this typeclass when you extend `MonoidHom`. -/
 @[to_additive]
 class MonoidHomClass (F : Type*) (M N : outParam Type*) [MulOneClass M] [MulOneClass N]
-  [FunLike F M N]
-  extends MulHomClass F M N, OneHomClass F M N : Prop
+  [FunLike F M N] : Prop
+  extends MulHomClass F M N, OneHomClass F M N
 
 @[to_additive]
 instance MonoidHom.instFunLike : FunLike (M →* N) M N where
@@ -879,7 +880,7 @@ def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M)
       _ = g x * g y := h₁ _
 
 /-- If `M` and `N` have multiplications, `f : M →ₙ* N` is a surjective multiplicative map,
-and `M` is commutative, then `N` is commutative. --/
+and `M` is commutative, then `N` is commutative. -/
 @[to_additive
 "If `M` and `N` have additions, `f : M →ₙ+ N` is a surjective additive map,
 and `M` is commutative, then `N` is commutative."]
@@ -1024,3 +1025,39 @@ protected theorem map_mul_inv [Group α] [DivisionMonoid β] (f : α →* β) (g
     f (g * h⁻¹) = f g * (f h)⁻¹ := by simp
 
 end MonoidHom
+
+@[to_additive (attr := simp)]
+lemma iterate_map_mul {M F : Type*} [Mul M] [FunLike F M M] [MulHomClass F M M]
+    (f : F) (n : ℕ) (x y : M) :
+    f^[n] (x * y) = f^[n] x * f^[n] y :=
+  Function.Semiconj₂.iterate (map_mul f) n x y
+
+@[to_additive (attr := simp)]
+lemma iterate_map_one {M F : Type*} [One M] [FunLike F M M] [OneHomClass F M M]
+    (f : F) (n : ℕ) :
+    f^[n] 1 = 1 :=
+  iterate_fixed (map_one f) n
+
+@[to_additive (attr := simp)]
+lemma iterate_map_inv {M F : Type*} [Group M] [FunLike F M M] [MonoidHomClass F M M]
+    (f : F) (n : ℕ) (x : M) :
+    f^[n] x⁻¹ = (f^[n] x)⁻¹ :=
+  Commute.iterate_left (map_inv f) n x
+
+@[to_additive (attr := simp)]
+lemma iterate_map_div {M F : Type*} [Group M] [FunLike F M M] [MonoidHomClass F M M]
+    (f : F) (n : ℕ) (x y : M) :
+    f^[n] (x / y) = f^[n] x / f^[n] y :=
+  Semiconj₂.iterate (map_div f) n x y
+
+@[to_additive (attr := simp)]
+lemma iterate_map_pow {M F : Type*} [Monoid M] [FunLike F M M] [MonoidHomClass F M M]
+    (f : F) (n : ℕ) (x : M) (k : ℕ) :
+    f^[n] (x ^ k) = f^[n] x ^ k :=
+  Commute.iterate_left (map_pow f · k) n x
+
+@[to_additive (attr := simp)]
+lemma iterate_map_zpow {M F : Type*} [Group M] [FunLike F M M] [MonoidHomClass F M M]
+    (f : F) (n : ℕ) (x : M) (k : ℤ) :
+    f^[n] (x ^ k) = f^[n] x ^ k :=
+  Commute.iterate_left (map_zpow f · k) n x

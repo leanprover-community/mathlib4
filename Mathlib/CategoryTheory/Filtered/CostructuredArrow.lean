@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Limits.Final
 /-!
 # Inferring Filteredness from Filteredness of Costructured Arrow Categories
 
-# References
+## References
 
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Proposition 3.1.8
 
