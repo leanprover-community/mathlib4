@@ -16,7 +16,7 @@ One can interpret `κ n` as a kernel which takes as an input the trajectory of a
 `X 0` and moving `X 0 → X 1 → X 2 → ... → X n` and which outputs the distribution of the next
 position of the point in `X (n + 1)`. If `a b : ℕ` and `a < b`, we can compose the kernels,
 and `κ a ⊗ₖ κ (a + 1) ⊗ₖ ... ⊗ₖ κ b` will take the trajectory up to time `a` as input and outputs
-the distrbution of the trajectory in `X (a + 1) × ... × X (b + 1)`.
+the distribution of the trajectory in `X (a + 1) × ... × X (b + 1)`.
 
 The Ionescu-Tulcea theorem then tells us that these compositions can be extend into a kernel
 `η : Kernel (Π i : Iic a, X i) → Π n ≥ a, X n` which given the trajectory up to time `a` outputs
