@@ -140,7 +140,15 @@ instance [IsFiniteKernel κ] [IsFiniteKernel η] : IsFiniteKernel (κ ∥ₖ η)
     · exact measure_le_bound κ a.1 Set.univ
     · exact measure_le_bound η a.2 Set.univ
 
-instance [IsSFiniteKernel κ] [IsSFiniteKernel η] : IsSFiniteKernel (κ ∥ₖ η) := by
+instance : IsSFiniteKernel (κ ∥ₖ η) := by
+  by_cases h : IsSFiniteKernel κ
+  swap
+  · simp only [h, not_false_eq_true, parallelComp_of_not_isSFiniteKernel_left]
+    infer_instance
+  by_cases h : IsSFiniteKernel η
+  swap
+  · simp only [h, not_false_eq_true, parallelComp_of_not_isSFiniteKernel_right]
+    infer_instance
   simp_rw [← kernel_sum_seq κ, ← kernel_sum_seq η, parallelComp_sum_left, parallelComp_sum_right]
   infer_instance
 

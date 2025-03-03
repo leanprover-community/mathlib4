@@ -34,9 +34,12 @@ namespace ProbabilityTheory.Kernel
 
 variable {η : Kernel γ δ}
 
-lemma parallelComp_comp_copy (κ : Kernel α β) [IsSFiniteKernel κ]
-    (η : Kernel α γ) [IsSFiniteKernel η] :
+lemma parallelComp_comp_copy (κ : Kernel α β) (η : Kernel α γ) :
     (κ ∥ₖ η) ∘ₖ (copy α) = κ ×ₖ η := by
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [hκ]
+  by_cases hη : IsSFiniteKernel η
+  swap; · simp [hη]
   ext a s hs
   simp_rw [prod_apply, comp_apply, copy_apply, Measure.bind_apply hs (Kernel.measurable _)]
   rw [lintegral_dirac']
@@ -70,8 +73,10 @@ end ProbabilityTheory.Kernel
 
 namespace MeasureTheory.Measure
 
-lemma compProd_eq_parallelComp_comp_copy_comp [SFinite μ] [IsSFiniteKernel κ] :
+lemma compProd_eq_parallelComp_comp_copy_comp [SFinite μ] :
     μ ⊗ₘ κ = (Kernel.id ∥ₖ κ) ∘ₘ Kernel.copy α ∘ₘ μ := by
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [hκ]
   rw [compProd_eq_comp_prod, ← Kernel.parallelComp_comp_copy, Measure.comp_assoc]
 
 lemma prod_comp_right [SFinite ν] {κ : Kernel β γ} [IsSFiniteKernel κ] :
@@ -107,41 +112,50 @@ namespace ProbabilityTheory.Kernel
 
 variable {α' β' γ' : Type*} {mα' : MeasurableSpace α'} {mβ' : MeasurableSpace β'}
   {mγ' : MeasurableSpace γ'}
-  [IsSFiniteKernel κ]
 
 lemma parallelComp_id_left_comp_parallelComp
     {η : Kernel α' γ} [IsSFiniteKernel η] {ξ : Kernel γ δ} [IsSFiniteKernel ξ] :
     (Kernel.id ∥ₖ ξ) ∘ₖ (κ ∥ₖ η) = κ ∥ₖ (ξ ∘ₖ η) := by
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [hκ]
   ext a
   rw [parallelComp_apply, comp_apply, comp_apply, parallelComp_apply, Measure.prod_comp_right]
 
 lemma parallelComp_id_right_comp_parallelComp {η : Kernel α' γ} [IsSFiniteKernel η]
     {ξ : Kernel γ δ} [IsSFiniteKernel ξ] :
     (ξ ∥ₖ Kernel.id) ∘ₖ (η ∥ₖ κ) = (ξ ∘ₖ η) ∥ₖ κ := by
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [hκ]
   ext a
   rw [parallelComp_apply, comp_apply, comp_apply, parallelComp_apply, Measure.prod_comp_left]
 
-lemma parallelComp_comp_parallelComp {η : Kernel β γ} [IsSFiniteKernel η]
+lemma parallelComp_comp_parallelComp [IsSFiniteKernel κ] {η : Kernel β γ} [IsSFiniteKernel η]
     {κ' : Kernel α' β'} [IsSFiniteKernel κ'] {η' : Kernel β' γ'} [IsSFiniteKernel η'] :
     (η ∥ₖ η') ∘ₖ (κ ∥ₖ κ') = (η ∘ₖ κ) ∥ₖ (η' ∘ₖ κ') := by
   rw [← parallelComp_id_left_comp_parallelComp, ← parallelComp_id_right_comp_parallelComp,
     ← comp_assoc, parallelComp_id_left_comp_parallelComp, comp_id]
 
-lemma parallelComp_comp_prod {η : Kernel β γ} [IsSFiniteKernel η]
+lemma parallelComp_comp_prod [IsSFiniteKernel κ] {η : Kernel β γ} [IsSFiniteKernel η]
     {κ' : Kernel α β'} [IsSFiniteKernel κ'] {η' : Kernel β' γ'} [IsSFiniteKernel η'] :
     (η ∥ₖ η') ∘ₖ (κ ×ₖ κ') = (η ∘ₖ κ) ×ₖ (η' ∘ₖ κ') := by
   rw [← parallelComp_comp_copy, ← comp_assoc, parallelComp_comp_parallelComp,
     ← parallelComp_comp_copy]
 
-lemma parallelComp_comm {η : Kernel γ δ} [IsSFiniteKernel η] :
+lemma parallelComp_comm {η : Kernel γ δ}:
     (Kernel.id ∥ₖ κ) ∘ₖ (η ∥ₖ Kernel.id) = (η ∥ₖ Kernel.id) ∘ₖ (Kernel.id ∥ₖ κ) := by
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [hκ]
+  by_cases hη : IsSFiniteKernel η
+  swap; · simp [hη]
   rw [parallelComp_id_left_comp_parallelComp, parallelComp_id_right_comp_parallelComp,
     comp_id, comp_id]
 
 end ProbabilityTheory.Kernel
 
-lemma MeasureTheory.Measure.parallelComp_comp_compProd [SFinite μ]
+lemma MeasureTheory.Measure.parallelComp_comp_compProd
     [IsSFiniteKernel κ] {η : Kernel β γ} [IsSFiniteKernel η] :
     (Kernel.id ∥ₖ η) ∘ₘ (μ ⊗ₘ κ) = μ ⊗ₘ (η ∘ₖ κ) := by
+  by_cases hμ : SFinite μ
+  swap; · simp [hμ]
   rw [Measure.compProd_eq_comp_prod, Measure.compProd_eq_comp_prod, Measure.comp_assoc,
     Kernel.parallelComp_comp_prod, Kernel.id_comp]

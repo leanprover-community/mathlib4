@@ -176,12 +176,14 @@ theorem compProd_apply_eq_compProdFun (κ : Kernel α β) [IsSFiniteKernel κ] (
   rw [Measure.ofMeasurable_apply _ hs]
   rfl
 
+@[simp]
 theorem compProd_of_not_isSFiniteKernel_left (κ : Kernel α β) (η : Kernel (α × β) γ)
     (h : ¬ IsSFiniteKernel κ) :
     κ ⊗ₖ η = 0 := by
   rw [compProd, dif_neg]
   simp [h]
 
+@[simp]
 theorem compProd_of_not_isSFiniteKernel_right (κ : Kernel α β) (η : Kernel (α × β) γ)
     (h : ¬ IsSFiniteKernel η) :
     κ ⊗ₖ η = 0 := by

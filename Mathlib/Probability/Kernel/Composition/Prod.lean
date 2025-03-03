@@ -50,6 +50,27 @@ noncomputable def prod (κ : Kernel α β) (η : Kernel α γ) : Kernel α (β �
 @[inherit_doc]
 scoped[ProbabilityTheory] infixl:100 " ×ₖ " => ProbabilityTheory.Kernel.prod
 
+@[simp]
+lemma zero_prod (η : Kernel α γ) : (0 : Kernel α β) ×ₖ η = 0 := by simp [prod]
+
+@[simp]
+lemma prod_zero (κ : Kernel α β) : κ ×ₖ (0 : Kernel α γ) = 0 := by simp [prod]
+
+@[simp]
+lemma prod_of_not_isSFiniteKernel_left {κ : Kernel α β} (η : Kernel α γ) (h : ¬ IsSFiniteKernel κ) :
+    κ ×ₖ η = 0 := by
+  simp [prod, h]
+
+@[simp]
+lemma prod_of_not_isSFiniteKernel_right (κ : Kernel α β) {η : Kernel α γ}
+    (h : ¬ IsSFiniteKernel η) :
+    κ ×ₖ η = 0 := by
+  cases isEmpty_or_nonempty β with
+  | inl h => simp [eq_zero_of_isEmpty_right κ]
+  | inr h =>
+    rw [prod, compProd_of_not_isSFiniteKernel_right]
+    simpa only [swapLeft_prodMkLeft, isSFiniteKernel_prodMkRight_iff]
+
 theorem prod_apply' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel α γ) [IsSFiniteKernel η]
     (a : α) {s : Set (β × γ)} (hs : MeasurableSet s) :
     (κ ×ₖ η) a s = ∫⁻ b : β, (η a) {c : γ | (b, c) ∈ s} ∂κ a := by
