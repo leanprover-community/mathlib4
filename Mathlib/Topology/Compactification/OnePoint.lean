@@ -312,7 +312,7 @@ alias nhdsWithin_compl_infty_eq := nhdsNE_infty_eq
 
 /-- If `X` is a non-compact space, then `∞` is not an isolated point of `OnePoint X`. -/
 instance nhdsNE_infty_neBot [NoncompactSpace X] : NeBot (𝓝[≠] (∞ : OnePoint X)) := by
-  rw [nhdsWithin_compl_infty_eq]
+  rw [nhdsNE_infty_eq]
   infer_instance
 
 @[deprecated (since := "2025-03-02")]
