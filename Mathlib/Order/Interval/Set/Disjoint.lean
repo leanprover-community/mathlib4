@@ -65,6 +65,18 @@ theorem Ioc_disjoint_Ioi (h : b ≤ c) : Disjoint (Ioc a b) (Ioi c) :=
 theorem Ioc_disjoint_Ioi_same : Disjoint (Ioc a b) (Ioi b) :=
   Ioc_disjoint_Ioi le_rfl
 
+@[simp] theorem Ioi_disjoint_Iio (h : a ≤ b) : Disjoint (Ioi b) (Iio a) :=
+  disjoint_left.mpr fun _ hx hy ↦ not_lt_of_le h (hx.trans hy)
+
+theorem Ioi_disjoint_Iio_self : Disjoint (Ioi a) (Iio a) :=
+  Ioi_disjoint_Iio le_rfl
+
+@[simp] theorem Iio_disjoint_Ioi (h : a ≤ b) : Disjoint (Iio a) (Ioi b) :=
+  disjoint_comm.mp (Ioi_disjoint_Iio h)
+
+theorem Iio_disjoint_Ioi_self : Disjoint (Iio a) (Ioi a) :=
+  Iio_disjoint_Ioi le_rfl
+
 @[simp]
 theorem iUnion_Iic : ⋃ a : α, Iic a = univ :=
   iUnion_eq_univ_iff.2 fun x => ⟨x, right_mem_Iic⟩
