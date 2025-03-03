@@ -198,8 +198,9 @@ theorem equivalenceCounitIso_eq (hη : τ₀ = τ₁ hF hG η) :
   dsimp [equivalence]
   simp only [comp_id, id_comp, Functor.map_comp, equivalence₂CounitIso_eq,
     equivalence₂CounitIso_hom_app, assoc, equivalenceCounitIso_hom_app]
-  simp only [← eB.inverse.map_comp_assoc, ← τ₀_hom_app, hη, τ₁_hom_app]
-  erw [hF.inv.naturality_assoc, hF.inv.naturality_assoc]
+  simp only [← eB.inverse.map_comp_assoc, ← τ₀_hom_app, hη, τ₁_hom_app, equivalence₂_inverse,
+    Functor.comp_obj]
+  rw [hF.inv.naturality_assoc, hF.inv.naturality_assoc]
   dsimp
   congr 2
   simp only [← e'.functor.map_comp_assoc, Equivalence.fun_inv_map, assoc,
@@ -243,9 +244,8 @@ theorem equivalenceUnitIso_eq (hε : υ hF = ε) :
     (equivalence hF hG).unitIso = equivalenceUnitIso hG ε := by
   ext1; apply NatTrans.ext; ext X
   dsimp [equivalence]
-  simp only [assoc, comp_id, equivalenceUnitIso_hom_app]
-  erw [id_comp]
-  simp only [equivalence₂UnitIso_eq eB hF, equivalence₂UnitIso_hom_app,
+  simp only [assoc, comp_id, equivalenceUnitIso_hom_app, equivalence₂_inverse, Functor.comp_obj,
+    id_comp, equivalence₂UnitIso_eq eB hF, equivalence₂UnitIso_hom_app,
     ← eA.inverse.map_comp_assoc, assoc, ← hε, υ_hom_app]
 
 end Compatibility
