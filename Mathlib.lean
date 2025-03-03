@@ -2257,6 +2257,7 @@ import Mathlib.CategoryTheory.Preadditive.HomOrthogonal
 import Mathlib.CategoryTheory.Preadditive.Indization
 import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
+import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
 import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
 import Mathlib.CategoryTheory.Preadditive.LeftExact
 import Mathlib.CategoryTheory.Preadditive.Mat
@@ -2264,6 +2265,7 @@ import Mathlib.CategoryTheory.Preadditive.OfBiproducts
 import Mathlib.CategoryTheory.Preadditive.Opposite
 import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 import Mathlib.CategoryTheory.Preadditive.Projective.LiftingProperties
+import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 import Mathlib.CategoryTheory.Preadditive.Schur
 import Mathlib.CategoryTheory.Preadditive.SingleObj
