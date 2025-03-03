@@ -9,5 +9,5 @@ warning: The `cases'` tactic is discouraged: please strongly consider using `obt
 note: this linter can be disabled with `set_option linter.cases false`
 -/
 #guard_msgs in
-example {a : (True ∨ True) ∨ (True ∨ True)}: True := by
+example (a : (True ∨ True) ∨ (True ∨ True)): True := by
   cases' a with b b <;> cases' b <;> trivial
