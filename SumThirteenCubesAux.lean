@@ -2,6 +2,7 @@ import Mathlib.NumberTheory.SumFourSquares
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.List.MinMax
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Util.Qq
 
 open Nat
 
@@ -321,7 +322,7 @@ lemma sum_of_cubes_reduce (N : ℕ) : ∃ m k, m ^ 3 + k = N ∧ k ≤ 3 * (N : 
     rw [sub_lt_iff_lt_add']
     exact Nat.lt_floor_add_one _
   rw [Nat.cast_sub h₂, Nat.cast_pow, h₃]
-  refine mul_le_of_le_one_of_le_of_nonneg h₄.le ?_ (by positivity)
+  refine (mul_le_of_le_one_left (by positivity) h₄.le).trans ?_
   refine (add_le_add_three le_rfl (mul_le_mul_of_nonneg_left h₁ (by positivity))
     (pow_le_pow_left₀ (Nat.cast_nonneg _) h₁ _)).trans_eq ?_
   have h₅ : (N : ℝ) ^ (2 / 3 : ℝ) = ((N : ℝ) ^ (1 / 3 : ℝ) : ℝ) ^ 2 := by
@@ -415,7 +416,7 @@ def find_rep : (allowed_nums : ℕ) → (remaining_tot : ℕ) → (lowest_used :
   | n, 0, _ => [List.replicate n 0]
   | 0, (_ + 1), _ => []
   | n + 1, m@(_ + 1), k => do
-      let i ← List.iota k
+      let i ← (List.range' 1 k).reverse
       if (i ^ 3 ≤ m) then (find_rep n (m - i ^ 3) i).map (i :: ·) else []
 
 /--
@@ -425,7 +426,8 @@ and whose sum of cubes is exactly `m`
 def find_rep' : (allowed_nums : ℕ) → (remaining_tot : ℕ) → (lowest_used : ℕ) → Bool
 | _, 0, _ => true
 | 0, (_ + 1), _ => false
-| n + 1, m@(_ + 1), k => List.any (List.iota k) fun i => i ^ 3 ≤ m && find_rep' n (m - i ^ 3) i
+| n + 1, m@(_ + 1), k =>
+    (List.range' 1 k).reverse.any fun i => i ^ 3 ≤ m && find_rep' n (m - i ^ 3) i
 
 lemma find_rep_not_isEmpty_iff : ∀ n m k, (find_rep n m k).isEmpty = !find_rep' n m k
 | n, 0, x => by rw [find_rep, find_rep']; rfl
@@ -461,7 +463,12 @@ lemma find_rep_iff (n m k : ℕ) (l : List ℕ) :
   cases' m with m
   · exact find_rep_iff_zero_middle _ _ _
   rw [find_rep]
-  simp only [bind_eq_flatMap, mem_flatMap, mem_iota]
+  simp only [bind_eq_flatMap, mem_flatMap, mem_reverse, mem_range'_1, add_comm 1,
+    Nat.lt_add_one_iff]
+  -- simp?
+
+  -- simp only [succ_eq_add_one, mem_ite_nil_right, mem_map, ge_iff_le]
+  -- simp?
   constructor
   · simp only [forall_exists_index, and_imp]
     rintro x - hxk hl
@@ -472,6 +479,7 @@ lemma find_rep_iff (n m k : ℕ) (l : List ℕ) :
     rw [ih] at ha
     simp only [length_cons, ha, mem_cons, forall_eq_or_imp, ge_iff_le, pairwise_cons, and_true, map,
       List.sum_cons, true_and, hxk]
+    simp
     exact ⟨fun i hi => (ha.2.1 _ hi).trans hxk, ha.2.1, add_tsub_cancel_of_le h'⟩
   cases' l with x l
   · simp
@@ -479,7 +487,7 @@ lemma find_rep_iff (n m k : ℕ) (l : List ℕ) :
     List.sum_cons, and_imp]
   intros h hxk _ hl₂ hl₃ hl₄
   refine ⟨x, ⟨?_, hxk⟩, ?_⟩
-  · rw [pos_iff_ne_zero]
+  · rw [Nat.add_one_le_iff, pos_iff_ne_zero]
     rintro rfl
     have : ∀ a ∈ l, a = 0 := by simpa using hl₂
     rw [List.eq_replicate_iff.2 ⟨rfl, this⟩] at hl₄
@@ -539,13 +547,28 @@ section
 
 open Lean Meta Elab Qq
 
+def test_val (n : ℕ) : Array (List ℕ) := Id.run do
+  let mut tab := Array.mkEmpty (α := List ℕ) (n + 1)
+  tab := tab.push []
+  for i in [1:n+1] do
+    let mut best := List.replicate i 1
+    for t in [1:n+1] do
+      if i < t ^ 3 then break
+      else
+        if t ^ 3 = i then best := [t]
+          else
+            let k := tab.getD (i - t ^ 3) []
+            if k.length + 1 < best.length then best := t :: k
+    tab := tab.push best
+  return tab
+
 lemma Tactic.mem_sum_of_powers (n i k : ℕ) (l : List ℕ)
     (h1 : l.length = k) (h2 : (l.map (· ^ i)).sum = n) : n ∈ sum_of_powers i k :=
   ⟨l, h1, h2⟩
 
--- lemma Tactic.mem_sum_of_powers' (i : ℕ) (l : List ℕ) :
---     (l.map (· ^ i)).sum ∈ sum_of_powers i l.length :=
---   ⟨_, rfl, rfl⟩
+lemma Tactic.mem_sum_of_powers_table (n i k : ℕ) (l : List ℕ) (hi : i ≠ 0)
+    (h1 : l.length ≤ k) (h2 : (l.map (· ^ i)).sum = n) : n ∈ sum_of_powers i k :=
+  sum_of_powers_mono_right hi h1 ⟨l, rfl, h2⟩
 
 /-- Given `n, k : ℕ`, return a proof of `n ∈ sum_of_powers 3 k`. -/
 def prove_sumOfPowers (n k : ℕ) : MetaM Expr := do
@@ -583,14 +606,28 @@ lemma Tactic.mem_sum_of_powers_many_step {l u : ℕ} (k : ℕ)
   · exact h_this
   · exact h_next i lt hui
 
-#check Expr.nat?
+lemma Tactic.mem_sum_of_powers_many_one {l : ℕ} (k : ℕ)
+    (h_this : l ∈ sum_of_powers 3 k) :
+    ∀ i, l ≤ i → i < l + 1 → i ∈ sum_of_powers 3 k := by
+  intro i hli hui
+  obtain rfl : i = l := by omega
+  assumption
+
+lemma Tactic.mem_sum_of_powers_many_halve {l m u : ℕ} (k : ℕ)
+    (h_lo : ∀ i, l ≤ i → i < m → i ∈ sum_of_powers 3 k)
+    (h_hi : ∀ i, m ≤ i → i < u → i ∈ sum_of_powers 3 k) :
+    ∀ i, l ≤ i → i < u → i ∈ sum_of_powers 3 k := by
+  intro i hli hui
+  obtain hm | hm := lt_or_le i m
+  · exact h_lo i hli hm
+  · exact h_hi i hm hui
 
 /-- Given `l, u, k : ℕ`, return a proof of `∀ i, l ≤ i → i < u → i ∈ sum_of_powers 3 k`. -/
 def prove_sumOfPowers_many (l u k : ℕ) (el eu ek : Expr) (t : Q(Prop)) : MetaM Expr := do
   if l < u
     then
       let pf_this ← prove_sumOfPowers l k
-      let pf_next ← prove_sumOfPowers_many (l + 1) u k (toExpr (l + 1)) eu ek t
+      let pf_next ← prove_sumOfPowers_many (l + 1) u k (mkNatLit (l + 1)) eu ek t
       let pf ← mkAppM `Tactic.mem_sum_of_powers_many_step #[ek, pf_this, pf_next]
       return pf
     else
@@ -599,11 +636,109 @@ def prove_sumOfPowers_many (l u k : ℕ) (el eu ek : Expr) (t : Q(Prop)) : MetaM
       let pf ← mkAppM `Tactic.mem_sum_of_powers_many_lt #[ek, h]
       return pf
 
-  -- let l :: _ := find_rep k n (n.findGreatest (· ^ 3 ≤ n)) | throwError "no list found"
-  -- let pf ← mkAppM `Tactic.mem_sum_of_powers' #[mkNatLit 3, toExpr l]
-  -- pure pf
+def prove_sumOfPowers_many_half (l u k : ℕ) (el eu ek : Expr) (t : Q(Prop)) : MetaM Expr := do
+  if l < u then
+    if l + 1 = u
+      then
+        let pf_this ← prove_sumOfPowers l k
+        let pf ← mkAppM `Tactic.mem_sum_of_powers_many_one #[ek, pf_this]
+        return pf
+      else
+        let m := (l + u) / 2
+        let em := mkNatLit m
+        let pf_lo ← prove_sumOfPowers_many_half l m k el em ek t
+        let pf_hi ← prove_sumOfPowers_many_half m u k em eu ek t
+        let pf ← mkAppM `Tactic.mem_sum_of_powers_many_halve #[ek, pf_lo, pf_hi]
+        return pf
+  else
+    let lt ← mkLt el eu
+    let h ← mkDecideProof (mkNot lt)
+    let pf ← mkAppM `Tactic.mem_sum_of_powers_many_lt #[ek, h]
+    return pf
 
-def sum_of_powers_many_tac (g : MVarId) : MetaM Unit := do
+-- lemma Tactic.mem_sum_of_powers_table (n i k : ℕ) (l : List ℕ) (hi : i ≠ 0)
+--     (h1 : l.length ≤ k) (h2 : (l.map (· ^ i)).sum = n) : n ∈ sum_of_powers i k :=
+--   sum_of_powers_mono_right hi h1 ⟨l, rfl, h2⟩
+
+#check OfNat.ofNat
+
+/-- Given `l, u, k : ℕ`, return a proof of `∀ i, l ≤ i → i < u → i ∈ sum_of_powers 3 k`. -/
+def prove_sumOfPowers_many_table (l u k : ℕ) (el eu ek : Expr) (t : Q(Prop))
+    (arr : Array (List ℕ)) : MetaM Expr := do
+  if l < u
+    then
+      let lst := arr.get! l
+      let elst := toExpr lst
+      let hk ← mkDecideProof (mkNot (← mkEq (mkNatLit 3) (mkNatLit 0)))
+      let hlength ← mkDecideProof (← mkLe (← mkAppM `List.length #[elst]) ek)
+      let h2 ← mkEqRefl el
+      let pf_this ←
+        mkAppM `Tactic.mem_sum_of_powers_table #[el, mkNatLit 3, ek, elst, hk, hlength, h2]
+      let pf_next ← prove_sumOfPowers_many (l + 1) u k (mkNatLit (l + 1)) eu ek t
+      let pf ← mkAppM `Tactic.mem_sum_of_powers_many_step #[ek, pf_this, pf_next]
+      return pf
+    else
+      let lt ← mkLt el eu
+      let h ← mkDecideProof (mkNot lt)
+      let pf ← mkAppM `Tactic.mem_sum_of_powers_many_lt #[ek, h]
+      return pf
+
+def prove_sumOfPowers_many_half_table (l u k : ℕ) (el eu ek : Expr) (t : Q(Prop))
+    (arr : Array (List ℕ)) :
+    MetaM Expr := do
+  if l < u then
+    if l + 1 = u
+      then
+        let lst := arr.get! l
+        let elst := toExpr lst
+        let hk ← mkDecideProof (mkNot (← mkEq (mkNatLit 3) (mkNatLit 0)))
+        let hlength ← mkDecideProof (← mkLe (← mkAppM `List.length #[elst]) ek)
+        trace[debug] "{elst}"
+        let h2 ← mkEqRefl el
+        let pf_one ←
+          mkAppM `Tactic.mem_sum_of_powers_table #[el, mkNatLit 3, ek, elst, hk, hlength, h2]
+        let pf ← mkAppM `Tactic.mem_sum_of_powers_many_one #[ek, pf_one]
+        return pf
+      else
+        let m := (l + u) / 2
+        let em := mkNatLit m
+        let pf_lo ← prove_sumOfPowers_many_half_table l m k el em ek t arr
+        let pf_hi ← prove_sumOfPowers_many_half_table m u k em eu ek t arr
+        let pf ← mkAppM `Tactic.mem_sum_of_powers_many_halve #[ek, pf_lo, pf_hi]
+        return pf
+  else
+    let lt ← mkLt el eu
+    let h ← mkDecideProof (mkNot lt)
+    let pf ← mkAppM `Tactic.mem_sum_of_powers_many_lt #[ek, h]
+    return pf
+
+-- def sum_of_powers_many_tac (g : MVarId) : MetaM Unit := do
+--   let t : Q(Prop) ← g.getType
+--   match t with
+--   | ~q(∀ i, $el ≤ i → i < $eu → i ∈ sum_of_powers 3 $ek) =>
+--       let some l := el.nat? | throwError "{el} not a natural literal"
+--       let some u := eu.nat? | throwError "{eu} not a natural literal"
+--       let some k := ek.nat? | throwError "{ek} not a natural literal"
+--       -- let pf : Q($t) := q(sorry)
+--       let pf ← prove_sumOfPowers_many l u k el eu ek t
+--       g.assign pf
+--   | _ => throwError "goal is not a sum_of_powers"
+
+-- def sum_of_powers_many_tac_half (g : MVarId) : MetaM Unit := do
+--   let t : Q(Prop) ← g.getType
+--   match t with
+--   | ~q(∀ i, $el ≤ i → i < $eu → i ∈ sum_of_powers 3 $ek) =>
+--       trace[debug] "{el} {eu} {ek}"
+--       let some l := el.nat? | throwError "{el} not a natural literal"
+--       let some u := eu.nat? | throwError "{eu} not a natural literal"
+--       let some k := ek.nat? | throwError "{ek} not a natural literal"
+--       let pf ← prove_sumOfPowers_many_half l u k el eu ek t
+--       g.assign pf
+--       -- let pf : Q($t) := q(sorry)
+--       -- g.assign pf
+--   | _ => throwError "goal is not a sum_of_powers"
+
+def sum_of_powers_many_tac_half_table (g : MVarId) : MetaM Unit := do
   let t : Q(Prop) ← g.getType
   match t with
   | ~q(∀ i, $el ≤ i → i < $eu → i ∈ sum_of_powers 3 $ek) =>
@@ -611,36 +746,55 @@ def sum_of_powers_many_tac (g : MVarId) : MetaM Unit := do
       let some l := el.nat? | throwError "{el} not a natural literal"
       let some u := eu.nat? | throwError "{eu} not a natural literal"
       let some k := ek.nat? | throwError "{ek} not a natural literal"
-      -- let l :: _ := find_rep k n (n.findGreatest (· ^ 3 ≤ n)) | throwError "no list found"
-      let pf ← prove_sumOfPowers_many l u k el eu ek t
+      let arr := test_val u
+      let pf ← prove_sumOfPowers_many_half_table l u k el eu ek t arr
       g.assign pf
       -- let pf : Q($t) := q(sorry)
       -- g.assign pf
   | _ => throwError "goal is not a sum_of_powers"
 
-elab "prove_sumOfPowers_many" : tactic =>
-  Elab.Tactic.liftMetaFinishingTactic sum_of_powers_many_tac
+-- elab "prove_sumOfPowers_many" : tactic =>
+--   Elab.Tactic.liftMetaFinishingTactic sum_of_powers_many_tac
+
+-- elab "prove_sumOfPowers_many_half" : tactic =>
+--   Elab.Tactic.liftMetaFinishingTactic sum_of_powers_many_tac_half
+
+elab "prove_sumOfPowers_many_half_table" : tactic =>
+  Elab.Tactic.liftMetaFinishingTactic sum_of_powers_many_tac_half_table
 
 -- set_option trace.debug true in
 -- lemma test : ∀ n, 2 ≤ n → n < 3000 → n ∈ sum_of_powers 3 9 := by
 --   prove_sumOfPowers_many
 
-lemma test : ∀ n, 24 ≤ n → n < 238 → n ∈ sum_of_powers 3 8 := by
-  prove_sumOfPowers_many
+-- lemma test : ∀ n, 24 ≤ n → n < 25 → n ∈ sum_of_powers 3 8 := by
+--   prove_sumOfPowers_many_half
 
-set_option trace.profiler true in
-#eval do
-  let n ← List.range' 455 400
-  find_rep 7 n (n.findGreatest (· ^ 3 ≤ n))
+-- set_option trace.debug true in
+-- set_option trace.profiler true in
+-- lemma test' : ∀ n, 455 ≤ n → n < 1000 → n ∈ sum_of_powers 3 7 := by
+--   prove_sumOfPowers_many
+
+-- set_option trace.debug true in
+-- set_option trace.profiler true in
+-- lemma test'' : ∀ n, 455 ≤ n → n < 2000 → n ∈ sum_of_powers 3 7 := by
+--   prove_sumOfPowers_many_half
 
 set_option trace.debug true in
 set_option trace.profiler true in
-lemma test' : ∀ n, 455 ≤ n → n < 800 → n ∈ sum_of_powers 3 7 := by
-  prove_sumOfPowers_many
+lemma test''' : ∀ n, 455 ≤ n → n < 3234 → n ∈ sum_of_powers 3 7 := by
+  prove_sumOfPowers_many_half_table
 
-#print test
+#print test'''
 
-#exit
+set_option trace.profiler true in
+#eval test_val 3000
+
+-- set_option trace.debug true in
+-- set_option trace.profiler true in
+-- lemma test' : ∀ n, 455 ≤ n → n < 800 → n ∈ sum_of_powers 3 7 := by
+--   prove_sumOfPowers_many
+
+-- #print test
 
 end
 -- use the kernel to check a list exists
@@ -661,7 +815,10 @@ lemma third_range' : ∀ i : ℕ, i < 455 → 240 ≤ i → i ∈ sum_of_powers 
   all_goals prove_sumOfPowers
 
 -- use the vm to check a list exists
+set_option trace.profiler true in
 lemma fourth_range : ∀ i : ℕ, i ≤ 3234 → 455 ≤ i → find_all' 7 i = true := by native_decide
+
+#exit
 
 end compute
 
