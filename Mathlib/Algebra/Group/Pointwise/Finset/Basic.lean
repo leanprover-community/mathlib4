@@ -6,12 +6,13 @@ Authors: Floris van Doorn, Yaël Dillies
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
-import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Ring.Int.Defs
 
 /-!
 # Pointwise operations of finsets

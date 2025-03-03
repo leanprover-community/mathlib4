@@ -9,6 +9,7 @@ import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.ZMod.Basic
+import Mathlib.Algebra.Order.Ring.Rat
 
 /-!
 # Witt polynomials
