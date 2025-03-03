@@ -1904,4 +1904,3 @@ instance Nat.decidablePred_mem_vadd_set {s : Set ℕ} [DecidablePred (· ∈ s)]
     simp only [Set.mem_vadd_set, vadd_eq_add]; aesop
 
 set_option linter.style.longFile 2000
-#min_imports
