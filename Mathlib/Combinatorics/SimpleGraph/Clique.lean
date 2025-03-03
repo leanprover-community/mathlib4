@@ -346,7 +346,7 @@ theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι �
   rw [← top_adj, ← f.map_adj_iff, comap_adj, top_adj] at hn
   exact absurd he hn
 
-/-- Embedding of the complete graph on ι into completeMultipartiteGraph on ι nonempty parts-/
+/-- Embedding of the complete graph on `ι` into `completeMultipartiteGraph` on `ι` nonempty parts-/
 noncomputable def CompleteMultipartiteGraph.topEmbedding {ι : Type*} (V : ι → Type*)
     [∀ i, Nonempty (V i)] : (⊤ : SimpleGraph ι) ↪g (completeMultipartiteGraph V) where
   toFun := fun i ↦ ⟨i, Classical.arbitrary (V i)⟩

@@ -455,7 +455,7 @@ theorem cliqueFree_of_chromaticNumber_lt {n : ℕ} (hc : G.chromaticNumber < n) 
   rw [← hne] at hc
   simpa using hc
 
-/-- The canonical coloring of a completeMultiPartiteGraph with parts indexed by ι -/
+/-- The canonical coloring of a `completeMultipartiteGraph` with parts indexed by `ι` -/
 def CompleteMultipartiteGraph.coloring {ι : Type*} (V : ι → Type*) :
     (completeMultipartiteGraph V).Coloring ι := Coloring.mk (fun v ↦ v.1) (by simp)
 
