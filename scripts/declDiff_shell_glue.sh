@@ -37,5 +37,9 @@ printf $'LeanDiff<<EOF\n<details><summary> <b>Declaration diff in Lean</b></summ
 %s
 @@@
 </details>\nEOF' "$(diff decls_in_master.txt decls_in_PR.txt | grep "^[<>]")" |
-  # show resutl in stdout and also store it in `GITHUB_OUTPUT`
+  # show result in stdout and also store it in `GITHUB_OUTPUT`
+  tee >(cat) >> "${GITHUB_OUTPUT}"
+
+printf $'LeanDiff1<<EOF\n%s\nEOF' "$(diff decls_in_master.txt decls_in_PR.txt | grep "^[<>]")" |
+  # show result in stdout and also store it in `GITHUB_OUTPUT`
   tee >(cat) >> "${GITHUB_OUTPUT}"

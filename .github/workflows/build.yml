@@ -246,10 +246,13 @@ jobs:
       - name: Report diff in Lean
         run:
           printf $'%s\n' "${{ steps.diff_in_lean.outputs.LeanDiff }}"
+          leanDiff="$(printf $'<details><summary> <b>Declaration diff in Lean</b></summary>\n\n```diff\n%s\n```\n</details>\n' "${{ steps.diff_in_lean.outputs.LeanDiff1 }}")"
+          printf $'leanDiff1: "%s"\n\n' "${leanDiff}"
+
           ./scripts/update_PR_comment.sh "$(
             printf $'%s\n' "${{ steps.diff_in_lean.outputs.LeanDiff }}" |
               sed 's=@@@=```=g'
-            )" '<details><summary> <b>Declaration diff in Lean</b></summary>' "${{ github.event.pull_request.number }}"
+            )" '<details><summary> <b>Declaration diff in Lean</b></summary>' "${{ github.event.issue.number }}"
 
       - name: check for noisy stdout lines
         id: noisy
