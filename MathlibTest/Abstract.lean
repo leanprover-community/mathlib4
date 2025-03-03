@@ -22,7 +22,7 @@ example (n : Nat) : n = by abstract exact 0 := sorry
 example (f : True ∧ True → Nat) (n : Nat) :
   n = f (by constructor; abstract trivial; trivial) := sorry
 
-/-- error: unsolved goals
+/-- error: tactic `abstract` failed with unsolved goals
 case left
 f : True ∧ True → Nat
 n : Nat
@@ -35,3 +35,22 @@ n : Nat
 #guard_msgs in
 example (f : True ∧ True → Nat) (n : Nat) :
   n = f (by abstract constructor) := sorry
+
+
+def bar : Function.const (∀ α : Type _, ∀ a : α, a = a) 1 (by abstract simp) = 1 := rfl
+
+/--
+info: def bar.{u_1} : Function.const (∀ (α : Type u_1) (a : α), a = a) 1 bar.abstract_1 = 1 :=
+rfl
+-/
+#guard_msgs in
+#print bar
+
+def baz : Function.const (∀ α : Type u, ∀ a : α, a = a) 1 (by abstract simp) = 1 := rfl
+
+/--
+info: def baz.{u} : Function.const (∀ (α : Type u) (a : α), a = a) 1 baz.abstract_1 = 1 :=
+rfl
+-/
+#guard_msgs in
+#print baz

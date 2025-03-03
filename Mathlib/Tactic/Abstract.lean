@@ -28,8 +28,10 @@ elab "abstract" tacs:ppDedent(tacticSeq) : tactic => do
   setGoals [newGoal.mvarId!]
   evalTactic tacs
   let newGoal ← instantiateMVars newGoal
-  if newGoal.hasMVar then
-    goal.assign newGoal -- makes sure we get the correct error message
+  -- `mkAuxTheorem` works when there are universe metavariables,
+  -- so we only check for expression metavariabes.
+  if newGoal.hasExprMVar then
+    throwError m! "tactic `abstract` failed with unsolved goals\n{goalsToMessageData (← getGoals)}"
   else
     setGoals [goal]
     let auxName ← mkAuxName ((← getDeclName?).getD .anonymous ++ `abstract) 1
