@@ -43,7 +43,7 @@ The advantage of this approach is that it allows us to write for instance
 
 In this file we therefore define this family of kernels and prove some properties of it.
 In particular we provide at the end of the file some results to compute the integral of a function
-against `ptraj κ a b`, takin inspiration from `MeasureTheory.lmarginal`.
+against `ptraj κ a b`, taking inspiration from `MeasureTheory.lmarginal`.
 
 ## Main definitions
 
