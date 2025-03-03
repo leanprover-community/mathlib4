@@ -163,7 +163,9 @@ jobs:
 
       - name: print the sizes of the oleans
         run: |
-          du .lake/build/lib/lean/Mathlib || echo "This code should be unreachable"
+          du .lake/build/lib/lean/Mathlib ||
+            # This path was the correct path before v4.18: it is here just for compatibility reasons
+            du .lake/build/lib/Mathlib || echo "This code should be unreachable"
 
       - name: upload cache
         # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
