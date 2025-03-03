@@ -6,7 +6,6 @@ Authors: Jeremy Tan, Damiano Testa
 
 import Lean.Elab.Command
 import Mathlib.Tactic.Cases
-import Mathlib.Tactic.Linter.Header
 
 /-!
 # The "cases" linter
