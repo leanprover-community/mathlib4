@@ -231,6 +231,15 @@ jobs:
             exit 1
           fi
 
+      - id: PR
+        uses: 8BitJonny/gh-get-current-pr@3.0.0
+        # TODO: this may not work properly if the same commit is pushed to multiple branches:
+        # https://github.com/8BitJonny/gh-get-current-pr/issues/8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Only return if PR is still open
+          filterOutClosed: true
+
       - name: Declarations diff -- Lean implementation
         id: diff_in_lean
         run: |
@@ -250,7 +259,7 @@ jobs:
           printf $'%s\n' "${{ steps.diff_in_lean.outputs.LeanDiff }}" |
               sed 's=@@@=```=g' > messageContent
 
-          ./scripts/update_PR_comment.sh messageContent "${messageStart}" 22497 #"${{ github.event.issue.number }}"
+          ./scripts/update_PR_comment.sh messageContent "${messageStart}" ${{ steps.PR.outputs.number }}
 
       - name: check for noisy stdout lines
         id: noisy
