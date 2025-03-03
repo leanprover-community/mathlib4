@@ -604,8 +604,8 @@ lemma compProd_sum_right {ι : Type*} [Countable ι]
   rw [← lintegral_tsum]
   · congr with i
     rw [Measure.sum_apply]
-    exact measurable_prod_mk_left hs
-  · exact fun _ ↦ (measurable_kernel_prod_mk_left' hs a).aemeasurable
+    exact measurable_prodMk_left hs
+  · exact fun _ ↦ (measurable_kernel_prodMk_left' hs a).aemeasurable
 
 lemma comapRight_compProd_id_prod {δ : Type*} {mδ : MeasurableSpace δ}
     (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel (α × β) γ) [IsSFiniteKernel η]
