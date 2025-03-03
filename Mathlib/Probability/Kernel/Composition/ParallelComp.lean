@@ -66,7 +66,7 @@ lemma parallelComp_of_not_isSFiniteKernel_left (η : Kernel γ δ) (h : ¬ IsSFi
 @[simp]
 lemma parallelComp_of_not_isSFiniteKernel_right (κ : Kernel α β) (h : ¬ IsSFiniteKernel η) :
     κ ∥ₖ η = 0 := by
-  rw [parallelComp, dif_neg (not_and_of_not_left _ h)]
+  rw [parallelComp, dif_neg (not_and_of_not_right _ h)]
 
 lemma parallelComp_apply (κ : Kernel α β) [IsSFiniteKernel κ]
     (η : Kernel γ δ) [IsSFiniteKernel η] (x : α × γ) :
