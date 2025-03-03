@@ -3,8 +3,8 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 import Mathlib.CategoryTheory.Functor.Derived.RightDerived
+import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 import Mathlib.CategoryTheory.Localization.StructuredArrow
 
 /-!
@@ -90,6 +90,9 @@ section
 
 variable {F L}
 
+/-- If `L : C ⥤ D` is a localization functor for `W` and `e : F ≅ L ⋙ G` is an isomorphism,
+then `e.hom` makes `G` a pointwise left Kan extension of `F` along `L` at `L.obj Y`
+for any `Y : C`. -/
 def isPointwiseLeftKanExtensionAtOfIso
     {G : D ⥤ H} (e : F ≅ L ⋙ G) [L.IsLocalization W] (Y : C) :
     (LeftExtension.mk _ e.hom).IsPointwiseLeftKanExtensionAt (L.obj Y) where
@@ -123,6 +126,8 @@ def isPointwiseLeftKanExtensionAtOfIso
     dsimp at this m hm ⊢
     simp only [← this, map_id, comp_id, Iso.inv_hom_id_app_assoc]
 
+/-- If `L` is a localization functor for `W` and `e : F ≅ L ⋙ G` is an isomorphism,
+then `e.hom` makes `G` a poinwise left Kan extension of `F` along `L`. -/
 noncomputable def isPointwiseLeftKanExtensionOfIso
     {G : D ⥤ H} (e : F ≅ L ⋙ G) [L.IsLocalization W] :
     (LeftExtension.mk _ e.hom).IsPointwiseLeftKanExtension := fun Y => by
@@ -130,6 +135,10 @@ noncomputable def isPointwiseLeftKanExtensionOfIso
   exact (LeftExtension.mk _ e.hom).isPointwiseLeftKanExtensionAtEquivOfIso'
     (L.objObjPreimageIso Y) (isPointwiseLeftKanExtensionAtOfIso W e _)
 
+/-- Let `L : C ⥤ D` be a localization functor for `W`, if an extension `E`
+of `F : C ⥤ H` along `L` is such that the natural transformation
+`E.hom : F ⟶ L ⋙ E.right` is an isomorphism, then `E` is a pointwise
+left Ken extension. -/
 noncomputable def LeftExtension.isPointwiseLeftKanExtensionOfIsIso
     (E : LeftExtension L F) [IsIso E.hom] [L.IsLocalization W] :
     E.IsPointwiseLeftKanExtension :=
