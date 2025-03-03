@@ -239,7 +239,13 @@ jobs:
           fi
 
       - name: Declarations diff -- Lean implementation
-        run: ./scripts/declDiff_shell_glue.sh
+        id: diff_in_lean
+        run: |
+          ./scripts/declDiff_shell_glue.sh
+
+      - name: Report diff in Lean
+        run:
+          ./scripts/update_PR_comment.sh "${{ steps.diff_in_lean.outputs.LeanDiff }}" "<details><summary> <b>Declaration diff in Lean</b></summary>" "${{ github.event.pull_request.number }}"
 
       - name: check for noisy stdout lines
         id: noisy
