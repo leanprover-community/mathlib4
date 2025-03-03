@@ -46,9 +46,9 @@ expectation.
 
 * `eq_traj`: Uniqueness of `traj`: to check that `η = traj κ a` it is enough to show that
   the restriction of `η` to variables `≤ b` is `partialTraj κ a b`.
-* `traj_comp_partialTraj`: Given the distribution up to tome `a`, `partialTraj κ a b` gives the distribution of
-  the trajectory up to time `b`, and composing this with `traj κ b` gives the distribution
-  of the whole trajectory.
+* `traj_comp_partialTraj`: Given the distribution up to tome `a`, `partialTraj κ a b`
+  gives the distribution of the trajectory up to time `b`, and composing this with
+  `traj κ b` gives the distribution of the whole trajectory.
 * `condExp_traj`: If `a ≤ b`, the conditional expectation of `f` with respect to `traj κ a`
   given the information up to time `b` is obtained by integrating `f` against `traj κ b`.
 
@@ -228,7 +228,8 @@ section definition
 
 lemma isProjectiveMeasureFamily_partialTraj {a : ℕ} (x₀ : Π i : Iic a, X i) :
     IsProjectiveMeasureFamily (inducedFamily (fun b ↦ partialTraj κ a b x₀)) :=
-  isProjectiveMeasureFamily_inducedFamily _ (fun _ _ ↦ partialTraj_map_frestrictLe₂_apply (κ := κ) x₀)
+  isProjectiveMeasureFamily_inducedFamily _
+    (fun _ _ ↦ partialTraj_map_frestrictLe₂_apply (κ := κ) x₀)
 
 /-- Given a family of kernels `κ : (n : ℕ) → Kernel (Π i : Iic n, X i) (X (n + 1))`, and the
 trajectory up to time `a` we can construct an additive content over cylinders. It corresponds
@@ -305,7 +306,8 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
   have tendstoF x : Tendsto (F · x) atTop (𝓝 (l x)) := htendsto x
   -- Integrating `fₙ` between time `k` and `aₙ` is the same as integrating
   -- `Fₙ` between time `k` and time `k + 1`.
-  have f_eq x n : lmarginalPartialTraj κ k (a n) (f n) x = lmarginalPartialTraj κ k (k + 1) (F n) x := by
+  have f_eq x n : lmarginalPartialTraj κ k (a n) (f n) x =
+      lmarginalPartialTraj κ k (k + 1) (F n) x := by
     simp_rw [F]
     obtain h | h | h := lt_trichotomy (k + 1) (a n)
     · rw [← lmarginalPartialTraj_self k.le_succ h.le (mf n)]
@@ -402,7 +404,8 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
     simp [χ, A_anti hmn ha]
   -- Integrating `χₙ` further than the last coordinate it depends on does nothing.
   -- This is used to then show that the integral of `χₙ` from time `k` is non-increasing.
-  have lma_inv k M n (h : a n ≤ M) : lmarginalPartialTraj κ k M (χ n) = lmarginalPartialTraj κ k (a n) (χ n) :=
+  have lma_inv k M n (h : a n ≤ M) :
+      lmarginalPartialTraj κ k M (χ n) = lmarginalPartialTraj κ k (a n) (χ n) :=
     (χ_dep n).lmarginalPartialTraj_const_right (mχ n) h le_rfl
   -- the integral of `χₙ` from time `k` is non-increasing.
   have anti_lma k x : Antitone fun n ↦ lmarginalPartialTraj κ k (a n) (χ n) x := by
@@ -456,7 +459,8 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
       rw [iterateInduction, dif_neg (by omega)]
   -- We now want to prove that the integral of `χₙ`, which is equal to the `trajContent`
   -- of `Aₙ`, converges to `0`.
-  have aux x n : trajContent κ x₀ (A n) = lmarginalPartialTraj κ p (a n) (χ n) (updateFinset x _ x₀) := by
+  have aux x n :
+      trajContent κ x₀ (A n) = lmarginalPartialTraj κ p (a n) (χ n) (updateFinset x _ x₀) := by
     simp_rw [χ, A_eq]
     nth_rw 1 [← frestrictLe_updateFinset x x₀]
     exact trajContent_eq_lmarginalPartialTraj _ (mS n) ..
@@ -578,10 +582,11 @@ theorem eq_traj {a : ℕ} (η : Kernel (Π i : Iic a, X i) (Π n, X n))
     (hη : ∀ b, η.map (frestrictLe b) = partialTraj κ a b) : η = traj κ a :=
   eq_traj' κ 0 η fun b _ ↦ hη b
 
-/-- Given the distribution up to tome `a`, `partialTraj κ a b` gives the distribution of the trajectory
-up to time `b`, and composing this with `traj κ b` gives the distribution
+/-- Given the distribution up to tome `a`, `partialTraj κ a b` gives the distribution
+of the trajectory up to time `b`, and composing this with `traj κ b` gives the distribution
 of the whole trajectory. -/
-theorem traj_comp_partialTraj {a b : ℕ} (hab : a ≤ b) : (traj κ b) ∘ₖ (partialTraj κ a b) = traj κ a := by
+theorem traj_comp_partialTraj {a b : ℕ} (hab : a ≤ b) :
+    (traj κ b) ∘ₖ (partialTraj κ a b) = traj κ a := by
   refine eq_traj _ _ fun n ↦ ?_
   rw [map_comp, traj_map_frestrictLe, partialTraj_comp_partialTraj' _ hab]
 
@@ -667,14 +672,15 @@ variable {κ}
 theorem integral_traj_partialTraj' {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
     {f : (Π i : Iic b, X i) → (Π n : ℕ, X n) → E}
     (hf : Integrable f.uncurry ((partialTraj κ a b x₀) ⊗ₘ (traj κ b))) :
-    ∫ x, ∫ y, f x y ∂traj κ b x ∂partialTraj κ a b x₀ = ∫ x, f (frestrictLe b x) x ∂traj κ a x₀ := by
+    ∫ x, ∫ y, f x y ∂traj κ b x ∂partialTraj κ a b x₀ =
+    ∫ x, f (frestrictLe b x) x ∂traj κ a x₀ := by
   have hf1 := hf
   rw [← partialTraj_comp_partialTrajProd_traj κ hab] at hf1
   replace hf1 := hf1.comp_measurable (by fun_prop)
   have hf2 := aestronglyMeasurable_traj κ hab hf1.1
   rw [← traj_comp_partialTraj κ hab, Kernel.integral_comp]
   · apply integral_congr_ae
-    filter_upwards [hf.1.compProd, hf2] with x h1 h2
+    filter_upwards [hf.1.ae_of_compProd, hf2] with x h1 h2
     rw [integral_traj _ h1]
     nth_rw 2 [integral_traj]
     · simp_rw [frestrictLe_updateFinset]
