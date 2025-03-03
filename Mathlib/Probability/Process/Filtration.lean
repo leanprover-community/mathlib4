@@ -347,8 +347,8 @@ open MeasurableSpace Preorder
 
 variable {ι : Type*} [Preorder ι] {X : ι → Type*} [∀ i, MeasurableSpace (X i)]
 
-/-- The canonical filtration on the pi space `Π i, X i`, where `piLE X i` consists of
-measurable sets depending only on coordinates `≤ i`. -/
+/-- The canonical filtration on the product space `Π i, X i`, where `piLE i`
+consists of measurable sets depending only on coordinates `≤ i`. -/
 def piLE : @Filtration (Π i, X i) ι _ pi where
   seq i := pi.comap (restrictLe i)
   mono' i j hij := by

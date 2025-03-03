@@ -237,6 +237,10 @@ theorem Icc_ssubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b�
   rw [← coe_ssubset, coe_Icc, coe_Icc]
   exact Set.Icc_ssubset_Icc_right hI ha hb
 
+theorem Ioc_disjoint_Ioc (a b c : α) : Disjoint (Ioc a b) (Ioc b c) :=
+  disjoint_right.2 fun _ hi h ↦
+    (not_and_of_not_right _ (_root_.lt_iff_le_not_le.1 (mem_Ioc.1 hi).1).2) (mem_Ioc.1 h)
+
 variable (a)
 
 theorem Ico_self : Ico a a = ∅ :=
@@ -427,14 +431,12 @@ theorem Ioo_subset_Iic_self : Ioo a b ⊆ Iic b :=
 theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
   disjoint_left.2 fun _ hax hbcx ↦ (mem_Iic.1 hax).not_lt <| lt_of_le_of_lt h (mem_Ioc.1 hbcx).1
 
-/-- An equivalence between `Finset.Iic a` and `Set.Iic a`. Can be used jointly with
-`Equiv.piCongrLeft` for instance to get an equiv
-`(Π i : Finset.Iic a, π i) ≃ (Π i : Set.Iic a, π i)`. -/
-def _root_.Equiv.Iic (a : α) : Iic a ≃ Set.Iic a :=
-    { toFun b := ⟨b.1, coe_Iic a ▸ mem_coe.2 b.2⟩
-      invFun b := ⟨b.1, by rw [← mem_coe, coe_Iic a]; exact b.2⟩
-      left_inv := fun _ ↦ rfl
-      right_inv := fun _ ↦ rfl }
+/-- An equivalence between `Finset.Iic a` and `Set.Iic a`. -/
+def _root_.Equiv.Iic_finset_set (a : α) : Iic a ≃ Set.Iic a where
+  toFun b := ⟨b.1, coe_Iic a ▸ mem_coe.2 b.2⟩
+  invFun b := ⟨b.1, by rw [← mem_coe, coe_Iic a]; exact b.2⟩
+  left_inv := fun _ ↦ rfl
+  right_inv := fun _ ↦ rfl
 
 end LocallyFiniteOrderBot
 
