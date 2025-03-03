@@ -237,6 +237,10 @@ theorem Icc_ssubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b�
   rw [← coe_ssubset, coe_Icc, coe_Icc]
   exact Set.Icc_ssubset_Icc_right hI ha hb
 
+theorem Ioc_disjoint_Ioc (a b c : α) : Disjoint (Ioc a b) (Ioc b c) :=
+  disjoint_right.2 fun _ hi h ↦
+    (not_and_of_not_right _ (_root_.lt_iff_le_not_le.1 (mem_Ioc.1 hi).1).2) (mem_Ioc.1 h)
+
 variable (a)
 
 theorem Ico_self : Ico a a = ∅ :=
