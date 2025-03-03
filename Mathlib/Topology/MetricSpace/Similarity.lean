@@ -3,7 +3,7 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Newell Jensen
 -/
-import Mathlib.Topology.MetricSpace.PseudoMetric
+import Mathlib.Topology.MetricSpace.Congruence
 
 /-!
 # Similarities
@@ -35,26 +35,30 @@ def Similarity (v₁ : ι → P₁) (v₂ : ι → P₂)
 @[inherit_doc]
 scoped[Similarity] infixl:25 " ∼ " => Similarity
 
-/-- Similarity holds if and only if and only if all extended distances are the same. -/
+/-- Similarity holds if and only if and only if all extended distances are proportional. -/
 lemma similarity_iff_exists_edist_eq [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] :
     Similarity v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (edist (v₁ i₁) (v₁ i₂) =
       r * edist (v₂ i₁) (v₂ i₂))) :=
   refl _
 
-/-- Similarity holds if and only if all non-negative distances are the same. -/
+/-- Similarity holds if and only if all non-negative distances are proportional. -/
 lemma similarity_iff_exists_nndist_eq [PseudoMetricSpace P₁] [PseudoMetricSpace P₂] :
     Similarity v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (nndist (v₁ i₁) (v₁ i₂) =
       r * nndist (v₂ i₁) (v₂ i₂))) :=
   exists_congr <| fun _ => and_congr Iff.rfl <| forall₂_congr <|
   fun _ _ => by { rw [edist_nndist, edist_nndist]; norm_cast }
 
-/-- Similarity holds if and only if all distances are the same. -/
+/-- Similarity holds if and only if all distances are proportional. -/
 lemma similarity_iff_exists_dist_eq [PseudoMetricSpace P₁] [PseudoMetricSpace P₂] :
     Similarity v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (dist (v₁ i₁) (v₁ i₂) =
       r * dist (v₂ i₁) (v₂ i₂))) :=
   similarity_iff_exists_nndist_eq.trans
   (exists_congr <| fun _ => and_congr Iff.rfl <| forall₂_congr <|
     fun _ _ => by { rw [dist_nndist, dist_nndist]; norm_cast })
+
+lemma Congruent.similarity [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] {v₁ : ι → P₁}
+    {v₂ : ι → P₂} (h : Congruent v₁ v₂) : Similarity v₁ v₂ :=
+  ⟨1, one_ne_zero, fun i₁ i₂ ↦ by simpa using h i₁ i₂⟩
 
 namespace Similarity
 
@@ -116,7 +120,7 @@ variable [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] [PseudoEMetricSpace
   rw [ENNReal.coe_inv hr, ← ENNReal.div_eq_inv_mul, ENNReal.eq_div_iff _ ENNReal.coe_ne_top, h]
   norm_cast
 
-@[simp] lemma _root_.similarity_comm : v₁ ∼ v₂ ↔ v₂ ∼ v₁ := ⟨Similarity.symm, Similarity.symm⟩
+lemma _root_.similarity_comm : v₁ ∼ v₂ ↔ v₂ ∼ v₁ := ⟨Similarity.symm, Similarity.symm⟩
 
 @[trans] protected lemma trans (h₁ : v₁ ∼ v₂) (h₂ : v₂ ∼ v₃) : v₁ ∼ v₃ := by
   rcases h₁ with ⟨r₁, hr₁, h₁⟩; rcases h₂ with ⟨r₂, hr₂, h₂⟩
