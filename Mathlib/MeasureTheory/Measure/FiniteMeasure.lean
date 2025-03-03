@@ -142,7 +142,7 @@ instance {α : Type*} [MeasurableSpace α] : MeasurableSpace (FiniteMeasure α) 
     Subtype.instMeasurableSpace
 
 /-- The set of all finite measures is a measurable set in the Giry monad -/
-lemma finite_measures_measurable_set {α : Type*} [MeasurableSpace α] :
+lemma measurableSet_isFiniteMeasure {α : Type*} [MeasurableSpace α] :
     MeasurableSet { μ : Measure α | IsFiniteMeasure μ } := by
   suffices { μ : Measure α | IsFiniteMeasure μ } = (fun μ => μ univ) ⁻¹' (Set.Ico 0 ∞) by
     rw [this]
