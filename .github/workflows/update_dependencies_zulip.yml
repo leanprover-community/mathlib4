@@ -112,8 +112,8 @@ jobs:
           response = client.get_messages(request)
           messages = response['messages']
 
-          # Only post if the last message was a failure message
-          if messages and '❌ `lake update` failed' in messages[0]['content']:
+          # Post if there are no messages or if the last message wasn't a success message
+          if not messages or '✅ `lake update` succeeded' not in messages[0]['content']:
               request = {
                   'type': 'stream',
                   'to': 'mathlib reviewers',
