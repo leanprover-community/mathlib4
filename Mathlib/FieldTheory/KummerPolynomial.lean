@@ -28,7 +28,7 @@ lemma root_X_pow_sub_C_pow (n : ℕ) (a : K) :
 
 lemma root_X_pow_sub_C_ne_zero {n : ℕ} (hn : 1 < n) (a : K) :
     (AdjoinRoot.root (X ^ n - C a)) ≠ 0 :=
-  mk_ne_zero_of_natDegree_lt (monic_X_pow_sub_C _ (Nat.not_eq_zero_of_lt hn))
+  mk_ne_zero_of_natDegree_lt (monic_X_pow_sub_C _ (Nat.ne_zero_of_lt hn))
     X_ne_zero <| by rwa [natDegree_X_pow_sub_C, natDegree_X]
 
 lemma root_X_pow_sub_C_ne_zero' {n : ℕ} {a : K} (hn : 0 < n) (ha : a ≠ 0) :

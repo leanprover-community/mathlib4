@@ -9,6 +9,7 @@ import Mathlib.Data.Finite.Prod
 
 /-! # Finiteness lemmas for pointwise operations on sets -/
 
+assert_not_exists MonoidWithZero
 
 open Pointwise
 
