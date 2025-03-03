@@ -963,7 +963,7 @@ theorem normAtPlace_negAt (x : mixedSpace K) (w : InfinitePlace K) :
     normAtPlace w (negAt s x) = normAtPlace w x := by
   obtain hw | hw := isReal_or_isComplex w
   · simp_rw [normAtPlace_apply_of_isReal hw, negAt_apply_norm_of_isReal]
-  · simp_rw [normAtPlace_apply_of_isComplex hw, negAt_apply_of_isComplex]
+  · simp_rw [normAtPlace_apply_of_isComplex hw, negAt_apply_isComplex]
 
 /-- `negAt` preserves the `norm`. -/
 @[simp]
@@ -987,11 +987,11 @@ theorem negAt_symm :
 def signSet (x : mixedSpace K) : Set {w : InfinitePlace K // IsReal w} := {w | x.1 w ≤ 0}
 
 @[simp]
-theorem negAt_signSet_apply_of_isReal (x : mixedSpace K) (w : {w // IsReal w}) :
+theorem negAt_signSet_apply_isReal (x : mixedSpace K) (w : {w // IsReal w}) :
     (negAt (signSet x) x).1 w = ‖x.1 w‖ := by
   by_cases hw : x.1 w ≤ 0
-  · rw [negAt_apply_of_isReal_and_mem _ hw, Real.norm_of_nonpos hw]
-  · rw [negAt_apply_of_isReal_and_not_mem _ hw, Real.norm_of_nonneg (lt_of_not_ge hw).le]
+  · rw [negAt_apply_isReal_and_mem _ hw, Real.norm_of_nonpos hw]
+  · rw [negAt_apply_isReal_and_not_mem _ hw, Real.norm_of_nonneg (lt_of_not_ge hw).le]
 
 @[simp]
 theorem negAt_signSet_apply_isComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
@@ -1049,8 +1049,8 @@ theorem mem_negAt_plusPart_of_mem (hx₁ : x ∈ A) (hx₂ : ∀ w, x.1 w ≠ 0)
         ⟨(fun w ↦ ‖x.1 w‖, x.2), ⟨(hA x).mp hx₁, fun w ↦ norm_pos_iff.mpr (hx₂ w)⟩, ?_⟩⟩
   ext w
   · by_cases hw : w ∈ s
-    · simp [negAt_apply_of_isReal_and_mem _ hw, abs_of_neg (h₁ w hw)]
-    · simp [negAt_apply_of_isReal_and_not_mem _ hw, abs_of_pos (h₂ w hw)]
+    · simp [negAt_apply_isReal_and_mem _ hw, abs_of_neg (h₁ w hw)]
+    · simp [negAt_apply_isReal_and_not_mem _ hw, abs_of_pos (h₂ w hw)]
   · rfl
 
 include hA in
