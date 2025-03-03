@@ -129,7 +129,7 @@ theorem toMeasure_injective : Function.Injective ((↑) : ProbabilityMeasure Ω 
 instance {α : Type*} [MeasurableSpace α] : MeasurableSpace (ProbabilityMeasure α) :=
     Subtype.instMeasurableSpace
 
-lemma probability_measures_measurable_set {α : Type*} [MeasurableSpace α] :
+lemma measurableSet_isProbabilityMeasure {α : Type*} [MeasurableSpace α] :
     MeasurableSet { μ : Measure α | IsProbabilityMeasure μ } := by
   suffices { μ : Measure α | IsProbabilityMeasure μ } = (fun μ => μ univ) ⁻¹' {1} by
     rw [this]
