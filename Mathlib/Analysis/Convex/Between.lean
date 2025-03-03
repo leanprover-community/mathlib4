@@ -62,15 +62,12 @@ theorem affineSegment_same (x : P) : affineSegment R x x = {x} := by
   simp_rw [affineSegment, lineMap_same, AffineMap.coe_const, Function.const,
     (Set.nonempty_Icc.mpr zero_le_one).image_const]
 
-variable {R}
-
+variable {R} in
 @[simp]
 theorem affineSegment_image (f : P →ᵃ[R] P') (x y : P) :
     f '' affineSegment R x y = affineSegment R (f x) (f y) := by
   rw [affineSegment, affineSegment, Set.image_image, ← comp_lineMap]
   rfl
-
-variable (R)
 
 @[simp]
 theorem affineSegment_const_vadd_image (x y : P) (v : V) :
@@ -582,6 +579,24 @@ section LinearOrderedField
 
 variable [LinearOrderedField R] [AddCommGroup V] [Module R V] [AddTorsor V P] {x y z : P}
 variable {R}
+
+lemma wbtw_iff_of_le {x y z : R} (hxz : x ≤ z) : Wbtw R x y z ↔ x ≤ y ∧ y ≤ z := by
+  cases hxz.eq_or_lt with
+  | inl hxz =>
+    subst hxz
+    rw [← le_antisymm_iff, wbtw_self_iff, eq_comm]
+  | inr hxz =>
+    have hxz' : 0 < z - x := sub_pos.mpr hxz
+    let r := (y - x) / (z - x)
+    have hy : y = r * (z - x) + x := by simp [r, hxz'.ne']
+    simp [hy, wbtw_mul_sub_add_iff, mul_nonneg_iff_of_pos_right hxz', ← le_sub_iff_add_le,
+      mul_le_iff_le_one_left hxz', hxz.ne]
+
+lemma Wbtw.of_le_of_le {x y z : R} (hxy : x ≤ y) (hyz : y ≤ z) : Wbtw R x y z :=
+  (wbtw_iff_of_le (hxy.trans hyz)).mpr ⟨hxy, hyz⟩
+
+lemma Sbtw.of_lt_of_lt {x y z : R} (hxy : x < y) (hyz : y < z) : Sbtw R x y z :=
+  ⟨.of_le_of_le hxy.le hyz.le, hxy.ne', hyz.ne⟩
 
 theorem wbtw_iff_left_eq_or_right_mem_image_Ici {x y z : P} :
     Wbtw R x y z ↔ x = y ∨ z ∈ lineMap x y '' Set.Ici (1 : R) := by

@@ -92,8 +92,7 @@ def coneDiscreteComp :
   Limits.Cones.postcomposeEquivalence (Discrete.compNatIsoDiscrete X π)
 
 theorem coneDiscreteComp_obj_mapCone :
-    -- Porting note: check universe parameters here
-    (coneDiscreteComp X).functor.obj (Functor.mapCone π (TopCat.piFan.{u,u} X)) =
+    (coneDiscreteComp X).functor.obj (Functor.mapCone π (TopCat.piFan X)) =
       Limits.Fan.mk (πₓ (TopCat.of (∀ i, X i))) (proj X) :=
   rfl
 
@@ -108,8 +107,7 @@ instance : IsIso (piTopToPiCone X) :=
 
 /-- The fundamental groupoid functor preserves products -/
 lemma preservesProduct : Limits.PreservesLimit (Discrete.functor X) π := by
-  -- Porting note: check universe parameters here
-  apply Limits.preservesLimit_of_preserves_limit_cone (TopCat.piFanIsLimit.{u,u} X)
+  apply Limits.preservesLimit_of_preserves_limit_cone (TopCat.piFanIsLimit X)
   apply (Limits.IsLimit.ofConeEquiv (coneDiscreteComp X)).toFun
   simp only [coneDiscreteComp_obj_mapCone]
   apply Limits.IsLimit.ofIsoLimit _ (asIso (piTopToPiCone X)).symm
@@ -185,12 +183,7 @@ def prodIso : CategoryTheory.Grpd.of (πₓ A × πₓ B) ≅ πₓ (TopCat.of (
     apply CategoryTheory.Functor.hext
     · intros; apply FundamentalGroupoid.ext; apply Prod.ext <;> simp <;> rfl
     rintro ⟨x₀, x₁⟩ ⟨y₀, y₁⟩ f
-    have := Path.Homotopic.prod_projLeft_projRight f
-    -- Porting note: was simpa but TopSpace instances might be getting in the way
-    simp only [CategoryTheory.Functor.comp_obj, CategoryTheory.Functor.prod'_obj, prodToProdTop_obj,
-      CategoryTheory.Functor.comp_map, CategoryTheory.Functor.prod'_map, projLeft_map,
-      projRight_map, CategoryTheory.Functor.id_obj, CategoryTheory.Functor.id_map, heq_eq_eq]
-    apply this
+    simpa [-Path.Homotopic.prod_projLeft_projRight] using Path.Homotopic.prod_projLeft_projRight f
 
 end Prod
 

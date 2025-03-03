@@ -8,6 +8,7 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Field.Subfield.Defs
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.Analysis.Normed.Group.Constructions
+import Mathlib.Analysis.Normed.Group.Subgroup
 import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.Algebra.Ring.Regular
 
@@ -848,16 +849,19 @@ theorem exists_norm_lt_one : ∃ x : α, 0 < ‖x‖ ∧ ‖x‖ < 1 :=
 variable {α}
 
 @[instance]
-theorem punctured_nhds_neBot (x : α) : NeBot (𝓝[≠] x) := by
+theorem nhdsNE_neBot (x : α) : NeBot (𝓝[≠] x) := by
   rw [← mem_closure_iff_nhdsWithin_neBot, Metric.mem_closure_iff]
   rintro ε ε0
   rcases exists_norm_lt α ε0 with ⟨b, hb0, hbε⟩
   refine ⟨x + b, mt (Set.mem_singleton_iff.trans add_right_eq_self).1 <| norm_pos_iff.1 hb0, ?_⟩
   rwa [dist_comm, dist_eq_norm, add_sub_cancel_left]
 
+@[deprecated (since := "2025-03-02")]
+alias punctured_nhds_neBot := nhdsNE_neBot
+
 @[instance]
 theorem nhdsWithin_isUnit_neBot : NeBot (𝓝[{ x : α | IsUnit x }] 0) := by
-  simpa only [isUnit_iff_ne_zero] using punctured_nhds_neBot (0 : α)
+  simpa only [isUnit_iff_ne_zero] using nhdsNE_neBot (0 : α)
 
 end Nontrivially
 

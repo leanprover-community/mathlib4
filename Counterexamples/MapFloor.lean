@@ -113,7 +113,7 @@ def forgetEpsilons : ℤ[ε] →+*o ℤ where
   map_mul' := mul_coeff_zero
   monotone' := monotone_iff_forall_lt.2 (by
     rintro p q ⟨n, hn⟩
-    cases' n with n
+    rcases n with - | n
     · exact hn.2.le
     · exact (hn.1 _ n.zero_lt_succ).le)
 

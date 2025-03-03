@@ -101,7 +101,7 @@ theorem formPerm_apply_of_not_mem (h : x ∉ l) : formPerm l x = x :=
   not_imp_comm.1 mem_of_formPerm_apply_ne h
 
 theorem formPerm_apply_mem_of_mem (h : x ∈ l) : formPerm l x ∈ l := by
-  cases' l with y l
+  rcases l with - | ⟨y, l⟩
   · simp at h
   induction' l with z l IH generalizing x y
   · simpa using h
@@ -190,7 +190,7 @@ theorem formPerm_apply_lt_get (xs : List α) (h : Nodup xs) (n : ℕ) (hn : n + 
 theorem formPerm_apply_getElem (xs : List α) (w : Nodup xs) (i : ℕ) (h : i < xs.length) :
     formPerm xs xs[i] =
       xs[(i + 1) % xs.length]'(Nat.mod_lt _ (i.zero_le.trans_lt h)) := by
-  cases' xs with x xs
+  rcases xs with - | ⟨x, xs⟩
   · simp at h
   · have : i ≤ xs.length := by
       refine Nat.le_of_lt_succ ?_
@@ -221,7 +221,7 @@ theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α,
     rcases (Nat.succ_le_of_lt hn).eq_or_lt with hn' | hn'
     · simp only [← hn', Nat.mod_self] at h
       refine not_exists.mpr h' ?_
-      rw [← length_eq_one, ← hn', (Fin.mk.inj_iff.mp h).symm]
+      rw [← length_eq_one_iff, ← hn', (Fin.mk.inj_iff.mp h).symm]
     · simp [Nat.mod_eq_of_lt hn'] at h
 
 theorem support_formPerm_of_nodup [Fintype α] (l : List α) (h : Nodup l) (h' : ∀ x : α, l ≠ [x]) :
@@ -350,27 +350,27 @@ theorem formPerm_eq_self_of_not_mem (l : List α) (x : α) (h : x ∉ l) : formP
   by_contra fun H => h <| mem_of_formPerm_ne_self _ _ H
 
 theorem formPerm_eq_one_iff (hl : Nodup l) : formPerm l = 1 ↔ l.length ≤ 1 := by
-  cases' l with hd tl
+  rcases l with - | ⟨hd, tl⟩
   · simp
   · rw [← formPerm_apply_mem_eq_self_iff _ hl hd (mem_cons_self _ _)]
     constructor
     · simp +contextual
     · intro h
       simp only [(hd :: tl).formPerm_apply_mem_eq_self_iff hl hd (mem_cons_self hd tl),
-        add_le_iff_nonpos_left, length, nonpos_iff_eq_zero, length_eq_zero] at h
+        add_le_iff_nonpos_left, length, nonpos_iff_eq_zero, length_eq_zero_iff] at h
       simp [h]
 
 theorem formPerm_eq_formPerm_iff {l l' : List α} (hl : l.Nodup) (hl' : l'.Nodup) :
     l.formPerm = l'.formPerm ↔ l ~r l' ∨ l.length ≤ 1 ∧ l'.length ≤ 1 := by
   rcases l with (_ | ⟨x, _ | ⟨y, l⟩⟩)
   · suffices l'.length ≤ 1 ↔ l' = nil ∨ l'.length ≤ 1 by
-      simpa [eq_comm, formPerm_eq_one_iff, hl, hl', length_eq_zero]
+      simpa [eq_comm, formPerm_eq_one_iff, hl, hl', length_eq_zero_iff]
     refine ⟨fun h => Or.inr h, ?_⟩
     rintro (rfl | h)
     · simp
     · exact h
   · suffices l'.length ≤ 1 ↔ [x] ~r l' ∨ l'.length ≤ 1 by
-      simpa [eq_comm, formPerm_eq_one_iff, hl, hl', length_eq_zero, le_rfl]
+      simpa [eq_comm, formPerm_eq_one_iff, hl, hl', length_eq_zero_iff, le_rfl]
     refine ⟨fun h => Or.inr h, ?_⟩
     rintro (h | h)
     · simp [← h.perm.length_eq]
