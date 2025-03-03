@@ -25,7 +25,7 @@ makes sense of composing infinitely many kernels together.
 
 To be able to even state the theorem we want to take the composition-product
 (see `ProbabilityTheory.Kernel.compProd`) of consecutive kernels.
-This however is not straight forward.
+This however is not straightforward.
 
 Consider `n : ℕ`. We cannot write `(κ n) ⊗ₖ (κ (n + 1))` directly, we need to first
 introduce an equivalence to see `κ (n + 1)` as a kernel with codomain
