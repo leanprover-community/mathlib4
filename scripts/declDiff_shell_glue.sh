@@ -26,4 +26,4 @@ getDeclarations decls_in_master.txt
 
 printf 'Diff the declarations\n'
 
-printf '```diff\n%s\n```\n' "$(diff decls_in_PR.txt decls_in_master.txt | grep "^[<>]")"
+printf '```diff\n%s\n```\n' "$(diff decls_in_master.txt decls_in_PR.txt | grep "^[<>]")"
