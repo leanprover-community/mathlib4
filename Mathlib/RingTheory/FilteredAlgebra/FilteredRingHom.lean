@@ -244,6 +244,10 @@ abbrev GradedPieceHom (i : ι) : GradedPiece FR FR_lt i →+ GradedPiece FS FS_l
 @[inherit_doc]
 scoped[FilteredRingHom] notation:9000 "Gr(" i ")[" f "]" => GradedPieceHom f i
 
+lemma AssociatedGradedRingHom_apply_mk_eq_mk_piece_wise_hom {i : ι} (x : FR i) :
+    Gr(i)[f] (GradedPiece.mk FR FR_lt x) = (GradedPiece.mk FS FS_lt (f.piece_wise_hom i x)) :=
+  rfl
+
 lemma GradedPieceHom_comp_apply (x : AssociatedGraded FR FR_lt) (i : ι) :
     Gr(i)[g] (Gr(i)[f] (x i)) = Gr(i)[g.comp f] (x i) :=
   FilteredAddGroupHom.GradedPieceHom_comp_apply g.1 f.1 x i
@@ -305,10 +309,6 @@ theorem AssociatedGradedRingHom_comp_eq_comp: Gr[g].comp Gr[f] = Gr[g.comp f] :=
   RingHom.ext <| fun x ↦ congrFun
   (congrArg DFunLike.coe (FilteredAddGroupHom.AssociatedGradedAddMonoidHom_comp_eq_comp g.1 f.1)) x
 
-omit [OrderedAddCommMonoid ι] [hasGMul FR FR_lt] [hasGMul FS FS_lt] [DecidableEq ι]
-lemma AssociatedGradedRingHom_apply_mk_eq_mk_piece_wise_hom {i : ι} (x : FR i) :
-    Gr(i)[f] (GradedPiece.mk FR FR_lt x) = (GradedPiece.mk FS FS_lt (f.piece_wise_hom i x)) :=
-  rfl
 
 end DirectSum
 
