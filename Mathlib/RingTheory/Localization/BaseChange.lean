@@ -61,7 +61,7 @@ noncomputable def LocalizedModule.equivTensorProduct :
     (LocalizedModule.mkLinearMap S M) |>.equiv.symm
 
 @[simp]
-lemma LocalizedModule.equivTensorProduct_symm_apply_tmul (x : M) (r : R)(s : S) :
+lemma LocalizedModule.equivTensorProduct_symm_apply_tmul (x : M) (r : R) (s : S) :
     (equivTensorProduct S M).symm (Localization.mk r s ⊗ₜ[R] x) = r • mk x s := by
   simp [equivTensorProduct, IsBaseChange.equiv_tmul, mk_smul_mk, smul'_mk]
 
