@@ -581,7 +581,7 @@ theorem ProbabilityMeasure.measurable_prod {α β : Type*} [MeasurableSpace α] 
   · exact (measurable_coe Hv).comp (measurable_subtype_coe.comp measurable_snd)
 
 /-- The monoidal product is a measurabule function from the product of finite measures over
-``α`` and ``β`` into the type of finite measures over ``α × β``. -/
+`α` and `β` into the type of finite measures over `α × β`. -/
 theorem FiniteMeasure.measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     Measurable (fun (μ : FiniteMeasure α × FiniteMeasure β)
       ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
