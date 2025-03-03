@@ -155,14 +155,8 @@ we aim to show the two functors we defined above are inverses of each other.
 def factEqOverOfUnder : Factorisation f ≌ Over (Under.mk f) where
   functor := fromFactToOverOfUnder f
   inverse := fromOverOfUndertoFact f
-  unitIso := NatIso.ofComponents (fun g => {
-    hom := 𝟙 g
-    inv := 𝟙 g
-  })
-  counitIso := NatIso.ofComponents (fun g => {
-    hom := 𝟙 (fromOverOfUndertoFact f ⋙ fromFactToOverOfUnder f).obj g
-    inv := 𝟙 (fromOverOfUndertoFact f ⋙ fromFactToOverOfUnder f).obj g
-  })
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 end OverOfUnder
 
@@ -184,14 +178,8 @@ Thus formulating the ≌ relationship. -/
 def factEqUnderOfOver : Factorisation f ≌ Under (Over.mk f) where
   functor := fromFactToUnderOfOver f
   inverse := fromUnderOfOvertoFact f
-  unitIso := NatIso.ofComponents (fun g => {
-    hom := 𝟙 g
-    inv := 𝟙 g
-  })
-  counitIso := NatIso.ofComponents (fun g => {
-    hom := 𝟙 (fromUnderOfOvertoFact f ⋙ fromFactToUnderOfOver f).obj g
-    inv := 𝟙 (fromUnderOfOvertoFact f ⋙ fromFactToUnderOfOver f).obj g
-  })
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 end UnderOfOver
 
