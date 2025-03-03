@@ -23,6 +23,7 @@ This file defines orbits, stabilizers, and other objects defined in terms of act
 
 -/
 
+assert_not_exists MonoidWithZero
 
 universe u v
 
@@ -102,14 +103,11 @@ section FixedPoints
 def fixedPoints : Set α :=
   { a : α | ∀ m : M, m • a = a }
 
-variable {M}
-
+variable {M} in
 /-- `fixedBy m` is the set of elements fixed by `m`. -/
 @[to_additive "`fixedBy m` is the set of elements fixed by `m`."]
 def fixedBy (m : M) : Set α :=
   { x | m • x = x }
-
-variable (M)
 
 @[to_additive]
 theorem fixed_eq_iInter_fixedBy : fixedPoints M α = ⋂ m : M, fixedBy α m :=
@@ -528,8 +526,8 @@ lemma univ_eq_iUnion_orbit :
 end Orbit
 
 section Stabilizer
-variable (G)
 
+variable (G) in
 /-- The stabilizer of an element under an action, i.e. what sends the element to itself.
 A subgroup. -/
 @[to_additive
@@ -538,8 +536,6 @@ A subgroup. -/
 def stabilizer (a : α) : Subgroup G :=
   { stabilizerSubmonoid G a with
     inv_mem' := fun {m} (ha : m • a = a) => show m⁻¹ • a = a by rw [inv_smul_eq_iff, ha] }
-
-variable {G}
 
 @[to_additive]
 instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizer G a) :=
