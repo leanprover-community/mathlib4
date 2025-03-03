@@ -33,14 +33,6 @@ universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
 namespace CategoryTheory
 
-lemma Limits.hasColimit_iff_of_iso {J C : Type*} [Category J] [Category C]
-    {F G : J ⥤ C} (e : F ≅ G) : HasColimit F ↔ HasColimit G := by
-  constructor
-  · intro
-    exact hasColimitOfIso e.symm
-  · intro
-    exact hasColimitOfIso e
-
 open Limits Category
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} {H : Type u₃}
