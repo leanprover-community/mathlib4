@@ -618,8 +618,6 @@ end
 
 section PiIota
 
-open Classical
-
 variable [HasZeroMorphisms C] {β : Type w} [DecidableEq β] (f : β → C) [HasProduct f]
 
 /-- In the presence of 0-morphism we can define an inclusion morphism into any product. -/
