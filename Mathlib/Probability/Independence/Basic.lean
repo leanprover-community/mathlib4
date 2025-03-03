@@ -652,7 +652,7 @@ lemma iIndepFun.indepFun_prod_mk_prod_mk (h_indep : iIndepFun m f μ) (hf : ∀ 
 variable {ι' : Type*} {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
 
 open Function in
-lemma iIndepFun.reindex_of_injective {g : ι' → ι} (hg : g.Injective) (h : iIndepFun m f μ) :
+lemma iIndepFun.comp_of_injective {g : ι' → ι} (hg : g.Injective) (h : iIndepFun m f μ) :
     iIndepFun (m ∘' g) (f ∘' g) μ := by
   have : IsProbabilityMeasure μ := h.isProbabilityMeasure
   nontriviality ι'
@@ -673,7 +673,7 @@ lemma iIndepFun.of_comp_equiv (g : ι' ≃ ι) (h : iIndepFun (m ∘' g) (f ∘'
   convert hs <;> simp
 
 lemma iIndepFun.comp_equiv (g : ι' ≃ ι) : iIndepFun (m ∘' g) (f ∘' g) μ ↔ iIndepFun m f μ :=
-  ⟨fun h ↦ h.of_comp_equiv g, fun h ↦ h.reindex_of_injective g.injective⟩
+  ⟨fun h ↦ h.of_comp_equiv g, fun h ↦ h.comp_of_injective g.injective⟩
 
 end iIndepFun
 
