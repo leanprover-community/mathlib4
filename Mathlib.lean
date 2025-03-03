@@ -51,6 +51,7 @@ import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 import Mathlib.Algebra.BigOperators.Group.Finset.Pi
+import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
 import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 import Mathlib.Algebra.BigOperators.Group.List.Basic
@@ -1175,6 +1176,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 import Mathlib.AlgebraicTopology.SimplicialSet.Path
 import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
+import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 import Mathlib.AlgebraicTopology.SingularHomology.Basic
 import Mathlib.AlgebraicTopology.SingularSet
 import Mathlib.AlgebraicTopology.TopologicalSimplex
@@ -2255,6 +2257,7 @@ import Mathlib.CategoryTheory.Preadditive.HomOrthogonal
 import Mathlib.CategoryTheory.Preadditive.Indization
 import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
+import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
 import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
 import Mathlib.CategoryTheory.Preadditive.LeftExact
 import Mathlib.CategoryTheory.Preadditive.Mat
@@ -2262,6 +2265,7 @@ import Mathlib.CategoryTheory.Preadditive.OfBiproducts
 import Mathlib.CategoryTheory.Preadditive.Opposite
 import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 import Mathlib.CategoryTheory.Preadditive.Projective.LiftingProperties
+import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 import Mathlib.CategoryTheory.Preadditive.Schur
 import Mathlib.CategoryTheory.Preadditive.SingleObj
@@ -3563,6 +3567,7 @@ import Mathlib.GroupTheory.Sylow
 import Mathlib.GroupTheory.Torsion
 import Mathlib.GroupTheory.Transfer
 import Mathlib.InformationTheory.Hamming
+import Mathlib.InformationTheory.KullbackLeibler.Basic
 import Mathlib.InformationTheory.KullbackLeibler.KLFun
 import Mathlib.Init
 import Mathlib.Lean.CoreM
@@ -3595,11 +3600,12 @@ import Mathlib.Lean.PrettyPrinter.Delaborator
 import Mathlib.Lean.Thunk
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
-import Mathlib.LinearAlgebra.AffineSpace.Basic
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 import Mathlib.LinearAlgebra.AffineSpace.Basis
 import Mathlib.LinearAlgebra.AffineSpace.Combination
 import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
+import Mathlib.LinearAlgebra.AffineSpace.Defs
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.LinearAlgebra.AffineSpace.Independent
 import Mathlib.LinearAlgebra.AffineSpace.Matrix
@@ -4604,6 +4610,7 @@ import Mathlib.Probability.Kernel.MeasurableIntegral
 import Mathlib.Probability.Kernel.MeasurableLIntegral
 import Mathlib.Probability.Kernel.Proper
 import Mathlib.Probability.Kernel.RadonNikodym
+import Mathlib.Probability.Kernel.SetIntegral
 import Mathlib.Probability.Kernel.WithDensity
 import Mathlib.Probability.Martingale.Basic
 import Mathlib.Probability.Martingale.BorelCantelli

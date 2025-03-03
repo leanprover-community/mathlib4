@@ -268,6 +268,9 @@ variable [AddCommMonoid E] [AddCommMonoid F] [Module 𝕜 E] [Module 𝕜 F] {x 
 theorem StarConvex.smul (hs : StarConvex 𝕜 x s) (c : 𝕜) : StarConvex 𝕜 (c • x) (c • s) :=
   hs.linear_image <| LinearMap.lsmul _ _ c
 
+theorem StarConvex.zero_smul (hs : StarConvex 𝕜 0 s) (c : 𝕜) : StarConvex 𝕜 0 (c • s) := by
+  simpa using hs.smul c
+
 theorem StarConvex.preimage_smul {c : 𝕜} (hs : StarConvex 𝕜 (c • x) s) :
     StarConvex 𝕜 x ((fun z => c • z) ⁻¹' s) :=
   hs.linear_preimage (LinearMap.lsmul _ _ c)
