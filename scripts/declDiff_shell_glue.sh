@@ -19,6 +19,8 @@ getDeclarations () {
   printf $'def %s := 0\n#all_declarations "%s"\n' "${1}" "${1}" >> "${script_file}"
   #printf $'#all_declarations "%s"\n' "${1}" >> "${script_file}"
 
+  cat "${script_file}"
+
   lake env lean "${script_file}"
 
   # undo the local changes
