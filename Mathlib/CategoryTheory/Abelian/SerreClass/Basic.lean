@@ -27,13 +27,14 @@ and is closed under subobjects, quotients and extensions.
 
 -/
 
-universe v u
+universe v v' u u'
 
 namespace CategoryTheory
 
 open Limits ZeroObject
 
 variable {C : Type u} [Category.{v} C] [Abelian C] (P : ObjectProperty C)
+  {D : Type u'} [Category.{v'} D] [Abelian D]
 
 namespace ObjectProperty
 
@@ -63,6 +64,10 @@ lemma prop_X₂_of_exact {S : ShortComplex C} (hS : S.Exact)
   have := hS.mono_g' d.right
   exact (P.prop_X₂_of_shortExact (hS.shortExact d)
     (P.prop_of_epi d.left.f' h₁) (P.prop_of_mono d.right.g' h₃) :)
+
+instance (F : D ⥤ C) [PreservesFiniteLimits F]
+    [PreservesFiniteColimits F] :
+    (P.inverseImage F).IsSerreClass where
 
 end ObjectProperty
 
