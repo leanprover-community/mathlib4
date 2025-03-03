@@ -6,7 +6,9 @@ Authors: Jeremy Avigad
 import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Int.Parity
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Inclusion
+import Mathlib.Data.Set.Order
 
 /-!
 # The integers form a linear ordered ring

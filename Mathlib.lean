@@ -3149,7 +3149,9 @@ import Mathlib.Data.Seq.Parallel
 import Mathlib.Data.Seq.Seq
 import Mathlib.Data.Seq.WSeq
 import Mathlib.Data.Set.Accumulate
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Inclusion
+import Mathlib.Data.Set.Order
 import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Data.Set.Card
 import Mathlib.Data.Set.Card.Arithmetic

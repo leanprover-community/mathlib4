@@ -5,7 +5,9 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Inclusion
+import Mathlib.Data.Set.Order
 import Mathlib.Tactic.Common
 
 /-!

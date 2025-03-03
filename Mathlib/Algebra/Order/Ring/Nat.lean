@@ -7,7 +7,9 @@ import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Parity
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Inclusion
+import Mathlib.Data.Set.Order
 
 /-!
 # The natural numbers form an ordered semiring
