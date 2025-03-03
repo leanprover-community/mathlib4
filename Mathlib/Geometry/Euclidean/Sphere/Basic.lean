@@ -183,7 +183,7 @@ section NormedSpace
 
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
 
-lemma Sphere.exists_mem_iff [Nontrivial V] {s : Sphere P} : (∃ p, p ∈ s) ↔ 0 ≤ s.radius := by
+lemma Sphere.nonempty_iff [Nontrivial V] {s : Sphere P} : (s : Set P).Nonempty ↔ 0 ≤ s.radius := by
   refine ⟨fun ⟨p, hp⟩ ↦ radius_nonneg_of_mem hp, fun h ↦ ?_⟩
   obtain ⟨v, hv⟩ := (NormedSpace.sphere_nonempty (x := (0 : V)) (r := s.radius)).2 h
   refine ⟨v +ᵥ s.center, ?_⟩
