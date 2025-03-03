@@ -6,7 +6,9 @@ Authors: Frédéric Marbach
 import Mathlib.Algebra.Lie.Basic
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Subalgebra
+import Mathlib.RingTheory.Nilpotent.Exp
 import Mathlib.RingTheory.Noetherian.Basic
+import Mathlib.Algebra.Algebra.Rat
 
 /-!
 # Lie derivations
@@ -248,6 +250,35 @@ theorem coe_smul_linearMap (r : S) (D : LieDerivation R L M) : ↑(r • D) = r 
 
 theorem smul_apply (r : S) (D : LieDerivation R L M) : (r • D) a = r • D a :=
   rfl
+
+section Hidden
+
+variable (L : Type*) [LieRing L] [LieAlgebra ℚ L] (D : L →ₗ⁅ℚ⁆ L)
+theorem exp_equiv2 {D1 : LieDerivation ℚ L L} (h : IsNilpotent D1.toLinearMap) : IsUnit ((IsNilpotent.exp D1.toLinearMap)) := sorry
+
+#check IsNilpotent.exp (D.toLinearMap)
+
+instance instExp (h : IsNilpotent D.toLinearMap) : LieHom ℚ L L where
+  toFun := fun l => (IsNilpotent.exp D.toLinearMap) l
+  map_add' := by exact fun x y ↦ LinearMap.map_add (IsNilpotent.exp D.toLinearMap) x y
+  map_smul' := by exact fun m x ↦ LinearMap.CompatibleSMul.map_smul (IsNilpotent.exp D.toLinearMap) m x
+  map_lie' := by sorry
+
+noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
+  LieEquiv ℚ L L :=
+{ toFun := fun l => (IsNilpotent.exp D.toLinearMap) l,
+  map_add' := by exact fun x y ↦ LinearMap.map_add (IsNilpotent.exp D.toLinearMap) x y,
+  map_smul' := by exact fun m x ↦ LinearMap.CompatibleSMul.map_smul (IsNilpotent.exp D.toLinearMap) m x,
+  map_lie' := sorry -- by exact fun x y ↦ LieHom.map_lie' (IsNilpotent.exp D.toLinearMap) x y,
+  invFun := fun l => (IsNilpotent.exp (-(D.toLinearMap))) l,  -- The inverse is exp(-D)
+  left_inv := sorry,  -- Prove that exp(D) ∘ exp(-D) = id
+  right_inv := sorry, -- Prove that exp(-D) ∘ exp(D) = id
+}
+
+
+--theorem exp_equiv {D : LieDerivation ℚ L L} (h : IsNilpotent D.toLinearMap) : LieEquiv ℚ L L :=
+
+end Hidden
 
 instance instSMulBase : SMulBracketCommClass R L M := ⟨fun s l a ↦ (lie_smul s l a).symm⟩
 
