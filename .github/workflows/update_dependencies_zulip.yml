@@ -55,3 +55,70 @@ jobs:
           topic: 'Mathlib `lake update` failure'
           content: |
             ${{ steps.construct_message.outputs.result }}
+
+  monitor-success:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Install Zulip API client
+        run: pip install zulip
+
+      - name: Construct success message
+        id: construct_message
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}
+          result-encoding: string
+          script: |
+            const owner = context.repo.owner, repo = context.repo.repo;
+            let output = "✅ `lake update` succeeded! "
+            let prs = context.payload.workflow_run.pull_requests
+            if (prs.length) {
+              for (let pr of prs) {
+                const { data: pullRequest } = await github.rest.pulls.get({
+                  owner,
+                  repo,
+                  pull_number: pr.number,
+                });
+                output += "Found [PR " + pr.number + "](" + pullRequest.html_url + "). ";
+              }
+            }
+            return output
+
+      - name: Check last message and post if necessary
+        env:
+          ZULIP_EMAIL: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
+          ZULIP_SITE: 'https://leanprover.zulipchat.com'
+          SUCCESS_MESSAGE: ${{ steps.construct_message.outputs.result }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+        run: |
+          import os
+          import zulip
+          client = zulip.Client(email=os.getenv('ZULIP_EMAIL'), api_key=os.getenv('ZULIP_API_KEY'), site=os.getenv('ZULIP_SITE'))
+
+          # Get the last message in the topic
+          request = {
+            'anchor': 'newest',
+            'num_before': 1,
+            'num_after': 0,
+            'narrow': [
+              {'operator': 'stream', 'operand': 'mathlib reviewers'},
+              {'operator': 'topic', 'operand': 'Mathlib `lake update` failure'}
+            ],
+            'apply_markdown': False
+          }
+          response = client.get_messages(request)
+          messages = response['messages']
+
+          # Only post if the last message was a failure message
+          if messages and '❌ `lake update` failed' in messages[0]['content']:
+              request = {
+                  'type': 'stream',
+                  'to': 'mathlib reviewers',
+                  'topic': 'Mathlib `lake update` failure',
+                  'content': os.getenv('SUCCESS_MESSAGE')
+              }
+              result = client.send_message(request)
+              print(result)
