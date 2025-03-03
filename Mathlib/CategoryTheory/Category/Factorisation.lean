@@ -146,7 +146,7 @@ def fromOverOfUndertoFact : Over (Under.mk f) ⥤ Factorisation f where
   map κ := {
     h := κ.left.right,
     ι_h := Under.w κ.left,
-    h_π := by (rw [← Under.comp_right, Over.w])
+    h_π := by rw [← Under.comp_right, Over.w]
   }
 
 /-- We aim to show `Factorisation f` ≌ `(X/C)/f`. That is to say,
@@ -171,7 +171,7 @@ def fromFactToUnderOfOver : Factorisation f ⥤ Under (Over.mk f) where
 /-- The functor turning `f/(C/Y)` into `Factorisation f` -/
 def fromUnderOfOvertoFact : Under (Over.mk f) ⥤ Factorisation f where
   obj α := { mid := α.right.left, ι := α.hom.left, π := α.right.hom}
-  map κ := {h := κ.right.left, ι_h := by (rw [← Over.comp_left, Under.w]), h_π := Over.w κ.right}
+  map κ := {h := κ.right.left, ι_h := by rw [← Over.comp_left, Under.w], h_π := Over.w κ.right}
 
 /-- proving that the two functors above are inverses of each other.
 Thus formulating the ≌ relationship. -/
