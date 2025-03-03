@@ -300,7 +300,6 @@ import Mathlib.Algebra.Group.Center
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.Commute.Finite
 import Mathlib.Algebra.Group.Commute.Hom
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Conj
