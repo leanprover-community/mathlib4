@@ -11,9 +11,11 @@ import Mathlib.SetTheory.Cardinal.Finite
 # Cardinality of sets under pointwise group with zero operations
 -/
 
+assert_not_exists Field
+
 open scoped Cardinal Pointwise
 
-variable {G G₀ M M₀ : Type*}
+variable {G₀ M₀ : Type*}
 
 namespace Set
 variable [GroupWithZero G₀] [Zero M₀] [MulActionWithZero G₀ M₀] {a : G₀}

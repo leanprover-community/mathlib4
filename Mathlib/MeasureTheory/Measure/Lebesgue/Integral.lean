@@ -83,7 +83,7 @@ theorem integral_comp_neg_Iic {E : Type*} [NormedAddCommGroup E] [NormedSpace �
     (Homeomorph.neg ℝ).isClosedEmbedding.measurableEmbedding
   have := MeasurableEmbedding.setIntegral_map (μ := volume) A f (Ici (-c))
   rw [Measure.map_neg_eq_self (volume : Measure ℝ)] at this
-  simp_rw [← integral_Ici_eq_integral_Ioi, this, neg_preimage, preimage_neg_Ici, neg_neg]
+  simp_rw [← integral_Ici_eq_integral_Ioi, this, neg_preimage, neg_Ici, neg_neg]
 
 /- @[simp] Porting note: Linter complains it does not apply to itself. Although it does apply to
 itself, it does not apply when `f` is more complicated -/
@@ -102,7 +102,7 @@ theorem integral_comp_abs {f : ℝ → ℝ} :
       rw [← Measure.map_neg_eq_self (volume : Measure ℝ)]
       let m : MeasurableEmbedding fun x : ℝ => -x := (Homeomorph.neg ℝ).measurableEmbedding
       rw [m.integrableOn_map_iff]
-      simp_rw [Function.comp_def, abs_neg, neg_preimage, preimage_neg_Iic, neg_zero]
+      simp_rw [Function.comp_def, abs_neg, neg_preimage, neg_Iic, neg_zero]
       exact integrableOn_Ici_iff_integrableOn_Ioi.mpr hf
     calc
       _ = (∫ x in Iic 0, f |x|) + ∫ x in Ioi 0, f |x| := by

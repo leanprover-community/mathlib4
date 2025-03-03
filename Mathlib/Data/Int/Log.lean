@@ -46,6 +46,7 @@ def digits (b : ℕ) (q : ℚ) (n : ℕ) : ℕ :=
 * `Int.neg_log_inv_eq_clog`, `Int.neg_clog_inv_eq_log`: the link between the two definitions.
 -/
 
+assert_not_exists Finset
 
 variable {R : Type*} [LinearOrderedSemifield R] [FloorSemiring R]
 
@@ -71,10 +72,9 @@ theorem log_natCast (b : ℕ) (n : ℕ) : log b (n : R) = Nat.log b n := by
   · rw [log_of_one_le_right, Nat.floor_natCast]
     simp
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem log_ofNat (b : ℕ) (n : ℕ) [n.AtLeastTwo] :
-    log b (no_index (OfNat.ofNat n : R)) = Nat.log b (OfNat.ofNat n) :=
+    log b (ofNat(n) : R) = Nat.log b ofNat(n) :=
   log_natCast b n
 
 theorem log_of_left_le_one {b : ℕ} (hb : b ≤ 1) (r : R) : log b r = 0 := by
@@ -199,7 +199,7 @@ theorem clog_of_right_le_zero (b : ℕ) {r : R} (hr : r ≤ 0) : clog b r = 0 :=
 
 @[simp]
 theorem clog_inv (b : ℕ) (r : R) : clog b r⁻¹ = -log b r := by
-  cases' lt_or_le 0 r with hrp hrp
+  rcases lt_or_le 0 r with hrp | hrp
   · obtain hr | hr := le_total 1 r
     · rw [clog_of_right_le_one _ (inv_le_one_of_one_le₀ hr), log_of_one_le_right _ hr, inv_inv]
     · rw [clog_of_one_le_right _ ((one_le_inv₀ hrp).2 hr), log_of_right_le_one _ hr, neg_neg]
@@ -216,14 +216,13 @@ theorem neg_clog_inv_eq_log (b : ℕ) (r : R) : -clog b r⁻¹ = log b r := by r
 
 @[simp, norm_cast]
 theorem clog_natCast (b : ℕ) (n : ℕ) : clog b (n : R) = Nat.clog b n := by
-  cases' n with n
+  rcases n with - | n
   · simp [clog_of_right_le_one]
   · rw [clog_of_one_le_right, (Nat.ceil_eq_iff (Nat.succ_ne_zero n)).mpr] <;> simp
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem clog_ofNat (b : ℕ) (n : ℕ) [n.AtLeastTwo] :
-    clog b (no_index (OfNat.ofNat n : R)) = Nat.clog b (OfNat.ofNat n) :=
+    clog b (ofNat(n) : R) = Nat.clog b ofNat(n) :=
   clog_natCast b n
 
 theorem clog_of_left_le_one {b : ℕ} (hb : b ≤ 1) (r : R) : clog b r = 0 := by

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Set.Countable
-import Mathlib.Order.Disjointed
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Tactic.Measurability
 
@@ -35,7 +35,6 @@ contains all of them.
 measurable space, σ-algebra, measurable function
 -/
 
-
 open Set Encodable Function Equiv
 
 variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
@@ -59,7 +58,7 @@ instance [h : MeasurableSpace α] : MeasurableSpace αᵒᵈ := h
 def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
   ‹MeasurableSpace α›.MeasurableSet' s
 
--- Porting note (#11215): TODO: `scoped[MeasureTheory]` doesn't work for unknown reason
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `scoped[MeasureTheory]` doesn't work for unknown reason
 namespace MeasureTheory
 set_option quotPrecheck false in
 /-- Notation for `MeasurableSet` with respect to a non-standard σ-algebra. -/
@@ -205,11 +204,6 @@ protected theorem MeasurableSet.cond {s₁ s₂ : Set α} (h₁ : MeasurableSet 
   cases i
   exacts [h₂, h₁]
 
-@[simp, measurability]
-protected theorem MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, MeasurableSet (f i)) (n) :
-    MeasurableSet (disjointed f n) :=
-  disjointedRec (fun _ _ ht => MeasurableSet.diff ht <| h _) (h n)
-
 protected theorem MeasurableSet.const (p : Prop) : MeasurableSet { _a : α | p } := by
   by_cases p <;> simp [*]
 
@@ -264,7 +258,7 @@ theorem Set.Subsingleton.measurableSet {s : Set α} (hs : s.Subsingleton) : Meas
   hs.induction_on .empty .singleton
 
 theorem Set.Finite.measurableSet {s : Set α} (hs : s.Finite) : MeasurableSet s :=
-  Finite.induction_on hs MeasurableSet.empty fun _ _ hsm => hsm.insert _
+  Finite.induction_on _ hs .empty fun _ _ hsm => hsm.insert _
 
 @[measurability]
 protected theorem Finset.measurableSet (s : Finset α) : MeasurableSet (↑s : Set α) :=
@@ -429,7 +423,7 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
 
 @[simp, measurability] theorem measurableSet_top {s : Set α} : MeasurableSet[⊤] s := trivial
 
-@[simp, nolint simpNF] -- Porting note (#11215): TODO: `simpNF` claims that
+@[simp, nolint simpNF] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `simpNF` claims that
 -- this lemma doesn't simplify LHS
 theorem measurableSet_inf {m₁ m₂ : MeasurableSpace α} {s : Set α} :
     MeasurableSet[m₁ ⊓ m₂] s ↔ MeasurableSet[m₁] s ∧ MeasurableSet[m₂] s :=

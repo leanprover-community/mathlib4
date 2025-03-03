@@ -82,7 +82,7 @@ instance : CategoryStruct (Algebra T) where
   id := Hom.id
   comp := @Hom.comp _ _ _
 
--- Porting note (#11041): Adding this `ext` lemma to help automation below.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Adding this `ext` lemma to help automation below.
 @[ext]
 lemma Hom.ext' (X Y : Algebra T) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext h
 
@@ -262,8 +262,6 @@ end Monad
 namespace Comonad
 
 /-- An Eilenberg-Moore coalgebra for a comonad `T`. -/
--- Porting note(#5171): linter not ported yet
--- @[nolint has_nonempty_instance]
 structure Coalgebra (G : Comonad C) : Type max u₁ v₁ where
   /-- The underlying object associated to a coalgebra. -/
   A : C
@@ -288,8 +286,6 @@ namespace Coalgebra
 variable {G : Comonad C}
 
 /-- A morphism of Eilenberg-Moore coalgebras for the comonad `G`. -/
--- Porting note(#5171): linter not ported yet
---@[ext, nolint has_nonempty_instance]
 @[ext]
 structure Hom (A B : Coalgebra G) where
   /-- The underlying morphism associated to a morphism of coalgebras. -/
@@ -318,7 +314,7 @@ instance : CategoryStruct (Coalgebra G) where
   id := Hom.id
   comp := @Hom.comp _ _ _
 
--- Porting note (#11041): Adding `ext` lemma to help automation below.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Adding `ext` lemma to help automation below.
 @[ext]
 lemma Hom.ext' (X Y : Coalgebra G) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext h
 

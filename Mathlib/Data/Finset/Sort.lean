@@ -8,6 +8,7 @@ import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Construct a sorted list from a finset.
@@ -113,7 +114,7 @@ theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < (s.sort (· ≤ ·)).le
     obtain ⟨i, hi⟩ : ∃ i, l.get i = s.min' H := List.mem_iff_get.1 this
     rw [← hi]
     exact (s.sort_sorted (· ≤ ·)).rel_get_of_le (Nat.zero_le i)
-  · have : l.get ⟨0, h⟩ ∈ s := (Finset.mem_sort (α := α) (· ≤ ·)).1 (List.get_mem l 0 h)
+  · have : l.get ⟨0, h⟩ ∈ s := (Finset.mem_sort (α := α) (· ≤ ·)).1 (List.get_mem l _)
     exact s.min'_le _ this
 
 theorem sorted_zero_eq_min' {s : Finset α} {h : 0 < (s.sort (· ≤ ·)).length} :
@@ -130,7 +131,7 @@ theorem sorted_last_eq_max'_aux (s : Finset α)
   let l := s.sort (· ≤ ·)
   apply le_antisymm
   · have : l.get ⟨(s.sort (· ≤ ·)).length - 1, h⟩ ∈ s :=
-      (Finset.mem_sort (α := α) (· ≤ ·)).1 (List.get_mem l _ h)
+      (Finset.mem_sort (α := α) (· ≤ ·)).1 (List.get_mem l _)
     exact s.le_max' _ this
   · have : s.max' H ∈ l := (Finset.mem_sort (α := α) (· ≤ ·)).mpr (s.max'_mem H)
     obtain ⟨i, hi⟩ : ∃ i, l.get i = s.max' H := List.mem_iff_get.1 this
@@ -170,7 +171,7 @@ theorem coe_orderIsoOfFin_apply (s : Finset α) {k : ℕ} (h : s.card = k) (i : 
   rfl
 
 theorem orderIsoOfFin_symm_apply (s : Finset α) {k : ℕ} (h : s.card = k) (x : s) :
-    ↑((s.orderIsoOfFin h).symm x) = (s.sort (· ≤ ·)).indexOf ↑x :=
+    ↑((s.orderIsoOfFin h).symm x) = (s.sort (· ≤ ·)).idxOf ↑x :=
   rfl
 
 theorem orderEmbOfFin_apply (s : Finset α) {k : ℕ} (h : s.card = k) (i : Fin k) :

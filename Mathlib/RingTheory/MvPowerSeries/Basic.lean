@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
 
-import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Algebra.Order.Antidiag.Finsupp
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Data.Finsupp.Weight
 import Mathlib.Tactic.Linarith
 import Mathlib.LinearAlgebra.Pi
+import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
 # Formal (multivariate) power series
@@ -157,9 +157,9 @@ theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
 
 theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
     coeff R m (monomial R n a) = if m = n then a else 0 := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [coeff, monomial_def, LinearMap.proj_apply (i := m)]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [LinearMap.single_apply, Pi.single_apply]
 
 @[simp]
@@ -347,7 +347,7 @@ def C : R →+* MvPowerSeries σ R :=
   { monomial R (0 : σ →₀ ℕ) with
     map_one' := rfl
     map_mul' := fun a b => (monomial_mul_monomial 0 0 a b).symm
-    map_zero' := (monomial R (0 : _)).map_zero }
+    map_zero' := (monomial R 0).map_zero }
 
 variable {σ} {R}
 
@@ -479,7 +479,7 @@ theorem X_inj [Nontrivial R] {s t : σ} : (X s : MvPowerSeries σ R) = X t ↔ s
     rw [coeff_X, if_pos rfl, coeff_X] at h
     split_ifs at h with H
     · rw [Finsupp.single_eq_single_iff] at H
-      cases' H with H H
+      rcases H with H | H
       · exact H.1
       · exfalso
         exact one_ne_zero H.1
@@ -492,8 +492,8 @@ section Map
 
 variable {S T : Type*} [Semiring R] [Semiring S] [Semiring T]
 variable (f : R →+* S) (g : S →+* T)
-variable (σ)
 
+variable (σ) in
 /-- The map between multivariate formal power series induced by a map on the coefficients. -/
 def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
   toFun φ n := f <| coeff R n φ
@@ -515,8 +515,6 @@ def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
         rw [coeff_mul, map_sum, coeff_mul]
         apply Finset.sum_congr rfl
         rintro ⟨i, j⟩ _; rw [f.map_mul]; rfl
-
-variable {σ}
 
 @[simp]
 theorem map_id : map σ (RingHom.id R) = RingHom.id _ :=
@@ -548,6 +546,13 @@ theorem map_C (a : R) : map σ f (C σ R a) = C σ S (f a) :=
 theorem map_X (s : σ) : map σ f (X s) = X s := by simp [MvPowerSeries.X]
 
 end Map
+
+@[simp]
+theorem map_eq_zero {S : Type*} [DivisionSemiring R] [Semiring S] [Nontrivial S]
+    (φ : MvPowerSeries σ R) (f : R →+* S) : φ.map σ f = 0 ↔ φ = 0 := by
+  simp only [MvPowerSeries.ext_iff]
+  congr! with n
+  simp
 
 section Semiring
 
@@ -641,12 +646,12 @@ theorem coeff_prod [DecidableEq σ]
       rintro u v rfl
       rw [ih, Finset.mul_sum, ← Finset.sum_attach]
       apply Finset.sum_congr rfl
-      simp only [mem_attach, Finset.prod_insert ha, Function.update_same, forall_true_left,
+      simp only [mem_attach, Finset.prod_insert ha, Function.update_self, forall_true_left,
         Subtype.forall]
       rintro x -
       rw [Finset.prod_congr rfl]
       intro i hi
-      rw [Function.update_noteq]
+      rw [Function.update_of_ne]
       exact ne_of_mem_of_not_mem hi ha
     · simp only [Set.PairwiseDisjoint, Set.Pairwise, mem_coe, mem_antidiagonal, ne_eq,
         disjoint_left, mem_map, mem_attach, Function.Embedding.coeFn_mk, true_and, Subtype.exists,
@@ -654,16 +659,16 @@ theorem coeff_prod [DecidableEq σ]
         Prod.forall, Prod.mk.injEq]
       rintro u v rfl u' v' huv h k - l - hkl
       obtain rfl : u' = u := by
-        simpa only [Finsupp.coe_update, Function.update_same] using DFunLike.congr_fun hkl a
+        simpa only [Finsupp.coe_update, Function.update_self] using DFunLike.congr_fun hkl a
       simp only [add_right_inj] at huv
       exact h rfl huv.symm
 
 /-- The `d`th coefficient of a power of a multivariate power series
-is the sum, indexed by `finsuppAntidiag (Finset.range n) d`, of products of coefficients  -/
+is the sum, indexed by `finsuppAntidiag (Finset.range n) d`, of products of coefficients -/
 theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) {n : ℕ} (d : σ →₀ ℕ) :
     coeff R d (f ^ n) =
-      ∑ l in finsuppAntidiag (Finset.range n) d,
-        ∏ i in Finset.range n, coeff R (l i) f := by
+      ∑ l ∈ finsuppAntidiag (Finset.range n) d,
+        ∏ i ∈ Finset.range n, coeff R (l i) f := by
   suffices f ^ n = (Finset.range n).prod fun _ ↦ f by
     rw [this, coeff_prod]
   rw [Finset.prod_const, card_range]
@@ -713,16 +718,14 @@ section Algebra
 
 variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
-instance : Algebra R (MvPowerSeries σ A) :=
-  {
-    show Module R (MvPowerSeries σ A) by infer_instance with
-    commutes' := fun a φ => by
-      ext n
-      simp [Algebra.commutes]
-    smul_def' := fun a σ => by
-      ext n
-      simp [(coeff A n).map_smul_of_tower a, Algebra.smul_def]
-    toRingHom := (MvPowerSeries.map σ (algebraMap R A)).comp (C σ R) }
+instance : Algebra R (MvPowerSeries σ A) where
+  algebraMap := (MvPowerSeries.map σ (algebraMap R A)).comp (C σ R)
+  commutes' := fun a φ => by
+    ext n
+    simp [Algebra.commutes]
+  smul_def' := fun a σ => by
+    ext n
+    simp [(coeff A n).map_smul_of_tower a, Algebra.smul_def]
 
 theorem c_eq_algebraMap : C σ R = algebraMap R (MvPowerSeries σ R) :=
   rfl

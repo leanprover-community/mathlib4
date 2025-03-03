@@ -36,7 +36,7 @@ theorem Summable.mul_norm {f : ι → R} {g : ι' → R} (hf : Summable fun x =>
     (hg : Summable fun x => ‖g x‖) : Summable fun x : ι × ι' => ‖f x.1 * g x.2‖ :=
   .of_nonneg_of_le (fun _ ↦ norm_nonneg _)
     (fun x => norm_mul_le (f x.1) (g x.2))
-    (hf.mul_of_nonneg hg (fun x => norm_nonneg <| f x) fun x => norm_nonneg <| g x : _)
+    (hf.mul_of_nonneg hg (fun x => norm_nonneg <| f x) fun x => norm_nonneg <| g x :)
 
 theorem summable_mul_of_summable_norm [CompleteSpace R] {f : ι → R} {g : ι' → R}
     (hf : Summable fun x => ‖f x‖) (hg : Summable fun x => ‖g x‖) :

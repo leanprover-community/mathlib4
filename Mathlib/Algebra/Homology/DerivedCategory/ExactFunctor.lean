@@ -14,6 +14,8 @@ abelian categories, then there is an induced triangulated functor
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
 open CategoryTheory Category Limits

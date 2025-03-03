@@ -121,7 +121,7 @@ theorem compl [Zero α] [One α] (h : IsAdjMatrix A) : IsAdjMatrix A.compl :=
 theorem toGraph_compl_eq [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) :
     h.compl.toGraph = h.toGraphᶜ := by
   ext v w
-  cases' h.zero_or_one v w with h h <;> by_cases hvw : v = w <;> simp [Matrix.compl, h, hvw]
+  rcases h.zero_or_one v w with h | h <;> by_cases hvw : v = w <;> simp [Matrix.compl, h, hvw]
 
 end IsAdjMatrix
 
@@ -143,7 +143,7 @@ def adjMatrix [Zero α] [One α] : Matrix V V α :=
 
 variable {α}
 
--- TODO: set as an equation lemma for `adjMatrix`, see mathlib4#3024
+-- TODO: set as an equation lemma for `adjMatrix`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem adjMatrix_apply (v w : V) [Zero α] [One α] :
     G.adjMatrix α v w = if G.Adj v w then 1 else 0 :=
@@ -241,9 +241,10 @@ theorem adjMatrix_mulVec_const_apply_of_regular [NonAssocSemiring α] {d : ℕ} 
 theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ) (u v : V) :
     (G.adjMatrix α ^ n) u v = Fintype.card { p : G.Walk u v | p.length = n } := by
   rw [card_set_walk_length_eq]
-  induction' n with n ih generalizing u v
-  · obtain rfl | h := eq_or_ne u v <;> simp [finsetWalkLength, *]
-  · simp only [pow_succ', finsetWalkLength, ih, adjMatrix_mul_apply]
+  induction n generalizing u v with
+  | zero => obtain rfl | h := eq_or_ne u v <;> simp [finsetWalkLength, *]
+  | succ n ih =>
+    simp only [pow_succ', finsetWalkLength, ih, adjMatrix_mul_apply]
     rw [Finset.card_biUnion]
     · norm_cast
       simp only [Nat.cast_sum, card_map, neighborFinset_def]

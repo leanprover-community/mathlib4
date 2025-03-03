@@ -3,9 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Logic.Equiv.Nat
-import Mathlib.Logic.Equiv.Fin
 import Mathlib.Data.Countable.Defs
+import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Data.ENat.Defs
+import Mathlib.Logic.Equiv.Nat
 
 /-!
 # Countable types
@@ -13,6 +14,7 @@ import Mathlib.Data.Countable.Defs
 In this file we provide basic instances of the `Countable` typeclass defined elsewhere.
 -/
 
+assert_not_exists Monoid
 
 universe u v w
 
@@ -57,7 +59,7 @@ variable {α : Type u} {β : Type v} {π : α → Type w}
 instance [Countable α] [Countable β] : Countable (α ⊕ β) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
   rcases exists_injective_nat β with ⟨g, hg⟩
-  exact (Equiv.natSumNatEquivNat.injective.comp <| hf.sum_map hg).countable
+  exact (Equiv.natSumNatEquivNat.injective.comp <| hf.sumMap hg).countable
 
 instance Sum.uncountable_inl [Uncountable α] : Uncountable (α ⊕ β) :=
   inl_injective.uncountable

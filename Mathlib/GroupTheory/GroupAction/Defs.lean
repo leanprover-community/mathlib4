@@ -3,10 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.Group.Submonoid.MulAction
 
 /-!
 # Definition of `orbit`, `fixedPoints` and `stabilizer`
@@ -113,7 +114,7 @@ variable (M)
 @[to_additive]
 theorem fixed_eq_iInter_fixedBy : fixedPoints M α = ⋂ m : M, fixedBy α m :=
   Set.ext fun _ =>
-    ⟨fun hx => Set.mem_iInter.2 fun m => hx m, fun hx m => (Set.mem_iInter.1 hx m : _)⟩
+    ⟨fun hx => Set.mem_iInter.2 fun m => hx m, fun hx m => (Set.mem_iInter.1 hx m :)⟩
 
 variable {M α}
 
@@ -312,8 +313,14 @@ variable {G α}
 theorem orbitRel_apply {a b : α} : orbitRel G α a b ↔ a ∈ orbit G b :=
   Iff.rfl
 
-@[to_additive (attr := deprecated (since := "2024-10-18"))]
+@[to_additive]
 alias orbitRel_r_apply := orbitRel_apply
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+attribute [deprecated orbitRel_apply (since := "2024-10-18")] orbitRel_r_apply
+attribute [deprecated AddAction.orbitRel_apply (since := "2024-10-18")] AddAction.orbitRel_r_apply
+
 
 /-- When you take a set `U` in `α`, push it down to the quotient, and pull back, you get the union
 of the orbit of `U` under `G`. -/
@@ -431,7 +438,7 @@ nonrec lemma orbitRel.Quotient.orbit_nonempty (x : orbitRel.Quotient G α) :
 nonrec lemma orbitRel.Quotient.mapsTo_smul_orbit (g : G) (x : orbitRel.Quotient G α) :
     Set.MapsTo (g • ·) x.orbit x.orbit := by
   rw [orbitRel.Quotient.orbit_eq_orbit_out x Quotient.out_eq']
-  exact mapsTo_smul_orbit g x.out'
+  exact mapsTo_smul_orbit g x.out
 
 @[to_additive]
 instance (x : orbitRel.Quotient G α) : MulAction G x.orbit where
@@ -485,12 +492,12 @@ local notation "Ω" => orbitRel.Quotient G α
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
 
 This version is expressed in terms of `MulAction.orbitRel.Quotient.orbit` instead of
-`MulAction.orbit`, to avoid mentioning `Quotient.out'`. -/
+`MulAction.orbit`, to avoid mentioning `Quotient.out`. -/
 @[to_additive
       "Decomposition of a type `X` as a disjoint union of its orbits under an additive group action.
 
       This version is expressed in terms of `AddAction.orbitRel.Quotient.orbit` instead of
-      `AddAction.orbit`, to avoid mentioning `Quotient.out'`. "]
+      `AddAction.orbit`, to avoid mentioning `Quotient.out`. "]
 def selfEquivSigmaOrbits' : α ≃ Σω : Ω, ω.orbit :=
   letI := orbitRel G α
   calc
@@ -503,7 +510,7 @@ def selfEquivSigmaOrbits' : α ≃ Σω : Ω, ω.orbit :=
 @[to_additive
       "Decomposition of a type `X` as a disjoint union of its orbits under an additive group
       action."]
-def selfEquivSigmaOrbits : α ≃ Σω : Ω, orbit G ω.out' :=
+def selfEquivSigmaOrbits : α ≃ Σω : Ω, orbit G ω.out :=
   (selfEquivSigmaOrbits' G α).trans <|
     Equiv.sigmaCongrRight fun _ =>
       Equiv.Set.ofEq <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'

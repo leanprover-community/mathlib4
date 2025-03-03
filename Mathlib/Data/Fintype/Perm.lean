@@ -3,9 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.GroupTheory.Perm.Basic
-import Mathlib.Tactic.Ring
+import Mathlib.Algebra.BigOperators.Group.List.Defs
+import Mathlib.Algebra.Group.End
+import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Data.Fintype.EquivFin
 import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
@@ -15,6 +16,8 @@ Main declarations:
 * `permsOfFinset s`: The finset of permutations of the finset `s`.
 
 -/
+
+assert_not_exists MonoidWithZero
 
 open Function
 
@@ -36,10 +39,7 @@ def permsOfList : List α → List (Perm α)
 theorem length_permsOfList : ∀ l : List α, length (permsOfList l) = l.length !
   | [] => rfl
   | a :: l => by
-    rw [length_cons, Nat.factorial_succ]
-    simp only [permsOfList, length_append, length_permsOfList, length_flatMap, comp_def,
-     length_map, map_const', sum_replicate, smul_eq_mul, succ_mul]
-    ring
+    simp [Nat.factorial_succ, permsOfList, length_permsOfList, comp_def, succ_mul, add_comm]
 
 theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x → x ∈ l) :
     f ∈ permsOfList l := by
@@ -140,7 +140,7 @@ theorem card_perms_of_finset : ∀ s : Finset α, #(permsOfFinset s) = (#s)! := 
 def fintypePerm [Fintype α] : Fintype (Perm α) :=
   ⟨permsOfFinset (@Finset.univ α _), by simp [mem_perms_of_finset_iff]⟩
 
-instance equivFintype [Fintype α] [Fintype β] : Fintype (α ≃ β) :=
+instance Equiv.instFintype [Fintype α] [Fintype β] : Fintype (α ≃ β) :=
   if h : Fintype.card β = Fintype.card α then
     Trunc.recOnSubsingleton (Fintype.truncEquivFin α) fun eα =>
       Trunc.recOnSubsingleton (Fintype.truncEquivFin β) fun eβ =>
@@ -148,8 +148,18 @@ instance equivFintype [Fintype α] [Fintype β] : Fintype (α ≃ β) :=
           (equivCongr (Equiv.refl α) (eα.trans (Eq.recOn h eβ.symm)) : α ≃ α ≃ (α ≃ β))
   else ⟨∅, fun x => False.elim (h (Fintype.card_eq.2 ⟨x.symm⟩))⟩
 
+@[deprecated (since := "2024-11-19")] alias equivFintype := Equiv.instFintype
+
+@[to_additive]
+instance MulEquiv.instFintype
+    {α β : Type*} [Mul α] [Mul β] [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] :
+    Fintype (α ≃* β) where
+  elems := Equiv.instFintype.elems.filterMap
+    (fun e => if h : ∀ a b : α, e (a * b) = e a * e b then (⟨e, h⟩ : α ≃* β) else none) (by aesop)
+  complete me := (Finset.mem_filterMap ..).mpr ⟨me.toEquiv, Finset.mem_univ _, by {simp; rfl}⟩
+
 theorem Fintype.card_perm [Fintype α] : Fintype.card (Perm α) = (Fintype.card α)! :=
-  Subsingleton.elim (@fintypePerm α _ _) (@equivFintype α α _ _ _ _) ▸ card_perms_of_finset _
+  Subsingleton.elim (@fintypePerm α _ _) (@Equiv.instFintype α α _ _ _ _) ▸ card_perms_of_finset _
 
 theorem Fintype.card_equiv [Fintype α] [Fintype β] (e : α ≃ β) :
     Fintype.card (α ≃ β) = (Fintype.card α)! :=

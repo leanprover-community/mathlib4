@@ -82,9 +82,9 @@ instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α
   coe μ := μ.toOuterMeasure
   coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, h => toOuterMeasure_injective <| DFunLike.coe_injective h
 
-set_option linter.deprecated false in -- Not immediately obvious how to use `measure_empty` here.
+
 instance Measure.instOuterMeasureClass [MeasurableSpace α] : OuterMeasureClass (Measure α) α where
-  measure_empty m := m.empty'
+  measure_empty m := measure_empty (μ := m.toOuterMeasure)
   measure_iUnion_nat_le m := m.iUnion_nat
   measure_mono m := m.mono
 
@@ -271,7 +271,8 @@ theorem _root_.MeasurableSpace.ae_induction_on_inter
         Pairwise (Disjoint on f) → (∀ i, MeasurableSet (f i)) → (∀ i, C x (f i)) → C x (⋃ i, f i)) :
     ∀ᵐ x ∂μ, ∀ ⦃t⦄, MeasurableSet t → C x t := by
   filter_upwards [h_empty, h_basic, h_compl, h_union] with x hx_empty hx_basic hx_compl hx_union
-    using MeasurableSpace.induction_on_inter h_eq h_inter hx_empty hx_basic hx_compl hx_union
+    using MeasurableSpace.induction_on_inter (C := fun t _ ↦ C x t)
+      h_eq h_inter hx_empty hx_basic hx_compl hx_union
 
 end ae
 
@@ -295,8 +296,6 @@ theorem subset_toMeasurable (μ : Measure α) (s : Set α) : s ⊆ toMeasurable 
 
 theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
   HasSubset.Subset.eventuallyLE (subset_toMeasurable _ _)
-
-  --(subset_toMeasurable _ _).EventuallyLE
 
 @[simp]
 theorem measurableSet_toMeasurable (μ : Measure α) (s : Set α) :

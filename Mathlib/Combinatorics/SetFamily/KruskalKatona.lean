@@ -139,11 +139,12 @@ lemma toColex_compress_lt_toColex {hU : U.Nonempty} {hV : V.Nonempty} (h : max' 
   have : a ∉ U := fun H ↦ ha.not_lt ((le_max' _ _ H).trans_lt h)
   simp [‹a ∉ U›, ‹a ∉ V›]
 
-/-- These are the compressions which we will apply to decrease the "measure" of a family of sets.-/
+/-- These are the compressions which we will apply to decrease the "measure" of a family of sets. -/
 private def UsefulCompression (U V : Finset α) : Prop :=
   Disjoint U V ∧ #U = #V ∧ ∃ (HU : U.Nonempty) (HV : V.Nonempty), max' U HU < max' V HV
 
-private instance UsefulCompression.instDecidableRel : @DecidableRel (Finset α) UsefulCompression :=
+private instance UsefulCompression.instDecidableRel :
+    DecidableRel (α := Finset α) UsefulCompression :=
   fun _ _ ↦ inferInstanceAs (Decidable (_ ∧ _))
 
 /-- Applying a good compression will decrease measure, keep cardinality, keep sizes and decrease
@@ -197,7 +198,7 @@ attribute [-instance] Fintype.decidableForallFintype
 
 Note that this does depend on the order of the ground set, unlike the Kruskal-Katona theorem itself
 (although `kruskal_katona` currently is stated in an order-dependent manner). -/
-private def familyMeasure (𝒜 : Finset (Finset (Fin n))) : ℕ := ∑ A in 𝒜, ∑ a in A, 2 ^ (a : ℕ)
+private def familyMeasure (𝒜 : Finset (Finset (Fin n))) : ℕ := ∑ A ∈ 𝒜, ∑ a ∈ A, 2 ^ (a : ℕ)
 
 /-- Applying a compression strictly decreases the measure. This helps show that "compress until we
 can't any more" is a terminating process. -/
@@ -287,9 +288,10 @@ theorem kruskal_katona (h𝒜r : (𝒜 : Set (Finset (Fin n))).Sized r) (h𝒞�
 shadow size is attained by initial segments. -/
 theorem iterated_kk (h₁ : (𝒜 : Set (Finset (Fin n))).Sized r) (h₂ : #𝒞 ≤ #𝒜) (h₃ : IsInitSeg 𝒞 r) :
     #(∂^[k] 𝒞) ≤ #(∂^[k] 𝒜) := by
-  induction' k with _k ih generalizing r 𝒜 𝒞
-  · simpa
-  · refine ih h₁.shadow (kruskal_katona h₁ h₂ h₃) ?_
+  induction k generalizing r 𝒜 𝒞 with
+  | zero => simpa
+  | succ _ ih =>
+    refine ih h₁.shadow (kruskal_katona h₁ h₂ h₃) ?_
     convert h₃.shadow
 
 /-- The **Lovasz formulation of the Kruskal-Katona theorem**.
@@ -349,7 +351,7 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
     (h₃ : r ≤ n / 2) :
     #𝒜 ≤ (n - 1).choose (r - 1) := by
   -- Take care of the r=0 case first: it's not very interesting.
-  cases' Nat.eq_zero_or_pos r with b h1r
+  rcases Nat.eq_zero_or_pos r with b | h1r
   · convert Nat.zero_le _
     rw [Finset.card_eq_zero, eq_empty_iff_forall_not_mem]
     refine fun A HA ↦ h𝒜 HA HA ?_

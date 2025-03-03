@@ -100,8 +100,9 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
     obtain ⟨P, hP₁, hP₂, hP₃, hP₄⟩ := h (⌊4 / ε ^ 5⌋₊ + 1)
     refine ⟨P, hP₁, (le_initialBound _ _).trans hP₂, hP₃.trans ?_,
       hP₄.resolve_right fun hPenergy => lt_irrefl (1 : ℝ) ?_⟩
-    · rw [iterate_succ_apply']
-      exact mul_le_mul_left' (pow_le_pow_left (by norm_num) (by norm_num) _) _
+    · rw [iterate_succ_apply', stepBound, bound]
+      gcongr
+      norm_num
     calc
       (1 : ℝ) = ε ^ 5 / ↑4 * (↑4 / ε ^ 5) := by
         rw [mul_comm, div_mul_div_cancel₀ (pow_pos hε 5).ne']; norm_num
@@ -111,12 +112,14 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
       _ ≤ 1 := mod_cast P.energy_le_one G
   -- Let's do the actual induction.
   intro i
-  induction' i with i ih
+  induction i with
   -- For `i = 0`, the dummy equipartition is enough.
-  · refine ⟨dum, hdum₁, hdum₂.ge, hdum₂.le, Or.inr ?_⟩
+  | zero =>
+    refine ⟨dum, hdum₁, hdum₂.ge, hdum₂.le, Or.inr ?_⟩
     rw [Nat.cast_zero, mul_zero]
     exact mod_cast dum.energy_nonneg G
   -- For the induction step at `i + 1`, find `P` the equipartition at `i`.
+  | succ i ih =>
   obtain ⟨P, hP₁, hP₂, hP₃, hP₄⟩ := ih
   by_cases huniform : P.IsUniform G ε
   -- If `P` is already uniform, then no need to break it up further. We can just return `P` again.

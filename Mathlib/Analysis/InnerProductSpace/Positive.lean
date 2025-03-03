@@ -109,7 +109,7 @@ lemma antilipschitz_of_forall_le_inner_map {H : Type*} [NormedAddCommGroup H]
   simp_rw [sq, mul_assoc] at h
   by_cases hx0 : x = 0
   · simp [hx0]
-  · apply (map_le_map_iff <| OrderIso.mulLeft₀ ‖x‖ (norm_pos_iff'.mpr hx0)).mp
+  · apply (map_le_map_iff <| OrderIso.mulLeft₀ ‖x‖ (norm_pos_iff.mpr hx0)).mp
     exact (h x).trans <| (norm_inner_le_norm _ _).trans <| (mul_comm _ _).le
 
 lemma isUnit_of_forall_le_norm_inner_map (f : E →L[𝕜] E) {c : ℝ≥0} (hc : 0 < c)

@@ -3,13 +3,14 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.BigOperators.Group.List
-import Mathlib.Algebra.Group.Action.End
+import Mathlib.Algebra.BigOperators.Group.List.Lemmas
+import Mathlib.Algebra.Group.Action.Hom
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Sigma.Basic
 import Lean.Elab.Tactic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Additively-graded multiplicative structures
@@ -79,7 +80,7 @@ in `Algebra.DirectSum.Internal`.
 
 This file also defines:
 
-* `SetLike.isHomogeneous A` (which says that `a` is homogeneous iff `a ∈ A i` for some `i : ι`)
+* `SetLike.IsHomogeneousElem A` (which says that `a` is homogeneous iff `a ∈ A i` for some `i : ι`)
 * `SetLike.homogeneousSubmonoid A`, which is, as the name suggests, the submonoid consisting of
   all the homogeneous elements.
 
@@ -402,11 +403,11 @@ theorem List.dProd_nil (fι : α → ι) (fA : ∀ a, A (fι a)) :
     (List.nil : List α).dProd fι fA = GradedMonoid.GOne.one :=
   rfl
 
--- the `( : _)` in this lemma statement results in the type on the RHS not being unfolded, which
+-- the `( :)` in this lemma statement results in the type on the RHS not being unfolded, which
 -- is nicer in the goal view.
 @[simp]
 theorem List.dProd_cons (fι : α → ι) (fA : ∀ a, A (fι a)) (a : α) (l : List α) :
-    (a :: l).dProd fι fA = (GradedMonoid.GMul.mul (fA a) (l.dProd fι fA) : _) :=
+    (a :: l).dProd fι fA = (GradedMonoid.GMul.mul (fA a) (l.dProd fι fA) :) :=
   rfl
 
 theorem GradedMonoid.mk_list_dProd (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) :
@@ -648,26 +649,64 @@ section HomogeneousElements
 variable {R S : Type*} [SetLike S R]
 
 /-- An element `a : R` is said to be homogeneous if there is some `i : ι` such that `a ∈ A i`. -/
-def SetLike.Homogeneous (A : ι → S) (a : R) : Prop :=
+def SetLike.IsHomogeneousElem (A : ι → S) (a : R) : Prop :=
   ∃ i, a ∈ A i
 
 @[simp]
-theorem SetLike.homogeneous_coe {A : ι → S} {i} (x : A i) : SetLike.Homogeneous A (x : R) :=
+theorem SetLike.isHomogeneousElem_coe {A : ι → S} {i} (x : A i) :
+    SetLike.IsHomogeneousElem A (x : R) :=
   ⟨i, x.prop⟩
 
-theorem SetLike.homogeneous_one [Zero ι] [One R] (A : ι → S) [SetLike.GradedOne A] :
-    SetLike.Homogeneous A (1 : R) :=
+@[deprecated (since := "2025-01-31")] alias SetLike.homogeneous_coe :=
+  SetLike.isHomogeneousElem_coe
+
+theorem SetLike.isHomogeneousElem_one [Zero ι] [One R] (A : ι → S) [SetLike.GradedOne A] :
+    SetLike.IsHomogeneousElem A (1 : R) :=
   ⟨0, SetLike.one_mem_graded _⟩
 
-theorem SetLike.homogeneous_mul [Add ι] [Mul R] {A : ι → S} [SetLike.GradedMul A] {a b : R} :
-    SetLike.Homogeneous A a → SetLike.Homogeneous A b → SetLike.Homogeneous A (a * b)
+@[deprecated (since := "2025-01-31")] alias SetLike.homogeneous_one := SetLike.isHomogeneousElem_one
+
+theorem SetLike.IsHomogeneousElem.mul [Add ι] [Mul R] {A : ι → S} [SetLike.GradedMul A] {a b : R} :
+    SetLike.IsHomogeneousElem A a → SetLike.IsHomogeneousElem A b →
+    SetLike.IsHomogeneousElem A (a * b)
   | ⟨i, hi⟩, ⟨j, hj⟩ => ⟨i + j, SetLike.mul_mem_graded hi hj⟩
+
+@[deprecated (since := "2025-01-31")] alias SetLike.homogeneous_mul := SetLike.IsHomogeneousElem.mul
 
 /-- When `A` is a `SetLike.GradedMonoid A`, then the homogeneous elements forms a submonoid. -/
 def SetLike.homogeneousSubmonoid [AddMonoid ι] [Monoid R] (A : ι → S) [SetLike.GradedMonoid A] :
     Submonoid R where
-  carrier := { a | SetLike.Homogeneous A a }
-  one_mem' := SetLike.homogeneous_one A
-  mul_mem' a b := SetLike.homogeneous_mul a b
+  carrier := { a | SetLike.IsHomogeneousElem A a }
+  one_mem' := SetLike.isHomogeneousElem_one A
+  mul_mem' a b := SetLike.IsHomogeneousElem.mul a b
 
 end HomogeneousElements
+
+section CommMonoid
+
+namespace SetLike
+
+variable {ι R S : Type*} [SetLike S R] [CommMonoid R] [AddCommMonoid ι]
+variable (A : ι → S) [SetLike.GradedMonoid A]
+
+variable {κ : Type*} (i : κ → ι) (g : κ → R) {F : Finset κ}
+
+theorem prod_mem_graded (hF : ∀ k ∈ F, g k ∈ A (i k)) : ∏ k ∈ F, g k ∈ A (∑ k ∈ F, i k) := by
+  classical
+  induction F using Finset.induction_on
+  · simp [GradedOne.one_mem]
+  · case insert j F' hF2 h3 =>
+    rw [Finset.prod_insert hF2, Finset.sum_insert hF2]
+    apply SetLike.mul_mem_graded (hF j <| Finset.mem_insert_self j F')
+    apply h3
+    intro k hk
+    apply hF k
+    exact Finset.mem_insert_of_mem hk
+
+theorem prod_pow_mem_graded (n : κ → ℕ) (hF : ∀ k ∈ F, g k ∈ A (i k)) :
+    ∏ k ∈ F, g k ^ n k ∈ A (∑ k ∈ F, n k • i k) :=
+  prod_mem_graded A _ _ fun k hk ↦ pow_mem_graded _ (hF k hk)
+
+end SetLike
+
+end CommMonoid

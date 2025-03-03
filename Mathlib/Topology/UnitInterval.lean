@@ -5,7 +5,7 @@ Authors: Patrick Massot, Kim Morrison
 -/
 import Mathlib.Algebra.Order.Interval.Set.Instances
 import Mathlib.Order.Interval.Set.ProjIcc
-import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.Instances.Real.Defs
 
 /-!
 # The unit interval, as a topological space
@@ -122,8 +122,6 @@ def symmHomeomorph : I ≃ₜ I where
 
 theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
 
-@[deprecated (since := "2024-02-27")] alias involutive_symm := symm_involutive
-@[deprecated (since := "2024-02-27")] alias bijective_symm := symm_bijective
 
 @[simp]
 theorem symm_inj {i j : I} : σ i = σ j ↔ i = j := symm_bijective.injective.eq_iff
@@ -254,7 +252,7 @@ lemma _root_.Set.abs_projIcc_sub_projIcc : (|projIcc a b h c - projIcc a b h d| 
   · exact (abs_eq_self.mpr hdc).le
 
 /-- When `h : a ≤ b` and `δ > 0`, `addNSMul h δ` is a sequence of points in the closed interval
-  `[a,b]`, which is initially equally spaced but eventually stays at the right endpoint `b`. -/
+`[a,b]`, which is initially equally spaced but eventually stays at the right endpoint `b`. -/
 def addNSMul (δ : α) (n : ℕ) : Icc a b := projIcc a b h (a + n • δ)
 
 lemma addNSMul_zero : addNSMul h δ 0 = a := by
@@ -286,8 +284,8 @@ end Set.Icc
 
 open scoped unitInterval
 
-/-- Any open cover `c` of a closed interval `[a, b]` in ℝ can be refined to
-  a finite partition into subintervals. -/
+/-- Any open cover `c` of a closed interval `[a, b]` in ℝ
+can be refined to a finite partition into subintervals. -/
 lemma exists_monotone_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b) {c : ι → Set (Icc a b)}
     (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : univ ⊆ ⋃ i, c i) : ∃ t : ℕ → Icc a b, t 0 = a ∧
       Monotone t ∧ (∃ m, ∀ n ≥ m, t n = b) ∧ ∀ n, ∃ i, Icc (t n) (t (n + 1)) ⊆ c i := by
@@ -346,7 +344,7 @@ end Tactic.Interactive
 
 section
 
-variable {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [TopologicalRing 𝕜]
+variable {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
 
 -- We only need the ordering on `𝕜` here to avoid talking about flipping the interval over.
 -- At the end of the day I only care about `ℝ`, so I'm hesitant to put work into generalizing.
@@ -375,3 +373,20 @@ theorem iccHomeoI_symm_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc (0 : 𝕜
   rfl
 
 end
+
+section NNReal
+
+open unitInterval NNReal
+
+/-- The coercion from `I` to `ℝ≥0`. -/
+def unitInterval.toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
+
+@[fun_prop]
+lemma unitInterval.toNNReal_continuous : Continuous toNNReal := by
+  delta toNNReal
+  fun_prop
+
+@[simp]
+lemma unitInterval.coe_toNNReal (x : I) : ((toNNReal x) : ℝ) = x := rfl
+
+end NNReal

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
 /-!
@@ -65,7 +64,7 @@ theorem map_sub [Sub β] [Bot β] {f : α → β} (h : ∀ x y, f (x - y) = f x 
 
 end
 
-variable [CanonicallyOrderedAddCommMonoid α] [Sub α] [OrderedSub α]
+variable [Add α] [LE α] [OrderBot α] [Sub α] [OrderedSub α]
 
 instance : OrderedSub (WithTop α) := by
   constructor
@@ -76,6 +75,7 @@ instance : OrderedSub (WithTop α) := by
   · simp
   cases z
   · simp
-  norm_cast; exact tsub_le_iff_right
+  norm_cast
+  exact tsub_le_iff_right
 
 end WithTop

@@ -24,7 +24,7 @@ of the underlying map of topological spaces, including
 
 -/
 
-open CategoryTheory Topology
+open CategoryTheory Topology TopologicalSpace
 
 namespace AlgebraicGeometry
 
@@ -83,6 +83,18 @@ instance surjective_isLocalAtTarget : IsLocalAtTarget @Surjective := by
   obtain ⟨⟨y, _⟩, hy⟩ := hf i ⟨x, hxi⟩
   exact ⟨y, congr(($hy).1)⟩
 
+@[simp]
+lemma range_eq_univ [Surjective f] : Set.range f.base = Set.univ := by
+  simpa [Set.range_eq_univ] using f.surjective
+
+lemma range_eq_range_of_surjective {S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (e : X ⟶ Y)
+    [Surjective e] (hge : e ≫ g = f) : Set.range f.base = Set.range g.base := by
+  rw [← hge]
+  simp [Set.range_comp]
+
+lemma mem_range_iff_of_surjective {S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (e : X ⟶ Y)
+    [Surjective e] (hge : e ≫ g = f) (s : S) : s ∈ Set.range f.base ↔ s ∈ Set.range g.base := by
+  rw [range_eq_range_of_surjective f g e hge]
 end Surjective
 
 section Injective
@@ -99,7 +111,7 @@ instance : (topologically IsOpenMap).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isOpenMap) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance isOpenMap_isLocalAtTarget : IsLocalAtTarget (topologically IsOpenMap) :=
-  topologically_isLocalAtTarget' _ fun _ _ _ hU _ ↦ isOpenMap_iff_isOpenMap_of_iSup_eq_top hU
+  topologically_isLocalAtTarget' _ fun _ _ _ hU _ ↦ hU.isOpenMap_iff_restrictPreimage
 
 end IsOpenMap
 
@@ -109,7 +121,7 @@ instance : (topologically IsClosedMap).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isClosedMap) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance isClosedMap_isLocalAtTarget : IsLocalAtTarget (topologically IsClosedMap) :=
-  topologically_isLocalAtTarget' _ fun _ _ _ hU _ ↦ isClosedMap_iff_isClosedMap_of_iSup_eq_top hU
+  topologically_isLocalAtTarget' _ fun _ _ _ hU _ ↦ hU.isClosedMap_iff_restrictPreimage
 
 end IsClosedMap
 
@@ -119,7 +131,7 @@ instance : (topologically IsEmbedding).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance isEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsEmbedding) :=
-  topologically_isLocalAtTarget' _ fun _ _ _ ↦ isEmbedding_iff_of_iSup_eq_top
+  topologically_isLocalAtTarget' _ fun _ _ _ hU ↦ hU.isEmbedding_iff_restrictPreimage
 
 end IsEmbedding
 
@@ -129,7 +141,7 @@ instance : (topologically IsOpenEmbedding).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isOpenEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance isOpenEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsOpenEmbedding) :=
-  topologically_isLocalAtTarget' _ fun _ _ _ ↦ isOpenEmbedding_iff_isOpenEmbedding_of_iSup_eq_top
+  topologically_isLocalAtTarget' _ fun _ _ _ hU ↦ hU.isOpenEmbedding_iff_restrictPreimage
 
 end IsOpenEmbedding
 
@@ -139,8 +151,7 @@ instance : (topologically IsClosedEmbedding).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isClosedEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance isClosedEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsClosedEmbedding) :=
-  topologically_isLocalAtTarget' _
-    fun _ _ _ ↦ isClosedEmbedding_iff_isClosedEmbedding_of_iSup_eq_top
+  topologically_isLocalAtTarget' _ fun _ _ _ hU ↦ hU.isClosedEmbedding_iff_restrictPreimage
 
 end IsClosedEmbedding
 
@@ -162,7 +173,7 @@ lemma Scheme.Hom.denseRange (f : X.Hom Y) [IsDominant f] : DenseRange f.base :=
 instance (priority := 100) [Surjective f] : IsDominant f := ⟨f.surjective.denseRange⟩
 
 instance [IsDominant f] [IsDominant g] : IsDominant (f ≫ g) :=
-  ⟨g.denseRange.comp f.denseRange g.base.2⟩
+  ⟨g.denseRange.comp f.denseRange g.base.hom.2⟩
 
 instance : MorphismProperty.IsMultiplicative @IsDominant where
   id_mem := fun _ ↦ inferInstance
@@ -182,7 +193,7 @@ instance IsDominant.isLocalAtTarget : IsLocalAtTarget @IsDominant :=
   have : MorphismProperty.RespectsIso (topologically DenseRange) :=
     dominant_eq_topologically ▸ IsDominant.respectsIso
   dominant_eq_topologically ▸ topologically_isLocalAtTarget' DenseRange
-    fun _ _ _ hU _ ↦ denseRange_iff_denseRange_of_iSup_eq_top hU
+    fun _ _ _ hU _ ↦ hU.denseRange_iff_restrictPreimage
 
 lemma surjective_of_isDominant_of_isClosed_range (f : X ⟶ Y) [IsDominant f]
     (hf : IsClosed (Set.range f.base)) :
@@ -222,7 +233,7 @@ instance specializingMap_isLocalAtTarget : IsLocalAtTarget (topologically @Speci
   · introv hU _ hsp
     simp_rw [specializingMap_iff_closure_singleton_subset] at hsp ⊢
     intro x y hy
-    have : ∃ i, y ∈ U i := Opens.mem_iSup.mp (hU ▸ trivial)
+    have : ∃ i, y ∈ U i := Opens.mem_iSup.mp (hU ▸ Opens.mem_top _)
     obtain ⟨i, hi⟩ := this
     rw [← specializes_iff_mem_closure] at hy
     have hfx : f x ∈ U i := (U i).2.stableUnderGeneralization hy hi

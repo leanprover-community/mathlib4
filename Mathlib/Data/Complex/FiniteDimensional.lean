@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Data.Complex.Cardinality
 import Mathlib.Data.Complex.Module
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.Order.Interval.Set.Infinite
 
 /-!
 # Complex number as a finite dimensional vector space over `ℝ`

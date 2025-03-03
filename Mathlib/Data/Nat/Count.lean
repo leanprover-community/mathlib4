@@ -3,6 +3,8 @@ Copyright (c) 2021 Vladimir Goryachev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodriguez
 -/
+import Mathlib.Algebra.Group.Nat.Range
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.SetTheory.Cardinal.Basic
 
 /-!

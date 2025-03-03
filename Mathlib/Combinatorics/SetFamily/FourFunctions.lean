@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Pi
-import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Finset.Sups
 import Mathlib.Order.Birkhoff
 import Mathlib.Order.Booleanisation
@@ -243,15 +242,18 @@ protected lemma Finset.four_functions_theorem (u : Finset α)
     (h : ∀ ⦃s⦄, s ⊆ u → ∀ ⦃t⦄, t ⊆ u → f₁ s * f₂ t ≤ f₃ (s ∩ t) * f₄ (s ∪ t))
     {𝒜 ℬ : Finset (Finset α)} (h𝒜 : 𝒜 ⊆ u.powerset) (hℬ : ℬ ⊆ u.powerset) :
     (∑ s ∈ 𝒜, f₁ s) * ∑ s ∈ ℬ, f₂ s ≤ (∑ s ∈ 𝒜 ⊼ ℬ, f₃ s) * ∑ s ∈ 𝒜 ⊻ ℬ, f₄ s := by
-  induction' u using Finset.induction with a u hu ih generalizing f₁ f₂ f₃ f₄ 𝒜 ℬ
-  · simp only [Finset.powerset_empty, Finset.subset_singleton_iff] at h𝒜 hℬ
+  induction u using Finset.induction generalizing f₁ f₂ f₃ f₄ 𝒜 ℬ with
+  | empty =>
+    simp only [Finset.powerset_empty, Finset.subset_singleton_iff] at h𝒜 hℬ
     obtain rfl | rfl := h𝒜 <;> obtain rfl | rfl := hℬ <;> simp; exact h (subset_refl ∅) subset_rfl
-  specialize ih (collapse_nonneg h₁) (collapse_nonneg h₂) (collapse_nonneg h₃) (collapse_nonneg h₄)
-    (collapse_modular hu h₁ h₂ h₃ h₄ h 𝒜 ℬ) Subset.rfl Subset.rfl
-  have : 𝒜 ⊼ ℬ ⊆ powerset (insert a u) := by simpa using infs_subset h𝒜 hℬ
-  have : 𝒜 ⊻ ℬ ⊆ powerset (insert a u) := by simpa using sups_subset h𝒜 hℬ
-  simpa only [powerset_sups_powerset_self, powerset_infs_powerset_self, sum_collapse,
-    not_false_eq_true, *] using ih
+  | insert hu ih =>
+    rename_i a u
+    specialize ih (collapse_nonneg h₁) (collapse_nonneg h₂) (collapse_nonneg h₃)
+      (collapse_nonneg h₄) (collapse_modular hu h₁ h₂ h₃ h₄ h 𝒜 ℬ) Subset.rfl Subset.rfl
+    have : 𝒜 ⊼ ℬ ⊆ powerset (insert a u) := by simpa using infs_subset h𝒜 hℬ
+    have : 𝒜 ⊻ ℬ ⊆ powerset (insert a u) := by simpa using sups_subset h𝒜 hℬ
+    simpa only [powerset_sups_powerset_self, powerset_infs_powerset_self, sum_collapse,
+      not_false_eq_true, *] using ih
 
 variable (f₁ f₂ f₃ f₄) [Fintype α]
 
@@ -365,5 +367,5 @@ lemma Finset.le_card_diffs_mul_card_diffs (s t : Finset α) :
 
 /-- The **Marica-Schönheim Inequality**. -/
 lemma Finset.card_le_card_diffs (s : Finset α) : #s ≤ #(s \\ s) :=
-  le_of_pow_le_pow_left two_ne_zero (zero_le _) <| by
+  le_of_pow_le_pow_left₀ two_ne_zero (zero_le _) <| by
     simpa [← sq] using s.le_card_diffs_mul_card_diffs s

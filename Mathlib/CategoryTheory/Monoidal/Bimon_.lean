@@ -157,13 +157,19 @@ def trivial : Bimon_ C := Comon_.trivial (Mon_ C)
 
 /-- The bimonoid morphism from the trivial bimonoid to any bimonoid. -/
 @[simps]
-def trivial_to (A : Bimon_ C) : trivial C ⟶ A :=
+def trivialTo (A : Bimon_ C) : trivial C ⟶ A :=
   { hom := (default : Mon_.trivial C ⟶ A.X), }
+
+@[deprecated (since := "2024-12-07")] alias trivial_to := trivialTo
+@[deprecated (since := "2024-12-07")] alias trivial_to_hom := trivialTo_hom
 
 /-- The bimonoid morphism from any bimonoid to the trivial bimonoid. -/
 @[simps!]
-def to_trivial (A : Bimon_ C) : A ⟶ trivial C :=
+def toTrivial (A : Bimon_ C) : A ⟶ trivial C :=
   (default : @Quiver.Hom (Comon_ (Mon_ C)) _ A (Comon_.trivial (Mon_ C)))
+
+@[deprecated (since := "2024-12-07")] alias to_trivial := toTrivial
+@[deprecated (since := "2024-12-07")] alias to_trivial_hom := toTrivial_hom
 
 /-! # Additional lemmas -/
 

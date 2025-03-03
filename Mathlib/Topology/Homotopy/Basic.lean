@@ -368,7 +368,7 @@ The type of homotopies between `f₀ f₁ : C(X, Y)`, where the intermediate map
 `P : C(X, Y) → Prop`
 -/
 structure HomotopyWith (f₀ f₁ : C(X, Y)) (P : C(X, Y) → Prop) extends Homotopy f₀ f₁ where
-  -- Porting note (#11215): TODO: use `toHomotopy.curry t`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `toHomotopy.curry t`
   /-- the intermediate maps of the homotopy satisfy the property -/
   prop' : ∀ t, P ⟨fun x => toFun (t, x),
     Continuous.comp continuous_toFun (continuous_const.prod_mk continuous_id')⟩
@@ -399,8 +399,7 @@ theorem ext {F G : HomotopyWith f₀ f₁ P} (h : ∀ x, F x = G x) : F = G := D
 because it is a composition of multiple projections. -/
 def Simps.apply (F : HomotopyWith f₀ f₁ P) : I × X → Y := F
 
-initialize_simps_projections HomotopyWith (toHomotopy_toContinuousMap_toFun → apply,
-  -toHomotopy_toContinuousMap)
+initialize_simps_projections HomotopyWith (toFun → apply, -toHomotopy_toContinuousMap)
 
 @[continuity]
 protected theorem continuous (F : HomotopyWith f₀ f₁ P) : Continuous F :=
@@ -514,7 +513,7 @@ theorem symm ⦃f g : C(X, Y)⦄ (h : HomotopicWith f g P) : HomotopicWith g f P
 
 -- Note: this was formerly tagged with `@[trans]`, and although the `trans` attribute accepted it
 -- the `trans` tactic could not use it.
--- An update to the trans tactic coming in mathlib4#7014 will reject this attribute.
+-- An update to the trans tactic coming in https://github.com/leanprover-community/mathlib4/pull/7014 will reject this attribute.
 -- It could be restored by changing the argument order to `HomotopicWith P f g`.
 @[trans]
 theorem trans ⦃f g h : C(X, Y)⦄ (h₀ : HomotopicWith f g P) (h₁ : HomotopicWith g h P) :

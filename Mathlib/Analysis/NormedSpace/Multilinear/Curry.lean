@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
+import Mathlib.LinearAlgebra.Multilinear.Curry
 
 /-!
 # Currying and uncurrying continuous multilinear maps
@@ -47,13 +48,11 @@ We use the following type variables in this file:
 
 universe u v v' wE wE₁ wE' wEi wG wG'
 
-variable {𝕜 : Type u} {ι : Type v} {ι' : Type v'} {n : ℕ} {E : ι → Type wE} {E₁ : ι → Type wE₁}
-  {E' : ι' → Type wE'} {Ei : Fin n.succ → Type wEi} {G : Type wG} {G' : Type wG'} [Fintype ι]
+variable {𝕜 : Type u} {ι : Type v} {ι' : Type v'} {n : ℕ} {E : ι → Type wE}
+  {Ei : Fin n.succ → Type wEi} {G : Type wG} {G' : Type wG'} [Fintype ι]
   [Fintype ι'] [NontriviallyNormedField 𝕜] [∀ i, NormedAddCommGroup (E i)]
-  [∀ i, NormedSpace 𝕜 (E i)] [∀ i, NormedAddCommGroup (E₁ i)] [∀ i, NormedSpace 𝕜 (E₁ i)]
-  [∀ i, NormedAddCommGroup (E' i)] [∀ i, NormedSpace 𝕜 (E' i)] [∀ i, NormedAddCommGroup (Ei i)]
-  [∀ i, NormedSpace 𝕜 (Ei i)] [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup G']
-  [NormedSpace 𝕜 G']
+  [∀ i, NormedSpace 𝕜 (E i)] [∀ i, NormedAddCommGroup (Ei i)] [∀ i, NormedSpace 𝕜 (Ei i)]
+  [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 
 theorem ContinuousLinearMap.norm_map_tail_le
@@ -101,7 +100,7 @@ theorem ContinuousMultilinearMap.norm_map_snoc_le (f : ContinuousMultilinearMap 
 
 /-- Given a continuous linear map `f` from `E 0` to continuous multilinear maps on `n` variables,
 construct the corresponding continuous multilinear map on `n+1` variables obtained by concatenating
-the variables, given by `m ↦ f (m 0) (tail m)`-/
+the variables, given by `m ↦ f (m 0) (tail m)` -/
 def ContinuousLinearMap.uncurryLeft
     (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) :
     ContinuousMultilinearMap 𝕜 Ei G :=
@@ -406,7 +405,7 @@ theorem ContinuousMultilinearMap.fin0_apply_norm (f : G[×0]→L[𝕜] G') {x : 
   obtain rfl : x = 0 := Subsingleton.elim _ _
   refine le_antisymm (by simpa using f.le_opNorm 0) ?_
   have : ‖ContinuousMultilinearMap.uncurry0 𝕜 G f.curry0‖ ≤ ‖f.curry0‖ :=
-    ContinuousMultilinearMap.opNorm_le_bound _ (norm_nonneg _) fun m => by
+    ContinuousMultilinearMap.opNorm_le_bound (norm_nonneg _) fun m => by
       simp [-ContinuousMultilinearMap.apply_zero_uncurry0]
   simpa [-Matrix.zero_empty] using this
 
@@ -512,7 +511,7 @@ def uncurrySum (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => G)
   MultilinearMap.mkContinuous
     (toMultilinearMapLinear.compMultilinearMap f.toMultilinearMap).uncurrySum ‖f‖ fun m => by
     simpa [Fintype.prod_sum_type, mul_assoc] using
-      (f (m ∘ Sum.inl)).le_of_opNorm_le (m ∘ Sum.inr) (f.le_opNorm _)
+      (f (m ∘ Sum.inl)).le_of_opNorm_le (f.le_opNorm _) (m ∘ Sum.inr)
 
 @[simp]
 theorem uncurrySum_apply (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => G)

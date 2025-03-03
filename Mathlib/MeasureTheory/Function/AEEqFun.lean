@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Zhouhang Zhou
 import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.Order.Filter.Germ.Basic
 import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 
 /-!
 
@@ -124,7 +124,7 @@ then we choose that one. -/
 def cast (f : α →ₘ[μ] β) : α → β :=
   if h : ∃ (b : β), f = mk (const α b) aestronglyMeasurable_const then
     const α <| Classical.choose h else
-    AEStronglyMeasurable.mk _ (Quotient.out' f : { f : α → β // AEStronglyMeasurable f μ }).2
+    AEStronglyMeasurable.mk _ (Quotient.out f : { f : α → β // AEStronglyMeasurable f μ }).2
 
 /-- A measurable representative of an `AEEqFun` [f] -/
 instance instCoeFun : CoeFun (α →ₘ[μ] β) fun _ => α → β := ⟨cast⟩
@@ -708,7 +708,7 @@ instance instCommMonoid [CommMonoid γ] [ContinuousMul γ] : CommMonoid (α →�
 
 section Group
 
-variable [Group γ] [TopologicalGroup γ]
+variable [Group γ] [IsTopologicalGroup γ]
 
 section Inv
 
@@ -772,19 +772,19 @@ end ZPow
 
 end Group
 
-instance instAddGroup [AddGroup γ] [TopologicalAddGroup γ] : AddGroup (α →ₘ[μ] γ) :=
+instance instAddGroup [AddGroup γ] [IsTopologicalAddGroup γ] : AddGroup (α →ₘ[μ] γ) :=
   toGerm_injective.addGroup toGerm zero_toGerm add_toGerm neg_toGerm sub_toGerm
     (fun _ _ => smul_toGerm _ _) fun _ _ => smul_toGerm _ _
 
-instance instAddCommGroup [AddCommGroup γ] [TopologicalAddGroup γ] : AddCommGroup (α →ₘ[μ] γ) :=
+instance instAddCommGroup [AddCommGroup γ] [IsTopologicalAddGroup γ] : AddCommGroup (α →ₘ[μ] γ) :=
   { add_comm := add_comm }
 
 @[to_additive existing]
-instance instGroup [Group γ] [TopologicalGroup γ] : Group (α →ₘ[μ] γ) :=
+instance instGroup [Group γ] [IsTopologicalGroup γ] : Group (α →ₘ[μ] γ) :=
   toGerm_injective.group _ one_toGerm mul_toGerm inv_toGerm div_toGerm pow_toGerm zpow_toGerm
 
 @[to_additive existing]
-instance instCommGroup [CommGroup γ] [TopologicalGroup γ] : CommGroup (α →ₘ[μ] γ) :=
+instance instCommGroup [CommGroup γ] [IsTopologicalGroup γ] : CommGroup (α →ₘ[μ] γ) :=
   { mul_comm := mul_comm }
 
 section Module
@@ -836,7 +836,7 @@ theorem lintegral_mono {f g : α →ₘ[μ] ℝ≥0∞} : f ≤ g → lintegral 
 section Abs
 
 theorem coeFn_abs {β} [TopologicalSpace β] [Lattice β] [TopologicalLattice β] [AddGroup β]
-    [TopologicalAddGroup β] (f : α →ₘ[μ] β) : ⇑|f| =ᵐ[μ] fun x => |f x| := by
+    [IsTopologicalAddGroup β] (f : α →ₘ[μ] β) : ⇑|f| =ᵐ[μ] fun x => |f x| := by
   simp_rw [abs]
   filter_upwards [AEEqFun.coeFn_sup f (-f), AEEqFun.coeFn_neg f] with x hx_sup hx_neg
   rw [hx_sup, hx_neg, Pi.neg_apply]
@@ -863,6 +863,17 @@ theorem coeFn_posPart (f : α →ₘ[μ] γ) : ⇑(posPart f) =ᵐ[μ] fun a => 
 
 end PosPart
 
+section AELimit
+
+/-- The ae-limit is ae-unique. -/
+theorem tendsto_ae_unique {ι : Type*} [T2Space β]
+    {g h : α → β} {f : ι → α → β} {l : Filter ι} [l.NeBot]
+    (hg : ∀ᵐ ω ∂μ, Tendsto (fun i => f i ω) l (𝓝 (g ω)))
+    (hh : ∀ᵐ ω ∂μ, Tendsto (fun i => f i ω) l (𝓝 (h ω))) : g =ᵐ[μ] h := by
+  filter_upwards [hg, hh] with ω hg1 hh1 using tendsto_nhds_unique hg1 hh1
+
+end AELimit
+
 end AEEqFun
 
 end MeasureTheory
@@ -882,7 +893,7 @@ def toAEEqFun (f : C(α, β)) : α →ₘ[μ] β :=
 theorem coeFn_toAEEqFun (f : C(α, β)) : f.toAEEqFun μ =ᵐ[μ] f :=
   AEEqFun.coeFn_mk f _
 
-variable [Group β] [TopologicalGroup β]
+variable [Group β] [IsTopologicalGroup β]
 
 /-- The `MulHom` from the group of continuous maps from `α` to `β` to the group of equivalence
 classes of `μ`-almost-everywhere measurable functions. -/
@@ -896,7 +907,7 @@ def toAEEqFunMulHom : C(α, β) →* α →ₘ[μ] β where
 
 variable {𝕜 : Type*} [Semiring 𝕜]
 variable [TopologicalSpace γ] [PseudoMetrizableSpace γ] [AddCommGroup γ] [Module 𝕜 γ]
-  [TopologicalAddGroup γ] [ContinuousConstSMul 𝕜 γ] [SecondCountableTopologyEither α γ]
+  [IsTopologicalAddGroup γ] [ContinuousConstSMul 𝕜 γ] [SecondCountableTopologyEither α γ]
 
 /-- The linear map from the group of continuous maps from `α` to `β` to the group of equivalence
 classes of `μ`-almost-everywhere measurable functions. -/

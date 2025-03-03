@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Order.Filter.AtTopBot.Finset
 import Mathlib.Topology.Algebra.InfiniteSum.Group
 import Mathlib.Topology.Algebra.Star
 
@@ -20,7 +21,7 @@ open Filter Finset Function
 
 open scoped Topology
 
-variable {α β γ δ : Type*}
+variable {α β γ : Type*}
 
 
 /-! ## Product, Sigma and Pi types -/
@@ -71,6 +72,33 @@ end ProdCodomain
 section ContinuousMul
 
 variable [CommMonoid α] [TopologicalSpace α] [ContinuousMul α]
+
+section Sum
+
+@[to_additive]
+lemma HasProd.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
+    {f : α ⊕ β → M} {a b : M}
+    (h₁ : HasProd (f ∘ Sum.inl) a) (h₂ : HasProd (f ∘ Sum.inr) b) : HasProd f (a * b) := by
+  have : Tendsto ((∏ b ∈ ·, f b) ∘ sumEquiv.symm) (atTop.map sumEquiv) (nhds (a * b)) := by
+    rw [Finset.sumEquiv.map_atTop, ← prod_atTop_atTop_eq]
+    convert (tendsto_mul.comp (nhds_prod_eq (x := a) (y := b) ▸ Tendsto.prod_map h₁ h₂))
+    ext s
+    simp
+  simpa [Tendsto, ← Filter.map_map] using this
+
+@[to_additive "For the statement that `tsum` commutes with `Finset.sum`, see `tsum_finsetSum`."]
+lemma tprod_sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M] [T2Space M]
+    {f : α ⊕ β → M} (h₁ : Multipliable (f ∘ .inl)) (h₂ : Multipliable (f ∘ .inr)) :
+    ∏' i, f i = (∏' i, f (.inl i)) * (∏' i, f (.inr i)) :=
+  (h₁.hasProd.sum h₂.hasProd).tprod_eq
+
+@[to_additive]
+lemma Multipliable.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
+    (f : α ⊕ β → M) (h₁ : Multipliable (f ∘ Sum.inl)) (h₂ : Multipliable (f ∘ Sum.inr)) :
+    Multipliable f :=
+  ⟨_, .sum h₁.hasProd h₂.hasProd⟩
+
+end Sum
 
 section RegularSpace
 
@@ -192,6 +220,11 @@ theorem Multipliable.prod_factor {f : β × γ → α} (h : Multipliable f) (b :
     Multipliable fun c ↦ f (b, c) :=
   h.comp_injective fun _ _ h ↦ (Prod.ext_iff.1 h).2
 
+@[to_additive Summable.prod]
+lemma Multipliable.prod {f : β × γ → α} (h : Multipliable f) :
+    Multipliable fun b ↦ ∏' c, f (b, c) :=
+  ((Equiv.sigmaEquivProd β γ).multipliable_iff.mpr h).sigma
+
 @[to_additive]
 lemma HasProd.tprod_fiberwise [T2Space α] {f : β → α} {a : α} (hf : HasProd f a) (g : β → γ) :
     HasProd (fun c : γ ↦ ∏' b : g ⁻¹' {c}, f b) a :=
@@ -251,14 +284,14 @@ open MulOpposite
 variable [AddCommMonoid α] [TopologicalSpace α] {f : β → α} {a : α}
 
 theorem HasSum.op (hf : HasSum f a) : HasSum (fun a ↦ op (f a)) (op a) :=
-  (hf.map (@opAddEquiv α _) continuous_op : _)
+  (hf.map (@opAddEquiv α _) continuous_op :)
 
 theorem Summable.op (hf : Summable f) : Summable (op ∘ f) :=
   hf.hasSum.op.summable
 
 theorem HasSum.unop {f : β → αᵐᵒᵖ} {a : αᵐᵒᵖ} (hf : HasSum f a) :
     HasSum (fun a ↦ unop (f a)) (unop a) :=
-  (hf.map (@opAddEquiv α _).symm continuous_unop : _)
+  (hf.map (@opAddEquiv α _).symm continuous_unop :)
 
 theorem Summable.unop {f : β → αᵐᵒᵖ} (hf : Summable f) : Summable (unop ∘ f) :=
   hf.hasSum.unop.summable

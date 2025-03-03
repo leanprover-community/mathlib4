@@ -3,8 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Basic
+import Mathlib.Algebra.Homology.Embedding.IsSupported
 import Mathlib.Algebra.Homology.Additive
+import Mathlib.Algebra.Homology.Opposite
 
 /-!
 # The extension of a homological complex by an embedding of complex shapes
@@ -46,6 +47,12 @@ lemma isZero_X {i : Option ι} (hi : i = none) :
   subst hi
   exact Limits.isZero_zero _
 
+/-- The canonical isomorphism `X K.op i ≅ Opposite.op (X K i)`. -/
+noncomputable def XOpIso (i : Option ι) : X K.op i ≅ Opposite.op (X K i) :=
+  match i with
+  | some _ => Iso.refl _
+  | none => IsZero.iso (isZero_X _ rfl) (isZero_X K rfl).op
+
 /-- Auxiliary definition for the `d` field of `HomologicalComplex.extend`. -/
 noncomputable def d : ∀ (i j : Option ι), extend.X K i ⟶ extend.X K j
   | none, _ => 0
@@ -63,6 +70,21 @@ lemma d_eq {i j : Option ι} {a b : ι} (hi : i = some a) (hj : j = some b) :
   subst hi hj
   dsimp [XIso, d]
   erw [id_comp, comp_id]
+
+@[reassoc]
+lemma XOpIso_hom_d_op (i j : Option ι) :
+    (XOpIso K i).hom ≫ (d K j i).op =
+      d K.op i j ≫ (XOpIso K j).hom :=
+  match i, j with
+  | none, _ => by
+      simp only [d_none_eq_zero, d_none_eq_zero', comp_zero, zero_comp, op_zero]
+  | some i, some j => by
+      dsimp [XOpIso]
+      simp only [d_eq _ rfl rfl, Option.some.injEq, d_eq, op_comp, assoc,
+        id_comp, comp_id]
+      rfl
+  | some _, none => by
+      simp only [d_none_eq_zero, d_none_eq_zero', comp_zero, zero_comp, op_zero]
 
 variable {K L}
 
@@ -127,6 +149,9 @@ lemma isZero_extend_X (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
     · exact hi'
     · exfalso
       exact hi' _ (e.f_eq_of_r_eq_some hi))
+
+instance : (K.extend e).IsStrictlySupported e where
+  isZero i' hi' := K.isZero_extend_X e i' hi'
 
 lemma extend_d_eq {i' j' : ι'} {i j : ι} (hi : e.f i = i') (hj : e.f j = j') :
     (K.extend e).d i' j' = (K.extendXIso e hi).hom ≫ K.d i j ≫
@@ -221,6 +246,20 @@ lemma extendMap_zero : extendMap (0 : K ⟶ L) e = 0 := by
   · obtain ⟨i, hi⟩ := hi'
     simp [extendMap_f _ e hi]
   · apply (K.isZero_extend_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
+
+/-- The canonical isomorphism `K.op.extend e.op ≅ (K.extend e).op`. -/
+noncomputable def extendOpIso : K.op.extend e.op ≅ (K.extend e).op :=
+  Hom.isoOfComponents (fun _ ↦ extend.XOpIso _ _) (fun _ _ _ ↦
+    extend.XOpIso_hom_d_op _ _ _)
+
+@[reassoc]
+lemma extend_op_d (i' j' : ι') :
+    (K.op.extend e.op).d i' j' =
+      (K.extendOpIso e).hom.f i' ≫ ((K.extend e).d j' i').op ≫
+        (K.extendOpIso e).inv.f j' := by
+  have := (K.extendOpIso e).inv.comm i' j'
+  dsimp at this
+  rw [← this, ← comp_f_assoc, Iso.hom_inv_id, id_f, id_comp]
 
 end
 

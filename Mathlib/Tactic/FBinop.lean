@@ -185,12 +185,12 @@ private def toExprCore (t : Tree) : TermElabM Expr := do
   | .term _ trees e =>
     modifyInfoState (fun s => { s with trees := s.trees ++ trees }); return e
   | .binop ref f lhs rhs =>
-    withRef ref <| withInfoContext' ref (mkInfo := mkTermInfo .anonymous ref) do
+    withRef ref <| withTermInfoContext' .anonymous ref do
       let lhs ← toExprCore lhs
       let mut rhs ← toExprCore rhs
       mkBinOp f lhs rhs
   | .macroExpansion macroName stx stx' nested =>
-    withRef stx <| withInfoContext' stx (mkInfo := mkTermInfo macroName stx) do
+    withRef stx <| withTermInfoContext' macroName stx do
       withMacroExpansion stx stx' do
         toExprCore nested
 

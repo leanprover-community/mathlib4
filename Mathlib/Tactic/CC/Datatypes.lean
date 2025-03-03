@@ -3,11 +3,10 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
-import Lean.Meta.CongrTheorems
-import Lean.Meta.Tactic.Rfl
 import Batteries.Data.RBMap.Basic
 import Mathlib.Lean.Meta.Basic
-import Std.Data.HashMap.Basic
+import Mathlib.Lean.Meta.CongrTheorems
+import Mathlib.Data.Ordering.Basic
 
 /-!
 # Datatypes for `cc`
@@ -154,9 +153,10 @@ scoped instance : Ord ACApps where
     | .ofExpr _, .apps _ _ => .lt
     | .apps _ _, .ofExpr _ => .gt
     | .apps op₁ args₁, .apps op₂ args₂ =>
-      compare op₁ op₂ |>.then <| compare args₁.size args₂.size |>.then <| Id.run do
-        for i in [:args₁.size] do
-          let o := compare args₁[i]! args₂[i]!
+      compare op₁ op₂ |>.then <| compare args₁.size args₂.size |>.dthen fun hs => Id.run do
+        have hs := Batteries.BEqCmp.cmp_iff_eq.mp hs
+        for hi : i in [:args₁.size] do
+          have hi := hi.right; let o := compare args₁[i] (args₂[i]'(hs ▸ hi.1))
           if o != .eq then return o
         return .eq
 
@@ -428,7 +428,8 @@ Note that this only works for two-argument relations: `ModEq n` and `ModEq m` ar
 same. -/
 abbrev SymmCongruences := Std.HashMap SymmCongruencesKey (List (Expr × Name))
 
-/-- Stores the root representatives of subsingletons. -/
+/-- Stores the root representatives of subsingletons, this uses `FastSingleton` instead of
+`Subsingleton`. -/
 abbrev SubsingletonReprs := RBExprMap Expr
 
 /-- Stores the root representatives of `.instImplicit` arguments. -/
@@ -469,7 +470,7 @@ structure CCState extends CCConfig where
   /-- Records equality between `ACApps`. -/
   acR : RBACAppsMap (ACApps × DelayedExpr) := ∅
   /-- Returns true if the `CCState` is inconsistent. For example if it had both `a = b` and `a ≠ b`
-      in it.-/
+      in it. -/
   inconsistent : Bool := false
   /-- "Global Modification Time". gmt is a number stored on the `CCState`,
       it is compared with the modification time of a cc_entry in e-matching. See `CCState.mt`. -/
@@ -583,10 +584,10 @@ def getVarWithLeastOccs (ccs : CCState) (e : ACApps) (inLHS : Bool) : Option Exp
     let mut r := args[0]?
     let mut numOccs := r.casesOn 0 fun r' => ccs.getNumROccs r' inLHS
     for hi : i in [1:args.size] do
-      if (args[i]'hi.2) != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) hi.2)) then
-        let currOccs := ccs.getNumROccs (args[i]'hi.2) inLHS
+      if args[i] != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) hi.2.1)) then
+        let currOccs := ccs.getNumROccs args[i] inLHS
         if currOccs < numOccs then
-          r := (args[i]'hi.2)
+          r := args[i]
           numOccs := currOccs
     return r
   | .ofExpr e => e
@@ -691,5 +692,12 @@ structure CCStructure extends CCState where
   phandler : Option CCPropagationHandler := none
   cache : CCCongrTheoremCache := ∅
   deriving Inhabited
+
+initialize
+  registerTraceClass `Meta.Tactic.cc.merge
+  registerTraceClass `Meta.Tactic.cc.failure
+  registerTraceClass `Debug.Meta.Tactic.cc
+  registerTraceClass `Debug.Meta.Tactic.cc.ac
+  registerTraceClass `Debug.Meta.Tactic.cc.parentOccs
 
 end Mathlib.Tactic.CC

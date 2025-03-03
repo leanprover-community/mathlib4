@@ -3,16 +3,19 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.Ring.Int.Units
+import Mathlib.Algebra.Group.Conj
+import Mathlib.Algebra.Group.Subgroup.Lattice
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Finset.Sort
+import Mathlib.Data.Fintype.Perm
+import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Data.Finset.Sigma
 
 /-!
 # Sign of a permutation
@@ -41,11 +44,9 @@ def modSwap (i j : α) : Setoid (Perm α) :=
   ⟨fun σ τ => σ = τ ∨ σ = swap i j * τ, fun σ => Or.inl (refl σ), fun {σ τ} h =>
     Or.casesOn h (fun h => Or.inl h.symm) fun h => Or.inr (by rw [h, swap_mul_self_mul]),
     fun {σ τ υ} hστ hτυ => by
-    cases' hστ with hστ hστ <;> cases' hτυ with hτυ hτυ <;> try rw [hστ, hτυ, swap_mul_self_mul] <;>
-    simp [hστ, hτυ] -- Porting note: should close goals, but doesn't
-    · simp [hστ, hτυ]
-    · simp [hστ, hτυ]
-    · simp [hστ, hτυ]⟩
+    rcases hστ with hστ | hστ <;> rcases hτυ with hτυ | hτυ <;>
+      (try rw [hστ, hτυ, swap_mul_self_mul]) <;>
+      simp [hστ, hτυ]⟩
 
 noncomputable instance {α : Type*} [Fintype α] [DecidableEq α] (i j : α) :
     DecidableRel (modSwap i j).r :=
@@ -96,7 +97,7 @@ is preserved under composition with a non-trivial swap, then `P` holds for all p
 theorem swap_induction_on [Finite α] {P : Perm α → Prop} (f : Perm α) :
     P 1 → (∀ f x y, x ≠ y → P f → P (swap x y * f)) → P f := by
   cases nonempty_fintype α
-  cases' (truncSwapFactors f).out with l hl
+  obtain ⟨l, hl⟩ := (truncSwapFactors f).out
   induction' l with g l ih generalizing f
   · simp +contextual only [hl.left.symm, List.prod_nil, forall_true_iff]
   · intro h1 hmul_swap
@@ -352,7 +353,6 @@ theorem signAux3_mul_and_swap [Finite α] (f g : Perm α) (s : Multiset α) (hs 
 theorem signAux3_symm_trans_trans [Finite α] [DecidableEq β] [Finite β] (f : Perm α) (e : α ≃ β)
     {s : Multiset α} {t : Multiset β} (hs : ∀ x, x ∈ s) (ht : ∀ x, x ∈ t) :
     signAux3 ((e.symm.trans f).trans e) ht = signAux3 f hs := by
-  -- Porting note: switched from term mode to tactic mode
   induction' t, s using Quotient.inductionOn₂ with t s ht hs
   show signAux2 _ _ = signAux2 _ _
   rcases Finite.exists_equiv_fin β with ⟨n, ⟨e'⟩⟩
@@ -594,5 +594,30 @@ theorem sign_ofSubtype {p : α → Prop} [DecidablePred p] (f : Equiv.Perm (Subt
 end congr
 
 end SignType.sign
+
+section Finset
+
+variable [Fintype α]
+
+/-- Permutations of a given sign. -/
+def ofSign (s : ℤˣ) : Finset (Perm α) := univ.filter (sign · = s)
+
+@[simp]
+lemma mem_ofSign {s : ℤˣ} {σ : Perm α} : σ ∈ ofSign s ↔ σ.sign = s := by
+  rw [ofSign, mem_filter, and_iff_right (mem_univ σ)]
+
+lemma ofSign_disjoint : _root_.Disjoint (ofSign 1 : Finset (Perm α)) (ofSign (-1)) := by
+  rw [Finset.disjoint_iff_ne]
+  rintro σ hσ τ hτ rfl
+  rw [mem_ofSign] at hσ hτ
+  have := hσ.symm.trans hτ
+  contradiction
+
+lemma ofSign_disjUnion :
+    (ofSign 1).disjUnion (ofSign (-1)) ofSign_disjoint = (univ : Finset (Perm α)) := by
+  ext σ
+  simp_rw [mem_disjUnion, mem_ofSign, Int.units_eq_one_or, mem_univ]
+
+end Finset
 
 end Equiv.Perm

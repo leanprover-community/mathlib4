@@ -31,10 +31,7 @@ As corollaries, we get:
 -/
 
 
-open Finset LinearMap Set
-
-open scoped Classical
-open Convex Pointwise
+open Finset LinearMap Set Convex Pointwise
 
 variable {𝕜 E F β ι : Type*}
 
@@ -110,14 +107,14 @@ lemma StrictConvexOn.map_sum_lt (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ i ∈
   have hk : k ∉ u := by simp [u]
   have ht :
       t = (u.cons k hk).cons j (mem_cons.not.2 <| not_or_intro (ne_of_apply_ne _ hjk) hj) := by
-    simp [insert_erase this, insert_erase ‹j ∈ t›, *]
+    simp [u, insert_erase this, insert_erase ‹j ∈ t›, *]
   clear_value u
   subst ht
   simp only [sum_cons]
   have := h₀ j <| by simp
   have := h₀ k <| by simp
   let c := w j + w k
-  have hc : w j / c + w k / c = 1 := by field_simp
+  have hc : w j / c + w k / c = 1 := by field_simp [c]
   calc f (w j • p j + (w k • p k + ∑ x ∈ u, w x • p x))
     _ = f (c • ((w j / c) • p j + (w k / c) • p k) + ∑ x ∈ u, w x • p x) := by
       congrm f ?_

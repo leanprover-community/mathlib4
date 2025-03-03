@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
 -/
 import Mathlib.Logic.Equiv.Fin
-import Mathlib.Topology.DenseEmbedding
-import Mathlib.Topology.Support
+import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.Connected.LocallyConnected
+import Mathlib.Topology.ContinuousMap.Defs
+import Mathlib.Topology.DenseEmbedding
 
 /-!
 # Homeomorphisms
@@ -198,6 +199,9 @@ theorem image_preimage (h : X ≃ₜ Y) (s : Set Y) : h '' (h ⁻¹' s) = s :=
 theorem preimage_image (h : X ≃ₜ Y) (s : Set X) : h ⁻¹' (h '' s) = s :=
   h.toEquiv.preimage_image s
 
+theorem image_eq_preimage (h : X ≃ₜ Y) (s : Set X) : h '' s = h.symm ⁻¹' s :=
+  h.toEquiv.image_eq_preimage s
+
 lemma image_compl (h : X ≃ₜ Y) (s : Set X) : h '' (sᶜ) = (h '' s)ᶜ :=
   h.toEquiv.image_compl s
 
@@ -308,6 +312,11 @@ protected theorem t3Space [T3Space X] (h : X ≃ₜ Y) : T3Space Y := h.symm.isE
 
 theorem isDenseEmbedding (h : X ≃ₜ Y) : IsDenseEmbedding h :=
   { h.isEmbedding with dense := h.surjective.denseRange }
+
+protected lemma totallyDisconnectedSpace (h : X ≃ₜ Y) [tdc : TotallyDisconnectedSpace X] :
+    TotallyDisconnectedSpace Y :=
+  (totallyDisconnectedSpace_iff Y).mpr
+    (h.range_coe ▸ ((IsEmbedding.isTotallyDisconnected_range h.isEmbedding).mpr tdc))
 
 @[deprecated (since := "2024-09-30")]
 alias denseEmbedding := isDenseEmbedding
@@ -423,11 +432,7 @@ theorem locallyCompactSpace_iff (h : X ≃ₜ Y) :
 @[simps toEquiv]
 def homeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) : X ≃ₜ Y where
   continuous_toFun := h₁
-  continuous_invFun := by
-    rw [continuous_def]
-    intro s hs
-    convert ← h₂ s hs using 1
-    apply e.image_eq_preimage
+  continuous_invFun := e.continuous_symm_iff.2 h₂
   toEquiv := e
 
 /-- If a bijective map `e : X ≃ Y` is continuous and closed, then it is a homeomorphism. -/
@@ -515,9 +520,25 @@ def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
 
 /-- Sum of two homeomorphisms. -/
 def sumCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X ⊕ Y ≃ₜ X' ⊕ Y' where
-  continuous_toFun := h₁.continuous.sum_map h₂.continuous
-  continuous_invFun := h₁.symm.continuous.sum_map h₂.symm.continuous
+  continuous_toFun := h₁.continuous.sumMap h₂.continuous
+  continuous_invFun := h₁.symm.continuous.sumMap h₂.symm.continuous
   toEquiv := h₁.toEquiv.sumCongr h₂.toEquiv
+
+@[simp]
+lemma sumCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
+  (sumCongr h₁ h₂).symm = sumCongr h₁.symm h₂.symm := rfl
+
+@[simp]
+theorem sumCongr_refl : sumCongr (.refl X) (.refl Y) = .refl (X ⊕ Y) := by
+  ext i
+  cases i <;> rfl
+
+@[simp]
+theorem sumCongr_trans {X'' Y'' : Type*} [TopologicalSpace X''] [TopologicalSpace Y'']
+    (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') (h₃ : X' ≃ₜ X'') (h₄ : Y' ≃ₜ Y'') :
+    (sumCongr h₁ h₂).trans (sumCongr h₃ h₄) = sumCongr (h₁.trans h₃) (h₂.trans h₄) := by
+  ext i
+  cases i <;> rfl
 
 /-- Product of two homeomorphisms. -/
 def prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X × Y ≃ₜ X' × Y' where
@@ -554,11 +575,11 @@ theorem coe_sumComm : ⇑(sumComm X Y) = Sum.swap :=
 
 @[continuity, fun_prop]
 lemma continuous_sumAssoc : Continuous (Equiv.sumAssoc X Y Z) :=
-  Continuous.sum_elim (by fun_prop) (by fun_prop)
+  Continuous.sumElim (by fun_prop) (by fun_prop)
 
 @[continuity, fun_prop]
 lemma continuous_sumAssoc_symm : Continuous (Equiv.sumAssoc X Y Z).symm :=
-  Continuous.sum_elim (by fun_prop) (by fun_prop)
+  Continuous.sumElim (by fun_prop) (by fun_prop)
 
 /-- `(X ⊕ Y) ⊕ Z` is homeomorphic to `X ⊕ (Y ⊕ Z)`. -/
 def sumAssoc : (X ⊕ Y) ⊕ Z ≃ₜ X ⊕ Y ⊕ Z where
@@ -593,7 +614,7 @@ lemma sumSumSumComm_symm : (sumSumSumComm X Y W Z).symm = (sumSumSumComm X W Y Z
 @[simps! (config := .asFn) apply]
 def sumEmpty [IsEmpty Y] : X ⊕ Y ≃ₜ X where
   toEquiv := Equiv.sumEmpty X Y
-  continuous_toFun := Continuous.sum_elim continuous_id (by fun_prop)
+  continuous_toFun := Continuous.sumElim continuous_id (by fun_prop)
   continuous_invFun := continuous_inl
 
 /-- The sum of `X` with any empty topological space is homeomorphic to `X`. -/
@@ -663,9 +684,31 @@ def punitProd : PUnit × X ≃ₜ X :=
 /-- If both `X` and `Y` have a unique element, then `X ≃ₜ Y`. -/
 @[simps!]
 def homeomorphOfUnique [Unique X] [Unique Y] : X ≃ₜ Y :=
-  { Equiv.equivOfUnique X Y with
+  { Equiv.ofUnique X Y with
     continuous_toFun := continuous_const
     continuous_invFun := continuous_const }
+
+/-- The product over `S ⊕ T` of a family of topological spaces
+is homeomorphic to the product of (the product over `S`) and (the product over `T`).
+
+This is `Equiv.sumPiEquivProdPi` as a `Homeomorph`.
+-/
+def sumPiEquivProdPi (S T : Type*) (A : S ⊕ T → Type*)
+    [∀ st, TopologicalSpace (A st)] :
+    (Π (st : S ⊕ T), A st) ≃ₜ (Π (s : S), A (.inl s)) × (Π (t : T), A (.inr t)) where
+  __ := Equiv.sumPiEquivProdPi _
+  continuous_toFun := Continuous.prod_mk (by fun_prop) (by fun_prop)
+  continuous_invFun := continuous_pi <| by rintro (s | t) <;> simp <;> fun_prop
+
+/-- The product `Π t : α, f t` of a family of topological spaces is homeomorphic to the
+space `f ⬝` when `α` only contains `⬝`.
+
+This is `Equiv.piUnique` as a `Homeomorph`.
+-/
+@[simps! (config := .asFn)]
+def piUnique {α : Type*} [Unique α] (f : α → Type*) [∀ x, TopologicalSpace (f x)] :
+    (Π t, f t) ≃ₜ f default :=
+  homeomorphOfContinuousOpen (Equiv.piUnique f) (continuous_apply default) (isOpenMap_eval _)
 
 end prod
 
@@ -703,11 +746,11 @@ def piCongr {ι₁ ι₂ : Type*} {Y₁ : ι₁ → Type*} {Y₂ : ι₂ → Typ
     (e : ι₁ ≃ ι₂) (F : ∀ i₁, Y₁ i₁ ≃ₜ Y₂ (e i₁)) : (∀ i₁, Y₁ i₁) ≃ₜ ∀ i₂, Y₂ i₂ :=
   (Homeomorph.piCongrRight F).trans (Homeomorph.piCongrLeft e)
 
--- Porting note (#11215): TODO: align the order of universes with `Equiv.ulift`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: align the order of universes with `Equiv.ulift`
 /-- `ULift X` is homeomorphic to `X`. -/
 def ulift.{u, v} {X : Type u} [TopologicalSpace X] : ULift.{v, u} X ≃ₜ X where
-  continuous_toFun := continuous_uLift_down
-  continuous_invFun := continuous_uLift_up
+  continuous_toFun := continuous_uliftDown
+  continuous_invFun := continuous_uliftUp
   toEquiv := Equiv.ulift
 
 /-- The natural homeomorphism `(ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)`.
@@ -739,7 +782,7 @@ theorem _root_.Fin.continuous_append (m n : ℕ) :
   exact Homeomorph.continuous_toFun _
 
 /-- The natural homeomorphism between `(Fin m → X) × (Fin n → X)` and `Fin (m + n) → X`.
-`Fin.appendEquiv` as a homeomorphism.-/
+`Fin.appendEquiv` as a homeomorphism -/
 @[simps!]
 def _root_.Fin.appendHomeomorph (m n : ℕ) : (Fin m → X) × (Fin n → X) ≃ₜ (Fin (m + n) → X) where
   toEquiv := Fin.appendEquiv m n
@@ -760,9 +803,9 @@ section Distrib
 def sumProdDistrib : (X ⊕ Y) × Z ≃ₜ (X × Z) ⊕ (Y × Z) :=
   Homeomorph.symm <|
     homeomorphOfContinuousOpen (Equiv.sumProdDistrib X Y Z).symm
-        ((continuous_inl.prodMap continuous_id).sum_elim
+        ((continuous_inl.prodMap continuous_id).sumElim
           (continuous_inr.prodMap continuous_id)) <|
-      (isOpenMap_inl.prodMap IsOpenMap.id).sum_elim (isOpenMap_inr.prodMap IsOpenMap.id)
+      (isOpenMap_inl.prodMap IsOpenMap.id).sumElim (isOpenMap_inr.prodMap IsOpenMap.id)
 
 /-- `X × (Y ⊕ Z)` is homeomorphic to `X × Y ⊕ X × Z`. -/
 def prodSumDistrib : X × (Y ⊕ Z) ≃ₜ (X × Y) ⊕ (X × Z) :=
@@ -803,7 +846,7 @@ def finTwoArrow : (Fin 2 → X) ≃ₜ X × X :=
 -/
 @[simps!]
 def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
-  -- Porting note (#11215): TODO: by continuity!
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: by continuity!
   continuous_toFun := e.continuous.continuousOn.restrict_mapsTo (mapsTo_image _ _)
   continuous_invFun := (e.symm.continuous.comp continuous_subtype_val).codRestrict _
   toEquiv := e.toEquiv.image s
@@ -894,7 +937,7 @@ lemma toHomeomorph_trans (e : X ≃ Y) (f : Y ≃ Z) (he hf) :
     (e.toHomeomorph he).trans (f.toHomeomorph hf) := rfl
 
 /-- An inducing equiv between topological spaces is a homeomorphism. -/
-@[simps toEquiv] -- Porting note (#11215): TODO: was `@[simps]`
+@[simps toEquiv] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: was `@[simps]`
 def toHomeomorphOfIsInducing (f : X ≃ Y) (hf : IsInducing f) : X ≃ₜ Y :=
   { f with
     continuous_toFun := hf.continuous
@@ -1030,7 +1073,7 @@ lemma IsHomeomorph.comp {g : Y → Z} (hg : IsHomeomorph g) (hf : IsHomeomorph f
     IsHomeomorph (g ∘ f) := ⟨hg.1.comp hf.1, hg.2.comp hf.2, hg.3.comp hf.3⟩
 
 lemma IsHomeomorph.sumMap {g : Z → W} (hf : IsHomeomorph f) (hg : IsHomeomorph g) :
-    IsHomeomorph (Sum.map f g) := ⟨hf.1.sum_map hg.1, hf.2.sumMap hg.2, hf.3.sum_map hg.3⟩
+    IsHomeomorph (Sum.map f g) := ⟨hf.1.sumMap hg.1, hf.2.sumMap hg.2, hf.3.sumMap hg.3⟩
 
 lemma IsHomeomorph.prodMap {g : Z → W} (hf : IsHomeomorph f) (hg : IsHomeomorph g) :
     IsHomeomorph (Prod.map f g) := ⟨hf.1.prodMap hg.1, hf.2.prodMap hg.2, hf.3.prodMap hg.3⟩
@@ -1046,3 +1089,39 @@ lemma IsHomeomorph.pi_map {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalS
     [∀ i, TopologicalSpace (Y i)] {f : (i : ι) → X i → Y i} (h : ∀ i, IsHomeomorph (f i)) :
     IsHomeomorph (fun (x : ∀ i, X i) i ↦ f i (x i)) :=
   (Homeomorph.piCongrRight fun i ↦ (h i).homeomorph (f i)).isHomeomorph
+
+/-- `HomeomorphClass F A B` states that `F` is a type of homeomorphisms. -/
+class HomeomorphClass (F : Type*) (A B : outParam Type*)
+    [TopologicalSpace A] [TopologicalSpace B] [h : EquivLike F A B] : Prop where
+  map_continuous : ∀ (f : F), Continuous f
+  inv_continuous : ∀ (f : F), Continuous (h.inv f)
+
+namespace HomeomorphClass
+
+variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [EquivLike F α β]
+
+/-- Turn an element of a type `F` satisfying `HomeomorphClass F α β` into an actual
+`Homeomorph`. This is declared as the default coercion from `F` to `α ≃ₜ β`. -/
+@[coe]
+def toHomeomorph [h : HomeomorphClass F α β] (f : F) : α ≃ₜ β :=
+  { (f : α ≃ β) with
+    continuous_toFun := h.map_continuous f
+    continuous_invFun := h.inv_continuous f }
+
+@[simp]
+theorem coe_coe [h : HomeomorphClass F α β] (f : F) : ⇑(h.toHomeomorph f) = ⇑f := rfl
+
+instance [HomeomorphClass F α β] : CoeOut F (α ≃ₜ β) :=
+  ⟨HomeomorphClass.toHomeomorph⟩
+
+theorem toHomeomorph_injective [HomeomorphClass F α β] : Function.Injective ((↑) : F → α ≃ₜ β) :=
+  fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃ₜ β ↦ e.toFun a) e
+
+instance [HomeomorphClass F α β] : ContinuousMapClass F α β where
+  map_continuous  f := map_continuous f
+
+instance : HomeomorphClass (α ≃ₜ β) α β where
+  map_continuous e := e.continuous_toFun
+  inv_continuous e := e.continuous_invFun
+
+end HomeomorphClass
