@@ -5868,6 +5868,7 @@ import Mathlib.Topology.SeparatedMap
 import Mathlib.Topology.Separation.Basic
 import Mathlib.Topology.Separation.CompletelyRegular
 import Mathlib.Topology.Separation.CountableSeparatingOn
+import Mathlib.Topology.Separation.DisjointCover
 import Mathlib.Topology.Separation.GDelta
 import Mathlib.Topology.Separation.Hausdorff
 import Mathlib.Topology.Separation.NotNormal
