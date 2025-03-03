@@ -229,8 +229,10 @@ jobs:
       - name: Report diff in Lean
         run:
           printf $'%s\n' "${{ steps.diff_in_lean.outputs.LeanDiff }}"
-          leanDiff="$(printf $'<details><summary> <b>Declaration diff in Lean</b></summary>\n\n```diff\n%s\n```\n</details>\n' "${{ steps.diff_in_lean.outputs.LeanDiff1 }}")"
-          printf $'leanDiff1: "%s"\n\n' "${leanDiff}"
+          leanDiff="$(
+              printf $'<details><summary> <b>Declaration diff in Lean</b></summary>\n\n```diff\n%s\n```\n</details>\n' "${{ steps.diff_in_lean.outputs.LeanDiff1 }}"
+            )"
+          printf $'leanDiff1 is "%s"\n\n' "${leanDiff}"
 
           ./scripts/update_PR_comment.sh "$(
             printf $'%s\n' "${{ steps.diff_in_lean.outputs.LeanDiff }}" |
