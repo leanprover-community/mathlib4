@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Tactic.Common
 import Mathlib.Data.Set.Basic
+import Mathlib.Tactic.Common
 
 /-!
 # Monoids of endomorphisms, groups of automorphisms
