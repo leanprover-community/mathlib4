@@ -72,7 +72,6 @@ theorem Differentiable.fderiv_norm_rpow {f : F → E} (hf : Differentiable ℝ f
     (p * ‖f x‖ ^ (p - 2)) • (innerSL ℝ (f x)).comp (fderiv ℝ f x) :=
   hasFDerivAt_norm_rpow (f x) hp |>.comp x (hf x).hasFDerivAt |>.fderiv
 
-set_option maxSynthPendingDepth 2 in
 theorem norm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f) {x : F}
     {p : ℝ} (hp : 1 < p) :
     ‖fderiv ℝ (fun x ↦ ‖f x‖ ^ p) x‖ ≤ p * ‖f x‖ ^ (p - 1) * ‖fderiv ℝ f x‖ := by
@@ -85,7 +84,6 @@ theorem norm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f) {x : 
   rw [innerSL_apply_norm, ← mul_assoc, ← Real.rpow_add_one' (by positivity) (by linarith)]
   ring_nf
 
-set_option maxSynthPendingDepth 2 in
 theorem norm_fderiv_norm_id_rpow (x : E) {p : ℝ} (hp : 1 < p) :
     ‖fderiv ℝ (fun x ↦ ‖x‖ ^ p) x‖ = p * ‖x‖ ^ (p - 1) := by
   rw [fderiv_norm_rpow x hp, norm_smul, norm_mul]
