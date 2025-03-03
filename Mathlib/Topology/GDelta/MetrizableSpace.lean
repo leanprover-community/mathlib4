@@ -24,63 +24,36 @@ section Metrizable
 
 instance (priority := 100) [PseudoMetrizableSpace X] : NormalSpace X where
   normal s t hs ht hst := by
-    letI := pseudoMetrizableSpacePseudoMetric
+    let _ := pseudoMetrizableSpacePseudoMetric X
     by_cases hee : s = ∅ ∨ t = ∅
     · obtain rfl | rfl := hee <;> simp
-    apply separatedNhds_iff_disjoint.mpr
-    rw [not_or] at hee
+    simp only [not_or, ← ne_eq, ← nonempty_iff_ne_empty] at hee
     obtain ⟨hse, hte⟩ := hee
-    rw [← ne_eq, ← nonempty_iff_ne_empty] at hse hte
-    have hdj : Disjoint (Set.Ioi (0 : ℝ)) (Set.Iio 0) := by
-      rw [Set.disjoint_iff, Ioi_inter_Iio, Ioo_eq_empty (lt_irrefl 0)]
-    have hg := (continuous_infDist_pt t).sub (continuous_infDist_pt s)
-    apply Filter.disjoint_of_disjoint_of_mem
-      (hdj.preimage fun p ↦ infDist p t - infDist p s)
-    · apply (isOpen_Ioi.preimage hg).mem_nhdsSet.mpr
-      intro x hx
-      rw [mem_preimage, infDist_zero_of_mem hx, sub_zero,
-        mem_Ioi, ← ht.not_mem_iff_infDist_pos hte]
-      exact hst.not_mem_of_mem_left hx
-    · apply (isOpen_Iio.preimage hg).mem_nhdsSet.mpr
-      intro x hx
-      rw [mem_preimage, infDist_zero_of_mem hx, zero_sub,
-        mem_Iio, neg_neg_iff_pos, ← hs.not_mem_iff_infDist_pos hse]
-      exact hst.not_mem_of_mem_right hx
+    let g (p : X) := infDist p t - infDist p s
+    have hg : Continuous g := by fun_prop
+    refine ⟨g ⁻¹' (Ioi 0), g ⁻¹' (Iio 0), isOpen_Ioi.preimage hg, isOpen_Iio.preimage hg,
+      fun x hx ↦ ?_, fun x hx ↦ ?_, Ioi_disjoint_Iio_self.preimage g⟩
+    · simp [g, infDist_zero_of_mem hx,
+        (ht.not_mem_iff_infDist_pos hte).mp (hst.not_mem_of_mem_left hx)]
+    · simp [g, infDist_zero_of_mem hx,
+        (hs.not_mem_iff_infDist_pos hse).mp (hst.not_mem_of_mem_right hx)]
 
 instance (priority := 500) [PseudoMetrizableSpace X] : PerfectlyNormalSpace X where
   closed_gdelta s hs := by
-    letI := pseudoMetrizableSpacePseudoMetric
-    by_cases he : s = ∅
-    · exact he ▸ IsGδ.empty
-    rw [← ne_eq, ← nonempty_iff_ne_empty] at he
-    have := Nonempty.to_subtype he
-    use Set.range fun (n : Nat) ↦ {p | infDist p s < (n + 1 : ℝ)⁻¹}
-    constructor
-    · rintro _ ⟨n, rfl⟩
-      conv_rhs =>
-        dsimp
-        enter [1, p]
-        rw [infDist_eq_iInf, ciInf_lt_iff ⟨0, fun _ ⟨_, h⟩ ↦ h ▸ dist_nonneg⟩]
-        simp only [← mem_ball]
-        rw [← mem_iUnion, ← biUnion_eq_iUnion s fun i _ ↦ ball i (n + 1 : ℝ)⁻¹]
-      rw [setOf_mem_eq]
-      exact isOpen_biUnion fun _ _ ↦ isOpen_ball
-    · constructor
-      · apply countable_range
-      · apply subset_antisymm
-        · rintro x hx _ ⟨n, rfl⟩
-          simp_rw [mem_setOf, infDist_zero_of_mem hx, inv_pos]
-          exact n.cast_add_one_pos
-        · intro x hx
-          rw [← hs.closure_eq, mem_closure_iff_infDist_zero he]
-          apply infDist_nonneg.eq_or_gt.resolve_right
-          intro hpos
-          rw [sInter_range, mem_iInter] at hx
-          specialize hx ⌊(infDist x s)⁻¹⌋₊
-          rw [mem_setOf, lt_inv_comm₀ hpos (by positivity)] at hx
-          have hcf := Nat.ceil_le_floor_add_one (Metric.infDist x s)⁻¹
-          rw [← @Nat.cast_le ℝ, Nat.cast_add, Nat.cast_one] at hcf
-          exact (not_le_of_lt (hcf.trans_lt hx) (Nat.le_ceil _))
+    let _ := pseudoMetrizableSpacePseudoMetric X
+    obtain rfl | he := s.eq_empty_or_nonempty
+    · exact IsGδ.empty
+    convert IsGδ.iInter_of_isOpen
+      fun n : ℕ ↦ isOpen_Iio (a := (n + 1 : ℝ)⁻¹).preimage (continuous_infDist_pt s)
+    apply subset_antisymm
+    · refine subset_iInter fun n x hx ↦ ?_
+      simp only [mem_preimage, infDist_zero_of_mem hx, mem_Iio, inv_pos]
+      positivity
+    · intro x hx
+      rw [hs.mem_iff_infDist_zero he]
+      refine le_antisymm (le_of_forall_pos_lt_add fun ε hε ↦ ?_) infDist_nonneg
+      obtain ⟨n, hn⟩ := exists_nat_one_div_lt hε
+      exact (mem_iInter.mp hx n).trans <| by simpa using hn
 
 instance (priority := 100) [MetrizableSpace X] : T4Space X where
 
@@ -93,7 +66,7 @@ variable {Y : Type*} [TopologicalSpace Y]
 
 theorem IsGδ.setOf_continuousAt [PseudoMetrizableSpace Y] (f : X → Y) :
     IsGδ { x | ContinuousAt f x } := by
-  letI := pseudoMetrizableSpacePseudoMetric
+  let _ := pseudoMetrizableSpacePseudoMetric Y
   obtain ⟨U, _, hU⟩ := (@uniformity_hasBasis_open_symmetric Y _).exists_antitone_subbasis
   simp only [Uniform.continuousAt_iff_prod, nhds_prod_eq]
   simp only [(nhds_basis_opens _).prod_self.tendsto_iff hU.toHasBasis,
