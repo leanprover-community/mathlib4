@@ -506,6 +506,7 @@
   "Mathlib.Algebra.BigOperators.Group.List.Lemmas":
   ["Mathlib.Data.List.ProdSigma"],
   "Mathlib.Algebra.BigOperators.Group.List": ["Mathlib.Data.List.ProdSigma"],
+  "Mathlib.Algebra.BigOperators.Pi": ["Mathlib.Data.Finset.Lattice.Fold"],
   "Mathlib.Algebra.Algebra.Subalgebra.Order":
   ["Mathlib.Algebra.Module.Submodule.Order"],
   "Batteries.Tactic.OpenPrivate": ["Lean.Parser.Module"],
