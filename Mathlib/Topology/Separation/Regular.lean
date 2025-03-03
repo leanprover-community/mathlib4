@@ -351,7 +351,7 @@ section T3
 
 /-- A T₃ space is a T₀ space which is a regular space. Any T₃ space is a T₁ space, a T₂ space, and
 a T₂.₅ space. -/
-class T3Space (X : Type u) [TopologicalSpace X] extends T0Space X, RegularSpace X : Prop
+class T3Space (X : Type u) [TopologicalSpace X] : Prop extends T0Space X, RegularSpace X
 
 instance (priority := 90) instT3Space [T0Space X] [RegularSpace X] : T3Space X := ⟨⟩
 
@@ -468,7 +468,7 @@ end NormalSpace
 section Normality
 
 /-- A T₄ space is a normal T₁ space. -/
-class T4Space (X : Type u) [TopologicalSpace X] extends T1Space X, NormalSpace X : Prop
+class T4Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, NormalSpace X
 
 instance (priority := 100) [T1Space X] [NormalSpace X] : T4Space X := ⟨⟩
 
@@ -545,7 +545,7 @@ instance ULift.instCompletelyNormalSpace [CompletelyNormalSpace X] :
   IsEmbedding.uliftDown.completelyNormalSpace
 
 /-- A T₅ space is a completely normal T₁ space. -/
-class T5Space (X : Type u) [TopologicalSpace X] extends T1Space X, CompletelyNormalSpace X : Prop
+class T5Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, CompletelyNormalSpace X
 
 theorem Topology.IsEmbedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X → Y}
     (he : IsEmbedding e) : T5Space X where
