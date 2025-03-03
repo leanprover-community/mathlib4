@@ -37,7 +37,7 @@ theorem _root_.Measurable.factorsThrough [MeasurableSpace Z] [MeasurableSingleto
 /-- If a function `g` is strongly measurable with respect to the pullback along some function `f`,
 then to prove `g x = g y` it is enough to prove `f x = f y`.
 
-Under certain assumptions, the factorization map `h` is measurable. This is the content of the
+TODO: under certain assumptions, the factorization map `h` is measurable. This is the content of the
 [Doob-Dynkin lemma](https://en.wikipedia.org/wiki/Doob–Dynkin_lemma). -/
 theorem StronglyMeasurable.factorsThrough [TopologicalSpace Z]
     [PseudoMetrizableSpace Z] [T1Space Z] (hg : StronglyMeasurable[mY.comap f] g) :
