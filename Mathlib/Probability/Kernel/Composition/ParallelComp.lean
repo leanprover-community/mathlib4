@@ -61,20 +61,17 @@ scoped[ProbabilityTheory] infixl:100 " ∥ₖ " => ProbabilityTheory.Kernel.para
 @[simp]
 lemma parallelComp_of_not_isSFiniteKernel_left (η : Kernel γ δ) (h : ¬ IsSFiniteKernel κ) :
     κ ∥ₖ η = 0 := by
-  rw [parallelComp, dif_neg]
-  simp [h]
+  rw [parallelComp, dif_neg (not_and_of_not_left _ h)]
 
 @[simp]
 lemma parallelComp_of_not_isSFiniteKernel_right (κ : Kernel α β) (h : ¬ IsSFiniteKernel η) :
     κ ∥ₖ η = 0 := by
-  rw [parallelComp, dif_neg]
-  simp [h]
+  rw [parallelComp, dif_neg (not_and_of_not_left _ h)]
 
 lemma parallelComp_apply (κ : Kernel α β) [IsSFiniteKernel κ]
     (η : Kernel γ δ) [IsSFiniteKernel η] (x : α × γ) :
     (κ ∥ₖ η) x = (κ x.1).prod (η x.2) := by
-  rw [parallelComp, dif_pos ⟨inferInstance, inferInstance⟩]
-  rfl
+  rw [parallelComp, dif_pos ⟨inferInstance, inferInstance⟩, coe_mk]
 
 lemma parallelComp_apply' [IsSFiniteKernel κ] [IsSFiniteKernel η]
     {s : Set (β × δ)} (hs : MeasurableSet s) :

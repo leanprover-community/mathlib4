@@ -55,21 +55,16 @@ lemma swap_parallelComp : swap β δ ∘ₖ (κ ∥ₖ η) = η ∥ₖ κ ∘ₖ
   rw [MeasureTheory.lintegral_prod_symm]
   swap; · exact ((Kernel.id.measurable_coe hs).comp measurable_swap).aemeasurable
   congr with d
-  simp_rw [Prod.swap_prod_mk, Measure.dirac_apply' _ hs]
-  have h_eq (x : β) : s.indicator (1 : δ × β → ℝ≥0∞) (d, x) = (Prod.mk d ⁻¹' s).indicator 1 x := by
-    by_cases h : (d, x) ∈ s <;> simp [h]
-  simp_rw [h_eq]
-  rw [lintegral_indicator]
-  · simp
-  · exact measurable_prod_mk_left hs
+  simp_rw [Prod.swap_prod_mk, Measure.dirac_apply' _ hs, ← Set.indicator_comp_right,
+    lintegral_indicator (measurable_prod_mk_left hs)]
+  simp
 
 /-- For a deterministic kernel, copying then applying the kernel to the two copies is the same
 as first applying the kernel then copying. -/
 lemma deterministic_comp_copy {f : α → β} (hf : Measurable f) :
-    (Kernel.deterministic f hf ∥ₖ Kernel.deterministic f hf) ∘ₖ Kernel.copy α
-      = Kernel.copy β ∘ₖ Kernel.deterministic f hf := by
-  simp_rw [Kernel.parallelComp_comp_copy, Kernel.deterministic_prod_deterministic,
-    Kernel.copy, Kernel.deterministic_comp_deterministic, Function.comp_def]
+    (deterministic f hf ∥ₖ deterministic f hf) ∘ₖ copy α = copy β ∘ₖ deterministic f hf := by
+  simp_rw [parallelComp_comp_copy, deterministic_prod_deterministic, copy,
+    deterministic_comp_deterministic, Function.comp_def]
 
 end ProbabilityTheory.Kernel
 
