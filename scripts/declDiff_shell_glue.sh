@@ -6,6 +6,7 @@ git checkout master
 git checkout -
 
 getDeclarations () {
+  printf '* Save the declarations to %s\n' "${1}"
   # download the cache
   lake exe cache get Archive.lean Counterexamples.lean Mathlib.lean &&
   printf '#all_declarations "%s"\n' "${1}" >> "${script_file}"
@@ -16,16 +17,13 @@ getDeclarations () {
   git restore .
 }
 
-printf 'Save the declarations in the PR branch\n'
-
 getDeclarations decls_in_PR.txt
 currentHash="$(git rev-parse HEAD)"
 git checkout master...HEAD
 
 git checkout "${currentHash}" "${script_file}"
-printf 'Save the declarations in the master branch\n'
 getDeclarations decls_in_master.txt
 
 printf 'Diff the declarations\n'
 
-printf '```diff\n%s\n```\n' "$(diff decls_in_PR.txt decls_in_master.txt)"
+printf '```diff\n%s\n```\n' "$(diff decls_in_PR.txt decls_in_master.txt | grep "^[<>]")"
