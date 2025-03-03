@@ -27,13 +27,13 @@ variable {FR : ι → σR} {FS : ι → σS} {FT : ι → σT}
 
 variable {FR_lt: outParam <| ι → σR} {FS_lt: outParam <| ι → σS} {FT_lt: outParam <| ι → σT}
 
-variable [IsRingFiltration FS FS_lt] [FilteredRingHom FR FR_lt FT FT_lt]
+variable [IsRingFiltration FS FS_lt]
 
 variable (f : FilteredRingHom FR FR_lt FS FS_lt) (g : FilteredRingHom FS FS_lt FT FT_lt)
 
 open DirectSum DFinsupp FilteredRingHom FilteredAddGroupHom
 
-omit [DecidableEq ι] [FilteredRingHom FR FR_lt FT FT_lt] in
+omit [DecidableEq ι] in
 lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict : g.IsStrict)
     (fgexact : Function.Exact f.toAddMonoidHom g.toAddMonoidHom) :
     ∀ p : ι, ∀ x : GradedPiece FS FS_lt p, Gr(p)[g] x = 0 → ∃ y : FR p, Gr(p)[f] ⟦y⟧ = x := by
@@ -45,7 +45,7 @@ lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict 
     · rw [AssociatedGradedRingHom_apply_mk_eq_mk_piece_wise_hom, GradedPiece.mk_eq,
           QuotientAddGroup.eq_zero_iff] at xto0
       exact xto0
-    simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Set.mem_range,
+    · simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Set.mem_range,
       exists_apply_eq_apply]
 
   obtain⟨y, yin, feq⟩ : x - x' ∈ f.toRingHom '' (FR p) := by
@@ -102,5 +102,3 @@ theorem exact_of_strict_exact (fstrict : f.IsStrict) (gstrict : g.IsStrict)
       AssociatedGradedRingHom_apply_mk_eq_mk_piece_wise_hom (g.comp f), this, ← GradedPiece.mk_zero]
 
 end exactness
-
-#lint
