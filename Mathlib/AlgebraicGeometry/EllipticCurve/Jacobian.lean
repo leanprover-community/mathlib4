@@ -20,46 +20,66 @@ that they form an abelian group is proven in `Mathlib/AlgebraicGeometry/Elliptic
 
 ## Mathematical background
 
-Let `W` be a Weierstrass curve over a field `F`. A point on the weighted projective plane with
-weights $(2, 3, 1)$ is an equivalence class of triples $[x:y:z]$ with coordinates in `F` such that
-$(x, y, z) \sim (x', y', z')$ precisely if there is some unit `u` of `F` such that
-$(x, y, z) = (u^2x', u^3y', uz')$, with an extra condition that $(x, y, z) \ne (0, 0, 0)$.
-A rational point is a point on the $(2, 3, 1)$-projective plane satisfying a $(2, 3, 1)$-homogeneous
-Weierstrass equation $Y^2 + a_1XYZ + a_3YZ^3 = X^3 + a_2X^2Z^2 + a_4XZ^4 + a_6Z^6$, and being
-nonsingular means the partial derivatives $W_X(X, Y, Z)$, $W_Y(X, Y, Z)$, and $W_Z(X, Y, Z)$ do not
-vanish simultaneously. Note that the vanishing of the Weierstrass equation and its partial
-derivatives are independent of the representative for $[x:y:z]$, and the nonsingularity condition
-already implies that $(x, y, z) \ne (0, 0, 0)$, so a nonsingular rational point on `W` can simply be
-given by a tuple consisting of $[x:y:z]$ and the nonsingular condition on any representative.
-In cryptography, as well as in this file, this is often called the Jacobian coordinates of `W`.
+A point on the projective plane over a commutative ring `R` with weights `(2, 3, 1)` is an
+equivalence class `[x : y : z]` of triples `(x, y, z) ≠ (0, 0, 0)` of elements in `R` such that
+`(x, y, z) ∼ (x', y', z')` if there is some unit `u` in `Rˣ` with `(x, y, z) = (u²x', u³y', uz')`.
 
-As in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine`, the set of nonsingular rational points forms
-an abelian group under the same secant-and-tangent process, but the polynomials involved are
-$(2, 3, 1)$-homogeneous, and any instances of division become multiplication in the $Z$-coordinate.
-Note that most computational proofs follow from their analogous proofs for affine coordinates.
+Let `W` be a Weierstrass curve over a field `F` with coefficients `aᵢ`. A *Jacobian point* is a
+point on the projective plane over `F` with weights `(2, 3, 1)` satisfying the
+*`(2, 3, 1)`-homogeneous Weierstrass equation* `W(X, Y, Z) = 0` in *Jacobian coordinates*, where
+`W(X, Y, Z) := Y² + a₁XYZ + a₃YZ³ - (X³ + a₂X²Z² + a₄XZ⁴ + a₆Z⁶)`. It is *nonsingular* if its
+partial derivatives `W_X(x, y, z)`, `W_Y(x, y, z)`, and `W_Z(x, y, z)` do not vanish simultaneously.
+
+The nonsingular Jacobian points on `W` can be given negation and addition operations defined by an
+analogue of the secant-and-tangent process in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`,
+but the polynomials involved are `(2, 3, 1)`-homogeneous, so any instances of division become
+multiplication in the `Z`-coordinate. Most computational proofs are immediate from their analogous
+proofs for affine coordinates. They can be endowed with an group law, which is uniquely determined
+by these formulae and follows from an equivalence with the nonsingular points `W⟮F⟯` in affine
+coordinates.
 
 ## Main definitions
 
  * `WeierstrassCurve.Jacobian.PointClass`: the equivalence class of a point representative.
- * `WeierstrassCurve.Jacobian.toAffine`: the Weierstrass curve in affine coordinates.
  * `WeierstrassCurve.Jacobian.Nonsingular`: the nonsingular condition on a point representative.
  * `WeierstrassCurve.Jacobian.NonsingularLift`: the nonsingular condition on a point class.
- * `WeierstrassCurve.Jacobian.neg`: the negation operation on a point representative.
- * `WeierstrassCurve.Jacobian.negMap`: the negation operation on a point class.
- * `WeierstrassCurve.Jacobian.add`: the addition operation on a point representative.
- * `WeierstrassCurve.Jacobian.addMap`: the addition operation on a point class.
- * `WeierstrassCurve.Jacobian.Point`: a nonsingular rational point.
- * `WeierstrassCurve.Jacobian.Point.neg`: the negation operation on a nonsingular rational point.
- * `WeierstrassCurve.Jacobian.Point.add`: the addition operation on a nonsingular rational point.
- * `WeierstrassCurve.Jacobian.Point.toAffineAddEquiv`: the equivalence between the nonsingular
-    rational points on a Weierstrass curve in Jacobian coordinates with those in affine coordinates.
+
+ * `WeierstrassCurve.Jacobian.negY`: the `Y`-coordinate of `-P`.
+ * `WeierstrassCurve.Jacobian.dblZ`: the `Z`-coordinate of `2 • P`.
+ * `WeierstrassCurve.Jacobian.dblX`: the `X`-coordinate of `2 • P`.
+ * `WeierstrassCurve.Jacobian.negDblY`: the `Y`-coordinate of `-(2 • P)`.
+ * `WeierstrassCurve.Jacobian.dblY`: the `Y`-coordinate of `2 • P`.
+ * `WeierstrassCurve.Jacobian.addZ`: the `Z`-coordinate of `P + Q`.
+ * `WeierstrassCurve.Jacobian.addX`: the `X`-coordinate of `P + Q`.
+ * `WeierstrassCurve.Jacobian.negAddY`: the `Y`-coordinate of `-(P + Q)`.
+ * `WeierstrassCurve.Jacobian.addY`: the `Y`-coordinate of `P + Q`.
+
+ * `WeierstrassCurve.Jacobian.neg`: the negation of a point representative.
+ * `WeierstrassCurve.Jacobian.negMap`: the negation of a point class.
+ * `WeierstrassCurve.Jacobian.add`: the addition of two point representatives.
+ * `WeierstrassCurve.Jacobian.addMap`: the addition of two point classes.
+ * `WeierstrassCurve.Jacobian.Point`: a nonsingular Jacobian point.
+ * `WeierstrassCurve.Jacobian.Point.neg`: the negation of a nonsingular Jacobian point.
+ * `WeierstrassCurve.Jacobian.Point.add`: the addition of two nonsingular Jacobian points.
+ * `WeierstrassCurve.Jacobian.Point.toAffineAddEquiv`: the equivalence between the type of
+    nonsingular Jacobian points with the type of nonsingular points `W⟮F⟯` in affine coordinates.
 
 ## Main statements
 
- * `WeierstrassCurve.Jacobian.NonsingularNeg`: negation preserves the nonsingular condition.
- * `WeierstrassCurve.Jacobian.NonsingularAdd`: addition preserves the nonsingular condition.
+ * `WeierstrassCurve.Jacobian.nonsingular_neg`: negation preserves the nonsingular condition.
+ * `WeierstrassCurve.Jacobian.nonsingular_add`: addition preserves the nonsingular condition.
 
 ## Implementation notes
+
+All definitions and lemmas for Weierstrass curves in Jacobian coordinates live in the namespace
+`WeierstrassCurve.Jacobian` to distinguish them from those in other coordinates. This is simply an
+abbreviation for `WeierstrassCurve` that can be converted using `WeierstrassCurve.toJacobian`. This
+can be converted into `WeierstrassCurve.Affine` using `WeierstrassCurve.Jacobian.toAffine`.
+A nonsingular Jacobian point representative can be converted to a nonsingular point in affine
+coordinates using `WeiestrassCurve.Jacobian.Point.toAffine`, which lifts to a map on nonsingular
+Jacobian points using `WeiestrassCurve.Jacobian.Point.toAffineLift`. Conversely, a nonsingular point
+in affine coordinates can be converted to a nonsingular Jacobian point using
+`WeierstrassCurve.Jacobian.Point.fromAffine` or `WeierstrassCurve.Affine.Point.toJacobian`.
 
 A point representative is implemented as a term `P` of type `Fin 3 → R`, which allows for the vector
 notation `![x, y, z]`. However, `P` is not syntactically equivalent to the expanded vector
@@ -68,10 +88,26 @@ two forms. The equivalence of two point representatives `P` and `Q` is implement
 of orbits of the action of `Rˣ`, or equivalently that there is some unit `u` of `R` such that
 `P = u • Q`. However, `u • Q` is not syntactically equal to `![u² * Q x, u³ * Q y, u * Q z]`, so the
 lemmas `smul_fin3` and `smul_fin3_ext` can be used to convert between the two forms.
-
 This file makes extensive use of `erw` to get around this problem.
 While `erw` is often an indication of a problem, in this case it is self-contained and should not
 cause any issues. It would alternatively be possible to add some automation to assist here.
+Note that `W(X, Y, Z)` and its partial derivatives are independent of the point representative, and
+the nonsingularity condition already implies `(x, y, z) ≠ (0, 0, 0)`, so a nonsingular Jacobian
+point on `W` can be given by `[x : y : z]` and the nonsingular condition on any representative.
+
+The definitions of `WeierstrassCurve.Jacobian.addX` and `WeierstrassCurve.Jacobian.negAddY` are
+given explicitly by large polynomials that are homogeneous of degrees `8` and `12` respectively.
+Clearing the denominators of their corresponding affine rational functions in
+`Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean` would give polynomials that are
+homogeneous of degrees `12` and `18` respectively, so their actual definitions are off by powers of
+a certain polynomial factor that is homogeneous of degree `2`. This factor divides their
+corresponding affine polynomials only modulo the `(2, 3, 1)`-homogeneous Weierstrass equation, so
+their large quotient polynomials are calculated explicitly in a computer algebra system. All of this
+is done to ensure that the definitions of both `WeierstrassCurve.Jacobian.dblXYZ` and
+`WeierstrassCurve.Jacobian.addXYZ` are `(2, 3, 1)`-homogeneous of degree `4`.
+
+Whenever possible, all changes to documentation and naming of definitions and theorems should be
+mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective.lean`.
 
 ## References
 
@@ -120,14 +156,14 @@ variable (R) in
 abbrev Jacobian : Type r :=
   WeierstrassCurve R
 
-/-- The coercion to a Weierstrass curve in Jacobian coordinates. -/
+/-- The conversion from a Weierstrass curve to Jacobian coordinates. -/
 abbrev toJacobian (W : WeierstrassCurve R) : Jacobian R :=
   W
 
 namespace Jacobian
 
 variable (W') in
-/-- The coercion to a Weierstrass curve in affine coordinates. -/
+/-- The conversion from a Weierstrass curve in Jacobian coordinates to affine coordinates. -/
 abbrev toAffine : Affine R :=
   W'
 
@@ -147,7 +183,7 @@ section Jacobian
 
 /-! ### Jacobian coordinates -/
 
-/-- The scalar multiplication on a point representative. -/
+/-- The scalar multiplication for a Jacobian point representative on a Weierstrass curve. -/
 scoped instance : SMul R <| Fin 3 → R :=
   ⟨fun u P => ![u ^ 2 * P x, u ^ 3 * P y, u * P z]⟩
 
@@ -163,18 +199,18 @@ lemma comp_smul (f : R →+* S) (P : Fin 3 → R) (u : R) : f ∘ (u • P) = f 
 
 @[deprecated (since := "2025-01-30")] alias map_smul := comp_smul
 
-/-- The multiplicative action on a point representative. -/
+/-- The multiplicative action for a Jacobian point representative on a Weierstrass curve. -/
 scoped instance : MulAction R <| Fin 3 → R where
   one_smul _ := by simp_rw [smul_fin3, one_pow, one_mul, fin3_def]
   mul_smul _ _ _ := by simp_rw [smul_fin3, mul_pow, mul_assoc, fin3_def_ext]
 
-/-- The equivalence setoid for a point representative. -/
+/-- The equivalence setoid for a Jacobian point representative on a Weierstrass curve. -/
 @[reducible]
 scoped instance : Setoid <| Fin 3 → R :=
   MulAction.orbitRel Rˣ <| Fin 3 → R
 
 variable (R) in
-/-- The equivalence class of a point representative. -/
+/-- The equivalence class of a Jacobian point representative on a Weierstrass curve. -/
 abbrev PointClass : Type r :=
   MulAction.orbitRel.Quotient Rˣ <| Fin 3 → R
 
@@ -254,9 +290,11 @@ section Equation
 /-! ### Weierstrass equations -/
 
 variable (W') in
-/-- The polynomial $W(X, Y, Z) := Y^2 + a_1XYZ + a_3YZ^3 - (X^3 + a_2X^2Z^2 + a_4XZ^4 + a_6Z^6)$
-associated to a Weierstrass curve `W'` over `R`. This is represented as a term of type
-`MvPolynomial (Fin 3) R`, where `X 0`, `X 1`, and `X 2` represent $X$, $Y$, and $Z$ respectively. -/
+/-- The polynomial `W(X, Y, Z) := Y² + a₁XYZ + a₃YZ³ - (X³ + a₂X²Z² + a₄XZ⁴ + a₆Z⁶)` associated to a
+Weierstrass curve `W` over a ring `R` in Jacobian coordinates.
+
+This is represented as a term of type `MvPolynomial (Fin 3) R`, where `X 0`, `X 1`, and `X 2`
+represent `X`, `Y`, and `Z` respectively. -/
 noncomputable def polynomial : MvPolynomial (Fin 3) R :=
   X 1 ^ 2 + C W'.a₁ * X 0 * X 1 * X 2 + C W'.a₃ * X 1 * X 2 ^ 3
     - (X 0 ^ 3 + C W'.a₂ * X 0 ^ 2 * X 2 ^ 2 + C W'.a₄ * X 0 * X 2 ^ 4 + C W'.a₆ * X 2 ^ 6)
@@ -275,8 +313,10 @@ lemma eval_polynomial_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : eval P 
       - W.a₄ * P x / P z ^ 2 * div_self (pow_ne_zero 4 hPz) - W.a₆ * div_self (pow_ne_zero 6 hPz)
 
 variable (W') in
-/-- The proposition that a point representative $(x, y, z)$ lies in `W'`.
-In other words, $W(x, y, z) = 0$. -/
+/-- The proposition that a Jacobian point representative `(x, y, z)` lies in a Weierstrass curve
+`W`.
+
+In other words, it satisfies the `(2, 3, 1)`-homogeneous Weierstrass equation `W(X, Y, Z) = 0`. -/
 def Equation (P : Fin 3 → R) : Prop :=
   eval P W'.polynomial = 0
 
@@ -316,7 +356,8 @@ section Nonsingular
 /-! ### Nonsingular Weierstrass equations -/
 
 variable (W') in
-/-- The partial derivative $W_X(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $X$. -/
+/-- The partial derivative `W_X(X, Y, Z)` with respect to `X` of the polynomial `W(X, Y, Z)`
+associated to a Weierstrass curve `W` in Jacobian coordinates. -/
 noncomputable def polynomialX : MvPolynomial (Fin 3) R :=
   pderiv x W'.polynomial
 
@@ -339,7 +380,8 @@ lemma eval_polynomialX_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
       - W.a₄ * div_self (pow_ne_zero 4 hPz)
 
 variable (W') in
-/-- The partial derivative $W_Y(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $Y$. -/
+/-- The partial derivative `W_Y(X, Y, Z)` with respect to `Y` of the polynomial `W(X, Y, Z)`
+associated to a Weierstrass curve `W` in Jacobian coordinates. -/
 noncomputable def polynomialY : MvPolynomial (Fin 3) R :=
   pderiv y W'.polynomial
 
@@ -360,7 +402,8 @@ lemma eval_polynomialY_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.a₁ * P x / P z ^ 2 * div_self hPz + W.a₃ * div_self (pow_ne_zero 3 hPz)
 
 variable (W') in
-/-- The partial derivative $W_Z(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $Z$. -/
+/-- The partial derivative `W_Z(X, Y, Z)` with respect to `Z` of the polynomial `W(X, Y, Z)`
+associated to a Weierstrass curve `W` in Jacobian coordinates. -/
 noncomputable def polynomialZ : MvPolynomial (Fin 3) R :=
   pderiv z W'.polynomial
 
@@ -377,8 +420,10 @@ lemma eval_polynomialZ (P : Fin 3 → R) : eval P W'.polynomialZ =
   eval_simp
 
 variable (W') in
-/-- The proposition that a point representative $(x, y, z)$ in `W'` is nonsingular.
-In other words, either $W_X(x, y, z) \ne 0$, $W_Y(x, y, z) \ne 0$, or $W_Z(x, y, z) \ne 0$.
+/-- The proposition that a Jacobian point representative `(x, y, z)` on a Weierstrass curve `W` is
+nonsingular.
+
+In other words, either `W_X(x, y, z) ≠ 0`, `W_Y(x, y, z) ≠ 0`, or `W_Z(x, y, z) ≠ 0`.
 
 Note that this definition is only mathematically accurate for fields. -/
 -- TODO: generalise this definition to be mathematically accurate for a larger class of rings.
@@ -491,8 +536,12 @@ lemma comp_equiv_comp (f : F →+* K) {P Q : Fin 3 → F} (hP : W.Nonsingular P)
     exact ⟨Units.map f u, (comp_smul ..).symm⟩
 
 variable (W') in
-/-- The proposition that a point class on `W'` is nonsingular. If `P` is a point representative,
-then `W'.NonsingularLift ⟦P⟧` is definitionally equivalent to `W'.Nonsingular P`. -/
+/-- The proposition that a Jacobian point class on a Weierstrass curve `W` is nonsingular.
+
+If `P` is a Jacobian point representative on `W`, then `W.NonsingularLift ⟦P⟧` is definitionally
+equivalent to `W.Nonsingular P`.
+
+Note that this definition is only mathematically accurate for fields. -/
 def NonsingularLift (P : PointClass R) : Prop :=
   P.lift W'.Nonsingular fun _ _ => propext ∘ nonsingular_of_equiv
 
@@ -513,7 +562,8 @@ section Negation
 /-! ### Negation formulae -/
 
 variable (W') in
-/-- The $Y$-coordinate of a representative of `-P` for a point `P`. -/
+/-- The `Y`-coordinate of a representative of `-P` for a Jacobian point representative `P` on a
+Weierstrass curve. -/
 def negY (P : Fin 3 → R) : R :=
   -P y - W'.a₁ * P x * P z - W'.a₃ * P z ^ 3
 
@@ -595,7 +645,9 @@ section Doubling
 /-! ### Doubling formulae -/
 
 variable (W') in
-/-- The unit associated to the doubling of a 2-torsion point `P`.
+/-- The unit associated to a representative of `2 • P` for a Jacobian point representative `P` on a
+Weierstrass curve `W` that is `2`-torsion.
+
 More specifically, the unit `u` such that `W.add P P = u • ![1, 1, 0]` where `P = W.neg P`. -/
 noncomputable def dblU (P : Fin 3 → R) : R :=
   eval P W'.polynomialX
@@ -623,7 +675,8 @@ lemma isUnit_dblU_of_Y_eq {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z 
   (dblU_ne_zero_of_Y_eq hP hPz hQz hx hy hy').isUnit
 
 variable (W') in
-/-- The $Z$-coordinate of a representative of `2 • P` for a point `P`. -/
+/-- The `Z`-coordinate of a representative of `2 • P` for a Jacobian point representative `P` on a
+Weierstrass curve. -/
 def dblZ (P : Fin 3 → R) : R :=
   P z * (P y - W'.negY P)
 
@@ -670,7 +723,8 @@ private lemma toAffine_slope_of_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hQ :
   ring1
 
 variable (W') in
-/-- The $X$-coordinate of a representative of `2 • P` for a point `P`. -/
+/-- The `X`-coordinate of a representative of `2 • P` for a Jacobian point representative `P` on a
+Weierstrass curve. -/
 noncomputable def dblX (P : Fin 3 → R) : R :=
   W'.dblU P ^ 2 - W'.a₁ * W'.dblU P * P z * (P y - W'.negY P)
     - W'.a₂ * P z ^ 2 * (P y - W'.negY P) ^ 2 - 2 * P x * (P y - W'.negY P) ^ 2
@@ -704,7 +758,8 @@ lemma dblX_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
     toAffine_addX_of_eq hPz <| sub_ne_zero.mpr <| Y_ne_negY_of_Y_ne' hP hQ hx hy]
 
 variable (W') in
-/-- The $Y$-coordinate of a representative of `-(2 • P)` for a point `P`. -/
+/-- The `Y`-coordinate of a representative of `-(2 • P)` for a Jacobian point representative `P` on
+a Weierstrass curve. -/
 noncomputable def negDblY (P : Fin 3 → R) : R :=
   -W'.dblU P * (W'.dblX P - P x * (P y - W'.negY P) ^ 2) + P y * (P y - W'.negY P) ^ 3
 
@@ -741,7 +796,8 @@ lemma negDblY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equat
     toAffine_negAddY_of_eq hPz <| sub_ne_zero.mpr <| Y_ne_negY_of_Y_ne' hP hQ hx hy]
 
 variable (W') in
-/-- The $Y$-coordinate of a representative of `2 • P` for a point `P`. -/
+/-- The `Y`-coordinate of a representative of `2 • P` for a Jacobian point representative `P` on a
+Weierstrass curve. -/
 noncomputable def dblY (P : Fin 3 → R) : R :=
   W'.negY ![W'.dblX P, W'.negDblY P, W'.dblZ P]
 
@@ -768,7 +824,8 @@ lemma dblY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
     dblX_of_Z_ne_zero hP hQ hPz hQz hx hy, negDblY_of_Z_ne_zero hP hQ hPz hQz hx hy, Affine.addY]
 
 variable (W') in
-/-- The coordinates of a representative of `2 • P` for a point `P`. -/
+/-- The coordinates of a representative of `2 • P` for a Jacobian point representative `P` on a
+Weierstrass curve. -/
 noncomputable def dblXYZ (P : Fin 3 → R) : Fin 3 → R :=
   ![W'.dblX P, W'.dblY P, W'.dblZ P]
 
@@ -818,7 +875,9 @@ section Addition
 
 /-! ### Addition formulae -/
 
-/-- The unit associated to the addition of a non-2-torsion point `P` with its negation.
+/-- The unit associated to a representative of `P + Q` for two Jacobian point representatives `P`
+and `Q` on a Weierstrass curve `W` that are not `2`-torsion.
+
 More specifically, the unit `u` such that `W.add P Q = u • ![1, 1, 0]` where
 `P x / P z ^ 2 = Q x / Q z ^ 2` but `P ≠ W.neg P`. -/
 def addU (P Q : Fin 3 → F) : F :=
@@ -843,8 +902,10 @@ lemma isUnit_addU_of_Y_ne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0
     (hy : P y * Q z ^ 3 ≠ Q y * P z ^ 3) : IsUnit (addU P Q) :=
   (addU_ne_zero_of_Y_ne hPz hQz hy).isUnit
 
-/-- The $Z$-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`.
-Note that this returns the value 0 if the representatives of `P` and `Q` are equal. -/
+/-- The `Z`-coordinate of a representative of `P + Q` for two distinct Jacobian point
+representatives `P` and `Q` on a Weierstrass curve.
+
+If the representatives of `P` and `Q` are equal, then this returns the value `0`. -/
 def addZ (P Q : Fin 3 → R) : R :=
   P x * Q z ^ 2 - Q x * P z ^ 2
 
@@ -885,8 +946,10 @@ private lemma toAffine_slope_of_ne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : 
   ring1
 
 variable (W') in
-/-- The $X$-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`.
-Note that this returns the value 0 if the representatives of `P` and `Q` are equal. -/
+/-- The `X`-coordinate of a representative of `P + Q` for two distinct Jacobian point
+representatives `P` and `Q` on a Weierstrass curve.
+
+If the representatives of `P` and `Q` are equal, then this returns the value `0`. -/
 def addX (P Q : Fin 3 → R) : R :=
   P x * Q x ^ 2 * P z ^ 2 - 2 * P y * Q y * P z * Q z + P x ^ 2 * Q x * Q z ^ 2
     - W'.a₁ * P x * Q y * P z ^ 2 * Q z - W'.a₁ * P y * Q x * P z * Q z ^ 2
@@ -955,8 +1018,10 @@ lemma addX_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
     toAffine_addX_of_ne hPz hQz <| addZ_ne_zero_of_X_ne hx]
 
 variable (W') in
-/-- The $Y$-coordinate of a representative of `-(P + Q)` for two distinct points `P` and `Q`.
-Note that this returns the value 0 if the representatives of `P` and `Q` are equal. -/
+/-- The `Y`-coordinate of a representative of `-(P + Q)` for two distinct Jacobian point
+representatives `P` and `Q` on a Weierstrass curve.
+
+If the representatives of `P` and `Q` are equal, then this returns the value `0`. -/
 def negAddY (P Q : Fin 3 → R) : R :=
   -P y * Q x ^ 3 * P z ^ 3 + 2 * P y * Q y ^ 2 * P z ^ 3 - 3 * P x ^ 2 * Q x * Q y * P z ^ 2 * Q z
     + 3 * P x * P y * Q x ^ 2 * P z * Q z ^ 2 + P x ^ 3 * Q y * Q z ^ 3
@@ -1029,8 +1094,10 @@ lemma negAddY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equat
     toAffine_negAddY_of_ne hPz hQz <| addZ_ne_zero_of_X_ne hx]
 
 variable (W') in
-/-- The $Y$-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`.
-Note that this returns the value 0 if the representatives of `P` and `Q` are equal. -/
+/-- The `Y`-coordinate of a representative of `P + Q` for two distinct Jacobian point
+representatives `P` and `Q` on a Weierstrass curve.
+
+If the representatives of `P` and `Q` are equal, then this returns the value `0`. -/
 def addY (P Q : Fin 3 → R) : R :=
   W'.negY ![W'.addX P Q, W'.negAddY P Q, addZ P Q]
 
@@ -1074,8 +1141,10 @@ lemma addY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
     negAddY_of_Z_ne_zero hP hQ hPz hQz hx, Affine.addY]
 
 variable (W') in
-/-- The coordinates of a representative of `P + Q` for two distinct points `P` and `Q`.
-Note that this returns the value `![0, 0, 0]` if the representatives of `P` and `Q` are equal. -/
+/-- The coordinates of a representative of `P + Q` for two distinct Jacobian point
+representatives `P` and `Q` on a Weierstrass curve.
+
+If the representatives of `P` and `Q` are equal, then this returns the value `![0, 0, 0]`. -/
 noncomputable def addXYZ (P Q : Fin 3 → R) : Fin 3 → R :=
   ![W'.addX P Q, W'.addY P Q, addZ P Q]
 
@@ -1129,7 +1198,7 @@ section Negation
 /-! ### Negation on point representatives -/
 
 variable (W') in
-/-- The negation of a point representative. -/
+/-- The negation of a Jacobian point representative on a Weierstrass curve. -/
 def neg (P : Fin 3 → R) : Fin 3 → R :=
   ![P x, W'.negY P, P z]
 
@@ -1202,8 +1271,10 @@ lemma addXYZ_neg {P : Fin 3 → R} (hP : W'.Equation P) :
     Odd.neg_pow <| by decide, mul_one, mul_zero]
 
 variable (W') in
-/-- The negation of a point class. If `P` is a point representative,
-then `W'.negMap ⟦P⟧` is definitionally equivalent to `W'.neg P`. -/
+/-- The negation of a Jacobian point class on a Weierstrass curve `W`.
+
+If `P` is a Jacobian point representative on `W`, then `W.negMap ⟦P⟧` is definitionally equivalent
+to `W.neg P`. -/
 def negMap (P : PointClass R) : PointClass R :=
   P.map W'.neg fun _ _ => neg_equiv
 
@@ -1232,7 +1303,7 @@ section Addition
 
 open Classical in
 variable (W') in
-/-- The addition of two point representatives. -/
+/-- The addition of two Jacobian point representatives on a Weierstrass curve. -/
 noncomputable def add (P Q : Fin 3 → R) : Fin 3 → R :=
   if P ≈ Q then W'.dblXYZ P else W'.addXYZ P Q
 
@@ -1344,8 +1415,10 @@ lemma nonsingular_add {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsing
             nonsingular_smul _ <| isUnit_addZ_of_X_ne hx]
 
 variable (W') in
-/-- The addition of two point classes. If `P` is a point representative,
-then `W.addMap ⟦P⟧ ⟦Q⟧` is definitionally equivalent to `W.add P Q`. -/
+/-- The addition of two Jacobian point classes on a Weierstrass curve `W`.
+
+If `P` and `Q` are two Jacobian point representatives on `W`, then `W.addMap ⟦P⟧ ⟦Q⟧` is
+definitionally equivalent to `W.add P Q`. -/
 noncomputable def addMap (P Q : PointClass R) : PointClass R :=
   Quotient.map₂ W'.add (fun _ _ hP _ _ hQ => add_equiv hP hQ) P Q
 
@@ -1406,12 +1479,12 @@ end Addition
 /-! ### Nonsingular rational points -/
 
 variable (W') in
-/-- A nonsingular rational point on `W'`. -/
+/-- A nonsingular Jacobian point on a Weierstrass curve `W`. -/
 @[ext]
 structure Point where
-  /-- The point class underlying a nonsingular rational point on `W'`. -/
+  /-- The Jacobian point class underlying a nonsingular Jacobian point on `W`. -/
   {point : PointClass R}
-  /-- The nonsingular condition underlying a nonsingular rational point on `W'`. -/
+  /-- The nonsingular condition underlying a nonsingular Jacobian point on `W`. -/
   (nonsingular : W'.NonsingularLift point)
 
 namespace Point
@@ -1428,8 +1501,8 @@ lemma zero_def [Nontrivial R] : (0 : W'.Point) = ⟨nonsingularLift_zero⟩ :=
 lemma zero_point [Nontrivial R] : (0 : W'.Point).point = ⟦![1, 1, 0]⟧ :=
   rfl
 
-/-- The map from a nonsingular rational point on a Weierstrass curve `W'` in affine coordinates
-to the corresponding nonsingular rational point on `W'` in Jacobian coordinates. -/
+/-- The natural map from a nonsingular point on a Weierstrass curve in affine coordinates to its
+corresponding nonsingular Jacobian point. -/
 def fromAffine [Nontrivial R] : W'.toAffine.Point → W'.Point
   | 0 => 0
   | .some h => ⟨(nonsingularLift_some ..).mpr h⟩
@@ -1446,8 +1519,9 @@ lemma fromAffine_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X
   obtain ⟨u, eq⟩ := Quotient.eq.mp <| (Point.ext_iff ..).mp h0
   simpa [Units.smul_def, smul_fin3] using congr_fun eq z
 
-/-- The negation of a nonsingular rational point on `W`.
-Given a nonsingular rational point `P` on `W`, use `-P` instead of `neg P`. -/
+/-- The negation of a nonsingular Jacobian point on a Weierstrass curve `W`.
+
+Given a nonsingular Jacobian point `P` on `W`, use `-P` instead of `neg P`. -/
 def neg (P : W.Point) : W.Point :=
   ⟨nonsingularLift_negMap P.nonsingular⟩
 
@@ -1460,8 +1534,9 @@ lemma neg_def (P : W.Point) : -P = P.neg :=
 lemma neg_point (P : W.Point) : (-P).point = W.negMap P.point :=
   rfl
 
-/-- The addition of two nonsingular rational points on `W`.
-Given two nonsingular rational points `P` and `Q` on `W`, use `P + Q` instead of `add P Q`. -/
+/-- The addition of two nonsingular Jacobian points on a Weierstrass curve `W`.
+
+Given two nonsingular Jacobian points `P` and `Q` on `W`, use `P + Q` instead of `add P Q`. -/
 noncomputable def add (P Q : W.Point) : W.Point :=
   ⟨nonsingularLift_addMap P.nonsingular Q.nonsingular⟩
 
@@ -1484,8 +1559,8 @@ namespace Point
 
 open Classical in
 variable (W) in
-/-- The map from a point representative that is nonsingular on a Weierstrass curve `W` in Jacobian
-coordinates to the corresponding nonsingular rational point on `W` in affine coordinates. -/
+/-- The natural map from a nonsingular Jacobian point representative on a Weierstrass curve to its
+corresponding nonsingular point in affine coordinates. -/
 noncomputable def toAffine (P : Fin 3 → F) : W.toAffine.Point :=
   if hP : W.Nonsingular P ∧ P z ≠ 0 then .some <| (nonsingular_of_Z_ne_zero hP.2).mp hP.1 else 0
 
@@ -1569,8 +1644,11 @@ lemma toAffine_add {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingula
             toAffine_smul _ <| isUnit_dblZ_of_Y_ne' hP.left hQ.left hPz hx <| not_and.mp hxy hx]
         · rwa [add_of_X_ne hP.left hQ.left hPz hQz hx, toAffine_smul _ <| isUnit_addZ_of_X_ne hx]
 
-/-- The map from a nonsingular rational point on a Weierstrass curve `W` in Jacobian coordinates
-to the corresponding nonsingular rational point on `W` in affine coordinates. -/
+/-- The natural map from a nonsingular Jacobian point on a Weierstrass curve `W` to its
+corresponding nonsingular point in affine coordinates.
+
+If `hP` is the nonsingular condition underlying a nonsingular Jacobian point `P` on `W`, then
+`toAffineLift ⟨hP⟩` is definitionally equivalent to `toAffine W P`. -/
 noncomputable def toAffineLift (P : W.Point) : W.toAffine.Point :=
   P.point.lift _ fun _ _ => toAffine_of_equiv
 
@@ -1603,8 +1681,8 @@ lemma toAffineLift_add (P Q : W.Point) :
   exact toAffine_add hP hQ
 
 variable (W) in
-/-- The equivalence between the nonsingular rational points on a Weierstrass curve `W` in Jacobian
-coordinates with the nonsingular rational points on `W` in affine coordinates. -/
+/-- The addition-preserving equivalence between the type of nonsingular Jacobian points on a
+Weierstrass curve `W` and the type of nonsingular points `W⟮F⟯` in affine coordinates. -/
 @[simps]
 noncomputable def toAffineAddEquiv : W.Point ≃+ W.toAffine.Point where
   toFun := toAffineLift
@@ -1851,4 +1929,4 @@ abbrev WeierstrassCurve.Affine.Point.toJacobian {R : Type u} [CommRing R] [Nontr
     {W : Affine R} (P : W.Point) : W.toJacobian.Point :=
   Jacobian.Point.fromAffine P
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 2100
