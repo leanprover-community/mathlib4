@@ -228,7 +228,7 @@ jobs:
 
       - name: Report diff in Lean
         run:
-          printf '%s\n' "${{ steps.diff_in_lean.outputs.LeanDiff }}"
+          printf $'%s\n' "${{ steps.diff_in_lean.outputs.LeanDiff }}"
           ./scripts/update_PR_comment.sh "${{ steps.diff_in_lean.outputs.LeanDiff }}" '<details><summary> <b>Declaration diff in Lean</b></summary>' "${{ github.event.pull_request.number }}"
 
       - name: check for noisy stdout lines
