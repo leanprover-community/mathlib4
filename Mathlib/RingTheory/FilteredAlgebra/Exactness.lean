@@ -50,11 +50,10 @@ lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict 
     ∀ p : ι, ∀ x : GradedPiece FS FS_lt p, Gr(p)[g] x = 0 → ∃ y : FR p, Gr(p)[f] ⟦y⟧ = x := by
   intro p x₀ xto0
   obtain⟨x, hx⟩ : ∃ x, GradedPiece.mk FS FS_lt x = x₀:= Quotient.exists_rep x₀
-  rw[← hx] at xto0 ⊢
+  rw[← hx, GradedPieceHom_apply_mk_eq_mk_piece_wise_hom] at xto0
   obtain⟨x', xin, geq⟩ : g.toRingHom x ∈ g.toRingHom '' (FS_lt p) := by
     apply gstrict.strict_lt
-    · rw [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom] at xto0
-      simpa [GradedPiece.mk] using xto0
+    · simpa [GradedPiece.mk] using xto0
     · simp
   obtain ⟨y, yin, feq⟩ : x - x' ∈ f.toRingHom '' (FR p) := by
     apply FilteredHom.IsStrict.strict (sub_mem x.2 (IsFiltration.F_lt_le_F FS FS_lt p xin))
@@ -62,9 +61,8 @@ lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict 
     have : x.1 - x' ∈ (g.toAddMonoidHom).ker := geq
     simpa [fgexact.addMonoidHom_ker_eq]
   use ⟨y, yin⟩
-  rw[← GradedPiece.mk_eq, GradedPieceHom_apply_mk_eq_mk_piece_wise_hom]
-  simp only [GradedPiece.mk_eq]
-  rw [QuotientAddGroup.eq, AddSubgroup.mem_addSubgroupOf]
+  rw [← GradedPiece.mk_eq, GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, ← hx, GradedPiece.mk_eq,
+      GradedPiece.mk_eq,  QuotientAddGroup.eq, AddSubgroup.mem_addSubgroupOf]
   have : (toFilteredHom.piece_wise_hom p ⟨y, yin⟩ : FS p) = f.toRingHom y := rfl
   simp [this, feq, xin]
 
@@ -84,8 +82,7 @@ theorem exact_of_strict_exact (fstrict : f.IsStrict) (gstrict : g.IsStrict)
     set s : AssociatedGraded FR FR_lt := DirectSum.mk
       (fun i ↦ GradedPiece FR FR_lt i) (support m) component_2 with hs
     have : Gr[f] s = m := by
-      apply AssociatedGraded.ext_iff.mpr
-      intro j
+      apply AssociatedGraded.ext_iff.mpr fun j ↦ ?_
       simp only [FilteredRingHom.AssociatedGradedRingHom_apply]
       by_cases nh : j ∈ support m
       · rw [mk_apply_of_mem nh, hc, Classical.choose_spec (this j)]
