@@ -360,9 +360,9 @@ theorem prod_deriv_expMap_single (x : realSpace K) :
   rw [Finset.prod_mul_distrib]
   congr 1
   · simp_rw [← prod_expMapBasis_pow, prod_eq_prod_mul_prod, expMapBasis_apply, expMap_apply,
-      mult_ofIsReal, mult_ofIsComplex, pow_one, Finset.prod_pow, pow_two, mul_assoc, mul_inv_cancel₀
+      mult_isReal, mult_isComplex, pow_one, Finset.prod_pow, pow_two, mul_assoc, mul_inv_cancel₀
       (Finset.prod_ne_zero_iff.mpr <| fun _ _ ↦ Real.exp_ne_zero _), mul_one]
-  · simp [prod_eq_prod_mul_prod, mult_ofIsReal, mult_ofIsComplex]
+  · simp [prod_eq_prod_mul_prod, mult_isReal, mult_isComplex]
 
 theorem norm_expMapBasis (x : realSpace K) :
     mixedEmbedding.norm (mixedSpaceOfRealSpace (expMapBasis x)) =
