@@ -2620,7 +2620,7 @@ import Mathlib.Control.ULiftable
 import Mathlib.Data.Analysis.Filter
 import Mathlib.Data.Analysis.Topology
 import Mathlib.Data.Array.Defs
-import Mathlib.Data.Array.ExtractLemmas
+import Mathlib.Data.Array.Extract
 import Mathlib.Data.BitVec
 import Mathlib.Data.Bool.AllAny
 import Mathlib.Data.Bool.Basic
