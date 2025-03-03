@@ -9,6 +9,7 @@ import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Algebra.Ring.Idempotent
 
 /-!
 # Pointwise action on sets
@@ -631,5 +632,51 @@ protected theorem neg_smul : -s • t = -(s • t) := by
   exact image2_image_left_comm neg_smul
 
 end Ring
+
+section
+
+--#check MulAction
+
+variable [Monoid α] [MulAction α β]
+
+theorem range_comp_subset_range2 (f g : α ) : (g * f) • univ ⊆ g • (univ : Set β) := by
+  intro y hy
+  obtain ⟨x,⟨_,hx⟩⟩ := hy
+  simp at hx
+  rw [← hx]
+  subst hx
+  simp_all only [mem_univ]
+  rw [MulAction.mul_smul]
+  exact smul_mem_smul_set trivial
+
+lemma range_prod_of_commute {f g : α}
+    (h : Commute f g) : (f * g) • (univ : Set β) ⊆ f • univ ∩ g • univ := by
+  simp only [Set.le_eq_subset, Set.subset_inter_iff]
+  constructor
+  · apply Set.range_comp_subset_range2 g f
+  · rw [(commute_iff_eq f g).mp h]
+    exact Set.range_comp_subset_range2 f g
+
+lemma proj_apply2 (f : α) (hP : IsIdempotentElem f)
+    (a : β) (ha: a ∈ f • (Set.univ : Set β)) : f • a = a := by
+  obtain ⟨c,⟨_,hc⟩⟩ := ha
+  rw [← hc, smul_smul, hP.eq]
+
+lemma _root_.IsIdempotentElem.range_prod_of_commute {P Q : α}
+    (hP : IsIdempotentElem P) (hQ : IsIdempotentElem Q) (hPQ : Commute P Q) :
+    (P * Q) • (Set.univ) = P • (Set.univ) ∩ Q • (Set.univ : Set β) := by
+  apply le_antisymm
+  · simp only [Set.le_eq_subset]
+    exact Set.range_prod_of_commute hPQ
+  · intro a ha
+    use a
+    constructor
+    · trivial
+    · simp only
+      rw [← smul_smul]
+      rw [Set.proj_apply2 Q hQ _ (Set.mem_of_mem_inter_right ha),
+      proj_apply2 P hP _ (Set.mem_of_mem_inter_left ha)]
+
+end
 
 end Set
