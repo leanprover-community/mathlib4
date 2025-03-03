@@ -42,3 +42,4 @@ printf '%s\n' "${actualDiff}"
 printf $'LeanDiff<<EOF\n%q\nEOF' "${actualDiff}" |
   # show result in stdout and also store it in `GITHUB_OUTPUT`
   tee >(cat) >> "${GITHUB_OUTPUT}"
+printf 'GETME!\n%s\n' "${actualDiff}"

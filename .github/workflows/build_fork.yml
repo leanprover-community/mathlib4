@@ -181,7 +181,12 @@ jobs:
           actualDiff="${{ steps.diff_in_lean.outputs.LeanDiff }}"
           printf '%s\n' "${actualDiff}"
           messageStart=$'<details><summary> <b>Declaration diff in Lean</b></summary>'
-          printf $'%s\n\n```diff\n%s\n```\n</details>\n' "${messageStart}" "${actualDiff}" > messageContent
+          (
+            printf $'%s\n\n```diff\n' "$(./scripts/declDiff_shell_glue.sh | awk 'BEGIN{con=0} (con == 1) {print $0} /GETME!/ {con=1}')"
+            #printf $'%s\n```\n</details>\n' "${actualDiff}"
+          ) > messageContent
+
+          cat messageContent
 
           ./scripts/update_PR_comment.sh messageContent "${messageStart}" ${{ steps.PR.outputs.number }}
 
