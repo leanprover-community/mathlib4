@@ -15,7 +15,7 @@ We show that if `X` is a profinite space, and `V` is a uniform space, then any c
 `X → V` can be uniformly approximated by locally constant functions.
 -/
 
-open Metric UniformSpace Set
+open UniformSpace Set
 
 open TopologicalSpace (Opens Clopens IsOpenCover)
 
