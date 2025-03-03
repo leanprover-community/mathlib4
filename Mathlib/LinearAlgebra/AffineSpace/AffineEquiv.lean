@@ -465,7 +465,7 @@ open Function
 def pointReflection (x : P₁) : P₁ ≃ᵃ[k] P₁ :=
   (constVSub k x).trans (vaddConst k x)
 
-@[simp] lemma pointReflection_apply_eq_equiv_pointReflection_apply (x y : P₁) :
+@[simp] lemma pointReflection_apply_eq_equivPointReflection_apply (x y : P₁) :
     pointReflection k x y = Equiv.pointReflection x y :=
   rfl
 
