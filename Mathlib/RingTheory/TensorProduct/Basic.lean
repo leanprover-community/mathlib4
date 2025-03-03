@@ -754,8 +754,7 @@ variable [Semiring C] [Algebra R C] [Algebra S C] [IsScalarTower R S C]
 variable [Semiring D] [Algebra R D]
 variable [Semiring E] [Algebra R E] [Algebra S E] [IsScalarTower R S E]
 variable [Semiring F] [Algebra R F]
-variable (R' : Type*) [CommSemiring R'] [Algebra R R'] [Algebra R' A]
-  [Algebra R' C] [IsScalarTower R R' A] [IsScalarTower R R' C]
+
 section
 
 variable (R A)
@@ -1052,38 +1051,38 @@ theorem leftComm_symm_tmul (m : A) (n : B) (p : C) :
 theorem leftComm_toLinearEquiv :
     (leftComm R A B C : _ ≃ₗ[R] _) = _root_.TensorProduct.leftComm R A B C := rfl
 
-variable (R A B C D) in
+variable (R S A B C D) in
 set_option maxSynthPendingDepth 2 in
 /-- Tensor product of algebras analogue of `mul_mul_mul_comm`.
 
 This is the algebra version of `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`. -/
-def tensorTensorTensorComm : (A ⊗[R] B) ⊗[R'] C ⊗[R] D ≃ₐ[R'] (A ⊗[R'] C) ⊗[R] B ⊗[R] D :=
-  AlgEquiv.ofLinearEquiv (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm _ _ _ _ _ _)
-    rfl (LinearMap.map_mul_iff _|>.2 <| by ext; simp)
+def tensorTensorTensorComm : (A ⊗[R] B) ⊗[S] C ⊗[R] D ≃ₐ[S] (A ⊗[S] C) ⊗[R] B ⊗[R] D :=
+  AlgEquiv.ofLinearEquiv (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R S A B C D)
+    rfl (LinearMap.map_mul_iff _ |>.mpr <| by ext; simp)
 
 @[simp]
 theorem tensorTensorTensorComm_tmul (m : A) (n : B) (p : C) (q : D) :
-    tensorTensorTensorComm R A B C D R' (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
+    tensorTensorTensorComm R S A B C D (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
   rfl
 
 set_option maxSynthPendingDepth 2 in
 @[simp]
 theorem tensorTensorTensorComm_symm_tmul (m : A) (n : C) (p : B) (q : D) :
-    (tensorTensorTensorComm R A B C D R').symm (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
+    (tensorTensorTensorComm R S A B C D).symm (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
   rfl
 
 theorem tensorTensorTensorComm_symm :
-    (tensorTensorTensorComm R A B C D R).symm = tensorTensorTensorComm R A C B D R := by
+    (tensorTensorTensorComm R R A B C D).symm = tensorTensorTensorComm R R A C B D := by
   ext; rfl
 
 set_option maxSynthPendingDepth 2 in
 theorem tensorTensorTensorComm_toLinearEquiv :
-    (tensorTensorTensorComm R A B C D R').toLinearEquiv =
-      TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R R' A B C D := rfl
+    (tensorTensorTensorComm R S A B C D).toLinearEquiv =
+      TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R S A B C D := rfl
 
 @[simp]
 theorem tensorTensorTensorComm_eq_tensorTensorTensorComm :
-    (tensorTensorTensorComm R A B C D R).toLinearEquiv =
+    (tensorTensorTensorComm R R A B C D).toLinearEquiv =
       _root_.TensorProduct.tensorTensorTensorComm R A B C D := by
   apply LinearEquiv.toLinearMap_injective
   ext; simp
