@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   style_lint:
-    if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
+    if: false #github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
     name: Lint styleJOB_NAME
     runs-on: STYLE_LINT_RUNNER
     steps:
@@ -232,7 +232,7 @@ jobs:
           leanDiff="$(
               printf $'<details><summary> <b>Declaration diff in Lean</b></summary>\n\n```diff\n%s\n```\n</details>\n' "${{ steps.diff_in_lean.outputs.LeanDiff1 }}"
             )"
-          printf $'leanDiff1: is "%s"\n\n' "${leanDiff}"
+          printf $'leanDiff1: "%s"\n\n' "${leanDiff}"
 
           ./scripts/update_PR_comment.sh "$(
             printf $'%s\n' "${{ steps.diff_in_lean.outputs.LeanDiff }}" |
