@@ -178,12 +178,11 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
   rw [Finset.eq_univ_iff_forall, not_forall] at hS
   obtain ⟨l, hl⟩ := hS
   simp only [mem_insert, mem_singleton, not_or] at hl
-  refine ⟨l, ?_, fun a ↦ ?_⟩
-  · exact hl.1
-  · fin_cases a
-    · exact Ne.symm hl.2.1
-    · exact Ne.symm hl.2.2.1
-    · exact Ne.symm hl.2.2.2
+  refine ⟨l, hl.1, fun a ↦ ?_⟩
+  fin_cases a
+  · exact Ne.symm hl.2.1
+  · exact Ne.symm hl.2.2.1
+  · exact Ne.symm hl.2.2.2
 
 /-- The `j`th face of codimension `1` of the `i`-th horn. -/
 def face {n : ℕ} (i j : Fin (n+2)) (h : j ≠ i) : (Λ[n+1, i] : SSet.{u}) _⦋n⦌ :=
