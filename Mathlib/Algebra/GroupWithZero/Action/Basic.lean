@@ -3,11 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.End
+import Mathlib.Algebra.Group.Action.Basic
+import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.Group.Action.Prod
-import Mathlib.Algebra.GroupWithZero.Prod
-import Mathlib.Algebra.SMulWithZero
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
 # Definitions of group actions
@@ -45,11 +44,39 @@ More sophisticated lemmas belong in `GroupTheory.GroupAction`.
 group action
 -/
 
-assert_not_exists Ring
+assert_not_exists RelIso Equiv.Perm.equivUnitsEnd Prod.fst_mul Ring
 
 open Function
 
-variable {G G₀ A M M₀ N₀ R α : Type*}
+variable {G G₀ A B M M₀ N₀ R α : Type*}
+
+section SMulZeroClass
+variable [Zero A] [Zero B] [SMulZeroClass M A] [SMul M B]
+
+/-- Pullback a zero-preserving scalar multiplication along an injective zero-preserving map.
+See note [reducible non-instances]. -/
+protected abbrev Function.Injective.smulZeroClass (f : ZeroHom B A)
+    (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
+    SMulZeroClass M B where
+  smul := (· • ·)
+  smul_zero c := hf <| by simp only [smul, map_zero, smul_zero]
+
+/-- Pushforward a zero-preserving scalar multiplication along a zero-preserving map.
+See note [reducible non-instances]. -/
+protected abbrev ZeroHom.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom A B)
+    (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
+    SMulZeroClass M B where
+  -- Porting note: `simp` no longer works here.
+  smul_zero c := by rw [← map_zero f, ← smul, smul_zero]
+
+variable (A) in
+/-- Each element of the scalars defines a zero-preserving map. -/
+@[simps]
+def SMulZeroClass.toZeroHom (x : M) : ZeroHom A A where
+  toFun := (x • ·)
+  map_zero' := smul_zero x
+
+end SMulZeroClass
 
 section GroupWithZero
 variable [GroupWithZero G₀] [MulAction G₀ α] {a : G₀}
@@ -65,6 +92,17 @@ protected lemma MulAction.surjective₀ (ha : a ≠ 0) : Surjective (a • · : 
 
 end GroupWithZero
 
+section DistribSMul
+variable [AddZeroClass A] [DistribSMul M A]
+
+variable (A) in
+/-- Each element of the scalars defines an additive monoid homomorphism. -/
+@[simps]
+def DistribSMul.toAddMonoidHom (x : M) : A →+ A :=
+  { SMulZeroClass.toZeroHom A x with toFun := (x • ·), map_add' := smul_add x }
+
+end DistribSMul
+
 section DistribMulAction
 variable [Group G] [Monoid M] [AddMonoid A]
 variable (A)
@@ -74,41 +112,10 @@ variable (A)
 This is a stronger version of `MulAction.toPerm`. -/
 @[simps (config := { simpRhs := true })]
 def DistribMulAction.toAddEquiv [DistribMulAction G A] (x : G) : A ≃+ A where
-  __ := toAddMonoidHom A x
-  __ := MulAction.toPermHom G A x
-
-variable (G)
-
-/-- Each element of the group defines an additive monoid isomorphism.
-
-This is a stronger version of `MulAction.toPermHom`. -/
-@[simps]
-def DistribMulAction.toAddAut [DistribMulAction G A] : G →* AddAut A where
-  toFun := toAddEquiv _
-  map_one' := AddEquiv.ext (one_smul _)
-  map_mul' _ _ := AddEquiv.ext (mul_smul _ _)
+  __ := DistribSMul.toAddMonoidHom A x
+  __ := MulAction.toPerm x
 
 end DistribMulAction
-
-/-- Scalar multiplication as a monoid homomorphism with zero. -/
-@[simps]
-def smulMonoidWithZeroHom [MonoidWithZero M₀] [MulZeroOneClass N₀] [MulActionWithZero M₀ N₀]
-    [IsScalarTower M₀ N₀ N₀] [SMulCommClass M₀ N₀ N₀] : M₀ × N₀ →*₀ N₀ :=
-  { smulMonoidHom with map_zero' := smul_zero _ }
-
-namespace AddAut
-
-/-- The tautological action by `AddAut A` on `A`.
-
-This generalizes `Function.End.applyMulAction`. -/
-instance applyDistribMulAction [AddMonoid A] : DistribMulAction (AddAut A) A where
-  smul := (· <| ·)
-  smul_zero := map_zero
-  smul_add := map_add
-  one_smul _ := rfl
-  mul_smul _ _ _ := rfl
-
-end AddAut
 
 lemma IsUnit.smul_sub_iff_sub_inv_smul [Group G] [Monoid R] [AddGroup R] [DistribMulAction G R]
     [IsScalarTower G R R] [SMulCommClass G R R] (r : G) (a : R) :

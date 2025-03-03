@@ -4,18 +4,19 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Hom
-import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.End
+import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Units
 
 /-!
 # Group actions and (endo)morphisms
 -/
 
-assert_not_exists RelIso Equiv.Perm.equivUnitsEnd Prod.fst_mul Ring
+assert_not_exists RelIso Ring
 
 open Function
 
-variable {M N A α β : Type*}
+variable {G M N A α β : Type*}
 
 /-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →* S`.
 
@@ -75,7 +76,35 @@ instance AddMonoid.End.applyFaithfulSMul [AddMonoid α] :
 This is a stronger version of `DistribMulAction.toAddMonoidHom`. -/
 def DistribMulAction.toAddEquiv₀ {α : Type*} (β : Type*) [GroupWithZero α] [AddMonoid β]
     [DistribMulAction α β] (x : α) (hx : x ≠ 0) : β ≃+ β :=
-  { DistribMulAction.toAddMonoidHom β x with
+  { DistribSMul.toAddMonoidHom β x with
     invFun := fun b ↦ x⁻¹ • b
     left_inv := fun b ↦ inv_smul_smul₀ hx b
     right_inv := fun b ↦ smul_inv_smul₀ hx b }
+
+namespace AddAut
+
+/-- The tautological action by `AddAut A` on `A`.
+
+This generalizes `Function.End.applyMulAction`. -/
+instance applyDistribMulAction [AddMonoid A] : DistribMulAction (AddAut A) A where
+  smul := (· <| ·)
+  smul_zero := map_zero
+  smul_add := map_add
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
+
+end AddAut
+
+section DistribMulAction
+variable (A G) [Group G] [Monoid M] [AddMonoid A]
+
+/-- Each element of the group defines an additive monoid isomorphism.
+
+This is a stronger version of `MulAction.toPermHom`. -/
+@[simps]
+def DistribMulAction.toAddAut [DistribMulAction G A] : G →* AddAut A where
+  toFun := toAddEquiv _
+  map_one' := AddEquiv.ext (one_smul _)
+  map_mul' _ _ := AddEquiv.ext (mul_smul _ _)
+
+end DistribMulAction
