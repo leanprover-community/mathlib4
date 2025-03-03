@@ -1,3 +1,4 @@
+import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Linter.CasesLinter
 
 set_option linter.style.cases true

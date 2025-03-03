@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan, Damiano Testa
 -/
 import Lean.Elab.Command
-import Mathlib.Tactic.Cases
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+import Mathlib.Tactic.Linter.Header
 
 /-!
 # The "cases" linter
@@ -34,7 +36,7 @@ partial
 def getCases' : Syntax → Array Syntax
   | stx@(.node _ kind args) =>
     let rargs := (args.map getCases').flatten
-    if kind == ``Mathlib.Tactic.cases' then rargs.push stx else rargs
+    if kind == `Mathlib.Tactic.cases' then rargs.push stx else rargs
   | _ => default
 
 @[inherit_doc linter.style.cases]
