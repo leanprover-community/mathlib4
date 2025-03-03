@@ -11,14 +11,13 @@ import Mathlib.Algebra.Order.Star.Basic
 
 The type class `ContinuousSqrt` gives a sufficient condition on `R` to make `C(α, R)`
 and `C(α, R)₀` into a `StarOrderedRing` for any topological space `α`, thereby providing a means
-by which we can ensure `C(α, R)` has this property. This condiiton is satisfied
+by which we can ensure `C(α, R)` has this property. This condition is satisfied
 by `ℝ≥0`, `ℝ`, and `ℂ`, and the instances can be found in the file
 `Topology.ContinuousMap.ContinuousSqrt`.
 
 ## Implementation notes
 
-Instead of asking for a well-behaved square root on `{x : R | 0 ≤ x}`, we ask for it on the set
-`{x : R × R | x.1 ≤ x.2}`. This is because we need this type class to work for `ℝ≥0` for the
+Instead of asking for a well-behaved square root on `{x : R | 0 ≤ x}` in the obvious way, we instead require that, for every `x y  : R` such that `x ≤ y`, there exist some `s` such that `x + s*s = y`. This is because we need this type class to work for `ℝ≥0` for the
 continuous functional calculus. We could instead assume `[OrderedSub R] [ContinuousSub R]`, but that
 would lead to a proliferation of type class assumptions in the general case of the continuous
 functional calculus, which we want to avoid because there is *already* a proliferation of type
