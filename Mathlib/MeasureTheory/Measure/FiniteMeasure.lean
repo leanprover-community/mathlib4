@@ -141,7 +141,7 @@ lemma coeFn_mk (μ : Measure Ω) (hμ) :
 instance {α : Type*} [MeasurableSpace α] : MeasurableSpace (FiniteMeasure α) :=
     Subtype.instMeasurableSpace
 
-/-- The set of all finite measures is a measurable set in the Giry monad -/
+/-- The set of all finite measures is a measurable set in the Giry monad. -/
 lemma measurableSet_isFiniteMeasure {α : Type*} [MeasurableSpace α] :
     MeasurableSet { μ : Measure α | IsFiniteMeasure μ } := by
   suffices { μ : Measure α | IsFiniteMeasure μ } = (fun μ => μ univ) ⁻¹' (Set.Ico 0 ∞) by
