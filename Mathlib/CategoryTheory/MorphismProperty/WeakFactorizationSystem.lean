@@ -59,9 +59,9 @@ lemma llp_eq_of_wfs : W₂.llp = W₁ := IsWeakFactorizationSystem.llp
 
 variable {W₁ W₂} in
 lemma hasLiftingProperty_of_wfs {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y)
-    (hi : W₁ i) (hp : W₂ p) : HasLiftingProperty i p := by
-  rw [← llp_eq_of_wfs W₁ W₂] at hi
-  exact hi p hp
+    (hi : W₁ i) (hp : W₂ p) : HasLiftingProperty i p :=
+  (llp_eq_of_wfs W₁ W₂ ▸ hi) p hp
+
 
 end
 
