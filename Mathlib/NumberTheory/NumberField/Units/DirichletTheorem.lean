@@ -69,16 +69,13 @@ variable [NumberField K]
 /-- The distinguished infinite place. -/
 def w₀ : InfinitePlace K := (inferInstance : Nonempty (InfinitePlace K)).some
 
-variable (K)
-
+variable (K) in
 /-- The logarithmic embedding of the units (seen as an `Additive` group). -/
 def _root_.NumberField.Units.logEmbedding :
     Additive ((𝓞 K)ˣ) →+ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
 { toFun := fun x w => mult w.val * Real.log (w.val ↑x.toMul)
   map_zero' := by simp; rfl
   map_add' := fun _ _ ↦ by simp [Real.log_mul, mul_add]; rfl }
-
-variable {K}
 
 @[simp]
 theorem logEmbedding_component (x : (𝓞 K)ˣ) (w : {w : InfinitePlace K // w ≠ w₀}) :
@@ -88,16 +85,9 @@ open scoped Classical in
 theorem sum_logEmbedding_component (x : (𝓞 K)ˣ) :
     ∑ w, logEmbedding K (Additive.ofMul x) w =
       - mult (w₀ : InfinitePlace K) * Real.log (w₀ (x : K)) := by
-  have h := congr_arg Real.log (prod_eq_abs_norm (x : K))
-  rw [Units.norm, Rat.cast_one, Real.log_one, Real.log_prod] at h
-  · simp_rw [Real.log_pow] at h
-    rw [← insert_erase (mem_univ w₀), sum_insert (not_mem_erase w₀ univ), add_comm,
-      add_eq_zero_iff_eq_neg] at h
-    convert h using 1
-    · refine (sum_subtype _ (fun w ↦ ?_) (fun w ↦ (mult w) * (Real.log (w (x : K))))).symm
-      exact ⟨ne_of_mem_erase, fun h ↦ mem_erase_of_ne_of_mem h (mem_univ w)⟩
-    · norm_num
-  · refine fun w _ ↦ pow_ne_zero _ (Units.pos_at_place _ _).ne'
+  have h := sum_mult_mul_log x
+  rw [Fintype.sum_eq_add_sum_subtype_ne _ w₀, add_comm, add_eq_zero_iff_eq_neg, ← neg_mul] at h
+  simpa [logEmbedding_component] using h
 
 end NumberField
 

@@ -9,6 +9,7 @@ import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Vector
 import Mathlib.Algebra.BigOperators.Option
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 
 /-!
 Results about "big operations" over a `Fintype`, and consequent
@@ -96,9 +97,8 @@ variable {M : Type*} [Fintype α] [CommMonoid M]
 theorem Fintype.prod_option (f : Option α → M) : ∏ i, f i = f none * ∏ i, f (some i) :=
   Finset.prod_insertNone f univ
 
-open Classical in
 @[to_additive]
-theorem Fintype.prod_eq_mul_prod_subtype_ne (f : α → M) (a : α) :
+theorem Fintype.prod_eq_mul_prod_subtype_ne [DecidableEq α] (f : α → M) (a : α) :
     ∏ i, f i = f a * ∏ i : {i // i ≠ a}, f i.1 := by
   simp_rw [← (Equiv.optionSubtypeNe a).prod_comp, prod_option, Equiv.optionSubtypeNe_none,
     Equiv.optionSubtypeNe_some]

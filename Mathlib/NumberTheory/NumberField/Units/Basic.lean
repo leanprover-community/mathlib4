@@ -102,6 +102,11 @@ protected theorem norm [NumberField K] (x : (𝓞 K)ˣ) :
 theorem pos_at_place (x : (𝓞 K)ˣ) (w : InfinitePlace K) :
     0 < w x := pos_iff.mpr (coe_ne_zero x)
 
+theorem sum_mult_mul_log [NumberField K] (x : (𝓞 K)ˣ) :
+    ∑ w : InfinitePlace K, w.mult * Real.log (w x) = 0 := by
+  simpa [Units.norm, Real.log_prod, Real.log_pow] using
+    congr_arg Real.log (prod_eq_abs_norm (x : K))
+
 section torsion
 
 variable (K)

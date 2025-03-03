@@ -429,12 +429,12 @@ define it, see `card_filter_mk_eq`. -/
 noncomputable def mult (w : InfinitePlace K) : ℕ := if (IsReal w) then 1 else 2
 
 @[simp]
-theorem mult_ofIsReal (w : {w : InfinitePlace K // IsReal w}) :
+theorem mult_isReal (w : {w : InfinitePlace K // IsReal w}) :
     mult w.1 = 1 := by
   rw [mult, if_pos w.prop]
 
 @[simp]
-theorem mult_ofIsComplex (w : {w : InfinitePlace K // IsComplex w}) :
+theorem mult_isComplex (w : {w : InfinitePlace K // IsComplex w}) :
     mult w.1 = 2 := by
   rw [mult, if_neg (not_isReal_iff_isComplex.mpr w.prop)]
 
@@ -474,7 +474,7 @@ open scoped Classical in
 @[to_additive]
 theorem prod_eq_prod_mul_prod {α : Type*} [CommMonoid α] [NumberField K] (f : InfinitePlace K → α) :
     ∏ w, f w = (∏ w : {w // IsReal w}, f w.1) * (∏ w : {w // IsComplex w}, f w.1) := by
-  rw [← (Equiv.subtypeEquivRight (fun _ ↦ not_isReal_iff_isComplex)).prod_comp ]
+  rw [← (Equiv.subtypeEquivRight (fun _ ↦ not_isReal_iff_isComplex)).prod_comp]
   simp [Fintype.prod_subtype_mul_prod_subtype]
 
 theorem sum_mult_eq [NumberField K] :
@@ -935,14 +935,11 @@ lemma isUnramified_smul_iff :
   rw [isUnramified_iff, isUnramified_iff, isReal_smul_iff, comap_smul,
     ← AlgEquiv.toAlgHom_toRingHom, AlgHom.comp_algebraMap]
 
-variable (K)
-
+variable (K) in
 /-- A infinite place of the base field is unramified in a field extension if every
 infinite place over it is unramified. -/
 def IsUnramifiedIn (w : InfinitePlace k) : Prop :=
   ∀ v, comap v (algebraMap k K) = w → IsUnramified k v
-
-variable {K}
 
 lemma isUnramifiedIn_comap [IsGalois k K] {w : InfinitePlace K} :
     (w.comap (algebraMap k K)).IsUnramifiedIn K ↔ w.IsUnramified k := by

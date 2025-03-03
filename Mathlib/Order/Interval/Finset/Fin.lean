@@ -14,25 +14,7 @@ intervals as Finsets and Fintypes.
 
 assert_not_exists MonoidWithZero
 
-namespace Fin
-
-variable {n : ℕ} (a b : Fin n)
-
-@[simp, norm_cast]
-theorem coe_sup : ↑(a ⊔ b) = (a ⊔ b : ℕ) := rfl
-
-@[simp, norm_cast]
-theorem coe_inf : ↑(a ⊓ b) = (a ⊓ b : ℕ) := rfl
-
-@[simp, norm_cast]
-theorem coe_max : ↑(max a b) = (max a b : ℕ) := rfl
-
-@[simp, norm_cast]
-theorem coe_min : ↑(min a b) = (min a b : ℕ) := rfl
-
-end Fin
-
-open Finset Fin Function
+open Finset Function
 
 namespace Fin
 

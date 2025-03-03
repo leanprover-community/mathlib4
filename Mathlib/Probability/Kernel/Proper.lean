@@ -89,13 +89,6 @@ private lemma IsProper.lintegral_indicator_mul_indicator (hπ : IsProper π) (h�
     Pi.one_apply, one_mul]
   rw [← hπ.inter_eq_indicator_mul h𝓑𝓧 hA hB, inter_comm]
 
-#adaptation_note
-/--
-The `by measurability` argument of `lintegral_iSup` became slower after
-https://github.com/leanprover-community/aesop/pull/199 was merged,
-resulting in this declaration now requiring a larger `maxHeartbeats` limit.
--/
-set_option maxHeartbeats 400000 in
 set_option linter.style.multiGoal false in -- false positive
 /-- Auxiliary lemma for `IsProper.lintegral_mul` and
 `IsProper.setLIntegral_eq_indicator_mul_lintegral`. -/
