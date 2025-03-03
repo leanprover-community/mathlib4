@@ -6,6 +6,13 @@ Authors: Chris Hughes
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.Multiset.Defs
 
+/-!
+# Pairwise relations on a multiset
+
+This file provides basic results about `Multiset.Pairwise` (definitions are in
+`Mathlib.Data.Multiset.Defs`).
+-/
+
 namespace Multiset
 
 variable {α : Type*} {r : α → α → Prop} {s : Multiset α}
