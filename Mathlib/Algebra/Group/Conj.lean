@@ -6,7 +6,6 @@ Authors: Patrick Massot, Chris Hughes, Michael Howes
 import Mathlib.Algebra.Group.End
 import Mathlib.Algebra.Group.Semiconj.Units
 
-import Mathlib.Tactic.ApplyFun
 /-!
 # Conjugacy of group elements
 
@@ -56,14 +55,9 @@ protected theorem MonoidHom.map_isConj (f : α →* β) {a b : α} : IsConj a b 
 
 @[simp]
 theorem isConj_one_right {a : α} : IsConj 1 a ↔ a = 1 := by
-  constructor
-  · rintro ⟨⟨w, w', val_inv⟩, h⟩
-    unfold SemiconjBy at h
-    simp only [mul_one] at h
-    apply_fun (fun x ↦ x * w') at h
-    symm
-    simpa [val_inv, mul_assoc] using h
-  · exact fun h => by rw [h]
+  refine ⟨fun ⟨c, h⟩ => ?_, fun h => by rw [h]⟩
+  rw [SemiconjBy, mul_one] at h
+  exact Units.mul_left_eq_self.mp h.symm
 
 @[simp]
 theorem isConj_one_left {a : α} : IsConj a 1 ↔ a = 1 :=

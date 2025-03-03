@@ -113,6 +113,16 @@ theorem mul_eq_one_iff_inv_eq {a : α} : ↑u * a = 1 ↔ ↑u⁻¹ = a := by rw
 theorem inv_unique {u₁ u₂ : αˣ} (h : (↑u₁ : α) = ↑u₂) : (↑u₁⁻¹ : α) = ↑u₂⁻¹ :=
   Units.inv_eq_of_mul_eq_one_right <| by rw [h, u₂.mul_inv]
 
+@[to_additive]
+theorem mul_left_eq_self {a : α} {c : αˣ} : a * c = c ↔ a = 1 := calc
+  a * c = c ↔ a * c = 1 * c := by rw [one_mul]
+    _ ↔ a = 1 := by rw [Units.mul_left_inj]
+
+@[to_additive]
+theorem mul_right_eq_self {a : α} {c : αˣ} : c * a = c ↔ a = 1 := calc
+  c * a = c ↔ c * a = c * 1 := by rw [mul_one]
+    _ ↔ a = 1 := by rw [Units.mul_right_inj]
+
 end Monoid
 
 end Units
