@@ -51,6 +51,9 @@ section normLeOne
 
 variable [NumberField K]
 
+/--
+Docstring.
+-/
 abbrev normLeOne  : Set (mixedSpace K) :=
   {x | x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ 1}
 
@@ -73,6 +76,9 @@ noncomputable section expMap
 
 variable {K}
 
+/--
+Docstring.
+-/
 @[simps]
 def expMap_single (w : InfinitePlace K) : PartialHomeomorph ℝ ℝ where
   toFun := fun x ↦ Real.exp ((w.mult : ℝ)⁻¹ * x)
@@ -88,6 +94,9 @@ def expMap_single (w : InfinitePlace K) : PartialHomeomorph ℝ ℝ where
   continuousOn_toFun := (continuousOn_const.mul continuousOn_id).rexp
   continuousOn_invFun := continuousOn_const.mul (Real.continuousOn_log.mono (by aesop))
 
+/--
+Docstring.
+-/
 abbrev deriv_expMap_single (w : InfinitePlace K) (x : ℝ) : ℝ :=
   (expMap_single w x) * (w.mult : ℝ)⁻¹
 
@@ -98,6 +107,9 @@ theorem hasDerivAt_expMap_single (w : InfinitePlace K) (x : ℝ) :
 
 variable [NumberField K]
 
+/--
+Docstring.
+-/
 def expMap : PartialHomeomorph (realSpace K) (realSpace K) := by
   refine PartialHomeomorph.pi fun w ↦ expMap_single w
 
@@ -161,6 +173,9 @@ theorem sum_expMap_symm_apply {x : K} (hx : x ≠ 0) :
   simp_rw [← prod_eq_abs_norm, Real.log_prod _ _ (fun _ _ ↦ pow_ne_zero _ ((map_ne_zero _).mpr hx)),
     Real.log_pow, expMap_symm_apply]
 
+/--
+Docstring.
+-/
 abbrev fderiv_expMap (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
   .pi fun w ↦ (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (deriv_expMap_single w (x w))).comp
     (.proj w)
@@ -179,11 +194,16 @@ variable [NumberField K]
 variable {K}
 
 open scoped Classical in
-/-- DOCSTRING -/
+/--
+Docstring.
+-/
 def equivFinRank : Fin (rank K) ≃ {w : InfinitePlace K // w ≠ w₀} :=
   Fintype.equivOfCardEq <| by
     rw [Fintype.card_subtype_compl, Fintype.card_ofSubsingleton, Fintype.card_fin, rank]
 
+/--
+Docstring.
+-/
 def realSpaceToLogSpace : realSpace K →ₗ[ℝ] ({w : InfinitePlace K // w ≠ w₀} → ℝ) where
   toFun := fun x w ↦ x w.1 - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹
   map_add' := fun _ _ ↦ funext fun _ ↦ by simpa [sum_add_distrib] using by ring
@@ -199,6 +219,9 @@ theorem realSpaceToLogSpace_expMap_symm {x : K} (hx : x ≠ 0) :
     logMap, normAtPlace_apply, mul_sub, mul_assoc, norm_eq_norm]
 
 variable (K) in
+/--
+Docstring.
+-/
 def completeFamily : InfinitePlace K → realSpace K := by
   intro i
   by_cases hi : i = w₀
@@ -249,6 +272,9 @@ theorem linearIndependent_completeFamily :
   rw [← linearIndependent_equiv (Equiv.optionSubtypeNe w₀), linearIndependent_option]
   exact ⟨h₁, h₂⟩
 
+/--
+Docstring.
+-/
 def completeBasis : Basis (InfinitePlace K) ℝ (realSpace K) :=
   basisOfLinearIndependentOfCardEqFinrank (linearIndependent_completeFamily K)
     (Module.finrank_fintype_fun_eq_card _).symm
@@ -293,6 +319,9 @@ variable [NumberField K]
 
 variable {K}
 
+/--
+Docstring.
+-/
 def expMapBasis : PartialHomeomorph (realSpace K) (realSpace K) :=
   (completeBasis K).equivFunL.symm.toHomeomorph.transPartialHomeomorph expMap
 
@@ -408,6 +437,9 @@ open ENNReal MeasureTheory
 
 variable (K)
 
+/--
+Docstring.
+-/
 abbrev fderiv_expMapBasis (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
   (fderiv_expMap ((completeBasis K).equivFun.symm x)).comp
     (completeBasis K).equivFunL.symm.toContinuousLinearMap
@@ -461,6 +493,9 @@ section param
 variable [NumberField K]
 
 open scoped Classical in
+/--
+Docstring.
+-/
 abbrev paramSet : Set (realSpace K) :=
   Set.univ.pi fun w ↦ if w = w₀ then Set.Iic 0 else Set.Ico 0 1
 
@@ -571,6 +606,9 @@ variable [NumberField K]
 open Pointwise
 
 open scoped Classical in
+/--
+Docstring.
+-/
 abbrev compactSet : Set (realSpace K) :=
   (Set.Icc (0 : ℝ) 1) • (expMapBasis '' Set.univ.pi fun w ↦ if w = w₀ then {0} else Set.Icc 0 1)
 
@@ -649,8 +687,6 @@ end NormLeOne
 variable [NumberField K]
 
 open ENNReal Bornology MeasureTheory NormLeOne
-
--- variable (K)
 
 theorem measurableSet_normLeOne :
     MeasurableSet (normLeOne K) :=
