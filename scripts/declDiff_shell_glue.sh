@@ -9,7 +9,7 @@ getDeclarations () {
   printf '* Download the cache\n'
   lake exe cache get Archive.lean Counterexamples.lean Mathlib.lean &&
 
-  printf '* Save the declarations to \'%s\'\n' "${1}"
+  printf $'* Save the declarations to \'%s\'\n' "${1}"
   printf '#all_declarations "%s"\n' "${1}" >> "${script_file}"
   #cat "${script_file}"
 
