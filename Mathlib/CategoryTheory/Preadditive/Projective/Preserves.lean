@@ -37,7 +37,7 @@ theorem Functor.projective_obj_of_projective (F : C ⥤ D) [F.PreservesProjectiv
     (h : Projective X) : Projective (F.obj X) :=
   Functor.PreservesProjectiveObjects.projective_obj h
 
-theorem Functor.preservesProjectiveObjects_comp (F : C ⥤ D) (G : D ⥤ E)
+instance Functor.preservesProjectiveObjects_comp (F : C ⥤ D) (G : D ⥤ E)
     [F.PreservesProjectiveObjects] [G.PreservesProjectiveObjects] :
     (F ⋙ G).PreservesProjectiveObjects where
   projective_obj := G.projective_obj_of_projective ∘ F.projective_obj_of_projective
@@ -47,8 +47,8 @@ theorem Functor.preservesProjectiveObjects_of_adjunction_of_preservesEpimorphism
     F.PreservesProjectiveObjects where
   projective_obj h := adj.map_projective _ h
 
-theorem Functor.preservesProjectiveObjects_of_isEquivalence {F : C ⥤ D} [IsEquivalence F] :
-    F.PreservesProjectiveObjects :=
+instance (priority := low) Functor.preservesProjectiveObjects_of_isEquivalence {F : C ⥤ D}
+    [IsEquivalence F] : F.PreservesProjectiveObjects :=
   preservesProjectiveObjects_of_adjunction_of_preservesEpimorphisms F.asEquivalence.toAdjunction
 
 theorem Functor.preservesEpimorphisms_of_adjunction_of_preservesProjectiveObjects

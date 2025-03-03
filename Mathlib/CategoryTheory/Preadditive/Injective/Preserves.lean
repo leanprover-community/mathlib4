@@ -37,7 +37,7 @@ theorem Functor.injective_obj_of_injective (F : C ⥤ D) [F.PreservesInjectiveOb
     (h : Injective X) : Injective (F.obj X) :=
   Functor.PreservesInjectiveObjects.injective_obj h
 
-theorem Functor.preservesInjectiveObjects_comp (F : C ⥤ D) (G : D ⥤ E)
+instance Functor.preservesInjectiveObjects_comp (F : C ⥤ D) (G : D ⥤ E)
     [F.PreservesInjectiveObjects] [G.PreservesInjectiveObjects] :
     (F ⋙ G).PreservesInjectiveObjects where
   injective_obj := G.injective_obj_of_injective ∘ F.injective_obj_of_injective
@@ -47,8 +47,8 @@ theorem Functor.preservesInjectiveObjects_of_adjunction_of_preservesMonomorphism
     G.PreservesInjectiveObjects where
   injective_obj h := adj.map_injective _ h
 
-theorem Functor.preservesInjectiveObjects_of_isEquivalence {F : C ⥤ D} [IsEquivalence F] :
-    F.PreservesInjectiveObjects :=
+instance (priority := low) Functor.preservesInjectiveObjects_of_isEquivalence {F : C ⥤ D}
+    [IsEquivalence F] : F.PreservesInjectiveObjects :=
   preservesInjectiveObjects_of_adjunction_of_preservesMonomorphisms
     F.asEquivalence.symm.toAdjunction
 
