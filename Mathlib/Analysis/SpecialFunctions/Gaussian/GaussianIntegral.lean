@@ -147,8 +147,7 @@ theorem integrable_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) :
 
 theorem norm_cexp_neg_mul_sq (b : ℂ) (x : ℝ) :
     ‖Complex.exp (-b * (x : ℂ) ^ 2)‖ = exp (-b.re * x ^ 2) := by
-  rw [Complex.norm_eq_abs, Complex.abs_exp, ← ofReal_pow, mul_comm (-b) _, re_ofReal_mul, neg_re,
-    mul_comm]
+  rw [norm_exp, ← ofReal_pow, mul_comm (-b) _, re_ofReal_mul, neg_re, mul_comm]
 
 theorem integrable_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
     Integrable fun x : ℝ => cexp (-b * (x : ℂ) ^ 2) := by
@@ -165,8 +164,7 @@ theorem integrable_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
   have := (integrable_mul_exp_neg_mul_sq hb).hasFiniteIntegral
   rw [← hasFiniteIntegral_norm_iff] at this ⊢
   convert this
-  rw [norm_mul, norm_mul, norm_cexp_neg_mul_sq b, Complex.norm_eq_abs, abs_ofReal, Real.norm_eq_abs,
-    norm_of_nonneg (exp_pos _).le]
+  rw [norm_mul, norm_mul, norm_cexp_neg_mul_sq b, norm_real, norm_of_nonneg (exp_pos _).le]
 
 theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
     ∫ r : ℝ in Ioi 0, (r : ℂ) * cexp (-b * (r : ℂ) ^ 2) = (2 * b)⁻¹ := by

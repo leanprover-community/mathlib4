@@ -32,7 +32,7 @@ open scoped Pointwise
 variable {ι α β M G H : Type*} [AddCommGroup G]
 
 /-- Translation of a function in a group by an element of that group.
-`τ a f` is defined as `x ↦ f (x - a)`.  -/
+`τ a f` is defined as `x ↦ f (x - a)`. -/
 def translate (a : G) (f : G → α) : G → α := fun x ↦ f (x - a)
 
 @[inherit_doc] scoped[translate] notation "τ " => translate

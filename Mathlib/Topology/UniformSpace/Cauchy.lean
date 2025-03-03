@@ -532,7 +532,7 @@ lemma totallyBounded_singleton (a : α) : TotallyBounded {a} := (finite_singleto
 theorem totallyBounded_empty : TotallyBounded (∅ : Set α) := finite_empty.totallyBounded
 
 /-- The union of two sets is totally bounded
-if and only if each of the two sets is totally bounded.-/
+if and only if each of the two sets is totally bounded. -/
 @[simp]
 lemma totallyBounded_union {s t : Set α} :
     TotallyBounded (s ∪ t) ↔ TotallyBounded s ∧ TotallyBounded t := by
@@ -816,7 +816,7 @@ section DiscreteUniformity
 
 open Filter
 
-/-- A Cauchy filter in a discrete uniform space is contained in a principal filter-/
+/-- A Cauchy filter in a discrete uniform space is contained in a principal filter. -/
 theorem DiscreteUnif.cauchy_le_pure {X : Type*} {uX : UniformSpace X}
     (hX : uX = ⊥) {α : Filter X} (hα : Cauchy α) : ∃ x : X, α = pure x := by
   rcases hα with ⟨α_ne_bot, α_le⟩

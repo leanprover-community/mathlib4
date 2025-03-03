@@ -35,4 +35,9 @@ def findLocalDeclWithTypeQ? {u : Level} (sort : Q(Sort u)) : MetaM (Option Q($so
   let some fvarId ← findLocalDeclWithType? q($sort) | return none
   return some <| .fvar fvarId
 
+/-- Returns a proof of `p : Prop` using `decide p`.
+
+This is a Qq version of `Lean.Meta.mkDecideProof`. -/
+def mkDecideProofQ (p : Q(Prop)) : MetaM Q($p) := mkDecideProof p
+
 end Qq

@@ -198,7 +198,7 @@ def constantsVarsEquiv : L[[γ]].Term α ≃ L.Term (γ ⊕ α) :=
       · cases f
         · simp [constantsToVars, varsToConstants, ih]
         · simp [constantsToVars, varsToConstants, Constants.term, eq_iff_true_of_subsingleton]
-      · cases' f with f f
+      · obtain - | f := f
         · simp [constantsToVars, varsToConstants, ih]
         · exact isEmptyElim f, by
     intro t
@@ -750,7 +750,7 @@ noncomputable def iExs [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :
 
 variable (β) in
 /-- `iExsUnique f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by existentially
-quantifying over all variables `Sum.inr _` and asserting that the solution should be unique  -/
+quantifying over all variables `Sum.inr _` and asserting that the solution should be unique -/
 noncomputable def iExsUnique [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
   iExs β <| φ ⊓ iAlls β
     ((φ.relabel (fun a => Sum.elim (.inl ∘ .inl) .inr a)).imp <|
