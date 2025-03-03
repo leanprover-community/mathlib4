@@ -56,10 +56,6 @@ lemma IsFiltration.mk_int (F : ℤ → σ) (mono : Monotone F) :
   is_le lt := mono (Int.le_sub_one_of_lt lt)
   is_sup _ j hi := hi (j - 1) (sub_one_lt j)
 
-lemma IsFiltration.lt_le (F : ι → σ) (F_lt : outParam <| ι → σ) [IsFiltration F F_lt] :
-  ∀ i, F_lt i ≤ F i := fun i _ ha ↦
-    IsFiltration.is_sup (F i) i (fun _ hj ↦ IsFiltration.mono (le_of_lt hj)) ha
-
 end GeneralFiltration
 
 section FilteredRing

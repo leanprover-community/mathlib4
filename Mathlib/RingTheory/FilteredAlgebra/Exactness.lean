@@ -3,8 +3,10 @@ Copyright (c) 2025 Huanyu Zheng, Weichen Jiao, Yi Yuan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Huanyu Zheng, Weichen Jiao, Yi Yuan
 -/
-import Mathlib.RingTheory.FilteredAlgebra.FilteredRingHom
 import Mathlib.Algebra.Exact
+import Mathlib.RingTheory.FilteredAlgebra.FilteredRingHom
+import Mathlib.RingTheory.Ideal.Maps
+
 /-!
 
 -/
@@ -54,14 +56,11 @@ lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict 
     · rw [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom] at xto0
       simpa [GradedPiece.mk] using xto0
     · simp
-  obtain⟨y, yin, feq⟩ : x - x' ∈ f.toRingHom '' (FR p) := by
-    apply_fun (fun m ↦ m - g.toRingHom x') at geq
-    rw [sub_self, ← map_sub] at geq
-    have sub_mem_mp : x.1 - x' ∈ FS p :=
-      sub_mem (SetLike.coe_mem x) <| (IsFiltration.lt_le FS FS_lt p) xin
-    have : (x - x' : S) ∈ (g.toAddMonoidHom).ker := geq.symm
-    rw[Function.Exact.addMonoidHom_ker_eq fgexact] at this
-    apply fstrict.strict sub_mem_mp this
+  obtain ⟨y, yin, feq⟩ : x - x' ∈ f.toRingHom '' (FR p) := by
+    apply FilteredHom.IsStrict.strict (sub_mem x.2 (IsFiltration.F_lt_le_F FS FS_lt p xin))
+    rw [Eq.comm, ← RingHom.sub_mem_ker_iff] at geq
+    have : x.1 - x' ∈ (g.toAddMonoidHom).ker := geq
+    simpa [fgexact.addMonoidHom_ker_eq]
   use ⟨y, yin⟩
   rw[← GradedPiece.mk_eq, GradedPieceHom_apply_mk_eq_mk_piece_wise_hom]
   simp only [GradedPiece.mk_eq]
