@@ -172,6 +172,7 @@ section Monotone
 
 variable {n : ℕ} {α : Type u} {f : Fin n → α}
 
+open scoped Relator in
 theorem sorted_ofFn_iff {r : α → α → Prop} : (ofFn f).Sorted r ↔ ((· < ·) ⇒ r) f f := by
   simp_rw [Sorted, pairwise_iff_get, get_ofFn, Relator.LiftFun]
   exact Iff.symm (Fin.rightInverse_cast _).surjective.forall₂
