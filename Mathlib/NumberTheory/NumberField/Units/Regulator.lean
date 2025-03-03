@@ -7,6 +7,8 @@ import Mathlib.Algebra.Module.ZLattice.Covolume
 import Mathlib.LinearAlgebra.Matrix.Determinant.Misc
 import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 
+import Mathlib.Sandbox
+
 /-!
 # Regulator of a number field
 
@@ -32,14 +34,61 @@ namespace NumberField.Units
 
 variable (K : Type*) [Field K]
 
-open MeasureTheory NumberField.InfinitePlace Module
+open MeasureTheory NumberField.InfinitePlace Module Submodule
   NumberField NumberField.Units.dirichletUnitTheorem
 
 variable [NumberField K]
 
 open scoped Classical in
+ /--
+ Docstring.
+ -/
+def equivFinRank : Fin (rank K) ≃ {w : InfinitePlace K // w ≠ w₀} :=
+  Fintype.equivOfCardEq <| by
+    rw [Fintype.card_subtype_compl, Fintype.card_ofSubsingleton, Fintype.card_fin, rank]
+
+variable {K} in
+abbrev isMaxRank (u : Fin (rank K) → (𝓞 K)ˣ) : Prop :=
+  LinearIndependent ℝ (fun i ↦ logEmbedding K (Additive.ofMul (u i)))
+
+variable {K} in
+def regOfFamily (u : Fin (rank K) → (𝓞 K)ˣ) : ℝ := by
+  classical
+  by_cases hu : isMaxRank u
+  · exact ZLattice.covolume <| span ℤ <| Set.range <|
+      basisOfPiSpaceOfLinearIndependent <| (linearIndependent_equiv (equivFinRank K).symm).mpr hu
+  · exact 0
+
+-- variable {K} in
+-- def regOfFamily (u : Fin (rank K) → (𝓞 K)ˣ) : ℝ := by
+--   classical
+--   by_cases hr :  0 < rank K
+--   · by_cases hu : isMaxRank u
+--     · have : Nonempty (Fin (rank K)) := Fin.pos_iff_nonempty.mp hr
+--       let B := basisOfLinearIndependentOfCardEqFinrank hu
+--         (by rw [Units.finrank_eq_rank, Fintype.card_fin])
+--       exact ZLattice.covolume (span ℤ (Set.range B))
+--     · exact 0
+--   · exact 1
+
+theorem regOfFamily_eq_zero {u : Fin (rank K) → (𝓞 K)ˣ} (hu : ¬ isMaxRank u) :
+    regOfFamily u = 0 := by
+  rw [regOfFamily, dif_neg hu]
+
+open scoped Classical in
 /-- The regulator of a number field `K`. -/
 def regulator : ℝ := ZLattice.covolume (unitLattice K)
+
+example : regulator K = regOfFamily (fundSystem K) := by
+  classical
+  simp only [regOfFamily, logEmbedding_fundSystem]
+  rw [regulator, dif_pos]
+  · simp only [coe_basisOfPiSpaceOfLinearIndependent, Function.comp_def]
+    simp_rw [← ((basisUnitLattice K).reindex (equivFinRank K)).ofZLatticeBasis_span ℝ]
+    congr! with i
+    rw [Basis.ofZLatticeBasis_apply, Basis.reindex_apply]
+  · convert ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K)).linearIndependent
+    simp [logEmbedding_fundSystem, Basis.ofZLatticeBasis_apply]
 
 open scoped Classical in
 theorem regulator_ne_zero : regulator K ≠ 0 := ZLattice.covolume_ne_zero (unitLattice K) volume

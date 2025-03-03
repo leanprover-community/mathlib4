@@ -117,6 +117,11 @@ theorem covolume_eq_det {ι : Type*} [Fintype ι] [DecidableEq ι] (L : Submodul
   ext1
   exact b.ofZLatticeBasis_apply ℝ L _
 
+theorem covolume_eq_one {ι : Type*} [Fintype ι] [IsEmpty ι] (L : Submodule ℤ (ι → ℝ))
+    [DiscreteTopology L] [IsZLattice ℝ L] :
+    covolume L = 1 := by
+  rw [covolume_eq_det L (Basis.empty _), Matrix.coe_det_isEmpty, Function.const_apply, abs_one]
+
 theorem covolume_eq_det_inv {ι : Type*} [Fintype ι] [DecidableEq ι] (L : Submodule ℤ (ι → ℝ))
     [DiscreteTopology L] [IsZLattice ℝ L] (b : Basis ι ℤ L) :
     covolume L = |(LinearEquiv.det (b.ofZLatticeBasis ℝ L).equivFun : ℝ)|⁻¹ := by
