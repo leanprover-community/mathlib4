@@ -197,6 +197,14 @@ theorem append_right_injective (s : List α) : Injective fun t ↦ s ++ t :=
 theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
   fun _ _ ↦ append_cancel_right
 
+theorem append_cancel_right_length {as bs bs' cs : List α}
+(eq_length : bs.length = bs'.length) (h : as ++ bs = cs ++ bs') : as = cs := by
+  match as, cs with
+  | [], []       => rfl
+  | [], c::cs    => have aux := congrArg length h; simp +arith [eq_length] at aux
+  | a::as, []    => have aux := congrArg length h; simp +arith [eq_length] at aux
+  | a::as, c::cs => injection h with h₁ h₂; subst h₁; rw [append_cancel_right_length eq_length h₂]
+
 /-! ### replicate -/
 
 theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length a ↔ ∀ b ∈ l, b = a
