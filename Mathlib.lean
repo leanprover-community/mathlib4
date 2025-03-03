@@ -3246,15 +3246,11 @@ import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.Data.ZMod.QuotientRing
 import Mathlib.Data.ZMod.Units
 import Mathlib.Data.ZMod.ValMinAbs
-import Mathlib.Deprecated.AlgebraClasses
 import Mathlib.Deprecated.Aliases
 import Mathlib.Deprecated.ByteArray
 import Mathlib.Deprecated.Cardinal.Continuum
 import Mathlib.Deprecated.Cardinal.Finite
 import Mathlib.Deprecated.Cardinal.PartENat
-import Mathlib.Deprecated.Equiv
-import Mathlib.Deprecated.Logic
-import Mathlib.Deprecated.MinMax
 import Mathlib.Deprecated.NatLemmas
 import Mathlib.Deprecated.Order
 import Mathlib.Dynamics.BirkhoffSum.Average
