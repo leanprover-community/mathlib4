@@ -206,9 +206,7 @@ theorem ofBijective.symm_eq {φ : P₁ →ᵃ[k] P₂} (hφ : Function.Bijective
     (ofBijective hφ).symm.toEquiv = (Equiv.ofBijective _ hφ).symm :=
   rfl
 
-@[simp]
-theorem range_eq (e : P₁ ≃ᵃ[k] P₂) : range e = univ :=
-  e.surjective.range_eq
+theorem range_eq (e : P₁ ≃ᵃ[k] P₂) : range e = univ := by simp
 
 @[simp]
 theorem apply_symm_apply (e : P₁ ≃ᵃ[k] P₂) (p : P₂) : e (e.symm p) = p :=
