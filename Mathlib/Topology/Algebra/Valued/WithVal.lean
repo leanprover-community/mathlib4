@@ -106,5 +106,5 @@ def withValEquiv (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ
 end NumberField.RingOfIntegers
 
 open scoped NumberField in
-def Rat.RingOfIntegers.withValEquiv (v : Valuation ℚ Γ₀) : 𝓞 (WithVal v) ≃+* ℤ :=
+def Rat.ringOfIntegersWithValEquiv (v : Valuation ℚ Γ₀) : 𝓞 (WithVal v) ≃+* ℤ :=
   NumberField.RingOfIntegers.withValEquiv v ℤ
