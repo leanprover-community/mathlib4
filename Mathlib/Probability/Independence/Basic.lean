@@ -649,17 +649,19 @@ lemma iIndepFun.indepFun_prod_mk_prod_mk (h_indep : iIndepFun m f μ) (hf : ∀ 
   have hg (i j : ι) : Measurable (g i j) := by fun_prop
   exact (h_indep.indepFun_finset {i, j} {k, l} (by aesop) hf).comp (hg i j) (hg k l)
 
-lemma iIndepFun.reindex_of_injective (h : iIndepFun n f μ) (g : ι' → ι) (hg : Injective g) :
-    iIndepFun (n ∘' g) (f ∘' g) μ := by
+variable {ι' : Type*} {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
+
+open Function in
+lemma iIndepFun.reindex_of_injective {g : ι' → ι} (hg : g.Injective) (h : iIndepFun m f μ) :
+    iIndepFun (m ∘' g) (f ∘' g) μ := by
   have : IsProbabilityMeasure μ := h.isProbabilityMeasure
   nontriviality ι'
-  have A : ∀ x, invFun g (g x) = x := leftInverse_invFun hg
+  have A (x) : Function.invFun g (g x) = x := Function.leftInverse_invFun hg x
   rw [iIndepFun_iff] at h ⊢
   intro t s' hs'
-  specialize h (t.map ⟨g, hg⟩ ) (f' := fun i ↦ s' (invFun g i)) (by simpa [A] using hs')
-  simpa [A] using h
+  simpa [A] using h (t.map ⟨g, hg⟩) (f' := fun i ↦ s' (invFun g i)) (by simpa [A] using hs')
 
-lemma iIndepFun.reindex (g : ι' ≃ ι) (h : iIndepFun (n ∘' g) (f ∘' g) μ) : iIndepFun n f μ := by
+lemma iIndepFun.reindex (g : ι' ≃ ι) (h : iIndepFun (m ∘' g) (f ∘' g) μ) : iIndepFun m f μ := by
   rw [iIndepFun_iff] at h ⊢
   intro t s hs
   have : ⋂ i, ⋂ (_ : g i ∈ t), s (g i) = ⋂ i ∈ t, s i := by ext x; simp [g.forall_congr_left]
@@ -668,10 +670,11 @@ lemma iIndepFun.reindex (g : ι' ≃ ι) (h : iIndepFun (n ∘' g) (f ∘' g) μ
   apply h
   convert hs <;> simp
 
-lemma iIndepFun.reindex_symm (g : ι' ≃ ι) (h : iIndepFun n f μ) : iIndepFun (n ∘' g) (f ∘' g) μ := by
-  apply h.reindex_of_injective _ (Equiv.injective g)
+lemma iIndepFun.reindex_symm (g : ι' ≃ ι) (h : iIndepFun m f μ) :
+    iIndepFun (m ∘' g) (f ∘' g) μ :=
+  h.reindex_of_injective (Equiv.injective g)
 
-lemma iIndepFun_reindex_iff (g : ι' ≃ ι) : iIndepFun (n ∘' g) (f ∘' g) μ ↔ iIndepFun n f μ :=
+lemma iIndepFun_reindex_iff (g : ι' ≃ ι) : iIndepFun (m ∘' g) (f ∘' g) μ ↔ iIndepFun m f μ :=
   ⟨fun h ↦ h.reindex g, fun h ↦ h.reindex_symm g⟩
 
 end iIndepFun
