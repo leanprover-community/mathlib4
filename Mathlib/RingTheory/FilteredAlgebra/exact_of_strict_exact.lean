@@ -5,6 +5,7 @@ section ExhaustiveFiltration
 
 variable {ι A σ : Type*} [Preorder ι] [SetLike σ A]
 
+/-- -/
 class IsExhaustiveFiltration (F : ι → σ) (F_lt : ι → σ) [IsFiltration F F_lt] : Prop where
   exhaustive : (⊤ : Set A) = ⋃ i, (F i : Set A)
 
@@ -32,52 +33,36 @@ variable (f : FilteredRingHom FR FR_lt FS FS_lt) (g : FilteredRingHom FS FS_lt F
 
 open DirectSum DFinsupp FilteredRingHom FilteredAddGroupHom
 
-omit [DecidableEq ι] in
+omit [DecidableEq ι] [FilteredRingHom FR FR_lt FT FT_lt] in
 lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict : g.IsStrict)
-    (exact : Function.Exact f.toRingHom g.toRingHom) :
+    (fgexact : Function.Exact f.toAddMonoidHom g.toAddMonoidHom) :
     ∀ p : ι, ∀ x : GradedPiece FS FS_lt p, Gr(p)[g] x = 0 → ∃ y : FR p, Gr(p)[f] ⟦y⟧ = x := by
   intro p x₀ xto0
-  obtain ⟨x, hx⟩ := Quotient.exists_rep x₀
-  rw [← hx] at xto0 ⊢
-  obtain ⟨x', geq⟩ : ∃ x' : FS_lt p, g.toRingHom x = g.toRingHom x' := by
+  obtain⟨x, hx⟩ : ∃ x, GradedPiece.mk FS FS_lt x = x₀:= Quotient.exists_rep x₀
+  rw[← hx] at xto0 ⊢
+  obtain⟨x', xin, geq⟩ : g.toRingHom x ∈ g.toRingHom '' (FS_lt p) := by
+    apply gstrict.strict_lt
+    · rw [AssociatedGradedRingHom_apply_mk_eq_mk_piece_wise_hom, GradedPiece.mk_eq,
+          QuotientAddGroup.eq_zero_iff] at xto0
+      exact xto0
+    simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Set.mem_range,
+      exists_apply_eq_apply]
 
-    -- have : (g.toRingHom x) ∈ FT_lt p := by
-
-    #check gstrict.strict_lt (p := p) (y := g.toRingHom x)
-    -- have : g.toRingHom x ∈ g.toFun '' (FS_lt p) := by
-    --   apply?
-      -- sorry
-    -- have := (gstrict.strict_lt p (g.toRingHom x)).2 ⟨xto0, RingHom.mem_range_self g.toRingHom x⟩
-
-    sorry
-    -- simp only [Gf, GradedPiece.mk_eq, AddMonoidHom.coe_mk, ZeroHom.coe_mk, Quotient.lift_mk,
-    --   QuotientAddGroup.eq_zero_iff] at xto0
-    --
-    -- rcases (Set.mem_image _ _ _).1 this with ⟨x', x'Mltp, geq⟩
-    -- use ⟨x', x'Mltp⟩, geq.symm
-  obtain ⟨y, feq⟩ : ∃ y : FR p, f.toRingHom y = x - x' := by
+  obtain⟨y, yin, feq⟩ : x - x' ∈ f.toRingHom '' (FR p) := by
     apply_fun (fun m ↦ m - g.toRingHom x') at geq
     rw [sub_self, ← map_sub] at geq
-    #check fstrict.strict (p := p) (y := x.1 - x')
-    -- replace strictf := ().2
-    have sub_mem_mp : x.1 - x' ∈ FS p := by
-      apply sub_mem (SetLike.coe_mem x)
-      sorry
-    --   -- refine SetLike.mem_coe.mp ?_
-    --   --  <| (IsFiltration.lt_le FS FS_lt p) x'.2
-    -- replace strictf := strictf ⟨sub_mem_mp, (exact (x - x')).1 geq⟩
-    -- -- obtain ⟨y'', hy''⟩ := strictf
-    -- exact ⟨⟨y'', hy''.1⟩, hy''.2⟩
-    sorry
-  use y
-  have : Gr(p)[f] ⟦y⟧ = ⟦⟨f.toRingHom y, FilteredHom.pieces_wise (SetLike.coe_mem y)⟩⟧ := by
-    sorry
-    -- simp [FilteredAddGroupHom.GradedPieceHom_apply_mk_eq_mk_piece_wise_hom]
+    have sub_mem_mp : x.1 - x' ∈ FS p :=
+      sub_mem (SetLike.coe_mem x) <| (IsFiltration.lt_le FS FS_lt p) xin
+    have : (x - x' : S) ∈ (g.toAddMonoidHom).ker := geq.symm
+    rw[Function.Exact.addMonoidHom_ker_eq fgexact] at this
+    apply fstrict.strict sub_mem_mp this
 
---   simp only [this, feq]
---   refine QuotientAddGroup.eq.mpr (AddSubgroup.mem_addSubgroupOf.mpr ?_)
---   simp only [AddSubgroup.coe_add, NegMemClass.coe_neg, neg_sub, sub_add_cancel, SetLike.coe_mem]
-
+  use ⟨y, yin⟩
+  rw[← GradedPiece.mk_eq, AssociatedGradedRingHom_apply_mk_eq_mk_piece_wise_hom]
+  simp only [GradedPiece.mk_eq]
+  refine QuotientAddGroup.eq.mpr (AddSubgroup.mem_addSubgroupOf.mpr ?_)
+  have : (toFilteredHom.piece_wise_hom p ⟨y, yin⟩ : FS p) = f.toRingHom y := rfl
+  simp[this, feq, xin]
 
 variable  [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt]
 
@@ -117,3 +102,5 @@ theorem exact_of_strict_exact (fstrict : f.IsStrict) (gstrict : g.IsStrict)
       AssociatedGradedRingHom_apply_mk_eq_mk_piece_wise_hom (g.comp f), this, ← GradedPiece.mk_zero]
 
 end exactness
+
+#lint
