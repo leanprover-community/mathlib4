@@ -78,9 +78,6 @@ class FilteredHom where
   pieces_wise {i a} : a ∈ FA i → toFun a ∈ FB i
   pieces_wise_lt {i a} : a ∈ FA_lt i → toFun a ∈ FB_lt i
 
-instance : CoeOut (FilteredHom FA FA_lt FB FB_lt) (A → B) :=
-  ⟨fun a ↦ a.toFun⟩
-
 instance : FunLike (FilteredHom FA FA_lt FB FB_lt) A B where
   coe f := f.toFun
   coe_injective' _ _ hfg := FilteredHom.ext hfg
@@ -93,7 +90,7 @@ variable {FA FB FC FA_lt FB_lt FC_lt} in
 
 /-- Filtered morphism restricted to its `i`-th filtration layer.-/
 def piece_wise_hom (i : ι) : FA i → FB i :=
-  fun a ↦ ⟨f.toFun a, f.pieces_wise a.2⟩
+  Subtype.map f (fun _ ha ↦ f.pieces_wise ha)
 
 /-- The composition of two filtered morphisms,
 obtained from the composition of the underlying function.-/
@@ -133,6 +130,9 @@ add_decl_doc FilteredAddGroupHom.toAddMonoidHom
 instance : Coe (FilteredAddGroupHom FA FA_lt FB FB_lt) (FilteredHom FA FA_lt FB FB_lt) :=
   ⟨fun a ↦ a.toFilteredHom⟩
 
+instance : CoeOut (FilteredAddGroupHom FA FA_lt FB FB_lt) (A →+ B) :=
+  ⟨fun a ↦ a.toAddMonoidHom⟩
+
 namespace FilteredAddGroupHom
 
 variable  (g : FilteredAddGroupHom FB FB_lt FC FC_lt) (f : FilteredAddGroupHom FA FA_lt FB FB_lt)
@@ -146,7 +146,17 @@ def comp : FilteredAddGroupHom FA FA_lt FC FC_lt where
   pieces_wise ha := g.pieces_wise (f.pieces_wise ha)
   pieces_wise_lt ha := g.pieces_wise_lt (f.pieces_wise_lt ha)
 
-variable [AddSubgroupClass α A] [AddSubgroupClass β B] [AddSubgroupClass γ C]
+variable [AddSubgroupClass α A]
+
+lemma IsStrict.strict [FilteredHom.IsStrict FA FA_lt FB FB_lt f] {p y} :
+    y ∈ (FB p) → y ∈ f.range → y ∈ AddSubgroup.map (f : A →+ B) (FA p) :=
+  FilteredHom.IsStrict.strict
+
+lemma IsStrict.strict_lt [FilteredHom.IsStrict FA FA_lt FB FB_lt f] {p y} :
+    y ∈ (FB_lt p) → y ∈ f.range → y ∈ AddSubgroup.map (f : A →+ B) (FA_lt p) :=
+  FilteredHom.IsStrict.strict_lt
+
+variable [AddSubgroupClass β B] [AddSubgroupClass γ C]
 
 /-- A filtered abelian group morphism restricted to its `i`-th filtration layer.-/
 abbrev piece_wise_hom (i : ι) : FA i →+ FB i where
@@ -217,6 +227,9 @@ add_decl_doc FilteredRingHom.toRingHom
 
 instance : Coe (FilteredRingHom FR FR_lt FS FS_lt) (FilteredAddGroupHom FR FR_lt FS FS_lt) :=
   ⟨fun a ↦ a.toFilteredAddGroupHom⟩
+
+instance : CoeOut (FilteredRingHom FR FR_lt FS FS_lt) (R →+* S) :=
+  ⟨fun a ↦ a.toRingHom⟩
 
 namespace FilteredRingHom
 
