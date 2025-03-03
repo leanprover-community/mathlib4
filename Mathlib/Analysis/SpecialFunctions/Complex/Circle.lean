@@ -22,7 +22,7 @@ open Real
 namespace Circle
 
 theorem injective_arg : Injective fun z : Circle => arg z := fun z w h =>
-  Subtype.ext <| ext_abs_arg (z.abs_coe.trans w.abs_coe.symm) h
+  Subtype.ext <| ext_norm_arg (z.norm_coe.trans w.norm_coe.symm) h
 
 @[simp]
 theorem arg_eq_arg {z w : Circle} : arg z = arg w ↔ z = w :=
