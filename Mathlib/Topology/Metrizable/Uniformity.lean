@@ -3,8 +3,9 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.NNReal.Basic
+import Mathlib.Topology.Metrizable.Basic
 
 /-!
 # Metrizable uniform spaces
@@ -117,7 +118,9 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
     rw [← nonpos_iff_eq_zero]
     simpa only [nonpos_iff_eq_zero, hab, hbc, dist_self c, max_self, mul_zero] using hd a b c c
   haveI : IsTrans X fun x y => d x y = 0 := ⟨hd₀_trans⟩
-  induction' hn : length l using Nat.strong_induction_on with n ihn generalizing x y l
+  suffices ∀ n, length l = n → d x y ≤ 2 * (zipWith d (x :: l) (l ++ [y])).sum by exact this _ rfl
+  intro n hn
+  induction n using Nat.strong_induction_on generalizing x y l with | h n ihn =>
   simp only at ihn
   subst n
   set L := zipWith d (x::l) (l ++ [y])
@@ -216,7 +219,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     intro x y n
     dsimp only [d]
     split_ifs with h
-    · rw [(pow_right_strictAnti hr.1 hr.2).le_iff_le, Nat.find_le_iff]
+    · rw [(pow_right_strictAnti₀ hr.1 hr.2).le_iff_le, Nat.find_le_iff]
       exact ⟨fun ⟨m, hmn, hm⟩ hn => hm (hB.antitone hmn hn), fun h => ⟨n, le_rfl, h⟩⟩
     · push_neg at h
       simp only [h, not_true, (pow_pos hr.1 _).not_le]
@@ -268,7 +271,7 @@ theorem UniformSpace.metrizableSpace [UniformSpace X] [IsCountablyGenerated (�
   infer_instance
 
 /-- A totally bounded set is separable in countably generated uniform spaces. This can be obtained
-from the more general `EMetric.subset_countable_closure_of_almost_dense_set`.-/
+from the more general `EMetric.subset_countable_closure_of_almost_dense_set`. -/
 lemma TotallyBounded.isSeparable [UniformSpace X] [i : IsCountablyGenerated (𝓤 X)]
     {s : Set X} (h : TotallyBounded s) : TopologicalSpace.IsSeparable s := by
   letI := (UniformSpace.pseudoMetricSpace (X := X)).toPseudoEMetricSpace

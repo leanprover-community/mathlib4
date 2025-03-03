@@ -3,6 +3,7 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Data.DFinsupp.BigOperators
 import Mathlib.Data.DFinsupp.Order
 
 /-!
@@ -92,11 +93,11 @@ theorem toDFinsupp_lt_toDFinsupp : toDFinsupp s < toDFinsupp t ↔ s < t :=
 
 @[simp]
 theorem toDFinsupp_inter (s t : Multiset α) : toDFinsupp (s ∩ t) = toDFinsupp s ⊓ toDFinsupp t := by
-  ext i; simp [inf_eq_min]
+  ext i; simp
 
 @[simp]
 theorem toDFinsupp_union (s t : Multiset α) : toDFinsupp (s ∪ t) = toDFinsupp s ⊔ toDFinsupp t := by
-  ext i; simp [sup_eq_max]
+  ext i; simp
 
 end Multiset
 

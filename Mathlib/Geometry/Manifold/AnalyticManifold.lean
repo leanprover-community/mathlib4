@@ -4,32 +4,29 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Lee, Geoffrey Irving
 -/
 import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
+import Mathlib.Geometry.Manifold.IsManifold.Basic
 
 /-!
 # Analytic manifolds (possibly with boundary or corners)
 
 An analytic manifold is a manifold modelled on a normed vector space, or a subset like a
-half-space (to get manifolds with boundaries) for which changes of coordinates are analytic in the
-interior and smooth everywhere (including at the boundary).  The definition mirrors
-`SmoothManifoldWithCorners`, but using an `analyticGroupoid` in place of `contDiffGroupoid`.  All
-analytic manifolds are smooth manifolds.
+half-space (to get manifolds with boundaries) for which changes of coordinates are analytic
+everywhere.  The definition mirrors `IsManifold`, but using an `analyticGroupoid` in
+place of `contDiffGroupoid`.  All analytic manifolds are smooth manifolds.
 
-Completeness is required throughout, but this is nonessential: it is due to many of the lemmas about
-AnalyticOn` requiring completeness for ease of proof.
+TODO: deprecate the whole file: one should use `IsManifold I ω M` instead
 -/
 
 noncomputable section
 
 open Set Filter Function
 
-open scoped Manifold Filter Topology
+open scoped Manifold Filter Topology ContDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*}
-  [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M]
+  [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M]
 
 /-!
 ## `analyticGroupoid`
@@ -41,6 +38,7 @@ analytic on the interior, and map the interior to itself.  This allows us to def
 
 section analyticGroupoid
 
+variable (I) in
 /-- Given a model with corners `(E, H)`, we define the pregroupoid of analytic transformations of
 `H` as the maps that are `AnalyticOn` when read in `E` through `I`.  Using `AnalyticOn`
 rather than `AnalyticOnNhd` gives us meaningful definitions at boundary points. -/
@@ -74,6 +72,7 @@ def analyticPregroupoid : Pregroupoid H where
     simp only [mfld_simps, ← hx] at hy1 ⊢
     rw [fg _ hy1]
 
+variable (I) in
 /-- Given a model with corners `(E, H)`, we define the groupoid of analytic transformations of
 `H` as the maps that are `AnalyticOn` when read in `E` through `I`.  Using `AnalyticOn`
 rather than `AnalyticOnNhd` gives us meaningful definitions at boundary points. -/
@@ -95,7 +94,7 @@ theorem symm_trans_mem_analyticGroupoid (e : PartialHomeomorph M H) :
     e.symm.trans e ∈ analyticGroupoid I :=
   haveI : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
     PartialHomeomorph.symm_trans_self _
-  StructureGroupoid.mem_of_eqOnSource _ (ofSet_mem_analyticGroupoid I e.open_target) this
+  StructureGroupoid.mem_of_eqOnSource _ (ofSet_mem_analyticGroupoid e.open_target) this
 
 /-- The analytic groupoid is closed under restriction. -/
 instance : ClosedUnderRestriction (analyticGroupoid I) :=
@@ -103,7 +102,7 @@ instance : ClosedUnderRestriction (analyticGroupoid I) :=
     (by
       rw [StructureGroupoid.le_iff]
       rintro e ⟨s, hs, hes⟩
-      exact (analyticGroupoid I).mem_of_eqOnSource' _ _ (ofSet_mem_analyticGroupoid I hs) hes)
+      exact (analyticGroupoid I).mem_of_eqOnSource' _ _ (ofSet_mem_analyticGroupoid hs) hes)
 
 /-- `f ∈ analyticGroupoid` iff it and its inverse are analytic within `range I`. -/
 lemma mem_analyticGroupoid {I : ModelWithCorners 𝕜 E H} {f : PartialHomeomorph H H} :
@@ -145,7 +144,7 @@ section AnalyticManifold
 /-- An analytic manifold w.r.t. a model `I : ModelWithCorners 𝕜 E H` is a charted space over `H`
 s.t. all extended chart conversion maps are analytic. -/
 class AnalyticManifold (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M]
-  [ChartedSpace H M] extends HasGroupoid M (analyticGroupoid I) : Prop
+  [ChartedSpace H M] : Prop extends HasGroupoid M (analyticGroupoid I)
 
 /-- Normed spaces are analytic manifolds over themselves. -/
 instance AnalyticManifold.self : AnalyticManifold 𝓘(𝕜, E) E where
@@ -164,12 +163,11 @@ instance AnalyticManifold.prod {E A : Type} [NormedAddCommGroup E] [NormedSpace 
       (n.toHasGroupoid.compatible hf2 hg2)
 
 /-- Analytic manifolds are smooth manifolds. -/
-instance AnalyticManifold.smoothManifoldWithCorners [ChartedSpace H M]
-    [cm : AnalyticManifold I M] [CompleteSpace E] :
-    SmoothManifoldWithCorners I M where
-  compatible := by
-    intro f g hf hg
-    have m := cm.compatible hf hg
-    exact ⟨m.1.contDiffOn, m.2.contDiffOn⟩
+instance AnalyticManifold.isManifold [ChartedSpace H M]
+    [cm : AnalyticManifold I M] :
+    IsManifold I ∞ M where
+  compatible hf hg := ⟨(cm.compatible hf hg).1.contDiffOn I.uniqueDiffOn_preimage_source,
+    (cm.compatible hg hf).1.contDiffOn I.uniqueDiffOn_preimage_source⟩
+
 
 end AnalyticManifold

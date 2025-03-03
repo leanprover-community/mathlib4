@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Interval.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+import Mathlib.Algebra.Order.Interval.Finset.Basic
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Tactic.Linarith
 
@@ -136,7 +136,7 @@ theorem prod_Ioc_succ_top {a b : ℕ} (hab : a ≤ b) (f : ℕ → M) :
 
 @[to_additive]
 theorem prod_Icc_succ_top {a b : ℕ} (hab : a ≤ b + 1) (f : ℕ → M) :
-    (∏ k in Icc a (b + 1), f k) = (∏ k in Icc a b, f k) * f (b + 1) := by
+    (∏ k ∈ Icc a (b + 1), f k) = (∏ k ∈ Icc a b, f k) * f (b + 1) := by
   rw [← Nat.Ico_succ_right, prod_Ico_succ_top hab, Nat.Ico_succ_right]
 
 @[to_additive]
@@ -268,7 +268,7 @@ lemma prod_range_diag_flip (n : ℕ) (f : ℕ → ℕ → M) :
       ∏ m ∈ range n, ∏ k ∈ range (n - m), f m k := by
   rw [prod_sigma', prod_sigma']
   refine prod_nbij' (fun a ↦ ⟨a.2, a.1 - a.2⟩) (fun a ↦ ⟨a.1 + a.2, a.1⟩) ?_ ?_ ?_ ?_ ?_ <;>
-    simp (config := { contextual := true }) only [mem_sigma, mem_range, lt_tsub_iff_left,
+    simp +contextual only [mem_sigma, mem_range, lt_tsub_iff_left,
       Nat.lt_succ_iff, le_add_iff_nonneg_right, Nat.zero_le, and_true, and_imp, imp_self,
       implies_true, Sigma.forall, forall_const, add_tsub_cancel_of_le, Sigma.mk.inj_iff,
       add_tsub_cancel_left, heq_eq_eq]

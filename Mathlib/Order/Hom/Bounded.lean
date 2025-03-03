@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.Hom.Basic
-import Mathlib.Order.BoundedOrder
+import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Bounded order homomorphisms
@@ -76,8 +76,8 @@ class BotHomClass (F : Type*) (α β : outParam Type*) [Bot α] [Bot β] [FunLik
 
 You should extend this class when you extend `BoundedOrderHom`. -/
 class BoundedOrderHomClass (F α β : Type*) [LE α] [LE β]
-  [BoundedOrder α] [BoundedOrder β] [FunLike F α β]
-  extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) : Prop where
+    [BoundedOrder α] [BoundedOrder β] [FunLike F α β] : Prop
+  extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
   /-- Morphisms preserve the top element. The preferred spelling is `_root_.map_top`. -/
   map_top (f : F) : f ⊤ = ⊤
   /-- Morphisms preserve the bottom element. The preferred spelling is `_root_.map_bot`. -/
@@ -227,7 +227,7 @@ variable (α)
 protected def id : TopHom α α :=
   ⟨id, rfl⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(TopHom.id α) = id :=
   rfl
 
@@ -308,7 +308,7 @@ section SemilatticeInf
 
 variable [SemilatticeInf β] [OrderTop β] (f g : TopHom α β)
 
-instance : Inf (TopHom α β) :=
+instance : Min (TopHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_top, map_top, inf_top_eq]⟩⟩
 
 instance : SemilatticeInf (TopHom α β) :=
@@ -328,7 +328,7 @@ section SemilatticeSup
 
 variable [SemilatticeSup β] [OrderTop β] (f g : TopHom α β)
 
-instance : Sup (TopHom α β) :=
+instance : Max (TopHom α β) :=
   ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_top, map_top, sup_top_eq]⟩⟩
 
 instance : SemilatticeSup (TopHom α β) :=
@@ -400,7 +400,7 @@ variable (α)
 protected def id : BotHom α α :=
   ⟨id, rfl⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(BotHom.id α) = id :=
   rfl
 
@@ -481,7 +481,7 @@ section SemilatticeInf
 
 variable [SemilatticeInf β] [OrderBot β] (f g : BotHom α β)
 
-instance : Inf (BotHom α β) :=
+instance : Min (BotHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_bot, map_bot, inf_bot_eq]⟩⟩
 
 instance : SemilatticeInf (BotHom α β) :=
@@ -501,7 +501,7 @@ section SemilatticeSup
 
 variable [SemilatticeSup β] [OrderBot β] (f g : BotHom α β)
 
-instance : Sup (BotHom α β) :=
+instance : Max (BotHom α β) :=
   ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_bot, map_bot, sup_bot_eq]⟩⟩
 
 instance : SemilatticeSup (BotHom α β) :=
@@ -527,7 +527,7 @@ end BotHom
 
 /-! ### Bounded order homomorphisms -/
 
--- Porting note (#11215): TODO: remove this configuration and use the default configuration.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
 initialize_simps_projections BoundedOrderHom (+toOrderHom, -toFun)
 
@@ -578,7 +578,7 @@ protected def id : BoundedOrderHom α α :=
 instance : Inhabited (BoundedOrderHom α α) :=
   ⟨BoundedOrderHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(BoundedOrderHom.id α) = id :=
   rfl
 
@@ -725,18 +725,18 @@ protected def dual :
     BoundedOrderHom α β ≃
       BoundedOrderHom αᵒᵈ
         βᵒᵈ where
-  toFun f := ⟨OrderHom.dual f.toOrderHom, f.map_bot', f.map_top'⟩
+  toFun f := ⟨f.toOrderHom.dual, f.map_bot', f.map_top'⟩
   invFun f := ⟨OrderHom.dual.symm f.toOrderHom, f.map_bot', f.map_top'⟩
   left_inv _ := ext fun _ => rfl
   right_inv _ := ext fun _ => rfl
 
 @[simp]
-theorem dual_id : BoundedOrderHom.dual (BoundedOrderHom.id α) = BoundedOrderHom.id _ :=
+theorem dual_id : (BoundedOrderHom.id α).dual = BoundedOrderHom.id _ :=
   rfl
 
 @[simp]
 theorem dual_comp (g : BoundedOrderHom β γ) (f : BoundedOrderHom α β) :
-    BoundedOrderHom.dual (g.comp f) = g.dual.comp (BoundedOrderHom.dual f) :=
+    (g.comp f).dual = g.dual.comp f.dual :=
   rfl
 
 @[simp]

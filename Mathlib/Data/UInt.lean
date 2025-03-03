@@ -3,7 +3,9 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Data.ZMod.Defs
+import Mathlib.Data.BitVec
 
 /-!
 # Adds Mathlib specific instances to the `UIntX` data types.
@@ -28,52 +30,57 @@ run_cmd
   let typeName := Lean.mkIdent typeName'
   Lean.Elab.Command.elabCommand (← `(
     namespace $typeName
-      instance neZero : NeZero size := ⟨by decide⟩
 
       instance : Neg $typeName where
-        neg a := mk (-a.val)
+        neg a := ofBitVec ⟨-a.toFin⟩
 
       instance : Pow $typeName ℕ where
-        pow a n := mk (a.val ^ n)
+        pow a n := ofBitVec ⟨a.toFin ^ n⟩
 
       instance : SMul ℕ $typeName where
-        smul n a := mk (n • a.val)
+        smul n a := ofBitVec ⟨n • a.toFin⟩
 
       instance : SMul ℤ $typeName where
-        smul z a := mk (z • a.val)
+        smul z a := ofBitVec ⟨z • a.toFin⟩
 
-      lemma neg_def (a : $typeName) : -a = ⟨-a.val⟩ := rfl
+      lemma neg_def (a : $typeName) : -a = ⟨⟨-a.toFin⟩⟩ := rfl
 
-      lemma pow_def (a : $typeName) (n : ℕ) : a ^ n = ⟨a.val ^ n⟩ := rfl
+      lemma pow_def (a : $typeName) (n : ℕ) : a ^ n = ⟨⟨a.toFin ^ n⟩⟩ := rfl
 
-      lemma nsmul_def (n : ℕ) (a : $typeName) : n • a = ⟨n • a.val⟩ := rfl
+      lemma nsmul_def (n : ℕ) (a : $typeName) : n • a = ⟨⟨n • a.toFin⟩⟩ := rfl
 
-      lemma zsmul_def (z : ℤ) (a : $typeName) : z • a = ⟨z • a.val⟩ := rfl
+      lemma zsmul_def (z : ℤ) (a : $typeName) : z • a = ⟨⟨z • a.toFin⟩⟩ := rfl
 
-      open $typeName (eq_of_val_eq) in
-      lemma val_injective : Function.Injective val := @eq_of_val_eq
+      open $typeName (eq_of_toFin_eq) in
+      lemma toFin_injective : Function.Injective toFin := @eq_of_toFin_eq
+
+      @[deprecated toFin_injective (since := "2025-02-13")]
+      lemma val_injective : Function.Injective toFin := toFin_injective
+
+      open $typeName (eq_of_toBitVec_eq) in
+      lemma toBitVec_injective : Function.Injective toBitVec := @eq_of_toBitVec_eq
 
       instance instCommMonoid : CommMonoid $typeName :=
-        Function.Injective.commMonoid val val_injective
+        Function.Injective.commMonoid toBitVec toBitVec_injective
           rfl (fun _ _ => rfl) (fun _ _ => rfl)
 
       instance instNonUnitalCommRing : NonUnitalCommRing $typeName :=
-        Function.Injective.nonUnitalCommRing val val_injective
+        Function.Injective.nonUnitalCommRing toBitVec toBitVec_injective
           rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
           (fun _ _ => rfl) (fun _ _ => rfl)
 
       local instance instNatCast : NatCast $typeName where
-        natCast n := mk n
+        natCast n := ofBitVec n
 
       local instance instIntCast : IntCast $typeName where
-        intCast z := mk z
+        intCast z := ofBitVec z
 
-      lemma natCast_def (n : ℕ) : (n : $typeName) = ⟨n⟩ := rfl
+      lemma natCast_def (n : ℕ) : (n : $typeName) = ofBitVec n := rfl
 
-      lemma intCast_def (z : ℤ) : (z : $typeName) = ⟨z⟩ := rfl
+      lemma intCast_def (z : ℤ) : (z : $typeName) = ofBitVec z := rfl
 
       local instance instCommRing : CommRing $typeName :=
-        Function.Injective.commRing val val_injective
+        Function.Injective.commRing toBitVec toBitVec_injective
           rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
           (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
 
@@ -113,13 +120,7 @@ def isASCIIDigit (c : UInt8) : Bool :=
 def isASCIIAlphanum (c : UInt8) : Bool :=
   c.isASCIIAlpha || c.isASCIIDigit
 
-@[deprecated (since := "2024-06-06")] alias isUpper := isASCIIUpper
-@[deprecated (since := "2024-06-06")] alias isLower := isASCIILower
-@[deprecated (since := "2024-06-06")] alias isAlpha := isASCIIAlpha
-@[deprecated (since := "2024-06-06")] alias isDigit := isASCIIDigit
-@[deprecated (since := "2024-06-06")] alias isAlphanum := isASCIIAlphanum
-
 /-- The numbers from 0 to 256 are all valid UTF-8 characters, so we can embed one in the other. -/
-def toChar (n : UInt8) : Char := ⟨n.toUInt32, .inl (n.1.2.trans (by decide))⟩
+def toChar (n : UInt8) : Char := ⟨n.toUInt32, .inl (Nat.lt_trans n.toBitVec.isLt (by decide))⟩
 
 end UInt8

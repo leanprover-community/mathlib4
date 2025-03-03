@@ -7,7 +7,9 @@ Authors: Andrew Yang, Riccardo Brasca
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.DiscreteValuationRing.TFAE
+import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+import Mathlib.RingTheory.Nakayama
 
 /-!
 
@@ -17,9 +19,9 @@ We gather results about the quotients of local rings.
 
 open Submodule FiniteDimensional Module
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [LocalRing R] [Module.Finite R S]
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [IsLocalRing R] [Module.Finite R S]
 
-namespace LocalRing
+namespace IsLocalRing
 
 local notation "p" => maximalIdeal R
 local notation "pS" => Ideal.map (algebraMap R S) p
@@ -44,7 +46,8 @@ theorem quotient_span_eq_top_iff_span_eq_top (s : Set S) :
       rw [← this, ← comap_map_eq, mem_comap, ← H, hs, restrictScalars_top]
       exact mem_top
   · intro hs
-    rwa [hs, Submodule.map_top, LinearMap.range_eq_top.mpr, restrictScalars_eq_top_iff] at H
+    rwa [hs, Submodule.map_top, LinearMap.range_eq_top.mpr,
+      restrictScalars_eq_top_iff] at H
     rw [IsScalarTower.coe_toAlgHom', Ideal.Quotient.algebraMap_eq]
     exact Ideal.Quotient.mk_surjective
 
@@ -67,7 +70,7 @@ theorem finrank_quotient_map :
   · let b := Module.Free.chooseBasis (R ⧸ p) (S ⧸ pS)
     choose b' hb' using fun i ↦ Ideal.Quotient.mk_surjective (b i)
     conv_rhs => rw [finrank_eq_card_chooseBasisIndex]
-    apply finrank_le_of_span_eq_top
+    refine finrank_le_of_span_eq_top (v := b') ?_
     apply (quotient_span_eq_top_iff_span_eq_top _).mp
     rw [← Set.range_comp, show Ideal.Quotient.mk pS ∘ b' = ⇑b from funext hb']
     exact b.span_eq
@@ -100,4 +103,20 @@ lemma basisQuotient_repr {ι} [Fintype ι] (b : Basis ι R S) (x) (i) :
     Ideal.Quotient.mk_smul_mk_quotient_map_quotient, ← Algebra.smul_def]
   rw [← map_sum, Basis.sum_repr b x]
 
-end LocalRing
+end IsLocalRing
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.quotient_span_eq_top_iff_span_eq_top :=
+  IsLocalRing.quotient_span_eq_top_iff_span_eq_top
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.finrank_quotient_map := IsLocalRing.finrank_quotient_map
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.basisQuotient := IsLocalRing.basisQuotient
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.basisQuotient_apply := IsLocalRing.basisQuotient_apply
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.basisQuotient_repr := IsLocalRing.basisQuotient_repr

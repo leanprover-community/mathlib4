@@ -117,10 +117,10 @@ theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ 
         sub_eq_add_neg, sub_eq_zero, Finset.sum_congr rfl]
       rintro ⟨i, j⟩ hij
       rw [Finset.mem_erase, mem_antidiagonal] at hij
-      cases' hij with h₁ h₂
+      obtain ⟨h₁, h₂⟩ := hij
       subst n
       rw [if_pos]
-      suffices (0 : _) + j < i + j by simpa
+      suffices 0 + j < i + j by simpa
       apply add_lt_add_right
       constructor
       · intro s
@@ -154,10 +154,10 @@ section CommRing
 variable [CommRing R]
 
 /-- Multivariate formal power series over a local ring form a local ring. -/
-instance [LocalRing R] : LocalRing (MvPowerSeries σ R) :=
-  LocalRing.of_isUnit_or_isUnit_one_sub_self <| by
+instance [IsLocalRing R] : IsLocalRing (MvPowerSeries σ R) :=
+  IsLocalRing.of_isUnit_or_isUnit_one_sub_self <| by
     intro φ
-    rcases LocalRing.isUnit_or_isUnit_one_sub_self (constantCoeff σ R φ) with (⟨u, h⟩ | ⟨u, h⟩) <;>
+    obtain ⟨u, h⟩ | ⟨u, h⟩ := IsLocalRing.isUnit_or_isUnit_one_sub_self (constantCoeff σ R φ) <;>
         [left; right] <;>
       · refine isUnit_of_mul_eq_one _ _ (mul_invOfUnit _ u ?_)
         simpa using h.symm
@@ -165,7 +165,7 @@ instance [LocalRing R] : LocalRing (MvPowerSeries σ R) :=
 -- TODO(jmc): once adic topology lands, show that this is complete
 end CommRing
 
-section LocalRing
+section IsLocalRing
 
 variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalHom f]
 
@@ -179,7 +179,7 @@ theorem map.isLocalHom : IsLocalHom (map σ f) :=
     rintro φ ⟨ψ, h⟩
     replace h := congr_arg (constantCoeff σ S) h
     rw [constantCoeff_map] at h
-    have : IsUnit (constantCoeff σ S ↑ψ) := isUnit_constantCoeff (↑ψ) ψ.isUnit
+    have : IsUnit (constantCoeff σ S ↑ψ) := isUnit_constantCoeff _ ψ.isUnit
     rw [h] at this
     rcases isUnit_of_map_unit f _ this with ⟨c, hc⟩
     exact isUnit_of_mul_eq_one φ (invOfUnit φ c) (mul_invOfUnit φ c hc.symm)⟩
@@ -187,7 +187,7 @@ theorem map.isLocalHom : IsLocalHom (map σ f) :=
 @[deprecated (since := "2024-10-10")]
 alias map.isLocalRingHom := map.isLocalHom
 
-end LocalRing
+end IsLocalRing
 
 section Field
 
@@ -228,8 +228,7 @@ theorem inv_eq_zero {φ : MvPowerSeries σ k} : φ⁻¹ = 0 ↔ constantCoeff σ
 theorem zero_inv : (0 : MvPowerSeries σ k)⁻¹ = 0 := by
   rw [inv_eq_zero, constantCoeff_zero]
 
--- Porting note (#10618): simp can prove this.
--- @[simp]
+@[simp]
 theorem invOfUnit_eq (φ : MvPowerSeries σ k) (h : constantCoeff σ k φ ≠ 0) :
     invOfUnit φ (Units.mk0 _ h) = φ⁻¹ :=
   rfl
@@ -268,7 +267,7 @@ protected theorem mul_inv_rev (φ ψ : MvPowerSeries σ k) :
   · rw [inv_eq_zero.mpr h]
     simp only [map_mul, mul_eq_zero] at h
     -- we don't have `NoZeroDivisors (MvPowerSeries σ k)` yet,
-    cases' h with h h <;> simp [inv_eq_zero.mpr h]
+    rcases h with h | h <;> simp [inv_eq_zero.mpr h]
   · rw [MvPowerSeries.inv_eq_iff_mul_eq_one h]
     simp only [not_or, map_mul, mul_eq_zero] at h
     rw [← mul_assoc, mul_assoc _⁻¹, MvPowerSeries.inv_mul_cancel _ h.left, mul_one,

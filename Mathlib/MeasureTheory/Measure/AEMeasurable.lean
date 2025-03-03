@@ -187,14 +187,14 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
     · simp only [g, hx, piecewise_eq_of_not_mem, not_false_iff]
       contrapose! hx
       apply subset_toMeasurable
-      simp (config := { contextual := true }) only [hx, mem_compl_iff, mem_setOf_eq, not_and,
+      simp +contextual only [hx, mem_compl_iff, mem_setOf_eq, not_and,
         not_false_iff, imp_true_iff]
   · have A : μ (toMeasurable μ { x | f x = H.mk f x ∧ f x ∈ t }ᶜ) = 0 := by
       rw [measure_toMeasurable, ← compl_mem_ae_iff, compl_compl]
       exact H.ae_eq_mk.and ht
     filter_upwards [compl_mem_ae_iff.2 A] with x hx
     rw [mem_compl_iff] at hx
-    simp only [g, hx, piecewise_eq_of_not_mem, not_false_iff]
+    simp only [s, g, hx, piecewise_eq_of_not_mem, not_false_iff]
     contrapose! hx
     apply subset_toMeasurable
     simp only [hx, mem_compl_iff, mem_setOf_eq, false_and, not_false_iff]
@@ -248,7 +248,7 @@ theorem aemeasurable_restrict_iff_comap_subtype {s : Set α} (hs : MeasurableSet
     {f : α → β} : AEMeasurable f (μ.restrict s) ↔ AEMeasurable (f ∘ (↑) : s → β) (comap (↑) μ) := by
   rw [← map_comap_subtype_coe hs, (MeasurableEmbedding.subtype_coe hs).aemeasurable_map_iff]
 
-@[to_additive] -- @[to_additive (attr := simp)] -- Porting note (#10618): simp can prove this
+@[to_additive]
 theorem aemeasurable_one [One β] : AEMeasurable (fun _ : α => (1 : β)) μ :=
   measurable_one.aemeasurable
 
@@ -286,7 +286,7 @@ theorem aemeasurable_Ioi_of_forall_Ioc {β} {mβ : MeasurableSpace β} [LinearOr
     exact fun y _ => (hu_tendsto.eventually (eventually_ge_atTop y)).exists
   rw [Ioi_eq_iUnion, aemeasurable_iUnion_iff]
   intro n
-  cases' lt_or_le x (u n) with h h
+  rcases lt_or_le x (u n) with h | h
   · exact g_meas (u n) h
   · rw [Ioc_eq_empty (not_lt.mpr h), Measure.restrict_empty]
     exact aemeasurable_zero_measure

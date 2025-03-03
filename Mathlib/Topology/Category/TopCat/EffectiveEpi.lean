@@ -9,68 +9,64 @@ import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 
 # Effective epimorphisms in `TopCat`
 
-This file proves the result `TopCat.effectiveEpi_iff_quotientMap`:
+This file proves the result `TopCat.effectiveEpi_iff_isQuotientMap`:
 The effective epimorphisms in `TopCat` are precisely the quotient maps.
 
 -/
 
 universe u
 
-open CategoryTheory Limits
+open CategoryTheory Limits Topology
 
 namespace TopCat
 
 /--
 Implementation: If `π` is a morphism in `TopCat` which is a quotient map, then it is an effective
-epimorphism. The theorem `TopCat.effectiveEpi_iff_quotientMap` should be used instead of
+epimorphism. The theorem `TopCat.effectiveEpi_iff_isQuotientMap` should be used instead of
 this definition.
 -/
 noncomputable
-def effectiveEpiStructOfQuotientMap {B X : TopCat.{u}} (π : X ⟶ B) (hπ : QuotientMap π) :
+def effectiveEpiStructOfQuotientMap {B X : TopCat.{u}} (π : X ⟶ B) (hπ : IsQuotientMap π) :
     EffectiveEpiStruct π where
-  /- `QuotientMap.lift` gives the required morphism -/
-  desc e h := hπ.lift e fun a b hab ↦
-    DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
+  /- `IsQuotientMap.lift` gives the required morphism -/
+  desc e h := ofHom <| hπ.lift e.hom fun a b hab ↦
+    CategoryTheory.congr_fun (h
+      (ofHom ⟨fun _ ↦ a, continuous_const⟩)
+      (ofHom ⟨fun _ ↦ b, continuous_const⟩)
     (by ext; exact hab)) a
-  /- `QuotientMap.lift_comp` gives the factorisation -/
-  fac e h := (hπ.lift_comp e
-    fun a b hab ↦ DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
+  /- `IsQuotientMap.lift_comp` gives the factorisation -/
+  fac e h := hom_ext (hπ.lift_comp e.hom
+    fun a b hab ↦ CategoryTheory.congr_fun (h
+      (ofHom ⟨fun _ ↦ a, continuous_const⟩)
+      (ofHom ⟨fun _ ↦ b, continuous_const⟩)
     (by ext; exact hab)) a)
-  /- Uniqueness follows from the fact that `QuotientMap.lift` is an equivalence (given by
-  `QuotientMap.liftEquiv`). -/
+  /- Uniqueness follows from the fact that `IsQuotientMap.lift` is an equivalence (given by
+  `IsQuotientMap.liftEquiv`). -/
   uniq e h g hm := by
-    suffices g = hπ.liftEquiv ⟨e,
-      fun a b hab ↦ DFunLike.congr_fun
-        (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩ (by ext; exact hab))
-        a⟩ by assumption
-    rw [← Equiv.symm_apply_eq hπ.liftEquiv]
+    suffices g = ofHom (hπ.liftEquiv ⟨e.hom,
+      fun a b hab ↦ CategoryTheory.congr_fun (h
+          (ofHom ⟨fun _ ↦ a, continuous_const⟩)
+          (ofHom ⟨fun _ ↦ b, continuous_const⟩)
+          (by ext; exact hab))
+        a⟩) by assumption
+    apply hom_ext
+    rw [hom_ofHom, ← Equiv.symm_apply_eq hπ.liftEquiv]
     ext
-    simp only [QuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]
+    simp only [IsQuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]
     rfl
 
 /-- The effective epimorphisms in `TopCat` are precisely the quotient maps. -/
-theorem effectiveEpi_iff_quotientMap {B X : TopCat.{u}} (π : X ⟶ B) :
-    EffectiveEpi π ↔ QuotientMap π := by
+theorem effectiveEpi_iff_isQuotientMap {B X : TopCat.{u}} (π : X ⟶ B) :
+    EffectiveEpi π ↔ IsQuotientMap π := by
   /- The backward direction is given by `effectiveEpiStructOfQuotientMap` above. -/
   refine ⟨fun _ ↦ ?_, fun hπ ↦ ⟨⟨effectiveEpiStructOfQuotientMap π hπ⟩⟩⟩
   /- Since `TopCat` has pullbacks, `π` is in fact a `RegularEpi`. This means that it exhibits `B` as
     a coequalizer of two maps into `X`. It suffices to prove that `π` followed by the isomorphism to
     an arbitrary coequalizer is a quotient map. -/
   have hπ : RegularEpi π := inferInstance
-  let F := parallelPair hπ.left hπ.right
-  let i : B ≅ colimit F := hπ.isColimit.coconePointUniqueUpToIso (colimit.isColimit _)
-  suffices QuotientMap (homeoOfIso i ∘ π) by
-    simpa [← Function.comp_assoc] using (homeoOfIso i).symm.quotientMap.comp this
-  constructor
-  /- Effective epimorphisms are epimorphisms and epimorphisms in `TopCat` are surjective. -/
-  · change Function.Surjective (π ≫ i.hom)
-    rw [← epi_iff_surjective]
-    infer_instance
-  /- The key to proving that the coequalizer has the quotient topology is
-    `TopCat.coequalizer_isOpen_iff` which characterises the open sets in a coequalizer. -/
-  · ext U
-    have : π ≫ i.hom = colimit.ι F WalkingParallelPair.one := by simp [i, ← Iso.eq_comp_inv]
-    rw [isOpen_coinduced (f := (homeoOfIso i ∘ π)), coequalizer_isOpen_iff _ U, ← this]
-    rfl
+  exact isQuotientMap_of_isColimit_cofork _ hπ.isColimit
+
+@[deprecated (since := "2024-10-22")]
+alias effectiveEpi_iff_quotientMap := effectiveEpi_iff_isQuotientMap
 
 end TopCat

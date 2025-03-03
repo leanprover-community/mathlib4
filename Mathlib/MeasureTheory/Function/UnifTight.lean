@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Igor Khavkine
 -/
 import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
-import Mathlib.MeasureTheory.Function.L1Space
 import Mathlib.MeasureTheory.Function.UniformIntegrable
 
 /-!
@@ -46,7 +45,7 @@ variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAd
 section UnifTight
 
 /- This follows closely the `UnifIntegrable` section
-from `Mathlib.MeasureTheory.Functions.UniformIntegrable`.-/
+from `Mathlib.MeasureTheory.Functions.UniformIntegrable`. -/
 
 variable {f g : ι → α → β} {p : ℝ≥0∞}
 
@@ -139,7 +138,7 @@ theorem unifTight_congr_ae {g : ι → α → β} (hfg : ∀ n, f n =ᵐ[μ] g n
   ⟨fun h => h.aeeq hfg, fun h => h.aeeq fun i => (hfg i).symm⟩
 
 /-- A constant sequence is tight. -/
-theorem unifTight_const {g : α → β} (hp_ne_top : p ≠ ∞) (hg : Memℒp g p μ) :
+theorem unifTight_const {g : α → β} (hp_ne_top : p ≠ ∞) (hg : MemLp g p μ) :
     UnifTight (fun _ : ι => g) p μ := by
   intro ε hε
   by_cases hε_top : ε = ∞
@@ -149,12 +148,12 @@ theorem unifTight_const {g : α → β} (hp_ne_top : p ≠ ∞) (hg : Memℒp g 
 
 /-- A single function is tight. -/
 theorem unifTight_of_subsingleton [Subsingleton ι] (hp_top : p ≠ ∞)
-    {f : ι → α → β} (hf : ∀ i, Memℒp (f i) p μ) : UnifTight f p μ := fun ε hε ↦ by
+    {f : ι → α → β} (hf : ∀ i, MemLp (f i) p μ) : UnifTight f p μ := fun ε hε ↦ by
   by_cases hε_top : ε = ∞
   · exact ⟨∅, by measurability, fun _ => hε_top.symm ▸ le_top⟩
   by_cases hι : Nonempty ι
   case neg => exact ⟨∅, (by measurability), fun i => False.elim <| hι <| Nonempty.intro i⟩
-  cases' hι with i
+  obtain ⟨i⟩ := hι
   obtain ⟨s, _, hμs, hfε⟩ := (hf i).exists_eLpNorm_indicator_compl_lt hp_top (coe_ne_zero.2 hε.ne')
   refine ⟨s, ne_of_lt hμs, fun j => ?_⟩
   convert hfε.le
@@ -162,17 +161,16 @@ theorem unifTight_of_subsingleton [Subsingleton ι] (hp_top : p ≠ ∞)
 /-- This lemma is less general than `MeasureTheory.unifTight_finite` which applies to
 all sequences indexed by a finite type. -/
 private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α → β}
-    (hf : ∀ i, Memℒp (f i) p μ) : UnifTight f p μ := by
+    (hf : ∀ i, MemLp (f i) p μ) : UnifTight f p μ := by
   revert f
   induction' n with n h
   · intro f hf
-    have : Subsingleton (Fin Nat.zero) := subsingleton_fin_zero -- Porting note: Added this instance
     exact unifTight_of_subsingleton hp_top hf
   intro f hfLp ε hε
   by_cases hε_top : ε = ∞
   · exact ⟨∅, (by measurability), fun _ => hε_top.symm ▸ le_top⟩
   let g : Fin n → α → β := fun k => f k
-  have hgLp : ∀ i, Memℒp (g i) p μ := fun i => hfLp i
+  have hgLp : ∀ i, MemLp (g i) p μ := fun i => hfLp i
   obtain ⟨S, hμS, hFε⟩ := h hgLp hε
   obtain ⟨s, _, hμs, hfε⟩ :=
     (hfLp n).exists_eLpNorm_indicator_compl_lt hp_top (coe_ne_zero.2 hε.ne')
@@ -193,10 +191,10 @@ private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α �
 
 /-- A finite sequence of Lp functions is uniformly tight. -/
 theorem unifTight_finite [Finite ι] (hp_top : p ≠ ∞) {f : ι → α → β}
-    (hf : ∀ i, Memℒp (f i) p μ) : UnifTight f p μ := fun ε hε ↦ by
+    (hf : ∀ i, MemLp (f i) p μ) : UnifTight f p μ := fun ε hε ↦ by
   obtain ⟨n, hn⟩ := Finite.exists_equiv_fin ι
   set g : Fin n → α → β := f ∘ hn.some.symm
-  have hg : ∀ i, Memℒp (g i) p μ := fun _ => hf _
+  have hg : ∀ i, MemLp (g i) p μ := fun _ => hf _
   obtain ⟨s, hμs, hfε⟩ := unifTight_fin hp_top hg hε
   refine ⟨s, hμs, fun i => ?_⟩
   simpa only [g, Function.comp_apply, Equiv.symm_apply_apply] using hfε (hn.some i)
@@ -215,12 +213,12 @@ from convergence in Lp. Mathlib already has the analogous `unifIntegrable_of_ten
 and `tendstoInMeasure_of_tendsto_eLpNorm`. -/
 
 /-- Intermediate lemma for `unifTight_of_tendsto_Lp`. -/
-private theorem unifTight_of_tendsto_Lp_zero (hp' : p ≠ ∞) (hf : ∀ n, Memℒp (f n) p μ)
+private theorem unifTight_of_tendsto_Lp_zero (hp' : p ≠ ∞) (hf : ∀ n, MemLp (f n) p μ)
     (hf_tendsto : Tendsto (fun n ↦ eLpNorm (f n) p μ) atTop (𝓝 0)) : UnifTight f p μ := fun ε hε ↦by
   rw [ENNReal.tendsto_atTop_zero] at hf_tendsto
   obtain ⟨N, hNε⟩ := hf_tendsto ε (by simpa only [gt_iff_lt, ENNReal.coe_pos])
   let F : Fin N → α → β := fun n => f n
-  have hF : ∀ n, Memℒp (F n) p μ := fun n => hf n
+  have hF : ∀ n, MemLp (F n) p μ := fun n => hf n
   obtain ⟨s, hμs, hFε⟩ := unifTight_fin hp' hF hε
   refine ⟨s, hμs, fun n => ?_⟩
   by_cases hn : n < N
@@ -228,8 +226,8 @@ private theorem unifTight_of_tendsto_Lp_zero (hp' : p ≠ ∞) (hf : ∀ n, Mem�
   · exact (eLpNorm_indicator_le _).trans (hNε n (not_lt.mp hn))
 
 /-- Convergence in Lp implies uniform tightness. -/
-private theorem unifTight_of_tendsto_Lp (hp' : p ≠ ∞) (hf : ∀ n, Memℒp (f n) p μ)
-    (hg : Memℒp g p μ) (hfg : Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0)) :
+private theorem unifTight_of_tendsto_Lp (hp' : p ≠ ∞) (hf : ∀ n, MemLp (f n) p μ)
+    (hg : MemLp g p μ) (hfg : Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0)) :
     UnifTight f p μ := by
   have : f = (fun _ => g) + fun n => f n - g := by ext1 n; simp
   rw [this]
@@ -238,14 +236,14 @@ private theorem unifTight_of_tendsto_Lp (hp' : p ≠ ∞) (hf : ∀ n, Memℒp (
   · exact unifTight_const hp' hg
   · exact unifTight_of_tendsto_Lp_zero hp' (fun n => (hf n).sub hg) hfg
 
-/- Next we deal with the forward direction. The `Memℒp` and `TendstoInMeasure` hypotheses
+/- Next we deal with the forward direction. The `MemLp` and `TendstoInMeasure` hypotheses
 are unwrapped and strengthened (by known lemmas) to also have the `StronglyMeasurable`
-and a.e. convergence hypotheses. The bulk of the proof is done under these stronger hypotheses.-/
+and a.e. convergence hypotheses. The bulk of the proof is done under these stronger hypotheses. -/
 
 /-- Bulk of the proof under strengthened hypotheses. Invoked from `tendsto_Lp_of_tendsto_ae`. -/
 private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞)
     {f : ℕ → α → β} {g : α → β} (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g)
-    (hg' : Memℒp g p μ) (hui : UnifIntegrable f p μ) (hut : UnifTight f p μ)
+    (hg' : MemLp g p μ) (hui : UnifIntegrable f p μ) (hut : UnifTight f p μ)
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0) := by
   rw [ENNReal.tendsto_atTop_zero]
@@ -256,13 +254,13 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
   · rw [hμ]; use 0; intro n _; rw [eLpNorm_measure_zero]; exact zero_le ε
   have hε' : 0 < ε / 3 := ENNReal.div_pos hε.ne' (coe_ne_top)
   -- use tightness to divide the domain into interior and exterior
-  obtain ⟨Eg, hmEg, hμEg, hgε⟩ := Memℒp.exists_eLpNorm_indicator_compl_lt hp' hg' hε'.ne' --hrε'
+  obtain ⟨Eg, hmEg, hμEg, hgε⟩ := MemLp.exists_eLpNorm_indicator_compl_lt hp' hg' hε'.ne' --hrε'
   obtain ⟨Ef, hmEf, hμEf, hfε⟩ := hut.exists_measurableSet_indicator hε'.ne'
   have hmE := hmEf.union hmEg
   have hfmE := (measure_union_le Ef Eg).trans_lt (add_lt_top.mpr ⟨hμEf, hμEg⟩)
   set E : Set α := Ef ∪ Eg
   -- use uniform integrability to get control on the limit over E
-  have hgE' := Memℒp.restrict E hg'
+  have hgE' := MemLp.restrict E hg'
   have huiE := hui.restrict  E
   have hfgE : (∀ᵐ x ∂(μ.restrict E), Tendsto (fun n => f n x) atTop (𝓝 (g x))) :=
     ae_restrict_of_ae hfg
@@ -287,14 +285,14 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
   have hgEcε := calc
     eLpNorm (Eᶜ.indicator g) p μ
       ≤ eLpNorm (Efᶜ.indicator (Egᶜ.indicator g)) p μ := by
-        unfold_let E; rw [compl_union, ← indicator_indicator]
+        unfold E; rw [compl_union, ← indicator_indicator]
     _ ≤ eLpNorm (Egᶜ.indicator g) p μ := eLpNorm_indicator_le _
     _ ≤ ε / 3 := hgε.le
   have hmfnEc : AEStronglyMeasurable _ μ := ((hf n).indicator hmE.compl).aestronglyMeasurable
   have hfnEcε : eLpNorm (Eᶜ.indicator (f n)) p μ ≤ ε / 3 := calc
     eLpNorm (Eᶜ.indicator (f n)) p μ
       ≤ eLpNorm (Egᶜ.indicator (Efᶜ.indicator (f n))) p μ := by
-        unfold_let E; rw [compl_union, inter_comm, ← indicator_indicator]
+        unfold E; rw [compl_union, inter_comm, ← indicator_indicator]
     _ ≤ eLpNorm (Efᶜ.indicator (f n)) p μ := eLpNorm_indicator_le _
     _ ≤ ε / 3 := hfε n
   have hmfngEc : AEStronglyMeasurable _ μ :=
@@ -326,10 +324,11 @@ private theorem ae_tendsto_ae_congr {f f' : ℕ → α → β} {g g' : α → β
   apply Tendsto.congr hff'x
   rw [← hgg'x]; exact hfgx
 
-/-- Forward direction of Vitali's convergnece theorem, with a.e. instead of InMeasure convergence.-/
+/-- Forward direction of Vitali's convergence theorem, with a.e. instead of `InMeasure`
+convergence -/
 theorem tendsto_Lp_of_tendsto_ae (hp : 1 ≤ p) (hp' : p ≠ ∞)
     {f : ℕ → α → β} {g : α → β} (haef : ∀ n, AEStronglyMeasurable (f n) μ)
-    (hg' : Memℒp g p μ) (hui : UnifIntegrable f p μ) (hut : UnifTight f p μ)
+    (hg' : MemLp g p μ) (hui : UnifIntegrable f p μ) (hut : UnifTight f p μ)
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0) := by
   -- come up with an a.e. equal strongly measurable replacement `f` for `g`
@@ -352,7 +351,7 @@ theorem tendsto_Lp_of_tendsto_ae (hp : 1 ≤ p) (hp' : p ≠ ∞)
 if `f` is a sequence of uniformly integrable, uniformly tight functions that converge in
 measure to some function `g` in a finite measure space, then `f` converge in Lp to `g`. -/
 theorem tendsto_Lp_of_tendstoInMeasure (hp : 1 ≤ p) (hp' : p ≠ ∞)
-    (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : Memℒp g p μ)
+    (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : MemLp g p μ)
     (hui : UnifIntegrable f p μ) (hut : UnifTight f p μ)
     (hfg : TendstoInMeasure μ f atTop g) : Tendsto (fun n ↦ eLpNorm (f n - g) p μ) atTop (𝓝 0) := by
   refine tendsto_of_subseq_tendsto fun ns hns => ?_
@@ -372,7 +371,7 @@ theorem tendsto_Lp_of_tendstoInMeasure (hp : 1 ≤ p) (hp' : p ≠ ∞)
 A sequence of functions `f` converges to `g` in Lp
 if and only if it is uniformly integrable, uniformly tight and converges to `g` in measure. -/
 theorem tendstoInMeasure_iff_tendsto_Lp (hp : 1 ≤ p) (hp' : p ≠ ∞)
-    (hf : ∀ n, Memℒp (f n) p μ) (hg : Memℒp g p μ) :
+    (hf : ∀ n, MemLp (f n) p μ) (hg : MemLp g p μ) :
     TendstoInMeasure μ f atTop g ∧ UnifIntegrable f p μ ∧ UnifTight f p μ
       ↔ Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0) where
   mp h := tendsto_Lp_of_tendstoInMeasure hp hp' (fun n => (hf n).1) hg h.2.1 h.2.2 h.1

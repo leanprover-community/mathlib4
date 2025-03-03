@@ -41,8 +41,8 @@ instance (K : Type*) [NormedField K] : Inhabited (AlgebraNorm K K) :=
 /-- `AlgebraNormClass F R S` states that `F` is a type of `R`-algebra norms on the ring `S`.
 You should extend this class when you extend `AlgebraNorm`. -/
 class AlgebraNormClass (F : Type*) (R : outParam <| Type*) [SeminormedCommRing R]
-    (S : outParam <| Type*) [Ring S] [Algebra R S] [FunLike F S ℝ] extends RingNormClass F S ℝ,
-    SeminormClass F R S : Prop
+    (S : outParam <| Type*) [Ring S] [Algebra R S] [FunLike F S ℝ] : Prop
+    extends RingNormClass F S ℝ, SeminormClass F R S
 
 namespace AlgebraNorm
 
@@ -56,7 +56,7 @@ instance : FunLike (AlgebraNorm R S) S ℝ where
   coe f := f.toFun
   coe_injective' f f' h := by
     simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe] at h
-    cases f; cases f'; congr;
+    cases f; cases f'; congr
     simp only at h
     ext s
     erw [h]
@@ -69,10 +69,6 @@ instance algebraNormClass : AlgebraNormClass (AlgebraNorm R S) R S where
   map_neg_eq_map f  := f.neg'
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
   map_smul_eq_mul f := f.smul'
-
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`. -/
-instance : CoeFun (AlgebraNorm R S) fun _ => S → ℝ :=
-  DFunLike.hasCoeToFun
 
 theorem toFun_eq_coe (p : AlgebraNorm R S) : p.toFun = p := rfl
 
@@ -90,7 +86,7 @@ theorem extends_norm (hf1 : f 1 = 1) (a : R) : f (algebraMap R S a) = ‖a‖ :=
 
 /-- The restriction of an algebra norm to a subalgebra. -/
 def restriction (A : Subalgebra R S) (f : AlgebraNorm R S) : AlgebraNorm R A where
-  toFun       := fun x : A => f x.val
+  toFun x     := f x.val
   map_zero'   := map_zero f
   add_le' x y := map_add_le_add _ _ _
   neg' x      := map_neg_eq_map _ _
@@ -103,7 +99,7 @@ def restriction (A : Subalgebra R S) (f : AlgebraNorm R S) : AlgebraNorm R A whe
 def isScalarTower_restriction {A : Type*} [CommRing A] [Algebra R A] [Algebra A S]
     [IsScalarTower R A S] (hinj : Function.Injective (algebraMap A S)) (f : AlgebraNorm R S) :
     AlgebraNorm R A where
-  toFun       := fun x : A => f (algebraMap A S x)
+  toFun x     := f (algebraMap A S x)
   map_zero'   := by simp only [map_zero]
   add_le' x y := by simp only [map_add, map_add_le_add]
   neg' x      := by simp only [map_neg, map_neg_eq_map]
@@ -137,8 +133,8 @@ instance (K : Type*) [NormedField K] : Inhabited (MulAlgebraNorm K K) :=
 /-- `MulAlgebraNormClass F R S` states that `F` is a type of multiplicative `R`-algebra norms on
 the ring `S`. You should extend this class when you extend `MulAlgebraNorm`. -/
 class MulAlgebraNormClass (F : Type*) (R : outParam <| Type*) [SeminormedCommRing R]
-    (S : outParam <| Type*) [Ring S] [Algebra R S] [FunLike F S ℝ] extends MulRingNormClass F S ℝ,
-    SeminormClass F R S : Prop
+    (S : outParam <| Type*) [Ring S] [Algebra R S] [FunLike F S ℝ] : Prop
+    extends MulRingNormClass F S ℝ, SeminormClass F R S
 
 namespace MulAlgebraNorm
 
@@ -149,7 +145,7 @@ instance : FunLike (MulAlgebraNorm R S) S ℝ where
   coe f := f.toFun
   coe_injective' f f' h:= by
     simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe, DFunLike.coe_fn_eq] at h
-    obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := f'; congr;
+    obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := f'; congr
 
 instance mulAlgebraNormClass : MulAlgebraNormClass (MulAlgebraNorm R S) R S where
   map_zero f        := f.map_zero'
@@ -160,10 +156,6 @@ instance mulAlgebraNormClass : MulAlgebraNormClass (MulAlgebraNorm R S) R S wher
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
   map_smul_eq_mul f := f.smul'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`. -/
-instance : CoeFun (MulAlgebraNorm R S) fun _ => S → ℝ :=
-  DFunLike.hasCoeToFun
-
 theorem toFun_eq_coe (p : MulAlgebraNorm R S) : p.toFun = p := rfl
 
 @[ext]
@@ -172,7 +164,7 @@ theorem ext {p q : MulAlgebraNorm R S} : (∀ x, p x = q x) → p = q :=
 
 /-- A multiplicative `R`-algebra norm extends the norm on `R`. -/
 theorem extends_norm' (f : MulAlgebraNorm R S) (a : R) : f (a • (1 : S)) = ‖a‖ := by
-  rw [← mul_one ‖a‖, ← f.map_one', ← f.smul']; rfl
+  rw [← mul_one ‖a‖, ← f.map_one', ← f.smul', toFun_eq_coe]
 
 /-- A multiplicative `R`-algebra norm extends the norm on `R`. -/
 theorem extends_norm (f : MulAlgebraNorm R S) (a : R) : f (algebraMap R S a) = ‖a‖ := by
@@ -196,7 +188,7 @@ def toRingNorm (f : MulRingNorm R) : RingNorm R where
 /-- A multiplicative ring norm is power-multiplicative. -/
 theorem isPowMul {A : Type*} [Ring A] (f : MulRingNorm A) : IsPowMul f := fun x n hn => by
   cases n
-  · exfalso; linarith
+  · omega
   · rw [map_pow]
 
 end MulRingNorm

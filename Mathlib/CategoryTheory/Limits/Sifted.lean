@@ -17,10 +17,10 @@ preserves finite products.
 
 ## References
 - [nLab, *Sifted category*](https://ncatlab.org/nlab/show/sifted+category)
-- [*Algebraic Theories*, Chapter 2.][Adámek_Rosický_Vitale_2010]
+- [*Algebraic Theories*, Chapter 2.][Adamek_Rosicky_Vitale_2010]
 -/
 
-universe w v v₁ u u₁
+universe w v v₁ v₂ u u₁ u₂
 
 namespace CategoryTheory
 
@@ -36,7 +36,7 @@ abbrev IsSiftedOrEmpty : Prop := Final (diag C)
 /-- A category `C` `IsSfited` if
 1. the diagonal functor `C ⥤ C × C` is final.
 2. there exists some object. -/
-class IsSifted extends IsSiftedOrEmpty C : Prop where
+class IsSifted : Prop extends IsSiftedOrEmpty C where
   [nonempty : Nonempty C]
 
 attribute [instance] IsSifted.nonempty
@@ -98,6 +98,16 @@ instance isSifted_of_hasBinaryCoproducts_and_nonempty [_root_.Nonempty C] [HasBi
     IsSifted C where
 
 end IsSifted
+
+end
+
+section
+
+variable {C : Type u} [Category.{v} C] [IsSiftedOrEmpty C] {D : Type u₁} [Category.{v₁} D]
+  {D' : Type u₂} [Category.{v₂} D'] (F : C ⥤ D) (G : C ⥤ D')
+
+instance [F.Final] [G.Final] : (F.prod' G).Final :=
+  show (diag C ⋙ F.prod G).Final from final_comp _ _
 
 end
 

@@ -13,14 +13,6 @@ import Mathlib.Algebra.Field.Basic
 
 variable {u : Lean.Level}
 
-#adaptation_note
-/--
-Since https://github.com/leanprover/lean4/pull/5338,
-the unused variable linter can not see usages of variables in
-`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
--/
-set_option linter.unusedVariables false
-
 namespace Mathlib.Meta.NormNum
 
 open Lean.Meta Qq
@@ -65,6 +57,7 @@ theorem isRat_mkRat : {a na n : ℤ} → {b nb d : ℕ} → IsInt a na → IsNat
     IsRat (na / nb : ℚ) n d → IsRat (mkRat a b) n d
   | _, _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, ⟨_, h⟩ => by rw [Rat.mkRat_eq_div]; exact ⟨_, h⟩
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `mkRat a b`,
 such that `norm_num` successfully recognises both `a` and `b`, and returns `a / b`. -/
 @[norm_num mkRat _ _]
@@ -140,6 +133,7 @@ theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} 
 
 open Lean
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a⁻¹`,
 such that `norm_num` successfully recognises `a`. -/
 @[norm_num _⁻¹] def evalInv : NormNumExt where eval {u α} e := do

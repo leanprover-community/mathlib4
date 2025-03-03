@@ -6,9 +6,9 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.BoxIntegral.DivergenceTheorem
 import Mathlib.Analysis.BoxIntegral.Integrability
 import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.MeasureTheory.Constructions.Prod.Integral
-import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
+import Mathlib.MeasureTheory.Integral.Prod
+import Mathlib.MeasureTheory.Integral.IntervalIntegral
 
 /-!
 # Divergence theorem for Bochner integral
@@ -56,7 +56,7 @@ divergence theorem, Bochner integral
 
 open Set Finset TopologicalSpace Function BoxIntegral MeasureTheory Filter
 
-open scoped Classical Topology Interval
+open scoped Topology Interval
 
 universe u
 

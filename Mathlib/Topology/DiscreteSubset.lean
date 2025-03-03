@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Bhavik Mehta, Daniel Weber
 -/
 import Mathlib.Topology.Constructions
-import Mathlib.Topology.Separation
+import Mathlib.Topology.Separation.Basic
 
 /-!
 # Discrete subsets of topological spaces
@@ -69,7 +69,7 @@ lemma tendsto_cofinite_cocompact_of_discrete [DiscreteTopology X]
 lemma IsClosed.tendsto_coe_cofinite_of_discreteTopology
     {s : Set X} (hs : IsClosed s) (_hs' : DiscreteTopology s) :
     Tendsto ((↑) : s → X) cofinite (cocompact _) :=
-  tendsto_cofinite_cocompact_of_discrete hs.closedEmbedding_subtype_val.tendsto_cocompact
+  tendsto_cofinite_cocompact_of_discrete hs.isClosedEmbedding_subtypeVal.tendsto_cocompact
 
 lemma IsClosed.tendsto_coe_cofinite_iff [T1Space X] [WeaklyLocallyCompactSpace X]
     {s : Set X} (hs : IsClosed s) :
@@ -110,6 +110,17 @@ lemma mem_codiscreteWithin {S T : Set X} :
 lemma mem_codiscreteWithin_accPt {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ¬AccPt x (𝓟 (T \ S)) := by
   simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]
+
+/-- If a set is codiscrete within `U`, then it is codiscrete within any subset of `U`. -/
+lemma Filter.codiscreteWithin.mono {U₁ U : Set X} (hU : U₁ ⊆ U) :
+   codiscreteWithin U₁ ≤ codiscreteWithin U := by
+  intro s hs
+  simp_rw [mem_codiscreteWithin, disjoint_principal_right] at hs ⊢
+  intro x hx
+  specialize hs x (hU hx)
+  apply mem_of_superset hs
+  rw [Set.compl_subset_compl]
+  exact diff_subset_diff_left hU
 
 /-- In any topological space, the open sets with discrete complement form a filter,
 defined as the supremum of all punctured neighborhoods.

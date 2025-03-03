@@ -50,8 +50,6 @@ submonoid, submonoids
 
 assert_not_exists MonoidWithZero
 
--- Only needed for notation
--- Only needed for notation
 variable {M : Type*} {N : Type*}
 variable {A : Type*}
 
@@ -138,7 +136,7 @@ theorem closure_le : closure s ≤ S ↔ s ⊆ S :=
 
 /-- Submonoid closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
-@[to_additive
+@[to_additive (attr := gcongr)
       "Additive submonoid closure of a set is monotone in its argument: if `s ⊆ t`,
       then `closure s ≤ closure t`"]
 theorem closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure s ≤ closure t :=
@@ -266,7 +264,6 @@ theorem sup_eq_closure (N N' : Submonoid M) : N ⊔ N' = closure ((N : Set M) �
 theorem closure_iUnion {ι} (s : ι → Set M) : closure (⋃ i, s i) = ⨆ i, closure (s i) :=
   (Submonoid.gi M).gc.l_iSup
 
--- Porting note (#10618): `simp` can now prove this, so we remove the `@[simp]` attribute
 @[to_additive]
 theorem closure_singleton_le_iff_mem (m : M) (p : Submonoid M) : closure {m} ≤ p ↔ m ∈ p := by
   rw [closure_le, singleton_subset_iff, SetLike.mem_coe]

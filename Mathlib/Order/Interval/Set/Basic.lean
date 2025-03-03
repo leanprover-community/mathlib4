@@ -3,28 +3,35 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
-import Mathlib.Order.MinMax
+import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Order.MinMax
+import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Says
 
 /-!
 # Intervals
 
-In any preorder `α`, we define intervals (which on each side can be either infinite, open, or
-closed) using the following naming conventions:
+In any preorder `α`, we define intervals
+(which on each side can be either infinite, open, or closed) using the following naming conventions:
+
 - `i`: infinite
 - `o`: open
 - `c`: closed
 
-Each interval has the name `I` + letter for left side + letter for right side. For instance,
-`Ioc a b` denotes the interval `(a, b]`.
+Each interval has the name `I` + letter for left side + letter for right side.
+For instance, `Ioc a b` denotes the interval `(a, b]`.
+The definitions can be found in `Order/Interval/Set/Defs`.
 
-This file contains these definitions, and basic facts on inclusion, intersection, difference of
-intervals (where the precise statements may depend on the properties of the order, in particular
-for some statements it should be `LinearOrder` or `DenselyOrdered`).
+This file contains basic facts on inclusion, intersection, difference of intervals
+(where the precise statements may depend on the properties of the order,
+in particular for some statements it should be `LinearOrder` or `DenselyOrdered`).
 
 TODO: This is just the beginning; a lot of rules are missing
 -/
+
+assert_not_exists RelIso
 
 open Function
 
@@ -38,93 +45,6 @@ section Preorder
 
 variable [Preorder α] {a a₁ a₂ b b₁ b₂ c x : α}
 
-/-- `Ioo a b` is the left-open right-open interval $(a, b)$. -/
-def Ioo (a b : α) :=
-  { x | a < x ∧ x < b }
-
-/-- `Ico a b` is the left-closed right-open interval $[a, b)$. -/
-def Ico (a b : α) :=
-  { x | a ≤ x ∧ x < b }
-
-/-- `Iio b` is the left-infinite right-open interval $(-∞, b)$. -/
-def Iio (b : α) :=
-  { x | x < b }
-
-/-- `Icc a b` is the left-closed right-closed interval $[a, b]$. -/
-def Icc (a b : α) :=
-  { x | a ≤ x ∧ x ≤ b }
-
-/-- `Iic b` is the left-infinite right-closed interval $(-∞, b]$. -/
-def Iic (b : α) :=
-  { x | x ≤ b }
-
-/-- `Ioc a b` is the left-open right-closed interval $(a, b]$. -/
-def Ioc (a b : α) :=
-  { x | a < x ∧ x ≤ b }
-
-/-- `Ici a` is the left-closed right-infinite interval $[a, ∞)$. -/
-def Ici (a : α) :=
-  { x | a ≤ x }
-
-/-- `Ioi a` is the left-open right-infinite interval $(a, ∞)$. -/
-def Ioi (a : α) :=
-  { x | a < x }
-
-theorem Ioo_def (a b : α) : { x | a < x ∧ x < b } = Ioo a b :=
-  rfl
-
-theorem Ico_def (a b : α) : { x | a ≤ x ∧ x < b } = Ico a b :=
-  rfl
-
-theorem Iio_def (a : α) : { x | x < a } = Iio a :=
-  rfl
-
-theorem Icc_def (a b : α) : { x | a ≤ x ∧ x ≤ b } = Icc a b :=
-  rfl
-
-theorem Iic_def (b : α) : { x | x ≤ b } = Iic b :=
-  rfl
-
-theorem Ioc_def (a b : α) : { x | a < x ∧ x ≤ b } = Ioc a b :=
-  rfl
-
-theorem Ici_def (a : α) : { x | a ≤ x } = Ici a :=
-  rfl
-
-theorem Ioi_def (a : α) : { x | a < x } = Ioi a :=
-  rfl
-
-@[simp]
-theorem mem_Ioo : x ∈ Ioo a b ↔ a < x ∧ x < b :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Ico : x ∈ Ico a b ↔ a ≤ x ∧ x < b :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Iio : x ∈ Iio b ↔ x < b :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Icc : x ∈ Icc a b ↔ a ≤ x ∧ x ≤ b :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Iic : x ∈ Iic b ↔ x ≤ b :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Ioc : x ∈ Ioc a b ↔ a < x ∧ x ≤ b :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Ici : x ∈ Ici a ↔ a ≤ x :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Ioi : x ∈ Ioi a ↔ a < x :=
-  Iff.rfl
 
 instance decidableMemIoo [Decidable (a < x ∧ x < b)] : Decidable (x ∈ Ioo a b) := by assumption
 
@@ -142,38 +62,22 @@ instance decidableMemIci [Decidable (a ≤ x)] : Decidable (x ∈ Ici a) := by a
 
 instance decidableMemIoi [Decidable (a < x)] : Decidable (x ∈ Ioi a) := by assumption
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem left_mem_Ioo : a ∈ Ioo a b ↔ False := by simp [lt_irrefl]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp [le_refl]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp [le_refl]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem left_mem_Ioc : a ∈ Ioc a b ↔ False := by simp [lt_irrefl]
 
 theorem left_mem_Ici : a ∈ Ici a := by simp
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem right_mem_Ioo : b ∈ Ioo a b ↔ False := by simp [lt_irrefl]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem right_mem_Ico : b ∈ Ico a b ↔ False := by simp [lt_irrefl]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem right_mem_Icc : b ∈ Icc a b ↔ a ≤ b := by simp [le_refl]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b := by simp [le_refl]
 
 theorem right_mem_Iic : a ∈ Iic a := by simp
@@ -318,34 +222,32 @@ theorem Ioc_eq_empty_of_le (h : b ≤ a) : Ioc a b = ∅ :=
 theorem Ioo_eq_empty_of_le (h : b ≤ a) : Ioo a b = ∅ :=
   Ioo_eq_empty h.not_lt
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem Ico_self (a : α) : Ico a a = ∅ :=
   Ico_eq_empty <| lt_irrefl _
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem Ioc_self (a : α) : Ioc a a = ∅ :=
   Ioc_eq_empty <| lt_irrefl _
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem Ioo_self (a : α) : Ioo a a = ∅ :=
   Ioo_eq_empty <| lt_irrefl _
 
+@[simp]
 theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a :=
   ⟨fun h => h <| left_mem_Ici, fun h _ hx => h.trans hx⟩
 
 @[gcongr] alias ⟨_, _root_.GCongr.Ici_subset_Ici_of_le⟩ := Ici_subset_Ici
 
+@[simp]
 theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b :=
   @Ici_subset_Ici αᵒᵈ _ _ _
 
 @[gcongr] alias ⟨_, _root_.GCongr.Iic_subset_Iic_of_le⟩ := Iic_subset_Iic
 
+@[simp]
 theorem Ici_subset_Ioi : Ici a ⊆ Ioi b ↔ b < a :=
   ⟨fun h => h left_mem_Ici, fun h _ hx => h.trans_le hx⟩
 
+@[simp]
 theorem Iic_subset_Iio : Iic a ⊆ Iio b ↔ a < b :=
   ⟨fun h => h right_mem_Iic, fun h _ hx => lt_of_le_of_lt hx h⟩
 
@@ -585,12 +487,8 @@ theorem not_mem_Ico_of_lt (ha : c < a) : c ∉ Ico a b := fun h => ha.not_le h.1
 
 theorem not_mem_Ioc_of_gt (hb : b < c) : c ∉ Ioc a b := fun h => hb.not_le h.2
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem not_mem_Ioi_self : a ∉ Ioi a := lt_irrefl _
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem not_mem_Iio_self : b ∉ Iio b := lt_irrefl _
 
 theorem not_mem_Ioc_of_le (ha : c ≤ a) : c ∉ Ioc a b := fun h => lt_irrefl _ <| h.1.trans_le ha
@@ -600,6 +498,54 @@ theorem not_mem_Ico_of_ge (hb : b ≤ c) : c ∉ Ico a b := fun h => lt_irrefl _
 theorem not_mem_Ioo_of_le (ha : c ≤ a) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.1.trans_le ha
 
 theorem not_mem_Ioo_of_ge (hb : b ≤ c) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.2.trans_le hb
+
+section matched_intervals
+
+@[simp] theorem Icc_eq_Ioc_same_iff : Icc a b = Ioc a b ↔ ¬a ≤ b where
+  mp h := by simpa using Set.ext_iff.mp h a
+  mpr h := by rw [Icc_eq_empty h, Ioc_eq_empty (mt le_of_lt h)]
+
+@[simp] theorem Icc_eq_Ico_same_iff : Icc a b = Ico a b ↔ ¬a ≤ b where
+  mp h := by simpa using Set.ext_iff.mp h b
+  mpr h := by rw [Icc_eq_empty h, Ico_eq_empty (mt le_of_lt h)]
+
+@[simp] theorem Icc_eq_Ioo_same_iff : Icc a b = Ioo a b ↔ ¬a ≤ b where
+  mp h := by simpa using Set.ext_iff.mp h b
+  mpr h := by rw [Icc_eq_empty h, Ioo_eq_empty (mt le_of_lt h)]
+
+@[simp] theorem Ioc_eq_Ico_same_iff : Ioc a b = Ico a b ↔ ¬a < b where
+  mp h := by simpa using Set.ext_iff.mp h a
+  mpr h := by rw [Ioc_eq_empty h, Ico_eq_empty h]
+
+@[simp] theorem Ioo_eq_Ioc_same_iff : Ioo a b = Ioc a b ↔ ¬a < b where
+  mp h := by simpa using Set.ext_iff.mp h b
+  mpr h := by rw [Ioo_eq_empty h, Ioc_eq_empty h]
+
+@[simp] theorem Ioo_eq_Ico_same_iff : Ioo a b = Ico a b ↔ ¬a < b where
+  mp h := by simpa using Set.ext_iff.mp h a
+  mpr h := by rw [Ioo_eq_empty h, Ico_eq_empty h]
+
+-- Mirrored versions of the above for `simp`.
+
+@[simp] theorem Ioc_eq_Icc_same_iff : Ioc a b = Icc a b ↔ ¬a ≤ b :=
+  eq_comm.trans Icc_eq_Ioc_same_iff
+
+@[simp] theorem Ico_eq_Icc_same_iff : Ico a b = Icc a b ↔ ¬a ≤ b :=
+  eq_comm.trans Icc_eq_Ico_same_iff
+
+@[simp] theorem Ioo_eq_Icc_same_iff : Ioo a b = Icc a b ↔ ¬a ≤ b :=
+  eq_comm.trans Icc_eq_Ioo_same_iff
+
+@[simp] theorem Ico_eq_Ioc_same_iff : Ico a b = Ioc a b ↔ ¬a < b :=
+  eq_comm.trans Ioc_eq_Ico_same_iff
+
+@[simp] theorem Ioc_eq_Ioo_same_iff : Ioc a b = Ioo a b ↔ ¬a < b :=
+  eq_comm.trans Ioo_eq_Ioc_same_iff
+
+@[simp] theorem Ico_eq_Ioo_same_iff : Ico a b = Ioo a b ↔ ¬a < b :=
+  eq_comm.trans Ioo_eq_Ico_same_iff
+
+end matched_intervals
 
 end Preorder
 
@@ -693,13 +639,9 @@ theorem Ici_diff_Ioi_same : Ici a \ Ioi a = {a} := by
 theorem Iic_diff_Iio_same : Iic a \ Iio a = {a} := by
   rw [← Iic_diff_right, diff_diff_cancel_left (singleton_subset_iff.2 right_mem_Iic)]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem Ioi_union_left : Ioi a ∪ {a} = Ici a :=
   ext fun x => by simp [eq_comm, le_iff_eq_or_lt]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem Iio_union_right : Iio a ∪ {a} = Iic a :=
   ext fun _ => le_iff_lt_or_eq.symm
 
@@ -1238,7 +1180,6 @@ theorem Iic_union_Ico_eq_Iio (h : a < b) : Iic a ∪ Ico a b = Iio b :=
 
 /-! #### Two finite intervals, `I?o` and `Ic?` -/
 
-
 theorem Ioo_subset_Ioo_union_Ico : Ioo a c ⊆ Ioo a b ∪ Ico b c := fun x hx =>
   (lt_or_le x b).elim (fun hxb => Or.inl ⟨hx.1, hxb⟩) fun hxb => Or.inr ⟨hxb, hx.2⟩
 
@@ -1294,7 +1235,6 @@ theorem Ioo_union_Icc_eq_Ioc (h₁ : a < b) (h₂ : b ≤ c) : Ioo a b ∪ Icc b
 
 /-! #### Two finite intervals, `I?c` and `Io?` -/
 
-
 theorem Ioo_subset_Ioc_union_Ioo : Ioo a c ⊆ Ioc a b ∪ Ioo b c := fun x hx =>
   (le_or_lt x b).elim (fun hxb => Or.inl ⟨hx.1, hxb⟩) fun hxb => Or.inr ⟨hxb, hx.2⟩
 
@@ -1349,7 +1289,6 @@ theorem Ioc_union_Ioc (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) 
   all_goals simp [*]
 
 /-! #### Two finite intervals with a common point -/
-
 
 theorem Ioo_subset_Ioc_union_Ico : Ioo a c ⊆ Ioc a b ∪ Ico b c :=
   Subset.trans Ioo_subset_Ioc_union_Ioo (union_subset_union_right _ Ioo_subset_Ico_self)
@@ -1429,6 +1368,11 @@ theorem Ioo_union_Ioo (h₁ : min a b < max c d) (h₂ : min c d < max a b) :
   all_goals
     simp [*, min_eq_left_of_lt, min_eq_right_of_lt, max_eq_left_of_lt, max_eq_right_of_lt,
       le_of_lt h₂, le_of_lt h₁]
+
+theorem Ioo_subset_Ioo_union_Ioo (h₁ : a ≤ a₁) (h₂ : c < b) (h₃ : b₁ ≤ d) :
+    Ioo a₁ b₁ ⊆ Ioo a b ∪ Ioo c d := fun x hx =>
+  (lt_or_le x b).elim (fun hxb => Or.inl ⟨lt_of_le_of_lt h₁ hx.1, hxb⟩)
+    fun hxb => Or.inr ⟨lt_of_lt_of_le h₂ hxb, lt_of_lt_of_le hx.2 h₃⟩
 
 end LinearOrder
 
@@ -1531,11 +1475,11 @@ theorem Ioo_inter_Ioc_of_right_lt (h : b₂ < b₁) : Ioo a₁ b₁ ∩ Ioc a₂
 
 @[simp]
 theorem Ico_diff_Iio : Ico a b \ Iio c = Ico (max a c) b := by
-  rw [diff_eq, compl_Iio, Ico_inter_Ici, sup_eq_max]
+  rw [diff_eq, compl_Iio, Ico_inter_Ici]
 
 @[simp]
 theorem Ioc_diff_Ioi : Ioc a b \ Ioi c = Ioc a (min b c) :=
-  ext <| by simp (config := { contextual := true }) [iff_def]
+  ext <| by simp +contextual [iff_def]
 
 @[simp]
 theorem Ioc_inter_Ioi : Ioc a b ∩ Ioi c = Ioc (a ⊔ c) b := by
@@ -1544,11 +1488,22 @@ theorem Ioc_inter_Ioi : Ioc a b ∩ Ioi c = Ioc (a ⊔ c) b := by
 
 @[simp]
 theorem Ico_inter_Iio : Ico a b ∩ Iio c = Ico a (min b c) :=
-  ext <| by simp (config := { contextual := true }) [iff_def]
+  ext <| by simp +contextual [iff_def]
 
 @[simp]
 theorem Ioc_diff_Iic : Ioc a b \ Iic c = Ioc (max a c) b := by
-  rw [diff_eq, compl_Iic, Ioc_inter_Ioi, sup_eq_max]
+  rw [diff_eq, compl_Iic, Ioc_inter_Ioi]
+
+theorem compl_Ioc : (Ioc a b)ᶜ = Iic a ∪ Ioi b := by
+  ext i
+  rw [mem_compl_iff, mem_Ioc, mem_union, mem_Iic, mem_Ioi, not_and_or, not_lt, not_le]
+
+theorem Iic_diff_Ioc : Iic b \ Ioc a b = Iic (a ⊓ b) := by
+  rw [diff_eq, compl_Ioc, inter_union_distrib_left, Iic_inter_Iic, ← compl_Iic, inter_compl_self,
+    union_empty, min_comm]
+
+theorem Iic_diff_Ioc_self_of_le (hab : a ≤ b) : Iic b \ Ioc a b = Iic a := by
+  rw [Iic_diff_Ioc, min_eq_left hab]
 
 @[simp]
 theorem Ioc_union_Ioc_right : Ioc a b ∪ Ioc a c = Ioc a (max b c) := by
@@ -1571,6 +1526,7 @@ theorem Ioc_union_Ioc_union_Ioc_cycle :
   all_goals
   solve_by_elim (config := { maxDepth := 5 }) [min_le_of_left_le, min_le_of_right_le,
        le_max_of_le_left, le_max_of_le_right, le_refl]
+
 end LinearOrder
 
 /-!
@@ -1663,4 +1619,4 @@ namespace Set
 
 end Set
 
-set_option linter.style.longFile 1800
+set_option linter.style.longFile 1700

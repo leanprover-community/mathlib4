@@ -249,7 +249,7 @@ irreducible_def hausdorffEdist {α : Type u} [PseudoEMetricSpace α] (s t : Set 
 
 section HausdorffEdist
 
-variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {x y : α} {s t u : Set α} {Φ : α → β}
+variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {x : α} {s t u : Set α} {Φ : α → β}
 
 /-- The Hausdorff edistance of a set to itself vanishes. -/
 @[simp]
@@ -378,7 +378,6 @@ theorem hausdorffEdist_closure₂ : hausdorffEdist s (closure t) = hausdorffEdis
   simp [@hausdorffEdist_comm _ _ s _]
 
 /-- The Hausdorff edistance between sets or their closures is the same. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem hausdorffEdist_closure : hausdorffEdist (closure s) (closure t) = hausdorffEdist s t := by
   simp
 
@@ -536,6 +535,10 @@ theorem infDist_zero_of_mem_closure (hx : x ∈ closure s) : infDist x s = 0 := 
 theorem mem_closure_iff_infDist_zero (h : s.Nonempty) : x ∈ closure s ↔ infDist x s = 0 := by
   simp [mem_closure_iff_infEdist_zero, infDist, ENNReal.toReal_eq_zero_iff, infEdist_ne_top h]
 
+theorem infDist_pos_iff_not_mem_closure (hs : s.Nonempty) :
+    x ∉ closure s ↔ 0 < infDist x s :=
+  (mem_closure_iff_infDist_zero hs).not.trans infDist_nonneg.gt_iff_ne.symm
+
 /-- Given a closed set `s`, a point belongs to `s` iff its infimum distance to this set vanishes -/
 theorem _root_.IsClosed.mem_iff_infDist_zero (h : IsClosed s) (hs : s.Nonempty) :
     x ∈ s ↔ infDist x s = 0 := by rw [← mem_closure_iff_infDist_zero hs, h.closure_eq]
@@ -666,24 +669,15 @@ theorem hausdorffDist_empty' : hausdorffDist ∅ s = 0 := by simp [hausdorffDist
 in each set to the other set -/
 theorem hausdorffDist_le_of_infDist {r : ℝ} (hr : 0 ≤ r) (H1 : ∀ x ∈ s, infDist x t ≤ r)
     (H2 : ∀ x ∈ t, infDist x s ≤ r) : hausdorffDist s t ≤ r := by
-  by_cases h1 : hausdorffEdist s t = ⊤
-  · rwa [hausdorffDist, h1, ENNReal.top_toReal]
   rcases s.eq_empty_or_nonempty with hs | hs
   · rwa [hs, hausdorffDist_empty']
   rcases t.eq_empty_or_nonempty with ht | ht
   · rwa [ht, hausdorffDist_empty]
   have : hausdorffEdist s t ≤ ENNReal.ofReal r := by
     apply hausdorffEdist_le_of_infEdist _ _
-    · intro x hx
-      have I := H1 x hx
-      rwa [infDist, ← ENNReal.toReal_ofReal hr,
-        ENNReal.toReal_le_toReal (infEdist_ne_top ht) ENNReal.ofReal_ne_top] at I
-    · intro x hx
-      have I := H2 x hx
-      rwa [infDist, ← ENNReal.toReal_ofReal hr,
-        ENNReal.toReal_le_toReal (infEdist_ne_top hs) ENNReal.ofReal_ne_top] at I
-  rwa [hausdorffDist, ← ENNReal.toReal_ofReal hr,
-    ENNReal.toReal_le_toReal h1 ENNReal.ofReal_ne_top]
+    · simpa only [infDist, ← ENNReal.le_ofReal_iff_toReal_le (infEdist_ne_top ht) hr] using H1
+    · simpa only [infDist, ← ENNReal.le_ofReal_iff_toReal_le (infEdist_ne_top hs) hr] using H2
+  exact ENNReal.toReal_le_of_le_ofReal hr this
 
 /-- Bounding the Hausdorff distance by exhibiting, for any point in each set,
 another point in the other set at controlled distance -/
@@ -777,7 +771,6 @@ theorem hausdorffDist_closure₂ : hausdorffDist s (closure t) = hausdorffDist s
   simp [hausdorffDist]
 
 /-- The Hausdorff distances between two sets and their closures coincide. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem hausdorffDist_closure : hausdorffDist (closure s) (closure t) = hausdorffDist s t := by
   simp [hausdorffDist]
 

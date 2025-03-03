@@ -3,11 +3,12 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Relator
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.SimpRw
+import Mathlib.Logic.Basic
+import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Relation closures
@@ -120,18 +121,28 @@ def Comp (r : α → β → Prop) (p : β → γ → Prop) (a : α) (c : γ) : P
 @[inherit_doc]
 local infixr:80 " ∘r " => Relation.Comp
 
-theorem comp_eq : r ∘r (· = ·) = r :=
-  funext fun _ ↦ funext fun b ↦ propext <|
-  Iff.intro (fun ⟨_, h, Eq⟩ ↦ Eq ▸ h) fun h ↦ ⟨b, h, rfl⟩
+@[simp]
+theorem comp_eq_fun (f : γ → β) : r ∘r (· = f ·) = (r · <| f ·) := by
+  ext x y
+  simp [Comp]
 
-theorem eq_comp : (· = ·) ∘r r = r :=
-  funext fun a ↦ funext fun _ ↦ propext <|
-  Iff.intro (fun ⟨_, Eq, h⟩ ↦ Eq.symm ▸ h) fun h ↦ ⟨a, rfl, h⟩
+@[simp]
+theorem comp_eq : r ∘r (· = ·) = r := comp_eq_fun ..
 
+@[simp]
+theorem fun_eq_comp (f : γ → α) : (f · = ·) ∘r r = (r <| f ·) := by
+  ext x y
+  simp [Comp]
+
+@[simp]
+theorem eq_comp : (· = ·) ∘r r = r := fun_eq_comp ..
+
+@[simp]
 theorem iff_comp {r : Prop → α → Prop} : (· ↔ ·) ∘r r = r := by
   have : (· ↔ ·) = (· = ·) := by funext a b; exact iff_eq_eq
   rw [this, eq_comp]
 
+@[simp]
 theorem comp_iff {r : α → Prop → Prop} : r ∘r (· ↔ ·) = r := by
   have : (· ↔ ·) = (· = ·) := by funext a b; exact iff_eq_eq
   rw [this, comp_eq]
@@ -688,15 +699,6 @@ theorem Quot.eqvGen_sound (H : EqvGen r a b) : Quot.mk r a = Quot.mk r b :=
     (fun _ _ _ IH ↦ Eq.symm IH)
     (fun _ _ _ _ _ IH₁ IH₂ ↦ Eq.trans IH₁ IH₂)
     H
-
-instance Quotient.decidableEq {α : Sort*} {s : Setoid α} [d : ∀ a b : α, Decidable (a ≈ b)] :
-    DecidableEq (Quotient s) :=
-  fun q₁ q₂ : Quotient s ↦
-    Quotient.recOnSubsingleton₂ q₁ q₂
-      (fun a₁ a₂ ↦
-        match (d a₁ a₂) with
-        | (isTrue h₁)  => isTrue (Quotient.sound h₁)
-        | (isFalse h₂) => isFalse (fun h ↦ absurd (Quotient.exact h) h₂))
 
 theorem Equivalence.eqvGen_iff (h : Equivalence r) : EqvGen r a b ↔ r a b :=
   Iff.intro

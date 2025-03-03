@@ -72,15 +72,14 @@ variable {E}
 theorem finite_integral_rpow_sub_one_pow_aux {r : ℝ} (n : ℕ) (hnr : (n : ℝ) < r) :
     (∫⁻ x : ℝ in Ioc 0 1, ENNReal.ofReal ((x ^ (-r⁻¹) - 1) ^ n)) < ∞ := by
   have hr : 0 < r := lt_of_le_of_lt n.cast_nonneg hnr
-  have h_int : ∀ x : ℝ, x ∈ Ioc (0 : ℝ) 1 →
-      ENNReal.ofReal ((x ^ (-r⁻¹) - 1) ^ n) ≤ ENNReal.ofReal (x ^ (-(r⁻¹ * n))) := fun x hx ↦ by
-    apply ENNReal.ofReal_le_ofReal
-    rw [← neg_mul, rpow_mul hx.1.le, rpow_natCast]
-    refine pow_le_pow_left ?_ (by simp only [sub_le_self_iff, zero_le_one]) n
-    rw [le_sub_iff_add_le', add_zero]
-    refine Real.one_le_rpow_of_pos_of_le_one_of_nonpos hx.1 hx.2 ?_
-    rw [Right.neg_nonpos_iff, inv_nonneg]
-    exact hr.le
+  have h_int x (hx : x ∈ Ioc (0 : ℝ) 1) := by
+    calc
+      ENNReal.ofReal ((x ^ (-r⁻¹) - 1) ^ n) ≤ .ofReal ((x ^ (-r⁻¹) - 0) ^ n) := by
+        gcongr
+        · rw [sub_nonneg]
+          exact Real.one_le_rpow_of_pos_of_le_one_of_nonpos hx.1 hx.2 (by simpa using hr.le)
+        · norm_num
+      _ = .ofReal (x ^ (-(r⁻¹ * n))) := by simp [rpow_mul hx.1.le, ← neg_mul]
   refine lt_of_le_of_lt (setLIntegral_mono' measurableSet_Ioc h_int) ?_
   refine IntegrableOn.setLIntegral_lt_top ?_
   rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one]
@@ -126,16 +125,16 @@ theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r)
     -- The integral over the constant zero function is finite:
     rw [setLIntegral_congr_fun measurableSet_Ioi (ae_of_all volume <| h_int''), lintegral_const 0,
       zero_mul]
-    exact WithTop.zero_lt_top
+    exact WithTop.top_pos
 
 theorem integrable_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
     Integrable (fun x ↦ (1 + ‖x‖) ^ (-r)) μ := by
   constructor
   · apply Measurable.aestronglyMeasurable (by fun_prop)
   -- Lower Lebesgue integral
-  have : (∫⁻ a : E, ‖(1 + ‖a‖) ^ (-r)‖₊ ∂μ) = ∫⁻ a : E, ENNReal.ofReal ((1 + ‖a‖) ^ (-r)) ∂μ :=
-    lintegral_nnnorm_eq_of_nonneg fun _ => rpow_nonneg (by positivity) _
-  rw [HasFiniteIntegral, this]
+  have : (∫⁻ a : E, ‖(1 + ‖a‖) ^ (-r)‖ₑ ∂μ) = ∫⁻ a : E, ENNReal.ofReal ((1 + ‖a‖) ^ (-r)) ∂μ :=
+    lintegral_enorm_of_nonneg fun _ => rpow_nonneg (by positivity) _
+  rw [hasFiniteIntegral_iff_enorm, this]
   exact finite_integral_one_add_norm hnr
 
 theorem integrable_rpow_neg_one_add_norm_sq {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :

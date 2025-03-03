@@ -29,11 +29,20 @@ universe u v w z
 
 variable {α : Sort u} {β : Sort v} {γ : Sort w}
 
-namespace Equiv
+namespace EquivLike
 
 @[simp]
-theorem range_eq_univ {α : Type*} {β : Type*} (e : α ≃ β) : range e = univ :=
-  eq_univ_of_forall e.surjective
+theorem range_eq_univ {α : Type*} {β : Type*} {E : Type*} [EquivLike E α β] (e : E) :
+    range e = univ :=
+  eq_univ_of_forall (EquivLike.toEquiv e).surjective
+
+end EquivLike
+
+namespace Equiv
+
+theorem range_eq_univ {α : Type*} {β : Type*} (e : α ≃ β) :
+    range e = univ :=
+  EquivLike.range_eq_univ e
 
 protected theorem image_eq_preimage {α β} (e : α ≃ β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
   Set.ext fun _ => mem_image_iff_of_inverse e.left_inv e.right_inv
@@ -58,8 +67,6 @@ theorem _root_.Set.preimage_equiv_eq_image_symm {α β} (S : Set α) (f : β ≃
 protected theorem symm_image_subset {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
     e.symm '' t ⊆ s ↔ t ⊆ e '' s := by rw [image_subset_iff, e.image_eq_preimage]
 
-@[deprecated (since := "2024-01-19")] alias subset_image := Equiv.symm_image_subset
-
 -- Porting note: increased priority so this fires before `image_subset_iff`
 @[simp high]
 protected theorem subset_symm_image {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
@@ -67,8 +74,6 @@ protected theorem subset_symm_image {α β} (e : α ≃ β) (s : Set α) (t : Se
   calc
     s ⊆ e.symm '' t ↔ e.symm.symm '' s ⊆ t := by rw [e.symm.symm_image_subset]
     _ ↔ e '' s ⊆ t := by rw [e.symm_symm]
-
-@[deprecated (since := "2024-01-19")] alias subset_image' := Equiv.subset_symm_image
 
 @[simp]
 theorem symm_image_image {α β} (e : α ≃ β) (s : Set α) : e.symm '' (e '' s) = s :=
@@ -104,7 +109,6 @@ theorem preimage_symm_preimage {α β} (e : α ≃ β) (s : Set α) : e ⁻¹' (
 theorem preimage_subset {α β} (e : α ≃ β) (s t : Set β) : e ⁻¹' s ⊆ e ⁻¹' t ↔ s ⊆ t :=
   e.surjective.preimage_subset_preimage_iff
 
--- Porting note (#10618): removed `simp` attribute. `simp` can prove it.
 theorem image_subset {α β} (e : α ≃ β) (s t : Set α) : e '' s ⊆ e '' t ↔ s ⊆ t :=
   image_subset_image_iff e.injective
 
@@ -569,7 +573,7 @@ theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type*} {β : α → Type*} (
     (piEquivPiSubtypeProd p β).symm ⁻¹' pi univ s =
       (pi univ fun i : { i // p i } => s i) ×ˢ pi univ fun i : { i // ¬p i } => s i := by
   ext ⟨f, g⟩
-  simp only [mem_preimage, mem_univ_pi, prod_mk_mem_set_prod_eq, Subtype.forall, ← forall_and]
+  simp only [mem_preimage, mem_univ_pi, prodMk_mem_set_prod_eq, Subtype.forall, ← forall_and]
   refine forall_congr' fun i => ?_
   dsimp only [Subtype.coe_mk]
   by_cases hi : p i <;> simp [hi]

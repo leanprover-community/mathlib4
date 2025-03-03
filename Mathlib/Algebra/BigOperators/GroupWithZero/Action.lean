@@ -3,11 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Multiset.Basic
 import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.Order.Group.Multiset
+import Mathlib.Data.Finset.Basic
+import Mathlib.Algebra.Group.Action.Basic
 
 /-!
 # Lemmas about group actions on big operators
@@ -17,7 +17,7 @@ This file contains results about two kinds of actions:
 * sums over `DistribSMul`: `r • ∑ x ∈ s, f x = ∑ x ∈ s, r • f x`
 * products over `MulDistribMulAction` (with primed name): `r • ∏ x ∈ s, f x = ∏ x ∈ s, r • f x`
 * products over `SMulCommClass` (with unprimed name):
-  `b ^ s.card • ∏ x in s, f x = ∏ x in s, b • f x`
+  `b ^ s.card • ∏ x ∈ s, f x = ∏ x ∈ s, b • f x`
 
 Note that analogous lemmas for `Module`s like `Finset.sum_smul` appear in other files.
 -/
@@ -73,6 +73,18 @@ theorem smul_finprod' {ι : Sort*} [Finite ι] {f : ι → β} (r : α) :
   simp only [finprod_eq_prod_plift_of_mulSupport_subset (s := Finset.univ) (by simp),
     finprod_eq_prod_of_fintype, Finset.smul_prod']
 
+variable {G : Type*} [Group G] [MulDistribMulAction G β]
+
+theorem Finset.smul_prod_perm [Fintype G] (b : β) (g : G) :
+    (g • ∏ h : G, h • b) = ∏ h : G, h • b := by
+  simp only [smul_prod', smul_smul]
+  exact Finset.prod_bijective (g * ·) (Group.mulLeft_bijective g) (by simp) (fun _ _ ↦ rfl)
+
+theorem smul_finprod_perm [Finite G] (b : β) (g : G) :
+    (g • ∏ᶠ h : G, h • b) = ∏ᶠ h : G, h • b := by
+  cases nonempty_fintype G
+  simp only [finprod_eq_prod_of_fintype, Finset.smul_prod_perm]
+
 end
 
 namespace List
@@ -102,7 +114,7 @@ namespace Finset
 theorem smul_prod
     [CommMonoid β] [Monoid α] [MulAction α β] [IsScalarTower α β β] [SMulCommClass α β β]
     (s : Finset β) (b : α) (f : β → β) :
-    b ^ s.card • ∏ x in s, f x = ∏ x in s, b • f x := by
+    b ^ s.card • ∏ x ∈ s, f x = ∏ x ∈ s, b • f x := by
   have : Multiset.map (fun (x : β) ↦ b • f x) s.val =
       Multiset.map (fun x ↦ b • x) (Multiset.map f s.val) := by
     simp only [Multiset.map_map, Function.comp_apply]
@@ -111,7 +123,7 @@ theorem smul_prod
 theorem prod_smul
     [CommMonoid β] [CommMonoid α] [MulAction α β] [IsScalarTower α β β] [SMulCommClass α β β]
     (s : Finset β) (b : β → α) (f : β → β) :
-    ∏ i in s, b i • f i = (∏ i in s, b i) • ∏ i in s, f i := by
+    ∏ i ∈ s, b i • f i = (∏ i ∈ s, b i) • ∏ i ∈ s, f i := by
   induction s using Finset.cons_induction_on with
   | h₁ =>  simp
   | h₂ hj ih => rw [prod_cons, ih, smul_mul_smul_comm, ← prod_cons hj, ← prod_cons hj]

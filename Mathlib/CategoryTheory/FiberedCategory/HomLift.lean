@@ -55,7 +55,7 @@ class Functor.IsHomLift {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) :
 macro "subst_hom_lift" p:term:max f:term:max φ:term:max : tactic =>
   `(tactic| obtain ⟨⟩ := Functor.IsHomLift.cond (p := $p) (f := $f) (φ := $φ))
 
-/-- For any arrow `φ : a ⟶ b` in `𝒳`, `φ` lifts the arrow `p.map φ` in the base `𝒮`-/
+/-- For any arrow `φ : a ⟶ b` in `𝒳`, `φ` lifts the arrow `p.map φ` in the base `𝒮`. -/
 @[simp]
 instance {a b : 𝒳} (φ : a ⟶ b) : p.IsHomLift (p.map φ) φ where
   cond := by constructor
@@ -106,11 +106,15 @@ lemma of_fac' {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.obj
   obtain rfl : f = p.map φ := by simpa using h.symm
   infer_instance
 
-lemma of_commSq {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.obj a = R) (hb : p.obj b = S)
-    (h : CommSq (p.map φ) (eqToHom ha) (eqToHom hb) f) : p.IsHomLift f φ := by
+lemma of_commsq {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.obj a = R) (hb : p.obj b = S)
+    (h : p.map φ ≫ eqToHom hb = (eqToHom ha) ≫ f) : p.IsHomLift f φ := by
   subst ha hb
-  obtain rfl : f = p.map φ := by simpa using h.1.symm
+  obtain rfl : f = p.map φ := by simpa using h.symm
   infer_instance
+
+lemma of_commSq {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.obj a = R) (hb : p.obj b = S)
+    (h : CommSq (p.map φ) (eqToHom ha) (eqToHom hb) f) : p.IsHomLift f φ :=
+  of_commsq p f φ ha hb h.1
 
 instance comp {R S T : 𝒮} {a b c : 𝒳} (f : R ⟶ S) (g : S ⟶ T) (φ : a ⟶ b)
     (ψ : b ⟶ c) [p.IsHomLift f φ] [p.IsHomLift g ψ] : p.IsHomLift (f ≫ g) (φ ≫ ψ) := by

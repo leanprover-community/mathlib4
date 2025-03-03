@@ -128,12 +128,6 @@ section Five
 variable {R₁ R₂ : ComposableArrows C 4} (hR₁ : R₁.Exact) (hR₂ : R₂.Exact) (φ : R₁ ⟶ R₂)
 include hR₁ hR₂
 
-#adaptation_note /-- nightly-2024-03-11
-We turn off simprocs here.
-Ideally someone will investigate whether `simp` lemmas can be rearranged
-so that this works without the `set_option`,
-*or* come up with a proposal regarding finer control of disabling simprocs. -/
-set_option simprocs false in
 /-- The five lemma. -/
 theorem isIso_of_epi_of_isIso_of_isIso_of_mono (h₀ : Epi (app' φ 0)) (h₁ : IsIso (app' φ 1))
     (h₂ : IsIso (app' φ 3)) (h₃ : Mono (app' φ 4)) : IsIso (app' φ 2) := by
@@ -227,5 +221,34 @@ theorem epi_of_epi_of_epi_of_epi (hR₂ : R₂.Exact) (hR₁' : Epi (R₁.map' 1
 end Three
 
 end Abelian
+
+namespace ShortComplex
+
+variable {C : Type*} [Category C] [Abelian C]
+variable {R₁ R₂ : ShortComplex C} (φ : R₁ ⟶ R₂)
+
+attribute [local simp] ComposableArrows.Precomp.map
+
+theorem mono_of_epi_of_epi_of_mono (hR₂ : R₂.Exact) (hR₁' : Epi R₁.g)
+    (h₀ : Epi φ.τ₁) (h₁ : Mono φ.τ₂) : Mono (φ.τ₃) :=
+  Abelian.mono_of_epi_of_epi_mono' (ShortComplex.mapToComposableArrows φ)
+    (by simp) hR₁' hR₂.exact_toComposableArrows h₀ h₁
+
+theorem epi_of_mono_of_epi_of_mono (hR₁ : R₁.Exact)
+    (hR₂' : Mono R₂.f) (h₀ : Epi φ.τ₂) (h₁ : Mono φ.τ₃) : Epi φ.τ₁ :=
+  Abelian.epi_of_mono_of_epi_of_mono' (ShortComplex.mapToComposableArrows φ)
+    hR₁.exact_toComposableArrows (by simp) hR₂' h₀ h₁
+
+theorem mono_of_mono_of_mono_of_mono (hR₁ : R₁.Exact) (hR₂' : Mono R₂.f) (h₀ : Mono φ.τ₁)
+    (h₁ : Mono φ.τ₃) : Mono φ.τ₂ :=
+  Abelian.mono_of_mono_of_mono_of_mono (ShortComplex.mapToComposableArrows φ)
+    hR₁.exact_toComposableArrows hR₂' h₀ h₁
+
+theorem epi_of_epi_of_epi_of_epi (hR₂ : R₂.Exact) (hR₁' : Epi R₁.g) (h₀ : Epi φ.τ₁)
+    (h₁ : Epi φ.τ₃) : Epi φ.τ₂ :=
+  Abelian.epi_of_epi_of_epi_of_epi (ShortComplex.mapToComposableArrows φ)
+    hR₂.exact_toComposableArrows hR₁' h₀ h₁
+
+end ShortComplex
 
 end CategoryTheory

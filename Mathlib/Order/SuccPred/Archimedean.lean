@@ -130,8 +130,8 @@ This isn't an instance due to a loop with `LinearOrder`.
 -/
 -- See note [reducible non instances]
 abbrev IsSuccArchimedean.linearOrder [SuccOrder α] [IsSuccArchimedean α]
-     [DecidableEq α] [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] [IsDirected α (· ≥ ·)] :
-     LinearOrder α where
+     [DecidableEq α] [DecidableRel (α := α) (· ≤ ·)] [DecidableRel (α := α) (· < ·)]
+     [IsDirected α (· ≥ ·)] : LinearOrder α where
   le_total a b :=
     have ⟨c, ha, hb⟩ := directed_of (· ≥ ·) a b
     le_total_of_codirected ha hb
@@ -152,8 +152,8 @@ This isn't an instance due to a loop with `LinearOrder`.
 -/
 -- See note [reducible non instances]
 abbrev IsPredArchimedean.linearOrder [PredOrder α] [IsPredArchimedean α]
-     [DecidableEq α] [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] [IsDirected α (· ≤ ·)] :
-     LinearOrder α :=
+     [DecidableEq α] [DecidableRel (α := α) (· ≤ ·)] [DecidableRel (α := α) (· < ·)]
+     [IsDirected α (· ≤ ·)] : LinearOrder α :=
   letI : LinearOrder αᵒᵈ := IsSuccArchimedean.linearOrder
   inferInstanceAs (LinearOrder αᵒᵈᵒᵈ)
 
@@ -298,7 +298,7 @@ lemma SuccOrder.forall_ne_bot_iff
 
 section IsLeast
 
--- TODO: generalize to PartialOrder and `DirectedOn` after #16272
+-- TODO: generalize to PartialOrder and `DirectedOn` after https://github.com/leanprover-community/mathlib4/pull/16272
 lemma BddAbove.exists_isGreatest_of_nonempty {X : Type*} [LinearOrder X] [SuccOrder X]
     [IsSuccArchimedean X] {S : Set X} (hS : BddAbove S) (hS' : S.Nonempty) :
     ∃ x, IsGreatest S x := by
@@ -396,3 +396,117 @@ instance Set.OrdConnected.isSuccArchimedean [SuccOrder α] [IsSuccArchimedean α
   inferInstanceAs (IsSuccArchimedean sᵒᵈᵒᵈ)
 
 end OrdConnected
+
+section Monotone
+variable {α β : Type*} [PartialOrder α] [Preorder β]
+
+section SuccOrder
+variable [SuccOrder α] [IsSuccArchimedean α] {s : Set α} {f : α → β}
+
+lemma monotoneOn_of_le_succ (hs : s.OrdConnected)
+    (hf : ∀ a, ¬ IsMax a → a ∈ s → succ a ∈ s → f a ≤ f (succ a)) : MonotoneOn f s := by
+  rintro a ha b hb hab
+  obtain ⟨n, rfl⟩ := exists_succ_iterate_of_le hab
+  clear hab
+  induction' n with n hn
+  · simp
+  rw [Function.iterate_succ_apply'] at hb ⊢
+  have : succ^[n] a ∈ s := hs.1 ha hb ⟨le_succ_iterate .., le_succ _⟩
+  by_cases hb' : IsMax (succ^[n] a)
+  · rw [succ_eq_iff_isMax.2 hb']
+    exact hn this
+  · exact (hn this).trans (hf _ hb' this hb)
+
+lemma antitoneOn_of_succ_le (hs : s.OrdConnected)
+    (hf : ∀ a, ¬ IsMax a → a ∈ s → succ a ∈ s → f (succ a) ≤ f a) : AntitoneOn f s :=
+  monotoneOn_of_le_succ (β := βᵒᵈ) hs hf
+
+lemma strictMonoOn_of_lt_succ (hs : s.OrdConnected)
+    (hf : ∀ a, ¬ IsMax a → a ∈ s → succ a ∈ s → f a < f (succ a)) : StrictMonoOn f s := by
+  rintro a ha b hb hab
+  obtain ⟨n, rfl⟩ := exists_succ_iterate_of_le hab.le
+  obtain _ | n := n
+  · simp at hab
+  apply not_isMax_of_lt at hab
+  induction' n with n hn
+  · simpa using hf _ hab ha hb
+  rw [Function.iterate_succ_apply'] at hb ⊢
+  have : succ^[n + 1] a ∈ s := hs.1 ha hb ⟨le_succ_iterate .., le_succ _⟩
+  by_cases hb' : IsMax (succ^[n + 1] a)
+  · rw [succ_eq_iff_isMax.2 hb']
+    exact hn this
+  · exact (hn this).trans (hf _ hb' this hb)
+
+lemma strictAntiOn_of_succ_lt (hs : s.OrdConnected)
+    (hf : ∀ a, ¬ IsMax a → a ∈ s → succ a ∈ s → f (succ a) < f a) : StrictAntiOn f s :=
+  strictMonoOn_of_lt_succ (β := βᵒᵈ) hs hf
+
+lemma monotone_of_le_succ (hf : ∀ a, ¬ IsMax a → f a ≤ f (succ a)) : Monotone f := by
+  simpa using monotoneOn_of_le_succ Set.ordConnected_univ (by simpa using hf)
+
+lemma antitone_of_succ_le (hf : ∀ a, ¬ IsMax a → f (succ a) ≤ f a) : Antitone f := by
+  simpa using antitoneOn_of_succ_le Set.ordConnected_univ (by simpa using hf)
+
+lemma strictMono_of_lt_succ (hf : ∀ a, ¬ IsMax a → f a < f (succ a)) : StrictMono f := by
+  simpa using strictMonoOn_of_lt_succ Set.ordConnected_univ (by simpa using hf)
+
+lemma strictAnti_of_succ_lt (hf : ∀ a, ¬ IsMax a → f (succ a) < f a) : StrictAnti f := by
+  simpa using strictAntiOn_of_succ_lt Set.ordConnected_univ (by simpa using hf)
+
+end SuccOrder
+
+section PredOrder
+variable [PredOrder α] [IsPredArchimedean α] {s : Set α} {f : α → β}
+
+lemma monotoneOn_of_pred_le (hs : s.OrdConnected)
+    (hf : ∀ a, ¬ IsMin a → a ∈ s → pred a ∈ s → f (pred a) ≤ f a) : MonotoneOn f s := by
+  rintro a ha b hb hab
+  obtain ⟨n, rfl⟩ := exists_pred_iterate_of_le hab
+  clear hab
+  induction' n with n hn
+  · simp
+  rw [Function.iterate_succ_apply'] at ha ⊢
+  have : pred^[n] b ∈ s := hs.1 ha hb ⟨pred_le _, pred_iterate_le ..⟩
+  by_cases ha' : IsMin (pred^[n] b)
+  · rw [pred_eq_iff_isMin.2 ha']
+    exact hn this
+  · exact (hn this).trans' (hf _ ha' this ha)
+
+lemma antitoneOn_of_le_pred (hs : s.OrdConnected)
+    (hf : ∀ a, ¬ IsMin a → a ∈ s → pred a ∈ s → f a ≤ f (pred a)) : AntitoneOn f s :=
+  monotoneOn_of_pred_le (β := βᵒᵈ) hs hf
+
+lemma strictMonoOn_of_pred_lt (hs : s.OrdConnected)
+    (hf : ∀ a, ¬ IsMin a → a ∈ s → pred a ∈ s → f (pred a) < f a) : StrictMonoOn f s := by
+  rintro a ha b hb hab
+  obtain ⟨n, rfl⟩ := exists_pred_iterate_of_le hab.le
+  obtain _ | n := n
+  · simp at hab
+  apply not_isMin_of_lt at hab
+  induction' n with n hn
+  · simpa using hf _ hab hb ha
+  rw [Function.iterate_succ_apply'] at ha ⊢
+  have : pred^[n + 1] b ∈ s := hs.1 ha hb ⟨pred_le _, pred_iterate_le ..⟩
+  by_cases ha' : IsMin (pred^[n + 1] b)
+  · rw [pred_eq_iff_isMin.2 ha']
+    exact hn this
+  · exact (hn this).trans' (hf _ ha' this ha)
+
+lemma strictAntiOn_of_lt_pred (hs : s.OrdConnected)
+    (hf : ∀ a, ¬ IsMin a → a ∈ s → pred a ∈ s → f a < f (pred a)) : StrictAntiOn f s :=
+  strictMonoOn_of_pred_lt (β := βᵒᵈ) hs hf
+
+lemma monotone_of_pred_le (hf : ∀ a, ¬ IsMin a → f (pred a) ≤ f a) : Monotone f := by
+  simpa using monotoneOn_of_pred_le Set.ordConnected_univ (by simpa using hf)
+
+lemma antitone_of_le_pred (hf : ∀ a, ¬ IsMin a → f a ≤ f (pred a)) : Antitone f := by
+  simpa using antitoneOn_of_le_pred Set.ordConnected_univ (by simpa using hf)
+
+lemma strictMono_of_pred_lt (hf : ∀ a, ¬ IsMin a → f (pred a) < f a) : StrictMono f := by
+  simpa using strictMonoOn_of_pred_lt Set.ordConnected_univ (by simpa using hf)
+
+lemma strictAnti_of_lt_pred (hf : ∀ a, ¬ IsMin a → f a < f (pred a)) : StrictAnti f := by
+  simpa using strictAntiOn_of_lt_pred Set.ordConnected_univ (by simpa using hf)
+
+end PredOrder
+end Monotone

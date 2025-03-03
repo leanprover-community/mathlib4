@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Algebra.Order.Module.Algebra
-import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.Algebra.Ring.Subring.Units
-import Mathlib.Tactic.Positivity
+import Mathlib.LinearAlgebra.LinearIndependent.Defs
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Module
+import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Rays in modules
@@ -180,7 +182,6 @@ theorem add_right (hy : SameRay R x y) (hz : SameRay R x z) : SameRay R x (y + z
 
 end SameRay
 
--- Porting note(#5171): removed has_nonempty_instance nolint, no such linter
 set_option linter.unusedVariables false in
 /-- Nonzero vectors, as used to define rays. This type depends on an unused argument `R` so that
 `RayVector.Setoid` can be an instance. -/
@@ -188,9 +189,9 @@ set_option linter.unusedVariables false in
 def RayVector (R M : Type*) [Zero M] :=
   { v : M // v ≠ 0 }
 
--- Porting note: Made Coe into CoeOut so it's not dangerous anymore
 instance RayVector.coe [Zero M] : CoeOut (RayVector R M) M where
   coe := Subtype.val
+
 instance {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
   let ⟨x, hx⟩ := exists_ne (0 : M)
   ⟨⟨x, hx⟩⟩
@@ -205,7 +206,6 @@ instance RayVector.Setoid : Setoid (RayVector R M) where
       exact hxy.trans hyz fun hy => (y.2 hy).elim⟩
 
 /-- A ray (equivalence class of nonzero vectors with common positive multiples) in a module. -/
--- Porting note(#5171): removed has_nonempty_instance nolint, no such linter
 def Module.Ray :=
   Quotient (RayVector.Setoid R M)
 
@@ -217,7 +217,6 @@ theorem equiv_iff_sameRay {v₁ v₂ : RayVector R M} : v₁ ≈ v₂ ↔ SameRa
 
 variable (R)
 
--- Porting note: Removed `protected` here, not in namespace
 /-- The ray given by a nonzero vector. -/
 def rayOfNeZero (v : M) (h : v ≠ 0) : Module.Ray R M :=
   ⟦⟨v, h⟩⟧
@@ -328,7 +327,7 @@ theorem someVector_ne_zero (x : Module.Ray R M) : x.someVector ≠ 0 :=
 /-- The ray of `someVector`. -/
 @[simp]
 theorem someVector_ray (x : Module.Ray R M) : rayOfNeZero R _ x.someVector_ne_zero = x :=
-  (congr_arg _ (Subtype.coe_eta _ _) : _).trans x.out_eq
+  (congr_arg _ (Subtype.coe_eta _ _) :).trans x.out_eq
 
 end Module.Ray
 
@@ -410,7 +409,7 @@ instance : InvolutiveNeg (Module.Ray R M) where
 
 /-- A ray does not equal its own negation. -/
 theorem ne_neg_self [NoZeroSMulDivisors R M] (x : Module.Ray R M) : x ≠ -x := by
-  induction' x using Module.Ray.ind with x hx
+  induction x using Module.Ray.ind with | h x hx =>
   rw [neg_rayOfNeZero, Ne, ray_eq_iff]
   exact mt eq_zero_of_sameRay_self_neg hx
 
@@ -426,8 +425,7 @@ theorem units_smul_of_neg (u : Rˣ) (hu : u.1 < 0) (v : Module.Ray R M) : u • 
 
 @[simp]
 protected theorem map_neg (f : M ≃ₗ[R] N) (v : Module.Ray R M) : map f (-v) = -map f v := by
-  induction' v using Module.Ray.ind with g hg
-  simp
+  induction v using Module.Ray.ind with | h g hg => simp
 
 end Module.Ray
 
@@ -497,7 +495,7 @@ theorem sameRay_neg_smul_left_iff_of_ne {v : M} {r : R} (hv : v ≠ 0) (hr : r �
 -- Porting note: `(u.1 : R)` was `(u : R)`, CoeHead from R to Rˣ does not seem to work.
 @[simp]
 theorem units_smul_eq_self_iff {u : Rˣ} {v : Module.Ray R M} : u • v = v ↔ 0 < u.1 := by
-  induction' v using Module.Ray.ind with v hv
+  induction v using Module.Ray.ind with | h v hv =>
   simp only [smul_rayOfNeZero, ray_eq_iff, Units.smul_def, sameRay_smul_left_iff_of_ne hv u.ne_zero]
 
 @[simp]

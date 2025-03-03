@@ -15,7 +15,6 @@ such as irreducibility under the assumption `B` is a domain.
 -/
 
 
-open scoped Classical
 open Polynomial Set Function
 
 variable {A B B' : Type*}
@@ -24,6 +23,7 @@ section MinPolyDef
 
 variable (A) [CommRing A] [Ring B] [Algebra A B]
 
+open scoped Classical in
 /-- Suppose `x : B`, where `B` is an `A`-algebra.
 
 The minimal polynomial `minpoly A x` of `x`
@@ -33,6 +33,7 @@ if such exists (`IsIntegral A x`) or zero otherwise.
 For example, if `V` is a `𝕜`-vector space for some field `𝕜` and `f : V →ₗ[𝕜] V` then
 the minimal polynomial of `f` is `minpoly 𝕜 f`.
 -/
+@[stacks 09GM]
 noncomputable def minpoly (x : B) : A[X] :=
   if hx : IsIntegral A x then degree_lt_wf.min _ hx else 0
 
@@ -58,8 +59,12 @@ theorem ne_zero [Nontrivial A] (hx : IsIntegral A x) : minpoly A x ≠ 0 :=
 theorem eq_zero (hx : ¬IsIntegral A x) : minpoly A x = 0 :=
   dif_neg hx
 
+theorem ne_zero_iff [Nontrivial A] : minpoly A x ≠ 0 ↔ IsIntegral A x :=
+  ⟨fun h => of_not_not <| eq_zero.mt h, ne_zero⟩
+
 theorem algHom_eq (f : B →ₐ[A] B') (hf : Function.Injective f) (x : B) :
     minpoly A (f x) = minpoly A x := by
+  classical
   simp_rw [minpoly, isIntegral_algHom_iff _ hf, ← Polynomial.aeval_def, aeval_algHom,
     AlgHom.comp_apply, _root_.map_eq_zero_iff f hf]
 
@@ -257,7 +262,7 @@ theorem irreducible (hx : IsIntegral A x) : Irreducible (minpoly A x) := by
   by_contra! h
   have heval := congr_arg (Polynomial.aeval x) he
   rw [aeval A x, aeval_mul, mul_eq_zero] at heval
-  cases' heval with heval heval
+  rcases heval with heval | heval
   · exact aeval_ne_zero_of_dvdNotUnit_minpoly hx hf ⟨hf.ne_zero, g, h.2, he.symm⟩ heval
   · refine aeval_ne_zero_of_dvdNotUnit_minpoly hx hg ⟨hg.ne_zero, f, h.1, ?_⟩ heval
     rw [mul_comm, he]

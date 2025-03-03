@@ -3,11 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Tactic.Use
 import Batteries.Tactic.Congr
-import Mathlib.Order.TypeTags
 import Mathlib.Data.Option.Basic
+import Mathlib.Data.Set.Subsingleton
+import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Images and preimages of sets
@@ -30,6 +29,8 @@ import Mathlib.Data.Option.Basic
 set, sets, image, preimage, pre-image, range
 
 -/
+
+assert_not_exists WithTop OrderIso
 
 universe u v
 
@@ -185,11 +186,6 @@ variable {f : α → β} {s t : Set α}
 
 -- Porting note: `Set.image` is already defined in `Data.Set.Defs`
 
-@[deprecated mem_image (since := "2024-03-23")]
-theorem mem_image_iff_bex {f : α → β} {s : Set α} {y : β} :
-    y ∈ f '' s ↔ ∃ (x : _) (_ : x ∈ s), f x = y :=
-  bex_def.symm
-
 theorem image_eta (f : α → β) : f '' s = (fun x => f x) '' s :=
   rfl
 
@@ -206,18 +202,6 @@ theorem forall_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
 
 theorem exists_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
     (∃ y ∈ f '' s, p y) ↔ ∃ x ∈ s, p (f x) := by simp
-
-@[deprecated (since := "2024-02-21")] alias ball_image_iff := forall_mem_image
-@[deprecated (since := "2024-02-21")] alias bex_image_iff := exists_mem_image
-@[deprecated (since := "2024-02-21")] alias ⟨_, ball_image_of_ball⟩ := forall_mem_image
-
-@[deprecated forall_mem_image (since := "2024-02-21")]
-theorem mem_image_elim {f : α → β} {s : Set α} {C : β → Prop} (h : ∀ x : α, x ∈ s → C (f x)) :
-    ∀ {y : β}, y ∈ f '' s → C y := forall_mem_image.2 h _
-
-@[deprecated forall_mem_image (since := "2024-02-21")]
-theorem mem_image_elim_on {f : α → β} {s : Set α} {C : β → Prop} {y : β} (h_y : y ∈ f '' s)
-    (h : ∀ x : α, x ∈ s → C (f x)) : C y := forall_mem_image.2 h _ h_y
 
 -- Porting note: used to be `safe`
 @[congr]
@@ -352,6 +336,17 @@ theorem image_subset_preimage_of_inverse {f : α → β} {g : β → α} (I : Le
 theorem preimage_subset_image_of_inverse {f : α → β} {g : β → α} (I : LeftInverse g f) (s : Set β) :
     f ⁻¹' s ⊆ g '' s := fun b h => ⟨f b, h, I b⟩
 
+theorem range_inter_ssubset_iff_preimage_ssubset {f : α → β} {S S' : Set β} :
+  range f ∩ S ⊂ range f ∩ S' ↔ f ⁻¹' S ⊂ f ⁻¹' S' := by
+    simp only [Set.ssubset_iff_exists]
+    apply and_congr ?_ (by aesop)
+    constructor
+    all_goals
+      intro r x hx
+      simp_all only [subset_inter_iff, inter_subset_left, true_and, mem_preimage,
+        mem_inter_iff, mem_range, true_and]
+      aesop
+
 theorem image_eq_preimage_of_inverse {f : α → β} {g : β → α} (h₁ : LeftInverse g f)
     (h₂ : RightInverse g f) : image f = preimage g :=
   funext fun s =>
@@ -400,8 +395,6 @@ theorem Nonempty.of_image {f : α → β} {s : Set α} : (f '' s).Nonempty → s
 theorem image_nonempty {f : α → β} {s : Set α} : (f '' s).Nonempty ↔ s.Nonempty :=
   ⟨Nonempty.of_image, fun h => h.image f⟩
 
-@[deprecated (since := "2024-01-06")] alias nonempty_image_iff := image_nonempty
-
 theorem Nonempty.preimage {s : Set β} (hs : s.Nonempty) {f : α → β} (hf : Surjective f) :
     (f ⁻¹' s).Nonempty :=
   let ⟨y, hy⟩ := hs
@@ -409,7 +402,7 @@ theorem Nonempty.preimage {s : Set β} (hs : s.Nonempty) {f : α → β} (hf : S
   ⟨x, mem_preimage.2 <| hx.symm ▸ hy⟩
 
 instance (f : α → β) (s : Set α) [Nonempty s] : Nonempty (f '' s) :=
-  (Set.Nonempty.image f nonempty_of_nonempty_subtype).to_subtype
+  (Set.Nonempty.image f .of_subtype).to_subtype
 
 /-- image and preimage are a Galois connection -/
 @[simp]
@@ -421,6 +414,9 @@ theorem image_preimage_subset (f : α → β) (s : Set β) : f '' (f ⁻¹' s) �
 
 theorem subset_preimage_image (f : α → β) (s : Set α) : s ⊆ f ⁻¹' (f '' s) := fun _ =>
   mem_image_of_mem f
+
+theorem preimage_image_univ {f : α → β} : f ⁻¹' (f '' univ) = univ :=
+  Subset.antisymm (fun _ _ => trivial) (subset_preimage_image f univ)
 
 @[simp]
 theorem preimage_image_eq {f : α → β} (s : Set α) (h : Injective f) : f ⁻¹' (f '' s) = s :=
@@ -437,11 +433,19 @@ theorem Nonempty.subset_preimage_const {s : Set α} (hs : Set.Nonempty s) (t : S
     s ⊆ (fun _ => a) ⁻¹' t ↔ a ∈ t := by
   rw [← image_subset_iff, hs.image_const, singleton_subset_iff]
 
+-- Note defeq abuse identifying `preimage` with function composition in the following two proofs.
+
+@[simp]
+theorem preimage_injective : Injective (preimage f) ↔ Surjective f :=
+  injective_comp_right_iff_surjective
+
+@[simp]
+theorem preimage_surjective : Surjective (preimage f) ↔ Injective f :=
+  surjective_comp_right_iff_injective
+
 @[simp]
 theorem preimage_eq_preimage {f : β → α} (hf : Surjective f) : f ⁻¹' s = f ⁻¹' t ↔ s = t :=
-  Iff.intro
-    fun eq => by rw [← image_preimage_eq s hf, ← image_preimage_eq t hf, eq]
-    fun eq => eq ▸ rfl
+  (preimage_injective.mpr hf).eq_iff
 
 theorem image_inter_preimage (f : α → β) (s : Set α) (t : Set β) :
     f '' (s ∩ f ⁻¹' t) = f '' s ∩ t := by
@@ -572,7 +576,6 @@ variable {f : ι → α} {s t : Set α}
 
 theorem forall_mem_range {p : α → Prop} : (∀ a ∈ range f, p a) ↔ ∀ i, p (f i) := by simp
 
-@[deprecated (since := "2024-02-21")] alias forall_range_iff := forall_mem_range
 
 theorem forall_subtype_range_iff {p : range f → Prop} :
     (∀ a : range f, p a) ↔ ∀ i, p ⟨f i, mem_range_self _⟩ :=
@@ -582,9 +585,6 @@ theorem forall_subtype_range_iff {p : range f → Prop} :
 
 theorem exists_range_iff {p : α → Prop} : (∃ a ∈ range f, p a) ↔ ∃ i, p (f i) := by simp
 
-@[deprecated (since := "2024-03-10")]
-alias exists_range_iff' := exists_range_iff
-
 theorem exists_subtype_range_iff {p : range f → Prop} :
     (∃ a : range f, p a) ↔ ∃ i, p ⟨f i, mem_range_self _⟩ :=
   ⟨fun ⟨⟨a, i, hi⟩, ha⟩ => by
@@ -592,10 +592,12 @@ theorem exists_subtype_range_iff {p : range f → Prop} :
     exact ⟨i, ha⟩,
    fun ⟨_, hi⟩ => ⟨_, hi⟩⟩
 
-theorem range_iff_surjective : range f = univ ↔ Surjective f :=
+theorem range_eq_univ : range f = univ ↔ Surjective f :=
   eq_univ_iff_forall
 
-alias ⟨_, _root_.Function.Surjective.range_eq⟩ := range_iff_surjective
+@[deprecated (since := "2024-11-11")] alias range_iff_surjective := range_eq_univ
+
+alias ⟨_, _root_.Function.Surjective.range_eq⟩ := range_eq_univ
 
 @[simp]
 theorem subset_range_of_surjective {f : α → β} (h : Surjective f) (s : Set β) :
@@ -605,6 +607,13 @@ theorem subset_range_of_surjective {f : α → β} (h : Surjective f) (s : Set �
 theorem image_univ {f : α → β} : f '' univ = range f := by
   ext
   simp [image, range]
+
+lemma image_compl_eq_range_diff_image {f : α → β} (hf : Injective f) (s : Set α) :
+    f '' sᶜ = range f \ f '' s := by rw [← image_univ, ← image_diff hf, compl_eq_univ_diff]
+
+/-- Alias of `Set.image_compl_eq_range_sdiff_image`. -/
+lemma range_diff_image {f : α → β} (hf : Injective f) (s : Set α) : range f \ f '' s = f '' sᶜ := by
+  rw [image_compl_eq_range_diff_image hf]
 
 @[simp]
 theorem preimage_eq_univ_iff {f : α → β} {s} : f ⁻¹' s = univ ↔ range f ⊆ s := by
@@ -628,6 +637,12 @@ theorem Nonempty.preimage' {s : Set β} (hs : s.Nonempty) {f : α → β} (hf : 
   ⟨x, Set.mem_preimage.2 <| hx.symm ▸ hy⟩
 
 theorem range_comp (g : α → β) (f : ι → α) : range (g ∘ f) = g '' range f := by aesop
+
+/--
+Variant of `range_comp` using a lambda instead of function composition.
+-/
+theorem range_comp' (g : α → β) (f : ι → α) : range (fun x => g (f x)) = g '' range f :=
+  range_comp g f
 
 theorem range_subset_iff : range f ⊆ s ↔ ∀ y, f y ∈ s :=
   forall_mem_range
@@ -696,14 +711,10 @@ theorem exists_subset_range_and_iff {f : α → β} {p : Set β → Prop} :
     (∃ s, s ⊆ range f ∧ p s) ↔ ∃ s, p (f '' s) := by
   rw [← exists_range_iff, range_image]; rfl
 
-@[deprecated exists_subset_range_and_iff (since := "2024-06-06")]
-theorem exists_subset_range_iff {f : α → β} {p : Set β → Prop} :
-    (∃ (s : _) (_ : s ⊆ range f), p s) ↔ ∃ s, p (f '' s) := by simp
-
 @[simp]
 theorem forall_subset_range_iff {f : α → β} {p : Set β → Prop} :
     (∀ s, s ⊆ range f → p s) ↔ ∀ s, p (f '' s) := by
-  rw [← forall_mem_range, range_image]; rfl
+  rw [← forall_mem_range, range_image]; simp only [mem_powerset_iff]
 
 @[simp]
 theorem preimage_subset_preimage_iff {s t : Set α} {f : β → α} (hs : s ⊆ range f) :
@@ -738,7 +749,7 @@ theorem preimage_image_preimage {f : α → β} {s : Set β} : f ⁻¹' (f '' (f
 
 @[simp, mfld_simps]
 theorem range_id : range (@id α) = univ :=
-  range_iff_surjective.2 surjective_id
+  range_eq_univ.2 surjective_id
 
 @[simp, mfld_simps]
 theorem range_id' : (range fun x : α => x) = univ :=
@@ -816,12 +827,12 @@ theorem image_preimage_inl_union_image_preimage_inr (s : Set (α ⊕ β)) :
 
 @[simp]
 theorem range_quot_mk (r : α → α → Prop) : range (Quot.mk r) = univ :=
-  (surjective_quot_mk r).range_eq
+  Quot.mk_surjective.range_eq
 
 @[simp]
 theorem range_quot_lift {r : ι → ι → Prop} (hf : ∀ x y, r x y → f x = f y) :
     range (Quot.lift f hf) = range f :=
-  ext fun _ => (surjective_quot_mk _).exists
+  ext fun _ => Quot.mk_surjective.exists
 
 @[simp]
 theorem range_quotient_mk {s : Setoid α} : range (Quotient.mk s) = univ :=
@@ -836,7 +847,7 @@ theorem range_quotient_lift [s : Setoid ι] (hf) :
 theorem range_quotient_mk' {s : Setoid α} : range (Quotient.mk' : α → Quotient s) = univ :=
   range_quot_mk _
 
-@[simp] lemma Quotient.range_mk'' {sa : Setoid α} : range (Quotient.mk'' (s₁ := sa)) = univ :=
+lemma Quotient.range_mk'' {sa : Setoid α} : range (Quotient.mk'' (s₁ := sa)) = univ :=
   range_quotient_mk
 
 @[simp]
@@ -938,10 +949,6 @@ theorem range_unique [h : Unique ι] : range f = {f default} := by
 theorem range_diff_image_subset (f : α → β) (s : Set α) : range f \ f '' s ⊆ f '' sᶜ :=
   fun _ ⟨⟨x, h₁⟩, h₂⟩ => ⟨x, fun h => h₂ ⟨x, h, h₁⟩, h₁⟩
 
-theorem range_diff_image {f : α → β} (H : Injective f) (s : Set α) : range f \ f '' s = f '' sᶜ :=
-  (Subset.antisymm (range_diff_image_subset f s)) fun _ ⟨_, hx, hy⟩ =>
-    hy ▸ ⟨mem_range_self _, fun ⟨_, hx', Eq⟩ => hx <| H Eq ▸ hx'⟩
-
 @[simp]
 theorem range_inclusion (h : s ⊆ t) : range (inclusion h) = { x : t | (x : α) ∈ s } := by
   ext ⟨x, hx⟩
@@ -987,6 +994,13 @@ theorem range_some_union_none (α : Type*) : range (some : α → Option α) ∪
 @[simp]
 theorem insert_none_range_some (α : Type*) : insert none (range (some : α → Option α)) = univ :=
   (isCompl_range_some_none α).symm.sup_eq_top
+
+lemma image_of_range_union_range_eq_univ {α β γ γ' δ δ' : Type*}
+    {h : β → α} {f : γ → β} {f₁ : γ' → α} {f₂ : γ → γ'} {g : δ → β} {g₁ : δ' → α} {g₂ : δ → δ'}
+    (hf : h ∘ f = f₁ ∘ f₂) (hg : h ∘ g = g₁ ∘ g₂) (hfg : range f ∪ range g = univ) (s : Set β) :
+    h '' s = f₁ '' (f₂ '' (f ⁻¹' s)) ∪ g₁ '' (g₂ '' (g ⁻¹' s)) := by
+  rw [← image_comp, ← image_comp, ← hf, ← hg, image_comp, image_comp, image_preimage_eq_inter_range,
+    image_preimage_eq_inter_range, ← image_union, ← inter_union_distrib_left, hfg, inter_univ]
 
 end Range
 
@@ -1070,10 +1084,8 @@ theorem Surjective.preimage_injective (hf : Surjective f) : Injective (preimage 
 theorem Injective.preimage_image (hf : Injective f) (s : Set α) : f ⁻¹' (f '' s) = s :=
   preimage_image_eq s hf
 
-theorem Injective.preimage_surjective (hf : Injective f) : Surjective (preimage f) := by
-  intro s
-  use f '' s
-  rw [hf.preimage_image]
+theorem Injective.preimage_surjective (hf : Injective f) : Surjective (preimage f) :=
+  Set.preimage_surjective.mpr hf
 
 theorem Injective.subsingleton_image_iff (hf : Injective f) {s : Set α} :
     (f '' s).Subsingleton ↔ s.Subsingleton :=
@@ -1277,14 +1289,6 @@ theorem range_eq {α β} (f : Option α → β) : range f = insert (f none) (ran
 
 end Option
 
-theorem WithBot.range_eq {α β} (f : WithBot α → β) :
-    range f = insert (f ⊥) (range (f ∘ WithBot.some : α → β)) :=
-  Option.range_eq f
-
-theorem WithTop.range_eq {α β} (f : WithTop α → β) :
-    range f = insert (f ⊤) (range (f ∘ WithBot.some : α → β)) :=
-  Option.range_eq f
-
 namespace Set
 
 open Function
@@ -1295,20 +1299,6 @@ open Function
 section ImagePreimage
 
 variable {α : Type u} {β : Type v} {f : α → β}
-
-@[simp]
-theorem preimage_injective : Injective (preimage f) ↔ Surjective f := by
-  refine ⟨fun h y => ?_, Surjective.preimage_injective⟩
-  obtain ⟨x, hx⟩ : (f ⁻¹' {y}).Nonempty := by
-    rw [h.nonempty_apply_iff preimage_empty]
-    apply singleton_nonempty
-  exact ⟨x, hx⟩
-
-@[simp]
-theorem preimage_surjective : Surjective (preimage f) ↔ Injective f := by
-  refine ⟨fun h x x' hx => ?_, Injective.preimage_surjective⟩
-  rcases h {x} with ⟨s, hs⟩; have := mem_singleton x
-  rwa [← hs, mem_preimage, hx, ← mem_preimage, hs, mem_singleton_iff, eq_comm] at this
 
 @[simp]
 theorem image_surjective : Surjective (image f) ↔ Surjective f := by

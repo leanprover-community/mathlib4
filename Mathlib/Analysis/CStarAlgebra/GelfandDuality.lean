@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.CStarAlgebra.Spectrum
+import Mathlib.Analysis.CStarAlgebra.ContinuousMap
 import Mathlib.Analysis.Normed.Group.Quotient
 import Mathlib.Analysis.Normed.Algebra.Basic
 import Mathlib.Topology.ContinuousMap.Units
@@ -124,8 +125,7 @@ end ComplexBanachAlgebra
 
 section ComplexCStarAlgebra
 
-variable {A : Type*} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
-variable [StarRing A] [CStarRing A] [StarModule ℂ A]
+variable {A : Type*} [CommCStarAlgebra A]
 
 theorem gelfandTransform_map_star (a : A) :
     gelfandTransform ℂ A (star a) = star (gelfandTransform ℂ A a) :=
@@ -170,7 +170,7 @@ theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A)
     points in `C(characterSpace ℂ A, ℂ)` and is closed under `star`. -/
   have h : rng.topologicalClosure = rng := le_antisymm
     (StarSubalgebra.topologicalClosure_minimal le_rfl
-      (gelfandTransform_isometry A).closedEmbedding.isClosed_range)
+      (gelfandTransform_isometry A).isClosedEmbedding.isClosed_range)
     (StarSubalgebra.le_topologicalClosure _)
   refine h ▸ ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoints
     _ (fun _ _ => ?_)
@@ -212,15 +212,12 @@ noncomputable def compContinuousMap (ψ : A →⋆ₐ[𝕜] B) :
     Continuous.subtype_mk
       (continuous_of_continuous_eval fun a => map_continuous <| gelfandTransform 𝕜 B (ψ a)) _
 
-variable (A)
-
+variable (A) in
 /-- `WeakDual.CharacterSpace.compContinuousMap` sends the identity to the identity. -/
 @[simp]
 theorem compContinuousMap_id :
     compContinuousMap (StarAlgHom.id 𝕜 A) = ContinuousMap.id (characterSpace 𝕜 A) :=
   ContinuousMap.ext fun _a => ext fun _x => rfl
-
-variable {A}
 
 /-- `WeakDual.CharacterSpace.compContinuousMap` is functorial. -/
 @[simp]
@@ -258,9 +255,7 @@ V                     V
 B  --- η B ---> C(characterSpace ℂ B, ℂ)
 ```
 -/
-theorem gelfandStarTransform_naturality {A B : Type*} [NormedCommRing A] [NormedAlgebra ℂ A]
-    [CompleteSpace A] [StarRing A] [CStarRing A] [StarModule ℂ A] [NormedCommRing B]
-    [NormedAlgebra ℂ B] [CompleteSpace B] [StarRing B] [CStarRing B] [StarModule ℂ B]
+theorem gelfandStarTransform_naturality {A B : Type*} [CommCStarAlgebra A] [CommCStarAlgebra B]
     (φ : A →⋆ₐ[ℂ] B) :
     (gelfandStarTransform B : _ →⋆ₐ[ℂ] _).comp φ =
       (compContinuousMap φ |>.compStarAlgHom' ℂ ℂ).comp (gelfandStarTransform A : _ →⋆ₐ[ℂ] _) := by

@@ -296,7 +296,7 @@ def keysLookupEquiv :
     dsimp only at hf
     ext
     · simp [keys, Multiset.keys, ← hf, Option.isSome_iff_exists]
-    · simp (config := { contextual := true }) [lookup_eq_some_iff, ← hf]
+    · simp +contextual [lookup_eq_some_iff, ← hf]
 
 @[simp] lemma keysLookupEquiv_symm_apply_keys :
     ∀ f : {f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1},
@@ -417,11 +417,13 @@ theorem insert_toFinmap (a : α) (b : β a) (s : AList β) :
     insert a b (AList.toFinmap s) = AList.toFinmap (s.insert a b) := by
   simp [insert]
 
-theorem insert_entries_of_neg {a : α} {b : β a} {s : Finmap β} :
+theorem entries_insert_of_not_mem {a : α} {b : β a} {s : Finmap β} :
     a ∉ s → (insert a b s).entries = ⟨a, b⟩ ::ₘ s.entries :=
   induction_on s fun s h => by
-    -- Porting note: `-insert_entries` required
-    simp [AList.insert_entries_of_neg (mt mem_toFinmap.1 h), -insert_entries]
+    -- Porting note: `-entries_insert` required
+    simp [AList.entries_insert_of_not_mem (mt mem_toFinmap.1 h), -entries_insert]
+
+@[deprecated (since := "2024-12-14")] alias insert_entries_of_neg := entries_insert_of_not_mem
 
 @[simp]
 theorem mem_insert {a a' : α} {b' : β a'} {s : Finmap β} : a ∈ insert a' b' s ↔ a = a' ∨ a ∈ s :=
@@ -455,7 +457,7 @@ theorem mem_list_toFinmap (a : α) (xs : List (Sigma β)) :
   -- Porting note: golfed
   induction' xs with x xs
   · simp only [toFinmap_nil, not_mem_empty, find?, not_mem_nil, exists_false]
-  cases' x with fst_i snd_i
+  obtain ⟨fst_i, snd_i⟩ := x
   -- Porting note: `Sigma.mk.inj_iff` required because `simp` behaves differently
   simp only [toFinmap_cons, *, exists_or, mem_cons, mem_insert, exists_and_left, Sigma.mk.inj_iff]
   refine (or_congr_left <| and_iff_left_of_imp ?_).symm
@@ -513,7 +515,12 @@ theorem lookup_union_left_of_not_in {a} {s₁ s₂ : Finmap β} (h : a ∉ s₂)
   · rw [lookup_union_left h']
   · rw [lookup_union_right h', lookup_eq_none.mpr h, lookup_eq_none.mpr h']
 
--- @[simp] -- Porting note (#10618): simp can prove this
+/-- `simp`-normal form of `mem_lookup_union` -/
+@[simp]
+theorem mem_lookup_union' {a} {b : β a} {s₁ s₂ : Finmap β} :
+    lookup a (s₁ ∪ s₂) = some b ↔ b ∈ lookup a s₁ ∨ a ∉ s₁ ∧ b ∈ lookup a s₂ :=
+  induction_on₂ s₁ s₂ fun _ _ => AList.mem_lookup_union
+
 theorem mem_lookup_union {a} {b : β a} {s₁ s₂ : Finmap β} :
     b ∈ lookup a (s₁ ∪ s₂) ↔ b ∈ lookup a s₁ ∨ a ∉ s₁ ∧ b ∈ lookup a s₂ :=
   induction_on₂ s₁ s₂ fun _ _ => AList.mem_lookup_union

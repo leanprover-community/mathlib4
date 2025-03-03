@@ -8,15 +8,29 @@ import Mathlib.Logic.Equiv.Set
 import Mathlib.Data.Set.Monotone
 import Mathlib.Data.Set.Image
 import Mathlib.Order.WellFounded
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Order homomorphisms and sets
 -/
 
 
-open OrderDual
+open OrderDual Set
 
 variable {α β : Type*}
+
+namespace Set
+
+/-- Sets on sum types are order-equivalent to pairs of sets on each summand. -/
+def sumEquiv : Set (α ⊕ β) ≃o Set α × Set β where
+  toFun s := (Sum.inl ⁻¹' s, Sum.inr ⁻¹' s)
+  invFun s := Sum.inl '' s.1 ∪ Sum.inr '' s.2
+  left_inv s := image_preimage_inl_union_image_preimage_inr s
+  right_inv s := by
+    simp [preimage_image_eq _ Sum.inl_injective, preimage_image_eq _ Sum.inr_injective]
+  map_rel_iff' := by simp [subset_def]
+
+end Set
 
 namespace OrderIso
 
@@ -158,6 +172,36 @@ instance subsingleton_of_wellFoundedGT' [LinearOrder β] [WellFoundedGT β] [Pre
   rw [Subsingleton.elim f.dual]
 
 instance unique_of_wellFoundedGT [LinearOrder α] [WellFoundedGT α] : Unique (α ≃o α) := Unique.mk' _
+
+/-- An order isomorphism between lattices induces an order isomorphism between corresponding
+interval sublattices. -/
+protected def Iic [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :
+    Iic x ≃o Iic (e x) where
+  toFun y := ⟨e y, (map_le_map_iff _).mpr y.property⟩
+  invFun y := ⟨e.symm y, e.symm_apply_le.mpr y.property⟩
+  left_inv y := by simp
+  right_inv y := by simp
+  map_rel_iff' := by simp
+
+/-- An order isomorphism between lattices induces an order isomorphism between corresponding
+interval sublattices. -/
+protected def Ici [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :
+    Ici x ≃o Ici (e x) where
+  toFun y := ⟨e y, (map_le_map_iff _).mpr y.property⟩
+  invFun y := ⟨e.symm y, e.le_symm_apply.mpr y.property⟩
+  left_inv y := by simp
+  right_inv y := by simp
+  map_rel_iff' := by simp
+
+/-- An order isomorphism between lattices induces an order isomorphism between corresponding
+interval sublattices. -/
+protected def Icc [Lattice α] [Lattice β] (e : α ≃o β) (x y : α) :
+    Icc x y ≃o Icc (e x) (e y) where
+  toFun z := ⟨e z, by simp only [mem_Icc, map_le_map_iff]; exact z.property⟩
+  invFun z := ⟨e.symm z, by simp only [mem_Icc, e.le_symm_apply, e.symm_apply_le]; exact z.property⟩
+  left_inv y := by simp
+  right_inv y := by simp
+  map_rel_iff' := by simp
 
 end OrderIso
 

@@ -18,7 +18,7 @@ presheaves.
 -/
 
 open CategoryTheory TopCat TopologicalSpace Opposite CategoryTheory.Limits CategoryTheory.Category
-  CategoryTheory.Functor
+  CategoryTheory.Functor Topology
 
 universe u v
 
@@ -156,20 +156,20 @@ open TopCat.Presheaf
 
 /-- The restriction of a sheafed space along an open embedding into the space.
 -/
-def restrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)} (h : OpenEmbedding f) :
+def restrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)} (h : IsOpenEmbedding f) :
     SheafedSpace C :=
-  { X.toPresheafedSpace.restrict h with IsSheaf := isSheaf_of_openEmbedding h X.IsSheaf }
+  { X.toPresheafedSpace.restrict h with IsSheaf := isSheaf_of_isOpenEmbedding h X.IsSheaf }
 
 /-- The map from the restriction of a presheafed space.
 -/
 @[simps!]
 def ofRestrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)}
-    (h : OpenEmbedding f) : X.restrict h ⟶ X := X.toPresheafedSpace.ofRestrict h
+    (h : IsOpenEmbedding f) : X.restrict h ⟶ X := X.toPresheafedSpace.ofRestrict h
 
 /-- The restriction of a sheafed space `X` to the top subspace is isomorphic to `X` itself.
 -/
 @[simps! hom inv]
-def restrictTopIso (X : SheafedSpace C) : X.restrict (Opens.openEmbedding ⊤) ≅ X :=
+def restrictTopIso (X : SheafedSpace C) : X.restrict (Opens.isOpenEmbedding ⊤) ≅ X :=
   isoMk (X.toPresheafedSpace.restrictTopIso)
 
 /-- The global sections, notated Gamma.
@@ -206,17 +206,19 @@ noncomputable instance [HasLimits C] :
 instance [HasLimits C] : HasColimits.{v} (SheafedSpace C) :=
   hasColimits_of_hasColimits_createsColimits forgetToPresheafedSpace
 
-noncomputable instance [HasLimits C] : PreservesColimits (forget C) :=
-  Limits.compPreservesColimits forgetToPresheafedSpace (PresheafedSpace.forget C)
+noncomputable instance [HasLimits C] : PreservesColimits (forget.{_, _, v} C) :=
+  Limits.comp_preservesColimits forgetToPresheafedSpace (PresheafedSpace.forget C)
 
 section ConcreteCategory
 
-variable [ConcreteCategory.{v} C] [HasColimits C] [HasLimits C]
-variable  [PreservesLimits (CategoryTheory.forget C)]
+variable {FC : C → C → Type*} {CC : C → Type v} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+variable [instCC : ConcreteCategory.{v} C FC] [HasColimits C] [HasLimits C]
+variable [PreservesLimits (CategoryTheory.forget C)]
 variable [PreservesFilteredColimits (CategoryTheory.forget C)]
 variable [(CategoryTheory.forget C).ReflectsIsomorphisms]
 
-attribute [local instance] ConcreteCategory.instFunLike in
+attribute [local ext] DFunLike.ext in
+include instCC in
 lemma hom_stalk_ext {X Y : SheafedSpace C} (f g : X ⟶ Y) (h : f.base = g.base)
     (h' : ∀ x, f.stalkMap x = (Y.presheaf.stalkCongr (h ▸ rfl)).hom ≫ g.stalkMap x) :
     f = g := by
@@ -230,6 +232,8 @@ lemma hom_stalk_ext {X Y : SheafedSpace C} (f g : X ⟶ Y) (h : f.base = g.base)
   erw [← PresheafedSpace.stalkMap_germ_apply ⟨f, fc⟩, ← PresheafedSpace.stalkMap_germ_apply ⟨f, gc⟩]
   simp [h']
 
+attribute [local ext] DFunLike.ext in
+include instCC in
 lemma mono_of_base_injective_of_stalk_epi {X Y : SheafedSpace C} (f : X ⟶ Y)
     (h₁ : Function.Injective f.base)
     (h₂ : ∀ x, Epi (f.stalkMap x)) : Mono f := by

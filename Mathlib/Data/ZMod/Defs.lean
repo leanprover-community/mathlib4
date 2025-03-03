@@ -5,9 +5,9 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Algebra.NeZero
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Definition of `ZMod n` + basic results.
@@ -16,14 +16,14 @@ This file provides the basic details of `ZMod n`, including its commutative ring
 
 ## Implementation details
 
-This used to be inlined into `Data.ZMod.Basic`. This file imports `CharP.Basic`, which is an
+This used to be inlined into `Data.ZMod.Basic`. This file imports `CharP.Lemmas`, which is an
 issue; all `CharP` instances create an `Algebra (ZMod p) R` instance; however, this instance may
 not be definitionally equal to other `Algebra` instances (for example, `GaloisField` also has an
 `Algebra` instance as it is defined as a `SplittingField`). The way to fix this is to use the
 forgetful inheritance pattern, and make `CharP` carry the data of what the `smul` should be (so
 for example, the `smul` on the `GaloisField` `CharP` instance should be equal to the `smul` from
 its `SplittingField` structure); there is only one possible `ZMod p` algebra for any `p`, so this
-is not an issue mathematically. For this to be possible, however, we need `CharP.Basic` to be
+is not an issue mathematically. For this to be possible, however, we need `CharP.Lemmas` to be
 able to import some part of `ZMod`.
 
 -/
@@ -101,7 +101,7 @@ instance ZMod.repr : ∀ n : ℕ, Repr (ZMod n)
 
 namespace ZMod
 
-instance instUnique : Unique (ZMod 1) := Fin.uniqueFinOne
+instance instUnique : Unique (ZMod 1) := Fin.instUnique
 
 instance fintype : ∀ (n : ℕ) [NeZero n], Fintype (ZMod n)
   | 0, h => (h.ne _ rfl).elim

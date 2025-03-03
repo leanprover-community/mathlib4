@@ -54,7 +54,6 @@ Note that `F` can be a function field over multiple, non-isomorphic, `Fq`.
 abbrev FunctionField [Algebra (RatFunc Fq) F] : Prop :=
   FiniteDimensional (RatFunc Fq) F
 
--- Porting note: Removed `protected`
 /-- `F` is a function field over `Fq` iff it is a finite extension of `Fq(t)`. -/
 theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
     [IsFractionRing Fq[X] Fqt] [Algebra (RatFunc Fq) F] [Algebra Fqt F] [Algebra Fq[X] F]
@@ -75,12 +74,15 @@ theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
     refine FiniteDimensional.of_fintype_basis (b.mapCoeffs e.symm ?_)
     intro c x; convert (this (e.symm c) x).symm; simp only [e.apply_symm_apply]
 
+namespace FunctionField
+
 theorem algebraMap_injective [Algebra Fq[X] F] [Algebra (RatFunc Fq) F]
     [IsScalarTower Fq[X] (RatFunc Fq) F] : Function.Injective (⇑(algebraMap Fq[X] F)) := by
   rw [IsScalarTower.algebraMap_eq Fq[X] (RatFunc Fq) F]
   exact (algebraMap (RatFunc Fq) F).injective.comp (IsFractionRing.injective Fq[X] (RatFunc Fq))
 
-namespace FunctionField
+@[deprecated (since := "2025-03-03")]
+alias _root_.algebraMap_injective := FunctionField.algebraMap_injective
 
 /-- The function field analogue of `NumberField.ringOfIntegers`:
 `FunctionField.ringOfIntegers Fq Fqt F` is the integral closure of `Fq[t]` in `F`.
@@ -208,12 +210,12 @@ theorem inftyValuation.C {k : Fq} (hk : k ≠ 0) :
 theorem inftyValuation.X : inftyValuationDef Fq RatFunc.X = Multiplicative.ofAdd (1 : ℤ) := by
   rw [inftyValuationDef, if_neg RatFunc.X_ne_zero, RatFunc.intDegree_X]
 
-@[simp]
+-- Dropped attribute `@[simp]` due to issue described here:
+-- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/.60synthInstance.2EmaxHeartbeats.60.20error.20but.20only.20in.20.60simpNF.60
 theorem inftyValuation.polynomial {p : Fq[X]} (hp : p ≠ 0) :
     inftyValuationDef Fq (algebraMap Fq[X] (RatFunc Fq) p) =
       Multiplicative.ofAdd (p.natDegree : ℤ) := by
-  have hp' : algebraMap Fq[X] (RatFunc Fq) p ≠ 0 := by
-    rw [Ne, NoZeroSMulDivisors.algebraMap_eq_zero_iff]; exact hp
+  have hp' : algebraMap Fq[X] (RatFunc Fq) p ≠ 0 := by simpa
   rw [inftyValuationDef, if_neg hp', RatFunc.intDegree_polynomial]
 
 /-- The valued field `Fq(t)` with the valuation at infinity. -/

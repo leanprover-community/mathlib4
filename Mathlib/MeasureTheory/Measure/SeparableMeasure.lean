@@ -169,21 +169,22 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_finite [IsFiniteMeasur
     -- enough to show that such sets constitute a `σ`-algebra containing `𝒜`. This is contained in
     -- the theorem `generateFrom_induction`.
     have : MeasurableSet s ∧ ∀ (ε : ℝ), 0 < ε → ∃ t ∈ 𝒜, (μ (s ∆ t)).toReal < ε := by
-      apply generateFrom_induction
-        (p := fun s ↦ MeasurableSet s ∧ ∀ (ε : ℝ), 0 < ε → ∃ t ∈ 𝒜, (μ (s ∆ t)).toReal < ε)
-        (C := 𝒜) (hs := hgen ▸ ms)
-      · -- If `t ∈ 𝒜`, then `μ (t ∆ t) = 0` which is less than any `ε > 0`.
-        exact fun t t_mem ↦ ⟨hgen ▸ measurableSet_generateFrom t_mem,
-          fun ε ε_pos ↦ ⟨t, t_mem, by simpa⟩⟩
-      · -- `∅ ∈ 𝒜` and `μ (∅ ∆ ∅) = 0` which is less than any `ε > 0`.
-        exact ⟨MeasurableSet.empty, fun ε ε_pos ↦ ⟨∅, h𝒜.empty_mem, by simpa⟩⟩
-      · -- If `s` is measurable and `t ∈ 𝒜` such that `μ (s ∆ t) < ε`, then `tᶜ ∈ 𝒜` and
-        -- `μ (sᶜ ∆ tᶜ) = μ (s ∆ t) < ε` so `sᶜ` can be approximated.
-        refine fun t ⟨mt, ht⟩ ↦ ⟨mt.compl, fun ε ε_pos ↦ ?_⟩
-        rcases ht ε ε_pos with ⟨u, u_mem, hμtcu⟩
+      rw [hgen] at ms
+      induction s, ms using generateFrom_induction with
+      -- If `t ∈ 𝒜`, then `μ (t ∆ t) = 0` which is less than any `ε > 0`.
+      | hC t t_mem _ =>
+        exact ⟨hgen ▸ measurableSet_generateFrom t_mem, fun ε ε_pos ↦ ⟨t, t_mem, by simpa⟩⟩
+      -- `∅ ∈ 𝒜` and `μ (∅ ∆ ∅) = 0` which is less than any `ε > 0`.
+      | empty => exact ⟨MeasurableSet.empty, fun ε ε_pos ↦ ⟨∅, h𝒜.empty_mem, by simpa⟩⟩
+      -- If `s` is measurable and `t ∈ 𝒜` such that `μ (s ∆ t) < ε`, then `tᶜ ∈ 𝒜` and
+      -- `μ (sᶜ ∆ tᶜ) = μ (s ∆ t) < ε` so `sᶜ` can be approximated.
+      | compl t _ ht =>
+        refine ⟨ht.1.compl, fun ε ε_pos ↦ ?_⟩
+        obtain ⟨u, u_mem, hμtcu⟩ := ht.2 ε ε_pos
         exact ⟨uᶜ, h𝒜.compl_mem u_mem, by rwa [compl_symmDiff_compl]⟩
-      · -- Let `(fₙ)` be a sequence of measurable sets and `ε > 0`.
-        refine fun f hf ↦ ⟨MeasurableSet.iUnion (fun n ↦ (hf n).1), fun ε ε_pos ↦ ?_⟩
+      -- Let `(fₙ)` be a sequence of measurable sets and `ε > 0`.
+      | iUnion f _ hf =>
+        refine ⟨MeasurableSet.iUnion (fun n ↦ (hf n).1), fun ε ε_pos ↦ ?_⟩
         -- We have  `μ (⋃ n ≤ N, fₙ) ⟶ μ (⋃ n, fₙ)`.
         have := tendsto_measure_iUnion_accumulate (μ := μ) (f := f)
         rw [← tendsto_toReal_iff (fun _ ↦ measure_ne_top _ _) (measure_ne_top _ _)] at this
@@ -230,11 +231,11 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_finite [IsFiniteMeasur
                     (⋃ n ∈ (Finset.range (N + 1)), g ↑n))).toReal
                       ≤ (μ (⋃ n ∈ (Finset.range (N + 1)), f n ∆ g n)).toReal :=
                           toReal_mono (measure_ne_top _ _) (measure_mono biSup_symmDiff_biSup_le)
-                    _ ≤ ∑ n in (Finset.range (N + 1)), (μ (f n ∆ g n)).toReal := by
+                    _ ≤ ∑ n ∈ Finset.range (N + 1), (μ (f n ∆ g n)).toReal := by
                           rw [← toReal_sum (fun _ _ ↦ measure_ne_top _ _)]
                           exact toReal_mono (ne_of_lt <| sum_lt_top.2 fun _ _ ↦ measure_lt_top μ _)
                             (measure_biUnion_finset_le _ _)
-                    _ < ∑ n in (Finset.range (N + 1)), (ε / (2 * (N + 1))) :=
+                    _ < ∑ n ∈ Finset.range (N + 1), (ε / (2 * (N + 1))) :=
                           Finset.sum_lt_sum (fun i _ ↦ le_of_lt (hg i)) ⟨0, by simp, hg 0⟩
                     _ ≤ ε / 2 := by
                           simp only [Finset.sum_const, Finset.card_range, nsmul_eq_mul,
@@ -500,9 +501,9 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
         --   `≤ ‖f - bf‖ₚ + ‖g - bg‖ₚ`
         --   `< ε/2 + ε/2 = ε`.
         calc
-          ‖Memℒp.toLp f hf + Memℒp.toLp g hg - (bf + bg)‖
-            = ‖(Memℒp.toLp f hf) - bf + ((Memℒp.toLp g hg) - bg)‖ := by congr; abel
-          _ ≤ ‖(Memℒp.toLp f hf) - bf‖ + ‖(Memℒp.toLp g hg) - bg‖ := norm_add_le ..
+          ‖MemLp.toLp f hf + MemLp.toLp g hg - (bf + bg)‖
+            = ‖(MemLp.toLp f hf) - bf + ((MemLp.toLp g hg) - bg)‖ := by congr; abel
+          _ ≤ ‖(MemLp.toLp f hf) - bf‖ + ‖(MemLp.toLp g hg) - bg‖ := norm_add_le ..
           _ < ε := by linarith [hbf, hbg]
 
 end SecondCountableLp

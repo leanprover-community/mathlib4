@@ -92,7 +92,7 @@ abbrev HasPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :=
 abbrev pullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :=
   limit (cospan f g)
 
-/-- The cone associated to the pullback of `f` and `g`-/
+/-- The cone associated to the pullback of `f` and `g` -/
 abbrev pullback.cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] : PullbackCone f g :=
   limit.cone (cospan f g)
 
@@ -150,33 +150,27 @@ theorem PullbackCone.fst_limit_cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [Has
 theorem PullbackCone.snd_limit_cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasLimit (cospan f g)] :
     PullbackCone.snd (limit.cone (cospan f g)) = pullback.snd f g := rfl
 
--- Porting note (#10618): simp can prove this; removed simp
 theorem PushoutCocone.inl_colimit_cocone {X Y Z : C} (f : Z ⟶ X) (g : Z ⟶ Y)
     [HasColimit (span f g)] : PushoutCocone.inl (colimit.cocone (span f g)) = pushout.inl _ _ := rfl
 
--- Porting note (#10618): simp can prove this; removed simp
 theorem PushoutCocone.inr_colimit_cocone {X Y Z : C} (f : Z ⟶ X) (g : Z ⟶ Y)
     [HasColimit (span f g)] : PushoutCocone.inr (colimit.cocone (span f g)) = pushout.inr _ _ := rfl
 
--- Porting note (#10618): simp can prove this and reassoced version; removed simp
 @[reassoc]
 theorem pullback.lift_fst {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] (h : W ⟶ X)
     (k : W ⟶ Y) (w : h ≫ f = k ≫ g) : pullback.lift h k w ≫ pullback.fst f g = h :=
   limit.lift_π _ _
 
--- Porting note (#10618): simp can prove this and reassoced version; removed simp
 @[reassoc]
 theorem pullback.lift_snd {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] (h : W ⟶ X)
     (k : W ⟶ Y) (w : h ≫ f = k ≫ g) : pullback.lift h k w ≫ pullback.snd f g = k :=
   limit.lift_π _ _
 
--- Porting note (#10618): simp can prove this and reassoced version; removed simp
 @[reassoc]
 theorem pushout.inl_desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h : Y ⟶ W)
     (k : Z ⟶ W) (w : f ≫ h = g ≫ k) : pushout.inl _ _ ≫ pushout.desc h k w = h :=
   colimit.ι_desc _ _
 
--- Porting note (#10618): simp can prove this and reassoced version; removed simp
 @[reassoc]
 theorem pushout.inr_desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h : Y ⟶ W)
     (k : Z ⟶ W) (w : f ≫ h = g ≫ k) : pushout.inr _ _ ≫ pushout.desc h k w = k :=
@@ -232,6 +226,16 @@ def pushoutIsPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
     IsColimit (PushoutCocone.mk (pushout.inl f g) (pushout.inr _ _) pushout.condition) :=
   PushoutCocone.IsColimit.mk _ (fun s => pushout.desc s.inl s.inr s.condition) (by simp) (by simp)
     (by aesop_cat)
+
+@[simp]
+lemma pullback.lift_fst_snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
+    lift (fst f g) (snd f g) condition = 𝟙 (pullback f g) := by
+  apply hom_ext <;> simp
+
+@[simp]
+lemma pushout.desc_inl_inr {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
+    desc (inl f g) (inr f g) condition = 𝟙 (pushout f g) := by
+  apply hom_ext <;> simp
 
 /-- Given such a diagram, then there is a natural morphism `W ×ₛ X ⟶ Y ×ₜ Z`.
 
@@ -508,10 +512,8 @@ end PushoutSymmetry
 
 variable (C)
 
-/-- `HasPullbacks` represents a choice of pullback for every pair of morphisms
-
-See <https://stacks.math.columbia.edu/tag/001W>
--/
+/-- `HasPullbacks` represents a choice of pullback for every pair of morphisms. -/
+@[stacks 001W]
 abbrev HasPullbacks :=
   HasLimitsOfShape WalkingCospan C
 

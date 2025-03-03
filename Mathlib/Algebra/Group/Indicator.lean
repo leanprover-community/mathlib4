@@ -5,6 +5,7 @@ Authors: Zhouhang Zhou
 -/
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.Support
+import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Indicator function
@@ -51,7 +52,6 @@ noncomputable def mulIndicator (s : Set α) (f : α → M) (x : α) : M :=
 theorem piecewise_eq_mulIndicator [DecidablePred (· ∈ s)] : s.piecewise f 1 = s.mulIndicator f :=
   funext fun _ => @if_congr _ _ _ _ (id _) _ _ _ _ Iff.rfl rfl rfl
 
--- Porting note: needed unfold for mulIndicator
 @[to_additive]
 theorem mulIndicator_apply (s : Set α) (f : α → M) (a : α) [Decidable (a ∈ s)] :
     mulIndicator s f a = if a ∈ s then f a else 1 := by
@@ -119,8 +119,16 @@ set. -/
 theorem mem_of_mulIndicator_ne_one (h : mulIndicator s f a ≠ 1) : a ∈ s :=
   not_imp_comm.1 (fun hn => mulIndicator_of_not_mem hn f) h
 
-@[to_additive]
+/-- See `Set.eqOn_mulIndicator'` for the version with `sᶜ`. -/
+@[to_additive
+      "See `Set.eqOn_indicator'` for the version with `sᶜ`"]
 theorem eqOn_mulIndicator : EqOn (mulIndicator s f) f s := fun _ hx => mulIndicator_of_mem hx f
+
+/-- See `Set.eqOn_mulIndicator` for the version with `s`. -/
+@[to_additive
+      "See `Set.eqOn_indicator` for the version with `s`."]
+theorem eqOn_mulIndicator' : EqOn (mulIndicator s f) 1 sᶜ :=
+  fun _ hx => mulIndicator_of_not_mem hx f
 
 @[to_additive]
 theorem mulSupport_mulIndicator_subset : mulSupport (s.mulIndicator f) ⊆ s := fun _ hx =>
@@ -143,6 +151,17 @@ theorem mulIndicator_congr (h : EqOn f g s) : mulIndicator s f = mulIndicator s 
     split_ifs with h_1
     · exact h h_1
     rfl
+
+@[to_additive]
+theorem mulIndicator_eq_mulIndicator {t : Set β} {g : β → M} {b : β}
+    (h1 : a ∈ s ↔ b ∈ t) (h2 : f a = g b) :
+    s.mulIndicator f a = t.mulIndicator g b := by
+  by_cases a ∈ s <;> simp_all
+
+@[to_additive]
+theorem mulIndicator_const_eq_mulIndicator_const {t : Set β} {b : β} {c : M} (h : a ∈ s ↔ b ∈ t) :
+    s.mulIndicator (fun _ ↦ c) a = t.mulIndicator (fun _ ↦ c) b :=
+  mulIndicator_eq_mulIndicator h rfl
 
 @[to_additive (attr := simp)]
 theorem mulIndicator_univ (f : α → M) : mulIndicator (univ : Set α) f = f :=
@@ -173,7 +192,7 @@ theorem mulIndicator_mulIndicator (s t : Set α) (f : α → M) :
     mulIndicator s (mulIndicator t f) = mulIndicator (s ∩ t) f :=
   funext fun x => by
     simp only [mulIndicator]
-    split_ifs <;> simp_all (config := { contextual := true })
+    split_ifs <;> simp_all +contextual
 
 @[to_additive (attr := simp)]
 theorem mulIndicator_inter_mulSupport (s : Set α) (f : α → M) :

@@ -5,6 +5,7 @@ Authors: Xavier Roblot
 -/
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.GroupTheory.Torsion
 
 /-!
 # Units of a number field
@@ -26,7 +27,7 @@ places `w` of `K`.
 
 ## Tags
 number field, units
- -/
+-/
 
 open scoped NumberField
 
@@ -94,6 +95,12 @@ open NumberField.InfinitePlace
 protected theorem norm [NumberField K] (x : (𝓞 K)ˣ) :
     |Algebra.norm ℚ (x : K)| = 1 := by
   rw [← RingOfIntegers.coe_norm, isUnit_iff_norm.mp x.isUnit]
+
+variable {K} in
+theorem sum_mult_mul_log [NumberField K] (x : (𝓞 K)ˣ) :
+    ∑ w : InfinitePlace K, w.mult * Real.log (w x) = 0 := by
+  simpa [Units.norm, Real.log_prod, Real.log_pow] using
+    congr_arg Real.log (prod_eq_abs_norm (x : K))
 
 section torsion
 

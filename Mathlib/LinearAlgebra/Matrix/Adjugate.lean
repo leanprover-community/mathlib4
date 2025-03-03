@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Regular.Basic
+import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 import Mathlib.LinearAlgebra.Matrix.Polynomial
 import Mathlib.RingTheory.Polynomial.Basic
@@ -69,11 +70,11 @@ variable (A : Matrix n n α) (b : n → α)
   Otherwise, the outcome of `cramerMap` is well-defined but not necessarily useful.
 -/
 def cramerMap (i : n) : α :=
-  (A.updateColumn i b).det
+  (A.updateCol i b).det
 
 theorem cramerMap_is_linear (i : n) : IsLinearMap α fun b => cramerMap A b i :=
-  { map_add := det_updateColumn_add _ _
-    map_smul := det_updateColumn_smul _ _ }
+  { map_add := det_updateCol_add _ _
+    map_smul := det_updateCol_smul _ _ }
 
 theorem cramer_is_linear : IsLinearMap α (cramerMap A) := by
   constructor <;> intros <;> ext i
@@ -85,15 +86,15 @@ theorem cramer_is_linear : IsLinearMap α (cramerMap A) := by
 
   If `A * x = b` has a unique solution in `x`, `cramer A` sends the vector `b` to `A.det • x`.
   Otherwise, the outcome of `cramer` is well-defined but not necessarily useful.
- -/
+-/
 def cramer (A : Matrix n n α) : (n → α) →ₗ[α] (n → α) :=
   IsLinearMap.mk' (cramerMap A) (cramer_is_linear A)
 
-theorem cramer_apply (i : n) : cramer A b i = (A.updateColumn i b).det :=
+theorem cramer_apply (i : n) : cramer A b i = (A.updateCol i b).det :=
   rfl
 
 theorem cramer_transpose_apply (i : n) : cramer Aᵀ b i = (A.updateRow i b).det := by
-  rw [cramer_apply, updateColumn_transpose, det_transpose]
+  rw [cramer_apply, updateCol_transpose, det_transpose]
 
 theorem cramer_transpose_row_self (i : n) : Aᵀ.cramer (A i) = Pi.single i A.det := by
   ext j
@@ -101,9 +102,9 @@ theorem cramer_transpose_row_self (i : n) : Aᵀ.cramer (A i) = Pi.single i A.de
   split_ifs with h
   · -- i = j: this entry should be `A.det`
     subst h
-    simp only [updateColumn_transpose, det_transpose, updateRow_eq_self]
+    simp only [updateCol_transpose, det_transpose, updateRow_eq_self]
   · -- i ≠ j: this entry should be 0
-    rw [updateColumn_transpose, det_transpose]
+    rw [updateCol_transpose, det_transpose]
     apply det_zero_of_row_eq h
     rw [updateRow_self, updateRow_ne (Ne.symm h)]
 
@@ -122,18 +123,18 @@ theorem cramer_one : cramer (1 : Matrix n n α) = 1 := by
 
 theorem cramer_smul (r : α) (A : Matrix n n α) :
     cramer (r • A) = r ^ (Fintype.card n - 1) • cramer A :=
-  LinearMap.ext fun _ => funext fun _ => det_updateColumn_smul' _ _ _ _
+  LinearMap.ext fun _ => funext fun _ => det_updateCol_smul_left _ _ _ _
 
 @[simp]
 theorem cramer_subsingleton_apply [Subsingleton n] (A : Matrix n n α) (b : n → α) (i : n) :
-    cramer A b i = b i := by rw [cramer_apply, det_eq_elem_of_subsingleton _ i, updateColumn_self]
+    cramer A b i = b i := by rw [cramer_apply, det_eq_elem_of_subsingleton _ i, updateCol_self]
 
 theorem cramer_zero [Nontrivial n] : cramer (0 : Matrix n n α) = 0 := by
   ext i j
   obtain ⟨j', hj'⟩ : ∃ j', j' ≠ j := exists_ne j
   apply det_eq_zero_of_column_eq_zero j'
   intro j''
-  simp [updateColumn_ne hj']
+  simp [updateCol_ne hj']
 
 /-- Use linearity of `cramer` to take it out of a summation. -/
 theorem sum_cramer {β} (s : Finset β) (f : β → n → α) :
@@ -148,7 +149,7 @@ theorem sum_cramer_apply {β} (s : Finset β) (f : n → β → α) (i : n) :
       (Finset.sum_apply i s _).symm
     _ = cramer A (fun j : n => ∑ x ∈ s, f j x) i := by
       rw [sum_cramer, cramer_apply, cramer_apply]
-      simp only [updateColumn]
+      simp only [updateCol]
       congr with j
       congr
       apply Finset.sum_apply
@@ -156,7 +157,7 @@ theorem sum_cramer_apply {β} (s : Finset β) (f : n → β → α) (i : n) :
 theorem cramer_submatrix_equiv (A : Matrix m m α) (e : n ≃ m) (b : n → α) :
     cramer (A.submatrix e e) b = cramer A (b ∘ e.symm) ∘ e := by
   ext i
-  simp_rw [Function.comp_apply, cramer_apply, updateColumn_submatrix_equiv,
+  simp_rw [Function.comp_apply, cramer_apply, updateCol_submatrix_equiv,
     det_submatrix_equiv_self e, Function.comp_def]
 
 theorem cramer_reindex (e : m ≃ n) (A : Matrix m m α) (b : n → α) :
@@ -191,7 +192,7 @@ theorem adjugate_def (A : Matrix n n α) : adjugate A = of fun i => cramer Aᵀ 
 
 theorem adjugate_apply (A : Matrix n n α) (i j : n) :
     adjugate A i j = (A.updateRow j (Pi.single i 1)).det := by
-  rw [adjugate_def, of_apply, cramer_apply, updateColumn_transpose, det_transpose]
+  rw [adjugate_def, of_apply, cramer_apply, updateCol_transpose, det_transpose]
 
 theorem adjugate_transpose (A : Matrix n n α) : (adjugate A)ᵀ = adjugate Aᵀ := by
   ext i j
@@ -206,15 +207,15 @@ theorem adjugate_transpose (A : Matrix n n α) : (adjugate A)ᵀ = adjugate Aᵀ
     ext j'
     subst h
     have : σ j' = σ j ↔ j' = j := σ.injective.eq_iff
-    rw [updateRow_apply, updateColumn_apply]
+    rw [updateRow_apply, updateCol_apply]
     simp_rw [this]
     rw [← dite_eq_ite, ← dite_eq_ite]
     congr 1 with rfl
     rw [Pi.single_eq_same, Pi.single_eq_same]
   · -- Otherwise, we need to show that there is a `0` somewhere in the product.
-    have : (∏ j' : n, updateColumn A j (Pi.single i 1) (σ j') j') = 0 := by
+    have : (∏ j' : n, updateCol A j (Pi.single i 1) (σ j') j') = 0 := by
       apply prod_eq_zero (mem_univ j)
-      rw [updateColumn_self, Pi.single_eq_of_ne' h]
+      rw [updateCol_self, Pi.single_eq_of_ne' h]
     rw [this]
     apply prod_eq_zero (mem_univ (σ⁻¹ i))
     erw [apply_symm_apply σ i, updateRow_self]
@@ -296,7 +297,7 @@ theorem adjugate_zero [Nontrivial n] : adjugate (0 : Matrix n n α) = 0 := by
   obtain ⟨j', hj'⟩ : ∃ j', j' ≠ j := exists_ne j
   apply det_eq_zero_of_column_eq_zero j'
   intro j''
-  simp [updateColumn_ne hj']
+  simp [updateCol_ne hj']
 
 @[simp]
 theorem adjugate_one : adjugate (1 : Matrix n n α) = 1 := by
@@ -309,13 +310,13 @@ theorem adjugate_diagonal (v : n → α) :
   ext i j
   simp only [adjugate_def, cramer_apply, diagonal_transpose, of_apply]
   obtain rfl | hij := eq_or_ne i j
-  · rw [diagonal_apply_eq, diagonal_updateColumn_single, det_diagonal,
+  · rw [diagonal_apply_eq, diagonal_updateCol_single, det_diagonal,
       prod_update_of_mem (Finset.mem_univ _), sdiff_singleton_eq_erase, one_mul]
   · rw [diagonal_apply_ne _ hij]
     refine det_eq_zero_of_row_eq_zero j fun k => ?_
     obtain rfl | hjk := eq_or_ne k j
-    · rw [updateColumn_self, Pi.single_eq_of_ne' hij]
-    · rw [updateColumn_ne hjk, diagonal_apply_ne' _ hjk]
+    · rw [updateCol_self, Pi.single_eq_of_ne' hij]
+    · rw [updateCol_ne hjk, diagonal_apply_ne' _ hjk]
 
 theorem _root_.RingHom.map_adjugate {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
     (M : Matrix n n R) : f.mapMatrix M.adjugate = Matrix.adjugate (f.mapMatrix M) := by
@@ -468,9 +469,9 @@ theorem adjugate_mul_distrib (A B : Matrix n n α) : adjugate (A * B) = adjugate
 
 @[simp]
 theorem adjugate_pow (A : Matrix n n α) (k : ℕ) : adjugate (A ^ k) = adjugate A ^ k := by
-  induction' k with k IH
-  · simp
-  · rw [pow_succ', adjugate_mul_distrib, IH, pow_succ]
+  induction k with
+  | zero => simp
+  | succ k IH => rw [pow_succ', adjugate_mul_distrib, IH, pow_succ]
 
 theorem det_smul_adjugate_adjugate (A : Matrix n n α) :
     det A • adjugate (adjugate A) = det A ^ (Fintype.card n - 1) • A := by
@@ -484,7 +485,7 @@ theorem det_smul_adjugate_adjugate (A : Matrix n n α) :
 theorem adjugate_adjugate (A : Matrix n n α) (h : Fintype.card n ≠ 1) :
     adjugate (adjugate A) = det A ^ (Fintype.card n - 2) • A := by
   -- get rid of the `- 2`
-  cases' h_card : Fintype.card n with n'
+  rcases h_card : Fintype.card n with _ | n'
   · subsingleton [Fintype.card_eq_zero_iff.mp h_card]
   cases n'
   · exact (h h_card).elim

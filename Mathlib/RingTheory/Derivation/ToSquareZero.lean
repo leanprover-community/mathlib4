@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
 import Mathlib.RingTheory.Derivation.Basic
-import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-!
 # Results
@@ -50,7 +50,7 @@ def derivationToSquareZeroOfLift [IsScalarTower R A B]  (hI : I ^ 2 = ⊥) (f : 
       map_one_eq_zero' := ?_
       leibniz' := ?_ }
   · rw [e]; ext; rfl
-  · ext; change f 1 - algebraMap A B 1 = 0; rw [map_one, map_one, sub_self]
+  · ext; simp
   · intro x y
     let F := diffToIdealOfQuotientCompEq I f (IsScalarTower.toAlgHom R A B) (by rw [e]; ext; rfl)
     have : (f x - algebraMap A B x) * (f y - algebraMap A B y) = 0 := by
@@ -117,7 +117,7 @@ lifts `A →ₐ[R] B` of the canonical map `A →ₐ[R] B ⧸ I`. -/
 def derivationToSquareZeroEquivLift [IsScalarTower R A B] : Derivation R A I ≃
     { f : A →ₐ[R] B // (Ideal.Quotient.mkₐ R I).comp f = IsScalarTower.toAlgHom R A (B ⧸ I) } := by
   refine ⟨fun d => ⟨liftOfDerivationToSquareZero I hI d, ?_⟩, fun f =>
-    (derivationToSquareZeroOfLift I hI f.1 f.2 : _), ?_, ?_⟩
+    (derivationToSquareZeroOfLift I hI f.1 f.2 :), ?_, ?_⟩
   · ext x; exact liftOfDerivationToSquareZero_mk_apply I hI d x
   · intro d; ext x; exact add_sub_cancel_right (d x : B) (algebraMap A B x)
   · rintro ⟨f, hf⟩; ext x; exact sub_add_cancel (f x) (algebraMap A B x)

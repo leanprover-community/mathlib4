@@ -3,8 +3,9 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
+import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Nat.Bits
-import Mathlib.Order.Lattice
 
 /-! Lemmas about `size`. -/
 
@@ -19,8 +20,8 @@ theorem shiftLeft_eq_mul_pow (m) : ∀ n, m <<< n = m * 2 ^ n := shiftLeft_eq _
 theorem shiftLeft'_tt_eq_mul_pow (m) : ∀ n, shiftLeft' true m n + 1 = (m + 1) * 2 ^ n
   | 0 => by simp [shiftLeft', pow_zero, Nat.one_mul]
   | k + 1 => by
-    rw [shiftLeft', bit_val, cond_true, add_assoc, ← Nat.mul_add_one, shiftLeft'_tt_eq_mul_pow m k,
-      mul_left_comm, mul_comm 2, pow_succ]
+    rw [shiftLeft', bit_val, Bool.toNat_true, add_assoc, ← Nat.mul_add_one,
+      shiftLeft'_tt_eq_mul_pow m k, mul_left_comm, mul_comm 2, pow_succ]
 
 end
 
@@ -39,7 +40,7 @@ theorem size_zero : size 0 = 0 := by simp [size]
 
 @[simp]
 theorem size_bit {b n} (h : bit b n ≠ 0) : size (bit b n) = succ (size n) := by
-  rw [size]
+  unfold size
   conv =>
     lhs
     rw [binaryRec]
@@ -81,7 +82,7 @@ theorem size_shiftLeft {m} (h : m ≠ 0) (n) : size (m <<< n) = size m + n := by
 theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
   rw [← one_shiftLeft]
   have : ∀ {n}, n = 0 → n < 1 <<< (size n) := by simp
-  apply binaryRec _ _ n
+  refine binaryRec ?_ ?_ n
   · apply this rfl
   intro b n IH
   by_cases h : bit b n = 0
@@ -90,12 +91,12 @@ theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
   cases b <;> dsimp [bit] <;> omega
 
 theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
-  ⟨fun h => lt_of_lt_of_le (lt_size_self _) (pow_le_pow_of_le_right (by decide) h), by
-    rw [← one_shiftLeft]; revert n
-    apply binaryRec _ _ m
-    · intro n
-      simp
-    · intro b m IH n h
+  ⟨fun h => lt_of_lt_of_le (lt_size_self _) (pow_le_pow_right (by decide) h), by
+    rw [← one_shiftLeft]
+    induction m using binaryRec generalizing n with
+    | z => simp
+    | f b m IH =>
+      intro h
       by_cases e : bit b m = 0
       · simp [e]
       rw [size_bit e]

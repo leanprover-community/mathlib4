@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 import Batteries.WF
 
 /-!
@@ -106,7 +106,6 @@ lemma find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬ p 0)
   cases n
   exacts [h0, @Nat.find_min (fun n ↦ p (n + 1)) _ h₂ _ (succ_lt_succ_iff.1 hn)]
 
--- Porting note (#10618): removing `simp` attribute as `simp` can prove it
 lemma find_pos (h : ∃ n : ℕ, p n) : 0 < Nat.find h ↔ ¬p 0 :=
   Nat.pos_iff_ne_zero.trans (Nat.find_eq_zero _).not
 

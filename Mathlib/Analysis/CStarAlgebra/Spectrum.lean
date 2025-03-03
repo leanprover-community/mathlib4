@@ -3,8 +3,8 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Analysis.CStarAlgebra.Unitization
+import Mathlib.Analysis.Complex.Convex
 import Mathlib.Analysis.Normed.Algebra.Spectrum
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Algebra.Star.StarAlgHom
@@ -86,12 +86,21 @@ theorem spectrum.subset_circle_of_unitary {u : E} (h : u ∈ unitary E) :
 
 end UnitarySpectrum
 
+section Quasispectrum
+
+open scoped NNReal in
+lemma CStarAlgebra.le_nnnorm_of_mem_quasispectrum {A : Type*} [NonUnitalCStarAlgebra A]
+    {a : A} {x : ℝ≥0} (hx : x ∈ quasispectrum ℝ≥0 a) : x ≤ ‖a‖₊ := by
+  rw [Unitization.quasispectrum_eq_spectrum_inr' ℝ≥0 ℂ] at hx
+  simpa [Unitization.nnnorm_inr] using spectrum.le_nnnorm_of_mem hx
+
+end Quasispectrum
+
 section ComplexScalars
 
 open Complex
 
-variable {A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
-  [CStarRing A]
+variable {A : Type*} [CStarAlgebra A]
 
 local notation "↑ₐ" => algebraMap ℂ A
 
@@ -115,7 +124,7 @@ lemma IsSelfAdjoint.toReal_spectralRadius_complex_eq_norm {a : A} (ha : IsSelfAd
 
 theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
     spectralRadius ℂ a = ‖a‖₊ := by
-  refine (ENNReal.pow_strictMono two_ne_zero).injective ?_
+  refine (ENNReal.pow_right_strictMono two_ne_zero).injective ?_
   have heq :
     (fun n : ℕ => (‖(a⋆ * a) ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ)) =
       (fun x => x ^ 2) ∘ fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ) := by
@@ -140,8 +149,8 @@ theorem IsSelfAdjoint.mem_spectrum_eq_re {a : A} (ha : IsSelfAdjoint a) {z : ℂ
     simpa only [Units.smul_def, Units.val_mk0] using
       spectrum.exp_mem_exp (Iu • a) (smul_mem_smul_iff.mpr hz)
   exact Complex.ext (ofReal_re _) <| by
-    simpa only [← Complex.exp_eq_exp_ℂ, mem_sphere_zero_iff_norm, norm_eq_abs, abs_exp,
-      Real.exp_eq_one_iff, smul_eq_mul, I_mul, neg_eq_zero] using
+    simpa only [← Complex.exp_eq_exp_ℂ, mem_sphere_zero_iff_norm, norm_exp, Real.exp_eq_one_iff,
+      smul_eq_mul, I_mul, neg_eq_zero] using
       spectrum.subset_circle_of_unitary hu this
 
 /-- Any element of the spectrum of a selfadjoint is real. -/
@@ -221,11 +230,7 @@ end ComplexScalars
 
 namespace NonUnitalStarAlgHom
 
-variable {F A B : Type*}
-variable [NonUnitalNormedRing A] [CompleteSpace A] [StarRing A] [CStarRing A]
-variable [NormedSpace ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A]
-variable [NonUnitalNormedRing B] [CompleteSpace B] [StarRing B] [CStarRing B]
-variable [NormedSpace ℂ B] [IsScalarTower ℂ B B] [SMulCommClass ℂ B B] [StarModule ℂ B]
+variable {F A B : Type*} [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [StarHomClass F A B]
 
 open Unitization
@@ -240,7 +245,6 @@ lemma nnnorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
       exact this <| .star_mul_self x
     intro s hs
     suffices this : spectralRadius ℂ (ψ s) ≤ spectralRadius ℂ s by
-      -- changing the order of `rw`s below runs into https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/weird.20type.20class.20synthesis.20error/near/421224482
       rwa [(hs.map ψ).spectralRadius_eq_nnnorm, hs.spectralRadius_eq_nnnorm, coe_le_coe]
         at this
     exact iSup_le_iSup_of_subset (AlgHom.spectrum_apply_subset ψ s)
@@ -263,10 +267,7 @@ end NonUnitalStarAlgHom
 
 namespace StarAlgEquiv
 
-variable {F A B : Type*} [NonUnitalNormedRing A] [NormedSpace ℂ A] [SMulCommClass ℂ A A]
-variable [IsScalarTower ℂ A A] [CompleteSpace A] [StarRing A] [CStarRing A] [StarModule ℂ A]
-variable [NonUnitalNormedRing B] [NormedSpace ℂ B] [SMulCommClass ℂ B B] [IsScalarTower ℂ B B]
-variable [CompleteSpace B] [StarRing B] [CStarRing B] [StarModule ℂ B] [EquivLike F A B]
+variable {F A B : Type*} [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B] [EquivLike F A B]
 variable [NonUnitalAlgEquivClass F ℂ A B] [StarHomClass F A B]
 
 lemma nnnorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
@@ -289,8 +290,7 @@ open ContinuousMap Complex
 
 open scoped ComplexStarModule
 
-variable {F A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
-  [CStarRing A] [StarModule ℂ A] [FunLike F A ℂ] [hF : AlgHomClass F ℂ A ℂ]
+variable {F A : Type*} [CStarAlgebra A] [FunLike F A ℂ] [hF : AlgHomClass F ℂ A ℂ]
 
 /-- This instance is provided instead of `StarHomClass` to avoid type class inference loops.
 See note [lower instance priority] -/

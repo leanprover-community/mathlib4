@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
-import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
@@ -63,7 +62,6 @@ instance evenOdd.gradedMonoid : SetLike.GradedMonoid (evenOdd Q) where
 
 /-- A version of `CliffordAlgebra.ι` that maps directly into the graded structure. This is
 primarily an auxiliary construction used to provide `CliffordAlgebra.gradedAlgebra`. -/
--- Porting note: added `protected`
 protected def GradedAlgebra.ι : M →ₗ[R] ⨁ i : ZMod 2, evenOdd Q i :=
   DirectSum.lof R (ZMod 2) (fun i => ↥(evenOdd Q i)) 1 ∘ₗ (ι Q).codRestrict _ (ι_mem_evenOdd_one Q)
 
@@ -76,39 +74,35 @@ nonrec theorem GradedAlgebra.ι_sq_scalar (m : M) :
   rw [GradedAlgebra.ι_apply Q, DirectSum.of_mul_of, DirectSum.algebraMap_apply]
   exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext rfl <| ι_sq_scalar _ _)
 
-set_option linter.deprecated false in
 theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     -- Porting note: added a second `by apply`
     lift Q ⟨by apply GradedAlgebra.ι Q, by apply GradedAlgebra.ι_sq_scalar Q⟩ x' =
       DirectSum.of (fun i => evenOdd Q i) i' x' := by
-  cases' x' with x' hx'
+  obtain ⟨x', hx'⟩ := x'
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
   induction hx' using Submodule.iSup_induction' with
   | mem i x hx =>
     obtain ⟨i, rfl⟩ := i
-    -- Porting note: `dsimp only [Subtype.coe_mk] at hx` doesn't work, use `change` instead
-    change x ∈ LinearMap.range (ι Q) ^ i at hx
+    dsimp only [Subtype.coe_mk] at hx
     induction hx using Submodule.pow_induction_on_left' with
     | algebraMap r =>
       rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
     | add x y i hx hy ihx ihy =>
-      -- Note: in #8386 `map_add` had to be specialized to avoid a timeout
-      -- (the definition was already very slow)
-      rw [AlgHom.map_add, ihx, ihy, ← AddMonoidHom.map_add]
+      rw [map_add, ihx, ihy, ← AddMonoidHom.map_add]
       rfl
     | mem_mul m hm i x hx ih =>
       obtain ⟨_, rfl⟩ := hm
-      rw [AlgHom.map_mul, ih, lift_ι_apply, GradedAlgebra.ι_apply Q, DirectSum.of_mul_of]
+      rw [map_mul, ih, lift_ι_apply, GradedAlgebra.ι_apply Q, DirectSum.of_mul_of]
       refine DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext ?_ ?_) <;>
         dsimp only [GradedMonoid.mk, Subtype.coe_mk]
       · rw [Nat.succ_eq_add_one, add_comm, Nat.cast_add, Nat.cast_one]
       rfl
   | zero =>
-    rw [AlgHom.map_zero]
+    rw [map_zero]
     apply Eq.symm
     apply DFinsupp.single_eq_zero.mpr; rfl
   | add x y hx hy ihx ihy =>
-    rw [AlgHom.map_add, ihx, ihy, ← AddMonoidHom.map_add]; rfl
+    rw [map_add, ihx, ihy, ← AddMonoidHom.map_add]; rfl
 
 /-- The clifford algebra is graded by the even and odd parts. -/
 instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
@@ -197,8 +191,8 @@ theorem even_induction {motive : ∀ x, x ∈ evenOdd Q 0 → Prop}
           motive (ι Q m₁ * ι Q m₂ * x)
             (zero_add (0 : ZMod 2) ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 0) : motive x hx := by
-  refine evenOdd_induction _ _ (motive := motive) (fun rx => ?_) add ι_mul_ι_mul x hx
-  rintro ⟨r, rfl⟩
+  refine evenOdd_induction _ _ (motive := motive) (fun rx h => ?_) add ι_mul_ι_mul x hx
+  obtain ⟨r, rfl⟩ := Submodule.mem_one.mp h
   exact algebraMap r
 
 /-- To show a property is true on the odd parts, it suffices to show it is true on the

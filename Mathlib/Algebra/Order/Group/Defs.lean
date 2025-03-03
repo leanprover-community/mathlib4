@@ -46,8 +46,8 @@ class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
 attribute [to_additive] OrderedCommGroup
 
 @[to_additive]
-instance OrderedCommGroup.to_covariantClass_left_le (α : Type u) [OrderedCommGroup α] :
-    CovariantClass α α (· * ·) (· ≤ ·) where
+instance OrderedCommGroup.toMulLeftMono (α : Type u) [OrderedCommGroup α] :
+    MulLeftMono α where
       elim a b c bc := OrderedCommGroup.mul_le_mul_left b c bc a
 
 -- See note [lower instance priority]
@@ -56,26 +56,26 @@ instance (priority := 100) OrderedCommGroup.toOrderedCancelCommMonoid [OrderedCo
     OrderedCancelCommMonoid α :=
 { ‹OrderedCommGroup α› with le_of_mul_le_mul_left := fun _ _ _ ↦ le_of_mul_le_mul_left' }
 
-example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· + ·)) (· < ·) :=
-  IsRightCancelAdd.covariant_swap_add_lt_of_covariant_swap_add_le α
+example (α : Type u) [OrderedAddCommGroup α] : AddRightStrictMono α :=
+  inferInstance
 
 -- Porting note: this instance is not used,
--- and causes timeouts after lean4#2210.
+-- and causes timeouts after https://github.com/leanprover/lean4/pull/2210.
 -- It was introduced in https://github.com/leanprover-community/mathlib/pull/17564
 -- but without the motivation clearly explained.
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
-theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCommGroup α] :
-    ContravariantClass α α (· * ·) (· ≤ ·) where
+theorem OrderedCommGroup.toMulLeftReflectLE (α : Type u) [OrderedCommGroup α] :
+    MulLeftReflectLE α where
       elim a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
 
 -- Porting note: this instance is not used,
--- and causes timeouts after lean4#2210.
--- See further explanation on `OrderedCommGroup.to_contravariantClass_left_le`.
+-- and causes timeouts after https://github.com/leanprover/lean4/pull/2210.
+-- See further explanation on `OrderedCommGroup.toMulLeftReflectLE`.
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
-theorem OrderedCommGroup.to_contravariantClass_right_le (α : Type u) [OrderedCommGroup α] :
-    ContravariantClass α α (swap (· * ·)) (· ≤ ·) where
+theorem OrderedCommGroup.toMulRightReflectLE (α : Type u) [OrderedCommGroup α] :
+    MulRightReflectLE α where
       elim a b c bc := by simpa using mul_le_mul_right' bc a⁻¹
 
 alias OrderedCommGroup.mul_lt_mul_left' := mul_lt_mul_left'

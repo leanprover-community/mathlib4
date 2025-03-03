@@ -40,7 +40,7 @@ jobs:
                 });
               }
             } else {
-              output += "No PR found for this run! If you are feeling impatient and have write access, please go to the following page and click the "Run workflow" button!\nhttps://github.com/leanprover-community/mathlib4/actions/workflows/update_dependencies.yml";
+              output += "No PR found for this run! If you are feeling impatient and have write access, please go to the following page and click the \"Run workflow\" button!\nhttps://github.com/leanprover-community/mathlib4/actions/workflows/update_dependencies.yml";
             }
             return output;
 

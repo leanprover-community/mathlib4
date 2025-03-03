@@ -7,6 +7,7 @@ import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Monad.Writer
 import Mathlib.Control.Lawful
 import Batteries.Tactic.Congr
+import Batteries.Lean.Except
 
 /-!
 # Continuation Monad
@@ -29,8 +30,8 @@ class MonadCont (m : Type u → Type v) where
 
 open MonadCont
 
-class LawfulMonadCont (m : Type u → Type v) [Monad m] [MonadCont m]
-    extends LawfulMonad m : Prop where
+class LawfulMonadCont (m : Type u → Type v) [Monad m] [MonadCont m] : Prop
+    extends LawfulMonad m where
   callCC_bind_right {α ω γ} (cmd : m α) (next : Label ω m γ → α → m ω) :
     (callCC fun f => cmd >>= next f) = cmd >>= fun x => callCC fun f => next f x
   callCC_bind_left {α} (β) (x : α) (dead : Label α m β → β → m α) :

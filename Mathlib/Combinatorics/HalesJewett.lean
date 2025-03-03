@@ -3,10 +3,11 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Shrink
 import Mathlib.Data.Fintype.Sum
+import Mathlib.Data.Finite.Prod
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # The Hales-Jewett theorem
@@ -64,7 +65,6 @@ combinatorial line, Ramsey theory, arithmetic progression
 -/
 
 open Function
-open scoped Classical
 
 universe u v
 variable {η α ι κ : Type*}
@@ -106,6 +106,7 @@ lemma coe_apply (l : Subspace η α ι) (x : η → α) (i : ι) : l x i = (l.id
 
 -- Note: This is not made a `FunLike` instance to avoid having two syntactically different coercions
 lemma coe_injective [Nontrivial α] : Injective ((⇑) : Subspace η α ι → (η → α) → ι → α) := by
+  classical
   rintro l m hlm
   ext i
   simp only [funext_iff] at hlm
@@ -181,10 +182,9 @@ variable {l : Line α ι} {i : ι} {a x : α}
 @[coe] def toFun (l : Line α ι) (x : α) (i : ι) : α := (l.idxFun i).getD x
 
 -- This lets us treat a line `l : Line α ι` as a function `α → ι → α`.
-instance instCoeFun : CoeFun (Line α ι) fun _ => α → ι → α :=
-  ⟨fun l x i => (l.idxFun i).getD x⟩
+instance instCoeFun : CoeFun (Line α ι) fun _ => α → ι → α := ⟨toFun⟩
 
-lemma coe_apply (l : Line α ι) (x : α) (i : ι) : l x i = (l.idxFun i).getD x := rfl
+@[simp] lemma coe_apply (l : Line α ι) (x : α) (i : ι) : l x i = (l.idxFun i).getD x := rfl
 
 -- Note: This is not made a `FunLike` instance to avoid having two syntactically different coercions
 lemma coe_injective [Nontrivial α] : Injective ((⇑) : Line α ι → α → ι → α) := by
@@ -324,8 +324,8 @@ theorem prod_apply {α ι ι'} (l : Line α ι) (l' : Line α ι') (x : α) :
   cases i <;> rfl
 
 @[simp]
-theorem diagonal_apply {α ι} [Nonempty ι] (x : α) : Line.diagonal α ι x = fun _ => x := by
-  simp_rw [Line.diagonal, Option.getD_none]
+theorem diagonal_apply {α ι} [Nonempty ι] (x : α) : diagonal α ι x = fun _ => x := by
+  ext; simp [diagonal]
 
 /-- The **Hales-Jewett theorem**. This version has a restriction on universe levels which is
 necessary for the proof. See `exists_mono_in_high_dimension` for a fully universe-polymorphic
@@ -379,9 +379,10 @@ private theorem exists_mono_in_high_dimension' :
       exact Finset.card_le_univ ⟨_, s.distinct_colors⟩
     -- We now prove the key claim, by induction on `r`.
     intro r
-    induction' r with r ihr
+    induction r with
     -- The base case `r = 0` is trivial as the empty collection is color-focused.
-    · exact ⟨Empty, inferInstance, fun C => Or.inl ⟨default, Multiset.card_zero⟩⟩
+    | zero => exact ⟨Empty, inferInstance, fun C => Or.inl ⟨default, Multiset.card_zero⟩⟩
+    | succ r ihr =>
     -- Supposing the key claim holds for `r`, we need to show it for `r+1`. First pick a high
     -- enough dimension `ι` for `r`.
     obtain ⟨ι, _inst, hι⟩ := ihr
@@ -419,7 +420,6 @@ private theorem exists_mono_in_high_dimension' :
     -- and adding to this the vertical line obtained by the focus point and `l`.
     refine Or.inl ⟨⟨(s.lines.map ?_).cons ⟨(l'.map some).vertical s.focus, C' s.focus, fun x => ?_⟩,
             Sum.elim s.focus (l'.map some none), ?_, ?_⟩, ?_⟩
-    -- Porting note: Needed to reorder the following two goals
     -- The product lines are almost monochromatic.
     · refine fun p => ⟨p.line.prod (l'.map some), p.color, fun x => ?_⟩
       rw [Line.prod_apply, Line.map_apply, ← p.has_color, ← congr_fun (hl' x)]
@@ -452,6 +452,7 @@ end Line
 monoid, and `S` is a finite subset, then there exists a monochromatic homothetic copy of `S`. -/
 theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset M) [Finite κ]
     (C : M → κ) : ∃ a > 0, ∃ (b : M) (c : κ), ∀ s ∈ S, C (a • s + b) = c := by
+  classical
   obtain ⟨ι, _inst, hι⟩ := Line.exists_mono_in_high_dimension S κ
   specialize hι fun v => C <| ∑ i, v i
   obtain ⟨l, c, hl⟩ := hι
@@ -476,7 +477,7 @@ theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset
     intro i hi
     rw [hs, Finset.compl_filter, Finset.mem_filter] at hi
     obtain ⟨y, hy⟩ := Option.ne_none_iff_exists.mp hi.right
-    simp_rw [← hy, Option.map_some', Option.getD]
+    simp [← hy, Option.map_some', Option.getD]
 
 namespace Subspace
 
