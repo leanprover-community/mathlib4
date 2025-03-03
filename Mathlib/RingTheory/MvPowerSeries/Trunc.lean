@@ -13,11 +13,11 @@ import Mathlib.Algebra.MvPolynomial.Eval
 # Formal (multivariate) power series - Truncation
 
 * `MvPowerSeries.trunc n φ` truncates a formal multivariate power series
-to the multivariate polynomial that has the same coefficients as `φ`,
-for all `m < n`, and `0` otherwise.
+  to the multivariate polynomial that has the same coefficients as `φ`,
+  for all `m < n`, and `0` otherwise.
 
-Note that here, `m` and `n` have types `σ →₀ ℕ`,
-so that `m < n` means that `m ≠ n` and `m s ≤ n s` for all `s : σ`.
+  Note that here, `m` and `n` have types `σ →₀ ℕ`,
+  so that `m < n` means that `m ≠ n` and `m s ≤ n s` for all `s : σ`.
 
 * `MvPowerSeries.trunc_one` : truncation of the unit power series
 
@@ -26,14 +26,14 @@ so that `m < n` means that `m ≠ n` and `m s ≤ n s` for all `s : σ`.
 * `MvPowerSeries.trunc_C_mul` : truncation of constant multiple.
 
 * `MvPowerSeries.trunc' n φ` truncates a formal multivariate power series
-to the multivariate polynomial that has the same coefficients as `φ`,
-for all `m ≤ n`, and `0` otherwise.
+  to the multivariate polynomial that has the same coefficients as `φ`,
+  for all `m ≤ n`, and `0` otherwise.
 
-Here, `m` and `n`  have types `σ →₀ ℕ` so that `m ≤ n` means that `m s ≤ n s` for all `s : σ`.
+  Here, `m` and `n`  have types `σ →₀ ℕ` so that `m ≤ n` means that `m s ≤ n s` for all `s : σ`.
 
 
 * `MvPowerSeries.coeff_mul_eq_coeff_trunc'_mul_trunc'` : compares the coefficients
-of a product with those of the product of truncations.
+  of a product with those of the product of truncations.
 
 * `MvPowerSeries.trunc'_one` : truncation of a the unit power series.
 

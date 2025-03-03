@@ -322,6 +322,14 @@ def subtype (s : Subfield K) : s →+* K :=
   { s.toSubmonoid.subtype, s.toAddSubgroup.subtype with toFun := (↑) }
 
 @[simp]
+lemma subtype_apply {s : Subfield K} (x : s) :
+    s.subtype x = x := rfl
+
+lemma subtype_injective (s : Subfield K) :
+    Function.Injective s.subtype :=
+  Subtype.coe_injective
+
+@[simp]
 theorem coe_subtype : ⇑(s.subtype) = ((↑) : s → K) :=
   rfl
 

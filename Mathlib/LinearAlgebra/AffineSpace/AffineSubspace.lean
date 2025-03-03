@@ -371,8 +371,12 @@ protected def subtype (s : AffineSubspace k P) [Nonempty s] : s →ᵃ[k] P wher
 theorem subtype_linear (s : AffineSubspace k P) [Nonempty s] :
     s.subtype.linear = s.direction.subtype := rfl
 
-theorem subtype_apply (s : AffineSubspace k P) [Nonempty s] (p : s) : s.subtype p = p :=
+@[simp]
+theorem subtype_apply {s : AffineSubspace k P} [Nonempty s] (p : s) : s.subtype p = p :=
   rfl
+
+theorem subtype_injective (s : AffineSubspace k P) [Nonempty s] : Function.Injective s.subtype :=
+  Subtype.coe_injective
 
 @[simp]
 theorem coe_subtype (s : AffineSubspace k P) [Nonempty s] : (s.subtype : s → P) = ((↑) : s → P) :=
@@ -380,9 +384,6 @@ theorem coe_subtype (s : AffineSubspace k P) [Nonempty s] : (s.subtype : s → P
 
 @[deprecated (since := "2025-02-18")]
 alias coeSubtype := coe_subtype
-
-theorem injective_subtype (s : AffineSubspace k P) [Nonempty s] : Function.Injective s.subtype :=
-  Subtype.coe_injective
 
 /-- Two affine subspaces with nonempty intersection are equal if and only if their directions are
 equal. -/

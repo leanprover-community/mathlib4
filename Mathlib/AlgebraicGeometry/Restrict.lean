@@ -474,8 +474,8 @@ theorem isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Open
   refine
     (IsPullback.of_horiz_isIso ⟨?_⟩).paste_horiz
       (IsPullback.of_hasPullback f (Y.ofRestrict U.isOpenEmbedding)).flip
-  -- Porting note: changed `rw` to `erw`
-  erw [pullbackRestrictIsoRestrict_inv_fst]; rw [Category.comp_id]
+  erw [pullbackRestrictIsoRestrict_inv_fst]
+  rw [Category.comp_id]
 
 lemma isPullback_opens_inf_le {X : Scheme} {U V W : X.Opens} (hU : U ≤ W) (hV : V ≤ W) :
     IsPullback (X.homOfLE inf_le_left) (X.homOfLE inf_le_right) (X.homOfLE hU) (X.homOfLE hV) := by

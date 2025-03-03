@@ -574,7 +574,7 @@ theorem dense_compl_singleton_iff_not_open :
 @[elab_as_elim]
 lemma Dense.induction (hs : Dense s) {P : X → Prop}
     (mem : ∀ x ∈ s, P x) (isClosed : IsClosed { x | P x }) (x : X) : P x :=
-  hs.closure_eq.symm.subset.trans (isClosed.closure_subset_iff.mpr mem) trivial
+  hs.closure_eq.symm.subset.trans (isClosed.closure_subset_iff.mpr mem) (Set.mem_univ _)
 
 theorem IsOpen.subset_interior_closure {s : Set X} (s_open : IsOpen s) :
     s ⊆ interior (closure s) := s_open.subset_interior_iff.mpr subset_closure

@@ -644,9 +644,19 @@ theorem coe_ofStrictMono {α β} [LinearOrder α] [Preorder β] {f : α → β} 
   rfl
 
 /-- Embedding of a subtype into the ambient type as an `OrderEmbedding`. -/
-@[simps! (config := .asFn)]
 def subtype (p : α → Prop) : Subtype p ↪o α :=
   ⟨Function.Embedding.subtype p, Iff.rfl⟩
+
+@[simp]
+theorem subtype_apply {p : α → Prop} (x : Subtype p) : subtype p x = x :=
+  rfl
+
+theorem subtype_injective (p : α → Prop) : Function.Injective (subtype p) :=
+  Subtype.coe_injective
+
+@[simp]
+theorem coe_subtype (p : α → Prop) : ⇑(subtype p) = Subtype.val :=
+  rfl
 
 /-- Convert an `OrderEmbedding` to an `OrderHom`. -/
 @[simps (config := .asFn)]
