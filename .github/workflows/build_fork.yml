@@ -195,9 +195,9 @@ jobs:
               )"
             #printf $'%s\n```\n</details>\n' "${actualDiff}"
           ) > messageContent
-          printf "------\n"
+          printf -- "------\n"
           cat messageContent
-          printf "------\n"
+          printf -- "------\n"
 
           ./scripts/update_PR_comment.sh messageContent "${messageStart}" ${{ steps.PR.outputs.number }}
 
