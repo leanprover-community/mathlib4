@@ -262,7 +262,7 @@ jobs:
           #printf $'leanDiff1: "%s"\n\n' "${leanDiff}"
 
           messageStart=$'<details><summary> <b>Declaration diff in Lean</b></summary>'
-          printf $'%s\n' $'${{ steps.diff_in_lean.outputs.LeanDiff }}' > messageContent
+          printf $'%s\n\n```diff\n%s\n```\n</details>\n' "${messageStart}" "$(diff decls_in_master.txt decls_in_PR.txt | grep "^[<>]")" > messageContent
 
           ./scripts/update_PR_comment.sh messageContent "${messageStart}" ${{ steps.PR.outputs.number }}
 
