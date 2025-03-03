@@ -1,5 +1,13 @@
+/-
+Copyright (c) 2025 Huanyu Zheng, Weichen Jiao, Yi Yuan. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Huanyu Zheng, Weichen Jiao, Yi Yuan
+-/
 import Mathlib.RingTheory.FilteredAlgebra.FilteredRingHom
 import Mathlib.Algebra.Exact
+/-!
+
+-/
 
 section ExhaustiveFiltration
 
@@ -7,7 +15,7 @@ variable {ι A σ : Type*} [Preorder ι] [SetLike σ A]
 
 /-- -/
 class IsExhaustiveFiltration (F : ι → σ) (F_lt : ι → σ) [IsFiltration F F_lt] : Prop where
-  exhaustive : (⊤ : Set A) = ⋃ i, (F i : Set A)
+  exhaustive : ⋃ i, (F i : Set A) = Set.univ
 
 end ExhaustiveFiltration
 
@@ -31,7 +39,8 @@ variable [IsRingFiltration FS FS_lt]
 
 variable (f : FilteredRingHom FR FR_lt FS FS_lt) (g : FilteredRingHom FS FS_lt FT FT_lt)
 
-open DirectSum DFinsupp FilteredRingHom FilteredAddGroupHom
+open DirectSum DFinsupp FilteredAddGroupHom
+open scoped FilteredRingHom
 
 omit [DecidableEq ι] in
 lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict : g.IsStrict)
@@ -42,12 +51,11 @@ lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict 
   rw[← hx] at xto0 ⊢
   obtain⟨x', xin, geq⟩ : g.toRingHom x ∈ g.toRingHom '' (FS_lt p) := by
     apply gstrict.strict_lt
-    · rw [AssociatedGradedRingHom_apply_mk_eq_mk_piece_wise_hom, GradedPiece.mk_eq,
+    · rw [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, GradedPiece.mk_eq,
           QuotientAddGroup.eq_zero_iff] at xto0
       exact xto0
     · simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Set.mem_range,
       exists_apply_eq_apply]
-
   obtain⟨y, yin, feq⟩ : x - x' ∈ f.toRingHom '' (FR p) := by
     apply_fun (fun m ↦ m - g.toRingHom x') at geq
     rw [sub_self, ← map_sub] at geq
@@ -56,13 +64,12 @@ lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict 
     have : (x - x' : S) ∈ (g.toAddMonoidHom).ker := geq.symm
     rw[Function.Exact.addMonoidHom_ker_eq fgexact] at this
     apply fstrict.strict sub_mem_mp this
-
   use ⟨y, yin⟩
-  rw[← GradedPiece.mk_eq, AssociatedGradedRingHom_apply_mk_eq_mk_piece_wise_hom]
+  rw[← GradedPiece.mk_eq, GradedPieceHom_apply_mk_eq_mk_piece_wise_hom]
   simp only [GradedPiece.mk_eq]
-  refine QuotientAddGroup.eq.mpr (AddSubgroup.mem_addSubgroupOf.mpr ?_)
+  rw [QuotientAddGroup.eq, AddSubgroup.mem_addSubgroupOf]
   have : (toFilteredHom.piece_wise_hom p ⟨y, yin⟩ : FS p) = f.toRingHom y := rfl
-  simp[this, feq, xin]
+  simp [this, feq, xin]
 
 variable  [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt]
 
@@ -73,7 +80,7 @@ theorem exact_of_strict_exact (fstrict : f.IsStrict) (gstrict : g.IsStrict)
   · intro h
     have (i : ι) : ∃ y, Gr(i)[f] ⟦y⟧ = m i := by
       apply exact_component_of_strict_exact_component f g fstrict gstrict exact i
-      have : (Gr[g] m) i = 0 := by rw [h]; rfl
+      have : (Gr[g] m) i = 0 := by simp [h]
       simpa
     set component_2 := fun (i : support m) ↦
       (⟦Classical.choose (this i)⟧ : GradedPiece FR FR_lt i) with hc
@@ -82,7 +89,7 @@ theorem exact_of_strict_exact (fstrict : f.IsStrict) (gstrict : g.IsStrict)
     have : Gr[f] s = m := by
       apply AssociatedGraded.ext_iff.mpr
       intro j
-      simp only [AssociatedGradedRingHom_apply]
+      simp only [FilteredRingHom.AssociatedGradedRingHom_apply]
       by_cases nh : j ∈ support m
       · rw [mk_apply_of_mem nh, hc, Classical.choose_spec (this j)]
       · rw [hs, mk_apply_of_not_mem nh, map_zero]
@@ -93,12 +100,11 @@ theorem exact_of_strict_exact (fstrict : f.IsStrict) (gstrict : g.IsStrict)
   · rintro ⟨l, hl⟩
     rw [← hl]
     show (Gr[g].comp Gr[f]) l = 0
-    rw [AssociatedGradedRingHom_comp_eq_comp g f]
+    rw [FilteredRingHom.AssociatedGradedRingHom_comp_eq_comp g f]
     ext i
     obtain⟨k, hk⟩ : ∃ k, GradedPiece.mk FR FR_lt k = l i := Quotient.exists_rep (l i)
     have : ((g.comp f).piece_wise_hom i) k = 0 :=
       ZeroMemClass.coe_eq_zero.mp (Function.Exact.apply_apply_eq_zero exact k)
-    rw [AssociatedGradedRingHom_apply, DirectSum.zero_apply, ← hk,
-      AssociatedGradedRingHom_apply_mk_eq_mk_piece_wise_hom (g.comp f), this, ← GradedPiece.mk_zero]
+    simp [← hk, this]
 
 end exactness
