@@ -254,7 +254,7 @@ jobs:
           printf $'%s\n' "${{ steps.diff_in_lean.outputs.LeanDiff }}" |
               sed 's=@@@=```=g' > messageContent
 
-          ./scripts/update_PR_comment.sh messageContent "${messageStart}" "${{ github.event.issue.number }}"
+          ./scripts/update_PR_comment.sh messageContent "${messageStart}" 22497 #"${{ github.event.issue.number }}"
 
       - name: check for noisy stdout lines
         id: noisy
