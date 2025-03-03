@@ -42,6 +42,6 @@ printf $'LeanDiff<<EOF\n<details><summary> <b>Declaration diff in Lean</b></summ
   # show result in stdout and also store it in `GITHUB_OUTPUT`
   tee >(cat) >> "${GITHUB_OUTPUT}"
 
-printf $'LeanDiff1<<EOF\n%s\nEOF' "${actualDiff}" |
+printf $'ReLeanDiff1<<EOF\n%s\nEOF' "${actualDiff}" |
   # show result in stdout and also store it in `GITHUB_OUTPUT`
   tee >(cat) >> "${GITHUB_OUTPUT}"
