@@ -189,7 +189,7 @@ instance [L.Faithful] [L.Full] {Y : D} : IsIso (R.map (h.counit.app Y)) :=
   isIso_of_hom_comp_eq_id _ (h.right_triangle_components Y)
 
 lemma isIso_counit_app_iff_mem_essImage [L.Faithful] [L.Full] {X : D} :
-    IsIso (h.counit.app X) ↔ X ∈ L.essImage := by
+    IsIso (h.counit.app X) ↔ L.essImage X := by
   constructor
   · intro
     exact ⟨R.obj X, ⟨asIso (h.counit.app X)⟩⟩
@@ -198,7 +198,7 @@ lemma isIso_counit_app_iff_mem_essImage [L.Faithful] [L.Full] {X : D} :
     infer_instance
 
 lemma mem_essImage_of_counit_isIso (A : D)
-    [IsIso (h.counit.app A)] : A ∈ L.essImage :=
+    [IsIso (h.counit.app A)] : L.essImage A :=
   ⟨R.obj A, ⟨asIso (h.counit.app A)⟩⟩
 
 lemma isIso_counit_app_of_iso [L.Faithful] [L.Full] {X : D} {Y : C} (e : X ≅ L.obj Y) :
@@ -212,7 +212,7 @@ instance [R.Faithful] [R.Full] {X : C} : IsIso (L.map (h.unit.app X)) :=
   isIso_of_comp_hom_eq_id _ (h.left_triangle_components X)
 
 lemma isIso_unit_app_iff_mem_essImage [R.Faithful] [R.Full] {Y : C} :
-    IsIso (h.unit.app Y) ↔ Y ∈ R.essImage := by
+    IsIso (h.unit.app Y) ↔ R.essImage Y := by
   constructor
   · intro
     exact ⟨L.obj Y, ⟨(asIso (h.unit.app Y)).symm⟩⟩
@@ -222,7 +222,7 @@ lemma isIso_unit_app_iff_mem_essImage [R.Faithful] [R.Full] {Y : C} :
 
 /-- If `η_A` is an isomorphism, then `A` is in the essential image of `i`. -/
 theorem mem_essImage_of_unit_isIso (A : C)
-    [IsIso (h.unit.app A)] : A ∈ R.essImage :=
+    [IsIso (h.unit.app A)] : R.essImage A :=
   ⟨L.obj A, ⟨(asIso (h.unit.app A)).symm⟩⟩
 
 lemma isIso_unit_app_of_iso [R.Faithful] [R.Full] {X : D} {Y : C} (e : Y ≅ R.obj X) :
