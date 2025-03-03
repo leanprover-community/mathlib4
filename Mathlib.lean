@@ -745,6 +745,7 @@ import Mathlib.Algebra.Order.Group.CompleteLattice
 import Mathlib.Algebra.Order.Group.Cone
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.DenselyOrdered
+import Mathlib.Algebra.Order.Group.End
 import Mathlib.Algebra.Order.Group.Finset
 import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Algebra.Order.Group.InjSurj
@@ -4525,7 +4526,6 @@ import Mathlib.Order.Radical
 import Mathlib.Order.Rel.GaloisConnection
 import Mathlib.Order.RelClasses
 import Mathlib.Order.RelIso.Basic
-import Mathlib.Order.RelIso.Group
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.RelSeries
 import Mathlib.Order.Restriction
