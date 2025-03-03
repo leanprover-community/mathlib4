@@ -126,7 +126,7 @@ instance : Zero (DivisorOn U) where
 /-- Helper lemma for the `simp` tactic: the function of the zero-divisor is the
 zero function. -/
 @[simp]
-theorem zero_fun : (0 : DivisorOn U).toFun = 0 := rfl
+theorem zero_fun : ((0 : DivisorOn U) : 𝕜 → ℤ) = 0 := rfl
 
 /-- Divisors can be added -/
 instance : Add (DivisorOn U) where
@@ -145,7 +145,7 @@ instance : Add (DivisorOn U) where
 /-- Helper lemma for the `simp` tactic: the function of the sum of two divisors
 is the sum of the associated functions. -/
 @[simp]
-lemma add_fun {D₁ D₂ : DivisorOn U} : (D₁ + D₂).toFun = D₁.toFun + D₂.toFun := rfl
+lemma add_fun {D₁ D₂ : DivisorOn U} : (↑(D₁ + D₂) : 𝕜 → ℤ) = (D₁ : 𝕜 → ℤ) + (D₂ : 𝕜 → ℤ) := rfl
 
 /-- Divisors have a negative -/
 instance : Neg (DivisorOn U) where
@@ -161,7 +161,7 @@ instance : Neg (DivisorOn U) where
 /-- Helper lemma for the `simp` tactic: the function of the negative divisor
 is the negative of the associated function. -/
 @[simp]
-lemma neg_fun {D : DivisorOn U} : (-D).toFun = -(D.toFun) := rfl
+lemma neg_fun {D : DivisorOn U} : (↑(-D) : 𝕜 → ℤ) = -(D: 𝕜 → ℤ) := rfl
 
 /-- Divisors have scalar multiplication with natural numbers -/
 instance : SMul ℕ (DivisorOn U) where
@@ -181,7 +181,7 @@ instance : SMul ℕ (DivisorOn U) where
 (natural number)·divisor is the scalar product of the natural number with the
 associated function of the divisor. -/
 @[simp]
-lemma nsmul_fun {D : DivisorOn U} {n : ℕ} : (n • D).toFun = n • (D.toFun) := rfl
+lemma nsmul_fun {D : DivisorOn U} {n : ℕ} : (↑(n • D) : 𝕜 → ℤ) = n • (D : 𝕜 → ℤ) := rfl
 
 /-- Divisors have scalar multiplication with integers -/
 instance : SMul ℤ (DivisorOn U) where
@@ -201,7 +201,7 @@ instance : SMul ℤ (DivisorOn U) where
 (integer)·divisor is the scalar product of the integer with the associated
 function of the divisor. -/
 @[simp]
-lemma zsmul_fun {D : DivisorOn U} {n : ℤ} : (n • D).toFun = n • (D.toFun) := rfl
+lemma zsmul_fun {D : DivisorOn U} {n : ℤ} : (↑(n • D) : 𝕜 → ℤ) = n • (D : 𝕜 → ℤ) := rfl
 
 /-- Divisors have a partial ordering by pointwise comparison of the associated
 functions. -/
@@ -211,7 +211,7 @@ instance : LE (DivisorOn U) where
 /-- Helper lemma for the `simp` tactic: a divisor is smaller than another one
 if the same relation holds with the associated functions. -/
 @[simp]
-lemma le_fun {D₁ D₂ : DivisorOn U} : D₁ ≤ D₂ ↔ D₁.toFun ≤ D₂.toFun := ⟨(·),(·)⟩
+lemma le_fun {D₁ D₂ : DivisorOn U} : D₁ ≤ D₂ ↔ (D₁ : 𝕜 → ℤ) ≤ (D₂ : 𝕜 → ℤ) := ⟨(·),(·)⟩
 
 /-- Divisors form an ordered commutative group -/
 instance : OrderedAddCommGroup (DivisorOn U) where
@@ -224,6 +224,7 @@ instance : OrderedAddCommGroup (DivisorOn U) where
   neg := (- ·)
   zsmul := (· • ·)
   neg_add_cancel := fun _ ↦ by ext; simp
+
   add_comm := fun _ _ ↦ by ext; simp [add_comm]
   nsmul_zero := fun _ ↦ by ext; simp
   nsmul_succ := fun _ _ ↦ by ext; simp [add_one_mul]
@@ -245,7 +246,7 @@ instance : LT (DivisorOn U) where
 /-- Helper lemma for the `simp` tactic: a divisor is smaller than another one
 if the same relation holds with the associated functions. -/
 @[simp]
-lemma lt_fun {D₁ D₂ : DivisorOn U} : D₁ < D₂ ↔ D₁.toFun < D₂.toFun := ⟨(·),(·)⟩
+lemma lt_fun {D₁ D₂ : DivisorOn U} : D₁ < D₂ ↔ (D₁ : 𝕜 → ℤ) < (D₂ : 𝕜 → ℤ) := ⟨(·),(·)⟩
 
 /-- Divisors have a max. -/
 instance : Max (DivisorOn U) where
