@@ -4,24 +4,6 @@ import Lean
 --import Archive
 --import Counterexamples
 import Lean.Elab.Command
-import Mathlib.adomaniLeanUtils.inspect_syntax
-
-import Lean
-
-open Lean Elab Command
-
-theorem my_rw_rule : 1 + 1 = 2 := by simp
-
-elab " my_rewrite " " @ " hyp:ident : tactic =>
-  Lean.Elab.Tactic.withMainContext do
-    let hyp' := mkNode `Lean.Parser.Tactic.locationHyp #[hyp]
-    let hyp' ← `(Lean.Parser.Tactic.location| at $(hyp))
-    dbg_trace hyp'
-    Lean.Elab.Tactic.evalTactic (← `(tactic| rw [``rw_rule] at $hyp'))
-inspect
-example (h : 1 + 1 = 2) : True := by
-  rw [] at h
-  my_rewrite @ h
 
 open Lean
 
