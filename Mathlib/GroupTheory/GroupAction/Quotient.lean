@@ -12,6 +12,7 @@ import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Hom
+import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # Properties of group actions involving quotient groups
@@ -508,3 +509,48 @@ theorem quotientCenterEmbedding_apply {S : Set G} (hS : closure S = ⊤) (g : G)
   rfl
 
 end Subgroup
+
+section QuotientGroupAction
+
+namespace MulAction
+
+variable [Group β] (H : Subgroup β) (α : Type u) [MulAction β α]
+
+/-- A typeclass for when a `MulAction β α` descends to the quotient `β ⧸ H`. -/
+class QuotientGroupAction : Prop where
+  /-- This ensures that the action descends to an action of the quotient `β ⧸ H`. -/
+  eq_id : ∀ b : H, ∀ a : α, b • a = a
+
+/-- A typeclass for when a `AddAction β α` descends to the quotient `β ⧸ H`. -/
+class _root_.AddAction.QuotientAddGroupAction {β : Type v} [AddGroup β]
+    (H : AddSubgroup β) (α : Type u) [AddAction β α] : Prop where
+  /-- This ensures that the action descends to an action of the quotient `β ⧸ H`. -/
+  eq_id : ∀ b : H, ∀ a : α, b +ᵥ a = a
+
+attribute [to_additive] MulAction.QuotientGroupAction
+
+namespace QuotientGroupAction
+
+open Function Subgroup QuotientGroup
+
+variable [QuotientGroupAction H α]
+
+@[to_additive]
+instance smul : SMul (β ⧸ H) α where
+  smul b := Quotient.liftOn' b (· • ·) fun A B hAB => by
+    rw [@leftRel_apply] at hAB
+    ext1 a
+    refine let_body_congr a ?_
+    intro x
+    suffices h : A⁻¹ • A • x = A⁻¹ • B • x by rw [@smul_eq_iff_eq_inv_smul, ← h, @inv_smul_smul]
+    rw [@inv_smul_smul, @smul_smul]
+    exact QuotientGroupAction.eq_id ⟨(A⁻¹ * B), hAB⟩ x |>.symm
+
+@[to_additive]
+instance mulAction [H.Normal] : MulAction (β ⧸ H) α :=
+  Function.Surjective.mulActionLeft (QuotientGroup.mk' <| H)
+    (QuotientGroup.mk'_surjective <| H) fun _ _ => rfl
+
+end QuotientGroupAction
+end MulAction
+end QuotientGroupAction
