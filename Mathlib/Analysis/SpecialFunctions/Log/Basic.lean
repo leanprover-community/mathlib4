@@ -322,14 +322,14 @@ theorem abs_log_mul_self_lt (x : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) : |log x * x| 
 theorem tendsto_log_atTop : Tendsto log atTop atTop :=
   tendsto_comp_exp_atTop.1 <| by simpa only [log_exp] using tendsto_id
 
-lemma tendsto_log_nhdsGT_zero_right : Tendsto log (𝓝[>] 0) atBot := by
+lemma tendsto_log_nhdsGT_zero : Tendsto log (𝓝[>] 0) atBot := by
   simpa [← tendsto_comp_exp_atBot] using tendsto_id
 
 @[deprecated (since := "2025-03-02")]
-alias tendsto_log_nhdsWithin_zero_right := tendsto_log_nhdsGT_zero_right
+alias tendsto_log_nhdsWithin_zero_right := tendsto_log_nhdsGT_zero
 
 theorem tendsto_log_nhdsNE_zero : Tendsto log (𝓝[≠] 0) atBot := by
-  simpa [comp_def] using tendsto_log_nhdsGT_zero_right.comp tendsto_abs_nhdsNE_zero
+  simpa [comp_def] using tendsto_log_nhdsGT_zero.comp tendsto_abs_nhdsNE_zero
 
 @[deprecated (since := "2025-03-02")]
 alias tendsto_log_nhdsWithin_zero := tendsto_log_nhdsNE_zero
