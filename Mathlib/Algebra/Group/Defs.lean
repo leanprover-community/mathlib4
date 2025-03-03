@@ -68,7 +68,7 @@ class IsRightCancelMul (G : Type u) [Mul G] : Prop where
   /-- Multiplication is right cancellative. -/
   protected mul_right_cancel : ∀ a b c : G, a * b = c * b → a = c
 /-- A mixin for cancellative multiplication. -/
-class IsCancelMul (G : Type u) [Mul G] extends IsLeftCancelMul G, IsRightCancelMul G : Prop
+class IsCancelMul (G : Type u) [Mul G] : Prop extends IsLeftCancelMul G, IsRightCancelMul G
 
 /-- A mixin for left cancellative addition. -/
 class IsLeftCancelAdd (G : Type u) [Add G] : Prop where
@@ -85,7 +85,7 @@ class IsRightCancelAdd (G : Type u) [Add G] : Prop where
 attribute [to_additive IsRightCancelAdd] IsRightCancelMul
 
 /-- A mixin for cancellative addition. -/
-class IsCancelAdd (G : Type u) [Add G] extends IsLeftCancelAdd G, IsRightCancelAdd G : Prop
+class IsCancelAdd (G : Type u) [Add G] : Prop extends IsLeftCancelAdd G, IsRightCancelAdd G
 
 attribute [to_additive IsCancelAdd] IsCancelMul
 
