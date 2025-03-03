@@ -408,6 +408,7 @@ theorem quot_liftOn_mk (β : Type v) (f : List (α × Bool) → β)
     (H : ∀ L₁ L₂, Red.Step L₁ L₂ → f L₁ = f L₂) : Quot.liftOn (mk L) f H = f L :=
   rfl
 
+open scoped Relator in
 @[to_additive (attr := simp)]
 theorem quot_map_mk (β : Type v) (f : List (α × Bool) → List (β × Bool))
     (H : (Red.Step ⇒ Red.Step) f f) : Quot.map f H (mk L) = mk (f L) :=

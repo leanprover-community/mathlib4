@@ -57,7 +57,7 @@ lemma comp_app {X Y Z : SSet} (f : X ⟶ Y) (g : Y ⟶ Z) (n : SimplexCategory�
 @[simps]
 def const {X Y : SSet.{u}} (y : Y _⦋0⦌) : X ⟶ Y where
   app n _ := Y.map (n.unop.const _ 0).op y
-  naturality n m f := by
+  naturality _ _ _ := by
     ext
     dsimp
     rw [← FunctorToTypes.map_comp_apply]

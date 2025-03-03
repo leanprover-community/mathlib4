@@ -200,13 +200,10 @@ theorem mem_span_iff_linearCombination (s : Set M) (x : M) :
 
 @[deprecated (since := "2024-08-29")] alias mem_span_iff_total := mem_span_iff_linearCombination
 
-variable {R}
-
+variable {R} in
 theorem mem_span_range_iff_exists_finsupp {v : α → M} {x : M} :
     x ∈ span R (range v) ↔ ∃ c : α →₀ R, (c.sum fun i a => a • v i) = x := by
   simp only [← Finsupp.range_linearCombination, LinearMap.mem_range, linearCombination_apply]
-
-variable (R)
 
 theorem span_image_eq_map_linearCombination (s : Set α) :
     span R (v '' s) = Submodule.map (linearCombination R v) (supported R R s) := by
