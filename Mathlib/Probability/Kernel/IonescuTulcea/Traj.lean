@@ -9,7 +9,7 @@ import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
 import Mathlib.Probability.Kernel.Composition.MeasureComp
 import Mathlib.Probability.Kernel.SetIntegral
-import Mathlib.Probability.Kernel.IonescuTulcea.PTraj
+import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
 
 /-!
 # Ionescu-Tulcea theorem
@@ -45,8 +45,8 @@ expectation.
 ## Main statements
 
 * `eq_traj`: Uniqueness of `traj`: to check that `η = traj κ a` it is enough to show that
-  the restriction of `η` to variables `≤ b` is `ptraj κ a b`.
-* `traj_comp_ptraj`: Given the distribution up to tome `a`, `ptraj κ a b` gives the distribution of
+  the restriction of `η` to variables `≤ b` is `partialTraj κ a b`.
+* `traj_comp_partialTraj`: Given the distribution up to tome `a`, `partialTraj κ a b` gives the distribution of
   the trajectory up to time `b`, and composing this with `traj κ b` gives the distribution
   of the whole trajectory.
 * `condExp_traj`: If `a ≤ b`, the conditional expectation of `f` with respect to `traj κ a`
@@ -55,7 +55,7 @@ expectation.
 ## Implementation notes
 
 The kernel `traj κ a` is built using the Carathéodory extension theorem. First we build a projective
-family of measures using `inducedFamily` and `ptraj κ a`. Then we build an
+family of measures using `inducedFamily` and `partialTraj κ a`. Then we build an
 `MeasureTheory.AddContent` on `MeasureTheory.measurableCylinders` called `trajContent` using
 `projectiveFamilyContent`. Finally we prove `trajContent_tendsto_zero` which implies the
 `σ`-additivity of the content, allowing to turn it into a measure.
@@ -226,30 +226,30 @@ section definition
 
 /-! ### Definition and basic properties of `traj` -/
 
-lemma isProjectiveMeasureFamily_ptraj {a : ℕ} (x₀ : Π i : Iic a, X i) :
-    IsProjectiveMeasureFamily (inducedFamily (fun b ↦ ptraj κ a b x₀)) :=
-  isProjectiveMeasureFamily_inducedFamily _ (fun _ _ ↦ ptraj_map_frestrictLe₂_apply (κ := κ) x₀)
+lemma isProjectiveMeasureFamily_partialTraj {a : ℕ} (x₀ : Π i : Iic a, X i) :
+    IsProjectiveMeasureFamily (inducedFamily (fun b ↦ partialTraj κ a b x₀)) :=
+  isProjectiveMeasureFamily_inducedFamily _ (fun _ _ ↦ partialTraj_map_frestrictLe₂_apply (κ := κ) x₀)
 
 /-- Given a family of kernels `κ : (n : ℕ) → Kernel (Π i : Iic n, X i) (X (n + 1))`, and the
 trajectory up to time `a` we can construct an additive content over cylinders. It corresponds
 to composing the kernels, starting at time `a + 1`. -/
 noncomputable def trajContent {a : ℕ} (x₀ : Π i : Iic a, X i) :
     AddContent (measurableCylinders X) :=
-  projectiveFamilyContent (isProjectiveMeasureFamily_ptraj κ x₀)
+  projectiveFamilyContent (isProjectiveMeasureFamily_partialTraj κ x₀)
 
-/-- The `trajContent κ x₀` of a cylinder indexed by first coordinates is given by `ptraj`. -/
+/-- The `trajContent κ x₀` of a cylinder indexed by first coordinates is given by `partialTraj`. -/
 theorem trajContent_cylinder {a b : ℕ} (x₀ : Π i : Iic a, X i)
     {S : Set (Π i : Iic b, X i)} (mS : MeasurableSet S) :
-    trajContent κ x₀ (cylinder _ S) = ptraj κ a b x₀ S := by
+    trajContent κ x₀ (cylinder _ S) = partialTraj κ a b x₀ S := by
   rw [trajContent, projectiveFamilyContent_cylinder _ mS, inducedFamily_Iic]
 
 /-- The `trajContent` of a cylinder is equal to the integral of its indicator function against
-`ptraj`. -/
-theorem trajContent_eq_lmarginalPTraj {b : ℕ} {S : Set (Π i : Iic b, X i)}
+`partialTraj`. -/
+theorem trajContent_eq_lmarginalPartialTraj {b : ℕ} {S : Set (Π i : Iic b, X i)}
     (mS : MeasurableSet S) (x₀ : Π n, X n) (a : ℕ) :
     trajContent κ (frestrictLe a x₀) (cylinder _ S) =
-      lmarginalPTraj κ a b ((cylinder _ S).indicator 1) x₀ := by
-  rw [trajContent_cylinder _ _ mS, ← lintegral_indicator_one mS, lmarginalPTraj]
+      lmarginalPartialTraj κ a b ((cylinder _ S).indicator 1) x₀ := by
+  rw [trajContent_cylinder _ _ mS, ← lintegral_indicator_one mS, lmarginalPartialTraj]
   congr with x
   apply Set.indicator_const_eq_indicator_const
   rw [mem_cylinder]
@@ -272,26 +272,26 @@ theorem cylinders_nat :
 variable {κ} in
 lemma trajContent_ne_top {a : ℕ} {x : Π i : Iic a, X i} {s : Set (Π n, X n)} :
     trajContent κ x s ≠ ∞ :=
-  projectiveFamilyContent_ne_top (isProjectiveMeasureFamily_ptraj κ x)
+  projectiveFamilyContent_ne_top (isProjectiveMeasureFamily_partialTraj κ x)
 
 /-- This is an auxiliary result for `trajContent_tendsto_zero`. Consider `f` a sequence of bounded
 measurable functions such that `f n` depends only on the first coordinates up to `a n`.
-Assume that when integrating `f n` against `ptraj (k + 1) (a n)`, one gets a non-increasing
+Assume that when integrating `f n` against `partialTraj (k + 1) (a n)`, one gets a non-increasing
 sequence of functions wich converges to `l`.
 Assume then that there exists `ε` and `y : Π i : Iic k, X i` such that
-when integrating `f n` against `ptraj k (a n) y`, you get something at least
+when integrating `f n` against `partialTraj k (a n) y`, you get something at least
 `ε` for all `n`. Then there exists `z` such that this remains true when integrating
-`f` against `ptraj (k + 1) (a n) (update y (k + 1) z)`. -/
-theorem le_lmarginalPTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a : ℕ → ℕ}
+`f` against `partialTraj (k + 1) (a n) (update y (k + 1) z)`. -/
+theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a : ℕ → ℕ}
     (hcte : ∀ n, DependsOn (f n) (Iic (a n))) (mf : ∀ n, Measurable (f n))
     {bound : ℝ≥0∞} (fin_bound : bound ≠ ∞) (le_bound : ∀ n x, f n x ≤ bound) {k : ℕ}
-    (anti : ∀ x, Antitone (fun n ↦ lmarginalPTraj κ (k + 1) (a n) (f n) x))
+    (anti : ∀ x, Antitone (fun n ↦ lmarginalPartialTraj κ (k + 1) (a n) (f n) x))
     {l : (Π n, X n) → ℝ≥0∞}
-    (htendsto : ∀ x, Tendsto (fun n ↦ lmarginalPTraj κ (k + 1) (a n) (f n) x) atTop (𝓝 (l x)))
+    (htendsto : ∀ x, Tendsto (fun n ↦ lmarginalPartialTraj κ (k + 1) (a n) (f n) x) atTop (𝓝 (l x)))
     (ε : ℝ≥0∞) (y : Π i : Iic k, X i)
-    (hpos : ∀ x n, ε ≤ lmarginalPTraj κ k (a n) (f n) (updateFinset x _ y)) :
+    (hpos : ∀ x n, ε ≤ lmarginalPartialTraj κ k (a n) (f n) (updateFinset x _ y)) :
     ∃ z, ∀ x n,
-      ε ≤ lmarginalPTraj κ (k + 1) (a n) (f n) (update (updateFinset x _ y) (k + 1) z) := by
+      ε ≤ lmarginalPartialTraj κ (k + 1) (a n) (f n) (update (updateFinset x _ y) (k + 1) z) := by
   have _ n : Nonempty (X n) := by
     induction n using Nat.case_strong_induction_on with
     | hz => exact ⟨y ⟨0, mem_Iic.2 (zero_le _)⟩⟩
@@ -300,34 +300,34 @@ theorem le_lmarginalPTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a : ℕ
         ⟨fun i ↦ @Classical.ofNonempty _ (hm i.1 (mem_Iic.1 i.2))⟩
       exact ProbabilityMeasure.nonempty ⟨κ m Classical.ofNonempty, inferInstance⟩
   -- `Fₙ` is the integral of `fₙ` from time `k + 1` to `aₙ`.
-  let F n : (Π n, X n) → ℝ≥0∞ := lmarginalPTraj κ (k + 1) (a n) (f n)
+  let F n : (Π n, X n) → ℝ≥0∞ := lmarginalPartialTraj κ (k + 1) (a n) (f n)
   -- `Fₙ` converges to `l` by hypothesis.
   have tendstoF x : Tendsto (F · x) atTop (𝓝 (l x)) := htendsto x
   -- Integrating `fₙ` between time `k` and `aₙ` is the same as integrating
   -- `Fₙ` between time `k` and time `k + 1`.
-  have f_eq x n : lmarginalPTraj κ k (a n) (f n) x = lmarginalPTraj κ k (k + 1) (F n) x := by
+  have f_eq x n : lmarginalPartialTraj κ k (a n) (f n) x = lmarginalPartialTraj κ k (k + 1) (F n) x := by
     simp_rw [F]
     obtain h | h | h := lt_trichotomy (k + 1) (a n)
-    · rw [← lmarginalPTraj_self k.le_succ h.le (mf n)]
-    · rw [← h, lmarginalPTraj_le _ le_rfl (mf n)]
-    · rw [lmarginalPTraj_le _ _ (mf n), (hcte n).lmarginalPTraj_le _ (mf n),
-        (hcte n).lmarginalPTraj_le _ (mf n)]
+    · rw [← lmarginalPartialTraj_self k.le_succ h.le (mf n)]
+    · rw [← h, lmarginalPartialTraj_le _ le_rfl (mf n)]
+    · rw [lmarginalPartialTraj_le _ _ (mf n), (hcte n).lmarginalPartialTraj_le _ (mf n),
+        (hcte n).lmarginalPartialTraj_le _ (mf n)]
       all_goals omega
   -- `F` is also a bounded sequence.
   have F_le n x : F n x ≤ bound := by
-    simpa [F, lmarginalPTraj] using lintegral_le_const (ae_of_all _ fun z ↦ le_bound _ _)
+    simpa [F, lmarginalPartialTraj] using lintegral_le_const (ae_of_all _ fun z ↦ le_bound _ _)
   -- By dominated convergence, the integral of `fₙ` between time `k` and time `a n` converges
   -- to the integral of `l` between time `k` and time `k + 1`.
-  have tendsto_int x : Tendsto (fun n ↦ lmarginalPTraj κ k (a n) (f n) x) atTop
-      (𝓝 (lmarginalPTraj κ k (k + 1) l x)) := by
-    simp_rw [f_eq, lmarginalPTraj]
+  have tendsto_int x : Tendsto (fun n ↦ lmarginalPartialTraj κ k (a n) (f n) x) atTop
+      (𝓝 (lmarginalPartialTraj κ k (k + 1) l x)) := by
+    simp_rw [f_eq, lmarginalPartialTraj]
     exact tendsto_lintegral_of_dominated_convergence (fun _ ↦ bound)
-      (fun n ↦ (measurable_lmarginalPTraj _ _ (mf n)).comp measurable_updateFinset)
+      (fun n ↦ (measurable_lmarginalPartialTraj _ _ (mf n)).comp measurable_updateFinset)
       (fun n ↦ Eventually.of_forall <| fun y ↦ F_le n _)
       (by simp [fin_bound]) (Eventually.of_forall (fun _ ↦ tendstoF _))
-  -- By hypothesis, we have `ε ≤ lmarginalPTraj κ k (k + 1) (F n) (updateFinset x _ y)`,
+  -- By hypothesis, we have `ε ≤ lmarginalPartialTraj κ k (k + 1) (F n) (updateFinset x _ y)`,
   -- so this is also true for `l`.
-  have ε_le_lint x : ε ≤ lmarginalPTraj κ k (k + 1) l (updateFinset x _ y) :=
+  have ε_le_lint x : ε ≤ lmarginalPartialTraj κ k (k + 1) l (updateFinset x _ y) :=
     ge_of_tendsto (tendsto_int _) (by simp [hpos])
   let x_ : Π n, X n := Classical.ofNonempty
   -- We now have that the integral of `l` with respect to a probability measure is greater than `ε`,
@@ -338,7 +338,7 @@ theorem le_lmarginalPTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a : ℕ
         fun y ↦ le_of_tendsto' (tendstoF _) <| fun _ ↦ F_le _ _
     obtain ⟨x, hx⟩ := exists_lintegral_le this
     refine ⟨x, (ε_le_lint x_).trans ?_⟩
-    rwa [lmarginalPTraj_succ, frestrictLe_updateFinset]
+    rwa [lmarginalPartialTraj_succ, frestrictLe_updateFinset]
     exact ENNReal.measurable_of_tendsto (by fun_prop) (tendsto_pi_nhds.2 htendsto)
   refine ⟨x, fun x' n ↦ ?_⟩
   -- As `F` is a non-increasing sequence, we have `ε ≤ Fₙ(y, x)` for any `n`.
@@ -346,7 +346,7 @@ theorem le_lmarginalPTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a : ℕ
   -- This part below is just to say that this is true for any `x : (i : ι) → X i`,
   -- as `Fₙ` technically depends on all the variables, but really depends only on the first `k + 1`.
   convert this using 1
-  refine (hcte n).dependsOn_lmarginalPTraj _ (mf n) fun i hi ↦ ?_
+  refine (hcte n).dependsOn_lmarginalPartialTraj _ (mf n) fun i hi ↦ ?_
   simp only [update, updateFinset, mem_Iic, F]
   split_ifs with h1 h2 <;> try rfl
   rw [mem_coe, mem_Iic] at hi
@@ -389,11 +389,11 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
   have χ_dep n : DependsOn (χ n) (Iic (a n)) := by
     simp_rw [χ, A_eq]
     exact dependsOn_cylinder_indicator _
-  -- Therefore its integral against `ptraj κ k (a n)` is constant.
+  -- Therefore its integral against `partialTraj κ k (a n)` is constant.
   have lma_const x y n :
-      lmarginalPTraj κ p (a n) (χ n) (updateFinset x _ x₀) =
-      lmarginalPTraj κ p (a n) (χ n) (updateFinset y _ x₀) := by
-    refine (χ_dep n).dependsOn_lmarginalPTraj p (mχ n) fun i hi ↦ ?_
+      lmarginalPartialTraj κ p (a n) (χ n) (updateFinset x _ x₀) =
+      lmarginalPartialTraj κ p (a n) (χ n) (updateFinset y _ x₀) := by
+    refine (χ_dep n).dependsOn_lmarginalPartialTraj p (mχ n) fun i hi ↦ ?_
     rw [mem_coe, mem_Iic] at hi
     simp [updateFinset, hi]
   -- As `(Aₙ)` is non-increasing, so is `(χₙ)`.
@@ -402,17 +402,17 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
     simp [χ, A_anti hmn ha]
   -- Integrating `χₙ` further than the last coordinate it depends on does nothing.
   -- This is used to then show that the integral of `χₙ` from time `k` is non-increasing.
-  have lma_inv k M n (h : a n ≤ M) : lmarginalPTraj κ k M (χ n) = lmarginalPTraj κ k (a n) (χ n) :=
-    (χ_dep n).lmarginalPTraj_const_right (mχ n) h le_rfl
+  have lma_inv k M n (h : a n ≤ M) : lmarginalPartialTraj κ k M (χ n) = lmarginalPartialTraj κ k (a n) (χ n) :=
+    (χ_dep n).lmarginalPartialTraj_const_right (mχ n) h le_rfl
   -- the integral of `χₙ` from time `k` is non-increasing.
-  have anti_lma k x : Antitone fun n ↦ lmarginalPTraj κ k (a n) (χ n) x := by
+  have anti_lma k x : Antitone fun n ↦ lmarginalPartialTraj κ k (a n) (χ n) x := by
     intro m n hmn
     simp only
     rw [← lma_inv k ((a n).max (a m)) n (le_max_left _ _),
       ← lma_inv k ((a n).max (a m)) m (le_max_right _ _)]
-    exact lmarginalPTraj_mono _ _ (χ_anti hmn) _
+    exact lmarginalPartialTraj_mono _ _ (χ_anti hmn) _
   -- Therefore it converges to some function `lₖ`.
-  have this k x : ∃ l, Tendsto (fun n ↦ lmarginalPTraj κ k (a n) (χ n) x) atTop (𝓝 l) := by
+  have this k x : ∃ l, Tendsto (fun n ↦ lmarginalPartialTraj κ k (a n) (χ n) x) atTop (𝓝 l) := by
     obtain h | h := tendsto_of_antitone (anti_lma k x)
     · rw [OrderBot.atBot_eq] at h
       exact ⟨0, h.mono_right <| pure_le_nhds 0⟩
@@ -426,22 +426,22 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
   obtain ⟨ε, hε⟩ : ∃ ε, ∀ x, l p (updateFinset x _ x₀) = ε :=
       ⟨l p (updateFinset Classical.ofNonempty _ x₀), fun x ↦ l_const _ _⟩
   -- As the sequence is decreasing, `ε ≤ ∫ χₙ`.
-  have hpos x n : ε ≤ lmarginalPTraj κ p (a n) (χ n) (updateFinset x _ x₀) :=
+  have hpos x n : ε ≤ lmarginalPartialTraj κ p (a n) (χ n) (updateFinset x _ x₀) :=
     hε x ▸ ((anti_lma p _).le_of_tendsto (hl p _)) n
   -- Also, the indicators are bounded by `1`.
   have χ_le n x : χ n x ≤ 1 := by
     apply Set.indicator_le
     simp
-  -- We have all the conditions to apply `le_lmarginalPTraj_succ`.
+  -- We have all the conditions to apply `le_lmarginalPartialTraj_succ`.
   -- This allows us to recursively build a sequence `z` with the following property:
   -- for any `k ≥ p` and `n`, integrating `χ n` from time `k` to time `a n`
   -- with the trajectory up to `k` being equal to `z` gives something greater than `ε`.
   choose! ind hind using
-    fun k y h ↦ le_lmarginalPTraj_succ κ χ_dep mχ (by norm_num : (1 : ℝ≥0∞) ≠ ∞)
+    fun k y h ↦ le_lmarginalPartialTraj_succ κ χ_dep mχ (by norm_num : (1 : ℝ≥0∞) ≠ ∞)
       χ_le (anti_lma (k + 1)) (hl (k + 1)) ε y h
   let z := iterateInduction x₀ ind
   have main k (hk : p ≤ k) : ∀ x n,
-      ε ≤ lmarginalPTraj κ k (a n) (χ n) (updateFinset x _ (frestrictLe k z)) := by
+      ε ≤ lmarginalPartialTraj κ k (a n) (χ n) (updateFinset x _ (frestrictLe k z)) := by
     induction k, hk using Nat.le_induction with
     | base => exact fun x n ↦ by simpa [z, frestrictLe_iterateInduction] using hpos x n
     | succ k hn h =>
@@ -456,10 +456,10 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
       rw [iterateInduction, dif_neg (by omega)]
   -- We now want to prove that the integral of `χₙ`, which is equal to the `trajContent`
   -- of `Aₙ`, converges to `0`.
-  have aux x n : trajContent κ x₀ (A n) = lmarginalPTraj κ p (a n) (χ n) (updateFinset x _ x₀) := by
+  have aux x n : trajContent κ x₀ (A n) = lmarginalPartialTraj κ p (a n) (χ n) (updateFinset x _ x₀) := by
     simp_rw [χ, A_eq]
     nth_rw 1 [← frestrictLe_updateFinset x x₀]
-    exact trajContent_eq_lmarginalPTraj _ (mS n) ..
+    exact trajContent_eq_lmarginalPartialTraj _ (mS n) ..
   simp_rw [aux z]
   convert hl p _
   rw [hε]
@@ -469,7 +469,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
   by_contra!
   have mem n : z ∈ A n := by
     have : 0 < χ n z := by
-      rw [← lmarginalPTraj_le κ (le_max_right p (a n)) (mχ n),
+      rw [← lmarginalPartialTraj_le κ (le_max_right p (a n)) (mχ n),
         ← updateFinset_frestrictLe (a := a n) z]
       simpa using lt_of_lt_of_le this.symm.bot_lt (main _ (le_max_left _ _) z n)
     exact Set.mem_of_indicator_ne_zero (ne_of_lt this).symm
@@ -499,8 +499,8 @@ theorem isProbabilityMeasure_trajFun (a : ℕ) (x₀ : Π i : Iic a, X i) :
     · exact cylinder_mem_measurableCylinders _ _ .univ
 
 theorem isProjectiveLimit_trajFun (a : ℕ) (x₀ : Π i : Iic a, X i) :
-    IsProjectiveLimit (trajFun κ a x₀) (inducedFamily (fun n ↦ ptraj κ a n x₀)) := by
-  refine isProjectiveLimit_nat_iff (isProjectiveMeasureFamily_ptraj κ x₀) _ |>.2 fun n ↦ ?_
+    IsProjectiveLimit (trajFun κ a x₀) (inducedFamily (fun n ↦ partialTraj κ a n x₀)) := by
+  refine isProjectiveLimit_nat_iff (isProjectiveMeasureFamily_partialTraj κ x₀) _ |>.2 fun n ↦ ?_
   ext s ms
   rw [Measure.map_apply (measurable_frestrictLe n) ms, trajFun, AddContent.measure_eq, trajContent,
     projectiveFamilyContent_congr _ (frestrictLe n ⁻¹' s) rfl ms]
@@ -547,43 +547,43 @@ lemma traj_apply (a : ℕ) (x : Π i : Iic a, X i) : traj κ a x = trajFun κ a 
 
 instance (a : ℕ) : IsMarkovKernel (traj κ a) := ⟨fun _ ↦ isProbabilityMeasure_trajFun ..⟩
 
-lemma traj_map_frestrictLe (a b : ℕ) : (traj κ a).map (frestrictLe b) = ptraj κ a b := by
+lemma traj_map_frestrictLe (a b : ℕ) : (traj κ a).map (frestrictLe b) = partialTraj κ a b := by
   ext1 x
   rw [map_apply, traj_apply, frestrictLe, isProjectiveLimit_trajFun, inducedFamily_Iic]
   fun_prop
 
 lemma traj_map_frestrictLe_apply (a b : ℕ) (x : Π i : Iic a, X i) :
-    (traj κ a x).map (frestrictLe b) = ptraj κ a b x := by
+    (traj κ a x).map (frestrictLe b) = partialTraj κ a b x := by
   rw [← map_apply _ (measurable_frestrictLe b), traj_map_frestrictLe]
 
 lemma traj_map_frestrictLe_of_le {a b : ℕ} (hab : a ≤ b) :
     (traj κ b).map (frestrictLe a) =
       deterministic (frestrictLe₂ hab) (measurable_frestrictLe₂ _) := by
-  rw [traj_map_frestrictLe, ptraj_le]
+  rw [traj_map_frestrictLe, partialTraj_le]
 
 /-- To check that `η = traj κ a` it is enough to show that the restriction of `η` to variables `≤ b`
-is `ptraj κ a b` for any `b ≥ n`. -/
+is `partialTraj κ a b` for any `b ≥ n`. -/
 theorem eq_traj' {a : ℕ} (n : ℕ) (η : Kernel (Π i : Iic a, X i) (Π n, X n))
-    (hη : ∀ b ≥ n, η.map (frestrictLe b) = ptraj κ a b) : η = traj κ a := by
+    (hη : ∀ b ≥ n, η.map (frestrictLe b) = partialTraj κ a b) : η = traj κ a := by
   ext1 x
   refine ((isProjectiveLimit_trajFun _ _ _).unique ?_).symm
   rw [isProjectiveLimit_nat_iff' _ _ n]
   · intro k hk
     rw [inducedFamily_Iic, ← map_apply _ (measurable_frestrictLe k), hη k hk]
-  · exact isProjectiveMeasureFamily_ptraj κ x
+  · exact isProjectiveMeasureFamily_partialTraj κ x
 
 /-- To check that `η = traj κ a` it is enough to show that the restriction of `η` to variables `≤ b`
-is `ptraj κ a b`. -/
+is `partialTraj κ a b`. -/
 theorem eq_traj {a : ℕ} (η : Kernel (Π i : Iic a, X i) (Π n, X n))
-    (hη : ∀ b, η.map (frestrictLe b) = ptraj κ a b) : η = traj κ a :=
+    (hη : ∀ b, η.map (frestrictLe b) = partialTraj κ a b) : η = traj κ a :=
   eq_traj' κ 0 η fun b _ ↦ hη b
 
-/-- Given the distribution up to tome `a`, `ptraj κ a b` gives the distribution of the trajectory
+/-- Given the distribution up to tome `a`, `partialTraj κ a b` gives the distribution of the trajectory
 up to time `b`, and composing this with `traj κ b` gives the distribution
 of the whole trajectory. -/
-theorem traj_comp_ptraj {a b : ℕ} (hab : a ≤ b) : (traj κ b) ∘ₖ (ptraj κ a b) = traj κ a := by
+theorem traj_comp_partialTraj {a b : ℕ} (hab : a ≤ b) : (traj κ b) ∘ₖ (partialTraj κ a b) = traj κ a := by
   refine eq_traj _ _ fun n ↦ ?_
-  rw [map_comp, traj_map_frestrictLe, ptraj_comp_ptraj' _ hab]
+  rw [map_comp, traj_map_frestrictLe, partialTraj_comp_partialTraj' _ hab]
 
 /-- This theorem shows that `traj κ n` is, up to an equivalence, the product of
 a determinstic kernel with another kernel. This is an intermediate result to compute integrals
@@ -597,7 +597,7 @@ theorem traj_eq_prod (a : ℕ) :
   · rw [map_comp_right, ← map_prod_map, ← map_comp_right]
     · conv_lhs => enter [1, 2, 2]; change (Ioc a b).restrict
       rw [← restrict₂_comp_restrict Ioc_subset_Iic_self, ← frestrictLe, map_comp_right,
-        traj_map_frestrictLe, map_id, ← ptraj_eq_prod]
+        traj_map_frestrictLe, map_id, ← partialTraj_eq_prod]
       all_goals fun_prop
     all_goals fun_prop
   all_goals fun_prop
@@ -622,7 +622,7 @@ variable {E : Type*} [NormedAddCommGroup E]
 theorem integrable_traj {a b : ℕ} (hab : a ≤ b) {f : (Π n, X n) → E}
     (x₀ : Π i : Iic a, X i) (i_f : Integrable f (traj κ a x₀)) :
     ∀ᵐ x ∂traj κ a x₀, Integrable f (traj κ b (frestrictLe b x)) := by
-  rw [← traj_comp_ptraj _ hab, integrable_comp_iff] at i_f
+  rw [← traj_comp_partialTraj _ hab, integrable_comp_iff] at i_f
   · apply ae_of_ae_map (p := fun x ↦ Integrable f (traj κ b x))
     · fun_prop
     · convert i_f.1
@@ -631,8 +631,8 @@ theorem integrable_traj {a b : ℕ} (hab : a ≤ b) {f : (Π n, X n) → E}
 
 theorem aestronglyMeasurable_traj {a b : ℕ} (hab : a ≤ b) {f : (Π n, X n) → E}
     {x₀ : Π i : Iic a, X i} (hf : AEStronglyMeasurable f (traj κ a x₀)) :
-    ∀ᵐ x ∂ptraj κ a b x₀, AEStronglyMeasurable f (traj κ b x) := by
-  rw [← traj_comp_ptraj κ hab] at hf
+    ∀ᵐ x ∂partialTraj κ a b x₀, AEStronglyMeasurable f (traj κ b x) := by
+  rw [← traj_comp_partialTraj κ hab] at hf
   exact hf.comp
 
 variable [NormedSpace ℝ E]
@@ -648,10 +648,10 @@ theorem integral_traj {a : ℕ} (x₀ : Π i : Iic a, X i) {f : (Π n, X n) → 
   · convert mf
     rw [traj_map_updateFinset]
 
-lemma ptraj_comp_ptrajProd_traj {a b : ℕ} (hab : a ≤ b) (u : Π i : Iic a, X i) :
-    (traj κ a u).map (fun x ↦ (frestrictLe b x, x)) = (ptraj κ a b u) ⊗ₘ (traj κ b) := by
+lemma partialTraj_comp_partialTrajProd_traj {a b : ℕ} (hab : a ≤ b) (u : Π i : Iic a, X i) :
+    (traj κ a u).map (fun x ↦ (frestrictLe b x, x)) = (partialTraj κ a b u) ⊗ₘ (traj κ b) := by
   ext s ms
-  rw [Measure.map_apply, Measure.compProd_apply, ← traj_comp_ptraj _ hab, comp_apply']
+  rw [Measure.map_apply, Measure.compProd_apply, ← traj_comp_partialTraj _ hab, comp_apply']
   · congr with x
     rw [← traj_map_updateFinset, Measure.map_apply, Measure.map_apply]
     · congr with y
@@ -664,50 +664,50 @@ lemma ptraj_comp_ptrajProd_traj {a b : ℕ} (hab : a ≤ b) (u : Π i : Iic a, X
 
 variable {κ}
 
-theorem integral_traj_ptraj' {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
+theorem integral_traj_partialTraj' {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
     {f : (Π i : Iic b, X i) → (Π n : ℕ, X n) → E}
-    (hf : Integrable f.uncurry ((ptraj κ a b x₀) ⊗ₘ (traj κ b))) :
-    ∫ x, ∫ y, f x y ∂traj κ b x ∂ptraj κ a b x₀ = ∫ x, f (frestrictLe b x) x ∂traj κ a x₀ := by
+    (hf : Integrable f.uncurry ((partialTraj κ a b x₀) ⊗ₘ (traj κ b))) :
+    ∫ x, ∫ y, f x y ∂traj κ b x ∂partialTraj κ a b x₀ = ∫ x, f (frestrictLe b x) x ∂traj κ a x₀ := by
   have hf1 := hf
-  rw [← ptraj_comp_ptrajProd_traj κ hab] at hf1
+  rw [← partialTraj_comp_partialTrajProd_traj κ hab] at hf1
   replace hf1 := hf1.comp_measurable (by fun_prop)
   have hf2 := aestronglyMeasurable_traj κ hab hf1.1
-  rw [← traj_comp_ptraj κ hab, Kernel.integral_comp]
+  rw [← traj_comp_partialTraj κ hab, Kernel.integral_comp]
   · apply integral_congr_ae
     filter_upwards [hf.1.compProd, hf2] with x h1 h2
     rw [integral_traj _ h1]
     nth_rw 2 [integral_traj]
     · simp_rw [frestrictLe_updateFinset]
     · exact h2
-  · rwa [traj_comp_ptraj _ hab]
+  · rwa [traj_comp_partialTraj _ hab]
 
-theorem integral_traj_ptraj {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
+theorem integral_traj_partialTraj {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
     {f : (Π n : ℕ, X n) → E} (hf : Integrable f (traj κ a x₀)) :
-    ∫ x, ∫ y, f y ∂traj κ b x ∂ptraj κ a b x₀ = ∫ x, f x ∂traj κ a x₀ := by
-  apply integral_traj_ptraj' hab
-  rw [← traj_comp_ptraj κ hab, comp_apply, ← Measure.snd_compProd] at hf
+    ∫ x, ∫ y, f y ∂traj κ b x ∂partialTraj κ a b x₀ = ∫ x, f x ∂traj κ a x₀ := by
+  apply integral_traj_partialTraj' hab
+  rw [← traj_comp_partialTraj κ hab, comp_apply, ← Measure.snd_compProd] at hf
   exact hf.comp_measurable measurable_snd
 
-theorem setIntegral_traj_ptraj' {a b : ℕ} (hab : a ≤ b) {u : (Π i : Iic a, X i)}
+theorem setIntegral_traj_partialTraj' {a b : ℕ} (hab : a ≤ b) {u : (Π i : Iic a, X i)}
     {f : (Π i : Iic b, X i) → (Π n : ℕ, X n) → E}
-    (hf : Integrable f.uncurry ((ptraj κ a b u) ⊗ₘ (traj κ b)))
+    (hf : Integrable f.uncurry ((partialTraj κ a b u) ⊗ₘ (traj κ b)))
     {A : Set (Π i : Iic b, X i)} (hA : MeasurableSet A) :
-    ∫ x in A, ∫ y, f x y ∂traj κ b x ∂ptraj κ a b u =
+    ∫ x in A, ∫ y, f x y ∂traj κ b x ∂partialTraj κ a b u =
       ∫ y in frestrictLe b ⁻¹' A, f (frestrictLe b y) y ∂traj κ a u := by
-  rw [← integral_integral_indicator _ _ _ hA, integral_traj_ptraj' hab]
+  rw [← integral_integral_indicator _ _ _ hA, integral_traj_partialTraj' hab]
   · simp_rw [← Set.indicator_comp_right, ← integral_indicator (measurable_frestrictLe b hA)]
     rfl
   convert hf.indicator (hA.prod .univ)
   ext ⟨x, y⟩
   by_cases hx : x ∈ A <;> simp [uncurry_def, hx]
 
-theorem setIntegral_traj_ptraj {a b : ℕ} (hab : a ≤ b) {x₀ : (Π i : Iic a, X i)}
+theorem setIntegral_traj_partialTraj {a b : ℕ} (hab : a ≤ b) {x₀ : (Π i : Iic a, X i)}
     {f : (Π n : ℕ, X n) → E} (hf : Integrable f (traj κ a x₀))
     {A : Set (Π i : Iic b, X i)} (hA : MeasurableSet A) :
-    ∫ x in A, ∫ y, f y ∂traj κ b x ∂ptraj κ a b x₀ =
+    ∫ x in A, ∫ y, f y ∂traj κ b x ∂partialTraj κ a b x₀ =
       ∫ y in frestrictLe b ⁻¹' A, f y ∂traj κ a x₀ := by
-  refine setIntegral_traj_ptraj' hab ?_ hA
-  rw [← traj_comp_ptraj κ hab, comp_apply, ← Measure.snd_compProd] at hf
+  refine setIntegral_traj_partialTraj' hab ?_ hA
+  rw [← traj_comp_partialTraj κ hab, comp_apply, ← Measure.snd_compProd] at hf
   exact hf.comp_measurable measurable_snd
 
 variable [CompleteSpace E]
@@ -721,7 +721,7 @@ theorem condExp_traj {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
   have i_f' : Integrable (fun x ↦ ∫ y, f y ∂(traj κ b) x)
       (((traj κ a) x₀).map (frestrictLe b)) := by
     rw [← map_apply _ (measurable_frestrictLe _), traj_map_frestrictLe _ _]
-    rw [← traj_comp_ptraj _ hab] at i_f
+    rw [← traj_comp_partialTraj _ hab] at i_f
     exact i_f.integral_comp
 
   refine ae_eq_condExp_of_forall_setIntegral_eq (piLE.le _) i_f
@@ -730,7 +730,7 @@ theorem condExp_traj {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
   · rintro - ⟨t, mt, rfl⟩ -
     simp_rw [Function.comp_apply]
     rw [← setIntegral_map mt i_f'.1, ← map_apply, traj_map_frestrictLe,
-      setIntegral_traj_ptraj hab i_f mt]
+      setIntegral_traj_partialTraj hab i_f mt]
     all_goals fun_prop
   · exact (i_f'.1.comp_ae_measurable' (measurable_frestrictLe b).aemeasurable)
 
@@ -741,7 +741,7 @@ theorem condExp_traj' {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c)
     (x₀ : Π i : Iic a, X i) (f : (Π n, X n) → E) :
     (traj κ a x₀)[f|piLE b] =ᵐ[traj κ a x₀]
       fun x ↦ ∫ y, ((traj κ a x₀)[f|piLE c]) (updateFinset x _ y)
-        ∂ptraj κ b c (frestrictLe b x) := by
+        ∂partialTraj κ b c (frestrictLe b x) := by
   have i_cf : Integrable ((traj κ a x₀)[f|piLE c]) (traj κ a x₀) :=
     integrable_condExp
   have mcf : StronglyMeasurable ((traj κ a x₀)[f|piLE c]) :=
