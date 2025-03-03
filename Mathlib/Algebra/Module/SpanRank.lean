@@ -118,7 +118,8 @@ lemma spanRank_finite_iff_fg {p : Submodule R M} : p.spanRank < aleph0 ↔ p.FG 
   · rintro ⟨s, ⟨hs₁, hs₂⟩⟩
     exact lt_of_le_of_lt (ciInf_le' _ ⟨s, hs₂⟩) (by simpa)
 
-/-- A submodule is finitely generated if and only if its `spanRank` is equal to its `spanFinrank`.-/
+/-- A submodule is finitely generated if and only if its `spanRank` is equal to its `spanFinrank`.
+-/
 lemma fg_iff_spanRank_eq_spanFinrank {p : Submodule R M} : p.spanRank = p.spanFinrank ↔ p.FG := by
   rw [spanFinrank, ← spanRank_finite_iff_fg, eq_comm]
   exact cast_toNat_eq_iff_lt_aleph0
