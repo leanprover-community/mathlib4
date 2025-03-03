@@ -325,7 +325,8 @@ lemma IsIntTangentAt.isIntTangent {s₁ s₂ : Sphere P} {p : P} (h : s₁.IsInt
 @[simp] lemma isIntTangent_self_iff [Nontrivial V] {s : Sphere P} :
     s.IsIntTangent s ↔ 0 ≤ s.radius := by
   simp_rw [IsIntTangent, isIntTangentAt_self_iff_mem]
-  rw [exists_mem_iff]
+  rw [← nonempty_iff]
+  rfl
 
 lemma IsExtTangent.dist_center {s₁ s₂ : Sphere P} (h : s₁.IsExtTangent s₂) :
     dist s₁.center s₂.center = s₁.radius + s₂.radius := by
