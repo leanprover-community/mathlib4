@@ -884,53 +884,30 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | ⊤, ⊤ => {⊤}
     | ⊤, (b : α) => ∅
     | (a : α), ⊤ => insertTop (Ici a)
-    | (a : α), (b : α) => (Icc a b).map Function.Embedding.coeWithTop
+    | (a : α), (b : α) => (Icc a b).map Embedding.coeWithTop
   finsetIco a b :=
     match a, b with
     | ⊤, _ => ∅
-    | (a : α), ⊤ => (Ici a).map Function.Embedding.coeWithTop
-    | (a : α), (b : α) => (Ico a b).map Function.Embedding.coeWithTop
+    | (a : α), ⊤ => (Ici a).map Embedding.coeWithTop
+    | (a : α), (b : α) => (Ico a b).map Embedding.coeWithTop
   finsetIoc a b :=
     match a, b with
     | ⊤, _ => ∅
     | (a : α), ⊤ => insertTop (Ioi a)
-    | (a : α), (b : α) => (Ioc a b).map Function.Embedding.coeWithTop
+    | (a : α), (b : α) => (Ioc a b).map Embedding.coeWithTop
   finsetIoo a b :=
     match a, b with
     | ⊤, _ => ∅
-    | (a : α), ⊤ => (Ioi a).map Function.Embedding.coeWithTop
-    | (a : α), (b : α) => (Ioo a b).map Function.Embedding.coeWithTop
-  -- Porting note: the proofs below got much worse
-  finset_mem_Icc a b x :=
-    match a, b, x with
-    | ⊤, ⊤, _ => mem_singleton.trans (le_antisymm_iff.trans and_comm)
-    | ⊤, (b : α), _ =>
-      iff_of_false (not_mem_empty _) fun h => (h.1.trans h.2).not_lt <| coe_lt_top _
-    | (a : α), ⊤, ⊤ => by simp
-    | (a : α), ⊤, (x : α) => by simp
-    | (a : α), (b : α), ⊤ => by simp
-    | (a : α), (b : α), (x : α) => by simp
-  finset_mem_Ico a b x :=
-    match a, b, x with
-    | ⊤, _, _ => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_lt h.2
-    | (a : α), ⊤, ⊤ => by simp
-    | (a : α), ⊤, (x : α) => by simp
-    | (a : α), (b : α), ⊤ => by simp
-    | (a : α), (b : α), (x : α) => by simp
-  finset_mem_Ioc a b x :=
-    match a, b, x with
-    | ⊤, _, _ => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_le h.2
-    | (a : α), ⊤, ⊤ => by simp [some, insertTop, top]
-    | (a : α), ⊤, (x : α) => by simp
-    | (a : α), (b : α), ⊤ => by simp
-    | (a : α), (b : α), (x : α) => by simp
-  finset_mem_Ioo a b x :=
-    match a, b, x with
-    | ⊤, _, _ => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans h.2
-    | (a : α), ⊤, ⊤ => by simp
-    | (a : α), ⊤, (x : α) => by simp
-    | (a : α), (b : α), ⊤ => by simp
-    | (a : α), (b : α), (x : α) => by simp
+    | (a : α), ⊤ => (Ioi a).map Embedding.coeWithTop
+    | (a : α), (b : α) => (Ioo a b).map Embedding.coeWithTop
+  finset_mem_Icc a b x := by
+    cases a <;> cases b <;> cases x <;> simp
+  finset_mem_Ico a b x := by
+    cases a <;> cases b <;> cases x <;> simp
+  finset_mem_Ioc a b x := by
+    cases a <;> cases b <;> cases x <;> simp
+  finset_mem_Ioo a b x := by
+    cases a <;> cases b <;> cases x <;> simp
 
 variable (a b : α)
 
