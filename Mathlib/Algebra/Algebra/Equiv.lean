@@ -269,8 +269,7 @@ def symm (e : A₁ ≃ₐ[R] A₂) : A₂ ≃ₐ[R] A₁ :=
     commutes' := fun r => by
       rw [← e.toRingEquiv.symm_apply_apply (algebraMap R A₁ r)]
       congr
-      change _ = e _
-      rw [e.commutes] }
+      simp }
 
 theorem invFun_eq_symm {e : A₁ ≃ₐ[R] A₂} : e.invFun = e.symm :=
   rfl
@@ -623,6 +622,8 @@ theorem one_apply (x : A₁) : (1 : A₁ ≃ₐ[R] A₁) x = x :=
 @[simp]
 theorem mul_apply (e₁ e₂ : A₁ ≃ₐ[R] A₁) (x : A₁) : (e₁ * e₂) x = e₁ (e₂ x) :=
   rfl
+
+lemma aut_inv (ϕ : A₁ ≃ₐ[R] A₁) : ϕ⁻¹ = ϕ.symm := rfl
 
 /-- An algebra isomorphism induces a group isomorphism between automorphism groups.
 

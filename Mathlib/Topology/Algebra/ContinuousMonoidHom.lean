@@ -116,7 +116,7 @@ lemma coe_toContinuousMap (f : ContinuousMonoidHom A B) : f.toContinuousMap = f 
 
 section
 
-variable  {F : Type*} [FunLike F A B]
+variable {F : Type*} [FunLike F A B]
 
 /-- Turn an element of a type `F` satisfying `MonoidHomClass F A B` and `ContinuousMapClass F A B`
 into a`ContinuousMonoidHom`. This is declared as the default coercion from `F` to
@@ -279,7 +279,7 @@ end CommMonoid
 
 section CommGroup
 
-variable [CommGroup E] [TopologicalSpace E] [TopologicalGroup E]
+variable [CommGroup E] [TopologicalSpace E] [IsTopologicalGroup E]
 /-- The continuous homomorphism given by inversion. -/
 @[to_additive (attr := simps!) "The continuous homomorphism given by negation."]
 def inv : ContinuousMonoidHom E E :=
@@ -532,10 +532,10 @@ variable {L : Type*} [Mul L] [TopologicalSpace L]
 
 /-- The composition of two ContinuousMulEquiv. -/
 @[to_additive "The composition of two ContinuousAddEquiv."]
-def trans (cme1 : M ≃ₜ* N) (cme2 : N ≃ₜ* L) : M ≃ₜ* L :=
-  { cme1.toMulEquiv.trans cme2.toMulEquiv with
+def trans (cme1 : M ≃ₜ* N) (cme2 : N ≃ₜ* L) : M ≃ₜ* L where
+  __ := cme1.toMulEquiv.trans cme2.toMulEquiv
   continuous_toFun := by convert Continuous.comp cme2.continuous_toFun cme1.continuous_toFun
-  continuous_invFun := by convert Continuous.comp cme1.continuous_invFun cme2.continuous_invFun }
+  continuous_invFun := by convert Continuous.comp cme1.continuous_invFun cme2.continuous_invFun
 
 @[to_additive (attr := simp)]
 theorem coe_trans (e₁ : M ≃ₜ* N) (e₂ : N ≃ₜ* L) : ↑(e₁.trans e₂) = e₂ ∘ e₁ := rfl
@@ -562,10 +562,10 @@ section unique
 /-- The `MulEquiv` between two monoids with a unique element. -/
 @[to_additive "The `AddEquiv` between two `AddMonoid`s with a unique element."]
 def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N]
-    [TopologicalSpace M] [TopologicalSpace N] : M ≃ₜ* N :=
-  { MulEquiv.ofUnique with
+    [TopologicalSpace M] [TopologicalSpace N] : M ≃ₜ* N where
+  __ := MulEquiv.ofUnique
   continuous_toFun := by continuity
-  continuous_invFun := by continuity }
+  continuous_invFun := by continuity
 
 /-- There is a unique monoid homomorphism between two monoids with a unique element. -/
 @[to_additive "There is a unique additive monoid homomorphism between two additive monoids with

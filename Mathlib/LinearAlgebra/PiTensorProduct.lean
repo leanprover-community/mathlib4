@@ -5,6 +5,7 @@ Authors: Frédéric Dupuis, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.LinearAlgebra.Multilinear.Curry
 
 /-!
 # Tensor product of an indexed family of modules over commutative semirings
@@ -270,8 +271,7 @@ instance : SMulCommClass R R (⨂[R] i, s i) :=
 instance : IsScalarTower R R (⨂[R] i, s i) :=
   PiTensorProduct.isScalarTower'
 
-variable (R)
-
+variable (R) in
 /-- The canonical `MultilinearMap R s (⨂[R] i, s i)`.
 
 `tprod R fun i => f i` has notation `⨂ₜ[R] i, f i`. -/
@@ -280,8 +280,6 @@ def tprod : MultilinearMap R s (⨂[R] i, s i) where
   map_update_add' {_ f} i x y := (add_tprodCoeff (1 : R) f i x y).symm
   map_update_smul' {_ f} i r x := by
     rw [smul_tprodCoeff', ← smul_tprodCoeff (1 : R) _ i, update_idem, update_self]
-
-variable {R}
 
 unsuppress_compilation in
 @[inherit_doc tprod]

@@ -45,7 +45,7 @@ wish to enforce infiniteness. -/
 class Encodable (α : Type*) where
   /-- Encoding from Type α to ℕ -/
   encode : α → ℕ
-  /-- Decoding from ℕ to Option α-/
+  /-- Decoding from ℕ to Option α -/
   decode : ℕ → Option α
   /-- Invariant relationship between encoding and decoding -/
   encodek : ∀ a, decode (encode a) = some a
@@ -163,8 +163,7 @@ def decode₂ (α) [Encodable α] (n : ℕ) : Option α :=
 
 theorem mem_decode₂' [Encodable α] {n : ℕ} {a : α} :
     a ∈ decode₂ α n ↔ a ∈ decode n ∧ encode a = n := by
-  simpa [decode₂, bind_eq_some] using
-    ⟨fun ⟨_, h₁, rfl, h₂⟩ => ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨_, h₁, rfl, h₂⟩⟩
+  simp [decode₂, bind_eq_some]
 
 theorem mem_decode₂ [Encodable α] {n : ℕ} {a : α} : a ∈ decode₂ α n ↔ encode a = n :=
   mem_decode₂'.trans (and_iff_right_of_imp fun e => e ▸ encodek _)
@@ -204,7 +203,7 @@ def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α 
   toFun := fun a : α => ⟨encode a, Set.mem_range_self _⟩
   invFun n :=
     Option.get _
-      (show isSome (decode₂ α n.1) by cases' n.2 with x hx; rw [← hx, encodek₂]; exact rfl)
+      (show isSome (decode₂ α n.1) by obtain ⟨x, hx⟩ := n.2; rw [← hx, encodek₂]; exact rfl)
   left_inv a := by dsimp; rw [← Option.some_inj, Option.some_get, encodek₂]
   right_inv := fun ⟨n, x, hx⟩ => by
     apply Subtype.eq
@@ -278,7 +277,7 @@ theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none := by
   have : 1 ≤ n / 2 := by
     rw [Nat.le_div_iff_mul_le]
     exacts [h, by decide]
-  cases' exists_eq_succ_of_ne_zero (_root_.ne_of_gt this) with m e
+  obtain ⟨m, e⟩ := exists_eq_succ_of_ne_zero (_root_.ne_of_gt this)
   simp only [decodeSum, boddDiv2_eq, div2_val]; cases bodd n <;> simp [e]
 
 noncomputable instance _root_.Prop.encodable : Encodable Prop :=
@@ -546,7 +545,7 @@ theorem sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Directe
     r (f (hf.sequence f n)) (f (hf.sequence f (n + 1))) := by
   dsimp [Directed.sequence]
   generalize hf.sequence f n = p
-  cases' (decode n : Option α) with a
+  rcases (decode n : Option α) with - | a
   · exact (Classical.choose_spec (hf p p)).1
   · exact (Classical.choose_spec (hf p a)).1
 
