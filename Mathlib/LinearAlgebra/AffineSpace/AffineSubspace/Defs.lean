@@ -585,6 +585,10 @@ theorem top_coe : ((⊤ : AffineSubspace k P) : Set P) = Set.univ :=
 theorem mem_top (p : P) : p ∈ (⊤ : AffineSubspace k P) :=
   Set.mem_univ p
 
+@[simp] lemma mk'_top (p : P) : mk' p (⊤ : Submodule k V) = ⊤ := by
+  ext x
+  simp [mem_mk'_iff_vsub_mem]
+
 variable (P)
 
 /-- The direction of `⊤` is the whole module as a submodule. -/
