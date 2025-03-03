@@ -228,7 +228,7 @@ jobs:
 
       - name: Report diff in Lean
         run: |
-          #printf $'%s\n' "${{ steps.diff_in_lean.outputs.LeanDiff }}"
+          printf $'%s\n' "${{ steps.diff_in_lean.outputs.LeanDiff }}"
           diff decls_in_master.txt decls_in_PR.txt || echo "--- END of diff ---"
 
           leanDiff="$(
