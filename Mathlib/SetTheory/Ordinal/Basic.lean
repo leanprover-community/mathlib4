@@ -1451,5 +1451,3 @@ theorem List.Sorted.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : List
       | head as => exact List.head_le_of_lt hmltl
       | tail b hi => exact le_of_lt (lt_of_lt_of_le (List.rel_of_sorted_cons hm _ hi)
           (List.head_le_of_lt hmltl))
-
-set_option linter.style.longFile 1700
