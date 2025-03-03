@@ -130,14 +130,12 @@ end AssociatedGraded
 namespace GradedPiece
 
 /-- Obtaining an element of `GradedPiece i` from an element of `F i`.-/
-def mk {i : ι} (x : F i) : GradedPiece F F_lt i := ⟦x⟧
+def mk {i : ι} : F i →+ GradedPiece F F_lt i :=
+  QuotientAddGroup.mk' (((F_lt i) : AddSubgroup A).addSubgroupOf ((F i) : AddSubgroup A))
 
 section
 
-@[simp]
 lemma mk_eq {i : ι} (x : F i) : mk F F_lt x = ⟦x⟧ := rfl
-
-lemma mk_zero {i : ι} : mk F F_lt 0  = (0 : GradedPiece F F_lt i) := rfl
 
 lemma HEq_rfl {i j : ι} {r : A} (h : i = j) (hi : r ∈ F i) (hj : r ∈F j) :
     HEq (mk F F_lt ⟨r, hi⟩) (mk F F_lt ⟨r, hj⟩) :=
