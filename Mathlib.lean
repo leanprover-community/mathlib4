@@ -309,6 +309,7 @@ import Mathlib.Algebra.Group.Embedding
 import Mathlib.Algebra.Group.End
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.Equiv.Opposite
 import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.EvenFunction
