@@ -970,7 +970,6 @@ import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.Idempotent
 import Mathlib.Algebra.Ring.Identities
 import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Algebra.Ring.Int.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.Algebra.Ring.Int.Units
