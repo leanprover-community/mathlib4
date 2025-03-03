@@ -302,14 +302,11 @@ theorem convex_closed_sInter {S : Set (Set E)} (h : ∀ s ∈ S, Convex 𝕜 s �
   ⟨fun _ hx => starConvex_sInter fun _ hs => (h _ hs).1 <| hx _ hs,
     isClosed_sInter fun _ hs => (h _ hs).2⟩
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- The convex closed hull of a set `s` is the minimal convex closed set that includes `s`. -/
 @[simps! isClosed]
 def closedConvexHull : ClosureOperator (Set E) := .ofCompletePred (fun s => Convex 𝕜 s ∧ IsClosed s)
   fun _ ↦ convex_closed_sInter
-
-variable {𝕜}
 
 theorem convex_closedConvexHull {s : Set E} :
     Convex 𝕜 (closedConvexHull 𝕜 s) := ((closedConvexHull 𝕜).isClosed_closure s).1
