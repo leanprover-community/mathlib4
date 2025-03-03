@@ -30,7 +30,7 @@ variable {α β : Type*} [LinearOrderedCommGroupWithZero α] [LinearOrderedCommG
 M to `WithZero (Mˣ ×ₗ Nˣ)`, which is the linearly ordered group with zero that can be identified
 as their product. -/
 @[simps!]
-def inl : α →*o WithZero (Lex (αˣ × βˣ)) where
+def inl : α →*₀o WithZero (Lex (αˣ × βˣ)) where
   toFun a := if ha : a = 0 then 0 else WithZero.coe (toLex ⟨Units.mk0 _ ha, 1⟩)
   map_one' := by simp
   map_mul' x y := by
@@ -42,6 +42,7 @@ def inl : α →*o WithZero (Lex (αˣ × βˣ)) where
     · simp [*] at hxy
     · simp [*] at hxy
     · simp [← WithZero.coe_mul, ← toLex_mul]
+  map_zero' := by simp
   monotone' x y hxy := by
     dsimp only
     split_ifs
@@ -50,13 +51,11 @@ def inl : α →*o WithZero (Lex (αˣ × βˣ)) where
     · simp [*] at hxy
     · simp [Prod.Lex.toLex_le_toLex, ← Units.val_lt_val, lt_or_eq_of_le hxy]
 
-lemma inl_zero : inl (β := β) (0 : α) = 0 := dif_pos rfl
-
 /-- Given linearly ordered groups with zero M, N, the natural inclusion ordered homomorphism from
 N to `WithZero (Mˣ ×ₗ Nˣ)`, which is the linearly ordered group with zero that can be identified
 as their product. -/
 @[simps!]
-def inr : β →*o WithZero (Lex (αˣ × βˣ)) where
+def inr : β →*₀o WithZero (Lex (αˣ × βˣ)) where
   toFun a := if ha : a = 0 then 0 else WithZero.coe (toLex ⟨1, Units.mk0 _ ha⟩)
   map_one' := by simp
   map_mul' x y := by
@@ -68,6 +67,7 @@ def inr : β →*o WithZero (Lex (αˣ × βˣ)) where
     · simp [*] at hxy
     · simp [*] at hxy
     · simp [← WithZero.coe_mul, ← toLex_mul]
+  map_zero' := by simp
   monotone' x y hxy := by
     dsimp only
     split_ifs
@@ -76,16 +76,15 @@ def inr : β →*o WithZero (Lex (αˣ × βˣ)) where
     · simp [*] at hxy
     · simp [Prod.Lex.toLex_le_toLex, ← Units.val_le_val, hxy]
 
-lemma inr_zero : inr (α := α) (0 : β) = 0 := dif_pos rfl
-
 /-- Given linearly ordered groups with zero M, N, the natural projection ordered homomorphism from
 `WithZero (Mˣ ×ₗ Nˣ)` to M, which is the linearly ordered group with zero that can be identified
 as their product. -/
 @[simps!]
-def fst : WithZero (Lex (αˣ × βˣ)) →*o α where
+def fst : WithZero (Lex (αˣ × βˣ)) →*₀o α where
   toFun a := WithZero.recZeroCoe 0 (fun p ↦ (ofLex p).fst) a
   map_one' := by simp [← WithZero.coe_one]
   map_mul' x y := by cases x <;> cases y <;> simp [← WithZero.coe_mul]
+  map_zero' := by simp
   monotone' x y hxy := by
     cases x <;> cases y
     · simp
