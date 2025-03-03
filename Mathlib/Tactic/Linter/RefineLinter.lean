@@ -23,7 +23,7 @@ This linter is an incentive to discourage uses of `refine'`, without being a ban
 
 open Lean Elab
 
-namespace Mathlib.Linter
+namespace Mathlib.Linter.Style
 
 /-- The "refine" linter flags usages of the `refine'` tactic.
 
@@ -31,7 +31,7 @@ The tactics `refine` and `refine'` are similar, but they handle meta-variables s
 This means that they are not completely interchangeable, nor can one completely replace the other.
 However, `refine` is more readable and (heuristically) tends to be more efficient on average.
 -/
-register_option linter.refine : Bool := {
+register_option linter.style.refine : Bool := {
   defValue := false
   descr := "enable the refine linter"
 }
@@ -44,17 +44,17 @@ def getRefine' : Syntax → Array Syntax
     if kind == ``Lean.Parser.Tactic.refine' then rargs.push stx else rargs
   | _ => default
 
-@[inherit_doc linter.refine]
+@[inherit_doc linter.style.refine]
 def refineLinter : Linter where run := withSetOptionIn fun _stx => do
-  unless Linter.getLinterValue linter.refine (← getOptions) do
+  unless Linter.getLinterValue linter.style.refine (← getOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return
   for stx in (getRefine' _stx) do
-    Linter.logLint linter.refine stx
+    Linter.logLint linter.style.refine stx
       "The `refine'` tactic is discouraged: \
       please strongly consider using `refine` or `apply` instead."
 
 initialize addLinter refineLinter
 
-end Mathlib.Linter
+end Mathlib.Linter.Style

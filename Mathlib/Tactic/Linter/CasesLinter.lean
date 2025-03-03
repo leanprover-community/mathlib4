@@ -18,13 +18,13 @@ This linter is an incentive to discourage uses of `cases'`, without being a ban.
 
 open Lean Elab
 
-namespace Mathlib.Linter
+namespace Mathlib.Linter.Style
 
 /-- The "cases" linter flags uses of the `cases'` tactic, which is a backward-compatible version of
 Lean 3's `cases` tactic. Unlike `obtain`, `rcases` and Lean 4's `cases`, variables introduced by
 `cases'` are not required to be separated by case, which hinders readability.
 -/
-register_option linter.cases : Bool := {
+register_option linter.style.cases : Bool := {
   defValue := false
   descr := "enable the cases linter"
 }
@@ -37,17 +37,17 @@ def getCases' : Syntax → Array Syntax
     if kind == ``Mathlib.Tactic.cases' then rargs.push stx else rargs
   | _ => default
 
-@[inherit_doc linter.cases]
+@[inherit_doc linter.style.cases]
 def casesLinter : Linter where run := withSetOptionIn fun _stx => do
-  unless Linter.getLinterValue linter.cases (← getOptions) do
+  unless Linter.getLinterValue linter.style.cases (← getOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return
   for stx in (getCases' _stx) do
-    Linter.logLint linter.cases stx
+    Linter.logLint linter.style.cases stx
       "The `cases'` tactic is discouraged: \
       please strongly consider using `obtain`, `rcases` or `cases` instead."
 
 initialize addLinter casesLinter
 
-end Mathlib.Linter
+end Mathlib.Linter.Style
