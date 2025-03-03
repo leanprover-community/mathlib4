@@ -3,8 +3,8 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Data.Prod.Lex
 import Mathlib.Order.Prod.Lex.Hom
 
@@ -58,7 +58,7 @@ lexicographic M ×ₗ N. -/
 @[to_additive (attr := simps!) "Given ordered additive monoids M, N, the natural inclusion ordered
 homomorphism from M to the lexicographic M ×ₗ N."]
 def inlₗ : α →*o α ×ₗ β where
-  __ := (Prod.Lex.orderHom).comp (inl _ _).toOrderHom
+  __ := (Prod.Lex.orderHom).comp (inl α β)
   map_one' := by simp
   map_mul' := by simp [← toLex_mul]
 
@@ -67,7 +67,7 @@ lexicographic M ×ₗ N. -/
 @[to_additive (attr := simps!) "Given ordered additive monoids M, N, the natural inclusion ordered
 homomorphism from N to the lexicographic M ×ₗ N."]
 def inrₗ : β →*o (α ×ₗ β) where
-  __ := (Prod.Lex.orderHom).comp (inr _ _).toOrderHom
+  __ := (Prod.Lex.orderHom).comp (inr α β)
   map_one' := by simp
   map_mul' := by simp [← toLex_mul]
 
