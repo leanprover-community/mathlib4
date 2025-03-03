@@ -8,12 +8,12 @@ import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Group.Action.Pointwise.Set
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Finset.Preimage
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Ring.Int.Defs
 
 /-!
 # Pointwise operations of finsets
@@ -1904,3 +1904,4 @@ instance Nat.decidablePred_mem_vadd_set {s : Set ℕ} [DecidablePred (· ∈ s)]
     simp only [Set.mem_vadd_set, vadd_eq_add]; aesop
 
 set_option linter.style.longFile 2000
+#min_imports
