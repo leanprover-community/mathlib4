@@ -3,7 +3,7 @@ Copyright (c) 2024 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
+import Mathlib.Analysis.Asymptotics.ExpGrowth
 import Mathlib.Data.Real.ENatENNReal
 import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
 import Mathlib.Data.ENat.Lattice
@@ -363,7 +363,7 @@ lemma nonempty_inter_of_coverMincard {T : X → X} {F : Set X} {U : Set (X × X)
 
 open ENNReal EReal
 
-lemma log_coverMincard_nonneg (T : X → X) {F : Set X} (h : F.Nonempty) (U : Set (X × X)) (n : ℕ) :
+/-lemma log_coverMincard_nonneg (T : X → X) {F : Set X} (h : F.Nonempty) (U : Set (X × X)) (n : ℕ) :
     0 ≤ log (coverMincard T F U n) := by
   apply zero_le_log_iff.2
   rw [← ENat.toENNReal_one, ENat.toENNReal_le]
@@ -400,47 +400,40 @@ lemma log_coverMincard_le_add {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
     ← EReal.mul_div, div_eq_mul_inv _ (m : EReal)]
   apply add_le_add_right (mul_le_mul_of_nonneg_left _ h_log)
   apply (div_le_div_right_of_nonneg (Nat.cast_pos'.2 n_pos).le (natCast_div_le n m)).trans_eq
-  rw [EReal.div_div, mul_comm, ← EReal.div_div, n_div_n, one_div (m : EReal)]
+  rw [EReal.div_div, mul_comm, ← EReal.div_div, n_div_n, one_div (m : EReal)]-/
 
 /-! ### Cover entropy of entourages -/
 
-open Filter
+open ExpGrowth Filter
 
 /-- The entropy of an entourage `U`, defined as the exponential rate of growth of the size
   of the smallest `(U, n)`-refined cover of `F`. Takes values in the space of extended real numbers
   `[-∞, +∞]`. This first version uses a `limsup`, and is chosen as the default definition. -/
 noncomputable def coverEntropyEntourage (T : X → X) (F : Set X) (U : Set (X × X)) :=
-  atTop.limsup fun n : ℕ ↦ log (coverMincard T F U n) / n
+  expGrowthSup fun n : ℕ ↦ coverMincard T F U n
 
 /-- The entropy of an entourage `U`, defined as the exponential rate of growth of the size
   of the smallest `(U, n)`-refined cover of `F`. Takes values in the space of extended real numbers
   `[-∞, +∞]`. This second version uses a `liminf`, and is chosen as an alternative definition. -/
 noncomputable def coverEntropyInfEntourage (T : X → X) (F : Set X) (U : Set (X × X)) :=
-  atTop.liminf fun n : ℕ ↦ log (coverMincard T F U n) / n
+  expGrowthInf fun n : ℕ ↦ coverMincard T F U n
 
 lemma coverEntropyInfEntourage_antitone (T : X → X) (F : Set X) :
-    Antitone (fun U : Set (X × X) ↦ coverEntropyInfEntourage T F U) :=
-  fun _ _ U_V ↦ (liminf_le_liminf) <| Eventually.of_forall
-    fun n ↦ monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
-    <| log_monotone (ENat.toENNReal_mono (coverMincard_antitone T F n U_V))
+    Antitone fun U : Set (X × X) ↦ coverEntropyInfEntourage T F U :=
+  fun _ _ UV ↦ expGrowthInf_monotone fun n ↦ ENat.toENNReal_mono (coverMincard_antitone T F n UV)
 
 lemma coverEntropyEntourage_antitone (T : X → X) (F : Set X) :
-    Antitone (fun U : Set (X × X) ↦ coverEntropyEntourage T F U) :=
-  fun _ _ U_V ↦ (limsup_le_limsup) <| Eventually.of_forall
-    fun n ↦ monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
-    <| log_monotone (ENat.toENNReal_mono (coverMincard_antitone T F n U_V))
+    Antitone fun U : Set (X × X) ↦ coverEntropyEntourage T F U :=
+  fun _ _ UV ↦ expGrowthSup_monotone fun n ↦ ENat.toENNReal_mono (coverMincard_antitone T F n UV)
 
 lemma coverEntropyInfEntourage_le_coverEntropyEntourage (T : X → X) (F : Set X) (U : Set (X × X)) :
-    coverEntropyInfEntourage T F U ≤ coverEntropyEntourage T F U := liminf_le_limsup
+    coverEntropyInfEntourage T F U ≤ coverEntropyEntourage T F U := expGrowthInf_le_expGrowthSup
 
 @[simp]
 lemma coverEntropyEntourage_empty {T : X → X} {U : Set (X × X)} :
     coverEntropyEntourage T ∅ U = ⊥ := by
-  suffices h : ∀ᶠ n : ℕ in atTop, log (coverMincard T ∅ U n) / n = ⊥ by
-    rw [coverEntropyEntourage]
-    exact limsup_congr h ▸ limsup_const ⊥
-  · simp only [coverMincard_empty, ENat.toENNReal_zero, log_zero, eventually_atTop]
-    exact ⟨1, fun n n_pos ↦ bot_div_of_pos_ne_top (Nat.cast_pos'.2 n_pos) (natCast_ne_top n)⟩
+  simp only [coverEntropyEntourage, coverMincard_empty]
+  rw [ENat.toENNReal_zero, ← Pi.zero_def, expGrowthSup_zero]
 
 @[simp]
 lemma coverEntropyInfEntourage_empty {T : X → X} {U : Set (X × X)} :
@@ -448,9 +441,11 @@ lemma coverEntropyInfEntourage_empty {T : X → X} {U : Set (X × X)} :
   eq_bot_mono (coverEntropyInfEntourage_le_coverEntropyEntourage T ∅ U) coverEntropyEntourage_empty
 
 lemma coverEntropyInfEntourage_nonneg (T : X → X) {F : Set X} (h : F.Nonempty) (U : Set (X × X)) :
-    0 ≤ coverEntropyInfEntourage T F U :=
-  (le_iInf fun n ↦ div_nonneg (log_coverMincard_nonneg T h U n) (Nat.cast_nonneg' n)).trans
-    iInf_le_liminf
+    0 ≤ coverEntropyInfEntourage T F U := by
+  rw [← expGrowthInf_const one_ne_zero one_ne_top, coverEntropyInfEntourage]
+  refine expGrowthInf_monotone fun n ↦ ?_
+  have := (one_le_coverMincard_iff T F U n).2 h
+  rwa [← ENat.toENNReal_le, ENat.toENNReal_one] at this
 
 lemma coverEntropyEntourage_nonneg (T : X → X) {F : Set X} (h : F.Nonempty) (U : Set (X × X)) :
     0 ≤ coverEntropyEntourage T F U :=
@@ -459,23 +454,36 @@ lemma coverEntropyEntourage_nonneg (T : X → X) {F : Set X} (h : F.Nonempty) (U
 
 lemma coverEntropyEntourage_univ (T : X → X) {F : Set X} (h : F.Nonempty) :
     coverEntropyEntourage T F univ = 0 := by
-  simp [coverEntropyEntourage, coverMincard_univ T h]
+  rw [← expGrowthSup_const one_ne_zero one_ne_top, coverEntropyEntourage]
+  simp only [coverMincard_univ T h, ENat.toENNReal_one]
 
 lemma coverEntropyInfEntourage_univ (T : X → X) {F : Set X} (h : F.Nonempty) :
     coverEntropyInfEntourage T F univ = 0 := by
-  simp [coverEntropyInfEntourage, coverMincard_univ T h]
+  rw [← expGrowthInf_const one_ne_zero one_ne_top, coverEntropyInfEntourage]
+  simp only [coverMincard_univ T h, ENat.toENNReal_one]
 
 lemma coverEntropyEntourage_le_log_coverMincard_div {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
     {U : Set (X × X)} (U_symm : SymmetricRel U) {n : ℕ} (n_pos : 0 < n) :
     coverEntropyEntourage T F (U ○ U) ≤ log (coverMincard T F U n) / n := by
   -- Deal with the edge cases: `F = ∅` or `F` has no finite cover.
-  rcases eq_or_ne (log (coverMincard T F U n)) ⊥ with logm_bot | logm_nneg
-  · rw [log_eq_bot_iff, ← ENat.toENNReal_zero, ENat.toENNReal_inj,
-      coverMincard_eq_zero_iff T F U n] at logm_bot
-    simp [logm_bot]
-  rcases eq_or_ne (log (coverMincard T F U n)) ⊤ with logm_top | logm_fin
-  · rw [logm_top, top_div_of_pos_ne_top (Nat.cast_pos'.2 n_pos) (natCast_ne_top n)]
-    exact le_top
+  rcases eq_empty_or_nonempty F with rfl | F_nemp
+  · rw [coverEntropyEntourage_empty]; exact bot_le
+  rcases eq_or_ne (coverMincard T F U n) ⊤ with cov_top | cov_fin
+  · rw [cov_top, ENat.toENNReal_top, log_top, top_div_of_pos_ne_top (Nat.cast_pos'.2 n_pos)
+      (natCast_ne_top n)]; exact le_top
+  apply (expGrowthSup_monotone (fun m ↦ ENat.toENNReal_le.2
+    <| coverMincard_le_pow F_inv U_symm n_pos m)).trans
+  have := coverMincard_le_pow F_inv U_symm n_pos
+  have key : (fun m : ℕ ↦ (coverMincard T F U n ^ (m / n + 1)).toENNReal)
+    ≤ fun m : ℕ ↦ (coverMincard T F U n : ENNReal)
+      * (coverMincard T F U n ^ (1 / n) : ENNReal) ^ m := by
+    intro m
+    simp only
+    norm_cast
+    sorry
+  rw [key]
+  stop
+
   -- The general case follows from `log_coverMincard_le_add`, with careful manipulation of limits.
   let u := fun _ : ℕ ↦ log (coverMincard T F U n) / n
   let v := fun m : ℕ ↦ log (coverMincard T F U n) / m
