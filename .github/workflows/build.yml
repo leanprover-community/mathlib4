@@ -259,7 +259,7 @@ jobs:
               sed 's=@@@=```=g'
             )"
 
-          ./scripts/update_PR_comment.sh $"{messageContent}" $"{messageStart}" "${{ github.event.issue.number }}"
+          ./scripts/update_PR_comment.sh "${messageContent}" "${messageStart}" "${{ github.event.issue.number }}"
 
       - name: check for noisy stdout lines
         id: noisy
