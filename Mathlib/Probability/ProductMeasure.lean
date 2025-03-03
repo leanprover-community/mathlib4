@@ -175,13 +175,14 @@ lemma Measure.pi_prod_map_IocProdIoc {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ 
     ((Measure.pi (fun i : Ioc a b ↦ μ i)).prod (Measure.pi (fun i : Ioc b c ↦ μ i))).map
       (IocProdIoc a b c) = Measure.pi (fun i : Ioc a c ↦ μ i) := by
   refine (Measure.pi_eq fun s ms ↦ ?_).symm
-  rw [Measure.map_apply, IocProdIoc_preim hab hbc, Measure.prod_prod, Measure.pi_pi, Measure.pi_pi,
-    univ_eq_attach, prod_attach]
-
-    -- ← prod_Ioc hab hbc]
-  · rfl
-  · fun_prop
-  · exact .univ_pi ms
+  simp_rw [Measure.map_apply measurable_IocProdIoc (.univ_pi ms), IocProdIoc_preim hab hbc,
+    Measure.prod_prod, Measure.pi_pi, prod_eq_prod_extend]
+  nth_rw 1 [Eq.comm, ← Ioc_union_Ioc_eq_Ioc hab hbc, prod_union (Ioc_disjoint_Ioc a b c)]
+  congr 1 <;> refine prod_congr rfl fun x hx ↦ ?_
+  · rw [Function.extend_val_apply x hx, Function.extend_val_apply x (Ioc_subset_Ioc_right hbc hx),
+    restrict₂]
+  · rw [Function.extend_val_apply x hx, Function.extend_val_apply x (Ioc_subset_Ioc_left hab hx),
+    restrict₂]
 
 lemma Measure.pi_prod_map_IicProdIoc {a b : ℕ} :
     ((Measure.pi (fun i : Iic a ↦ μ i)).prod (Measure.pi (fun i : Ioc a b ↦ μ i))).map
@@ -211,18 +212,18 @@ lemma Measure.map_piSingleton (μ : (n : ℕ) → Measure (X n)) [∀ n, SigmaFi
   · exact (piSingleton n).measurable
   · exact .univ_pi hs
 
-theorem ptraj_const' {a b : ℕ} :
-    (ptraj (fun n ↦ const _ (μ (n + 1))) a b).map (restrict₂ (Ioc_subset_Iic_self (a := a))) =
+theorem partialTraj_const' {a b : ℕ} :
+    (partialTraj (fun n ↦ const _ (μ (n + 1))) a b).map (restrict₂ (Ioc_subset_Iic_self (a := a))) =
     const _ (Measure.pi (fun i : Ioc a b ↦ μ i)) := by
   obtain hab | hba := lt_or_le a b
   · refine Nat.le_induction ?_ (fun n hn hind ↦ ?_) b (Nat.succ_le.2 hab) <;> ext1 x₀
-    · rw [ptraj_succ_self, Kernel.map_map, map_apply, prod_apply, map_apply, const_apply,
+    · rw [partialTraj_succ_self, Kernel.map_map, map_apply, prod_apply, map_apply, const_apply,
         const_apply, Measure.map_piSingleton, restrict₂_comp_IicProdIoc, Measure.map_snd_prod,
         measure_univ, one_smul]
       all_goals fun_prop
     · have : (restrict₂ (Ioc_subset_Iic_self (a := a))) ∘ (IicProdIoc (X := X) n (n + 1)) =
           (IocProdIoc a n (n + 1)) ∘ (Prod.map (restrict₂ Ioc_subset_Iic_self) id) := rfl
-      rw [const_apply, ptraj_succ_of_le (by omega), map_const, prod_const_comp, id_comp,
+      rw [const_apply, partialTraj_succ_of_le (by omega), map_const, prod_const_comp, id_comp,
         Kernel.map_map, this, ← Kernel.map_map, Kernel.map_prod, hind,  Kernel.map_id, map_apply,
         prod_apply, const_apply, const_apply, Measure.map_piSingleton,
         Measure.pi_prod_map_IocProdIoc]
@@ -236,10 +237,10 @@ theorem ptraj_const' {a b : ℕ} :
     · rw [Set.not_nonempty_iff_eq_empty.1 hs]
       simp
 
-theorem ptraj_const {a b : ℕ} :
-    ptraj (fun n ↦ const _ (μ (n + 1))) a b =
+theorem partialTraj_const {a b : ℕ} :
+    partialTraj (fun n ↦ const _ (μ (n + 1))) a b =
       (Kernel.id ×ₖ (const _ (Measure.pi (fun i : Ioc a b ↦ μ i)))).map (IicProdIoc a b) := by
-  rw [ptraj_eq_prod, ptraj_const']
+  rw [partialTraj_eq_prod, partialTraj_const']
 
 theorem isProjectiveLimit_infinitePiNat :
     IsProjectiveLimit (Measure.infinitePiNat μ)
@@ -248,7 +249,7 @@ theorem isProjectiveLimit_infinitePiNat :
   intro I
   simp_rw [isProjectiveMeasureFamily_pi μ _ _ I.sub_Iic]
   rw [← restrict₂_comp_restrict I.sub_Iic, ← Measure.map_map, ← frestrictLe, Measure.infinitePiNat,
-    Measure.map_comp, traj_map_frestrictLe, ptraj_const, ← Measure.map_comp,
+    Measure.map_comp, traj_map_frestrictLe, partialTraj_const, ← Measure.map_comp,
     ← Measure.compProd_eq_comp_prod, Measure.compProd_const, Measure.pi_prod_map_IicProdIoc]
   any_goals fun_prop
 
