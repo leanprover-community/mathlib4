@@ -316,7 +316,7 @@ def ofWalk (C : G.PartialColoring s) {u v w : α} (p : G.Walk u v) (h : G.Adj v 
     : G.PartialColoring (s ∪ p.support.toFinset) :=
   match p with
    | nil  => by
-      convert C.ofGreedy u using 1; 
+      convert C.ofGreedy u using 1;
       simp; rw [union_comm]; rfl
    | Walk.cons h' p => by
       convert (C.ofWalk p h).ofGreedy u using 1
@@ -357,11 +357,15 @@ lemma next_eq_degree {C : G.PartialColoring s} {a : α} (h : C.greedy a = G.degr
     exact card_lt_card ⟨inter_subset_left,fun h ↦ h5 fun x hx ↦ (mem_of_mem_inter_right (h hx))⟩
   exact ⟨by rwa [← coe_inter, inter_eq_left.mpr hs] at hinj1, hs⟩
 
+/-- If two neighbors of `a` have the same color then greedily coloring `a` uses a color
+less-than the degree of `a`-/
 lemma greedy_lt_of_not_injOn {C : G.PartialColoring s} {a : α} {u v : α} (hu : G.Adj a u)
     (hv : G.Adj a v) (hne : u ≠ v) (hc : C.col u = C.col v) : C.greedy a < G.degree a :=
   lt_of_le_of_ne (C.greedy_le_degree _) fun hf ↦ hne <| (next_eq_degree hf).1
     ((mem_neighborFinset ..).mpr hu) ((mem_neighborFinset ..).mpr hv) hc
 
+/-- If `a` has an uncolored neighbor then greedily coloring `a` uses a color less-than
+  the degree of `a`-/
 lemma greedy_lt_of_not_colored {C : G.PartialColoring s} {a : α} {u : α} (hu : G.Adj a u)
     (h : u ∉ s) : C.greedy a < G.degree a := lt_of_le_of_ne (C.greedy_le_degree _)
         fun hf ↦ h <| (next_eq_degree hf).2 <| (mem_neighborFinset ..).mpr hu
