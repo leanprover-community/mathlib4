@@ -18,7 +18,7 @@ position of the point in `X (n + 1)`. If `a b : ℕ` and `a < b`, we can compose
 and `κ a ⊗ₖ κ (a + 1) ⊗ₖ ... ⊗ₖ κ b` takes the trajectory up to time `a` as input and outputs
 the distribution of the trajectory in `X (a + 1) × ... × X (b + 1)`.
 
-The Ionescu-Tulcea theorem then tells us that these compositions can be extend into a kernel
+The Ionescu-Tulcea theorem then tells us that these compositions can be extended into a kernel
 `η : Kernel (Π i : Iic a, X i) → Π n > a, X n` which given the trajectory up to time `a` outputs
 the distribution of the infinite trajectory started in `X (a + 1)`. In other words this theorem
 makes sense of composing infinitely many kernels together.
