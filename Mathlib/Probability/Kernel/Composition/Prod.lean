@@ -69,7 +69,7 @@ lemma prod_of_not_isSFiniteKernel_right (κ : Kernel α β) {η : Kernel α γ}
   | inl h => simp [eq_zero_of_isEmpty_right κ]
   | inr h =>
     rw [prod, compProd_of_not_isSFiniteKernel_right]
-    simpa only [swapLeft_prodMkLeft, isSFiniteKernel_prodMkRight_iff]
+    simpa [swapLeft_prodMkLeft, isSFiniteKernel_prodMkRight_iff]
 
 theorem prod_apply' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel α γ) [IsSFiniteKernel η]
     (a : α) {s : Set (β × γ)} (hs : MeasurableSet s) :
