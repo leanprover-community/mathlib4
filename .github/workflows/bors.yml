@@ -164,17 +164,17 @@ jobs:
           # Only return if PR is still open
           filterOutClosed: true
 
-      - name: Declarations diff -- Lean implementation
-        id: diff_in_lean
-        run: |
-          ./scripts/declDiff_shell_glue.sh
+      #- name: Declarations diff -- Lean implementation
+      #  id: diff_in_lean
+      #  run: |
+      #    ./scripts/declDiff_shell_glue.sh
 
       - name: Report diff in Lean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
 
-          actualDiff="${{ steps.diff_in_lean.outputs.LeanDiff }}"
+          #actualDiff="${ steps.diff_in_lean.outputs.LeanDiff }}"
           printf '%s\n' "${actualDiff}"
           messageStart=$'<details><summary> <b>Declaration diff in Lean</b></summary>'
           (
