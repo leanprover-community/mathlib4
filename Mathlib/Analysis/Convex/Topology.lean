@@ -473,3 +473,64 @@ theorem isPathConnected_compl_of_isPathConnected_compl_zero [ContinuousSMul ℝ 
     exact mt (Submodule.eq_zero_of_coe_mem_of_disjoint hpq.disjoint) (hγ₁ t)
 
 end ComplementsConnected
+
+section LinearOrderedField
+
+variable {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+
+open scoped Topology
+
+open Filter
+
+theorem Convex.nontrivial_iff_nonempty_interior {s : Set 𝕜} (hs : Convex 𝕜 s) :
+    s.Nontrivial ↔ (interior s).Nonempty := by
+  constructor
+  · rintro ⟨x, hx, y, hy, h⟩
+    have hs' := Nonempty.mono <| interior_mono <| hs.segment_subset hx hy
+    rw [segment_eq_Icc', interior_Icc, nonempty_Ioo, inf_lt_sup] at hs'
+    exact hs' h
+  · rintro ⟨x, hx⟩
+    rcases eq_singleton_or_nontrivial (interior_subset hx) with rfl | h
+    · rw [interior_singleton] at hx
+      exact hx.elim
+    · exact h
+
+theorem Convex.diff_singleton_eventually_mem_nhds {s : Set 𝕜} (hs : Convex 𝕜 s) (a : 𝕜) :
+    ∀ᶠ x in 𝓝[s \ {a}] a, s \ {a} ∈ 𝓝 x := by
+  by_cases has : a ∈ closure s
+  swap
+  · rw [diff_singleton_eq_self (not_mem_subset subset_closure has),
+      not_mem_closure_iff_nhdsWithin_eq_bot.1 has]
+    apply eventually_bot
+  rcases Nonempty.of_closure ⟨a, has⟩ with ⟨a', ha'⟩
+  rcases eq_singleton_or_nontrivial ha' with rfl | h
+  · rw [closure_singleton, mem_singleton_iff] at has
+    rw [has, diff_self, nhdsWithin_empty]
+    apply eventually_bot
+  replace h := hs.interior_closure_eq_interior_of_nonempty_interior <|
+    hs.nontrivial_iff_nonempty_interior.1 h
+  conv in 𝓝[s \ {a}] a => rw [diff_eq, ← Iio_union_Ioi, inter_union_distrib_left]
+  rw [nhdsWithin_union, eventually_sup]
+  constructor
+  · rcases eq_empty_or_nonempty (s ∩ Iio a) with hs' | ⟨b, hbs, hba⟩
+    · rw [hs', nhdsWithin_empty]
+      apply eventually_bot
+    have := interior_mono <| hs.closure.openSegment_subset (subset_closure hbs) has
+    rw [openSegment_eq_Ioo hba, interior_Ioo, h] at this
+    replace this := this.trans interior_subset
+    apply eventually_of_mem (U := Ioo b a)
+    · exact mem_nhdsWithin.2 ⟨Ioi b, isOpen_Ioi, hba, fun _ ⟨h₁, _, h₂⟩ ↦ ⟨h₁, h₂⟩⟩
+    · intro x hx
+      exact mem_nhds_iff.2 ⟨Ioo b a, subset_diff_singleton this right_not_mem_Ioo, isOpen_Ioo, hx⟩
+  · rcases eq_empty_or_nonempty (s ∩ Ioi a) with hs' | ⟨b, hbs, hab⟩
+    · rw [hs', nhdsWithin_empty]
+      apply eventually_bot
+    have := interior_mono <| hs.closure.openSegment_subset has (subset_closure hbs)
+    rw [openSegment_eq_Ioo hab, interior_Ioo, h] at this
+    replace this := this.trans interior_subset
+    apply eventually_of_mem (U := Ioo a b)
+    · exact mem_nhdsWithin.2 ⟨Iio b, isOpen_Iio, hab, fun _ ⟨h₁, _, h₂⟩ ↦ ⟨h₂, h₁⟩⟩
+    · intro x hx
+      exact mem_nhds_iff.2 ⟨Ioo a b, subset_diff_singleton this left_not_mem_Ioo, isOpen_Ioo, hx⟩
+
+end LinearOrderedField
