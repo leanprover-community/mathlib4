@@ -33,11 +33,6 @@ namespace Function
 
 namespace Embedding
 
-/-- Embedding into `WithTop α`. -/
-@[simps]
-def coeWithTop {α} : α ↪ WithTop α :=
-  { Embedding.some with toFun := WithTop.some }
-
 /-- Given an embedding `f : α ↪ β` and a point outside of `Set.range f`, construct an embedding
 `Option α ↪ β`. -/
 @[simps]
