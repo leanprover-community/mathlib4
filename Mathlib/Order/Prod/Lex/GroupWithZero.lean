@@ -24,7 +24,7 @@ TODO: Create the "LinOrdCommGrpWithZero" category.
 
 namespace LinearOrderedCommGroupWithZero
 
-variable {α β : Type*} [LinearOrderedCommGroupWithZero α] [LinearOrderedCommGroupWithZero β]
+variable (α β : Type*) [LinearOrderedCommGroupWithZero α] [LinearOrderedCommGroupWithZero β]
 
 /-- Given linearly ordered groups with zero M, N, the natural inclusion ordered homomorphism from
 M to `WithZero (Mˣ ×ₗ Nˣ)`, which is the linearly ordered group with zero that can be identified
@@ -93,5 +93,16 @@ def fst : WithZero (Lex (αˣ × βˣ)) →*₀o α where
     · simp only [WithZero.coe_le_coe, Prod.Lex.le_iff] at hxy
       simp only [WithZero.recZeroCoe_coe, le_iff_lt_or_eq, Units.val_lt_val]
       exact hxy.imp_right (by simp +contextual)
+
+@[simp]
+theorem fst_comp_inl : (fst _ _).comp (inl α β) = .id α := by
+  ext x
+  simp only [OrderMonoidWithZeroHom.comp_apply, inl_apply, fst_apply]
+  split_ifs <;>
+  simp_all
+
+theorem inlₗ_mul_inrₗ_eq_coe_toLex {m : α} {n : β} (hm : m ≠ 0) (hn : n ≠ 0) :
+    (inl α β m * inr α β n) = toLex (Units.mk0 _ hm, Units.mk0 _ hn) := by
+  simp [← WithZero.coe_mul, ← toLex_mul, hm, hn]
 
 end LinearOrderedCommGroupWithZero
