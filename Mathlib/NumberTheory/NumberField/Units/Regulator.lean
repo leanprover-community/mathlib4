@@ -96,16 +96,6 @@ theorem regulator_ne_zero : regulator K ≠ 0 := ZLattice.covolume_ne_zero (unit
 open scoped Classical in
 theorem regulator_pos : 0 < regulator K := ZLattice.covolume_pos (unitLattice K) volume
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/4119
-the `Module ℤ (Additive ((𝓞 K)ˣ ⧸ NumberField.Units.torsion K))` instance required below isn't found
-unless we use `set_option maxSynthPendingDepth 2`, or add
-explicit instances:
-```
-local instance : CommGroup (𝓞 K)ˣ := inferInstance
-```
--/
-set_option maxSynthPendingDepth 2 -- Note this is active for the remainder of the file.
-
 open scoped Classical in
 theorem regulator_eq_det' (e : {w : InfinitePlace K // w ≠ w₀} ≃ Fin (rank K)) :
     regulator K = |(Matrix.of fun i ↦

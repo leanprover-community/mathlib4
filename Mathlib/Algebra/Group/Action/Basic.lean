@@ -179,3 +179,15 @@ lemma smul_div' (r : M) (x y : A) : r • (x / y) = r • x / r • y :=
   map_div (MulDistribMulAction.toMonoidHom A r) x y
 
 end MulDistribMulAction
+
+section Arrow
+variable [Group G] [MulAction G A] [Monoid M]
+
+attribute [local instance] arrowAction
+
+/-- When `M` is a monoid, `ArrowAction` is additionally a `MulDistribMulAction`. -/
+def arrowMulDistribMulAction : MulDistribMulAction G (A → M) where
+  smul_one _ := rfl
+  smul_mul _ _ _ := rfl
+
+end Arrow

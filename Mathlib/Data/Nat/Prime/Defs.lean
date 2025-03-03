@@ -100,7 +100,7 @@ theorem prime_def {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, m ∣ p → m = 1 �
   simp only [Nat.isUnit_iff]
   apply Or.imp_right _ (h.2 a _)
   · rintro rfl
-    rw [← mul_right_inj' (not_eq_zero_of_lt h1), ← hab, mul_one]
+    rw [← mul_right_inj' (Nat.ne_zero_of_lt h1), ← hab, mul_one]
   · rw [hab]
     exact dvd_mul_right _ _
 

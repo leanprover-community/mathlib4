@@ -105,56 +105,56 @@ namely `b₁ ≤ b₂ → a * b₁ ≤ a * b₂` if `0 ≤ a`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `OrderedSemiring`. -/
-@[mk_iff] class PosMulMono extends CovariantClass α≥0 α (fun x y => x * y) (· ≤ ·) : Prop
+@[mk_iff] class PosMulMono : Prop extends CovariantClass α≥0 α (fun x y => x * y) (· ≤ ·)
 
 /-- Typeclass for monotonicity of multiplication by nonnegative elements on the right,
 namely `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b` if `0 ≤ b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `OrderedSemiring`. -/
-@[mk_iff] class MulPosMono extends CovariantClass α≥0 α (fun x y => y * x) (· ≤ ·) : Prop
+@[mk_iff] class MulPosMono : Prop extends CovariantClass α≥0 α (fun x y => y * x) (· ≤ ·)
 
 /-- Typeclass for strict monotonicity of multiplication by positive elements on the left,
 namely `b₁ < b₂ → a * b₁ < a * b₂` if `0 < a`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `StrictOrderedSemiring`. -/
-@[mk_iff] class PosMulStrictMono extends CovariantClass α>0 α (fun x y => x * y) (· < ·) : Prop
+@[mk_iff] class PosMulStrictMono : Prop extends CovariantClass α>0 α (fun x y => x * y) (· < ·)
 
 /-- Typeclass for strict monotonicity of multiplication by positive elements on the right,
 namely `a₁ < a₂ → a₁ * b < a₂ * b` if `0 < b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `StrictOrderedSemiring`. -/
-@[mk_iff] class MulPosStrictMono extends CovariantClass α>0 α (fun x y => y * x) (· < ·) : Prop
+@[mk_iff] class MulPosStrictMono : Prop extends CovariantClass α>0 α (fun x y => y * x) (· < ·)
 
 /-- Typeclass for strict reverse monotonicity of multiplication by nonnegative elements on
 the left, namely `a * b₁ < a * b₂ → b₁ < b₂` if `0 ≤ a`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `LinearOrderedSemiring`. -/
-@[mk_iff] class PosMulReflectLT extends ContravariantClass α≥0 α (fun x y => x * y) (· < ·) : Prop
+@[mk_iff] class PosMulReflectLT : Prop extends ContravariantClass α≥0 α (fun x y => x * y) (· < ·)
 
 /-- Typeclass for strict reverse monotonicity of multiplication by nonnegative elements on
 the right, namely `a₁ * b < a₂ * b → a₁ < a₂` if `0 ≤ b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `LinearOrderedSemiring`. -/
-@[mk_iff] class MulPosReflectLT extends ContravariantClass α≥0 α (fun x y => y * x) (· < ·) : Prop
+@[mk_iff] class MulPosReflectLT : Prop extends ContravariantClass α≥0 α (fun x y => y * x) (· < ·)
 
 /-- Typeclass for reverse monotonicity of multiplication by positive elements on the left,
 namely `a * b₁ ≤ a * b₂ → b₁ ≤ b₂` if `0 < a`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `LinearOrderedSemiring`. -/
-@[mk_iff] class PosMulReflectLE extends ContravariantClass α>0 α (fun x y => x * y) (· ≤ ·) : Prop
+@[mk_iff] class PosMulReflectLE : Prop extends ContravariantClass α>0 α (fun x y => x * y) (· ≤ ·)
 
 /-- Typeclass for reverse monotonicity of multiplication by positive elements on the right,
 namely `a₁ * b ≤ a₂ * b → a₁ ≤ a₂` if `0 < b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `LinearOrderedSemiring`. -/
-@[mk_iff] class MulPosReflectLE extends ContravariantClass α>0 α (fun x y => y * x) (· ≤ ·) : Prop
+@[mk_iff] class MulPosReflectLE : Prop extends ContravariantClass α>0 α (fun x y => y * x) (· ≤ ·)
 
 end Abbreviations
 

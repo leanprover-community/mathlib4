@@ -24,7 +24,7 @@ assert_not_exists MonoidWithZero
 
 open Function (Injective Surjective)
 
-variable {G M N α : Type*}
+variable {G M N A α : Type*}
 
 /-! ### Tautological actions -/
 
@@ -97,6 +97,16 @@ instance applyMulAction : MulAction (MulAut M) M where
   smul := (· <| ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
+
+/-- The tautological action by `MulAut M` on `M`.
+
+This generalizes `Function.End.applyMulAction`. -/
+instance applyMulDistribMulAction : MulDistribMulAction (MulAut M) M where
+  smul := (· <| ·)
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
+  smul_one := map_one
+  smul_mul := map_mul
 
 @[simp] protected lemma smul_def (f : MulAut M) (a : M) : f • a = f a := rfl
 
@@ -192,4 +202,25 @@ This is a stronger version of `MulAction.toPerm`. -/
 def MulDistribMulAction.toMulEquiv (x : G) : M ≃* M :=
   { MulDistribMulAction.toMonoidHom M x, MulAction.toPermHom G M x with }
 
+variable (G) in
+/-- Each element of the group defines a multiplicative monoid isomorphism.
+
+This is a stronger version of `MulAction.toPermHom`. -/
+@[simps]
+def MulDistribMulAction.toMulAut : G →* MulAut M where
+  toFun := MulDistribMulAction.toMulEquiv M
+  map_one' := MulEquiv.ext (one_smul _)
+  map_mul' _ _ := MulEquiv.ext (mul_smul _ _)
+
 end MulDistribMulAction
+
+section Arrow
+variable [Group G] [MulAction G A] [Monoid M]
+
+attribute [local instance] arrowMulDistribMulAction
+
+/-- Given groups `G H` with `G` acting on `A`, `G` acts by
+multiplicative automorphisms on `A → H`. -/
+@[simps!] def mulAutArrow : G →* MulAut (A → M) := MulDistribMulAction.toMulAut _ _
+
+end Arrow

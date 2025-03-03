@@ -56,7 +56,7 @@ section FiniteFPowerSeries
 `f` has `p` as a finite power series on the ball of radius `r > 0` around `x` if
 `f (x + y) = ∑' pₘ yᵐ` for all `‖y‖ < r` and `pₙ = 0` for `n ≤ m`. -/
 structure HasFiniteFPowerSeriesOnBall (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (x : E)
-    (n : ℕ) (r : ℝ≥0∞) extends HasFPowerSeriesOnBall f p x r : Prop where
+    (n : ℕ) (r : ℝ≥0∞) : Prop extends HasFPowerSeriesOnBall f p x r where
   finite : ∀ (m : ℕ), n ≤ m → p m = 0
 
 theorem HasFiniteFPowerSeriesOnBall.mk' {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {x : E}
@@ -326,9 +326,6 @@ lemma changeOriginSeriesTerm_bound (p : FormalMultilinearSeries 𝕜 E F) {n : �
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k l : ℕ) {s : Finset (Fin (k + l))}
     (hs : s.card = l) (hkl : n ≤ k + l) :
     p.changeOriginSeriesTerm k l s hs = 0 := by
-  #adaptation_note /-- https://github.com/leanprover/lean4/pull/4119
-  `set_option maxSynthPendingDepth 2` required after https://github.com/leanprover/lean4/pull/4119 -/
-  set_option maxSynthPendingDepth 2 in
   rw [changeOriginSeriesTerm, hn _ hkl, map_zero]
 
 /-- If `p` is a finite formal multilinear series, then so is `p.changeOriginSeries k` for every

@@ -138,10 +138,6 @@ theorem ne_iff {l₁ l₂ : List α} (H : length l₁ ≤ length l₂) : Lex (·
 
 end Lex
 
---Note: this overrides an instance in core lean
-instance LT' [LT α] : LT (List α) :=
-  ⟨Lex (· < ·)⟩
-
 -- TODO: This deprecated instance is still used (by the instance just below)
 @[deprecated "No deprecation message was provided." (since := "2024-07-30")]
 instance isStrictTotalOrder (r : α → α → Prop) [IsStrictTotalOrder α r] :

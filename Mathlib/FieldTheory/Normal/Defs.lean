@@ -27,7 +27,7 @@ variable (F K : Type*) [Field F] [Field K] [Algebra F K]
 /-- Typeclass for normal field extension: `K` is a normal extension of `F` iff the minimal
 polynomial of every element `x` in `K` splits in `K`, i.e. every conjugate of `x` is in `K`. -/
 @[stacks 09HM]
-class Normal extends Algebra.IsAlgebraic F K : Prop where
+class Normal : Prop extends Algebra.IsAlgebraic F K where
   splits' (x : K) : Splits (algebraMap F K) (minpoly F x)
 
 variable {F K}

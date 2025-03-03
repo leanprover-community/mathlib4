@@ -44,7 +44,7 @@ class IsPrecomplete : Prop where
     ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)]
 
 /-- A module `M` is `I`-adically complete if it is Hausdorff and precomplete. -/
-class IsAdicComplete extends IsHausdorff I M, IsPrecomplete I M : Prop
+class IsAdicComplete : Prop extends IsHausdorff I M, IsPrecomplete I M
 
 variable {I M}
 

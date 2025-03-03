@@ -23,6 +23,7 @@ This file defines orbits, stabilizers, and other objects defined in terms of act
 
 -/
 
+assert_not_exists MonoidWithZero
 
 universe u v
 

@@ -8,6 +8,7 @@ import Mathlib.Order.SetNotation
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Pairwise
 import Mathlib.Data.Set.Image
+import Mathlib.Order.Hom.Basic
 
 /-!
 # Interactions between embeddings and sets.

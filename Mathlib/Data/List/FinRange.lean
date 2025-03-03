@@ -39,7 +39,7 @@ theorem nodup_finRange (n : ℕ) : (finRange n).Nodup := by
 
 @[simp]
 theorem finRange_eq_nil {n : ℕ} : finRange n = [] ↔ n = 0 := by
-  rw [← length_eq_zero, length_finRange]
+  rw [← length_eq_zero_iff, length_finRange]
 
 theorem pairwise_lt_finRange (n : ℕ) : Pairwise (· < ·) (finRange n) := by
   rw [finRange_eq_pmap_range]

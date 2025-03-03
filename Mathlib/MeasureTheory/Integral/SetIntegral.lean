@@ -60,7 +60,7 @@ variable {X Y E F : Type*}
 
 namespace MeasureTheory
 
-variable [MeasurableSpace X]
+variable {mX : MeasurableSpace X}
 
 section NormedAddCommGroup
 
@@ -183,6 +183,11 @@ theorem integral_indicator (hs : MeasurableSet s) :
       (congr_arg₂ (· + ·) (integral_congr_ae (indicator_ae_eq_restrict hs))
         (integral_congr_ae (indicator_ae_eq_restrict_compl hs)))
     _ = ∫ x in s, f x ∂μ := by simp
+
+lemma integral_integral_indicator {mY : MeasurableSpace Y} {ν : Measure Y} (f : X → Y → E)
+    {s : Set X} (hs : MeasurableSet s) :
+    ∫ x, ∫ y, s.indicator (f · y) x ∂ν ∂μ = ∫ x in s, ∫ y, f x y ∂ν ∂μ := by
+  simp_rw [← integral_indicator hs, integral_indicator₂]
 
 theorem setIntegral_indicator (ht : MeasurableSet t) :
     ∫ x in s, t.indicator f x ∂μ = ∫ x in s ∩ t, f x ∂μ := by

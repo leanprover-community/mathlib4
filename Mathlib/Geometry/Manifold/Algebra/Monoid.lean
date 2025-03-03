@@ -43,8 +43,8 @@ instances `AddMonoid G` and `ContMDiffAdd I n G`. -/
 class ContMDiffAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
-    (G : Type*) [Add G] [TopologicalSpace G] [ChartedSpace H G] extends IsManifold I n G :
-    Prop where
+    (G : Type*) [Add G] [TopologicalSpace G] [ChartedSpace H G] : Prop
+    extends IsManifold I n G where
   contMDiff_add : ContMDiff (I.prod I) I n fun p : G × G => p.1 + p.2
 
 @[deprecated (since := "2025-01-09")] alias SmoothAdd := ContMDiffAdd
@@ -57,8 +57,8 @@ and `ContMDiffMul I n G`. -/
 class ContMDiffMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
-    (G : Type*) [Mul G] [TopologicalSpace G] [ChartedSpace H G] extends IsManifold I n G :
-    Prop where
+    (G : Type*) [Mul G] [TopologicalSpace G] [ChartedSpace H G] : Prop
+    extends IsManifold I n G where
   contMDiff_mul : ContMDiff (I.prod I) I n fun p : G × G => p.1 * p.2
 
 @[deprecated (since := "2025-01-09")] alias SmoothMul := ContMDiffMul
