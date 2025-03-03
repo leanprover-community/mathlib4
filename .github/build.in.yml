@@ -239,13 +239,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          printf $'%s\n' "${{ steps.diff_in_lean.outputs.LeanDiff }}"
-          diff decls_in_master.txt decls_in_PR.txt || echo "--- END of diff ---"
+          #printf $'%s\n' "${ steps.diff_in_lean.outputs.LeanDiff }}"
+          #diff decls_in_master.txt decls_in_PR.txt || echo "--- END of diff ---"
 
-          leanDiff="$(
-              printf $'<details><summary> <b>Declaration diff in Lean</b></summary>\n\n```diff\n%s\n```\n</details>\n' "${{ steps.diff_in_lean.outputs.ReLeanDiff1 }}"
-            )"
-          printf $'leanDiff1: "%s"\n\n' "${leanDiff}"
+          #leanDiff="$(
+          #    printf $'<details><summary> <b>Declaration diff in Lean</b></summary>\n\n```diff\n%s\n```\n</details>\n' "${{ steps.diff_in_lean.outputs.ReLeanDiff1 }}"
+          #  )"
+          #printf $'leanDiff1: "%s"\n\n' "${leanDiff}"
 
           messageStart=$'<details><summary> <b>Declaration diff in Lean</b></summary>'
           printf $'%s\n' "${{ steps.diff_in_lean.outputs.LeanDiff }}" |

@@ -36,12 +36,8 @@ printf 'Diff the declarations\n'
 
 actualDiff="$(diff decls_in_master.txt decls_in_PR.txt | grep "^[<>]")"
 
-diff decls_in_master.txt decls_in_PR.txt || echo true
+printf '%s\n' "${actualDiff}"
 
-printf $'LeanDiff<<EOF\n<details><summary> <b>Declaration diff in Lean</b></summary>\n\n@@@diff\n%s\n@@@\n</details>\nEOF' "${actualDiff}" |
-  # show result in stdout and also store it in `GITHUB_OUTPUT`
-  tee >(cat) >> "${GITHUB_OUTPUT}"
-
-printf $'ReLeanDiff1<<EOF\n%s\nEOF' "${actualDiff}" |
+printf $'LeanDiff<<EOF\n<details><summary> <b>Declaration diff in Lean</b></summary>\n\n```diff\n%s\n```\n</details>\nEOF' "${actualDiff}" |
   # show result in stdout and also store it in `GITHUB_OUTPUT`
   tee >(cat) >> "${GITHUB_OUTPUT}"
