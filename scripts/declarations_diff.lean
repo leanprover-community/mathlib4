@@ -19,5 +19,5 @@ elab "#all_declarations " branch:str : command => do
     else
       tot.binInsert (· < ·) nm.toString
   --for n in sorted do
-  dbg_trace "Writing {sorted.size} declarations to '{branch.getString}'"
+  dbg_trace "* Writing {sorted.size} declarations to '{branch.getString}'"
   IO.FS.writeFile branch.getString <| .intercalate "\n" sorted.toList
