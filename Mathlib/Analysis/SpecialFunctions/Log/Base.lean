@@ -420,18 +420,18 @@ theorem logb_eq_zero : logb b x = 0 ↔ b = 0 ∨ b = 1 ∨ b = -1 ∨ x = 0 ∨
 
 theorem tendsto_logb_nhdsWithin_zero (hb : 1 < b) :
     Tendsto (logb b) (𝓝[≠] 0) atBot :=
-  tendsto_log_nhdsWithin_zero.atBot_div_const (log_pos hb)
+  tendsto_log_nhdsNE_zero.atBot_div_const (log_pos hb)
 
 theorem tendsto_logb_nhdsWithin_zero_of_base_lt_one (hb₀ : 0 < b) (hb : b < 1) :
     Tendsto (logb b) (𝓝[≠] 0) atTop :=
-  tendsto_log_nhdsWithin_zero.atBot_mul_const_of_neg (inv_lt_zero.2 (log_neg hb₀ hb))
+  tendsto_log_nhdsNE_zero.atBot_mul_const_of_neg (inv_lt_zero.2 (log_neg hb₀ hb))
 
 lemma tendsto_logb_nhdsWithin_zero_right (hb : 1 < b) : Tendsto (logb b) (𝓝[>] 0) atBot :=
-  tendsto_log_nhdsWithin_zero_right.atBot_div_const (log_pos hb)
+  tendsto_log_nhdsGT_zero.atBot_div_const (log_pos hb)
 
 lemma tendsto_logb_nhdsWithin_zero_right_of_base_lt_one (hb₀ : 0 < b) (hb : b < 1) :
     Tendsto (logb b) (𝓝[>] 0) atTop :=
-  tendsto_log_nhdsWithin_zero_right.atBot_mul_const_of_neg (inv_lt_zero.2 (log_neg hb₀ hb))
+  tendsto_log_nhdsGT_zero.atBot_mul_const_of_neg (inv_lt_zero.2 (log_neg hb₀ hb))
 
 theorem continuousOn_logb : ContinuousOn (logb b) {0}ᶜ := continuousOn_log.div_const _
 
