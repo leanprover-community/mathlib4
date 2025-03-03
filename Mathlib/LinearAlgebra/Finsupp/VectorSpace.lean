@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.LinearAlgebra.Finsupp.Span
+import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
 # Linear structures on function with finite support `ι →₀ M`
