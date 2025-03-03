@@ -350,7 +350,7 @@ theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι �
 noncomputable def CompleteMultipartiteGraph.topEmbedding {ι : Type*} (V : ι → Type*)
     [∀ i, Nonempty (V i)] : (⊤ : SimpleGraph ι) ↪g (completeMultipartiteGraph V) where
   toFun := fun i ↦ ⟨i, Classical.arbitrary (V i)⟩
-  inj' := fun i j h ↦ (Sigma.mk.inj_iff.1 h).1
+  inj' := fun _ _ h ↦ (Sigma.mk.inj_iff.1 h).1
   map_rel_iff' := by simp
 
 theorem CompleteMultipartiteGraph.notCliqueFree_le_card {ι : Type*} [Fintype ι] (V : ι → Type*)
