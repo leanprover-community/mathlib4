@@ -57,7 +57,6 @@ instance {α : Type w} [SMul α R] [SMul α S] [Star α] [Star R] [Star S]
 
 end Prod
 
--- Porting note: removing @[simp], `simp` simplifies LHS
 theorem Units.embed_product_star [Monoid R] [StarMul R] (u : Rˣ) :
     Units.embedProduct R (star u) = star (Units.embedProduct R u) :=
   rfl
