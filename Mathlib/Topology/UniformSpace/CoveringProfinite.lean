@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.Topology.Algebra.Indicator
-import Mathlib.Topology.ContinuousMap.Compact
 import Mathlib.Topology.Separation.DisjointCover
 import Mathlib.Order.Disjointed
+import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 # Uniform approximation by locally constant functions
