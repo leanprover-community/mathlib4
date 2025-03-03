@@ -51,11 +51,9 @@ lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict 
   rw[← hx] at xto0 ⊢
   obtain⟨x', xin, geq⟩ : g.toRingHom x ∈ g.toRingHom '' (FS_lt p) := by
     apply gstrict.strict_lt
-    · rw [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, GradedPiece.mk_eq,
-          QuotientAddGroup.eq_zero_iff] at xto0
-      exact xto0
-    · simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Set.mem_range,
-      exists_apply_eq_apply]
+    · rw [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom] at xto0
+      simpa [GradedPiece.mk] using xto0
+    · simp
   obtain⟨y, yin, feq⟩ : x - x' ∈ f.toRingHom '' (FR p) := by
     apply_fun (fun m ↦ m - g.toRingHom x') at geq
     rw [sub_self, ← map_sub] at geq
