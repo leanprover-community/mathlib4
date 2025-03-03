@@ -83,6 +83,7 @@ theorem algebraMap_injective [Algebra Fq[X] F] [Algebra (RatFunc Fq) F]
 
 @[deprecated (since := "2025-03-03")]
 alias _root_.algebraMap_injective := FunctionField.algebraMap_injective
+
 /-- The function field analogue of `NumberField.ringOfIntegers`:
 `FunctionField.ringOfIntegers Fq Fqt F` is the integral closure of `Fq[t]` in `F`.
 
