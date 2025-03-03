@@ -185,7 +185,7 @@ jobs:
           printf '%s\n' "${actualDiff}"
           messageStart=$'<details><summary> <b>Declaration diff in Lean</b></summary>'
           (
-            printf $'%s\n' "$(
+            #printf $'%s\n' "$(
               ./scripts/declDiff_shell_glue.sh |
                 awk -v messStart="${messageStart}" '
                   BEGIN{
@@ -195,7 +195,7 @@ jobs:
                   (con == 1) {print $0}
                   /GETME!/ {con=1}
                   END{ print "```\n</details>" }'
-              )"
+            #  )"
             #printf $'%s\n```\n</details>\n' "${actualDiff}"
           ) > messageContent
           printf -- "------\n"
