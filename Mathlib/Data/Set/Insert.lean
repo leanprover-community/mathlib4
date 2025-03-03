@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Data.Set.Disjoint
-import Mathlib.Data.Set.Inclusion
-import Mathlib.Data.Set.Order
 import Mathlib.Data.One.Defs
 
 /-!

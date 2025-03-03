@@ -11,9 +11,7 @@ import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ByContra
 import Mathlib.Util.Delaborators
 import Mathlib.Order.SymmDiff
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Data.Set.Inclusion
-import Mathlib.Data.Set.Order
+import Mathlib.Data.Set.Basic
 
 /-! # Symmetric differences of sets -/
 

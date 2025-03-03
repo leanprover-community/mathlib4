@@ -3,9 +3,7 @@ Copyright (c) 2021 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Data.Set.Inclusion
-import Mathlib.Data.Set.Order
+import Mathlib.Data.Set.Basic
 
 /-!
 # Bundle
