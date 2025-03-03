@@ -305,6 +305,11 @@ theorem AssociatedGradedRingHom_comp_eq_comp: Gr[g].comp Gr[f] = Gr[g.comp f] :=
   RingHom.ext <| fun x ↦ congrFun
   (congrArg DFunLike.coe (FilteredAddGroupHom.AssociatedGradedAddMonoidHom_comp_eq_comp g.1 f.1)) x
 
+omit [OrderedAddCommMonoid ι] [hasGMul FR FR_lt] [hasGMul FS FS_lt] [DecidableEq ι]
+lemma AssociatedGradedRingHom_apply_mk_eq_mk_piece_wise_hom {i : ι} (x : FR i) :
+    Gr(i)[f] (GradedPiece.mk FR FR_lt x) = (GradedPiece.mk FS FS_lt (f.piece_wise_hom i x)) :=
+  rfl
+
 end DirectSum
 
 end FilteredRingHom
