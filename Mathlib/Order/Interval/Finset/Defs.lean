@@ -859,7 +859,6 @@ Adding a `⊥` to a locally finite `OrderBot` keeps it locally finite.
 
 namespace WithTop
 
--- TODO: where should this live?
 -- TODO: WithBot variant
 /-- Given a finset on `α`, lift it to being a finset on `WithTop α`
 using `WithTop.some` and then insert `⊤`. -/
