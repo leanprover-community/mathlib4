@@ -137,7 +137,7 @@ lemma coeFn_def (μ : FiniteMeasure Ω) : μ = fun s ↦ ((μ : Measure Ω) s).t
 lemma coeFn_mk (μ : Measure Ω) (hμ) :
     DFunLike.coe (F := FiniteMeasure Ω) ⟨μ, hμ⟩ = fun s ↦ (μ s).toNNReal := rfl
 
-/-- The type of probability measures is a measurable space when equipped with the Giry monad. -/
+/-- The type of finite measures is a measurable space when equipped with the Giry monad. -/
 instance {α : Type*} [MeasurableSpace α] : MeasurableSpace (FiniteMeasure α) :=
     Subtype.instMeasurableSpace
 
