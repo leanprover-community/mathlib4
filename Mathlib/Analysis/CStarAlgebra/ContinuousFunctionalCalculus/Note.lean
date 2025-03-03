@@ -135,8 +135,9 @@ works is `ℂ`.
 Unless you are developing theory over arbitrary scalar rings, it should never be necessary to
 assume `ContinuousMap.UniqueHom` or `ContinuousMapZero.UniqueHom`, despite the fact that these
 hypotheses are necessary for certain lemmas (in particular, `cfc_comp`). Over `ℝ` and `ℂ`, this
-instance should always be available, and for `ℝ≥0`, one needs only to have the additional assumptions
-`T2Space A` and `IsTopologicalRing A` (as before, the algebra `A` should still be an `ℝ`-algebra).
+instance should always be available, and for `ℝ≥0`, one needs only to have the additional
+assumptions `T2Space A` and `IsTopologicalRing A` (as before, the algebra `A` should still be an
+`ℝ`-algebra).
 
 ## Using `autoParam`
 
@@ -151,7 +152,7 @@ In general, lemmas about the continuous functional calculus should be written us
 wherever possible for these kinds of goals. These arguments should be placed *last*, at least among
 the explicit arguments. Moreover, if the arguments `f` and `a` cannot be inferred from other
 explicit arguments (i.e., those which are not `autoParam`s), then they should also be *explicit*
-rather than implicit, despite the fact that they appear in the types of the `autoParam` arguments. .
+rather than implicit, despite the fact that they appear in the types of the `autoParam` arguments.
 The reason is that it is often necessary to supply these arguments in order for the `autoParam`
 arguments to fire.
 
