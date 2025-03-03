@@ -90,11 +90,8 @@ theorem exact_of_strict_exact (fstrict : f.IsStrict) (gstrict : g.IsStrict)
       simp only [FilteredRingHom.AssociatedGradedRingHom_apply]
       by_cases nh : j ∈ support m
       · rw [mk_apply_of_mem nh, hc, Classical.choose_spec (this j)]
-      · rw [hs, mk_apply_of_not_mem nh, map_zero]
-        rw [mem_support_toFun, ne_eq, not_not] at nh
-        rw [nh]
-    rw [← this]
-    exact Set.mem_range_self s
+      · rw [hs, mk_apply_of_not_mem nh, map_zero, not_mem_support_iff.mp nh]
+    simp [← this]
   · rintro ⟨l, hl⟩
     rw [← hl]
     show (Gr[g].comp Gr[f]) l = 0
