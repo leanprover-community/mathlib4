@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.Pi.Notation
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Logic.Function.Iterate
 
