@@ -50,21 +50,25 @@ variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α}
 
 open Classical in
 /-- Kullback-Leibler divergence between two measures. -/
-noncomputable def kl (μ ν : Measure α) : ℝ≥0∞ :=
+noncomputable irreducible_def kl (μ ν : Measure α) : ℝ≥0∞ :=
   if μ ≪ ν ∧ Integrable (llr μ ν) μ
     then ENNReal.ofReal (∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal)
     else ∞
 
 lemma kl_of_ac_of_integrable (h1 : μ ≪ ν) (h2 : Integrable (llr μ ν) μ) :
-    kl μ ν = ENNReal.ofReal (∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal) :=
-  if_pos ⟨h1, h2⟩
+    kl μ ν = ENNReal.ofReal (∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal) := by
+  rw [kl_def]
+  exact if_pos ⟨h1, h2⟩
 
 @[simp]
-lemma kl_of_not_ac (h : ¬ μ ≪ ν) : kl μ ν = ∞ := if_neg (not_and_of_not_left _ h)
+lemma kl_of_not_ac (h : ¬ μ ≪ ν) : kl μ ν = ∞ := by
+  rw [kl_def]
+  exact if_neg (not_and_of_not_left _ h)
 
 @[simp]
-lemma kl_of_not_integrable (h : ¬ Integrable (llr μ ν) μ) : kl μ ν = ∞ :=
-  if_neg (not_and_of_not_right _ h)
+lemma kl_of_not_integrable (h : ¬ Integrable (llr μ ν) μ) : kl μ ν = ∞ := by
+  rw [kl_def]
+  exact if_neg (not_and_of_not_right _ h)
 
 @[simp]
 lemma kl_self (μ : Measure α) [SigmaFinite μ] : kl μ μ = 0 := by
@@ -99,8 +103,9 @@ open Classical in
 lemma kl_eq_integral_klFun :
     kl μ ν = if μ ≪ ν ∧ Integrable (llr μ ν) μ
       then ENNReal.ofReal (∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν)
-      else ∞ :=
-  if_ctx_congr Iff.rfl (fun h ↦ by rw [integral_klFun_rnDeriv h.1 h.2]) fun _ ↦ rfl
+      else ∞ := by
+  rw [kl_def]
+  exact if_ctx_congr Iff.rfl (fun h ↦ by rw [integral_klFun_rnDeriv h.1 h.2]) fun _ ↦ rfl
 
 open Classical in
 lemma kl_eq_lintegral_klFun :
