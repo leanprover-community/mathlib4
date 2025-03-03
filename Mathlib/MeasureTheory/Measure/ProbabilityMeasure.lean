@@ -567,8 +567,7 @@ open Measure
 
 /-- The monoidal product is a measurable function from the product of probability spaces over
 ``α`` and ``β`` into the type of probability spaces over ``α × β``. Lemma 4.1 of
-https://doi.org/10.1016/j.aim.2020.107239.
--/
+https://doi.org/10.1016/j.aim.2020.107239. -/
 theorem ProbabilityMeasure.measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     Measurable (fun (μ : ProbabilityMeasure α × ProbabilityMeasure β)
       ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
