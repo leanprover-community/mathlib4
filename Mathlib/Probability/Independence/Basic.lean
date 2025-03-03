@@ -661,21 +661,19 @@ lemma iIndepFun.reindex_of_injective {g : ι' → ι} (hg : g.Injective) (h : iI
   intro t s' hs'
   simpa [A] using h (t.map ⟨g, hg⟩) (f' := fun i ↦ s' (invFun g i)) (by simpa [A] using hs')
 
-lemma iIndepFun.reindex (g : ι' ≃ ι) (h : iIndepFun (m ∘' g) (f ∘' g) μ) : iIndepFun m f μ := by
+lemma iIndepFun.of_comp_equiv (g : ι' ≃ ι) (h : iIndepFun (m ∘' g) (f ∘' g) μ) :
+    iIndepFun m f μ := by
   rw [iIndepFun_iff] at h ⊢
   intro t s hs
   have : ⋂ i, ⋂ (_ : g i ∈ t), s (g i) = ⋂ i ∈ t, s i := by ext x; simp [g.forall_congr_left]
   specialize h (t.map g.symm.toEmbedding) (f' := s ∘ g)
-  simp [this, g.forall_congr_left] at h
+  simp only [Finset.mem_map_equiv, Equiv.symm_symm, Function.comp_apply, g.forall_congr_left,
+    Equiv.apply_symm_apply, this, Finset.prod_map, Equiv.coe_toEmbedding] at h
   apply h
   convert hs <;> simp
 
-lemma iIndepFun.reindex_symm (g : ι' ≃ ι) (h : iIndepFun m f μ) :
-    iIndepFun (m ∘' g) (f ∘' g) μ :=
-  h.reindex_of_injective (Equiv.injective g)
-
-lemma iIndepFun_reindex_iff (g : ι' ≃ ι) : iIndepFun (m ∘' g) (f ∘' g) μ ↔ iIndepFun m f μ :=
-  ⟨fun h ↦ h.reindex g, fun h ↦ h.reindex_symm g⟩
+lemma iIndepFun.comp_equiv (g : ι' ≃ ι) : iIndepFun (m ∘' g) (f ∘' g) μ ↔ iIndepFun m f μ :=
+  ⟨fun h ↦ h.of_comp_equiv g, fun h ↦ h.reindex_of_injective g.injective⟩
 
 end iIndepFun
 
