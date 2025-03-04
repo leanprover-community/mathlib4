@@ -247,7 +247,7 @@ instance {α : Type v} [Finite α] [HasColimitsOfShape (Discrete α) C] :
   -- ```
   -- from the fact that finite limits commute with filtered colimits and from the fact that
   -- `Ind.yoneda` preserves finite colimits.
-  exact hasColimitOfIso iso.symm
+  exact hasColimit_of_iso iso.symm
 
 instance [HasFiniteCoproducts C] : HasCoproducts.{v} (Ind C) :=
   have : HasFiniteCoproducts (Ind C) :=
@@ -271,7 +271,7 @@ instance [HasColimitsOfShape WalkingParallelPair C] :
   obtain ⟨P⟩ := nonempty_indParallelPairPresentation (F.obj WalkingParallelPair.zero).2
     (F.obj WalkingParallelPair.one).2 (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.left)
     (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.right)
-  exact hasColimitOfIso (diagramIsoParallelPair _ ≪≫ P.parallelPairIsoParallelPairCompIndYoneda)
+  exact hasColimit_of_iso (diagramIsoParallelPair _ ≪≫ P.parallelPairIsoParallelPairCompIndYoneda)
 
 instance [HasFiniteColimits C] : HasColimits (Ind C) :=
   has_colimits_of_hasCoequalizers_and_coproducts
@@ -294,7 +294,7 @@ section Small
 variable (C : Type u) [SmallCategory C] [HasFiniteColimits C]
 
 /-- For small finitely cocomplete categories `C : Type u`, the category of Ind-objects `Ind C` is
-equivalent to the category of left-exact functors `Cᵒᵖ ⥤ Type u`  -/
+equivalent to the category of left-exact functors `Cᵒᵖ ⥤ Type u` -/
 noncomputable def Ind.leftExactFunctorEquivalence : Ind C ≌ LeftExactFunctor Cᵒᵖ (Type u) :=
   (Ind.equivalence _).trans <| Equivalence.ofFullSubcategory isIndObject_iff_preservesFiniteLimits
 

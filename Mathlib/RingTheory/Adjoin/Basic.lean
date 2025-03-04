@@ -543,7 +543,7 @@ theorem Algebra.restrictScalars_adjoin_of_algEquiv
     (Algebra.adjoin L S).restrictScalars F = (Algebra.adjoin L' S).restrictScalars F := by
   apply_fun Subalgebra.toSubsemiring using fun K K' h ↦ by rwa [SetLike.ext'_iff] at h ⊢
   change Subsemiring.closure _ = Subsemiring.closure _
-  erw [hi, Set.range_comp, i.toEquiv.range_eq_univ, Set.image_univ]
+  rw [hi, Set.range_comp, EquivLike.range_eq_univ, Set.image_univ]
 
 end
 

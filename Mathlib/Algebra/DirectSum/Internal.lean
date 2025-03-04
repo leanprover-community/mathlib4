@@ -134,11 +134,11 @@ section coe
 
 variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
 
-/-- The canonical ring isomorphism between `⨁ i, A i` and `R`-/
+/-- The canonical ring isomorphism between `⨁ i, A i` and `R` -/
 def coeRingHom [AddMonoid ι] [SetLike.GradedMonoid A] : (⨁ i, A i) →+* R :=
   DirectSum.toSemiring (fun i => AddSubmonoidClass.subtype (A i)) rfl fun _ _ => rfl
 
-/-- The canonical ring isomorphism between `⨁ i, A i` and `R`-/
+/-- The canonical ring isomorphism between `⨁ i, A i` and `R` -/
 @[simp]
 theorem coeRingHom_of [AddMonoid ι] [SetLike.GradedMonoid A] (i : ι) (x : A i) :
     (coeRingHom A : _ →+* R) (of (fun i => A i) i x) = x :=
@@ -348,7 +348,8 @@ variable [CommSemiring R] [AddMonoid ι] [SetLike σ R] [AddSubmonoidClass σ R]
 variable (A : ι → σ) [SetLike.GradedMonoid A]
 
 -- TODO: it might be expensive to unify `A` in this instance in practice
-/--The commutative semiring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`.-/
+/-- The commutative semiring `A 0` inherited from `R` in the presence of
+`SetLike.GradedMonoid A`. -/
 instance instCommSemiring : CommSemiring (A 0) := (subsemiring A).toCommSemiring
 
 end CommSemiring
