@@ -628,10 +628,9 @@ lemma GradedPiece.HEq_one_smul {i : ιM} (x : GradedPiece FM FM_lt i) :
   let rx := Quotient.out x
   have : (1 : F 0).1 • rx.1 = rx.1 := MulAction.one_smul rx.1
   apply HEq_eq_mk_eq FM FM_lt (zero_vadd ι i) this
-  · convert (gradedSMul_def F F_lt FM FM_lt (1 : F 0) rx).symm
-    exact (Quotient.out_eq' x).symm
+  · rw [← Quotient.out_eq' x]
+    exact (gradedSMul_def F F_lt FM FM_lt (1 : F 0) rx).symm
   · exact (Quotient.out_eq' x).symm
-  · simp [this]
 
 theorem GradedPiece.smul_add {i : ι} {j : ιM} (a : GradedPiece F F_lt i)
     (b c : GradedPiece FM FM_lt j) : a • (b + c) = a • b + a • c := by
@@ -695,17 +694,15 @@ lemma GradedPiece.HEq_mul_smul [hasGMul F F_lt] {i j : ι} {k : ιM}
   let rc := Quotient.out c
   apply HEq_eq_mk_eq FM FM_lt (add_vadd i j k) (mul_smul ra.1 rb.1 rc.1)
   · show (a * b) • c = ⟦(ra * rb) • rc⟧
+    rw [← Quotient.out_eq' c]
     convert (gradedSMul_def F F_lt FM FM_lt (ra * rb) rc).symm
-    · convert (gradedMul_def F F_lt ra rb).symm
-      · exact (Quotient.out_eq' a).symm
-      · exact (Quotient.out_eq' b).symm
-    · exact (Quotient.out_eq' c).symm
+    rw [← Quotient.out_eq' a, ← Quotient.out_eq' b]
+    exact (gradedMul_def F F_lt ra rb).symm
   · show a • (b • c) = ⟦ra • (rb • rc)⟧
+    rw [← Quotient.out_eq' a]
     convert (gradedSMul_def F F_lt FM FM_lt ra (rb • rc)).symm
-    · exact (Quotient.out_eq' a).symm
-    · convert (gradedSMul_def F F_lt FM FM_lt rb rc).symm
-      · exact (Quotient.out_eq' b).symm
-      · exact (Quotient.out_eq' c).symm
+    rw [← Quotient.out_eq' b, ← Quotient.out_eq' c]
+    exact (gradedSMul_def F F_lt FM FM_lt rb rc).symm
 
 end
 
