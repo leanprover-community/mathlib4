@@ -193,7 +193,7 @@ adjunction between categories and quivers with the map underlying the quotient f
 @[simps! toPrefunctor obj map]
 def adj.unit.app (V : Type u) [ReflQuiver V] :
     V ⥤rq forget.obj (Cat.freeRefl.obj (ReflQuiv.of V)) where
-  toPrefunctor := Quiv.adj.unit.app (Quiv.of V) ⋙q
+  toPrefunctor := (Quiv.adj.unit).app (Quiv.of V) ⋙q
     Quiv.forget.map (Cat.FreeRefl.quotientFunctor V)
   map_id := fun _ => Quotient.sound _ ⟨⟩
 
@@ -207,7 +207,7 @@ from the corresponding counit component for the adjunction between categories an
 @[simps!]
 def adj.counit.app (C : Type u) [Category.{max u v} C] :
     Cat.freeRefl.obj (ReflQuiv.of C) ⥤ C :=
-  Quotient.lift Cat.FreeReflRel (Quiv.adj.counit.app (Cat.of C)) (by
+  Quotient.lift Cat.FreeReflRel ((Quiv.adj.counit).app (Cat.of C)) (by
     intro x y f g rel
     cases rel
     unfold Quiv.adj
@@ -253,7 +253,7 @@ nonrec def adj : Cat.freeRefl.{max u v, u} ⊣ ReflQuiv.forget :=
       rw [Cat.free.map_comp]
       show (_ ⋙ ((Quiv.forget ⋙ Cat.free).map (X := Cat.of _) (Y := Cat.of _)
         (Cat.FreeRefl.quotientFunctor V))) ⋙ _ = _
-      rw [Functor.assoc, ← Cat.comp_eq_comp]
+      rw [Functor.assoc]
       conv => enter [1, 2]; apply Quiv.adj.counit.naturality
       rw [Cat.comp_eq_comp, ← Functor.assoc, ← Cat.comp_eq_comp]
       conv => enter [1, 1]; apply Quiv.adj.left_triangle_components V.toQuiv

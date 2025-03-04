@@ -227,4 +227,9 @@ theorem mapPath_comp {a b : V} (p : Path a b) :
 theorem mapPath_toPath {a b : V} (f : a ⟶ b) : F.mapPath f.toPath = (F.map f).toPath :=
   rfl
 
+@[simp]
+theorem mapPath_id {a b : V} : (p : Path a b) → (𝟭q V).mapPath p = p
+  | Path.nil => rfl
+  | Path.cons q e => by dsimp; rw [mapPath_id q]
+
 end Prefunctor
