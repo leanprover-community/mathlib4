@@ -169,22 +169,20 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           messageStart=$'<details><summary> <b>Declaration diff in Lean</b></summary>'
-          (
-            ./scripts/declDiff_shell_glue.sh |
-              awk -v messStart="${messageStart}" '
-                BEGIN{
-                  con=0
-                  printf("%s\n\n```diff\n\n", messStart)
-                }
-                (con == 1) {print $0}
-                /GETME!/ {con=1}
-                END{ print "```\n</details>" }'
-          ) > messageContent
+          ./scripts/declDiff_shell_glue.sh |
+            awk -v messStart="${messageStart}" '
+              BEGIN{
+                con=0
+                printf("%s\n\n```diff\n\n", messStart)
+              }
+              (con == 1) {print $0}
+              /^GETME!$/ {con=1}
+              END{ print "```\n</details>" }' > please_merge_master
           printf -- "------\n"
-          cat messageContent
+          cat please_merge_master
           printf -- "------\n"
 
-          ./scripts/update_PR_comment.sh messageContent "${messageStart}" ${{ steps.PR.outputs.number }}
+          ./scripts/update_PR_comment.sh please_merge_master "${messageStart}" ${{ steps.PR.outputs.number }}
 
       - name: build mathlib
         id: build
