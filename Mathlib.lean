@@ -510,8 +510,8 @@ import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.HomotopyCofiber
 import Mathlib.Algebra.Homology.ImageToKernel
-import Mathlib.Algebra.Homology.LeftResolution.Basic
-import Mathlib.Algebra.Homology.LeftResolution.Reduced
+import Mathlib.Algebra.Homology.LeftResolutions.Basic
+import Mathlib.Algebra.Homology.LeftResolutions.Reduced
 import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.LocalCohomology
 import Mathlib.Algebra.Homology.Localization
