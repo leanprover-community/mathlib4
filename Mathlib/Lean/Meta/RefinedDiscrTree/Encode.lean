@@ -480,6 +480,7 @@ partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
 
 end MkDTExpr
 
+set_option linter.style.docString false in
 /-- -/
 def DTExpr.isSpecific : DTExpr → Bool
   | .star _
