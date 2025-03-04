@@ -64,7 +64,7 @@ instance {P S : Type*} [SMul P S] [SMul S R] [SMul P R] [IsScalarTower P S R] :
 
 instance (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ := Valued.mk' v
 
-/-- Canonical ring equivalence between `WithValuation v` and `R`. -/
+/-- Canonical ring equivalence between `WithVal v` and `R`. -/
 def equiv : WithVal v ≃+* R := RingEquiv.refl _
 
 theorem apply_equiv (r : WithVal v) : v (WithVal.equiv v r) = v r := rfl
@@ -95,4 +95,18 @@ instance : CoeHead (𝓞 (WithVal v)) (WithVal v) := inferInstanceAs (CoeHead (�
 
 instance : IsDedekindDomain (𝓞 (WithVal v)) := inferInstanceAs (IsDedekindDomain (𝓞 K))
 
+instance (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
+    IsIntegralClosure R ℤ (WithVal v) := ‹IsIntegralClosure R ℤ K›
+
+/-- The ring equivalence between `𝓞 (WithVal v)` and an integral closure of
+`ℤ` in `K`. -/
+def withValEquiv (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
+    𝓞 (WithVal v) ≃+* R := NumberField.RingOfIntegers.equiv R
+
 end NumberField.RingOfIntegers
+
+open scoped NumberField in
+/-- The ring of integers of `WithVal v`, when `v` is a valuation on `ℚ`, is
+equivalent to `ℤ`. -/
+def Rat.ringOfIntegersWithValEquiv (v : Valuation ℚ Γ₀) : 𝓞 (WithVal v) ≃+* ℤ :=
+  NumberField.RingOfIntegers.withValEquiv v ℤ
