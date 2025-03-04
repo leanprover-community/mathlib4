@@ -465,13 +465,10 @@ lemma subobjectMk_le_mk_of_hom :
   Subobject.mk_le_mk_of_comm f.left (by simp)
 
 lemma isIso_left_iff_subobjectMk_eq :
-    IsIso f.left ↔ Subobject.mk P.1.hom = Subobject.mk Q.1.hom := by
-  constructor
-  · intro
-    exact Subobject.mk_eq_mk_of_comm _ _ (asIso f.left) (by simp)
-  · intro h
-    exact ⟨Subobject.ofMkLEMk _ _ h.symm.le, by simp [← cancel_mono P.1.hom],
-      by simp [← cancel_mono Q.1.hom]⟩
+    IsIso f.left ↔ Subobject.mk P.1.hom = Subobject.mk Q.1.hom :=
+  ⟨fun _ ↦ Subobject.mk_eq_mk_of_comm _ _ (asIso f.left) (by simp),
+    fun h ↦ ⟨Subobject.ofMkLEMk _ _ h.symm.le, by simp [← cancel_mono P.1.hom],
+      by simp [← cancel_mono Q.1.hom]⟩⟩
 
 lemma isIso_iff_subobjectMk_eq :
     IsIso f ↔ Subobject.mk P.1.hom = Subobject.mk Q.1.hom := by

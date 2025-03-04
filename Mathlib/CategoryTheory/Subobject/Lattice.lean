@@ -659,7 +659,7 @@ instance {B : C} : CompleteLattice (Subobject B) :=
 end CompleteLattice
 
 lemma subsingleton_of_isZero {X : C} (hX : IsZero X) : Subsingleton (Subobject X) := by
-  suffices ∀ (S : Subobject X), S = .mk (𝟙 _) from ⟨fun S₁ S₂ ↦ by simp [this]⟩
+  suffices ∀ (S : Subobject X), S = .mk (𝟙 _) from ⟨by simp [this]⟩
   intro S
   obtain ⟨A, i, _, rfl⟩ := S.mk_surjective
   let e : A ≅ X :=
