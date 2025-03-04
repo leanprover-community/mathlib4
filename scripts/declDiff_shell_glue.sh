@@ -39,4 +39,4 @@ getDeclarations "${MSdeclsFile}"
 
 printf 'Diff the declarations\n'
 
-diff "${MSdeclsFile}" "${PRdeclsFile}" | grep '^[<>]'
+diff "${MSdeclsFile}" "${PRdeclsFile}"
