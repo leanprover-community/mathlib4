@@ -37,8 +37,7 @@ protected lemma le_of_eq (hab : a = b) : a ≤ b := by rw [hab]; exact Int.le_rf
 protected lemma ge_of_eq (hab : a = b) : b ≤ a := Int.le_of_eq hab.symm
 protected lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
   ⟨fun h ↦ ⟨Int.le_of_eq h, Int.ge_of_eq h⟩, fun h ↦ Int.le_antisymm h.1 h.2⟩
-protected lemma le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := by
-  rw [Int.le_antisymm_iff, Int.lt_iff_le_not_le, ← and_or_left]; simp [Decidable.em]
+protected lemma le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := by omega
 
 protected lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := by rw [Int.le_iff_eq_or_lt, or_comm]
 
@@ -486,10 +485,6 @@ lemma lt_of_toNat_lt {a b : ℤ} (h : toNat a < toNat b) : a < b :=
 
 @[simp] lemma toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ) = i - 1 := by
   simp only [lt_toNat, Nat.cast_ofNat_Int, h, natCast_pred_of_pos, Int.le_of_lt h, toNat_of_nonneg]
-
-@[simp] lemma toNat_eq_zero : ∀ {n : ℤ}, n.toNat = 0 ↔ n ≤ 0
-  | (n : ℕ) => by simp
-  | -[n+1] => by simpa [toNat] using Int.le_of_lt (negSucc_lt_zero n)
 
 theorem toNat_sub_of_le {a b : ℤ} (h : b ≤ a) : (toNat (a - b) : ℤ) = a - b :=
   Int.toNat_of_nonneg (Int.sub_nonneg_of_le h)

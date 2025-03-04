@@ -5,6 +5,7 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 import Mathlib.Probability.Kernel.Composition.CompNotation
 import Mathlib.Probability.Kernel.Composition.MeasureCompProd
+import Mathlib.Probability.Kernel.Composition.Prod
 
 /-!
 # Lemmas about the composition of a measure and a kernel
@@ -96,9 +97,9 @@ variable {E : Type*} [NormedAddCommGroup E] {f : β → E}
 lemma integrable_compProd_snd_iff [SFinite μ] [IsSFiniteKernel κ]
     (hf : AEStronglyMeasurable f (κ ∘ₘ μ)) :
     Integrable (fun p ↦ f p.2) (μ ⊗ₘ κ) ↔ Integrable f (κ ∘ₘ μ) := by
-  rw [← snd_compProd, Measure.snd, integrable_map_measure _ measurable_snd.aemeasurable]
-  · rfl
-  · rwa [← Measure.snd, snd_compProd]
+  rw [← snd_compProd, Measure.snd, integrable_map_measure _ measurable_snd.aemeasurable,
+    Function.comp_def]
+  rwa [← Measure.snd, snd_compProd]
 
 lemma ae_integrable_of_integrable_comp (h_int : Integrable f (κ ∘ₘ μ)) :
     ∀ᵐ x ∂μ, Integrable f (κ x) := by
