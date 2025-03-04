@@ -1132,7 +1132,7 @@ theorem isInducing_sumElim :
    (specialize h (inl x)
     rw [nhds_inl, elim_inl] at h
     apply_fun (· ⊓ map Sum.inr ⊤) at h)] <;>
-  simpa only [inf_sup_left, inf_sup_right, sup_bot_eq, bot_sup_eq, ← map_inf,
+  simpa only [map_inl_inf_map_inr, inf_sup_left, inf_sup_right, sup_bot_eq, bot_sup_eq, ← map_inf,
     inl_injective, inr_injective, top_inf_eq, inf_top_eq, map_eq_bot_iff] using h
 
 lemma Topology.IsInducing.sumElim_of_separatedNhds
