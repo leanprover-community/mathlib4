@@ -48,7 +48,7 @@ point in affine coordinates can be converted to a nonsingular projective point u
 `WeierstrassCurve.Projective.Point.fromAffine` or `WeierstrassCurve.Affine.Point.toProjective`.
 
 Whenever possible, all changes to documentation and naming of definitions and theorems should be
-mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian.lean`.
+mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Point.lean`.
 
 ## References
 

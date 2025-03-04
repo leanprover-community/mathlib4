@@ -51,7 +51,7 @@ While `erw` is often an indication of a problem, in this case it is self-contain
 cause any issues. It would alternatively be possible to add some automation to assist here.
 
 Whenever possible, all changes to documentation and naming of definitions and theorems should be
-mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective.lean`.
+mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Basic.lean`.
 
 ## References
 
