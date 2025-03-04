@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Embedding
+import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Multiset
 
 /-!
@@ -17,8 +19,6 @@ intervals as finsets and fintypes.
 Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedMul` or `SuccOrder`
 and subsequently be moved upstream to `Order.Interval.Finset`.
 -/
-
-assert_not_exists Ring
 
 open Finset Nat
 
@@ -156,15 +156,11 @@ set_option linter.deprecated false in
 theorem Ico_insert_succ_left (h : a < b) : insert a (Ico a.succ b) = Ico a b := by
   rw [Ico_succ_left, ← Ioo_insert_left h]
 
-lemma Icc_insert_succ_left (h : a ≤ b) : insert a (Icc (a + 1) b) = Icc a b := by
-  ext x
-  simp only [mem_insert, mem_Icc]
-  omega
+lemma Icc_insert_succ_left (h : a ≤ b) : insert a (Icc (a + 1) b) = Icc a b :=
+  insert_Icc_add_one_left_eq_Icc h
 
-lemma Icc_insert_succ_right (h : a ≤ b + 1) : insert (b + 1) (Icc a b) = Icc a (b + 1) := by
-  ext x
-  simp only [mem_insert, mem_Icc]
-  omega
+lemma Icc_insert_succ_right (h : a ≤ b + 1) : insert (b + 1) (Icc a b) = Icc a (b + 1) :=
+  insert_Icc_eq_Icc_add_one_right h
 
 theorem image_sub_const_Ico (h : c ≤ a) :
     ((Ico a b).image fun x => x - c) = Ico (a - c) (b - c) := by
