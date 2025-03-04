@@ -65,7 +65,7 @@ section PerfectlyNormal
 
 /-- A topological space `X` is a *perfectly normal space* provided it is normal and
 closed sets are Gδ. -/
-class PerfectlyNormalSpace (X : Type u) [TopologicalSpace X] extends NormalSpace X : Prop where
+class PerfectlyNormalSpace (X : Type u) [TopologicalSpace X] : Prop extends NormalSpace X where
     closed_gdelta : ∀ ⦃h : Set X⦄, IsClosed h → IsGδ h
 
 /-- Lemma that allows the easy conclusion that perfectly normal spaces are completely normal. -/
@@ -107,7 +107,7 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
          closed_gdelta isClosed_closure).mono (fun ⦃_⦄ a ↦ a) subset_closure⟩
 
 /-- A T₆ space is a perfectly normal T₁ space. -/
-class T6Space (X : Type u) [TopologicalSpace X] extends T1Space X, PerfectlyNormalSpace X : Prop
+class T6Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, PerfectlyNormalSpace X
 
 -- see Note [lower instance priority]
 /-- A `T₆` space is a `T₅` space. -/
