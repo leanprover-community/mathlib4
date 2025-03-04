@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
 script_file=scripts/declarations_diff.lean
-PRdeclsFile=${1:-decls_in_PR.txt}
-MSdeclsFile=${2:-decls_in_master.txt}
+PRdeclsFile=decls_in_PR.txt
+MSdeclsFile=decls_in_master.txt
+PR_NUMBER="${1:-NO_PR_NUMBER}"
+PR_HASH="${2:-NO_PR_HASH}"
 
 git checkout master
 git checkout -
@@ -31,15 +33,25 @@ getDeclarations () {
 }
 
 getDeclarations "${PRdeclsFile}"
-PRhash="$(git rev-parse HEAD)"
 
 git checkout master...HEAD
+masterHash="$(git rev-parse HEAD)"
 
 # get the lean script file from the current PR -- update before merging into master
-git checkout "${PRhash}" "${script_file}"
+git checkout "${PR_HASH}" "${script_file}"
 getDeclarations "${MSdeclsFile}"
 
 printf 'Diff the declarations\n'
 
 diff "${MSdeclsFile}" "${PRdeclsFile}"
 echo "*** End of diff ***"
+
+messageStart=$'New <details><summary><b>Declaration diff in Lean</b></summary>'
+{
+  printf '%s\n\n```diff\n' "${messageStart}"
+  diff "${MSdeclsFile}" "${PRdeclsFile}" | grep '^[<>]'
+  printf '```\n</details>\nPR: %s\n\nMaster: %s\n' "${PR_HASH}" "${masterHash}"
+} > please_merge_master
+printf -- $'------\n%s------\n' "$(cat please_merge_master)"
+
+./scripts/update_PR_comment.sh please_merge_master "${messageStart}" "${PR}"

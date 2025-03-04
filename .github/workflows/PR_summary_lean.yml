@@ -46,26 +46,25 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PR="${{ github.event.pull_request.number }}"
-          PRdeclsFile=decls_in_PR.txt
-          MSdeclsFile=decls_in_master.txt
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          PR_HASH="${{ github.event.pull_request.head.sha }}"
 
           git checkout master
           git checkout -
-          git checkout master...HEAD
+          ./scripts/declDiff_shell_glue.sh "${PR_NUMBER}" "${PR_HASH}"
+
+          #git checkout master...HEAD
           #masterHash=$(date)
-          masterHash="$(git rev-parse HEAD)"
-          echo "${masterHash}"
-          git checkout -
+          #masterHash="$(git rev-parse HEAD)"
+          #echo "${masterHash}"
+          #git checkout -
 
-          rm -rf .lake/build/lib/lean/Mathlib/ .lake/build/lib/Mathlib/
-          messageStart=$'New <details><summary><b>Declaration diff in Lean</b></summary>'
-          ./scripts/declDiff_shell_glue.sh "${PRdeclsFile}" "${MSdeclsFile}"
-          {
-            printf '%s\n\n```diff\n' "${messageStart}"
-            diff "${MSdeclsFile}" "${PRdeclsFile}" | grep '^[<>]'
-            printf '```\n</details>\nPR: %s\n\nMaster: %s\n' "${{ github.event.pull_request.head.sha }}" "${masterHash}"
-          } > please_merge_master
-          printf -- $'------\n%s------\n' "$(cat please_merge_master)"
-
-          ./scripts/update_PR_comment.sh please_merge_master "${messageStart}" "${PR}"
+          #rm -rf .lake/build/lib/lean/Mathlib/ .lake/build/lib/Mathlib/
+          #{
+          #  printf '%s\n\n```diff\n' "${messageStart}"
+          #  diff "${MSdeclsFile}" "${PRdeclsFile}" | grep '^[<>]'
+          #  printf '```\n</details>\nPR: %s\n\nMaster: %s\n' "${{ github.event.pull_request.head.sha }}" "${masterHash}"
+          #} > please_merge_master
+          #printf -- $'------\n%s------\n' "$(cat please_merge_master)"
+          #
+          #./scripts/update_PR_comment.sh please_merge_master "${messageStart}" "${PR}"
