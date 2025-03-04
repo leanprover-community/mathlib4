@@ -20,7 +20,7 @@ getDeclarations () {
 
   cp "${script_file}" Mathlib/declarations_diff_lean.lean
   printf $'def %s\' := 0\n#all_declarations "%s"\n' "${1}" "${1}" >> Mathlib/declarations_diff_lean.lean
-  lake build Mathlib/declarations_diff_lean.lean
+  lake build Mathlib.declarations_diff_lean
 
   # undo the local changes
   rm -rf Mathlib/declarations_diff_lean.lean
