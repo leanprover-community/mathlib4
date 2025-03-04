@@ -356,6 +356,12 @@ theorem Nodup.ext {s t : Multiset α} : Nodup s → Nodup t → (s = t ↔ ∀ a
 theorem le_iff_subset {s t : Multiset α} : Nodup s → (s ≤ t ↔ s ⊆ t) :=
   Quotient.inductionOn₂ s t fun _ _ d => ⟨subset_of_le, d.subperm⟩
 
+theorem nodup_of_le {s t : Multiset α} (h : s ≤ t) : Nodup t → Nodup s :=
+  Multiset.leInductionOn h fun {_ _} => Nodup.sublist
+
+instance nodupDecidable [DecidableEq α] (s : Multiset α) : Decidable (Nodup s) :=
+  Quotient.recOnSubsingleton s fun l => l.nodupDecidable
+
 end Nodup
 
 section SizeOf
