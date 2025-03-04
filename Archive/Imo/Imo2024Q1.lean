@@ -25,6 +25,7 @@ First reducing modulo 2, any answer that is not a multiple of 2 is inductively s
 contained in a decreasing sequence of intervals, with empty intersection.
 -/
 
+open Finset
 
 namespace Imo2024Q1
 
@@ -37,7 +38,7 @@ def solutionSet : Set ℝ := {α : ℝ | ∃ m : ℤ, α = 2 * m}
 lemma condition_two_mul_int (m : ℤ) : Condition (2 * m) := by
   rintro n -
   suffices (n : ℤ) ∣ ∑ i ∈ Finset.Icc 0 n, ⌊((i * (2 * m) : ℤ) : ℝ)⌋ by
-    rw [← Nat.Icc_insert_succ_left n.zero_le, Finset.sum_insert_zero (by norm_num)] at this
+    rw [← insert_Icc_add_one_left_eq_Icc n.zero_le, sum_insert_zero (by norm_num)] at this
     exact_mod_cast this
   simp_rw [Int.floor_intCast, ← Finset.sum_mul, ← Finset.Ico_succ_right_eq_Icc,
     ← Finset.range_eq_Ico, ← mul_assoc]
@@ -109,7 +110,7 @@ lemma mem_Ico_n_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) {n : ℕ} (hn : 0 < n) :
       have hn11 : k + 1 ∉ Finset.Icc 1 k := by
         rw [Finset.mem_Icc]
         omega
-      rw [← Nat.Icc_insert_succ_right (Nat.le_add_left 1 k), Finset.sum_insert hn11, hks]
+      rw [← insert_Icc_eq_Icc_add_one_right (Nat.le_add_left 1 k), sum_insert hn11, hks]
     specialize hc (k + 1) k.succ_pos
     rw [hs] at hc ⊢
     have hkl' : 2 * k ≤ ⌊(k + 1 : ℕ) * α⌋ := by

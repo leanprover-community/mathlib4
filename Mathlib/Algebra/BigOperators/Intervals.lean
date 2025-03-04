@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 import Mathlib.Algebra.Order.Interval.Finset.Basic
 import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Finset.Nat
 
