@@ -59,25 +59,6 @@ namespace MvPolynomial
 
 open Finsupp Function
 
-theorem _root_.Finsupp.option_embedding_add_single {σ : Type*}
-    {n : Option σ →₀ ℕ} {m : σ →₀ ℕ} {i : ℕ} :
-    (n = embDomain Embedding.some m + Finsupp.single none i) ↔
-      n none = i ∧ n.some = m := by
-  rw [Finsupp.ext_iff, Option.forall]
-  apply and_congr
-  · simp only [coe_add, Pi.add_apply, single_eq_same]
-    rw [embDomain_notin_range _ _ _ ?_, zero_add]
-    rintro ⟨s, hs⟩
-    exact Option.some_ne_none s hs
-  · rw [Finsupp.ext_iff]
-    apply forall_congr'
-    intro s
-    simp only [coe_add, Pi.add_apply, ne_eq, reduceCtorEq, not_false_eq_true, single_eq_of_ne,
-      add_zero, some_apply]
-    rw [← Embedding.some_apply, embDomain_apply, Embedding.some_apply]
-
-#find_home! Finsupp.option_embedding_add_single
-
 /-- A multivariate polynomial that vanishes on a large product finset is the zero polynomial. -/
 theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R]
     (P : MvPolynomial σ R) (S : σ → Finset R)

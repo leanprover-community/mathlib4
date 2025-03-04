@@ -753,6 +753,22 @@ theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : O
     (f.sum fun o r => r • b o) = f none • b none + f.some.sum fun a r => r • b (Option.some a) :=
   f.sum_option_index _ (fun _ => zero_smul _ _) fun _ _ _ => add_smul _ _ _
 
+theorem option_embedding_add_single [AddCommMonoid M] {n : Option α →₀ M} {m : α →₀ M} {i : M} :
+    (n = embDomain Embedding.some m + single none i) ↔
+      n none = i ∧ n.some = m := by
+  rw [ext_iff, Option.forall]
+  apply and_congr
+  · simp only [coe_add, Pi.add_apply, single_eq_same]
+    rw [embDomain_notin_range _ _ _ ?_, zero_add]
+    rintro ⟨s, hs⟩
+    exact Option.some_ne_none s hs
+  · rw [Finsupp.ext_iff]
+    apply forall_congr'
+    intro s
+    simp only [coe_add, Pi.add_apply, ne_eq, reduceCtorEq, not_false_eq_true, single_eq_of_ne,
+      add_zero, some_apply]
+    rw [← Embedding.some_apply, embDomain_apply, Embedding.some_apply]
+
 end Option
 
 /-! ### Declarations about `Finsupp.filter` -/
