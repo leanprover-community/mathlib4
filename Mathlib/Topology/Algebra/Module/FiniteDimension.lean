@@ -164,7 +164,7 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
     -- Finally, the pullback by `φ.symm` is exactly the pushforward by `φ`, so we have to prove
     -- that `φ` is continuous when `𝕜` is endowed with the pushforward by `φ` of the quotient
     -- topology, which is trivial by definition of the pushforward.
-    rw [this.symm, Equiv.induced_symm]
+    simp_rw [this.symm, Equiv.induced_symm]
     exact continuous_coinduced_rng
 
 /-- Any linear form on a topological vector space over a nontrivially normed field is continuous if
