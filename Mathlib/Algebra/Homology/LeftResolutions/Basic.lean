@@ -6,7 +6,6 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.Algebra.Homology.QuasiIso
 
 /-!
 # Left resolutions
