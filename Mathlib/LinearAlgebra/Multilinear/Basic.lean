@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.NoZeroSMulDivisors.Pi
+import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.LinearAlgebra.Pi

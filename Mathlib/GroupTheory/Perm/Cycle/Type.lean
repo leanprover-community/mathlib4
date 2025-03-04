@@ -5,7 +5,7 @@ Authors: Thomas Browning
 -/
 import Mathlib.Algebra.GCDMonoid.Multiset
 import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.Algebra.Group.TypeTags.Fintype
+import Mathlib.Algebra.Group.TypeTags.Finite
 import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Data.List.Rotate
 import Mathlib.GroupTheory.Perm.Closure
