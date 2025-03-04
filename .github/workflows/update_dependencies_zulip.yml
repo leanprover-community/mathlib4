@@ -73,11 +73,6 @@ jobs:
             let prs = context.payload.workflow_run.pull_requests
             if (prs.length) {
               for (let pr of prs) {
-                const { data: pullRequest } = await github.rest.pulls.get({
-                  owner,
-                  repo,
-                  pull_number: pr.number,
-                });
                 output += "merged via #" + pr.number + ". ";
               }
             }
