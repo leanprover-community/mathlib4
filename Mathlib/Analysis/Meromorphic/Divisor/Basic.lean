@@ -366,7 +366,7 @@ lemma restrict_orderHom_fun {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
     restrict_orderHom h D = D.restrict h := by rfl
 
 /-- Restriction as a group morphism -/
-noncomputable def restrict_groupHom {V : Set 𝕜} (h : V ⊆ U) : DivisorOn U →+ DivisorOn V where
+noncomputable def restrict_monoidHom {V : Set 𝕜} (h : V ⊆ U) : DivisorOn U →+ DivisorOn V where
   toFun := fun D ↦ D.restrict h
   map_zero' := by
     ext x
