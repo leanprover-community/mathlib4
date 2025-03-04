@@ -564,6 +564,18 @@ theorem Filter.Eventually.prod_nhds {p : X → Prop} {q : Y → Prop} {x : X} {y
     (hx : ∀ᶠ x in 𝓝 x, p x) (hy : ∀ᶠ y in 𝓝 y, q y) : ∀ᶠ z : X × Y in 𝓝 (x, y), p z.1 ∧ q z.2 :=
   prod_mem_nhds hx hy
 
+theorem Filter.EventuallyEq.prodMap_nhds {α β : Type*} {f₁ f₂ : X → α} {g₁ g₂ : Y → β}
+    {x : X} {y : Y} (hf : f₁ =ᶠ[𝓝 x] f₂) (hg : g₁ =ᶠ[𝓝 y] g₂) :
+    Prod.map f₁ g₁ =ᶠ[𝓝 (x, y)] Prod.map f₂ g₂ := by
+  rw [nhds_prod_eq]
+  exact hf.prod_map hg
+
+theorem Filter.EventuallyLE.prodMap_nhds {α β : Type*} [LE α] [LE β] {f₁ f₂ : X → α} {g₁ g₂ : Y → β}
+    {x : X} {y : Y} (hf : f₁ ≤ᶠ[𝓝 x] f₂) (hg : g₁ ≤ᶠ[𝓝 y] g₂) :
+    Prod.map f₁ g₁ ≤ᶠ[𝓝 (x, y)] Prod.map f₂ g₂ := by
+  rw [nhds_prod_eq]
+  exact hf.prod_map hg
+
 theorem nhds_swap (x : X) (y : Y) : 𝓝 (x, y) = (𝓝 (y, x)).map Prod.swap := by
   rw [nhds_prod_eq, Filter.prod_comm, nhds_prod_eq]; rfl
 
@@ -571,6 +583,12 @@ theorem Filter.Tendsto.prod_mk_nhds {γ} {x : X} {y : Y} {f : Filter γ} {mx : �
     (hx : Tendsto mx f (𝓝 x)) (hy : Tendsto my f (𝓝 y)) :
     Tendsto (fun c => (mx c, my c)) f (𝓝 (x, y)) := by
   rw [nhds_prod_eq]; exact Filter.Tendsto.prod_mk hx hy
+
+theorem Filter.Tendsto.prodMap_nhds {x : X} {y : Y} {z : Z} {w : W} {f : X → Y} {g : Z → W}
+    (hf : Tendsto f (𝓝 x) (𝓝 y)) (hg : Tendsto g (𝓝 z) (𝓝 w)) :
+    Tendsto (Prod.map f g) (𝓝 (x, z)) (𝓝 (y, w)) := by
+  rw [nhds_prod_eq, nhds_prod_eq]
+  exact hf.prod_map hg
 
 theorem Filter.Eventually.curry_nhds {p : X × Y → Prop} {x : X} {y : Y}
     (h : ∀ᶠ x in 𝓝 (x, y), p x) : ∀ᶠ x' in 𝓝 x, ∀ᶠ y' in 𝓝 y, p (x', y') := by
@@ -1317,6 +1335,7 @@ theorem Continuous.quotient_liftOn' {f : X → Y} (h : Continuous f)
     Continuous (fun x => Quotient.liftOn' x f hs : Quotient s → Y) :=
   h.quotient_lift hs
 
+open scoped Relator in
 @[continuity, fun_prop]
 theorem Continuous.quotient_map' {t : Setoid Y} {f : X → Y} (hf : Continuous f)
     (H : (s.r ⇒ t.r) f f) : Continuous (Quotient.map' f H) :=

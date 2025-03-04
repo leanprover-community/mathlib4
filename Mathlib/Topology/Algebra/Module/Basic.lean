@@ -246,7 +246,6 @@ namespace Submodule
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [TopologicalSpace M]
   (S : Submodule R M)
 
--- Porting note: This is required in Lean4.
 instance _root_.QuotientModule.Quotient.topologicalSpace : TopologicalSpace (M ⧸ S) :=
   inferInstanceAs (TopologicalSpace (Quotient S.quotientRel))
 

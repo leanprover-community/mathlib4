@@ -103,7 +103,7 @@ theorem aeval_of_isScalarTower (R : Type*) {K T U : Type*} [CommRing R] [Field K
 
 /-- If a subfield `F` of `E` contains all the coefficients of `minpoly E a`, then
 `minpoly F a` maps to `minpoly E a` via `algebraMap F E`. -/
-theorem minpoly_lift {F E A : Type*} [Field F] [Field E] [CommRing A]
+theorem map_algebraMap {F E A : Type*} [Field F] [Field E] [CommRing A]
     [Algebra F E] [Algebra E A] [Algebra F A] [IsScalarTower F E A]
     {a : A} (ha : IsIntegral F a) (h : minpoly E a ∈ lifts (algebraMap F E)) :
     (minpoly F a).map (algebraMap F E) = minpoly E a := by
