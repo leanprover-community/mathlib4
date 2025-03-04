@@ -198,31 +198,31 @@ theorem compl_accepts_iff (x : List α) : x ∈ Mᶜ.accepts ↔ x ∉ M.accepts
 
  This is a generalization of the intersection of two DFAs to arbitrary binary set operations.
 -/
-def product (M₁ : DFA α σ) (M₂ : DFA α σ') (p : Prop → Prop → Prop) : DFA α (σ × σ') where
+def prod (M₁ : DFA α σ) (M₂ : DFA α σ') (p : Prop → Prop → Prop) : DFA α (σ × σ') where
   step := fun ⟨s₁, s₂⟩ a => (M₁.step s₁ a, M₂.step s₂ a)
   start := (M₁.start, M₂.start)
   accept := {s | p (s.fst ∈ M₁.accept) (s.snd ∈ M₂.accept)}
 
-theorem product_accept_iff
+theorem prod_accept_iff
     (p : Prop → Prop → Prop) (M₁ : DFA α σ) (M₂ : DFA α σ') (s : σ × σ') :
-    s ∈ (M₁.product M₂ p).accept ↔ p (s.fst ∈ M₁.accept) (s.snd ∈ M₂.accept) := by
-  simp [product]
+    s ∈ (M₁.prod M₂ p).accept ↔ p (s.fst ∈ M₁.accept) (s.snd ∈ M₂.accept) := by
+  simp [prod]
 
-theorem product_evalFrom
+theorem prod_evalFrom
     (p : Prop → Prop → Prop) (M₁ : DFA α σ) (M₂ : DFA α σ') (x : List α) (s : σ × σ') :
-    (M₁.product M₂ p).evalFrom s x = ⟨M₁.evalFrom s.1 x, M₂.evalFrom s.2 x⟩ := by
+    (M₁.prod M₂ p).evalFrom s x = ⟨M₁.evalFrom s.1 x, M₂.evalFrom s.2 x⟩ := by
   revert s
-  dsimp [evalFrom, product]
+  dsimp [evalFrom, prod]
   induction x with
   | nil => simp
   | cons a x ih =>
     intro s
     simp [List.foldl, ih, DFA.step]
 
-theorem product_accepts_iff
+theorem prod_accepts_iff
     (p : Prop → Prop → Prop) (M₁ : DFA α σ) (M₂ : DFA α σ') (x : List α) :
-    x ∈ (M₁.product M₂ p).accepts ↔ p (x ∈ M₁.accepts) (x ∈ M₂.accepts) := by
-  simp only [accepts, acceptsFrom, product_evalFrom]
+    x ∈ (M₁.prod M₂ p).accepts ↔ p (x ∈ M₁.accepts) (x ∈ M₂.accepts) := by
+  simp only [accepts, acceptsFrom, prod_evalFrom]
   rfl
 
 /--
@@ -230,22 +230,22 @@ theorem product_accepts_iff
 
  There is no instance for this to provide the `M₁ ∩ M₂` syntax, because M₁ and M₂ have
  different state types. -/
-def inter (M₁ : DFA α σ) (M₂ : DFA α σ') : DFA α (σ × σ') := product M₁ M₂ And
+def inter (M₁ : DFA α σ) (M₂ : DFA α σ') : DFA α (σ × σ') := prod M₁ M₂ And
 
 theorem inter_accept_iff (M₁ : DFA α σ) (M₂ : DFA α σ') (s : σ × σ') :
     s ∈ (M₁.inter M₂).accept ↔ s.fst ∈ M₁.accept ∧ s.snd ∈ M₂.accept := by
-  simp [inter, product_accept_iff]
+  simp [inter, prod_accept_iff]
 
 theorem inter_accepts_iff (M₁ : DFA α σ) (M₂ : DFA α σ') (x : List α) :
     x ∈ (M₁.inter M₂).accepts ↔ x ∈ M₁.accepts ∧ x ∈ M₂.accepts := by
-  simp [inter, product_accepts_iff]
+  simp [inter, prod_accepts_iff]
 
-theorem inter_accept_eq_product_accept (M₁ : DFA α σ) (M₂ : DFA α σ') :
+theorem inter_accept_eq_prod_accept (M₁ : DFA α σ) (M₂ : DFA α σ') :
     (M₁.inter M₂).accept = M₁.accept ×ˢ M₂.accept := by
   ext ⟨s₁, s₂⟩
   simp [inter_accept_iff]
 
-theorem inter_accepts_inter (M₁ : DFA α σ) (M₂ : DFA α σ') :
+theorem inter_accepts_eq_inter (M₁ : DFA α σ) (M₂ : DFA α σ') :
     (M₁.inter M₂).accepts = M₁.accepts ∩ M₂.accepts := by
   ext x
   simp only [inter_accepts_iff]
@@ -256,15 +256,15 @@ theorem inter_accepts_inter (M₁ : DFA α σ) (M₂ : DFA α σ') :
 
  There is no instance for this to provide the `M₁ ∪ M₂` syntax, because M₁ and M₂ have
  different state types. -/
-def union (M₁ : DFA α σ) (M₂ : DFA α σ') : DFA α (σ × σ') := product M₁ M₂ Or
+def union (M₁ : DFA α σ) (M₂ : DFA α σ') : DFA α (σ × σ') := prod M₁ M₂ Or
 
 theorem union_accept_iff (M₁ : DFA α σ) (M₂ : DFA α σ') (s : σ × σ') :
     s ∈ (M₁.union M₂).accept ↔ s.fst ∈ M₁.accept ∨ s.snd ∈ M₂.accept := by
-  simp [union, product_accept_iff]
+  simp [union, prod_accept_iff]
 
 theorem union_accepts_iff (M₁ : DFA α σ) (M₂ : DFA α σ') (x : List α) :
     x ∈ (M₁.union M₂).accepts ↔ x ∈ M₁.accepts ∨ x ∈ M₂.accepts := by
-  simp [union, product_accepts_iff]
+  simp [union, prod_accepts_iff]
 
 theorem union_accepts_union (M₁ : DFA α σ) (M₂ : DFA α σ') :
     (M₁.union M₂).accepts = M₁.accepts + M₂.accepts := by
