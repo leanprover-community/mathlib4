@@ -116,7 +116,6 @@ theorem integral_mulExpNegMulSq_comp_eq {P' : Measure E} [IsFiniteMeasure P']
     {A : Subalgebra ℝ (E →ᵇ ℝ)} (hε : 0 < ε)
     (heq : ∀ g ∈ A, ∫ x, (g : E → ℝ) x ∂P = ∫ x, (g : E → ℝ) x ∂P') {g : E →ᵇ ℝ} (hgA : g ∈ A) :
     ∫ x, mulExpNegMulSq ε (g x) ∂P = ∫ x, mulExpNegMulSq ε (g x) ∂P' := by
-  --obtain ⟨C, h⟩ := hbound g hgA
   have one_plus_inv_mul_mem (n : ℕ) : g * (1 + (n : ℝ)⁻¹ • -(ε • g * g)) ^ n ∈ A := by
     apply Subalgebra.mul_mem A hgA (Subalgebra.pow_mem A _ n)
     apply Subalgebra.add_mem A (Subalgebra.one_mem A) (Subalgebra.smul_mem A _ n⁻¹)
@@ -125,7 +124,6 @@ theorem integral_mulExpNegMulSq_comp_eq {P' : Measure E} [IsFiniteMeasure P']
       (𝓝 (∫ x, mulExpNegMulSq ε (g x) ∂P')) := by
     rw [funext fun n => heq _ (one_plus_inv_mul_mem n)]
     exact tendsto_integral_mul_one_plus_inv_smul_sq_pow g hε
-    --exact tendsto_integral_mul_one_plus_inv_smul_sq_pow (mkOfBound g C h) hε
   exact tendsto_nhds_unique
     (tendsto_integral_mul_one_plus_inv_smul_sq_pow g hε) limP
 
@@ -159,7 +157,6 @@ difference of the integrals of `mulExpNegMulSq ε ∘ g` with respect to `P, P'`
 `6 * sqrt ε`. -/
 theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
     {A : Subalgebra ℝ (E →ᵇ ℝ)} (hA : (A.map (toContinuousMapₐ ℝ)).SeparatesPoints)
-    --(hbound : ∀ g ∈ A, ∃ C, ∀ x y : E, dist (g x) (g y) ≤ C)
     (heq : ∀ g ∈ A, ∫ x, (g : E → ℝ) x ∂P = ∫ x, (g : E → ℝ) x ∂P') (hε : 0 < ε) :
     |∫ x, mulExpNegMulSq ε (f x) ∂P - ∫ x, mulExpNegMulSq ε (f x) ∂P'| ≤ 6 * sqrt ε := by
   -- if both measures are zero, the result is trivial
@@ -193,7 +190,7 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
       ContinuousMap.exists_mem_subalgebra_near_continuous_of_isCompact_of_separatesPoints
       hA f hKco (Left.mul_pos (sqrt_pos_of_pos hε) (inv_pos_of_pos pos_of_measure))
   simp only [Subalgebra.mem_map] at hg'A
-  set g := hg'A.choose with hg
+  let g := hg'A.choose
   have hgA : g ∈ A := hg'A.choose_spec.1
   have hgapprox : ∀ x ∈ K, ‖g x - f x‖ < sqrt ε * const⁻¹ := by
     rw [← coe_toContinuousMapₐ ℝ g, hg'A.choose_spec.2]
