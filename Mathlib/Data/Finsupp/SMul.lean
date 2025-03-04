@@ -149,7 +149,8 @@ theorem mapDomain_smul {_ : Monoid R} [AddCommMonoid M] [DistribMulAction R M] {
 theorem smul_single' {_ : Semiring R} (c : R) (a : α) (b : R) :
     c • Finsupp.single a b = Finsupp.single a (c * b) := by simp
 
-theorem smul_single_one [Semiring R] (a : α) (b : R) : b • single a (1 : R) = single a b := by
+theorem smul_single_one [MulZeroOneClass R] (a : α) (b : R) :
+    b • single a (1 : R) = single a b := by
   rw [smul_single, smul_eq_mul, mul_one]
 
 theorem comapDomain_smul [AddMonoid M] [Monoid R] [DistribMulAction R M] {f : α → β} (r : R)
@@ -177,8 +178,9 @@ theorem sum_smul_index' [AddMonoid M] [DistribSMul R M] [AddCommMonoid N] {g : �
   Finsupp.sum_mapRange_index h0
 
 /-- A version of `Finsupp.sum_smul_index'` for bundled additive maps. -/
-theorem sum_smul_index_addMonoidHom [AddMonoid M] [AddCommMonoid N] [DistribSMul R M] {g : α →₀ M}
-    {b : R} {h : α → M →+ N} : ((b • g).sum fun a => h a) = g.sum fun i c => h i (b • c) :=
+theorem sum_smul_index_addMonoidHom [AddZeroClass M] [AddCommMonoid N] [SMulZeroClass R M]
+    {g : α →₀ M} {b : R} {h : α → M →+ N} :
+    ((b • g).sum fun a => h a) = g.sum fun i c => h i (b • c) :=
   sum_mapRange_index fun i => (h i).map_zero
 
 instance noZeroSMulDivisors [Zero R] [Zero M] [SMulZeroClass R M] {ι : Type*}

@@ -450,23 +450,23 @@ theorem inr_mul_inr [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒ�
 
 end
 
-theorem inl_mul_inr [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] (r : R) (m : M) :
-    (inl r * inr m : tsze R M) = inr (r • m) :=
+theorem inl_mul_inr [Semiring R] [AddCommMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
+    (r : R) (m : M) : (inl r * inr m : tsze R M) = inr (r • m) :=
   ext (mul_zero r) <|
     show r • m + (0 : Rᵐᵒᵖ) • (0 : M) = r • m by rw [smul_zero, add_zero]
 
-theorem inr_mul_inl [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] (r : R) (m : M) :
-    (inr m * inl r : tsze R M) = inr (m <• r) :=
+theorem inr_mul_inl [Semiring R] [AddCommMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
+    (r : R) (m : M) : (inr m * inl r : tsze R M) = inr (m <• r) :=
   ext (zero_mul r) <|
     show (0 : R) •> (0 : M) + m <• r = m <• r by rw [smul_zero, zero_add]
 
-theorem inl_mul_eq_smul [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
-    (r : R) (x : tsze R M) :
+theorem inl_mul_eq_smul [Semiring R] [AddCommMonoid M] [DistribMulAction R M]
+    [DistribMulAction Rᵐᵒᵖ M] (r : R) (x : tsze R M) :
     inl r * x = r •> x :=
   ext rfl (by dsimp; rw [smul_zero, add_zero])
 
-theorem mul_inl_eq_op_smul [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
-    (x : tsze R M) (r : R) :
+theorem mul_inl_eq_op_smul [Semiring R] [AddCommMonoid M] [DistribMulAction R M]
+    [DistribMulAction Rᵐᵒᵖ M] (x : tsze R M) (r : R) :
     x * inl r = x <• r :=
   ext rfl (by dsimp; rw [smul_zero, zero_add])
 
@@ -636,8 +636,8 @@ instance semiring [Semiring R] [AddCommMonoid M]
 
 /-- The second element of a product $\prod_{i=0}^n (r_i + m_i)$ is a sum of terms of the form
 $r_0\cdots r_{i-1}m_ir_{i+1}\cdots r_n$. -/
-theorem snd_list_prod [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
-    [SMulCommClass R Rᵐᵒᵖ M] (l : List (tsze R M)) :
+theorem snd_list_prod [Semiring R] [AddCommMonoid M] [DistribMulAction R M]
+    [DistribMulAction Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] (l : List (tsze R M)) :
     l.prod.snd =
       (l.zipIdx.map fun x : tsze R M × ℕ =>
           ((l.map fst).take x.2).prod •> x.fst.snd <• ((l.map fst).drop x.2.succ).prod).sum := by

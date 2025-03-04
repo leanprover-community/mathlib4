@@ -126,8 +126,9 @@ theorem Antiperiodic.nat_mul_sub_eq [Ring α] [Ring β] (h : Antiperiodic f c) (
   simpa only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow, Int.cast_neg,
     Int.cast_one] using h.nsmul_sub_eq n
 
-theorem Antiperiodic.const_smul₀ [AddCommMonoid α] [Neg β] [DivisionSemiring γ] [Module γ α]
-    (h : Antiperiodic f c) {a : γ} (ha : a ≠ 0) : Antiperiodic (fun x => f (a • x)) (a⁻¹ • c) :=
+theorem Antiperiodic.const_smul₀ [AddCommMonoid α] [Neg β] [DivisionSemiring γ]
+    [DistribMulAction γ α] (h : Antiperiodic f c) {a : γ} (ha : a ≠ 0) :
+    Antiperiodic (fun x => f (a • x)) (a⁻¹ • c) :=
   fun x => by simpa only [smul_add, smul_inv_smul₀ ha] using h (a • x)
 
 theorem Antiperiodic.const_mul [DivisionSemiring α] [Neg β] (h : Antiperiodic f c) {a : α}

@@ -144,7 +144,8 @@ theorem abs_natCast_norm (x : ℤ[i]) : (x.norm.natAbs : ℤ) = x.norm :=
   Int.natAbs_of_nonneg (norm_nonneg _)
 
 @[simp]
-theorem natCast_natAbs_norm {α : Type*} [Ring α] (x : ℤ[i]) : (x.norm.natAbs : α) = x.norm := by
+theorem natCast_natAbs_norm {α : Type*} [AddGroupWithOne α] (x : ℤ[i]) :
+    (x.norm.natAbs : α) = x.norm := by
   rw [← Int.cast_natCast, abs_natCast_norm]
 
 theorem natAbs_norm_eq (x : ℤ[i]) :
