@@ -285,19 +285,17 @@ lemma GradedPiece.HEq_one_mul [hasGMul F F_lt] {i : ι} (x : GradedPiece F F_lt 
     HEq ((1 : GradedPiece F F_lt 0) * x) x := by
   let rx := Quotient.out x
   apply HEq_eq_mk_eq F F_lt (zero_add i) (one_mul (rx : R))
-  · convert (gradedMul_def F F_lt (1 : F 0) rx).symm
-    exact (Quotient.out_eq' x).symm
+  · rw [← Quotient.out_eq' x]
+    exact (gradedMul_def F F_lt (1 : F 0) rx).symm
   · exact (Quotient.out_eq' x).symm
-  · simp
 
 lemma GradedPiece.HEq_mul_one [hasGMul F F_lt] {i : ι} (x : GradedPiece F F_lt i) :
     HEq (x * (1 : GradedPiece F F_lt 0)) x := by
   let rx := Quotient.out x
   apply HEq_eq_mk_eq F F_lt (add_zero i) (mul_one (rx : R))
-  · convert (gradedMul_def F F_lt rx (1 : F 0)).symm
-    exact (Quotient.out_eq' x).symm
+  · rw [← Quotient.out_eq' x]
+    exact (gradedMul_def F F_lt rx (1 : F 0)).symm
   · exact (Quotient.out_eq' x).symm
-  · simp
 
 lemma GradedPiece.HEq_mul_assoc [hasGMul F F_lt] {i j k : ι}
     (a : GradedPiece F F_lt i) (b : GradedPiece F F_lt j) (c : GradedPiece F F_lt k) :
@@ -307,17 +305,15 @@ lemma GradedPiece.HEq_mul_assoc [hasGMul F F_lt] {i j k : ι}
   let rc := Quotient.out c
   apply HEq_eq_mk_eq F F_lt (add_assoc i j k) (mul_assoc (ra : R) rb rc)
   · show a * b * c = ⟦ra * rb * rc⟧
+    rw [← Quotient.out_eq' c]
     convert (gradedMul_def F F_lt (ra * rb) rc).symm
-    · convert (gradedMul_def F F_lt ra rb).symm
-      · exact (Quotient.out_eq' a).symm
-      · exact (Quotient.out_eq' b).symm
-    · exact (Quotient.out_eq' c).symm
+    rw [← Quotient.out_eq' a, ← Quotient.out_eq' b]
+    exact (gradedMul_def F F_lt ra rb).symm
   · show a * (b * c) = ⟦ra * (rb * rc)⟧
+    rw [← Quotient.out_eq' a]
     convert (gradedMul_def F F_lt ra (rb * rc)).symm
-    · exact (Quotient.out_eq' a).symm
-    · convert (gradedMul_def F F_lt rb rc).symm
-      · exact (Quotient.out_eq' b).symm
-      · exact (Quotient.out_eq' c).symm
+    rw [← Quotient.out_eq' b, ← Quotient.out_eq' c]
+    exact (gradedMul_def F F_lt rb rc).symm
 
 lemma Filtration.pow_mem [IsRingFiltration F F_lt] (n : ℕ) {i : ι}
     (x : ofClass (F i)) : (x : R) ^ n ∈ ofClass (F (n • i)) := by
@@ -396,7 +392,7 @@ lemma GradedPiece.zero_mul [hasGMul F F_lt] {i j : ι} (a : GradedPiece F F_lt i
     (0 : GradedPiece F F_lt j) * a = 0 := by
   rw [← QuotientAddGroup.mk_zero, ← QuotientAddGroup.mk_zero]
   induction a using Quotient.ind'
-  change Quotient.mk'' _ = Quotient.mk'' _
+  show Quotient.mk'' _ = Quotient.mk'' _
   simp only [Quotient.eq'', ZeroMemClass.coe_zero, zero_mul, QuotientAddGroup.leftRel_apply,
     add_zero, neg_mem_iff]
   show (0 : R) * _ ∈ (F_lt (j + i))
