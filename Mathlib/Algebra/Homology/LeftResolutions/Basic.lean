@@ -84,8 +84,9 @@ lemma map_chainComplex_d (n : ℕ) :
     ι.map ((Λ.chainComplex X).d (n + 2) (n + 1)) =
     ι.map (Λ.chainComplexXIso X n).hom ≫ Λ.π.app (kernel (ι.map ((Λ.chainComplex X).d (n + 1) n))) ≫
       kernel.ι (ι.map ((Λ.chainComplex X).d (n + 1) n)) := by
-  erw [← ι.map_preimage (Λ.π.app _ ≫ kernel.ι (ι.map ((Λ.chainComplex X).d (n + 1) n)))]
-  rw [← Functor.map_comp]
+  have := ι.map_preimage (Λ.π.app _ ≫ kernel.ι (ι.map ((Λ.chainComplex X).d (n + 1) n)))
+  dsimp at this
+  rw [← this, ← Functor.map_comp]
   congr 1
   apply ChainComplex.mk'_d
 
