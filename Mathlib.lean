@@ -5824,6 +5824,7 @@ import Mathlib.Topology.MetricSpace.ThickenedIndicator
 import Mathlib.Topology.MetricSpace.Thickening
 import Mathlib.Topology.MetricSpace.Ultra.Basic
 import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
+import Mathlib.Topology.MetricSpace.Ultra.Pi
 import Mathlib.Topology.MetricSpace.Ultra.TotallySeparated
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Metrizable.ContinuousMap
