@@ -638,6 +638,9 @@ def coeFnAddHom : (α →ᵇ β) →+ α → β where
   map_zero' := coe_zero
   map_add' := coe_add
 
+/-- Composition on the left by a (lipschitz-continuous) homomorphism of topological additive
+monoids, as a `AddMonoidHom`. Similar to `MonoidHom.compLeftContinuous`. -/
+@[simps]
 protected def _root_.AddMonoidHom.compLeftContinuousBounded (α : Type*) {β : Type*} {γ : Type*}
     [TopologicalSpace α]
     [PseudoMetricSpace β] [AddMonoid β] [BoundedAdd β] [ContinuousAdd β]
@@ -796,9 +799,12 @@ instance instSemiring [Semiring R] [BoundedMul R] [ContinuousMul R]
 instance instMulOneClass [MulOneClass R] [BoundedMul R] [ContinuousMul R] : MulOneClass (α →ᵇ R) :=
   DFunLike.coe_injective.mulOneClass _ coe_one coe_mul
 
+/-- Composition on the left by a (lipschitz-continuous) homomorphism of topological monoids, as a
+`AddMonoidHom`. Similar to `MonoidHom.compLeftContinuous`. -/
+@[simps]
 protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*) {β : Type*} {γ : Type*}
     [TopologicalSpace α]
-    [PseudoMetricSpace β] [Monoid β] [MulOneClass β] [BoundedMul β] [ContinuousMul β]
+    [PseudoMetricSpace β] [Monoid β] [BoundedMul β] [ContinuousMul β]
     [PseudoMetricSpace γ] [Monoid γ] [BoundedMul γ] [ContinuousMul γ]
     (g : β →* γ) {C : NNReal} (hg : LipschitzWith C g) :
     (α →ᵇ β) →* (α →ᵇ γ) where
@@ -1267,6 +1273,9 @@ instance instSeminormedRing : SeminormedRing (α →ᵇ R) where
   __ := instRing
   __ := instNonUnitalSeminormedRing
 
+/-- Composition on the left by a (lipschitz-continuous) homomorphism of topological semirings, as a
+`RingHom`.  Similar to `RingHom.compLeftContinuous`. -/
+@[simps!]
 protected def _root_.RingHom.compLeftContinuousBounded (α : Type*) {β : Type*} {γ : Type*}
     [TopologicalSpace α] [SeminormedRing β] [SeminormedRing γ]
     (g : β →+* γ) {C : NNReal} (hg : LipschitzWith C g) : (α →ᵇ β) →+* (α →ᵇ γ) :=
@@ -1365,6 +1374,8 @@ instance instNormedAlgebra : NormedAlgebra 𝕜 (α →ᵇ γ) where
 
 variable (𝕜)
 
+/-- Composition on the left by a (lipschitz-continuous) homomorphism of topological `R`-algebras,
+as an `AlgHom`. Similar to `AlgHom.compLeftContinuous`. -/
 @[simps!]
 protected def AlgHom.compLeftContinuousBounded {α : Type*} [TopologicalSpace α]
     [NormedRing β] [NormedAlgebra 𝕜 β][NormedRing γ] [NormedAlgebra 𝕜 γ]
