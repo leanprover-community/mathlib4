@@ -24,7 +24,7 @@ theorem length_iterate (f : α → α) (a : α) (n : ℕ) : length (iterate f a 
 
 @[simp]
 theorem iterate_eq_nil {f : α → α} {a : α} {n : ℕ} : iterate f a n = [] ↔ n = 0 := by
-  rw [← length_eq_zero, length_iterate]
+  rw [← length_eq_zero_iff, length_iterate]
 
 theorem getElem?_iterate (f : α → α) (a : α) :
     ∀ (n i : ℕ), i < n → (iterate f a n)[i]? = f^[i] a

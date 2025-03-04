@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
 import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 
