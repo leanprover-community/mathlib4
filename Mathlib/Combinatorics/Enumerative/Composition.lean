@@ -101,6 +101,9 @@ structure Composition (n : ℕ) where
   blocks_pos : ∀ {i}, i ∈ blocks → 0 < i
   /-- Proof that `blocks` sums to `n` -/
   blocks_sum : blocks.sum = n
+  deriving DecidableEq
+
+attribute [simp] Composition.blocks_sum
 
 /-- Combinatorial viewpoint on a composition of `n`, by seeing it as non-empty blocks of
 consecutive integers in `{0, ..., n-1}`. We register every block by its left end-point, yielding
@@ -115,9 +118,12 @@ structure CompositionAsSet (n : ℕ) where
   zero_mem : (0 : Fin n.succ) ∈ boundaries
   /-- Last element of the composition -/
   getLast_mem : Fin.last n ∈ boundaries
+  deriving DecidableEq
 
 instance {n : ℕ} : Inhabited (CompositionAsSet n) :=
   ⟨⟨Finset.univ, Finset.mem_univ _, Finset.mem_univ _⟩⟩
+
+attribute [simp] CompositionAsSet.zero_mem CompositionAsSet.getLast_mem
 
 /-!
 ### Compositions
@@ -125,7 +131,6 @@ instance {n : ℕ} : Inhabited (CompositionAsSet n) :=
 A composition of an integer `n` is a decomposition `n = i₀ + ... + i_{k-1}` of `n` into a sum of
 positive integers.
 -/
-
 
 namespace Composition
 
@@ -145,18 +150,24 @@ theorem blocks_length : c.blocks.length = c.length :=
 functions using compositions, this is the main player. -/
 def blocksFun : Fin c.length → ℕ := c.blocks.get
 
+@[simp]
 theorem ofFn_blocksFun : ofFn c.blocksFun = c.blocks :=
   ofFn_get _
 
+@[simp]
 theorem sum_blocksFun : ∑ i, c.blocksFun i = n := by
   conv_rhs => rw [← c.blocks_sum, ← ofFn_blocksFun, sum_ofFn]
 
+@[simp]
 theorem blocksFun_mem_blocks (i : Fin c.length) : c.blocksFun i ∈ c.blocks :=
   get_mem _ _
 
-@[simp]
 theorem one_le_blocks {i : ℕ} (h : i ∈ c.blocks) : 1 ≤ i :=
   c.blocks_pos h
+
+theorem blocks_le {i : ℕ} (h : i ∈ c.blocks) : i ≤ n := by
+  rw [← c.blocks_sum]
+  exact List.le_sum_of_mem h
 
 @[simp]
 theorem one_le_blocks' {i : ℕ} (h : i < c.length) : 1 ≤ c.blocks[i] :=
@@ -166,23 +177,37 @@ theorem one_le_blocks' {i : ℕ} (h : i < c.length) : 1 ≤ c.blocks[i] :=
 theorem blocks_pos' (i : ℕ) (h : i < c.length) : 0 < c.blocks[i] :=
   c.one_le_blocks' h
 
+@[simp]
 theorem one_le_blocksFun (i : Fin c.length) : 1 ≤ c.blocksFun i :=
   c.one_le_blocks (c.blocksFun_mem_blocks i)
 
+@[simp]
 theorem blocksFun_le {n} (c : Composition n) (i : Fin c.length) :
-    c.blocksFun i ≤ n := by
-  have := c.blocks_sum
-  have := List.le_sum_of_mem (c.blocksFun_mem_blocks i)
-  simp_all
+    c.blocksFun i ≤ n :=
+  c.blocks_le <| getElem_mem _
 
+@[simp]
 theorem length_le : c.length ≤ n := by
   conv_rhs => rw [← c.blocks_sum]
   exact length_le_sum_of_one_le _ fun i hi => c.one_le_blocks hi
 
-theorem length_pos_of_pos (h : 0 < n) : 0 < c.length := by
-  apply length_pos_of_sum_pos
-  convert h
-  exact c.blocks_sum
+@[simp]
+theorem blocks_eq_nil : c.blocks = [] ↔ n = 0 := by
+  constructor
+  · intro h
+    simpa using congr(List.sum $h)
+  · rintro rfl
+    rw [← length_eq_zero, ← nonpos_iff_eq_zero]
+    exact c.length_le
+
+protected theorem length_eq_zero : c.length = 0 ↔ n = 0 := by
+  simp
+
+@[simp]
+theorem length_pos_iff : 0 < c.length ↔ 0 < n := by
+  simp [pos_iff_ne_zero]
+
+alias ⟨_, length_pos_of_pos⟩ := length_pos_iff
 
 /-- The sum of the sizes of the blocks in a composition up to `i`. -/
 def sizeUpTo (i : ℕ) : ℕ :=
