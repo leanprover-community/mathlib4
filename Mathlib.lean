@@ -2473,6 +2473,7 @@ import Mathlib.Combinatorics.Enumerative.IncidenceAlgebra
 import Mathlib.Combinatorics.Enumerative.InclusionExclusion
 import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Combinatorics.Extremal.RuzsaSzemeredi
+import Mathlib.Combinatorics.Flow.Basic
 import Mathlib.Combinatorics.HalesJewett
 import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Combinatorics.Hall.Finite
