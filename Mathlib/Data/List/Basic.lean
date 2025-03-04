@@ -201,9 +201,9 @@ theorem append_cancel_right_length {as bs bs' cs : List α}
 (eq_length : bs.length = bs'.length) (h : as ++ bs = cs ++ bs') : as = cs := by
   match as, cs with
   | [], []       => rfl
-  | [], c::cs    => have aux := congrArg length h; simp +arith [eq_length] at aux
-  | a::as, []    => have aux := congrArg length h; simp +arith [eq_length] at aux
-  | a::as, c::cs => injection h with h₁ h₂; subst h₁; rw [append_cancel_right_length eq_length h₂]
+  | [], c::cs    => simpa +arith [eq_length] using congrArg length h
+  | a::as, []    => simpa +arith [eq_length] using congrArg length h
+  | a::as, c::cs => injection h with h₁ h₂; rw [h₁, append_cancel_right_length eq_length h₂]
 
 /-! ### replicate -/
 
