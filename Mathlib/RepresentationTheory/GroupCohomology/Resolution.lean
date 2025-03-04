@@ -108,9 +108,10 @@ def actionDiagonalSucc (G : Type u) [Group G] :
 
 theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (n + 1) → G) :
     (actionDiagonalSucc G n).hom.hom f = (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
-  induction' n with n hn
-  · exact Prod.ext rfl (funext fun x => Fin.elim0 x)
-  · refine Prod.ext rfl (funext fun x => ?_)
+  induction n with
+  | zero => exact Prod.ext rfl (funext fun x => Fin.elim0 x)
+  | succ n hn =>
+    refine Prod.ext rfl (funext fun x => ?_)
     /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
     · dsimp only [actionDiagonalSucc]
       simp only [Iso.trans_hom, comp_hom, types_comp_apply, diagonalSucc_hom_hom,
@@ -127,12 +128,14 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
 theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f : Fin n → G) :
     (actionDiagonalSucc G n).inv.hom (g, f) = (g • Fin.partialProd f : Fin (n + 1) → G) := by
   revert g
-  induction' n with n hn
-  · intro g
+  induction n with
+  | zero =>
+    intro g
     funext (x : Fin 1)
     simp only [Subsingleton.elim x 0, Pi.smul_apply, Fin.partialProd_zero, smul_eq_mul, mul_one]
     rfl
-  · intro g
+  | succ n hn =>
+    intro g
     /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
     ext
     dsimp only [actionDiagonalSucc]
@@ -359,7 +362,7 @@ variable (G)
 
 /-- The simplicial `G`-set sending `[n]` to `Gⁿ⁺¹` equipped with the diagonal action of `G`. -/
 def classifyingSpaceUniversalCover [Monoid G] :
-    SimplicialObject (Action (Type u) <| MonCat.of G) where
+    SimplicialObject (Action (Type u) G) where
   obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
   map f :=
     { hom := fun x => x ∘ f.unop.toOrderHom

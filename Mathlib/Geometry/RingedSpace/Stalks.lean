@@ -185,7 +185,7 @@ def stalkIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ≅ Y) (x : X) :
 @[reassoc, elementwise, simp, nolint simpNF]
 theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
     (f : X ⟶ Y) {x y : X} (h : x ⤳ y) :
-    Y.presheaf.stalkSpecializes (f.base.map_specializes h) ≫ f.stalkMap x =
+    Y.presheaf.stalkSpecializes (f.base.hom.map_specializes h) ≫ f.stalkMap x =
       f.stalkMap y ≫ X.presheaf.stalkSpecializes h := by
   -- Porting note: the original one liner `dsimp [stalkMap]; simp [stalkMap]` doesn't work,
   -- I had to uglify this

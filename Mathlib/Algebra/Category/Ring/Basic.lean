@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Algebra.Ring.PUnit
+import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
 /-!
 # Category instances for `Semiring`, `Ring`, `CommSemiring`, and `CommRing`.
@@ -123,14 +124,10 @@ lemma ofHom_comp {R S T : Type u} [Semiring R] [Semiring S] [Semiring T]
 lemma ofHom_apply {R S : Type u} [Semiring R] [Semiring S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
 
-@[simp]
 lemma inv_hom_apply {R S : SemiRingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {R S : SemiRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 instance : Inhabited SemiRingCat :=
@@ -277,14 +274,10 @@ lemma ofHom_comp {R S T : Type u} [Ring R] [Ring S] [Ring T]
 lemma ofHom_apply {R S : Type u} [Ring R] [Ring S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
 
-@[simp]
 lemma inv_hom_apply {R S : RingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {R S : RingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 instance : Inhabited RingCat :=
@@ -436,14 +429,10 @@ lemma ofHom_comp {R S T : Type u} [CommSemiring R] [CommSemiring S] [CommSemirin
 lemma ofHom_apply {R S : Type u} [CommSemiring R] [CommSemiring S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
 
-@[simp]
 lemma inv_hom_apply {R S : CommSemiRingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {R S : CommSemiRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 instance : Inhabited CommSemiRingCat :=
@@ -593,14 +582,10 @@ lemma ofHom_comp {R S T : Type u} [CommRing R] [CommRing S] [CommRing T]
 lemma ofHom_apply {R S : Type u} [CommRing R] [CommRing S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
 
-@[simp]
 lemma inv_hom_apply {R S : CommRingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {R S : CommRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 instance : Inhabited CommRingCat :=
@@ -640,6 +625,11 @@ instance hasForgetToAddCommMonCat : HasForget₂ CommRingCat CommSemiRingCat whe
   forget₂ :=
     { obj := fun R ↦ CommSemiRingCat.of R
       map := fun f ↦ CommSemiRingCat.ofHom f.hom }
+
+@[simps]
+instance : HasForget₂ CommRingCat CommMonCat where
+  forget₂ := { obj M := .of M, map f := CommMonCat.ofHom f.hom }
+  forget_comp := rfl
 
 /-- Ring equivalence are isomorphisms in category of semirings -/
 @[simps]
@@ -689,23 +679,6 @@ def commRingCatIsoToRingEquiv {R S : CommRingCat.{u}} (e : R ≅ S) : R ≃+* S 
   (e.commRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 end CategoryTheory.Iso
-
--- Porting note: typemax hacks to fix universe complaints
-/-- An alias for `SemiringCat.{max u v}`, to deal around unification issues. -/
-@[nolint checkUnivs]
-abbrev SemiRingCatMax.{u1, u2} := SemiRingCat.{max u1 u2}
-
-/-- An alias for `RingCat.{max u v}`, to deal around unification issues. -/
-@[nolint checkUnivs]
-abbrev RingCatMax.{u1, u2} := RingCat.{max u1 u2}
-
-/-- An alias for `CommSemiRingCat.{max u v}`, to deal around unification issues. -/
-@[nolint checkUnivs]
-abbrev CommSemiRingCatMax.{u1, u2} := CommSemiRingCat.{max u1 u2}
-
-/-- An alias for `CommRingCat.{max u v}`, to deal around unification issues. -/
-@[nolint checkUnivs]
-abbrev CommRingCatMax.{u1, u2} := CommRingCat.{max u1 u2}
 
 lemma RingCat.forget_map_apply {R S : RingCat} (f : R ⟶ S)
     (x : (CategoryTheory.forget RingCat).obj R) :

@@ -28,7 +28,7 @@ hence our definition agrees with [N. Bourbaki, *Algebra II*, chapter 4, §2, n°
 * `IsLinearTopology R M`: the topology on `M` is `R`-linear, meaning that there exists a basis
 of neighborhoods of 0 consisting of `R`-submodules. Note that we don't impose that the topology
 is invariant by translation, so you'll often want to add `ContinuousConstVAdd M M` to get
-something meaningless. To express that the topology of a ring `R` is linear, use
+something meaningful. To express that the topology of a ring `R` is linear, use
 `[IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R]`.
 * `IsLinearTopology.mk_of_hasBasis`: a convenient constructor for `IsLinearTopology`.
 See also `IsLinearTopology.mk_of_hasBasis'`.
@@ -61,7 +61,7 @@ by homeomorphisms. Similarly, `IsLinearTopology R R` and `ContinuousConstVAdd R 
 `R` is a topological ring. All of this will follow from PR#18437.
 
 Nevertheless, we don't plan on adding those facts as instances: one should use directly
-results from PR#18437 to get `TopologicalAddGroup` and `TopologicalRing` instances.
+results from PR#18437 to get `IsTopologicalAddGroup` and `IsTopologicalRing` instances.
 
 * The main constructor for `IsLinearTopology`, `IsLinearTopology.mk_of_hasBasis`
 is formulated in terms of the subobject classes `AddSubmonoidClass` and `SMulMemClass`
@@ -134,7 +134,7 @@ variable (R) in
 /-- To show that `M` is linearly-topologized as an `R`-module, it suffices to show
 that it has a basis of neighborhoods of zero made of `R`-submodules.
 
-Note: for technical reasons detailed in the module docstring, Lean sometimes struggle to find the
+Note: for technical reasons detailed in the module docstring, Lean sometimes struggles to find the
 right `SMulMemClass` instance. See `IsLinearTopology.mk_of_hasBasis'` for a more
 explicit variant. -/
 lemma mk_of_hasBasis {ι : Sort*} {S : Type*} [SetLike S M]
@@ -280,7 +280,7 @@ theorem _root_.isLinearTopology_iff_hasBasis_ideal :
       (fun I : Ideal R ↦ (I : Set R) ∈ 𝓝 0) (fun I : Ideal R ↦ (I : Set R)) :=
   isLinearTopology_iff_hasBasis_submodule
 
-theorem _root_.isLinearTopology_iff_hasBasis_open_ideal [TopologicalRing R] :
+theorem _root_.isLinearTopology_iff_hasBasis_open_ideal [IsTopologicalRing R] :
     IsLinearTopology R R ↔ (𝓝 0).HasBasis
       (fun I : Ideal R ↦ IsOpen (I : Set R)) (fun I : Ideal R ↦ (I : Set R)) :=
   isLinearTopology_iff_hasBasis_open_submodule

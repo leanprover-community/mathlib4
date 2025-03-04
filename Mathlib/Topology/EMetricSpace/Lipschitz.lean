@@ -1,11 +1,10 @@
 /-
 Copyright (c) 2018 Rohan Mitta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov
+Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov, Winston Yin
 -/
-import Mathlib.Logic.Function.Iterate
+import Mathlib.Algebra.Group.End
 import Mathlib.Topology.EMetricSpace.Diam
-import Mathlib.Tactic.GCongr
 
 /-!
 # Lipschitz continuous functions
@@ -351,7 +350,7 @@ protected theorem continuous {f : α → β} (hf : LocallyLipschitz f) : Continu
   rcases (hf x) with ⟨K, t, ht, hK⟩
   exact (hK.continuousOn).continuousAt ht
 
-/-- The composition of locally Lipschitz functions is locally Lipschitz. --/
+/-- The composition of locally Lipschitz functions is locally Lipschitz. -/
 protected lemma comp  {f : β → γ} {g : α → β}
     (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) : LocallyLipschitz (f ∘ g) := by
   intro x
@@ -476,3 +475,35 @@ theorem continuous_prod_of_continuous_lipschitzWith [PseudoEMetricSpace α] [Top
     [PseudoEMetricSpace γ] (f : α × β → γ) (K : ℝ≥0) (ha : ∀ a, Continuous fun y => f (a, y))
     (hb : ∀ b, LipschitzWith K fun x => f (x, b)) : Continuous f :=
   continuous_prod_of_dense_continuous_lipschitzWith f K dense_univ (fun _ _ ↦ ha _) hb
+
+theorem continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith' [TopologicalSpace α]
+    [PseudoEMetricSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) {s : Set α} {t t' : Set β}
+    (ht' : t' ⊆ t) (htt' : t ⊆ closure t') (K : ℝ≥0)
+    (ha : ∀ a ∈ s, LipschitzOnWith K (fun y => f (a, y)) t)
+    (hb : ∀ b ∈ t', ContinuousOn (fun x => f (x, b)) s) : ContinuousOn f (s ×ˢ t) :=
+  have : ContinuousOn (f ∘ Prod.swap) (t ×ˢ s) :=
+    continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith _ ht' htt' K hb ha
+  this.comp continuous_swap.continuousOn (mapsTo_swap_prod _ _)
+
+theorem continuousOn_prod_of_continuousOn_lipschitzOnWith' [TopologicalSpace α]
+    [PseudoEMetricSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) {s : Set α} {t : Set β} (K : ℝ≥0)
+    (ha : ∀ a ∈ s, LipschitzOnWith K (fun y => f (a, y)) t)
+    (hb : ∀ b ∈ t, ContinuousOn (fun x => f (x, b)) s) : ContinuousOn f (s ×ˢ t) :=
+  have : ContinuousOn (f ∘ Prod.swap) (t ×ˢ s) :=
+    continuousOn_prod_of_continuousOn_lipschitzOnWith _ K hb ha
+  this.comp continuous_swap.continuousOn (mapsTo_swap_prod _ _)
+
+theorem continuous_prod_of_dense_continuous_lipschitzWith' [TopologicalSpace α]
+    [PseudoEMetricSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) (K : ℝ≥0) {t : Set β}
+    (ht : Dense t) (ha : ∀ a, LipschitzWith K fun y => f (a, y))
+    (hb : ∀ b ∈ t, Continuous fun x => f (x, b)) : Continuous f :=
+  have : Continuous (f ∘ Prod.swap) :=
+    continuous_prod_of_dense_continuous_lipschitzWith _ K ht hb ha
+  this.comp continuous_swap
+
+theorem continuous_prod_of_continuous_lipschitzWith' [TopologicalSpace α] [PseudoEMetricSpace β]
+    [PseudoEMetricSpace γ] (f : α × β → γ) (K : ℝ≥0) (ha : ∀ a, LipschitzWith K fun y => f (a, y))
+    (hb : ∀ b, Continuous fun x => f (x, b)) : Continuous f :=
+  have : Continuous (f ∘ Prod.swap) :=
+    continuous_prod_of_continuous_lipschitzWith _ K hb ha
+  this.comp continuous_swap

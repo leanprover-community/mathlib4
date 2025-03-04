@@ -324,7 +324,7 @@ lemma LSeriesSummable.isBigO_rpow {f : ℕ → ℂ} {s : ℂ} (h : LSeriesSummab
   obtain ⟨C, hC⟩ := h.le_const_mul_rpow
   refine Asymptotics.IsBigO.of_bound C <| eventually_atTop.mpr ⟨1, fun n hn ↦ ?_⟩
   convert hC n (Nat.pos_iff_ne_zero.mp hn) using 2
-  rw [Real.norm_eq_abs, Real.abs_rpow_of_nonneg n.cast_nonneg, _root_.abs_of_nonneg n.cast_nonneg]
+  rw [Real.norm_eq_abs, Real.abs_rpow_of_nonneg n.cast_nonneg, abs_of_nonneg n.cast_nonneg]
 
 /-- If `f n` is bounded in absolute value by a constant times `n^(x-1)` and `re s > x`,
 then the `LSeries` of `f` is summable at `s`. -/
@@ -348,7 +348,7 @@ lemma LSeriesSummable_of_le_const_mul_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ}
   · simpa only [term_zero, norm_zero] using norm_nonneg _
   have hn' : 0 < (n : ℝ) ^ s.re := Real.rpow_pos_of_pos (Nat.cast_pos.mpr hn) _
   simp_rw [term_of_ne_zero hn.ne', norm_div, norm_natCast_cpow_of_pos hn, div_le_iff₀ hn',
-    norm_eq_abs (C : ℂ), abs_ofReal, _root_.abs_of_nonneg hC₀, div_eq_mul_inv, mul_assoc,
+    norm_real, Real.norm_of_nonneg hC₀, div_eq_mul_inv, mul_assoc,
     ← Real.rpow_neg <| Nat.cast_nonneg _, ← Real.rpow_add <| Nat.cast_pos.mpr hn]
   simpa using hC n <| Nat.pos_iff_ne_zero.mp hn
 
@@ -368,7 +368,7 @@ lemma LSeriesSummable_of_isBigO_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ} (hs :
   · refine (hm n hn).trans ?_
     have hn₀ : (0 : ℝ) ≤ n := cast_nonneg _
     gcongr
-    rw [Real.norm_eq_abs, abs_rpow_of_nonneg hn₀, _root_.abs_of_nonneg hn₀]
+    rw [Real.norm_eq_abs, abs_rpow_of_nonneg hn₀, abs_of_nonneg hn₀]
   · have hn' : 0 < n := Nat.pos_of_ne_zero hn₀
     refine (div_le_iff₀ <| rpow_pos_of_pos (cast_pos.mpr hn') _).mp ?_
     refine (le_max' _ _ <| mem_insert_of_mem ?_).trans <| le_max_right ..
@@ -376,12 +376,12 @@ lemma LSeriesSummable_of_isBigO_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ} (hs :
 
 /-- If `f` is bounded, then its `LSeries` is summable at `s` when `re s > 1`. -/
 theorem LSeriesSummable_of_bounded_of_one_lt_re {f : ℕ → ℂ} {m : ℝ}
-    (h : ∀ n ≠ 0, Complex.abs (f n) ≤ m) {s : ℂ} (hs : 1 < s.re) :
+    (h : ∀ n ≠ 0, ‖f n‖ ≤ m) {s : ℂ} (hs : 1 < s.re) :
     LSeriesSummable f s :=
   LSeriesSummable_of_le_const_mul_rpow hs ⟨m, fun n hn ↦ by simp [h n hn]⟩
 
 /-- If `f` is bounded, then its `LSeries` is summable at `s : ℝ` when `s > 1`. -/
 theorem LSeriesSummable_of_bounded_of_one_lt_real {f : ℕ → ℂ} {m : ℝ}
-    (h : ∀ n ≠ 0, Complex.abs (f n) ≤ m) {s : ℝ} (hs : 1 < s) :
+    (h : ∀ n ≠ 0, ‖f n‖ ≤ m) {s : ℝ} (hs : 1 < s) :
     LSeriesSummable f s :=
   LSeriesSummable_of_bounded_of_one_lt_re h <| by simp [hs]
