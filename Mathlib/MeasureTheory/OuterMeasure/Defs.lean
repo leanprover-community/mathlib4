@@ -33,6 +33,8 @@ We also define a typeclass `MeasureTheory.OuterMeasureClass`.
 outer measure
 -/
 
+assert_not_exists Basis
+
 open scoped ENNReal
 
 variable {α : Type*}
