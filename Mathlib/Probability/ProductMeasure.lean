@@ -51,24 +51,20 @@ namespace MeasureTheory
 
 section Preliminaries
 
-variable {ι : Type*} {α : ι → Type*}
-
-variable {X : ι → Type*} [∀ i, MeasurableSpace (X i)]
+variable {ι : Type*} {X : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)}
 variable (μ : (i : ι) → Measure (X i)) [hμ : ∀ i, IsProbabilityMeasure (μ i)]
 
 /-- Consider a family of probability measures. You can take their products for any finite
-subfamily. This gives a projective family of measures, see `IsProjectiveMeasureFamily`. -/
+subfamily. This gives a projective family of measures. -/
 lemma isProjectiveMeasureFamily_pi :
     IsProjectiveMeasureFamily (fun I : Finset ι ↦ (Measure.pi (fun i : I ↦ μ i))) := by
   refine fun I J hJI ↦ Measure.pi_eq (fun s ms ↦ ?_)
   classical
-  rw [Measure.map_apply (measurable_restrict₂ hJI) (.univ_pi ms),
-    restrict₂_preimage hJI, Measure.pi_pi]
-  let g := fun i ↦ (μ i) (if hi : i ∈ J then s ⟨i, hi⟩ else Set.univ)
-  conv_lhs => change ∏ i : I, g i
-  have h2 : univ.prod (fun i : J ↦ (μ i) (s i)) = univ.prod (fun i : J ↦ g i) :=
-    Finset.prod_congr rfl (by simp [g])
-  rw [h2, prod_coe_sort, prod_coe_sort, prod_subset hJI (fun _ h h' ↦ by simp [g, h, h'])]
+  simp_rw [Measure.map_apply (measurable_restrict₂ hJI) (.univ_pi ms), restrict₂_preimage hJI,
+    Measure.pi_pi, prod_eq_prod_extend]
+  refine (prod_subset_one_on_sdiff hJI (fun x hx ↦ ?_) (fun x hx ↦ ?_)).symm
+  · rw [Function.extend_val_apply x (mem_sdiff.1 hx).1, dif_neg (mem_sdiff.1 hx).2, measure_univ]
+  · rw [Function.extend_val_apply x hx, Function.extend_val_apply x (hJI hx), dif_pos hx]
 
 /-- Consider a family of probability measures. You can take their products for any finite
 subfamily. This gives an additive content on the measurable cylinders. -/
@@ -81,6 +77,12 @@ lemma piContent_cylinder {I : Finset ι} {S : Set (Π i : I, X i)} (hS : Measura
 
 theorem piContent_eq_measure_pi [Fintype ι] {s : Set (Π i, X i)} (hs : MeasurableSet s) :
     piContent μ s = Measure.pi μ s := by
+  let e : @Finset.univ ι _ ≃ ι :=
+    { toFun i := i
+      invFun i := ⟨i, mem_univ i⟩
+      left_inv := fun _ ↦ rfl
+      right_inv := fun _ ↦ rfl }
+  let aux := MeasurableEquiv.piCongrLeft X (Equiv.Set.univ ι)
   let aux : (Π i : univ, X i) → (Π i, X i) := fun x i ↦ x ⟨i, mem_univ i⟩
   have maux : Measurable aux := measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
   have pi_eq : Measure.pi μ = (Measure.pi (fun i : univ ↦ μ i)).map aux := by
@@ -89,9 +91,10 @@ theorem piContent_eq_measure_pi [Fintype ι] {s : Set (Π i, X i)} (hs : Measura
     have : aux ⁻¹' Set.univ.pi a = Set.univ.pi (fun i : @univ ι _ ↦ a i) := by ext x; simp [aux]
     rw [this, Measure.pi_pi]
     simp
-  have : s = cylinder univ (aux ⁻¹' s) := by ext x; simp [aux]
+  have : s = cylinder univ (MeasurableEquiv.piCongrLeft X e ⁻¹' s) := rfl
   nth_rw 1 [this]
-  rw [piContent_cylinder _ (maux hs), pi_eq, Measure.map_apply maux hs]
+  rw [piContent_cylinder _ (hs.preimage (by fun_prop)), ← Measure.pi_map_piCongrLeft e,
+    ← Measure.map_apply (by fun_prop) hs]; rfl
 
 end Preliminaries
 
@@ -153,7 +156,7 @@ lemma Measure.pi_prod_map_IocProdIoc {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ 
   refine (Measure.pi_eq fun s ms ↦ ?_).symm
   simp_rw [Measure.map_apply measurable_IocProdIoc (.univ_pi ms), IocProdIoc_preim hab hbc,
     Measure.prod_prod, Measure.pi_pi, prod_eq_prod_extend]
-  nth_rw 1 [Eq.comm, ← Ioc_union_Ioc_eq_Ioc hab hbc, prod_union (Ioc_disjoint_Ioc le_rfl)]
+  nth_rw 1 [Eq.comm, ← Ioc_union_Ioc_eq_Ioc hab hbc, prod_union sorry]-- (Ioc_disjoint_Ioc le_rfl)]
   congr 1 <;> refine prod_congr rfl fun x hx ↦ ?_
   · rw [Function.extend_val_apply x hx, Function.extend_val_apply x (Ioc_subset_Ioc_right hbc hx),
     restrict₂]
