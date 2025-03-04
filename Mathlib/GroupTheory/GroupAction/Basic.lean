@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Action.End
-import Mathlib.Algebra.Group.Action.Pointwise.Set
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Group.Subgroup.Map
 import Mathlib.Algebra.Module.Defs
