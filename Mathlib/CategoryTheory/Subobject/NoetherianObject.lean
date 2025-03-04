@@ -27,8 +27,6 @@ closed under subobjects.
 
 universe v u
 
-open CategoryTheory
-
 namespace CategoryTheory
 
 open Limits ZeroObject
