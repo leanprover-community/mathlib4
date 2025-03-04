@@ -53,6 +53,26 @@ lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = 
 lemma comp_app {X Y Z : SSet} (f : X ⟶ Y) (g : Y ⟶ Z) (n : SimplexCategoryᵒᵖ) :
     (f ≫ g).app n = f.app n ≫ g.app n := NatTrans.comp_app _ _ _
 
+/-- The constant map of simplicial sets `X ⟶ Y` induced by a simplex `y : Y _[0]`. -/
+@[simps]
+def const {X Y : SSet.{u}} (y : Y _⦋0⦌) : X ⟶ Y where
+  app n _ := Y.map (n.unop.const _ 0).op y
+  naturality _ _ _ := by
+    ext
+    dsimp
+    rw [← FunctorToTypes.map_comp_apply]
+    rfl
+
+@[simp]
+lemma comp_const {X Y Z : SSet.{u}} (f : X ⟶ Y) (z : Z _⦋0⦌) :
+    f ≫ const z = const z := rfl
+
+@[simp]
+lemma const_comp {X Y Z : SSet.{u}} (y : Y _⦋0⦌) (g : Y ⟶ Z) :
+    const (X := X) y ≫ g = const (g.app _ y) := by
+  ext m x
+  simp [FunctorToTypes.naturality]
+
 /-- The ulift functor `SSet.{u} ⥤ SSet.{max u v}` on simplicial sets. -/
 def uliftFunctor : SSet.{u} ⥤ SSet.{max u v} :=
   (SimplicialObject.whiskering _ _).obj CategoryTheory.uliftFunctor.{v, u}

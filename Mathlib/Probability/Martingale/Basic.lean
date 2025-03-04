@@ -72,12 +72,9 @@ theorem martingale_const_fun [OrderBot ι] (ℱ : Filtration ι m0) (μ : Measur
   refine ⟨fun i => hf.mono <| ℱ.mono bot_le, fun i j _ => ?_⟩
   rw [condExp_of_stronglyMeasurable (ℱ.le _) (hf.mono <| ℱ.mono bot_le) hfint]
 
-variable (E)
-
+variable (E) in
 theorem martingale_zero (ℱ : Filtration ι m0) (μ : Measure Ω) : Martingale (0 : ι → Ω → E) ℱ μ :=
   ⟨adapted_zero E ℱ, fun i j _ => by rw [Pi.zero_apply, condExp_zero]; simp⟩
-
-variable {E}
 
 namespace Martingale
 

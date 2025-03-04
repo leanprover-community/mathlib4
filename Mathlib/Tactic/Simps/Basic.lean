@@ -784,8 +784,10 @@ def getRawProjections (stx : Syntax) (str : Name) (traceIfExists : Bool := false
     -- We always print the projections when they already exists and are called by
     -- `initialize_simps_projections`.
     withOptions (· |>.updateBool `trace.simps.verbose (traceIfExists || ·)) <| do
-      trace[simps.debug]
-        projectionsInfo data.2.toList "Already found projection information for structure" str
+      trace[simps.verbose]
+        projectionsInfo data.2.toList "The projections for this structure have already been \
+        initialized by a previous invocation of `initialize_simps_projections` or `@[simps]`.\n\
+        Generated projections for" str
     return data
   trace[simps.verbose] "generating projection information for structure {str}."
   trace[simps.debug] "Applying the rules {rules}."
@@ -1020,12 +1022,12 @@ partial def headStructureEtaReduce (e : Expr) : MetaM Expr := do
   headStructureEtaReduce reduct
 
 /-- Derive lemmas specifying the projections of the declaration.
-  `nm`: name of the lemma
-  If `todo` is non-empty, it will generate exactly the names in `todo`.
-  `toApply` is non-empty after a custom projection that is a composition of multiple projections
-  was just used. In that case we need to apply these projections before we continue changing `lhs`.
-  `simpLemmas`: names of the simp lemmas added so far.(simpLemmas : Array Name)
-  -/
+`nm`: name of the lemma
+If `todo` is non-empty, it will generate exactly the names in `todo`.
+`toApply` is non-empty after a custom projection that is a composition of multiple projections
+was just used. In that case we need to apply these projections before we continue changing `lhs`.
+`simpLemmas`: names of the simp lemmas added so far.(simpLemmas : Array Name)
+-/
 partial def addProjections (nm : Name) (type lhs rhs : Expr)
   (args : Array Expr) (mustBeStr : Bool) (cfg : Config)
   (todo : List (String × Syntax)) (toApply : List Nat) : MetaM (Array Name) := do
