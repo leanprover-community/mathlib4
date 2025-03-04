@@ -469,7 +469,7 @@ theorem snd_apply (κ : Kernel α (β × γ)) (a : α) : snd κ a = (κ a).map P
   rfl
 
 theorem snd_apply' (κ : Kernel α (β × γ)) (a : α) {s : Set γ} (hs : MeasurableSet s) :
-    snd κ a s = κ a {p | p.2 ∈ s} := by rw [snd_apply, Measure.map_apply measurable_snd hs]; rfl
+    snd κ a s = κ a (Prod.snd ⁻¹' s) := by rw [snd_apply, Measure.map_apply measurable_snd hs]
 
 @[simp]
 lemma snd_zero : snd (0 : Kernel α (β × γ)) = 0 := by simp [snd]
