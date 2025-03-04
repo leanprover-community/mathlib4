@@ -1056,6 +1056,15 @@ lemma IsClosedEmbedding.sumElim {f : X → Z} {g : Y → Z}
 
 section IsInducing
 
+-- TODO: where should this go?
+@[simp]
+theorem Filter.map_inl_inf_map_inr {X Y} (u : Filter X) (v : Filter Y) :
+    map inl u ⊓ map inr v = ⊥ := by
+  apply le_bot_iff.mp
+  trans map inl ⊤ ⊓ map inr ⊤
+  · apply inf_le_inf <;> simp
+  · simp
+
 variable {f : X → Z} {g : Y → Z}
 
 /-- If `Sum.elim f g` is an inducing map, then so is `f`. -/
@@ -1112,11 +1121,6 @@ theorem isInducing_sumElim :
       simp only [image_image, elim_inl, elim_inr, preimage_compl, compl_union, inter_mem_iff]
       simp only [← mem_comap_iff_compl, ← mem_map, ← mem_sup]
     rw [← Filter.ext_iff, eq_comm]
-  have hlr (u : Filter X) (v : Filter Y) : map inl u ⊓ map inr v = ⊥ := by
-    apply le_bot_iff.mp
-    trans map inl ⊤ ⊓ map inr ⊤
-    · apply inf_le_inf <;> simp
-    · simp
   constructor <;>
   simp only [disjoint_principal_left, disjoint_principal_right,
     ← disjoint_principal_nhdsSet, ← disjoint_nhdsSet_principal, mem_nhdsSet_iff_forall] <;>
@@ -1128,7 +1132,7 @@ theorem isInducing_sumElim :
    (specialize h (inl x)
     rw [nhds_inl, elim_inl] at h
     apply_fun (· ⊓ map Sum.inr ⊤) at h)] <;>
-  simpa only [hlr, inf_sup_left, inf_sup_right, sup_bot_eq, bot_sup_eq, ← map_inf,
+  simpa only [inf_sup_left, inf_sup_right, sup_bot_eq, bot_sup_eq, ← map_inf,
     inl_injective, inr_injective, top_inf_eq, inf_top_eq, map_eq_bot_iff] using h
 
 lemma Topology.IsInducing.sumElim_of_separatedNhds
