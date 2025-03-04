@@ -312,7 +312,7 @@ end
 /-- An auxiliary lemma that is used to specialize the general divergence theorem to spaces that do
 not have the form `Fin n → ℝ`. -/
 theorem integral_divergence_of_hasFDerivWithinAt_off_countable_of_equiv {F : Type*}
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [PartialOrder F] [MeasureSpace F] [BorelSpace F]
+    [NormedAddCommGroup F] [NormedSpace ℝ F] [Preorder F] [MeasureSpace F] [BorelSpace F]
     (eL : F ≃L[ℝ] ℝⁿ⁺¹) (he_ord : ∀ x y, eL x ≤ eL y ↔ x ≤ y)
     (he_vol : MeasurePreserving eL volume volume) (f : Fin (n + 1) → F → E)
     (f' : Fin (n + 1) → F → F →L[ℝ] E) (s : Set F) (hs : s.Countable) (a b : F) (hle : a ≤ b)

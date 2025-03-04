@@ -61,10 +61,10 @@ theorem eq_of_inclusion_surjective {s t : Set α} {h : s ⊆ t}
   obtain ⟨y, hy⟩ := h_surj ⟨x, hx⟩
   exact mem_of_eq_of_mem (congr_arg Subtype.val hy).symm y.prop
 
-theorem inclusion_le_inclusion [Preorder α] {s t : Set α} (h : s ⊆ t) {x y : s} :
+theorem inclusion_le_inclusion [LE α] {s t : Set α} (h : s ⊆ t) {x y : s} :
     inclusion h x ≤ inclusion h y ↔ x ≤ y := Iff.rfl
 
-theorem inclusion_lt_inclusion [Preorder α] {s t : Set α} (h : s ⊆ t) {x y : s} :
+theorem inclusion_lt_inclusion [LT α] {s t : Set α} (h : s ⊆ t) {x y : s} :
     inclusion h x < inclusion h y ↔ x < y := Iff.rfl
 
 end Set
