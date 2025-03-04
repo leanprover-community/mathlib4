@@ -106,9 +106,10 @@ syntax bigOpBinderCollection := bigOpBinderParenthesized+
 syntax bigOpBinders := bigOpBinderCollection <|> (ppSpace bigOpBinder)
 
 /-- Collects additional binder/Finset pairs for the given `bigOpBinder`.
+
 Note: this is not extensible at the moment, unlike the usual `bigOpBinder` expansions. -/
-def processBigOpBinder (processed : (Array (Term × Term)))
-    (binder : TSyntax ``bigOpBinder) : MacroM (Array (Term × Term)) :=
+def processBigOpBinder (processed : (Array (Term × Term))) (binder : TSyntax ``bigOpBinder) :
+    MacroM (Array (Term × Term)) :=
   set_option hygiene false in
   withRef binder do
     match binder with
@@ -133,18 +134,16 @@ def processBigOpBinders (binders : TSyntax ``bigOpBinders) :
   | `(bigOpBinders| $[($bs:bigOpBinder)]*) => bs.foldlM processBigOpBinder #[]
   | _ => Macro.throwUnsupported
 
-/-- Collect the binderIdents into a `⟨...⟩` expression. -/
-def bigOpBindersPattern (processed : (Array (Term × Term))) :
-    MacroM Term := do
+/-- Collects the binderIdents into a `⟨...⟩` expression. -/
+def bigOpBindersPattern (processed : Array (Term × Term)) : MacroM Term := do
   let ts := processed.map Prod.fst
   if ts.size == 1 then
     return ts[0]!
   else
     `(⟨$ts,*⟩)
 
-/-- Collect the terms into a product of sets. -/
-def bigOpBindersProd (processed : (Array (Term × Term))) :
-    MacroM Term := do
+/-- Collects the terms into a product of sets. -/
+def bigOpBindersProd (processed : Array (Term × Term)) : MacroM Term := do
   if processed.isEmpty then
     `((Finset.univ : Finset Unit))
   else if processed.size == 1 then
@@ -164,7 +163,7 @@ def bigOpBindersProd (processed : (Array (Term × Term))) :
 These support destructuring, for example `∑ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
 
 Notation: `"∑" bigOpBinders* ("with" term)? "," term` -/
-syntax (name := bigsum) "∑ " bigOpBinders ("with " term)? ", " term:67 : term
+syntax (name := bigsum) "∑ " bigOpBinders ("with " term (" : " term)?)? ", " term:67 : term
 
 /--
 - `∏ x, f x` is notation for `Finset.prod Finset.univ f`. It is the product of `f x`,
@@ -177,25 +176,33 @@ syntax (name := bigsum) "∑ " bigOpBinders ("with " term)? ", " term:67 : term
 These support destructuring, for example `∏ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
 
 Notation: `"∏" bigOpBinders* ("with" term)? "," term` -/
-syntax (name := bigprod) "∏ " bigOpBinders ("with " term)? ", " term:67 : term
+syntax (name := bigprod) "∏ " bigOpBinders ("with " term (" : " term)?)? ", " term:67 : term
 
 macro_rules (kind := bigsum)
-  | `(∑ $bs:bigOpBinders $[with $p?]?, $v) => do
+  | `(∑ $bs:bigOpBinders $[with $a? $[: $b??]?]?, $v) => do
     let processed ← processBigOpBinders bs
     let x ← bigOpBindersPattern processed
     let s ← bigOpBindersProd processed
-    match p? with
-    | some p => `(Finset.sum (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
-    | none => `(Finset.sum $s (fun $x ↦ $v))
+    -- `a` is interpreted as the filtering proposition, unless `b` exists, in which case `a` is the
+    -- proof and `b` is the filtering proposition
+    match a?, b?? with
+    | some hp, some (some p) =>
+      `(Finset.sum $s fun $x ↦ if $hp : $p then f $x $hp else 0)
+    | some p, _ => `(Finset.sum (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
+    | none, _ => `(Finset.sum $s (fun $x ↦ $v))
 
 macro_rules (kind := bigprod)
-  | `(∏ $bs:bigOpBinders $[with $p?]?, $v) => do
+  | `(∏ $bs:bigOpBinders $[with $a? $[: $b??]?]?, $v) => do
     let processed ← processBigOpBinders bs
     let x ← bigOpBindersPattern processed
     let s ← bigOpBindersProd processed
-    match p? with
-    | some p => `(Finset.prod (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
-    | none => `(Finset.prod $s (fun $x ↦ $v))
+    -- `a` is interpreted as the filtering proposition, unless `b` exists, in which case `a` is the
+    -- proof and `b` is the filtering proposition
+    match a?, b?? with
+    | some hp, some (some p) =>
+      `(Finset.prod $s fun $x ↦ if $hp : $p then f $x $hp else 1)
+    | some p, _ => `(Finset.prod (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
+    | none, _ => `(Finset.prod $s (fun $x ↦ $v))
 
 section deprecated -- since 2024-30-01
 open Elab Term Tactic TryThis
