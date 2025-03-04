@@ -65,6 +65,13 @@ variable {K : Type*} [NormedLinearOrderedField K]
 variable [NormedAddCommGroup E] [NormedSpace K E]
 variable (b : Basis ι K E)
 
+def basis : Basis ι ℤ (span ℤ (Set.range b)) := Basis.restrictScalars ℤ b
+
+@[simp]
+theorem basis_apply (i : ι) :
+    (basis b) i = b i := by
+  rw [basis, Basis.restrictScalars_apply]
+
 theorem span_top : span K (span ℤ (Set.range b) : Set E) = ⊤ := by simp [span_span_of_tower]
 
 theorem map {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] (f : E ≃ₗ[K] F) :

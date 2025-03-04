@@ -12,6 +12,7 @@ noncomputable def basisOfPiSpaceOfLinearIndependent {b : ι → (ι → K)} (hb 
   · rw [not_nonempty_iff] at hι
     exact Basis.empty _
 
+@[simp]
 theorem coe_basisOfPiSpaceOfLinearIndependent {b : ι → (ι → K)} (hb : LinearIndependent K b) :
     ⇑(basisOfPiSpaceOfLinearIndependent hb) = b := by
   by_cases hι : Nonempty ι

@@ -47,10 +47,26 @@ def equivFinRank : Fin (rank K) ≃ {w : InfinitePlace K // w ≠ w₀} :=
   Fintype.equivOfCardEq <| by
     rw [Fintype.card_subtype_compl, Fintype.card_ofSubsingleton, Fintype.card_fin, rank]
 
-variable {K} in
+variable {K}
+
+abbrev isMaxRank (u : Fin (rank K) → (𝓞 K)ˣ) : Prop :=
+  LinearIndependent ℝ (fun i ↦ logEmbedding K (Additive.ofMul (u i)))
+
+def basisOfIsMaxRank {u : Fin (rank K) → (𝓞 K)ˣ} (hu : isMaxRank u) :
+    Basis (Fin (rank K)) ℝ ({w : InfinitePlace K // w ≠ w₀} → ℝ) := by
+  classical
+  exact (basisOfPiSpaceOfLinearIndependent
+    ((linearIndependent_equiv (equivFinRank K).symm).mpr hu)).reindex (equivFinRank K).symm
+
+theorem basisOfIsMaxRank_apply {u : Fin (rank K) → (𝓞 K)ˣ} (hu : isMaxRank u) (i : Fin (rank K)) :
+    (basisOfIsMaxRank hu) i = logEmbedding K (Additive.ofMul (u i)) := by
+  classical
+  simp [basisOfIsMaxRank, Basis.coe_reindex,  Equiv.symm_symm, Function.comp_apply,
+    coe_basisOfPiSpaceOfLinearIndependent]
+
 def regOfFamily (u : Fin (rank K) → (𝓞 K)ˣ) : ℝ := by
   classical
-  by_cases hu : LinearIndependent ℝ (fun i ↦ logEmbedding K (Additive.ofMul (u i)))
+  by_cases hu : isMaxRank u
   · exact ZLattice.covolume <| span ℤ <| Set.range <|
       basisOfPiSpaceOfLinearIndependent <| (linearIndependent_equiv (equivFinRank K).symm).mpr hu
   · exact 0
@@ -67,11 +83,11 @@ def regOfFamily (u : Fin (rank K) → (𝓞 K)ˣ) : ℝ := by
 --     · exact 0
 --   · exact 1
 
-variable {K} in
-theorem regOfFamily_eq_zero {u : Fin (rank K) → (𝓞 K)ˣ}
-    (hu : ¬ LinearIndependent ℝ (fun i ↦ logEmbedding K (Additive.ofMul (u i)))) :
+theorem regOfFamily_eq_zero {u : Fin (rank K) → (𝓞 K)ˣ} (hu : ¬ isMaxRank u) :
     regOfFamily u = 0 := by
   rw [regOfFamily, dif_neg hu]
+
+variable (K)
 
 open scoped Classical in
 /-- The regulator of a number field `K`. -/
@@ -95,14 +111,14 @@ open scoped Classical in
 theorem regulator_pos : 0 < regulator K := ZLattice.covolume_pos (unitLattice K) volume
 
 open scoped Classical in
-example (u :  Fin (rank K) → (𝓞 K)ˣ) (e : {w : InfinitePlace K // w ≠ w₀} ≃ Fin (rank K)) :
+example (u : Fin (rank K) → (𝓞 K)ˣ) (e : {w : InfinitePlace K // w ≠ w₀} ≃ Fin (rank K)) :
     regOfFamily u = |(Matrix.of fun i ↦ logEmbedding K (Additive.ofMul (u (e i)))).det| := by
   by_cases hu : LinearIndependent ℝ (fun i ↦ logEmbedding K (Additive.ofMul (u i)))
-  ·
-    rw [regOfFamily, dif_pos hu, ZLattice.covolume_eq_det]
-    sorry
-
-
+  · rw [regOfFamily, dif_pos hu, ZLattice.covolume_eq_det _ (ZSpan.basis _),
+      ← Matrix.abs_det_submatrix_equiv_equiv ( e.trans (equivFinRank K)) (Equiv.refl _)]
+    congr
+    ext
+    simp
   · have := (linearIndependent_equiv e).not.mpr hu
     simp_rw [Function.comp_def] at this
     rw [regOfFamily_eq_zero hu, Matrix.det_eq_zero_iff.mpr this, abs_zero]
