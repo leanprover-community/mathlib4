@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.LeftResolutions.Transport
 import Mathlib.CategoryTheory.Idempotents.FunctorExtension
+import Mathlib.CategoryTheory.MorphismProperty.Retract
 
 /-!
 # Left resolutions which preserve the zero object
