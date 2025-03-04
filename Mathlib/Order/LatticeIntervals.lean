@@ -122,7 +122,7 @@ protected lemma codisjoint_iff [SemilatticeSup α] {x y : Iic a} :
     Codisjoint x y ↔ (x : α) ⊔ (y : α) = a := by
   simpa only [_root_.codisjoint_iff] using Iic.eq_top_iff
 
-protected lemma isCompl_iff [Lattice α] [BoundedOrder α] {x y : Iic a} :
+protected lemma isCompl_iff [Lattice α] [OrderBot α] {x y : Iic a} :
     IsCompl x y ↔ Disjoint (x : α) (y : α) ∧ (x : α) ⊔ (y : α) = a := by
   rw [_root_.isCompl_iff, Iic.disjoint_iff, Iic.codisjoint_iff]
 

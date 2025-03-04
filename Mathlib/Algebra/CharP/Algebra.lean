@@ -88,7 +88,7 @@ protected theorem RingHom.charP_iff {R A : Type*} [NonAssocSemiring R] [NonAssoc
 /-- If a ring homomorphism `R →+* A` is injective then `A` has the same exponential characteristic
 as `R`. -/
 lemma expChar_of_injective_ringHom {R A : Type*}
-    [Semiring R] [Semiring A] {f : R →+* A} (h : Function.Injective f)
+    [NonAssocSemiring R] [NonAssocSemiring A] {f : R →+* A} (h : Function.Injective f)
     (q : ℕ) [hR : ExpChar R q] : ExpChar A q := by
   rcases hR with _ | hprime
   · haveI := charZero_of_injective_ringHom h; exact .zero
@@ -96,7 +96,7 @@ lemma expChar_of_injective_ringHom {R A : Type*}
 
 /-- If `R →+* A` is injective, and `A` is of exponential characteristic `p`, then `R` is also of
 exponential characteristic `p`. Similar to `RingHom.charZero`. -/
-lemma RingHom.expChar {R A : Type*} [Semiring R] [Semiring A] (f : R →+* A)
+lemma RingHom.expChar {R A : Type*} [NonAssocSemiring R] [NonAssocSemiring A] (f : R →+* A)
     (H : Function.Injective f) (p : ℕ) [ExpChar A p] : ExpChar R p := by
   cases ‹ExpChar A p› with
   | zero => haveI := f.charZero; exact .zero
@@ -149,7 +149,7 @@ end QAlgebra
 An algebra over a field has the same characteristic as the field.
 -/
 
-lemma RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [Semiring L] [Nontrivial L]
+lemma RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [NonAssocSemiring L] [Nontrivial L]
     (f : K →+* L) (p : ℕ) : CharP K p ↔ CharP L p := by
   simp only [charP_iff, ← f.injective.eq_iff, map_natCast f, map_zero f]
 

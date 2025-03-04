@@ -53,7 +53,7 @@ private lemma tendsto_nat_rpow_inv :
   exact Tendsto.comp tendsto_rpow_div tendsto_natCast_atTop_atTop
 
 -- Multiplication by a constant moves in a List.sum
-private lemma list_mul_sum {R : Type*} [CommSemiring R] {T : Type*} (l : List T) (y : R) (x : R) :
+private lemma list_mul_sum {R : Type*} [Semiring R] {T : Type*} (l : List T) (y : R) (x : R) :
     (l.mapIdx fun i _ => x * y ^ i).sum = x * (l.mapIdx fun i _ => y ^ i).sum := by
   simp_rw [← smul_eq_mul, List.smul_sum, List.mapIdx_eq_zipIdx_map]
   congr 1

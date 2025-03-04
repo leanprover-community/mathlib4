@@ -53,7 +53,7 @@ section
 variable {R n m : Type*} [Semiring R] [DecidableEq n]
 
 @[simp]
-lemma map_swap {S : Type*} [Semiring S] (f : R →+* S) (i j : n) :
+lemma map_swap {S : Type*} [NonAssocSemiring S] (f : R →+* S) (i j : n) :
     (swap R i j).map f = swap S i j := by
   simp [swap]
 

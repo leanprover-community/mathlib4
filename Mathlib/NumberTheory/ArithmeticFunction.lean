@@ -407,7 +407,7 @@ theorem zeta_apply_ne {x : ℕ} (h : x ≠ 0) : ζ x = 1 :=
   if_neg h
 
 -- Porting note: removed `@[simp]`, LHS not in normal form
-theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [Module R M]
+theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
     {f : ArithmeticFunction M} {x : ℕ} :
     ((↑ζ : ArithmeticFunction R) • f) x = ∑ i ∈ divisors x, f i := by
   rw [smul_apply]
@@ -458,7 +458,7 @@ theorem pmul_comm [CommMonoidWithZero R] (f g : ArithmeticFunction R) : f.pmul g
   ext
   simp [mul_comm]
 
-lemma pmul_assoc [CommMonoidWithZero R] (f₁ f₂ f₃ : ArithmeticFunction R) :
+lemma pmul_assoc [SemigroupWithZero R] (f₁ f₂ f₃ : ArithmeticFunction R) :
     pmul (pmul f₁ f₂) f₃ = pmul f₁ (pmul f₂ f₃) := by
   ext
   simp only [pmul_apply, mul_assoc]
@@ -592,7 +592,7 @@ theorem map_prod_of_subset_primeFactors [CommSemiring R] {f : ArithmeticFunction
     f (∏ a ∈ t, a) = ∏ a ∈ t, f a :=
   map_prod_of_prime h_mult t fun _ a => prime_of_mem_primeFactors (ht a)
 
-theorem map_div_of_coprime [CommGroupWithZero R] {f : ArithmeticFunction R}
+theorem map_div_of_coprime [GroupWithZero R] {f : ArithmeticFunction R}
     (hf : IsMultiplicative f) {l d : ℕ} (hdl : d ∣ l) (hl : (l/d).Coprime d) (hd : f d ≠ 0) :
     f (l / d) = f l / f d := by
   apply (div_eq_of_eq_mul hd ..).symm
@@ -783,7 +783,7 @@ theorem map_lcm [CommGroupWithZero R] {f : ArithmeticFunction R}
     f (x.lcm y) = f x * f y / f (x.gcd y) := by
   rw [←hf.lcm_apply_mul_gcd_apply, mul_div_cancel_right₀ _ hf_gcd]
 
-theorem eq_zero_of_squarefree_of_dvd_eq_zero [CommMonoidWithZero R] {f : ArithmeticFunction R}
+theorem eq_zero_of_squarefree_of_dvd_eq_zero [MonoidWithZero R] {f : ArithmeticFunction R}
     (hf : IsMultiplicative f) {m n : ℕ} (hn : Squarefree n) (hmn : m ∣ n)
     (h_zero : f m = 0) :
     f n = 0 := by

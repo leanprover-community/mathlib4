@@ -216,7 +216,7 @@ the integral closure `C` of `A` in `L` is a Dedekind domain.
 This cannot be an instance since `A`, `K` or `L` can't be inferred. See also the instance
 `integralClosure.isDedekindDomain_fractionRing` where `K := FractionRing A`
 and `C := integralClosure A L`. -/
-theorem IsIntegralClosure.isDedekindDomain [IsDedekindDomain A] : IsDedekindDomain C :=
+theorem IsIntegralClosure.isDedekindDomain [IsDedekindRing A] : IsDedekindDomain C :=
   have : IsFractionRing C L := IsIntegralClosure.isFractionRing_of_finite_extension A K L C
   have : Algebra.IsIntegral A C := IsIntegralClosure.isIntegral_algebra A L
   { IsIntegralClosure.isNoetherianRing A K L C,

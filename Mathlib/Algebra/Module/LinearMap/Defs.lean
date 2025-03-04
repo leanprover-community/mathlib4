@@ -952,7 +952,7 @@ lemma restrictScalars_comp [AddCommMonoid P] [Module S P] [Module R P]
   rfl
 
 @[simp]
-lemma restrictScalars_trans {T : Type*} [CommSemiring T] [Module T M] [Module T N]
+lemma restrictScalars_trans {T : Type*} [Semiring T] [Module T M] [Module T N]
     [CompatibleSMul M N S T] [CompatibleSMul M N R T] (f : M →ₗ[T] N) :
     (f.restrictScalars S).restrictScalars R = f.restrictScalars R :=
   rfl
