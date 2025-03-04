@@ -93,21 +93,17 @@ theorem IntervalIntegrable.congr {g : ℝ → E} (hf : IntervalIntegrable f μ a
   rwa [intervalIntegrable_iff, ← integrableOn_congr_fun_ae h, ← intervalIntegrable_iff]
 
 /-- Interval integrability is invariant when functions change along discrete sets. -/
-theorem intervalIntegrable_congr_codiscreteWithin {g : ℝ → E}
+theorem IntervalIntegrable.congr_codiscreteWithin {g : ℝ → E} [NoAtoms μ]
+    (h : f =ᶠ[codiscreteWithin (Ι a b)] g) (hf : IntervalIntegrable f μ a b) :
+    IntervalIntegrable g μ a b :=
+  hf.congr (ae_restrict_le_codiscreteWithin measurableSet_Ioc h)
+
+/-- Interval integrability is invariant when functions change along discrete sets. -/
+theorem intervalIntegrable_congr_codiscreteWithin {g : ℝ → E} [NoAtoms μ]
     (h : f =ᶠ[codiscreteWithin (Ι a b)] g) :
-    IntervalIntegrable f volume a b ↔ IntervalIntegrable g volume a b := by
-  constructor
-  · intro hf
-    apply hf.congr
-    rw [eventuallyEq_iff_exists_mem] at *
-    obtain ⟨s, h₁s, h₂s⟩ := h
-    use s, ae_restrict_le_codiscreteWithin measurableSet_Ioc h₁s, h₂s
-  · rw [eventuallyEq_comm] at h
-    intro hg
-    apply hg.congr
-    rw [eventuallyEq_iff_exists_mem] at *
-    obtain ⟨s, h₁s, h₂s⟩ := h
-    use s, ae_restrict_le_codiscreteWithin measurableSet_Ioc h₁s, h₂s
+    IntervalIntegrable f μ a b ↔ IntervalIntegrable g μ a b :=
+  ⟨(IntervalIntegrable.congr_codiscreteWithin h ·),
+    (IntervalIntegrable.congr_codiscreteWithin h.symm ·)⟩
 
 theorem intervalIntegrable_iff_integrableOn_Ioc_of_le (hab : a ≤ b) :
     IntervalIntegrable f μ a b ↔ IntegrableOn f (Ioc a b) μ := by
