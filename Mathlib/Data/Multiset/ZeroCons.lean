@@ -555,9 +555,10 @@ theorem card_eq_card_of_rel {r : α → β → Prop} {s : Multiset α} {t : Mult
 
 theorem exists_mem_of_rel_of_mem {r : α → β → Prop} {s : Multiset α} {t : Multiset β}
     (h : Rel r s t) : ∀ {a : α}, a ∈ s → ∃ b ∈ t, r a b := by
-  induction' h with x y s t hxy _hst ih
-  · simp
-  · intro a ha
+  induction h with
+  | zero => simp
+  | @cons x y s t hxy _ ih =>
+    intro a ha
     rcases mem_cons.1 ha with ha | ha
     · exact ⟨y, mem_cons_self _ _, ha.symm ▸ hxy⟩
     · rcases ih ha with ⟨b, hbt, hab⟩
@@ -580,9 +581,10 @@ theorem rel_of_forall {m1 m2 : Multiset α} {r : α → α → Prop} (h : ∀ a 
 protected nonrec
 theorem Rel.trans (r : α → α → Prop) [IsTrans α r] {s t u : Multiset α} (r1 : Rel r s t)
     (r2 : Rel r t u) : Rel r s u := by
-  induction' t using Multiset.induction_on with x t ih generalizing s u
-  · rw [rel_zero_right.mp r1, rel_zero_left.mp r2, rel_zero_left]
-  · obtain ⟨a, as, ha1, ha2, rfl⟩ := rel_cons_right.mp r1
+  induction t using Multiset.induction_on generalizing s u with
+  | empty => rw [rel_zero_right.mp r1, rel_zero_left.mp r2, rel_zero_left]
+  | cons x t ih =>
+    obtain ⟨a, as, ha1, ha2, rfl⟩ := rel_cons_right.mp r1
     obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp r2
     exact Multiset.Rel.cons (_root_.trans ha1 hb1) (ih ha2 hb2)
 
