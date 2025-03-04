@@ -38,9 +38,10 @@ jobs:
             elan toolchain uninstall "$(cat lean-toolchain)"
           fi
 
-      - name: build cache
+      - name: build cache and get it
         run: |
           lake build cache
+          lake exe cache get Archive.lean Counterexamples.lean Mathlib.lean
 
       - name: Report diff in Lean
         env:
