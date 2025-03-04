@@ -45,10 +45,9 @@ jobs:
       - name: Report diff in Lean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER:    ${{ github.event.pull_request.number }}
+          PR_HASH:      ${{ github.event.pull_request.head.sha }}
         run: |
-          PR_NUMBER="${{ github.event.pull_request.number }}"
-          PR_HASH="${{ github.event.pull_request.head.sha }}"
-
           git checkout master
           git checkout -
           ./scripts/declDiff_shell_glue.sh "${PR_NUMBER}" "${PR_HASH}"

@@ -6,9 +6,6 @@ MSdeclsFile=decls_in_master.txt
 PR_NUMBER="${1:-NO_PR_NUMBER}"
 PR_HASH="${2:-NO_PR_HASH}"
 
-git checkout master
-git checkout -
-
 # Running `getDeclarations <file_name> <sep_string>`
 # 1. downloads the cache for `Mathlib`, `Archive` and `Counterexamples`;
 # 2. adds the line `#all_declarations <file_name>` to the declarations diff Lean script;
@@ -46,7 +43,7 @@ printf 'Diff the declarations\n'
 diff "${MSdeclsFile}" "${PRdeclsFile}"
 echo "*** End of diff ***"
 
-messageStart=$'New <details><summary><b>Declaration diff in Lean</b></summary>'
+messageStart=$'<details><summary><b>Declaration diff in Lean</b></summary>'
 {
   printf '%s\n\n```diff\n' "${messageStart}"
   diff "${MSdeclsFile}" "${PRdeclsFile}" | grep '^[<>]'
@@ -54,4 +51,5 @@ messageStart=$'New <details><summary><b>Declaration diff in Lean</b></summary>'
 } > please_merge_master
 printf -- $'------\n%s------\n' "$(cat please_merge_master)"
 
-./scripts/update_PR_comment.sh please_merge_master "${messageStart}" "${PR_NUMBER}"
+./scripts/update_PR_comment.sh please_merge_master "⚠️" "${PR_NUMBER}"
+#"${messageStart}" "${PR_NUMBER}"
