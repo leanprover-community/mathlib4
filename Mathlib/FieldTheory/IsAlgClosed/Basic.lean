@@ -334,10 +334,11 @@ variable (R : Type u) [CommRing R] (L : Type v) (M : Type w) [Field L] [Field M]
 variable [Algebra R M] [NoZeroSMulDivisors R M] [IsAlgClosure R M]
 variable [Algebra R L] [NoZeroSMulDivisors R L] [IsAlgClosure R L]
 
-attribute [local instance] IsAlgClosure.isAlgClosed in
 /-- A (random) isomorphism between two algebraic closures of `R`. -/
 @[stacks 09GV]
 noncomputable def equiv : L ≃ₐ[R] M :=
+  haveI : IsAlgClosed L := IsAlgClosure.isAlgClosed R
+  haveI : IsAlgClosed M := IsAlgClosure.isAlgClosed R
   AlgEquiv.ofBijective _ (IsAlgClosure.isAlgebraic.algHom_bijective₂
     (IsAlgClosed.lift : L →ₐ[R] M)
     (IsAlgClosed.lift : M →ₐ[R] L)).1

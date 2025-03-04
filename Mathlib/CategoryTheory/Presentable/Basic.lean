@@ -160,7 +160,9 @@ class HasCardinalFilteredColimits : Prop where
   hasColimitsOfShape (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
     HasColimitsOfShape J C := by intros; infer_instance
 
-attribute [instance] HasCardinalFilteredColimits.hasColimitsOfShape
+#adaptation_note /-- nightly-2025-03-02
+This is not a valid instance, since the κ is not determined. -/
+--attribute [instance] HasCardinalFilteredColimits.hasColimitsOfShape
 
 instance [HasColimitsOfSize.{w, w} C] : HasCardinalFilteredColimits.{w} C κ where
 

@@ -146,7 +146,10 @@ class IsTriangulated : Prop where
 
 namespace IsTriangulated
 
-attribute [instance] commShift leftAdjoint_isTriangulated rightAdjoint_isTriangulated
+#adaptation_note /-- nightly-2025-03-02
+Commented out declarations are not valid instances, since the `adj` argument is not determined.
+-/
+attribute [instance] commShift -- leftAdjoint_isTriangulated rightAdjoint_isTriangulated
 
 /-- Constructor for `Adjunction.IsTriangulated`.
 -/
@@ -168,7 +171,12 @@ variable {E : Type*} [Category E] {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G
 
 /-- A composition of triangulated adjunctions is triangulated.
 -/
-instance comp [adj.IsTriangulated] [adj'.IsTriangulated] : (adj.comp adj').IsTriangulated where
+instance comp [adj.IsTriangulated] [adj'.IsTriangulated] : (adj.comp adj').IsTriangulated :=
+  have := leftAdjoint_isTriangulated adj
+  have := rightAdjoint_isTriangulated adj
+  have := leftAdjoint_isTriangulated adj'
+  have := rightAdjoint_isTriangulated adj'
+  {}
 
 end IsTriangulated
 
@@ -186,8 +194,10 @@ abbrev IsTriangulated : Prop := E.toAdjunction.IsTriangulated
 
 namespace IsTriangulated
 
-instance [E.IsTriangulated] : E.functor.IsTriangulated := inferInstance
-instance [E.IsTriangulated] : E.inverse.IsTriangulated := inferInstance
+instance [inst : E.IsTriangulated] : E.functor.IsTriangulated :=
+  inst.leftAdjoint_isTriangulated
+instance [inst : E.IsTriangulated] : E.inverse.IsTriangulated :=
+  inst.rightAdjoint_isTriangulated
 
 instance [h : E.functor.IsTriangulated] : E.symm.inverse.IsTriangulated := h
 instance [h : E.inverse.IsTriangulated] : E.symm.functor.IsTriangulated := h
