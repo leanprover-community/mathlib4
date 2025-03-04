@@ -26,17 +26,32 @@ lemma asc_factorial_aux (n l m a b : ℕ) (h₁ : n.ascFactorial l = a)
   apply ascFactorial_mul_ascFactorial
 
 /-- Calculate `n.ascFactorial l` and return this value along with a proof of the result. -/
-partial def proveAscFactorial (n l : ℕ) : (result : Q(ℕ)) × Q(($n).ascFactorial $l = $result) :=
+partial def proveAscFactorial (n l : ℕ) (en el : Q(ℕ)) :
+    (result : ℕ) × (eresult : Q(ℕ)) × Q(($en).ascFactorial $el = $eresult) :=
   if l ≤ 50 then
-    let res : Q(ℕ) := mkRawNatLit (n.ascFactorial l)
-    ⟨res, (q(Eq.refl $res) : Expr)⟩
+    have res : ℕ := n.ascFactorial l
+    have eres : Q(ℕ) := mkRawNatLit (n.ascFactorial l)
+    have : ($en).ascFactorial $el =Q $eres := ⟨⟩
+    ⟨res, eres, q(Eq.refl $eres)⟩
   else
-    let m : ℕ := l / 2
-    let r : ℕ := l - m
-    let ⟨a, a_prf⟩ := proveAscFactorial n m
-    let ⟨b, b_prf⟩ := proveAscFactorial (n + m) r
-    let prf : Expr := q(asc_factorial_aux $n $m $r $a $b $a_prf $b_prf)
-    ⟨mkRawNatLit (a.natLit! * b.natLit!), prf⟩
+    have m : ℕ := l / 2
+    have em : Q(ℕ) := mkRawNatLit m
+    have : $em =Q $el / 2 := ⟨⟩
+
+    have r : ℕ := l - m
+    have er : Q(ℕ) := mkRawNatLit r
+    have : $er =Q $el - $em := ⟨⟩
+    have : $el =Q ($em + $er) := ⟨⟩
+
+    have nm : ℕ := n + m
+    have enm : Q(ℕ) := mkRawNatLit nm
+    have : $enm =Q $en + $em := ⟨⟩
+
+    let ⟨a, ea, a_prf⟩ := proveAscFactorial n m en em
+    let ⟨b, eb, b_prf⟩ := proveAscFactorial (n + m) r enm er
+    have eab : Q(ℕ) := mkRawNatLit (a * b)
+    have : $eab =Q $ea * $eb := ⟨⟩
+    ⟨a * b, eab, q(by convert asc_factorial_aux $en $em $er $ea $eb $a_prf $b_prf)⟩
 
 lemma isNat_factorial {n x : ℕ} (h₁ : IsNat n x) (a : ℕ) (h₂ : (1).ascFactorial x = a) :
     IsNat (n !) a := by
@@ -47,12 +62,11 @@ lemma isNat_factorial {n x : ℕ} (h₁ : IsNat n x) (a : ℕ) (h₂ : (1).ascFa
 @[norm_num Nat.factorial _]
 def evalNatFactorial : NormNumExt where eval {u α} e := do
   let .app _ (x : Q(ℕ)) ← Meta.whnfR e | failure
+  have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩; have : $e =Q Nat.factorial $x := ⟨⟩
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨ex, p⟩ ← deriveNat x sℕ
-  let ⟨val, ascPrf⟩ := proveAscFactorial 1 ex.natLit!
-  let ascPrf' : Q(ascFactorial 1 $ex = $val) := ascPrf
-  let prf := q(isNat_factorial $p $val $ascPrf')
-  return .isNat sℕ q($val) prf
+  let ⟨_, val, ascPrf⟩ := proveAscFactorial 1 ex.natLit! q(nat_lit 1) ex
+  return .isNat sℕ q($val) q(isNat_factorial $p $val $ascPrf)
 
 lemma isNat_ascFactorial {n x l y : ℕ} (h₁ : IsNat n x) (h₂ : IsNat l y) (a : ℕ)
     (p : x.ascFactorial y = a) : IsNat (n.ascFactorial l) a := by
@@ -63,13 +77,12 @@ lemma isNat_ascFactorial {n x l y : ℕ} (h₁ : IsNat n x) (h₂ : IsNat l y) (
 @[norm_num Nat.ascFactorial _ _]
 def evalNatAscFactorial : NormNumExt where eval {u α} e := do
   let .app (.app _ (x : Q(ℕ))) (y : Q(ℕ)) ← Meta.whnfR e | failure
+  have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩; have : $e =Q Nat.ascFactorial $x $y := ⟨⟩
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨ex₁, p₁⟩ ← deriveNat x sℕ
   let ⟨ex₂, p₂⟩ ← deriveNat y sℕ
-  let ⟨val, ascPrf⟩ := proveAscFactorial (ex₁.natLit!) (ex₂.natLit!)
-  let ascPrf' : Q(ascFactorial $ex₁ $ex₂ = $val) := ascPrf
-  let prf := q(isNat_ascFactorial $p₁ $p₂ $val $ascPrf')
-  return .isNat sℕ q($val) prf
+  let ⟨_, val, ascPrf⟩ := proveAscFactorial ex₁.natLit! ex₂.natLit! ex₁ ex₂
+  return .isNat sℕ q($val) q(isNat_ascFactorial $p₁ $p₂ $val $ascPrf)
 
 lemma isNat_descFactorial {n x l y : ℕ} (z : ℕ) (h₁ : IsNat n x) (h₂ : IsNat l y)
     (h₃ : x = z + y) (a : ℕ) (p : (z + 1).ascFactorial y = a) : IsNat (n.descFactorial l) a := by
@@ -82,37 +95,41 @@ lemma isNat_descFactorial_zero {n x l y : ℕ} (z : ℕ) (h₁ : IsNat n x) (h�
   constructor
   simp [h₁.out, h₂.out, h₃]
 
-private partial def evalNatDescFactorialNotZero {x' y' : Q(ℕ)} (x y z : Q(ℕ)) (px : Q(IsNat $x' $x))
-    (py : Q(IsNat $y' $y)) : (n : Q(ℕ)) × Q(IsNat (descFactorial $x' $y') $n) :=
-  let eq_prf : Q($x = $z + $y) := (q(Eq.refl $x) : Expr)
-  let ⟨val, ascPrf⟩ := proveAscFactorial (z.natLit! + 1) (y.natLit!)
-  let ascPrf : Q(ascFactorial ($z + 1) $y = $val) := ascPrf
-  let prf : Q(IsNat (descFactorial $x' $y') $val) :=
-    q(isNat_descFactorial $z $px $py $eq_prf $val $ascPrf)
-  ⟨val, prf⟩
+private partial def evalNatDescFactorialNotZero {x' y' : Q(ℕ)} (x y z : Q(ℕ))
+    (_hx : $x =Q $z + $y)
+    (px : Q(IsNat $x' $x)) (py : Q(IsNat $y' $y)) :
+    (n : Q(ℕ)) × Q(IsNat (descFactorial $x' $y') $n) :=
+  have zp1 :Q(ℕ) := mkRawNatLit (z.natLit! + 1)
+  have : $zp1 =Q $z + 1 := ⟨⟩
+  let ⟨_, val, ascPrf⟩ := proveAscFactorial (z.natLit! + 1) y.natLit! zp1 y
+  ⟨val, q(isNat_descFactorial $z $px $py rfl $val $ascPrf)⟩
 
-private partial def evalNatDescFactorialZero {x' y' : Q(ℕ)} (x y z : Q(ℕ)) (px : Q(IsNat $x' $x))
-    (py : Q(IsNat $y' $y)) : (n : Q(ℕ)) × Q(IsNat (descFactorial $x' $y') $n) :=
-  let eq_prf : Q($y = $z + $x + 1) := (q(Eq.refl $y) : Expr)
-  let prf : Q(IsNat (descFactorial $x' $y') 0) :=
-    q(isNat_descFactorial_zero $z $px $py $eq_prf)
-  ⟨q(nat_lit 0), prf⟩
+private partial def evalNatDescFactorialZero {x' y' : Q(ℕ)} (x y z : Q(ℕ))
+    (_hy : $y =Q $z + $x + 1)
+    (px : Q(IsNat $x' $x)) (py : Q(IsNat $y' $y)) :
+    (n : Q(ℕ)) × Q(IsNat (descFactorial $x' $y') $n) :=
+  ⟨q(nat_lit 0), q(isNat_descFactorial_zero $z $px $py rfl)⟩
 
-/-- Evaluates the Nat.ascFactorial function. -/
+/-- Evaluates the `Nat.descFactorial` function. -/
 @[norm_num Nat.descFactorial _ _]
 def evalNatDescFactorial : NormNumExt where eval {u α} e := do
   let .app (.app _ (x' : Q(ℕ))) (y' : Q(ℕ)) ← Meta.whnfR e | failure
+  have : u =QL 0 := ⟨⟩
+  have : $α =Q ℕ := ⟨⟩
+  have : $e =Q Nat.descFactorial $x' $y' := ⟨⟩
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨x, p₁⟩ ← deriveNat x' sℕ
   let ⟨y, p₂⟩ ← deriveNat y' sℕ
   if x.natLit! ≥ y.natLit! then
-    let z : ℕ := x.natLit! - y.natLit!
-    let ⟨val, prf⟩ := evalNatDescFactorialNotZero (x' := x') (y' := y') x y (mkRawNatLit z) p₁ p₂
-    return .isNat sℕ val prf
+    have z : Q(ℕ) := mkRawNatLit (x.natLit! - y.natLit!)
+    have : $x =Q $z + $y := ⟨⟩
+    let ⟨val, prf⟩ := evalNatDescFactorialNotZero (x' := x') (y' := y') x y z ‹_› p₁ p₂
+    return .isNat sℕ val q($prf)
   else
-    let z : ℕ := y.natLit! - x.natLit! - 1
-    let ⟨val, prf⟩ := evalNatDescFactorialZero (x' := x') (y' := y') x y (mkRawNatLit z) p₁ p₂
-    return .isNat sℕ val prf
+    have z : Q(ℕ) := mkRawNatLit (y.natLit! - x.natLit! - 1)
+    have : $y =Q $z + $x + 1 := ⟨⟩
+    let ⟨val, prf⟩ := evalNatDescFactorialZero (x' := x') (y' := y') x y z ‹_› p₁ p₂
+    return .isNat sℕ val q($prf)
 
 end NormNum
 
