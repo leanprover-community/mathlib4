@@ -9,7 +9,6 @@ import Mathlib.Logic.ExistsUnique
 import Mathlib.Logic.Nonempty
 import Mathlib.Logic.Nontrivial.Defs
 import Batteries.Tactic.Init
-import Mathlib.Order.Defs.PartialOrder
 import Mathlib.Order.Defs.Unbundled
 
 /-!
