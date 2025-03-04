@@ -361,6 +361,16 @@ theorem exists_length_eq_zero_iff {u v : V} : (∃ p : G.Walk u v, p.length = 0)
     exact ⟨nil, rfl⟩
 
 @[simp]
+lemma exists_length_eq_one_iff {u v : V} : (∃ (p : G.Walk u v), p.length = 1) ↔ G.Adj u v := by
+  refine ⟨?_, fun h ↦ ⟨h.toWalk, by simp⟩⟩
+  rintro ⟨p , hp⟩
+  induction p with
+  | nil => simp only [Walk.length_nil, zero_ne_one] at hp
+  | cons h p' =>
+    simp only [Walk.length_cons, add_left_eq_self] at hp
+    exact ((p'.eq_of_length_eq_zero hp) ▸ h)
+
+@[simp]
 theorem length_eq_zero_iff {u : V} {p : G.Walk u u} : p.length = 0 ↔ p = nil := by cases p <;> simp
 
 theorem getVert_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) (i : ℕ) :
