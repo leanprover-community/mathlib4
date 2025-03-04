@@ -149,7 +149,7 @@ lemma codiscreteWithin_iff_locallyEmptyComplementWithin {s U : Set X} :
     use t, h₁t, (disjoint_iff_inter_eq_empty.mpr h₂t).subset_compl_right
 
 /-- If `U` is closed and `s` is codiscrete within `U`, then `U \ s` is closed.-/
-theorem closed_compl_of_codiscreteWithin {s U : Set X} (hs : s ∈ codiscreteWithin U)
+theorem isClosed_sdiff_of_codiscreteWithin {s U : Set X} (hs : s ∈ codiscreteWithin U)
     (hU : IsClosed U) :
     IsClosed (U \ s) := by
   rw [← isOpen_compl_iff, isOpen_iff_eventually]
