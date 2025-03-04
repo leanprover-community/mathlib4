@@ -31,6 +31,8 @@ getDeclarations () {
 }
 
 getDeclarations "${PRdeclsFile}"
+PRhash="$(git rev-parse HEAD)"
+
 git checkout master...HEAD
 
 # get the lean script file from the current PR -- update before merging into master
