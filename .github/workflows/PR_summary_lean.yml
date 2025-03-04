@@ -66,5 +66,6 @@ jobs:
               ($0 ~ sepString) {con=1}
               END{ printf("```\n</details>\nPR: %s\n\nMaster: %s\n", sha, masterHash) }' > please_merge_master
           printf -- $'------\n%s------\n' "$(cat please_merge_master)"
+          grep "decls_in" *decls_in*
 
           ./scripts/update_PR_comment.sh please_merge_master "${messageStart}" "${PR}"
