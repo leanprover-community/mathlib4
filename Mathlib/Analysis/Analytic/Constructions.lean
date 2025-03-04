@@ -752,8 +752,7 @@ nonnegative. -/
 lemma AnalyticWithinAt.fun_zpow_nonneg {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ}
     (hf : AnalyticWithinAt 𝕜 f s z) (hn : 0 ≤ n) :
     AnalyticWithinAt 𝕜 (fun x ↦ f x ^ n) s z := by
-  simp_rw [(Eq.symm (Int.toNat_of_nonneg hn) : n = OfNat.ofNat n.toNat), zpow_ofNat]
-  apply pow hf
+  simpa [← zpow_natCast, hn] using hf.pow n.toNat
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
 nonnegative. -/
@@ -766,8 +765,7 @@ lemma AnalyticWithinAt.zpow_nonneg {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ
 nonnegative. -/
 lemma AnalyticAt.fun_zpow_nonneg {f : E → 𝕝} {z : E} {n : ℤ} (hf : AnalyticAt 𝕜 f z) (hn : 0 ≤ n) :
     AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := by
-  simp_rw [(Eq.symm (Int.toNat_of_nonneg hn) : n = OfNat.ofNat n.toNat), zpow_ofNat]
-  apply pow hf
+  simpa [← zpow_natCast, hn] using hf.pow n.toNat
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
 nonnegative. -/
@@ -780,8 +778,7 @@ nonnegative. -/
 lemma AnalyticOn.fun_zpow_nonneg {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : AnalyticOn 𝕜 f s)
     (hn : 0 ≤ n) :
     AnalyticOn 𝕜 (fun x ↦ f x ^ n) s := by
-  simp_rw [(Eq.symm (Int.toNat_of_nonneg hn) : n = OfNat.ofNat n.toNat), zpow_ofNat]
-  apply pow hf
+  simpa [← zpow_natCast, hn] using hf.pow n.toNat
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
 nonnegative. -/
