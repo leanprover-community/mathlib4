@@ -322,16 +322,23 @@ theorem abs_log_mul_self_lt (x : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) : |log x * x| 
 theorem tendsto_log_atTop : Tendsto log atTop atTop :=
   tendsto_comp_exp_atTop.1 <| by simpa only [log_exp] using tendsto_id
 
-theorem tendsto_log_nhdsWithin_zero : Tendsto log (𝓝[≠] 0) atBot := by
-  rw [← show _ = log from funext log_abs]
-  refine Tendsto.comp (g := log) ?_ tendsto_abs_nhdsWithin_zero
+lemma tendsto_log_nhdsGT_zero : Tendsto log (𝓝[>] 0) atBot := by
   simpa [← tendsto_comp_exp_atBot] using tendsto_id
 
-lemma tendsto_log_nhdsWithin_zero_left : Tendsto log (𝓝[<] 0) atBot :=
-  tendsto_log_nhdsWithin_zero.mono_left <| nhdsWithin_mono _ fun _ h ↦ ne_of_lt h
+@[deprecated (since := "2025-03-02")]
+alias tendsto_log_nhdsWithin_zero_right := tendsto_log_nhdsGT_zero
 
-lemma tendsto_log_nhdsWithin_zero_right : Tendsto log (𝓝[>] 0) atBot :=
-  tendsto_log_nhdsWithin_zero.mono_left <| nhdsWithin_mono _ fun _ h ↦ ne_of_gt h
+theorem tendsto_log_nhdsNE_zero : Tendsto log (𝓝[≠] 0) atBot := by
+  simpa [comp_def] using tendsto_log_nhdsGT_zero.comp tendsto_abs_nhdsNE_zero
+
+@[deprecated (since := "2025-03-02")]
+alias tendsto_log_nhdsWithin_zero := tendsto_log_nhdsNE_zero
+
+lemma tendsto_log_nhdsLT_zero : Tendsto log (𝓝[<] 0) atBot :=
+  tendsto_log_nhdsNE_zero.mono_left <| nhdsWithin_mono _ fun _ h ↦ ne_of_lt h
+
+@[deprecated (since := "2025-03-02")]
+alias tendsto_log_nhdsWithin_zero_left := tendsto_log_nhdsLT_zero
 
 theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
   simp (config := { unfoldPartialApp := true }) only [continuousOn_iff_continuous_restrict,
@@ -356,8 +363,8 @@ theorem continuousAt_log (hx : x ≠ 0) : ContinuousAt log x :=
 theorem continuousAt_log_iff : ContinuousAt log x ↔ x ≠ 0 := by
   refine ⟨?_, continuousAt_log⟩
   rintro h rfl
-  exact not_tendsto_nhds_of_tendsto_atBot tendsto_log_nhdsWithin_zero _
-    (h.tendsto.mono_left inf_le_left)
+  exact not_tendsto_nhds_of_tendsto_atBot tendsto_log_nhdsNE_zero _ <|
+    h.tendsto.mono_left nhdsWithin_le_nhds
 
 theorem log_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
     log (∏ i ∈ s, f i) = ∑ i ∈ s, log (f i) := by
