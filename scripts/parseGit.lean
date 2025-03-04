@@ -23,12 +23,13 @@ sequence of digits in `l`, in their order. -/
 def String.getNats (l : String) : List Nat :=
   l.isolate (·.isDigit) |>.map (·.toNat!)
 
-
+/--  A `lineRg` contains the first and last modified lines in a `GitDiff`. -/
 structure lineRg where
   first : Nat
   last : Nat
   deriving Inhabited
 
+/-- A `GitDiff` contains a file and a line range. -/
 structure GitDiff where
   file : System.FilePath := ""
   rg : lineRg := default
@@ -38,9 +39,19 @@ instance : ToString GitDiff where
   toString := fun
   | {file := f, rg := {first := fi, last := la}} => s!"file: {f}, lines {fi}-{la}"
 
+/--
+`GitDiff.isReady g` checks whether the `GitDiff` `g` contains a non-empty file name
+and a non-empty range.
+-/
 def GitDiff.isReady : GitDiff → Bool
   | {file := f, rg := {first := _, last := la}} => f != "" && la != 0
 
+/--
+Check whether the `GitDiff` `g` is ready.
+* If `g.isReady`, then append it to the array `a` and return the "template" `GitDiff`
+  containing just the input file name.
+* If `! g.isReady`, then return `g` and `a` unchanged.
+-/
 def GitDiff.appendIfReady (a : Array GitDiff) (g : GitDiff) (f : System.FilePath) :
     GitDiff × Array GitDiff :=
   if g.isReady then ({file := f}, a.push g) else (g, a)
