@@ -33,13 +33,26 @@ import Mathlib.Topology.Algebra.Ring.Basic
 Foobars, barfoos
 -/
 
-
 open Set Topology Filter
 
 variable {ι : Type*}
 variable (R : ι → Type*) (A : (i : ι) → Set (R i))
 variable (R' : ι → Type*) (A' : (i : ι) → Set (R' i))
 
+/-!
+## Definition and elementary maps
+-/
+
+/-- The restricted product of a family `R : ι → Type*` of types, relative to subsets
+`A : (i : ι) → Set (R i)` and the filter `𝓕 : Filter ι`, is the set of all `x : Π i, R i`
+such that `x j ∈ A j` eventually along `𝓕`. We denote it by `Πʳ i, [R i, A i]_[𝓕]`.
+
+The most common use case is with `𝓕 = cofinite`, in which case the restricted product is the set
+of all `x : Π i, R i` such that `x j ∈ A j` for all but finitely many `j`. We denote it simply
+by `Πʳ i, [R i, A i]`.
+
+Similarly, if `S` is a principal filter, the restricted product `Πʳ i, [R i, A i]_[𝓟 s]`
+is the set of all `x : Π i, R i` such that `∀ j ∈ S, x j ∈ A j`. -/
 def RestrictedProduct (𝓕 : Filter ι) : Type _ := {x : Π i, R i // ∀ᶠ i in 𝓕, x i ∈ A i}
 
 open Batteries.ExtendedBinder
@@ -64,16 +77,20 @@ instance : DFunLike (Πʳ i, [R i, A i]_[𝓕]) ι R where
 
 lemma range_coe :
     range ((↑) : Πʳ i, [R i, A i]_[𝓕] → Π i, R i) = {x | ∀ᶠ i in 𝓕, x i ∈ A i} :=
-  subset_antisymm (range_subset_iff.mpr fun x ↦ x.2) (fun x hx ↦ mem_range.mpr ⟨⟨x, hx⟩, rfl⟩)
+  Subtype.range_val_subtype
 
 lemma range_coe_principal :
     range ((↑) : Πʳ i, [R i, A i]_[𝓟 S] → Π i, R i) = S.pi A :=
   range_coe R A
 
 variable (𝓕) in
+/-- The *structure map* of the restricted product is the obvious inclusion from `Π i, A i`
+into `Πʳ i, [R i, A i]_[𝓕]`. -/
 def structureMap (x : Π i, A i) : Πʳ i, [R i, A i]_[𝓕] :=
   ⟨fun i ↦ x i, .of_forall fun i ↦ (x i).2⟩
 
+/-- If `𝓕 ≤ 𝓖`, the restricted product `Πʳ i, [R i, A i]_[𝓖]` is naturally included in
+`Πʳ i, [R i, A i]_[𝓕]`. This is the corresponding map. -/
 def inclusion (h : 𝓕 ≤ 𝓖) (x : Πʳ i, [R i, A i]_[𝓖]) :
     Πʳ i, [R i, A i]_[𝓕] :=
   ⟨x, x.2.filter_mono h⟩
@@ -102,6 +119,12 @@ lemma range_structureMap :
     (fun _ hx ↦ mem_range.mpr <| exists_structureMap_eq_of_forall R A hx)
 
 section Algebra
+/-!
+## Algebraic instances on restricted products
+
+In this section, we endow the restricted product with its algebraic instances.
+To avoid any unnecessary coercions, we use subobject classes for the subset `A i` of each `R i`.
+-/
 
 variable {S S' : ι → Type*} -- subobject types
 variable [Π i, SetLike (S i) (R i)] [Π i, SetLike (S' i) (R' i)]
@@ -167,6 +190,33 @@ instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
 end Algebra
 
 section Topology
+/-!
+## Topology on the restricted product
+
+The topology on the restricted product `Πʳ i, [R i, A i]_[𝓕]` is defined in the following way:
+1. If `𝓕` is some principal filter `𝓟 s`, we take the topology induced by the product topology
+on `Π i, R i`.
+2. In general, we note that `𝓕` is the infimum of the principal filters coarser than `𝓕`. We
+then endow `Πʳ i, [R i, A i]_[𝓕]` with the inductive limit / final topology associated to the
+inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
+
+In particular:
+* On the "usual" restricted product, with respect to the cofinite filter, this corresponds to taking
+the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all *finite* sets `s : Set ι`.
+* If `𝓕 = 𝓟 s` is a principal filter, this second step clearly does not change the topology, since
+`s` belongs to the indexing set of the inductive limit.
+
+Taking advantage of that second remark, we do not actually declare an instance specific to
+principal filters. Instead, we provide directly the general instance (corresponding to step 2 above)
+as `RestrictedProduct.topologicalSpace`. We then prove that, for a principal filter, the
+map to the full product is an inducing (`RestrictedProduct.isInducing_coe_of_principal`),
+and that the topology for a general `𝓕` is indeed the expected inductive limit
+(`RestrictedProduct.topologicalSpace_eq_iSup`).
+-/
+
+/-!
+### Definition of the topology
+-/
 
 variable {R A R' A'}
 variable {𝓕 : Filter ι}
@@ -188,6 +238,9 @@ theorem continuous_inclusion {𝓖 : Filter ι} (h : 𝓕 ≤ 𝓖) :
   exact iSup₂_le fun S hS ↦ le_iSup₂_of_le S (le_trans h hS) le_rfl
 
 section principal
+/-!
+### Topological facts in the principal case
+-/
 
 variable {S : Set ι}
 
@@ -234,6 +287,7 @@ theorem continuous_rng_of_bot {X : Type*} [TopologicalSpace X]
     Continuous f ↔ Continuous ((↑) ∘ f : X → Π i, R i) :=
   isInducing_coe_of_bot.continuous_iff
 
+/-- The obvious bijection between `Πʳ i, [R i, A i]_[⊤]` and `Π i, A i` is a homeomorphism. -/
 def homeoTop : (Π i, A i) ≃ₜ (Πʳ i, [R i, A i]_[⊤]) where
   toFun f := ⟨fun i ↦ f i, fun i ↦ (f i).2⟩
   invFun f i := ⟨f i, f.2 i⟩
@@ -244,6 +298,7 @@ def homeoTop : (Π i, A i) ≃ₜ (Πʳ i, [R i, A i]_[⊤]) where
   left_inv _ := rfl
   right_inv _ := rfl
 
+/-- The obvious bijection between `Πʳ i, [R i, A i]_[⊥]` and `Π i, R i` is a homeomorphism. -/
 def homeoBot : (Π i, R i) ≃ₜ (Πʳ i, [R i, A i]_[⊥]) where
   toFun f := ⟨fun i ↦ f i, eventually_bot⟩
   invFun f i := f i
@@ -252,19 +307,23 @@ def homeoBot : (Π i, R i) ≃ₜ (Πʳ i, [R i, A i]_[⊥]) where
   left_inv _ := rfl
   right_inv _ := rfl
 
-instance [hS : Fact (cofinite ≤ 𝓟 S)]
-    [∀ i, WeaklyLocallyCompactSpace (R i)] [hAcompact : ∀ i, CompactSpace (A i)] :
+/-- Assume that `S` is a subset of `ι` with finite complement, that each `R i` is weakly locally
+compact, and that `A i` is *compact* for all `i ∈ S`. Then the restricted product
+`Πʳ i, [R i, A i]_[𝓟 S]` is locally compact.
+
+Note: we spell "`S` has finite complement" as `cofinite ≤ 𝓟 S`. -/
+theorem weaklyLocallyCompactSpace_of_principal [∀ i, WeaklyLocallyCompactSpace (R i)]
+    (hS : cofinite ≤ 𝓟 S) (hAcompact : ∀ i ∈ S, IsCompact (A i)) :
     WeaklyLocallyCompactSpace (Πʳ i, [R i, A i]_[𝓟 S]) where
   exists_compact_mem_nhds := fun x ↦ by
-    have hS := hS.out
     rw [le_principal_iff, mem_cofinite] at hS
     classical
     have : ∀ i, ∃ K, IsCompact K ∧ K ∈ 𝓝 (x i) := fun i ↦ exists_compact_mem_nhds (x i)
     choose K K_compact hK using this
     set Q : Set (Π i, R i) := univ.pi (fun i ↦ if i ∈ S then A i else K i) with Q_def
     have Q_compact : IsCompact Q := isCompact_univ_pi fun i ↦ by
-      split_ifs
-      · exact isCompact_iff_compactSpace.mpr inferInstance
+      split_ifs with his
+      · exact hAcompact i his
       · exact K_compact i
     set U : Set (Π i, R i) := Sᶜ.pi K with U_def
     have U_nhds : U ∈ 𝓝 (x : Π i, R i) := set_pi_mem_nhds hS fun i _ ↦ hK i
@@ -279,9 +338,18 @@ instance [hS : Fact (cofinite ≤ 𝓟 S)]
       exact inter_subset_left
     · simpa only [isInducing_coe_of_principal.nhds_eq_comap] using preimage_mem_comap U_nhds
 
+instance [∀ i, WeaklyLocallyCompactSpace (R i)] [hS : Fact (cofinite ≤ 𝓟 S)]
+    [hAcompact : ∀ i, CompactSpace (A i)] :
+    WeaklyLocallyCompactSpace (Πʳ i, [R i, A i]_[𝓟 S]) :=
+  weaklyLocallyCompactSpace_of_principal hS.out
+    fun _ _ ↦ isCompact_iff_compactSpace.mpr inferInstance
+
 end principal
 
 section general
+/-!
+### Topological facts in the general case
+-/
 
 variable (𝓕) in
 theorem topologicalSpace_eq_iSup :
@@ -289,6 +357,11 @@ theorem topologicalSpace_eq_iSup :
       .coinduced (inclusion R A hS) (topologicalSpace R A (𝓟 S)) := by
   simp_rw [topologicalSpace_eq_of_principal, topologicalSpace]
 
+/-- The **universal property** of the topology on the restricted product: a map from
+`Πʳ i, [R i, A i]_[𝓕]` is continuous *iff* its restriction to each `Πʳ i, [R i, A i]_[𝓟 s]`
+(with `𝓕 ≤ 𝓟 s`) is continuous.
+
+See also `RestrictedProduct.continuous_dom_prod_right`. -/
 theorem continuous_dom {X : Type*} [TopologicalSpace X]
     {f : Πʳ i, [R i, A i]_[𝓕] → X} :
     Continuous f ↔ ∀ (S : Set ι) (hS : 𝓕 ≤ 𝓟 S), Continuous (f ∘ inclusion R A hS) := by
@@ -325,6 +398,21 @@ theorem isEmbedding_structureMap :
 end general
 
 section cofinite
+/-!
+### Topological facts in the case of `𝓕 = cofinite` and all `A i`s open
+
+The classical restricted product, associated to the cofinite filter, satisfies more topological
+property when each `A i` is an open subset of `R i`. The key fact is that each
+`Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite) then embeds **as an open subset** in
+`Πʳ i, [R i, A i]`.
+
+This allows us to prove a "universal property with parameters", expressing that for any
+arbitrary topolgical space `X` (of "parameters"), the product `X × Πʳ i, [R i, A i]`
+is still the inductive limit of the `X × Πʳ i, [R i, A i]_[𝓟 S]` for `S` cofinite.
+
+This fact, which is **not true** for a general inductive limit, will allow us to prove continuity
+of functions of two variables (e.g algebraic operations), which would otherwise be inaccessible.
+-/
 
 variable (hAopen : ∀ i, IsOpen (A i)) (hAopen' : ∀ i, IsOpen (A' i))
 
@@ -386,21 +474,33 @@ theorem nhds_eq_map_structureMap
     (𝓝 (structureMap R A cofinite x)) = map (structureMap R A cofinite) (𝓝 x) := by
   rw [isOpenEmbedding_structureMap hAopen |>.map_nhds_eq x]
 
-instance [hAopen : Fact (∀ i, IsOpen (A i))] [∀ i, WeaklyLocallyCompactSpace (R i)]
-    [hAcompact : ∀ i, CompactSpace (A i)] :
+include hAopen in
+/-- If each `R i` is weakly locally compact, each `A i` is open, and all but finitely many `A i`s
+are also compact, then the restricted product `Πʳ i, [R i, A i]` is weakly locally compact. -/
+theorem weaklyLocallyCompactSpace_of_cofinite [∀ i, WeaklyLocallyCompactSpace (R i)]
+    (hAcompact : ∀ᶠ i in cofinite, IsCompact (A i)) :
     WeaklyLocallyCompactSpace (Πʳ i, [R i, A i]) where
   exists_compact_mem_nhds := fun x ↦ by
-    set S := {i | x i ∈ A i}
-    have hS : cofinite ≤ 𝓟 S := le_principal_iff.mpr x.2
-    haveI : Fact (cofinite ≤ 𝓟 S) := ⟨hS⟩
-    have hSx : ∀ i ∈ S, x i ∈ A i := fun i hi ↦ hi
+    set S := {i | IsCompact (A i) ∧ x i ∈ A i}
+    have hS : cofinite ≤ 𝓟 S := le_principal_iff.mpr (hAcompact.and x.2)
+    have hSx : ∀ i ∈ S, x i ∈ A i := fun i hi ↦ hi.2
+    have hSA : ∀ i ∈ S, IsCompact (A i) := fun i hi ↦ hi.1
+    haveI := weaklyLocallyCompactSpace_of_principal hS hSA
     rcases exists_inclusion_eq_of_eventually R A hS hSx with ⟨x', hxx'⟩
-    rw [← hxx', nhds_eq_map_inclusion hAopen.out]
+    rw [← hxx', nhds_eq_map_inclusion hAopen]
     rcases exists_compact_mem_nhds x' with ⟨K, K_compact, hK⟩
     exact ⟨inclusion R A hS '' K, K_compact.image (continuous_inclusion hS), image_mem_map hK⟩
 
--- The key result for continuity of multiplication and addition
+instance [hAopen : Fact (∀ i, IsOpen (A i))] [∀ i, WeaklyLocallyCompactSpace (R i)]
+    [hAcompact : ∀ i, CompactSpace (A i)] :
+    WeaklyLocallyCompactSpace (Πʳ i, [R i, A i]) :=
+  weaklyLocallyCompactSpace_of_cofinite hAopen.out <|
+    .of_forall fun _ ↦ isCompact_iff_compactSpace.mpr inferInstance
+
 include hAopen in
+/-- The **universal property with parameters** of the topology on the restricted product:
+for any topological space `X` of "parameters", a map from `X × Πʳ i, [R i, A i]` is continuous
+*iff* its restriction to each `X × Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite) is continuous. -/
 theorem continuous_dom_prod_right {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {f : Πʳ i, [R i, A i] × Y → X} :
     Continuous f ↔ ∀ (S : Set ι) (hS : cofinite ≤ 𝓟 S),
@@ -417,9 +517,11 @@ theorem continuous_dom_prod_right {X Y : Type*} [TopologicalSpace X] [Topologica
     ← map_id (f := 𝓝 y), prod_map_map_eq, ← nhds_prod_eq, tendsto_map'_iff]
   exact H S hS |>.tendsto ⟨x', y⟩
 
--- The key result for continuity of multiplication and addition
 -- TODO: get from the previous one instead of copy-pasting
 include hAopen in
+/-- The **universal property with parameters** of the topology on the restricted product:
+for any topological space `X` of "parameters", a map from `(Πʳ i, [R i, A i]) × X` is continuous
+*iff* its restriction to each `(Πʳ i, [R i, A i]_[𝓟 S]) × X` (with `S` cofinite) is continuous. -/
 theorem continuous_dom_prod_left {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {f : Y × Πʳ i, [R i, A i] → X} :
     Continuous f ↔ ∀ (S : Set ι) (hS : cofinite ≤ 𝓟 S),
@@ -436,8 +538,12 @@ theorem continuous_dom_prod_left {X Y : Type*} [TopologicalSpace X] [Topological
     ← map_id (f := 𝓝 y), prod_map_map_eq, ← nhds_prod_eq, tendsto_map'_iff]
   exact H S hS |>.tendsto ⟨y, x'⟩
 
--- The key result for continuity of multiplication and addition
 include hAopen hAopen' in
+/-- A map from `Πʳ i, [R i, A i] × Πʳ i, [R' i, A' i]` is continuous
+*iff* its restriction to each `Πʳ i, [R i, A i]_[𝓟 S] × Πʳ i, [R' i, A' i]_[𝓟 S]`
+(with `S` cofinite) is continuous.
+
+This is the key result for continuity of multiplication and addition. -/
 theorem continuous_dom_prod {X : Type*} [TopologicalSpace X]
     {f : Πʳ i, [R i, A i] × Πʳ i, [R' i, A' i] → X} :
     Continuous f ↔ ∀ (S : Set ι) (hS : cofinite ≤ 𝓟 S),
@@ -454,8 +560,10 @@ end cofinite
 
 end Topology
 
--- Compatibility between algebra and topology
 section Compatibility
+/-!
+## Compatibility properties between algebra and topology
+-/
 
 variable {S S' : ι → Type*} -- subobject types
 variable [Π i, SetLike (S i) (R i)] [Π i, SetLike (S' i) (R' i)]
@@ -552,7 +660,23 @@ instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopolo
 instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] [∀ i, IsTopologicalRing (R i)] :
     IsTopologicalRing (Πʳ i, [R i, A i]) where
 
+/-- Assume that each `R i` is a locally compact group with `A i` an open subgroup.
+Assume also that all but finitely many `A i`s are compact.
+Then the restricted product `Πʳ i, [R i, A i]` is a locally compact group. -/
+@[to_additive
+"Assume that each `R i` is a locally compact additive group with `A i` an open subgroup.
+Assume also that all but finitely many `A i`s are compact.
+Then the restricted product `Πʳ i, [R i, A i]` is a locally compact additive group."]
+theorem locallyCompactSpace_of_group [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)]
+    [∀ i, IsTopologicalGroup (R i)] [∀ i, LocallyCompactSpace (R i)]
+    (hAcompact : ∀ᶠ i in cofinite, IsCompact (A i : Set (R i))) :
+    LocallyCompactSpace (Πʳ i, [R i, A i]) :=
+  haveI : WeaklyLocallyCompactSpace (Πʳ i, [R i, A i]) :=
+    weaklyLocallyCompactSpace_of_cofinite hAopen.out hAcompact
+  inferInstance
+
 open Pointwise in
+@[to_additive]
 instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopologicalGroup (R i)]
     [hAcompact : ∀ i, CompactSpace (A i)] : LocallyCompactSpace (Πʳ i, [R i, A i]) :=
   -- TODO: extract as a lemma
@@ -560,7 +684,7 @@ instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopolo
     ⟨x • (A i : Set (R i)), .smul _ (isCompact_iff_compactSpace.mpr inferInstance),
       hAopen.out i |>.smul _ |>.mem_nhds <| by
       simpa using smul_mem_smul_set (a := x) (one_mem (A i))⟩
-  inferInstance
+  locallyCompactSpace_of_group _ <| .of_forall fun _ ↦ isCompact_iff_compactSpace.mpr inferInstance
 
 end cofinite
 
