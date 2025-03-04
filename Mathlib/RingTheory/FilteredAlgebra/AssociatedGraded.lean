@@ -540,17 +540,15 @@ variable [OrderedAddCommMonoid ι]
 /--The `algebraMap` for associated graded algebra. -/
 def GradedPiece.algebraMap [IsRingFiltration F F_lt] : R →+ GradedPiece F F_lt 0 where
   toFun r := (mk F F_lt (r • (1 : F 0)))
-  map_zero' := by
-    simp
-  map_add' x y := by
-    simp [add_smul]
+  map_zero' := by simp
+  map_add' x y := by simp [add_smul]
 
 lemma GradedPiece.algebraMap.map_mul [hasGMul F F_lt] (r s : R) : GradedMonoid.mk 0
     ((GradedPiece.algebraMap F F_lt) (r * s)) = GradedMonoid.mk (0 + 0) (GradedMonoid.GMul.mul
     ((GradedPiece.algebraMap F F_lt) r) ((GradedPiece.algebraMap F F_lt) s)) := by
   congr
   · rw [zero_add]
-  · show HEq (mk F F_lt ((r * s) • 1)) _
+  · show HEq (mk F F_lt ((r * s) • (1 : F 0))) _
     rw [mul_comm r s]
     have : ((s * r) • (1 : F 0)).1 = (r • (1 : F 0)).1 * (s • (1 : F 0)).1 := by
       simpa using mul_smul s r (1 : A)
@@ -560,10 +558,12 @@ lemma GradedPiece.algebraMap.map_mul [hasGMul F F_lt] (r s : R) : GradedMonoid.m
 lemma GradedPiece.algebraMap.commutes [hasGMul F F_lt] (r : R) (i : ι) (a : GradedPiece F F_lt i) :
     HEq ((mk F F_lt (r • (1 : F 0))) * a) (a * (mk F F_lt (r • (1 : F 0)))) := by
   have : mk F F_lt a.out = a := by simp only [mk_eq, Quotient.out_eq]
-  have eq1 : (mk F F_lt (r • (1 : F 0))) * a = (mk F F_lt ((r • (1 : F 0)) * a.out)) := by
+  have eq1 : (mk F F_lt (r • (1 : F 0))) * a =
+    (mk F F_lt ((⟨(r • (1 : F 0)).1, (r • (1 : F 0)).2⟩ : ofClass (F 0)) * a.out)) := by
     nth_rw 1 [← this]
     rfl
-  have eq2 : a * (mk F F_lt (r • (1 : F 0))) = (mk F F_lt (a.out * (r • (1 : F 0)))) := by
+  have eq2 : a * (mk F F_lt (r • (1 : F 0))) =
+    (mk F F_lt (a.out * (⟨(r • (1 : F 0)).1, (r • (1 : F 0)).2⟩ : ofClass (F 0)))) := by
     nth_rw 1 [← this]
     rfl
   apply HEq_eq_mk_coe_eq F F_lt _ _ (add_comm 0 i) _ eq1 eq2
@@ -576,7 +576,8 @@ lemma GradedPiece.algebraMap.smul_def [hasGMul F F_lt] (r : R) (i : ι) (a : Gra
   have eq1 : r • a = (mk F F_lt (r • (⟨a.out.1, a.out.2⟩ : F i))) := by
     nth_rw 1 [← this]
     rfl
-  have eq2 : (mk F F_lt (r • (1 : F 0))) * a = (mk F F_lt ((r • (1 : F 0)) * a.out)) := by
+  have eq2 : (mk F F_lt (r • (1 : F 0))) * a =
+    (mk F F_lt ((⟨(r • (1 : F 0)).1, (r • (1 : F 0)).2⟩ : ofClass (F 0)) * a.out)) := by
     nth_rw 1 [← this]
     rfl
   apply HEq_eq_mk_coe_eq F F_lt _ _ (zero_add i).symm _ eq1 eq2
