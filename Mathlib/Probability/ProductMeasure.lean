@@ -63,7 +63,7 @@ lemma isProjectiveMeasureFamily_pi :
   refine fun I J hJI ↦ Measure.pi_eq (fun s ms ↦ ?_)
   classical
   rw [Measure.map_apply (measurable_restrict₂ hJI) (.univ_pi ms),
-    preimage_restrict₂ hJI, Measure.pi_pi]
+    restrict₂_preimage hJI, Measure.pi_pi]
   let g := fun i ↦ (μ i) (if hi : i ∈ J then s ⟨i, hi⟩ else Set.univ)
   conv_lhs => change ∏ i : I, g i
   have h2 : univ.prod (fun i : J ↦ (μ i) (s i)) = univ.prod (fun i : J ↦ g i) :=
@@ -153,7 +153,7 @@ lemma Measure.pi_prod_map_IocProdIoc {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ 
   refine (Measure.pi_eq fun s ms ↦ ?_).symm
   simp_rw [Measure.map_apply measurable_IocProdIoc (.univ_pi ms), IocProdIoc_preim hab hbc,
     Measure.prod_prod, Measure.pi_pi, prod_eq_prod_extend]
-  nth_rw 1 [Eq.comm, ← Ioc_union_Ioc_eq_Ioc hab hbc, prod_union (Ioc_disjoint_Ioc a b c)]
+  nth_rw 1 [Eq.comm, ← Ioc_union_Ioc_eq_Ioc hab hbc, prod_union (Ioc_disjoint_Ioc le_rfl)]
   congr 1 <;> refine prod_congr rfl fun x hx ↦ ?_
   · rw [Function.extend_val_apply x hx, Function.extend_val_apply x (Ioc_subset_Ioc_right hbc hx),
     restrict₂]
@@ -388,7 +388,7 @@ theorem eq_infinitePi {ν : Measure (Π i, X i)}
   refine (isProjectiveLimit_infinitePi μ).unique ?_ |>.symm
   refine fun s ↦ (pi_eq fun t ht ↦ ?_).symm
   classical
-  rw [Measure.map_apply, preimage_restrict, hν, ← prod_attach, univ_eq_attach]
+  rw [Measure.map_apply, restrict_preimage, hν, ← prod_attach, univ_eq_attach]
   · congr with i
     rw [dif_pos i.2]
   any_goals fun_prop
