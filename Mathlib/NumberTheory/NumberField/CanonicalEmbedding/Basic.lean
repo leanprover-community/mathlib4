@@ -1133,7 +1133,7 @@ theorem realSpace.volume_eq_zero [NumberField K] (w : InfinitePlace K) :
   simpa [A] using (h ▸ Set.mem_univ _ : 1 ∈ A)
 
 /--
-The continuous linear map from `realSpace K` to `mixedSpace K` which is the identity of real
+The continuous linear map from `realSpace K` to `mixedSpace K` which is the identity at real
 places and the natural map `ℝ → ℂ` at complex places.
 -/
 def mixedSpaceOfRealSpace : realSpace K →L[ℝ] mixedSpace K :=
