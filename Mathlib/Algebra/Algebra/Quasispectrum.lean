@@ -268,7 +268,7 @@ where `R` is a *semi*ring, but `φ` must still function over a scalar ring `S`. 
 need `S` to be explicit. The primary use case is, for instance, `R := ℝ≥0` and `S := ℝ` or
 `S := ℂ`. -/
 lemma NonUnitalAlgHom.quasispectrum_apply_subset' {F R : Type*} (S : Type*) {A B : Type*}
-    [CommSemiring R] [CommRing S] [NonUnitalRing A] [NonUnitalRing B] [Module R S]
+    [CommSemiring R] [Semiring S] [NonUnitalRing A] [NonUnitalRing B] [Module R S]
     [Module S A] [Module R A] [Module S B] [Module R B] [IsScalarTower R S A] [IsScalarTower R S B]
     [FunLike F A B] [NonUnitalAlgHomClass F S A B] (φ : F) (a : A) :
     quasispectrum R (φ a) ⊆ quasispectrum R a := by
