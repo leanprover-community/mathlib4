@@ -236,6 +236,17 @@ lemma mul_mem_nonZeroDivisors : a * b ∈ M₀⁰ ↔ a ∈ M₀⁰ ∧ b ∈ M�
     apply hb
     rw [mul_assoc, hx]
 
+theorem nonZeroDivisors_dvd_iff_dvd_coe {a b : M₀⁰} :
+    a ∣ b ↔ (a : M₀) ∣ (b : M₀) :=
+  ⟨fun ⟨c, hc⟩ ↦ by simp_rw [hc, Submonoid.coe_mul, dvd_mul_right],
+  fun ⟨c, hc⟩ ↦ ⟨⟨c, (mul_mem_nonZeroDivisors.mp (hc ▸ b.prop)).2⟩,
+    by simp_rw [Subtype.ext_iff, Submonoid.coe_mul, hc]⟩⟩
+
+theorem isUnit_of_mem_nonZeroDivisors {G₀ : Type*} [GroupWithZero G₀] {x : G₀}
+    (hx : x ∈ nonZeroDivisors G₀) : IsUnit x :=
+  ⟨⟨x, x⁻¹, mul_inv_cancel₀ (nonZeroDivisors.ne_zero hx),
+    inv_mul_cancel₀ (nonZeroDivisors.ne_zero hx)⟩, rfl⟩
+
 end CommMonoidWithZero
 
 section GroupWithZero
@@ -249,9 +260,6 @@ noncomputable def nonZeroDivisorsEquivUnits : G₀⁰ ≃* G₀ˣ where
   left_inv u := rfl
   right_inv u := by simp
   map_mul' u v := by simp
-
-lemma isUnit_of_mem_nonZeroDivisors (hx : x ∈ nonZeroDivisors G₀) : IsUnit x :=
-  (nonZeroDivisorsEquivUnits ⟨x, hx⟩).isUnit
 
 end GroupWithZero
 

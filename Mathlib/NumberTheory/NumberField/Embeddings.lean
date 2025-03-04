@@ -443,7 +443,10 @@ theorem mult_pos {w : InfinitePlace K} : 0 < mult w := by
   split_ifs <;> norm_num
 
 @[simp]
-theorem mult_ne_zero {w : InfinitePlace K} : mult w ≠ 0 := ne_of_gt mult_pos
+theorem mult_ne_zero {w : InfinitePlace K} : mult w ≠ 0 := mult_pos.ne'
+
+theorem mult_coe_ne_zero {w : InfinitePlace K} : (mult w : ℝ) ≠ 0 :=
+  Nat.cast_ne_zero.mpr mult_ne_zero
 
 theorem one_le_mult {w : InfinitePlace K} : (1 : ℝ) ≤ mult w := by
   rw [← Nat.cast_one, Nat.cast_le]
@@ -471,7 +474,7 @@ open scoped Classical in
 @[to_additive]
 theorem prod_eq_prod_mul_prod {α : Type*} [CommMonoid α] [NumberField K] (f : InfinitePlace K → α) :
     ∏ w, f w = (∏ w : {w // IsReal w}, f w.1) * (∏ w : {w // IsComplex w}, f w.1) := by
-  rw [← Equiv.prod_comp (Equiv.subtypeEquivRight (fun _ ↦ not_isReal_iff_isComplex))]
+  rw [← (Equiv.subtypeEquivRight (fun _ ↦ not_isReal_iff_isComplex)).prod_comp]
   simp [Fintype.prod_subtype_mul_prod_subtype]
 
 theorem sum_mult_eq [NumberField K] :
