@@ -629,7 +629,7 @@ instance hasLimit_cospan_forget_of_left : HasLimit (cospan f g ⋙ forget) := by
       ((cospan f g ⋙ forget).map Hom.inr)) := by
     change HasLimit (cospan ((forget).map f) ((forget).map g))
     infer_instance
-  apply hasLimitOfIso (diagramIsoCospan _).symm
+  apply hasLimit_of_iso (diagramIsoCospan _).symm
 
 instance hasLimit_cospan_forget_of_left' :
     HasLimit (cospan ((cospan f g ⋙ forget).map Hom.inl) ((cospan f g ⋙ forget).map Hom.inr)) :=
@@ -640,7 +640,7 @@ instance hasLimit_cospan_forget_of_right : HasLimit (cospan g f ⋙ forget) := b
       ((cospan g f ⋙ forget).map Hom.inr)) := by
     change HasLimit (cospan ((forget).map g) ((forget).map f))
     infer_instance
-  apply hasLimitOfIso (diagramIsoCospan _).symm
+  apply hasLimit_of_iso (diagramIsoCospan _).symm
 
 instance hasLimit_cospan_forget_of_right' :
     HasLimit (cospan ((cospan g f ⋙ forget).map Hom.inl) ((cospan g f ⋙ forget).map Hom.inr)) :=

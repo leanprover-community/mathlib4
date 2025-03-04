@@ -170,14 +170,11 @@ protected theorem isCompact [OrderClosedTopology 𝕜] [T2Space E] {A B : Set E}
 
 end IsExposed
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- A point is exposed with respect to `A` iff there exists a hyperplane whose intersection with
 `A` is exactly that point. -/
 def Set.exposedPoints (A : Set E) : Set E :=
   { x ∈ A | ∃ l : E →L[𝕜] 𝕜, ∀ y ∈ A, l y ≤ l x ∧ (l x ≤ l y → y = x) }
-
-variable {𝕜}
 
 theorem exposed_point_def :
     x ∈ A.exposedPoints 𝕜 ↔ x ∈ A ∧ ∃ l : E →L[𝕜] 𝕜, ∀ y ∈ A, l y ≤ l x ∧ (l x ≤ l y → y = x) :=

@@ -160,7 +160,7 @@ theorem forall₂_iff_zip {l₁ l₂} :
   ⟨fun h => ⟨Forall₂.length_eq h, @forall₂_zip _ _ _ _ _ h⟩, fun h => by
     obtain ⟨h₁, h₂⟩ := h
     induction' l₁ with a l₁ IH generalizing l₂
-    · cases length_eq_zero.1 h₁.symm
+    · cases length_eq_zero_iff.1 h₁.symm
       constructor
     · rcases l₂ with - | ⟨b, l₂⟩
       · simp at h₁

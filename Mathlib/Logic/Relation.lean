@@ -3,11 +3,12 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Relator
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.SimpRw
+import Mathlib.Logic.Basic
+import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Relation closures
@@ -712,8 +713,5 @@ theorem Equivalence.eqvGen_iff (h : Equivalence r) : EqvGen r a b ↔ r a b :=
 
 theorem Equivalence.eqvGen_eq (h : Equivalence r) : EqvGen r = r :=
   funext fun _ ↦ funext fun _ ↦ propext <| h.eqvGen_iff
-
-@[deprecated (since := "2024-08-29")] alias Quot.exact := Quot.eqvGen_exact
-@[deprecated (since := "2024-08-29")] alias Quot.EqvGen_sound := Quot.eqvGen_sound
 
 end EqvGen
