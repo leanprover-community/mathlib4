@@ -242,9 +242,6 @@ theorem Ioc_disjoint_Ioc_of_le {d : α} (hbc : b ≤ c) : Disjoint (Ioc a b) (Io
   disjoint_left.2 fun _ h1 h2 ↦ not_and_of_not_left _
     ((mem_Ioc.1 h1).2.trans hbc).not_lt (mem_Ioc.1 h2)
 
-theorem Ioc_disjoint_Ioc_same : Disjoint (Ioc a b) (Ioc b c) :=
-  Ioc_disjoint_Ioc_of_le le_rfl
-
 variable (a)
 
 theorem Ico_self : Ico a a = ∅ :=
