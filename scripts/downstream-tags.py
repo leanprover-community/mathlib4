@@ -5,6 +5,8 @@ import sys
 import subprocess
 import re
 from typing import List, Dict, Optional
+import json
+import base64
 
 # Unicode symbols
 TICK = "✅"   # Check mark button
@@ -45,7 +47,6 @@ def get_latest_version(repo: Dict[str, str]) -> Optional[str]:
             return None
 
         # Parse JSON response
-        import json
         tags = json.loads(result.stdout)
 
         # Extract tag names and filter for version tags
@@ -75,6 +76,39 @@ def get_latest_version(repo: Dict[str, str]) -> Optional[str]:
         return max(version_tags, key=version_key)
     except Exception as e:
         print(f"Error fetching tags for {repo['name']}: {e}", file=sys.stderr)
+        return None
+
+def check_toolchain_history(repo: Dict[str, str], version: str) -> Optional[str]:
+    """Check git history of lean-toolchain file for first occurrence of version"""
+    github_url = repo['github']
+    repo_name = github_url.replace('https://github.com/', '')
+
+    try:
+        result = subprocess.run(
+            ['gh', 'api', f'repos/{repo_name}/commits?path=lean-toolchain'],
+            capture_output=True,
+            text=True
+        )
+        if result.returncode != 0:
+            return None
+
+        commits = json.loads(result.stdout)
+
+        for commit in commits:
+            sha = commit['sha']
+            result = subprocess.run(
+                ['gh', 'api', f'repos/{repo_name}/contents/lean-toolchain?ref={sha}'],
+                capture_output=True,
+                text=True
+            )
+            if result.returncode == 0:
+                content = json.loads(result.stdout)
+                toolchain = base64.b64decode(content['content']).decode('utf-8').strip()
+                if f'leanprover/lean4:{version}' in toolchain:
+                    return commit['sha']
+        return None
+    except Exception as e:
+        print(f"Error checking toolchain history for {repo['name']}: {e}", file=sys.stderr)
         return None
 
 def main():
@@ -108,7 +142,6 @@ def main():
         sys.exit(0 if latest_versions else 1)
 
     elif len(sys.argv) == 2:
-        # Check specific tag
         tag = sys.argv[1]
         print(f"Checking for tag {tag} in downstream repositories:")
         print("-" * 50)
@@ -120,6 +153,12 @@ def main():
             print(f"{status} {repo['name']}")
             if not exists:
                 all_exist = False
+                if commit := check_toolchain_history(repo, tag):
+                    print("    - There is a commit which uses this toolchain. You can tag it using:")
+                    print(f"    gh api repos/{repo['github'].replace('https://github.com/', '')}/git/refs "
+                          f"-X POST -F ref=refs/tags/{tag} -F sha={commit}")
+                else:
+                    print("    - No matching toolchain found in history")
 
         sys.exit(0 if all_exist else 1)
 
