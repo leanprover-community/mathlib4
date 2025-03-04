@@ -77,7 +77,7 @@ lemma le_egauge_inter (s t : Set E) (x : E) :
 lemma le_egauge_pi {ι : Type*} {E : ι → Type*} [∀ i, SMul 𝕜 (E i)] {I : Set ι} {i : ι}
     (hi : i ∈ I) (s : ∀ i, Set (E i)) (x : ∀ i, E i) :
     egauge 𝕜 (s i) (x i) ≤ egauge 𝕜 (I.pi s) x :=
-  egauge_le_of_mapsTo _ (Pi.evalMulActionHom i) (fun x hx ↦ hx i hi) _
+  egauge_le_of_mapsTo _ (Pi.evalMulActionHom i) (fun x hx ↦ by exact hx i hi) _
 
 end SMul
 
