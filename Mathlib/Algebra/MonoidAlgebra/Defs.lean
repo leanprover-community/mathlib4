@@ -674,8 +674,9 @@ theorem ringHom_ext' {R} [Semiring k] [MulOneClass G] [Semiring R] {f g : Monoid
     f = g :=
   ringHom_ext (RingHom.congr_fun h₁) (DFunLike.congr_fun h_of)
 
-theorem induction_on [Semiring k] [Monoid G] {p : MonoidAlgebra k G → Prop} (f : MonoidAlgebra k G)
-    (hM : ∀ g, p (of k G g)) (hadd : ∀ f g : MonoidAlgebra k G, p f → p g → p (f + g))
+theorem induction_on [Semiring k] [MulOneClass G] {p : MonoidAlgebra k G → Prop}
+    (f : MonoidAlgebra k G) (hM : ∀ g, p (of k G g))
+    (hadd : ∀ f g : MonoidAlgebra k G, p f → p g → p (f + g))
     (hsmul : ∀ (r : k) (f), p f → p (r • f)) : p f := by
   refine Finsupp.induction_linear f ?_ (fun f g hf hg => hadd f g hf hg) fun g r => ?_
   · simpa using hsmul 0 (of k G 1) (hM 1)

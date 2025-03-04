@@ -70,7 +70,8 @@ lemma Even.trans_dvd (ha : Even a) (hab : a ∣ b) : Even b :=
 
 lemma Dvd.dvd.even (hab : a ∣ b) (ha : Even a) : Even b := ha.trans_dvd hab
 
-@[simp] lemma range_two_mul (α) [Semiring α] : Set.range (fun x : α ↦ 2 * x) = {a | Even a} := by
+@[simp] lemma range_two_mul (α) [NonAssocSemiring α] :
+    Set.range (fun x : α ↦ 2 * x) = {a | Even a} := by
   ext x
   simp [eq_comm, two_mul, Even]
 

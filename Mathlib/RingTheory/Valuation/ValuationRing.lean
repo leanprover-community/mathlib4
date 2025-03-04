@@ -324,8 +324,8 @@ theorem iff_ideal_total : ValuationRing R ↔ IsTotal (Ideal R) (· ≤ ·) :=
   Iff.trans (⟨fun inst ↦ inst.toPreValuationRing, fun _ ↦ .mk⟩)
     PreValuationRing.iff_ideal_total
 
-theorem unique_irreducible [ValuationRing R] ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible q) :
-    Associated p q := by
+theorem unique_irreducible [PreValuationRing R] ⦃p q : R⦄ (hp : Irreducible p)
+    (hq : Irreducible q) : Associated p q := by
   have := dvd_total p q
   rw [Irreducible.dvd_comm hp hq, or_self_iff] at this
   exact associated_of_dvd_dvd (Irreducible.dvd_symm hq hp this) this

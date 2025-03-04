@@ -701,8 +701,8 @@ theorem blockDiagonal'_pow [∀ i, DecidableEq (m' i)] [Fintype o] [∀ i, Finty
   map_pow (blockDiagonal'RingHom m' α) M n
 
 @[simp]
-theorem blockDiagonal'_smul {R : Type*} [Semiring R] [AddCommMonoid α] [Module R α] (x : R)
-    (M : ∀ i, Matrix (m' i) (n' i) α) : blockDiagonal' (x • M) = x • blockDiagonal' M := by
+theorem blockDiagonal'_smul {R : Type*} [Semiring R] [AddCommMonoid α] [DistribMulAction R α]
+    (x : R) (M : ∀ i, Matrix (m' i) (n' i) α) : blockDiagonal' (x • M) = x • blockDiagonal' M := by
   ext
   simp only [blockDiagonal'_apply, Pi.smul_apply, smul_apply]
   split_ifs <;> simp
