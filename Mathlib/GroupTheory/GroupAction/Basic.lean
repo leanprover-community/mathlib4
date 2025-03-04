@@ -3,10 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Group.Action.End
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Group.Subgroup.Map
+import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.Data.Finite.Sigma
 import Mathlib.Data.Set.Finite.Range
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
 
@@ -284,12 +288,11 @@ theorem Equiv.swap_mem_stabilizer {α : Type*} [DecidableEq α] {S : Set α} {a 
   simp_rw [Set.mem_inv_smul_set_iff, Perm.smul_def, swap_apply_def]
   exact ⟨fun h ↦ by simpa [Iff.comm] using h a, by intros; split_ifs <;> simp [*]⟩
 
-
 namespace MulAction
 
 variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
-/-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions.-/
+/-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions. -/
 @[to_additive
   "To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions."]
 theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :

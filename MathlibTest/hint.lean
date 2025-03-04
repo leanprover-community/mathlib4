@@ -67,7 +67,7 @@ register_hint long_trivial
 /--
 info: Try these:
 • this_is_a_multiline_exact
-  trivial
+    trivial
 -/
 #guard_msgs in
 example : True := by

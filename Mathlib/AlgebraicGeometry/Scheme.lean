@@ -57,19 +57,20 @@ instance : CoeSort Scheme Type* where
 abbrev Opens (X : Scheme) : Type* := TopologicalSpace.Opens X
 
 /-- A morphism between schemes is a morphism between the underlying locally ringed spaces. -/
-structure Hom (X Y : Scheme) extends X.toLocallyRingedSpace.Hom Y.toLocallyRingedSpace where
+structure Hom (X Y : Scheme)
+  extends toLRSHom' : X.toLocallyRingedSpace.Hom Y.toLocallyRingedSpace where
 
 /-- Cast a morphism of schemes into morphisms of local ringed spaces. -/
 abbrev Hom.toLRSHom {X Y : Scheme.{u}} (f : X.Hom Y) :
     X.toLocallyRingedSpace ⟶ Y.toLocallyRingedSpace :=
-  f.toHom_1
+  f.toLRSHom'
 
 /-- See Note [custom simps projection] -/
 def Hom.Simps.toLRSHom {X Y : Scheme.{u}} (f : X.Hom Y) :
     X.toLocallyRingedSpace ⟶ Y.toLocallyRingedSpace :=
   f.toLRSHom
 
-initialize_simps_projections Hom (toHom_1 → toLRSHom)
+initialize_simps_projections Hom (toLRSHom' → toLRSHom)
 
 /-- Schemes are a full subcategory of locally ringed spaces.
 -/
@@ -270,7 +271,6 @@ theorem comp_coeBase {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).base = f.base ≫ g.base :=
   rfl
 
--- Porting note: removed elementwise attribute, as generated lemmas were trivial.
 @[reassoc]
 theorem comp_base {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).base = f.base ≫ g.base :=
@@ -324,10 +324,10 @@ lemma presheaf_map_eqToHom_op (X : Scheme) (U V : X.Opens) (i : U = V) :
     X.presheaf.map (eqToHom i).op = eqToHom (i ▸ rfl) := by
   rw [eqToHom_op, eqToHom_map]
 
-instance is_locallyRingedSpace_iso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.toLRSHom :=
+instance isIso_toLRSHom {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.toLRSHom :=
   forgetToLocallyRingedSpace.map_isIso f
 
-instance base_isIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : IsIso f.base :=
+instance isIso_base {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : IsIso f.base :=
   Scheme.forgetToTop.map_isIso f
 
 -- Porting note: need an extra instance here.
