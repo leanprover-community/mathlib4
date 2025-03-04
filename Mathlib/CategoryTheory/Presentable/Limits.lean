@@ -160,11 +160,11 @@ lemma isCardinalAccessible_of_isLimit {K : Type u'} [Category.{v'} K] {F : K ⥤
 
 end Functor
 
-/-- This is `isCardinalPresentable_of_isColimit` in the particular case `w = v`. -/
+/-- In case `C` is locally `w`-small, use `isCardinalPresentable_of_isColimit`. -/
 lemma isCardinalPresentable_of_isColimit'
-    {K : Type v} [Category.{v} K] {Y : K ⥤ C}
-    (c : Cocone Y) (hc : IsColimit c) (κ : Cardinal.{v}) [Fact κ.IsRegular]
-    (hK : HasCardinalLT (Arrow K) κ)
+    {K : Type u'} [Category.{v'} K] {Y : K ⥤ C}
+    (c : Cocone Y) (hc : IsColimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [HasLimitsOfShape Kᵒᵖ (Type v)] (hK : HasCardinalLT (Arrow K) κ)
     [∀ k, IsCardinalPresentable (Y.obj k) κ] :
     IsCardinalPresentable c.pt κ := by
   have (k : Kᵒᵖ) : ((Y.op ⋙ coyoneda).obj k).IsCardinalAccessible κ := by
@@ -172,9 +172,8 @@ lemma isCardinalPresentable_of_isColimit'
   exact Functor.isCardinalAccessible_of_isLimit
     (coyoneda.mapCone c.op) (isLimitOfPreserves _ hc.op) κ (by simpa)
 
-lemma isCardinalPresentable_of_isColimit
-    [LocallySmall.{w} C]
-    {K : Type w} [Category.{w} K] {Y : K ⥤ C}
+lemma isCardinalPresentable_of_isColimit [LocallySmall.{w} C]
+    {K : Type u'} [Category.{v'} K] [HasLimitsOfShape Kᵒᵖ (Type w)] {Y : K ⥤ C}
     (c : Cocone Y) (hc : IsColimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     (hK : HasCardinalLT (Arrow K) κ)
     [∀ k, IsCardinalPresentable (Y.obj k) κ] :
