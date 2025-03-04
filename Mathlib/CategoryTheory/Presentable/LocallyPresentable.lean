@@ -23,7 +23,7 @@ section
 
 variable (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
-class HasCardinalFilteredGenerators extends LocallySmall.{w} C : Prop where
+class HasCardinalFilteredGenerators : Prop extends LocallySmall.{w} C where
   exists_generators' : ∃ (ι : Type w) (G : ι → C),
     AreCardinalFilteredGenerators G κ
 
@@ -35,11 +35,11 @@ lemma exists_generators [HasCardinalFilteredGenerators.{w} C κ] :
 
 end HasCardinalFilteredGenerators
 
-class IsCardinalLocallyPresentable
-  extends HasCardinalFilteredGenerators C κ, HasColimitsOfSize.{w, w} C : Prop where
+class IsCardinalLocallyPresentable : Prop
+  extends HasCardinalFilteredGenerators C κ, HasColimitsOfSize.{w, w} C where
 
-class IsCardinalAccessibleCategory
-  extends HasCardinalFilteredGenerators C κ, HasCardinalFilteredColimits.{w} C κ : Prop where
+class IsCardinalAccessibleCategory : Prop
+  extends HasCardinalFilteredGenerators C κ, HasCardinalFilteredColimits.{w} C κ where
 
 instance [IsCardinalLocallyPresentable C κ] : IsCardinalAccessibleCategory C κ where
 
