@@ -112,18 +112,6 @@ theorem sigmaIsoSigma_inv_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i 
   rw [← sigmaIsoSigma_hom_ι_apply, ← comp_app, ← comp_app, Iso.hom_inv_id,
     Category.comp_id]
 
-theorem induced_of_isLimit {F : J ⥤ TopCat.{max v u}} (C : Cone F) (hC : IsLimit C) :
-    C.pt.str = ⨅ j, (F.obj j).str.induced (C.π.app j) := by
-  let homeo := homeoOfIso (hC.conePointUniqueUpToIso (limitConeInfiIsLimit F))
-  refine homeo.isInducing.eq_induced.trans ?_
-  change induced homeo (⨅ j : J, _) = _
-  simp [induced_iInf, induced_compose]
-  rfl
-
-theorem limit_topology (F : J ⥤ TopCat.{max v u}) :
-    (limit F).str = ⨅ j, (F.obj j).str.induced (limit.π F j) :=
-  induced_of_isLimit _ (limit.isLimit F)
-
 section Prod
 
 -- Porting note: why is autoParam not firing?
