@@ -57,8 +57,8 @@ lemma surjective (x : c.pt.obj cX.pt) :
     let z (k : K) : (F.obj k).obj (X.obj (j k)) := (H k).choose_spec.choose
     have hz (k : K) : (F.obj k).map (cX.ι.app (j k)) (z k) = y.1 k :=
       (H k).choose_spec.choose_spec
-    refine ⟨IsCardinalFiltered.max j (hasCardinalLT_of_hasCardinalLT_arrow hK), fun k ↦
-      (F.obj k).map (X.map (IsCardinalFiltered.toMax j _ k)) (z k),
+    exact ⟨IsCardinalFiltered.max j (hasCardinalLT_of_hasCardinalLT_arrow hK),
+      fun k ↦ (F.obj k).map (X.map (IsCardinalFiltered.toMax j _ k)) (z k),
         fun k ↦ by rw [← hz, ← FunctorToTypes.map_comp_apply, cX.w]⟩
   obtain ⟨j₁, α, hα⟩ : ∃ (j₁ : J) (α : j₀ ⟶ j₁), ∀ ⦃k k' : K⦄ (φ : k ⟶ k'),
       (F.obj k').map (X.map α) ((F.map φ).app _ (z k)) =
