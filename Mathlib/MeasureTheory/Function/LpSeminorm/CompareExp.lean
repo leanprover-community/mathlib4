@@ -49,7 +49,7 @@ theorem eLpNorm'_le_eLpNormEssSup_mul_rpow_measure_univ {q : ℝ} (hq_pos : 0 < 
     eLpNorm' f q μ ≤ eLpNormEssSup f μ * μ Set.univ ^ (1 / q) := by
   have h_le : (∫⁻ a : α, ‖f a‖ₑ ^ q ∂μ) ≤ ∫⁻ _ : α, eLpNormEssSup f μ ^ q ∂μ := by
     refine lintegral_mono_ae ?_
-    have h_nnnorm_le_eLpNorm_ess_sup := coe_nnnorm_ae_le_eLpNormEssSup f μ
+    have h_nnnorm_le_eLpNorm_ess_sup := enorm_ae_le_eLpNormEssSup f μ
     exact h_nnnorm_le_eLpNorm_ess_sup.mono fun x hx => by gcongr
   rw [eLpNorm', ← ENNReal.rpow_one (eLpNormEssSup f μ)]
   nth_rw 2 [← mul_inv_cancel₀ (ne_of_lt hq_pos).symm]
