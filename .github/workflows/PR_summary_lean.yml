@@ -48,6 +48,8 @@ jobs:
           SEP_STRING: 123GETME!
         run: |
           PR="${{ github.event.pull_request.number }}"
+          git checkout master
+          git switch -
           git checkout master...HEAD
           masterHash="$(git rev-parse HEAD)"
           git switch -
