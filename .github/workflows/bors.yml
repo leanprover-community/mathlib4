@@ -183,6 +183,7 @@ jobs:
           printf -- "------\n"
 
           ./scripts/update_PR_comment.sh please_merge_master "${messageStart}" ${{ steps.PR.outputs.number }}
+          exit 1
 
       - name: build mathlib
         id: build
