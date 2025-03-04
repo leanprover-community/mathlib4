@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Algebra.Group.Prod.Notation
 import Mathlib.Algebra.ZeroOne.Prod
 import Mathlib.Logic.Equiv.Basic
 
@@ -41,10 +42,6 @@ assert_not_exists MonoidWithZero DenselyOrdered
 variable {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
 
 namespace Prod
-
-@[to_additive]
-instance instMul [Mul M] [Mul N] : Mul (M × N) :=
-  ⟨fun p q => ⟨p.1 * q.1, p.2 * q.2⟩⟩
 
 @[to_additive]
 theorem one_mk_mul_one_mk [MulOneClass M] [Mul N] (b₁ b₂ : N) :
