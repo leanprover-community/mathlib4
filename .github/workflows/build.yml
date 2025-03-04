@@ -123,8 +123,6 @@ jobs:
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: If using a lean-pr-release toolchain, uninstall
         run: |
@@ -161,33 +159,6 @@ jobs:
           else
             echo "mk_all=true" >> "${GITHUB_OUTPUT}"
           fi
-
-      - id: PR
-        uses: 8BitJonny/gh-get-current-pr@3.0.0
-        # TODO: this may not work properly if the same commit is pushed to multiple branches:
-        # https://github.com/8BitJonny/gh-get-current-pr/issues/8
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          # Only return if PR is still open
-          filterOutClosed: true
-
-      - name: Report diff in Lean
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          messageStart=$'<details><summary><b>Declaration diff in Lean</b></summary>'
-          ./scripts/declDiff_shell_glue.sh |
-            awk -v messStart="${messageStart}" '
-              BEGIN{
-                con=0
-                printf("%s\n\n```diff\n", messStart)
-              }
-              (con == 1) {print $0}
-              /^GETME!$/ {con=1}
-              END{ print "```\n</details>" }' > please_merge_master
-          printf -- $'------\n%s------\n' "$(cat please_merge_master)"
-
-          ./scripts/update_PR_comment.sh please_merge_master "${messageStart}" ${{ steps.PR.outputs.number }}
 
       - name: build mathlib
         id: build
