@@ -41,6 +41,4 @@ git checkout "${PRhash}"
 
 printf 'Diff the declarations\n'
 
-actualDiff="$(diff decls_in_master.txt "${PRdeclsFile}" | grep '^[<>]')"
-
-printf '%s\n' "${actualDiff}"
+diff "${MSdeclsFile}" "${PRdeclsFile}" | grep '^[<>]'
