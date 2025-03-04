@@ -7,6 +7,7 @@ import Mathlib.Data.Real.Star
 import Mathlib.Algebra.Field.Periodic
 import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.Topology.Algebra.Star
+import Mathlib.Topology.Algebra.UniformGroup.Defs
 import Mathlib.Topology.Instances.Real.Defs
 import Mathlib.Topology.Order.Bornology
 
@@ -33,6 +34,13 @@ instance instIsOrderBornology : IsOrderBornology ℝ where
     exact ⟨bddBelow_Icc.mono hr, bddAbove_Icc.mono hr⟩
 
 instance : ContinuousStar ℝ := ⟨continuous_id⟩
+
+instance : UniformAddGroup ℝ :=
+  UniformAddGroup.mk' Real.uniformContinuous_add Real.uniformContinuous_neg
+
+theorem Real.uniformContinuous_const_mul {x : ℝ} : UniformContinuous (x * ·) :=
+  uniformContinuous_of_continuousAt_zero (DistribMulAction.toAddMonoidHom ℝ x)
+    (continuous_const_smul x).continuousAt
 
 theorem Real.isTopologicalBasis_Ioo_rat :
     @IsTopologicalBasis ℝ _ (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) b}) :=
