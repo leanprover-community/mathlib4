@@ -373,6 +373,20 @@ instance {S A : Type*} [Semiring S] [SMul R S] [AddCommMonoid A] [Module R A] [M
 
 end Semiring
 
+section CommSemiring
+
+variable {A : Type*} [CommSemiring A]
+
+theorem pow_eq_zero_of_mem {I : Ideal A} {n m : ℕ} (hnI : I ^ n = 0) (hmn : n ≤ m) {x : A}
+    (hx : x ∈ I) : x ^ m = 0 := by
+  have hxn : x ^ n = 0 := by
+    rw [← Ideal.mem_bot, ← Ideal.zero_eq_bot, ← hnI]
+    exact Ideal.pow_mem_pow hx n
+  obtain ⟨c, hc⟩ := Nat.exists_eq_add_of_le hmn
+  rw [hc, pow_add, hxn, MulZeroClass.zero_mul]
+
+end CommSemiring
+
 section MulAndRadical
 
 variable {R : Type u} {ι : Type*} [CommSemiring R]
