@@ -199,3 +199,18 @@ To feed the information about the ranges, maybe I can add an import on the first
 
 The new file contains the modified ranges and the linter option.
 -/
+
+run_cmd
+  let mut tots := #[]
+  let declsInModule := (← getEnv).constants.map₂
+  --let declRanges := declRangeExt.get (← getEnv)
+  for (name, _cinfo) in declsInModule do
+    if ! name.isInternalDetail then
+      if let some r ← findDeclarationRanges? name then
+        tots := tots.binInsert (·.2.1.1 < ·.2.1.1) (name, (r.range.pos, r.range.endPos))
+        --dbg_trace (name, (r.range.pos, r.range.endPos))
+  dbg_trace ← gitDiffMaster
+  dbg_trace tots
+  --let edit := 34
+  --dbg_trace tots.binSearch (default, ⟨0, 0⟩, default) fun (_, p1, q1) (_, p2, q2) => edit ≤ q1.1
+  --_
