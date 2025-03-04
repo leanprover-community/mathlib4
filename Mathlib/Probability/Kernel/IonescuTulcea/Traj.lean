@@ -755,7 +755,7 @@ theorem condExp_traj' {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c)
   filter_upwards [piLE.condExp_condExp f hbc, condExp_traj hab i_cf] with x h1 h2
   rw [← h1, h2, ← traj_map_frestrictLe, Kernel.map_apply, integral_map]
   · congr with y
-    apply stronglyMeasurable_condExp.dependsOn
+    apply stronglyMeasurable_condExp.dependsOn_of_piLE
     simp only [Set.mem_Iic, updateFinset, mem_Iic, frestrictLe_apply, dite_eq_ite]
     exact fun i hi ↦ (if_pos hi).symm
   any_goals fun_prop
