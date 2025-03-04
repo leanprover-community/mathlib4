@@ -1,8 +1,8 @@
 import Lean
 import Batteries -- technically not needed, since `Mathlib` already imports it
-import Mathlib
-import Archive
-import Counterexamples
+--import Mathlib
+--import Archive
+--import Counterexamples
 
 open Lean
 
