@@ -949,7 +949,7 @@ theorem some_mem_insertBot {s : Finset α} {a : α} : ↑a ∈ insertBot s ↔ a
   simp [insertBot]
 
 @[simp]
-theorem top_mem_insertTop {s : Finset α} : ⊥ ∈ insertBot s := by
+theorem bot_mem_insertBot {s : Finset α} : ⊥ ∈ insertBot s := by
   simp [insertBot]
 
 variable (α) [PartialOrder α] [OrderBot α] [LocallyFiniteOrder α]
