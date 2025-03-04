@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Order.Max
 import Mathlib.Order.ULift
-import Mathlib.Tactic.PushNeg
+import Mathlib.Tactic.Push
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.AssertExists
 

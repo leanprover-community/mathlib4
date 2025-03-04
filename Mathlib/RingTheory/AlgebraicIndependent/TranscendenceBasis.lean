@@ -42,9 +42,8 @@ open AlgebraicIndependent
 
 theorem exists_isTranscendenceBasis (h : Injective (algebraMap R A)) :
     ∃ s : Set A, IsTranscendenceBasis R ((↑) : s → A) := by
-  cases' exists_maximal_algebraicIndependent (∅ : Set A) Set.univ (Set.subset_univ _)
-      ((algebraicIndependent_empty_iff R A).2 h) with
-    s hs
+  obtain ⟨s, hs⟩ := exists_maximal_algebraicIndependent (∅ : Set A) Set.univ (Set.subset_univ _)
+      ((algebraicIndependent_empty_iff R A).2 h)
   refine ⟨s, hs.2.1.1, fun t ht hst ↦ ?_⟩
   simp only [Subtype.range_coe_subtype, setOf_mem_eq] at *
   exact hs.2.eq_of_le ⟨ht, subset_univ _⟩ hst

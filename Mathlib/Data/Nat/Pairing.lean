@@ -3,9 +3,9 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Data.Set.Lattice
+import Mathlib.Algebra.ZeroOne.Prod
 import Mathlib.Data.Nat.Sqrt
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Naturals pairing function
@@ -23,7 +23,7 @@ It has the advantage of being monotone in both directions and sending `⟦0, n^2
 `⟦0, n - 1⟧²`.
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists Monoid
 
 open Prod Decidable Function
 
@@ -134,7 +134,7 @@ theorem pair_lt_max_add_one_sq (m n : ℕ) : pair m n < (max m n + 1) ^ 2 := by
 
 theorem max_sq_add_min_le_pair (m n : ℕ) : max m n ^ 2 + min m n ≤ pair m n := by
   rw [pair]
-  cases' lt_or_le m n with h h
+  rcases lt_or_le m n with h | h
   · rw [if_pos h, max_eq_right h.le, min_eq_left h.le, Nat.pow_two]
   rw [if_neg h.not_lt, max_eq_left h, min_eq_right h, Nat.pow_two, Nat.add_assoc,
     Nat.add_le_add_iff_left]
@@ -156,12 +156,10 @@ open Nat
 
 section CompleteLattice
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem iSup_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
     ⨆ n : ℕ, f n.unpair.1 n.unpair.2 = ⨆ (i : ℕ) (j : ℕ), f i j := by
   rw [← (iSup_prod : ⨆ i : ℕ × ℕ, f i.1 i.2 = _), ← Nat.surjective_unpair.iSup_comp]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem iInf_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
     ⨅ n : ℕ, f n.unpair.1 n.unpair.2 = ⨅ (i : ℕ) (j : ℕ), f i j :=
   iSup_unpair (show ℕ → ℕ → αᵒᵈ from f)
@@ -175,12 +173,10 @@ theorem iUnion_unpair_prod {α β} {s : ℕ → Set α} {t : ℕ → Set β} :
   rw [← Set.iUnion_prod]
   exact surjective_unpair.iUnion_comp (fun x => s x.fst ×ˢ t x.snd)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem iUnion_unpair {α} (f : ℕ → ℕ → Set α) :
     ⋃ n : ℕ, f n.unpair.1 n.unpair.2 = ⋃ (i : ℕ) (j : ℕ), f i j :=
   iSup_unpair f
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem iInter_unpair {α} (f : ℕ → ℕ → Set α) :
     ⋂ n : ℕ, f n.unpair.1 n.unpair.2 = ⋂ (i : ℕ) (j : ℕ), f i j :=
   iInf_unpair f

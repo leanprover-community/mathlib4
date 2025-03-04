@@ -7,7 +7,6 @@ import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!

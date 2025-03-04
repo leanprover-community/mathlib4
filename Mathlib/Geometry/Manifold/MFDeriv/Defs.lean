@@ -253,7 +253,6 @@ theorem mdifferentiableAt_iff (f : M → M') (x : M) :
   rw [MDifferentiableAt, liftPropAt_iff]
   congrm _ ∧ ?_
   simp [DifferentiableWithinAtProp, Set.univ_inter]
-  -- Porting note: `rfl` wasn't needed
   rfl
 
 theorem MDifferentiableAt.continuousAt {f : M → M'} {x : M} (hf : MDifferentiableAt I I' f x) :

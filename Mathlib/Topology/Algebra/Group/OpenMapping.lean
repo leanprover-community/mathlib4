@@ -24,7 +24,7 @@ open scoped Topology Pointwise
 open MulAction Set Function
 
 variable {G X : Type*} [TopologicalSpace G] [TopologicalSpace X]
-  [Group G] [TopologicalGroup G] [MulAction G X]
+  [Group G] [IsTopologicalGroup G] [MulAction G X]
   [SigmaCompactSpace G] [BaireSpace X] [T2Space X]
   [ContinuousSMul G X] [IsPretransitive G X]
 

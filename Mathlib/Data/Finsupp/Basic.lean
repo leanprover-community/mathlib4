@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
+import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.Rat.BigOperators
 
@@ -622,7 +623,7 @@ theorem eq_zero_of_comapDomain_eq_zero [AddCommMonoid M] (f : α → β) (l : β
   rw [← support_eq_empty, ← support_eq_empty, comapDomain]
   simp only [Finset.ext_iff, Finset.not_mem_empty, iff_false, mem_preimage]
   intro h a ha
-  cases' hf.2.2 ha with b hb
+  obtain ⟨b, hb⟩ := hf.2.2 ha
   exact h b (hb.2.symm ▸ ha)
 
 section FInjective
@@ -856,8 +857,6 @@ theorem mem_frange {f : α →₀ M} {y : M} : y ∈ f.frange ↔ y ≠ 0 ∧ �
   rw [frange, @Finset.mem_image _ _ (Classical.decEq _) _ f.support]
   exact ⟨fun ⟨x, hx1, hx2⟩ => ⟨hx2 ▸ mem_support_iff.1 hx1, x, hx2⟩, fun ⟨hy, x, hx⟩ =>
     ⟨x, mem_support_iff.2 (hx.symm ▸ hy), hx⟩⟩
-  -- Porting note: maybe there is a better way to fix this, but (1) it wasn't seeing past `frange`
-  -- the definition, and (2) it needed the `Classical.decEq` instance again.
 
 theorem zero_not_mem_frange {f : α →₀ M} : (0 : M) ∉ f.frange := fun H => (mem_frange.1 H).1 rfl
 
@@ -1152,7 +1151,7 @@ def sumFinsuppEquivProdFinsupp {α β γ : Type*} [Zero γ] : (α ⊕ β →₀ 
   invFun fg := sumElim fg.1 fg.2
   left_inv f := by
     ext ab
-    cases' ab with a b <;> simp
+    rcases ab with a | b <;> simp
   right_inv fg := by ext <;> simp
 
 theorem fst_sumFinsuppEquivProdFinsupp {α β γ : Type*} [Zero γ] (f : α ⊕ β →₀ γ) (x : α) :

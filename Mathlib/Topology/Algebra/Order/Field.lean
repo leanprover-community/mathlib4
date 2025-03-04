@@ -26,24 +26,24 @@ open OrderDual (toDual ofDual)
 nonnegative norm `norm : R → 𝕜`, where `𝕜` is a linear ordered field, and the open balls
 `{ x | norm x < ε }`, `ε > 0`, form a basis of neighborhoods of zero, then `R` is a topological
 ring. -/
-theorem TopologicalRing.of_norm {R 𝕜 : Type*} [NonUnitalNonAssocRing R] [LinearOrderedField 𝕜]
-    [TopologicalSpace R] [TopologicalAddGroup R] (norm : R → 𝕜)
+theorem IsTopologicalRing.of_norm {R 𝕜 : Type*} [NonUnitalNonAssocRing R] [LinearOrderedField 𝕜]
+    [TopologicalSpace R] [IsTopologicalAddGroup R] (norm : R → 𝕜)
     (norm_nonneg : ∀ x, 0 ≤ norm x) (norm_mul_le : ∀ x y, norm (x * y) ≤ norm x * norm y)
     (nhds_basis : (𝓝 (0 : R)).HasBasis ((0 : 𝕜) < ·) (fun ε ↦ { x | norm x < ε })) :
-    TopologicalRing R := by
+    IsTopologicalRing R := by
   have h0 : ∀ f : R → R, ∀ c ≥ (0 : 𝕜), (∀ x, norm (f x) ≤ c * norm x) →
       Tendsto f (𝓝 0) (𝓝 0) := by
     refine fun f c c0 hf ↦ (nhds_basis.tendsto_iff nhds_basis).2 fun ε ε0 ↦ ?_
     rcases exists_pos_mul_lt ε0 c with ⟨δ, δ0, hδ⟩
     refine ⟨δ, δ0, fun x hx ↦ (hf _).trans_lt ?_⟩
     exact (mul_le_mul_of_nonneg_left (le_of_lt hx) c0).trans_lt hδ
-  apply TopologicalRing.of_addGroup_of_nhds_zero
+  apply IsTopologicalRing.of_addGroup_of_nhds_zero
   case hmul =>
     refine ((nhds_basis.prod nhds_basis).tendsto_iff nhds_basis).2 fun ε ε0 ↦ ?_
     refine ⟨(1, ε), ⟨one_pos, ε0⟩, fun (x, y) ⟨hx, hy⟩ => ?_⟩
     simp only [sub_zero] at *
     calc norm (x * y) ≤ norm x * norm y := norm_mul_le _ _
-    _ < ε := mul_lt_of_le_one_of_lt_of_nonneg hx.le hy (norm_nonneg _)
+    _ < ε := (mul_le_of_le_one_left (norm_nonneg _) hx.le).trans_lt hy
   case hmul_left => exact fun x => h0 _ (norm x) (norm_nonneg _) (norm_mul_le x)
   case hmul_right =>
     exact fun y => h0 (· * y) (norm y) (norm_nonneg y) fun x =>
@@ -53,7 +53,7 @@ variable {𝕜 α : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [Or
   {l : Filter α} {f g : α → 𝕜}
 
 -- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedField.topologicalRing : TopologicalRing 𝕜 :=
+instance (priority := 100) LinearOrderedField.topologicalRing : IsTopologicalRing 𝕜 :=
   .of_norm abs abs_nonneg (fun _ _ ↦ (abs_mul _ _).le) <| by
     simpa using nhds_basis_abs_sub_lt (0 : 𝕜)
 
@@ -259,14 +259,14 @@ theorem tendsto_const_mul_pow_nhds_iff {n : ℕ} {c d : 𝕜} (hc : c ≠ 0) :
 theorem tendsto_const_mul_zpow_atTop_nhds_iff {n : ℤ} {c d : 𝕜} (hc : c ≠ 0) :
     Tendsto (fun x : 𝕜 => c * x ^ n) atTop (𝓝 d) ↔ n = 0 ∧ c = d ∨ n < 0 ∧ d = 0 := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · cases n with -- Porting note: Lean 3 proof used `by_cases`, then `lift` but `lift` failed
+  · cases n with
     | ofNat n =>
       left
       simpa [tendsto_const_mul_pow_nhds_iff hc] using h
     | negSucc n =>
       have hn := Int.negSucc_lt_zero n
       exact Or.inr ⟨hn, tendsto_nhds_unique h (tendsto_const_mul_zpow_atTop_zero hn)⟩
-  · cases' h with h h
+  · rcases h with h | h
     · simp only [h.left, h.right, zpow_zero, mul_one]
       exact tendsto_const_nhds
     · exact h.2.symm ▸ tendsto_const_mul_zpow_atTop_zero h.1

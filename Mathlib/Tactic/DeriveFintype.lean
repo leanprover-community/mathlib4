@@ -115,7 +115,7 @@ def mkFintypeEnum (declName : Name) : CommandElabM Unit := do
   let levels := indVal.levelParams.map Level.param
   let toCtorIdxName := declName.mkStr "toCtorIdx"
   let enumListName := declName.mkStr "enumList"
-  let toCtorThmName := declName.mkStr "enumList_get?_to_CtorIdx_eq"
+  let toCtorThmName := declName.mkStr "enumList_getElem?_to_CtorIdx_eq"
   let enumListNodupName := declName.mkStr "enumList_nodup"
   liftTermElabM <| Term.withoutErrToSorry do
     do -- Define `enumList` enumerating all constructors
@@ -138,7 +138,7 @@ def mkFintypeEnum (declName : Name) : CommandElabM Unit := do
     do -- Prove that this list is in `toCtorIdx` order
       trace[Elab.Deriving.fintype] "proving {toCtorThmName}"
       let goalStx ← `(term| ∀ (x : $(← Term.exprToSyntax <| mkConst declName levels)),
-        List.get? $(mkIdent enumListName) ($(mkIdent toCtorIdxName) x) = some x)
+        $(mkIdent enumListName)[$(mkIdent toCtorIdxName) x]? = some x)
       let goal ← Term.elabTerm goalStx (mkSort .zero)
       let pf ← Term.elabTerm (← `(term| by intro x; cases x <;> rfl)) goal
       Term.synthesizeSyntheticMVarsNoPostponing
@@ -172,7 +172,7 @@ def mkFintypeEnum (declName : Name) : CommandElabM Unit := do
       elems := Finset.mk $(mkIdent enumListName) $(mkIdent enumListNodupName)
       complete := by
         intro x
-        rw [Finset.mem_mk, Multiset.mem_coe, List.mem_iff_get?]
+        rw [Finset.mem_mk, Multiset.mem_coe, List.mem_iff_getElem?]
         exact ⟨$(mkIdent toCtorIdxName) x, $(mkIdent toCtorThmName) x⟩)
   trace[Elab.Deriving.fintype] "instance command:\n{cmd}"
   elabCommand cmd

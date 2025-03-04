@@ -3,9 +3,10 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yongle Hu
 -/
+import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Group.Subgroup.Actions
-import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Ideal.Pointwise
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-!
 # Ideals over/under ideals
@@ -19,11 +20,14 @@ This is expressed here by writing `I = J.comap f`.
 -- for going-up results about integral extensions, see `Mathlib.RingTheory.Ideal.GoingUp`
 assert_not_exists Algebra.IsIntegral
 
+-- for results about finiteness, see `Mathlib.RingTheory.Finiteness.Quotient`
+assert_not_exists Module.Finite
+
 variable {R : Type*} [CommRing R]
 
 namespace Ideal
 
-open Polynomial Submodule
+open Submodule
 
 open scoped Pointwise
 
@@ -77,12 +81,6 @@ instance Quotient.tower_quotient_map_quotient [Algebra R S] :
   IsScalarTower.of_algebraMap_eq fun x => by
     rw [Quotient.algebraMap_eq, Quotient.algebraMap_quotient_map_quotient,
       Quotient.mk_algebraMap]
-
-instance QuotientMapQuotient.isNoetherian [Algebra R S] [IsNoetherian R S] (I : Ideal R) :
-    IsNoetherian (R ⧸ I) (S ⧸ I.map (algebraMap R S)) :=
-  isNoetherian_of_tower R <|
-    isNoetherian_of_surjective S (Ideal.Quotient.mkₐ R _).toLinearMap <|
-      LinearMap.range_eq_top.mpr Ideal.Quotient.mk_surjective
 
 end CommRing
 
@@ -214,21 +212,6 @@ instance algebraOfLiesOver : Algebra (A ⧸ p) (B ⧸ P) :=
 instance isScalarTower_of_liesOver : IsScalarTower R (A ⧸ p) (B ⧸ P) :=
   IsScalarTower.of_algebraMap_eq' <|
     congrArg (algebraMap B (B ⧸ P)).comp (IsScalarTower.algebraMap_eq R A B)
-
-/-- `B ⧸ P` is a finite `A ⧸ p`-module if `B` is a finite `A`-module. -/
-instance module_finite_of_liesOver [Module.Finite A B] : Module.Finite (A ⧸ p) (B ⧸ P) :=
-  Module.Finite.of_restrictScalars_finite A (A ⧸ p) (B ⧸ P)
-
-example [Module.Finite A B] : Module.Finite (A ⧸ P.under A) (B ⧸ P) := inferInstance
-
-/-- `B ⧸ P` is a finitely generated `A ⧸ p`-algebra if `B` is a finitely generated `A`-algebra. -/
-instance algebra_finiteType_of_liesOver [Algebra.FiniteType A B] :
-    Algebra.FiniteType (A ⧸ p) (B ⧸ P) :=
-  Algebra.FiniteType.of_restrictScalars_finiteType A (A ⧸ p) (B ⧸ P)
-
-/-- `B ⧸ P` is a Noetherian `A ⧸ p`-module if `B` is a Noetherian `A`-module. -/
-instance isNoetherian_of_liesOver [IsNoetherian A B] : IsNoetherian (A ⧸ p) (B ⧸ P) :=
-  isNoetherian_of_tower A inferInstance
 
 instance instFaithfulSMul : FaithfulSMul (A ⧸ p) (B ⧸ P) := by
   rw [faithfulSMul_iff_algebraMap_injective]

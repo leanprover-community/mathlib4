@@ -43,90 +43,81 @@ namespace Basis
 section ExistsBasis
 
 /-- If `s` is a linear independent set of vectors, we can extend it to a basis. -/
-noncomputable def extend (hs : LinearIndependent K ((↑) : s → V)) :
+noncomputable def extend (hs : LinearIndepOn K id s) :
     Basis (hs.extend (subset_univ s)) K V :=
   Basis.mk
-    (@LinearIndependent.restrict_of_comp_subtype _ _ _ id _ _ _ _ (hs.linearIndependent_extend _))
+    (hs.linearIndepOn_extend _).linearIndependent_restrict
     (SetLike.coe_subset_coe.mp <| by simpa using hs.subset_span_extend (subset_univ s))
 
-theorem extend_apply_self (hs : LinearIndependent K ((↑) : s → V)) (x : hs.extend _) :
-    Basis.extend hs x = x :=
+theorem extend_apply_self (hs : LinearIndepOn K id s) (x : hs.extend _) : Basis.extend hs x = x :=
   Basis.mk_apply _ _ _
 
 @[simp]
-theorem coe_extend (hs : LinearIndependent K ((↑) : s → V)) : ⇑(Basis.extend hs) = ((↑) : _ → _) :=
+theorem coe_extend (hs : LinearIndepOn K id s) : ⇑(Basis.extend hs) = ((↑) : _ → _) :=
   funext (extend_apply_self hs)
 
-theorem range_extend (hs : LinearIndependent K ((↑) : s → V)) :
+theorem range_extend (hs : LinearIndepOn K id s) :
     range (Basis.extend hs) = hs.extend (subset_univ _) := by
   rw [coe_extend, Subtype.range_coe_subtype, setOf_mem_eq]
 
--- Porting note: adding this to make the statement of `subExtend` more readable
 /-- Auxiliary definition: the index for the new basis vectors in `Basis.sumExtend`.
 
-The specific value of this definition should be considered an implementation detail.
--/
+The specific value of this definition should be considered an implementation detail. -/
 def sumExtendIndex (hs : LinearIndependent K v) : Set V :=
-  LinearIndependent.extend hs.to_subtype_range (subset_univ _) \ range v
+  LinearIndepOn.extend hs.linearIndepOn_id (subset_univ _) \ range v
 
 /-- If `v` is a linear independent family of vectors, extend it to a basis indexed by a sum type. -/
 noncomputable def sumExtend (hs : LinearIndependent K v) : Basis (ι ⊕ sumExtendIndex hs) K V :=
   let s := Set.range v
   let e : ι ≃ s := Equiv.ofInjective v hs.injective
-  let b := hs.to_subtype_range.extend (subset_univ (Set.range v))
-  (Basis.extend hs.to_subtype_range).reindex <|
+  let b := hs.linearIndepOn_id.extend (subset_univ (Set.range v))
+  (Basis.extend hs.linearIndepOn_id).reindex <|
     Equiv.symm <|
       calc
         ι ⊕ (b \ s : Set V) ≃ s ⊕ (b \ s : Set V) := Equiv.sumCongr e (Equiv.refl _)
         _ ≃ b :=
           haveI := Classical.decPred (· ∈ s)
-          Equiv.Set.sumDiffSubset (hs.to_subtype_range.subset_extend _)
+          Equiv.Set.sumDiffSubset (hs.linearIndepOn_id.subset_extend _)
 
-theorem subset_extend {s : Set V} (hs : LinearIndependent K ((↑) : s → V)) :
-    s ⊆ hs.extend (Set.subset_univ _) :=
+theorem subset_extend {s : Set V} (hs : LinearIndepOn K id s) : s ⊆ hs.extend (Set.subset_univ _) :=
   hs.subset_extend _
 
 /-- If `s` is a family of linearly independent vectors contained in a set `t` spanning `V`,
 then one can get a basis of `V` containing `s` and contained in `t`. -/
-noncomputable def extendLe (hs : LinearIndependent K ((↑) : s → V))
-    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
+noncomputable def extendLe (hs : LinearIndepOn K id s) (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
     Basis (hs.extend hst) K V :=
   Basis.mk
-    (@LinearIndependent.restrict_of_comp_subtype _ _ _ id _ _ _ _ (hs.linearIndependent_extend _))
+    ((hs.linearIndepOn_extend _).linearIndependent ..)
     (le_trans ht <| Submodule.span_le.2 <| by simpa using hs.subset_span_extend hst)
 
-theorem extendLe_apply_self (hs : LinearIndependent K ((↑) : s → V))
-    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) (x : hs.extend hst) :
-    Basis.extendLe hs hst ht x = x :=
+theorem extendLe_apply_self (hs : LinearIndepOn K id s) (hst : s ⊆ t) (ht : ⊤ ≤ span K t)
+    (x : hs.extend hst) : Basis.extendLe hs hst ht x = x :=
   Basis.mk_apply _ _ _
 
 @[simp]
-theorem coe_extendLe (hs : LinearIndependent K ((↑) : s → V))
-    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) : ⇑(Basis.extendLe hs hst ht) = ((↑) : _ → _) :=
+theorem coe_extendLe (hs : LinearIndepOn K id s) (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
+    ⇑(Basis.extendLe hs hst ht) = ((↑) : _ → _) :=
   funext (extendLe_apply_self hs hst ht)
 
-theorem range_extendLe (hs : LinearIndependent K ((↑) : s → V))
-    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
+theorem range_extendLe (hs : LinearIndepOn K id s) (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
     range (Basis.extendLe hs hst ht) = hs.extend hst := by
   rw [coe_extendLe, Subtype.range_coe_subtype, setOf_mem_eq]
 
-theorem subset_extendLe (hs : LinearIndependent K ((↑) : s → V))
-    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
+theorem subset_extendLe (hs : LinearIndepOn K id s) (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
     s ⊆ range (Basis.extendLe hs hst ht) :=
   (range_extendLe hs hst ht).symm ▸ hs.subset_extend hst
 
-theorem extendLe_subset (hs : LinearIndependent K ((↑) : s → V))
-    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
+theorem extendLe_subset (hs : LinearIndepOn K id s) (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
     range (Basis.extendLe hs hst ht) ⊆ t :=
   (range_extendLe hs hst ht).symm ▸ hs.extend_subset hst
 
 /-- If a set `s` spans the space, this is a basis contained in `s`. -/
 noncomputable def ofSpan (hs : ⊤ ≤ span K s) :
-    Basis ((linearIndependent_empty K V).extend (empty_subset s)) K V :=
+    Basis ((linearIndepOn_empty K id).extend (empty_subset s)) K V :=
   extendLe (linearIndependent_empty K V) (empty_subset s) hs
 
 theorem ofSpan_apply_self (hs : ⊤ ≤ span K s)
-    (x : (linearIndependent_empty K V).extend (empty_subset s)) :
+    (x : (linearIndepOn_empty K id).extend (empty_subset s)) :
     Basis.ofSpan hs x = x :=
   extendLe_apply_self (linearIndependent_empty K V) (empty_subset s) hs x
 
@@ -135,7 +126,7 @@ theorem coe_ofSpan (hs : ⊤ ≤ span K s) : ⇑(ofSpan hs) = ((↑) : _ → _) 
   funext (ofSpan_apply_self hs)
 
 theorem range_ofSpan (hs : ⊤ ≤ span K s) :
-    range (ofSpan hs) = (linearIndependent_empty K V).extend (empty_subset s) := by
+    range (ofSpan hs) = (linearIndepOn_empty K id).extend (empty_subset s) := by
   rw [coe_ofSpan, Subtype.range_coe_subtype, setOf_mem_eq]
 
 theorem ofSpan_subset (hs : ⊤ ≤ span K s) : range (ofSpan hs) ⊆ s :=
@@ -147,7 +138,7 @@ variable (K V)
 
 /-- A set used to index `Basis.ofVectorSpace`. -/
 noncomputable def ofVectorSpaceIndex : Set V :=
-  (linearIndependent_empty K V).extend (subset_univ _)
+  (linearIndepOn_empty K id).extend (subset_univ _)
 
 /-- Each vector space has a basis. -/
 noncomputable def ofVectorSpace : Basis (ofVectorSpaceIndex K V) K V :=
@@ -217,7 +208,7 @@ submodules equal to the span of a nonzero element of the module. -/
 theorem atom_iff_nonzero_span (W : Submodule K V) :
     IsAtom W ↔ ∃ v ≠ 0, W = span K {v} := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · cases' h with hbot h
+  · obtain ⟨hbot, h⟩ := h
     rcases (Submodule.ne_bot_iff W).1 hbot with ⟨v, ⟨hW, hv⟩⟩
     refine ⟨v, ⟨hv, ?_⟩⟩
     by_contra heq
@@ -242,10 +233,10 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
     ∃ g : V' →ₗ[K] V, g.comp f = LinearMap.id := by
   let B := Basis.ofVectorSpaceIndex K V
   let hB := Basis.ofVectorSpace K V
-  have hB₀ : _ := hB.linearIndependent.to_subtype_range
-  have : LinearIndependent K (fun x => x : f '' B → V') := by
-    have h₁ : LinearIndependent K ((↑) : ↥(f '' Set.range (Basis.ofVectorSpace K V)) → V') :=
-      LinearIndependent.image_subtype (f := f) hB₀ (show Disjoint _ _ by simp [hf_inj])
+  have hB₀ : _ := hB.linearIndependent.linearIndepOn_id
+  have : LinearIndepOn K _root_.id (f '' B) := by
+    have h₁ : LinearIndepOn K _root_.id (f '' Set.range (Basis.ofVectorSpace K V)) :=
+      LinearIndepOn.image (f := f) hB₀ (show Disjoint _ _ by simp [hf_inj])
     rwa [Basis.range_ofVectorSpace K V] at h₁
   let C := this.extend (subset_univ _)
   have BC := this.subset_extend (subset_univ _)

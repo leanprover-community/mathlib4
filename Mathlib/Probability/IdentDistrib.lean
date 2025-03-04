@@ -39,7 +39,7 @@ instance:
 
 * `IdentDistrib.aestronglyMeasurable_snd`: if `f` and `g` are identically distributed and `f`
   is almost everywhere strongly measurable, then so is `g`.
-* `IdentDistrib.memℒp_snd`: if `f` and `g` are identically distributed and `f`
+* `IdentDistrib.memLp_snd`: if `f` and `g` are identically distributed and `f`
   belongs to `ℒp`, then so does `g`.
 
 We also register several dot notation shortcuts for convenience.
@@ -202,20 +202,26 @@ theorem eLpNorm_eq [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentD
   exact h.comp (Measurable.pow_const (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
     p.toReal)
 
-theorem memℒp_snd [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν)
-    (hf : Memℒp f p μ) : Memℒp g p ν := by
+theorem memLp_snd [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν)
+    (hf : MemLp f p μ) : MemLp g p ν := by
   refine ⟨h.aestronglyMeasurable_snd hf.aestronglyMeasurable, ?_⟩
   rw [← h.eLpNorm_eq]
   exact hf.2
 
-theorem memℒp_iff [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν) :
-    Memℒp f p μ ↔ Memℒp g p ν :=
-  ⟨fun hf => h.memℒp_snd hf, fun hg => h.symm.memℒp_snd hg⟩
+@[deprecated (since := "2025-02-21")]
+alias memℒp_snd := memLp_snd
+
+theorem memLp_iff [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν) :
+    MemLp f p μ ↔ MemLp g p ν :=
+  ⟨fun hf => h.memLp_snd hf, fun hg => h.symm.memLp_snd hg⟩
+
+@[deprecated (since := "2025-02-21")]
+alias memℒp_iff := memLp_iff
 
 theorem integrable_snd [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν)
     (hf : Integrable f μ) : Integrable g ν := by
-  rw [← memℒp_one_iff_integrable] at hf ⊢
-  exact h.memℒp_snd hf
+  rw [← memLp_one_iff_integrable] at hf ⊢
+  exact h.memLp_snd hf
 
 theorem integrable_iff [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν) :
     Integrable f μ ↔ Integrable g ν :=
@@ -283,10 +289,10 @@ open TopologicalSpace
 variable {E : Type*} [MeasurableSpace E] [NormedAddCommGroup E] [BorelSpace E]
   {μ : Measure α} [IsFiniteMeasure μ]
 
-/-- This lemma is superseded by `Memℒp.uniformIntegrable_of_identDistrib` which only requires
+/-- This lemma is superseded by `MemLp.uniformIntegrable_of_identDistrib` which only requires
 `AEStronglyMeasurable`. -/
-theorem Memℒp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}
-    (hp : 1 ≤ p) (hp' : p ≠ ∞) (hℒp : Memℒp (f j) p μ) (hfmeas : ∀ i, StronglyMeasurable (f i))
+theorem MemLp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}
+    (hp : 1 ≤ p) (hp' : p ≠ ∞) (hℒp : MemLp (f j) p μ) (hfmeas : ∀ i, StronglyMeasurable (f i))
     (hf : ∀ i, IdentDistrib (f i) (f j) μ μ) : UniformIntegrable f p μ := by
   refine uniformIntegrable_of' hp hp' hfmeas fun ε hε => ?_
   by_cases hι : Nonempty ι
@@ -309,20 +315,26 @@ theorem Memℒp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → �
   rw [this, this, ← eLpNorm_map_measure F_meas.aestronglyMeasurable (hf i).aemeasurable_fst,
     (hf i).map_eq, eLpNorm_map_measure F_meas.aestronglyMeasurable (hf j).aemeasurable_fst]
 
+@[deprecated (since := "2025-02-21")]
+alias Memℒp.uniformIntegrable_of_identDistrib_aux := MemLp.uniformIntegrable_of_identDistrib_aux
+
 /-- A sequence of identically distributed Lᵖ functions is p-uniformly integrable. -/
-theorem Memℒp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}
-    (hp : 1 ≤ p) (hp' : p ≠ ∞) (hℒp : Memℒp (f j) p μ) (hf : ∀ i, IdentDistrib (f i) (f j) μ μ) :
+theorem MemLp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}
+    (hp : 1 ≤ p) (hp' : p ≠ ∞) (hℒp : MemLp (f j) p μ) (hf : ∀ i, IdentDistrib (f i) (f j) μ μ) :
     UniformIntegrable f p μ := by
   have hfmeas : ∀ i, AEStronglyMeasurable (f i) μ := fun i =>
     (hf i).aestronglyMeasurable_iff.2 hℒp.1
   set g : ι → α → E := fun i => (hfmeas i).choose
   have hgmeas : ∀ i, StronglyMeasurable (g i) := fun i => (Exists.choose_spec <| hfmeas i).1
   have hgeq : ∀ i, g i =ᵐ[μ] f i := fun i => (Exists.choose_spec <| hfmeas i).2.symm
-  have hgℒp : Memℒp (g j) p μ := hℒp.ae_eq (hgeq j).symm
+  have hgℒp : MemLp (g j) p μ := hℒp.ae_eq (hgeq j).symm
   exact UniformIntegrable.ae_eq
-    (Memℒp.uniformIntegrable_of_identDistrib_aux hp hp' hgℒp hgmeas fun i =>
+    (MemLp.uniformIntegrable_of_identDistrib_aux hp hp' hgℒp hgmeas fun i =>
       (IdentDistrib.of_ae_eq (hgmeas i).aemeasurable (hgeq i)).trans
         ((hf i).trans <| IdentDistrib.of_ae_eq (hfmeas j).aemeasurable (hgeq j).symm)) hgeq
+
+@[deprecated (since := "2025-02-21")]
+alias Memℒp.uniformIntegrable_of_identDistrib := MemLp.uniformIntegrable_of_identDistrib
 
 end UniformIntegrable
 

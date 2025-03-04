@@ -50,7 +50,6 @@ equipped with the product topology.
 -/
 def piIsoPi {ι : Type v} (α : ι → TopCat.{max v u}) : ∏ᶜ α ≅ TopCat.of (∀ i, α i) :=
   (limit.isLimit _).conePointUniqueUpToIso (piFanIsLimit.{v, u} α)
-  -- Specifying the universes in `piFanIsLimit` wasn't necessary when we had `TopCatMax`
 
 @[reassoc (attr := simp)]
 theorem piIsoPi_inv_π {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) :
@@ -60,7 +59,6 @@ theorem piIsoPi_inv_π_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : �
     (Pi.π α i :) ((piIsoPi α).inv x) = x i :=
   ConcreteCategory.congr_hom (piIsoPi_inv_π α i) x
 
--- Porting note: needing the type ascription on `∏ᶜ α : TopCat.{max v u}` is unfortunate.
 theorem piIsoPi_hom_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι)
     (x : (∏ᶜ α : TopCat.{max v u})) : (piIsoPi α).hom x i = (Pi.π α i :) x := by
   have := piIsoPi_inv_π α i
@@ -97,7 +95,6 @@ def sigmaCofanIsColimit {ι : Type v} (β : ι → TopCat.{max v u}) : IsColimit
 -/
 def sigmaIsoSigma {ι : Type v} (α : ι → TopCat.{max v u}) : ∐ α ≅ TopCat.of (Σi, α i) :=
   (colimit.isColimit _).coconePointUniqueUpToIso (sigmaCofanIsColimit.{v, u} α)
-  -- Specifying the universes in `sigmaCofanIsColimit` wasn't necessary when we had `TopCatMax`
 
 @[reassoc (attr := simp)]
 theorem sigmaIsoSigma_hom_ι {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) :
@@ -214,18 +211,15 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
       and_self_iff]
   · rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
     use (prodIsoProd W X).inv (x₁, x₂)
-    change (forget TopCat).map _ _ = _
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩
-    · change limit.π (pair Y Z) _ ((prod.map f g) _) = _
-      erw [← ConcreteCategory.comp_apply, Limits.prod.map_fst]
-      change (_ ≫ _ ≫ f) _ = _
-      rw [TopCat.prodIsoProd_inv_fst_assoc,TopCat.comp_app]
+    · rw [← ConcreteCategory.comp_apply]
+      erw [Limits.prod.map_fst]
+      rw [← ConcreteCategory.comp_apply, TopCat.prodIsoProd_inv_fst_assoc, TopCat.comp_app]
       exact hx₁
-    · change limit.π (pair Y Z) _ ((prod.map f g) _) = _
-      erw [← ConcreteCategory.comp_apply, Limits.prod.map_snd]
-      change (_ ≫ _ ≫ g) _ = _
-      rw [TopCat.prodIsoProd_inv_snd_assoc,TopCat.comp_app]
+    · rw [← ConcreteCategory.comp_apply]
+      erw [Limits.prod.map_snd]
+      rw [← ConcreteCategory.comp_apply, TopCat.prodIsoProd_inv_snd_assoc, TopCat.comp_app]
       exact hx₂
 
 theorem isInducing_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : IsInducing f)

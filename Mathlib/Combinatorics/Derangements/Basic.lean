@@ -134,7 +134,7 @@ theorem RemoveNone.fiber_some (a : α) :
     rintro ⟨F, F_derangement, F_none, rfl⟩ x x_fixed
     rw [mem_fixedPoints_iff] at x_fixed
     apply_fun some at x_fixed
-    cases' Fx : F (some x) with y
+    rcases Fx : F (some x) with - | y
     · rwa [removeNone_none F Fx, F_none, Option.some_inj, eq_comm] at x_fixed
     · exfalso
       rw [removeNone_some F ⟨y, Fx⟩] at x_fixed
@@ -145,7 +145,7 @@ theorem RemoveNone.fiber_some (a : α) :
     · intro x
       apply_fun fun x => Equiv.swap none (some a) x
       simp only [Perm.decomposeOption_symm_apply, swap_apply_self, Perm.coe_mul]
-      cases' x with x
+      rcases x with - | x
       · simp
       simp only [comp, optionCongr_apply, Option.map_some', swap_apply_self]
       by_cases x_vs_a : x = a

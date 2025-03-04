@@ -119,19 +119,22 @@ theorem order_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} {x : 𝕜}
     (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     (hf.smul hg).order = hf.order + hg.order := by
   -- Trivial cases: one of the functions vanishes around z₀
-  cases' h₂f : hf.order with m h₂f
-  · simp only [top_add, order_eq_top_iff] at h₂f ⊢
+  cases h₂f : hf.order with
+  | top =>
+    simp only [top_add, order_eq_top_iff] at h₂f ⊢
     filter_upwards [h₂f] with z hz using by simp [hz]
-  cases' h₂g : hg.order with n h₂f
-  · simp only [add_top, order_eq_top_iff] at h₂g ⊢
-    filter_upwards [h₂g] with z hz using by simp [hz]
-  -- Non-trivial case: both functions do not vanish around z₀
-  rw [← WithTop.coe_add, order_eq_int_iff]
-  obtain ⟨F, h₁F, h₂F, h₃F⟩ := (hf.order_eq_int_iff _).1 h₂f
-  obtain ⟨G, h₁G, h₂G, h₃G⟩ := (hg.order_eq_int_iff _).1 h₂g
-  use F • G, h₁F.smul h₁G, by simp [h₂F, h₂G]
-  filter_upwards [self_mem_nhdsWithin, h₃F, h₃G] with a ha hfa hga
-  simp [hfa, hga, smul_comm (F a), zpow_add₀ (sub_ne_zero.mpr ha), mul_smul]
+  | coe m =>
+    cases h₂g : hg.order with
+    | top =>
+      simp only [add_top, order_eq_top_iff] at h₂g ⊢
+      filter_upwards [h₂g] with z hz using by simp [hz]
+    | coe n => -- Non-trivial case: both functions do not vanish around z₀
+      rw [← WithTop.coe_add, order_eq_int_iff]
+      obtain ⟨F, h₁F, h₂F, h₃F⟩ := (hf.order_eq_int_iff _).1 h₂f
+      obtain ⟨G, h₁G, h₂G, h₃G⟩ := (hg.order_eq_int_iff _).1 h₂g
+      use F • G, h₁F.smul h₁G, by simp [h₂F, h₂G]
+      filter_upwards [self_mem_nhdsWithin, h₃F, h₃G] with a ha hfa hga
+      simp [hfa, hga, smul_comm (F a), zpow_add₀ (sub_ne_zero.mpr ha), mul_smul]
 
 /-- The order is additive when multiplying meromorphic functions. -/
 theorem order_mul {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :

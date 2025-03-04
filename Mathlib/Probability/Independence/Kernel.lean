@@ -279,7 +279,7 @@ theorem indep_bot_right (m' : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω}
   rcases eq_zero_or_isMarkovKernel κ with rfl| h
   · simp
   refine Filter.Eventually.of_forall (fun a ↦ ?_)
-  cases' ht with ht ht
+  rcases ht with ht | ht
   · rw [ht, Set.inter_empty, measure_empty, mul_zero]
   · rw [ht, Set.inter_univ, measure_univ, mul_one]
 
@@ -323,7 +323,7 @@ theorem IndepSets.union {s₁ s₂ s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω
     (h₁ : IndepSets s₁ s' κ μ) (h₂ : IndepSets s₂ s' κ μ) :
     IndepSets (s₁ ∪ s₂) s' κ μ := by
   intro t1 t2 ht1 ht2
-  cases' (Set.mem_union _ _ _).mp ht1 with ht1₁ ht1₂
+  rcases (Set.mem_union _ _ _).mp ht1 with ht1₁ | ht1₂
   · exact h₁ t1 t2 ht1₁ ht2
   · exact h₂ t1 t2 ht1₂ ht2
 
@@ -341,7 +341,7 @@ theorem IndepSets.iUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : M
     IndepSets (⋃ n, s n) s' κ μ := by
   intro t1 t2 ht1 ht2
   rw [Set.mem_iUnion] at ht1
-  cases' ht1 with n ht1
+  obtain ⟨n, ht1⟩ := ht1
   exact hyp n t1 t2 ht1 ht2
 
 theorem IndepSets.bUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
@@ -360,7 +360,7 @@ theorem IndepSets.inter {s₁ s' : Set (Set Ω)} (s₂ : Set (Set Ω)) {_mΩ : M
 theorem IndepSets.iInter {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} (h : ∃ n, IndepSets (s n) s' κ μ) :
     IndepSets (⋂ n, s n) s' κ μ := by
-  intro t1 t2 ht1 ht2; cases' h with n h; exact h t1 t2 (Set.mem_iInter.mp ht1 n) ht2
+  intro t1 t2 ht1 ht2; obtain ⟨n, h⟩ := h; exact h t1 t2 (Set.mem_iInter.mp ht1 n) ht2
 
 theorem IndepSets.bInter {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} {u : Set ι} (h : ∃ n ∈ u, IndepSets (s n) s' κ μ) :
@@ -405,7 +405,7 @@ theorem iIndepSets.indepSets {s : ι → Set (Set Ω)} {_mΩ : MeasurableSpace �
   intro t₁ t₂ ht₁ ht₂
   have hf_m : ∀ x : ι, x ∈ ({i, j} : Finset ι) → ite (x = i) t₁ t₂ ∈ s x := by
     intro x hx
-    cases' Finset.mem_insert.mp hx with hx hx
+    rcases Finset.mem_insert.mp hx with hx | hx
     · simp [hx, ht₁]
     · simp [Finset.mem_singleton.mp hx, hij.symm, ht₂]
   have h1 : t₁ = ite (i = i) t₁ t₂ := by simp only [if_true, eq_self_iff_true]
@@ -553,7 +553,7 @@ theorem indepSets_piiUnionInter_of_disjoint {s : ι → Set (Set Ω)}
     have hgm : ∀ i ∈ p1 ∪ p2, g i ∈ s i := by
       intro i hi_mem_union
       rw [Finset.mem_union] at hi_mem_union
-      cases' hi_mem_union with hi1 hi2
+      rcases hi_mem_union with hi1 | hi2
       · have hi2 : i ∉ p2 := fun hip2 => Set.disjoint_left.mp hST (hp1 hi1) (hp2 hip2)
         simp_rw [g, if_pos hi1, if_neg hi2, Set.inter_univ]
         exact ht1_m i hi1
@@ -686,7 +686,7 @@ theorem iIndepSets.piiUnionInter_of_not_mem {π : ι → Set (Set Ω)} {a : ι} 
   have h_f_mem : ∀ n ∈ insert a s, f n ∈ π n := by
     intro n hn_mem_insert
     dsimp only [f]
-    cases' Finset.mem_insert.mp hn_mem_insert with hn_mem hn_mem
+    rcases Finset.mem_insert.mp hn_mem_insert with hn_mem | hn_mem
     · simp [hn_mem, ht2_mem_pia]
     · have hn_ne_a : n ≠ a := by rintro rfl; exact haS (hs_mem hn_mem)
       simp [hn_ne_a, hn_mem, hft1_mem n hn_mem]
@@ -1028,7 +1028,7 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
     simp_rw [Set.mem_inter_iff, Set.mem_iInter, Set.mem_preimage, Finset.mem_union]
     constructor <;> intro h
     · intro i hi
-      cases' hi with hiS hiT
+      rcases hi with hiS | hiT
       · replace h := h.1 i hiS
         simp_rw [sets_s', sets_t', dif_pos hiS, dif_neg (Finset.disjoint_left.mp hST hiS)]
         simp only [sets_s'] at h
@@ -1041,7 +1041,7 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
   have h_meas_inter : ∀ i ∈ S ∪ T, MeasurableSet (sets_s' i ∩ sets_t' i) := by
     intros i hi_mem
     rw [Finset.mem_union] at hi_mem
-    cases' hi_mem with hi_mem hi_mem
+    rcases hi_mem with hi_mem | hi_mem
     · rw [h_sets_t'_univ hi_mem, Set.inter_univ]
       exact h_meas_s' i hi_mem
     · rw [h_sets_s'_univ hi_mem, Set.univ_inter]

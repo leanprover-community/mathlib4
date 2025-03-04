@@ -94,14 +94,14 @@ this is the `homotopyInvHomId` field of the homotopy equivalence
 the morphism `mappingCone f ⟶ mappingCone (f ≫ g)`. -/
 noncomputable def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) :=
   (Cochain.equivHomotopy _ _).symm ⟨-((snd _).comp ((fst (f ≫ g)).1.comp
-    ((inl f).comp (inl _) (by omega)) (show 1 + (-2) = -1 by omega)) (zero_add (-1))), by
+    ((inl f).comp (inl _) (by decide)) (show 1 + (-2) = -1 by decide)) (zero_add (-1))), by
       rw [δ_neg, δ_zero_cochain_comp _ _ _ (neg_add_cancel 1),
         Int.negOnePow_neg, Int.negOnePow_one, Units.neg_smul, one_smul,
-        δ_comp _ _ (show 1 + (-2) = -1 by omega) 2 (-1) 0 (by omega)
-          (by omega) (by omega),
-        δ_comp _ _ (show (-1) + (-1) = -2 by omega) 0 0 (-1) (by omega)
-          (by omega) (by omega), Int.negOnePow_neg, Int.negOnePow_neg,
-        Int.negOnePow_even 2 ⟨1, by omega⟩, Int.negOnePow_one, Units.neg_smul,
+        δ_comp _ _ (show 1 + (-2) = -1 by decide) 2 (-1) 0 (by decide)
+          (by decide) (by decide),
+        δ_comp _ _ (show (-1) + (-1) = -2 by decide) 0 0 (-1) (by decide)
+          (by decide) (by decide), Int.negOnePow_neg, Int.negOnePow_neg,
+        Int.negOnePow_even 2 ⟨1, by decide⟩, Int.negOnePow_one, Units.neg_smul,
         one_smul, one_smul, δ_inl, δ_inl, δ_snd, Cocycle.δ_eq_zero, Cochain.zero_comp, add_zero,
         Cochain.neg_comp, neg_neg]
       ext n
@@ -110,9 +110,9 @@ noncomputable def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) :=
       dsimp [hom, inv]
       simp [ext_to_iff _ n (n + 1) rfl, map, Cochain.comp_v _ _
           (add_neg_cancel 1) n (n + 1) n (by omega) (by omega),
-        Cochain.comp_v _ _ (show 1 + -2 = -1 by omega) (n + 1) (n + 2) n
+        Cochain.comp_v _ _ (show 1 + -2 = -1 by decide) (n + 1) (n + 2) n
           (by omega) (by omega),
-        Cochain.comp_v _ _ (show (-1) + -1 = -2 by omega) (n + 2) (n + 1) n
+        Cochain.comp_v _ _ (show (-1) + -1 = -2 by decide) (n + 2) (n + 1) n
           (by omega) (by omega)]⟩
 
 end MappingConeCompHomotopyEquiv

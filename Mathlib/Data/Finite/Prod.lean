@@ -5,7 +5,12 @@ Authors: Kyle Miller
 -/
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Fintype.Vector
+import Mathlib.Data.Fintype.Pi
+import Mathlib.Algebra.Order.Group.Multiset
+import Mathlib.Data.Vector.Basic
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Data.ULift
+import Mathlib.Data.Set.NAry
 
 /-!
 # Finiteness of products
@@ -42,13 +47,8 @@ instance Pi.finite {α : Sort*} {β : α → Sort*} [Finite α] [∀ a, Finite (
     Finite.of_equiv (∀ a : PLift α, PLift (β (Equiv.plift a)))
       (Equiv.piCongr Equiv.plift fun _ => Equiv.plift)
 
-instance [Finite α] {n : ℕ} : Finite (Sym α n) := by
-  classical
-  haveI := Fintype.ofFinite α
-  infer_instance
-
 instance Function.Embedding.finite {α β : Sort*} [Finite β] : Finite (α ↪ β) := by
-  cases' isEmpty_or_nonempty (α ↪ β) with _ h
+  rcases isEmpty_or_nonempty (α ↪ β) with _ | h
   · -- Porting note: infer_instance fails because it applies `Finite.of_fintype` and produces a
     -- "stuck at solving universe constraint" error.
     apply Finite.of_subsingleton

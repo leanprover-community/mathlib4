@@ -457,7 +457,7 @@ theorem mem_list_toFinmap (a : α) (xs : List (Sigma β)) :
   -- Porting note: golfed
   induction' xs with x xs
   · simp only [toFinmap_nil, not_mem_empty, find?, not_mem_nil, exists_false]
-  cases' x with fst_i snd_i
+  obtain ⟨fst_i, snd_i⟩ := x
   -- Porting note: `Sigma.mk.inj_iff` required because `simp` behaves differently
   simp only [toFinmap_cons, *, exists_or, mem_cons, mem_insert, exists_and_left, Sigma.mk.inj_iff]
   refine (or_congr_left <| and_iff_left_of_imp ?_).symm

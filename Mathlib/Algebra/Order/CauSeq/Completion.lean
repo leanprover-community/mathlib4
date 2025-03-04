@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Robert Y. Lewis
 -/
 import Mathlib.Algebra.Order.CauSeq.Basic
-import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Algebra.Ring.Action.Rat
 import Mathlib.Tactic.FastInstance
 
 /-!

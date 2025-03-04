@@ -97,16 +97,16 @@ class IsCancelSMul (G P : Type*) [SMul G P] : Prop where
   protected right_cancel : ∀ (a b : G) (c : P), a • c = b • c → a = b
 
 /-- An ordered cancellative vector addition is an ordered vector addition that is cancellative. -/
-class IsOrderedCancelVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] extends
-    IsOrderedVAdd G P : Prop where
+class IsOrderedCancelVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] : Prop
+    extends IsOrderedVAdd G P where
   protected le_of_vadd_le_vadd_left : ∀ (a : G) (b c : P), a +ᵥ b ≤ a +ᵥ c → b ≤ c
   protected le_of_vadd_le_vadd_right : ∀ (a b : G) (c : P), a +ᵥ c ≤ b +ᵥ c → a ≤ b
 
 /-- An ordered cancellative scalar multiplication is an ordered scalar multiplication that is
   cancellative. -/
 @[to_additive]
-class IsOrderedCancelSMul (G P : Type*) [LE G] [LE P] [SMul G P] extends
-    IsOrderedSMul G P : Prop where
+class IsOrderedCancelSMul (G P : Type*) [LE G] [LE P] [SMul G P] : Prop
+    extends IsOrderedSMul G P where
   protected le_of_smul_le_smul_left : ∀ (a : G) (b c : P), a • b ≤ a • c → b ≤ c
   protected le_of_smul_le_smul_right : ∀ (a b : G) (c : P), a • c ≤ b • c → a ≤ b
 

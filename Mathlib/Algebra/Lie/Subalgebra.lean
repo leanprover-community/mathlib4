@@ -352,14 +352,13 @@ codomain. -/
 def map : LieSubalgebra R L₂ :=
   { (K : Submodule R L).map (f : L →ₗ[R] L₂) with
     lie_mem' := @fun x y hx hy ↦ by
-      erw [Submodule.mem_map] at hx
+      simp only [AddSubsemigroup.mem_carrier] at hx
       rcases hx with ⟨x', hx', hx⟩
       rw [← hx]
-      erw [Submodule.mem_map] at hy
+      simp only [AddSubsemigroup.mem_carrier] at hy
       rcases hy with ⟨y', hy', hy⟩
       rw [← hy]
-      erw [Submodule.mem_map]
-      exact ⟨⁅x', y'⁆, K.lie_mem hx' hy', f.map_lie x' y'⟩ }
+      simpa using ⟨⁅x', y'⁆, K.lie_mem hx' hy', f.map_lie x' y'⟩ }
 
 @[simp]
 theorem mem_map (x : L₂) : x ∈ K.map f ↔ ∃ y : L, y ∈ K ∧ f y = x :=
@@ -618,12 +617,12 @@ variable {R L s}
 
 theorem mem_lieSpan {x : L} : x ∈ lieSpan R L s ↔ ∀ K : LieSubalgebra R L, s ⊆ K → x ∈ K := by
   change x ∈ (lieSpan R L s : Set L) ↔ _
-  erw [sInf_coe]
+  rw [lieSpan, sInf_coe]
   exact Set.mem_iInter₂
 
 theorem subset_lieSpan : s ⊆ lieSpan R L s := by
   intro m hm
-  erw [mem_lieSpan]
+  rw [SetLike.mem_coe, mem_lieSpan]
   intro K hK
   exact hK hm
 

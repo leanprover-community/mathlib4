@@ -169,7 +169,8 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_finite [IsFiniteMeasur
     -- enough to show that such sets constitute a `σ`-algebra containing `𝒜`. This is contained in
     -- the theorem `generateFrom_induction`.
     have : MeasurableSet s ∧ ∀ (ε : ℝ), 0 < ε → ∃ t ∈ 𝒜, (μ (s ∆ t)).toReal < ε := by
-      induction s, hgen ▸ ms using generateFrom_induction with
+      rw [hgen] at ms
+      induction s, ms using generateFrom_induction with
       -- If `t ∈ 𝒜`, then `μ (t ∆ t) = 0` which is less than any `ε > 0`.
       | hC t t_mem _ =>
         exact ⟨hgen ▸ measurableSet_generateFrom t_mem, fun ε ε_pos ↦ ⟨t, t_mem, by simpa⟩⟩
@@ -500,9 +501,9 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
         --   `≤ ‖f - bf‖ₚ + ‖g - bg‖ₚ`
         --   `< ε/2 + ε/2 = ε`.
         calc
-          ‖Memℒp.toLp f hf + Memℒp.toLp g hg - (bf + bg)‖
-            = ‖(Memℒp.toLp f hf) - bf + ((Memℒp.toLp g hg) - bg)‖ := by congr; abel
-          _ ≤ ‖(Memℒp.toLp f hf) - bf‖ + ‖(Memℒp.toLp g hg) - bg‖ := norm_add_le ..
+          ‖MemLp.toLp f hf + MemLp.toLp g hg - (bf + bg)‖
+            = ‖(MemLp.toLp f hf) - bf + ((MemLp.toLp g hg) - bg)‖ := by congr; abel
+          _ ≤ ‖(MemLp.toLp f hf) - bf‖ + ‖(MemLp.toLp g hg) - bg‖ := norm_add_le ..
           _ < ε := by linarith [hbf, hbg]
 
 end SecondCountableLp

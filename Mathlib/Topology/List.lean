@@ -159,12 +159,13 @@ theorem continuous_eraseIdx {n : ℕ} : Continuous fun l : List α => eraseIdx l
 @[to_additive]
 theorem tendsto_prod [Monoid α] [ContinuousMul α] {l : List α} :
     Tendsto List.prod (𝓝 l) (𝓝 l.prod) := by
-  induction' l with x l ih
-  · simp +contextual [nhds_nil, mem_of_mem_nhds, tendsto_pure_left]
-  simp_rw [tendsto_cons_iff, prod_cons]
-  have := continuous_iff_continuousAt.mp continuous_mul (x, l.prod)
-  rw [ContinuousAt, nhds_prod_eq] at this
-  exact this.comp (tendsto_id.prod_map ih)
+  induction l with
+  | nil => simp +contextual [nhds_nil, mem_of_mem_nhds, tendsto_pure_left]
+  | cons x l ih =>
+    simp_rw [tendsto_cons_iff, prod_cons]
+    have := continuous_iff_continuousAt.mp continuous_mul (x, l.prod)
+    rw [ContinuousAt, nhds_prod_eq] at this
+    exact this.comp (tendsto_id.prod_map ih)
 
 @[to_additive]
 theorem continuous_prod [Monoid α] [ContinuousMul α] : Continuous (prod : List α → α) :=
@@ -172,53 +173,51 @@ theorem continuous_prod [Monoid α] [ContinuousMul α] : Continuous (prod : List
 
 end List
 
-namespace Vector
+namespace List.Vector
 
 open List
 
-open List (Vector)
+instance (n : ℕ) : TopologicalSpace (Vector α n) := by unfold Vector; infer_instance
 
-instance (n : ℕ) : TopologicalSpace (List.Vector α n) := by unfold List.Vector; infer_instance
-
-theorem tendsto_cons {n : ℕ} {a : α} {l : List.Vector α n} :
-    Tendsto (fun p : α × List.Vector α n => p.1 ::ᵥ p.2) (𝓝 a ×ˢ 𝓝 l) (𝓝 (a ::ᵥ l)) := by
+theorem tendsto_cons {n : ℕ} {a : α} {l : Vector α n} :
+    Tendsto (fun p : α × Vector α n => p.1 ::ᵥ p.2) (𝓝 a ×ˢ 𝓝 l) (𝓝 (a ::ᵥ l)) := by
   rw [tendsto_subtype_rng, Vector.cons_val]
   exact tendsto_fst.cons (Tendsto.comp continuousAt_subtype_val tendsto_snd)
 
 theorem tendsto_insertIdx {n : ℕ} {i : Fin (n + 1)} {a : α} :
-    ∀ {l : List.Vector α n},
-      Tendsto (fun p : α × List.Vector α n => Vector.insertIdx p.1 i p.2) (𝓝 a ×ˢ 𝓝 l)
-        (𝓝 (Vector.insertIdx a i l))
+    ∀ {l : Vector α n},
+      Tendsto (fun p : α × Vector α n => insertIdx p.1 i p.2) (𝓝 a ×ˢ 𝓝 l)
+        (𝓝 (insertIdx a i l))
   | ⟨l, hl⟩ => by
-    rw [Vector.insertIdx, tendsto_subtype_rng]
-    simp only [Vector.insertIdx_val]
+    rw [insertIdx, tendsto_subtype_rng]
+    simp only [insertIdx_val]
     exact List.tendsto_insertIdx tendsto_fst (Tendsto.comp continuousAt_subtype_val tendsto_snd : _)
 
 @[deprecated (since := "2024-10-21")] alias tendsto_insertNth := tendsto_insertIdx'
 
 /-- Continuity of `Vector.insertIdx`. -/
 theorem continuous_insertIdx' {n : ℕ} {i : Fin (n + 1)} :
-    Continuous fun p : α × List.Vector α n => Vector.insertIdx p.1 i p.2 :=
+    Continuous fun p : α × Vector α n => Vector.insertIdx p.1 i p.2 :=
   continuous_iff_continuousAt.mpr fun ⟨a, l⟩ => by
     rw [ContinuousAt, nhds_prod_eq]; exact tendsto_insertIdx
 
 @[deprecated (since := "2024-10-21")] alias continuous_insertNth' := continuous_insertIdx'
 
-theorem continuous_insertIdx {n : ℕ} {i : Fin (n + 1)} {f : β → α} {g : β → List.Vector α n}
+theorem continuous_insertIdx {n : ℕ} {i : Fin (n + 1)} {f : β → α} {g : β → Vector α n}
     (hf : Continuous f) (hg : Continuous g) : Continuous fun b => Vector.insertIdx (f b) i (g b) :=
   continuous_insertIdx'.comp (hf.prod_mk hg)
 
 @[deprecated (since := "2024-10-21")] alias continuous_insertNth := continuous_insertIdx
 
 theorem continuousAt_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
-    ∀ {l : List.Vector α (n + 1)}, ContinuousAt (List.Vector.eraseIdx i) l
+    ∀ {l : Vector α (n + 1)}, ContinuousAt (Vector.eraseIdx i) l
   | ⟨l, hl⟩ => by
-    rw [ContinuousAt, List.Vector.eraseIdx, tendsto_subtype_rng]
+    rw [ContinuousAt, Vector.eraseIdx, tendsto_subtype_rng]
     simp only [Vector.eraseIdx_val]
     exact Tendsto.comp List.tendsto_eraseIdx continuousAt_subtype_val
 
 theorem continuous_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
-    Continuous (List.Vector.eraseIdx i : List.Vector α (n + 1) → List.Vector α n) :=
+    Continuous (Vector.eraseIdx i : Vector α (n + 1) → Vector α n) :=
   continuous_iff_continuousAt.mpr fun ⟨_a, _l⟩ => continuousAt_eraseIdx
 
-end Vector
+end List.Vector

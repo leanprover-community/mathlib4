@@ -141,8 +141,13 @@ def getDeclName (cmd : Syntax) : CommandElabM Name := do
   let ns ← getCurrNamespace
   let id1 ← getId cmd
   let id2 := mkIdentFrom id1 (previousInstName id1.getId)
-  let modifiers : TSyntax ``Parser.Command.declModifiers := ⟨cmd[0]⟩
+  let some declStx := cmd.find? (·.isOfKind ``Parser.Command.declaration) | pure default
+  let some modifiersStx := declStx.find? (·.isOfKind ``Parser.Command.declModifiers) | pure default
+  let modifiers : TSyntax ``Parser.Command.declModifiers := ⟨modifiersStx⟩
+  -- the `get`/`set` state catches issues with elaboration of, for instance, `scoped` attributes
+  let s ← get
   let modifiers ← elabModifiers modifiers
+  set s
   liftCoreM do (
     -- Try applying the algorithm in `Lean.mkDeclName` to attach a namespace to the name.
     -- Unfortunately calling `Lean.mkDeclName` directly won't work: it will complain that there is
@@ -167,7 +172,7 @@ def getDeclName (cmd : Syntax) : CommandElabM Name := do
     -- failing everything, use the current namespace followed by the visible name
     return ns ++ id1.getId)
 
-/--`getAllDependencies cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
+/-- `getAllDependencies cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 declaration names that are implied by
 * the `SyntaxNodeKinds`,
 * the attributes of `cmd` (if there are any),
@@ -190,7 +195,7 @@ def getAllDependencies (cmd id : Syntax) :
               |>.append (getSyntaxNodeKinds cmd)
               |>.append (getAttrs env cmd)
 
-/--`getAllImports cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
+/-- `getAllImports cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 module names that are implied by
 * the `SyntaxNodeKinds`,
 * the attributes of `cmd` (if there are any),

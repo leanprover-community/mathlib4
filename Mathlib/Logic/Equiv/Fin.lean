@@ -3,10 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.Int.Defs
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Logic.Embedding.Set
 import Mathlib.Logic.Equiv.Option
+import Mathlib.Data.Int.Init
 
 /-!
 # Equivalences for `Fin n`
@@ -49,7 +49,7 @@ def finTwoArrowEquiv (α : Type*) : (Fin 2 → α) ≃ α × α :=
 
 /-- An equivalence that removes `i` and maps it to `none`.
 This is a version of `Fin.predAbove` that produces `Option (Fin n)` instead of
-mapping both `i.cast_succ` and `i.succ` to `i`. -/
+mapping both `i.castSucc` and `i.succ` to `i`. -/
 def finSuccEquiv' (i : Fin (n + 1)) : Fin (n + 1) ≃ Option (Fin n) where
   toFun := i.insertNth none some
   invFun x := x.casesOn' i (Fin.succAbove i)
@@ -81,6 +81,15 @@ theorem finSuccEquiv'_symm_none (i : Fin (n + 1)) : (finSuccEquiv' i).symm none 
 theorem finSuccEquiv'_symm_some (i : Fin (n + 1)) (j : Fin n) :
     (finSuccEquiv' i).symm (some j) = i.succAbove j :=
   rfl
+
+@[simp]
+theorem finSuccEquiv'_eq_some {i j : Fin (n + 1)} {k : Fin n} :
+    finSuccEquiv' i j = k ↔ j = i.succAbove k :=
+  (finSuccEquiv' i).apply_eq_iff_eq_symm_apply
+
+@[simp]
+theorem finSuccEquiv'_eq_none {i j : Fin (n + 1)} : finSuccEquiv' i j = none ↔ i = j :=
+  (finSuccEquiv' i).apply_eq_iff_eq_symm_apply.trans eq_comm
 
 theorem finSuccEquiv'_symm_some_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSucc m < i) :
     (finSuccEquiv' i).symm (some m) = Fin.castSucc m :=
@@ -120,6 +129,15 @@ theorem finSuccEquiv_symm_none : (finSuccEquiv n).symm none = 0 :=
 theorem finSuccEquiv_symm_some (m : Fin n) : (finSuccEquiv n).symm (some m) = m.succ :=
   congr_fun Fin.succAbove_zero m
 
+@[simp]
+theorem finSuccEquiv_eq_some {i : Fin (n + 1)} {j : Fin n} :
+    finSuccEquiv n i = j ↔ i = j.succ :=
+  (finSuccEquiv n).apply_eq_iff_eq_symm_apply
+
+@[simp]
+theorem finSuccEquiv_eq_none {i : Fin (n + 1)} : finSuccEquiv n i = none ↔ i = 0 :=
+  (finSuccEquiv n).apply_eq_iff_eq_symm_apply
+
 /-- The equiv version of `Fin.predAbove_zero`. -/
 theorem finSuccEquiv'_zero : finSuccEquiv' (0 : Fin (n + 1)) = finSuccEquiv n :=
   rfl
@@ -151,7 +169,7 @@ theorem finSuccAboveEquiv_apply (p : Fin (n + 1)) (i : Fin n) :
 theorem finSuccAboveEquiv_symm_apply_last (x : { x : Fin (n + 1) // x ≠ Fin.last n }) :
     (finSuccAboveEquiv (Fin.last n)).symm x = Fin.castLT x.1 (Fin.val_lt_last x.2) := by
   rw [← Option.some_inj]
-  simpa [finSuccAboveEquiv] using finSuccEquiv'_last_apply x.property
+  simp [finSuccAboveEquiv]
 
 theorem finSuccAboveEquiv_symm_apply_ne_last {p : Fin (n + 1)} (h : p ≠ Fin.last n)
     (x : { x : Fin (n + 1) // x ≠ p }) :
@@ -202,7 +220,7 @@ def Equiv.embeddingFinSucc (n : ℕ) (ι : Type*) :
 def finSumFinEquiv : Fin m ⊕ Fin n ≃ Fin (m + n) where
   toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
   invFun i := @Fin.addCases m n (fun _ => Fin m ⊕ Fin n) Sum.inl Sum.inr i
-  left_inv x := by cases' x with y y <;> dsimp <;> simp
+  left_inv x := by rcases x with y | y <;> dsimp <;> simp
   right_inv x := by refine Fin.addCases (fun i => ?_) (fun i => ?_) x <;> simp
 
 @[simp]
@@ -397,7 +415,7 @@ instance subsingleton_fin_zero : Subsingleton (Fin 0) :=
 instance subsingleton_fin_one : Subsingleton (Fin 1) :=
   finOneEquiv.subsingleton
 
-/-- The natural `Equiv` between `(Fin m → α) × (Fin n → α)` and `Fin (m + n) → α`.-/
+/-- The natural `Equiv` between `(Fin m → α) × (Fin n → α)` and `Fin (m + n) → α` -/
 @[simps]
 def Fin.appendEquiv {α : Type*} (m n : ℕ) :
     (Fin m → α) × (Fin n → α) ≃ (Fin (m + n) → α) where

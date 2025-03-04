@@ -60,9 +60,10 @@ private lemma supClosed_isRetrocompact : SupClosed {s : Set X | IsRetrocompact s
 
 lemma IsRetrocompact.finsetSup {ι : Type*} {s : Finset ι} {t : ι → Set X}
     (ht : ∀ i ∈ s, IsRetrocompact (t i)) : IsRetrocompact (s.sup t) := by
-  induction' s using Finset.cons_induction with i s ih hi
-  · simp
-  · rw [Finset.sup_cons]
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons i s ih hi =>
+    rw [Finset.sup_cons]
     exact (ht _ <| by simp).union <| hi <| Finset.forall_of_forall_cons ht
 
 set_option linter.docPrime false in
@@ -92,9 +93,10 @@ private lemma infClosed_isRetrocompact : InfClosed {s : Set X | IsRetrocompact s
 
 lemma IsRetrocompact.finsetInf {ι : Type*} {s : Finset ι} {t : ι → Set X}
     (ht : ∀ i ∈ s, IsRetrocompact (t i)) : IsRetrocompact (s.inf t) := by
-  induction' s using Finset.cons_induction with i s ih hi
-  · simp
-  · rw [Finset.inf_cons]
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons i s ih hi =>
+    rw [Finset.inf_cons]
     exact (ht _ <| by simp).inter <| hi <| Finset.forall_of_forall_cons ht
 
 set_option linter.docPrime false in
@@ -413,9 +415,10 @@ lemma IsLocallyConstructible.inter (hs : IsLocallyConstructible s) (ht : IsLocal
 
 lemma IsLocallyConstructible.finsetInf {ι : Type*} {s : Finset ι} {t : ι → Set X}
     (ht : ∀ i ∈ s, IsLocallyConstructible (t i)) : IsLocallyConstructible (s.inf t) := by
-  induction' s using Finset.cons_induction with i s ih hi
-  · simp
-  · rw [Finset.inf_cons]
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons i s ih hi =>
+    rw [Finset.inf_cons]
     exact (ht _ <| by simp).inter <| hi <| Finset.forall_of_forall_cons ht
 
 set_option linter.docPrime false in

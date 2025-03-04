@@ -58,8 +58,7 @@ of a subgroup. -/
 def leftRel : Setoid α :=
   MulAction.orbitRel s.op α
 
-variable {s}
-
+variable {s} in
 @[to_additive]
 theorem leftRel_apply {x y : α} : leftRel s x y ↔ x⁻¹ * y ∈ s :=
   calc
@@ -68,8 +67,6 @@ theorem leftRel_apply {x y : α} : leftRel s x y ↔ x⁻¹ * y ∈ s :=
     _ ↔ ∃ a : s, x⁻¹ * y = a⁻¹ := by
       simp only [inv_mul_eq_iff_eq_mul, Subgroup.coe_inv, eq_mul_inv_iff_mul_eq]
     _ ↔ x⁻¹ * y ∈ s := by simp [exists_inv_mem_iff_exists_mem]
-
-variable (s)
 
 @[to_additive]
 theorem leftRel_eq : ⇑(leftRel s) = fun x y => x⁻¹ * y ∈ s :=
@@ -100,16 +97,13 @@ subgroup. -/
 def rightRel : Setoid α :=
   MulAction.orbitRel s α
 
-variable {s}
-
+variable {s} in
 @[to_additive]
 theorem rightRel_apply {x y : α} : rightRel s x y ↔ y * x⁻¹ ∈ s :=
   calc
     (∃ a : s, (a : α) * y = x) ↔ ∃ a : s, y * x⁻¹ = a⁻¹ := by
       simp only [mul_inv_eq_iff_eq_mul, Subgroup.coe_inv, eq_inv_mul_iff_mul_eq]
     _ ↔ y * x⁻¹ ∈ s := by simp [exists_inv_mem_iff_exists_mem]
-
-variable (s)
 
 @[to_additive]
 theorem rightRel_eq : ⇑(rightRel s) = fun x y => y * x⁻¹ ∈ s :=
@@ -176,12 +170,6 @@ instance : Coe α (α ⧸ s) :=
 
 @[to_additive] alias induction_on' := induction_on
 
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated induction_on (since := "2024-08-04")] induction_on'
-attribute [deprecated QuotientAddGroup.induction_on (since := "2024-08-04")]
-QuotientAddGroup.induction_on'
-
 @[to_additive (attr := simp)]
 theorem quotient_liftOn_mk {β} (f : α → β) (h) (x : α) : Quotient.liftOn' (x : α ⧸ s) f h = f x :=
   rfl
@@ -203,9 +191,6 @@ protected theorem eq {a b : α} : (a : α ⧸ s) = b ↔ a⁻¹ * b ∈ s :=
   calc
     _ ↔ leftRel s a b := Quotient.eq''
     _ ↔ _ := by rw [leftRel_apply]
-
-@[to_additive (attr := deprecated "No deprecation message was provided." (since := "2024-08-04"))]
-alias eq' := QuotientGroup.eq
 
 @[to_additive]
 theorem out_eq' (a : α ⧸ s) : mk a.out = a :=

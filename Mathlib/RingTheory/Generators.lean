@@ -33,6 +33,15 @@ import Mathlib.RingTheory.Extension
 - `Algebra.Generators.Cotangent`: The cotangent space wrt `P = R[X] → S`, i.e. the
   space `I/I²` with `I` being the kernel of the presentation.
 
+## TODOs
+
+Currently, Lean does not see through the `vars` field of terms of `Generators R S` obtained
+from constructions, e.g. composition. This causes fragile and cumbersome proofs, because
+`simp` and `rw` often don't work properly. `Generators R S` (and `Presentation R S`, etc.) should
+be refactored in a way that makes these equalities reducibly def-eq, for example
+by unbundling the `vars` field or making the field globally reducible in constructions using
+unification hints.
+
 -/
 
 universe w u v
@@ -401,6 +410,34 @@ lemma toComp_toAlgHom_monomial (Q : Generators S T) (P : Generators R S) (j a) :
   ext f (i₁ | i₂) <;>
     simp [Finsupp.mapDomain_notin_range, Finsupp.mapDomain_apply Sum.inr_injective]
 
+@[simp]
+lemma toAlgHom_ofComp_rename (Q : Generators S T) (P : Generators R S) (p : P.Ring) :
+    (Q.ofComp P).toAlgHom ((rename Sum.inr) p) = C (algebraMap _ _ p) :=
+  have : (Q.ofComp P).toAlgHom.comp (rename Sum.inr) =
+    (IsScalarTower.toAlgHom R S Q.Ring).comp (IsScalarTower.toAlgHom R P.Ring S) := by ext; simp
+  DFunLike.congr_fun this p
+
+lemma toAlgHom_ofComp_surjective (Q : Generators S T) (P : Generators R S) :
+    Function.Surjective (Q.ofComp P).toAlgHom := by
+  intro p
+  induction p using MvPolynomial.induction_on with
+  | h_C a =>
+      use MvPolynomial.rename Sum.inr (P.σ a)
+      simp only [Hom.toAlgHom, ofComp, Generators.comp, MvPolynomial.aeval_rename,
+        Sum.elim_comp_inr]
+      simp_rw [Function.comp_def, ← MvPolynomial.algebraMap_eq, ← IsScalarTower.toAlgHom_apply R,
+        ← MvPolynomial.comp_aeval]
+      simp
+  | h_add p q hp hq =>
+      obtain ⟨p, rfl⟩ := hp
+      obtain ⟨q, rfl⟩ := hq
+      use p + q
+      simp
+  | h_X p i hp =>
+      obtain ⟨(p : MvPolynomial (Q.vars ⊕ P.vars) R), rfl⟩ := hp
+      use p * MvPolynomial.X (R := R) (Sum.inl i)
+      simp [Algebra.Generators.ofComp, Algebra.Generators.Hom.toAlgHom]
+
 /-- Given families of generators `X ⊆ T`, there is a map `R[X] → S[X]`. -/
 @[simps]
 noncomputable
@@ -440,7 +477,7 @@ variable {P} in
 lemma aeval_val_eq_zero {x} (hx : x ∈ P.ker) : aeval P.val x = 0 := by rwa [← algebraMap_apply]
 
 lemma map_toComp_ker (Q : Generators S T) (P : Generators R S) :
-    P.ker.map (Q.toComp P).toAlgHom.toRingHom = RingHom.ker (Q.ofComp P).toAlgHom := by
+    P.ker.map (Q.toComp P).toAlgHom = RingHom.ker (Q.ofComp P).toAlgHom := by
   letI : DecidableEq (Q.vars →₀ ℕ) := Classical.decEq _
   apply le_antisymm
   · rw [Ideal.map_le_iff_le_comap]
@@ -506,6 +543,67 @@ lemma map_toComp_ker (Q : Generators S T) (P : Generators R S) :
           convert this p
         · refine (((support q).map e).finite_toSet.subset ?_)
           convert this q
+
+/--
+Given `R[X] → S` and `S[Y] → T`, this is the lift of an element in `ker(S[Y] → T)`
+to `ker(R[X][Y] → S[Y] → T)` constructed from `P.σ`.
+-/
+noncomputable
+def kerCompPreimage (Q : Generators S T) (P : Generators R S) (x : Q.ker) :
+    (Q.comp P).ker := by
+  refine ⟨x.1.sum fun n r ↦ ?_, ?_⟩
+  · -- The use of `refine` is intentional to control the elaboration order
+    -- so that the term has type `(Q.comp P).Ring` and not `MvPolynomial (Q.vars ⊕ P.vars) R`
+    refine rename ?_ (P.σ r) * monomial ?_ 1
+    exacts [Sum.inr, n.mapDomain Sum.inl]
+  · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker]
+    conv_rhs => rw [← aeval_val_eq_zero x.2, ← x.1.support_sum_monomial_coeff]
+    simp only [Finsupp.sum, map_sum, map_mul, aeval_rename, Function.comp_def, comp_val,
+      Sum.elim_inr, aeval_monomial, map_one, Finsupp.prod_mapDomain_index_inj Sum.inl_injective,
+      Sum.elim_inl, one_mul]
+    congr! with v i
+    simp_rw [← IsScalarTower.toAlgHom_apply R, ← comp_aeval, AlgHom.comp_apply, P.aeval_val_σ,
+      coeff]
+
+lemma ofComp_kerCompPreimage (Q : Generators S T) (P : Generators R S) (x : Q.ker) :
+    (Q.ofComp P).toAlgHom (kerCompPreimage Q P x) = x := by
+  conv_rhs => rw [← x.1.support_sum_monomial_coeff]
+  rw [kerCompPreimage, map_finsupp_sum, Finsupp.sum]
+  refine Finset.sum_congr rfl fun j _ ↦ ?_
+  simp only [AlgHom.toLinearMap_apply, _root_.map_mul, Hom.toAlgHom_monomial]
+  rw [one_smul, Finsupp.prod_mapDomain_index_inj Sum.inl_injective]
+  rw [rename, ← AlgHom.comp_apply, comp_aeval]
+  simp only [ofComp_val, Sum.elim_inr, Function.comp_apply, self_val, id_eq,
+    Sum.elim_inl, monomial_eq, Hom.toAlgHom_X]
+  congr 1
+  rw [aeval_def, IsScalarTower.algebraMap_eq R S, ← MvPolynomial.algebraMap_eq,
+    ← coe_eval₂Hom, ← map_aeval, P.aeval_val_σ]
+  simp [coeff]
+
+lemma map_ofComp_ker (Q : Generators S T) (P : Generators R S) :
+    Ideal.map (Q.ofComp P).toAlgHom (Q.comp P).ker = Q.ker := by
+  ext x
+  rw [Ideal.mem_map_iff_of_surjective _ (toAlgHom_ofComp_surjective Q P)]
+  constructor
+  · rintro ⟨x, hx, rfl⟩
+    simp only [ker_eq_ker_aeval_val, Submodule.coe_restrictScalars, SetLike.mem_coe,
+      RingHom.mem_ker, AlgHom.toLinearMap_apply, Submodule.restrictScalars_mem] at hx ⊢
+    rw [← hx, Hom.algebraMap_toAlgHom, id.map_eq_self]
+  · intro hx
+    exact ⟨_, (kerCompPreimage Q P ⟨x, hx⟩).2, ofComp_kerCompPreimage Q P ⟨x, hx⟩⟩
+
+lemma ker_comp_eq_sup (Q : Generators S T) (P : Generators R S) :
+    (Q.comp P).ker =
+      Ideal.map (Q.toComp P).toAlgHom P.ker ⊔ Ideal.comap (Q.ofComp P).toAlgHom Q.ker := by
+  rw [← map_ofComp_ker Q P,
+    Ideal.comap_map_of_surjective _ (toAlgHom_ofComp_surjective Q P)]
+  rw [← sup_assoc, Algebra.Generators.map_toComp_ker, ← RingHom.ker_eq_comap_bot]
+  apply le_antisymm (le_trans le_sup_right le_sup_left)
+  simp only [le_sup_left, sup_of_le_left, sup_le_iff, le_refl, and_true]
+  intro x hx
+  simp only [RingHom.mem_ker] at hx
+  rw [Generators.ker_eq_ker_aeval_val, RingHom.mem_ker, ← id.map_eq_self (MvPolynomial.aeval _ x)]
+  rw [← Generators.Hom.algebraMap_toAlgHom (Q.ofComp P), hx, map_zero]
 
 end Hom
 

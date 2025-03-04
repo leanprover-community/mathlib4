@@ -161,7 +161,7 @@ theorem fourier_add' {m n : ℤ} {x : AddCircle T} :
 
 theorem fourier_norm [Fact (0 < T)] (n : ℤ) : ‖@fourier T n‖ = 1 := by
   rw [ContinuousMap.norm_eq_iSup_norm]
-  have : ∀ x : AddCircle T, ‖fourier n x‖ = 1 := fun x => Circle.abs_coe _
+  have : ∀ x : AddCircle T, ‖fourier n x‖ = 1 := fun x => Circle.norm_coe _
   simp_rw [this]
   exact @ciSup_const _ _ _ Zero.instNonempty _
 
@@ -243,7 +243,9 @@ theorem span_fourierLp_closure_eq_top {p : ℝ≥0∞} [Fact (1 ≤ p)] (hp : p 
   convert
     (ContinuousMap.toLp_denseRange ℂ (@haarAddCircle T hT) ℂ hp).topologicalClosure_map_submodule
       span_fourier_closure_eq_top
-  erw [map_span, range_comp]
+  rw [map_span]
+  unfold fourierLp
+  rw [range_comp']
   simp only [ContinuousLinearMap.coe_coe]
 
 /-- The monomials `fourier n` are an orthonormal set with respect to normalised Haar measure. -/

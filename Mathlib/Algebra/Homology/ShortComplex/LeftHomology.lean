@@ -42,9 +42,9 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C] (S : ShortComplex C)
 `π : K ⟶ H` such that `i` identifies `K` to the kernel of `g : S.X₂ ⟶ S.X₃`,
 and that `π` identifies `H` to the cokernel of the induced map `f' : S.X₁ ⟶ K` -/
 structure LeftHomologyData where
-  /-- a choice of kernel of `S.g : S.X₂ ⟶ S.X₃`-/
+  /-- a choice of kernel of `S.g : S.X₂ ⟶ S.X₃` -/
   K : C
-  /-- a choice of cokernel of the induced morphism `S.f' : S.X₁ ⟶ K`-/
+  /-- a choice of cokernel of the induced morphism `S.f' : S.X₁ ⟶ K` -/
   H : C
   /-- the inclusion of cycles in `S.X₂` -/
   i : K ⟶ S.X₂
@@ -1009,7 +1009,7 @@ lemma hasCokernel [S.HasLeftHomology] [HasKernel S.g] :
   let e : parallelPair (kernel.lift S.g S.f S.zero) 0 ≅ parallelPair h.f' 0 :=
     parallelPair.ext (Iso.refl _) (IsLimit.conePointUniqueUpToIso (kernelIsKernel S.g) h.hi)
       (by aesop_cat) (by simp)
-  exact hasColimitOfIso e
+  exact hasColimit_of_iso e
 
 end HasLeftHomology
 

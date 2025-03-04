@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
 import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
 # Pointwise actions on sets in Pi types
@@ -29,7 +30,6 @@ theorem smul_pi_subset [∀ i, SMul K (R i)] (r : K) (s : Set ι) (t : ∀ i, Se
   rintro x ⟨y, h, rfl⟩ i hi
   exact smul_mem_smul_set (h i hi)
 
--- Porting note: Lean 4 can't synthesize `Set.mem_univ i`?
 @[to_additive]
 theorem smul_univ_pi [∀ i, SMul K (R i)] (r : K) (t : ∀ i, Set (R i)) :
     r • pi (univ : Set ι) t = pi (univ : Set ι) (r • t) :=

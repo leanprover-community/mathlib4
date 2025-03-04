@@ -109,6 +109,10 @@ theorem _root_.exists_subtype_mk_eq_iff {a : Subtype p} {b : α} :
     (∃ h : p b, Subtype.mk b h = a) ↔ b = a := by
   simp only [@eq_comm _ b, exists_eq_subtype_mk_iff, @eq_comm _ _ a]
 
+theorem _root_.Function.extend_val_apply {p : β → Prop} {g : {x // p x} → γ} {j : β → γ}
+    {b : β} (hb : p b) : val.extend g j b = g ⟨b, hb⟩ :=
+  val_injective.extend_apply g j ⟨b, hb⟩
+
 /-- Restrict a (dependent) function to a subtype -/
 def restrict {α} {β : α → Type*} (p : α → Prop) (f : ∀ x, β x) (x : Subtype p) : β x.1 :=
   f x
@@ -131,7 +135,7 @@ theorem surjective_restrict {α} {β : α → Type*} [ne : ∀ a, Nonempty (β a
   rintro ⟨x, hx⟩
   exact dif_pos hx
 
-/-- Defining a map into a subtype, this can be seen as a "coinduction principle" of `Subtype`-/
+/-- Defining a map into a subtype, this can be seen as a "coinduction principle" of `Subtype` -/
 @[simps]
 def coind {α β} (f : α → β) {p : β → Prop} (h : ∀ a, p (f a)) : α → Subtype p := fun a ↦ ⟨f a, h a⟩
 

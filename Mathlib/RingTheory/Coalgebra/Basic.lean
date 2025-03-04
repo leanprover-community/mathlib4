@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+import Mathlib.LinearAlgebra.TensorProduct.Associator
 
 /-!
 # Coalgebras
@@ -158,8 +159,6 @@ theorem sum_map_tmul_tmul_eq {B : Type*} [AddCommMonoid B] [Module R B]
   simp_all only [map_sum, TensorProduct.map_tmul, LinearMap.coe_coe]
 
 end Coalgebra
-
-section CommSemiring
 
 open Coalgebra
 
@@ -380,7 +379,6 @@ instance instCoalgebra : Coalgebra R (ι →₀ A) where
 
 end Finsupp
 
-end CommSemiring
 namespace TensorProduct
 open Coalgebra
 

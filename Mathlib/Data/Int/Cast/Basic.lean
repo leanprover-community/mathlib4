@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Gabriel Ebner
 -/
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Data.Nat.Basic
 
 /-!
 # Cast of integers (additional theorems)

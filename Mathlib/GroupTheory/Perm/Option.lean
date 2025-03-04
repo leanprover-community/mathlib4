@@ -4,10 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Data.Fintype.Option
-import Mathlib.Data.Fintype.Perm
-import Mathlib.Data.Fintype.Prod
 import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.Logic.Equiv.Option
 
 /-!
 # Permutations of `Option α`
@@ -43,7 +40,7 @@ theorem map_equiv_removeNone {α : Type*} [DecidableEq α] (σ : Perm (Option α
     (removeNone σ).optionCongr = swap none (σ none) * σ := by
   ext1 x
   have : Option.map (⇑(removeNone σ)) x = (swap none (σ none)) (σ x) := by
-    cases' x with x
+    obtain - | x := x
     · simp
     · cases h : σ (some _)
       · simp [removeNone_none _ h]

@@ -206,6 +206,13 @@ def subtype {α} (p : α → Prop) : Subtype p ↪ α :=
   ⟨Subtype.val, fun _ _ => Subtype.ext⟩
 
 @[simp]
+theorem subtype_apply {α} {p : α → Prop} (x : Subtype p) : subtype p x = x :=
+  rfl
+
+theorem subtype_injective {α} (p : α → Prop) : Function.Injective (subtype p) :=
+  Subtype.coe_injective
+
+@[simp]
 theorem coe_subtype {α} (p : α → Prop) : ↑(subtype p) = Subtype.val :=
   rfl
 
@@ -258,7 +265,7 @@ open Sum
 
 /-- If `e₁` and `e₂` are embeddings, then so is `Sum.map e₁ e₂`. -/
 def sumMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α ⊕ γ ↪ β ⊕ δ :=
-  ⟨Sum.map e₁ e₂, e₁.injective.sum_map e₂.injective⟩
+  ⟨Sum.map e₁ e₂, e₁.injective.sumMap e₂.injective⟩
 
 @[simp]
 theorem coe_sumMap {α β γ δ} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : sumMap e₁ e₂ = Sum.map e₁ e₂ :=

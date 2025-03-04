@@ -235,7 +235,10 @@ theorem twoBlockTriangular_det' (M : Matrix m m R) (p : m → Prop) [DecidablePr
 
 protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : BlockTriangular M b) :
     M.det = ∏ a ∈ univ.image b, (M.toSquareBlock b a).det := by
-  induction' hs : univ.image b using Finset.strongInduction with s ih generalizing m
+  suffices ∀ hs : Finset α, univ.image b = hs → M.det = ∏ a ∈ hs, (M.toSquareBlock b a).det by
+    exact this _ rfl
+  intro s hs
+  induction s using Finset.strongInduction generalizing m with | H s ih =>
   subst hs
   cases isEmpty_or_nonempty m
   · simp
@@ -353,7 +356,9 @@ theorem toBlock_inverse_eq_zero [LinearOrder α] [Invertible M] (hM : BlockTrian
 /-- The inverse of a block-triangular matrix is block-triangular. -/
 theorem blockTriangular_inv_of_blockTriangular [LinearOrder α] [Invertible M]
     (hM : BlockTriangular M b) : BlockTriangular M⁻¹ b := by
-  induction' hs : univ.image b using Finset.strongInduction with s ih generalizing m
+  suffices ∀ hs : Finset α, univ.image b = hs → BlockTriangular M⁻¹ b by exact this _ rfl
+  intro s hs
+  induction s using Finset.strongInduction generalizing m with | H s ih =>
   subst hs
   intro i j hij
   haveI : Inhabited m := ⟨i⟩

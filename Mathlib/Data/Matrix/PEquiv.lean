@@ -32,6 +32,7 @@ inverse of this map, sending anything not in the image to zero.
 This file uses `ᵀ` for `Matrix.transpose`.
 -/
 
+assert_not_exists Field
 
 namespace PEquiv
 
@@ -58,7 +59,7 @@ theorem toMatrix_apply [DecidableEq n] [Zero α] [One α] (f : m ≃. n) (i j) :
 theorem toMatrix_mul_apply [Fintype m] [DecidableEq m] [Semiring α] (f : l ≃. m) (M : Matrix m n α)
     (i j) : (f.toMatrix * M :) i j = Option.casesOn (f i) 0 fun fi => M fi j := by
   dsimp [toMatrix, Matrix.mul_apply]
-  cases' h : f i with fi
+  rcases h : f i with - | fi
   · simp [h]
   · rw [Finset.sum_eq_single fi] <;> simp +contextual [h, eq_comm]
 
@@ -67,7 +68,7 @@ theorem toMatrix_mul_apply [Fintype m] [DecidableEq m] [Semiring α] (f : l ≃.
 theorem mul_toMatrix_apply [Fintype m] [Semiring α] [DecidableEq n] (M : Matrix l m α) (f : m ≃. n)
     (i j) : (M * f.toMatrix :) i j = Option.casesOn (f.symm j) 0 (M i) := by
   dsimp [Matrix.mul_apply, toMatrix_apply]
-  cases' h : f.symm j with fj
+  rcases h : f.symm j with - | fj
   · simp [h, ← f.eq_some_iff]
   · rw [Finset.sum_eq_single fj]
     · simp [h, ← f.eq_some_iff]
@@ -151,8 +152,8 @@ theorem toMatrix_injective [DecidableEq n] [MonoidWithZero α] [Nontrivial α] :
   simp only [Matrix.ext_iff.symm, toMatrix_apply, PEquiv.ext_iff, not_forall, exists_imp]
   intro i hi
   use i
-  cases' hf : f i with fi
-  · cases' hg : g i with gi
+  rcases hf : f i with - | fi
+  · rcases hg : g i with - | gi
     · rw [hf, hg] at hi; exact (hi rfl).elim
     · use gi
       simp

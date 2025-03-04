@@ -26,8 +26,8 @@ namespace EuclideanDomain
 variable {R : Type u}
 variable [EuclideanDomain R]
 
-/-- The well founded relation in a Euclidean Domain satisfying `a % b ≺ b` for `b ≠ 0`  -/
-local infixl:50 " ≺ " => EuclideanDomain.R
+/-- The well founded relation in a Euclidean Domain satisfying `a % b ≺ b` for `b ≠ 0` -/
+local infixl:50 " ≺ " => EuclideanDomain.r
 
 -- See note [lower instance priority]
 instance (priority := 100) toMulDivCancelClass : MulDivCancelClass R where
@@ -37,6 +37,14 @@ instance (priority := 100) toMulDivCancelClass : MulDivCancelClass R where
     have := mul_right_not_lt b h
     rw [sub_mul, mul_comm (_ / _), sub_eq_iff_eq_add'.2 (div_add_mod (a * b) b).symm] at this
     exact this (mod_lt _ hb)
+
+theorem mod_eq_sub_mul_div {R : Type*} [EuclideanDomain R] (a b : R) : a % b = a - b * (a / b) :=
+  calc
+    a % b = b * (a / b) + a % b - b * (a / b) := (add_sub_cancel_left _ _).symm
+    _ = a - b * (a / b) := by rw [div_add_mod]
+
+theorem val_dvd_le : ∀ a b : R, b ∣ a → a ≠ 0 → ¬a ≺ b
+  | _, b, ⟨d, rfl⟩, ha => mul_left_not_lt b (mt (by rintro rfl; exact mul_zero _) ha)
 
 @[simp]
 theorem mod_eq_zero {a b : R} : a % b = 0 ↔ b ∣ a :=

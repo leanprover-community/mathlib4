@@ -6,7 +6,7 @@ Authors: Johan Commelin, Eric Wieser, Jujian Zhang
 import Mathlib.Algebra.Divisibility.Finite
 import Mathlib.Algebra.Divisibility.Prod
 import Mathlib.Data.Fintype.Units
-import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
+import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 
 /-!
 # A homogeneous ideal that is homogeneously prime but not prime
@@ -138,8 +138,9 @@ theorem I_isHomogeneous : Ideal.IsHomogeneous (grading R) I := by
   rw [Set.image_singleton]
   rfl
 
+
 theorem homogeneous_mem_or_mem : ∀ {x y : R × R},
-    SetLike.Homogeneous (grading R) x → SetLike.Homogeneous (grading R) y →
+    SetLike.IsHomogeneousElem (grading R) x → SetLike.IsHomogeneousElem (grading R) y →
     x * y ∈ I → x ∈ I ∨ y ∈ I := by
   have h2 : Prime (2:R) := by
     unfold Prime

@@ -21,9 +21,7 @@ This file is a home for results about base change for matrices.
 
 namespace Matrix
 
-open scoped Matrix
-
-variable {m n L : Type*} [Fintype m] [Fintype n] [DecidableEq m] [Field L]
+variable {m n L : Type*} [Finite m] [Fintype n] [DecidableEq m] [Field L]
   (e : m ≃ n) (K : Subfield L) {A : Matrix m n L} {B : Matrix n m L} (hAB : A * B = 1)
 
 include e hAB
@@ -31,6 +29,7 @@ include e hAB
 lemma mem_subfield_of_mul_eq_one_of_mem_subfield_right
     (h_mem : ∀ i j, A i j ∈ K) (i : n) (j : m) :
     B i j ∈ K := by
+  cases nonempty_fintype m
   let A' : Matrix m m K := of fun i j ↦ ⟨A.submatrix id e i j, h_mem i (e j)⟩
   have hA' : A'.map K.subtype = A.submatrix id e := rfl
   have hA : IsUnit A' := by

@@ -63,10 +63,6 @@ instance : Inhabited Profinite :=
 instance {X : Profinite} : TotallyDisconnectedSpace X :=
   X.prop
 
-instance {X : Profinite} : TotallyDisconnectedSpace ((forget Profinite).obj X) := by
-  change TotallyDisconnectedSpace X
-  exact inferInstance
-
 end Profinite
 
 /-- The fully faithful embedding of `Profinite` in `CompHaus`. -/

@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Topology.MetricSpace.Algebra
+import Mathlib.Data.ENNReal.Action
 import Mathlib.Topology.Algebra.UniformMulAction
+import Mathlib.Topology.MetricSpace.Algebra
 
 /-!
 # Lemmas for `BoundedSMul` over normed additive groups

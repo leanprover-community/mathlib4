@@ -6,6 +6,7 @@ Authors: Jeremy Avigad
 import Batteries.Data.List.Pairwise
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.TakeWhile
 import Mathlib.Order.Fin.Basic
 
 /-!
@@ -26,7 +27,6 @@ namespace List
 /-!
 ### The predicate `List.Sorted`
 -/
-
 
 section Sorted
 
@@ -171,6 +171,7 @@ section Monotone
 
 variable {n : ℕ} {α : Type u} {f : Fin n → α}
 
+open scoped Relator in
 theorem sorted_ofFn_iff {r : α → α → Prop} : (ofFn f).Sorted r ↔ ((· < ·) ⇒ r) f f := by
   simp_rw [Sorted, pairwise_iff_get, get_ofFn, Relator.LiftFun]
   exact Iff.symm (Fin.rightInverse_cast _).surjective.forall₂
@@ -189,6 +190,118 @@ strictly monotone. -/
 alias ⟨_, _root_.Monotone.ofFn_sorted⟩ := sorted_le_ofFn_iff
 
 end Monotone
+
+end List
+
+open List
+
+namespace RelEmbedding
+
+variable {α β : Type*} {ra : α → α → Prop} {rb : β → β → Prop}
+
+@[simp]
+theorem sorted_listMap (e : ra ↪r rb) {l : List α} : (l.map e).Sorted rb ↔ l.Sorted ra := by
+  simp [Sorted, pairwise_map, e.map_rel_iff]
+
+@[simp]
+theorem sorted_swap_listMap (e : ra ↪r rb) {l : List α} :
+    (l.map e).Sorted (Function.swap rb) ↔ l.Sorted (Function.swap ra) := by
+  simp [Sorted, pairwise_map, e.map_rel_iff]
+
+end RelEmbedding
+
+namespace OrderEmbedding
+
+variable {α β : Type*} [Preorder α] [Preorder β]
+
+@[simp]
+theorem sorted_lt_listMap (e : α ↪o β) {l : List α} :
+    (l.map e).Sorted (· < ·) ↔ l.Sorted (· < ·) :=
+  e.ltEmbedding.sorted_listMap
+
+@[simp]
+theorem sorted_gt_listMap (e : α ↪o β) {l : List α} :
+    (l.map e).Sorted (· > ·) ↔ l.Sorted (· > ·) :=
+  e.ltEmbedding.sorted_swap_listMap
+
+end OrderEmbedding
+
+namespace RelIso
+
+variable {α β : Type*} {ra : α → α → Prop} {rb : β → β → Prop}
+
+@[simp]
+theorem sorted_listMap (e : ra ≃r rb) {l : List α} : (l.map e).Sorted rb ↔ l.Sorted ra :=
+  e.toRelEmbedding.sorted_listMap
+
+@[simp]
+theorem sorted_swap_listMap (e : ra ≃r rb) {l : List α} :
+    (l.map e).Sorted (Function.swap rb) ↔ l.Sorted (Function.swap ra) :=
+  e.toRelEmbedding.sorted_swap_listMap
+
+end RelIso
+
+namespace OrderIso
+
+variable {α β : Type*} [Preorder α] [Preorder β]
+
+@[simp]
+theorem sorted_lt_listMap (e : α ≃o β) {l : List α} :
+    (l.map e).Sorted (· < ·) ↔ l.Sorted (· < ·) :=
+  e.toOrderEmbedding.sorted_lt_listMap
+
+@[simp]
+theorem sorted_gt_listMap (e : α ≃o β) {l : List α} :
+    (l.map e).Sorted (· > ·) ↔ l.Sorted (· > ·) :=
+  e.toOrderEmbedding.sorted_gt_listMap
+
+end OrderIso
+
+namespace StrictMono
+
+variable {α β : Type*} [LinearOrder α] [Preorder β] {f : α → β} {l : List α}
+
+theorem sorted_le_listMap (hf : StrictMono f) :
+    (l.map f).Sorted (· ≤ ·) ↔ l.Sorted (· ≤ ·) :=
+  (OrderEmbedding.ofStrictMono f hf).sorted_listMap
+
+theorem sorted_ge_listMap (hf : StrictMono f) :
+    (l.map f).Sorted (· ≥ ·) ↔ l.Sorted (· ≥ ·) :=
+  (OrderEmbedding.ofStrictMono f hf).sorted_swap_listMap
+
+theorem sorted_lt_listMap (hf : StrictMono f) :
+    (l.map f).Sorted (· < ·) ↔ l.Sorted (· < ·) :=
+  (OrderEmbedding.ofStrictMono f hf).sorted_lt_listMap
+
+theorem sorted_gt_listMap (hf : StrictMono f) :
+    (l.map f).Sorted (· > ·) ↔ l.Sorted (· > ·) :=
+  (OrderEmbedding.ofStrictMono f hf).sorted_gt_listMap
+
+end StrictMono
+
+namespace StrictAnti
+
+variable {α β : Type*} [LinearOrder α] [Preorder β] {f : α → β} {l : List α}
+
+theorem sorted_le_listMap (hf : StrictAnti f) :
+    (l.map f).Sorted (· ≤ ·) ↔ l.Sorted (· ≥ ·) :=
+  hf.dual_right.sorted_ge_listMap
+
+theorem sorted_ge_listMap (hf : StrictAnti f) :
+    (l.map f).Sorted (· ≥ ·) ↔ l.Sorted (· ≤ ·) :=
+  hf.dual_right.sorted_le_listMap
+
+theorem sorted_lt_listMap (hf : StrictAnti f) :
+    (l.map f).Sorted (· < ·) ↔ l.Sorted (· > ·) :=
+  hf.dual_right.sorted_gt_listMap
+
+theorem sorted_gt_listMap (hf : StrictAnti f) :
+    (l.map f).Sorted (· > ·) ↔ l.Sorted (· < ·) :=
+  hf.dual_right.sorted_lt_listMap
+
+end StrictAnti
+
+namespace List
 
 section sort
 
@@ -426,7 +539,7 @@ theorem Sorted.orderedInsert (a : α) : ∀ l, Sorted r l → Sorted r (orderedI
     · suffices ∀ b' : α, b' ∈ List.orderedInsert r a l → r b b' by
         simpa [orderedInsert, h', h.of_cons.orderedInsert a l]
       intro b' bm
-      cases' (mem_orderedInsert r).mp bm with be bm
+      rcases (mem_orderedInsert r).mp bm with be | bm
       · subst b'
         exact (total_of r _ _).resolve_left h'
       · exact rel_of_sorted_cons h _ bm
@@ -526,25 +639,22 @@ theorem Sorted.merge {l l' : List α} (h : Sorted r l) (h' : Sorted r l') :
 
 variable (r)
 
-/-- Variant of `sorted_mergeSort` using order typeclasses. -/
-theorem sorted_mergeSort' [Preorder α] [DecidableRel ((· : α) ≤ ·)] [IsTotal α (· ≤ ·)]
-    (l : List α) : Sorted (· ≤ ·) (mergeSort l) := by
-  simpa using sorted_mergeSort (le := fun a b => a ≤ b)
-    (fun a b c h₁ h₂ => by simpa using le_trans (by simpa using h₁) (by simpa using h₂))
-    (fun a b => by simpa using IsTotal.total a b)
+/-- Variant of `sorted_mergeSort` using relation typeclasses. -/
+theorem sorted_mergeSort' (l : List α) : Sorted r (mergeSort l (r · ·)) := by
+  simpa using sorted_mergeSort (le := (r · ·))
+    (fun _ _ _ => by simpa using trans_of r)
+    (by simpa using total_of r)
     l
 
-theorem mergeSort_eq_self [LinearOrder α] {l : List α} : Sorted (· ≤ ·) l → mergeSort l = l :=
-  eq_of_perm_of_sorted (mergeSort_perm _ _) (sorted_mergeSort' l)
+variable [IsAntisymm α r]
 
-theorem mergeSort_eq_insertionSort [IsAntisymm α r] (l : List α) :
+theorem mergeSort_eq_self {l : List α} : Sorted r l → mergeSort l (r · ·) = l :=
+  eq_of_perm_of_sorted (mergeSort_perm _ _) (sorted_mergeSort' _ l)
+
+theorem mergeSort_eq_insertionSort (l : List α) :
     mergeSort l (r · ·) = insertionSort r l :=
   eq_of_perm_of_sorted ((mergeSort_perm l _).trans (perm_insertionSort r l).symm)
-    (sorted_mergeSort (le := (r · ·))
-      (fun a b c h₁ h₂ => by simpa using _root_.trans (by simpa using h₁) (by simpa using h₂))
-      (fun a b => by simpa using IsTotal.total a b)
-      l)
-    (sorted_insertionSort r l).decide
+    (sorted_mergeSort' r l) (sorted_insertionSort r l)
 
 end TotalAndTransitive
 

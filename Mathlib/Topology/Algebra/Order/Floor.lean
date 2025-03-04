@@ -155,31 +155,31 @@ theorem tendsto_ceil_right' (n : ℤ) :
 
 end OrderClosedTopology
 
-theorem continuousOn_fract [TopologicalAddGroup α] (n : ℤ) :
+theorem continuousOn_fract [IsTopologicalAddGroup α] (n : ℤ) :
     ContinuousOn (fract : α → α) (Ico n (n + 1) : Set α) :=
   continuousOn_id.sub (continuousOn_floor n)
 
-theorem continuousAt_fract [OrderClosedTopology α] [TopologicalAddGroup α]
+theorem continuousAt_fract [OrderClosedTopology α] [IsTopologicalAddGroup α]
     {x : α} (h : x ≠ ⌊x⌋) : ContinuousAt fract x :=
   (continuousOn_fract ⌊x⌋).continuousAt <|
     Ico_mem_nhds ((floor_le _).lt_of_ne h.symm) (lt_floor_add_one _)
 
-theorem tendsto_fract_left' [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
+theorem tendsto_fract_left' [OrderClosedTopology α] [IsTopologicalAddGroup α] (n : ℤ) :
     Tendsto (fract : α → α) (𝓝[<] n) (𝓝 1) := by
   rw [← sub_sub_cancel (n : α) 1]
   refine (tendsto_id.mono_left nhdsWithin_le_nhds).sub ?_
   exact tendsto_floor_left' n
 
-theorem tendsto_fract_left [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
+theorem tendsto_fract_left [OrderClosedTopology α] [IsTopologicalAddGroup α] (n : ℤ) :
     Tendsto (fract : α → α) (𝓝[<] n) (𝓝[<] 1) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ (tendsto_fract_left' _)
     (Eventually.of_forall fract_lt_one)
 
-theorem tendsto_fract_right' [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
+theorem tendsto_fract_right' [OrderClosedTopology α] [IsTopologicalAddGroup α] (n : ℤ) :
     Tendsto (fract : α → α) (𝓝[≥] n) (𝓝 0) :=
   sub_self (n : α) ▸ (tendsto_nhdsWithin_of_tendsto_nhds tendsto_id).sub (tendsto_floor_right' n)
 
-theorem tendsto_fract_right [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
+theorem tendsto_fract_right [OrderClosedTopology α] [IsTopologicalAddGroup α] (n : ℤ) :
     Tendsto (fract : α → α) (𝓝[≥] n) (𝓝[≥] 0) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ (tendsto_fract_right' _)
     (Eventually.of_forall fract_nonneg)

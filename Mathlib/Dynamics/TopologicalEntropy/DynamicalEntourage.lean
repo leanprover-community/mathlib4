@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone
 -/
 import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Topology.Constructions
+import Mathlib.Topology.UniformSpace.Defs
 
 /-!
 # Dynamical entourages
@@ -38,7 +39,7 @@ variable {X : Type*}
 
 /-- The dynamical entourage associated to a transformation `T`, entourage `U` and time `n`
 is the set of points `(x, y)` such that `(T^[k] x, T^[k] y) ∈ U` for all `k < n`, i.e.
-which are `U`-close up to time `n`.-/
+which are `U`-close up to time `n`. -/
 def dynEntourage (T : X → X) (U : Set (X × X)) (n : ℕ) : Set (X × X) :=
   ⋂ k < n, (map T T)^[k] ⁻¹' U
 

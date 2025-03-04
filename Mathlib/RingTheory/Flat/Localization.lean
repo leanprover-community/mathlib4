@@ -96,3 +96,10 @@ theorem flat_of_localized_span
   flat_of_isLocalized_span _ _ _ spn _ (fun _ ↦ mkLinearMap _ _) h
 
 end Module
+
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+
+instance [Module.Flat A B] (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
+    Module.Flat (Localization.AtPrime p) (Localization.AtPrime P) := by
+  rw [Module.flat_iff_of_isLocalization (Localization.AtPrime p) p.primeCompl]
+  exact Module.Flat.trans A B (Localization.AtPrime P)

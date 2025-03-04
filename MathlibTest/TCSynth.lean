@@ -22,6 +22,7 @@ open Complex Filter Bornology
 /--
 error: failed to synthesize
   AddMonoidHomClass (AddGroupSeminorm ℂ) ℂ ℝ
+
 Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
@@ -64,7 +65,7 @@ section
 
 open Complex in
 set_option synthInstance.maxHeartbeats 3200 in
-example (x : ℝ) : abs (cos x + sin x * I) = 1 := by simp
+example (x : ℝ) : ‖cos x + sin x * I‖ = 1 := by simp
 
 end
 
@@ -103,6 +104,7 @@ set_option synthInstance.maxHeartbeats 1000 in
 /--
 error: failed to synthesize
   I.IsPrime
+
 Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in

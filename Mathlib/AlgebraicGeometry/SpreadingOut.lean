@@ -66,7 +66,7 @@ lemma injective_germ_basicOpen (U : X.Opens) (hU : IsAffineOpen U)
   have := hU.isLocalization_basicOpen f
   obtain ⟨t, s, rfl⟩ := IsLocalization.mk'_surjective (.powers f) t
   rw [← RingHom.mem_ker, IsLocalization.mk'_eq_mul_mk'_one, Ideal.mul_unit_mem_iff_mem,
-    RingHom.mem_ker, RingHom.algebraMap_toAlgebra, CommRingCat.germ_res_apply] at ht
+    RingHom.mem_ker, RingHom.algebraMap_toAlgebra, TopCat.Presheaf.germ_res_apply] at ht
   swap; · exact @isUnit_of_invertible _ _ _ (@IsLocalization.invertible_mk'_one ..)
   rw [H _ ht, IsLocalization.mk'_zero]
 
@@ -141,6 +141,8 @@ lemma Scheme.IsGermInjective.Spec
   rw [← RingHom.mem_ker, IsLocalization.mk'_eq_mul_mk'_one, Ideal.mul_unit_mem_iff_mem,
     RingHom.mem_ker, RingHom.algebraMap_toAlgebra] at hx
   swap; · exact @isUnit_of_invertible _ _ _ (@IsLocalization.invertible_mk'_one ..)
+  -- There is an `Opposite.unop (Opposite.op _)` in `hx` which doesn't seem removable using
+  -- `simp`/`rw`.
   erw [StructureSheaf.germ_toOpen] at hx
   obtain ⟨⟨y, hy⟩, hy'⟩ := (IsLocalization.map_eq_zero_iff p.asIdeal.primeCompl
     ((Spec.structureSheaf R).presheaf.stalk p) _).mp hx
@@ -292,7 +294,7 @@ lemma exists_lift_of_germInjective {x : X} [X.IsGermInjectiveAt x] {U : X.Opens}
     rw [RingEquiv.apply_symm_apply]
     ext
     show X.presheaf.germ _ _ _ (X.presheaf.map _ _) = (φRA ≫ φ) a
-    rw [CommRingCat.germ_res_apply, ‹φRA ≫ φ = _›]
+    rw [TopCat.Presheaf.germ_res_apply, ‹φRA ≫ φ = _›]
     rfl
 
 /--

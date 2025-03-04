@@ -184,10 +184,6 @@ theorem exists_mem_iterate_mem_of_measure_univ_lt_mul_measure (hf : MeasurePrese
   refine ⟨f^[i] x, hxi, j - i, ⟨tsub_pos_of_lt hlt, lt_of_le_of_lt (j.sub_le i) hj⟩, ?_⟩
   rwa [← iterate_add_apply, tsub_add_cancel_of_le hlt.le]
 
-@[deprecated (since := "2024-08-12")]
-alias exists_mem_iterate_mem_of_volume_lt_mul_volume :=
-  exists_mem_iterate_mem_of_measure_univ_lt_mul_measure
-
 /-- A self-map preserving a finite measure is conservative: if `μ s ≠ 0`, then at least one point
 `x ∈ s` comes back to `s` under iterations of `f`. Actually, a.e. point of `s` comes back to `s`
 infinitely many times, see `MeasureTheory.MeasurePreserving.conservative` and theorems about

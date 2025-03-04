@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 
 import Mathlib.RingTheory.Algebraic.Basic
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
 import Mathlib.ModelTheory.Algebra.Ring.Definability
 import Mathlib.RingTheory.Polynomial.Basic
@@ -22,7 +22,7 @@ then any injective polynomial map `K^n → K^n` is also surjective.
 `S : Set (ι → K)` is the `zeroLocus` of some ideal of `MvPolynomial ι K`, then any injective
 polynomial map `S → S` is also surjective on `S`.
 * `ax_grothendieck_univ`: Any injective polynomial map `K^n → K^n` is also surjective if `K` is an
-algberaically closed field.
+algebraically closed field.
 * `ax_grothendieck_of_definable`: Any injective polynomial map `S → S` is also surjective on `S` if
 `K` is an algebraically closed field and `S` is a definable subset of `K^n`.
 * `ax_grothendieck_of_locally_finite`: any injective polynomial map `R^n → R^n` is also surjective
@@ -141,7 +141,7 @@ noncomputable def genericPolyMapSurjOnOfInjOn [Finite ι]
   Formula.iAlls (α ⊕ Σ i : ι, mons i) ((mapsTo.imp <| injOn.imp <| surjOn).relabel Sum.inr)
 
 theorem realize_genericPolyMapSurjOnOfInjOn
-    [Fintype ι] (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
+    [Finite ι] (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
     (K ⊨ genericPolyMapSurjOnOfInjOn φ mons) ↔
       ∀ (v : α → K) (p : { p : ι → MvPolynomial ι K // (∀ i, (p i).support ⊆ mons i) }),
         let f : (ι → K) → (ι → K) := fun v i => eval v (p.1 i)
@@ -166,7 +166,7 @@ theorem realize_genericPolyMapSurjOnOfInjOn
     lift_genericPolyMap, Nat.reduceAdd, Fin.isValue, Function.uncurry_apply_pair, Fin.cons_zero,
     Fin.cons_one, ↓reduceIte, one_ne_zero]
 
-theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime [Fintype ι]
+theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime [Finite ι]
     {p : ℕ} (hp : p.Prime) (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
     Theory.ACF p ⊨ᵇ genericPolyMapSurjOnOfInjOn φ mons := by
   classical
@@ -181,7 +181,7 @@ theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime [Fintype ι]
   exact ax_grothendieck_of_locally_finite (K := ZMod p) (ι := ι) f _
 
 theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime_or_zero
-    [Fintype ι] {p : ℕ} (hp : p.Prime ∨ p = 0)
+    [Finite ι] {p : ℕ} (hp : p.Prime ∨ p = 0)
     (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
     Theory.ACF p ⊨ᵇ genericPolyMapSurjOnOfInjOn φ mons := by
   rcases hp with hp | rfl

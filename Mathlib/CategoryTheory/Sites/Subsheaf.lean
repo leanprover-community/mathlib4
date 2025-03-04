@@ -190,15 +190,12 @@ theorem Subpresheaf.sheafify_le (h : G ≤ G') (hF : Presieve.IsSheaf J F)
 
 section Image
 
-variable (J)
-
+variable (J) in
 /-- A morphism factors through the sheafification of the image presheaf. -/
 @[simps!]
 def Subpresheaf.toRangeSheafify (f : F' ⟶ F) : F' ⟶ ((Subpresheaf.range f).sheafify J).toPresheaf :=
   toRange f ≫ Subpresheaf.homOfLe ((range f).le_sheafify J)
 
-
-variable {J}
 
 /-- The image sheaf of a morphism between sheaves, defined to be the sheafification of
 `image_presheaf`. -/
@@ -252,6 +249,7 @@ def imageMonoFactorization {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Limits.Mon
   m := Sheaf.imageι f
   e := Sheaf.toImage f
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- The mono factorization given by `image_sheaf` for a morphism is an image. -/
 noncomputable def imageFactorization {F F' : Sheaf J (Type (max v u))} (f : F ⟶ F') :
     Limits.ImageFactorisation f where

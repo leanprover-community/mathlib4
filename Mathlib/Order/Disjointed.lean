@@ -51,7 +51,7 @@ variable [Preorder ι] [LocallyFiniteOrderBot ι]
 
 /-- The function mapping `i` to `f i \ (⨆ j < i, f j)`. When `ι` is a partial order, this is the
 unique function `g` having the same `partialSups` as `f` and such that `g i` and `g j` are
-disjoint whenever `i < j`.  -/
+disjoint whenever `i < j`. -/
 def disjointed (f : ι → α) (i : ι) : α := f i \ (Iio i).sup f
 
 lemma disjointed_apply (f : ι → α) (i : ι) : disjointed f i = f i \ (Iio i).sup f := rfl
@@ -233,7 +233,7 @@ end LinearOrder
 /-- For any finite family of elements `f : ι → α`, we can find a pairwise-disjoint family `g`
 bounded above by `f` and having the same supremum. This is non-canonical, depending on an arbitrary
 choice of ordering of `ι`. -/
-lemma Fintype.exists_disjointed_le {ι : Type*} [Fintype ι] {f : ι → α} :
+lemma Fintype.exists_disjointed_le {ι : Type*} [Fintype ι] (f : ι → α) :
     ∃ g, g ≤ f ∧ univ.sup g = univ.sup f ∧ Pairwise (Disjoint on g) := by
   rcases isEmpty_or_nonempty ι with hι | hι
   ·  -- do `ι = ∅` separately since `⊤ : Fin n` isn't defined for `n = 0`

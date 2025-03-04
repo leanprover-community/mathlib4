@@ -43,12 +43,11 @@ proved in `Mathlib.NumberTheory.LSeries.HurwitzZetaEven`.
 -/
 
 
-open CharZero MeasureTheory Set Filter Asymptotics TopologicalSpace Real Asymptotics
-  Classical HurwitzZeta
+open CharZero Set Filter HurwitzZeta
 
-open Complex hiding exp norm_eq_abs abs_of_nonneg abs_two continuous_exp
+open Complex hiding exp continuous_exp
 
-open scoped Topology Real Nat
+open scoped Topology Real
 
 noncomputable section
 

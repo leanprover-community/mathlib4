@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Continuity
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import Mathlib.Topology.MetricSpace.Thickening
 
@@ -44,7 +44,7 @@ theorem measurableSet_ball : MeasurableSet (Metric.ball x ε) :=
 
 @[measurability]
 theorem measurableSet_closedBall : MeasurableSet (Metric.closedBall x ε) :=
-  Metric.isClosed_ball.measurableSet
+  Metric.isClosed_closedBall.measurableSet
 
 @[measurability]
 theorem measurable_infDist {s : Set α} : Measurable fun x => infDist x s :=

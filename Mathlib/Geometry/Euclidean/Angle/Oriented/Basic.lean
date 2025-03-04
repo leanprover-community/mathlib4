@@ -52,6 +52,7 @@ def oangle (x y : V) : Real.Angle :=
   Complex.arg (o.kahler x y)
 
 /-- Oriented angles are continuous when the vectors involved are nonzero. -/
+@[fun_prop]
 theorem continuousAt_oangle {x : V × V} (hx1 : x.1 ≠ 0) (hx2 : x.2 ≠ 0) :
     ContinuousAt (fun y : V × V => o.oangle y.1 y.2) x := by
   refine (Complex.continuousAt_arg_coe_angle ?_).comp ?_
@@ -538,7 +539,7 @@ theorem inner_eq_norm_mul_norm_mul_cos_oangle (x y : V) :
     ⟪x, y⟫ = ‖x‖ * ‖y‖ * Real.Angle.cos (o.oangle x y) := by
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
-  rw [oangle, Real.Angle.cos_coe, Complex.cos_arg, o.abs_kahler]
+  rw [oangle, Real.Angle.cos_coe, Complex.cos_arg, o.norm_kahler]
   · simp only [kahler_apply_apply, real_smul, add_re, ofReal_re, mul_re, I_re, ofReal_im]
     -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp`; replaced by `simp only ...` to speed up
     -- Reinstate `field_simp` once it is faster.
@@ -751,7 +752,7 @@ theorem oangle_smul_add_right_eq_zero_or_eq_pi_iff {x y : V} (r : ℝ) :
     o.oangle x (r • x + y) = 0 ∨ o.oangle x (r • x + y) = π ↔
     o.oangle x y = 0 ∨ o.oangle x y = π := by
   simp_rw [oangle_eq_zero_or_eq_pi_iff_not_linearIndependent, Fintype.not_linearIndependent_iff,
-      Fin.sum_univ_two, Fin.exists_fin_two]
+    Fin.sum_univ_two, Fin.exists_fin_two]
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rcases h with ⟨m, h, hm⟩
     change m 0 • x + m 1 • (r • x + y) = 0 at h
@@ -786,8 +787,7 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
     intro r'
     rwa [← o.oangle_smul_add_right_eq_zero_or_eq_pi_iff r', not_or] at h
   let s : Set (V × V) := (fun r' : ℝ => (x, r' • x + y)) '' Set.univ
-  have hc : IsConnected s := isConnected_univ.image _ (continuous_const.prod_mk
-    ((continuous_id.smul continuous_const).add continuous_const)).continuousOn
+  have hc : IsConnected s := isConnected_univ.image _ (by fun_prop)
   have hf : ContinuousOn (fun z : V × V => o.oangle z.1 z.2) s := by
     refine continuousOn_of_forall_continuousAt fun z hz => o.continuousAt_oangle ?_ ?_
     all_goals

@@ -43,7 +43,7 @@ theorem card_eq_fintype_card [Fintype α] : Nat.card α = Fintype.card α :=
   mk_toNat_eq_card
 
 /-- Because this theorem takes `Fintype α` as a non-instance argument, it can be used in particular
-when `Fintype.card` ends up with different instance than the one found by inference  -/
+when `Fintype.card` ends up with different instance than the one found by inference -/
 theorem _root_.Fintype.card_eq_nat_card {_ : Fintype α} : Fintype.card α = Nat.card α :=
   mk_toNat_eq_card.symm
 
@@ -272,9 +272,13 @@ def card (α : Type*) : ℕ∞ :=
 theorem card_eq_coe_fintype_card [Fintype α] : card α = Fintype.card α := by
   simp [card]
 
-@[simp]
+@[simp high]
 theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ := by
-  simp [card]
+  simp only [card, toENat_eq_top, aleph0_le_mk]
+
+@[simp] lemma card_eq_top : card α = ⊤ ↔ Infinite α := by simp [card, aleph0_le_mk_iff]
+
+@[simp] theorem card_lt_top_of_finite [Finite α] : card α < ⊤ := by simp [card]
 
 @[simp]
 theorem card_sum (α β : Type*) :

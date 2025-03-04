@@ -91,11 +91,9 @@ def gi : GaloisInsertion (span : Set (ℙ K V) → Subspace K V) SetLike.coe whe
   gc A B :=
     ⟨fun h => le_trans (subset_span _) h, by
       intro h x hx
-      induction' hx with y hy
-      · apply h
-        assumption
-      · apply B.mem_add
-        assumption'⟩
+      induction hx with
+      | of => apply h; assumption
+      | mem_add => apply B.mem_add; assumption'⟩
   le_l_u _ := subset_span _
   choice_eq _ _ := rfl
 

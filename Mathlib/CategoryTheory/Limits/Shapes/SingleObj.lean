@@ -23,6 +23,8 @@ We characterise (co)limits of shape `SingleObj M`. Currently only in the categor
 
 -/
 
+assert_not_exists MonoidWithZero
+
 universe u v
 
 namespace CategoryTheory

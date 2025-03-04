@@ -96,9 +96,7 @@ attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre
   Pre.hasZero Pre.hasOne Pre.hasSMul
 
 /-- Given a function from `X` to an `R`-algebra `A`, `lift_fun` provides a lift of `f` to a function
-from `Pre R X` to `A`. This is mainly used in the construction of `FreeAlgebra.lift`.
--/
--- Porting note: recOn was replaced to preserve computability, see https://github.com/leanprover/lean4/issues/2049
+from `Pre R X` to `A`. This is mainly used in the construction of `FreeAlgebra.lift`. -/
 def liftFun {A : Type*} [Semiring A] [Algebra R A] (f : X → A) :
     Pre R X → A
   | .of t => f t
@@ -343,8 +341,7 @@ private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
   commutes' := by tauto
 
 /-- Given a function `f : X → A` where `A` is an `R`-algebra, `lift R f` is the unique lift
-of `f` to a morphism of `R`-algebras `FreeAlgebra R X → A`.
--/
+of `f` to a morphism of `R`-algebras `FreeAlgebra R X → A`. -/
 @[irreducible]
 def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
   { toFun := liftAux R

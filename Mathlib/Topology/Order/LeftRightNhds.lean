@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Algebra.Ring.Pointwise.Set
+import Mathlib.Order.Filter.AtTopBot.CompleteLattice
 import Mathlib.Order.Filter.AtTopBot.Group
 import Mathlib.Topology.Order.Basic
 
@@ -438,13 +439,10 @@ theorem nhds_basis_Icc_pos [NoMaxOrder α] [DenselyOrdered α] (a : α) :
       ⟨δ, δ₀, Icc_subset_Ioo (sub_lt_sub_left δε _) (add_lt_add_left δε _)⟩)
     (fun ε ε₀ ↦ ⟨ε, ε₀, Ioo_subset_Icc_self⟩)
 
-variable (α)
-
+variable (α) in
 theorem nhds_basis_zero_abs_sub_lt [NoMaxOrder α] :
     (𝓝 (0 : α)).HasBasis (fun ε : α => (0 : α) < ε) fun ε => { b | |b| < ε } := by
   simpa using nhds_basis_abs_sub_lt (0 : α)
-
-variable {α}
 
 /-- If `a` is positive we can form a basis from only nonnegative `Set.Ioo` intervals -/
 theorem nhds_basis_Ioo_pos_of_pos [NoMaxOrder α] {a : α} (ha : 0 < a) :

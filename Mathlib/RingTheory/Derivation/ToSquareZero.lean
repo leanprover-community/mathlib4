@@ -50,7 +50,7 @@ def derivationToSquareZeroOfLift [IsScalarTower R A B]  (hI : I ^ 2 = ⊥) (f : 
       map_one_eq_zero' := ?_
       leibniz' := ?_ }
   · rw [e]; ext; rfl
-  · ext; change f 1 - algebraMap A B 1 = 0; rw [map_one, map_one, sub_self]
+  · ext; simp
   · intro x y
     let F := diffToIdealOfQuotientCompEq I f (IsScalarTower.toAlgHom R A B) (by rw [e]; ext; rfl)
     have : (f x - algebraMap A B x) * (f y - algebraMap A B y) = 0 := by

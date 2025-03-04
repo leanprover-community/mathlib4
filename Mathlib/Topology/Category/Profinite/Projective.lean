@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Topology.Category.Profinite.Basic
 import Mathlib.Topology.StoneCech
-import Mathlib.CategoryTheory.Preadditive.Projective
+import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!

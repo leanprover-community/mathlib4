@@ -3,7 +3,9 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Induction
+import Mathlib.Data.List.TakeWhile
+
 /-!
 
 # Dropping or taking from lists on the right
@@ -121,7 +123,7 @@ theorem rdropWhile_eq_nil_iff : rdropWhile p l = [] ↔ ∀ x ∈ l, p x := by s
 -- it is in this file because it requires `List.Infix`
 @[simp]
 theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.get ⟨0, hl⟩) := by
-  cases' l with hd tl
+  rcases l with - | ⟨hd, tl⟩
   · simp only [dropWhile, true_iff]
     intro h
     by_contra

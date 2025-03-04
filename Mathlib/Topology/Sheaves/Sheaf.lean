@@ -145,4 +145,20 @@ theorem comp_app {F G H : Sheaf C X} (f : F ⟶ G) (g : G ⟶ H) (t) :
 
 end Sheaf
 
+lemma Presheaf.IsSheaf.section_ext {X : TopCat.{u}}
+    {A : Type*} [Category.{u} A] {FC : A → A → Type*} {CC : A → Type u}
+    [∀ X Y : A, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{u} A FC]
+    [HasLimits A] [PreservesLimits (forget A)] [(forget A).ReflectsIsomorphisms]
+    {F : TopCat.Presheaf A X} (hF : TopCat.Presheaf.IsSheaf F)
+    {U : (Opens X)ᵒᵖ} {s t : ToType (F.obj U)}
+    (hst : ∀ x ∈ U.unop, ∃ V, ∃ hV : V ≤ U.unop, x ∈ V ∧
+      F.map (homOfLE hV).op s = F.map (homOfLE hV).op t) :
+    s = t := by
+  have := (isSheaf_iff_isSheaf_of_type _ _).mp
+    ((Presheaf.isSheaf_iff_isSheaf_forget (C := Opens X) (A' := A) _ F (forget _)).mp hF)
+  choose V hV hxV H using fun x : U.unop ↦ hst x.1 x.2
+  refine (this.isSheafFor _ (.ofArrows V fun x ↦ homOfLE (hV x)) ?_).isSeparatedFor.ext ?_
+  · exact fun x hx ↦ ⟨V ⟨x, hx⟩, homOfLE (hV _), Sieve.le_generate _ _ (.mk _), hxV _⟩
+  · rintro _ _ ⟨x⟩; exact H x
+
 end TopCat

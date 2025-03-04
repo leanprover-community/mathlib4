@@ -367,9 +367,10 @@ lemma self_pow_inv (r : ℕ) : padicValRat p ((p : ℚ) ^ r)⁻¹ = -r := by
 (if the sum is non-zero). -/
 theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < padicValRat p (F i))
     (hn0 : ∑ i ∈ Finset.range n, F i ≠ 0) : 0 < padicValRat p (∑ i ∈ Finset.range n, F i) := by
-  induction' n with d hd
-  · exact False.elim (hn0 rfl)
-  · rw [Finset.sum_range_succ] at hn0 ⊢
+  induction n with
+  | zero => exact False.elim (hn0 rfl)
+  | succ d hd =>
+    rw [Finset.sum_range_succ] at hn0 ⊢
     by_cases h : ∑ x ∈ Finset.range d, F x = 0
     · rw [h, zero_add]
       exact hF d (lt_add_one _)
@@ -382,10 +383,12 @@ number, then the p-adic valuation of their sum is also greater than the same rat
 theorem lt_sum_of_lt {p j : ℕ} [hp : Fact (Nat.Prime p)] {F : ℕ → ℚ} {S : Finset ℕ}
     (hS : S.Nonempty) (hF : ∀ i, i ∈ S → padicValRat p (F j) < padicValRat p (F i))
     (hn1 : ∀ i : ℕ, 0 < F i) : padicValRat p (F j) < padicValRat p (∑ i ∈ S, F i) := by
-  induction' hS using Finset.Nonempty.cons_induction with k s S' Hnot Hne Hind
-  · rw [Finset.sum_singleton]
+  induction hS using Finset.Nonempty.cons_induction with
+  | singleton k =>
+    rw [Finset.sum_singleton]
     exact hF k (by simp)
-  · rw [Finset.cons_eq_insert, Finset.sum_insert Hnot]
+  | cons s S' Hnot Hne Hind =>
+    rw [Finset.cons_eq_insert, Finset.sum_insert Hnot]
     exact padicValRat.lt_add_of_lt
       (ne_of_gt (add_pos (hn1 s) (Finset.sum_pos (fun i _ => hn1 i) Hne)))
       (hF _ (by simp [Finset.mem_insert, true_or]))

@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Duplicate
 import Mathlib.Data.List.InsertIdx
+import Mathlib.Data.List.Induction
 import Batteries.Data.List.Perm
 import Mathlib.Data.List.Perm.Basic
 
@@ -254,7 +255,7 @@ theorem perm_of_mem_permutationsAux :
   · exact (IH1 _ m).trans perm_middle
   · have p : l₁ ++ l₂ ~ is := by
       simp only [mem_cons] at m
-      cases' m with e m
+      rcases m with e | m
       · simp [e]
       exact is.append_nil ▸ IH2 _ m
     exact ((perm_middle.trans (p.cons _)).append_right _).trans (perm_append_comm.cons _)
@@ -295,7 +296,7 @@ theorem mem_permutationsAux_of_perm :
     rcases append_of_mem (p'.symm.subset (mem_cons_self _ _)) with ⟨l₁, l₂, e⟩
     subst is'
     have p := (perm_middle.symm.trans p').cons_inv
-    cases' l₂ with a l₂'
+    rcases l₂ with - | ⟨a, l₂'⟩
     · exact Or.inl ⟨l₁, by simpa using p⟩
     · exact Or.inr (Or.inr ⟨l₁, a :: l₂', mem_permutations_of_perm_lemma (IH2 _) p, by simp⟩)
   · exact Or.inr (Or.inl m)

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Category.BialgebraCat.Basic
-import Mathlib.RingTheory.HopfAlgebra
+import Mathlib.RingTheory.HopfAlgebra.Basic
 
 /-!
 # The category of Hopf algebras over a commutative ring
@@ -40,14 +40,11 @@ open HopfAlgebra
 instance : CoeSort (HopfAlgebraCat.{v} R) (Type v) :=
   ⟨(·.carrier)⟩
 
-variable (R)
-
+variable (R) in
 /-- The object in the category of `R`-Hopf algebras associated to an `R`-Hopf algebra. -/
 abbrev of (X : Type v) [Ring X] [HopfAlgebra R X] :
     HopfAlgebraCat R where
   carrier := X
-
-variable {R}
 
 @[simp]
 lemma of_comul {X : Type v} [Ring X] [HopfAlgebra R X] :
