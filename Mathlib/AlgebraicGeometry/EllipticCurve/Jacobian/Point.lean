@@ -380,6 +380,9 @@ lemma zero_def [Nontrivial R] : (0 : W'.Point) = ⟨nonsingularLift_zero⟩ :=
 lemma zero_point [Nontrivial R] : (0 : W'.Point).point = ⟦![1, 1, 0]⟧ :=
   rfl
 
+lemma mk_ne_zero [Nontrivial R] {X Y : R} (h : W'.NonsingularLift ⟦![X, Y, 1]⟧) : mk h ≠ 0 :=
+  (not_equiv_of_Z_eq_zero_right one_ne_zero rfl).comp <| Quotient.eq.mp.comp Point.ext_iff.mp
+
 /-- The natural map from a nonsingular point on a Weierstrass curve in affine coordinates to its
 corresponding nonsingular Jacobian point. -/
 def fromAffine [Nontrivial R] : W'.toAffine.Point → W'.Point
@@ -393,10 +396,11 @@ lemma fromAffine_some [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y)
     fromAffine (.some h) = ⟨(nonsingularLift_some ..).mpr h⟩ :=
   rfl
 
-lemma fromAffine_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
-    fromAffine (.some h) ≠ 0 := fun h0 ↦ by
-  obtain ⟨u, eq⟩ := Quotient.eq.mp <| (Point.ext_iff ..).mp h0
-  simpa [Units.smul_def, smul_fin3] using congr_fun eq z
+lemma fromAffine_some_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
+    fromAffine (.some h) ≠ 0 :=
+  mk_ne_zero <| (nonsingularLift_some ..).mpr h
+
+@[deprecated (since := "2025-03-01")] alias fromAffine_ne_zero := fromAffine_some_ne_zero
 
 /-- The negation of a nonsingular Jacobian point on a Weierstrass curve `W`.
 
