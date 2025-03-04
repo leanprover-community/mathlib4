@@ -79,9 +79,6 @@ class FilteredHom where
   pieces_wise {i a} : a ∈ FA i → toFun a ∈ FB i
   pieces_wise_lt {i a} : a ∈ FA_lt i → toFun a ∈ FB_lt i
 
-instance : CoeOut (FilteredHom FA FA_lt FB FB_lt) (A → B) :=
-  ⟨fun a ↦ a.toFun⟩
-
 instance : FunLike (FilteredHom FA FA_lt FB FB_lt) A B where
   coe f := f.toFun
   coe_injective' _ _ hfg := FilteredHom.ext hfg
@@ -94,7 +91,7 @@ variable {FA FB FC FA_lt FB_lt FC_lt} in
 
 /-- Filtered morphism restricted to its `i`-th filtration layer.-/
 def piece_wise_hom (i : ι) : FA i → FB i :=
-  fun a ↦ ⟨f.toFun a, f.pieces_wise a.2⟩
+  Subtype.map f (fun _ ha ↦ f.pieces_wise ha)
 
 /-- The composition of two filtered morphisms,
 obtained from the composition of the underlying function.-/
@@ -134,6 +131,9 @@ add_decl_doc FilteredAddGroupHom.toAddMonoidHom
 instance : Coe (FilteredAddGroupHom FA FA_lt FB FB_lt) (FilteredHom FA FA_lt FB FB_lt) :=
   ⟨fun a ↦ a.toFilteredHom⟩
 
+instance : CoeOut (FilteredAddGroupHom FA FA_lt FB FB_lt) (A →+ B) :=
+  ⟨fun a ↦ a.toAddMonoidHom⟩
+
 namespace FilteredAddGroupHom
 
 variable  (g : FilteredAddGroupHom FB FB_lt FC FC_lt) (f : FilteredAddGroupHom FA FA_lt FB FB_lt)
@@ -147,7 +147,17 @@ def comp : FilteredAddGroupHom FA FA_lt FC FC_lt where
   pieces_wise ha := g.pieces_wise (f.pieces_wise ha)
   pieces_wise_lt ha := g.pieces_wise_lt (f.pieces_wise_lt ha)
 
-variable [AddSubgroupClass α A] [AddSubgroupClass β B] [AddSubgroupClass γ C]
+variable [AddSubgroupClass α A]
+
+lemma IsStrict.strict [FilteredHom.IsStrict FA FA_lt FB FB_lt f] {p y} :
+    y ∈ (FB p) → y ∈ f.range → y ∈ AddSubgroup.map f (AddSubgroup.ofClass (FA p)) :=
+  FilteredHom.IsStrict.strict
+
+lemma IsStrict.strict_lt [FilteredHom.IsStrict FA FA_lt FB FB_lt f] {p y} :
+    y ∈ (FB_lt p) → y ∈ f.range → y ∈ AddSubgroup.map f (AddSubgroup.ofClass (FA_lt p)) :=
+  FilteredHom.IsStrict.strict_lt
+
+variable [AddSubgroupClass β B] [AddSubgroupClass γ C]
 
 /-- A filtered abelian group morphism restricted to its `i`-th filtration layer.-/
 abbrev piece_wise_hom (i : ι) : FA i →+ FB i where
@@ -164,6 +174,7 @@ def GradedPieceHom (i : ι) : GradedPiece FA FA_lt i →+ GradedPiece FB FB_lt i
 @[inherit_doc]
 scoped[FilteredAddGroupHom] notation:9000 "Gr(" i ")[" f "]" => GradedPieceHom f i
 
+@[simp]
 lemma GradedPieceHom_apply_mk_eq_mk_piece_wise_hom {i : ι} (x : FA i) :
     Gr(i)[f] (GradedPiece.mk FA FA_lt x) = (GradedPiece.mk FB FB_lt (f.piece_wise_hom i x)) :=
   rfl
@@ -218,6 +229,9 @@ add_decl_doc FilteredRingHom.toRingHom
 instance : Coe (FilteredRingHom FR FR_lt FS FS_lt) (FilteredAddGroupHom FR FR_lt FS FS_lt) :=
   ⟨fun a ↦ a.toFilteredAddGroupHom⟩
 
+instance : CoeOut (FilteredRingHom FR FR_lt FS FS_lt) (R →+* S) :=
+  ⟨fun a ↦ a.toRingHom⟩
+
 namespace FilteredRingHom
 
 variable (g : FilteredRingHom FS FS_lt FT FT_lt) (f : FilteredRingHom FR FR_lt FS FS_lt)
@@ -244,6 +258,11 @@ abbrev GradedPieceHom (i : ι) : GradedPiece FR FR_lt i →+ GradedPiece FS FS_l
 
 @[inherit_doc]
 scoped[FilteredRingHom] notation:9000 "Gr(" i ")[" f "]" => GradedPieceHom f i
+
+@[simp]
+lemma GradedPieceHom_apply_mk_eq_mk_piece_wise_hom {i : ι} (x : FR i) :
+    Gr(i)[f] (GradedPiece.mk FR FR_lt x) = (GradedPiece.mk FS FS_lt (f.piece_wise_hom i x)) :=
+  rfl
 
 lemma GradedPieceHom_comp_apply (x : AssociatedGraded FR FR_lt) (i : ι) :
     Gr(i)[g] (Gr(i)[f] (x i)) = Gr(i)[g.comp f] (x i) :=
