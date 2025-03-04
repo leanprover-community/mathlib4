@@ -297,7 +297,7 @@ theorem oneTruncation₂_toNerve₂Mk' : oneTruncation₂.map (toNerve₂.mk' F 
 
 end
 
-/-- An equality between maps into the 2-truncated nerve is detected by an equality beteween their
+/-- An equality between maps into the 2-truncated nerve is detected by an equality between their
 underlying refl prefunctors. -/
 theorem toNerve₂.ext (F G : X ⟶ nerveFunctor₂.obj (Cat.of C))
     (hyp : SSet.oneTruncation₂.map F = SSet.oneTruncation₂.map G) : F = G := by
