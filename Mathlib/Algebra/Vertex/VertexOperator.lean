@@ -25,6 +25,7 @@ In this file we introduce vertex operators as linear maps to Laurent series.
 ## To do:
 * residue products with identity give Hasse derivatives.
 * Dong's lemma : pairwise locality implies locality with residue products.
+* API for SMul by integer powers of suitable MVPolynomials, like `(X i) - (X j)`
 
 ## References
 * G. Mason `Vertex rings and Pierce bundles` ArXiv 1707.00328
@@ -223,6 +224,7 @@ end HasseDerivative
 
 section Binomial
 
+/-- subtraction of monomials. Maybe put this in HahnSeries folder. -/
 def unitSub {σ : Type*} [LinearOrder σ] {i j : σ} : HahnSeries (σ → ℤ) R :=
   HahnSeries.single (fun k ↦ if k = i then 1 else 0) 1 -
     HahnSeries.single (fun k ↦ if k = j then 1 else 0) 1

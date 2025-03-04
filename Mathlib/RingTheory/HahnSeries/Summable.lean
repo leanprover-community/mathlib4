@@ -917,7 +917,6 @@ theorem pow_finite_co_support {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (g : �
 
 /-- A summable family of powers of a Hahn series `x`. If `x` has non-positive orderTop, then we
 return the junk value zero. -/
-@[simps]
 def powers (x : HahnSeries Γ R) : SummableFamily Γ R ℕ where
   toFun n := if 0 < x.orderTop then x ^ n else 0
   isPWO_iUnion_support' := by
@@ -930,6 +929,18 @@ def powers (x : HahnSeries Γ R) : SummableFamily Γ R ℕ where
     · simp only [h, ↓reduceIte]
       exact pow_finite_co_support h g
     · simp [h]
+
+@[simp]
+theorem powers_of_orderTop_pos {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (n : ℕ) :
+    powers x n = x ^ n := by
+  simp [powers, hx]
+  exact rfl
+
+@[simp]
+theorem powers_of_not_orderTop_pos {x : HahnSeries Γ R} (hx : ¬ 0 < x.orderTop) :
+    powers x = 0 := by
+  simp [powers, hx]
+  exact rfl
 
 variable {x : HahnSeries Γ R} (hx : 0 < x.orderTop)
 
@@ -946,13 +957,13 @@ theorem embDomain_succ_smul_powers :
   apply SummableFamily.ext
   rintro (_ | n)
   · simp [hx]
-  · simp only [coe_sub, coe_ofFinsupp, Pi.sub_apply, powers_toFun, ne_eq, self_eq_add_left,
-    AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, not_false_eq_true,
+  · simp only [coe_sub, coe_ofFinsupp, Pi.sub_apply, powers_of_orderTop_pos hx, ne_eq,
+    self_eq_add_left, AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, not_false_eq_true,
     Finsupp.single_eq_of_ne, sub_zero]
     simp only [embDomain_apply, Embedding.coeFn_mk, Nat.range_succ, Set.mem_setOf_eq,
       lt_add_iff_pos_left, add_pos_iff, Nat.lt_one_iff, pos_of_gt, or_true, ↓reduceDIte,
-      Nat.succ_eq_add_one, add_left_inj, Classical.choose_eq, smul_apply, powers_toFun, hx,
-      ↓reduceIte, smul_eq_mul]
+      Nat.succ_eq_add_one, add_left_inj, Classical.choose_eq, smul_apply, powers_of_orderTop_pos hx,
+      smul_eq_mul]
     rw [add_comm, pow_add, pow_one]
     exact rfl
 

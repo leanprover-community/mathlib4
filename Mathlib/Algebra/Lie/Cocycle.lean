@@ -10,24 +10,25 @@ import Mathlib.GroupTheory.Perm.List
 import Mathlib.LinearAlgebra.Alternating.Basic
 
 /-!
-# The Chevalley-Eilenberg complex
-
-Given a Lie algebra `L` over a commutative ring `R`, and an `L`-module `M`, we construct the cochain
-complex of alternating multilinear maps from `L^p` to `M`.
+# Chevalley-Eilenberg cochains
+Given a Lie algebra `L` over a commutative ring `R`, and an `L`-module `M`, we construct the
+structures underlying the Chevalley-Eilenberg cochain complex, whose `p`th cochains are given by the
+`R`-module of alternating `R`-multilinear maps from `L^p` to `M`.
 
 ## Main definitions
-
-* Standard cochain complex
-* cohomology
+ * Standard cochain complex
+ * cohomology
 
 ## Main results
+* The first sum making the differential is alternating.
+* The second sum making the differential is alternating.
 
 ## TODO
 
-* Use "shape" API for homological complexes to avoid indexing problems?
-
-* There seems to be a method of continuous group cohomology mentioned on Zulip that avoids
-alternating sums. Perhaps it can be adapted here.
+ * In a separate file, apply these data to the homological complex API.
+ * Use "shape" API for homological complexes to avoid indexing problems?
+ * There seems to be a method of continuous group cohomology mentioned on Zulip that avoids
+   alternating sums. Perhaps it can be adapted here.
 
 ## References
 * [Cartan, H., Eilenberg, S., *Homological Algebra*][cartanEilenberg1956]
@@ -399,6 +400,8 @@ def coboundary_first (n : ℕ) (f : L [⋀^Fin n]→ₗ[R] M) :
   ⟨∑ i : Fin (n + 1), coboundary_first_summand f i,
     fun g i j h hi ↦ coboundary_first_alternating n f g i j h hi⟩
 
+--TODO: show that this is linear
+
 /-- The summand for the coboundary map. -/
 def coboundary_second_aux {n : ℕ} (g : Fin (n + 1 + 1) → L) {i j : Fin (n + 1 + 1)} (h : i < j) :
     Fin (n + 1) → L :=
@@ -503,5 +506,26 @@ def coboundary_second_summand_multilinear (n : ℕ) (f : L [⋀^Fin (n + 1)]→�
           rw [Fin.succ_castPred_eq_add_one]
           exact lt_of_le_of_lt (Fin.add_one_le_of_lt h) hkj
         simp [Fin.removeNth_update_of_lt this]
+
+/-- The second sum in the Lie algebra coboundary map, as a multilinear map. -/
+def coboundary_second_multilinear (n : ℕ) (f : L [⋀^Fin (n + 1)]→ₗ[R] M) :
+    MultilinearMap R (fun _ : Fin (n + 1 + 1) => L) M :=
+  ∑ i ∈ Finset.univ (α := Fin (n + 1 + 1)), ∑ j ∈ Finset.univ (α := Fin (n + 1 + 1)),
+    if h : j < i then coboundary_second_summand_multilinear n f h else 0
+
+/-!
+/-- The image of the second sum of the differential on a cochain, as a multilinear map. -/
+def coboundary_second_summand_alternating (n : ℕ) (f : L [⋀^Fin (n + 1)]→ₗ[R] M)
+    {i j : Fin (n + 1 + 1)} (h : i < j) : L [⋀^Fin (n + 1 + 1)]→ₗ[R] M :=
+  { coboundary_second_multilinear n f with
+    map_eq_zero_of_eq' g k l hlt hne := by
+      simp only [coboundary_second_multilinear, coboundary_second_summand_multilinear,
+        coboundary_second_aux, MultilinearMap.toFun_eq_coe, MultilinearMap.coe_sum,
+        Finset.sum_apply]
+
+
+      sorry
+  }
+-/
 
 end LieAlgebra
