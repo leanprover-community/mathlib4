@@ -52,6 +52,15 @@ instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
   bot := 0
   bot_le := Fin.zero_le'
 
+@[simp, norm_cast]
+theorem coe_max (a b : Fin n) : ↑(max a b) = (max a b : ℕ) := rfl
+
+@[simp, norm_cast]
+theorem coe_min (a b : Fin n) : ↑(min a b) = (min a b : ℕ) := rfl
+
+@[deprecated (since := "2025-03-01")] alias coe_sup := coe_max
+@[deprecated (since := "2025-03-01")] alias coe_inf := coe_min
+
 /- There is a slight asymmetry here, in the sense that `0` is of type `Fin n` when we have
 `[NeZero n]` whereas `last n` is of type `Fin (n + 1)`. To address this properly would
 require a change to std4, defining `NeZero n` and thus re-defining `last n`

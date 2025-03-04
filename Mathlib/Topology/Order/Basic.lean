@@ -505,8 +505,7 @@ theorem SuccOrder.hasBasis_nhds_Ioc [OrderTopology α] [SuccOrder α] {a : α} [
     (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
   SuccOrder.hasBasis_nhds_Ioc_of_exists_lt (exists_lt a)
 
-variable (α)
-
+variable (α) in
 /-- Let `α` be a densely ordered linear order with order topology. If `α` is a separable space, then
 it has second countable topology. Note that the "densely ordered" assumption cannot be dropped, see
 [double arrow space](https://topology.pi-base.org/spaces/S000093) for a counterexample. -/
@@ -515,8 +514,6 @@ theorem SecondCountableTopology.of_separableSpace_orderTopology [OrderTopology �
   rcases exists_countable_dense α with ⟨s, hc, hd⟩
   refine ⟨⟨_, ?_, hd.topology_eq_generateFrom⟩⟩
   exact (hc.image _).union (hc.image _)
-
-variable {α}
 
 /-- The set of points which are isolated on the right is countable when the space is
 second-countable. -/

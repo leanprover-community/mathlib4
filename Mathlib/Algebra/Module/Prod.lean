@@ -19,15 +19,12 @@ namespace Prod
 
 instance smulWithZero [Zero R] [Zero M] [Zero N] [SMulWithZero R M] [SMulWithZero R N] :
     SMulWithZero R (M × N) :=
-  { Prod.smul with
-    smul_zero := fun _ => Prod.ext (smul_zero _) (smul_zero _)
+  { smul_zero := fun _ => Prod.ext (smul_zero _) (smul_zero _)
     zero_smul := fun _ => Prod.ext (zero_smul _ _) (zero_smul _ _) }
 
 instance mulActionWithZero [MonoidWithZero R] [Zero M] [Zero N] [MulActionWithZero R M]
     [MulActionWithZero R N] : MulActionWithZero R (M × N) :=
-  { Prod.mulAction with
-    smul_zero := fun _ => Prod.ext (smul_zero _) (smul_zero _)
-    zero_smul := fun _ => Prod.ext (zero_smul _ _) (zero_smul _ _) }
+  { Prod.mulAction, Prod.smulWithZero with }
 
 instance instModule [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] :
     Module R (M × N) :=

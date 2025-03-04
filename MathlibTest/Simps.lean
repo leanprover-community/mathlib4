@@ -439,7 +439,7 @@ class has_hom (obj : Type u) : Type (max u (v+1)) where
 
 infixr:10 " ⟶ " => has_hom.hom -- type as \h
 
-class CategoryStruct (obj : Type u) extends has_hom.{v} obj : Type (max u (v+1)) where
+class CategoryStruct (obj : Type u) : Type (max u (v+1)) extends has_hom.{v} obj where
   (id   : ∀ X : obj, hom X X)
   (comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z))
 
@@ -1238,11 +1238,11 @@ def myFoo : Foo := ⟨1, ⟨1, 1⟩, 1⟩
 
 structure Prod (X Y : Type _) extends _root_.Prod X Y
 
-structure Prod2 (X Y : Type _) extends Prod X Y
+structure Prod2 (X Y : Type _) extends toProd_1 : Prod X Y
 
 initialize_simps_projections Prod2 (toProd → myName, toProd_1 → myOtherName)
 
-structure Prod3 (X Y : Type _) extends Prod X Y
+structure Prod3 (X Y : Type _) extends toProd_1 : Prod X Y
 
 @[simps] def foo : Prod3 Nat Nat := { fst := 1, snd := 3 }
 @[simps toProd_1] def foo' : Prod3 Nat Nat := { fst := 1, snd := 3 }

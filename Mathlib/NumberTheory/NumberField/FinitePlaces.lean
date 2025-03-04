@@ -166,7 +166,7 @@ theorem RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max (x y : K) :
     adicAbv v (x + y) ≤ (adicAbv v x) ⊔ (adicAbv v y) := by
   simp [← FinitePlace.norm_def]
 
- @[deprecated (since := "2025-02-28")] alias vadicAbv_add_le_max :=
+@[deprecated (since := "2025-02-28")] alias vadicAbv_add_le_max :=
   RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max
 
 /-- The `v`-adic absolute value of a natural number is `≤ 1`. -/

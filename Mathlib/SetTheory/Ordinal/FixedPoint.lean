@@ -451,18 +451,6 @@ theorem iSup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) 
     rw [List.foldr_const f a l]
     exact Ordinal.le_iSup _ _
 
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided."  (since := "2024-08-27")]
-theorem sup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) :
-    (sup fun n : ℕ => f^[n] a) = nfp f a := by
-  refine le_antisymm ?_ (sup_le fun l => ?_)
-  · rw [sup_le_iff]
-    intro n
-    rw [← List.length_replicate n Unit.unit, ← List.foldr_const f a]
-    apply le_sup
-  · rw [List.foldr_const f a l]
-    exact le_sup _ _
-
 theorem iterate_le_nfp (f a n) : f^[n] a ≤ nfp f a := by
   rw [← iSup_iterate_eq_nfp]
   exact Ordinal.le_iSup (fun n ↦ f^[n] a) n

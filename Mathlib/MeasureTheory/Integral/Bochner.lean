@@ -216,6 +216,10 @@ theorem integral_zero : ∫ _ : α, (0 : G) ∂μ = 0 := by
 theorem integral_zero' : integral μ (0 : α → G) = 0 :=
   integral_zero α G
 
+lemma integral_indicator₂ {β : Type*} (f : β → α → G) (s : Set β) (b : β) :
+    ∫ y, s.indicator (f · y) b ∂μ = s.indicator (fun x ↦ ∫ y, f x y ∂μ) b := by
+  by_cases hb : b ∈ s <;> simp [hb]
+
 variable {α G}
 
 theorem integrable_of_integral_eq_one {f : α → ℝ} (h : ∫ x, f x ∂μ = 1) : Integrable f μ :=

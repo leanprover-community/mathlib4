@@ -47,8 +47,8 @@ section NonUnitalSubringClass
 
 /-- `NonUnitalSubringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative submonoid and an additive subgroup. -/
-class NonUnitalSubringClass (S : Type*) (R : Type u) [NonUnitalNonAssocRing R]
-    [SetLike S R] extends NonUnitalSubsemiringClass S R, NegMemClass S R : Prop where
+class NonUnitalSubringClass (S : Type*) (R : Type u) [NonUnitalNonAssocRing R] [SetLike S R] : Prop
+  extends NonUnitalSubsemiringClass S R, NegMemClass S R where
 
 -- See note [lower instance priority]
 instance (priority := 100) NonUnitalSubringClass.addSubgroupClass (S : Type*) (R : Type u)
@@ -85,6 +85,14 @@ def subtype (s : S) : s →ₙ+* R :=
   { NonUnitalSubsemiringClass.subtype s,
     AddSubgroupClass.subtype s with
     toFun := Subtype.val }
+
+variable {s} in
+@[simp]
+theorem subtype_apply (x : s) : subtype s x = x :=
+  rfl
+
+theorem subtype_injective : Function.Injective (subtype s) :=
+  Subtype.coe_injective
 
 @[simp]
 theorem coe_subtype : (subtype s : s → R) = Subtype.val :=

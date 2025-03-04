@@ -1288,7 +1288,7 @@ lemma hasKernel [S.HasRightHomology] [HasCokernel S.f] :
   let e : parallelPair (cokernel.desc S.f S.g S.zero) 0 ≅ parallelPair h.g' 0 :=
     parallelPair.ext (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) h.hp)
       (Iso.refl _) (coequalizer.hom_ext (by simp)) (by simp)
-  exact hasLimitOfIso e.symm
+  exact hasLimit_of_iso e.symm
 
 end HasRightHomology
 

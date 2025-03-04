@@ -201,11 +201,6 @@ def eraseProofs (e : Expr) : MetaM Expr :=
       else
         return .continue)
 
-/-- If an `Expr` has form `.fvar n`, then returns `some n`, otherwise `none`. -/
-def fvarId? : Expr → Option FVarId
-  | .fvar n => n
-  | _ => none
-
 /-- If an `Expr` has the form `Type u`, then return `some u`, otherwise `none`. -/
 def type? : Expr → Option Level
   | .sort u => u.dec

@@ -915,11 +915,6 @@ lemma limsInf_principal_eq_sInf (s : Set α) : limsInf (𝓟 s) = sInf s := by
 @[simp] lemma liminf_top_eq_iInf (u : β → α) : liminf u ⊤ = ⨅ i, u i := by
   rw [liminf, map_top, limsInf_principal_eq_sInf, sInf_range]
 
-@[deprecated (since := "2024-08-27")] alias limsSup_principal := limsSup_principal_eq_sSup
-@[deprecated (since := "2024-08-27")] alias limsInf_principal := limsInf_principal_eq_sInf
-@[deprecated (since := "2024-08-27")] alias limsup_top := limsup_top_eq_iSup
-@[deprecated (since := "2024-08-27")] alias liminf_top := liminf_top_eq_iInf
-
 theorem blimsup_congr' {f : Filter β} {p q : β → Prop} {u : β → α}
     (h : ∀ᶠ x in f, u x ≠ ⊥ → (p x ↔ q x)) : blimsup u f p = blimsup u f q := by
   simp only [blimsup_eq]

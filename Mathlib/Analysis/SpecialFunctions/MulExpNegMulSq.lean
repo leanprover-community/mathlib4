@@ -110,7 +110,7 @@ theorem nnnorm_deriv_mulExpNegMulSq_le_one (hε : 0 < ε) (x : ℝ) :
   rw [← NNReal.coe_le_coe, coe_nnnorm]
   exact norm_deriv_mulExpNegMulSq_le_one hε x
 
- /-- For fixed `ε > 0`, the mapping `mulExpNegMulSq ε` is Lipschitz with constant `1` -/
+/-- For fixed `ε > 0`, the mapping `mulExpNegMulSq ε` is Lipschitz with constant `1` -/
 theorem lipschitzWith_one_mulExpNegMulSq (hε : 0 < ε) :
     LipschitzWith 1 (mulExpNegMulSq ε) := by
   apply lipschitzWith_of_nnnorm_deriv_le differentiable_mulExpNegMulSq

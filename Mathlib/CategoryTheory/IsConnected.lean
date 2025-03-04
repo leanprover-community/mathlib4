@@ -69,7 +69,7 @@ component'.
 
 This allows us to show that the functor X ⨯ - preserves connected limits. -/
 @[stacks 002S]
-class IsConnected (J : Type u₁) [Category.{v₁} J] extends IsPreconnected J : Prop where
+class IsConnected (J : Type u₁) [Category.{v₁} J] : Prop extends IsPreconnected J where
   [is_nonempty : Nonempty J]
 
 attribute [instance 100] IsConnected.is_nonempty

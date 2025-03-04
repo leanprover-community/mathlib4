@@ -14,9 +14,12 @@ this file introduces the type class `P.IsClosedUnderIsomorphisms`.
 
 -/
 
+universe v v' u u'
+
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] (P Q : ObjectProperty C)
+variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
+  (P Q : ObjectProperty C)
 
 namespace ObjectProperty
 
@@ -72,6 +75,15 @@ instance : IsClosedUnderIsomorphisms (isoClosure P) where
   of_iso := by
     rintro X Y e ⟨Z, hZ, ⟨f⟩⟩
     exact ⟨Z, hZ, ⟨e.symm.trans f⟩⟩
+
+instance (F : C ⥤ D) : IsClosedUnderIsomorphisms (P.map F) where
+  of_iso := by
+    rintro _ _ e ⟨X, hX, ⟨e'⟩⟩
+    exact ⟨X, hX, ⟨e' ≪≫ e⟩⟩
+
+instance (F : D ⥤ C) [P.IsClosedUnderIsomorphisms] :
+    IsClosedUnderIsomorphisms (P.inverseImage F) where
+  of_iso e hX := P.prop_of_iso (F.mapIso e) hX
 
 end ObjectProperty
 

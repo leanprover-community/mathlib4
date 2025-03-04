@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Seminorm
+import Mathlib.GroupTheory.GroupAction.Pointwise
 
 /-!
 # The Minkowski functional, normed field version
@@ -80,10 +81,8 @@ lemma le_egauge_inter (s t : Set E) (x : E) :
 
 lemma le_egauge_pi {ι : Type*} {E : ι → Type*} [∀ i, SMul 𝕜 (E i)] {I : Set ι} {i : ι}
     (hi : i ∈ I) (s : ∀ i, Set (E i)) (x : ∀ i, E i) :
-    egauge 𝕜 (s i) (x i) ≤ egauge 𝕜 (I.pi s) x := by
-  -- TODO: add `(· i)` as a `MulActionHom`, if we don't have it yet.
-  refine egauge_le_of_mapsTo _ (⟨(· i), fun _ _ ↦ rfl⟩ : (∀ i, E i) →[𝕜] E i) ?_ _
-  exact fun x hx ↦ hx i hi
+    egauge 𝕜 (s i) (x i) ≤ egauge 𝕜 (I.pi s) x :=
+  egauge_le_of_mapsTo _ (Pi.evalMulActionHom i) (fun x hx ↦ by exact hx i hi) _
 
 end SMul
 

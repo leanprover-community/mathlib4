@@ -19,7 +19,7 @@ Let `R` be a commutative ring, `S` is an `R`-algebra, `M` be a submonoid of `R`.
   finite type `R' = M⁻¹R`-algebra.
 * `finiteType_ofLocalizationSpan` : `S` is a finite type `R`-algebra if there exists
   a set `{ r }` that spans `R` such that `Sᵣ` is a finite type `Rᵣ`-algebra.
-*`RingHom.finiteType_is_local`: `RingHom.FiniteType` is a local property.
+*`RingHom.finiteType_isLocal`: `RingHom.FiniteType` is a local property.
 
 -/
 
@@ -219,7 +219,7 @@ theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteTy
       exact Or.inl (Or.inr r.2)
     · rw [ht]; trivial
 
-theorem finiteType_is_local : PropertyIsLocal @FiniteType :=
+theorem finiteType_isLocal : PropertyIsLocal @FiniteType :=
   ⟨finiteType_localizationPreserves.away,
     finiteType_ofLocalizationSpanTarget,
     finiteType_ofLocalizationSpanTarget.ofLocalizationSpan
@@ -228,8 +228,11 @@ theorem finiteType_is_local : PropertyIsLocal @FiniteType :=
     (finiteType_stableUnderComposition.stableUnderCompositionWithLocalizationAway
       finiteType_holdsForLocalizationAway).right⟩
 
+@[deprecated (since := "2025-03-01")]
+alias finiteType_is_local := finiteType_isLocal
+
 theorem finiteType_respectsIso : RingHom.RespectsIso @RingHom.FiniteType :=
-  RingHom.finiteType_is_local.respectsIso
+  RingHom.finiteType_isLocal.respectsIso
 
 theorem finiteType_isStableUnderBaseChange : IsStableUnderBaseChange @FiniteType := by
   apply IsStableUnderBaseChange.mk

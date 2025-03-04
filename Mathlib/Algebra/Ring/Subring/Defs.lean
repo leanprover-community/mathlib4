@@ -71,8 +71,8 @@ section SubringClass
 
 /-- `SubringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative submonoid and an additive subgroup. -/
-class SubringClass (S : Type*) (R : outParam (Type u)) [Ring R] [SetLike S R] extends
-  SubsemiringClass S R, NegMemClass S R : Prop
+class SubringClass (S : Type*) (R : outParam (Type u)) [Ring R] [SetLike S R] : Prop
+    extends SubsemiringClass S R, NegMemClass S R
 
 -- See note [lower instance priority]
 instance (priority := 100) SubringClass.addSubgroupClass (S : Type*) (R : Type u)
@@ -115,6 +115,15 @@ instance (priority := 75) {R} [Ring R] [IsDomain R] [SetLike S R] [SubringClass 
 def subtype (s : S) : s →+* R :=
   { SubmonoidClass.subtype s, AddSubgroupClass.subtype s with
     toFun := (↑) }
+
+variable {s} in
+@[simp]
+lemma subtype_apply (x : s) :
+    SubringClass.subtype s x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (subtype s) :=
+  Subtype.coe_injective
 
 @[simp]
 theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
@@ -325,6 +334,14 @@ instance {R} [Ring R] [IsDomain R] (s : Subring R) : IsDomain s :=
 /-- The natural ring hom from a subring of ring `R` to `R`. -/
 def subtype (s : Subring R) : s →+* R :=
   { s.toSubmonoid.subtype, s.toAddSubgroup.subtype with toFun := (↑) }
+
+@[simp]
+lemma subtype_apply {s : Subring R} (x : s) :
+    s.subtype x = x := rfl
+
+lemma subtype_injective (s : Subring R) :
+    Function.Injective s.subtype :=
+  s.toSubmonoid.subtype_injective
 
 @[simp]
 theorem coe_subtype : ⇑s.subtype = ((↑) : s → R) :=

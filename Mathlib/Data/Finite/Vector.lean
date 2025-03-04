@@ -9,6 +9,13 @@ import Mathlib.Data.Fintype.Vector
 # Finiteness of vector types
 -/
 
-instance List.Vector.finite {α : Type*} [Finite α] {n : ℕ} : Finite (Vector α n) := by
+variable {α : Type*}
+
+instance List.Vector.finite [Finite α] {n : ℕ} : Finite (Vector α n) := by
+  haveI := Fintype.ofFinite α
+  infer_instance
+
+instance [Finite α] {n : ℕ} : Finite (Sym α n) := by
+  classical
   haveI := Fintype.ofFinite α
   infer_instance
