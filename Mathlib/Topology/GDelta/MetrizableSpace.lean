@@ -32,7 +32,7 @@ instance (priority := 100) [PseudoMetrizableSpace X] : NormalSpace X where
     let g (p : X) := infDist p t - infDist p s
     have hg : Continuous g := by fun_prop
     refine ⟨g ⁻¹' (Ioi 0), g ⁻¹' (Iio 0), isOpen_Ioi.preimage hg, isOpen_Iio.preimage hg,
-      fun x hx ↦ ?_, fun x hx ↦ ?_, Ioi_disjoint_Iio_self.preimage g⟩
+      fun x hx ↦ ?_, fun x hx ↦ ?_, Ioi_disjoint_Iio_same.preimage g⟩
     · simp [g, infDist_zero_of_mem hx,
         (ht.not_mem_iff_infDist_pos hte).mp (hst.not_mem_of_mem_left hx)]
     · simp [g, infDist_zero_of_mem hx,
