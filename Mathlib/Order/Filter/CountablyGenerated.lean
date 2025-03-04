@@ -28,15 +28,15 @@ class IsCountablyGenerated (f : Filter α) : Prop where
   out : ∃ s : Set (Set α), s.Countable ∧ f = generate s
 
 /-- `IsCountableBasis p s` means the image of `s` bounded by `p` is a countable filter basis. -/
-structure IsCountableBasis (p : ι → Prop) (s : ι → Set α) extends IsBasis p s : Prop where
+structure IsCountableBasis (p : ι → Prop) (s : ι → Set α) : Prop extends IsBasis p s where
   /-- The set of `i` that satisfy the predicate `p` is countable. -/
   countable : (setOf p).Countable
 
 /-- We say that a filter `l` has a countable basis `s : ι → Set α` bounded by `p : ι → Prop`,
 if `t ∈ l` if and only if `t` includes `s i` for some `i` such that `p i`, and the set
 defined by `p` is countable. -/
-structure HasCountableBasis (l : Filter α) (p : ι → Prop) (s : ι → Set α)
-    extends HasBasis l p s : Prop where
+structure HasCountableBasis (l : Filter α) (p : ι → Prop) (s : ι → Set α) : Prop
+    extends HasBasis l p s where
   /-- The set of `i` that satisfy the predicate `p` is countable. -/
   countable : (setOf p).Countable
 
@@ -105,7 +105,7 @@ theorem HasAntitoneBasis.hasBasis_ge [Preorder ι] [IsDirected ι (· ≤ ·)] {
 /-- If `f` is countably generated and `f.HasBasis p s`, then `f` admits a decreasing basis
 enumerated by natural numbers such that all sets have the form `s i`. More precisely, there is a
 sequence `i n` such that `p (i n)` for all `n` and `s (i n)` is a decreasing sequence of sets which
-forms a basis of `f`-/
+forms a basis of `f`. -/
 theorem HasBasis.exists_antitone_subbasis {f : Filter α} [h : f.IsCountablyGenerated]
     {p : ι' → Prop} {s : ι' → Set α} (hs : f.HasBasis p s) :
     ∃ x : ℕ → ι', (∀ i, p (x i)) ∧ f.HasAntitoneBasis fun i => s (x i) := by

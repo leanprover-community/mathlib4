@@ -489,8 +489,23 @@ theorem Dense.topology_eq_generateFrom [OrderTopology α] [DenselyOrdered α] {s
       let _ := generateFrom (Ioi '' s ∪ Iio '' s)
       exact isOpen_iUnion fun x ↦ isOpen_iUnion fun h ↦ .basic _ <| .inr <| mem_image_of_mem _ h.1
 
-variable (α)
+theorem PredOrder.hasBasis_nhds_Ioc_of_exists_gt [OrderTopology α] [PredOrder α] {a : α}
+    (ha : ∃ u, a < u) : (𝓝 a).HasBasis (a < ·) (Set.Ico a ·) :=
+  PredOrder.nhdsGE_eq_nhds a ▸ nhdsGE_basis_of_exists_gt ha
 
+theorem PredOrder.hasBasis_nhds_Ioc [OrderTopology α] [PredOrder α] [NoMaxOrder α] {a : α} :
+    (𝓝 a).HasBasis (a < ·) (Set.Ico a ·) :=
+  PredOrder.hasBasis_nhds_Ioc_of_exists_gt (exists_gt a)
+
+theorem SuccOrder.hasBasis_nhds_Ioc_of_exists_lt [OrderTopology α] [SuccOrder α] {a : α}
+    (ha : ∃ l, l < a) : (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
+  SuccOrder.nhdsLE_eq_nhds a ▸ nhdsLE_basis_of_exists_lt ha
+
+theorem SuccOrder.hasBasis_nhds_Ioc [OrderTopology α] [SuccOrder α] {a : α} [NoMinOrder α] :
+    (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
+  SuccOrder.hasBasis_nhds_Ioc_of_exists_lt (exists_lt a)
+
+variable (α) in
 /-- Let `α` be a densely ordered linear order with order topology. If `α` is a separable space, then
 it has second countable topology. Note that the "densely ordered" assumption cannot be dropped, see
 [double arrow space](https://topology.pi-base.org/spaces/S000093) for a counterexample. -/
@@ -499,8 +514,6 @@ theorem SecondCountableTopology.of_separableSpace_orderTopology [OrderTopology �
   rcases exists_countable_dense α with ⟨s, hc, hd⟩
   refine ⟨⟨_, ?_, hd.topology_eq_generateFrom⟩⟩
   exact (hc.image _).union (hc.image _)
-
-variable {α}
 
 /-- The set of points which are isolated on the right is countable when the space is
 second-countable. -/

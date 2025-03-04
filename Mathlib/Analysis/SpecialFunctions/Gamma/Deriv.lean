@@ -50,7 +50,7 @@ theorem hasDerivAt_GammaIntegral {s : ℂ} (hs : 0 < s.re) :
   · refine (Continuous.continuousOn ?_).locallyIntegrableOn measurableSet_Ioi
     exact continuous_ofReal.comp (Real.continuous_exp.comp continuous_neg)
   · rw [← isBigO_norm_left]
-    simp_rw [Complex.norm_eq_abs, abs_ofReal, ← Real.norm_eq_abs, isBigO_norm_left]
+    simp_rw [norm_real, isBigO_norm_left]
     simpa only [neg_one_mul] using (isLittleO_exp_neg_mul_rpow_atTop zero_lt_one _).isBigO
   · simp_rw [neg_zero, rpow_zero]
     refine isBigO_const_of_tendsto (?_ : Tendsto _ _ (𝓝 (1 : ℂ))) one_ne_zero

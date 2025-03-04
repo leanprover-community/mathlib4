@@ -48,13 +48,13 @@ theorem cardinalMk_le_of_le' {κ : Cardinal.{max u v}}
   simp_rw [← lift_umax.{v, u}] at hκ
   nth_rewrite 1 [← lift_id'.{v, u} #γ] at hκ
   simp_rw [← mk_arrow, ← mk_sigma, le_def] at hκ
-  cases' hκ with hκ
+  obtain ⟨hκ⟩ := hκ
   exact Cardinal.mk_le_of_injective (elim_injective _ hκ.1 hκ.2)
 
 @[deprecated (since := "2024-11-10")] alias cardinal_mk_le_of_le' := cardinalMk_le_of_le'
 
 /-- If, for any `a : α`, `β a` is finite, then the cardinality of `WType β`
-  is at most the maximum of the cardinality of `α` and `ℵ₀`  -/
+is at most the maximum of the cardinality of `α` and `ℵ₀` -/
 theorem cardinalMk_le_max_aleph0_of_finite' [∀ a, Finite (β a)] :
     #(WType β) ≤ max (lift.{v} #α) ℵ₀ :=
   (isEmpty_or_nonempty α).elim
@@ -100,7 +100,7 @@ theorem cardinalMk_le_of_le {κ : Cardinal.{u}} (hκ : (sum fun a : α => κ ^ #
 @[deprecated (since := "2024-11-10")] alias cardinal_mk_le_of_le := cardinalMk_le_of_le
 
 /-- If, for any `a : α`, `β a` is finite, then the cardinality of `WType β`
-  is at most the maximum of the cardinality of `α` and `ℵ₀`  -/
+is at most the maximum of the cardinality of `α` and `ℵ₀` -/
 theorem cardinalMk_le_max_aleph0_of_finite [∀ a, Finite (β a)] : #(WType β) ≤ max #α ℵ₀ :=
   cardinalMk_le_max_aleph0_of_finite'.trans_eq <| by rw [lift_id]
 

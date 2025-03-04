@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
@@ -32,7 +32,7 @@ open scoped Pointwise
 variable {ι α β M G H : Type*} [AddCommGroup G]
 
 /-- Translation of a function in a group by an element of that group.
-`τ a f` is defined as `x ↦ f (x - a)`.  -/
+`τ a f` is defined as `x ↦ f (x - a)`. -/
 def translate (a : G) (f : G → α) : G → α := fun x ↦ f (x - a)
 
 @[inherit_doc] scoped[translate] notation "τ " => translate
@@ -47,7 +47,7 @@ lemma translate_translate (a b : G) (f : G → α) : τ a (τ b f) = τ (a + b) 
 
 lemma translate_add (a b : G) (f : G → α) : τ (a + b) f = τ a (τ b f) := by ext; simp [sub_sub]
 
-/-- See `translate_add`-/
+/-- See `translate_add` -/
 lemma translate_add' (a b : G) (f : G → α) : τ (a + b) f = τ b (τ a f) := by
   rw [add_comm, translate_add]
 
@@ -72,7 +72,7 @@ section AddCommMonoid
 variable [AddCommMonoid M]
 
 lemma translate_sum_right (a : G) (f : ι → G → M) (s : Finset ι) :
-    τ a (∑ i in s, f i) = ∑ i in s, τ a (f i) := by ext; simp
+    τ a (∑ i ∈ s, f i) = ∑ i ∈ s, τ a (f i) := by ext; simp
 
 lemma sum_translate [Fintype G] (a : G) (f : G → M) : ∑ b, τ a f b = ∑ b, f b :=
   Fintype.sum_equiv (Equiv.subRight _) _ _ fun _ ↦ rfl
@@ -90,4 +90,4 @@ end AddCommGroup
 variable [CommMonoid M]
 
 lemma translate_prod_right (a : G) (f : ι → G → M) (s : Finset ι) :
-    τ a (∏ i in s, f i) = ∏ i in s, τ a (f i) := by ext; simp
+    τ a (∏ i ∈ s, f i) = ∏ i ∈ s, τ a (f i) := by ext; simp

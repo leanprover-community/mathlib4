@@ -376,10 +376,6 @@ alias aleph_le := aleph_le_aleph
 theorem aleph_max (o₁ o₂ : Ordinal) : ℵ_ (max o₁ o₂) = max (ℵ_ o₁) (ℵ_ o₂) :=
   aleph.monotone.map_max
 
-@[deprecated aleph_max (since := "2024-08-28")]
-theorem max_aleph_eq (o₁ o₂ : Ordinal) : max (ℵ_ o₁) (ℵ_ o₂) = ℵ_ (max o₁ o₂) :=
-  (aleph_max o₁ o₂).symm
-
 theorem preAleph_le_aleph (o : Ordinal) : preAleph o ≤ ℵ_ o :=
   preAleph_le_preAleph.2 (Ordinal.le_add_left _ _)
 
@@ -505,61 +501,6 @@ set_option linter.docPrime false
 @[deprecated preAleph (since := "2024-10-22")]
 noncomputable alias aleph' := preAleph
 
-/-- The `aleph'` index function, which gives the ordinal index of a cardinal.
-  (The `aleph'` part is because unlike `aleph` this counts also the
-  finite stages. So `alephIdx n = n`, `alephIdx ω = ω`,
-  `alephIdx ℵ₁ = ω + 1` and so on.)
-  In this definition, we register additionally that this function is an initial segment,
-  i.e., it is order preserving and its range is an initial segment of the ordinals.
-  For the basic function version, see `alephIdx`.
-  For an upgraded version stating that the range is everything, see `AlephIdx.rel_iso`. -/
-@[deprecated preAleph (since := "2024-08-28")]
-def alephIdx.initialSeg : @InitialSeg Cardinal Ordinal (· < ·) (· < ·) :=
-  @RelEmbedding.collapse Cardinal Ordinal (· < ·) (· < ·) _ Cardinal.ord.orderEmbedding.ltEmbedding
-
-set_option linter.deprecated false in
-/-- The `aleph'` index function, which gives the ordinal index of a cardinal.
-  (The `aleph'` part is because unlike `aleph` this counts also the
-  finite stages. So `alephIdx n = n`, `alephIdx ℵ₀ = ω`,
-  `alephIdx ℵ₁ = ω + 1` and so on.)
-  In this version, we register additionally that this function is an order isomorphism
-  between cardinals and ordinals.
-  For the basic function version, see `alephIdx`. -/
-@[deprecated preAleph (since := "2024-08-28")]
-def alephIdx.relIso : @RelIso Cardinal.{u} Ordinal.{u} (· < ·) (· < ·) :=
-  aleph'.symm.toRelIsoLT
-
-set_option linter.deprecated false in
-/-- The `aleph'` index function, which gives the ordinal index of a cardinal.
-  (The `aleph'` part is because unlike `aleph` this counts also the
-  finite stages. So `alephIdx n = n`, `alephIdx ω = ω`,
-  `alephIdx ℵ₁ = ω + 1` and so on.)
-  For an upgraded version stating that the range is everything, see `AlephIdx.rel_iso`. -/
-@[deprecated aleph' (since := "2024-08-28")]
-def alephIdx : Cardinal → Ordinal :=
-  aleph'.symm
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided."  (since := "2024-08-28")]
-theorem alephIdx.relIso_coe : (alephIdx.relIso : Cardinal → Ordinal) = alephIdx :=
-  rfl
-
-set_option linter.deprecated false in
-/-- The `aleph'` function gives the cardinals listed by their ordinal
-  index, and is the inverse of `aleph_idx`.
-  `aleph' n = n`, `aleph' ω = ω`, `aleph' (ω + 1) = succ ℵ₀`, etc.
-  In this version, we register additionally that this function is an order isomorphism
-  between ordinals and cardinals.
-  For the basic function version, see `aleph'`. -/
-@[deprecated aleph' (since := "2024-08-28")]
-def Aleph'.relIso :=
-  aleph'
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided."  (since := "2024-08-28")]
-theorem aleph'.relIso_coe : (Aleph'.relIso : Ordinal → Cardinal) = aleph' :=
-  rfl
-
 set_option linter.deprecated false in
 @[deprecated preAleph_lt_preAleph (since := "2024-10-22")]
 theorem aleph'_lt {o₁ o₂ : Ordinal} : aleph' o₁ < aleph' o₂ ↔ o₁ < o₂ :=
@@ -574,16 +515,6 @@ set_option linter.deprecated false in
 @[deprecated preAleph_max (since := "2024-10-22")]
 theorem aleph'_max (o₁ o₂ : Ordinal) : aleph' (max o₁ o₂) = max (aleph' o₁) (aleph' o₂) :=
   aleph'.monotone.map_max
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided."  (since := "2024-08-28")]
-theorem aleph'_alephIdx (c : Cardinal) : aleph' c.alephIdx = c :=
-  Cardinal.alephIdx.relIso.toEquiv.symm_apply_apply c
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided."  (since := "2024-08-28")]
-theorem alephIdx_aleph' (o : Ordinal) : (aleph' o).alephIdx = o :=
-  Cardinal.alephIdx.relIso.toEquiv.apply_symm_apply o
 
 set_option linter.deprecated false in
 @[deprecated preAleph_zero (since := "2024-10-22")]
@@ -623,12 +554,6 @@ theorem aleph'_omega0 : aleph' ω = ℵ₀ :=
 
 @[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias aleph'_omega := aleph'_omega0
-
-set_option linter.deprecated false in
-/-- `aleph'` and `aleph_idx` form an equivalence between `Ordinal` and `Cardinal` -/
-@[deprecated aleph' (since := "2024-08-28")]
-def aleph'Equiv : Ordinal ≃ Cardinal :=
-  ⟨aleph', alephIdx, alephIdx_aleph', aleph'_alephIdx⟩
 
 @[deprecated aleph_eq_preAleph (since := "2024-10-22")]
 theorem aleph_eq_aleph' (o : Ordinal) : ℵ_ o = preAleph (ω + o) :=
@@ -678,7 +603,7 @@ set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided."  (since := "2024-09-24")]
 theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω ≤ o) :
     ∃ a, (ℵ_ a).ord = o := by
-  cases' eq_aleph'_of_eq_card_ord ho with a ha
+  obtain ⟨a, ha⟩ := eq_aleph'_of_eq_card_ord ho
   use a - ω
   rwa [aleph_eq_aleph', Ordinal.add_sub_cancel_of_le]
   rwa [← aleph0_le_aleph', ← ord_le_ord, ha, ord_aleph0]

@@ -116,16 +116,12 @@ theorem toList_inj {s₁ s₂ : String} : s₁.toList = s₂.toList ↔ s₁ = s
 theorem asString_nil : [].asString = "" :=
   rfl
 
-@[deprecated (since := "2024-06-04")] alias nil_asString_eq_empty := asString_nil
-
 @[simp]
 theorem toList_empty : "".toList = [] :=
   rfl
 
 theorem asString_toList (s : String) : s.toList.asString = s :=
   rfl
-
-@[deprecated (since := "2024-06-04")] alias asString_inv_toList := asString_toList
 
 theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.drop 1).toList
   | ⟨s⟩, h => by
@@ -156,8 +152,7 @@ instance : LinearOrder String where
   compare_eq_compareOfLessAndEq a b := by
     simp only [compare, compareOfLessAndEq, instLT, List.instLT, lt_iff_toList_lt, toList]
     split_ifs <;>
-    simp only [List.lt_iff_lex_lt] at * <;>
-    contradiction
+    simp only [List.lt_iff_lex_lt] at *
 
 end String
 
@@ -167,8 +162,6 @@ namespace List
 
 theorem toList_asString (l : List Char) : l.asString.toList = l :=
   rfl
-
-@[deprecated (since := "2024-06-04")] alias toList_inv_asString := toList_asString
 
 @[simp]
 theorem length_asString (l : List Char) : l.asString.length = l.length :=

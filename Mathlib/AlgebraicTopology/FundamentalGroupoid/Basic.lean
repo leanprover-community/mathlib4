@@ -336,7 +336,7 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
   obj X := { α := FundamentalGroupoid X }
   map f :=
     { obj := fun x => ⟨f x.as⟩
-      map := fun {X Y} p => by exact Path.Homotopic.Quotient.mapFn p f
+      map := fun {X Y} p => by exact Path.Homotopic.Quotient.mapFn p f.hom
       map_id := fun _ => rfl
       map_comp := fun {x y z} p q => by
         refine Quotient.inductionOn₂ p q fun a b => ?_
@@ -367,7 +367,7 @@ scoped notation "πₓ" => FundamentalGroupoid.fundamentalGroupoidFunctor.obj
 scoped notation "πₘ" => FundamentalGroupoid.fundamentalGroupoidFunctor.map
 
 theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :
-    (πₘ f).map p = p.mapFn f := rfl
+    (πₘ (TopCat.ofHom f)).map p = p.mapFn f := rfl
 
 /-- Help the typechecker by converting a point in a groupoid back to a point in
 the underlying topological space. -/
@@ -379,9 +379,8 @@ abbrev fromTop {X : TopCat} (x : X) : πₓ X := ⟨x⟩
 
 /-- Help the typechecker by converting an arrow in the fundamental groupoid of
 a topological space back to a path in that space (i.e., `Path.Homotopic.Quotient`). -/
--- Porting note: Added `(X := X)` to the type.
 abbrev toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
-    Path.Homotopic.Quotient (X := X) x₀.as x₁.as :=
+    Path.Homotopic.Quotient x₀.as x₁.as :=
   p
 
 /-- Help the typechecker by converting a path in a topological space to an arrow in the

@@ -3,8 +3,8 @@ Copyright (c) 2024 Yaël Dillies, Patrick Luo, Bhavik Mehta. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Patrick Luo, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Group.Action.Pointwise.Finset
 import Mathlib.Algebra.Group.Submonoid.Pointwise
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.GroupTheory.GroupAction.Defs

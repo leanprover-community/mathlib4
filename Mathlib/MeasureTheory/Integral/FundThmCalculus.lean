@@ -141,10 +141,9 @@ integral, fundamental theorem of calculus, FTC-1, FTC-2, change of variables in 
 
 noncomputable section
 
-open scoped Classical
 open MeasureTheory Set Filter Function
 
-open scoped Classical Topology Filter ENNReal Interval NNReal
+open scoped Topology Filter ENNReal Interval NNReal
 
 variable {ι 𝕜 E A : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
@@ -189,8 +188,8 @@ of the integral w.r.t. Lebesgue measure. -/
 
 /-- An auxiliary typeclass for the Fundamental theorem of calculus, part 1. It is used to formulate
 theorems that work simultaneously for left and right one-sided derivatives of `∫ x in u..v, f x`. -/
-class FTCFilter (a : outParam ℝ) (outer : Filter ℝ) (inner : outParam <| Filter ℝ) extends
-    TendstoIxxClass Ioc outer inner : Prop where
+class FTCFilter (a : outParam ℝ) (outer : Filter ℝ) (inner : outParam <| Filter ℝ) : Prop
+    extends TendstoIxxClass Ioc outer inner where
   pure_le : pure a ≤ outer
   le_nhds : inner ≤ 𝓝 a
   [meas_gen : IsMeasurablyGenerated inner]
@@ -1223,7 +1222,7 @@ theorem integrableOn_deriv_right_of_nonneg (hcont : ContinuousOn g (Icc a b))
   let F : ℝ → ℝ := (↑) ∘ f
   have intF : IntegrableOn F (Ioo a b) := by
     refine ⟨f.measurable.coe_nnreal_real.aestronglyMeasurable, ?_⟩
-    simpa only [F, hasFiniteIntegral_iff_nnnorm, comp_apply, NNReal.nnnorm_eq] using fint
+    simpa only [F, hasFiniteIntegral_iff_enorm, comp_apply, NNReal.enorm_eq] using fint
   have A : ∫⁻ x : ℝ in Ioo a b, f x = ENNReal.ofReal (∫ x in Ioo a b, F x) :=
     lintegral_coe_eq_integral _ intF
   rw [A] at hf

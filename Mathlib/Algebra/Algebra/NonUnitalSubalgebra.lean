@@ -32,9 +32,20 @@ namespace NonUnitalSubalgebraClass
 def subtype (s : S) : s →ₙₐ[R] A :=
   { NonUnitalSubsemiringClass.subtype s, SMulMemClass.subtype s with toFun := (↑) }
 
+variable {s} in
 @[simp]
-theorem coeSubtype : (subtype s : s → A) = ((↑) : s → A) :=
+lemma subtype_apply (x : s) : subtype s x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (subtype s) :=
+  Subtype.coe_injective
+
+@[simp]
+theorem coe_subtype : (subtype s : s → A) = ((↑) : s → A) :=
   rfl
+
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
 
 end NonUnitalSubalgebraClass
 
@@ -42,8 +53,8 @@ end NonUnitalSubalgebraClass
 
 /-- A non-unital subalgebra is a sub(semi)ring that is also a submodule. -/
 structure NonUnitalSubalgebra (R : Type u) (A : Type v) [CommSemiring R]
-    [NonUnitalNonAssocSemiring A] [Module R A]
-    extends NonUnitalSubsemiring A, Submodule R A : Type v
+    [NonUnitalNonAssocSemiring A] [Module R A] : Type v
+    extends NonUnitalSubsemiring A, Submodule R A
 
 /-- Reinterpret a `NonUnitalSubalgebra` as a `NonUnitalSubsemiring`. -/
 add_decl_doc NonUnitalSubalgebra.toNonUnitalSubsemiring
@@ -913,7 +924,7 @@ instance _root_.NonUnitalAlgHom.subsingleton [Subsingleton (NonUnitalSubalgebra 
 
 /-- The map `S → T` when `S` is a non-unital subalgebra contained in the non-unital subalgebra `T`.
 
-This is the non-unital subalgebra version of `Submodule.inclusion`, or `Subring.inclusion`  -/
+This is the non-unital subalgebra version of `Submodule.inclusion`, or `Subring.inclusion` -/
 def inclusion {S T : NonUnitalSubalgebra R A} (h : S ≤ T) : S →ₙₐ[R] T where
   toFun := Set.inclusion h
   map_add' _ _ := rfl

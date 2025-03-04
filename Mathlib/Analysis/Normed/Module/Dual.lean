@@ -56,14 +56,6 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 /-- The topological dual of a seminormed space `E`. -/
 abbrev Dual : Type _ := E →L[𝕜] 𝕜
 
--- TODO: helper instance for elaboration of inclusionInDoubleDual_norm_eq until
--- https://github.com/leanprover/lean4/issues/2522 is resolved; remove once fixed
-instance : NormedSpace 𝕜 (Dual 𝕜 E) := inferInstance
-
--- TODO: helper instance for elaboration of inclusionInDoubleDual_norm_le until
--- https://github.com/leanprover/lean4/issues/2522 is resolved; remove once fixed
-instance : SeminormedAddCommGroup (Dual 𝕜 E) := inferInstance
-
 /-- The inclusion of a normed space in its double (topological) dual, considered
    as a bounded linear map. -/
 def inclusionInDoubleDual : E →L[𝕜] Dual 𝕜 (Dual 𝕜 E) :=
@@ -152,11 +144,31 @@ def polar (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedA
     [NormedSpace 𝕜 E] : Set E → Set (Dual 𝕜 E) :=
   (dualPairing 𝕜 E).flip.polar
 
+/-- Given a subset `s` in a normed space `E` (over a field `𝕜`) closed under scalar multiplication,
+ the polar `polarSubmodule 𝕜 s` is the submodule of `Dual 𝕜 E` consisting of those functionals which
+evaluate to zero at all points `z ∈ s`. -/
+def polarSubmodule (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E]
+    [NormedSpace 𝕜 E] {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) :
+    Submodule 𝕜 (Dual 𝕜 E) := (dualPairing 𝕜 E).flip.polarSubmodule m
+
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
+lemma polarSubmodule_eq_polar (m : SubMulAction 𝕜 E) :
+    (polarSubmodule 𝕜 m : Set (Dual 𝕜 E)) = polar 𝕜 m := rfl
+
 theorem mem_polar_iff {x' : Dual 𝕜 E} (s : Set E) : x' ∈ polar 𝕜 s ↔ ∀ z ∈ s, ‖x' z‖ ≤ 1 :=
   Iff.rfl
+
+lemma polarSubmodule_eq_setOf {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) :
+    polarSubmodule 𝕜 m = { y : Dual 𝕜 E | ∀ x ∈ m, y x = 0 } :=
+  (dualPairing 𝕜 E).flip.polar_subMulAction _
+
+lemma mem_polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) (y : Dual 𝕜 E) :
+    y ∈ polarSubmodule 𝕜 m ↔ ∀ x ∈ m, y x = 0 := by
+  have := polarSubmodule_eq_setOf 𝕜 m
+  apply_fun (y ∈ ·) at this
+  rwa [propext_iff] at this
 
 @[simp]
 theorem zero_mem_polar (s : Set E) : (0 : Dual 𝕜 E) ∈ polar 𝕜 s :=

@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.EqLocus
 import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.LinearAlgebra.Span.Defs
 import Mathlib.Order.CompactlyGenerated.Basic
 import Mathlib.Order.OmegaCompletePartialOrder
@@ -436,6 +436,37 @@ theorem comap_map_eq (f : F) (p : Submodule R M) : comap f (map f p) = p ⊔ Lin
 
 theorem comap_map_eq_self {f : F} {p : Submodule R M} (h : LinearMap.ker f ≤ p) :
     comap f (map f p) = p := by rw [Submodule.comap_map_eq, sup_of_le_left h]
+
+theorem comap_map_sup_of_comap_le {f : F} {p : Submodule R M} {q : Submodule R₂ M₂}
+    (le : comap f q ≤ p) : comap f (map f p ⊔ q) = p := by
+  refine le_antisymm (fun x h ↦ ?_) (map_le_iff_le_comap.mp le_sup_left)
+  obtain ⟨_, ⟨y, hy, rfl⟩, z, hz, eq⟩ := mem_sup.mp h
+  rw [add_comm, ← eq_sub_iff_add_eq, ← map_sub] at eq; subst eq
+  simpa using p.add_mem (le hz) hy
+
+theorem isCoatom_comap_or_eq_top (f : F) {p : Submodule R₂ M₂} (hp : IsCoatom p) :
+    IsCoatom (comap f p) ∨ comap f p = ⊤ :=
+  or_iff_not_imp_right.mpr fun h ↦ ⟨h, fun q lt ↦ by
+    rw [← comap_map_sup_of_comap_le lt.le, hp.2 (map f q ⊔ p), comap_top]
+    simpa only [right_lt_sup, map_le_iff_le_comap] using lt.not_le⟩
+
+theorem isCoatom_comap_iff {f : F} (hf : Surjective f) {p : Submodule R₂ M₂} :
+    IsCoatom (comap f p) ↔ IsCoatom p := by
+  have := comap_injective_of_surjective hf
+  rw [IsCoatom, IsCoatom, ← comap_top f, this.ne_iff]
+  refine and_congr_right fun _ ↦
+    ⟨fun h m hm ↦ this (h _ <| comap_strictMono_of_surjective hf hm), fun h m hm ↦ ?_⟩
+  rw [← h _ (lt_map_of_comap_lt_of_surjective hf hm),
+    comap_map_eq_self ((comap_mono bot_le).trans hm.le)]
+
+theorem isCoatom_map_of_ker_le {f : F} (hf : Surjective f) {p : Submodule R M}
+    (le : LinearMap.ker f ≤ p) (hp : IsCoatom p) : IsCoatom (map f p) :=
+  (isCoatom_comap_iff hf).mp <| by rwa [comap_map_eq_self le]
+
+theorem map_iInf_of_ker_le {f : F} (hf : Surjective f) {ι} {p : ι → Submodule R M}
+    (h : LinearMap.ker f ≤ ⨅ i, p i) : map f (⨅ i, p i) = ⨅ i, map f (p i) := by
+  conv_rhs => rw [← map_comap_eq_of_surjective hf (⨅ _, _), comap_iInf]
+  simp_rw [fun i ↦ comap_map_eq_self (le_iInf_iff.mp h i)]
 
 lemma _root_.LinearMap.range_domRestrict_eq_range_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
     LinearMap.range (f.domRestrict S) = LinearMap.range f ↔ S ⊔ (LinearMap.ker f) = ⊤ := by

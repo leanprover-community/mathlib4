@@ -6,9 +6,10 @@ Authors: Rémy Degenne
 import Mathlib.Data.Countable.Basic
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.SuccPred.Archimedean
-import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Finset.Max
+import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Order.Interval.Finset.Defs
 
 /-!
 # Linear locally finite orders
@@ -162,7 +163,7 @@ instance (priority := 100) [LocallyFiniteOrder ι] [SuccOrder ι] : IsSuccArchim
   exists_succ_iterate_of_le := by
     intro i j hij
     rw [le_iff_lt_or_eq] at hij
-    cases' hij with hij hij
+    rcases hij with hij | hij
     swap
     · refine ⟨0, ?_⟩
       simpa only [Function.iterate_zero, id] using hij
@@ -267,7 +268,7 @@ theorem toZ_iterate_succ_of_not_isMax (n : ℕ) (hn : ¬IsMax (succ^[n] i0)) :
 
 theorem toZ_iterate_pred_of_not_isMin (n : ℕ) (hn : ¬IsMin (pred^[n] i0)) :
     toZ i0 (pred^[n] i0) = -n := by
-  cases' n with n
+  rcases n with - | n
   · simp
   have : pred^[n.succ] i0 < i0 := by
     refine lt_of_le_of_ne (pred_iterate_le _ _) fun h_pred_iterate_eq ↦ hn ?_
@@ -367,7 +368,7 @@ noncomputable def orderIsoRangeToZOfLinearSuccPredArch [hι : Nonempty ι] :
   map_rel_iff' := by intro i j; exact toZ_le_iff i j
 
 instance (priority := 100) countable_of_linear_succ_pred_arch : Countable ι := by
-  cases' isEmpty_or_nonempty ι with _ hι
+  rcases isEmpty_or_nonempty ι with _ | hι
   · infer_instance
   · exact Countable.of_equiv _ orderIsoRangeToZOfLinearSuccPredArch.symm.toEquiv
 

@@ -41,34 +41,23 @@ variable {α' : Type*} {M' : Type*} [AddCommMonoid M'] [Module R M'] (v : α →
 def linearCombination : (α →₀ R) →ₗ[R] M :=
   Finsupp.lsum ℕ fun i => LinearMap.id.smulRight (v i)
 
-@[deprecated (since := "2024-08-29")] noncomputable alias total := linearCombination
-
 variable {v}
 
 theorem linearCombination_apply (l : α →₀ R) : linearCombination R v l = l.sum fun i a => a • v i :=
   rfl
-
-@[deprecated (since := "2024-08-29")] alias total_apply := linearCombination_apply
 
 theorem linearCombination_apply_of_mem_supported {l : α →₀ R} {s : Finset α}
     (hs : l ∈ supported R R (↑s : Set α)) : linearCombination R v l = s.sum fun i => l i • v i :=
   Finset.sum_subset hs fun x _ hxg =>
     show l x • v x = 0 by rw [not_mem_support_iff.1 hxg, zero_smul]
 
-@[deprecated (since := "2024-08-29")] alias total_apply_of_mem_supported :=
-  linearCombination_apply_of_mem_supported
-
 @[simp]
 theorem linearCombination_single (c : R) (a : α) :
     linearCombination R v (single a c) = c • v a := by
   simp [linearCombination_apply, sum_single_index]
 
-@[deprecated (since := "2024-08-29")] alias total_single := linearCombination_single
-
 theorem linearCombination_zero_apply (x : α →₀ R) : (linearCombination R (0 : α → M)) x = 0 := by
   simp [linearCombination_apply]
-
-@[deprecated (since := "2024-08-29")] alias total_zero_apply := linearCombination_zero_apply
 
 variable (α M)
 
@@ -76,7 +65,12 @@ variable (α M)
 theorem linearCombination_zero : linearCombination R (0 : α → M) = 0 :=
   LinearMap.ext (linearCombination_zero_apply R)
 
-@[deprecated (since := "2024-08-29")] alias total_zero := linearCombination_zero
+@[simp]
+theorem linearCombination_single_index (c : M) (a : α) (f : α →₀ R) [DecidableEq α] :
+    linearCombination R (Pi.single a c) f = f a • c := by
+  rw [linearCombination_apply, sum_eq_single a, Pi.single_eq_same]
+  · exact fun i _ hi ↦ by rw [Pi.single_eq_of_ne hi, smul_zero]
+  · exact fun _ ↦ by simp only [single_eq_same, zero_smul]
 
 variable {α M}
 
@@ -89,19 +83,13 @@ theorem apply_linearCombination (f : M →ₗ[R] M') (v) (l : α →₀ R) :
     f (linearCombination R v l) = linearCombination R (f ∘ v) l :=
   congr($(linearCombination_linear_comp R f) l).symm
 
-@[deprecated (since := "2024-08-29")] alias apply_total := apply_linearCombination
-
 theorem apply_linearCombination_id (f : M →ₗ[R] M') (l : M →₀ R) :
     f (linearCombination R _root_.id l) = linearCombination R f l :=
   apply_linearCombination ..
 
-@[deprecated (since := "2024-08-29")] alias apply_total_id := apply_linearCombination_id
-
 theorem linearCombination_unique [Unique α] (l : α →₀ R) (v : α → M) :
     linearCombination R v l = l default • v default := by
   rw [← linearCombination_single, ← unique_single l]
-
-@[deprecated (since := "2024-08-29")] alias total_unique := linearCombination_unique
 
 theorem linearCombination_surjective (h : Function.Surjective v) :
     Function.Surjective (linearCombination R v) := by
@@ -109,21 +97,15 @@ theorem linearCombination_surjective (h : Function.Surjective v) :
   obtain ⟨y, hy⟩ := h x
   exact ⟨Finsupp.single y 1, by simp [hy]⟩
 
-@[deprecated (since := "2024-08-29")] alias total_surjective := linearCombination_surjective
-
 theorem linearCombination_range (h : Function.Surjective v) :
     LinearMap.range (linearCombination R v) = ⊤ :=
   range_eq_top.2 <| linearCombination_surjective R h
-
-@[deprecated (since := "2024-08-29")] alias total_range := linearCombination_range
 
 /-- Any module is a quotient of a free module. This is stated as surjectivity of
 `Finsupp.linearCombination R id : (M →₀ R) →ₗ[R] M`. -/
 theorem linearCombination_id_surjective (M) [AddCommMonoid M] [Module R M] :
     Function.Surjective (linearCombination R (id : M → M)) :=
   linearCombination_surjective R Function.surjective_id
-
-@[deprecated (since := "2024-08-29")] alias total_id_surjective := linearCombination_id_surjective
 
 theorem range_linearCombination : LinearMap.range (linearCombination R v) = span R (range v) := by
   ext x
@@ -141,43 +123,30 @@ theorem range_linearCombination : LinearMap.range (linearCombination R v) = span
     use Finsupp.single i 1
     simp [hi]
 
-@[deprecated (since := "2024-08-29")] alias range_total := range_linearCombination
-
 theorem lmapDomain_linearCombination (f : α → α') (g : M →ₗ[R] M') (h : ∀ i, g (v i) = v' (f i)) :
     (linearCombination R v').comp (lmapDomain R R f) = g.comp (linearCombination R v) := by
   ext l
   simp [linearCombination_apply, Finsupp.sum_mapDomain_index, add_smul, h]
-
-@[deprecated (since := "2024-08-29")] alias lmapDomain_total := lmapDomain_linearCombination
 
 theorem linearCombination_comp_lmapDomain (f : α → α') :
     (linearCombination R v').comp (Finsupp.lmapDomain R R f) = linearCombination R (v' ∘ f) := by
   ext
   simp
 
-@[deprecated (since := "2024-08-29")] alias total_comp_lmapDomain :=
-  linearCombination_comp_lmapDomain
-
 @[simp]
 theorem linearCombination_embDomain (f : α ↪ α') (l : α →₀ R) :
     (linearCombination R v') (embDomain f l) = (linearCombination R (v' ∘ f)) l := by
   simp [linearCombination_apply, Finsupp.sum, support_embDomain, embDomain_apply]
-
-@[deprecated (since := "2024-08-29")] alias total_embDomain := linearCombination_embDomain
 
 @[simp]
 theorem linearCombination_mapDomain (f : α → α') (l : α →₀ R) :
     (linearCombination R v') (mapDomain f l) = (linearCombination R (v' ∘ f)) l :=
   LinearMap.congr_fun (linearCombination_comp_lmapDomain _ _) l
 
-@[deprecated (since := "2024-08-29")] alias total_mapDomain := linearCombination_mapDomain
-
 @[simp]
 theorem linearCombination_equivMapDomain (f : α ≃ α') (l : α →₀ R) :
     (linearCombination R v') (equivMapDomain f l) = (linearCombination R (v' ∘ f)) l := by
   rw [equivMapDomain_eq_mapDomain, linearCombination_mapDomain]
-
-@[deprecated (since := "2024-08-29")] alias total_equivMapDomain := linearCombination_equivMapDomain
 
 /-- A version of `Finsupp.range_linearCombination` which is useful for going in the other
 direction -/
@@ -185,21 +154,14 @@ theorem span_eq_range_linearCombination (s : Set M) :
     span R s = LinearMap.range (linearCombination R ((↑) : s → M)) := by
   rw [range_linearCombination, Subtype.range_coe_subtype, Set.setOf_mem_eq]
 
-@[deprecated (since := "2024-08-29")] alias span_eq_range_total := span_eq_range_linearCombination
-
 theorem mem_span_iff_linearCombination (s : Set M) (x : M) :
     x ∈ span R s ↔ ∃ l : s →₀ R, linearCombination R (↑) l = x :=
   (SetLike.ext_iff.1 <| span_eq_range_linearCombination _ _) x
 
-@[deprecated (since := "2024-08-29")] alias mem_span_iff_total := mem_span_iff_linearCombination
-
-variable {R}
-
+variable {R} in
 theorem mem_span_range_iff_exists_finsupp {v : α → M} {x : M} :
     x ∈ span R (range v) ↔ ∃ c : α →₀ R, (c.sum fun i a => a • v i) = x := by
   simp only [← Finsupp.range_linearCombination, LinearMap.mem_range, linearCombination_apply]
-
-variable (R)
 
 theorem span_image_eq_map_linearCombination (s : Set α) :
     span R (v '' s) = Submodule.map (linearCombination R v) (supported R R s) := by
@@ -216,28 +178,19 @@ theorem span_image_eq_map_linearCombination (s : Set α) :
       by_cases h : c ∈ s
       · exact smul_mem _ _ (subset_span (Set.mem_image_of_mem _ h))
       · simp [(Finsupp.mem_supported' R _).1 hz _ h]
-    -- Porting note: `rw` is required to infer metavariables in `sum_mem`.
     rw [mem_comap, linearCombination_apply]
     refine sum_mem ?_
     simp [this]
-
-@[deprecated (since := "2024-08-29")] alias span_image_eq_map_total :=
-  span_image_eq_map_linearCombination
 
 theorem mem_span_image_iff_linearCombination {s : Set α} {x : M} :
     x ∈ span R (v '' s) ↔ ∃ l ∈ supported R R s, linearCombination R v l = x := by
   rw [span_image_eq_map_linearCombination]
   simp
 
-@[deprecated (since := "2024-08-29")] alias mem_span_image_iff_total :=
-  mem_span_image_iff_linearCombination
-
 theorem linearCombination_option (v : Option α → M) (f : Option α →₀ R) :
     linearCombination R v f =
       f none • v none + linearCombination R (v ∘ Option.some) f.some := by
   rw [linearCombination_apply, sum_option_index_smul, linearCombination_apply]; simp
-
-@[deprecated (since := "2024-08-29")] alias total_option := linearCombination_option
 
 theorem linearCombination_linearCombination {α β : Type*} (A : α → M) (B : β → α →₀ R)
     (f : β →₀ R) : linearCombination R A (linearCombination R B f) =
@@ -250,8 +203,6 @@ theorem linearCombination_linearCombination {α β : Type*} (A : α → M) (B : 
     simp [sum_add_index, h₁, h₂, add_smul]
   · simp [sum_single_index, sum_smul_index, smul_sum, mul_smul]
 
-@[deprecated (since := "2024-08-29")] alias total_total := linearCombination_linearCombination
-
 theorem linearCombination_smul [Module R S] [Module S M] [IsScalarTower R S M] {w : α' → S} :
     linearCombination R (fun i : α × α' ↦ w i.2 • v i.1) = (linearCombination S v).restrictScalars R
       ∘ₗ mapRange.linearMap (linearCombination R w) ∘ₗ (finsuppProdLEquiv R).toLinearMap := by
@@ -261,8 +212,6 @@ theorem linearCombination_smul [Module R S] [Module S M] [IsScalarTower R S M] {
 theorem linearCombination_fin_zero (f : Fin 0 → M) : linearCombination R f = 0 := by
   ext i
   apply finZeroElim i
-
-@[deprecated (since := "2024-08-29")] alias total_fin_zero := linearCombination_fin_zero
 
 variable (α) (M) (v)
 
@@ -275,8 +224,6 @@ def linearCombinationOn (s : Set α) : supported R R s →ₗ[R] span R (v '' s)
   LinearMap.codRestrict _ ((linearCombination _ v).comp (Submodule.subtype (supported R R s)))
     fun ⟨l, hl⟩ => (mem_span_image_iff_linearCombination _).2 ⟨l, hl, rfl⟩
 
-@[deprecated (since := "2024-08-29")] noncomputable alias totalOn := linearCombinationOn
-
 variable {α} {M} {v}
 
 theorem linearCombinationOn_range (s : Set α) :
@@ -285,8 +232,6 @@ theorem linearCombinationOn_range (s : Set α) :
     ← LinearMap.range_le_iff_comap, range_subtype, Submodule.map_top, LinearMap.range_comp,
     range_subtype]
   exact (span_image_eq_map_linearCombination _ _).le
-
-@[deprecated (since := "2024-08-29")] alias totalOn_range := linearCombinationOn_range
 
 theorem linearCombination_restrict (s : Set α) :
     linearCombination R (s.restrict v) = Submodule.subtype _ ∘ₗ
@@ -298,14 +243,10 @@ theorem linearCombination_comp (f : α' → α) :
   ext
   simp [linearCombination_apply]
 
-@[deprecated (since := "2024-08-29")] alias total_comp := linearCombination_comp
-
 theorem linearCombination_comapDomain (f : α → α') (l : α' →₀ R)
     (hf : Set.InjOn f (f ⁻¹' ↑l.support)) : linearCombination R v (Finsupp.comapDomain f l hf) =
       (l.support.preimage f hf).sum fun i => l (f i) • v i := by
   rw [linearCombination_apply]; rfl
-
-@[deprecated (since := "2024-08-29")] alias total_comapDomain := linearCombination_comapDomain
 
 theorem linearCombination_onFinset {s : Finset α} {f : α → R} (g : α → M)
     (hf : ∀ a, f a ≠ 0 → a ∈ s) :
@@ -316,8 +257,6 @@ theorem linearCombination_onFinset {s : Finset α} {f : α → R} (g : α → M)
   intro x _ h
   contrapose! h
   simp [h]
-
-@[deprecated (since := "2024-08-29")] alias total_onFinset := linearCombination_onFinset
 
 end LinearCombination
 
@@ -343,23 +282,16 @@ protected def Fintype.linearCombination : (α → M) →ₗ[S] (α → R) →ₗ
   map_add' u v := by ext; simp [Finset.sum_add_distrib, Pi.add_apply, smul_add]
   map_smul' r v := by ext; simp [Finset.smul_sum, smul_comm]
 
-@[deprecated (since := "2024-08-29")] alias Fintype.total := Fintype.linearCombination
-
 variable {S}
 
 theorem Fintype.linearCombination_apply (f) : Fintype.linearCombination R S v f = ∑ i, f i • v i :=
   rfl
-
-@[deprecated (since := "2024-08-29")] alias Fintype.total_apply := Fintype.linearCombination_apply
 
 @[simp]
 theorem Fintype.linearCombination_apply_single [DecidableEq α] (i : α) (r : R) :
     Fintype.linearCombination R S v (Pi.single i r) = r • v i := by
   simp_rw [Fintype.linearCombination_apply, Pi.single_apply, ite_smul, zero_smul]
   rw [Finset.sum_ite_eq', if_pos (Finset.mem_univ _)]
-
-@[deprecated (since := "2024-08-29")] alias Fintype.total_apply_single :=
-  Fintype.linearCombination_apply_single
 
 variable (S)
 
@@ -372,16 +304,10 @@ theorem Finsupp.linearCombination_eq_fintype_linearCombination_apply (x : α →
     rw [Finsupp.not_mem_support_iff.mp hx]
     exact zero_smul _ _
 
-@[deprecated (since := "2024-08-29")] alias Finsupp.total_eq_fintype_total_apply :=
-  Finsupp.linearCombination_eq_fintype_linearCombination_apply
-
 theorem Finsupp.linearCombination_eq_fintype_linearCombination :
     (linearCombination R v).comp (Finsupp.linearEquivFunOnFinite R R α).symm.toLinearMap =
       Fintype.linearCombination R S v :=
   LinearMap.ext <| linearCombination_eq_fintype_linearCombination_apply R S v
-
-@[deprecated (since := "2024-08-29")] alias Finsupp.total_eq_fintype_total :=
-  Finsupp.linearCombination_eq_fintype_linearCombination
 
 variable {S}
 
@@ -390,9 +316,6 @@ theorem Fintype.range_linearCombination :
     LinearMap.range (Fintype.linearCombination R S v) = Submodule.span R (Set.range v) := by
   rw [← Finsupp.linearCombination_eq_fintype_linearCombination, LinearMap.range_comp,
       LinearEquiv.range, Submodule.map_top, Finsupp.range_linearCombination]
-
-@[deprecated (since := "2024-08-29")] alias Fintype.range_total := Fintype.range_linearCombination
-
 section SpanRange
 
 variable {v} {x : M}
@@ -401,7 +324,6 @@ variable {v} {x : M}
 -/
 theorem mem_span_range_iff_exists_fun :
     x ∈ span R (range v) ↔ ∃ c : α → R, ∑ i, c i • v i = x := by
-  -- Porting note: `Finsupp.equivFunOnFinite.surjective.exists` should be come before `simp`.
   rw [Finsupp.equivFunOnFinite.surjective.exists]
   simp only [Finsupp.mem_span_range_iff_exists_finsupp, Finsupp.equivFunOnFinite_apply]
   exact exists_congr fun c => Eq.congr_left <| Finsupp.sum_fintype _ _ fun i => zero_smul _ _
@@ -413,6 +335,22 @@ theorem top_le_span_range_iff_forall_exists_fun :
     ⊤ ≤ span R (range v) ↔ ∀ x, ∃ c : α → R, ∑ i, c i • v i = x := by
   simp_rw [← mem_span_range_iff_exists_fun]
   exact ⟨fun h x => h trivial, fun h x _ => h x⟩
+
+omit [Fintype α]
+
+theorem mem_span_image_iff_exists_fun {s : Set α} :
+    x ∈ span R (v '' s) ↔ ∃ t : Finset α, ↑t ⊆ s ∧ ∃ c : t → R, ∑ i, c i • v i = x := by
+  refine ⟨fun h ↦ ?_, fun ⟨t, ht, c, hx⟩ ↦ ?_⟩
+  · obtain ⟨l, hl, hx⟩ := (Finsupp.mem_span_image_iff_linearCombination R).mp h
+    refine ⟨l.support, hl, l ∘ (↑), ?_⟩
+    rw [← hx]
+    exact l.support.sum_coe_sort fun a ↦ l a • v a
+  · rw [← hx]
+    exact sum_smul_mem (span R (v '' s)) c fun a _ ↦ subset_span <| by aesop
+
+theorem Fintype.mem_span_image_iff_exists_fun {s : Set α} [Fintype s] :
+    x ∈ span R (v '' s) ↔ ∃ c : s → R, ∑ i, c i • v i = x := by
+  rw [← mem_span_range_iff_exists_fun, image_eq_range]
 
 end SpanRange
 
@@ -439,16 +377,11 @@ theorem Span.finsupp_linearCombination_repr {w : Set M} (x : span R w) :
   rw [Span.repr_def]
   exact ((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose_spec
 
-@[deprecated (since := "2024-08-29")] alias Span.finsupp_total_repr :=
-  Span.finsupp_linearCombination_repr
 end
 
 theorem LinearMap.map_finsupp_linearCombination (f : M →ₗ[R] N) {ι : Type*} {g : ι → M}
     (l : ι →₀ R) : f (linearCombination R g l) = linearCombination R (f ∘ g) l :=
   apply_linearCombination _ _ _ _
-
-@[deprecated (since := "2024-08-29")] alias LinearMap.map_finsupp_total :=
-  LinearMap.map_finsupp_linearCombination
 
 theorem mem_span_finset {s : Finset M} {x : M} :
     x ∈ span R (↑s : Set M) ↔ ∃ f : M → R, ∑ i ∈ s, f i • i = x :=
