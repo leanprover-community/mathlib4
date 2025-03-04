@@ -163,7 +163,7 @@ theorem tendsto_integral_filter_of_norm_le_const {ι} {l : Filter ι} [l.IsCount
     (h_bound : ∃ C, ∀ᶠ n in l, (∀ᵐ ω ∂μ, ‖F n ω‖ ≤ C))
     (h_lim : ∀ᵐ ω ∂μ, Tendsto (fun n => F n ω) l (𝓝 (f ω))) :
     Tendsto (fun n => ∫ ω, F n ω ∂μ) l (nhds (∫ ω, f ω ∂μ)) := by
-  cases' h_bound with c h_boundc
+  obtain ⟨c, h_boundc⟩ := h_bound
   let C : α → ℝ := (fun _ => c)
   exact tendsto_integral_filter_of_dominated_convergence
     C h_meas h_boundc (integrable_const c) h_lim

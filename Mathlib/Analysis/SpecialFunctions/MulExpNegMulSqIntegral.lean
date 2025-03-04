@@ -84,7 +84,8 @@ theorem tendsto_integral_mul_one_plus_inv_smul_sq_pow (g : E →ᵇ ℝ) (hε : 
   · obtain ⟨N, hgN⟩ := exists_nat_gt (ε * (norm g * norm g))
     use norm g
     rw [eventually_atTop]
-    use N; intro n hn
+    use N
+    intro n hn
     have hnpos : 0 < (n : ℝ) := by
       apply lt_of_lt_of_le (lt_of_le_of_lt _ hgN) (Nat.cast_le.mpr hn)
       exact (mul_nonneg (le_of_lt hε) (mul_self_nonneg (norm g)))
@@ -94,8 +95,8 @@ theorem tendsto_integral_mul_one_plus_inv_smul_sq_pow (g : E →ᵇ ℝ) (hε : 
       BoundedContinuousFunction.coe_add, BoundedContinuousFunction.coe_one, coe_neg,
       BoundedContinuousFunction.coe_smul, smul_eq_mul, Pi.add_apply, Pi.one_apply, Pi.neg_apply,
       norm_mul, norm_eq_abs, norm_pow]
-    refine mul_le_of_le_of_le_one' (norm_coe_le_norm g x) ?_
-      (pow_nonneg (abs_nonneg _) n) (norm_nonneg _)
+    refine (mul_le_mul_of_nonneg_right (norm_coe_le_norm g x) (pow_nonneg (abs_nonneg _) n)).trans
+      <| mul_le_of_le_one_right (norm_nonneg _) ?_
     apply pow_le_one₀ (abs_nonneg _)
     rw [mul_assoc, inv_mul_eq_div, abs_le]
     refine ⟨?_, (add_le_iff_nonpos_right 1).mpr (Left.neg_nonpos_iff.mpr
@@ -112,11 +113,9 @@ theorem tendsto_integral_mul_one_plus_inv_smul_sq_pow (g : E →ᵇ ℝ) (hε : 
     exact tendsto_one_plus_div_pow_exp (-(ε * (g x * g x)))
 
 theorem integral_mulExpNegMulSq_comp_eq {P' : Measure E} [IsFiniteMeasure P']
-    {A : Subalgebra ℝ C(E, ℝ)} (hε : 0 < ε)
-    (hbound : ∀ g ∈ A, ∃ C, ∀ x y : E, dist (g x) (g y) ≤ C)
-    (heq : ∀ g ∈ A, ∫ x, (g : E → ℝ) x ∂P = ∫ x, (g : E → ℝ) x ∂P') {g : C(E, ℝ)} (hgA : g ∈ A) :
+    {A : Subalgebra ℝ (E →ᵇ ℝ)} (hε : 0 < ε)
+    (heq : ∀ g ∈ A, ∫ x, (g : E → ℝ) x ∂P = ∫ x, (g : E → ℝ) x ∂P') {g : E →ᵇ ℝ} (hgA : g ∈ A) :
     ∫ x, mulExpNegMulSq ε (g x) ∂P = ∫ x, mulExpNegMulSq ε (g x) ∂P' := by
-  obtain ⟨C, h⟩ := hbound g hgA
   have one_plus_inv_mul_mem (n : ℕ) : g * (1 + (n : ℝ)⁻¹ • -(ε • g * g)) ^ n ∈ A := by
     apply Subalgebra.mul_mem A hgA (Subalgebra.pow_mem A _ n)
     apply Subalgebra.add_mem A (Subalgebra.one_mem A) (Subalgebra.smul_mem A _ n⁻¹)
@@ -124,9 +123,9 @@ theorem integral_mulExpNegMulSq_comp_eq {P' : Measure E} [IsFiniteMeasure P']
   have limP : Tendsto (fun n : ℕ => ∫ x, (g * (1 + (n : ℝ)⁻¹ • -(ε • g * g)) ^ n) x ∂P) atTop
       (𝓝 (∫ x, mulExpNegMulSq ε (g x) ∂P')) := by
     rw [funext fun n => heq _ (one_plus_inv_mul_mem n)]
-    exact tendsto_integral_mul_one_plus_inv_smul_sq_pow (mkOfBound g C h) hε
+    exact tendsto_integral_mul_one_plus_inv_smul_sq_pow g hε
   exact tendsto_nhds_unique
-    (tendsto_integral_mul_one_plus_inv_smul_sq_pow (mkOfBound g C h) hε) limP
+    (tendsto_integral_mul_one_plus_inv_smul_sq_pow g hε) limP
 
 theorem abs_integral_sub_setIntegral_mulExpNegMulSq_comp_lt (f : C(E, ℝ))
     {K : Set E} (hK : MeasurableSet K) (hε : 0 < ε) (hKP : P Kᶜ < ε.toNNReal) :
@@ -157,8 +156,7 @@ variable {E : Type*} [MeasurableSpace E] [PseudoEMetricSpace E] [BorelSpace E] [
 difference of the integrals of `mulExpNegMulSq ε ∘ g` with respect to `P, P'` is bounded by
 `6 * sqrt ε`. -/
 theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
-    {A : Subalgebra ℝ C(E, ℝ)} (hA : A.SeparatesPoints)
-    (hbound : ∀ g ∈ A, ∃ C, ∀ x y : E, dist (g x) (g y) ≤ C)
+    {A : Subalgebra ℝ (E →ᵇ ℝ)} (hA : (A.map (toContinuousMapₐ ℝ)).SeparatesPoints)
     (heq : ∀ g ∈ A, ∫ x, (g : E → ℝ) x ∂P = ∫ x, (g : E → ℝ) x ∂P') (hε : 0 < ε) :
     |∫ x, mulExpNegMulSq ε (f x) ∂P - ∫ x, mulExpNegMulSq ε (f x) ∂P'| ≤ 6 * sqrt ε := by
   -- if both measures are zero, the result is trivial
@@ -167,8 +165,8 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
     mul_nonneg_iff_of_pos_left, (le_of_lt (sqrt_pos_of_pos hε))]
   let const : ℝ := (max (P Set.univ).toReal (P' Set.univ).toReal)
   have pos_of_measure : 0 < const := by
-    rw [Mathlib.Tactic.PushNeg.not_and_or_eq] at hPP'
-    cases' hPP' with hP0 hP'0
+    rw [not_and_or] at hPP'
+    rcases hPP' with hP0 | hP'0
     · exact lt_max_of_lt_left
         (toReal_pos ((Measure.measure_univ_ne_zero).mpr hP0) (measure_ne_top P Set.univ))
     · exact lt_max_of_lt_right
@@ -188,9 +186,15 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
   have hKP'bound : P' (KP ∪ KP')ᶜ < ε.toNNReal := lt_of_le_of_lt
         (measure_mono (Set.compl_subset_compl_of_subset (Set.subset_union_right))) hKP'
   -- stone-weierstrass approximation of f on K
-  obtain ⟨g, hgA, hgapprox⟩ :=
+  obtain ⟨g', hg'A, hg'approx⟩ :=
       ContinuousMap.exists_mem_subalgebra_near_continuous_of_isCompact_of_separatesPoints
       hA f hKco (Left.mul_pos (sqrt_pos_of_pos hε) (inv_pos_of_pos pos_of_measure))
+  simp only [Subalgebra.mem_map] at hg'A
+  let g := hg'A.choose
+  have hgA : g ∈ A := hg'A.choose_spec.1
+  have hgapprox : ∀ x ∈ K, ‖g x - f x‖ < sqrt ε * const⁻¹ := by
+    rw [← coe_toContinuousMapₐ ℝ g, hg'A.choose_spec.2]
+    exact hg'approx
   -- collect the results needed in the decomposition at the end of the proof
   have line1 : |∫ x, mulExpNegMulSq ε (f x) ∂P
       - ∫ x in K, mulExpNegMulSq ε (f x) ∂P| < sqrt ε :=
@@ -232,7 +236,7 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
   have line4 : |∫ x, mulExpNegMulSq ε (g x) ∂P
       - ∫ x, mulExpNegMulSq ε (g x) ∂P'| = 0 := by
     rw [abs_eq_zero, sub_eq_zero]
-    exact integral_mulExpNegMulSq_comp_eq hε hbound heq hgA
+    exact integral_mulExpNegMulSq_comp_eq hε heq hgA
   calc
       |∫ x, mulExpNegMulSq ε (f x) ∂P - ∫ x, mulExpNegMulSq ε (f x) ∂P'|
     ≤ |∫ x, mulExpNegMulSq ε (f x) ∂P - ∫ x in K, mulExpNegMulSq ε (f x) ∂P|

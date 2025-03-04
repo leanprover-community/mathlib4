@@ -39,7 +39,7 @@ namespace Lex
 
 theorem cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
     Lex r (a :: l₁) (a :: l₂) ↔ Lex r l₁ l₂ :=
-  ⟨fun h => by cases' h with _ _ _ _ _ h _ _ _ _ h; exacts [h, (irrefl_of r a h).elim], Lex.cons⟩
+  ⟨fun h => by obtain - | h | h := h; exacts [h, (irrefl_of r a h).elim], Lex.cons⟩
 
 @[deprecated (since := "2024-12-21")] alias not_nil_right := not_lex_nil
 
@@ -137,10 +137,6 @@ theorem ne_iff {l₁ l₂ : List α} (H : length l₁ ≤ length l₂) : Lex (·
   exact Decidable.List.Lex.ne_iff H
 
 end Lex
-
---Note: this overrides an instance in core lean
-instance LT' [LT α] : LT (List α) :=
-  ⟨Lex (· < ·)⟩
 
 -- TODO: This deprecated instance is still used (by the instance just below)
 @[deprecated "No deprecation message was provided." (since := "2024-07-30")]

@@ -30,7 +30,6 @@ open CategoryTheory Opposite CategoryTheory.Limits
 
 namespace RingHom
 
--- Porting Note: Deleted variable `f` here, since it wasn't used explicitly
 variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop)
 
 section RespectsIso
@@ -54,7 +53,8 @@ theorem RespectsIso.cancel_right_isIso (hP : RespectsIso @P) {R S T : CommRingCa
     (g : S ⟶ T) [IsIso g] : P (g.hom.comp f.hom) ↔ P f.hom :=
   ⟨fun H => by
     convert hP.1 (f ≫ g).hom (asIso g).symm.commRingCatIsoToRingEquiv H
-    simp [← CommRingCat.hom_comp], hP.1 f.hom (asIso g).commRingCatIsoToRingEquiv⟩
+    simp [← CommRingCat.hom_comp],
+   hP.1 f.hom (asIso g).commRingCatIsoToRingEquiv⟩
 
 theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S : Type u}
     (R' S' : Type u) [CommRing R] [CommRing S] [CommRing R'] [CommRing S'] [Algebra R R']

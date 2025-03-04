@@ -187,7 +187,7 @@ def mutuallySingularSet (κ η : Kernel α γ) : Set (α × γ) := {p | 1 ≤ rn
 `κ` and `η`. That is,
 * `withDensity η (rnDeriv κ η) a (mutuallySingularSetSlice κ η a) = 0`,
 * `singularPart κ η a (mutuallySingularSetSlice κ η a)ᶜ = 0`.
- -/
+-/
 def mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) : Set γ :=
   {x | 1 ≤ rnDerivAux κ (κ + η) a x}
 

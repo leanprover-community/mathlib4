@@ -515,7 +515,7 @@ namespace Matroid
     obtain ⟨B, hB, hfin⟩ := exists_finite_base
     refine fun X _ ↦ Matroid.existsMaximalSubsetProperty_of_bdd
       ⟨B.ncard, fun Y ⟨B', hB', hYB'⟩ ↦ ?_⟩ X
-    rw [hfin.cast_ncard_eq, isBase_exchange.encard_base_eq hB hB']
+    rw [hfin.cast_ncard_eq, isBase_exchange.encard_isBase_eq hB hB']
     exact encard_mono hYB')
   (subset_ground := subset_ground)
 
