@@ -9,6 +9,7 @@ import Mathlib.Algebra.Lie.Subalgebra
 import Mathlib.RingTheory.Nilpotent.Exp
 import Mathlib.RingTheory.Noetherian.Basic
 import Mathlib.Algebra.Algebra.Rat
+import LeanCopilot
 
 /-!
 # Lie derivations
@@ -253,26 +254,38 @@ theorem smul_apply (r : S) (D : LieDerivation R L M) : (r • D) a = r • D a :
 
 section Hidden
 
-variable (L : Type*) [LieRing L] [LieAlgebra ℚ L] (D : L →ₗ⁅ℚ⁆ L)
+variable (L : Type*) [LieRing L] [LieAlgebra ℚ L] (D : LieDerivation ℚ L L)
 theorem exp_equiv2 {D1 : LieDerivation ℚ L L} (h : IsNilpotent D1.toLinearMap) : IsUnit ((IsNilpotent.exp D1.toLinearMap)) := sorry
 
+#check IsNilpotent D.toLinearMap
 #check IsNilpotent.exp (D.toLinearMap)
-
-instance instExp (h : IsNilpotent D.toLinearMap) : LieHom ℚ L L where
-  toFun := fun l => (IsNilpotent.exp D.toLinearMap) l
-  map_add' := by exact fun x y ↦ LinearMap.map_add (IsNilpotent.exp D.toLinearMap) x y
-  map_smul' := by exact fun m x ↦ LinearMap.CompatibleSMul.map_smul (IsNilpotent.exp D.toLinearMap) m x
-  map_lie' := by sorry
 
 noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
   LieEquiv ℚ L L :=
 { toFun := fun l => (IsNilpotent.exp D.toLinearMap) l,
   map_add' := by exact fun x y ↦ LinearMap.map_add (IsNilpotent.exp D.toLinearMap) x y,
-  map_smul' := by exact fun m x ↦ LinearMap.CompatibleSMul.map_smul (IsNilpotent.exp D.toLinearMap) m x,
-  map_lie' := sorry -- by exact fun x y ↦ LieHom.map_lie' (IsNilpotent.exp D.toLinearMap) x y,
-  invFun := fun l => (IsNilpotent.exp (-(D.toLinearMap))) l,  -- The inverse is exp(-D)
-  left_inv := sorry,  -- Prove that exp(D) ∘ exp(-D) = id
-  right_inv := sorry, -- Prove that exp(-D) ∘ exp(D) = id
+  map_smul' := by exact fun m x ↦
+    LinearMap.CompatibleSMul.map_smul (IsNilpotent.exp D.toLinearMap) m x,
+  map_lie' := sorry
+  invFun := fun l => (IsNilpotent.exp (-(D.toLinearMap))) l,
+  left_inv := by
+    simp_all
+    let A := (IsNilpotent.exp (-(D.toLinearMap))) * (IsNilpotent.exp ((D.toLinearMap)))
+    have key : A = 1 := by sorry
+    have key2 (l : L) : A l = l := by sorry
+    intro x
+    have ttt := key2 x
+    dsimp [A] at ttt
+    exact key2 x
+  right_inv := by
+    simp_all
+    let A := (IsNilpotent.exp ((D.toLinearMap))) * (IsNilpotent.exp (-(D.toLinearMap)))
+    have key : A = 1 := by sorry
+    have key2 (l : L) : A l = l := by sorry
+    intro x
+    have ttt := key2 x
+    dsimp [A] at ttt
+    exact key2 x
 }
 
 
