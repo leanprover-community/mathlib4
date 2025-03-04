@@ -510,8 +510,7 @@ example : 1000! / 999! = 1000 := by norm_num1
 example : (Nat.sqrt 1024)! = 32! := by norm_num1
 example : (1 : ℚ) / 0 ! + 1 / 1 ! + 1 / 2 ! + 1 / 3! + 1 / 4! = 65 / 24 := by norm_num1
 
-example : (3 + 2).ascFactorial 3 = 336 := by norm_num1
-
+example : (4 + 2).ascFactorial 3 = 336 := by norm_num1
 example : (5 + 5).descFactorial 2 = 90 := by norm_num1
 example : (1000000).descFactorial 1000001 = 0 := by norm_num1
 

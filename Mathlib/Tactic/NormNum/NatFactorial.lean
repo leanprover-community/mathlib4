@@ -19,11 +19,6 @@ namespace Mathlib.Meta.NormNum
 
 open Nat Qq Lean Elab.Tactic Qq Meta
 
-lemma ascFactorial_mul_ascFactorial (n l k : ℕ) :
-    n.ascFactorial l * (n + l).ascFactorial k = n.ascFactorial (l + k) := by
-  apply mul_left_cancel₀ (factorial_pos n).ne.symm
-  simp [factorial_mul_ascFactorial, ← mul_assoc, add_assoc]
-
 lemma asc_factorial_aux (n l m a b : ℕ) (h₁ : n.ascFactorial l = a)
     (h₂ : (n + l).ascFactorial m = b) : n.ascFactorial (l + m) = a * b := by
   rw [← h₁, ← h₂]
@@ -43,10 +38,10 @@ partial def proveAscFactorial (n l : ℕ) : (result : Q(ℕ)) × Q(($n).ascFacto
     let prf : Expr := q(asc_factorial_aux $n $m $r $a $b $a_prf $b_prf)
     ⟨mkRawNatLit (a.natLit! * b.natLit!), prf⟩
 
-lemma isNat_factorial {n x : ℕ} (h₁ : IsNat n x) (a : ℕ) (h₂ : (0).ascFactorial x = a) :
+lemma isNat_factorial {n x : ℕ} (h₁ : IsNat n x) (a : ℕ) (h₂ : (1).ascFactorial x = a) :
     IsNat (n !) a := by
   constructor
-  simp [zero_ascFactorial, h₁.out, ← h₂]
+  simp only [h₁.out, cast_id, ← h₂, one_ascFactorial]
 
 /-- Evaluates the `Nat.factorial` function. -/
 @[norm_num Nat.factorial _]
@@ -54,13 +49,13 @@ def evalNatFactorial : NormNumExt where eval {u α} e := do
   let .app _ (x : Q(ℕ)) ← Meta.whnfR e | failure
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨ex, p⟩ ← deriveNat x sℕ
-  let ⟨val, ascPrf⟩ := proveAscFactorial 0 ex.natLit!
-  let ascPrf' : Q(ascFactorial 0 $ex = $val) := ascPrf
+  let ⟨val, ascPrf⟩ := proveAscFactorial 1 ex.natLit!
+  let ascPrf' : Q(ascFactorial 1 $ex = $val) := ascPrf
   let prf := q(isNat_factorial $p $val $ascPrf')
   return .isNat sℕ q($val) prf
 
 lemma isNat_ascFactorial {n x l y : ℕ} (h₁ : IsNat n x) (h₂ : IsNat l y) (a : ℕ)
-    (p : (x).ascFactorial y = a) : IsNat (n.ascFactorial l) a := by
+    (p : x.ascFactorial y = a) : IsNat (n.ascFactorial l) a := by
   constructor
   simp [h₁.out, h₂.out, ← p]
 
@@ -77,7 +72,7 @@ def evalNatAscFactorial : NormNumExt where eval {u α} e := do
   return .isNat sℕ q($val) prf
 
 lemma isNat_descFactorial {n x l y : ℕ} (z : ℕ) (h₁ : IsNat n x) (h₂ : IsNat l y)
-    (h₃ : x = z + y) (a : ℕ) (p : z.ascFactorial y = a) : IsNat (n.descFactorial l) a := by
+    (h₃ : x = z + y) (a : ℕ) (p : (z + 1).ascFactorial y = a) : IsNat (n.descFactorial l) a := by
   constructor
   simp [h₁.out, h₂.out, ← p, h₃]
   apply Nat.add_descFactorial_eq_ascFactorial
@@ -90,8 +85,8 @@ lemma isNat_descFactorial_zero {n x l y : ℕ} (z : ℕ) (h₁ : IsNat n x) (h�
 private partial def evalNatDescFactorialNotZero {x' y' : Q(ℕ)} (x y z : Q(ℕ)) (px : Q(IsNat $x' $x))
     (py : Q(IsNat $y' $y)) : (n : Q(ℕ)) × Q(IsNat (descFactorial $x' $y') $n) :=
   let eq_prf : Q($x = $z + $y) := (q(Eq.refl $x) : Expr)
-  let ⟨val, ascPrf⟩ := proveAscFactorial (z.natLit!) (y.natLit!)
-  let ascPrf : Q(ascFactorial $z $y = $val) := ascPrf
+  let ⟨val, ascPrf⟩ := proveAscFactorial (z.natLit! + 1) (y.natLit!)
+  let ascPrf : Q(ascFactorial ($z + 1) $y = $val) := ascPrf
   let prf : Q(IsNat (descFactorial $x' $y') $val) :=
     q(isNat_descFactorial $z $px $py $eq_prf $val $ascPrf)
   ⟨val, prf⟩
@@ -118,3 +113,9 @@ def evalNatDescFactorial : NormNumExt where eval {u α} e := do
     let z : ℕ := y.natLit! - x.natLit! - 1
     let ⟨val, prf⟩ := evalNatDescFactorialZero (x' := x') (y' := y') x y (mkRawNatLit z) p₁ p₂
     return .isNat sℕ val prf
+
+end NormNum
+
+end Meta
+
+end Mathlib
