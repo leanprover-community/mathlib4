@@ -449,6 +449,6 @@ cases r with
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def divCasesOn {C : ℚ → Sort*} (a : ℚ)
     (div : ∀ (n : ℤ) (d : ℕ), d ≠ 0 → n.natAbs.Coprime d → C (n / d)) : C a :=
-  a.casesOn fun n d nz red => by rw [Rat.mk'_eq_divInt, Rat.divInt_eq_div]; exact h n d nz red
+  a.casesOn fun n d nz red => by rw [Rat.mk'_eq_divInt, Rat.divInt_eq_div]; exact div n d nz red
 
 end Rat
