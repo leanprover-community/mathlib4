@@ -30,10 +30,10 @@ getDeclarations () {
   lake exe cache get Archive.lean Counterexamples.lean Mathlib.lean
 
   printf $'* Save the declarations to \'%s\'\n' "${1}"
-  #printf $'#all_declarations "%s"\n' "${1}" >> "${script_file}"
 
   cp "${script_file}" "${file}"
   printf $'@[to_additive] theorem Mul.%s\' : True := trivial\n#all_declarations "%s"\n' "${1}" "${1}" >> "${file}"
+  #printf $'#all_declarations "%s"\n' "${1}" >> "${file}"
   lake build Mathlib.declarations_diff_lean
 
   # undo the local changes
