@@ -19,14 +19,14 @@ we will need further cleanup of the lemmas involved before we can do this.
 -/
 
 open Function (Surjective)
-open Finsupp
+open Finsupp TensorProduct
 
 namespace Submodule
 
 variable {R M N : Type*} [CommSemiring R] [AddCommMonoid M]
   [AddCommMonoid N] [Module R M] [Module R N] {I : Submodule R N}
 
-open TensorProduct LinearMap
+open LinearMap
 /-- Every `x : N ⊗ M` is the image of some `y : J ⊗ M`, where `J` is a finitely generated
 submodule of `N`, under the tensor product of the inclusion `J → N` and the identity `M → M`. -/
 theorem exists_fg_le_eq_rTensor_subtype (x : N ⊗ M) :
@@ -50,7 +50,6 @@ theorem exists_fg_le_subset_range_rTensor_subtype (s : Set (N ⊗[R] M)) (hs : s
     ⟨rTensor M (inclusion <| le_iSup _ ⟨x, hx⟩) (y x), .trans ?_ (eq x).symm⟩⟩
   rw [← comp_apply, ← rTensor_comp]; rfl
 
-open TensorProduct LinearMap
 /-- Every `x : I ⊗ M` is the image of some `y : J ⊗ M`, where `J ≤ I` is finitely generated,
 under the tensor product of `J.inclusion ‹J ≤ I› : J → I` and the identity `M → M`. -/
 theorem exists_fg_le_eq_rTensor_inclusion (x : I ⊗ M) :
@@ -78,12 +77,12 @@ variable (R A B M N : Type*)
 /-- Porting note: reminding Lean about this instance for Module.Finite.base_change -/
 noncomputable local instance
     [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M] [Module R M] :
-    Module A (TensorProduct R A M) :=
+    Module A (A ⊗[R] M) :=
   haveI : SMulCommClass R A A := IsScalarTower.to_smulCommClass
   TensorProduct.leftModule
 
 instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M]
-    [Module R M] [h : Module.Finite R M] : Module.Finite A (TensorProduct R A M) := by
+    [Module R M] [h : Module.Finite R M] : Module.Finite A (A ⊗[R] M) := by
   classical
     obtain ⟨s, hs⟩ := h.fg_top
     refine ⟨⟨s.image (TensorProduct.mk R A M 1), eq_top_iff.mpr ?_⟩⟩
@@ -92,7 +91,7 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
     | zero => exact zero_mem _
     | tmul x y =>
       -- Porting note: new TC reminder
-      haveI : IsScalarTower R A (TensorProduct R A M) := TensorProduct.isScalarTower_left
+      haveI : IsScalarTower R A (A ⊗[R] M) := TensorProduct.isScalarTower_left
       rw [Finset.coe_image, ← Submodule.span_span_of_tower R, Submodule.span_image, hs,
         Submodule.map_top, LinearMap.range_coe]
       change _ ∈ Submodule.span A (Set.range <| TensorProduct.mk R A M 1)
@@ -102,7 +101,7 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
 
 instance Module.Finite.tensorProduct [CommSemiring R] [AddCommMonoid M] [Module R M]
     [AddCommMonoid N] [Module R N] [hM : Module.Finite R M] [hN : Module.Finite R N] :
-    Module.Finite R (TensorProduct R M N) where
+    Module.Finite R (M ⊗[R] N) where
   fg_top := (TensorProduct.map₂_mk_top_top_eq_top R M N).subst (hM.fg_top.map₂ _ hN.fg_top)
 
 end ModuleAndAlgebra

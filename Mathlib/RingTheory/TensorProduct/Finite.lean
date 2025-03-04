@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
 import Mathlib.RingTheory.Finiteness.TensorProduct
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.TensorProduct.Adjoin
 
 /-!
 # Finiteness results related to tensor products
