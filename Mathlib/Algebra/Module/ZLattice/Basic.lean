@@ -178,13 +178,10 @@ theorem fract_zSpan_add (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
 theorem fract_add_ZSpan (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
     fract b (m + v) = fract b m := by rw [add_comm, fract_zSpan_add b m h]
 
-variable {b}
-
+variable {b} in
 theorem fract_eq_self {x : E} : fract b x = x ↔ x ∈ fundamentalDomain b := by
   classical simp only [Basis.ext_elem_iff b, repr_fract_apply, Int.fract_eq_self,
     mem_fundamentalDomain, Set.mem_Ico]
-
-variable (b)
 
 theorem fract_mem_fundamentalDomain (x : E) : fract b x ∈ fundamentalDomain b :=
   fract_eq_self.mp (fract_fract b _)
@@ -324,7 +321,7 @@ theorem setFinite_inter [ProperSpace E] [Finite ι] {s : Set E} (hs : Bornology.
     Set.Finite (s ∩ span ℤ (Set.range b)) := by
   have : DiscreteTopology (span ℤ (Set.range b)) := inferInstance
   refine Metric.finite_isBounded_inter_isClosed hs ?_
-  change IsClosed ((span ℤ (Set.range b)).toAddSubgroup : Set E)
+  rw [← coe_toAddSubgroup]
   exact AddSubgroup.isClosed_of_discrete
 
 @[measurability]
@@ -535,8 +532,8 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
     -- `e` is a `K`-basis of `E` formed of vectors of `b`
     let e : Basis t K E := Basis.mk ht_lin (by simp [ht_span, h_spanE])
     have : Fintype t := Set.Finite.fintype ((Set.range b).toFinite.subset ht_inc)
-    have h : LinearIndependent ℤ (fun x : (Set.range b) => (x : E)) := by
-      rwa [linearIndependent_subtype_range (Subtype.coe_injective.comp b₀.injective)]
+    have h : LinearIndepOn ℤ id (Set.range b) := by
+      rwa [linearIndepOn_id_range_iff (Subtype.coe_injective.comp b₀.injective)]
     contrapose! h
     -- Since `finrank ℤ L > finrank K E`, there exists a vector `v ∈ b` with `v ∉ e`
     obtain ⟨v, hv⟩ : (Set.range b \ Set.range e).Nonempty := by
@@ -548,14 +545,14 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
       rwa [not_lt, h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span,
         finrank_span_set_eq_card ht_lin]
     -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then we get the contradiction
-    suffices ¬ LinearIndependent ℤ (fun x : ↥(insert v (Set.range e)) => (x : E)) by
+    suffices ¬ LinearIndepOn ℤ id (insert v (Set.range e)) by
       contrapose! this
-      refine LinearIndependent.mono ?_ this
+      refine this.mono ?_
       exact Set.insert_subset (Set.mem_of_mem_diff hv) (by simp [e, ht_inc])
     -- We prove finally that `e ∪ {v}` is not ℤ-linear independent or, equivalently,
     -- not ℚ-linear independent by showing that `v ∈ span ℚ e`.
-    rw [LinearIndependent.iff_fractionRing ℤ ℚ,
-      linearIndependent_insert (Set.not_mem_of_mem_diff hv),  not_and, not_not]
+    rw [LinearIndepOn, LinearIndependent.iff_fractionRing ℤ ℚ, ← LinearIndepOn,
+      linearIndepOn_id_insert (Set.not_mem_of_mem_diff hv), not_and, not_not]
     intro _
     -- But that follows from the fact that there exist `n, m : ℕ`, `n ≠ m`
     -- such that `(n - m) • v ∈ span ℤ e` which is true since `n ↦ ZSpan.fract e (n • v)`

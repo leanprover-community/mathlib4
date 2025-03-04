@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Function.AEEqOfIntegral
-import Mathlib.Probability.Kernel.Composition.Basic
+import Mathlib.Probability.Kernel.Composition.CompProd
 import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
 
 /-!
@@ -317,7 +317,7 @@ lemma IsRatCondKernelCDFAux.bddBelow_range (hf : IsRatCondKernelCDFAux f κ ν) 
 lemma IsRatCondKernelCDFAux.integrable_iInf_rat_gt (hf : IsRatCondKernelCDFAux f κ ν)
     [IsFiniteKernel ν] (a : α) (q : ℚ) :
     Integrable (fun t ↦ ⨅ r : Ioi q, f (a, t) r) (ν a) := by
-  rw [← memℒp_one_iff_integrable]
+  rw [← memLp_one_iff_integrable]
   refine ⟨(Measurable.iInf fun i ↦ hf.measurable_right a _).aestronglyMeasurable, ?_⟩
   refine (?_ : _ ≤ (ν a univ : ℝ≥0∞)).trans_lt (measure_lt_top _ _)
   refine (eLpNorm_le_of_ae_bound (C := 1) ?_).trans (by simp)
@@ -564,7 +564,7 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     simp only [mem_setOf_eq] at ht₁ ht₂
     have h_prod_eq_snd : ∀ a ∈ t₁, {x : ℝ | (a, x) ∈ t₁ ×ˢ t₂} = t₂ := by
       intro a ha
-      simp only [ha, prod_mk_mem_set_prod_eq, true_and, setOf_mem_eq]
+      simp only [ha, prodMk_mem_set_prod_eq, true_and, setOf_mem_eq]
     rw [← lintegral_add_compl _ ht₁]
     have h_eq1 : ∫⁻ x in t₁, hf.toKernel f (a, x) {y : ℝ | (x, y) ∈ t₁ ×ˢ t₂} ∂(ν a)
         = ∫⁻ x in t₁, hf.toKernel f (a, x) t₂ ∂(ν a) := by
@@ -578,7 +578,7 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
         simp only [lintegral_const, zero_mul]
       intro a hat₁
       rw [mem_compl_iff] at hat₁
-      simp only [hat₁, prod_mk_mem_set_prod_eq, false_and, setOf_false, measure_empty]
+      simp only [hat₁, prodMk_mem_set_prod_eq, false_and, setOf_false, measure_empty]
     rw [h_eq1, h_eq2, add_zero]
     exact setLIntegral_toKernel_prod hf a ht₁ ht₂
   | compl t ht ht_eq =>

@@ -3,13 +3,13 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Hom.CompleteLattice
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # liminfs and limsups of functions and filters
@@ -915,11 +915,6 @@ lemma limsInf_principal_eq_sInf (s : Set α) : limsInf (𝓟 s) = sInf s := by
 @[simp] lemma liminf_top_eq_iInf (u : β → α) : liminf u ⊤ = ⨅ i, u i := by
   rw [liminf, map_top, limsInf_principal_eq_sInf, sInf_range]
 
-@[deprecated (since := "2024-08-27")] alias limsSup_principal := limsSup_principal_eq_sSup
-@[deprecated (since := "2024-08-27")] alias limsInf_principal := limsInf_principal_eq_sInf
-@[deprecated (since := "2024-08-27")] alias limsup_top := limsup_top_eq_iSup
-@[deprecated (since := "2024-08-27")] alias liminf_top := liminf_top_eq_iInf
-
 theorem blimsup_congr' {f : Filter β} {p q : β → Prop} {u : β → α}
     (h : ∀ᶠ x in f, u x ≠ ⊥ → (p x ↔ q x)) : blimsup u f p = blimsup u f q := by
   simp only [blimsup_eq]
@@ -1315,7 +1310,7 @@ theorem eventually_add_neg_lt_of_le_liminf [Preorder β] [AddMonoid α] [AddLeft
   eventually_lt_of_lt_liminf (lt_of_lt_of_le (add_lt_of_neg_right x hε) hu) hu_bdd
 
 /-- If `Filter.limsup u atTop ≤ x`, then for all `ε > 0`, there exists a positive natural
-  number `n` such that `u n < x + ε`.  -/
+number `n` such that `u n < x + ε`. -/
 theorem exists_lt_of_limsup_le [AddMonoid α] [AddLeftStrictMono α] {x ε : α} {u : ℕ → α}
     (hu_bdd : IsBoundedUnder LE.le atTop u) (hu : Filter.limsup u atTop ≤ x) (hε : 0 < ε) :
     ∃ n : PNat, u n < x + ε := by
@@ -1325,7 +1320,7 @@ theorem exists_lt_of_limsup_le [AddMonoid α] [AddLeftStrictMono α] {x ε : α}
   exact ⟨⟨n + 1, Nat.succ_pos _⟩, hn (n + 1) (Nat.le_succ _)⟩
 
 /-- If `x ≤ Filter.liminf u atTop`, then for all `ε < 0`, there exists a positive natural
-  number `n` such that ` x + ε < u n`.  -/
+number `n` such that ` x + ε < u n`. -/
 theorem exists_lt_of_le_liminf [AddMonoid α] [AddLeftStrictMono α] {x ε : α} {u : ℕ → α}
     (hu_bdd : IsBoundedUnder GE.ge atTop u) (hu : x ≤ Filter.liminf u atTop) (hε : ε < 0) :
     ∃ n : PNat, x + ε < u n := by
