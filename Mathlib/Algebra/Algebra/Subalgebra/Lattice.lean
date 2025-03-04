@@ -14,6 +14,8 @@ In this file we define `Algebra.adjoin` and the complete lattice structure on su
 More lemmas about `adjoin` can be found in `Mathlib.RingTheory.Adjoin.Basic`.
 -/
 
+assert_not_exists Polynomial
+
 universe u u' v w w'
 
 namespace Algebra
@@ -403,11 +405,7 @@ end MapComap
 
 section Adjoin
 
-assert_not_exists Polynomial
-
 universe uR uS uA uB
-
-open Pointwise
 
 open Submodule Subsemiring
 
