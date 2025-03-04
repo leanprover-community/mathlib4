@@ -13,16 +13,17 @@ git checkout -
 # 5. removes the line added to the declarations diff Lean script.
 getDeclarations () {
   printf '* Download the cache\n'
-  lake exe cache get Archive.lean Counterexamples.lean Mathlib.lean &&
+  lake exe cache get Archive.lean Counterexamples.lean Mathlib.lean
 
   printf $'* Save the declarations to \'%s\'\n' "${1}"
-  printf $'def %s\' := 0\n#all_declarations "%s"\n' "${1}" "${1}" >> "${script_file}"
   #printf $'#all_declarations "%s"\n' "${1}" >> "${script_file}"
 
-  lake env lean "${script_file}"
+  cp "${script_file}" Mathlib/declarations_diff_lean.lean
+  printf $'def %s\' := 0\n#all_declarations "%s"\n' "${1}" "${1}" >> Mathlib/declarations_diff_lean.lean
+  lake build Mathlib/declarations_diff_lean.lean
 
   # undo the local changes
-  git restore .
+  rm -rf Mathlib/declarations_diff_lean.lean
 }
 
 getDeclarations decls_in_PR.txt
