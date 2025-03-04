@@ -160,7 +160,7 @@ theorem differentiable_circleMap (c : ℂ) (R : ℝ) : Differentiable ℝ (circl
   (hasDerivAt_circleMap c R θ).differentiableAt
 
 /-- The circleMap is real analytic. -/
-theorem analyticOnNhd_circleMap {c : ℂ} {R : ℝ} :
+theorem analyticOnNhd_circleMap (c : ℂ) (R : ℝ) :
     AnalyticOnNhd ℝ (circleMap c R) Set.univ := by
   intro z hz
   apply analyticAt_const.add
@@ -171,7 +171,7 @@ theorem analyticOnNhd_circleMap {c : ℂ} {R : ℝ} :
 /-- The circleMap is continuously differentiable. -/
 theorem contDiff_circleMap (c : ℂ) (R : ℝ) {n : WithTop ℕ∞} :
     ContDiff ℝ n (circleMap c R) :=
-  (analyticOnNhd_circleMap).contDiff
+  (analyticOnNhd_circleMap c R).contDiff
 
 @[continuity, fun_prop]
 theorem continuous_circleMap (c : ℂ) (R : ℝ) : Continuous (circleMap c R) :=
@@ -207,7 +207,7 @@ theorem continuous_circleMap_inv {R : ℝ} {z w : ℂ} (hw : w ∈ ball z R) :
 theorem circleMap_preimage_codiscrete {c : ℂ} {R : ℝ} (hR : R ≠ 0) :
     map (circleMap c R) (codiscrete ℝ) ≤ codiscreteWithin (Metric.sphere c |R|) := by
   intro s hs
-  apply analyticOnNhd_circleMap.preimage_mem_codiscreteWithin
+  apply (analyticOnNhd_circleMap c R).preimage_mem_codiscreteWithin
   · intro x hx
     by_contra hCon
     obtain ⟨a, ha⟩ := eventuallyConst_iff_exists_eventuallyEq.1 hCon
