@@ -44,7 +44,7 @@ lemma comul_eq_algHom_toLinearMap :
       ((Algebra.TensorProduct.tensorTensorTensorComm R R A A B B).toAlgHom.comp
       (Algebra.TensorProduct.map (Bialgebra.comulAlgHom R A)
       (Bialgebra.comulAlgHom R B))).toLinearMap := by
-  ext; simp [← Algebra.TensorProduct.tensorTensorTensorComm_eq_tensorTensorTensorComm]
+  ext; simp [← Algebra.TensorProduct.toLinearEquiv_tensorTensorTensorComm]
 
 end Bialgebra.TensorProduct
 

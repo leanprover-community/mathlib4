@@ -1081,7 +1081,7 @@ theorem tensorTensorTensorComm_toLinearEquiv :
       TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R S A B C D := rfl
 
 @[simp]
-theorem tensorTensorTensorComm_toLinearEquiv :
+theorem toLinearEquiv_tensorTensorTensorComm :
     (tensorTensorTensorComm R R A B C D).toLinearEquiv =
       _root_.TensorProduct.tensorTensorTensorComm R A B C D := by
   apply LinearEquiv.toLinearMap_injective
