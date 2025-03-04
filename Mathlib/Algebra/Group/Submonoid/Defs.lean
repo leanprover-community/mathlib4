@@ -110,11 +110,6 @@ class AddSubmonoidClass (S : Type*) (M : outParam Type*) [AddZeroClass M] [SetLi
 
 attribute [to_additive] Submonoid SubmonoidClass
 
-@[to_additive]
-instance (priority := 50) SubmonoidClass.toSubmonoid {A M : Type*} [Monoid M] [SetLike A M]
-    [SubmonoidClass A M] : CoeOut A (Submonoid M) :=
-  ⟨fun S ↦ ⟨⟨S, MulMemClass.mul_mem⟩, OneMemClass.one_mem S⟩⟩
-
 @[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))]
 theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
@@ -126,6 +121,10 @@ theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x :
     exact mul_mem (pow_mem hx n) hx
 
 namespace Submonoid
+
+@[to_additive]
+def ofClass {S M : Type*} [Monoid M] [SetLike S M] [SubmonoidClass S M] (s : S) : Submonoid M :=
+  ⟨⟨s, MulMemClass.mul_mem⟩, OneMemClass.one_mem s⟩
 
 @[to_additive]
 instance : SetLike (Submonoid M) M where
