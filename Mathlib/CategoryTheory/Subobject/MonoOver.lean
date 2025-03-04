@@ -139,12 +139,9 @@ instance {A B : MonoOver X} (f : A ⟶ B) [IsIso f] : IsIso f.left :=
 
 lemma isIso_iff_isIso_left {A B : MonoOver X} (f : A ⟶ B) :
     IsIso f ↔ IsIso f.left := by
-  constructor
-  · intro
-    infer_instance
-  · intro
-    exact ⟨MonoOver.homMk (inv f.left) (by simpa using (MonoOver.w f).symm),
-      Subsingleton.elim _ _, Subsingleton.elim _ _⟩
+  refine ⟨fun _ => inferInstance, fun _ => ?_⟩
+  exact ⟨MonoOver.homMk (inv f.left) (by simpa using (MonoOver.w f).symm),
+    Subsingleton.elim _ _, Subsingleton.elim _ _⟩
 
 /-- Lift a functor between over categories to a functor between `MonoOver` categories,
 given suitable evidence that morphisms are taken to monomorphisms.
