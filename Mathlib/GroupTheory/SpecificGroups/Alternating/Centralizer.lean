@@ -14,7 +14,7 @@ in `alternatingGroup α`.
 * `AlternatingGroup.card_of_cycleType_mul_eq m` and `AlternatingGroup.card_of_cycleType m`
 compute the number of even permutations of given cycle type.
 
-* `Equiv.Perm.odd_of_centralizer_le_alternatingGroup` :
+* `Equiv.Perm.OnCycleFactors.odd_of_centralizer_le_alternatingGroup` :
 if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then all members of the `g.cycleType` are odd.
 
 * `Equiv.Perm.card_le_of_centralizer_le_alternating` :
