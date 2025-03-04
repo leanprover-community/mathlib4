@@ -98,7 +98,7 @@ theorem discreteSupport (D : DivisorOn U) : DiscreteTopology D.support := by
 /-- If `U` is closed, the the support of a divisor on `U` is also closed. -/
 theorem closedSupport (D : DivisorOn U) (hU : IsClosed U) :
     IsClosed D.support := by
-  convert closed_compl_of_codiscreteWithin D.supportDiscreteWithinDomain hU
+  convert isClosed_sdiff_of_codiscreteWithin D.supportDiscreteWithinDomain hU
   ext x
   constructor
   · intro hx
@@ -380,7 +380,7 @@ noncomputable def restrict_monoidHom {V : Set 𝕜} (h : V ⊆ U) : DivisorOn U 
 /-- Helper lemma for the `simp` tactic: `restrict_groupHom` restricts divisors. -/
 @[simp]
 lemma restrict_groupHom_fun {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
-    restrict_groupHom h D = D.restrict h := by rfl
+    restrict_monoidHom h D = D.restrict h := by rfl
 
 /-- Restriction as a lattice morphism -/
 noncomputable def restrict_latticeHom {V : Set 𝕜} (h : V ⊆ U) :
