@@ -92,13 +92,13 @@ theorem exists_linearIndepOn_of_lt_rank [StrongRankCondition R]
     {s : Set M} (hs : LinearIndepOn R id s) :
     ∃ t, s ⊆ t ∧ #t = Module.rank R M ∧ LinearIndepOn R id t := by
   obtain ⟨t, ht, ht'⟩ := exists_set_linearIndependent R (M ⧸ Submodule.span R s)
-  choose sec hsec using Submodule.Quotient.mk_surjective (Submodule.span R s)
-  have hsec' : Submodule.Quotient.mk ∘ sec = _root_.id := funext hsec
+  choose sec hsec using Submodule.mkQ_surjective (Submodule.span R s)
+  have hsec' : (Submodule.mkQ _) ∘ sec = _root_.id := funext hsec
   have hst : Disjoint s (sec '' t) := by
     rw [Set.disjoint_iff]
     rintro _ ⟨hxs, ⟨x, hxt, rfl⟩⟩
     apply ht'.ne_zero ⟨x, hxt⟩
-    rw [Subtype.coe_mk, ← hsec x, Submodule.Quotient.mk_eq_zero]
+    rw [Subtype.coe_mk, ← hsec x,mkQ_apply, Quotient.mk_eq_zero]
     exact Submodule.subset_span hxs
   refine ⟨s ∪ sec '' t, subset_union_left, ?_, ?_⟩
   · rw [Cardinal.mk_union_of_disjoint hst, Cardinal.mk_image_eq, ht,
