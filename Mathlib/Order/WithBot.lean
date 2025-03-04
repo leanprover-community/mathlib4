@@ -599,6 +599,12 @@ theorem untopD_eq_untopD_iff {d : α} {x y : WithTop α} :
 @[deprecated (since := "2025-02-06")]
 alias untop'_eq_untop'_iff := untopD_eq_untopD_iff
 
+theorem untopD_of_ne_top {d : α} {x : WithTop α} (h : x ≠ ⊤) :
+  WithTop.untopD d x = x := by
+  obtain ⟨b, hb⟩ := Option.ne_none_iff_exists.1 h
+  rw [← hb]
+  rfl
+
 /-- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithTop α → WithTop β :=
   Option.map f
