@@ -203,7 +203,7 @@ theorem continuous_circleMap_inv {R : ℝ} {z w : ℂ} (hw : w ∈ ball z R) :
   exact Continuous.inv₀ (by fun_prop) this
 
 theorem circleMap_preimage_codiscrete {c : ℂ} {R : ℝ} (hR : R ≠ 0) :
-    map (circleMap c R) (codiscrete ℝ) ≤ (codiscreteWithin (Metric.sphere c |R|)) := by
+    map (circleMap c R) (codiscrete ℝ) ≤ codiscreteWithin (Metric.sphere c |R|) := by
   intro s hs
   apply analyticOnNhd_circleMap.preimage_mem_codiscreteWithin
   · intro x hx
