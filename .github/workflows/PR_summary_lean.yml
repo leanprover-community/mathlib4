@@ -45,7 +45,6 @@ jobs:
       - name: Report diff in Lean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SEP_STRING: 123GETME!
         run: |
           PR="${{ github.event.pull_request.number }}"
           PRdeclsFile=decls_in_PR.txt
