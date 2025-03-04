@@ -16,7 +16,7 @@ open Filter MeasureTheory
 
 /-- Under reasonable assumptions, sets that are codiscrete within `U` are contained in the “almost
 everywhere” filter of co-null sets. -/
-theorem ae_of_restrVol_le_codiscreteWithin
+theorem ae_restrict_le_codiscreteWithin
     {α : Type*} [MeasureSpace α] [TopologicalSpace α] [SecondCountableTopology α]
     {μ : Measure α} [NoAtoms μ] {U : Set α} (hU : MeasurableSet U) :
     ae (μ.restrict U) ≤ codiscreteWithin U := by
