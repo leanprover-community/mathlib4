@@ -187,8 +187,7 @@ macro_rules (kind := bigsum)
     -- proof and `b` is the filtering proposition
     match a?, b?? with
     | some hp, some (some p) =>
-      `(Finset.sum (α := (Finset.filter (fun $x ↦ $p) $s)) Finset.univ fun ⟨$x, hx⟩ ↦
-        have ⟨_, $hp⟩ := Finset.mem_filter.1 hx; $v)
+      `(Finset.sum $s fun $x ↦ if $hp : $p then f $x $hp else 0)
     | some p, _ => `(Finset.sum (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
     | none, _ => `(Finset.sum $s (fun $x ↦ $v))
 
@@ -201,8 +200,7 @@ macro_rules (kind := bigprod)
     -- proof and `b` is the filtering proposition
     match a?, b?? with
     | some hp, some (some p) =>
-      `(Finset.prod (α := (Finset.filter (fun $x ↦ $p) $s)) Finset.univ fun ⟨$x, hx⟩ ↦
-        have ⟨_, $hp⟩ := Finset.mem_filter.1 hx; $v)
+      `(Finset.prod $s fun $x ↦ if $hp : $p then f $x $hp else 1)
     | some p, _ => `(Finset.prod (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
     | none, _ => `(Finset.prod $s (fun $x ↦ $v))
 
