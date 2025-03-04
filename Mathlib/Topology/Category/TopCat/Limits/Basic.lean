@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.Adjunctions
+import Mathlib.Topology.Instances.Shrink
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Adjunction.Limits
 
@@ -44,6 +45,34 @@ def limitCone (F : J ⥤ TopCat.{max v u}) : Cone F where
         ext a
         exact (a.2 f).symm }
 
+instance (F : J ⥤ TopCat.{u}) : TopologicalSpace (F ⋙ forget).sections :=
+  inferInstanceAs <|
+    TopologicalSpace { u : ∀ j : J, F.obj j | ∀ {i j : J} (f : i ⟶ j), F.map f (u i) = u j }
+
+instance (F : J ⥤ TopCat.{u}) [Small.{u} (F ⋙ forget).sections]  :
+    TopologicalSpace (Types.Small.limitCone (F ⋙ forget)).pt :=
+  inferInstanceAs <| TopologicalSpace (Shrink (F ⋙ forget).sections)
+
+/--
+Implementation: A choice of limit cone for a functor `F : J ⥤ TopCat.{u}` with `J : Type v`. This
+is `(F ⋙ forget).sections` shrinked to universe `u`.
+Use `limit.cone F` instead.
+-/
+def Small.limitCone (F : J ⥤ TopCat.{u}) [Small.{u} (F ⋙ forget).sections] : Cone F where
+  pt := TopCat.of (Types.Small.limitCone (F ⋙ forget)).pt
+  π :=
+    { app j := ofHom
+        { toFun :=
+            (fun u ↦ u.val j) ∘ (Shrink.homeomorph.{u} (F ⋙ forget).sections).symm
+          continuous_toFun := by
+            apply Continuous.comp
+            · exact Continuous.comp (continuous_apply (π := fun j ↦ F.obj j) j)
+                (continuous_subtype_val)
+            · exact (Shrink.homeomorph.{u} (F ⋙ forget).sections).symm.continuous }
+      naturality X Y f := by
+        ext a
+        exact (((Shrink.homeomorph _).symm a).2 f).symm }
+
 /-- A choice of limit cone for a functor `F : J ⥤ TopCat` whose topology is defined as an
 infimum of topologies infimum.
 Generally you should just use `limit.cone F`, unless you need the actual definition
@@ -81,6 +110,32 @@ def limitConeIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitCone.{v,u} F) 
     simp [← h]
     rfl
 
+/--
+Implementation: The shrinked limit cone for `F : J ⥤ TopCat.{u}` with `J : Type v` is indeed a
+limit. Use `limit.isLimit F` instead.
+-/
+def Small.limitConeIsLimit (F : J ⥤ TopCat.{u}) [Small.{u} (F ⋙ forget).sections] :
+    IsLimit (Small.limitCone F) where
+  lift S := ofHom
+    { toFun := Shrink.homeomorph (F ⋙ forget).sections ∘ (fun x =>
+        ⟨fun _ => S.π.app _ x, fun f => by
+          dsimp
+          rw [← S.w f]
+          rfl⟩)
+      continuous_toFun :=
+        Continuous.comp (Shrink.homeomorph _).continuous <|
+        Continuous.subtype_mk (continuous_pi (π := fun j ↦ F.obj j)
+          fun j => (S.π.app j).hom.2) fun x i j f => by
+            dsimp
+            rw [← S.w f]
+            rfl }
+  fac S j := by
+    ext a
+    simp [Small.limitCone]
+  uniq S m h := by
+    ext a
+    simp [← h, Small.limitCone]
+
 /-- The chosen cone `TopCat.limitConeInfi F` for a functor `F : J ⥤ TopCat` is a limit cone.
 Generally you should just use `limit.isLimit F`, unless you need the actual definition
 (which is in terms of `Types.limitConeIsLimit`).
@@ -102,12 +157,12 @@ def limitConeInfiIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitConeInfi.{
           (continuous_iff_coinduced_le.mp (s.π.app j).hom.continuous :))
   · rfl
 
-instance topCat_hasLimitsOfSize : HasLimitsOfSize.{w, v} TopCat.{max v u} where
+instance topCat_hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} TopCat.{u} where
   has_limits_of_shape _ :=
     { has_limit := fun F =>
         HasLimit.mk
-          { cone := limitCone.{v,u} F
-            isLimit := limitConeIsLimit F } }
+          { cone := Small.limitCone.{v, u} F
+            isLimit := Small.limitConeIsLimit F } }
 
 instance topCat_hasLimits : HasLimits TopCat.{u} :=
   TopCat.topCat_hasLimitsOfSize.{u, u}
@@ -226,7 +281,7 @@ lemma hasColimit_iff_small_quot :
   · infer_instance
   · exact ⟨⟨_, isColimitCoconeOfForget _ (colimit.isColimit _)⟩⟩
 
-instance topCat_hasColimitsOfSize : HasColimitsOfSize.{w, v} TopCat.{max v u} where
+instance topCat_hasColimitsOfSize [UnivLE.{v, u}] : HasColimitsOfSize.{w, v} TopCat.{u} where
   has_colimits_of_shape _ := ⟨fun F ↦ by
     rw [hasColimit_iff_small_quot]
     infer_instance⟩
