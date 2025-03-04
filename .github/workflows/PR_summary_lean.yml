@@ -48,6 +48,9 @@ jobs:
           SEP_STRING: 123GETME!
         run: |
           PR="${{ github.event.pull_request.number }}"
+          PRdeclsFile=decls_in_PR.txt
+          MSdeclsFile=decls_in_master.txt
+
           #git checkout master
           #git switch -
           #git checkout master...HEAD
@@ -56,11 +59,11 @@ jobs:
 
           rm -rf .lake/build/lib/lean/Mathlib/ .lake/build/lib/Mathlib/
           messageStart=$'New <details><summary><b>Declaration diff in Lean</b></summary>'
-          ./scripts/declDiff_shell_glue.sh "${SEP_STRING}"
+          ./scripts/declDiff_shell_glue.sh "${PRdeclsFile}" "${MSdeclsFile}"
           masterHash=$(date)
           {
             printf '%s\n\n```diff\n' "${messageStart}"
-            diff decls_in_master.txt decls_in_PR.txt | grep '^[<>]'
+            diff "${MSdeclsFile}" "${PRdeclsFile}" | grep '^[<>]'
             printf '```\n</details>\nPR: %s\n\nMaster: %s\n' "${{ github.event.pull_request.head.sha }}" "${masterHash}"
           } > please_merge_master
           printf -- $'------\n%s------\n' "$(cat please_merge_master)"

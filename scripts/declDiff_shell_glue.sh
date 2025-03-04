@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 script_file=scripts/declarations_diff.lean
-
-SEP_STRING="${2:-STANDARD_SEPARATOR_STRING}"
+PRdeclsFile=${1:-decls_in_PR.txt}
+MSdeclsFile=${2:-decls_in_master.txt}
 
 git checkout master
 git checkout -
@@ -29,24 +29,18 @@ getDeclarations () {
   rm -f Mathlib/declarations_diff_lean.lean
 }
 
-getDeclarations decls_in_PR.txt
+getDeclarations "${PRdeclsFile}"
 PRhash="$(git rev-parse HEAD)"
 git checkout master...HEAD
 
 git checkout "${PRhash}" "${script_file}"
-getDeclarations decls_in_master.txt
+getDeclarations "${MSdeclsFile}"
 
 # switch back to the PR branch
 git checkout "${PRhash}"
 
 printf 'Diff the declarations\n'
 
-actualDiff="$(diff decls_in_master.txt decls_in_PR.txt | grep '^[<>]')"
-#echo "${actualDiff}"
+actualDiff="$(diff decls_in_master.txt "${PRdeclsFile}" | grep '^[<>]')"
 
 printf '%s\n' "${actualDiff}"
-
-#printf $'LeanDiff<<EOF\n%q\nEOF' "${actualDiff}" |
-#  # show result in stdout and also store it in `GITHUB_OUTPUT`
-#  tee >(cat) >> "${GITHUB_OUTPUT}"
-printf '%s\n%s\n' "${SEP_STRING}" "${actualDiff}"
