@@ -343,25 +343,23 @@ theorem radius_smul_eq (p : FormalMultilinearSeries 𝕜 E F) {c : 𝕜} (hc : c
 theorem radius_compContinuousLinearMap_ge (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) :
     p.radius / ‖u‖₊ ≤ (p.compContinuousLinearMap u).radius := by
   by_cases h_zero : ‖u‖₊ = 0
-  · simp at h_zero
-    rw [h_zero]
-    simp
+  · simp only [nnnorm_eq_zero] at h_zero
+    simp only [h_zero, nnnorm_zero, ENNReal.coe_zero]
     by_cases hr : p.radius = 0
     · rw [hr]
       simp
-    · rw [ENNReal.div_zero hr]
-      simp
+    · rw [ENNReal.div_zero hr, top_le_iff]
       apply FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ 1
       intro m
       ext v
-      simp
+      simp only [compContinuousLinearMap_apply, ContinuousMultilinearMap.zero_apply]
       change (p (m + 1)) 0 = 0
       simp
   simp only [radius, ENNReal.iSup_div]
   -- Maybe it should be separate lemma?
   have h : ∀ n, ‖p.compContinuousLinearMap u n‖ ≤ ‖p n‖ * ‖u‖^n := by
     intro
-    simp [compContinuousLinearMap]
+    simp only [compContinuousLinearMap]
     apply le_trans (ContinuousMultilinearMap.norm_compContinuousLinearMap_le _ _)
     simp
   apply iSup_mono'
@@ -371,7 +369,7 @@ theorem radius_compContinuousLinearMap_ge (p : FormalMultilinearSeries 𝕜 F G)
   intro C
   use C
   apply iSup_mono'
-  simp
+  simp only [NNReal.coe_div, coe_nnnorm, exists_prop]
   intro h1
   constructor
   · intro n
