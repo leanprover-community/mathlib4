@@ -237,6 +237,10 @@ theorem Icc_ssubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b�
   rw [← coe_ssubset, coe_Icc, coe_Icc]
   exact Set.Icc_ssubset_Icc_right hI ha hb
 
+theorem Ioc_disjoint_Ioc {d : α} (hbc : b ≤ c) : Disjoint (Ioc a b) (Ioc c d) :=
+  disjoint_left.2 fun _ h1 h2 ↦ not_and_of_not_left _
+    ((mem_Ioc.1 h1).2.trans hbc).not_lt (mem_Ioc.1 h2)
+
 variable (a)
 
 theorem Ico_self : Ico a a = ∅ :=
@@ -428,7 +432,7 @@ theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
   disjoint_left.2 fun _ hax hbcx ↦ (mem_Iic.1 hax).not_lt <| lt_of_le_of_lt h (mem_Ioc.1 hbcx).1
 
 /-- An equivalence between `Finset.Iic a` and `Set.Iic a`. -/
-def _root_.Equiv.Iic_finset_set (a : α) : Iic a ≃ Set.Iic a where
+def _root_.Equiv.IicFinsetSet (a : α) : Iic a ≃ Set.Iic a where
   toFun b := ⟨b.1, coe_Iic a ▸ mem_coe.2 b.2⟩
   invFun b := ⟨b.1, by rw [← mem_coe, coe_Iic a]; exact b.2⟩
   left_inv := fun _ ↦ rfl
