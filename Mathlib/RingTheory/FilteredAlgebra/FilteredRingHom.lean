@@ -178,8 +178,8 @@ lemma GradedPieceHom_apply_mk_eq_mk_piece_wise_hom {i : ι} (x : FA i) :
     Gr(i)[f] (GradedPiece.mk FA FA_lt x) = (GradedPiece.mk FB FB_lt (f.piece_wise_hom i x)) :=
   rfl
 
-lemma GradedPieceHom_comp_apply (x : AssociatedGraded FA FA_lt) (i : ι) :
-    Gr(i)[g] (Gr(i)[f] (x i)) = Gr(i)[g.comp f] (x i) := QuotientAddGroup.induction_on (x i) <|
+lemma GradedPieceHom_comp_apply (i : ι) (x : GradedPiece FA FA_lt i) :
+    Gr(i)[g] (Gr(i)[f] x) = Gr(i)[g.comp f] x := QuotientAddGroup.induction_on x <|
   fun _ ↦ rfl
 
 /-- Additive group homomorphism (between direct sum of graded pieces) induced by
@@ -263,9 +263,9 @@ lemma GradedPieceHom_apply_mk_eq_mk_piece_wise_hom {i : ι} (x : FR i) :
     Gr(i)[f] (GradedPiece.mk FR FR_lt x) = (GradedPiece.mk FS FS_lt (f.piece_wise_hom i x)) :=
   rfl
 
-lemma GradedPieceHom_comp_apply (x : AssociatedGraded FR FR_lt) (i : ι) :
-    Gr(i)[g] (Gr(i)[f] (x i)) = Gr(i)[g.comp f] (x i) :=
-  FilteredAddGroupHom.GradedPieceHom_comp_apply g.1 f.1 x i
+lemma GradedPieceHom_comp_apply (i : ι) (x : GradedPiece FR FR_lt i):
+    Gr(i)[g] (Gr(i)[f] x) = Gr(i)[g.comp f] x :=
+  FilteredAddGroupHom.GradedPieceHom_comp_apply g.1 f.1 i x
 
 section DirectSum
 
