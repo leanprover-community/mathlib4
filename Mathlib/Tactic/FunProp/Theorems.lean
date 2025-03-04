@@ -168,6 +168,7 @@ structure FunctionTheorem where
 
 private local instance : Ord Name := ⟨Name.quickCmp⟩
 
+set_option linter.style.docString false in
 /-- -/
 structure FunctionTheorems where
   /-- map: function name → function property → function theorem -/
@@ -182,7 +183,7 @@ def FunctionTheorem.getProof (thm : FunctionTheorem) : MetaM Expr := do
   | .decl name => mkConstWithFreshMVarLevels name
   | .fvar id => return .fvar id
 
-
+set_option linter.style.docString false in
 /-- -/
 abbrev FunctionTheoremsExt := SimpleScopedEnvExtension FunctionTheorem FunctionTheorems
 
@@ -201,6 +202,7 @@ initialize functionTheoremsExt : FunctionTheoremsExt ←
               thms.push e}
   }
 
+set_option linter.style.docString false in
 /-- -/
 def getTheoremsForFunction (funName : Name) (funPropName : Name) :
     CoreM (Array FunctionTheorem) := do
