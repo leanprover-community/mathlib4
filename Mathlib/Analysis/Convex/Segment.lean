@@ -219,13 +219,15 @@ theorem image_openSegment (f : E →ᵃ[𝕜] F) (a b : E) :
     simp_rw [openSegment_eq_image_lineMap, mem_image, exists_exists_and_eq_and,
       AffineMap.apply_lineMap]
 
+omit [AddCommGroup G] in
 @[simp]
-theorem vadd_segment [AddTorsor G E] [VAddCommClass G E E] (a : G) (b c : E) :
+theorem vadd_segment [VAdd G E] [VAddCommClass G E E] (a : G) (b c : E) :
     a +ᵥ [b -[𝕜] c] = [a +ᵥ b -[𝕜] a +ᵥ c] :=
   image_segment 𝕜 ⟨_, LinearMap.id, fun _ _ => vadd_comm _ _ _⟩ b c
 
+omit [AddCommGroup G] in
 @[simp]
-theorem vadd_openSegment [AddTorsor G E] [VAddCommClass G E E] (a : G) (b c : E) :
+theorem vadd_openSegment [VAdd G E] [VAddCommClass G E E] (a : G) (b c : E) :
     a +ᵥ openSegment 𝕜 b c = openSegment 𝕜 (a +ᵥ b) (a +ᵥ c) :=
   image_openSegment 𝕜 ⟨_, LinearMap.id, fun _ _ => vadd_comm _ _ _⟩ b c
 

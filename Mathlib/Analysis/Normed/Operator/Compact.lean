@@ -180,15 +180,16 @@ section Operations
 
 variable {R₁ R₄ : Type*} [Semiring R₁] [CommSemiring R₄]
   {σ₁₄ : R₁ →+* R₄} {M₁ M₂ M₄ : Type*} [TopologicalSpace M₁]
-  [AddCommMonoid M₁] [TopologicalSpace M₂] [AddCommMonoid M₂]
-  [TopologicalSpace M₄] [AddCommGroup M₄]
+  [AddCommMonoid M₁] [TopologicalSpace M₂] [TopologicalSpace M₄] [AddCommGroup M₄]
 
-theorem IsCompactOperator.smul {S : Type*} [Monoid S] [DistribMulAction S M₂]
+theorem IsCompactOperator.smul {S : Type*} [SMul S M₂]
     [ContinuousConstSMul S M₂] {f : M₁ → M₂} (hf : IsCompactOperator f) (c : S) :
     IsCompactOperator (c • f) :=
   let ⟨K, hK, hKf⟩ := hf
   ⟨c • K, hK.image <| continuous_id.const_smul c,
     mem_of_superset hKf fun _ hx => smul_mem_smul_set hx⟩
+
+variable [AddCommMonoid M₂]
 
 theorem IsCompactOperator.add [ContinuousAdd M₂] {f g : M₁ → M₂} (hf : IsCompactOperator f)
     (hg : IsCompactOperator g) : IsCompactOperator (f + g) :=
