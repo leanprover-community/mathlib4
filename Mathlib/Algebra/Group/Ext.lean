@@ -3,7 +3,6 @@ Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Gin-ge Chen, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.PPow
 import Mathlib.Algebra.Group.Hom.Defs
 
 /-!
@@ -36,18 +35,18 @@ variable {M : Type*} [Monoid M]
 
 @[to_additive (attr := ext)]
 theorem Semigroup.ext {M : Type u} ⦃m₁ m₂ : Semigroup M⦄ (h_mul : m₁.mul = m₂.mul) : m₁ = m₂ := by
-  let f := @MulHom.mk _ _ m₁.toMul m₂.toMul id fun _ _ => congr_fun (congr_fun h_mul _) _
   have : m₁.ppow = m₂.ppow := by
     ext n hn x
-    exact @map_ppow _ M M m₁ m₂ _ _ f x ⟨n, hn⟩
+    induction n using Nat.strongRecOn with
+    | ind n ih =>
+      match n with
+      | 1 => rw [m₁.ppow_one, m₂.ppow_one]
+      | n + 2 =>
+        rw [m₁.ppow_succ, m₂.ppow_succ, ih _ (n + 1).lt_succ_self n.succ_pos]
+        exact congr_fun (congr_fun h_mul _) _
   rcases m₁ with @⟨@⟨_⟩, _⟩
   rcases m₂ with @⟨@⟨_⟩, _⟩
   congr
-#align semigroup.ext Semigroup.extₓ
-#noalign semigroup.ext_iff
-#align add_semigroup.ext AddSemigroup.extₓ
-#noalign add_semigroup.ext_iff
-
 
 @[to_additive]
 theorem CommSemigroup.toSemigroup_injective {M : Type u} :
@@ -60,11 +59,6 @@ theorem CommSemigroup.toSemigroup_injective {M : Type u} :
 theorem CommSemigroup.ext {M : Type _} ⦃m₁ m₂ : CommSemigroup M⦄ (h_mul : m₁.mul = m₂.mul) :
     m₁ = m₂ :=
   CommSemigroup.toSemigroup_injective <| Semigroup.ext h_mul
-#align comm_semigroup.ext CommSemigroup.extₓ
-#noalign comm_semigroup.ext_iff
-#align add_comm_semigroup.ext AddCommSemigroup.extₓ
-#noalign add_comm_semigroup.ext_iff
-
 
 @[to_additive (attr := ext)]
 theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄

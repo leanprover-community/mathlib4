@@ -10,9 +10,7 @@ import Mathlib.Data.PNat.Basic
 # TODO : Fill in module docstring
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- See issue #2220
-
-variable {M : Type _}
+variable {M : Type*}
 
 instance Semigroup.instPow [Semigroup M] : Pow M ℕ+ where
   pow x n := Semigroup.ppow n n.pos x
