@@ -30,14 +30,10 @@ getDeclarations () {
 }
 
 getDeclarations "${PRdeclsFile}"
-PRhash="$(git rev-parse HEAD)"
 git checkout master...HEAD
 
 git checkout "${PRhash}" "${script_file}"
 getDeclarations "${MSdeclsFile}"
-
-# switch back to the PR branch
-git checkout "${PRhash}"
 
 printf 'Diff the declarations\n'
 
