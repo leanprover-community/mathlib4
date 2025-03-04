@@ -206,7 +206,7 @@ instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
     [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
     {I' : ModelWithCorners 𝕜 E' H'} {G' : Type*} [TopologicalSpace G'] [ChartedSpace H' G']
     [Group G'] [LieGroup I' n G'] : LieGroup (I.prod I') n (G × G') :=
-  { ContMDiffMul.prod _ _ _ _ with contMDiff_inv := contMDiff_fst.inv.prod_mk contMDiff_snd.inv }
+  { ContMDiffMul.prod _ _ _ _ with contMDiff_inv := contMDiff_fst.inv.prodMk contMDiff_snd.inv }
 
 end Product
 

@@ -50,7 +50,7 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 @[to_additive]
 instance instMul [Mul β] [ContinuousMul β] : Mul C(α, β) :=
-  ⟨fun f g => ⟨f * g, continuous_mul.comp (f.continuous.prod_mk g.continuous :)⟩⟩
+  ⟨fun f g => ⟨f * g, continuous_mul.comp (f.continuous.prodMk g.continuous :)⟩⟩
 
 @[to_additive (attr := norm_cast, simp)]
 theorem coe_mul [Mul β] [ContinuousMul β] (f g : C(α, β)) : ⇑(f * g) = f * g :=
@@ -339,7 +339,7 @@ instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) w
     rw [ContinuousAt, tendsto_iff_forall_isCompact_tendstoUniformlyOn, nhds_prod_eq]
     exact fun K hK =>
       uniformContinuous_mul.comp_tendstoUniformlyOn
-        ((tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prod
+        ((tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prodMk
           (tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK))
   continuous_inv := by
     letI : UniformSpace β := IsTopologicalGroup.toUniformSpace β

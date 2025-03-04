@@ -178,7 +178,7 @@ lemma coe_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
 @[to_additive (attr := simps!) prod "Product of two continuous homomorphisms on the same space."]
 def prod (f : ContinuousMonoidHom A B) (g : ContinuousMonoidHom A C) :
     ContinuousMonoidHom A (B × C) :=
-  ⟨f.toMonoidHom.prod g.toMonoidHom, f.continuous_toFun.prod_mk g.continuous_toFun⟩
+  ⟨f.toMonoidHom.prod g.toMonoidHom, f.continuous_toFun.prodMk g.continuous_toFun⟩
 
 /-- Product of two continuous homomorphisms on different spaces. -/
 @[to_additive (attr := simps!) prodMap

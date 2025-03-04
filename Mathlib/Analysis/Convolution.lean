@@ -508,7 +508,7 @@ theorem convolution_congr [MeasurableAdd₂ G] [MeasurableNeg G] [SFinite μ]
     [IsAddRightInvariant μ] (h1 : f =ᵐ[μ] f') (h2 : g =ᵐ[μ] g') : f ⋆[L, μ] g = f' ⋆[L, μ] g' := by
   ext x
   apply integral_congr_ae
-  exact (h1.prod_mk <| h2.comp_tendsto
+  exact (h1.prodMk <| h2.comp_tendsto
     (quasiMeasurePreserving_sub_left_of_right_invariant μ x).tendsto_ae).fun_comp ↿fun x y ↦ L x y
 
 theorem support_convolution_subset_swap : support (f ⋆[L, μ] g) ⊆ support g + support f := by
@@ -565,7 +565,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
     rcases H with ⟨p, hp, x, hx⟩
     have A : support (g p) ⊆ k := support_subset_iff'.2 (fun y hy ↦ hgs p y hp hy)
     have B : Continuous (g p) := by
-      refine hg.comp_continuous (continuous_const.prod_mk continuous_id') fun x => ?_
+      refine hg.comp_continuous (.prodMk_right _) fun x => ?_
       simpa only [prodMk_mem_set_prod_eq, mem_univ, and_true] using hp
     rcases eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_addGroup hk A B with H|H
     · simp [H] at hx
@@ -604,7 +604,7 @@ theorem continuousOn_convolution_right_with_param_comp {s : Set P} {v : P → G}
     (hgs : ∀ p, ∀ x, p ∈ s → x ∉ k → g p x = 0) (hf : LocallyIntegrable f μ)
     (hg : ContinuousOn (↿g) (s ×ˢ univ)) : ContinuousOn (fun x => (f ⋆[L, μ] g x) (v x)) s := by
   apply
-    (continuousOn_convolution_right_with_param L hk hgs hf hg).comp (continuousOn_id.prod hv)
+    (continuousOn_convolution_right_with_param L hk hgs hf hg).comp (continuousOn_id.prodMk hv)
   intro x hx
   simp only [hx, prodMk_mem_set_prod_eq, mem_univ, and_self_iff, _root_.id]
 
@@ -921,7 +921,7 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
     (measurePreserving_sub_prod μ ν).map_eq
   suffices Integrable (uncurry fun x y => L₃ (f y) (L₄ (g x) (k (x₀ - y - x)))) (μ.prod ν) by
     rw [← h3] at this
-    convert this.comp_measurable (measurable_sub.prod_mk measurable_snd)
+    convert this.comp_measurable (measurable_sub.prodMk measurable_snd)
     ext ⟨x, y⟩
     simp (config := { unfoldPartialApp := true }) only [uncurry, Function.comp_apply,
       sub_sub_sub_cancel_right]
@@ -1039,7 +1039,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
       ((f ⋆[L.precompR (P × G), μ] fun x : G => fderiv 𝕜 (↿g) (q₀.1, x)) q₀.2) q₀ := by
   let g' := fderiv 𝕜 ↿g
   have A : ∀ p ∈ s, Continuous (g p) := fun p hp ↦ by
-    refine hg.continuousOn.comp_continuous (continuous_const.prod_mk continuous_id') fun x => ?_
+    refine hg.continuousOn.comp_continuous (.prodMk_right _) fun x => ?_
     simpa only [prodMk_mem_set_prod_eq, mem_univ, and_true] using hp
   have A' : ∀ q : P × G, q.1 ∈ s → s ×ˢ univ ∈ 𝓝 q := fun q hq ↦ by
     apply (hs.prod isOpen_univ).mem_nhds
@@ -1109,7 +1109,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     apply (HasCompactSupport.convolutionExists_right (L.precompR (P × G) :) T hf _ q₀.2).1
     have : ContinuousOn g' (s ×ˢ univ) :=
       hg.continuousOn_fderiv_of_isOpen (hs.prod isOpen_univ) le_rfl
-    apply this.comp_continuous (continuous_const.prod_mk continuous_id')
+    apply this.comp_continuous (.prodMk_right _)
     intro x
     simpa only [prodMk_mem_set_prod_eq, mem_univ, and_true] using hq₀
   set K' := (-k + {q₀.2} : Set G) with K'_def
@@ -1288,7 +1288,7 @@ theorem contDiffOn_convolution_right_with_param_comp {n : ℕ∞} (L : E →L[�
     {v : P → G} (hv : ContDiffOn 𝕜 n v s) {f : G → E} {g : P → G → E'} {k : Set G} (hs : IsOpen s)
     (hk : IsCompact k) (hgs : ∀ p, ∀ x, p ∈ s → x ∉ k → g p x = 0) (hf : LocallyIntegrable f μ)
     (hg : ContDiffOn 𝕜 n (↿g) (s ×ˢ univ)) : ContDiffOn 𝕜 n (fun x => (f ⋆[L, μ] g x) (v x)) s := by
-  apply (contDiffOn_convolution_right_with_param L hs hk hgs hf hg).comp (contDiffOn_id.prod hv)
+  apply (contDiffOn_convolution_right_with_param L hs hk hgs hf hg).comp (contDiffOn_id.prodMk hv)
   intro x hx
   simp only [hx, mem_preimage, prodMk_mem_set_prod_eq, mem_univ, and_self_iff, _root_.id]
 
@@ -1311,7 +1311,7 @@ theorem contDiffOn_convolution_left_with_param_comp [μ.IsAddLeftInvariant] [μ.
     {g : P → G → E'} {k : Set G} (hs : IsOpen s) (hk : IsCompact k)
     (hgs : ∀ p, ∀ x, p ∈ s → x ∉ k → g p x = 0) (hf : LocallyIntegrable f μ)
     (hg : ContDiffOn 𝕜 n (↿g) (s ×ˢ univ)) : ContDiffOn 𝕜 n (fun x => (g x ⋆[L, μ] f) (v x)) s := by
-  apply (contDiffOn_convolution_left_with_param L hs hk hgs hf hg).comp (contDiffOn_id.prod hv)
+  apply (contDiffOn_convolution_left_with_param L hs hk hgs hf hg).comp (contDiffOn_id.prodMk hv)
   intro x hx
   simp only [hx, mem_preimage, prodMk_mem_set_prod_eq, mem_univ, and_self_iff, _root_.id]
 

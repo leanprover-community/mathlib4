@@ -79,10 +79,10 @@ namespace UniformSpace
 open UniformSpace (ball)
 
 lemma isOpen_ball (x : α) {V : Set (α × α)} (hV : IsOpen V) : IsOpen (ball x V) :=
-  hV.preimage <| continuous_const.prod_mk continuous_id
+  hV.preimage <| .prodMk_right _
 
 lemma isClosed_ball (x : α) {V : Set (α × α)} (hV : IsClosed V) : IsClosed (ball x V) :=
-  hV.preimage <| continuous_const.prod_mk continuous_id
+  hV.preimage <| .prodMk_right _
 
 /-!
 ### Neighborhoods in uniform spaces
@@ -730,22 +730,31 @@ theorem uniformContinuous_snd [UniformSpace α] [UniformSpace β] :
 
 variable [UniformSpace α] [UniformSpace β] [UniformSpace γ]
 
-theorem UniformContinuous.prod_mk {f₁ : α → β} {f₂ : α → γ} (h₁ : UniformContinuous f₁)
+theorem UniformContinuous.prodMk {f₁ : α → β} {f₂ : α → γ} (h₁ : UniformContinuous f₁)
     (h₂ : UniformContinuous f₂) : UniformContinuous fun a => (f₁ a, f₂ a) := by
   rw [UniformContinuous, uniformity_prod]
   exact tendsto_inf.2 ⟨tendsto_comap_iff.2 h₁, tendsto_comap_iff.2 h₂⟩
 
-theorem UniformContinuous.prod_mk_left {f : α × β → γ} (h : UniformContinuous f) (b) :
-    UniformContinuous fun a => f (a, b) :=
-  h.comp (uniformContinuous_id.prod_mk uniformContinuous_const)
+@[deprecated (since := "2025-02-21")]
+alias UniformContinuous.prod_mk := UniformContinuous.prodMk
 
-theorem UniformContinuous.prod_mk_right {f : α × β → γ} (h : UniformContinuous f) (a) :
+theorem UniformContinuous.prodMk_left {f : α × β → γ} (h : UniformContinuous f) (b) :
+    UniformContinuous fun a => f (a, b) :=
+  h.comp (uniformContinuous_id.prodMk uniformContinuous_const)
+
+@[deprecated (since := "2025-02-21")]
+alias UniformContinuous.prod_mk_left := UniformContinuous.prodMk_left
+
+theorem UniformContinuous.prodMk_right {f : α × β → γ} (h : UniformContinuous f) (a) :
     UniformContinuous fun b => f (a, b) :=
-  h.comp (uniformContinuous_const.prod_mk uniformContinuous_id)
+  h.comp (uniformContinuous_const.prodMk uniformContinuous_id)
+
+@[deprecated (since := "2025-02-21")]
+alias UniformContinuous.prod_mk_right := UniformContinuous.prodMk_right
 
 theorem UniformContinuous.prodMap [UniformSpace δ] {f : α → γ} {g : β → δ}
     (hf : UniformContinuous f) (hg : UniformContinuous g) : UniformContinuous (Prod.map f g) :=
-  (hf.comp uniformContinuous_fst).prod_mk (hg.comp uniformContinuous_snd)
+  (hf.comp uniformContinuous_fst).prodMk (hg.comp uniformContinuous_snd)
 
 @[deprecated (since := "2024-10-06")] alias UniformContinuous.prod_map := UniformContinuous.prodMap
 
@@ -921,7 +930,7 @@ theorem continuousAt_iff'_left [TopologicalSpace β] {f : β → α} {b : β} :
 theorem continuousAt_iff_prod [TopologicalSpace β] {f : β → α} {b : β} :
     ContinuousAt f b ↔ Tendsto (fun x : β × β => (f x.1, f x.2)) (𝓝 (b, b)) (𝓤 α) :=
   ⟨fun H => le_trans (H.prodMap' H) (nhds_le_uniformity _), fun H =>
-    continuousAt_iff'_left.2 <| H.comp <| tendsto_id.prod_mk_nhds tendsto_const_nhds⟩
+    continuousAt_iff'_left.2 <| H.comp <| tendsto_id.prodMk_nhds tendsto_const_nhds⟩
 
 theorem continuousWithinAt_iff'_right [TopologicalSpace β] {f : β → α} {b : β} {s : Set β} :
     ContinuousWithinAt f s b ↔ Tendsto (fun x => (f b, f x)) (𝓝[s] b) (𝓤 α) := by
@@ -964,7 +973,7 @@ lemma exists_is_open_mem_uniformity_of_forall_mem_eq
     have I1 : (f y, f x) ∈ t := (htsymm.mk_mem_comm).2 (hu hy).1
     have I2 : (g x, g y) ∈ t := (hu hy).2
     rw [hfg hx] at I1
-    exact htr (prod_mk_mem_compRel I1 I2)
+    exact htr (prodMk_mem_compRel I1 I2)
   choose! t t_open xt ht using A
   refine ⟨⋃ x ∈ s, t x, isOpen_biUnion t_open, fun x hx ↦ mem_biUnion hx (xt x hx), ?_⟩
   rintro x hx

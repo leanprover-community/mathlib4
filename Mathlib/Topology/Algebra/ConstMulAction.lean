@@ -122,7 +122,7 @@ instance OrderDual.continuousConstSMul' : ContinuousConstSMul Mᵒᵈ α :=
 @[to_additive]
 instance Prod.continuousConstSMul [SMul M β] [ContinuousConstSMul M β] :
     ContinuousConstSMul M (α × β) :=
-  ⟨fun _ => (continuous_fst.const_smul _).prod_mk (continuous_snd.const_smul _)⟩
+  ⟨fun _ => (continuous_fst.const_smul _).prodMk (continuous_snd.const_smul _)⟩
 
 @[to_additive]
 instance {ι : Type*} {γ : ι → Type*} [∀ i, TopologicalSpace (γ i)] [∀ i, SMul M (γ i)]

@@ -530,9 +530,9 @@ section Product
 /-- Product of two diffeomorphisms. -/
 def prodCongr (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : N ≃ₘ^n⟮J, J'⟯ N') :
     (M × N) ≃ₘ^n⟮I.prod J, I'.prod J'⟯ M' × N' where
-  contMDiff_toFun := (h₁.contMDiff.comp contMDiff_fst).prod_mk (h₂.contMDiff.comp contMDiff_snd)
+  contMDiff_toFun := (h₁.contMDiff.comp contMDiff_fst).prodMk (h₂.contMDiff.comp contMDiff_snd)
   contMDiff_invFun :=
-    (h₁.symm.contMDiff.comp contMDiff_fst).prod_mk (h₂.symm.contMDiff.comp contMDiff_snd)
+    (h₁.symm.contMDiff.comp contMDiff_fst).prodMk (h₂.symm.contMDiff.comp contMDiff_snd)
   toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
 
 @[simp]
@@ -551,8 +551,8 @@ variable (I J J' M N N' n)
 
 /-- `M × N` is diffeomorphic to `N × M`. -/
 def prodComm : (M × N) ≃ₘ^n⟮I.prod J, J.prod I⟯ N × M where
-  contMDiff_toFun := contMDiff_snd.prod_mk contMDiff_fst
-  contMDiff_invFun := contMDiff_snd.prod_mk contMDiff_fst
+  contMDiff_toFun := contMDiff_snd.prodMk contMDiff_fst
+  contMDiff_invFun := contMDiff_snd.prodMk contMDiff_fst
   toEquiv := Equiv.prodComm M N
 
 @[simp]
@@ -566,10 +566,10 @@ theorem coe_prodComm : ⇑(prodComm I J M N n) = Prod.swap :=
 /-- `(M × N) × N'` is diffeomorphic to `M × (N × N')`. -/
 def prodAssoc : ((M × N) × N') ≃ₘ^n⟮(I.prod J).prod J', I.prod (J.prod J')⟯ M × N × N' where
   contMDiff_toFun :=
-    (contMDiff_fst.comp contMDiff_fst).prod_mk
-      ((contMDiff_snd.comp contMDiff_fst).prod_mk contMDiff_snd)
+    (contMDiff_fst.comp contMDiff_fst).prodMk
+      ((contMDiff_snd.comp contMDiff_fst).prodMk contMDiff_snd)
   contMDiff_invFun :=
-    (contMDiff_fst.prod_mk (contMDiff_fst.comp contMDiff_snd)).prod_mk
+    (contMDiff_fst.prodMk (contMDiff_fst.comp contMDiff_snd)).prodMk
       (contMDiff_snd.comp contMDiff_snd)
   toEquiv := Equiv.prodAssoc M N N'
 

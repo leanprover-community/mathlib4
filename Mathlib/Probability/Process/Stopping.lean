@@ -776,7 +776,7 @@ theorem stronglyMeasurable_stoppedValue_of_le (h : ProgMeasurable f u) (hτ : Is
     ext1 ω; simp only [stoppedValue, Function.comp_apply, Subtype.coe_mk]
   rw [this]
   refine StronglyMeasurable.comp_measurable (h n) ?_
-  exact (hτ.measurable_of_le hτ_le).subtype_mk.prod_mk measurable_id
+  exact (hτ.measurable_of_le hτ_le).subtype_mk.prodMk measurable_id
 
 theorem measurable_stoppedValue [MetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
     (hf_prog : ProgMeasurable f u) (hτ : IsStoppingTime f τ) :

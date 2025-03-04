@@ -131,7 +131,7 @@ lemma IsCompact.mem_uniformity_of_prod
     refine ⟨w, hw, v, hv, fun p hp y hy ↦ ?_⟩
     have A : (f q x, f p y) ∈ u' := hvw (⟨hp, hy⟩ : (p, y) ∈ v ×ˢ w)
     have B : (f q x, f q y) ∈ u' := hvw (⟨mem_of_mem_nhdsWithin hq hv, hy⟩ : (q, y) ∈ v ×ˢ w)
-    exact hu' (prod_mk_mem_compRel (u'_symm A) B)
+    exact hu' (prodMk_mem_compRel (u'_symm A) B)
 
 section UniformConvergence
 
