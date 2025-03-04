@@ -14,12 +14,13 @@ namespace CategoryTheory.Abelian
 
 open Category
 
-variable {A C : Type*} [Category C] [Category A] {ι : C ⥤ A}
-  {A' C' : Type*} [Category C'] [Category A'] {ι' : C' ⥤ A'}
+variable {A C : Type*} [Category C] [Category A]
+  {A' C' : Type*} [Category C'] [Category A']
 
 namespace LeftResolutions
 
-def transport (Λ : LeftResolutions ι)
+/-- Transport `LeftResolutions` via equivalences of categories. -/
+def transport {ι : C ⥤ A} (Λ : LeftResolutions ι) {ι' : C' ⥤ A'}
     (eA : A' ≌ A) (eC : C' ≌ C) (e : ι' ⋙ eA.functor ≅ eC.functor ⋙ ι) :
     LeftResolutions ι' where
   F := eA.functor ⋙ Λ.F ⋙ eC.inverse
@@ -32,10 +33,19 @@ def transport (Λ : LeftResolutions ι)
       whiskerLeft Λ.F eC.counitIso.hom ≫ Λ.F.rightUnitor.hom)) _) _ ≫
         (whiskerRight ((Functor.associator _ _ _).hom ≫ whiskerLeft _ Λ.π ≫
           (Functor.rightUnitor _).hom) _) ≫ eA.unitIso.inv
-  hπ := by
+  hπ X := by
     dsimp
     simp only [Functor.map_id, comp_id, id_comp]
     infer_instance
+
+/-- If we have an isomorphism `e : G ⋙ ι' ≅ ι`, then any `Λ : LeftResolutions ι`
+induces `Λ.ofCompIso e : LeftResolutions ι'`. -/
+def ofCompIso {ι : C ⥤ A} (Λ : LeftResolutions ι) {ι' : C' ⥤ A} {G : C ⥤ C'}
+    (e : G ⋙ ι' ≅ ι) :
+    LeftResolutions ι' where
+  F := Λ.F ⋙ G
+  π := (Functor.associator _ _ _).hom ≫ whiskerLeft _ e.hom ≫ Λ.π
+  hπ X := by dsimp; simp only [id_comp]; infer_instance
 
 end LeftResolutions
 
