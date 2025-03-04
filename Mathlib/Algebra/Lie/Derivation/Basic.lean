@@ -270,18 +270,42 @@ noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
   invFun := fun l => (IsNilpotent.exp (-(D.toLinearMap))) l,
   left_inv := by
     simp_all
+    have h₁ : Commute D.toLinearMap (-(D.toLinearMap)) := Commute.neg_right rfl
+    have h₄ : Commute (-(D.toLinearMap)) (D.toLinearMap) := Commute.neg_left rfl
+    have h₂ : IsNilpotent (-(D.toLinearMap)) := IsNilpotent.neg h
+    have h₃ := IsNilpotent.exp_add_of_commute h₁ h h₂
+    have h₅ := IsNilpotent.exp_add_of_commute h₄ h₂ h
     let A := (IsNilpotent.exp (-(D.toLinearMap))) * (IsNilpotent.exp ((D.toLinearMap)))
-    have key : A = 1 := by sorry
-    have key2 (l : L) : A l = l := by sorry
+    have key : A = 1 := by
+      have step : (IsNilpotent.exp (-(D.toLinearMap))) * (IsNilpotent.exp ((D.toLinearMap))) =
+        IsNilpotent.exp (-(D.toLinearMap) + (D.toLinearMap)) := h₅.symm
+      simp at step
+      rw [IsNilpotent.exp_zero_eq_one] at step
+      exact step
+    have key2 (l : L) : A l = l := by
+      rw [key]
+      exact rfl
     intro x
     have ttt := key2 x
     dsimp [A] at ttt
     exact key2 x
   right_inv := by
     simp_all
+    have h₁ : Commute D.toLinearMap (-(D.toLinearMap)) := Commute.neg_right rfl
+    have h₄ : Commute (-(D.toLinearMap)) (D.toLinearMap) := Commute.neg_left rfl
+    have h₂ : IsNilpotent (-(D.toLinearMap)) := IsNilpotent.neg h
+    have h₃ := IsNilpotent.exp_add_of_commute h₁ h h₂
+    have h₅ := IsNilpotent.exp_add_of_commute h₄ h₂ h
     let A := (IsNilpotent.exp ((D.toLinearMap))) * (IsNilpotent.exp (-(D.toLinearMap)))
-    have key : A = 1 := by sorry
-    have key2 (l : L) : A l = l := by sorry
+    have key : A = 1 := by
+      have step : (IsNilpotent.exp ((D.toLinearMap))) * (IsNilpotent.exp (-(D.toLinearMap))) =
+        IsNilpotent.exp ((D.toLinearMap) + (-(D.toLinearMap))) := h₃.symm
+      simp at step
+      rw [IsNilpotent.exp_zero_eq_one] at step
+      exact step
+    have key2 (l : L) : A l = l := by
+      rw [key]
+      exact rfl
     intro x
     have ttt := key2 x
     dsimp [A] at ttt
