@@ -76,6 +76,8 @@ theorem _root_.Finsupp.option_embedding_add_single {σ : Type*}
       add_zero, some_apply]
     rw [← Embedding.some_apply, embDomain_apply, Embedding.some_apply]
 
+#find_home! Finsupp.option_embedding_add_single
+
 /-- A multivariate polynomial that vanishes on a large product finset is the zero polynomial. -/
 theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R]
     (P : MvPolynomial σ R) (S : σ → Finset R)
