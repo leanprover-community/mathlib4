@@ -202,7 +202,7 @@ instance : SMul ℤ (DivisorOn U) where
 (integer)·divisor is the scalar product of the integer with the associated
 function of the divisor. -/
 @[simp]
-lemma zsmul_fun {D : DivisorOn U} {n : ℤ} : (↑(n • D) : 𝕜 → ℤ) = n • (D : 𝕜 → ℤ) := rfl
+lemma coe_zsmul {D : DivisorOn U} {n : ℤ} : (↑(n • D) : 𝕜 → ℤ) = n • (D : 𝕜 → ℤ) := rfl
 
 /-- Divisors have a partial ordering by pointwise comparison of the associated
 functions. -/
