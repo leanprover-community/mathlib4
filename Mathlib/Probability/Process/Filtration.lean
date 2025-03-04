@@ -375,7 +375,7 @@ open MeasurableSpace Finset
 variable {ι : Type*} {X : ι → Type*} [∀ i, MeasurableSpace (X i)]
 
 /-- The filtration of events which only depends on finitely many coordinates
-on the product space `Π i, X i`, `piLE s` consists of measurable sets depending only on
+on the product space `Π i, X i`, `piFinset s` consists of measurable sets depending only on
 coordinates in `s`, where `s : Finset ι`. -/
 def piFinset : @Filtration (Π i, X i) (Finset ι) _ pi where
   seq s := pi.comap s.restrict
