@@ -172,7 +172,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          messageStart=$'<details><summary> <b>Declaration diff in Lean</b></summary>'
+          messageStart=$'<details><summary><b>Declaration diff in Lean</b></summary>'
           ./scripts/declDiff_shell_glue.sh |
             awk -v messStart="${messageStart}" '
               BEGIN{
