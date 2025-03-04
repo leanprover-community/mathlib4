@@ -146,6 +146,10 @@ theorem iterate_apply_lie' (D : LieDerivation R L L) (n : ℕ) (a b : L) :
   rw [iterate_apply_lie D n a b]
   exact sum_antidiagonal_eq_sum_range_succ (fun i j ↦ n.choose i • ⁅D^[i] a, D^[j] b⁆) n
 
+theorem helpme (D : LieDerivation R L L) (n : ℕ) (a b : L) : D^[n] ⁅a, b⁆ = (D.toLinearMap ^ n) ⁅a, b⁆ := by
+  symm
+  simp [LinearMap.coe_pow]
+
 end
 
 instance instZero : Zero (LieDerivation R L M) where
@@ -266,7 +270,38 @@ noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
   map_add' := by exact fun x y ↦ LinearMap.map_add (IsNilpotent.exp D.toLinearMap) x y,
   map_smul' := by exact fun m x ↦
     LinearMap.CompatibleSMul.map_smul (IsNilpotent.exp D.toLinearMap) m x,
-  map_lie' := sorry
+  map_lie' := by
+    intro x y
+    simp
+    dsimp [IsNilpotent.exp]
+    have rr (i j : ℕ) (hj : j ≤ i) : (i.factorial : ℚ)⁻¹ * (i.choose j) = ((j.factorial : ℚ)⁻¹ * ((i - j).factorial : ℚ)⁻¹) := by
+      rw [Nat.choose_eq_factorial_div_factorial hj,
+        Nat.cast_div (Nat.factorial_mul_factorial_dvd_factorial hj) (by field_simp)]
+      field_simp
+    have s1 :=
+      calc
+        (∑ i ∈ Finset.range (nilpotencyClass D.toLinearMap), (i.factorial : ℚ)⁻¹ • (D.toLinearMap ^ i)) ⁅x, y⁆ =
+        ∑ i ∈ Finset.range (nilpotencyClass D.toLinearMap), (i.factorial : ℚ)⁻¹ • ((D.toLinearMap ^ i) ⁅x, y⁆) := by
+          simp
+        _ = ∑ i ∈ Finset.range (nilpotencyClass D.toLinearMap), (i.factorial : ℚ)⁻¹ • ((D^[i]) ⁅x, y⁆) := by simp [LinearMap.coe_pow]
+        _ = ∑ i ∈ Finset.range (nilpotencyClass D.toLinearMap), (i.factorial : ℚ)⁻¹ • (∑ j ∈ Finset.range (i + 1), i.choose j • ⁅D^[j] x, D^[i - j] y⁆) := by
+          refine Finset.sum_congr rfl fun i hi ↦ ?_
+          rw [iterate_apply_lie' D i x y]
+        _ = ∑ i ∈ Finset.range (nilpotencyClass D.toLinearMap), (∑ j ∈ Finset.range (i + 1), (i.factorial : ℚ)⁻¹ • (i.choose j • ⁅D^[j] x, D^[i - j] y⁆)) := by
+          simp only [Finset.smul_sum]
+        _ = ∑ i ∈ Finset.range (nilpotencyClass D.toLinearMap), (∑ j ∈ Finset.range (i + 1), ((i.factorial : ℚ)⁻¹ * i.choose j) • ⁅D^[j] x, D^[i - j] y⁆) := by
+          refine Finset.sum_congr rfl fun i hi ↦ Finset.sum_congr rfl fun j hj ↦ ?_
+          rw [mul_smul]
+          simp_all only [Finset.mem_range]
+          norm_cast
+        _ = ∑ i ∈ Finset.range (nilpotencyClass D.toLinearMap), (∑ j ∈ Finset.range (i + 1), ((j.factorial : ℚ)⁻¹ * ((i - j).factorial : ℚ)⁻¹) • ⁅D^[j] x, D^[i - j] y⁆) := by
+          refine Finset.sum_congr rfl fun i hi ↦ Finset.sum_congr rfl fun j hj ↦ ?_
+          simp at hj
+          have ss : j ≤ i := by exact Nat.le_of_lt_succ hj
+          rw [rr i j ss]
+        _ = ∑ i ∈ Finset.range (nilpotencyClass D.toLinearMap), (∑ j ∈ Finset.range (i + 1), ((j.factorial : ℚ)⁻¹ * ((i - j).factorial : ℚ)⁻¹) • ⁅(D.toLinearMap ^ j) x, (D.toLinearMap ^ (i - j))  y⁆) := by simp [LinearMap.pow_apply]
+
+    sorry,
   invFun := fun l => (IsNilpotent.exp (-(D.toLinearMap))) l,
   left_inv := by
     simp_all
