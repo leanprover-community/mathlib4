@@ -46,56 +46,52 @@ open scoped FilteredRingHom
 
 omit [DecidableEq ι] in
 lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict : g.IsStrict)
-    (fgexact : Function.Exact f.toAddMonoidHom g.toAddMonoidHom) :
-    ∀ p : ι, ∀ x : GradedPiece FS FS_lt p, Gr(p)[g] x = 0 → ∃ y : FR p, Gr(p)[f] ⟦y⟧ = x := by
-  intro p x₀ xto0
-  obtain⟨x, hx⟩ : ∃ x, GradedPiece.mk FS FS_lt x = x₀:= Quotient.exists_rep x₀
-  rw[← hx, GradedPieceHom_apply_mk_eq_mk_piece_wise_hom] at xto0
-  obtain ⟨x', xin, geq⟩ : g.toRingHom x ∈ g.toRingHom '' (FS_lt p) := by
-    apply gstrict.strict_lt
-    · simpa [GradedPiece.mk] using xto0
-    · simp
-  obtain ⟨y, yin, feq⟩ : x - x' ∈ f.toRingHom '' (FR p) := by
-    have : x.1 - x' ∈ FS p := sub_mem x.2 (IsFiltration.F_lt_le_F FS FS_lt p xin)
-    apply FilteredHom.IsStrict.strict this
-    rw [Eq.comm, ← RingHom.sub_mem_ker_iff] at geq
-    have : x.1 - x' ∈ (g.toAddMonoidHom).ker := geq
-    simpa [fgexact.addMonoidHom_ker_eq]
-  use ⟨y, yin⟩
-  rw [← GradedPiece.mk_eq, GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, ← hx, GradedPiece.mk_eq,
-      GradedPiece.mk_eq,  QuotientAddGroup.eq, AddSubgroup.mem_addSubgroupOf]
-  have : (toFilteredHom.piece_wise_hom p ⟨y, yin⟩ : FS p) = f.toRingHom y := rfl
-  simpa [this, feq] using xin
+    (fgexact : Function.Exact f.toAddMonoidHom g.toAddMonoidHom) (i : ι)
+    (x : GradedPiece FS FS_lt i) : Gr(i)[g] x = 0 ↔ x ∈ Set.range Gr(i)[f] :=
+    QuotientAddGroup.induction_on x <| fun s ↦ by
+  refine ⟨fun h ↦ ?_, fun ⟨y, hy⟩ ↦ ?_⟩
+  · simp only [← GradedPiece.mk_eq, FilteredRingHom.GradedPieceHom_apply_mk_eq_mk_piece_wise_hom]
+    have : ((g.piece_wise_hom i) s).1 ∈ FT_lt i := by
+      simp only [← GradedPiece.mk_eq, GradedPieceHom_apply_mk_eq_mk_piece_wise_hom] at h
+      simpa [GradedPiece.mk] using h
+    rcases gstrict.strict_lt this (Set.mem_range_self s.1) with ⟨s', hs', eqs⟩
+    have := g.toAddMonoidHom.eq_iff.mp eqs.symm
+    rw [Function.Exact.addMonoidHom_ker_eq fgexact] at this
+    have mem := (add_mem (neg_mem (IsFiltration.F_lt_le_F FS FS_lt i hs')) s.2)
+    rcases fstrict.strict mem this with ⟨r, hr, eq⟩
+    have : f.toFun r + s' = s := by rw [eq, neg_add_cancel_comm]
+    use GradedPiece.mk FR FR_lt ⟨r, hr⟩
+    rw [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom]
+    simp only [GradedPiece.mk, QuotientAddGroup.mk'_eq_mk']
+    use ⟨s', IsFiltration.F_lt_le_F FS FS_lt i hs'⟩
+    exact ⟨hs', SetCoe.ext this⟩
+  · induction y using QuotientAddGroup.induction_on
+    rename_i z
+    rw [← hy, FilteredRingHom.GradedPieceHom_comp_apply]
+    exact congrArg (GradedPiece.mk FT FT_lt) (SetCoe.ext (fgexact.apply_apply_eq_zero z.1))
 
 variable  [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt]
 
 theorem exact_of_strict_exact (fstrict : f.IsStrict) (gstrict : g.IsStrict)
     (exact : Function.Exact f.toRingHom g.toRingHom) : Function.Exact Gr[f] Gr[g] := by
   intro m
-  constructor
-  · intro h
-    have (i : ι) : ∃ y, Gr(i)[f] ⟦y⟧ = m i := by
-      apply exact_component_of_strict_exact_component f g fstrict gstrict exact i
-      simp [← FilteredRingHom.AssociatedGradedRingHom_apply, h]
-    set component_2 := fun (i : support m) ↦
-      (⟦Classical.choose (this i)⟧ : GradedPiece FR FR_lt i) with hc
-    set s : AssociatedGraded FR FR_lt := DirectSum.mk
-      (fun i ↦ GradedPiece FR FR_lt i) (support m) component_2 with hs
-    have : Gr[f] s = m := by
-      apply AssociatedGraded.ext_iff.mpr fun j ↦ ?_
-      simp only [FilteredRingHom.AssociatedGradedRingHom_apply]
-      by_cases nh : j ∈ support m
-      · rw [mk_apply_of_mem nh, hc, Classical.choose_spec (this j)]
-      · rw [hs, mk_apply_of_not_mem nh, map_zero, not_mem_support_iff.mp nh]
-    simp [← this]
-  · rintro ⟨l, hl⟩
-    rw [← hl]
-    show (Gr[g].comp Gr[f]) l = 0
-    rw [FilteredRingHom.AssociatedGradedRingHom_comp_eq_comp g f]
-    ext i
-    obtain ⟨k, hk⟩ : ∃ k, GradedPiece.mk FR FR_lt k = l i := Quotient.exists_rep (l i)
-    have : ((g.comp f).piece_wise_hom i) k = 0 :=
-      ZeroMemClass.coe_eq_zero.mp (Function.Exact.apply_apply_eq_zero exact k)
-    simp [← hk, this]
+  have iff1 : Gr[g] m = 0 ↔ ∀ i : ι, Gr(i)[g] (m i) = 0 := by
+    refine ⟨fun h i ↦ ?_, fun h ↦ ?_⟩
+    · rw [← FilteredRingHom.AssociatedGradedRingHom_apply, h, DirectSum.zero_apply]
+    · ext i
+      simp [h i]
+  have iff2 : m ∈ Set.range Gr[f] ↔ ∀ i : ι, m i ∈ Set.range Gr(i)[f] := by
+    refine ⟨fun ⟨l, hl⟩ i ↦ ?_, fun h ↦ ?_⟩
+    · rw [← hl, FilteredRingHom.AssociatedGradedRingHom_apply]
+      use l i
+    · use DirectSum.mk (GradedPiece FR FR_lt) (support m) (fun i ↦ Classical.choose (h i))
+      ext i
+      rw [FilteredRingHom.AssociatedGradedRingHom_apply]
+      by_cases mem : i ∈ support m
+      · rw [mk_apply_of_mem mem, Classical.choose_spec (h i)]
+      · rw [mk_apply_of_not_mem mem, not_mem_support_iff.mp mem, map_zero]
+  rw [iff1, iff2]
+  exact forall_congr'
+    (fun i ↦ exact_component_of_strict_exact_component f g fstrict gstrict exact i (m i))
 
 end exactness
