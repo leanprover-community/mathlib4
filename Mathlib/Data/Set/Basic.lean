@@ -713,6 +713,14 @@ theorem union_univ (s : Set α) : s ∪ univ = univ := sup_top_eq _
 @[simp]
 theorem univ_union (s : Set α) : univ ∪ s = univ := top_sup_eq _
 
+@[simp]
+theorem ssubset_union_left_iff : s ⊂ s ∪ t ↔ ¬ t ⊆ s :=
+  left_lt_sup
+
+@[simp]
+theorem ssubset_union_right_iff : t ⊂ s ∪ t ↔ ¬ s ⊆ t :=
+  right_lt_sup
+
 /-! ### Lemmas about intersection -/
 
 theorem inter_def {s₁ s₂ : Set α} : s₁ ∩ s₂ = { a | a ∈ s₁ ∧ a ∈ s₂ } :=
@@ -829,6 +837,14 @@ theorem inter_setOf_eq_sep (s : Set α) (p : α → Prop) : s ∩ {a | p a} = {a
 
 theorem setOf_inter_eq_sep (p : α → Prop) (s : Set α) : {a | p a} ∩ s = {a ∈ s | p a} :=
   inter_comm _ _
+
+@[simp]
+theorem inter_ssubset_right_iff : s ∩ t ⊂ t ↔ ¬ t ⊆ s :=
+  inf_lt_right
+
+@[simp]
+theorem inter_ssubset_left_iff : s ∩ t ⊂ s ↔ ¬ s ⊆ t :=
+  inf_lt_left
 
 /-! ### Distributivity laws -/
 
@@ -948,6 +964,13 @@ theorem inter_diff_distrib_left (s t u : Set α) : s ∩ (t \ u) = (s ∩ t) \ (
 
 theorem inter_diff_distrib_right (s t u : Set α) : (s \ t) ∩ u = (s ∩ u) \ (t ∩ u) :=
   inf_sdiff_distrib_right _ _ _
+
+theorem diff_inter_distrib_right (s t r : Set α) : (t ∩ r) \ s = (t \ s) ∩ (r \ s) :=
+  inf_sdiff
+
+theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
+    Disjoint s t ↔ s = ∅ := by
+  simp only [disjoint_iff, inf_eq_left.mpr h, bot_eq_empty]
 
 /-! ### Lemmas about complement -/
 
@@ -1161,7 +1184,7 @@ theorem diff_subset_comm {s t u : Set α} : s \ t ⊆ u ↔ s \ u ⊆ t :=
 theorem diff_inter {s t u : Set α} : s \ (t ∩ u) = s \ t ∪ s \ u :=
   sdiff_inf
 
-theorem diff_inter_diff {s t u : Set α} : s \ t ∩ (s \ u) = s \ (t ∪ u) :=
+theorem diff_inter_diff : s \ t ∩ (s \ u) = s \ (t ∪ u) :=
   sdiff_sup.symm
 
 theorem diff_compl : s \ tᶜ = s ∩ t :=
@@ -1172,6 +1195,12 @@ theorem compl_diff : (t \ s)ᶜ = s ∪ tᶜ :=
 
 theorem diff_diff_right {s t u : Set α} : s \ (t \ u) = s \ t ∪ s ∩ u :=
   sdiff_sdiff_right'
+
+theorem inter_diff_right_comm : (s ∩ t) \ u = s \ u ∩ t := by
+  rw [diff_eq, diff_eq, inter_right_comm]
+
+theorem diff_inter_right_comm : (s \ u) ∩ t = (s ∩ t) \ u := by
+  rw [diff_eq, diff_eq, inter_right_comm]
 
 @[simp]
 theorem union_diff_self {s t : Set α} : s ∪ t \ s = s ∪ t :=
@@ -1204,6 +1233,20 @@ theorem diff_diff_cancel_left {s t : Set α} (h : s ⊆ t) : t \ (t \ s) = s :=
 
 theorem union_eq_diff_union_diff_union_inter (s t : Set α) : s ∪ t = s \ t ∪ t \ s ∪ s ∩ t :=
   sup_eq_sdiff_sup_sdiff_sup_inf
+
+theorem diff_union_diff_cancel_of_inter_subset_of_subset_union (hi : s ∩ u ⊆ t) (hu : t ⊆ s ∪ u) :
+    (s \ t) ∪ (t \ u) = s \ u := by
+  rw [← diff_eq_empty, inter_diff_right_comm, ← disjoint_iff_inter_eq_empty] at hi
+  simpa [subset_antisymm_iff, subset_diff, diff_subset_iff, disjoint_sdiff_left, union_comm u,
+    hu, union_assoc, ← union_assoc (a := s \ t)]
+
+@[simp]
+theorem diff_ssubset_left_iff : s \ t ⊂ s ↔ (s ∩ t).Nonempty :=
+  sdiff_lt_left.trans <| by rw [not_disjoint_iff_nonempty_inter, inter_comm]
+
+lemma _root_.HasSubset.Subset.diff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s.Nonempty) :
+    t \ s ⊂ t := by
+  simpa [inter_eq_self_of_subset_right hst]
 
 /-! ### Powerset -/
 
