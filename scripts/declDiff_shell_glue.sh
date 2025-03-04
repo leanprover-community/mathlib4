@@ -2,15 +2,18 @@
 
 script_file=scripts/declarations_diff.lean
 
+SEP_STRING="${2:-STANDARD_SEPARATOR_STRING}"
+
 git checkout master
 git checkout -
 
-# Running `getDeclarations <file_name>`
+# Running `getDeclarations <file_name> <sep_string>`
 # 1. downloads the cache for `Mathlib`, `Archive` and `Counterexamples`;
 # 2. adds the line `#all_declarations <file_name>` to the declarations diff Lean script;
 # 3. builds the declarations diff script, which in turn
 # 4. saves to `<file_name>` all the declarations in the environment;
-# 5. removes the line added to the declarations diff Lean script.
+# 5. removes the line added to the declarations diff Lean script;
+# 6. uses `<sep_string>` to signal when the text that the report should use starts.
 getDeclarations () {
   printf '* Download the cache\n'
   lake exe cache get Archive.lean Counterexamples.lean Mathlib.lean
@@ -46,4 +49,4 @@ printf '%s\n' "${actualDiff}"
 #printf $'LeanDiff<<EOF\n%q\nEOF' "${actualDiff}" |
 #  # show result in stdout and also store it in `GITHUB_OUTPUT`
 #  tee >(cat) >> "${GITHUB_OUTPUT}"
-printf 'GETME!\n%s\n' "${actualDiff}"
+printf '%s\n%s\n' "${SEP_STRING}" "${actualDiff}"
