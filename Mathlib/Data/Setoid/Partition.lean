@@ -3,6 +3,7 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot, Wen Yang, Johan Commelin
 -/
+
 import Mathlib.Data.Set.Finite.Range
 import Mathlib.Order.Partition.Finpartition
 
@@ -248,8 +249,7 @@ instance Partition.partialOrder : PartialOrder (Subtype (@IsPartition α)) where
     let h := @le_antisymm (Setoid α) _ _ _ hx hy
     rw [Subtype.ext_iff_val, ← classes_mkClasses x.1 x.2, ← classes_mkClasses y.1 y.2, h]
 
-variable (α)
-
+variable (α) in
 /-- The order-preserving bijection between equivalence relations on a type `α`, and
   partitions of `α` into subsets. -/
 protected def Partition.orderIso : Setoid α ≃o { C : Set (Set α) // IsPartition C } where
@@ -260,8 +260,6 @@ protected def Partition.orderIso : Setoid α ≃o { C : Set (Set α) // IsPartit
   map_rel_iff' {r s} := by
     conv_rhs => rw [← mkClasses_classes r, ← mkClasses_classes s]
     rfl
-
-variable {α}
 
 /-- A complete lattice instance for partitions; there is more infrastructure for the
     equivalent complete lattice on equivalence relations. -/

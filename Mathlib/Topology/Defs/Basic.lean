@@ -55,6 +55,8 @@ We introduce notation `IsOpen[t]`, `IsClosed[t]`, `closure[t]`, `Continuous[t₁
 that allow passing custom topologies to these predicates and functions without using `@`.
 -/
 
+assert_not_exists Monoid
+
 universe u v
 open Set
 
