@@ -42,10 +42,10 @@ section InversionEstimate
 
 variable (v : Valuation K Γ₀)
 
--- The following is the main technical lemma ensuring that inversion is continuous
--- in the topology induced by a valuation on a division ring (i.e. the next instance)
--- and the fact that a valued field is completable
--- [BouAC, VI.5.1 Lemme 1]
+/-- The following is the main technical lemma ensuring that inversion is continuous
+in the topology induced by a valuation on a division ring (i.e. the next instance)
+and the fact that a valued field is completable, see
+[N. Bourbaki, *Algèbre Commutative*, Chapitre 6, § 5, n. 1, Lemme 1][bourbaki1964] -/
 theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ} (y_ne : y ≠ 0)
     (h : v (x - y) < min (γ * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) < γ := by
   have hyp1 : v (x - y) < γ * (v y * v y) := lt_of_lt_of_le h (min_le_left _ _)
@@ -73,8 +73,10 @@ end InversionEstimate
 
 open Valued
 
+example [Valued K Γ₀] (x y : Valued.v.rangeGroup (R := K)) : x ≤ y ↔ x.1 ≤ y.1 := by rfl
+
 /-- The topology coming from a valuation on a division ring makes it a topological division ring
-    [BouAC, VI.5.1 middle of Proposition 1] -/
+    [N. Bourbaki, *Algèbre Commutative*, Chapitre 6, § 5, n. 1, Proposition 1][bourbaki1964] -/
 instance (priority := 100) Valued.topologicalDivisionRing [Valued K Γ₀] :
     TopologicalDivisionRing K :=
   { (by infer_instance : IsTopologicalRing K) with
@@ -82,15 +84,18 @@ instance (priority := 100) Valued.topologicalDivisionRing [Valued K Γ₀] :
       intro x x_ne s s_in
       obtain ⟨γ, hs⟩ := Valued.mem_nhds.mp s_in; clear s_in
       rw [mem_map, Valued.mem_nhds]
-      change ∃ γ : Γ₀ˣ, { y : K | (v (y - x) : Γ₀) < γ } ⊆ { x : K | x⁻¹ ∈ s }
+      change ∃ γ : v.rangeGroup, { y : K | (v (y - x)) < γ.1 } ⊆ { x : K | x⁻¹ ∈ s }
       have vx_ne := (Valuation.ne_zero_iff <| v).mpr x_ne
-      let γ' := Units.mk0 _ vx_ne
-      use min (γ * (γ' * γ')) γ'
+      let γ' : v.rangeGroup := ⟨Units.mk0 _ vx_ne, v.mem_rangeGroup rfl⟩
+      use min (γ * γ' * γ') γ'
       intro y y_in
       apply hs
-      simp only [mem_setOf_eq] at y_in
-      rw [Units.min_val, Units.val_mul, Units.val_mul] at y_in
-      exact Valuation.inversion_estimate _ x_ne y_in }
+      apply Valuation.inversion_estimate _ x_ne
+      convert y_in
+      simp only [lt_min_iff, mul_assoc, v.rangeGroup_min, Submonoid.coe_mul,
+        Subgroup.coe_toSubmonoid, Units.val_mul, Units.val_mk0, mem_setOf_eq,
+        Subgroup.coe_mul, Units.val_mul, Units.val_mk0]
+        }
 
 /-- A valued division ring is separated. -/
 instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := by
@@ -100,7 +105,7 @@ instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := 
   refine ⟨{ k | v k < v x }, ?_, fun h => lt_irrefl _ h⟩
   rw [Valued.mem_nhds]
   have vx_ne := (Valuation.ne_zero_iff <| v).mpr x_ne
-  let γ' := Units.mk0 _ vx_ne
+  let γ' : v.rangeGroup := ⟨Units.mk0 _ vx_ne, v.mem_rangeGroup rfl⟩
   exact ⟨γ', fun y hy => by simpa using hy⟩
 
 section
@@ -109,6 +114,14 @@ open WithZeroTopology
 
 open Valued
 
+lemma continuous_iff_restrictionRangeGroup_continuous [Valued K Γ₀] :
+    Continuous (Valued.v : K → Γ₀) ↔
+      Continuous (Valued.v.restrictionRangeGroup (R := K) ) := by
+  -- set H := v.rangeGroup (R := K) with rfl--this needs to change, it shows outParams are needed
+  -- have := @continuous_coinduced_dom K (v.rangeGroupWithZero (R := K)) Γ₀
+  --   (Valued.v.restrictionRangeGroup (R := K)) ?_ ?_ ?_
+  sorry
+
 theorem Valued.continuous_valuation [Valued K Γ₀] : Continuous (v : K → Γ₀) := by
   rw [continuous_iff_continuousAt]
   intro x
@@ -116,7 +129,8 @@ theorem Valued.continuous_valuation [Valued K Γ₀] : Continuous (v : K → Γ�
   · rw [ContinuousAt, map_zero, WithZeroTopology.tendsto_zero]
     intro γ hγ
     rw [Filter.Eventually, Valued.mem_nhds_zero]
-    use Units.mk0 γ hγ; rfl
+    sorry
+    -- use Units.mk0 γ hγ; rfl
   · have v_ne : (v x : Γ₀) ≠ 0 := (Valuation.ne_zero_iff _).mpr h
     rw [ContinuousAt, WithZeroTopology.tendsto_of_ne_zero v_ne]
     apply Valued.loc_const v_ne
@@ -140,7 +154,7 @@ instance (priority := 100) completable : CompletableTopField K :=
   { ValuedRing.separated with
     nice := by
       rintro F hF h0
-      have : ∃ γ₀ : Γ₀ˣ, ∃ M ∈ F, ∀ x ∈ M, (γ₀ : Γ₀) ≤ v x := by
+      have : ∃ γ₀ : Valued.v.rangeGroup (R := K), ∃ M ∈ F, ∀ x ∈ M, (γ₀.1 : Γ₀) ≤ v x := by
         rcases Filter.inf_eq_bot_iff.mp h0 with ⟨U, U_in, M, M_in, H⟩
         rcases Valued.mem_nhds_zero.mp U_in with ⟨γ₀, hU⟩
         exists γ₀, M, M_in
@@ -173,15 +187,15 @@ instance (priority := 100) completable : CompletableTopField K :=
             simp at x_in₀
           exact (Valuation.ne_zero_iff _).mp this
         · refine lt_of_lt_of_le H₁ ?_
-          rw [Units.min_val]
+          rw [v.rangeGroup_min/- , Units.min_val -/]
           apply min_le_min _ x_in₀
           rw [mul_assoc]
           have : ((γ₀ * γ₀ : Γ₀ˣ) : Γ₀) ≤ v x * v x :=
             calc
-              ↑γ₀ * ↑γ₀ ≤ ↑γ₀ * v x := mul_le_mul_left' x_in₀ ↑γ₀
+              γ₀.1 * γ₀.1 ≤ γ₀.1 * v x := mul_le_mul_left' x_in₀ _
               _ ≤ _ := mul_le_mul_right' x_in₀ (v x)
-          rw [Units.val_mul]
-          exact mul_le_mul_left' this γ }
+          simp only [Submonoid.coe_mul, Subgroup.coe_toSubmonoid, Units.val_mul, ge_iff_le]
+          exact mul_le_mul_left' this _ }
 
 open WithZeroTopology
 
@@ -304,7 +318,7 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
       rw [← le_max_iff]
       exact v.map_add x y
 
--- Bourbaki CA VI §5 no.3 Proposition 5 (d)
+/- [N. Bourbaki, *Algèbre Commutative*, Chapitre 6, § 5, n. 3, Proposition 5][bourbaki1964] -/
 theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
     closure ((↑) '' { x : K | v x < (γ : Γ₀) }) =
     { x : hat K | extensionValuation x < (γ : Γ₀) } := by
@@ -335,9 +349,11 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
   v := extensionValuation
   is_topological_valuation s := by
     suffices
-      HasBasis (𝓝 (0 : hat K)) (fun _ => True) fun γ : Γ₀ˣ => { x | extensionValuation x < γ } by
+      HasBasis (𝓝 (0 : hat K)) (fun _ ↦ True) fun γ : v.rangeGroup (R := K) ↦
+        { x | extensionValuation x < (γ : Γ₀ˣ) } by
       rw [this.mem_iff]
-      exact exists_congr fun γ => by simp
+      sorry
+      -- exact exists_congr fun γ => by simp
     simp_rw [← closure_coe_completion_v_lt]
     exact (hasBasis_nhds_zero K Γ₀).hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
 
