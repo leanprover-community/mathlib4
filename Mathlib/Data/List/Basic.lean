@@ -230,6 +230,18 @@ theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
 theorem replicate_left_inj {a : α} {n m : ℕ} : replicate n a = replicate m a ↔ n = m :=
   (replicate_left_injective a).eq_iff
 
+theorem head?_flatten_replicate {n : ℕ} {as : List α} (h : n ≠ 0) :
+((List.replicate n as).flatten.head?) = as.head? := by
+  match n, as with
+  | 0, _ => exact (h rfl).elim
+  | n+1, [] => simp
+  | n+1, h::_ => simp [replicate]
+
+theorem getLast?_flatten_replicate  {n : ℕ} {as : List α} (h : n ≠ 0) :
+((List.replicate n as).flatten.getLast?) = as.getLast? := by
+  rw [← List.head?_reverse, ← List.head?_reverse,List.reverse_flatten, List.map_replicate,
+  List.reverse_replicate,head?_flatten_replicate h]
+
 /-! ### pure -/
 
 theorem mem_pure (x y : α) : x ∈ (pure y : List α) ↔ x = y := by simp
