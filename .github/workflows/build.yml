@@ -123,8 +123,6 @@ jobs:
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: If using a lean-pr-release toolchain, uninstall
         run: |
@@ -237,9 +235,6 @@ jobs:
             echo "Please run 'lake exe mk_all' to regenerate the import all files"
             exit 1
           fi
-
-      - name: Declarations diff -- Lean implementation
-        run: ./scripts/declDiff_shell_glue.sh
 
       - name: check for noisy stdout lines
         id: noisy
