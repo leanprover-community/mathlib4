@@ -250,6 +250,25 @@ end OrientationPreserving
 
 section OrientableManifold
 
+class IsOrientedManifold {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace H]
+    (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] (M : Type*) [TopologicalSpace M]
+    [ChartedSpace H M] [NormedAddCommGroup H] [NormedSpace ℝ H] (O : M → SignType) extends
+  HasGroupoid M (orientationPreservingGroupoid I) : Prop where
+  oriented  x y : O x = O y ↔ OrientationPreserving ((chartAt H x).symm.trans (chartAt H y))
+    (Set.range (chartAt H x) ∩ Set.range (chartAt H y))
+  reversing x y : O x ≠ O y ↔ OrientationReversing ((chartAt H x).symm.trans (chartAt H y))
+    (Set.range (chartAt H x) ∩ Set.range (chartAt H y))
+
+class IsOrientedSmoothManifold {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [TopologicalSpace H] (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] (M : Type*)
+    [TopologicalSpace M] [ChartedSpace H M] [NormedAddCommGroup H] [NormedSpace ℝ H] (n : ℕ∞)
+    (O : M → SignType) extends
+  HasGroupoid M (contDiffOrientationPreservingGroupoid n I) : Prop where
+  oriented  x y : O x = O y ↔ OrientationPreserving ((chartAt H x).symm.trans (chartAt H y))
+    (Set.range (chartAt H x) ∩ Set.range (chartAt H y))
+  reversing x y : O x ≠ O y ↔ OrientationReversing ((chartAt H x).symm.trans (chartAt H y))
+    (Set.range (chartAt H x) ∩ Set.range (chartAt H y))
+
 /-- Typeclass defining orientable manifolds: a finite-dimensional (topological) manifold
 is orientable if and only if it admits an orientable atlas. -/
 class OrientableManifold {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace H]
