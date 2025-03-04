@@ -305,9 +305,8 @@ theorem Equiv.Perm.sign_eq_prod_prod_Ioi (σ : Equiv.Perm (Fin n)) :
 theorem Equiv.Perm.prod_Iio_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
     (σ : Equiv.Perm (Fin n)) {f : Fin n → Fin n → R} (hf : ∀ i j, f i j = - f j i) :
     ∏ j, ∏ i ∈ Finset.Iio j, f (σ i) (σ j) = σ.sign * ∏ j, ∏ i ∈ Finset.Iio j, f i j := by
-  rw [← σ.sign_inv, Equiv.Perm.sign_eq_prod_prod_Iio, Finset.prod_sigma', Finset.prod_sigma',
-    Finset.prod_sigma']
-  simp only [Units.coe_prod, Int.cast_prod, ← Finset.prod_mul_distrib]
+  simp_rw [← σ.sign_inv, Equiv.Perm.sign_eq_prod_prod_Iio, Finset.prod_sigma', Units.coe_prod,
+    Int.cast_prod, ← Finset.prod_mul_distrib]
   set D := (Finset.univ : Finset (Fin n)).sigma Finset.Iio with hD
   have hφD : D.image (fun x ↦ ⟨σ x.1 ⊔ σ x.2, σ x.1 ⊓ σ x.2⟩) = D := by
     ext ⟨x1, x2⟩
@@ -318,9 +317,8 @@ theorem Equiv.Perm.prod_Iio_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
     obtain hlt' | hle := lt_or_le (σ.symm x1) (σ.symm x2)
     · exact ⟨_, _, hlt', by simp [hlt.le]⟩
     exact ⟨_, _, hle.lt_of_ne (by simp [hlt.ne]), by simp [hlt.le]⟩
-  have hinj := Finset.injOn_of_card_image_eq (s := D) (by rw [hφD])
   nth_rw 2 [← hφD]
-  rw [Finset.prod_image (fun x hx y hy hxy ↦ hinj hx hy hxy)]
+  rw [Finset.prod_image fun x hx y hy ↦ Finset.injOn_of_card_image_eq (by rw [hφD]) hx hy]
   refine Finset.prod_congr rfl fun ⟨x₁, x₂⟩ hx ↦ ?_
   replace hx : x₂ < x₁ := by simpa [hD] using hx
   obtain hlt | hle := lt_or_le (σ x₁) (σ x₂)
