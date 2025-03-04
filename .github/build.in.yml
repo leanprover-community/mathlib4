@@ -163,7 +163,7 @@ jobs:
             awk -v messStart="${messageStart}" '
               BEGIN{
                 con=0
-                printf("%s\n\n```diff\n\n", messStart)
+                printf("%s\n\n```diff\n", messStart)
               }
               (con == 1) {print $0}
               /^GETME!$/ {con=1}
