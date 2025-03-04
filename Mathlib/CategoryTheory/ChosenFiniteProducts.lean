@@ -48,11 +48,11 @@ class ChosenFiniteProducts (C : Type u) [Category.{v} C] where
 An instance of `ChosenFiniteCoproducts C` bundles an explicit choice of a binary
 product of two objects of `C`, and a terminal object in `C`.
 
-Users should use the monoidal notation: `X ⊗ Y` for the product and `𝟙_ C` for
-the terminal object.
+Users should use the monoidal notation: `X ⊕ₒ Y` for the product and `𝟘_ C` for
+the initial object.
 -/
 class ChosenFiniteCoproducts (C : Type u) [Category.{v} C] where
-  /-- A choice of a colimit binary fan for any two objects of the category. -/
+  /-- A choice of a colimit binary cofan for any two objects of the category. -/
   coproduct : (X Y : C) → Limits.ColimitCocone (Limits.pair X Y)
   /-- A choice of an initial object. -/
   initial : Limits.ColimitCocone (Functor.empty.{0} C)
@@ -161,8 +161,12 @@ lemma tensorHom_fst {X₁ X₂ Y₁ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ 
 lemma tensorHom_snd {X₁ X₂ Y₁ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
     (f ⊗ g) ≫ snd _ _ = snd _ _ ≫ g := lift_snd _ _
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma lift_map {V W X Y Z : C} (f : V ⟶ W) (g : V ⟶ X) (h : W ⟶ Y) (k : X ⟶ Z) :
+    lift f g ≫ (h ⊗ k) = lift (f ≫ h) (g ≫ k) := by ext <;> simp
+
+@[deprecated lift_map (since := "2025-03-04"), reassoc (attr := simp)]
+lemma lift_tensorHom {V W X Y Z : C} (f : V ⟶ W) (g : V ⟶ X) (h : W ⟶ Y) (k : X ⟶ Z) :
     lift f g ≫ (h ⊗ k) = lift (f ≫ h) (g ≫ k) := by ext <;> simp
 
 @[simp]
@@ -600,13 +604,13 @@ lemma fromZero_unique {X : C} (f g : 𝟘_ _ ⟶ X) : f = g :=
   Subsingleton.elim _ _
 
 /--
-Construct a morphism to the coproduct given its two components.
+Construct a morphism from the coproduct given its two components.
 -/
 def desc {T X Y : C} (f : X ⟶ T) (g : Y ⟶ T) : X ⊕ₒ Y ⟶ T :=
   (coproduct X Y).isColimit.desc <| Limits.BinaryCofan.mk f g
 
 /--
-The first injecton into the coproduct
+The first injection into the coproduct
 -/
 def inl (X Y : C) : X ⟶ X ⊕ₒ Y :=
   letI F : Limits.BinaryCofan X Y := (coproduct X Y).cocone
@@ -659,7 +663,7 @@ lemma desc_inl_comp_inr_comp {X Y Z : C} (f : Y ⊕ₒ Z ⟶ X) :
 -- `ChosenFiniteProducts` uses `tensorHom` from `MonoidalCategory`
 
 /-- The coproduct of two morphisms -/
-abbrev addHom {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') : X ⊕ₒ X' ⟶ Y ⊕ₒ Y' :=
+def addHom {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') : X ⊕ₒ X' ⟶ Y ⊕ₒ Y' :=
   desc (f ≫ inl Y Y') (g ≫ inr Y Y')
 
 /-- Notation for the chosen coproduct of two morphisms -/
@@ -667,15 +671,15 @@ scoped infixr:70 " ⊕ₕ " => addHom
 
 @[reassoc]
 lemma inl_addHom {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
-    inl X X' ≫ (f ⊕ₕ g) = f ≫ inl Y Y' := by simp
+    inl X X' ≫ (f ⊕ₕ g) = f ≫ inl Y Y' := by simp [addHom]
 
 @[reassoc]
 lemma inr_addHom {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
-    inr X X' ≫ (f ⊕ₕ g) = g ≫ inr Y Y' := by simp
+    inr X X' ≫ (f ⊕ₕ g) = g ≫ inr Y Y' := by simp [addHom]
 
 @[reassoc]
-lemma map_desc {S T U V W : C} (f : U ⟶ S) (g : W ⟶ S) (h : T ⟶ U) (k : V ⟶ W) :
-    (h ⊕ₕ k) ≫ desc f g = desc (h ≫ f) (k ≫ g) := by simp
+lemma addHom_desc {S T U V W : C} (f : U ⟶ S) (g : W ⟶ S) (h : T ⟶ U) (k : V ⟶ W) :
+    (h ⊕ₕ k) ≫ desc f g = desc (h ≫ f) (k ≫ g) := by simp [addHom]
 
 @[simp]
 lemma desc_comp_inl_inr {W X Y Z : C} (g : X ⟶ W) (g' : Z ⟶ Y) :
