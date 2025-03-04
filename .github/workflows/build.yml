@@ -185,9 +185,7 @@ jobs:
               (con == 1) {print $0}
               /^GETME!$/ {con=1}
               END{ print "```\n</details>" }' > please_merge_master
-          printf -- "------\n"
-          cat please_merge_master
-          printf -- "------\n"
+          printf -- $'------\n%s------\n' "$(cat please_merge_master)"
 
           ./scripts/update_PR_comment.sh please_merge_master "${messageStart}" ${{ steps.PR.outputs.number }}
           exit 1
