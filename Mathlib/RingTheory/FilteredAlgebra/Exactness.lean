@@ -5,7 +5,6 @@ Authors: Huanyu Zheng, Weichen Jiao, Yi Yuan
 -/
 import Mathlib.Algebra.Exact
 import Mathlib.RingTheory.FilteredAlgebra.FilteredRingHom
-import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 
