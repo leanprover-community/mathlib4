@@ -675,6 +675,13 @@ instance {Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [IsOpenImmersion f]
 
 end IsOpenImmersion
 
+lemma isIso_of_isOpenImmersion_of_opensRange_eq_top {X Y : Scheme.{u}} (f : X ⟶ Y)
+    [IsOpenImmersion f] (hf : f.opensRange = ⊤) : IsIso f := by
+  rw [isIso_iff_isOpenImmersion]
+  refine ⟨inferInstance, ?_⟩
+  rw [TopCat.epi_iff_surjective, ← Set.range_eq_univ]
+  exact TopologicalSpace.Opens.ext_iff.mp hf
+
 section MorphismProperty
 
 instance isOpenImmersion_isStableUnderComposition :
