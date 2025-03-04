@@ -18,6 +18,8 @@ a functor `F : A ⥤ C` and a natural epimorphism
 This is used in order to construct a resolution functor
 `LeftResolutions.chainComplexFunctor : A ⥤ ChainComplex C ℕ`.
 
+This shall be used in order to construct functorial flat resolutions.
+
 -/
 
 namespace CategoryTheory.Abelian
