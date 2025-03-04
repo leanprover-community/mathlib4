@@ -673,6 +673,13 @@ def piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h
   let e := Equiv.Finset.union s t h
   sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans (.piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e)
 
+/-- A finset is equivalent to its coercion as a set. -/
+def _root_.Finset.equivToSet (s : Finset α) : s ≃ s.toSet where
+  toFun a := ⟨a.1, mem_coe.2 a.2⟩
+  invFun a := ⟨a.1, mem_coe.1 a.2⟩
+  left_inv := fun _ ↦ rfl
+  right_inv := fun _ ↦ rfl
+
 end Equiv
 
 namespace Multiset
