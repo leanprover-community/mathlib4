@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.GroupTheory.QuotientGroup.Defs
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Stabilizer of a set under a pointwise action
