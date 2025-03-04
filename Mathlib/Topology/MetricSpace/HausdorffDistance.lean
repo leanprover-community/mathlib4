@@ -445,6 +445,10 @@ value `∞` instead, use `EMetric.infEdist`, which takes values in `ℝ≥0∞`)
 @[simp]
 theorem infDist_empty : infDist x ∅ = 0 := by simp [infDist]
 
+lemma isGLB_infDist (hs : s.Nonempty) : IsGLB ((dist x ·) '' s) (infDist x s) := by
+  simpa [infDist_eq_iInf, sInf_image']
+    using isGLB_csInf (hs.image _) ⟨0, by simp [lowerBounds, dist_nonneg]⟩
+
 /-- In a metric space, the minimal edistance to a nonempty set is finite. -/
 theorem infEdist_ne_top (h : s.Nonempty) : infEdist x s ≠ ⊤ := by
   rcases h with ⟨y, hy⟩

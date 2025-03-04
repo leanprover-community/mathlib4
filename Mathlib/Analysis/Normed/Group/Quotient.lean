@@ -271,11 +271,10 @@ theorem image_norm_nonempty {S : AddSubgroup M} (x : M ⧸ S) :
 theorem bddBelow_image_norm (s : Set M) : BddBelow (norm '' s) :=
   ⟨0, forall_mem_image.2 fun _ _ ↦ norm_nonneg _⟩
 
-@[deprecated "No replacement. Use constituent lemmas." (since := "2025-02-02")]
+@[deprecated isGLB_infDist (since := "2025-02-02")]
 theorem isGLB_quotient_norm {S : AddSubgroup M} (x : M ⧸ S) :
     IsGLB (norm '' { m | mk' S m = x }) (‖x‖) := by
-  simp only [norm_eq_infDist, infDist_eq_iInf, ← sInf_image', dist_zero_left]
-  exact isGLB_csInf (by simpa using QuotientGroup.add_norm_aux x) ⟨0, fun _ ↦ by aesop⟩
+  simpa using isGLB_infDist (QuotientGroup.add_norm_aux x) (x := 0)
 
 /-- The norm on the quotient satisfies `‖-x‖ = ‖x‖`. -/
 @[deprecated norm_neg (since := "2025-02-02")]
