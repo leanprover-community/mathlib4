@@ -188,7 +188,6 @@ jobs:
           printf -- $'------\n%s------\n' "$(cat please_merge_master)"
 
           ./scripts/update_PR_comment.sh please_merge_master "${messageStart}" ${{ steps.PR.outputs.number }}
-          exit 1
 
       - name: build mathlib
         id: build
@@ -324,7 +323,7 @@ jobs:
           run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
       - name: lint mathlib
-        #if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
+        if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
         uses: liskin/gh-problem-matcher-wrap@v3
         with:
