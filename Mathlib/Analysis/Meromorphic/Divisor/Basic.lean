@@ -146,7 +146,7 @@ instance : Add (DivisorOn U) where
 /-- Helper lemma for the `simp` tactic: the function of the sum of two divisors
 is the sum of the associated functions. -/
 @[simp]
-lemma add_fun {D₁ D₂ : DivisorOn U} : (↑(D₁ + D₂) : 𝕜 → ℤ) = (D₁ : 𝕜 → ℤ) + (D₂ : 𝕜 → ℤ) := rfl
+lemma coe_add {D₁ D₂ : DivisorOn U} : (↑(D₁ + D₂) : 𝕜 → ℤ) = (D₁ : 𝕜 → ℤ) + (D₂ : 𝕜 → ℤ) := rfl
 
 /-- Divisors have a negative -/
 instance : Neg (DivisorOn U) where
