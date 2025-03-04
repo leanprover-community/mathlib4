@@ -385,6 +385,14 @@ def piFinset : @Filtration (Π i, X i) (Finset ι) _ pi where
     exact comap_mono (measurable_restrict₂ hst).comap_le
   le' s := s.measurable_restrict.comap_le
 
+lemma piFinset_eq_comap_restrict (s : Finset ι) :
+    piFinset (X := X) s = pi.comap (s.toSet.restrict) := by
+  apply le_antisymm
+  · simp_rw [piFinset, ← piCongrLeft_comp_frestrictLe, ← MeasurableEquiv.coe_piCongrLeft, ← comap_comp]
+    exact MeasurableSpace.comap_mono <| Measurable.comap_le (by fun_prop)
+  · rw [← piCongrLeft_comp_restrictLe, ← MeasurableEquiv.coe_piCongrLeft, ← comap_comp]
+    exact MeasurableSpace.comap_mono <| Measurable.comap_le (by fun_prop)
+
 end piFinset
 
 variable {α : Type*}
