@@ -52,6 +52,6 @@ messageStart=$'<details><summary><b>Declaration diff in Lean</b></summary>'
   diff "${MSdeclsFile}" "${PRdeclsFile}" | grep '^[<>]'
   printf '```\n</details>\nPR: %s\n\nMaster: %s\n' "${PR_HASH}" "${masterHash}"
 } > please_merge_master
-printf -- $'------\n%s------\n' "$(cat please_merge_master)"
+printf -- $'--- Start of message ---\n%s\n--- End of message ---\n' "$(cat please_merge_master)"
 
 ./scripts/update_PR_comment.sh please_merge_master "${messageStart}" "${PR_NUMBER}"
