@@ -3,7 +3,7 @@ Copyright (c) 2023 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian
+import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
 import Mathlib.LinearAlgebra.FreeModule.Norm
 import Mathlib.RingTheory.ClassGroup
 import Mathlib.RingTheory.Polynomial.UniqueFactorization
@@ -12,8 +12,7 @@ import Mathlib.RingTheory.Polynomial.UniqueFactorization
 # Group law on Weierstrass curves
 
 This file proves that the nonsingular rational points on a Weierstrass curve form an abelian group
-under the geometric group law defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean` and
-in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian.lean`.
+under the geometric group law defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`.
 
 ## Mathematical background
 
@@ -33,9 +32,6 @@ Injectivity can then be shown by computing the degree of such a norm `N(p + qY)`
 ways, which is done in `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis` and in the
 auxiliary lemmas in the proof of `WeierstrassCurve.Affine.Point.instAddCommGroup`.
 
-When `W` is given in Jacobian coordinates, `WeierstrassCurve.Jacobian.Point.toAffineAddEquiv` pulls
-back the group law on `WeierstrassCurve.Affine.Point` to `WeierstrassCurve.Jacobian.Point`.
-
 ## Main definitions
 
  * `WeierstrassCurve.Affine.CoordinateRing`: the coordinate ring `F[W]` of a Weierstrass curve `W`.
@@ -49,8 +45,6 @@ back the group law on `WeierstrassCurve.Affine.Point` to `WeierstrassCurve.Jacob
     element in the affine coordinate ring in terms of its power basis.
  * `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular points `W⟮F⟯` in affine
     coordinates forms an abelian group under addition.
- * `WeierstrassCurve.Jacobian.Point.instAddCommGroup`: the type of nonsingular points on a
-    Weierstrass curve in Jacobian coordinates forms an abelian group under addition.
 
 ## References
 
@@ -554,32 +548,6 @@ noncomputable instance : AddCommGroup W.Point where
   add_comm _ _ := toClass_injective <| by simp only [map_add, add_comm]
   add_assoc _ _ _ := toClass_injective <| by simp only [map_add, add_assoc]
 
-end Point
-
-end WeierstrassCurve.Affine
-
-namespace WeierstrassCurve.Jacobian.Point
-
-/-! ## Weierstrass curves in Jacobian coordinates -/
-
-variable {F : Type u} [Field F] {W : Jacobian F}
-
-noncomputable instance : AddCommGroup W.Point where
-  nsmul := nsmulRec
-  zsmul := zsmulRec
-  zero_add _ := (toAffineAddEquiv W).injective <| by
-    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, zero_add]
-  add_zero _ := (toAffineAddEquiv W).injective <| by
-    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, add_zero]
-  neg_add_cancel P := (toAffineAddEquiv W).injective <| by
-    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, neg_add_cancel, toAffineLift_zero]
-  add_comm _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_comm]
-  add_assoc _ _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_assoc]
-
-end WeierstrassCurve.Jacobian.Point
-
-namespace WeierstrassCurve.Affine.Point
-
 /-! ## Elliptic curves in affine coordinates -/
 
 variable {R : Type*} [Nontrivial R] [CommRing R] (E : WeierstrassCurve R) [E.IsElliptic]
@@ -588,4 +556,6 @@ variable {R : Type*} [Nontrivial R] [CommRing R] (E : WeierstrassCurve R) [E.IsE
 def mk {x y : R} (h : E.toAffine.Equation x y) : E.toAffine.Point :=
   .some <| (equation_iff_nonsingular ..).mp h
 
-end WeierstrassCurve.Affine.Point
+end Point
+
+end WeierstrassCurve.Affine
