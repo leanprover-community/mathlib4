@@ -6,31 +6,102 @@ Authors: Anatole Dedecker
 import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
-# Restricted products of sets, groups and rings
+# Restricted products of sets, groups and rings, and their topology
+
+We define the **restricted product** of `R : ι → Type*` of types, relative to
+a family of subsets `A : (i : ι) → Set (R i)` and a filter `𝓕 : Filter ι`. This
+is the set of all `x : Π i, R i` such that `x j ∈ A j` eventually along `𝓕`,
+which we denote by `Πʳ i, [R i, A i]_[𝓕]`.
+
+The main case of interest, which we shall refer to as the "classical restricted product",
+is that of `𝓕 = cofinite`, where the restricted product is the set of all `x : Π i, R i` such that
+`x j ∈ A j` for all but finitely many `j`s. We denote it simply by `Πʳ i, [R i, A i]`.
+
+We endow these types with the obvious algebraic structures, as well as their natural topology,
+which we describe below. We also show various compatibility results.
+
+In particular, with the theory of adeles in mind, we show that if each `R i` is a locally compact
+topological ring with open subring `A i`, and if all but finitely many of the `A i`s are also
+compact, then `Πʳ i, [R i, A i]` is a locally compact topological ring.
 
 ## Main definitions
 
-* `FooBar`
+* `RestrictedProduct`: the restricted product of a family `R` of types, relative to a family `A` of
+subsets and a filter `𝓕` on the indexing set. This is denoted `Πʳ i, [R i, A i]_[𝓕]`,
+or simply `Πʳ i, [R i, A i]` when `𝓕 = cofinite`.
+* `RestrictedProduct.instDFunLike`: interpret an element of `Πʳ i, [R i, A i]_[𝓕]` as an element
+of `Π i, R i` using the `DFunLike` machinery.
+* `RestrictedProduct.structureMap`: the inclusion map from `Π i, A i` to `Πʳ i, [R i, A i]_[𝓕]`.
+* `RestrictedProduct.topologicalSpace`: the `TopologicalSpace` instance on `Πʳ i, [R i, A i]_[𝓕]`.
+
+## Topology on the restricted product
+
+The topology on the restricted product `Πʳ i, [R i, A i]_[𝓕]` is defined in the following way:
+1. If `𝓕` is some principal filter `𝓟 s`, we take the topology induced by the product topology
+on `Π i, R i`.
+2. In general, we note that `𝓕` is the infimum of the principal filters coarser than `𝓕`. We
+then endow `Πʳ i, [R i, A i]_[𝓕]` with the inductive limit / final topology associated to the
+inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
+
+In particular:
+* On the classical restricted product, with respect to the cofinite filter, this corresponds to
+taking the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all *cofinite* sets `s : Set ι`
+(that is, sets with finite complement).
+* If `𝓕 = 𝓟 s` is a principal filter, this second step clearly does not change the topology, since
+`s` belongs to the indexing set of the inductive limit.
+
+Taking advantage of that second remark, we do not actually declare an instance specific to
+principal filters. Instead, we provide directly the general instance (corresponding to step 2 above)
+as `RestrictedProduct.topologicalSpace`. We then prove that, for a principal filter, the
+map to the full product is an inducing (`RestrictedProduct.isEmbedding_coe_of_principal`),
+and that the topology for a general `𝓕` is indeed the expected inductive limit
+(`RestrictedProduct.topologicalSpace_eq_iSup`).
 
 ## Main statements
 
-* `fooBar_unique`
+* `RestrictedProduct.isEmbedding_coe_of_principal`: for any set `S`, `Πʳ i, [R i, A i]_[𝓟 S]`
+is endowed with the subset topology coming from `Π i, R i`.
+* `RestrictedProduct.topologicalSpace_eq_iSup`: the topology on `Πʳ i, [R i, A i]_[𝓕]` is the
+inductive limit / final topology associated to the natural maps
+`Πʳ i, [R i, A i]_[𝓟 S] → Πʳ i, [R i, A i]_[𝓕]`, where `𝓕 ≤ 𝓟 S`.
+* `RestrictedProduct.continuous_dom`: a map from `Πʳ i, [R i, A i]_[𝓕]` is continuous
+*if and only if* its restriction to each `Πʳ i, [R i, A i]_[𝓟 s]` (with `𝓕 ≤ 𝓟 s`) is continuous.
+* `RestrictedProduct.continuous_dom_prod_left`: assume that each `A i` is an **open** subset of
+`R i`. Then, for any topological space `Y`, a map from `Y × Πʳ i, [R i, A i]` is continuous
+*if and only if* its restriction to each `Y × Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite)
+is continuous.
+
+* `RestrictedProduct.isTopologicalGroup`: if each `R i` is a topological group and each `A i` is an
+open subgroup of `R i`, then `Πʳ i, [R i, A i]` is a topological group.
+* `RestrictedProduct.isTopologicalRing`: if each `R i` is a topological ring and each `A i` is an
+open subring of `R i`, then `Πʳ i, [R i, A i]` is a topological ring.
+* `RestrictedProduct.continuousSMul`: if some topological monoid `G` acts on each `M i`, and each
+`A i` is stable for that action, then the natural action of `G` on `Πʳ i, [M i, A i]` is also
+continuous. In particular, if each `M i` is a topological `R`-module and each `A i` is an open
+sub-`R`-module of `M i`, then `Πʳ i, [M i, A i]` is a topological `R`-module.
+
+* `RestrictedProduct.weaklyLocallyCompactSpace_of_cofinite`:  if each `R i` is weakly locally
+compact, each `A i` is open, and all but finitely many `A i`s are also compact, then the
+restricted product `Πʳ i, [R i, A i]` is weakly locally compact.
+* `RestrictedProduct.locallyCompactSpace_of_group`: assume that each `R i` is a locally compact
+group with `A i` an open subgroup. Assume also that all but finitely many `A i`s are compact.
+Then the restricted product `Πʳ i, [R i, A i]` is a locally compact group.
 
 ## Notation
 
-
+* `Πʳ i, [R i, A i]_[𝓕]` is `RestrictedProduct R A 𝓕`.
+* `Πʳ i, [R i, A i]` is `RestrictedProduct R A cofinite`.
 
 ## Implementation details
 
-
-
-## References
-
-* [F. Bar, *Quuxes*][bibkey]
+Outside of principal filters and the cofinite filter, the topology we define on the restricted
+product does not seem well-behaved. While declaring a single instance is practical, it may conflict
+with more interesting topologies in some other cases. Thus, future contributions should not
+restrain from specializing these instances to principal and cofinite filters if necessary.
 
 ## Tags
 
-Foobars, barfoos
+restricted product, adeles, ideles
 -/
 
 open Set Topology Filter
@@ -43,7 +114,7 @@ variable (R' : ι → Type*) (A' : (i : ι) → Set (R' i))
 ## Definition and elementary maps
 -/
 
-/-- The restricted product of a family `R : ι → Type*` of types, relative to subsets
+/-- The **restricted product** of a family `R : ι → Type*` of types, relative to subsets
 `A : (i : ι) → Set (R i)` and the filter `𝓕 : Filter ι`, is the set of all `x : Π i, R i`
 such that `x j ∈ A j` eventually along `𝓕`. We denote it by `Πʳ i, [R i, A i]_[𝓕]`.
 
@@ -201,17 +272,23 @@ then endow `Πʳ i, [R i, A i]_[𝓕]` with the inductive limit / final topology
 inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
 
 In particular:
-* On the "usual" restricted product, with respect to the cofinite filter, this corresponds to taking
-the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all *finite* sets `s : Set ι`.
+* On the classical restricted product, with respect to the cofinite filter, this corresponds to
+taking the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all *cofinite* sets `s : Set ι`
+(that is, sets with finite complement).
 * If `𝓕 = 𝓟 s` is a principal filter, this second step clearly does not change the topology, since
 `s` belongs to the indexing set of the inductive limit.
 
 Taking advantage of that second remark, we do not actually declare an instance specific to
 principal filters. Instead, we provide directly the general instance (corresponding to step 2 above)
 as `RestrictedProduct.topologicalSpace`. We then prove that, for a principal filter, the
-map to the full product is an inducing (`RestrictedProduct.isInducing_coe_of_principal`),
+map to the full product is an inducing (`RestrictedProduct.isEmbedding_coe_of_principal`),
 and that the topology for a general `𝓕` is indeed the expected inductive limit
 (`RestrictedProduct.topologicalSpace_eq_iSup`).
+
+Note: outside of these two cases, this topology on the restricted product does not seem
+well-behaved. While declaring a single instance is practical, it may conflict with more interesting
+topologies in some other cases. Thus, future contributions should not restrain from specializing
+these instances to principal and cofinite filters if necessary.
 -/
 
 /-!
@@ -237,6 +314,15 @@ theorem continuous_inclusion {𝓖 : Filter ι} (h : 𝓕 ≤ 𝓖) :
   simp_rw [continuous_iff_coinduced_le, topologicalSpace, coinduced_iSup, coinduced_compose]
   exact iSup₂_le fun S hS ↦ le_iSup₂_of_le S (le_trans h hS) le_rfl
 
+instance [∀ i, T0Space (R i)] : T0Space (Πʳ i, [R i, A i]_[𝓕]) :=
+  t0Space_of_injective_of_continuous DFunLike.coe_injective continuous_coe
+
+instance [∀ i, T1Space (R i)] : T1Space (Πʳ i, [R i, A i]_[𝓕]) :=
+  t1Space_of_injective_of_continuous DFunLike.coe_injective continuous_coe
+
+instance [∀ i, T2Space (R i)] : T2Space (Πʳ i, [R i, A i]_[𝓕]) :=
+  .of_injective_continuous DFunLike.coe_injective continuous_coe
+
 section principal
 /-!
 ### Topological facts in the principal case
@@ -260,32 +346,33 @@ theorem topologicalSpace_eq_of_bot :
       .induced ((↑) : Πʳ i, [R i, A i]_[⊥] → Π i, R i) inferInstance :=
   principal_empty ▸ topologicalSpace_eq_of_principal
 
-theorem isInducing_coe_of_principal :
-    IsInducing ((↑) : Πʳ i, [R i, A i]_[𝓟 S] → Π i, R i) where
+theorem isEmbedding_coe_of_principal :
+    IsEmbedding ((↑) : Πʳ i, [R i, A i]_[𝓟 S] → Π i, R i) where
   eq_induced := topologicalSpace_eq_of_principal
+  injective := DFunLike.coe_injective
 
-theorem isInducing_coe_of_top :
-    IsInducing ((↑) : Πʳ i, [R i, A i]_[⊤] → Π i, R i) :=
-  principal_univ ▸ isInducing_coe_of_principal
+theorem isEmbedding_coe_of_top :
+    IsEmbedding ((↑) : Πʳ i, [R i, A i]_[⊤] → Π i, R i) :=
+  principal_univ ▸ isEmbedding_coe_of_principal
 
-theorem isInducing_coe_of_bot :
-    IsInducing ((↑) : Πʳ i, [R i, A i]_[⊥] → Π i, R i) :=
-  principal_empty ▸ isInducing_coe_of_principal
+theorem isEmbedding_coe_of_bot :
+    IsEmbedding ((↑) : Πʳ i, [R i, A i]_[⊥] → Π i, R i) :=
+  principal_empty ▸ isEmbedding_coe_of_principal
 
 theorem continuous_rng_of_principal {X : Type*} [TopologicalSpace X]
     {f : X → Πʳ i, [R i, A i]_[𝓟 S]} :
     Continuous f ↔ Continuous ((↑) ∘ f : X → Π i, R i) :=
-  isInducing_coe_of_principal.continuous_iff
+  isEmbedding_coe_of_principal.continuous_iff
 
 theorem continuous_rng_of_top {X : Type*} [TopologicalSpace X]
     {f : X → Πʳ i, [R i, A i]_[⊤]} :
     Continuous f ↔ Continuous ((↑) ∘ f : X → Π i, R i) :=
-  isInducing_coe_of_top.continuous_iff
+  isEmbedding_coe_of_top.continuous_iff
 
 theorem continuous_rng_of_bot {X : Type*} [TopologicalSpace X]
     {f : X → Πʳ i, [R i, A i]_[⊥]} :
     Continuous f ↔ Continuous ((↑) ∘ f : X → Π i, R i) :=
-  isInducing_coe_of_bot.continuous_iff
+  isEmbedding_coe_of_bot.continuous_iff
 
 /-- The obvious bijection between `Πʳ i, [R i, A i]_[⊤]` and `Π i, A i` is a homeomorphism. -/
 def homeoTop : (Π i, A i) ≃ₜ (Πʳ i, [R i, A i]_[⊤]) where
@@ -333,10 +420,10 @@ theorem weaklyLocallyCompactSpace_of_principal [∀ i, WeaklyLocallyCompactSpace
       · exact y.2 hi
       · exact H i hi
     refine ⟨((↑) ⁻¹' Q), ?_, mem_of_superset ?_ QU⟩
-    · refine isInducing_coe_of_principal.isCompact_preimage_iff ?_ |>.mpr Q_compact
+    · refine isEmbedding_coe_of_principal.isCompact_preimage_iff ?_ |>.mpr Q_compact
       simp_rw [range_coe_principal, Q_def, pi_if, mem_univ, true_and]
       exact inter_subset_left
-    · simpa only [isInducing_coe_of_principal.nhds_eq_comap] using preimage_mem_comap U_nhds
+    · simpa only [isEmbedding_coe_of_principal.nhds_eq_comap] using preimage_mem_comap U_nhds
 
 instance [∀ i, WeaklyLocallyCompactSpace (R i)] [hS : Fact (cofinite ≤ 𝓟 S)]
     [hAcompact : ∀ i, CompactSpace (A i)] :
@@ -361,34 +448,19 @@ theorem topologicalSpace_eq_iSup :
 `Πʳ i, [R i, A i]_[𝓕]` is continuous *iff* its restriction to each `Πʳ i, [R i, A i]_[𝓟 s]`
 (with `𝓕 ≤ 𝓟 s`) is continuous.
 
-See also `RestrictedProduct.continuous_dom_prod_right`. -/
+See also `RestrictedProduct.continuous_dom_prod_left`. -/
 theorem continuous_dom {X : Type*} [TopologicalSpace X]
     {f : Πʳ i, [R i, A i]_[𝓕] → X} :
     Continuous f ↔ ∀ (S : Set ι) (hS : 𝓕 ≤ 𝓟 S), Continuous (f ∘ inclusion R A hS) := by
   simp_rw [topologicalSpace_eq_of_principal, continuous_iSup_dom, continuous_coinduced_dom]
 
-theorem isInducing_inclusion_principal {S : Set ι} (hS : 𝓕 ≤ 𝓟 S) :
-    IsInducing (inclusion R A hS) :=
-  .of_comp (continuous_inclusion hS) continuous_coe isInducing_coe_of_principal
-
-theorem isInducing_inclusion_top :
-    IsInducing (inclusion R A (le_top : 𝓕 ≤ ⊤)) :=
-  .of_comp (continuous_inclusion _) continuous_coe isInducing_coe_of_top
-
 theorem isEmbedding_inclusion_principal {S : Set ι} (hS : 𝓕 ≤ 𝓟 S) :
-    IsEmbedding (inclusion R A hS) where
-  toIsInducing := isInducing_inclusion_principal hS
-  injective _ _ h := DFunLike.ext _ _ (fun i ↦ DFunLike.congr_fun h i)
+    IsEmbedding (inclusion R A hS) :=
+  .of_comp (continuous_inclusion hS) continuous_coe isEmbedding_coe_of_principal
 
 theorem isEmbedding_inclusion_top :
-    IsEmbedding (inclusion R A (le_top : 𝓕 ≤ ⊤)) where
-  toIsInducing := isInducing_inclusion_top
-  injective _ _ h := DFunLike.ext _ _ (fun i ↦ DFunLike.congr_fun h i)
-
-/-- `Π i, A i` has the subset topology from the restricted product. -/
-theorem isInducing_structureMap :
-    IsInducing (structureMap R A 𝓕) :=
-  isInducing_inclusion_top.comp homeoTop.isInducing
+    IsEmbedding (inclusion R A (le_top : 𝓕 ≤ ⊤)) :=
+  .of_comp (continuous_inclusion _) continuous_coe isEmbedding_coe_of_top
 
 /-- `Π i, A i` has the subset topology from the restricted product. -/
 theorem isEmbedding_structureMap :
@@ -399,7 +471,7 @@ end general
 
 section cofinite
 /-!
-### Topological facts in the case of `𝓕 = cofinite` and all `A i`s open
+### Topological facts in the case where `𝓕 = cofinite` and all `A i`s are open
 
 The classical restricted product, associated to the cofinite filter, satisfies more topological
 property when each `A i` is an open subset of `R i`. The key fact is that each
@@ -499,8 +571,8 @@ instance [hAopen : Fact (∀ i, IsOpen (A i))] [∀ i, WeaklyLocallyCompactSpace
 
 include hAopen in
 /-- The **universal property with parameters** of the topology on the restricted product:
-for any topological space `X` of "parameters", a map from `X × Πʳ i, [R i, A i]` is continuous
-*iff* its restriction to each `X × Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite) is continuous. -/
+for any topological space `Y` of "parameters", a map from `(Πʳ i, [R i, A i]) × Y` is continuous
+*iff* its restriction to each `(Πʳ i, [R i, A i]_[𝓟 S]) × Y` (with `S` cofinite) is continuous. -/
 theorem continuous_dom_prod_right {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {f : Πʳ i, [R i, A i] × Y → X} :
     Continuous f ↔ ∀ (S : Set ι) (hS : cofinite ≤ 𝓟 S),
@@ -520,8 +592,8 @@ theorem continuous_dom_prod_right {X Y : Type*} [TopologicalSpace X] [Topologica
 -- TODO: get from the previous one instead of copy-pasting
 include hAopen in
 /-- The **universal property with parameters** of the topology on the restricted product:
-for any topological space `X` of "parameters", a map from `(Πʳ i, [R i, A i]) × X` is continuous
-*iff* its restriction to each `(Πʳ i, [R i, A i]_[𝓟 S]) × X` (with `S` cofinite) is continuous. -/
+for any topological space `Y` of "parameters", a map from `Y × Πʳ i, [R i, A i]` is continuous
+*iff* its restriction to each `Y × Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite) is continuous. -/
 theorem continuous_dom_prod_left {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {f : Y × Πʳ i, [R i, A i] → X} :
     Continuous f ↔ ∀ (S : Set ι) (hS : cofinite ≤ 𝓟 S),
@@ -580,7 +652,7 @@ instance [Π i, Inv (R i)] [∀ i, InvMemClass (S i) (R i)] [∀ i, ContinuousIn
     rw [continuous_dom]
     intro T hT
     haveI : ContinuousInv (Πʳ i, [R i, A i]_[𝓟 T]) :=
-      isInducing_coe_of_principal.continuousInv fun _ ↦ rfl
+      isEmbedding_coe_of_principal.continuousInv fun _ ↦ rfl
     exact (continuous_inclusion hT).comp continuous_inv
 
 @[to_additive]
@@ -591,7 +663,7 @@ instance {G : Type*} [Π i, SMul G (R i)] [∀ i, SMulMemClass (S i) G (R i)]
     rw [continuous_dom]
     intro T hT
     haveI : ContinuousConstSMul G (Πʳ i, [R i, A i]_[𝓟 T]) :=
-      isInducing_coe_of_principal.continuousConstSMul id rfl
+      isEmbedding_coe_of_principal.continuousConstSMul id rfl
     exact (continuous_inclusion hT).comp (continuous_const_smul g)
 
 end general
@@ -604,13 +676,13 @@ instance [Π i, Mul (R i)] [∀ i, MulMemClass (S i) (R i)] [∀ i, ContinuousMu
   let φ : Πʳ i, [R i, A i]_[𝓟 T] →ₙ* Π i, R i :=
   { toFun := (↑)
     map_mul' := fun _ _ ↦ rfl }
-  isInducing_coe_of_principal.continuousMul φ
+  isEmbedding_coe_of_principal.continuousMul φ
 
 @[to_additive]
 instance {G : Type*} [TopologicalSpace G] [Π i, SMul G (R i)] [∀ i, SMulMemClass (S i) G (R i)]
     [∀ i, ContinuousSMul G (R i)] :
     ContinuousSMul G (Πʳ i, [R i, A i]_[𝓟 T]) :=
-  isInducing_coe_of_principal.continuousSMul continuous_id rfl
+  isEmbedding_coe_of_principal.continuousSMul continuous_id rfl
 
 @[to_additive]
 instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopologicalGroup (R i)] :
@@ -646,18 +718,20 @@ instance [Π i, Mul (R i)] [∀ i, MulMemClass (S i) (R i)] [∀ i, ContinuousMu
     exact fun S hS ↦ (continuous_inclusion hS).comp continuous_mul
 
 @[to_additive]
-instance {G : Type*} [TopologicalSpace G] [Π i, SMul G (R i)] [∀ i, SMulMemClass (S i) G (R i)]
-    [∀ i, ContinuousSMul G (R i)] :
+instance continuousSMul {G : Type*} [TopologicalSpace G] [Π i, SMul G (R i)]
+    [∀ i, SMulMemClass (S i) G (R i)] [∀ i, ContinuousSMul G (R i)] :
     ContinuousSMul G (Πʳ i, [R i, A i]) where
   continuous_smul := by
     rw [continuous_dom_prod_left hAopen.out]
     exact fun S hS ↦ (continuous_inclusion hS).comp continuous_smul
 
 @[to_additive]
-instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopologicalGroup (R i)] :
+instance isTopologicalGroup [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)]
+    [∀ i, IsTopologicalGroup (R i)] :
     IsTopologicalGroup (Πʳ i, [R i, A i]) where
 
-instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] [∀ i, IsTopologicalRing (R i)] :
+instance isTopologicalRing [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)]
+    [∀ i, IsTopologicalRing (R i)] :
     IsTopologicalRing (Πʳ i, [R i, A i]) where
 
 /-- Assume that each `R i` is a locally compact group with `A i` an open subgroup.
