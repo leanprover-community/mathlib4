@@ -3,7 +3,6 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Order.Filter.Bases
 import Mathlib.Topology.Algebra.Module.Basic
 
 /-!

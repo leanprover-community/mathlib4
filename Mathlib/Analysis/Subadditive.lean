@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Order.Filter.AtTopBot.Archimedean
+import Mathlib.Order.Filter.AtTopBot.Finite
+import Mathlib.Order.Filter.AtTopBot.Prod
 import Mathlib.Topology.Instances.Real.Defs
 
 /-!
