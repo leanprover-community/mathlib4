@@ -44,7 +44,7 @@ instance : ToString GitDiff where
 and a non-empty range.
 -/
 def GitDiff.isReady : GitDiff → Bool
-  | {file := f, rg := {first := _, last := la}} => f != "" && la != 0
+  | {file := f, rg := {first := fi, last := la}} => f != "" && fi != la
 
 /--
 Check whether the `GitDiff` `g` is ready.
@@ -55,6 +55,21 @@ Check whether the `GitDiff` `g` is ready.
 def GitDiff.appendIfReady (a : Array GitDiff) (g : GitDiff) (f : System.FilePath) :
     GitDiff × Array GitDiff :=
   if g.isReady then ({file := f}, a.push g) else (g, a)
+
+/--
+Convert a string containing either a single natural number or two natural numbers into a `lineRg`.
+The convention seems to be that
+* a single natural number `a` corresponds to line `a` having been modified;
+* two natural numbers `a`, `b` correspond to a range starting with `a` and spanning `b` lines.
+A range of `0` lines, i.e. `b = 0`, corresponds to no modification.
+
+`GitDiff.isReady` is aware of this and acts consequently.
+-/
+def assignLineRanges (s : String) : lineRg :=
+  match s.getNats with
+  | [a] => {first := a, last := a + 1}
+  | [a, b] => {first := a, last := a + b}
+  | _ => panic s!"{s}: I have not seen this range of lines in a git-diff"
 
 /--
 `diffToGitDiff s` converts the output of `git diff` into two arrays of `GitDiff`s,
@@ -77,9 +92,12 @@ def diffToGitDiff (s : String) : Array GitDiff × Array GitDiff := Id.run do
       nextGDA := {nextGDA with file := fA}
       nextGDB := {nextGDB with file := fB}
     if l.startsWith "@@ -" then
-      let [la, ra, lb, rb] := l.getNats | continue
-      nextGDA := {nextGDA with rg := ⟨la, la + ra⟩}
-      nextGDB := {nextGDB with rg := ⟨lb, lb + rb⟩}
+      let _ :: ls :: _ := l.splitOn "@@ " | continue
+      let [left, right] := ls.trim.splitOn " " | continue
+      let rgA := assignLineRanges left
+      let rgB := assignLineRanges right
+      nextGDA := {nextGDA with rg := rgA}
+      nextGDB := {nextGDB with rg := rgB}
     (nextGDA, totA) := nextGDA.appendIfReady totA fileA
     (nextGDB, totB) := nextGDB.appendIfReady totB fileA
   return (totA, totB)
