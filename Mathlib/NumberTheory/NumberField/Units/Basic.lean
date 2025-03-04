@@ -160,15 +160,15 @@ variable {K}
 
 theorem torsion_eq_one_or_neg_one_of_odd_finrank [NumberField K]
     (h : Odd (Module.finrank ℚ K)) (x : torsion K) : (x : (𝓞 K)ˣ) = 1 ∨ (x : (𝓞 K)ˣ) = -1 := by
-  by_cases hc : 2 < orderOf (x.1 : K)
-  · linarith [IsPrimitiveRoot.nrRealPlaces_eq_zero_of_two_lt hc (IsPrimitiveRoot.orderOf (x.1 : K)),
+  by_cases hc : 2 < orderOf (x : (𝓞 K)ˣ)
+  · rw [← orderOf_units, ← orderOf_submonoid] at hc
+    linarith [IsPrimitiveRoot.nrRealPlaces_eq_zero_of_two_lt hc (IsPrimitiveRoot.orderOf (x.1 : K)),
         NumberField.InfinitePlace.nrRealPlaces_pos_of_odd_finrank h]
   · push_neg at hc
-    erw [le_iff_lt_or_eq, orderOf_submonoid, orderOf_units] at hc
-    rcases hc with h1 | h2
-    · exact Or.intro_left _ (orderOf_eq_one_iff.1
-        (by linarith [orderOf_pos_iff.2 ((CommGroup.mem_torsion _ x.1).1 x.2)]))
-    · erw [← Units.eq_iff, ← Units.eq_iff, ← sq_eq_one_iff]
+    interval_cases hi : orderOf (x : (𝓞 K)ˣ)
+    · linarith [orderOf_pos_iff.2 ((CommGroup.mem_torsion _ x.1).1 x.2)]
+    · exact Or.intro_left _ (orderOf_eq_one_iff.1 hi)
+    · rw [← Units.eq_iff, ← Units.eq_iff, Units.val_neg, Units.val_one, ← sq_eq_one_iff]
       convert pow_orderOf_eq_one x.1.1
       rwa [orderOf_units, Eq.comm]
 
