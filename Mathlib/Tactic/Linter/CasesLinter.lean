@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan, Damiano Testa
 -/
 import Lean.Elab.Command
--- Import this linter explicitly to ensure that
--- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header
 
 /-!
