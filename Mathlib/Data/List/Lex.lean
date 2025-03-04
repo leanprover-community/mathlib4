@@ -138,13 +138,9 @@ theorem ne_iff {l₁ l₂ : List α} (H : length l₁ ≤ length l₂) : Lex (·
 
 end Lex
 
--- TODO: This deprecated instance is still used (by the instance just below)
-@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
-instance isStrictTotalOrder (r : α → α → Prop) [IsStrictTotalOrder α r] :
-    IsStrictTotalOrder (List α) (Lex r) :=
-  { isStrictWeakOrder_of_isOrderConnected with }
-
 instance [LinearOrder α] : LinearOrder (List α) :=
+  have : ∀ {r} [IsStrictTotalOrder α r], IsStrictTotalOrder (List α) (Lex r) :=
+    { isStrictWeakOrder_of_isOrderConnected with }
   linearOrderOfSTO (Lex (· < ·))
 
 --Note: this overrides an instance in core lean

@@ -335,6 +335,9 @@ def swapLeft (κ : Kernel (α × β) γ) : Kernel (β × α) γ :=
   comap κ Prod.swap measurable_swap
 
 @[simp]
+lemma swapLeft_zero : swapLeft (0 : Kernel (α × β) γ) = 0 := by simp [swapLeft]
+
+@[simp]
 theorem swapLeft_apply (κ : Kernel (α × β) γ) (a : β × α) : swapLeft κ a = κ a.swap := rfl
 
 theorem swapLeft_apply' (κ : Kernel (α × β) γ) (a : β × α) (s : Set γ) :
@@ -366,6 +369,9 @@ noncomputable def swapRight (κ : Kernel α (β × γ)) : Kernel α (γ × β) :
 
 lemma swapRight_eq (κ : Kernel α (β × γ)) : swapRight κ = map κ Prod.swap := by
   simp [swapRight]
+
+@[simp]
+lemma swapRight_zero : swapRight (0 : Kernel α (β × γ)) = 0 := by simp [swapRight]
 
 theorem swapRight_apply (κ : Kernel α (β × γ)) (a : α) : swapRight κ a = (κ a).map Prod.swap :=
   rfl
@@ -626,6 +632,20 @@ lemma sectR_prodMkRight (β : Type*) [MeasurableSpace β] (κ : Kernel α γ) (b
 @[simp] lemma sectR_swapRight (κ : Kernel (α × β) γ) : sectR (swapLeft κ) = sectL κ := rfl
 
 end sectLsectR
+
+lemma isSFiniteKernel_prodMkLeft_iff [Nonempty γ] {κ : Kernel α β} :
+    IsSFiniteKernel (prodMkLeft γ κ) ↔ IsSFiniteKernel κ := by
+  inhabit γ
+  refine ⟨fun h ↦ ?_, fun _ ↦ inferInstance⟩
+  rw [← sectR_prodMkLeft γ κ default]
+  infer_instance
+
+lemma isSFiniteKernel_prodMkRight_iff [Nonempty γ] {κ : Kernel α β} :
+    IsSFiniteKernel (prodMkRight γ κ) ↔ IsSFiniteKernel κ := by
+  inhabit γ
+  refine ⟨fun h ↦ ?_, fun _ ↦ inferInstance⟩
+  rw [← sectL_prodMkRight γ κ default]
+  infer_instance
 
 end Kernel
 end ProbabilityTheory
