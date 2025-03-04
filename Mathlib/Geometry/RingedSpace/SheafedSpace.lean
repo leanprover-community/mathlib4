@@ -194,7 +194,7 @@ theorem Γ_map {X Y : (SheafedSpace C)ᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.
 theorem Γ_map_op {X Y : SheafedSpace C} (f : X ⟶ Y) : Γ.map f.op = f.c.app (op ⊤) :=
   rfl
 
-instance (J : Type w) [Category.{w'} J] [UnivLE.{w, v}] [HasLimitsOfShape J C]
+instance (J : Type w) [Category.{w'} J] [HasLimitsOfShape J C]
     (X : TopCat) [HasLimitsOfShape J C] : HasLimitsOfShape J (Presheaf C X) := by
   apply functorCategoryHasLimitsOfShape
 
