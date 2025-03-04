@@ -54,4 +54,4 @@ messageStart=$'New <details><summary><b>Declaration diff in Lean</b></summary>'
 } > please_merge_master
 printf -- $'------\n%s------\n' "$(cat please_merge_master)"
 
-./scripts/update_PR_comment.sh please_merge_master "${messageStart}" "${PR}"
+./scripts/update_PR_comment.sh please_merge_master "${messageStart}" "${PR_NUMBER}"
