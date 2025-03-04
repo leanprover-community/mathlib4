@@ -48,13 +48,9 @@ def equivFinRank : Fin (rank K) ≃ {w : InfinitePlace K // w ≠ w₀} :=
     rw [Fintype.card_subtype_compl, Fintype.card_ofSubsingleton, Fintype.card_fin, rank]
 
 variable {K} in
-abbrev isMaxRank (u : Fin (rank K) → (𝓞 K)ˣ) : Prop :=
-  LinearIndependent ℝ (fun i ↦ logEmbedding K (Additive.ofMul (u i)))
-
-variable {K} in
 def regOfFamily (u : Fin (rank K) → (𝓞 K)ˣ) : ℝ := by
   classical
-  by_cases hu : isMaxRank u
+  by_cases hu : LinearIndependent ℝ (fun i ↦ logEmbedding K (Additive.ofMul (u i)))
   · exact ZLattice.covolume <| span ℤ <| Set.range <|
       basisOfPiSpaceOfLinearIndependent <| (linearIndependent_equiv (equivFinRank K).symm).mpr hu
   · exact 0
@@ -71,7 +67,9 @@ def regOfFamily (u : Fin (rank K) → (𝓞 K)ˣ) : ℝ := by
 --     · exact 0
 --   · exact 1
 
-theorem regOfFamily_eq_zero {u : Fin (rank K) → (𝓞 K)ˣ} (hu : ¬ isMaxRank u) :
+variable {K} in
+theorem regOfFamily_eq_zero {u : Fin (rank K) → (𝓞 K)ˣ}
+    (hu : ¬ LinearIndependent ℝ (fun i ↦ logEmbedding K (Additive.ofMul (u i)))) :
     regOfFamily u = 0 := by
   rw [regOfFamily, dif_neg hu]
 
@@ -95,6 +93,19 @@ theorem regulator_ne_zero : regulator K ≠ 0 := ZLattice.covolume_ne_zero (unit
 
 open scoped Classical in
 theorem regulator_pos : 0 < regulator K := ZLattice.covolume_pos (unitLattice K) volume
+
+open scoped Classical in
+example (u :  Fin (rank K) → (𝓞 K)ˣ) (e : {w : InfinitePlace K // w ≠ w₀} ≃ Fin (rank K)) :
+    regOfFamily u = |(Matrix.of fun i ↦ logEmbedding K (Additive.ofMul (u (e i)))).det| := by
+  by_cases hu : LinearIndependent ℝ (fun i ↦ logEmbedding K (Additive.ofMul (u i)))
+  ·
+    rw [regOfFamily, dif_pos hu, ZLattice.covolume_eq_det]
+    sorry
+
+
+  · have := (linearIndependent_equiv e).not.mpr hu
+    simp_rw [Function.comp_def] at this
+    rw [regOfFamily_eq_zero hu, Matrix.det_eq_zero_iff.mpr this, abs_zero]
 
 open scoped Classical in
 theorem regulator_eq_det' (e : {w : InfinitePlace K // w ≠ w₀} ≃ Fin (rank K)) :
