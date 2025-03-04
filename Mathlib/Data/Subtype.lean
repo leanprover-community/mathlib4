@@ -110,7 +110,7 @@ theorem _root_.exists_subtype_mk_eq_iff {a : Subtype p} {b : α} :
   simp only [@eq_comm _ b, exists_eq_subtype_mk_iff, @eq_comm _ _ a]
 
 theorem _root_.Function.extend_val_apply {p : β → Prop} {g : {x // p x} → γ} {j : β → γ}
-    (b : β) (hb : p b) : val.extend g j b = g ⟨b, hb⟩ :=
+    {b : β} (hb : p b) : val.extend g j b = g ⟨b, hb⟩ :=
   val_injective.extend_apply g j ⟨b, hb⟩
 
 /-- Restrict a (dependent) function to a subtype -/
