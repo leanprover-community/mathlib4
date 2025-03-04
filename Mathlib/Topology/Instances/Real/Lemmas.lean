@@ -3,9 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Data.Real.Star
 import Mathlib.Algebra.Field.Periodic
 import Mathlib.Topology.Algebra.Order.Archimedean
+import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Instances.Real.Defs
+import Mathlib.Topology.Order.Bornology
 
 /-!
 # Topological properties of ℝ
@@ -21,6 +24,15 @@ open scoped Topology Uniformity Interval
 universe u v w
 
 variable {α : Type u} {β : Type v} {γ : Type w}
+
+instance instIsOrderBornology : IsOrderBornology ℝ where
+  isBounded_iff_bddBelow_bddAbove s := by
+    refine ⟨fun bdd ↦ ?_, fun h ↦ isBounded_of_bddAbove_of_bddBelow h.2 h.1⟩
+    obtain ⟨r, hr⟩ : ∃ r : ℝ, s ⊆ Icc (-r) r := by
+      simpa [Real.closedBall_eq_Icc] using bdd.subset_closedBall 0
+    exact ⟨bddBelow_Icc.mono hr, bddAbove_Icc.mono hr⟩
+
+instance : ContinuousStar ℝ := ⟨continuous_id⟩
 
 theorem Real.isTopologicalBasis_Ioo_rat :
     @IsTopologicalBasis ℝ _ (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) b}) :=
