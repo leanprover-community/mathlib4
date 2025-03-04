@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   style_lint:
-    if: false #github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
+    if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
     name: Lint styleJOB_NAME
     runs-on: STYLE_LINT_RUNNER
     steps:

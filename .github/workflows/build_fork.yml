@@ -36,7 +36,7 @@ concurrency:
 
 jobs:
   style_lint:
-    if: false #github.repository != 'leanprover-community/mathlib4'
+    if: github.repository != 'leanprover-community/mathlib4'
     name: Lint style (fork)
     runs-on: ubuntu-latest
     steps:
