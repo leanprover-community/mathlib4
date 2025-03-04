@@ -100,6 +100,10 @@ section Mul
 
 variable [Mul α] [DecidableEq α] {s t u : Finset α} {a : α}
 
+open scoped RightActions in
+@[to_additive] lemma mul_singleton (a : α) : s * {a} = s <• a := image₂_singleton_right
+@[to_additive] lemma singleton_mul (a : α) : {a} * s = a • s := image₂_singleton_left
+
 @[to_additive] lemma smul_finset_subset_mul : a ∈ s → a • t ⊆ s * t := image_subset_image₂_right
 
 @[to_additive]
@@ -266,4 +270,3 @@ instance Nat.decidablePred_mem_vadd_set {s : Set ℕ} [DecidablePred (· ∈ s)]
     DecidablePred (· ∈ a +ᵥ s) :=
   fun n ↦ decidable_of_iff' (a ≤ n ∧ n - a ∈ s) <| by
     simp only [Set.mem_vadd_set, vadd_eq_add]; aesop
-
