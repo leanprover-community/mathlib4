@@ -7,10 +7,18 @@ import re
 from typing import List, Dict, Optional
 import json
 import base64
+import shutil
 
 # Unicode symbols
 TICK = "✅"   # Check mark button
 CROSS = "❌"  # Cross mark
+
+def check_gh_installed():
+    """Check if GitHub CLI (gh) is installed and accessible"""
+    if not shutil.which('gh'):
+        print("Error: GitHub CLI (gh) is not installed or not in PATH", file=sys.stderr)
+        print("Please install it from https://cli.github.com/", file=sys.stderr)
+        sys.exit(1)
 
 def load_repos() -> List[Dict[str, str]]:
     """Load repository information from downstream_repos.yml"""
@@ -133,6 +141,9 @@ def get_current_toolchain(repo: Dict[str, str]) -> Optional[str]:
         return None
 
 def main():
+    # Add gh check at the start of main
+    check_gh_installed()
+
     repos = load_repos()
 
     if len(sys.argv) == 1:
