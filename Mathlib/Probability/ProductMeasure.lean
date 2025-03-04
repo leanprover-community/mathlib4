@@ -10,24 +10,22 @@ import Mathlib.Probability.Kernel.IonescuTulcea.Traj
 # Infinite product of probability measures
 
 This files provides a definition for the product measure of an arbitrary family of probability
-measures. Given `μ : (i : ι) → Measure (X i)`, `productMeasure μ` is the only probability measure
- `ν` over `Π i, X i` such that `ν (Set.pi s t) = ∏ i ∈ s, μ i (t i)`, with `s : Finset ι` and
-such that `∀ i ∈ s, MeasurableSet (t i)` (see `eq_productMeasure` and `productMeasure_boxes`).
+measures. Given `μ : (i : ι) → Measure (X i)`, `Measure.infinitePi μ` is the only probability
+measure `ν` over `Π i, X i` such that `ν (Set.pi s t) = ∏ i ∈ s, μ i (t i)`, with `s : Finset ι` and
+such that `∀ i ∈ s, MeasurableSet (t i)` (see `eq_infinitePi` and `infinitePi_boxes`).
 We also provide a few results regarding integration against this measure.
 
 ## Main definition
 
-* `productMeasure μ`: The product measure of the family of probability measures `μ`.
+* `Measure.infinitePi μ`: The product measure of the family of probability measures `μ`.
 
 ## Main statements
 
-* `eq_productMeasure`: Any measure which gives to a finite product of sets the mass which is the
+* `eq_infinitePi`: Any measure which gives to a finite product of sets the mass which is the
   product of their measures is the product measure.
-
-* `productMeasure_boxes`: the product measure gives to finite products of sets a mass which is
+* `infinitePi_boxes`: the product measure gives to finite products of sets a mass which is
   the product of their masses.
-
-* `productMeasure_cylinder`: `productMeasure μ (cylinder s S) = Measure.pi (fun i : s ↦ μ i) S`
+* `infinitePi_cylinder`: `infinitePi μ (cylinder s S) = Measure.pi (fun i : s ↦ μ i) S`
 
 ## Implementation notes
 
@@ -38,44 +36,22 @@ over an arbitrary type by extending `piContent μ` thanks to Carathéodory's the
 to do so is `piContent_tendsto_zero`, which states that `piContent μ (A n)` tends to zero if
 `⋂ n, A n = ∅`. We prove this lemma by reducing to the case of an at most countable product,
 in which case `piContent μ` is known to be a true measure (see `piContent_eq_measure_pi` and
-piContent_eq_infinitePiNat).
+`piContent_eq_infinitePiNat`).
 
 ## Tags
 
 infinite product measure
 -/
 
-open MeasureTheory ProbabilityTheory Finset Filter Topology Preorder MeasurableEquiv
+open MeasureTheory ProbabilityTheory Finset Filter Preorder MeasurableEquiv
 
-open scoped ENNReal
+open scoped ENNReal Topology
 
 namespace MeasureTheory
 
 section Preliminaries
 
 variable {ι : Type*} {α : ι → Type*}
-
-lemma _root_.preimage_restrict₂ {I J : Finset ι} [∀ i : ι, Decidable (i ∈ I)]
-    (hIJ : I ⊆ J) (s : (i : I) → Set (α i)) :
-    (restrict₂ hIJ) ⁻¹' (Set.univ.pi s) =
-      (@Set.univ J).pi (fun j ↦ if h : j.1 ∈ I then s ⟨j.1, h⟩ else Set.univ) := by
-  ext x
-  simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, true_implies, Subtype.forall]
-  refine ⟨fun h i hi ↦ ?_, fun h i i_mem ↦ by simpa [i_mem] using h i (hIJ i_mem)⟩
-  split_ifs with i_mem
-  · exact h i i_mem
-  · trivial
-
-lemma _root_.preimage_restrict {I : Finset ι} [∀ i : ι, Decidable (i ∈ I)]
-    (s : (i : I) → Set (α i)) :
-    I.restrict ⁻¹' (Set.univ.pi s) =
-      Set.pi I (fun i ↦ if h : i ∈ I then s ⟨i, h⟩ else Set.univ) := by
-  ext x
-  simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, restrict, forall_const, Subtype.forall,
-    mem_coe]
-  refine ⟨fun h i hi ↦ by simpa [hi] using h i hi, fun h i hi ↦ ?_⟩
-  convert h i hi
-  rw [dif_pos hi]
 
 variable {X : ι → Type*} [∀ i, MeasurableSpace (X i)]
 variable (μ : (i : ι) → Measure (X i)) [hμ : ∀ i, IsProbabilityMeasure (μ i)]
@@ -164,7 +140,7 @@ variable [∀ n, MeasurableSpace (X n)]
   (μ : (n : ℕ) → Measure (X n)) [hμ : ∀ n, IsProbabilityMeasure (μ n)]
 
 /-- Infinite product measure indexed by `ℕ`. This is an auxiliary construction, you should use
-the generic product measure `Measure.productMeasure`. -/
+the generic product measure `Measure.infinitePi`. -/
 noncomputable def Measure.infinitePiNat : Measure ((n : ℕ) → X n) :=
   (traj (fun n ↦ const _ (μ (n + 1))) 0) ∘ₘ (Measure.pi (fun i : Iic 0 ↦ μ i))
 
@@ -270,7 +246,7 @@ theorem piContent_eq_infinitePiNat {A : Set ((n : ℕ) → X n)} (hA : A ∈ mea
 
 end Nat
 
-section ProductMeasure
+section InfinitePi
 
 open Measure
 
@@ -383,7 +359,7 @@ theorem isSigmaSubadditive_piContent : (piContent μ).IsSigmaSubadditive := by
 /-- The product measure of an arbitrary family of probability measures. It is defined as the unique
 extension of the function which gives to cylinders the measure given by the associated product
 measure. -/
-noncomputable def Measure.productMeasure : Measure (Π i, X i) :=
+noncomputable def Measure.infinitePi : Measure (Π i, X i) :=
   (piContent μ).measure isSetSemiring_measurableCylinders
     generateFrom_measurableCylinders.ge (isSigmaSubadditive_piContent μ)
 
@@ -391,25 +367,25 @@ open Measure
 
 /-- The product measure is the projective limit of the partial product measures. This ensures
 uniqueness and expresses the value of the product measures applied to cylinders. -/
-theorem isProjectiveLimit_productMeasure :
-    IsProjectiveLimit (productMeasure μ) (fun I : Finset ι ↦ (Measure.pi (fun i : I ↦ μ i))) := by
+theorem isProjectiveLimit_infinitePi :
+    IsProjectiveLimit (infinitePi μ) (fun I : Finset ι ↦ (Measure.pi (fun i : I ↦ μ i))) := by
   intro I
   ext1 s hs
-  rw [map_apply (measurable_restrict I) hs, productMeasure, AddContent.measure_eq,
+  rw [map_apply (measurable_restrict I) hs, infinitePi, AddContent.measure_eq,
     ← cylinder, piContent_cylinder μ hs]
   · exact generateFrom_measurableCylinders.symm
   · exact cylinder_mem_measurableCylinders _ _ hs
 
-instance : IsProbabilityMeasure (productMeasure μ) := by
+instance : IsProbabilityMeasure (infinitePi μ) := by
   constructor
   rw [← cylinder_univ ∅, cylinder, ← map_apply (measurable_restrict _) .univ,
-    isProjectiveLimit_productMeasure μ, measure_univ]
+    isProjectiveLimit_infinitePi μ, measure_univ]
 
-theorem eq_productMeasure {ν : Measure (Π i, X i)}
+theorem eq_infinitePi {ν : Measure (Π i, X i)}
     (hν : ∀ s : Finset ι, ∀ t : (i : ι) → Set (X i),
       (∀ i ∈ s, MeasurableSet (t i)) → ν (Set.pi s t) = ∏ i ∈ s, μ i (t i)) :
-    ν = productMeasure μ := by
-  refine (isProjectiveLimit_productMeasure μ).unique ?_ |>.symm
+    ν = infinitePi μ := by
+  refine (isProjectiveLimit_infinitePi μ).unique ?_ |>.symm
   refine fun s ↦ (pi_eq fun t ht ↦ ?_).symm
   classical
   rw [Measure.map_apply, preimage_restrict, hν, ← prod_attach, univ_eq_attach]
@@ -420,33 +396,33 @@ theorem eq_productMeasure {ν : Measure (Π i, X i)}
   · exact .univ_pi ht
 
 -- TODO: add a version for an infinite product
-lemma productMeasure_boxes {s : Finset ι} {t : (i : ι) → Set (X i)}
+lemma infinitePi_boxes {s : Finset ι} {t : (i : ι) → Set (X i)}
     (mt : ∀ i ∈ s, MeasurableSet (t i)) :
-    productMeasure μ (Set.pi s t) = ∏ i ∈ s, (μ i) (t i) := by
+    infinitePi μ (Set.pi s t) = ∏ i ∈ s, (μ i) (t i) := by
   have : Set.pi s t = cylinder s ((@Set.univ s).pi (fun i : s ↦ t i)) := by
     ext x
     simp
-  rw [this, cylinder, ← map_apply, isProjectiveLimit_productMeasure μ, pi_pi]
+  rw [this, cylinder, ← map_apply, isProjectiveLimit_infinitePi μ, pi_pi]
   · rw [Finset.univ_eq_attach, Finset.prod_attach _ (fun i ↦ (μ i) (t i))]
   · exact measurable_restrict _
   · exact .univ_pi fun i ↦ mt i.1 i.2
 
-theorem productMeasure_eq_pi [Fintype ι] : productMeasure μ = Measure.pi μ := by
+theorem infinitePi_eq_pi [Fintype ι] : infinitePi μ = Measure.pi μ := by
   refine (pi_eq fun s hs ↦ ?_).symm
-  rw [← coe_univ, productMeasure_boxes]
+  rw [← coe_univ, infinitePi_boxes]
   simpa
 
-lemma productMeasure_cylinder {s : Finset ι} {S : Set (Π i : s, X i)} (mS : MeasurableSet S) :
-    productMeasure μ (cylinder s S) = Measure.pi (fun i : s ↦ μ i) S := by
-  rw [cylinder, ← Measure.map_apply (measurable_restrict _) mS, isProjectiveLimit_productMeasure μ]
+lemma infinitePi_cylinder {s : Finset ι} {S : Set (Π i : s, X i)} (mS : MeasurableSet S) :
+    infinitePi μ (cylinder s S) = Measure.pi (fun i : s ↦ μ i) S := by
+  rw [cylinder, ← Measure.map_apply (measurable_restrict _) mS, isProjectiveLimit_infinitePi μ]
 
-theorem integral_dep_productMeasure {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem integral_dep_infinitePi {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {s : Finset ι} {f : (Π i : s, X i) → E}
     (hf : AEStronglyMeasurable f (Measure.pi (fun i : s ↦ μ i))) :
-    ∫ y, f (s.restrict y) ∂productMeasure μ = ∫ y, f y ∂Measure.pi (fun i : s ↦ μ i) := by
-  rw [← integral_map, isProjectiveLimit_productMeasure μ]
+    ∫ y, f (s.restrict y) ∂infinitePi μ = ∫ y, f y ∂Measure.pi (fun i : s ↦ μ i) := by
+  rw [← integral_map, isProjectiveLimit_infinitePi μ]
   · fun_prop
-  · rwa [isProjectiveLimit_productMeasure μ]
+  · rwa [isProjectiveLimit_infinitePi μ]
 
 open Filtration
 
@@ -460,7 +436,7 @@ theorem dependsOn_of_stronglyMeasurable' {E : Type*} [NormedAddCommGroup E]
 theorem integral_stronglyMeasurable [DecidableEq ι] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] {s : Finset ι} {f : (Π i, X i) → E}
     (mf : StronglyMeasurable[piFinset s] f) (x : Π i, X i) :
-    ∫ y, f y ∂productMeasure μ =
+    ∫ y, f y ∂infinitePi μ =
     ∫ y, f (Function.updateFinset x s y) ∂Measure.pi (fun i : s ↦ μ i) := by
   let g : (Π i : s, X i) → E := fun y ↦ f (Function.updateFinset x _ y)
   have this y : g (s.restrict y) = f y := by
@@ -468,17 +444,17 @@ theorem integral_stronglyMeasurable [DecidableEq ι] {E : Type*} [NormedAddCommG
     intro i hi
     simp only [Function.updateFinset, Finset.restrict, dite_eq_ite, ite_eq_left_iff]
     exact fun h ↦ (h hi).elim
-  rw [← integral_congr_ae <| Eventually.of_forall this, integral_dep_productMeasure]
+  rw [← integral_congr_ae <| Eventually.of_forall this, integral_dep_infinitePi]
   exact mf.comp_measurable (measurable_updateFinset.mono le_rfl (piFinset.le s))
     |>.aestronglyMeasurable
 
 theorem lintegral_dep {s : Finset ι} {f : (Π i : s, X i) → ℝ≥0∞} (hf : Measurable f) :
-    ∫⁻ y, f (s.restrict y) ∂productMeasure μ = ∫⁻ y, f y ∂Measure.pi (fun i : s ↦ μ i) := by
-  rw [← lintegral_map hf (measurable_restrict _), isProjectiveLimit_productMeasure μ]
+    ∫⁻ y, f (s.restrict y) ∂infinitePi μ = ∫⁻ y, f y ∂Measure.pi (fun i : s ↦ μ i) := by
+  rw [← lintegral_map hf (measurable_restrict _), isProjectiveLimit_infinitePi μ]
 
 theorem lintegral_measurable_piFinset [DecidableEq ι] {s : Finset ι}
     {f : (Π i, X i) → ℝ≥0∞} (mf : Measurable[piFinset s] f)
-    (x : Π i, X i) : ∫⁻ y, f y ∂productMeasure μ = (∫⋯∫⁻_s, f ∂μ) x := by
+    (x : Π i, X i) : ∫⁻ y, f y ∂infinitePi μ = (∫⋯∫⁻_s, f ∂μ) x := by
   let g : (Π i : s, X i) → ℝ≥0∞ := fun y ↦ f (Function.updateFinset x _ y)
   have this y : g (s.restrict y) = f y := by
     refine mf.dependsOn_of_piFinset fun i hi ↦ ?_
@@ -489,6 +465,6 @@ theorem lintegral_measurable_piFinset [DecidableEq ι] {s : Finset ι}
   · rfl
   · exact mf.comp (measurable_updateFinset.mono le_rfl (piFinset.le s))
 
-end ProductMeasure
+end InfinitePi
 
 end MeasureTheory
