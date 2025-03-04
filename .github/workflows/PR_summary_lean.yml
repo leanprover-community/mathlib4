@@ -52,14 +52,14 @@ jobs:
 
           git checkout master
           git checkout -
-          #git checkout master...HEAD
-          #masterHash="$(git rev-parse HEAD)"
-          #git switch -
+          git checkout master...HEAD
+          #masterHash=$(date)
+          masterHash="$(git rev-parse HEAD)"
+          git checkout -
 
           rm -rf .lake/build/lib/lean/Mathlib/ .lake/build/lib/Mathlib/
           messageStart=$'New <details><summary><b>Declaration diff in Lean</b></summary>'
           ./scripts/declDiff_shell_glue.sh "${PRdeclsFile}" "${MSdeclsFile}"
-          masterHash=$(date)
           {
             printf '%s\n\n```diff\n' "${messageStart}"
             diff "${MSdeclsFile}" "${PRdeclsFile}" | grep '^[<>]'
