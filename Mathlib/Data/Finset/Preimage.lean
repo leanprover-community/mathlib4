@@ -134,3 +134,23 @@ theorem sigma_image_fst_preimage_mk {β : α → Type*} [DecidableEq α] (s : Fi
 
 end Preimage
 end Finset
+
+namespace Equiv
+
+/-- Given an equivalence `e : α ≃ β` and `s : Finset β`, restrict `e` to an equivalence
+from `e ⁻¹' s` to `s`. -/
+def frestrict (e : α ≃ β) (s : Finset β) : (s.preimage e e.injective.injOn) ≃ s where
+  toFun := fun a ↦ ⟨e a, Finset.mem_preimage.1 a.2⟩
+  invFun := fun b ↦ ⟨e.symm b, by simp⟩
+  left_inv := fun _ ↦ by simp
+  right_inv := fun _ ↦ by simp
+
+variable {e : α ≃ β} {s : Finset β}
+
+@[simp]
+lemma frestrict_apply (a : s.preimage e e.injective.injOn) : e.frestrict s a = e a := rfl
+
+@[simp]
+lemma frestrict_symm_apply (b : s) : (e.frestrict s).symm b = e.symm b := rfl
+
+end Equiv
