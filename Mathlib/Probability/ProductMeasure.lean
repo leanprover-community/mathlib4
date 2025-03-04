@@ -227,7 +227,7 @@ theorem partialTraj_const_restrict₂ {a b : ℕ} :
     · have : (restrict₂ (Ioc_subset_Iic_self (a := a))) ∘ (IicProdIoc (X := X) n (n + 1)) =
           (IocProdIoc a n (n + 1)) ∘ (Prod.map (restrict₂ Ioc_subset_Iic_self) id) := rfl
       rw [const_apply, partialTraj_succ_of_le (by omega), map_const, prod_const_comp, id_comp,
-        Kernel.map_map, this, ← Kernel.map_map, Kernel.map_prod, hind,  Kernel.map_id, map_apply,
+        ← map_comp_right, this, map_comp_right, ← map_prod_map, hind, Kernel.map_id, map_apply,
         prod_apply, const_apply, const_apply, Measure.map_piSingleton,
         Measure.pi_prod_map_IocProdIoc]
       any_goals fun_prop
@@ -250,11 +250,12 @@ theorem isProjectiveLimit_infinitePiNat :
       (fun I : Finset ℕ ↦ (Measure.pi (fun i : I ↦ μ i))) := by
   have _ := ProbabilityMeasure.nonempty ⟨μ 0, hμ 0⟩
   intro I
-  simp_rw [isProjectiveMeasureFamily_pi μ _ _ I.sub_Iic]
-  rw [← restrict₂_comp_restrict I.sub_Iic, ← Measure.map_map, ← frestrictLe, Measure.infinitePiNat,
-    Measure.map_comp, traj_map_frestrictLe, partialTraj_const, ← Measure.map_comp,
-    ← Measure.compProd_eq_comp_prod, Measure.compProd_const, Measure.pi_prod_map_IicProdIoc]
-  any_goals fun_prop
+  simp_rw [isProjectiveMeasureFamily_pi μ _ _ I.subset_Iic_sup_id]
+  rw [← restrict₂_comp_restrict I.subset_Iic_sup_id, ← Measure.map_map, ← frestrictLe,
+    Measure.infinitePiNat, Measure.map_comp, traj_map_frestrictLe, partialTraj_const,
+    ← Measure.map_comp, ← Measure.compProd_eq_comp_prod, Measure.compProd_const,
+    Measure.pi_prod_map_IicProdIoc]
+  all_goals fun_prop
 
 lemma infinitePiNat_map_restrict {I : Finset ℕ} :
     (Measure.infinitePiNat μ).map I.restrict = Measure.pi fun i : I ↦ μ i :=
