@@ -1225,7 +1225,7 @@ theorem subst_definitions_eq {k : ℕ} (f : L.BoundedFormula α k)
         cases sum <;> simp}
     · intro h xs is
       have ht₁ := t₁.subst_definitions_eq _ hFs (by
-        simp at is
+        simp_rw [List.mem_append, List.mem_map] at is
         intro s hs
         replace is := is (.relabel (n := _ + _) _ s) (.inl ⟨s, ⟨hs, rfl⟩⟩)
         rw [realize_relabel] at is
@@ -1234,7 +1234,7 @@ theorem subst_definitions_eq {k : ℕ} (f : L.BoundedFormula α k)
         funext sum
         cases sum <;> rfl)
       have ht₂ := t₂.subst_definitions_eq _ hFs (by
-        simp at is
+        simp_rw [List.mem_append, List.mem_map] at is
         intro s hs
         replace is := is (.relabel (n := _ + _) _ s) (.inr ⟨s, ⟨hs, rfl⟩⟩)
         rw [realize_relabel] at is
@@ -1264,11 +1264,11 @@ theorem subst_definitions_eq {k : ℕ} (f : L.BoundedFormula α k)
       let hxs := fun i ↦ ((ts i).subst_definitions_extraVals_X (Sum.elim vL vR) hFs).2
       replace h := h xs (by
         intro i hi
-        simp at hi
+        simp only [List.mem_flatten, exists_exists_eq_and, List.mem_map] at hi
         rcases hi with ⟨w,hiw,hiw₂⟩
         rw [List.mem_ofFn] at hiw
         obtain ⟨j,rfl⟩ := hiw
-        simp at hiw₂
+        rw [List.mem_map] at hiw₂
         obtain ⟨a,ha₁,rfl⟩ := hiw₂
         have := hxs j a ha₁
         rw [Formula.Realize] at this
@@ -1277,7 +1277,8 @@ theorem subst_definitions_eq {k : ℕ} (f : L.BoundedFormula α k)
         funext sum
         cases sum <;> simp [xs]
         rw [Equiv.leftInverse_symm])
-      simp at h
+      simp only [realize_relabel, Nat.add_zero, castAdd_zero, cast_refl, Function.comp_id,
+        realize_subst, Term.realize_relabel, xs] at h
       rw [Formula.Realize]
       convert h with i
       have := (ts i).subst_definitions_eq (Sum.elim vL vR) hFs
@@ -1297,7 +1298,8 @@ theorem subst_definitions_eq {k : ℕ} (f : L.BoundedFormula α k)
       rw [show (xs ∘ @Fin.natAdd 0 (∑ i : Fin m, _)) = default from Unique.eq_default _]
       convert h with i
       have hti := (ts i).subst_definitions_eq (Sum.elim vL vR) hFs (by
-          simp at is
+          simp only [List.mem_flatten, List.mem_ofFn, exists_exists_eq_and, List.mem_map,
+            forall_exists_index, and_imp] at is
           intro s hs
           replace is := is (.relabel (k := 0) _ s) i s hs rfl
           rw [realize_relabel] at is
