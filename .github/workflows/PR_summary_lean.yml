@@ -61,7 +61,6 @@ jobs:
           rm -rf .lake/build/lib/lean/Mathlib/ .lake/build/lib/Mathlib/
           messageStart=$'New <details><summary><b>Declaration diff in Lean</b></summary>'
           ./scripts/declDiff_shell_glue.sh "${PRdeclsFile}" "${MSdeclsFile}"
-          grep "decls_in" "${MSdeclsFile}" "${PRdeclsFile}"
           {
             printf '%s\n\n```diff\n' "${messageStart}"
             diff "${MSdeclsFile}" "${PRdeclsFile}" | grep '^[<>]'
