@@ -34,7 +34,7 @@ variable {α : Type u} {β : Type v} {X ι : Type*}
 variable [PseudoMetricSpace α]
 
 /-- We now define `MetricSpace`, extending `PseudoMetricSpace`. -/
-class MetricSpace (α : Type u) extends PseudoMetricSpace α : Type u where
+class MetricSpace (α : Type u) : Type u extends PseudoMetricSpace α where
   eq_of_dist_eq_zero : ∀ {x y : α}, dist x y = 0 → x = y
 
 /-- Two metric space structures with the same distance coincide. -/
