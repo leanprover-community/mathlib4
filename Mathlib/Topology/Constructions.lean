@@ -1588,18 +1588,29 @@ theorem Continuous.finInsertNth
 @[deprecated (since := "2025-01-02")]
 alias Continuous.fin_insertNth := Continuous.finInsertNth
 
-theorem Filter.Tendsto.finInit
-    {f : Y → ∀ j : Fin (n + 1), π j} {l : Filter Y} {x : ∀ j, π j}
-    (hg : Tendsto f l (𝓝 x)) : Tendsto (fun a => Fin.init (f a)) l (𝓝 <| Fin.init x) :=
+theorem Filter.Tendsto.finInit {f : Y → ∀ j : Fin (n + 1), π j} {l : Filter Y} {x : ∀ j, π j}
+    (hg : Tendsto f l (𝓝 x)) : Tendsto (fun a ↦ Fin.init (f a)) l (𝓝 <| Fin.init x) :=
   tendsto_pi_nhds.2 fun j ↦ apply_nhds hg j.castSucc
 
 theorem ContinuousAt.finInit {f : X → ∀ j : Fin (n + 1), π j} {x : X}
-    (hf : ContinuousAt f x) : ContinuousAt (fun a => Fin.init (f a)) x :=
+    (hf : ContinuousAt f x) : ContinuousAt (fun a ↦ Fin.init (f a)) x :=
   hf.tendsto.finInit
 
-theorem Continuous.finInit {f : X → ∀ j : Fin (n + 1), π j}
-    (hf : Continuous f) : Continuous fun a => Fin.init (f a) :=
-  continuous_iff_continuousAt.2 fun _ => hf.continuousAt.finInit
+theorem Continuous.finInit {f : X → ∀ j : Fin (n + 1), π j} (hf : Continuous f) :
+    Continuous fun a ↦ Fin.init (f a) :=
+  continuous_iff_continuousAt.2 fun _ ↦ hf.continuousAt.finInit
+
+theorem Filter.Tendsto.finTail {f : Y → ∀ j : Fin (n + 1), π j} {l : Filter Y} {x : ∀ j, π j}
+    (hg : Tendsto f l (𝓝 x)) : Tendsto (fun a ↦ Fin.tail (f a)) l (𝓝 <| Fin.tail x) :=
+  tendsto_pi_nhds.2 fun j ↦ apply_nhds hg j.succ
+
+theorem ContinuousAt.finTail {f : X → ∀ j : Fin (n + 1), π j} {x : X}
+    (hf : ContinuousAt f x) : ContinuousAt (fun a ↦ Fin.tail (f a)) x :=
+  hf.tendsto.finTail
+
+theorem Continuous.finTail {f : X → ∀ j : Fin (n + 1), π j} (hf : Continuous f) :
+    Continuous fun a ↦ Fin.tail (f a) :=
+  continuous_iff_continuousAt.2 fun _ ↦ hf.continuousAt.finTail
 
 end Fin
 
