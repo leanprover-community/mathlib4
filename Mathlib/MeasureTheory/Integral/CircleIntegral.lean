@@ -156,8 +156,6 @@ theorem hasDerivAt_circleMap (c : ℂ) (R : ℝ) (θ : ℝ) :
   simpa only [mul_assoc, one_mul, ofRealCLM_apply, circleMap, ofReal_one, zero_add]
     using (((ofRealCLM.hasDerivAt (x := θ)).mul_const I).cexp.const_mul (R : ℂ)).const_add c
 
-/- TODO: prove `ContDiff ℝ (circleMap c R)`. This needs a version of `ContDiff.mul`
-for multiplication in a normed algebra over the base field. -/
 theorem differentiable_circleMap (c : ℂ) (R : ℝ) : Differentiable ℝ (circleMap c R) := fun θ =>
   (hasDerivAt_circleMap c R θ).differentiableAt
 
@@ -169,6 +167,11 @@ theorem analyticOnNhd_circleMap {c : ℂ} {R : ℝ} :
   apply analyticAt_const.mul
   rw [(by rfl : (fun θ ↦ exp (θ * I) : ℝ → ℂ) = cexp ∘ (fun θ : ℝ ↦ (θ * I)))]
   apply analyticAt_cexp.restrictScalars.comp ((ofRealCLM.analyticAt z).mul (by fun_prop))
+
+/-- The circleMap is continuously differentiable. -/
+theorem contDiff_circleMap (c : ℂ) (R : ℝ) {n : WithTop ℕ∞} :
+    ContDiff ℝ n (circleMap c R) :=
+  (analyticOnNhd_circleMap).contDiff
 
 @[continuity, fun_prop]
 theorem continuous_circleMap (c : ℂ) (R : ℝ) : Continuous (circleMap c R) :=
