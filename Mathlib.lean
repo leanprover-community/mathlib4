@@ -5746,6 +5746,7 @@ import Mathlib.Topology.Instances.RatLemmas
 import Mathlib.Topology.Instances.Real.Defs
 import Mathlib.Topology.Instances.Real.Lemmas
 import Mathlib.Topology.Instances.RealVectorSpace
+import Mathlib.Topology.Instances.Shrink
 import Mathlib.Topology.Instances.Sign
 import Mathlib.Topology.Instances.TrivSqZeroExt
 import Mathlib.Topology.Instances.ZMod
