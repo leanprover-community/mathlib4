@@ -58,7 +58,7 @@ replacing it with the evaluated value,
 and returning the new `values`, `stars` and `children`. -/
 private def evalNode (trie : TrieIndex) :
     TreeM α (Array α × Std.HashMap Nat TrieIndex × Std.HashMap Key TrieIndex) := do
-  let .node values stars children pending := (← get).get! trie
+  let .node values stars children pending := (← get)[trie]!
   if pending.isEmpty then
     return (values, stars, children)
   setTrie trie default
