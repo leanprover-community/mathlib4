@@ -54,14 +54,8 @@ protected lemma MulAction.surjective (g : α) : Function.Surjective (g • · : 
 lemma smul_left_cancel (g : α) {x y : β} (h : g • x = g • y) : x = y := MulAction.injective g h
 
 @[to_additive (attr := simp)]
-lemma smul_left_inj (g : α) {x y : β} : g • x = g • y ↔ x = y :=
+lemma smul_left_cancel_iff (g : α) {x y : β} : g • x = g • y ↔ x = y :=
   (MulAction.injective g).eq_iff
-
-@[deprecated (since := "2025-03-03")]
-alias vadd_left_cancel_iff := vadd_left_inj
-
-@[to_additive existing, deprecated (since := "2025-03-03")]
-alias smul_left_cancel_iff := smul_left_inj
 
 @[to_additive]
 lemma smul_eq_iff_eq_inv_smul (g : α) {x y : β} : g • x = y ↔ x = g⁻¹ • y :=
@@ -117,12 +111,9 @@ alias _root_.AddAction.vadd_bijective_of_is_addUnit := IsAddUnit.vadd_bijective
 alias _root_.MulAction.smul_bijective_of_is_unit := IsUnit.smul_bijective
 
 @[to_additive]
-protected lemma smul_left_inj {a : α} (ha : IsUnit a) {x y : β} : a • x = a • y ↔ x = y :=
+lemma smul_left_cancel {a : α} (ha : IsUnit a) {x y : β} : a • x = a • y ↔ x = y :=
   let ⟨u, hu⟩ := ha
-  hu ▸ smul_left_inj u
-
-@[deprecated (since := "2025-03-03")]
-alias smul_left_cancel := smul_left_inj
+  hu ▸ smul_left_cancel_iff u
 
 end IsUnit
 
