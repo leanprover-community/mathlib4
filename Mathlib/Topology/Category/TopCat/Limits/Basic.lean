@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.Adjunctions
+import Mathlib.Topology.Instances.Shrink
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Adjunction.Limits
 
@@ -48,32 +49,19 @@ instance (F : J ⥤ TopCat.{u}) : TopologicalSpace (F ⋙ forget).sections :=
   inferInstanceAs <|
     TopologicalSpace { u : ∀ j : J, F.obj j | ∀ {i j : J} (f : i ⟶ j), F.map f (u i) = u j }
 
-instance (X : Type u) [TopologicalSpace X] [Small.{v, u} X] :
-    TopologicalSpace (Shrink.{v, u} X) :=
-  .coinduced (equivShrink X) inferInstance
-
-@[simps toEquiv]
-def _root_.Shrink.homeomorph (X : Type u) [TopologicalSpace X] [Small.{v, u} X] :
-    X ≃ₜ Shrink.{v, u} X where
-  __ := equivShrink X
-  continuous_toFun := continuous_coinduced_rng
-  continuous_invFun := by
-    convert continuous_induced_dom
-    simp only [Equiv.invFun_as_coe, Equiv.induced_symm]
-    rfl
-
-instance (F : J ⥤ TopCat.{u}) [Small.{u, max v u} (F ⋙ forget).sections]  :
+instance (F : J ⥤ TopCat.{u}) [Small.{u} (F ⋙ forget).sections]  :
     TopologicalSpace (Types.Small.limitCone (F ⋙ forget)).pt :=
   inferInstanceAs <| TopologicalSpace (Shrink (F ⋙ forget).sections)
 
-/-- A choice of limit cone for a functor `F : J ⥤ TopCat`.
-Generally you should just use `limit.cone F`, unless you need the actual definition
-(which is in terms of `Types.limitCone`).
+/--
+Implementation: A choice of limit cone for a functor `F : J ⥤ TopCat.{u}` with `J : Type v`. This
+is `(F ⋙ forget).sections` shrinked to universe `u`.
+Use `limit.cone F` instead.
 -/
 def Small.limitCone (F : J ⥤ TopCat.{u}) [Small.{u} (F ⋙ forget).sections] : Cone F where
   pt := TopCat.of (Types.Small.limitCone (F ⋙ forget)).pt
   π :=
-    { app := fun j => ofHom
+    { app j := ofHom
         { toFun :=
             (fun u ↦ u.val j) ∘ (Shrink.homeomorph.{u} (F ⋙ forget).sections).symm
           continuous_toFun := by
@@ -81,7 +69,7 @@ def Small.limitCone (F : J ⥤ TopCat.{u}) [Small.{u} (F ⋙ forget).sections] :
             · exact Continuous.comp (continuous_apply (π := fun j ↦ F.obj j) j)
                 (continuous_subtype_val)
             · exact (Shrink.homeomorph.{u} (F ⋙ forget).sections).symm.continuous }
-      naturality := fun X Y f => by
+      naturality X Y f := by
         ext a
         exact (((Shrink.homeomorph _).symm a).2 f).symm }
 
@@ -122,8 +110,12 @@ def limitConeIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitCone.{v,u} F) 
     simp [← h]
     rfl
 
-def Small.limitConeIsLimit (F : J ⥤ TopCat.{u}) [Small.{u, max u v} ↑(F ⋙ forget).sections] :
-    IsLimit (Small.limitCone.{v, u} F) where
+/--
+Implementation: The shrinked limit cone for `F : J ⥤ TopCat.{u}` with `J : Type v` is indeed a
+limit. Use `limit.isLimit F` instead.
+-/
+def Small.limitConeIsLimit (F : J ⥤ TopCat.{u}) [Small.{u} (F ⋙ forget).sections] :
+    IsLimit (Small.limitCone F) where
   lift S := ofHom
     { toFun := Shrink.homeomorph (F ⋙ forget).sections ∘ (fun x =>
         ⟨fun _ => S.π.app _ x, fun f => by
