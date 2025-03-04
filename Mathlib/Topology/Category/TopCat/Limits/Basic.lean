@@ -74,7 +74,7 @@ def Small.limitCone (F : J ⥤ TopCat.{u}) [Small.{u} (F ⋙ forget).sections] :
   pt := TopCat.of (Types.Small.limitCone (F ⋙ forget)).pt
   π :=
     { app := fun j => ofHom
-        { toFun := 
+        { toFun :=
             (fun u ↦ u.val j) ∘ (Shrink.homeomorph.{u} (F ⋙ forget).sections).symm
           continuous_toFun := by
             apply Continuous.comp

@@ -299,7 +299,7 @@ lemma iSup_opensRange_sigmaι : ⨆ i, (Sigma.ι f i).opensRange = ⊤ :=
 @[simps obj map]
 noncomputable
 def sigmaOpenCover [UnivLE.{v, u}] : (∐ g).OpenCover where
-  J := σ 
+  J := σ
   obj := g
   map := Sigma.ι g
   f x := (exists_sigmaι_eq g x).choose
