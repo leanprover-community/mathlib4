@@ -54,23 +54,23 @@ namespace KSpace
 variable {X : Type*} [TopologicalSpace X] [KSpace X]
 
 /-- A set `A` in a k-space is open iff for every compact set `K`, the intersection `K ∩ A` is
-  open in `K`.-/
+open in `K`.-/
 lemma isOpen_iff (A : Set X) : IsOpen A ↔ ∀ K, IsCompact K → IsOpen (K ↓∩ A) :=
   RestrictGenTopology.isOpen_iff restrictGenTopology
 
 /-- A set `A` in a k-space is closed iff for every compact set `K`, the intersection `K ∩ A` is
-  closed in `K`.-/
+closed in `K`.-/
 lemma isClosed_iff (A : Set X) : IsClosed A ↔ ∀ K, IsCompact K → IsClosed (K ↓∩ A) :=
   RestrictGenTopology.isClosed_iff restrictGenTopology
 
 /-- If every set `A` is open if for every compact `K` the intersection `K ∩ A` is open in `K`,
-  then the space is a k-space. -/
+then the space is a k-space. -/
 lemma kspace_of_isOpen {X : Type*} [TopologicalSpace X]
     (h : ∀ (A : Set X), (∀ K, IsCompact K → IsOpen (K ↓∩ A)) → IsOpen A) : KSpace X where
   restrictGenTopology := {isOpen_of_forall_induced := h}
 
 /-- If every set `A` is closed if for every compact `K` the intersection `K ∩ A` is closed in `K`,
-  then the space is a k-space. -/
+then the space is a k-space. -/
 lemma kspace_of_isClosed {X : Type*} [TopologicalSpace X]
     (h : ∀ (A : Set X), (∀ K, IsCompact K → IsClosed (K ↓∩ A)) → IsClosed A) : KSpace X where
   restrictGenTopology := RestrictGenTopology.of_isClosed h
@@ -134,7 +134,7 @@ instance compactlyGeneratedSpace_of_kspace_of_t2 {X : Type*} [TopologicalSpace X
 def kification (X : Type*) := X
 
 /--For a topological space `X` the k-ification is defined as:
-  `A` is open iff for all compact sets `B`, the intersection `A ∩ B` is open in `B`.-/
+`A` is open iff for all compact sets `B`, the intersection `A ∩ B` is open in `B`.-/
 instance instkification {X : Type*} [TopologicalSpace X] : TopologicalSpace (kification X) where
   IsOpen A := ∀ (K : Set X), IsCompact K → IsOpen (K ↓∩ A)
   isOpen_univ := by simp
@@ -146,14 +146,14 @@ instance instkification {X : Type*} [TopologicalSpace X] : TopologicalSpace (kif
     exact hs u hu K hK
 
 /-- A set `A` is the k-ification is open iff for all compact sets `K`,
-  the intersection `K ∩ A` is open in `K`.-/
+the intersection `K ∩ A` is open in `K`.-/
 lemma kification.isOpen_iff {X : Type*} [TopologicalSpace X] {A : Set (kification X)} :
     IsOpen (X := kification X) A ↔
     ∀ (K : Set X), IsCompact K → IsOpen (K ↓∩ A) := by
   rfl
 
 /-- A set `A` is the k-ification is closed iff for all compact sets `K`,
-  the intersection `K ∩ A` is closed in `K`.-/
+the intersection `K ∩ A` is closed in `K`.-/
 lemma kification.isClosed_iff {X : Type*} [TopologicalSpace X] {A : Set (kification X)} :
     IsClosed (X := kification X) A ↔
     ∀ (K : Set X), IsCompact K → IsClosed (K ↓∩ A):= by
