@@ -3,10 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
+import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.RestrictScalars
+import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
 # The tensor product of R-algebras
@@ -33,6 +34,8 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 * [C. Kassel, *Quantum Groups* (§II.4)][Kassel1995]
 
 -/
+
+#import_bumps
 
 assert_not_exists Equiv.Perm.cycleType
 
@@ -882,9 +885,6 @@ lemma comm_comp_includeLeft :
 lemma comm_comp_includeRight :
     (TensorProduct.comm R A B : A ⊗[R] B →ₐ[R] B ⊗[R] A).comp includeRight = includeLeft := rfl
 
-theorem adjoin_tmul_eq_top : adjoin R { t : A ⊗[R] B | ∃ a b, a ⊗ₜ[R] b = t } = ⊤ :=
-  top_le_iff.mp <| (top_le_iff.mpr <| span_tmul_eq_top R A B).trans (span_le_adjoin R _)
-
 end
 
 section
@@ -971,16 +971,6 @@ theorem map_restrictScalars_comp_includeRight (f : A →ₐ[S] C) (g : B →ₐ[
 theorem map_comp_includeRight (f : A →ₐ[R] C) (g : B →ₐ[R] D) :
     (map f g).comp includeRight = includeRight.comp g :=
   map_restrictScalars_comp_includeRight f g
-
-theorem map_range (f : A →ₐ[R] C) (g : B →ₐ[R] D) :
-    (map f g).range = (includeLeft.comp f).range ⊔ (includeRight.comp g).range := by
-  apply le_antisymm
-  · rw [← map_top, ← adjoin_tmul_eq_top, ← adjoin_image, adjoin_le_iff]
-    rintro _ ⟨_, ⟨a, b, rfl⟩, rfl⟩
-    rw [map_tmul, ← mul_one (f a), ← one_mul (g b), ← tmul_mul_tmul]
-    exact mul_mem_sup (AlgHom.mem_range_self _ a) (AlgHom.mem_range_self _ b)
-  · rw [← map_comp_includeLeft f g, ← map_comp_includeRight f g]
-    exact sup_le (AlgHom.range_comp_le_range _ _) (AlgHom.range_comp_le_range _ _)
 
 lemma comm_comp_map (f : A →ₐ[R] C) (g : B →ₐ[R] D) :
     (TensorProduct.comm R C D : C ⊗[R] D →ₐ[R] D ⊗[R] C).comp (Algebra.TensorProduct.map f g) =
@@ -1174,12 +1164,6 @@ theorem productMap_right_apply (b : B) :
 @[simp]
 theorem productMap_right : (productMap f g).comp includeRight = g :=
   lift_comp_includeRight _ _ (fun _ _ => Commute.all _ _)
-
-theorem productMap_range : (productMap f g).range = f.range ⊔ g.range := by
-  rw [productMap_eq_comp_map, AlgHom.range_comp, map_range, map_sup, ← AlgHom.range_comp,
-    ← AlgHom.range_comp,
-    ← AlgHom.comp_assoc, ← AlgHom.comp_assoc, lmul'_comp_includeLeft, lmul'_comp_includeRight,
-    AlgHom.id_comp, AlgHom.id_comp]
 
 end
 
@@ -1387,3 +1371,5 @@ theorem mul'_comp_tensorTensorTensorComm :
 end Lemmas
 
 end TensorProduct.Algebra
+
+#min_imports
