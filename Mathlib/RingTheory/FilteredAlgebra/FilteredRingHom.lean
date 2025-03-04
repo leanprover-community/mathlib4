@@ -320,6 +320,11 @@ variable [DecidableEq ι]
 theorem AssociatedGradedRingHom_apply (x : AssociatedGraded FR FR_lt) (i : ι) :
     (Gr[f] x) i = Gr(i)[f] (x i) := rfl
 
+@[simp]
+lemma AssociatedGradedAddMonoidHom_apply_of {i : ι} (x : GradedPiece FR FR_lt i) :
+    (Gr[f] (AssociatedGraded.of x)) = AssociatedGraded.of (Gr(i)[f] x) :=
+  f.1.AssociatedGradedAddMonoidHom_apply_of x
+
 theorem AssociatedGradedRingHom_comp_eq_comp: Gr[g].comp Gr[f] = Gr[g.comp f] :=
   RingHom.ext <| fun x ↦ congrFun
   (congrArg DFunLike.coe (FilteredAddGroupHom.AssociatedGradedAddMonoidHom_comp_eq_comp g.1 f.1)) x
