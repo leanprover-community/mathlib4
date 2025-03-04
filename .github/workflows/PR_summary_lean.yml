@@ -1,12 +1,16 @@
 name: Post Lean declaration diff
 
 on:
-  pull_request:
+  #pull_request:
+  workflow_run:
+    workflows: ["continuous integration"]
+    types: [completed] #requested
 
 jobs:
-  build:
+  on-success:
     name: Lean declaration diff
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: cleanup
         run: |
