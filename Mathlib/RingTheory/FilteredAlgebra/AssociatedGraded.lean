@@ -42,13 +42,15 @@ variable {A : Type*} [AddCommGroup A] {σ : Type*} [SetLike σ A] [AddSubgroupCl
 variable (F : ι → σ) (F_lt : outParam <| ι → σ)
 
 @[nolint unusedArguments]
-instance [Preorder ι] [IsFiltration F F_lt] (i : ι) : Setoid (F i) :=
-  QuotientAddGroup.leftRel (((F_lt i) : AddSubgroup A).addSubgroupOf ((F i) : AddSubgroup A))
+instance [Preorder ι] [IsFiltration F F_lt] (i : ι) : Setoid (AddSubgroup.ofClass (F i)) :=
+  QuotientAddGroup.leftRel
+    ((AddSubgroup.ofClass (F_lt i)).addSubgroupOf (AddSubgroup.ofClass (F i)))
 
 /-- `GradedPiece i` of the associated graded abelian group to `IsFiltration F F_lt`
 with every `F j` `AddSubgroup`s is defined as `F i` quotient by `F_lt i`. -/
 abbrev GradedPiece (i : ι) :=
-  ((F i) : AddSubgroup A) ⧸ ((F_lt i) : AddSubgroup A).addSubgroupOf ((F i) : AddSubgroup A)
+  (AddSubgroup.ofClass (F i)) ⧸
+    (AddSubgroup.ofClass (F_lt i)).addSubgroupOf (AddSubgroup.ofClass (F i))
 
 /-- Direct sum of `GradedPiece`s.-/
 abbrev AssociatedGraded := DirectSum ι (GradedPiece F F_lt)
@@ -123,22 +125,24 @@ theorem of_injective (i : ι) : Function.Injective (of (i := i) (F := F) (F_lt :
 
 end AssociatedGraded
 
+open AddSubgroup
+
 namespace GradedPiece
 
 /-- Obtaining an element of `GradedPiece i` from an element of `F i`.-/
-def mk {i : ι} : F i →+ GradedPiece F F_lt i :=
-  QuotientAddGroup.mk' (((F_lt i) : AddSubgroup A).addSubgroupOf ((F i) : AddSubgroup A))
+def mk {i : ι} : (ofClass (F i)) →+ GradedPiece F F_lt i :=
+  QuotientAddGroup.mk' ((ofClass (F_lt i)).addSubgroupOf (ofClass (F i)))
 
 section
 
 lemma mk_eq {i : ι} (x : F i) : mk F F_lt x = ⟦x⟧ := rfl
 
-lemma HEq_rfl {i j : ι} {r : A} (h : i = j) (hi : r ∈ F i) (hj : r ∈F j) :
+lemma HEq_rfl {i j : ι} {r : A} (h : i = j) (hi : r ∈ ofClass (F i)) (hj : r ∈ ofClass (F j)) :
     HEq (mk F F_lt ⟨r, hi⟩) (mk F F_lt ⟨r, hj⟩) :=
   h ▸ HEq.rfl
 
 lemma HEq_eq_mk_eq {i j : ι} {x : GradedPiece F F_lt i} {y : GradedPiece F F_lt j} {r s : A}
-    (h : i = j) (e : r = s) (hi : r ∈ F i) (hj : s ∈ F j)
+    (h : i = j) (e : r = s) (hi : r ∈ ofClass (F i)) (hj : s ∈ ofClass (F j))
     (hx : x = mk F F_lt ⟨r, hi⟩) (hy : y = mk F F_lt ⟨s, hj⟩) : HEq x y := by
   rw [hx, hy]
   subst e
@@ -146,21 +150,21 @@ lemma HEq_eq_mk_eq {i j : ι} {x : GradedPiece F F_lt i} {y : GradedPiece F F_lt
 
 -- Will be easier to use if HMul intances for F i is added and some other refactor is done.
 lemma HEq_eq_mk_coe_eq {i j : ι} {x : GradedPiece F F_lt i} {y : GradedPiece F F_lt j}
-    (r : F i) (s : F j) (h : i = j) (e : (r : A) = (s : A))
+    (r : ofClass (F i)) (s : ofClass (F j)) (h : i = j) (e : (r : A) = (s : A))
     (hx : x = mk F F_lt r) (hy : y = mk F F_lt s) : HEq x y :=
   HEq_eq_mk_eq F F_lt h e r.2 (e ▸ s.2) hx hy
 
 end
 
-lemma mk_congr {i : ι} (x y : F i) (h : x = y) : mk F F_lt x = mk F F_lt y :=
+lemma mk_congr {i : ι} (x y : ofClass (F i)) (h : x = y) : mk F F_lt x = mk F F_lt y :=
   congrArg (mk F F_lt) h
 
-lemma sound [Preorder ι] [IsFiltration F F_lt] {i : ι} (x y : F i) :
+lemma sound [Preorder ι] [IsFiltration F F_lt] {i : ι} (x y : ofClass (F i)) :
     x ≈ y → mk F F_lt x = mk F F_lt y :=
   Quotient.sound
 
 @[simp]
-lemma exact [Preorder ι] [IsFiltration F F_lt] {i : ι} (x y : F i) :
+lemma exact [Preorder ι] [IsFiltration F F_lt] {i : ι} (x y : ofClass (F i)) :
     mk F F_lt x = mk F F_lt y → x ≈ y :=
   Quotient.exact
 
@@ -217,16 +221,20 @@ lemma hasGMul_AddSubgroup (F : ι → AddSubgroup R) (F_lt : outParam <| ι → 
 
 variable [OrderedAddCommMonoid ι] [AddSubgroupClass σ R]
 
-/-- The multiplication `F i → F j → F (i + j)` defined as the multiplication of its value. -/
-def IsRingFiltration.hMul [IsRingFiltration F F_lt] (i j : ι) (x : F i) (y : F j) : F (i + j) where
-  val := x * y
-  property := by simp [IsRingFiltration.toGradedMonoid.mul_mem x.2 y.2]
+open AddSubgroup
 
-instance [IsRingFiltration F F_lt] {i j : ι} : HMul (F i) (F j) (F (i + j)) where
+/-- The multiplication `F i → F j → F (i + j)` defined as the multiplication of its value. -/
+def IsRingFiltration.hMul [isfil : IsRingFiltration F F_lt] (i j : ι)
+    (x : AddSubgroup.ofClass (F i)) (y : AddSubgroup.ofClass (F j)) : ofClass (F (i + j)) where
+  val := x * y
+  property := isfil.toGradedMonoid.mul_mem x.2 y.2
+
+instance [IsRingFiltration F F_lt] {i j : ι} :
+    HMul (ofClass (F i)) (ofClass (F j)) (ofClass (F (i + j))) where
   hMul := IsRingFiltration.hMul F F_lt i j
 
-lemma hasGMul.mul_equiv_mul [hasGMul F F_lt] {i j : ι}
-    ⦃x₁ x₂ : F i⦄ (hx : x₁ ≈ x₂) ⦃y₁ y₂ : F j⦄ (hy : y₁ ≈ y₂) : x₁ * y₁ ≈ x₂ * y₂ := by
+lemma hasGMul.mul_equiv_mul [hasGMul F F_lt] {i j : ι} ⦃x₁ x₂ : ofClass (F i)⦄ (hx : x₁ ≈ x₂)
+    ⦃y₁ y₂ : ofClass (F j)⦄ (hy : y₁ ≈ y₂) : x₁ * y₁ ≈ x₂ * y₂ := by
   simp only [HasEquiv.Equiv, QuotientAddGroup.leftRel_apply] at hx hy ⊢
   have eq : - (x₁ * y₁ : R) + (x₂ * y₂ : R) = (- x₁ + x₂ : R) * y₁ + x₂ * (- y₁ + y₂ : R) := by
     noncomm_ring
@@ -249,10 +257,10 @@ namespace GradedPiece
 
 section HEq
 
-lemma mk_mul [hasGMul F F_lt] {i j : ι} (x : F i) (y : F j) :
+lemma mk_mul [hasGMul F F_lt] {i j : ι} (x : ofClass (F i)) (y : ofClass (F j)) :
     mk F F_lt x * mk F F_lt y = mk F F_lt (x * y) := rfl
 
-lemma gradedMul_def [hasGMul F F_lt] {i j : ι} (x : F i) (y : F j) :
+lemma gradedMul_def [hasGMul F F_lt] {i j : ι} (x : ofClass (F i)) (y : ofClass (F j)) :
     mk F F_lt (IsRingFiltration.hMul F F_lt i j x y) =
     hasGMul.gradedMul F F_lt (mk F F_lt x) (mk F F_lt y) := rfl
 
@@ -274,19 +282,17 @@ lemma GradedPiece.HEq_one_mul [hasGMul F F_lt] {i : ι} (x : GradedPiece F F_lt 
     HEq ((1 : GradedPiece F F_lt 0) * x) x := by
   let rx := Quotient.out x
   apply HEq_eq_mk_eq F F_lt (zero_add i) (one_mul (rx : R))
-  · convert (gradedMul_def F F_lt (1 : F 0) rx).symm
-    exact (Quotient.out_eq' x).symm
+  · rw [← Quotient.out_eq' x]
+    exact (gradedMul_def F F_lt (1 : F 0) rx).symm
   · exact (Quotient.out_eq' x).symm
-  · simp
 
 lemma GradedPiece.HEq_mul_one [hasGMul F F_lt] {i : ι} (x : GradedPiece F F_lt i) :
     HEq (x * (1 : GradedPiece F F_lt 0)) x := by
   let rx := Quotient.out x
   apply HEq_eq_mk_eq F F_lt (add_zero i) (mul_one (rx : R))
-  · convert (gradedMul_def F F_lt rx (1 : F 0)).symm
-    exact (Quotient.out_eq' x).symm
+  · rw [← Quotient.out_eq' x]
+    exact (gradedMul_def F F_lt rx (1 : F 0)).symm
   · exact (Quotient.out_eq' x).symm
-  · simp
 
 lemma GradedPiece.HEq_mul_assoc [hasGMul F F_lt] {i j k : ι}
     (a : GradedPiece F F_lt i) (b : GradedPiece F F_lt j) (c : GradedPiece F F_lt k) :
@@ -296,34 +302,32 @@ lemma GradedPiece.HEq_mul_assoc [hasGMul F F_lt] {i j k : ι}
   let rc := Quotient.out c
   apply HEq_eq_mk_eq F F_lt (add_assoc i j k) (mul_assoc (ra : R) rb rc)
   · show a * b * c = ⟦ra * rb * rc⟧
+    rw [← Quotient.out_eq' c]
     convert (gradedMul_def F F_lt (ra * rb) rc).symm
-    · convert (gradedMul_def F F_lt ra rb).symm
-      · exact (Quotient.out_eq' a).symm
-      · exact (Quotient.out_eq' b).symm
-    · exact (Quotient.out_eq' c).symm
+    rw [← Quotient.out_eq' a, ← Quotient.out_eq' b]
+    exact (gradedMul_def F F_lt ra rb).symm
   · show a * (b * c) = ⟦ra * (rb * rc)⟧
+    rw [← Quotient.out_eq' a]
     convert (gradedMul_def F F_lt ra (rb * rc)).symm
-    · exact (Quotient.out_eq' a).symm
-    · convert (gradedMul_def F F_lt rb rc).symm
-      · exact (Quotient.out_eq' b).symm
-      · exact (Quotient.out_eq' c).symm
+    rw [← Quotient.out_eq' b, ← Quotient.out_eq' c]
+    exact (gradedMul_def F F_lt rb rc).symm
 
-omit [AddSubgroupClass σ R] in
 lemma Filtration.pow_mem [IsRingFiltration F F_lt] (n : ℕ) {i : ι}
-    (x : F i) : (x : R) ^ n ∈ (F (n • i)) := by
+    (x : ofClass (F i)) : (x : R) ^ n ∈ ofClass (F (n • i)) := by
   induction' n with d hd
   · simpa using IsRingFiltration.toGradedMonoid.one_mem
-  · simpa [pow_succ, succ_nsmul i d] using (IsRingFiltration.toGradedMonoid.mul_mem hd x.2)
+  · rw [pow_succ, succ_nsmul i d]
+    exact IsRingFiltration.toGradedMonoid.mul_mem hd x.2
 
-lemma Filtration.pow_lift [hasGMul F F_lt] (n : ℕ) {i : ι} (x₁ x₂ : F i) (h : x₁ ≈ x₂) :
-    (⟨x₁ ^ n, Filtration.pow_mem F F_lt n x₁⟩ : (F (n • i))) ≈
-    (⟨x₂ ^ n, Filtration.pow_mem F F_lt n x₂⟩ : (F (n • i))) := by
+lemma Filtration.pow_lift [hasGMul F F_lt] (n : ℕ) {i : ι} (x₁ x₂ : ofClass (F i)) (h : x₁ ≈ x₂) :
+    (⟨x₁ ^ n, Filtration.pow_mem F F_lt n x₁⟩ : ofClass (F (n • i))) ≈
+    (⟨x₂ ^ n, Filtration.pow_mem F F_lt n x₂⟩ : ofClass (F (n • i))) := by
   induction' n with d hd
   · simp only [pow_zero, mk_eq, exact]
   · simp only [pow_succ, HasEquiv.Equiv, QuotientAddGroup.leftRel_apply] at h hd ⊢
     have mem1 : x₁.1 ^ d * x₂.1 - x₁.1 ^ d * x₁.1 ∈ F_lt ((d + 1) • i) := by
-      rw [← mul_sub, sub_eq_neg_add]
-      simpa [succ_nsmul i d] using hasGMul.mul_F_lt_mem (Filtration.pow_mem F F_lt d x₁) h
+      rw [← mul_sub, sub_eq_neg_add, succ_nsmul i d]
+      exact hasGMul.mul_F_lt_mem (Filtration.pow_mem F F_lt d x₁) h
     have mem2 : x₂.1 ^ d * x₂.1 - x₁.1 ^ d * x₂.1 ∈ F_lt ((d + 1) • i) := by
       rw [← sub_mul, sub_eq_neg_add]
       simp only [← sub_mul, sub_eq_neg_add, succ_nsmul i d]
@@ -385,7 +389,7 @@ lemma GradedPiece.zero_mul [hasGMul F F_lt] {i j : ι} (a : GradedPiece F F_lt i
     (0 : GradedPiece F F_lt j) * a = 0 := by
   rw [← QuotientAddGroup.mk_zero, ← QuotientAddGroup.mk_zero]
   induction a using Quotient.ind'
-  change Quotient.mk'' _ = Quotient.mk'' _
+  show Quotient.mk'' _ = Quotient.mk'' _
   simp only [Quotient.eq'', ZeroMemClass.coe_zero, zero_mul, QuotientAddGroup.leftRel_apply,
     add_zero, neg_mem_iff]
   show (0 : R) * _ ∈ (F_lt (j + i))
@@ -411,10 +415,10 @@ lemma GradedPiece.add_mul [hasGMul F F_lt] {i j : ι} (a b : GradedPiece F F_lt 
   induction a using Quotient.ind'
   induction b using Quotient.ind'
   induction c using Quotient.ind'
+  rename_i a1 a2 a3
   show Quotient.mk'' _ = Quotient.mk'' _
   simp only [Quotient.eq'', QuotientAddGroup.leftRel_apply, AddSubgroup.mem_addSubgroupOf,
     AddSubgroup.coe_add, NegMemClass.coe_neg, AddSubgroup.mem_mk, SetLike.mem_coe]
-  rename_i a1 a2 a3
   have : -((a1 + a2) * a3).1 + ((a1 * a3).1 + (a2 * a3).1) = 0 := by
     have : -((a1.1 + a2.1) * a3.1) + (a1.1 * a3.1 + a2.1 * a3.1) = 0 := by noncomm_ring
     rw [← this]

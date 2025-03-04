@@ -149,11 +149,11 @@ def comp : FilteredAddGroupHom FA FA_lt FC FC_lt where
 variable [AddSubgroupClass α A]
 
 lemma IsStrict.strict [FilteredHom.IsStrict FA FA_lt FB FB_lt f] {p y} :
-    y ∈ (FB p) → y ∈ f.range → y ∈ AddSubgroup.map (f : A →+ B) (FA p) :=
+    y ∈ (FB p) → y ∈ f.range → y ∈ AddSubgroup.map f (AddSubgroup.ofClass (FA p)) :=
   FilteredHom.IsStrict.strict
 
 lemma IsStrict.strict_lt [FilteredHom.IsStrict FA FA_lt FB FB_lt f] {p y} :
-    y ∈ (FB_lt p) → y ∈ f.range → y ∈ AddSubgroup.map (f : A →+ B) (FA_lt p) :=
+    y ∈ (FB_lt p) → y ∈ f.range → y ∈ AddSubgroup.map f (AddSubgroup.ofClass (FA_lt p)) :=
   FilteredHom.IsStrict.strict_lt
 
 variable [AddSubgroupClass β B] [AddSubgroupClass γ C]
