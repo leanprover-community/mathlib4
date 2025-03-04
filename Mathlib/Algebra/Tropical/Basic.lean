@@ -151,9 +151,8 @@ instance instLETropical [LE R] : LE (Tropical R) where le x y := untrop x ≤ un
 theorem untrop_le_iff [LE R] {x y : Tropical R} : untrop x ≤ untrop y ↔ x ≤ y :=
   Iff.rfl
 
-instance decidableLE [LE R] [DecidableRel ((· ≤ ·) : R → R → Prop)] :
-    DecidableRel ((· ≤ ·) : Tropical R → Tropical R → Prop) := fun x y =>
-  ‹DecidableRel (· ≤ ·)› (untrop x) (untrop y)
+instance decidableLE [LE R] [DecidableLE R] : DecidableLE (Tropical R) := fun x y =>
+  ‹DecidableLE R› (untrop x) (untrop y)
 
 instance instLTTropical [LT R] : LT (Tropical R) where lt x y := untrop x < untrop y
 
@@ -161,9 +160,8 @@ instance instLTTropical [LT R] : LT (Tropical R) where lt x y := untrop x < untr
 theorem untrop_lt_iff [LT R] {x y : Tropical R} : untrop x < untrop y ↔ x < y :=
   Iff.rfl
 
-instance decidableLT [LT R] [DecidableRel ((· < ·) : R → R → Prop)] :
-    DecidableRel ((· < ·) : Tropical R → Tropical R → Prop) := fun x y =>
-  ‹DecidableRel (· < ·)› (untrop x) (untrop y)
+instance decidableLT [LT R] [DecidableLT R] : DecidableLT (Tropical R) := fun x y =>
+  ‹DecidableLT R› (untrop x) (untrop y)
 
 instance instPreorderTropical [Preorder R] : Preorder (Tropical R) :=
   { instLETropical, instLTTropical with
