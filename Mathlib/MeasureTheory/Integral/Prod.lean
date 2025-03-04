@@ -289,6 +289,12 @@ theorem Integrable.prod_mul {L : Type*} [RCLike L] {f : α → L} {g : β → L}
     (hg : Integrable g ν) : Integrable (fun z : α × β => f z.1 * g z.2) (μ.prod ν) :=
   hf.prod_smul hg
 
+theorem IntegrableOn.swap [SFinite μ] {f : α × β → E} {s : Set α} {t : Set β}
+    (hf : IntegrableOn f (s ×ˢ t) (μ.prod ν)) :
+    IntegrableOn (f ∘ Prod.swap) (t ×ˢ s) (ν.prod μ) := by
+  rw [IntegrableOn, ← Measure.prod_restrict] at hf ⊢
+  exact hf.swap
+
 end
 
 variable [NormedSpace ℝ E]
@@ -313,6 +319,10 @@ variable [SFinite μ]
 theorem integral_prod_swap (f : α × β → E) :
     ∫ z, f z.swap ∂ν.prod μ = ∫ z, f z ∂μ.prod ν :=
   measurePreserving_swap.integral_comp MeasurableEquiv.prodComm.measurableEmbedding _
+
+theorem setIntegral_prod_swap (s : Set α) (t : Set β) (f : α × β → E) :
+    ∫ (z : β × α) in t ×ˢ s, f z.swap ∂ν.prod μ = ∫ (z : α × β) in s ×ˢ t, f z ∂μ.prod ν := by
+  rw [← Measure.prod_restrict, ← Measure.prod_restrict, integral_prod_swap]
 
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
 
@@ -533,5 +543,6 @@ lemma integral_integral_swap_of_hasCompactSupport
     exact mem_image_of_mem _ (subset_tsupport _ this)
 
 end
+
 
 end MeasureTheory
