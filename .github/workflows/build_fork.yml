@@ -182,18 +182,15 @@ jobs:
           printf '%s\n' "${actualDiff}"
           messageStart=$'<details><summary> <b>Declaration diff in Lean</b></summary>'
           (
-            #printf $'%s\n' "$(
-              ./scripts/declDiff_shell_glue.sh |
-                awk -v messStart="${messageStart}" '
-                  BEGIN{
-                    con=0
-                    printf("%s```diff\n", messStart)
-                  }
-                  (con == 1) {print $0}
-                  /GETME!/ {con=1}
-                  END{ print "```\n</details>" }'
-            #  )"
-            #printf $'%s\n```\n</details>\n' "${actualDiff}"
+            ./scripts/declDiff_shell_glue.sh |
+              awk -v messStart="${messageStart}" '
+                BEGIN{
+                  con=0
+                  printf("%s```diff\n\n", messStart)
+                }
+                (con == 1) {print $0}
+                /GETME!/ {con=1}
+                END{ print "```\n</details>" }'
           ) > messageContent
           printf -- "------\n"
           cat messageContent
