@@ -259,9 +259,6 @@ theorem LinearIndependent.linearCombination_ne_of_not_mem_support [Nontrivial R]
   simp only [not_exists, not_and, mem_map] at p -- Porting note: `mem_map` isn't currently triggered
   exact p f (f.mem_supported_support R) rfl
 
-@[deprecated (since := "2024-08-29")] alias LinearIndependent.total_ne_of_not_mem_support :=
-  LinearIndependent.linearCombination_ne_of_not_mem_support
-
 end Subtype
 
 section union
