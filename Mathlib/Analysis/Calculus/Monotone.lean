@@ -132,7 +132,7 @@ theorem Monotone.ae_hasDerivAt {f : ℝ → ℝ} (hf : Monotone f) :
   /- We already know that the Stieltjes function associated to `f` (i.e., `g : x ↦ f (x^+)`) is
     differentiable almost everywhere. We reduce to this statement by sandwiching values of `f` with
     values of `g`, by shifting with `(y - x)^2` (which has no influence on the relevant
-    scale `y - x`.)-/
+    scale `y - x`.) -/
   filter_upwards [hf.stieltjesFunction.ae_hasDerivAt,
     hf.countable_not_continuousAt.ae_not_mem volume] with x hx h'x
   have A : hf.stieltjesFunction x = f x := by

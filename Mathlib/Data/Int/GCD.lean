@@ -10,6 +10,7 @@ import Mathlib.Data.Set.Operations
 import Mathlib.Order.Basic
 import Mathlib.Order.Bounds.Defs
 import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Data.Int.Basic
 
 /-!
 # Extended GCD and divisibility over ℤ
@@ -374,7 +375,7 @@ end Int
 theorem pow_gcd_eq_one {M : Type*} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 1) (hn : x ^ n = 1) :
     x ^ m.gcd n = 1 := by
   rcases m with (rfl | m); · simp [hn]
-  obtain ⟨y, rfl⟩ := isUnit_ofPowEqOne hm m.succ_ne_zero
+  obtain ⟨y, rfl⟩ := IsUnit.of_pow_eq_one hm m.succ_ne_zero
   rw [← Units.val_pow_eq_pow_val, ← Units.val_one (α := M), ← zpow_natCast, ← Units.ext_iff] at *
   rw [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, zpow_mul, hn, hm, one_zpow, one_zpow, one_mul]
 

@@ -134,7 +134,7 @@ variable {D : J ⥤ Algebra T} (c : Cocone (D ⋙ forget T)) (t : IsColimit c)
 /-- (Impl)
 The natural transformation given by the algebra structure maps, used to construct a cocone `c` with
 point `colimit (D ⋙ forget T)`.
- -/
+-/
 @[simps]
 def γ : (D ⋙ forget T) ⋙ ↑T ⟶ D ⋙ forget T where app j := (D.obj j).a
 
@@ -262,9 +262,8 @@ variable {J : Type u} [Category.{v} J]
 
 instance comp_comparison_forget_hasLimit (F : J ⥤ D) (R : D ⥤ C) [MonadicRightAdjoint R]
     [HasLimit (F ⋙ R)] :
-    HasLimit ((F ⋙ Monad.comparison (monadicAdjunction R)) ⋙ Monad.forget _) :=
-  @hasLimitOfIso _ _ _ _ (F ⋙ R) _ _
-    (isoWhiskerLeft F (Monad.comparisonForget (monadicAdjunction R)).symm)
+    HasLimit ((F ⋙ Monad.comparison (monadicAdjunction R)) ⋙ Monad.forget _) := by
+  assumption
 
 instance comp_comparison_hasLimit (F : J ⥤ D) (R : D ⥤ C) [MonadicRightAdjoint R]
     [HasLimit (F ⋙ R)] : HasLimit (F ⋙ Monad.comparison (monadicAdjunction R)) :=
@@ -465,7 +464,7 @@ variable {D : J ⥤ Coalgebra T} (c : Cone (D ⋙ forget T)) (t : IsLimit c)
 /-- (Impl)
 The natural transformation given by the coalgebra structure maps, used to construct a cone `c` with
 point `limit (D ⋙ forget T)`.
- -/
+-/
 @[simps]
 def γ : D ⋙ forget T ⟶ (D ⋙ forget T) ⋙ ↑T where app j := (D.obj j).a
 
@@ -588,9 +587,8 @@ end Comonad
 
 instance comp_comparison_forget_hasColimit (F : J ⥤ D) (R : D ⥤ C) [ComonadicLeftAdjoint R]
     [HasColimit (F ⋙ R)] :
-    HasColimit ((F ⋙ Comonad.comparison (comonadicAdjunction R)) ⋙ Comonad.forget _) :=
-  @hasColimitOfIso _ _ _ _ (F ⋙ R) _ _
-    (isoWhiskerLeft F (Comonad.comparisonForget (comonadicAdjunction R)).symm)
+    HasColimit ((F ⋙ Comonad.comparison (comonadicAdjunction R)) ⋙ Comonad.forget _) := by
+  assumption
 
 instance comp_comparison_hasColimit (F : J ⥤ D) (R : D ⥤ C) [ComonadicLeftAdjoint R]
     [HasColimit (F ⋙ R)] : HasColimit (F ⋙ Comonad.comparison (comonadicAdjunction R)) :=

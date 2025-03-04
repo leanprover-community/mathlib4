@@ -27,6 +27,7 @@ protected theorem Pairwise.nodup {l : List α} {r : α → α → Prop} [IsIrref
     Nodup l :=
   h.imp ne_of_irrefl
 
+open scoped Relator in
 theorem rel_nodup {r : α → β → Prop} (hr : Relator.BiUnique r) : (Forall₂ r ⇒ (· ↔ ·)) Nodup Nodup
   | _, _, Forall₂.nil => by simp only [nodup_nil]
   | _, _, Forall₂.cons hab h => by
@@ -59,11 +60,17 @@ theorem nodup_iff_sublist {l : List α} : Nodup l ↔ ∀ a, ¬[a, a] <+ l :=
       exact (IH fun a s => h a <| sublist_cons_of_sublist _ s).cons fun al =>
         h a <| (singleton_sublist.2 al).cons_cons _⟩
 
+@[simp]
+theorem nodup_mergeSort {l : List α} {le : α → α → Bool} : (l.mergeSort le).Nodup ↔ l.Nodup :=
+  (mergeSort_perm l le).nodup_iff
+
+protected alias ⟨_, Nodup.mergeSort⟩ := nodup_mergeSort
+
 theorem nodup_iff_injective_getElem {l : List α} :
     Nodup l ↔ Function.Injective (fun i : Fin l.length => l[i.1]) :=
   pairwise_iff_getElem.trans
     ⟨fun h i j hg => by
-      cases' i with i hi; cases' j with j hj
+      obtain ⟨i, hi⟩ := i; obtain ⟨j, hj⟩ := j
       rcases lt_trichotomy i j with (hij | rfl | hji)
       · exact (h i j hi hj hij hg).elim
       · rfl
@@ -98,6 +105,8 @@ theorem nodup_iff_getElem?_ne_getElem? {l : List α} :
     rw [Ne, ← Option.some_inj, ← getElem?_eq_getElem, ← getElem?_eq_getElem]
     exact h i j hij hj
 
+set_option linter.deprecated false in
+@[deprecated nodup_iff_getElem?_ne_getElem? (since := "2025-02-17")]
 theorem nodup_iff_get?_ne_get? {l : List α} :
     l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l.get? i ≠ l.get? j := by
   simp [nodup_iff_getElem?_ne_getElem?]
@@ -120,17 +129,21 @@ theorem not_nodup_of_get_eq_of_ne (xs : List α) (n m : Fin xs.length)
   rw [nodup_iff_injective_get]
   exact fun hinj => hne (hinj h)
 
-theorem indexOf_getElem [DecidableEq α] {l : List α} (H : Nodup l) (i : Nat) (h : i < l.length) :
-    indexOf l[i] l = i :=
-  suffices (⟨indexOf l[i] l, indexOf_lt_length_iff.2 (getElem_mem _)⟩ : Fin l.length) = ⟨i, h⟩
+theorem idxOf_getElem [DecidableEq α] {l : List α} (H : Nodup l) (i : Nat) (h : i < l.length) :
+    idxOf l[i] l = i :=
+  suffices (⟨idxOf l[i] l, idxOf_lt_length_iff.2 (getElem_mem _)⟩ : Fin l.length) = ⟨i, h⟩
     from Fin.val_eq_of_eq this
   nodup_iff_injective_get.1 H (by simp)
 
--- This is incorrectly named and should be `indexOf_get`;
+@[deprecated (since := "2025-01-30")] alias indexOf_getElem := idxOf_getElem
+
+-- This is incorrectly named and should be `idxOf_get`;
 -- this already exists, so will require a deprecation dance.
-theorem get_indexOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
-    indexOf (get l i) l = i := by
-  simp [indexOf_getElem, H]
+theorem get_idxOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
+    idxOf (get l i) l = i := by
+  simp [idxOf_getElem, H]
+
+@[deprecated (since := "2025-01-30")] alias get_indexOf := get_idxOf
 
 theorem nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ a, count a l ≤ 1 :=
   nodup_iff_sublist.trans <|
@@ -234,14 +247,14 @@ lemma nodup_tail_reverse (l : List α) (h : l[0]? = l.getLast?) :
   | cons a l ih =>
     by_cases hl : l = []
     · aesop
-    · simp_all only [List.get?_eq_getElem?, List.tail_reverse, List.nodup_reverse,
+    · simp_all only [List.tail_reverse, List.nodup_reverse,
         List.dropLast_cons_of_ne_nil hl, List.tail_cons]
       simp only [length_cons, Nat.zero_lt_succ, getElem?_eq_getElem, getElem_cons_zero,
         Nat.add_one_sub_one, Nat.lt_add_one, Option.some.injEq, List.getElem_cons,
         show l.length ≠ 0 by aesop, ↓reduceDIte, getLast?_eq_getElem?] at h
       rw [h,
         show l.Nodup = (l.dropLast ++ [l.getLast hl]).Nodup by
-          simp [List.dropLast_eq_take, ← List.drop_length_sub_one],
+          simp [List.dropLast_eq_take],
         List.nodup_append_comm]
       simp [List.getLast_eq_getElem]
 
@@ -343,7 +356,7 @@ protected theorem Nodup.set :
 
 theorem Nodup.map_update [DecidableEq α] {l : List α} (hl : l.Nodup) (f : α → β) (x : α) (y : β) :
     l.map (Function.update f x y) =
-      if x ∈ l then (l.map f).set (l.indexOf x) y else l.map f := by
+      if x ∈ l then (l.map f).set (l.idxOf x) y else l.map f := by
   induction' l with hd tl ihl; · simp
   rw [nodup_cons] at hl
   simp only [mem_cons, map, ihl hl.2]

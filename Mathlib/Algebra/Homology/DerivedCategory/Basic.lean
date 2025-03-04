@@ -75,7 +75,7 @@ of acyclic complexes. -/
 def subcategoryAcyclic : Triangulated.Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) :=
   (homologyFunctor C (ComplexShape.up ℤ) 0).homologicalKernel
 
-instance : ClosedUnderIsomorphisms (subcategoryAcyclic C).P := by
+instance : (subcategoryAcyclic C).P.IsClosedUnderIsomorphisms := by
   dsimp [subcategoryAcyclic]
   infer_instance
 

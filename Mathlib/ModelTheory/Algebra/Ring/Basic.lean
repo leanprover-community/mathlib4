@@ -147,7 +147,7 @@ structure is the same as the structure already given on `R` by the classes `Add`
 
 It is recommended to use this type class as a hypothesis to any theorem whose statement
 requires a type to have be both a `Ring` (or `Field` etc.) and a
-`Language.ring.Structure`  -/
+`Language.ring.Structure` -/
 /- This class does not extend `Add` etc, because this way it can be used in
 combination with a `Ring`, or `Field` instance without having multiple different
 `Add` structures on the Type. -/

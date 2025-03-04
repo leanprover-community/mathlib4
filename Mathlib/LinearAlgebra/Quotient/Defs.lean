@@ -46,8 +46,6 @@ theorem quotientRel_def {x y : M} : p.quotientRel x y ↔ x - y ∈ p :=
       rfl)
     neg_mem_iff
 
-@[deprecated (since := "2024-08-29")] alias quotientRel_r_def := quotientRel_def
-
 /-- The quotient of a module `M` by a submodule `p ⊆ M`. -/
 instance hasQuotient : HasQuotient M (Submodule R M) :=
   ⟨fun p => Quotient (quotientRel p)⟩
@@ -106,6 +104,10 @@ theorem mk_sub : (mk (x - y) : M ⧸ p) = mk x - mk y :=
   rfl
 
 protected nonrec lemma «forall» {P : M ⧸ p → Prop} : (∀ a, P a) ↔ ∀ a, P (mk a) := Quotient.forall
+
+theorem subsingleton_iff : Subsingleton (M ⧸ p) ↔ ∀ x : M, x ∈ p := by
+  rw [subsingleton_iff_forall_eq 0, Submodule.Quotient.forall]
+  simp_rw [Submodule.Quotient.mk_eq_zero]
 
 section SMul
 
