@@ -171,7 +171,9 @@ info: [file: scripts/parseGit.lean, lines 26-27,
 -/
 #guard_msgs in
 run_cmd
-  let diffString ← IO.Process.run {cmd := "git", args := #["diff", "--unified=0", "420e511d5f1d81458aef9bd76f48b96b07d32908..55741ae1d9aaa639953dd63bcfe32ed00cf3b4f5"]}
+  let args := #["diff", "--unified=0",
+    "420e511d5f1d81458aef9bd76f48b96b07d32908..55741ae1d9aaa639953dd63bcfe32ed00cf3b4f5"]
+  let diffString ← IO.Process.run {cmd := "git", args := args}
   let (totA, totB) := diffToGitDiff diffString
   logInfo m!"{totA}"
   logInfo m!"{totB}"
