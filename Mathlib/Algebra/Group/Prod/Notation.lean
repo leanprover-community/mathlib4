@@ -110,7 +110,7 @@ end SMul
 
 section Pow
 
-variable {α β E : Type*} [Pow α E] [Pow β E]
+variable {E α β : Type*} [Pow α E] [Pow β E]
 
 @[to_additive existing instSMul]
 instance instPow : Pow (α × β) E where pow p c := (p.1 ^ c, p.2 ^ c)
