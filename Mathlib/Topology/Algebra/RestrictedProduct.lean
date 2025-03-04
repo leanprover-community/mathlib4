@@ -128,10 +128,12 @@ def RestrictedProduct (𝓕 : Filter ι) : Type _ := {x : Π i, R i // ∀ᶠ i 
 
 open Batteries.ExtendedBinder
 
+/-- `Πʳ i, [R i, A i]_[𝓕]` is `RestrictedProduct R A 𝓕`. -/
 scoped[RestrictedProduct]
 notation3 "Πʳ "(...)", ""["r:(scoped R => R)", "a:(scoped A => A)"]_[" f "]" =>
   RestrictedProduct r a f
 
+/-- `Πʳ i, [R i, A i]` is `RestrictedProduct R A cofinite`. -/
 scoped[RestrictedProduct]
 notation3"Πʳ "(...)", ""["r:(scoped R => R)", "a:(scoped A => A)"]" =>
   RestrictedProduct r a cofinite
@@ -412,7 +414,7 @@ theorem weaklyLocallyCompactSpace_of_principal [∀ i, WeaklyLocallyCompactSpace
       split_ifs with his
       · exact hAcompact i his
       · exact K_compact i
-    set U : Set (Π i, R i) := Sᶜ.pi K with U_def
+    set U : Set (Π i, R i) := Sᶜ.pi K
     have U_nhds : U ∈ 𝓝 (x : Π i, R i) := set_pi_mem_nhds hS fun i _ ↦ hK i
     have QU : (↑) ⁻¹' U ⊆ ((↑) ⁻¹' Q : Set (Πʳ i, [R i, A i]_[𝓟 S])) := fun y H i _ ↦ by
       dsimp only
