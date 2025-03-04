@@ -1048,30 +1048,41 @@ theorem leftComm_symm_tmul (m : A) (n : B) (p : C) :
 theorem leftComm_toLinearEquiv :
     (leftComm R A B C : _ ≃ₗ[R] _) = _root_.TensorProduct.leftComm R A B C := rfl
 
-variable (R A B C D) in
+variable (R S A B C D) in
+set_option maxSynthPendingDepth 2 in
 /-- Tensor product of algebras analogue of `mul_mul_mul_comm`.
 
-This is the algebra version of `TensorProduct.tensorTensorTensorComm`. -/
-def tensorTensorTensorComm : (A ⊗[R] B) ⊗[R] C ⊗[R] D ≃ₐ[R] (A ⊗[R] C) ⊗[R] B ⊗[R] D :=
-  let e₁ := Algebra.TensorProduct.assoc R A B (C ⊗[R] D)
-  let e₂ := congr (1 : A ≃ₐ[R] A) (leftComm R B C D)
-  let e₃ := (Algebra.TensorProduct.assoc R A C (B ⊗[R] D)).symm
-  e₁.trans (e₂.trans e₃)
+This is the algebra version of `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`. -/
+def tensorTensorTensorComm : (A ⊗[R] B) ⊗[S] C ⊗[R] D ≃ₐ[S] (A ⊗[S] C) ⊗[R] B ⊗[R] D :=
+  AlgEquiv.ofLinearEquiv (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R S A B C D)
+    rfl (LinearMap.map_mul_iff _ |>.mpr <| by ext; simp)
 
 @[simp]
 theorem tensorTensorTensorComm_tmul (m : A) (n : B) (p : C) (q : D) :
-    tensorTensorTensorComm R A B C D (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
+    tensorTensorTensorComm R S A B C D (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
   rfl
 
+set_option maxSynthPendingDepth 2 in
 @[simp]
+theorem tensorTensorTensorComm_symm_tmul (m : A) (n : C) (p : B) (q : D) :
+    (tensorTensorTensorComm R S A B C D).symm (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
+  rfl
+
 theorem tensorTensorTensorComm_symm :
-    (tensorTensorTensorComm R A B C D).symm = tensorTensorTensorComm R A C B D := by
+    (tensorTensorTensorComm R R A B C D).symm = tensorTensorTensorComm R R A C B D := by
   ext; rfl
 
-@[simp]
+set_option maxSynthPendingDepth 2 in
 theorem tensorTensorTensorComm_toLinearEquiv :
-    (tensorTensorTensorComm R A B C D : _ ≃ₗ[R] _) =
-      _root_.TensorProduct.tensorTensorTensorComm R A B C D := rfl
+    (tensorTensorTensorComm R S A B C D).toLinearEquiv =
+      TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R S A B C D := rfl
+
+@[simp]
+theorem toLinearEquiv_tensorTensorTensorComm :
+    (tensorTensorTensorComm R R A B C D).toLinearEquiv =
+      _root_.TensorProduct.tensorTensorTensorComm R A B C D := by
+  apply LinearEquiv.toLinearMap_injective
+  ext; simp
 
 end
 
