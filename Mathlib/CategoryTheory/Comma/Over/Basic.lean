@@ -94,6 +94,17 @@ end
 def homMk {U V : Over X} (f : U.left ⟶ V.left) (w : f ≫ V.hom = U.hom := by aesop_cat) : U ⟶ V :=
   CostructuredArrow.homMk f w
 
+@[simp]
+lemma left_homMk {U V : Over X} (f : U ⟶ V) (h) :
+    homMk f.left h = f := by
+  rfl
+
+/-- This is useful when `homMk (· ≫ ·)` appears under `Functor.map` or a natural equivalence. -/
+lemma homMk_comp {U V W : Over X} (f : U.left ⟶ V.left) (g : V.left ⟶ W.left) (w_f w_g)
+    (w_fg := by aesop) : homMk (f ≫ g) w_fg = homMk f w_f ≫ homMk g w_g := by
+  ext
+  simp
+
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward
 direction gives a commutative triangle.
 -/
@@ -165,6 +176,46 @@ def mapIso {Y : T} (f : X ≅ Y) : Over X ≌ Over Y :=
 
 @[simp] lemma mapIso_functor {Y : T} (f : X ≅ Y) : (mapIso f).functor = map f.hom := rfl
 @[simp] lemma mapIso_inverse {Y : T} (f : X ≅ Y) : (mapIso f).inverse = map f.inv := rfl
+
+/-- `Over.Sigma Y U` a shorthand for `(Over.map Y.hom).obj U`. This is the categoy-theoretic
+analogue of `Sigma` for types.
+-/
+abbrev Sigma {X : T} (Y : Over X) (U : Over (Y.left)) : Over X :=
+  (map Y.hom).obj U
+
+namespace Sigma
+
+variable {X : T}
+
+lemma hom {Y : Over X} (Z : Over (Y.left)) : (Sigma Y Z).hom = Z.hom ≫ Y.hom := map_obj_hom
+
+/-- `Σ_ ` is functorial in the second argument. -/
+def map {Y : Over X} {Z Z' : Over (Y.left)} (g : Z ⟶ Z') : (Sigma Y Z) ⟶ (Sigma Y Z') :=
+  (Over.map Y.hom).map g
+
+lemma map_left {Y : Over X} {Z Z' : Over (Y.left)} {g : Z ⟶ Z'} :
+    ((Over.map Y.hom).map g).left = g.left := Over.map_map_left
+
+lemma map_homMk_left {Y : Over X} {Z Z' : Over (Y.left)} {g : Z ⟶ Z'} :
+    map g = (Over.homMk g.left : Sigma Y Z ⟶ Sigma Y Z') := by
+  rfl
+
+/-- The first projection of the sigma object. -/
+@[simps!]
+def fst {Y : Over X} (Z : Over (Y.left)) : (Sigma Y Z) ⟶ Y := Over.homMk Z.hom
+
+lemma map_comp_fst {Y : Over X} {Z Z' : Over (Y.left)} (g : Z ⟶ Z') :
+    (Over.map Y.hom).map g ≫ fst Z' = fst Z := by
+  ext
+  simp [Sigma.fst, Over.w]
+
+/-- Promoting a morphism `g : Σ_Y Z ⟶ Σ_Y Z'` in `Over X` with `g ≫ fst Z' = fst Z`
+to a morphism `Z ⟶ Z'` in `Over (Y.left)`. -/
+def overHomMk {Y : Over X} {Z Z' : Over (Y.left)} (g : Sigma Y Z ⟶ Sigma Y Z')
+    (w : g ≫ fst Z' = fst Z := by aesop_cat) : Z ⟶ Z' :=
+  Over.homMk g.left (congr_arg CommaMorphism.left w)
+
+end Sigma
 
 section coherences
 /-!
@@ -315,6 +366,10 @@ def iteratedSliceEquiv : Over f ≌ Over f.left where
 
 theorem iteratedSliceForward_forget :
     iteratedSliceForward f ⋙ forget f.left = forget f ⋙ forget X :=
+  rfl
+
+theorem iteratedSliceBackward_forget :
+    iteratedSliceBackward f ⋙ forget f = Over.map f.hom :=
   rfl
 
 theorem iteratedSliceBackward_forget_forget :
