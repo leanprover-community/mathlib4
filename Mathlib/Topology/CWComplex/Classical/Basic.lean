@@ -412,11 +412,8 @@ lemma RelCWComplex.iUnion_skeleton_eq_skeleton [RelCWComplex C D] (n : ℕ∞) :
     · refine ⟨0, ?_, skeletonLT_mono (by norm_num) hiC⟩
       simp
     · refine ⟨i, ?_, hiC⟩
-      cases' n with n n
-      · simp
-      · nth_rw 2 [← Nat.cast_one] at hin
-        rw [← Nat.cast_add, ENat.coe_le_coe, Nat.add_le_add_iff_right] at hin
-        exact ENat.coe_le_coe.mpr hin
+      rw [Nat.cast_add_one] at hin
+      exact Order.le_of_lt_add_one <| (ENat.add_one_le_iff <| by simp).1 hin
 
 lemma RelCWComplex.skeletonLT_succ_eq_skeletonLT_union_iUnion_closedCell [RelCWComplex C D]
     (n : ℕ) : skeletonLT C (n + 1) = skeletonLT C n ∪ ⋃ (j : cell C n), closedCell n j := by
@@ -475,7 +472,7 @@ lemma CWComplex.complex_eq_iUnion_openCell [CWComplex C] :
     C = ⋃ (n : ℕ) (j : cell C n), openCell n j := by
   simpa using RelCWComplex.complex_eq_iUnion_openCell (C := C) (D := ∅)
 
-/-- The contraposition of `disjoint_openCell_of_ne`. -/
+/-- The contrapositive of `disjoint_openCell_of_ne`. -/
 lemma RelCWComplex.eq_cell_of_not_disjoint [RelCWComplex C D] {n : ℕ} {j : cell C n} {m : ℕ}
     {i : cell C m} (h : ¬ Disjoint (openCell n j) (openCell m i)) :
     (⟨n, j⟩ : (Σ n, cell C n)) = ⟨m, i⟩ := by
@@ -530,14 +527,15 @@ lemma RelCWComplex.skeleton_inter_openCell_eq_empty [RelCWComplex C D] {n : ℕ�
     {j : cell C m} (nlem : n < m) : skeleton C n ∩ openCell m j = ∅ :=
   skeletonLT_inter_openCell_eq_empty (Order.add_one_le_of_lt nlem)
 
-lemma RelCWComplex.base_inter_iUnion_openCell_eq_empty [RelCWComplex C D] :
-    D ∩ ⋃ (n : ℕ) (j : cell C n), openCell n j = ∅ := by
-  simp_rw [inter_iUnion, iUnion_eq_empty]
+lemma RelCWComplex.disjoint_base_iUnion_openCell [RelCWComplex C D] :
+    Disjoint D (⋃ (n : ℕ) (j : cell C n), openCell n j) := by
+  simp_rw [disjoint_iff_inter_eq_empty, inter_iUnion, iUnion_eq_empty]
   intro n i
   rw [inter_comm, (disjointBase n i).inter_eq]
 
-lemma RelCWComplex.interior_base_inter_closedCell_eq_empty [T2Space X] [RelCWComplex C D] {n : ℕ}
-    {j : cell C n} : interior D ∩ closedCell n j = ∅ := by
+lemma RelCWComplex.disjoint_interior_base_closedCell [T2Space X] [RelCWComplex C D] {n : ℕ}
+    {j : cell C n} : Disjoint (interior D) (closedCell n j) := by
+  rw [disjoint_iff_inter_eq_empty]
   by_contra h
   push_neg at h
   rw [← closure_openCell_eq_closedCell, inter_comm,
@@ -547,12 +545,13 @@ lemma RelCWComplex.interior_base_inter_closedCell_eq_empty [T2Space X] [RelCWCom
     rwa [skeletonLT_inter_openCell_eq_empty n.cast_nonneg'] at this
   exact ⟨base_subset_skeletonLT 0 (interior_subset xmemD), xmemcell⟩
 
-lemma RelCWComplex.interior_base_inter_iUnion_closedCell_eq_empty [T2Space X] [RelCWComplex C D] :
-    interior D ∩ ⋃ (n : ℕ) (j : cell C n), closedCell n j = ∅ := by
-  simp_rw [inter_iUnion, interior_base_inter_closedCell_eq_empty, iUnion_empty]
+lemma RelCWComplex.disjoint_interior_base_iUnion_closedCell [T2Space X] [RelCWComplex C D] :
+    Disjoint (interior D) (⋃ (n : ℕ) (j : cell C n), closedCell n j) := by
+  simp_rw [disjoint_iff_inter_eq_empty, inter_iUnion, disjoint_interior_base_closedCell.inter_eq,
+    iUnion_empty]
 
 /-- A skeleton intersected with a closed cell of a higher dimension is the skeleton intersected with
-  the boundary of the cell. -/
+the boundary of the cell. -/
 lemma RelCWComplex.skeletonLT_inter_closedCell_eq_skeletonLT_inter_cellFrontier [RelCWComplex C D]
     {n : ℕ∞} {m : ℕ} {j : cell C m} (hnm : n ≤ m) :
     skeletonLT C n ∩ closedCell m j = skeletonLT C n ∩ cellFrontier m j := by
@@ -569,8 +568,8 @@ lemma RelCWComplex.skeleton_inter_closedCell_eq_skeleton_inter_cellFrontier [Rel
   skeletonLT_inter_closedCell_eq_skeletonLT_inter_cellFrontier (Order.add_one_le_of_lt hnm)
 
 /-- If for all `m ≤ n` and every `i : cell C m` the intersection `A ∩ closedCell m j` is closed
-  and `A ∩ D` is closed then `A ∩ cellFrontier (n + 1) j` is closed for every
-  `j : cell C (n + 1)`. -/
+and `A ∩ D` is closed then `A ∩ cellFrontier (n + 1) j` is closed for every
+`j : cell C (n + 1)`. -/
 lemma RelCWComplex.isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedCell
     [RelCWComplex C D] [T2Space X] {A : Set X} {n : ℕ} (hn : ∀ m ≤ n, ∀ (j : cell C m),
     IsClosed (A ∩ closedCell m j)) (j : cell C (n + 1)) (hD : IsClosed (A ∩ D)) :
@@ -595,7 +594,7 @@ lemma CWComplex.isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedCell
     (by simp only [inter_empty, isClosed_empty])
 
 /-- If for every cell either `A ∩ openCell n j` or `A ∩ closedCell n j` is closed then
-  `A` is closed. -/
+`A` is closed. -/
 lemma RelCWComplex.isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedCell
     [RelCWComplex C D] [T2Space X] {A : Set X} (hAC : A ⊆ C) (hDA : IsClosed (A ∩ D))
     (h : ∀ n (_ : 0 < n), ∀ (j : cell C n),
@@ -613,14 +612,14 @@ lemma RelCWComplex.isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedC
   · exact h2
 
 /-- If for every cell either `A ∩ openCell n j` or `A ∩ closedCell n j` is closed then
-  `A` is closed. -/
+`A` is closed. -/
 lemma CWComplex.isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedCell
     [CWComplex C] [T2Space X] {A : Set X} (hAC : A ⊆ C) (h : ∀ n (_ : 0 < n), ∀ (j : cell C n),
     IsClosed (A ∩ openCell n j) ∨ IsClosed (A ∩ closedCell n j)) : IsClosed A :=
   RelCWComplex.isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedCell hAC (by simp) h
 
 /-- A version of `cellFrontier_subset_finite_closedCell` using open cells: The boundary of a cell is
-  contained in a finite union of open cells of a lower dimension. -/
+contained in a finite union of open cells of a lower dimension. -/
 lemma RelCWComplex.cellFrontier_subset_finite_openCell [RelCWComplex C D] (n : ℕ) (i : cell C n) :
     ∃ I : Π m, Finset (cell C m),
     cellFrontier n i ⊆ D ∪ (⋃ (m < n) (j ∈ I m), openCell m j) := by
@@ -654,7 +653,7 @@ lemma RelCWComplex.cellFrontier_subset_finite_openCell [RelCWComplex C D] (n : �
       exact ⟨Or.intro_left _ hj, hxj⟩
 
 /-- A version of `cellFrontier_subset_finite_closedCell` using open cells: The boundary of a cell is
-  contained in a finite union of open cells of a lower dimension. -/
+contained in a finite union of open cells of a lower dimension. -/
 lemma CWComplex.cellFrontier_subset_finite_openCell [CWComplex C] (n : ℕ) (i : cell C n) :
     ∃ I : Π m, Finset (cell C m),
     cellFrontier n i ⊆ ⋃ (m < n) (j ∈ I m), openCell m j := by
