@@ -104,18 +104,38 @@ def check_toolchain_history(repo: Dict[str, str], version: str) -> Optional[str]
             if result.returncode == 0:
                 content = json.loads(result.stdout)
                 toolchain = base64.b64decode(content['content']).decode('utf-8').strip()
-                if f'leanprover/lean4:{version}' in toolchain:
+                # Check for exact match
+                if toolchain == f'leanprover/lean4:{version}':
                     return commit['sha']
         return None
     except Exception as e:
         print(f"Error checking toolchain history for {repo['name']}: {e}", file=sys.stderr)
         return None
 
+def get_current_toolchain(repo: Dict[str, str]) -> Optional[str]:
+    """Get the current toolchain version from the default branch"""
+    github_url = repo['github']
+    repo_name = github_url.replace('https://github.com/', '')
+
+    try:
+        result = subprocess.run(
+            ['gh', 'api', f'repos/{repo_name}/contents/lean-toolchain'],
+            capture_output=True,
+            text=True
+        )
+        if result.returncode == 0:
+            content = json.loads(result.stdout)
+            toolchain = base64.b64decode(content['content']).decode('utf-8').strip()
+            # Strip the prefix if present
+            return toolchain.replace('leanprover/lean4:', '')
+        return None
+    except Exception:
+        return None
+
 def main():
     repos = load_repos()
 
     if len(sys.argv) == 1:
-        # No argument provided - get latest version
         print("Finding latest version tags in downstream repositories:")
         print("-" * 50)
 
@@ -123,7 +143,8 @@ def main():
         for repo in repos:
             latest = get_latest_version(repo)
             status = TICK if latest else CROSS
-            version_str = latest if latest else "No matching version found"
+            current = get_current_toolchain(repo)
+            version_str = latest if latest else f"no toolchain tags found ({repo['default_branch']} branch is on {current})"
             print(f"{status} {repo['name']}: {version_str}")
             if latest:
                 latest_versions.append(latest)
