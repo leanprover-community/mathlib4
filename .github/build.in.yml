@@ -154,18 +154,10 @@ jobs:
           # Only return if PR is still open
           filterOutClosed: true
 
-      #- name: Declarations diff -- Lean implementation
-      #  id: diff_in_lean
-      #  run: |
-      #    ./scripts/declDiff_shell_glue.sh
-
       - name: Report diff in Lean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-
-          #actualDiff="${ steps.diff_in_lean.outputs.LeanDiff }}"
-          printf '%s\n' "${actualDiff}"
           messageStart=$'<details><summary> <b>Declaration diff in Lean</b></summary>\n'
           (
             ./scripts/declDiff_shell_glue.sh |
@@ -318,7 +310,7 @@ jobs:
           run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
       - name: lint mathlib
-        if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
+        #if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
         uses: liskin/gh-problem-matcher-wrap@v3
         with:
