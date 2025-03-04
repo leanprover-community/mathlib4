@@ -26,7 +26,7 @@ getDeclarations () {
   lake build Mathlib.declarations_diff_lean
 
   # undo the local changes
-  rm -rf Mathlib/declarations_diff_lean.lean
+  rm -f Mathlib/declarations_diff_lean.lean
 }
 
 getDeclarations decls_in_PR.txt
