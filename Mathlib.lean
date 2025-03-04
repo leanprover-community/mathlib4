@@ -288,7 +288,9 @@ import Mathlib.Algebra.Group.Action.Hom
 import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Action.Option
 import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.Action.Pointwise.Set
+import Mathlib.Algebra.Group.Action.Pointwise.Finset
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Action.Pretransitive
 import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Group.Action.Sigma
@@ -415,6 +417,7 @@ import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Algebra.GroupWithZero.Action.Faithful
 import Mathlib.Algebra.GroupWithZero.Action.Opposite
 import Mathlib.Algebra.GroupWithZero.Action.Pi
+import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Finset
 import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 import Mathlib.Algebra.GroupWithZero.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Action.Units
@@ -946,7 +949,9 @@ import Mathlib.Algebra.Ring.Action.End
 import Mathlib.Algebra.Ring.Action.Field
 import Mathlib.Algebra.Ring.Action.Group
 import Mathlib.Algebra.Ring.Action.Invariant
+import Mathlib.Algebra.Ring.Action.Pointwise.Finset
 import Mathlib.Algebra.Ring.Action.Pointwise.Set
+import Mathlib.Algebra.Ring.Action.Rat
 import Mathlib.Algebra.Ring.Action.Submonoid
 import Mathlib.Algebra.Ring.Action.Subobjects
 import Mathlib.Algebra.Ring.AddAut
@@ -3164,6 +3169,7 @@ import Mathlib.Data.Set.CoeSort
 import Mathlib.Data.Set.Constructions
 import Mathlib.Data.Set.Countable
 import Mathlib.Data.Set.Defs
+import Mathlib.Data.Set.Disjoint
 import Mathlib.Data.Set.Enumerate
 import Mathlib.Data.Set.Equitable
 import Mathlib.Data.Set.Finite.Basic
@@ -3176,6 +3182,7 @@ import Mathlib.Data.Set.Finite.Range
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Inclusion
 import Mathlib.Data.Set.Insert
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.List
@@ -3186,6 +3193,7 @@ import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Notation
 import Mathlib.Data.Set.Operations
 import Mathlib.Data.Set.Opposite
+import Mathlib.Data.Set.Order
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Pairwise.Lattice
 import Mathlib.Data.Set.Pointwise.Iterate
