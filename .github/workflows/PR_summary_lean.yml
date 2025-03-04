@@ -48,11 +48,11 @@ jobs:
           SEP_STRING: 123GETME!
         run: |
           PR="${{ github.event.pull_request.number }}"
-          git checkout master
-          git switch -
-          git checkout master...HEAD
-          masterHash="$(git rev-parse HEAD)"
-          git switch -
+          #git checkout master
+          #git switch -
+          #git checkout master...HEAD
+          #masterHash="$(git rev-parse HEAD)"
+          #git switch -
 
           rm -rf .lake/build/lib/lean/Mathlib/ .lake/build/lib/Mathlib/
           messageStart=$'New <details><summary><b>Declaration diff in Lean</b></summary>'
