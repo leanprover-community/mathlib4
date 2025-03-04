@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn, Sven Manthe
+Authors: Floris van Doorn, Sven Manthe, Jovan Gerbscheid
 -/
 import Mathlib.Init
 import Lean.Meta.Closure
@@ -22,17 +22,17 @@ elab "abstract" tacs:ppDedent(tacticSeq) : tactic => do
     throwError "Abstract failed. There are {(← getGoals).length} goals. Expected exactly 1 goal."
   let target ← getMainTarget
   if !(← isProp target) then
-    throwError "Abstract failed. The current goal is not propositional."
+    throwError "Abstract failed. The current goal is not a proposition."
   let goal ← getMainGoal
   let newGoal ← mkFreshExprMVar target
   setGoals [newGoal.mvarId!]
   evalTactic tacs
+  if !(← getGoals).isEmpty then
+    throwError m! "Abstract failed. There are unsolved goals\n{goalsToMessageData (← getGoals)}"
   let newGoal ← instantiateMVars newGoal
   -- `mkAuxTheorem` works when there are universe metavariables,
   -- so we only check for expression metavariabes.
   if newGoal.hasExprMVar then
-    throwError m! "tactic `abstract` failed with unsolved goals\n{goalsToMessageData (← getGoals)}"
-  else
-    setGoals [goal]
-    let auxName ← mkAuxName ((← getDeclName?).getD .anonymous ++ `abstract) 1
-    goal.assign <| ← mkAuxTheorem auxName target newGoal
+    throwError m! "Abstract failed. The term contains metavariables {indentExpr newGoal}"
+  let auxName ← mkAuxName ((← getDeclName?).getD .anonymous ++ `abstract) 1
+  goal.assign <| ← mkAuxTheorem auxName target newGoal

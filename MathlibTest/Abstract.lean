@@ -13,7 +13,7 @@ fun x => Subsingleton.elim x ⟨0, foo.abstract_1⟩
 #guard_msgs in
 #print foo
 
-/-- error: Abstract failed. The current goal is not propositional. -/
+/-- error: Abstract failed. The current goal is not a proposition. -/
 #guard_msgs in
 example (n : Nat) : n = by abstract exact 0 := sorry
 
@@ -22,7 +22,7 @@ example (n : Nat) : n = by abstract exact 0 := sorry
 example (f : True ∧ True → Nat) (n : Nat) :
   n = f (by constructor; abstract trivial; trivial) := sorry
 
-/-- error: tactic `abstract` failed with unsolved goals
+/-- error: Abstract failed. There are unsolved goals
 case left
 f : True ∧ True → Nat
 n : Nat
