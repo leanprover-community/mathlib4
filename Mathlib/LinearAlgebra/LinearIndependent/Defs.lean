@@ -144,8 +144,6 @@ theorem LinearIndepOn.ne_zero [Nontrivial R] {i : ι} (hv : LinearIndepOn R v s)
 theorem LinearIndepOn.zero_not_mem_image [Nontrivial R] (hs : LinearIndepOn R v s) : 0 ∉ v '' s :=
   fun ⟨_, hi, h0⟩ ↦ hs.ne_zero hi h0
 
--- done
-
 theorem linearIndependent_empty_type [IsEmpty ι] : LinearIndependent R v :=
   injective_of_subsingleton _
 

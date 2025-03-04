@@ -228,16 +228,16 @@ theorem span_int_eq_addSubgroup_closure {M : Type*} [AddCommGroup M] (s : Set M)
 theorem span_int_eq {M : Type*} [AddCommGroup M] (s : AddSubgroup M) :
     (span ℤ (s : Set M)).toAddSubgroup = s := by rw [span_int_eq_addSubgroup_closure, s.closure_eq]
 
-theorem disjoint_of_disjoint_span (hst : Disjoint (span R s) (span R t)) :
+theorem _root_.Disjoint.of_span (hst : Disjoint (span R s) (span R t)) :
     Disjoint (s \ {0}) t := by
   rw [disjoint_iff_forall_ne]
   rintro v ⟨hvs, hv0 : v ≠ 0⟩ _ hvt rfl
   exact hv0 <| (disjoint_def.1 hst) v (subset_span hvs) (subset_span hvt)
 
-theorem disjoint_of_disjoint_span₀ (hst : Disjoint (span R s) (span R t)) (h0s : 0 ∉ s) :
+theorem _root_.Disjoint.of_span₀ (hst : Disjoint (span R s) (span R t)) (h0s : 0 ∉ s) :
     Disjoint s t := by
   rw [← diff_singleton_eq_self h0s]
-  exact disjoint_of_disjoint_span hst
+  exact hst.of_span
 
 section
 

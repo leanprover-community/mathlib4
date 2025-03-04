@@ -63,14 +63,12 @@ theorem LinearIndepOn.union_of_quotient {s t : Set ι} {f : ι → M} (hs : Line
   · simp
   aesop
 
--- TODO : change the statement to use `MkQ`, and the proof to use `LinearIndepOn.union_of_quotient`.
 theorem LinearIndepOn.union_id_of_quotient {M' : Submodule R M}
     {s : Set M} (hs : s ⊆ M') (hs' : LinearIndepOn R id s) {t : Set M}
-    (ht : LinearIndepOn R (Submodule.Quotient.mk (p := M')) t) : LinearIndepOn R id (s ∪ t) :=
-  have h := (LinearIndependent.sumElim_of_quotient (f := Set.embeddingOfSubset s M' hs)
-    (LinearIndependent.of_comp M'.subtype (by simpa using hs')) Subtype.val ht)
-  h.linearIndepOn_id' <| by
-    simp only [embeddingOfSubset_apply_coe, Sum.elim_range, Subtype.range_val]
+    (ht : LinearIndepOn R (mkQ M') t) : LinearIndepOn R id (s ∪ t) :=
+  hs'.union_of_quotient <| by
+    rw [image_id]
+    exact ht.of_comp ((span R s).mapQ M' (LinearMap.id) (span_le.2 hs))
 
 @[deprecated (since := "2025-02-16")] alias LinearIndependent.union_of_quotient :=
   LinearIndepOn.union_id_of_quotient

@@ -475,7 +475,7 @@ theorem LinearIndepOn.union {t : Set ι} (hs : LinearIndepOn R v s) (ht : Linear
   nontriviality R
   classical
   have hli := LinearIndependent.sum_type hs ht (by rwa [← image_eq_range, ← image_eq_range])
-  have hdj := (Submodule.disjoint_of_disjoint_span₀ hdj hs.zero_not_mem_image).of_image
+  have hdj := (hdj.of_span₀ hs.zero_not_mem_image).of_image
   rw [LinearIndepOn]
   convert (hli.comp _ (Equiv.Set.union hdj).injective) with ⟨x, hx | hx⟩
   · rw [comp_apply, Equiv.Set.union_apply_left _ hx, Sum.elim_inl]
