@@ -6,6 +6,7 @@ Authors: Bhavik Mehta, Kim Morrison
 import Mathlib.CategoryTheory.Subobject.MonoOver
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.CategoryTheory.Elementwise
 
@@ -235,6 +236,10 @@ theorem mk_arrow (P : Subobject X) : mk P.arrow = P :=
   Quotient.inductionOn' P fun Q => by
     obtain ⟨e⟩ := @Quotient.mk_out' _ (isIsomorphicSetoid _) Q
     exact Quotient.sound' ⟨MonoOver.isoMk (Iso.refl _) ≪≫ e⟩
+
+@[simp]
+lemma mk_arrow_mk {X : C} (m : MonoOver X) : mk m.arrow = ⟦m⟧ :=
+  rfl
 
 theorem le_of_comm {B : C} {X Y : Subobject B} (f : (X : C) ⟶ (Y : C)) (w : f ≫ Y.arrow = X.arrow) :
     X ≤ Y := by
@@ -517,9 +522,36 @@ theorem pullback_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject Z) :
   induction' x using Quotient.inductionOn' with t
   exact Quotient.sound ⟨(MonoOver.pullbackComp _ _).app t⟩
 
+lemma pullback_obj_representative {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
+    (pullback f).obj x = mk ((MonoOver.pullback f).obj (representative.obj x)).arrow := by
+  induction' x using Quotient.inductionOn' with m
+  exact Quotient.sound ⟨Functor.mapIso _ (representativeIso _).symm⟩
+
+theorem pullback_obj {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
+    (pullback f).obj x = mk (pullback.snd x.arrow f) := by
+  rw [pullback_obj_representative]
+  rfl
+
 instance (f : X ⟶ Y) : (pullback f).Faithful where
 
 end Pullback
+
+section IsPullback
+
+theorem eqOfIsPullback {X Y Z : C} {x x' : Subobject X}
+    {f : X ⟶ Z} {g : Y ⟶ Z} {k : (x : C) ⟶ Y} {k' : (x' : C) ⟶ Y}
+    (h : IsPullback k x.arrow g f) (h' : IsPullback k' x'.arrow g f) :
+    x = x' :=
+  eq_of_comm (IsPullback.isoIsPullback _ _ h h') (by simp)
+
+theorem arrow_isPullback {X Y Z : C}
+    (f : Y ⟶ Z) (g : X ⟶ Z) [HasPullback f g] [Mono f] :
+    IsPullback ((underlyingIso _).hom ≫ pullback.fst f g) (mk (pullback.snd f g)).arrow f g :=
+  IsPullback.of_iso (IsPullback.of_hasPullback f g)
+    (underlyingIso _).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
+    (by simp) (by simp) (by simp) (by simp)
+
+end IsPullback
 
 section Map
 
