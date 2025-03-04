@@ -474,8 +474,7 @@ lemma RelCWComplex.mem_skeleton_iff [RelCWComplex C D] {n : ℕ∞} {x : X} :
   · rw [← Nat.cast_one, ← Nat.cast_add, Nat.cast_lt, Nat.cast_le, Order.lt_add_one_iff]
 
 lemma CWComplex.exists_mem_openCell_of_mem_skeleton [CWComplex C] {n : ℕ∞} {x : X} :
-    x ∈ skeleton C n ↔
-    ∃ (m : ℕ) (_ : m ≤ n) (j : cell C m), x ∈ openCell m j := by
+    x ∈ skeleton C n ↔ ∃ (m : ℕ) (_ : m ≤ n) (j : cell C m), x ∈ openCell m j := by
   rw [RelCWComplex.mem_skeleton_iff, mem_empty_iff_false, false_or]
 
 /-- A skeleton and an open cell of a higher dimension are disjoint. -/
