@@ -3,12 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Real.Star
 import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.Algebra.Star
-import Mathlib.Topology.Algebra.UniformGroup.Defs
 import Mathlib.Topology.Instances.Int
-import Mathlib.Topology.Order.Bornology
 
 /-!
 # Topological properties of ℝ
@@ -38,13 +34,6 @@ theorem Real.uniformContinuous_neg : UniformContinuous (@Neg.neg ℝ _) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
     ⟨_, ε0, fun _ _ h => by simpa only [abs_sub_comm, Real.dist_eq, neg_sub_neg] using h⟩
 
-instance : UniformAddGroup ℝ :=
-  UniformAddGroup.mk' Real.uniformContinuous_add Real.uniformContinuous_neg
-
-theorem Real.uniformContinuous_const_mul {x : ℝ} : UniformContinuous (x * ·) :=
-  uniformContinuous_of_continuousAt_zero (DistribMulAction.toAddMonoidHom ℝ x)
-    (continuous_const_smul x).continuousAt
-
 -- short-circuit type class inference
 instance : IsTopologicalAddGroup ℝ := by infer_instance
 instance : IsTopologicalRing ℝ := inferInstance
@@ -66,12 +55,3 @@ instance Real.instCompleteSpace : CompleteSpace ℝ := by
   have := c.equiv_lim ε ε0
   simp only [mem_map, mem_atTop_sets, mem_setOf_eq]
   exact this.imp fun N hN n hn => hε (hN n hn)
-
-instance instIsOrderBornology : IsOrderBornology ℝ where
-  isBounded_iff_bddBelow_bddAbove s := by
-    refine ⟨fun bdd ↦ ?_, fun h ↦ isBounded_of_bddAbove_of_bddBelow h.2 h.1⟩
-    obtain ⟨r, hr⟩ : ∃ r : ℝ, s ⊆ Icc (-r) r := by
-      simpa [Real.closedBall_eq_Icc] using bdd.subset_closedBall 0
-    exact ⟨bddBelow_Icc.mono hr, bddAbove_Icc.mono hr⟩
-
-instance : ContinuousStar ℝ := ⟨continuous_id⟩

@@ -9,7 +9,9 @@ import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Topology.Instances.NNReal.Defs
+import Mathlib.Topology.Instances.Real.Lemmas
 import Mathlib.Topology.MetricSpace.Isometry
+import Mathlib.Topology.Order.Bornology
 
 /-!
 # Topology on `ℝ≥0`
@@ -40,6 +42,22 @@ noncomputable section
 open Filter Metric Set TopologicalSpace Topology
 
 namespace NNReal
+
+/-
+instance : ContinuousStar ℝ≥0 where
+  continuous_star := continuous_id
+-/
+
+-- TODO: generalize this to a broader class of subtypes
+instance : IsOrderBornology ℝ≥0 where
+  isBounded_iff_bddBelow_bddAbove s := by
+    refine ⟨fun bdd ↦ ?_, fun h ↦ isBounded_of_bddAbove_of_bddBelow h.2 h.1⟩
+    obtain ⟨r, hr⟩ : ∃ r : ℝ≥0, s ⊆ Icc 0 r := by
+      obtain ⟨rreal, hrreal⟩ := bdd.subset_closedBall 0
+      use rreal.toNNReal
+      simp only [← NNReal.closedBall_zero_eq_Icc', Real.coe_toNNReal']
+      exact subset_trans hrreal (Metric.closedBall_subset_closedBall (le_max_left rreal 0))
+    exact ⟨bddBelow_Icc.mono hr, bddAbove_Icc.mono hr⟩
 
 variable {α : Type*}
 

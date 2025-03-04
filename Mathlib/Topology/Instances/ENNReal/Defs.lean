@@ -3,10 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Topology.Order.MonotoneContinuity
-import Mathlib.Topology.EMetricSpace.Lipschitz
-import Mathlib.Topology.Metrizable.Basic
-import Mathlib.Topology.Order.T5
 import Mathlib.Topology.Instances.NNReal.Defs
 
 /-!
@@ -36,14 +32,7 @@ instance : OrderTopology ℝ≥0∞ := ⟨rfl⟩
 
 -- short-circuit type class inference
 instance : T2Space ℝ≥0∞ := inferInstance
-instance : T5Space ℝ≥0∞ := inferInstance
 instance : T4Space ℝ≥0∞ := inferInstance
-
-instance : SecondCountableTopology ℝ≥0∞ :=
-  orderIsoUnitIntervalBirational.toHomeomorph.isEmbedding.secondCountableTopology
-
-instance : MetrizableSpace ENNReal :=
-  orderIsoUnitIntervalBirational.toHomeomorph.isEmbedding.metrizableSpace
 
 theorem isEmbedding_coe : IsEmbedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
   coe_strictMono.isEmbedding_of_ordConnected <| by rw [range_coe']; exact ordConnected_Iio
@@ -68,7 +57,5 @@ instance : ContinuousAdd ℝ≥0∞ := by
   · exact tendsto_nhds_top_mono' continuousAt_snd fun p => le_add_left le_rfl
   simp only [ContinuousAt, some_eq_coe, nhds_coe_coe, ← coe_add, tendsto_map'_iff,
     Function.comp_def, tendsto_coe, tendsto_add]
-
-instance : ContinuousInv ℝ≥0∞ := ⟨OrderIso.invENNReal.continuous⟩
 
 end ENNReal
