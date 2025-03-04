@@ -565,10 +565,6 @@ theorem KaehlerDifferential.derivationQuotKerTotal_lift_comp_linearCombination :
   conv_rhs => rw [← Finsupp.smul_single_one a b, LinearMap.map_smul]
   simp [KaehlerDifferential.derivationQuotKerTotal_apply]
 
-@[deprecated (since := "2024-08-29")] alias
-  KaehlerDifferential.derivationQuotKerTotal_lift_comp_total :=
-  KaehlerDifferential.derivationQuotKerTotal_lift_comp_linearCombination
-
 theorem KaehlerDifferential.kerTotal_eq :
     LinearMap.ker (Finsupp.linearCombination S (KaehlerDifferential.D R S)) =
       KaehlerDifferential.kerTotal R S := by
@@ -582,9 +578,6 @@ theorem KaehlerDifferential.kerTotal_eq :
 theorem KaehlerDifferential.linearCombination_surjective :
     Function.Surjective (Finsupp.linearCombination S (KaehlerDifferential.D R S)) := by
   rw [← LinearMap.range_eq_top, range_linearCombination, span_range_derivation]
-
-@[deprecated (since := "2024-08-29")] alias KaehlerDifferential.total_surjective :=
-  KaehlerDifferential.linearCombination_surjective
 
 /-- `Ω[S⁄R]` is isomorphic to `S` copies of `S` with kernel `KaehlerDifferential.kerTotal`. -/
 @[simps!]

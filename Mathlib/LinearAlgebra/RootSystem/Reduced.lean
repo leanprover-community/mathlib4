@@ -17,12 +17,23 @@ This file contains basic definitions and results related to reduced root pairing
  * `RootPairing.linInd_iff_coxeterWeight_ne_four`: for a finite root pairing, two
    roots are linearly independent iff their Coxeter weight is not four.
 
+## Implementation details:
+
+For convenience we provide two versions of many lemmas, according to whether we know that the root
+pairing is valued in a smaller ring (in the sense of `RootPairing.IsValuedIn`). For example we
+provide both `RootPairing.linInd_iff_coxeterWeight_ne_four` and
+`RootPairing.linInd_iff_coxeterWeightIn_ne_four`.
+
+Several ways to avoid this duplication exist. We leave explorations of this for future work. One
+possible solution is to drop `RootPairing.pairing` and `RootPairing.coxeterWeight` entirely and rely
+solely on `RootPairing.pairingIn` and `RootPairing.coxeterWeightIn`.`
+
 -/
 
 open Module Set Function
 
 variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-  (P : RootPairing ι R M N) {i j : ι}
+  (P : RootPairing ι R M N) (S : Type*) {i j : ι}
 
 namespace RootPairing
 
@@ -93,6 +104,7 @@ lemma coxeterWeight_ne_four_of_linearIndependent [NeZero (2 : R)] [NoZeroSMulDiv
 
 variable [CharZero R] [NoZeroSMulDivisors R M]
 
+/-- See also `RootPairing.linearIndependent_iff_coxeterWeightIn_ne_four`. -/
 lemma linearIndependent_iff_coxeterWeight_ne_four :
     LinearIndependent R ![P.root i, P.root j] ↔ P.coxeterWeight i j ≠ 4 := by
   have : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
@@ -108,12 +120,14 @@ lemma linearIndependent_iff_coxeterWeight_ne_four :
     _ = P.pairing i j • (2 : R) • P.root j := by rw [mul_smul, h₁]
     _ = (4 : R) • P.root i := by rw [smul_comm, h₂, ← mul_smul]; norm_num
 
+/-- See also `RootPairing.coxeterWeightIn_eq_four_iff_not_linearIndependent`. -/
 lemma coxeterWeight_eq_four_iff_not_linearIndependent :
     P.coxeterWeight i j = 4 ↔ ¬ LinearIndependent R ![P.root i, P.root j] := by
   rw [P.linearIndependent_iff_coxeterWeight_ne_four, not_not]
 
 variable (i j)
 
+/-- See also `RootPairing.pairingIn_two_two_iff`. -/
 @[simp]
 lemma pairing_two_two_iff :
     P.pairing i j = 2 ∧ P.pairing j i = 2 ↔ i = j := by
@@ -123,6 +137,7 @@ lemma pairing_two_two_iff :
   replace this := P.pairing_smul_root_eq_of_not_linInd this
   exact P.root.injective <| smul_right_injective M two_ne_zero (h₂ ▸ this)
 
+/-- See also `RootPairing.pairingIn_neg_two_neg_two_iff`. -/
 @[simp]
 lemma pairing_neg_two_neg_two_iff :
     P.pairing i j = -2 ∧ P.pairing j i = -2 ↔ P.root i = -P.root j := by
@@ -153,15 +168,63 @@ lemma pairing_neg_one_neg_four_iff' (h2 : IsSMulRegular R (2 : R)) :
     P.pairing i j = -1 ∧ P.pairing j i = -4 ↔ P.root j = (-2 : R) • P.root i := by
   simpa [neg_smul, ← neg_eq_iff_eq_neg] using P.pairing_one_four_iff' i (P.reflection_perm j j) h2
 
+/-- See also `RootPairing.pairingIn_one_four_iff`. -/
 @[simp]
 lemma pairing_one_four_iff [NoZeroDivisors R] :
     P.pairing i j = 1 ∧ P.pairing j i = 4 ↔ P.root j = (2 : R) • P.root i :=
   P.pairing_one_four_iff' i j <| smul_right_injective R two_ne_zero
 
+/-- See also `RootPairing.pairingIn_neg_one_neg_four_iff`. -/
 @[simp]
 lemma pairing_neg_one_neg_four_iff [NoZeroDivisors R] :
     P.pairing i j = -1 ∧ P.pairing j i = -4 ↔ P.root j = (-2 : R) • P.root i :=
   P.pairing_neg_one_neg_four_iff' i j <| smul_right_injective R two_ne_zero
+
+section IsValuedIn
+
+open FaithfulSMul
+
+variable [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R] [P.IsValuedIn S]
+omit [NoZeroSMulDivisors R N]
+variable {i j}
+
+lemma linearIndependent_iff_coxeterWeightIn_ne_four :
+    LinearIndependent R ![P.root i, P.root j] ↔ P.coxeterWeightIn S i j ≠ 4 := by
+  rw [linearIndependent_iff_coxeterWeight_ne_four, ← P.algebraMap_coxeterWeightIn S,
+    ← map_ofNat (algebraMap S R), (algebraMap_injective S R).ne_iff]
+
+lemma coxeterWeightIn_eq_four_iff_not_linearIndependent :
+    P.coxeterWeightIn S i j = 4 ↔ ¬ LinearIndependent R ![P.root i, P.root j] := by
+  rw [P.linearIndependent_iff_coxeterWeightIn_ne_four S, not_not]
+
+variable (i j)
+
+@[simp]
+lemma pairingIn_two_two_iff :
+    P.pairingIn S i j = 2 ∧ P.pairingIn S j i = 2 ↔ i = j := by
+  simp only [← P.pairing_two_two_iff, ← P.algebraMap_pairingIn S, ← map_ofNat (algebraMap S R),
+    (algebraMap_injective S R).eq_iff]
+
+lemma pairingIn_neg_two_neg_two_iff :
+    P.pairingIn S i j = -2 ∧ P.pairingIn S j i = -2 ↔ P.root i = -P.root j := by
+  simp only [← P.pairing_neg_two_neg_two_iff, ← P.algebraMap_pairingIn S,
+    ← map_ofNat (algebraMap S R), (algebraMap_injective S R).eq_iff, ← map_neg]
+
+variable [NoZeroSMulDivisors R N]
+
+lemma pairingIn_one_four_iff [NoZeroDivisors R] :
+    P.pairingIn S i j = 1 ∧ P.pairingIn S j i = 4 ↔ P.root j = (2 : R) • P.root i := by
+  rw [← P.pairing_one_four_iff, ← P.algebraMap_pairingIn S, ← P.algebraMap_pairingIn S,
+    ← map_one (algebraMap S R), ← map_ofNat (algebraMap S R), (algebraMap_injective S R).eq_iff,
+    (algebraMap_injective S R).eq_iff]
+
+lemma pairingIn_neg_one_neg_four_iff [NoZeroDivisors R] :
+    P.pairingIn S i j = -1 ∧ P.pairingIn S j i = -4 ↔ P.root j = (-2 : R) • P.root i := by
+  rw [← P.pairing_neg_one_neg_four_iff, ← P.algebraMap_pairingIn S, ← P.algebraMap_pairingIn S,
+    ← map_one (algebraMap S R), ← map_ofNat (algebraMap S R), ← map_neg, ← map_neg,
+    (algebraMap_injective S R).eq_iff, (algebraMap_injective S R).eq_iff]
+
+end IsValuedIn
 
 end Finite
 
