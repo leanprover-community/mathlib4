@@ -127,7 +127,7 @@ instance : Zero (DivisorOn U) where
 /-- Helper lemma for the `simp` tactic: the function of the zero-divisor is the
 zero function. -/
 @[simp]
-theorem zero_fun : ((0 : DivisorOn U) : 𝕜 → ℤ) = 0 := rfl
+theorem coe_zero : ((0 : DivisorOn U) : 𝕜 → ℤ) = 0 := rfl
 
 /-- Divisors can be added -/
 instance : Add (DivisorOn U) where
