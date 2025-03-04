@@ -310,7 +310,7 @@ lemma equiv_toPartialMap_iff_of_isSeparated [X.Over S] [Y.Over S] [IsReduced X]
 end PartialMap
 
 /-- A rational map from `X` to `Y` (`X ⤏ Y`) is an equivalence class of partial maps,
-where two partial maps are equivalent if they are equal on a dense open subscheme.  -/
+where two partial maps are equivalent if they are equal on a dense open subscheme. -/
 def RationalMap (X Y : Scheme.{u}) : Type u :=
   @Quotient (X.PartialMap Y) inferInstance
 

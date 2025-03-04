@@ -130,7 +130,7 @@ def isoMk {f g : MonoOver X} (h : f.obj.left ≅ g.obj.left)
 
 /-- If `f : MonoOver X`, then `mk' f.arrow` is of course just `f`, but not definitionally, so we
     package it as an isomorphism. -/
-@[simp]
+@[simps!]
 def mk'ArrowIso {X : C} (f : MonoOver X) : mk' f.arrow ≅ f :=
   isoMk (Iso.refl _)
 
@@ -231,13 +231,10 @@ def map (f : X ⟶ Y) [Mono f] : MonoOver X ⥤ MonoOver Y :=
 def mapComp (f : X ⟶ Y) (g : Y ⟶ Z) [Mono f] [Mono g] : map (f ≫ g) ≅ map f ⋙ map g :=
   liftIso _ _ (Over.mapComp _ _) ≪≫ (liftComp _ _ _ _).symm
 
-variable (X)
-
+variable (X) in
 /-- `MonoOver.map` preserves the identity (up to a natural isomorphism). -/
 def mapId : map (𝟙 X) ≅ 𝟭 _ :=
   liftIso _ _ (Over.mapId X) ≪≫ liftId
-
-variable {X}
 
 @[simp]
 theorem map_obj_left (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g : C) = g.obj.left :=
@@ -359,10 +356,8 @@ def imageForgetAdj : image ⊣ forget X :=
             · apply image.lift_fac
           left_inv := fun _ => Subsingleton.elim _ _
           right_inv := fun k => by
-            ext1
-            change factorThruImage _ ≫ image.lift _ = _
-            rw [← cancel_mono g.arrow, assoc, image.lift_fac, image.fac f.hom]
-            exact (Over.w k).symm } }
+            ext
+            simp } }
 
 instance : (forget X).IsRightAdjoint :=
   ⟨_, ⟨imageForgetAdj⟩⟩

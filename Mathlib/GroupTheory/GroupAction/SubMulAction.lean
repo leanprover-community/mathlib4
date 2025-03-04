@@ -231,15 +231,12 @@ theorem smul_mem (r : R) (h : x ∈ p) : r • x ∈ p :=
 @[to_additive]
 instance : SMul R p where smul c x := ⟨c • x.1, smul_mem _ c x.2⟩
 
-variable {p}
-
+variable {p} in
 @[to_additive (attr := norm_cast, simp)]
 theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
   rfl
 
 -- Porting note: no longer needed because of defeq structure eta
-
-variable (p)
 
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
 @[to_additive "Embedding of a submodule `p` to the ambient space `M`."]
@@ -247,9 +244,14 @@ protected def subtype : p →[R] M where
   toFun := Subtype.val
   map_smul' := by simp [val_smul]
 
+variable {p} in
 @[to_additive (attr := simp)]
 theorem subtype_apply (x : p) : p.subtype x = x :=
   rfl
+
+lemma subtype_injective :
+    Function.Injective p.subtype :=
+  Subtype.coe_injective
 
 @[to_additive]
 theorem subtype_eq_val : (SubMulAction.subtype p : p → M) = Subtype.val :=
@@ -272,6 +274,15 @@ instance (priority := 75) toMulAction : MulAction R S' :=
 @[to_additive "The natural `AddActionHom` over `R` from a `SubAddAction` of `M` to `M`."]
 protected def subtype : S' →[R] M where
   toFun := Subtype.val; map_smul' _ _ := rfl
+
+variable {S'} in
+@[simp]
+lemma subtype_apply (x : S') :
+    SMulMemClass.subtype S' x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (SMulMemClass.subtype S') :=
+  Subtype.coe_injective
 
 @[to_additive (attr := simp)]
 protected theorem coe_subtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
