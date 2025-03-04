@@ -52,19 +52,3 @@ jobs:
           git checkout master
           git checkout -
           ./scripts/declDiff_shell_glue.sh "${PR_NUMBER}" "${PR_HASH}"
-
-          #git checkout master...HEAD
-          #masterHash=$(date)
-          #masterHash="$(git rev-parse HEAD)"
-          #echo "${masterHash}"
-          #git checkout -
-
-          #rm -rf .lake/build/lib/lean/Mathlib/ .lake/build/lib/Mathlib/
-          #{
-          #  printf '%s\n\n```diff\n' "${messageStart}"
-          #  diff "${MSdeclsFile}" "${PRdeclsFile}" | grep '^[<>]'
-          #  printf '```\n</details>\nPR: %s\n\nMaster: %s\n' "${{ github.event.pull_request.head.sha }}" "${masterHash}"
-          #} > please_merge_master
-          #printf -- $'------\n%s------\n' "$(cat please_merge_master)"
-          #
-          #./scripts/update_PR_comment.sh please_merge_master "${messageStart}" "${PR}"
