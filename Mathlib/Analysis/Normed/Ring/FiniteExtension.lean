@@ -181,12 +181,13 @@ theorem exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional (hfd : Finit
       IsNonarchimedean f := by
   -- Choose a basis B = {1, e2,..., en} of the K-vector space L
   set h1 : LinearIndependent K fun x : ({1} : Set L) ↦ (x : L) :=
-    linearIndependent_singleton one_ne_zero
-  set ι := { x // x ∈ h1.extend (Set.subset_univ ({1} : Set L)) }
+    LinearIndepOn.id_singleton _ one_ne_zero
+  set ι := { x // x ∈ LinearIndepOn.extend h1 (Set.subset_univ ({1} : Set L)) }
   set B : Basis ι K L := Basis.extend h1
   letI hfin : Fintype ι := FiniteDimensional.fintypeBasisIndex B
   haveI hem : Nonempty ι := B.index_nonempty
-  have h1L : (1 : L) ∈ h1.extend _ := Basis.subset_extend _ (Set.mem_singleton (1 : L))
+  have h1L : (1 : L) ∈ LinearIndepOn.extend h1 _ :=
+    Basis.subset_extend _ (Set.mem_singleton (1 : L))
   have hB1 : B ⟨1, h1L⟩ = (1 : L) := by rw [Basis.coe_extend, Subtype.coe_mk]
   -- Define a function g : L → ℝ by setting g (∑ki • ei) = maxᵢ ‖ ki ‖
   set g : L → ℝ := B.norm
