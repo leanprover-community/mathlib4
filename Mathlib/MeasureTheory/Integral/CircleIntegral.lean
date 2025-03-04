@@ -161,7 +161,6 @@ for multiplication in a normed algebra over the base field. -/
 theorem differentiable_circleMap (c : ℂ) (R : ℝ) : Differentiable ℝ (circleMap c R) := fun θ =>
   (hasDerivAt_circleMap c R θ).differentiableAt
 
-open Complex in
 /-- The circleMap is real analytic. -/
 theorem analyticOnNhd_circleMap {c : ℂ} {R : ℝ} :
     AnalyticOnNhd ℝ (circleMap c R) Set.univ := by
@@ -363,7 +362,7 @@ theorem circleIntegral_congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : �
     (hf : f₁ =ᶠ[codiscreteWithin (Metric.sphere c |R|)] f₂) (hR : R ≠ 0) :
     (∮ z in C(c, R), f₁ z) = (∮ z in C(c, R), f₂ z) := by
   apply intervalIntegral.integral_congr_ae_restrict
-  apply ae_of_restrVol_le_codiscreteWithin measurableSet_uIoc
+  apply ae_restrict_le_codiscreteWithin measurableSet_uIoc
   simp only [deriv_circleMap, smul_eq_mul, mul_eq_mul_left_iff, mul_eq_zero,
     circleMap_eq_center_iff, hR, Complex.I_ne_zero, or_self, or_false]
   exact codiscreteWithin.mono (by tauto) (circleMap_preimage_codiscrete hR hf)

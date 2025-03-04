@@ -101,13 +101,13 @@ theorem intervalIntegrable_congr_codiscreteWithin {g : ℝ → E}
     apply hf.congr
     rw [eventuallyEq_iff_exists_mem] at *
     obtain ⟨s, h₁s, h₂s⟩ := h
-    use s, ae_of_restrVol_le_codiscreteWithin measurableSet_Ioc h₁s, h₂s
+    use s, ae_restrict_le_codiscreteWithin measurableSet_Ioc h₁s, h₂s
   · rw [eventuallyEq_comm] at h
     intro hg
     apply hg.congr
     rw [eventuallyEq_iff_exists_mem] at *
     obtain ⟨s, h₁s, h₂s⟩ := h
-    use s, ae_of_restrVol_le_codiscreteWithin measurableSet_Ioc h₁s, h₂s
+    use s, ae_restrict_le_codiscreteWithin measurableSet_Ioc h₁s, h₂s
 
 theorem intervalIntegrable_iff_integrableOn_Ioc_of_le (hab : a ≤ b) :
     IntervalIntegrable f μ a b ↔ IntegrableOn f (Ioc a b) μ := by
@@ -994,7 +994,7 @@ theorem integral_congr_ae_restrict {a b : ℝ} {f g : ℝ → E} {μ : Measure �
 theorem integral_congr_codiscreteWithin {a b : ℝ} {f₁ f₂ : ℝ → ℝ}
     (hf : f₁ =ᶠ[codiscreteWithin (Ι a b)] f₂) :
     ∫ (x : ℝ) in a..b, f₁ x = ∫ (x : ℝ) in a..b, f₂ x :=
-  integral_congr_ae_restrict (ae_of_restrVol_le_codiscreteWithin measurableSet_uIoc hf)
+  integral_congr_ae_restrict (ae_restrict_le_codiscreteWithin measurableSet_uIoc hf)
 
 theorem integral_zero_ae (h : ∀ᵐ x ∂μ, x ∈ Ι a b → f x = 0) : ∫ x in a..b, f x ∂μ = 0 :=
   calc
