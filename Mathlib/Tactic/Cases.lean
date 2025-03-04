@@ -125,9 +125,9 @@ elab (name := induction') "induction' " tgts:(Parser.Tactic.elimTarget,+)
         let body ← inferType targets[0]!
         let names : Array Format := if withArg.1.getArgs.size > 1 then
           (withArg.1.getArgs[1]!).getArgs.map Syntax.prettyPrint else Array.empty
-        let unames : Array Format := if usingArg.1.getArgs.size > 0 then
-          (usingArg.1.getArgs[0]!).getArgs.map Syntax.prettyPrint else Array.empty
-        logInfoAt tgts m!"{body.getAppFn.setPPExplicit true} {unames} {names} \
+        let inductor : Format := if usingArg.1.getArgs.size > 1 then
+          Syntax.prettyPrint usingArg.1.getArgs[1]! else "~"
+        logInfoAt tgts m!"{body.getAppFn.setPPExplicit true} {inductor} {names} \
           {subgoals.toList.length}"
         setGoals <| (subgoals ++ result.others).toList ++ gs
 
