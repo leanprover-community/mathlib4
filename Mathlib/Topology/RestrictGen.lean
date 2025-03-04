@@ -53,6 +53,10 @@ protected theorem continuous_iff {Y : Type*} [TopologicalSpace Y] {f : X → Y}
   ⟨fun h _ _ ↦ h.continuousOn, fun h ↦ continuous_def.2 fun _u hu ↦ hS.isOpen_iff.2 fun s hs ↦
     hu.preimage <| (h s hs).restrict⟩
 
+/-- The restriction of a topology on `X` to sets from a family `S`
+generates the original topology if for any topological space `Y`, a
+function `f : X → Y` is continuous provided that it is continuous on
+each `s ∈ S`.  -/
 theorem of_continuous_prop (h : ∀ f : X → Prop, (∀ s ∈ S, ContinuousOn f s) → Continuous f) :
     RestrictGenTopology S where
   isOpen_of_forall_induced u hu := by
