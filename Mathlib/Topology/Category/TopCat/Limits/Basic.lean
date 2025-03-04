@@ -71,8 +71,8 @@ section
 variable {F : J ⥤ TopCat.{u}} (c : Cone (F ⋙ forget))
 
 /-- Given a functor `F : J ⥤ TopCat` and a cone `c : Cone (F ⋙ forget)`
-of the underlying cone of types, this is the type `c.pt`
-with the infimum of the topologies that are induced by the maps `c.ι.app j`. -/
+of the underlying functor to types, this is the type `c.pt`
+with the infimum of the induced topologies by the maps `c.π.app j`. -/
 def conePtOfConeForget : Type _ := c.pt
 
 instance topologicalSpaceConePtOfConeForget :
@@ -80,10 +80,10 @@ instance topologicalSpaceConePtOfConeForget :
   (⨅ j, (F.obj j).str.induced (c.π.app j))
 
 /-- Given a functor `F : J ⥤ TopCat` and a cone `c : Cone (F ⋙ forget)`
-of the underlying cone of types, this is a cone for `F` whose point is
+of the underlying functor to types, this is a cone for `F` whose point is
 `c.pt` with the infimum of the induced topologies by the maps `c.π.app j`. -/
 @[simps pt π_app]
-def coneOfConeForget  : Cone F where
+def coneOfConeForget : Cone F where
   pt := of (conePtOfConeForget c)
   π :=
     { app j := ofHom (ContinuousMap.mk (c.π.app j) (by
@@ -94,8 +94,8 @@ def coneOfConeForget  : Cone F where
         apply congr_fun (c.π.naturality φ) }
 
 /-- Given a functor `F : J ⥤ TopCat` and a cone `c : Cone (F ⋙ forget)`
-of the underlying cone of types, the limit of `F` is `c.pt` equipped
-with the supremum of the induced topologies by the maps `c.π.app j`. -/
+of the underlying functor to types, the limit of `F` is `c.pt` equipped
+with the infimum of the induced topologies by the maps `c.π.app j`. -/
 def isLimitConeOfForget (c : Cone (F ⋙ forget)) (hc : IsLimit c) :
     IsLimit (coneOfConeForget c) := by
   refine IsLimit.ofFaithful forget (ht := hc)
