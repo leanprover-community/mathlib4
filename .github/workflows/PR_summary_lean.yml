@@ -51,4 +51,4 @@ jobs:
         run: |
           git checkout master
           git checkout -
-          ./scripts/declDiff_shell_glue.sh "${PR_NUMBER}" "${PR_HASH}"
+          ./scripts/declarations_diff_lean_shell_glue.sh "${PR_NUMBER}" "${PR_HASH}"
