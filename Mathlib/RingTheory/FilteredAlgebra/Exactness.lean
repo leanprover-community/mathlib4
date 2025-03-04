@@ -51,7 +51,7 @@ lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict 
   intro p x₀ xto0
   obtain⟨x, hx⟩ : ∃ x, GradedPiece.mk FS FS_lt x = x₀:= Quotient.exists_rep x₀
   rw[← hx, GradedPieceHom_apply_mk_eq_mk_piece_wise_hom] at xto0
-  obtain⟨x', xin, geq⟩ : g.toRingHom x ∈ g.toRingHom '' (FS_lt p) := by
+  obtain ⟨x', xin, geq⟩ : g.toRingHom x ∈ g.toRingHom '' (FS_lt p) := by
     apply gstrict.strict_lt
     · simpa [GradedPiece.mk] using xto0
     · simp
@@ -76,8 +76,7 @@ theorem exact_of_strict_exact (fstrict : f.IsStrict) (gstrict : g.IsStrict)
   · intro h
     have (i : ι) : ∃ y, Gr(i)[f] ⟦y⟧ = m i := by
       apply exact_component_of_strict_exact_component f g fstrict gstrict exact i
-      have : (Gr[g] m) i = 0 := by simp [h]
-      simpa
+      simp [← FilteredRingHom.AssociatedGradedRingHom_apply, h]
     set component_2 := fun (i : support m) ↦
       (⟦Classical.choose (this i)⟧ : GradedPiece FR FR_lt i) with hc
     set s : AssociatedGraded FR FR_lt := DirectSum.mk
@@ -94,7 +93,7 @@ theorem exact_of_strict_exact (fstrict : f.IsStrict) (gstrict : g.IsStrict)
     show (Gr[g].comp Gr[f]) l = 0
     rw [FilteredRingHom.AssociatedGradedRingHom_comp_eq_comp g f]
     ext i
-    obtain⟨k, hk⟩ : ∃ k, GradedPiece.mk FR FR_lt k = l i := Quotient.exists_rep (l i)
+    obtain ⟨k, hk⟩ : ∃ k, GradedPiece.mk FR FR_lt k = l i := Quotient.exists_rep (l i)
     have : ((g.comp f).piece_wise_hom i) k = 0 :=
       ZeroMemClass.coe_eq_zero.mp (Function.Exact.apply_apply_eq_zero exact k)
     simp [← hk, this]
