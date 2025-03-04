@@ -595,8 +595,9 @@ abbrev SeminormedAddCommGroup.ofCoreReplaceAll {𝕜 : Type*} {E : Type*} [Norme
 /-- A structure encapsulating minimal axioms needed to defined a normed vector space, as found
 in textbooks. This is meant to be used to easily define `NormedAddCommGroup E` and `NormedSpace E`
 instances from scratch on a type with no preexisting distance or topology. -/
-structure NormedSpace.Core (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-    [Norm E] extends SeminormedAddCommGroup.Core 𝕜 E : Prop where
+structure NormedSpace.Core (𝕜 : Type*) (E : Type*)
+    [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Norm E] : Prop
+    extends SeminormedAddCommGroup.Core 𝕜 E where
   norm_eq_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0
 
 variable {𝕜 : Type*} {E : Type*} [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Norm E]

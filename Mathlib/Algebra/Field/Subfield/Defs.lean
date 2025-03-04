@@ -3,8 +3,9 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Ring.Subring.Defs
-import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 
 /-!
 # Subfields
@@ -49,8 +50,8 @@ variable {K : Type u} {L : Type v} {M : Type w}
 variable [DivisionRing K] [DivisionRing L] [DivisionRing M]
 
 /-- `SubfieldClass S K` states `S` is a type of subsets `s ⊆ K` closed under field operations. -/
-class SubfieldClass (S K : Type*) [DivisionRing K] [SetLike S K] extends SubringClass S K,
-  InvMemClass S K : Prop
+class SubfieldClass (S K : Type*) [DivisionRing K] [SetLike S K] : Prop
+    extends SubringClass S K, InvMemClass S K
 
 namespace SubfieldClass
 

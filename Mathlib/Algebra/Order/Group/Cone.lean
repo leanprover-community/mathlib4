@@ -18,14 +18,14 @@ cones in groups and the corresponding ordered groups.
 -/
 
 /-- `AddGroupConeClass S G` says that `S` is a type of cones in `G`. -/
-class AddGroupConeClass (S : Type*) (G : outParam Type*) [AddCommGroup G] [SetLike S G]
-    extends AddSubmonoidClass S G : Prop where
+class AddGroupConeClass (S : Type*) (G : outParam Type*) [AddCommGroup G] [SetLike S G] : Prop
+    extends AddSubmonoidClass S G where
   eq_zero_of_mem_of_neg_mem {C : S} {a : G} : a ∈ C → -a ∈ C → a = 0
 
 /-- `GroupConeClass S G` says that `S` is a type of cones in `G`. -/
 @[to_additive]
-class GroupConeClass (S : Type*) (G : outParam Type*) [CommGroup G] [SetLike S G] extends
-    SubmonoidClass S G : Prop where
+class GroupConeClass (S : Type*) (G : outParam Type*) [CommGroup G] [SetLike S G] : Prop
+    extends SubmonoidClass S G where
   eq_one_of_mem_of_inv_mem {C : S} {a : G} : a ∈ C → a⁻¹ ∈ C → a = 1
 
 export GroupConeClass (eq_one_of_mem_of_inv_mem)

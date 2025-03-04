@@ -263,9 +263,9 @@ lemma Path.one_lt_length_cells (p : Path N): 1 < p.cells.length := by
   by_contra hl
   have h : p.cells.length = 0 ∨ p.cells.length = 1 := by omega
   rcases h with h | h
-  · rw [List.length_eq_zero] at h
+  · rw [List.length_eq_zero_iff] at h
     exact p.nonempty h
-  · rw [List.length_eq_one] at h
+  · rw [List.length_eq_one_iff] at h
     rcases h with ⟨c, hc⟩
     have h1 := p.head_first_row
     simp_rw [hc, List.head_cons] at h1

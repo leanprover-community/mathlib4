@@ -34,104 +34,6 @@ this is a basis over `Fin 3 → R`.
 
 open Function Set Submodule
 
-namespace LinearMap
-
-variable (R : Type*) {ι : Type*} [Semiring R] (φ : ι → Type*) [∀ i, AddCommMonoid (φ i)]
-  [∀ i, Module R (φ i)] [DecidableEq ι]
-
-/-- The standard basis of the product of `φ`. -/
-@[deprecated LinearMap.single (since := "2024-08-09")]
-def stdBasis : ∀ i : ι, φ i →ₗ[R] ∀ i, φ i :=
-  single R φ
-
-set_option linter.deprecated false in
-@[deprecated Pi.single (since := "2024-08-09")]
-theorem stdBasis_apply (i : ι) (b : φ i) : stdBasis R φ i b = update (0 : (a : ι) → φ a) i b :=
-  rfl
-
-set_option linter.deprecated false in
-@[simp, deprecated Pi.single_apply (since := "2024-08-09")]
-theorem stdBasis_apply' (i i' : ι) : (stdBasis R (fun _x : ι => R) i) 1 i' = ite (i = i') 1 0 := by
-  simp_rw [stdBasis, single_apply, Pi.single_apply, eq_comm]
-
-set_option linter.deprecated false in
-@[deprecated LinearMap.coe_single (since := "2024-08-09")]
-theorem coe_stdBasis (i : ι) : ⇑(stdBasis R φ i) = Pi.single i :=
-  rfl
-
-set_option linter.deprecated false in
-@[simp, deprecated Pi.single_eq_same (since := "2024-08-09")]
-theorem stdBasis_same (i : ι) (b : φ i) : stdBasis R φ i b i = b :=
-  Pi.single_eq_same ..
-
-set_option linter.deprecated false in
-@[deprecated Pi.single_eq_of_ne (since := "2024-08-09")]
-theorem stdBasis_ne (i j : ι) (h : j ≠ i) (b : φ i) : stdBasis R φ i b j = 0 :=
-  Pi.single_eq_of_ne h b
-
-set_option linter.deprecated false in
-@[deprecated single_eq_pi_diag (since := "2024-08-09")]
-theorem stdBasis_eq_pi_diag (i : ι) : stdBasis R φ i = pi (diag i) :=
-  single_eq_pi_diag ..
-
-set_option linter.deprecated false in
-@[deprecated ker_single (since := "2024-08-09")]
-theorem ker_stdBasis (i : ι) : ker (stdBasis R φ i) = ⊥ :=
-  ker_single ..
-
-set_option linter.deprecated false in
-@[deprecated proj_comp_single (since := "2024-08-09")]
-theorem proj_comp_stdBasis (i j : ι) : (proj i).comp (stdBasis R φ j) = diag j i :=
-  proj_comp_single ..
-
-set_option linter.deprecated false in
-@[deprecated proj_comp_single_same (since := "2024-08-09")]
-theorem proj_stdBasis_same (i : ι) : (proj i).comp (stdBasis R φ i) = id :=
-  proj_comp_single_same ..
-
-set_option linter.deprecated false in
-@[deprecated proj_comp_single_ne (since := "2024-08-09")]
-theorem proj_stdBasis_ne (i j : ι) (h : i ≠ j) : (proj i).comp (stdBasis R φ j) = 0 :=
-  proj_comp_single_ne R φ i j h
-
-set_option linter.deprecated false in
-@[deprecated iSup_range_single_le_iInf_ker_proj (since := "2024-08-09")]
-theorem iSup_range_stdBasis_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
-    ⨆ i ∈ I, range (stdBasis R φ i) ≤ ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) :=
-  iSup_range_single_le_iInf_ker_proj R φ I J h
-
-set_option linter.deprecated false in
-@[deprecated iInf_ker_proj_le_iSup_range_single (since := "2024-08-09")]
-theorem iInf_ker_proj_le_iSup_range_stdBasis {I : Finset ι} {J : Set ι} (hu : Set.univ ⊆ ↑I ∪ J) :
-    ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) ≤ ⨆ i ∈ I, range (stdBasis R φ i) :=
-  iInf_ker_proj_le_iSup_range_single R φ hu
-
-set_option linter.deprecated false in
-@[deprecated iSup_range_single_eq_iInf_ker_proj (since := "2024-08-09")]
-theorem iSup_range_stdBasis_eq_iInf_ker_proj {I J : Set ι} (hd : Disjoint I J)
-    (hu : Set.univ ⊆ I ∪ J) (hI : Set.Finite I) :
-    ⨆ i ∈ I, range (stdBasis R φ i) = ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) :=
-  iSup_range_single_eq_iInf_ker_proj _ _ hd hu hI
-
-set_option linter.deprecated false in
-@[deprecated iSup_range_single (since := "2024-08-09")]
-theorem iSup_range_stdBasis [Finite ι] : ⨆ i, range (stdBasis R φ i) = ⊤ :=
-  iSup_range_single ..
-
-set_option linter.deprecated false in
-@[deprecated disjoint_single_single (since := "2024-08-09")]
-theorem disjoint_stdBasis_stdBasis (I J : Set ι) (h : Disjoint I J) :
-    Disjoint (⨆ i ∈ I, range (stdBasis R φ i)) (⨆ i ∈ J, range (stdBasis R φ i)) :=
-  disjoint_single_single R φ I J h
-
-set_option linter.deprecated false in
-@[deprecated "You can probably use Finsupp.single_eq_pi_single here" (since := "2024-08-09")]
-theorem stdBasis_eq_single {a : R} :
-    (fun i : ι => (stdBasis R (fun _ : ι => R) i) a) = fun i : ι => ↑(Finsupp.single i a) :=
-  funext fun i => (Finsupp.single_eq_pi_single i a).symm
-
-end LinearMap
-
 namespace Pi
 
 open LinearMap
@@ -171,13 +73,6 @@ theorem linearIndependent_single [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i, M
     convert Set.disjoint_singleton_left.2 hiJ using 0
   exact (disjoint_single_single _ _ _ _ h₃).mono h₁ h₂
 
-set_option linter.deprecated false in
-@[deprecated linearIndependent_single (since := "2024-08-09")]
-theorem linearIndependent_stdBasis [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i, Module R (Ms i)]
-    [DecidableEq η] (v : ∀ j, ιs j → Ms j) (hs : ∀ i, LinearIndependent R (v i)) :
-    LinearIndependent R fun ji : Σj, ιs j => stdBasis R Ms ji.1 (v ji.1 ji.2) :=
-  linearIndependent_single _ hs
-
 variable [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]
 
 section Fintype
@@ -216,12 +111,6 @@ theorem basis_repr_single [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (
     Finsupp.single_eq_of_ne]
   rintro ⟨⟩
   contradiction
-
-set_option linter.deprecated false in
-@[simp, deprecated basis_repr_single (since := "2024-08-09")]
-theorem basis_repr_stdBasis [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (j i) :
-    (Pi.basis s).repr (stdBasis R _ j (s j i)) = Finsupp.single ⟨j, i⟩ 1 :=
-  basis_repr_single ..
 
 @[simp]
 theorem basis_apply [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (ji) :

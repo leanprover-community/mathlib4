@@ -123,7 +123,7 @@ open Function hiding Commute
 -/
 
 /-- A lift of a monotone degree one map `S¹ → S¹`. -/
-structure CircleDeg1Lift extends ℝ →o ℝ : Type where
+structure CircleDeg1Lift : Type extends ℝ →o ℝ where
   map_add_one' : ∀ x, toFun (x + 1) = toFun x + 1
 
 namespace CircleDeg1Lift

@@ -42,8 +42,8 @@ notation:50 A " ≃ₐc[" R "] " B => BialgEquiv R A B
 from `A` to `B`. -/
 class BialgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B]
-    extends CoalgEquivClass F R A B, MulEquivClass F A B : Prop
+    [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B] : Prop
+    extends CoalgEquivClass F R A B, MulEquivClass F A B
 
 namespace BialgEquivClass
 

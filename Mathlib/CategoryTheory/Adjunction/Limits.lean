@@ -146,10 +146,10 @@ theorem hasColimit_comp_equivalence (E : C ⥤ D) [E.IsEquivalence] [HasColimit 
       isColimit := isColimitOfPreserves _ (colimit.isColimit K) }
 
 theorem hasColimit_of_comp_equivalence (E : C ⥤ D) [E.IsEquivalence] [HasColimit (K ⋙ E)] :
-    HasColimit K :=
-  @hasColimitOfIso _ _ _ _ (K ⋙ E ⋙ E.inv) K
-    (@hasColimit_comp_equivalence _ _ _ _ _ _ (K ⋙ E) E.inv _ _)
-    ((Functor.rightUnitor _).symm ≪≫ isoWhiskerLeft K E.asEquivalence.unitIso)
+    HasColimit K := by
+  rw [hasColimit_iff_of_iso
+    ((Functor.rightUnitor _).symm ≪≫ isoWhiskerLeft K E.asEquivalence.unitIso)]
+  exact hasColimit_comp_equivalence (K ⋙ E) E.inv
 
 /-- Transport a `HasColimitsOfShape` instance across an equivalence. -/
 theorem hasColimitsOfShape_of_equivalence (E : C ⥤ D) [E.IsEquivalence] [HasColimitsOfShape J D] :
@@ -265,10 +265,10 @@ theorem hasLimit_comp_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimit K] :
       isLimit := isLimitOfPreserves _ (limit.isLimit K) }
 
 theorem hasLimit_of_comp_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimit (K ⋙ E)] :
-    HasLimit K :=
-  @hasLimitOfIso _ _ _ _ (K ⋙ E ⋙ E.inv) K
-    (@hasLimit_comp_equivalence _ _ _ _ _ _ (K ⋙ E) E.inv _ _)
-    (isoWhiskerLeft K E.asEquivalence.unitIso.symm ≪≫ Functor.rightUnitor _)
+    HasLimit K := by
+  rw [← hasLimit_iff_of_iso
+    (isoWhiskerLeft K E.asEquivalence.unitIso.symm ≪≫ Functor.rightUnitor _)]
+  exact hasLimit_comp_equivalence (K ⋙ E) E.inv
 
 /-- Transport a `HasLimitsOfShape` instance across an equivalence. -/
 theorem hasLimitsOfShape_of_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimitsOfShape J C] :

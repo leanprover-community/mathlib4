@@ -122,8 +122,8 @@ of irreducible factors, use the definition `of_existsUnique_irreducible_factors`
 To define a UFD using the definition in terms of multisets
 of prime factors, use the definition `of_exists_prime_factors`
 -/
-class UniqueFactorizationMonoid (α : Type*) [CancelCommMonoidWithZero α] extends
-    IsWellFounded α DvdNotUnit : Prop where
+class UniqueFactorizationMonoid (α : Type*) [CancelCommMonoidWithZero α] : Prop
+    extends IsWellFounded α DvdNotUnit where
   protected irreducible_iff_prime : ∀ {a : α}, Irreducible a ↔ Prime a
 
 instance (priority := 100) ufm_of_decomposition_of_wfDvdMonoid

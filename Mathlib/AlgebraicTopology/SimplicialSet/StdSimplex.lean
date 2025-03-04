@@ -133,8 +133,6 @@ end Examples
 
 namespace Augmented
 
--- Porting note: an instance of `Subsingleton (⊤_ (Type u))` was added in
--- `CategoryTheory.Limits.Types` to ease the automation in this definition
 /-- The functor which sends `⦋n⦌` to the simplicial set `Δ[n]` equipped by
 the obvious augmentation towards the terminal object of the category of sets. -/
 @[simps]

@@ -3,10 +3,10 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Eric Wieser
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Pointwise
 import Mathlib.Data.Real.Archimedean
-import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
 # Pointwise operations on sets of reals

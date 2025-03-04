@@ -675,8 +675,8 @@ smooth manifold and `n = ω` means analytic manifold). -/
 class IsManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞) (M : Type*)
-    [TopologicalSpace M] [ChartedSpace H M] extends
-    HasGroupoid M (contDiffGroupoid n I) : Prop
+    [TopologicalSpace M] [ChartedSpace H M] : Prop
+    extends HasGroupoid M (contDiffGroupoid n I)
 
 @[deprecated (since := "2025-01-09")] alias SmoothManifoldWithCorners := IsManifold
 

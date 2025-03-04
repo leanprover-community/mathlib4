@@ -39,7 +39,7 @@ theorem nodup_finRange (n : ℕ) : (finRange n).Nodup := by
 
 @[simp]
 theorem finRange_eq_nil {n : ℕ} : finRange n = [] ↔ n = 0 := by
-  rw [← length_eq_zero, length_finRange]
+  rw [← length_eq_zero_iff, length_finRange]
 
 theorem pairwise_lt_finRange (n : ℕ) : Pairwise (· < ·) (finRange n) := by
   rw [finRange_eq_pmap_range]
@@ -57,8 +57,6 @@ lemma count_finRange {n : ℕ} (a : Fin n) : count a (finRange n) = 1 := by
 theorem get_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange n ▸ h⟩ := by
   simp
-
-@[deprecated (since := "2024-08-19")] alias nthLe_finRange := get_finRange
 
 @[simp]
 theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=

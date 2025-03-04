@@ -100,7 +100,7 @@ def AffineScheme.ofHom {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
     AffineScheme.of X ⟶ AffineScheme.of Y :=
   f
 
-theorem mem_Spec_essImage (X : Scheme) : X ∈ Scheme.Spec.essImage ↔ IsAffine X :=
+theorem mem_Spec_essImage (X : Scheme) : Scheme.Spec.essImage X ↔ IsAffine X :=
   ⟨fun h => ⟨Functor.essImage.unit_isIso h⟩,
     fun _ => ΓSpec.adjunction.mem_essImage_of_unit_isIso _⟩
 

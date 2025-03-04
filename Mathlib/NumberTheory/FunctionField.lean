@@ -74,12 +74,15 @@ theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
     refine FiniteDimensional.of_fintype_basis (b.mapCoeffs e.symm ?_)
     intro c x; convert (this (e.symm c) x).symm; simp only [e.apply_symm_apply]
 
+namespace FunctionField
+
 theorem algebraMap_injective [Algebra Fq[X] F] [Algebra (RatFunc Fq) F]
     [IsScalarTower Fq[X] (RatFunc Fq) F] : Function.Injective (⇑(algebraMap Fq[X] F)) := by
   rw [IsScalarTower.algebraMap_eq Fq[X] (RatFunc Fq) F]
   exact (algebraMap (RatFunc Fq) F).injective.comp (IsFractionRing.injective Fq[X] (RatFunc Fq))
 
-namespace FunctionField
+@[deprecated (since := "2025-03-03")]
+alias _root_.algebraMap_injective := FunctionField.algebraMap_injective
 
 /-- The function field analogue of `NumberField.ringOfIntegers`:
 `FunctionField.ringOfIntegers Fq Fqt F` is the integral closure of `Fq[t]` in `F`.

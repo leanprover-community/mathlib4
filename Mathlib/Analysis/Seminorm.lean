@@ -54,7 +54,7 @@ attribute [nolint docBlame] Seminorm.toAddGroupSeminorm
 
 You should extend this class when you extend `Seminorm`. -/
 class SeminormClass (F : Type*) (𝕜 E : outParam Type*) [SeminormedRing 𝕜] [AddGroup E]
-  [SMul 𝕜 E] [FunLike F E ℝ] extends AddGroupSeminormClass F E ℝ : Prop where
+  [SMul 𝕜 E] [FunLike F E ℝ] : Prop extends AddGroupSeminormClass F E ℝ where
   /-- The seminorm of a scalar multiplication is the product of the absolute value of the scalar
   and the original seminorm. -/
   map_smul_eq_mul (f : F) (a : 𝕜) (x : E) : f (a • x) = ‖a‖ * f x
@@ -1263,7 +1263,7 @@ lemma bddAbove_of_absorbent {ι : Sort*} {p : ι → Seminorm 𝕜 E} {s : Set E
   rw [Seminorm.bddAbove_range_iff]
   intro x
   obtain ⟨c, hc₀, hc⟩ : ∃ c ≠ 0, (c : 𝕜) • x ∈ s :=
-    (eventually_mem_nhdsWithin.and (hs.eventually_nhdsWithin_zero x)).exists
+    (eventually_mem_nhdsWithin.and (hs.eventually_nhdsNE_zero x)).exists
   rcases h _ hc with ⟨M, hM⟩
   refine ⟨M / ‖c‖, forall_mem_range.mpr fun i ↦ (le_div_iff₀' (norm_pos_iff.2 hc₀)).2 ?_⟩
   exact hM ⟨i, map_smul_eq_mul ..⟩

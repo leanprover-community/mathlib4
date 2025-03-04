@@ -293,8 +293,6 @@ theorem toDual_linearCombination_left (f : ι →₀ R) (i : ι) :
   · rfl
   · rw [Finsupp.not_mem_support_iff.mp h]
 
-@[deprecated (since := "2024-08-29")] alias toDual_total_left := toDual_linearCombination_left
-
 @[simp]
 theorem toDual_linearCombination_right (f : ι →₀ R) (i : ι) :
     b.toDual (b i) (Finsupp.linearCombination R b f) = f i := by
@@ -303,9 +301,6 @@ theorem toDual_linearCombination_right (f : ι →₀ R) (i : ι) :
   split_ifs with h
   · rfl
   · rw [Finsupp.not_mem_support_iff.mp h]
-
-@[deprecated (since := "2024-08-29")] alias toDual_total_right :=
-  toDual_linearCombination_right
 
 theorem toDual_apply_left (m : M) (i : ι) : b.toDual m (b i) = b.repr m i := by
   rw [← b.toDual_linearCombination_left, b.linearCombination_repr]
@@ -411,8 +406,6 @@ theorem linearCombination_dualBasis (f : ι →₀ R) (i : ι) :
   · intro
     rw [zero_smul]
 
-@[deprecated (since := "2024-08-29")] alias total_dualBasis := linearCombination_dualBasis
-
 @[simp] theorem dualBasis_repr (l : Dual R M) (i : ι) : b.dualBasis.repr l i = l (b i) := by
   rw [← linearCombination_dualBasis b, Basis.linearCombination_repr b.dualBasis l]
 
@@ -474,8 +467,6 @@ theorem linearCombination_coord [CommRing R] [AddCommGroup M] [Module R M] [Fini
     (b : Basis ι R M) (f : ι →₀ R) (i : ι) : Finsupp.linearCombination R b.coord f (b i) = f i := by
   haveI := Classical.decEq ι
   rw [← coe_dualBasis, linearCombination_dualBasis]
-
-@[deprecated (since := "2024-08-29")] alias total_coord := linearCombination_coord
 
 theorem dual_rank_eq [CommRing K] [AddCommGroup V] [Module K V] [Finite ι] (b : Basis ι K V) :
     Cardinal.lift.{uK,uV} (Module.rank K V) = Module.rank K (Dual K V) := by
@@ -1679,17 +1670,7 @@ theorem dualCoannihilator_dualAnnihilator_eq {W : Subspace K (Dual K V)} [Finite
 theorem finiteDimensional_quot_dualCoannihilator_iff {W : Submodule K (Dual K V)} :
     FiniteDimensional K (V ⧸ W.dualCoannihilator) ↔ FiniteDimensional K W :=
   ⟨fun _ ↦ FiniteDimensional.of_injective _ W.flip_quotDualCoannihilatorToDual_injective,
-    fun _ ↦ by
-      #adaptation_note /-- https://github.com/leanprover/lean4/pull/4119
-      the `Free K W` instance isn't found unless we use `set_option maxSynthPendingDepth 2`, or add
-      explicit instances:
-      ```
-      have := Free.of_divisionRing K ↥W
-      have := Basis.dual_finite (R := K) (M := W)
-      ```
-      -/
-      set_option maxSynthPendingDepth 2 in
-      exact FiniteDimensional.of_injective _ W.quotDualCoannihilatorToDual_injective⟩
+    fun _ ↦ FiniteDimensional.of_injective _ W.quotDualCoannihilatorToDual_injective⟩
 
 open OrderDual in
 /-- For any vector space, `dualAnnihilator` and `dualCoannihilator` gives an antitone order

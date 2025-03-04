@@ -206,9 +206,7 @@ theorem ofBijective.symm_eq {φ : P₁ →ᵃ[k] P₂} (hφ : Function.Bijective
     (ofBijective hφ).symm.toEquiv = (Equiv.ofBijective _ hφ).symm :=
   rfl
 
-@[simp]
-theorem range_eq (e : P₁ ≃ᵃ[k] P₂) : range e = univ :=
-  e.surjective.range_eq
+theorem range_eq (e : P₁ ≃ᵃ[k] P₂) : range e = univ := by simp
 
 @[simp]
 theorem apply_symm_apply (e : P₁ ≃ᵃ[k] P₂) (p : P₂) : e (e.symm p) = p :=
@@ -465,6 +463,10 @@ open Function
 def pointReflection (x : P₁) : P₁ ≃ᵃ[k] P₁ :=
   (constVSub k x).trans (vaddConst k x)
 
+@[simp] lemma pointReflection_apply_eq_equivPointReflection_apply (x y : P₁) :
+    pointReflection k x y = Equiv.pointReflection x y :=
+  rfl
+
 theorem pointReflection_apply (x y : P₁) : pointReflection k x y = (x -ᵥ y) +ᵥ x :=
   rfl
 
@@ -477,7 +479,6 @@ theorem toEquiv_pointReflection (x : P₁) :
     (pointReflection k x).toEquiv = Equiv.pointReflection x :=
   rfl
 
-@[simp]
 theorem pointReflection_self (x : P₁) : pointReflection k x x = x :=
   vsub_vadd _ _
 
@@ -551,6 +552,6 @@ theorem vadd_lineMap (v : V₁) (p₁ p₂ : P₁) (c : k) :
 variable {R' : Type*} [CommRing R'] [Module R' V₁]
 
 theorem homothety_neg_one_apply (c p : P₁) : homothety c (-1 : R') p = pointReflection R' c p := by
-  simp [homothety_apply, pointReflection_apply]
+  simp [homothety_apply, Equiv.pointReflection_apply]
 
 end AffineMap

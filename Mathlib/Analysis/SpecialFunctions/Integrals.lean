@@ -492,7 +492,7 @@ lemma integral_log_from_zero_of_pos (ht : 0 < b) : ∫ s in (0)..b, log s = b * 
   · exact ht
   · intro s ⟨hs, _ ⟩
     simpa using (hasDerivAt_mul_log hs.ne.symm).sub (hasDerivAt_id s)
-  · simpa [mul_comm] using ((tendsto_log_mul_rpow_nhds_zero zero_lt_one).sub
+  · simpa [mul_comm] using ((tendsto_log_mul_rpow_nhdsGT_zero zero_lt_one).sub
       (tendsto_nhdsWithin_of_tendsto_nhds Filter.tendsto_id))
   · exact tendsto_nhdsWithin_of_tendsto_nhds (ContinuousAt.tendsto (by fun_prop))
 

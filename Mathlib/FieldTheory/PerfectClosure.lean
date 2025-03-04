@@ -230,8 +230,6 @@ See `mk_zero_right` for the lemma used to be called `mk_zero`. -/
 theorem mk_zero : mk K p 0 = 0 :=
   rfl
 
-@[deprecated (since := "2024-08-16")] alias mk_zero_zero := mk_zero
-
 @[simp]
 theorem mk_zero_right (n : ℕ) : mk K p (n, 0) = 0 := by
   induction' n with n ih

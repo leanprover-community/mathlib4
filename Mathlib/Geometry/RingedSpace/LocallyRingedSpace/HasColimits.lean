@@ -133,7 +133,7 @@ theorem coequalizer_π_app_isLocalHom
       SheafedSpace.forgetToPresheafedSpace f.toShHom g.toShHom).hom.c :=
     PresheafedSpace.c_isIso_of_iso _
   -- Had to add this instance too.
-  have := CommRingCat.equalizer_ι_is_local_ring_hom' (PresheafedSpace.componentwiseDiagram _
+  have := CommRingCat.equalizer_ι_isLocalHom' (PresheafedSpace.componentwiseDiagram _
         ((Opens.map
               (PreservesCoequalizer.iso SheafedSpace.forgetToPresheafedSpace (Hom.toShHom f)
                     (Hom.toShHom g)).hom.base).obj
