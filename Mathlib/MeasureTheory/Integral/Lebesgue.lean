@@ -30,7 +30,7 @@ We introduce the following notation for the lower Lebesgue integral of a functio
 
 -/
 
-assert_not_exists NormedSpace
+assert_not_exists Basis NormedSpace
 
 noncomputable section
 
