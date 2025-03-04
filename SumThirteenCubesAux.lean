@@ -66,10 +66,10 @@ lemma ϕ_add_six_le_ψ_aux (t : ℝ) (hz : 379 ≤ t) :
   have h₁ : -2 ≤ - (6 / t) := by rw [←neg_div, le_div_iff₀ ht₀]; linarith
   have h₂ : 12 * t ^ 9 + 2 * t ^ 8 * (t - (378 : ℝ)) ≤ 14 * (t - 6) ^ 9 := by
     have h₃ := one_add_mul_le_pow h₁ 9
-    rw [←sub_eq_add_neg, one_sub_div ht₀.ne', div_pow, le_div_iff₀, ←sub_nonneg] at h₃
+    rw [← sub_eq_add_neg, one_sub_div ht₀.ne', div_pow, le_div_iff₀, ←sub_nonneg] at h₃
     swap
     · positivity
-    rw [←sub_nonneg]
+    rw [← sub_nonneg]
     refine (mul_nonneg h₃ (by norm_num1 : (0 : ℝ) ≤ 14)).trans_eq ?_
     field_simp [ht₀.ne']
     ring_nf
@@ -77,15 +77,15 @@ lemma ϕ_add_six_le_ψ_aux (t : ℝ) (hz : 379 ≤ t) :
   rw [add_assoc, add_assoc, add_lt_add_iff_left, ←add_assoc]
   have h₃ : 3 * t ^ 6 ≤ 3 * t ^ 8 / (379 : ℝ) ^ 2 := by
     rw [le_div_iff₀, (by norm_num : 8 = 6 + 2), pow_add, ←mul_assoc]
-    · exact mul_le_mul_of_nonneg_left (pow_le_pow_left₀ (by positivity) hz _) (by positivity)
+    · gcongr
     · positivity
   have h₄ : 128 * t ^ 3 ≤ 128 * t ^ 8 / (379 : ℝ) ^ 5 := by
     rw [le_div_iff₀, (by norm_num : 8 = 3 + 5), pow_add, ←mul_assoc]
-    · exact mul_le_mul_of_nonneg_left (pow_le_pow_left₀ (by positivity) hz _) (by positivity)
+    · gcongr
     · positivity
-  have h₅ : (1 : ℝ) ≤ t ^ 8 / 379 ^ 8 := by -- why do i need the ascription here :(
+  have h₅ : 1 ≤ t ^ 8 / 379 ^ 8 := by
     rw [one_le_div]
-    · exact pow_le_pow_left₀ (by positivity) hz _
+    · gcongr
     · positivity
   have h₆ : 2 * t ^ 8 ≤ 2 * t ^ 8 * (t - 378) :=
     le_mul_of_one_le_right (by positivity) (by linarith)
@@ -94,13 +94,11 @@ lemma ϕ_add_six_le_ψ_aux (t : ℝ) (hz : 379 ≤ t) :
   exact mul_lt_mul_of_pos_left (by norm_num) (by positivity)
 
 lemma ϕ_add_six_le_ψ {z : ℕ} (hz : 373 ≤ z) : ϕ (z + 6) < ψ z := by
-  rw [ϕ_eq, ←Nat.cast_lt (α := ℝ)]
+  rw [ϕ_eq, ← Nat.cast_lt (α := ℝ)]
   push_cast
-  refine (ϕ_add_six_le_ψ_aux (z + 6) ?_).trans_eq ?_
-  · norm_cast
-    linarith only [hz]
-  simp only [add_sub_cancel, ψ]
-  simp -- norm_cast used to work
+  refine (ϕ_add_six_le_ψ_aux (z + 6) ?_).trans_eq (by simp [ψ])
+  norm_cast
+  omega
 
 def I (z : ℕ) : Finset ℕ := Finset.Icc (ϕ z) (ψ z)
 
@@ -124,13 +122,13 @@ lemma in_some_I (n : ℕ) (hn : 14 * 379 ^ 9 ≤ n) : ∃ z, z % 6 = 1 ∧ n ∈
   let z := Nat.find ex
   have ⟨(hz₁ : z % 6 = 1), (hz₂ : n ≤ ψ (z + 6))⟩ := Nat.find_spec ex
   have hz : 373 ≤ z := by
-    rw [←add_le_add_iff_right 6, ←ψ_increasing.le_iff_le]
+    rw [← add_le_add_iff_right 6, ← ψ_increasing.le_iff_le]
     exact hz₂.trans' hn'
   have h₆z : 6 ≤ z := by linarith
   have hn'' : ψ z < n := by
     have : z - 6 < z := Nat.sub_lt (by linarith) (by norm_num)
     have := Nat.find_min ex this
-    rw [not_and, not_le, ←Nat.mod_eq_sub_mod h₆z, Nat.sub_add_cancel h₆z] at this
+    rw [not_and, not_le, ← Nat.mod_eq_sub_mod h₆z, Nat.sub_add_cancel h₆z] at this
     exact this hz₁
   refine ⟨z + 6, (Nat.add_mod_right _ _).trans hz₁, ?_⟩
   rw [I, Finset.mem_Icc]
@@ -138,13 +136,11 @@ lemma in_some_I (n : ℕ) (hn : 14 * 379 ^ 9 ≤ n) : ∃ z, z % 6 = 1 ∧ n ∈
 
 lemma six_coprime_cube {z : ℕ} (hz : z % 6 = 1) : Nat.Coprime 6 (z ^ 3) := by
   have hz₂ : z % 2 = 1 := by
-    have := congr_arg (· % 2) hz
-    dsimp at this
+    have := congr($hz % 2)
     rw [Nat.mod_mod_of_dvd _ (by norm_num)] at this
     simpa using this
   have hz₃ : z % 3 = 1 := by
-    have := congr_arg (· % 3) hz
-    dsimp at this
+    have := congr($hz % 3)
     rw [Nat.mod_mod_of_dvd _ (by norm_num)] at this
     simpa using this
   rw [Nat.coprime_pow_right_iff three_pos, (by norm_num : 6 = 2 * 3), Nat.coprime_mul_iff_left,
@@ -216,14 +212,14 @@ lemma represent_partial (n : ℕ) (hn : n ≠ 0) {z : ℕ} (hz : z % 6 = 1) (hnz
   have hN₁ : N < ϕ z - 8 * z ^ 9 := by
     rw [ϕ, add_assoc, ←tsub_add_eq_add_tsub, ←tsub_mul, ←add_assoc]
     swap
-    · exact mul_le_mul_right' (by norm_num1) (z ^ 9)
+    · gcongr; norm_num1 -- exact mul_le_mul_right' (by norm_num1) (z ^ 9)
     refine add_lt_add_of_lt_of_le ?_ ?_
     swap
-    · exact pow_le_pow_of_le_left (mul_le_mul_right' hs₁ z) 3
-    rw [add_assoc, add_assoc, add_comm, ←two_mul]
+    · gcongr
+    rw [add_assoc, add_assoc, add_comm, ← two_mul]
     refine add_lt_add_of_lt_of_le ?_ ?_
     swap
-    · exact pow_le_pow_left₀ (by positivity) (add_le_add_right hr₂ 1) 3
+    · gcongr
     have h₁ : (r - 1) ^ 3 < z ^ (3 * 3) := by
       rw [pow_mul]
       refine Nat.pow_lt_pow_left ?_ (by norm_num1)
@@ -241,26 +237,26 @@ lemma represent_partial (n : ℕ) (hn : n ≠ 0) {z : ℕ} (hz : z % 6 = 1) (hnz
   have h₉ : z ^ 9 = (z ^ 3) ^ 3 := by rw [←pow_mul]
   have : 6 * z ^ 3 ∣ n - (N + 8 * z ^ 9) := by
     refine (six_coprime_cube hz).mul_dvd_of_dvd_of_dvd ?_ ?_
-    · rw [←modEq_iff_dvd', ModEq, hsn, ←hN₄, add_mod, mul_mod, pow_mod, hz, one_pow,
+    · rw [← modEq_iff_dvd', ModEq, hsn, ←hN₄, add_mod, mul_mod, pow_mod, hz, one_pow,
       ←mul_mod, ←add_mod, mul_one]
       exact hN₂.le
-    rw [←modEq_iff_dvd', ModEq, hrn, h₉, add_mod, mul_mod, pow_mod, mod_self,
-      zero_pow three_ne_zero, ←mul_mod, mul_zero, ←add_mod, add_zero, N_mod_z_cubed hr₁ hr₂]
+    rw [← modEq_iff_dvd', ModEq, hrn, h₉, add_mod, mul_mod, pow_mod, mod_self,
+      zero_pow three_ne_zero, ← mul_mod, mul_zero, ← add_mod, add_zero, N_mod_z_cubed hr₁ hr₂]
     exact hN₂.le
   obtain ⟨m, hm⟩ := this
   refine ⟨_, _, _, _, _, N, m, ?_, ?_, ?_, rfl⟩
-  · rw [mul_right_comm, ←hm, add_tsub_cancel_of_le hN₂.le]
+  · rw [mul_right_comm, ← hm, add_tsub_cancel_of_le hN₂.le]
   · rw [pos_iff_ne_zero]
     rintro rfl
     rw [mul_zero, Nat.sub_eq_zero_iff_le] at hm
     exact hN₂.not_le hm
-  rw [←tsub_tsub] at hm
+  rw [← tsub_tsub] at hm
   by_contra! hm'
   have : 6 * z ^ 3 * z ^ 6 ≤ n - N - 8 * z ^ 9 := by
     rw [hm]
     gcongr
   have := this.trans_lt (tsub_lt_tsub_right_of_le (le_tsub_of_add_le_left hN₂.le) hN₃)
-  rw [←tsub_mul] at this
+  rw [← tsub_mul] at this
   ring_nf at this
   simp at this
 
@@ -410,8 +406,9 @@ section compute
 open List
 
 /--
-`find_rep n m k i` consists of all the decreasing lists of length `n` whose elements are `≤ k`
-and whose sum of `i`th powers is exactly `m`
+`find_rep i n m k` consists of all the decreasing lists of length `n` whose elements are `≤ k`
+and whose sum of `i`th powers is exactly `m`.
+This implementation is inefficient for `i = 0`.
 -/
 def find_rep (pow : ℕ) :
     (allowed_nums : ℕ) → (remaining_tot : ℕ) → (lowest_used : ℕ) → List (List ℕ)
@@ -419,11 +416,12 @@ def find_rep (pow : ℕ) :
   | 0, (_ + 1), _ => []
   | n + 1, m@(_ + 1), k => do
       let i ← (List.range' 1 k).reverse
-      if (i ^ pow ≤ m) then (find_rep pow n (m - i ^ pow) i).map (i :: ·) else []
+      if i ^ pow ≤ m then (find_rep pow n (m - i ^ pow) i).map (i :: ·) else []
 
 /--
-`find_rep' n m k` determines whether there is a list of length `n` whose elements are `≤ k`
-and whose sum of cubes is exactly `m`
+`find_rep' i n m k` determines whether there is a list of length `n` whose elements are `≤ k`
+and whose sum of `i`th powers is exactly `m`.
+This implementation is very inefficient for `i = 0`.
 -/
 def find_rep' (pow : ℕ) : (allowed_nums : ℕ) → (remaining_tot : ℕ) → (lowest_used : ℕ) → Bool
 | _, 0, _ => true
@@ -453,7 +451,7 @@ private lemma find_rep_iff_zero_middle (i n k : ℕ) (l : List ℕ) (hi : i ≠ 
   simpa [eq_replicate_iff, h₁, sum_eq_zero_iff, hi] using h₂
 
 /-- `find_rep` consists exactly of the lists it should -/
-lemma find_rep_iff (n m k : ℕ) (l : List ℕ) (hi : i ≠ 0) :
+lemma find_rep_iff {n m k : ℕ} (l : List ℕ) (hi : i ≠ 0) :
     l ∈ find_rep i n m k ↔
       l.length = n ∧ (∀ x ∈ l, x ≤ k) ∧ l.Pairwise (· ≥ ·) ∧ (l.map (· ^ i)).sum = m := by
   induction' n with n ih generalizing m k l
@@ -467,18 +465,16 @@ lemma find_rep_iff (n m k : ℕ) (l : List ℕ) (hi : i ≠ 0) :
   rw [find_rep]
   simp only [bind_eq_flatMap, mem_flatMap, mem_reverse, mem_range'_1, add_comm 1,
     Nat.lt_add_one_iff]
+  simp only [succ_eq_add_one, mem_ite_nil_right, ge_iff_le]
   constructor
   · simp only [forall_exists_index, and_imp]
-    rintro x - hxk hl
-    cases' em' (x ^ i ≤ m + 1) with h' h'
-    · simp [if_neg h'] at hl
-    rw [if_pos h', mem_map] at hl
+    rintro x h hxk hx hl
+    rw [mem_map] at hl
     obtain ⟨a, ha, rfl⟩ := hl
     rw [ih] at ha
-    simp only [length_cons, ha, mem_cons, forall_eq_or_imp, ge_iff_le, pairwise_cons, and_true, map,
-      List.sum_cons, true_and, hxk]
-    simp
-    exact ⟨fun i hi => (ha.2.1 _ hi).trans hxk, ha.2.1, add_tsub_cancel_of_le h'⟩
+    simp only [length_cons, ha, mem_cons, forall_eq_or_imp, hxk, true_and, pairwise_cons, and_true,
+      map_cons, List.sum_cons, hx, add_tsub_cancel_of_le]
+    exact ⟨fun i hi => (ha.2.1 _ hi).trans hxk, ha.2.1⟩
   cases' l with x l
   · simp
   simp only [length_cons, succ.injEq, mem_cons, forall_eq_or_imp, ge_iff_le, pairwise_cons, map,
@@ -488,13 +484,11 @@ lemma find_rep_iff (n m k : ℕ) (l : List ℕ) (hi : i ≠ 0) :
   · rw [Nat.add_one_le_iff, pos_iff_ne_zero]
     rintro rfl
     have : ∀ a ∈ l, a = 0 := by simpa using hl₂
-    rw [List.eq_replicate_iff.2 ⟨rfl, this⟩] at hl₄
-    rw [map_replicate, sum_replicate] at hl₄
+    rw [List.eq_replicate_iff.2 ⟨rfl, this⟩, map_replicate, sum_replicate] at hl₄
     simp [hi] at hl₄
-  have : x ^ i ≤ succ m := by rw [succ_eq_add_one, ←hl₄]; simp
-  rw [if_pos this]
-  simp only [mem_map, cons.injEq, true_and, exists_eq_right]
-  refine (ih _ _ l).2 ⟨h, hl₂, hl₃, ?_⟩
+  have : x ^ i ≤ m + 1 := by omega
+  simp only [this, mem_map, cons.injEq, true_and, exists_eq_right]
+  refine (ih l).2 ⟨h, hl₂, hl₃, ?_⟩
   rw [eq_tsub_iff_add_eq_of_le this, add_comm, hl₄]
 
 def find_all (i k n : ℕ) : List (List ℕ) := find_rep i k n (n.findGreatest (· ^ i ≤ n))
@@ -502,7 +496,7 @@ def find_all (i k n : ℕ) : List (List ℕ) := find_rep i k n (n.findGreatest (
 lemma find_all_nonempty_iff {i k n : ℕ} (hi : i ≠ 0) :
     find_all i k n ≠ [] ↔ n ∈ sum_of_powers i k := by
   rw [find_all, ← length_pos, length_pos_iff_exists_mem]
-  simp only [find_rep_iff _ _ _ _ hi]
+  simp only [find_rep_iff _ hi]
   constructor
   · rintro ⟨l, hl₁, -, -, hl₂⟩
     exact ⟨l, hl₁, hl₂⟩
@@ -525,16 +519,23 @@ lemma find_all'_iff {i k n : ℕ} (hi : i ≠ 0) :
   rw [← find_all_nonempty_iff hi, ne_eq, ←List.isEmpty_iff, find_all, find_rep_not_isEmpty_iff,
     Bool.not_eq_true', Bool.not_eq_false, find_all']
 
-lemma twenty_three_is_not_sum_of_eight_cubes' : 23 ∉ sum_of_powers 3 8 := by
+/--
+While the set `sum_of_powers i k` is decidable, to prove membership it is faster to use the
+`prove_sumOfPowers` tactic.
+-/
+instance : Decidable (n ∈ sum_of_powers i k) :=
+  if hi : i = 0
+    then decidable_of_iff (n = k) <| by simp [hi]
+    else decidable_of_iff (find_all' i k n = true) <| find_all'_iff hi
+
+lemma twenty_three_is_not_sum_of_eight_cubes : 23 ∉ sum_of_powers 3 8 := by
   rw [← find_all'_iff (by norm_num), Bool.not_eq_true]
   rfl
 
--- use the kernel to prove no list exists
 lemma two_hundred_thirty_nine_is_not_sum_of_eight_cubes : 239 ∉ sum_of_powers 3 8 := by
   rw [← find_all'_iff (by norm_num), Bool.not_eq_true]
   rfl
 
--- I used #eval to find the list then typed it in
 lemma two_hundred_thirty_nine_is_sum_of_nine_cubes' : 239 ∈ sum_of_powers 3 9 :=
   ⟨[5, 3, 3, 3, 2, 2, 2, 2, 1], rfl, rfl⟩
 
@@ -557,19 +558,6 @@ def test_val (i n : ℕ) : Array (List ℕ) := Id.run do
     tab := tab.push best
   return tab
 
-def myPowSum (i : ℕ) : List ℕ → ℕ
-  | [] => 0
-  | x :: xs => x ^ i + myPowSum i xs
-
-lemma myPowSum_eq (i : ℕ) (l : List ℕ) : myPowSum i l = (l.map (· ^ i)).sum := by
-  induction l <;> aesop (add simp myPowSum)
-
-lemma Tactic.mem_sum_of_powers_le (n i k : ℕ) (l : List ℕ)
-    (h1 : Nat.ble l.length k = true) (h2 : myPowSum i l = n) (h3 : (i != 0) = true) :
-    n ∈ sum_of_powers i k :=
-  sum_of_powers_mono_right (by simpa using h3) (by simpa using h1)
-    ⟨l, rfl, myPowSum_eq _ _ ▸ h2⟩
-
 lemma Tactic.mem_sum_of_powers_base (i k : ℕ) (hi : (i != 0) = true) : 0 ∈ sum_of_powers i k := by
   apply zero_mem_sum_of_powers
   simpa using hi
@@ -589,7 +577,7 @@ lemma Tactic.mem_sum_of_powers_many_lt (i k l u : ℕ) (h : Nat.ble u l = true) 
     goalShape l u i k :=
   fun _ hl hu ↦ ((hl.trans_lt hu).not_le (by simpa using h)).elim
 
-lemma Tactic.mem_sum_of_powers_many_one {l : ℕ} (u i k : ℕ)
+lemma Tactic.mem_sum_of_powers_many_one (l u i k : ℕ)
     (hl : l ∈ sum_of_powers i k)
     (hu : l + 1 = u) :
     goalShape l u i k := by
@@ -606,8 +594,8 @@ lemma Tactic.mem_sum_of_powers_many_halve {l m u : ℕ} (i k : ℕ)
   · exact h_lo j hli hm
   · exact h_hi j hm hui
 
-lemma Tactic.end_sum_of_powers (h : goalShape l u 3 k) :
-    ∀ x, l ≤ x → x < u → x ∈ sum_of_powers 3 k := h
+lemma Tactic.end_sum_of_powers (h : goalShape l u i k) :
+    ∀ x, l ≤ x → x < u → x ∈ sum_of_powers i k := h
 
 /--
 Given expressions `en, ek, ei` representing natural numbers `n, k, i` and a list `list : List ℕ`
@@ -634,10 +622,11 @@ def prove_sumOfPowers_many (l u k i : ℕ) (el eu ek ei : Expr)
   if l < u then
     if l + 1 = u then
       let list := arr.get! l
-      if k < list.length
-        then throwError "goal {l} ∈ sum_of_powers {i} {k} is false, best is {list.length}"
+      if k < list.length then
+        throwError "subgoal {l} ∈ sum_of_powers {i} {k} is false, \
+          best is {l} ∈ sum_of_powers {i} {list.length}"
       let pf ← prove_sumOfPowers l k i el ek ei list
-      mkAppM `Tactic.mem_sum_of_powers_many_one #[eu, ei, ek, pf, ← mkEqRefl eu]
+      mkAppM `Tactic.mem_sum_of_powers_many_one #[el, eu, ei, ek, pf, ← mkEqRefl eu]
     else
       let m := (l + u) / 2
       let em := mkNatLit m
@@ -661,7 +650,8 @@ def sum_of_powers_tac (g : MVarId) : MetaM Unit := do
       else
         let list :: _ := find_all i k n | throwError "sum_of_powers goal is false"
         let list := list.takeWhile (· ≠ 0)
-        g.assign (← prove_sumOfPowers n k i en ek ei list)
+        let pf ← prove_sumOfPowers n k i en ek ei list
+        g.assign pf
   | ~q(∀ x, $el ≤ x → x < $eu → x ∈ sum_of_powers $ei $ek) =>
       let some i := ei.nat? | throwError "{ei} not a natural literal"
       let some l := el.nat? | throwError "{el} not a natural literal"
@@ -688,19 +678,17 @@ lemma mid_range : ∀ i : ℕ, 455 ≤ i → i < 3235 → i ∈ sum_of_powers 3 
 
 end compute
 
-lemma low_range : ∀ (i : ℕ), 0 ≤ i → i < 455 → i ∈ sum_of_powers 3 13 := by
+lemma low_range : ∀ (i : ℕ), 0 ≤ i → i < 455 → i ∈ sum_of_powers 3 9 := by
   prove_sumOfPowers
 
 theorem sum_thirteen_cubes (n : ℕ) : n ∈ sum_of_powers 3 13 := by
   cases' le_or_lt (14 * 379 ^ 9) n with h₁ h₁
   · exact sum_of_thirteen_cubes_set_large _ h₁
   cases' lt_or_le n 455 with h₂ h₂
-  · exact low_range _ (by simp) h₂
+  · exact sum_of_powers_mono_right (by simp) (by simp) (low_range _ (by simp) h₂)
   obtain ⟨N, hN⟩ := exists_add_of_le h₂
   rw [add_comm] at hN
   rw [hN]
   refine reduce_many 455 ?_ _ (by omega)
   intro k hk
   exact mid_range _ (by simp) (by omega)
-
-#print axioms sum_thirteen_cubes
