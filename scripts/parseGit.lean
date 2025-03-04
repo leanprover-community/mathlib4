@@ -160,3 +160,18 @@ info: (#[file: .github/workflows/bench_summary_comment.yml, lines 33-36, file: .
 #eval do
   let tots := diffToGitDiff test
   dbg_trace tots
+
+/--
+info: [file: scripts/parseGit.lean, lines 26-27]
+---
+info: [file: scripts/parseGit.lean, lines 26-27,
+ file: scripts/parseGit.lean, lines 32-33,
+ file: scripts/parseGit.lean, lines 42-46,
+ file: scripts/parseGit.lean, lines 49-55]
+-/
+#guard_msgs in
+run_cmd
+  let diffString ← IO.Process.run {cmd := "git", args := #["diff", "--unified=0", "420e511d5f1d81458aef9bd76f48b96b07d32908..55741ae1d9aaa639953dd63bcfe32ed00cf3b4f5"]}
+  let (totA, totB) := diffToGitDiff diffString
+  logInfo m!"{totA}"
+  logInfo m!"{totB}"
