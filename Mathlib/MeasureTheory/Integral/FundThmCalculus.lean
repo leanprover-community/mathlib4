@@ -141,10 +141,9 @@ integral, fundamental theorem of calculus, FTC-1, FTC-2, change of variables in 
 
 noncomputable section
 
-open scoped Classical
 open MeasureTheory Set Filter Function
 
-open scoped Classical Topology Filter ENNReal Interval NNReal
+open scoped Topology Filter ENNReal Interval NNReal
 
 variable {ι 𝕜 E A : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
@@ -189,8 +188,8 @@ of the integral w.r.t. Lebesgue measure. -/
 
 /-- An auxiliary typeclass for the Fundamental theorem of calculus, part 1. It is used to formulate
 theorems that work simultaneously for left and right one-sided derivatives of `∫ x in u..v, f x`. -/
-class FTCFilter (a : outParam ℝ) (outer : Filter ℝ) (inner : outParam <| Filter ℝ) extends
-    TendstoIxxClass Ioc outer inner : Prop where
+class FTCFilter (a : outParam ℝ) (outer : Filter ℝ) (inner : outParam <| Filter ℝ) : Prop
+    extends TendstoIxxClass Ioc outer inner where
   pure_le : pure a ≤ outer
   le_nhds : inner ≤ 𝓝 a
   [meas_gen : IsMeasurablyGenerated inner]
@@ -1152,14 +1151,14 @@ theorem integral_eq_sub_of_hasDerivAt_of_tendsto (hab : a < b) {fa fb}
     refine fun x hx => (hderiv x hx).congr_of_eventuallyEq ?_
     filter_upwards [Ioo_mem_nhds hx.1 hx.2] with _ hy
     unfold F
-    rw [update_noteq hy.2.ne, update_noteq hy.1.ne']
+    rw [update_of_ne hy.2.ne, update_of_ne hy.1.ne']
   have hcont : ContinuousOn F (Icc a b) := by
     rw [continuousOn_update_iff, continuousOn_update_iff, Icc_diff_right, Ico_diff_left]
     refine ⟨⟨fun z hz => (hderiv z hz).continuousAt.continuousWithinAt, ?_⟩, ?_⟩
     · exact fun _ => ha.mono_left (nhdsWithin_mono _ Ioo_subset_Ioi_self)
     · rintro -
       refine (hb.congr' ?_).mono_left (nhdsWithin_mono _ Ico_subset_Iio_self)
-      filter_upwards [Ioo_mem_nhdsLT hab] with _ hz using (update_noteq hz.1.ne' _ _).symm
+      filter_upwards [Ioo_mem_nhdsLT hab] with _ hz using (update_of_ne hz.1.ne' _ _).symm
   simpa [F, hab.ne, hab.ne'] using integral_eq_sub_of_hasDerivAt_of_le hab.le hcont Fderiv hint
 
 /-- Fundamental theorem of calculus-2: If `f : ℝ → E` is differentiable at every `x` in `[a, b]` and
@@ -1193,7 +1192,7 @@ lemma integral_unitInterval_deriv_eq_sub [RCLike 𝕜] [NormedSpace 𝕜 E] [IsS
       simp only [one_smul]
     exact this.const_add z₀
   convert (integral_eq_sub_of_hasDerivAt hderiv' hint) using 1
-  · simp_rw [← integral_smul, Function.comp_apply]
+  · simp_rw [← integral_smul, Function.comp_apply, γ]
   · simp only [γ, Function.comp_apply, one_smul, zero_smul, add_zero]
 
 /-!
@@ -1223,7 +1222,7 @@ theorem integrableOn_deriv_right_of_nonneg (hcont : ContinuousOn g (Icc a b))
   let F : ℝ → ℝ := (↑) ∘ f
   have intF : IntegrableOn F (Ioo a b) := by
     refine ⟨f.measurable.coe_nnreal_real.aestronglyMeasurable, ?_⟩
-    simpa only [F, hasFiniteIntegral_iff_nnnorm, comp_apply, NNReal.nnnorm_eq] using fint
+    simpa only [F, hasFiniteIntegral_iff_enorm, comp_apply, NNReal.enorm_eq] using fint
   have A : ∫⁻ x : ℝ in Ioo a b, f x = ENNReal.ofReal (∫ x in Ioo a b, F x) :=
     lintegral_coe_eq_integral _ intF
   rw [A] at hf

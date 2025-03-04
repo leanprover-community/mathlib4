@@ -102,12 +102,6 @@ noncomputable section
 
 open ENat NNReal Topology Filter Set Fin Filter Function
 
-/-
-Porting note: These lines are not required in Mathlib4.
-attribute [local instance 1001]
-  NormedAddCommGroup.toAddCommGroup NormedSpace.toModule' AddCommGroup.toAddCommMonoid
--/
-
 /-- Smoothness exponent for analytic functions. -/
 scoped [ContDiff] notation3 "ω" => (⊤ : WithTop ℕ∞)
 /-- Smoothness exponent for infinitely differentiable functions. -/
@@ -279,12 +273,6 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_left {n : ℕ} :
         rw [this]
         exact h.2.2
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/4119,
-without `set_option maxSynthPendingDepth 2` this proof needs substantial repair.
--/
-set_option maxSynthPendingDepth 2 in
 -- Porting note: this was split out from `hasFTaylorSeriesUpToOn_succ_iff_right` to avoid a timeout.
 theorem HasFTaylorSeriesUpToOn.shift_of_succ
     {n : ℕ} (H : HasFTaylorSeriesUpToOn (n + 1 : ℕ) f p s) :
@@ -327,7 +315,7 @@ theorem hasFTaylorSeriesUpToOn_succ_nat_iff_right {n : ℕ} :
     constructor
     · exact Hzero_eq
     · intro m (hm : (m : WithTop ℕ∞) < n.succ) x (hx : x ∈ s)
-      cases' m with m
+      rcases m with - | m
       · exact Hfderiv_zero x hx
       · have A : (m : WithTop ℕ∞) < n := by
           rw [Nat.cast_lt] at hm ⊢
@@ -344,7 +332,7 @@ theorem hasFTaylorSeriesUpToOn_succ_nat_iff_right {n : ℕ} :
             (p x m.succ.succ) (snoc (cons y (init v)) (v (last _)))
         rw [← cons_snoc_eq_snoc_cons, snoc_init_self]
     · intro m (hm : (m : WithTop ℕ∞) ≤ n.succ)
-      cases' m with m
+      rcases m with - | m
       · have : DifferentiableOn 𝕜 (fun x => p x 0) s := fun x hx =>
           (Hfderiv_zero x hx).differentiableWithinAt
         exact this.continuousOn
@@ -413,8 +401,13 @@ theorem iteratedFDerivWithin_zero_eq_comp :
   rfl
 
 @[simp]
+theorem dist_iteratedFDerivWithin_zero (f : E → F) (s : Set E) (x : E)
+    (g : E → F) (t : Set E) (y : E) :
+    dist (iteratedFDerivWithin 𝕜 0 f s x) (iteratedFDerivWithin 𝕜 0 g t y) = dist (f x) (g y) := by
+  simp only [iteratedFDerivWithin_zero_eq_comp, comp_apply, LinearIsometryEquiv.dist_map]
+
+@[simp]
 theorem norm_iteratedFDerivWithin_zero : ‖iteratedFDerivWithin 𝕜 0 f s x‖ = ‖f x‖ := by
-  -- Porting note: added `comp_apply`.
   rw [iteratedFDerivWithin_zero_eq_comp, comp_apply, LinearIsometryEquiv.norm_map]
 
 theorem iteratedFDerivWithin_succ_apply_left {n : ℕ} (m : Fin (n + 1) → E) :
@@ -442,6 +435,23 @@ theorem norm_fderivWithin_iteratedFDerivWithin {n : ℕ} :
   -- Porting note: added `comp_apply`.
   rw [iteratedFDerivWithin_succ_eq_comp_left, comp_apply, LinearIsometryEquiv.norm_map]
 
+@[simp]
+theorem dist_iteratedFDerivWithin_one (f g : E → F) {y}
+    (hsx : UniqueDiffWithinAt 𝕜 s x) (hyt : UniqueDiffWithinAt 𝕜 t y) :
+    dist (iteratedFDerivWithin 𝕜 1 f s x) (iteratedFDerivWithin 𝕜 1 g t y)
+      = dist (fderivWithin 𝕜 f s x) (fderivWithin 𝕜 g t y) := by
+  simp only [iteratedFDerivWithin_succ_eq_comp_left, comp_apply,
+    LinearIsometryEquiv.dist_map, iteratedFDerivWithin_zero_eq_comp,
+    LinearIsometryEquiv.comp_fderivWithin, hsx, hyt]
+  apply (continuousMultilinearCurryFin0 𝕜 E F).symm.toLinearIsometry.postcomp.dist_map
+
+@[simp]
+theorem norm_iteratedFDerivWithin_one (f : E → F) (h : UniqueDiffWithinAt 𝕜 s x) :
+    ‖iteratedFDerivWithin 𝕜 1 f s x‖ = ‖fderivWithin 𝕜 f s x‖ := by
+  simp only [← norm_fderivWithin_iteratedFDerivWithin,
+    iteratedFDerivWithin_zero_eq_comp, LinearIsometryEquiv.comp_fderivWithin _ h]
+  apply (continuousMultilinearCurryFin0 𝕜 E F).symm.toLinearIsometry.norm_toContinuousLinearMap_comp
+
 theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s)
     (m : Fin (n + 1) → E) :
     (iteratedFDerivWithin 𝕜 (n + 1) f s x : (Fin (n + 1) → E) → F) m =
@@ -467,18 +477,7 @@ theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 
         rw [fderivWithin_congr A (A x hx)]
       _ = (I ∘ fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) s x :
               E → E[×n + 1]→L[𝕜] F) (m 0) (tail m) := by
-        #adaptation_note
-        /--
-        After https://github.com/leanprover/lean4/pull/4119 we need to either use
-        `set_option maxSynthPendingDepth 2 in`
-        or fill in an explicit argument as
-        ```
-        simp only [LinearIsometryEquiv.comp_fderivWithin _
-          (f := iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) (hs x hx)]
-        ```
-        -/
-        set_option maxSynthPendingDepth 2 in
-          simp only [LinearIsometryEquiv.comp_fderivWithin _ (hs x hx)]
+        simp only [LinearIsometryEquiv.comp_fderivWithin _ (hs x hx)]
         rfl
       _ = (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fun y => fderivWithin 𝕜 f s y) s) s x :
               E → E[×n]→L[𝕜] E →L[𝕜] F) (m 0) (init (tail m)) ((tail m) (last n)) := rfl
@@ -629,10 +628,6 @@ theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
         (IH (le_of_lt A) hx).symm
     rw [iteratedFDerivWithin_succ_eq_comp_left, Function.comp_apply, this.fderivWithin (hs x hx)]
     exact (ContinuousMultilinearMap.uncurry_curryLeft _).symm
-
-@[deprecated (since := "2024-03-28")]
-alias HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn :=
-  HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
 
 /-- The iterated derivative commutes with shifting the function by a constant on the left. -/
 lemma iteratedFDerivWithin_comp_add_left' (n : ℕ) (a : E) :

@@ -116,15 +116,7 @@ instance [Inhabited C] (U : Comonad C) : Inhabited (Cokleisli U) :=
 instance category : Category (Cokleisli U) where
   Hom := fun X Y : C => (U : C ⥤ C).obj X ⟶ Y
   id X := U.ε.app X
-  comp {X} {_} {_} f g := U.δ.app X ≫ (U : C ⥤ C).map f ≫ g
-  id_comp f := by dsimp; rw [U.right_counit_assoc]
-  assoc {X} {Y} {Z} {W} f g h := by
-    -- Porting note: working around lack of unfold_projs
-    change U.δ.app X ≫ U.map (U.δ.app X ≫ U.map f ≫ g) ≫ h =
-      U.δ.app X ≫ U.map f ≫ (U.δ.app Y ≫ U.map g ≫ h)
-    -- Porting note: something was broken here and was easier just to redo from scratch
-    simp only [Functor.map_comp, ← Category.assoc, eq_whisker]
-    simp only [Category.assoc, U.δ.naturality, Functor.comp_map, U.coassoc_assoc]
+  comp f g := U.δ.app _ ≫ (U : C ⥤ C).map f ≫ g
 
 namespace Adjunction
 
@@ -132,7 +124,7 @@ namespace Adjunction
 @[simps]
 def toCokleisli : C ⥤ Cokleisli U where
   obj X := (X : Cokleisli U)
-  map {X} {_} f := (U.ε.app X ≫ f : _)
+  map {X} {_} f := (U.ε.app X ≫ f :)
   map_comp {X} {Y} {_} f g := by
     -- Porting note: working around lack of unfold_projs
     change U.ε.app X ≫ f ≫ g = U.δ.app X ≫ U.map (U.ε.app X ≫ f) ≫ U.ε.app Y ≫ g

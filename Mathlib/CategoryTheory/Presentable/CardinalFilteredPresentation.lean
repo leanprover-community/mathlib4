@@ -94,7 +94,7 @@ include h in
 lemma presentable [LocallySmall.{w} C] (X : C) : IsPresentable.{w} X := by
   obtain ⟨κ', _, le, hκ'⟩ : ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (_ : κ ≤ κ'),
       HasCardinalLT (Arrow (h.presentation X).J) κ' := by
-    obtain ⟨κ', h₁, h₂⟩ := exists_regular_cardinal'.{w}
+    obtain ⟨κ', h₁, h₂⟩ := HasCardinalLT.exists_regular_cardinal_forall.{w}
       (Sum.elim (fun (_ : Unit) ↦ Arrow (h.presentation X).J) (fun (_ : Unit) ↦ κ.ord.toType))
     exact ⟨κ', ⟨h₁⟩,
       le_of_lt (by simpa [hasCardinalLT_iff_cardinal_mk_lt] using h₂ (Sum.inr ⟨⟩)),

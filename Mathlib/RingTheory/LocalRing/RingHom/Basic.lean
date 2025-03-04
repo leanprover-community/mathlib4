@@ -86,8 +86,8 @@ section
 variable [CommSemiring R] [IsLocalRing R] [CommSemiring S] [IsLocalRing S]
 
 /-- A ring homomorphism between local rings is a local ring hom iff it reflects units,
-i.e. any preimage of a unit is still a unit. https://stacks.math.columbia.edu/tag/07BJ
--/
+i.e. any preimage of a unit is still a unit. -/
+@[stacks 07BJ]
 theorem local_hom_TFAE (f : R →+* S) :
     List.TFAE
       [IsLocalHom f, f '' (maximalIdeal R).1 ⊆ maximalIdeal S,

@@ -6,7 +6,7 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Analysis.Normed.Algebra.Spectrum
 import Mathlib.Analysis.SpecialFunctions.Exponential
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Topology.ContinuousMap.StarOrdered
 
 /-!
@@ -58,7 +58,7 @@ namespace CFC
 section RCLikeNormed
 
 variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [NormedRing A]
-  [StarRing A] [TopologicalRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+  [StarRing A] [IsTopologicalRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
   [ContinuousFunctionalCalculus 𝕜 p]
 
 lemma exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
@@ -76,7 +76,7 @@ end RCLikeNormed
 section RealNormed
 
 variable {A : Type*} [NormedRing A] [StarRing A]
-  [TopologicalRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
+  [IsTopologicalRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
   [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
 
 lemma real_exp_eq_normedSpace_exp {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
@@ -127,8 +127,6 @@ protected lemma _root_.IsSelfAdjoint.log {a : A} : IsSelfAdjoint (log a) := cfc_
 lemma log_algebraMap {r : ℝ} : log (algebraMap ℝ A r) = algebraMap ℝ A (Real.log r) := by
   simp [log]
 
-variable [UniqueContinuousFunctionalCalculus ℝ A]
-
 -- TODO: Relate the hypothesis to a notion of strict positivity
 lemma log_smul {r : ℝ} (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) (hr : 0 < r)
     (ha₁ : IsSelfAdjoint a := by cfc_tac) :
@@ -152,7 +150,7 @@ lemma log_pow (n : ℕ) (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x)
 variable [CompleteSpace A]
 
 lemma log_exp (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : log (NormedSpace.exp ℝ a) = a := by
-  have hcont : ContinuousOn Real.log (Real.exp '' spectrum ℝ a) := by fun_prop (disch := aesop)
+  have hcont : ContinuousOn Real.log (Real.exp '' spectrum ℝ a) := by fun_prop (disch := simp)
   rw [log, ← real_exp_eq_normedSpace_exp, ← cfc_comp' Real.log Real.exp a hcont]
   simp [cfc_id' (R := ℝ) a]
 

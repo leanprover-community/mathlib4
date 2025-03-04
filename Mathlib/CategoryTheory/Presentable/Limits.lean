@@ -3,11 +3,8 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.TypesFiltered
 import Mathlib.CategoryTheory.Limits.Yoneda
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Presentable.Basic
 
 /-!
@@ -60,8 +57,8 @@ lemma surjective (x : c.pt.obj cX.pt) :
     let z (k : K) : (F.obj k).obj (X.obj (j k)) := (H k).choose_spec.choose
     have hz (k : K) : (F.obj k).map (cX.ι.app (j k)) (z k) = y.1 k :=
       (H k).choose_spec.choose_spec
-    refine ⟨IsCardinalFiltered.max j (hasCardinalLT_of_hasCardinalLT_arrow hK), fun k ↦
-      (F.obj k).map (X.map (IsCardinalFiltered.toMax j _ k)) (z k),
+    exact ⟨IsCardinalFiltered.max j (hasCardinalLT_of_hasCardinalLT_arrow hK),
+      fun k ↦ (F.obj k).map (X.map (IsCardinalFiltered.toMax j _ k)) (z k),
         fun k ↦ by rw [← hz, ← FunctorToTypes.map_comp_apply, cX.w]⟩
   obtain ⟨j₁, α, hα⟩ : ∃ (j₁ : J) (α : j₀ ⟶ j₁), ∀ ⦃k k' : K⦄ (φ : k ⟶ k'),
       (F.obj k').map (X.map α) ((F.map φ).app _ (z k)) =
@@ -152,8 +149,7 @@ end Accessible
 
 lemma isCardinalAccessible_of_isLimit {K : Type u'} [Category.{v'} K] {F : K ⥤ C ⥤ Type w'}
     (c : Cone F) (hc : IsLimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    [HasLimitsOfShape K (Type w')]
-    (hK : HasCardinalLT (Arrow K) κ)
+    [HasLimitsOfShape K (Type w')] (hK : HasCardinalLT (Arrow K) κ)
     [∀ k, (F.obj k).IsCardinalAccessible κ] :
     c.pt.IsCardinalAccessible κ where
   preservesColimitOfShape {J _ _} := ⟨fun {X} ↦ ⟨fun {cX} hcX ↦ by
@@ -164,30 +160,29 @@ lemma isCardinalAccessible_of_isLimit {K : Type u'} [Category.{v'} K] {F : K ⥤
 
 end Functor
 
-/-- This is `isCardinalPresentable_of_isColimit` in the particular case `w = v`. -/
+/-- In case `C` is locally `w`-small, use `isCardinalPresentable_of_isColimit`. -/
 lemma isCardinalPresentable_of_isColimit'
-    {K : Type v} [Category.{v} K] {Y : K ⥤ C}
-    (c : Cocone Y) (hc : IsColimit c) (κ : Cardinal.{v}) [Fact κ.IsRegular]
-    (hK : HasCardinalLT (Arrow K) κ)
+    {K : Type u'} [Category.{v'} K] {Y : K ⥤ C}
+    (c : Cocone Y) (hc : IsColimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [HasLimitsOfShape Kᵒᵖ (Type v)] (hK : HasCardinalLT (Arrow K) κ)
     [∀ k, IsCardinalPresentable (Y.obj k) κ] :
     IsCardinalPresentable c.pt κ := by
-  have : ∀ (k : Kᵒᵖ), ((Y.op ⋙ coyoneda).obj k).IsCardinalAccessible κ := fun k ↦ by
-    dsimp
-    infer_instance
+  have (k : Kᵒᵖ) : ((Y.op ⋙ coyoneda).obj k).IsCardinalAccessible κ := by
+    dsimp; infer_instance
   exact Functor.isCardinalAccessible_of_isLimit
     (coyoneda.mapCone c.op) (isLimitOfPreserves _ hc.op) κ (by simpa)
 
-lemma isCardinalPresentable_of_isColimit
-    [LocallySmall.{w} C]
-    {K : Type w} [Category.{w} K] {Y : K ⥤ C}
+lemma isCardinalPresentable_of_isColimit [LocallySmall.{w} C]
+    {K : Type u'} [Category.{v'} K] [HasLimitsOfShape Kᵒᵖ (Type w)] {Y : K ⥤ C}
     (c : Cocone Y) (hc : IsColimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     (hK : HasCardinalLT (Arrow K) κ)
     [∀ k, IsCardinalPresentable (Y.obj k) κ] :
     IsCardinalPresentable c.pt κ := by
-  rw [← isCardinalPresentable_shrinkHoms_iff.{w}]
-  let e := ShrinkHoms.equivalence C
-  have : ∀ (k : K), IsCardinalPresentable ((Y ⋙ e.functor).obj k) κ := by
+  let e := ShrinkHoms.equivalence.{w} C
+  have (k : K) : IsCardinalPresentable ((Y ⋙ e.functor).obj k) κ := by
     dsimp; infer_instance
-  exact isCardinalPresentable_of_isColimit' _ (isColimitOfPreserves e.functor hc) κ hK
+  rw [← isCardinalPresentable_iff_of_isEquivalence c.pt κ e.functor]
+  exact isCardinalPresentable_of_isColimit' _
+    (isColimitOfPreserves e.functor hc) κ hK
 
 end CategoryTheory

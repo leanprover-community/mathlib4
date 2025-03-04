@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
 import Mathlib.RingTheory.Regular.IsSMulRegular
-import Mathlib.RingTheory.Artinian
+import Mathlib.RingTheory.Artinian.Module
+import Mathlib.RingTheory.Nakayama
 import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Regular sequences and weakly regular sequences
@@ -145,7 +147,7 @@ lemma isWeaklyRegular_iff_Fin (rs : List R) :
 
 /-- A weakly regular sequence `rs` on `M` is regular if also `M/rsM ≠ 0`. -/
 @[mk_iff]
-structure IsRegular (rs : List R) extends IsWeaklyRegular M rs : Prop where
+structure IsRegular (rs : List R) : Prop extends IsWeaklyRegular M rs where
   top_ne_smul : (⊤ : Submodule R M) ≠ Ideal.ofList rs • ⊤
 
 end Definitions

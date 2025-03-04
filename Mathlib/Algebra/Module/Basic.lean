@@ -3,20 +3,20 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+import Mathlib.Algebra.Ring.Invertible
 
 /-!
 # Further basic results about modules.
 
 -/
 
-assert_not_exists Nonneg.inv
-assert_not_exists Multiset
+assert_not_exists Nonneg.inv Multiset
 
 open Function Set
 
@@ -35,9 +35,6 @@ theorem invOf_two_smul_add_invOf_two_smul (R) [Semiring R] [AddCommMonoid M] [Mo
     (⅟ 2 : R) • x + (⅟ 2 : R) • x = x :=
   Convex.combo_self invOf_two_add_invOf_two _
 
-@[deprecated (since := "2024-04-17")]
-alias map_nat_cast_smul := map_natCast_smul
-
 theorem map_inv_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*)
     [DivisionSemiring R] [DivisionSemiring S] [Module R M]
@@ -55,9 +52,6 @@ theorem map_inv_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} 
     rw [← smul_inv_smul₀ hR x, map_natCast_smul f R S, hS, zero_smul]
   · rw [← inv_smul_smul₀ hS (f _), ← map_natCast_smul f R S, smul_inv_smul₀ hR]
 
-@[deprecated (since := "2024-04-17")]
-alias map_inv_nat_cast_smul := map_inv_natCast_smul
-
 theorem map_inv_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [DivisionRing R] [DivisionRing S] [Module R M]
     [Module S M₂] (z : ℤ) (x : M) : f ((z⁻¹ : R) • x) = (z⁻¹ : S) • f x := by
@@ -66,9 +60,6 @@ theorem map_inv_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [F
   · simp_rw [Int.cast_neg, Int.cast_natCast, inv_neg, neg_smul, map_neg,
       map_inv_natCast_smul _ R S]
 
-@[deprecated (since := "2024-04-17")]
-alias map_inv_int_cast_smul := map_inv_intCast_smul
-
 /-- If `E` is a vector space over two division semirings `R` and `S`, then scalar multiplications
 agree on inverses of natural numbers in `R` and `S`. -/
 theorem inv_natCast_smul_eq {E : Type*} (R S : Type*) [AddCommMonoid E] [DivisionSemiring R]
@@ -76,17 +67,11 @@ theorem inv_natCast_smul_eq {E : Type*} (R S : Type*) [AddCommMonoid E] [Divisio
     (n⁻¹ : R) • x = (n⁻¹ : S) • x :=
   map_inv_natCast_smul (AddMonoidHom.id E) R S n x
 
-@[deprecated (since := "2024-04-17")]
-alias inv_nat_cast_smul_eq := inv_natCast_smul_eq
-
 /-- If `E` is a vector space over two division rings `R` and `S`, then scalar multiplications
 agree on inverses of integer numbers in `R` and `S`. -/
 theorem inv_intCast_smul_eq {E : Type*} (R S : Type*) [AddCommGroup E] [DivisionRing R]
     [DivisionRing S] [Module R E] [Module S E] (n : ℤ) (x : E) : (n⁻¹ : R) • x = (n⁻¹ : S) • x :=
   map_inv_intCast_smul (AddMonoidHom.id E) R S n x
-
-@[deprecated (since := "2024-04-17")]
-alias inv_int_cast_smul_eq := inv_intCast_smul_eq
 
 /-- If `E` is a vector space over a division semiring `R` and has a monoid action by `α`, then that
 action commutes by scalar multiplication of inverses of natural numbers in `R`. -/
@@ -95,18 +80,12 @@ theorem inv_natCast_smul_comm {α E : Type*} (R : Type*) [AddCommMonoid E] [Divi
     (n⁻¹ : R) • s • x = s • (n⁻¹ : R) • x :=
   (map_inv_natCast_smul (DistribMulAction.toAddMonoidHom E s) R R n x).symm
 
-@[deprecated (since := "2024-04-17")]
-alias inv_nat_cast_smul_comm := inv_natCast_smul_comm
-
 /-- If `E` is a vector space over a division ring `R` and has a monoid action by `α`, then that
 action commutes by scalar multiplication of inverses of integers in `R` -/
 theorem inv_intCast_smul_comm {α E : Type*} (R : Type*) [AddCommGroup E] [DivisionRing R]
     [Monoid α] [Module R E] [DistribMulAction α E] (n : ℤ) (s : α) (x : E) :
     (n⁻¹ : R) • s • x = s • (n⁻¹ : R) • x :=
   (map_inv_intCast_smul (DistribMulAction.toAddMonoidHom E s) R R n x).symm
-
-@[deprecated (since := "2024-04-17")]
-alias inv_int_cast_smul_comm := inv_intCast_smul_comm
 
 namespace Function
 

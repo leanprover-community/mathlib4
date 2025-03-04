@@ -263,7 +263,7 @@ variable (i : K →+* L)
 /-- This lemma is for polynomials over a field. -/
 theorem splits_iff (f : K[X]) :
     Splits i f ↔ f = 0 ∨ ∀ {g : L[X]}, Irreducible g → g ∣ f.map i → degree g = 1 := by
-  rw [Splits, map_eq_zero]
+  rw [Splits, Polynomial.map_eq_zero]
 
 /-- This lemma is for polynomials over a field. -/
 theorem Splits.def {i : K →+* L} {f : K[X]} (h : Splits i f) :

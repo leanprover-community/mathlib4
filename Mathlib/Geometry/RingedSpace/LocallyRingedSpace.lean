@@ -49,8 +49,8 @@ variable (X : LocallyRingedSpace.{u})
 
 /-- An alias for `toSheafedSpace`, where the result type is a `RingedSpace`.
 This allows us to use dot-notation for the `RingedSpace` namespace.
- -/
-def toRingedSpace : RingedSpace :=
+-/
+abbrev toRingedSpace : RingedSpace :=
   X.toSheafedSpace
 
 /-- The underlying topological space of a locally ringed space. -/
@@ -72,8 +72,8 @@ def 𝒪 : Sheaf CommRingCat X.toTopCat :=
 /-- A morphism of locally ringed spaces is a morphism of ringed spaces
  such that the morphisms induced on stalks are local ring homomorphisms. -/
 @[ext]
-structure Hom (X Y : LocallyRingedSpace.{u})
-    extends X.toPresheafedSpace.Hom Y.toPresheafedSpace : Type _ where
+structure Hom (X Y : LocallyRingedSpace.{u}) : Type _
+    extends X.toPresheafedSpace.Hom Y.toPresheafedSpace where
   /-- the underlying morphism induces a local ring homomorphism on stalks -/
   prop : ∀ x, IsLocalHom (toHom.stalkMap x).hom
 
@@ -273,7 +273,7 @@ instance : EmptyCollection LocallyRingedSpace.{u} := ⟨LocallyRingedSpace.empty
 
 /-- The canonical map from the empty locally ringed space. -/
 def emptyTo (X : LocallyRingedSpace.{u}) : ∅ ⟶ X :=
-  ⟨⟨⟨fun x => PEmpty.elim x, by fun_prop⟩,
+  ⟨⟨ofHom ⟨fun x => PEmpty.elim x, by fun_prop⟩,
     { app := fun U => CommRingCat.ofHom <| by refine ⟨⟨⟨0, ?_⟩, ?_⟩, ?_, ?_⟩ <;> intros <;> rfl }⟩,
     fun x => PEmpty.elim x⟩
 
@@ -354,12 +354,12 @@ lemma stalkMap_comp (x : X) :
 
 @[reassoc]
 lemma stalkSpecializes_stalkMap (x x' : X) (h : x ⤳ x') :
-    Y.presheaf.stalkSpecializes (f.base.map_specializes h) ≫ f.stalkMap x =
+    Y.presheaf.stalkSpecializes (f.base.hom.map_specializes h) ≫ f.stalkMap x =
       f.stalkMap x' ≫ X.presheaf.stalkSpecializes h :=
   PresheafedSpace.stalkMap.stalkSpecializes_stalkMap f.toShHom h
 
 lemma stalkSpecializes_stalkMap_apply (x x' : X) (h : x ⤳ x') (y) :
-    f.stalkMap x (Y.presheaf.stalkSpecializes (f.base.map_specializes h) y) =
+    f.stalkMap x (Y.presheaf.stalkSpecializes (f.base.hom.map_specializes h) y) =
       (X.presheaf.stalkSpecializes h (f.stalkMap x' y)) :=
   DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkSpecializes_stalkMap f x x' h)) y
 

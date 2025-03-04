@@ -6,21 +6,26 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 import Mathlib.Data.Sum.Order
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.RelIso.Set
+import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.WellFounded
 
 /-!
 # Initial and principal segments
 
-This file defines initial and principal segments.
+This file defines initial and principal segment embeddings. Though these definitions make sense for
+arbitrary relations, they're intended for use with well orders.
+
+An initial segment is simply a lower set, i.e. if `x` belongs to the range, then any `y < x` also
+belongs to the range. A principal segment is a set of the form `Set.Iio x` for some `x`.
+
+An initial segment embedding `r ≼i s` is an order embedding `r ↪ s` such that its range is an
+initial segment. Likewise, a principal segment embedding `r ≺i s` has a principal segment for a
+range.
 
 ## Main definitions
 
-* `InitialSeg r s`: type of order embeddings of `r` into `s` for which the range is an initial
-  segment (i.e., if `b` belongs to the range, then any `b' < b` also belongs to the range).
-  It is denoted by `r ≼i s`.
-* `PrincipalSeg r s`: Type of order embeddings of `r` into `s` for which the range is a principal
-  segment, i.e., an interval of the form `(-∞, top)` for some element `top`. It is denoted by
-  `r ≺i s`.
+* `InitialSeg r s`: Type of initial segment embeddings of `r` into `s` , denoted by `r ≼i s`.
+* `PrincipalSeg r s`: Type of principal segment embeddings of `r` into `s` , denoted by `r ≺i s`.
 
 The lemmas `Ordinal.type_le_iff` and `Ordinal.type_lt_iff` tell us that `≼i` corresponds to the `≤`
 relation on ordinals, while `≺i` corresponds to the `<` relation. This prompts us to think of
@@ -36,14 +41,7 @@ These notations belong to the `InitialSeg` locale.
 * `α <i β` is an abbreviation for `(· < ·) ≺i (· < ·)`.
 -/
 
-
-/-!
-### Initial segments
-
-Order embeddings whose range is an initial segment of `s` (i.e., if `b` belongs to the range, then
-any `b' < b` also belongs to the range). The type of these embeddings from `r` to `s` is called
-`InitialSeg r s`, and denoted by `r ≼i s`.
--/
+/-! ### Initial segment embeddings -/
 
 variable {α : Type*} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
   {t : γ → γ → Prop}
@@ -51,7 +49,7 @@ variable {α : Type*} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β
 open Function
 
 /-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≼i s` is an order
-embedding whose range is an initial segment. That is, whenever `b < f a` in `β` then `b` is in the
+embedding whose `Set.range` is a lower set. That is, whenever `b < f a` in `β` then `b` is in the
 range of `f`. -/
 structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends r ↪r s where
   /-- The order embedding is an initial segment -/
@@ -128,7 +126,7 @@ theorem exists_eq_iff_rel (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a
 @[deprecated exists_eq_iff_rel (since := "2024-09-21")]
 alias init_iff := exists_eq_iff_rel
 
-/-- A relation isomorphism is an initial segment -/
+/-- A relation isomorphism is an initial segment embedding -/
 @[simps!]
 def _root_.RelIso.toInitialSeg (f : r ≃r s) : r ≼i s :=
   ⟨f, by simp⟩
@@ -169,6 +167,7 @@ instance subsingleton_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl 
     rw [f.exists_eq_iff_rel, g.exists_eq_iff_rel]
     exact exists_congr fun x => and_congr_left fun hx => IH _ hx ▸ Iff.rfl
 
+/-- Given a well order `s`, there is at most one initial segment embedding of `r` into `s`. -/
 instance [IsWellOrder β s] : Subsingleton (r ≼i s) :=
   ⟨fun a => have := a.isWellFounded; Subsingleton.elim a⟩
 
@@ -184,8 +183,8 @@ alias ltOrEq_apply_right := eq_relIso
 private theorem antisymm_aux [IsWellOrder α r] (f : r ≼i s) (g : s ≼i r) : LeftInverse g f :=
   (f.trans g).eq (InitialSeg.refl _)
 
-/-- If we have order embeddings between `α` and `β` whose images are initial segments, and `β`
-is a well-order then `α` and `β` are order-isomorphic. -/
+/-- If we have order embeddings between `α` and `β` whose ranges are initial segments, and `β` is a
+well order, then `α` and `β` are order-isomorphic. -/
 def antisymm [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) : r ≃r s :=
   have := f.toRelEmbedding.isWellOrder
   ⟨⟨f, g, antisymm_aux f g, antisymm_aux g f⟩, f.map_rel_iff'⟩
@@ -199,6 +198,9 @@ theorem antisymm_symm [IsWellOrder α r] [IsWellOrder β s] (f : r ≼i s) (g : 
     (antisymm f g).symm = antisymm g f :=
   RelIso.coe_fn_injective rfl
 
+/-- An initial segment embedding is either an isomorphism, or a principal segment embedding.
+
+See also `InitialSeg.ltOrEq`. -/
 theorem eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
     Surjective f ∨ ∃ b, ∀ x, x ∈ Set.range f ↔ s x b := by
   apply or_iff_not_imp_right.2
@@ -215,7 +217,7 @@ theorem eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
     cases hy (Set.mem_range_self z)
 
 /-- Restrict the codomain of an initial segment -/
-def codRestrict (p : Set β) (f : r ≼i s) (H : ∀ a, f a ∈ p) : r ≼i Subrel s p :=
+def codRestrict (p : Set β) (f : r ≼i s) (H : ∀ a, f a ∈ p) : r ≼i Subrel s (· ∈ p) :=
   ⟨RelEmbedding.codRestrict p f H, fun a ⟨b, m⟩ h =>
     let ⟨a', e⟩ := f.mem_range_of_rel h
     ⟨a', by subst e; rfl⟩⟩
@@ -224,7 +226,7 @@ def codRestrict (p : Set β) (f : r ≼i s) (H : ∀ a, f a ∈ p) : r ≼i Subr
 theorem codRestrict_apply (p) (f : r ≼i s) (H a) : codRestrict p f H a = ⟨f a, H a⟩ :=
   rfl
 
-/-- Initial segment from an empty type. -/
+/-- Initial segment embedding from an empty type. -/
 def ofIsEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] : r ≼i s :=
   ⟨RelEmbedding.ofIsEmpty r s, isEmptyElim⟩
 
@@ -245,19 +247,11 @@ protected theorem acc (f : r ≼i s) (a : α) : Acc r a ↔ Acc s (f a) :=
 
 end InitialSeg
 
-/-!
-### Principal segments
+/-! ### Principal segments -/
 
-Order embeddings whose range is a principal segment of `s` (i.e., an interval of the form
-`(-∞, top)` for some element `top` of `β`). The type of these embeddings from `r` to `s` is called
-`PrincipalSeg r s`, and denoted by `r ≺i s`. Principal segments are in particular initial
-segments.
--/
-
-
-/-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≺i s` is an order
-embedding whose range is an open interval `(-∞, top)` for some element `top` of `β`. Such order
-embeddings are called principal segments -/
+/-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≺i s` is an initial
+segment embedding whose range is `Set.Iio x` for some element `x`. If `β` is a well order, this is
+equivalent to the embedding not being surjective. -/
 structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends r ↪r s where
   /-- The supremum of the principal segment -/
   top : β
@@ -325,7 +319,7 @@ theorem surjOn (f : r ≺i s) : Set.SurjOn f Set.univ { b | s b f.top } := by
   intro b h
   simpa using mem_range_of_rel_top _ h
 
-/-- A principal segment is in particular an initial segment. -/
+/-- A principal segment embedding is in particular an initial segment embedding. -/
 instance hasCoeInitialSeg [IsTrans β s] : Coe (r ≺i s) (r ≼i s) :=
   ⟨fun f => ⟨f.toRelEmbedding, fun _ _ => f.mem_range_of_rel⟩⟩
 
@@ -364,7 +358,8 @@ theorem irrefl {r : α → α → Prop} [IsWellOrder α r] (f : r ≺i r) : Fals
 instance (r : α → α → Prop) [IsWellOrder α r] : IsEmpty (r ≺i r) :=
   ⟨fun f => f.irrefl⟩
 
-/-- Composition of a principal segment with an initial segment, as a principal segment -/
+/-- Composition of a principal segment embedding with an initial segment embedding, as a principal
+segment embedding -/
 def transInitial (f : r ≺i s) (g : s ≼i t) : r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g f.top, fun a => by
     simp [g.exists_eq_iff_rel, ← PrincipalSeg.mem_range_iff_rel, exists_swap, ← exists_and_left]⟩
@@ -390,7 +385,7 @@ set_option linter.deprecated false in
 theorem lt_le_top (f : r ≺i s) (g : s ≼i t) : (f.ltLe g).top = g f.top :=
   rfl
 
-/-- Composition of two principal segments as a principal segment. -/
+/-- Composition of two principal segment embeddings as a principal segment embedding -/
 @[trans]
 protected def trans [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) : r ≺i t :=
   transInitial f g
@@ -403,7 +398,8 @@ theorem trans_apply [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) (a : α) : f.tr
 theorem trans_top [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) : (f.trans g).top = g f.top :=
   rfl
 
-/-- Composition of an order isomorphism with a principal segment, as a principal segment. -/
+/-- Composition of an order isomorphism with a principal segment embedding, as a principal
+segment embedding -/
 def relIsoTrans (f : r ≃r s) (g : s ≺i t) : r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g.top, fun c => by simp [g.mem_range_iff_rel]⟩
 
@@ -428,7 +424,8 @@ set_option linter.deprecated false in
 theorem equivLT_top (f : r ≃r s) (g : s ≺i t) : (equivLT f g).top = g.top :=
   rfl
 
-/-- Composition of a principal segment with an order isomorphism, as a principal segment -/
+/-- Composition of a principal segment embedding with a relation isomorphism, as a principal segment
+embedding -/
 def transRelIso (f : r ≺i s) (g : s ≃r t) : r ≺i t :=
   transInitial f g.toInitialSeg
 
@@ -462,10 +459,8 @@ theorem top_rel_top {r : α → α → Prop} {s : β → β → Prop} {t : γ �
 alias topLTTop := top_rel_top
 
 /-- Any element of a well order yields a principal segment. -/
--- The explicit typing is required in order for `simp` to work properly.
 @[simps!]
-def ofElement {α : Type*} (r : α → α → Prop) (a : α) :
-    @PrincipalSeg { b // r b a } α (Subrel r { b | r b a }) r :=
+def ofElement {α : Type*} (r : α → α → Prop) (a : α) : Subrel r (r · a) ≺i r :=
   ⟨Subrel.relEmbedding _ _, a, fun _ => ⟨fun ⟨⟨_, h⟩, rfl⟩ => h, fun h => ⟨⟨_, h⟩, rfl⟩⟩⟩
 
 @[simp]
@@ -473,23 +468,22 @@ theorem ofElement_apply {α : Type*} (r : α → α → Prop) (a : α) (b) : ofE
   rfl
 
 /-- For any principal segment `r ≺i s`, there is a `Subrel` of `s` order isomorphic to `r`. -/
--- The explicit typing is required in order for `simp` to work properly.
 @[simps! symm_apply]
-noncomputable def subrelIso (f : r ≺i s) :
-    @RelIso { b // s b f.top } α (Subrel s { b | s b f.top }) r :=
+noncomputable def subrelIso (f : r ≺i s) : Subrel s (s · f.top) ≃r r :=
   RelIso.symm ⟨(Equiv.ofInjective f f.injective).trans
     (Equiv.setCongr (funext fun _ ↦ propext f.mem_range_iff_rel)), f.map_rel_iff⟩
 
 @[simp]
-theorem apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) : f (f.subrelIso b) = b :=
+theorem apply_subrelIso (f : r ≺i s) (b : {b // s b f.top}) : f (f.subrelIso b) = b :=
   Equiv.apply_ofInjective_symm f.injective _
 
 @[simp]
 theorem subrelIso_apply (f : r ≺i s) (a : α) : f.subrelIso ⟨f a, f.lt_top a⟩ = a :=
   Equiv.ofInjective_symm_apply f.injective _
 
-/-- Restrict the codomain of a principal segment -/
-def codRestrict (p : Set β) (f : r ≺i s) (H : ∀ a, f a ∈ p) (H₂ : f.top ∈ p) : r ≺i Subrel s p :=
+/-- Restrict the codomain of a principal segment embedding. -/
+def codRestrict (p : Set β) (f : r ≺i s) (H : ∀ a, f a ∈ p) (H₂ : f.top ∈ p) :
+    r ≺i Subrel s (· ∈ p) :=
   ⟨RelEmbedding.codRestrict p f H, ⟨f.top, H₂⟩, fun ⟨_, _⟩ => by simp [← f.mem_range_iff_rel]⟩
 
 @[simp]
@@ -531,9 +525,8 @@ theorem wellFounded_iff_principalSeg.{u} {β : Type u} {s : β → β → Prop} 
 namespace InitialSeg
 
 open Classical in
-/-- To an initial segment taking values in a well order, one can associate either a principal
-segment (if the range is not everything, taking the top the minimum of the complement of the range)
-or an order isomorphism (if the range is everything). -/
+/-- Every initial segment embedding into a well order can be turned into an isomorphism if
+surjective, or into a principal segment embedding if not. -/
 noncomputable def principalSumRelIso [IsWellOrder β s] (f : r ≼i s) : (r ≺i s) ⊕ (r ≃r s) :=
   if h : Surjective f
     then Sum.inr (RelIso.ofSurjective f h)
@@ -542,7 +535,8 @@ noncomputable def principalSumRelIso [IsWellOrder β s] (f : r ≼i s) : (r ≺i
 @[deprecated principalSumRelIso (since := "2024-10-20")]
 alias ltOrEq := principalSumRelIso
 
-/-- Composition of an initial segment taking values in a well order and a principal segment. -/
+/-- Composition of an initial segment embedding and a principal segment embedding as a principal
+segment embedding -/
 noncomputable def transPrincipal [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) :
     r ≺i t :=
   match f.principalSumRelIso with
@@ -670,6 +664,9 @@ alias ⟨_, map_isMin⟩ := isMin_apply_iff
 theorem map_bot [PartialOrder α] [OrderBot α] [OrderBot β] (f : α ≤i β) : f ⊥ = ⊥ :=
   (map_isMin f isMin_bot).eq_bot
 
+theorem image_Iio [PartialOrder α] (f : α ≤i β) (a : α) : f '' Set.Iio a = Set.Iio (f a) :=
+  f.toOrderEmbedding.image_Iio f.isLowerSet_range a
+
 theorem le_apply_iff [LinearOrder α] (f : α ≤i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b := by
   constructor
   · intro h
@@ -725,6 +722,9 @@ alias ⟨_, map_isMin⟩ := isMin_apply_iff
 @[simp]
 theorem map_bot [PartialOrder α] [OrderBot α] [OrderBot β] (f : α <i β) : f ⊥ = ⊥ :=
   (f : α ≤i β).map_bot
+
+theorem image_Iio [PartialOrder α] (f : α <i β) (a : α) : f '' Set.Iio a = Set.Iio (f a) :=
+  (f : α ≤i β).image_Iio a
 
 theorem le_apply_iff [LinearOrder α] (f : α <i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b :=
   (f : α ≤i β).le_apply_iff

@@ -5,6 +5,7 @@ Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Data.Prod.PProd
 import Mathlib.Order.Filter.Finite
+import Mathlib.Order.Filter.Map
 
 /-!
 # Filter bases
@@ -197,7 +198,7 @@ protected theorem mem_filter_iff (h : IsBasis p s) {U : Set α} :
     exists_exists_and_eq_and]
 
 theorem filter_eq_generate (h : IsBasis p s) : h.filter = generate { U | ∃ i, p i ∧ s i = U } := by
-  erw [h.filterBasis.generate]; rfl
+  rw [IsBasis.filter, ← h.filterBasis.generate, IsBasis.filterBasis]
 
 end IsBasis
 
@@ -578,6 +579,7 @@ theorem _root_.Disjoint.exists_mem_filter_basis (h : Disjoint l l') (hl : l.HasB
     (hl' : l'.HasBasis p' s') : ∃ i, p i ∧ ∃ i', p' i' ∧ Disjoint (s i) (s' i') :=
   (hl.disjoint_iff hl').1 h
 
+open scoped Function in -- required for scoped `on` notation
 theorem _root_.Pairwise.exists_mem_filter_basis_of_disjoint {I} [Finite I] {l : I → Filter α}
     {ι : I → Sort*} {p : ∀ i, ι i → Prop} {s : ∀ i, ι i → Set α} (hd : Pairwise (Disjoint on l))
     (h : ∀ i, (l i).HasBasis (p i) (s i)) :
@@ -719,14 +721,14 @@ protected theorem HasBasis.ker (h : HasBasis l p s) : l.ker = ⋂ (i) (_ : p i),
 variable {ι'' : Type*} [Preorder ι''] (l) (s'' : ι'' → Set α)
 
 /-- `IsAntitoneBasis s` means the image of `s` is a filter basis such that `s` is decreasing. -/
-structure IsAntitoneBasis extends IsBasis (fun _ => True) s'' : Prop where
+structure IsAntitoneBasis : Prop extends IsBasis (fun _ => True) s'' where
   /-- The sequence of sets is antitone. -/
   protected antitone : Antitone s''
 
 /-- We say that a filter `l` has an antitone basis `s : ι → Set α`, if `t ∈ l` if and only if `t`
 includes `s i` for some `i`, and `s` is decreasing. -/
-structure HasAntitoneBasis (l : Filter α) (s : ι'' → Set α)
-    extends HasBasis l (fun _ => True) s : Prop where
+structure HasAntitoneBasis (l : Filter α) (s : ι'' → Set α) : Prop
+    extends HasBasis l (fun _ => True) s where
   /-- The sequence of sets is antitone. -/
   protected antitone : Antitone s
 
@@ -825,6 +827,11 @@ theorem mem_prod_self_iff {s} : s ∈ la ×ˢ la ↔ ∃ t ∈ la, t ×ˢ t ⊆ 
 lemma eventually_prod_self_iff {r : α → α → Prop} :
     (∀ᶠ x in la ×ˢ la, r x.1 x.2) ↔ ∃ t ∈ la, ∀ x ∈ t, ∀ y ∈ t, r x y :=
   mem_prod_self_iff.trans <| by simp only [prod_subset_iff, mem_setOf_eq]
+
+/-- A version of `eventually_prod_self_iff` that is more suitable for forward rewriting. -/
+lemma eventually_prod_self_iff' {r : α × α → Prop} :
+    (∀ᶠ x in la ×ˢ la, r x) ↔ ∃ t ∈ la, ∀ x ∈ t, ∀ y ∈ t, r (x, y) :=
+  Iff.symm eventually_prod_self_iff.symm
 
 theorem HasAntitoneBasis.prod {ι : Type*} [LinearOrder ι] {f : Filter α} {g : Filter β}
     {s : ι → Set α} {t : ι → Set β} (hf : HasAntitoneBasis f s) (hg : HasAntitoneBasis g t) :

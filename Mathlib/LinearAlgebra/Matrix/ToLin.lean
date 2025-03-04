@@ -86,12 +86,6 @@ theorem Matrix.coe_vecMulLinear [Fintype m] (M : Matrix m n R) :
 
 variable [Fintype m]
 
-set_option linter.deprecated false in
-@[simp, deprecated Matrix.single_one_vecMul (since := "2024-08-09")]
-theorem Matrix.vecMul_stdBasis [DecidableEq m] (M : Matrix m n R) (i j) :
-    (LinearMap.stdBasis R (fun _ ↦ R) i 1 ᵥ* M) j = M i j :=
-  congr_fun (Matrix.single_one_vecMul ..) j
-
 theorem range_vecMulLinear (M : Matrix m n R) :
     LinearMap.range M.vecMulLinear = span R (range M) := by
   letI := Classical.decEq m
@@ -115,12 +109,17 @@ theorem Matrix.vecMul_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} 
     ext j
     simp [vecMul, dotProduct]
 
+lemma Matrix.linearIndependent_rows_of_isUnit {R : Type*} [CommRing R] {A : Matrix m m R}
+    [DecidableEq m] (ha : IsUnit A) : LinearIndependent R (fun i ↦ A i) := by
+  rw [← Matrix.vecMul_injective_iff]
+  exact Matrix.vecMul_injective_of_isUnit ha
+
 section
 variable [DecidableEq m]
 
 /-- Linear maps `(m → R) →ₗ[R] (n → R)` are linearly equivalent over `Rᵐᵒᵖ` to `Matrix m n R`,
 by having matrices act by right multiplication.
- -/
+-/
 def LinearMap.toMatrixRight' : ((m → R) →ₗ[R] n → R) ≃ₗ[Rᵐᵒᵖ] Matrix m n R where
   toFun f i j := f (single R (fun _ ↦ R) i 1) j
   invFun := Matrix.vecMulLinear
@@ -244,7 +243,7 @@ variable [Fintype n]
 @[simp]
 theorem Matrix.mulVecLin_one [DecidableEq n] :
     Matrix.mulVecLin (1 : Matrix n n R) = LinearMap.id := by
-  ext; simp [Matrix.one_apply, Pi.single_apply]
+  ext; simp [Matrix.one_apply, Pi.single_apply, eq_comm]
 
 @[simp]
 theorem Matrix.mulVecLin_mul [Fintype m] (M : Matrix l m R) (N : Matrix m n R) :
@@ -255,18 +254,6 @@ theorem Matrix.ker_mulVecLin_eq_bot_iff {M : Matrix m n R} :
     (LinearMap.ker M.mulVecLin) = ⊥ ↔ ∀ v, M *ᵥ v = 0 → v = 0 := by
   simp only [Submodule.eq_bot_iff, LinearMap.mem_ker, Matrix.mulVecLin_apply]
 
-set_option linter.deprecated false in
-@[deprecated Matrix.mulVec_single_one (since := "2024-08-09")]
-theorem Matrix.mulVec_stdBasis [DecidableEq n] (M : Matrix m n R) (i j) :
-    (M *ᵥ LinearMap.stdBasis R (fun _ ↦ R) j 1) i = M i j :=
-  congr_fun (Matrix.mulVec_single_one ..) i
-
-set_option linter.deprecated false in
-@[simp, deprecated Matrix.mulVec_single_one (since := "2024-08-09")]
-theorem Matrix.mulVec_stdBasis_apply [DecidableEq n] (M : Matrix m n R) (j) :
-    M *ᵥ LinearMap.stdBasis R (fun _ ↦ R) j 1 = Mᵀ j :=
-  Matrix.mulVec_single_one ..
-
 theorem Matrix.range_mulVecLin (M : Matrix m n R) :
     LinearMap.range M.mulVecLin = span R (range Mᵀ) := by
   rw [← vecMulLinear_transpose, range_vecMulLinear]
@@ -275,6 +262,12 @@ theorem Matrix.mulVec_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} 
     Function.Injective M.mulVec ↔ LinearIndependent R (fun i ↦ Mᵀ i) := by
   change Function.Injective (fun x ↦ _) ↔ _
   simp_rw [← M.vecMul_transpose, vecMul_injective_iff]
+
+lemma Matrix.linearIndependent_cols_of_isUnit {R : Type*} [CommRing R] [Fintype m]
+    {A : Matrix m m R} [DecidableEq m] (ha : IsUnit A) :
+    LinearIndependent R (fun i ↦ A.transpose i) := by
+  rw [← Matrix.mulVec_injective_iff]
+  exact Matrix.mulVec_injective_of_isUnit ha
 
 end mulVec
 
@@ -458,9 +451,6 @@ theorem Matrix.toLinAlgEquiv'_apply (M : Matrix n n R) (v : n → R) :
     Matrix.toLinAlgEquiv' M v = M *ᵥ v :=
   rfl
 
--- Porting note: the simpNF linter rejects this, as `simp` already simplifies the lhs
--- to `(1 : (n → R) →ₗ[R] n → R)`.
--- @[simp]
 theorem Matrix.toLinAlgEquiv'_one : Matrix.toLinAlgEquiv' (1 : Matrix n n R) = LinearMap.id :=
   Matrix.toLin'_one
 
@@ -739,9 +729,6 @@ theorem Matrix.toLinAlgEquiv_self (M : Matrix n n R) (i : n) :
 theorem LinearMap.toMatrixAlgEquiv_id : LinearMap.toMatrixAlgEquiv v₁ id = 1 := by
   simp_rw [LinearMap.toMatrixAlgEquiv, AlgEquiv.ofLinearEquiv_apply, LinearMap.toMatrix_id]
 
--- Porting note: the simpNF linter rejects this, as `simp` already simplifies the lhs
--- to `(1 : M₁ →ₗ[R] M₁)`.
--- @[simp]
 theorem Matrix.toLinAlgEquiv_one : Matrix.toLinAlgEquiv v₁ 1 = LinearMap.id := by
   rw [← LinearMap.toMatrixAlgEquiv_id v₁, Matrix.toLinAlgEquiv_toMatrixAlgEquiv]
 

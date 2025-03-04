@@ -3,7 +3,7 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.Multiset.Basic
+import Mathlib.Algebra.Order.Group.Multiset
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Tactic.ApplyFun
@@ -469,12 +469,12 @@ def oneEquiv : α ≃ Sym α 1 where
   toFun a := ⟨{a}, by simp⟩
   invFun s := (Equiv.subtypeQuotientEquivQuotientSubtype
       (·.length = 1) _ (fun _ ↦ Iff.rfl) (fun l l' ↦ by rfl) s).liftOn
-    (fun l ↦ l.1.head <| List.length_pos.mp <| by simp)
+    (fun l ↦ l.1.head <| List.length_pos_iff.mp <| by simp)
     fun ⟨_, _⟩ ⟨_, h⟩ ↦ fun perm ↦ by
-      obtain ⟨a, rfl⟩ := List.length_eq_one.mp h
+      obtain ⟨a, rfl⟩ := List.length_eq_one_iff.mp h
       exact List.eq_of_mem_singleton (perm.mem_iff.mp <| List.head_mem _)
   left_inv a := by rfl
-  right_inv := by rintro ⟨⟨l⟩, h⟩; obtain ⟨a, rfl⟩ := List.length_eq_one.mp h; rfl
+  right_inv := by rintro ⟨⟨l⟩, h⟩; obtain ⟨a, rfl⟩ := List.length_eq_one_iff.mp h; rfl
 
 /-- Fill a term `m : Sym α (n - i)` with `i` copies of `a` to obtain a term of `Sym α n`.
 This is a convenience wrapper for `m.append (replicate i a)` that adjusts the term using
