@@ -41,4 +41,4 @@ getDeclarations "${MSdeclsFile}"
 
 printf 'Diff the declarations\n'
 
-diff "${MSdeclsFile}" "${PRdeclsFile}"
+diff "${MSdeclsFile}" "${PRdeclsFile}" || echo "*** End of diff ***"
