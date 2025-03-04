@@ -200,7 +200,7 @@ theorem of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (RingHom.ker f.toRi
     have : RingHom.ker f ≤ I.comap (FormallySmooth.lift I ⟨2, hI⟩ (i.comp f)) := by
       rintro x (hx : f x = 0)
       have : _ = i (f x) := (FormallySmooth.mk_lift I ⟨2, hI⟩ (i.comp f) x :)
-      rwa [hx, map_zero, ← Ideal.Quotient.mk_eq_mk, Submodule.Quotient.mk_eq_zero] at this
+      rwa [hx, map_zero, ← Ideal.Quotient.mkQ_eq_mk, Submodule.mkQ_eq_zero] at this
     intro x hx
     have := (Ideal.pow_right_mono this 2).trans (Ideal.le_comap_pow _ 2) hx
     rwa [hI] at this
@@ -224,7 +224,7 @@ theorem iff_split_surjection [FormallySmooth R P] :
   constructor
   · intro
     have surj : Function.Surjective f.kerSquareLift := fun x =>
-      ⟨Submodule.Quotient.mk (hf x).choose, (hf x).choose_spec⟩
+      ⟨Submodule.mkQ _ (hf x).choose, (hf x).choose_spec⟩
     have sqz : RingHom.ker f.kerSquareLift.toRingHom ^ 2 = 0 := by
       rw [AlgHom.ker_kerSquareLift, Ideal.cotangentIdeal_square, Ideal.zero_eq_bot]
     refine

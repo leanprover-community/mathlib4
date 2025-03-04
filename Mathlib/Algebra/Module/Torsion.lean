@@ -133,9 +133,14 @@ noncomputable def quotTorsionOfEquivSpanSingleton (x : M) : (R ⧸ torsionOf R M
 
 variable {R M}
 
-@[simp]
 theorem quotTorsionOfEquivSpanSingleton_apply_mk (x : M) (a : R) :
     quotTorsionOfEquivSpanSingleton R M x (Submodule.Quotient.mk a) =
+      a • ⟨x, Submodule.mem_span_singleton_self x⟩ :=
+  rfl
+
+@[simp]
+theorem quotTorsionOfEquivSpanSingleton_apply_mkQ (x : M) (a : R) :
+    quotTorsionOfEquivSpanSingleton R M x (Submodule.mkQ _ a) =
       a • ⟨x, Submodule.mem_span_singleton_self x⟩ :=
   rfl
 
@@ -552,7 +557,7 @@ def quotientAnnihilator : Module (R ⧸ Module.annihilator R M) M :=
 theorem isTorsionBy_quotient_iff (N : Submodule R M) (r : R) :
     IsTorsionBy R (M⧸N) r ↔ ∀ x, r • x ∈ N :=
   Iff.trans N.mkQ_surjective.forall <| forall_congr' fun _ =>
-    Submodule.Quotient.mk_eq_zero N
+    Submodule.mkQ_eq_zero N
 
 theorem IsTorsionBy.quotient (N : Submodule R M) {r : R}
     (h : IsTorsionBy R M r) : IsTorsionBy R (M⧸N) r :=
@@ -562,7 +567,7 @@ theorem isTorsionBySet_quotient_iff (N : Submodule R M) (s : Set R) :
     IsTorsionBySet R (M⧸N) s ↔ ∀ x, ∀ r ∈ s, r • x ∈ N :=
   Iff.trans N.mkQ_surjective.forall <| forall_congr' fun _ =>
     Iff.trans Subtype.forall <| forall₂_congr fun _ _ =>
-      Submodule.Quotient.mk_eq_zero N
+      Submodule.mkQ_eq_zero N
 
 theorem IsTorsionBySet.quotient (N : Submodule R M) {s}
     (h : IsTorsionBySet R M s) : IsTorsionBySet R (M⧸N) s :=
@@ -588,6 +593,11 @@ lemma Quotient.mk_smul_mk [I.IsTwoSided] (r : R) (m : M) :
     Ideal.Quotient.mk I r •
       Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) m =
       Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) (r • m) :=
+  rfl
+
+lemma Quotient.mkQ_smul_mkQ [I.IsTwoSided] (r : R) (m : M) :
+    Ideal.Quotient.mk I r • mkQ (I • ⊤ : Submodule R M) m =
+      mkQ (I • ⊤ : Submodule R M) (r • m) :=
   rfl
 
 end Module
@@ -792,8 +802,8 @@ variable [CommRing R] [AddCommGroup M] [Module R M]
 theorem torsion_eq_bot : torsion R (M ⧸ torsion R M) = ⊥ :=
   eq_bot_iff.mpr fun z =>
     Quotient.inductionOn' z fun x ⟨a, hax⟩ => by
-      rw [Quotient.mk''_eq_mk, ← Quotient.mk_smul, Quotient.mk_eq_zero] at hax
-      rw [mem_bot, Quotient.mk''_eq_mk, Quotient.mk_eq_zero]
+      rw [mk''_eq_mkQ, ← mkQ_smul, mkQ_eq_zero] at hax
+      rw [mem_bot, mk''_eq_mkQ, mkQ_eq_zero]
       obtain ⟨b, h⟩ := hax
       exact ⟨b * a, (mul_smul _ _ _).trans h⟩
 
@@ -866,15 +876,15 @@ theorem torsionBy_eq_span_singleton {R : Type w} [CommRing R] (a b : R) (ha : a 
     torsionBy R (R ⧸ R ∙ a * b) a = R ∙ mk (R ∙ a * b) b := by
   ext x; rw [mem_torsionBy_iff, Submodule.mem_span_singleton]
   obtain ⟨x, rfl⟩ := mk_surjective x; constructor <;> intro h
-  · rw [← mk_eq_mk, ← Quotient.mk_smul, Quotient.mk_eq_zero, Submodule.mem_span_singleton] at h
+  · rw [← mkQ_eq_mk, ← mkQ_smul, mkQ_eq_zero, Submodule.mem_span_singleton] at h
     obtain ⟨c, h⟩ := h
     rw [smul_eq_mul, smul_eq_mul, mul_comm, mul_assoc, mul_cancel_left_mem_nonZeroDivisors ha,
       mul_comm] at h
     use c
-    rw [← h, ← mk_eq_mk, ← Quotient.mk_smul, smul_eq_mul, mk_eq_mk]
+    rw [← h, ← mkQ_eq_mk, ← mkQ_smul, smul_eq_mul, mkQ_eq_mk]
   · obtain ⟨c, h⟩ := h
-    rw [← h, smul_comm, ← mk_eq_mk, ← Quotient.mk_smul,
-      (Quotient.mk_eq_zero _).mpr <| mem_span_singleton_self _, smul_zero]
+    rw [← h, smul_comm, ← mkQ_eq_mk, ← mkQ_smul,
+      (mkQ_eq_zero _).mpr (mem_span_singleton_self _), smul_zero]
 
 end Ideal.Quotient
 

@@ -214,9 +214,12 @@ def Submodule.toLocalizedQuotient' : M ⧸ M' →ₗ[R] N ⧸ M'.localized' S p 
 abbrev Submodule.toLocalizedQuotient : M ⧸ M' →ₗ[R] LocalizedModule p M ⧸ M'.localized p :=
   M'.toLocalizedQuotient' (Localization p) p (LocalizedModule.mkLinearMap p M)
 
-@[simp]
 lemma Submodule.toLocalizedQuotient'_mk (x : M) :
     M'.toLocalizedQuotient' S p f (Submodule.Quotient.mk x) = Submodule.Quotient.mk (f x) := rfl
+
+@[simp]
+lemma Submodule.toLocalizedQuotient'_mkQ (x : M) :
+    M'.toLocalizedQuotient' S p f (Submodule.mkQ M' x) = Submodule.mkQ _ (f x) := rfl
 
 open Submodule Submodule.Quotient IsLocalization in
 instance IsLocalizedModule.toLocalizedQuotient' (M' : Submodule R M) :
@@ -229,15 +232,14 @@ instance IsLocalizedModule.toLocalizedQuotient' (M' : Submodule R M) :
     replace e := Submodule.smul_mem _ (IsLocalization.mk' S 1 x) e
     rwa [smul_comm, ← smul_assoc, smul_mk'_one, mk'_self', one_smul, ← Submodule.Quotient.eq] at e
   surj' y := by
-    obtain ⟨y, rfl⟩ := mk_surjective _ y
+    obtain ⟨y, rfl⟩ := mkQ_surjective _ y
     obtain ⟨⟨y, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective p f y
-    exact ⟨⟨Submodule.Quotient.mk y, s⟩,
-      by simp only [Function.uncurry_apply_pair, toLocalizedQuotient'_mk, ← mk_smul, mk'_cancel']⟩
+    exact ⟨⟨Submodule.mkQ M' y, s⟩, by simp [← mkQ_smul]⟩
   exists_of_eq {m n} e := by
-    obtain ⟨⟨m, rfl⟩, n, rfl⟩ := PProd.mk (mk_surjective _ m) (mk_surjective _ n)
-    obtain ⟨x, hx, s, hs⟩ : f (m - n) ∈ _ := by simpa [Submodule.Quotient.eq] using e
+    obtain ⟨⟨m, rfl⟩, n, rfl⟩ := PProd.mk (mkQ_surjective _ m) (mkQ_surjective _ n)
+    obtain ⟨x, hx, s, hs⟩ : f (m - n) ∈ localized' S p f M' := by simpa [Submodule.mkQ_eq] using e
     obtain ⟨c, hc⟩ := exists_of_eq (S := p) (show f (s • (m - n)) = f x by simp [-map_sub, ← hs])
-    exact ⟨c * s, by simpa only [← Quotient.mk_smul, Submodule.Quotient.eq,
+    exact ⟨c * s, by simpa only [← mkQ_smul, Submodule.mkQ_eq,
       ← smul_sub, mul_smul, hc] using M'.smul_mem c hx⟩
 
 instance (M' : Submodule R M) : IsLocalizedModule p (M'.toLocalizedQuotient p) :=
