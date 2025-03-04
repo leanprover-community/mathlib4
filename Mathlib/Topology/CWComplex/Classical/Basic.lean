@@ -6,6 +6,7 @@ Authors: Floris van Doorn, Hannah Scholz
 
 import Mathlib.Analysis.NormedSpace.Real
 import Mathlib.Logic.Equiv.PartialEquiv
+import Mathlib.Topology.MetricSpace.ProperSpace.Real
 
 /-!
 # CW complexes

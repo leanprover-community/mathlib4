@@ -10,6 +10,7 @@ import Mathlib.Data.Complex.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Field
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.RealVectorSpace
+import Mathlib.Topology.MetricSpace.ProperSpace.Real
 
 /-!
 

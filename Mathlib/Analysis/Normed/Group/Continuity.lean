@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Topology.Instances.ENNReal.Defs
+import Mathlib.Topology.Algebra.Ring.Real
 import Mathlib.Topology.Metrizable.Uniformity
 import Mathlib.Topology.Sequences
 
