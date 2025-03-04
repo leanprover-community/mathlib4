@@ -220,10 +220,6 @@ lemma four_smul_rootForm_sq_eq_coxeterWeight_smul (i j : ι) :
     map_smul, ← pairing, smul_eq_mul, smul_eq_mul, smul_eq_mul, coxeterWeight]
   ring
 
-lemma corootForm_self_smul_root (i : ι) :
-    (P.CorootForm (P.coroot i) (P.coroot i)) • P.root i = 2 • P.CoPolarization (P.coroot i) :=
-  rootForm_self_smul_coroot (P.flip) i
-
 lemma rootForm_mul_pairing (i j : ι) : P.RootForm (P.root i) (P.root i) * P.pairing j i =
     P.RootForm (P.root j) (P.root j) * P.pairing i j := by
   rw [pairing, root', ← smul_eq_mul, ← map_smul, rootForm_self_smul_coroot, map_nsmul,
@@ -294,30 +290,7 @@ theorem polarization_reflection (i : ι) (x : M) :
   | inv => sorry
 -/
 
-section IsCrystallographic
-
-variable [CharZero R] (h : P.IsCrystallographic) (i : ι)
-include h
-
-lemma rootForm_apply_root_self_ne_zero :
-    P.RootForm (P.root i) (P.root i) ≠ 0 := by
-  choose z hz using P.isCrystallographic_iff.mp h i
-  simp only [rootForm_apply_apply, PerfectPairing.flip_apply_apply, root_coroot_eq_pairing, ← hz]
-  suffices 0 < ∑ i, z i * z i by norm_cast; exact this.ne'
-  refine Finset.sum_pos' (fun i _ ↦ mul_self_nonneg (z i)) ⟨i, Finset.mem_univ i, ?_⟩
-  have hzi : z i = 2 := by
-    specialize hz i
-    rw [pairing_same] at hz
-    norm_cast at hz
-  simp [hzi]
-
-lemma corootForm_apply_coroot_self_ne_zero : -- why doesn't `h.flip` work here anymore?
-    P.CorootForm (P.coroot i) (P.coroot i) ≠ 0 :=
-  P.flip.rootForm_apply_root_self_ne_zero (by infer_instance) i
-
-end IsCrystallographic
-
-end CommRing
+end Fintype
 
 section IsValuedInOrdered
 

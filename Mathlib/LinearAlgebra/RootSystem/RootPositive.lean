@@ -44,20 +44,8 @@ variable {ι R S M N : Type*} [LinearOrderedCommRing S] [CommRing R] [Algebra S 
 
 namespace RootPairing
 
-section RootPositive
-
-variable [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-
-/-- A Prop-valued class for a bilinear form to be compatible with a root pairing. -/
-class IsRootPositive (P : RootPairing ι R M N) (B : M →ₗ[R] M →ₗ[R] R) : Prop where
-  zero_lt_apply_root : ∀ i, 0 < B (P.root i) (P.root i)
-  symm : ∀ x y, B x y = B y x
-  apply_reflection_eq : ∀ i x y, B (P.reflection i x) (P.reflection i y) = B x y
-
-variable {P : RootPairing ι R M N} (B : M →ₗ[R] M →ₗ[R] R) [IsRootPositive P B] (i j : ι)
-include B
-
-lemma two_mul_apply_root_root :
+lemma two_mul_apply_root_root_of_isOrthogonal (P : RootPairing ι R M N)
+    (B : LinearMap.BilinForm R M) (i j : ι) (h : B.IsOrthogonal (P.reflection j)) :
     2 * B (P.root i) (P.root j) = P.pairing i j * B (P.root j) (P.root j) := by
   rw [two_mul, ← eq_sub_iff_add_eq]
   nth_rw 1 [← h]
@@ -189,8 +177,6 @@ lemma coxeterWeight_zero_iff_isOrthogonal :
   · exact ⟨h, (pairing_zero_iff B i j).mp h⟩
   · exact ⟨(pairing_zero_iff B j i).mp h, h⟩
 
-end RootPositive
-
 section ultraparallel
 /-! We consider the case `4 < P.coxeterWeight i j`.  A pair of roots with this configuration
 are called `ultraparallel` in the literature.  The reflections in ultraparallel roots generate an
@@ -200,9 +186,7 @@ Hmm. If I wait until we do polarization, then it suffices to construct a combina
 nonpositive norm.
 -/
 
-variable [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-
-variable (P : RootPairing ι R M N) (i j : ι)
+variable (P : RootPairing ι R M N) [P.IsValuedIn S] (B : P.RootPositiveForm S) (i j : ι)
 
 /-- This is a function that describes the coefficients attached to `P.root i` and `P.root j` of the
 roots given by `(P.reflection i) ∘ (P.reflection j) (P.root i)`. -/
@@ -211,6 +195,8 @@ private def refl_coeff : ℕ → R × R
   | n + 1 => (((refl_coeff n).1 + (refl_coeff n).2) * P.coxeterWeight i j - (refl_coeff n).1,
     -(refl_coeff n).1 - (refl_coeff n).2)
 
+omit [LinearOrderedCommRing S] [Algebra S R] B [FaithfulSMul S R] [NoZeroDivisors R]
+ [P.IsValuedIn S] in
 lemma refl_coeff_rec (n : ℕ) : ((P.reflection i) ∘ (P.reflection j))
     ((P.refl_coeff i j n).1 • P.root i + (P.refl_coeff i j n).2 • P.pairing i j • P.root j) =
     (P.refl_coeff i j (n + 1)).1 • P.root i +
@@ -223,6 +209,8 @@ lemma refl_coeff_rec (n : ℕ) : ((P.reflection i) ∘ (P.reflection j))
   abel_nf
   simp
 
+omit [LinearOrderedCommRing S] [Algebra S R] B [FaithfulSMul S R] [NoZeroDivisors R]
+[P.IsValuedIn S] in
 lemma refl_coeff_eq (n : ℕ) : (P.refl_coeff i j n).1 • P.root i +
     (P.refl_coeff i j n).2 • P.pairing i j • P.root j =
     ((P.reflection i) ∘ (P.reflection j))^[n] (P.root i) := by
@@ -261,28 +249,31 @@ lemma linear_independent_of_four_lt_coxeterWeight (hc : 4 < P.coxeterWeight i j)
   sorry
 -/
 
-lemma root_reflection_pos_coeff_left {a b : R} (ha : 0 < a) (hab : -2 * b < a)
-    (hc : 4 < P.coxeterWeight i j) : a < ((a + b) * P.coxeterWeight i j - a) := by
+omit B [FaithfulSMul S R] [NoZeroDivisors R] in
+lemma root_reflection_pos_coeff_left {a b : S} (ha : 0 < a) (hab : -2 * b < a)
+    (hc : 4 < P.coxeterWeightIn S i j) : a < ((a + b) * P.coxeterWeightIn S i j - a) := by
   have hapb : 2 * a < (a + b) * 4 := by linarith
   have habz : 0 < a + b := by linarith
-  have hab4 : (a + b) * 4 < (a + b) * P.coxeterWeight i j := (mul_lt_mul_left habz).mpr hc
+  have hab4 : (a + b) * 4 < (a + b) * P.coxeterWeightIn S i j := (mul_lt_mul_left habz).mpr hc
   calc
     a = 2 * a - a := by ring
     2 * a - a < (a + b) * 4 - a := sub_lt_sub_right hapb a
-    (a + b) * 4 - a < (a + b) * P.coxeterWeight i j - a := sub_lt_sub_right hab4 a
+    (a + b) * 4 - a < (a + b) * P.coxeterWeightIn S i j - a := sub_lt_sub_right hab4 a
 /-!
 lemma root_reflection_pos_coeff_right {a b : R} (hab : -2 * b < a) : -(a + b) < b := by
   linarith
 -/
-lemma root_refl_pos_coeff_right_2 {a b : R} (ha : 0 < a) (hab : -2 * b < a)
-    (hc : 4 < P.coxeterWeight i j) : (-2 * -(a + b)) < ((a + b) * P.coxeterWeight i j - a) := by
+omit B [FaithfulSMul S R] [NoZeroDivisors R] in
+lemma root_refl_pos_coeff_right_2 {a b : S} (ha : 0 < a) (hab : -2 * b < a)
+    (hc : 4 < P.coxeterWeightIn S i j) :
+    (-2 * -(a + b)) < ((a + b) * P.coxeterWeightIn S i j - a) := by
   have habz : 0 < a + b := by linarith
-  have hab4 : (a + b) * 4 < (a + b) * P.coxeterWeight i j := by exact (mul_lt_mul_left habz).mpr hc
+  have hab4 : (a + b) * 4 < (a + b) * P.coxeterWeightIn S i j := (mul_lt_mul_left habz).mpr hc
   calc
     (-2 * -(a + b)) = 2 * a + 2 * b := by ring
     2 * a + 2 * b < 3 * a + 4 * b := by linarith
     3 * a + 4 * b = ((a + b) * 4 - a) := by ring
-    ((a + b) * 4 - a) < ((a + b) * P.coxeterWeight i j - a) := by linarith
+    ((a + b) * 4 - a) < ((a + b) * P.coxeterWeightIn S i j - a) := by linarith
 
 -- show coeff of P.root i is monotone!  Or, choose a good linear functional!
 /-!
@@ -326,30 +317,5 @@ lemma infinite_of_four_lt_coxeterWeight (hc : 4 < P.coxeterWeight i j) : Infinit
 
 -- use reflection_reflection_smul_root_plus_pairing_smul_root
 end ultraparallel
-
-/-!
-I want something flip-invariant.  One common factor in examples: a distinguished subspace on which
-the form is non-degenerate.  For finite root data, this is the span of roots.  For Kac-Moody Lie
-algebras, this is the extended Cartan (i.e., not just the span of roots.)
-So, maybe I want a class with distinguished subspaces `M'` `N'`, paired with each other, with
-nondegenerate root-positive forms that are "in correspondence".  Perhaps I just want the images of
-`B : M →ₗ[R] N` and `B' : N →ₗ[R] M` to be nondegenerate and root-positive.  So, just trivial
-intersection of images with kernels.
--/
-
-variable [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-
-/-- This seems to be the structure in common between finite root data and Kac-Moody root systems-/
-class DualPositive (P : RootPairing ι R M N) where
-  /-- A linear map from weight space to coweight space. -/
-  wcw : M →ₗ[R] N
-  /-- A linear map from coweight space to weight space. -/
-  cww : N →ₗ[R] M
-  root_in : ∀ i, P.root i ∈ LinearMap.range cww
-  coroot_in : ∀ i, P.coroot i ∈ LinearMap.range wcw
-  root_pos : IsRootPositive P (P.toPerfectPairing.toDualRight ∘ₗ wcw)
-  coroot_pos : IsRootPositive P.flip (P.toPerfectPairing.toDualLeft ∘ₗ cww)
-  weight_nondeg : ∀ x, x ∈ LinearMap.range cww → x ∈ LinearMap.ker wcw → x = 0
-  coweight_nondeg : ∀ y, y ∈ LinearMap.range wcw → y ∈ LinearMap.ker cww → y = 0
 
 end RootPairing

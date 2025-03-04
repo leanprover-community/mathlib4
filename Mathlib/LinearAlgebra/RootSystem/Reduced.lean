@@ -64,11 +64,11 @@ lemma infinite_of_linInd_coxeterWeight_four [NeZero (2 : R)] [NoZeroSMulDivisors
       (P.mapsTo_reflection_root i)).comp (bijOn_reflection_of_mapsTo (P.coroot_root_two j)
       (P.mapsTo_reflection_root j))).image_eq n]
     exact mem_image_of_mem _ (mem_range_self j)
-  · rw [coroot_root_eq_pairing, coroot_root_eq_pairing, ← hc, mul_comm, coxeterWeight]
+  · rw [← hc, root_coroot'_eq_pairing, root_coroot'_eq_pairing, mul_comm, coxeterWeight]
   · rw [LinearIndependent.pair_iff] at hl
     specialize hl (P.pairing j i) (-2)
     simp only [neg_smul, neg_eq_zero, two_ne_zero (α := R), and_false, imp_false] at hl
-    rw [ne_eq, coroot_root_eq_pairing, ← sub_eq_zero, sub_eq_add_neg]
+    rw [ne_eq, root_coroot'_eq_pairing, ← sub_eq_zero, sub_eq_add_neg]
     exact hl
 
 lemma pairing_smul_root_eq_of_not_linInd [NeZero (2 : R)] [NoZeroSMulDivisors R M]
