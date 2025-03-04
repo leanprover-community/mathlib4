@@ -15,7 +15,7 @@ exact.
 
 ## Overview over the proof
 
-The usual stategy to prove the Freyd-Mitchell embedding theorem is as follows:
+The usual strategy to prove the Freyd-Mitchell embedding theorem is as follows:
 
 1. Prove that if `D` is a Grothendieck abelian category and `F : C ⥤ Dᵒᵖ` is a functor from a
 small category, then there is a functor `G : Dᵒᵖ ⥤ ModuleCat R` for a suitable `R` such that `G`
@@ -54,7 +54,7 @@ interesting properties from the category of abelian groups.
 `LeftExactFunctor C Ab` (see the file `Mathlib.CategoryTheory.Preadditive.Indization`).
 This approach deduces most interesting properties from the category of types.
 
-When work on this theorem commenced in early 2022, all three apporaches were quite out of reach.
+When work on this theorem commenced in early 2022, all three approaches were quite out of reach.
 By the time the theorem was proved in early 2025, both the `Sheaf` approach and the `Ind` approach
 were available in mathlib. The code below uses `D := Ind Cᵒᵖ`.
 

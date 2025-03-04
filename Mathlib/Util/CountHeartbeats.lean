@@ -195,7 +195,7 @@ end Mathlib
 /-!
 #  The "countHeartbeats" linter
 
-The "countHeartbeats" linter counts the hearbeats of every declaration.
+The "countHeartbeats" linter counts the heartbeats of every declaration.
 -/
 
 open Lean Elab Command

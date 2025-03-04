@@ -203,7 +203,7 @@ lemma continuous_toENNReal : Continuous EReal.toENNReal := by
   simp_all only [mem_compl_iff, mem_singleton_iff, mem_insert_iff, or_self, not_false_eq_true]
 
 @[fun_prop]
-lemma _root_.Continous.ereal_toENNReal {α : Type*} [TopologicalSpace α] {f : α → EReal}
+lemma _root_.Continuous.ereal_toENNReal {α : Type*} [TopologicalSpace α] {f : α → EReal}
     (hf : Continuous f) :
     Continuous fun x => (f x).toENNReal :=
   continuous_toENNReal.comp hf
