@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.GroupWithZero.Action.ConjAct
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 
 /-!
 # Conjugation action on a field on itself
