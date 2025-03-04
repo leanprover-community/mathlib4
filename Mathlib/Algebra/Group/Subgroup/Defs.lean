@@ -291,12 +291,22 @@ instance (priority := 50) SubgroupClass.toSubgroup {A M : Type*} [Group M] [SetL
 namespace Subgroup
 
 @[to_additive]
+def ofClass {S G : Type*} [Group G] [SetLike S G] [SubgroupClass S G]
+    (s : S) : Subgroup G :=
+  ⟨⟨⟨s, MulMemClass.mul_mem⟩, OneMemClass.one_mem s⟩, InvMemClass.inv_mem⟩
+
+@[to_additive]
 instance : SetLike (Subgroup G) G where
   coe s := s.carrier
   coe_injective' p q h := by
     obtain ⟨⟨⟨hp,_⟩,_⟩,_⟩ := p
     obtain ⟨⟨⟨hq,_⟩,_⟩,_⟩ := q
     congr
+
+@[to_additive]
+instance : CanLift (Set G) (Subgroup G) (↑)
+    (fun s ↦ 1 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧ ∀ {x}, x ∈ s → x⁻¹ ∈ s) where
+  prf s h := ⟨{ carrier := s, one_mem' := h.1, mul_mem' := h.2.1, inv_mem' := h.2.2}, rfl⟩
 
 -- TODO: Below can probably be written more uniformly
 @[to_additive]
