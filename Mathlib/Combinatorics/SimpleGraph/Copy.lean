@@ -6,25 +6,18 @@ Authors: Mitchell Horner
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
-# Subgraph isomorphism
+# Copies of Simple Graphs
 
-This file defines subgraph isomorphisms for simple graphs.
+This file introduces the concept of one simple graph containing a copy of another.
 
 ## Main definitions
 
-* `SimpleGraph.SubgraphIso A B`, `A ≲g B` is the type of subgraph isomorphisms from `A` to `B`,
-  implemented as the subtype of *injective* homomorphisms.
-
-  It is standard to define a subgraph isomorphism as an isomorphism from `A` to a subgraph of `B`.
-  However, `SimpleGraph.IsSubgraph` is such that subgraphs of `B` have the same number of vertices
-  as `B`. In this case, it is impossible to have a subgraph isomorphism from `A` to `B` using
-  `SimpleGraph.IsSubgraph` unless `A` and `B` have the same number of vertices. It is for this
-  reason that the mathematically equivalent definition of a subgraph isomorphism as an *injective*
-  homomorphism is taken.
+* `SimpleGraph.Copy A B` is the type of copies of `A` in `B`, implemented as the subtype of
+  *injective* homomorphisms.
 
 * `SimpleGraph.IsIsoSubgraph` is the relation that `B` contains a copy of `A`, that
-  is, `A` is an isomorphic subgraph of `B`, that is, the type of subgraph isomorphisms from `A` to
-  `B` is nonempty.
+  is, the type of copies of `A` in `B` is nonempty. This is equivalent to the existence of an
+  isomorphism from`A` to a subgraph of `B`.
 
   This is similar to `SimpleGraph.IsSubgraph` except that the simple graphs here need not have the
   same underlying vertex type.
@@ -41,99 +34,95 @@ namespace SimpleGraph
 variable {V α β γ : Type*} {G : SimpleGraph V}
   {A : SimpleGraph α} {B : SimpleGraph β} {C : SimpleGraph γ}
 
-section SubgraphIso
+section Copy
 
-/-- The type of subgraph isomorphisms as a subtype of *injective* homomorphisms.
-
-The notation `A ≲g B` is introduced for the type of subgrah isomorphisms. -/
-abbrev SubgraphIso (A : SimpleGraph α) (B : SimpleGraph β) :=
+/-- The type of copies as a subtype of *injective* homomorphisms. -/
+abbrev Copy (A : SimpleGraph α) (B : SimpleGraph β) :=
   { f : A →g B // Function.Injective f }
 
-@[inherit_doc] infixl:50 " ≲g " => SubgraphIso
+/-- An injective homomorphism gives rise to a copy. -/
+abbrev Hom.toCopy (f : A →g B) (h : Function.Injective f) : Copy A B := ⟨f, h⟩
 
-/-- An injective homomorphism gives rise to a subgraph isomorphism. -/
-abbrev Hom.toSubgraphIso (f : A →g B) (h : Function.Injective f) : A ≲g B := ⟨f, h⟩
+/-- An embedding gives rise to a copy. -/
+abbrev Embedding.toCopy (f : A ↪g B) : Copy A B := Hom.toCopy f.toHom f.injective
 
-/-- An embedding gives rise to a subgraph isomorphism. -/
-abbrev Embedding.toSubgraphIso (f : A ↪g B) : A ≲g B := Hom.toSubgraphIso f.toHom f.injective
+/-- An isomorphism gives rise to a copy. -/
+abbrev Iso.toCopy (f : A ≃g B) : Copy A B := Embedding.toCopy f.toEmbedding
 
-/-- An isomorphism gives rise to a subgraph isomorphism. -/
-abbrev Iso.toSubgraphIso (f : A ≃g B) : A ≲g B := Embedding.toSubgraphIso f.toEmbedding
+/-- A `Subgraph G` gives rise to a copy from the coercion to `G`. -/
+def Subgraph.coeCopy (G' : G.Subgraph) : Copy G'.coe G :=
+  G'.hom.toCopy Subgraph.hom.injective
 
-namespace SubgraphIso
+namespace Copy
 
-/-- A subgraph isomorphism gives rise to a homomorphism. -/
-abbrev toHom : A ≲g B → A →g B := Subtype.val
+/-- A copy gives rise to a homomorphism. -/
+abbrev toHom : Copy A B → A →g B := Subtype.val
 
-@[simp] lemma coe_toHom (f : A ≲g B) : ⇑f.toHom = f := rfl
+@[simp] lemma coe_toHom (f : Copy A B) : ⇑f.toHom = f := rfl
 
-lemma injective : (f : A ≲g B) → (Function.Injective f.toHom) := Subtype.prop
+lemma injective : (f : Copy A B) → (Function.Injective f.toHom) := Subtype.prop
 
-instance : FunLike (A ≲g B) α β where
+instance : FunLike (Copy A B) α β where
   coe f := DFunLike.coe f.toHom
   coe_injective' _ _ h := Subtype.val_injective (DFunLike.coe_injective h)
 
-@[simp] lemma coe_toHom_apply (f : A ≲g B) (a : α) : ⇑f.toHom a = f a := rfl
+@[simp] lemma coe_toHom_apply (f : Copy A B) (a : α) : ⇑f.toHom a = f a := rfl
 
-/-- A subgraph isomorphism induces an embedding of edge sets. -/
-def mapEdgeSet (f : A ≲g B) : A.edgeSet ↪ B.edgeSet where
+/-- A copy induces an embedding of edge sets. -/
+def mapEdgeSet (f : Copy A B) : A.edgeSet ↪ B.edgeSet where
   toFun := Hom.mapEdgeSet f.toHom
   inj' := Hom.mapEdgeSet.injective f.toHom f.injective
 
-/-- A subgraph isomorphisms induces an embedding of neighbor sets. -/
-def mapNeighborSet (f : A ≲g B) (a : α) :
+/-- A copy induces an embedding of neighbor sets. -/
+def mapNeighborSet (f : Copy A B) (a : α) :
     A.neighborSet a ↪ B.neighborSet (f a) where
   toFun v := ⟨f v, f.toHom.apply_mem_neighborSet v.prop⟩
   inj' _ _ h := by
     rw [Subtype.mk_eq_mk] at h ⊢
     exact f.injective h
 
-/-- A subgraph isomorphism gives rise to an embedding of vertex types. -/
-def asEmbedding (f : A ≲g B) : α ↪ β := ⟨f, f.injective⟩
+/-- A copy gives rise to an embedding of vertex types. -/
+def asEmbedding (f : Copy A B) : α ↪ β := ⟨f, f.injective⟩
 
-/-- The identity subgraph isomorphism from a simple graph to itself. -/
-@[refl] def refl (G : SimpleGraph V) : G ≲g G := ⟨Hom.id, Function.injective_id⟩
+/-- The identity copy from a simple graph to itself. -/
+@[refl] def refl (G : SimpleGraph V) : Copy G G := ⟨Hom.id, Function.injective_id⟩
 
-/-- The subgraph isomorphism from a subgraph to the supergraph. -/
-def ofLE {G₁ G₂ : SimpleGraph V} (h : G₁ ≤ G₂) : G₁ ≲g G₂ :=
+/-- The copy from a subgraph to the supergraph. -/
+def ofLE {G₁ G₂ : SimpleGraph V} (h : G₁ ≤ G₂) : Copy G₁ G₂ :=
   ⟨Hom.ofLE h, Function.injective_id⟩
 
-/-- The subgraph isomorphism from an induced subgraph to the initial simple graph. -/
-def induce (G : SimpleGraph V) (s : Set V) : (G.induce s) ≲g G :=
-  (Embedding.induce s).toSubgraphIso
+/-- The copy from an induced subgraph to the initial simple graph. -/
+def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G :=
+  (Embedding.induce s).toCopy
 
-/-- The composition of subgraph isomorphisms is a subgraph isomorphism. -/
-def comp (g : B ≲g C) (f : A ≲g B) : A ≲g C := by
+/-- The composition of copies is a copy. -/
+def comp (g : Copy B C) (f : Copy A B) : Copy A C := by
   use g.toHom.comp f.toHom
   rw [Hom.coe_comp]
   exact Function.Injective.comp g.injective f.injective
 
 @[simp]
-theorem comp_apply (g : B ≲g C) (f : A ≲g B) (a : α) : g.comp f a = g (f a) :=
+theorem comp_apply (g : Copy B C) (f : Copy A B) (a : α) : g.comp f a = g (f a) :=
   RelHom.comp_apply g.toHom f.toHom a
 
-end SubgraphIso
+end Copy
 
-/-- The subgraph isomorphism from a `Subgraph G` coercion to `G`. -/
-def Subgraph.subgraphIso (G' : G.Subgraph) : (G'.coe) ≲g G :=
-  G'.hom.toSubgraphIso Subgraph.hom.injective
-
-end SubgraphIso
+end Copy
 
 section IsIsoSubgraph
 
 /-- The relation `IsIsoSubgraph A B` says that a simple graph `B` contains a copy of a simple graph
 `A`. -/
-abbrev IsIsoSubgraph (A : SimpleGraph α) (B : SimpleGraph β) := Nonempty (A ≲g B)
+abbrev IsIsoSubgraph (A : SimpleGraph α) (B : SimpleGraph β) := Nonempty (Copy A B)
 
 /-- A simple graph contains itself. -/
 @[refl]
 theorem isIsoSubgraph_refl (G : SimpleGraph V) :
-  G.IsIsoSubgraph G := ⟨SubgraphIso.refl G⟩
+  G.IsIsoSubgraph G := ⟨Copy.refl G⟩
 
 /-- A simple graph contains its subgraphs. -/
 theorem isIsoSubgraph_of_le {G₁ G₂ : SimpleGraph V} (h : G₁ ≤ G₂) :
-  G₁.IsIsoSubgraph G₂ := ⟨SubgraphIso.ofLE h⟩
+  G₁.IsIsoSubgraph G₂ := ⟨Copy.ofLE h⟩
 
 /-- If `A` contains `B` and `B` contains `C`, then `A` contains `C`. -/
 theorem isIsoSubgraph_trans : A.IsIsoSubgraph B → B.IsIsoSubgraph C → A.IsIsoSubgraph C :=
@@ -151,7 +140,7 @@ alias IsIsoSubgraph.trans' := isIsoSubgraph_trans'
 theorem isIsoSubgraph_of_isEmpty [IsEmpty α] : A.IsIsoSubgraph B := by
   let ι : α ↪ β := Function.Embedding.ofIsEmpty
   let f : A →g B := ⟨ι, by apply isEmptyElim⟩
-  exact ⟨f.toSubgraphIso ι.injective⟩
+  exact ⟨f.toCopy ι.injective⟩
 
 /-- A simple graph having no edges is contained in any simple graph having sufficent vertices. -/
 theorem isIsoSubgraph_of_isEmpty_edgeSet [IsEmpty A.edgeSet] [Fintype α] [Fintype β]
@@ -166,18 +155,18 @@ theorem isIsoSubgraph_of_isEmpty_edgeSet [IsEmpty A.edgeSet] [Fintype α] [Finty
       rw [mem_edgeSet]
       exact hadj
     exact isEmptyElim e
-  exact ⟨f.toSubgraphIso ι.injective⟩
+  exact ⟨f.toCopy ι.injective⟩
 
 /-- If `A ≃g B`, then `A` is contained in `C` if and only if `B` is contained in `C`. -/
 theorem isIsoSubgraph_iff_of_iso (f : A ≃g B) :
     A.IsIsoSubgraph C ↔ B.IsIsoSubgraph C :=
-  ⟨isIsoSubgraph_trans ⟨f.symm.toSubgraphIso⟩, isIsoSubgraph_trans ⟨f.toSubgraphIso⟩⟩
+  ⟨isIsoSubgraph_trans ⟨f.symm.toCopy⟩, isIsoSubgraph_trans ⟨f.toCopy⟩⟩
 
 /-- A simple graph `G` contains all `Subgraph G` coercions. -/
-lemma Subgraph.coe_isIsoSubgraph (G' : G.Subgraph) : (G'.coe).IsIsoSubgraph G := ⟨G'.subgraphIso⟩
+lemma Subgraph.coe_isIsoSubgraph (G' : G.Subgraph) : (G'.coe).IsIsoSubgraph G := ⟨G'.coeCopy⟩
 
-/-- The isomorphism from `Subgraph A` to its map under a subgraph isomorphism `A ≲g B`. -/
-noncomputable def Subgraph.isoMap (f : A ≲g B) (A' : A.Subgraph) :
+/-- The isomorphism from `Subgraph A` to its map under a copy `Copy A B`. -/
+noncomputable def Subgraph.isoMap (f : Copy A B) (A' : A.Subgraph) :
     A'.coe ≃g (A'.map f.toHom).coe := by
   use Equiv.Set.image f.toHom _ f.injective
   simp_rw [map_verts, Equiv.Set.image_apply, coe_adj, map_adj, Relation.map_apply,
@@ -191,7 +180,7 @@ theorem isIsoSubgraph_iff_exists_iso_subgraph :
     use (⊤ : A.Subgraph).map f
     exact ⟨((⊤ : A.Subgraph).isoMap f).comp Subgraph.topIso.symm⟩
   · intro ⟨B', ⟨e⟩⟩
-    exact B'.coe_isIsoSubgraph.trans' ⟨e.toSubgraphIso⟩
+    exact B'.coe_isIsoSubgraph.trans' ⟨e.toCopy⟩
 
 alias ⟨exists_iso_subgraph, _⟩ := isIsoSubgraph_iff_exists_iso_subgraph
 
