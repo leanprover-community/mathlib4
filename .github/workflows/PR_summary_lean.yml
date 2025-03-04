@@ -48,17 +48,21 @@ jobs:
           SEP_STRING: 123GETME!
         run: |
           PR="${{ github.event.pull_request.number }}"
+          git checkout master...HEAD
+          masterHash="$(git rev-parse HEAD)"
+          git switch -
+
           rm -rf .lake/build/lib/lean/Mathlib/ .lake/build/lib/Mathlib/
           messageStart=$'New <details><summary><b>Declaration diff in Lean</b></summary>'
           ./scripts/declDiff_shell_glue.sh "${SEP_STRING}" |
-            awk -v messStart="${messageStart}" -v sepString="${SEP_STRING}" -v sha="${{ github.event.pull_request.head.sha }}" '
+            awk -v messStart="${messageStart}" -v sepString="${SEP_STRING}" -v sha="${{ github.event.pull_request.head.sha }}" -v masterHash="${masterHash}" '
               BEGIN{
                 con=0
                 printf("%s\n\n```diff\n", messStart)
               }
               (con == 1) {print $0}
               ($0 ~ sepString) {con=1}
-              END{ printf("```\n</details>\n%s\n", sha) }' > please_merge_master
+              END{ printf("```\n</details>\nPR: %s\nMaster: %s\n", sha, masterHash) }' > please_merge_master
           printf -- $'------\n%s------\n' "$(cat please_merge_master)"
 
           ./scripts/update_PR_comment.sh please_merge_master "${messageStart}" "${PR}"
