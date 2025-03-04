@@ -237,6 +237,7 @@ theorem Icc_ssubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b�
   rw [← coe_ssubset, coe_Icc, coe_Icc]
   exact Set.Icc_ssubset_Icc_right hI ha hb
 
+@[simp]
 theorem Ioc_disjoint_Ioc_of_le {d : α} (hbc : b ≤ c) : Disjoint (Ioc a b) (Ioc c d) :=
   disjoint_left.2 fun _ h1 h2 ↦ not_and_of_not_left _
     ((mem_Ioc.1 h1).2.trans hbc).not_lt (mem_Ioc.1 h2)
