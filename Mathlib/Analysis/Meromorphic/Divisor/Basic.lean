@@ -162,7 +162,7 @@ instance : Neg (DivisorOn U) where
 /-- Helper lemma for the `simp` tactic: the function of the negative divisor
 is the negative of the associated function. -/
 @[simp]
-lemma neg_fun {D : DivisorOn U} : (↑(-D) : 𝕜 → ℤ) = -(D: 𝕜 → ℤ) := rfl
+lemma coe_neg {D : DivisorOn U} : (↑(-D) : 𝕜 → ℤ) = -(D: 𝕜 → ℤ) := rfl
 
 /-- Divisors have scalar multiplication with natural numbers -/
 instance : SMul ℕ (DivisorOn U) where
