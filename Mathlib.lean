@@ -361,6 +361,7 @@ import Mathlib.Algebra.Group.Pointwise.Set.Card
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
 import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.Group.Prod.Notation
 import Mathlib.Algebra.Group.Semiconj.Basic
 import Mathlib.Algebra.Group.Semiconj.Defs
 import Mathlib.Algebra.Group.Semiconj.Units
