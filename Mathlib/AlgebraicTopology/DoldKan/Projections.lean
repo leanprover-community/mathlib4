@@ -151,6 +151,7 @@ def natTransP (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComp
     · dsimp [alternatingFaceMapComplex]
       simp only [P_zero, id_comp, comp_id]
     · simp only [P_succ, add_comp, comp_add, assoc, comp_id, hq, reassoc_of% hq]
+      -- `erw` is needed to see through `natTransHσ q).app = Hσ q`
       erw [(natTransHσ q).naturality f]
       rfl
 

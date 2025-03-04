@@ -541,15 +541,9 @@ theorem nmul_le_nmul_left (h : a ≤ b) (c) : c ⨳ a ≤ c ⨳ b := by
   · exact (nmul_lt_nmul_of_pos_left h₁ h₂).le
   all_goals simp
 
-@[deprecated nmul_le_nmul_left (since := "2024-08-20")]
-alias nmul_le_nmul_of_nonneg_left := nmul_le_nmul_left
-
 theorem nmul_le_nmul_right (h : a ≤ b) (c) : a ⨳ c ≤ b ⨳ c := by
   rw [nmul_comm, nmul_comm b]
   exact nmul_le_nmul_left h c
-
-@[deprecated nmul_le_nmul_left (since := "2024-08-20")]
-alias nmul_le_nmul_of_nonneg_right := nmul_le_nmul_right
 
 theorem nmul_nadd (a b c : Ordinal) : a ⨳ (b ♯ c) = a ⨳ b ♯ a ⨳ c := by
   refine le_antisymm (nmul_le_iff.2 fun a' ha d hd => ?_)
@@ -722,8 +716,5 @@ theorem mul_le_nmul (a b : Ordinal.{u}) : a * b ≤ a ⨳ b := by
     · rw [(isNormal_mul_right ha).apply_of_isLimit hc, Ordinal.iSup_le_iff]
       rintro ⟨i, hi⟩
       exact (H i hi).trans (nmul_le_nmul_left hi.le a)
-
-@[deprecated mul_le_nmul (since := "2024-08-20")]
-alias _root_.NatOrdinal.mul_le_nmul := mul_le_nmul
 
 end Ordinal
