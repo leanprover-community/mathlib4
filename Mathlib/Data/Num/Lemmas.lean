@@ -9,7 +9,6 @@ import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Num.Bitwise
-import Mathlib.Data.PNat.Basic
 
 /-!
 # Properties of the binary representation of integers
