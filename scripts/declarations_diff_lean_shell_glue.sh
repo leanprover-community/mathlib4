@@ -1,14 +1,11 @@
 #!/usr/bin/env bash
 
  : <<'BASH_MODULE_DOCS'
-# Running `getDeclarations <PR_NUMBER> <PR_HASH>`
-# 1. downloads the cache for `Mathlib`, `Archive` and `Counterexamples`;
-# 2. copies the declarations diff Lean script to `Mathlib` and adds the line
-     `#all_declarations <file_name>` to the file
-# 3. builds the declarations diff script, which in turn
-# 4. saves to `${PRdeclsFile}`/`${MSdeclsFile}` all the declarations in the environment as appropriate;
-# 5. removes the line added to the declarations diff Lean script;
-# 6. uses `<sep_string>` to signal when the text that the report should use starts.
+Running `./scripts/declarations_diff_lean_shell_glue.sh <PR_NUMBER> <PR_HASH>`
+creates the two files `${PRdeclsFile}` and `${MSdeclsFile}`, containing all the declarations
+in the environment the former for the PR, the latter for `master`.
+
+It then creates/updates the declaration diff message on the PR with the diff of the two files.
 BASH_MODULE_DOCS
 
 script_file=scripts/declarations_diff.lean
