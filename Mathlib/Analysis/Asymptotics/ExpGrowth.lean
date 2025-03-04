@@ -314,4 +314,45 @@ lemma expGrowthSup_sum {α : Type*} (u : α → ℕ → ℝ≥0∞) (s : Finset 
   | @insert a t a_t ha => rw [Finset.sum_insert a_t, expGrowthSup_add, ← Finset.iSup_coe,
     Finset.coe_insert a t, iSup_insert, Finset.iSup_coe, ha]
 
+/-! ### Composition -/
+
+-- rajouter Tendsto. pour autoriser la notation .
+lemma le_liminf_comp {α β γ : Type*} [CompleteLattice α] (u : β → α) {v : γ → β}
+    {f : Filter γ} {f' : Filter β} (h : f.Tendsto v f') : f'.liminf u ≤ f.liminf (u ∘ v) := by
+  rw [Filter.liminf_comp]
+  exact (Filter.liminf_le_liminf_of_le) h
+
+-- rajouter Tendsto. pour autoriser la notation .
+lemma limsup_comp_le {α β γ : Type*} [CompleteLattice α] (u : β → α) {v : γ → β}
+    {f : Filter γ} {f' : Filter β} (h : f.Tendsto v f') : f.limsup (u ∘ v) ≤ f'.limsup u := by
+  rw [Filter.limsup_comp]
+  exact (Filter.limsup_le_limsup_of_le) h
+
+lemma expGrowthSup_comp_le {u : ℕ → ℝ≥0∞} {v : ℕ → ℕ} (hu : 1 ≤ᶠ[atTop] u)
+    (hv₀ : (atTop.limsup fun n ↦ (v n : EReal) / n) ≠ 0)
+    (hv₁ : (atTop.limsup fun n ↦ (v n : EReal) / n) ≠ ⊤) (hv₂ : atTop.Tendsto v atTop) :
+    expGrowthSup (u ∘ v) ≤ (atTop.limsup fun n ↦ (v n : EReal) / n) * expGrowthSup u := by
+  rw [expGrowthSup, expGrowthSup]
+  have v0 : 0 ≤ atTop.limsup fun n ↦ (v n : EReal) / n := by
+    apply ((le_liminf_of_le) _).trans (liminf_le_limsup)
+    exact Eventually.of_forall fun n ↦ EReal.div_nonneg (v n).cast_nonneg' n.cast_nonneg'
+  apply (mul_le_mul_of_nonneg_left (limsup_comp_le (fun n ↦ (u n).log / n) hv₂) v0).trans'
+  refine (limsup_mul_le ?_ ?_ (.inl hv₀) (.inl hv₁)).trans_eq' ?_
+  · refine Eventually.of_forall fun n ↦ ?_
+    simp only [Pi.zero_apply]
+    exact div_nonneg (v n).cast_nonneg' n.cast_nonneg'
+  · rw [← Pi.zero_comp v, ← Filter.eventuallyLE_map]
+    refine Eventually.filter_mono hv₂ <| Eventually.mono hu fun n un1 ↦ ?_
+    simp only [Pi.one_apply, Pi.zero_apply] at *
+    exact div_nonneg (ENNReal.zero_le_log_iff.2 un1) n.cast_nonneg'
+  · rw [Pi.mul_def]
+    apply limsup_congr
+    refine Eventually.mono (hv₂.eventually_ne_atTop 0) fun n vn0 ↦ ?_
+    simp only [comp_apply]
+    rw [EReal.div_mul_div_comm, mul_comm (v n : EReal),
+        mul_div_mul_cancel (natCast_ne_bot (v n)) (natCast_ne_top (v n)) (Nat.cast_ne_zero.2 vn0)]
+
+
+
+
 end ExpGrowth
