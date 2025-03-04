@@ -59,6 +59,9 @@ instance NatOrdinal.instNoMaxOrder : NoMaxOrder NatOrdinal := Ordinal.instNoMaxO
 instance NatOrdinal.instZeroLEOneClass : ZeroLEOneClass NatOrdinal := Ordinal.instZeroLEOneClass
 instance NatOrdinal.instNeZeroOne : NeZero (1 : NatOrdinal) := Ordinal.instNeZeroOne
 
+instance NatOrdinal.uncountable : Uncountable NatOrdinal :=
+  Ordinal.uncountable
+
 /-- The identity function between `Ordinal` and `NatOrdinal`. -/
 @[match_pattern]
 def Ordinal.toNatOrdinal : Ordinal ≃o NatOrdinal :=
@@ -396,15 +399,19 @@ theorem le_of_nadd_le_nadd_left : ∀ {a b c}, a ♯ b ≤ a ♯ c → b ≤ c :
 theorem le_of_nadd_le_nadd_right : ∀ {a b c}, b ♯ a ≤ c ♯ a → b ≤ c :=
   @le_of_add_le_add_right NatOrdinal _ _ _
 
+@[simp]
 theorem nadd_lt_nadd_iff_left : ∀ (a) {b c}, a ♯ b < a ♯ c ↔ b < c :=
   @add_lt_add_iff_left NatOrdinal _ _ _ _
 
+@[simp]
 theorem nadd_lt_nadd_iff_right : ∀ (a) {b c}, b ♯ a < c ♯ a ↔ b < c :=
   @add_lt_add_iff_right NatOrdinal _ _ _ _
 
+@[simp]
 theorem nadd_le_nadd_iff_left : ∀ (a) {b c}, a ♯ b ≤ a ♯ c ↔ b ≤ c :=
   @add_le_add_iff_left NatOrdinal _ _ _ _
 
+@[simp]
 theorem nadd_le_nadd_iff_right : ∀ (a) {b c}, b ♯ a ≤ c ♯ a ↔ b ≤ c :=
   @_root_.add_le_add_iff_right NatOrdinal _ _ _ _
 
@@ -426,9 +433,11 @@ theorem nadd_left_cancel : ∀ {a b c}, a ♯ b = a ♯ c → b = c :=
 theorem nadd_right_cancel : ∀ {a b c}, a ♯ b = c ♯ b → a = c :=
   @_root_.add_right_cancel NatOrdinal _ _
 
+@[simp]
 theorem nadd_left_cancel_iff : ∀ {a b c}, a ♯ b = a ♯ c ↔ b = c :=
   @add_left_cancel_iff NatOrdinal _ _
 
+@[simp]
 theorem nadd_right_cancel_iff : ∀ {a b c}, b ♯ a = c ♯ a ↔ b = c :=
   @add_right_cancel_iff NatOrdinal _ _
 

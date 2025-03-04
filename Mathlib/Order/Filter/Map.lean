@@ -22,7 +22,7 @@ universe u v w x y
 
 namespace Filter
 
-variable {α β γ δ : Type*} {ι : Sort*}{F : Filter α} {G : Filter β}
+variable {α β γ δ : Type*} {ι : Sort*} {F : Filter α} {G : Filter β}
 
 /-! ### Push-forwards, pull-backs, and the monad structure -/
 
@@ -41,6 +41,12 @@ theorem eventually_map {P : β → Prop} : (∀ᶠ b in map m f, P b) ↔ ∀ᶠ
 @[simp]
 theorem frequently_map {P : β → Prop} : (∃ᶠ b in map m f, P b) ↔ ∃ᶠ a in f, P (m a) :=
   Iff.rfl
+
+@[simp]
+theorem eventuallyEq_map {f₁ f₂ : β → γ} : f₁ =ᶠ[map m f] f₂ ↔ f₁ ∘ m =ᶠ[f] f₂ ∘ m := .rfl
+
+@[simp]
+theorem eventuallyLE_map [LE γ] {f₁ f₂ : β → γ} : f₁ ≤ᶠ[map m f] f₂ ↔ f₁ ∘ m ≤ᶠ[f] f₂ ∘ m := .rfl
 
 @[simp]
 theorem mem_map : t ∈ map m f ↔ m ⁻¹' t ∈ f :=

@@ -10,17 +10,17 @@ import Mathlib.MeasureTheory.Integral.SetToL1
 
 The Bochner integral extends the definition of the Lebesgue integral to functions that map from a
 measure space into a Banach space (complete normed vector space). It is constructed here
-for L1 functions by extending the integral on simple functions. See the file `Bochner` for the
-integral of functions and corresponding API.
+for L1 functions by extending the integral on simple functions. See the file
+`Mathlib.MeasureTheory.Integral.Bochner` for the integral of functions and corresponding API.
 
 ## Main definitions
 
-The Bochner integral is defined through the extension process described in the file `SetToL1`,
-which follows these steps:
+The Bochner integral is defined through the extension process described in the file
+`Mathlib.MeasureTheory.Integral.SetToL1`, which follows these steps:
 
 1. Define the integral of the indicator of a set. This is `weightedSMul μ s x = (μ s).toReal * x`.
   `weightedSMul μ` is shown to be linear in the value `x` and `DominatedFinMeasAdditive`
-  (defined in the file `SetToL1`) with respect to the set `s`.
+  (defined in the file `Mathlib.MeasureTheory.Integral.SetToL1`) with respect to the set `s`.
 
 2. Define the integral on simple functions of the type `SimpleFunc α E` (notation : `α →ₛ E`)
   where `E` is a real normed space. (See `SimpleFunc.integral` for details.)
@@ -35,14 +35,14 @@ which follows these steps:
 
 ## Notations
 
-* `α →ₛ E` : simple functions (defined in `MeasureTheory/Integration`)
+* `α →ₛ E` : simple functions (defined in `Mathlib/MeasureTheory/Function/SimpleFunc.lean`)
 * `α →₁[μ] E` : functions in L1 space, i.e., equivalence classes of integrable functions (defined in
-                `MeasureTheory/LpSpace`)
+                `Mathlib/MeasureTheory/Function/LpSpace/Basic.lean`)
 * `α →₁ₛ[μ] E` : simple functions in L1 space, i.e., equivalence classes of integrable simple
-                 functions (defined in `MeasureTheory/SimpleFuncDense`)
+                 functions (defined in `Mathlib/MeasureTheory/Function/SimpleFuncDense`)
 
 We also define notations for integral on a set, which are described in the file
-`MeasureTheory/SetIntegral`.
+`Mathlib/MeasureTheory/Integral/SetIntegral.lean`.
 
 Note : `ₛ` is typed using `\_s`. Sometimes it shows as a box if the font is missing.
 
@@ -57,7 +57,7 @@ assert_not_exists Differentiable
 
 noncomputable section
 
-open Filter ENNReal EMetric Set TopologicalSpace Topology
+open Filter ENNReal Set
 open scoped NNReal ENNReal MeasureTheory
 
 namespace MeasureTheory
@@ -438,7 +438,7 @@ theorem negPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
   rw [h₁]
   show max _ _ = max _ _
   rw [h₂]
-  rfl
+  simp
 
 theorem integral_eq_norm_posPart_sub (f : α →₁ₛ[μ] ℝ) : integral f = ‖posPart f‖ - ‖negPart f‖ := by
   -- Convert things in `L¹` to their `SimpleFunc` counterpart
@@ -480,14 +480,11 @@ attribute [local instance] simpleFunc.normedSpace
 
 open ContinuousLinearMap
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- The Bochner integral in L1 space as a continuous linear map. -/
 nonrec def integralCLM' : (α →₁[μ] E) →L[𝕜] E :=
   (integralCLM' α E 𝕜 μ).extend (coeToLp α E 𝕜) (simpleFunc.denseRange one_ne_top)
     simpleFunc.isUniformInducing
-
-variable {𝕜}
 
 /-- The Bochner integral in L1 space as a continuous linear map over ℝ. -/
 def integralCLM : (α →₁[μ] E) →L[ℝ] E :=
@@ -539,10 +536,6 @@ theorem integral_smul (c : 𝕜) (f : α →₁[μ] E) : integral (c • f) = c 
   simp only [integral]
   show (integralCLM' 𝕜) (c • f) = c • (integralCLM' 𝕜) f
   exact _root_.map_smul (integralCLM' 𝕜) c f
-
-local notation "Integral" => @integralCLM α E _ _ μ _ _
-
-local notation "sIntegral" => @SimpleFunc.integralCLM α E _ _ μ _
 
 theorem norm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖ ≤ 1 :=
   norm_setToL1_le (dominatedFinMeasAdditive_weightedSMul μ) zero_le_one
