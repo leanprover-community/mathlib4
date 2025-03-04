@@ -441,7 +441,7 @@ end Casts
 
 /--
 A version of `Rat.casesOn` that uses `/` instead of `Rat.mk'`. Use as
-```
+```lean
 cases r with
 | div p q nonzero coprime =>
 ```
