@@ -125,7 +125,7 @@ lemma hasBasis_nhds_zero [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] 
     simpa [basis, coeff_apply, Iic, pi] using subset_rfl
 
 /-- The topology on `MvPowerSeries` is a left linear topology
-  when the ring of coefficients has a linar topology. -/
+  when the ring of coefficients has a linear topology. -/
 instance [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
     IsLinearTopology (MvPowerSeries σ R) (MvPowerSeries σ R) :=
   IsLinearTopology.mk_of_hasBasis'  _ hasBasis_nhds_zero TwoSidedIdeal.mul_mem_left

@@ -448,7 +448,7 @@ lemma compatible {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Spac
 /-- The universal property of the largest T2 quotient of a topological space `X`: any continuous
 map from `X` to a T2 space `Y` uniquely factors through `t2Quotient X`. This declaration builds the
 factored map. Its continuity is `t2Quotient.continuous_lift`, the fact that it indeed factors the
-original map is `t2Quotient.lift_mk` and uniquenes is `t2Quotient.unique_lift`. -/
+original map is `t2Quotient.lift_mk` and uniqueness is `t2Quotient.unique_lift`. -/
 def lift {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
     {f : X → Y} (hf : Continuous f) : t2Quotient X → Y :=
   Quotient.lift f (t2Quotient.compatible hf)
