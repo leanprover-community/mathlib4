@@ -92,7 +92,7 @@ def diffToGitDiff (s : String) : Array GitDiff × Array GitDiff := Id.run do
       nextGDA := {nextGDA with file := fA}
       nextGDB := {nextGDB with file := fB}
     if l.startsWith "@@ -" then
-      let _ :: ls :: _ := l.splitOn "@@ " | continue
+      let _ :: ls :: _ := l.splitOn "@@" | continue
       let [left, right] := ls.trim.splitOn " " | continue
       let rgA := assignLineRanges left
       let rgB := assignLineRanges right
