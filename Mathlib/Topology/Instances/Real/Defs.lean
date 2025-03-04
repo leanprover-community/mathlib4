@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Algebra.UniformGroup.Defs
 import Mathlib.Topology.Instances.Int
-import Mathlib.Topology.Order.Bornology
 
 /-!
 # Topological properties of ℝ
@@ -65,11 +64,12 @@ instance Real.instCompleteSpace : CompleteSpace ℝ := by
   simp only [mem_map, mem_atTop_sets, mem_setOf_eq]
   exact this.imp fun N hN n hn => hε (hN n hn)
 
-instance instIsOrderBornology : IsOrderBornology ℝ where
+-- import Mathlib.Topology.Order.Bornology
+/- instance instIsOrderBornology : IsOrderBornology ℝ where
   isBounded_iff_bddBelow_bddAbove s := by
     refine ⟨fun bdd ↦ ?_, fun h ↦ isBounded_of_bddAbove_of_bddBelow h.2 h.1⟩
     obtain ⟨r, hr⟩ : ∃ r : ℝ, s ⊆ Icc (-r) r := by
       simpa [Real.closedBall_eq_Icc] using bdd.subset_closedBall 0
-    exact ⟨bddBelow_Icc.mono hr, bddAbove_Icc.mono hr⟩
+    exact ⟨bddBelow_Icc.mono hr, bddAbove_Icc.mono hr⟩ -/
 
 -- instance : ContinuousStar ℝ := ⟨continuous_id⟩
