@@ -144,6 +144,7 @@
   "Mathlib.Tactic.Positivity.Finset",
   "Mathlib.Tactic.ProjectionNotation",
   "Mathlib.Tactic.Push",
+  "Mathlib.Tactic.Push.Attr",
   "Mathlib.Tactic.Qify",
   "Mathlib.Tactic.RSuffices",
   "Mathlib.Tactic.Recover",
