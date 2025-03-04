@@ -6,13 +6,24 @@ MSdeclsFile=decls_in_master.txt
 PR_NUMBER="${1:-NO_PR_NUMBER}"
 PR_HASH="${2:-NO_PR_HASH}"
 
-# Running `getDeclarations <file_name> <sep_string>`
+ : <<'BASH_MODULE_DOCS'
+# Running `getDeclarations <PR_NUMBER> <PR_HASH>`
 # 1. downloads the cache for `Mathlib`, `Archive` and `Counterexamples`;
-# 2. adds the line `#all_declarations <file_name>` to the declarations diff Lean script;
+# 2. copies the declarations diff Lean script to `Mathlib` and adds the line
+     `#all_declarations <file_name>` to the file
 # 3. builds the declarations diff script, which in turn
-# 4. saves to `<file_name>` all the declarations in the environment;
+# 4. saves to `${PRdeclsFile}`/`${MSdeclsFile}` all the declarations in the environment as appropriate;
 # 5. removes the line added to the declarations diff Lean script;
 # 6. uses `<sep_string>` to signal when the text that the report should use starts.
+BASH_MODULE_DOCS
+
+# Running `getDeclarations <file_name>`
+# 1. downloads the cache for `Mathlib`, `Archive` and `Counterexamples`;
+# 2. copies the declarations diff Lean script to `Mathlib` and adds the line
+#    `#all_declarations <file_name>` to the file
+# 3. `lake build`s the declarations diff script, which in turn
+# 4. saves to `<file_name>` all the declarations in the environment;
+# 5. removes the copy of the declaration diff script from `Mathlib`.
 getDeclarations () {
   local file=Mathlib/declarations_diff_lean.lean
   printf '* Download the cache\n'
@@ -22,7 +33,7 @@ getDeclarations () {
   #printf $'#all_declarations "%s"\n' "${1}" >> "${script_file}"
 
   cp "${script_file}" "${file}"
-  printf $'@[to_additive] theorem Mul.%s\' : Nat := 0\n#all_declarations "%s"\n' "${1}" "${1}" >> "${file}"
+  printf $'@[to_additive] theorem Mul.%s\' : True := trivial\n#all_declarations "%s"\n' "${1}" "${1}" >> "${file}"
   lake build Mathlib.declarations_diff_lean
 
   # undo the local changes
