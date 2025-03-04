@@ -180,7 +180,7 @@ jobs:
 
           #actualDiff="${ steps.diff_in_lean.outputs.LeanDiff }}"
           printf '%s\n' "${actualDiff}"
-          messageStart=$'<details><summary> <b>Declaration diff in Lean</b></summary>'
+          messageStart=$'<details><summary> <b>Declaration diff in Lean</b></summary>\n'
           (
             ./scripts/declDiff_shell_glue.sh |
               awk -v messStart="${messageStart}" '
