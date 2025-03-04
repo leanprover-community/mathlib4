@@ -183,16 +183,16 @@ theorem tensorHom_inv_inv_mul (A : Grp_ C) :
     (A.inv ⊗ A.inv) ≫ A.mul = (β_ A.X A.X).hom ≫ A.mul ≫ A.inv := by
   rw [mul_inv A, SymmetricCategory.symmetry_assoc]
 
-/-- The map `(· * f)`. Note that this is mul "left" because the left argument is varying. -/
+/-- The map `(· * f)`. -/
 @[simps]
-def mulLeft (A : Grp_ C) (f : 𝟙_ C ⟶ A.X) : A.X ≅ A.X where
+def mulRight (A : Grp_ C) (f : 𝟙_ C ⟶ A.X) : A.X ≅ A.X where
   hom := lift (𝟙 _) (toUnit _ ≫ f) ≫ A.mul
   inv := lift (𝟙 _) (toUnit _ ≫ f ≫ A.inv) ≫ A.mul
   hom_inv_id := by simp [comp_lift_assoc, lift_lift_assoc, ← comp_lift]
   inv_hom_id := by simp [comp_lift_assoc, lift_lift_assoc, ← comp_lift]
 
 @[simp]
-lemma mulLeft_one (A : Grp_ C) : A.mulLeft A.one = Iso.refl A.X := by
+lemma mulRight_one (A : Grp_ C) : A.mulRight A.one = Iso.refl A.X := by
   ext; simp
 
 /-- The associativity diagram of a group object is cartesian.
