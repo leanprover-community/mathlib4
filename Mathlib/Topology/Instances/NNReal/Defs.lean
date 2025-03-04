@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Data.NNReal.Star
 import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Topology.Instances.Real.Defs
 import Mathlib.Topology.MetricSpace.Isometry
@@ -53,8 +52,10 @@ instance : OrderTopology ℝ≥0 :=
 instance : CompleteSpace ℝ≥0 :=
   isClosed_Ici.completeSpace_coe
 
+/-
 instance : ContinuousStar ℝ≥0 where
   continuous_star := continuous_id
+-/
 
 -- TODO: generalize this to a broader class of subtypes
 instance : IsOrderBornology ℝ≥0 where
