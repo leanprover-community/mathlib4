@@ -190,3 +190,12 @@ def gitDiffMaster (commit : String := "HEAD") : IO (Array GitDiff × Array GitDi
   let diffString ← IO.Process.run
     {cmd := "git", args := #["diff", "--unified=0", s!"origin/master...{commit}"]}
   pure <| diffToGitDiff diffString
+
+/-
+The linter reads the modified ranges and only emit a warning if `stx.getRange?` overlaps with
+at least one range.
+
+To feed the information about the ranges, maybe I can add an import on the first line, without a line break.
+
+The new file contains the modified ranges and the linter option.
+-/
