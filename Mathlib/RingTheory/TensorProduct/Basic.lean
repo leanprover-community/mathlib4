@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.Module.Rat
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
 # The tensor product of R-algebras
