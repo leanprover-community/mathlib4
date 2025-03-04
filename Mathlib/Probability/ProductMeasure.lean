@@ -286,7 +286,8 @@ lemma infinitePiNat_map_piCongrLeft (e : ℕ ≃ ι) {s : Set (Π i, X i)}
   rw [map_apply _ hS.cylinder, cylinder, ← Set.preimage_comp, coe_piCongrLeft,
     restrict_comp_piCongrLeft, Set.preimage_comp, ← map_apply,
     infinitePiNat_map_restrict (fun n ↦ μ (e n)), ← cylinder, piContent_cylinder μ hS,
-    ← pi_map_piCongrLeft (e.frestrict I), map_apply _ hS]; rfl
+    ← pi_map_piCongrLeft (e.frestrict I), map_apply _ hS]
+  · rfl
   any_goals fun_prop
   exact hS.preimage (by fun_prop)
 
@@ -359,22 +360,22 @@ theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n
     simp_rw [fun n ↦ piContent_eq_measure_pi (fun i : u ↦ μ i) (mB n)]
     convert tendsto_measure_iInter_atTop (fun n ↦ (mB n).nullMeasurableSet) B_anti
       ⟨0, measure_ne_top _ _⟩
-    rw [B_inter, measure_empty]; infer_instance
+    · rw [B_inter, measure_empty]
+    · infer_instance
   · -- If `u` is infinite, then we have an equivalence with `ℕ` so we can apply `secondLemma`.
     have count_u : Countable u := Set.countable_iUnion (fun n ↦ (s n).countable_toSet)
     obtain ⟨φ, -⟩ := Classical.exists_true_of_nonempty (α := ℕ ≃ u) nonempty_equiv_of_countable
     conv => enter [1]; ext n; rw [← infinitePiNat_map_piCongrLeft _ φ (B_mem n)]
     convert tendsto_measure_iInter_atTop (fun n ↦ (mB n).nullMeasurableSet) B_anti
       ⟨0, measure_ne_top _ _⟩
-    rw [B_inter, measure_empty]; infer_instance
+    · rw [B_inter, measure_empty]
+    · infer_instance
 
-/-- The `projectiveFamilyContent` associated to a family of probability measures is σ-subadditive. -/
-theorem piContent_sigma_subadditive ⦃f : ℕ → Set (Π i, X i)⦄
-    (hf : ∀ n, f n ∈ measurableCylinders X) (hf_Union : (⋃ n, f n) ∈ measurableCylinders X) :
-    piContent μ (⋃ n, f n) ≤
-    ∑' n, piContent μ (f n) := by
-  refine addContent_iUnion_le_of_addContent_iUnion_eq_tsum
-    isSetRing_measurableCylinders (fun f hf hf_Union hf' ↦ ?_) f hf hf_Union
+/-- The `projectiveFamilyContent` associated to a family of probability measures is
+σ-subadditive. -/
+theorem isSigmaSubadditive_piContent : (piContent μ).IsSigmaSubadditive := by
+  refine isSigmaSubadditive_of_addContent_iUnion_eq_tsum
+    isSetRing_measurableCylinders (fun f hf hf_Union hf' ↦ ?_)
   exact addContent_iUnion_eq_sum_of_tendsto_zero isSetRing_measurableCylinders
     (piContent μ) (fun s hs ↦ projectiveFamilyContent_ne_top _)
     (fun _ ↦ piContent_tendsto_zero μ) hf hf_Union hf'
@@ -384,7 +385,7 @@ extension of the function which gives to cylinders the measure given by the asso
 measure. -/
 noncomputable def Measure.productMeasure : Measure (Π i, X i) :=
   (piContent μ).measure isSetSemiring_measurableCylinders
-    generateFrom_measurableCylinders.ge (piContent_sigma_subadditive μ)
+    generateFrom_measurableCylinders.ge (isSigmaSubadditive_piContent μ)
 
 open Measure
 
@@ -464,7 +465,7 @@ the finite set of coordinates `s`, then it only depends on those coordinates. -/
 theorem dependsOn_of_stronglyMeasurable' {E : Type*} [NormedAddCommGroup E]
     {s : Finset ι} {f : (Π i, X i) → E}
     (mf : StronglyMeasurable[piFinset s] f) : DependsOn f s :=
-  dependsOn_iff_factorsThrough.2 (factorsThrough_of_stronglyMeasurable_comap mf)
+  dependsOn_iff_factorsThrough.2 mf.factorsThrough
 
 theorem integral_stronglyMeasurable [DecidableEq ι] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] {s : Finset ι} {f : (Π i, X i) → E}
