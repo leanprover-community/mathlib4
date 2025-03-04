@@ -45,17 +45,15 @@ typeclass. We provide it as `[Fact (x < y)]`.
 
 noncomputable section
 
-open Set Function SignType
+open Set Function
 
 open scoped Manifold ContDiff
 
-/--
-The half-space in `ℝ^n`, used to model manifolds with boundary. We only define it when `1 ≤ n`, as
-the definition only makes sense in this case. It takes a choice of sign `ε` so it can be either the
-positive or negative half-space.
+/-- The half-space in `ℝ^n`, used to model manifolds with boundary. We only define it when
+`1 ≤ n`, as the definition only makes sense in this case.
 -/
-def EuclideanHalfSpace (n : ℕ) [NeZero n] (ε : SignType) : Type :=
-  { x : EuclideanSpace ℝ (Fin n) // 0 ≤ ε * x 0 }
+def EuclideanHalfSpace (n : ℕ) [NeZero n] : Type :=
+  { x : EuclideanSpace ℝ (Fin n) // 0 ≤ x 0 }
 
 /--
 The quadrant in `ℝ^n`, used to model manifolds with corners, made of all vectors with nonnegative
@@ -69,21 +67,21 @@ section
 /- Register class instances for euclidean half-space and quadrant, that can not be noticed
 without the following reducibility attribute (which is only set in this section). -/
 
-variable {n : ℕ} {ε : SignType}
+variable {n : ℕ}
 
-instance [NeZero n] : TopologicalSpace (EuclideanHalfSpace n ε) :=
+instance [NeZero n] : TopologicalSpace (EuclideanHalfSpace n) :=
   instTopologicalSpaceSubtype
 
 instance : TopologicalSpace (EuclideanQuadrant n) :=
   instTopologicalSpaceSubtype
 
-instance [NeZero n] : Inhabited (EuclideanHalfSpace n ε) :=
-  ⟨⟨0, by simp⟩⟩
+instance [NeZero n] : Inhabited (EuclideanHalfSpace n) :=
+  ⟨⟨0, le_rfl⟩⟩
 
 instance : Inhabited (EuclideanQuadrant n) :=
   ⟨⟨0, fun _ => le_rfl⟩⟩
 
-instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n ε) := ⟨⟨fun _ ↦ 0, by norm_num⟩⟩
+instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) := ⟨⟨fun _ ↦ 0, by norm_num⟩⟩
 
 instance {n : ℕ} : Zero (EuclideanQuadrant n) := ⟨⟨fun _ ↦ 0, by norm_num⟩⟩
 
@@ -92,36 +90,33 @@ theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = 
   Subtype.eq h
 
 @[ext]
-theorem EuclideanHalfSpace.ext [NeZero n] (x y : EuclideanHalfSpace n ε)
+theorem EuclideanHalfSpace.ext [NeZero n] (x y : EuclideanHalfSpace n)
     (h : x.1 = y.1) : x = y :=
   Subtype.eq h
 
 theorem EuclideanHalfSpace.convex [NeZero n] :
-    Convex ℝ { x : EuclideanSpace ℝ (Fin n) | 0 ≤ ε * x 0 } :=
-  fun _ hx _ hy c d hc hd _ ↦ by
-  dsimp at hx hy ⊢
-  rw [mul_add, ← mul_assoc, ← mul_assoc, mul_comm ↑ε c, mul_comm ↑ε d, mul_assoc, mul_assoc d]
-  exact add_nonneg (mul_nonneg hc hx) (mul_nonneg hd hy)
+    Convex ℝ { x : EuclideanSpace ℝ (Fin n) | 0 ≤ x 0 } :=
+  fun _ hx _ hy _ _ _ _ _ ↦ by dsimp at hx hy ⊢; positivity
 
 theorem EuclideanQuadrant.convex :
     Convex ℝ { x : EuclideanSpace ℝ (Fin n) | ∀ i, 0 ≤ x i } :=
   fun _ hx _ hy _ _ _ _ _ i ↦ by dsimp at hx hy ⊢; specialize hx i; specialize hy i; positivity
 
 instance EuclideanHalfSpace.pathConnectedSpace [NeZero n] :
-    PathConnectedSpace (EuclideanHalfSpace n ε) :=
+    PathConnectedSpace (EuclideanHalfSpace n) :=
   isPathConnected_iff_pathConnectedSpace.mp <| convex.isPathConnected ⟨0, by simp⟩
 
 instance EuclideanQuadrant.pathConnectedSpace : PathConnectedSpace (EuclideanQuadrant n) :=
   isPathConnected_iff_pathConnectedSpace.mp <| convex.isPathConnected ⟨0, by simp⟩
 
-instance [NeZero n] : LocPathConnectedSpace (EuclideanHalfSpace n ε) :=
+instance [NeZero n] : LocPathConnectedSpace (EuclideanHalfSpace n) :=
   EuclideanHalfSpace.convex.locPathConnectedSpace
 
 instance : LocPathConnectedSpace (EuclideanQuadrant n) :=
   EuclideanQuadrant.convex.locPathConnectedSpace
 
-theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] (ε : SignType) :
-    (range fun x : EuclideanHalfSpace n ε => x.val) = { y | 0 ≤ (ε : ℝ) * y 0 } :=
+theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
+    (range fun x : EuclideanHalfSpace n => x.val) = { y | 0 ≤ y 0 } :=
   Subtype.range_val
 
 open ENNReal in
