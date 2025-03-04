@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Set.Finite.Basic
@@ -154,3 +155,13 @@ lemma frestrict_apply (a : s.preimage e e.injective.injOn) : e.frestrict s a = e
 lemma frestrict_symm_apply (b : s) : (e.frestrict s).symm b = e.symm b := rfl
 
 end Equiv
+
+/-- Reindexing and then restricting to a `Finset` is the same as first restricting to the preimage
+of this `Finset` and then reindexing. -/
+lemma Finset.restrict_comp_piCongrLeft {π : β → Type*} (s : Finset β) (e : α ≃ β) :
+    s.restrict ∘ ⇑(e.piCongrLeft π) =
+    ⇑((e.frestrict s).piCongrLeft (fun b : s ↦ (π b))) ∘
+    (s.preimage e e.injective.injOn).restrict := by
+  ext x b
+  simp only [comp_apply, restrict, Equiv.piCongrLeft_apply_eq_cast, cast_inj]
+  rfl

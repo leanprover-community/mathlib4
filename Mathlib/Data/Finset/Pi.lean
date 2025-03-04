@@ -3,7 +3,8 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Finset.Card
+ import Mathlib.Data.Finset.Union
 import Mathlib.Data.Multiset.Pi
 import Mathlib.Logic.Function.DependsOn
 
@@ -181,17 +182,6 @@ theorem restrict₂_comp_restrict₂ {s t u : Finset ι} (hst : s ⊆ t) (htu : 
 
 lemma dependsOn_restrict (s : Finset ι) : DependsOn (s.restrict (π := π)) s :=
   (s : Set ι).dependsOn_restrict
-
-omit [DecidableEq (ι → α)] in
-/-- Reindexing and then restricting to a `Finset` is the same as first restricting to the preimage
-of this `Finset` and then reindexing. -/
-lemma restrict_comp_piCongrLeft (s : Finset α) (e : ι ≃ α) :
-    s.restrict ∘ ⇑(e.piCongrLeft β) =
-    ⇑((e.frestrict s).piCongrLeft (fun a : s ↦ (β a))) ∘
-    (s.preimage e e.injective.injOn).restrict := by
-  ext x b
-  simp only [comp_apply, restrict, Equiv.piCongrLeft_apply_eq_cast, cast_inj]
-  rfl
 
 end Pi
 
