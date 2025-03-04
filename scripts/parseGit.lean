@@ -154,12 +154,19 @@ index 9fbfeec9e2e..f381810c095 100644
 "
 
 /--
-info: (#[file: .github/workflows/bench_summary_comment.yml, lines 33-36, file: .github/workflows/bors.yml, lines 186-196, file: .github/workflows/bors.yml, lines 330-336], #[file: .github/workflows/bench_summary_comment.yml, lines 33-44, file: .github/workflows/bors.yml, lines 186-198, file: .github/workflows/bors.yml, lines 332-347])
+info: [file: .github/workflows/bench_summary_comment.yml, lines 33-36,
+ file: .github/workflows/bors.yml, lines 186-196,
+ file: .github/workflows/bors.yml, lines 330-336]
+---
+info: [file: .github/workflows/bench_summary_comment.yml, lines 33-44,
+ file: .github/workflows/bors.yml, lines 186-198,
+ file: .github/workflows/bors.yml, lines 332-347]
 -/
 #guard_msgs in
 #eval do
-  let tots := diffToGitDiff test
-  dbg_trace tots
+  let (totA, totB) := diffToGitDiff test
+  logInfo m!"{totA}"
+  logInfo m!"{totB}"
 
 /--
 info: [file: scripts/parseGit.lean, lines 26-27]
