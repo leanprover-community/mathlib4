@@ -345,7 +345,7 @@ section piLE
 
 open MeasurableSpace Preorder
 
-variable {ι : Type*} [Preorder ι] {X : ι → Type*} [∀ i, MeasurableSpace (X i)]
+variable {X : ι → Type*} [∀ i, MeasurableSpace (X i)]
 
 /-- The canonical filtration on the product space `Π i, X i`, where `piLE i`
 consists of measurable sets depending only on coordinates `≤ i`. -/
@@ -367,6 +367,25 @@ lemma piLE_eq_comap_frestrictLe (i : ι) : piLE (X := X) i = pi.comap (frestrict
     exact MeasurableSpace.comap_mono <| Measurable.comap_le (by fun_prop)
 
 end piLE
+
+section piFinset
+
+open MeasurableSpace Finset
+
+variable {ι : Type*} {X : ι → Type*} [∀ i, MeasurableSpace (X i)]
+
+/-- The filtration of events which only depends on finitely many coordinates
+on the product space `Π i, X i`, `piLE s` consists of measurable sets depending only on
+coordinates in `s`, where `s : Finset ι`. -/
+def piFinset : @Filtration (Π i, X i) (Finset ι) _ pi where
+  seq s := pi.comap s.restrict
+  mono' s t hst := by
+    simp only
+    rw [← restrict₂_comp_restrict hst, ← comap_comp]
+    exact comap_mono (measurable_restrict₂ hst).comap_le
+  le' s := s.measurable_restrict.comap_le
+
+end piFinset
 
 variable {α : Type*}
 
