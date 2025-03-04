@@ -305,7 +305,7 @@ theorem Equiv.Perm.sign_eq_prod_prod_Ioi (σ : Equiv.Perm (Fin n)) :
 theorem Equiv.Perm.prod_Iio_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
     (σ : Equiv.Perm (Fin n)) {f : Fin n → Fin n → R} (hf : ∀ i j, f i j = - f j i) :
     ∏ j, ∏ i ∈ Finset.Iio j, f (σ i) (σ j) = σ.sign * ∏ j, ∏ i ∈ Finset.Iio j, f i j := by
-  simp_rw [← σ.sign_inv, Equiv.Perm.sign_eq_prod_prod_Iio, Finset.prod_sigma', Units.coe_prod,
+  simp_rw [← σ.sign_inv, σ⁻¹.sign_eq_prod_prod_Iio, Finset.prod_sigma', Units.coe_prod,
     Int.cast_prod, ← Finset.prod_mul_distrib]
   set D := (Finset.univ : Finset (Fin n)).sigma Finset.Iio with hD
   have hφD : D.image (fun x ↦ ⟨σ x.1 ⊔ σ x.2, σ x.1 ⊓ σ x.2⟩) = D := by
