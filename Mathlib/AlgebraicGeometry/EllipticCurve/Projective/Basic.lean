@@ -469,17 +469,6 @@ lemma nonsingularLift_some (X Y : R) :
     W'.NonsingularLift ⟦![X, Y, 1]⟧ ↔ W'.toAffine.Nonsingular X Y :=
   nonsingular_some X Y
 
-@[deprecated (since := "2024-08-27")] alias equation_smul_iff := equation_smul
-@[deprecated (since := "2024-08-27")] alias nonsingularLift_zero' := nonsingularLift_zero
-@[deprecated (since := "2024-08-27")] alias nonsingular_affine_of_Z_ne_zero :=
-  nonsingular_of_Z_ne_zero
-@[deprecated (since := "2024-08-27")] alias nonsingular_iff_affine_of_Z_ne_zero :=
-  nonsingular_of_Z_ne_zero
-@[deprecated (since := "2024-08-27")] alias nonsingular_of_affine_of_Z_ne_zero :=
-  nonsingular_of_Z_ne_zero
-@[deprecated (since := "2024-08-27")] alias nonsingular_smul_iff := nonsingular_smul
-@[deprecated (since := "2024-08-27")] alias nonsingular_zero' := nonsingular_zero
-
 /-! ## Maps and base changes -/
 
 variable (f : R →+* S) (P : Fin 3 → R)
@@ -527,12 +516,6 @@ variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebr
 lemma baseChange_polynomial : (W'.baseChange B).toProjective.polynomial =
     MvPolynomial.map f (W'.baseChange A).toProjective.polynomial := by
   rw [← map_polynomial, map_baseChange]
-
-variable {P} in
-lemma Equation.baseChange (h : (W'.baseChange A).toProjective.Equation P) :
-    (W'.baseChange B).toProjective.Equation (f ∘ P) := by
-  convert Equation.map f.toRingHom h using 1
-  rw [AlgHom.toRingHom_eq_coe, map_baseChange]
 
 variable {f} in
 lemma baseChange_equation (hf : Function.Injective f) :
