@@ -182,7 +182,7 @@ instance : SMul ℕ (DivisorOn U) where
 (natural number)·divisor is the scalar product of the natural number with the
 associated function of the divisor. -/
 @[simp]
-lemma nsmul_fun {D : DivisorOn U} {n : ℕ} : (↑(n • D) : 𝕜 → ℤ) = n • (D : 𝕜 → ℤ) := rfl
+lemma coe_nsmul {D : DivisorOn U} {n : ℕ} : (↑(n • D) : 𝕜 → ℤ) = n • (D : 𝕜 → ℤ) := rfl
 
 /-- Divisors have scalar multiplication with integers -/
 instance : SMul ℤ (DivisorOn U) where
