@@ -51,8 +51,8 @@ jobs:
           PRdeclsFile=decls_in_PR.txt
           MSdeclsFile=decls_in_master.txt
 
-          #git checkout master
-          #git switch -
+          git checkout master
+          git switch -
           #git checkout master...HEAD
           #masterHash="$(git rev-parse HEAD)"
           #git switch -
