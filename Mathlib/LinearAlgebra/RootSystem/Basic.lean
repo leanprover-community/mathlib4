@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury, Scott Carnahan
 -/
 import Mathlib.LinearAlgebra.RootSystem.Defs
+import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
 
 /-!
 # Root data and root systems
@@ -73,128 +74,7 @@ protected def equiv_of_mapsTo :
 
 end reflection_perm
 
-variable (P : RootPairing ι R M N) (i j : ι)
-
-lemma reflection_apply_lin_comb (x : M) (a b : R) :
-    P.reflection i (x + a • P.root i + b • P.root j) =
-      x + (- a - P.toPerfectPairing x (P.coroot i) - b * P.pairing j i) • P.root i +
-      b • P.root j := by
-  simp only [reflection_apply, PerfectPairing.flip_apply_apply, ← toLin_toPerfectPairing,
-    PerfectPairing.toLin_apply, LinearMap.map_add, LinearMap.map_smul]
-  simp only [PerfectPairing.toLin_apply, root_coroot_eq_pairing, pairing_same, smul_eq_mul,
-    sub_smul, neg_smul, mul_smul, add_smul, two_smul, smul_add]
-  abel
-
-lemma reflection_reflection (x : M) : P.reflection i (P.reflection j x) =
-    x - P.toPerfectPairing x (P.coroot j) • P.root j - (P.toPerfectPairing x (P.coroot i) -
-    P.toPerfectPairing x (P.coroot j) • (P.pairing j i)) • P.root i := by
-  rw [reflection_apply P j, reflection_apply P i]
-  simp only [← toLin_toPerfectPairing, map_sub, map_smul,
-    LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul, sub_right_inj]
-  simp
-
-lemma two_root_eq_pairing_root (h : P.reflection i = P.reflection j) :
-    (2 : R) • P.root i = (P.pairing i j) • P.root j := by
-  have h₂ : ∀ (x : M), P.reflection i x = P.reflection j x := congrFun (congrArg DFunLike.coe h)
-  have h₃ : ∀ (x : M), P.toPerfectPairing x (P.coroot i) • P.root i =
-      P.toPerfectPairing x (P.coroot j) • P.root j := by
-    intro x
-    specialize h₂ x
-    rw [reflection_apply, reflection_apply, sub_eq_sub_iff_add_eq_add, add_left_cancel_iff] at h₂
-    exact id h₂.symm
-  specialize h₃ (P.root i)
-  rw [root_coroot_eq_pairing, pairing_same] at h₃
-  exact h₃
-
-lemma linearDependent_of_eq_reflection (h : P.reflection i = P.reflection j) (h₁ : ¬ (2 : R) = 0) :
-    ¬ LinearIndependent R ![P.root i, P.root j] := by
-  rw [LinearIndependent.pair_iff]
-  intro h'
-  specialize h' 2 (-P.pairing i j)
-  have h₂ : (2 : R) • P.root i + (-P.pairing i j) • P.root j = 0 := by
-    simp [two_root_eq_pairing_root P i j h]
-  specialize h' h₂
-  apply h₁ h'.left
-
-/-- Seems to be superfluous. -/
-lemma root_reflection_trans_iterate_coxeterWeight_four (hc : P.coxeterWeight i j = 4) (n : ℕ) :
-    ((P.reflection j).trans (P.reflection i))^[n] (P.root j) =
-      P.root j + n • (P.pairing j i • P.root i - (2 : R) • P.root j) := by
-  rw [coxeterWeight, pairing, pairing, mul_comm] at hc
-  rw [reflection, reflection, pairing]
-  convert reflection_reflection_iterate (R := R) (M := M) _ _ _ n
-  exact hc
-
-/-- May be useful in more generality. -/
-lemma root_reflection_perm_trans_iterate (k : ι) (n : ℕ) :
-    P.root (((P.reflection_perm j).trans (P.reflection_perm i))^[n] k) =
-      ((P.reflection j).trans (P.reflection i))^[n] (P.root k) := by
-  induction n with
-  | zero => simp
-  | succ n ih =>
-    rw [iterate_succ', iterate_succ', Equiv.coe_trans, comp_assoc, comp_apply, root_reflection_perm,
-    comp_apply, root_reflection_perm, ← Equiv.coe_trans, ih, comp_apply, LinearEquiv.trans_apply]
-
-/-- We should be able to eliminate the NoZeroSMulDivisors ℤ M hypothesis. -/
-lemma infinite_of_linearIndependent_coxeterWeight_four [CharZero R] [NoZeroSMulDivisors ℤ M]
-    (P : RootPairing ι R M N) (i j : ι) (hl : LinearIndependent R ![P.root i, P.root j])
-    (hc : P.coxeterWeight i j = 4) : Infinite ι := by
-  refine (infinite_range_iff (Embedding.injective P.root)).mp (Infinite.mono ?_
-    ((infinite_range_reflection_reflection_iterate_iff (P.coroot_root_two i)
-    (P.coroot_root_two j) ?_).mpr ?_))
-  · rw [range_subset_iff]
-    intro n
-    rw [← IsFixedPt.image_iterate ((bijOn_reflection_of_mapsTo (P.coroot_root_two i)
-      (P.mapsTo_reflection_root i)).comp (bijOn_reflection_of_mapsTo (P.coroot_root_two j)
-      (P.mapsTo_reflection_root j))).image_eq n]
-    exact mem_image_of_mem _ (mem_range_self j)
-  · rw [PerfectPairing.flip_apply_apply, root_coroot_eq_pairing, root_coroot'_eq_pairing, ← hc,
-      mul_comm, coxeterWeight]
-  · rw [LinearIndependent.pair_iff] at hl
-    specialize hl (P.pairing j i) (-2)
-    simp only [neg_smul, neg_eq_zero, OfNat.ofNat_ne_zero, and_false, imp_false] at hl
-    rw [ne_eq, root_coroot'_eq_pairing, ← sub_eq_zero, sub_eq_add_neg]
-    exact hl
-
-/-!
-lemma coxeterWeight_one_order (h: coxeterWeight P i j = 1) :
-    orderOf (P.reflection i * P.reflection j) = 3 := by
-  sorry
-
-lemma coxeterWeight_two_order (h: coxeterWeight P i j = 2) :
-    orderOf (P.reflection i * P.reflection j) = 4 := by
-  sorry
-
-lemma coxeterWeight_three_order (h: coxeterWeight P i j = 3) :
-    orderOf (P.reflection i * P.reflection j) = 6 := by
-  sorry
-
-
-lemma Commute_IsOrthogonal (h : Commute (P.reflection i) (P.reflection j)) :
-    IsOrthogonal P i j := by
-  rw [IsOrthogonal, pairing, pairing]
-  have hx : ∀ (x : M), (P.reflection i) (P.reflection j x) =
-      (P.reflection j) (P.reflection i x) := by
-    intro x
-    rw [Commute, SemiconjBy] at h
-    rw [← @reflection_mul, h, reflection_mul]
-
-  -- try applying h to P.root i and P.root j
-  sorry
--/
-
--- parallel, non-syemmetrizable, definite, indefinite, ultraparallel
-
---lemma parallel_linearIndependent
-
-variable [Finite ι] (P : RootPairing ι R M N) (i j : ι)
-
-lemma coxeterWeight_ne_four_of_linearIndependent [CharZero R] [NoZeroSMulDivisors ℤ M]
-    (hl : LinearIndependent R ![P.root i, P.root j]) :
-    P.coxeterWeight i j ≠ 4 := by
-  intro contra
-  have := P.infinite_of_linearIndependent_coxeterWeight_four i j hl contra
-  exact not_finite ι
+variable (P : RootPairing ι R M N) [Finite ι]
 
 /-- Even though the roots may not span, coroots are distinguished by their pairing with the
 roots. The proof depends crucially on the fact that there are finitely-many roots.
@@ -225,12 +105,12 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     simp only [root_reflection_perm, reflection_apply, coroot']
     simp only [hr, he, hc']
   suffices P₁.coroot = P₂.coroot by
-    cases' P₁ with p₁; cases' P₂ with p₂; cases p₁; cases p₂; congr; exact hp this
+    obtain ⟨p₁⟩ := P₁; obtain ⟨p₂⟩ := P₂; cases p₁; cases p₂; congr; exact hp this
   have := NoZeroSMulDivisors.int_of_charZero R M
   ext i
   apply P₁.injOn_dualMap_subtype_span_root_coroot (mem_range_self i) (hc ▸ mem_range_self i)
   simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, comp_apply]
-  apply Dual.eq_of_preReflection_mapsTo' (P₁.ne_zero i) (finite_range P₁.root)
+  apply Dual.eq_of_preReflection_mapsTo' (finite_range P₁.root)
   · exact Submodule.subset_span (mem_range_self i)
   · exact P₁.coroot_root_two i
   · exact P₁.mapsTo_reflection_root i
@@ -272,14 +152,14 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [NoZeroSMulDivisor
   have := injOn_dualMap_subtype_span_range_range (finite_range root)
     (c := p.flip ∘ coroot) hp hr
   apply this (mem_range_self k) (mem_range_self l)
-  refine Dual.eq_of_preReflection_mapsTo' hk₀ (finite_range root)
+  refine Dual.eq_of_preReflection_mapsTo' (finite_range root)
     (Submodule.subset_span <| mem_range_self k) (hp k) (hr k) hkl ?_
   rw [comp_apply, hl, hk, hij]
   exact (hr i).comp <| (hr j).comp (hr i)
 
 /-- In characteristic zero if there is no torsion, to check that two finite families of roots and
 coroots form a root pairing, it is sufficient to check that they are stable under reflections. -/
-def mk' [Finite ι] [CharZero R] [NoZeroSMulDivisors R M]
+def mk' [CharZero R] [NoZeroSMulDivisors R M]
     (p : PerfectPairing R M N)
     (root : ι ↪ M)
     (coroot : ι ↪ N)
@@ -319,15 +199,15 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
       P₁.root = P₂.root → range P₁.coroot ⊆ range P₂.coroot by
     have h₁ := this P₁ P₂ he hr
     have h₂ := this P₂ P₁ he.symm hr.symm
-    cases' P₁ with P₁
-    cases' P₂ with P₂
+    obtain ⟨P₁⟩ := P₁
+    obtain ⟨P₂⟩ := P₂
     congr
     exact RootPairing.ext he hr (le_antisymm h₁ h₂)
   clear! P₁ P₂
   rintro P₁ P₂ he hr - ⟨i, rfl⟩
   use i
   apply P₁.bijectiveRight.injective
-  apply Dual.eq_of_preReflection_mapsTo (P₁.ne_zero i) (finite_range P₁.root) P₁.span_eq_top
+  apply Dual.eq_of_preReflection_mapsTo (finite_range P₁.root) P₁.span_root_eq_top
   · exact hr ▸ he ▸ P₂.coroot_root_two i
   · exact hr ▸ he ▸ P₂.mapsTo_reflection_root i
   · exact P₁.coroot_root_two i
@@ -356,29 +236,35 @@ private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [NoZ
       preReflection_apply] -- v4.7.0-rc1 issues
   have hk₀ : root k ≠ 0 := fun h ↦ by simpa [h, ← PerfectPairing.toLin_apply] using hp k
   apply p.bijectiveRight.injective
-  apply Dual.eq_of_preReflection_mapsTo hk₀ (finite_range root) hsp (hp k) (hs k)
+  apply Dual.eq_of_preReflection_mapsTo (finite_range root) hsp (hp k) (hs k)
   · simp [map_sub, α, β, α', β', sα, sβ, sα', hk, preReflection_apply, hp i, hp j, mul_two,
       mul_comm (p α β')]
     ring -- v4.7.0-rc1 issues
   · rw [hk, hij]
     exact (hs i).comp <| (hs j).comp (hs i)
 
-/-- In characteristic zero if there is no torsion, to check that a finite family of roots form a
-root system, we do not need to check that the coroots are stable under reflections since this
-follows from the corresponding property for the roots. -/
-def mk' [CharZero R] [NoZeroSMulDivisors R M]
-    (p : PerfectPairing R M N)
+/-- Over a field of characteristic zero, to check that a finite family of roots form a
+crystallographic root system, we do not need to check that the coroots are stable under reflections
+since this follows from the corresponding property for the roots. Likewise, we do not need to
+check that the coroots span. -/
+def mk' {k : Type*} [Field k] [CharZero k] [Module k M] [Module k N]
+    (p : PerfectPairing k M N)
     (root : ι ↪ M)
     (coroot : ι ↪ N)
     (hp : ∀ i, p.toLin (root i) (coroot i) = 2)
     (hs : ∀ i, MapsTo (preReflection (root i) (p.toLin.flip (coroot i))) (range root) (range root))
-    (hsp : span R (range root) = ⊤) :
-    RootSystem ι R M N where
-  span_eq_top := hsp
-  toRootPairing := RootPairing.mk' p root coroot hp hs <| by
+    (hsp : span k (range root) = ⊤)
+    (h_int : ∀ i j, ∃ z : ℤ, z = p (root i) (coroot j)) :
+    RootSystem ι k M N :=
+  let P := RootPairing.mk' p root coroot hp hs <| by
     rintro i - ⟨j, rfl⟩
     use RootPairing.equiv_of_mapsTo p root coroot i hs hp j
     refine (coroot_eq_coreflection_of_root_eq_of_span_eq_top p root coroot hp hs hsp ?_)
     rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo  p root coroot i j hs).choose_spec]
+  have _i : P.IsCrystallographic := ⟨h_int⟩
+  have _i : Fintype ι := Fintype.ofFinite ι
+  { toRootPairing := P,
+    span_root_eq_top := hsp,
+    span_coroot_eq_top := P.rootSpan_eq_top_iff.mp hsp }
 
 end RootSystem

@@ -50,20 +50,28 @@ theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬IsLimit a := by
       exact isOpen_Ioo
     · exact (ha ha').elim
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to a `SuccOrder`
-theorem nhds_right' (a : Ordinal) : 𝓝[>] a = ⊥ := (covBy_succ a).nhdsWithin_Ioi
+@[deprecated SuccOrder.nhdsGT (since := "2025-01-05")]
+protected theorem nhdsGT (a : Ordinal) : 𝓝[>] a = ⊥ := SuccOrder.nhdsGT
 
--- todo: generalize to a `SuccOrder`
-theorem nhds_left'_eq_nhds_ne (a : Ordinal) : 𝓝[<] a = 𝓝[≠] a := by
-  rw [← nhds_left'_sup_nhds_right', nhds_right', sup_bot_eq]
+@[deprecated (since := "2024-12-22")] alias nhds_right' := Ordinal.nhdsGT
 
--- todo: generalize to a `SuccOrder`
-theorem nhds_left_eq_nhds (a : Ordinal) : 𝓝[≤] a = 𝓝 a := by
-  rw [← nhds_left_sup_nhds_right', nhds_right', sup_bot_eq]
+@[deprecated SuccOrder.nhdsLT_eq_nhdsNE (since := "2025-01-05")]
+theorem nhdsLT_eq_nhdsNE (a : Ordinal) : 𝓝[<] a = 𝓝[≠] a :=
+  SuccOrder.nhdsLT_eq_nhdsNE a
 
--- todo: generalize to a `SuccOrder`
-theorem nhdsBasis_Ioc (h : a ≠ 0) : (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
-  nhds_left_eq_nhds a ▸ nhdsWithin_Iic_basis' ⟨0, h.bot_lt⟩
+@[deprecated (since := "2024-12-22")] alias nhds_left'_eq_nhds_ne := nhdsLT_eq_nhdsNE
+
+@[deprecated SuccOrder.nhdsLE_eq_nhds (since := "2025-01-05")]
+theorem nhdsLE_eq_nhds (a : Ordinal) : 𝓝[≤] a = 𝓝 a :=
+  SuccOrder.nhdsLE_eq_nhds a
+
+@[deprecated (since := "2024-12-22")] alias nhds_left_eq_nhds := nhdsLE_eq_nhds
+
+@[deprecated SuccOrder.hasBasis_nhds_Ioc_of_exists_lt (since := "2025-01-05")]
+theorem hasBasis_nhds_Ioc (h : a ≠ 0) : (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
+  SuccOrder.hasBasis_nhds_Ioc_of_exists_lt ⟨0, Ordinal.pos_iff_ne_zero.2 h⟩
+
+@[deprecated (since := "2024-12-22")] alias nhdsBasis_Ioc := hasBasis_nhds_Ioc
 
 -- todo: generalize to a `SuccOrder`
 theorem nhds_eq_pure : 𝓝 a = pure a ↔ ¬IsLimit a :=
@@ -73,7 +81,7 @@ theorem nhds_eq_pure : 𝓝 a = pure a ↔ ¬IsLimit a :=
 theorem isOpen_iff : IsOpen s ↔ ∀ o ∈ s, IsLimit o → ∃ a < o, Set.Ioo a o ⊆ s := by
   refine isOpen_iff_mem_nhds.trans <| forall₂_congr fun o ho => ?_
   by_cases ho' : IsLimit o
-  · simp only [(nhdsBasis_Ioc ho'.ne_zero).mem_iff, ho', true_implies]
+  · simp only [(SuccOrder.hasBasis_nhds_Ioc_of_exists_lt ⟨0, ho'.pos⟩).mem_iff, ho', true_implies]
     refine exists_congr fun a => and_congr_right fun ha => ?_
     simp only [← Set.Ioo_insert_right ha, Set.insert_subset_iff, ho, true_and]
   · simp [nhds_eq_pure.2 ho', ho, ho']
@@ -88,8 +96,8 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
         (∀ x hx, f x hx ∈ s) ∧ bsup.{u, u} o f = a,
       ∃ (ι : Type u), Nonempty ι ∧ ∃ f : ι → Ordinal, (∀ i, f i ∈ s) ∧ ⨆ i, f i = a] := by
   tfae_have 1 → 2 := by
-    simp only [mem_closure_iff_nhdsWithin_neBot, inter_comm s, nhdsWithin_inter', nhds_left_eq_nhds]
-    exact id
+    simpa only [mem_closure_iff_nhdsWithin_neBot, inter_comm s, nhdsWithin_inter',
+      SuccOrder.nhdsLE_eq_nhds] using id
   tfae_have 2 → 3
   | h => by
     rcases (s ∩ Iic a).eq_empty_or_nonempty with he | hne
@@ -124,24 +132,10 @@ theorem mem_closure_iff_iSup :
   apply ((mem_closure_tfae a s).out 0 5).trans
   simp_rw [exists_prop]
 
-set_option linter.deprecated false in
-@[deprecated mem_closure_iff_iSup (since := "2024-08-27")]
-theorem mem_closure_iff_sup :
-    a ∈ closure s ↔
-      ∃ (ι : Type u) (_ : Nonempty ι) (f : ι → Ordinal), (∀ i, f i ∈ s) ∧ sup f = a :=
-  mem_closure_iff_iSup
-
 theorem mem_iff_iSup_of_isClosed (hs : IsClosed s) :
     a ∈ s ↔ ∃ (ι : Type u) (_hι : Nonempty ι) (f : ι → Ordinal),
       (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
   rw [← mem_closure_iff_iSup, hs.closure_eq]
-
-set_option linter.deprecated false in
-@[deprecated mem_iff_iSup_of_isClosed (since := "2024-08-27")]
-theorem mem_closed_iff_sup (hs : IsClosed s) :
-    a ∈ s ↔ ∃ (ι : Type u) (_hι : Nonempty ι) (f : ι → Ordinal),
-      (∀ i, f i ∈ s) ∧ sup f = a :=
-  mem_iff_iSup_of_isClosed hs
 
 theorem mem_closure_iff_bsup :
     a ∈ closure s ↔
@@ -163,17 +157,6 @@ theorem isClosed_iff_iSup :
   rw [← closure_subset_iff_isClosed]
   intro h x hx
   rcases mem_closure_iff_iSup.1 hx with ⟨ι, hι, f, hf, rfl⟩
-  exact h hι f hf
-
-set_option linter.deprecated false in
-@[deprecated mem_iff_iSup_of_isClosed (since := "2024-08-27")]
-theorem isClosed_iff_sup :
-    IsClosed s ↔
-      ∀ {ι : Type u}, Nonempty ι → ∀ f : ι → Ordinal, (∀ i, f i ∈ s) → ⨆ i, f i ∈ s := by
-  use fun hs ι hι f hf => (mem_closed_iff_sup hs).2 ⟨ι, hι, f, hf, rfl⟩
-  rw [← closure_subset_iff_isClosed]
-  intro h x hx
-  rcases mem_closure_iff_sup.1 hx with ⟨ι, hι, f, hf, rfl⟩
   exact h hι f hf
 
 theorem isClosed_iff_bsup :

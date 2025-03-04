@@ -117,8 +117,9 @@ structure NonarchAddGroupNorm (G : Type*) [AddGroup G] extends NonarchAddGroupSe
 the additive group `α`.
 
 You should extend this class when you extend `NonarchAddGroupSeminorm`. -/
-class NonarchAddGroupSeminormClass (F : Type*) (α : outParam Type*) [AddGroup α] [FunLike F α ℝ]
-    extends NonarchimedeanHomClass F α ℝ : Prop where
+class NonarchAddGroupSeminormClass (F : Type*) (α : outParam Type*)
+    [AddGroup α] [FunLike F α ℝ] : Prop
+    extends NonarchimedeanHomClass F α ℝ where
   /-- The image of zero is zero. -/
   protected map_zero (f : F) : f 0 = 0
   /-- The seminorm is invariant under negation. -/
@@ -128,8 +129,8 @@ class NonarchAddGroupSeminormClass (F : Type*) (α : outParam Type*) [AddGroup �
 additive group `α`.
 
 You should extend this class when you extend `NonarchAddGroupNorm`. -/
-class NonarchAddGroupNormClass (F : Type*) (α : outParam Type*) [AddGroup α] [FunLike F α ℝ]
-    extends NonarchAddGroupSeminormClass F α : Prop where
+class NonarchAddGroupNormClass (F : Type*) (α : outParam Type*) [AddGroup α] [FunLike F α ℝ] : Prop
+    extends NonarchAddGroupSeminormClass F α where
   /-- If the image under the norm is zero, then the argument is zero. -/
   protected eq_zero_of_map_eq_zero (f : F) {a : α} : f a = 0 → a = 0
 
@@ -443,7 +444,6 @@ instance nonarchAddGroupSeminormClass :
   map_zero f := f.map_zero'
   map_neg_eq_map' f := f.neg'
 
--- Porting note: `simpNF` said the left hand side simplified to this
 @[simp]
 theorem toZeroHom_eq_coe : ⇑p.toZeroHom = p := by
   rfl
@@ -659,7 +659,6 @@ instance groupNormClass : GroupNormClass (GroupNorm E) E ℝ where
   map_inv_eq_map f := f.inv'
   eq_one_of_map_eq_zero f := f.eq_one_of_map_eq_zero' _
 
--- Porting note: `simpNF` told me the left-hand side simplified to this
 @[to_additive (attr := simp)]
 theorem toGroupSeminorm_eq_coe : ⇑p.toGroupSeminorm = p :=
   rfl
@@ -784,7 +783,6 @@ instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNor
   map_neg_eq_map' f := f.neg'
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
 
--- Porting note: `simpNF` told me the left-hand side simplified to this
 @[simp]
 theorem toNonarchAddGroupSeminorm_eq_coe : ⇑p.toNonarchAddGroupSeminorm = p :=
   rfl

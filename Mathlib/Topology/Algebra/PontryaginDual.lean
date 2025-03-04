@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
+import Mathlib.Topology.Algebra.Group.CompactOpen
 
 /-!
 # Pontryagin dual
@@ -24,7 +24,7 @@ open Pointwise Function
 
 variable (A B C G H : Type*) [Monoid A] [Monoid B] [Monoid C] [CommGroup G] [Group H]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
-  [TopologicalSpace G] [TopologicalSpace H] [TopologicalGroup G] [TopologicalGroup H]
+  [TopologicalSpace G] [TopologicalSpace H] [IsTopologicalGroup G] [IsTopologicalGroup H]
 
 /-- The Pontryagin dual of `A` is the group of continuous homomorphism `A → Circle`. -/
 def PontryaginDual :=
@@ -41,8 +41,8 @@ instance : T2Space (PontryaginDual A) :=
 noncomputable instance : CommGroup (PontryaginDual A) :=
   (inferInstance : CommGroup (ContinuousMonoidHom A Circle))
 
-instance : TopologicalGroup (PontryaginDual A) :=
-  (inferInstance : TopologicalGroup (ContinuousMonoidHom A Circle))
+instance : IsTopologicalGroup (PontryaginDual A) :=
+  (inferInstance : IsTopologicalGroup (ContinuousMonoidHom A Circle))
 
 -- Porting note: instance is now noncomputable
 noncomputable instance : Inhabited (PontryaginDual A) :=
@@ -101,7 +101,7 @@ theorem map_apply (f : ContinuousMonoidHom A B) (x : PontryaginDual B) (y : A) :
   rfl
 
 @[simp]
-theorem map_one : map (one A B) = one (PontryaginDual B) (PontryaginDual A) :=
+theorem map_one : map (1 : ContinuousMonoidHom A B) = 1 :=
   ext fun x => ext (fun _y => OneHomClass.map_one x)
 
 @[simp]

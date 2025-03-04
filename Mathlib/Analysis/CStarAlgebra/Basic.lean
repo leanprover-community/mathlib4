@@ -77,8 +77,6 @@ for every `x`. Note that this condition actually implies equality, as is shown i
 class CStarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
   norm_mul_self_le : ∀ x : E, ‖x‖ * ‖x‖ ≤ ‖x⋆ * x‖
 
-@[deprecated (since := "2024-08-04")] alias CstarRing := CStarRing
-
 instance : CStarRing ℝ where
   norm_mul_self_le x := by
     simp only [Real.norm_eq_abs, abs_mul_abs_self, star, id, norm_mul, le_refl]
@@ -177,9 +175,6 @@ section Unital
 
 variable [NormedRing E] [StarRing E] [CStarRing E]
 
--- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
--- simp cannot prove this
-@[simp, nolint simpNF]
 theorem norm_one [Nontrivial E] : ‖(1 : E)‖ = 1 := by
   have : 0 < ‖(1 : E)‖ := norm_pos_iff.mpr one_ne_zero
   rw [← mul_left_inj' this.ne', ← norm_star_mul_self, mul_one, star_one, one_mul]
@@ -249,15 +244,13 @@ section starₗᵢ
 variable [CommSemiring 𝕜] [StarRing 𝕜]
 variable [SeminormedAddCommGroup E] [StarAddMonoid E] [NormedStarGroup E]
 variable [Module 𝕜 E] [StarModule 𝕜 E]
-variable (𝕜)
 
+variable (𝕜) in
 /-- `star` bundled as a linear isometric equivalence -/
 def starₗᵢ : E ≃ₗᵢ⋆[𝕜] E :=
   { starAddEquiv with
     map_smul' := star_smul
     norm_map' := norm_star }
-
-variable {𝕜}
 
 @[simp]
 theorem coe_starₗᵢ : (starₗᵢ 𝕜 : E → E) = star :=

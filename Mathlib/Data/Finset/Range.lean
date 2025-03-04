@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Insert
+import Mathlib.Data.Multiset.Range
 import Mathlib.Order.Interval.Set.Defs
 
 /-!
@@ -25,12 +26,7 @@ finite sets, finset
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
-assert_not_exists List.sublistsLen
-assert_not_exists Multiset.powerset
-
-assert_not_exists CompleteLattice
-
-assert_not_exists OrderedCommMonoid
+assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice OrderedCommMonoid
 
 open Multiset Subtype Function
 

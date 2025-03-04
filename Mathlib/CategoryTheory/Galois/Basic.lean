@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.Data.Finite.Card
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Algebra.Equiv.TransferInstance
 
 /-!
 # Definition and basic properties of Galois categories
@@ -403,8 +403,8 @@ end CardFiber
 end PreGaloisCategory
 
 /-- A `PreGaloisCategory` is a `GaloisCategory` if it admits a fiber functor. -/
-class GaloisCategory (C : Type u₁) [Category.{u₂, u₁} C]
-    extends PreGaloisCategory C : Prop where
+class GaloisCategory (C : Type u₁) [Category.{u₂, u₁} C] : Prop
+    extends PreGaloisCategory C where
   hasFiberFunctor : ∃ F : C ⥤ FintypeCat.{u₂}, Nonempty (PreGaloisCategory.FiberFunctor F)
 
 namespace PreGaloisCategory

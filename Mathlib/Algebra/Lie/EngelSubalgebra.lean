@@ -122,7 +122,7 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     apply le_sup_of_le_left
     rw [Submodule.map_le_iff_le_comap]
     intro y hy
-    simp only [Submodule.mem_comap, mem_engel_iff, mem_coe_submodule]
+    simp only [Submodule.mem_comap, mem_engel_iff, mem_toSubmodule]
     use k+1
     clear hk; revert hy
     generalize k+1 = k
@@ -135,7 +135,7 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     apply le_sup_of_le_right
     rw [Submodule.map_le_iff_le_comap]
     rintro _ ⟨y, rfl⟩
-    simp only [pow_succ', LinearMap.mul_apply, Submodule.mem_comap, mem_coe_submodule]
+    simp only [pow_succ', LinearMap.mul_apply, Submodule.mem_comap, mem_toSubmodule]
     apply aux₁
     simp only [Submodule.coe_subtype, SetLike.coe_mem]
 
@@ -143,8 +143,8 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
 if it is contained in the Engel subalgebra of all its elements. -/
 lemma isNilpotent_of_forall_le_engel [IsNoetherian R L]
     (H : LieSubalgebra R L) (h : ∀ x ∈ H, H ≤ engel R x) :
-    LieAlgebra.IsNilpotent R H := by
-  rw [LieAlgebra.isNilpotent_iff_forall]
+    LieRing.IsNilpotent H := by
+  rw [LieAlgebra.isNilpotent_iff_forall (R := R)]
   intro x
   let K : ℕ →o Submodule R H :=
     ⟨fun n ↦ LinearMap.ker ((ad R H x) ^ n), fun m n hmn ↦ ?mono⟩

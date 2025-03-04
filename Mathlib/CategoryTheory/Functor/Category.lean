@@ -97,7 +97,7 @@ theorem epi_of_epi_app (α : F ⟶ G) [∀ X : C, Epi (α.app X)] : Epi α :=
     ext X
     rw [← cancel_epi (α.app X), ← comp_app, eq, comp_app]⟩
 
-/-- The monoid of natural transformations of the identity is commutative.-/
+/-- The monoid of natural transformations of the identity is commutative. -/
 lemma id_comm (α β : (𝟭 C) ⟶ (𝟭 C)) : α ≫ β = β ≫ α := by
   ext X
   exact (α.naturality (β.app X)).symm
@@ -142,6 +142,18 @@ protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
 
 end Functor
 
+variable (C D E) in
+/-- The functor `(C ⥤ D ⥤ E) ⥤ D ⥤ C ⥤ E` which flips the variables. -/
+@[simps]
+def flipFunctor : (C ⥤ D ⥤ E) ⥤ D ⥤ C ⥤ E where
+  obj F := F.flip
+  map {F₁ F₂} φ :=
+    { app := fun Y =>
+        { app := fun X => (φ.app X).app Y
+          naturality := fun X₁ X₂ f => by
+            dsimp
+            simp only [← NatTrans.comp_app, naturality] } }
+
 namespace Iso
 
 @[reassoc (attr := simp)]
@@ -155,10 +167,5 @@ theorem map_inv_hom_id_app {X Y : C} (e : X ≅ Y) (F : C ⥤ D ⥤ E) (Z : D) :
   simp [← NatTrans.comp_app, ← Functor.map_comp]
 
 end Iso
-
-@[deprecated (since := "2024-06-09")] alias map_hom_inv_app := Iso.map_hom_inv_id_app
-@[deprecated (since := "2024-06-09")] alias map_inv_hom_app := Iso.map_inv_hom_id_app
-@[deprecated (since := "2024-06-09")] alias map_hom_inv_app_assoc := Iso.map_hom_inv_id_app_assoc
-@[deprecated (since := "2024-06-09")] alias map_inv_hom_app_assoc := Iso.map_inv_hom_id_app_assoc
 
 end CategoryTheory

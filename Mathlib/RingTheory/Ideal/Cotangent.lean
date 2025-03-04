@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Algebra.Module.Torsion
-import Mathlib.Algebra.Ring.Idempotents
+import Mathlib.Algebra.Ring.Idempotent
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
@@ -120,18 +120,31 @@ theorem cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ := by
     rw [sub_zero, pow_two]; exact Ideal.mul_mem_mul hx hy
   · intro x y hx hy; exact add_mem hx hy
 
-theorem to_quotient_square_range :
+lemma mk_mem_cotangentIdeal {I : Ideal R} {x : R} :
+    Quotient.mk (I ^ 2) x ∈ I.cotangentIdeal ↔ x ∈ I := by
+  refine ⟨fun ⟨y, hy, e⟩ ↦ ?_,  fun h ↦ ⟨x, h, rfl⟩⟩
+  simpa using sub_mem hy (Ideal.pow_le_self two_ne_zero
+    ((Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _).mp e))
+
+lemma comap_cotangentIdeal (I : Ideal R) :
+    I.cotangentIdeal.comap (Quotient.mk (I ^ 2)) = I :=
+  Ideal.ext fun _ ↦ mk_mem_cotangentIdeal
+
+theorem range_cotangentToQuotientSquare :
     LinearMap.range I.cotangentToQuotientSquare = I.cotangentIdeal.restrictScalars R := by
   trans LinearMap.range (I.cotangentToQuotientSquare.comp I.toCotangent)
   · rw [LinearMap.range_comp, I.toCotangent_range, Submodule.map_top]
   · rw [to_quotient_square_comp_toCotangent, LinearMap.range_comp, I.range_subtype]; ext; rfl
+
+@[deprecated (since := "2025-01-04")]
+alias to_quotient_square_range := range_cotangentToQuotientSquare
 
 /-- The equivalence of the two definitions of `I / I ^ 2`, either as the quotient of `I` or the
 ideal of `R / I ^ 2`. -/
 noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal := by
   refine
   { LinearMap.codRestrict (I.cotangentIdeal.restrictScalars R) I.cotangentToQuotientSquare
-      fun x => by { rw [← to_quotient_square_range]; exact LinearMap.mem_range_self _ _ },
+      fun x => by rw [← range_cotangentToQuotientSquare]; exact LinearMap.mem_range_self _ _,
     Equiv.ofBijective _ ⟨?_, ?_⟩ with }
   · rintro x y e
     replace e := congr_arg Subtype.val e

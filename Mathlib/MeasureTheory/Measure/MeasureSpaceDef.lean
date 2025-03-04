@@ -271,7 +271,8 @@ theorem _root_.MeasurableSpace.ae_induction_on_inter
         Pairwise (Disjoint on f) → (∀ i, MeasurableSet (f i)) → (∀ i, C x (f i)) → C x (⋃ i, f i)) :
     ∀ᵐ x ∂μ, ∀ ⦃t⦄, MeasurableSet t → C x t := by
   filter_upwards [h_empty, h_basic, h_compl, h_union] with x hx_empty hx_basic hx_compl hx_union
-    using MeasurableSpace.induction_on_inter h_eq h_inter hx_empty hx_basic hx_compl hx_union
+    using MeasurableSpace.induction_on_inter (C := fun t _ ↦ C x t)
+      h_eq h_inter hx_empty hx_basic hx_compl hx_union
 
 end ae
 

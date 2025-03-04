@@ -3,10 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Group.Action.End
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Group.Subgroup.Map
+import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.Data.Finite.Sigma
 import Mathlib.Data.Set.Finite.Range
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
 
@@ -69,17 +73,21 @@ section FixedPoints
 
 variable {M α}
 
+@[to_additive (attr := simp)]
+theorem subsingleton_orbit_iff_mem_fixedPoints {a : α} :
+    (orbit M a).Subsingleton ↔ a ∈ fixedPoints M α := by
+  rw [mem_fixedPoints]
+  constructor
+  · exact fun h m ↦ h (mem_orbit a m) (mem_orbit_self a)
+  · rintro h _ ⟨m, rfl⟩ y ⟨p, rfl⟩
+    simp only [h]
+
 @[to_additive mem_fixedPoints_iff_card_orbit_eq_one]
 theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
     a ∈ fixedPoints M α ↔ Fintype.card (orbit M a) = 1 := by
-  rw [Fintype.card_eq_one_iff, mem_fixedPoints]
-  constructor
-  · exact fun h => ⟨⟨a, mem_orbit_self _⟩, fun ⟨a, ⟨x, hx⟩⟩ => Subtype.eq <| by simp [h x, hx.symm]⟩
-  · intro h x
-    rcases h with ⟨⟨z, hz⟩, hz₁⟩
-    calc
-      x • a = z := Subtype.mk.inj (hz₁ ⟨x • a, mem_orbit _ _⟩)
-      _ = a := (Subtype.mk.inj (hz₁ ⟨a, mem_orbit_self _⟩)).symm
+  simp only [← subsingleton_orbit_iff_mem_fixedPoints, le_antisymm_iff,
+    Fintype.card_le_one_iff_subsingleton, Nat.add_one_le_iff, Fintype.card_pos_iff,
+    Set.subsingleton_coe, iff_self_and, Set.nonempty_coe_sort, orbit_nonempty, implies_true]
 
 @[to_additive instDecidablePredMemSetFixedByAddOfDecidableEq]
 instance (m : M) [DecidableEq β] :
@@ -103,6 +111,19 @@ theorem smul_cancel_of_non_zero_divisor {M R : Type*} [Monoid M] [NonUnitalNonAs
 
 namespace MulAction
 variable {G α β : Type*} [Group G] [MulAction G α] [MulAction G β]
+
+@[to_additive] theorem fixedPoints_of_subsingleton [Subsingleton α] :
+    fixedPoints G α = .univ := by
+  apply Set.eq_univ_of_forall
+  simp only [mem_fixedPoints]
+  intro x hx
+  apply Subsingleton.elim ..
+
+/-- If a group acts nontrivially, then the type is nontrivial -/
+@[to_additive "If a subgroup acts nontrivially, then the type is nontrivial."]
+theorem nontrivial_of_fixedPoints_ne_univ (h : fixedPoints G α ≠ .univ) :
+    Nontrivial α :=
+  (subsingleton_or_nontrivial α).resolve_left fun _ ↦ h fixedPoints_of_subsingleton
 
 section Orbit
 
@@ -267,12 +288,13 @@ theorem Equiv.swap_mem_stabilizer {α : Type*} [DecidableEq α] {S : Set α} {a 
   simp_rw [Set.mem_inv_smul_set_iff, Perm.smul_def, swap_apply_def]
   exact ⟨fun h ↦ by simpa [Iff.comm] using h a, by intros; split_ifs <;> simp [*]⟩
 
-
 namespace MulAction
 
 variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
-/-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions.-/
+/-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions. -/
+@[to_additive
+  "To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions."]
 theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
     H ≤ stabilizer G s ↔ ∀ g ∈ H, g • s ⊆ s := by
   constructor
@@ -291,3 +313,17 @@ theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
     · simp only [smul_inv_smul]
 
 end MulAction
+
+section
+
+variable (R M : Type*) [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
+
+variable {M} in
+lemma Module.stabilizer_units_eq_bot_of_ne_zero {x : M} (hx : x ≠ 0) :
+    MulAction.stabilizer Rˣ x = ⊥ := by
+  rw [eq_bot_iff]
+  intro g (hg : g.val • x = x)
+  ext
+  rw [← sub_eq_zero, ← smul_eq_zero_iff_left hx, Units.val_one, sub_smul, hg, one_smul, sub_self]
+
+end

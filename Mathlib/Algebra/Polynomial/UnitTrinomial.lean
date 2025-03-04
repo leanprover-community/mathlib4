@@ -188,7 +188,7 @@ theorem isUnitTrinomial_iff' :
   · have key : ∀ k ∈ p.support, p.coeff k ^ 2 = 1 := fun k hk =>
       Int.sq_eq_one_of_sq_le_three
         ((single_le_sum (fun k _ => sq_nonneg (p.coeff k)) hk).trans hp.le) (mem_support_iff.mp hk)
-    refine isUnitTrinomial_iff.mpr ⟨?_, fun k hk => isUnit_ofPowEqOne (key k hk) two_ne_zero⟩
+    refine isUnitTrinomial_iff.mpr ⟨?_, fun k hk => .of_pow_eq_one (key k hk) two_ne_zero⟩
     rw [sum_def, sum_congr rfl key, sum_const, Nat.smul_one_eq_cast] at hp
     exact Nat.cast_injective hp
 
@@ -247,14 +247,8 @@ theorem irreducible_aux2 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k 
   · refine Or.inr ?_
     rw [← trinomial_mirror hkm' hmn' u.ne_zero u.ne_zero, eq_comm, mirror_eq_iff] at hp
     exact hq.trans hp
-  · suffices m = m' by
-      rw [this] at hp
-      exact Or.inl (hq.trans hp.symm)
-    rw [tsub_add_eq_add_tsub hmn.le, eq_tsub_iff_add_eq_of_le, ← two_mul] at hm
-    · rw [tsub_add_eq_add_tsub hmn'.le, eq_tsub_iff_add_eq_of_le, ← two_mul] at hm'
-      · exact mul_left_cancel₀ two_ne_zero (hm.trans hm'.symm)
-      · exact hmn'.le.trans (Nat.le_add_right n k)
-    · exact hmn.le.trans (Nat.le_add_right n k)
+  · obtain rfl : m = m' := by omega
+    exact Or.inl (hq.trans hp.symm)
 
 theorem irreducible_aux3 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k < m') (hmn' : m' < n)
     (u v w x z : Units ℤ) (hp : p = trinomial k m n (u : ℤ) v w)
@@ -303,13 +297,11 @@ theorem irreducible_of_coprime (hp : p.IsUnitTrinomial)
   rcases eq_or_eq_neg_of_sq_eq_sq (y : ℤ) (v : ℤ)
       ((Int.isUnit_sq y.isUnit).trans (Int.isUnit_sq v.isUnit).symm) with
     (h1 | h1)
-  · -- Porting note: `rw [h1] at *` rewrites at `h1`
-    rw [h1] at hq
+  · rw [h1] at hq
     rcases irreducible_aux3 hkm hmn hkm' hmn' u v w x z hp hq hpq with (h2 | h2)
     · exact Or.inl h2
     · exact Or.inr (Or.inr (Or.inl h2))
-  · -- Porting note: `rw [h1] at *` rewrites at `h1`
-    rw [h1] at hq
+  · rw [h1] at hq
     rw [trinomial_def] at hp
     rw [← neg_inj, neg_add, neg_add, ← neg_mul, ← neg_mul, ← neg_mul, ← C_neg, ← C_neg, ← C_neg]
       at hp

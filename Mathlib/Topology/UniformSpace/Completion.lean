@@ -80,7 +80,7 @@ private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lif
         { p : CauchyFilter α × CauchyFilter α | s ∈ (p.2.val ×ˢ p.1.val : Filter (α × α)) }
   have h₁ : map Prod.swap ((𝓤 α).lift' gen) = (𝓤 α).lift' f := by
     delta gen
-    simp [map_lift'_eq, monotone_setOf, Filter.monotone_mem, Function.comp_def,
+    simp [f, map_lift'_eq, monotone_setOf, Filter.monotone_mem, Function.comp_def,
       image_swap_eq_preimage_swap]
   have h₂ : (𝓤 α).lift' f ≤ (𝓤 α).lift' gen :=
     uniformity_lift_le_swap
@@ -310,12 +310,13 @@ instance completeSpace : CompleteSpace (Completion α) :=
 
 instance t0Space : T0Space (Completion α) := SeparationQuotient.instT0Space
 
+variable {α} in
 /-- The map from a uniform space to its completion. -/
 @[coe] def coe' : α → Completion α := SeparationQuotient.mk ∘ pureCauchy
 
 /-- Automatic coercion from `α` to its completion. Not always injective. -/
 instance : Coe α (Completion α) :=
-  ⟨coe' α⟩
+  ⟨coe'⟩
 
 -- note [use has_coe_t]
 protected theorem coe_eq : ((↑) : α → Completion α) = SeparationQuotient.mk ∘ pureCauchy := rfl
@@ -330,13 +331,10 @@ theorem comap_coe_eq_uniformity :
     ((𝓤 _).comap fun p : α × α => ((p.1 : Completion α), (p.2 : Completion α))) = 𝓤 α :=
   (isUniformInducing_coe _).1
 
-variable {α}
-
+variable {α} in
 theorem denseRange_coe : DenseRange ((↑) : α → Completion α) :=
   SeparationQuotient.surjective_mk.denseRange.comp denseRange_pureCauchy
     SeparationQuotient.continuous_mk
-
-variable (α)
 
 /-- The Haudorff completion as an abstract completion. -/
 def cPkg {α : Type*} [UniformSpace α] : AbstractCompletion α where
