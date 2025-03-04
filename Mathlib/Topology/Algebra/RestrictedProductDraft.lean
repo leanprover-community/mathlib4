@@ -215,8 +215,8 @@ instance [∀ i, ContinuousNeg (R i)] (S : Set ι) :
     ContinuousNeg (PreRestrictedProduct R A S) :=
   PreRestrictedProduct.isInducing_toPi R A S |>.continuousNeg (fun _ ↦ rfl)
 
-instance [∀ i, TopologicalAddGroup (R i)] (S : Set ι) :
-    TopologicalAddGroup (PreRestrictedProduct R A S) :=
+instance [∀ i, IsTopologicalAddGroup (R i)] (S : Set ι) :
+    IsTopologicalAddGroup (PreRestrictedProduct R A S) :=
   PreRestrictedProduct.isInducing_toPi R A S |>.topologicalAddGroup
 
 /-- `PreRestrictedProduct R A ∅` is homeomorphic to `Π i, A i` -/
@@ -270,7 +270,7 @@ theorem RestrictedProduct.continuous_of_commutes
     continuous_coinduced_dom.mpr <| comm S hS ▸
       (RestrictedProduct.continuous_ofPre R A (hT S hS) |>.comp (g_cont S hS))
 
-instance RestrictedProduct.continuousConstVAdd [∀ i, TopologicalAddGroup (R i)] :
+instance RestrictedProduct.continuousConstVAdd [∀ i, IsTopologicalAddGroup (R i)] :
     ContinuousConstVAdd (RestrictedProduct R A) (RestrictedProduct R A) where
   continuous_const_vadd x := continuous_dom.mpr fun S hS ↦ by
       set T := S ∪ {i | x.1 i ∉ A i}
@@ -280,7 +280,7 @@ instance RestrictedProduct.continuousConstVAdd [∀ i, TopologicalAddGroup (R i)
       exact RestrictedProduct.continuous_ofPre R A hT |>.comp
         (continuous_const_vadd x') |>.comp (PreRestrictedProduct.continuous_inclusion R A hST)
 
-theorem RestrictedProduct.nhds_eq_map_nhds_zero [∀ i, TopologicalAddGroup (R i)]
+theorem RestrictedProduct.nhds_eq_map_nhds_zero [∀ i, IsTopologicalAddGroup (R i)]
     (x : RestrictedProduct R A) : 𝓝 x = map (x + ·) (𝓝 0) := by
   simpa only [eq_comm, Homeomorph.vadd_apply, vadd_eq_add, add_zero] using
     Homeomorph.vadd x |>.map_nhds_eq (0 : RestrictedProduct R A)
@@ -303,7 +303,7 @@ include hAopen
 
 theorem PreRestrictedProduct.isOpen_forall_mem_A' {S : Set ι} (hS : S.Finite) (T : Set ι) :
     IsOpen {f : PreRestrictedProduct R A S | ∀ i ∉ T, f.1 i ∈ A i} := by
-  convert isOpen_set_pi (hS.diff T) (fun i _ ↦ hAopen i) |>.preimage
+  convert isOpen_set_pi (hS.diff (t := T)) (fun i _ ↦ hAopen i) |>.preimage
     (PreRestrictedProduct.continuous_toPi R A S)
   ext f
   refine ⟨fun H i hi ↦ H i hi.2, fun H i hiT ↦ ?_⟩
@@ -407,7 +407,7 @@ def RestrictedProduct.homeomorphProd :
     continuous_invFun := by
       sorry}
 
-theorem RestrictedProduct.topology_eq_of_isOpenEmbedding [∀ i, TopologicalAddGroup (R i)]
+theorem RestrictedProduct.topology_eq_of_isOpenEmbedding [∀ i, IsTopologicalAddGroup (R i)]
     {t : TopologicalSpace (RestrictedProduct R A)}
     (h_add : ∀ x : RestrictedProduct R A, @nhds _ t x = map (x + ·) (@nhds _ t 0))
     (h_open : IsOpenEmbedding (tY := t) (RestrictedProduct.structureMap R A)) :
@@ -416,20 +416,20 @@ theorem RestrictedProduct.topology_eq_of_isOpenEmbedding [∀ i, TopologicalAddG
   rw [h_add x, nhds_eq_map_nhds_zero R A x, nhds_zero_eq_map R A hAopen, h_open.map_nhds_eq 0]
   rfl
 
--- def RestrictedProduct.topology_prod_eq_induced [∀ i, TopologicalAddGroup (R i)] :
+-- def RestrictedProduct.topology_prod_eq_induced [∀ i, IsTopologicalAddGroup (R i)] :
 --     (instTopologicalSpaceProd (X := RestrictedProduct R A) (Y := RestrictedProduct R A)) =
 --     .induced (RestrictedProduct.ringEquivProd R A |>.symm) inferInstance := by
 --   refine RestrictedProduct.topology_eq_of_isOpenEmbedding R A hAopen _ _
 --   sorry
 
-private lemma RestrictedProduct.ringEquivProd_map_nhds [∀ i, TopologicalAddGroup (R i)] :
+private lemma RestrictedProduct.ringEquivProd_map_nhds [∀ i, IsTopologicalAddGroup (R i)] :
     map (ringEquivProd R A) (𝓝 0) = 𝓝 0 := by
   rw [RestrictedProduct.nhds_zero_eq_map _ _ (fun i ↦ (hAopen i |>.prod <| hAopen i)), map_map,
       Prod.zero_eq_mk, nhds_prod_eq, RestrictedProduct.nhds_zero_eq_map _ _ hAopen, prod_map_map_eq]
 
   sorry
 
-def RestrictedProduct.homeomorphProd [∀ i, TopologicalAddGroup (R i)] :
+def RestrictedProduct.homeomorphProd [∀ i, IsTopologicalAddGroup (R i)] :
     (RestrictedProduct (fun i ↦ R i × R i) (fun i ↦ (A i).prod (A i))) ≃ₜ
     (RestrictedProduct R A) × (RestrictedProduct R A) :=
   haveI : ContinuousConstVAdd (RestrictedProduct R A × RestrictedProduct R A)
@@ -446,11 +446,11 @@ def RestrictedProduct.homeomorphProd [∀ i, TopologicalAddGroup (R i)] :
       refine AddHom.continuous_of_continuousAt (f := (ringEquivProd R A).symm) 0 ?_
       sorry}
 
-instance RestrictedProduct.topologicalAddGroup [∀ i, TopologicalAddGroup (R i)] :
-    TopologicalAddGroup (RestrictedProduct R A) := by
+instance RestrictedProduct.topologicalAddGroup [∀ i, IsTopologicalAddGroup (R i)] :
+    IsTopologicalAddGroup (RestrictedProduct R A) := by
   -- Should not be neded
-  haveI : ∀ i, TopologicalAddGroup (A i) :=
-    fun i ↦ (A i).toAddSubgroup.instTopologicalAddGroupSubtypeMem
+  haveI : ∀ i, IsTopologicalAddGroup (A i) :=
+    fun i ↦ (A i).toAddSubgroup.instIsTopologicalAddGroupSubtypeMem
   -- Why are these slow ????
   haveI : ContinuousAdd (Π i, A i) := sorry
   haveI : ContinuousNeg (Π i, A i) := sorry
@@ -469,7 +469,7 @@ instance RestrictedProduct.topologicalAddGroup [∀ i, TopologicalAddGroup (R i)
 
 instance RestrictedProduct.topologicalRing [∀ i, TopologicalRing (R i)] :
     TopologicalRing (RestrictedProduct R A) := by
-  haveI : TopologicalAddGroup (RestrictedProduct R A) := topologicalAddGroup R A hAopen
+  haveI : IsTopologicalAddGroup (RestrictedProduct R A) := topologicalAddGroup R A hAopen
   refine .of_addGroup_of_nhds_zero ?_ ?_ ?_ <;>
   rw [RestrictedProduct.nhds_zero_eq_map R A hAopen]
   · rw [prod_map_map_eq]

@@ -289,7 +289,8 @@ variable (hAopen : ∀ i, IsOpen (A i)) (hAopen' : ∀ i, IsOpen (A' i))
 include hAopen in
 theorem Pre.isOpen_forall_mem' {S : Set ι} (hS : S.Finite) (T : Set ι) :
     IsOpen {f : Pre R A S | ∀ i ∉ T, f.1 i ∈ A i} := by
-  convert isOpen_set_pi (hS.diff T) (fun i _ ↦ hAopen i) |>.preimage (Pre.continuous_coe R A S)
+  convert isOpen_set_pi (hS.diff (t := T)) (fun i _ ↦ hAopen i)
+    |>.preimage (Pre.continuous_coe R A S)
   ext f
   refine ⟨fun H i hi ↦ H i hi.2, fun H i hiT ↦ ?_⟩
   by_cases hiS : i ∈ S
@@ -453,11 +454,11 @@ instance {G : Type*} [TopologicalSpace G] [Π i, SMul G (R i)] [∀ i, SMulMemCl
   Pre.isInducing_coe R _ T |>.continuousSMul continuous_id rfl
 
 @[to_additive]
-instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, TopologicalGroup (R i)] :
-    TopologicalGroup (Pre R (fun i ↦ A i) T) where
+instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopologicalGroup (R i)] :
+    IsTopologicalGroup (Pre R (fun i ↦ A i) T) where
 
-instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] [∀ i, TopologicalRing (R i)] :
-    TopologicalRing (Pre R (fun i ↦ A i) T) where
+instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] [∀ i, IsTopologicalRing (R i)] :
+    IsTopologicalRing (Pre R (fun i ↦ A i) T) where
 
 end Pre
 
@@ -514,14 +515,14 @@ instance {G : Type*} [TopologicalSpace G] [Π i, SMul G (R i)] [∀ i, SMulMemCl
     exact fun S hS ↦ (continuous_ofPre R _ hS).comp continuous_smul
 
 @[to_additive]
-instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, TopologicalGroup (R i)] :
-    TopologicalGroup (RestrPi R (fun i ↦ A i)) where
+instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopologicalGroup (R i)] :
+    IsTopologicalGroup (RestrPi R (fun i ↦ A i)) where
 
-instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] [∀ i, TopologicalRing (R i)] :
-    TopologicalRing (RestrPi R (fun i ↦ A i)) where
+instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] [∀ i, IsTopologicalRing (R i)] :
+    IsTopologicalRing (RestrPi R (fun i ↦ A i)) where
 
 open Pointwise in
-instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, TopologicalGroup (R i)]
+instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopologicalGroup (R i)]
     [hAcompact : ∀ i, CompactSpace (A i)] : LocallyCompactSpace (RestrPi R (A ·)) :=
   -- TODO: extract as a lemma
   haveI : ∀ i, WeaklyLocallyCompactSpace (R i) := fun i ↦ .mk fun x ↦

@@ -472,11 +472,11 @@ instance {G : Type*} [TopologicalSpace G] [Π i, SMul G (R i)] [∀ i, SMulMemCl
   isInducing_coe_of_principal.continuousSMul continuous_id rfl
 
 @[to_additive]
-instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, TopologicalGroup (R i)] :
-    TopologicalGroup (Πᶠ i in 𝓟 T, [R i, A i]) where
+instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopologicalGroup (R i)] :
+    IsTopologicalGroup (Πᶠ i in 𝓟 T, [R i, A i]) where
 
-instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] [∀ i, TopologicalRing (R i)] :
-    TopologicalRing (Πᶠ i in 𝓟 T, [R i, A i]) where
+instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] [∀ i, IsTopologicalRing (R i)] :
+    IsTopologicalRing (Πᶠ i in 𝓟 T, [R i, A i]) where
 
 end principal
 
@@ -513,14 +513,14 @@ instance {G : Type*} [TopologicalSpace G] [Π i, SMul G (R i)] [∀ i, SMulMemCl
     exact fun S hS ↦ (continuous_inclusion hS).comp continuous_smul
 
 @[to_additive]
-instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, TopologicalGroup (R i)] :
-    TopologicalGroup (Πᶠ i, [R i, A i]) where
+instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopologicalGroup (R i)] :
+    IsTopologicalGroup (Πᶠ i, [R i, A i]) where
 
-instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] [∀ i, TopologicalRing (R i)] :
-    TopologicalRing (Πᶠ i, [R i, A i]) where
+instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] [∀ i, IsTopologicalRing (R i)] :
+    IsTopologicalRing (Πᶠ i, [R i, A i]) where
 
 open Pointwise in
-instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, TopologicalGroup (R i)]
+instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopologicalGroup (R i)]
     [hAcompact : ∀ i, CompactSpace (A i)] : LocallyCompactSpace (Πᶠ i, [R i, A i]) :=
   -- TODO: extract as a lemma
   haveI : ∀ i, WeaklyLocallyCompactSpace (R i) := fun i ↦ .mk fun x ↦
