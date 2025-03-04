@@ -833,6 +833,8 @@ partial def transformDeclAux
     once https://github.com/leanprover/lean4/pull/5068 is in
     -/
     modifyEnv fun env => Match.Extension.addMatcherInfo env tgt matcherInfo
+  -- necessary so that e.g. match equations can be generated for `tgt`
+  enableRealizationsForConst tgt
 
 /-- Copy the instance attribute in a `to_additive`
 
