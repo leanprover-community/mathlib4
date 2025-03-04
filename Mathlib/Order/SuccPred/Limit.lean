@@ -823,6 +823,17 @@ theorem isSuccLimitRecOn_of_isSuccLimit (hb : IsSuccLimit b) :
   rw [isSuccLimitRecOn, isSuccPrelimitRecOn_of_isSuccPrelimit _ _ hb.isSuccPrelimit,
     dif_neg hb.not_isMin]
 
+theorem coe_succ_Iio {a : α} (h : IsSuccPrelimit a)
+    {x : Set.Iio a} : (succ x).1 = succ x.1 := by
+  apply coe_succ_of_mem
+  have := Subtype.mem x
+  rw [Set.mem_Iio] at this ⊢
+  exact h.succ_lt this
+
+theorem succ_Iio {a : α} (h : IsSuccPrelimit a)
+    {x : Set.Iio a} : succ x = ⟨succ x.1, h.succ_lt x.2⟩ :=
+  Subtype.val_inj.mp <| coe_succ_Iio h
+
 end PartialOrder
 
 section LinearOrder
