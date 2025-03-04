@@ -15,18 +15,19 @@ git checkout -
 # 5. removes the line added to the declarations diff Lean script;
 # 6. uses `<sep_string>` to signal when the text that the report should use starts.
 getDeclarations () {
+  local file=Mathlib/declarations_diff_lean.lean
   printf '* Download the cache\n'
   lake exe cache get Archive.lean Counterexamples.lean Mathlib.lean
 
   printf $'* Save the declarations to \'%s\'\n' "${1}"
   #printf $'#all_declarations "%s"\n' "${1}" >> "${script_file}"
 
-  cp "${script_file}" Mathlib/declarations_diff_lean.lean
-  printf $'def %s\' := 0\n#all_declarations "%s"\n' "${1}" "${1}" >> Mathlib/declarations_diff_lean.lean
+  cp "${script_file}" "${file}"
+  printf $'def %s\' := 0\n#all_declarations "%s"\n' "${1}" "${1}" >> "${file}"
   lake build Mathlib.declarations_diff_lean
 
   # undo the local changes
-  rm -f Mathlib/declarations_diff_lean.lean
+  rm -f "${file}"
 }
 
 getDeclarations "${PRdeclsFile}"
