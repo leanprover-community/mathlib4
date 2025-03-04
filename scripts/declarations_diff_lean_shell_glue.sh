@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-script_file=scripts/declarations_diff.lean
-PRdeclsFile=decls_in_PR.txt
-MSdeclsFile=decls_in_master.txt
-PR_NUMBER="${1:-NO_PR_NUMBER}"
-PR_HASH="${2:-NO_PR_HASH}"
-
  : <<'BASH_MODULE_DOCS'
 # Running `getDeclarations <PR_NUMBER> <PR_HASH>`
 # 1. downloads the cache for `Mathlib`, `Archive` and `Counterexamples`;
@@ -16,6 +10,12 @@ PR_HASH="${2:-NO_PR_HASH}"
 # 5. removes the line added to the declarations diff Lean script;
 # 6. uses `<sep_string>` to signal when the text that the report should use starts.
 BASH_MODULE_DOCS
+
+script_file=scripts/declarations_diff.lean
+PRdeclsFile=decls_in_PR.txt
+MSdeclsFile=decls_in_master.txt
+PR_NUMBER="${1:-NO_PR_NUMBER}"
+PR_HASH="${2:-NO_PR_HASH}"
 
 # Running `getDeclarations <file_name>`
 # 1. downloads the cache for `Mathlib`, `Archive` and `Counterexamples`;
