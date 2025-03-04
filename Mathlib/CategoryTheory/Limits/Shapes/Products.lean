@@ -80,8 +80,7 @@ theorem fan_mk_proj {f : β → C} (P : C) (p : ∀ b, P ⟶ f b) : (Fan.mk P p)
   rfl
 
 @[simp]
-theorem cofan_mk_inj {f : β → C} (P : C) (p : ∀ b, f b ⟶ P) :
-    (Cofan.mk P p).inj = p :=
+theorem cofan_mk_inj {f : β → C} (P : C) (p : ∀ b, f b ⟶ P) : (Cofan.mk P p).inj = p :=
   rfl
 
 /-- An abbreviation for `HasLimit (Discrete.functor f)`. -/
