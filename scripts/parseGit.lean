@@ -186,7 +186,7 @@ run_cmd
   logInfo m!"{totB}"
 
 /-- Get the `GitDiff`s with respect to `origin/master...HEAD`. -/
-def gitDiffMaster : IO (Array GitDiff × Array GitDiff) := do
+def gitDiffMaster (commit : String := "HEAD") : IO (Array GitDiff × Array GitDiff) := do
   let diffString ← IO.Process.run
-    {cmd := "git", args := #["diff", "--unified=0", "origin/master...HEAD"]}
+    {cmd := "git", args := #["diff", "--unified=0", s!"origin/master...{commit}"]}
   pure <| diffToGitDiff diffString
