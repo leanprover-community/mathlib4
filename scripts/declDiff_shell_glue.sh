@@ -34,8 +34,11 @@ getDeclarations "${PRdeclsFile}"
 git checkout origin/master...HEAD
 masterHash="$(git rev-parse HEAD)"
 
-# get the lean script file from the current PR -- update before merging into master
-git checkout "${PR_HASH}" "${script_file}"
+# get the lean script file from master or the current PR if it does not exist there
+# once the PR is merged, the `||`-branch can be removed
+git checkout master:"${script_file}" ||
+  git checkout "${PR_HASH}" "${script_file}"
+
 getDeclarations "${MSdeclsFile}"
 
 printf 'Diff the declarations\n'
