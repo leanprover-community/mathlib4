@@ -56,7 +56,8 @@ lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict 
     · simpa [GradedPiece.mk] using xto0
     · simp
   obtain ⟨y, yin, feq⟩ : x - x' ∈ f.toRingHom '' (FR p) := by
-    apply FilteredHom.IsStrict.strict (sub_mem x.2 (IsFiltration.F_lt_le_F FS FS_lt p xin))
+    have : x.1 - x' ∈ FS p := sub_mem x.2 (IsFiltration.F_lt_le_F FS FS_lt p xin)
+    apply FilteredHom.IsStrict.strict this
     rw [Eq.comm, ← RingHom.sub_mem_ker_iff] at geq
     have : x.1 - x' ∈ (g.toAddMonoidHom).ker := geq
     simpa [fgexact.addMonoidHom_ker_eq]
@@ -64,7 +65,7 @@ lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict 
   rw [← GradedPiece.mk_eq, GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, ← hx, GradedPiece.mk_eq,
       GradedPiece.mk_eq,  QuotientAddGroup.eq, AddSubgroup.mem_addSubgroupOf]
   have : (toFilteredHom.piece_wise_hom p ⟨y, yin⟩ : FS p) = f.toRingHom y := rfl
-  simp [this, feq, xin]
+  simpa [this, feq] using xin
 
 variable  [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt]
 
