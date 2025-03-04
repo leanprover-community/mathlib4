@@ -25,6 +25,15 @@ We provide the following functions to work with these objects:
 3. `SimplexCategory.Hom.mk` makes a morphism out of a monotone map between `Fin`'s.
 4. `SimplexCategory.Hom.toOrderHom` gives the underlying monotone map associated to a
   term of `SimplexCategory.Hom`.
+
+## Notations
+
+* `⦋n⦌` denotes the `n`-dimensional simplex. This notation is available with
+  `open Simplicial`.
+* `⦋m⦌ₙ` (defined in `Mathlib.Tactic.SimplexCategory`) denotes the
+  `m`-dimensional simplex in the `n`-truncated simplex category. The truncation
+  proof `p : m ≤ n` can also be provided using the syntax `⦋m, p⦌ₙ`. This
+  notation is available with `open SimplexCategory.Truncated`.
 -/
 
 universe v
