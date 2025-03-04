@@ -283,11 +283,6 @@ add_decl_doc Subgroup.toSubmonoid
 /-- Reinterpret an `AddSubgroup` as an `AddSubmonoid`. -/
 add_decl_doc AddSubgroup.toAddSubmonoid
 
-@[to_additive]
-instance (priority := 50) SubgroupClass.toSubgroup {A M : Type*} [Group M] [SetLike A M]
-    [SubgroupClass A M] : CoeOut A (Subgroup M) :=
-  ⟨fun S ↦ ⟨⟨⟨S, MulMemClass.mul_mem⟩, OneMemClass.one_mem S⟩, InvMemClass.inv_mem⟩⟩
-
 namespace Subgroup
 
 @[to_additive]
