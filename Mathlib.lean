@@ -1065,7 +1065,9 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Formula
 import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Point
 import Mathlib.AlgebraicGeometry.EllipticCurve.ModelsWithJ
 import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
-import Mathlib.AlgebraicGeometry.EllipticCurve.Projective
+import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic
+import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Formula
+import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Point
 import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
 import Mathlib.AlgebraicGeometry.Fiber
@@ -1591,6 +1593,7 @@ import Mathlib.Analysis.Normed.Order.Hom.Basic
 import Mathlib.Analysis.Normed.Order.Hom.Ultra
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.Normed.Order.UpperLower
+import Mathlib.Analysis.Normed.Ring.FiniteExtension
 import Mathlib.Analysis.Normed.Ring.IsPowMulFaithful
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Analysis.Normed.Ring.SeminormFromBounded
