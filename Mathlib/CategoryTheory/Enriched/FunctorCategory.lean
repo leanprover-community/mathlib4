@@ -32,6 +32,8 @@ namespace CategoryTheory.Enriched.FunctorCategory
 
 open Category MonoidalCategory Limits
 
+open scoped EnrichedCategory
+
 variable (V : Type u₁) [Category.{v₁} V] [MonoidalCategory V]
   {C : Type u₂} [Category.{v₂} C] {J : Type u₃} [Category.{v₃} J]
   {K : Type u₄} [Category.{v₄} K] [EnrichedOrdinaryCategory V C]

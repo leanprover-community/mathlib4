@@ -20,5 +20,6 @@
   "files.readonlyInclude": {
     "**/.elan/**": true,
     "**/.lake/**": true
-  }
+  },
+  "workbench.activityBar.location": "default"
 }

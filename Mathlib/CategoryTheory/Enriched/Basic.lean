@@ -55,7 +55,13 @@ class EnrichedCategory (C : Type u₁) where
   assoc (W X Y Z : C) : (α_ _ _ _).inv ≫ comp W X Y ▷ _ ≫ comp W Y Z =
     _ ◁ comp X Y Z ≫ comp W X Z := by aesop_cat
 
-notation X " ⟶[" V "] " Y:10 => (EnrichedCategory.Hom X Y : V)
+namespace EnrichedCategory
+
+scoped notation X " ⟶[" V "] " Y:10 => (EnrichedCategory.Hom X Y : V)
+
+end EnrichedCategory
+
+open scoped EnrichedCategory
 
 variable {C : Type u₁} [EnrichedCategory V C]
 

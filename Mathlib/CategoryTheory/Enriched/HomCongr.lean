@@ -31,6 +31,8 @@ namespace Iso
 
 open Category MonoidalCategory
 
+open scoped EnrichedCategory
+
 variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
   {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory V C]
 

@@ -35,6 +35,8 @@ universe v u
 
 open CategoryTheory Category Simplicial MonoidalCategory
 
+open scoped EnrichedCategory
+
 namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C]

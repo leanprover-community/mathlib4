@@ -28,6 +28,8 @@ universe v' v u u'
 
 open CategoryTheory Category MonoidalCategory
 
+open scoped EnrichedCategory
+
 namespace CategoryTheory
 
 variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
