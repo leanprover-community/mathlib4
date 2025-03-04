@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Iso
-import Mathlib.Order.CompleteBooleanAlgebra
+import Mathlib.Order.Basic
 
 /-!
 # Properties of objects in a category
