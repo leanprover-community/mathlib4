@@ -68,7 +68,8 @@ lemma idRel_subset_dynEntourage (T : X → X) {U : Set (X × X)} (h : idRel ⊆ 
   simp only [dynEntourage, map_iterate, subset_iInter_iff, idRel_subset, mem_preimage, map_apply]
   exact fun _ _ _ ↦ h rfl
 
-lemma _root_.IsSymmetricRel.dynEntourage (T : X → X) {U : Set (X × X)} (h : IsSymmetricRel U) (n : ℕ) :
+lemma _root_.IsSymmetricRel.dynEntourage (T : X → X) {U : Set (X × X)}
+    (h : IsSymmetricRel U) (n : ℕ) :
     IsSymmetricRel (dynEntourage T U n) := by
   ext xy
   simp only [Dynamics.dynEntourage, map_iterate, mem_preimage, mem_iInter]
