@@ -5,8 +5,8 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Seminorm
 import Mathlib.Data.NNReal.Basic
-import Mathlib.Topology.Instances.ENNReal.Defs
 import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.Order.Real
 
 /-!
 # Normed (semi)groups
