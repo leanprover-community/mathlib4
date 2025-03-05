@@ -183,8 +183,8 @@ lemma GradedPieceHom_comp_apply (i : ι) (x : GradedPiece FA FA_lt i) :
   QuotientAddGroup.induction_on x (fun _ ↦ rfl)
 
 lemma GradedPieceHom_comp (i : ι) : Gr(i)[g].comp Gr(i)[f]  = Gr(i)[g.comp f] := by
-  ext
-  rfl
+  ext x
+  exact GradedPieceHom_comp_apply g f i x
 
 /-- Additive group homomorphism (between direct sum of graded pieces) induced by
 `GradedPieceHom i f` where `f : FilteredAddGroupHom FA FA_lt FB FB_lt`. -/
@@ -206,8 +206,7 @@ lemma AssociatedGradedAddMonoidHom_apply_of [DecidableEq ι] {i : ι} (x : Grade
 
 theorem AssociatedGradedAddMonoidHom_comp_eq_comp: Gr[g].comp Gr[f] = Gr[g.comp f] := by
   apply Eq.trans (DirectSum.map_comp (GradedPieceHom f) (GradedPieceHom g)).symm
-  simp only [GradedPieceHom_comp]
-  rfl
+  simp only [GradedPieceHom_comp, AssociatedGradedAddMonoidHom]
 
 end FilteredAddGroupHom
 
