@@ -674,18 +674,10 @@ theorem integral_traj_partialTraj' {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Ii
     (hf : Integrable f.uncurry ((partialTraj κ a b x₀) ⊗ₘ (traj κ b))) :
     ∫ x, ∫ y, f x y ∂traj κ b x ∂partialTraj κ a b x₀ =
     ∫ x, f (frestrictLe b x) x ∂traj κ a x₀ := by
-  have hf1 := hf
-  rw [partialTraj_compProd_traj κ hab] at hf1
-  replace hf1 := hf1.comp_measurable (by fun_prop)
-  have hf2 := aestronglyMeasurable_traj κ hab hf1.1
-  rw [← traj_comp_partialTraj κ hab, Kernel.integral_comp]
-  · apply integral_congr_ae
-    filter_upwards [hf.1.ae_of_compProd, hf2] with x h1 h2
-    rw [integral_traj _ h1]
-    nth_rw 2 [integral_traj]
-    · simp_rw [frestrictLe_updateFinset]
-    · exact h2
-  · rwa [traj_comp_partialTraj _ hab]
+  have hf' := hf
+  rw [partialTraj_compProd_traj _ hab] at hf'
+  simp_rw [← uncurry_apply_pair f, ← Measure.integral_compProd hf,
+    partialTraj_compProd_traj _ hab, integral_map (by fun_prop) hf'.1]
 
 theorem integral_traj_partialTraj {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
     {f : (Π n : ℕ, X n) → E} (hf : Integrable f (traj κ a x₀)) :
