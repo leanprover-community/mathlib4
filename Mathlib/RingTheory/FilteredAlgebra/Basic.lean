@@ -65,8 +65,8 @@ variable {ι R σ : Type*} [OrderedAddCommMonoid ι] [Semiring R] [SetLike σ R]
 /-- For a family of subsets `σ` of semiring `R`, an increasing series `F` in `σ` is
 a ring filtration if `IsFiltration F F_lt` and the pointwise multiplication of `F i` and `F j`
 is in `F (i + j)`. -/
-class IsRingFiltration (F : ι → σ) (F_lt : outParam <| ι → σ)
-    extends IsFiltration F F_lt, SetLike.GradedMonoid F : Prop
+class IsRingFiltration (F : ι → σ) (F_lt : outParam <| ι → σ) : Prop
+    extends IsFiltration F F_lt, SetLike.GradedMonoid F
 
 /-- A convenience constructor for `IsRingFiltration` when the index is the integers. -/
 lemma IsRingFiltration.mk_int (F : ℤ → σ) (mono : Monotone F) [SetLike.GradedMonoid F] :
@@ -86,8 +86,8 @@ and the pointwise scalar multiplication of `F i` and `FM j` is in `F (i +ᵥ j)`
 
 The index set `ιM` for the module can be more general, however usually we take `ιM = ι`. -/
 class IsModuleFiltration (F : ι → σ) (F_lt : outParam <| ι → σ) [IsRingFiltration F F_lt]
-    (F' : ιM → σM) (F'_lt : outParam <| ιM → σM)
-    extends IsFiltration F' F'_lt, SetLike.GradedSMul F F' : Prop
+    (F' : ιM → σM) (F'_lt : outParam <| ιM → σM) : Prop
+    extends IsFiltration F' F'_lt, SetLike.GradedSMul F F'
 
 /-- A convenience constructor for `IsModuleFiltration` when the index is the integers. -/
 lemma IsModuleFiltration.mk_int (F : ℤ → σ) (mono : Monotone F) [SetLike.GradedMonoid F]

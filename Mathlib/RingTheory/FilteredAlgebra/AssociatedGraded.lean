@@ -192,7 +192,7 @@ section HasGMul
 
 /-- The class of ring filtrations that can obtain a well defined `GradedMul`
 from the multiplication `F i → F j → F (i + j)`. -/
-class hasGMul [OrderedAddCommMonoid ι] extends IsRingFiltration F F_lt : Prop where
+class hasGMul [OrderedAddCommMonoid ι] : Prop extends IsRingFiltration F F_lt where
   F_lt_mul_mem {i j : ι} {x y} : x ∈ F_lt i → y ∈ F j → x * y ∈ F_lt (i + j)
   mul_F_lt_mem {i j : ι} {x y} : x ∈ F i → y ∈ F_lt j → x * y ∈ F_lt (i + j)
 
