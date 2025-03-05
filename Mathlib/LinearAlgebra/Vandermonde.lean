@@ -201,8 +201,8 @@ private theorem det_projVandermonde_of_field (v w : Fin n → K) :
 /-- The formula for the determinant of a projective Vandermonde matrix. -/
 theorem det_projVandermonde (v w : Fin n → R) : (projVandermonde v w).det =
     ∏ i : Fin n, ∏ j ∈ Finset.Ioi i, (v j * w i - v i * w j) := by
-  let R' := MvPolynomial (Fin n × Bool) ℤ
-  let u : Fin n × Bool → FractionRing R' := fun i ↦ (algebraMap R' _) (MvPolynomial.X ⟨i.1, i.2⟩)
+  let u := fun (i : Fin n × Bool) ↦ (algebraMap (MvPolynomial (Fin n × Bool) ℤ)
+    (FractionRing (MvPolynomial (Fin n × Bool) ℤ))) (MvPolynomial.X ⟨i.1, i.2⟩)
   have hdet := det_projVandermonde_of_field (u ⟨· , true⟩) (u ⟨·, false⟩)
   simp only [u, RingHom.mapMatrix_apply] at hdet
   norm_cast at hdet
@@ -210,7 +210,7 @@ theorem det_projVandermonde (v w : Fin n → R) : (projVandermonde v w).det =
   apply_fun MvPolynomial.eval₂Hom (Int.castRingHom R) (fun x ↦ (if x.2 then v else w) x.1) at hdet
   rw [RingHom.map_det] at hdet
   convert hdet <;>
-  simp [← Matrix.ext_iff, projVandermonde_apply, u, R']
+  simp [← Matrix.ext_iff, projVandermonde_apply, u]
 
 /-- The formula for the determinant of a Vandermonde matrix. -/
 theorem det_vandermonde (v : Fin n → R) :
