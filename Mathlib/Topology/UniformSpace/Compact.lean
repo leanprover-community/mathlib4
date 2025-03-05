@@ -41,6 +41,21 @@ theorem lebesgue_number_lemma {ι : Sort*} {U : ι → Set α} (hK : IsCompact K
   rcases mem_iUnion₂.1 (ht hx) with ⟨y, hyt, hxy⟩
   exact ⟨ind y y.2, fun z hz ↦ hWU _ _ ⟨x, hxy, mem_iInter₂.1 hz _ hyt⟩⟩
 
+theorem lebesgue_number_lemma_nhds' {U : (x : α) → x ∈ K → Set α} (hK : IsCompact K)
+    (hU : ∀ x hx, U x hx ∈ 𝓝 x) : ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y, ∃ hy, ball x V ⊆ U y hy := by
+  rcases lebesgue_number_lemma (U := fun x : K => interior (U x x.2)) hK (fun _ => isOpen_interior)
+    (fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, mem_interior_iff_mem_nhds.2 (hU x hx)⟩) with ⟨V, V_unif, hV⟩
+  refine ⟨V, V_unif, fun x hx => ?_⟩
+  rcases hV x hx with ⟨y, hy⟩
+  exact ⟨y, y.2, hy.trans interior_subset⟩
+
+theorem lebesgue_number_lemma_nhds {U : α → Set α} (hK : IsCompact K) (hU : ∀ x ∈ K, U x ∈ 𝓝 x) :
+    ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y, ball x V ⊆ U y := by
+  rcases lebesgue_number_lemma_nhds' hK hU with ⟨V, V_unif, hV⟩
+  refine ⟨V, V_unif, fun x hx => ?_⟩
+  rcases hV x hx with ⟨y, _, hy⟩
+  exact ⟨y, hy⟩
+
 /-- Let `U : ι → Set α` be an open cover of a compact set `K`.
 Then there exists an entourage `V`
 such that for each `x ∈ K` its `V`-neighborhood is included in some `U i`.
