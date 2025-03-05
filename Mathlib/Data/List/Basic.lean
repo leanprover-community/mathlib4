@@ -230,6 +230,18 @@ theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
 theorem replicate_left_inj {a : α} {n m : ℕ} : replicate n a = replicate m a ↔ n = m :=
   (replicate_left_injective a).eq_iff
 
+@[simp]
+theorem head?_flatten_replicate {n : ℕ} (h : n ≠ 0) (l : List α) :
+    (List.replicate n l).flatten.head? = l.head? := by
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
+  induction l <;> simp [replicate]
+
+@[simp]
+theorem getLast?_flatten_replicate  {n : ℕ} (h : n ≠ 0) (l : List α) :
+    (List.replicate n l).flatten.getLast? = l.getLast? := by
+  rw [← List.head?_reverse, ← List.head?_reverse, List.reverse_flatten, List.map_replicate,
+  List.reverse_replicate, head?_flatten_replicate h]
+
 /-! ### pure -/
 
 theorem mem_pure (x y : α) : x ∈ (pure y : List α) ↔ x = y := by simp
@@ -471,12 +483,6 @@ theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     (h' : i + 1 < l.length := (by simp only [length_tail] at h; omega)) :
     l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
   cases l <;> [cases h; rfl]
-
-@[deprecated "No deprecation message was provided." (since := "2024-08-22")]
-theorem get_cons {l : List α} {a : α} {n} (hl) :
-    (a :: l).get ⟨n, hl⟩ = if hn : n = 0 then a else
-      l.get ⟨n - 1, by contrapose! hl; rw [length_cons]; omega⟩ :=
-  getElem_cons hl
 
 /-! ### sublists -/
 
@@ -1134,8 +1140,6 @@ theorem filter_false (l : List α) :
 
 end Filter
 
-@[deprecated (since := "2024-08-19")] alias nthLe_cons := getElem_cons
-
 /-! ### eraseP -/
 
 section eraseP
@@ -1183,11 +1187,6 @@ theorem erase_getElem [DecidableEq ι] {l : List ι} {i : ℕ} (hi : i < l.lengt
         simpa [ha] using .trans (perm_cons_erase (getElem_mem _)) (.cons _ (IH hi'))
       else
         simpa [ha] using IH hi'
-
-@[deprecated erase_getElem (since := "2024-08-03")]
-theorem erase_get [DecidableEq ι] {l : List ι} (i : Fin l.length) :
-    Perm (l.erase (l.get i)) (l.eraseIdx ↑i) :=
-  erase_getElem i.isLt
 
 theorem length_eraseIdx_add_one {l : List ι} {i : ℕ} (h : i < l.length) :
     (l.eraseIdx i).length + 1 = l.length := by
