@@ -223,20 +223,18 @@ theorem _root_.MvPolynomial.coeToMvPowerSeries_uniformContinuous
       exact I.prod_mem hs' (I.pow_mem_of_pow_mem (Nat.sInf_mem (hn_ne s)) hs)
 
 variable (φ a)
+open scoped Classical in
 /-- Evaluation of power series. Meaningful on adequate elements or on `MvPolynomial`)  -/
-noncomputable def eval₂ (f : MvPowerSeries σ R) : S := by
-  let hp := fun (p : MvPolynomial σ R) ↦ p = f
-  classical
-  exact if (Classical.epsilon hp = f) then (MvPolynomial.eval₂ φ a (Classical.epsilon hp))
-    else IsDenseInducing.extend coeToMvPowerSeries_denseInducing (MvPolynomial.eval₂ φ a) f
+noncomputable def eval₂ (f : MvPowerSeries σ R) : S :=
+  if H : ∃ p : MvPolynomial σ R, p = f then (MvPolynomial.eval₂ φ a H.choose)
+  else IsDenseInducing.extend coeToMvPowerSeries_denseInducing (MvPolynomial.eval₂ φ a) f
 
 theorem eval₂_coe (f : MvPolynomial σ R) :
     MvPowerSeries.eval₂ φ a f = MvPolynomial.eval₂ φ a f := by
-  have hf := Classical.epsilon_spec
-    (p := fun (p : MvPolynomial σ R) ↦ p = (f : MvPowerSeries σ R)) ⟨f, rfl⟩
-  rw [eval₂, if_pos hf]
+  have : ∃ p : MvPolynomial σ R, (p : MvPowerSeries σ R) = f := ⟨f, rfl⟩
+  rw [eval₂, dif_pos this]
   apply _root_.congr_arg
-  rw [← MvPolynomial.coe_inj, hf]
+  rw [← MvPolynomial.coe_inj, this.choose_spec]
 
 theorem eval₂_C (r : R) :
     eval₂ φ a (C σ R r) = φ r := by
@@ -271,10 +269,10 @@ theorem coe_eval₂Hom (hφ : Continuous φ) (ha : EvalDomain a) :
   let hf := fun (p : MvPolynomial σ R) ↦ p = f
   simp only [eval₂Hom_apply, eval₂]
   split_ifs with h
-  · conv_lhs => rw [← h]
-    simpa only [MvPolynomial.coe_eval₂Hom, coeToMvPowerSeries.ringHom_apply]
-      using IsDenseInducing.extend_eq coeToMvPowerSeries_denseInducing
-        (coeToMvPowerSeries_uniformContinuous hφ ha).continuous (Classical.epsilon hf)
+  · obtain ⟨p, rfl⟩ := h
+    simpa [MvPolynomial.coe_eval₂Hom, coeToMvPowerSeries.ringHom_apply] using
+      IsDenseInducing.extend_eq coeToMvPowerSeries_denseInducing
+        (coeToMvPowerSeries_uniformContinuous hφ ha).continuous p
   · rfl
 
 theorem uniformContinuous_eval₂ (hφ : Continuous φ) (ha : EvalDomain a) :
