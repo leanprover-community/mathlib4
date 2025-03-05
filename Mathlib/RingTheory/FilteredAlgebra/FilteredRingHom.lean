@@ -327,7 +327,7 @@ theorem AssociatedGradedRingHom_apply (x : AssociatedGraded FR FR_lt) (i : ι) :
     (Gr[f] x) i = Gr(i)[f] (x i) := rfl
 
 @[simp]
-lemma AssociatedGradedAddMonoidHom_apply_of {i : ι} (x : GradedPiece FR FR_lt i) :
+lemma AssociatedGradedRingHom_apply_of {i : ι} (x : GradedPiece FR FR_lt i) :
     (Gr[f] (AssociatedGraded.of x)) = AssociatedGraded.of (Gr(i)[f] x) :=
   f.1.AssociatedGradedAddMonoidHom_apply_of x
 
