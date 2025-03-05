@@ -188,7 +188,19 @@ namespace Rep
 
 open CategoryTheory
 
-variable (k G : Type u) [CommRing k] [Group G] (A : Rep k G)
+variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) (S : Subgroup G) [S.Normal]
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
+the invariants of `ρ|_S`. -/
+noncomputable abbrev toInvariants :
+    Rep k G := Rep.of <| A.ρ.toInvariants S
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
+the invariants of `ρ|_S`. -/
+abbrev quotientToInvariants (S : Subgroup G) [S.Normal] :=
+  Rep.of (A.ρ.quotientToInvariants S)
+
+variable (k G)
 
 /-- The functor sending a representation to its submodule of invariants. -/
 @[simps]

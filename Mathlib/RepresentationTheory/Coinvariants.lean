@@ -3,6 +3,7 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.RepresentationTheory.Rep
 
 /-!
@@ -83,8 +84,6 @@ theorem coinvariantsLift_comp_mkQ (f : V →ₗ[k] W) (h : ∀ (x : G), f ∘ₗ
 theorem coinvariantsLift_mk (f : V →ₗ[k] W) (h : ∀ (x : G), f ∘ₗ ρ x = f) (x : V) :
   coinvariantsLift ρ f h (Submodule.Quotient.mk x) = f x := rfl
 
-end
-
 section
 
 variable {k G V : Type*} [CommRing k] [Group G] [AddCommGroup V] [Module k V]
@@ -120,7 +119,7 @@ noncomputable abbrev quotientToCoinvariants :
     Representation k (G ⧸ S) (coinvariants (ρ.comp S.subtype)) :=
   ofQuotient (toCoinvariants ρ S) S
 
-end Group
+end
 section Finsupp
 
 open Finsupp
@@ -258,9 +257,7 @@ theorem coinvariantsMap_comp (f : A ⟶ B) (g : B ⟶ C) :
     coinvariantsMap (f ≫ g) = coinvariantsMap g ∘ₗ coinvariantsMap f := by
   ext; rfl
 
-end
-
-section
+noncomputable section
 
 variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) (S : Subgroup G) [S.Normal]
 
@@ -298,6 +295,8 @@ lemma coinvariantsShortComplex_shortExact : (coinvariantsShortComplex A S).Short
 the coinvariants of `ρ|_S`. -/
 abbrev quotientToCoinvariants :=
   ofQuotient (toCoinvariants A S) S
+
+end
 
 variable (k G)
 
