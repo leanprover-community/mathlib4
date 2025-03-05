@@ -236,14 +236,14 @@ section LinearOrderedAddCommGroup
 variable [LinearOrderedAddCommGroup G] {a b c : G}
 
 @[to_additive]
-theorem apply_abs_le_mul_of_one_le' {H : Type*} [MulOneClass H] [Preorder H]
+theorem apply_abs_le_mul_of_one_le' {H : Type*} [MulOneClass H] [LE H]
     [MulLeftMono H] [MulRightMono H] {f : G → H}
     {a : G} (h₁ : 1 ≤ f a) (h₂ : 1 ≤ f (-a)) : f |a| ≤ f a * f (-a) :=
   (le_total a 0).rec (fun ha => (abs_of_nonpos ha).symm ▸ le_mul_of_one_le_left' h₁) fun ha =>
     (abs_of_nonneg ha).symm ▸ le_mul_of_one_le_right' h₂
 
 @[to_additive]
-theorem apply_abs_le_mul_of_one_le {H : Type*} [MulOneClass H] [Preorder H]
+theorem apply_abs_le_mul_of_one_le {H : Type*} [MulOneClass H] [LE H]
     [MulLeftMono H] [MulRightMono H] {f : G → H}
     (h : ∀ x, 1 ≤ f x) (a : G) : f |a| ≤ f a * f (-a) :=
   apply_abs_le_mul_of_one_le' (h _) (h _)
