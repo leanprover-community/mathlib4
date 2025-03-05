@@ -102,27 +102,6 @@ theorem isTrivial_apply (ρ : Representation k G V) [IsTrivial ρ] (g : G) (x : 
 
 end trivial
 
-section Group
-
-variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
-  (ρ : Representation k G V)
-
-@[simp]
-theorem inv_self_apply (g : G) (x : V) :
-    ρ g⁻¹ (ρ g x) = x := by
-  simp [← LinearMap.mul_apply, ← map_mul]
-
-@[simp]
-theorem self_inv_apply (g : G) (x : V) :
-    ρ g (ρ g⁻¹ x) = x := by
-  simp [← LinearMap.mul_apply, ← map_mul]
-
-lemma apply_bijective (g : G) :
-    Function.Bijective (ρ g) :=
-  Equiv.bijective ⟨ρ g, ρ g⁻¹, inv_self_apply ρ g, self_inv_apply ρ g⟩
-
-end Group
-
 section MonoidAlgebra
 
 variable {k G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
