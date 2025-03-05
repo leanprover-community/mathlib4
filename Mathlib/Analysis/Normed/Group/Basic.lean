@@ -109,6 +109,7 @@ class ENormedMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, 
 
 /-- An enormed commutative monoid is an additive commutative monoid
 endowed with a continuous enorm.
+
 We don't have `ENormedAddCommGroup` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
 is not an `EMetricSpace`. This is because ℝ≥0∞ carries the order topology, which is distinct from
 the topology coming from `edist`. -/
