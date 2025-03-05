@@ -19,23 +19,22 @@ This file contains lemmas providing sufficient conditions for the cast of `n!` t
 
 -/
 
-section Factorial
+namespace IsUnit
 
 open Nat
-
 section Semiring
 
 variable {A : Type*} [CommSemiring A]
 
-theorem natCast_factorial_isUnit_of_lt {n : ℕ} (hn_fac : IsUnit ((n - 1)! : A))
+theorem natCast_factorial_of_lt {n : ℕ} (hn_fac : IsUnit ((n - 1)! : A))
     {m : ℕ} (hmn : m < n) : IsUnit (m ! : A) :=
   isUnit_of_dvd_unit (cast_dvd_cast (factorial_dvd_factorial (le_sub_one_of_lt hmn))) hn_fac
 
-theorem natCast_factorial_isUnit_of_le {n : ℕ} (hn_fac : IsUnit (n ! : A))
+theorem natCast_factorial_of_le {n : ℕ} (hn_fac : IsUnit (n ! : A))
     {m : ℕ} (hmn : m ≤ n) : IsUnit (m ! : A) :=
   isUnit_of_dvd_unit (cast_dvd_cast (factorial_dvd_factorial hmn)) hn_fac
 
-theorem natCast_factorial_isUnit_of_ratAlgebra [Algebra ℚ A] (n : ℕ) : IsUnit (n ! : A) := by
+theorem natCast_factorial_of_ratAlgebra [Algebra ℚ A] (n : ℕ) : IsUnit (n ! : A) := by
   rw [← map_natCast (algebraMap ℚ A)]
   apply IsUnit.map
   simp [isUnit_iff_ne_zero, n.factorial_ne_zero]
@@ -46,7 +45,7 @@ section CharP
 
 variable {A : Type*} [CommRing A] (p : ℕ) [Fact (Nat.Prime p)] [CharP A p]
 
-theorem natCast_factorial_isUnit_of_charP  {n : ℕ} (h : n < p) : IsUnit (n ! : A) := by
+theorem natCast_factorial_of_charP  {n : ℕ} (h : n < p) : IsUnit (n ! : A) := by
   induction n with
   | zero => simp
   | succ n ih =>
@@ -61,4 +60,4 @@ theorem natCast_factorial_isUnit_of_charP  {n : ℕ} (h : n < p) : IsUnit (n ! :
 
 end CharP
 
-end Factorial
+end IsUnit
