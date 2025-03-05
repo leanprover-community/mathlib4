@@ -409,7 +409,7 @@ theorem map_mul_eq_one [MonoidHomClass F M N] (f : F) {a b : M} (h : a * b = 1) 
 variable [FunLike F G H]
 
 @[to_additive]
-theorem map_div' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
+theorem map_div' [DivInvMonoid G] [DivInvMonoid H] [MulHomClass F G H]
     (f : F) (hf : ∀ a, f a⁻¹ = (f a)⁻¹) (a b : G) : f (a / b) = f a / f b := by
   rw [div_eq_mul_inv, div_eq_mul_inv, map_mul, hf]
 
