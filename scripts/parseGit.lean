@@ -192,13 +192,36 @@ def gitDiffMaster (commit : String := "HEAD") : IO (Array GitDiff × Array GitDi
   pure <| diffToGitDiff diffString
 
 /-
-The linter reads the modified ranges and only emit a warning if `stx.getRange?` overlaps with
+The linter reads the modified ranges and only emits a warning if `stx.getRange?` overlaps with
 at least one range.
 
 To feed the information about the ranges, maybe I can add an import on the first line, without a line break.
 
 The new file contains the modified ranges and the linter option.
 -/
+
+def disjointRange (l m : lineRg) : Bool := (l.last < m.first) || (m.last < l.first)
+
+def overlapOne (l m : lineRg) : Bool := ! disjointRange l m
+  --(l.first ≤ m.first && m.first ≤ l.last) &&
+  --(m.first ≤ l.first && l.first ≤ m.last) &&
+  --true
+
+def overlaps {m} [Monad m] [MonadFileMap m] (as : Array GitDiff) (rg : String.Range) : m Bool := do
+  let fm ← getFileMap
+  let lineRange : lineRg :=
+    { first := (fm.toPosition rg.start).line
+      last  := (fm.toPosition rg.stop).line }
+  pure <| as.any (overlapOne lineRange ·.rg)
+
+run_cmd
+  let args := #["diff", "--unified=0",
+    "420e511d5f1d81458aef9bd76f48b96b07d32908..55741ae1d9aaa639953dd63bcfe32ed00cf3b4f5"]
+  let diffString ← IO.Process.run {cmd := "git", args := args}
+  let (totA, totB) := diffToGitDiff diffString
+  logInfo m!"{totA}"
+  logInfo m!"{totB}"
+
 
 run_cmd
   let mut tots := #[]
