@@ -8,6 +8,7 @@ import Mathlib.Data.Matrix.Defs
 import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Basis
 import Mathlib.Logic.Small.Basic
+import Mathlib.LinearAlgebra.StdBasis
 
 /-!
 # Free modules
@@ -207,3 +208,19 @@ instance tensor : Module.Free S (M ⊗[R] N) :=
 end CommSemiring
 
 end Module.Free
+
+namespace Basis
+
+open Finset
+
+variable {S : Type*} [CommRing R] [Ring S] [Algebra R S]
+
+/-- If `B` is a basis of the `R`-algebra `S` such that `B i = 1` for some index `i`, then
+each `r : R` gets represented as `s • B i` as an element of `S`. -/
+theorem repr_algebraMap {ι : Type*} [DecidableEq ι] {B : Basis ι R S} {i : ι} (hBi : B i = 1)
+    (r : R) : B.repr ((algebraMap R S) r) = fun j : ι ↦ if i = j then r else 0 := by
+  ext j
+  rw [Algebra.algebraMap_eq_smul_one, map_smul, ← hBi, Finsupp.smul_apply, B.repr_self_apply]
+  simp
+
+end Basis

@@ -50,7 +50,7 @@ theorem imageOfDf_eq_comap_C_compl_zeroLocus :
   ext x
   refine ⟨fun hx => ⟨⟨map C x.asIdeal, isPrime_map_C_of_isPrime x.isPrime⟩, ⟨?_, ?_⟩⟩, ?_⟩
   · rw [mem_compl_iff, mem_zeroLocus, singleton_subset_iff]
-    cases' hx with i hi
+    obtain ⟨i, hi⟩ := hx
     exact fun a => hi (mem_map_C_iff.mp a i)
   · ext x
     refine ⟨fun h => ?_, fun h => subset_span (mem_image_of_mem C.1 h)⟩

@@ -20,7 +20,6 @@ This allows us to specialize API about long exact sequences to group cohomology.
 
 * `groupCohomology.δ hX i j hij`: the connecting homomorphism `Hⁱ(G, X₃) ⟶ Hʲ(G, X₁)` associated
   to an exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of representations.
-
 -/
 
 universe u
@@ -39,8 +38,7 @@ lemma map_cochainsFunctor_shortExact :
     exact := by
       have : LinearMap.range X.f.hom.hom = LinearMap.ker X.g.hom.hom :=
         (hX.exact.map (forget₂ (Rep k G) (ModuleCat k))).moduleCat_range_eq_ker
-      simp [moduleCat_exact_iff_range_eq_ker, LinearMap.range_compLeft,
-        LinearMap.ker_compLeft, this]
+      simp_all [moduleCat_exact_iff_range_eq_ker, LinearMap.range_compLeft, LinearMap.ker_compLeft]
     mono_f := letI := hX.2; cochainsMap_id_f_map_mono X.f i
     epi_g := letI := hX.3; cochainsMap_id_f_map_epi X.g i }
 
@@ -89,7 +87,7 @@ theorem δ_apply (i j : ℕ) (hij : i + 1 = j)
       ⟨z, show ((inhomogeneousCochains X.X₃).dFrom i).hom z = 0 by
         simp_all [(inhomogeneousCochains X.X₃).dFrom_eq hij]⟩) =
       groupCohomologyπ X.X₁ j ((moduleCatCyclesIso _).inv
-        ⟨x, by convert ((map_cochainsFunctor_shortExact hX).δ_apply_aux i j y x
+        ⟨x, by convert ((map_cochainsFunctor_shortExact hX).d_eq_zero_of_f_eq_d_apply i j y x
           (by simpa [cochainsMap_id_f_eq_compLeft] using hx) <| (ComplexShape.up ℕ).next j)⟩) := by
   convert (map_cochainsFunctor_shortExact hX).δ_apply i j hij z
     hz y hy x (by simpa [cochainsMap_id_f_eq_compLeft] using hx) ((ComplexShape.up ℕ).next j) rfl

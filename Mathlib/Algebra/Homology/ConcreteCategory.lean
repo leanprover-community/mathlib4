@@ -65,16 +65,17 @@ lemma δ_apply' (x₃ : (forget₂ C Ab).obj (S.X₃.homology i))
     (forget₂ C Ab).map (hS.δ i j hij) x₃ = (forget₂ C Ab).map (S.X₁.homologyπ j) x₁ :=
   (HomologicalComplex.HomologySequence.snakeInput hS i j hij).δ_apply' x₃ x₂ x₁ h₂ h₁
 
--- not sure what to call it...
 include hS in
-theorem δ_apply_aux (x₂ : ((forget₂ C Ab).obj (S.X₂.X i))) (x₁ : ((forget₂ C Ab).obj (S.X₁.X j)))
+theorem d_eq_zero_of_f_eq_d_apply
+    (x₂ : ((forget₂ C Ab).obj (S.X₂.X i))) (x₁ : ((forget₂ C Ab).obj (S.X₁.X j)))
     (hx₁ : ((forget₂ C Ab).map (S.f.f j)) x₁ = ((forget₂ C Ab).map (S.X₂.d i j)) x₂) (k : ι) :
     ((forget₂ C Ab).map (S.X₁.d j k)) x₁ = 0 := by
   have := hS.mono_f
   apply (Preadditive.mono_iff_injective (S.f.f k)).1 inferInstance
   rw [← ConcreteCategory.forget₂_comp_apply, ← HomologicalComplex.Hom.comm,
     ConcreteCategory.forget₂_comp_apply, hx₁, ← ConcreteCategory.forget₂_comp_apply,
-    HomologicalComplex.d_comp_d, Functor.map_zero, map_zero]; rfl
+    HomologicalComplex.d_comp_d, Functor.map_zero, map_zero]
+  rfl
 
 lemma δ_apply (x₃ : (forget₂ C Ab).obj (S.X₃.X i))
     (hx₃ : (forget₂ C Ab).map (S.X₃.d i j) x₃ = 0)
@@ -85,7 +86,7 @@ lemma δ_apply (x₃ : (forget₂ C Ab).obj (S.X₃.X i))
     (forget₂ C Ab).map (hS.δ i j hij)
       ((forget₂ C Ab).map (S.X₃.homologyπ i) (S.X₃.cyclesMk x₃ j (c.next_eq' hij) hx₃)) =
         (forget₂ C Ab).map (S.X₁.homologyπ j) (S.X₁.cyclesMk x₁ k hk
-          (δ_apply_aux hS _ _ x₂ x₁ hx₁ _)) := by
+          (d_eq_zero_of_f_eq_d_apply hS _ _ x₂ x₁ hx₁ _)) := by
   refine hS.δ_apply' i j hij _ ((forget₂ C Ab).map (S.X₂.pOpcycles i) x₂) _ ?_ ?_
   · rw [← ConcreteCategory.forget₂_comp_apply, ← ConcreteCategory.forget₂_comp_apply,
       HomologicalComplex.p_opcyclesMap, Functor.map_comp, ConcreteCategory.comp_apply,

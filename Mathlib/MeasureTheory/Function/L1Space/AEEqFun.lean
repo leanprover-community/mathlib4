@@ -65,7 +65,7 @@ theorem Integrable.neg {f : α →ₘ[μ] β} : Integrable f → Integrable (-f)
 section
 
 theorem integrable_iff_mem_L1 {f : α →ₘ[μ] β} : Integrable f ↔ f ∈ (α →₁[μ] β) := by
-  rw [← integrable_coeFn, ← memℒp_one_iff_integrable, Lp.mem_Lp_iff_memℒp]
+  rw [← integrable_coeFn, ← memLp_one_iff_integrable, Lp.mem_Lp_iff_memLp]
 
 theorem Integrable.add {f g : α →ₘ[μ] β} : Integrable f → Integrable g → Integrable (f + g) := by
   refine induction_on₂ f g fun f hf g hg hfi hgi => ?_
@@ -96,8 +96,8 @@ namespace L1
 
 
 theorem integrable_coeFn (f : α →₁[μ] β) : Integrable f μ := by
-  rw [← memℒp_one_iff_integrable]
-  exact Lp.memℒp f
+  rw [← memLp_one_iff_integrable]
+  exact Lp.memLp f
 
 theorem hasFiniteIntegral_coeFn (f : α →₁[μ] β) : HasFiniteIntegral f μ :=
   (integrable_coeFn f).hasFiniteIntegral
@@ -157,7 +157,7 @@ namespace Integrable
 /-- Construct the equivalence class `[f]` of an integrable function `f`, as a member of the
 space `Lp β 1 μ`. -/
 def toL1 (f : α → β) (hf : Integrable f μ) : α →₁[μ] β :=
-  (memℒp_one_iff_integrable.2 hf).toLp f
+  (memLp_one_iff_integrable.2 hf).toLp f
 
 @[simp]
 theorem toL1_coeFn (f : α →₁[μ] β) (hf : Integrable f μ) : hf.toL1 f = f := by
@@ -178,7 +178,7 @@ theorem toL1_eq_mk (f : α → β) (hf : Integrable f μ) :
 @[simp]
 theorem toL1_eq_toL1_iff (f g : α → β) (hf : Integrable f μ) (hg : Integrable g μ) :
     toL1 f hf = toL1 g hg ↔ f =ᵐ[μ] g :=
-  Memℒp.toLp_eq_toLp_iff _ _
+  MemLp.toLp_eq_toLp_iff _ _
 
 theorem toL1_add (f g : α → β) (hf : Integrable f μ) (hg : Integrable g μ) :
     toL1 (f + g) (hf.add hg) = toL1 f hf + toL1 g hg :=

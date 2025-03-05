@@ -203,11 +203,6 @@ theorem inhomogeneousCochains.d_def (n : ℕ) :
     (inhomogeneousCochains A).d n (n + 1) = ModuleCat.ofHom (inhomogeneousCochains.d n A) :=
   CochainComplex.of_d _ _ _ _
 
-theorem inhomogeneousCochains.d_comp_d (n : ℕ) :
-    inhomogeneousCochains.d (n + 1) A ∘ₗ inhomogeneousCochains.d n A = 0 := by
-  simpa [CochainComplex.of] using
-    congr(ModuleCat.Hom.hom $((inhomogeneousCochains A).d_comp_d n (n + 1) (n + 2)))
-
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
 to `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `G`-representation. -/
 def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolution A := by

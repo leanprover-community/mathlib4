@@ -49,7 +49,7 @@ open Limits Functor
 
 variable [GaloisCategory C] [FiberFunctor F]
 
-variable {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G] [CompactSpace G]
+variable {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G]
 
 private local instance fintypeQuotient (H : OpenSubgroup (G)) :
     Fintype (G ⧸ (H : Subgroup (G))) :=
