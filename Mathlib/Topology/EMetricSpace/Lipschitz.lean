@@ -5,6 +5,7 @@ Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudr
 -/
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Topology.EMetricSpace.Diam
+import Mathlib.Topology.MetricSpace.Pseudo.Defs
 import Mathlib.Tactic.GCongr
 
 /-!
@@ -400,6 +401,12 @@ protected lemma continuousOn (hf : LocallyLipschitzOn s f) : ContinuousOn f s :=
   continuousOn_iff_continuous_restrict.2 hf.restrict.continuous
 
 end LocallyLipschitzOn
+
+theorem LocallyLipschitzOn.lipshitzOnWith_of_isCompact [PseudoEMetricSpace α] [PseudoMetricSpace β]
+    {f : α → β} {s : Set α} (hs : IsCompact s) (hf : LocallyLipschitzOn s f) :
+    ∃ K, LipschitzOnWith K f s := by
+  choose! K U hU hK using hf
+  sorry
 
 /-- Consider a function `f : α × β → γ`. Suppose that it is continuous on each “vertical fiber”
 `{a} × t`, `a ∈ s`, and is Lipschitz continuous on each “horizontal fiber” `s × {b}`, `b ∈ t`
