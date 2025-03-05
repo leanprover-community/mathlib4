@@ -8,14 +8,14 @@ import Mathlib.Topology.Constructions
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
 
 /-!
-# X-systems of cylinders and square cylinders
+# π-systems of cylinders and square cylinders
 
 The instance `MeasurableSpace.pi` on `∀ i, α i`, where each `α i` has a `MeasurableSpace` `m i`,
 is defined as `⨆ i, (m i).comap (fun a => a i)`.
 That is, a function `g : β → ∀ i, α i` is measurable iff for all `i`, the function `b ↦ g b i`
 is measurable.
 
-We define two X-systems generating `MeasurableSpace.pi`, cylinders and square cylinders.
+We define two π-systems generating `MeasurableSpace.pi`, cylinders and square cylinders.
 
 ## Main definitions
 

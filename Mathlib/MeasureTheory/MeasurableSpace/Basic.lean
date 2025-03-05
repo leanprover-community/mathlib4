@@ -51,7 +51,7 @@ defined in terms of the Galois connection induced by f.
 
 ## Tags
 
-measurable space, σ-algebra, measurable function, dynkin system, X-λ theorem, X-system
+measurable space, σ-algebra, measurable function, dynkin system, π-λ theorem, π-system
 -/
 
 open Set Encodable Function Equiv Filter MeasureTheory
