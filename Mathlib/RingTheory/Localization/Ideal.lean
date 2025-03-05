@@ -172,7 +172,7 @@ theorem disjoint_comap_iff (S : Submonoid R) {A : Type*} [CommRing A]
     Disjoint (S : Set R) (J.comap (algebraMap R A)) ↔ J ≠ ⊤ := by
   rw [← iff_not_comm]
   constructor
-  · intro h; subst h;
+  · rintro rfl
     rw [Ideal.comap_top, Submodule.top_coe, Set.disjoint_univ, ← ne_eq, ← Set.nonempty_iff_ne_empty]
     exact ⟨_, S.one_mem⟩
   · rw [Disjoint, Set.bot_eq_empty]
