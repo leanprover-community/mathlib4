@@ -51,11 +51,11 @@ open scoped Uniformity
 variable {X : Type*}
 
 /-- The relation is transitive. -/
-def TransitiveRel (V : Set (X × X)) : Prop :=
+def IsTransitiveRel (V : Set (X × X)) : Prop :=
   ∀ ⦃x y z⦄, (x, y) ∈ V → (y, z) ∈ V → (x, z) ∈ V
 
-lemma TransitiveRel.comp_eq_of_idRel_subset {s : Set (X × X)}
-    (h : TransitiveRel s) (h' : idRel ⊆ s) :
+lemma IsTransitiveRel.comp_eq_of_idRel_subset {s : Set (X × X)}
+    (h : IsTransitiveRel s) (h' : idRel ⊆ s) :
     s ○ s = s := by
   refine le_antisymm ?_ (subset_comp_self h')
   intro ⟨x, y⟩
@@ -69,7 +69,7 @@ variable (X) in
 /-- A uniform space is ultrametric if the uniformity `𝓤 X` has a basis of equivalence relations. -/
 class IsUltraUniformity : Prop where
   has_basis : (𝓤 X).HasBasis
-    (fun s : Set (X × X) => s ∈ 𝓤 X ∧ SymmetricRel s ∧ TransitiveRel s) id
+    (fun s : Set (X × X) => s ∈ 𝓤 X ∧ IsSymmetricRel s ∧ IsTransitiveRel s) id
 
 variable [IsUltraUniformity X]
 
