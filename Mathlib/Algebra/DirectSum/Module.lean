@@ -228,7 +228,7 @@ def lmap : (⨁ i, M i) →ₗ[R] ⨁ i, N i := DFinsupp.mapRange.linearMap f
 
 @[simp] lemma lmap_comp {K : ι → Type*} [∀ i, AddCommMonoid (K i)] [∀ i, Module R (K i)]
     (g : ∀ (i : ι), N i →ₗ[R] K i) :
-    (lmap (fun i ↦ (g i).comp (f i))) = (lmap g).comp (lmap f) :=
+    (lmap (fun i ↦ (g i) ∘ₗ (f i))) = (lmap g) ∘ₗ (lmap f) :=
   DFinsupp.mapRange.linearMap_comp _ _
 
 theorem lmap_injective : Function.Injective (lmap f) ↔ ∀ i, Function.Injective (f i) := by
