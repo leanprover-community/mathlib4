@@ -400,8 +400,9 @@ noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
           · simp only [mem_sigma, mem_product, implies_true]
           · simp only [implies_true]
     rw [s₂.symm] at s₁
-    simp_all only [LinearMap.coeFn_sum, sum_apply, LinearMap.smul_apply, not_le, not_and, lie_smul,
-      smul_lie, R2N, RN],
+    rw [s₁]
+    simp only [LinearMap.coeFn_sum, sum_apply, LinearMap.smul_apply]
+    ,
   invFun := fun l => (IsNilpotent.exp (-(D.toLinearMap))) l,
   left_inv := by
     simp_all
