@@ -44,10 +44,10 @@ abbrev Copy (A : SimpleGraph α) (B : SimpleGraph β) :=
 abbrev Hom.toCopy (f : A →g B) (h : Function.Injective f) : Copy A B := ⟨f, h⟩
 
 /-- An embedding gives rise to a copy. -/
-abbrev Embedding.toCopy (f : A ↪g B) : Copy A B := Hom.toCopy f.toHom f.injective
+abbrev Embedding.toCopy (f : A ↪g B) : Copy A B := f.toHom.toCopy f.injective
 
 /-- An isomorphism gives rise to a copy. -/
-abbrev Iso.toCopy (f : A ≃g B) : Copy A B := Embedding.toCopy f.toEmbedding
+abbrev Iso.toCopy (f : A ≃g B) : Copy A B := f.toEmbedding.toCopy
 
 namespace Copy
 
@@ -78,14 +78,13 @@ def mapNeighborSet (f : Copy A B) (a : α) :
     exact f.injective h
 
 /-- A copy gives rise to an embedding of vertex types. -/
-def asEmbedding (f : Copy A B) : α ↪ β := ⟨f, f.injective⟩
+def toEmbedding (f : Copy A B) : α ↪ β := ⟨f, f.injective⟩
 
 /-- The identity copy from a simple graph to itself. -/
-@[refl] def refl (G : SimpleGraph V) : Copy G G := ⟨Hom.id, Function.injective_id⟩
+@[refl] def id (G : SimpleGraph V) : Copy G G := ⟨Hom.id, Function.injective_id⟩
 
 /-- The copy from a subgraph to the supergraph. -/
-def ofLE {G₁ G₂ : SimpleGraph V} (h : G₁ ≤ G₂) : Copy G₁ G₂ :=
-  ⟨Hom.ofLE h, Function.injective_id⟩
+def ofLE (G₁ G₂ : SimpleGraph V) (h : G₁ ≤ G₂) : Copy G₁ G₂ := ⟨Hom.ofLE h, Function.injective_id⟩
 
 /-- The copy from an induced subgraph to the initial simple graph. -/
 def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G :=
