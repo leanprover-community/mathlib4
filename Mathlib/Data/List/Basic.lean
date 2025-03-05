@@ -237,7 +237,7 @@ theorem head?_flatten_replicate {n : ℕ} {as : List α} (h : n ≠ 0) :
 
 theorem getLast?_flatten_replicate  {n : ℕ} {as : List α} (h : n ≠ 0) :
     (List.replicate n as).flatten.getLast? = as.getLast? := by
-  rw [← List.head?_reverse, ← List.head?_reverse,List.reverse_flatten, List.map_replicate,
+  rw [← List.head?_reverse, ← List.head?_reverse, List.reverse_flatten, List.map_replicate,
   List.reverse_replicate, head?_flatten_replicate h]
 
 /-! ### pure -/
