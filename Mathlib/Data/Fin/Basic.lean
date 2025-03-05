@@ -78,22 +78,6 @@ namespace Fin
     1 = (⟨a, ha⟩ : Fin (n + 2)) ↔ a = 1 := by
   simp [eq_comm]
 
-@[simp] theorem mk_eq_zero {n a : Nat} {ha : a < n} [NeZero n] :
-    (⟨a, ha⟩ : Fin n) = 0 ↔ a = 0 :=
-  mk.inj_iff
-
-@[simp] theorem zero_eq_mk {n a : Nat} {ha : a < n} [NeZero n] :
-    0 = (⟨a, ha⟩ : Fin n) ↔ a = 0 := by
-  simp [eq_comm]
-
-@[simp] theorem mk_eq_one {n a : Nat} {ha : a < n + 2} :
-    (⟨a, ha⟩ : Fin (n + 2)) = 1 ↔ a = 1 :=
-  mk.inj_iff
-
-@[simp] theorem one_eq_mk {n a : Nat} {ha : a < n + 2} :
-    1 = (⟨a, ha⟩ : Fin (n + 2)) ↔ a = 1 := by
-  simp [eq_comm]
-
 instance {n : ℕ} : CanLift ℕ (Fin n) Fin.val (· < n) where
   prf k hk := ⟨⟨k, hk⟩, rfl⟩
 
