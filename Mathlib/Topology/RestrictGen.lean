@@ -63,6 +63,9 @@ theorem of_continuous_prop (h : ∀ f : X → Prop, (∀ s ∈ S, ContinuousOn f
     simp only [continuousOn_iff_continuous_restrict, continuous_Prop] at *
     exact h _ hu
 
+/-- The restriction of a topology on `X` to set from a family `S`
+generates the original topology if a set which is relatively closed in
+each `s ∈ S` is closed. -/
 theorem of_isClosed (h : ∀ t : Set X, (∀ s ∈ S, IsClosed ((↑) ⁻¹' t : Set s)) → IsClosed t) :
     RestrictGenTopology S :=
   ⟨fun _t ht ↦ isClosed_compl_iff.1 <| h _ fun s hs ↦ (ht s hs).isClosed_compl⟩

@@ -83,10 +83,9 @@ end TopologicalSpace
 namespace Topology
 variable {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
 
-/-- We say that restrictions of the topology on `X` to sets from a
-family `S` generates the original topology, if for any topological
-space `Y`, a function `f : X → Y` is continuous provided that it is
-continuous on each `s ∈ S`.  -/
+/-- The restriction of a topology on `X` to sets from a family `S`
+generates the original topology if a set which is relatively open in
+each `s ∈ S` is open.  -/
 structure RestrictGenTopology (S : Set (Set X)) : Prop where
   isOpen_of_forall_induced (u : Set X) : (∀ s ∈ S, IsOpen ((↑) ⁻¹' u : Set s)) → IsOpen u
 
