@@ -3,12 +3,12 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.Data.Finset.Sym
+import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 import Mathlib.LinearAlgebra.Matrix.Symmetric
-import Mathlib.Data.Finset.Sym
-import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Quadratic maps
