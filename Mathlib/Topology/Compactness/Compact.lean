@@ -205,15 +205,15 @@ theorem IsCompact.elim_nhds_subcover (hs : IsCompact s) (U : X → Set X) (hU : 
 theorem IsCompact.elim_nhdsWithin_subcover' (hs : IsCompact s) (U : ∀ x ∈ s, Set X)
     (hU : ∀ x (hx : x ∈ s), U x hx ∈ 𝓝[s] x) : ∃ t : Finset s, s ⊆ ⋃ x ∈ t, U x x.2 := by
   choose V V_nhds hV using fun x hx => mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (hU x hx)
-  rcases hs.elim_nhds_subcover' V V_nhds with ⟨t, ht⟩
-  refine ⟨t, subset_trans ?_ (biUnion_mono (fun _ => id) fun x _ => hV x x.2)⟩
+  refine (hs.elim_nhds_subcover' V V_nhds).imp fun t ht =>
+    subset_trans ?_ (biUnion_mono (fun _ => id) fun x _ => hV x x.2)
   simpa [← iUnion_inter, ← iUnion_coe_set]
 
 theorem IsCompact.elim_nhdsWithin_subcover (hs : IsCompact s) (U : X → Set X)
     (hU : ∀ x ∈ s, U x ∈ 𝓝[s] x) : ∃ t : Finset X, (∀ x ∈ t, x ∈ s) ∧ s ⊆ ⋃ x ∈ t, U x := by
   choose! V V_nhds hV using fun x hx => mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (hU x hx)
-  rcases hs.elim_nhds_subcover V V_nhds with ⟨t, t_sub_s, ht⟩
-  refine ⟨t, t_sub_s, subset_trans ?_ (biUnion_mono (fun _ => id) fun x hx => hV x (t_sub_s x hx))⟩
+  refine (hs.elim_nhds_subcover V V_nhds).imp fun t ⟨t_sub_s, ht⟩ =>
+    ⟨t_sub_s, subset_trans ?_ (biUnion_mono (fun _ => id) fun x hx => hV x (t_sub_s x hx))⟩
   simpa [← iUnion_inter]
 
 /-- The neighborhood filter of a compact set is disjoint with a filter `l` if and only if the
