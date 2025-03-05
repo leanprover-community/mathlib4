@@ -1202,6 +1202,12 @@ theorem coe_toDualTopEquiv_eq [LE α] :
     (WithBot.toDualTopEquiv : WithBot αᵒᵈ → (WithTop α)ᵒᵈ) = toDual ∘ WithBot.ofDual :=
   funext fun _ => rfl
 
+/-- Embedding into `WithBot α`. -/
+@[simps]
+def _root_.Function.Embedding.coeWithBot : α ↪ WithBot α where
+  toFun := (↑)
+  inj' := WithBot.coe_injective
+
 /-- The coercion `α → WithBot α` bundled as monotone map. -/
 @[simps]
 def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithBot α where
