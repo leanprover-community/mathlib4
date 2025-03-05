@@ -168,10 +168,10 @@ theorem expMap_smul (c : ℝ) (x : realSpace K) :
   simp [mul_comm c _, ← mul_assoc, Real.exp_mul]
 
 theorem sum_expMap_symm_apply {x : K} (hx : x ≠ 0) :
-    ∑ w : InfinitePlace K, expMap.symm (fun w ↦ w x) w =
+    ∑ w : InfinitePlace K, expMap.symm ((normAtAllPlaces (mixedEmbedding K x))) w =
       Real.log (|Algebra.norm ℚ x| : ℚ) := by
   simp_rw [← prod_eq_abs_norm, Real.log_prod _ _ (fun _ _ ↦ pow_ne_zero _ ((map_ne_zero _).mpr hx)),
-    Real.log_pow, expMap_symm_apply]
+    Real.log_pow, expMap_symm_apply, normAtAllPlaces_mixedEmbedding]
 
 /--
 Docstring.
@@ -213,7 +213,8 @@ theorem realSpaceToLogSpace_apply (x :realSpace K) (w : {w : InfinitePlace K // 
     realSpaceToLogSpace x w = x w - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹ := rfl
 
 theorem realSpaceToLogSpace_expMap_symm {x : K} (hx : x ≠ 0) :
-    realSpaceToLogSpace (expMap.symm fun w ↦ w x) = logMap (mixedEmbedding K x) := by
+    realSpaceToLogSpace (expMap.symm (normAtAllPlaces (mixedEmbedding K x))) =
+      logMap (mixedEmbedding K x) := by
   ext w
   simp_rw [realSpaceToLogSpace_apply, sum_expMap_symm_apply hx, expMap_symm_apply,
     logMap, normAtPlace_apply, mul_sub, mul_assoc, norm_eq_norm]
@@ -226,7 +227,8 @@ def completeFamily : InfinitePlace K → realSpace K := by
   intro i
   by_cases hi : i = w₀
   · exact fun w ↦ mult w
-  · exact expMap.symm (fun w ↦ w (fundSystem K (equivFinRank.symm ⟨i, hi⟩)))
+  · exact expMap.symm
+      (normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm ⟨i, hi⟩))))
 
 theorem realSpaceToLogSpace_completeFamily_of_eq :
     realSpaceToLogSpace (completeFamily K w₀) = 0 := by
@@ -285,7 +287,7 @@ theorem completeBasis_apply_of_eq :
 
 theorem completeBasis_apply_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
     completeBasis K i =
-      expMap.symm (fun w : InfinitePlace K ↦ w (fundSystem K (equivFinRank.symm i))) := by
+      expMap.symm (normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm i)))) := by
   rw [completeBasis, coe_basisOfLinearIndependentOfCardEqFinrank, completeFamily, dif_neg]
 
 theorem expMap_basis_of_eq :
@@ -294,7 +296,8 @@ theorem expMap_basis_of_eq :
   simp_rw [expMap_apply, completeBasis_apply_of_eq, inv_mul_cancel₀ mult_coe_ne_zero]
 
 theorem expMap_basis_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
-    expMap (completeBasis K i) = fun w ↦ w (fundSystem K (equivFinRank.symm i) : 𝓞 K) := by
+    expMap (completeBasis K i) =
+      normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm i))) := by
   rw [completeBasis_apply_of_ne, PartialHomeomorph.right_inv _ (by simp [expMap_target])]
 
 theorem abs_det_completeBasis_equivFunL_symm :
@@ -309,7 +312,7 @@ theorem abs_det_completeBasis_equivFunL_symm :
     (completeBasis K).equivFunL.apply_symm_apply]
   split_ifs with hw
   · rw [hw, completeBasis_apply_of_eq]
-  · rw [completeBasis_apply_of_ne K ⟨w, hw⟩, expMap_symm_apply]
+  · simp_rw [completeBasis_apply_of_ne K ⟨w, hw⟩, expMap_symm_apply, normAtAllPlaces_mixedEmbedding]
 
 end completeBasis
 
@@ -357,7 +360,8 @@ theorem expMapBasis_apply' (x : realSpace K) :
          ∏ i : {w // w ≠ w₀}, w (fundSystem K (equivFinRank.symm i)) ^ x i := by
   simp_rw [expMapBasis_apply, Basis.equivFun_symm_apply, Fintype.sum_eq_add_sum_subtype_ne _ w₀,
     expMap_add, expMap_smul, expMap_basis_of_eq, Pi.pow_def, Real.exp_one_rpow, Pi.mul_def,
-    expMap_sum, expMap_smul, expMap_basis_of_ne, Pi.smul_def, smul_eq_mul, prod_apply, Pi.pow_apply]
+    expMap_sum, expMap_smul, expMap_basis_of_ne, Pi.smul_def, smul_eq_mul, prod_apply, Pi.pow_apply,
+    normAtAllPlaces_mixedEmbedding]
 
 open scoped Classical in
 theorem expMapBasis_apply'' (x : realSpace K) :
@@ -419,11 +423,11 @@ theorem logMap_expMapBasis (x : realSpace K) :
     enter [2, 1, 2, w, 2, i]
     rw [if_neg i.prop]
   simp_rw [sum_apply, ← sum_fn, map_sum, Pi.smul_apply, ← Pi.smul_def, map_smul,
-    completeBasis_apply_of_ne, expMap_symm_apply, ← logEmbedding_component, logEmbedding_fundSystem,
-    Finsupp.coe_finset_sum, Finsupp.coe_smul, sum_apply, Pi.smul_apply,
-    Basis.ofZLatticeBasis_repr_apply, Basis.repr_self, Finsupp.single_apply,
-    EmbeddingLike.apply_eq_iff_eq, Int.cast_ite, Int.cast_one, Int.cast_zero, smul_ite,
-    smul_eq_mul, mul_one, mul_zero, Fintype.sum_ite_eq']
+    completeBasis_apply_of_ne, expMap_symm_apply, normAtAllPlaces_mixedEmbedding,
+    ← logEmbedding_component, logEmbedding_fundSystem, Finsupp.coe_finset_sum, Finsupp.coe_smul,
+    sum_apply, Pi.smul_apply, Basis.ofZLatticeBasis_repr_apply, Basis.repr_self,
+    Finsupp.single_apply, EmbeddingLike.apply_eq_iff_eq, Int.cast_ite, Int.cast_one, Int.cast_zero,
+    smul_ite, smul_eq_mul, mul_one, mul_zero, Fintype.sum_ite_eq']
 
 theorem normAtAllPlaces_image_preimage_expMapBasis (s : Set (realSpace K)) :
     normAtAllPlaces '' (normAtAllPlaces ⁻¹' (expMapBasis '' s)) = expMapBasis '' s := by
