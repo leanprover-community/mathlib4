@@ -653,7 +653,7 @@ theorem integral_traj {a : ℕ} (x₀ : Π i : Iic a, X i) {f : (Π n, X n) → 
   · convert mf
     rw [traj_map_updateFinset]
 
-lemma partialTraj_comp_partialTrajProd_traj {a b : ℕ} (hab : a ≤ b) (u : Π i : Iic a, X i) :
+lemma partialTraj_compProd_traj {a b : ℕ} (hab : a ≤ b) (u : Π i : Iic a, X i) :
     (traj κ a u).map (fun x ↦ (frestrictLe b x, x)) = (partialTraj κ a b u) ⊗ₘ (traj κ b) := by
   ext s ms
   rw [Measure.map_apply, Measure.compProd_apply, ← traj_comp_partialTraj _ hab, comp_apply']
@@ -675,7 +675,7 @@ theorem integral_traj_partialTraj' {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Ii
     ∫ x, ∫ y, f x y ∂traj κ b x ∂partialTraj κ a b x₀ =
     ∫ x, f (frestrictLe b x) x ∂traj κ a x₀ := by
   have hf1 := hf
-  rw [← partialTraj_comp_partialTrajProd_traj κ hab] at hf1
+  rw [← partialTraj_compProd_traj κ hab] at hf1
   replace hf1 := hf1.comp_measurable (by fun_prop)
   have hf2 := aestronglyMeasurable_traj κ hab hf1.1
   rw [← traj_comp_partialTraj κ hab, Kernel.integral_comp]
