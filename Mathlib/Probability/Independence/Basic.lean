@@ -679,8 +679,17 @@ lemma iIndepFun.of_precomp {g : ι' → ι} (hg : g.Surjective)
   rw [iIndepFun_iff] at h ⊢
   intro t s hs
   have A (x) : g (Function.invFun g x) = x := Function.rightInverse_invFun hg x
-  stop
-  have := h (t.image (Function.invFun g)) (f' := fun i ↦ s (g i)) (by simpa [A] using hs)
+  have : ∀ i ∈ Finset.image (Function.invFun g) t,
+    @MeasurableSet _ (MeasurableSpace.comap (f <| g i) (m <| g i)) (s <| g i) := by
+    intro i hi
+    obtain ⟨j, hj, rfl⟩ := Finset.mem_image.mp hi
+    simpa [A] using (A j).symm ▸ hs j hj
+  have eq : ∏ i ∈ Finset.image (Function.invFun g) t, μ (s (g i)) = ∏ i ∈ t, μ (s i) := by
+    rw [Finset.prod_image (fun x hx y hy h => ?_), Finset.prod_congr rfl (fun x _ => by rw [A])]
+    rw [←A x, ← A y, h]
+  simpa [A, eq] using h (t.image (Function.invFun g)) (f' := fun i ↦ s (g i)) this
+
+
 
 lemma iIndepFun_precomp_of_bijective {g : ι' → ι} (hg : g.Bijective) :
     iIndepFun (fun i ↦ m (g i)) (fun i ↦ f (g i)) μ ↔ iIndepFun m f μ where
