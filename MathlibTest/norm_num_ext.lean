@@ -514,4 +514,6 @@ example : (4 + 2).ascFactorial 3 = 336 := by norm_num1
 example : (5 + 5).descFactorial 2 = 90 := by norm_num1
 example : (1000000).descFactorial 1000001 = 0 := by norm_num1
 
+example : (200 : ℕ) ! / (10 ^ 370) = 78865 := by norm_num1
+
 end Factorial
