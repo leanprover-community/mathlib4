@@ -31,7 +31,8 @@ variable (Φ : LocalizerMorphism W₁ W₂)
 
 include hi in
 lemma hasRightResolutions_arrow_of_functorial_resolutions :
-    Φ.arrow.HasRightResolutions := fun f ↦ ⟨{
+    Φ.arrow.HasRightResolutions :=
+  fun f ↦ ⟨{
     X₁ := Arrow.mk (ρ.map f.hom)
     w := Arrow.homMk (i.app _) (i.app _) ((i.naturality f.hom).symm)
     hw := ⟨hi _, hi _⟩ }⟩
