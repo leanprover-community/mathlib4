@@ -60,7 +60,7 @@ variable {X Y E F : Type*}
 
 namespace MeasureTheory
 
-variable [MeasurableSpace X]
+variable {mX : MeasurableSpace X}
 
 section NormedAddCommGroup
 
@@ -183,6 +183,11 @@ theorem integral_indicator (hs : MeasurableSet s) :
       (congr_arg₂ (· + ·) (integral_congr_ae (indicator_ae_eq_restrict hs))
         (integral_congr_ae (indicator_ae_eq_restrict_compl hs)))
     _ = ∫ x in s, f x ∂μ := by simp
+
+lemma integral_integral_indicator {mY : MeasurableSpace Y} {ν : Measure Y} (f : X → Y → E)
+    {s : Set X} (hs : MeasurableSet s) :
+    ∫ x, ∫ y, s.indicator (f · y) x ∂ν ∂μ = ∫ x in s, ∫ y, f x y ∂ν ∂μ := by
+  simp_rw [← integral_indicator hs, integral_indicator₂]
 
 theorem setIntegral_indicator (ht : MeasurableSet t) :
     ∫ x in s, t.indicator f x ∂μ = ∫ x in s ∩ t, f x ∂μ := by
@@ -408,7 +413,7 @@ theorem setIntegral_eq_integral_of_forall_compl_eq_zero (h : ∀ x, x ∉ s → 
     ∫ x in s, f x ∂μ = ∫ x, f x ∂μ :=
   setIntegral_eq_integral_of_ae_compl_eq_zero (Eventually.of_forall h)
 
-theorem setIntegral_neg_eq_setIntegral_nonpos [LinearOrder E] {f : X → E}
+theorem setIntegral_neg_eq_setIntegral_nonpos [PartialOrder E] {f : X → E}
     (hf : AEStronglyMeasurable f μ) :
     ∫ x in {x | f x < 0}, f x ∂μ = ∫ x in {x | f x ≤ 0}, f x ∂μ := by
   have h_union : {x | f x ≤ 0} = {x | f x < 0} ∪ {x | f x = 0} := by
@@ -1413,7 +1418,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
     ContinuousOn (fun x ↦ ∫ y, L (g y) (f x y) ∂μ) s := by
   have A : ∀ p ∈ s, Continuous (f p) := fun p hp ↦ by
     refine hf.comp_continuous (continuous_const.prod_mk continuous_id') fun y => ?_
-    simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true] using hp
+    simpa only [prodMk_mem_set_prod_eq, mem_univ, and_true] using hp
   intro q hq
   apply Metric.continuousWithinAt_iff'.2 (fun ε εpos ↦ ?_)
   obtain ⟨δ, δpos, hδ⟩ : ∃ (δ : ℝ), 0 < δ ∧ ∫ x in k, ‖L‖ * ‖g x‖ * δ ∂μ < ε := by
