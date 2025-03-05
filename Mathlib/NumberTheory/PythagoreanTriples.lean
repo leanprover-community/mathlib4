@@ -447,7 +447,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
     contrapose! hvz with hw1
     -- Porting note: `contrapose` unfolds local names, refold them
     replace hw1 : w = -1 := hw1; show v = 0
-    rw [hw1, neg_sq, one_pow, add_left_eq_self] at hq
+    rw [hw1, neg_sq, one_pow, add_eq_right] at hq
     exact pow_eq_zero hq
   have hQ : ∀ x : ℚ, 1 + x ^ 2 ≠ 0 := by
     intro q

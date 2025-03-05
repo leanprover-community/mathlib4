@@ -88,7 +88,7 @@ theorem x_not_pseudo_eq : ¬PseudoEqual _ x y := by
     Preadditive.add_comp, BinaryBicone.inl_snd, BinaryBicone.inr_snd, zero_add, two_smul] at ha₂
   erw [add_apply, ModuleCat.id_apply] at ha₂
   subst ha₁
-  simp only [self_eq_add_right] at ha₂
+  simp only [left_eq_add] at ha₂
   exact one_ne_zero' ℚ ha₂
 
 attribute [local instance] Pseudoelement.setoid

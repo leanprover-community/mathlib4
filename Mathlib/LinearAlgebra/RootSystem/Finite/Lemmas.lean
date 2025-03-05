@@ -176,7 +176,7 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
   obtain ⟨l, hl⟩ := hk
   have hli : l ≠ i := by
     rintro rfl
-    rw [add_comm, add_sub_assoc, self_eq_add_right, sub_eq_zero, P.root.injective.eq_iff] at hl
+    rw [add_comm, add_sub_assoc, left_eq_add, sub_eq_zero, P.root.injective.eq_iff] at hl
     exact hkj hl
   suffices 0 < P.pairingIn ℤ l i by
     convert P.root_sub_root_mem_of_pairingIn_pos this hli using 1

@@ -121,7 +121,7 @@ theorem lt_card_le_iff_apply_le_of_monotone [PartialOrder α] [DecidableRel (α 
     have h_le : Fintype.card { i // f i ≤ a } ≤ m := by
       conv_rhs => rw [← Fintype.card_fin m]
       exact Fintype.card_subtype_le _
-    rwa [Fintype.card_sum, h4, Fintype.card_fin_lt_of_le h_le, add_right_eq_self] at he
+    rwa [Fintype.card_sum, h4, Fintype.card_fin_lt_of_le h_le, add_eq_left] at he
   intro _ h
   contrapose! h
   rw [← Fin.card_Iio, Fintype.card_subtype]

@@ -331,7 +331,7 @@ theorem IndepFun.variance_sum [IsProbabilityMeasure μ] {ι : Type*} {X : ι →
       ring
     _ = variance (X k) μ + variance (∑ i ∈ s, X i) μ := by
       simp_rw [Pi.mul_apply, Pi.ofNat_apply, Nat.cast_ofNat, sum_apply, mul_sum, mul_assoc,
-        add_right_eq_self]
+        add_eq_left]
       rw [integral_finset_sum s fun i hi => ?_]; swap
       · apply Integrable.const_mul _ (2 : ℝ)
         apply IndepFun.integrable_mul _ (MemLp.integrable one_le_two (hs _ (mem_insert_self _ _)))

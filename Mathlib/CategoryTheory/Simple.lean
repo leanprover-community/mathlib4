@@ -174,7 +174,7 @@ variable [Preadditive C] [HasBinaryBiproducts C]
 -- There are another three potential variations of this lemma,
 -- but as any one suffices to prove `indecomposable_of_simple` we will not give them all.
 theorem Biprod.isIso_inl_iff_isZero (X Y : C) : IsIso (biprod.inl : X ⟶ X ⊞ Y) ↔ IsZero Y := by
-  rw [biprod.isIso_inl_iff_id_eq_fst_comp_inl, ← biprod.total, add_right_eq_self]
+  rw [biprod.isIso_inl_iff_id_eq_fst_comp_inl, ← biprod.total, add_eq_left]
   constructor
   · intro h
     replace h := h =≫ biprod.snd

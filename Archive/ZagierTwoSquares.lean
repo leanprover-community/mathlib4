@@ -49,7 +49,7 @@ lemma zagierSet_lower_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) : 0 < 
   all_goals
     rcases (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e | e
     all_goals
-      simp only [e, self_eq_add_left, ne_eq, add_eq_zero, and_false, not_false_eq_true,
+      simp only [e, right_eq_add, ne_eq, add_eq_zero, and_false, not_false_eq_true,
         mul_eq_left₀, reduceCtorEq] at h
       simp only [h, zero_add] at hk
       exact Nat.not_prime_one hk.out
@@ -147,7 +147,7 @@ theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (comple
   rw [mem_fixedPoints_iff, complexInvo, Subtype.mk.injEq] at mem
   split_ifs at mem with less more <;>
     -- less (completely handled by the pre-applied `simp_all only`)
-    simp_all only [not_lt, Prod.mk.injEq, add_right_eq_self, mul_eq_zero, false_or,
+    simp_all only [not_lt, Prod.mk.injEq, add_eq_left, mul_eq_zero, false_or,
       lt_self_iff_false, reduceCtorEq]
   · -- more
     obtain ⟨_, _, _⟩ := mem; simp_all
