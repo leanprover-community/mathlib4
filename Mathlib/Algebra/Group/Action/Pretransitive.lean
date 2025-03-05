@@ -66,10 +66,15 @@ lemma exists_smul_eq (x y : α) : ∃ m : M, m • x = y := IsPretransitive.exis
 @[to_additive]
 lemma surjective_smul (x : α) : Surjective fun c : M ↦ c • x := exists_smul_eq M x
 
-/-- The regular action of a group on itself is transitive. -/
+/-- The left regular action of a group on itself is transitive. -/
 @[to_additive "The regular action of a group on itself is transitive."]
 instance Regular.isPretransitive [Group G] : IsPretransitive G G :=
   ⟨fun x y ↦ ⟨y * x⁻¹, inv_mul_cancel_right _ _⟩⟩
+
+/-- The right regular action of a group on itself is transitive. -/
+@[to_additive "The right regular action of an additive group on itself is transitive."]
+instance Regular.isPretransitive_mulOpposite [Group G] : IsPretransitive Gᵐᵒᵖ G :=
+  ⟨fun x y ↦ ⟨.op (x⁻¹ * y), mul_inv_cancel_left _ _⟩⟩
 
 end MulAction
 
