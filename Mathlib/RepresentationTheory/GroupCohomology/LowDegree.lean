@@ -589,7 +589,7 @@ variable {G M : Type*} [Monoid G] [CommGroup M] [MulAction G M]
 
 theorem map_one_of_isMulOneCocycle {f : G → M} (hf : IsMulOneCocycle f) :
     f 1 = 1 := by
-  simpa only [mul_one, one_smul, self_eq_mul_right] using hf 1 1
+  simpa only [mul_one, one_smul, left_eq_mul] using hf 1 1
 
 theorem map_one_fst_of_isMulTwoCocycle {f : G × G → M} (hf : IsMulTwoCocycle f) (g : G) :
     f (1, g) = f (1, 1) := by

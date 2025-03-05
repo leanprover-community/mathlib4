@@ -33,7 +33,7 @@ example [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ 𝟙 _ ≫ 
   rw?
 
 /--
-info: Try this: rw [mul_left_eq_self]
+info: Try this: rw [mul_eq_right]
 -- "no goals"
 -/
 #guard_msgs in
