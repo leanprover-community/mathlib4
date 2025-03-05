@@ -32,6 +32,7 @@ This file also provides diffeomorphisms related to products and disjoint unions.
 * `Diffeomorph.sumComm`: `M ⊕ M'` is diffeomorphic to `M' × M`
 * `Diffeomorph.sumAssoc`: `(M ⊕ N) ⊕ P` is diffeomorphic to `M ⊕ (N ⊕ P)`
 * `Diffeomorph.sumEmpty`: `M ⊕ ∅` is diffeomorphic to `M`
+* `Diffeomorph.prodSumDistrib`: `(M × P) ⊕ (N × P)` is diffeomorphic to `(M⊕N) × P`
 
 ## Notations
 
@@ -579,9 +580,9 @@ end Product
 
 section disjointUnion
 
-variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
-  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
-  {N J : Type*} [TopologicalSpace N] [ChartedSpace H N] {J : ModelWithCorners 𝕜 E' H}
+variable {J : ModelWithCorners 𝕜 E' H}
+  {M' M'' N : Type*} [TopologicalSpace M'] [ChartedSpace H M']
+  [TopologicalSpace M''] [ChartedSpace H M''] [TopologicalSpace N] [ChartedSpace H N]
   {N' : Type*} [TopologicalSpace N'] [ChartedSpace H N']
 
 /-- The sum of two diffeomorphisms -/
@@ -653,6 +654,21 @@ def sumEmpty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M n where
 
 @[simp]
 theorem sumEmpty_toEquiv [IsEmpty M'] : (sumEmpty I M n).toEquiv = Equiv.sumEmpty M M' := rfl
+
+variable (I J M M' N n) in
+def prodSumDistrib: Diffeomorph (I.prod J) (I.prod J) ((M × N) ⊕ (M' × N)) ((M ⊕ M') × N) n where
+  toEquiv := (Equiv.sumProdDistrib M M' N).symm
+  contMDiff_toFun := by
+    apply ContMDiff.sumElim
+    · exact ContMDiff.prod_map ContMDiff.inl contMDiff_id
+    · exact ContMDiff.prod_map ContMDiff.inr contMDiff_id
+  contMDiff_invFun := sorry
+
+
+@[simp]
+theorem prodSumDistrib_toEquiv :
+    (prodSumDistrib I M n J M' N).toEquiv = (Equiv.sumProdDistrib M M' N).symm :=
+  rfl
 
 end disjointUnion
 
