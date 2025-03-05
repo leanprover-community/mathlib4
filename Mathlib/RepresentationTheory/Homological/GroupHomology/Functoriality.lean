@@ -388,10 +388,10 @@ theorem H1CoresCoinfOfTrivial_exact [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.com
   intro x hx
 /- Denote `C(i) : C(S, A) ⟶ C(G, A), C(π) : C(G, A) ⟶ C(G ⧸ S, A)` and let `x : Z₁(G, A)` map to
 0 in `H₁(G ⧸ S, A)`. -/
-  induction' x using Quotient.inductionOn' with x
-  rcases x with ⟨(x : G →₀ A), (hxc : x ∈ oneCycles A)⟩
+  induction' x using H1_induction_on with x
+  rcases x with ⟨x, hxc⟩
   simp_all only [H1CoresCoinfOfTrivial_X₂, H1CoresCoinfOfTrivial_X₃, H1CoresCoinfOfTrivial_g,
-    Submodule.Quotient.mk''_eq_mk, LinearMap.mem_ker, H1π_comp_H1Map_apply (QuotientGroup.mk' S)]
+    LinearMap.mem_ker, H1π_comp_H1Map_apply (QuotientGroup.mk' S)]
 /- Choose `y := ∑ y(σ, τ)·(σ, τ) ∈ C₂(G ⧸ S, A)` such that `C₁(π)(x) = d(y)`. -/
   rcases (H1π_eq_zero_iff _).1 hx with ⟨y, hy⟩
 /- Let `s : G ⧸ S → G` be a section of the quotient map. -/

@@ -758,6 +758,11 @@ lemma H1π_eq_iff (x y : oneCycles A) :
   rw [← sub_eq_zero, ← map_sub]
   exact H1π_eq_zero_iff (x - y)
 
+@[elab_as_elim]
+theorem H1_induction_on {C : H1 A → Prop}
+    (h : ∀ x : oneCycles A, C (Submodule.Quotient.mk x)) (x : H1 A) :
+    C x := Quotient.inductionOn' x h
+
 /-- The short complex `(G² →₀ A) --dOne--> (G →₀ A) --dZero--> A` is isomorphic to the 1st
 short complex associated to the complex of inhomogeneous chains of `A`. -/
 @[simps! hom inv]
@@ -832,6 +837,11 @@ lemma H2π_eq_iff (x y : twoCycles A) :
     H2π A x = H2π A y ↔ x.1 - y.1 ∈ twoBoundaries A := by
   rw [← sub_eq_zero, ← map_sub]
   exact H2π_eq_zero_iff (x - y)
+
+@[elab_as_elim]
+theorem H2_induction_on {C : H2 A → Prop}
+    (h : ∀ x : twoCycles A, C (Submodule.Quotient.mk x)) (x : H2 A) :
+    C x := Quotient.inductionOn' x h
 
 /-- The short complex `(G³ →₀ A) --dTwo--> (G² →₀ A) --dOne--> (G →₀ A)` is
 isomorphic to the 2nd short complex associated to the complex of inhomogeneous chains of `A`. -/
