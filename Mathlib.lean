@@ -4402,6 +4402,7 @@ import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 import Mathlib.Order.Filter.AtTopBot.Defs
 import Mathlib.Order.Filter.AtTopBot.Disjoint
 import Mathlib.Order.Filter.AtTopBot.Field
+import Mathlib.Order.Filter.AtTopBot.Finite
 import Mathlib.Order.Filter.AtTopBot.Finset
 import Mathlib.Order.Filter.AtTopBot.Floor
 import Mathlib.Order.Filter.AtTopBot.Group
@@ -4411,7 +4412,8 @@ import Mathlib.Order.Filter.AtTopBot.Monoid
 import Mathlib.Order.Filter.AtTopBot.Prod
 import Mathlib.Order.Filter.AtTopBot.Ring
 import Mathlib.Order.Filter.AtTopBot.Tendsto
-import Mathlib.Order.Filter.Bases
+import Mathlib.Order.Filter.Bases.Basic
+import Mathlib.Order.Filter.Bases.Finite
 import Mathlib.Order.Filter.Basic
 import Mathlib.Order.Filter.CardinalInter
 import Mathlib.Order.Filter.Cocardinal
