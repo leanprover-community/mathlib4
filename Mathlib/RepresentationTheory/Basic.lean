@@ -516,12 +516,13 @@ considered as a `k[G]`-module. -/
 def finsuppLEquivFreeAsModule :
     (α →₀ MonoidAlgebra k G) ≃ₗ[MonoidAlgebra k G] (free k G α).asModule :=
   { AddEquiv.refl _ with
-    map_smul' := fun r x => by
+    map_smul' _ x := by
       simp only [AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
         AddEquiv.refl_apply, RingHom.id_apply]
-      refine x.induction ?_ fun _ _ _ _ _ h => ?_
-      · simp only [smul_zero]
-      · rw [smul_add, h]
+      induction x using Finsupp.induction with
+      | h0 => simp only [smul_zero]
+      | @ha _ _ _ _ _ h =>
+        rw [smul_add, h]
         show _ + asAlgebraHom _ _ _ = asAlgebraHom _ _ _
         simp only [map_add, smul_single, smul_eq_mul, MonoidAlgebra.mul_def,
           asAlgebraHom_def, MonoidAlgebra.lift_apply]
