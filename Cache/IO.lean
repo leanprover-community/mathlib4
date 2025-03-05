@@ -146,9 +146,7 @@ the file should be located at `(← getSrcDir _) / "Mathlib" / "Init.lean`.
 
 Usually it is either `.` or something like `./.lake/packages/mathlib/`
 -/
-def getSrcDir (path : FilePath) : CacheM FilePath := do
-  let sp := (← read).srcSearchPath
-
+def getSrcDir (sp : SearchPath) (path : FilePath) : IO FilePath := do
   -- `path` is a unresolved file name like `Aesop/Build.lean`
   let mod : Name := .fromComponents <| path.withExtension "" |>.components.map Name.mkSimple
 
@@ -296,7 +294,8 @@ def mkBuildPaths (path : FilePath) : CacheM <| List (FilePath × Bool) := do
   If a dependency is added to mathlib which uses such a custom layout, `mkBuildPaths`
   needs to be adjusted!
   -/
-  let packageDir ← getSrcDir path
+  let sp := (← read).srcSearchPath
+  let packageDir ← getSrcDir sp path
   if !(← (packageDir / ".lake").isDir) then
     IO.eprintln <| s!"Warning: {packageDir / ".lake"} seems not to exist, most likely `cache` \
       will not work as expected!"
@@ -407,17 +406,17 @@ def lookup (hashMap : ModuleHashMap) (paths : List FilePath) : IO Unit := do
   if err then IO.Process.exit 1
 
 /--
-Parse a string as either a path or a Lean module name. If the argument describes a folder,
-use `walkDir` to find all `.lean` files within.
+Parse a string as either a path or a Lean module name.
+TODO: If the argument describes a folder, use `walkDir` to find all `.lean` files within.
 
 Return tuples of the form ("module name", "path to .lean file").
 
 The input string `arg` takes one of the following forms:
 
 1. `Mathlib.Algebra.Fields.Basic`: there exists such a Lean file
-2. `Mathlib.Algebra.Fields`: no Lean file exists but a folder
+2. `Mathlib.Algebra.Fields`: no Lean file exists but a folder (TODO)
 3. `Mathlib/Algebra/Fields/Basic.lean`: the file exists (note potentially `\` on Windows)
-4. `Mathlib/Algebra/Fields/`: the folder exists
+4. `Mathlib/Algebra/Fields/`: the folder exists (TODO)
 
 Not supported yet:
 
@@ -425,12 +424,12 @@ Not supported yet:
 
 Note: An argument like `Archive` is treated as module, not a path.
 -/
-def leanModulesFromSpec (argₛ : String) (sp : SearchPath) : CacheM <| Except String <| Array (Name × FilePath) := do
-  let arg : FilePath := argₛ
+def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
+    IO <| Except String <| Array (Name × FilePath) := do
+  let arg : FilePath := (argₛ : FilePath)
   if arg.components.length > 1 || arg.extension == "lean" then
     -- provided file name of a Lean file
     let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
-    let srcDir ← getSrcDir arg
     if !(← arg.pathExists) then
       -- TODO: (5.) We could use `srcDir` to allow arguments like `Aesop/Builder.lean` which
       -- refer to a file located under `.lake/packages/...`
@@ -440,9 +439,7 @@ def leanModulesFromSpec (argₛ : String) (sp : SearchPath) : CacheM <| Except S
       return .ok #[(mod, arg)]
     else
       -- (4.) provided existing directory: walk it
-      IO.println s!"Searching directory {arg} for .lean files"
-      let leanModulesInFolder ← walkDir arg srcDir
-      return .ok leanModulesInFolder
+      return .error "Searching lean files in a folder is not supported yet!"
   else
     -- provided a module
     let mod := argₛ.toName
@@ -464,20 +461,6 @@ def leanModulesFromSpec (argₛ : String) (sp : SearchPath) : CacheM <| Except S
           file `Mathlib/Data.lean` exists) is not supported yet!"
       else
         return .error "Invalid argument: non-existing module {mod}"
-where
-  /-- assumes the folder exists -/
-  walkDir (folder : FilePath) (srcDir : FilePath) : CacheM <| Array (Name × FilePath) := do
-    -- find all Lean files in the folder, skipping hidden folders/files
-    let files ← folder.walkDir fun p => match p.fileName with
-      | some s => pure !(s.startsWith ".")
-      | none => pure false
-    let leanFiles := files.filter (·.extension == some "lean")
-    let mut leanModulesInFolder : Array (Name × FilePath) := #[]
-    for file in leanFiles do
-      let path := file.withoutParent srcDir
-      let mod : Name := path.withExtension "" |>.components.foldl .str .anonymous
-      leanModulesInFolder := leanModulesInFolder.push (mod, file)
-    return leanModulesInFolder
 
 /--
 Parse command line arguments.
@@ -489,9 +472,9 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
   match args with
   | [] => pure ∅
   | _ :: args₀ => args₀.foldlM (init := ∅) fun acc (arg : String) => do
-    match ← leanModulesFromSpec arg with
+    let sp := (← read).srcSearchPath
+    match (← leanModulesFromSpec sp arg) with
     | .ok mods =>
-      dbg_trace s!"{mods}"
       pure <| acc.insertMany mods
     | .error msg =>
       IO.eprintln msg
