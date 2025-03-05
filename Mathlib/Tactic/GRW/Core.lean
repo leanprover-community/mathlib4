@@ -25,7 +25,9 @@ initialize registerTraceClass `GRW
 Lemmas marked `@[grw]` are used by the `grw` tactic to use a relation to rewrite an expression.
 
 The lemma is used to rewrite its first explicit argument into the result type. The other arguments
-are then filled in using the `gcongr` tactic.
+are then filled in using the `gcongr` tactic. Due to it's use of templates, this attribute is
+very strict about argument order: the final arguments of the lemma should exactly match the
+arguments of the target type.
 
 For example, this lemma shows `grw` how to convert `a < b` into `c < d`.
 
@@ -35,12 +37,13 @@ lemma rewrite_lt {α : Type} [Preorder α] {a b c d : α} (h₁ : a < b) (h₂ :
     c < d := lt_of_le_of_lt h₂ (lt_of_lt_of_le h₁ h₃)
 ```
 
-These lemmas can do more than just use transitivity. This lemma shows `grw` to to rewrite `a ∈ X`
-into `a ∈ Y`.
+These lemmas can do more than just use transitivity. This lemma shows `grw` how to rewrite `a ∈ X`
+into `a ∈ Y`. Note the dummy argument corresponding to the `a` argument of `a ∈ Y`.
 
 ```lean
 @[grw]
-lemma rewrite_mem {α : Type} {a : α} {X Y: Set α} (h₁ : a ∈ X) (h₂ : X ⊆ Y) : a ∈ Y := h₂ h₁
+lemma rewrite_mem {α : Type} {a : α} {X Y : Set α} (h₁ : a ∈ X) (h₂ : X ⊆ Y) (_ : a = a) :
+    a ∈ Y := h₂ h₁
 ```
 -/
 initialize ext : LabelExtension ← (
@@ -59,10 +62,10 @@ def getNeedleReplacement (relationType : Expr) : MetaM (Expr × Expr) := do
   return (args[args.size - 2]!, args[args.size - 1]!)
 
 /--
-Constructs the new expression after rewriting occurrences of the LHS of `rule` with the RHS
-in `oldExpr` (or vice versa when `rev` is true). Returns `(template, newExpr)` where `newExpr` is
-the replaced expression and `template` is the rewrite motive with the bound variable replaced with
-a fresh mvar (used as input to gcongr).
+When `rule` is an expression of type `x ~ y`, constructs the new expression after rewriting
+occurrences of `x` with `y` in `oldExpr` (or vice versa when `rev` is true). Returns
+`(template, newExpr)` where `newExpr` is the replaced expression and `template` is the rewrite
+motive with the bound variable replaced with a fresh mvar (used as input to gcongr).
 -/
 def getNewExpr (rule : Expr) (rev : Bool) (oldExpr : Expr) : MetaM (Expr × Expr) := do
   let ruleType ← instantiateMVars (← inferType rule)
