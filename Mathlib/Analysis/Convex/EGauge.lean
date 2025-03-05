@@ -28,11 +28,6 @@ because we lack a theory of normed semifields.
 open Function Set Filter Metric
 open scoped Topology Pointwise ENNReal NNReal
 
-protected theorem Set.MapsTo.smul_set {F M α β : Type*} [FunLike F α β] [SMul M α] [SMul M β]
-    [MulActionHomClass F M α β] {f : F} {s : Set α} {t : Set β} (h : MapsTo f s t) (c : M) :
-    MapsTo f (c • s) (c • t) :=
-  Semiconj.mapsTo_image_right (map_smul f c) h
-
 section SMul
 
 /-- The Minkowski functional for vector spaces over normed fields.
@@ -50,13 +45,13 @@ noncomputable def egauge (𝕜 : Type*) [ENorm 𝕜] {E : Type*} [SMul 𝕜 E] (
 
 variable (𝕜 : Type*) [NNNorm 𝕜] {E : Type*} [SMul 𝕜 E] {c : 𝕜} {s t : Set E} {x : E} {r : ℝ≥0∞}
 
-lemma egauge_le_of_mapsTo {E' F : Type*} [SMul 𝕜 E'] [FunLike F E E'] [MulActionHomClass F 𝕜 E E']
+lemma Set.MapsTo.egauge_le {E' F : Type*} [SMul 𝕜 E'] [FunLike F E E'] [MulActionHomClass F 𝕜 E E']
     (f : F) {t : Set E'} (h : MapsTo f s t) (x : E) : egauge 𝕜 t (f x) ≤ egauge 𝕜 s x :=
   iInf_mono fun c ↦ iInf_mono' fun hc ↦ ⟨h.smul_set c hc, le_rfl⟩
 
 @[mono, gcongr]
 lemma egauge_anti (h : s ⊆ t) (x : E) : egauge 𝕜 t x ≤ egauge 𝕜 s x :=
-  egauge_le_of_mapsTo _ (MulActionHom.id ..) h _
+  MapsTo.egauge_le _ (MulActionHom.id ..) h _
 
 @[simp] lemma egauge_empty (x : E) : egauge 𝕜 ∅ x = ∞ := by simp [egauge]
 
@@ -82,7 +77,17 @@ lemma le_egauge_inter (s t : Set E) (x : E) :
 lemma le_egauge_pi {ι : Type*} {E : ι → Type*} [∀ i, SMul 𝕜 (E i)] {I : Set ι} {i : ι}
     (hi : i ∈ I) (s : ∀ i, Set (E i)) (x : ∀ i, E i) :
     egauge 𝕜 (s i) (x i) ≤ egauge 𝕜 (I.pi s) x :=
-  egauge_le_of_mapsTo _ (Pi.evalMulActionHom i) (fun x hx ↦ by exact hx i hi) _
+  MapsTo.egauge_le _ (Pi.evalMulActionHom i) (fun x hx ↦ by exact hx i hi) _
+
+variable {F : Type*} [SMul 𝕜 F]
+
+lemma le_egauge_prod_left (s : Set E) (t : Set F) (a : E) (b : F) :
+    egauge 𝕜 s a ≤ egauge 𝕜 (s ×ˢ t) (a, b) :=
+  MapsTo.egauge_le 𝕜 (MulActionHom.fst 𝕜 E F) mapsTo_fst_prod (a, b)
+
+lemma le_egauge_prod_right (s : Set E) (t : Set F) (a : E) (b : F) :
+    egauge 𝕜 t b ≤ egauge 𝕜 (s ×ˢ t) (a, b) :=
+  MapsTo.egauge_le 𝕜 (MulActionHom.snd 𝕜 E F) mapsTo_snd_prod (a, b)
 
 end SMul
 
@@ -214,7 +219,7 @@ theorem egauge_pi' {I : Set ι} (hI : I.Finite)
     (x : ∀ i, E i) (hI₀ : I = univ ∨ (∃ i ∈ I, x i ≠ 0) ∨ (𝓝[≠] (0 : 𝕜)).NeBot) :
     egauge 𝕜 (I.pi U) x = ⨆ i ∈ I, egauge 𝕜 (U i) (x i) := by
   refine le_antisymm ?_ (iSup₂_le fun i hi ↦ le_egauge_pi hi _ _)
-  apply le_of_forall_lt' fun r hr ↦ ?_
+  refine le_of_forall_lt' fun r hr ↦ ?_
   have : ∀ i ∈ I, ∃ c : 𝕜, x i ∈ c • U i ∧ ‖c‖ₑ < r := fun i hi ↦
     egauge_lt_iff.mp <| (le_iSup₂ i hi).trans_lt hr
   choose! c hc hcr using this
@@ -272,17 +277,27 @@ theorem egauge_univ_pi [Finite ι] {U : ∀ i, Set (E i)} (hU : ∀ i, Balanced 
 end Pi
 
 variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {E : Type*} [AddCommGroup E] [Module 𝕜 E]
+  {F : Type*} [AddCommGroup F] [Module 𝕜 F]
+
+/-- The extended gauge of a point `(a, b)` with respect to the product of balanced sets `U` and `V`
+is equal to the maximum of the extended gauges of `a` with respect to `U`
+and `b` with respect to `V`.
+-/
+theorem egauge_prod_mk {U : Set E} {V : Set F}
+    (hU : Balanced 𝕜 U) (hV : Balanced 𝕜 V) (a : E) (b : F) :
+    egauge 𝕜 (U ×ˢ V) (a, b) = max (egauge 𝕜 U a) (egauge 𝕜 V b) := by
+  refine le_antisymm ?_ (max_le (le_egauge_prod_left _ _ _ _) (le_egauge_prod_right _ _ _ _))
+  refine le_of_forall_lt' fun r hr ↦ ?_
+  simp only [max_lt_iff, egauge_lt_iff, smul_set_prod, mk_mem_prod] at hr ⊢
+  rcases hr with ⟨⟨x, hx, hxr⟩, ⟨y, hy, hyr⟩⟩
+  cases le_total ‖x‖ ‖y‖ with
+  | inl hle => exact ⟨y, ⟨hU.smul_mono hle hx, hy⟩, hyr⟩
+  | inr hle => exact ⟨x, ⟨hx, hV.smul_mono hle hy⟩, hxr⟩
 
 theorem egauge_add_add_le {U V : Set E} (hU : Balanced 𝕜 U) (hV : Balanced 𝕜 V) (a b : E) :
     egauge 𝕜 (U + V) (a + b) ≤ max (egauge 𝕜 U a) (egauge 𝕜 V b) := by
-  refine le_of_forall_lt' fun c hc ↦ ?_
-  simp only [max_lt_iff, egauge_lt_iff] at hc ⊢
-  rcases hc with ⟨⟨x, hx, hxc⟩, ⟨y, hy, hyc⟩⟩
-  wlog hxy : ‖x‖ ≤ ‖y‖ generalizing a b x y U V
-  · simpa only [add_comm] using this hV hU b a y hy hyc x hx hxc (le_of_not_le hxy)
-  refine ⟨y, ?_, hyc⟩
-  rw [smul_add]
-  exact add_mem_add (hU.smul_mono hxy hx) hy
+  rw [← egauge_prod_mk hU hV a b, ← add_image_prod]
+  exact MapsTo.egauge_le 𝕜 (LinearMap.fst 𝕜 E E + LinearMap.snd 𝕜 E E) (mapsTo_image _ _) (a, b)
 
 end NormedDivisionRing
 
