@@ -404,11 +404,6 @@ noncomputable def exp_nilpotent (h : IsNilpotent D.toLinearMap) :
     dsimp only [AddHom.toFun_eq_coe, AddHom.coe_mk]
     nth_rewrite 1 [← IsNilpotent.exp_eq_truncated (k := 2 * N + 1) h₁]
     rw [← IsNilpotent.exp_eq_truncated h₂]
-    have rr (i j : ℕ) (hj : j ≤ i) : (i ! : ℚ)⁻¹ * (i.choose j) =
-        ((j ! : ℚ)⁻¹ * ((i - j) ! : ℚ)⁻¹) := by
-      rw [Nat.choose_eq_factorial_div_factorial hj,
-          Nat.cast_div (Nat.factorial_mul_factorial_dvd_factorial hj) (by field_simp)]
-      field_simp
     set R2N := range (2 * N + 1) with hR2N
     set RN := range (N + 1) with hRN
     set E := D.toLinearMap
@@ -433,7 +428,10 @@ noncomputable def exp_nilpotent (h : IsNilpotent D.toLinearMap) :
           ⁅D^[j] x, D^[i - j] y⁆) := by
           refine sum_congr rfl fun i hi ↦ sum_congr rfl fun j hj ↦ ?_
           simp only [mem_range] at hj
-          rw [rr i j (Nat.le_of_lt_succ hj)]
+          rw [Nat.choose_eq_factorial_div_factorial (Nat.le_of_lt_succ hj),
+               Nat.cast_div (Nat.factorial_mul_factorial_dvd_factorial (Nat.le_of_lt_succ hj))]
+          · field_simp
+          field_simp
         _ = ∑ i ∈ R2N, (∑ j ∈ range (i + 1), ((j ! : ℚ)⁻¹ * ((i - j) ! : ℚ)⁻¹) •
           ⁅(E ^ j) x, (E ^ (i - j)) y⁆) :=
           by simp only [LinearMap.pow_apply, coeFn_coe, E]
