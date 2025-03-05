@@ -184,13 +184,12 @@ end IsIsoSubgraph
 section Free
 
 /-- The proposition that a simple graph does not contain a copy of another simple graph. -/
-abbrev Free (A : SimpleGraph α) (B : SimpleGraph β) := ¬A.IsIsoSubgraph B
+abbrev Free (A : SimpleGraph α) (B : SimpleGraph β) := ¬A ⊑ B
 
 /-- If `A ≃g B`, then `C` is `A`-free if and only if `C` is `B`-free. -/
-theorem free_iff_of_iso (f : A ≃g B) :
-    A.Free C ↔ B.Free C := by
+theorem free_congr (e : A ≃g B) : A.Free C ↔ B.Free C := by
   rw [not_iff_not]
-  exact isIsoSubgraph_iff_of_iso f
+  exact isIsoSubgraph_congr e
 
 end Free
 
