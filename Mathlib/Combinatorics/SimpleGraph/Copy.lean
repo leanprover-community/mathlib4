@@ -49,10 +49,6 @@ abbrev Embedding.toCopy (f : A ↪g B) : Copy A B := Hom.toCopy f.toHom f.inject
 /-- An isomorphism gives rise to a copy. -/
 abbrev Iso.toCopy (f : A ≃g B) : Copy A B := Embedding.toCopy f.toEmbedding
 
-/-- A `Subgraph G` gives rise to a copy from the coercion to `G`. -/
-def Subgraph.coeCopy (G' : G.Subgraph) : Copy G'.coe G :=
-  G'.hom.toCopy Subgraph.hom.injective
-
 namespace Copy
 
 /-- A copy gives rise to a homomorphism. -/
@@ -106,6 +102,10 @@ theorem comp_apply (g : Copy B C) (f : Copy A B) (a : α) : g.comp f a = g (f a)
   RelHom.comp_apply g.toHom f.toHom a
 
 end Copy
+
+/-- A `Subgraph G` gives rise to a copy from the coercion to `G`. -/
+def Subgraph.coeCopy (G' : G.Subgraph) : Copy G'.coe G :=
+  G'.hom.toCopy Subgraph.hom.injective
 
 end Copy
 
