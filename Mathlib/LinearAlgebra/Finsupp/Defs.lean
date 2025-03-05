@@ -255,6 +255,20 @@ theorem finsuppProdLEquiv_symm_apply {α β R M : Type*} [Semiring R] [AddCommMo
   conv_rhs =>
     rw [← (finsuppProdLEquiv R).apply_symm_apply f, finsuppProdLEquiv_apply]
 
+@[simp]
+lemma finsuppProdLEquiv_single {α β R M : Type*}
+    [Semiring R] [AddCommMonoid M] [Module R M] (a : α × β) (m : M) :
+    finsuppProdLEquiv R (single a m) = single a.1 (single a.2 m) := by
+  show Finsupp.curry _ = _
+  simp only [Finsupp.curry, single_zero, sum_single_index]
+
+@[simp]
+lemma finsuppProdLEquiv_symm_single_single {α β R M : Type*}
+    [Semiring R] [AddCommMonoid M] [Module R M] (a : α) (b : β) (m : M) :
+    (finsuppProdLEquiv R).symm (single a (single b m)) = single (a, b) m := by
+  show Finsupp.uncurry _ = _
+  simp only [Finsupp.uncurry, sum_zero_index, sum_single_index, single_zero]
+
 end Prod
 
 end Finsupp

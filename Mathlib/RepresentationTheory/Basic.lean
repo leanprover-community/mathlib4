@@ -18,6 +18,7 @@ representations.
   * `Representation.tprod`
   * `Representation.linHom`
   * `Representation.dual`
+  * `Representation.free`
 
 ## Implementation notes
 
@@ -343,6 +344,12 @@ noncomputable def ofMulAction : Representation k G (H →₀ k) where
     ext z w
     simp [mul_smul]
 
+/-- The natural `k`-linear `G`-representation on `k[G]` induced by left multiplication in `G`. -/
+noncomputable abbrev leftRegular := ofMulAction k G G
+
+/-- The natural `k`-linear `G`-representation on `k[Gⁿ]` induced by left multiplication in `G`. -/
+noncomputable abbrev diagonal (n : ℕ) := ofMulAction k G (Fin n → G)
+
 variable {k G H}
 
 theorem ofMulAction_def (g : G) : ofMulAction k G H g = Finsupp.lmapDomain k k (g • ·) :=
@@ -552,4 +559,67 @@ theorem dualTensorHom_comm (g : G) :
 
 end LinearHom
 
+section
+
+variable {k G : Type*} [CommSemiring k] [Monoid G] {α A B : Type*}
+  [AddCommMonoid A] [Module k A] (ρ : Representation k G A)
+  [AddCommMonoid B] [Module k B] (τ : Representation k G B)
+
+open Finsupp
+
+/-- The representation on `α →₀ A` defined pointwise by a representation on `A`. -/
+@[simps (config := .lemmasOnly)]
+noncomputable def finsupp (α : Type*) :
+    Representation k G (α →₀ A) where
+  toFun g := lsum k fun i => (lsingle i).comp (ρ g)
+  map_one' := lhom_ext (fun _ _ => by simp)
+  map_mul' _ _ := lhom_ext (fun _ _ => by simp)
+
+@[simp]
+lemma finsupp_single (g : G) (x : α) (a : A) :
+    ρ.finsupp α g (single x a) = single x (ρ g a) := by
+  simp [finsupp_apply]
+
+/-- The representation on `α →₀ k[G]` defined pointwise by the left regular representation on
+`k[G]`. -/
+noncomputable abbrev free (k G : Type*) [CommSemiring k] [Monoid G] (α : Type*) :
+    Representation k G (α →₀ G →₀ k) :=
+  finsupp (leftRegular k G) α
+
+noncomputable instance (k G : Type*) [CommRing k] [Monoid G] (α : Type*) :
+    AddCommGroup (free k G α).asModule :=
+  Finsupp.instAddCommGroup
+
+lemma free_single_single (g h : G) (i : α) (r : k) :
+    free k G α g (single i (single h r)) = single i (single (g * h) r) := by
+  simp
+
+variable (k G) (α : Type*)
+
+/-- The free `k[G]`-module on a type `α` is isomorphic to the representation `free k G α`
+considered as a `k[G]`-module. -/
+def finsuppLEquivFreeAsModule :
+    (α →₀ MonoidAlgebra k G) ≃ₗ[MonoidAlgebra k G] (free k G α).asModule :=
+  { AddEquiv.refl _ with
+    map_smul' := fun r x => by
+      simp only [AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+        AddEquiv.refl_apply, RingHom.id_apply]
+      refine x.induction ?_ fun _ _ _ _ _ h => ?_
+      · simp only [smul_zero]
+      · rw [smul_add, h]
+        show _ + asAlgebraHom _ _ _ = asAlgebraHom _ _ _
+        simp only [map_add, smul_single, smul_eq_mul, MonoidAlgebra.mul_def,
+          asAlgebraHom_def, MonoidAlgebra.lift_apply]
+        simp [free, MonoidAlgebra, asModule, ofMulAction_def, mapDomain, smul_sum, single_sum] }
+
+/-- `α` gives a `k[G]`-basis of the representation `free k G α`. -/
+def freeAsModuleBasis :
+    Basis α (MonoidAlgebra k G) (free k G α).asModule where
+  repr := (finsuppLEquivFreeAsModule k G α).symm
+
+theorem free_asModule_free :
+    Module.Free (MonoidAlgebra k G) (free k G α).asModule :=
+  Module.Free.of_basis (freeAsModuleBasis k G α)
+
+end
 end Representation

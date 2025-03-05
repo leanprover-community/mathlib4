@@ -22,11 +22,11 @@ suppress_compilation
 
 universe u
 
-open MonoidAlgebra
-
 open Representation
 
 namespace GroupAlgebra
+
+open MonoidAlgebra
 
 variable (k G : Type*) [CommSemiring k] [Group G]
 variable [Fintype G] [Invertible (Fintype.card G : k)]
@@ -214,5 +214,23 @@ noncomputable def invariantsFunctor : Rep k G ⥤ ModuleCat k where
 instance : (invariantsFunctor k G).PreservesZeroMorphisms where
 
 instance : (invariantsFunctor k G).Additive where
+
+/-- The adjunction between the functor equipping a module with the trivial representation, and
+the functor sending a representation to its submodule of invariants. -/
+noncomputable abbrev invariantsAdjunction : trivialFunctor G ⊣ invariantsFunctor k G :=
+  Adjunction.mkOfHomEquiv {
+    homEquiv := fun _ _ => {
+      toFun := fun f => ModuleCat.ofHom <|
+        LinearMap.codRestrict _ f.hom.hom fun x g => (hom_comm_apply f _ _).symm
+      invFun := fun f => {
+        hom := ModuleCat.ofHom (Submodule.subtype _ ∘ₗ f.hom)
+        comm := fun g => by ext x; exact ((f x).2 g).symm }
+      left_inv := by intro; rfl
+      right_inv := by intro; rfl }
+    homEquiv_naturality_left_symm := by intros; rfl
+    homEquiv_naturality_right := by intros; rfl }
+
+noncomputable instance : Limits.PreservesLimits (invariantsFunctor k G) :=
+  (invariantsAdjunction k G).rightAdjoint_preservesLimits
 
 end Rep
