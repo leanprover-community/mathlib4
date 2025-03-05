@@ -198,7 +198,7 @@ theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
   fun _ _ ↦ append_cancel_right
 
 theorem append_cancel_right_length {as bs bs' cs : List α}
-(eq_length : bs.length = bs'.length) (h : as ++ bs = cs ++ bs') : as = cs := by
+    (eq_length : bs.length = bs'.length) (h : as ++ bs = cs ++ bs') : as = cs := by
   match as, cs with
   | [], []       => rfl
   | [], c::cs    => simpa +arith [eq_length] using congrArg length h
