@@ -53,14 +53,8 @@ def essImage.getIso {Y : D} (h : F.essImage Y) : F.obj (essImage.witness h) ≅ 
 theorem essImage.ofIso {Y Y' : D} (h : Y ≅ Y') (hY : essImage F Y) : essImage F Y' :=
   hY.imp fun _ => Nonempty.map (· ≪≫ h)
 
-lemma essImage_eq_map_top : F.essImage = ObjectProperty.map ⊤ F := by
-  ext X
-  rw [ObjectProperty.prop_map_iff]
-  aesop
-
-instance : F.essImage.IsClosedUnderIsomorphisms := by
-  rw [F.essImage_eq_map_top]
-  infer_instance
+instance : F.essImage.IsClosedUnderIsomorphisms where
+  of_iso e h := essImage.ofIso e h
 
 /-- If `Y` is in the essential image of `F` then it is in the essential image of `F'` as long as
 `F ≅ F'`.
@@ -86,7 +80,6 @@ abbrev EssImageSubcategory (F : C ⥤ D) := F.essImage.FullSubcategory
 def essImageInclusion (F : C ⥤ D) : F.EssImageSubcategory ⥤ D :=
   F.essImage.ι
 
-@[deprecated "use Functor.map_injective" (since := "2025-03-04")]
 lemma essImage_ext (F : C ⥤ D) {X Y : F.EssImageSubcategory} (f g : X ⟶ Y)
     (h : F.essImage.ι.map f = F.essImage.ι.map g) : f = g :=
   F.essImage.ι.map_injective h
