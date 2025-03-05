@@ -203,7 +203,6 @@ theorem normalizedTrace_trans_apply [Algebra.IsIntegral E K] [CharZero E] (a : K
     normalizedTrace F E (normalizedTrace E K a) = normalizedTrace F K a :=
   let S : Set E := (minpoly E a).coeffs
   let E₀ := IntermediateField.adjoin F S
-  have : S.Finite := by simp_all only [Finset.finite_toSet, S]
   have : FiniteDimensional F E₀ := IntermediateField.finiteDimensional_adjoin
     fun x _ ↦ Algebra.IsIntegral.isIntegral x
   have : Algebra.IsIntegral E₀ E := IsIntegral.tower_top F
