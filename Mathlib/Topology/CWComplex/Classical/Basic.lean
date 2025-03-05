@@ -449,7 +449,7 @@ lemma CWComplex.iUnion_openCell_eq_complex [CWComplex C] :
   simpa using RelCWComplex.union_iUnion_openCell_eq_complex (C := C) (D := ∅)
 
 /-- The contrapositive of `disjoint_openCell_of_ne`. -/
-lemma RelCWComplex.eq_cell_of_not_disjoint [RelCWComplex C D] {n : ℕ} {j : cell C n} {m : ℕ}
+lemma RelCWComplex.eq_of_not_disjoint_openCell [RelCWComplex C D] {n : ℕ} {j : cell C n} {m : ℕ}
     {i : cell C m} (h : ¬ Disjoint (openCell n j) (openCell m i)) :
     (⟨n, j⟩ : (Σ n, cell C n)) = ⟨m, i⟩ := by
   contrapose! h
@@ -527,7 +527,7 @@ lemma RelCWComplex.skeletonLT_inter_closedCell_eq_skeletonLT_inter_cellFrontier 
   rw [(disjoint_skeletonLT_openCell hnm).inter_eq]
   exact empty_subset _
 
-/-- Version of `skeletonLT_inter_openCell_eq_empty` using `skeleton`. -/
+/-- Version of `skeletonLT_inter_closedCell_eq_skeletonLT_inter_cellFrontier` using `skeleton`. -/
 lemma RelCWComplex.skeleton_inter_closedCell_eq_skeleton_inter_cellFrontier [RelCWComplex C D]
     {n : ℕ∞} {m : ℕ} {j : cell C m} (hnm : n < m) :
     skeleton C n ∩ closedCell m j = skeleton C n ∩ cellFrontier m j :=
@@ -540,7 +540,7 @@ lemma RelCWComplex.isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedC
     [RelCWComplex C D] [T2Space X] {A : Set X} {n : ℕ} (hn : ∀ m ≤ n, ∀ (j : cell C m),
     IsClosed (A ∩ closedCell m j)) (j : cell C (n + 1)) (hD : IsClosed (A ∩ D)) :
     IsClosed (A ∩ cellFrontier (n + 1) j) := by
-  -- this is a consequence of `cellFrontier_subset_finite_closedCell`
+  -- this is a consequence of `cellFrontier_subset_base_union_finite_closedCell`
   obtain ⟨I, hI⟩ := cellFrontier_subset_base_union_finite_closedCell (n + 1) j
   rw [← inter_eq_right.2 hI, ← inter_assoc]
   refine IsClosed.inter ?_ isClosed_cellFrontier
@@ -584,18 +584,18 @@ lemma CWComplex.isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedCell
     IsClosed (A ∩ openCell n j) ∨ IsClosed (A ∩ closedCell n j)) : IsClosed A :=
   RelCWComplex.isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedCell hAC (by simp) h
 
-/-- A version of `cellFrontier_subset_finite_closedCell` using open cells: The boundary of a cell is
-contained in a finite union of open cells of a lower dimension. -/
+/-- A version of `cellFrontier_subset_base_union_finite_closedCell` using open cells:
+The boundary of a cell is contained in a finite union of open cells of a lower dimension. -/
 lemma RelCWComplex.cellFrontier_subset_finite_openCell [RelCWComplex C D] (n : ℕ) (i : cell C n) :
     ∃ I : Π m, Finset (cell C m),
     cellFrontier n i ⊆ D ∪ (⋃ (m < n) (j ∈ I m), openCell m j) := by
   induction' n using Nat.case_strong_induction_on with n hn
   · simp [cellFrontier_zero_eq_empty]
-  · -- We apply `cellFrontier_subset_finite_closedCell` once and then apply
+  · -- We apply `cellFrontier_subset_base_union_finite_closedCell` once and then apply
     -- the induction hypothesis to the finitely many cells that
-    -- `cellFrontier_subset_finite_closedCell` gives us.
+    -- `cellFrontier_subset_base_union_finite_closedCell` gives us.
     classical
-    obtain ⟨J, hJ⟩ :=  cellFrontier_subset_base_union_finite_closedCell n.succ i
+    obtain ⟨J, hJ⟩ := cellFrontier_subset_base_union_finite_closedCell n.succ i
     choose p hp using hn
     let I m := J m ∪ ((Finset.range n.succ).biUnion
       (fun l ↦ (J l).biUnion (fun y ↦ if h : l ≤ n then p l h y m else ∅)))
@@ -639,7 +639,7 @@ export RelCWComplex (pairwiseDisjoint disjoint_openCell_of_ne openCell_subset_cl
   iUnion_cellFrontier_subset_skeleton closedCell_zero_eq_singleton openCell_zero_eq_singleton
   cellFrontier_zero_eq_empty isClosed skeletonLT_union_iUnion_closedCell_eq_skeletonLT_succ
   skeleton_union_iUnion_closedCell_eq_skeleton_succ
-  eq_cell_of_not_disjoint disjoint_skeletonLT_openCell
+  eq_of_not_disjoint_openCell disjoint_skeletonLT_openCell
   disjoint_skeleton_openCell skeletonLT_inter_closedCell_eq_skeletonLT_inter_cellFrontier
   skeleton_inter_closedCell_eq_skeleton_inter_cellFrontier)
 
