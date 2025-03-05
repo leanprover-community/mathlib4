@@ -8,8 +8,9 @@ import Mathlib.Algebra.Group.Pointwise.Set.Card
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Topology.Algebra.Affine
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+import Mathlib.Topology.Order.DenselyOrdered
 import Mathlib.Topology.Order.Monotone
+import Mathlib.Topology.Order.Real
 
 /-!
 # Points in sight

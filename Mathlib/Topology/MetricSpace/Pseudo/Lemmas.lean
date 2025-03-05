@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 import Mathlib.Topology.MetricSpace.Pseudo.Constructions
 import Mathlib.Topology.Order.DenselyOrdered
+import Mathlib.Topology.Order.Real
 import Mathlib.Topology.UniformSpace.Compact
 
 /-!
@@ -15,10 +16,6 @@ open Bornology Filter Metric Set
 open scoped NNReal Topology
 
 variable {ι α : Type*} [PseudoMetricSpace α]
-
-instance : OrderTopology ℝ :=
-  orderTopology_of_nhds_abs fun x => by
-    simp only [nhds_basis_ball.eq_biInf, ball, Real.dist_eq, abs_sub_comm]
 
 lemma Real.singleton_eq_inter_Icc (b : ℝ) : {b} = ⋂ (r > 0), Icc (b - r) (b + r) := by
   simp [Icc_eq_closedBall, biInter_basis_nhds Metric.nhds_basis_closedBall]

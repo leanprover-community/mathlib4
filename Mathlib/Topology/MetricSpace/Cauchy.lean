@@ -3,8 +3,8 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 import Mathlib.Topology.EMetricSpace.Basic
+import Mathlib.Topology.Order.Real
 
 /-!
 ## Cauchy sequences in (pseudo-)metric spaces
