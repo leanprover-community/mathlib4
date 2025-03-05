@@ -137,7 +137,7 @@ attribute [instance] HasExplicitFiniteCoproducts.hasProp
 
 instance [HasExplicitFiniteCoproducts.{w} P] (α : Type w) [Finite α] :
     HasColimitsOfShape (Discrete α) (CompHausLike P) where
-  has_colimit _ := hasColimitOfIso Discrete.natIsoFunctor
+  has_colimit _ := hasColimit_of_iso Discrete.natIsoFunctor
 
 instance [HasExplicitFiniteCoproducts.{w} P] : HasFiniteCoproducts (CompHausLike.{max u w} P) where
   out n := by
@@ -240,10 +240,7 @@ def pullback.lift {Z : CompHausLike P} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f 
     Z ⟶ pullback f g :=
   TopCat.ofHom
   { toFun := fun z ↦ ⟨⟨a z, b z⟩, by apply_fun (fun q ↦ q z) at w; exact w⟩
-    continuous_toFun := by
-      apply Continuous.subtype_mk
-      rw [continuous_prod_mk]
-      exact ⟨a.hom.continuous, b.hom.continuous⟩ }
+    continuous_toFun := by fun_prop }
 
 @[reassoc (attr := simp)]
 lemma pullback.lift_fst {Z : CompHausLike P} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
@@ -314,7 +311,7 @@ class HasExplicitPullbacks : Prop where
 attribute [instance] HasExplicitPullbacks.hasProp
 
 instance [HasExplicitPullbacks P] : HasPullbacks (CompHausLike P) where
-  has_limit F := hasLimitOfIso (diagramIsoCospan F).symm
+  has_limit F := hasLimit_of_iso (diagramIsoCospan F).symm
 
 variable (P) in
 /--
