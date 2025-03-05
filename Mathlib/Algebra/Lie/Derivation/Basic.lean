@@ -385,11 +385,15 @@ noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
     have s₂ := by
       letI : NonUnitalNonAssocSemiring L := LieRing.instNonUnitalNonAssocSemiring
       calc ⁅(∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) x))), (∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) y)))⁆ = (∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) x))) * (∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) y))) := by rfl
-        _ = ∑ i ∈ RN, ∑ j ∈ RN, ⁅(i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) x),  (j ! : ℚ)⁻¹ • ((D.toLinearMap ^ j) y)⁆ := ?_
-      · rw [sum_mul_sum]
-        rfl
-
-
+        _ = ∑ i ∈ RN, ∑ j ∈ RN, ⁅(i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) x),  (j ! : ℚ)⁻¹ • ((D.toLinearMap ^ j) y)⁆ := by
+          rw [sum_mul_sum]
+          rfl
+        _ = ∑ ij ∈ RN ×ˢ RN, ⁅(ij.1 ! : ℚ)⁻¹ • ((D.toLinearMap ^ ij.1) x),  (ij.2 ! : ℚ)⁻¹ • ((D.toLinearMap ^ ij.2) y)⁆ := by
+          rw [sum_sigma']
+          apply sum_bijective (fun ⟨i, j⟩ ↦ (i, j))
+          · exact ⟨fun ⟨i, j⟩ ⟨i', j'⟩ h ↦ by cases h; rfl, fun ⟨i, j⟩ ↦ ⟨⟨i, j⟩, rfl⟩⟩
+          · simp only [mem_sigma, mem_product, implies_true]
+          · simp only [implies_true]
     sorry,
   invFun := fun l => (IsNilpotent.exp (-(D.toLinearMap))) l,
   left_inv := by
