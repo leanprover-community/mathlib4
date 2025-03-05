@@ -360,6 +360,9 @@ instance (priority := 100) SeminormedCommGroup.to_uniformGroup : UniformGroup E 
 instance (priority := 100) SeminormedCommGroup.toIsTopologicalGroup : IsTopologicalGroup E :=
   inferInstance
 
+@[deprecated (since := "2025-14-02")] alias SeminormedCommGroup.toTopologicalGroup :=
+  SeminormedCommGroup.toIsTopologicalGroup
+
 /-! ### SeparationQuotient -/
 
 namespace SeparationQuotient

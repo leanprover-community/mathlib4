@@ -228,6 +228,9 @@ instance instContinuousSMul : ContinuousSMul 𝕜 (E →WOT[𝕜] F) := .induced
 
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (E →WOT[𝕜] F) where
 
+@[deprecated (since := "2025-14-02")] alias instTopologicalAddGroup :=
+  instIsTopologicalAddGroup
+
 instance instUniformSpace : UniformSpace (E →WOT[𝕜] F) := .comap (inducingFn 𝕜 E F) inferInstance
 
 instance instUniformAddGroup : UniformAddGroup (E →WOT[𝕜] F) := .comap (inducingFn 𝕜 E F)

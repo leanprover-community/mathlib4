@@ -500,6 +500,9 @@ instance instContinuousSMul : ContinuousSMul 𝕜 𝓢(E, F) := by
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.isTopologicalAddGroup
 
+@[deprecated (since := "2025-14-02")] alias instTopologicalAddGroup :=
+  instIsTopologicalAddGroup
+
 instance instUniformSpace : UniformSpace 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.uniformSpace
 

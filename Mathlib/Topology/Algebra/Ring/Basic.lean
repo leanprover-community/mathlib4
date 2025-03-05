@@ -45,6 +45,9 @@ mathematically equivalent (see `IsTopologicalSemiring.continuousNeg_of_mul` or
 class IsTopologicalSemiring [TopologicalSpace α] [NonUnitalNonAssocSemiring α] : Prop
     extends ContinuousAdd α, ContinuousMul α
 
+@[deprecated (since := "2025-14-02")] alias TopologicalSemiring :=
+  IsTopologicalSemiring
+
 /-- A topological ring is a ring `R` where addition, multiplication and negation are continuous.
 
 If `R` is a (unital) ring, then continuity of negation can be derived from continuity of
@@ -53,6 +56,9 @@ multiplication as it is multiplication with `-1`. (See
 `topological_semiring.to_topological_add_group`) -/
 class IsTopologicalRing [TopologicalSpace α] [NonUnitalNonAssocRing α] : Prop
     extends IsTopologicalSemiring α, ContinuousNeg α
+
+@[deprecated (since := "2025-14-02")] alias TopologicalRing :=
+  IsTopologicalRing
 
 variable {α}
 
@@ -69,6 +75,9 @@ proving `continuous_neg`. -/
 theorem IsTopologicalSemiring.toIsTopologicalRing [TopologicalSpace α] [NonAssocRing α]
     (_ : IsTopologicalSemiring α) : IsTopologicalRing α where
   toContinuousNeg := IsTopologicalSemiring.continuousNeg_of_mul
+
+@[deprecated (since := "2025-14-02")] alias TopologicalSemiring.toTopologicalRing :=
+  IsTopologicalSemiring.toIsTopologicalRing
 
 -- See note [lower instance priority]
 instance (priority := 100) IsTopologicalRing.to_topologicalAddGroup [NonUnitalNonAssocRing α]
@@ -88,6 +97,9 @@ variable [TopologicalSpace α] [NonUnitalSemiring α] [IsTopologicalSemiring α]
 
 instance instIsTopologicalSemiring (S : NonUnitalSubsemiring α) : IsTopologicalSemiring S :=
   { S.toSubsemigroup.continuousMul, S.toAddSubmonoid.continuousAdd with }
+
+@[deprecated (since := "2025-14-02")] alias instTopologicalSemiring :=
+  instIsTopologicalSemiring
 
 /-- The (topological) closure of a non-unital subsemiring of a non-unital topological semiring is
 itself a non-unital subsemiring. -/
@@ -194,9 +206,15 @@ instance Pi.instIsTopologicalSemiring {β : Type*} {C : β → Type*} [∀ b, To
     [∀ b, NonUnitalNonAssocSemiring (C b)] [∀ b, IsTopologicalSemiring (C b)] :
     IsTopologicalSemiring (∀ b, C b) where
 
+@[deprecated (since := "2025-14-02")] alias Pi.instTopologicalSemiring :=
+  Pi.instIsTopologicalSemiring
+
 instance Pi.instIsTopologicalRing {β : Type*} {C : β → Type*} [∀ b, TopologicalSpace (C b)]
     [∀ b, NonUnitalNonAssocRing (C b)] [∀ b, IsTopologicalRing (C b)] :
     IsTopologicalRing (∀ b, C b) := ⟨⟩
+
+@[deprecated (since := "2025-14-02")] alias Pi.instTopologicalRing :=
+  Pi.instIsTopologicalRing
 
 section MulOpposite
 
@@ -282,6 +300,9 @@ variable [NonUnitalRing α] [IsTopologicalRing α]
 instance instIsTopologicalRing (S : NonUnitalSubring α) : IsTopologicalRing S :=
   { S.toSubsemigroup.continuousMul, inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup) with }
 
+@[deprecated (since := "2025-14-02")] alias instTopologicalRing :=
+  instIsTopologicalRing
+
 /-- The (topological) closure of a non-unital subring of a non-unital topological ring is
 itself a non-unital subring. -/
 def topologicalClosure (S : NonUnitalSubring α) : NonUnitalSubring α :=
@@ -312,6 +333,9 @@ variable [Ring α] [IsTopologicalRing α]
 
 instance Subring.instIsTopologicalRing (S : Subring α) : IsTopologicalRing S :=
   { S.toSubmonoid.continuousMul, inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup) with }
+
+@[deprecated (since := "2025-14-02")] alias Subring.instTopologicalRing :=
+  Subring.instIsTopologicalRing
 
 instance Subring.continuousSMul (s : Subring α) (X) [TopologicalSpace X] [MulAction α X]
     [ContinuousSMul α X] : ContinuousSMul s X :=

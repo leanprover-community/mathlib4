@@ -176,6 +176,9 @@ instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSem
 instance (priority := 100) NonUnitalSeminormedRing.toIsTopologicalRing [NonUnitalSeminormedRing α] :
     IsTopologicalRing α where
 
+@[deprecated (since := "2025-14-02")] alias NonUnitalSeminormedRing.toTopologicalRing :=
+  NonUnitalSeminormedRing.toIsTopologicalRing
+
 namespace SeparationQuotient
 
 instance [NonUnitalSeminormedRing α] : NonUnitalNormedRing (SeparationQuotient α) where
