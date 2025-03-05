@@ -269,4 +269,98 @@ noncomputable def IslocalDiffeomorph.diffeomorph_of_bijective
       have : y = (Φ x) x := ((hgInverse.2 y).congr (hfx hx)).mp rfl
       exact this ▸ (Φ x).map_source hx }
 
+section IFT
+
+-- TODO: prove this, from the inverse function theorem for manifolds
+/-- If `f` has bijective differential at `x`, it is a local diffeomorphism at `x`. -/
+lemma IsLocalDiffeomorphAt.of_mfderiv_bijective (hdiff: Function.Bijective (mfderiv I J f x)) :
+    IsLocalDiffeomorphAt I J n f x := sorry
+
+/-- If `f` has bijective differential everywhere, it is a local diffeomorphism. -/
+lemma IsLocalDiffeomorph.of_mfderiv_bijective (hdiff: ∀ x, Function.Bijective (mfderiv I J f x)) :
+    IsLocalDiffeomorph I J n f :=
+  fun x ↦ IsLocalDiffeomorphAt.of_mfderiv_bijective (hdiff x)
+
+end IFT
+
+-- XXX: move to Diffeomorph? split that file?
+section Distributivity
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {F : Type*}
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {H : Type*} [TopologicalSpace H] {H' : Type*}
+  [TopologicalSpace H'] {G : Type*} [TopologicalSpace G] {G' : Type*} [TopologicalSpace G']
+  {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'} {J : ModelWithCorners 𝕜 F G}
+  {J' : ModelWithCorners 𝕜 F G'}
+
+variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {M' : Type*} [TopologicalSpace M']
+  [ChartedSpace H' M'] {N : Type*} [TopologicalSpace N] [ChartedSpace G N] {N' : Type*}
+  [TopologicalSpace N'] [ChartedSpace G' N'] {n : WithTop ℕ∞}
+
+variable {J : ModelWithCorners 𝕜 E' H}
+  {M' M'' N : Type*} [TopologicalSpace M'] [ChartedSpace H M']
+  [TopologicalSpace M''] [ChartedSpace H M''] [TopologicalSpace N] [ChartedSpace H N]
+  {N' : Type*} [TopologicalSpace N'] [ChartedSpace H N']
+
+section
+
+variable {R R₂ M M₂ : Type*} [DivisionRing R] [Semiring R₂] [AddCommMonoid M] [AddCommGroup M₂]
+  [Module R M] [Module R M₂] [FiniteDimensional R M₂]
+
+namespace _root_.LinearEquiv
+
+/-- An injective linear map between finite-dimensional space of equal rank
+is a linear equivalence. -/
+noncomputable def of_injective_finrank_eq (f : M →ₗ[R] M₂) (hinj : Function.Injective f)
+    (hrank : Module.finrank R M = Module.finrank R M₂) : M ≃ₗ[R] M₂ :=
+  haveI : LinearMap.range f = ⊤ := by
+    apply Submodule.eq_top_of_finrank_eq (S := LinearMap.range f)
+    exact (LinearMap.finrank_range_of_inj hinj).trans hrank
+  (LinearEquiv.ofInjective f hinj).trans (LinearEquiv.ofTop (LinearMap.range f) this)
+
+@[simp]
+lemma of_injective_finrank_eq_coe (f : M →ₗ[R] M₂) (hinj : Function.Injective f)
+    (hrank : Module.finrank R M = Module.finrank R M₂) :
+    (of_injective_finrank_eq f hinj hrank).toLinearMap = f := rfl
+
+end _root_.LinearEquiv
+
+end
+
+variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 E']
+
+variable (I J M M' N n) in
+noncomputable def prodSumDistrib :
+    Diffeomorph (I.prod J) (I.prod J) ((M × N) ⊕ (M' × N)) ((M ⊕ M') × N) n := by
+  refine IslocalDiffeomorph.diffeomorph_of_bijective (f := (Equiv.sumProdDistrib M M' N).symm) ?_
+    (Equiv.bijective _)
+  apply IsLocalDiffeomorph.of_mfderiv_bijective
+  intro x
+  set f := (Equiv.sumProdDistrib M M' N).symm
+  have : ContMDiff (I.prod J) (I.prod J) n f := by
+    apply ContMDiff.sumElim
+    · exact ContMDiff.prod_map ContMDiff.inl contMDiff_id
+    · exact ContMDiff.prod_map ContMDiff.inr contMDiff_id
+  have hinj : Function.Injective (mfderiv (I.prod J) (I.prod J) f x) := by
+    -- two cases, depending on whether x is a left or right point
+    -- in each, it follows by computing the mfderiv of a product with the identity
+    sorry
+  -- The domain and co-domain have the same finite dimension, hence they are equivalent.
+  have : FiniteDimensional 𝕜 (TangentSpace (I.prod J) (f x)) := by
+    change FiniteDimensional 𝕜 (E × E')
+    infer_instance
+  -- Both tangent spaces are defeq to E.prod E', hence the proof by rfl...
+  have hrank : Module.finrank 𝕜 (TangentSpace (I.prod J) x) =
+    Module.finrank 𝕜 (TangentSpace (I.prod J) (f x)) := rfl
+  let aux := _root_.LinearEquiv.of_injective_finrank_eq
+    (mfderiv (I.prod J) (I.prod J) f x).toLinearMap hinj rfl
+  exact LinearEquiv.bijective aux
+
+@[simp]
+theorem prodSumDistrib_toEquiv :
+    (prodSumDistrib I M n J M' N).toEquiv = (Equiv.sumProdDistrib M M' N).symm :=
+  sorry -- rfl -- TODO: fix!
+
+end Distributivity
+
 end Basic

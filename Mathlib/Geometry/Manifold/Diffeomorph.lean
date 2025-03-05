@@ -655,21 +655,6 @@ def sumEmpty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M n where
 @[simp]
 theorem sumEmpty_toEquiv [IsEmpty M'] : (sumEmpty I M n).toEquiv = Equiv.sumEmpty M M' := rfl
 
-variable (I J M M' N n) in
-def prodSumDistrib: Diffeomorph (I.prod J) (I.prod J) ((M × N) ⊕ (M' × N)) ((M ⊕ M') × N) n where
-  toEquiv := (Equiv.sumProdDistrib M M' N).symm
-  contMDiff_toFun := by
-    apply ContMDiff.sumElim
-    · exact ContMDiff.prod_map ContMDiff.inl contMDiff_id
-    · exact ContMDiff.prod_map ContMDiff.inr contMDiff_id
-  contMDiff_invFun := sorry
-
-
-@[simp]
-theorem prodSumDistrib_toEquiv :
-    (prodSumDistrib I M n J M' N).toEquiv = (Equiv.sumProdDistrib M M' N).symm :=
-  rfl
-
 end disjointUnion
 
 end Constructions
