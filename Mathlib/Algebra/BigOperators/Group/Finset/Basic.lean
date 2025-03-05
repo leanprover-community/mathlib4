@@ -560,6 +560,12 @@ theorem prod_extend_by_one [DecidableEq α] (s : Finset α) (f : α → β) :
     ∏ i ∈ s, (if i ∈ s then f i else 1) = ∏ i ∈ s, f i :=
   (prod_congr rfl) fun _i hi => if_pos hi
 
+@[to_additive]
+theorem prod_eq_prod_extend (f : s → β) : ∏ x, f x = ∏ x ∈ s, Subtype.val.extend f 1 x := by
+  rw [univ_eq_attach, ← Finset.prod_attach s]
+  congr with ⟨x, hx⟩
+  rw [Subtype.val_injective.extend_apply]
+
 @[to_additive (attr := simp)]
 theorem prod_ite_mem [DecidableEq α] (s t : Finset α) (f : α → β) :
     ∏ i ∈ s, (if i ∈ t then f i else 1) = ∏ i ∈ s ∩ t, f i := by
