@@ -4400,7 +4400,6 @@ import Mathlib.Order.Filter.AtTopBot.Prod
 import Mathlib.Order.Filter.AtTopBot.Ring
 import Mathlib.Order.Filter.AtTopBot.Tendsto
 import Mathlib.Order.Filter.Bases.Basic
-import Mathlib.Order.Filter.Bases.Defs
 import Mathlib.Order.Filter.Bases.Finite
 import Mathlib.Order.Filter.Basic
 import Mathlib.Order.Filter.CardinalInter
