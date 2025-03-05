@@ -581,9 +581,9 @@ theorem isTopologicalBasis_subtype
   h.isInducing ⟨rfl⟩
 
 section
-variable {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
+variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
 
-lemma isOpenMap_eval (i : ι) : IsOpenMap (Function.eval i : (∀ i, π i) → π i) := by
+lemma isOpenMap_eval (i : ι) : IsOpenMap (Function.eval i : (∀ i, X i) → X i) := by
   classical
   refine (isTopologicalBasis_pi fun _ ↦ isTopologicalBasis_opens).isOpenMap_iff.2 ?_
   rintro _ ⟨U, s, hU, rfl⟩
@@ -692,8 +692,8 @@ instance {β} [TopologicalSpace β] [FirstCountableTopology α] [FirstCountableT
 
 section Pi
 
-instance {ι : Type*} {π : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (π i)]
-    [∀ i, FirstCountableTopology (π i)] : FirstCountableTopology (∀ i, π i) :=
+instance {ι : Type*} {X : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (X i)]
+    [∀ i, FirstCountableTopology (X i)] : FirstCountableTopology (∀ i, X i) :=
   ⟨fun f => by rw [nhds_pi]; infer_instance⟩
 
 end Pi
@@ -795,8 +795,8 @@ instance {β : Type*} [TopologicalSpace β] [SecondCountableTopology α] [Second
   ((isBasis_countableBasis α).prod (isBasis_countableBasis β)).secondCountableTopology <|
     (countable_countableBasis α).image2 (countable_countableBasis β) _
 
-instance {ι : Type*} {π : ι → Type*} [Countable ι] [∀ a, TopologicalSpace (π a)]
-    [∀ a, SecondCountableTopology (π a)] : SecondCountableTopology (∀ a, π a) :=
+instance {ι : Type*} {X : ι → Type*} [Countable ι] [∀ a, TopologicalSpace (X a)]
+    [∀ a, SecondCountableTopology (X a)] : SecondCountableTopology (∀ a, X a) :=
   secondCountableTopology_iInf fun _ => secondCountableTopology_induced _ _ _
 
 -- see Note [lower instance priority]
@@ -920,32 +920,32 @@ end Sum
 
 section Quotient
 
-variable {X : Type*} [TopologicalSpace X] {Y : Type*} [TopologicalSpace Y] {π : X → Y}
+variable {X : Type*} [TopologicalSpace X] {Y : Type*} [TopologicalSpace Y] {X : X → Y}
 
 /-- The image of a topological basis under an open quotient map is a topological basis. -/
 theorem IsTopologicalBasis.isQuotientMap {V : Set (Set X)} (hV : IsTopologicalBasis V)
-    (h' : IsQuotientMap π) (h : IsOpenMap π) : IsTopologicalBasis (Set.image π '' V) := by
+    (h' : IsQuotientMap X) (h : IsOpenMap X) : IsTopologicalBasis (Set.image X '' V) := by
   apply isTopologicalBasis_of_isOpen_of_nhds
   · rintro - ⟨U, U_in_V, rfl⟩
     apply h U (hV.isOpen U_in_V)
   · intro y U y_in_U U_open
     obtain ⟨x, rfl⟩ := h'.surjective y
-    let W := π ⁻¹' U
+    let W := X ⁻¹' U
     have x_in_W : x ∈ W := y_in_U
     have W_open : IsOpen W := U_open.preimage h'.continuous
     obtain ⟨Z, Z_in_V, x_in_Z, Z_in_W⟩ := hV.exists_subset_of_mem_open x_in_W W_open
-    have πZ_in_U : π '' Z ⊆ U := (Set.image_subset _ Z_in_W).trans (image_preimage_subset π U)
-    exact ⟨π '' Z, ⟨Z, Z_in_V, rfl⟩, ⟨x, x_in_Z, rfl⟩, πZ_in_U⟩
+    have XZ_in_U : X '' Z ⊆ U := (Set.image_subset _ Z_in_W).trans (image_preimage_subset X U)
+    exact ⟨X '' Z, ⟨Z, Z_in_V, rfl⟩, ⟨x, x_in_Z, rfl⟩, XZ_in_U⟩
 
 @[deprecated (since := "2024-10-22")]
 alias IsTopologicalBasis.quotientMap := IsTopologicalBasis.isQuotientMap
 
 /-- A second countable space is mapped by an open quotient map to a second countable space. -/
 theorem _root_.Topology.IsQuotientMap.secondCountableTopology [SecondCountableTopology X]
-    (h' : IsQuotientMap π) (h : IsOpenMap π) : SecondCountableTopology Y where
+    (h' : IsQuotientMap X) (h : IsOpenMap X) : SecondCountableTopology Y where
   is_open_generated_countable := by
     obtain ⟨V, V_countable, -, V_generates⟩ := exists_countable_basis X
-    exact ⟨Set.image π '' V, V_countable.image (Set.image π),
+    exact ⟨Set.image X '' V, V_countable.image (Set.image X),
       (V_generates.isQuotientMap h' h).eq_generateFrom⟩
 
 @[deprecated (since := "2024-10-22")]

@@ -38,8 +38,8 @@ topological space, separation setoid
 
 open Set Filter Function Topology List
 
-variable {X Y Z α ι : Type*} {π : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y]
-  [TopologicalSpace Z] [∀ i, TopologicalSpace (π i)] {x y z : X} {s : Set X} {f g : X → Y}
+variable {X Y Z α ι : Type*} {X : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y]
+  [TopologicalSpace Z] [∀ i, TopologicalSpace (X i)] {x y z : X} {s : Set X} {f g : X → Y}
 
 /-!
 ### `Specializes` relation
@@ -170,7 +170,7 @@ theorem Specializes.fst {a b : X × Y} (h : a ⤳ b) : a.1 ⤳ b.1 := (specializ
 theorem Specializes.snd {a b : X × Y} (h : a ⤳ b) : a.2 ⤳ b.2 := (specializes_prod.1 h).2
 
 @[simp]
-theorem specializes_pi {f g : ∀ i, π i} : f ⤳ g ↔ ∀ i, f i ⤳ g i := by
+theorem specializes_pi {f g : ∀ i, X i} : f ⤳ g ↔ ∀ i, f i ⤳ g i := by
   simp only [Specializes, nhds_pi, pi_le_pi]
 
 theorem not_specializes_iff_exists_open : ¬x ⤳ y ↔ ∃ S : Set X, IsOpen S ∧ y ∈ S ∧ x ∉ S := by
@@ -478,7 +478,7 @@ theorem Inseparable.prod {x₁ x₂ : X} {y₁ y₂ : Y} (hx : x₁ ~ᵢ x₂) (
   inseparable_prod.2 ⟨hx, hy⟩
 
 @[simp]
-theorem inseparable_pi {f g : ∀ i, π i} : (f ~ᵢ g) ↔ ∀ i, f i ~ᵢ g i := by
+theorem inseparable_pi {f g : ∀ i, X i} : (f ~ᵢ g) ↔ ∀ i, f i ~ᵢ g i := by
   simp only [Inseparable, nhds_pi, funext_iff, pi_inj]
 
 namespace Inseparable

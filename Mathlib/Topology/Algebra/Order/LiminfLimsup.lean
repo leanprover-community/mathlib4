@@ -28,7 +28,7 @@ open scoped Topology
 
 universe u v
 
-variable {ι α β R S : Type*} {π : ι → Type*}
+variable {ι α β R S : Type*} {X : ι → Type*}
 
 /-- Ad hoc typeclass stating that neighborhoods are eventually bounded above. -/
 class BoundedLENhdsClass (α : Type*) [Preorder α] [TopologicalSpace α] : Prop where
@@ -74,8 +74,8 @@ instance Prod.instBoundedLENhdsClass : BoundedLENhdsClass (α × β) := by
   rw [← @Prod.mk.eta _ _ x, nhds_prod_eq]
   exact ⟨(a, b), ha.prod_mk hb⟩
 
-instance Pi.instBoundedLENhdsClass [Finite ι] [∀ i, Preorder (π i)] [∀ i, TopologicalSpace (π i)]
-    [∀ i, BoundedLENhdsClass (π i)] : BoundedLENhdsClass (∀ i, π i) := by
+instance Pi.instBoundedLENhdsClass [Finite ι] [∀ i, Preorder (X i)] [∀ i, TopologicalSpace (X i)]
+    [∀ i, BoundedLENhdsClass (X i)] : BoundedLENhdsClass (∀ i, X i) := by
   refine ⟨fun x ↦ ?_⟩
   rw [nhds_pi]
   choose f hf using fun i ↦ isBounded_le_nhds (x i)
@@ -112,9 +112,9 @@ instance : BoundedLENhdsClass αᵒᵈ := ⟨@isBounded_ge_nhds α _ _ _⟩
 instance Prod.instBoundedGENhdsClass : BoundedGENhdsClass (α × β) :=
   ⟨(Prod.instBoundedLENhdsClass (α := αᵒᵈ) (β := βᵒᵈ)).isBounded_le_nhds⟩
 
-instance Pi.instBoundedGENhdsClass [Finite ι] [∀ i, Preorder (π i)] [∀ i, TopologicalSpace (π i)]
-    [∀ i, BoundedGENhdsClass (π i)] : BoundedGENhdsClass (∀ i, π i) :=
-  ⟨(Pi.instBoundedLENhdsClass (π := fun i ↦ (π i)ᵒᵈ)).isBounded_le_nhds⟩
+instance Pi.instBoundedGENhdsClass [Finite ι] [∀ i, Preorder (X i)] [∀ i, TopologicalSpace (X i)]
+    [∀ i, BoundedGENhdsClass (X i)] : BoundedGENhdsClass (∀ i, X i) :=
+  ⟨(Pi.instBoundedLENhdsClass (X := fun i ↦ (X i)ᵒᵈ)).isBounded_le_nhds⟩
 
 end BoundedGENhdsClass
 

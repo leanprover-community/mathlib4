@@ -196,8 +196,8 @@ instance Quotient.instAlexandrovDiscrete {s : Setoid α} : AlexandrovDiscrete (Q
 instance Sum.instAlexandrovDiscrete : AlexandrovDiscrete (α ⊕ β) :=
   alexandrovDiscrete_coinduced.sup alexandrovDiscrete_coinduced
 
-instance Sigma.instAlexandrovDiscrete {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    [∀ i, AlexandrovDiscrete (π i)] : AlexandrovDiscrete (Σ i, π i) :=
+instance Sigma.instAlexandrovDiscrete {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    [∀ i, AlexandrovDiscrete (X i)] : AlexandrovDiscrete (Σ i, X i) :=
   alexandrovDiscrete_iSup fun _ ↦ alexandrovDiscrete_coinduced
 
 end
