@@ -8,6 +8,7 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Vandermonde matrix
@@ -38,21 +39,40 @@ coding theory, and representations of uniform matroids over finite fields.
 -/
 
 
-variable {R : Type*} [CommRing R]
+variable {R K : Type*} [CommRing R] [Field K] {n : ℕ}
 
 open Equiv Finset
 
-open Matrix
+open Matrix Fin
 
 namespace Matrix
 
-/-- `vandermonde v` is the square matrix with `i`th row equal to `1, v i, v i ^ 2, v i ^ 3, ...`.
--/
-def vandermonde {n : ℕ} (v : Fin n → R) : Matrix (Fin n) (Fin n) R := .of fun i j => v i ^ (j : ℕ)
+/-- A matrix with rows all having the form `[b^(n-1), a * b^(n-2), ..., a ^ (n-1)]` -/
+def rectVandermonde {α : Type*} (v w : α → R) (n : ℕ) : Matrix α (Fin n) R :=
+  .of fun i j ↦ (v i) ^ j.1 * (w i) ^ j.rev.1
+
+/-- A square matrix with rows all having the form `[b^(n-1), a * b^(n-2), ..., a ^ (n-1)]` -/
+def projVandermonde (v w : Fin n → R) : Matrix (Fin n) (Fin n) R :=
+  rectVandermonde v w n
+
+/-- `vandermonde v` is the square matrix with `i`th row equal to `1, v i, v i ^ 2, v i ^ 3, ...`. -/
+def vandermonde {n : ℕ} (v : Fin n → R) : Matrix (Fin n) (Fin n) R :=
+  .of fun i j ↦ (v i) ^ j.1
+
+lemma vandermonde_eq_projVandermonde {n : ℕ} (v : Fin n → R) :
+    vandermonde v = projVandermonde v 1 := by
+  simp [projVandermonde, rectVandermonde, vandermonde]
+
+/-- We don't mark this as `@[simp]` because the RHS is not simp-nf,
+and simplifying it RHS gives a bothersome `Nat` subtraction.  -/
+theorem projVandermonde_apply {v w : Fin n → R} {i j : Fin n} :
+    projVandermonde v w i j = (v i) ^ j.1 * (w i) ^ j.rev.1 := rfl
+
+theorem rectVandermonde_apply {α : Type*} {v w : α → R} {i : α} {j : Fin n} :
+    rectVandermonde v w n i j = (v i) ^ j.1 * (w i) ^ j.rev.1 := rfl
 
 @[simp]
-theorem vandermonde_apply {n : ℕ} (v : Fin n → R) (i j) : vandermonde v i j = v i ^ (j : ℕ) :=
-  rfl
+theorem vandermonde_apply {n : ℕ} (v : Fin n → R) (i j) : vandermonde v i j = v i ^ (j : ℕ) := rfl
 
 @[simp]
 theorem vandermonde_cons {n : ℕ} (v0 : R) (v : Fin n → R) :
@@ -79,71 +99,103 @@ theorem vandermonde_transpose_mul_vandermonde {n : ℕ} (v : Fin n → R) (i j) 
     ((vandermonde v)ᵀ * vandermonde v) i j = ∑ k : Fin n, v k ^ (i + j : ℕ) := by
   simp only [vandermonde_apply, Matrix.mul_apply, Matrix.transpose_apply, pow_add]
 
+theorem rectVandermonde_apply_zero_right {α : Type*} {v w : α → R} {i : α} (hw : w i = 0) :
+    rectVandermonde v w (n+1) i = Pi.single (Fin.last n) ((v i) ^ n) := by
+  ext j
+  obtain rfl | hlt := j.le_last.eq_or_lt
+  · simp [rectVandermonde_apply]
+  rw [rectVandermonde_apply, Pi.single_eq_of_ne hlt.ne, hw, zero_pow, mul_zero]
+  simpa [Nat.sub_eq_zero_iff_le] using hlt
+
+theorem projVandermonde_apply_of_ne_zero {v w : Fin (n+1) → K} {i j : Fin (n+1)} (hw : w i ≠ 0) :
+    projVandermonde v w i j = (v i) ^ j.1 * (w i) ^ n / (w i) ^ j.1 := by
+  rw [projVandermonde_apply, eq_div_iff (by simp [hw]), mul_assoc, ← pow_add, Fin.rev_add_cast]
+
+theorem projVandermonde_apply_zero_right {v w : Fin (n+1) → R} {i : Fin (n+1)} (hw : w i = 0) :
+    projVandermonde v w i = Pi.single (Fin.last n) ((v i) ^ n)  := by
+  ext j
+  obtain rfl | hlt := j.le_last.eq_or_lt
+  · simp [projVandermonde_apply]
+  rw [projVandermonde_apply, Pi.single_eq_of_ne hlt.ne, hw, zero_pow, mul_zero]
+  simpa [Nat.sub_eq_zero_iff_le] using hlt
+
+theorem projVandermonde_comp {v w : Fin n → R} (f : Fin n → Fin n) :
+    projVandermonde (v ∘ f) (w ∘ f) = (projVandermonde v w).submatrix f id := rfl
+
+theorem projVandermonde_map {R' : Type*} [CommRing R'] (φ : R →+* R') (v w : Fin n → R) :
+    projVandermonde (fun i ↦ φ (v i)) (fun i ↦ φ (w i)) = φ.mapMatrix (projVandermonde v w) := by
+  ext i j
+  simp [projVandermonde_apply]
+
+private theorem det_projVandermonde_of_field (v w : Fin n → K) :
+    (projVandermonde v w).det = ∏ i : Fin n, ∏ j ∈ Finset.Ioi i, (v j * w i - v i * w j) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+  /- We can assume not all `w i` are zero, and therefore that `w 0 ≠ 0`,
+  since otherwise we can swap row `0` with another nonzero row. -/
+  wlog h0 : w 0 ≠ 0 generalizing v w with aux
+  · obtain h0' | ⟨i₀, hi₀ : w i₀ ≠ 0⟩ := forall_or_exists_not (w · = 0)
+    · obtain rfl | hne := eq_or_ne n 0
+      · simp [projVandermonde_apply]
+      rw [det_eq_zero_of_column_eq_zero 0 (fun i ↦ by simpa [projVandermonde_apply, h0']),
+        Finset.prod_sigma', Finset.prod_eq_zero (i := ⟨0, Fin.last n⟩) (by simpa) (by simp [h0'])]
+    rw [← mul_right_inj' (a := ((Equiv.swap 0 i₀).sign : K))
+      (by simp [show 0 ≠ i₀ by rintro rfl; contradiction]), ← det_permute, ← projVandermonde_comp,
+      aux _ _ (by simpa), ← (Equiv.swap 0 i₀).prod_Ioi_comp_eq_sign_mul_prod (by simp)]
+    rfl
+  /- Let `W` be obtained from the matrix by subtracting `r = (v 0) / (w 0)` times each column
+  from the next column, starting from the penultimate column. This doesn't change the determinant.-/
+  set r := v 0 / w 0 with hr
+  set W : Matrix (Fin (n+1)) (Fin (n+1)) K := .of fun i ↦ (cons (projVandermonde v w i 0)
+    (fun j ↦ projVandermonde v w i j.succ - r * projVandermonde v w i j.castSucc))
+  -- deleting the first row and column of `W` gives a row-scaling of a Vandermonde matrix.
+  have hW_eq : (W.submatrix succ succ) = .of
+    fun i j ↦ (v (succ i) - r * w (succ i)) *
+      projVandermonde (v ∘ succ) (w ∘ succ) i j := by
+    ext i j
+    simp only [projVandermonde_apply, val_zero, rev_zero, val_last, val_succ,
+      coe_castSucc, submatrix_apply, cons_succ, Function.comp_apply, rev_succ,
+      Pi.smul_apply, smul_eq_mul, W, r, rev_castSucc]
+    field_simp
+    ring
+  /- The first row of `W` is `[(w 0)^n, 0, ..., 0]` - take a cofactor expansion along this row,
+  and apply induction. -/
+  rw [det_eq_of_forall_col_eq_smul_add_pred (B := W) (c := fun _ ↦ r) (by simp [W])
+    (fun i j ↦ by simp [W, r, projVandermonde_apply]), det_succ_row_zero,
+    Finset.sum_eq_single 0 _ (by simp)]
+  · rw [succAbove_zero, hW_eq, det_mul_column, ih]
+    simp only [Nat.succ_eq_add_one, val_zero, pow_zero, projVandermonde_apply, val_rev,
+      Nat.reduceSubDiff, tsub_zero, one_mul, val_succ, coe_castSucc, cons_zero,
+      Function.comp_apply, W, r, of_apply]
+    rw [prod_univ_succ, ← mul_assoc (a := _ ^ n), show (w 0) ^ n = ∏ x : Fin n, w 0 by simp,
+      ← Finset.prod_mul_distrib]
+    simp_rw [mul_sub, ← mul_assoc (a := w 0), mul_div_cancel₀ _ h0, mul_comm (w 0)]
+    simp
+  intro j _ hj0
+  obtain ⟨j, rfl⟩ := j.eq_succ_of_ne_zero hj0
+  rw [mul_eq_zero, mul_eq_zero]
+  refine .inl (.inr ?_)
+  simp only [of_apply, projVandermonde_apply_of_ne_zero h0, val_succ, coe_castSucc, cons_succ, W, r]
+  ring
+
+/-- The formula for the determinant of a projective Vandermonde matrix. -/
+theorem det_projVandermonde (v w : Fin n → R) : (projVandermonde v w).det =
+    ∏ i : Fin n, ∏ j ∈ Finset.Ioi i, (v j * w i - v i * w j) := by
+  let R' := MvPolynomial (Fin n × Bool) ℤ
+  let u : Fin n × Bool → FractionRing R' := fun i ↦ (algebraMap R' _) (MvPolynomial.X ⟨i.1, i.2⟩)
+  have hdet := det_projVandermonde_of_field (u ⟨· , true⟩) (u ⟨·, false⟩)
+  simp only [u, RingHom.mapMatrix_apply] at hdet
+  norm_cast at hdet
+  rw [projVandermonde_map, ← RingHom.map_det, IsFractionRing.coe_inj] at hdet
+  apply_fun MvPolynomial.eval₂Hom (Int.castRingHom R) (fun x ↦ (if x.2 then v else w) x.1) at hdet
+  rw [RingHom.map_det] at hdet
+  convert hdet <;>
+  simp [← Matrix.ext_iff, projVandermonde_apply, u, R']
+
 theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
     det (vandermonde v) = ∏ i : Fin n, ∏ j ∈ Ioi i, (v j - v i) := by
-  unfold vandermonde
-  induction n with
-  | zero => exact det_eq_one_of_card_eq_zero (Fintype.card_fin 0)
-  | succ n ih =>
-  calc
-    det (of fun i j : Fin n.succ => v i ^ (j : ℕ)) =
-        det
-          (of fun i j : Fin n.succ =>
-            Matrix.vecCons (v 0 ^ (j : ℕ)) (fun i => v (Fin.succ i) ^ (j : ℕ) - v 0 ^ (j : ℕ)) i) :=
-      det_eq_of_forall_row_eq_smul_add_const (Matrix.vecCons 0 1) 0 (Fin.cons_zero _ _) ?_
-    _ =
-        det
-          (of fun i j : Fin n =>
-            Matrix.vecCons (v 0 ^ (j.succ : ℕ))
-              (fun i : Fin n => v (Fin.succ i) ^ (j.succ : ℕ) - v 0 ^ (j.succ : ℕ))
-              (Fin.succAbove 0 i)) := by
-      simp_rw [det_succ_column_zero, Fin.sum_univ_succ, of_apply, Matrix.cons_val_zero, submatrix,
-        of_apply, Matrix.cons_val_succ, Fin.val_zero, pow_zero, one_mul, sub_self,
-        mul_zero, zero_mul, Finset.sum_const_zero, add_zero]
-    _ =
-        det
-          (of fun i j : Fin n =>
-              (v (Fin.succ i) - v 0) *
-                ∑ k ∈ Finset.range (j + 1 : ℕ), v i.succ ^ k * v 0 ^ (j - k : ℕ) :
-            Matrix _ _ R) := by
-      congr
-      ext i j
-      rw [Fin.succAbove_zero, Matrix.cons_val_succ, Fin.val_succ, mul_comm]
-      exact (geom_sum₂_mul (v i.succ) (v 0) (j + 1 : ℕ)).symm
-    _ =
-        (∏ i ∈ Finset.univ, (v (Fin.succ i) - v 0)) *
-          det fun i j : Fin n =>
-            ∑ k ∈ Finset.range (j + 1 : ℕ), v i.succ ^ k * v 0 ^ (j - k : ℕ) :=
-      (det_mul_column (fun i => v (Fin.succ i) - v 0) _)
-    _ = (∏ i ∈ Finset.univ, (v (Fin.succ i) - v 0)) *
-    det (of fun i j : Fin n => v (Fin.succ i) ^ (j : ℕ)) := congr_arg _ ?_
-    _ = ∏ i : Fin n.succ, ∏ j ∈ Ioi i, (v j - v i) := by
-      simp_rw [Fin.prod_univ_succ, Fin.prod_Ioi_zero, Fin.prod_Ioi_succ]
-      have h : (of fun i j : Fin n ↦ v i.succ ^ (j : ℕ)).det =
-          ∏ x : Fin n, ∏ y ∈ Ioi x, (v y.succ - v x.succ) := by
-        simpa using ih (v ∘ Fin.succ)
-      rw [h]
-
-  · intro i j
-    simp_rw [of_apply]
-    rw [Matrix.cons_val_zero]
-    refine Fin.cases ?_ (fun i => ?_) i
-    · simp
-    rw [Matrix.cons_val_succ, Matrix.cons_val_succ, Pi.one_apply]
-    ring
-  · cases n
-    · rw [det_eq_one_of_card_eq_zero (Fintype.card_fin 0),
-      det_eq_one_of_card_eq_zero (Fintype.card_fin 0)]
-    apply det_eq_of_forall_col_eq_smul_add_pred fun _ => v 0
-    · intro j
-      simp
-    · intro i j
-      simp only [smul_eq_mul, Pi.add_apply, Fin.val_succ, Fin.coe_castSucc, Pi.smul_apply]
-      rw [Finset.sum_range_succ, add_comm, tsub_self, pow_zero, mul_one, Finset.mul_sum]
-      congr 1
-      refine Finset.sum_congr rfl fun i' hi' => ?_
-      rw [mul_left_comm (v 0), Nat.succ_sub, pow_succ']
-      exact Nat.lt_succ_iff.mp (Finset.mem_range.mp hi')
+  simp [vandermonde_eq_projVandermonde, det_projVandermonde]
 
 theorem det_vandermonde_eq_zero_iff [IsDomain R] {n : ℕ} {v : Fin n → R} :
     det (vandermonde v) = 0 ↔ ∃ i j : Fin n, v i = v j ∧ i ≠ j := by
@@ -175,6 +227,7 @@ theorem eq_zero_of_forall_index_sum_pow_mul_eq_zero {R : Type*} [CommRing R] [Is
     {f v : Fin n → R} (hf : Function.Injective f)
     (hfv : ∀ j, (∑ i : Fin n, f j ^ (i : ℕ) * v i) = 0) : v = 0 :=
   eq_zero_of_mulVec_eq_zero (det_vandermonde_ne_zero_iff.mpr hf) (funext hfv)
+
 
 theorem eq_zero_of_forall_index_sum_mul_pow_eq_zero {R : Type*} [CommRing R] [IsDomain R] {n : ℕ}
     {f v : Fin n → R} (hf : Function.Injective f) (hfv : ∀ j, (∑ i, v i * f j ^ (i : ℕ)) = 0) :
@@ -209,82 +262,5 @@ theorem det_eval_matrixOfPolynomials_eq_det_vandermonde {n : ℕ} (v : Fin n →
   rw [Matrix.eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials v p (fun i ↦
       Nat.le_of_eq (h_deg i)), Matrix.det_mul,
       Matrix.det_matrixOfPolynomials p h_deg h_monic, mul_one]
-
-section WithTop
-
-variable {n : ℕ} {i j : Fin n} {v : Fin n → WithTop R}
-
-/-- The `n × n` matrix whose `i`th row is `[1, a, a^2, ...]` if `v i = ↑a`,
-and `[0, 0, ..., 1]` if `v i = ⊤`.
-The exceptional type of row can be thought of as a normalization of the regular type of row,
-with `a = ⊤`.-/
-def vandermondeTop (v : Fin n → WithTop R) : Matrix (Fin n) (Fin n) R :=
-  .of fun i j => (v i).recTopCoe (if j.1 + 1 = n then 1 else 0) (· ^ (j : ℕ))
-
-lemma vandermondeTop_apply_ne_top (hi : v i ≠ ⊤) :
-    vandermondeTop v i j = ((v i).untop hi) ^ (j : ℕ) := by
-  lift v i to R using hi with a ha
-  simp [vandermondeTop, of_apply, WithTop.untop_coe, ← ha]
-
-lemma vandermondeTop_apply_top_zero (hi : v i = ⊤) (hj : j.1 + 1 < n) :
-    vandermondeTop v i j = 0 := by
-  simp [vandermondeTop, hi, hj.ne]
-
-lemma vandermondeTop_apply_top_one (hi : v i = ⊤) (hj : j.1 + 1 = n) :
-    vandermondeTop v i j = 1 := by
-  simp [vandermondeTop, hi, hj]
-
-lemma vandermondeTop_apply_top_eq_ite {n : ℕ} {i j : Fin (n+1)} {v : Fin (n+1) → WithTop R}
-    (hi : v i = ⊤) : vandermondeTop v i j = if j = Fin.last n then 1 else 0 := by
-  obtain rfl | hlt := j.le_last.eq_or_lt
-  · simp [vandermondeTop_apply_top_one hi]
-  rw [vandermondeTop_apply_top_zero hi (by omega), if_neg hlt.ne]
-
-lemma vandermondeTop_eq_vandermonde (hv : ∀ i, (v i ≠ ⊤)) :
-    vandermondeTop v = vandermonde fun i ↦ (v i).untop (hv i) := by
-  obtain rfl | n := n
-  · exact ext_of_single_vecMul (congrFun rfl)
-  ext i j
-  exact vandermondeTop_apply_ne_top (hv i)
-
-/-- If a `vandermondeTop` matrix has exactly one 'infinity' row,
-then its determinant is (up to sign) equal to that of the `vandermonde` matrix obtained by removing
-this infinity row and the last column. -/
-lemma det_vandermondeTop_of_unique {v : Fin (n+1) → WithTop R} {i₀ : Fin (n+1)}
-    (hv : ∀ i, v i = ⊤ ↔ i = i₀) :
-    (vandermondeTop v).det = (-1) ^ (i₀.1 + n) *
-      (vandermonde (fun i ↦ (v (i₀.succAbove i)).untop
-      (fun h ↦ i₀.succAbove_ne i <| (hv _).1 h))).det := by
-  have hi₀ : v i₀ = ⊤ := (hv i₀).2 rfl
-  have aux (i) : v (i₀.succAbove i) ≠ ⊤ := fun h ↦ i₀.succAbove_ne i <| (hv _).1 h
-  rw [det_succ_row (i := i₀), Fintype.sum_eq_single (Fin.last n)]
-  · convert rfl
-    · simp [vandermondeTop_apply_top_eq_ite hi₀]
-    rw [← vandermondeTop_eq_vandermonde]
-    ext i j
-    rw [vandermondeTop_apply_ne_top (by apply aux), submatrix_apply,
-      vandermondeTop_apply_ne_top (aux _)]
-    simp
-  exact fun i hi ↦ by simp [vandermondeTop_apply_top_eq_ite hi₀, if_neg hi]
-
-lemma det_vandermondeTop_ne_zero_iff [IsDomain R] {v : Fin n → WithTop R} :
-    det (vandermondeTop v) ≠ 0 ↔ Function.Injective v := by
-  obtain rfl | n := n
-  · simp [Function.injective_of_subsingleton v]
-  refine ⟨fun h i j hij ↦ by_contra fun hne ↦ h (det_zero_of_row_eq hne ?_), fun h ↦ ?_⟩
-  · ext k
-    simp [vandermondeTop, hij]
-  obtain ⟨i₀, hi₀⟩ | htop := em <| ⊤ ∈ Set.range v
-  · have aux (i) : v i = ⊤ ↔ i = i₀ := ⟨fun hi ↦ by rw [← h.eq_iff, hi, hi₀], fun h ↦ h ▸ hi₀⟩
-    simp only [det_vandermondeTop_of_unique aux, ne_eq, mul_eq_zero, pow_eq_zero_iff', neg_eq_zero,
-      one_ne_zero, AddLeftCancelMonoid.add_eq_zero, not_and, false_and, false_or,
-      det_vandermonde_ne_zero_iff]
-    intro i j (hij : (v (i₀.succAbove i)).untop _ = (v (i₀.succAbove j)).untop _)
-    rwa [WithTop.eq_untop_iff, WithTop.coe_untop, h.eq_iff, Fin.succAbove_right_inj] at hij
-  rw [vandermondeTop_eq_vandermonde (by simpa using htop), det_vandermonde_ne_zero_iff]
-  intro i j (hij : (v i).untop _ = (v j).untop _)
-  rwa [WithTop.eq_untop_iff, WithTop.coe_untop, h.eq_iff] at hij
-
-end WithTop
 
 end Matrix
