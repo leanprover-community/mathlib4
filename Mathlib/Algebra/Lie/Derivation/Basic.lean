@@ -254,20 +254,6 @@ theorem smul_apply (r : S) (D : LieDerivation R L M) : (r • D) a = r • D a :
 
 section Hidden
 
-local instance LieRing.instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring L where
-  add x y := x + y
-  add_assoc := by exact fun a b c ↦ add_assoc a b c
-  zero := 0
-  zero_add := by exact fun a ↦ AddZeroClass.zero_add a
-  add_zero := by exact fun a ↦ AddMonoid.add_zero a
-  nsmul := nsmulRec
-  add_comm := by exact fun a b ↦ AddCommMagma.add_comm a b
-  mul a b := ⁅a, b⁆
-  left_distrib := by exact fun a b c ↦ lie_add a b c
-  right_distrib := by exact fun a b c ↦ add_lie a b c
-  zero_mul := zero_lie
-  mul_zero := lie_zero
-
 open Finset
 open scoped Nat
 variable (L : Type*) [LieRing L] [LieAlgebra ℚ L] (D : LieDerivation ℚ L L)
@@ -310,17 +296,16 @@ noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
             • ⁅D^[j] x, D^[i - j] y⁆) := by
           refine sum_congr rfl fun i hi ↦ sum_congr rfl fun j hj ↦ ?_
           rw [mul_smul]
-          simp_all only [mem_range]
           norm_cast
         _ = ∑ i ∈ R2N, (∑ j ∈ range (i + 1), ((j ! : ℚ)⁻¹ * ((i - j) ! : ℚ)⁻¹) •
             ⁅D^[j] x, D^[i - j] y⁆) := by
           refine sum_congr rfl fun i hi ↦ sum_congr rfl fun j hj ↦ ?_
-          simp at hj
+          simp only [mem_range] at hj
           have ss : j ≤ i := by exact Nat.le_of_lt_succ hj
           rw [rr i j ss]
         _ = ∑ i ∈ R2N, (∑ j ∈ range (i + 1), ((j ! : ℚ)⁻¹ * ((i - j) ! : ℚ)⁻¹) •
             ⁅(D.toLinearMap ^ j) x, (D.toLinearMap ^ (i - j)) y⁆) :=
-          by simp [LinearMap.pow_apply]
+          by simp only [LinearMap.pow_apply, coeFn_coe]
         _ = ∑ ij ∈ R2N ×ˢ R2N with ij.1 + ij.2 ≤ 2 * N, ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) •
               ⁅(D.toLinearMap ^ ij.1) x, (D.toLinearMap ^ ij.2) y⁆ := by
           rw [hR2N, sum_sigma']
