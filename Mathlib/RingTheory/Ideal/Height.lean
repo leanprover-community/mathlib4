@@ -225,17 +225,13 @@ theorem IsLocalization.primeHeight_comap (S : Submonoid R) {A : Type*} [CommRing
     exact Set.disjoint_of_subset_right hp (e ⟨_, ‹J.IsPrime›⟩).2.2
   refine Order.krullDim_eq_of_orderIso ?_
   exact
-  { toFun := fun I => ⟨⟨I.1.1.comap (algebraMap R A), (e ⟨_, I.1.2⟩).2.1⟩, Ideal.comap_mono I.2⟩
-    invFun := fun I => ⟨⟨_, (e.symm ⟨_, I.1.2, H _ I.2⟩).2⟩, Ideal.map_le_iff_le_comap.mpr I.2⟩
-    left_inv := fun I => Subtype.ext <| PrimeSpectrum.ext_iff.mpr <| by
-      have := (e.left_inv ⟨_, I.1.2⟩)
-      apply_fun (fun I ↦ I.1) at this
-      exact this
-    right_inv := fun I => Subtype.ext <| PrimeSpectrum.ext_iff.mpr <| by
-      have := (e.right_inv ⟨_, I.1.2, H _ I.2⟩)
-      apply_fun (fun I ↦ I.1) at this
-      exact this
-    map_rel_iff' := fun {I₁ I₂} => @RelIso.map_rel_iff _ _ _ _ e ⟨_, I₁.1.2⟩ ⟨_, I₂.1.2⟩ }
+ { toFun I := ⟨⟨I.1.1.comap (algebraMap R A), (e ⟨_, I.1.2⟩).2.1⟩, Ideal.comap_mono I.2⟩
+    invFun I := ⟨⟨_, (e.symm ⟨_, I.1.2, H _ I.2⟩).2⟩, Ideal.map_le_iff_le_comap.mpr I.2⟩
+    left_inv I := Subtype.ext <| PrimeSpectrum.ext_iff.mpr <|
+      congrArg (fun I ↦ I.1) (e.left_inv ⟨_, I.1.2⟩)
+    right_inv I := Subtype.ext <| PrimeSpectrum.ext_iff.mpr <|
+      congrArg (fun I ↦ I.1) (e.right_inv ⟨_, I.1.2, H _ I.2⟩)
+    map_rel_iff' {I₁ I₂} := @RelIso.map_rel_iff _ _ _ _ e ⟨_, I₁.1.2⟩ ⟨_, I₂.1.2⟩ }
 
 theorem IsLocalization.height_comap (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
     [IsLocalization S A] (J : Ideal A) : (J.comap (algebraMap R A)).height = J.height := by
