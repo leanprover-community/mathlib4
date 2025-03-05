@@ -13,6 +13,9 @@ import Mathlib.Topology.UniformSpace.Real
 
 /-!
 # Second countability of the reals
+
+We prove that `ℝ`, `EReal`, `ℝ≥0` and `ℝ≥0∞` are second countable.
+In the process, we also provide instances `ProperSpace ℝ` and `ProperSpace ℝ≥0`.
 -/
 
 assert_not_exists IsTopologicalRing UniformContinuousConstSMul UniformOnFun
@@ -39,12 +42,7 @@ end EReal
 namespace NNReal
 
 /-!
-Instances for the following typeclasses are defined:
-
-* `SecondCountableTopology ℝ≥0`
-* `ProperSpace ℝ≥0`
-
-Everything is inherited from the corresponding structures on the reals.
+Instances for `ℝ≥0` are inherited from the corresponding structures on the reals.
 -/
 
 instance : SecondCountableTopology ℝ≥0 :=
