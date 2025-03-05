@@ -5335,6 +5335,7 @@ import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.HaveLetLinter
 import Mathlib.Tactic.Linter.Header
 import Mathlib.Tactic.Linter.Lint
+import Mathlib.Tactic.Linter.Local
 import Mathlib.Tactic.Linter.MinImports
 import Mathlib.Tactic.Linter.Multigoal
 import Mathlib.Tactic.Linter.OldObtain
@@ -5968,6 +5969,7 @@ import Mathlib.Util.MemoFix
 import Mathlib.Util.Notation3
 import Mathlib.Util.PPOptions
 import Mathlib.Util.ParseCommand
+import Mathlib.Util.ParseGit
 import Mathlib.Util.Qq
 import Mathlib.Util.SleepHeartbeats
 import Mathlib.Util.Superscript
