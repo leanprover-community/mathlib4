@@ -269,12 +269,9 @@ theorem WithSeminorms.withSeminorms_eq {p : SeminormFamily 𝕜 E ι} [t : Topol
 variable [TopologicalSpace E]
 variable {p : SeminormFamily 𝕜 E ι}
 
-theorem WithSeminorms.isTopologicalAddGroup (hp : WithSeminorms p) : IsTopologicalAddGroup E := by
+theorem WithSeminorms.topologicalAddGroup (hp : WithSeminorms p) : IsTopologicalAddGroup E := by
   rw [hp.withSeminorms_eq]
   exact AddGroupFilterBasis.isTopologicalAddGroup _
-
-@[deprecated (since := "2025-02-14")] alias WithSeminorms.topologicalAddGroup  :=
-  WithSeminorms.isTopologicalAddGroup
 
 theorem WithSeminorms.continuousSMul (hp : WithSeminorms p) : ContinuousSMul 𝕜 E := by
   rw [hp.withSeminorms_eq]
