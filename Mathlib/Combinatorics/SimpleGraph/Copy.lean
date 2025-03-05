@@ -15,7 +15,7 @@ This file introduces the concept of one simple graph containing a copy of anothe
 * `SimpleGraph.Copy A B` is the type of copies of `A` in `B`, implemented as the subtype of
   *injective* homomorphisms.
 
-* `SimpleGraph.IsIsoSubgraph` is the relation that `B` contains a copy of `A`, that
+* `SimpleGraph.IsIsoSubgraph A B`, `A ⊑ B` is the relation that `B` contains a copy of `A`, that
   is, the type of copies of `A` in `B` is nonempty. This is equivalent to the existence of an
   isomorphism from `A` to a subgraph of `B`.
 
@@ -110,60 +110,59 @@ end Copy
 
 section IsIsoSubgraph
 
-/-- The relation `IsIsoSubgraph A B` says that `B` contains a copy of `A`.
+/-- The relation `IsIsoSubgraph A B`, `A ⊑ B` says that `B` contains a copy of `A`.
 
 This is equivalent to the existence of an isomorphism from `A` to a subgraph of `B`. -/
 abbrev IsIsoSubgraph (A : SimpleGraph α) (B : SimpleGraph β) := Nonempty (Copy A B)
 
+@[inherit_doc] scoped infixl:50 " ⊑ " => SimpleGraph.IsIsoSubgraph
+
 /-- A simple graph contains itself. -/
-@[refl]
-theorem isIsoSubgraph_refl (G : SimpleGraph V) :
-  G.IsIsoSubgraph G := ⟨Copy.refl G⟩
+@[refl] theorem isIsoSubgraph_refl (G : SimpleGraph V) : G ⊑ G := ⟨Copy.id G⟩
 
 /-- A simple graph contains its subgraphs. -/
-theorem isIsoSubgraph_of_le {G₁ G₂ : SimpleGraph V} (h : G₁ ≤ G₂) :
-  G₁.IsIsoSubgraph G₂ := ⟨Copy.ofLE h⟩
+theorem isIsoSubgraph_of_le {G₁ G₂ : SimpleGraph V} (h : G₁ ≤ G₂) : G₁ ⊑ G₂ := ⟨Copy.ofLE G₁ G₂ h⟩
 
 /-- If `A` contains `B` and `B` contains `C`, then `A` contains `C`. -/
-theorem isIsoSubgraph_trans : A.IsIsoSubgraph B → B.IsIsoSubgraph C → A.IsIsoSubgraph C :=
-  fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
+theorem isIsoSubgraph_trans : A ⊑ B → B ⊑ C → A ⊑ C := fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
 
 alias IsIsoSubgraph.trans := isIsoSubgraph_trans
 
 /-- If `B` contains `C` and `A` contains `B`, then `A` contains `C`. -/
-theorem isIsoSubgraph_trans' : B.IsIsoSubgraph C → A.IsIsoSubgraph B → A.IsIsoSubgraph C :=
-  flip isIsoSubgraph_trans
+theorem isIsoSubgraph_trans' : B ⊑ C → A ⊑ B → A ⊑ C := flip isIsoSubgraph_trans
 
 alias IsIsoSubgraph.trans' := isIsoSubgraph_trans'
 
+lemma IsIsoSubgraph.mono_right {B' : SimpleGraph β} (h_isub : A ⊑ B) (h_sub : B ≤ B') : A ⊑ B' :=
+  h_isub.trans <| isIsoSubgraph_of_le h_sub
+
+alias IsIsoSubgraph.trans_le := IsIsoSubgraph.mono_right
+
+lemma IsIsoSubgraph.mono_left {A' : SimpleGraph α} (h_sub : A ≤ A') (h_isub : A' ⊑ B) : A ⊑ B :=
+  (isIsoSubgraph_of_le h_sub).trans h_isub
+
+alias IsIsoSubgraph.trans_le' := IsIsoSubgraph.mono_left
+
+/-- If `A ≃g B`, then `A` is contained in `C` if and only if `B` is contained in `C`. -/
+theorem isIsoSubgraph_congr (e : A ≃g B) : A ⊑ C ↔ B ⊑ C :=
+  ⟨isIsoSubgraph_trans ⟨e.symm.toCopy⟩, isIsoSubgraph_trans ⟨e.toCopy⟩⟩
+
 /-- A simple graph having no vertices is contained in any simple graph. -/
-theorem isIsoSubgraph_of_isEmpty [IsEmpty α] : A.IsIsoSubgraph B := by
-  let ι : α ↪ β := Function.Embedding.ofIsEmpty
-  let f : A →g B := ⟨ι, by apply isEmptyElim⟩
-  exact ⟨f.toCopy ι.injective⟩
+lemma isIsoSubgraph_of_isEmpty [IsEmpty α] : A ⊑ B := by
+  use ⟨isEmptyElim, fun {a} ↦ isEmptyElim a⟩, isEmptyElim
 
 /-- A simple graph having no edges is contained in any simple graph having sufficent vertices. -/
 theorem isIsoSubgraph_of_isEmpty_edgeSet [IsEmpty A.edgeSet] [Fintype α] [Fintype β]
-    (h : card α ≤ card β) : A.IsIsoSubgraph B := by
-  haveI : Nonempty (α ↪ β) := Function.Embedding.nonempty_of_card_le h
+    (h : card α ≤ card β) : A ⊑ B := by
+  haveI := Function.Embedding.nonempty_of_card_le h
   let ι : α ↪ β := Classical.arbitrary (α ↪ β)
-  let f : A →g B := by
-    use ι
-    intro a₁ a₂ hadj
-    let e : A.edgeSet := by
-      use s(a₁, a₂)
-      rw [mem_edgeSet]
-      exact hadj
-    exact isEmptyElim e
-  exact ⟨f.toCopy ι.injective⟩
+  exact ⟨⟨ι, isEmptyElim ∘ fun hadj ↦ (⟨s(_, _), hadj⟩ : A.edgeSet)⟩, ι.injective⟩
 
-/-- If `A ≃g B`, then `A` is contained in `C` if and only if `B` is contained in `C`. -/
-theorem isIsoSubgraph_iff_of_iso (f : A ≃g B) :
-    A.IsIsoSubgraph C ↔ B.IsIsoSubgraph C :=
-  ⟨isIsoSubgraph_trans ⟨f.symm.toCopy⟩, isIsoSubgraph_trans ⟨f.toCopy⟩⟩
+lemma bot_isIsoSubgraph (f : α ↪ β) : (⊥ : SimpleGraph α) ⊑ B := by
+  use ⟨f, False.elim⟩, f.injective
 
 /-- A simple graph `G` contains all `Subgraph G` coercions. -/
-lemma Subgraph.coe_isIsoSubgraph (G' : G.Subgraph) : (G'.coe).IsIsoSubgraph G := ⟨G'.coeCopy⟩
+lemma Subgraph.coe_isIsoSubgraph (G' : G.Subgraph) : G'.coe ⊑ G := ⟨G'.coeCopy⟩
 
 /-- The isomorphism from `Subgraph A` to its map under a copy `Copy A B`. -/
 noncomputable def Subgraph.isoMap (f : Copy A B) (A' : A.Subgraph) :
@@ -174,13 +173,9 @@ noncomputable def Subgraph.isoMap (f : Copy A B) (A' : A.Subgraph) :
 
 /-- `B` contains `A` if and only if `B` has a subgraph `B'` and `B'` is isomorphic to `A`. -/
 theorem isIsoSubgraph_iff_exists_iso_subgraph :
-    A.IsIsoSubgraph B ↔ ∃ B' : B.Subgraph, Nonempty (A ≃g B'.coe) := by
-  constructor
-  · intro ⟨f⟩
-    use (⊤ : A.Subgraph).map f
-    exact ⟨((⊤ : A.Subgraph).isoMap f).comp Subgraph.topIso.symm⟩
-  · intro ⟨B', ⟨e⟩⟩
-    exact B'.coe_isIsoSubgraph.trans' ⟨e.toCopy⟩
+    A ⊑ B ↔ ∃ B' : B.Subgraph, Nonempty (A ≃g B'.coe) :=
+  ⟨fun ⟨f⟩ ↦ ⟨Subgraph.map f.toHom ⊤, ⟨(Subgraph.isoMap f ⊤).comp Subgraph.topIso.symm⟩⟩,
+    fun ⟨B', ⟨e⟩⟩ ↦ B'.coe_isIsoSubgraph.trans' ⟨e.toCopy⟩⟩
 
 alias ⟨exists_iso_subgraph, _⟩ := isIsoSubgraph_iff_exists_iso_subgraph
 
