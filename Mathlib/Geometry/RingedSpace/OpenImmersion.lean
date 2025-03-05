@@ -308,8 +308,8 @@ def pullbackConeOfLeftFst :
                     constructor
                     · change _ ∈ U.unop at h₁
                       convert h₁
-                      erw [TopCat.pullbackIsoProdSubtype_inv_fst_apply]
-                    · erw [TopCat.pullbackIsoProdSubtype_inv_snd_apply]
+                      rw [TopCat.pullbackIsoProdSubtype_inv_fst_apply]
+                    · rw [TopCat.pullbackIsoProdSubtype_inv_snd_apply]
                   · rintro _ ⟨x, h₁, rfl⟩
                     exact ⟨_, h₁, CategoryTheory.congr_fun pullback.condition x⟩))
       naturality := by
@@ -629,7 +629,7 @@ instance hasLimit_cospan_forget_of_left : HasLimit (cospan f g ⋙ forget) := by
       ((cospan f g ⋙ forget).map Hom.inr)) := by
     change HasLimit (cospan ((forget).map f) ((forget).map g))
     infer_instance
-  apply hasLimitOfIso (diagramIsoCospan _).symm
+  apply hasLimit_of_iso (diagramIsoCospan _).symm
 
 instance hasLimit_cospan_forget_of_left' :
     HasLimit (cospan ((cospan f g ⋙ forget).map Hom.inl) ((cospan f g ⋙ forget).map Hom.inr)) :=
@@ -640,7 +640,7 @@ instance hasLimit_cospan_forget_of_right : HasLimit (cospan g f ⋙ forget) := b
       ((cospan g f ⋙ forget).map Hom.inr)) := by
     change HasLimit (cospan ((forget).map g) ((forget).map f))
     infer_instance
-  apply hasLimitOfIso (diagramIsoCospan _).symm
+  apply hasLimit_of_iso (diagramIsoCospan _).symm
 
 instance hasLimit_cospan_forget_of_right' :
     HasLimit (cospan ((cospan g f ⋙ forget).map Hom.inl) ((cospan g f ⋙ forget).map Hom.inr)) :=
@@ -713,12 +713,14 @@ end Pullback
 
 section OfStalkIso
 
-variable [HasLimits C] [HasColimits C] [HasForget C]
+variable [HasLimits C] [HasColimits C] {FC : C → C → Type*} {CC : C → Type v}
+variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [instCC : ConcreteCategory.{v} C FC]
 variable [(CategoryTheory.forget C).ReflectsIsomorphisms]
   [PreservesLimits (CategoryTheory.forget C)]
 
 variable [PreservesFilteredColimits (CategoryTheory.forget C)]
 
+include instCC in
 /-- Suppose `X Y : SheafedSpace C`, where `C` is a concrete category,
 whose forgetful functor reflects isomorphisms, preserves limits and filtered colimits.
 Then a morphism `X ⟶ Y` that is a topological open embedding
@@ -946,8 +948,6 @@ instance mono : Mono f :=
 instance : SheafedSpace.IsOpenImmersion (LocallyRingedSpace.forgetToSheafedSpace.map f) :=
   H
 
--- note to reviewers: is there a `count_heartbeats` for this?
-set_option synthInstance.maxHeartbeats 40000 in
 /-- An explicit pullback cone over `cospan f g` if `f` is an open immersion. -/
 def pullbackConeOfLeft : PullbackCone f g := by
   refine PullbackCone.mk ?_
@@ -967,7 +967,6 @@ def pullbackConeOfLeft : PullbackCone f g := by
 instance : LocallyRingedSpace.IsOpenImmersion (pullbackConeOfLeft f g).snd :=
   show PresheafedSpace.IsOpenImmersion (Y.toPresheafedSpace.ofRestrict _) by infer_instance
 
-set_option synthInstance.maxHeartbeats 40000 in
 /-- The constructed `pullbackConeOfLeft` is indeed limiting. -/
 def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
   PullbackCone.isLimitAux' _ fun s => by

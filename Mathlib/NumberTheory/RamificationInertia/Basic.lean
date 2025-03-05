@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
 import Mathlib.RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.Finiteness.Quotient
 
 /-!
 # Ramification index and inertia degree
@@ -91,7 +92,7 @@ theorem ramificationIdx_spec {n : ℕ} (hle : map f p ≤ P ^ n) (hgt : ¬map f 
 
 theorem ramificationIdx_lt {n : ℕ} (hgt : ¬map f p ≤ P ^ n) : ramificationIdx f p P < n := by
   classical
-  cases' n with n n
+  rcases n with - | n
   · simp at hgt
   · rw [Nat.lt_succ_iff]
     have : ∀ k, map f p ≤ P ^ k → k ≤ n := by
@@ -252,8 +253,7 @@ variable (K)
 
 open scoped Matrix
 
-variable {K}
-
+variable {K} in
 /-- If `b` mod `p` spans `S/p` as `R/p`-space, then `b` itself spans `Frac(S)` as `K`-space.
 
 Here,
@@ -353,7 +353,6 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
     rw [Submodule.restrictScalars_mem, IsScalarTower.algebraMap_apply R S L] at hx
     exact IsFractionRing.ideal_span_singleton_map_subset R hRL span_d hx
 
-variable (K)
 variable [hRK : IsFractionRing R K]
 
 /-- Let `V` be a vector space over `K = Frac(R)`, `S / R` a ring extension

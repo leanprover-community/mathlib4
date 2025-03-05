@@ -414,7 +414,7 @@ variable {L} {M}
 
 /-!
 ### `comap` and `map`
- -/
+-/
 
 
 /-- The preimage of a substructure along a homomorphism is a substructure. -/
@@ -628,8 +628,18 @@ def subtype (S : L.Substructure M) : S ↪[L] M where
   inj' := Subtype.coe_injective
 
 @[simp]
-theorem coeSubtype : ⇑S.subtype = ((↑) : S → M) :=
+theorem subtype_apply {S : L.Substructure M} {x : S} : subtype S x = x :=
   rfl
+
+theorem subtype_injective (S : L.Substructure M): Function.Injective (subtype S) :=
+  Subtype.coe_injective
+
+@[simp]
+theorem coe_subtype : ⇑S.subtype = ((↑) : S → M) :=
+  rfl
+
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
 
 /-- The equivalence between the maximal substructure of a structure and the structure itself. -/
 def topEquiv : (⊤ : L.Substructure M) ≃[L] M where
@@ -706,7 +716,7 @@ namespace Substructure
 def withConstants (S : L.Substructure M) {A : Set M} (h : A ⊆ S) : L[[A]].Substructure M where
   carrier := S
   fun_mem {n} f := by
-    cases' f with f f
+    obtain f | f := f
     · exact S.fun_mem f
     · cases n
       · exact fun _ _ => h f.2
@@ -948,7 +958,7 @@ theorem coe_inclusion {S T : L.Substructure M} (h : S ≤ T) :
 
 theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
   ext x
-  simp only [Hom.mem_range, Embedding.coe_toHom, coeSubtype]
+  simp only [Hom.mem_range, Embedding.coe_toHom, coe_subtype]
   refine ⟨?_, fun h => ⟨⟨x, h⟩, rfl⟩⟩
   rintro ⟨⟨y, hy⟩, rfl⟩
   exact hy
