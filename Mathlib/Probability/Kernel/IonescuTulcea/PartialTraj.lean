@@ -290,7 +290,7 @@ theorem partialTraj_comp_partialTraj (hab : a ≤ b) (hbc : b ≤ c) :
   | succ k h hk => rw [partialTraj_succ_eq_comp h, comp_assoc, hk,
       ← partialTraj_succ_eq_comp (hab.trans h)]
 
-/-- This is a specific lemma used in the proof `partialTraj_eq_prod`. It is the main rewrite step
+/-- This is a specific lemma used in the proof of `partialTraj_eq_prod`. It is the main rewrite step
 and stating it as a separate lemma avoids using extensionality of kernels, which would generate
 a lot of measurability subgoals. -/
 private lemma fst_prod_comp_id_prod {X Y Z : Type*} {mX : MeasurableSpace X}
