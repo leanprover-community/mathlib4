@@ -900,21 +900,21 @@ theorem measurable_update_left {a : δ} [DecidableEq δ] {x : X a} :
   measurable_update'.comp measurable_prod_mk_right
 
 @[measurability, fun_prop]
-theorem Set.measurable_restrict (s : Set δ) : Measurable (s.restrict (X := X)) :=
+theorem Set.measurable_restrict (s : Set δ) : Measurable (s.restrict (π := X)) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 @[measurability, fun_prop]
 theorem Set.measurable_restrict₂ {s t : Set δ} (hst : s ⊆ t) :
-    Measurable (restrict₂ (X := X) hst) :=
+    Measurable (restrict₂ (π := X) hst) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 @[measurability, fun_prop]
-theorem Finset.measurable_restrict (s : Finset δ) : Measurable (s.restrict (X := X)) :=
+theorem Finset.measurable_restrict (s : Finset δ) : Measurable (s.restrict (π := X)) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 @[measurability, fun_prop]
 theorem Finset.measurable_restrict₂ {s t : Finset δ} (hst : s ⊆ t) :
-    Measurable (Finset.restrict₂ (X := X) hst) :=
+    Measurable (Finset.restrict₂ (π := X) hst) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 @[measurability, fun_prop]
@@ -924,7 +924,7 @@ theorem Set.measurable_restrict_apply (s : Set α) {f : α → γ} (hf : Measura
 @[measurability, fun_prop]
 theorem Set.measurable_restrict₂_apply {s t : Set α} (hst : s ⊆ t)
     {f : t → γ} (hf : Measurable f) :
-    Measurable (restrict₂ (X := fun _ ↦ γ) hst f) := hf.comp (measurable_inclusion hst)
+    Measurable (restrict₂ (π := fun _ ↦ γ) hst f) := hf.comp (measurable_inclusion hst)
 
 @[measurability, fun_prop]
 theorem Finset.measurable_restrict_apply (s : Finset α) {f : α → γ} (hf : Measurable f) :
@@ -933,7 +933,7 @@ theorem Finset.measurable_restrict_apply (s : Finset α) {f : α → γ} (hf : M
 @[measurability, fun_prop]
 theorem Finset.measurable_restrict₂_apply {s t : Finset α} (hst : s ⊆ t)
     {f : t → γ} (hf : Measurable f) :
-    Measurable (restrict₂ (X := fun _ ↦ γ) hst f) := hf.comp (measurable_inclusion hst)
+    Measurable (restrict₂ (π := fun _ ↦ γ) hst f) := hf.comp (measurable_inclusion hst)
 
 variable (X) in
 theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable (congr_arg X h).mp := by

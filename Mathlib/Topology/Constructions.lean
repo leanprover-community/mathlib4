@@ -1443,16 +1443,16 @@ lemma Pi.continuous_restrict (S : Set ι) :
   Pi.continuous_precomp' ((↑) : S → ι)
 
 @[continuity, fun_prop]
-lemma Pi.continuous_restrict₂ {s t : Set ι} (hst : s ⊆ t) : Continuous (restrict₂ (X := X) hst) :=
+lemma Pi.continuous_restrict₂ {s t : Set ι} (hst : s ⊆ t) : Continuous (restrict₂ (π := X) hst) :=
   continuous_pi fun _ ↦ continuous_apply _
 
 @[continuity, fun_prop]
-theorem Finset.continuous_restrict (s : Finset ι) : Continuous (s.restrict (X := X)) :=
+theorem Finset.continuous_restrict (s : Finset ι) : Continuous (s.restrict (π := X)) :=
   continuous_pi fun _ ↦ continuous_apply _
 
 @[continuity, fun_prop]
 theorem Finset.continuous_restrict₂ {s t : Finset ι} (hst : s ⊆ t) :
-    Continuous (Finset.restrict₂ (X := X) hst) :=
+    Continuous (Finset.restrict₂ (π := X) hst) :=
   continuous_pi fun _ ↦ continuous_apply _
 
 variable [TopologicalSpace Z]
@@ -1464,7 +1464,7 @@ theorem Pi.continuous_restrict_apply (s : Set X) {f : X → Z} (hf : Continuous 
 @[continuity, fun_prop]
 theorem Pi.continuous_restrict₂_apply {s t : Set X} (hst : s ⊆ t)
     {f : t → Z} (hf : Continuous f) :
-    Continuous (restrict₂ (X := fun _ ↦ Z) hst f) := hf.comp (continuous_inclusion hst)
+    Continuous (restrict₂ (π := fun _ ↦ Z) hst f) := hf.comp (continuous_inclusion hst)
 
 @[continuity, fun_prop]
 theorem Finset.continuous_restrict_apply (s : Finset X) {f : X → Z} (hf : Continuous f) :
@@ -1473,7 +1473,7 @@ theorem Finset.continuous_restrict_apply (s : Finset X) {f : X → Z} (hf : Cont
 @[continuity, fun_prop]
 theorem Finset.continuous_restrict₂_apply {s t : Finset X} (hst : s ⊆ t)
     {f : t → Z} (hf : Continuous f) :
-    Continuous (restrict₂ (X := fun _ ↦ Z) hst f) := hf.comp (continuous_inclusion hst)
+    Continuous (restrict₂ (π := fun _ ↦ Z) hst f) := hf.comp (continuous_inclusion hst)
 
 lemma Pi.induced_restrict (S : Set ι) :
     induced (S.restrict) Pi.topologicalSpace =
