@@ -12,7 +12,14 @@ import Mathlib.Topology.Order.Real
 import Mathlib.Topology.UniformSpace.Real
 
 /-!
-# Topological properties of ℝ
+# Topological algebra properties of ℝ
+
+This file defines topological field/(semi)ring structures on the
+(extended) (nonnegative) reals and shows the algebraic operations are
+(uniformly) continuous.
+
+It also includes a bit of more general topological theory of the reals,
+needed to define the structures and prove continuity.
 -/
 
 assert_not_exists StarRing UniformContinuousConstSMul UniformOnFun

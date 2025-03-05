@@ -147,7 +147,7 @@ instance [LinearOrder α] : LinearOrder (List α) :=
 instance LE' [LinearOrder α] : LE (List α) :=
   Preorder.toLE
 
-theorem lt_iff_lex_lt [LinearOrder α] (l l' : List α) : List.lt l l' ↔ Lex (· < ·) l l' := by
+theorem lt_iff_lex_lt [LT α] (l l' : List α) : List.lt l l' ↔ Lex (· < ·) l l' := by
   rw [List.lt]
 
 theorem head_le_of_lt [Preorder α] {a a' : α} {l l' : List α} (h : (a' :: l') < (a :: l)) :

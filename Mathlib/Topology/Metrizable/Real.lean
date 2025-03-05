@@ -9,6 +9,11 @@ import Mathlib.Topology.Order.Real
 
 /-!
 # `ENNReal` is metrizable
+
+## Implementation details
+
+This file currently only contains results on `ENNReal` but is named `Real.lean`
+to make it clear we can accept more `(E)(NN)Real` results.
 -/
 
 namespace ENNReal
