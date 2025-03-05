@@ -46,6 +46,8 @@ that is required to evaluate power series
 
 namespace MvPowerSeries
 
+open Topology
+
 open Filter MvPolynomial RingHom Set TopologicalSpace UniformSpace
 
 /- ## Necessary conditions -/
@@ -63,7 +65,7 @@ open WithPiTopology
 /-- Families at which power series can be evaluated -/
 structure EvalDomain (a : σ → S) : Prop where
   hpow : ∀ s, IsTopologicallyNilpotent (a s)
-  tendsto_zero : Tendsto a cofinite (nhds 0)
+  tendsto_zero : Tendsto a cofinite (𝓝 0)
 
 /-- The domain of evaluation of `MvPowerSeries`, as an ideal -/
 def EvalDomain_ideal [IsTopologicalRing S] [IsLinearTopology S S] :
@@ -117,21 +119,11 @@ theorem Continuous.on_scalars {ε : MvPowerSeries σ R →+* S} (hε : Continuou
 /-- The inclusion of polynomials into power series has dense image -/
 theorem _root_.MvPolynomial.coeToMvPowerSeries_denseRange :
     DenseRange (coeToMvPowerSeries.ringHom (R := R) (σ := σ)) := fun f => by
-  rw [mem_closure_iff_nhds, nhds_pi]
-  intro t
-  rw [Filter.mem_pi]
-  rintro ⟨I, hI, p, hp, hp_le⟩
-  obtain ⟨n, hn⟩ := hI.bddAbove
-  use f.truncFun' n
-  constructor
-  · apply hp_le
-    simp only [Set.mem_pi]
-    intro d hd
-    apply mem_of_mem_nhds
-    convert hp d using 2
-    change MvPolynomial.coeff d (truncFun' n f)  = MvPowerSeries.coeff R d f
-    rw [coeff_truncFun', if_pos (hn hd)]
-  · simp only [Set.mem_range, coeToMvPowerSeries.ringHom_apply, MvPolynomial.coe_inj, exists_eq]
+  have : Tendsto (fun d ↦ (trunc' R d f : MvPowerSeries σ R)) atTop (𝓝 f) := by
+    rw [tendsto_iff_coeff_tendsto]
+    refine fun d ↦ tendsto_atTop_of_eventually_const fun n (hdn : d ≤ n) ↦ ?_
+    simp [coeff_trunc', hdn]
+  exact mem_closure_of_tendsto this <| .of_forall fun _ ↦ mem_range_self _
 
 end
 
@@ -164,7 +156,8 @@ theorem _root_.MvPolynomial.coeToMvPowerSeries_denseInducing :
 
 variable {a : σ → S}
 
-/- The coercion of polynomials into power series is uniformly continuous. -/
+/- The evaluation map on multivariate polynomials is uniformly continuous
+for the uniform structure induced by that on multivariate power series. -/
 theorem _root_.MvPolynomial.coeToMvPowerSeries_uniformContinuous
     [UniformAddGroup R] [UniformAddGroup S] [IsLinearTopology S S]
     (hφ : Continuous φ) (ha : EvalDomain a) :
@@ -227,12 +220,7 @@ theorem _root_.MvPolynomial.coeToMvPowerSeries_uniformContinuous
       simp only [mem_Iic, D, Finsupp.le_iff] at hd
       push_neg at hd
       rcases hd with ⟨s, hs', hs⟩
-      rw [Finset.prod_eq_prod_diff_singleton_mul hs']
-      · apply Ideal.mul_mem_left
-        rw [← Nat.add_sub_of_le (Nat.succ_le_of_lt hs), pow_add]
-        apply Ideal.mul_mem_right
-        simp only [Finsupp.coe_mk, n₀, n]
-        exact Nat.sInf_mem (hn_ne s)
+      exact I.mem_prod_of_mem hs' (I.pow_mem_of_pow_mem (Nat.sInf_mem (hn_ne s)) hs)
 
 variable (φ a)
 /-- Evaluation of power series. Meaningful on adequate elements or on `MvPolynomial`)  -/
