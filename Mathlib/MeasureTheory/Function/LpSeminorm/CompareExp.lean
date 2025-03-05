@@ -198,7 +198,7 @@ theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (f : α → E) {g : 
     ← lintegral_const_mul'' _ (by fun_prop)]
   simp only [← ENNReal.mul_rpow_of_nonneg (hz := hp.le)]
   apply lintegral_mono_ae
-  filter_upwards [h, coe_nnnorm_ae_le_eLpNormEssSup f μ] with x hb hf
+  filter_upwards [h, enorm_ae_le_eLpNormEssSup f μ] with x hb hf
   refine ENNReal.rpow_le_rpow ?_ hp.le
   gcongr
   exact hf

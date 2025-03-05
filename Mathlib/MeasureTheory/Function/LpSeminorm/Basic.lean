@@ -493,20 +493,13 @@ theorem eLpNorm_mono_real {f : α → F} {g : α → ℝ} (h : ∀ x, ‖f x‖ 
     eLpNorm f p μ ≤ eLpNorm g p μ :=
   eLpNorm_mono_ae_real (Eventually.of_forall fun x => h x)
 
-theorem eLpNormEssSup_le_of_ae_enorm_bound {f : α → ε} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) :
+theorem eLpNormEssSup_le_of_ae_enorm_bound {f : α → ε} {C : ℝ≥0∞} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) :
     eLpNormEssSup f μ ≤ C :=
-  essSup_le_of_ae_le (C : ℝ≥0∞) hfC
+  essSup_le_of_ae_le C hfC
 
 theorem eLpNormEssSup_le_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) :
     eLpNormEssSup f μ ≤ C :=
   essSup_le_of_ae_le (C : ℝ≥0∞) <| hfC.mono fun _x hx => ENNReal.coe_le_coe.mpr hx
-
--- XXX: better naming suggestions welcome
-theorem eLpNormEssSup_le_of_ae_bound' {f : α → ε} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) :
-    eLpNormEssSup f μ ≤ ENNReal.ofReal C := by
-  apply eLpNormEssSup_le_of_ae_enorm_bound
-  rw [Real.toNNReal_coe]
-  exact hfC
 
 theorem eLpNormEssSup_le_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
     eLpNormEssSup f μ ≤ ENNReal.ofReal C :=
@@ -1057,9 +1050,8 @@ theorem enorm_ae_le_eLpNormEssSup {_ : MeasurableSpace α} (f : α → ε) (μ :
     ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ eLpNormEssSup f μ :=
   ENNReal.ae_le_essSup fun x => ‖f x‖ₑ
 
-theorem coe_nnnorm_ae_le_eLpNormEssSup {_ : MeasurableSpace α} (f : α → ε) (μ : Measure α) :
-    ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ eLpNormEssSup f μ :=
-  ENNReal.ae_le_essSup fun x => ‖f x‖ₑ
+@[deprecated (since := "2025-03-05")] alias
+coe_nnnorm_ae_le_eLpNormEssSup := enorm_ae_le_eLpNormEssSup
 
 @[simp]
 theorem eLpNormEssSup_eq_zero_iff {f : α → F} : eLpNormEssSup f μ = 0 ↔ f =ᵐ[μ] 0 := by
