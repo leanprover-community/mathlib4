@@ -231,13 +231,13 @@ theorem replicate_left_inj {a : α} {n m : ℕ} : replicate n a = replicate m a 
   (replicate_left_injective a).eq_iff
 
 @[simp]
-theorem head?_flatten_replicate {n : ℕ} (h : n ≠ 0) (l : List α):
+theorem head?_flatten_replicate {n : ℕ} (h : n ≠ 0) (l : List α) :
     (List.replicate n l).flatten.head? = l.head? := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
   induction l <;> simp [replicate]
 
 @[simp]
-theorem getLast?_flatten_replicate  {n : ℕ} (h : n ≠ 0) (l : List α):
+theorem getLast?_flatten_replicate  {n : ℕ} (h : n ≠ 0) (l : List α) :
     (List.replicate n l).flatten.getLast? = l.getLast? := by
   rw [← List.head?_reverse, ← List.head?_reverse, List.reverse_flatten, List.map_replicate,
   List.reverse_replicate, head?_flatten_replicate h]
