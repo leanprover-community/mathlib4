@@ -925,6 +925,23 @@ theorem mapRange_injective (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 =
   ⟨fun h i x y eq ↦ single_injective (@h (single i x) (single i y) <| by
     simpa using congr_arg _ eq), fun h _ _ eq ↦ DFinsupp.ext fun i ↦ h i congr($eq i)⟩
 
+theorem mapRange_surjective (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) :
+    Function.Surjective (mapRange f hf) ↔ ∀ i, Function.Surjective (f i) := by
+  refine ⟨fun h i u ↦ ?_, fun h x ↦ ?_⟩
+  · obtain ⟨x, hx⟩ := h (single i u)
+    exact ⟨x i, by simpa using congr($hx i)⟩
+  · obtain ⟨x, s, hs⟩ := x
+    have (i : ι) : ∃ u : β₁ i, f i u = x i ∧ (x i = 0 → u = 0) :=
+      (eq_or_ne (x i) 0).elim
+        (fun h ↦ ⟨0, (hf i).trans h.symm, fun _ ↦ rfl⟩)
+        (fun h' ↦ by
+          obtain ⟨u, hu⟩ := h i (x i)
+          exact ⟨u, hu, fun h'' ↦ (h' h'').elim⟩)
+    choose y hy using this
+    refine ⟨⟨y, Trunc.mk ⟨s, fun i ↦ ?_⟩⟩, ext fun i ↦ ?_⟩
+    · exact (hs i).imp_right (hy i).2
+    · simp [(hy i).1]
+
 variable [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ (i) (x : β₂ i), Decidable (x ≠ 0)]
 
 theorem support_mapRange {f : ∀ i, β₁ i → β₂ i} {hf : ∀ i, f i 0 = 0} {g : Π₀ i, β₁ i} :

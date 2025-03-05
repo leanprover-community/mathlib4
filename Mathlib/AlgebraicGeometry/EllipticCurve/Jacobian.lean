@@ -7,7 +7,6 @@ import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
 import Mathlib.Data.Fin.Tuple.Reflection
-import Mathlib.Tactic.LinearCombination'
 
 /-!
 # Jacobian coordinates for Weierstrass curves
@@ -184,7 +183,7 @@ section Jacobian
 /-! ### Jacobian coordinates -/
 
 /-- The scalar multiplication for a Jacobian point representative on a Weierstrass curve. -/
-scoped instance instSMulPoint : SMul R <| Fin 3 → R :=
+scoped instance : SMul R <| Fin 3 → R :=
   ⟨fun u P => ![u ^ 2 * P x, u ^ 3 * P y, u * P z]⟩
 
 lemma smul_fin3 (P : Fin 3 → R) (u : R) : u • P = ![u ^ 2 * P x, u ^ 3 * P y, u * P z] :=
@@ -200,12 +199,13 @@ lemma comp_smul (f : R →+* S) (P : Fin 3 → R) (u : R) : f ∘ (u • P) = f 
 @[deprecated (since := "2025-01-30")] alias map_smul := comp_smul
 
 /-- The multiplicative action for a Jacobian point representative on a Weierstrass curve. -/
-scoped instance instMulActionPoint : MulAction R <| Fin 3 → R where
+scoped instance : MulAction R <| Fin 3 → R where
   one_smul _ := by simp_rw [smul_fin3, one_pow, one_mul, fin3_def]
   mul_smul _ _ _ := by simp_rw [smul_fin3, mul_pow, mul_assoc, fin3_def_ext]
 
 /-- The equivalence setoid for a Jacobian point representative on a Weierstrass curve. -/
-@[reducible] scoped instance instSetoidPoint : Setoid <| Fin 3 → R :=
+@[reducible]
+scoped instance : Setoid <| Fin 3 → R :=
   MulAction.orbitRel Rˣ <| Fin 3 → R
 
 variable (R) in
@@ -224,16 +224,16 @@ lemma smul_equiv_smul (P Q : Fin 3 → R) {u v : R} (hu : IsUnit u) (hv : IsUnit
     u • P ≈ v • Q ↔ P ≈ Q := by
   rw [← Quotient.eq_iff_equiv, ← Quotient.eq_iff_equiv, smul_eq P hu, smul_eq Q hv]
 
-lemma equiv_iff_eq_of_Z_eq' {P Q : Fin 3 → R} (hz : P z = Q z) (mem : Q z ∈ nonZeroDivisors R) :
+lemma equiv_iff_eq_of_Z_eq' {P Q : Fin 3 → R} (hz : P z = Q z) (hQz : Q z ∈ nonZeroDivisors R) :
     P ≈ Q ↔ P = Q := by
-  refine ⟨?_, by rintro rfl; exact Setoid.refl _⟩
+  refine ⟨?_, Quotient.exact.comp <| congrArg _⟩
   rintro ⟨u, rfl⟩
-  rw [← one_mul (Q z)] at hz
-  simp_rw [Units.smul_def, (mul_cancel_right_mem_nonZeroDivisors mem).mp hz, one_smul]
+  simp only [Units.smul_def, (mul_cancel_right_mem_nonZeroDivisors hQz).mp <| one_mul (Q z) ▸ hz]
+  rw [one_smul]
 
 lemma equiv_iff_eq_of_Z_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hz : P z = Q z) (hQz : Q z ≠ 0) :
     P ≈ Q ↔ P = Q :=
-  equiv_iff_eq_of_Z_eq' hz (mem_nonZeroDivisors_of_ne_zero hQz)
+  equiv_iff_eq_of_Z_eq' hz <| mem_nonZeroDivisors_of_ne_zero hQz
 
 lemma Z_eq_zero_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P z = 0 ↔ Q z = 0 := by
   rcases h with ⟨_, rfl⟩
@@ -584,9 +584,10 @@ lemma negY_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
 lemma Y_sub_Y_mul_Y_sub_negY {P Q : Fin 3 → R} (hP : W'.Equation P) (hQ : W'.Equation Q)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) :
     (P y * Q z ^ 3 - Q y * P z ^ 3) * (P y * Q z ^ 3 - W'.negY Q * P z ^ 3) = 0 := by
-  linear_combination' (norm := (rw [negY]; ring1)) Q z ^ 6 * (equation_iff P).mp hP
-    - P z ^ 6 * (equation_iff Q).mp hQ + hx * hx * hx + W'.a₂ * P z ^ 2 * Q z ^ 2 * hx * hx
-    + (W'.a₄ * P z ^ 4 * Q z ^ 4 - W'.a₁ * P y * P z * Q z ^ 4) * hx
+  linear_combination (norm := (rw [negY]; ring1)) Q z ^ 6 * (equation_iff P).mp hP
+    - P z ^ 6 * (equation_iff Q).mp hQ + (P x ^ 2 * Q z ^ 4 + P x * Q x * P z ^ 2 * Q z ^ 2
+      + Q x ^ 2 * P z ^ 4 - W'.a₁ * P y * P z * Q z ^ 4 + W'.a₂ * P x * P z ^ 2 * Q z ^ 4
+      + W'.a₂ * Q x * P z ^ 4 * Q z ^ 2 + W'.a₄ * P z ^ 4 * Q z ^ 4) * hx
 
 lemma Y_eq_of_Y_ne [NoZeroDivisors R] {P Q : Fin 3 → R} (hP : W'.Equation P) (hQ : W'.Equation Q)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 ≠ Q y * P z ^ 3) :
@@ -768,9 +769,9 @@ lemma negDblY_smul (P : Fin 3 → R) (u : R) : W'.negDblY (u • P) = (u ^ 4) ^ 
 
 lemma negDblY_of_Z_eq_zero {P : Fin 3 → R} (hP : W'.Equation P) (hPz : P z = 0) :
     W'.negDblY P = -(P x ^ 2) ^ 3 := by
-  linear_combination' (norm :=
+  linear_combination (norm :=
       (rw [negDblY, dblU_of_Z_eq_zero hPz, dblX_of_Z_eq_zero hP hPz, negY_of_Z_eq_zero hPz]; ring1))
-    (8 * (equation_of_Z_eq_zero hPz).mp hP - 12 * P x ^ 3) * (equation_of_Z_eq_zero hPz).mp hP
+    (8 * P y ^ 2 - 4 * P x ^ 3) * (equation_of_Z_eq_zero hPz).mp hP
 
 lemma negDblY_of_Y_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hQz : Q z ≠ 0)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3)
@@ -1210,12 +1211,12 @@ lemma neg_Y (P : Fin 3 → R) : W'.neg P y = W'.negY P :=
 lemma neg_Z (P : Fin 3 → R) : W'.neg P z = P z :=
   rfl
 
-lemma neg_smul (P : Fin 3 → R) (u : R) : W'.neg (u • P) = u • W'.neg P := by
+protected lemma neg_smul (P : Fin 3 → R) (u : R) : W'.neg (u • P) = u • W'.neg P := by
   rw [neg, negY_smul]
   rfl
 
 lemma neg_smul_equiv (P : Fin 3 → R) {u : R} (hu : IsUnit u) : W'.neg (u • P) ≈ W'.neg P :=
-  ⟨hu.unit, (neg_smul ..).symm⟩
+  ⟨hu.unit, (W'.neg_smul ..).symm⟩
 
 lemma neg_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.neg P ≈ W'.neg Q := by
   rcases h with ⟨u, rfl⟩
@@ -1238,7 +1239,8 @@ lemma neg_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
 
 private lemma nonsingular_neg_of_Z_ne_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z ≠ 0) :
     W.Nonsingular ![P x / P z ^ 2, W.toAffine.negY (P x / P z ^ 2) (P y / P z ^ 3), 1] :=
-  (nonsingular_some ..).mpr <| Affine.nonsingular_neg <| (nonsingular_of_Z_ne_zero hPz).mp hP
+  (nonsingular_some ..).mpr <| (Affine.nonsingular_neg ..).mpr <|
+    (nonsingular_of_Z_ne_zero hPz).mp hP
 
 lemma nonsingular_neg {P : Fin 3 → F} (hP : W.Nonsingular P) : W.Nonsingular <| W.neg P := by
   by_cases hPz : P z = 0
@@ -1260,8 +1262,8 @@ lemma negAddY_neg {P : Fin 3 → R} (hP : W'.Equation P) :
     -2 * P z ^ 3 * (P y - W'.negY P) * (equation_iff _).mp hP
 
 lemma addY_neg {P : Fin 3 → R} (hP : W'.Equation P) : W'.addY P (W'.neg P) = -W'.dblZ P ^ 3 := by
-  rw [addY, addX_neg hP, negAddY_neg hP, addZ_neg, negY_of_Z_eq_zero rfl, Matrix.cons_val_one,
-    Matrix.head_cons]
+  rw [addY, addX_neg hP, negAddY_neg hP, addZ_neg, negY_of_Z_eq_zero rfl]
+  rfl
 
 lemma addXYZ_neg {P : Fin 3 → R} (hP : W'.Equation P) :
     W'.addXYZ P (W'.neg P) = -W'.dblZ P • ![1, 1, 0] := by
@@ -1299,7 +1301,7 @@ section Addition
 
 /-! ### Addition on point representatives -/
 
-open Classical in
+open scoped Classical in
 variable (W') in
 /-- The addition of two Jacobian point representatives on a Weierstrass curve. -/
 noncomputable def add (P Q : Fin 3 → R) : Fin 3 → R :=
@@ -1338,25 +1340,25 @@ lemma add_equiv {P P' Q Q' : Fin 3 → R} (hP : P ≈ P') (hQ : Q ≈ Q') :
 
 lemma add_of_Z_eq_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q)
     (hPz : P z = 0) (hQz : Q z = 0) : W.add P Q = P x ^ 2 • ![1, 1, 0] := by
-  rw [add, if_pos <| equiv_of_Z_eq_zero hP hQ hPz hQz, dblXYZ_of_Z_eq_zero hP.left hPz]
+  rw [add_of_equiv <| equiv_of_Z_eq_zero hP hQ hPz hQz, dblXYZ_of_Z_eq_zero hP.left hPz]
 
 lemma add_of_Z_eq_zero_left {P Q : Fin 3 → R} (hP : W'.Equation P) (hPz : P z = 0) (hQz : Q z ≠ 0) :
     W'.add P Q = (P x * Q z) • Q := by
-  rw [add, if_neg <| not_equiv_of_Z_eq_zero_left hPz hQz, addXYZ_of_Z_eq_zero_left hP hPz]
+  rw [add_of_not_equiv <| not_equiv_of_Z_eq_zero_left hPz hQz, addXYZ_of_Z_eq_zero_left hP hPz]
 
 lemma add_of_Z_eq_zero_right {P Q : Fin 3 → R} (hQ : W'.Equation Q) (hPz : P z ≠ 0)
     (hQz : Q z = 0) : W'.add P Q = -(Q x * P z) • P := by
-  rw [add, if_neg <| not_equiv_of_Z_eq_zero_right hPz hQz, addXYZ_of_Z_eq_zero_right hQ hQz]
+  rw [add_of_not_equiv <| not_equiv_of_Z_eq_zero_right hPz hQz, addXYZ_of_Z_eq_zero_right hQ hQz]
 
 lemma add_of_Y_eq {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3)
     (hy' : P y * Q z ^ 3 = W.negY Q * P z ^ 3) : W.add P Q = W.dblU P • ![1, 1, 0] := by
-  rw [add, if_pos <| equiv_of_X_eq_of_Y_eq hPz hQz hx hy, dblXYZ_of_Y_eq hQz hx hy hy']
+  rw [add_of_equiv <| equiv_of_X_eq_of_Y_eq hPz hQz hx hy, dblXYZ_of_Y_eq hQz hx hy hy']
 
 lemma add_of_Y_ne {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
     (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 ≠ Q y * P z ^ 3) :
     W.add P Q = addU P Q • ![1, 1, 0] := by
-  rw [add, if_neg <| not_equiv_of_Y_ne hy, addXYZ_of_X_eq hP hQ hPz hQz hx]
+  rw [add_of_not_equiv <| not_equiv_of_Y_ne hy, addXYZ_of_X_eq hP hQ hPz hQz hx]
 
 lemma add_of_Y_ne' {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
     (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 ≠ W.negY Q * P z ^ 3) :
@@ -1366,7 +1368,7 @@ lemma add_of_Y_ne' {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (
         W.toAffine.addY (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3)
           (W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3)),
         1] := by
-  rw [add, if_pos <| equiv_of_X_eq_of_Y_eq hPz hQz hx <| Y_eq_of_Y_ne' hP hQ hx hy,
+  rw [add_of_equiv <| equiv_of_X_eq_of_Y_eq hPz hQz hx <| Y_eq_of_Y_ne' hP hQ hx hy,
     dblXYZ_of_Z_ne_zero hP hQ hPz hQz hx hy]
 
 lemma add_of_X_ne {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
@@ -1376,7 +1378,7 @@ lemma add_of_X_ne {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (h
         W.toAffine.addY (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3)
           (W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3)),
         1] := by
-  rw [add, if_neg <| not_equiv_of_X_ne hx, addXYZ_of_Z_ne_zero hP hQ hPz hQz hx]
+  rw [add_of_not_equiv <| not_equiv_of_X_ne hx, addXYZ_of_Z_ne_zero hP hQ hPz hQz hx]
 
 private lemma nonsingular_add_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P)
     (hQ : W.Nonsingular Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
@@ -1425,25 +1427,25 @@ lemma addMap_eq (P Q : Fin 3 → R) : W'.addMap ⟦P⟧ ⟦Q⟧ = ⟦W'.add P Q�
 
 lemma addMap_of_Z_eq_zero_left {P : Fin 3 → F} {Q : PointClass F} (hP : W.Nonsingular P)
     (hQ : W.NonsingularLift Q) (hPz : P z = 0) : W.addMap ⟦P⟧ Q = Q := by
-  rcases Q with ⟨Q⟩
+  revert hQ
+  refine Q.inductionOn (motive := fun Q => _ → W.addMap _ Q = Q) fun Q hQ => ?_
   by_cases hQz : Q z = 0
-  · erw [addMap_eq, add_of_Z_eq_zero hP hQ hPz hQz,
+  · rw [addMap_eq, add_of_Z_eq_zero hP hQ hPz hQz,
       smul_eq _ <| (isUnit_X_of_Z_eq_zero hP hPz).pow 2, Quotient.eq]
     exact Setoid.symm <| equiv_zero_of_Z_eq_zero hQ hQz
-  · erw [addMap_eq, add_of_Z_eq_zero_left hP.left hPz hQz,
+  · rw [addMap_eq, add_of_Z_eq_zero_left hP.left hPz hQz,
       smul_eq _ <| (isUnit_X_of_Z_eq_zero hP hPz).mul <| Ne.isUnit hQz]
-    rfl
 
 lemma addMap_of_Z_eq_zero_right {P : PointClass F} {Q : Fin 3 → F} (hP : W.NonsingularLift P)
     (hQ : W.Nonsingular Q) (hQz : Q z = 0) : W.addMap P ⟦Q⟧ = P := by
-  rcases P with ⟨P⟩
+  revert hP
+  refine P.inductionOn (motive := fun P => _ → W.addMap P _ = P) fun P hP => ?_
   by_cases hPz : P z = 0
-  · erw [addMap_eq, add_of_Z_eq_zero hP hQ hPz hQz,
+  · rw [addMap_eq, add_of_Z_eq_zero hP hQ hPz hQz,
       smul_eq _ <| (isUnit_X_of_Z_eq_zero hP hPz).pow 2, Quotient.eq]
     exact Setoid.symm <| equiv_zero_of_Z_eq_zero hP hPz
-  · erw [addMap_eq, add_of_Z_eq_zero_right hQ.left hPz hQz,
+  · rw [addMap_eq, add_of_Z_eq_zero_right hQ.left hPz hQz,
       smul_eq _ ((isUnit_X_of_Z_eq_zero hQ hQz).mul <| Ne.isUnit hPz).neg]
-    rfl
 
 lemma addMap_of_Y_eq {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
     (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = Q x * P z ^ 2)
@@ -1490,7 +1492,7 @@ namespace Point
 lemma mk_point {P : PointClass R} (h : W'.NonsingularLift P) : (mk h).point = P :=
   rfl
 
-instance instZeroPoint [Nontrivial R] : Zero W'.Point :=
+instance [Nontrivial R] : Zero W'.Point :=
   ⟨⟨nonsingularLift_zero⟩⟩
 
 lemma zero_def [Nontrivial R] : (0 : W'.Point) = ⟨nonsingularLift_zero⟩ :=
@@ -1498,6 +1500,9 @@ lemma zero_def [Nontrivial R] : (0 : W'.Point) = ⟨nonsingularLift_zero⟩ :=
 
 lemma zero_point [Nontrivial R] : (0 : W'.Point).point = ⟦![1, 1, 0]⟧ :=
   rfl
+
+lemma mk_ne_zero [Nontrivial R] {X Y : R} (h : W'.NonsingularLift ⟦![X, Y, 1]⟧) : mk h ≠ 0 :=
+  (not_equiv_of_Z_eq_zero_right one_ne_zero rfl).comp <| Quotient.eq.mp.comp Point.ext_iff.mp
 
 /-- The natural map from a nonsingular point on a Weierstrass curve in affine coordinates to its
 corresponding nonsingular Jacobian point. -/
@@ -1512,10 +1517,11 @@ lemma fromAffine_some [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y)
     fromAffine (.some h) = ⟨(nonsingularLift_some ..).mpr h⟩ :=
   rfl
 
-lemma fromAffine_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
-    fromAffine (.some h) ≠ 0 := fun h0 ↦ by
-  obtain ⟨u, eq⟩ := Quotient.eq.mp <| (Point.ext_iff ..).mp h0
-  simpa [Units.smul_def, smul_fin3] using congr_fun eq z
+lemma fromAffine_some_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
+    fromAffine (.some h) ≠ 0 :=
+  mk_ne_zero <| (nonsingularLift_some ..).mpr h
+
+@[deprecated (since := "2025-03-01")] alias fromAffine_ne_zero := fromAffine_some_ne_zero
 
 /-- The negation of a nonsingular Jacobian point on a Weierstrass curve `W`.
 
@@ -1523,7 +1529,7 @@ Given a nonsingular Jacobian point `P` on `W`, use `-P` instead of `neg P`. -/
 def neg (P : W.Point) : W.Point :=
   ⟨nonsingularLift_negMap P.nonsingular⟩
 
-instance instNegPoint : Neg W.Point :=
+instance : Neg W.Point :=
   ⟨neg⟩
 
 lemma neg_def (P : W.Point) : -P = P.neg :=
@@ -1538,7 +1544,7 @@ Given two nonsingular Jacobian points `P` and `Q` on `W`, use `P + Q` instead of
 noncomputable def add (P Q : W.Point) : W.Point :=
   ⟨nonsingularLift_addMap P.nonsingular Q.nonsingular⟩
 
-noncomputable instance instAddPoint : Add W.Point :=
+noncomputable instance : Add W.Point :=
   ⟨add⟩
 
 lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
@@ -1555,7 +1561,7 @@ section Affine
 
 namespace Point
 
-open Classical in
+open scoped Classical in
 variable (W) in
 /-- The natural map from a nonsingular Jacobian point representative on a Weierstrass curve to its
 corresponding nonsingular point in affine coordinates. -/
@@ -1694,7 +1700,7 @@ noncomputable def toAffineAddEquiv : W.Point ≃+ W.toAffine.Point where
       exact Quotient.eq.mpr <| Setoid.symm <| equiv_some_of_Z_ne_zero hPz
   right_inv := by
     rintro (_ | _)
-    · erw [fromAffine_zero, toAffineLift_zero, Affine.Point.zero_def]
+    · rw [← Affine.Point.zero_def, fromAffine_zero, toAffineLift_zero]
     · rw [fromAffine_some, toAffineLift_some]
   map_add' := toAffineLift_add
 
@@ -1706,21 +1712,20 @@ section Map
 
 /-! ### Maps across ring homomorphisms -/
 
-variable {S : Type v} [CommRing S] (f : R →+* S)
+variable (f : R →+* S) (P Q : Fin 3 → R)
 
 @[simp]
 lemma map_polynomial : (W'.map f).toJacobian.polynomial = MvPolynomial.map f W'.polynomial := by
   simp only [polynomial]
   map_simp
 
-lemma Equation.map {P : Fin 3 → R} (h : W'.Equation P) :
-    (W'.map f).toJacobian.Equation (f ∘ P) := by
-  rw [Equation, map_polynomial, eval_map, ← eval₂_comp, ← map_zero f]
-  exact congr_arg f h
+variable {P} in
+lemma Equation.map (h : W'.Equation P) : (W'.map f).toJacobian.Equation (f ∘ P) := by
+  rw [Equation, map_polynomial, eval_map, ← eval₂_comp, h, map_zero]
 
 variable {f} in
 @[simp]
-lemma map_equation (hf : Function.Injective f) (P : Fin 3 → R) :
+lemma map_equation (hf : Function.Injective f) :
     (W'.map f).toJacobian.Equation (f ∘ P) ↔ W'.Equation P := by
   simp only [Equation, map_polynomial, eval_map, ← eval₂_comp, map_eq_zero_iff f hf]
 
@@ -1738,88 +1743,82 @@ lemma map_polynomialZ : (W'.map f).toJacobian.polynomialZ = MvPolynomial.map f W
 
 variable {f} in
 @[simp]
-lemma map_nonsingular (hf : Function.Injective f) (P : Fin 3 → R) :
+lemma map_nonsingular (hf : Function.Injective f) :
     (W'.map f).toJacobian.Nonsingular (f ∘ P) ↔ W'.Nonsingular P := by
-  simp only [Nonsingular, map_equation hf, map_polynomialX, map_polynomialY, map_polynomialZ,
+  simp only [Nonsingular, map_equation P hf, map_polynomialX, map_polynomialY, map_polynomialZ,
     eval_map, ← eval₂_comp, map_ne_zero_iff f hf]
 
 @[simp]
-lemma map_negY (P : Fin 3 → R) : (W'.map f).toJacobian.negY (f ∘ P) = f (W'.negY P) := by
+lemma map_negY : (W'.map f).toJacobian.negY (f ∘ P) = f (W'.negY P) := by
   simp only [negY]
   map_simp
 
 @[simp]
-protected lemma map_neg (P : Fin 3 → R) : (W'.map f).toJacobian.neg (f ∘ P) = f ∘ W'.neg P := by
+protected lemma map_neg : (W'.map f).toJacobian.neg (f ∘ P) = f ∘ W'.neg P := by
   simp only [neg, map_negY, comp_fin3]
   map_simp
 
 @[simp]
-lemma map_dblU (P : Fin 3 → R) : (W'.map f).toJacobian.dblU (f ∘ P) = f (W'.dblU P) := by
+lemma map_dblU : (W'.map f).toJacobian.dblU (f ∘ P) = f (W'.dblU P) := by
   simp only [dblU_eq]
   map_simp
 
 @[simp]
-lemma map_dblZ (P : Fin 3 → R) : (W'.map f).toJacobian.dblZ (f ∘ P) = f (W'.dblZ P) := by
+lemma map_dblZ : (W'.map f).toJacobian.dblZ (f ∘ P) = f (W'.dblZ P) := by
   simp only [dblZ, negY]
   map_simp
 
 @[simp]
-lemma map_dblX (P : Fin 3 → R) : (W'.map f).toJacobian.dblX (f ∘ P) = f (W'.dblX P) := by
+lemma map_dblX : (W'.map f).toJacobian.dblX (f ∘ P) = f (W'.dblX P) := by
   simp only [dblX, map_dblU, map_negY]
   map_simp
 
 @[simp]
-lemma map_negDblY (P : Fin 3 → R) : (W'.map f).toJacobian.negDblY (f ∘ P) = f (W'.negDblY P) := by
+lemma map_negDblY : (W'.map f).toJacobian.negDblY (f ∘ P) = f (W'.negDblY P) := by
   simp only [negDblY, map_dblU, map_dblX, map_negY]
   map_simp
 
 @[simp]
-lemma map_dblY (P : Fin 3 → R) : (W'.map f).toJacobian.dblY (f ∘ P) = f (W'.dblY P) := by
+lemma map_dblY : (W'.map f).toJacobian.dblY (f ∘ P) = f (W'.dblY P) := by
   simp only [dblY, negY_eq, map_negDblY, map_dblX, map_dblZ]
   map_simp
 
 @[simp]
-lemma map_dblXYZ (P : Fin 3 → R) : (W'.map f).toJacobian.dblXYZ (f ∘ P) = f ∘ dblXYZ W' P := by
+lemma map_dblXYZ : (W'.map f).toJacobian.dblXYZ (f ∘ P) = f ∘ dblXYZ W' P := by
   simp only [dblXYZ, map_dblX, map_dblY, map_dblZ, comp_fin3]
 
 @[simp]
-lemma map_addU {K : Type v} [Field K] (f : F →+* K) (P Q : Fin 3 → F) :
-    addU (f ∘ P) (f ∘ Q) = f (addU P Q) := by
+lemma map_addU (f : F →+* K) (P Q : Fin 3 → F) : addU (f ∘ P) (f ∘ Q) = f (addU P Q) := by
   simp only [addU]
   map_simp
 
 @[simp]
-lemma map_addZ (P Q : Fin 3 → R) : addZ (f ∘ P) (f ∘ Q) = f (addZ P Q) := by
+lemma map_addZ : addZ (f ∘ P) (f ∘ Q) = f (addZ P Q) := by
   simp only [addZ]
   map_simp
 
 @[simp]
-lemma map_addX (P Q : Fin 3 → R) :
-    (W'.map f).toJacobian.addX (f ∘ P) (f ∘ Q) = f (W'.addX P Q) := by
+lemma map_addX : (W'.map f).toJacobian.addX (f ∘ P) (f ∘ Q) = f (W'.addX P Q) := by
   simp only [addX]
   map_simp
 
 @[simp]
-lemma map_negAddY (P Q : Fin 3 → R) :
-    (W'.map f).toJacobian.negAddY (f ∘ P) (f ∘ Q) = f (W'.negAddY P Q) := by
+lemma map_negAddY : (W'.map f).toJacobian.negAddY (f ∘ P) (f ∘ Q) = f (W'.negAddY P Q) := by
   simp only [negAddY]
   map_simp
 
 @[simp]
-lemma map_addY (P Q : Fin 3 → R) :
-    (W'.map f).toJacobian.addY (f ∘ P) (f ∘ Q) = f (W'.addY P Q) := by
+lemma map_addY : (W'.map f).toJacobian.addY (f ∘ P) (f ∘ Q) = f (W'.addY P Q) := by
   simp only [addY, negY_eq, map_negAddY, map_addX, map_addZ]
   map_simp
 
 @[simp]
-lemma map_addXYZ (P Q : Fin 3 → R) :
-    (W'.map f).toJacobian.addXYZ (f ∘ P) (f ∘ Q) = f ∘ addXYZ W' P Q := by
+lemma map_addXYZ : (W'.map f).toJacobian.addXYZ (f ∘ P) (f ∘ Q) = f ∘ addXYZ W' P Q := by
   simp only [addXYZ, map_addX, map_addY, map_addZ, comp_fin3]
 
 @[simp]
-protected lemma map_add {K : Type v} [Field K] (f : F →+* K) {P Q : Fin 3 → F}
-    (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) :
-    (W.map f).toJacobian.add (f ∘ P) (f ∘ Q) = f ∘ W.add P Q := by
+protected lemma map_add (f : F →+* K) {P Q : Fin 3 → F} (hP : W.Nonsingular P)
+    (hQ : W.Nonsingular Q) : (W.map f).toJacobian.add (f ∘ P) (f ∘ Q) = f ∘ W.add P Q := by
   by_cases h : P ≈ Q
   · rw [add_of_equiv <| (comp_equiv_comp f hP hQ).mpr h, add_of_equiv h, map_dblXYZ]
   · rw [add_of_not_equiv <| h.comp (comp_equiv_comp f hP hQ).mp, add_of_not_equiv h, map_addXYZ]
@@ -1830,18 +1829,17 @@ section BaseChange
 
 /-! ### Base changes across algebra homomorphisms -/
 
-variable {R : Type r} [CommRing R] (W' : Jacobian R) {S : Type s} [CommRing S] [Algebra R S]
-  {A : Type u} [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-  {B : Type v} [CommRing B] [Algebra R B] [Algebra S B] [IsScalarTower R S B] (f : A →ₐ[S] B)
+variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]
+  [IsScalarTower R S B] (f : A →ₐ[S] B) (P Q : Fin 3 → A)
 
 lemma baseChange_polynomial : (W'.baseChange B).toJacobian.polynomial =
     MvPolynomial.map f (W'.baseChange A).toJacobian.polynomial := by
   rw [← map_polynomial, map_baseChange]
 
 variable {f} in
-lemma baseChange_equation (hf : Function.Injective f) (P : Fin 3 → A) :
+lemma baseChange_equation (hf : Function.Injective f) :
     (W'.baseChange B).toJacobian.Equation (f ∘ P) ↔ (W'.baseChange A).toJacobian.Equation P := by
-  rw [← RingHom.coe_coe, ← map_equation hf, AlgHom.toRingHom_eq_coe, map_baseChange]
+  rw [← RingHom.coe_coe, ← map_equation P hf, AlgHom.toRingHom_eq_coe, map_baseChange]
 
 lemma baseChange_polynomialX : (W'.baseChange B).toJacobian.polynomialX =
     MvPolynomial.map f (W'.baseChange A).toJacobian.polynomialX := by
@@ -1856,67 +1854,66 @@ lemma baseChange_polynomialZ : (W'.baseChange B).toJacobian.polynomialZ =
   rw [← map_polynomialZ, map_baseChange]
 
 variable {f} in
-lemma baseChange_nonsingular (hf : Function.Injective f) (P : Fin 3 → A) :
+lemma baseChange_nonsingular (hf : Function.Injective f) :
     (W'.baseChange B).toJacobian.Nonsingular (f ∘ P) ↔
       (W'.baseChange A).toJacobian.Nonsingular P := by
-  rw [← RingHom.coe_coe, ← map_nonsingular hf, AlgHom.toRingHom_eq_coe, map_baseChange]
+  rw [← RingHom.coe_coe, ← map_nonsingular P hf, AlgHom.toRingHom_eq_coe, map_baseChange]
 
-lemma baseChange_negY (P : Fin 3 → A) :
+lemma baseChange_negY :
     (W'.baseChange B).toJacobian.negY (f ∘ P) = f ((W'.baseChange A).toJacobian.negY P) := by
   rw [← RingHom.coe_coe, ← map_negY, map_baseChange]
 
-lemma baseChange_neg (P : Fin 3 → A) :
+lemma baseChange_neg :
     (W'.baseChange B).toJacobian.neg (f ∘ P) = f ∘ (W'.baseChange A).toJacobian.neg P := by
   rw [← RingHom.coe_coe, ← WeierstrassCurve.Jacobian.map_neg, map_baseChange]
 
-lemma baseChange_dblU (P : Fin 3 → A) : (W'.baseChange B).toJacobian.dblU (f ∘ P) =
-    f ((W'.baseChange A).toJacobian.dblU P) := by
+lemma baseChange_dblU :
+    (W'.baseChange B).toJacobian.dblU (f ∘ P) = f ((W'.baseChange A).toJacobian.dblU P) := by
   rw [← RingHom.coe_coe, ← map_dblU, map_baseChange]
 
-lemma baseChange_dblZ (P : Fin 3 → A) : (W'.baseChange B).toJacobian.dblZ (f ∘ P) =
-    f ((W'.baseChange A).toJacobian.dblZ P) := by
+lemma baseChange_dblZ :
+    (W'.baseChange B).toJacobian.dblZ (f ∘ P) = f ((W'.baseChange A).toJacobian.dblZ P) := by
   rw [← RingHom.coe_coe, ← map_dblZ, map_baseChange]
 
-lemma baseChange_dblX (P : Fin 3 → A) : (W'.baseChange B).toJacobian.dblX (f ∘ P) =
-    f ((W'.baseChange A).toJacobian.dblX P) := by
+lemma baseChange_dblX :
+    (W'.baseChange B).toJacobian.dblX (f ∘ P) = f ((W'.baseChange A).toJacobian.dblX P) := by
   rw [← RingHom.coe_coe, ← map_dblX, map_baseChange]
 
-lemma baseChange_negDblY (P : Fin 3 → A) : (W'.baseChange B).toJacobian.negDblY (f ∘ P) =
-    f ((W'.baseChange A).toJacobian.negDblY P) := by
+lemma baseChange_negDblY :
+    (W'.baseChange B).toJacobian.negDblY (f ∘ P) = f ((W'.baseChange A).toJacobian.negDblY P) := by
   rw [← RingHom.coe_coe, ← map_negDblY, map_baseChange]
 
-lemma baseChange_dblY (P : Fin 3 → A) : (W'.baseChange B).toJacobian.dblY (f ∘ P) =
-    f ((W'.baseChange A).toJacobian.dblY P) := by
+lemma baseChange_dblY :
+    (W'.baseChange B).toJacobian.dblY (f ∘ P) = f ((W'.baseChange A).toJacobian.dblY P) := by
   rw [← RingHom.coe_coe, ← map_dblY, map_baseChange]
 
-lemma baseChange_dblXYZ (P : Fin 3 → A) : (W'.baseChange B).toJacobian.dblXYZ (f ∘ P) =
-    f ∘ (W'.baseChange A).toJacobian.dblXYZ P := by
+lemma baseChange_dblXYZ :
+    (W'.baseChange B).toJacobian.dblXYZ (f ∘ P) = f ∘ (W'.baseChange A).toJacobian.dblXYZ P := by
   rw [← RingHom.coe_coe, ← map_dblXYZ, map_baseChange]
 
-lemma baseChange_addX (P Q : Fin 3 → A) : (W'.baseChange B).toJacobian.addX (f ∘ P) (f ∘ Q) =
+lemma baseChange_addX : (W'.baseChange B).toJacobian.addX (f ∘ P) (f ∘ Q) =
     f ((W'.baseChange A).toJacobian.addX P Q) := by
   rw [← RingHom.coe_coe, ← map_addX, map_baseChange]
 
-lemma baseChange_negAddY (P Q : Fin 3 → A) : (W'.baseChange B).toJacobian.negAddY (f ∘ P) (f ∘ Q) =
+lemma baseChange_negAddY : (W'.baseChange B).toJacobian.negAddY (f ∘ P) (f ∘ Q) =
     f ((W'.baseChange A).toJacobian.negAddY P Q) := by
   rw [← RingHom.coe_coe, ← map_negAddY, map_baseChange]
 
-lemma baseChange_addY (P Q : Fin 3 → A) : (W'.baseChange B).toJacobian.addY (f ∘ P) (f ∘ Q) =
+lemma baseChange_addY : (W'.baseChange B).toJacobian.addY (f ∘ P) (f ∘ Q) =
     f ((W'.baseChange A).toJacobian.addY P Q) := by
   rw [← RingHom.coe_coe, ← map_addY, map_baseChange]
 
-lemma baseChange_addXYZ (P Q : Fin 3 → A) : (W'.baseChange B).toJacobian.addXYZ (f ∘ P) (f ∘ Q) =
+lemma baseChange_addXYZ : (W'.baseChange B).toJacobian.addXYZ (f ∘ P) (f ∘ Q) =
     f ∘ (W'.baseChange A).toJacobian.addXYZ P Q := by
   rw [← RingHom.coe_coe, ← map_addXYZ, map_baseChange]
 
-variable [Algebra R F] [Algebra S F] [IsScalarTower R S F] {K : Type v} [Field K] [Algebra R K]
-  [Algebra S K] [IsScalarTower R S K] (f : F →ₐ[S] K)
-
-lemma baseChange_add {P Q : Fin 3 → F} (hP : (W'.baseChange F).toJacobian.Nonsingular P)
+lemma baseChange_add [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebra R K] [Algebra S K]
+    [IsScalarTower R S K] (f : F →ₐ[S] K) {P Q : Fin 3 → F}
+    (hP : (W'.baseChange F).toJacobian.Nonsingular P)
     (hQ : (W'.baseChange F).toJacobian.Nonsingular Q) :
     (W'.baseChange K).toJacobian.add (f ∘ P) (f ∘ Q) =
       f ∘ (W'.baseChange F).toJacobian.add P Q := by
-  rw [← RingHom.coe_coe, ← WeierstrassCurve.Jacobian.map_add f hP hQ (K := K), map_baseChange]
+  rw [← RingHom.coe_coe, ← WeierstrassCurve.Jacobian.map_add _ hP hQ, map_baseChange]
 
 end BaseChange
 

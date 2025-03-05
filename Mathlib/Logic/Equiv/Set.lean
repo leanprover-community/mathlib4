@@ -243,7 +243,7 @@ TODO: this is the same as `Equiv.setCongr`! -/
 protected def ofEq {α : Type u} {s t : Set α} (h : s = t) : s ≃ t :=
   Equiv.setCongr h
 
-lemma Equiv.strictMono_setCongr {α : Type*} [PartialOrder α] {S T : Set α} (h : S = T) :
+lemma Equiv.strictMono_setCongr {α : Type*} [Preorder α] {S T : Set α} (h : S = T) :
     StrictMono (setCongr h) := fun _ _ ↦ id
 
 /-- If `a ∉ s`, then `insert a s` is equivalent to `s ⊕ PUnit`. -/
@@ -573,7 +573,7 @@ theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type*} {β : α → Type*} (
     (piEquivPiSubtypeProd p β).symm ⁻¹' pi univ s =
       (pi univ fun i : { i // p i } => s i) ×ˢ pi univ fun i : { i // ¬p i } => s i := by
   ext ⟨f, g⟩
-  simp only [mem_preimage, mem_univ_pi, prod_mk_mem_set_prod_eq, Subtype.forall, ← forall_and]
+  simp only [mem_preimage, mem_univ_pi, prodMk_mem_set_prod_eq, Subtype.forall, ← forall_and]
   refine forall_congr' fun i => ?_
   dsimp only [Subtype.coe_mk]
   by_cases hi : p i <;> simp [hi]

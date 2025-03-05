@@ -405,7 +405,7 @@ theorem extend_Z_bilin : Continuous (extend (de.prodMap df) (fun p : β × δ =>
     · have := prod_mem_prod U'_nhd V'_nhd
       tauto
     · intro p h'
-      simp only [Set.mem_preimage, Set.prod_mk_mem_set_prod_eq] at h'
+      simp only [Set.mem_preimage, Set.prodMk_mem_set_prod_eq] at h'
       rcases p with ⟨⟨x, y⟩, ⟨x', y'⟩⟩
       apply h <;> tauto
 
