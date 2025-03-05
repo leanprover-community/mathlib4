@@ -431,7 +431,7 @@ noncomputable def exp_nilpotent (h : IsNilpotent D.toLinearMap) :
           rw [Nat.choose_eq_factorial_div_factorial (Nat.le_of_lt_succ hj),
                Nat.cast_div (Nat.factorial_mul_factorial_dvd_factorial (Nat.le_of_lt_succ hj))]
           · field_simp
-          field_simp
+          · field_simp
         _ = ∑ i ∈ R2N, (∑ j ∈ range (i + 1), ((j ! : ℚ)⁻¹ * ((i - j) ! : ℚ)⁻¹) •
           ⁅(E ^ j) x, (E ^ (i - j)) y⁆) :=
           by simp only [LinearMap.pow_apply, coeFn_coe, E]
