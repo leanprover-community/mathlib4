@@ -729,7 +729,6 @@ theorem condExp_traj {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
     rw [← map_apply _ (measurable_frestrictLe _), traj_map_frestrictLe _ _]
     rw [← traj_comp_partialTraj _ hab] at i_f
     exact i_f.integral_comp
-
   refine ae_eq_condExp_of_forall_setIntegral_eq (piLE.le _) i_f
     (fun s _ _ ↦ i_f'.comp_aemeasurable (measurable_frestrictLe b).aemeasurable |>.integrableOn)
     ?_ ?_ |>.symm <;> rw [piLE_eq_comap_frestrictLe]
