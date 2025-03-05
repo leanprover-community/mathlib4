@@ -113,16 +113,6 @@ theorem mul_eq_one_iff_inv_eq {a : α} : ↑u * a = 1 ↔ ↑u⁻¹ = a := by rw
 theorem inv_unique {u₁ u₂ : αˣ} (h : (↑u₁ : α) = ↑u₂) : (↑u₁⁻¹ : α) = ↑u₂⁻¹ :=
   Units.inv_eq_of_mul_eq_one_right <| by rw [h, u₂.mul_inv]
 
-@[to_additive]
-theorem mul_eq_left {a : α} {c : αˣ} : a * c = c ↔ a = 1 := calc
-  a * c = c ↔ a * c = 1 * c := by rw [one_mul]
-    _ ↔ a = 1 := by rw [Units.mul_left_inj]
-
-@[to_additive]
-theorem mul_eq_right {a : α} {c : αˣ} : c * a = c ↔ a = 1 := calc
-  c * a = c ↔ c * a = c * 1 := by rw [mul_one]
-    _ ↔ a = 1 := by rw [Units.mul_right_inj]
-
 end Monoid
 
 end Units
@@ -313,6 +303,16 @@ protected theorem mul_left_cancel (h : IsUnit a) : a * b = a * c → b = c :=
 @[to_additive]
 protected theorem mul_right_cancel (h : IsUnit b) : a * b = c * b → a = c :=
   h.mul_left_inj.1
+
+@[to_additive]
+theorem mul_eq_left (h : IsUnit b) : a * b = b ↔ a = 1 := calc
+  a * b = b ↔ a * b = 1 * b := by rw [one_mul]
+    _ ↔ a = 1 := by rw [h.mul_left_inj]
+
+@[to_additive]
+theorem mul_eq_right (h : IsUnit a) : a * b = a ↔ b = 1 := calc
+  a * b = a ↔ a * b = a * 1 := by rw [mul_one]
+    _ ↔ b = 1 := by rw [h.mul_right_inj]
 
 @[to_additive]
 protected theorem mul_right_injective (h : IsUnit a) : Injective (a * ·) :=

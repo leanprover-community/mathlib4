@@ -57,7 +57,7 @@ protected theorem MonoidHom.map_isConj (f : α →* β) {a b : α} : IsConj a b 
 theorem isConj_one_right {a : α} : IsConj 1 a ↔ a = 1 := by
   refine ⟨fun ⟨c, h⟩ => ?_, fun h => by rw [h]⟩
   rw [SemiconjBy, mul_one] at h
-  exact Units.mul_eq_left.mp h.symm
+  exact c.isUnit.mul_eq_left.mp h.symm
 
 @[simp]
 theorem isConj_one_left {a : α} : IsConj a 1 ↔ a = 1 :=
