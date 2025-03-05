@@ -59,7 +59,7 @@ lemma N_lt_of_M_le_apply {a : ℕ → ℕ} {N i : ℕ} (h : M a N ≤ a i) : N <
   exact Nat.not_succ_le_self _ (h.trans (Finset.le_sup (Finset.mem_range_succ_iff.2 hi)))
 
 lemma ne_zero_of_M_le_apply {a : ℕ → ℕ} {N i : ℕ} (h : M a N ≤ a i) : i ≠ 0 :=
-  Nat.not_eq_zero_of_lt (N_lt_of_M_le_apply h)
+  Nat.ne_zero_of_lt (N_lt_of_M_le_apply h)
 
 lemma apply_lt_of_M_le_apply {a : ℕ → ℕ} {N i j : ℕ} (hi : M a N ≤ a i) (hj : j ≤ N) :
     a j < a i :=
