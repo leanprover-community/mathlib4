@@ -195,8 +195,7 @@ theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [I.IsPrime]
   rcases lt_or_eq_of_le hM' with (hM' | hM')
   · have h1 := Ideal.primeHeight_strict_mono hM'
     have h2 := e ▸ M.primeHeight_le_ringKrullDim
-    simp only [WithBot.coe_le_coe] at h2
-    exact False.elim ((not_lt_of_le h2) h1)
+    simp [WithBot.coe_le_coe, ← not_lt, h1] at h2
   · exact hM' ▸ hM
 
 /-- The prime height of the maximal ideal equals the Krull dimension in a local ring -/
