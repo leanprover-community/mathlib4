@@ -195,7 +195,7 @@ theorem chain'_append_cons_cons {b c : α} {l₁ l₂ : List α} :
   rw [chain'_split, chain'_cons]
 
 theorem chain'_iff_forall_rel_of_append_cons_cons {l : List α} :
-    Chain' R l ↔ ∀ {a b l₁ l₂}, l = l₁ ++ (a :: b :: l₂) → R a b := by
+    Chain' R l ↔ ∀ {a b l₁ l₂}, l = l₁ ++ a :: b :: l₂ → R a b := by
   refine ⟨fun h _ _ _ _ eq => (chain'_append_cons_cons.mp (eq ▸ h)).2.1, ?_⟩
   induction l with
   | nil => exact fun _ ↦ chain'_nil
