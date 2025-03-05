@@ -74,7 +74,6 @@ instance [HasColimits C] : HasColimits (SimplicialObject C) :=
 
 variable {C}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : SimplicialObject C} (f g : X ⟶ Y)
     (h : ∀ (n : SimplexCategoryᵒᵖ), f.app n = g.app n) : f = g :=
@@ -371,7 +370,6 @@ variable {C}
 
 namespace Augmented
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : Augmented C} (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) :
     f = g :=
@@ -445,6 +443,17 @@ def whiskering (D : Type u') [Category.{v'} D] : (C ⥤ D) ⥤ Augmented C ⥤ A
 
 variable {C}
 
+/-- The constant augmented simplicial object functor. -/
+@[simps]
+def const : C ⥤ Augmented C where
+  obj X :=
+    { left := (SimplicialObject.const C).obj X
+      right := X
+      hom := 𝟙 _ }
+  map f :=
+    { left := (SimplicialObject.const C).map f
+      right := f }
+
 end Augmented
 
 /-- Augment a simplicial object with an object. -/
@@ -463,6 +472,7 @@ def augment (X : SimplicialObject C) (X₀ : C) (f : X _⦋0⦌ ⟶ X₀)
         rw [← g.op_unop]
         simpa only [← X.map_comp, ← Category.assoc, Category.comp_id, ← op_comp] using w _ _ _ }
 
+-- Not `@[simp]` since `simp` can prove this.
 theorem augment_hom_zero (X : SimplicialObject C) (X₀ : C) (f : X _⦋0⦌ ⟶ X₀) (w) :
     (X.augment X₀ f w).hom.app (op ⦋0⦌) = f := by simp
 
@@ -502,7 +512,6 @@ instance [HasColimits C] : HasColimits (CosimplicialObject C) :=
 
 variable {C}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : CosimplicialObject C} (f g : X ⟶ Y)
     (h : ∀ (n : SimplexCategory), f.app n = g.app n) : f = g :=
@@ -698,7 +707,6 @@ variable {C}
 
 namespace Augmented
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : Augmented C} (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) :
     f = g :=
@@ -765,6 +773,17 @@ def whiskering (D : Type u') [Category.{v'} D] : (C ⥤ D) ⥤ Augmented C ⥤ A
 
 variable {C}
 
+/-- The constant augmented cosimplicial object functor. -/
+@[simps]
+def const : C ⥤ Augmented C where
+  obj X :=
+    { left := X
+      right := (CosimplicialObject.const C).obj X
+      hom := 𝟙 _ }
+  map f :=
+    { left := f
+      right := (CosimplicialObject.const C).map f }
+
 end Augmented
 
 open Simplicial
@@ -783,6 +802,7 @@ def augment (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj ⦋0⦌)
         dsimp
         rw [Category.id_comp, Category.assoc, ← X.map_comp, w] }
 
+-- Not `@[simp]` since `simp` can prove this.
 theorem augment_hom_zero (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj ⦋0⦌) (w) :
     (X.augment X₀ f w).hom.app ⦋0⦌ = f := by simp
 
