@@ -28,6 +28,11 @@ elab "add_range " st:num en:num : command => do
   let newEntry := {file := fname, rg := {first := st.getNat, last := en.getNat}}
   modifyEnv (activeRangesExt.addEntry · newEntry)
 
+def _root_.Lean.Syntax.inRange {m} [Monad m] [MonadLog m] [MonadEnv m] (stx : Syntax) : m Bool := do
+  match stx.getRange? with
+  | none => pure false
+  | some rg => overlaps (activeRangesExt.getState (← getEnv)) rg
+
 namespace LocalLinter
 
 @[inherit_doc Mathlib.Linter.linter.localLinter]
@@ -37,9 +42,8 @@ def localLinterLinter : Linter where run stx := do
   if (← get).messages.hasErrors then
     return
   let activeRanges := activeRangesExt.getState (← getEnv)
-  if let some rg := stx.getRange? then
-    if ← overlaps activeRanges rg then
-      Linter.logLint linter.localLinter stx m!"'{stx}' is in range!"
+  if ← stx.inRange then
+    Linter.logLint linter.localLinter stx m!"'{stx}' is in range!"
 
 initialize addLinter localLinterLinter
 
