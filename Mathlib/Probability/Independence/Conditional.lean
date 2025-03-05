@@ -559,7 +559,7 @@ theorem iCondIndepSet.condIndep_generateFrom_lt [Preorder ι] {s : ι → Set Ω
     CondIndep m' (generateFrom {s i}) (generateFrom { t | ∃ j < i, s j = t }) hm' μ :=
   Kernel.iIndepSet.indep_generateFrom_lt hsm hs i
 
-theorem iCondIndepSet.condIndep_generateFrom_le [LinearOrder ι] {s : ι → Set Ω}
+theorem iCondIndepSet.condIndep_generateFrom_le [Preorder ι] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iCondIndepSet m' hm' s μ) (i : ι) {k : ι} (hk : i < k) :
     CondIndep m' (generateFrom {s k}) (generateFrom { t | ∃ j ≤ i, s j = t }) hm' μ :=
   Kernel.iIndepSet.indep_generateFrom_le hsm hs i hk

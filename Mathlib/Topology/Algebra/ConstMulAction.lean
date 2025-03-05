@@ -3,9 +3,9 @@ Copyright (c) 2021 Alex Kontorovich, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 import Mathlib.Algebra.Module.ULift
 import Mathlib.Algebra.Order.Group.Synonym
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.Support
@@ -267,9 +267,6 @@ theorem smul_mem_nhds_smul_iff {t : Set α} (g : G) {a : α} : g • t ∈ 𝓝 
 
 @[to_additive] alias ⟨_, smul_mem_nhds_smul⟩ := smul_mem_nhds_smul_iff
 
-@[to_additive (attr := deprecated "No deprecation message was provided." (since := "2024-08-06"))]
-alias smul_mem_nhds := smul_mem_nhds_smul
-
 @[to_additive (attr := simp)]
 theorem smul_mem_nhds_self [TopologicalSpace G] [ContinuousConstSMul G G] {g : G} {s : Set G} :
     g • s ∈ 𝓝 g ↔ s ∈ 𝓝 1 := by
@@ -516,15 +513,7 @@ theorem smul_mem_nhds_smul_iff₀ {c : G₀} {s : Set α} {x : α} (hc : c ≠ 0
     c • s ∈ 𝓝 (c • x : α) ↔ s ∈ 𝓝 x :=
   smul_mem_nhds_smul_iff (Units.mk0 c hc)
 
-@[deprecated (since := "2024-08-06")]
-alias set_smul_mem_nhds_smul_iff := smul_mem_nhds_smul_iff₀
-
 alias ⟨_, smul_mem_nhds_smul₀⟩ := smul_mem_nhds_smul_iff₀
-
-@[deprecated smul_mem_nhds_smul₀ (since := "2024-08-06")]
-theorem set_smul_mem_nhds_smul {c : G₀} {s : Set α} {x : α} (hs : s ∈ 𝓝 x) (hc : c ≠ 0) :
-    c • s ∈ 𝓝 (c • x : α) :=
-  smul_mem_nhds_smul₀ hc hs
 
 end MulAction
 

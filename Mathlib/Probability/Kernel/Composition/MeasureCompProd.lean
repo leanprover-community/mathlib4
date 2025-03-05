@@ -56,7 +56,6 @@ lemma compProd_of_not_isSFiniteKernel (μ : Measure α) (κ : Kernel α β) (h :
 lemma compProd_apply [SFinite μ] [IsSFiniteKernel κ] {s : Set (α × β)} (hs : MeasurableSet s) :
     (μ ⊗ₘ κ) s = ∫⁻ a, κ a (Prod.mk a ⁻¹' s) ∂μ := by
   simp_rw [compProd, Kernel.compProd_apply hs, Kernel.const_apply, Kernel.prodMkLeft_apply']
-  rfl
 
 @[simp]
 lemma compProd_apply_univ [SFinite μ] [IsMarkovKernel κ] : (μ ⊗ₘ κ) univ = μ univ := by
@@ -94,7 +93,6 @@ lemma _root_.ProbabilityTheory.Kernel.compProd_apply_eq_compProd_sectR {γ : Typ
     (κ ⊗ₖ η) a = (κ a) ⊗ₘ (Kernel.sectR η a) := by
   ext s hs
   simp_rw [Kernel.compProd_apply hs, compProd_apply hs, Kernel.sectR_apply]
-  rfl
 
 lemma compProd_id [SFinite μ] : μ ⊗ₘ Kernel.id = μ.map (fun x ↦ (x, x)) := by
   ext s hs

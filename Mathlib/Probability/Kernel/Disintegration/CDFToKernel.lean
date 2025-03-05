@@ -551,47 +551,44 @@ lemma setLIntegral_toKernel_prod [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
 open scoped Function in -- required for scoped `on` notation
 lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     (a : α) {s : Set (β × ℝ)} (hs : MeasurableSet s) :
-    ∫⁻ b, hf.toKernel f (a, b) {y | (b, y) ∈ s} ∂(ν a) = κ a s := by
+    ∫⁻ b, hf.toKernel f (a, b) (Prod.mk b ⁻¹' s) ∂(ν a) = κ a s := by
   -- `setLIntegral_toKernel_prod` gives the result for sets of the form `t₁ × t₂`. These
   -- sets form a π-system that generates the product σ-algebra, hence we can get the same equality
   -- for any measurable set `s`.
   induction s, hs
     using MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod with
   | empty =>
-    simp only [mem_empty_iff_false, setOf_false, measure_empty, lintegral_const, zero_mul]
+    simp only [preimage_empty, measure_empty, lintegral_const, zero_mul]
   | basic s hs =>
     rcases hs with ⟨t₁, ht₁, t₂, ht₂, rfl⟩
     simp only [mem_setOf_eq] at ht₁ ht₂
-    have h_prod_eq_snd : ∀ a ∈ t₁, {x : ℝ | (a, x) ∈ t₁ ×ˢ t₂} = t₂ := by
-      intro a ha
-      simp only [ha, prodMk_mem_set_prod_eq, true_and, setOf_mem_eq]
     rw [← lintegral_add_compl _ ht₁]
-    have h_eq1 : ∫⁻ x in t₁, hf.toKernel f (a, x) {y : ℝ | (x, y) ∈ t₁ ×ˢ t₂} ∂(ν a)
+    have h_eq1 : ∫⁻ x in t₁, hf.toKernel f (a, x) (Prod.mk x ⁻¹' t₁ ×ˢ t₂) ∂(ν a)
         = ∫⁻ x in t₁, hf.toKernel f (a, x) t₂ ∂(ν a) := by
       refine setLIntegral_congr_fun ht₁ (Eventually.of_forall fun a ha ↦ ?_)
-      rw [h_prod_eq_snd a ha]
+      rw [mk_preimage_prod_right ha]
     have h_eq2 :
-        ∫⁻ x in t₁ᶜ, hf.toKernel f (a, x) {y : ℝ | (x, y) ∈ t₁ ×ˢ t₂} ∂(ν a) = 0 := by
+        ∫⁻ x in t₁ᶜ, hf.toKernel f (a, x) (Prod.mk x ⁻¹' t₁ ×ˢ t₂) ∂(ν a) = 0 := by
       suffices h_eq_zero :
-          ∀ x ∈ t₁ᶜ, hf.toKernel f (a, x) {y : ℝ | (x, y) ∈ t₁ ×ˢ t₂} = 0 by
+          ∀ x ∈ t₁ᶜ, hf.toKernel f (a, x) (Prod.mk x ⁻¹' t₁ ×ˢ t₂) = 0 by
         rw [setLIntegral_congr_fun ht₁.compl (Eventually.of_forall h_eq_zero)]
         simp only [lintegral_const, zero_mul]
       intro a hat₁
       rw [mem_compl_iff] at hat₁
-      simp only [hat₁, prodMk_mem_set_prod_eq, false_and, setOf_false, measure_empty]
+      simp only [hat₁, not_false_eq_true, mk_preimage_prod_right_eq_empty, measure_empty]
     rw [h_eq1, h_eq2, add_zero]
     exact setLIntegral_toKernel_prod hf a ht₁ ht₂
   | compl t ht ht_eq =>
-    calc ∫⁻ b, hf.toKernel f (a, b) {y : ℝ | (b, y) ∈ tᶜ} ∂(ν a)
-      = ∫⁻ b, hf.toKernel f (a, b) {y : ℝ | (b, y) ∈ t}ᶜ ∂(ν a) := rfl
+    calc ∫⁻ b, hf.toKernel f (a, b) (Prod.mk b ⁻¹' tᶜ) ∂(ν a)
+      = ∫⁻ b, hf.toKernel f (a, b) (Prod.mk b ⁻¹' t)ᶜ ∂(ν a) := rfl
     _ = ∫⁻ b, hf.toKernel f (a, b) univ
-          - hf.toKernel f (a, b) {y : ℝ | (b, y) ∈ t} ∂(ν a) := by
+          - hf.toKernel f (a, b) (Prod.mk b ⁻¹' t) ∂(ν a) := by
         congr with x : 1
         exact measure_compl (measurable_prodMk_left ht)
           (measure_ne_top (hf.toKernel f (a, x)) _)
     _ = ∫⁻ x, hf.toKernel f (a, x) univ ∂(ν a) -
-          ∫⁻ x, hf.toKernel f (a, x) {y : ℝ | (x, y) ∈ t} ∂(ν a) := by
-        have h_le : (fun x ↦ hf.toKernel f (a, x) {y : ℝ | (x, y) ∈ t})
+          ∫⁻ x, hf.toKernel f (a, x) (Prod.mk x ⁻¹' t) ∂(ν a) := by
+        have h_le : (fun x ↦ hf.toKernel f (a, x) (Prod.mk x ⁻¹' t))
               ≤ᵐ[ν a] fun x ↦ hf.toKernel f (a, x) univ :=
           Eventually.of_forall fun _ ↦ measure_mono (subset_univ _)
         rw [lintegral_sub _ _ h_le]
@@ -602,10 +599,10 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     _ = κ a univ - κ a t := by rw [ht_eq, lintegral_toKernel_univ hf]
     _ = κ a tᶜ := (measure_compl ht (measure_ne_top _ _)).symm
   | iUnion f' hf_disj hf_meas hf_eq =>
-    have h_eq : ∀ a, {x | (a, x) ∈ ⋃ i, f' i} = ⋃ i, {x | (a, x) ∈ f' i} := by
-      intro a; ext x; simp only [mem_iUnion, mem_setOf_eq]
+    have h_eq : ∀ a, Prod.mk a ⁻¹' ⋃ i, f' i = ⋃ i, Prod.mk a ⁻¹' f' i := by
+      simp only [preimage_iUnion, implies_true]
     simp_rw [h_eq]
-    have h_disj : ∀ a, Pairwise (Disjoint on fun i ↦ {x | (a, x) ∈ f' i}) := by
+    have h_disj : ∀ a, Pairwise (Disjoint on fun i ↦ Prod.mk a ⁻¹' f' i) := by
       intro a i j hij
       have h_disj := hf_disj hij
       rw [Function.onFun, disjoint_iff_inter_eq_empty] at h_disj ⊢
@@ -614,11 +611,11 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
       intro h_mem_both
       suffices (a, x) ∈ ∅ by rwa [mem_empty_iff_false] at this
       rwa [← h_disj, mem_inter_iff]
-    calc ∫⁻ b, hf.toKernel f (a, b) (⋃ i, {y | (b, y) ∈ f' i}) ∂(ν a)
-      = ∫⁻ b, ∑' i, hf.toKernel f (a, b) {y | (b, y) ∈ f' i} ∂(ν a) := by
+    calc ∫⁻ b, hf.toKernel f (a, b) (⋃ i, Prod.mk b ⁻¹' f' i) ∂(ν a)
+      = ∫⁻ b, ∑' i, hf.toKernel f (a, b) (Prod.mk b ⁻¹' f' i) ∂(ν a) := by
           congr with x : 1
           rw [measure_iUnion (h_disj x) fun i ↦ measurable_prodMk_left (hf_meas i)]
-    _ = ∑' i, ∫⁻ b, hf.toKernel f (a, b) {y | (b, y) ∈ f' i} ∂(ν a) :=
+    _ = ∑' i, ∫⁻ b, hf.toKernel f (a, b) (Prod.mk b ⁻¹' f' i) ∂(ν a) :=
           lintegral_tsum fun i ↦ (Kernel.measurable_kernel_prodMk_left' (hf_meas i) a).aemeasurable
     _ = ∑' i, κ a (f' i) := by simp_rw [hf_eq]
     _ = κ a (iUnion f') := (measure_iUnion hf_disj hf_meas).symm

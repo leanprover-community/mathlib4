@@ -427,7 +427,7 @@ theorem iIndepSet.indep_generateFrom_lt [Preorder ι] {s : ι → Set Ω}
     Indep (generateFrom {s i}) (generateFrom { t | ∃ j < i, s j = t }) μ :=
   Kernel.iIndepSet.indep_generateFrom_lt hsm hs i
 
-theorem iIndepSet.indep_generateFrom_le [LinearOrder ι]
+theorem iIndepSet.indep_generateFrom_le [Preorder ι]
     {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s μ) (i : ι) {k : ι} (hk : i < k) :
     Indep (generateFrom {s k}) (generateFrom { t | ∃ j ≤ i, s j = t }) μ :=

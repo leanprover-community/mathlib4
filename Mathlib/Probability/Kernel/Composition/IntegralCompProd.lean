@@ -258,7 +258,6 @@ theorem integral_compProd :
     · exact (Kernel.measurable_kernel_prodMk_left' hs _).aemeasurable
     · exact ae_kernel_lt_top a h2s.ne
     rw [Kernel.compProd_apply hs]
-    rfl
   · intro f g _ i_f i_g hf hg
     simp_rw [integral_add' i_f i_g, Kernel.integral_integral_add' i_f i_g, hf, hg]
   · exact isClosed_eq continuous_integral Kernel.continuous_integral_integral
