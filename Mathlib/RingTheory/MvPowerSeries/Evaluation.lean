@@ -220,7 +220,7 @@ theorem _root_.MvPolynomial.coeToMvPowerSeries_uniformContinuous
       simp only [mem_Iic, D, Finsupp.le_iff] at hd
       push_neg at hd
       rcases hd with ⟨s, hs', hs⟩
-      exact I.mem_prod_of_mem hs' (I.pow_mem_of_pow_mem (Nat.sInf_mem (hn_ne s)) hs)
+      exact I.prod_mem hs' (I.pow_mem_of_pow_mem (Nat.sInf_mem (hn_ne s)) hs)
 
 variable (φ a)
 /-- Evaluation of power series. Meaningful on adequate elements or on `MvPolynomial`)  -/

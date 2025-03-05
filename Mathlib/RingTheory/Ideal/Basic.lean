@@ -171,7 +171,7 @@ theorem span_range_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : s → ℕ) :
   simp_rw [pow_add]
   exact mul_mem_left _ _ (subset_span ⟨_, rfl⟩)
 
-theorem mem_prod_of_mem {ι : Type*} {f : ι → α} {s : Finset ι}
+theorem prod_mem {ι : Type*} {f : ι → α} {s : Finset ι}
     (I : Ideal α) {i : ι} (hi : i ∈ s) (hfi : f i ∈ I) :
     ∏ i ∈ s, f i ∈ I := by
   classical
