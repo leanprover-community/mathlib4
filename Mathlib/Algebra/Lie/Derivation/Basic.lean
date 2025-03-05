@@ -381,7 +381,16 @@ noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
         omega
       · tauto
     rw [restrict] at s₁
-    rw [s₁]
+    have ss : ∑ ij ∈ RN ×ˢ RN, ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • ⁅(D.toLinearMap ^ ij.1) x, (D.toLinearMap ^ ij.2) y⁆ =
+        ∑ ij ∈ RN ×ˢ RN, ⁅(ij.1 ! : ℚ)⁻¹ • (D.toLinearMap ^ ij.1) x, (ij.2 ! : ℚ)⁻¹ • (D.toLinearMap ^ ij.2) y⁆ := by
+      refine sum_congr rfl fun ij hi ↦ ?_
+      rw [mul_smul]
+      rw [← lie_smul]
+      rw [← smul_lie]
+
+
+
+    rw [ss] at s₁
     have s₂ := by
       letI : NonUnitalNonAssocSemiring L := LieRing.instNonUnitalNonAssocSemiring
       calc ⁅(∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) x))), (∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) y)))⁆ = (∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) x))) * (∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) y))) := by rfl
@@ -394,7 +403,10 @@ noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
           · exact ⟨fun ⟨i, j⟩ ⟨i', j'⟩ h ↦ by cases h; rfl, fun ⟨i, j⟩ ↦ ⟨⟨i, j⟩, rfl⟩⟩
           · simp only [mem_sigma, mem_product, implies_true]
           · simp only [implies_true]
-    sorry,
+    have s₃ : ⁅∑ i ∈ RN, (i ! : ℚ)⁻¹ • (D.toLinearMap ^ i) x, ∑ i ∈ RN, (i ! : ℚ)⁻¹ • (D.toLinearMap ^ i) y⁆ =
+        ∑ ij ∈ RN ×ˢ RN, ⁅(ij.1 ! : ℚ)⁻¹ • (D.toLinearMap ^ ij.1) x, (ij.2 ! : ℚ)⁻¹ • (D.toLinearMap ^ ij.2) y⁆ := s₂
+    rw [s₃.symm] at s₁
+    simp_all only [LinearMap.coeFn_sum, sum_apply, LinearMap.smul_apply, not_le, not_and, lie_smul, smul_lie, R2N, RN],
   invFun := fun l => (IsNilpotent.exp (-(D.toLinearMap))) l,
   left_inv := by
     simp_all
