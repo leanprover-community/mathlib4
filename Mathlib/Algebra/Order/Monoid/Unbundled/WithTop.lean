@@ -188,13 +188,13 @@ protected theorem add_lt_add_of_lt_of_le [Preorder α] [AddLeftMono α]
     w + x < y + z :=
   (WithTop.add_lt_add_right hx hwy).trans_le <| add_le_add_left hxz _
 
-lemma addLECancellable_of_ne_top [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
+lemma addLECancellable_of_ne_top [LE α] [ContravariantClass α α (· + ·) (· ≤ ·)]
     (hx : x ≠ ⊤) : AddLECancellable x := fun _b _c ↦ WithTop.le_of_add_le_add_left hx
 
 lemma addLECancellable_of_lt_top [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
     (hx : x < ⊤) : AddLECancellable x := addLECancellable_of_ne_top hx.ne
 
-lemma addLECancellable_coe [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)] (a : α) :
+lemma addLECancellable_coe [LE α] [ContravariantClass α α (· + ·) (· ≤ ·)] (a : α) :
     AddLECancellable (a : WithTop α) := addLECancellable_of_ne_top coe_ne_top
 
 lemma addLECancellable_iff_ne_top [Nonempty α] [Preorder α]
@@ -536,13 +536,13 @@ protected theorem add_lt_add_of_lt_of_le [Preorder α] [AddLeftMono α]
     w + x < y + z :=
   (WithBot.add_lt_add_right hx hwy).trans_le <| add_le_add_left hxz _
 
-lemma addLECancellable_of_ne_bot [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
+lemma addLECancellable_of_ne_bot [LE α] [ContravariantClass α α (· + ·) (· ≤ ·)]
     (hx : x ≠ ⊥) : AddLECancellable x := fun _b _c ↦ WithBot.le_of_add_le_add_left hx
 
 lemma addLECancellable_of_lt_bot [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
     (hx : x < ⊥) : AddLECancellable x := addLECancellable_of_ne_bot hx.ne
 
-lemma addLECancellable_coe [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)] (a : α) :
+lemma addLECancellable_coe [LE α] [ContravariantClass α α (· + ·) (· ≤ ·)] (a : α) :
     AddLECancellable (a : WithBot α) := addLECancellable_of_ne_bot coe_ne_bot
 
 lemma addLECancellable_iff_ne_bot [Nonempty α] [Preorder α]
