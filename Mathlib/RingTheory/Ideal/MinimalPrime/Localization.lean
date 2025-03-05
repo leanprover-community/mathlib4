@@ -191,10 +191,9 @@ end
 
 section
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [CommRing R] (S : Submonoid R) (A : Type*) [CommRing A] [Algebra R A]
 
-theorem IsLocalization.minimalPrimes_comap (S : Submonoid R) (A : Type*) [CommRing A]
-    [Algebra R A] [IsLocalization S A] (J : Ideal A) :
+theorem IsLocalization.minimalPrimes_comap  [IsLocalization S A] (J : Ideal A) :
     (J.comap (algebraMap R A)).minimalPrimes = Ideal.comap (algebraMap R A) '' J.minimalPrimes := by
   rcases eq_or_ne J ⊤ with (rfl | hJ)
   · simp_rw [Ideal.comap_top, Ideal.minimalPrimes_top, Set.image_empty]
@@ -212,8 +211,7 @@ theorem IsLocalization.minimalPrimes_comap (S : Submonoid R) (A : Type*) [CommRi
   simp_rw [IsLocalization.map_comap S A] at e hq
   exact Ideal.comap_mono (hp.2 ⟨h₁, hq⟩ e)
 
-theorem IsLocalization.minimalPrimes_map (S : Submonoid R) (A : Type*) [CommRing A]
-    [Algebra R A] [IsLocalization S A] (J : Ideal R) :
+theorem IsLocalization.minimalPrimes_map [IsLocalization S A] (J : Ideal R) :
     (J.map (algebraMap R A)).minimalPrimes = Ideal.comap (algebraMap R A) ⁻¹' J.minimalPrimes := by
   ext p
   constructor
