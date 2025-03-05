@@ -63,13 +63,10 @@ variable {X Y Z : TopCat.{v}}
 
 namespace TopCat.Presheaf
 
-variable (C)
-
+variable (C) in
 /-- Stalks are functorial with respect to morphisms of presheaves over a fixed `X`. -/
 def stalkFunctor (x : X) : X.Presheaf C ⥤ C :=
   (whiskeringLeft _ _ C).obj (OpenNhds.inclusion x).op ⋙ colim
-
-variable {C}
 
 /-- The stalk of a presheaf `F` at a point `x` is calculated as the colimit of the functor
 nbhds x ⥤ opens F.X ⥤ C
@@ -133,7 +130,7 @@ composition with the `germ` morphisms.
 theorem stalk_hom_ext (F : X.Presheaf C) {x} {Y : C} {f₁ f₂ : F.stalk x ⟶ Y}
     (ih : ∀ (U : Opens X) (hxU : x ∈ U), F.germ U x hxU ≫ f₁ = F.germ U x hxU ≫ f₂) : f₁ = f₂ :=
   colimit.hom_ext fun U => by
-    induction' U using Opposite.rec with U; cases' U with U hxU; exact ih U hxU
+    induction U using Opposite.rec with | op U => obtain ⟨U, hxU⟩ := U; exact ih U hxU
 
 @[reassoc (attr := simp)]
 theorem stalkFunctor_map_germ {F G : X.Presheaf C} (U : Opens X) (x : X) (hx : x ∈ U) (f : F ⟶ G) :
@@ -415,7 +412,7 @@ theorem germ_exist (F : X.Presheaf C) (x : X) (t : ToType (stalk.{v, u} F x)) :
     Types.jointly_surjective.{v, v} _ (isColimitOfPreserves (forget C) (colimit.isColimit _)) t
   revert s e
   induction U with | h U => ?_
-  cases' U with V m
+  obtain ⟨V, m⟩ := U
   intro s e
   exact ⟨V, m, s, e⟩
 

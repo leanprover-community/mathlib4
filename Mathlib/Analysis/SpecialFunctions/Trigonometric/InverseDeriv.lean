@@ -23,14 +23,14 @@ section Arcsin
 
 theorem deriv_arcsin_aux {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) :
     HasStrictDerivAt arcsin (1 / √(1 - x ^ 2)) x ∧ ContDiffAt ℝ ω arcsin x := by
-  cases' h₁.lt_or_lt with h₁ h₁
+  rcases h₁.lt_or_lt with h₁ | h₁
   · have : 1 - x ^ 2 < 0 := by nlinarith [h₁]
     rw [sqrt_eq_zero'.2 this.le, div_zero]
     have : arcsin =ᶠ[𝓝 x] fun _ => -(π / 2) :=
       (gt_mem_nhds h₁).mono fun y hy => arcsin_of_le_neg_one hy.le
     exact ⟨(hasStrictDerivAt_const x _).congr_of_eventuallyEq this.symm,
       contDiffAt_const.congr_of_eventuallyEq this⟩
-  cases' h₂.lt_or_lt with h₂ h₂
+  rcases h₂.lt_or_lt with h₂ | h₂
   · have : 0 < √(1 - x ^ 2) := sqrt_pos.2 (by nlinarith [h₁, h₂])
     simp only [← cos_arcsin, one_div] at this ⊢
     exact ⟨sinPartialHomeomorph.hasStrictDerivAt_symm ⟨h₁, h₂⟩ this.ne' (hasStrictDerivAt_sin _),

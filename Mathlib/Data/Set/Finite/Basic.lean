@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
 import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Finset.Image
+import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Tactic.Nontriviality
 
 /-!
 # Finite sets
@@ -38,7 +40,7 @@ instances since they do not compute anything.
 finite sets
 -/
 
-assert_not_exists OrderedRing MonoidWithZero
+assert_not_exists Monoid
 
 open Set Function
 open scoped symmDiff
@@ -155,14 +157,9 @@ protected alias ⟨_, toFinset_mono⟩ := Finite.toFinset_subset_toFinset
 
 protected alias ⟨_, toFinset_strictMono⟩ := Finite.toFinset_ssubset_toFinset
 
--- Porting note: `simp` can simplify LHS but then it simplifies something
--- in the generated `Fintype {x | p x}` instance and fails to apply `Set.toFinset_setOf`
 @[simp high]
 protected theorem toFinset_setOf [Fintype α] (p : α → Prop) [DecidablePred p]
-    (h : { x | p x }.Finite) : h.toFinset = Finset.univ.filter p := by
-  ext
-  -- Porting note: `simp` doesn't use the `simp` lemma `Set.toFinset_setOf` without the `_`
-  simp [Set.toFinset_setOf _]
+    (h : { x | p x }.Finite) : h.toFinset = Finset.univ.filter p := by simp
 
 @[simp]
 nonrec theorem disjoint_toFinset {hs : s.Finite} {ht : t.Finite} :
@@ -221,6 +218,10 @@ protected theorem toFinset_range [DecidableEq α] [Fintype β] (f : β → α) (
   ext
   simp
 
+@[simp]
+protected theorem toFinset_nontrivial (h : s.Finite) : h.toFinset.Nontrivial ↔ s.Nontrivial := by
+  rw [Finset.Nontrivial, h.coe_toFinset]
+
 end Finite
 
 /-! ### Fintype instances
@@ -275,17 +276,6 @@ instance fintypeDiff [DecidableEq α] (s t : Set α) [Fintype s] [Fintype t] :
 instance fintypeDiffLeft (s t : Set α) [Fintype s] [DecidablePred (· ∈ t)] :
     Fintype (s \ t : Set α) :=
   Set.fintypeSep s (· ∈ tᶜ)
-
-/-- A union of sets with `Fintype` structure over a set with `Fintype` structure has a `Fintype`
-structure. -/
-def fintypeBiUnion [DecidableEq α] {ι : Type*} (s : Set ι) [Fintype s] (t : ι → Set α)
-    (H : ∀ i ∈ s, Fintype (t i)) : Fintype (⋃ x ∈ s, t x) :=
-  haveI : ∀ i : toFinset s, Fintype (t i) := fun i => H i (mem_toFinset.1 i.2)
-  Fintype.ofFinset (s.toFinset.attach.biUnion fun x => (t x).toFinset) fun x => by simp
-
-instance fintypeBiUnion' [DecidableEq α] {ι : Type*} (s : Set ι) [Fintype s] (t : ι → Set α)
-    [∀ i, Fintype (t i)] : Fintype (⋃ x ∈ s, t x) :=
-  Fintype.ofFinset (s.toFinset.biUnion fun x => (t x).toFinset) <| by simp
 
 instance fintypeEmpty : Fintype (∅ : Set α) :=
   Fintype.ofFinset ∅ <| by simp
@@ -979,16 +969,5 @@ lemma Finite.of_forall_not_lt_lt (h : ∀ ⦃x y z : α⦄, x < y → y < z → 
 lemma Set.finite_of_forall_not_lt_lt (h : ∀ x ∈ s, ∀ y ∈ s, ∀ z ∈ s, x < y → y < z → False) :
     Set.Finite s :=
   @Set.toFinite _ s <| Finite.of_forall_not_lt_lt <| by simpa only [SetCoe.forall'] using h
-
-lemma Directed.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} [Nonempty ι]
-    {f : ι → Set α} (h : Directed (· ⊆ ·) f) {s : Finset α} (hs : (s : Set α) ⊆ ⋃ i, f i) :
-    ∃ i, (s : Set α) ⊆ f i := by
-  induction s using Finset.cons_induction with
-  | empty => simp
-  | cons b t hbt iht =>
-    simp only [Finset.coe_cons, Set.insert_subset_iff, Set.mem_iUnion] at hs ⊢
-    rcases hs.imp_right iht with ⟨⟨i, hi⟩, j, hj⟩
-    rcases h i j with ⟨k, hik, hjk⟩
-    exact ⟨k, hik hi, hj.trans hjk⟩
 
 end LinearOrder

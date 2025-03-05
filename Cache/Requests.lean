@@ -80,7 +80,7 @@ def downloadFiles (hashMap : IO.ModuleHashMap) (forceDownload : Bool) (parallel 
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   let size := hashMap.size
   if size > 0 then
-    IO.mkDir IO.CACHEDIR
+    IO.FS.createDirAll IO.CACHEDIR
     IO.println s!"Attempting to download {size} file(s)"
     let failed ← if parallel then
       IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent hashMap)
@@ -253,7 +253,7 @@ The file name is the current Git hash and the `c/` prefix means that it's a comm
 def commit (hashMap : IO.ModuleHashMap) (overwrite : Bool) (token : String) : IO Unit := do
   let hash ← getGitCommitHash
   let path := IO.CACHEDIR / hash
-  IO.mkDir IO.CACHEDIR
+  IO.FS.createDirAll IO.CACHEDIR
   IO.FS.writeFile path <| ("\n".intercalate <| hashMap.hashes.toList.map toString) ++ "\n"
   if useFROCache then
     -- TODO: reimplement using HEAD requests?
