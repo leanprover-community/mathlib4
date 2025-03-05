@@ -94,7 +94,8 @@ end ENorm
 /-- A type `E` equipped with a continuous map `‖·‖ₑ : E → ℝ≥0∞`. -/
 class ContinuousENorm (E : Type*) [TopologicalSpace E] extends ENorm E where
   continuous_enorm : Continuous enorm
-  -- the topology is somehow defined by the enorm.
+  -- Future: should one demand that the topology is somehow defined by the enorm?
+  -- For many applications, the current definition suffices.
 
 /-- An enormed monoid is an additive monoid endowed with a continuous enorm. -/
 class ENormedAddMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, AddMonoid E where
