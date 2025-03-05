@@ -364,7 +364,7 @@ instance : Mono (H1InfRes A S).f := by
 
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, the short complex
 `H¹(G ⧸ S, A^S) ⟶ H¹(G, A) ⟶ H¹(S, A)` is exact. -/
-instance : (H1InfRes A S).Exact := by
+lemma H1InfRes_exact : (H1InfRes A S).Exact := by
   rw [moduleCat_exact_iff_ker_sub_range]
   intro x hx
   induction' x using H1_induction_on with x
