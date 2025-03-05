@@ -1,4 +1,5 @@
 import Lean.Elab.Command
+import Mathlib.Util.ParseGit
 
 /-!
 #  The "localLinter" linter
@@ -16,25 +17,29 @@ register_option linter.localLinter : Bool := {
   descr := "enable the localLinter linter"
 }
 
+initialize activeRangesExt : SimplePersistentEnvExtension GitDiff (Array GitDiff) ←
+  registerSimplePersistentEnvExtension {
+    addEntryFn := (·.push)
+    addImportedFn := mkStateFromImportedEntries (·.push) {}
+  }
 
---initialize hintExtension : SimplePersistentEnvExtension (Nat × Nat) (List (Nat × Nat)) ←
---  registerSimplePersistentEnvExtension {
---    addEntryFn := (·.cons)
---    addImportedFn := mkStateFromImportedEntries (·.cons) {}
---  }
-
-initialize activeRangesRef : IO.Ref (Array (Nat × Nat)) ← IO.mkRef ∅
+elab "add_range " st:num en:num : command => do
+  let fname ← getFileName
+  let newEntry := {file := fname, rg := {first := st.getNat, last := en.getNat}}
+  modifyEnv (activeRangesExt.addEntry · newEntry)
 
 namespace LocalLinter
 
 @[inherit_doc Mathlib.Linter.linter.localLinter]
-def localLinterLinter : Linter where run := withSetOptionIn fun stx ↦ do
+def localLinterLinter : Linter where run stx := do
   unless Linter.getLinterValue linter.localLinter (← getOptions) do
     return
   if (← get).messages.hasErrors then
     return
-
-  Linter.logLint linter.localLinter stx m!"'{stx}' Nat subtraction"
+  let activeRanges := activeRangesExt.getState (← getEnv)
+  if let some rg := stx.getRange? then
+    if ← overlaps activeRanges rg then
+      Linter.logLint linter.localLinter stx m!"'{stx}' is in range!"
 
 initialize addLinter localLinterLinter
 

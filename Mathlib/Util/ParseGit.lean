@@ -207,12 +207,13 @@ def overlapOne (l m : lineRg) : Bool := ! disjointRange l m
   --(m.first ≤ l.first && l.first ≤ m.last) &&
   --true
 
-def overlaps {m} [Monad m] [MonadFileMap m] (as : Array GitDiff) (rg : String.Range) : m Bool := do
+def overlaps {m} [Monad m] [MonadLog m] [MonadFileMap m] (as : Array GitDiff) (rg : String.Range) : m Bool := do
+  let fname ← getFileName
   let fm ← getFileMap
   let lineRange : lineRg :=
     { first := (fm.toPosition rg.start).line
       last  := (fm.toPosition rg.stop).line }
-  pure <| as.any (overlapOne lineRange ·.rg)
+  pure <| (as.filter (·.file.toString == fname)).any (overlapOne lineRange ·.rg)
 
 run_cmd
   let args := #["diff", "--unified=0",
