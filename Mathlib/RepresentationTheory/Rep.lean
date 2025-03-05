@@ -323,8 +323,8 @@ def freeLift {α : Type u} (A : Rep k G) (f : α → A) :
     free k G α ⟶ A where
   hom := ModuleCat.ofHom <| linearCombination k (fun x => A.ρ x.2 (f x.1)) ∘ₗ
     (finsuppProdLEquiv k).symm.toLinearMap
-  comm _ := ModuleCat.hom_ext <| lhom_ext' fun _ => lhom_ext fun _ _ => by
-    simp [ModuleCat.endRingEquiv]
+  comm _ := by
+    ext; simp [ModuleCat.endRingEquiv]
 
 lemma freeLift_hom_single_single {α : Type u} (A : Rep k G)
     (f : α → A) (i : α) (g : G) (r : k) :
@@ -338,9 +338,9 @@ def freeLiftLEquiv (α : Type u) (A : Rep k G) :
     (free k G α ⟶ A) ≃ₗ[k] (α → A) where
   toFun f i := f.hom (single i (single 1 1))
   invFun := freeLift A
-  left_inv x := Action.Hom.ext <| ModuleCat.hom_ext <| lhom_ext' fun i => lhom_ext fun j y => by
-      have := (hom_comm_apply x j (single i (single 1 1))).symm
-      simp_all [← map_smul]
+  left_inv x := by
+      ext i j
+      simpa [← map_smul] using (hom_comm_apply x j (single i (single 1 1))).symm
   right_inv _ := by ext; simp
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -376,7 +376,8 @@ def finsuppTensorLeft [DecidableEq α] :
 def finsuppTensorRight [DecidableEq α] :
     A ⊗ B.finsupp α ≅ (A ⊗ B).finsupp α :=
   Action.mkIso (TensorProduct.finsuppRight k A B α).toModuleIso fun _ => ModuleCat.hom_ext <|
-    TensorProduct.ext <| LinearMap.ext fun _ => lhom_ext fun _ _ => by
+      TensorProduct.ext <| LinearMap.ext fun _ => lhom_ext fun _ _ => by
+      ext
       simp [Action_ρ_eq_ρ, TensorProduct.finsuppRight_apply_tmul, ModuleCat.endRingEquiv,
         instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj]
 
@@ -388,6 +389,7 @@ def leftRegularTensorTrivialIsoFree (α : Type u) :
   Action.mkIso (finsuppTensorFinsupp' k G α ≪≫ₗ Finsupp.domLCongr (Equiv.prodComm G α) ≪≫ₗ
     finsuppProdLEquiv k).toModuleIso fun _ =>
       ModuleCat.hom_ext <| TensorProduct.ext <| lhom_ext fun _ _ => lhom_ext fun _ _ => by
+        ext
         simp [Action_ρ_eq_ρ, instMonoidalCategoryStruct_tensorObj, ModuleCat.endRingEquiv,
           instMonoidalCategoryStruct_whiskerRight, ModuleCat.MonoidalCategory.whiskerRight,
           ModuleCat.MonoidalCategory.tensorObj]
