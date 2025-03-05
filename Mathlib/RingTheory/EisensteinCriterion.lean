@@ -111,7 +111,7 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
       contrapose hmnd
       apply ne_of_lt
       rw [not_and_or] at hmnd
-      cases' hmnd with hmnd hmnd
+      rcases hmnd with hmnd | hmnd
       · exact add_lt_add_of_lt_of_le (lt_of_le_of_ne hmp (Ne.symm hmnd)) hnq
       · exact add_lt_add_of_le_of_lt hmp (lt_of_le_of_ne hnq (Ne.symm hmnd))
     obtain rfl | rfl : m = 0 ∨ n = 0 := by

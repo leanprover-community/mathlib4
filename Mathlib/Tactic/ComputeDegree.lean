@@ -134,7 +134,7 @@ theorem coeff_smul {n : ℕ} {a : R} {f : R[X]} : (a • f).coeff n = a * f.coef
 
 section congr_lemmas
 
-/--  The following two lemmas should be viewed as a hand-made "congr"-lemmas.
+/-- The following two lemmas should be viewed as a hand-made "congr"-lemmas.
 They achieve the following goals.
 * They introduce *two* fresh metavariables replacing the given one `deg`,
   one for the `natDegree ≤` computation and one for the `coeff =` computation.
@@ -152,7 +152,7 @@ theorem natDegree_eq_of_le_of_coeff_ne_zero' {deg m o : ℕ} {c : R} {p : R[X]}
   exact natDegree_eq_of_le_of_coeff_ne_zero ‹_› ‹_›
 
 theorem degree_eq_of_le_of_coeff_ne_zero' {deg m o : WithBot ℕ} {c : R} {p : R[X]}
-    (h_deg_le : degree p ≤ m) (coeff_eq : coeff p (WithBot.unbot' 0 deg) = c)
+    (h_deg_le : degree p ≤ m) (coeff_eq : coeff p (WithBot.unbotD 0 deg) = c)
     (coeff_ne_zero : c ≠ 0) (deg_eq_deg : m = deg) (coeff_eq_deg : o = deg) :
     degree p = deg := by
   subst coeff_eq coeff_eq_deg deg_eq_deg

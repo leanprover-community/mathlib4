@@ -247,13 +247,10 @@ variable (C : VariableChange R)
 def map : VariableChange A :=
   ⟨Units.map φ C.u, φ C.r, φ C.s, φ C.t⟩
 
-variable (A)
-
+variable (A) in
 /-- The change of variables base changed to an algebra `A` over `R`. -/
 abbrev baseChange [Algebra R A] : VariableChange A :=
   C.map <| algebraMap R A
-
-variable {A}
 
 @[simp]
 lemma map_id : C.map (RingHom.id R) = C :=

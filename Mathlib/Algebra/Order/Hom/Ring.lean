@@ -143,8 +143,7 @@ def toOrderMonoidWithZeroHom (f : α →+*o β) : α →*₀o β :=
 instance : FunLike (α →+*o β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
-    obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
-    -- Porting note: needed to add the following line
+    cases f; cases g; congr
     exact DFunLike.coe_injective' h
 
 instance : OrderHomClass (α →+*o β) α β where
@@ -299,7 +298,6 @@ section LE
 variable [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [Mul γ] [Add γ] [LE γ]
 
 /-- Reinterpret an ordered ring isomorphism as an order isomorphism. -/
--- Porting note: Added @[coe] attribute
 @[coe]
 def toOrderIso (f : α ≃+*o β) : α ≃o β :=
   ⟨f.toRingEquiv.toEquiv, f.map_le_map_iff'⟩

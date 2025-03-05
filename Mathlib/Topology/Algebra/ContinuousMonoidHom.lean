@@ -25,9 +25,9 @@ section
 open Function Topology
 open scoped Pointwise
 
-variable (F A B C D E : Type*) [Monoid A] [Monoid B] [Monoid C] [Monoid D] [CommGroup E]
-  [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] [TopologicalSpace D]
-  [TopologicalSpace E] [TopologicalGroup E]
+variable (F A B C D E : Type*)
+variable [Monoid A] [Monoid B] [Monoid C] [Monoid D]
+variable [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] [TopologicalSpace D]
 
 /-- The type of continuous additive monoid homomorphisms from `A` to `B`.
 
@@ -59,8 +59,8 @@ homomorphisms.
 Deprecated and changed from a `class` to a `structure`.
 Use `[AddMonoidHomClass F A B] [ContinuousMapClass F A B]` instead. -/
 structure ContinuousAddMonoidHomClass (A B : outParam Type*) [AddMonoid A] [AddMonoid B]
-    [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B]
-    extends AddMonoidHomClass F A B, ContinuousMapClass F A B : Prop
+    [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B] : Prop
+    extends AddMonoidHomClass F A B, ContinuousMapClass F A B
 
 /-- `ContinuousMonoidHomClass F A B` states that `F` is a type of continuous monoid
 homomorphisms.
@@ -70,8 +70,8 @@ Use `[MonoidHomClass F A B] [ContinuousMapClass F A B]` instead. -/
 @[to_additive (attr := deprecated "Use `[MonoidHomClass F A B] [ContinuousMapClass F A B]` instead."
   (since := "2024-10-08"))]
 structure ContinuousMonoidHomClass (A B : outParam Type*) [Monoid A] [Monoid B]
-    [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B]
-    extends MonoidHomClass F A B, ContinuousMapClass F A B : Prop
+    [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B] : Prop
+    extends MonoidHomClass F A B, ContinuousMapClass F A B
 
 end
 
@@ -116,8 +116,7 @@ lemma coe_toContinuousMap (f : ContinuousMonoidHom A B) : f.toContinuousMap = f 
 
 section
 
-variable {A B : Type*} [Monoid A] [Monoid B] [TopologicalSpace A] [TopologicalSpace B]
-  {F : Type*} [FunLike F A B]
+variable {F : Type*} [FunLike F A B]
 
 /-- Turn an element of a type `F` satisfying `MonoidHomClass F A B` and `ContinuousMapClass F A B`
 into a`ContinuousMonoidHom`. This is declared as the default coercion from `F` to
@@ -199,12 +198,15 @@ variable (A B C D E)
 
 /-- The trivial continuous homomorphism. -/
 @[to_additive (attr := simps!) "The trivial continuous homomorphism."]
-def one : ContinuousMonoidHom A B :=
-  ⟨1, continuous_const⟩
+instance : One (ContinuousMonoidHom A B) where
+  one := ⟨1, continuous_const⟩
+
+@[to_additive (attr := simp)]
+lemma coe_one : ⇑(1 : ContinuousMonoidHom A B) = 1 :=
+  rfl
 
 @[to_additive]
-instance : Inhabited (ContinuousMonoidHom A B) :=
-  ⟨one A B⟩
+instance : Inhabited (ContinuousMonoidHom A B) := ⟨1⟩
 
 /-- The identity continuous homomorphism. -/
 @[to_additive (attr := simps!) "The identity continuous homomorphism."]
@@ -231,13 +233,13 @@ def snd : ContinuousMonoidHom (A × B) B :=
 @[to_additive (attr := simps!)
   "The continuous homomorphism given by inclusion of the first factor."]
 def inl : ContinuousMonoidHom A (A × B) :=
-  prod (id A) (one A B)
+  prod (id A) 1
 
 /-- The continuous homomorphism given by inclusion of the second factor. -/
 @[to_additive (attr := simps!)
   "The continuous homomorphism given by inclusion of the second factor."]
 def inr : ContinuousMonoidHom B (A × B) :=
-  prod (one B A) (id B)
+  prod 1 (id B)
 
 /-- The continuous homomorphism given by the diagonal embedding. -/
 @[to_additive (attr := simps!) "The continuous homomorphism given by the diagonal embedding."]
@@ -249,17 +251,23 @@ def diag : ContinuousMonoidHom A (A × A) :=
 def swap : ContinuousMonoidHom (A × B) (B × A) :=
   prod (snd A B) (fst A B)
 
+section CommMonoid
+variable [CommMonoid E] [TopologicalSpace E] [ContinuousMul E]
+
 /-- The continuous homomorphism given by multiplication. -/
 @[to_additive (attr := simps!) "The continuous homomorphism given by addition."]
 def mul : ContinuousMonoidHom (E × E) E :=
   ⟨mulMonoidHom, continuous_mul⟩
 
-/-- The continuous homomorphism given by inversion. -/
-@[to_additive (attr := simps!) "The continuous homomorphism given by negation."]
-def inv : ContinuousMonoidHom E E :=
-  ⟨invMonoidHom, continuous_inv⟩
-
 variable {A B C D E}
+
+@[to_additive]
+instance : CommMonoid (ContinuousMonoidHom A E) where
+  mul f g := (mul E).comp (f.prod g)
+  mul_comm f g := ext fun x => mul_comm (f x) (g x)
+  mul_assoc f g h := ext fun x => mul_assoc (f x) (g x) (h x)
+  one_mul f := ext fun x => one_mul (f x)
+  mul_one f := ext fun x => mul_one (f x)
 
 /-- Coproduct of two continuous homomorphisms to the same space. -/
 @[to_additive (attr := simps!) "Coproduct of two continuous homomorphisms to the same space."]
@@ -267,16 +275,25 @@ def coprod (f : ContinuousMonoidHom A E) (g : ContinuousMonoidHom B E) :
     ContinuousMonoidHom (A × B) E :=
   (mul E).comp (f.prodMap g)
 
+end CommMonoid
+
+section CommGroup
+
+variable [CommGroup E] [TopologicalSpace E] [IsTopologicalGroup E]
+/-- The continuous homomorphism given by inversion. -/
+@[to_additive (attr := simps!) "The continuous homomorphism given by negation."]
+def inv : ContinuousMonoidHom E E :=
+  ⟨invMonoidHom, continuous_inv⟩
+
 @[to_additive]
 instance : CommGroup (ContinuousMonoidHom A E) where
-  mul f g := (mul E).comp (f.prod g)
-  mul_comm f g := ext fun x => mul_comm (f x) (g x)
-  mul_assoc f g h := ext fun x => mul_assoc (f x) (g x) (h x)
-  one := one A E
-  one_mul f := ext fun x => one_mul (f x)
-  mul_one f := ext fun x => mul_one (f x)
+  __ : CommMonoid (ContinuousMonoidHom A E) := inferInstance
   inv f := (inv E).comp f
   inv_mul_cancel f := ext fun x => inv_mul_cancel (f x)
+  div f g := .comp ⟨divMonoidHom, continuous_div'⟩ (f.prod g)
+  div_eq_mul_inv f g := ext fun x => div_eq_mul_inv (f x) (g x)
+
+end CommGroup
 
 /-- For `f : F` where `F` is a class of continuous monoid hom, this yields an element
 `ContinuousMonoidHom A B`. -/
@@ -515,10 +532,10 @@ variable {L : Type*} [Mul L] [TopologicalSpace L]
 
 /-- The composition of two ContinuousMulEquiv. -/
 @[to_additive "The composition of two ContinuousAddEquiv."]
-def trans (cme1 : M ≃ₜ* N) (cme2 : N ≃ₜ* L) : M ≃ₜ* L :=
-  { cme1.toMulEquiv.trans cme2.toMulEquiv with
+def trans (cme1 : M ≃ₜ* N) (cme2 : N ≃ₜ* L) : M ≃ₜ* L where
+  __ := cme1.toMulEquiv.trans cme2.toMulEquiv
   continuous_toFun := by convert Continuous.comp cme2.continuous_toFun cme1.continuous_toFun
-  continuous_invFun := by convert Continuous.comp cme1.continuous_invFun cme2.continuous_invFun }
+  continuous_invFun := by convert Continuous.comp cme1.continuous_invFun cme2.continuous_invFun
 
 @[to_additive (attr := simp)]
 theorem coe_trans (e₁ : M ≃ₜ* N) (e₂ : N ≃ₜ* L) : ↑(e₁.trans e₂) = e₂ ∘ e₁ := rfl
@@ -545,10 +562,10 @@ section unique
 /-- The `MulEquiv` between two monoids with a unique element. -/
 @[to_additive "The `AddEquiv` between two `AddMonoid`s with a unique element."]
 def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N]
-    [TopologicalSpace M] [TopologicalSpace N] : M ≃ₜ* N :=
-  { MulEquiv.ofUnique with
+    [TopologicalSpace M] [TopologicalSpace N] : M ≃ₜ* N where
+  __ := MulEquiv.ofUnique
   continuous_toFun := by continuity
-  continuous_invFun := by continuity }
+  continuous_invFun := by continuity
 
 /-- There is a unique monoid homomorphism between two monoids with a unique element. -/
 @[to_additive "There is a unique additive monoid homomorphism between two additive monoids with
