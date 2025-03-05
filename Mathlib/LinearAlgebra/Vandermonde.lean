@@ -76,15 +76,13 @@ def projVandermonde (v w : Fin n → R) : Matrix (Fin n) (Fin n) R :=
   rectVandermonde v w n
 
 /-- `vandermonde v` is the square matrix with `i`th row equal to `1, v i, v i ^ 2, v i ^ 3, ...`. -/
-def vandermonde {n : ℕ} (v : Fin n → R) : Matrix (Fin n) (Fin n) R :=
-  .of fun i j ↦ (v i) ^ j.1
+def vandermonde (v : Fin n → R) : Matrix (Fin n) (Fin n) R := .of fun i j ↦ (v i) ^ j.1
 
-lemma vandermonde_eq_projVandermonde {n : ℕ} (v : Fin n → R) :
-    vandermonde v = projVandermonde v 1 := by
+lemma vandermonde_eq_projVandermonde (v : Fin n → R) : vandermonde v = projVandermonde v 1 := by
   simp [projVandermonde, rectVandermonde, vandermonde]
 
 /-- We don't mark this as `@[simp]` because the RHS is not simp-nf,
-and simplifying the RHS gives a bothersome `Nat` subtraction.  -/
+and simplifying the RHS gives a bothersome `Nat` subtraction. -/
 theorem projVandermonde_apply {v w : Fin n → R} {i j : Fin n} :
     projVandermonde v w i j = (v i) ^ j.1 * (w i) ^ j.rev.1 := rfl
 
@@ -92,10 +90,10 @@ theorem rectVandermonde_apply {α : Type*} {v w : α → R} {i : α} {j : Fin n}
     rectVandermonde v w n i j = (v i) ^ j.1 * (w i) ^ j.rev.1 := rfl
 
 @[simp]
-theorem vandermonde_apply {n : ℕ} (v : Fin n → R) (i j) : vandermonde v i j = v i ^ (j : ℕ) := rfl
+theorem vandermonde_apply (v : Fin n → R) (i j) : vandermonde v i j = v i ^ (j : ℕ) := rfl
 
 @[simp]
-theorem vandermonde_cons {n : ℕ} (v0 : R) (v : Fin n → R) :
+theorem vandermonde_cons (v0 : R) (v : Fin n → R) :
     vandermonde (Fin.cons v0 v : Fin n.succ → R) =
       Fin.cons (fun (j : Fin n.succ) => v0 ^ (j : ℕ)) fun i => Fin.cons 1
       fun j => v i * vandermonde v i j := by
@@ -104,18 +102,18 @@ theorem vandermonde_cons {n : ℕ} (v0 : R) (v : Fin n → R) :
   refine Fin.cases (by simp) (fun j => ?_) j
   simp [pow_succ']
 
-theorem vandermonde_succ {n : ℕ} (v : Fin n.succ → R) :
+theorem vandermonde_succ (v : Fin n.succ → R) :
     vandermonde v = .of
       Fin.cons (fun (j : Fin n.succ) => v 0 ^ (j : ℕ)) fun i =>
         Fin.cons 1 fun j => v i.succ * vandermonde (Fin.tail v) i j := by
   conv_lhs => rw [← Fin.cons_self_tail v, vandermonde_cons]
   rfl
 
-theorem vandermonde_mul_vandermonde_transpose {n : ℕ} (v w : Fin n → R) (i j) :
+theorem vandermonde_mul_vandermonde_transpose (v w : Fin n → R) (i j) :
     (vandermonde v * (vandermonde w)ᵀ) i j = ∑ k : Fin n, (v i * w j) ^ (k : ℕ) := by
   simp only [vandermonde_apply, Matrix.mul_apply, Matrix.transpose_apply, mul_pow]
 
-theorem vandermonde_transpose_mul_vandermonde {n : ℕ} (v : Fin n → R) (i j) :
+theorem vandermonde_transpose_mul_vandermonde (v : Fin n → R) (i j) :
     ((vandermonde v)ᵀ * vandermonde v) i j = ∑ k : Fin n, v k ^ (i + j : ℕ) := by
   simp only [vandermonde_apply, Matrix.mul_apply, Matrix.transpose_apply, pow_add]
 
@@ -233,37 +231,35 @@ theorem det_vandermonde_ne_zero_iff [IsDomain R] {v : Fin n → R} :
   simp only [det_vandermonde_eq_zero_iff, Ne, not_exists, not_and, Classical.not_not]
 
 @[simp]
-theorem det_vandermonde_add {n : ℕ} (v : Fin n → R) (a : R) :
+theorem det_vandermonde_add (v : Fin n → R) (a : R) :
     (Matrix.vandermonde fun i ↦ v i + a).det = (Matrix.vandermonde v).det := by
   simp [Matrix.det_vandermonde]
 
 @[simp]
-theorem det_vandermonde_sub {n : ℕ} (v : Fin n → R) (a : R) :
+theorem det_vandermonde_sub (v : Fin n → R) (a : R) :
     (Matrix.vandermonde fun i ↦ v i - a).det = (Matrix.vandermonde v).det := by
   rw [← det_vandermonde_add v (- a)]
   simp only [← sub_eq_add_neg]
 
-theorem eq_zero_of_forall_index_sum_pow_mul_eq_zero {R : Type*} [CommRing R] [IsDomain R] {n : ℕ}
-    {f v : Fin n → R} (hf : Function.Injective f)
-    (hfv : ∀ j, (∑ i : Fin n, f j ^ (i : ℕ) * v i) = 0) : v = 0 :=
+theorem eq_zero_of_forall_index_sum_pow_mul_eq_zero [IsDomain R] {f v : Fin n → R}
+    (hf : Function.Injective f) (hfv : ∀ j, (∑ i : Fin n, f j ^ (i : ℕ) * v i) = 0) : v = 0 :=
   eq_zero_of_mulVec_eq_zero (det_vandermonde_ne_zero_iff.mpr hf) (funext hfv)
 
-theorem eq_zero_of_forall_index_sum_mul_pow_eq_zero {R : Type*} [CommRing R] [IsDomain R] {n : ℕ}
-    {f v : Fin n → R} (hf : Function.Injective f) (hfv : ∀ j, (∑ i, v i * f j ^ (i : ℕ)) = 0) :
-    v = 0 := by
+theorem eq_zero_of_forall_index_sum_mul_pow_eq_zero [IsDomain R] {f v : Fin n → R}
+    (hf : Function.Injective f) (hfv : ∀ j, (∑ i, v i * f j ^ (i : ℕ)) = 0) : v = 0 := by
   apply eq_zero_of_forall_index_sum_pow_mul_eq_zero hf
   simp_rw [mul_comm]
   exact hfv
 
-theorem eq_zero_of_forall_pow_sum_mul_pow_eq_zero {R : Type*} [CommRing R] [IsDomain R] {n : ℕ}
-    {f v : Fin n → R} (hf : Function.Injective f)
-    (hfv : ∀ i : Fin n, (∑ j : Fin n, v j * f j ^ (i : ℕ)) = 0) : v = 0 :=
+theorem eq_zero_of_forall_pow_sum_mul_pow_eq_zero [IsDomain R] {f v : Fin n → R}
+    (hf : Function.Injective f) (hfv : ∀ i : Fin n, (∑ j : Fin n, v j * f j ^ (i : ℕ)) = 0) :
+    v = 0 :=
   eq_zero_of_vecMul_eq_zero (det_vandermonde_ne_zero_iff.mpr hf) (funext hfv)
 
 open Polynomial
 
-theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials {n : ℕ}
-    (v : Fin n → R) (p : Fin n → R[X]) (h_deg : ∀ i, (p i).natDegree ≤ i) :
+theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials (v : Fin n → R)
+    (p : Fin n → R[X]) (h_deg : ∀ i, (p i).natDegree ≤ i) :
     Matrix.of (fun i j => ((p j).eval (v i))) =
     (Matrix.vandermonde v) * (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) := by
   ext i j
@@ -275,7 +271,7 @@ theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials {n : ℕ
   ext k
   rw [mul_comm, Matrix.of_apply, RingHom.id_apply, of_apply]
 
-theorem det_eval_matrixOfPolynomials_eq_det_vandermonde {n : ℕ} (v : Fin n → R) (p : Fin n → R[X])
+theorem det_eval_matrixOfPolynomials_eq_det_vandermonde (v : Fin n → R) (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :
     (Matrix.vandermonde v).det = (Matrix.of (fun i j => ((p j).eval (v i)))).det := by
   rw [Matrix.eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials v p (fun i ↦
