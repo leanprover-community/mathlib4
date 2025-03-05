@@ -7,8 +7,6 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Sym.Sym2.Order
 
-
-
 /-!
 # Lemmas on `Finset.sum` and `Finset.prod` involving `Finset.sym2` or `Finset.sym`.
 -/
@@ -23,21 +21,12 @@ theorem sum_sym2_filter_not_isDiag {ι α} [LinearOrder ι] [AddCommMonoid α]
   rw [Finset.offDiag_filter_lt_eq_filter_le]
   conv_rhs => rw [← Finset.sum_subtype_eq_sum_filter]
   refine (Finset.sum_equiv Sym2.sortEquiv.symm ?_ ?_).symm
-  · rintro ⟨⟨i₁, j₁⟩, hij₁⟩
-    simp [and_assoc]
-  · rintro ⟨⟨i₁, j₁⟩, hij₁⟩
-    simp
+  all_goals aesop
 
-theorem sum_range_count_of_mem_sym {α} [DecidableEq α] {m : ℕ} {k : Sym α m} {s : Finset α}
+theorem sum_count_of_mem_sym {α} [DecidableEq α] {m : ℕ} {k : Sym α m} {s : Finset α}
     (hk : k ∈ s.sym m) : (∑ i ∈ s, count i k) = m := by
   simp_rw [← k.prop, ← toFinset_sum_count_eq, eq_comm]
-  apply sum_subset_zero_on_sdiff _ _ (fun _ _ ↦ rfl)
-  · intro i hi
-    simp only [Sym.val_eq_coe, mem_toFinset, Sym.mem_coe] at hi
-    exact mem_sym_iff.mp hk i hi
-  · intro _ hx
-    simp only [Sym.val_eq_coe, mem_sdiff, Finset.mem_range, mem_toFinset, Sym.mem_coe] at hx
-    simp only [count_eq_zero, Sym.mem_coe]
-    exact hx.2
+  refine sum_subset_zero_on_sdiff (fun _ _ ↦ ?_) ?_ (fun _ _ ↦ rfl)
+  all_goals aesop
 
 end Finset
