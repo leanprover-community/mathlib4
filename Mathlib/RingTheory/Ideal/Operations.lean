@@ -371,21 +371,11 @@ instance {S A : Type*} [Semiring S] [SMul R S] [AddCommMonoid A] [Module R A] [M
     [IsScalarTower R S A] [NoZeroSMulDivisors R A] {I : Submodule S A} : NoZeroSMulDivisors R I :=
   Submodule.noZeroSMulDivisors (Submodule.restrictScalars R I)
 
-end Semiring
-
-section CommSemiring
-
-variable {A : Type*} [CommSemiring A]
-
-theorem pow_eq_zero_of_mem {I : Ideal A} {n m : ℕ} (hnI : I ^ n = 0) (hmn : n ≤ m) {x : A}
+theorem pow_eq_zero_of_mem {I : Ideal R} {n m : ℕ} (hnI : I ^ n = 0) (hmn : n ≤ m) {x : R}
     (hx : x ∈ I) : x ^ m = 0 := by
-  have hxn : x ^ n = 0 := by
-    rw [← Ideal.mem_bot, ← Ideal.zero_eq_bot, ← hnI]
-    exact Ideal.pow_mem_pow hx n
-  obtain ⟨c, hc⟩ := Nat.exists_eq_add_of_le hmn
-  rw [hc, pow_add, hxn, MulZeroClass.zero_mul]
+  simpa [hnI] using pow_le_pow_right hmn <| pow_mem_pow hx m
 
-end CommSemiring
+end Semiring
 
 section MulAndRadical
 
