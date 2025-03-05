@@ -46,8 +46,6 @@ theorem quotientRel_def {x y : M} : p.quotientRel x y ↔ x - y ∈ p :=
       rfl)
     neg_mem_iff
 
-@[deprecated (since := "2024-08-29")] alias quotientRel_r_def := quotientRel_def
-
 /-- The quotient of a module `M` by a submodule `p ⊆ M`. -/
 instance hasQuotient : HasQuotient M (Submodule R M) :=
   ⟨fun p => Quotient (quotientRel p)⟩

@@ -560,6 +560,12 @@ theorem prod_extend_by_one [DecidableEq α] (s : Finset α) (f : α → β) :
     ∏ i ∈ s, (if i ∈ s then f i else 1) = ∏ i ∈ s, f i :=
   (prod_congr rfl) fun _i hi => if_pos hi
 
+@[to_additive]
+theorem prod_eq_prod_extend (f : s → β) : ∏ x, f x = ∏ x ∈ s, Subtype.val.extend f 1 x := by
+  rw [univ_eq_attach, ← Finset.prod_attach s]
+  congr with ⟨x, hx⟩
+  rw [Subtype.val_injective.extend_apply]
+
 @[to_additive (attr := simp)]
 theorem prod_ite_mem [DecidableEq α] (s t : Finset α) (f : α → β) :
     ∏ i ∈ s, (if i ∈ t then f i else 1) = ∏ i ∈ s ∩ t, f i := by
@@ -1117,7 +1123,7 @@ theorem prod_ite_one (s : Finset α) (p : α → Prop) [DecidablePred p]
     exact fun i hi => if_neg (h i hi)
 
 @[to_additive]
-theorem prod_erase_lt_of_one_lt {γ : Type*} [DecidableEq α] [CommMonoid γ] [Preorder γ]
+theorem prod_erase_lt_of_one_lt {γ : Type*} [DecidableEq α] [CommMonoid γ] [LT γ]
     [MulLeftStrictMono γ] {s : Finset α} {d : α} (hd : d ∈ s) {f : α → γ}
     (hdf : 1 < f d) : ∏ m ∈ s.erase d, f m < ∏ m ∈ s, f m := by
   conv in ∏ m ∈ s, f m => rw [← Finset.insert_erase hd]
