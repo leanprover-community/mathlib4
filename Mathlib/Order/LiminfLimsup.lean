@@ -419,19 +419,23 @@ end add_and_sum
 
 section mul
 
-lemma isBoundedUnder_le_mul_of_nonneg [Mul α] [Zero α] [Preorder α] [PosMulMono α]
-    [MulPosMono α] {f : Filter ι} {u v : ι → α} (h₁ : 0 ≤ᶠ[f] u)
-    (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u)
-    (h₃ : 0 ≤ᶠ[f] v)
+lemma isBoundedUnder_le_mul_of_nonneg [LinearOrder α] [MulZeroClass α] [PosMulMono α]
+    [MulPosMono α] {f : Filter ι} {u v : ι → α} (h₁ : ∃ᶠ x in f, 0 ≤ u x)
+    (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u) (h₃ : 0 ≤ᶠ[f] v)
     (h₄ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f v) :
     IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f (u * v) := by
   obtain ⟨U, hU⟩ := h₂.eventually_le
   obtain ⟨V, hV⟩ := h₄.eventually_le
   refine isBoundedUnder_of_eventually_le (a := U * V) ?_
-  filter_upwards [hU, hV, h₁, h₃] with x x_U x_V u_0 v_0
-  exact mul_le_mul x_U x_V v_0 (u_0.trans x_U)
+  filter_upwards [hU, hV, h₃] with x x_U x_V v_0
+  simp only [Pi.zero_apply, Pi.mul_apply] at v_0 ⊢
+  rcases lt_or_ge (u x) 0 with u_0 | u_0
+  · obtain ⟨y, uy_U, uy_0⟩ := (hU.and_frequently h₁).exists
+    apply (mul_nonpos_of_nonpos_of_nonneg u_0.le v_0).trans
+    exact mul_nonneg (uy_0.trans uy_U) (v_0.trans x_V)
+  · exact mul_le_mul x_U x_V v_0 (u_0.trans x_U)
 
-lemma isCoboundedUnder_ge_mul_of_nonneg [Mul α] [Zero α] [LinearOrder α] [PosMulMono α]
+lemma isCoboundedUnder_ge_mul_of_nonneg [LinearOrder α] [Mul α] [Zero α] [PosMulMono α]
     [MulPosMono α] {f : Filter ι} [f.NeBot] {u v : ι → α} (h₁ : 0 ≤ᶠ[f] u)
     (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u)
     (h₃ : 0 ≤ᶠ[f] v)
