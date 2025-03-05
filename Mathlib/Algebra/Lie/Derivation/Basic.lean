@@ -388,6 +388,8 @@ open Finset
 open scoped Nat
 variable (L : Type*) [LieRing L] [LieAlgebra ℚ L] (D : LieDerivation ℚ L L)
 
+/-- In characteristic zero, the exponential of a nilpotent derivation is a Lie algebra
+automorphism. -/
 noncomputable def exp_nilpotent_derivation (h : IsNilpotent D.toLinearMap) :
   LieEquiv ℚ L L :=
 {

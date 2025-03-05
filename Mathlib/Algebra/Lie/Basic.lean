@@ -276,6 +276,8 @@ instance Module.Dual.instLieModule : LieModule R L (M →ₗ[R] R) where
   smul_lie := fun t x m ↦ by ext n; simp
   lie_smul := fun t x m ↦ by ext n; simp
 
+/-- Every LieRing is a NonUnitalNonAssocSemiring. This is useful for proving general distributivity
+theorems about the Lie-bracket. -/
 local instance LieRing.instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring L where
   add x y := x + y
   add_assoc := by exact fun a b c ↦ add_assoc a b c
