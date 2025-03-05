@@ -158,7 +158,7 @@ lemma pi_prod_map_IocProdIoc {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c) :
   refine (Measure.pi_eq fun s ms ↦ ?_).symm
   simp_rw [Measure.map_apply measurable_IocProdIoc (.univ_pi ms), IocProdIoc_preim hab hbc,
     Measure.prod_prod, Measure.pi_pi, prod_eq_prod_extend]
-  nth_rw 1 [Eq.comm, ← Ioc_union_Ioc_eq_Ioc hab hbc, prod_union sorry]-- (Ioc_disjoint_Ioc le_rfl)]
+  nth_rw 1 [Eq.comm, ← Ioc_union_Ioc_eq_Ioc hab hbc, prod_union (Ioc_disjoint_Ioc_of_le le_rfl)]
   congr 1 <;> refine prod_congr rfl fun x hx ↦ ?_
   · rw [Function.extend_val_apply hx, Function.extend_val_apply (Ioc_subset_Ioc_right hbc hx),
     restrict₂]
