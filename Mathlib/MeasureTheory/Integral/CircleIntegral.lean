@@ -275,8 +275,8 @@ theorem CircleIntegrable.congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ :
 theorem circleIntegrable_congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → ℂ}
     (hf : f₁ =ᶠ[codiscreteWithin (Metric.sphere c |R|)] f₂) :
     CircleIntegrable f₁ c R ↔ CircleIntegrable f₂ c R :=
-  ⟨(CircleIntegrable.congr_of_codiscreteWithin hf ·),
-    (CircleIntegrable.congr_of_codiscreteWithin hf.symm ·)⟩
+  ⟨(CircleIntegrable.congr_codiscreteWithin hf ·),
+    (CircleIntegrable.congr_codiscreteWithin hf.symm ·)⟩
 
 theorem circleIntegrable_iff [NormedSpace ℂ E] {f : ℂ → E} {c : ℂ} (R : ℝ) :
     CircleIntegrable f c R ↔ IntervalIntegrable (fun θ : ℝ =>
