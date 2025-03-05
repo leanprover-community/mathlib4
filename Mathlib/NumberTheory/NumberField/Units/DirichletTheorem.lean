@@ -48,14 +48,15 @@ namespace NumberField.Units.dirichletUnitTheorem
 /-!
 ### Dirichlet Unit Theorem
 
-We define a group morphism from `(𝓞 K)ˣ` to `{w : InfinitePlace K // w ≠ w₀} → ℝ` where `w₀` is a
-distinguished (arbitrary) infinite place, prove that its kernel is the torsion subgroup (see
-`logEmbedding_eq_zero_iff`) and that its image, called `unitLattice`, is a full `ℤ`-lattice. It
-follows that `unitLattice` is a free `ℤ`-module (see `instModuleFree_unitLattice`) of rank
-`card (InfinitePlaces K) - 1` (see `unitLattice_rank`). To prove that the `unitLattice` is a full
-`ℤ`-lattice, we need to prove that it is discrete (see `unitLattice_inter_ball_finite`) and that it
-spans the full space over `ℝ` (see `unitLattice_span_eq_top`); this is the main part of the proof,
-see the section `span_top` below for more details.
+We define a group morphism from `(𝓞 K)ˣ` to `logSpace K`, defined as
+`{w : InfinitePlace K // w ≠ w₀} → ℝ` where `w₀` is a distinguished (arbitrary) infinite place,
+prove that its kernel is the torsion subgroup (see `logEmbedding_eq_zero_iff`) and that its image,
+called `unitLattice`, is a full `ℤ`-lattice. It follows that `unitLattice` is a free `ℤ`-module
+(see `instModuleFree_unitLattice`) of rank `card (InfinitePlaces K) - 1` (see `unitLattice_rank`).
+To prove that the `unitLattice` is a full `ℤ`-lattice, we need to prove that it is discrete
+(see `unitLattice_inter_ball_finite`) and that it spans the full space over `ℝ`
+(see `unitLattice_span_eq_top`); this is the main part of the proof, see the section `span_top`
+below for more details.
 -/
 
 open Finset
@@ -70,9 +71,14 @@ variable [NumberField K]
 def w₀ : InfinitePlace K := (inferInstance : Nonempty (InfinitePlace K)).some
 
 variable (K) in
+/-- The `logSpace` is defined as `{w : InfinitePlace K // w ≠ w₀} → ℝ` where `w₀` is the
+distinguished infinite place. -/
+abbrev logSpace := {w : InfinitePlace K // w ≠ w₀} → ℝ
+
+variable (K) in
 /-- The logarithmic embedding of the units (seen as an `Additive` group). -/
 def _root_.NumberField.Units.logEmbedding :
-    Additive ((𝓞 K)ˣ) →+ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
+    Additive ((𝓞 K)ˣ) →+ logSpace K :=
 { toFun := fun x w => mult w.val * Real.log (w.val ↑x.toMul)
   map_zero' := by simp; rfl
   map_add' := fun _ _ => by simp [Real.log_mul, mul_add]; rfl }
@@ -153,13 +159,12 @@ variable (K)
 
 /-- The lattice formed by the image of the logarithmic embedding. -/
 noncomputable def _root_.NumberField.Units.unitLattice :
-    Submodule ℤ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
+    Submodule ℤ (logSpace K) :=
   Submodule.map (logEmbedding K).toIntLinearMap ⊤
 
 open scoped Classical in
 theorem unitLattice_inter_ball_finite (r : ℝ) :
-    ((unitLattice K : Set ({ w : InfinitePlace K // w ≠ w₀} → ℝ)) ∩
-      Metric.closedBall 0 r).Finite := by
+    ((unitLattice K : Set (logSpace K)) ∩ Metric.closedBall 0 r).Finite := by
   obtain hr | hr := lt_or_le r 0
   · convert Set.finite_empty
     rw [Metric.closedBall_eq_empty.mpr hr]
@@ -297,7 +302,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
   exact seq_norm_le K w₁ hB n
 
 theorem unitLattice_span_eq_top :
-    Submodule.span ℝ (unitLattice K : Set ({w : InfinitePlace K // w ≠ w₀} → ℝ)) = ⊤ := by
+    Submodule.span ℝ (unitLattice K : Set (logSpace K)) = ⊤ := by
   classical
   refine le_antisymm le_top ?_
   -- The standard basis
@@ -356,7 +361,7 @@ instance instZLattice_unitLattice : IsZLattice ℝ (unitLattice K) where
   span_top := unitLattice_span_eq_top K
 
 protected theorem finrank_eq_rank :
-    finrank ℝ ({w : InfinitePlace K // w ≠ w₀} → ℝ) = Units.rank K := by
+    finrank ℝ (logSpace K) = Units.rank K := by
   classical
   simp only [finrank_fintype_fun_eq_card, Fintype.card_subtype_compl,
     Fintype.card_ofSubsingleton, rank]
@@ -369,7 +374,7 @@ theorem unitLattice_rank :
 
 /-- The map obtained by quotienting by the kernel of `logEmbedding`. -/
 def logEmbeddingQuot :
-    Additive ((𝓞 K)ˣ ⧸ (torsion K)) →+ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
+    Additive ((𝓞 K)ˣ ⧸ (torsion K)) →+ logSpace K :=
   MonoidHom.toAdditive' <|
     (QuotientGroup.kerLift (AddMonoidHom.toMultiplicative' (logEmbedding K))).comp
       (QuotientGroup.quotientMulEquivOfEq (by
