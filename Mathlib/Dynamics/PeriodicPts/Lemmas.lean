@@ -32,6 +32,13 @@ theorem minimalPeriod_eq_prime {p : ℕ} [hp : Fact p.Prime] (hper : IsPeriodicP
   (hp.out.eq_one_or_self_of_dvd _ hper.minimalPeriod_dvd).resolve_left
     (mt minimalPeriod_eq_one_iff_isFixedPt.1 hfix)
 
+theorem minimalPeriod_eq_prime_iff {p : ℕ} [hp : Fact p.Prime] :
+    minimalPeriod f x = p ↔ IsPeriodicPt f p x ∧ ¬IsFixedPt f x := by
+  rw [Function.isPeriodicPt_iff_minimalPeriod_dvd, Nat.dvd_prime hp.out,
+    ← minimalPeriod_eq_one_iff_isFixedPt.not, or_and_right, and_not_self_iff, false_or,
+    iff_self_and]
+  exact fun h ↦ ne_of_eq_of_ne h hp.out.ne_one
+
 theorem minimalPeriod_eq_prime_pow {p k : ℕ} [hp : Fact p.Prime] (hk : ¬IsPeriodicPt f (p ^ k) x)
     (hk1 : IsPeriodicPt f (p ^ (k + 1)) x) : minimalPeriod f x = p ^ (k + 1) := by
   apply Nat.eq_prime_pow_of_dvd_least_prime_pow hp.out <;>
