@@ -288,6 +288,9 @@ import Mathlib.Algebra.Group.Action.Hom
 import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Action.Option
 import Mathlib.Algebra.Group.Action.Pi
+import Mathlib.Algebra.Group.Action.Pointwise.Finset
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Action.Pretransitive
 import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Group.Action.Sigma
@@ -309,6 +312,7 @@ import Mathlib.Algebra.Group.Embedding
 import Mathlib.Algebra.Group.End
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.Equiv.Finite
 import Mathlib.Algebra.Group.Equiv.Opposite
 import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Group.Even
@@ -347,6 +351,7 @@ import Mathlib.Algebra.Group.PNatPowAssoc
 import Mathlib.Algebra.Group.PUnit
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.Group.Pi.Notation
 import Mathlib.Algebra.Group.Pi.Units
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Group.Pointwise.Finset.Interval
@@ -393,7 +398,6 @@ import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.Group.Translate
 import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.Algebra.Group.TypeTags.Fintype
 import Mathlib.Algebra.Group.TypeTags.Hom
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Algebra.Group.UniqueProds.Basic
@@ -413,6 +417,8 @@ import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Algebra.GroupWithZero.Action.Faithful
 import Mathlib.Algebra.GroupWithZero.Action.Opposite
 import Mathlib.Algebra.GroupWithZero.Action.Pi
+import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Finset
+import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 import Mathlib.Algebra.GroupWithZero.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.GroupWithZero.Associated
@@ -943,6 +949,10 @@ import Mathlib.Algebra.Ring.Action.End
 import Mathlib.Algebra.Ring.Action.Field
 import Mathlib.Algebra.Ring.Action.Group
 import Mathlib.Algebra.Ring.Action.Invariant
+import Mathlib.Algebra.Ring.Action.Pointwise.Finset
+import Mathlib.Algebra.Ring.Action.Pointwise.Set
+import Mathlib.Algebra.Ring.Action.Rat
+import Mathlib.Algebra.Ring.Action.Submonoid
 import Mathlib.Algebra.Ring.Action.Subobjects
 import Mathlib.Algebra.Ring.AddAut
 import Mathlib.Algebra.Ring.Associated
@@ -1004,7 +1014,6 @@ import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.Ring.WithZero
 import Mathlib.Algebra.RingQuot
-import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 import Mathlib.Algebra.Small.Group
 import Mathlib.Algebra.Small.Module
@@ -1053,7 +1062,9 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.IsomOfJ
 import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian
 import Mathlib.AlgebraicGeometry.EllipticCurve.ModelsWithJ
 import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
-import Mathlib.AlgebraicGeometry.EllipticCurve.Projective
+import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic
+import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Formula
+import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Point
 import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
 import Mathlib.AlgebraicGeometry.Fiber
@@ -1579,6 +1590,7 @@ import Mathlib.Analysis.Normed.Order.Hom.Basic
 import Mathlib.Analysis.Normed.Order.Hom.Ultra
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.Normed.Order.UpperLower
+import Mathlib.Analysis.Normed.Ring.FiniteExtension
 import Mathlib.Analysis.Normed.Ring.IsPowMulFaithful
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Analysis.Normed.Ring.SeminormFromBounded
@@ -2911,10 +2923,6 @@ import Mathlib.Data.List.TakeWhile
 import Mathlib.Data.List.ToFinsupp
 import Mathlib.Data.List.Zip
 import Mathlib.Data.MLList.BestFirst
-import Mathlib.Data.MLList.Dedup
-import Mathlib.Data.MLList.DepthFirst
-import Mathlib.Data.MLList.IO
-import Mathlib.Data.MLList.Split
 import Mathlib.Data.Matrix.Auto
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Basis
@@ -2968,8 +2976,8 @@ import Mathlib.Data.Multiset.Interval
 import Mathlib.Data.Multiset.Lattice
 import Mathlib.Data.Multiset.MapFold
 import Mathlib.Data.Multiset.NatAntidiagonal
-import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Multiset.OrderedMonoid
+import Mathlib.Data.Multiset.Pairwise
 import Mathlib.Data.Multiset.Pi
 import Mathlib.Data.Multiset.Powerset
 import Mathlib.Data.Multiset.Range
@@ -3163,6 +3171,7 @@ import Mathlib.Data.Set.CoeSort
 import Mathlib.Data.Set.Constructions
 import Mathlib.Data.Set.Countable
 import Mathlib.Data.Set.Defs
+import Mathlib.Data.Set.Disjoint
 import Mathlib.Data.Set.Enumerate
 import Mathlib.Data.Set.Equitable
 import Mathlib.Data.Set.Finite.Basic
@@ -3175,6 +3184,7 @@ import Mathlib.Data.Set.Finite.Range
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Inclusion
 import Mathlib.Data.Set.Insert
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.List
@@ -3185,10 +3195,10 @@ import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Notation
 import Mathlib.Data.Set.Operations
 import Mathlib.Data.Set.Opposite
+import Mathlib.Data.Set.Order
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Pairwise.Lattice
 import Mathlib.Data.Set.Pointwise.Iterate
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Pointwise.Support
 import Mathlib.Data.Set.Prod
 import Mathlib.Data.Set.SMulAntidiagonal
@@ -3254,14 +3264,12 @@ import Mathlib.Data.ZMod.Units
 import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.Deprecated.AlgebraClasses
 import Mathlib.Deprecated.Aliases
-import Mathlib.Deprecated.ByteArray
 import Mathlib.Deprecated.Cardinal.Continuum
 import Mathlib.Deprecated.Cardinal.Finite
 import Mathlib.Deprecated.Cardinal.PartENat
 import Mathlib.Deprecated.Equiv
 import Mathlib.Deprecated.Logic
 import Mathlib.Deprecated.MinMax
-import Mathlib.Deprecated.NatLemmas
 import Mathlib.Deprecated.Order
 import Mathlib.Dynamics.BirkhoffSum.Average
 import Mathlib.Dynamics.BirkhoffSum.Basic
@@ -3334,11 +3342,13 @@ import Mathlib.FieldTheory.MvRatFunc.Rank
 import Mathlib.FieldTheory.Normal.Basic
 import Mathlib.FieldTheory.Normal.Closure
 import Mathlib.FieldTheory.Normal.Defs
+import Mathlib.FieldTheory.NormalizedTrace
 import Mathlib.FieldTheory.Perfect
 import Mathlib.FieldTheory.PerfectClosure
 import Mathlib.FieldTheory.PolynomialGaloisGroup
 import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.FieldTheory.PurelyInseparable.Basic
+import Mathlib.FieldTheory.PurelyInseparable.Exponent
 import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
 import Mathlib.FieldTheory.PurelyInseparable.Tower
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
@@ -4392,6 +4402,7 @@ import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 import Mathlib.Order.Filter.AtTopBot.Defs
 import Mathlib.Order.Filter.AtTopBot.Disjoint
 import Mathlib.Order.Filter.AtTopBot.Field
+import Mathlib.Order.Filter.AtTopBot.Finite
 import Mathlib.Order.Filter.AtTopBot.Finset
 import Mathlib.Order.Filter.AtTopBot.Floor
 import Mathlib.Order.Filter.AtTopBot.Group
@@ -4401,7 +4412,8 @@ import Mathlib.Order.Filter.AtTopBot.Monoid
 import Mathlib.Order.Filter.AtTopBot.Prod
 import Mathlib.Order.Filter.AtTopBot.Ring
 import Mathlib.Order.Filter.AtTopBot.Tendsto
-import Mathlib.Order.Filter.Bases
+import Mathlib.Order.Filter.Bases.Basic
+import Mathlib.Order.Filter.Bases.Finite
 import Mathlib.Order.Filter.Basic
 import Mathlib.Order.Filter.CardinalInter
 import Mathlib.Order.Filter.Cocardinal
@@ -5749,6 +5761,7 @@ import Mathlib.Topology.Instances.RatLemmas
 import Mathlib.Topology.Instances.Real.Defs
 import Mathlib.Topology.Instances.Real.Lemmas
 import Mathlib.Topology.Instances.RealVectorSpace
+import Mathlib.Topology.Instances.Shrink
 import Mathlib.Topology.Instances.Sign
 import Mathlib.Topology.Instances.TrivSqZeroExt
 import Mathlib.Topology.Instances.ZMod
@@ -5778,6 +5791,7 @@ import Mathlib.Topology.MetricSpace.CauSeqFilter
 import Mathlib.Topology.MetricSpace.Cauchy
 import Mathlib.Topology.MetricSpace.Closeds
 import Mathlib.Topology.MetricSpace.Completion
+import Mathlib.Topology.MetricSpace.Congruence
 import Mathlib.Topology.MetricSpace.Contracting
 import Mathlib.Topology.MetricSpace.Defs
 import Mathlib.Topology.MetricSpace.Dilation
