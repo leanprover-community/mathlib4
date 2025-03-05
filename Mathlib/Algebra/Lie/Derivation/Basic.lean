@@ -254,6 +254,20 @@ theorem smul_apply (r : S) (D : LieDerivation R L M) : (r • D) a = r • D a :
 
 section Hidden
 
+local instance LieRing.instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring L where
+  add x y:= x + y
+  add_assoc := by exact fun a b c ↦ add_assoc a b c
+  zero := 0
+  zero_add := by exact fun a ↦ AddZeroClass.zero_add a
+  add_zero := by exact fun a ↦ AddMonoid.add_zero a
+  nsmul := nsmulRec
+  add_comm := by exact fun a b ↦ AddCommMagma.add_comm a b
+  mul a b := ⁅a, b⁆
+  left_distrib := by exact fun a b c ↦ lie_add a b c
+  right_distrib := by exact fun a b c ↦ add_lie a b c
+  zero_mul := zero_lie
+  mul_zero := lie_zero
+
 variable (L : Type*) [LieRing L] [LieAlgebra ℚ L] (D : LieDerivation ℚ L L)
 --theorem exp_equiv2 {D1 : LieDerivation ℚ L L} (h : IsNilpotent D1.toLinearMap) :
 --  IsUnit ((IsNilpotent.exp D1.toLinearMap)) := sorry
@@ -369,13 +383,13 @@ noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
     rw [restrict] at s₁
     rw [s₁]
     have s₂ := by
-      calc
-            ⁅(∑ i ∈ RN, (i ! : ℚ)⁻¹ • D.toLinearMap ^ i) x, (∑ i ∈ RN, (i ! : ℚ)⁻¹ • D.toLinearMap ^ i) y⁆ =
-            ∑ i ∈ RN, ⁅(i ! : ℚ)⁻¹ • (D.toLinearMap ^ i) x, (∑ j ∈ RN, (j ! : ℚ)⁻¹ • D.toLinearMap ^ j) y⁆ := ?_
-        _ = ∑ i ∈ RN, ∑ j ∈ RN, ((i ! : ℚ)⁻¹ * (j ! : ℚ)⁻¹) • ⁅(D.toLinearMap ^ i) x, (D.toLinearMap ^ j) y⁆ := ?_
-       -- _ = ∑ ij ∈ RN ×ˢ RN, ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) := ?_
-      · sorry
-      . sorry
+      letI : NonUnitalNonAssocSemiring L := LieRing.instNonUnitalNonAssocSemiring
+      calc ⁅(∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) x))), (∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) y)))⁆ = (∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) x))) * (∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) y))) := by rfl
+        _ = ∑ i ∈ RN, ∑ j ∈ RN, ⁅(i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) x),  (j ! : ℚ)⁻¹ • ((D.toLinearMap ^ j) y)⁆ := ?_
+      · rw [sum_mul_sum]
+        rfl
+
+
     sorry,
   invFun := fun l => (IsNilpotent.exp (-(D.toLinearMap))) l,
   left_inv := by
