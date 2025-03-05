@@ -104,9 +104,12 @@ theorem measurable_kernel_prodMk_left' [IsSFiniteKernel η] {s : Set (β × γ)}
 @[deprecated (since := "2025-02-22")]
 alias measurable_kernel_prod_mk_left' := measurable_kernel_prodMk_left'
 
-theorem measurable_kernel_prod_mk_right [IsSFiniteKernel κ] {s : Set (β × α)}
+theorem measurable_kernel_prodMk_right [IsSFiniteKernel κ] {s : Set (β × α)}
     (hs : MeasurableSet s) : Measurable fun y => κ y ((fun x => (x, y)) ⁻¹' s) :=
   measurable_kernel_prodMk_left (measurableSet_swap_iff.mpr hs)
+
+@[deprecated (since := "2025-03-05")]
+alias measurable_kernel_prod_mk_right := measurable_kernel_prodMk_right
 
 end Kernel
 
