@@ -89,8 +89,8 @@ def diffToGitDiff (s : String) : Array GitDiff × Array GitDiff := Id.run do
       let [fA, fB] := l.drop "diff --git a/".length |>.splitOn " b/" | continue
       fileA := fA
       fileB := fB
-      nextGDA := {nextGDA with file := fA}
-      nextGDB := {nextGDB with file := fB}
+      nextGDA := {nextGDA with file := fileA}
+      nextGDB := {nextGDB with file := fileB}
     if l.startsWith "@@ -" then
       let _ :: ls :: _ := l.splitOn "@@" | continue
       let [left, right] := ls.trim.splitOn " " | continue
