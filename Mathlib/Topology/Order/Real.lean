@@ -9,7 +9,7 @@ import Mathlib.Topology.Order.Bornology
 import Mathlib.Topology.Order.T5
 
 /-!
-# Topological properties of ℝ
+# The reals are equipped with their order topology
 -/
 
 assert_not_exists IsTopologicalRing UniformContinuousConstSMul UniformOnFun

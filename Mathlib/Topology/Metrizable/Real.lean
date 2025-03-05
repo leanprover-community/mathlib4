@@ -8,7 +8,7 @@ import Mathlib.Topology.Order.MonotoneContinuity
 import Mathlib.Topology.Order.Real
 
 /-!
-# Topological properties of ℝ
+# `ENNReal` is metrizable
 -/
 
 namespace ENNReal

@@ -12,7 +12,7 @@ import Mathlib.Topology.Order.Real
 import Mathlib.Topology.UniformSpace.Real
 
 /-!
-# Topological properties of ℝ
+# Second countability of the reals
 -/
 
 assert_not_exists IsTopologicalRing UniformContinuousConstSMul UniformOnFun

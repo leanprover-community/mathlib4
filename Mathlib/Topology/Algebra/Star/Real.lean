@@ -8,7 +8,7 @@ import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.MetricSpace.Pseudo.Constructions
 
 /-!
-# Topological properties of ℝ
+# Topological properties of conjugation on ℝ
 -/
 
 assert_not_exists IsTopologicalRing UniformContinuousConstSMul UniformOnFun

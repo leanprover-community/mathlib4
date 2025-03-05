@@ -7,7 +7,7 @@ import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Topology.MetricSpace.Cauchy
 
 /-!
-# Topological properties of ℝ
+# The reals are complete
 -/
 
 assert_not_exists IsTopologicalRing UniformContinuousConstSMul UniformOnFun
