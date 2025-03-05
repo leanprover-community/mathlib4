@@ -5,7 +5,6 @@ Authors: Amelia Livingston
 -/
 import Mathlib.FieldTheory.Fixed
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
-import Mathlib.LinearAlgebra.LinearIndependent
 
 /-!
 # Hilbert's Theorem 90
