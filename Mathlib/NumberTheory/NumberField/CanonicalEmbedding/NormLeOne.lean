@@ -364,7 +364,9 @@ variable [NumberField K]
 variable {K}
 
 /--
-Docstring.
+The map that sends `x : realSpace K` to
+`Real.exp (x w₀) * ∏_{i ≠ w₀} |ηᵢ| ^ x i` where `|ηᵢ|` denote the vector of `realSpace K` given
+by `w (ηᵢ)` and `ηᵢ` denote the units in `fundSystem K`, see `expMapBasis_apply'`.
 -/
 def expMapBasis : PartialHomeomorph (realSpace K) (realSpace K) :=
   (completeBasis K).equivFunL.symm.toHomeomorph.transPartialHomeomorph expMap
