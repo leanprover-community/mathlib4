@@ -739,9 +739,12 @@ lemma map_polynomial : (W'.map f).toAffine.polynomial = W'.polynomial.map (mapRi
   simp only [polynomial]
   map_simp
 
-lemma evalEval_baseChange_polynomial_X_Y :
-    (W'.baseChange R[X][Y]).toAffine.polynomial.evalEval (C X) Y = W'.polynomial := by
+lemma eval_baseChange_polynomial :
+    (W.baseChange R[X][Y]).toAffine.polynomial.evalEval (C X) Y = W.polynomial := by
   rw [map_polynomial, evalEval, eval_map, eval_C_X_eval₂_map_C_X]
+
+@[deprecated (since := "2025-03-05")] alias evalEval_baseChange_polynomial_X_Y :=
+  eval_baseChange_polynomial
 
 variable {x y} in
 lemma Equation.map {x y : R} (h : W'.Equation x y) : (W'.map f).toAffine.Equation (f x) (f y) := by
