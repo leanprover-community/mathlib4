@@ -106,8 +106,6 @@ theorem instIsTopologicalSemiring [Semiring R] [IsTopologicalSemiring R] :
     continuous_finset_sum _ fun i _ => continuous_mul.comp
       ((continuous_coeff R i.fst).fst'.prod_mk (continuous_coeff R i.snd).snd')
 
-@[deprecated (since := "2025-14-02")] alias instTopologicalSemiring := instIsTopologicalSemiring
-
 /-- The ring topology on `MvPowerSeries` of a topological ring -/
 @[scoped instance]
 theorem instIsTopologicalRing [Ring R] [IsTopologicalRing R] :
@@ -115,8 +113,6 @@ theorem instIsTopologicalRing [Ring R] [IsTopologicalRing R] :
   { instIsTopologicalSemiring σ R with
     continuous_neg := continuous_pi fun d ↦ Continuous.comp continuous_neg
       (continuous_coeff R d) }
-
-@[deprecated (since := "2025-14-02")] alias instTopologicalRing := instIsTopologicalRing
 
 variable {σ R}
 

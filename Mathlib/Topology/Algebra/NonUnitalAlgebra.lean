@@ -31,9 +31,6 @@ variable [ContinuousConstSMul R A]
 instance instIsTopologicalSemiring (s : NonUnitalSubalgebra R A) : IsTopologicalSemiring s :=
   s.toNonUnitalSubsemiring.instIsTopologicalSemiring
 
-@[deprecated (since := "2025-14-02")] alias instTopologicalSemiring :=
-  instIsTopologicalSemiring
-
 /-- The (topological) closure of a non-unital subalgebra of a non-unital topological algebra is
 itself a non-unital subalgebra. -/
 def topologicalClosure (s : NonUnitalSubalgebra R A) : NonUnitalSubalgebra R A :=
@@ -68,9 +65,6 @@ variable [ContinuousConstSMul R A]
 
 instance instIsTopologicalRing (s : NonUnitalSubalgebra R A) : IsTopologicalRing s :=
   s.toNonUnitalSubring.instIsTopologicalRing
-
-@[deprecated (since := "2025-14-02")] alias instTopologicalRing :=
-  instIsTopologicalRing
 
 /-- If a non-unital subalgebra of a non-unital topological algebra is commutative, then so is its
 topological closure.

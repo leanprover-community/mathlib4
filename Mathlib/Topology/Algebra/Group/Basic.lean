@@ -402,7 +402,7 @@ continuous. -/
 class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] : Prop
     extends ContinuousAdd G, ContinuousNeg G
 
-@[deprecated (since := "2025-14-02")] alias TopologicalAddGroup :=
+@[deprecated (since := "2025-02-14")] alias TopologicalAddGroup :=
   IsTopologicalAddGroup
 
 /-- A topological group is a group in which the multiplication and inversion operations are
@@ -416,7 +416,7 @@ you should also provide an instance of `UniformSpace` and `UniformGroup` using
 class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] : Prop
     extends ContinuousMul G, ContinuousInv G
 
-@[deprecated (since := "2025-14-02")] alias TopologicalGroup :=
+@[deprecated (since := "2025-02-14")] alias TopologicalGroup :=
   IsTopologicalGroup
 
 section Conj
@@ -589,9 +589,6 @@ instance Prod.instIsTopologicalGroup [TopologicalSpace H] [Group H] [IsTopologic
 
 @[to_additive]
 instance OrderDual.instIsTopologicalGroup : IsTopologicalGroup Gᵒᵈ where
-
-@[deprecated (since := "2025-14-02")] alias OrderDual.instTopologicalGroup :=
-  OrderDual.instIsTopologicalGroup
 
 @[to_additive]
 instance Pi.topologicalGroup {C : β → Type*} [∀ b, TopologicalSpace (C b)] [∀ b, Group (C b)]

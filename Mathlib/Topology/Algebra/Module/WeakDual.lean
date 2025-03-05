@@ -158,9 +158,6 @@ instance instAddCommGroup : AddCommGroup (WeakDual 𝕜 E) :=
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (WeakDual 𝕜 E) :=
   WeakBilin.instIsTopologicalAddGroup (topDualPairing 𝕜 E)
 
-@[deprecated (since := "2025-14-02")] alias instTopologicalAddGroup :=
-  instIsTopologicalAddGroup
-
 end Ring
 
 end WeakDual
@@ -270,9 +267,6 @@ instance instAddCommGroup : AddCommGroup (WeakSpace 𝕜 E) :=
 
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (WeakSpace 𝕜 E) :=
   WeakBilin.instIsTopologicalAddGroup (topDualPairing 𝕜 E).flip
-
-@[deprecated (since := "2025-14-02")] alias instTopologicalAddGroup :=
-  instIsTopologicalAddGroup
 
 end WeakSpace
 

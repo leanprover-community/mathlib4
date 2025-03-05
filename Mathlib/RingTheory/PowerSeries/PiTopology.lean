@@ -100,15 +100,11 @@ theorem instIsTopologicalSemiring [Semiring R] [IsTopologicalSemiring R] :
     IsTopologicalSemiring (PowerSeries R) :=
   MvPowerSeries.WithPiTopology.instIsTopologicalSemiring Unit R
 
-@[deprecated (since := "2025-14-02")] alias instTopologicalSemiring := instIsTopologicalSemiring
-
 /-- The ring topology on `PowerSeries` of a topological ring -/
 @[scoped instance]
 theorem instIsTopologicalRing [Ring R] [IsTopologicalRing R] :
     IsTopologicalRing (PowerSeries R) :=
   MvPowerSeries.WithPiTopology.instIsTopologicalRing Unit R
-
-@[deprecated (since := "2025-14-02")] alias instTopologicalRing := instIsTopologicalRing
 
 end WithPiTopology
 

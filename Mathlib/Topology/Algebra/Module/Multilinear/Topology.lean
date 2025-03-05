@@ -182,9 +182,6 @@ instance instIsTopologicalAddGroup : IsTopologicalAddGroup (ContinuousMultilinea
   haveI := uniformAddGroup_of_addCommGroup (G := F)
   inferInstance
 
-@[deprecated (since := "2025-14-02")] alias instTopologicalAddGroup :=
-  instIsTopologicalAddGroup
-
 instance instContinuousConstSMul
     {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜 M F] [ContinuousConstSMul M F] :
     ContinuousConstSMul M (ContinuousMultilinearMap 𝕜 E F) := by

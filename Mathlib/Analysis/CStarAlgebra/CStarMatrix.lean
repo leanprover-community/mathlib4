@@ -579,9 +579,6 @@ instance instT3Space : T3Space (CStarMatrix m n A) := _root_.instT3Space
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (CStarMatrix m n A) :=
   Pi.topologicalAddGroup
 
-@[deprecated (since := "2025-14-02")] alias instTopologicalAddGroup :=
-  instIsTopologicalAddGroup
-
 instance instUniformAddGroup : UniformAddGroup (CStarMatrix m n A) :=
   Pi.instUniformAddGroup
 

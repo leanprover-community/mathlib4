@@ -159,9 +159,6 @@ instance instIsTopologicalAddGroup [TopologicalSpace F] [IsTopologicalAddGroup F
   haveI : UniformAddGroup F := uniformAddGroup_of_addCommGroup
   infer_instance
 
-@[deprecated (since := "2025-14-02")] alias instTopologicalAddGroup :=
-  instIsTopologicalAddGroup
-
 theorem continuousEvalConst [TopologicalSpace F] [IsTopologicalAddGroup F]
     (𝔖 : Set (Set E)) (h𝔖 : ⋃₀ 𝔖 = Set.univ) :
     ContinuousEvalConst (UniformConvergenceCLM σ F 𝔖) E F where

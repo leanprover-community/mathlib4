@@ -273,7 +273,7 @@ theorem WithSeminorms.isTopologicalAddGroup (hp : WithSeminorms p) : IsTopologic
   rw [hp.withSeminorms_eq]
   exact AddGroupFilterBasis.isTopologicalAddGroup _
 
-@[deprecated (since := "2025-14-02")] alias WithSeminorms.topologicalAddGroup  :=
+@[deprecated (since := "2025-02-14")] alias WithSeminorms.topologicalAddGroup  :=
   WithSeminorms.isTopologicalAddGroup
 
 theorem WithSeminorms.continuousSMul (hp : WithSeminorms p) : ContinuousSMul 𝕜 E := by

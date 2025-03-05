@@ -167,9 +167,6 @@ instance instIsTopologicalAddGroup [ContinuousAdd 𝕜] : IsTopologicalAddGroup 
     ext x
     simp only [map_neg, Function.comp_apply, LinearMap.neg_apply]
 
-@[deprecated (since := "2025-14-02")] alias instTopologicalAddGroup :=
-  instIsTopologicalAddGroup
-
 end Ring
 
 end WeakBilin

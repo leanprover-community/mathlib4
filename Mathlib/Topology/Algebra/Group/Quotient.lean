@@ -112,9 +112,6 @@ instance instIsTopologicalGroup [N.Normal] : IsTopologicalGroup (G ⧸ N) where
     exact continuous_mk.comp continuous_mul
   continuous_inv := continuous_inv.quotient_map' _
 
-@[deprecated (since := "2025-14-02")] alias instTopologicalGroup :=
-  instIsTopologicalGroup
-
 @[to_additive]
 theorem isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set G)) :
     IsClosedMap ((↑) : G → G ⧸ H) := by

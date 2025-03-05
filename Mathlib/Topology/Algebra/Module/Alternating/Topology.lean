@@ -147,9 +147,6 @@ instance instIsTopologicalAddGroup : IsTopologicalAddGroup (E [⋀^ι]→L[𝕜]
   isEmbedding_toContinuousMultilinearMap.topologicalAddGroup
     (toContinuousMultilinearMapLinear (R := ℕ))
 
-@[deprecated (since := "2025-14-02")] alias instTopologicalAddGroup :=
-  instIsTopologicalAddGroup
-
 @[continuity, fun_prop]
 lemma continuous_toContinuousMultilinearMap :
     Continuous (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F → _)) :=
