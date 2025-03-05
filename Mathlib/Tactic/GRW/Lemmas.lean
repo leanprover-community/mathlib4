@@ -23,7 +23,7 @@ namespace Mathlib.Tactic.GRW
     (H : a < b) (ha : a' ≤ a) (hb : b ≤ b') : a' < b' := lt_of_le_of_lt ha (lt_of_lt_of_le H hb)
 
 @[grw] lemma rewrite_mem {α : Type*} {a : α} {X X' : Set α}
-    (H : a ∈ X) (hX : X ⊆ X') : a ∈ X' := hX H
+    (H : a ∈ X) (hX : X ⊆ X') (_ : a = a) : a ∈ X' := hX H
 
 @[grw] lemma rewrite_sub {α : Type*} {X Y X' Y' : Set α} (H : X ⊆ Y) (hX : X' ⊆ X) (hY : Y ⊆ Y') :
     X' ⊆ Y' := fun _ hx ↦ hY (H (hX hx))
@@ -36,3 +36,7 @@ namespace Mathlib.Tactic.GRW
 
 @[grw] lemma rewrite_setNonempty {α : Type*} {s s' : Set α} (H : Set.Nonempty s) (hs : s ⊆ s') :
     Set.Nonempty s' := H.mono hs
+
+end GRW
+end Tactic
+end Mathlib

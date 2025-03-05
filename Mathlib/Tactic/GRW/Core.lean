@@ -156,11 +156,12 @@ def _root_.Lean.MVarId.grw (goal : MVarId) (expr rule : Expr) (rev isTarget : Bo
       if let some (lemExpr, metas) := lemResult then
         let metas ← metas.filterM fun x => not <$> x.mvarId!.isAssigned
         let args := template.getAppArgs
+        trace[GRW] "template: {template} args: {args}, metas: {metas}"
         -- HACK: we are assuming the side goals of the grw lemma come in the same order
         -- as they appear in the function, and all the fixed args (e.g. type, instances)
         -- come before the ones to rewrite
         let args := args[args.size - metas.size:].toArray
-        let subgoals ← (metas.zip args).concatMapM fun (arg, template) => do
+        let subgoals ← (metas.zip args).flatMapM fun (arg, template) => do
           let mvar := arg.mvarId!
           let type ← instantiateMVars (← inferType arg)
           withTraceNode `GRW (fun _ ↦ return m!"Looking for value of type {type}") do
@@ -177,3 +178,7 @@ def _root_.Lean.MVarId.grw (goal : MVarId) (expr rule : Expr) (rev isTarget : Bo
       let otherMVars := (← getMVarsNoDelayed proof).filter (!subgoals.contains ·)
       return (newExpr, proof, subgoals ++ otherMVars)
   throwError "No grw lemmas worked"
+
+end GRW
+end Tactic
+end Mathlib

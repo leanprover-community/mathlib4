@@ -6,6 +6,8 @@ Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth
 import Mathlib.Data.Int.ModEq
 import Mathlib.Tactic.GRW
 import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.NormNum
+import Mathlib.Algebra.Order.Ring.Abs
 
 private axiom test_sorry : ∀ {α}, α
 

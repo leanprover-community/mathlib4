@@ -65,3 +65,6 @@ elab tok:"grw" rules:rwRuleSeq loc:(location)? : tactic => do
   let goal ← getMainGoal
   try goal.withContext <| Meta.withReducible goal.applyRfl
   catch _ => pure ()
+
+end Tactic
+end Mathlib
