@@ -517,7 +517,7 @@ section hasGSMul
 /-- The class of filtrations that can obtain a well defined `GradedSMul`
 from the multiplication `F i → FM j → FM (i +ᵥ j)`.-/
 class hasGSMul [AddCommMonoid M] [Module R M] [isfil : IsRingFiltration F F_lt] (FM : ιM → σM)
-    (FM_lt : outParam <| ιM → σM) extends IsModuleFiltration F F_lt FM FM_lt : Prop where
+    (FM_lt : outParam <| ιM → σM) : Prop extends IsModuleFiltration F F_lt FM FM_lt where
   F_lt_smul_mem {i : ι} {j : ιM} {x y} : x ∈ F_lt i → y ∈ FM j → x • y ∈ FM_lt (i +ᵥ j)
   smul_F_lt_mem {i : ι} {j : ιM} {x y} : x ∈ F i → y ∈ FM_lt j → x • y ∈ FM_lt (i +ᵥ j)
 
