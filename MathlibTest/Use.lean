@@ -38,6 +38,7 @@ error: failed to synthesize
 numerals are polymorphic in Lean, but the numeral `42` cannot be used in a context where the expected type is
   Nat × Nat
 due to the absence of the instance above
+
 Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
@@ -94,6 +95,7 @@ error: failed to synthesize
 numerals are polymorphic in Lean, but the numeral `1` cannot be used in a context where the expected type is
   Option Nat
 due to the absence of the instance above
+
 Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
@@ -105,6 +107,7 @@ error: failed to synthesize
 numerals are polymorphic in Lean, but the numeral `1` cannot be used in a context where the expected type is
   Nat → Nat
 due to the absence of the instance above
+
 Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in

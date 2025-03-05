@@ -721,14 +721,14 @@ protected theorem HasBasis.ker (h : HasBasis l p s) : l.ker = ⋂ (i) (_ : p i),
 variable {ι'' : Type*} [Preorder ι''] (l) (s'' : ι'' → Set α)
 
 /-- `IsAntitoneBasis s` means the image of `s` is a filter basis such that `s` is decreasing. -/
-structure IsAntitoneBasis extends IsBasis (fun _ => True) s'' : Prop where
+structure IsAntitoneBasis : Prop extends IsBasis (fun _ => True) s'' where
   /-- The sequence of sets is antitone. -/
   protected antitone : Antitone s''
 
 /-- We say that a filter `l` has an antitone basis `s : ι → Set α`, if `t ∈ l` if and only if `t`
 includes `s i` for some `i`, and `s` is decreasing. -/
-structure HasAntitoneBasis (l : Filter α) (s : ι'' → Set α)
-    extends HasBasis l (fun _ => True) s : Prop where
+structure HasAntitoneBasis (l : Filter α) (s : ι'' → Set α) : Prop
+    extends HasBasis l (fun _ => True) s where
   /-- The sequence of sets is antitone. -/
   protected antitone : Antitone s
 

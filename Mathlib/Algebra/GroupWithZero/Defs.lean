@@ -71,8 +71,8 @@ theorem mul_left_injective₀ (hb : b ≠ 0) : Function.Injective fun a => a * b
 end IsRightCancelMulZero
 
 /-- A mixin for cancellative multiplication by nonzero elements. -/
-class IsCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀]
-  extends IsLeftCancelMulZero M₀, IsRightCancelMulZero M₀ : Prop
+class IsCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop
+  extends IsLeftCancelMulZero M₀, IsRightCancelMulZero M₀
 
 export MulZeroClass (zero_mul mul_zero)
 attribute [simp] zero_mul mul_zero

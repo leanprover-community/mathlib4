@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
 import Mathlib.Algebra.Group.ConjFinite
-import Mathlib.Algebra.Group.TypeTags.Fintype
 import Mathlib.GroupTheory.GroupAction.Quotient
 
 /-!
@@ -14,6 +13,12 @@ See `Mathlib.GroupTheory.GroupAction.Quotient` for Burnside's lemma itself.
 This lemma is separate because it requires `Nat.card`
 and hence transitively the development of cardinals.
 -/
+
+variable {α : Type*}
+
+instance instInfiniteProdSubtypeCommute [Mul α] [Infinite α] :
+    Infinite { p : α × α // Commute p.1 p.2 } :=
+  Infinite.of_injective (fun a => ⟨⟨a, a⟩, rfl⟩) (by intro; simp)
 
 open Fintype
 

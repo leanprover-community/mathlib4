@@ -181,7 +181,6 @@ noncomputable instance : NormedAddCommGroup (V →ᴬ[𝕜] W) :=
           rw [h₂]
           rfl }
 
-set_option maxSynthPendingDepth 2 in
 instance : NormedSpace 𝕜 (V →ᴬ[𝕜] W) where
   norm_smul_le t f := by
     simp only [norm_def, coe_smul, Pi.smul_apply, norm_smul, smul_contLinear,

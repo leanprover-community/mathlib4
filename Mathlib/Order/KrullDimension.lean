@@ -807,11 +807,11 @@ section finiteDimensional
 variable {α : Type*} [Preorder α]
 
 lemma finiteDimensionalOrder_iff_krullDim_ne_bot_and_top :
-    FiniteDimensionalOrder α ↔ (krullDim α ≠ ⊥ ∧ krullDim α ≠ ⊤) := by
+    FiniteDimensionalOrder α ↔ krullDim α ≠ ⊥ ∧ krullDim α ≠ ⊤ := by
   by_cases h : Nonempty α
   · simp [← not_infiniteDimensionalOrder_iff, ← krullDim_eq_top_iff]
   · constructor
-    · exact (fun h1 ↦ False.elim (h (LTSeries.nonempty_of_finiteDimensionalType α)))
+    · exact (fun h1 ↦ False.elim (h (LTSeries.nonempty_of_finiteDimensionalOrder α)))
     · exact (fun h1 ↦ False.elim (h1.1 (krullDim_eq_bot_iff.mpr (not_nonempty_iff.mp h))))
 
 end finiteDimensional
@@ -835,7 +835,7 @@ end typeclass
 
 section calculations
 
-@[simp] lemma krullDim_isSimpleOrder {α : Type*} [PartialOrder α] [BoundedOrder α]
+@[simp] lemma krullDim_of_isSimpleOrder {α : Type*} [PartialOrder α] [BoundedOrder α]
     [IsSimpleOrder α] : krullDim α = 1 := by
   rw [krullDim]
   let q : LTSeries α := ⟨1, (fun n ↦ if n == 0 then ⊥ else ⊤), by simp [Fin.fin_one_eq_zero]⟩
