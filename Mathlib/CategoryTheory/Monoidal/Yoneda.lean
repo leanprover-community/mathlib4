@@ -110,10 +110,8 @@ def yonedaMonObjRepresentableBy [Mon_Class X] : (yonedaMonObj X ⋙ forget _).Re
 lemma Mon_ClassOfRepresentableBy_yonedaMonObjRepresentableBy [Mon_Class X] :
     Mon_ClassOfRepresentableBy X _ (yonedaMonObjRepresentableBy X) = ‹_› := by
   ext
-  · show toUnit _ ≫ η = η
-    rw [toUnit_unique (toUnit _) (𝟙 _), Category.id_comp]
-  · show lift (fst X X) (snd X X) ≫ μ = μ
-    rw [lift_fst_snd, Category.id_comp]
+  show lift (fst X X) (snd X X) ≫ μ = μ
+  rw [lift_fst_snd, Category.id_comp]
 
 /-- If `X` represents a presheaf of monoids `F`, then `Hom(-, X)` is isomorphic to `F` as
 a presheaf of monoids. -/
