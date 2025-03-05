@@ -89,6 +89,28 @@ lemma expGrowthSup_le_iff {u : ℕ → ℝ≥0∞} {a : EReal} :
   nth_rw 1 [← EReal.log_exp (b * n)]
   exact logOrderIso.lt_iff_lt
 
+-- TODO : trois autres versions
+-- TODO : move
+lemma limsup_le_iff' {α β : Type*} [ConditionallyCompleteLinearOrder β] [DenselyOrdered β]
+    {f : Filter α} {u : α → β} {x : β}
+    (h₁ : IsCoboundedUnder (fun (x1 x2 : β) => x1 ≤ x2) f u := by isBoundedDefault)
+    (h₂ : IsBoundedUnder (fun (x1 x2 : β) => x1 ≤ x2) f u := by isBoundedDefault) :
+    limsup u f ≤ x ↔ ∀ y > x, ∀ᶠ (a : α) in f, u a ≤ y := by
+  constructor
+  · exact fun h _ h' ↦ (eventually_lt_of_limsup_lt (h.trans_lt h') h₂).mono fun _ ↦ le_of_lt
+  · rw [← forall_lt_iff_le']
+    intro h y x_y
+    obtain ⟨z, x_z, z_y⟩ := exists_between x_y
+    exact (limsup_le_of_le h₁ (h z x_z)).trans_lt z_y
+
+lemma expGrowthSup_le_iff' {u : ℕ → ℝ≥0∞} {a : EReal} :
+    expGrowthSup u ≤ a ↔ ∀ b > a, ∀ᶠ n : ℕ in atTop, u n ≤ exp (b * n) := by
+  rw [expGrowthSup, limsup_le_iff']
+  refine forall₂_congr fun b _ ↦ eventually_congr (eventually_atTop.2 ⟨1, fun n _ ↦ ?_⟩)
+  rw [EReal.div_le_iff_le_mul (by norm_cast) (natCast_ne_top n)]
+  nth_rw 1 [mul_comm, ← EReal.log_exp (b * n)]
+  exact logOrderIso.le_iff_le
+
 lemma le_expGrowthSup_iff {u : ℕ → ℝ≥0∞} {a : EReal} :
     a ≤ expGrowthSup u ↔ ∀ b < a, ∃ᶠ n : ℕ in atTop, exp (b * n) < u n := by
   rw [expGrowthSup, Filter.le_limsup_iff]
@@ -140,6 +162,18 @@ lemma expGrowthSup_pow {a : ℝ≥0∞} : expGrowthSup (fun n ↦ a ^ n) = log a
   refine limsup_congr (eventually_atTop.2 ⟨1, fun n n_1 ↦ ?_⟩)
   rw [EReal.div_eq_iff (natCast_ne_bot n) (natCast_ne_top n)
     (zero_lt_one.trans_le (Nat.one_le_cast.2 n_1)).ne.symm, log_pow, mul_comm]
+
+lemma expGrowthInf_exp {a : EReal} : expGrowthInf (fun n ↦ exp (a * n)) = a := by
+  rw [expGrowthInf, ← liminf_const (f := atTop (α := ℕ)) a]
+  refine liminf_congr (eventually_atTop.2 ⟨1, fun n n_1 ↦ ?_⟩)
+  rw [liminf_const, log_exp, mul_comm, ← mul_div n a n, EReal.mul_div_cancel (natCast_ne_bot n)
+    (natCast_ne_top n) (zero_lt_one.trans_le (Nat.one_le_cast.2 n_1)).ne.symm]
+
+lemma expGrowthSup_exp {a : EReal} : expGrowthSup (fun n ↦ exp (a * n)) = a := by
+  rw [expGrowthSup, ← limsup_const (f := atTop (α := ℕ)) a]
+  refine limsup_congr (eventually_atTop.2 ⟨1, fun n n_1 ↦ ?_⟩)
+  rw [limsup_const, log_exp, mul_comm, ← mul_div n a n, EReal.mul_div_cancel (natCast_ne_bot n)
+    (natCast_ne_top n) (zero_lt_one.trans_le (Nat.one_le_cast.2 n_1)).ne.symm]
 
 /-! ### Multiplication and inversion -/
 
@@ -316,43 +350,48 @@ lemma expGrowthSup_sum {α : Type*} (u : α → ℕ → ℝ≥0∞) (s : Finset 
 
 /-! ### Composition -/
 
--- rajouter Tendsto. pour autoriser la notation .
-lemma le_liminf_comp {α β γ : Type*} [CompleteLattice α] (u : β → α) {v : γ → β}
-    {f : Filter γ} {f' : Filter β} (h : f.Tendsto v f') : f'.liminf u ≤ f.liminf (u ∘ v) := by
-  rw [Filter.liminf_comp]
-  exact (Filter.liminf_le_liminf_of_le) h
-
--- rajouter Tendsto. pour autoriser la notation .
-lemma limsup_comp_le {α β γ : Type*} [CompleteLattice α] (u : β → α) {v : γ → β}
-    {f : Filter γ} {f' : Filter β} (h : f.Tendsto v f') : f.limsup (u ∘ v) ≤ f'.limsup u := by
-  rw [Filter.limsup_comp]
-  exact (Filter.limsup_le_limsup_of_le) h
-
-lemma expGrowthSup_comp_le {u : ℕ → ℝ≥0∞} {v : ℕ → ℕ} (hu : 1 ≤ᶠ[atTop] u)
+-- TODO : Supprimer cette version.
+/-lemma expGrowthSup_comp_le {u : ℕ → ℝ≥0∞} {v : ℕ → ℕ} (hu : 1 ≤ᶠ[atTop] u)
     (hv₀ : (atTop.limsup fun n ↦ (v n : EReal) / n) ≠ 0)
     (hv₁ : (atTop.limsup fun n ↦ (v n : EReal) / n) ≠ ⊤) (hv₂ : atTop.Tendsto v atTop) :
     expGrowthSup (u ∘ v) ≤ (atTop.limsup fun n ↦ (v n : EReal) / n) * expGrowthSup u := by
   rw [expGrowthSup, expGrowthSup]
-  have v0 : 0 ≤ atTop.limsup fun n ↦ (v n : EReal) / n := by
-    apply ((le_liminf_of_le) _).trans (liminf_le_limsup)
-    exact Eventually.of_forall fun n ↦ EReal.div_nonneg (v n).cast_nonneg' n.cast_nonneg'
-  apply (mul_le_mul_of_nonneg_left (limsup_comp_le (fun n ↦ (u n).log / n) hv₂) v0).trans'
+  have v_0 : 0 ≤ atTop.limsup fun n ↦ (v n : EReal) / n := by
+    apply (le_limsup_of_frequently_le)
+    exact Frequently.of_forall fun n ↦ EReal.div_nonneg (v n).cast_nonneg' n.cast_nonneg'
+  apply (mul_le_mul_of_nonneg_left (limsup_comp_le (fun n ↦ (u n).log / n) hv₂) v_0).trans'
   refine (limsup_mul_le ?_ ?_ (.inl hv₀) (.inl hv₁)).trans_eq' ?_
-  · refine Eventually.of_forall fun n ↦ ?_
-    simp only [Pi.zero_apply]
-    exact div_nonneg (v n).cast_nonneg' n.cast_nonneg'
+  · exact Frequently.of_forall fun n ↦ div_nonneg (v n).cast_nonneg' n.cast_nonneg'
   · rw [← Pi.zero_comp v, ← Filter.eventuallyLE_map]
-    refine Eventually.filter_mono hv₂ <| Eventually.mono hu fun n un1 ↦ ?_
+    refine Eventually.filter_mono hv₂ <| Eventually.mono hu fun n un_1 ↦ ?_
     simp only [Pi.one_apply, Pi.zero_apply] at *
-    exact div_nonneg (ENNReal.zero_le_log_iff.2 un1) n.cast_nonneg'
+    exact div_nonneg (ENNReal.zero_le_log_iff.2 un_1) n.cast_nonneg'
   · rw [Pi.mul_def]
     apply limsup_congr
-    refine Eventually.mono (hv₂.eventually_ne_atTop 0) fun n vn0 ↦ ?_
+    refine Eventually.mono (hv₂.eventually_ne_atTop 0) fun n vn_0 ↦ ?_
     simp only [comp_apply]
     rw [EReal.div_mul_div_comm, mul_comm (v n : EReal),
-        mul_div_mul_cancel (natCast_ne_bot (v n)) (natCast_ne_top (v n)) (Nat.cast_ne_zero.2 vn0)]
+        mul_div_mul_cancel (natCast_ne_bot (v n)) (natCast_ne_top (v n)) (Nat.cast_ne_zero.2 vn_0)]
+-/
 
-
-
+lemma expGrowthSup_comp_le {u : ℕ → ℝ≥0∞} {v : ℕ → ℕ} (hu : ∃ᶠ n in atTop, 1 ≤ u n)
+    (hv₀ : (atTop.limsup fun n ↦ (v n : EReal) / n) ≠ 0)
+    (hv₁ : (atTop.limsup fun n ↦ (v n : EReal) / n) ≠ ⊤) (hv₂ : atTop.Tendsto v atTop) :
+    expGrowthSup (u ∘ v) ≤ (atTop.limsup fun n ↦ (v n : EReal) / n) * expGrowthSup u := by
+  have v_0 : 0 < atTop.limsup fun n ↦ (v n : EReal) / n := by
+    apply hv₀.symm.lt_of_le <| le_limsup_of_frequently_le _
+    exact Frequently.of_forall fun n ↦ EReal.div_nonneg (v n).cast_nonneg' n.cast_nonneg'
+  refine (EReal.le_mul_of_forall_lt (.inl v_0) (.inl hv₁)) fun a v_a b u_b ↦ ?_
+  refine le_of_le_of_eq (expGrowthSup_eventually_monotone ?_) (expGrowthSup_exp (a := a * b))
+  have b_0 : 0 ≤ b := by
+    apply (le_limsup_of_frequently_le _).trans u_b.le
+    exact hu.mono fun n un_1 ↦ EReal.div_nonneg (ENNReal.zero_le_log_iff.2 un_1) n.cast_nonneg'
+  have uv_b_exp : ∀ᶠ n in atTop, u (v n) ≤ exp (b * (v n : EReal)) :=
+    eventually_map.1 <| (expGrowthSup_le_iff'.1 (le_refl (expGrowthSup u)) b u_b).filter_mono hv₂
+  filter_upwards [uv_b_exp, eventually_lt_of_limsup_lt v_a, eventually_ge_atTop 1]
+    with n uvn_b vn_a n_1
+  rw [comp_apply, mul_comm a b, mul_assoc b a]
+  apply uvn_b.trans <| exp_monotone (mul_le_mul_of_nonneg_left ?_ b_0)
+  exact ((EReal.div_lt_iff (by norm_cast) (natCast_ne_top n)).1 vn_a).le
 
 end ExpGrowth
