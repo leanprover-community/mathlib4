@@ -405,12 +405,9 @@ noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
     ,
   invFun := fun l => (IsNilpotent.exp (-(D.toLinearMap))) l,
   left_inv := by
-    simp_all
-    have h₁ : Commute D.toLinearMap (-(D.toLinearMap)) := Commute.neg_right rfl
-    have h₄ : Commute (-(D.toLinearMap)) (D.toLinearMap) := Commute.neg_left rfl
+    have h₁ : Commute (-(D.toLinearMap)) (D.toLinearMap) := Commute.neg_left rfl
     have h₂ : IsNilpotent (-(D.toLinearMap)) := IsNilpotent.neg h
-    have h₃ := IsNilpotent.exp_add_of_commute h₁ h h₂
-    have h₅ := IsNilpotent.exp_add_of_commute h₄ h₂ h
+    have h₅ := IsNilpotent.exp_add_of_commute h₁ h₂ h
     let A := (IsNilpotent.exp (-(D.toLinearMap))) * (IsNilpotent.exp ((D.toLinearMap)))
     have key : A = 1 := by
       have step : (IsNilpotent.exp (-(D.toLinearMap))) * (IsNilpotent.exp ((D.toLinearMap))) =
@@ -426,7 +423,6 @@ noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
     dsimp [A] at ttt
     exact key2 x
   right_inv := by
-    simp_all
     have h₁ : Commute D.toLinearMap (-(D.toLinearMap)) := Commute.neg_right rfl
     have h₄ : Commute (-(D.toLinearMap)) (D.toLinearMap) := Commute.neg_left rfl
     have h₂ : IsNilpotent (-(D.toLinearMap)) := IsNilpotent.neg h
