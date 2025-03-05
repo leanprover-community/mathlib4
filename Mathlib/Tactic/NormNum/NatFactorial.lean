@@ -27,7 +27,7 @@ lemma asc_factorial_aux (n l m a b : ℕ) (h₁ : n.ascFactorial l = a)
 
 /-- Calculate `n.ascFactorial l` and return this value along with a proof of the result. -/
 partial def proveAscFactorial (n l : ℕ) (en el : Q(ℕ)) :
-    (result : ℕ) × (eresult : Q(ℕ)) × Q(($en).ascFactorial $el = $eresult) :=
+    ℕ × (eresult : Q(ℕ)) × Q(($en).ascFactorial $el = $eresult) :=
   if l ≤ 50 then
     have res : ℕ := n.ascFactorial l
     have eres : Q(ℕ) := mkRawNatLit (n.ascFactorial l)
@@ -59,7 +59,7 @@ lemma isNat_factorial {n x : ℕ} (h₁ : IsNat n x) (a : ℕ) (h₂ : (1).ascFa
   simp only [h₁.out, cast_id, ← h₂, one_ascFactorial]
 
 /-- Evaluates the `Nat.factorial` function. -/
-@[norm_num Nat.factorial _]
+@[nolint unusedHavesSuffices, norm_num Nat.factorial _]
 def evalNatFactorial : NormNumExt where eval {u α} e := do
   let .app _ (x : Q(ℕ)) ← Meta.whnfR e | failure
   have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩; have : $e =Q Nat.factorial $x := ⟨⟩
@@ -74,7 +74,7 @@ lemma isNat_ascFactorial {n x l y : ℕ} (h₁ : IsNat n x) (h₂ : IsNat l y) (
   simp [h₁.out, h₂.out, ← p]
 
 /-- Evaluates the Nat.ascFactorial function. -/
-@[norm_num Nat.ascFactorial _ _]
+@[nolint unusedHavesSuffices, norm_num Nat.ascFactorial _ _]
 def evalNatAscFactorial : NormNumExt where eval {u α} e := do
   let .app (.app _ (x : Q(ℕ))) (y : Q(ℕ)) ← Meta.whnfR e | failure
   have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩; have : $e =Q Nat.ascFactorial $x $y := ⟨⟩
@@ -111,7 +111,7 @@ private partial def evalNatDescFactorialZero {x' y' : Q(ℕ)} (x y z : Q(ℕ))
   ⟨q(nat_lit 0), q(isNat_descFactorial_zero $z $px $py rfl)⟩
 
 /-- Evaluates the `Nat.descFactorial` function. -/
-@[norm_num Nat.descFactorial _ _]
+@[nolint unusedHavesSuffices, norm_num Nat.descFactorial _ _]
 def evalNatDescFactorial : NormNumExt where eval {u α} e := do
   let .app (.app _ (x' : Q(ℕ))) (y' : Q(ℕ)) ← Meta.whnfR e | failure
   have : u =QL 0 := ⟨⟩
