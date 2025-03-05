@@ -267,7 +267,7 @@ lemma exists_map_eq_of_sorted_nonempty_iff_sbtw {l : List P} (hl : l ≠ []) :
           fun h ↦ ?_⟩
   · rw [← hl'l]
     rcases hla with hla | hla
-    · rw [length_eq_one] at hla
+    · rw [length_eq_one_iff] at hla
       rcases hla with ⟨a, rfl⟩
       apply_fun length at hl'l
       rw [length_map, length_singleton] at hl'l
@@ -282,7 +282,7 @@ lemma exists_map_eq_of_sorted_nonempty_iff_sbtw {l : List P} (hl : l ≠ []) :
     · cases l with
       | nil => simp at hl
       | cons head tail =>
-        simp only [length_cons, add_left_eq_self, length_eq_zero, head_cons]
+        simp only [length_cons, add_left_eq_self, length_eq_zero_iff, head_cons]
         cases tail with
         | nil => simp
         | cons head2 tail =>
@@ -302,7 +302,7 @@ lemma exists_map_eq_of_sorted_iff_sbtw [Nontrivial P] {l : List P} :
     · rcases exists_pair_ne P with ⟨p₁, p₂, hp₁p₂⟩
       exact ⟨p₁, p₂, hp₁p₂, by simp [hl]⟩
     · by_cases hlen : l.length = 1
-      · rw [length_eq_one] at hlen
+      · rw [length_eq_one_iff] at hlen
         rcases hlen with ⟨p₁, rfl⟩
         rcases exists_ne p₁ with ⟨p₂, hp₂p₁⟩
         exact ⟨p₁, p₂, hp₂p₁.symm, [0], by simp⟩
