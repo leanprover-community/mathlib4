@@ -103,7 +103,6 @@ theorem IsUnit.preimage_smul_setₛₗ {F G : Type*} [FunLike G M N] [MonoidHomC
 
 -- TODO: when you remove the next 2 aliases,
 -- please move the group version below out of the `Group` namespace.
-
 @[deprecated (since := "2025-03-04")]
 alias preimage_vadd_setₛₗ := IsAddUnit.preimage_vadd_setₛₗ
 
@@ -119,7 +118,7 @@ protected theorem MonoidHom.preimage_smul_setₛₗ {F : Type*} (σ : M →* N) 
 
 end Monoid
 
-/-- `preimage_smul_setₛₗ` in the context of a groups -/
+/-- `preimage_smul_setₛₗ` in the context of groups -/
 @[to_additive]
 theorem Group.preimage_smul_setₛₗ {G H α β : Type*} [Group G] [Group H] (σ : G → H)
     [MulAction G α] [MulAction H β]
