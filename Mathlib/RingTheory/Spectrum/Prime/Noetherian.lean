@@ -38,7 +38,7 @@ lemma finite_setOf_isMin :
   simp_rw [isMin_iff]
   exact (minimalPrimes.finite_of_isNoetherianRing R).subset (Set.image_preimage_subset _ _)
 
-lemma _root_.Ideal.minimalPrimes_finite_of_isNoetherianRing (I : Ideal R) :
+lemma _root_.Ideal.finite_minimalPrimes_of_isNoetherianRing (I : Ideal R) :
     I.minimalPrimes.Finite := by
   rw [I.minimalPrimes_eq_comap]
   apply Set.Finite.image
