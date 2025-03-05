@@ -3,6 +3,7 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.CategoryTheory.Monoidal.Linear
 import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
@@ -189,47 +190,83 @@ end
 
 end Monoidal
 
+section
+
 open MonoidalCategory
+
+variable (G : Type u)
+
+/-- The natural isomorphism of `G`-sets `Gⁿ⁺¹ ≅ G × Gⁿ`, where `G` acts by left multiplication on
+each factor. -/
+@[simps!]
+noncomputable def diagonalSuccIsoTensorDiagonal [Monoid G] (n : ℕ) :
+    diagonal G (n + 1) ≅ leftRegular G ⊗ diagonal G n :=
+  mkIso (Fin.consEquiv _).symm.toIso fun _ => rfl
+
+variable [Group G]
 
 /-- Given `X : Action (Type u) G` for `G` a group, then `G × X` (with `G` acting as left
 multiplication on the first factor and by `X.ρ` on the second) is isomorphic as a `G`-set to
 `G × X` (with `G` acting as left multiplication on the first factor and trivially on the second).
 The isomorphism is given by `(g, x) ↦ (g, g⁻¹ • x)`. -/
-@[simps]
-noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type u) G) :
-    leftRegular G ⊗ X ≅ leftRegular G ⊗ Action.mk X.V 1 where
-  hom :=
-    { hom := fun g => ⟨g.1, (X.ρ (g.1⁻¹ : G) g.2 : X.V)⟩
-      comm := fun (g : G) => by
-        funext ⟨(x₁ : G), (x₂ : X.V)⟩
-        refine Prod.ext rfl ?_
-        change (X.ρ ((g * x₁)⁻¹ : G) * X.ρ g) x₂ = X.ρ _ _
-        rw [mul_inv_rev, ← X.ρ.map_mul, inv_mul_cancel_right] }
-  inv :=
-    { hom := fun g => ⟨g.1, X.ρ g.1 g.2⟩
-      comm := fun (g : G) => by
-        funext ⟨(x₁ : G), (x₂ : X.V)⟩
-        refine Prod.ext rfl ?_
-        simp [leftRegular] }
-  hom_inv_id := by
-    apply Hom.ext
-    funext x
-    refine Prod.ext rfl ?_
-    change (X.ρ x.1 * X.ρ (x.1⁻¹ : G)) x.2 = x.2
-    rw [← X.ρ.map_mul, mul_inv_cancel, X.ρ.map_one, End.one_def, types_id_apply]
-  inv_hom_id := by
-    apply Hom.ext
-    funext x
-    refine Prod.ext rfl ?_
-    change (X.ρ (x.1⁻¹ : G) * X.ρ x.1) x.2 = x.2
-    rw [← X.ρ.map_mul, inv_mul_cancel, X.ρ.map_one, End.one_def, types_id_apply]
+noncomputable abbrev leftRegularTensorIso (X : Action (Type u) G) :
+    leftRegular G ⊗ X ≅ leftRegular G ⊗ trivial G X.V :=
+  mkIso (Equiv.toIso {
+    toFun := fun g => ⟨g.1, (X.ρ (g.1⁻¹ : G) g.2 : X.V)⟩
+    invFun := fun g => ⟨g.1, X.ρ g.1 g.2⟩
+    left_inv := fun _ => Prod.ext rfl <| by simp
+    right_inv := fun _ => Prod.ext rfl <| by simp }) <| fun _ => by
+      ext _
+      simp only [instMonoidalCategory_tensorObj_V, tensor_ρ', types_comp_apply, tensor_apply,
+        ofMulAction_apply]
+      simp
 
-/-- The natural isomorphism of `G`-sets `Gⁿ⁺¹ ≅ G × Gⁿ`, where `G` acts by left multiplication on
-each factor. -/
-@[simps!]
-noncomputable def diagonalSucc (G : Type u) [Monoid G] (n : ℕ) :
-    diagonal G (n + 1) ≅ leftRegular G ⊗ diagonal G n :=
-  mkIso (Fin.consEquiv _).symm.toIso fun _ => rfl
+/-- An isomorphism of `G`-sets `Gⁿ⁺¹ ≅ G × Gⁿ`, where `G` acts by left multiplication on `Gⁿ⁺¹` and
+`G` but trivially on `Gⁿ`. The map sends `(g₀, ..., gₙ) ↦ (g₀, (g₀⁻¹g₁, g₁⁻¹g₂, ..., gₙ₋₁⁻¹gₙ))`,
+and the inverse is `(g₀, (g₁, ..., gₙ)) ↦ (g₀, g₀g₁, g₀g₁g₂, ..., g₀g₁...gₙ).` -/
+noncomputable def diagonalSuccIsoTensorTrivial :
+    ∀ n : ℕ, diagonal G (n + 1) ≅ leftRegular G ⊗ trivial G (Fin n → G)
+  | 0 =>
+    diagonalOneIsoLeftRegular G ≪≫
+      (ρ_ _).symm ≪≫ tensorIso (Iso.refl _) (tensorUnitIso (Equiv.ofUnique PUnit _).toIso)
+  | n + 1 =>
+    diagonalSuccIsoTensorDiagonal _ _ ≪≫
+      tensorIso (Iso.refl _) (diagonalSuccIsoTensorTrivial n) ≪≫
+        leftRegularTensorIso _ _ ≪≫
+          tensorIso (Iso.refl _)
+            (mkIso (Fin.insertNthEquiv (fun _ => G) 0).toIso fun _ => rfl)
+
+variable {G}
+
+@[simp]
+theorem diagonalSuccIsoTensorTrivial_hom_hom {n : ℕ} (f : Fin (n + 1) → G) :
+    (diagonalSuccIsoTensorTrivial G n).hom.hom f =
+      (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
+  induction' n with n hn
+  · exact Prod.ext rfl (funext fun x => Fin.elim0 x)
+  · refine Prod.ext rfl (funext fun x => ?_)
+    induction' x using Fin.cases
+    <;> simp_all only [instMonoidalCategory_tensorObj_V, diagonalSuccIsoTensorTrivial,
+        Iso.trans_hom, tensorIso_hom, Iso.refl_hom, id_tensorHom, comp_hom,
+        instMonoidalCategory_whiskerLeft_hom, mkIso_hom_hom, tensor_ρ', tensor_apply,
+        ofMulAction_apply, types_comp_apply, whiskerLeft_apply]
+    <;> simp [tensorObj_def, Fin.tail, Fin.castSucc_fin_succ, ofMulAction_V]
+
+@[simp]
+theorem diagonalSuccIsoTensorTrivial_inv_hom {n : ℕ} (g : G) (f : Fin n → G) :
+    (diagonalSuccIsoTensorTrivial G n).inv.hom (g, f) =
+      (g • Fin.partialProd f : Fin (n + 1) → G) := by
+  induction' n with n hn generalizing g
+  · funext (x : Fin 1)
+    simp [diagonalSuccIsoTensorTrivial, diagonalOneIsoLeftRegular, Subsingleton.elim x 0,
+      ofMulAction_V]
+  · funext x
+    induction' x using Fin.cases
+    <;> simp_all only [diagonalSuccIsoTensorTrivial, instMonoidalCategory_tensorObj_V,
+        Iso.trans_inv, comp_hom, mkIso_inv_hom, tensor_ρ', tensor_apply, ofMulAction_apply]
+    <;> simp_all [tensorObj_def, mul_assoc, Fin.partialProd_succ', ofMulAction_V]
+
+end
 
 end Action
 
