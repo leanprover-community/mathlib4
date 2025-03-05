@@ -84,7 +84,7 @@ lemma vandermonde_eq_projVandermonde {n : ℕ} (v : Fin n → R) :
   simp [projVandermonde, rectVandermonde, vandermonde]
 
 /-- We don't mark this as `@[simp]` because the RHS is not simp-nf,
-and simplifying it RHS gives a bothersome `Nat` subtraction.  -/
+and simplifying the RHS gives a bothersome `Nat` subtraction.  -/
 theorem projVandermonde_apply {v w : Fin n → R} {i j : Fin n} :
     projVandermonde v w i j = (v i) ^ j.1 * (w i) ^ j.rev.1 := rfl
 
