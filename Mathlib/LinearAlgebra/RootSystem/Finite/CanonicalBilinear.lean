@@ -239,11 +239,11 @@ end Fintype
 section IsValuedInOrdered
 
 variable (S : Type*) [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R]
-  [Module S M] [IsScalarTower S R M] [P.IsValuedIn S] [Fintype ι]
+  [Module S M] [IsScalarTower S R M] [P.IsValuedIn S] {i j : ι}
 
 /-- The bilinear form of a finite root pairing taking values in a linearly-ordered ring, as a
 root-positive form. -/
-def posRootForm : P.RootPositiveForm S where
+def posRootForm [Fintype ι] : P.RootPositiveForm S where
   form := P.RootForm
   symm := P.rootForm_symmetric
   isOrthogonal_reflection := P.rootForm_reflection_reflection_apply
@@ -252,7 +252,7 @@ def posRootForm : P.RootPositiveForm S where
     refine ⟨∑ k, P.pairingIn S i k ^ 2, ?_, by simp [sq, rootForm_apply_apply]⟩
     exact Finset.sum_pos' (fun j _ ↦ sq_nonneg _) ⟨i, by simp⟩
 
-theorem exists_ge_zero_eq_rootForm (x : M) (hx : x ∈ span S (range P.root)) :
+theorem exists_ge_zero_eq_rootForm [Fintype ι] (x : M) (hx : x ∈ span S (range P.root)) :
     ∃ s ≥ 0, algebraMap S R s = P.RootForm x x := by
   refine ⟨(P.posRootForm S).posForm ⟨x, hx⟩ ⟨x, hx⟩, IsSumSq.nonneg ?_, by simp [posRootForm]⟩
   choose s hs using P.coroot'_apply_apply_mem_of_mem_span S hx
@@ -261,6 +261,18 @@ theorem exists_ge_zero_eq_rootForm (x : M) (hx : x ∈ span S (range P.root)) :
   apply FaithfulSMul.algebraMap_injective S R
   simp only [posRootForm, RootPositiveForm.algebraMap_posForm, map_sum, map_mul]
   simp [← Algebra.linearMap_apply, hs, rootForm_apply_apply]
+
+lemma zero_lt_pairingIn_iff' [Finite ι] :
+    0 < P.pairingIn S i j ↔ 0 < P.pairingIn S j i :=
+  let _i : Fintype ι := Fintype.ofFinite ι
+  zero_lt_pairingIn_iff (P.posRootForm S) i j
+
+omit [Module S M] [IsScalarTower S R M] in
+lemma pairingIn_zero_iff [Finite ι] [NoZeroDivisors R] :
+    P.pairingIn S i j = 0 ↔ P.pairingIn S j i = 0 := by
+  let _i : Fintype ι := Fintype.ofFinite ι
+  simp only [← FaithfulSMul.algebraMap_eq_zero_iff S R, algebraMap_pairingIn]
+  exact pairing_zero_iff (P.posRootForm S) i j
 
 end IsValuedInOrdered
 
