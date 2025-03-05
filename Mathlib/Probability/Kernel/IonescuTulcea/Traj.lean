@@ -8,8 +8,8 @@ import Mathlib.MeasureTheory.Function.FactorsThrough
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
 import Mathlib.Probability.Kernel.Composition.MeasureComp
-import Mathlib.Probability.Kernel.SetIntegral
 import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
+import Mathlib.Probability.Kernel.SetIntegral
 
 /-!
 # Ionescu-Tulcea theorem
@@ -312,8 +312,8 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
     obtain h | h | h := lt_trichotomy (k + 1) (a n)
     · rw [← lmarginalPartialTraj_self k.le_succ h.le (mf n)]
     · rw [← h, lmarginalPartialTraj_le _ le_rfl (mf n)]
-    · rw [lmarginalPartialTraj_le _ _ (mf n), (hcte n).lmarginalPartialTraj_le _ (mf n),
-        (hcte n).lmarginalPartialTraj_le _ (mf n)]
+    · rw [lmarginalPartialTraj_le _ _ (mf n), (hcte n).lmarginalPartialTraj_of_le _ (mf n),
+        (hcte n).lmarginalPartialTraj_of_le _ (mf n)]
       all_goals omega
   -- `F` is also a bounded sequence.
   have F_le n x : F n x ≤ bound := by
@@ -653,8 +653,8 @@ theorem integral_traj {a : ℕ} (x₀ : Π i : Iic a, X i) {f : (Π n, X n) → 
   · convert mf
     rw [traj_map_updateFinset]
 
-lemma partialTraj_comp_partialTrajProd_traj {a b : ℕ} (hab : a ≤ b) (u : Π i : Iic a, X i) :
-    (traj κ a u).map (fun x ↦ (frestrictLe b x, x)) = (partialTraj κ a b u) ⊗ₘ (traj κ b) := by
+lemma partialTraj_compProd_traj {a b : ℕ} (hab : a ≤ b) (u : Π i : Iic a, X i) :
+    (partialTraj κ a b u) ⊗ₘ (traj κ b) = (traj κ a u).map (fun x ↦ (frestrictLe b x, x)) := by
   ext s ms
   rw [Measure.map_apply, Measure.compProd_apply, ← traj_comp_partialTraj _ hab, comp_apply']
   · congr with x
@@ -674,18 +674,10 @@ theorem integral_traj_partialTraj' {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Ii
     (hf : Integrable f.uncurry ((partialTraj κ a b x₀) ⊗ₘ (traj κ b))) :
     ∫ x, ∫ y, f x y ∂traj κ b x ∂partialTraj κ a b x₀ =
     ∫ x, f (frestrictLe b x) x ∂traj κ a x₀ := by
-  have hf1 := hf
-  rw [← partialTraj_comp_partialTrajProd_traj κ hab] at hf1
-  replace hf1 := hf1.comp_measurable (by fun_prop)
-  have hf2 := aestronglyMeasurable_traj κ hab hf1.1
-  rw [← traj_comp_partialTraj κ hab, Kernel.integral_comp]
-  · apply integral_congr_ae
-    filter_upwards [hf.1.ae_of_compProd, hf2] with x h1 h2
-    rw [integral_traj _ h1]
-    nth_rw 2 [integral_traj]
-    · simp_rw [frestrictLe_updateFinset]
-    · exact h2
-  · rwa [traj_comp_partialTraj _ hab]
+  have hf' := hf
+  rw [partialTraj_compProd_traj _ hab] at hf'
+  simp_rw [← uncurry_apply_pair f, ← Measure.integral_compProd hf,
+    partialTraj_compProd_traj _ hab, integral_map (by fun_prop) hf'.1]
 
 theorem integral_traj_partialTraj {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
     {f : (Π n : ℕ, X n) → E} (hf : Integrable f (traj κ a x₀)) :
@@ -729,7 +721,6 @@ theorem condExp_traj {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
     rw [← map_apply _ (measurable_frestrictLe _), traj_map_frestrictLe _ _]
     rw [← traj_comp_partialTraj _ hab] at i_f
     exact i_f.integral_comp
-
   refine ae_eq_condExp_of_forall_setIntegral_eq (piLE.le _) i_f
     (fun s _ _ ↦ i_f'.comp_aemeasurable (measurable_frestrictLe b).aemeasurable |>.integrableOn)
     ?_ ?_ |>.symm <;> rw [piLE_eq_comap_frestrictLe]

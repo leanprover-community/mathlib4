@@ -261,7 +261,7 @@ instance [∀ n, IsZeroOrMarkovKernel (κ n)] (a b : ℕ) :
     | succ k hak => rw [partialTraj_succ_of_le hak]; infer_instance
   · rw [partialTraj_le hba]; infer_instance
 
-instance IsMarkovKernel.partialTraj [∀ n, IsMarkovKernel (κ n)] (a b : ℕ) :
+instance [∀ n, IsMarkovKernel (κ n)] (a b : ℕ) :
     IsMarkovKernel (partialTraj κ a b) := by
   obtain hab | hba := le_total a b
   · induction b, hab using Nat.le_induction with
@@ -272,7 +272,8 @@ instance IsMarkovKernel.partialTraj [∀ n, IsMarkovKernel (κ n)] (a b : ℕ) :
       exact IsMarkovKernel.map _ measurable_IicProdIoc
   · rw [partialTraj_le hba]; infer_instance
 
-lemma partialTraj_succ_self (a : ℕ) : partialTraj κ a (a + 1) =
+lemma partialTraj_succ_self (a : ℕ) :
+    partialTraj κ a (a + 1) =
     (Kernel.id ×ₖ ((κ a).map (piSingleton a))).map (IicProdIoc a (a + 1)) := by
   rw [partialTraj_succ_of_le le_rfl, partialTraj_self, comp_id]
 
@@ -290,7 +291,10 @@ theorem partialTraj_comp_partialTraj (hab : a ≤ b) (hbc : b ≤ c) :
   | succ k h hk => rw [partialTraj_succ_eq_comp h, comp_assoc, hk,
       ← partialTraj_succ_eq_comp (hab.trans h)]
 
-lemma fst_prod_comp_id_prod {X Y Z : Type*} {mX : MeasurableSpace X}
+/-- This is a specific lemma used in the proof of `partialTraj_eq_prod`. It is the main rewrite step
+and stating it as a separate lemma avoids using extensionality of kernels, which would generate
+a lot of measurability subgoals. -/
+private lemma fst_prod_comp_id_prod {X Y Z : Type*} {mX : MeasurableSpace X}
     {mY : MeasurableSpace Y} {mZ : MeasurableSpace Z} (κ : Kernel X Y) [IsSFiniteKernel κ]
     (η : Kernel (X × Y) Z) [IsSFiniteKernel η] :
     ((deterministic Prod.fst measurable_fst) ×ₖ η) ∘ₖ (Kernel.id ×ₖ κ) =
@@ -303,7 +307,8 @@ lemma fst_prod_comp_id_prod {X Y Z : Type*} {mX : MeasurableSpace X}
 
 /-- This is a technical lemma saying that `partialTraj κ a b` consists of two independent parts, the
 first one being the identity. It allows to compute integrals. -/
-lemma partialTraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) : partialTraj κ a b =
+lemma partialTraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) :
+    partialTraj κ a b =
     (Kernel.id ×ₖ (partialTraj κ a b).map (restrict₂ Ioc_subset_Iic_self)).map
     (IicProdIoc a b) := by
   obtain hba | hab := le_total b a
@@ -412,7 +417,8 @@ lemma lmarginalPartialTraj_mono (a b : ℕ) {f g : (Π n, X n) → ℝ≥0∞} (
 /-- Integrating `f` against `partialTraj κ a b x` is the same as integrating only over the variables
   from `x_{a+1}` to `x_b`. -/
 lemma lmarginalPartialTraj_eq_lintegral_map [∀ n, IsSFiniteKernel (κ n)] {f : (Π n, X n) → ℝ≥0∞}
-    (mf : Measurable f) (x₀ : Π n, X n) : lmarginalPartialTraj κ a b f x₀ =
+    (mf : Measurable f) (x₀ : Π n, X n) :
+    lmarginalPartialTraj κ a b f x₀ =
     ∫⁻ x : (Π i : Ioc a b, X i), f (updateFinset x₀ _ x)
       ∂(partialTraj κ a b).map (restrict₂ Ioc_subset_Iic_self) (frestrictLe a x₀) := by
   nth_rw 1 [lmarginalPartialTraj, partialTraj_eq_prod, lintegral_map, lintegral_id_prod]
@@ -476,7 +482,7 @@ namespace DependsOn
 
 /-- If `f` only depends on the variables up to rank `a` and `a ≤ b`, integrating `f` against
 `partialTraj κ b c` does nothing. -/
-theorem lmarginalPartialTraj_le [∀ n, IsMarkovKernel (κ n)] (c : ℕ) {f : (Π n, X n) → ℝ≥0∞}
+theorem lmarginalPartialTraj_of_le [∀ n, IsMarkovKernel (κ n)] (c : ℕ) {f : (Π n, X n) → ℝ≥0∞}
     (mf : Measurable f) (hf : DependsOn f (Iic a)) (hab : a ≤ b) :
     lmarginalPartialTraj κ b c f = f := by
   ext x
@@ -495,9 +501,9 @@ theorem lmarginalPartialTraj_const_right [∀ n, IsMarkovKernel (κ n)] {d : ℕ
   wlog hcd : c ≤ d generalizing c d
   · rw [this had hac (le_of_not_le hcd)]
   obtain hbc | hcb := le_total b c
-  · rw [← lmarginalPartialTraj_self hbc hcd mf, hf.lmarginalPartialTraj_le d mf hac]
-  · rw [hf.lmarginalPartialTraj_le c mf (hac.trans hcb),
-      hf.lmarginalPartialTraj_le d mf (hac.trans hcb)]
+  · rw [← lmarginalPartialTraj_self hbc hcd mf, hf.lmarginalPartialTraj_of_le d mf hac]
+  · rw [hf.lmarginalPartialTraj_of_le c mf (hac.trans hcb),
+      hf.lmarginalPartialTraj_of_le d mf (hac.trans hcb)]
 
 /-- If `f` only depends on variables up to rank `b`, its integral from `a` to `b` only depends on
 variables up to rank `a`. -/
