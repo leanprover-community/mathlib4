@@ -126,7 +126,10 @@ theorem of_finite_basis {ι : Type w} {s : Set ι} (h : Basis s K V) (hs : Set.F
   haveI := hs.fintype
   of_fintype_basis h
 
-/-- A subspace of a finite-dimensional space is also finite-dimensional. -/
+/-- A subspace of a finite-dimensional space is also finite-dimensional.
+
+This is a shortcut instance to simplify inference in the presence of `[FiniteDimensional K V]`.
+-/
 instance finiteDimensional_submodule [FiniteDimensional K V] (S : Submodule K V) :
     FiniteDimensional K S := by
   infer_instance
