@@ -190,20 +190,6 @@ theorem tensor_ρ {A B : Rep k G} : (A ⊗ B).ρ = A.ρ.tprod B.ρ := rfl
 lemma res_obj_ρ {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H) (g : G) :
     DFunLike.coe (F := G →* (A →ₗ[k] A)) (ρ ((Action.res _ f).obj A)) g = A.ρ (f g) := rfl
 
-@[simp]
-theorem tensor_ρ {A B : Rep k G} : (A ⊗ B).ρ = A.ρ.tprod B.ρ := rfl
-
-end
-section Res
-
-variable {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H)
-
-@[simp]
-lemma coe_res_obj_ρ (g : G) :
-    @DFunLike.coe (no_index G →* (A →ₗ[k] A)) _ _ _
-      (Rep.ρ ((Action.res _ f).obj A)) g = A.ρ (f g) := rfl
-
-end Res
 section Linearization
 
 variable (k G)

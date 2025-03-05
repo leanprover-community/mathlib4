@@ -40,6 +40,7 @@ theorem ρ_self_inv_apply (g : G) (x : A.V) :
 end
 
 /-- Bundles a type `H` with a multiplicative action of `G` as an `Action`. -/
+@[simps (config := .lemmasOnly)]
 def ofMulAction (G H : Type u) [Monoid G] [MulAction G H] : Action (Type u) G where
   V := H
   ρ := @MulAction.toEndHom _ _ _ (by assumption)
