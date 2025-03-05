@@ -17,7 +17,7 @@ This file introduces the concept of one simple graph containing a copy of anothe
 
 * `SimpleGraph.IsIsoSubgraph` is the relation that `B` contains a copy of `A`, that
   is, the type of copies of `A` in `B` is nonempty. This is equivalent to the existence of an
-  isomorphism from`A` to a subgraph of `B`.
+  isomorphism from `A` to a subgraph of `B`.
 
   This is similar to `SimpleGraph.IsSubgraph` except that the simple graphs here need not have the
   same underlying vertex type.
@@ -111,8 +111,9 @@ end Copy
 
 section IsIsoSubgraph
 
-/-- The relation `IsIsoSubgraph A B` says that a simple graph `B` contains a copy of a simple graph
-`A`. -/
+/-- The relation `IsIsoSubgraph A B` says that `B` contains a copy of `A`.
+
+This is equivalent to the existence of an isomorphism from `A` to a subgraph of `B`. -/
 abbrev IsIsoSubgraph (A : SimpleGraph α) (B : SimpleGraph β) := Nonempty (Copy A B)
 
 /-- A simple graph contains itself. -/
