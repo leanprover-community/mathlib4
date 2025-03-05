@@ -458,13 +458,13 @@ section PPrime
 variable {x n} {p : ℕ} [hp : Fact p.Prime]
 
 @[to_additive]
-theorem orderOf_eq_prime (hg : x ^ p = 1) (hg1 : x ≠ 1) : orderOf x = p :=
-  minimalPeriod_eq_prime ((isPeriodicPt_mul_iff_pow_eq_one _).mpr hg)
-    (by rwa [IsFixedPt, mul_one])
-
-@[to_additive]
 theorem orderOf_eq_prime_iff : orderOf x = p ↔ x ^ p = 1 ∧ x ≠ 1 := by
   rw [orderOf, minimalPeriod_eq_prime_iff, isPeriodicPt_mul_iff_pow_eq_one, IsFixedPt, mul_one]
+
+/-- The backward direction of `orderOf_eq_prime_iff`. -/
+@[to_additive "The backward direction of `addOrderOf_eq_prime_iff`."]
+theorem orderOf_eq_prime (hg : x ^ p = 1) (hg1 : x ≠ 1) : orderOf x = p :=
+  orderOf_eq_prime_iff.mpr ⟨hg, hg1⟩
 
 @[to_additive addOrderOf_eq_prime_pow]
 theorem orderOf_eq_prime_pow (hnot : ¬x ^ p ^ n = 1) (hfin : x ^ p ^ (n + 1) = 1) :
