@@ -345,7 +345,7 @@ section piLE
 
 open MeasurableSpace Preorder
 
-variable {ι : Type*} [Preorder ι] {X : ι → Type*} [∀ i, MeasurableSpace (X i)]
+variable {X : ι → Type*} [∀ i, MeasurableSpace (X i)]
 
 /-- The canonical filtration on the product space `Π i, X i`, where `piLE i`
 consists of measurable sets depending only on coordinates `≤ i`. -/
