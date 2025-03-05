@@ -8,6 +8,10 @@ import Mathlib.Topology.MetricSpace.Cauchy
 
 /-!
 # The reals are complete
+
+This file provides the instances `CompleteSpace ℝ` and `CompleteSpace ℝ≥0`.
+Along the way, we add a shortcut instance for the natural topology on `ℝ≥0`
+(the one induced from `ℝ`), and add some basic API.
 -/
 
 assert_not_exists IsTopologicalRing UniformContinuousConstSMul UniformOnFun
@@ -30,15 +34,7 @@ namespace NNReal
 
 /-!
 ### Topology on `ℝ≥0`
-
-The natural topology on `ℝ≥0` (the one induced from `ℝ`), and a basic API.
-
-Instances for the following typeclasses are defined:
-
-* `TopologicalSpace ℝ≥0`
-* `CompleteSpace ℝ≥0`
-
-Everything is inherited from the corresponding structures on the reals.
+All the instances are inherited from the corresponding structures on the reals.
 
 -/
 

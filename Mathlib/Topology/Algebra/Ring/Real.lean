@@ -16,7 +16,7 @@ import Mathlib.Topology.UniformSpace.Real
 
 This file defines topological field/(semi)ring structures on the
 (extended) (nonnegative) reals and shows the algebraic operations are
-(uniform) continuous.
+(uniformly) continuous.
 
 It also includes a bit of more general topological theory of the reals,
 needed to define the structures and prove continuity.
