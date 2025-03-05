@@ -276,8 +276,6 @@ instance Module.Dual.instLieModule : LieModule R L (M →ₗ[R] R) where
   smul_lie := fun t x m ↦ by ext n; simp
   lie_smul := fun t x m ↦ by ext n; simp
 
-variable {ι ι' α β γ : Type*} {κ : ι → Type*} {s s₁ s₂ : Finset ι} {i : ι} {a : α} {f g : ι → α}
-
 local instance LieRing.instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring L where
   add x y := x + y
   add_assoc := by exact fun a b c ↦ add_assoc a b c
@@ -292,7 +290,23 @@ local instance LieRing.instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring
   zero_mul := zero_lie
   mul_zero := lie_zero
 
-lemma lie_sum_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → L) (g : κ → L) :
+variable {ι: Type*} {κ : Type*} --{s : Finset ι} {t : Finset κ} {f : ι → L} {g : κ → L}
+
+theorem sum_lie (s : Finset ι) (f : ι → L) (a : L) : ⁅∑ i ∈ s, f i, a⁆ = ∑ i ∈ s, ⁅f i, a⁆ := by
+  letI : NonUnitalNonAssocSemiring L := LieRing.instNonUnitalNonAssocSemiring
+  calc
+    ⁅∑ i ∈ s, f i, a⁆ = (∑ i ∈ s, f i) * a := by rfl
+    _ = ∑ i ∈ s, f i * a := by rw [Finset.sum_mul]
+    _ = ∑ i ∈ s, ⁅f i, a⁆ := by rfl
+
+theorem lie_sum (s : Finset ι) (f : ι → L) (a : L) : ⁅a, ∑ i ∈ s, f i⁆ = ∑ i ∈ s, ⁅a, f i⁆ := by
+  letI : NonUnitalNonAssocSemiring L := LieRing.instNonUnitalNonAssocSemiring
+  calc
+    ⁅a, ∑ i ∈ s, f i⁆ = a * (∑ i ∈ s, f i) := by rfl
+    _ = ∑ i ∈ s, a * f i := by rw [Finset.mul_sum]
+    _ = ∑ i ∈ s, ⁅a, f i⁆ := by rfl
+
+theorem sum_lie_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → L) (g : κ → L) :
     ⁅(∑ i ∈ s, f i), ∑ j ∈ t, g j⁆ = ∑ i ∈ s, ∑ j ∈ t, ⁅f i, g j⁆ := by
   letI : NonUnitalNonAssocSemiring L := LieRing.instNonUnitalNonAssocSemiring
   calc

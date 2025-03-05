@@ -383,7 +383,7 @@ noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
       calc ⁅(∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) x))),
             (∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) y)))⁆ =
           ∑ i ∈ RN, ∑ j ∈ RN, ⁅(i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) x),
-            (j ! : ℚ)⁻¹ • ((D.toLinearMap ^ j) y)⁆ := by rw [lie_sum_sum]
+            (j ! : ℚ)⁻¹ • ((D.toLinearMap ^ j) y)⁆ := by rw [sum_lie_sum]
           _ = ∑ ij ∈ RN ×ˢ RN, ⁅(ij.1 ! : ℚ)⁻¹ • ((D.toLinearMap ^ ij.1) x),
             (ij.2 ! : ℚ)⁻¹ • ((D.toLinearMap ^ ij.2) y)⁆ := by
             rw [sum_sigma']
