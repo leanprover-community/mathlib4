@@ -34,6 +34,12 @@ variable {k G H : Type u} [CommRing k] [Group G] [Group H]
   {A : Rep k G} {B : Rep k H} (f : G →* H) (φ : A ⟶ (Action.res _ f).obj B) (n : ℕ)
   [DecidableEq G] [DecidableEq H]
 
+theorem congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ : A ⟶ (Action.res _ f₁).obj B} {T : Type*}
+    (F : (f : G →* H) → (φ : A ⟶ (Action.res _ f).obj B) → T) :
+    F f₁ φ = F f₂ (h ▸ φ) := by
+  subst h
+  rfl
+
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the chain map sending `∑ aᵢ·gᵢ : Gⁿ →₀ A` to `∑ φ(aᵢ)·(f ∘ gᵢ) : Hⁿ →₀ B`. -/
 @[simps! (config := .lemmasOnly) f f_hom]
@@ -290,6 +296,27 @@ lemma cyclesMap_comp_isoOneCycles_hom :
     Category.assoc, cyclesMap'_i, isoOneCycles, ← Category.assoc]
   simp [chainsMap_f_1_comp_oneChainsLequiv f φ, mapShortComplexH1, ← LinearEquiv.toModuleIso_hom]
 
+instance mapOneCycles_quotientGroupMk'_epi (S : Subgroup G) [S.Normal]
+    [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)] :
+    Epi (mapOneCycles (QuotientGroup.mk' S) (resOfQuotientIso A S).inv) := by
+  rw [ModuleCat.epi_iff_surjective]
+  rintro ⟨x, hx⟩
+  choose! s hs using QuotientGroup.mk_surjective (s := S)
+  have hs₁ : QuotientGroup.mk ∘ s = id := funext hs
+  refine ⟨⟨mapDomain s x, ?_⟩, Subtype.ext <| by
+    rw [mapOneCycles_comp_subtype_apply]; simp [← mapDomain_comp, hs₁]⟩
+  simpa [mem_oneCycles_iff, ← (mem_oneCycles_iff _).1 hx, sum_mapDomain_index_inj (f := s)
+      (fun x y h => by rw [← hs x, ← hs y, h])]
+    using Finsupp.sum_congr fun a b => QuotientGroup.induction_on a fun a => by
+      simp [← QuotientGroup.mk_inv, ρ_eq_of_coe_eq A S (s a)⁻¹ a⁻¹ (by simp [hs])]
+
+instance H1Map_quotientGroupMk'_epi (S : Subgroup G) [S.Normal]
+    [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)] :
+    Epi (H1Map (QuotientGroup.mk' S) (resOfQuotientIso A S).inv) := by
+  convert epi_of_epi (H1π A) _
+  rw [H1π_comp_H1Map]
+  exact @epi_comp _ _ _ _ _ _ (mapOneCycles_quotientGroupMk'_epi A S) (H1π _) inferInstance
+
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map `H₁(G, A) ⟶ H₁(H, B)`. -/
 noncomputable abbrev H1Map : H1 A ⟶ H1 B :=
@@ -322,6 +349,107 @@ lemma map_comp_isoH1_hom :
     map f φ 1 ≫ (isoH1 B).hom = (isoH1 A).hom ≫ H1Map f φ := by
   simp [← cancel_epi (groupHomologyπ _ _), H1Map, Category.assoc, (leftHomologyπ_naturality'
     (mapShortComplexH1 f φ) (moduleCatLeftHomologyData _) (moduleCatLeftHomologyData _)).symm]
+
+@[simp]
+lemma H1Map_one (φ : A ⟶ (Action.res _ (1 : G →* H)).obj B) :
+    H1Map (1 : G →* H) φ = 0 := by
+  simp only [← cancel_epi (H1π A), H1π_comp_H1Map, Limits.comp_zero]
+  ext x
+  rw [ModuleCat.hom_comp]
+  refine (H1π_eq_zero_iff _).2 ?_
+  simpa [← mapDomain_mapRange] using
+    Submodule.finsupp_sum_mem _ _ _ _ fun _ _ => single_one_mem_oneBoundaries _
+
+/-- Given a `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially, this is the
+short complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A)`. -/
+@[simps X₁ X₂ X₃ f g]
+def H1CoresCoinfOfTrivial (S : Subgroup G) [S.Normal]
+    [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)] :
+    ShortComplex (ModuleCat k) where
+  X₁ := H1 ((Action.res _ S.subtype).obj A)
+  X₂ := H1 A
+  X₃ := H1 (ofQuotient A S)
+  f := H1Map S.subtype (𝟙 _)
+  g := H1Map (QuotientGroup.mk' S) <| (resOfQuotientIso A S).inv
+  zero := by rw [← H1Map_comp, congr (QuotientGroup.mk'_comp_subtype S) H1Map, H1Map_one]
+
+/-- Given a `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially, the
+induced map `H₁(G, A) ⟶ H₁(G ⧸ S, A)` is an epimorphism. -/
+instance H1CoresCoinfOfTrivial_g_epi
+    [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)] :
+    Epi (H1CoresCoinfOfTrivial A S).g :=
+  inferInstanceAs <| Epi (H1Map _ _)
+
+/-- Given a `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially, the short
+complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A)` is exact. -/
+theorem H1CoresCoinfOfTrivial_exact [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)] :
+    (H1CoresCoinfOfTrivial A S).Exact := by
+  rw [ShortComplex.moduleCat_exact_iff_ker_sub_range]
+  intro x hx
+/- Denote `C(i) : C(S, A) ⟶ C(G, A), C(π) : C(G, A) ⟶ C(G ⧸ S, A)` and let `x : Z₁(G, A)` map to
+0 in `H₁(G ⧸ S, A)`. -/
+  induction' x using Quotient.inductionOn' with x
+  rcases x with ⟨(x : G →₀ A), (hxc : x ∈ oneCycles A)⟩
+  simp_all only [H1CoresCoinfOfTrivial_X₂, H1CoresCoinfOfTrivial_X₃, H1CoresCoinfOfTrivial_g,
+    Submodule.Quotient.mk''_eq_mk, LinearMap.mem_ker, H1π_comp_H1Map_apply (QuotientGroup.mk' S)]
+/- Choose `y := ∑ y(σ, τ)·(σ, τ) ∈ C₂(G ⧸ S, A)` such that `C₁(π)(x) = d(y)`. -/
+  rcases (H1π_eq_zero_iff _).1 hx with ⟨y, hy⟩
+/- Let `s : G ⧸ S → G` be a section of the quotient map. -/
+  choose! s hs using QuotientGroup.mk'_surjective S
+  have hs₁ : QuotientGroup.mk (s := S) ∘ s = id := funext hs
+  have hs₂ : s.Injective := fun x y hxy => by rw [← hs x, ← hs y, hxy]
+/- Let `z := ∑ y(σ, τ)·(s(σ), s(τ))`. -/
+  let z : G × G →₀ A := lmapDomain _ k (Prod.map s s) y
+/- We have that `C₂(π)(z) = y`. -/
+  have hz : lmapDomain _ k (QuotientGroup.mk' S) (dOne A z) = dOne (A.ofQuotient S) y := by
+    have := congr($((mapShortComplexH1 (QuotientGroup.mk' S)
+      (resOfQuotientIso A S).inv).comm₁₂.symm) z)
+    simp_all [shortComplexH1, z, ← mapDomain_comp, Prod.map_comp_map]
+  let v := x - dOne _ z
+/- We have `C₁(s ∘ π)(v) = ∑ v(g)·s(π(g)) = 0`, since `C₁(π)(v) = dC₁(π)(z) - C₁(π)(dz) = 0` by
+previous assumptions. -/
+  have hv : mapDomain (s ∘ QuotientGroup.mk) v = 0 := by
+    rw [mapDomain_comp]
+    simp_all [v, mapDomain, sum_sub_index]
+  let e : G → G × G := fun (g : G) => (s (g : G ⧸ S), (s (g : G ⧸ S))⁻¹ * g)
+  have he : e.Injective := fun x y hxy => by
+    obtain ⟨(h₁ : s _ = s _), (h₂ : _ * _ = _ * _)⟩ := Prod.ext_iff.1 hxy
+    exact (mul_right_inj _).1 (h₁ ▸ h₂)
+/- Let `ve := ∑ v(g)·(s(π(g)), s(π(g))⁻¹g)`. -/
+  let ve : G × G →₀ A := mapDomain e v
+  have hS : (v + dOne _ ve).support.toSet ⊆ S := by
+  /- We have `d(ve) = ∑ ρ(s(π(g))⁻¹)(v(g))·s(π(g))⁻¹g - ∑ v(g)·g + ∑ v(g)·s(π(g))`.
+    The second sum is `v`, so cancels: -/
+    simp only [dOne, coe_lsum, he, ve, sum_mapDomain_index_inj, mul_inv_cancel_left,
+      LinearMap.add_apply, LinearMap.sub_apply, LinearMap.coe_comp, Function.comp_apply,
+      lsingle_apply, sum_add, sum_sub, sum_single, ← add_assoc, add_sub_cancel, e]
+    intro w hw
+    · obtain (hl | hr) := Finset.mem_union.1 (support_add hw)
+    /- The first sum clearly has support in `S`: -/
+      · obtain ⟨t, _, ht⟩ := Finset.mem_biUnion.1 (support_sum hl)
+        apply support_single_subset at ht
+        simp_all [← QuotientGroup.eq, hs]
+    /- The third sum is 0, by `hv`. -/
+      · simp_all [mapDomain]
+  /- Now `v + d(ve)` has support in `S` and agrees with `x` in `H₁(G, A)`: -/
+  use H1π _ ⟨comapDomain Subtype.val (v + dOne _ ve) <|
+    Set.injOn_of_injective Subtype.val_injective, ?_⟩
+  · simp only [H1CoresCoinfOfTrivial_X₁, H1CoresCoinfOfTrivial_f, Action.res_obj_V,
+      ModuleCat.hom_ofHom, Submodule.mkQ_apply, H1π_comp_H1Map_apply]
+    refine (H1π_eq_iff _ _).2 ?_
+  /- Indeed, `v + d(ve) - x = d(ve - z) ∈ B₁(G, A)`, since `v := x - dz`. -/
+    use ve - z
+    have := mapOneCycles_comp_subtype_apply (B := A) S.subtype (𝟙 _)
+    have := mapDomain_comapDomain (α := S) Subtype.val Subtype.val_injective
+      (v + dOne A ve) (fun x hx => ⟨⟨x, hS hx⟩, rfl⟩)
+    simp_all [-mapOneCycles_comp_subtype_apply, v, add_sub_assoc, sub_add_sub_cancel']
+  /- And `v + d(ve) := x - dz + d(ve)` is a 1-cycle because `x` is. -/
+  · have : v + dOne _ ve ∈ oneCycles A := Submodule.add_mem _
+      (Submodule.sub_mem _ hxc <| dOne_apply_mem_oneCycles _) (dOne_apply_mem_oneCycles _)
+    rw [mem_oneCycles_iff] at this ⊢
+    rwa [← sum_comapDomain, ← sum_comapDomain (g := fun _ a => a)] at this <;>
+    exact ⟨Set.mapsTo_preimage _ _, Set.injOn_of_injective Subtype.val_injective,
+      fun x hx => ⟨⟨x, hS hx⟩, hx, rfl⟩⟩
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map from the short complex
