@@ -732,10 +732,6 @@ theorem ne_one_of_nnnorm_ne_zero {a : E} : ‖a‖₊ ≠ 0 → a ≠ 1 :=
 theorem nnnorm_mul_le' (a b : E) : ‖a * b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
   NNReal.coe_le_coe.1 <| norm_mul_le' a b
 
-@[to_additive enorm_add_le]
-lemma enorm_mul_le' {E : Type*} [TopologicalSpace E] [ENormedMonoid E] (a b : E) :
-  ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ENormedMonoid.enorm_mul_le a b
-
 @[to_additive norm_nsmul_le]
 lemma norm_pow_le_mul_norm : ∀ {n : ℕ}, ‖a ^ n‖ ≤ n * ‖a‖
   | 0 => by simp
@@ -876,6 +872,28 @@ theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball 1 r ↔ �
   rw [EMetric.mem_ball, edist_one_eq_enorm]
 
 end ENorm
+
+section ENormedMonoid
+
+variable {E : Type*} [TopologicalSpace E] [ENormedMonoid E]
+
+@[to_additive enorm_add_le]
+lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ENormedMonoid.enorm_mul_le a b
+
+@[to_additive (attr := simp) enorm_eq_zero]
+lemma enorm_eq_zero' {a : E} :
+  ‖a‖ₑ = 0 ↔ a = 1 := by simp [enorm, ENormedMonoid.enorm_eq_zero]
+
+@[to_additive enorm_ne_zero]
+lemma enorm_ne_zero' {a : E} :
+    ‖a‖ₑ ≠ 0 ↔ a ≠ 1 := enorm_eq_zero'.ne
+
+@[to_additive (attr := simp) enorm_pos]
+lemma enorm_pos' {a : E} :
+    0 < ‖a‖ₑ ↔ a ≠ 1 := pos_iff_ne_zero.trans enorm_ne_zero'
+
+end ENormedMonoid
+
 
 open Set in
 @[to_additive]
@@ -1215,24 +1233,12 @@ theorem eq_one_or_nnnorm_pos (a : E) : a = 1 ∨ 0 < ‖a‖₊ :=
 theorem nnnorm_eq_zero' : ‖a‖₊ = 0 ↔ a = 1 := by
   rw [← NNReal.coe_eq_zero, coe_nnnorm', norm_eq_zero']
 
-@[to_additive (attr := simp) enorm_eq_zero]
-lemma enorm_eq_zero' {E : Type*} [TopologicalSpace E] [ENormedMonoid E] {a : E} :
-  ‖a‖ₑ = 0 ↔ a = 1 := by simp [enorm, ENormedMonoid.enorm_eq_zero]
-
 @[to_additive nnnorm_ne_zero_iff]
 theorem nnnorm_ne_zero_iff' : ‖a‖₊ ≠ 0 ↔ a ≠ 1 :=
   nnnorm_eq_zero'.not
 
-@[to_additive enorm_ne_zero]
-lemma enorm_ne_zero' {E : Type*} [TopologicalSpace E] [ENormedMonoid E] {a : E} :
-    ‖a‖ₑ ≠ 0 ↔ a ≠ 1 := enorm_eq_zero'.ne
-
 @[to_additive (attr := simp) nnnorm_pos]
 lemma nnnorm_pos' : 0 < ‖a‖₊ ↔ a ≠ 1 := pos_iff_ne_zero.trans nnnorm_ne_zero_iff'
-
-@[to_additive (attr := simp) enorm_pos]
-lemma enorm_pos' {E : Type*} [TopologicalSpace E] [ENormedMonoid E] {a : E} :
-    0 < ‖a‖ₑ ↔ a ≠ 1 := pos_iff_ne_zero.trans enorm_ne_zero'
 
 variable (E)
 
