@@ -312,8 +312,8 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
     obtain h | h | h := lt_trichotomy (k + 1) (a n)
     · rw [← lmarginalPartialTraj_self k.le_succ h.le (mf n)]
     · rw [← h, lmarginalPartialTraj_le _ le_rfl (mf n)]
-    · rw [lmarginalPartialTraj_le _ _ (mf n), (hcte n).lmarginalPartialTraj_le _ (mf n),
-        (hcte n).lmarginalPartialTraj_le _ (mf n)]
+    · rw [lmarginalPartialTraj_le _ _ (mf n), (hcte n).lmarginalPartialTraj_of_le _ (mf n),
+        (hcte n).lmarginalPartialTraj_of_le _ (mf n)]
       all_goals omega
   -- `F` is also a bounded sequence.
   have F_le n x : F n x ≤ bound := by
