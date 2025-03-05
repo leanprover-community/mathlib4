@@ -182,9 +182,6 @@ theorem ContinuousAt.norm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x
 theorem ContinuousAt.nnnorm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x => ‖f x‖₊) a :=
   Tendsto.nnnorm' h
 
-@[fun_prop]
-lemma ContinuousAt.enorm (h : ContinuousAt f a) : ContinuousAt (‖f ·‖ₑ) a := Tendsto.enorm' h
-
 @[to_additive ContinuousWithinAt.norm]
 theorem ContinuousWithinAt.norm' {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
     ContinuousWithinAt (fun x => ‖f x‖) s a :=
@@ -195,10 +192,6 @@ theorem ContinuousWithinAt.nnnorm' {s : Set α} {a : α} (h : ContinuousWithinAt
     ContinuousWithinAt (fun x => ‖f x‖₊) s a :=
   Tendsto.nnnorm' h
 
-@[to_additive ContinuousWithinAt.enorm]
-lemma ContinuousWithinAt.enorm' (h : ContinuousWithinAt f s a) : ContinuousWithinAt (‖f ·‖ₑ) s a :=
-  Tendsto.enorm' h
-
 @[to_additive (attr := fun_prop) ContinuousOn.norm]
 theorem ContinuousOn.norm' {s : Set α} (h : ContinuousOn f s) : ContinuousOn (fun x => ‖f x‖) s :=
   fun x hx => (h x hx).norm'
@@ -206,10 +199,6 @@ theorem ContinuousOn.norm' {s : Set α} (h : ContinuousOn f s) : ContinuousOn (f
 @[to_additive (attr := fun_prop) ContinuousOn.nnnorm]
 theorem ContinuousOn.nnnorm' {s : Set α} (h : ContinuousOn f s) :
     ContinuousOn (fun x => ‖f x‖₊) s := fun x hx => (h x hx).nnnorm'
-
-@[to_additive (attr := fun_prop) ContinuousOn.enorm]
-lemma ContinuousOn.enorm' (h : ContinuousOn f s) : ContinuousOn (‖f ·‖ₑ) s :=
-  fun x hx => (h x hx).enorm'
 
 end
 
