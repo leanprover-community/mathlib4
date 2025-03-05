@@ -4,28 +4,24 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Real.EReal
-import Mathlib.Topology.MetricSpace.Pseudo.Constructions
-import Mathlib.Topology.Order.LeftRightNhds
+import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.Order.Bornology
 import Mathlib.Topology.Order.T5
 
 /-!
 # The reals are equipped with their order topology
-
-The topologies on `ℝ` and `ℝ≥0` are defined via the `PseudoMetricSpace` instances
-found in `Mathlib.Topology.MetricSpace.Pseudo.Defs` and
-`Mathlib.Topology.MetricSpace.Pseudo.Constructions` respectively.
 -/
 
 assert_not_exists IsTopologicalRing UniformContinuousConstSMul UniformOnFun
 
-open Set
+open Metric Set
 
-open Bornology Filter Metric Set
-open scoped NNReal Topology
-
-instance : OrderTopology ℝ :=
-  orderTopology_of_nhds_abs fun x => by
-    simp only [nhds_basis_ball.eq_biInf, ball, Real.dist_eq, abs_sub_comm]
+instance instIsOrderBornology : IsOrderBornology ℝ where
+  isBounded_iff_bddBelow_bddAbove s := by
+    refine ⟨fun bdd ↦ ?_, fun h ↦ isBounded_of_bddAbove_of_bddBelow h.2 h.1⟩
+    obtain ⟨r, hr⟩ : ∃ r : ℝ, s ⊆ Icc (-r) r := by
+      simpa [Real.closedBall_eq_Icc] using bdd.subset_closedBall 0
+    exact ⟨bddBelow_Icc.mono hr, bddAbove_Icc.mono hr⟩
 
 namespace EReal
 
@@ -70,11 +66,23 @@ namespace NNReal
 Instances for the following typeclasses are defined:
 
 * `OrderTopology ℝ≥0`
+* `IsOrderBornology ℝ≥0`
 
 Everything is inherited from the corresponding structures on the reals.
 -/
 
 instance : OrderTopology ℝ≥0 :=
   orderTopology_of_ordConnected (t := Ici 0)
+
+-- TODO: generalize this to a broader class of subtypes
+instance : IsOrderBornology ℝ≥0 where
+  isBounded_iff_bddBelow_bddAbove s := by
+    refine ⟨fun bdd ↦ ?_, fun h ↦ isBounded_of_bddAbove_of_bddBelow h.2 h.1⟩
+    obtain ⟨r, hr⟩ : ∃ r : ℝ≥0, s ⊆ Icc 0 r := by
+      obtain ⟨rreal, hrreal⟩ := bdd.subset_closedBall 0
+      use rreal.toNNReal
+      simp only [← NNReal.closedBall_zero_eq_Icc', Real.coe_toNNReal']
+      exact subset_trans hrreal (Metric.closedBall_subset_closedBall (le_max_left rreal 0))
+    exact ⟨bddBelow_Icc.mono hr, bddAbove_Icc.mono hr⟩
 
 end NNReal

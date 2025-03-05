@@ -9,7 +9,6 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
 import Mathlib.Tactic.Monotonicity
 import Mathlib.Topology.Algebra.Indicator
 import Mathlib.Topology.Bornology.BoundedOperation
-import Mathlib.Topology.Bornology.Real
 import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
