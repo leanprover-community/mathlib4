@@ -340,14 +340,13 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- A submodule is finitely generated if and only if it is finite-dimensional -/
 theorem fg_iff_finiteDimensional (s : Submodule K V) : s.FG ↔ FiniteDimensional K s :=
-  ⟨fun h => Module.finite_def.2 <| (fg_top s).2 h, fun h => (fg_top s).1 <| Module.finite_def.1 h⟩
+  (fg_top s).symm.trans Module.finite_def.symm
 
 /-- A submodule contained in a finite-dimensional submodule is
 finite-dimensional. -/
 theorem finiteDimensional_of_le {S₁ S₂ : Submodule K V} [FiniteDimensional K S₂] (h : S₁ ≤ S₂) :
     FiniteDimensional K S₁ :=
-  iff_fg.1
-    (IsNoetherian.iff_rank_lt_aleph0.2 ((Submodule.rank_mono h).trans_lt (rank_lt_aleph0 K S₂)))
+  (isNoetherian_of_le h).finite
 
 /-- The inf of two submodules, the first finite-dimensional, is
 finite-dimensional. -/
