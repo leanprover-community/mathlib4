@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.Closed.Monoidal
 
 Given a monoidal category `C` and a monoidal predicate on `C`, that is a function `P : C → Prop`
 closed under `𝟙_` and `⊗`, we can put a monoidal structure on `{X : C // P X}` (the category
-structure is defined in `Mathlib.CategoryTheory.FullSubcategory`).
+structure is defined in `Mathlib.CategoryTheory.ObjectProperty.FullSubcategory`).
 
 When `C` is also braided/symmetric, the full monoidal subcategory also inherits the
 braided/symmetric structure.

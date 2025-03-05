@@ -59,7 +59,7 @@ instance (F : C ⥤ₗ Type v) : PreservesFiniteLimits (inverseAux.obj F) where
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
 noncomputable def inverse : (C ⥤ₗ Type v) ⥤ (C ⥤ₗ AddCommGrp.{v}) :=
-  FullSubcategory.lift _ inverseAux inferInstance
+  ObjectProperty.lift _ inverseAux inferInstance
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`.
 This is the complicated bit, where we show that forgetting the group structure in the image of

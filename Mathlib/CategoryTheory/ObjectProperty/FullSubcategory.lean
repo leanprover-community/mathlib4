@@ -84,8 +84,8 @@ def fullyFaithfulιOfLE (h : P ≤ P') :
     (ιOfLE h).FullyFaithful where
   preimage f := f
 
-instance (h : P ≤ P') : (ιOfLE h).Full := (fullyFaithfulιOfLE h).full
-instance (h : P ≤ P') : (ιOfLE h).Faithful := (fullyFaithfulιOfLE h).faithful
+instance full_ιOfLE (h : P ≤ P') : (ιOfLE h).Full := (fullyFaithfulιOfLE h).full
+instance faithful_ιOfLE (h : P ≤ P') : (ιOfLE h).Faithful := (fullyFaithfulιOfLE h).faithful
 
 @[deprecated "use ιOfLECompιIso" (since := "2025-03-04")]
 theorem FullSubcategory.map_inclusion (h : P ≤ P') :
