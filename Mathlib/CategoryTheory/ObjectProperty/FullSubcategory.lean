@@ -70,6 +70,16 @@ abbrev fullyFaithfulι  :
 instance full_ι : P.ι.Full := P.fullyFaithfulι.full
 instance faithful_ι : P.ι.Faithful := P.fullyFaithfulι.faithful
 
+/-- Constructor for isomorphisms in `P.FullSubcategory` when
+`P : ObjectProperty C`. -/
+@[simps]
+def isoMk {X Y : P.FullSubcategory} (e : P.ι.obj X ≅ P.ι.obj Y) : X ≅ Y where
+  hom := e.hom
+  inv := e.inv
+  hom_inv_id := e.hom_inv_id
+  inv_hom_id := e.inv_hom_id
+
+
 variable {P} {P' : ObjectProperty C}
 
 /-- If `P` and `P'` are properties of objects such that `P ≤ P'`, there is
