@@ -82,13 +82,28 @@ protected theorem Filter.HasBasis.lebesgue_number_lemma_nhds' {ι' : Sort*} {p :
     (hK : IsCompact K) (hU : ∀ x hx, U x hx ∈ 𝓝 x) :
     ∃ i, p i ∧ ∀ x ∈ K, ∃ y : K, ball x (V i) ⊆ U y y.2 := by
   refine (hbasis.exists_iff ?_).1 (lebesgue_number_lemma_nhds' hK hU)
-  exact fun s t hst ht x hx ↦ (ht x hx).imp fun y hy ↦  Subset.trans (ball_mono hst _) hy
+  exact fun s t hst ht x hx ↦ (ht x hx).imp fun y hy ↦ Subset.trans (ball_mono hst _) hy
 
 protected theorem Filter.HasBasis.lebesgue_number_lemma_nhds {ι' : Sort*} {p : ι' → Prop}
     {V : ι' → Set (α × α)} {U : α → Set α} (hbasis : (𝓤 α).HasBasis p V) (hK : IsCompact K)
     (hU : ∀ x ∈ K, U x ∈ 𝓝 x) : ∃ i, p i ∧ ∀ x ∈ K, ∃ y, ball x (V i) ⊆ U y := by
   refine (hbasis.exists_iff ?_).1 (lebesgue_number_lemma_nhds hK hU)
-  exact fun s t hst ht x hx ↦ (ht x hx).imp fun y hy ↦  Subset.trans (ball_mono hst _) hy
+  exact fun s t hst ht x hx ↦ (ht x hx).imp fun y hy ↦ Subset.trans (ball_mono hst _) hy
+
+protected theorem Filter.HasBasis.lebesgue_number_lemma_nhdsWithin' {ι' : Sort*} {p : ι' → Prop}
+    {V : ι' → Set (α × α)} {U : (x : α) → x ∈ K → Set α} (hbasis : (𝓤 α).HasBasis p V)
+    (hK : IsCompact K) (hU : ∀ x hx, U x hx ∈ 𝓝[K] x) :
+    ∃ i, p i ∧ ∀ x ∈ K, ∃ y : K, ball x (V i) ∩ K ⊆ U y y.2 := by
+  refine (hbasis.exists_iff ?_).1 (lebesgue_number_lemma_nhdsWithin' hK hU)
+  exact fun s t hst ht x hx ↦ (ht x hx).imp
+    fun y hy ↦ Subset.trans (Set.inter_subset_inter_left K (ball_mono hst _)) hy
+
+protected theorem Filter.HasBasis.lebesgue_number_lemma_nhdsWithin {ι' : Sort*} {p : ι' → Prop}
+    {V : ι' → Set (α × α)} {U : α → Set α} (hbasis : (𝓤 α).HasBasis p V) (hK : IsCompact K)
+    (hU : ∀ x ∈ K, U x ∈ 𝓝[K] x) : ∃ i, p i ∧ ∀ x ∈ K, ∃ y, ball x (V i) ∩ K ⊆ U y := by
+  refine (hbasis.exists_iff ?_).1 (lebesgue_number_lemma_nhdsWithin hK hU)
+  exact fun s t hst ht x hx ↦ (ht x hx).imp
+    fun y hy ↦ Subset.trans (Set.inter_subset_inter_left K (ball_mono hst _)) hy
 
 /-- Let `c : Set (Set α)` be an open cover of a compact set `s`. Then there exists an entourage
 `n` such that for each `x ∈ s` its `n`-neighborhood is contained in some `t ∈ c`. -/
