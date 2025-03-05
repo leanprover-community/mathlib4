@@ -230,7 +230,7 @@ lemma nonsingular_iff_variableChange (x y : R) :
   simp only [variableChange]
   congr! 3 <;> ring1
 
-lemma equation_zero_iff_nonsingular_zero_of_Δ_ne_zero (hΔ : W.Δ ≠ 0) :
+private lemma equation_zero_iff_nonsingular_zero_of_Δ_ne_zero (hΔ : W.Δ ≠ 0) :
     W.Equation 0 0 ↔ W.Nonsingular 0 0 := by
   simp only [equation_zero, nonsingular_zero, iff_self_and]
   contrapose! hΔ
@@ -247,11 +247,11 @@ lemma equation_iff_nonsingular [Nontrivial R] [W.IsElliptic] {x y : R} :
     W.toAffine.Equation x y ↔ W.toAffine.Nonsingular x y :=
   W.toAffine.equation_iff_nonsingular_of_Δ_ne_zero <| W.coe_Δ' ▸ W.Δ'.ne_zero
 
-@[deprecated (since := "2025-02-01")] alias nonsingular_zero_of_Δ_ne_zero :=
-  equation_zero_iff_nonsingular_zero_of_Δ_ne_zero
-@[deprecated (since := "2025-02-01")] alias nonsingular_of_Δ_ne_zero :=
+@[deprecated (since := "2025-03-01")] alias nonsingular_zero_of_Δ_ne_zero :=
   equation_iff_nonsingular_of_Δ_ne_zero
-@[deprecated (since := "2025-02-01")] alias nonsingular := equation_iff_nonsingular
+@[deprecated (since := "2025-03-01")] alias nonsingular_of_Δ_ne_zero :=
+  equation_iff_nonsingular_of_Δ_ne_zero
+@[deprecated (since := "2025-03-01")] alias nonsingular := equation_iff_nonsingular
 
 /-! ## Maps and base changes -/
 
