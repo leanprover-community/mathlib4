@@ -39,7 +39,7 @@ together.
 * The definition `RelCWComplex` does not require `X` to be a Hausdorff space.
   A lot of the lemmas will however require this property.
 * This definition is a class to ease working with different constructions and their properties.
-  Overall this means the being a CW complex is treated more like a property than data.
+  Overall this means that being a CW complex is treated more like a property than data.
 * The natural number is explicit in `openCell`, `closedCell` and `cellFrontier` because `cell n` and
   `cell m` might be the same type in an explicit CW complex even when `n` and `m` are different.
 * For statements, the auxiliary construction `skeletonLT` is preferred over `skeleton` as it makes
