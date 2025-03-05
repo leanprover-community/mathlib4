@@ -16,26 +16,23 @@ This file defines the characteristic function of a `FiniteMeasure P` on a topolo
 
 We first define
 
-`probChar w : C(V, ℂ) := fun (v : V) ↦ e (L v w)`,
+`probChar _ _ w : V →ᵇ ℂ := fun (v : V) ↦ e (L v w)`,
 
-where `e` is a continuous additive character and `L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ` is a bilinear map. We show:
-- `probChar_submonoid`: `{ probChar w | w : W }` is a submonoid of `C(V, ℂ)`. This
-  uses `probChar_one_mem` and `probChar_mul_mem`;
-- `probChar_starSubalgebra`: `probChar_submonoid` spans is a star subalgebra of
-  `C(V, ℂ)`. This uses `probChar_star_mem`;
-- `probChar_StarSubalgebra_separatesPoints`: We use `probChar_SeparatesPoints` to
-  show that the `probChar_starSubalgebra` separates points as well. Here we assume that `e`
-  and `L` are non-trivial;
+where `e` is a continuous additive character and `L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ` is a bilinear map. We
+then define `expPoly`, the star subalgebra of `ℂ`-linear combinations of elements of
+`{probChar _ _ w : w ∈ W}`. We show that `expPoly` separates points in `V`, see
+`expPoly_separatesPoints`.
 
 ## Characterictic Function
 
-The characteristic function of a `FiniteMeasure P` on `V` is the mapping
+The characteristic function of a finite measure `P` on `V` is the mapping
 
 `fun w => ∫ v, e (-L v w) ∂P = ∫ v, probChar w ∂P`
 
 We show:
-- `ext_of_charFun_eq`: If the characteristic functions of two finite measures `P` and `P'`
-  are equal, then `P = P'`. In other words, characteristic functions separate finite measures.
+- `MeasureTheory.ext_of_charFun_eq`: If the characteristic functions of two finite measures `P`
+  and `P'` are equal, then `P = P'`. In other words, characteristic functions separate finite
+  measures.
 
 ## Example: Finite Dimensional Case
 
@@ -47,205 +44,192 @@ We show:
   determined by the integrals of the form `∫ v, exp (Complex.I * ⟨v, w⟩) ∂P` for all `w : ℝ ^ d`.
 -/
 
-open MeasureTheory Filter
+open MeasureTheory Filter BoundedContinuousFunction Complex
 
-section probChar
+section ProbChar
 
-variable {V : Type*} [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
-    {W : Type*} [TopologicalSpace W] [AddCommGroup W] [Module ℝ W]
+variable {V W : Type*} [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
+    [AddCommGroup W] [Module ℝ W] [TopologicalSpace W]
     {e : AddChar ℝ Circle} {L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ}
+    {he : Continuous e} {hL : Continuous fun p : V × W ↦ L p.1 p.2}
 
-/-- define probChar, as continuous mapping from V to ℂ -/
-noncomputable def probChar (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    (w : W) : ContinuousMap V ℂ where
-  toFun := fun (v : V) ↦ e (L v w)
-  continuous_toFun := Continuous.subtype_val
-    (he.comp (hL.comp (Continuous.Prod.mk_left w)))
+/-- The bounded continuous mapping `fun v ↦ e (L v (Multiplicative.toAdd w))` from `V` to `ℂ`.  -/
+def probChar (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
+    (w : Multiplicative W) :
+    V →ᵇ ℂ where
+  toFun := fun v ↦ e (L v (Multiplicative.toAdd w))
+  continuous_toFun :=
+    continuous_induced_dom.comp (he.comp (hL.comp (Continuous.Prod.mk_left w)))
+  map_bounded' := by
+    refine ⟨2, fun x y ↦ ?_⟩
+    calc dist _ _
+      ≤ (‖_‖ : ℝ) + ‖_‖ := dist_le_norm_add_norm _ _
+    _ ≤ 1 + 1 := add_le_add (by simp) (by simp)
+    _ = 2 := by ring
 
-theorem probChar_apply (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    (w : W) (v : V) : probChar he hL w v = e (L v w) := rfl
+@[simp]
+lemma probChar_apply (w : Multiplicative W) (v : V) :
+    probChar he hL w v = e (L v (Multiplicative.toAdd w)) := rfl
 
-theorem probChar_abs_one (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    (w : W) (v : V) : Complex.abs (probChar he hL w v) = 1 :=
-  Circle.abs_coe (e (L v w))
+@[simp]
+lemma probChar_one : probChar he hL 1 = 1 := by ext; simp
 
-theorem probChar_dist_le_two (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    (w : W) (v v' : V) : dist (probChar he hL w v) (probChar he hL w v') ≤ 2 := by
-  rw [dist_eq_norm_sub]
-  apply le_trans (norm_sub_le _ _) _
-  simp [Complex.norm_eq_abs, probChar_abs_one he hL w _]
-  norm_num
+lemma probChar_mul (x y : Multiplicative W) :
+    probChar he hL (x * y) = probChar he hL x * probChar he hL y := by
+  ext
+  simp [e.map_add_eq_mul]
 
-theorem probChar_one_mem (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
-    1 ∈ {probChar he hL w | w : W} := by
-  use 0
-  ext z
-  simp only [probChar, map_zero, neg_zero, AddChar.map_zero_eq_one, OneMemClass.coe_one,
-    ContinuousMap.coe_mk, ContinuousMap.one_apply]
+lemma probChar_inv (w : Multiplicative W) :
+    probChar he hL w⁻¹ = star (probChar he hL w) := by ext; simp
 
-theorem probChar_mul_mem (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
-    ∀ x y : C(V, ℂ), x ∈ {probChar he hL w | w : W} →
-    y ∈ {probChar he hL w | w : W} → x * y ∈ {probChar he hL w | w : W} := by
-  rintro x y ⟨v, hv⟩ ⟨v', hv'⟩
-  use v + v'
-  ext z
-  simp only [probChar, map_add, ContinuousMap.coe_mk, ContinuousMap.mul_apply]
-  rw [AddChar.map_add_eq_mul e, Submonoid.coe_mul]
-  rw [← congrFun (congrArg DFunLike.coe hv) z, ← congrFun (congrArg DFunLike.coe hv') z]
-  simp [probChar]
-
-theorem probChar_star_mem (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
-    ∀ x, x ∈ {probChar he hL w | w : W} → star x ∈ {probChar he hL w | w : W} := by
-  intro x ⟨w, hw⟩
-  use -w
-  ext v
-  rw [← hw]
-  simp only [probChar, map_neg, neg_neg]
-  simp [probChar_apply he hL]
-  rw [AddChar.map_neg_eq_inv, Circle.coe_inv_eq_conj]
-
-/-- If `e` and `L` are non-trivial, then `probChar` separates points. -/
 theorem probChar_SeparatesPoints (he : Continuous e) (he' : e ≠ 1)
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hL' : ∀ v ≠ 0, L v ≠ 0) {v v' : V} (hv : v ≠ v') :
     ∃ w : W, probChar he hL w v ≠ probChar he hL w v' := by
   obtain ⟨w, hw⟩ := DFunLike.ne_iff.mp (hL' (v - v') (sub_ne_zero_of_ne hv))
   obtain ⟨a, ha⟩ := DFunLike.ne_iff.mp he'
   use (a / (L (v - v') w)) • w
-  simp only [probChar, map_sub, LinearMap.sub_apply, LinearMapClass.map_smul, smul_eq_mul,
-    ContinuousMap.coe_mk, ne_eq]
-  rw [← div_eq_one_iff_eq (Circle.coe_ne_zero _)]
-  rw [div_eq_inv_mul, ← coe_inv_unitSphere]
-  rw [← AddChar.map_neg_eq_inv e ((a / ((L v) w - (L v') w) * (L v') w))]
-  rw [← Submonoid.coe_mul, ← AddChar.map_add_eq_mul e]
-  ring_nf
-  rw [← sub_mul, ← mul_sub, mul_assoc, GroupWithZero.mul_inv_cancel (((L v) w - (L v') w)), mul_one]
-  · exact fun h => ha (SetLike.coe_eq_coe.mp h)
-  · intro h
-    apply hw
-    simp only [map_sub, LinearMap.sub_apply, LinearMap.zero_apply, h]
+  simp only [map_sub, LinearMap.sub_apply, probChar_apply, ne_eq]
+  rw [← div_eq_one_iff_eq (Circle.coe_ne_zero _), div_eq_inv_mul, ← coe_inv_unitSphere,
+    ← e.map_neg_eq_inv, ← Submonoid.coe_mul, ← e.map_add_eq_mul, OneMemClass.coe_eq_one]
+  calc e (- L v' ((a / (L v w - L v' w)) • w) + L v ((a / (L v w - L v' w)) • w))
+  _ = e (- (a / (L v w - L v' w)) • L v' w + (a / (L v w - L v' w)) • L v w) := by
+    congr
+    · rw [neg_smul, ← map_smul (L v')]
+    · rw [← map_smul (L v)]
+  _ = e ((a / (L (v - v') w)) • (L (v - v') w)) := by
+    simp only [neg_mul, map_sub, LinearMap.sub_apply]
+    congr
+    module
+  _ = e a := by
+    congr
+    simp only [map_sub, LinearMap.sub_apply, smul_eq_mul]
+    rw [div_mul_cancel₀]
+    convert hw
+    simp
+  _ ≠ 1 := ha
 
-section Submonoid
+/-- Monoid homomorphism mapping `w` to `fun v ↦ e (L v (Multiplicative.toAdd w))`. -/
+def expInnerMulI (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
+    Multiplicative W →* (V →ᵇ ℂ) where
+  toFun := probChar he hL
+  map_one' := probChar_one
+  map_mul' := probChar_mul (he := he) (hL := hL)
 
-/-- The set `{(probChar he hL w) | w : W}` forms a submonoid -/
+@[simp]
+lemma expInnerMulI_apply (w : Multiplicative W) (v : V) :
+    expInnerMulI he hL w v = e (L v (Multiplicative.toAdd w)) := by simp [expInnerMulI]
+
+/-- Algebra homomorphism mapping `w` to `fun v ↦ e (L v (Multiplicative.toAdd w))`. -/
 noncomputable
-def probChar_submonoid (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
-    Submonoid C(V, ℂ) where
-  carrier := {(probChar he hL w) | w : W}
-  mul_mem' := (fun ha hb => probChar_mul_mem he hL _ _ ha hb)
-  one_mem' := probChar_one_mem he hL
+def expInnerMulIₐ (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
+    AddMonoidAlgebra ℂ W →ₐ[ℂ] (V →ᵇ ℂ) :=
+  AddMonoidAlgebra.lift ℂ W (V →ᵇ ℂ) (expInnerMulI he hL)
 
-theorem probChar_submonoid_dist_le_two (he : Continuous e)
-    (hL : Continuous fun p : V × W ↦ L p.1 p.2) (f : probChar_submonoid he hL) :
-    ∀ (v v' : V), dist ((f : C(V, ℂ)) v) ((f : C(V, ℂ)) v') ≤ 2 := by
-  rw [← Exists.choose_spec (Set.mem_setOf.1 (Subtype.coe_prop f))]
-  exact probChar_dist_le_two he hL _
+@[simp]
+lemma expInnerMulIₐ_apply (w : AddMonoidAlgebra ℂ W) (v : V) :
+    expInnerMulIₐ he hL w v = ∑ a ∈ w.support, w a * (e (L v a) : ℂ) := by
+  simp only [expInnerMulIₐ, AddMonoidAlgebra.lift_apply]
+  rw [Finsupp.sum_of_support_subset w subset_rfl]
+  · simp only [coe_sum, BoundedContinuousFunction.coe_smul, expInnerMulI_apply, toAdd_ofAdd,
+      smul_eq_mul, Finset.sum_apply]
+  · simp
 
-end Submonoid
+lemma expInnerMulₐ'_star_mem (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
+    {x : V →ᵇ ℂ} (hx : x ∈ (expInnerMulIₐ he hL).range) :
+    star x ∈ (expInnerMulIₐ he hL).range := by
+  simp only [AlgHom.mem_range] at hx ⊢
+  obtain ⟨y, rfl⟩ := hx
+  let z := Finsupp.mapRange star (star_zero _) y
+  let f : W ↪ W := ⟨fun x ↦ -x, (fun _ _ ↦ neg_inj.mp)⟩
+  refine ⟨z.embDomain f, ?_⟩
+  ext1 u
+  simp only [expInnerMulIₐ_apply, Finsupp.support_embDomain, Finset.sum_map,
+    Finsupp.embDomain_apply, star_apply, star_sum, star_mul', Circle.star_addChar]
+  rw [Finsupp.support_mapRange_of_injective (star_zero _) y star_injective]
+  simp_rw [← map_neg (L u)]
+  rfl
 
-namespace StarSubalgebra
-
-/-- The span of `probChar_submonoid` is a `StarSubalgebra` of `C(V, ℂ)` -/
+/-- The star-subalgebra of exponential polynomials. -/
 noncomputable
-def probChar_starSubalgebra (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
-    StarSubalgebra ℂ C(V, ℂ) :=
-  StarSubalgebra.of_span_submonoid ℂ (probChar_submonoid he hL)
-      (probChar_star_mem he hL)
+def expPoly (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
+    StarSubalgebra ℂ (V →ᵇ ℂ) where
+  toSubalgebra := (expInnerMulIₐ he hL).range
+  star_mem' := by
+    intro x hx
+    exact expInnerMulₐ'_star_mem he hL hx
 
-theorem probChar_StarSubalgebra_separatesPoints (he : Continuous e)
-    (he' : e ≠ 0) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    (hL' : ∀ v ≠ 0, L v ≠ 0) : (probChar_starSubalgebra he hL).SeparatesPoints := by
+lemma mem_expPoly (f : V →ᵇ ℂ) :
+    f ∈ expPoly he hL
+      ↔ ∃ w : AddMonoidAlgebra ℂ W, f = fun x ↦ ∑ a ∈ w.support, w a * (e (L x a) : ℂ) := by
+  change f ∈ (expInnerMulIₐ he hL).range ↔ _
+  rw [AlgHom.mem_range]
+  constructor
+  · rintro ⟨y, rfl⟩
+    refine ⟨y, ?_⟩
+    ext
+    simp
+  · rintro ⟨y, h⟩
+    refine ⟨y, ?_⟩
+    ext
+    simp [h]
+
+lemma probChar_mem_expPoly (w : W) : probChar he hL w ∈ expPoly he hL := by
+  rw [mem_expPoly]
+  refine ⟨AddMonoidAlgebra.single w 1, ?_⟩
+  ext v
+  simp only [probChar_apply, AddMonoidAlgebra.single]
+  rw [Finset.sum_eq_single w]
+  · simp only [Finsupp.single_eq_same, ofReal_one, one_mul, SetLike.coe_eq_coe]
+    rfl
+  · simp [Finsupp.single_apply_ne_zero]
+  · simp
+
+lemma expPoly_separatesPoints (he : Continuous e) (he' : e ≠ 1)
+    (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hL' : ∀ v ≠ 0, L v ≠ 0) :
+    ((expPoly he hL).map (toContinuousMapStarₐ ℂ)).SeparatesPoints := by
   intro v v' hvv'
   obtain ⟨w, hw⟩ := probChar_SeparatesPoints he he' hL hL' hvv'
-  use (probChar he hL w)
-  simp only [StarSubalgebra.coe_toSubalgebra, Set.mem_image, SetLike.mem_coe, DFunLike.coe_fn_eq,
-    exists_eq_right, ne_eq]
-  exact ⟨Submodule.subset_span ⟨w, rfl⟩, hw⟩
+  use probChar he hL w
+  simp only [StarSubalgebra.coe_toSubalgebra, StarSubalgebra.coe_map, Set.mem_image,
+    SetLike.mem_coe, exists_exists_and_eq_and, ne_eq, SetLike.coe_eq_coe]
+  exact ⟨⟨probChar he hL w, probChar_mem_expPoly w, rfl⟩, hw⟩
 
-theorem probChar_starSubalgebra_bounded (he : Continuous e)
-    (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
-    ∀ g ∈ (probChar_starSubalgebra he hL), ∃ C, ∀ (v v' : V), dist (g v) (g v') ≤ C := by
-  intro g hg
-  obtain ⟨n, c, f, hf⟩ := mem_span_set'.1 hg
-  by_cases hn : n = 0
-  · use 0
-    intro x y
-    rw [← hf]
-    simp only [hn, Fin.isEmpty', Finset.univ_eq_empty, Finset.sum_empty, ContinuousMap.zero_apply,
-      dist_self, le_refl]
-  have : Nonempty (Fin n) := by
-    exact Fin.pos_iff_nonempty.mp (Nat.zero_lt_of_ne_zero hn)
-  let C := Complex.abs (c (Exists.choose (Finite.exists_max (fun i => Complex.abs (c i)))))
-  have hC : ∀ i, Complex.abs (c i) ≤ C :=
-    Exists.choose_spec (Finite.exists_max (fun i => Complex.abs (c i)))
-  use n * (C * 2)
-  intro v v'
-  rw [dist_eq_norm, Complex.norm_eq_abs, ← hf]
-  simp only [ContinuousMap.coe_sum, ContinuousMap.coe_smul, Finset.sum_apply, Pi.smul_apply,
-    smul_eq_mul]
-  rw [← Finset.univ.sum_sub_distrib]
-  have := AbsoluteValue.sum_le Complex.abs
-      Finset.univ fun i ↦ c i * ((f i) : C(V, ℂ)) v - c i * ((f i) : C(V, ℂ)) v'
-  apply le_trans this _
-  apply le_trans (Finset.sum_le_card_nsmul _ (fun i =>
-      Complex.abs ((c i) * ((f i) : C(V, ℂ)) v - (c i) * ((f i) : C(V, ℂ)) v')) (C * 2) _)
-  · simp only [Finset.card_univ, Fintype.card_fin, nsmul_eq_mul, le_refl]
-  · intro i _
-    simp only
-    rw [← mul_sub]
-    rw [AbsoluteValue.map_mul Complex.abs (c i) (((f i) : C(V, ℂ)) v - ((f i) : C(V, ℂ)) v')]
-    apply mul_le_mul (hC i) (probChar_submonoid_dist_le_two he hL (f i) _ _)
-        (AbsoluteValue.nonneg Complex.abs _) (AbsoluteValue.nonneg Complex.abs (_))
-
-theorem probChar_starSubalgebra_integrable [MeasurableSpace V] [BorelSpace V]
-    (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    {P : MeasureTheory.FiniteMeasure V} :
-    ∀ g ∈ (probChar_starSubalgebra he hL), MeasureTheory.Integrable g P :=
-  fun g hg => BoundedContinuousFunction.integrable P
-      ⟨g, probChar_starSubalgebra_bounded he hL g hg⟩
-
-end StarSubalgebra
-
-end probChar
-
-section CharFun
+section ext
 
 variable {V : Type*} [AddCommGroup V] [Module ℝ V] [PseudoEMetricSpace V] [MeasurableSpace V]
-    [BorelSpace V] [CompleteSpace V] [SecondCountableTopology V]
-    {W : Type*} [TopologicalSpace W] [AddCommGroup W] [Module ℝ W]
-    {e : AddChar ℝ Circle} {L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ}
+    [BorelSpace V] [CompleteSpace V] [SecondCountableTopology V] {L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ}
+    {𝕜 : Type*} [RCLike 𝕜]
 
 /--
 If the characteristic functions of two finite measures `P` and `P'` are equal, then `P = P'`. In
 other words, characteristic functions separate finite measures.
 -/
-theorem FiniteMeasure.ext_of_charFun_eq (he : Continuous e) (he' : e ≠ 0)
+theorem MeasureTheory.ext_of_charFun_eq (he : Continuous e) (he' : e ≠ 0)
     (hL' : ∀ v ≠ 0, L v ≠ 0) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    (P P' : MeasureTheory.FiniteMeasure V) :
+    (P P' : Measure V) [IsFiniteMeasure P] [IsFiniteMeasure P'] :
     (∀ w, ∫ v, probChar he hL w v ∂P = ∫ v, probChar he hL w v ∂P') → P = P' := by
   intro h
   apply ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable
-      (StarSubalgebra.probChar_StarSubalgebra_separatesPoints he he' hL hL')
-      (StarSubalgebra.probChar_starSubalgebra_bounded he hL)
+      (expPoly_separatesPoints he he' hL hL')
   intro g hg
-  obtain ⟨n, c, f, hf⟩ := mem_span_set'.1 hg
-  rw [← hf]
-  have hsum : ∀ (P : MeasureTheory.FiniteMeasure V),
-      ∫ v, (Finset.univ.sum fun i ↦ c i • ((f i) : C(V, ℂ))) v ∂P
-      = (Finset.univ.sum fun i ↦ ∫ v, c i • ((f i) : C(V, ℂ)) v ∂P) := by
-    intro P
-    simp only [ContinuousMap.coe_sum, ContinuousMap.coe_smul, Finset.sum_apply, Pi.smul_apply,
-      smul_eq_mul]
-    apply MeasureTheory.integral_finset_sum Finset.univ
-    exact fun i _ => MeasureTheory.Integrable.const_mul
-        (StarSubalgebra.probChar_starSubalgebra_integrable he hL _
-        (Submodule.subset_span (Subtype.coe_prop (f i)))) _
+  simp [StarSubalgebra.mem_map, mem_expPoly] at hg
+  obtain ⟨w, hw⟩ := hg
+  rw [hw]
+  have hsum (P : Measure V) [IsFiniteMeasure P] :
+      ∫ v, ∑ a ∈ w.support, w a * ↑(e ((L v) a)) ∂P
+      = ∑ a ∈ w.support, ∫ v, w a * ↑(e ((L v) a)) ∂P :=
+    integral_finset_sum w.support
+      fun a ha => Integrable.const_mul (integrable P (probChar he hL a)) _
   rw [hsum P, hsum P']
   apply Finset.sum_congr rfl
   intro i _
   simp only [smul_eq_mul, MeasureTheory.integral_mul_left, mul_eq_mul_left_iff]
   left
-  obtain ⟨w, hw⟩ := Set.mem_setOf.1 (Subtype.coe_prop (f i))
-  rw [← hw]; exact h w
+  exact h i
+
+end ext
+
+end ProbChar
 
 /-
 The following is an example to show that the previous theorem can be applied in the special case
@@ -256,7 +240,7 @@ namespace FiniteDimensional
 
 variable {ι : Type*}
 
-/-- dot product of two vectors in ℝ^d as a bilinear map -/
+/-- dot product of two vectors in euclidean space as a bilinear map -/
 noncomputable
 def dotProduct_bilinear (J : Finset ι) : (J → ℝ) →ₗ[ℝ] (J → ℝ) →ₗ[ℝ] ℝ := by
   apply LinearMap.mk₂ ℝ (fun v w : J → ℝ => dotProduct v w)
@@ -282,13 +266,9 @@ theorem probFourierChar_apply (z : ℝ) : probFourierChar z = Circle.exp z := rf
 
 theorem continuous_probFourierChar : Continuous probFourierChar := Circle.exp.continuous
 
-theorem probChar_eq (J : Finset ι) (v w : J → ℝ) : (probFourierChar (dotProduct_bilinear J v w))
-    = (probChar continuous_probFourierChar (continuous_dotProduct J) w) v := by
-  simp [probFourierChar, probChar]
-
 /-- docBlame -/
 theorem ext_of_charFun_eq (J : Finset ι)
-    (P P' : MeasureTheory.FiniteMeasure ((i : J) → ℝ)) :
+    (P P' : Measure ((i : J) → ℝ)) [IsFiniteMeasure P] [IsFiniteMeasure P'] :
     (∀ w : J → ℝ, ∫ v, ((probFourierChar (dotProduct_bilinear J v w)) : ℂ) ∂P
     = ∫ v, ((probFourierChar (dotProduct_bilinear J v w)) : ℂ) ∂P') → P = P' := by
   have h1 : probFourierChar ≠ 1 := by
@@ -306,11 +286,8 @@ theorem ext_of_charFun_eq (J : Finset ι)
     rw [LinearMap.zero_apply]
     simpa only [dotProduct_bilinear, LinearMap.mk₂_apply, ne_eq, dotProduct_self_eq_zero]
   intro h
-  apply FiniteMeasure.ext_of_charFun_eq FiniteDimensional.continuous_probFourierChar h1 h2
+  apply MeasureTheory.ext_of_charFun_eq FiniteDimensional.continuous_probFourierChar h1 h2
       (continuous_dotProduct J) P P'
-  simp [probChar_eq] at *
   exact h
 
 end FiniteDimensional
-
-end CharFun
