@@ -120,6 +120,10 @@ instance {V : Type u} [AddCommGroup V] [Module k V] :
 instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
     IsTrivial (Rep.of ρ) := ‹_›
 
+instance {H V : Type u} [Group H] [AddCommGroup V] [Module k V] (ρ : Representation k H V)
+    (f : G →* H) [Representation.IsTrivial (ρ.comp f)] :
+    Representation.IsTrivial ((Rep.of ρ).ρ.comp f) := ‹_›
+
 section
 
 variable {G : Type u} [Group G] (A : Rep k G) (S : Subgroup G)

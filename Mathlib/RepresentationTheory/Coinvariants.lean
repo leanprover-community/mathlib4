@@ -3,6 +3,7 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.RepresentationTheory.Rep
 
 /-!
@@ -138,7 +139,7 @@ theorem coinvariantsMap_comp (f : A ⟶ B) (g : B ⟶ C) :
     coinvariantsMap (f ≫ g) = coinvariantsMap g ∘ₗ coinvariantsMap f := by
   ext; rfl
 
-section
+noncomputable section
 
 variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) (S : Subgroup G) [S.Normal]
 
