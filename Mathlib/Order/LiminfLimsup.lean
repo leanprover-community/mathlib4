@@ -1398,6 +1398,18 @@ theorem limsup_le_iff {α β} [ConditionallyCompleteLinearOrder β] {f : Filter 
     rcases h' with ⟨z, x_z, hz⟩
     exact (h z x_z).mono  <| fun w hw ↦ (or_iff_left (not_le_of_lt hw)).1 (hz (u w))
 
+/- A version of `limsup_le_iff` with large inequalities in densely ordered spaces.-/
+lemma limsup_le_iff' {α β : Type*} [ConditionallyCompleteLinearOrder β] [DenselyOrdered β]
+    {f : Filter α} {u : α → β} {x : β}
+    (h₁ : IsCoboundedUnder (fun (x1 x2 : β) => x1 ≤ x2) f u := by isBoundedDefault)
+    (h₂ : IsBoundedUnder (fun (x1 x2 : β) => x1 ≤ x2) f u := by isBoundedDefault) :
+    limsup u f ≤ x ↔ ∀ y > x, ∀ᶠ (a : α) in f, u a ≤ y := by
+  refine ⟨fun h _ h' ↦ (eventually_lt_of_limsup_lt (h.trans_lt h') h₂).mono fun _ ↦ le_of_lt, ?_⟩
+  rw [← forall_lt_iff_le']
+  intro h y x_y
+  obtain ⟨z, x_z, z_y⟩ := exists_between x_y
+  exact (limsup_le_of_le h₁ (h z x_z)).trans_lt z_y
+
 theorem le_limsup_iff {α β} [ConditionallyCompleteLinearOrder β] {f : Filter α} {u : α → β} {x : β}
     (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
     (h₂ : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) :

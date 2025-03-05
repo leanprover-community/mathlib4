@@ -67,7 +67,7 @@ lemma expGrowthInf_le_expGrowthSup {u : ℕ → ℝ≥0∞} :
 
 lemma expGrowthInf_le_iff {u : ℕ → ℝ≥0∞} {a : EReal} :
     expGrowthInf u ≤ a ↔ ∀ b > a, ∃ᶠ n : ℕ in atTop, u n < exp (b * n) := by
-  rw [expGrowthInf, Filter.liminf_le_iff]
+  rw [expGrowthInf, liminf_le_iff]
   refine forall₂_congr fun b _ ↦ frequently_congr (eventually_atTop.2 ⟨1, fun n _ ↦ ?_⟩)
   rw [EReal.div_lt_iff (by norm_cast) (natCast_ne_top n)]
   nth_rw 1 [← EReal.log_exp (b * n)]
@@ -75,7 +75,7 @@ lemma expGrowthInf_le_iff {u : ℕ → ℝ≥0∞} {a : EReal} :
 
 lemma le_expGrowthInf_iff {u : ℕ → ℝ≥0∞} {a : EReal} :
     a ≤ expGrowthInf u ↔ ∀ b < a, ∀ᶠ n : ℕ in atTop, exp (b * n) < u n := by
-  rw [expGrowthInf, Filter.le_liminf_iff]
+  rw [expGrowthInf, le_liminf_iff]
   refine forall₂_congr fun b _ ↦ eventually_congr (eventually_atTop.2 ⟨1, fun n _ ↦ ?_⟩)
   rw [EReal.lt_div_iff (by norm_cast) (natCast_ne_top n)]
   nth_rw 1 [← EReal.log_exp (b * n)]
@@ -83,41 +83,28 @@ lemma le_expGrowthInf_iff {u : ℕ → ℝ≥0∞} {a : EReal} :
 
 lemma expGrowthSup_le_iff {u : ℕ → ℝ≥0∞} {a : EReal} :
     expGrowthSup u ≤ a ↔ ∀ b > a, ∀ᶠ n : ℕ in atTop, u n < exp (b * n) := by
-  rw [expGrowthSup, Filter.limsup_le_iff]
+  rw [expGrowthSup, limsup_le_iff]
   refine forall₂_congr fun b _ ↦ eventually_congr (eventually_atTop.2 ⟨1, fun n _ ↦ ?_⟩)
   rw [EReal.div_lt_iff (by norm_cast) (natCast_ne_top n)]
   nth_rw 1 [← EReal.log_exp (b * n)]
   exact logOrderIso.lt_iff_lt
 
--- TODO : trois autres versions
--- TODO : move
-lemma limsup_le_iff' {α β : Type*} [ConditionallyCompleteLinearOrder β] [DenselyOrdered β]
-    {f : Filter α} {u : α → β} {x : β}
-    (h₁ : IsCoboundedUnder (fun (x1 x2 : β) => x1 ≤ x2) f u := by isBoundedDefault)
-    (h₂ : IsBoundedUnder (fun (x1 x2 : β) => x1 ≤ x2) f u := by isBoundedDefault) :
-    limsup u f ≤ x ↔ ∀ y > x, ∀ᶠ (a : α) in f, u a ≤ y := by
-  constructor
-  · exact fun h _ h' ↦ (eventually_lt_of_limsup_lt (h.trans_lt h') h₂).mono fun _ ↦ le_of_lt
-  · rw [← forall_lt_iff_le']
-    intro h y x_y
-    obtain ⟨z, x_z, z_y⟩ := exists_between x_y
-    exact (limsup_le_of_le h₁ (h z x_z)).trans_lt z_y
-
-lemma expGrowthSup_le_iff' {u : ℕ → ℝ≥0∞} {a : EReal} :
-    expGrowthSup u ≤ a ↔ ∀ b > a, ∀ᶠ n : ℕ in atTop, u n ≤ exp (b * n) := by
-  rw [expGrowthSup, limsup_le_iff']
-  refine forall₂_congr fun b _ ↦ eventually_congr (eventually_atTop.2 ⟨1, fun n _ ↦ ?_⟩)
-  rw [EReal.div_le_iff_le_mul (by norm_cast) (natCast_ne_top n)]
-  nth_rw 1 [mul_comm, ← EReal.log_exp (b * n)]
-  exact logOrderIso.le_iff_le
-
 lemma le_expGrowthSup_iff {u : ℕ → ℝ≥0∞} {a : EReal} :
     a ≤ expGrowthSup u ↔ ∀ b < a, ∃ᶠ n : ℕ in atTop, exp (b * n) < u n := by
-  rw [expGrowthSup, Filter.le_limsup_iff]
+  rw [expGrowthSup, le_limsup_iff]
   refine forall₂_congr fun b _ ↦ frequently_congr (eventually_atTop.2 ⟨1, fun n _ ↦ ?_⟩)
   rw [EReal.lt_div_iff (by norm_cast) (natCast_ne_top n)]
   nth_rw 1 [← EReal.log_exp (b * n)]
   exact logOrderIso.lt_iff_lt
+
+/- A version of `expGrowthSup_le_iff` with large inequalities.-/
+lemma expGrowthSup_le_iff' {u : ℕ → ℝ≥0∞} {a : EReal} :
+    expGrowthSup u ≤ a ↔ ∀ b > a, ∀ᶠ n : ℕ in atTop, u n ≤ exp (b * n) := by
+  rw [expGrowthSup, limsup_le_iff']
+  refine forall₂_congr fun b _ ↦ eventually_congr (eventually_atTop.2 ⟨1, fun n _ ↦ ?_⟩)
+  rw [EReal.div_le_iff_le_mul (by norm_cast) (natCast_ne_top n), ← EReal.log_exp (n * b),
+    mul_comm _ b]
+  exact logOrderIso.le_iff_le
 
 /-! ### Special cases -/
 
