@@ -1468,6 +1468,8 @@ theorem coe_normGroupNorm : ⇑(normGroupNorm E) = norm :=
 
 section continuity
 
+variable {E}
+
 /-- See `tendsto_norm_one` for a version with full neighborhoods. -/
 @[to_additive "See `tendsto_norm_zero` for a version with full neighborhoods."]
 lemma tendsto_norm_nhdsNE_one : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>] 0) :=
