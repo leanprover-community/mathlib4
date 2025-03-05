@@ -24,15 +24,23 @@ namespace IsUnit
 open Nat
 section Semiring
 
-variable {A : Type*} [CommSemiring A]
+variable {A : Type*} [Semiring A]
+
+theorem natCast_factorial_of_le {n : ℕ} (hn_fac : IsUnit (n ! : A))
+    {m : ℕ} (hmn : m ≤ n) : IsUnit (m ! : A) := by
+  obtain ⟨k, rfl⟩ := exists_add_of_le hmn
+  clear hmn
+  induction k generalizing m with
+  | zero => simpa using hn_fac
+  | succ k ih =>
+    rw [← add_assoc, add_right_comm] at hn_fac
+    have := ih hn_fac
+    rw [Nat.factorial_succ, Nat.cast_mul, Nat.cast_commute _ _ |>.isUnit_mul_iff] at this
+    exact this.2
 
 theorem natCast_factorial_of_lt {n : ℕ} (hn_fac : IsUnit ((n - 1)! : A))
     {m : ℕ} (hmn : m < n) : IsUnit (m ! : A) :=
-  isUnit_of_dvd_unit (cast_dvd_cast (factorial_dvd_factorial (le_sub_one_of_lt hmn))) hn_fac
-
-theorem natCast_factorial_of_le {n : ℕ} (hn_fac : IsUnit (n ! : A))
-    {m : ℕ} (hmn : m ≤ n) : IsUnit (m ! : A) :=
-  isUnit_of_dvd_unit (cast_dvd_cast (factorial_dvd_factorial hmn)) hn_fac
+  hn_fac.natCast_factorial_of_le <| le_sub_one_of_lt hmn
 
 theorem natCast_factorial_of_ratAlgebra [Algebra ℚ A] (n : ℕ) : IsUnit (n ! : A) := by
   rw [← map_natCast (algebraMap ℚ A)]
