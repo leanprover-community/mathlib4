@@ -114,6 +114,12 @@ def oneChainsToAugmentationSubmodule :
     (G →₀ A) →ₗ[k] augmentationSubmodule A.ρ :=
   (dZero A).codRestrict _ <| range_dZero_eq_augmentationSubmodule A ▸ LinearMap.mem_range_self _
 
+lemma oneChainsToAugmentationSubmodule_surjective :
+    Function.Surjective (oneChainsToAugmentationSubmodule A) := by
+  rintro ⟨x, hx⟩
+  rcases range_dZero_eq_augmentationSubmodule A ▸ hx with ⟨y, hy⟩
+  use y, Subtype.ext hy
+
 @[simp]
 theorem dZero_eq_zero_of_isTrivial [A.IsTrivial] : dZero A = 0 := by
   ext

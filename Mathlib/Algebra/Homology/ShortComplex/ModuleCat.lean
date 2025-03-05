@@ -147,6 +147,33 @@ lemma toCycles_moduleCatCyclesIso_hom :
     Category.assoc, S.moduleCatCyclesIso_hom_subtype, toCycles_i]
   rfl
 
+/-- Given a short complex `S` of modules, this is the isomorphism between the abstract `S.opcycles`
+of the homology API and the more concrete description as `S.X₂ ⧸ LinearMap.range S.f.hom`. -/
+def moduleCatOpcyclesIso : S.opcycles ≅ ModuleCat.of R (S.X₂ ⧸ LinearMap.range S.f.hom) :=
+  S.opcyclesIsoCokernel ≪≫ ModuleCat.cokernelIsoRangeQuotient _
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+theorem pOpcycles_comp_moduleCatOpcyclesIso_hom :
+    S.pOpcycles ≫ S.moduleCatOpcyclesIso.hom = ModuleCat.ofHom (Submodule.mkQ _) := by
+  simp [moduleCatOpcyclesIso]
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+theorem moduleCatOpcyclesIso_inv_comp_fromOpcycles :
+    S.moduleCatOpcyclesIso.inv ≫ S.fromOpcycles = ModuleCat.ofHom (Submodule.liftQ
+      (LinearMap.range S.f.hom) S.g.hom <|
+      LinearMap.range_le_ker_iff.2 <| ModuleCat.hom_ext_iff.1 S.zero) := by
+  have : Epi (ModuleCat.ofHom <| Submodule.mkQ (LinearMap.range S.f.hom)) :=
+    (ModuleCat.epi_iff_surjective _).2 <| Submodule.Quotient.mk_surjective _
+  simp only [← cancel_epi (ModuleCat.ofHom <| Submodule.mkQ <| LinearMap.range S.f.hom),
+    moduleCatOpcyclesIso, Iso.trans_inv, ← Category.assoc]
+  simp [← ModuleCat.ofHom_comp, Submodule.liftQ_mkQ]
+
+theorem moduleCat_pOpcycles_eq_iff (x y : S.X₂) :
+    S.pOpcycles x = S.pOpcycles y ↔ x - y ∈ LinearMap.range S.f.hom :=
+  Iff.trans ⟨fun h => by simpa using congr(S.moduleCatOpcyclesIso.hom $h),
+    fun h => (ModuleCat.mono_iff_injective S.moduleCatOpcyclesIso.hom).1 inferInstance (by simpa)⟩
+    (Submodule.Quotient.eq _)
+
 /-- Given a short complex `S` of modules, this is the isomorphism between
 the abstract `S.homology` of the homology API and the more explicit
 quotient of `LinearMap.ker S.g` by the image of
