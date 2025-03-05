@@ -1007,7 +1007,7 @@ theorem measurable_piEquivPiSubtypeProd (p : δ → Prop) [DecidablePred p] :
 
 end Pi
 
-instance TProd.instMeasurableSpace (X : δ → Type*) [∀ x, MeasurableSpace (X x)] :
+instance TProd.instMeasurableSpace (X : δ → Type*) [∀ i, MeasurableSpace (X i)] :
     ∀ l : List δ, MeasurableSpace (List.TProd X l)
   | [] => PUnit.instMeasurableSpace
   | _::is => @Prod.instMeasurableSpace _ _ _ (TProd.instMeasurableSpace X is)
@@ -1016,7 +1016,7 @@ section TProd
 
 open List
 
-variable {X : δ → Type*} [∀ x, MeasurableSpace (X x)]
+variable {X : δ → Type*} [∀ i, MeasurableSpace (X i)]
 
 theorem measurable_tProd_mk (l : List δ) : Measurable (@TProd.mk δ X l) := by
   induction' l with i l ih

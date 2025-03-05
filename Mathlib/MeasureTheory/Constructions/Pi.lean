@@ -127,7 +127,7 @@ section Tprod
 
 open List
 
-variable {δ : Type*} {X : δ → Type*} [∀ x, MeasurableSpace (X x)]
+variable {δ : Type*} {X : δ → Type*} [∀ i, MeasurableSpace (X i)]
 
 -- for some reason the equation compiler doesn't like this definition
 /-- A product of measures in `tprod α l`. -/
