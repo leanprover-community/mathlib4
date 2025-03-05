@@ -36,9 +36,6 @@ variable [LT α]
 @[simp] lemma sum_lt_top : ∑ i ∈ s, f i < ⊤ ↔ ∀ i ∈ s, f i < ⊤ := by
   simp [WithTop.lt_top_iff_ne_top]
 
-@[deprecated (since := "2024-08-25")] alias sum_eq_top_iff := sum_eq_top
-@[deprecated (since := "2024-08-25")] alias sum_lt_top_iff := sum_lt_top
-
 end AddCommMonoid
 
 section CommMonoidWithZero
@@ -92,12 +89,5 @@ lemma bot_lt_prod [LT α] (h : ∀ i ∈ s, ⊥ < f i) : ⊥ < ∏ i ∈ s, f i 
   prod_induction f (⊥ < ·) (fun _ _ ↦ bot_lt_mul) (bot_lt_coe _) h
 
 end CommMonoidWithZero
-
-/-- A product of finite terms is finite. -/
-@[deprecated bot_lt_prod (since := "2024-08-25")]
-lemma prod_lt_bot [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] [DecidableEq α] [LT α]
-    {s : Finset ι} {f : ι → WithBot α} (h : ∀ i ∈ s, f i ≠ ⊥) : ⊥ < ∏ i ∈ s, f i :=
-  prod_induction f (⊥ < ·) (fun _ _ h₁ h₂ ↦ bot_lt_mul h₁ h₂) (bot_lt_coe 1)
-    fun a ha ↦ WithBot.bot_lt_iff_ne_bot.2 (h a ha)
 
 end WithBot
