@@ -232,10 +232,8 @@ theorem replicate_left_inj {a : α} {n m : ℕ} : replicate n a = replicate m a 
 
 theorem head?_flatten_replicate {n : ℕ} {as : List α} (h : n ≠ 0) :
 ((List.replicate n as).flatten.head?) = as.head? := by
-  match n, as with
-  | 0, _ => exact (h rfl).elim
-  | n+1, [] => simp
-  | n+1, h::_ => simp [replicate]
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
+  induction as <;> simp [replicate]
 
 theorem getLast?_flatten_replicate  {n : ℕ} {as : List α} (h : n ≠ 0) :
 ((List.replicate n as).flatten.getLast?) = as.getLast? := by
