@@ -262,8 +262,7 @@ noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
   LieEquiv ℚ L L :=
 { toFun := fun l => (IsNilpotent.exp D.toLinearMap) l,
   map_add' := by exact fun x y ↦ LinearMap.map_add (IsNilpotent.exp D.toLinearMap) x y,
-  map_smul' := by exact fun m x ↦
-    LinearMap.CompatibleSMul.map_smul (IsNilpotent.exp D.toLinearMap) m x,
+  map_smul' := by exact fun m x ↦ LinearMap.map_smul (IsNilpotent.exp D.toLinearMap) m x,
   map_lie' := by
     obtain ⟨N, hN⟩ := h
     have h₁ : D.toLinearMap ^ (2 * N + 1) = 0 := pow_eq_zero_of_le (by omega) hN
@@ -283,7 +282,7 @@ noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
       calc
         (∑ i ∈ R2N, (i ! : ℚ)⁻¹ • (D.toLinearMap ^ i)) ⁅x, y⁆ =
         ∑ i ∈ R2N, (i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) ⁅x, y⁆) := by
-          simp
+          simp only [LinearMap.coeFn_sum, sum_apply, LinearMap.smul_apply]
         _ = ∑ i ∈ R2N, (i.factorial : ℚ)⁻¹ • ((D^[i]) ⁅x, y⁆) := by simp [LinearMap.coe_pow]
         _ = ∑ i ∈ R2N, (i.factorial : ℚ)⁻¹ •
             (∑ j ∈ range (i + 1), i.choose j • ⁅D^[j] x, D^[i - j] y⁆) := by
@@ -301,8 +300,7 @@ noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
             ⁅D^[j] x, D^[i - j] y⁆) := by
           refine sum_congr rfl fun i hi ↦ sum_congr rfl fun j hj ↦ ?_
           simp only [mem_range] at hj
-          have ss : j ≤ i := by exact Nat.le_of_lt_succ hj
-          rw [rr i j ss]
+          rw [rr i j (Nat.le_of_lt_succ hj)]
         _ = ∑ i ∈ R2N, (∑ j ∈ range (i + 1), ((j ! : ℚ)⁻¹ * ((i - j) ! : ℚ)⁻¹) •
             ⁅(D.toLinearMap ^ j) x, (D.toLinearMap ^ (i - j)) y⁆) :=
           by simp only [LinearMap.pow_apply, coeFn_coe]
