@@ -150,11 +150,29 @@ noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : �
   isManifold := by infer_instance
   f x := ⟨fun i ↦ if h: i = 0 then 0 else x (Fin.pred i (by omega)), by simp⟩
   isEmbedding := sorry
-  contMDiff := by
-    -- In the standard model, this map has no subtypes any more: so this should be easy.
-    -- use ContMDiff.congr and the above observation
-    sorry
-  isImmersion hk x := sorry
+  contMDiff x := by
+    rw [contMDiffAt_iff]
+    constructor
+    · sorry -- necessary to prove the embedding property
+    -- This is the local coordinates expression of the map f above.
+    let F : (EuclideanSpace ℝ (Fin n)) → (EuclideanSpace ℝ (Fin (n + 1))) :=
+      fun x i ↦ if h : i = 0 then 0 else x (i.pred (by assumption))
+    have : ContDiffWithinAt ℝ k F (Set.range ↑(𝓡 n)) ((extChartAt (𝓡 n) x) x) := by
+      apply ContDiff.contDiffWithinAt
+      unfold F
+      sorry -- why is the map in charts differentiable? "should be easy"
+    apply this.congr
+    exacts [fun y hy ↦ by simp [F, modelWithCornersEuclideanHalfSpace],
+      by simp [F, modelWithCornersEuclideanHalfSpace]]
+  isImmersion hk x := by
+    let F : (EuclideanSpace ℝ (Fin n)) → (EuclideanSpace ℝ (Fin (n + 1))) :=
+      fun x i ↦ if h : i = 0 then 0 else x (i.pred (by assumption))
+    suffices hyp: Function.Injective (fderiv ℝ F x) by
+      -- missing: translate the mfderiv to something about fderiv_within
+      -- then use hyp
+      unfold mfderiv
+      sorry
+    sorry -- "should be easy"/missing API
   range_eq_boundary := sorry
 
 #exit
