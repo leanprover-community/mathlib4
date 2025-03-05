@@ -27,6 +27,7 @@ protected theorem Pairwise.nodup {l : List α} {r : α → α → Prop} [IsIrref
     Nodup l :=
   h.imp ne_of_irrefl
 
+open scoped Relator in
 theorem rel_nodup {r : α → β → Prop} (hr : Relator.BiUnique r) : (Forall₂ r ⇒ (· ↔ ·)) Nodup Nodup
   | _, _, Forall₂.nil => by simp only [nodup_nil]
   | _, _, Forall₂.cons hab h => by

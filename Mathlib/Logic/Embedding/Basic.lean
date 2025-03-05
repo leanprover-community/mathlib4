@@ -206,6 +206,13 @@ def subtype {α} (p : α → Prop) : Subtype p ↪ α :=
   ⟨Subtype.val, fun _ _ => Subtype.ext⟩
 
 @[simp]
+theorem subtype_apply {α} {p : α → Prop} (x : Subtype p) : subtype p x = x :=
+  rfl
+
+theorem subtype_injective {α} (p : α → Prop) : Function.Injective (subtype p) :=
+  Subtype.coe_injective
+
+@[simp]
 theorem coe_subtype {α} (p : α → Prop) : ↑(subtype p) = Subtype.val :=
   rfl
 
