@@ -23,6 +23,10 @@ open CategoryTheory Functor Condensed Limits Monoidal MonoidalCategory MonoidalC
 
 
 
+
+
+
+
 /-!
 
 # Towards a formalized theory of solid modules
@@ -397,6 +401,23 @@ instance : Module.Free (ULift.{1} ℤ) (ULift (LocallyConstant S ℤ)) := by
     left_inv := congrFun rfl
     right_inv := congrFun rfl }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 section Coproduct
 
 /-
@@ -458,7 +479,27 @@ various ways, important for the development of the solid theory.
 
 -/
 
-section
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 variable (M : CondensedAb) (S : Profinite)
 
@@ -492,8 +533,6 @@ instance [M.IsDiscrete] :
 def isoUnderlyingOfDiscrete [M.IsDiscrete] :
     M ≅ (discrete _).obj (M.val.obj (*)) :=
   (asIso ((discreteUnderlyingAdj _).counit.app _)).symm
-
-end
 
 end Paper3
 
