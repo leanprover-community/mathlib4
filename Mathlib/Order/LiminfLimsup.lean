@@ -1375,8 +1375,7 @@ theorem frequently_lt_of_lt_limsup {α β} [ConditionallyCompleteLinearOrder β]
   simpa using h
 
 theorem frequently_lt_of_liminf_lt {α β} [ConditionallyCompleteLinearOrder β] {f : Filter α}
-    {u : α → β} {b : β}
-    (hu : f.IsCoboundedUnder (· ≥ ·) u := by isBoundedDefault)
+    {u : α → β} {b : β} (hu : f.IsCoboundedUnder (· ≥ ·) u := by isBoundedDefault)
     (h : liminf u f < b) : ∃ᶠ x in f, u x < b :=
   frequently_lt_of_lt_limsup (β := βᵒᵈ) hu h
 
@@ -1384,7 +1383,7 @@ theorem limsup_le_iff {α β} [ConditionallyCompleteLinearOrder β] {f : Filter 
     (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
     (h₂ : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) :
     limsup u f ≤ x ↔ ∀ y > x, ∀ᶠ a in f, u a < y := by
-  refine ⟨fun h _ h' ↦ eventually_lt_of_limsup_lt (lt_of_le_of_lt h h') h₂, fun h ↦ ?_⟩
+  refine ⟨fun h _ h' ↦ eventually_lt_of_limsup_lt (h.trans_lt h') h₂, fun h ↦ ?_⟩
   --Two cases: Either `x` is a cluster point from above, or it is not.
   --In the first case, we use `forall_lt_iff_le'` and split an interval.
   --In the second case, the function `u` must eventually be smaller or equal to `x`.
@@ -1392,17 +1391,16 @@ theorem limsup_le_iff {α β} [ConditionallyCompleteLinearOrder β] {f : Filter 
   · rw [← forall_lt_iff_le']
     intro y x_y
     rcases h' y x_y with ⟨z, x_z, z_y⟩
-    exact lt_of_le_of_lt (limsup_le_of_le h₁ ((h z x_z).mono (fun _ ↦ le_of_lt))) z_y
+    exact (limsup_le_of_le h₁ ((h z x_z).mono (fun _ ↦ le_of_lt))).trans_lt z_y
   · apply limsup_le_of_le h₁
     set_option push_neg.use_distrib true in push_neg at h'
     rcases h' with ⟨z, x_z, hz⟩
     exact (h z x_z).mono  <| fun w hw ↦ (or_iff_left (not_le_of_lt hw)).1 (hz (u w))
 
 /- A version of `limsup_le_iff` with large inequalities in densely ordered spaces.-/
-lemma limsup_le_iff' {α β : Type*} [ConditionallyCompleteLinearOrder β] [DenselyOrdered β]
-    {f : Filter α} {u : α → β} {x : β}
-    (h₁ : IsCoboundedUnder (fun (x1 x2 : β) => x1 ≤ x2) f u := by isBoundedDefault)
-    (h₂ : IsBoundedUnder (fun (x1 x2 : β) => x1 ≤ x2) f u := by isBoundedDefault) :
+lemma limsup_le_iff' {α β} [ConditionallyCompleteLinearOrder β] [DenselyOrdered β] {f : Filter α}
+    {u : α → β} {x : β} (h₁ : IsCoboundedUnder (· ≤ ·) f u := by isBoundedDefault)
+    (h₂ : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
     limsup u f ≤ x ↔ ∀ y > x, ∀ᶠ (a : α) in f, u a ≤ y := by
   refine ⟨fun h _ h' ↦ (eventually_lt_of_limsup_lt (h.trans_lt h') h₂).mono fun _ ↦ le_of_lt, ?_⟩
   rw [← forall_lt_iff_le']
@@ -1414,29 +1412,52 @@ theorem le_limsup_iff {α β} [ConditionallyCompleteLinearOrder β] {f : Filter 
     (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
     (h₂ : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) :
     x ≤ limsup u f ↔ ∀ y < x, ∃ᶠ a in f, y < u a := by
-  refine ⟨fun h _ h' ↦ frequently_lt_of_lt_limsup h₁ (lt_of_lt_of_le h' h), fun h ↦ ?_⟩
+  refine ⟨fun h _ h' ↦ frequently_lt_of_lt_limsup h₁ (h'.trans_le h), fun h ↦ ?_⟩
   --Two cases: Either `x` is a cluster point from below, or it is not.
   --In the first case, we use `forall_lt_iff_le` and split an interval.
   --In the second case, the function `u` must frequently be larger or equal to `x`.
   by_cases h' : ∀ y < x, ∃ z, y < z ∧ z < x
   · rw [← forall_lt_iff_le]
     intro y y_x
-    rcases h' y y_x with ⟨z, y_z, z_x⟩
-    exact lt_of_lt_of_le y_z (le_limsup_of_frequently_le ((h z z_x).mono (fun _ ↦ le_of_lt)) h₂)
+    obtain ⟨z, y_z, z_x⟩ := h' y y_x
+    exact y_z.trans_le (le_limsup_of_frequently_le ((h z z_x).mono (fun _ ↦ le_of_lt)) h₂)
   · apply le_limsup_of_frequently_le _ h₂
     set_option push_neg.use_distrib true in push_neg at h'
     rcases h' with ⟨z, z_x, hz⟩
     exact (h z z_x).mono <| fun w hw ↦ (or_iff_right (not_le_of_lt hw)).1 (hz (u w))
+
+/- A version of `le_limsup_iff` with large inequalities in densely ordered spaces.-/
+lemma le_limsup_iff' {α β} [ConditionallyCompleteLinearOrder β] [DenselyOrdered β]
+    {f : Filter α} {u : α → β} {x : β} (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
+    (h₂ : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) :
+    x ≤ limsup u f ↔ ∀ y < x, ∃ᶠ a in f, y ≤ u a := by
+  refine ⟨fun h _ h' ↦ (frequently_lt_of_lt_limsup h₁ (h'.trans_le h)).mono fun _ ↦ le_of_lt, ?_⟩
+  rw [← forall_lt_iff_le]
+  intro h y y_x
+  obtain ⟨z, y_z, z_x⟩ := exists_between y_x
+  exact y_z.trans_le (le_limsup_of_frequently_le (h z z_x) h₂)
 
 theorem le_liminf_iff {α β} [ConditionallyCompleteLinearOrder β] {f : Filter α} {u : α → β} {x : β}
     (h₁ : f.IsCoboundedUnder (· ≥ ·) u := by isBoundedDefault)
     (h₂ : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) :
     x ≤ liminf u f ↔ ∀ y < x, ∀ᶠ a in f, y < u a := limsup_le_iff (β := βᵒᵈ) h₁ h₂
 
+/- A version of `le_liminf_iff` with large inequalities in densely ordered spaces.-/
+theorem le_liminf_iff' {α β} [ConditionallyCompleteLinearOrder β] [DenselyOrdered β] {f : Filter α}
+    {u : α → β} {x : β} (h₁ : f.IsCoboundedUnder (· ≥ ·) u := by isBoundedDefault)
+    (h₂ : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) :
+    x ≤ liminf u f ↔ ∀ y < x, ∀ᶠ a in f, y ≤ u a := limsup_le_iff' (β := βᵒᵈ) h₁ h₂
+
 theorem liminf_le_iff {α β} [ConditionallyCompleteLinearOrder β] {f : Filter α} {u : α → β} {x : β}
     (h₁ : f.IsCoboundedUnder (· ≥ ·) u := by isBoundedDefault)
     (h₂ : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) :
     liminf u f ≤ x ↔ ∀ y > x, ∃ᶠ a in f, u a < y := le_limsup_iff (β := βᵒᵈ) h₁ h₂
+
+/- A version of `liminf_le_iff` with large inequalities in densely ordered spaces.-/
+theorem liminf_le_iff' {α β} [ConditionallyCompleteLinearOrder β] [DenselyOrdered β] {f : Filter α}
+    {u : α → β} {x : β} (h₁ : f.IsCoboundedUnder (· ≥ ·) u := by isBoundedDefault)
+    (h₂ : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) :
+    liminf u f ≤ x ↔ ∀ y > x, ∃ᶠ a in f, u a ≤ y := le_limsup_iff' (β := βᵒᵈ) h₁ h₂
 
 variable [ConditionallyCompleteLinearOrder α] {f : Filter α} {b : α}
 
