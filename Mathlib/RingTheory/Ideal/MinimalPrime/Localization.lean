@@ -18,12 +18,13 @@ of localizations
   preimage of some minimal prime over `I`.
 - `Ideal.minimalPrimes_eq_comap`: The minimal primes over `I` are precisely the preimages of
   minimal primes of `R ⧸ I`.
-- `IsLocalization.minimalPrimes_comap`: If A is a localization of R with respect to the submonoid S,
-  J is an ideal of A, then the minimal primes over the preimage of J (under R →+* A) are exactly
-  the preimages of the minimal primes over J.
-- `IsLocalization.minimalPrimes_map`: If A is a localization of R with respect to the submonoid S,
-  J is an ideal of R, then the minimal primes over the span of the image of J (under R →+* A) are
-  exactly the ideals of A such that the preimage of which is a minimal prime over J.
+- `IsLocalization.minimalPrimes_comap`: If `A` is a localization of `R` with respect to the
+  submonoid `S`, `J` is an ideal of `A`, then the minimal primes over the preimage of `J`
+  (under `R →+* A`) are exactly the preimages of the minimal primes over `J`.
+- `IsLocalization.minimalPrimes_map`: If `A` is a localization of `R` with respect to the
+  submonoid `S`, `J` is an ideal of `R`, then the minimal primes over the span of the image of `J`
+  (under `R →+* A`) are exactly the ideals of `A` such that the preimage of which is a minimal prime
+  over `J`.
 - `Localization.AtPrime.prime_unique_of_minimal`: When localizing at a minimal prime ideal `I`,
   the resulting ring only has a single prime ideal.
 -/
