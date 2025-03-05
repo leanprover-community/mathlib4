@@ -42,6 +42,10 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
   `basisUnitLattice K` in the sense that, for `i ≠ w₀`, the image of `completeBasis K i` by the
   natural restriction map `realSpace K → logSpace K` is `basisUnitLattice K`.
 
+* At this point, we can construct the map `expMapBasis` that plays a crucial part in the proof.
+  It is the map that sends `x : realSpace K` to `Real.exp (x w₀) * ∏_{i ≠ w₀} |ηᵢ| ^ x i`, see
+  `expMapBasis_apply'`.
+
 ## Spaces and maps
 
 To help understand the proof, we make a list of (almost) all the spaces and maps used and
@@ -73,11 +77,16 @@ identify `realSpace K` with its image in `mixedSpace K`).
 * `expMap : realSpace K → realSpace K`: the right inverse of `logMap` in the sense that
   `logMap (expMap x) = (x_w)_{w ≠ w₀}`.
 
+* `expMapBasis : realSpace K → realSpace K`: the map that sends `x : realSpace K` to
+  `Real.exp (x w₀) * ∏_{i ≠ w₀} |ηᵢ| ^ x i` where `|ηᵢ|` denote the vector of `realSpace K` given
+  by `w (ηᵢ)` and `ηᵢ` denote the units in `fundSystem K`.
+
 -/
 
 variable (K : Type*) [Field K]
 
 open Finset NumberField NumberField.InfinitePlace NumberField.mixedEmbedding NumberField.Units
+  NumberField.Units.dirichletUnitTheorem
 
 namespace NumberField.mixedEmbedding
 
@@ -190,6 +199,24 @@ variable {K}
 theorem expMap_apply (x : realSpace K) (w : InfinitePlace K) :
     expMap x w = Real.exp ((↑w.mult)⁻¹ * x w) := rfl
 
+theorem expMap_pos (x : realSpace K) (w : InfinitePlace K) :
+    0 < expMap x w := Real.exp_pos _
+
+theorem expMap_smul (c : ℝ) (x : realSpace K) :
+    expMap (c • x) = (expMap x) ^ c := by
+  ext
+  simp [mul_comm c _, ← mul_assoc, Real.exp_mul]
+
+theorem expMap_add (x y : realSpace K) :
+    expMap (x + y) = expMap x * expMap y := by
+  ext
+  simp [mul_add, Real.exp_add]
+
+theorem expMap_sum {ι : Type*} (s : Finset ι) (f : ι → realSpace K) :
+    expMap (∑ i ∈ s, f i) = ∏ i ∈ s, expMap (f i) := by
+  ext
+  simp [← Real.exp_sum, ← mul_sum]
+
 @[simp]
 theorem expMap_symm_apply (x : realSpace K) (w : InfinitePlace K) :
     expMap.symm x w = ↑w.mult * Real.log (x w) := rfl
@@ -214,8 +241,6 @@ noncomputable section completeBasis
 variable [NumberField K]
 
 variable {K}
-
-open NumberField.Units.dirichletUnitTheorem
 
 open scoped Classical in
 /--
@@ -320,6 +345,57 @@ theorem completeBasis_apply_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
       expMap.symm (normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm i)))) := by
   rw [completeBasis, coe_basisOfLinearIndependentOfCardEqFinrank, completeFamily, dif_neg]
 
+theorem expMap_basis_of_eq :
+    expMap (completeBasis K w₀) = fun _ ↦ Real.exp 1 := by
+  ext
+  simp_rw [expMap_apply, completeBasis_apply_of_eq, inv_mul_cancel₀ mult_coe_ne_zero]
+
+theorem expMap_basis_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
+    expMap (completeBasis K i) =
+      normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm i))) := by
+  rw [completeBasis_apply_of_ne, PartialHomeomorph.right_inv _ (by simp [expMap_target])]
+
 end completeBasis
+
+noncomputable section expMapBasis
+
+variable [NumberField K]
+
+variable {K}
+
+/--
+Docstring.
+-/
+def expMapBasis : PartialHomeomorph (realSpace K) (realSpace K) :=
+  (completeBasis K).equivFunL.symm.toHomeomorph.transPartialHomeomorph expMap
+
+variable (K)
+
+theorem expMapBasis_source :
+    expMapBasis.source = (Set.univ : Set (realSpace K)) := by
+  simp [expMapBasis, expMap_source]
+
+variable {K}
+
+theorem expMapBasis_pos (x : realSpace K) (w : InfinitePlace K) :
+    0 < expMapBasis x w := expMap_pos _ _
+
+theorem expMapBasis_nonneg (x : realSpace K) (w : InfinitePlace K) :
+    0 ≤ expMapBasis x w := (expMapBasis_pos _ _).le
+
+theorem expMapBasis_apply (x : realSpace K) :
+    expMapBasis x = expMap ((completeBasis K).equivFun.symm x) := rfl
+
+open scoped Classical in
+theorem expMapBasis_apply' (x : realSpace K) :
+    expMapBasis x = Real.exp (x w₀) •
+      fun w : InfinitePlace K ↦
+         ∏ i : {w // w ≠ w₀}, w (fundSystem K (equivFinRank.symm i)) ^ x i := by
+  simp_rw [expMapBasis_apply, Basis.equivFun_symm_apply, Fintype.sum_eq_add_sum_subtype_ne _ w₀,
+    expMap_add, expMap_smul, expMap_basis_of_eq, Pi.pow_def, Real.exp_one_rpow, Pi.mul_def,
+    expMap_sum, expMap_smul, expMap_basis_of_ne, Pi.smul_def, smul_eq_mul, prod_apply, Pi.pow_apply,
+    normAtAllPlaces_mixedEmbedding]
+
+end expMapBasis
 
 end NumberField.mixedEmbedding
