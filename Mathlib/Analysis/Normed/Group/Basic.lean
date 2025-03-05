@@ -873,6 +873,16 @@ theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball 1 r ↔ �
 
 end ENorm
 
+-- Generic lemmas about ContinuousENorm: could also move to Basic.lean.
+section ContinuousENorm
+
+@[continuity, fun_prop]
+lemma continuous_enorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E] :
+    Continuous fun a : E ↦ ‖a‖ₑ :=
+  ContinuousENorm.continuous_enorm
+
+end ContinuousENorm
+
 section ENormedMonoid
 
 variable {E : Type*} [TopologicalSpace E] [ENormedMonoid E]
@@ -893,7 +903,6 @@ lemma enorm_pos' {a : E} :
     0 < ‖a‖ₑ ↔ a ≠ 1 := pos_iff_ne_zero.trans enorm_ne_zero'
 
 end ENormedMonoid
-
 
 open Set in
 @[to_additive]

@@ -16,20 +16,9 @@ import Mathlib.Topology.Sequences
 normed group
 -/
 
-
 variable {𝓕 α ι κ E F G : Type*}
 
 open Filter Function Metric Bornology ENNReal NNReal Uniformity Pointwise Topology
-
--- Generic lemmas about ContinuousENorm: could also move to Basic.lean.
-section ContinuousENorm
-
-@[continuity, fun_prop]
-lemma continuous_enorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E] :
-    Continuous fun a : E ↦ ‖a‖ₑ :=
-  ContinuousENorm.continuous_enorm
-
-end ContinuousENorm
 
 section SeminormedGroup
 
