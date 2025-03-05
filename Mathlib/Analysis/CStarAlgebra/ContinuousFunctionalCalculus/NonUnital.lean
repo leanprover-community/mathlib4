@@ -5,7 +5,6 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.Topology.ContinuousMap.Compact
-import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
 import Mathlib.Topology.UniformSpace.CompactConvergence
 
@@ -569,7 +568,7 @@ section Semiring
 
 variable {R A : Type*} {p : A → Prop} [OrderedCommSemiring R] [Nontrivial R]
 variable [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
-variable [∀ (α) [Zero α] [TopologicalSpace α], StarOrderedRing C(α, R)₀]
+variable [ContinuousSqrt R] [StarOrderedRing R] [NoZeroDivisors R]
 variable [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
 variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 variable [NonUnitalContinuousFunctionalCalculus R p]
@@ -635,7 +634,7 @@ section Ring
 
 variable {R A : Type*} {p : A → Prop} [OrderedCommRing R] [Nontrivial R]
 variable [StarRing R] [MetricSpace R] [IsTopologicalRing R] [ContinuousStar R]
-variable [∀ (α) [Zero α] [TopologicalSpace α], StarOrderedRing C(α, R)₀]
+variable [ContinuousSqrt R] [StarOrderedRing R] [NoZeroDivisors R]
 variable [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
 variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 variable [NonUnitalContinuousFunctionalCalculus R p] [NonnegSpectrumClass R A]
