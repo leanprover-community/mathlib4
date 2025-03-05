@@ -391,21 +391,25 @@ lemma RelCWComplex.isClosed [T2Space X] [RelCWComplex C D] : IsClosed C := by
   · rw [inter_eq_right.2 base_subset_complex]
     exact isClosedBase C
 
-lemma RelCWComplex.skeletonLT_succ_eq_skeletonLT_union_iUnion_closedCell [RelCWComplex C D]
-    (n : ℕ) : skeletonLT C (n + 1) = skeletonLT C n ∪ ⋃ (j : cell C n), closedCell n j := by
+lemma RelCWComplex.skeletonLT_union_iUnion_closedCell_eq_skeletonLT_succ [RelCWComplex C D]
+    (n : ℕ) : skeletonLT C n ∪ ⋃ (j : cell C n), closedCell n j = skeletonLT C (n + 1)  := by
   rw [skeletonLT, skeletonLT, union_assoc]
   congr
   norm_cast
-  exact biUnion_lt_succ _ _
+  exact (biUnion_lt_succ _ _).symm
 
-lemma RelCWComplex.skeleton_succ_eq_skeleton_union_iUnion_closedCell [RelCWComplex C D] (n : ℕ) :
-    skeleton C (n + 1) = skeleton C n ∪ ⋃ (j : cell C (n + 1)), closedCell (n + 1) j :=
-  skeletonLT_succ_eq_skeletonLT_union_iUnion_closedCell _
+lemma RelCWComplex.skeleton_union_iUnion_closedCell_eq_skeleton_succ [RelCWComplex C D] (n : ℕ) :
+    skeleton C n ∪ ⋃ (j : cell C (n + 1)), closedCell (n + 1) j = skeleton C (n + 1) :=
+  skeletonLT_union_iUnion_closedCell_eq_skeletonLT_succ _
 
 /-- A version of the definition of `skeletonLT` with open cells. -/
-lemma RelCWComplex.skeletonLT_eq_iUnion_openCell [RelCWComplex C D] (n : ℕ∞) :
-    skeletonLT C n = D ∪ ⋃ (m : ℕ) (_ : m < n) (j : cell C m), openCell m j := by
+lemma RelCWComplex.iUnion_openCell_eq_skeletonLT [RelCWComplex C D] (n : ℕ∞) :
+    D ∪ ⋃ (m : ℕ) (_ : m < n) (j : cell C m), openCell m j = skeletonLT C n := by
   apply subset_antisymm
+  · apply union_subset
+    · exact base_subset_skeletonLT n
+    · apply iUnion₂_subset fun m hm ↦ iUnion_subset fun j ↦ ?_
+      exact (openCell_subset_skeletonLT m j).trans (skeletonLT_mono (Order.add_one_le_of_lt hm))
   · rw [skeletonLT]
     apply union_subset subset_union_left
     refine iUnion₂_subset fun m hm ↦ iUnion_subset fun j ↦ ?_
@@ -423,30 +427,26 @@ lemma RelCWComplex.skeletonLT_eq_iUnion_openCell [RelCWComplex C D] (n : ℕ∞)
         · apply subset_union_of_subset_right
           exact subset_iUnion₂_of_subset l ((ENat.coe_lt_coe.2 hl).trans hm) <| subset_iUnion _ i
     · exact subset_union_of_subset_right (subset_iUnion₂_of_subset m hm (subset_iUnion _ j)) _
-  · apply union_subset
-    · exact base_subset_skeletonLT n
-    · apply iUnion₂_subset fun m hm ↦ iUnion_subset fun j ↦ ?_
-      exact (openCell_subset_skeletonLT m j).trans (skeletonLT_mono (Order.add_one_le_of_lt hm))
 
-lemma CWComplex.skeletonLT_eq_iUnion_openCell [CWComplex C] (n : ℕ∞) :
+lemma CWComplex.iUnion_openCell_eq_skeletonLT [CWComplex C] (n : ℕ∞) :
     ⋃ (m : ℕ) (_ : m < n) (j : cell C m), openCell m j = skeletonLT C n := by
-  rw [RelCWComplex.skeletonLT_eq_iUnion_openCell, empty_union]
+  rw [← RelCWComplex.iUnion_openCell_eq_skeletonLT, empty_union]
 
-lemma RelCWComplex.skeleton_eq_iUnion_openCell [RelCWComplex C D] (n : ℕ∞) :
-    skeleton C n = D ∪ ⋃ (m : ℕ) (_ : m < n + 1) (j : cell C m), openCell m j :=
-  skeletonLT_eq_iUnion_openCell _
+lemma RelCWComplex.iUnion_openCell_eq_skeleton [RelCWComplex C D] (n : ℕ∞) :
+    D ∪ ⋃ (m : ℕ) (_ : m < n + 1) (j : cell C m), openCell m j = skeleton C n :=
+  iUnion_openCell_eq_skeletonLT _
 
 lemma CWComplex.iUnion_openCell_eq_skeleton [CWComplex C] (n : ℕ∞) :
     ⋃ (m : ℕ) (_ : m < n + 1) (j : cell C m), openCell m j = skeleton C n :=
-  CWComplex.skeletonLT_eq_iUnion_openCell _
+  iUnion_openCell_eq_skeletonLT _
 
-lemma RelCWComplex.complex_eq_union_iUnion_openCell [RelCWComplex C D] :
-    C = D ∪ ⋃ (n : ℕ) (j : cell C n), openCell n j := by
-  simp only [← skeletonLT_top, skeletonLT_eq_iUnion_openCell, ENat.coe_lt_top, iUnion_true]
+lemma RelCWComplex.union_iUnion_openCell_eq_complex [RelCWComplex C D] :
+    D ∪ ⋃ (n : ℕ) (j : cell C n), openCell n j = C := by
+  simp only [← skeletonLT_top, ← iUnion_openCell_eq_skeletonLT, ENat.coe_lt_top, iUnion_true]
 
-lemma CWComplex.complex_eq_iUnion_openCell [CWComplex C] :
-    C = ⋃ (n : ℕ) (j : cell C n), openCell n j := by
-  simpa using RelCWComplex.complex_eq_union_iUnion_openCell (C := C) (D := ∅)
+lemma CWComplex.iUnion_openCell_eq_complex [CWComplex C] :
+    ⋃ (n : ℕ) (j : cell C n), openCell n j = C := by
+  simpa using RelCWComplex.union_iUnion_openCell_eq_complex (C := C) (D := ∅)
 
 /-- The contrapositive of `disjoint_openCell_of_ne`. -/
 lemma RelCWComplex.eq_cell_of_not_disjoint [RelCWComplex C D] {n : ℕ} {j : cell C n} {m : ℕ}
@@ -457,11 +457,11 @@ lemma RelCWComplex.eq_cell_of_not_disjoint [RelCWComplex C D] {n : ℕ} {j : cel
 
 lemma RelCWComplex.mem_skeletonLT_iff [RelCWComplex C D] {n : ℕ∞} {x : X} :
     x ∈ skeletonLT C n ↔ x ∈ D ∨ ∃ (m : ℕ) (_ : m < n) (j : cell C m), x ∈ openCell m j := by
-  simp [skeletonLT_eq_iUnion_openCell]
+  simp [← iUnion_openCell_eq_skeletonLT]
 
 lemma CWComplex.mem_skeletonLT_iff [CWComplex C] {n : ℕ∞} {x : X} :
     x ∈ skeletonLT C n ↔ ∃ (m : ℕ) (_ : m < n) (j : cell C m), x ∈ openCell m j := by
-  simp [← skeletonLT_eq_iUnion_openCell]
+  simp [← iUnion_openCell_eq_skeletonLT]
 
 lemma RelCWComplex.mem_skeleton_iff [RelCWComplex C D] {n : ℕ∞} {x : X} :
     x ∈ skeleton C n ↔ x ∈ D ∨ ∃ (m : ℕ) (_ : m ≤ n) (j : cell C m), x ∈ openCell m j := by
@@ -480,7 +480,7 @@ lemma CWComplex.exists_mem_openCell_of_mem_skeleton [CWComplex C] {n : ℕ∞} {
 lemma RelCWComplex.disjoint_skeletonLT_openCell [RelCWComplex C D] {n : ℕ∞} {m : ℕ}
     {j : cell C m} (hnm : n ≤ m) : Disjoint (skeletonLT C n) (openCell m j) := by
   -- This is a consequence of `iUnion_openCell_eq_skeletonLT` and `disjoint_openCell_of_ne`
-  simp_rw [skeletonLT_eq_iUnion_openCell, disjoint_union_left, disjoint_iUnion_left ]
+  simp_rw [← iUnion_openCell_eq_skeletonLT, disjoint_union_left, disjoint_iUnion_left]
   refine ⟨(disjointBase m j).symm, ?_⟩
   intro l hln i
   apply disjoint_openCell_of_ne
@@ -637,8 +637,8 @@ export RelCWComplex (pairwiseDisjoint disjoint_openCell_of_ne openCell_subset_cl
   openCell_subset_complex cellFrontier_subset_skeletonLT cellFrontier_subset_skeleton
   cellFrontier_subset_complex iUnion_cellFrontier_subset_skeletonLT
   iUnion_cellFrontier_subset_skeleton closedCell_zero_eq_singleton openCell_zero_eq_singleton
-  cellFrontier_zero_eq_empty isClosed skeletonLT_succ_eq_skeletonLT_union_iUnion_closedCell
-  skeleton_succ_eq_skeleton_union_iUnion_closedCell
+  cellFrontier_zero_eq_empty isClosed skeletonLT_union_iUnion_closedCell_eq_skeletonLT_succ
+  skeleton_union_iUnion_closedCell_eq_skeleton_succ
   eq_cell_of_not_disjoint disjoint_skeletonLT_openCell
   disjoint_skeleton_openCell skeletonLT_inter_closedCell_eq_skeletonLT_inter_cellFrontier
   skeleton_inter_closedCell_eq_skeleton_inter_cellFrontier)
