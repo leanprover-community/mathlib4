@@ -261,7 +261,7 @@ instance [∀ n, IsZeroOrMarkovKernel (κ n)] (a b : ℕ) :
     | succ k hak => rw [partialTraj_succ_of_le hak]; infer_instance
   · rw [partialTraj_le hba]; infer_instance
 
-instance IsMarkovKernel.partialTraj [∀ n, IsMarkovKernel (κ n)] (a b : ℕ) :
+instance [∀ n, IsMarkovKernel (κ n)] (a b : ℕ) :
     IsMarkovKernel (partialTraj κ a b) := by
   obtain hab | hba := le_total a b
   · induction b, hab using Nat.le_induction with
