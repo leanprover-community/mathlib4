@@ -3342,6 +3342,7 @@ import Mathlib.FieldTheory.MvRatFunc.Rank
 import Mathlib.FieldTheory.Normal.Basic
 import Mathlib.FieldTheory.Normal.Closure
 import Mathlib.FieldTheory.Normal.Defs
+import Mathlib.FieldTheory.NormalizedTrace
 import Mathlib.FieldTheory.Perfect
 import Mathlib.FieldTheory.PerfectClosure
 import Mathlib.FieldTheory.PolynomialGaloisGroup
