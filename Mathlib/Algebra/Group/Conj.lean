@@ -42,7 +42,7 @@ theorem IsConj.trans {a b c : α} : IsConj a b → IsConj b c → IsConj a c
   | ⟨c₁, hc₁⟩, ⟨c₂, hc₂⟩ => ⟨c₂ * c₁, hc₂.mul_left hc₁⟩
 
 theorem IsConj.pow {a b : α} (n : ℕ) : IsConj a b → IsConj (a^n) (b^n)
-  | ⟨c, hc⟩ => ⟨c, SemiconjBy.pow_right hc n⟩
+  | ⟨c, hc⟩ => ⟨c, hc.pow_right n⟩
 
 @[simp]
 theorem isConj_iff_eq {α : Type*} [CommMonoid α] {a b : α} : IsConj a b ↔ a = b :=
