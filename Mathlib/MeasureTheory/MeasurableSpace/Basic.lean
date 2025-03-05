@@ -390,7 +390,7 @@ end ULift
 
 section Nat
 
-variable [MeasurableSpace α]
+variable {mα : MeasurableSpace α}
 
 @[measurability]
 theorem measurable_from_nat {f : ℕ → α} : Measurable f :=
