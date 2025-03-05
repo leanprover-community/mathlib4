@@ -166,16 +166,6 @@ theorem Continuous.nnnorm' : Continuous f → Continuous fun x => ‖f x‖₊ :
 end
 end SeminormedGroup
 
-section
-
-variable [TopologicalSpace α] {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
-  {f : α → E} {s : Set α} {a : α}
-
-@[fun_prop]
-lemma Continuous.enorm : Continuous f → Continuous (‖f ·‖ₑ) := continuous_enorm.comp
-
-end
-
 section SeminormedGroup
 
 variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E} {a : E}

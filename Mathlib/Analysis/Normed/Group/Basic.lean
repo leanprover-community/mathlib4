@@ -873,13 +873,16 @@ theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball 1 r ↔ �
 
 end ENorm
 
--- Generic lemmas about ContinuousENorm: could also move to Basic.lean.
 section ContinuousENorm
 
+variable {X E : Type*} [TopologicalSpace E] [ContinuousENorm E]
+
 @[continuity, fun_prop]
-lemma continuous_enorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E] :
-    Continuous fun a : E ↦ ‖a‖ₑ :=
-  ContinuousENorm.continuous_enorm
+lemma continuous_enorm : Continuous fun a : E ↦ ‖a‖ₑ := ContinuousENorm.continuous_enorm
+
+@[fun_prop]
+lemma Continuous.enorm [TopologicalSpace X] {f : X → E} : Continuous f → Continuous (‖f ·‖ₑ) :=
+  continuous_enorm.comp
 
 end ContinuousENorm
 
