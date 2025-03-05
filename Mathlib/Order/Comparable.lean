@@ -71,6 +71,9 @@ theorem CompRel.symm : CompRel r a b → CompRel r b a :=
 instance : IsSymm α (CompRel r) where
   symm _ _ := CompRel.symm
 
+theorem compRel_comm {a b : α} : CompRel r a b ↔ CompRel r b a :=
+  comm
+
 instance CompRel.decidableRel [DecidableRel r] : DecidableRel (CompRel r) :=
   fun _ _ ↦ inferInstanceAs (Decidable (_ ∨ _))
 
@@ -191,6 +194,9 @@ theorem IncompRel.symm : IncompRel r a b → IncompRel r b a :=
 
 instance : IsSymm α (IncompRel r) where
   symm _ _ := IncompRel.symm
+
+theorem incompRel_comm {a b : α} : IncompRel r a b ↔ IncompRel r b a :=
+  comm
 
 instance IncompRel.decidableRel [DecidableRel r] : DecidableRel (IncompRel r) :=
   fun _ _ ↦ inferInstanceAs (Decidable (¬ _ ∧ ¬ _))
