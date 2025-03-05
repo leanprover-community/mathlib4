@@ -5,7 +5,6 @@ Authors: David Kurniadi Angdinata
 -/
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic
-import Mathlib.Tactic.LinearCombination'
 
 /-!
 # Negation and addition formulae for nonsingular points in projective coordinates
@@ -105,9 +104,10 @@ lemma negY_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
 lemma Y_sub_Y_mul_Y_sub_negY {P Q : Fin 3 → R} (hP : W'.Equation P) (hQ : W'.Equation Q)
     (hx : P x * Q z = Q x * P z) :
     P z * Q z * (P y * Q z - Q y * P z) * (P y * Q z - W'.negY Q * P z) = 0 := by
-  linear_combination' (norm := (rw [negY]; ring1)) Q z ^ 3 * (equation_iff P).mp hP
-    - P z ^ 3 * (equation_iff Q).mp hQ + hx * hx * hx + W'.a₂ * P z * Q z * hx * hx
-    + (W'.a₄ * P z ^ 2 * Q z ^ 2 - W'.a₁ * P y * P z * Q z ^ 2) * hx
+  linear_combination (norm := (rw [negY]; ring1)) Q z ^ 3 * (equation_iff P).mp hP
+    - P z ^ 3 * (equation_iff Q).mp hQ + (P x ^ 2 * Q z ^ 2 + P x * Q x * P z * Q z
+      + Q x ^ 2 * P z ^ 2 - W'.a₁ * P y * P z * Q z ^ 2 + W'.a₂ * P x * Q z ^ 2 * P z
+      + W'.a₂ * Q x * P z ^ 2 * Q z + W'.a₄ * P z ^ 2 * Q z ^ 2) * hx
 
 lemma Y_eq_of_Y_ne [NoZeroDivisors R] {P Q : Fin 3 → R} (hP : W'.Equation P) (hQ : W'.Equation Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ Q y * P z) :

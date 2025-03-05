@@ -389,7 +389,7 @@ lemma fromAffine_some_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingu
     fromAffine (.some h) ≠ 0 :=
   mk_ne_zero <| (nonsingularLift_some ..).mpr h
 
-@[deprecated (since := "2025-02-01")] alias fromAffine_ne_zero := fromAffine_some_ne_zero
+@[deprecated (since := "2025-03-01")] alias fromAffine_ne_zero := fromAffine_some_ne_zero
 
 /-- The negation of a nonsingular projective point on a Weierstrass curve `W`.
 
@@ -611,8 +611,8 @@ lemma baseChange_add [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R 
 end Projective
 
 /-- An abbreviation for `WeierstrassCurve.Projective.Point.fromAffine` for dot notation. -/
-abbrev Affine.Point.toProjective {R : Type r} [CommRing R] [Nontrivial R] {W : Affine R}
-    (P : W.Point) : W.toProjective.Point :=
+abbrev Affine.Point.toProjective [Nontrivial R] {W : Affine R} (P : W.Point) :
+    W.toProjective.Point :=
   Projective.Point.fromAffine P
 
 end WeierstrassCurve

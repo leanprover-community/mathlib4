@@ -469,17 +469,6 @@ lemma nonsingularLift_some (X Y : R) :
     W'.NonsingularLift ⟦![X, Y, 1]⟧ ↔ W'.toAffine.Nonsingular X Y :=
   nonsingular_some X Y
 
-@[deprecated (since := "2024-08-27")] alias equation_smul_iff := equation_smul
-@[deprecated (since := "2024-08-27")] alias nonsingularLift_zero' := nonsingularLift_zero
-@[deprecated (since := "2024-08-27")] alias nonsingular_affine_of_Z_ne_zero :=
-  nonsingular_of_Z_ne_zero
-@[deprecated (since := "2024-08-27")] alias nonsingular_iff_affine_of_Z_ne_zero :=
-  nonsingular_of_Z_ne_zero
-@[deprecated (since := "2024-08-27")] alias nonsingular_of_affine_of_Z_ne_zero :=
-  nonsingular_of_Z_ne_zero
-@[deprecated (since := "2024-08-27")] alias nonsingular_smul_iff := nonsingular_smul
-@[deprecated (since := "2024-08-27")] alias nonsingular_zero' := nonsingular_zero
-
 /-! ## Maps and base changes -/
 
 variable (f : R →+* S) (P : Fin 3 → R)

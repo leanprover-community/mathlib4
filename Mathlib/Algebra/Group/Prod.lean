@@ -6,6 +6,7 @@ Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.ZeroOne.Prod
 import Mathlib.Logic.Equiv.Basic
