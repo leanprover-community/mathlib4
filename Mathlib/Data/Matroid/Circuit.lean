@@ -508,7 +508,7 @@ lemma finitary_iff_forall_isCircuit_finite : M.Finitary ↔ ∀ C, M.IsCircuit C
   simpa using (hI {x} (by simpa) (finite_singleton _)).subset_ground
 
 /-- In a finitary matroid, every element spanned by a set `X` is in fact
-spanned by a finite independent subset of `X`.  -/
+spanned by a finite independent subset of `X`. -/
 lemma exists_mem_finite_closure_of_mem_closure [M.Finitary] (he : e ∈ M.closure X) :
     ∃ I ⊆ X, I.Finite ∧ M.Indep I ∧ e ∈ M.closure I := by
   by_cases heY : e ∈ X
@@ -579,9 +579,9 @@ lemma isCocircuit_iff_minimal_compl_nonspanning :
   convert isCocircuit_iff_minimal with K
   simp_rw [spanning_iff_exists_isBase_subset (S := M.E \ K), not_exists, subset_diff, not_and,
     not_disjoint_iff_nonempty_inter, ← and_imp, and_iff_left_of_imp IsBase.subset_ground,
-      inter_comm K]
+    inter_comm K]
 
-/-- For an element `e` of a base `B`, the complement of the closure of `B \ {e}` is a cocircuit.-/
+/-- For an element `e` of a base `B`, the complement of the closure of `B \ {e}` is a cocircuit. -/
 lemma IsBase.compl_closure_diff_singleton_isCocircuit (hB : M.IsBase B) (he : e ∈ B) :
     M.IsCocircuit (M.E \ M.closure (B \ {e})) := by
   rw [isCocircuit_iff_minimal_compl_nonspanning, minimal_subset_iff,
@@ -653,7 +653,7 @@ lemma rankPos_iff_exists_isCocircuit : M.RankPos ↔ ∃ K, M.IsCocircuit K := b
 /-- The fundamental cocircuit for `B` and `e`:
 that is, the unique cocircuit `K` of `M` for which `K ∩ B = {e}`.
 Should be used when `B` is a base and `e ∈ B`.
-Has the junk value `{e}` if `e ∉ B` or `e ∉ M.E`.-/
+Has the junk value `{e}` if `e ∉ B` or `e ∉ M.E`. -/
 def fundCocircuit (M : Matroid α) (e : α) (B : Set α) := M✶.fundCircuit e (M✶.E \ B)
 
 lemma fundCocircuit_isCocircuit (he : e ∈ B) (hB : M.IsBase B) :
@@ -688,7 +688,7 @@ lemma fundCocircuit_eq_of_not_mem (M : Matroid α) (heX : e ∉ X) : M.fundCocir
   rw [fundCocircuit_eq_of_not_mem_ground _ he]
 
 /-- For every element `e` of an independent set `I`,
-there is a cocircuit whose intersection with `I` is `{e}`.-/
+there is a cocircuit whose intersection with `I` is `{e}`. -/
 lemma Indep.exists_isCocircuit_inter_eq_mem (hI : M.Indep I) (heI : e ∈ I) :
     ∃ K, M.IsCocircuit K ∧ K ∩ I = {e} := by
   obtain ⟨B, hB, hIB⟩ := hI.exists_isBase_superset
