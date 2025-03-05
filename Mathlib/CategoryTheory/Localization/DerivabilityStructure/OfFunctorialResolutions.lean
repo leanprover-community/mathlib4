@@ -52,9 +52,9 @@ def localizerMorphismInv [W₂.HasTwoOutOfThreeProperty] :
   map := by
     rw [hW₁]
     intro X Y f hf
-    simp only [MorphismProperty.inverseImage_iff]
     have := i.naturality f
     dsimp at this
+    simp only [MorphismProperty.inverseImage_iff]
     rw [← W₂.precomp_iff _ _ (hi X), ← this]
     exact W₂.comp_mem _ _ hf (hi Y)
 
