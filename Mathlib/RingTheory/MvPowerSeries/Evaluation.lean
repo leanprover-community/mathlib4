@@ -70,7 +70,7 @@ structure EvalDomain (a : σ → S) : Prop where
 /-- The domain of evaluation of `MvPowerSeries`, as an ideal -/
 def EvalDomain_ideal [IsTopologicalRing S] [IsLinearTopology S S] :
     Ideal (σ → S) where
-  carrier := setOf EvalDomain
+  carrier := {a | EvalDomain a}
   add_mem' {a} {b} ha hb := {
     hpow := fun s ↦ IsTopologicallyNilpotent.add (ha.hpow s) (hb.hpow s)
     tendsto_zero := by
@@ -91,7 +91,7 @@ def EvalDomain_ideal [IsTopologicalRing S] [IsLinearTopology S S] :
 
 theorem EvalDomain.comp {a : σ → R} (ha : EvalDomain a) {ε : R →+* S} (hε : Continuous ε) :
     EvalDomain (ε ∘ a) := by
-  apply EvalDomain.mk _ ((map_zero ε ▸ Continuous.tendsto' hε 0 (ε 0) rfl).comp ha.tendsto_zero)
+  apply EvalDomain.mk _ ((Continuous.tendsto' hε 0 0 (map_zero ε)).comp ha.tendsto_zero)
   · intro s
     unfold IsTopologicallyNilpotent
     convert (Continuous.tendsto' hε 0 (ε 0) rfl).comp (ha.hpow s)
@@ -156,9 +156,51 @@ theorem _root_.MvPolynomial.coeToMvPowerSeries_denseInducing :
 
 variable {a : σ → S}
 
+
 /- The evaluation map on multivariate polynomials is uniformly continuous
 for the uniform structure induced by that on multivariate power series. -/
 theorem _root_.MvPolynomial.coeToMvPowerSeries_uniformContinuous
+    [UniformAddGroup R] [UniformAddGroup S] [IsLinearTopology S S]
+    (hφ : Continuous φ) (ha : EvalDomain a) :
+    UniformContinuous (MvPolynomial.eval₂Hom φ a) := by
+  classical
+  apply uniformContinuous_of_continuousAt_zero
+  rw [ContinuousAt, map_zero, IsLinearTopology.hasBasis_ideal.tendsto_right_iff]
+  intro I hI
+  let n : σ → ℕ := fun s ↦ sInf {n : ℕ | (a s) ^ n.succ ∈ I}
+  have hn_ne : ∀ s, Set.Nonempty {n : ℕ | (a s) ^ n.succ ∈ I} := fun s ↦ by
+    rcases ha.hpow s |>.eventually_mem hI |>.exists_forall_of_atTop with ⟨n, hn⟩
+    use n
+    simpa using hn n.succ n.le_succ
+  have hn : Set.Finite (n.support) := by
+    change n =ᶠ[cofinite] 0
+    filter_upwards [ha.tendsto_zero.eventually_mem hI] with s has
+    simpa [n, Pi.zero_apply, Nat.sInf_eq_zero, or_iff_left (hn_ne s).ne_empty] using has
+  let n₀ : σ →₀ ℕ := .ofSupportFinite n hn
+  let D := Iic n₀
+  have hD : Set.Finite D := finite_Iic _
+  have : ∀ d ∈ D, ∀ᶠ (p : MvPolynomial σ R) in 𝓝 0, φ (p.coeff d) ∈ I := fun d hd ↦ by
+    have : Tendsto (φ ∘ coeff R d ∘ toMvPowerSeries) (𝓝 0) (𝓝 0) :=
+      hφ.comp (continuous_coeff R d) |>.comp continuous_induced_dom |>.tendsto' 0 0 (map_zero _)
+    filter_upwards [this.eventually_mem hI] with f hf
+    simpa using hf
+  rw [← hD.eventually_all] at this
+  filter_upwards [this] with p hp
+  rw [coe_eval₂Hom, SetLike.mem_coe, eval₂_eq]
+  apply Ideal.sum_mem
+  intro d _
+  by_cases hd : d ∈ D
+  · exact Ideal.mul_mem_right _ _ (hp d hd)
+  · apply Ideal.mul_mem_left
+    simp only [mem_Iic, D, Finsupp.le_iff] at hd
+    push_neg at hd
+    rcases hd with ⟨s, hs', hs⟩
+    exact I.prod_mem hs' (I.pow_mem_of_pow_mem (Nat.sInf_mem (hn_ne s)) hs)
+
+/-
+/-- The evaluation map on multivariate polynomials is uniformly continuous
+for the uniform structure induced by that on multivariate power series. -/
+theorem _root_.MvPolynomial.coeToMvPowerSeries_uniformContinuous'
     [UniformAddGroup R] [UniformAddGroup S] [IsLinearTopology S S]
     (hφ : Continuous φ) (ha : EvalDomain a) :
     UniformContinuous (MvPolynomial.eval₂Hom φ a) := by
@@ -221,6 +263,7 @@ theorem _root_.MvPolynomial.coeToMvPowerSeries_uniformContinuous
       push_neg at hd
       rcases hd with ⟨s, hs', hs⟩
       exact I.prod_mem hs' (I.pow_mem_of_pow_mem (Nat.sInf_mem (hn_ne s)) hs)
+-/
 
 variable (φ a)
 open scoped Classical in
