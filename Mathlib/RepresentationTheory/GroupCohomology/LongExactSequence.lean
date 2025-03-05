@@ -102,14 +102,13 @@ noncomputable def δ₀ : H0 X.X₃ ⟶ H1 X.X₁ :=
 
 theorem δ₀_apply_aux (y : X.X₂) (x : G → X.X₁) (hx : X.f.hom ∘ x = dZero X.X₂ y) :
     dOne X.X₁ x = 0 := by
-  have hδ := (map_cochainsFunctor_shortExact hX).δ_apply_aux 0 1 ((zeroCochainsLequiv X.X₂).symm y)
-    ((oneCochainsLequiv X.X₁).symm x)
+  have hδ := (map_cochainsFunctor_shortExact hX).d_eq_zero_of_f_eq_d_apply 0 1
+    ((zeroCochainsLequiv X.X₂).symm y) ((oneCochainsLequiv X.X₁).symm x)
   have hy := congr($((CommSq.horiz_inv ⟨(shortComplexH1Iso X.X₂).hom.comm₁₂⟩).w) y)
   have h := congr($((Iso.eq_inv_comp _).2 (shortComplexH1Iso X.X₁).hom.comm₂₃) x)
   have h0 := congr($((CommSq.vert_inv
     ⟨(cochainsMap_f_1_comp_oneCochainsLequiv (MonoidHom.id G) X.f)⟩).w) x)
-  simp_all [LinearMap.compLeft, shortComplexH1, MonoidHom.coe_id, ← hx,
-    -inhomogeneousCochains.d_def]
+  simp_all [LinearMap.compLeft, shortComplexH1, MonoidHom.coe_id, ← hx]
 
 theorem δ₀_apply (z : X.X₃) (hz : z ∈ X.X₃.ρ.invariants) (y : X.X₂) (hy : X.g.hom y = z)
     (x : G → X.X₁) (hx : X.f.hom ∘ x = dZero X.X₂ y) :
@@ -121,7 +120,7 @@ theorem δ₀_apply (z : X.X₃) (hz : z ∈ X.X₃.ρ.invariants) (y : X.X₂) 
       ((zeroCochainsLequiv X.X₂).symm y) := by
     have := congr($((CommSq.horiz_inv ⟨dZero_comp_eq X.X₂⟩).w) y)
     ext i
-    simp_all [← hx, oneCochainsLequiv, -inhomogeneousCochains.d_def]
+    simp_all [← hx, oneCochainsLequiv]
   have δ_0_1 := congr((isoH1 X.X₁).hom
     $(δ_apply hX 0 1 rfl ((zeroCochainsLequiv X.X₃).symm z) h0z
     ((zeroCochainsLequiv X.X₂).symm y) (hy ▸ rfl) ((oneCochainsLequiv X.X₁).symm x) hxy))
@@ -151,14 +150,13 @@ noncomputable def δ₁ : H1 X.X₃ ⟶ H2 X.X₁ :=
 
 theorem δ₁_apply_aux (y : G → X.X₂) (x : G × G → X.X₁) (hx : X.f.hom ∘ x = dOne X.X₂ y) :
     dTwo X.X₁ x = 0 := by
-  have hδ := (map_cochainsFunctor_shortExact hX).δ_apply_aux 1 2 ((oneCochainsLequiv X.X₂).symm y)
-    ((twoCochainsLequiv X.X₁).symm x)
+  have hδ := (map_cochainsFunctor_shortExact hX).d_eq_zero_of_f_eq_d_apply 1 2
+    ((oneCochainsLequiv X.X₂).symm y) ((twoCochainsLequiv X.X₁).symm x)
   have hy := congr($((CommSq.horiz_inv ⟨(shortComplexH2Iso X.X₂).hom.comm₁₂⟩).w) y)
   have h := congr($((Iso.eq_inv_comp _).2 (shortComplexH2Iso X.X₁).hom.comm₂₃) x)
   have h2 := congr($((CommSq.vert_inv
     ⟨(cochainsMap_f_2_comp_twoCochainsLequiv (MonoidHom.id G) X.f)⟩).w) x)
-  simp_all [LinearMap.compLeft, shortComplexH2, MonoidHom.coe_id, ← hx,
-    -inhomogeneousCochains.d_def]
+  simp_all [LinearMap.compLeft, shortComplexH2, MonoidHom.coe_id, ← hx]
 
 theorem δ₁_apply (z : G → X.X₃) (hz : z ∈ oneCocycles X.X₃) (y : G → X.X₂) (hy : X.g.hom ∘ y = z)
     (x : G × G → X.X₁) (hx : X.f.hom ∘ x = dOne X.X₂ y) :
@@ -170,7 +168,7 @@ theorem δ₁_apply (z : G → X.X₃) (hz : z ∈ oneCocycles X.X₃) (y : G �
       (inhomogeneousCochains X.X₂).d 1 2 ((oneCochainsLequiv X.X₂).symm y) := by
     have := congr($((CommSq.horiz_inv ⟨dOne_comp_eq X.X₂⟩).w) y)
     ext i
-    simp_all [← hx, twoCochainsLequiv, -inhomogeneousCochains.d_def]
+    simp_all [← hx, twoCochainsLequiv]
   have δ_1_2 := congr((isoH2 X.X₁).hom
     $(δ_apply hX 1 2 rfl ((oneCochainsLequiv X.X₃).symm z) h1z
     ((oneCochainsLequiv X.X₂).symm y) (hy ▸ rfl) ((twoCochainsLequiv X.X₁).symm x) hxy))
