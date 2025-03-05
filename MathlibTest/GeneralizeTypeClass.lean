@@ -1,5 +1,7 @@
 import Mathlib.Tactic.Linter.GeneralizeTypeClass
--- import Mathlib.Algebra.Module.Defs
+--import Mathlib.Algebra.Module.Defs
+--import Mathlib.Algebra.Algebra.Defs
+--import Mathlib.Topology.Algebra.Ring.Basic
 
 class Parent where
   parent_thm : False
@@ -34,7 +36,11 @@ private theorem basic5 [Child2] : False := Parent.parent_thm
 #guard_msgs in
 theorem basic6 [ChildClassAbbrev] : False := Parent.parent_thm
 
+/---/
+#guard_msgs in
 theorem basic7 [Child] : False := Child.child_thm
+/---/
+#guard_msgs in
 theorem basic8 [C : Child] : False := C.child_thm
 
 -- Ensure we don't 'generalize' type classes in hypotheses
@@ -83,6 +89,8 @@ info: Generalize type class: ParentArg2 -/
 theorem argument2 [C : ChildArg Nat] : False := by
   try exact C.parent_thm
   try exact C.parent_thm2
+/---/
+#guard_msgs in
 theorem argument3 [C : ChildArg Nat] : False := C.child_thm
 /-- info: Generalize type class: ParentArg -/
 #guard_msgs in
@@ -126,3 +134,51 @@ variable [B : Child]
 --#guard_msgs in
 theorem FAIL : False := Parent.parent_thm
 end SectionTest
+
+
+-----
+theorem bad1 [Ring R] [AddCommMonoid M] [Module R M] : True := True.intro
+theorem bad2 [CommRing R] [AddCommMonoid M] [Module R M] : True := True.intro
+
+theorem good1 [Ring R] [AddCommGroup M] [Module R M] : True := True.intro
+theorem good2 [CommRing R] [AddCommGroup M] [Module R M] : True := True.intro
+-- TODO ././././Mathlib/Algebra/Module/Rat.lean:33
+theorem good3 [AddCommMonoid M] [Module ℚ≥0 M] : True := True.intro
+theorem good4 [Ring R] [Module R ℚ≥0] : True := True.intro
+
+-- Algebra
+theorem bad11 [CommRing R] [Semiring A] [Algebra R A] : True := True.intro
+theorem bad12 [CommRing R] [CommSemiring A] [Algebra R A] : True := True.intro
+
+theorem good11 [CommRing R] [Ring A] [Algebra R A] : True := True.intro
+-- TODO: Why don't I try to generalize the second CommRing to Ring?
+theorem good12 [CommRing R] [CommRing A] [Algebra R A] : True := True.intro
+
+-- IsTopological*
+theorem bad21 [TopologicalSpace B] [Ring B] [IsTopologicalSemiring B] : True := True.intro
+theorem bad22 [TopologicalSpace B] [CommRing B] [IsTopologicalSemiring B] : True := True.intro
+
+theorem good21 [TopologicalSpace B] [Ring B] [IsTopologicalRing B] : True := True.intro
+theorem good22 [TopologicalSpace B] [Semiring B] [Ring B] [IsTopologicalRing B] : True := True.intro
+theorem good23 [TopologicalSpace B] [CommRing B] [IsTopologicalRing B] : True := True.intro
+
+
+
+-----
+class Helper (X : outParam Type)
+class P
+class C extends P
+
+instance [Helper X] [P] : C where
+
+theorem myt [C] : False := sorry
+
+theorem myt1 [C] : False := myt
+--instance : C where
+--set_option trace.Meta.synthInstance true
+theorem myt2 [Helper X] [C] : False := myt
+
+def foo [Helper X] [P] : C := inferInstance
+
+set_option pp.all true
+#print foo
