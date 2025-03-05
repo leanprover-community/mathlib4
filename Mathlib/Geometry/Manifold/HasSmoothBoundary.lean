@@ -150,9 +150,14 @@ noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : �
   isManifold := by infer_instance
   f x := ⟨fun i ↦ if h: i = 0 then 0 else x (Fin.pred i (by omega)), by simp⟩
   isEmbedding := sorry
-  contMDiff := sorry
+  contMDiff := by
+    -- In the standard model, this map has no subtypes any more: so this should be easy.
+    -- use ContMDiff.congr and the above observation
+    sorry
   isImmersion hk x := sorry
   range_eq_boundary := sorry
+
+#exit
 
 variable {X Y Z W : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [TopologicalSpace W]
