@@ -96,7 +96,7 @@ end Group
 
 section Orthogonality
 
-variable {G : Grp.{u}} [IsAlgClosed k]
+variable {G : Type u} [Group G] [IsAlgClosed k]
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 

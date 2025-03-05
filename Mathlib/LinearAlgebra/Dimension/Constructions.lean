@@ -42,7 +42,7 @@ section Quotient
 variable [Ring R] [CommRing S] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
 variable [Module R M]
 
-theorem LinearIndependent.sum_elim_of_quotient
+theorem LinearIndependent.sumElim_of_quotient
     {M' : Submodule R M} {ι₁ ι₂} {f : ι₁ → M'} (hf : LinearIndependent R f) (g : ι₂ → M)
     (hg : LinearIndependent R (Submodule.Quotient.mk (p := M') ∘ g)) :
     LinearIndependent R (Sum.elim (f · : ι₁ → M) g) := by
@@ -53,10 +53,13 @@ theorem LinearIndependent.sum_elim_of_quotient
   simp_rw [← Quotient.mk_eq_zero, ← mkQ_apply, map_finsupp_sum, map_smul, mkQ_apply] at this
   rw [linearIndependent_iff.mp hg _ this, Finsupp.sum_zero_index]
 
+@[deprecated (since := "2025-02-21")]
+alias LinearIndependent.sum_elim_of_quotient := LinearIndependent.sumElim_of_quotient
+
 theorem LinearIndepOn.union_of_quotient {M' : Submodule R M}
     {s : Set M} (hs : s ⊆ M') (hs' : LinearIndepOn R id s) {t : Set M}
     (ht : LinearIndepOn R (Submodule.Quotient.mk (p := M')) t) : LinearIndepOn R id (s ∪ t) :=
-  have h := (LinearIndependent.sum_elim_of_quotient (f := Set.embeddingOfSubset s M' hs)
+  have h := (LinearIndependent.sumElim_of_quotient (f := Set.embeddingOfSubset s M' hs)
     (LinearIndependent.of_comp M'.subtype (by simpa using hs')) Subtype.val ht)
   h.linearIndepOn_id' <| by
     simp only [embeddingOfSubset_apply_coe, Sum.elim_range, Subtype.range_val]
@@ -72,7 +75,7 @@ theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
   rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range _) _ (bddAbove_range _)]
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
   choose f hf using Submodule.Quotient.mk_surjective M'
-  simpa [add_comm] using (LinearIndependent.sum_elim_of_quotient ht (fun (i : s) ↦ f i)
+  simpa [add_comm] using (LinearIndependent.sumElim_of_quotient ht (fun (i : s) ↦ f i)
     (by simpa [Function.comp_def, hf] using hs)).cardinal_le_rank
 
 theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Module.rank R M :=
@@ -424,13 +427,10 @@ theorem rank_span_of_finset (s : Finset M) : Module.rank R (span R (s : Set M)) 
 
 open Submodule Module
 
-variable (R)
-
+variable (R) in
 /-- The rank of a set of vectors as a natural number. -/
 protected noncomputable def Set.finrank (s : Set M) : ℕ :=
   finrank R (span R s)
-
-variable {R}
 
 theorem finrank_span_le_card (s : Set M) [Fintype s] : finrank R (span R s) ≤ s.toFinset.card :=
   finrank_le_of_rank_le (by simpa using rank_span_le (R := R) s)
