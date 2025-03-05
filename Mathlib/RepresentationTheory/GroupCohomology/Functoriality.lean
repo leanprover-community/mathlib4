@@ -359,7 +359,8 @@ instance : Mono (H1InfRes A S).f := by
   rcases hx with ⟨y, hy⟩
   refine ⟨⟨y, fun s => ?_⟩, Subtype.ext <| funext fun g => Quotient.inductionOn' g
     fun g => Subtype.ext <| congr_fun (Subtype.ext_iff.1 hy) g⟩
-  simpa [sub_eq_zero, shortComplexH1, moduleCatToCycles] using congr_fun (Subtype.ext_iff.1 hy) s.1
+  simpa [sub_eq_zero, shortComplexH1, moduleCatToCycles, (QuotientGroup.eq_one_iff s.1).2 s.2]
+    using congr_fun (Subtype.ext_iff.1 hy) s.1
 
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, the short complex
 `H¹(G ⧸ S, A^S) ⟶ H¹(G, A) ⟶ H¹(S, A)` is exact. -/
