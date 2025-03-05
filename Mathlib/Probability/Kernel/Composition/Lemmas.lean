@@ -59,7 +59,7 @@ lemma swap_parallelComp : swap β δ ∘ₖ (κ ∥ₖ η) = η ∥ₖ κ ∘ₖ
   swap; · exact ((Kernel.id.measurable_coe hs).comp measurable_swap).aemeasurable
   congr with d
   simp_rw [Prod.swap_prod_mk, Measure.dirac_apply' _ hs, ← Set.indicator_comp_right,
-    lintegral_indicator (measurable_prod_mk_left hs)]
+    lintegral_indicator (measurable_prodMk_left hs)]
   simp
 
 /-- For a deterministic kernel, copying then applying the kernel to the two copies is the same
