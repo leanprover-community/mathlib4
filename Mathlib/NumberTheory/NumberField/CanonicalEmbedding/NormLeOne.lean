@@ -126,7 +126,8 @@ def expMap_single (w : InfinitePlace K) : PartialHomeomorph ℝ ℝ where
 variable [NumberField K]
 
 /--
-Docstring.
+The map from `realSpace K → realSpace K` whose components is given by `expMap_single`. It is, in
+some respect, a right inverse of `logMap`, see `logMap_expMap`.
 -/
 def expMap : PartialHomeomorph (realSpace K) (realSpace K) := by
   refine PartialHomeomorph.pi fun w ↦ expMap_single w
