@@ -275,6 +275,7 @@ noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
     intro x y
     simp
     nth_rewrite 1 [← IsNilpotent.exp_eq_truncated (k := 2 * N + 1) h₁]
+    rw [← IsNilpotent.exp_eq_truncated h₂]
     have rr (i j : ℕ) (hj : j ≤ i) : (i ! : ℚ)⁻¹ * (i.choose j) =
         ((j ! : ℚ)⁻¹ * ((i - j) ! : ℚ)⁻¹) := by
       rw [Nat.choose_eq_factorial_div_factorial hj,
@@ -365,6 +366,16 @@ noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
         simp only [mem_filter, mem_product, mem_range, hR2N, hRN]
         omega
       · tauto
+    rw [restrict] at s₁
+    rw [s₁]
+    have s₂ := by
+      calc
+            ⁅(∑ i ∈ RN, (i ! : ℚ)⁻¹ • D.toLinearMap ^ i) x, (∑ i ∈ RN, (i ! : ℚ)⁻¹ • D.toLinearMap ^ i) y⁆ =
+            ∑ i ∈ RN, ⁅(i ! : ℚ)⁻¹ • (D.toLinearMap ^ i) x, (∑ j ∈ RN, (j ! : ℚ)⁻¹ • D.toLinearMap ^ j) y⁆ := ?_
+        _ = ∑ i ∈ RN, ∑ j ∈ RN, ((i ! : ℚ)⁻¹ * (j ! : ℚ)⁻¹) • ⁅(D.toLinearMap ^ i) x, (D.toLinearMap ^ j) y⁆ := ?_
+       -- _ = ∑ ij ∈ RN ×ˢ RN, ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) := ?_
+      · sorry
+      . sorry
     sorry,
   invFun := fun l => (IsNilpotent.exp (-(D.toLinearMap))) l,
   left_inv := by

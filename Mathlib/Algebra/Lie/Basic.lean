@@ -7,6 +7,7 @@ import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Data.Bracket
 import Mathlib.Tactic.Abel
+import LeanCopilot
 
 /-!
 # Lie algebras
@@ -216,6 +217,20 @@ lemma lie_lie : ⁅⁅x, y⁆, m⁆ = ⁅x, ⁅y, m⁆⁆ - ⁅y, ⁅x, m⁆⁆ 
 theorem lie_jacobi : ⁅x, ⁅y, z⁆⁆ + ⁅y, ⁅z, x⁆⁆ + ⁅z, ⁅x, y⁆⁆ = 0 := by
   rw [← neg_neg ⁅x, y⁆, lie_neg z, lie_skew y x, ← lie_skew, lie_lie]
   abel
+
+instance LieRing.instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring L where
+  add x y:= x + y
+  add_assoc := by exact fun a b c ↦ add_assoc a b c
+  zero := 0
+  zero_add := by exact fun a ↦ AddZeroClass.zero_add a
+  add_zero := by exact fun a ↦ AddMonoid.add_zero a
+  nsmul := nsmulRec
+  add_comm := by exact fun a b ↦ AddCommMagma.add_comm a b
+  mul a b := ⁅a, b⁆
+  left_distrib := by exact fun a b c ↦ lie_add a b c
+  right_distrib := by exact fun a b c ↦ add_lie a b c
+  zero_mul := zero_lie
+  mul_zero := lie_zero
 
 instance LieRing.instLieAlgebra : LieAlgebra ℤ L where lie_smul n x y := lie_zsmul x y n
 
