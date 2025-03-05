@@ -390,7 +390,7 @@ open Finset
 open scoped Nat
 variable (L : Type*) [LieRing L] [LieAlgebra ℚ L] (D : LieDerivation ℚ L L)
 
-noncomputable def exp_nilpotent (h : IsNilpotent D.toLinearMap) :
+noncomputable def exp_nilpotent_derivation (h : IsNilpotent D.toLinearMap) :
   LieEquiv ℚ L L :=
 {
   toFun := fun l => (IsNilpotent.exp D.toLinearMap) l,
