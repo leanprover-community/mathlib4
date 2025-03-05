@@ -19,14 +19,14 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
 
 * First, since `NormLeOne K` is norm-stable, in the sense that
   `normLeOne K = normAtAllPlaces⁻¹' (normAtAllPlaces '' (normLeOne K))`,
-  see `normLeOne_eq_primeage_image`, it's enough to study  the subset
+  see `normLeOne_eq_primeage_image`, it's enough to study the subset
   `normAtAllPlaces '' (normLeOne K)` of `realSpace K`.
 
 * A description of `normAtAllPlaces '' (normLeOne K)` is given by `normAtAllPlaces_normLeOne`, it is
   the set of `x : realSpace K`, nonnegative at all places, whose norm is nonzero and `≤ 1` and such
-  that the image of `x` by `logMap` is in the `fundamentalDomain` of `basisUnitLattice K`.
-  Note that, in this description and elsewhere, we identify `x` with its image in `mixedSpace K`
-  given by `mixedSpaceOfRealSpace x`.
+  that `logMap x` is in the `fundamentalDomain` of `basisUnitLattice K`.
+  Note that, here and elsewhere, we identify `x` with its image in `mixedSpace K` given
+  by `mixedSpaceOfRealSpace x`.
 
 * In order to describe the inverse image in `realSpace K` of `fundamentalDomain` of
   `basisUnitLattice K`, we define the map `expMap : realSpace K → realSpace K` that is, in
