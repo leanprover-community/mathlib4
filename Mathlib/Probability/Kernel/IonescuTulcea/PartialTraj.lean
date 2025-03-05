@@ -482,7 +482,7 @@ namespace DependsOn
 
 /-- If `f` only depends on the variables up to rank `a` and `a ≤ b`, integrating `f` against
 `partialTraj κ b c` does nothing. -/
-theorem lmarginalPartialTraj_le [∀ n, IsMarkovKernel (κ n)] (c : ℕ) {f : (Π n, X n) → ℝ≥0∞}
+theorem lmarginalPartialTraj_of_le [∀ n, IsMarkovKernel (κ n)] (c : ℕ) {f : (Π n, X n) → ℝ≥0∞}
     (mf : Measurable f) (hf : DependsOn f (Iic a)) (hab : a ≤ b) :
     lmarginalPartialTraj κ b c f = f := by
   ext x
@@ -501,9 +501,9 @@ theorem lmarginalPartialTraj_const_right [∀ n, IsMarkovKernel (κ n)] {d : ℕ
   wlog hcd : c ≤ d generalizing c d
   · rw [this had hac (le_of_not_le hcd)]
   obtain hbc | hcb := le_total b c
-  · rw [← lmarginalPartialTraj_self hbc hcd mf, hf.lmarginalPartialTraj_le d mf hac]
-  · rw [hf.lmarginalPartialTraj_le c mf (hac.trans hcb),
-      hf.lmarginalPartialTraj_le d mf (hac.trans hcb)]
+  · rw [← lmarginalPartialTraj_self hbc hcd mf, hf.lmarginalPartialTraj_of_le d mf hac]
+  · rw [hf.lmarginalPartialTraj_of_le c mf (hac.trans hcb),
+      hf.lmarginalPartialTraj_of_le d mf (hac.trans hcb)]
 
 /-- If `f` only depends on variables up to rank `b`, its integral from `a` to `b` only depends on
 variables up to rank `a`. -/
