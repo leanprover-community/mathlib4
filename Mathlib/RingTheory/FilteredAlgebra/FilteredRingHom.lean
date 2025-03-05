@@ -388,9 +388,13 @@ abbrev GradedPieceHom (i : ι) : GradedPiece FA FA_lt i →ₗ[R] GradedPiece FB
 @[inherit_doc]
 scoped[FilteredAlgHom] notation:9000 "Gr(" i ")[" f "]" => GradedPieceHom f i
 
-lemma GradedPieceHom_comp_apply (x : AssociatedGraded FA FA_lt) (i : ι) :
-    Gr(i)[g] (Gr(i)[f] (x i)) = Gr(i)[g.comp f] (x i) :=
-  FilteredRingHom.GradedPieceHom_comp_apply g.1 f.1 x i
+lemma GradedPieceHom_comp_apply (i : ι) (x : GradedPiece FA FA_lt i):
+    Gr(i)[g] (Gr(i)[f] x) = Gr(i)[g.comp f] x :=
+  FilteredRingHom.GradedPieceHom_comp_apply g.1 f.1 i x
+
+lemma GradedPieceHom_comp (i : ι) : Gr(i)[g].comp Gr(i)[f] = Gr(i)[g.comp f] := by
+  ext x
+  exact GradedPieceHom_comp_apply g f i x
 
 variable [OrderedAddCommMonoid ι] [hasGMul FA FA_lt] [hasGMul FB FB_lt] [hasGMul FC FC_lt]
 
