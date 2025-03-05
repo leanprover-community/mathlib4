@@ -63,6 +63,11 @@ theorem iteratedDerivWithin_univ : iteratedDerivWithin n f univ = iteratedDeriv 
   ext x
   rw [iteratedDerivWithin, iteratedDeriv, iteratedFDerivWithin_univ]
 
+theorem iteratedDerivWithin_of_isOpen (hs : IsOpen s) :
+    EqOn (iteratedDerivWithin n f s) (iteratedDeriv n f) s := by
+  intro x hx
+  rw [iteratedDerivWithin, iteratedDeriv, iteratedFDerivWithin_of_isOpen _ hs hx]
+
 /-! ### Properties of the iterated derivative within a set -/
 
 
@@ -308,3 +313,9 @@ lemma AnalyticAt.hasFPowerSeriesAt {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   rw [div_eq_iff, mul_comm, h_fact_smul, ← iteratedDeriv_eq_iteratedFDeriv]
   norm_cast
   exact Nat.factorial_ne_zero _
+
+lemma AnalyticAt.hasFPowerSeriesOnBall {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    [CharZero 𝕜] {f : 𝕜 → 𝕜} {x : 𝕜} {r : ENNReal} (h : AnalyticOn 𝕜 f (EMetric.ball x r)) :
+    let p := FormalMultilinearSeries.ofScalars 𝕜 (fun n ↦ iteratedDeriv n f x / n.factorial);
+    r ≤ p.radius → HasFPowerSeriesOnBall f p x p.radius := by
+  sorry

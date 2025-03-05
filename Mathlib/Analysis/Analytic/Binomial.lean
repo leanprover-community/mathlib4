@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 import Mathlib.RingTheory.Binomial
 
 /-!
@@ -95,3 +97,132 @@ theorem binomialSeries_radius_eq_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type 
   intro k
   simp only [neg_neg, ne_eq, one_div, and_self]
   exact ⟨(ha k).symm, this k⟩
+
+theorem binomialSeries_radius_ge_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type u} [NormedDivisionRing 𝔸]
+    [NormedAlgebra 𝕂 𝔸] {a : 𝕂} : 1 ≤ (binomialSeries 𝔸 a).radius := by
+  by_cases h : ∃ (k : ℕ), a = k
+  · obtain ⟨k, h⟩ := h
+    simp [h, binomialSeries_radius_eq_top_of_nat]
+  · push_neg at h
+    rw [binomialSeries_radius_eq_one h]
+
+theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
+    HasFPowerSeriesOnBall (fun x ↦ (1 + x)^a) (binomialSeries ℂ a) 0 1 := by
+  suffices (binomialSeries ℂ a = FormalMultilinearSeries.ofScalars ℂ
+      fun n ↦ iteratedDeriv n (fun (x : ℂ) ↦ (1 + x) ^ a) 0 / n !) by
+    suffices HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ a) (binomialSeries ℂ a) 0
+        (binomialSeries ℂ a).radius by
+      apply HasFPowerSeriesOnBall.mono this (by norm_num) binomialSeries_radius_ge_one
+    convert AnalyticAt.hasFPowerSeriesOnBall (r := 1) _ _
+    · infer_instance
+    · infer_instance
+    · apply AnalyticOn.cpow
+      · apply AnalyticOn.add
+        · exact analyticOn_const
+        · exact analyticOn_id
+      · exact analyticOn_const
+      · intro z hz
+        apply Complex.mem_slitPlane_of_norm_lt_one
+        rw [← ENNReal.ofReal_one, Metric.emetric_ball] at hz
+        simpa using hz
+    · rw [← this]
+      exact binomialSeries_radius_ge_one
+  simp [binomialSeries]
+  ext n
+  rw [Ring.choose_eq_smul]
+  field_simp
+  congr
+  let B := Metric.ball (0 : ℂ) 1
+  suffices Set.EqOn (iteratedDerivWithin n (fun x ↦ (1 + x) ^ a) B)
+      (fun x ↦ (descPochhammer ℤ n).smeval a * (1 + x)^(a - n)) B by
+    specialize this (show 0 ∈ _ by simp [B])
+    symm
+    rw [iteratedDerivWithin_of_isOpen Metric.isOpen_ball (by simp [B])] at this
+    simpa
+  induction n with
+  | zero =>
+    intro z hz
+    simp
+  | succ n ih =>
+    have : iteratedDerivWithin (n + 1) (fun (x : ℂ) ↦ (1 + x) ^ a) B =
+        derivWithin (iteratedDerivWithin n (fun x ↦ (1 + x) ^ a) B) B := by
+      ext z
+      rw [iteratedDerivWithin_succ]
+    rw [this]
+    clear this
+    have : Set.EqOn (derivWithin (iteratedDerivWithin n (fun (x : ℂ) ↦ (1 + x) ^ a) B) B)
+        (derivWithin (fun x ↦ (descPochhammer ℤ n).smeval a * (1 + x) ^ (a - ↑n)) B) B := by
+      intro z hz
+      rw [derivWithin_congr]
+      · intro z hz
+        exact ih hz
+      · exact ih hz
+    apply Set.EqOn.trans this
+    intro z hz
+    simp
+    rw [derivWithin_of_isOpen Metric.isOpen_ball hz]
+    simp
+    rw [deriv_cpow_const]
+    rotate_left
+    · fun_prop
+    · apply Complex.mem_slitPlane_of_norm_lt_one
+      simpa [B] using hz
+    rw [deriv_const_add', deriv_id'', mul_one, show a - (n + 1) = a - n - 1 by ring, ← mul_assoc]
+    congr
+    simp [descPochhammer_succ_right, Polynomial.smeval_mul, Polynomial.smeval_natCast]
+
+
+theorem one_add_cpow_hasFPowerSeriesAt_zero {a : ℂ} :
+    HasFPowerSeriesAt (fun x ↦ (1 + x)^a) (binomialSeries ℂ a) 0 := by
+  apply HasFPowerSeriesOnBall.hasFPowerSeriesAt one_add_cpow_hasFPowerSeriesOnBall_zero
+  -- convert AnalyticAt.hasFPowerSeriesAt _
+  -- rotate_left
+  -- · infer_instance
+  -- · infer_instance
+  -- · apply AnalyticAt.cpow
+  --   · fun_prop
+  --   · fun_prop
+  --   · simp
+  -- simp [binomialSeries]
+  -- ext n
+  -- rw [Ring.choose_eq_smul]
+  -- field_simp
+  -- congr
+  -- let B := Metric.ball (0 : ℂ) 1
+  -- suffices Set.EqOn (iteratedDerivWithin n (fun x ↦ (1 + x) ^ a) B)
+  --     (fun x ↦ (descPochhammer ℤ n).smeval a * (1 + x)^(a - n)) B by
+  --   specialize this (show 0 ∈ _ by simp [B])
+  --   symm
+  --   rw [iteratedDerivWithin_of_isOpen Metric.isOpen_ball (by simp [B])] at this
+  --   simpa
+  -- induction n with
+  -- | zero =>
+  --   intro z hz
+  --   simp
+  -- | succ n ih =>
+  --   have : iteratedDerivWithin (n + 1) (fun (x : ℂ) ↦ (1 + x) ^ a) B =
+  --       derivWithin (iteratedDerivWithin n (fun x ↦ (1 + x) ^ a) B) B := by
+  --     ext z
+  --     rw [iteratedDerivWithin_succ]
+  --   rw [this]
+  --   clear this
+  --   have : Set.EqOn (derivWithin (iteratedDerivWithin n (fun (x : ℂ) ↦ (1 + x) ^ a) B) B)
+  --       (derivWithin (fun x ↦ (descPochhammer ℤ n).smeval a * (1 + x) ^ (a - ↑n)) B) B := by
+  --     intro z hz
+  --     rw [derivWithin_congr]
+  --     · intro z hz
+  --       exact ih hz
+  --     · exact ih hz
+  --   apply Set.EqOn.trans this
+  --   intro z hz
+  --   simp
+  --   rw [derivWithin_of_isOpen Metric.isOpen_ball hz]
+  --   simp
+  --   rw [deriv_cpow_const]
+  --   rotate_left
+  --   · fun_prop
+  --   · apply Complex.mem_slitPlane_of_norm_lt_one
+  --     simpa [B] using hz
+  --   rw [deriv_const_add', deriv_id'', mul_one, show a - (n + 1) = a - n - 1 by ring, ← mul_assoc]
+  --   congr
+  --   simp [descPochhammer_succ_right, Polynomial.smeval_mul, Polynomial.smeval_natCast]
