@@ -272,7 +272,8 @@ instance [∀ n, IsMarkovKernel (κ n)] (a b : ℕ) :
       exact IsMarkovKernel.map _ measurable_IicProdIoc
   · rw [partialTraj_le hba]; infer_instance
 
-lemma partialTraj_succ_self (a : ℕ) : partialTraj κ a (a + 1) =
+lemma partialTraj_succ_self (a : ℕ) :
+    partialTraj κ a (a + 1) =
     (Kernel.id ×ₖ ((κ a).map (piSingleton a))).map (IicProdIoc a (a + 1)) := by
   rw [partialTraj_succ_of_le le_rfl, partialTraj_self, comp_id]
 
@@ -306,7 +307,8 @@ private lemma fst_prod_comp_id_prod {X Y Z : Type*} {mX : MeasurableSpace X}
 
 /-- This is a technical lemma saying that `partialTraj κ a b` consists of two independent parts, the
 first one being the identity. It allows to compute integrals. -/
-lemma partialTraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) : partialTraj κ a b =
+lemma partialTraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) :
+    partialTraj κ a b =
     (Kernel.id ×ₖ (partialTraj κ a b).map (restrict₂ Ioc_subset_Iic_self)).map
     (IicProdIoc a b) := by
   obtain hba | hab := le_total b a
@@ -415,7 +417,8 @@ lemma lmarginalPartialTraj_mono (a b : ℕ) {f g : (Π n, X n) → ℝ≥0∞} (
 /-- Integrating `f` against `partialTraj κ a b x` is the same as integrating only over the variables
   from `x_{a+1}` to `x_b`. -/
 lemma lmarginalPartialTraj_eq_lintegral_map [∀ n, IsSFiniteKernel (κ n)] {f : (Π n, X n) → ℝ≥0∞}
-    (mf : Measurable f) (x₀ : Π n, X n) : lmarginalPartialTraj κ a b f x₀ =
+    (mf : Measurable f) (x₀ : Π n, X n) :
+    lmarginalPartialTraj κ a b f x₀ =
     ∫⁻ x : (Π i : Ioc a b, X i), f (updateFinset x₀ _ x)
       ∂(partialTraj κ a b).map (restrict₂ Ioc_subset_Iic_self) (frestrictLe a x₀) := by
   nth_rw 1 [lmarginalPartialTraj, partialTraj_eq_prod, lintegral_map, lintegral_id_prod]
