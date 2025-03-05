@@ -284,14 +284,16 @@ noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
     set RN := range (N + 1) with hRN
     have s₁ :=
       calc
-        (∑ i ∈ R2N, (i.factorial : ℚ)⁻¹ • (D.toLinearMap ^ i)) ⁅x, y⁆ =
-        ∑ i ∈ R2N, (i.factorial : ℚ)⁻¹ • ((D.toLinearMap ^ i) ⁅x, y⁆) := by
+        (∑ i ∈ R2N, (i ! : ℚ)⁻¹ • (D.toLinearMap ^ i)) ⁅x, y⁆ =
+        ∑ i ∈ R2N, (i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) ⁅x, y⁆) := by
           simp
         _ = ∑ i ∈ R2N, (i.factorial : ℚ)⁻¹ • ((D^[i]) ⁅x, y⁆) := by simp [LinearMap.coe_pow]
-        _ = ∑ i ∈ R2N, (i.factorial : ℚ)⁻¹ • (∑ j ∈ range (i + 1), i.choose j • ⁅D^[j] x, D^[i - j] y⁆) := by
+        _ = ∑ i ∈ R2N, (i.factorial : ℚ)⁻¹ •
+            (∑ j ∈ range (i + 1), i.choose j • ⁅D^[j] x, D^[i - j] y⁆) := by
           refine sum_congr rfl fun i hi ↦ ?_
           rw [iterate_apply_lie' D i x y]
-        _ = ∑ i ∈ R2N, (∑ j ∈ range (i + 1), (i ! : ℚ)⁻¹ • (i.choose j • ⁅D^[j] x, D^[i - j] y⁆)) := by
+        _ = ∑ i ∈ R2N, (∑ j ∈ range (i + 1), (i ! : ℚ)⁻¹ •
+            (i.choose j • ⁅D^[j] x, D^[i - j] y⁆)) := by
           simp only [smul_sum]
         _ = ∑ i ∈ R2N, (∑ j ∈ range (i + 1), ((i ! : ℚ)⁻¹ * i.choose j)
             • ⁅D^[j] x, D^[i - j] y⁆) := by
@@ -327,16 +329,12 @@ noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
       sum_eq_zero fun i hi ↦ by
       rw [mem_filter] at hi
       cases le_or_lt (N + 1) i.1 with
-        | inl h =>
-            {
-              rw [pow_eq_zero_of_le h h₂]
-              simp
-            }
+        | inl h => rw [pow_eq_zero_of_le h h₂, LinearMap.zero_apply, zero_lie, smul_zero]
         | inr _ =>
             {
               have t : N + 1 ≤ i.2 := by linarith
               rw [pow_eq_zero_of_le t h₂]
-              simp
+              simp only [LinearMap.zero_apply, lie_zero, smul_zero]
             }
     have split₁ := sum_filter_add_sum_filter_not (R2N ×ˢ R2N)
       (fun ij ↦ ij.1 + ij.2 ≤ 2 * N)
@@ -344,7 +342,29 @@ noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
         ⁅(D.toLinearMap ^ ij.1) x, (D.toLinearMap ^ ij.2) y⁆)
     rw [z₁, add_zero] at split₁
     rw [split₁] at s₁
-
+    have z₂ : ∑ ij ∈ R2N ×ˢ R2N with ¬ (ij.1 ≤ N ∧ ij.2 ≤ N), ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) •
+        ⁅(D.toLinearMap ^ ij.1) x, (D.toLinearMap ^ ij.2) y⁆ = 0 :=
+      sum_eq_zero fun i hi ↦ by
+      simp only [not_and, not_le, mem_filter] at hi
+      cases le_or_lt (N + 1) i.1 with
+        | inl h => rw [pow_eq_zero_of_le h h₂, LinearMap.zero_apply, zero_lie, smul_zero]
+        | inr h => rw [pow_eq_zero_of_le (hi.2 (Nat.le_of_lt_succ h)) h₂, LinearMap.zero_apply,
+          lie_zero, smul_zero]
+    have split₂ := sum_filter_add_sum_filter_not (R2N ×ˢ R2N)
+      (fun ij ↦ ij.1 ≤ N ∧ ij.2 ≤ N)
+      (fun ij ↦ ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) •
+        ⁅(D.toLinearMap ^ ij.1) x, (D.toLinearMap ^ ij.2) y⁆)
+    rw [z₂, add_zero] at split₂
+    rw [← split₂] at s₁
+    have restrict: ∑ ij ∈ R2N ×ˢ R2N with ij.1 ≤ N ∧ ij.2 ≤ N,
+        ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • ⁅(D.toLinearMap ^ ij.1) x, (D.toLinearMap ^ ij.2) y⁆ =
+          ∑ ij ∈ RN ×ˢ RN, ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) •
+            ⁅(D.toLinearMap ^ ij.1) x, (D.toLinearMap ^ ij.2) y⁆ := by
+      apply sum_congr
+      · ext x
+        simp only [mem_filter, mem_product, mem_range, hR2N, hRN]
+        omega
+      · tauto
     sorry,
   invFun := fun l => (IsNilpotent.exp (-(D.toLinearMap))) l,
   left_inv := by
