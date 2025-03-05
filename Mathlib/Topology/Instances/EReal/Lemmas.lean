@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Data.Rat.Encodable
 import Mathlib.Data.Real.EReal
-import Mathlib.Topology.Instances.EReal.Defs
 import Mathlib.Topology.Instances.ENNReal.Lemmas
 import Mathlib.Topology.Order.MonotoneContinuity
 import Mathlib.Topology.Semicontinuous
