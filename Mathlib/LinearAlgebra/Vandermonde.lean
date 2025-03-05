@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen
+Authors: Anne Baanen, Peter Nelson
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.GeomSum
@@ -19,25 +19,45 @@ is defined to be `Fin n` by `Fin n` matrix `V` whose `i`th row is `[1, (v i), (v
 This matrix has determinant equal to the product of `v i - v j` over all unordered pairs `i,j`,
 and therefore is nonsingular if and only if `v` is injective.
 
-We also define a variant `vandermondeTop v`, where `v : Fin n → WithTop R` is allowed to take
-infinite values. If `v i = ⊤`, then the `i`th row of `vandermondeTop` is `[0,0, ..., 1]`,
-which can be thought of as a normalization of the row `[1, ∞, ∞^2, ... ∞^(n-1)]`.
-These extensions of Vandermonde matrices retain the injectivity property of the simpler form.
-They arise in the study of complete arcs in finite geometry,
+`vandermonde v` is a special case of two more general matrices we also define.
+For a type `α` and functions `v w : α → R`, we write `rectVandermonde v w n` for
+the `α × Fin n` matrix with `i`th row `[(w i) ^ (n-1), (v i) * (w i)^(n-2), ..., (v i)^(n-1)]`.
+`projVandermonde v w = rectVandermonde v w n` is the square matrix case, where `α = Fin n`.
+The determinant of `projVandermonde v w` is the product of `v j * w i - v i * w j`,
+taken over all pairs `i,j` with `i < j`, which gives a similar characterization of
+when it it nonsingular. Since `vandermonde v w = projVandermonde v 1`,
+we can derive most of the API for the former in terms of the latter.
+
+These extensions of Vandermonde matrices arise in the study of complete arcs in finite geometry,
 coding theory, and representations of uniform matroids over finite fields.
 
 ## Main definitions
 
- - `vandermonde v`: a square matrix with the `i, j`th entry equal to `v i ^ j`.
- - `vandermondeTop v`: a version of `vandermonde v` where the 'infinity' row `[0, ..., 0, 1]`
-    is also allowed.
+* `vandermonde v`: a square matrix with the `i, j`th entry equal to `v i ^ j`.
+* `rectVandermonde v w n`: an `α × Fin n` matrix whose
+  `i, j`-th entry is `(v i) ^ j * (w i) ^ (n-1-j)`.
+* `projVandermonde v w`: a square matrix whose `i, j`-th entry is `(v i) ^ j * (w i) ^ (n-1-j)`.
 
 ## Main results
 
- - `det_vandermonde`: `det (vandermonde v)` is the product of `v i - v j`, where
-   `(i, j)` ranges over the unordered pairs.
--/
+* `det_vandermonde`: `det (vandermonde v)` is the product of `v j - v i`, where
+   `(i, j)` ranges over the set of pairs with `i < j`.
+* `det_projVandermonde`: `det (projVandermonde v w)` is the product of `v j * w i - v i * w j`,
+    taken over all pairs with `i < j`.
 
+## Implementation notes
+
+We derive the `det_vandermonde` formula from `det_projVandermonde`,
+which is proved using an induction argument involving row operations and division.
+To circumvent issues with non-invertible elements while still maintaining the generality of rings,
+we first prove it for fields using the private lemma `det_projVandermonde_of_field`,
+and then use an algebraic workaround to generalize to the ring case,
+stating the strictly more general form as `det_projVandermonde`.
+
+## TODO
+
+Characterize when `rectVandermonde v w n` has linearly independent rows.
+-/
 
 variable {R K : Type*} [CommRing R] [Field K] {n : ℕ}
 
@@ -109,7 +129,7 @@ theorem rectVandermonde_apply_zero_right {α : Type*} {v w : α → R} {i : α} 
 
 theorem projVandermonde_apply_of_ne_zero {v w : Fin (n+1) → K} {i j : Fin (n+1)} (hw : w i ≠ 0) :
     projVandermonde v w i j = (v i) ^ j.1 * (w i) ^ n / (w i) ^ j.1 := by
-  rw [projVandermonde_apply, eq_div_iff (by simp [hw]), mul_assoc, ← pow_add, Fin.rev_add_cast]
+  rw [projVandermonde_apply, eq_div_iff (by simp [hw]), mul_assoc, ← pow_add, rev_add_cast]
 
 theorem projVandermonde_apply_zero_right {v w : Fin (n+1) → R} {i : Fin (n+1)} (hw : w i = 0) :
     projVandermonde v w i = Pi.single (Fin.last n) ((v i) ^ n)  := by
@@ -150,8 +170,7 @@ private theorem det_projVandermonde_of_field (v w : Fin n → K) :
   set W : Matrix (Fin (n+1)) (Fin (n+1)) K := .of fun i ↦ (cons (projVandermonde v w i 0)
     (fun j ↦ projVandermonde v w i j.succ - r * projVandermonde v w i j.castSucc))
   -- deleting the first row and column of `W` gives a row-scaling of a Vandermonde matrix.
-  have hW_eq : (W.submatrix succ succ) = .of
-    fun i j ↦ (v (succ i) - r * w (succ i)) *
+  have hW_eq : (W.submatrix succ succ) = .of fun i j ↦ (v (succ i) - r * w (succ i)) *
       projVandermonde (v ∘ succ) (w ∘ succ) i j := by
     ext i j
     simp only [projVandermonde_apply, val_zero, rev_zero, val_last, val_succ,
@@ -193,11 +212,12 @@ theorem det_projVandermonde (v w : Fin n → R) : (projVandermonde v w).det =
   convert hdet <;>
   simp [← Matrix.ext_iff, projVandermonde_apply, u, R']
 
-theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
+/-- The formula for the determinant of a Vandermonde matrix. -/
+theorem det_vandermonde (v : Fin n → R) :
     det (vandermonde v) = ∏ i : Fin n, ∏ j ∈ Ioi i, (v j - v i) := by
   simp [vandermonde_eq_projVandermonde, det_projVandermonde]
 
-theorem det_vandermonde_eq_zero_iff [IsDomain R] {n : ℕ} {v : Fin n → R} :
+theorem det_vandermonde_eq_zero_iff [IsDomain R] {v : Fin n → R} :
     det (vandermonde v) = 0 ↔ ∃ i j : Fin n, v i = v j ∧ i ≠ j := by
   constructor
   · simp only [det_vandermonde v, Finset.prod_eq_zero_iff, sub_eq_zero, forall_exists_index]
@@ -207,7 +227,7 @@ theorem det_vandermonde_eq_zero_iff [IsDomain R] {n : ℕ} {v : Fin n → R} :
     refine fun i j h₁ h₂ => Matrix.det_zero_of_row_eq h₂ (funext fun k => ?_)
     rw [vandermonde_apply, vandermonde_apply, h₁]
 
-theorem det_vandermonde_ne_zero_iff [IsDomain R] {n : ℕ} {v : Fin n → R} :
+theorem det_vandermonde_ne_zero_iff [IsDomain R] {v : Fin n → R} :
     det (vandermonde v) ≠ 0 ↔ Function.Injective v := by
   unfold Function.Injective
   simp only [det_vandermonde_eq_zero_iff, Ne, not_exists, not_and, Classical.not_not]
@@ -227,7 +247,6 @@ theorem eq_zero_of_forall_index_sum_pow_mul_eq_zero {R : Type*} [CommRing R] [Is
     {f v : Fin n → R} (hf : Function.Injective f)
     (hfv : ∀ j, (∑ i : Fin n, f j ^ (i : ℕ) * v i) = 0) : v = 0 :=
   eq_zero_of_mulVec_eq_zero (det_vandermonde_ne_zero_iff.mpr hf) (funext hfv)
-
 
 theorem eq_zero_of_forall_index_sum_mul_pow_eq_zero {R : Type*} [CommRing R] [IsDomain R] {n : ℕ}
     {f v : Fin n → R} (hf : Function.Injective f) (hfv : ∀ j, (∑ i, v i * f j ^ (i : ℕ)) = 0) :
