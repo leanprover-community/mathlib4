@@ -87,7 +87,7 @@ theorem eventually_atTop_prod_self [Nonempty α] [Preorder α] [IsDirected α (�
     {p : α × α → Prop} : (∀ᶠ x in atTop, p x) ↔ ∃ a, ∀ k l, a ≤ k → a ≤ l → p (k, l) :=
   eventually_atBot_prod_self (α := αᵒᵈ)
 
-theorem eventually_atBot_prod_self'  [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)]
+theorem eventually_atBot_prod_self' [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)]
     {p : α × α → Prop} : (∀ᶠ x in atBot, p x) ↔ ∃ a, ∀ k ≤ a, ∀ l ≤ a, p (k, l) := by
   simp only [eventually_atBot_prod_self, forall_cond_comm]
 
