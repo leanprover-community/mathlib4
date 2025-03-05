@@ -55,16 +55,13 @@ variable {ι α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [Topo
 
 namespace TopologicalSpace
 
-variable (α)
-
+variable (α) in
 /-- The type of open subsets of a topological space. -/
 structure Opens where
   /-- The underlying set of a bundled `TopologicalSpace.Opens` object. -/
   carrier : Set α
   /-- The `TopologicalSpace.Opens.carrier _` is an open set. -/
   is_open' : IsOpen carrier
-
-variable {α}
 
 namespace Opens
 
