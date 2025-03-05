@@ -21,11 +21,7 @@ set_option linter.deprecated false in
 @[simp, deprecated "No deprecation message was provided." (since := "2024-10-17")]
 lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum := rfl
 
-@[deprecated (since := "2024-08-20")] alias getElem_reverse' := getElem_reverse
-
 @[deprecated (since := "2024-12-10")] alias tail_reverse_eq_reverse_dropLast := tail_reverse
-
-@[deprecated (since := "2024-08-19")] alias nthLe_tail := getElem_tail
 
 theorem injOn_insertIdx_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
     Set.InjOn (fun k => insertIdx k x l) { n | n ≤ l.length } := by
