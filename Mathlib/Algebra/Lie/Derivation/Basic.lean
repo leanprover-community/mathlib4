@@ -255,7 +255,7 @@ theorem smul_apply (r : S) (D : LieDerivation R L M) : (r • D) a = r • D a :
 section Hidden
 
 local instance LieRing.instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring L where
-  add x y:= x + y
+  add x y := x + y
   add_assoc := by exact fun a b c ↦ add_assoc a b c
   zero := 0
   zero_add := by exact fun a ↦ AddZeroClass.zero_add a
@@ -379,30 +379,21 @@ noncomputable def exp_lie_equiv (h : IsNilpotent D.toLinearMap) :
         omega
       · tauto
     rw [restrict] at s₁
-    have s₂ : ⁅(∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) x))),
-        (∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) y)))⁆ =
-          ∑ ij ∈ RN ×ˢ RN, ⁅(ij.1 ! : ℚ)⁻¹ • ((D.toLinearMap ^ ij.1) x),
-            (ij.2 ! : ℚ)⁻¹ • ((D.toLinearMap ^ ij.2) y)⁆ := by
-      letI : NonUnitalNonAssocSemiring L := LieRing.instNonUnitalNonAssocSemiring
+    have s₂ := by
       calc ⁅(∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) x))),
-        (∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) y)))⁆ =
-          (∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) x))) *
-            (∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) y))) := by rfl
-        _ = ∑ i ∈ RN, ∑ j ∈ RN, ⁅(i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) x),
-            (j ! : ℚ)⁻¹ • ((D.toLinearMap ^ j) y)⁆ := by
-          rw [sum_mul_sum]
-          rfl
-        _ = ∑ ij ∈ RN ×ˢ RN, ⁅(ij.1 ! : ℚ)⁻¹ • ((D.toLinearMap ^ ij.1) x),
+            (∑ i ∈ RN, ((i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) y)))⁆ =
+          ∑ i ∈ RN, ∑ j ∈ RN, ⁅(i ! : ℚ)⁻¹ • ((D.toLinearMap ^ i) x),
+            (j ! : ℚ)⁻¹ • ((D.toLinearMap ^ j) y)⁆ := by rw [lie_sum_sum]
+          _ = ∑ ij ∈ RN ×ˢ RN, ⁅(ij.1 ! : ℚ)⁻¹ • ((D.toLinearMap ^ ij.1) x),
             (ij.2 ! : ℚ)⁻¹ • ((D.toLinearMap ^ ij.2) y)⁆ := by
-          rw [sum_sigma']
-          apply sum_bijective (fun ⟨i, j⟩ ↦ (i, j))
-          · exact ⟨fun ⟨i, j⟩ ⟨i', j'⟩ h ↦ by cases h; rfl, fun ⟨i, j⟩ ↦ ⟨⟨i, j⟩, rfl⟩⟩
-          · simp only [mem_sigma, mem_product, implies_true]
-          · simp only [implies_true]
+            rw [sum_sigma']
+            apply sum_bijective (fun ⟨i, j⟩ ↦ (i, j))
+            · exact ⟨fun ⟨i, j⟩ ⟨i', j'⟩ h ↦ by cases h; rfl, fun ⟨i, j⟩ ↦ ⟨⟨i, j⟩, rfl⟩⟩
+            · simp only [mem_sigma, mem_product, implies_true]
+            · simp only [implies_true]
     rw [s₂.symm] at s₁
     rw [s₁]
-    simp only [LinearMap.coeFn_sum, sum_apply, LinearMap.smul_apply]
-    ,
+    simp only [LinearMap.coeFn_sum, sum_apply, LinearMap.smul_apply],
   invFun := fun l => (IsNilpotent.exp (-(D.toLinearMap))) l,
   left_inv := by
     have h₁ : Commute (-(D.toLinearMap)) (D.toLinearMap) := Commute.neg_left rfl

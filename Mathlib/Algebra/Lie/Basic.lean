@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.Module.Equiv.Basic
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Data.Bracket
 import Mathlib.Tactic.Abel
 
@@ -274,6 +275,30 @@ instance Module.Dual.instLieRingModule : LieRingModule L (M →ₗ[R] R) where
 instance Module.Dual.instLieModule : LieModule R L (M →ₗ[R] R) where
   smul_lie := fun t x m ↦ by ext n; simp
   lie_smul := fun t x m ↦ by ext n; simp
+
+variable {ι ι' α β γ : Type*} {κ : ι → Type*} {s s₁ s₂ : Finset ι} {i : ι} {a : α} {f g : ι → α}
+
+local instance LieRing.instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring L where
+  add x y := x + y
+  add_assoc := by exact fun a b c ↦ add_assoc a b c
+  zero := 0
+  zero_add := by exact fun a ↦ AddZeroClass.zero_add a
+  add_zero := by exact fun a ↦ AddMonoid.add_zero a
+  nsmul := nsmulRec
+  add_comm := by exact fun a b ↦ AddCommMagma.add_comm a b
+  mul a b := ⁅a, b⁆
+  left_distrib := by exact fun a b c ↦ lie_add a b c
+  right_distrib := by exact fun a b c ↦ add_lie a b c
+  zero_mul := zero_lie
+  mul_zero := lie_zero
+
+lemma lie_sum_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → L) (g : κ → L) :
+    ⁅(∑ i ∈ s, f i), ∑ j ∈ t, g j⁆ = ∑ i ∈ s, ∑ j ∈ t, ⁅f i, g j⁆ := by
+  letI : NonUnitalNonAssocSemiring L := LieRing.instNonUnitalNonAssocSemiring
+  calc
+    ⁅(∑ i ∈ s, f i), ∑ j ∈ t, g j⁆ = (∑ i ∈ s, f i) * ∑ j ∈ t, g j := by rfl
+    _ = ∑ i ∈ s, ∑ j ∈ t, f i * g j := by rw [Finset.sum_mul_sum]
+    _ = ∑ i ∈ s, ∑ j ∈ t, ⁅f i, g j⁆ := by rfl
 
 end BasicProperties
 
