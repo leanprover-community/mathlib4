@@ -127,13 +127,13 @@ section WellFounded
 
 variable {h : WellFounded r}
 
-theorem _root_.Acc.shortlex {a : α} (n : ℕ) (aca : Acc r a)
-    (acb : (b : List α) → b.length < n → Acc (Shortlex r) b) (b : List α) (hb : b.length < n)
+private theorem _root_.Acc.shortlex {a : α} {b : List α} (aca : Acc r a)
+    (acb : Acc (Shortlex r) b)
     (ih : ∀ s : List α, s.length < (a :: b).length → Acc (Shortlex r) s) :
-    Acc (Shortlex r) ([a] ++ b) := by
+    Acc (Shortlex r) (a :: b) := by
   induction aca generalizing b with
   | intro xa _ iha =>
-    induction (acb b hb) with
+    induction acb with
     | intro xb _ ihb =>
       refine Acc.intro ([xa] ++ xb) fun p lt => ?_
       rcases shortlex_def.mp lt with h1 | ⟨h2len, h2lex⟩
@@ -143,16 +143,14 @@ theorem _root_.Acc.shortlex {a : α} (n : ℕ) (aca : Acc r a)
         | nil => simp at h2len
         | @cons x xs _ h =>
           simp only [length_cons, add_left_inj] at h2len
-          rw [← h2len] at hb
-          refine ihb _ (of_lex h2len h) hb fun l hl => ?_
+          refine ihb _ (of_lex h2len h) fun l hl => ?_
           apply ih
           rw [List.length_cons, ← h2len]
           exact hl
         | @rel x xs _ _ h =>
           simp only [List.length_cons, Nat.succ_eq_add_one, List.singleton_append,
             add_left_inj] at h2len
-          rw [← h2len] at hb
-          refine iha _ h _ hb fun l hl => ?_
+          refine iha _ h (ih xs (by rw [h2len]; simp)) fun l hl => ?_
           apply ih
           rw [List.length_cons, ← h2len]
           exact hl
@@ -171,9 +169,7 @@ theorem wf (h : WellFounded r) : WellFounded (Shortlex r) := by
     | succ n =>
       obtain ⟨head, tail, rfl⟩ := List.exists_of_length_succ a len_a
       rw [List.length_cons, add_left_inj] at len_a
-      apply Acc.shortlex (n+1) (WellFounded.apply h head) (fun b bl => ih b.length bl _ rfl)
-      · rw [len_a]
-        exact lt_add_one n
+      apply Acc.shortlex (WellFounded.apply h head) (ih n (lt_add_one n) _ len_a)
       intro l ll
       apply ih l.length _ _ rfl
       rw [← len_a]
