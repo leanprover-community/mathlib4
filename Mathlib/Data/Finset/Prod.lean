@@ -212,7 +212,7 @@ theorem singleton_product {a : α} :
   simp [and_left_comm, eq_comm]
 
 @[simp]
-theorem product_singleton {b : β} : s ×ˢ {b} = s.map ⟨fun i => (i, b), Prod.mk_right_injective _⟩ := by
+lemma product_singleton : s ×ˢ {b} = s.map ⟨fun i => (i, b), Prod.mk_right_injective _⟩ := by
   ext ⟨x, y⟩
   simp [and_left_comm, eq_comm]
 
