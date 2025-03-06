@@ -161,8 +161,8 @@ theorem isIsoSubgraph_congr (e : A ≃g B) : A ⊑ C ↔ B ⊑ C :=
   ⟨isIsoSubgraph_trans ⟨e.symm.toCopy⟩, isIsoSubgraph_trans ⟨e.toCopy⟩⟩
 
 /-- A simple graph having no vertices is contained in any simple graph. -/
-lemma isIsoSubgraph_of_isEmpty [IsEmpty α] : A ⊑ B := by
-  use ⟨isEmptyElim, fun {a} ↦ isEmptyElim a⟩, isEmptyElim
+lemma isIsoSubgraph_of_isEmpty [IsEmpty α] : A ⊑ B :=
+  ⟨⟨isEmptyElim, fun {a} ↦ isEmptyElim a⟩, isEmptyElim⟩
 
 /-- A simple graph having no edges is contained in any simple graph having sufficent vertices. -/
 theorem isIsoSubgraph_of_isEmpty_edgeSet [IsEmpty A.edgeSet] [Fintype α] [Fintype β]
@@ -171,8 +171,7 @@ theorem isIsoSubgraph_of_isEmpty_edgeSet [IsEmpty A.edgeSet] [Fintype α] [Finty
   let ι : α ↪ β := Classical.arbitrary (α ↪ β)
   exact ⟨⟨ι, isEmptyElim ∘ fun hadj ↦ (⟨s(_, _), hadj⟩ : A.edgeSet)⟩, ι.injective⟩
 
-lemma bot_isIsoSubgraph (f : α ↪ β) : (⊥ : SimpleGraph α) ⊑ B := by
-  use ⟨f, False.elim⟩, f.injective
+lemma bot_isIsoSubgraph (f : α ↪ β) : (⊥ : SimpleGraph α) ⊑ B := ⟨⟨f, False.elim⟩, f.injective⟩
 
 /-- A simple graph `G` contains all `Subgraph G` coercions. -/
 lemma Subgraph.coe_isIsoSubgraph (G' : G.Subgraph) : G'.coe ⊑ G := ⟨G'.coeCopy⟩
