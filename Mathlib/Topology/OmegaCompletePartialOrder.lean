@@ -66,7 +66,7 @@ end Scott
 
 /-- A Scott topological space is defined on preorders
 such that their open sets, seen as a function `α → Prop`,
-preserves the joins of ω-chains  -/
+preserves the joins of ω-chains. -/
 abbrev Scott (α : Type u) := α
 
 instance Scott.topologicalSpace (α : Type u) [OmegaCompletePartialOrder α] :

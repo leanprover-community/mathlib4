@@ -6,12 +6,11 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Data.ENNReal.Operations
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Topology.Instances.ENNReal.Defs
+import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Instances.NNReal.Lemmas
 import Mathlib.Topology.MetricSpace.Pseudo.Real
+import Mathlib.Topology.MetricSpace.ProperSpace.Real
 import Mathlib.Topology.Metrizable.Uniformity
-import Mathlib.Topology.Order.MonotoneContinuity
-import Mathlib.Topology.Order.T5
 
 /-!
 # Topology on extended non-negative reals
@@ -445,7 +444,7 @@ theorem continuous_nnreal_sub {a : ℝ≥0} : Continuous fun x : ℝ≥0∞ => (
 
 theorem continuousOn_sub_left (a : ℝ≥0∞) : ContinuousOn (a - ·) { x : ℝ≥0∞ | x ≠ ∞ } := by
   rw [show (fun x => a - x) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨a, x⟩ by rfl]
-  apply ContinuousOn.comp continuousOn_sub (Continuous.continuousOn (Continuous.Prod.mk a))
+  apply continuousOn_sub.comp (by fun_prop)
   rintro _ h (_ | _)
   exact h none_eq_top
 
@@ -453,7 +452,7 @@ theorem continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ =>
   by_cases a_infty : a = ∞
   · simp [a_infty, continuous_const, tsub_eq_zero_of_le]
   · rw [show (fun x => x - a) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨x, a⟩ by rfl]
-    apply ContinuousOn.comp_continuous continuousOn_sub (continuous_id'.prod_mk continuous_const)
+    apply continuousOn_sub.comp_continuous (by fun_prop)
     intro x
     simp only [a_infty, Ne, mem_setOf_eq, Prod.mk.inj_iff, and_false, not_false_iff]
 
@@ -1355,8 +1354,9 @@ lemma monotone_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) : Monotone
   exact ne_top_of_le_ne_top t_ne_top (min_le_left _ _)
 
 /-- The truncated cast `ENNReal.truncateToReal t : ℝ≥0∞ → ℝ` is continuous when `t ≠ ∞`. -/
+@[fun_prop]
 lemma continuous_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) : Continuous (truncateToReal t) := by
-  apply continuousOn_toReal.comp_continuous (continuous_min.comp (Continuous.Prod.mk t))
+  apply continuousOn_toReal.comp_continuous (by fun_prop)
   simp [t_ne_top]
 
 end truncateToReal
@@ -1395,7 +1395,7 @@ lemma le_limsup_mul {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞} :
     Frequently.mono (Frequently.and_eventually ((frequently_lt_of_lt_limsup) a_u)
     ((eventually_lt_of_lt_liminf) b_v)) fun _ ab_x ↦ c_ab.trans (mul_lt_mul ab_x.1 ab_x.2)
 
-/-- See also `ENNReal.limsup_mul_le`.-/
+/-- See also `ENNReal.limsup_mul_le`. -/
 lemma limsup_mul_le' {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞}
     (h : limsup u f ≠ 0 ∨ limsup v f ≠ ∞) (h' : limsup u f ≠ ∞ ∨ limsup v f ≠ 0) :
     limsup (u * v) f ≤ limsup u f * limsup v f := by

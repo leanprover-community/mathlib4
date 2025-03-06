@@ -8,6 +8,7 @@ import Mathlib.Order.SetNotation
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Pairwise
 import Mathlib.Data.Set.Image
+import Mathlib.Order.Hom.Basic
 
 /-!
 # Interactions between embeddings and sets.
@@ -32,11 +33,6 @@ end Equiv
 namespace Function
 
 namespace Embedding
-
-/-- Embedding into `WithTop α`. -/
-@[simps]
-def coeWithTop {α} : α ↪ WithTop α :=
-  { Embedding.some with toFun := WithTop.some }
 
 /-- Given an embedding `f : α ↪ β` and a point outside of `Set.range f`, construct an embedding
 `Option α ↪ β`. -/
