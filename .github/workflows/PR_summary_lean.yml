@@ -1,16 +1,12 @@
 name: Post Lean declaration diff
 
 on:
-  #pull_request:
-  workflow_run:
-    workflows: ["continuous integration"]
-    types: [completed] #requested
+  pull_request:
 
 jobs:
   on-success:
     name: Lean declaration diff
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: cleanup
         run: |
@@ -46,7 +42,7 @@ jobs:
         run: |
           lake build cache
           # get the cache here to avoid some clutter in the output of the next step
-          lake exe cache get Archive.lean Counterexamples.lean Mathlib.lean
+          lake exe cache get Mathlib/Algebra/Quandle.lean
 
       - name: Report diff in Lean
         env:
@@ -56,4 +52,8 @@ jobs:
         run: |
           git checkout master
           git checkout -
-          ./scripts/declarations_diff_lean_shell_glue.sh "${PR_NUMBER}" "${PR_HASH}"
+          cp scripts/declarations_diff.lean Mathlib/declarations_diff.lean
+          echo "ddiff" >> Mathlib/declarations_diff.lean
+          lake build Mathlib.declarations_diff
+          echo "done building"
+          #./scripts/declarations_diff_lean_shell_glue.sh "${PR_NUMBER}" "${PR_HASH}"
