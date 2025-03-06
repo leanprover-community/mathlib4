@@ -284,6 +284,10 @@ theorem inner_self_eq_zero {x : E} : ⟪x, x⟫ = 0 ↔ x = 0 := by
 theorem inner_self_ne_zero {x : E} : ⟪x, x⟫ ≠ 0 ↔ x ≠ 0 :=
   inner_self_eq_zero.not
 
+theorem inner_ne_zero_of_ne_zero {x : E} (h : x ≠ 0) : ∃ y, ⟪x, y⟫ ≠ 0 := by
+  use x
+  exact inner_self_ne_zero.mpr h
+
 variable (𝕜)
 
 theorem ext_inner_left {x y : E} (h : ∀ v, ⟪v, x⟫ = ⟪v, y⟫) : x = y := by

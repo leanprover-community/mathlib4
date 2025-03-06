@@ -204,7 +204,7 @@ variable {V : Type*} [AddCommGroup V] [Module ℝ V] [PseudoEMetricSpace V] [Mea
 If the characteristic functions of two finite measures `P` and `P'` are equal, then `P = P'`. In
 other words, characteristic functions separate finite measures.
 -/
-theorem MeasureTheory.ext_of_charFun_eq (he : Continuous e) (he' : e ≠ 0)
+theorem MeasureTheory.ext_of_charFun_eq (he : Continuous e) (he' : e ≠ 1)
     (hL' : ∀ v ≠ 0, L v ≠ 0) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
     (P P' : Measure V) [IsFiniteMeasure P] [IsFiniteMeasure P'] :
     (∀ w, ∫ v, probChar he hL w v ∂P = ∫ v, probChar he hL w v ∂P') → P = P' := by
@@ -230,64 +230,3 @@ theorem MeasureTheory.ext_of_charFun_eq (he : Continuous e) (he' : e ≠ 0)
 end ext
 
 end ProbChar
-
-/-
-The following is an example to show that the previous theorem can be applied in the special case
-where `V = W = ℝ ^ d`, `L = ⟪ , ⟫` and `e` is the probability character given by
-`e = fun x => Complex.exp (Complex.I * x)`. This is the standard setting in probability theory.
--/
-namespace FiniteDimensional
-
-variable {ι : Type*}
-
-/-- dot product of two vectors in euclidean space as a bilinear map -/
-noncomputable
-def dotProduct_bilinear (J : Finset ι) : (J → ℝ) →ₗ[ℝ] (J → ℝ) →ₗ[ℝ] ℝ := by
-  apply LinearMap.mk₂ ℝ (fun v w : J → ℝ => dotProduct v w)
-      (fun m1 m2 n => add_dotProduct m1 m2 n)
-      (fun c m n ↦ smul_dotProduct c m n)
-      (fun m n₁ n₂ ↦ dotProduct_add m n₁ n₂)
-      (fun c m n ↦ dotProduct_smul c m n)
-
-theorem continuous_dotProduct (J : Finset ι) :
-    Continuous fun p : (J → ℝ) × (J → ℝ) ↦ dotProduct_bilinear (J : Finset ι) p.1 p.2 := by
-  apply continuous_finset_sum _ (fun i _ => Continuous.mul
-      (Continuous.comp (continuous_apply i) (Continuous.fst continuous_id))
-      (Continuous.comp (continuous_apply i) (Continuous.snd continuous_id)))
-
-/-- Exponential map onto the circle, defined as additive character -/
-noncomputable
-def probFourierChar : AddChar ℝ Circle where
-  toFun z := Circle.exp (z)
-  map_zero_eq_one' := by simp only; rw [Circle.exp_zero]
-  map_add_eq_mul' x y := by simp only; rw [Circle.exp_add]
-
-theorem probFourierChar_apply (z : ℝ) : probFourierChar z = Circle.exp z := rfl
-
-theorem continuous_probFourierChar : Continuous probFourierChar := Circle.exp.continuous
-
-/-- docBlame -/
-theorem ext_of_charFun_eq (J : Finset ι)
-    (P P' : Measure ((i : J) → ℝ)) [IsFiniteMeasure P] [IsFiniteMeasure P'] :
-    (∀ w : J → ℝ, ∫ v, ((probFourierChar (dotProduct_bilinear J v w)) : ℂ) ∂P
-    = ∫ v, ((probFourierChar (dotProduct_bilinear J v w)) : ℂ) ∂P') → P = P' := by
-  have h1 : probFourierChar ≠ 1 := by
-    rw [DFunLike.ne_iff]
-    use Real.pi
-    rw [probFourierChar_apply]
-    intro h
-    have heq := congrArg Subtype.val h
-    rw [Circle.coe_exp Real.pi, Complex.exp_pi_mul_I] at heq
-    norm_num at heq
-  have h2 : ∀ (v : J → ℝ), v ≠ 0 → dotProduct_bilinear J v ≠ 0 := by
-    intro v hv
-    rw [DFunLike.ne_iff]
-    use v
-    rw [LinearMap.zero_apply]
-    simpa only [dotProduct_bilinear, LinearMap.mk₂_apply, ne_eq, dotProduct_self_eq_zero]
-  intro h
-  apply MeasureTheory.ext_of_charFun_eq FiniteDimensional.continuous_probFourierChar h1 h2
-      (continuous_dotProduct J) P P'
-  exact h
-
-end FiniteDimensional
