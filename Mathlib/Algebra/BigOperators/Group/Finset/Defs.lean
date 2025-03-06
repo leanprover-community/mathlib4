@@ -189,7 +189,7 @@ macro_rules (kind := bigsum)
     -- proof and `b` is the filtering proposition
     match hx??, p? with
     | some (some hx), some p =>
-      `(Finset.sum $s fun $x ↦ if $hx : $p then f $x $hx else 0)
+      `(Finset.sum $s fun $x ↦ if $hx : $p then $v else 0)
     | _, some p => `(Finset.sum (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
     | _, none => `(Finset.sum $s (fun $x ↦ $v))
 
@@ -202,7 +202,7 @@ macro_rules (kind := bigprod)
     -- proof and `b` is the filtering proposition
     match hx??, p? with
     | some (some hx), some p =>
-      `(Finset.prod $s fun $x ↦ if $hx : $p then f $x $hx else 1)
+      `(Finset.prod $s fun $x ↦ if $hx : $p then $v else 1)
     | _, some p => `(Finset.prod (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
     | _, none => `(Finset.prod $s (fun $x ↦ $v))
 
