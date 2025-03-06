@@ -36,7 +36,7 @@ In the following, `{α : Type*} [Fintype α] [DecidableEq α]`.
 ## Implementation details
 
 The forward direction of `Equiv.Perm.isoCycle'` uses `Fintype.choose` of the uniqueness
-result, relying on the `Fintype` instance of a `Cycle.nodup` subtype.
+result, relying on the `Fintype` instance of a `Cycle.Nodup` subtype.
 It is unclear if this works faster than the `Equiv.Perm.toCycle`, which relies
 on recursion over `Finset.univ`.
 
