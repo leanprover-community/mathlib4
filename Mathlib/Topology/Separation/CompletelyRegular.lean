@@ -85,7 +85,7 @@ instance NormalSpace.instCompletelyRegularSpace [NormalSpace X] : CompletelyRegu
 
 /-- A T₃.₅ space is a completely regular space that is also T1. -/
 @[mk_iff]
-class T35Space (X : Type u) [TopologicalSpace X] extends T1Space X, CompletelyRegularSpace X : Prop
+class T35Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, CompletelyRegularSpace X
 
 instance T35Space.instT3space [T35Space X] : T3Space X := {}
 

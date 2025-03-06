@@ -47,8 +47,8 @@ open Ideal IsLocalRing
 
 /-- An integral domain is a *discrete valuation ring* (DVR) if it's a local PID which
   is not a field. -/
-class IsDiscreteValuationRing (R : Type u) [CommRing R] [IsDomain R]
-    extends IsPrincipalIdealRing R, IsLocalRing R : Prop where
+class IsDiscreteValuationRing (R : Type u) [CommRing R] [IsDomain R] : Prop
+    extends IsPrincipalIdealRing R, IsLocalRing R where
   not_a_field' : maximalIdeal R ≠ ⊥
 
 namespace IsDiscreteValuationRing

@@ -121,7 +121,7 @@ variable [Monoid M] [MulAction M α] [Monoid N] [MulAction N β]
 theorem IsTrivialBlock.image {φ : M → N} {f : α →ₑ[φ] β}
     (hf : Function.Surjective f) {B : Set α} (hB : IsTrivialBlock B) :
     IsTrivialBlock (f '' B) := by
-  cases' hB with hB hB
+  obtain hB | hB := hB
   · apply Or.intro_left; apply Set.Subsingleton.image hB
   · apply Or.intro_right; rw [hB]
     simp only [Set.top_eq_univ, Set.image_univ, Set.range_eq_univ, hf]
@@ -130,7 +130,7 @@ theorem IsTrivialBlock.image {φ : M → N} {f : α →ₑ[φ] β}
 theorem IsTrivialBlock.preimage {φ : M → N} {f : α →ₑ[φ] β}
     (hf : Function.Injective f) {B : Set β} (hB : IsTrivialBlock B) :
     IsTrivialBlock (f ⁻¹' B) := by
-  cases' hB with hB hB
+  obtain hB | hB := hB
   · apply Or.intro_left; exact Set.Subsingleton.preimage hB hf
   · apply Or.intro_right; simp only [hB, Set.top_eq_univ]; apply Set.preimage_univ
 

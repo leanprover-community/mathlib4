@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 import Mathlib.LinearAlgebra.Determinant
-import Mathlib.RingTheory.Finiteness.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Finite
 
 
 /-! # The characteristic polynomial of base change -/

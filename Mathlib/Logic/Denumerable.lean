@@ -185,7 +185,7 @@ section Classical
 
 theorem exists_succ (x : s) : ∃ n, (x : ℕ) + n + 1 ∈ s := by
   by_contra h
-  have : ∀ (a : ℕ) (_ : a ∈ s), a < x + 1 := fun a ha =>
+  have (a : ℕ) (ha : a ∈ s) : a < x + 1 :=
     lt_of_not_ge fun hax => h ⟨a - (x + 1), by rwa [Nat.add_right_comm, Nat.add_sub_cancel' hax]⟩
   classical
   exact Fintype.false

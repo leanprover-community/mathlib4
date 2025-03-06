@@ -7,8 +7,6 @@ import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 import Mathlib.Algebra.Group.Even
 import Mathlib.Data.Finset.Piecewise
-import Mathlib.Data.Finset.Powerset
-import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Order.CompleteLattice.Finset
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Finset.Prod
@@ -16,26 +14,7 @@ import Mathlib.Data.Finset.Prod
 /-!
 # Big operators
 
-In this file we define products and sums indexed by finite sets (specifically, `Finset`).
-
-## Notation
-
-We introduce the following notation.
-
-Let `s` be a `Finset α`, and `f : α → β` a function.
-
-* `∏ x ∈ s, f x` is notation for `Finset.prod s f` (assuming `β` is a `CommMonoid`)
-* `∑ x ∈ s, f x` is notation for `Finset.sum s f` (assuming `β` is an `AddCommMonoid`)
-* `∏ x, f x` is notation for `Finset.prod Finset.univ f`
-  (assuming `α` is a `Fintype` and `β` is a `CommMonoid`)
-* `∑ x, f x` is notation for `Finset.sum Finset.univ f`
-  (assuming `α` is a `Fintype` and `β` is an `AddCommMonoid`)
-
-## Implementation Notes
-
-The first arguments in all definitions and lemmas is the codomain of the function of the big
-operator. This is necessary for the heuristic in `@[to_additive]`.
-See the documentation of `to_additive.attr` for more information.
+In this file we prove theorems about products and sums indexed by a `Finset`.
 
 -/
 
@@ -182,36 +161,6 @@ theorem prod_filter_xor (p q : α → Prop) [DecidablePred p] [DecidablePred q] 
       (∏ x ∈ s with (p x ∧ ¬ q x), f x) * (∏ x ∈ s with (q x ∧ ¬ p x), f x) := by
   classical rw [← prod_union (disjoint_filter_and_not_filter _ _), ← filter_or]
   simp only [Xor']
-
-/-- A product over all subsets of `s ∪ {x}` is obtained by multiplying the product over all subsets
-of `s`, and over all subsets of `s` to which one adds `x`. -/
-@[to_additive "A sum over all subsets of `s ∪ {x}` is obtained by summing the sum over all subsets
-of `s`, and over all subsets of `s` to which one adds `x`."]
-lemma prod_powerset_insert [DecidableEq α] (ha : a ∉ s) (f : Finset α → β) :
-    ∏ t ∈ (insert a s).powerset, f t =
-      (∏ t ∈ s.powerset, f t) * ∏ t ∈ s.powerset, f (insert a t) := by
-  rw [powerset_insert, prod_union, prod_image]
-  · exact insert_erase_invOn.2.injOn.mono fun t ht ↦ not_mem_mono (mem_powerset.1 ht) ha
-  · aesop (add simp [disjoint_left, insert_subset_iff])
-
-/-- A product over all subsets of `s ∪ {x}` is obtained by multiplying the product over all subsets
-of `s`, and over all subsets of `s` to which one adds `x`. -/
-@[to_additive "A sum over all subsets of `s ∪ {x}` is obtained by summing the sum over all subsets
-of `s`, and over all subsets of `s` to which one adds `x`."]
-lemma prod_powerset_cons (ha : a ∉ s) (f : Finset α → β) :
-    ∏ t ∈ (s.cons a ha).powerset, f t = (∏ t ∈ s.powerset, f t) *
-      ∏ t ∈ s.powerset.attach, f (cons a t <| not_mem_mono (mem_powerset.1 t.2) ha) := by
-  classical
-  simp_rw [cons_eq_insert]
-  rw [prod_powerset_insert ha, prod_attach _ fun t ↦ f (insert a t)]
-
-/-- A product over `powerset s` is equal to the double product over sets of subsets of `s` with
-`#s = k`, for `k = 1, ..., #s`. -/
-@[to_additive "A sum over `powerset s` is equal to the double sum over sets of subsets of `s` with
-`#s = k`, for `k = 1, ..., #s`"]
-lemma prod_powerset (s : Finset α) (f : Finset α → β) :
-    ∏ t ∈ powerset s, f t = ∏ j ∈ range (#s + 1), ∏ t ∈ powersetCard j s, f t := by
-  rw [powerset_card_disjiUnion, prod_disjiUnion]
 
 end CommMonoid
 
@@ -611,6 +560,12 @@ theorem prod_extend_by_one [DecidableEq α] (s : Finset α) (f : α → β) :
     ∏ i ∈ s, (if i ∈ s then f i else 1) = ∏ i ∈ s, f i :=
   (prod_congr rfl) fun _i hi => if_pos hi
 
+@[to_additive]
+theorem prod_eq_prod_extend (f : s → β) : ∏ x, f x = ∏ x ∈ s, Subtype.val.extend f 1 x := by
+  rw [univ_eq_attach, ← Finset.prod_attach s]
+  congr with ⟨x, hx⟩
+  rw [Subtype.val_injective.extend_apply]
+
 @[to_additive (attr := simp)]
 theorem prod_ite_mem [DecidableEq α] (s t : Finset α) (f : α → β) :
     ∏ i ∈ s, (if i ∈ t then f i else 1) = ∏ i ∈ s ∩ t, f i := by
@@ -984,13 +939,6 @@ lemma prod_pow_eq_pow_sum (s : Finset ι) (f : ι → ℕ) (a : β) :
     ∏ i ∈ s, a ^ f i = a ^ ∑ i ∈ s, f i :=
   cons_induction (by simp) (fun _ _ _ _ ↦ by simp [prod_cons, sum_cons, pow_add, *]) s
 
-/-- A product over `Finset.powersetCard` which only depends on the size of the sets is constant. -/
-@[to_additive
-"A sum over `Finset.powersetCard` which only depends on the size of the sets is constant."]
-lemma prod_powersetCard (n : ℕ) (s : Finset α) (f : ℕ → β) :
-    ∏ t ∈ powersetCard n s, f #t = f n ^ (#s).choose n := by
-  rw [prod_eq_pow_card, card_powersetCard]; rintro a ha; rw [(mem_powersetCard.1 ha).2]
-
 @[to_additive]
 theorem prod_flip {n : ℕ} (f : ℕ → β) :
     (∏ r ∈ range (n + 1), f (n - r)) = ∏ k ∈ range (n + 1), f k := by
@@ -1175,7 +1123,7 @@ theorem prod_ite_one (s : Finset α) (p : α → Prop) [DecidablePred p]
     exact fun i hi => if_neg (h i hi)
 
 @[to_additive]
-theorem prod_erase_lt_of_one_lt {γ : Type*} [DecidableEq α] [CommMonoid γ] [Preorder γ]
+theorem prod_erase_lt_of_one_lt {γ : Type*} [DecidableEq α] [CommMonoid γ] [LT γ]
     [MulLeftStrictMono γ] {s : Finset α} {d : α} (hd : d ∈ s) {f : α → γ}
     (hdf : 1 < f d) : ∏ m ∈ s.erase d, f m < ∏ m ∈ s, f m := by
   conv in ∏ m ∈ s, f m => rw [← Finset.insert_erase hd]
@@ -1542,5 +1490,3 @@ theorem nat_abs_sum_le {ι : Type*} (s : Finset ι) (f : ι → ℤ) :
   | cons i s his IH =>
     simp only [Finset.sum_cons, not_false_iff]
     exact (Int.natAbs_add_le _ _).trans (Nat.add_le_add_left IH _)
-
-set_option linter.style.longFile 1700

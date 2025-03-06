@@ -67,7 +67,7 @@ elab_rules : command
         runTermElabM fun vars => do
           withAutoBoundImplicit do
             elabBinders binders.getArgs fun xs => do
-              let xs ← addAutoBoundImplicits xs
+              let xs ← addAutoBoundImplicits xs none
               let type ← elabType type
               Term.synthesizeSyntheticMVarsNoPostponing
               let type ← mkForallFVars xs type

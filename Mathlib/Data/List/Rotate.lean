@@ -92,7 +92,7 @@ theorem rotate'_mod (l : List α) (n : ℕ) : l.rotate' (n % l.length) = l.rotat
     _ = l.rotate' n := by rw [rotate'_rotate', length_rotate', Nat.mod_add_div]
 
 theorem rotate_eq_rotate' (l : List α) (n : ℕ) : l.rotate n = l.rotate' n :=
-  if h : l.length = 0 then by simp_all [length_eq_zero]
+  if h : l.length = 0 then by simp_all [length_eq_zero_iff]
   else by
     rw [← rotate'_mod,
         rotate'_eq_drop_append_take (le_of_lt (Nat.mod_lt _ (Nat.pos_of_ne_zero h)))]
@@ -228,8 +228,6 @@ theorem head?_rotate {l : List α} {n : ℕ} (h : n < l.length) : head? (l.rotat
 theorem get_rotate_one (l : List α) (k : Fin (l.rotate 1).length) :
     (l.rotate 1).get k = l.get ⟨(k + 1) % l.length, mod_lt _ (length_rotate l 1 ▸ k.pos)⟩ :=
   get_rotate l 1 k
-
-@[deprecated (since := "2024-08-19")] alias nthLe_rotate_one := get_rotate_one
 
 /-- A version of `List.getElem_rotate` that represents `l[k]` in terms of
 `(List.rotate l n)[⋯]`, not vice versa. Can be used instead of rewriting `List.getElem_rotate`

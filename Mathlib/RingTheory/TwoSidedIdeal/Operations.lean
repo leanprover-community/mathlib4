@@ -257,6 +257,13 @@ def subtype : I →ₗ[R] R where
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
+theorem subtype_injective : Function.Injective (subtype I) :=
+  Subtype.coe_injective
+
+@[simp]
+theorem coe_subtype : ⇑(subtype I) = Subtype.val :=
+  rfl
+
 /--
 For any `RingCon R`, when we view it as an ideal in `Rᵒᵖ`, `subtype` is the injective `Rᵐᵒᵖ`-linear
 map `I → Rᵐᵒᵖ`.
@@ -266,6 +273,9 @@ def subtypeMop : I →ₗ[Rᵐᵒᵖ] Rᵐᵒᵖ where
   toFun x := MulOpposite.op x.1
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
+
+theorem subtypeMop_injective : Function.Injective (subtypeMop I) :=
+  MulOpposite.op_injective.comp Subtype.coe_injective
 
 /-- Given an ideal `I`, `span I` is the smallest two-sided ideal containing `I`. -/
 def fromIdeal : Ideal R →o TwoSidedIdeal R where

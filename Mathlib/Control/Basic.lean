@@ -197,7 +197,7 @@ end Sum
 
 /-- A `CommApplicative` functor `m` is a (lawful) applicative functor which behaves identically on
 `α × β` and `β × α`, so computations can occur in either order. -/
-class CommApplicative (m : Type u → Type v) [Applicative m] extends LawfulApplicative m : Prop where
+class CommApplicative (m : Type u → Type v) [Applicative m] : Prop extends LawfulApplicative m where
   /-- Computations performed first on `a : α` and then on `b : β` are equal to those performed in
   the reverse order. -/
   commutative_prod : ∀ {α β} (a : m α) (b : m β),

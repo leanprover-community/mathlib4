@@ -271,7 +271,7 @@ instance prod.instIsFiniteMeasureOnCompacts {α β : Type*} [TopologicalSpace α
   set L := (Prod.fst '' K) ×ˢ (Prod.snd '' K) with hL
   have : K ⊆ L := by
     rintro ⟨x, y⟩ hxy
-    simp only [L, prod_mk_mem_set_prod_eq, mem_image, Prod.exists, exists_and_right,
+    simp only [L, prodMk_mem_set_prod_eq, mem_image, Prod.exists, exists_and_right,
       exists_eq_right]
     exact ⟨⟨y, hxy⟩, ⟨x, hxy⟩⟩
   apply lt_of_le_of_lt (measure_mono this)

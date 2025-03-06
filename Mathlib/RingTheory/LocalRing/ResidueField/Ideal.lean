@@ -56,7 +56,7 @@ lemma Ideal.algebraMap_residueField_eq_zero {x} :
     IsLocalRing.ResidueField.algebraMap_eq, IsLocalRing.residue_eq_zero_iff]
   exact IsLocalization.AtPrime.to_map_mem_maximal_iff _ _ _
 
-@[simp]
+@[simp high] -- marked high to override the more general `FaithfulSMul.ker_algebraMap_eq_bot`
 lemma Ideal.ker_algebraMap_residueField :
     RingHom.ker (algebraMap R I.ResidueField) = I :=
   Ideal.ext fun _ ↦ Ideal.algebraMap_residueField_eq_zero

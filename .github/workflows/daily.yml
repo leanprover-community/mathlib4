@@ -80,6 +80,7 @@ jobs:
 
       - name: Check environments using lean4checker
         id: lean4checker
+        continue-on-error: true
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
@@ -104,6 +105,7 @@ jobs:
 
       - name: Run mathlib_test_executable
         id: mathlib-test
+        continue-on-error: true
         run: |
           lake exe mathlib_test_executable
 

@@ -249,7 +249,7 @@ lemma expGrowthInf_inf {u v : ℕ → ℝ≥0∞} :
 /-- Lower exponential growth as an `InfTopHom` -/
 noncomputable def expGrowthInfTopHom : InfTopHom (ℕ → ℝ≥0∞) EReal where
   toFun := expGrowthInf
-  map_inf' := fun u v ↦ @expGrowthInf_inf u v
+  map_inf' _ _ := expGrowthInf_inf
   map_top' := expGrowthInf_top
 
 lemma expGrowthInf_biInf {α : Type*} (u : α → ℕ → ℝ≥0∞) {s : Set α} (hs : s.Finite) :
@@ -272,7 +272,7 @@ lemma expGrowthSup_sup {u v : ℕ → ℝ≥0∞} :
 /-- Upper exponential growth as a `SupBotHom` -/
 noncomputable def expGrowthSupBotHom : SupBotHom (ℕ → ℝ≥0∞) EReal where
   toFun := expGrowthSup
-  map_sup' := fun u v ↦ @expGrowthSup_sup u v
+  map_sup' _ _ := expGrowthSup_sup
   map_bot' := expGrowthSup_zero
 
 lemma expGrowthSup_biSup {α : Type*} (u : α → ℕ → ℝ≥0∞) {s : Set α} (hs : s.Finite) :

@@ -139,7 +139,7 @@ difference operation `\` such that `(· \ a)` is left adjoint to `(· ⊔ a)`.
 
 This generalizes `CoheytingAlgebra` by not requiring a top element. -/
 class GeneralizedCoheytingAlgebra (α : Type*) extends Lattice α, OrderBot α, SDiff α where
-  /-- `(· \ a)` is right adjoint to `(· ⊔ a)` -/
+  /-- `(· \ a)` is left adjoint to `(· ⊔ a)` -/
   sdiff_le_iff (a b c : α) : a \ b ≤ c ↔ a ≤ b ⊔ c
 
 /-- A Heyting algebra is a bounded lattice with an additional binary operation `⇨` called Heyting
@@ -156,7 +156,7 @@ class CoheytingAlgebra (α : Type*) extends GeneralizedCoheytingAlgebra α, Orde
 
 /-- A bi-Heyting algebra is a Heyting algebra that is also a co-Heyting algebra. -/
 class BiheytingAlgebra (α : Type*) extends HeytingAlgebra α, SDiff α, HNot α where
-  /-- `(· \ a)` is right adjoint to `(· ⊔ a)` -/
+  /-- `(· \ a)` is left adjoint to `(· ⊔ a)` -/
   sdiff_le_iff (a b c : α) : a \ b ≤ c ↔ a ≤ b ⊔ c
   /-- `⊤ \ a` is `￢a` -/
   top_sdiff (a : α) : ⊤ \ a = ￢a

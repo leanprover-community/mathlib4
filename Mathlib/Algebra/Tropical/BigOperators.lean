@@ -66,7 +66,6 @@ theorem untrop_prod [AddCommMonoid R] (s : Finset S) (f : S → Tropical R) :
   simp only [Multiset.map_map, Function.comp_apply]
   rfl
 
--- Porting note: replaced `coe` with `WithTop.some` in statement
 theorem List.trop_minimum [LinearOrder R] (l : List R) :
     trop l.minimum = List.sum (l.map (trop ∘ WithTop.some)) := by
   induction' l with hd tl IH

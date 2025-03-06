@@ -444,7 +444,7 @@ theorem liftRel_destruct_iff {R : α → β → Prop} {s : WSeq α} {t : WSeq β
       LiftRel R s t ∨ Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct s) (destruct t),
       Or.inr h, fun {s t} h => by
       have h : Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct s) (destruct t) := by
-        cases' h with h h
+        obtain h | h := h
         · exact liftRel_destruct h
         · assumption
       apply Computation.LiftRel.imp _ _ _ h
@@ -504,7 +504,7 @@ theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (
         fun {a c} ha hc => ?_⟩
   rcases h1.left ha with ⟨b, hb, t1⟩
   have t2 := Computation.rel_of_liftRel h2 hb hc
-  cases' a with a <;> cases' c with c
+  obtain - | a := a <;> obtain - | c := c
   · trivial
   · cases b
     · cases t2

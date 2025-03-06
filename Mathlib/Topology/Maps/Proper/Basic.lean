@@ -73,7 +73,7 @@ universe u v
 and, for all `ℱ : Filter X`, any cluster point of `map f ℱ` is the image by `f` of a cluster point
 of `ℱ`. -/
 @[mk_iff isProperMap_iff_clusterPt, fun_prop]
-structure IsProperMap (f : X → Y) extends Continuous f : Prop where
+structure IsProperMap (f : X → Y) : Prop extends Continuous f where
   /-- By definition, if `f` is a proper map and `ℱ` is any filter on `X`, then any cluster point of
   `map f ℱ` is the image by `f` of some cluster point of `ℱ`. -/
   clusterPt_of_mapClusterPt :

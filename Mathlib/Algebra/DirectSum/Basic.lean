@@ -394,6 +394,41 @@ theorem finite_support (A : ι → S) (x : DirectSum ι fun i => A i) :
   classical
   exact (DFinsupp.support x).finite_toSet.subset (DirectSum.support_subset _ x)
 
+section map
+
+variable {ι : Type*} {α : ι → Type*} {β : ι → Type*} [∀ i, AddCommMonoid (α i)]
+variable [∀ i, AddCommMonoid (β i)] (f : ∀(i : ι), α i →+ β i)
+
+/-- create a homomorphism from `⨁ i, α i` to `⨁ i, β i` by giving the component-wise map `f`. -/
+def map : (⨁ i, α i) →+ ⨁ i, β i :=  DFinsupp.mapRange.addMonoidHom f
+
+@[simp] lemma map_of [DecidableEq ι] (i : ι) (x : α i) : map f (of α i x) = of β i (f i x) :=
+  DFinsupp.mapRange_single (hf := fun _ => map_zero _)
+
+@[simp] lemma map_apply (i : ι) (x : ⨁ i, α i) : map f x i = f i (x i) :=
+  DFinsupp.mapRange_apply (hf := fun _ => map_zero _) _ _ _
+
+@[simp] lemma map_id :
+    (map (fun i ↦ AddMonoidHom.id (α i))) = AddMonoidHom.id (⨁ i, α i) :=
+  DFinsupp.mapRange.addMonoidHom_id
+
+@[simp] lemma map_comp {γ : ι → Type*} [∀ i, AddCommMonoid (γ i)]
+    (g : ∀ (i : ι), β i →+ γ i) :
+    (map (fun i ↦ (g i).comp (f i))) = (map g).comp (map f) :=
+  DFinsupp.mapRange.addMonoidHom_comp _ _
+
+lemma map_injective : Function.Injective (map f) ↔ ∀ i, Function.Injective (f i) := by
+  classical exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
+
+lemma map_surjective : Function.Surjective (map f) ↔ (∀ i, Function.Surjective (f i)) := by
+  classical exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
+
+lemma map_eq_iff (x y : ⨁ i, α i) :
+    map f x = map f y ↔ ∀ i, f i (x i) = f i (y i) := by
+  simp_rw [DirectSum.ext_iff, map_apply]
+
+end map
+
 end DirectSum
 
 /-- The canonical isomorphism of a finite direct sum of additive commutative monoids

@@ -35,11 +35,6 @@ sense of `ω`-complete partial orders, which excludes the example because it is 
 class LawfulFix (α : Type*) [OmegaCompletePartialOrder α] extends Fix α where
   fix_eq : ∀ {f : α → α}, ωScottContinuous f → Fix.fix f = f (Fix.fix f)
 
-@[deprecated LawfulFix.fix_eq (since := "2024-08-26")]
-theorem LawfulFix.fix_eq' {α} [OmegaCompletePartialOrder α] [LawfulFix α] {f : α → α}
-    (hf : ωScottContinuous f) : Fix.fix f = f (Fix.fix f) :=
-  LawfulFix.fix_eq hf
-
 namespace Part
 
 open Part Nat Nat.Upto
@@ -179,8 +174,6 @@ theorem fix_eq_of_ωScottContinuous (hc : ωScottContinuous g) :
 
 variable {f}
 
-@[deprecated (since := "2024-08-26")] alias fix_eq := fix_eq_of_ωScottContinuous
-
 end Part
 
 namespace Part
@@ -196,8 +189,6 @@ theorem ωScottContinuous_toUnitMono (f : Part α → Part α) (hc : ωScottCont
   ext ⟨⟩ : 1
   dsimp [OmegaCompletePartialOrder.ωSup]
   erw [hc.map_ωSup, Chain.map_comp]; rfl
-
-@[deprecated (since := "2024-08-26")] alias to_unit_cont := ωScottContinuous_toUnitMono
 
 instance lawfulFix : LawfulFix (Part α) :=
   ⟨fun {f : Part α → Part α} hc ↦ show Part.fix (toUnitMono ⟨f,hc.monotone⟩) () = _ by
@@ -244,8 +235,6 @@ theorem ωScottContinuous_curry :
     rw [map_comp, map_comp]
     rfl
 
-@[deprecated (since := "2024-08-26")] alias continuous_curry := ωScottContinuous_curry
-
 theorem ωScottContinuous_uncurry :
     ωScottContinuous (monotoneUncurry α β γ) :=
     .of_map_ωSup_of_orderHom fun c ↦ by
@@ -253,8 +242,6 @@ theorem ωScottContinuous_uncurry :
   dsimp [uncurry, ωSup]
   rw [map_comp, map_comp]
   rfl
-
-@[deprecated (since := "2024-08-26")] alias continuous_uncurry := ωScottContinuous_uncurry
 
 end Monotone
 
@@ -274,9 +261,6 @@ theorem uncurry_curry_ωScottContinuous (hc : ωScottContinuous f) :
       (⟨f,hc.monotone⟩ : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) → γ x y).comp <|
       monotoneCurry α β γ :=
   (ωScottContinuous_uncurry _ _ _).comp (hc.comp (ωScottContinuous_curry _ _ _))
-
-@[deprecated (since := "2024-08-26")]
-alias uncurry_curry_continuous := uncurry_curry_ωScottContinuous
 
 end Curry
 

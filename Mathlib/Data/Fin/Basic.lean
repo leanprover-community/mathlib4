@@ -70,17 +70,6 @@ def finZeroElim {α : Fin 0 → Sort*} (x : Fin 0) : α x :=
 
 namespace Fin
 
-@[deprecated (since := "2024-08-13")] alias ne_of_vne := ne_of_val_ne
-@[deprecated (since := "2024-08-13")] alias vne_of_ne := val_ne_of_ne
-
-@[simp] theorem mk_eq_zero {n a : Nat} {ha : a < n} [NeZero n] :
-    (⟨a, ha⟩ : Fin n) = 0 ↔ a = 0 :=
-  mk.inj_iff
-
-@[simp] theorem zero_eq_mk {n a : Nat} {ha : a < n} [NeZero n] :
-    0 = (⟨a, ha⟩ : Fin n) ↔ a = 0 := by
-  simp [eq_comm]
-
 @[simp] theorem mk_eq_one {n a : Nat} {ha : a < n + 2} :
     (⟨a, ha⟩ : Fin (n + 2)) = 1 ↔ a = 1 :=
   mk.inj_iff

@@ -55,3 +55,39 @@ jobs:
           topic: 'Mathlib `lake update` failure'
           content: |
             ${{ steps.construct_message.outputs.result }}
+
+  monitor-success:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Construct success message
+        id: construct_message
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}
+          result-encoding: string
+          script: |
+            const owner = context.repo.owner, repo = context.repo.repo;
+            let output = "✅ `lake update` succeeded! "
+            let prs = context.payload.workflow_run.pull_requests
+            if (prs.length) {
+              for (let pr of prs) {
+                output += "merged via #" + pr.number + ". ";
+              }
+              return output
+            }
+            return ''  // Return empty string if no PRs found
+
+      - name: Send Zulip message
+        if: ${{ steps.construct_message.outputs.result != '' }}
+        uses: zulip/github-actions-zulip/send-message@v1
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'mathlib reviewers'
+          type: 'stream'
+          topic: 'Mathlib `lake update` failure'
+          content: |
+            ${{ steps.construct_message.outputs.result }}

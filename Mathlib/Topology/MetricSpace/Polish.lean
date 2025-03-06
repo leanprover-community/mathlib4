@@ -62,8 +62,8 @@ other way around as this is the most common use case.
 
 To endow a Polish space with a complete metric space structure, do `letI := upgradePolishSpace α`.
 -/
-class PolishSpace (α : Type*) [h : TopologicalSpace α]
-    extends SecondCountableTopology α : Prop where
+class PolishSpace (α : Type*) [h : TopologicalSpace α] : Prop
+    extends SecondCountableTopology α where
   complete : ∃ m : MetricSpace α, m.toUniformSpace.toTopologicalSpace = h ∧
     @CompleteSpace α m.toUniformSpace
 

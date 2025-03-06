@@ -217,4 +217,29 @@ theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t
 
 end Rel
 
+section Nodup
+
+variable {s : Multiset α} {a : α}
+
+theorem nodup_iff_count_le_one [DecidableEq α] {s : Multiset α} : Nodup s ↔ ∀ a, count a s ≤ 1 :=
+  Quot.induction_on s fun _l => by
+    simp only [quot_mk_to_coe'', coe_nodup, mem_coe, coe_count]
+    exact List.nodup_iff_count_le_one
+
+theorem nodup_iff_count_eq_one [DecidableEq α] : Nodup s ↔ ∀ a ∈ s, count a s = 1 :=
+  Quot.induction_on s fun _l => by simpa using List.nodup_iff_count_eq_one
+
+@[simp]
+theorem count_eq_one_of_mem [DecidableEq α] {a : α} {s : Multiset α} (d : Nodup s) (h : a ∈ s) :
+    count a s = 1 :=
+  nodup_iff_count_eq_one.mp d a h
+
+theorem count_eq_of_nodup [DecidableEq α] {a : α} {s : Multiset α} (d : Nodup s) :
+    count a s = if a ∈ s then 1 else 0 := by
+  split_ifs with h
+  · exact count_eq_one_of_mem d h
+  · exact count_eq_zero_of_not_mem h
+
+end Nodup
+
 end Multiset

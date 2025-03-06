@@ -242,9 +242,6 @@ section map
 protected theorem map_mul (f : M ≃* N) : ∀ x y, f (x * y) = f x * f y :=
   map_mul f
 
-attribute [deprecated map_mul (since := "2024-08-08")] MulEquiv.map_mul
-attribute [deprecated map_add (since := "2024-08-08")] AddEquiv.map_add
-
 end map
 
 section bijective

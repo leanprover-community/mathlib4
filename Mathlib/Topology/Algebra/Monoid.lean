@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Mitchell Lee
 -/
 import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Group.Submonoid.Basic
+import Mathlib.Algebra.Group.ULift
 import Mathlib.Order.Filter.Pointwise
 import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Group.ULift
 import Mathlib.Topology.ContinuousMap.Defs
-import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
 # Theory of topological monoids

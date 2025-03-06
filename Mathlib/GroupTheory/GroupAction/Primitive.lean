@@ -75,7 +75,7 @@ variable (G : Type*) (X : Type*)
 -- Note : if the action is degenerate, singletons may not be blocks.
 /-- An additive action is preprimitive if it is pretransitive and
 the only blocks are the trivial ones -/
-class _root_.AddAction.IsPreprimitive [VAdd G X] extends AddAction.IsPretransitive G X : Prop where
+class _root_.AddAction.IsPreprimitive [VAdd G X] : Prop extends AddAction.IsPretransitive G X where
   /-- An action is preprimitive if it is pretransitive and
   the only blocks are the trivial ones -/
   isTrivialBlock_of_isBlock : ∀ {B : Set X}, AddAction.IsBlock G B → AddAction.IsTrivialBlock B
@@ -83,7 +83,7 @@ class _root_.AddAction.IsPreprimitive [VAdd G X] extends AddAction.IsPretransiti
 /-- An action is preprimitive if it is pretransitive and
 the only blocks are the trivial ones -/
 @[to_additive]
-class IsPreprimitive [SMul G X] extends IsPretransitive G X : Prop where
+class IsPreprimitive [SMul G X] : Prop extends IsPretransitive G X where
   /-- An action is preprimitive if it is pretransitive and
   the only blocks are the trivial ones -/
   isTrivialBlock_of_isBlock : ∀ {B : Set X}, IsBlock G B → IsTrivialBlock B
@@ -93,7 +93,7 @@ open IsPreprimitive
 /-- An additive action of an additive group is quasipreprimitive if any normal subgroup
 that has no fixed point acts pretransitively -/
 class _root_.AddAction.IsQuasiPreprimitive
-    [AddGroup G] [AddAction G X] extends AddAction.IsPretransitive G X : Prop where
+    [AddGroup G] [AddAction G X] : Prop extends AddAction.IsPretransitive G X where
   isPretransitive_of_normal :
     ∀ {N : AddSubgroup G} [N.Normal], AddAction.fixedPoints N X ≠ .univ →
       AddAction.IsPretransitive N X
@@ -101,7 +101,7 @@ class _root_.AddAction.IsQuasiPreprimitive
 /-- An action of a group is quasipreprimitive if any normal subgroup
 that has no fixed point acts pretransitively -/
 @[to_additive]
-class IsQuasiPreprimitive [Group G] [MulAction G X] extends IsPretransitive G X : Prop where
+class IsQuasiPreprimitive [Group G] [MulAction G X] : Prop extends IsPretransitive G X where
   isPretransitive_of_normal :
     ∀ {N : Subgroup G} [N.Normal], fixedPoints N X ≠ .univ → IsPretransitive N X
 

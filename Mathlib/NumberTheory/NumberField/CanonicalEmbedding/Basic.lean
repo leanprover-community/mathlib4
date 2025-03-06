@@ -684,7 +684,7 @@ instance : DiscreteTopology (mixedEmbedding.integerLattice K) := by
 open Classical in
 instance : IsZLattice ℝ (mixedEmbedding.integerLattice K) := by
   simp_rw [← span_latticeBasis]
-  exact ZSpan.isZLattice (latticeBasis K)
+  infer_instance
 
 open Classical in
 theorem fundamentalDomain_integerLattice :
@@ -795,7 +795,7 @@ instance : DiscreteTopology (mixedEmbedding.idealLattice K I) := by
 open Classical in
 instance : IsZLattice ℝ (mixedEmbedding.idealLattice K I) := by
   simp_rw [← span_idealLatticeBasis]
-  exact ZSpan.isZLattice (fractionalIdealLatticeBasis K I)
+  infer_instance
 
 open Classical in
 theorem fundamentalDomain_idealLattice :

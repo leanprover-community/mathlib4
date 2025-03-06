@@ -16,7 +16,7 @@ open System (FilePath)
 
 /-- Target directory for build files -/
 def LIBDIR : FilePath :=
-  ".lake" / "build" / "lib"
+  ".lake" / "build" / "lib" / "lean"
 
 /-- Target directory for IR files -/
 def IRDIR : FilePath :=
