@@ -264,6 +264,8 @@ def HasCondSubgaussianMGF (X : Ω → ℝ) (c : ℝ≥0)
     (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] : Prop :=
   Kernel.HasSubgaussianMGF X c (condExpKernel μ m) (μ.trim hm)
 
+namespace HasCondSubgaussianMGF
+
 lemma HasCondSubgaussianMGF.condExp_le (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) :
     ∀ᵐ ω' ∂μ, (μ[fun ω ↦ exp (t * X ω) | m]) ω' ≤ exp (c * t ^ 2 / 2) := by
   have h_eq := condExp_ae_eq_integral_condExpKernel hm (h.integrable_exp_mul t)
@@ -273,21 +275,23 @@ lemma HasCondSubgaussianMGF.condExp_le (h : HasCondSubgaussianMGF m hm X c μ) (
   exact h_mgf t
 
 @[simp]
-lemma HasCondSubgaussianMGF.fun_zero : HasCondSubgaussianMGF m hm (fun _ ↦ 0) 0 μ :=
+lemma fun_zero : HasCondSubgaussianMGF m hm (fun _ ↦ 0) 0 μ :=
   Kernel.HasSubgaussianMGF.fun_zero
 
 @[simp]
-lemma HasCondSubgaussianMGF.zero : HasCondSubgaussianMGF m hm 0 0 μ :=
+lemma zero : HasCondSubgaussianMGF m hm 0 0 μ :=
   Kernel.HasSubgaussianMGF.zero
 
-lemma HasCondSubgaussianMGF.memLp (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) (p : ℝ≥0) :
+lemma memLp (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) (p : ℝ≥0) :
     MemLp (fun ω ↦ exp (t * X ω)) p μ :=
   condExpKernel_comp_trim (μ := μ) hm ▸ Kernel.HasSubgaussianMGF.memLp h t p
 
-lemma HasCondSubgaussianMGF.integrable_exp_mul
+lemma integrable_exp_mul
     (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) :
     Integrable (fun ω ↦ exp (t * X ω)) μ :=
   condExpKernel_comp_trim (μ := μ) hm ▸ Kernel.HasSubgaussianMGF.integrable_exp_mul h t
+
+end HasCondSubgaussianMGF
 
 end Conditional
 
