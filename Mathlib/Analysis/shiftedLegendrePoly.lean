@@ -1,9 +1,15 @@
 /-
-Copyright (c) 2024 Junqi Liu. All rights reserved.
+Copyright (c) 2025 Junqi Liu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junqi Liu
 -/
-import Mathlib
+import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Derivative
+import Mathlib.Algebra.Polynomial.Eval.SMul
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Data.Nat.Cast.Field
+import Mathlib.Data.Real.StarOrdered
 
 /-!
 # shifted Legendre Polynomials
@@ -114,3 +120,4 @@ lemma shiftedLegendre_eval_symm (n : ℕ) (x : ℝ) :
   simp only [even_two, Even.mul_right, Even.neg_pow, one_pow, mul_one]
 
 end Polynomial
+#min_imports
