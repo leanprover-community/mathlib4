@@ -134,9 +134,6 @@ theorem measurable_compProdFun (κ : Kernel α β) [IsSFiniteKernel κ] (η : Ke
     exact measurable_kernel_prod_mk_left (measurable_fst.snd.prod_mk measurable_snd hs)
   exact h_meas.lintegral_kernel_prod_right
 
-@[deprecated (since := "2024-08-30")]
-alias measurable_compProdFun_of_finite := measurable_compProdFun
-
 open scoped Classical in
 /-- Composition-Product of kernels. For s-finite kernels, it satisfies
 `∫⁻ bc, f bc ∂(compProd κ η a) = ∫⁻ b, ∫⁻ c, f (b, c) ∂(η (a, b)) ∂(κ a)`
@@ -192,7 +189,7 @@ theorem compProd_of_not_isSFiniteKernel_right (κ : Kernel α β) (η : Kernel (
 
 theorem compProd_apply (hs : MeasurableSet s) (κ : Kernel α β) [IsSFiniteKernel κ]
     (η : Kernel (α × β) γ) [IsSFiniteKernel η] (a : α) :
-    (κ ⊗ₖ η) a s = ∫⁻ b, η (a, b) {c | (b, c) ∈ s} ∂κ a :=
+    (κ ⊗ₖ η) a s = ∫⁻ b, η (a, b) (Prod.mk b ⁻¹' s) ∂κ a :=
   compProd_apply_eq_compProdFun κ η a hs
 
 theorem le_compProd_apply (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel (α × β) γ)
@@ -264,9 +261,9 @@ lemma compProd_eq_zero_iff {κ : Kernel α β} {η : Kernel (α × β) γ}
 lemma compProd_preimage_fst {s : Set β} (hs : MeasurableSet s) (κ : Kernel α β)
     (η : Kernel (α × β) γ) [IsSFiniteKernel κ] [IsMarkovKernel η] (x : α) :
     (κ ⊗ₖ η) x (Prod.fst ⁻¹' s) = κ x s := by
-  rw [compProd_apply (measurable_fst hs)]
-  simp only [Set.mem_preimage]
   classical
+  simp_rw [compProd_apply (measurable_fst hs), ← Set.preimage_comp, Prod.fst_comp_mk, Set.preimage,
+    Function.const_apply]
   have : ∀ b : β, η (x, b) {_c | b ∈ s} = s.indicator (fun _ ↦ 1) b := by
     intro b
     by_cases hb : b ∈ s <;> simp [hb]
@@ -283,12 +280,12 @@ lemma compProd_deterministic_apply [MeasurableSingletonClass γ] {f : α × β �
   have ht : MeasurableSet t := (measurable_id.prod_mk (hf.comp measurable_prod_mk_left)) hs
   rw [← lintegral_add_compl _ ht]
   convert add_zero _
-  · suffices ∀ b ∈ tᶜ, (if (b, f (x, b)) ∈ s then (1 : ℝ≥0∞) else 0) = 0 by
+  · suffices ∀ b ∈ tᶜ, (if f (x, b) ∈ Prod.mk b ⁻¹' s then (1 : ℝ≥0∞) else 0) = 0 by
       rw [setLIntegral_congr_fun ht.compl (ae_of_all _ this), lintegral_zero]
     intro b hb
     simp only [t, Set.mem_compl_iff, Set.mem_setOf_eq] at hb
     simp [hb]
-  · suffices ∀ b ∈ t, (if (b, f (x, b)) ∈ s then (1 : ℝ≥0∞) else 0) = 1 by
+  · suffices ∀ b ∈ t, (if f (x, b) ∈ Prod.mk b ⁻¹' s then (1 : ℝ≥0∞) else 0) = 1 by
       rw [setLIntegral_congr_fun ht (ae_of_all _ this), setLIntegral_one]
     intro b hb
     simp only [t, Set.mem_setOf_eq] at hb
@@ -317,8 +314,7 @@ theorem ae_kernel_lt_top (a : α) (h2s : (κ ⊗ₖ η) a s ≠ ∞) :
 theorem compProd_null (a : α) (hs : MeasurableSet s) :
     (κ ⊗ₖ η) a s = 0 ↔ (fun b => η (a, b) (Prod.mk b ⁻¹' s)) =ᵐ[κ a] 0 := by
   rw [Kernel.compProd_apply hs, lintegral_eq_zero_iff]
-  · rfl
-  · exact Kernel.measurable_kernel_prod_mk_left' hs a
+  exact Kernel.measurable_kernel_prod_mk_left' hs a
 
 theorem ae_null_of_compProd_null (h : (κ ⊗ₖ η) a s = 0) :
     (fun b => η (a, b) (Prod.mk b ⁻¹' s)) =ᵐ[κ a] 0 := by
@@ -360,10 +356,9 @@ variable {κ : Kernel α β} [IsSFiniteKernel κ] {η : Kernel (α × β) γ} [I
 theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht : MeasurableSet t) :
     Kernel.restrict κ hs ⊗ₖ Kernel.restrict η ht = Kernel.restrict (κ ⊗ₖ η) (hs.prod ht) := by
   ext a u hu
-  rw [compProd_apply hu, restrict_apply' _ _ _ hu,
-    compProd_apply (hu.inter (hs.prod ht))]
-  simp only [Kernel.restrict_apply, Measure.restrict_apply' ht, Set.mem_inter_iff,
-    Set.prodMk_mem_set_prod_eq]
+  rw [compProd_apply hu, restrict_apply' _ _ _ hu, compProd_apply (hu.inter (hs.prod ht))]
+  simp only [restrict_apply, Set.preimage, Measure.restrict_apply' ht, Set.mem_inter_iff,
+    Set.mem_prod]
   have :
     ∀ b,
       η (a, b) {c : γ | (b, c) ∈ u ∧ b ∈ s ∧ c ∈ t} =
@@ -439,7 +434,6 @@ theorem lintegral_compProd' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kerne
     congr
     ext1 b
     rw [lintegral_indicator_const_comp measurable_prod_mk_left hs]
-    rfl
   · intro f f' _ hf_eq hf'_eq
     simp_rw [SimpleFunc.coe_add, Pi.add_apply]
     change
@@ -540,7 +534,6 @@ theorem compProd_apply_univ_le (κ : Kernel α β) (η : Kernel (α × β) γ) [
   · rw [compProd_of_not_isSFiniteKernel_left _ _ hκ]
     simp
   rw [compProd_apply .univ]
-  simp only [Set.mem_univ, Set.setOf_true]
   let Cη := IsFiniteKernel.bound η
   calc
     ∫⁻ b, η (a, b) Set.univ ∂κ a ≤ ∫⁻ _, Cη ∂κ a :=
@@ -639,7 +632,7 @@ lemma fst_compProd_apply (κ : Kernel α β) (η : Kernel (α × β) γ)
   swap; · exact measurable_fst hs
   have h_eq b : η (x, b) {c | b ∈ s} = s.indicator (fun b ↦ η (x, b) Set.univ) b := by
     by_cases hb : b ∈ s <;> simp [hb]
-  simp_rw [Set.mem_setOf_eq, h_eq]
+  simp_rw [Set.preimage, Set.mem_setOf_eq, h_eq]
 
 @[simp]
 lemma fst_compProd (κ : Kernel α β) (η : Kernel (α × β) γ) [IsSFiniteKernel κ] [IsMarkovKernel η] :
