@@ -231,6 +231,23 @@ lemma iIndep.meas_iInter [Fintype ι] (h : iIndep m κ μ) (hs : ∀ i, Measurab
   filter_upwards [h.meas_biInter (fun i (_ : i ∈ Finset.univ) ↦ hs _)] with a ha
   simp [← ha]
 
+@[nontriviality, simp]
+lemma iIndepSets.of_subsingleton [Subsingleton ι] {m : ι → Set (Set Ω)} {κ : Kernel α Ω}
+    [IsMarkovKernel κ] : iIndepSets m κ μ := by
+  rintro s f hf
+  obtain rfl | ⟨i, rfl⟩ : s = ∅ ∨ ∃ i, s = {i} := by
+    simpa using (subsingleton_of_subsingleton (s := s.toSet)).eq_empty_or_singleton
+  all_goals simp
+
+@[nontriviality, simp]
+lemma iIndep.of_subsingleton [Subsingleton ι] {m : ι → MeasurableSpace Ω} {κ : Kernel α Ω}
+    [IsMarkovKernel κ] : iIndep m κ μ := by simp [iIndep]
+
+@[nontriviality, simp]
+lemma iIndepFun.of_subsingleton [Subsingleton ι] {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)}
+    {f : ∀ i, Ω → β i} [IsMarkovKernel κ] : iIndepFun m f κ μ := by
+  simp [iIndepFun]
+
 protected lemma iIndepFun.iIndep (hf : iIndepFun mβ f κ μ) :
     iIndep (fun x ↦ (mβ x).comap (f x)) κ μ := hf
 
@@ -650,7 +667,7 @@ theorem iIndepSet.indep_generateFrom_lt [Preorder ι] {s : ι → Set Ω}
     (Set.disjoint_singleton_left.mpr (lt_irrefl _)) using 1
   simp only [Set.mem_singleton_iff, exists_prop, exists_eq_left, Set.setOf_eq_eq_singleton']
 
-theorem iIndepSet.indep_generateFrom_le [LinearOrder ι] {s : ι → Set Ω}
+theorem iIndepSet.indep_generateFrom_le [Preorder ι] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (i : ι) {k : ι} (hk : i < k) :
     Indep (generateFrom {s k}) (generateFrom { t | ∃ j ≤ i, s j = t }) κ μ := by
   convert iIndepSet.indep_generateFrom_of_disjoint hsm hs {k} { j | j ≤ i }
@@ -949,13 +966,6 @@ theorem IndepFun.neg_left {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace �
 section iIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
 
-@[nontriviality]
-lemma iIndepFun.of_subsingleton [IsMarkovKernel κ] [Subsingleton ι] : iIndepFun m f κ μ := by
-  refine (iIndepFun_iff_measure_inter_preimage_eq_mul ..).2 fun s f' hf' ↦ ?_
-  obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty
-  · simp
-  · have : s = {x} := by ext y; simp [Subsingleton.elim y x, hx]
-    simp [this]
 
 /-- If `f` is a family of mutually independent random variables (`iIndepFun m f μ`) and `S, T` are
 two disjoint finite index sets, then the tuple formed by `f i` for `i ∈ S` is independent of the

@@ -24,7 +24,7 @@ We also show that this property is local at the target,
 and is stable under compositions and base-changes.
 
 ## Main result
-- `AlgebraicGeometry.is_localization_basicOpen_of_qcqs` (**Qcqs lemma**):
+- `AlgebraicGeometry.isLocalization_basicOpen_of_qcqs` (**Qcqs lemma**):
   If `U` is qcqs, then `Γ(X, D(f)) ≃ Γ(X, U)_f` for every `f : Γ(X, U)`.
 
 -/
@@ -327,7 +327,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
 
 /-- If `U` is qcqs, then `Γ(X, D(f)) ≃ Γ(X, U)_f` for every `f : Γ(X, U)`.
 This is known as the **Qcqs lemma** in [R. Vakil, *The rising sea*][RisingSea]. -/
-theorem is_localization_basicOpen_of_qcqs {X : Scheme} {U : X.Opens} (hU : IsCompact U.1)
+theorem isLocalization_basicOpen_of_qcqs {X : Scheme} {U : X.Opens} (hU : IsCompact U.1)
     (hU' : IsQuasiSeparated U.1) (f : Γ(X, U)) :
     IsLocalization.Away f (Γ(X, X.basicOpen f)) := by
   constructor
@@ -347,11 +347,14 @@ theorem is_localization_basicOpen_of_qcqs {X : Scheme} {U : X.Opens} (hU : IsCom
     refine ⟨⟨_, n, rfl⟩, ?_⟩
     simpa [mul_comm z] using e
 
+@[deprecated (since := "2025-03-01")]
+alias is_localization_basicOpen_of_qcqs := isLocalization_basicOpen_of_qcqs
+
 lemma exists_of_res_eq_of_qcqs {X : Scheme.{u}} {U : TopologicalSpace.Opens X}
     (hU : IsCompact U.carrier) (hU' : IsQuasiSeparated U.carrier)
     {f g s : Γ(X, U)} (hfg : f |_ X.basicOpen s = g |_ X.basicOpen s) :
     ∃ n, s ^ n * f = s ^ n * g := by
-  obtain ⟨n, hc⟩ := (is_localization_basicOpen_of_qcqs hU hU' s).exists_of_eq s hfg
+  obtain ⟨n, hc⟩ := (isLocalization_basicOpen_of_qcqs hU hU' s).exists_of_eq s hfg
   use n
 
 lemma exists_of_res_eq_of_qcqs_of_top {X : Scheme.{u}} [CompactSpace X] [QuasiSeparatedSpace X]
@@ -383,7 +386,7 @@ theorem isIso_ΓSpec_adjunction_unit_app_basicOpen {X : Scheme} [CompactSpace X]
   rw [ConcreteCategory.isIso_iff_bijective]
   apply (config := { allowSynthFailures := true }) IsLocalization.bijective
   · exact StructureSheaf.IsLocalization.to_basicOpen _ _
-  · refine is_localization_basicOpen_of_qcqs ?_ ?_ _
+  · refine isLocalization_basicOpen_of_qcqs ?_ ?_ _
     · exact isCompact_univ
     · exact isQuasiSeparated_univ
   · simp [RingHom.algebraMap_toAlgebra, ← CommRingCat.hom_comp, RingHom.algebraMap_toAlgebra,
