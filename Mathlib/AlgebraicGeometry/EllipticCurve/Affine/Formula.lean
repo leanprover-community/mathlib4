@@ -113,9 +113,11 @@ lemma negY_negY (x y : R) : W'.negY x (W'.negY x y) = y := by
   simp only [negY]
   ring1
 
-lemma eval_negPolynomial (x y : R) : W'.negPolynomial.evalEval x y = W'.negY x y := by
+lemma evalEval_negPolynomial (x y : R) : W'.negPolynomial.evalEval x y = W'.negY x y := by
   rw [negY, sub_sub, negPolynomial]
   eval_simp
+
+@[deprecated (since := "2025-03-05")] alias eval_negPolynomial := evalEval_negPolynomial
 
 lemma Y_eq_of_X_eq {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hx : x₁ = x₂) : y₁ = y₂ ∨ y₁ = W.negY x₂ y₂ := by
@@ -185,12 +187,14 @@ lemma slope_of_X_ne {x₁ x₂ y₁ y₂ : F} (hx : x₁ ≠ x₂) :
     W.slope x₁ x₂ y₁ y₂ = (y₁ - y₂) / (x₁ - x₂) := by
   rw [slope, if_neg hx]
 
-lemma slope_of_Y_ne_eq_eval {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy : y₁ ≠ W.negY x₂ y₂) :
+lemma slope_of_Y_ne_eq_evalEval {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy : y₁ ≠ W.negY x₂ y₂) :
     W.slope x₁ x₂ y₁ y₂ = -W.polynomialX.evalEval x₁ y₁ / W.polynomialY.evalEval x₁ y₁ := by
   rw [slope_of_Y_ne hx hy, evalEval_polynomialX, neg_sub]
   congr 1
   rw [negY, evalEval_polynomialY]
   ring1
+
+@[deprecated (since := "2025-03-05")] alias slope_of_Y_ne_eq_eval := slope_of_Y_ne_eq_evalEval
 
 /-! ## Addition formulae in affine coordinates -/
 

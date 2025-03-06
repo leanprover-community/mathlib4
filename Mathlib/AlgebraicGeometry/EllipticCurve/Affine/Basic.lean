@@ -291,12 +291,12 @@ lemma baseChange_polynomial : (W.baseChange B).toAffine.polynomial =
     (W.baseChange A).toAffine.polynomial.map (mapRingHom f) := by
   rw [← map_polynomial, map_baseChange]
 
-lemma eval_baseChange_polynomial :
-    (W.baseChange R[X][Y]).toAffine.polynomial.evalEval (C X) Y = W.polynomial := by
+lemma evalEval_baseChange_polynomial :
+    (W'.baseChange R[X][Y]).toAffine.polynomial.evalEval (C X) Y = W'.polynomial := by
   rw [map_polynomial, evalEval, eval_map, eval_C_X_eval₂_map_C_X]
 
-@[deprecated (since := "2025-02-01")] alias evalEval_baseChange_polynomial_X_Y :=
-  eval_baseChange_polynomial
+@[deprecated (since := "2025-03-05")] alias evalEval_baseChange_polynomial_X_Y :=
+  evalEval_baseChange_polynomial
 
 variable {x y} in
 lemma Equation.baseChange (h : (W.baseChange A).toAffine.Equation x y) :
