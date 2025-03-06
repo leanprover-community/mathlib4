@@ -121,6 +121,7 @@ pointwise.
 -/
 
 variable (U) in
+/-- Divisors form an additive subgroup of functions 𝕜 → ℤ -/
 protected def addSubgroup : AddSubgroup (𝕜 → ℤ) where
   carrier := {f | f.support ⊆ U ∧ f =ᶠ[codiscreteWithin U] 0}
   zero_mem' := by simp
@@ -136,6 +137,7 @@ protected lemma memAddSubgroup (D : DivisorOn U) :
     (D : 𝕜 → ℤ) ∈ DivisorOn.addSubgroup U :=
   ⟨D.supportWithinDomain, D.supportDiscreteWithinDomain⟩
 
+/-- Assign a divisor to a function in the subgroup -/
 @[simps]
 def mk_of_mem (f : 𝕜 → ℤ) (hf : f ∈ DivisorOn.addSubgroup U) : DivisorOn U :=
   ⟨f, hf.1, hf.2⟩
