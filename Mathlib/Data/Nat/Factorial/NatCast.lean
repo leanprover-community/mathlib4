@@ -14,8 +14,8 @@ import Mathlib.Data.Nat.Prime.Basic
 /-!
 # Invertibility of factorials
 
-This file contains lemmas providing sufficient conditions for the cast of `n!` to a commutative
-(semi)ring `A` to be a unit.
+This file contains lemmas providing sufficient conditions for the cast of `n!` to a (semi)ring `A`
+to be a unit.
 
 -/
 
@@ -51,20 +51,21 @@ end Semiring
 
 section CharP
 
-variable {A : Type*} [CommRing A] (p : ℕ) [Fact (Nat.Prime p)] [CharP A p]
+variable {A : Type*} [Ring A] (p : ℕ) [Fact (Nat.Prime p)] [CharP A p]
 
 theorem natCast_factorial_of_charP  {n : ℕ} (h : n < p) : IsUnit (n ! : A) := by
   induction n with
   | zero => simp
   | succ n ih =>
-    simp only [factorial_succ, cast_mul, IsUnit.mul_iff]
+    rw [factorial_succ, cast_mul, Nat.cast_commute _ _ |>.isUnit_mul_iff]
     refine ⟨?_, ih (lt_trans (lt_add_one n) h)⟩
     have h1 := Int.cast_one (R := A)
     rw [← cast_one, ← coprime_of_lt_prime (zero_lt_succ n) h (Fact.elim inferInstance),
       gcd_eq_gcd_ab, Int.cast_add] at h1
     simp only [succ_eq_add_one, Int.cast_mul, Int.cast_natCast, CharP.cast_eq_zero, zero_mul,
       zero_add] at h1
-    exact isUnit_of_mul_eq_one _ _ h1
+    have h2 :=  Nat.cast_commute _ _ |>.eq.symm.trans h1
+    exact ⟨⟨_, _, h1, h2⟩, rfl⟩
 
 end CharP
 
