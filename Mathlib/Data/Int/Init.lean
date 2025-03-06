@@ -404,17 +404,6 @@ lemma exists_lt_and_lt_iff_not_dvd (m : ℤ) (hn : 0 < n) :
     · rw [Int.add_comm _ (1 : ℤ), Int.mul_add, Int.mul_one]
       exact Int.add_lt_add_right (emod_lt_of_pos _ hn) _
 
-lemma natAbs_ediv (a b : ℤ) (H : b ∣ a) : natAbs (a / b) = natAbs a / natAbs b := by
-  rcases Nat.eq_zero_or_pos (natAbs b) with (h | h)
-  · rw [natAbs_eq_zero.1 h]
-    simp [Int.ediv_zero]
-  calc
-    natAbs (a / b) = natAbs (a / b) * 1 := by rw [Nat.mul_one]
-    _ = natAbs (a / b) * (natAbs b / natAbs b) := by rw [Nat.div_self h]
-    _ = natAbs (a / b) * natAbs b / natAbs b := by rw [Nat.mul_div_assoc _ b.natAbs.dvd_refl]
-    _ = natAbs (a / b * b) / natAbs b := by rw [natAbs_mul (a / b) b]
-    _ = natAbs a / natAbs b := by rw [Int.ediv_mul_cancel H]
-
 lemma dvd_of_mul_dvd_mul_left (ha : a ≠ 0) (h : a * m ∣ a * n) : m ∣ n := by
   obtain ⟨b, hb⟩ := h
   rw [Int.mul_assoc, Int.mul_eq_mul_left_iff ha] at hb
