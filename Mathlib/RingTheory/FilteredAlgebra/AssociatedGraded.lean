@@ -160,4 +160,3 @@ lemma exact [Preorder ι] [IsFiltration F F_lt] {i : ι} (x y : ofClass (F i)) :
 end GradedPiece
 
 end GeneralGraded
-#min_imports
