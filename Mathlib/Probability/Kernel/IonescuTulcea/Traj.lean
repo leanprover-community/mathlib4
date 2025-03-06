@@ -78,26 +78,6 @@ open scoped ENNReal Topology
 
 variable {X : ℕ → Type*}
 
-/-- Gluing `Iic a` and `Ioi a` into `ℕ`, version as a measurable equivalence
-on dependent functions. -/
-def MeasurableEquiv.IicProdIoi [∀ n, MeasurableSpace (X n)] (a : ℕ) :
-    ((Π i : Iic a, X i) × ((i : Set.Ioi a) → X i)) ≃ᵐ (Π n, X n) where
-  toFun := fun x i ↦ if hi : i ≤ a
-    then x.1 ⟨i, mem_Iic.2 hi⟩
-    else x.2 ⟨i, Set.mem_Ioi.2 (not_le.1 hi)⟩
-  invFun := fun x ↦ (fun i ↦ x i, fun i ↦ x i)
-  left_inv := fun x ↦ by
-    ext i
-    · simp [mem_Iic.1 i.2]
-    · simp [not_le.2 <| Set.mem_Ioi.1 i.2]
-  right_inv := fun x ↦ by simp
-  measurable_toFun := by
-    refine measurable_pi_lambda _ (fun i ↦ ?_)
-    by_cases hi : i ≤ a <;> simp only [Equiv.coe_fn_mk, hi, ↓reduceDIte]
-    · exact measurable_fst.eval
-    · exact measurable_snd.eval
-  measurable_invFun := Measurable.prod_mk (measurable_restrict _) (Set.measurable_restrict _)
-
 section castLemmas
 
 private lemma Iic_pi_eq {a b : ℕ} (h : a = b) :
