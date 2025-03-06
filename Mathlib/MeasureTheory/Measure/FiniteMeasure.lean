@@ -138,20 +138,6 @@ lemma coeFn_def (μ : FiniteMeasure Ω) : μ = fun s ↦ ((μ : Measure Ω) s).t
 lemma coeFn_mk (μ : Measure Ω) (hμ) :
     DFunLike.coe (F := FiniteMeasure Ω) ⟨μ, hμ⟩ = fun s ↦ (μ s).toNNReal := rfl
 
-/-- The type of finite measures is a measurable space when equipped with the Giry monad. -/
-instance {α : Type*} [MeasurableSpace α] : MeasurableSpace (FiniteMeasure α) :=
-    Subtype.instMeasurableSpace
-
-/-- The set of all finite measures is a measurable set in the Giry monad. -/
-lemma measurableSet_isFiniteMeasure {α : Type*} [MeasurableSpace α] :
-    MeasurableSet { μ : Measure α | IsFiniteMeasure μ } := by
-  suffices { μ : Measure α | IsFiniteMeasure μ } = (fun μ => μ univ) ⁻¹' (Set.Ico 0 ∞) by
-    rw [this]
-    exact Measure.measurable_coe MeasurableSet.univ measurableSet_Ico
-  ext μ
-  simp only [mem_setOf_eq, mem_iUnion, mem_preimage, mem_Ico, zero_le, true_and, exists_const]
-  exact isFiniteMeasure_iff μ
-
 @[simp, norm_cast]
 lemma mk_apply (μ : Measure Ω) (hμ) (s : Set Ω) :
     DFunLike.coe (F := FiniteMeasure Ω) ⟨μ, hμ⟩ s = (μ s).toNNReal := rfl
@@ -286,9 +272,17 @@ theorem restrict_eq_zero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict 
 theorem restrict_nonzero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict A ≠ 0 ↔ μ A ≠ 0 := by
   rw [← mass_nonzero_iff, restrict_mass]
 
-section MonoidalProduct
+/-- The type of finite measures is a measurable space when equipped with the Giry monad. -/
+instance : MeasurableSpace (FiniteMeasure Ω) := Subtype.instMeasurableSpace
 
-open Measure
+/-- The set of all finite measures is a measurable set in the Giry monad. -/
+lemma measurableSet_isFiniteMeasure : MeasurableSet { μ : Measure Ω | IsFiniteMeasure μ } := by
+  suffices { μ : Measure Ω | IsFiniteMeasure μ } = (fun μ => μ univ) ⁻¹' (Set.Ico 0 ∞) by
+    rw [this]
+    exact Measure.measurable_coe MeasurableSet.univ measurableSet_Ico
+  ext μ
+  simp only [mem_setOf_eq, mem_iUnion, mem_preimage, mem_Ico, zero_le, true_and, exists_const]
+  exact isFiniteMeasure_iff μ
 
 /-- The monoidal product is a measurabule function from the product of finite measures over
 `α` and `β` into the type of finite measures over `α × β`. -/
@@ -299,15 +293,13 @@ theorem measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β
       Measurable fun a : (FiniteMeasure α × FiniteMeasure β) ↦
       a.1.toMeasure u * a.2.toMeasure v :=
     Measurable.mul
-      ((measurable_coe Hu).comp (measurable_subtype_coe.comp measurable_fst))
-      ((measurable_coe Hv).comp (measurable_subtype_coe.comp measurable_snd))
+      ((Measure.measurable_coe Hu).comp (measurable_subtype_coe.comp measurable_fst))
+      ((Measure.measurable_coe Hv).comp (measurable_subtype_coe.comp measurable_snd))
   apply Measurable.measure_of_isPiSystem generateFrom_prod.symm isPiSystem_prod _
-  · simp_rw [← Set.univ_prod_univ, prod_prod, Heval MeasurableSet.univ MeasurableSet.univ]
+  · simp_rw [← Set.univ_prod_univ, Measure.prod_prod, Heval MeasurableSet.univ MeasurableSet.univ]
   simp only [mem_image2, mem_setOf_eq, forall_exists_index, and_imp]
   intros _ _ Hu _ Hv Heq
-  simp_rw [← Heq, prod_prod, Heval Hu Hv]
-
-end MonoidalProduct
+  simp_rw [← Heq, Measure.prod_prod, Heval Hu Hv]
 
 variable [TopologicalSpace Ω]
 
