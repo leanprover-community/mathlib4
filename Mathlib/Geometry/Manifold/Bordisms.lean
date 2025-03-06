@@ -183,6 +183,6 @@ variable (s t : SingularNManifold X k I)
 def sum (s t : SingularNManifold X k I) : SingularNManifold X k I where
   M := s.M ⊕ t.M
   f := Sum.elim s.f t.f
-  hf := s.hf.sum_elim t.hf
+  hf := s.hf.sumElim t.hf
 
 end SingularNManifold

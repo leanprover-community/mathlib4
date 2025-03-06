@@ -163,7 +163,7 @@ def Homeomorph.sumEquivBoolProd (X : Type*) [TopologicalSpace X] : X ⊕ X ≃�
   · show Continuous (Sum.elim (Prod.mk false) (Prod.mk true))
     fun_prop
   · show IsClosedMap (Sum.elim (Prod.mk false) (Prod.mk true))
-    exact (isClosedMap_prodMk_left false).sum_elim (isClosedMap_prodMk_left true)
+    exact (isClosedMap_prodMk_left false).sumElim (isClosedMap_prodMk_left true)
 
 def Homeomorph.finTwo : Bool ≃ₜ Fin 2 where
   toEquiv := finTwoEquiv.symm
@@ -230,7 +230,7 @@ variable {M M' N N' : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 -- #check MDifferentiable.prod_map
 
-lemma mfderiv_prod_map
+lemma mfderiv_prodMap
     (hf : MDifferentiableAt I J f x) (hg : MDifferentiableAt I' J' g x') :
     mfderiv (I.prod I') (J.prod J') (Prod.map f g) (x, x')
     = (mfderiv I J f x).prodMap (mfderiv I' J' g x') := sorry
@@ -263,10 +263,10 @@ def BoundaryManifoldData.prod_of_boundaryless_left [BoundarylessManifold I M]
   M₀ := M × bd.M₀
   f := Prod.map id bd.f
   isEmbedding := IsEmbedding.prodMap IsEmbedding.id bd.isEmbedding
-  -- XXX: mathlib naming is inconsistent, prodMap vs prod_map; check if zulip consensus
+  -- XXX: mathlib is currently renaming to prodMap and prodMk; update when that lands
   contMDiff := ContMDiff.prod_map contMDiff_id bd.contMDiff
   isImmersion hk x := by
-    rw [mfderiv_prod_map mdifferentiableAt_id ((bd.contMDiff x.2).mdifferentiableAt hk)]
+    rw [mfderiv_prodMap mdifferentiableAt_id ((bd.contMDiff x.2).mdifferentiableAt hk)]
     apply Function.Injective.prodMap
     · rw [mfderiv_id]
       exact fun ⦃a₁ a₂⦄ a ↦ a
@@ -285,7 +285,7 @@ def BoundaryManifoldData.prod_of_boundaryless_right (bd : BoundaryManifoldData M
   isEmbedding := IsEmbedding.prodMap bd.isEmbedding IsEmbedding.id
   contMDiff := ContMDiff.prod_map bd.contMDiff contMDiff_id
   isImmersion hk x := by
-    rw [mfderiv_prod_map ((bd.contMDiff x.1).mdifferentiableAt hk) mdifferentiableAt_id]
+    rw [mfderiv_prodMap ((bd.contMDiff x.1).mdifferentiableAt hk) mdifferentiableAt_id]
     apply Function.Injective.prodMap
     · exact bd.isImmersion hk _
     · rw [mfderiv_id]
@@ -306,12 +306,9 @@ def BoundaryManifoldData.of_Euclidean_halfSpace (n : ℕ) (k : ℕ∞)
     {M : Type} [TopologicalSpace M] [ChartedSpace (EuclideanHalfSpace (n + 1)) M]
     [IsManifold (𝓡∂ (n + 1)) k M] : BoundaryManifoldData M (𝓡∂ (n + 1)) k (𝓡 n):= sorry
 
--- This lemma (in a nicer phrasing) is proven in a dependent PR:
--- replace with the upstream version once that has landed.
-lemma IsEmbedding.sum_elim_of_foo {f : X → Z} {g : Y → Z}
-    (hf : IsEmbedding f) (hg : IsEmbedding g) (h : Function.Injective (Sum.elim f g))
-    {U V : Set Z} (hU : IsOpen U) (hV : IsOpen V) (hUV : Disjoint U V)
-    (hfU : Set.range f ⊆ U) (hgV : Set.range g ⊆ V) :
+-- Proven in #22137; we will omit the proof here
+lemma Topology.IsEmbedding.sumElim_of_separatedNhds {f : X → Z} {g : Y → Z}
+    (hf : IsEmbedding f) (hg : IsEmbedding g) (hsep : SeparatedNhds (range f) (range g)) :
     IsEmbedding (Sum.elim f g) := sorry
 
 /-- If `M` and `M'` are modelled on the same model `I` and have nice boundary over `I₀`,
@@ -323,32 +320,15 @@ noncomputable def BoundaryManifoldData.sum
   isManifold := by infer_instance
   f := Sum.map bd.f bd'.f
   isEmbedding := by
-    -- The boundaries are contained in disjoint open sets, namely M and M' (as subsets of M ⊕ M').
-    apply IsEmbedding.sum_elim_of_foo
-      (U := Set.range (@Sum.inl M M')) (V := Set.range (@Sum.inr M M'))
+    apply IsEmbedding.sumElim_of_separatedNhds
     · exact IsEmbedding.inl.comp bd.isEmbedding
     · exact IsEmbedding.inr.comp bd'.isEmbedding
-    · -- The overall function is injective: can this be simplified further?
-      intro x y hxy
-      cases x with
-      | inl x' =>
-        cases y with
-        | inl y' =>
-          simp_all
-          exact bd.isEmbedding.injective hxy
-        | inr y' => simp_all
-      | inr x' =>
-        cases y with
-        | inl y' => simp_all
-        | inr y' =>
-          simp_all
-          exact bd'.isEmbedding.injective hxy
-    · exact isOpen_range_inl
-    · exact isOpen_range_inr
-    · sorry -- exact? inl and inr have disjoint range
-    · rw [range_comp]; exact image_subset_range _ _
-    · rw [range_comp]; exact image_subset_range _ _
-  contMDiff := bd.contMDiff.sum_map bd'.contMDiff
+    · use Set.range (@Sum.inl M M'), Set.range (@Sum.inr M M')
+      refine ⟨isOpen_range_inl, isOpen_range_inr, ?_, ?_, ?_⟩
+      · rw [range_comp]; exact image_subset_range _ _
+      · rw [range_comp]; exact image_subset_range _ _
+      · rw [disjoint_iff]; ext; simp
+  contMDiff := bd.contMDiff.sumMap bd'.contMDiff
   isImmersion hk p := by
     cases p with
     | inl x =>
