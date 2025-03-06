@@ -55,14 +55,18 @@ variable {X : Type*}
 def IsTransitiveRel (V : Set (X × X)) : Prop :=
   ∀ ⦃x y z⦄, (x, y) ∈ V → (y, z) ∈ V → (x, z) ∈ V
 
-lemma IsTransitiveRel.comp_eq_of_idRel_subset {s : Set (X × X)}
-    (h : IsTransitiveRel s) (h' : idRel ⊆ s) :
-    s ○ s = s := by
-  refine le_antisymm ?_ (subset_comp_self h')
+lemma IsTransitiveRel.comp_subset_self {s : Set (X × X)}
+    (h : IsTransitiveRel s) :
+    s ○ s ⊆ s := by
   intro ⟨x, y⟩
   simp only [mem_compRel, forall_exists_index, and_imp]
   intro z
   exact @h x z y
+
+lemma IsTransitiveRel.comp_eq_of_idRel_subset {s : Set (X × X)}
+    (h : IsTransitiveRel s) (h' : idRel ⊆ s) :
+    s ○ s = s :=
+  le_antisymm h.comp_subset_self (subset_comp_self h')
 
 variable [UniformSpace X]
 
