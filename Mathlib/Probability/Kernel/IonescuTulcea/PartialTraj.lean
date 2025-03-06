@@ -168,8 +168,7 @@ def MeasurableEquiv.IicProdIoc {a b : ℕ} (hab : a ≤ b) :
     by_cases h : x ≤ a
     · simpa [h] using measurable_fst.eval
     · simpa [h] using measurable_snd.eval
-  measurable_invFun := by
-    refine Measurable.prod_mk ?_ ?_ <;> exact measurable_pi_lambda _ (fun a ↦ measurable_id.eval)
+  measurable_invFun := by dsimp; fun_prop
 
 lemma MeasurableEquiv.coe_IicProdIoc {a b : ℕ} (hab : a ≤ b) :
     ⇑(IicProdIoc (X := X) hab) = _root_.IicProdIoc a b := rfl
@@ -302,8 +301,8 @@ private lemma fst_prod_comp_id_prod {X Y Z : Type*} {mX : MeasurableSpace X}
   ext x s ms
   simp_rw [comp_apply' _ _ _ ms, lintegral_id_prod (Kernel.measurable_coe _ ms),
     deterministic_prod_apply' _ _ _ ms, id_prod_apply' _ _ ms,
-    comp_apply' _ _ _ (measurable_prod_mk_left ms),
-    lintegral_id_prod (η.measurable_coe (measurable_prod_mk_left ms))]
+    comp_apply' _ _ _ (measurable_prodMk_left ms),
+    lintegral_id_prod (η.measurable_coe (measurable_prodMk_left ms))]
 
 /-- This is a technical lemma saying that `partialTraj κ a b` consists of two independent parts, the
 first one being the identity. It allows to compute integrals. -/
