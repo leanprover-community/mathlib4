@@ -314,8 +314,8 @@ lemma AnalyticAt.hasFPowerSeriesAt {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   norm_cast
   exact Nat.factorial_ne_zero _
 
-lemma AnalyticAt.hasFPowerSeriesOnBall {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-    [CharZero 𝕜] {f : 𝕜 → 𝕜} {x : 𝕜} {r : ENNReal} (h : AnalyticOn 𝕜 f (EMetric.ball x r)) :
+lemma AnalyticOn.hasFPowerSeriesOnBall {𝕜 : Type*} [RCLike 𝕜] {f : 𝕜 → 𝕜} {x : 𝕜} {r : ENNReal}
+    (h : AnalyticOn 𝕜 f (EMetric.ball x r)) :
     let p := FormalMultilinearSeries.ofScalars 𝕜 (fun n ↦ iteratedDeriv n f x / n.factorial);
-    r ≤ p.radius → HasFPowerSeriesOnBall f p x p.radius := by
+    r ≤ p.radius → HasFPowerSeriesOnBall f p x r := by
   sorry
