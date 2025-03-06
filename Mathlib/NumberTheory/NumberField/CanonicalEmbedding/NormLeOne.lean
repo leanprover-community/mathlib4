@@ -18,6 +18,62 @@ Mainly, we prove that this is bounded, its frontier has volume zero and compute 
 ## Strategy of proof
 
 The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*][marcus1977number].
+
+* First, since `NormLeOne K` is norm-stable, in the sense that
+  `normLeOne K = normAtAllPlaces⁻¹' (normAtAllPlaces '' (normLeOne K))`,
+  see `normLeOne_eq_primeage_image`, it's enough to study the subset
+  `normAtAllPlaces '' (normLeOne K)` of `realSpace K`.
+
+* A description of `normAtAllPlaces '' (normLeOne K)` is given by `normAtAllPlaces_normLeOne`, it is
+  the set of `x : realSpace K`, nonnegative at all places, whose norm is nonzero and `≤ 1` and such
+  that `logMap x` is in the `fundamentalDomain` of `basisUnitLattice K`.
+  Note that, here and elsewhere, we identify `x` with its image in `mixedSpace K` given
+  by `mixedSpaceOfRealSpace x`.
+
+* In order to describe the inverse image in `realSpace K` of `fundamentalDomain` of
+  `basisUnitLattice K`, we define the map `expMap : realSpace K → realSpace K` that is, in
+  some way, the right inverse of `logMap`, see `logMap_expMap`.
+  We also need to construct a basis of `realSpace K` that extends the basis `basisUnitLattice K` of
+  `logSpace K`.
+
+* Denote by `ηᵢ` (with `i ≠ w₀` where `w₀` is the distinguished infinite place,
+  see `logSpace` below), the fundamental system of units given by `fundSystem` and let `|ηᵢ|` denote
+  `normAtAllPlaces (mixedEmbedding ηᵢ))`, that is the vector `(w (ηᵢ)_w` in `realSpace K`. We
+  construct a map, called `expMapBasis : realSpace K → realSpace K` such that
+  `expMapBasis x = Real.exp (x w₀) * ∏_{i ≠ w₀}, |ηᵢ| ^ x i`.
+  The map `expMapBasis` is constructed
+
+## Spaces and maps
+
+To help understand the proof, we make a list of (almost) all the spaces and maps used and
+their connections (as hinted above, we do not mention the map `mixedSpaceOfRealSpace` since we
+identify `realSpace K` with its image in `mixedSpace K`).
+
+* `mixedSpace`: the set `({w // IsReal w} → ℝ) × (w // IsComplex w → ℂ)` where `w` denote the
+  infinite places of `K`.
+
+* `realSpace`: the set `w → ℝ` where `w` denote the infinite places of `K`
+
+* `logSpace`: the set `{w // w ≠ w₀} → ℝ` where `w₀` is a distinguished place of `K`. It is the set
+  used in the proof of Dirichlet Unit Theorem.
+
+* `mixedEmbedding : K → mixedSpace K`: the map that sends `x : K` to `φ_w(x)` where, for all
+  infinite place `w`, `φ_w : K → ℝ` or `ℂ`, resp. if `w` is real or if `w` is complex, denote a
+  complex embedding associated to `w`.
+
+* `logEmbedding : (𝓞 K)ˣ → logSpace K`: the map that sends the unit `u : (𝓞 K)ˣ` to
+  `(mult w * log (w u))_w` for `w ≠ w₀`. Its image is `unitLattice K`, a `ℤ`-lattice of
+  `logSpace K`, that admits `basisUnitLattice K` as a basis.
+
+* `logMap : mixedSpace K → logSpace K`: this map is defined such that it factors `logEmbedding`,
+  that is, for `u : (𝓞 K)ˣ`, `logMap (mixedEmbedding x) = logEmbedding x`, and that
+  `logMap (c • x) = logMap x` for `c ≠ 0` and `norm x ≠ 0`. The inverse image of the fundamental
+  domain of `basisUnitLattice K` by `logMap` (minus the elements of norm zero) is
+  `fundamentalCone K`.
+
+* `expMap : realSpace K → realSpace K`: the right inverse of `logMap` in the sense that
+  `logMap (expMap x) = (x_w)_{w ≠ w₀}`.
+
 -/
 
 variable (K : Type*) [Field K]
@@ -204,7 +260,7 @@ def equivFinRank : Fin (rank K) ≃ {w : InfinitePlace K // w ≠ w₀} :=
 /--
 Docstring.
 -/
-def realSpaceToLogSpace : realSpace K →ₗ[ℝ] ({w : InfinitePlace K // w ≠ w₀} → ℝ) where
+def realSpaceToLogSpace : realSpace K →ₗ[ℝ] logSpace K where
   toFun := fun x w ↦ x w.1 - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹
   map_add' := fun _ _ ↦ funext fun _ ↦ by simpa [sum_add_distrib] using by ring
   map_smul' := fun _ _ ↦ funext fun _ ↦ by simpa [← mul_sum] using by ring
@@ -298,7 +354,9 @@ theorem expMap_basis_of_eq :
 theorem expMap_basis_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
     expMap (completeBasis K i) =
       normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm i))) := by
-  rw [completeBasis_apply_of_ne, PartialHomeomorph.right_inv _ (by simp [expMap_target])]
+  rw [completeBasis_apply_of_ne, PartialHomeomorph.right_inv _ (by simp only [expMap_target, ne_eq,
+    Set.mem_pi, Set.mem_univ, normAtAllPlaces_apply, normAtPlace_apply, Set.mem_Ioi, pos_at_place,
+    imp_self, implies_true])]
 
 theorem abs_det_completeBasis_equivFunL_symm :
     |((completeBasis K).equivFunL.symm : realSpace K →L[ℝ] realSpace K).det| =
