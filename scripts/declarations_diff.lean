@@ -40,8 +40,8 @@ elab "ddiff" : command => do
   let e1 ← declsFromImports mods
   dbg_trace "git checkout master"
   let _ ← IO.Process.run {cmd := "git", args := #["checkout", "master"]}
-  dbg_trace "lake build {fname.toString}"
-  let _ ← IO.Process.run {cmd := "lake", args := #["build", fname.toString]}
+  dbg_trace "lake build {mods[0]}"
+  let _ ← IO.Process.run {cmd := "lake", args := #["build", mods[0]]}
   let e2 ← declsFromImports mods
   let (d1, d2) := symmDiff e1 e2
   logInfo m!"{(d1, d2)}"
