@@ -35,7 +35,7 @@ of the corresponding vertex and that (2) the map from darts to edges is 2-to-1.
 simple graphs, sums, degree-sum formula, handshaking lemma
 -/
 
-assert_not_exists TwoSidedIdeal
+assert_not_exists Field TwoSidedIdeal
 
 open Finset
 
@@ -69,13 +69,10 @@ theorem dart_card_eq_sum_degrees : Fintype.card G.Dart = ∑ v, G.degree v := by
   simp only [← card_univ, ← dart_fst_fiber_card_eq_degree]
   exact card_eq_sum_card_fiberwise (by simp)
 
-variable {G}
-
+variable {G} in
 theorem Dart.edge_fiber [DecidableEq V] (d : G.Dart) :
     ({d' : G.Dart | d'.edge = d.edge} : Finset _) = {d, d.symm} :=
   Finset.ext fun d' => by simpa using dart_edge_eq_iff d' d
-
-variable (G)
 
 theorem dart_edge_fiber_card [DecidableEq V] (e : Sym2 V) (h : e ∈ G.edgeSet) :
     #{d : G.Dart | d.edge = e} = 2 := by

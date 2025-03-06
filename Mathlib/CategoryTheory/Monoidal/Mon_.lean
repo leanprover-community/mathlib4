@@ -63,6 +63,13 @@ theorem mul_one (X : C) [Mon_Class X] : X ◁ η ≫ μ = (ρ_ X).hom := mul_one
 @[reassoc (attr := simp)]
 theorem mul_assoc (X : C) [Mon_Class X] : μ ▷ X ≫ μ = (α_ X X X).hom ≫ X ◁ μ ≫ μ := mul_assoc'
 
+@[ext]
+theorem ext {X : C} (h₁ h₂ : Mon_Class X) (H : h₁.mul = h₂.mul) : h₁ = h₂ := by
+  suffices h₁.one = h₂.one by cases h₁; cases h₂; subst H this; rfl
+  trans (λ_ _).inv ≫ (h₁.one ⊗ h₂.one) ≫ h₁.mul
+  · simp [tensorHom_def, H, ← unitors_equal]
+  · simp [tensorHom_def']
+
 end Mon_Class
 
 open scoped Mon_Class

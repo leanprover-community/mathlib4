@@ -21,7 +21,7 @@ Adding a `bot` or a `top` to an order.
 
 * `With<Top/Bot> α`: Equips `Option α` with the order on `α` plus `none` as the top/bottom element.
 
- -/
+-/
 
 variable {α β γ δ : Type*}
 
@@ -63,28 +63,47 @@ theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
 
 /-- Specialization of `Option.getD` to values in `WithBot α` that respects API boundaries.
 -/
-def unbot' (d : α) (x : WithBot α) : α :=
+def unbotD (d : α) (x : WithBot α) : α :=
   recBotCoe d id x
 
-@[simp]
-theorem unbot'_bot {α} (d : α) : unbot' d ⊥ = d :=
-  rfl
+@[deprecated (since := "2025-02-06")]
+alias unbot' := unbotD
 
 @[simp]
-theorem unbot'_coe {α} (d x : α) : unbot' d x = x :=
+theorem unbotD_bot {α} (d : α) : unbotD d ⊥ = d :=
   rfl
+
+@[deprecated (since := "2025-02-06")]
+alias unbot'_bot := unbotD_bot
+
+@[simp]
+theorem unbotD_coe {α} (d x : α) : unbotD d x = x :=
+  rfl
+
+@[deprecated (since := "2025-02-06")]
+alias unbot'_coe := unbotD_coe
 
 theorem coe_eq_coe : (a : WithBot α) = b ↔ a = b := coe_inj
 
-theorem unbot'_eq_iff {d y : α} {x : WithBot α} : unbot' d x = y ↔ x = y ∨ x = ⊥ ∧ y = d := by
+theorem unbotD_eq_iff {d y : α} {x : WithBot α} : unbotD d x = y ↔ x = y ∨ x = ⊥ ∧ y = d := by
   induction x <;> simp [@eq_comm _ d]
 
-@[simp] theorem unbot'_eq_self_iff {d : α} {x : WithBot α} : unbot' d x = d ↔ x = d ∨ x = ⊥ := by
-  simp [unbot'_eq_iff]
+@[deprecated (since := "2025-02-06")]
+alias unbot'_eq_iff := unbotD_eq_iff
 
-theorem unbot'_eq_unbot'_iff {d : α} {x y : WithBot α} :
-    unbot' d x = unbot' d y ↔ x = y ∨ x = d ∧ y = ⊥ ∨ x = ⊥ ∧ y = d := by
- induction y <;> simp [unbot'_eq_iff, or_comm]
+@[simp]
+theorem unbotD_eq_self_iff {d : α} {x : WithBot α} : unbotD d x = d ↔ x = d ∨ x = ⊥ := by
+  simp [unbotD_eq_iff]
+
+@[deprecated (since := "2025-02-06")]
+alias unbot'_eq_self_iff := unbotD_eq_self_iff
+
+theorem unbotD_eq_unbotD_iff {d : α} {x y : WithBot α} :
+    unbotD d x = unbotD d y ↔ x = y ∨ x = d ∧ y = ⊥ ∨ x = ⊥ ∧ y = d := by
+  induction y <;> simp [unbotD_eq_iff, or_comm]
+
+@[deprecated (since := "2025-02-06")]
+alias unbot'_eq_unbot'_iff := unbotD_eq_unbotD_iff
 
 /-- Lift a map `f : α → β` to `WithBot α → WithBot β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithBot α → WithBot β :=
@@ -219,7 +238,10 @@ protected theorem _root_.IsMax.withBot (h : IsMax a) : IsMax (a : WithBot α) :=
 
 lemma le_unbot_iff (hy : y ≠ ⊥) : a ≤ unbot y hy ↔ a ≤ y := by lift y to α using id hy; simp
 lemma unbot_le_iff (hx : x ≠ ⊥) : unbot x hx ≤ b ↔ x ≤ b := by lift x to α using id hx; simp
-lemma unbot'_le_iff (hx : x = ⊥ → a ≤ b) : x.unbot' a ≤ b ↔ x ≤ b := by cases x <;> simp [hx]
+lemma unbotD_le_iff (hx : x = ⊥ → a ≤ b) : x.unbotD a ≤ b ↔ x ≤ b := by cases x <;> simp [hx]
+
+@[deprecated (since := "2025-02-06")]
+alias unbot'_le_iff := unbotD_le_iff
 
 end LE
 
@@ -258,7 +280,10 @@ protected lemma bot_lt_iff_ne_bot : ⊥ < x ↔ x ≠ ⊥ := by cases x <;> simp
 
 lemma lt_unbot_iff (hy : y ≠ ⊥) : a < unbot y hy ↔ a < y := by lift y to α using id hy; simp
 lemma unbot_lt_iff (hx : x ≠ ⊥) : unbot x hx < b ↔ x < b := by lift x to α using id hx; simp
-lemma unbot'_lt_iff (hx : x = ⊥ → a < b) : x.unbot' a < b ↔ x < b := by cases x <;> simp [hx]
+lemma unbotD_lt_iff (hx : x = ⊥ → a < b) : x.unbotD a < b ↔ x < b := by cases x <;> simp [hx]
+
+@[deprecated (since := "2025-02-06")]
+alias unbot'_lt_iff := unbotD_lt_iff
 
 end LT
 
@@ -313,7 +338,10 @@ alias ⟨_, _root_.StrictMono.withBot_map⟩ := strictMono_map_iff
 lemma map_le_iff (f : α → β) (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) :
     x.map f ≤ y.map f ↔ x ≤ y := by cases x <;> cases y <;> simp [mono_iff]
 
-theorem le_coe_unbot' (x : WithBot α) (b : α) : x ≤ x.unbot' b := by cases x <;> simp
+theorem le_coe_unbotD (x : WithBot α) (b : α) : x ≤ x.unbotD b := by cases x <;> simp
+
+@[deprecated (since := "2025-02-06")]
+alias le_coe_unbot' := le_coe_unbotD
 
 @[simp]
 theorem lt_coe_bot [OrderBot α] : x < (⊥ : α) ↔ x = ⊥ := by cases x <;> simp
@@ -527,30 +555,49 @@ theorem ofDual_apply_coe (a : αᵒᵈ) : WithTop.ofDual (a : WithTop αᵒᵈ) 
 
 /-- Specialization of `Option.getD` to values in `WithTop α` that respects API boundaries.
 -/
-def untop' (d : α) (x : WithTop α) : α :=
+def untopD (d : α) (x : WithTop α) : α :=
   recTopCoe d id x
 
-@[simp]
-theorem untop'_top {α} (d : α) : untop' d ⊤ = d :=
-  rfl
+@[deprecated (since := "2025-02-06")]
+alias untop' := untopD
 
 @[simp]
-theorem untop'_coe {α} (d x : α) : untop' d x = x :=
+theorem untopD_top {α} (d : α) : untopD d ⊤ = d :=
   rfl
+
+@[deprecated (since := "2025-02-06")]
+alias untop'_top := untopD_top
+
+@[simp]
+theorem untopD_coe {α} (d x : α) : untopD d x = x :=
+  rfl
+
+@[deprecated (since := "2025-02-06")]
+alias untop'_coe := untopD_coe
 
 @[simp, norm_cast] -- Porting note: added `simp`
 theorem coe_eq_coe : (a : WithTop α) = b ↔ a = b :=
   Option.some_inj
 
-theorem untop'_eq_iff {d y : α} {x : WithTop α} : untop' d x = y ↔ x = y ∨ x = ⊤ ∧ y = d :=
-  WithBot.unbot'_eq_iff
+theorem untopD_eq_iff {d y : α} {x : WithTop α} : untopD d x = y ↔ x = y ∨ x = ⊤ ∧ y = d :=
+  WithBot.unbotD_eq_iff
 
-@[simp] theorem untop'_eq_self_iff {d : α} {x : WithTop α} : untop' d x = d ↔ x = d ∨ x = ⊤ :=
-  WithBot.unbot'_eq_self_iff
+@[deprecated (since := "2025-02-06")]
+alias untop'_eq_iff := untopD_eq_iff
 
-theorem untop'_eq_untop'_iff {d : α} {x y : WithTop α} :
-    untop' d x = untop' d y ↔ x = y ∨ x = d ∧ y = ⊤ ∨ x = ⊤ ∧ y = d :=
-  WithBot.unbot'_eq_unbot'_iff
+@[simp]
+theorem untopD_eq_self_iff {d : α} {x : WithTop α} : untopD d x = d ↔ x = d ∨ x = ⊤ :=
+  WithBot.unbotD_eq_self_iff
+
+@[deprecated (since := "2025-02-06")]
+alias untop'_eq_self_iff := untopD_eq_self_iff
+
+theorem untopD_eq_untopD_iff {d : α} {x y : WithTop α} :
+    untopD d x = untopD d y ↔ x = y ∨ x = d ∧ y = ⊤ ∨ x = ⊤ ∧ y = d :=
+  WithBot.unbotD_eq_unbotD_iff
+
+@[deprecated (since := "2025-02-06")]
+alias untop'_eq_untop'_iff := untopD_eq_untopD_iff
 
 /-- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithTop α → WithTop β :=
@@ -695,7 +742,10 @@ protected theorem _root_.IsMin.withTop (h : IsMin a) : IsMin (a : WithTop α) :=
 
 lemma untop_le_iff (hx : x ≠ ⊤) : untop x hx ≤ b ↔ x ≤ b := by lift x to α using id hx; simp
 lemma le_untop_iff (hy : y ≠ ⊤) : a ≤ untop y hy ↔ a ≤ y := by lift y to α using id hy; simp
-lemma le_untop'_iff (hy : y = ⊤ → a ≤ b) : a ≤ y.untop' b ↔ a ≤ y := by cases y <;> simp [hy]
+lemma le_untopD_iff (hy : y = ⊤ → a ≤ b) : a ≤ y.untopD b ↔ a ≤ y := by cases y <;> simp [hy]
+
+@[deprecated (since := "2025-02-11")]
+alias le_untop'_iff := le_untopD_iff
 
 end LE
 
@@ -731,7 +781,10 @@ protected lemma lt_top_iff_ne_top : x < ⊤ ↔ x ≠ ⊤ := by cases x <;> simp
 
 lemma lt_untop_iff (hy : y ≠ ⊤) : a < y.untop hy ↔ a < y := by lift y to α using id hy; simp
 lemma untop_lt_iff (hx : x ≠ ⊤) : x.untop hx < b ↔ x < b := by lift x to α using id hx; simp
-lemma lt_untop'_iff (hy : y = ⊤ → a < b) : a < y.untop' b ↔ a < y := by cases y <;> simp [hy]
+lemma lt_untopD_iff (hy : y = ⊤ → a < b) : a < y.untopD b ↔ a < y := by cases y <;> simp [hy]
+
+@[deprecated (since := "2025-02-11")]
+alias lt_untop'_iff := lt_untopD_iff
 
 end LT
 
@@ -784,7 +837,10 @@ alias ⟨_, _root_.StrictMono.withTop_map⟩ := strictMono_map_iff
 theorem map_le_iff (f : α → β) (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) :
     x.map f ≤ y.map f ↔ x ≤ y := by cases x <;> cases y <;> simp [mono_iff]
 
-theorem coe_untop'_le (y : WithTop α) (a : α) : y.untop' a ≤ y :=  by cases y <;> simp
+theorem coe_untopD_le (y : WithTop α) (a : α) : y.untopD a ≤ y :=  by cases y <;> simp
+
+@[deprecated (since := "2025-02-11")]
+alias coe_untop'_le := coe_untopD_le
 
 @[simp]
 theorem coe_top_lt [OrderTop α] : (⊤ : α) < x ↔ x = ⊤ := by cases x <;> simp
