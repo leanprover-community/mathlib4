@@ -274,6 +274,10 @@ theorem braiding_inv_snd {X Y : C} : (β_ X Y).inv ≫ snd _ _ = fst _ _ := by
 
 theorem lift_snd_fst {X Y : C} : lift (snd X Y) (fst X Y) = (β_ X Y).hom := rfl
 
+@[simp]
+lemma lift_snd_comp_fst_comp {W X Y Z : C} (g : W ⟶ X) (g' : Y ⟶ Z) :
+    lift (snd _ _ ≫ g') (fst _ _ ≫ g) = (β_ _ _).hom ≫ (g' ⊗ g) := by ext <;> simp
+
 /--
 Construct an instance of `ChosenFiniteProducts C` given an instance of `HasFiniteProducts C`.
 -/
