@@ -69,14 +69,14 @@ section continuous_eval
 
 variable {𝕜 ι : Type*} {E : ι → Type*} {F : Type*}
     [NormedField 𝕜] [Finite ι] [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-    [TopologicalSpace F] [AddCommGroup F] [TopologicalAddGroup F] [Module 𝕜 F]
+    [TopologicalSpace F] [AddCommGroup F] [IsTopologicalAddGroup F] [Module 𝕜 F]
 
 instance ContinuousMultilinearMap.instContinuousEval :
     ContinuousEval (ContinuousMultilinearMap 𝕜 E F) (Π i, E i) F where
   continuous_eval := by
     cases nonempty_fintype ι
-    let _ := TopologicalAddGroup.toUniformSpace F
-    have := comm_topologicalAddGroup_is_uniform (G := F)
+    let _ := IsTopologicalAddGroup.toUniformSpace F
+    have := uniformAddGroup_of_addCommGroup (G := F)
     refine (UniformOnFun.continuousOn_eval₂ fun m ↦ ?_).comp_continuous
       (isEmbedding_toUniformOnFun.continuous.prodMap continuous_id) fun (f, x) ↦ f.cont.continuousAt
     exact ⟨ball m 1, NormedSpace.isVonNBounded_of_isBounded _ isBounded_ball,
@@ -814,7 +814,6 @@ def smulRightL : ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] Co
 @[simp] lemma smulRightL_apply (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
   smulRightL 𝕜 E G f z = f.smulRight z := rfl
 
-set_option maxSynthPendingDepth 2 in
 lemma norm_smulRightL_le : ‖smulRightL 𝕜 E G‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
 

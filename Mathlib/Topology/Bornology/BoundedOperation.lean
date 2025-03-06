@@ -5,6 +5,7 @@ Authors: Kalle Kytölä
 -/
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.Normed.Field.Lemmas
+import Mathlib.Topology.MetricSpace.ProperSpace.Real
 
 /-!
 # Bounded operations

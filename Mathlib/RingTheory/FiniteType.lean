@@ -229,12 +229,9 @@ end Finite
 
 namespace FiniteType
 
-variable (A)
-
+variable (A) in
 theorem id : FiniteType (RingHom.id A) :=
   Algebra.FiniteType.self A
-
-variable {A}
 
 theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FiniteType) (hg : Surjective g) :
     (g.comp f).FiniteType := by
@@ -313,6 +310,11 @@ theorem of_comp_finiteType {f : A →ₐ[R] B} {g : B →ₐ[R] C} (h : (g.comp 
 end FiniteType
 
 end AlgHom
+
+theorem algebraMap_finiteType_iff_algebra_finiteType {R A : Type*} [CommRing R] [CommRing A]
+    [Algebra R A] : (algebraMap R A).FiniteType ↔ Algebra.FiniteType R A := by
+  dsimp [RingHom.FiniteType]
+  constructor <;> (intro h; convert h; apply Algebra.algebra_ext; exact congrFun rfl)
 
 section MonoidAlgebra
 

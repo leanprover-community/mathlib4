@@ -15,6 +15,7 @@ The definition does not assume `sel` actually is a choice function, i.e. `sel s 
 `sel s = none ↔ s = ∅`. These assumptions are added to the lemmas needing them.
 -/
 
+assert_not_exists RelIso
 
 noncomputable section
 

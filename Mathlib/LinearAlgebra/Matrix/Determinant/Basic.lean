@@ -74,7 +74,7 @@ theorem det_diagonal {d : n → R} : det (diagonal d) = ∏ i, d i := by
   rw [det_apply']
   refine (Finset.sum_eq_single 1 ?_ ?_).trans ?_
   · rintro σ - h2
-    cases' not_forall.1 (mt Equiv.ext h2) with x h3
+    obtain ⟨x, h3⟩ := not_forall.1 (mt Equiv.ext h2)
     convert mul_zero (ε σ)
     apply Finset.prod_eq_zero (mem_univ x)
     exact if_neg h3
@@ -467,6 +467,18 @@ theorem det_updateCol_add_smul_self (A : Matrix n n R) {i j : n} (hij : i ≠ j)
 @[deprecated (since := "2024-12-11")]
 alias det_updateColumn_add_smul_self := det_updateCol_add_smul_self
 
+theorem linearIndependent_rows_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
+    LinearIndependent R (fun i ↦ A i) := by
+  contrapose! hA
+  obtain ⟨c, hc0, i, hci⟩ := Fintype.not_linearIndependent_iff.1 hA
+  have h0 := A.det_updateRow_sum i c
+  rwa [det_eq_zero_of_row_eq_zero (i := i) (fun j ↦ by simp [hc0]), smul_eq_mul, eq_comm,
+    mul_eq_zero_iff_left hci] at h0
+
+theorem linearIndependent_cols_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
+    LinearIndependent R (fun i ↦ Aᵀ i) :=
+  Matrix.linearIndependent_rows_of_det_ne_zero (by simpa)
+
 theorem det_eq_of_forall_row_eq_smul_add_const_aux {A B : Matrix n n R} {s : Finset n} :
     ∀ (c : n → R) (_ : ∀ i, i ∉ s → c i = 0) (k : n) (_ : k ∉ s)
       (_ : ∀ i j, A i j = B i j + c i * B k j), det A = det B := by
@@ -676,7 +688,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
         simpa only [Set.MapsTo, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] using
           mt mem_sumCongrHom_range_of_perm_mapsTo_inl hσn
       obtain ⟨a, ha⟩ := not_forall.mp h1
-      cases' hx : σ (Sum.inl a) with a2 b
+      rcases hx : σ (Sum.inl a) with a2 | b
       · have hn := (not_exists.mp ha) a2
         exact absurd hx.symm hn
       · rw [Finset.prod_eq_zero (Finset.mem_univ (Sum.inl a)), mul_zero]

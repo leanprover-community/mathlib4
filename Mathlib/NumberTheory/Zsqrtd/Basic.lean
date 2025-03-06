@@ -27,7 +27,9 @@ to choices of square roots of `d` in `R`.
   are called `re` and `im` by analogy to the negative `d` case. -/
 @[ext]
 structure Zsqrtd (d : ℤ) where
+  /-- Component of the integer not multiplied by `√d` -/
   re : ℤ
+  /-- Component of the integer multiplied by `√d` -/
   im : ℤ
   deriving DecidableEq
 
@@ -397,7 +399,7 @@ def Nonnegg (c d : ℕ) : ℤ → ℤ → Prop
   | -[_+1], -[_+1] => False
 
 theorem nonnegg_comm {c d : ℕ} {x y : ℤ} : Nonnegg c d x y = Nonnegg d c y x := by
-  induction x <;> induction y <;> rfl
+  cases x <;> cases y <;> rfl
 
 theorem nonnegg_neg_pos {c d} : ∀ {a b : ℕ}, Nonnegg c d (-a) b ↔ SqLe a d b c
   | 0, b => ⟨by simp [SqLe, Nat.zero_le], fun _ => trivial⟩
@@ -646,7 +648,7 @@ theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
     | ⟨-[x+1], -[y+1]⟩ => ⟨x + 1, y + 1, by simp [Int.negSucc_coe, add_assoc]; trivial⟩
   refine ⟨x + d * y, h.trans ?_⟩
   change Nonneg ⟨↑x + d * y - ↑x, 0 - ↑y⟩
-  cases' y with y
+  rcases y with - | y
   · simp
     trivial
   have h : ∀ y, SqLe y d (d * y) 1 := fun y => by

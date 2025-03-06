@@ -86,11 +86,17 @@ theorem coe_proj (i : ι) : ⇑(proj i : ((i : ι) → φ i) →ₗ[R] φ i) = F
 theorem proj_apply (i : ι) (b : (i : ι) → φ i) : (proj i : ((i : ι) → φ i) →ₗ[R] φ i) b = b i :=
   rfl
 
-theorem proj_pi (f : (i : ι) → M₂ →ₗ[R] φ i) (i : ι) : (proj i).comp (pi f) = f i :=
-  ext fun _ => rfl
+@[simp]
+theorem proj_pi (f : (i : ι) → M₂ →ₗ[R] φ i) (i : ι) : (proj i).comp (pi f) = f i := rfl
 
-theorem proj_surjective (i : ι) : Surjective (proj i : ((i : ι) → φ i) →ₗ[R] φ i) := by
-  classical exact fun x ↦ ⟨update 0 i x, update_self i x 0⟩
+@[simp]
+theorem pi_proj : pi proj = LinearMap.id (R := R) (M := ∀ i, φ i) := rfl
+
+@[simp]
+theorem pi_proj_comp (f : M₂ →ₗ[R] ∀ i, φ i) : pi (proj · ∘ₗ f) = f := rfl
+
+theorem proj_surjective (i : ι) : Surjective (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :=
+  surjective_eval i
 
 theorem iInf_ker_proj : (⨅ i, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :
     Submodule R ((i : ι) → φ i)) = ⊥ :=
@@ -299,8 +305,7 @@ variable (R φ)
 
 theorem single_eq_pi_diag (i : ι) : single R φ i = pi (diag i) := by
   ext x j
-  -- Porting note: made types explicit
-  convert (update_apply (R := R) (φ := φ) (ι := ι) 0 x i j _).symm
+  convert (update_apply 0 x i j _).symm
   rfl
 
 theorem ker_single (i : ι) : ker (single R φ i) = ⊥ :=
@@ -580,7 +585,7 @@ noncomputable def Function.ExtendByZero.linearMap : (ι → R) →ₗ[R] η → 
 end Extend
 
 variable (R) in
-/-- `Fin.consEquiv` as a continuous linear equivalence.  -/
+/-- `Fin.consEquiv` as a continuous linear equivalence. -/
 @[simps]
 def Fin.consLinearEquiv
     {n : ℕ} (M : Fin n.succ → Type*) [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] :

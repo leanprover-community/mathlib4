@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Topology.Algebra.Order.Archimedean
+import Mathlib.Topology.Algebra.Ring.Real
 import Mathlib.Topology.Instances.Nat
-import Mathlib.Topology.Instances.Real.Defs
 
 /-!
 # Topology on the rational numbers
@@ -101,7 +101,7 @@ theorem uniformContinuous_neg : UniformContinuous (@Neg.neg ℚ _) :=
 instance : UniformAddGroup ℚ :=
   UniformAddGroup.mk' Rat.uniformContinuous_add Rat.uniformContinuous_neg
 
-instance : TopologicalAddGroup ℚ := inferInstance
+instance : IsTopologicalAddGroup ℚ := inferInstance
 
 instance : OrderTopology ℚ := induced_orderTopology _ Rat.cast_lt exists_rat_btwn
 
@@ -110,7 +110,7 @@ theorem uniformContinuous_abs : UniformContinuous (abs : ℚ → ℚ) :=
     ⟨ε, ε0, fun _ _ h =>
       lt_of_le_of_lt (by simpa [Rat.dist_eq] using abs_abs_sub_abs_le_abs_sub _ _) h⟩
 
-instance : TopologicalRing ℚ := inferInstance
+instance : IsTopologicalRing ℚ := inferInstance
 
 nonrec theorem totallyBounded_Icc (a b : ℚ) : TotallyBounded (Icc a b) := by
   simpa only [preimage_cast_Icc]

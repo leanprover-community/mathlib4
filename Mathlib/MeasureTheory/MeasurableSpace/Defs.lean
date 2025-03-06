@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Set.Countable
-import Mathlib.Order.Disjointed
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Tactic.Measurability
 
@@ -35,6 +35,7 @@ contains all of them.
 measurable space, σ-algebra, measurable function
 -/
 
+assert_not_exists Covariant MonoidWithZero
 
 open Set Encodable Function Equiv
 
@@ -204,11 +205,6 @@ protected theorem MeasurableSet.cond {s₁ s₂ : Set α} (h₁ : MeasurableSet 
     (h₂ : MeasurableSet s₂) {i : Bool} : MeasurableSet (cond i s₁ s₂) := by
   cases i
   exacts [h₂, h₁]
-
-@[simp, measurability]
-protected theorem MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, MeasurableSet (f i)) (n) :
-    MeasurableSet (disjointed f n) :=
-  disjointedRec (fun _ _ ht => MeasurableSet.diff ht <| h _) (h n)
 
 protected theorem MeasurableSet.const (p : Prop) : MeasurableSet { _a : α | p } := by
   by_cases p <;> simp [*]
@@ -537,12 +533,6 @@ variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α] 
   DiscreteMeasurableSpace.forall_measurableSet _
 
 @[measurability, fun_prop] lemma Measurable.of_discrete : Measurable f := fun _ _ ↦ .of_discrete
-
-@[deprecated MeasurableSet.of_discrete (since := "2024-08-25")]
-lemma measurableSet_discrete (s : Set α) : MeasurableSet s := .of_discrete
-
-@[deprecated Measurable.of_discrete (since := "2024-08-25")]
-lemma measurable_discrete (f : α → β) : Measurable f := .of_discrete
 
 /-- Warning: Creates a typeclass loop with `MeasurableSingletonClass.toDiscreteMeasurableSpace`.
 To be monitored. -/
