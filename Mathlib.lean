@@ -2923,6 +2923,7 @@ import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.TakeDrop
 import Mathlib.Data.List.TakeWhile
 import Mathlib.Data.List.ToFinsupp
+import Mathlib.Data.List.Triplewise
 import Mathlib.Data.List.Zip
 import Mathlib.Data.MLList.BestFirst
 import Mathlib.Data.Matrix.Auto
@@ -4371,6 +4372,7 @@ import Mathlib.Order.Closure
 import Mathlib.Order.Cofinal
 import Mathlib.Order.CompactlyGenerated.Basic
 import Mathlib.Order.CompactlyGenerated.Intervals
+import Mathlib.Order.Comparable
 import Mathlib.Order.Compare
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.CompleteLattice
@@ -4756,6 +4758,7 @@ import Mathlib.RingTheory.Etale.Kaehler
 import Mathlib.RingTheory.Etale.Pi
 import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.Extension
+import Mathlib.RingTheory.FilteredAlgebra.Basic
 import Mathlib.RingTheory.Filtration
 import Mathlib.RingTheory.FiniteLength
 import Mathlib.RingTheory.FinitePresentation

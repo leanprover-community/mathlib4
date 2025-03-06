@@ -386,7 +386,7 @@ def piFinset : @Filtration (Π i, X i) (Finset ι) _ pi where
   le' s := s.measurable_restrict.comap_le
 
 lemma piFinset_eq_comap_restrict (s : Finset ι) :
-    piFinset (X := X) s = pi.comap (s.toSet.restrict) := by
+    piFinset (X := X) s = pi.comap s.toSet.restrict := by
   apply le_antisymm
   · simp_rw [piFinset, ← Set.piCongrLeft_comp_restrict, ← MeasurableEquiv.coe_piCongrLeft,
       ← comap_comp]
@@ -399,7 +399,7 @@ end piFinset
 variable {α : Type*}
 
 /-- The exterior σ-algebras of finite sets of `α` form a cofiltration indexed by `Finset α`. -/
-def cylinderEventsCompl : Filtration (Finset α)ᵒᵈ (.pi (π := fun _ : α ↦ Ω)) where
+def cylinderEventsCompl : Filtration (Finset α)ᵒᵈ (.pi (X := fun _ : α ↦ Ω)) where
   seq Λ := cylinderEvents (↑(OrderDual.ofDual Λ))ᶜ
   mono' _ _ h := cylinderEvents_mono <| Set.compl_subset_compl_of_subset h
   le' _  := cylinderEvents_le_pi
