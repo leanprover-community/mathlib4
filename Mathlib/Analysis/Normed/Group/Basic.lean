@@ -5,6 +5,7 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Seminorm
 import Mathlib.Data.NNReal.Basic
+import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.MetricSpace.Basic
 
 /-!

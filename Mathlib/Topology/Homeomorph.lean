@@ -28,6 +28,8 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 
 -/
 
+assert_not_exists Module MonoidWithZero
+
 open Filter Function Set Topology
 
 variable {X Y W Z : Type*}
@@ -374,11 +376,6 @@ theorem preimage_frontier (h : X ≃ₜ Y) (s : Set Y) : h ⁻¹' frontier s = f
 
 theorem image_frontier (h : X ≃ₜ Y) (s : Set X) : h '' frontier s = frontier (h '' s) := by
   rw [← preimage_symm, preimage_frontier]
-
-@[to_additive]
-theorem _root_.HasCompactMulSupport.comp_homeomorph {M} [One M] {f : Y → M}
-    (hf : HasCompactMulSupport f) (φ : X ≃ₜ Y) : HasCompactMulSupport (f ∘ φ) :=
-  hf.comp_isClosedEmbedding φ.isClosedEmbedding
 
 @[simp]
 theorem map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝 x) = 𝓝 (h x) :=
