@@ -200,7 +200,7 @@ def elabLinearCombination (tk : Syntax)
     -- for an equality task the default normalization tactic is (the internals of) `ring1` (but we
     -- use `.instances` transparency, which is arguably more robust in algebraic settings than the
     -- choice `.reducible` made in `ring1`)
-    | eq => fun g ↦ AtomM.run .instances <| Ring.proveEq g
+    | eq => fun g ↦ CanonAtomM.run .instances <| Ring.proveEq g
     | le => Ring.proveLE
     | lt => Ring.proveLT
 
