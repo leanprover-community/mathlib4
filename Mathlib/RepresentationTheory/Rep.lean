@@ -132,7 +132,7 @@ variable {G : Type u} [Group G] (A : Rep k G) (S : Subgroup G)
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` which is trivial on `S` factors
 through `G ⧸ S`. -/
-noncomputable abbrev ofQuotient : Rep k (G ⧸ S) := Rep.of (A.ρ.ofQuotient S)
+abbrev ofQuotient : Rep k (G ⧸ S) := Rep.of (A.ρ.ofQuotient S)
 
 /-- A `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially induces a
 `G ⧸ S`-representation on `A`, and composing this with the quotient map `G → G ⧸ S` gives the
@@ -146,7 +146,7 @@ variable (A : Rep k G)
 
 /-- Given a `k`-linear `G`-representation `(V, ρ)`, this is the representation defined by
 restricting `ρ` to a `G`-invariant `k`-submodule of `V`. -/
-noncomputable abbrev subrepresentation (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
+abbrev subrepresentation (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
     Rep k G :=
   Rep.of (A.ρ.subrepresentation W le_comap)
 
@@ -159,7 +159,8 @@ def subtype (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
 
 /-- Given a `k`-linear `G`-representation `(V, ρ)` and a `G`-invariant `k`-submodule `W ≤ V`, this
 is the representation induced on `V ⧸ W` by `ρ`.-/
-noncomputable abbrev quotient (W) (le_comap) :=
+abbrev quotient (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
+    Rep k G :=
   Rep.of (A.ρ.quotient W le_comap)
 
 /-- The natural projection from a representation to its quotient by a subrepresentation. -/
