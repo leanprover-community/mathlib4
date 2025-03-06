@@ -34,7 +34,10 @@ variable {L L₁ L₂ : List (α × Bool)}
 
 namespace Red
 
-@[to_additive]
+/-- Predicate asserting that the word `L` admits no reduction steps, i.e., no two neighboring
+  elements of the word cancel. -/
+@[to_additive "Predicate asserting the word `L` admits no reduction steps, i.e., no two neighboring
+elements of the word cancel."]
 def reduced (L : List (α × Bool)) : Prop := List.Chain' (fun a b => ¬(a.1 = b.1 ∧ (!a.2) = b.2)) L
 
 @[to_additive (attr := simp)]
@@ -102,7 +105,12 @@ theorem reduced_append_chain {L₁ L₂ L₃ : List (α × Bool)} (h : L₂ ≠ 
   case cons head tail ih =>
     refine reduced_cons_append_chain (by simp [h]) h1 (ih (reduced_infix h1 ⟨[head], [], by simp⟩))
 
-@[to_additive]
+/-- Predicate asserting that the word `L` is cyclically reduced, i.e., it is reduced and furthermore
+the first and the last letter of the word do not cancel. The empty word is by convention also
+cyclically reduced.-/
+@[to_additive "Predicate asserting that the word `L` is cyclically reduced, i.e., it is reduced and
+furthermore the first and the last letter of the word do not cancel. The empty word is by convention
+also cyclically reduced."]
 def cyclicallyReduced (L : List (α × Bool)) : Prop :=
   reduced L ∧ ∀ a ∈ L.getLast?, ∀ b ∈ L.head?, ¬(a.1 = b.1 ∧ (!a.2) = b.2)
 
@@ -177,14 +185,19 @@ theorem reduced_toWord {x : FreeGroup α} : Red.reduced (x.toWord) := by
   rw [Red.reduced_iff_eq_reduce]
   simp
 
-@[to_additive]
+/-- This function produces a subword of a word `w` by cancelling the first and last letters of `w`
+as long as possible. If `w` is reduced, the resulting word will be cyclically reduced. -/
+@[to_additive "This function produces a subword of a word `w` by cancelling the first and last
+letters of `w` as long as possible. If `w` is reduced, the resulting word will be cyclically
+reduced."]
 def reduceCyclically : List (α × Bool) → List (α × Bool) :=
   List.bidirectionalRec
     (nil := [])
     (singleton := fun x => [x])
     (cons_append := fun a l b rC => if (b.1 = a.1 ∧ (!b.2) = a.2) then rC else (a :: l ++ [b]))
 
-@[to_additive]
+/-- Partner function to `reduceCyclically`. See `reduceCyclically_conjugation`. -/
+@[to_additive "Partner function to `reduceCyclically`. See `reduceCyclically_conjugation`."]
 def reduceCyclicallyConjugator : List (α × Bool) → List (α × Bool) := List.bidirectionalRec
   (nil := [])
   (singleton := fun _ => [])
