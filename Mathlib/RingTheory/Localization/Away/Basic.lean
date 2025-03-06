@@ -8,6 +8,7 @@ import Mathlib.Algebra.Algebra.Pi
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+import Mathlib.Tactic.FieldSimp -- increase?
 
 /-!
 # Localizations away from an element
@@ -379,6 +380,79 @@ lemma awayLift_mk {A : Type*} [CommRing A] (f : R →+* A) (r : R)
 noncomputable abbrev awayMap (f : R →+* P) (r : R) :
     Localization.Away r →+* Localization.Away (f r) :=
   IsLocalization.Away.map _ _ f r
+
+/--
+Given a map `f : R →+* S`, an element `r : R`, and inverses for `f (r ^ n)`,
+we may construct a map `Rᵣ →+* S`.
+See `Localization.Away.lift` for a version that only requires an inverse for `f r`.
+-/
+def Away.lift' (f : R →+* P) (r : R) (hinv : ∀ (u : Submonoid.powers r), Invertible (f u)) :
+    Away r →+* P where
+  toFun := OreLocalization.liftExpand (fun a b ↦ f a /ₚ unitOfInvertible (f b)) fun a b s ht ↦ by
+    apply divp_eq_divp_iff.mpr
+    simp_rw [val_unitOfInvertible, smul_eq_mul, map_mul]
+    ring
+  map_one' := by
+    rw [OreLocalization.one_def, OreLocalization.liftExpand_of]
+    apply divp_eq_iff_mul_eq.mpr
+    simp
+  map_mul' := by
+    apply OreLocalization.ind
+    intro a₁ a₂
+    apply OreLocalization.ind
+    intro b₁ b₂
+    simp_rw [OreLocalization.oreDiv_mul_oreDiv, OreLocalization.liftExpand_of]
+    field_simp
+    simp only [← map_mul]
+    apply congrArg f
+    rw [mul_mul_mul_comm, ← OreLocalization.ore_eq]
+    ring
+  map_zero' := by
+    simp_rw [OreLocalization.zero_def, OreLocalization.liftExpand_of]
+    apply divp_eq_iff_mul_eq.mpr
+    simp
+  map_add' := by
+    apply OreLocalization.ind
+    intro a₁ a₂
+    apply OreLocalization.ind
+    intro b₁ b₂
+    simp_rw [OreLocalization.oreDiv_add_oreDiv, OreLocalization.liftExpand_of,
+        Submonoid.smul_def, smul_eq_mul]
+    field_simp
+    simp only [← map_mul, ← map_add]
+    apply congrArg f
+    rw [mul_comm, mul_add, mul_right_comm, mul_right_comm, mul_assoc,
+        mul_comm (a₂ : R), mul_right_comm, OreLocalization.ore_eq]
+    ring
+
+@[simp]
+theorem Away.lift'_mk_eq_mul_invOf (f : R →+* P) (r : R)
+    (hinv : ∀ (u : Submonoid.powers r), Invertible (f u)) (x : R) (y : Submonoid.powers r) :
+    Away.lift' f r hinv (mk x y) = f x * ⅟(f y) :=
+  rfl
+
+theorem Away.lift'_mk_eq_divp (f : R →+* P) (r : R)
+    (hinv : ∀ (u : Submonoid.powers r), Invertible (f u)) (x : R) (y : Submonoid.powers r) :
+    Away.lift' f r hinv (mk x y) = f x /ₚ unitOfInvertible (f y) :=
+  rfl
+
+/-- Given a map `f : R →+* S`, an element `r : R`, and
+an inverse for `f r`, we may construct a map `Rᵣ →+* S`. -/
+def Away.lift [DecidableEq R] (f : R →+* P) (r : R) (hinv : Invertible (f r)) : Away r →+* P :=
+  Localization.Away.lift' f r
+    fun u ↦ (invertiblePow (f r) (Submonoid.log u)).copy _ <| by
+      rw [← map_pow, ← Submonoid.pow_coe, Submonoid.pow_log_eq_self]
+
+@[simp]
+theorem Away.lift_mk_eq_mul_invOf [DecidableEq R] (f : R →+* P) (r : R)
+    (hinv : Invertible (f r)) (x : R) (y : Submonoid.powers r) :
+    Away.lift f r hinv (mk x y) = f x * ⅟(f r) ^ Submonoid.log y :=
+  rfl
+
+theorem Away.lift_mk_eq_divp [DecidableEq R] (f : R →+* P) (r : R)
+    (hinv : Invertible (f r)) (x : R) (y : Submonoid.powers r) :
+    Away.lift f r hinv (mk x y) = f x /ₚ unitOfInvertible (f r) ^ Submonoid.log y :=
+  rfl
 
 variable {A : Type*} [CommSemiring A] [Algebra R A]
 variable {B : Type*} [CommSemiring B] [Algebra R B]
