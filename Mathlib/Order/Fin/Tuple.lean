@@ -13,6 +13,8 @@ import Mathlib.Order.Interval.Set.Defs
 # Order properties on tuples
 -/
 
+assert_not_exists Monoid
+
 open Function Set
 
 namespace Fin
