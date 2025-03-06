@@ -333,14 +333,6 @@ lemma fun_zero [IsZeroOrProbabilityMeasure μ] : HasSubgaussianMGF (fun _ ↦ 0)
 @[simp]
 lemma zero [IsZeroOrProbabilityMeasure μ] : HasSubgaussianMGF 0 0 μ := fun_zero
 
-protected lemma of_rat (h_int : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X ω)) μ)
-    (h_mgf : ∀ q : ℚ, mgf X μ q ≤ exp (c * q ^ 2 / 2)) :
-    HasSubgaussianMGF X c μ where
-  integrable_exp_mul := h_int
-  mgf_le t := by
-    refine Rat.denseRange_cast.induction_on t ?_ h_mgf
-    exact isClosed_le (continuous_mgf h_int) (by fun_prop)
-
 section ChernoffBound
 
 /-- Chernoff bound on the right tail of a sub-Gaussian random variable. -/
