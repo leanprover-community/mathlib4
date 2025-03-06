@@ -35,7 +35,10 @@ def symmDiff (e1 e2 : NameSet) : NameSet × NameSet :=
     if e2.contains n then (e1, e2.erase n) else (e1.insert n, e2))
 
 elab "ddiff" : command => do
-  let e1 ← declsFromImports #[`SettersAndCheckers.declarations_diff]
-  let e2 ← declsFromImports #[`SettersAndCheckers.ParseGit]
+  let mods : Array Import := #[`Mathlib.Algebra.Quandle]
+  let e1 ← declsFromImports mods
+  let _ ← IO.Process.run {cmd := "git", args := #["checkout", "master"]}
+  let _ ← IO.Process.run {cmd := "lake", args := #["build", toString mods[0]]}
+  let e2 ← declsFromImports mods
   let (d1, d2) := symmDiff e1 e2
   logInfo m!"{(d1, d2)}"
