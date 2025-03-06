@@ -37,9 +37,10 @@ variable {ι A σ : Type*} [Preorder ι] [SetLike σ A]
 /-- For a family of subsets `σ` of `A`, an increasing series of `F` in `σ` is a filtration if
 there is another series `F_lt` in `σ` equal to the supremum of `F` with smaller index.
 
-In fact `F_lt j = ⨆ i < j, F i`, the design of `F_lt` can handle different conditions in the
-same structure, it avoid adding `CompleteLattice` to `σ`, also providing convenience when the index
-is `ℤ`. -/
+In the intended applications, `σ` is a complete lattice, and `F_lt` is uniquely-determined as
+`F_lt j = ⨆ i < j, F i`. Thus `F_lt` is an implementation detail which allows us defer depending
+on a complete lattice structure on `σ`. It also provides the ancillary benefit of giving us better
+definition control. This is convenient e.g., when the index is `ℤ`. -/
 class IsFiltration (F : ι → σ) (F_lt : outParam <| ι → σ) : Prop where
   mono : Monotone F
   is_le {i j} : i < j → F i ≤ F_lt j
