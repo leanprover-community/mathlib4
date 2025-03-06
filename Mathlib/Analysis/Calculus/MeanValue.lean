@@ -4,12 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.Deriv.AffineMap
-import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.Analysis.Calculus.LocalExtr.Rolle
-import Mathlib.Analysis.Convex.Normed
+import Mathlib.Analysis.Normed.Group.AddTorsor
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Analysis.RCLike.Basic
+import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.Topology.Instances.RealVectorSpace
 import Mathlib.Topology.LocallyConstant.Basic
 
 /-!
@@ -328,7 +331,7 @@ theorem norm_image_sub_le_of_norm_deriv_right_le_segment {f' : ℝ → E} {C : �
   have hg : ContinuousOn g (Icc a b) := hf.sub continuousOn_const
   have hg' : ∀ x ∈ Ico a b, HasDerivWithinAt g (f' x) (Ici x) x := by
     intro x hx
-    simpa using (hf' x hx).sub (hasDerivWithinAt_const _ _ _)
+    simp [g, hf' x hx]
   let B x := C * (x - a)
   have hB : ∀ x, HasDerivAt B C x := by
     intro x
@@ -1255,7 +1258,7 @@ theorem hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt
   refine ⟨ε, ε0, ?_⟩
   -- simplify formulas involving the product E × E
   rintro ⟨a, b⟩ h
-  rw [← ball_prod_same, prod_mk_mem_set_prod_eq] at h
+  rw [← ball_prod_same, prodMk_mem_set_prod_eq] at h
   -- exploit the choice of ε as the modulus of continuity of f'
   have hf' : ∀ x' ∈ ball x ε, ‖f' x' - f' x‖ ≤ c := fun x' H' => by
     rw [← dist_eq_norm]

@@ -118,6 +118,20 @@ def iic (j : J) :
     replace eq := congr_arg h.F.mapArrow.obj eq
     convert this using 1
 
+/-- A transfinite composition of shape `J` of morphisms in `W` induces a transfinite
+composition of shape `Set.Ici j` (for any `j : J`). -/
+noncomputable def ici (j : J) :
+    W.TransfiniteCompositionOfShape (Set.Ici j) (h.incl.app j) where
+  __ := h.toTransfiniteCompositionOfShape.ici j
+  map_mem i hi := by
+    have := h.map_mem i.1 (Set.not_isMax_coe _ hi)
+    rw [← W.arrow_mk_mem_toSet_iff] at this ⊢
+    have eq : Arrow.mk ((Subtype.mono_coe _).functor.map (homOfLE (Order.le_succ i))) =
+      Arrow.mk (homOfLE (Order.le_succ i.1)) :=
+        Arrow.ext rfl (coe_succ_of_mem (i.2.trans (Order.le_succ _))) rfl
+    replace eq := congr_arg h.F.mapArrow.obj eq
+    convert this using 1
+
 end
 
 /-- If `F : ComposableArrows C n` and all maps `F.obj i.castSucc ⟶ F.obj i.succ`
@@ -320,6 +334,37 @@ lemma transfiniteCompositionsOfShape_le_transfiniteCompositions
   intro A B f hf
   rw [transfiniteCompositions_iff]
   exact ⟨_, _, _, _, _, hf⟩
+
+lemma transfiniteCompositions_monotone :
+    Monotone (transfiniteCompositions.{w} (C := C)) := by
+  intro W₁ W₂ h X Y f hf
+  rw [transfiniteCompositions_iff] at hf
+  obtain ⟨J, _, _, _, _, hf⟩ := hf
+  exact transfiniteCompositionsOfShape_le_transfiniteCompositions _ _ _
+    (transfiniteCompositionsOfShape_monotone J h _ hf)
+
+lemma le_transfiniteCompositions :
+    W ≤ transfiniteCompositions.{w} W :=
+  le_trans (fun _ _ _ hf ↦
+    (MorphismProperty.TransfiniteCompositionOfShape.ofOrderIso (.ofMem _ hf)
+      (orderIsoShrink.{w} (Fin 2)).symm).mem)
+    (transfiniteCompositionsOfShape_le_transfiniteCompositions _ _)
+
+lemma transfiniteCompositions_le [IsStableUnderTransfiniteComposition.{w} W] :
+    transfiniteCompositions.{w} W ≤ W := by
+  intro _ _ f hf
+  rw [transfiniteCompositions_iff] at hf
+  obtain ⟨J, _, _, _, _, hf⟩ := hf
+  exact W.transfiniteCompositionsOfShape_le J _ hf
+
+@[simp]
+lemma transfiniteCompositions_le_iff {P Q : MorphismProperty C}
+    [IsStableUnderTransfiniteComposition.{w} Q] :
+    transfiniteCompositions.{w} P ≤ Q ↔ P ≤ Q := by
+  constructor
+  · exact (le_transfiniteCompositions P).trans
+  · intro h
+    exact (transfiniteCompositions_monotone.{w} h).trans Q.transfiniteCompositions_le
 
 end MorphismProperty
 

@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
-import Mathlib.Algebra.Group.Semiconj.Basic
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Group.Action
 import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Int.ModEq
 import Mathlib.Dynamics.PeriodicPts.Lemmas
 import Mathlib.GroupTheory.Index
 import Mathlib.NumberTheory.Divisors
@@ -126,6 +127,11 @@ theorem Submonoid.isOfFinOrder_coe {H : Submonoid G} {x : H} :
     IsOfFinOrder (x : G) ↔ IsOfFinOrder x := by
   rw [isOfFinOrder_iff_pow_eq_one, isOfFinOrder_iff_pow_eq_one]
   norm_cast
+
+theorem IsConj.isOfFinOrder (h : IsConj x y) : IsOfFinOrder x → IsOfFinOrder y := by
+  simp_rw [isOfFinOrder_iff_pow_eq_one]
+  rintro ⟨n, n_gt_0, eq'⟩
+  exact ⟨n, n_gt_0, by rw [← isConj_one_right, ← eq']; exact h.pow n⟩
 
 /-- The image of an element of finite order has finite order. -/
 @[to_additive "The image of an element of finite additive order has finite additive order."]
@@ -528,9 +534,9 @@ lemma finite_powers : (powers a : Set G).Finite ↔ IsOfFinOrder a := by
 @[to_additive (attr := simp)]
 lemma infinite_powers : (powers a : Set G).Infinite ↔ ¬ IsOfFinOrder a := finite_powers.not
 
-/-- The equivalence between `Fin (orderOf x)` and `Submonoid.powers x`, sending `i` to `x ^ i`."-/
+/-- The equivalence between `Fin (orderOf x)` and `Submonoid.powers x`, sending `i` to `x ^ i` -/
 @[to_additive "The equivalence between `Fin (addOrderOf a)` and
-`AddSubmonoid.multiples a`, sending `i` to `i • a`."]
+`AddSubmonoid.multiples a`, sending `i` to `i • a`"]
 noncomputable def finEquivPowers (x : G) (hx : IsOfFinOrder x) : Fin (orderOf x) ≃ powers x :=
   Equiv.ofBijective (fun n ↦ ⟨x ^ (n : ℕ), ⟨n, rfl⟩⟩) ⟨fun ⟨_, h₁⟩ ⟨_, h₂⟩ ij ↦
     Fin.ext (pow_injOn_Iio_orderOf h₁ h₂ (Subtype.mk_eq_mk.1 ij)), fun ⟨_, i, rfl⟩ ↦
@@ -874,7 +880,7 @@ theorem orderOf_dvd_card : orderOf x ∣ Fintype.card G := by
 
 @[to_additive]
 theorem orderOf_dvd_natCard {G : Type*} [Group G] (x : G) : orderOf x ∣ Nat.card G := by
-  cases' fintypeOrInfinite G with h h
+  obtain h | h := fintypeOrInfinite G
   · simp only [Nat.card_eq_fintype_card, orderOf_dvd_card]
   · simp only [card_eq_zero_of_infinite, dvd_zero]
 
