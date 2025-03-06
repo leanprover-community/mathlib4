@@ -283,11 +283,7 @@ theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
 
 @[simp] theorem cast_eq_zero {k l : ℕ} [NeZero k] [NeZero l]
     (h : k = l) (x : Fin k) : Fin.cast h x = 0 ↔ x = 0 := by
-<<<<<<< HEAD
-  simp only [← val_eq_val, coe_cast, val_zero]
-=======
   simp [← val_eq_zero_iff]
->>>>>>> origin/master
 
 lemma cast_injective {k l : ℕ} (h : k = l) : Injective (Fin.cast h) :=
   fun a b hab ↦ by simpa [← val_eq_val] using hab
