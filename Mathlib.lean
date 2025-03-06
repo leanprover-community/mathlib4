@@ -4371,6 +4371,7 @@ import Mathlib.Order.Closure
 import Mathlib.Order.Cofinal
 import Mathlib.Order.CompactlyGenerated.Basic
 import Mathlib.Order.CompactlyGenerated.Intervals
+import Mathlib.Order.Comparable
 import Mathlib.Order.Compare
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.CompleteLattice
