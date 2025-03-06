@@ -46,7 +46,7 @@ private structure Context where
   ctx : Simp.Context
   simp : Simp.Result → SimpM Simp.Result
 
-private abbrev M := ReaderT Context CanonAtomM
+private abbrev M := ReaderT Context AtomM
 
 private partial def rewrite (parent : Expr) (root := true) : M Simp.Result :=
   fun nctx rctx s red s' ↦ do
@@ -109,8 +109,7 @@ private theorem rat_rawCast_neg {R} [DivisionRing R] :
 end SimpLemmas
 
 private partial def M.run
-    {α : Type} (s : IO.Ref CanonAtomM.State) (cfg : LieRingNF.Config) (red : TransparencyMode)
-    (s' : IO.Ref Canonicalizer.State)(x : M α) : MetaM α := do
+    {α : Type} (s : IO.Ref AtomM.State) (cfg : LieRingNF.Config) (x : M α) : MetaM α := do
   let ctx ← Simp.mkContext { singlePass := cfg.strategy matches .raw}
     (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
     (congrTheorems := ← getSimpCongrTheorems)
@@ -141,8 +140,7 @@ private partial def M.run
 open Elab.Tactic Parser.Tactic
 /-- Use `liering_nf` to rewrite the main goal. -/
 private def lieRingNFTarget
-    (s : IO.Ref CanonAtomM.State) (red : TransparencyMode) (s' : IO.Ref Canonicalizer.State)
-    (cfg : Config) : TacticM Unit := withMainContext do
+    (s : IO.Ref AtomM.State) (cfg : Config) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let tgt ← instantiateMVars (← goal.getType)
   let r ← M.run s cfg red s' <| rewrite tgt
@@ -153,8 +151,7 @@ private def lieRingNFTarget
     replaceMainGoal [← applySimpResultToTarget goal tgt r]
 
 /-- Use `liering_nf` to rewrite hypothesis `h`. -/
-private def lieRingNFLocalDecl (s : IO.Ref CanonAtomM.State) (red : TransparencyMode)
-    (s' : IO.Ref Canonicalizer.State) (cfg : Config) (fvarId : FVarId) :
+private def lieRingNFLocalDecl (s : IO.Ref AtomM.State) (cfg : Config) (fvarId : FVarId) :
     TacticM Unit := withMainContext do
   let tgt ← instantiateMVars (← fvarId.getType)
   let goal ← getMainGoal
