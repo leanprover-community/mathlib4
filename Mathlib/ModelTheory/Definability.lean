@@ -22,7 +22,7 @@ This file defines what it means for a set over a first-order structure to be def
   `(s : Set (M × M))` is definable with parameters in `A`.
 - A `FirstOrder.Language.DefinableSet` is defined so that `L.DefinableSet A α` is the boolean
   algebra of subsets of `α → M` defined by formulas with parameters in `A`.
-- A function `f` is `A.TermDefinable L` if its graph can be expressed as a term in the language,
+- A function `f` is `A.TermDefinable L` if it can be expressed as a term in the language,
   which is stronger than typical FO definability. `A.TermDefinable L`
 
 ## Main Results
