@@ -52,12 +52,6 @@ as special cases of a notion of sub-Gaussianity with respect to a kernel and a m
   with parameter `c` with respect to a kernel `κ` and a measure `ν` if for `ν`-almost all `ω'`,
   for all `t : ℝ`, the moment generating function of `X` with respect to `κ ω'` is bounded by
   `exp (c * t ^ 2 / 2)`.
-* `HasSubgaussianMGF`: a random variable `X` has a sub-Gaussian moment generating function
-  with parameter `c` with respect to a measure `μ` if for all `t : ℝ`, `exp (t * X)`
-  is `μ`-integrable and the moment generating function of `X` is bounded by `exp (c * t ^ 2 / 2)`
-  for all `t : ℝ`.
-  This is equivalent to `Kernel.HasSubgaussianMGF` with a constant kernel.
-  See `HasSubgaussianMGF_iff_kernel`.
 * `HasCondSubgaussianMGF`: a random variable `X` has a conditionally sub-Gaussian moment generating
   function with parameter `c` with respect to a sigma-algebra `m` and a measure `μ` if for all
   `t : ℝ`, `exp (t * X)` is `μ`-integrable and the moment generating function of `X` contioned
@@ -65,6 +59,12 @@ as special cases of a notion of sub-Gaussianity with respect to a kernel and a m
   The actual definition uses `Kernel.HasSubgaussianMGF`: `HasCondSubgaussianMGF` is defined as
   sub-Gaussian with respect to the conditional expectation kernel for `m` and the restriction of `μ`
   to the sigma-algebra `m`.
+* `HasSubgaussianMGF`: a random variable `X` has a sub-Gaussian moment generating function
+  with parameter `c` with respect to a measure `μ` if for all `t : ℝ`, `exp (t * X)`
+  is `μ`-integrable and the moment generating function of `X` is bounded by `exp (c * t ^ 2 / 2)`
+  for all `t : ℝ`.
+  This is equivalent to `Kernel.HasSubgaussianMGF` with a constant kernel.
+  See `HasSubgaussianMGF_iff_kernel`.
 
 ## Implementation notes
 
