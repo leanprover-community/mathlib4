@@ -36,7 +36,7 @@ def closedIhom (X : ∀ i, C i) : (∀ i, C i) ⥤ (∀ i, C i) where
 /-- The unit for the adjunction `(tensorLeft X) ⊣ (closedIhom X)`. -/
 @[simps]
 def closedUnit (X : ∀ i, C i) : 𝟭 (∀ i, C i) ⟶ tensorLeft X ⋙ (closedIhom X) where
-  app Y :=  fun i ↦ (ihom.coev (X i)).app (Y i)
+  app Y := fun i ↦ (ihom.coev (X i)).app (Y i)
 
 /-- The counit for the adjunction `(tensorLeft X) ⊣ (closedIhom X)`. -/
 @[simps]
