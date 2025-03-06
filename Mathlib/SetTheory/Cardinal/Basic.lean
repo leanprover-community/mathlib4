@@ -1555,7 +1555,7 @@ theorem aleph0_le_of_isSuccLimit {c : Cardinal} (h : IsSuccLimit c) : ℵ₀ ≤
   exact not_isSuccLimit_of_lt_aleph0 h
 
 theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ := by
-  refine ⟨aleph0_ne_zero, fun hx ↦ ?_⟩
+  refine ⟨aleph0_ne_zero, fun x hx ↦ ?_⟩
   obtain ⟨n, rfl⟩ := lt_aleph0.1 hx
   exact_mod_cast nat_lt_aleph0 _
 
