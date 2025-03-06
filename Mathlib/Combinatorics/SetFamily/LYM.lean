@@ -44,10 +44,8 @@ Provide equality cases. Local LYM gives that the equality case of LYM and Sperne
 shadow, lym, slice, sperner, antichain
 -/
 
-
 open Finset Nat
-
-open FinsetFamily
+open scoped FinsetFamily
 
 variable {𝕜 α : Type*} [LinearOrderedField 𝕜]
 
@@ -55,13 +53,12 @@ namespace Finset
 
 /-! ### Local LYM inequality -/
 
-
 section LocalLYM
-variable [DecidableEq α] [Fintype α]
-  {𝒜 : Finset (Finset α)} {r : ℕ}
+variable [DecidableEq α] [Fintype α] {𝒜 : Finset (Finset α)} {r : ℕ}
+
 /-- The downward **local LYM inequality**, with cancelled denominators. `𝒜` takes up less of `α^(r)`
 (the finsets of card `r`) than `∂𝒜` takes up of `α^(r - 1)`. -/
-theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
+theorem local_lubell_yamamoto_meshalkin_inequality_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     #𝒜 * r ≤ #(∂ 𝒜) * (Fintype.card α - r + 1) := by
   let i : DecidableRel ((· ⊆ ·) : Finset α → Finset α → Prop) := fun _ _ => Classical.dec _
   refine card_mul_le_card_mul' (· ⊆ ·) (fun s hs => ?_) (fun s hs => ?_)
@@ -85,13 +82,13 @@ theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
 
 /-- The downward **local LYM inequality**. `𝒜` takes up less of `α^(r)` (the finsets of card `r`)
 than `∂𝒜` takes up of `α^(r - 1)`. -/
-theorem card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0)
+theorem local_lubell_yamamoto_meshalkin_inequality_div (hr : r ≠ 0)
     (h𝒜 : (𝒜 : Set (Finset α)).Sized r) : (#𝒜 : 𝕜) / (Fintype.card α).choose r
     ≤ #(∂ 𝒜) / (Fintype.card α).choose (r - 1) := by
   obtain hr' | hr' := lt_or_le (Fintype.card α) r
   · rw [choose_eq_zero_of_lt hr', cast_zero, div_zero]
     exact div_nonneg (cast_nonneg _) (cast_nonneg _)
-  replace h𝒜 := card_mul_le_card_shadow_mul h𝒜
+  replace h𝒜 := local_lubell_yamamoto_meshalkin_inequality_mul h𝒜
   rw [div_le_div_iff₀] <;> norm_cast
   · rcases r with - | r
     · exact (hr rfl).elim
@@ -107,7 +104,6 @@ theorem card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0)
 end LocalLYM
 
 /-! ### LYM inequality -/
-
 
 section LYM
 
@@ -182,18 +178,18 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
       cast_add, _root_.add_div, add_comm]
     rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left hk)]
     exact add_le_add_left ((ih <| le_of_succ_le hk).trans <|
-      card_div_choose_le_card_shadow_div_choose
+      local_lubell_yamamoto_meshalkin_inequality_div
         (tsub_pos_iff_lt.2 <| Nat.succ_le_iff.1 hk).ne' <| sized_falling _ _) _
 
 end Falling
 
-variable {𝒜 : Finset (Finset α)}
+variable [Fintype α] {𝒜 : Finset (Finset α)}
 
 /-- The **Lubell-Yamamoto-Meshalkin inequality**. If `𝒜` is an antichain, then the sum of the
 proportion of elements it takes from each layer is less than `1`. -/
-theorem sum_card_slice_div_choose_le_one [Fintype α]
+theorem lubell_yamamoto_meshalkin_inequality_sum_card_div_choose
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
-    (∑ r ∈ range (Fintype.card α + 1), (#(𝒜 # r) : 𝕜) / (Fintype.card α).choose r) ≤ 1 := by
+    ∑ r ∈ range (Fintype.card α + 1), (#(𝒜 # r) / (Fintype.card α).choose r : 𝕜) ≤ 1 := by
   classical
     rw [← sum_flip]
     refine (le_card_falling_div_choose le_rfl h𝒜).trans ?_
@@ -203,10 +199,21 @@ theorem sum_card_slice_div_choose_le_one [Fintype α]
     · rw [tsub_self, choose_zero_right]
       exact zero_lt_one
 
+/-- The **Lubell-Yamamoto-Meshalkin inequality**. If `𝒜` is an antichain, then the sum of the
+proportion of elements it takes from each layer is less than `1`. -/
+theorem lubell_yamamoto_meshalkin_inequality_sum_inv_choose (h𝒜 : IsAntichain (· ⊆ ·) 𝒜.toSet) :
+    ∑ s ∈ 𝒜, ((Fintype.card α).choose #s : 𝕜)⁻¹ ≤ 1 := by
+  calc
+    _ = ∑ r ∈ range (Fintype.card α + 1),
+        ∑ s ∈ 𝒜 with #s = r, ((Fintype.card α).choose r : 𝕜)⁻¹ := by
+      rw [sum_fiberwise_of_maps_to']; simp [Nat.lt_succ_iff, card_le_univ]
+    _ = ∑ r ∈ range (Fintype.card α + 1), (#(𝒜 # r) / (Fintype.card α).choose r : 𝕜) := by
+      simp [slice, div_eq_mul_inv]
+    _ ≤ 1 := lubell_yamamoto_meshalkin_inequality_sum_card_div_choose h𝒜
+
 end LYM
 
 /-! ### Sperner's theorem -/
-
 
 /-- **Sperner's theorem**. The size of an antichain in `Finset α` is bounded by the size of the
 maximal layer in `Finset α`. This precisely means that `Finset α` is a Sperner order. -/
@@ -222,7 +229,8 @@ theorem _root_.IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
       simp only [cast_pos]
       exact choose_pos (Nat.div_le_self _ _)
     rw [Iic_eq_Icc, ← Ico_succ_right, bot_eq_zero, Ico_zero_eq_range]
-    refine (sum_le_sum fun r hr => ?_).trans (sum_card_slice_div_choose_le_one h𝒜)
+    refine (sum_le_sum fun r hr => ?_).trans
+      (lubell_yamamoto_meshalkin_inequality_sum_card_div_choose h𝒜)
     rw [mem_range] at hr
     refine div_le_div_of_nonneg_left ?_ ?_ ?_ <;> norm_cast
     · exact Nat.zero_le _
