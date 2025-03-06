@@ -1116,30 +1116,34 @@ theorem isInducing_sumElim :
       Disjoint (closure (range f)) (range g) ∧ Disjoint (range f) (closure (range g)) := by
   refine ⟨fun h => ⟨h.sumElim_left, h.sumElim_right, ?_⟩,
     fun ⟨hf, hg, hFg, hfG⟩ => hf.sumElim hg hFg hfG⟩
-  conv at h =>
-    rw [isInducing_iff_nhds]
-    intro x
-    rw [Filter.ext_iff]
-    conv =>
-      enter [s, 2]
-      rw [mem_comap_iff_compl, ← image_preimage_inl_union_image_preimage_inr sᶜ, image_union]
-      simp only [image_image, elim_inl, elim_inr, preimage_compl, compl_union, inter_mem_iff]
-      simp only [← mem_comap_iff_compl, ← mem_map, ← mem_sup]
-    rw [← Filter.ext_iff, eq_comm]
+  have h' (x : X ⊕ Y) : map inl (comap (fun a ↦ f a) (𝓝 (Sum.elim f g x))) ⊔
+      map inr (comap (fun a ↦ g a) (𝓝 (Sum.elim f g x))) = 𝓝 x := by
+    rw [isInducing_iff_nhds] at h
+    simp_rw [Filter.ext_iff] at h
+    -- FIXME: can this proof be simplified by avoiding conv?
+    conv at h =>
+      intro x
+      conv =>
+        enter [s, 2]
+        rw [mem_comap_iff_compl, ← image_preimage_inl_union_image_preimage_inr sᶜ, image_union]
+        simp only [image_image, elim_inl, elim_inr, preimage_compl, compl_union, inter_mem_iff]
+        simp only [← mem_comap_iff_compl, ← mem_map, ← mem_sup]
+      rw [← Filter.ext_iff, eq_comm]
+    exact h x
   constructor <;>
   simp only [disjoint_principal_left, disjoint_principal_right,
     ← disjoint_principal_nhdsSet, ← disjoint_nhdsSet_principal, mem_nhdsSet_iff_forall] <;>
   rintro _ ⟨x, rfl⟩ <;>
   rw [← comap_eq_bot_iff_compl_range] <;>
-  [specialize h (inr x); specialize h (inl x)]
-  · rw [nhds_inr, elim_inr] at h
-    apply_fun (map inl ⊤ ⊓ ·) at h
+  [specialize h' (inr x); specialize h' (inl x)]
+  · rw [nhds_inr, elim_inr] at h'
+    apply_fun (map inl ⊤ ⊓ ·) at h'
     simpa only [map_inl_inf_map_inr, inf_sup_left, inf_sup_right, sup_bot_eq, bot_sup_eq, ← map_inf,
-      inl_injective, inr_injective, top_inf_eq, inf_top_eq, map_eq_bot_iff] using h
-  · rw [nhds_inl, elim_inl] at h
-    apply_fun (· ⊓ map Sum.inr ⊤) at h
+      inl_injective, inr_injective, top_inf_eq, inf_top_eq, map_eq_bot_iff] using h'
+  · rw [nhds_inl, elim_inl] at h'
+    apply_fun (· ⊓ map Sum.inr ⊤) at h'
     simpa only [map_inl_inf_map_inr, inf_sup_left, inf_sup_right, sup_bot_eq, bot_sup_eq, ← map_inf,
-      inl_injective, inr_injective, top_inf_eq, inf_top_eq, map_eq_bot_iff] using h
+      inl_injective, inr_injective, top_inf_eq, inf_top_eq, map_eq_bot_iff] using h'
 
 lemma Topology.IsInducing.sumElim_of_separatedNhds
     (hf : IsInducing f) (hg : IsInducing g) (hsep : SeparatedNhds (range f) (range g)) :
