@@ -21,7 +21,8 @@ We also provide extra API for these maps in degrees 0, 1, 2.
   induced by a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`.
 * `groupHomology.map f φ n` is the map `Hₙ(G, A) ⟶ Hₙ(H, B)` induced by a group homomorphism
   `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`.
-
+* `groupHomology.H1CoresCoinf A S` is the short complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A_S)`
+  for a normal subgroup `S ≤ G` and a representation `A` on which `S` acts trivially.
 -/
 
 universe v u
@@ -501,7 +502,7 @@ instance [DecidableEq (G ⧸ S)] :
     Epi (H1CoresCoinf A S).g := by
   rw [ModuleCat.epi_iff_surjective]
   intro x
-  induction' x using H1_induction_on with x
+  induction x using H1_induction_on with | @h x =>
 /- Let `x : Z₁(G ⧸ S, A_S)`. We know `Z₁(G, A_S) ⟶ Z₁(G ⧸ S, A_S)` is surjective, so pick
 `y : Z₁(G, A_S)` in the preimage of `x`. -/
   rcases (ModuleCat.epi_iff_surjective _).1
@@ -540,7 +541,7 @@ instance [DecidableEq (G ⧸ S)] :
     (H1CoresCoinf A S).Exact := by
   rw [ShortComplex.moduleCat_exact_iff_ker_sub_range]
   intro x hx
-  induction' x using H1_induction_on with x
+  induction x using H1_induction_on with | @h x =>
   simp only [H1CoresCoinf_X₂, H1CoresCoinf_X₃, LinearMap.mem_ker, H1CoresCoinf_g,
     H1π_comp_H1Map_apply (QuotientGroup.mk' S)] at hx
 /- Let `x : Z₁(G, A)` map to 0 in `H₁(G, ⧸ S, A_S)`. Pick `y : C₂(G ⧸ S, A_S)` such that `d(y)`
@@ -558,7 +559,7 @@ equals `Z₁(π, π)(x) : Z₁(G ⧸ S, A_S)`. -/
         H1π_comp_H1Map_apply (QuotientGroup.mk' S), ← ConcreteCategory.comp_apply,
         ← cyclesMap'_comp, ← mapShortComplexH1_comp,
         congr (MonoidHom.comp_id _) mapShortComplexH1] using hx) with ⟨z, hz⟩
-  induction' z using H1_induction_on with z
+  induction z using H1_induction_on with | @h z =>
   simp only [H1CoresCoinfOfTrivial_X₂, H1CoresCoinfOfTrivial_X₁, H1CoresCoinfOfTrivial_f,
     H1π_comp_H1Map_apply S.subtype, Action.res_obj_V, ModuleCat.hom_ofHom,
     Submodule.mkQ_apply] at hz

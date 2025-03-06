@@ -149,7 +149,8 @@ lemma toCycles_moduleCatCyclesIso_hom :
 
 /-- Given a short complex `S` of modules, this is the isomorphism between the abstract `S.opcycles`
 of the homology API and the more concrete description as `S.X₂ ⧸ LinearMap.range S.f.hom`. -/
-def moduleCatOpcyclesIso : S.opcycles ≅ ModuleCat.of R (S.X₂ ⧸ LinearMap.range S.f.hom) :=
+noncomputable def moduleCatOpcyclesIso :
+    S.opcycles ≅ ModuleCat.of R (S.X₂ ⧸ LinearMap.range S.f.hom) :=
   S.opcyclesIsoCokernel ≪≫ ModuleCat.cokernelIsoRangeQuotient _
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -159,9 +160,9 @@ theorem pOpcycles_comp_moduleCatOpcyclesIso_hom :
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem moduleCatOpcyclesIso_inv_comp_fromOpcycles :
-    S.moduleCatOpcyclesIso.inv ≫ S.fromOpcycles = ModuleCat.ofHom (Submodule.liftQ
-      (LinearMap.range S.f.hom) S.g.hom <|
-      LinearMap.range_le_ker_iff.2 <| ModuleCat.hom_ext_iff.1 S.zero) := by
+    S.moduleCatOpcyclesIso.inv ≫ S.fromOpcycles =
+      ModuleCat.ofHom (Submodule.liftQ (LinearMap.range S.f.hom) S.g.hom <|
+        LinearMap.range_le_ker_iff.2 <| ModuleCat.hom_ext_iff.1 S.zero) := by
   have : Epi (ModuleCat.ofHom <| Submodule.mkQ (LinearMap.range S.f.hom)) :=
     (ModuleCat.epi_iff_surjective _).2 <| Submodule.Quotient.mk_surjective _
   simp only [← cancel_epi (ModuleCat.ofHom <| Submodule.mkQ <| LinearMap.range S.f.hom),
