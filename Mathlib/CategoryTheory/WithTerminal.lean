@@ -665,7 +665,7 @@ end WithInitial
 open Opposite in
 /-- The opposite category of `WithTerminal C` is equivalent to `WithInitial Cᵒᵖ`. -/
 @[simps!]
-def WithTerminal.OpEquiv : (WithTerminal C)ᵒᵖ ≌ WithInitial Cᵒᵖ where
+def WithTerminal.opEquiv : (WithTerminal C)ᵒᵖ ≌ WithInitial Cᵒᵖ where
   functor :=
     { obj := fun ⟨x⟩ ↦ match x with
       | of x => .of <| op x
@@ -727,7 +727,7 @@ def WithTerminal.OpEquiv : (WithTerminal C)ᵒᵖ ≌ WithInitial Cᵒᵖ where
 open Opposite in
 /-- The opposite category of `WithInitial C` is equivalent to `WithTerminal Cᵒᵖ`. -/
 @[simps!]
-def WithInitial.OpEquiv : (WithInitial C)ᵒᵖ ≌ WithTerminal Cᵒᵖ where
+def WithInitial.opEquiv : (WithInitial C)ᵒᵖ ≌ WithTerminal Cᵒᵖ where
   functor :=
     { obj := fun ⟨x⟩ ↦
         match x with
