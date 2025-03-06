@@ -215,6 +215,19 @@ lemma iIndepFun_iff_iIndep {β : ι → Type*}
     iIndepFun m f μ ↔ iIndep (fun x ↦ (m x).comap (f x)) μ := by
   simp only [iIndepFun, iIndep, Kernel.iIndepFun]
 
+@[nontriviality, simp]
+lemma iIndepSets.of_subsingleton [Subsingleton ι] {m : ι → Set (Set Ω)} [IsProbabilityMeasure μ] :
+    iIndepSets m μ := Kernel.iIndepSets.of_subsingleton
+
+@[nontriviality, simp]
+lemma iIndep.of_subsingleton [Subsingleton ι] {m : ι → MeasurableSpace Ω} [IsProbabilityMeasure μ] :
+    iIndep m μ := Kernel.iIndep.of_subsingleton
+
+@[nontriviality, simp]
+lemma iIndepFun.of_subsingleton [Subsingleton ι] {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)}
+    {f : ∀ i, Ω → β i} [IsProbabilityMeasure μ] : iIndepFun m f μ :=
+  Kernel.iIndepFun.of_subsingleton
+
 protected lemma iIndepFun.iIndep {m : ∀ i, MeasurableSpace (κ i)} {f : ∀ x : ι, Ω → κ x}
     (hf : iIndepFun m f μ) :
     iIndep (fun x ↦ (m x).comap (f x)) μ := hf
@@ -619,10 +632,6 @@ theorem IndepFun.neg_left {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace �
 section iIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
 
-@[nontriviality]
-lemma iIndepFun.of_subsingleton [IsProbabilityMeasure μ] [Subsingleton ι] : iIndepFun m f μ :=
-  Kernel.iIndepFun.of_subsingleton
-
 lemma iIndepFun.isProbabilityMeasure (h : iIndepFun m f μ) : IsProbabilityMeasure μ :=
   ⟨by simpa using h.meas_biInter (S := ∅) (s := fun _ ↦ univ)⟩
 
@@ -648,6 +657,42 @@ lemma iIndepFun.indepFun_prod_mk_prod_mk (h_indep : iIndepFun m f μ) (hf : ∀ 
     ⟨v ⟨i, mem_insert_self _ _⟩, v ⟨j, mem_insert_of_mem <| mem_singleton_self _⟩⟩
   have hg (i j : ι) : Measurable (g i j) := by fun_prop
   exact (h_indep.indepFun_finset {i, j} {k, l} (by aesop) hf).comp (hg i j) (hg k l)
+
+variable {ι' : Type*} {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
+
+open Function in
+lemma iIndepFun.precomp {g : ι' → ι} (hg : g.Injective) (h : iIndepFun m f μ) :
+    iIndepFun (fun i ↦ m (g i)) (fun i ↦ f (g i)) μ := by
+  have : IsProbabilityMeasure μ := h.isProbabilityMeasure
+  nontriviality ι'
+  have A (x) : Function.invFun g (g x) = x := Function.leftInverse_invFun hg x
+  rw [iIndepFun_iff] at h ⊢
+  intro t s' hs'
+  simpa [A] using h (t.map ⟨g, hg⟩) (f' := fun i ↦ s' (invFun g i)) (by simpa [A] using hs')
+
+lemma iIndepFun.of_precomp {g : ι' → ι} (hg : g.Surjective)
+    (h : iIndepFun (fun i ↦ m (g i)) (fun i ↦ f (g i)) μ) : iIndepFun m f μ := by
+  have : IsProbabilityMeasure μ := h.isProbabilityMeasure
+  nontriviality ι
+  have := hg.nontrivial
+  classical
+  rw [iIndepFun_iff] at h ⊢
+  intro t s hs
+  have A (x) : g (Function.invFun g x) = x := Function.rightInverse_invFun hg x
+  have : ∀ i ∈ Finset.image (Function.invFun g) t,
+    @MeasurableSet _ (MeasurableSpace.comap (f <| g i) (m <| g i)) (s <| g i) := by
+    intro i hi
+    obtain ⟨j, hj, rfl⟩ := Finset.mem_image.mp hi
+    simpa [A] using (A j).symm ▸ hs j hj
+  have eq : ∏ i ∈ Finset.image (Function.invFun g) t, μ (s (g i)) = ∏ i ∈ t, μ (s i) := by
+    rw [Finset.prod_image (fun x hx y hy h => ?_), Finset.prod_congr rfl (fun x _ => by rw [A])]
+    rw [←A x, ← A y, h]
+  simpa [A, eq] using h (t.image (Function.invFun g)) (f' := fun i ↦ s (g i)) this
+
+lemma iIndepFun_precomp_of_bijective {g : ι' → ι} (hg : g.Bijective) :
+    iIndepFun (fun i ↦ m (g i)) (fun i ↦ f (g i)) μ ↔ iIndepFun m f μ where
+  mp := .of_precomp hg.surjective
+  mpr := .precomp hg.injective
 
 end iIndepFun
 
