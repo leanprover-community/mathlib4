@@ -27,10 +27,14 @@ initialize activeRangesExt : SimplePersistentEnvExtension GitDiff (Array GitDiff
     addImportedFn := mkStateFromImportedEntries (·.push) {}
   }
 
-elab "add_range " st:num en:num : command => do
-  let fname ← getFileName
+elab "add_range " mod:(str)? st:num en:num : command => do
+  let fname ← if let some mod := mod then pure mod.getString else pure <| stripDotSlash <| ← getFileName
   let newEntry := {file := fname, rg := {first := st.getNat, last := en.getNat}}
   modifyEnv (activeRangesExt.addEntry · newEntry)
+
+elab "#show_ranges" : command => do
+  let activeRanges := activeRangesExt.getState (← getEnv)
+  logInfo m!"{activeRanges}"
 
 def _root_.Lean.Syntax.inRange {m} [Monad m] [MonadLog m] [MonadEnv m] (stx : Syntax) : m Bool := do
   match stx.getRange? with
