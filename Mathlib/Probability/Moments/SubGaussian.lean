@@ -138,7 +138,7 @@ lemma ae_forall_integrable_exp_mul (h : HasSubgaussianMGF X c κ ν) :
   filter_upwards [h_int] with ω' h_int t
   exact integrable_exp_mul_of_le_of_le (h_int _) (h_int _) (Int.floor_le t) (Int.le_ceil t)
 
-protected lemma memLp (h : HasSubgaussianMGF X c κ ν) (t : ℝ) (p : ℝ≥0) :
+protected lemma memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (t : ℝ) (p : ℝ≥0) :
     MemLp (fun ω ↦ exp (t * X ω)) p (κ ∘ₘ ν) := by
   by_cases hp0 : p = 0
   · simpa [hp0] using (h.integrable_exp_mul t).1
@@ -266,7 +266,7 @@ def HasCondSubgaussianMGF (X : Ω → ℝ) (c : ℝ≥0)
 
 namespace HasCondSubgaussianMGF
 
-lemma HasCondSubgaussianMGF.condExp_le (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) :
+lemma condExp_le (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) :
     ∀ᵐ ω' ∂μ, (μ[fun ω ↦ exp (t * X ω) | m]) ω' ≤ exp (c * t ^ 2 / 2) := by
   have h_eq := condExp_ae_eq_integral_condExpKernel hm (h.integrable_exp_mul t)
   simp_rw [condExpKernel_comp_trim] at h_eq
@@ -282,9 +282,9 @@ lemma fun_zero : HasCondSubgaussianMGF m hm (fun _ ↦ 0) 0 μ :=
 lemma zero : HasCondSubgaussianMGF m hm 0 0 μ :=
   Kernel.HasSubgaussianMGF.zero
 
-lemma memLp (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) (p : ℝ≥0) :
+lemma memLp_exp_mul (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) (p : ℝ≥0) :
     MemLp (fun ω ↦ exp (t * X ω)) p μ :=
-  condExpKernel_comp_trim (μ := μ) hm ▸ Kernel.HasSubgaussianMGF.memLp h t p
+  condExpKernel_comp_trim (μ := μ) hm ▸ Kernel.HasSubgaussianMGF.memLp_exp_mul h t p
 
 lemma integrable_exp_mul
     (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) :
@@ -318,10 +318,10 @@ lemma aestronglyMeasurable (h : HasSubgaussianMGF X c μ) : AEStronglyMeasurable
   simp only [one_mul] at h_int
   exact (aemeasurable_of_aemeasurable_exp h_int.1.aemeasurable).aestronglyMeasurable
 
-lemma memLp (h : HasSubgaussianMGF X c μ) (t : ℝ) (p : ℝ≥0) :
+lemma memLp_exp_mul (h : HasSubgaussianMGF X c μ) (t : ℝ) (p : ℝ≥0) :
     MemLp (fun ω ↦ exp (t * X ω)) p μ := by
   rw [HasSubgaussianMGF_iff_kernel] at h
-  simpa using h.memLp t p
+  simpa using h.memLp_exp_mul t p
 
 lemma cgf_le (h : HasSubgaussianMGF X c μ) (t : ℝ) : cgf X μ t ≤ c * t ^ 2 / 2 := by
   rw [HasSubgaussianMGF_iff_kernel] at h
