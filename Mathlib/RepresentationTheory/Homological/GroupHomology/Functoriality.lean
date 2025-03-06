@@ -297,21 +297,6 @@ lemma cyclesMap_comp_isoOneCycles_hom :
     Category.assoc, cyclesMap'_i, isoOneCycles, ← Category.assoc]
   simp [chainsMap_f_1_comp_oneChainsLequiv f φ, mapShortComplexH1, ← LinearEquiv.toModuleIso_hom]
 
-variable (A) in
-instance mapOneCycles_quotientGroupMk'_epi (S : Subgroup G) [S.Normal]
-    [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)] :
-    Epi (mapOneCycles (QuotientGroup.mk' S) (resOfQuotientIso A S).inv) := by
-  rw [ModuleCat.epi_iff_surjective]
-  rintro ⟨x, hx⟩
-  choose! s hs using QuotientGroup.mk_surjective (s := S)
-  have hs₁ : QuotientGroup.mk ∘ s = id := funext hs
-  refine ⟨⟨mapDomain s x, ?_⟩, Subtype.ext <| by
-    rw [mapOneCycles_comp_subtype_apply]; simp [← mapDomain_comp, hs₁]⟩
-  simpa [mem_oneCycles_iff, ← (mem_oneCycles_iff _).1 hx, sum_mapDomain_index_inj (f := s)
-      (fun x y h => by rw [← hs x, ← hs y, h])]
-    using Finsupp.sum_congr fun a b => QuotientGroup.induction_on a fun a => by
-      simp [← QuotientGroup.mk_inv, ρ_eq_of_coe_eq A.ρ S (s a)⁻¹ a⁻¹ (by simp [hs])]
-
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map `H₁(G, A) ⟶ H₁(H, B)`. -/
 noncomputable abbrev H1Map : H1 A ⟶ H1 B :=
@@ -363,6 +348,19 @@ section OfTrivial
 
 variable [IsTrivial (A.ρ.comp S.subtype)]
 
+instance mapOneCycles_quotientGroupMk'_epi :
+    Epi (mapOneCycles (QuotientGroup.mk' S) (resOfQuotientIso A S).inv) := by
+  rw [ModuleCat.epi_iff_surjective]
+  rintro ⟨x, hx⟩
+  choose! s hs using QuotientGroup.mk_surjective (s := S)
+  have hs₁ : QuotientGroup.mk ∘ s = id := funext hs
+  refine ⟨⟨mapDomain s x, ?_⟩, Subtype.ext <| by
+    rw [mapOneCycles_comp_subtype_apply]; simp [← mapDomain_comp, hs₁]⟩
+  simpa [mem_oneCycles_iff, ← (mem_oneCycles_iff _).1 hx, sum_mapDomain_index_inj (f := s)
+      (fun x y h => by rw [← hs x, ← hs y, h])]
+    using Finsupp.sum_congr fun a b => QuotientGroup.induction_on a fun a => by
+      simp [← QuotientGroup.mk_inv, apply_eq_of_coe_eq A.ρ S (s a)⁻¹ a⁻¹ (by simp [hs])]
+
 /-- Given a `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially, this is the
 short complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A)`. -/
 @[simps X₁ X₂ X₃ f g]
@@ -373,8 +371,7 @@ noncomputable def H1CoresCoinfOfTrivial :
   X₃ := H1 (ofQuotient A S)
   f := H1Map S.subtype (𝟙 _)
   g := H1Map (QuotientGroup.mk' S) <| (resOfQuotientIso A S).inv
-  zero := by
-    rw [← H1Map_comp, congr (QuotientGroup.mk'_comp_subtype S) H1Map, H1Map_one]
+  zero := by rw [← H1Map_comp, congr (QuotientGroup.mk'_comp_subtype S) H1Map, H1Map_one]
 
 instance H1Map_quotientGroupMk'_epi :
     Epi (H1Map (QuotientGroup.mk' S) (resOfQuotientIso A S).inv) := by
@@ -396,7 +393,7 @@ theorem H1CoresCoinfOfTrivial_exact :
   intro x hx
 /- Denote `C(i) : C(S, A) ⟶ C(G, A), C(π) : C(G, A) ⟶ C(G ⧸ S, A)` and let `x : Z₁(G, A)` map to
 0 in `H₁(G ⧸ S, A)`. -/
-  induction' x using H1_induction_on with x
+  induction x using H1_induction_on with | @h x =>
   rcases x with ⟨x, hxc⟩
   simp_all only [H1CoresCoinfOfTrivial_X₂, H1CoresCoinfOfTrivial_X₃, H1CoresCoinfOfTrivial_g,
     LinearMap.mem_ker, H1π_comp_H1Map_apply (QuotientGroup.mk' S)]
@@ -435,7 +432,7 @@ previous assumptions. -/
     /- The first sum clearly has support in `S`: -/
       · obtain ⟨t, _, ht⟩ := Finset.mem_biUnion.1 (support_sum hl)
         apply support_single_subset at ht
-        simp_all [← QuotientGroup.eq, hs]
+        simp_all [← QuotientGroup.eq]
     /- The third sum is 0, by `hv`. -/
       · simp_all [mapDomain]
   /- Now `v + d(ve)` has support in `S` and agrees with `x` in `H₁(G, A)`: -/
