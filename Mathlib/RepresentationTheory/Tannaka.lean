@@ -171,12 +171,11 @@ variable [DecidableEq G]
 /-- `leftRegular` as a morphism `rightFDRep k G ⟶ rightFDRep k G` in `FDRep k G`. -/
 def leftRegularFDRepHom (s : G) : rightFDRep k G ⟶ rightFDRep k G where
   hom := ofHom (leftRegular s)
-  comm := by
-    intro (t : G)
-    ext (f : G → k)
-    funext u
-    change (leftRegular s) ((rightRegular t) f) u = (rightRegular t) ((leftRegular s) f) u
-    simp [mul_assoc]
+  comm _ := by
+    ext f
+    funext _
+    apply congrArg f
+    apply mul_assoc
 
 lemma toRightFDRepComp_in_rightRegular [IsDomain k] (η : Aut (forget k G)) :
     ∃ (s : G), toRightFDRepComp η = rightRegular s := by
