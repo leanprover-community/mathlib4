@@ -405,8 +405,8 @@ def ofCommaMorphism {c c': Comma (𝟭 (C ⥤ D)) (Functor.const C)} (φ : c ⟶
     | of a, star, _ => by simp; simpa [-CommaMorphism.w] using (congrArg (fun f ↦ f.app a) φ.w).symm
     | star, star, _ => by simp
 
-/-- The category of functors `WithInitial C ⥤ D` is equivalent to the category
-`Comma (const C) (𝟭 (C ⥤ D))`. -/
+/-- The category of functors `WithTerminal C ⥤ D` is equivalent to the category
+`Comma (𝟭 (C ⥤ D)) (const C) `. -/
 @[simps!]
 def equivComma : (WithTerminal C ⥤ D) ≌ Comma (𝟭 (C ⥤ D)) (Functor.const C) where
   functor :=
