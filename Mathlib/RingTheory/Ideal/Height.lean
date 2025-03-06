@@ -114,7 +114,7 @@ theorem Ideal.height_mono {I J : Ideal R} (h : I ≤ J) : I.height ≤ J.height 
   refine le_iInf₂ (fun p hp ↦ ?_)
   have := Ideal.minimalPrimes_isPrime hp
   obtain ⟨q, hq, e⟩ := Ideal.exists_minimalPrimes_le (h.trans hp.1.2)
-  have := Ideal.minimalPrimes_isPrime hq
+  haveI := Ideal.minimalPrimes_isPrime hq
   exact (iInf₂_le q hq).trans (Ideal.primeHeight_mono e)
 
 @[gcongr]
@@ -126,7 +126,7 @@ lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
     exact I.primeHeight_lt_top
   · rw [← ENat.add_one_le_iff I.primeHeight_ne_top, Ideal.height]
     refine le_iInf₂ (fun K hK ↦ ?_)
-    have := Ideal.minimalPrimes_isPrime hK
+    haveI := Ideal.minimalPrimes_isPrime hK
     have : I < K := lt_of_lt_of_le h hK.1.2
     exact Ideal.primeHeight_add_one_le_of_lt this
 
