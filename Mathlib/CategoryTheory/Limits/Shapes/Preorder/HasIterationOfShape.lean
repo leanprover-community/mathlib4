@@ -35,6 +35,8 @@ class HasIterationOfShape : Prop where
 
 attribute [instance] HasIterationOfShape.hasColimitsOfShape
 
+instance [HasColimitsOfSize.{w, w} C] : HasIterationOfShape J C where
+
 variable [HasIterationOfShape J C]
 
 variable {J} in
@@ -63,7 +65,7 @@ instance : HasIterationOfShape J (K ⥤ C) where
 variable {J} [SuccOrder J] [WellFoundedLT J]
 
 lemma hasColimitsOfShape_of_initialSeg
-    {α : Type*} [LinearOrder α] (f : α ≤i J) [Nonempty α] :
+    {α : Type*} [PartialOrder α] (f : α ≤i J) [Nonempty α] :
     HasColimitsOfShape α C := by
   by_cases hf : Function.Surjective f
   · exact hasColimitsOfShape_of_equivalence
