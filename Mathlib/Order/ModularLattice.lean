@@ -82,7 +82,7 @@ class IsLowerModularLattice (α : Type*) [Lattice α] : Prop where
 
 /-- A modular lattice is one with a limited associativity between `⊓` and `⊔`. -/
 class IsModularLattice (α : Type*) [Lattice α] : Prop where
-/-- Whenever `x ≤ z`, then for any `y`, `(x ⊔ y) ⊓ z ≤ x ⊔ (y ⊓ z)`  -/
+/-- Whenever `x ≤ z`, then for any `y`, `(x ⊔ y) ⊓ z ≤ x ⊔ (y ⊓ z)` -/
   sup_inf_le_assoc_of_le : ∀ {x : α} (y : α) {z : α}, x ≤ z → (x ⊔ y) ⊓ z ≤ x ⊔ y ⊓ z
 
 section WeakUpperModular
@@ -224,7 +224,7 @@ theorem strictMono_inf_prod_sup : StrictMono fun x ↦ (x ⊓ z, x ⊔ z) := fun
 
 /-- A generalization of the theorem that if `N` is a submodule of `M` and
   `N` and `M / N` are both Artinian, then `M` is Artinian. -/
-theorem wellFounded_lt_exact_sequence {β γ : Type*} [PartialOrder β] [Preorder γ]
+theorem wellFounded_lt_exact_sequence {β γ : Type*} [Preorder β] [Preorder γ]
     [h₁ : WellFoundedLT β] [h₂ : WellFoundedLT γ] (K : α)
     (f₁ : β → α) (f₂ : α → β) (g₁ : γ → α) (g₂ : α → γ) (gci : GaloisCoinsertion f₁ f₂)
     (gi : GaloisInsertion g₂ g₁) (hf : ∀ a, f₁ (f₂ a) = a ⊓ K) (hg : ∀ a, g₁ (g₂ a) = a ⊔ K) :
@@ -235,7 +235,7 @@ theorem wellFounded_lt_exact_sequence {β γ : Type*} [PartialOrder β] [Preorde
 
 /-- A generalization of the theorem that if `N` is a submodule of `M` and
   `N` and `M / N` are both Noetherian, then `M` is Noetherian. -/
-theorem wellFounded_gt_exact_sequence {β γ : Type*} [Preorder β] [PartialOrder γ]
+theorem wellFounded_gt_exact_sequence {β γ : Type*} [Preorder β] [Preorder γ]
     [WellFoundedGT β] [WellFoundedGT γ] (K : α)
     (f₁ : β → α) (f₂ : α → β) (g₁ : γ → α) (g₂ : α → γ) (gci : GaloisCoinsertion f₁ f₂)
     (gi : GaloisInsertion g₂ g₁) (hf : ∀ a, f₁ (f₂ a) = a ⊓ K) (hg : ∀ a, g₁ (g₂ a) = a ⊔ K) :

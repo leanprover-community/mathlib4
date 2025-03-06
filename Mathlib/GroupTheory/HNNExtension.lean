@@ -217,8 +217,8 @@ The normal form is a `head`, which is an element of `G`, followed by the product
 `t ^ u * g`, where `u` is `1` or `-1` and `g` is the chosen element of its right coset of
 `toSubgroup A B u`. There should also be no sequences of the form `t^u * g * t^-u`
 where `g ∈ toSubgroup A B u` -/
-structure _root_.HNNExtension.NormalWord (d : TransversalPair G A B)
-    extends ReducedWord G A B : Type _ where
+structure _root_.HNNExtension.NormalWord (d : TransversalPair G A B) : Type _
+    extends ReducedWord G A B where
   /-- Every element `g : G` in the list is the chosen element of its coset -/
   mem_set : ∀ (u : ℤˣ) (g : G), (u, g) ∈ toList → g ∈ d.set u
 
@@ -450,7 +450,7 @@ theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
         erw [(d.compl (-u)).equiv_snd_eq_inv_mul, this]
         simp
 
-/-- the equivalence given by multiplication on the left by `t`  -/
+/-- the equivalence given by multiplication on the left by `t` -/
 @[simps]
 noncomputable def unitsSMulEquiv : NormalWord d ≃ NormalWord d :=
   { toFun := unitsSMul φ 1

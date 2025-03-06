@@ -7,6 +7,7 @@ Authors: Felix Weilacher
 import Mathlib.Topology.Perfect
 import Mathlib.Topology.MetricSpace.Polish
 import Mathlib.Topology.MetricSpace.CantorScheme
+import Mathlib.Topology.Metrizable.Real
 
 /-!
 # Perfect Sets

@@ -360,7 +360,7 @@ For example
   - `e = q(Continuous fun x => foo (bar x) y)`
   - `fData` contains info on `fun x => foo (bar x) y`
   This tries to prove `Continuous fun x => foo (bar x) y` from `Continuous fun x => foo (bar x)`
- -/
+-/
 def removeArgRule (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) :
     FunPropM (Option Result) := do
