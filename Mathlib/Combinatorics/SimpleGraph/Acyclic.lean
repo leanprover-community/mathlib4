@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Tactic.Linarith
+import Mathlib.Combinatorics.SimpleGraph.Operations
 
 /-!
 
@@ -196,5 +197,90 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
         simp [this, hf' _ _ ((hf _).dropUntil hy)] at h'
       refine (hG.existsUnique_path _ _).unique ((hf _).takeUntil _) ?_
       simp [h.ne]
+
+theorem maximal_isAcyclic_iff_isTree [Nonempty V] :  Maximal IsAcyclic G ↔ G.IsTree where
+  mp := by
+
+    intro ⟨hIsAcyclic, hmaximal⟩
+    refine ⟨?_, hIsAcyclic⟩
+    rw [connected_iff]
+    refine ⟨?_, by assumption⟩
+    by_contra hnot_Preconnected
+    simp only [Preconnected, not_forall] at hnot_Preconnected
+    rcases hnot_Preconnected with ⟨u, v, hnot_Reachable⟩
+    have hnot_Adj_uv : ¬ G.Adj u v := fun x ↦ hnot_Reachable (Adj.reachable x)
+    let y := G ⊔ edge u v
+    have hy_not_Acyclic : ¬ y.IsAcyclic := by
+      by_contra hy_Acyclic
+      specialize hmaximal hy_Acyclic le_sup_left
+      simp_all only [le_sup_left, imp_self, sup_le_iff, le_refl, true_and, sup_of_le_left, y]
+      have h : (u = u ∧ v = v ∨ u = v ∧ v = u) ∧ u ≠ v := by
+        refine ⟨by aesop, ?_⟩
+        by_contra hu_eq_v
+        rw [hu_eq_v] at hnot_Reachable
+        exact hnot_Reachable (Reachable.refl v)
+      rw [← edge_adj u v u v] at h
+      exact hnot_Adj_uv (hmaximal h)
+    simp only [IsAcyclic, not_forall, not_not] at hy_not_Acyclic
+    rcases hy_not_Acyclic with ⟨w, x, hx⟩
+    have huv_in_cycle : s(u, v) ∈ edges x := by
+      by_contra hnot_uv_in_cycle
+      have he_in_G : ∀ e ∈ x.edges, e ∈ G.edgeSet := by
+        intro e he
+        have he_in_y : e ∈ y.edgeSet := edges_subset_edgeSet x he
+        rw [edgeSet_sup] at he_in_y
+        rcases he_in_y with _ | he_eq_uv
+        · assumption
+        · have huvne : u ≠ v := by
+            by_contra hu_eq_v
+            apply hnot_Reachable
+            rw [hu_eq_v]
+          rw [edge_edgeSet_of_ne huvne] at he_eq_uv
+          rw [he_eq_uv] at he
+          cases hnot_uv_in_cycle he
+      exact hIsAcyclic (x.transfer G he_in_G) (IsCycle.transfer hx he_in_G)
+    have hReachable :=
+      (adj_and_reachable_delete_edges_iff_exists_cycle.2 ⟨w, x, hx, huv_in_cycle⟩).2
+    have hG_add_minus : (y \ fromEdgeSet {s(u, v)}) = G := by
+      ext a b
+      simp only [sdiff_adj, sup_adj, fromEdgeSet_adj,
+        Set.mem_singleton_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, ne_eq,
+        not_and, Decidable.not_not, y]
+      rw [edge_adj]
+      refine ⟨by aesop, ?_⟩
+      intro hAdj_ab
+      simp_all only [true_or, true_and]
+      rintro (_ | ⟨rfl, rfl⟩)
+      · simp_all
+      · exfalso
+        exact hnot_Adj_uv (adj_symm G hAdj_ab)
+    rw [hG_add_minus] at hReachable
+    exact hnot_Reachable hReachable
+  mpr := by
+    intro h_IsTree
+    refine ⟨h_IsTree.IsAcyclic, ?_⟩
+    intro y hy hG u v huv
+    by_contra hnot_Adj_uv
+    rcases h_IsTree with ⟨⟨h_Preconnected⟩, _⟩
+    specialize h_Preconnected u v
+    rcases h_Preconnected with ⟨gwalk⟩
+    classical
+    let ypath := (gwalk.bypass).mapLe hG
+    have hvu := (adj_symm y huv)
+    let ycycle := cons hvu ypath
+    apply hy ycycle
+    rw [cons_isCycle_iff ypath hvu]
+    refine ⟨IsPath.mapLe hG (bypass_isPath gwalk),
+      List.forall_mem_ne.mp ?_⟩
+    intro e he
+    by_contra he_in_path
+    have hypath_edges : ypath.edges = _ :=
+      edges_map (Hom.mapSpanningSubgraphs hG) gwalk.bypass
+    rw [hypath_edges, ← he_in_path, List.mem_map] at he
+    rcases he with ⟨a, ha_in_path, hmap_a_eq⟩
+    simp only [Hom.mapSpanningSubgraphs_apply, Sym2.map_id', id_eq] at hmap_a_eq
+    have ha := edges_subset_edgeSet gwalk.bypass ha_in_path
+    rw [hmap_a_eq, mem_edgeSet G] at ha
+    exact hnot_Adj_uv (adj_symm G ha)
 
 end SimpleGraph
