@@ -75,10 +75,10 @@ lemma supportWithinDomain (D : DivisorOn U) : D.support ⊆ U := D.supportWithin
 lemma supportDiscreteWithinDomain (D : DivisorOn U) : D =ᶠ[codiscreteWithin U] 0 :=
   D.supportDiscreteWithinDomain'
 
-/-- Helper lemma for the `ext` tactic: two divisors are equal if their
-associated functions agree. -/
 @[ext]
-theorem ext {D₁ D₂ : DivisorOn U} (h : ∀ a, D₁ a = D₂ a) : D₁ = D₂ := DFunLike.ext _ _ h
+lemma ext {D₁ D₂ : DivisorOn U} (h : ∀ a, D₁ a = D₂ a) : D₁ = D₂ := DFunLike.ext _ _ h
+
+lemma coe_injective : Function.Injective (· : DivisorOn U → 𝕜 → ℤ) := DFunLike.coe_injective
 
 /-!
 ## Elementary properties of the support
@@ -120,193 +120,121 @@ ordered group, where addition, comparison, min and max of divisors are defined
 pointwise.
 -/
 
-/-- Divisors have a zero -/
+variable (U) in
+protected def addSubgroup : AddSubgroup (𝕜 → ℤ) where
+  carrier := {f | f.support ⊆ U ∧ f =ᶠ[codiscreteWithin U] 0}
+  zero_mem' := by simp
+  add_mem' {f g} hf hg := by
+    refine ⟨?_, hf.2.add hg.2⟩
+    intro x hx
+    contrapose! hx
+    simp [Function.nmem_support.1 fun a ↦ hx (hf.1 a),
+      Function.nmem_support.1 fun a ↦ hx (hg.1 a)]
+  neg_mem' {f} hf := ⟨fun x hx ↦ hf.1 <| by simpa using hx, hf.2.neg⟩
+
+protected lemma memAddSubgroup (D : DivisorOn U) :
+    (D : 𝕜 → ℤ) ∈ DivisorOn.addSubgroup U :=
+  ⟨D.supportWithinDomain, D.supportDiscreteWithinDomain⟩
+
+@[simps]
+def mk_of_mem (f : 𝕜 → ℤ) (hf : f ∈ DivisorOn.addSubgroup U) : DivisorOn U :=
+  ⟨f, hf.1, hf.2⟩
+
 instance : Zero (DivisorOn U) where
-  zero := ⟨fun _ ↦ 0, by simp, Eq.eventuallyEq rfl⟩
+  zero := mk_of_mem 0 <| zero_mem _
 
-/-- Helper lemma for the `simp` tactic: the function of the zero-divisor is the
-zero function. -/
-@[simp]
-theorem coe_zero : ((0 : DivisorOn U) : 𝕜 → ℤ) = 0 := rfl
-
-/-- Divisors can be added -/
 instance : Add (DivisorOn U) where
-  add D₁ D₂ := {
-    toFun := D₁ + D₂
-    supportWithinDomain' := by
-      intro x
-      contrapose
-      intro hx
-      simp [Function.nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
-        Function.nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
-    supportDiscreteWithinDomain' := D₁.supportDiscreteWithinDomain.add
-      D₂.supportDiscreteWithinDomain
-  }
+  add D₁ D₂ := mk_of_mem (D₁ + D₂) <| add_mem D₁.memAddSubgroup D₂.memAddSubgroup
 
-/-- Helper lemma for the `simp` tactic: the function of the sum of two divisors
-is the sum of the associated functions. -/
-@[simp]
-lemma coe_add {D₁ D₂ : DivisorOn U} : (↑(D₁ + D₂) : 𝕜 → ℤ) = (D₁ : 𝕜 → ℤ) + (D₂ : 𝕜 → ℤ) := rfl
-
-/-- Divisors have a negative -/
 instance : Neg (DivisorOn U) where
-  neg D := {
-    toFun := -D
-    supportWithinDomain' := by
-      intro x hx
-      rw [Function.support_neg', Function.mem_support, ne_eq] at hx
-      exact D.supportWithinDomain hx
-    supportDiscreteWithinDomain' := D.supportDiscreteWithinDomain.neg
-  }
+  neg D := mk_of_mem (-D) <| neg_mem D.memAddSubgroup
 
-/-- Helper lemma for the `simp` tactic: the function of the negative divisor
-is the negative of the associated function. -/
-@[simp]
-lemma coe_neg {D : DivisorOn U} : (↑(-D) : 𝕜 → ℤ) = -(D: 𝕜 → ℤ) := rfl
+instance : Sub (DivisorOn U) where
+  sub D₁ D₂ := mk_of_mem (D₁ - D₂) <| sub_mem D₁.memAddSubgroup D₂.memAddSubgroup
 
-/-- Divisors have scalar multiplication with natural numbers -/
 instance : SMul ℕ (DivisorOn U) where
-  smul n D := {
-    toFun := fun z ↦ n * D z
-    supportWithinDomain' := by
-      intro x hx
-      simp at hx
-      exact D.supportWithinDomain hx.2
-    supportDiscreteWithinDomain' := by
-      filter_upwards [D.supportDiscreteWithinDomain]
-      intro x hx
-      simp [hx]
-  }
+  smul n D := mk_of_mem (n • D) <| nsmul_mem D.memAddSubgroup n
 
-/-- Helper lemma for the `simp` tactic: the function of a scalar product
-(natural number)·divisor is the scalar product of the natural number with the
-associated function of the divisor. -/
-@[simp]
-lemma coe_nsmul {D : DivisorOn U} {n : ℕ} : (↑(n • D) : 𝕜 → ℤ) = n • (D : 𝕜 → ℤ) := rfl
-
-/-- Divisors have scalar multiplication with integers -/
 instance : SMul ℤ (DivisorOn U) where
-  smul n D := {
-    toFun := fun z ↦ n * D z
-    supportWithinDomain' := by
-      intro x hx
-      simp at hx
-      exact D.supportWithinDomain hx.2
-    supportDiscreteWithinDomain' := by
-      filter_upwards [D.supportDiscreteWithinDomain]
-      intro _ hx
-      simp [hx]
-  }
+  smul n D := mk_of_mem (n • D) <| zsmul_mem D.memAddSubgroup n
 
-/-- Helper lemma for the `simp` tactic: the function of a scalar product
-(integer)·divisor is the scalar product of the integer with the associated
-function of the divisor. -/
-@[simp]
-lemma coe_zsmul {D : DivisorOn U} {n : ℤ} : (↑(n • D) : 𝕜 → ℤ) = n • (D : 𝕜 → ℤ) := rfl
+@[simp] lemma coe_zero : ((0 : DivisorOn U) : 𝕜 → ℤ) = 0 := rfl
+@[simp] lemma coe_add (D₁ D₂ : DivisorOn U) : (↑(D₁ + D₂) : 𝕜 → ℤ) = D₁ + D₂ := rfl
+@[simp] lemma coe_neg (D : DivisorOn U) : (↑(-D) : 𝕜 → ℤ) = -(D : 𝕜 → ℤ) := rfl
+@[simp] lemma coe_sub (D₁ D₂ : DivisorOn U) : (↑(D₁ - D₂) : 𝕜 → ℤ) = D₁ - D₂ := rfl
+@[simp] lemma coe_nsmul (D : DivisorOn U) (n : ℕ) : (↑(n • D) : 𝕜 → ℤ) = n • (D : 𝕜 → ℤ) := rfl
+@[simp] lemma coe_zsmul (D : DivisorOn U) (n : ℤ) : (↑(n • D) : 𝕜 → ℤ) = n • (D : 𝕜 → ℤ) := rfl
 
-/-- Divisors have a partial ordering by pointwise comparison of the associated
-functions. -/
+instance : AddCommGroup (DivisorOn U) :=
+  Function.Injective.addCommGroup (M₁ := DivisorOn U) (M₂ := 𝕜 → ℤ)
+    _ coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
+
 instance : LE (DivisorOn U) where
   le := fun D₁ D₂ ↦ (D₁ : 𝕜 → ℤ) ≤ D₂
 
-/-- Helper lemma for the `simp` tactic: a divisor is smaller than another one
-if the same relation holds with the associated functions. -/
-@[simp]
 lemma le_def {D₁ D₂ : DivisorOn U} : D₁ ≤ D₂ ↔ (D₁ : 𝕜 → ℤ) ≤ (D₂ : 𝕜 → ℤ) := ⟨(·),(·)⟩
+
+instance : LT (DivisorOn U) where
+  lt := fun D₁ D₂ ↦ (D₁ : 𝕜 → ℤ) < D₂
+
+lemma lt_def {D₁ D₂ : DivisorOn U} : D₁ < D₂ ↔ (D₁ : 𝕜 → ℤ) < (D₂ : 𝕜 → ℤ) := ⟨(·),(·)⟩
+
+instance : Max (DivisorOn U) where
+  max D₁ D₂ :=
+  { toFun z := max (D₁ z) (D₂ z)
+    supportWithinDomain' := by
+      intro x
+      contrapose
+      intro hx
+      simp [Function.nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
+        Function.nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
+    supportDiscreteWithinDomain' := by
+      filter_upwards [D₁.supportDiscreteWithinDomain, D₂.supportDiscreteWithinDomain]
+      intro _ h₁ h₂
+      simp [h₁, h₂] }
+
+@[simp]
+lemma max_apply {D₁ D₂ : DivisorOn U} {x : 𝕜} : max D₁ D₂ x = max (D₁ x) (D₂ x) := rfl
+
+instance : Min (DivisorOn U) where
+  min D₁ D₂ :=
+  { toFun z := min (D₁ z) (D₂ z)
+    supportWithinDomain' := by
+      intro x
+      contrapose
+      intro hx
+      simp [Function.nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
+        Function.nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
+    supportDiscreteWithinDomain' := by
+      filter_upwards [D₁.supportDiscreteWithinDomain, D₂.supportDiscreteWithinDomain]
+      intro _ h₁ h₂
+      simp [h₁, h₂] }
+
+@[simp]
+lemma min_def {D₁ D₂ : DivisorOn U} {x : 𝕜} : min D₁ D₂ x = min (D₁ x) (D₂ x) := rfl
+
+instance : Lattice (DivisorOn U) where
+  le := (· ≤ ·)
+  lt := (· < ·)
+  le_refl := by simp [le_def]
+  le_trans D₁ D₂ D₃ h₁₂ h₂₃ := fun x ↦ (h₁₂ x).trans (h₂₃ x)
+  le_antisymm D₁ D₂ h₁₂ h₂₁ := by
+    ext x
+    exact Int.le_antisymm (h₁₂ x) (h₂₁ x)
+  sup := max
+  le_sup_left D₁ D₂ := fun x ↦ by simp
+  le_sup_right D₁ D₂ := fun x ↦ by simp
+  sup_le D₁ D₂ D₃ h₁₃ h₂₃ := fun x ↦ by simp [h₁₃ x, h₂₃ x]
+  inf := min
+  inf_le_left D₁ D₂ := fun x ↦ by simp
+  inf_le_right D₁ D₂ := fun x ↦ by simp
+  le_inf D₁ D₂ D₃ h₁₃ h₂₃ := fun x ↦ by simp [h₁₃ x, h₂₃ x]
 
 /-- Divisors form an ordered commutative group -/
 instance : OrderedAddCommGroup (DivisorOn U) where
-  add := (· + · )
-  add_assoc := fun _ _ _ ↦ by ext; simp [add_assoc]
-  zero := 0
-  zero_add := fun _ ↦ by ext; simp
-  add_zero := fun _ ↦ by ext; simp
-  nsmul := (· • ·)
-  neg := (- ·)
-  zsmul := (· • ·)
-  neg_add_cancel := fun _ ↦ by ext; simp
-
-  add_comm := fun _ _ ↦ by ext; simp [add_comm]
-  nsmul_zero := fun _ ↦ by ext; simp
-  nsmul_succ := fun _ _ ↦ by ext; simp [add_one_mul]
-  zsmul_zero' := fun _ ↦ by ext; simp
-  zsmul_succ' := fun _ _ ↦ by ext; simp [add_one_mul]
-  zsmul_neg' := fun _ _ ↦ by ext; simp; apply negSucc_zsmul
-  le := (· ≤ ·)
-  le_refl := by tauto
-  le_trans := fun D₁ D₂ D₃ h₁₂ h₂₃ ↦ by simp only [le_def] at h₁₂ h₂₃; exact h₁₂.trans h₂₃
-  le_antisymm := fun _ _ h₁₂ h₂₁ ↦ by ext x; exact Int.le_antisymm (h₁₂ x) (h₂₁ x)
-  add_le_add_left := fun _ _ _ _ ↦ by simpa
-
-/-- Divisors have a partial ordering by pointwise comparison of the associated
-functions. -/
-instance : LT (DivisorOn U) where
-  lt := fun D₁ D₂ ↦ D₁.toFun < D₂.toFun
-
-/-- Helper lemma for the `simp` tactic: a divisor is smaller than another one
-if the same relation holds with the associated functions. -/
-@[simp]
-lemma lt_fun {D₁ D₂ : DivisorOn U} : D₁ < D₂ ↔ (D₁ : 𝕜 → ℤ) < (D₂ : 𝕜 → ℤ) := ⟨(·),(·)⟩
-
-/-- Divisors have a max. -/
-instance : Max (DivisorOn U) where
-  max D₁ D₂ := {
-    toFun := fun z ↦ max (D₁ z) (D₂ z)
-    supportWithinDomain' := by
-      intro x
-      contrapose
-      intro hx
-      simp [Function.nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
-        Function.nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
-    supportDiscreteWithinDomain' := by
-      filter_upwards [D₁.supportDiscreteWithinDomain, D₂.supportDiscreteWithinDomain]
-      intro _ h₁ h₂
-      simp [h₁, h₂]
-  }
-
-/-- Helper lemma for the `simp` tactic: the function associated with the max of
-two divisors is the pointwise max of the associated functions. -/
-@[simp]
-lemma max_fun {D₁ D₂ : DivisorOn U} {x : 𝕜} : max D₁ D₂ x = max (D₁ x) (D₂ x) := rfl
-
-/-- Divisors have a min. -/
-instance : Min (DivisorOn U) where
-  min D₁ D₂ := {
-    toFun := fun z ↦ min (D₁ z) (D₂ z)
-    supportWithinDomain' := by
-      intro x
-      contrapose
-      intro hx
-      simp [Function.nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
-        Function.nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
-    supportDiscreteWithinDomain' := by
-      filter_upwards [D₁.supportDiscreteWithinDomain, D₂.supportDiscreteWithinDomain]
-      intro _ h₁ h₂
-      simp [h₁, h₂]
-  }
-
-/-- Helper lemma for the `simp` tactic: the function associated with the max of
-two divisors is the pointwise max of the associated functions. -/
-@[simp]
-lemma min_fun {D₁ D₂ : DivisorOn U} {x : 𝕜} : min D₁ D₂ x = min (D₁ x) (D₂ x) := rfl
-
-/-- Divisors form a lattice. -/
-instance : Lattice (DivisorOn U) where
-  le := (· ≤ ·)
-  le_refl := by simp
-  le_trans := by exact fun D₁ D₂ D₃ h₁₂ h₂₃ x ↦ (h₁₂ x).trans (h₂₃ x)
-  le_antisymm := by
-    intro D₁ D₂ h₁₂ h₂₁
-    ext x
-    exact Int.le_antisymm (h₁₂ x) (h₂₁ x)
-  sup := (max · ·)
-  le_sup_left := fun D₁ D₂ x ↦ by simp
-  le_sup_right := fun D₁ D₂ x ↦ by simp
-  sup_le := fun D₁ D₂ D₃ h₁₃ h₂₃ x ↦ by simp [h₁₃ x, h₂₃ x]
-  inf := (min · ·)
-  inf_le_left := fun D₁ D₂ x ↦ by simp
-  inf_le_right := fun D₁ D₂ x ↦ by simp
-  le_inf := fun D₁ D₂ D₃ h₁₃ h₂₃ x ↦ by simp [h₁₃ x, h₂₃ x]
+  __ := inferInstanceAs (AddCommGroup (DivisorOn U))
+  __ := inferInstanceAs (Lattice (DivisorOn U))
+  add_le_add_left := fun _ _ _ _ ↦ by simpa [le_def]
 
 /-!
 ## Restriction
@@ -334,73 +262,51 @@ open Classical in
 lemma restrict_apply {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) (z : 𝕜) :
     (D.restrict h) z = if z ∈ V then D z else 0 := rfl
 
-/-- Helper lemma for the `simp` tactic: restricting a divisor from `U` to a
-subset `V` does not change its values on `V`. -/
-@[simp]
 lemma restrict_eqOn {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
     Set.EqOn (D.restrict h) D V := by
   intro _ _
   simp_all [restrict_apply, dite_eq_ite, ite_eq_left_iff]
 
-/-- Helper lemma for the `simp` tactic: restricting a divisor from `U` to a
-subset `V` makes it zero outside of `V`. -/
-@[simp]
 lemma restrict_eqOn_compl {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
     Set.EqOn (D.restrict h) 0 Vᶜ := by
   intro _ hx
   simp_all [restrict_apply, dite_eq_ite, ite_eq_left_iff, hx]
 
-/-- Restriction as an order-preserving morphism -/
-noncomputable def restrict_orderHom {V : Set 𝕜} (h : V ⊆ U) : DivisorOn U →o DivisorOn V where
-  toFun := fun D ↦ D.restrict h
-  monotone' := by
-    intro D₁ D₂ h₁₂ x
-    simp only [restrict_apply]
-    split
-    · apply h₁₂
-    · exact le_rfl
-
-/-- Helper lemma for the `simp` tactic: `restrict_orderHom` restricts divisors. -/
-@[simp]
-lemma restrict_orderHom_fun {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
-    restrict_orderHom h D = D.restrict h := by rfl
-
 /-- Restriction as a group morphism -/
-noncomputable def restrict_monoidHom {V : Set 𝕜} (h : V ⊆ U) : DivisorOn U →+ DivisorOn V where
-  toFun := fun D ↦ D.restrict h
+noncomputable def restrictMonoidHom {V : Set 𝕜} (h : V ⊆ U) : DivisorOn U →+ DivisorOn V where
+  toFun D := D.restrict h
   map_zero' := by
     ext x
     simp [restrict_apply]
-  map_add' := by
-    intro D₁ D₂
+  map_add' D₁ D₂ := by
     ext x
     by_cases hx : x ∈ V
     <;> simp [restrict_apply, hx]
 
-/-- Helper lemma for the `simp` tactic: `restrict_groupHom` restricts divisors. -/
 @[simp]
-lemma restrict_groupHom_fun {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
-    restrict_monoidHom h D = D.restrict h := by rfl
+lemma restrictMonoidHom_apply {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
+    restrictMonoidHom h D = D.restrict h := by rfl
 
 /-- Restriction as a lattice morphism -/
-noncomputable def restrict_latticeHom {V : Set 𝕜} (h : V ⊆ U) :
+noncomputable def restrictLatticeHom {V : Set 𝕜} (h : V ⊆ U) :
     LatticeHom (DivisorOn U) (DivisorOn V) where
-  toFun := fun D ↦ D.restrict h
-  map_sup' := by
-    intro D₁ D₂
+  toFun D := D.restrict h
+  map_sup' D₁ D₂ := by
     ext x
     by_cases hx : x ∈ V
     <;> simp [DivisorOn.restrict_apply, hx]
-  map_inf' := by
-    intro D₁ D₂
+  map_inf' D₁ D₂ := by
     ext x
     by_cases hx : x ∈ V
     <;> simp [DivisorOn.restrict_apply, hx]
 
-/-- Helper lemma for the `simp` tactic: `restrict_latticeHom` restricts divisors. -/
 @[simp]
-lemma restrict_latticeHom_fun {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
-    restrict_latticeHom h D = D.restrict h := by rfl
+lemma restrictLatticeHom_apply {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
+    restrictLatticeHom h D = D.restrict h := by rfl
+
+/-- Restriction as an order-preserving morphism -/
+noncomputable example {V : Set 𝕜} (h : V ⊆ U) : DivisorOn U →o DivisorOn V :=
+  restrictLatticeHom h
 
 /-!
 ## Derived invariants
