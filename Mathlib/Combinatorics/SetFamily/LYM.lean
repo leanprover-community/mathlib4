@@ -80,6 +80,9 @@ theorem local_lubell_yamamoto_meshalkin_inequality_mul (h𝒜 : (𝒜 : Set (Fin
   rcases h with ⟨a, ha, rfl⟩
   exact mem_image_of_mem _ (mem_compl.2 ha)
 
+@[deprecated (since := "2025-03-06")]
+alias card_mul_le_card_shadow_mul := local_lubell_yamamoto_meshalkin_inequality_mul
+
 /-- The downward **local LYM inequality**. `𝒜` takes up less of `α^(r)` (the finsets of card `r`)
 than `∂𝒜` takes up of `α^(r - 1)`. -/
 theorem local_lubell_yamamoto_meshalkin_inequality_div (hr : r ≠ 0)
@@ -100,6 +103,9 @@ theorem local_lubell_yamamoto_meshalkin_inequality_div (hr : r ≠ 0)
       exact Or.inl (mul_comm _ _)
   · exact Nat.choose_pos hr'
   · exact Nat.choose_pos (r.pred_le.trans hr')
+
+@[deprecated (since := "2025-03-06")]
+alias card_div_choose_le_card_shadow_div_choose := local_lubell_yamamoto_meshalkin_inequality_div
 
 end LocalLYM
 
