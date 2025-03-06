@@ -1131,14 +1131,15 @@ theorem isInducing_sumElim :
     ← disjoint_principal_nhdsSet, ← disjoint_nhdsSet_principal, mem_nhdsSet_iff_forall] <;>
   rintro _ ⟨x, rfl⟩ <;>
   rw [← comap_eq_bot_iff_compl_range] <;>
-  [(specialize h (inr x)
-    rw [nhds_inr, elim_inr] at h
-    apply_fun (map inl ⊤ ⊓ ·) at h);
-   (specialize h (inl x)
-    rw [nhds_inl, elim_inl] at h
-    apply_fun (· ⊓ map Sum.inr ⊤) at h)] <;>
-  simpa only [map_inl_inf_map_inr, inf_sup_left, inf_sup_right, sup_bot_eq, bot_sup_eq, ← map_inf,
-    inl_injective, inr_injective, top_inf_eq, inf_top_eq, map_eq_bot_iff] using h
+  [specialize h (inr x); specialize h (inl x)]
+  · rw [nhds_inr, elim_inr] at h
+    apply_fun (map inl ⊤ ⊓ ·) at h
+    simpa only [map_inl_inf_map_inr, inf_sup_left, inf_sup_right, sup_bot_eq, bot_sup_eq, ← map_inf,
+      inl_injective, inr_injective, top_inf_eq, inf_top_eq, map_eq_bot_iff] using h
+  · rw [nhds_inl, elim_inl] at h
+    apply_fun (· ⊓ map Sum.inr ⊤) at h
+    simpa only [map_inl_inf_map_inr, inf_sup_left, inf_sup_right, sup_bot_eq, bot_sup_eq, ← map_inf,
+      inl_injective, inr_injective, top_inf_eq, inf_top_eq, map_eq_bot_iff] using h
 
 lemma Topology.IsInducing.sumElim_of_separatedNhds
     (hf : IsInducing f) (hg : IsInducing g) (hsep : SeparatedNhds (range f) (range g)) :
