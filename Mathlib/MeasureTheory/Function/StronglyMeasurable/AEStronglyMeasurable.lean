@@ -213,7 +213,7 @@ protected theorem prodMk {f : α → β} {g : α → γ} (hf : AEStronglyMeasura
   ⟨fun x => (hf.mk f x, hg.mk g x), hf.stronglyMeasurable_mk.prodMk hg.stronglyMeasurable_mk,
     hf.ae_eq_mk.prod_mk hg.ae_eq_mk⟩
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-05")]
 protected alias prod_mk := AEStronglyMeasurable.prodMk
 
 /-- The composition of a continuous function of two variables and two ae strongly measurable

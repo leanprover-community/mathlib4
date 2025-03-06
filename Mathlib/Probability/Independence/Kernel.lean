@@ -1088,7 +1088,7 @@ theorem iIndepFun.indepFun_prodMk (hf_Indep : iIndepFun m f κ μ) (hf_meas : �
   simp only [s, Finset.mem_insert, Finset.mem_singleton, not_or]
   exact ⟨hik.symm, hjk.symm⟩
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-05")]
 alias ProbabilityTheory.Kernel.iIndepFun.indepFun_prod_mk := iIndepFun.indepFun_prodMk
 
 open Finset in
@@ -1101,7 +1101,7 @@ lemma iIndepFun.indepFun_prodMk_prodMk (hf_indep : iIndepFun m f κ μ)
   have hg (i j : ι) : Measurable (g i j) := by fun_prop
   exact (hf_indep.indepFun_finset { i, j } { k, l } (by aesop) hf_meas).comp (hg i j) (hg k l)
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-05")]
 alias ProbabilityTheory.Kernel.iIndepFun.indepFun_prod_mk_prod_mk :=
   iIndepFun.indepFun_prodMk_prodMk
 

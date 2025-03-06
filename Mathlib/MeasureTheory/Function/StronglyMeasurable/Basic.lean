@@ -314,7 +314,7 @@ protected theorem prodMk {m : MeasurableSpace α} [TopologicalSpace β] [Topolog
   rw [nhds_prod_eq]
   exact Tendsto.prod_mk (hf.tendsto_approx x) (hg.tendsto_approx x)
 
-@[deprecated (since := "2025-02-22")] protected alias prod_mk := StronglyMeasurable.prodMk
+@[deprecated (since := "2025-03-05")] protected alias prod_mk := StronglyMeasurable.prodMk
 
 theorem comp_measurable [TopologicalSpace β] {_ : MeasurableSpace α} {_ : MeasurableSpace γ}
     {f : α → β} {g : γ → α} (hf : StronglyMeasurable f) (hg : Measurable g) :
