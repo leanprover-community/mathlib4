@@ -407,7 +407,7 @@ variable (S : Profinite.{0})
 Nöbeling's theorem: the abelian group of continuous maps from
 a profinite set `S` to `ℤ` is free (`LocallyConstant S ℤ` is an
 implementation detail to avoid introducing the discrete topology
-on `ℤ`).
+on the target).
 -/
 instance : Module.Free ℤ (LocallyConstant S ℤ) := LocallyConstant.freeOfProfinite S
 
@@ -669,7 +669,8 @@ example : ℤ[S]◾ ≅
     FintypeCat.toProfinite
     (finFree (ULift.{1} ℤ))).obj S := Iso.refl _
 
-def solidIso : ℤ[S]◾ ≅ limit (S.diagram ⋙ profiniteFree (ULift.{1} ℤ)) :=
+def solidIso : ℤ[S]◾ ≅
+    limit (S.diagram ⋙ profiniteFree (ULift.{1} ℤ)) :=
   haveI : Initial <| Profinite.Extend.functor S.asLimitCone :=
     Profinite.Extend.functor_initial S.asLimitCone S.asLimit
   (profiniteSolidIsPointwiseRightKanExtension _ _).isoLimit ≪≫
@@ -705,11 +706,11 @@ of abstract nonsense.
 -/
 instance : (ℤ[S] ⟶[CondensedAb] of ℤ).IsDiscrete := by sorry
 
-def isoInternalLocConst : (ℤ[S] ⟶[CondensedAb] of ℤ) ≅ of (LocallyConstant S ℤ) :=
+def isoInternalLocConst :
+    (ℤ[S] ⟶[CondensedAb] of ℤ) ≅ of (LocallyConstant S ℤ) :=
   let i : (ℤ[S] ⟶[CondensedAb] of ℤ).val.obj (*) ≅
     ModuleCat.of (ULift ℤ) (ULift (LocallyConstant S ℤ)) := sorry
   (isoUnderlyingOfDiscrete _) ≪≫ (δ).mapIso i
-
 
 def internalHomIntIso : (of ℤ ⟶[CondensedAb] of ℤ) ≅ of ℤ := sorry
 

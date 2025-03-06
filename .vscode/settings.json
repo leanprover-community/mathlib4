@@ -21,5 +21,5 @@
     "**/.elan/**": true,
     "**/.lake/**": true
   },
-  "workbench.activityBar.location": "default"
+  "workbench.activityBar.location": "hidden"
 }
