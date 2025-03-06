@@ -249,7 +249,10 @@ namespace UnorientedCobordism
 
 variable (s t : SingularNManifold X k I)
 
-def refl : UnorientedCobordism 12 s s where--:= sorry
+def refl : UnorientedCobordism k s s where--:= sorry
   W := s.M × (Set.Icc (0 : ℝ) 1)
+  bd := by
+    let icc := BoundaryManifoldData.Icc k
+    apply BoundaryManifoldData.prod_of_boundaryless_left
 
 end UnorientedCobordism
