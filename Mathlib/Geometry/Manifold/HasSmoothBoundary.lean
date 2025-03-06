@@ -108,7 +108,7 @@ structure BoundaryManifoldData.{u} (M : Type*) [TopologicalSpace M] [ChartedSpac
   /-- `f` maps `M₀` surjectively to the boundary of `M`. -/
   range_eq_boundary: Set.range f = I.boundary M
 
-variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {k : ℕ∞}
+variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {k : WithTop ℕ∞}
   {I : ModelWithCorners ℝ E H} [IsManifold I k M]
   {E₀ H₀: Type*} [NormedAddCommGroup E₀] [NormedSpace ℝ E₀]
   [TopologicalSpace H₀] (I₀ : ModelWithCorners ℝ E₀ H₀)
@@ -144,7 +144,7 @@ def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] :
 -- TODO: fill in these sorries (low priority)
 /-- The `n`-dimensional Euclidean half-space (modelled on itself) has nice boundary
 (which is an `n-1`-dimensional manifold). -/
-noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : ℕ∞) :
+noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : WithTop ℕ∞) :
     BoundaryManifoldData (EuclideanHalfSpace (n+1)) (𝓡∂ (n + 1)) k (𝓡 n) where
   M₀ := EuclideanSpace ℝ (Fin n)
   isManifold := by infer_instance
@@ -161,7 +161,7 @@ open Topology
 
 attribute [local instance] ChartedSpace.of_discreteTopology in
 attribute [local instance] IsManifold.of_discreteTopology in
-noncomputable def BoundaryManifoldData.Icc (k : ℕ∞) :
+noncomputable def BoundaryManifoldData.Icc (k : WithTop ℕ∞) :
     BoundaryManifoldData (Set.Icc (0 : ℝ) 1) (𝓡∂ 1) k (𝓡 0) where
   M₀ := Fin 2
   f x := if h : x = 0 then ⊥ else ⊤
@@ -282,7 +282,7 @@ M has boundary captured by the boundary of the half-space
 (e.g., modelling a boundaryless manifold on the half-space should be excluded)
 
 Proving this requires knowing homology groups of spheres (or similar). -/
-def BoundaryManifoldData.of_Euclidean_halfSpace (n : ℕ) (k : ℕ∞)
+def BoundaryManifoldData.of_Euclidean_halfSpace (n : ℕ) (k : WithTop ℕ∞)
     {M : Type} [TopologicalSpace M] [ChartedSpace (EuclideanHalfSpace (n + 1)) M]
     [IsManifold (𝓡∂ (n + 1)) k M] : BoundaryManifoldData M (𝓡∂ (n + 1)) k (𝓡 n) := sorry
 
