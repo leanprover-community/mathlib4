@@ -3,10 +3,10 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta, Huỳnh Trần Khanh, Stuart Presnell
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Fintype.Prod
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Stars and bars

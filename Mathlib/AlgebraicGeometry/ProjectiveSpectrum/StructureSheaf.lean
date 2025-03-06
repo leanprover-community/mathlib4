@@ -64,16 +64,13 @@ local notation3 "at " x =>
 
 namespace ProjectiveSpectrum.StructureSheaf
 
-variable {𝒜}
-
+variable {𝒜} in
 /-- The predicate saying that a dependent function on an open `U` is realised as a fixed fraction
 `r / s` of *same grading* in each of the stalks (which are localizations at various prime ideals).
 -/
 def IsFraction {U : Opens (ProjectiveSpectrum.top 𝒜)} (f : ∀ x : U, at x.1) : Prop :=
   ∃ (i : ℕ) (r s : 𝒜 i) (s_nin : ∀ x : U, s.1 ∉ x.1.asHomogeneousIdeal),
     ∀ x : U, f x = .mk ⟨i, r, s, s_nin x⟩
-variable (𝒜)
-
 /--
 The predicate `IsFraction` is "prelocal", in the sense that if it holds on `U` it holds on any open
 subset `V` of `U`.

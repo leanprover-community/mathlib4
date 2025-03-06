@@ -41,10 +41,10 @@ lemma counit_eq_algHom_toLinearMap :
 
 lemma comul_eq_algHom_toLinearMap :
     Coalgebra.comul (R := R) (A := A ⊗[R] B) =
-      ((Algebra.TensorProduct.tensorTensorTensorComm R A A B B).toAlgHom.comp
+      ((Algebra.TensorProduct.tensorTensorTensorComm R R A A B B).toAlgHom.comp
       (Algebra.TensorProduct.map (Bialgebra.comulAlgHom R A)
       (Bialgebra.comulAlgHom R B))).toLinearMap := by
-  rfl
+  ext; simp [← Algebra.TensorProduct.toLinearEquiv_tensorTensorTensorComm]
 
 end Bialgebra.TensorProduct
 

@@ -491,7 +491,7 @@ lemma nullMeasurableSet_mulSupport {E} [TopologicalSpace E] [MetrizableSpace E] 
     (hf : AEStronglyMeasurable f μ) : NullMeasurableSet (mulSupport f) μ :=
   (hf.nullMeasurableSet_eq_fun stronglyMeasurable_const.aestronglyMeasurable).compl
 
-theorem nullMeasurableSet_lt [LinearOrder β] [OrderClosedTopology β] [PseudoMetrizableSpace β]
+theorem nullMeasurableSet_lt [Preorder β] [OrderClosedTopology β] [PseudoMetrizableSpace β]
     {f g : α → β} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     NullMeasurableSet { a | f a < g a } μ := by
   apply

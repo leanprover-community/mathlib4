@@ -57,6 +57,7 @@ variable {R}
 
 variable {F : Cᵒᵖ ⥤ Type u} {G : PresheafOfModules.{u} R}
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- The morphism of presheaves of modules `freeObj F ⟶ G` corresponding to
 a morphism `F ⟶ G.presheaf ⋙ forget _` of presheaves of types. -/
 @[simps]

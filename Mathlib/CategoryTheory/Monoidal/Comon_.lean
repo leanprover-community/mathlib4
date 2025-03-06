@@ -310,7 +310,7 @@ def Comon_EquivMon_OpOp : Comon_ C ≌ (Mon_ (Cᵒᵖ))ᵒᵖ :=
 /--
 Comonoid objects in a braided category form a monoidal category.
 
-This definition is via transporting back and forth to monoids in the opposite category,
+This definition is via transporting back and forth to monoids in the opposite category.
 -/
 @[simps!]
 instance monoidal [BraidedCategory C] : MonoidalCategory (Comon_ C) :=

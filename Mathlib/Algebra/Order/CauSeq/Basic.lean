@@ -200,12 +200,9 @@ theorem coe_add (f g : CauSeq β abv) : ⇑(f + g) = (f : ℕ → β) + g :=
 theorem add_apply (f g : CauSeq β abv) (i : ℕ) : (f + g) i = f i + g i :=
   rfl
 
-variable (abv)
-
+variable (abv) in
 /-- The constant Cauchy sequence. -/
 def const (x : β) : CauSeq β abv := ⟨fun _ ↦ x, IsCauSeq.const _⟩
-
-variable {abv}
 
 /-- The constant Cauchy sequence -/
 local notation "const" => const abv

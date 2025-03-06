@@ -79,13 +79,10 @@ a morphism `φ : K ⟶ L` in the category `CochainComplex C ℤ`. -/
 noncomputable abbrev triangleh : Triangle (HomotopyCategory C (ComplexShape.up ℤ)) :=
   (HomotopyCategory.quotient _ _).mapTriangle.obj (triangle φ)
 
-variable (K)
-
+variable (K) in
 /-- The mapping cone of the identity is contractible. -/
 noncomputable def homotopyToZeroOfId : Homotopy (𝟙 (mappingCone (𝟙 K))) 0 :=
   descHomotopy (𝟙 K) _ _ 0 (inl _) (by simp) (by simp)
-
-variable {K}
 
 section mapOfHomotopy
 

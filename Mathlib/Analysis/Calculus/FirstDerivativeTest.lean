@@ -38,10 +38,10 @@ derivative test, calculus
 open Set Topology
 
 
- /-- The First-Derivative Test from calculus, maxima version.
-  Suppose `a < b < c`, `f : ℝ → ℝ` is continuous at `b`,
-  the derivative `f'` is nonnegative on `(a,b)`, and
-  the derivative `f'` is nonpositive on `(b,c)`. Then `f` has a local maximum at `a`. -/
+/-- The First-Derivative Test from calculus, maxima version.
+Suppose `a < b < c`, `f : ℝ → ℝ` is continuous at `b`,
+the derivative `f'` is nonnegative on `(a,b)`, and
+the derivative `f'` is nonpositive on `(b,c)`. Then `f` has a local maximum at `a`. -/
 lemma isLocalMax_of_deriv_Ioo {f : ℝ → ℝ} {a b c : ℝ} (g₀ : a < b) (g₁ : b < c)
     (h : ContinuousAt f b)
     (hd₀ : DifferentiableOn ℝ f (Ioo a b))
@@ -71,8 +71,8 @@ lemma isLocalMin_of_deriv_Ioo {f : ℝ → ℝ} {a b c : ℝ}
     (fun x hx => deriv.neg (f := f) ▸ Left.neg_nonpos_iff.mpr <|h₁ x hx)
   exact (neg_neg f) ▸ IsLocalMax.neg this
 
- /-- The First-Derivative Test from calculus, maxima version,
- expressed in terms of left and right filters. -/
+/-- The First-Derivative Test from calculus, maxima version,
+expressed in terms of left and right filters. -/
 lemma isLocalMax_of_deriv' {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
     (hd₀ : ∀ᶠ x in 𝓝[<] b, DifferentiableAt ℝ f x) (hd₁ : ∀ᶠ x in 𝓝[>] b, DifferentiableAt ℝ f x)
     (h₀ : ∀ᶠ x in 𝓝[<] b, 0 ≤ deriv f x) (h₁ : ∀ᶠ x in 𝓝[>] b, deriv f x ≤ 0) :
@@ -84,8 +84,8 @@ lemma isLocalMax_of_deriv' {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
     (fun _ hx => (hc.2 hx).1.differentiableWithinAt)
     (fun _ hx => (ha.2 hx).2) (fun x hx => (hc.2 hx).2)
 
- /-- The First-Derivative Test from calculus, minima version,
- expressed in terms of left and right filters. -/
+/-- The First-Derivative Test from calculus, minima version,
+expressed in terms of left and right filters. -/
 lemma isLocalMin_of_deriv' {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
     (hd₀ : ∀ᶠ x in 𝓝[<] b, DifferentiableAt ℝ f x) (hd₁ : ∀ᶠ x in 𝓝[>] b, DifferentiableAt ℝ f x)
     (h₀ : ∀ᶠ x in 𝓝[<] b, deriv f x ≤ 0) (h₁ : ∀ᶠ x in 𝓝[>] b, deriv f x ≥ 0) :

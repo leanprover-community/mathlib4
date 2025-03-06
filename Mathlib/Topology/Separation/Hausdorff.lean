@@ -194,7 +194,7 @@ theorem IsCompact.nhdsSet_inter_eq [T2Space X] {s t : Set X} (hs : IsCompact s) 
   · exact (disjoint_nhds_nhds.mpr hne).eq_bot ▸ bot_le
 
 /-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, there are open sets `U`,
-`V` that separate `t` and `x`.-/
+`V` that separate `t` and `x`. -/
 lemma IsCompact.separation_of_not_mem {X : Type u_1} [TopologicalSpace X] [T2Space X] {x : X}
     {t : Set X} (H1 : IsCompact t) (H2 : x ∉ t) :
     ∃ (U : Set X), ∃ (V : Set X), IsOpen U ∧ IsOpen V ∧ t ⊆ U ∧ x ∈ V ∧ Disjoint U V := by
@@ -541,7 +541,7 @@ theorem SeparatedNhds.of_isCompact_isCompact [T2Space X] {s t : Set X} (hs : IsC
   exact generalized_tube_lemma hs ht isClosed_diagonal.isOpen_compl hst
 
 /-- In a `T2Space X`, for disjoint closed sets `s t` such that `closure sᶜ` is compact,
-there are neighbourhoods that separate `s` and `t`.-/
+there are neighbourhoods that separate `s` and `t`. -/
 lemma SeparatedNhds.of_isClosed_isCompact_closure_compl_isClosed [T2Space X] {s : Set X}
     {t : Set X} (H1 : IsClosed s) (H2 : IsCompact (closure sᶜ)) (H3 : IsClosed t)
     (H4 : Disjoint s t) : SeparatedNhds s t := by

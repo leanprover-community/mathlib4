@@ -54,5 +54,5 @@ lemma AlgHom.mulLeftRight_apply (a : A) (b : Aᵐᵒᵖ) (x : A) :
 
 /-- An Azumaya algebra is a finitely generated, projective and faithful R-algebra where
   `AlgHom.mulLeftRight R A : (A ⊗[R] Aᵐᵒᵖ) →ₐ[R] Module.End R A` is an isomorphism. -/
-class IsAzumaya extends Module.Projective R A, FaithfulSMul R A, Module.Finite R A : Prop where
+class IsAzumaya : Prop extends Module.Projective R A, FaithfulSMul R A, Module.Finite R A where
     bij : Function.Bijective <| AlgHom.mulLeftRight R A

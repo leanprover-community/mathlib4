@@ -30,6 +30,8 @@ diameter of a subset, and its relation to boundedness
 metric, pseudo_metric, bounded, diameter, Heine-Borel theorem
 -/
 
+assert_not_exists Basis
+
 open Set Filter Bornology
 open scoped ENNReal Uniformity Topology Pointwise
 

@@ -229,12 +229,9 @@ end Finite
 
 namespace FiniteType
 
-variable (A)
-
+variable (A) in
 theorem id : FiniteType (RingHom.id A) :=
   Algebra.FiniteType.self A
-
-variable {A}
 
 theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FiniteType) (hg : Surjective g) :
     (g.comp f).FiniteType := by

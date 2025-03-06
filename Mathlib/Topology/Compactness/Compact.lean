@@ -13,15 +13,6 @@ import Mathlib.Topology.Defs.Ultrafilter
 /-!
 # Compact sets and compact spaces
 
-## Main definitions
-
-We define the following properties for sets in a topological space:
-
-* `IsCompact`: a set such that each open cover has a finite subcover. This is defined in mathlib
-  using filters. The main property of a compact set is `IsCompact.elim_finite_subcover`.
-* `CompactSpace`: typeclass stating that the whole space is a compact set.
-* `NoncompactSpace`: a space that is not a compact space.
-
 ## Main results
 
 * `isCompact_univ_pi`: **Tychonov's theorem** - an arbitrary product of compact sets

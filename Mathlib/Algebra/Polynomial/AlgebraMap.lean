@@ -91,8 +91,7 @@ theorem algHom_ext' {f g : A[X] →ₐ[R] B}
     (hX : f X = g X) : f = g :=
   AlgHom.coe_ringHom_injective (ringHom_ext' (congr_arg AlgHom.toRingHom hC) hX)
 
-variable (R)
-
+variable (R) in
 open AddMonoidAlgebra in
 /-- Algebra isomorphism between `R[X]` and `R[ℕ]`. This is just an
 implementation detail, but it can be useful to transfer results from `Finsupp` to polynomials. -/
@@ -101,8 +100,6 @@ def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
   { toFinsuppIso R with
     commutes' := fun r => by
       dsimp }
-
-variable {R}
 
 instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
   ⟨⟨⊥, ⊤, by

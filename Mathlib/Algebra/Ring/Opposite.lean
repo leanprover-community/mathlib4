@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Group.Equiv.Opposite
 import Mathlib.Algebra.GroupWithZero.Opposite
 import Mathlib.Algebra.Ring.Hom.Defs
 
@@ -73,13 +74,6 @@ instance instCommRing [CommRing α] : CommRing αᵐᵒᵖ where
 
 instance instIsDomain [Ring α] [IsDomain α] : IsDomain αᵐᵒᵖ :=
   NoZeroDivisors.to_isDomain _
-
-instance instGroupWithZero [GroupWithZero α] : GroupWithZero αᵐᵒᵖ where
-  __ := instMonoidWithZero
-  __ := instNontrivial
-  __ := instDivInvMonoid
-  mul_inv_cancel _ hx := unop_injective <| inv_mul_cancel₀ <| unop_injective.ne hx
-  inv_zero := unop_injective inv_zero
 
 end MulOpposite
 

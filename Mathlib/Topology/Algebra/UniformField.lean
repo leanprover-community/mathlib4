@@ -3,7 +3,7 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Field.Subfield.Basic
+import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.UniformRing
 
@@ -47,7 +47,7 @@ which does not have a cluster point at 0 is a Cauchy filter
 (with respect to the additive uniform structure). This ensures the completion is
 a field.
 -/
-class CompletableTopField extends T0Space K : Prop where
+class CompletableTopField : Prop extends T0Space K where
   nice : ∀ F : Filter K, Cauchy F → 𝓝 0 ⊓ F = ⊥ → Cauchy (map (fun x => x⁻¹) F)
 
 namespace UniformSpace

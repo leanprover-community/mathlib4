@@ -110,13 +110,10 @@ theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
     simp only [Finset.mem_coe, Set.mem_setOf_eq] at this
     rw [← this]
 
-variable {G}
-
+variable {G} in
 theorem mem_finsetWalkLength_iff {n : ℕ} {u v : V} {p : G.Walk u v} :
     p ∈ G.finsetWalkLength n u v ↔ p.length = n :=
   Set.ext_iff.mp (G.coe_finsetWalkLength_eq n u v) p
-
-variable (G)
 
 /-- The `Finset` of walks from `u` to `v` with length less than `n`. See `finsetWalkLength` for
 context. In particular, we use this definition for `SimpleGraph.Path.instFintype`. -/
@@ -134,13 +131,10 @@ theorem coe_finsetWalkLengthLT_eq (n : ℕ) (u v : V) :
   ext p
   simp [finsetWalkLengthLT, mem_coe, mem_disjiUnion, mem_finsetWalkLength_iff]
 
-variable {G}
-
+variable {G} in
 theorem mem_finsetWalkLengthLT_iff {n : ℕ} {u v : V} {p : G.Walk u v} :
     p ∈ G.finsetWalkLengthLT n u v ↔ p.length < n :=
   Set.ext_iff.mp (G.coe_finsetWalkLengthLT_eq n u v) p
-
-variable (G)
 
 instance fintypeSetWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v | p.length = n} :=
   Fintype.ofFinset (G.finsetWalkLength n u v) fun p => by

@@ -132,24 +132,10 @@ theorem mem_closure_iff_iSup :
   apply ((mem_closure_tfae a s).out 0 5).trans
   simp_rw [exists_prop]
 
-set_option linter.deprecated false in
-@[deprecated mem_closure_iff_iSup (since := "2024-08-27")]
-theorem mem_closure_iff_sup :
-    a ∈ closure s ↔
-      ∃ (ι : Type u) (_ : Nonempty ι) (f : ι → Ordinal), (∀ i, f i ∈ s) ∧ sup f = a :=
-  mem_closure_iff_iSup
-
 theorem mem_iff_iSup_of_isClosed (hs : IsClosed s) :
     a ∈ s ↔ ∃ (ι : Type u) (_hι : Nonempty ι) (f : ι → Ordinal),
       (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
   rw [← mem_closure_iff_iSup, hs.closure_eq]
-
-set_option linter.deprecated false in
-@[deprecated mem_iff_iSup_of_isClosed (since := "2024-08-27")]
-theorem mem_closed_iff_sup (hs : IsClosed s) :
-    a ∈ s ↔ ∃ (ι : Type u) (_hι : Nonempty ι) (f : ι → Ordinal),
-      (∀ i, f i ∈ s) ∧ sup f = a :=
-  mem_iff_iSup_of_isClosed hs
 
 theorem mem_closure_iff_bsup :
     a ∈ closure s ↔
@@ -171,17 +157,6 @@ theorem isClosed_iff_iSup :
   rw [← closure_subset_iff_isClosed]
   intro h x hx
   rcases mem_closure_iff_iSup.1 hx with ⟨ι, hι, f, hf, rfl⟩
-  exact h hι f hf
-
-set_option linter.deprecated false in
-@[deprecated mem_iff_iSup_of_isClosed (since := "2024-08-27")]
-theorem isClosed_iff_sup :
-    IsClosed s ↔
-      ∀ {ι : Type u}, Nonempty ι → ∀ f : ι → Ordinal, (∀ i, f i ∈ s) → ⨆ i, f i ∈ s := by
-  use fun hs ι hι f hf => (mem_closed_iff_sup hs).2 ⟨ι, hι, f, hf, rfl⟩
-  rw [← closure_subset_iff_isClosed]
-  intro h x hx
-  rcases mem_closure_iff_sup.1 hx with ⟨ι, hι, f, hf, rfl⟩
   exact h hι f hf
 
 theorem isClosed_iff_bsup :

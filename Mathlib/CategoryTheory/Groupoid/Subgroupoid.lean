@@ -292,7 +292,7 @@ theorem IsWide.eqToHom_mem {S : Subgroupoid C} (Sw : S.IsWide) {c d : C} (h : c 
     eqToHom h ∈ S.arrows c d := by cases h; simp only [eqToHom_refl]; apply Sw.id_mem c
 
 /-- A subgroupoid is normal if it is wide and satisfies the expected stability under conjugacy. -/
-structure IsNormal extends IsWide S : Prop where
+structure IsNormal : Prop extends IsWide S where
   conj : ∀ {c d} (p : c ⟶ d) {γ : c ⟶ c}, γ ∈ S.arrows c c → Groupoid.inv p ≫ γ ≫ p ∈ S.arrows d d
 
 theorem IsNormal.conj' {S : Subgroupoid C} (Sn : IsNormal S) :

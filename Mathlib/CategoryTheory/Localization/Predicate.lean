@@ -71,9 +71,9 @@ through `L`. -/
 structure StrictUniversalPropertyFixedTarget where
   /-- the functor `L` inverts `W` -/
   inverts : W.IsInvertedBy L
-  /-- any functor `C ⥤ E` which inverts `W` can be lifted as a functor `D ⥤ E`  -/
+  /-- any functor `C ⥤ E` which inverts `W` can be lifted as a functor `D ⥤ E` -/
   lift : ∀ (F : C ⥤ E) (_ : W.IsInvertedBy F), D ⥤ E
-  /-- there is a factorisation involving the lifted functor  -/
+  /-- there is a factorisation involving the lifted functor -/
   fac : ∀ (F : C ⥤ E) (hF : W.IsInvertedBy F), L ⋙ lift F hF = F
   /-- uniqueness of the lifted functor -/
   uniq : ∀ (F₁ F₂ : D ⥤ E) (_ : L ⋙ F₁ = L ⋙ F₂), F₁ = F₂

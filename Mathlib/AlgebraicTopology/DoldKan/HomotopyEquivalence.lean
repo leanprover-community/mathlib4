@@ -61,16 +61,12 @@ def homotopyPInftyToId : Homotopy (PInfty : K[X] ⟶ _) (𝟙 _) where
     rcases n with _|n
     · simpa only [Homotopy.dNext_zero_chainComplex, Homotopy.prevD_chainComplex,
         PInfty_f, P_f_0_eq, zero_add] using (homotopyPToId X 2).comm 0
-    · simp only [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex,
-        HomologicalComplex.id_f, PInfty_f, ← P_is_eventually_constant (le_refl <| n + 1)]
-      -- Porting note(lean4/2146): remaining proof was
-      -- `simpa only [homotopyPToId_eventually_constant X (lt_add_one (Nat.succ n))]
-      -- using (homotopyPToId X (n + 2)).comm (n + 1)`;
-      -- fails since leanprover/lean4:nightly-2023-05-16; `erw` below clunkily works around this.
-      erw [homotopyPToId_eventually_constant X (lt_add_one (Nat.succ n))]
-      have := (homotopyPToId X (n + 2)).comm (n + 1)
-      rw [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex] at this
-      exact this
+    · simpa only [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex,
+          HomologicalComplex.id_f, PInfty_f, ← P_is_eventually_constant (le_refl <| n + 1),
+          homotopyPToId_eventually_constant X (Nat.lt_add_one (Nat.succ n)),
+          Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex]
+        using (homotopyPToId X (n + 2)).comm (n + 1)
+
 
 /-- The inclusion of the Moore complex in the alternating face map complex
 is a homotopy equivalence -/

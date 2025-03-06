@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.Algebra.Group.Aut
+import Mathlib.Algebra.Group.Action.End
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.GroupAction.Primitive
 import Mathlib.GroupTheory.Subgroup.Simple

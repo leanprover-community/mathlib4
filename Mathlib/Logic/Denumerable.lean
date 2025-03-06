@@ -21,7 +21,7 @@ This property already has a name, namely `α ≃ ℕ`, but here we are intereste
 typeclass.
 -/
 
-assert_not_exists OrderedSemiring
+assert_not_exists Monoid
 
 variable {α β : Type*}
 
@@ -185,8 +185,8 @@ section Classical
 
 theorem exists_succ (x : s) : ∃ n, (x : ℕ) + n + 1 ∈ s := by
   by_contra h
-  have : ∀ (a : ℕ) (_ : a ∈ s), a < x + 1 := fun a ha =>
-    lt_of_not_ge fun hax => h ⟨a - (x + 1), by rwa [add_right_comm, Nat.add_sub_cancel' hax]⟩
+  have (a : ℕ) (ha : a ∈ s) : a < x + 1 :=
+    lt_of_not_ge fun hax => h ⟨a - (x + 1), by rwa [Nat.add_right_comm, Nat.add_sub_cancel' hax]⟩
   classical
   exact Fintype.false
     ⟨(((Multiset.range (succ x)).filter (· ∈ s)).pmap

@@ -337,9 +337,8 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
       A '' closedBall 0 r + closedBall (f x) (ε * r) =
         {f x} + r • (A '' closedBall 0 1 + closedBall 0 ε) := by
       rw [smul_add, ← add_assoc, add_comm {f x}, add_assoc, smul_closedBall _ _ εpos.le, smul_zero,
-        singleton_add_closedBall_zero, ← image_smul_set ℝ E E A,
-        _root_.smul_closedBall _ _ zero_le_one, smul_zero, Real.norm_eq_abs, abs_of_nonneg r0,
-        mul_one, mul_comm]
+        singleton_add_closedBall_zero, ← image_smul_set, _root_.smul_closedBall _ _ zero_le_one,
+        smul_zero, Real.norm_eq_abs, abs_of_nonneg r0, mul_one, mul_comm]
     rw [this] at K
     calc
       μ (f '' (s ∩ closedBall x r)) ≤ μ ({f x} + r • (A '' closedBall 0 1 + closedBall 0 ε)) :=

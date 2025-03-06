@@ -29,11 +29,20 @@ universe u v w z
 
 variable {α : Sort u} {β : Sort v} {γ : Sort w}
 
-namespace Equiv
+namespace EquivLike
 
 @[simp]
-theorem range_eq_univ {α : Type*} {β : Type*} (e : α ≃ β) : range e = univ :=
-  eq_univ_of_forall e.surjective
+theorem range_eq_univ {α : Type*} {β : Type*} {E : Type*} [EquivLike E α β] (e : E) :
+    range e = univ :=
+  eq_univ_of_forall (EquivLike.toEquiv e).surjective
+
+end EquivLike
+
+namespace Equiv
+
+theorem range_eq_univ {α : Type*} {β : Type*} (e : α ≃ β) :
+    range e = univ :=
+  EquivLike.range_eq_univ e
 
 protected theorem image_eq_preimage {α β} (e : α ≃ β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
   Set.ext fun _ => mem_image_iff_of_inverse e.left_inv e.right_inv
@@ -234,7 +243,7 @@ TODO: this is the same as `Equiv.setCongr`! -/
 protected def ofEq {α : Type u} {s t : Set α} (h : s = t) : s ≃ t :=
   Equiv.setCongr h
 
-lemma Equiv.strictMono_setCongr {α : Type*} [PartialOrder α] {S T : Set α} (h : S = T) :
+lemma Equiv.strictMono_setCongr {α : Type*} [Preorder α] {S T : Set α} (h : S = T) :
     StrictMono (setCongr h) := fun _ _ ↦ id
 
 /-- If `a ∉ s`, then `insert a s` is equivalent to `s ⊕ PUnit`. -/
@@ -564,7 +573,7 @@ theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type*} {β : α → Type*} (
     (piEquivPiSubtypeProd p β).symm ⁻¹' pi univ s =
       (pi univ fun i : { i // p i } => s i) ×ˢ pi univ fun i : { i // ¬p i } => s i := by
   ext ⟨f, g⟩
-  simp only [mem_preimage, mem_univ_pi, prod_mk_mem_set_prod_eq, Subtype.forall, ← forall_and]
+  simp only [mem_preimage, mem_univ_pi, prodMk_mem_set_prod_eq, Subtype.forall, ← forall_and]
   refine forall_congr' fun i => ?_
   dsimp only [Subtype.coe_mk]
   by_cases hi : p i <;> simp [hi]

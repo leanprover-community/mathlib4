@@ -25,6 +25,8 @@ for `PseudoMetricSpace`s in `PseudoMetric.lean`.
 metric, pseudo_metric, dist
 -/
 
+assert_not_exists Finset.sum
+
 open Set Filter Bornology
 open scoped NNReal Uniformity
 
@@ -34,7 +36,7 @@ variable {α : Type u} {β : Type v} {X ι : Type*}
 variable [PseudoMetricSpace α]
 
 /-- We now define `MetricSpace`, extending `PseudoMetricSpace`. -/
-class MetricSpace (α : Type u) extends PseudoMetricSpace α : Type u where
+class MetricSpace (α : Type u) : Type u extends PseudoMetricSpace α where
   eq_of_dist_eq_zero : ∀ {x y : α}, dist x y = 0 → x = y
 
 /-- Two metric space structures with the same distance coincide. -/
@@ -203,21 +205,6 @@ instance : Dist (Multiplicative X) := ‹Dist X›
 
 end
 
-section
-
-variable [PseudoMetricSpace X]
-
-@[simp] theorem nndist_ofMul (a b : X) : nndist (ofMul a) (ofMul b) = nndist a b := rfl
-
-@[simp] theorem nndist_ofAdd (a b : X) : nndist (ofAdd a) (ofAdd b) = nndist a b := rfl
-
-@[simp] theorem nndist_toMul (a b : Additive X) : nndist a.toMul b.toMul = nndist a b := rfl
-
-@[simp]
-theorem nndist_toAdd (a b : Multiplicative X) : nndist a.toAdd b.toAdd = nndist a b := rfl
-
-end
-
 instance [MetricSpace X] : MetricSpace (Additive X) := ‹MetricSpace X›
 instance [MetricSpace X] : MetricSpace (Multiplicative X) := ‹MetricSpace X›
 
@@ -238,18 +225,6 @@ instance : Dist Xᵒᵈ := ‹Dist X›
 @[simp] theorem dist_toDual (a b : X) : dist (toDual a) (toDual b) = dist a b := rfl
 
 @[simp] theorem dist_ofDual (a b : Xᵒᵈ) : dist (ofDual a) (ofDual b) = dist a b := rfl
-
-end
-
-section
-
-variable [PseudoMetricSpace X]
-
-instance : PseudoMetricSpace Xᵒᵈ := ‹PseudoMetricSpace X›
-
-@[simp] theorem nndist_toDual (a b : X) : nndist (toDual a) (toDual b) = nndist a b := rfl
-
-@[simp] theorem nndist_ofDual (a b : Xᵒᵈ) : nndist (ofDual a) (ofDual b) = nndist a b := rfl
 
 end
 

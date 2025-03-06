@@ -103,7 +103,7 @@ theorem dZero_ker_eq_invariants : LinearMap.ker (dZero A) = invariants A.ρ := b
 
 @[simp] theorem dZero_eq_zero [A.IsTrivial] : dZero A = 0 := by
   ext
-  simp only [dZero_apply, apply_eq_self, sub_self, LinearMap.zero_apply, Pi.zero_apply]
+  simp only [dZero_apply, isTrivial_apply, sub_self, LinearMap.zero_apply, Pi.zero_apply]
 
 lemma dZero_comp_subtype : dZero A ∘ₗ A.ρ.invariants.subtype = 0 := by
   ext ⟨x, hx⟩ g
@@ -282,17 +282,16 @@ theorem dZero_apply_mem_oneCocycles (x : A) :
 
 theorem oneCocycles_map_mul_of_isTrivial [A.IsTrivial] (f : oneCocycles A) (g h : G) :
     f (g * h) = f g + f h := by
-  rw [(mem_oneCocycles_iff f).1 f.2, apply_eq_self A.ρ g (f h), add_comm]
+  rw [(mem_oneCocycles_iff f).1 f.2, isTrivial_apply A.ρ g (f h), add_comm]
 
 theorem mem_oneCocycles_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
     f ∘ Additive.ofMul ∈ oneCocycles A :=
   (mem_oneCocycles_iff _).2 fun g h => by
     simp only [Function.comp_apply, ofMul_mul, map_add,
-      oneCocycles_map_mul_of_isTrivial, apply_eq_self A.ρ g (f (Additive.ofMul h)),
+      oneCocycles_map_mul_of_isTrivial, isTrivial_apply A.ρ g (f (Additive.ofMul h)),
       add_comm (f (Additive.ofMul g))]
 
-variable (A)
-
+variable (A) in
 /-- When `A : Rep k G` is a trivial representation of `G`, `Z¹(G, A)` is isomorphic to the
 group homs `G → A`. -/
 @[simps] def oneCocyclesLequivOfIsTrivial [hA : A.IsTrivial] :
@@ -308,8 +307,6 @@ group homs `G → A`. -/
       property := mem_oneCocycles_of_addMonoidHom f }
   left_inv f := by ext; rfl
   right_inv f := by ext; rfl
-
-variable {A}
 
 instance : FunLike (twoCocycles A) (G × G) A := ⟨Subtype.val, Subtype.val_injective⟩
 
@@ -810,6 +807,12 @@ lemma isoZeroCocycles_hom_comp_subtype :
       iCocycles A 0 ≫ (zeroCochainsLequiv A).toModuleIso.hom := by
   dsimp [isoZeroCocycles]
   apply KernelFork.mapOfIsLimit_ι
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma isoZeroCocycles_inv_comp_iCocycles :
+    (isoZeroCocycles A).inv ≫ iCocycles A 0 =
+        ModuleCat.ofHom A.ρ.invariants.subtype ≫ (zeroCochainsLequiv A).toModuleIso.inv := by
+  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoZeroCocycles_hom_comp_subtype]
 
 /-- The 0th group cohomology of `A`, defined as the 0th cohomology of the complex of inhomogeneous
 cochains, is isomorphic to the invariants of the representation on `A`. -/

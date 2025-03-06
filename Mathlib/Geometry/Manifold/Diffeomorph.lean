@@ -24,12 +24,21 @@ This file implements diffeomorphisms.
 * `Diffeomorph.toTransDiffeomorph`: the identity diffeomorphism between `M` with model `I` and `M`
   with model `I.trans_diffeomorph e`.
 
+This file also provides diffeomorphisms related to products and disjoint unions.
+* `Diffeomorph.prodCongr`: the product of two diffeomorphisms
+* `Diffeomorph.prodComm`: `M × N` is diffeomorphic to `N × M`
+* `Diffeomorph.prodAssoc`: `(M × N) × N'` is diffeomorphic to `M × (N × N')`
+* `Diffeomorph.sumCongr`: the disjoint union of two diffeomorphisms
+* `Diffeomorph.sumComm`: `M ⊕ M'` is diffeomorphic to `M' × M`
+* `Diffeomorph.sumAssoc`: `(M ⊕ N) ⊕ P` is diffeomorphic to `M ⊕ (N ⊕ P)`
+* `Diffeomorph.sumEmpty`: `M ⊕ ∅` is diffeomorphic to `M`
+
 ## Notations
 
 * `M ≃ₘ^n⟮I, I'⟯ M'`  := `Diffeomorph I J M N n`
 * `M ≃ₘ⟮I, I'⟯ M'`    := `Diffeomorph I J M N ∞`
-* `E ≃ₘ^n[𝕜] E'`      := `E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E'`
-* `E ≃ₘ[𝕜] E'`        := `E ≃ₘ⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E'`
+* `E ≃ₘ^n[𝕜] E'`     := `E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E'`
+* `E ≃ₘ[𝕜] E'`       := `E ≃ₘ⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E'`
 
 ## Implementation notes
 
@@ -326,58 +335,6 @@ theorem toPartialHomeomorph_mdifferentiable (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1
     h.toHomeomorph.toPartialHomeomorph.MDifferentiable I J :=
   ⟨h.mdifferentiableOn _ hn, h.symm.mdifferentiableOn _ hn⟩
 
-section Constructions
-
-/-- Product of two diffeomorphisms. -/
-def prodCongr (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : N ≃ₘ^n⟮J, J'⟯ N') :
-    (M × N) ≃ₘ^n⟮I.prod J, I'.prod J'⟯ M' × N' where
-  contMDiff_toFun := (h₁.contMDiff.comp contMDiff_fst).prod_mk (h₂.contMDiff.comp contMDiff_snd)
-  contMDiff_invFun :=
-    (h₁.symm.contMDiff.comp contMDiff_fst).prod_mk (h₂.symm.contMDiff.comp contMDiff_snd)
-  toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
-
-@[simp]
-theorem prodCongr_symm (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : N ≃ₘ^n⟮J, J'⟯ N') :
-    (h₁.prodCongr h₂).symm = h₁.symm.prodCongr h₂.symm :=
-  rfl
-
-@[simp]
-theorem coe_prodCongr (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : N ≃ₘ^n⟮J, J'⟯ N') :
-    ⇑(h₁.prodCongr h₂) = Prod.map h₁ h₂ :=
-  rfl
-
-section
-
-variable (I J J' M N N' n)
-
-/-- `M × N` is diffeomorphic to `N × M`. -/
-def prodComm : (M × N) ≃ₘ^n⟮I.prod J, J.prod I⟯ N × M where
-  contMDiff_toFun := contMDiff_snd.prod_mk contMDiff_fst
-  contMDiff_invFun := contMDiff_snd.prod_mk contMDiff_fst
-  toEquiv := Equiv.prodComm M N
-
-@[simp]
-theorem prodComm_symm : (prodComm I J M N n).symm = prodComm J I N M n :=
-  rfl
-
-@[simp]
-theorem coe_prodComm : ⇑(prodComm I J M N n) = Prod.swap :=
-  rfl
-
-/-- `(M × N) × N'` is diffeomorphic to `M × (N × N')`. -/
-def prodAssoc : ((M × N) × N') ≃ₘ^n⟮(I.prod J).prod J', I.prod (J.prod J')⟯ M × N × N' where
-  contMDiff_toFun :=
-    (contMDiff_fst.comp contMDiff_fst).prod_mk
-      ((contMDiff_snd.comp contMDiff_fst).prod_mk contMDiff_snd)
-  contMDiff_invFun :=
-    (contMDiff_fst.prod_mk (contMDiff_fst.comp contMDiff_snd)).prod_mk
-      (contMDiff_snd.comp contMDiff_snd)
-  toEquiv := Equiv.prodAssoc M N N'
-
-end
-
-end Constructions
-
 theorem uniqueMDiffOn_image_aux (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : Set M}
     (hs : UniqueMDiffOn I s) : UniqueMDiffOn J (h '' s) := by
   convert hs.uniqueMDiffOn_preimage (h.toPartialHomeomorph_mdifferentiable hn)
@@ -482,6 +439,8 @@ end ModelWithCorners
 
 namespace Diffeomorph
 
+section
+
 variable [NeZero n] (e : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F)
 
 instance instIsManifoldTransDiffeomorph [IsManifold I n M] :
@@ -561,5 +520,142 @@ theorem contMDiff_transDiffeomorph_left {f : M → M'} :
 
 @[deprecated (since := "2024-11-21")]
 alias smooth_transDiffeomorph_left := contMDiff_transDiffeomorph_left
+
+end
+
+section Constructions
+
+section Product
+
+/-- Product of two diffeomorphisms. -/
+def prodCongr (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : N ≃ₘ^n⟮J, J'⟯ N') :
+    (M × N) ≃ₘ^n⟮I.prod J, I'.prod J'⟯ M' × N' where
+  contMDiff_toFun := (h₁.contMDiff.comp contMDiff_fst).prod_mk (h₂.contMDiff.comp contMDiff_snd)
+  contMDiff_invFun :=
+    (h₁.symm.contMDiff.comp contMDiff_fst).prod_mk (h₂.symm.contMDiff.comp contMDiff_snd)
+  toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
+
+@[simp]
+theorem prodCongr_symm (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : N ≃ₘ^n⟮J, J'⟯ N') :
+    (h₁.prodCongr h₂).symm = h₁.symm.prodCongr h₂.symm :=
+  rfl
+
+@[simp]
+theorem coe_prodCongr (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : N ≃ₘ^n⟮J, J'⟯ N') :
+    ⇑(h₁.prodCongr h₂) = Prod.map h₁ h₂ :=
+  rfl
+
+section
+
+variable (I J J' M N N' n)
+
+/-- `M × N` is diffeomorphic to `N × M`. -/
+def prodComm : (M × N) ≃ₘ^n⟮I.prod J, J.prod I⟯ N × M where
+  contMDiff_toFun := contMDiff_snd.prod_mk contMDiff_fst
+  contMDiff_invFun := contMDiff_snd.prod_mk contMDiff_fst
+  toEquiv := Equiv.prodComm M N
+
+@[simp]
+theorem prodComm_symm : (prodComm I J M N n).symm = prodComm J I N M n :=
+  rfl
+
+@[simp]
+theorem coe_prodComm : ⇑(prodComm I J M N n) = Prod.swap :=
+  rfl
+
+/-- `(M × N) × N'` is diffeomorphic to `M × (N × N')`. -/
+def prodAssoc : ((M × N) × N') ≃ₘ^n⟮(I.prod J).prod J', I.prod (J.prod J')⟯ M × N × N' where
+  contMDiff_toFun :=
+    (contMDiff_fst.comp contMDiff_fst).prod_mk
+      ((contMDiff_snd.comp contMDiff_fst).prod_mk contMDiff_snd)
+  contMDiff_invFun :=
+    (contMDiff_fst.prod_mk (contMDiff_fst.comp contMDiff_snd)).prod_mk
+      (contMDiff_snd.comp contMDiff_snd)
+  toEquiv := Equiv.prodAssoc M N N'
+
+end
+
+end Product
+
+section disjointUnion
+
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
+  {N J : Type*} [TopologicalSpace N] [ChartedSpace H N] {J : ModelWithCorners 𝕜 E' H}
+  {N' : Type*} [TopologicalSpace N'] [ChartedSpace H N']
+
+/-- The sum of two diffeomorphisms -/
+def sumCongr (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
+    Diffeomorph I J (M ⊕ M') (N ⊕ N') n where
+  toEquiv := Equiv.sumCongr φ.toEquiv ψ.toEquiv
+  contMDiff_toFun := ContMDiff.sumMap φ.contMDiff_toFun ψ.contMDiff_toFun
+  contMDiff_invFun := ContMDiff.sumMap φ.contMDiff_invFun ψ.contMDiff_invFun
+
+lemma sumCongr_symm_symm (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
+    sumCongr φ.symm ψ.symm = (sumCongr φ ψ).symm := rfl
+
+@[simp]
+lemma sumCongr_coe (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
+    sumCongr φ ψ = Sum.map φ ψ := rfl
+
+lemma sumCongr_inl (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
+    (sumCongr φ ψ) ∘ Sum.inl = Sum.inl ∘ φ := rfl
+
+lemma sumCongr_inr (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
+    (sumCongr φ ψ) ∘ Sum.inr = Sum.inr ∘ ψ := rfl
+
+variable (I M M' n) in
+/-- The canonical diffeomorphism `M ⊕ M' → M' ⊕ M` -/
+def sumComm : Diffeomorph I I (M ⊕ M') (M' ⊕ M) n where
+  toEquiv := Equiv.sumComm M M'
+  contMDiff_toFun := ContMDiff.swap
+  contMDiff_invFun := ContMDiff.swap
+
+@[simp]
+theorem sumComm_coe : (Diffeomorph.sumComm I M n M' : (M ⊕ M') → (M' ⊕ M)) = Sum.swap := rfl
+
+@[simp]
+theorem sumComm_symm : (Diffeomorph.sumComm I M n M').symm = Diffeomorph.sumComm I M' n M := rfl
+
+variable (I M M' n) in
+lemma sumComm_inl : (Diffeomorph.sumComm I M n M') ∘ Sum.inl = Sum.inr := by
+  ext
+  exact Sum.swap_inl
+
+variable (I M M' n) in
+lemma sumComm_inr : (Diffeomorph.sumComm I M n M') ∘ Sum.inr = Sum.inl := by
+  ext
+  exact Sum.swap_inr
+
+variable (I M M' M'' n) in
+/-- The canonical diffeomorphism `(M ⊕ N) ⊕ P → M ⊕ (N ⊕ P)` -/
+def sumAssoc : Diffeomorph I I ((M ⊕ M') ⊕ M'') (M ⊕ (M' ⊕ M'')) n where
+  toEquiv := Equiv.sumAssoc M M' M''
+  contMDiff_toFun := by
+    apply ContMDiff.sumElim
+    · exact contMDiff_id.sumMap ContMDiff.inl
+    · exact ContMDiff.inr.comp ContMDiff.inr
+  contMDiff_invFun := by
+    apply ContMDiff.sumElim
+    · exact ContMDiff.inl.comp ContMDiff.inl
+    · exact ContMDiff.inr.sumMap contMDiff_id
+
+@[simp]
+theorem sumAssoc_coe :
+    (sumAssoc I M n M' M'' : (M ⊕ M') ⊕ M'' → M ⊕ (M' ⊕ M'')) = Equiv.sumAssoc M M' M'' := rfl
+
+variable (I M n) in
+/-- The canonical diffeomorphism `M ⊕ ∅ → M` -/
+def sumEmpty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M n where
+  toEquiv := Equiv.sumEmpty M M'
+  contMDiff_toFun := contMDiff_id.sumElim fun x ↦ (IsEmpty.false x).elim
+  contMDiff_invFun := ContMDiff.inl
+
+@[simp]
+theorem sumEmpty_toEquiv [IsEmpty M'] : (sumEmpty I M n).toEquiv = Equiv.sumEmpty M M' := rfl
+
+end disjointUnion
+
+end Constructions
 
 end Diffeomorph

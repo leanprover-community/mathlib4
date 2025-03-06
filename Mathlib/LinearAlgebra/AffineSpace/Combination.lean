@@ -6,7 +6,7 @@ Authors: Joseph Myers
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 import Mathlib.Tactic.FinCases
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
@@ -723,14 +723,11 @@ theorem centroidWeights_apply (i : ι) : s.centroidWeights k i = (#s : k)⁻¹ :
 theorem centroidWeights_eq_const : s.centroidWeights k = Function.const ι (#s : k)⁻¹ :=
   rfl
 
-variable {k}
-
+variable {k} in
 /-- The weights in the centroid sum to 1, if the number of points,
 converted to `k`, is not zero. -/
 theorem sum_centroidWeights_eq_one_of_cast_card_ne_zero (h : (#s : k) ≠ 0) :
     ∑ i ∈ s, s.centroidWeights k i = 1 := by simp [h]
-
-variable (k)
 
 /-- In the characteristic zero case, the weights in the centroid sum
 to 1 if the number of points is not zero. -/
@@ -939,8 +936,7 @@ theorem affineCombination_mem_affineSpan [Nontrivial k] {s : Finset ι} {w : ι 
     rw [← vsub_vadd (s.affineCombination k p w) (p i1)]
     exact AffineSubspace.vadd_mem_of_mem_direction hv (mem_affineSpan k (Set.mem_range_self _))
 
-variable (k)
-
+variable (k) in
 /-- A vector is in the `vectorSpan` of an indexed family if and only
 if it is a `weightedVSub` with sum of weights 0. -/
 theorem mem_vectorSpan_iff_eq_weightedVSub {v : V} {p : ι → P} :
@@ -982,8 +978,6 @@ theorem mem_vectorSpan_iff_eq_weightedVSub {v : V} {p : ι → P} :
         simp
     · rintro ⟨s, w, hw, rfl⟩
       exact weightedVSub_mem_vectorSpan hw p
-
-variable {k}
 
 /-- A point in the `affineSpan` of an indexed family is an
 `affineCombination` with sum of weights 1. See also

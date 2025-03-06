@@ -46,13 +46,13 @@ def letTelescope {α n} [MonadControlT MetaM n] [Monad n] (e : Expr)
   map2MetaM (fun k => letTelescopeImpl e k) k
 
 /--
-  Swaps bvars indices `i` and `j`
+Swaps bvars indices `i` and `j`
 
-  NOTE: the indices `i` and `j` do not correspond to the `n` in `bvar n`. Rather
-  they behave like indices in `Expr.lowerLooseBVars`, `Expr.liftLooseBVars`, etc.
+NOTE: the indices `i` and `j` do not correspond to the `n` in `bvar n`. Rather
+they behave like indices in `Expr.lowerLooseBVars`, `Expr.liftLooseBVars`, etc.
 
-  TODO: This has to have a better implementation, but I'm still beyond confused with how bvar
-  indices work
+TODO: This has to have a better implementation, but I'm still beyond confused with how bvar
+indices work
 -/
 def _root_.Lean.Expr.swapBVars (e : Expr) (i j : Nat) : Expr :=
 

@@ -76,18 +76,18 @@ instance abelian : Abelian (ModuleCat.{v} R) where
 
 section ReflectsLimits
 
--- Porting note: added to make the following definitions work
-instance : HasLimitsOfSize.{v,v} (ModuleCatMax.{v, w} R) :=
+/-- Add this instance to help Lean with universe levels. -/
+instance : HasLimitsOfSize.{v,v} (ModuleCat.{max v w} R) :=
   ModuleCat.hasLimitsOfSize.{v, v, max v w}
 
 /- We need to put this in this weird spot because we need to know that the category of modules
     is balanced. -/
 instance forget_reflectsLimitsOfSize :
-    ReflectsLimitsOfSize.{v, v} (forget (ModuleCatMax.{v, w} R)) :=
+    ReflectsLimitsOfSize.{v, v} (forget (ModuleCat.{max v w} R)) :=
   reflectsLimits_of_reflectsIsomorphisms
 
 instance forget₂_reflectsLimitsOfSize :
-    ReflectsLimitsOfSize.{v, v} (forget₂ (ModuleCatMax.{v, w} R) AddCommGrp.{max v w}) :=
+    ReflectsLimitsOfSize.{v, v} (forget₂ (ModuleCat.{max v w} R) AddCommGrp.{max v w}) :=
   reflectsLimits_of_reflectsIsomorphisms
 
 instance forget_reflectsLimits : ReflectsLimits (forget (ModuleCat.{v} R)) :=

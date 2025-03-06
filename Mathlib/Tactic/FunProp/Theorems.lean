@@ -158,9 +158,9 @@ structure FunctionTheorem where
   funOrigin   : Origin
   /-- array of argument indices about which this theorem is about -/
   mainArgs    : Array Nat
-  /-- total number of arguments applied to the function  -/
+  /-- total number of arguments applied to the function -/
   appliedArgs : Nat
-  /-- priority  -/
+  /-- priority -/
   priority    : Nat  := eval_prio default
   /-- form of the theorem, see documentation of TheoremForm -/
   form : TheoremForm
@@ -210,8 +210,7 @@ def getTheoremsForFunction (funName : Name) (funPropName : Name) :
 
 --------------------------------------------------------------------------------
 
-/-- General theorem about function property
-  used for transition and morphism theorems -/
+/-- General theorem about a function property used for transition and morphism theorems -/
 structure GeneralTheorem where
   /-- function property name -/
   funPropName   : Name
@@ -248,7 +247,7 @@ initialize transitionTheoremsExt : GeneralTheoremsExt ←
 /-- Get transition theorems applicable to `e`.
 
 For example calling on `e` equal to `Continuous f` might return theorems implying continuity
-from linearity over finite dimensional spaces or differentiability.  -/
+from linearity over finite dimensional spaces or differentiability. -/
 def getTransitionTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let ext := transitionTheoremsExt.getState (← getEnv)
   let candidates ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|

@@ -84,8 +84,6 @@ theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a < ⊤) (hb : b < ⊤) : a 
   rw [WithTop.lt_top_iff_ne_top] at *
   exact mul_ne_top ha hb
 
-@[deprecated (since := "2024-08-25")] alias mul_lt_top' := mul_lt_top
-
 instance instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) := by
   refine ⟨fun h₁ => Decidable.byContradiction fun h₂ => ?_⟩
   rw [mul_def, if_neg h₂] at h₁
@@ -312,8 +310,6 @@ theorem mul_ne_bot {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) : a * b 
 
 theorem bot_lt_mul [LT α] {a b : WithBot α} (ha : ⊥ < a) (hb : ⊥ < b) : ⊥ < a * b :=
   WithTop.mul_lt_top (α := αᵒᵈ) ha hb
-
-@[deprecated (since := "2024-08-25")] alias bot_lt_mul' := bot_lt_mul
 
 instance instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithBot α) :=
   WithTop.instNoZeroDivisors

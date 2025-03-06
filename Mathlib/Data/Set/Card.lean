@@ -987,6 +987,10 @@ theorem ncard_le_one (hs : s.Finite := by toFinite_tac) :
     s.ncard ≤ 1 ↔ ∀ a ∈ s, ∀ b ∈ s, a = b := by
   simp_rw [ncard_eq_toFinset_card _ hs, Finset.card_le_one, Finite.mem_toFinset]
 
+@[simp] theorem ncard_le_one_iff_subsingleton [Finite s] :
+    s.ncard ≤ 1 ↔ s.Subsingleton :=
+  ncard_le_one <| inferInstanceAs (Finite s)
+
 theorem ncard_le_one_iff (hs : s.Finite := by toFinite_tac) :
     s.ncard ≤ 1 ↔ ∀ {a b}, a ∈ s → b ∈ s → a = b := by
   rw [ncard_le_one hs]

@@ -25,12 +25,6 @@ open CategoryTheory.Limits
 
 universe v u w
 
--- Porting note: typemax hack to fix universe complaints
-/-- An alias for `MonCat.{max u v}`, to deal around unification issues. -/
-@[to_additive (attr := nolint checkUnivs) AddMonCatMax
-  "An alias for `AddMonCat.{max u v}`, to deal around unification issues."]
-abbrev MonCatMax.{u1, u2} := MonCat.{max u1 u2}
-
 namespace MonCat
 
 variable {J : Type v} [Category.{w} J] (F : J ⥤ MonCat.{u})
@@ -204,11 +198,6 @@ noncomputable instance forget_createsLimits :
 end MonCat
 
 open MonCat
-
-/-- An alias for `CommMonCat.{max u v}`, to deal around unification issues. -/
-@[to_additive (attr := nolint checkUnivs) AddCommMonCatMax
-  "An alias for `AddCommMonCat.{max u v}`, to deal around unification issues."]
-abbrev CommMonCatMax.{u1, u2} := CommMonCat.{max u1 u2}
 
 namespace CommMonCat
 

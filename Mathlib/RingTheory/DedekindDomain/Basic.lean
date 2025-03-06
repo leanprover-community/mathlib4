@@ -96,8 +96,8 @@ This is exactly `IsDedekindDomain` minus the `IsDomain` hypothesis.
 The integral closure condition is independent of the choice of field of fractions:
 use `isDedekindRing_iff` to prove `IsDedekindRing` for a given `fraction_map`.
 -/
-class IsDedekindRing
-  extends IsNoetherian A A, DimensionLEOne A, IsIntegralClosure A A (FractionRing A) : Prop
+class IsDedekindRing : Prop
+  extends IsNoetherian A A, DimensionLEOne A, IsIntegralClosure A A (FractionRing A)
 
 /-- An integral domain is a Dedekind domain if and only if it is
 Noetherian, has dimension ≤ 1, and is integrally closed in a given fraction field.
@@ -123,8 +123,8 @@ use `isDedekindDomain_iff` to prove `IsDedekindDomain` for a given `fraction_map
 This is the default implementation, but there are equivalent definitions,
 `IsDedekindDomainDvr` and `IsDedekindDomainInv`.
 -/
-class IsDedekindDomain
-  extends IsDomain A, IsDedekindRing A : Prop
+class IsDedekindDomain : Prop
+  extends IsDomain A, IsDedekindRing A
 
 attribute [instance 90] IsDedekindDomain.toIsDomain
 

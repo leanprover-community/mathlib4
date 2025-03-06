@@ -560,7 +560,7 @@ instance : HasLimit (Discrete.functor Z).op := hasLimit_op_of_hasColimit (Discre
 instance : HasLimit ((Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op) :=
   hasLimitEquivalenceComp (Discrete.opposite α).symm
 
-instance : HasProduct (op <| Z ·) := hasLimitOfIso
+instance : HasProduct (op <| Z ·) := hasLimit_of_iso
   ((Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl)) :
     (Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op ≅
     Discrete.functor (op <| Z ·))
@@ -657,7 +657,7 @@ instance : HasColimit (Discrete.functor Z).op := hasColimit_op_of_hasLimit (Disc
 instance : HasColimit ((Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op) :=
   hasColimit_equivalence_comp (Discrete.opposite α).symm
 
-instance : HasCoproduct (op <| Z ·) := hasColimitOfIso
+instance : HasCoproduct (op <| Z ·) := hasColimit_of_iso
   ((Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl)) :
     (Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op ≅
     Discrete.functor (op <| Z ·)).symm

@@ -50,7 +50,7 @@ private lemma edgeDensity_badVertices_le (hε : 0 ≤ ε) (dst : 2 * ε ≤ G.ed
 
 private lemma card_badVertices_le (dst : 2 * ε ≤ G.edgeDensity s t) (hst : G.IsUniform ε s t) :
     #(badVertices G ε s t) ≤ #s * ε := by
-  have hε : ε ≤ 1 := (le_mul_of_one_le_of_le_of_nonneg (by norm_num) le_rfl hst.pos.le).trans
+  have hε : ε ≤ 1 := (le_rfl.trans <| le_mul_of_one_le_left hst.pos.le (by norm_num)).trans
     (dst.trans <| by exact_mod_cast edgeDensity_le_one _ _ _)
   by_contra! h
   have : |(G.edgeDensity (badVertices G ε s t) t - G.edgeDensity s t : ℝ)| < ε :=

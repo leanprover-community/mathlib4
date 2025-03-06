@@ -147,7 +147,7 @@ lemma isWeaklyRegular_iff_Fin (rs : List R) :
 
 /-- A weakly regular sequence `rs` on `M` is regular if also `M/rsM ≠ 0`. -/
 @[mk_iff]
-structure IsRegular (rs : List R) extends IsWeaklyRegular M rs : Prop where
+structure IsRegular (rs : List R) : Prop extends IsWeaklyRegular M rs where
   top_ne_smul : (⊤ : Submodule R M) ≠ Ideal.ofList rs • ⊤
 
 end Definitions

@@ -3,12 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Data.Finset.Sort
-import Mathlib.Tactic.FastInstance
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+import Mathlib.Algebra.Ring.Action.Rat
+import Mathlib.Data.Finset.Sort
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Theory of univariate polynomials
@@ -267,6 +267,18 @@ instance inhabited : Inhabited R[X] :=
   ⟨0⟩
 
 instance instNatCast : NatCast R[X] where natCast n := ofFinsupp n
+
+@[simp]
+theorem ofFinsupp_natCast (n : ℕ) : (⟨n⟩ : R[X]) = n := rfl
+
+@[simp]
+theorem toFinsupp_natCast (n : ℕ) : (n : R[X]).toFinsupp = n := rfl
+
+@[simp]
+theorem ofFinsupp_ofNat (n : ℕ) [n.AtLeastTwo] : (⟨ofNat(n)⟩ : R[X]) = ofNat(n) := rfl
+
+@[simp]
+theorem toFinsupp_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R[X]).toFinsupp = ofNat(n) := rfl
 
 instance semiring : Semiring R[X] :=
   fast_instance% Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero
@@ -1070,6 +1082,12 @@ theorem toFinsupp_zsmul (a : ℤ) (b : R[X]) :
   rfl
 
 instance instIntCast : IntCast R[X] where intCast n := ofFinsupp n
+
+@[simp]
+theorem ofFinsupp_intCast (z : ℤ) : (⟨z⟩ : R[X]) = z := rfl
+
+@[simp]
+theorem toFinsupp_intCast (z : ℤ) : (z : R[X]).toFinsupp = z := rfl
 
 instance ring : Ring R[X] :=
   fast_instance% Function.Injective.ring toFinsupp toFinsupp_injective (toFinsupp_zero (R := R))

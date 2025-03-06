@@ -110,7 +110,7 @@ variable {f} (h : i₀ ≠ i₁) {K : HomologicalComplex C c} (φ₀ : X₀ ⟶ 
   (hφ : ∀ (k : ι), c.Rel i₁ k → φ₁ ≫ K.d i₁ k = 0)
 
 open Classical in
-/-- Constructor for morphisms from a homological complex `double f hi₀₁`.  -/
+/-- Constructor for morphisms from a homological complex `double f hi₀₁`. -/
 noncomputable def mkHomFromDouble : double f hi₀₁ ⟶ K where
   f k :=
     if hk₀ : k = i₀ then

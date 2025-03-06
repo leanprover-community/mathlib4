@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Kim Morrison
 -/
 import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.LinearAlgebra.LinearIndependent.Defs
 import Mathlib.SetTheory.Cardinal.Cofinality
 
 /-!

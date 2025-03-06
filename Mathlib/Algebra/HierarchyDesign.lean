@@ -182,8 +182,6 @@ briefly listing the parts of the API which still need to be provided.
 Hopefully this document makes it easy to assemble this list.
 
 Another alternative to a TODO list in the doc-strings is adding Github issues.
-
-
 -/
 
 

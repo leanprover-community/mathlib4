@@ -181,9 +181,7 @@ theorem symm_comp_self (h : X ≃ₜ Y) : h.symm ∘ h = id :=
 theorem self_comp_symm (h : X ≃ₜ Y) : h ∘ h.symm = id :=
   funext h.apply_symm_apply
 
-@[simp]
-theorem range_coe (h : X ≃ₜ Y) : range h = univ :=
-  h.surjective.range_eq
+theorem range_coe (h : X ≃ₜ Y) : range h = univ := by simp
 
 theorem image_symm (h : X ≃ₜ Y) : image h.symm = preimage h :=
   funext h.symm.toEquiv.image_eq_preimage
@@ -782,7 +780,7 @@ theorem _root_.Fin.continuous_append (m n : ℕ) :
   exact Homeomorph.continuous_toFun _
 
 /-- The natural homeomorphism between `(Fin m → X) × (Fin n → X)` and `Fin (m + n) → X`.
-`Fin.appendEquiv` as a homeomorphism.-/
+`Fin.appendEquiv` as a homeomorphism -/
 @[simps!]
 def _root_.Fin.appendHomeomorph (m n : ℕ) : (Fin m → X) × (Fin n → X) ≃ₜ (Fin (m + n) → X) where
   toEquiv := Fin.appendEquiv m n
@@ -962,7 +960,7 @@ theorem continuous_symm_of_equiv_compact_to_t2 [CompactSpace X] [T2Space Y] {f :
 
 This is not true when T2 is weakened to T1
 (see `Continuous.homeoOfEquivCompactToT2.t1_counterexample`). -/
-@[simps toEquiv] -- Porting note: was `@[simps]`
+@[simps toEquiv]
 def homeoOfEquivCompactToT2 [CompactSpace X] [T2Space Y] {f : X ≃ Y} (hf : Continuous f) : X ≃ₜ Y :=
   { f with
     continuous_toFun := hf
@@ -1090,7 +1088,7 @@ lemma IsHomeomorph.pi_map {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalS
     IsHomeomorph (fun (x : ∀ i, X i) i ↦ f i (x i)) :=
   (Homeomorph.piCongrRight fun i ↦ (h i).homeomorph (f i)).isHomeomorph
 
-/-- `HomeomorphClass F A B` states that `F` is a type of homeomorphisms.-/
+/-- `HomeomorphClass F A B` states that `F` is a type of homeomorphisms. -/
 class HomeomorphClass (F : Type*) (A B : outParam Type*)
     [TopologicalSpace A] [TopologicalSpace B] [h : EquivLike F A B] : Prop where
   map_continuous : ∀ (f : F), Continuous f

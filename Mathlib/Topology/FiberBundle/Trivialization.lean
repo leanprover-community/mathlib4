@@ -169,7 +169,7 @@ theorem preimage_symm_proj_inter (s : Set B) :
     e.toPartialEquiv.symm ⁻¹' (proj ⁻¹' s) ∩ e.baseSet ×ˢ univ = (s ∩ e.baseSet) ×ˢ univ := by
   ext ⟨x, y⟩
   suffices x ∈ e.baseSet → (proj (e.toPartialEquiv.symm (x, y)) ∈ s ↔ x ∈ s) by
-    simpa only [prod_mk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ, and_congr_left_iff]
+    simpa only [prodMk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ, and_congr_left_iff]
   intro h
   rw [e.proj_symm_apply' h]
 
@@ -769,7 +769,7 @@ variable {ι : Type*} [TopologicalSpace ι] [LocallyCompactPair ι T.baseSet]
   {γ : C(ι, T.baseSet)} {i : ι} {e : T.source}
 
 /-- Extension of `liftCM` to continuous maps taking values in `T.baseSet` (local version of
-homotopy lifting).-/
+homotopy lifting) -/
 def clift (T : Trivialization F proj) [LocallyCompactPair ι T.baseSet] :
     C(T.source × C(ι, T.baseSet), C(ι, T.source)) := by
   let Ψ : C((T.source × C(ι, T.baseSet)) × ι, C(ι, T.baseSet) × ι) :=

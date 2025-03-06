@@ -507,7 +507,7 @@ def sModNat (q : ℕ) : ℕ → ℕ
 theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : ℤ) = sMod p k := by
   have h1 := calc
     4 = 2 ^ 2 := by norm_num
-    _ ≤ 2 ^ p := Nat.pow_le_pow_of_le_right (by norm_num) hp
+    _ ≤ 2 ^ p := Nat.pow_le_pow_right (by norm_num) hp
   have h2 : 1 ≤ 2 ^ p := by omega
   induction k with
   | zero =>

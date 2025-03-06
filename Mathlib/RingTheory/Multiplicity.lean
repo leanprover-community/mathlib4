@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes, Daniel Weber
 -/
 import Batteries.Data.Nat.Gcd
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.GroupWithZero.Associated
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.ENat.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Multiplicity of a divisor

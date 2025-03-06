@@ -226,7 +226,7 @@ instance (priority := 100) IsLocallyNoetherian.quasiSeparatedSpace [IsLocallyNoe
 
 /-- A scheme `X` is Noetherian if it is locally Noetherian and compact. -/
 @[mk_iff]
-class IsNoetherian (X : Scheme) extends IsLocallyNoetherian X, CompactSpace X : Prop
+class IsNoetherian (X : Scheme) : Prop extends IsLocallyNoetherian X, CompactSpace X
 
 /-- A scheme is Noetherian if and only if it is covered by finitely many affine opens whose
 sections are noetherian rings. -/
