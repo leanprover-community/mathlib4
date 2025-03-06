@@ -148,7 +148,6 @@ theorem eqvGen_of_π_eq
     Relation.EqvGen
       (Function.Coequalizer.Rel 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap) x y := by
   delta GlueData.π Multicoequalizer.sigmaπ at h
-  -- Porting note: inlined `inferInstance` instead of leaving as a side goal.
   replace h : coequalizer.π D.diagram.fstSigmaMap D.diagram.sndSigmaMap x =
       coequalizer.π D.diagram.fstSigmaMap D.diagram.sndSigmaMap y :=
     (TopCat.mono_iff_injective (Multicoequalizer.isoCoequalizer 𝖣.diagram).inv).mp
@@ -355,7 +354,6 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     convert congr_arg Subtype.val (h.t_inv k i ⟨x, hx'⟩) using 3
     refine Subtype.ext ?_
     exact h.cocycle i j k ⟨x, hx⟩ hx'
-  -- Porting note: was not necessary in mathlib3
   f_mono _ _ := (TopCat.mono_iff_injective _).mpr fun _ _ h => Subtype.ext h
 
 variable {α : Type u} [TopologicalSpace α] {J : Type u} (U : J → Opens α)
