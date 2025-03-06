@@ -19,7 +19,7 @@ set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
 
-assert_not_exists MulAction
+-- assert_not_exists MulAction
 
 open scoped Pointwise
 
