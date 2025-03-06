@@ -3,6 +3,7 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Commutator.Finite
 import Mathlib.GroupTheory.Transfer
@@ -211,7 +212,7 @@ theorem card_commutator_le_of_finite_commutatorSet [Finite (commutatorSet G)] :
   rw [card_commutator_closureCommutatorRepresentatives] at h2
   replace h1 :=
     h1.trans
-      (Nat.pow_le_pow_of_le_right Finite.card_pos (rank_closureCommutatorRepresentatives_le G))
+      (Nat.pow_le_pow_right Finite.card_pos (rank_closureCommutatorRepresentatives_le G))
   replace h2 := h2.trans (pow_dvd_pow _ (add_le_add_right (mul_le_mul_right' h1 _) 1))
   rw [← pow_succ] at h2
   refine (Nat.le_of_dvd ?_ h2).trans (Nat.pow_le_pow_left h1 _)

@@ -37,6 +37,11 @@ theorem stdBasisMatrix_eq_of_single_single (i : m) (j : n) (a : α) :
   by_cases hi : i = a <;> by_cases hj : j = b <;> simp [*]
 
 @[simp]
+theorem of_symm_stdBasisMatrix (i : m) (j : n) (a : α) :
+    of.symm (stdBasisMatrix i j a) = Pi.single i (Pi.single j a) :=
+  congr_arg of.symm <| stdBasisMatrix_eq_of_single_single i j a
+
+@[simp]
 theorem smul_stdBasisMatrix [SMulZeroClass R α] (r : R) (i : m) (j : n) (a : α) :
     r • stdBasisMatrix i j a = stdBasisMatrix i j (r • a) := by
   unfold stdBasisMatrix
@@ -83,22 +88,11 @@ theorem matrix_eq_sum_stdBasisMatrix [AddCommMonoid α] [Fintype m] [Fintype n] 
   rw [← Fintype.sum_prod_type']
   simp [stdBasisMatrix, Matrix.sum_apply, Matrix.of_apply, ← Prod.mk.inj_iff]
 
-@[deprecated (since := "2024-08-11")] alias matrix_eq_sum_std_basis := matrix_eq_sum_stdBasisMatrix
-
 theorem stdBasisMatrix_eq_single_vecMulVec_single [MulZeroOneClass α] (i : m) (j : n) :
     stdBasisMatrix i j (1 : α) = vecMulVec (Pi.single i 1) (Pi.single j 1) := by
   ext i' j'
   -- Porting note: lean3 didn't apply `mul_ite`.
   simp [-mul_ite, stdBasisMatrix, vecMulVec, ite_and, Pi.single_apply, eq_comm]
-
--- TODO: tie this up with the `Basis` machinery of linear algebra
--- this is not completely trivial because we are indexing by two types, instead of one
-@[deprecated stdBasisMatrix_eq_single_vecMulVec_single (since := "2024-08-11")]
-theorem std_basis_eq_basis_mul_basis [MulZeroOneClass α] (i : m) (j : n) :
-    stdBasisMatrix i j (1 : α) =
-      vecMulVec (fun i' => ite (i = i') 1 0) fun j' => ite (j = j') 1 0 := by
-  rw [stdBasisMatrix_eq_single_vecMulVec_single]
-  congr! with i <;> simp only [Pi.single_apply, eq_comm]
 
 -- todo: the old proof used fintypes, I don't know `Finsupp` but this feels generalizable
 @[elab_as_elim]

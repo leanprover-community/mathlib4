@@ -42,7 +42,7 @@ structure ContinuousAlgEquiv (R A B : Type*) [CommSemiring R]
     [Algebra R B] extends A ≃ₐ[R] B, A ≃ₜ B
 
 @[inherit_doc]
-notation:50 A " ≃A[" R "]" B => ContinuousAlgEquiv R A B
+notation:50 A " ≃A[" R "] " B => ContinuousAlgEquiv R A B
 
 attribute [nolint docBlame] ContinuousAlgEquiv.toHomeomorph
 
@@ -53,8 +53,8 @@ attribute [nolint docBlame] ContinuousAlgEquiv.toHomeomorph
 -/
 class ContinuousAlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
     [Semiring A] [TopologicalSpace A] [Semiring B] [TopologicalSpace B]
-    [Algebra R A] [Algebra R B] [EquivLike F A B]
-    extends AlgEquivClass F R A B, HomeomorphClass F A B : Prop
+    [Algebra R A] [Algebra R B] [EquivLike F A B] : Prop
+    extends AlgEquivClass F R A B, HomeomorphClass F A B
 
 namespace ContinuousAlgEquiv
 
