@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Huanyu Zheng, Weichen Jiao, Yi Yuan
 -/
 import Mathlib.Algebra.Exact
-import Mathlib.RingTheory.FilteredAlgebra.FilteredRingHom
+import Mathlib.RingTheory.FilteredAlgebra.FilteredHom
 
 /-!
 
