@@ -1455,6 +1455,22 @@ lemma limsup_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (
   rw [key]
   rfl
 
+@[simp, norm_cast]
+lemma ofNNReal_limsup (hf : l.IsBoundedUnder (· ≤ ·) f) :
+    limsup f l = limsup (fun x ↦ (f x : ℝ≥0∞)) l := by
+  refine eq_of_forall_nnreal_iff fun r ↦ ?_
+  simp
+  rw [le_limsup_iff, le_limsup_iff]
+  simp [forall_ennreal]
+
+@[simp, norm_cast]
+lemma ofNNReal_liminf (hf : l.IsCoboundedUnder (· ≥ ·) f) :
+    liminf f l = liminf (fun x ↦ (f x : ℝ≥0∞)) l := by
+  refine eq_of_forall_nnreal_iff fun r ↦ ?_
+  simp
+  rw [le_liminf_iff hf, le_liminf_iff]
+  simp [forall_ennreal]
+
 end LimsupLiminf
 
 end ENNReal -- namespace
