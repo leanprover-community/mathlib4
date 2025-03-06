@@ -103,20 +103,21 @@ def maxColVal_RowPos [LinearOrder α] [AddGroup α] {m : ℕ} {n : ℕ} (M : Mat
     maxMatCol M i k l
   termination_by m - i
 
+-- CHANGE INDECES, uses induction
 /-- The row index of the highest value in column `l` of matrix `M` is greater than or equal to the
 index of row `i`, which is the first row in the matrix. -/
-theorem maxColVal_RowPos_Max2 [LinearOrder α] [AddGroup α] {y : ℕ} {z : ℕ}
-    (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (j : Fin z) :
-    maxColVal_RowPos M i j ≥ i := by
+theorem maxColVal_RowPos_Max2 [LinearOrder α] [AddGroup α] {m : ℕ} {n : ℕ}
+    (M : Matrix (Fin m) (Fin n) α) (i : Fin m) (l : Fin n) :
+    maxColVal_RowPos M i l ≥ i := by
   unfold maxColVal_RowPos
   split_ifs with h
   · exact Preorder.le_refl i
-  · let isucc := (⟨i+1,lessSucc i h⟩ : Fin y)
-    let k := maxColVal_RowPos M isucc j
-    cases' (maxMatColEither M i k j) with h1 h2
+  · let isucc := (⟨i+1,lessSucc i h⟩ : Fin m)
+    let k := maxColVal_RowPos M isucc l
+    cases' (maxMatColEither M i k l) with h1 h2
     · rw [h1]
     · rw [h2]
-      have h3 : isucc ≤ maxColVal_RowPos M isucc j := by
+      have h3 : isucc ≤ maxColVal_RowPos M isucc l := by
         apply maxColVal_RowPos_Max2
       have h4 : i ≤ isucc := by
         rw [Fin.mk_le_mk]
@@ -124,7 +125,7 @@ theorem maxColVal_RowPos_Max2 [LinearOrder α] [AddGroup α] {y : ℕ} {z : ℕ}
       apply Preorder.le_trans i isucc k
       · exact h4
       · exact h3
-      termination_by y - i
+      termination_by m - i
 
 /-! ### Turning elements into zero from a pivot -/
 
@@ -157,36 +158,36 @@ def turnBelowIntoZero [DecidableEq α] [DivisionRing α] {m : ℕ} {n : ℕ}
       turnBelowIntoZero M' isucc j l
 termination_by m - i
 
--- NOT DONE, pretty sure the statement is wrong too
-/-- -/
-theorem turnBelowIntoZeroProof [DecidableEq α] [DivisionRing α] {m : ℕ} {n : ℕ}
-    (M : Matrix (Fin m) (Fin n) α) (i : Fin m) (j : Fin m) (l : Fin n) (h1 : i = (j : ℕ) + 1)
-    (h2 : M j l ≠ 0) :
-    (turnBelowIntoZero M i j l) i l = 0 := by
-  unfold turnBelowIntoZero
-  split_ifs with h3
-  · apply addMulRowToZero
-    exact h2
-  · let isucc := (⟨i+1,lessSucc i h1⟩ : Fin m)
-    unfold_let
-    unfold turnBelowIntoZero
-
-    · done
-    · done
-  · done
-
--- theorem turnBelowIntoZeroProof [DecidableEq α] [DivisionRing α] {y : ℕ} {z : ℕ}
---   (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (j : Fin z) (p : Fin y) :
---   ∀ (k : Fin y), k > i → (turnBelowIntoZero M i j p) k j = 0 := by
---   induction y - i
---   · intro h hk
---     unfold turnBelowIntoZero
+-- -- NOT DONE, pretty sure the statement is wrong too
+-- /-- -/
+-- theorem turnBelowIntoZeroProof [DecidableEq α] [DivisionRing α] {m : ℕ} {n : ℕ}
+--     (M : Matrix (Fin m) (Fin n) α) (i : Fin m) (j : Fin m) (l : Fin n) (h1 : j = (i : ℕ) + 1)
+--     (h2 : M i l ≠ 0) :
+--     (turnBelowIntoZero M i j l) j l = 0 := by
+--   unfold turnBelowIntoZero
+--   split_ifs with h3
+--   · apply addMulRowToZero
+--     exact h2
+--   · let isucc := (⟨i+1,lessSucc i h1⟩ : Fin m)
 --     unfold_let
---     split_ifs with h1
---     ·
+--     unfold turnBelowIntoZero
 
 --     · done
---   ·
+--     · done
+--   · done
+
+theorem turnBelowIntoZeroProof [DecidableEq α] [DivisionRing α] {y : ℕ} {z : ℕ}
+  (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (j : Fin z) (p : Fin y) :
+  ∀ (k : Fin y), k > i → (turnBelowIntoZero M i j p) k j = 0 := by
+  induction y - i
+  · intro h hk
+    unfold turnBelowIntoZero
+    unfold_let
+    split_ifs with h1
+    ·
+
+    · done
+  ·
 
 /-- Uses the pivot, located at row `i` and column `l` of matrix `M`, to turn the elements above
 into 0, starting by the row above it, `j`, and going all the way up to the top row. This is done by

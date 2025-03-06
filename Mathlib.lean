@@ -2921,6 +2921,7 @@ import Mathlib.Data.Matrix.Diagonal
 import Mathlib.Data.Matrix.DoublyStochastic
 import Mathlib.Data.Matrix.DualNumber
 import Mathlib.Data.Matrix.ElementaryRowOperations
+import Mathlib.Data.Matrix.GaussianElimination
 import Mathlib.Data.Matrix.Hadamard
 import Mathlib.Data.Matrix.Invertible
 import Mathlib.Data.Matrix.Kronecker
