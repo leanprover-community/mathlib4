@@ -42,8 +42,9 @@ variable (k G) in
 /-- The monoidal forgetful functor from `FDRep k G` to `FGModuleCat k`. -/
 def forget := LaxMonoidalFunctor.of (forget₂ (FDRep k G) (FGModuleCat k))
 
-@[simp]
-lemma forget_map (X Y : FDRep k G) (f : X ⟶ Y) : (forget k G).map f = f.hom := rfl
+@[simp] lemma forget_obj (X : FDRep k G) : (forget k G).obj X = X.V := rfl
+
+@[simp] lemma forget_map (X Y : FDRep k G) (f : X ⟶ Y) : (forget k G).map f = f.hom := rfl
 
 /-- Definition of `equivHom g : Aut (forget k G)` by its components. -/
 @[simps]
@@ -114,15 +115,9 @@ end definitions
 
 variable [Fintype G]
 
-@[simp]
-lemma iso_hom_one (b : Type u) [Category b] (a : b) : Iso.hom (1 : Aut a) = 𝟙 a := rfl
-
 lemma equivHom_inj [Nontrivial k] [DecidableEq G] : Function.Injective (equivHom k G) := by
-  rw [injective_iff_map_eq_one]
-  intro s h
-  apply_fun (fun x ↦ (toRightFDRepComp x) (single 1 1) 1) at h
-  simp at h
-  erw [rightRegular_apply] at h
+  intro s t h
+  apply_fun (fun x ↦ (toRightFDRepComp x) (single t 1) 1) at h
   simp_all [single_apply]
 
 /-- An algebra morphism `φ : (G → k) →ₐ[k] k` is an evaluation map. -/
@@ -151,7 +146,7 @@ def mulRepHom : rightFDRep k G ⊗ rightFDRep k G ⟶ rightFDRep k G where
   hom := ofHom (LinearMap.mul' k (G → k))
   comm := by
     intro
-    ext (u : TensorProduct k (G → k) (G → k))
+    ext u
     refine TensorProduct.induction_on u rfl (fun _ _ ↦ rfl) (fun _ _ hx hy ↦ ?_)
     simp only [map_add, hx, hy]
 
@@ -170,11 +165,12 @@ an algebra morphism `(G → k) →ₐ[k] (G → k)`. -/
 def algHomOfRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₐ[k] (G → k) := by
   refine AlgHom.ofLinearMap (toRightFDRepComp η) ?_ (map_mul_toRightFDRepComp η)
   let α_inv : (G → k) → (G → k) := (η.inv.hom.app (rightFDRep k G)).hom
+  suffices (toRightFDRepComp η) (α_inv 1) = (1 : G → k) by
+    have h := this
+    rwa [← one_mul (α_inv 1), map_mul_toRightFDRepComp, h, mul_one] at this
   have := η.inv_hom_id
   apply_fun (fun x ↦ (x.hom.app (rightFDRep k G)).hom (1 : G → k)) at this
-  change (toRightFDRepComp η) (α_inv 1) = (1 : G → k) at this
-  have h := this
-  rwa [← one_mul (α_inv 1), map_mul_toRightFDRepComp, h, mul_one] at this
+  exact this
 
 variable [DecidableEq G]
 
@@ -185,7 +181,7 @@ def leftRegularFDRepHom (s : G) : rightFDRep k G ⟶ rightFDRep k G where
     ext f
     funext _
     apply congrArg f
-    apply mul_assoc
+    exact mul_assoc ..
 
 lemma toRightFDRepComp_in_rightRegular [IsDomain k] (η : Aut (forget k G)) :
     ∃ (s : G), toRightFDRepComp η = rightRegular s := by
@@ -215,6 +211,7 @@ def auxLinearMap {X : FDRep k G} (v : X) : (G → k) →ₗ[k] X where
   map_smul' _ _ := by
     simp only [smul_apply, smul_eq_mul, RingHom.id_apply, smul_sum, smul_smul]
 
+@[simp]
 lemma auxLinearMap_single_id {X : FDRep k G} (v : X) : (auxLinearMap v) (single 1 1) = v := by
   rw [auxLinearMap_apply]
   calc
@@ -232,16 +229,14 @@ lemma auxLinearMap_single_id {X : FDRep k G} (v : X) : (auxLinearMap v) (single 
 def auxFDRepHom (X : FDRep k G) (v : X) : (rightFDRep k G) ⟶ X where
   hom := ofHom (auxLinearMap v)
   comm := by
-    intro (t : G)
-    ext (f : G → k)
-    change (auxLinearMap v) (rightRegular t f) = X.ρ t (auxLinearMap v f)
-    simp only [auxLinearMap_apply, map_sum]
+    intro t
+    ext f
     set φ_term := fun (X : FDRep k G) (f : G → k) v s ↦ (f s) • (X.ρ s⁻¹ v)
     have := sum_map univ (mulRightEmbedding t⁻¹) (φ_term X (rightRegular t f) v)
-    simp only [φ_term, univ_map_embedding] at this
-    rw [this]
+    simp_all [φ_term]
+    rw [← this]
     apply sum_congr rfl
-    simp
+    exact fun _ _ ↦ rfl
 
 lemma toRightFDRepComp_inj : Function.Injective <| @toRightFDRepComp k G _ _ _ := by
   intro η₁ η₂ h
@@ -250,8 +245,7 @@ lemma toRightFDRepComp_inj : Function.Injective <| @toRightFDRepComp k G _ _ _ :
   have h2 := η₂.hom.hom.naturality (auxFDRepHom X v)
   rw [hom_ext h, ← h2] at h1
   apply_fun (Hom.hom · (single 1 1)) at h1
-  simp at h1
-  erw [auxLinearMap_single_id] at h1
+  simp [-auxLinearMap_apply] at h1
   exact h1
 
 lemma equivHom_surj [IsDomain k] : Function.Surjective (equivHom k G) := by
