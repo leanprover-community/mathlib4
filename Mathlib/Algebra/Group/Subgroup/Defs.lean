@@ -661,20 +661,35 @@ def setNormalizer (S : Set G) : Subgroup G where
     rw [ha (a⁻¹ * n * a⁻¹⁻¹)]
     simp only [inv_inv, mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
 
-variable {H}
+variable {H} {S}
+
+@[to_additive]
+theorem setNormalizer_normalizer : setNormalizer (H : Set G) = H.normalizer := rfl
+
+@[to_additive]
+theorem mem_setNormalizer_iff {g : G} :
+  g ∈ setNormalizer S ↔ ∀ s, s ∈ S ↔ g * s * g⁻¹ ∈ S := Iff.rfl
 
 @[to_additive]
 theorem mem_normalizer_iff {g : G} : g ∈ H.normalizer ↔ ∀ h, h ∈ H ↔ g * h * g⁻¹ ∈ H :=
   Iff.rfl
 
 @[to_additive]
-theorem mem_normalizer_iff'' {g : G} : g ∈ H.normalizer ↔ ∀ h : G, h ∈ H ↔ g⁻¹ * h * g ∈ H := by
-  rw [← inv_mem_iff (x := g), mem_normalizer_iff, inv_inv]
+theorem mem_setNormalizer_iff'' {g : G} : g ∈ setNormalizer S ↔ ∀ s, s ∈ S ↔ g⁻¹ * s * g ∈ S := by
+  rw [← inv_mem_iff (x := g), mem_setNormalizer_iff, inv_inv]
 
 @[to_additive]
-theorem mem_normalizer_iff' {g : G} : g ∈ H.normalizer ↔ ∀ n, n * g ∈ H ↔ g * n ∈ H :=
+theorem mem_normalizer_iff'' {g : G} : g ∈ H.normalizer ↔ ∀ h : G, h ∈ H ↔ g⁻¹ * h * g ∈ H :=
+  mem_setNormalizer_iff''
+
+@[to_additive]
+theorem mem_setNormalizer_iff' {g : G} : g ∈ setNormalizer S ↔ ∀ n, n * g ∈ S ↔ g * n ∈ S :=
   ⟨fun h n => by rw [h, mul_assoc, mul_inv_cancel_right], fun h n => by
     rw [mul_assoc, ← h, inv_mul_cancel_right]⟩
+
+@[to_additive]
+theorem mem_normalizer_iff' {g : G} : g ∈ H.normalizer ↔ ∀ n, n * g ∈ H ↔ g * n ∈ H
+:= mem_setNormalizer_iff'
 
 @[to_additive]
 theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
