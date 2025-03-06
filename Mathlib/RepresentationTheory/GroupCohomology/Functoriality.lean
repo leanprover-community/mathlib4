@@ -27,10 +27,6 @@ a normal subgroup `S ≤ G` and a `G`-representation `A`.
 
 universe v u
 
-@[simp]
-lemma QuotientGroup.mk'_comp_subtype {G : Type*} [Group G] (N : Subgroup G) [N.Normal] :
-    (mk' N).comp N.subtype = 1 := by ext; simp
-
 namespace groupCohomology
 open Rep CategoryTheory Representation
 

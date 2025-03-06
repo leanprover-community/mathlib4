@@ -200,8 +200,6 @@ abbrev quotientToInvariants := Rep.of (A.ρ.quotientToInvariants S)
 
 variable (k G)
 
-variable (k G)
-
 /-- The functor sending a representation to its submodule of invariants. -/
 @[simps]
 noncomputable def invariantsFunctor : Rep k G ⥤ ModuleCat k where
