@@ -103,10 +103,10 @@ lemma integral_tiltedReal_self (ht : t ∈ interior (integrableExpSet X μ)) :
 end Integral
 
 lemma memℒp_tiltedReal (ht : t ∈ interior (integrableExpSet X μ)) (p : ℝ≥0) :
-    Memℒp X p (μ.tiltedReal X t) := by
+    MemLp X p (μ.tiltedReal X t) := by
   have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet ht
   by_cases hp : p = 0
-  · simp only [hp, ENNReal.coe_zero, memℒp_zero_iff_aestronglyMeasurable]
+  · simp only [hp, ENNReal.coe_zero, memLp_zero_iff_aestronglyMeasurable]
     exact hX.aestronglyMeasurable.mono_ac (tiltedReal_absolutelyContinuous _ _ _)
   refine ⟨hX.aestronglyMeasurable.mono_ac (tiltedReal_absolutelyContinuous _ _ _), ?_⟩
   rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top]
