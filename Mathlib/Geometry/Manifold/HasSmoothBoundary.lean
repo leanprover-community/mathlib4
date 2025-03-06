@@ -87,7 +87,7 @@ Is a pair `(M₀, f)` of a smooth manifold `M₀` modelled over `(E₀, H₀)` a
 `f : M₀ → M` which is a smooth immersion, such that `range f = I.boundary M`.
 -/
 structure BoundaryManifoldData.{u} (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-    (I : ModelWithCorners ℝ E H) (k : ℕ∞) [IsManifold I k M]
+    (I : ModelWithCorners ℝ E H) (k : WithTop ℕ∞) [IsManifold I k M]
     {E₀ H₀: Type*} [NormedAddCommGroup E₀] [NormedSpace ℝ E₀]
     [TopologicalSpace H₀] (I₀ : ModelWithCorners ℝ E₀ H₀) where
   /-- A `C^k` manifold `M₀` which describes the boundary of `M` -/
