@@ -105,7 +105,7 @@ lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
 @[simps]
 def fromListChain' (x : List α) (x_ne_nil : x ≠ []) (hx : x.Chain' r) : RelSeries r where
   length := x.length - 1
-  toFun i := x[Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x_ne_nil) i]
+  toFun i := x[Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos_iff.mpr x_ne_nil) i]
   step i := List.chain'_iff_get.mp hx i i.2
 
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
@@ -116,7 +116,7 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} wh
   left_inv x := ext (by simp [toList]) <| by ext; dsimp; apply List.get_ofFn
   right_inv x := by
     refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => by dsimp; apply List.get_ofFn)
-    have := Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1
+    have := Nat.succ_pred_eq_of_pos <| List.length_pos_iff.mpr x.2.1
     simp_all [toList]
 
 lemma toList_injective : Function.Injective (RelSeries.toList (r := r)) :=
