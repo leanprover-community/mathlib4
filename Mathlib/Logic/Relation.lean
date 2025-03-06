@@ -187,8 +187,7 @@ theorem _root_.Acc.of_downward_closed (dc : ∀ {a b}, rβ b (f a) → ∃ c, f 
     (ha : Acc (InvImage rβ f) a) : Acc rβ (f a) :=
   ha.of_fibration f fun a _ h ↦
     let ⟨a', he⟩ := dc h
-    -- Porting note: Lean 3 did not need the motive
-    ⟨a', he.substr (p := fun x ↦ rβ x (f a)) h, he⟩
+    ⟨a', by simp_all [InvImage], he⟩
 
 end Fibration
 
