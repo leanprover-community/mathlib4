@@ -8,18 +8,14 @@ import Mathlib.Topology.Covering
 import Mathlib.Topology.UnitInterval
 /-!
 
-# The Homotopy lifting property of covering maps
+# The homotopy lifting property for covering maps
 
-Currently, this file only proves uniqueness of lifting, not existence,
-but under some more general conditions than covering maps, in order to
-apply to situations such as the monodromy theorem for analytic continuations.
 -/
 
 open Topology unitInterval
 
 variable {E X A : Type*} [TopologicalSpace E] [TopologicalSpace X] [TopologicalSpace A] {p : E → X}
 
--- generalize to IsLocalHomeomorphOn?
 /-- If `p : E → X` is a local homeomorphism, and if `g : I × A → E` is a lift of `f : C(I × A, X)`
   continuous on `{0} × A ∪ I × {a}` for some `a : A`, then there exists a neighborhood `N ∈ 𝓝 a`
   and `g' : I × A → E` continuous on `I × N` that agrees with `g` on `{0} × A ∪ I × {a}`.
@@ -130,17 +126,6 @@ theorem monodromy_theorem {γ₀ γ₁ : C(I, X)} (γ : γ₀.HomotopyRel γ₁ 
   · ext; apply Γ_lifts
   · simp_rw [Γ_0]; exact continuous_const
   · exact fun t ↦ (Γ t).2
-
-/-- A map `f` from a path-connected, locally path-connected space `A` to another space `X` lifts
-  through a local homeomorphism `p : E → X` if every path `γ` in `A`, the composed path `f ∘ γ`
-  in `X` lifts to `E` with endpoint only dependent on the endpoint of `γ` and independent of the
-  path chosen. In this theorem, we require that a specific point `a : A` be mapped to a specific
-  point `e : E`. -/
-/- theorem exists_lift_of_locPathConnectedSpace [PathConnectedSpace A] [LocPathConnectedSpace A]
-    (f : C(A, X)) (a : A) (e : E) (he : p e = f a)
-    (ex : ∀ γ : C(I, A), γ 0 = a → ∃ Γ : C(I, E), Γ 0 = e ∧ p ∘ Γ = γ ∘ f)
-    (uniq : ∀ γ γ' : C(I, A), γ 0 = a ∧ γ' 0 = a ∧  )
--/
 
 end IsLocalHomeomorph
 
