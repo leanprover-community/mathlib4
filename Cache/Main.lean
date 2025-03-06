@@ -11,20 +11,21 @@ Usage: cache [COMMAND]
 
 Commands:
   # No privilege required
-  get  [ARGS]  Download linked files missing on the local cache and decompress
-  get! [ARGS]  Download all linked files and decompress
-  get- [ARGS]  Download linked files missing to the local cache, but do no compress
-  pack         Compress non-compressed build files into the local cache
-  pack!        Compress build files into the local cache (no skipping)
-  unpack       Decompress linked already downloaded files
-  unpack!      Decompress linked already downloaded files (no skipping)
-  clean        Delete non-linked files
-  clean!       Delete everything on the local cache
-  lookup       Show information about cache files for the given lean files
+  get  [ARGS]   Download linked files missing on the local cache and decompress
+  get! [ARGS]   Download all linked files and decompress
+  get- [ARGS]   Download linked files missing to the local cache, but do not decompress
+  pack          Compress non-compressed build files into the local cache
+  pack!         Compress build files into the local cache (no skipping)
+  unpack        Decompress linked already downloaded files
+  unpack!       Decompress linked already downloaded files (no skipping)
+  clean         Delete non-linked files
+  clean!        Delete everything on the local cache
+  lookup [ARGS] Show information about cache files for the given lean files
 
   # Privilege required
   put          Run 'mk' then upload linked files missing on the server
   put!         Run 'mk' then upload all linked files
+  put-unpacked 'put' only files not already 'pack'ed; intended for CI use
   commit       Write a commit on the server
   commit!      Overwrite a commit on the server
   collect      TODO
@@ -32,9 +33,9 @@ Commands:
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' should be used manually, when hot-fixes are needed
 
-# The arguments for 'get' and 'get!'
+# The arguments for 'get', 'get!' and 'get-'
 
-'get' and 'get!' can process list of paths, allowing the user to be more
+'get', 'get!' and 'get-' can process a list of paths, allowing the user to be more
 specific about what should be downloaded. For example, with automatic glob
 expansion in shell, one can call:
 
@@ -56,14 +57,20 @@ def toPaths (args : List String) : List FilePath :=
     else
       mkFilePath (arg.toName.components.map Name.toString) |>.withExtension "lean"
 
+/-- Commands which (potentially) call `curl` for downloading files -/
 def curlArgs : List String :=
-  ["get", "get!", "get-", "put", "put!", "commit", "commit!"]
+  ["get", "get!", "get-", "put", "put!", "put-unpacked", "commit", "commit!"]
 
+/-- Commands which (potentially) call `leantar` for decompressing downloaded files -/
 def leanTarArgs : List String :=
   ["get", "get!", "pack", "pack!", "unpack", "lookup"]
 
 open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
+  if Lean.versionString == "4.8.0-rc1" && Lean.githash == "b470eb522bfd68ca96938c23f6a1bce79da8a99f" then do
+    println "Unfortunately, you have a broken Lean v4.8.0-rc1 installation."
+    println "Please run `elan toolchain uninstall leanprover/lean4:v4.8.0-rc1` and try again."
+    Process.exit 1
   -- We pass any following arguments to `getHashMemo`,
   -- so we can use the cache on `Archive` or `Counterexamples`.
   let extraRoots := match args with
@@ -72,30 +79,33 @@ def main (args : List String) : IO Unit := do
   if args.isEmpty then
     println help
     Process.exit 0
+  CacheM.run do
   let hashMemo ← getHashMemo extraRoots
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
+  let get (args : List String) (force := false) (decompress := true) := do
+    let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByFilePaths (toPaths args)
+    getFiles hashMap force force goodCurl decompress
+  let pack (overwrite verbose unpackedOnly := false) := do
+    packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
+  let put (overwrite unpackedOnly := false) := do
+    putFiles (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getToken)
   match args with
-  | ["get"] => getFiles hashMap false false goodCurl true
-  | ["get!"] => getFiles hashMap true true goodCurl true
-  | ["get-"] => getFiles hashMap false false goodCurl false
-  | "get"  :: args =>
-    getFiles (← hashMemo.filterByFilePaths (toPaths args)) false false goodCurl true
-  | "get!" :: args =>
-    getFiles (← hashMemo.filterByFilePaths (toPaths args)) true true goodCurl true
-  | "get-" :: args =>
-    getFiles (← hashMemo.filterByFilePaths (toPaths args)) false false goodCurl false
-  | ["pack"] => discard <| packCache hashMap false false (← getGitCommitHash)
-  | ["pack!"] => discard <| packCache hashMap true false (← getGitCommitHash)
+  | "get"  :: args => get args
+  | "get!" :: args => get args (force := true)
+  | "get-" :: args => get args (decompress := false)
+  | ["pack"] => discard <| pack
+  | ["pack!"] => discard <| pack (overwrite := true)
   | ["unpack"] => unpackCache hashMap false
   | ["unpack!"] => unpackCache hashMap true
   | ["clean"] =>
     cleanCache <| hashMap.fold (fun acc _ hash => acc.insert <| CACHEDIR / hash.asLTar) .empty
   | ["clean!"] => cleanCache
-  -- We allow arguments for `put` and `put!` so they can be added to the `roots`.
-  | "put" :: _ => putFiles (← packCache hashMap false true (← getGitCommitHash)) false (← getToken)
-  | "put!" :: _ => putFiles (← packCache hashMap false true (← getGitCommitHash)) true (← getToken)
+  -- We allow arguments for `put*` so they can be added to the `roots`.
+  | "put" :: _ => put
+  | "put!" :: _ => put (overwrite := true)
+  | "put-unpacked" :: _ => put (unpackedOnly := true)
   | ["commit"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMap false (← getToken)

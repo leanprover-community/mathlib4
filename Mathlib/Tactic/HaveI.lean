@@ -3,8 +3,8 @@ Copyright (c) 2023 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-import Std.Tactic.HaveI
 
+import Mathlib.Init
 /-!
 # Variants of `haveI`/`letI` for use in do-notation.
 
@@ -41,3 +41,5 @@ macro_rules
 -/
 macro "letI' " hd:haveDecl : doElem =>
   `(doElem| assert! letIDummy $hd:haveDecl)
+
+end Mathlib.Tactic.HaveI

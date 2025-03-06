@@ -6,8 +6,6 @@ Authors: Kevin Buzzard
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 
-#align_import imo.imo2019_q1 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
-
 /-!
 # IMO 2019 Q1
 
@@ -33,15 +31,15 @@ theorem imo2019_q1 (f : ℤ → ℤ) :
   -- functional equation
   -- Using `h` for `(0, b)` and `(-1, b + 1)`, we get `f (b + 1) = f b + m`
   obtain ⟨m, H⟩ : ∃ m, ∀ b, f (b + 1) = f b + m := by
-    refine' ⟨(f 0 - f (-2)) / 2, fun b => _⟩
-    refine' sub_eq_iff_eq_add'.1 (Int.eq_ediv_of_mul_eq_right two_ne_zero _)
+    refine ⟨(f 0 - f (-2)) / 2, fun b => ?_⟩
+    refine sub_eq_iff_eq_add'.1 (Int.eq_ediv_of_mul_eq_right two_ne_zero ?_)
     have h1 : f 0 + 2 * f b = f (f b) := by simpa using hf 0 b
     have h2 : f (-2) + 2 * f (b + 1) = f (f b) := by simpa using hf (-1) (b + 1)
     linarith
   -- Hence, `f` is an affine map, `f b = f 0 + m * b`
   obtain ⟨c, H⟩ : ∃ c, ∀ b, f b = c + m * b := by
-    refine' ⟨f 0, fun b => _⟩
-    induction' b using Int.induction_on with b ihb b ihb
+    refine ⟨f 0, fun b => ?_⟩
+    induction' b with b ihb b ihb
     · simp
     · simp [H, ihb, mul_add, add_assoc]
     · rw [← sub_eq_of_eq_add (H _)]
@@ -51,4 +49,3 @@ theorem imo2019_q1 (f : ℤ → ℤ) :
   obtain rfl | rfl : 2 = m ∨ m = 0 := by simpa [H, mul_add, H3] using hf 0 1
   · right; use c; ext b; simp [H, add_comm]
   · left; ext b; simpa [H, two_ne_zero] using H3
-#align imo2019_q1 imo2019_q1

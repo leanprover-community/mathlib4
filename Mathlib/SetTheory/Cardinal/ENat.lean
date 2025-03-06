@@ -1,17 +1,18 @@
 /-
-Copyright (c) 2024 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
-import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Algebra.Order.Hom.Ring
+import Mathlib.Data.ENat.Basic
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Conversion between `Cardinal` and `ℕ∞`
 
 In this file we define a coercion `Cardinal.ofENat : ℕ∞ → Cardinal`
 and a projection `Cardinal.toENat : Cardinal →+*o ℕ∞`.
-We also prove basic theorems about these definitons.
+We also prove basic theorems about these definitions.
 
 ## Implementation notes
 
@@ -26,6 +27,8 @@ Since it is not registered as a coercion, the argument about delaboration does n
 
 set theory, cardinals, extended natural numbers
 -/
+
+assert_not_exists Field
 
 open Function Set
 universe u v
@@ -47,7 +50,7 @@ instance : Coe ENat Cardinal := ⟨Cardinal.ofENat⟩
 @[simp, norm_cast] lemma ofENat_one : ofENat 1 = 1 := rfl
 
 @[simp, norm_cast] lemma ofENat_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ((no_index (OfNat.ofNat n : ℕ∞)) : Cardinal) = OfNat.ofNat n :=
+    ((ofNat(n) : ℕ∞) : Cardinal) = OfNat.ofNat n :=
   rfl
 
 lemma ofENat_strictMono : StrictMono ofENat :=
@@ -66,14 +69,14 @@ lemma ofENat_lt_aleph0 {m : ℕ∞} : (m : Cardinal) < ℵ₀ ↔ m < ⊤ :=
 @[simp] lemma ofENat_lt_nat {m : ℕ∞} {n : ℕ} : ofENat m < n ↔ m < n := by norm_cast
 
 @[simp] lemma ofENat_lt_ofNat {m : ℕ∞} {n : ℕ} [n.AtLeastTwo] :
-    ofENat m < no_index (OfNat.ofNat n) ↔ m < OfNat.ofNat n := ofENat_lt_nat
+    ofENat m < ofNat(n) ↔ m < OfNat.ofNat n := ofENat_lt_nat
 
 @[simp] lemma nat_lt_ofENat {m : ℕ} {n : ℕ∞} : (m : Cardinal) < n ↔ m < n := by norm_cast
 @[simp] lemma ofENat_pos {m : ℕ∞} : 0 < (m : Cardinal) ↔ 0 < m := by norm_cast
 @[simp] lemma one_lt_ofENat {m : ℕ∞} : 1 < (m : Cardinal) ↔ 1 < m := by norm_cast
 
 @[simp, norm_cast] lemma ofNat_lt_ofENat {m : ℕ} [m.AtLeastTwo] {n : ℕ∞} :
-  no_index (OfNat.ofNat m : Cardinal) < n ↔ OfNat.ofNat m < n := nat_lt_ofENat
+  (ofNat(m) : Cardinal) < n ↔ OfNat.ofNat m < n := nat_lt_ofENat
 
 lemma ofENat_mono : Monotone ofENat := ofENat_strictMono.monotone
 
@@ -87,14 +90,14 @@ lemma ofENat_le_ofENat {m n : ℕ∞} : (m : Cardinal) ≤ n ↔ m ≤ n := ofEN
 @[simp] lemma ofENat_le_one {m : ℕ∞} : ofENat m ≤ 1 ↔ m ≤ 1 := by norm_cast
 
 @[simp] lemma ofENat_le_ofNat {m : ℕ∞} {n : ℕ} [n.AtLeastTwo] :
-    ofENat m ≤ no_index (OfNat.ofNat n) ↔ m ≤ OfNat.ofNat n := ofENat_le_nat
+    ofENat m ≤ ofNat(n) ↔ m ≤ OfNat.ofNat n := ofENat_le_nat
 
 @[simp] lemma nat_le_ofENat {m : ℕ} {n : ℕ∞} : (m : Cardinal) ≤ n ↔ m ≤ n := by norm_cast
 @[simp] lemma one_le_ofENat {n : ℕ∞} : 1 ≤ (n : Cardinal) ↔ 1 ≤ n := by norm_cast
 
 @[simp]
 lemma ofNat_le_ofENat {m : ℕ} [m.AtLeastTwo] {n : ℕ∞} :
-    no_index (OfNat.ofNat m : Cardinal) ≤ n ↔ OfNat.ofNat m ≤ n := nat_le_ofENat
+    (ofNat(m) : Cardinal) ≤ n ↔ OfNat.ofNat m ≤ n := nat_le_ofENat
 
 lemma ofENat_injective : Injective ofENat := ofENat_strictMono.injective
 
@@ -111,10 +114,10 @@ lemma ofENat_inj {m n : ℕ∞} : (m : Cardinal) = n ↔ m = n := ofENat_injecti
 @[simp] lemma one_eq_ofENat {m : ℕ∞} : 1 = (m : Cardinal) ↔ m = 1 := by norm_cast; apply eq_comm
 
 @[simp] lemma ofENat_eq_ofNat {m : ℕ∞} {n : ℕ} [n.AtLeastTwo] :
-    (m : Cardinal) = no_index (OfNat.ofNat n) ↔ m = OfNat.ofNat n := ofENat_eq_nat
+    (m : Cardinal) = ofNat(n) ↔ m = OfNat.ofNat n := ofENat_eq_nat
 
 @[simp] lemma ofNat_eq_ofENat {m : ℕ} {n : ℕ∞} [m.AtLeastTwo] :
-    no_index (OfNat.ofNat m) = (n : Cardinal) ↔ OfNat.ofNat m = n := nat_eq_ofENat
+    ofNat(m) = (n : Cardinal) ↔ OfNat.ofNat m = n := nat_eq_ofENat
 
 @[simp, norm_cast] lemma lift_ofENat : ∀ m : ℕ∞, lift.{u, v} m = m
   | (m : ℕ) => lift_natCast m
@@ -169,10 +172,13 @@ lemma toENatAux_gc : GaloisConnection (↑) toENatAux := fun n x ↦ by
   | inl hx => lift x to ℕ using hx; simp
   | inr hx => simp [toENatAux_eq_top hx, (ofENat_le_aleph0 n).trans hx]
 
-lemma toENatAux_eq_nat {x : Cardinal} {n : ℕ} : toENatAux x = n ↔ x = n := by
+theorem toENatAux_le_nat {x : Cardinal} {n : ℕ} : toENatAux x ≤ n ↔ x ≤ n := by
   cases lt_or_le x ℵ₀ with
   | inl hx => lift x to ℕ using hx; simp
-  | inr hx => simpa [toENatAux_eq_top hx] using ((nat_lt_aleph0 n).trans_le hx).ne'
+  | inr hx => simp [toENatAux_eq_top hx, (nat_lt_aleph0 n).trans_le hx]
+
+lemma toENatAux_eq_nat {x : Cardinal} {n : ℕ} : toENatAux x = n ↔ x = n := by
+  simp only [le_antisymm_iff, toENatAux_le_nat, ← toENatAux_gc _, ofENat_nat]
 
 lemma toENatAux_eq_zero {x : Cardinal} : toENatAux x = 0 ↔ x = 0 := toENatAux_eq_nat
 
@@ -193,7 +199,7 @@ noncomputable def toENat : Cardinal.{u} →+*o ℕ∞ where
       · simp
       · simp only [toENatAux_eq_top hy]
         rw [toENatAux_eq_top, ENat.mul_top]
-        · rwa [Ne.def, toENatAux_eq_zero]
+        · rwa [Ne, toENatAux_eq_zero]
         · exact le_mul_of_one_le_of_le (one_le_iff_ne_zero.2 hx) hy
   map_add' x y := by
     wlog hle : x ≤ y; · rw [add_comm, this y x (le_of_not_le hle), add_comm]
@@ -220,7 +226,7 @@ noncomputable def gciENat : GaloisCoinsertion (↑) toENat :=
   enat_gc.toGaloisCoinsertion fun n ↦ (toENat_ofENat n).le
 
 lemma toENat_strictMonoOn : StrictMonoOn toENat (Iic ℵ₀) := by
-  simp only [← range_ofENat, StrictMonoOn, forall_range_iff, toENat_ofENat, ofENat_lt_ofENat]
+  simp only [← range_ofENat, StrictMonoOn, forall_mem_range, toENat_ofENat, ofENat_lt_ofENat]
   exact fun _ _ ↦ id
 
 lemma toENat_injOn : InjOn toENat (Iic ℵ₀) := toENat_strictMonoOn.injOn
@@ -236,14 +242,46 @@ lemma ofENat_toENat_eq_self {a : Cardinal} : toENat a = a ↔ a ≤ ℵ₀ := by
 
 lemma toENat_nat (n : ℕ) : toENat n = n := map_natCast _ n
 
+@[simp] lemma toENat_le_nat {a : Cardinal} {n : ℕ} : toENat a ≤ n ↔ a ≤ n := toENatAux_le_nat
 @[simp] lemma toENat_eq_nat {a : Cardinal} {n : ℕ} : toENat a = n ↔ a = n := toENatAux_eq_nat
 @[simp] lemma toENat_eq_zero {a : Cardinal} : toENat a = 0 ↔ a = 0 := toENatAux_eq_zero
+@[simp] lemma toENat_le_one {a : Cardinal} : toENat a ≤ 1 ↔ a ≤ 1 := toENat_le_nat
 @[simp] lemma toENat_eq_one {a : Cardinal} : toENat a = 1 ↔ a = 1 := toENat_eq_nat
 
+@[simp] lemma toENat_le_ofNat {a : Cardinal} {n : ℕ} [n.AtLeastTwo] :
+    toENat a ≤ ofNat(n) ↔ a ≤ OfNat.ofNat n := toENat_le_nat
+
 @[simp] lemma toENat_eq_ofNat {a : Cardinal} {n : ℕ} [n.AtLeastTwo] :
-    toENat a = no_index (OfNat.ofNat n) ↔ a = OfNat.ofNat n := toENat_eq_nat
+    toENat a = ofNat(n) ↔ a = OfNat.ofNat n := toENat_eq_nat
 
 @[simp] lemma toENat_eq_top {a : Cardinal} : toENat a = ⊤ ↔ ℵ₀ ≤ a := enat_gc.u_eq_top
+
+lemma toENat_ne_top {a : Cardinal} : toENat a ≠ ⊤ ↔ a < ℵ₀ := by simp
+
+@[simp] lemma toENat_lt_top {a : Cardinal} : toENat a < ⊤ ↔ a < ℵ₀ := by simp [lt_top_iff_ne_top]
+
+@[simp]
+theorem toENat_lift {a : Cardinal.{v}} : toENat (lift.{u} a) = toENat a := by
+  cases le_total a ℵ₀ with
+  | inl ha => lift a to ℕ∞ using ha; simp
+  | inr ha => simp [toENat_eq_top.2, ha]
+
+theorem toENat_congr {α : Type u} {β : Type v} (e : α ≃ β) : toENat #α = toENat #β := by
+  rw [← toENat_lift, lift_mk_eq.{_, _,v}.mpr ⟨e⟩, toENat_lift]
+
+lemma toENat_le_iff_of_le_aleph0 {c c' : Cardinal} (h : c ≤ ℵ₀) :
+    toENat c ≤ toENat c' ↔ c ≤ c' := by
+  lift c to ℕ∞ using h
+  simp_rw [toENat_ofENat, enat_gc _]
+
+lemma toENat_le_iff_of_lt_aleph0 {c c' : Cardinal} (hc' : c' < ℵ₀) :
+    toENat c ≤ toENat c' ↔ c ≤ c' := by
+  lift c' to ℕ using hc'
+  simp_rw [toENat_nat, ← toENat_le_nat]
+
+lemma toENat_eq_iff_of_le_aleph0 {c c' : Cardinal} (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) :
+    toENat c = toENat c' ↔ c = c' :=
+  toENat_strictMonoOn.injOn.eq_iff hc hc'
 
 @[simp, norm_cast]
 lemma ofENat_add (m n : ℕ∞) : ofENat (m + n) = m + n := by apply toENat_injOn <;> simp
@@ -253,7 +291,7 @@ lemma ofENat_add (m n : ℕ∞) : ofENat (m + n) = m + n := by apply toENat_injO
 @[simp] lemma ofENat_add_aleph0 (m : ℕ∞) : m + ℵ₀ = ℵ₀ := by rw [add_comm, aleph0_add_ofENat]
 
 @[simp] lemma ofENat_mul_aleph0 {m : ℕ∞} (hm : m ≠ 0) : ↑m * ℵ₀ = ℵ₀ := by
-  induction m using ENat.recTopCoe with
+  induction m with
   | top => exact aleph0_mul_aleph0
   | coe m => rw [ofENat_nat, nat_mul_aleph0 (mod_cast hm)]
 
@@ -273,10 +311,6 @@ def ofENatHom : ℕ∞ →+*o Cardinal where
   map_add' := ofENat_add
   monotone' := ofENat_mono
 
-@[simp] -- TODO: redefine `Cardinal.toNat` as the composition of `ENat.toNat` and `Cardinal.toENat`
-lemma toNat_toENat (a : Cardinal) : ENat.toNat (toENat a) = toNat a :=
-  match lt_or_le a ℵ₀ with
-  | .inl h => by lift a to ℕ using h; simp
-  | .inr h => by rw [toENat_eq_top.2 h, ENat.toNat_top, toNat_apply_of_aleph0_le h]
+
 
 end Cardinal

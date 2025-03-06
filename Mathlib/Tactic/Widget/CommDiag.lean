@@ -93,6 +93,7 @@ def commTriangleM? (e : Expr) : MetaM (Option Html) := do
     #[("A", A), ("B", B), ("C", C),
       ("f", f), ("g", g), ("h", lhs)]
 
+/-- Presenter for a commutative triangle -/
 @[expr_presenter]
 def commutativeTrianglePresenter : ExprPresenter where
   userName := "Commutative triangle"
@@ -126,6 +127,7 @@ def commSquareM? (e : Expr) : MetaM (Option Html) := do
     #[("A", A), ("B", B), ("C", C), ("D", D),
       ("f", f), ("g", g), ("h", h), ("i", i)]
 
+/-- Presenter for a commutative square -/
 @[expr_presenter]
 def commutativeSquarePresenter : ExprPresenter where
   userName := "Commutative square"
@@ -134,3 +136,7 @@ def commutativeSquarePresenter : ExprPresenter where
     if let some d ← commSquareM? type then
       return d
     throwError "Couldn't find a commutative square."
+
+end Widget
+
+end Mathlib.Tactic

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Real.Cardinality
-import Mathlib.Topology.Separation
 import Mathlib.Topology.TietzeExtension
 /-!
 # Not normal topological spaces
@@ -41,7 +40,7 @@ theorem IsClosed.mk_lt_continuum [NormalSpace X] {s : Set X} (hs : IsClosed s)
     -- By the Tietze Extension Theorem, any function `f : C(s, ℝ)` can be extended to `C(X, ℝ)`,
     -- hence `#C(s, ℝ) ≤ #C(X, ℝ)`
     _ ≤ #C(X, ℝ) := by
-      choose f hf using (ContinuousMap.exists_restrict_eq_of_closed · hs)
+      choose f hf using ContinuousMap.exists_restrict_eq (Y := ℝ) hs
       have hfi : Injective f := LeftInverse.injective hf
       exact mk_le_of_injective hfi
     -- Since `t` is dense, restriction `C(X, ℝ) → C(t, ℝ)` is injective, hence `#C(X, ℝ) ≤ #C(t, ℝ)`

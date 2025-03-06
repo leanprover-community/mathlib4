@@ -6,8 +6,6 @@ Authors: Eric Wieser
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 import Mathlib.RingTheory.GradedAlgebra.Basic
 
-#align_import linear_algebra.tensor_algebra.grading from "leanprover-community/mathlib"@"2a7ceb0e411e459553a303d48eecdbb8553bd7ed"
-
 /-!
 # Results about the grading structure of the tensor algebra
 
@@ -15,6 +13,7 @@ The main result is `TensorAlgebra.gradedAlgebra`, which says that the tensor alg
 ℕ-graded algebra.
 -/
 
+suppress_compilation
 
 namespace TensorAlgebra
 
@@ -29,14 +28,12 @@ primarily an auxiliary construction used to provide `TensorAlgebra.gradedAlgebra
 nonrec def GradedAlgebra.ι : M →ₗ[R] ⨁ i : ℕ, ↥(LinearMap.range (ι R : M →ₗ[_] _) ^ i) :=
   DirectSum.lof R ℕ (fun i => ↥(LinearMap.range (ι R : M →ₗ[_] _) ^ i)) 1 ∘ₗ
     (ι R).codRestrict _ fun m => by simpa only [pow_one] using LinearMap.mem_range_self _ m
-#align tensor_algebra.graded_algebra.ι TensorAlgebra.GradedAlgebra.ι
 
 theorem GradedAlgebra.ι_apply (m : M) :
     GradedAlgebra.ι R M m =
       DirectSum.of (fun (i : ℕ) => ↥(LinearMap.range (TensorAlgebra.ι R : M →ₗ[_] _) ^ i)) 1
         ⟨TensorAlgebra.ι R m, by simpa only [pow_one] using LinearMap.mem_range_self _ m⟩ :=
   rfl
-#align tensor_algebra.graded_algebra.ι_apply TensorAlgebra.GradedAlgebra.ι_apply
 
 variable {R M}
 
@@ -50,18 +47,17 @@ instance gradedAlgebra :
         AlgHom.id_apply]
       rw [lift_ι_apply, GradedAlgebra.ι_apply R M, DirectSum.coeAlgHom_of, Subtype.coe_mk])
     fun i x => by
-    cases' x with x hx
+    obtain ⟨x, hx⟩ := x
     dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
-    -- porting note: use new `induction using` support that failed in Lean 3
     induction hx using Submodule.pow_induction_on_left' with
-    | hr r =>
+    | algebraMap r =>
       rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
-    | hadd x y i hx hy ihx ihy =>
-      rw [AlgHom.map_add, ihx, ihy, ← map_add]; rfl
-    | hmul m hm i x hx ih =>
+    | add x y i hx hy ihx ihy =>
+      rw [map_add, ihx, ihy, ← AddMonoidHom.map_add]
+      rfl
+    | mem_mul m hm i x hx ih =>
       obtain ⟨_, rfl⟩ := hm
-      rw [AlgHom.map_mul, ih, lift_ι_apply, GradedAlgebra.ι_apply R M, DirectSum.of_mul_of]
+      rw [map_mul, ih, lift_ι_apply, GradedAlgebra.ι_apply R M, DirectSum.of_mul_of]
       exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext (add_comm _ _) rfl)
-#align tensor_algebra.graded_algebra TensorAlgebra.gradedAlgebra
 
 end TensorAlgebra

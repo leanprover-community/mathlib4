@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.CategoryTheory.Arrow
+import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
@@ -128,3 +128,7 @@ instance : HasTerminal (Factorisation f) := Limits.hasTerminal_of_unique Factori
 def forget : Factorisation f ⥤ C where
   obj := Factorisation.mid
   map f := f.h
+
+end Factorisation
+
+end CategoryTheory

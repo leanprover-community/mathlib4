@@ -1,8 +1,9 @@
 /-
-Copyright (c) 2023 Scott Morrison. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Alex J. Best
+Authors: Kim Morrison, Alex J. Best, Yaël Dillies
 -/
+import Mathlib.Init
 import Qq
 
 /-!
@@ -11,7 +12,6 @@ import Qq
 This file contains some additional functions for using the quote4 library more conveniently.
 -/
 
-set_option autoImplicit true
 open Lean Elab Tactic Meta
 
 namespace Qq
@@ -26,6 +26,18 @@ def inferTypeQ' (e : Expr) : MetaM ((u : Level) × (α : Q(Type $u)) × Q($α)) 
   let some v := (← instantiateLevelMVars u).dec | throwError "not a Type{indentExpr e}"
   pure ⟨v, α, e⟩
 
-theorem QuotedDefEq.rfl : @QuotedDefEq u α a a := ⟨⟩
+theorem QuotedDefEq.rfl {u : Level} {α : Q(Sort u)} {a : Q($α)} : @QuotedDefEq u α a a := ⟨⟩
+
+/-- Return a local declaration whose type is definitionally equal to `sort`.
+
+This is a Qq version of `Lean.Meta.findLocalDeclWithType?` -/
+def findLocalDeclWithTypeQ? {u : Level} (sort : Q(Sort u)) : MetaM (Option Q($sort)) := do
+  let some fvarId ← findLocalDeclWithType? q($sort) | return none
+  return some <| .fvar fvarId
+
+/-- Returns a proof of `p : Prop` using `decide p`.
+
+This is a Qq version of `Lean.Meta.mkDecideProof`. -/
+def mkDecideProofQ (p : Q(Prop)) : MetaM Q($p) := mkDecideProof p
 
 end Qq

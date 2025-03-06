@@ -5,8 +5,6 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
-#align_import category_theory.limits.exact_functor from "leanprover-community/mathlib"@"9fc53308a90fac244ac715308e1f9c969e6843a4"
-
 /-!
 # Bundled exact functors
 
@@ -18,7 +16,7 @@ In this file, we define the categories of bundled left exact, right exact and ex
 -/
 
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 open CategoryTheory.Limits
 
@@ -30,12 +28,9 @@ section
 
 variable (C) (D)
 
--- porting note: removed @[nolint has_nonempty_instance]
 /-- Bundled left-exact functors. -/
 def LeftExactFunctor :=
-  FullSubcategory fun F : C ⥤ D => Nonempty (PreservesFiniteLimits F)
-set_option linter.uppercaseLean3 false in
-#align category_theory.LeftExactFunctor CategoryTheory.LeftExactFunctor
+  FullSubcategory fun F : C ⥤ D => PreservesFiniteLimits F
 
 instance : Category (LeftExactFunctor C D) :=
   FullSubcategory.category _
@@ -46,21 +41,16 @@ infixr:26 " ⥤ₗ " => LeftExactFunctor
 /-- A left exact functor is in particular a functor. -/
 def LeftExactFunctor.forget : (C ⥤ₗ D) ⥤ C ⥤ D :=
   fullSubcategoryInclusion _
-set_option linter.uppercaseLean3 false in
-#align category_theory.LeftExactFunctor.forget CategoryTheory.LeftExactFunctor.forget
 
-instance : Full (LeftExactFunctor.forget C D) :=
+instance : (LeftExactFunctor.forget C D).Full :=
   FullSubcategory.full _
 
-instance : Faithful (LeftExactFunctor.forget C D) :=
+instance : (LeftExactFunctor.forget C D).Faithful :=
   FullSubcategory.faithful _
 
--- porting note: removed @[nolint has_nonempty_instance]
 /-- Bundled right-exact functors. -/
 def RightExactFunctor :=
-  FullSubcategory fun F : C ⥤ D => Nonempty (PreservesFiniteColimits F)
-set_option linter.uppercaseLean3 false in
-#align category_theory.RightExactFunctor CategoryTheory.RightExactFunctor
+  FullSubcategory fun F : C ⥤ D => PreservesFiniteColimits F
 
 instance : Category (RightExactFunctor C D) :=
   FullSubcategory.category _
@@ -71,64 +61,52 @@ infixr:26 " ⥤ᵣ " => RightExactFunctor
 /-- A right exact functor is in particular a functor. -/
 def RightExactFunctor.forget : (C ⥤ᵣ D) ⥤ C ⥤ D :=
   fullSubcategoryInclusion _
-set_option linter.uppercaseLean3 false in
-#align category_theory.RightExactFunctor.forget CategoryTheory.RightExactFunctor.forget
 
-instance : Full (RightExactFunctor.forget C D) :=
+instance : (RightExactFunctor.forget C D).Full :=
   FullSubcategory.full _
 
-instance : Faithful (RightExactFunctor.forget C D) :=
+instance : (RightExactFunctor.forget C D).Faithful :=
   FullSubcategory.faithful _
 
--- porting note: removed @[nolint has_nonempty_instance]
 /-- Bundled exact functors. -/
 def ExactFunctor :=
   FullSubcategory fun F : C ⥤ D =>
-    Nonempty (PreservesFiniteLimits F) ∧ Nonempty (PreservesFiniteColimits F)
-set_option linter.uppercaseLean3 false in
-#align category_theory.ExactFunctor CategoryTheory.ExactFunctor
+    PreservesFiniteLimits F ∧ PreservesFiniteColimits F
 
 instance : Category (ExactFunctor C D) :=
   FullSubcategory.category _
 
--- mathport name: «expr ⥤ₑ »
 /-- `C ⥤ₑ D` denotes exact functors `C ⥤ D` -/
 infixr:26 " ⥤ₑ " => ExactFunctor
 
 /-- An exact functor is in particular a functor. -/
 def ExactFunctor.forget : (C ⥤ₑ D) ⥤ C ⥤ D :=
   fullSubcategoryInclusion _
-set_option linter.uppercaseLean3 false in
-#align category_theory.ExactFunctor.forget CategoryTheory.ExactFunctor.forget
 
-instance : Full (ExactFunctor.forget C D) :=
+instance : (ExactFunctor.forget C D).Full :=
   FullSubcategory.full _
 
-instance : Faithful (ExactFunctor.forget C D) :=
+instance : (ExactFunctor.forget C D).Faithful :=
   FullSubcategory.faithful _
 
 /-- Turn an exact functor into a left exact functor. -/
 def LeftExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ₗ D :=
   FullSubcategory.map fun _ => And.left
-set_option linter.uppercaseLean3 false in
-#align category_theory.LeftExactFunctor.of_exact CategoryTheory.LeftExactFunctor.ofExact
 
-instance : Full (LeftExactFunctor.ofExact C D) :=
+instance : (LeftExactFunctor.ofExact C D).Full :=
   FullSubcategory.full_map _
 
-instance : Faithful (LeftExactFunctor.ofExact C D) :=
+instance : (LeftExactFunctor.ofExact C D).Faithful :=
   FullSubcategory.faithful_map _
 
 /-- Turn an exact functor into a left exact functor. -/
 def RightExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ᵣ D :=
   FullSubcategory.map fun _ => And.right
-set_option linter.uppercaseLean3 false in
-#align category_theory.RightExactFunctor.of_exact CategoryTheory.RightExactFunctor.ofExact
 
-instance : Full (RightExactFunctor.ofExact C D) :=
+instance : (RightExactFunctor.ofExact C D).Full :=
   FullSubcategory.full_map _
 
-instance : Faithful (RightExactFunctor.ofExact C D) :=
+instance : (RightExactFunctor.ofExact C D).Faithful :=
   FullSubcategory.faithful_map _
 
 variable {C D}
@@ -137,136 +115,198 @@ variable {C D}
 theorem LeftExactFunctor.ofExact_obj (F : C ⥤ₑ D) :
     (LeftExactFunctor.ofExact C D).obj F = ⟨F.1, F.2.1⟩ :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.LeftExactFunctor.of_exact_obj CategoryTheory.LeftExactFunctor.ofExact_obj
 
 @[simp]
 theorem RightExactFunctor.ofExact_obj (F : C ⥤ₑ D) :
     (RightExactFunctor.ofExact C D).obj F = ⟨F.1, F.2.2⟩ :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.RightExactFunctor.of_exact_obj CategoryTheory.RightExactFunctor.ofExact_obj
 
 @[simp]
 theorem LeftExactFunctor.ofExact_map {F G : C ⥤ₑ D} (α : F ⟶ G) :
     (LeftExactFunctor.ofExact C D).map α = α :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.LeftExactFunctor.of_exact_map CategoryTheory.LeftExactFunctor.ofExact_map
 
 @[simp]
 theorem RightExactFunctor.ofExact_map {F G : C ⥤ₑ D} (α : F ⟶ G) :
     (RightExactFunctor.ofExact C D).map α = α :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.RightExactFunctor.of_exact_map CategoryTheory.RightExactFunctor.ofExact_map
 
 @[simp]
 theorem LeftExactFunctor.forget_obj (F : C ⥤ₗ D) : (LeftExactFunctor.forget C D).obj F = F.1 :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.LeftExactFunctor.forget_obj CategoryTheory.LeftExactFunctor.forget_obj
 
 @[simp]
 theorem RightExactFunctor.forget_obj (F : C ⥤ᵣ D) : (RightExactFunctor.forget C D).obj F = F.1 :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.RightExactFunctor.forget_obj CategoryTheory.RightExactFunctor.forget_obj
 
 @[simp]
 theorem ExactFunctor.forget_obj (F : C ⥤ₑ D) : (ExactFunctor.forget C D).obj F = F.1 :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.ExactFunctor.forget_obj CategoryTheory.ExactFunctor.forget_obj
 
 @[simp]
 theorem LeftExactFunctor.forget_map {F G : C ⥤ₗ D} (α : F ⟶ G) :
     (LeftExactFunctor.forget C D).map α = α :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.LeftExactFunctor.forget_map CategoryTheory.LeftExactFunctor.forget_map
 
 @[simp]
 theorem RightExactFunctor.forget_map {F G : C ⥤ᵣ D} (α : F ⟶ G) :
     (RightExactFunctor.forget C D).map α = α :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.RightExactFunctor.forget_map CategoryTheory.RightExactFunctor.forget_map
 
 @[simp]
 theorem ExactFunctor.forget_map {F G : C ⥤ₑ D} (α : F ⟶ G) : (ExactFunctor.forget C D).map α = α :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.ExactFunctor.forget_map CategoryTheory.ExactFunctor.forget_map
 
 /-- Turn a left exact functor into an object of the category `LeftExactFunctor C D`. -/
 def LeftExactFunctor.of (F : C ⥤ D) [PreservesFiniteLimits F] : C ⥤ₗ D :=
-  ⟨F, ⟨inferInstance⟩⟩
-set_option linter.uppercaseLean3 false in
-#align category_theory.LeftExactFunctor.of CategoryTheory.LeftExactFunctor.of
+  ⟨F, inferInstance⟩
 
 /-- Turn a right exact functor into an object of the category `RightExactFunctor C D`. -/
 def RightExactFunctor.of (F : C ⥤ D) [PreservesFiniteColimits F] : C ⥤ᵣ D :=
-  ⟨F, ⟨inferInstance⟩⟩
-set_option linter.uppercaseLean3 false in
-#align category_theory.RightExactFunctor.of CategoryTheory.RightExactFunctor.of
+  ⟨F, inferInstance⟩
 
 /-- Turn an exact functor into an object of the category `ExactFunctor C D`. -/
 def ExactFunctor.of (F : C ⥤ D) [PreservesFiniteLimits F] [PreservesFiniteColimits F] : C ⥤ₑ D :=
-  ⟨F, ⟨⟨inferInstance⟩, ⟨inferInstance⟩⟩⟩
-set_option linter.uppercaseLean3 false in
-#align category_theory.ExactFunctor.of CategoryTheory.ExactFunctor.of
+  ⟨F, ⟨inferInstance, inferInstance⟩⟩
 
 @[simp]
 theorem LeftExactFunctor.of_fst (F : C ⥤ D) [PreservesFiniteLimits F] :
     (LeftExactFunctor.of F).obj = F :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.LeftExactFunctor.of_fst CategoryTheory.LeftExactFunctor.of_fst
 
 @[simp]
 theorem RightExactFunctor.of_fst (F : C ⥤ D) [PreservesFiniteColimits F] :
     (RightExactFunctor.of F).obj = F :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.RightExactFunctor.of_fst CategoryTheory.RightExactFunctor.of_fst
 
 @[simp]
 theorem ExactFunctor.of_fst (F : C ⥤ D) [PreservesFiniteLimits F] [PreservesFiniteColimits F] :
     (ExactFunctor.of F).obj = F :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.ExactFunctor.of_fst CategoryTheory.ExactFunctor.of_fst
 
 theorem LeftExactFunctor.forget_obj_of (F : C ⥤ D) [PreservesFiniteLimits F] :
     (LeftExactFunctor.forget C D).obj (LeftExactFunctor.of F) = F :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.LeftExactFunctor.forget_obj_of CategoryTheory.LeftExactFunctor.forget_obj_of
 
 theorem RightExactFunctor.forget_obj_of (F : C ⥤ D) [PreservesFiniteColimits F] :
     (RightExactFunctor.forget C D).obj (RightExactFunctor.of F) = F :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.RightExactFunctor.forget_obj_of CategoryTheory.RightExactFunctor.forget_obj_of
 
 theorem ExactFunctor.forget_obj_of (F : C ⥤ D) [PreservesFiniteLimits F]
     [PreservesFiniteColimits F] : (ExactFunctor.forget C D).obj (ExactFunctor.of F) = F :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.ExactFunctor.forget_obj_of CategoryTheory.ExactFunctor.forget_obj_of
 
 noncomputable instance (F : C ⥤ₗ D) : PreservesFiniteLimits F.obj :=
-  F.property.some
+  F.property
 
 noncomputable instance (F : C ⥤ᵣ D) : PreservesFiniteColimits F.obj :=
-  F.property.some
+  F.property
 
 noncomputable instance (F : C ⥤ₑ D) : PreservesFiniteLimits F.obj :=
-  F.property.1.some
+  F.property.1
 
 noncomputable instance (F : C ⥤ₑ D) : PreservesFiniteColimits F.obj :=
-  F.property.2.some
+  F.property.2
+
+variable {E : Type u₃} [Category.{v₃} E]
+
+section
+
+variable (C D E)
+
+/-- Whiskering a left exact functor by a left exact functor yields a left exact functor. -/
+@[simps! obj_obj obj_map map_app_app]
+def LeftExactFunctor.whiskeringLeft : (C ⥤ₗ D) ⥤ (D ⥤ₗ E) ⥤ (C ⥤ₗ E) where
+  obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringLeft C D E).obj F.obj)
+    (fun G => by dsimp; exact comp_preservesFiniteLimits _ _)
+  map {F G} η :=
+    { app := fun H => ((CategoryTheory.whiskeringLeft C D E).map η).app H.obj
+      naturality := fun _ _ f => ((CategoryTheory.whiskeringLeft C D E).map η).naturality f }
+  map_id X := by
+    rw [FullSubcategory.id_def]
+    aesop_cat
+  map_comp f g := by
+    rw [FullSubcategory.comp_def]
+    aesop_cat
+
+/-- Whiskering a left exact functor by a left exact functor yields a left exact functor. -/
+@[simps! obj_obj obj_map map_app_app]
+def LeftExactFunctor.whiskeringRight : (D ⥤ₗ E) ⥤ (C ⥤ₗ D) ⥤ (C ⥤ₗ E) where
+  obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringRight C D E).obj F.obj)
+    (fun G => by dsimp; exact comp_preservesFiniteLimits _ _)
+  map {F G} η :=
+    { app := fun H => ((CategoryTheory.whiskeringRight C D E).map η).app H.obj
+      naturality := fun _ _ f => ((CategoryTheory.whiskeringRight C D E).map η).naturality f }
+  map_id X := by
+    rw [FullSubcategory.id_def]
+    aesop_cat
+  map_comp f g := by
+    rw [FullSubcategory.comp_def]
+    aesop_cat
+
+/-- Whiskering a right exact functor by a right exact functor yields a right exact functor. -/
+@[simps! obj_obj obj_map map_app_app]
+def RightExactFunctor.whiskeringLeft : (C ⥤ᵣ D) ⥤ (D ⥤ᵣ E) ⥤ (C ⥤ᵣ E) where
+  obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringLeft C D E).obj F.obj)
+    (fun G => by dsimp; exact comp_preservesFiniteColimits _ _)
+  map {F G} η :=
+    { app := fun H => ((CategoryTheory.whiskeringLeft C D E).map η).app H.obj
+      naturality := fun _ _ f => ((CategoryTheory.whiskeringLeft C D E).map η).naturality f }
+  map_id X := by
+    rw [FullSubcategory.id_def]
+    aesop_cat
+  map_comp f g := by
+    rw [FullSubcategory.comp_def]
+    aesop_cat
+
+/-- Whiskering a right exact functor by a right exact functor yields a right exact functor. -/
+@[simps! obj_obj obj_map map_app_app]
+def RightExactFunctor.whiskeringRight : (D ⥤ᵣ E) ⥤ (C ⥤ᵣ D) ⥤ (C ⥤ᵣ E) where
+  obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringRight C D E).obj F.obj)
+    (fun G => by dsimp; exact comp_preservesFiniteColimits _ _)
+  map {F G} η :=
+    { app := fun H => ((CategoryTheory.whiskeringRight C D E).map η).app H.obj
+      naturality := fun _ _ f => ((CategoryTheory.whiskeringRight C D E).map η).naturality f }
+  map_id X := by
+    rw [FullSubcategory.id_def]
+    aesop_cat
+  map_comp f g := by
+    rw [FullSubcategory.comp_def]
+    aesop_cat
+
+/-- Whiskering an exact functor by an exact functor yields an exact functor. -/
+@[simps! obj_obj obj_map map_app_app]
+def ExactFunctor.whiskeringLeft : (C ⥤ₑ D) ⥤ (D ⥤ₑ E) ⥤ (C ⥤ₑ E) where
+  obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringLeft C D E).obj F.obj)
+    (fun G => ⟨by dsimp; exact comp_preservesFiniteLimits _ _,
+      by dsimp; exact comp_preservesFiniteColimits _ _⟩)
+  map {F G} η :=
+    { app := fun H => ((CategoryTheory.whiskeringLeft C D E).map η).app H.obj
+      naturality := fun _ _ f => ((CategoryTheory.whiskeringLeft C D E).map η).naturality f }
+  map_id X := by
+    rw [FullSubcategory.id_def]
+    aesop_cat
+  map_comp f g := by
+    rw [FullSubcategory.comp_def]
+    aesop_cat
+
+/-- Whiskering an exact functor by an exact functor yields an exact functor. -/
+@[simps! obj_obj obj_map map_app_app]
+def ExactFunctor.whiskeringRight : (D ⥤ₑ E) ⥤ (C ⥤ₑ D) ⥤ (C ⥤ₑ E) where
+  obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringRight C D E).obj F.obj)
+    (fun G => ⟨by dsimp; exact comp_preservesFiniteLimits _ _,
+      by dsimp; exact comp_preservesFiniteColimits _ _⟩)
+  map {F G} η :=
+    { app := fun H => ((CategoryTheory.whiskeringRight C D E).map η).app H.obj
+      naturality := fun _ _ f => ((CategoryTheory.whiskeringRight C D E).map η).naturality f }
+  map_id X := by
+    rw [FullSubcategory.id_def]
+    aesop_cat
+  map_comp f g := by
+    rw [FullSubcategory.comp_def]
+    aesop_cat
+
+end
 
 end
 

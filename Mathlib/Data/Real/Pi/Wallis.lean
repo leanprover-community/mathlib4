@@ -5,8 +5,6 @@ Authors: Hanting Zhang
 -/
 import Mathlib.Analysis.SpecialFunctions.Integrals
 
-#align_import data.real.pi.wallis from "leanprover-community/mathlib"@"980755c33b9168bc82f774f665eaa27878140fac"
-
 /-! # The Wallis formula for Pi
 
 This file establishes the Wallis product for `π` (`Real.tendsto_prod_pi_div_two`). Our proof is
@@ -29,10 +27,10 @@ algebraic manipulation.
 * `Real.Wallis.W_eq_integral_sin_pow_div_integral_sin_pow`: express `W n` as a ratio of integrals.
 * `Real.Wallis.W_le` and `Real.Wallis.le_W`: upper and lower bounds for `W n`.
 * `Real.tendsto_prod_pi_div_two`: the Wallis product formula.
- -/
+-/
 
 
-open scoped Real Topology BigOperators Nat
+open scoped Real Topology Nat
 
 open Filter Finset intervalIntegral
 
@@ -40,79 +38,68 @@ namespace Real
 
 namespace Wallis
 
-set_option linter.uppercaseLean3 false
 
 /-- The product of the first `k` terms in Wallis' formula for `π`. -/
 noncomputable def W (k : ℕ) : ℝ :=
-  ∏ i in range k, (2 * i + 2) / (2 * i + 1) * ((2 * i + 2) / (2 * i + 3))
-#align real.wallis.W Real.Wallis.W
+  ∏ i ∈ range k, (2 * i + 2) / (2 * i + 1) * ((2 * i + 2) / (2 * i + 3))
 
 theorem W_succ (k : ℕ) :
     W (k + 1) = W k * ((2 * k + 2) / (2 * k + 1) * ((2 * k + 2) / (2 * k + 3))) :=
   prod_range_succ _ _
-#align real.wallis.W_succ Real.Wallis.W_succ
 
 theorem W_pos (k : ℕ) : 0 < W k := by
   induction' k with k hk
   · unfold W; simp
   · rw [W_succ]
-    refine' mul_pos hk (mul_pos (div_pos _ _) (div_pos _ _)) <;> positivity
-#align real.wallis.W_pos Real.Wallis.W_pos
+    refine mul_pos hk (mul_pos (div_pos ?_ ?_) (div_pos ?_ ?_)) <;> positivity
 
 theorem W_eq_factorial_ratio (n : ℕ) :
     W n = 2 ^ (4 * n) * n ! ^ 4 / ((2 * n)! ^ 2 * (2 * n + 1)) := by
   induction' n with n IH
   · simp only [W, prod_range_zero, Nat.factorial_zero, mul_zero, pow_zero,
-      algebraMap.coe_one, one_pow, mul_one, algebraMap.coe_zero, zero_add, div_self, Ne.def,
+      algebraMap.coe_one, one_pow, mul_one, algebraMap.coe_zero, zero_add, div_self, Ne,
       one_ne_zero, not_false_iff]
     norm_num
   · unfold W at IH ⊢
     rw [prod_range_succ, IH, _root_.div_mul_div_comm, _root_.div_mul_div_comm]
-    refine' (div_eq_div_iff _ _).mpr _
+    refine (div_eq_div_iff ?_ ?_).mpr ?_
     any_goals exact ne_of_gt (by positivity)
     simp_rw [Nat.mul_succ, Nat.factorial_succ, pow_succ]
     push_cast
     ring_nf
-#align real.wallis.W_eq_factorial_ratio Real.Wallis.W_eq_factorial_ratio
 
 theorem W_eq_integral_sin_pow_div_integral_sin_pow (k : ℕ) : (π / 2)⁻¹ * W k =
     (∫ x : ℝ in (0)..π, sin x ^ (2 * k + 1)) / ∫ x : ℝ in (0)..π, sin x ^ (2 * k) := by
   rw [integral_sin_pow_even, integral_sin_pow_odd, mul_div_mul_comm, ← prod_div_distrib, inv_div]
   simp_rw [div_div_div_comm, div_div_eq_mul_div, mul_div_assoc]
   rfl
-#align real.wallis.W_eq_integral_sin_pow_div_integral_sin_pow Real.Wallis.W_eq_integral_sin_pow_div_integral_sin_pow
 
 theorem W_le (k : ℕ) : W k ≤ π / 2 := by
   rw [← div_le_one pi_div_two_pos, div_eq_inv_mul]
   rw [W_eq_integral_sin_pow_div_integral_sin_pow, div_le_one (integral_sin_pow_pos _)]
   apply integral_sin_pow_succ_le
-#align real.wallis.W_le Real.Wallis.W_le
 
 theorem le_W (k : ℕ) : ((2 : ℝ) * k + 1) / (2 * k + 2) * (π / 2) ≤ W k := by
-  rw [← le_div_iff pi_div_two_pos, div_eq_inv_mul (W k) _]
-  rw [W_eq_integral_sin_pow_div_integral_sin_pow, le_div_iff (integral_sin_pow_pos _)]
+  rw [← le_div_iff₀ pi_div_two_pos, div_eq_inv_mul (W k) _]
+  rw [W_eq_integral_sin_pow_div_integral_sin_pow, le_div_iff₀ (integral_sin_pow_pos _)]
   convert integral_sin_pow_succ_le (2 * k + 1)
   rw [integral_sin_pow (2 * k)]
-  simp only [sin_zero, ne_eq, add_eq_zero, and_false, not_false_eq_true, zero_pow', cos_zero,
-    mul_one, sin_pi, cos_pi, mul_neg, neg_zero, sub_self, zero_div, zero_add]
-  norm_cast
-#align real.wallis.le_W Real.Wallis.le_W
+  simp
 
 theorem tendsto_W_nhds_pi_div_two : Tendsto W atTop (𝓝 <| π / 2) := by
-  refine' tendsto_of_tendsto_of_tendsto_of_le_of_le _ tendsto_const_nhds le_W W_le
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le ?_ tendsto_const_nhds le_W W_le
   have : 𝓝 (π / 2) = 𝓝 ((1 - 0) * (π / 2)) := by rw [sub_zero, one_mul]
   rw [this]
-  refine' Tendsto.mul _ tendsto_const_nhds
+  refine Tendsto.mul ?_ tendsto_const_nhds
   have h : ∀ n : ℕ, ((2 : ℝ) * n + 1) / (2 * n + 2) = 1 - 1 / (2 * n + 2) := by
     intro n
-    rw [sub_div' _ _ _ (ne_of_gt (add_pos_of_nonneg_of_pos (mul_nonneg
+    rw [sub_div' (ne_of_gt (add_pos_of_nonneg_of_pos (mul_nonneg
       (two_pos : 0 < (2 : ℝ)).le (Nat.cast_nonneg _)) two_pos)), one_mul]
     congr 1; ring
   simp_rw [h]
-  refine' (tendsto_const_nhds.div_atTop _).const_sub _
-  refine' Tendsto.atTop_add _ tendsto_const_nhds
-  exact tendsto_nat_cast_atTop_atTop.const_mul_atTop two_pos
-#align real.wallis.tendsto_W_nhds_pi_div_two Real.Wallis.tendsto_W_nhds_pi_div_two
+  refine (tendsto_const_nhds.div_atTop ?_).const_sub _
+  refine Tendsto.atTop_add ?_ tendsto_const_nhds
+  exact tendsto_natCast_atTop_atTop.const_mul_atTop two_pos
 
 end Wallis
 
@@ -120,7 +107,6 @@ end Real
 
 /-- Wallis' product formula for `π / 2`. -/
 theorem Real.tendsto_prod_pi_div_two :
-    Tendsto (fun k => ∏ i in range k, ((2 : ℝ) * i + 2) / (2 * i + 1) * ((2 * i + 2) / (2 * i + 3)))
+    Tendsto (fun k => ∏ i ∈ range k, ((2 : ℝ) * i + 2) / (2 * i + 1) * ((2 * i + 2) / (2 * i + 3)))
       atTop (𝓝 (π / 2)) :=
   Real.Wallis.tendsto_W_nhds_pi_div_two
-#align real.tendsto_prod_pi_div_two Real.tendsto_prod_pi_div_two
