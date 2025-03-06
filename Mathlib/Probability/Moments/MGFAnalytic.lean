@@ -139,8 +139,7 @@ lemma continuous_mgf (h : ∀ t, Integrable (fun ω ↦ exp (t * X ω)) μ) :
   symm
   rw [interior_eq_univ]
   ext t
-  simp only [Set.mem_univ, iff_true]
-  exact h t
+  simpa using h t
 
 lemma analyticOnNhd_iteratedDeriv_mgf (n : ℕ) :
     AnalyticOnNhd ℝ (iteratedDeriv n (mgf X μ)) (interior (integrableExpSet X μ)) := by
