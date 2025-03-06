@@ -25,7 +25,7 @@ open Category MonoidalCategory ihom
 universe w₁ v₁ u₁
 
 variable {I : Type w₁} {C : I → Type u₁} [∀ i, Category.{v₁} (C i)]
-[∀ i, MonoidalCategory (C i)] [∀ i, MonoidalClosed (C i)]
+  [∀ i, MonoidalCategory (C i)] [∀ i, MonoidalClosed (C i)]
 
 /-- The internal hom functor `X ⟶[∀ i, C i] -` -/
 @[simps!]
