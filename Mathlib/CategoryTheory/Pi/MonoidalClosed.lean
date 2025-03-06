@@ -46,13 +46,11 @@ def closedCounit (X : ∀ i, C i) : (closedIhom X) ⋙ tensorLeft X ⟶ 𝟭 (�
 /-- `Pi.monoidalClosed C` equipps the product of a family of closed monoidal categories with
 a pointwise closed monoidal structure. -/
 instance monoidalClosed : MonoidalClosed (∀ i, C i) where
-    closed X := {
-      rightAdj := closedIhom X
-      adj := {
-        unit := closedUnit X
-        counit := closedCounit X
-      }
-    }
+  closed X :=
+  { rightAdj := closedIhom X
+    adj :=
+    { unit := closedUnit X
+      counit := closedCounit X } }
 
 end Pi
 
