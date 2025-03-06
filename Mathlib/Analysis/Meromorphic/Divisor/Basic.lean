@@ -120,6 +120,17 @@ ordered group, where addition, comparison, min and max of divisors are defined
 pointwise.
 -/
 
+def divisorOnSubgroup : AddSubgroup (𝕜 → ℤ) where
+  carrier := {f | f.support ⊆ U ∧ f =ᶠ[codiscreteWithin U] 0}
+  zero_mem' := by simp
+  add_mem' {f g} hf hg := by
+    refine ⟨?_, hf.2.add hg.2⟩ 
+    intro x hx
+    contrapose! hx
+    simp [Function.nmem_support.1 fun a ↦ hx (hf.1 a),
+      Function.nmem_support.1 fun a ↦ hx (hg.1 a)]
+  neg_mem' {f} hf := ⟨fun x hx ↦ hf.1 <| by simpa using hx, hf.2.neg⟩
+
 /-- Divisors have a zero -/
 instance : Zero (DivisorOn U) where
   zero := ⟨fun _ ↦ 0, by simp, Eq.eventuallyEq rfl⟩
@@ -131,8 +142,8 @@ theorem coe_zero : ((0 : DivisorOn U) : 𝕜 → ℤ) = 0 := rfl
 
 /-- Divisors can be added -/
 instance : Add (DivisorOn U) where
-  add D₁ D₂ := {
-    toFun := D₁ + D₂
+  add D₁ D₂ :=
+  { toFun := D₁ + D₂
     supportWithinDomain' := by
       intro x
       contrapose
@@ -140,8 +151,7 @@ instance : Add (DivisorOn U) where
       simp [Function.nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
         Function.nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
     supportDiscreteWithinDomain' := D₁.supportDiscreteWithinDomain.add
-      D₂.supportDiscreteWithinDomain
-  }
+      D₂.supportDiscreteWithinDomain }
 
 /-- Helper lemma for the `simp` tactic: the function of the sum of two divisors
 is the sum of the associated functions. -/
