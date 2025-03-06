@@ -196,7 +196,7 @@ abbrev toInvariants : Rep k G := Rep.of <| A.ρ.toInvariants S
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the invariants of `ρ|_S`. -/
-abbrev quotientToInvariants := Rep.of (A.ρ.quotientToInvariants S)
+abbrev quotientToInvariants : Rep k (G ⧸ S) := Rep.of (A.ρ.quotientToInvariants S)
 
 variable (k G)
 
