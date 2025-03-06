@@ -61,9 +61,6 @@ theorem bot_ne_coe : ⊥ ≠ (a : WithBot α) :=
 theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
   nofun
 
-lemma eq_coe_of_ne_bot {a : WithBot α} (ha : a ≠ ⊥) :
-    ∃ b : α, b = a := Option.ne_none_iff_exists.mp ha
-
 /-- Specialization of `Option.getD` to values in `WithBot α` that respects API boundaries.
 -/
 def unbot' (d : α) (x : WithBot α) : α :=
@@ -591,9 +588,6 @@ theorem top_ne_coe : ⊤ ≠ (a : WithTop α) :=
 @[simp]
 theorem coe_ne_top : (a : WithTop α) ≠ ⊤ :=
   nofun
-
-lemma eq_coe_of_ne_top {a : WithTop α} (ha : a ≠ ⊤) :
-    ∃ b : α, b = a := Option.ne_none_iff_exists.mp ha
 
 /-- `WithTop.toDual` is the equivalence sending `⊤` to `⊥` and any `a : α` to `toDual a : αᵒᵈ`.
 See `WithTop.toDualBotEquiv` for the related order-iso.
