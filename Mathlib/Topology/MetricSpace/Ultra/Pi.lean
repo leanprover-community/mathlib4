@@ -24,19 +24,5 @@ instance Pi.instIsUltrametricDist {ι : Type*} {X : ι → Type*} [Fintype ι]
     IsUltrametricDist ((i : ι) → X i) := by
   constructor
   intro f g h
-  simp only [le_sup_iff]
-  rw [dist_pi_le_iff dist_nonneg, dist_pi_le_iff dist_nonneg, dist_pi_def, dist_pi_def]
-  by_cases H : ∃ i, ∀ j, dist (f j) (g j) ≤ dist (g i) (h i)
-  · obtain ⟨i, hi⟩ := H
-    refine Or.inr ?_
-    intro j
-    refine (IsUltrametricDist.dist_triangle_max (f j) (g j) (h j)).trans
-      (sup_le ((hi _).trans ?_) ?_) <;>
-    · simpa using Finset.le_sup (f := fun i ↦ nndist (g i) (h i)) (Finset.mem_univ _)
-  · push_neg at H
-    refine Or.inl ?_
-    intro i
-    obtain ⟨j, hj⟩ := H i
-    refine (IsUltrametricDist.dist_triangle_max (f i) (g i) (h i)).trans
-      (sup_le ?_ (hj.le.trans ?_)) <;>
-    simpa using Finset.le_sup (f := fun i ↦ nndist (f i) (g i)) (Finset.mem_univ _)
+  simp only [dist_pi_def, ← NNReal.coe_max, NNReal.coe_le_coe, ← Finset.sup_sup]
+  exact Finset.sup_mono_fun fun i _ ↦ IsUltrametricDist.dist_triangle_max (f i) (g i) (h i)
