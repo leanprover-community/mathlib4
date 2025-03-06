@@ -81,8 +81,6 @@ lemma sum_ne_top : ∑ a ∈ s, f a ≠ ∞ ↔ ∀ a ∈ s, f a ≠ ∞ := With
 /-- A sum is finite iff all summands are finite. -/
 @[simp] lemma sum_lt_top : ∑ a ∈ s, f a < ∞ ↔ ∀ a ∈ s, f a < ∞ := WithTop.sum_lt_top
 
-@[deprecated (since := "2024-08-25")] alias sum_lt_top_iff := sum_lt_top
-
 theorem lt_top_of_sum_ne_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∑ x ∈ s, f x ≠ ∞) {a : α}
     (ha : a ∈ s) : f a < ∞ :=
   sum_lt_top.1 h.lt_top a ha

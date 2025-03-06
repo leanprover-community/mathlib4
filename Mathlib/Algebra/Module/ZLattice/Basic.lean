@@ -418,7 +418,7 @@ class IsZLattice (K : Type*) [NormedField K] {E : Type*} [NormedAddCommGroup E] 
   /-- `L` spans the full space `E` over `K`. -/
   span_top : span K (L : Set E) = ⊤
 
-theorem _root_.ZSpan.isZLattice {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+instance instIsZLatticeRealSpan {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [Finite ι] (b : Basis ι ℝ E) :
     IsZLattice ℝ (span ℤ (Set.range b)) where
   span_top := ZSpan.span_top b

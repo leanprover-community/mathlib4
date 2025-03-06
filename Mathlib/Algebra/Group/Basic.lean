@@ -714,8 +714,6 @@ theorem div_mul_div_cancel (a b c : G) : a / b * (b / c) = a / c := by
 theorem div_div_div_cancel_right (a b c : G) : a / c / (b / c) = a / b := by
   rw [← inv_div c b, div_inv_eq_mul, div_mul_div_cancel]
 
-@[deprecated (since := "2024-08-24")] alias div_div_div_cancel_right' := div_div_div_cancel_right
-
 @[to_additive]
 theorem div_eq_one : a / b = 1 ↔ a = b :=
   ⟨eq_of_div_eq_one, fun h ↦ by rw [h, div_self']⟩
@@ -942,8 +940,6 @@ theorem div_mul_mul_cancel (a b c : G) : a / c * (b * c) = a * b := by
 @[to_additive (attr := simp)]
 theorem div_mul_div_cancel' (a b c : G) : a / b * (c / a) = c / b := by
   rw [mul_comm]; apply div_mul_div_cancel
-
-@[deprecated (since := "2024-08-24")] alias div_mul_div_cancel'' := div_mul_div_cancel'
 
 @[to_additive (attr := simp)]
 theorem mul_div_div_cancel (a b c : G) : a * b / (a / c) = b * c := by

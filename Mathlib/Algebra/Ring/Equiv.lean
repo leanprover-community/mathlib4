@@ -3,12 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Equiv.Opposite
 import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Logic.Equiv.Set
-import Mathlib.Util.AssertExists
 
 /-!
 # (Semi)ring equivs

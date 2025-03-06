@@ -9,6 +9,7 @@ import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.Multiset.OrderedMonoid
 import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+import Mathlib.Data.Multiset.Powerset
 
 /-!
 # Big operators on a finset in ordered groups

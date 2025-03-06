@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.LinearAlgebra.Finsupp.Span
+import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
 # Linear structures on function with finite support `ι →₀ M`
@@ -159,10 +159,16 @@ theorem equivFun_symm_single [Finite n] (b : Basis n R M) (i : n) :
   cases nonempty_fintype n
   simp [Pi.single_apply]
 
-set_option linter.deprecated false in
-@[deprecated equivFun_symm_single (since := "2024-08-09")]
-theorem equivFun_symm_stdBasis [Finite n] (b : Basis n R M) (i : n) :
-    b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i :=
-  equivFun_symm_single ..
-
 end Basis
+
+section Algebra
+
+variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S] {ι : Type*} (B : Basis ι R S)
+
+/-- For any `r : R`, `s : S`, we have
+  `B.repr ((algebra_map R S r) * s) i = r * (B.repr s i) `. -/
+theorem Basis.repr_smul'  (i : ι) (r : R) (s : S) :
+    B.repr (algebraMap R S r * s) i = r * B.repr s i := by
+  rw [← smul_eq_mul, ← smul_eq_mul, algebraMap_smul, map_smul, Finsupp.smul_apply]
+
+end Algebra

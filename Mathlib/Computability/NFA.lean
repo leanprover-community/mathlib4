@@ -53,7 +53,7 @@ theorem mem_stepSet (s : σ) (S : Set σ) (a : α) : s ∈ M.stepSet S a ↔ ∃
 @[simp]
 theorem stepSet_empty (a : α) : M.stepSet ∅ a = ∅ := by simp [stepSet]
 
-/-- `M.evalFrom S x` computes all possible paths though `M` with input `x` starting at an element
+/-- `M.evalFrom S x` computes all possible paths through `M` with input `x` starting at an element
   of `S`. -/
 def evalFrom (start : Set σ) : List α → Set σ :=
   List.foldl M.stepSet start

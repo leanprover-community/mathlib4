@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Batteries.Tactic.Congr
+import Mathlib.Data.Option.Basic
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Data.Set.SymmDiff
-import Mathlib.Order.Hom.Basic
+import Mathlib.Data.Set.Inclusion
 
 /-!
 # Images and preimages of sets
@@ -29,6 +30,8 @@ import Mathlib.Order.Hom.Basic
 set, sets, image, preimage, pre-image, range
 
 -/
+
+assert_not_exists WithTop OrderIso
 
 universe u v
 
@@ -823,15 +826,6 @@ theorem image_preimage_inl_union_image_preimage_inr (s : Set (α ⊕ β)) :
   rw [image_preimage_eq_inter_range, image_preimage_eq_inter_range, ← inter_union_distrib_left,
     range_inl_union_range_inr, inter_univ]
 
-open Sum in
-/-- Sets on sum types are equivalent to pairs of sets on each summand. -/
-def sumEquiv {α β : Type*} : Set (α ⊕ β) ≃o Set α × Set β where
-  toFun s := (inl ⁻¹' s, inr ⁻¹' s)
-  invFun s := inl '' s.1 ∪ inr '' s.2
-  left_inv s := image_preimage_inl_union_image_preimage_inr s
-  right_inv s := by simp [preimage_image_eq _ inl_injective, preimage_image_eq _ inr_injective]
-  map_rel_iff' := by simp [subset_def]
-
 @[simp]
 theorem range_quot_mk (r : α → α → Prop) : range (Quot.mk r) = univ :=
   Quot.mk_surjective.range_eq
@@ -1295,14 +1289,6 @@ theorem range_eq {α β} (f : Option α → β) : range f = insert (f none) (ran
   Set.ext fun _ => Option.exists.trans <| eq_comm.or Iff.rfl
 
 end Option
-
-theorem WithBot.range_eq {α β} (f : WithBot α → β) :
-    range f = insert (f ⊥) (range (f ∘ WithBot.some : α → β)) :=
-  Option.range_eq f
-
-theorem WithTop.range_eq {α β} (f : WithTop α → β) :
-    range f = insert (f ⊤) (range (f ∘ WithBot.some : α → β)) :=
-  Option.range_eq f
 
 namespace Set
 

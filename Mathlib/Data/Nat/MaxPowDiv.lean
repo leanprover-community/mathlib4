@@ -42,14 +42,24 @@ end Nat
 namespace Nat.maxPowDiv
 
 theorem go_succ {k p n : ℕ} : go (k+1) p n = go k p n + 1 := by
-  induction k, p, n using go.induct
-  case case1 h ih =>
+  refine go.induct p (fun k n ↦ go (k+1) p n = go k p n + 1) ?_ ?_ k n
+  · intro k n h ih
     unfold go
     simp only [if_pos h]
     exact ih
-  case case2 h =>
+  · intro k n h
     unfold go
     simp only [if_neg h]
+  #adaptation_note /-- 05-03-2025
+  The proof used to be: -/
+  -- induction k, n using go.induct
+  -- case case1 h ih =>
+  --   unfold go
+  --   simp only [if_pos h]
+  --   exact ih
+  -- case case2 h =>
+  --   unfold go
+  --   simp only [if_neg h]
 
 @[simp]
 theorem zero_base {n : ℕ} : maxPowDiv 0 n = 0 := by

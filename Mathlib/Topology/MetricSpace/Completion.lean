@@ -3,12 +3,12 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.UniformSpace.Completion
+import Mathlib.Topology.Algebra.GroupCompletion
+import Mathlib.Topology.Algebra.Ring.Real
+import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Lipschitz
-import Mathlib.Topology.MetricSpace.Algebra
-import Mathlib.Topology.Algebra.GroupCompletion
-import Mathlib.Topology.Instances.Real.Defs
+import Mathlib.Topology.UniformSpace.Completion
 
 /-!
 # The completion of a metric space

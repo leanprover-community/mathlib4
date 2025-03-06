@@ -41,11 +41,6 @@ theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
   rw [range_succ_eq_map, chain_cons, and_congr_right_iff, ← chain'_range_succ, range_succ_eq_map]
   exact fun _ => Iff.rfl
 
-@[deprecated (since := "2024-08-19")] alias nthLe_range' := get_range'
-@[deprecated (since := "2024-08-19")] alias nthLe_range'_1 := getElem_range'_1
-@[deprecated (since := "2024-08-19")] alias nthLe_range := get_range
-
-
 section Ranges
 
 /-- From `l : List ℕ`, construct `l.ranges : List (List ℕ)` such that

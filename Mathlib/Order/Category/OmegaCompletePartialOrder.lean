@@ -124,7 +124,7 @@ def isEqualizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : IsLimit (equalizer f g) :=
 end HasEqualizers
 
 instance : HasProducts.{v} ωCPO.{v} :=
-  fun _ => { has_limit := fun _ => hasLimitOfIso Discrete.natIsoFunctor.symm }
+  fun _ => { has_limit := fun _ => hasLimit_of_iso Discrete.natIsoFunctor.symm }
 
 instance {X Y : ωCPO.{v}} (f g : X ⟶ Y) : HasLimit (parallelPair f g) :=
   HasLimit.mk ⟨_, HasEqualizers.isEqualizer f g⟩

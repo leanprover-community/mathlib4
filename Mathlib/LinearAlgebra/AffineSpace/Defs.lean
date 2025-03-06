@@ -37,5 +37,6 @@ Some key definitions are not yet present.
   coordinates, with appropriate proofs of existence when `k` is a field.
 -/
 
+assert_not_exists MonoidWithZero
 
 @[inherit_doc] scoped[Affine] notation "AffineSpace" => AddTorsor

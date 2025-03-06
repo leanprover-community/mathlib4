@@ -867,8 +867,7 @@ theorem integral_add_adjacent_intervals_cancel (hab : IntervalIntegrable f μ a 
     rw [Ioc_union_Ioc_union_Ioc_cycle, union_right_comm, Ioc_union_Ioc_union_Ioc_cycle,
       min_left_comm, max_left_comm]
   all_goals
-    simp [*, MeasurableSet.union, measurableSet_Ioc, Ioc_disjoint_Ioc_same,
-      Ioc_disjoint_Ioc_same.symm, hab.1, hab.2, hbc.1, hbc.2, hac.1, hac.2]
+    simp [*, hab.1, hab.2, hbc.1, hbc.2, hac.1, hac.2]
 
 theorem integral_add_adjacent_intervals (hab : IntervalIntegrable f μ a b)
     (hbc : IntervalIntegrable f μ b c) :

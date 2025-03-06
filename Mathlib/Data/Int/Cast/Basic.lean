@@ -95,7 +95,7 @@ theorem cast_add : ∀ m n, ((m + n : ℤ) : R) = m + n
   | (m : ℕ), (n : ℕ) => by simp [-Int.natCast_add, ← Int.ofNat_add]
   | (m : ℕ), -[n+1] => by erw [cast_subNatNat, cast_natCast, cast_negSucc, sub_eq_add_neg]
   | -[m+1], (n : ℕ) => by
-    erw [cast_subNatNat, cast_natCast, cast_negSucc, sub_eq_iff_eq_add, add_assoc,
+    erw [cast_subNatNat, cast_natCast, cast_negSucc, _root_.sub_eq_iff_eq_add, add_assoc,
       eq_neg_add_iff_add_eq, ← Nat.cast_add, ← Nat.cast_add, Nat.add_comm]
   | -[m+1], -[n+1] =>
     show (-[m + n + 1+1] : R) = _ by

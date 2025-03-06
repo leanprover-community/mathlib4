@@ -677,6 +677,19 @@ lemma toReal_enorm' (x : E) : ‖x‖ₑ.toReal = ‖x‖ := by simp [enorm]
 lemma ofReal_norm' (x : E) : .ofReal ‖x‖ = ‖x‖ₑ := by
   simp [enorm, ENNReal.ofReal, Real.toNNReal, nnnorm]
 
+@[to_additive enorm_eq_iff_norm_eq]
+theorem enorm'_eq_iff_norm_eq {x : E} {y : F} : ‖x‖ₑ = ‖y‖ₑ ↔ ‖x‖ = ‖y‖ := by
+  simp only [← ofReal_norm']
+  refine ⟨fun h ↦ ?_, fun h ↦ by congr⟩
+  exact (Real.toNNReal_eq_toNNReal_iff (norm_nonneg' _) (norm_nonneg' _)).mp (ENNReal.coe_inj.mp h)
+
+@[to_additive enorm_le_iff_norm_le]
+theorem enorm'_le_iff_norm_le {x : E} {y : F} : ‖x‖ₑ ≤ ‖y‖ₑ ↔ ‖x‖ ≤ ‖y‖ := by
+  simp only [← ofReal_norm']
+  refine ⟨fun h ↦ ?_, fun h ↦ by gcongr⟩
+  rw [ENNReal.ofReal_le_ofReal_iff (norm_nonneg' _)] at h
+  exact h
+
 @[to_additive]
 theorem nndist_eq_nnnorm_div (a b : E) : nndist a b = ‖a / b‖₊ :=
   NNReal.eq <| dist_eq_norm_div _ _
@@ -1132,6 +1145,8 @@ lemma nnnorm_norm' (x : E) : ‖‖x‖‖₊ = ‖x‖₊ := by simp [nnnorm]
 
 @[to_additive (attr := simp) enorm_norm]
 lemma enorm_norm' (x : E) : ‖‖x‖‖ₑ = ‖x‖ₑ := by simp [enorm]
+
+lemma enorm_enorm {ε : Type*} [ENorm ε] (x : ε) : ‖‖x‖ₑ‖ₑ = ‖x‖ₑ := by simp [enorm]
 
 end SeminormedCommGroup
 
