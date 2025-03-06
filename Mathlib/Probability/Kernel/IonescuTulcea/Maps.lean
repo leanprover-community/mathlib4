@@ -13,9 +13,9 @@ This file contains auxiliary maps which are used to prove the Ionescu-Tulcea the
 
 open Finset Preorder
 
-variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [DecidableLE ι] {X : ι → Type*}
+section LinearOrder
 
-section IocProdIoc
+variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [DecidableLE ι] {X : ι → Type*}
 
 /-- Gluing `Ioc a b` and `Ioc b c` into `Ioc a c`. -/
 def IocProdIoc (a b c : ι) (x : (Π i : Ioc a b, X i) × (Π i : Ioc b c, X i)) (i : Ioc a c) : X i :=
@@ -23,18 +23,13 @@ def IocProdIoc (a b c : ι) (x : (Π i : Ioc a b, X i) × (Π i : Ioc b c, X i))
     then x.1 ⟨i, mem_Ioc.2 ⟨(mem_Ioc.1 i.2).1, h⟩⟩
     else x.2 ⟨i, mem_Ioc.2 ⟨not_le.1 h, (mem_Ioc.1 i.2).2⟩⟩
 
-variable [∀ i, MeasurableSpace (X i)]
-
 @[measurability, fun_prop]
-lemma measurable_IocProdIoc {a b c : ι} : Measurable (IocProdIoc (X := X) a b c) := by
+lemma measurable_IocProdIoc [∀ i, MeasurableSpace (X i)] {a b c : ι} :
+    Measurable (IocProdIoc (X := X) a b c) := by
   refine measurable_pi_lambda _ (fun i ↦ ?_)
   by_cases h : i ≤ b
   · simpa [IocProdIoc, h] using measurable_fst.eval
   · simpa [IocProdIoc, h] using measurable_snd.eval
-
-end IocProdIoc
-
-section IicProdIoc
 
 variable [LocallyFiniteOrderBot ι]
 
@@ -116,9 +111,31 @@ lemma coe_IicProdIoc_symm {a b : ι} (hab : a ≤ b) :
     ⇑(IicProdIoc (X := X) hab).symm =
     fun x ↦ (frestrictLe₂ hab x, restrict₂ Ioc_subset_Iic_self x) := rfl
 
+/-- Gluing `Iic a` and `Ioi a` into `ℕ`, version as a measurable equivalence
+on dependent functions. -/
+def IicProdIoi (a : ι) :
+    ((Π i : Iic a, X i) × ((i : Set.Ioi a) → X i)) ≃ᵐ (Π n, X n) where
+  toFun := fun x i ↦ if hi : i ≤ a
+    then x.1 ⟨i, mem_Iic.2 hi⟩
+    else x.2 ⟨i, Set.mem_Ioi.2 (not_le.1 hi)⟩
+  invFun := fun x ↦ (fun i ↦ x i, fun i ↦ x i)
+  left_inv := fun x ↦ by
+    ext i
+    · simp [mem_Iic.1 i.2]
+    · simp [not_le.2 <| Set.mem_Ioi.1 i.2]
+  right_inv := fun x ↦ by simp
+  measurable_toFun := by
+    refine measurable_pi_lambda _ (fun i ↦ ?_)
+    by_cases hi : i ≤ a <;> simp only [Equiv.coe_fn_mk, hi, ↓reduceDIte]
+    · exact measurable_fst.eval
+    · exact measurable_snd.eval
+  measurable_invFun := Measurable.prod_mk (measurable_restrict _) (Set.measurable_restrict _)
+
 end MeasurableEquiv
 
-end IicProdIoc
+end LinearOrder
+
+section Nat
 
 variable {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)]
 
@@ -133,3 +150,5 @@ def MeasurableEquiv.piSingleton (a : ℕ) : X (a + 1) ≃ᵐ Π i : Ioc a (a + 1
     refine measurable_pi_lambda _ (fun i ↦ (MeasurableEquiv.cast _ ?_).measurable)
     cases Nat.mem_Ioc_succ' i; rfl
   measurable_invFun := measurable_pi_apply _
+
+end Nat
