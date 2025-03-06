@@ -212,8 +212,8 @@ def auxLinearMap {X : FDRep k G} (v : X) : (G → k) →ₗ[k] X where
     simp only [smul_apply, smul_eq_mul, RingHom.id_apply, smul_sum, smul_smul]
 
 @[simp]
-lemma auxLinearMap_single_id {X : FDRep k G} (v : X) : (auxLinearMap v) (single 1 1) = v := by
-  rw [auxLinearMap_apply]
+lemma auxLinearMap_single_id {X : FDRep k G} (v : X) :
+    ∑ s : G, (single 1 1 : G → k) s • (X.ρ s⁻¹) v = v := by
   calc
     _ = ∑ s ∈ {1}ᶜ, single 1 1 s • (X.ρ s⁻¹) v + single 1 1 1 • (X.ρ 1⁻¹) v :=
       Fintype.sum_eq_sum_compl_add 1 _
@@ -245,7 +245,7 @@ lemma toRightFDRepComp_inj : Function.Injective <| @toRightFDRepComp k G _ _ _ :
   have h2 := η₂.hom.hom.naturality (auxFDRepHom X v)
   rw [hom_ext h, ← h2] at h1
   apply_fun (Hom.hom · (single 1 1)) at h1
-  simp [-auxLinearMap_apply] at h1
+  simp at h1
   exact h1
 
 lemma equivHom_surj [IsDomain k] : Function.Surjective (equivHom k G) := by
