@@ -11,6 +11,9 @@ import Mathlib.Order.Antisymmetrization
 Two values in a preorder are said to be comparable whenever `a ≤ b` or `b ≤ a`. We define both the
 comparability and incomparability relations.
 
+In a linear order, `CompRel (· ≤ ·) a b` is always true, and `IncompRel (· ≤ ·) a b` is always
+false.
+
 ## Implementation notes
 
 Although comparability and incomparability are negations of each other, both relations are
@@ -109,26 +112,26 @@ alias LT.lt.compRel := CompRel.of_lt
 alias LT.lt.compRel_symm := CompRel.of_gt
 
 @[trans]
-theorem compRel_of_compRel_of_antisymmRel
+theorem CompRel.of_compRel_of_antisymmRel
     (h₁ : CompRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) b c) : CompRel (· ≤ ·) a c := by
   obtain (h | h) := h₁
   · exact (h.trans h₂.le).compRel
   · exact (h₂.ge.trans h).compRel_symm
 
-alias CompRel.trans_antisymmRel := compRel_of_compRel_of_antisymmRel
+alias CompRel.trans_antisymmRel := CompRel.of_compRel_of_antisymmRel
 
 instance : @Trans α α α (CompRel (· ≤ ·)) (AntisymmRel (· ≤ ·)) (CompRel (· ≤ ·)) where
-  trans := compRel_of_compRel_of_antisymmRel
+  trans := CompRel.of_compRel_of_antisymmRel
 
 @[trans]
-theorem compRel_of_antisymmRel_of_compRel
+theorem CompRel.of_antisymmRel_of_compRel
     (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : CompRel (· ≤ ·) b c) : CompRel (· ≤ ·) a c :=
   (h₂.symm.trans_antisymmRel h₁.symm).symm
 
-alias AntisymmRel.trans_compRel := compRel_of_antisymmRel_of_compRel
+alias AntisymmRel.trans_compRel := CompRel.of_antisymmRel_of_compRel
 
 instance : @Trans α α α (AntisymmRel (· ≤ ·)) (CompRel (· ≤ ·)) (CompRel (· ≤ ·)) where
-  trans := compRel_of_antisymmRel_of_compRel
+  trans := CompRel.of_antisymmRel_of_compRel
 
 theorem AntisymmRel.compRel_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) c d) :
     CompRel (· ≤ ·) a c ↔ CompRel (· ≤ ·) b d where
@@ -144,6 +147,12 @@ theorem AntisymmRel.compRel_congr_right (h : AntisymmRel (· ≤ ·) b c) :
   AntisymmRel.rfl.compRel_congr h
 
 end Preorder
+
+/-- A partial order where any two elements are comparable is a linear order. -/
+def linearOrderOfComprel [PartialOrder α] [dec : DecidableLE α]
+    (h : ∀ a b : α, CompRel (· ≤ ·) a b) : LinearOrder α where
+  le_total := h
+  decidableLE := dec
 
 /-! ### Incomparability relation -/
 
