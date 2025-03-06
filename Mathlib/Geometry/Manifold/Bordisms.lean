@@ -228,7 +228,7 @@ structure UnorientedCobordism.{v} (s : SingularNManifold X k I) (t : SingularNMa
   [chartedSpace: ChartedSpace H' W]
   /-- TODO! -/
   J : ModelWithCorners ℝ E' H'
-  [smoothManifold: IsManifold J k W]
+  [isManifold: IsManifold J k W]
   /-- TODO! -/
   bd: BoundaryManifoldData W J k I
   -- Why are these needed?
@@ -250,18 +250,50 @@ structure UnorientedCobordism.{v} (s : SingularNManifold X k I) (t : SingularNMa
 
 namespace UnorientedCobordism
 
-variable (s t : SingularNManifold X k I)
+variable {s t : SingularNManifold X k I}
+
+instance (φ : UnorientedCobordism k s t) : TopologicalSpace φ.W := φ.topologicalSpace
+
+instance (φ : UnorientedCobordism k s t) : CompactSpace φ.W := φ.compactSpace
+
+instance (φ : UnorientedCobordism k s t) : NormedAddCommGroup φ.E' := φ.normedAddCommGroup
+
+instance (φ : UnorientedCobordism k s t) : NormedSpace ℝ φ.E' := φ.normedSpace
+
+instance (φ : UnorientedCobordism k s t) : TopologicalSpace φ.H' := φ.topologicalSpaceH
+
+instance (φ : UnorientedCobordism k s t) : ChartedSpace φ.H' φ.W := φ.chartedSpace
+
+instance (φ : UnorientedCobordism k s t) : IsManifold φ.J k φ.W := φ.isManifold
 
 -- issues inferring H' and E'?
+variable (s) in
 def refl : UnorientedCobordism k s s where--:= sorry
   W := s.M × (Set.Icc (0 : ℝ) 1)
+  H' := ModelProd H (EuclideanHalfSpace 1)
+  E' := E × (EuclideanSpace ℝ (Fin 1))
   J := I.prod (𝓡∂ 1)
-  bd := BoundaryManifoldData.prod_of_boundaryless_left s.M I (BoundaryManifoldData.Icc k)
-
+  -- TODO: need more sophisticated boundary data, modelled on *I* and not I x ℝ!
+  bd := sorry --BoundaryManifoldData.prod_of_boundaryless_left s.M I (BoundaryManifoldData.Icc k)
   F := s.f ∘ (fun p ↦ p.1)
   hF := s.hf.comp continuous_fst
   φ := sorry
   hFf := sorry
   hFg := sorry
+
+/-- Being cobordant is symmetric. -/
+def symm (φ : UnorientedCobordism k s t) : UnorientedCobordism k t s where
+  J := φ.J
+  bd := φ.bd
+  F := φ.F
+  hF := φ.hF
+  φ := (Diffeomorph.sumComm I t.M k s.M).trans φ.φ
+  hFf := by rw [← φ.hFg]; congr
+  hFg := by rw [← φ.hFf]; congr
+
+-- TODO: this requires proving the collar neighbourhood theorem, i.e. is a lot of work
+/-- Being cobordant is transitive. -/
+def trans {u : SingularNManifold X k I} (φ : UnorientedCobordism k s t) :
+  UnorientedCobordism k t u := sorry
 
 end UnorientedCobordism
