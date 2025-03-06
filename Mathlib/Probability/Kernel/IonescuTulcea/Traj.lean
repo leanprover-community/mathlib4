@@ -20,7 +20,7 @@ One can interpret `κ n` as a kernel which takes as an input the trajectory of a
 `X 0` and moving `X 0 → X 1 → X 2 → ... → X n` and which outputs the distribution of the next
 position of the point in `X (n + 1)`. If `a b : ℕ` and `a < b`, we can compose the kernels,
 and `κ a ⊗ₖ κ (a + 1) ⊗ₖ ... ⊗ₖ κ b` will take the trajectory up to time `a` as input and outputs
-the distrbution of the trajectory on `X (a + 1) × ... × X (b + 1)`.
+the distribution of the trajectory on `X (a + 1) × ... × X (b + 1)`.
 
 The Ionescu-Tulcea theorem tells us that these compositions can be extended into a
 `Kernel (Π i : Iic a, X i) (Π n ≥ a, X n)` which given the trajectory up to time `a` outputs
@@ -237,19 +237,6 @@ theorem trajContent_eq_lmarginalPartialTraj {b : ℕ} {S : Set (Π i : Iic b, X 
   congrm (fun i ↦ ?_) ∈ S
   simp [updateFinset, i.2]
 
-/-- The cylinders of a product space indexed by `ℕ` can be seen as depending on the first
-coordinates. -/
-theorem cylinders_nat :
-    measurableCylinders X = ⋃ (a) (S) (_ : MeasurableSet S), {cylinder (Iic a) S} := by
-  ext s
-  simp only [mem_measurableCylinders, exists_prop, Set.mem_iUnion, mem_singleton]
-  refine ⟨?_, fun ⟨N, S, mS, s_eq⟩ ↦ ⟨Iic N, S, mS, s_eq⟩⟩
-  rintro ⟨t, S, mS, rfl⟩
-  refine ⟨t.sup id, restrict₂ t.subset_Iic_sup_id ⁻¹' S, measurable_restrict₂ _ mS, ?_⟩
-  unfold cylinder
-  rw [← Set.preimage_comp, restrict₂_comp_restrict]
-  exact Set.mem_singleton _
-
 variable {κ} in
 lemma trajContent_ne_top {a : ℕ} {x : Π i : Iic a, X i} {s : Set (Π n, X n)} :
     trajContent κ x s ≠ ∞ :=
@@ -334,12 +321,6 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
   rw [mem_coe, mem_Iic] at hi
   omega
 
-/-- The indicator of a cylinder only depends on the variables whose the cylinder depends on. -/
-theorem dependsOn_cylinder_indicator {ι : Type*} {α : ι → Type*} {I : Finset ι}
-    (S : Set ((i : I) → α i)) :
-    DependsOn ((cylinder I S).indicator (1 : ((Π i, α i) → ℝ≥0∞))) I :=
-  fun x y hxy ↦ Set.indicator_const_eq_indicator_const (by simp [restrict_def, hxy])
-
 /-- This is the key theorem to prove the existence of the `traj`:
 the `trajContent` of a decreasing sequence of cylinders with empty intersection
 converges to `0`.
@@ -359,7 +340,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
       exact ProbabilityMeasure.nonempty ⟨κ m Classical.ofNonempty, inferInstance⟩
   -- `Aₙ` is a cylinder, it can be written as `cylinder (Iic (a n)) Sₙ`.
   have A_cyl n : ∃ a S, MeasurableSet S ∧ A n = cylinder (Iic a) S := by
-    simpa [cylinders_nat] using A_mem n
+    simpa [measurableCylinders_nat] using A_mem n
   choose a S mS A_eq using A_cyl
   -- We write `χₙ` for the indicator function of `Aₙ`.
   let χ n := (A n).indicator (1 : (Π n, X n) → ℝ≥0∞)
@@ -370,7 +351,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
   -- `χₙ` only depends on the first coordinates.
   have χ_dep n : DependsOn (χ n) (Iic (a n)) := by
     simp_rw [χ, A_eq]
-    exact dependsOn_cylinder_indicator _
+    exact dependsOn_cylinder_indicator_const ..
   -- Therefore its integral against `partialTraj κ k (a n)` is constant.
   have lma_const x y n :
       lmarginalPartialTraj κ p (a n) (χ n) (updateFinset x _ x₀) =
@@ -499,7 +480,7 @@ theorem measurable_trajFun (a : ℕ) : Measurable (trajFun κ a) := by
     isPiSystem_measurableCylinders (by simp) (fun t ht ↦ ?cylinder) (fun t mt ht ↦ ?compl)
     (fun f disf mf hf ↦ ?union)
   · obtain ⟨N, S, mS, t_eq⟩ : ∃ N S, MeasurableSet S ∧ t = cylinder (Iic N) S := by
-      simpa [cylinders_nat] using ht
+      simpa [measurableCylinders_nat] using ht
     simp_rw [trajFun, AddContent.measure_eq _ _ generateFrom_measurableCylinders.symm _ ht,
       trajContent, projectiveFamilyContent_congr _ t t_eq mS, inducedFamily]
     refine Measure.measurable_measure.1 ?_ _ mS
