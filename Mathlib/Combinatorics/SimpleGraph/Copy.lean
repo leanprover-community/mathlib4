@@ -83,12 +83,7 @@ def toEmbedding (f : Copy A B) : α ↪ β := ⟨f, f.injective⟩
 /-- The identity copy from a simple graph to itself. -/
 @[refl] def id (G : SimpleGraph V) : Copy G G := ⟨Hom.id, Function.injective_id⟩
 
-/-- The copy from a subgraph to the supergraph. -/
-def ofLE (G₁ G₂ : SimpleGraph V) (h : G₁ ≤ G₂) : Copy G₁ G₂ := ⟨Hom.ofLE h, Function.injective_id⟩
-
-/-- The copy from an induced subgraph to the initial simple graph. -/
-def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G :=
-  (Embedding.induce s).toCopy
+@[simp, norm_cast] lemma coe_id : ⇑(id G) = _root_.id := rfl
 
 /-- The composition of copies is a copy. -/
 def comp (g : Copy B C) (f : Copy A B) : Copy A C := by
@@ -99,6 +94,24 @@ def comp (g : Copy B C) (f : Copy A B) : Copy A C := by
 @[simp]
 theorem comp_apply (g : Copy B C) (f : Copy A B) (a : α) : g.comp f a = g (f a) :=
   RelHom.comp_apply g.toHom f.toHom a
+
+/-- The copy from a subgraph to the supergraph. -/
+def ofLE (G₁ G₂ : SimpleGraph V) (h : G₁ ≤ G₂) : Copy G₁ G₂ := ⟨Hom.ofLE h, Function.injective_id⟩
+
+@[simp, norm_cast]
+theorem coe_comp (g : Copy B C) (f : Copy A B) : ⇑(g.comp f) = g ∘ f := by ext; simp
+
+@[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE G₁ G₂ h) = _root_.id := rfl
+
+@[simp] theorem ofLE_refl : ofLE G G (le_refl G) = id G := by ext; simp
+
+@[simp]
+theorem ofLE_comp (h₁₂ : G₁ ≤ G₂) (h₂₃ : G₂ ≤ G₃) :
+  (ofLE _ _ h₂₃).comp (ofLE _ _ h₁₂) = ofLE _ _ (h₁₂.trans h₂₃) := by ext; simp
+
+/-- The copy from an induced subgraph to the initial simple graph. -/
+def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G :=
+  (Embedding.induce s).toCopy
 
 end Copy
 
