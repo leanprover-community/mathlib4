@@ -32,13 +32,14 @@ open CategoryTheory Rep Finsupp Representation
 
 variable {k G H : Type u} [CommRing k] [Group G] [Group H]
   {A : Rep k G} {B : Rep k H} (f : G →* H) (φ : A ⟶ (Action.res _ f).obj B) (n : ℕ)
-  [DecidableEq G] [DecidableEq H]
 
 theorem congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ : A ⟶ (Action.res _ f₁).obj B} {T : Type*}
     (F : (f : G →* H) → (φ : A ⟶ (Action.res _ f).obj B) → T) :
     F f₁ φ = F f₂ (h ▸ φ) := by
   subst h
   rfl
+
+variable [DecidableEq G] [DecidableEq H]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the chain map sending `∑ aᵢ·gᵢ : Gⁿ →₀ A` to `∑ φ(aᵢ)·(f ∘ gᵢ) : Hⁿ →₀ B`. -/
@@ -296,6 +297,7 @@ lemma cyclesMap_comp_isoOneCycles_hom :
     Category.assoc, cyclesMap'_i, isoOneCycles, ← Category.assoc]
   simp [chainsMap_f_1_comp_oneChainsLequiv f φ, mapShortComplexH1, ← LinearEquiv.toModuleIso_hom]
 
+variable (A) in
 instance mapOneCycles_quotientGroupMk'_epi (S : Subgroup G) [S.Normal]
     [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)] :
     Epi (mapOneCycles (QuotientGroup.mk' S) (resOfQuotientIso A S).inv) := by
@@ -308,14 +310,7 @@ instance mapOneCycles_quotientGroupMk'_epi (S : Subgroup G) [S.Normal]
   simpa [mem_oneCycles_iff, ← (mem_oneCycles_iff _).1 hx, sum_mapDomain_index_inj (f := s)
       (fun x y h => by rw [← hs x, ← hs y, h])]
     using Finsupp.sum_congr fun a b => QuotientGroup.induction_on a fun a => by
-      simp [← QuotientGroup.mk_inv, ρ_eq_of_coe_eq A S (s a)⁻¹ a⁻¹ (by simp [hs])]
-
-instance H1Map_quotientGroupMk'_epi (S : Subgroup G) [S.Normal]
-    [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)] :
-    Epi (H1Map (QuotientGroup.mk' S) (resOfQuotientIso A S).inv) := by
-  convert epi_of_epi (H1π A) _
-  rw [H1π_comp_H1Map]
-  exact @epi_comp _ _ _ _ _ _ (mapOneCycles_quotientGroupMk'_epi A S) (H1π _) inferInstance
+      simp [← QuotientGroup.mk_inv, ρ_eq_of_coe_eq A.ρ S (s a)⁻¹ a⁻¹ (by simp [hs])]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map `H₁(G, A) ⟶ H₁(H, B)`. -/
@@ -362,29 +357,40 @@ lemma H1Map_one (φ : A ⟶ (Action.res _ (1 : G →* H)).obj B) :
 
 section CoresCoinf
 
+variable (A) (S : Subgroup G) [S.Normal] [DecidableEq (G ⧸ S)]
+
+section OfTrivial
+
+variable [IsTrivial (A.ρ.comp S.subtype)]
+
 /-- Given a `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially, this is the
 short complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A)`. -/
 @[simps X₁ X₂ X₃ f g]
-def H1CoresCoinfOfTrivial (S : Subgroup G) [S.Normal]
-    [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)] :
+noncomputable def H1CoresCoinfOfTrivial :
     ShortComplex (ModuleCat k) where
   X₁ := H1 ((Action.res _ S.subtype).obj A)
   X₂ := H1 A
   X₃ := H1 (ofQuotient A S)
   f := H1Map S.subtype (𝟙 _)
   g := H1Map (QuotientGroup.mk' S) <| (resOfQuotientIso A S).inv
-  zero := by rw [← H1Map_comp, congr (QuotientGroup.mk'_comp_subtype S) H1Map, H1Map_one]
+  zero := by
+    rw [← H1Map_comp, congr (QuotientGroup.mk'_comp_subtype S) H1Map, H1Map_one]
+
+instance H1Map_quotientGroupMk'_epi :
+    Epi (H1Map (QuotientGroup.mk' S) (resOfQuotientIso A S).inv) := by
+  convert epi_of_epi (H1π A) _
+  rw [H1π_comp_H1Map]
+  exact @epi_comp _ _ _ _ _ _ (mapOneCycles_quotientGroupMk'_epi A S) (H1π _) inferInstance
 
 /-- Given a `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially, the
 induced map `H₁(G, A) ⟶ H₁(G ⧸ S, A)` is an epimorphism. -/
-instance H1CoresCoinfOfTrivial_g_epi
-    [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)] :
+instance H1CoresCoinfOfTrivial_g_epi :
     Epi (H1CoresCoinfOfTrivial A S).g :=
   inferInstanceAs <| Epi (H1Map _ _)
 
 /-- Given a `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially, the short
 complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A)` is exact. -/
-theorem H1CoresCoinfOfTrivial_exact [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)] :
+theorem H1CoresCoinfOfTrivial_exact :
     (H1CoresCoinfOfTrivial A S).Exact := by
   rw [ShortComplex.moduleCat_exact_iff_ker_sub_range]
   intro x hx
@@ -452,6 +458,8 @@ previous assumptions. -/
     rwa [← sum_comapDomain, ← sum_comapDomain (g := fun _ a => a)] at this <;>
     exact ⟨Set.mapsTo_preimage _ _, Set.injOn_of_injective Subtype.val_injective,
       fun x hx => ⟨⟨x, hS hx⟩, hx, rfl⟩⟩
+
+end OfTrivial
 
 /-- The short complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A_S)`. -/
 @[simps X₁ X₂ X₃ f g]

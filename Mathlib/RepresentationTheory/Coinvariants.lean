@@ -120,6 +120,7 @@ noncomputable abbrev quotientToCoinvariants :
   ofQuotient (toCoinvariants ρ S) S
 
 end
+
 section Finsupp
 
 open Finsupp
@@ -210,7 +211,7 @@ noncomputable abbrev coinvariantsTprodLeftRegularLEquiv :
         simp_all [TensorProduct.smul_tmul', TensorProduct.smul_tmul]
 
 end TensorProduct
-
+end
 end Representation
 
 namespace Rep
