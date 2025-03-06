@@ -467,9 +467,6 @@ lemma sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign
 
 @[simp] lemma toNat_natCast_add_one {n : ℕ} : ((n : ℤ) + 1).toNat = n + 1 := rfl
 
-@[simp] lemma toNat_le {n : ℕ} : toNat m ≤ n ↔ m ≤ n := by
-  rw [ofNat_le.symm, toNat_eq_max, Int.max_le]; exact and_iff_left (ofNat_zero_le _)
-
 @[simp]
 lemma lt_toNat {m : ℕ} : m < toNat n ↔ (m : ℤ) < n := by rw [← Int.not_le, ← Nat.not_le, toNat_le]
 
@@ -489,14 +486,14 @@ lemma lt_of_toNat_lt {a b : ℤ} (h : toNat a < toNat b) : a < b :=
 theorem toNat_sub_of_le {a b : ℤ} (h : b ≤ a) : (toNat (a - b) : ℤ) = a - b :=
   Int.toNat_of_nonneg (Int.sub_nonneg_of_le h)
 
-lemma toNat_lt' {n : ℕ} (hn : n ≠ 0) : m.toNat < n ↔ m < n := by
+lemma toNat_lt'' {n : ℕ} (hn : n ≠ 0) : m.toNat < n ↔ m < n := by
   rw [← toNat_lt_toNat, toNat_natCast]; omega
 
 /-- The modulus of an integer by another as a natural. Uses the E-rounding convention. -/
 def natMod (m n : ℤ) : ℕ := (m % n).toNat
 
 lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
-  (toNat_lt' hn).2 <| emod_lt_of_pos _ <| by omega
+  (toNat_lt'' hn).2 <| emod_lt_of_pos _ <| by omega
 
 attribute [simp] natCast_pow
 
