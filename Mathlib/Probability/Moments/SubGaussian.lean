@@ -184,13 +184,13 @@ protected lemma of_rat (h_int : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X �
     exact isClosed_le (continuous_mgf h_int) (by fun_prop)
 
 @[simp]
-lemma zero [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] :
+lemma fun_zero [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] :
     HasSubgaussianMGF (fun _ ↦ 0) 0 κ ν where
   integrable_exp_mul := by simp
   mgf_le := by simpa using ae_of_all _ fun _ ↦ toReal_prob_le_one
 
 @[simp]
-lemma zero' [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] : HasSubgaussianMGF 0 0 κ ν := zero
+lemma zero [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] : HasSubgaussianMGF 0 0 κ ν := fun_zero
 
 lemma congr {Y : Ω → ℝ} (h : HasSubgaussianMGF X c κ ν) (h' : X =ᵐ[κ ∘ₘ ν] Y) :
     HasSubgaussianMGF Y c κ ν where
@@ -273,12 +273,12 @@ lemma HasCondSubgaussianMGF.condExp_le (h : HasCondSubgaussianMGF m hm X c μ) (
   exact h_mgf t
 
 @[simp]
-lemma HasCondSubgaussianMGF.zero : HasCondSubgaussianMGF m hm (fun _ ↦ 0) 0 μ :=
-  Kernel.HasSubgaussianMGF.zero
+lemma HasCondSubgaussianMGF.fun_zero : HasCondSubgaussianMGF m hm (fun _ ↦ 0) 0 μ :=
+  Kernel.HasSubgaussianMGF.fun_zero
 
 @[simp]
-lemma HasCondSubgaussianMGF.zero' : HasCondSubgaussianMGF m hm 0 0 μ :=
-  Kernel.HasSubgaussianMGF.zero'
+lemma HasCondSubgaussianMGF.zero : HasCondSubgaussianMGF m hm 0 0 μ :=
+  Kernel.HasSubgaussianMGF.zero
 
 lemma HasCondSubgaussianMGF.memLp (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) (p : ℝ≥0) :
     MemLp (fun ω ↦ exp (t * X ω)) p μ :=
@@ -324,11 +324,11 @@ lemma cgf_le (h : HasSubgaussianMGF X c μ) (t : ℝ) : cgf X μ t ≤ c * t ^ 2
   simpa using h.cgf_le t
 
 @[simp]
-lemma zero [IsZeroOrProbabilityMeasure μ] : HasSubgaussianMGF (fun _ ↦ 0) 0 μ := by
+lemma fun_zero [IsZeroOrProbabilityMeasure μ] : HasSubgaussianMGF (fun _ ↦ 0) 0 μ := by
   simp [HasSubgaussianMGF_iff_kernel]
 
 @[simp]
-lemma zero' [IsZeroOrProbabilityMeasure μ] : HasSubgaussianMGF 0 0 μ := zero
+lemma zero [IsZeroOrProbabilityMeasure μ] : HasSubgaussianMGF 0 0 μ := fun_zero
 
 protected lemma of_rat (h_int : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X ω)) μ)
     (h_mgf : ∀ q : ℚ, mgf X μ q ≤ exp (c * q ^ 2 / 2)) :
