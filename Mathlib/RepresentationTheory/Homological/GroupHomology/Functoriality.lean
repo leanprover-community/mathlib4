@@ -297,6 +297,7 @@ lemma cyclesMap_comp_isoOneCycles_hom :
     Category.assoc, cyclesMap'_i, isoOneCycles, ← Category.assoc]
   simp [chainsMap_f_1_comp_oneChainsLequiv f φ, mapShortComplexH1, ← LinearEquiv.toModuleIso_hom]
 
+variable (A) in
 instance mapOneCycles_quotientGroupMk'_epi (S : Subgroup G) [S.Normal]
     [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)] :
     Epi (mapOneCycles (QuotientGroup.mk' S) (resOfQuotientIso A S).inv) := by
@@ -354,11 +355,14 @@ lemma H1Map_one (φ : A ⟶ (Action.res _ (1 : G →* H)).obj B) :
   simpa [← mapDomain_mapRange] using
     Submodule.finsupp_sum_mem _ _ _ _ fun _ _ => single_one_mem_oneBoundaries _
 
+section
+
+variable (A) (S : Subgroup G) [S.Normal] [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)]
+
 /-- Given a `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially, this is the
 short complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A)`. -/
 @[simps X₁ X₂ X₃ f g]
-def H1CoresCoinfOfTrivial (S : Subgroup G) [S.Normal]
-    [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)] :
+noncomputable def H1CoresCoinfOfTrivial :
     ShortComplex (ModuleCat k) where
   X₁ := H1 ((Action.res _ S.subtype).obj A)
   X₂ := H1 A
@@ -368,8 +372,7 @@ def H1CoresCoinfOfTrivial (S : Subgroup G) [S.Normal]
   zero := by
     rw [← H1Map_comp, congr (QuotientGroup.mk'_comp_subtype S) H1Map, H1Map_one]
 
-instance H1Map_quotientGroupMk'_epi (S : Subgroup G) [S.Normal]
-    [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)] :
+instance H1Map_quotientGroupMk'_epi :
     Epi (H1Map (QuotientGroup.mk' S) (resOfQuotientIso A S).inv) := by
   convert epi_of_epi (H1π A) _
   rw [H1π_comp_H1Map]
@@ -377,14 +380,13 @@ instance H1Map_quotientGroupMk'_epi (S : Subgroup G) [S.Normal]
 
 /-- Given a `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially, the
 induced map `H₁(G, A) ⟶ H₁(G ⧸ S, A)` is an epimorphism. -/
-instance H1CoresCoinfOfTrivial_g_epi
-    [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)] :
+instance H1CoresCoinfOfTrivial_g_epi :
     Epi (H1CoresCoinfOfTrivial A S).g :=
   inferInstanceAs <| Epi (H1Map _ _)
 
 /-- Given a `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially, the short
 complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A)` is exact. -/
-theorem H1CoresCoinfOfTrivial_exact [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)] :
+theorem H1CoresCoinfOfTrivial_exact :
     (H1CoresCoinfOfTrivial A S).Exact := by
   rw [ShortComplex.moduleCat_exact_iff_ker_sub_range]
   intro x hx
@@ -452,6 +454,8 @@ previous assumptions. -/
     rwa [← sum_comapDomain, ← sum_comapDomain (g := fun _ a => a)] at this <;>
     exact ⟨Set.mapsTo_preimage _ _, Set.injOn_of_injective Subtype.val_injective,
       fun x hx => ⟨⟨x, hS hx⟩, hx, rfl⟩⟩
+
+end
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map from the short complex
