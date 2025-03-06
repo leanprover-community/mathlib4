@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Finset.Card
- import Mathlib.Data.Finset.Union
+import Mathlib.Data.Finset.Union
 import Mathlib.Data.Multiset.Pi
 import Mathlib.Logic.Function.DependsOn
 
@@ -167,10 +167,10 @@ theorem restrict_def (s : Finset ι) : s.restrict (π := π) = fun f x ↦ f x :
 
 variable {s t u : Finset ι}
 
-theorem _root_.Set.piCongrLeft_comp_restrict {s : Finset ι} :
+theorem _root_.Set.piCongrLeft_comp_restrict :
     (s.equivToSet.symm.piCongrLeft (fun i : s.toSet ↦ π i)) ∘ s.toSet.restrict = s.restrict := rfl
 
-theorem piCongrLeft_comp_restrict {s : Finset ι} :
+theorem piCongrLeft_comp_restrict :
     (s.equivToSet.piCongrLeft (fun i : s ↦ π i)) ∘ s.restrict = s.toSet.restrict := rfl
 
 /-- If a function `f` is restricted to a finite set `t`, and `s ⊆ t`,
