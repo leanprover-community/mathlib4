@@ -20,7 +20,7 @@ This file defines some extra lemmas for free groups, in particular about (cyclic
 * `FreeGroup.Red.cyclicallyReduced`: the predicate for cyclically reduced words
 
 ## Main statements
-* `FreeGroup.infinite_order`: : nontrivial elements of a free group have infinite order
+* `FreeGroup.infinite_order`: nontrivial elements of a free group have infinite order
 * `FreeGroup.zpow_left_injective`: taking n-th powers is an injective function on the free group
 
 -/
