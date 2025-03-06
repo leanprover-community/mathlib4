@@ -19,9 +19,9 @@ This file contains results on the behavior of ultrametrics in products of ultram
 ultrametric, nonarchimedean
 -/
 
-instance Pi.instIsUltrametricDist {ι : Type*} {π : ι → Type*} [Fintype ι]
-    [(i : ι) → PseudoMetricSpace (π i)] [(i : ι) → IsUltrametricDist (π i)] :
-    IsUltrametricDist ((i : ι) → π i) := by
+instance Pi.instIsUltrametricDist {ι : Type*} {X : ι → Type*} [Fintype ι]
+    [(i : ι) → PseudoMetricSpace (X i)] [(i : ι) → IsUltrametricDist (X i)] :
+    IsUltrametricDist ((i : ι) → X i) := by
   constructor
   intro f g h
   simp only [le_sup_iff]
