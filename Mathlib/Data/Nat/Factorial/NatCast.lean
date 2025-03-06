@@ -11,6 +11,7 @@ import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Int.GCD
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Algebra.Field.ZMod
 
 /-!
 # Invertibility of factorials
@@ -56,19 +57,37 @@ section CharP
 
 variable {A : Type*} [Ring A] (p : ℕ) [Fact (Nat.Prime p)] [CharP A p]
 
-theorem natCast_factorial_of_charP {n : ℕ} (h : n < p) : IsUnit (n ! : A) := by
+-- TODO: move / golf
+theorem natCast_iff_of_charP {n : ℕ} : IsUnit (n : A) ↔ ¬ (p ∣ n) := by
+  constructor
+  · rintro ⟨x, hx⟩
+    rw [← CharP.cast_eq_zero_iff (R := A), ← hx]
+    have := CharP.nontrivial_of_char_ne_one (R := A) (Nat.Prime.ne_one Fact.out : p ≠ 1)
+    exact x.ne_zero
+  · intro h
+    rw [ ← ZMod.cast_natCast' (n := p)]
+    refine ⟨⟨ZMod.cast (n : ZMod p), ZMod.cast (n⁻¹ : ZMod p), ?_, ?_⟩, rfl⟩
+    all_goals rw [← ZMod.cast_mul (m := p) dvd_rfl]
+    · rw [mul_inv_cancel₀ (G₀ := ZMod p), ZMod.cast_one']
+      rw [ne_eq, ZMod.natCast_zmod_eq_zero_iff_dvd]
+      assumption
+    · rw [inv_mul_cancel₀ (G₀ := ZMod p), ZMod.cast_one']
+      rw [ne_eq, ZMod.natCast_zmod_eq_zero_iff_dvd]
+      assumption
+
+theorem natCast_factorial_iff_of_charP {n : ℕ} : IsUnit (n ! : A) ↔ n < p := by
+  have hp : p.Prime := Fact.out
   induction n with
-  | zero => simp
+  | zero => simp [hp.pos]
   | succ n ih =>
-    rw [factorial_succ, cast_mul, Nat.cast_commute _ _ |>.isUnit_mul_iff]
-    refine ⟨?_, ih (lt_trans (lt_add_one n) h)⟩
-    have h1 := Int.cast_one (R := A)
-    rw [← cast_one, ← coprime_of_lt_prime (zero_lt_succ n) h (Fact.elim inferInstance),
-      gcd_eq_gcd_ab, Int.cast_add] at h1
-    simp only [succ_eq_add_one, Int.cast_mul, Int.cast_natCast, CharP.cast_eq_zero, zero_mul,
-      zero_add] at h1
-    have h2 := Nat.commute_cast _ _ |>.eq.trans h1
-    exact ⟨⟨_, _, h1, h2⟩, rfl⟩
+    -- TODO: why is `.symm.symm` needed here!?
+    rw [factorial_succ, cast_mul, Nat.cast_commute _ _ |>.isUnit_mul_iff, ih.symm.symm,
+      ← Nat.add_one_le_iff, natCast_iff_of_charP (p := p)]
+    constructor
+    · rintro ⟨h1, h2⟩
+      exact lt_of_le_of_ne h2 (mt (· ▸ dvd_rfl) h1)
+    · intro h
+      exact ⟨not_dvd_of_pos_of_lt (Nat.succ_pos _) h, h.le⟩
 
 end CharP
 
