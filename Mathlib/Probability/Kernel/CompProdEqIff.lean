@@ -6,13 +6,15 @@ Authors: Rémy Degenne
 import Mathlib.Probability.Kernel.Composition.AbsolutelyContinuous
 
 /-!
-# TODO
+# Condition for two kernels to be equal almost everywhere
 
-`μ ⊗ₘ κ = μ ⊗ₘ η ↔ κ =ᵐ[μ] η`
+We prove that two kernels `κ` and `η` are `μ`-a.e. equal iff the composition-products `μ ⊗ₘ κ`
+and `μ ⊗ₘ η` are equal.
 
 ## Main statements
 
 * `compProd_withDensity`: `μ ⊗ₘ (κ.withDensity f) = (μ ⊗ₘ κ).withDensity (fun p ↦ f p.1 p.2)`
+* `compProd_eq_iff`: `μ ⊗ₘ κ = μ ⊗ₘ η ↔ κ =ᵐ[μ] η`
 
 -/
 
@@ -42,6 +44,7 @@ lemma compProd_withDensity_apply_prod [SFinite μ] [IsSFiniteKernel κ]
   simp_rw [h_indicator]
   rw [lintegral_indicator hs]
 
+/-- Auxiliary lemma for `compProd_withDensity`. -/
 lemma compProd_withDensity_of_isFiniteMeasure [IsFiniteMeasure μ] [IsSFiniteKernel κ]
     [IsFiniteKernel (κ.withDensity f)] (hf : Measurable (Function.uncurry f)) :
     μ ⊗ₘ (κ.withDensity f) = (μ ⊗ₘ κ).withDensity (fun p ↦ f p.1 p.2) := by
@@ -64,6 +67,10 @@ lemma compProd_withDensity_of_isFiniteMeasure [IsFiniteMeasure μ] [IsSFiniteKer
   · intro f h_disj hf h
     simp_rw [measure_iUnion h_disj hf, h]
 
+/-- A composition-product of a measure with a kernel defined with `withDensity` is equal to the
+`withDensity` of the composition-product.
+
+TODO: can we weaken the `IsFiniteKernel (κ.withDensity f)` hypothesis? -/
 lemma compProd_withDensity [SFinite μ] [IsSFiniteKernel κ] [IsFiniteKernel (κ.withDensity f)]
     (hf : Measurable (Function.uncurry f)) :
     μ ⊗ₘ (κ.withDensity f) = (μ ⊗ₘ κ).withDensity (fun p ↦ f p.1 p.2) := by
@@ -99,8 +106,8 @@ lemma ae_eq_of_compProd_eq [IsFiniteMeasure μ] [IsFiniteKernel κ] [IsFiniteKer
 
 /-- Two finite kernels `κ` and `η` are `μ`-a.e. equal iff the composition-products `μ ⊗ₘ κ`
 and `μ ⊗ₘ η` are equal. -/
-lemma ae_eq_iff_compProd_eq [IsFiniteMeasure μ] [IsFiniteKernel κ] [IsFiniteKernel η] :
-    κ =ᵐ[μ] η ↔ μ ⊗ₘ κ = μ ⊗ₘ η :=
-  ⟨Measure.compProd_congr, Kernel.ae_eq_of_compProd_eq⟩
+lemma compProd_eq_iff [IsFiniteMeasure μ] [IsFiniteKernel κ] [IsFiniteKernel η] :
+    μ ⊗ₘ κ = μ ⊗ₘ η ↔ κ =ᵐ[μ] η :=
+  ⟨Kernel.ae_eq_of_compProd_eq, Measure.compProd_congr⟩
 
 end ProbabilityTheory.Kernel

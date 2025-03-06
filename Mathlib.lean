@@ -4613,6 +4613,7 @@ import Mathlib.Probability.Kernel.Composition.MeasureComp
 import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 import Mathlib.Probability.Kernel.Composition.ParallelComp
 import Mathlib.Probability.Kernel.Composition.Prod
+import Mathlib.Probability.Kernel.CompProdEqIff
 import Mathlib.Probability.Kernel.CondDistrib
 import Mathlib.Probability.Kernel.Condexp
 import Mathlib.Probability.Kernel.Defs
