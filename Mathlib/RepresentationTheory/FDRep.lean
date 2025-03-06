@@ -120,12 +120,14 @@ theorem Iso.conj_ρ {V W : FDRep R G} (i : V ≅ W) (g : G) :
   exact (i.hom.comm g).symm
 
 /-- Lift an unbundled representation to `FDRep`. -/
+@[simps ρ]
 abbrev of {V : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V]
     (ρ : Representation R G V) : FDRep R G :=
   ⟨FGModuleCat.of R V, (ModuleCat.endRingEquiv _).symm.toMonoidHom.comp ρ⟩
 
+/- Here `ρ` is `FDRep.ρ` instead of `Action.ρ` for `of_ρ`. -/
 @[simp]
-theorem of_ρ {V : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V] (ρ : G →* V →ₗ[R] V) :
+theorem of_ρ' {V : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V] (ρ : G →* V →ₗ[R] V) :
     (of ρ).ρ = ρ := rfl
 
 @[simp]
