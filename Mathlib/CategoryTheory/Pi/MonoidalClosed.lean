@@ -6,7 +6,6 @@ Authors: Sina Hazratpour
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Pi.Monoidal
 
-
 /-!
 # The pointwise closed monoidal strucutre on the product of families of closed monoidal categories
 
