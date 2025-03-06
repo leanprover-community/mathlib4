@@ -163,7 +163,7 @@ theorem isProper_of_not_mem {I : Ideal P} {p : P} (nmem : p ∉ I) : IsProper I 
 Note that `IsCoatom` is less general because ideals only have a top element when `P` is directed
 and nonempty. -/
 @[mk_iff]
-class IsMaximal (I : Ideal P) extends IsProper I : Prop where
+class IsMaximal (I : Ideal P) : Prop extends IsProper I where
   /-- This ideal is maximal in the collection of proper ideals. -/
   maximal_proper : ∀ ⦃J : Ideal P⦄, I < J → (J : Set P) = univ
 
@@ -332,7 +332,7 @@ instance : Max (Ideal P) :=
   ⟨fun I J ↦
     { carrier := { x | ∃ i ∈ I, ∃ j ∈ J, x ≤ i ⊔ j }
       nonempty' := by
-        cases' inter_nonempty I J with w h
+        obtain ⟨w, h⟩ := inter_nonempty I J
         exact ⟨w, w, h.1, w, h.2, le_sup_left⟩
       directed' := fun x ⟨xi, _, xj, _, _⟩ y ⟨yi, _, yj, _, _⟩ ↦
         ⟨x ⊔ y, ⟨xi ⊔ yi, sup_mem ‹_› ‹_›, xj ⊔ yj, sup_mem ‹_› ‹_›,

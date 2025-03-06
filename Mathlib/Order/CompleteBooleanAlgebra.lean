@@ -85,7 +85,7 @@ class Order.Coframe (α : Type*) extends CompleteLattice α, CoheytingAlgebra α
 
 /-- `⊔` distributes over `⨅`. -/
 theorem sup_sInf_eq {α : Type*} [Order.Coframe α] {s : Set α} {a : α} :
-    a ⊔ sInf s  = ⨅ b ∈ s, a ⊔ b:=
+    a ⊔ sInf s = ⨅ b ∈ s, a ⊔ b :=
   gc_sdiff_sup.u_sInf
 
 open Order
@@ -97,11 +97,13 @@ distributive lattice. Do NOT use, except for implementing `CompleteDistribLattic
 This structure omits the `himp`, `compl`, `sdiff`, `hnot` fields, which can be recovered using
 `CompleteDistribLattice.ofMinimalAxioms`. -/
 structure CompleteDistribLattice.MinimalAxioms (α : Type u)
-    extends CompleteLattice α, Frame.MinimalAxioms α, Coframe.MinimalAxioms α where
+    extends CompleteLattice α,
+      toFrameMinimalAxioms : Frame.MinimalAxioms α,
+      toCoframeMinimalAxioms : Coframe.MinimalAxioms α where
 
 -- We give those projections better name further down
-attribute [nolint docBlame] CompleteDistribLattice.MinimalAxioms.toMinimalAxioms
-  CompleteDistribLattice.MinimalAxioms.toMinimalAxioms_1
+attribute [nolint docBlame] CompleteDistribLattice.MinimalAxioms.toFrameMinimalAxioms
+  CompleteDistribLattice.MinimalAxioms.toCoframeMinimalAxioms
 
 /-- A complete distributive lattice is a complete lattice whose `⊔` and `⊓` respectively
 distribute over `⨅` and `⨆`. -/
@@ -218,7 +220,7 @@ def of [CompleteDistribLattice α] : MinimalAxioms α where
   iInf_sup_le_sup_sInf a s:= sup_sInf_eq.ge
 
 /-- Turn minimal axioms for `CompleteDistribLattice` into minimal axioms for `Order.Frame`. -/
-abbrev toFrame : Frame.MinimalAxioms α := minAx.toMinimalAxioms
+abbrev toFrame : Frame.MinimalAxioms α := minAx.toFrameMinimalAxioms
 
 /-- Turn minimal axioms for `CompleteDistribLattice` into minimal axioms for `Order.Coframe`. -/
 abbrev toCoframe : Coframe.MinimalAxioms α where __ := minAx

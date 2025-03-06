@@ -5,6 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Data.Int.Basic
 
 /-!
 # Facts about `ℤ` as an (unbundled) ordered group

@@ -29,7 +29,7 @@ theorem mem_accumulate [LE α] {x : α} {z : β} : z ∈ Accumulate s x ↔ ∃ 
 
 theorem subset_accumulate [Preorder α] {x : α} : s x ⊆ Accumulate s x := fun _ => mem_biUnion le_rfl
 
-theorem accumulate_subset_iUnion [Preorder α] (x : α) : Accumulate s x ⊆ ⋃ i, s i :=
+theorem accumulate_subset_iUnion [LE α] (x : α) : Accumulate s x ⊆ ⋃ i, s i :=
   (biUnion_subset_biUnion_left (subset_univ _)).trans_eq (biUnion_univ _)
 
 theorem monotone_accumulate [Preorder α] : Monotone (Accumulate s) := fun _ _ hxy =>

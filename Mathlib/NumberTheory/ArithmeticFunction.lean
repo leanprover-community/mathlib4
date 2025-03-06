@@ -810,10 +810,7 @@ def pow (k : ℕ) : ArithmeticFunction ℕ :=
 
 @[simp]
 theorem pow_apply {k n : ℕ} : pow k n = if k = 0 ∧ n = 0 then 0 else n ^ k := by
-  cases k
-  · simp [pow]
-  rename_i k  -- Porting note: added
-  simp [pow, k.succ_pos.ne']
+  cases k <;> simp [pow]
 
 theorem pow_zero_eq_zeta : pow 0 = ζ := by
   ext n
@@ -910,9 +907,9 @@ lemma cardFactors_zero : Ω 0 = 0 := by simp
 
 @[simp]
 theorem cardFactors_eq_one_iff_prime {n : ℕ} : Ω n = 1 ↔ n.Prime := by
-  refine ⟨fun h => ?_, fun h => List.length_eq_one.2 ⟨n, primeFactorsList_prime h⟩⟩
+  refine ⟨fun h => ?_, fun h => List.length_eq_one_iff.2 ⟨n, primeFactorsList_prime h⟩⟩
   cases n with | zero => simp at h | succ n =>
-  rcases List.length_eq_one.1 h with ⟨x, hx⟩
+  rcases List.length_eq_one_iff.1 h with ⟨x, hx⟩
   rw [← prod_primeFactorsList n.add_one_ne_zero, hx, List.prod_singleton]
   apply prime_of_mem_primeFactorsList
   rw [hx, List.mem_singleton]

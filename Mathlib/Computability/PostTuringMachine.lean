@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Computability.Tape
-import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Finset.Option
+import Mathlib.Data.Fintype.Defs
 import Mathlib.Data.PFun
 
 /-!
@@ -152,13 +152,13 @@ def evalInduction {σ} {f : σ → Option σ} {b : σ} {C : σ → Sort*} {a : �
 theorem mem_eval {σ} {f : σ → Option σ} {a b} : b ∈ eval f a ↔ Reaches f a b ∧ f b = none := by
   refine ⟨fun h ↦ ?_, fun ⟨h₁, h₂⟩ ↦ ?_⟩
   · refine evalInduction h fun a h IH ↦ ?_
-    cases' e : f a with a'
+    rcases e : f a with - | a'
     · rw [Part.mem_unique h
           (PFun.mem_fix_iff.2 <| Or.inl <| Part.mem_some_iff.2 <| by rw [e]; rfl)]
       exact ⟨ReflTransGen.refl, e⟩
     · rcases PFun.mem_fix_iff.1 h with (h | ⟨_, h, _⟩) <;> rw [e] at h <;>
         cases Part.mem_some_iff.1 h
-      cases' IH a' e with h₁ h₂
+      obtain ⟨h₁, h₂⟩ := IH a' e
       exact ⟨ReflTransGen.head e h₁, h₂⟩
   · refine ReflTransGen.head_induction_on h₁ ?_ fun h _ IH ↦ ?_
     · refine PFun.mem_fix_iff.2 (Or.inl ?_)
@@ -223,7 +223,7 @@ theorem tr_reaches_rev {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (
     rcases ReflTransGen.cases_head ce with (rfl | ⟨d', cd', de⟩)
     · have := H ee
       revert this
-      cases' eg : f₁ e₁ with g₁ <;> simp only [Respects, and_imp, exists_imp]
+      rcases eg : f₁ e₁ with - | g₁ <;> simp only [Respects, and_imp, exists_imp]
       · intro c0
         cases cd.symm.trans c0
       · intro g₂ gg cg
@@ -235,19 +235,19 @@ theorem tr_reaches_rev {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (
 
 theorem tr_eval {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (H : Respects f₁ f₂ tr) {a₁ b₁ a₂}
     (aa : tr a₁ a₂) (ab : b₁ ∈ eval f₁ a₁) : ∃ b₂, tr b₁ b₂ ∧ b₂ ∈ eval f₂ a₂ := by
-  cases' mem_eval.1 ab with ab b0
+  obtain ⟨ab, b0⟩ := mem_eval.1 ab
   rcases tr_reaches H aa ab with ⟨b₂, bb, ab⟩
   refine ⟨_, bb, mem_eval.2 ⟨ab, ?_⟩⟩
   have := H bb; rwa [b0] at this
 
 theorem tr_eval_rev {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (H : Respects f₁ f₂ tr) {a₁ b₂ a₂}
     (aa : tr a₁ a₂) (ab : b₂ ∈ eval f₂ a₂) : ∃ b₁, tr b₁ b₂ ∧ b₁ ∈ eval f₁ a₁ := by
-  cases' mem_eval.1 ab with ab b0
+  obtain ⟨ab, b0⟩ := mem_eval.1 ab
   rcases tr_reaches_rev H aa ab with ⟨c₁, c₂, bc, cc, ac⟩
   cases (reflTransGen_iff_eq (Option.eq_none_iff_forall_not_mem.1 b0)).1 bc
   refine ⟨_, cc, mem_eval.2 ⟨ac, ?_⟩⟩
   have := H cc
-  cases' hfc : f₁ c₁ with d₁
+  rcases hfc : f₁ c₁ with - | d₁
   · rfl
   rw [hfc] at this
   rcases this with ⟨d₂, _, bd⟩
@@ -739,7 +739,7 @@ theorem tr_respects [Inhabited Γ] :
     Respects (TM1.step M) (TM0.step (tr M))
       fun (c₁ : TM1.Cfg Γ Λ σ) (c₂ : TM0.Cfg Γ (Λ' M)) ↦ trCfg M c₁ = c₂ :=
   fun_respects.2 fun ⟨l₁, v, T⟩ ↦ by
-    cases' l₁ with l₁; · exact rfl
+    rcases l₁ with - | l₁; · exact rfl
     simp only [trCfg, TM1.step, FRespects, Option.map]
     induction M l₁ generalizing v T with
     | move _ _ IH => exact TransGen.head rfl (IH _ _)
@@ -779,7 +779,7 @@ theorem tr_supports {S : Finset Λ} (ss : TM1.Supports M S) :
     · apply Finset.mem_univ
   · intro q a q' s h₁ h₂
     rcases q with ⟨_ | q, v⟩; · cases h₁
-    cases' q' with q' v'
+    obtain ⟨q', v'⟩ := q'
     simp only [trStmts, Finset.mem_coe] at h₂ ⊢
     rw [Finset.mem_product] at h₂ ⊢
     simp only [Finset.mem_univ, and_true] at h₂ ⊢
@@ -1006,9 +1006,9 @@ theorem stepAux_write (q : Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (a b : Γ) (L R
   clear a b L R
   intro L' R' l₁ l₂ l₂' e
   induction' l₂ with a l₂ IH generalizing l₁ l₂'
-  · cases List.length_eq_zero.1 e
+  · cases List.length_eq_zero_iff.1 e
     rfl
-  cases' l₂' with b l₂' <;>
+  rcases l₂' with - | ⟨b, l₂'⟩ <;>
     simp only [List.length_nil, List.length_cons, Nat.succ_inj', reduceCtorEq] at e
   rw [List.reverseAux, ← IH (a :: l₁) l₂' e]
   simp [stepAux, ListBlank.append, write]
@@ -1050,7 +1050,7 @@ theorem tr_respects :
     Respects (step M) (step (tr enc dec M)) fun c₁ c₂ ↦ trCfg enc enc0 c₁ = c₂ :=
   fun_respects.2 fun ⟨l₁, v, T⟩ ↦ by
     obtain ⟨L, R, rfl⟩ := T.exists_mk'
-    cases' l₁ with l₁
+    rcases l₁ with - | l₁
     · exact rfl
     suffices ∀ q R, Reaches (step (tr enc dec M)) (stepAux (trNormal dec q) v (trTape' enc0 L R))
         (trCfg enc enc0 (stepAux q v (Tape.mk' L R))) by
@@ -1207,15 +1207,15 @@ def trCfg : TM0.Cfg Γ Λ → TM1.Cfg Γ (Λ' Γ Λ) Unit
 
 theorem tr_respects : Respects (TM0.step M) (TM1.step (tr M)) fun a b ↦ trCfg M a = b :=
   fun_respects.2 fun ⟨q, T⟩ ↦ by
-    cases' e : M q T.1 with val
+    rcases e : M q T.1 with - | val
     · simp only [TM0.step, trCfg, e]; exact Eq.refl none
-    cases' val with q' s
+    obtain ⟨q', s⟩ := val
     simp only [FRespects, TM0.step, trCfg, e, Option.isSome, cond, Option.map_some']
     revert e
     have : TM1.step (tr M) ⟨some (Λ'.act s q'), (), T⟩ = some ⟨some (Λ'.normal q'), (), match s with
         | TM0.Stmt.move d => T.move d
         | TM0.Stmt.write a => T.write a⟩ := by
-      cases' s with d a <;> rfl
+      cases s <;> rfl
     intro e
     refine TransGen.head ?_ (TransGen.head' this ?_)
     · simp only [TM1.step, TM1.stepAux, tr]
