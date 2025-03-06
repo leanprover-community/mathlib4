@@ -688,9 +688,6 @@ lemma iIndepFun.of_precomp {g : ι' → ι} (hg : g.Surjective)
     rw [Finset.prod_image (fun x hx y hy h => ?_), Finset.prod_congr rfl (fun x _ => by rw [A])]
     rw [←A x, ← A y, h]
   simpa [A, eq] using h (t.image (Function.invFun g)) (f' := fun i ↦ s (g i)) this
-
-
-
 lemma iIndepFun_precomp_of_bijective {g : ι' → ι} (hg : g.Bijective) :
     iIndepFun (fun i ↦ m (g i)) (fun i ↦ f (g i)) μ ↔ iIndepFun m f μ where
   mp := .of_precomp hg.surjective
