@@ -244,3 +244,12 @@ structure UnorientedCobordism.{v} (s : SingularNManifold X k I) (t : SingularNMa
   hFg : F ∘ bd.f ∘ φ ∘ Sum.inr = t.f
 
 -- TODO: the checkUnivs linter complains that M and bd.M₀ only occur together
+
+namespace UnorientedCobordism
+
+variable (s t : SingularNManifold X k I)
+
+def refl : UnorientedCobordism 12 s s where--:= sorry
+  W := s.M × (Set.Icc (0 : ℝ) 1)
+
+end UnorientedCobordism
