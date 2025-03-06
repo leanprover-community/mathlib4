@@ -106,7 +106,7 @@ theorem exists_isCompact_closure_measure_compl_lt [UniformSpace α] [CompleteSpa
     let seq := TopologicalSpace.denseSeq α
     have hseq_dense : DenseRange seq := TopologicalSpace.denseRange_denseSeq α
     obtain ⟨t : ℕ → Set (α × α),
-        hto : ∀ i, t i ∈ (uniformity α).sets ∧ IsOpen (t i) ∧ SymmetricRel (t i),
+        hto : ∀ i, t i ∈ (uniformity α).sets ∧ IsOpen (t i) ∧ IsSymmetricRel (t i),
         h_basis : (uniformity α).HasAntitoneBasis t⟩ :=
       (@uniformity_hasBasis_open_symmetric α _).exists_antitone_subbasis
     let f : ℕ → ℕ → Set α := fun n m ↦ UniformSpace.ball (seq m) (t n)
@@ -123,7 +123,7 @@ theorem exists_isCompact_closure_measure_compl_lt [UniformSpace α] [CompleteSpa
     rw [interUnionBalls, Set.compl_iInter]
     refine ((measure_iUnion_le _).trans ?_).trans_lt hδ2
     refine ENNReal.tsum_le_tsum (fun n ↦ ?_)
-    have h'' n : Prod.swap ⁻¹' t n = t n := SymmetricRel.eq (hto n).2.2
+    have h'' n : Prod.swap ⁻¹' t n = t n := IsSymmetricRel.eq (hto n).2.2
     simp only [h'', compl_iUnion, ge_iff_le]
     exact (s'bound n (δ n) (hδ1 n)).le
 
