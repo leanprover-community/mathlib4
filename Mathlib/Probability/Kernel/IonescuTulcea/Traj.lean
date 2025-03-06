@@ -23,7 +23,7 @@ and `κ a ⊗ₖ κ (a + 1) ⊗ₖ ... ⊗ₖ κ b` will take the trajectory up 
 the distribution of the trajectory on `X (a + 1) × ... × X (b + 1)`.
 
 The Ionescu-Tulcea theorem tells us that these compositions can be extended into a
-`Kernel (Π i : Iic a, X i) (Π n ≥ a, X n)` which given the trajectory up to time `a` outputs
+`Kernel (Π i : Iic a, X i) (Π n > a, X n)` which given the trajectory up to time `a` outputs
 the distribution of the infinite trajectory started in `X (a + 1)`. In other words this theorem
 makes sense of composing infinitely many kernels together.
 
@@ -31,9 +31,9 @@ In this file we construct this "limit" kernel given the family `κ`. More precis
 we construct the kernel `traj κ a : Kernel (Π i : Iic a, X i) (Π n, X n)`, which takes as input
 the trajectory in `X 0 × ... × X a` and outputs the distribution of the whole trajectory. The name
 `traj` thus stands for "trajectory". We build a kernel with output in `Π n, X n` instead of
-`Π i ≥ a, X i` to make manipulations easier. The first coordinates are deterministic.
+`Π i > a, X i` to make manipulations easier. The first coordinates are deterministic.
 
-We also provide to compute integrals against `traj κ a` and an expression for the conditional
+We also provide tools to compute integrals against `traj κ a` and an expression for the conditional
 expectation.
 
 ## Main definition
@@ -55,7 +55,7 @@ expectation.
 ## Implementation notes
 
 The kernel `traj κ a` is built using the Carathéodory extension theorem. First we build a projective
-family of measures using `inducedFamily` and `partialTraj κ a`. Then we build an
+family of measures using `inducedFamily` and `partialTraj κ a`. Then we build a
 `MeasureTheory.AddContent` on `MeasureTheory.measurableCylinders` called `trajContent` using
 `projectiveFamilyContent`. Finally we prove `trajContent_tendsto_zero` which implies the
 `σ`-additivity of the content, allowing to turn it into a measure.
