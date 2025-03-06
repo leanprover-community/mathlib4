@@ -157,26 +157,6 @@ noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : �
 variable {X Y Z W : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [TopologicalSpace W]
 
-/- The following results are not used, but might be useful for mathlib
-def Homeomorph.sumEquivBoolProd (X : Type*) [TopologicalSpace X] : X ⊕ X ≃ₜ Bool × X := by
-  apply Homeomorph.homeomorphOfContinuousClosed (Equiv.boolProdEquivSum X).symm
-  · show Continuous (Sum.elim (Prod.mk false) (Prod.mk true))
-    fun_prop
-  · show IsClosedMap (Sum.elim (Prod.mk false) (Prod.mk true))
-    exact (isClosedMap_prodMk_left false).sumElim (isClosedMap_prodMk_left true)
-
-def Homeomorph.finTwo : Bool ≃ₜ Fin 2 where
-  toEquiv := finTwoEquiv.symm
-
-def Homeomorph.foo {X : Type*} [TopologicalSpace X] : X ⊕ X ≃ₜ X × Fin 2 :=
-  letI b := Homeomorph.finTwo.symm.prodCongr (Homeomorph.refl X)
-  ((Homeomorph.sumEquivBoolProd X).trans b.symm).trans (Homeomorph.prodComm _ _)
-
--- needs merging master, and perhaps further work,
--- until a ChartedSpace instance on M × Fin 2 is found
--- def Diffeomorph.foo : Diffeomorph I I (M ⊕ M) (M × Fin 2) ⊤ := sorry
--/
-
 open Topology
 
 attribute [local instance] ChartedSpace.of_discreteTopology in
@@ -304,7 +284,7 @@ M has boundary captured by the boundary of the half-space
 Proving this requires knowing homology groups of spheres (or similar). -/
 def BoundaryManifoldData.of_Euclidean_halfSpace (n : ℕ) (k : ℕ∞)
     {M : Type} [TopologicalSpace M] [ChartedSpace (EuclideanHalfSpace (n + 1)) M]
-    [IsManifold (𝓡∂ (n + 1)) k M] : BoundaryManifoldData M (𝓡∂ (n + 1)) k (𝓡 n):= sorry
+    [IsManifold (𝓡∂ (n + 1)) k M] : BoundaryManifoldData M (𝓡∂ (n + 1)) k (𝓡 n) := sorry
 
 -- Proven in #22137; we will omit the proof here
 lemma Topology.IsEmbedding.sumElim_of_separatedNhds {f : X → Z} {g : Y → Z}
