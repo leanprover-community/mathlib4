@@ -330,33 +330,38 @@ end Compact
 
 end TopologicalSpace
 
-theorem lebesgue_number_lemma_of_emetric {s : Set α} {ι : Sort*} {c : ι → Set α} (hs : IsCompact s)
+section LebesgueNumberLemma
+
+variable {s : Set α}
+
+theorem lebesgue_number_lemma_of_emetric {ι : Sort*} {c : ι → Set α} (hs : IsCompact s)
     (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) : ∃ δ > 0, ∀ x ∈ s, ∃ i, ball x δ ⊆ c i := by
   simpa only [ball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma hs hc₁ hc₂
 
-theorem lebesgue_number_lemma_nhds_of_emetric' {s : Set α} {c : (x : α) → x ∈ s → Set α}
-    (hs : IsCompact s) (hc : ∀ x hx, c x hx ∈ 𝓝 x) :
-    ∃ δ > 0, ∀ x ∈ s, ∃ y : s, ball x δ ⊆ c y y.2 := by
+theorem lebesgue_number_lemma_nhds_of_emetric' {c : (x : α) → x ∈ s → Set α} (hs : IsCompact s)
+    (hc : ∀ x hx, c x hx ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y : s, ball x δ ⊆ c y y.2 := by
   simpa only [ball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma_nhds' hs hc
 
-theorem lebesgue_number_lemma_nhds_of_emetric {s : Set α} {c : α → Set α} (hs : IsCompact s)
-    (hc : ∀ x ∈ s, c x ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y, ball x δ ⊆ c y := by
+theorem lebesgue_number_lemma_nhds_of_emetric {c : α → Set α} (hs : IsCompact s)
+  (hc : ∀ x ∈ s, c x ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y, ball x δ ⊆ c y := by
   simpa only [ball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma_nhds hs hc
 
-theorem lebesgue_number_lemma_nhdsWithin_of_emetric' {s : Set α} {c : (x : α) → x ∈ s → Set α}
+theorem lebesgue_number_lemma_nhdsWithin_of_emetric' {c : (x : α) → x ∈ s → Set α}
     (hs : IsCompact s) (hc : ∀ x hx, c x hx ∈ 𝓝[s] x) :
     ∃ δ > 0, ∀ x ∈ s, ∃ y : s, ball x δ ∩ s ⊆ c y y.2 := by
   simpa only [ball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma_nhdsWithin' hs hc
 
-theorem lebesgue_number_lemma_nhdsWithin_of_emetric {s : Set α} {c : α → Set α} (hs : IsCompact s)
+theorem lebesgue_number_lemma_nhdsWithin_of_emetric {c : α → Set α} (hs : IsCompact s)
     (hc : ∀ x ∈ s, c x ∈ 𝓝[s] x) : ∃ δ > 0, ∀ x ∈ s, ∃ y, ball x δ ∩ s ⊆ c y := by
   simpa only [ball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma_nhdsWithin hs hc
 
-theorem lebesgue_number_lemma_of_emetric_sUnion {s : Set α} {c : Set (Set α)} (hs : IsCompact s)
+theorem lebesgue_number_lemma_of_emetric_sUnion {c : Set (Set α)} (hs : IsCompact s)
     (hc₁ : ∀ t ∈ c, IsOpen t) (hc₂ : s ⊆ ⋃₀ c) : ∃ δ > 0, ∀ x ∈ s, ∃ t ∈ c, ball x δ ⊆ t := by
   rw [sUnion_eq_iUnion] at hc₂; simpa using lebesgue_number_lemma_of_emetric hs (by simpa) hc₂
+
+end LebesgueNumberLemma
