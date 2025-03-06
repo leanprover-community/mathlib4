@@ -6,7 +6,8 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Int.GCD
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.Prime.Basic
