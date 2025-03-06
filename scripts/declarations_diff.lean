@@ -1,10 +1,13 @@
 import Lean
-import Batteries -- technically not needed, since `Mathlib` already imports it
-import Mathlib
-import Archive
-import Counterexamples
+--import Batteries -- technically not needed, since `Mathlib` already imports it
+--import Mathlib
+--import Archive
+--import Counterexamples
 
 open Lean
+
+local instance : ToString NameSet where
+  toString ns := s!"{ns.toArray.qsort (·.toString < ·.toString)}"
 
 /--
 Prints each declaration in the environment that is not an internal detail.
@@ -18,3 +21,21 @@ elab "#all_declarations " branch:str : command => do
       sorted := sorted.binInsert (· < ·) nm.toString
   dbg_trace "* Writing {sorted.size} declarations to '{branch.getString}'"
   IO.FS.writeFile branch.getString <| .intercalate "\n" sorted.toList
+
+def toUserNameSet (env : Environment) : NameSet :=
+  env.constants.fold (init := ∅) (fun tot nm _ =>
+    if nm.isInternalDetail then tot else tot.insert nm)
+
+def declsFromImports (imports : Array Import) : IO NameSet := do
+  let env1 ← importModules imports {}
+  pure <| toUserNameSet env1
+
+def symmDiff (e1 e2 : NameSet) : NameSet × NameSet :=
+  (e1.fold (init := (∅, e2)) fun (e1, e2) n =>
+    if e2.contains n then (e1, e2.erase n) else (e1.insert n, e2))
+
+elab "ddiff" : command => do
+  let e1 ← declsFromImports #[`SettersAndCheckers.declarations_diff]
+  let e2 ← declsFromImports #[`SettersAndCheckers.ParseGit]
+  let (d1, d2) := symmDiff e1 e2
+  logInfo m!"{(d1, d2)}"
