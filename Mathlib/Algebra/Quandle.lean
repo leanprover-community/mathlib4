@@ -703,7 +703,7 @@ def envelAction {R : Type*} [Rack R] : EnvelGroup R →* R ≃ R :=
   toEnvelGroup.map (toConj R)
 
 @[simp]
-theorem envelAction_prop {R : Type*} [Rack R] (x y : R) :
+theorem envelAction_propNew {R : Type*} [Rack R] (x y : R) :
     envelAction (toEnvelGroup R x) y = x ◃ y :=
   rfl
 
