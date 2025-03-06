@@ -42,9 +42,11 @@ theorem natCast_factorial_of_lt {n : ℕ} (hn_fac : IsUnit ((n - 1)! : A))
     {m : ℕ} (hmn : m < n) : IsUnit (m ! : A) :=
   hn_fac.natCast_factorial_of_le <| le_sub_one_of_lt hmn
 
-theorem natCast_factorial_of_ratAlgebra [Algebra ℚ A] (n : ℕ) : IsUnit (n ! : A) := by
-  rw [← map_natCast (algebraMap ℚ A)]
-  apply IsUnit.map
+/-- If `A` is an algebra over a characteristic-zero (semi)field, then `n!` is a unit. -/
+theorem natCast_factorial_of_algebra (K : Type*) [Semifield K] [CharZero K] [Algebra K A] (n : ℕ) :
+    IsUnit (n ! : A) := by
+  suffices IsUnit (n ! : K) by
+    simpa using this.map (algebraMap K A)
   simp [isUnit_iff_ne_zero, n.factorial_ne_zero]
 
 end Semiring
