@@ -8,8 +8,9 @@ import Mathlib.Probability.Kernel.Composition.AbsolutelyContinuous
 /-!
 # Condition for two kernels to be equal almost everywhere
 
-We prove that two kernels `κ` and `η` are `μ`-a.e. equal iff the composition-products `μ ⊗ₘ κ`
-and `μ ⊗ₘ η` are equal.
+We prove that two finite kernels `κ, η : Kernel α β` are `μ`-a.e. equal for a finite measure `μ` iff
+the composition-products `μ ⊗ₘ κ` and `μ ⊗ₘ η` are equal.
+The result requires `α` to be countable or `β` to be a countably generated measurable space.
 
 ## Main statements
 
