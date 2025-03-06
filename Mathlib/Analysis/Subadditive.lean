@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Filter.AtTopBot.Finite
 import Mathlib.Order.Filter.AtTopBot.Prod
-import Mathlib.Topology.Instances.Real.Defs
+import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # Convergence of subadditive sequences
