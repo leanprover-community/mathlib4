@@ -215,7 +215,7 @@
   "Mathlib.Tactic.Widget.CommDiag": ["Mathlib.CategoryTheory.Category.Basic"],
   "Mathlib.Tactic.Use": ["Batteries.Logic"],
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
-  "Mathlib.Tactic.TautoSet": ["Mathlib.Data.Set.SymmDiff"],
+  "Mathlib.Tactic.TautoSet": ["Mathlib.Data.Set.Disjoint", "Mathlib.Data.Set.SymmDiff"],
   "Mathlib.Tactic.Tauto": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.TFAE": ["Mathlib.Data.List.TFAE", "Mathlib.Tactic.Have"],
   "Mathlib.Tactic.Subsingleton": ["Mathlib.Logic.Basic", "Std.Logic"],
@@ -354,6 +354,8 @@
   "Mathlib.Order.RelClasses": ["Batteries.WF"],
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
+  "Mathlib.Order.Filter.Bases.Basic": ["Mathlib.Tactic.Subsingleton"],
+  "Mathlib.Order.Filter.AtTopBot.Basic": ["Mathlib.Tactic.Subsingleton"],
   "Mathlib.Order.Defs.PartialOrder": ["Batteries.Tactic.Trans"],
   "Mathlib.Order.Defs": ["Batteries.Tactic.Trans"],
   "Mathlib.Order.BoundedOrder.Basic": ["Mathlib.Tactic.Finiteness.Attr"],

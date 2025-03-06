@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Set
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.EqLocus
 import Mathlib.Algebra.Module.Submodule.Equiv

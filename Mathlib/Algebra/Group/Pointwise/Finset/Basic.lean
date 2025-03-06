@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.Action.Pointwise.Set
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
 import Mathlib.Algebra.Order.Group.Nat
@@ -61,6 +59,7 @@ pointwise subtraction
 -- assert_not_exists MonoidWithZero
 assert_not_exists Cardinal
 assert_not_exists Finset.dens
+assert_not_exists MulAction
 
 open Function MulOpposite
 
@@ -539,10 +538,6 @@ theorem Nonempty.of_mul_left : (s * t).Nonempty → s.Nonempty :=
 @[to_additive]
 theorem Nonempty.of_mul_right : (s * t).Nonempty → t.Nonempty :=
   Nonempty.of_image₂_right
-
-open scoped RightActions in
-@[to_additive] lemma mul_singleton (a : α) : s * {a} = s <• a := image₂_singleton_right
-@[to_additive] lemma singleton_mul (a : α) : {a} * s = a • s := image₂_singleton_left
 
 @[to_additive (attr := simp)]
 theorem singleton_mul_singleton (a b : α) : ({a} : Finset α) * {b} = {a * b} :=
@@ -1396,77 +1391,6 @@ theorem subset_vsub {s t : Set β} :
 
 end VSub
 
-section Instances
-
-variable [DecidableEq γ]
-
-@[to_additive]
-instance smulCommClass_finset [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
-    SMulCommClass α β (Finset γ) :=
-  ⟨fun _ _ => Commute.finset_image <| smul_comm _ _⟩
-
-@[to_additive]
-instance smulCommClass_finset' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
-    SMulCommClass α (Finset β) (Finset γ) :=
-  ⟨fun a s t => coe_injective <| by simp only [coe_smul_finset, coe_smul, smul_comm]⟩
-
-@[to_additive]
-instance smulCommClass_finset'' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
-    SMulCommClass (Finset α) β (Finset γ) :=
-  haveI := SMulCommClass.symm α β γ
-  SMulCommClass.symm _ _ _
-
-@[to_additive]
-instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
-    SMulCommClass (Finset α) (Finset β) (Finset γ) :=
-  ⟨fun s t u => coe_injective <| by simp_rw [coe_smul, smul_comm]⟩
-
-@[to_additive vaddAssocClass]
-instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
-    IsScalarTower α β (Finset γ) :=
-  ⟨fun a b s => by simp only [← image_smul, image_image, smul_assoc, Function.comp_def]⟩
-
-variable [DecidableEq β]
-
-@[to_additive vaddAssocClass']
-instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
-    IsScalarTower α (Finset β) (Finset γ) :=
-  ⟨fun a s t => coe_injective <| by simp only [coe_smul_finset, coe_smul, smul_assoc]⟩
-
-@[to_additive vaddAssocClass'']
-instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
-    IsScalarTower (Finset α) (Finset β) (Finset γ) :=
-  ⟨fun a s t => coe_injective <| by simp only [coe_smul_finset, coe_smul, smul_assoc]⟩
-
-@[to_additive]
-instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
-    IsCentralScalar α (Finset β) :=
-  ⟨fun a s => coe_injective <| by simp only [coe_smul_finset, coe_smul, op_smul_eq_smul]⟩
-
-/-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of
-`Finset α` on `Finset β`. -/
-@[to_additive
-      "An additive action of an additive monoid `α` on a type `β` gives an additive action
-      of `Finset α` on `Finset β`"]
-protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] :
-    MulAction (Finset α) (Finset β) where
-  mul_smul _ _ _ := image₂_assoc mul_smul
-  one_smul s := image₂_singleton_left.trans <| by simp_rw [one_smul, image_id']
-
-/-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `Finset β`.
--/
-@[to_additive
-      "An additive action of an additive monoid on a type `β` gives an additive action
-      on `Finset β`."]
-protected def mulActionFinset [Monoid α] [MulAction α β] : MulAction α (Finset β) :=
-  coe_injective.mulAction _ coe_smul_finset
-
-scoped[Pointwise]
-  attribute [instance]
-    Finset.mulActionFinset Finset.addActionFinset Finset.mulAction Finset.addAction
-
-end Instances
-
 section SMul
 
 variable [DecidableEq β] [DecidableEq γ] [SMul αᵐᵒᵖ β] [SMul β γ] [SMul α γ]
@@ -1479,30 +1403,6 @@ theorem op_smul_finset_smul_eq_smul_smul_finset (a : α) (s : Finset β) (t : Fi
   simp [mem_smul, mem_smul_finset, h]
 
 end SMul
-
-section Mul
-
-variable [Mul α] [DecidableEq α] {s t u : Finset α} {a : α}
-
-@[to_additive] lemma smul_finset_subset_mul : a ∈ s → a • t ⊆ s * t := image_subset_image₂_right
-
-@[to_additive]
-theorem op_smul_finset_subset_mul : a ∈ t → op a • s ⊆ s * t :=
-  image_subset_image₂_left
-
-@[to_additive (attr := simp)]
-theorem biUnion_op_smul_finset (s t : Finset α) : (t.biUnion fun a => op a • s) = s * t :=
-  biUnion_image_right
-
-@[to_additive]
-theorem mul_subset_iff_left : s * t ⊆ u ↔ ∀ a ∈ s, a • t ⊆ u :=
-  image₂_subset_iff_left
-
-@[to_additive]
-theorem mul_subset_iff_right : s * t ⊆ u ↔ ∀ b ∈ t, op b • s ⊆ u :=
-  image₂_subset_iff_right
-
-end Mul
 
 section Monoid
 variable [DecidableEq α] [DecidableEq β] [Monoid α] [Monoid β] [FunLike F α β]
@@ -1520,17 +1420,6 @@ lemma image_pow [MonoidHomClass F α β] (f : F) (s : Finset α) : ∀ n, (s ^ n
 
 end Monoid
 
-section Semigroup
-
-variable [Semigroup α] [DecidableEq α]
-
-@[to_additive]
-theorem op_smul_finset_mul_eq_mul_smul_finset (a : α) (s : Finset α) (t : Finset α) :
-    op a • s * t = s * a • t :=
-  op_smul_finset_smul_eq_smul_smul_finset _ _ _ fun _ _ _ => mul_assoc _ _ _
-
-end Semigroup
-
 section IsLeftCancelMul
 
 variable [Mul α] [IsLeftCancelMul α] [DecidableEq α] {s t : Finset α} {a : α}
@@ -1543,11 +1432,6 @@ lemma Nontrivial.mul_left : t.Nontrivial → s.Nonempty → (s * t).Nontrivial :
 @[to_additive]
 lemma Nontrivial.mul (hs : s.Nontrivial) (ht : t.Nontrivial) : (s * t).Nontrivial :=
   ht.mul_left hs.nonempty
-
-@[to_additive]
-theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset α} :
-    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t : Set (α × α)).InjOn fun p => p.1 * p.2 := by
-  simp_rw [← pairwiseDisjoint_coe, coe_smul_finset, Set.pairwiseDisjoint_smul_iff]
 
 @[to_additive (attr := simp)]
 theorem card_singleton_mul (a : α) (t : Finset α) : ({a} * t).card = t.card :=
@@ -1647,8 +1531,6 @@ variable [Group α] [DecidableEq α] {s t : Finset α}
   cases s.eq_empty_or_nonempty <;> simp [card_le_card_div_left, *]
 
 end Group
-
-open Pointwise
 
 @[to_additive]
 theorem image_smul_comm [DecidableEq β] [DecidableEq γ] [SMul α β] [SMul α γ] (f : β → γ) (a : α)
@@ -1780,16 +1662,7 @@ end Finset
 
 namespace Fintype
 variable {ι : Type*} {α β : ι → Type*} [Fintype ι] [DecidableEq ι] [∀ i, DecidableEq (β i)]
-
-@[to_additive]
-lemma piFinset_smul [∀ i, SMul (α i) (β i)] (s : ∀ i, Finset (α i)) (t : ∀ i, Finset (β i)) :
-    piFinset (fun i ↦ s i • t i) = piFinset s • piFinset t := piFinset_image₂ _ _ _
-
-@[to_additive]
-lemma piFinset_smul_finset [∀ i, SMul (α i) (β i)] (a : ∀ i, α i) (s : ∀ i, Finset (β i)) :
-    piFinset (fun i ↦ a i • s i) = a • piFinset s := piFinset_image _ _
-
-variable [∀ i, DecidableEq (α i)]
+  [∀ i, DecidableEq (α i)]
 
 @[to_additive]
 lemma piFinset_mul [∀ i, Mul (α i)] (s t : ∀ i, Finset (α i)) :
@@ -1802,11 +1675,6 @@ lemma piFinset_div [∀ i, Div (α i)] (s t : ∀ i, Finset (α i)) :
 @[to_additive (attr := simp)]
 lemma piFinset_inv [∀ i, Inv (α i)] (s : ∀ i, Finset (α i)) :
     piFinset (fun i ↦ (s i)⁻¹) = (piFinset s)⁻¹ := piFinset_image _ _
-
-
-
--- Note: We don't currently state `piFinset_vsub` because there's no
--- `[∀ i, VSub (β i) (α i)] → VSub (∀ i, β i) (∀ i, α i)` instance
 
 end Fintype
 
@@ -1898,9 +1766,4 @@ end VSub
 
 end Set
 
-instance Nat.decidablePred_mem_vadd_set {s : Set ℕ} [DecidablePred (· ∈ s)] (a : ℕ) :
-    DecidablePred (· ∈ a +ᵥ s) :=
-  fun n ↦ decidable_of_iff' (a ≤ n ∧ n - a ∈ s) <| by
-    simp only [Set.mem_vadd_set, vadd_eq_add]; aesop
-
-set_option linter.style.longFile 2000
+set_option linter.style.longFile 1800
