@@ -292,7 +292,7 @@ lemma baseChange_polynomial : (W.baseChange B).toAffine.polynomial =
   rw [← map_polynomial, map_baseChange]
 
 lemma evalEval_baseChange_polynomial :
-    (W'.baseChange R[X][Y]).toAffine.polynomial.evalEval (C X) Y = W'.polynomial := by
+    (W.baseChange R[X][Y]).toAffine.polynomial.evalEval (C X) Y = W.polynomial := by
   rw [map_polynomial, evalEval, eval_map, eval_C_X_eval₂_map_C_X]
 
 @[deprecated (since := "2025-03-05")] alias evalEval_baseChange_polynomial_X_Y :=
