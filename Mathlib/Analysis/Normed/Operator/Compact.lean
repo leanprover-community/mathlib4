@@ -99,7 +99,7 @@ theorem IsCompactOperator.image_subset_compact_of_isVonNBounded {f : M₁ →ₛ
   let ⟨c, hc⟩ := NormedField.exists_lt_norm 𝕜₁ r
   let this := ne_zero_of_norm_ne_zero (hr.trans hc).ne.symm
   ⟨σ₁₂ c • K, hK.image <| continuous_id.const_smul (σ₁₂ c), by
-    rw [image_subset_iff, preimage_smul_setₛₗ _ _ _ f this.isUnit]; exact hrS c hc.le⟩
+    rw [image_subset_iff, this.isUnit.preimage_smul_setₛₗ σ₁₂]; exact hrS c hc.le⟩
 
 theorem IsCompactOperator.isCompact_closure_image_of_isVonNBounded [T2Space M₂] {f : M₁ →ₛₗ[σ₁₂] M₂}
     (hf : IsCompactOperator f) {S : Set M₁} (hS : IsVonNBounded 𝕜₁ S) :
@@ -305,7 +305,7 @@ variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [Nontrivial
 theorem IsCompactOperator.continuous {f : M₁ →ₛₗ[σ₁₂] M₂} (hf : IsCompactOperator f) :
     Continuous f := by
   letI : UniformSpace M₂ := IsTopologicalAddGroup.toUniformSpace _
-  haveI : UniformAddGroup M₂ := comm_topologicalAddGroup_is_uniform
+  haveI : UniformAddGroup M₂ := uniformAddGroup_of_addCommGroup
   -- Since `f` is linear, we only need to show that it is continuous at zero.
   -- Let `U` be a neighborhood of `0` in `M₂`.
   refine continuous_of_continuousAt_zero f fun U hU => ?_
@@ -324,7 +324,7 @@ theorem IsCompactOperator.continuous {f : M₁ →ₛₗ[σ₁₂] M₂} (hf : I
   suffices (σ₁₂ <| c⁻¹) • K ⊆ U by
     refine mem_of_superset ?_ this
     have : IsUnit c⁻¹ := hcnz.isUnit.inv
-    rwa [mem_map, preimage_smul_setₛₗ _ _ _ f this, set_smul_mem_nhds_zero_iff (inv_ne_zero hcnz)]
+    rwa [mem_map, this.preimage_smul_setₛₗ σ₁₂, set_smul_mem_nhds_zero_iff (inv_ne_zero hcnz)]
   -- Since `σ₁₂ c⁻¹` = `(σ₁₂ c)⁻¹`, we have to prove that `K ⊆ σ₁₂ c • U`.
   rw [map_inv₀, ← subset_smul_set_iff₀ ((map_ne_zero σ₁₂).mpr hcnz)]
   -- But `σ₁₂` is isometric, so `‖σ₁₂ c‖ = ‖c‖ > r`, which concludes the argument since

@@ -79,15 +79,15 @@ theorem mem_sublists' {s t : List α} : s ∈ sublists' t ↔ s <+ t := by
   · rcases h with (h | ⟨s, h, rfl⟩)
     · exact sublist_cons_of_sublist _ h
     · exact h.cons_cons _
-  · cases' h with _ _ _ h s _ _ h
+  · obtain - | ⟨-, h⟩ | ⟨-, h⟩ := h
     · exact Or.inl h
-    · exact Or.inr ⟨s, h, rfl⟩
+    · exact Or.inr ⟨_, h, rfl⟩
 
 @[simp]
 theorem length_sublists' : ∀ l : List α, length (sublists' l) = 2 ^ length l
   | [] => rfl
   | a :: l => by
-    simp_arith only [sublists'_cons, length_append, length_sublists' l,
+    simp +arith only [sublists'_cons, length_append, length_sublists' l,
       length_map, length, Nat.pow_succ']
 
 @[simp]

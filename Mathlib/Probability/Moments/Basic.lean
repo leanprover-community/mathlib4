@@ -198,7 +198,7 @@ lemma exp_cgf [IsProbabilityMeasure μ] (hX : Integrable (fun ω ↦ exp (t * X 
 lemma mgf_id_map (hX : AEMeasurable X μ) : mgf id (μ.map X) = mgf X μ := by
   ext t
   rw [mgf, integral_map hX]
-  · rfl
+  · simp [mgf]
   · exact (measurable_const_mul _).exp.aestronglyMeasurable
 
 lemma mgf_congr_identDistrib {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ' : Measure Ω'}

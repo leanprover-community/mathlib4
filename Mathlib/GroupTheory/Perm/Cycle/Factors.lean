@@ -273,6 +273,13 @@ theorem mem_support_cycleOf_iff' (hx : f x ≠ x) [DecidableEq α] [Fintype α] 
     y ∈ support (f.cycleOf x) ↔ SameCycle f x y :=
   mem_support_cycleOf_iff'_aux hx
 
+theorem sameCycle_iff_cycleOf_eq_of_mem_support [DecidableEq α] [Fintype α]
+    {g : Perm α} {x y : α} (hx : x ∈ g.support) (hy : y ∈ g.support) :
+    g.SameCycle x y ↔ g.cycleOf x = g.cycleOf y := by
+  refine ⟨SameCycle.cycleOf_eq, fun h ↦ ?_⟩
+  rw [← mem_support_cycleOf_iff' (mem_support.mp hx), h,
+    mem_support_cycleOf_iff' (mem_support.mp hy)]
+
 theorem support_cycleOf_eq_nil_iff [DecidableEq α] [Fintype α] :
     (f.cycleOf x).support = ∅ ↔ x ∉ f.support := by simp
 
@@ -603,12 +610,12 @@ lemma disjoint_ofSubtype_noncommPiCoprod (u : Perm (Function.fixedPoints f))
     Disjoint (ofSubtype u) ((Subgroup.noncommPiCoprod f.pairwise_commute_of_mem_zpowers) v) := by
   apply Finset.noncommProd_induction
   · intro a _ b _ h
-    apply f.pairwise_commute_of_mem_zpowers h <;> simp only [Subgroup.coeSubtype, SetLike.coe_mem]
+    apply f.pairwise_commute_of_mem_zpowers h <;> simp only [Subgroup.coe_subtype, SetLike.coe_mem]
   · intro x y
     exact Disjoint.mul_right
   · exact disjoint_one_right _
   · intro c _
-    simp only [Subgroup.coeSubtype]
+    simp only [Subgroup.coe_subtype]
     exact Disjoint.mono (disjoint_ofSubtype_of_memFixedPoints_self u)
       le_rfl (support_zpowers_of_mem_cycleFactorsFinset_le (v c))
 
