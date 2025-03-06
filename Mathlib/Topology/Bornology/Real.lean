@@ -10,8 +10,7 @@ import Mathlib.Topology.Order.Bornology
 # The reals are equipped with their order bornology
 
 This file contains results related to the order bornology on (non-negative) real numbers.
-We
-- prove that `ℝ` and `ℝ≥0` are equipped with the order topology and bornology.
+We prove that `ℝ` and `ℝ≥0` are equipped with the order topology and bornology.
 -/
 
 assert_not_exists IsTopologicalRing UniformContinuousConstSMul UniformOnFun
@@ -28,12 +27,7 @@ instance instIsOrderBornology : IsOrderBornology ℝ where
 namespace NNReal
 
 /-!
-Instances for the following typeclasses are defined:
-
-* `OrderTopology ℝ≥0`
-* `IsOrderBornology ℝ≥0`
-
-Everything is inherited from the corresponding structures on the reals.
+Every instance is inherited from the corresponding structures on the reals.
 -/
 
 instance : OrderTopology ℝ≥0 :=
