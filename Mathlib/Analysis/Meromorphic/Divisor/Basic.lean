@@ -125,7 +125,7 @@ protected def addSubgroup : AddSubgroup (𝕜 → ℤ) where
   carrier := {f | f.support ⊆ U ∧ f =ᶠ[codiscreteWithin U] 0}
   zero_mem' := by simp
   add_mem' {f g} hf hg := by
-    refine ⟨?_, hf.2.add hg.2⟩ 
+    refine ⟨?_, hf.2.add hg.2⟩
     intro x hx
     contrapose! hx
     simp [Function.nmem_support.1 fun a ↦ hx (hf.1 a),
