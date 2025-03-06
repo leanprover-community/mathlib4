@@ -14,8 +14,9 @@ to a number field `K` of signature `(r₁, r₂)`. The first one is `mixedEmbedd
 value in `realMixedSpace K` defined as `ℝ^r₁ × (ℝ ⨯ ℝ)^r₂`, the second is
 `mixedEmbedding.polarSpaceCoord` and has value in `polarSpace K` defined as `ℝ^(r₁+r₂) × ℝ^r₂`.
 
-The change of variables with the `polarSpace` is useful to compute the volumes of subsets of the
-mixed space with enough symmetries, see ...
+The change of variables with the `polarSpace` is useful to compute the volume of subsets of the
+mixed space with enough symmetries, see `volume_eq_two_pi_pow_mul_integral` and
+`volume_eq_two_pow_mul_two_pi_pow_mul_integral`
 
 ## Main definitions and results
 
@@ -33,6 +34,15 @@ mixed space with enough symmetries, see ...
 
 * `mixedEmbedding.integral_comp_polarSpaceCoord_symm`: the change of variables formula for
   `mixedEmbedding.polarSpaceCoord`
+
+* `mixedEmbedding.volume_eq_two_pi_pow_mul_integral`: if the measurable set `A` of the mixed space
+  is norm-stable at complex places in the sense that
+  `normAtComplexPlaces⁻¹ (normAtComplexPlaces '' A) = A`, then its volume can be computed via an
+  integral over `normAtComplexPlaces '' A`.
+
+* `mixedEmbedding.volume_eq_two_pow_mul_two_pi_pow_mul_integral`: if the measurable set `A` of the
+  mixed space is norm-stable in the sense that `normAtAllPlaces⁻¹ (normAtAllPlaces '' A) = A`,
+  then its volume can be computed via an integral over `normAtAllPlaces '' A`.
 
 -/
 
@@ -365,6 +375,11 @@ private theorem volume_eq_two_pi_pow_mul_integral_aux
     simpa [if_neg (not_isReal_iff_isComplex.mpr hw)] using hx₂ w (Set.mem_univ w)
 
 open scoped Classical in
+/--
+If the measurable set `A` is norm-stable at complex places in the sense that
+`normAtComplexPlaces⁻¹ (normAtComplexPlaces '' A) = A`, then its volume can be computed via an
+integral over `normAtComplexPlaces '' A`.
+-/
 theorem volume_eq_two_pi_pow_mul_integral [NumberField K]
     (hA : normAtComplexPlaces ⁻¹' (normAtComplexPlaces '' A) = A) (hm : MeasurableSet A) :
     volume A = .ofReal (2 * π) ^ nrComplexPlaces K *
@@ -411,6 +426,11 @@ private theorem volume_eq_two_pow_mul_two_pi_pow_mul_integral_aux
     · simpa [Set.mem_setOf_eq, normAtComplexPlaces_apply_isReal] using (ha₂ w).ne'
 
 open scoped Classical in
+/--
+If the measurable set `A` is norm-stable in the sense that
+`normAtAllPlaces⁻¹ (normAtAllPlaces '' A) = A`, then its volume can be computed via an integral
+over `normAtAllPlaces '' A`.
+-/
 theorem volume_eq_two_pow_mul_two_pi_pow_mul_integral [NumberField K]
     (hA : normAtAllPlaces ⁻¹' (normAtAllPlaces '' A) = A) (hm : MeasurableSet A) :
     volume A = 2 ^ nrRealPlaces K * .ofReal (2 * π) ^ nrComplexPlaces K *
