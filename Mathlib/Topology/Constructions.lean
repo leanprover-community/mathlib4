@@ -1111,15 +1111,13 @@ theorem Topology.IsInducing.sumElim (hf : IsInducing f) (hg : IsInducing g)
   · rw [← disjoint_principal_left]
     exact hFg.mono_right (nhds_le_nhdsSet (mem_range_self x))
 
-theorem isInducing_sumElim :
-    IsInducing (Sum.elim f g) ↔ IsInducing f ∧ IsInducing g ∧
-      Disjoint (closure (range f)) (range g) ∧ Disjoint (range f) (closure (range g)) := by
-  refine ⟨fun h => ⟨h.sumElim_left, h.sumElim_right, ?_⟩,
-    fun ⟨hf, hg, hFg, hfG⟩ => hf.sumElim hg hFg hfG⟩
-  have h' (x : X ⊕ Y) : map inl (comap (fun a ↦ f a) (𝓝 (Sum.elim f g x))) ⊔
+/-- If `Sum.elim f g` is inducing, `closure (range f)` and `range g` must be disjoint.
+This is an auxiliary result towards proving `isInducing_sumElim`. -/
+theorem Topology.IsInducing.disjoint_of_sumElim_aux (h : IsInducing (Sum.elim f g)) :
+    Disjoint (closure (range f)) (range g) := by
+  simp_rw [isInducing_iff_nhds, Filter.ext_iff] at h
+  have h (x : X ⊕ Y) : map inl (comap (fun a ↦ f a) (𝓝 (Sum.elim f g x))) ⊔
       map inr (comap (fun a ↦ g a) (𝓝 (Sum.elim f g x))) = 𝓝 x := by
-    rw [isInducing_iff_nhds] at h
-    simp_rw [Filter.ext_iff] at h
     -- FIXME: can this proof be simplified by avoiding conv?
     conv at h =>
       intro x
@@ -1130,20 +1128,33 @@ theorem isInducing_sumElim :
         simp only [← mem_comap_iff_compl, ← mem_map, ← mem_sup]
       rw [← Filter.ext_iff, eq_comm]
     exact h x
-  constructor <;>
   simp only [disjoint_principal_left, disjoint_principal_right,
-    ← disjoint_principal_nhdsSet, ← disjoint_nhdsSet_principal, mem_nhdsSet_iff_forall] <;>
-  rintro _ ⟨x, rfl⟩ <;>
-  rw [← comap_eq_bot_iff_compl_range] <;>
-  [specialize h' (inr x); specialize h' (inl x)]
-  · rw [nhds_inr, elim_inr] at h'
-    apply_fun (map inl ⊤ ⊓ ·) at h'
-    simpa only [map_inl_inf_map_inr, inf_sup_left, inf_sup_right, sup_bot_eq, bot_sup_eq, ← map_inf,
-      inl_injective, inr_injective, top_inf_eq, inf_top_eq, map_eq_bot_iff] using h'
-  · rw [nhds_inl, elim_inl] at h'
-    apply_fun (· ⊓ map Sum.inr ⊤) at h'
-    simpa only [map_inl_inf_map_inr, inf_sup_left, inf_sup_right, sup_bot_eq, bot_sup_eq, ← map_inf,
-      inl_injective, inr_injective, top_inf_eq, inf_top_eq, map_eq_bot_iff] using h'
+    ← disjoint_principal_nhdsSet, ← disjoint_nhdsSet_principal, mem_nhdsSet_iff_forall]
+  rintro _ ⟨x, rfl⟩
+  rw [← comap_eq_bot_iff_compl_range]
+  specialize h (inr x)
+  rw [nhds_inr, elim_inr] at h
+  apply_fun (map inl ⊤ ⊓ ·) at h
+  simpa only [map_inl_inf_map_inr, inf_sup_left, sup_bot_eq, ← map_inf, inl_injective, top_inf_eq,
+    map_eq_bot_iff] using h
+
+@[simp]
+theorem Sum.elim_swap {α β γ : Type*} {f : α → γ} {g : β → γ} :
+    (Sum.elim f g) ∘ (@Sum.swap β α) = Sum.elim g f := by aesop
+  -- ext x
+  -- cases x with
+  -- | inl x => simp
+  -- | inr x => simp
+
+-- follows from
+theorem IsOpenEmbedding.sumSwap : IsOpenEmbedding (@Sum.swap Y X) := sorry
+
+theorem isInducing_sumElim :
+    IsInducing (Sum.elim f g) ↔ IsInducing f ∧ IsInducing g ∧
+      Disjoint (closure (range f)) (range g) ∧ Disjoint (range f) (closure (range g)) :=
+  ⟨fun h ↦ ⟨h.sumElim_left, h.sumElim_right, h.disjoint_of_sumElim_aux,
+    ((Sum.elim_swap ▸ h.comp IsOpenEmbedding.sumSwap.isInducing).disjoint_of_sumElim_aux ).symm⟩,
+    fun ⟨hf, hg, hFg, hfG⟩ ↦ hf.sumElim hg hFg hfG⟩
 
 lemma Topology.IsInducing.sumElim_of_separatedNhds
     (hf : IsInducing f) (hg : IsInducing g) (hsep : SeparatedNhds (range f) (range g)) :
