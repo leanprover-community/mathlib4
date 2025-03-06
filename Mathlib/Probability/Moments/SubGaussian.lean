@@ -86,7 +86,7 @@ with respect to `μ`.
 ## References
 
 * [R. Vershynin, *High-dimensional probability: An introduction with applications in data
-science*][vershynin2018high]
+  science*][vershynin2018high]
 
 -/
 
@@ -118,8 +118,7 @@ section BasicProperties
 lemma aestronglyMeasurable (h : HasSubgaussianMGF X c κ ν) :
     AEStronglyMeasurable X (κ ∘ₘ ν) := by
   have h_int := h.integrable_exp_mul 1
-  simp only [one_mul] at h_int
-  exact (aemeasurable_of_aemeasurable_exp h_int.1.aemeasurable).aestronglyMeasurable
+  simpa using (aemeasurable_of_aemeasurable_exp h_int.1.aemeasurable).aestronglyMeasurable
 
 lemma ae_integrable_exp_mul (h : HasSubgaussianMGF X c κ ν) (t : ℝ) :
     ∀ᵐ ω' ∂ν, Integrable (fun y ↦ exp (t * X y)) (κ ω') :=
@@ -128,14 +127,13 @@ lemma ae_integrable_exp_mul (h : HasSubgaussianMGF X c κ ν) (t : ℝ) :
 lemma ae_aestronglyMeasurable (h : HasSubgaussianMGF X c κ ν) :
     ∀ᵐ ω' ∂ν, AEStronglyMeasurable X (κ ω') := by
   have h_int := h.ae_integrable_exp_mul 1
-  simp only [one_mul] at h_int
   filter_upwards [h_int] with ω h_int
-  exact (aemeasurable_of_aemeasurable_exp h_int.1.aemeasurable).aestronglyMeasurable
+  simpa using (aemeasurable_of_aemeasurable_exp h_int.1.aemeasurable).aestronglyMeasurable
 
 lemma ae_forall_integrable_exp_mul (h : HasSubgaussianMGF X c κ ν) :
     ∀ᵐ ω' ∂ν, ∀ t, Integrable (fun ω ↦ exp (t * X ω)) (κ ω') := by
-  have h_int : ∀ n : ℤ, ∀ᵐ ω' ∂ν, Integrable (fun ω ↦ exp (n * X ω)) (κ ω') :=
-    fun _ ↦ h.ae_integrable_exp_mul _
+  have h_int (n : ℤ) : ∀ᵐ ω' ∂ν, Integrable (fun ω ↦ exp (n * X ω)) (κ ω') :=
+    h.ae_integrable_exp_mul _
   rw [← ae_all_iff] at h_int
   filter_upwards [h_int] with ω' h_int t
   exact integrable_exp_mul_of_le_of_le (h_int _) (h_int _) (Int.floor_le t) (Int.le_ceil t)
@@ -143,15 +141,14 @@ lemma ae_forall_integrable_exp_mul (h : HasSubgaussianMGF X c κ ν) :
 protected lemma memLp (h : HasSubgaussianMGF X c κ ν) (t : ℝ) (p : ℝ≥0) :
     MemLp (fun ω ↦ exp (t * X ω)) p (κ ∘ₘ ν) := by
   by_cases hp0 : p = 0
-  · simp only [hp0, ENNReal.coe_zero, memLp_zero_iff_aestronglyMeasurable]
-    exact (h.integrable_exp_mul t).1
+  · simpa [hp0] using (h.integrable_exp_mul t).1
   constructor
   · exact (h.integrable_exp_mul t).1
   · rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (mod_cast hp0) (by simp)]
     simp only [ENNReal.coe_toReal]
     have h' := (h.integrable_exp_mul (p * t)).2
     rw [hasFiniteIntegral_def] at h'
-    convert h' using 3 with p
+    convert h' using 3 with ω
     rw [enorm_eq_ofReal (by positivity), enorm_eq_ofReal (by positivity),
       ENNReal.ofReal_rpow_of_nonneg (by positivity), ← exp_mul, mul_comm, ← mul_assoc]
     positivity
@@ -163,8 +160,7 @@ lemma cgf_le (h : HasSubgaussianMGF X c κ ν) (t : ℝ) :
   _ = log (mgf X (κ ω') t) := rfl
   _ ≤ log (exp (c * t ^ 2 / 2)) := by
     by_cases h0 : κ ω' = 0
-    · simp only [h0, mgf_zero_measure, Pi.zero_apply, log_zero, log_exp]
-      positivity
+    · simpa [h0] using by positivity
     gcongr
     · exact mgf_pos' h0 (h_int t)
     · exact h t
@@ -189,12 +185,9 @@ protected lemma of_rat (h_int : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X �
 
 @[simp]
 lemma zero [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] :
-    HasSubgaussianMGF (fun _ ↦ 0) 0 κ ν := by
-  refine .of_rat ?_ ?_
-  · simp
-  · refine fun q ↦ ?_
-    simp only [mgf_const', mul_zero, exp_zero, mul_one, NNReal.coe_zero, zero_mul, zero_div]
-    exact ae_of_all _ fun _ ↦ toReal_prob_le_one
+    HasSubgaussianMGF (fun _ ↦ 0) 0 κ ν where
+  integrable_exp_mul := by simp
+  mgf_le := by simpa using ae_of_all _ fun _ ↦ toReal_prob_le_one
 
 @[simp]
 lemma zero' [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] : HasSubgaussianMGF 0 0 κ ν := zero
@@ -203,8 +196,7 @@ lemma congr {Y : Ω → ℝ} (h : HasSubgaussianMGF X c κ ν) (h' : X =ᵐ[κ �
     HasSubgaussianMGF Y c κ ν where
   integrable_exp_mul t := by
     refine (integrable_congr ?_).mpr (h.integrable_exp_mul t)
-    filter_upwards [h'] with ω' hω'
-    rw [hω']
+    filter_upwards [h'] with ω hω using by rw [hω]
   mgf_le := by
     have h'' := Measure.ae_ae_of_ae_comp h'
     filter_upwards [h.mgf_le, h''] with ω' h_mgf h' t
@@ -213,7 +205,7 @@ lemma congr {Y : Ω → ℝ} (h : HasSubgaussianMGF X c κ ν) (h' : X =ᵐ[κ �
 
 lemma _root_.ProbabilityTheory.Kernel.HasSubgaussianMGF_congr {Y : Ω → ℝ} (h : X =ᵐ[κ ∘ₘ ν] Y) :
     HasSubgaussianMGF X c κ ν ↔ HasSubgaussianMGF Y c κ ν :=
-  ⟨fun hX ↦ congr hX h, fun hY ↦ congr hY <| by filter_upwards [h] with ω' hω' using hω'.symm⟩
+  ⟨fun hX ↦ congr hX h, fun hY ↦ congr hY (ae_eq_symm h)⟩
 
 section ChernoffBound
 
