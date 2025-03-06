@@ -274,6 +274,10 @@ theorem mk_eq_mk_of_comm {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mo
     (w : i.hom ≫ g = f) : mk f = mk g :=
   eq_mk_of_comm _ ((underlyingIso f).trans i) <| by simp [w]
 
+lemma mk_surjective {X : C} (S : Subobject X) :
+    ∃ (A : C) (i : A ⟶ X) (_ : Mono i), S = Subobject.mk i :=
+  ⟨_, S.arrow, inferInstance, by simp⟩
+
 -- We make `X` and `Y` explicit arguments here so that when `ofLE` appears in goal statements
 -- it is possible to see its source and target
 -- (`h` will just display as `_`, because it is in `Prop`).
@@ -500,6 +504,24 @@ def lowerEquivalence {A : C} {B : D} (e : MonoOver A ≌ MonoOver B) : Subobject
     · exact (ThinSkeleton.map_comp_eq _ _).symm
     · exact ThinSkeleton.map_id_eq.symm
 
+
+section IsPullback
+
+theorem eqOfIsPullback {X Y Z : C} {x x' : Subobject X}
+    {f : X ⟶ Z} {g : Y ⟶ Z} {k : (x : C) ⟶ Y} {k' : (x' : C) ⟶ Y}
+    (h : IsPullback k x.arrow g f) (h' : IsPullback k' x'.arrow g f) :
+    x = x' :=
+  eq_of_comm (IsPullback.isoIsPullback _ _ h h') (by simp)
+
+theorem arrow_isPullback {X Y Z : C}
+    (f : Y ⟶ Z) (g : X ⟶ Z) [HasPullback f g] [Mono f] :
+    IsPullback ((underlyingIso _).hom ≫ pullback.fst f g) (mk (pullback.snd f g)).arrow f g :=
+  IsPullback.of_iso (IsPullback.of_hasPullback f g)
+    (underlyingIso _).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
+    (by simp) (by simp) (by simp) (by simp)
+
+end IsPullback
+
 section Pullback
 
 variable [HasPullbacks C]
@@ -518,36 +540,35 @@ theorem pullback_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject Z) :
   induction' x using Quotient.inductionOn' with t
   exact Quotient.sound ⟨(MonoOver.pullbackComp _ _).app t⟩
 
-lemma pullback_obj_representative {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
-    (pullback f).obj x = mk ((MonoOver.pullback f).obj (representative.obj x)).arrow := by
-  induction' x using Quotient.inductionOn' with m
-  exact Quotient.sound ⟨Functor.mapIso _ (representativeIso _).symm⟩
+-- lemma pullback_obj_representative {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
+--     (pullback f).obj x = mk ((MonoOver.pullback f).obj (representative.obj x)).arrow := by
+--   induction' x using Quotient.inductionOn' with m
+--   exact Quotient.sound ⟨Functor.mapIso _ (representativeIso _).symm⟩
+
+def pullback_obj_mk {A B X Y : C} {f : Y ⟶ X} {i : A ⟶ X} [Mono i]
+    {j : B ⟶ Y} [Mono j] {f' : B ⟶ A}
+    (h : IsPullback f' j i f) :
+    (pullback f).obj (mk i) = mk j :=
+  ((equivMonoOver Y).inverse.mapIso
+    (MonoOver.pullbackObjIsoOfIsPullback _ _ _ _ h)).to_eq
 
 theorem pullback_obj {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
     (pullback f).obj x = mk (pullback.snd x.arrow f) := by
-  rw [pullback_obj_representative]
-  rfl
+  obtain ⟨Z, ⟨i, ⟨_, hx⟩⟩⟩ := mk_surjective x
+  let i' := (mk i).arrow
+  have h := IsPullback.of_hasPullback i f
+  have h' : IsPullback (pullback.fst i' f ≫ (underlyingIso i).hom) (pullback.snd i' f) i f :=
+    IsPullback.of_iso (IsPullback.of_hasPullback i' f)
+      (Iso.refl _) (underlyingIso i) (Iso.refl _) (Iso.refl _)
+      (by simp) (by simp) (by simp [i']) (by simp)
+  let iso := IsPullback.isoIsPullback _ _ h h'
+  rw [hx, pullback_obj_mk h]
+  apply mk_eq_mk_of_comm (pullback.snd i f) (pullback.snd (mk i).arrow f) iso
+  simp [iso, i']
 
 instance (f : X ⟶ Y) : (pullback f).Faithful where
 
 end Pullback
-
-section IsPullback
-
-theorem eqOfIsPullback {X Y Z : C} {x x' : Subobject X}
-    {f : X ⟶ Z} {g : Y ⟶ Z} {k : (x : C) ⟶ Y} {k' : (x' : C) ⟶ Y}
-    (h : IsPullback k x.arrow g f) (h' : IsPullback k' x'.arrow g f) :
-    x = x' :=
-  eq_of_comm (IsPullback.isoIsPullback _ _ h h') (by simp)
-
-theorem arrow_isPullback {X Y Z : C}
-    (f : Y ⟶ Z) (g : X ⟶ Z) [HasPullback f g] [Mono f] :
-    IsPullback ((underlyingIso _).hom ≫ pullback.fst f g) (mk (pullback.snd f g)).arrow f g :=
-  IsPullback.of_iso (IsPullback.of_hasPullback f g)
-    (underlyingIso _).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
-    (by simp) (by simp) (by simp) (by simp)
-
-end IsPullback
 
 section Map
 

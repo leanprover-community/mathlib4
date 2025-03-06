@@ -229,6 +229,12 @@ def isoOfIsPullback {X Y Z : C} (S S' : MonoOver X)
     S ≅ S' :=
   MonoOver.isoMk (IsPullback.isoIsPullback _ _ h h') (by simp)
 
+def pullbackObjIsoOfIsPullback [HasPullbacks C] {X Y : C} (f : Y ⟶ X) (S : MonoOver X)
+    (T : MonoOver Y) (f' : T.obj.left ⟶ S.obj.left)
+    (h : IsPullback f' T.arrow S.arrow f) :
+    (pullback f).obj S ≅ T :=
+  isoMk ((IsPullback.isoPullback h).symm) (by simp)
+
 theorem arrow_isPullback {X Y Z : C}
     (f : Y ⟶ Z) (g : X ⟶ Z) [HasPullback f g] [Mono f] :
     IsPullback (pullback.fst f g) (mk' (pullback.snd f g)).arrow f g :=
