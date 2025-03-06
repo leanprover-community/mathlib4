@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Nailin Guan. All rights reserved.
+Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Wanyi He, Jiedong Jiang
 -/
@@ -18,13 +18,13 @@ over a ring also have a ring structure. i.e. the associated graded ring to a fil
 
 # Main definitions and results
 
-* `GradedPiece` : `GradedPiece i` of the associated graded abelian group to `IsFiltration F F_lt`
-with every `F i` of some `AddSubgroupClass` is defined as `F i` quotient by `F_lt i`
+* `GradedPiece` : Direct summand of the associated graded abelian group to `IsFiltration F F_lt`
+  with every `F i` of some `AddSubgroupClass`, defined as `F i` quotient by `F_lt i`.
 
-* `AssociatedGraded` : The direct sum of `GradedPiece`s
+* `AssociatedGraded` : The direct sum of `GradedPiece`s.
 
 * `hasGMul` : The class of filtrations that can obtain
-  a well defined graded multiplication over `GradedPiece`
+  a well defined graded multiplication over `GradedPiece`.
 
 * `instGRingGradedPieceOfHasGMul` : `GradedPiece` satisfies `DirectSum.GRing`
 
@@ -46,8 +46,8 @@ instance [Preorder ι] [IsFiltration F F_lt] (i : ι) : Setoid (AddSubgroup.ofCl
   QuotientAddGroup.leftRel
     ((AddSubgroup.ofClass (F_lt i)).addSubgroupOf (AddSubgroup.ofClass (F i)))
 
-/-- `GradedPiece i` of the associated graded abelian group to `IsFiltration F F_lt`
-with every `F j` `AddSubgroup`s is defined as `F i` quotient by `F_lt i`. -/
+/-- Direct summand of the associated graded abelian group to `IsFiltration F F_lt`
+  with every `F i` of some `AddSubgroupClass`, defined as `F i` quotient by `F_lt i`. -/
 abbrev GradedPiece (i : ι) :=
   (AddSubgroup.ofClass (F i)) ⧸
     (AddSubgroup.ofClass (F_lt i)).addSubgroupOf (AddSubgroup.ofClass (F i))
