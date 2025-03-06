@@ -7,7 +7,7 @@ import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Algebra.Polynomial.Eval.SMul
-import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Data.Real.StarOrdered
 
