@@ -138,7 +138,7 @@ lemma preparation_lift {n : ℕ} (npos : n > 0) [hmax : m.IsMaximal] (f : PowerS
     (∀ i : ℕ, i < g.degree → g.coeff i ∈ m.map (Ideal.Quotient.mk (m ^ n))) ∧ f = g * h := by
     let nontriv_all {k : ℕ} (pos : k > 0): Nontrivial (R ⧸ m ^ k) :=
       Submodule.Quotient.nontrivial_of_lt_top (m ^ k) (lt_of_le_of_lt
-      (Ideal.pow_le_self (Nat.not_eq_zero_of_lt pos)) (Ne.lt_top (Ideal.IsMaximal.ne_top hmax)))
+      (Ideal.pow_le_self (Nat.ne_zero_of_lt pos)) (Ne.lt_top (Ideal.IsMaximal.ne_top hmax)))
     induction' n with n ih
     · exact ((Nat.not_lt_zero 0) npos).elim
     · by_cases neq0 : n = 0
@@ -329,7 +329,7 @@ lemma preparation_lift_strong_uniq {n : ℕ} (npos : n > 0) [hmax : m.IsMaximal]
   apply (Classical.choose_spec (preparation_lift npos f ntriv)).2
   use g
   let _ : Nontrivial (R ⧸ m ^ n) := Submodule.Quotient.nontrivial_of_lt_top (m ^ n)
-    (lt_of_le_of_lt (Ideal.pow_le_self (Nat.not_eq_zero_of_lt npos))
+    (lt_of_le_of_lt (Ideal.pow_le_self (Nat.ne_zero_of_lt npos))
     (Ne.lt_top (Ideal.IsMaximal.ne_top hmax)))
   have ne_top : Ideal.map (Ideal.Quotient.mk (m ^ n)) m ≠ ⊤ := by
     apply (Ideal.ne_top_iff_one _).mpr
@@ -338,7 +338,7 @@ lemma preparation_lift_strong_uniq {n : ℕ} (npos : n > 0) [hmax : m.IsMaximal]
       Ideal.Quotient.mk_surjective mem with ⟨r, rmem, hr⟩
     have : r - 1 ∈ m ^ n := by simp only [← mk_eq_mk_iff_sub_mem r 1, hr, map_one]
     absurd (Ideal.ne_top_iff_one m).mp Ideal.IsPrime.ne_top'
-    rw [← (sub_sub_self r 1), m.sub_mem_iff_left (pow_le_self (Nat.not_eq_zero_of_lt npos) this)]
+    rw [← (sub_sub_self r 1), m.sub_mem_iff_left (pow_le_self (Nat.ne_zero_of_lt npos) this)]
     exact rmem
   exact ⟨mon, deg_eq_find ne_top f ntriv h g mon distinguish eq, distinguish, eq⟩
 
@@ -348,13 +348,13 @@ lemma map_ntriv' {n : ℕ} (npos : n > 0) {f : PowerSeries R} (ntriv : ∃ k, f.
     ∃ (k : ℕ),
     (f.map (Ideal.Quotient.mk (m ^ n))).coeff _ k ∉ m.map (Ideal.Quotient.mk (m ^ n)) := by
   convert ntriv
-  simp [Ideal.pow_le_self (Nat.not_eq_zero_of_lt npos)]
+  simp [Ideal.pow_le_self (Nat.ne_zero_of_lt npos)]
 
 open Classical in
 lemma map_ntriv_findeq' {n : ℕ} (npos : n > 0) {f : PowerSeries R} (ntriv : ∃ k, f.coeff R k ∉ m) :
     Nat.find (map_ntriv' npos ntriv) = Nat.find ntriv := by
   congr
-  simp [Ideal.pow_le_self (Nat.not_eq_zero_of_lt npos)]
+  simp [Ideal.pow_le_self (Nat.ne_zero_of_lt npos)]
 
 open Classical in
 theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : IsAdicComplete m R]
@@ -365,7 +365,7 @@ theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : I
     ((Ideal.ne_top_iff_one m).mp (Ideal.IsMaximal.ne_top hmax)))
   let R_ntriv' {k : ℕ} (kpos : k > 0): Nontrivial (R ⧸ m ^ k) :=
     Submodule.Quotient.nontrivial_of_lt_top (m ^ k) (lt_of_le_of_lt
-      (Ideal.pow_le_self (Nat.not_eq_zero_of_lt kpos)) hmax.ne_top.lt_top)
+      (Ideal.pow_le_self (Nat.ne_zero_of_lt kpos)) hmax.ne_top.lt_top)
   have findeq {n : ℕ} (npos : n > 0) : Nat.find (map_ntriv' npos ntriv) = Nat.find ntriv :=
     map_ntriv_findeq' npos ntriv
   choose h_series' hh series_uniq using fun (n : {n : ℕ // n > 0}) ↦ preparation_lift n.2
@@ -430,7 +430,7 @@ theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : I
     Ideal.Quotient.mk_surjective (h_series' ⟨k, Nat.zero_lt_of_ne_zero h⟩)
   have h_series_spec {k : ℕ} (kpos : k > 0) :
     (h_series k).map (Ideal.Quotient.mk (m ^ k)) = (h_series' ⟨k, kpos⟩) := by
-    simpa only [Nat.not_eq_zero_of_lt kpos, ↓reduceDIte, h_series]
+    simpa only [Nat.ne_zero_of_lt kpos, ↓reduceDIte, h_series]
       using Classical.choose_spec <| map_surjective (Ideal.Quotient.mk (m ^ k))
         Ideal.Quotient.mk_surjective (h_series' ⟨k, kpos⟩)
   let g_series : ℕ → R[X] := fun k ↦ if h : k = 0 then 0 else
@@ -441,7 +441,7 @@ theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : I
     (g_series' ⟨k, kpos⟩) ∧ (g_series k).degree = (g_series' ⟨k, kpos⟩).degree ∧
     (g_series k).Monic := by
     let _ := R_ntriv' kpos
-    simpa [Nat.not_eq_zero_of_lt kpos, g_series]
+    simpa [Nat.ne_zero_of_lt kpos, g_series]
       using Classical.choose_spec <| Polynomial.lifts_and_degree_eq_and_monic
       (Polynomial.map_surjective _ Ideal.Quotient.mk_surjective _) (series_mon ⟨k, kpos⟩)
   have h_series_mod {a b : ℕ} (apos : a > 0) (le : a ≤ b) : (h_series a).map
