@@ -5,8 +5,8 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Seminorm
 import Mathlib.Data.NNReal.Basic
-import Mathlib.Topology.Instances.ENNReal.Defs
 import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.Order.Real
 
 /-!
 # Normed (semi)groups
@@ -91,15 +91,17 @@ lemma enorm_eq_nnnorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
 
 end ENorm
 
-/-- A type `E` equipped with a continuous map `‖·‖ₑ : E → ℝ≥0∞`. -/
+/-- A type `E` equipped with a continuous map `‖·‖ₑ : E → ℝ≥0∞`
+
+NB. We do not demand that the topology is somehow defined by the enorm:
+for ℝ≥0∞ (the motivating example behind this definition), this is not true. -/
 class ContinuousENorm (E : Type*) [TopologicalSpace E] extends ENorm E where
   continuous_enorm : Continuous enorm
-  -- the topology is somehow defined by the enorm.
 
 /-- An enormed monoid is an additive monoid endowed with a continuous enorm. -/
 class ENormedAddMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, AddMonoid E where
   enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
-  enorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
+  protected enorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
 /-- An enormed monoid is a monoid endowed with a continuous enorm. -/
 @[to_additive]
@@ -109,8 +111,9 @@ class ENormedMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, 
 
 /-- An enormed commutative monoid is an additive commutative monoid
 endowed with a continuous enorm.
-We don't have `ENormedAddCommGroup` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
-is not an `EMetricSpace`. This is because ℝ≥0∞ carries the order topology, which is distinct from
+
+We don't have `ENormedAddCommMonoid` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
+is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topology, which is distinct from
 the topology coming from `edist`. -/
 class ENormedAddCommMonoid (E : Type*) [TopologicalSpace E]
   extends ENormedAddMonoid E, AddCommMonoid E where
@@ -744,10 +747,6 @@ theorem ne_one_of_nnnorm_ne_zero {a : E} : ‖a‖₊ ≠ 0 → a ≠ 1 :=
 theorem nnnorm_mul_le' (a b : E) : ‖a * b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
   NNReal.coe_le_coe.1 <| norm_mul_le' a b
 
-@[to_additive enorm_add_le]
-lemma enorm_mul_le' {E : Type*} [TopologicalSpace E] [ENormedMonoid E] (a b : E) :
-  ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ENormedMonoid.enorm_mul_le a b
-
 @[to_additive norm_nsmul_le]
 lemma norm_pow_le_mul_norm : ∀ {n : ℕ}, ‖a ^ n‖ ≤ n * ‖a‖
   | 0 => by simp
@@ -890,6 +889,54 @@ theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball 1 r ↔ �
   rw [EMetric.mem_ball, edist_one_eq_enorm]
 
 end ENorm
+
+section ContinuousENorm
+
+variable {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
+
+@[continuity, fun_prop]
+lemma continuous_enorm : Continuous fun a : E ↦ ‖a‖ₑ := ContinuousENorm.continuous_enorm
+
+variable {X : Type*} [TopologicalSpace X] {f : X → E} {s : Set X} {a : X}
+
+@[fun_prop]
+lemma Continuous.enorm : Continuous f → Continuous (‖f ·‖ₑ) :=
+  continuous_enorm.comp
+
+lemma ContinuousAt.enorm {a : X} (h : ContinuousAt f a) : ContinuousAt (‖f ·‖ₑ) a := by fun_prop
+
+@[fun_prop]
+lemma ContinuousWithinAt.enorm {s : Set X} {a : X} (h : ContinuousWithinAt f s a) :
+    ContinuousWithinAt (‖f ·‖ₑ) s a :=
+  (ContinuousENorm.continuous_enorm.continuousWithinAt).comp (t := Set.univ) h
+    (fun _ _ ↦ by trivial)
+
+@[fun_prop]
+lemma ContinuousOn.enorm (h : ContinuousOn f s) : ContinuousOn (‖f ·‖ₑ) s :=
+  (ContinuousENorm.continuous_enorm.continuousOn).comp (t := Set.univ) h fun _ _ ↦ trivial
+
+end ContinuousENorm
+
+section ENormedMonoid
+
+variable {E : Type*} [TopologicalSpace E] [ENormedMonoid E]
+
+@[to_additive enorm_add_le]
+lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ENormedMonoid.enorm_mul_le a b
+
+@[to_additive (attr := simp) enorm_eq_zero]
+lemma enorm_eq_zero' {a : E} :
+  ‖a‖ₑ = 0 ↔ a = 1 := by simp [enorm, ENormedMonoid.enorm_eq_zero]
+
+@[to_additive enorm_ne_zero]
+lemma enorm_ne_zero' {a : E} :
+    ‖a‖ₑ ≠ 0 ↔ a ≠ 1 := enorm_eq_zero'.ne
+
+@[to_additive (attr := simp) enorm_pos]
+lemma enorm_pos' {a : E} :
+    0 < ‖a‖ₑ ↔ a ≠ 1 := pos_iff_ne_zero.trans enorm_ne_zero'
+
+end ENormedMonoid
 
 open Set in
 @[to_additive]
@@ -1231,24 +1278,12 @@ theorem eq_one_or_nnnorm_pos (a : E) : a = 1 ∨ 0 < ‖a‖₊ :=
 theorem nnnorm_eq_zero' : ‖a‖₊ = 0 ↔ a = 1 := by
   rw [← NNReal.coe_eq_zero, coe_nnnorm', norm_eq_zero']
 
-@[to_additive (attr := simp) enorm_eq_zero]
-lemma enorm_eq_zero' {E : Type*} [TopologicalSpace E] [ENormedMonoid E] {a : E} :
-  ‖a‖ₑ = 0 ↔ a = 1 := by simp [enorm, ENormedMonoid.enorm_eq_zero]
-
 @[to_additive nnnorm_ne_zero_iff]
 theorem nnnorm_ne_zero_iff' : ‖a‖₊ ≠ 0 ↔ a ≠ 1 :=
   nnnorm_eq_zero'.not
 
-@[to_additive enorm_ne_zero]
-lemma enorm_ne_zero' {E : Type*} [TopologicalSpace E] [ENormedMonoid E] {a : E} :
-  ‖a‖ₑ ≠ 0 ↔ a ≠ 1 := enorm_eq_zero'.ne
-
 @[to_additive (attr := simp) nnnorm_pos]
 lemma nnnorm_pos' : 0 < ‖a‖₊ ↔ a ≠ 1 := pos_iff_ne_zero.trans nnnorm_ne_zero_iff'
-
-@[to_additive (attr := simp) enorm_pos]
-lemma enorm_pos' {E : Type*} [TopologicalSpace E] [ENormedMonoid E] {a : E} :
-  0 < ‖a‖ₑ ↔ a ≠ 1 := pos_iff_ne_zero.trans enorm_ne_zero'
 
 variable (E)
 

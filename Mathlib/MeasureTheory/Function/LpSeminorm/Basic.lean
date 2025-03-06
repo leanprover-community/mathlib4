@@ -1059,7 +1059,7 @@ theorem ae_eq_zero_of_eLpNorm'_eq_zero (hq0 : 0 ≤ q) (hf : AEStronglyMeasurabl
   simp only [eLpNorm'_eq_lintegral_enorm, lintegral_eq_zero_iff' (hf.enorm.pow_const q), one_div,
     ENNReal.rpow_eq_zero_iff, inv_pos, inv_neg'', hq0.not_lt, and_false, or_false] at h
   refine h.left.mono fun x hx ↦ ?_
-  simp only [Pi.zero_apply, ENNReal.rpow_eq_zero_iff, _root_.enorm_eq_zero, enorm_ne_top, false_and,
+  simp only [Pi.zero_apply, ENNReal.rpow_eq_zero_iff, enorm_eq_zero, enorm_ne_top, false_and,
     or_false] at hx
   exact hx.1
 

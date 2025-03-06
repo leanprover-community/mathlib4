@@ -223,7 +223,7 @@ theorem WellFoundedGT.monotone_chain_condition' [Preorder α] [h : WellFoundedGT
 
 /-- A stronger version of the **monotone chain** condition for partial orders.
 
-See `wellFoundedGT_iff_monotone_chain_condition'` for a version on preorders.  -/
+See `wellFoundedGT_iff_monotone_chain_condition'` for a version on preorders. -/
 theorem wellFoundedGT_iff_monotone_chain_condition [PartialOrder α] :
     WellFoundedGT α ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → a n = a m :=
   wellFoundedGT_iff_monotone_chain_condition'.trans <| by

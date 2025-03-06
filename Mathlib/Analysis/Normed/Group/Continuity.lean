@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Topology.Instances.ENNReal.Defs
+import Mathlib.Topology.Algebra.Ring.Real
 import Mathlib.Topology.Metrizable.Uniformity
 import Mathlib.Topology.Sequences
 
@@ -15,7 +15,6 @@ import Mathlib.Topology.Sequences
 
 normed group
 -/
-
 
 variable {𝓕 α ι κ E F G : Type*}
 
@@ -35,7 +34,7 @@ theorem tendsto_one_iff_norm_tendsto_zero {f : α → E} {a : Filter α} :
     Tendsto f a (𝓝 1) ↔ Tendsto (‖f ·‖) a (𝓝 0) :=
   tendsto_iff_norm_div_tendsto_zero.trans <| by simp only [div_one]
 
-@[to_additive]
+@[to_additive (attr := simp 1100)]
 theorem comap_norm_nhds_one : comap norm (𝓝 0) = 𝓝 (1 : E) := by
   simpa only [dist_one_right] using nhds_comap_dist (1 : E)
 
@@ -89,11 +88,6 @@ theorem continuous_nnnorm' : Continuous fun a : E => ‖a‖₊ :=
   continuous_norm'.subtype_mk _
 
 end SeminormedGroup
-
-@[continuity, fun_prop]
-lemma continuous_enorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E] :
-    Continuous fun a : E ↦ ‖a‖ₑ :=
-  ContinuousENorm.continuous_enorm
 
 section Instances
 
@@ -172,20 +166,9 @@ theorem Continuous.nnnorm' : Continuous f → Continuous fun x => ‖f x‖₊ :
 end
 end SeminormedGroup
 
-section
-
-variable [TopologicalSpace α] {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
-  {f : α → E} {s : Set α} {a : α}
-
-@[fun_prop]
-lemma Continuous.enorm : Continuous f → Continuous (‖f ·‖ₑ) := continuous_enorm.comp
-
-end
-
 section SeminormedGroup
 
 variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E} {a : E}
-
 
 section
 
@@ -199,9 +182,6 @@ theorem ContinuousAt.norm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x
 theorem ContinuousAt.nnnorm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x => ‖f x‖₊) a :=
   Tendsto.nnnorm' h
 
-@[fun_prop]
-lemma ContinuousAt.enorm (h : ContinuousAt f a) : ContinuousAt (‖f ·‖ₑ) a := Tendsto.enorm' h
-
 @[to_additive ContinuousWithinAt.norm]
 theorem ContinuousWithinAt.norm' {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
     ContinuousWithinAt (fun x => ‖f x‖) s a :=
@@ -212,10 +192,6 @@ theorem ContinuousWithinAt.nnnorm' {s : Set α} {a : α} (h : ContinuousWithinAt
     ContinuousWithinAt (fun x => ‖f x‖₊) s a :=
   Tendsto.nnnorm' h
 
-@[to_additive ContinuousWithinAt.enorm]
-lemma ContinuousWithinAt.enorm' (h : ContinuousWithinAt f s a) : ContinuousWithinAt (‖f ·‖ₑ) s a :=
-  Tendsto.enorm' h
-
 @[to_additive (attr := fun_prop) ContinuousOn.norm]
 theorem ContinuousOn.norm' {s : Set α} (h : ContinuousOn f s) : ContinuousOn (fun x => ‖f x‖) s :=
   fun x hx => (h x hx).norm'
@@ -223,10 +199,6 @@ theorem ContinuousOn.norm' {s : Set α} (h : ContinuousOn f s) : ContinuousOn (f
 @[to_additive (attr := fun_prop) ContinuousOn.nnnorm]
 theorem ContinuousOn.nnnorm' {s : Set α} (h : ContinuousOn f s) :
     ContinuousOn (fun x => ‖f x‖₊) s := fun x hx => (h x hx).nnnorm'
-
-@[to_additive (attr := fun_prop) ContinuousOn.enorm]
-lemma ContinuousOn.enorm' (h : ContinuousOn f s) : ContinuousOn (‖f ·‖ₑ) s :=
-  fun x hx => (h x hx).enorm'
 
 end
 

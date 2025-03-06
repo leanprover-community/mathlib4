@@ -236,14 +236,11 @@ theorem u_exists :
       simp only [I1, I2, add_zero, zero_div]
   · intro x; simp only [add_comm, neg_neg]
 
-variable {E}
-
+variable {E} in
 /-- An auxiliary function to construct partitions of unity on finite-dimensional real vector spaces,
 which is smooth, symmetric, and with support equal to the unit ball. -/
 def u (x : E) : ℝ :=
   Classical.choose (u_exists E) x
-
-variable (E)
 
 theorem u_smooth : ContDiff ℝ ∞ (u : E → ℝ) :=
   (Classical.choose_spec (u_exists E)).1
@@ -273,15 +270,11 @@ variable [MeasurableSpace E] [BorelSpace E]
 
 local notation "μ" => MeasureTheory.Measure.addHaar
 
-variable (E)
-
+variable (E) in
 theorem u_int_pos : 0 < ∫ x : E, u x ∂μ := by
   refine (integral_pos_iff_support_of_nonneg u_nonneg ?_).mpr ?_
   · exact (u_continuous E).integrable_of_hasCompactSupport (u_compact_support E)
   · rw [u_support]; exact measure_ball_pos _ _ zero_lt_one
-
-variable {E}
-
 
 /-- An auxiliary function to construct partitions of unity on finite-dimensional real vector spaces,
 which is smooth, symmetric, with support equal to the ball of radius `D` and integral `1`. -/
@@ -511,7 +504,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
         · rintro ⟨R, x⟩ ⟨hR : 1 < R, _⟩
           have A : 0 < (R - 1) / (R + 1) := by apply div_pos <;> linarith
           have B : (R - 1) / (R + 1) < 1 := by apply (div_lt_one _).2 <;> linarith
-          simp only [mem_preimage, prod_mk_mem_set_prod_eq, mem_Ioo, mem_univ, and_true, A, B]
+          simp only [mem_preimage, prodMk_mem_set_prod_eq, mem_Ioo, mem_univ, and_true, A, B]
       eq_one := fun R hR x hx => by
         have A : 0 < R + 1 := by linarith
         simp only [hR, if_true]

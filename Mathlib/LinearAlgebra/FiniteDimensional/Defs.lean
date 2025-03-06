@@ -87,7 +87,6 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCom
 /-- If the codomain of an injective linear map is finite dimensional, the domain must be as well. -/
 theorem of_injective (f : V →ₗ[K] V₂) (w : Function.Injective f) [FiniteDimensional K V₂] :
     FiniteDimensional K V :=
-  have : IsNoetherian K V₂ := IsNoetherian.iff_fg.mpr ‹_›
   Module.Finite.of_injective f w
 
 /-- If the domain of a surjective linear map is finite dimensional, the codomain must be as well. -/
@@ -118,7 +117,6 @@ noncomputable def fintypeBasisIndex {ι : Type*} [FiniteDimensional K V] (b : Ba
 /-- If a vector space is `FiniteDimensional`, `Basis.ofVectorSpace` is indexed by
   a finite type. -/
 noncomputable instance [FiniteDimensional K V] : Fintype (Basis.ofVectorSpaceIndex K V) := by
-  letI : IsNoetherian K V := IsNoetherian.iff_fg.2 inferInstance
   infer_instance
 
 /-- If a vector space has a basis indexed by elements of a finite set, then it is
@@ -128,13 +126,13 @@ theorem of_finite_basis {ι : Type w} {s : Set ι} (h : Basis s K V) (hs : Set.F
   haveI := hs.fintype
   of_fintype_basis h
 
-/-- A subspace of a finite-dimensional space is also finite-dimensional. -/
+/-- A subspace of a finite-dimensional space is also finite-dimensional.
+
+This is a shortcut instance to simplify inference in the presence of `[FiniteDimensional K V]`.
+-/
 instance finiteDimensional_submodule [FiniteDimensional K V] (S : Submodule K V) :
     FiniteDimensional K S := by
-  letI : IsNoetherian K V := iff_fg.2 ?_
-  · exact iff_fg.1 <| IsNoetherian.iff_rank_lt_aleph0.2 <|
-      (Submodule.rank_le _).trans_lt (rank_lt_aleph0 K V)
-  · infer_instance
+  infer_instance
 
 /-- A quotient of a finite-dimensional space is also finite-dimensional. -/
 instance finiteDimensional_quotient [FiniteDimensional K V] (S : Submodule K V) :
@@ -197,7 +195,6 @@ theorem _root_.LinearIndependent.lt_aleph0_of_finiteDimensional {ι : Type w} [F
 whole space. -/
 theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submodule K V}
     (h : finrank K S = finrank K V) : S = ⊤ := by
-  haveI : IsNoetherian K V := iff_fg.2 inferInstance
   set bS := Basis.ofVectorSpace K S with bS_eq
   have : LinearIndepOn K id (Subtype.val '' Basis.ofVectorSpaceIndex K S) := by
     simpa [bS] using bS.linearIndependent.linearIndepOn_id.image
@@ -346,15 +343,13 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- A submodule is finitely generated if and only if it is finite-dimensional -/
 theorem fg_iff_finiteDimensional (s : Submodule K V) : s.FG ↔ FiniteDimensional K s :=
-  ⟨fun h => Module.finite_def.2 <| (fg_top s).2 h, fun h => (fg_top s).1 <| Module.finite_def.1 h⟩
+  (fg_top s).symm.trans Module.finite_def.symm
 
 /-- A submodule contained in a finite-dimensional submodule is
 finite-dimensional. -/
 theorem finiteDimensional_of_le {S₁ S₂ : Submodule K V} [FiniteDimensional K S₂] (h : S₁ ≤ S₂) :
     FiniteDimensional K S₁ :=
-  haveI : IsNoetherian K S₂ := iff_fg.2 inferInstance
-  iff_fg.1
-    (IsNoetherian.iff_rank_lt_aleph0.2 ((Submodule.rank_mono h).trans_lt (rank_lt_aleph0 K S₂)))
+  (isNoetherian_of_le h).finite
 
 /-- The inf of two submodules, the first finite-dimensional, is
 finite-dimensional. -/
