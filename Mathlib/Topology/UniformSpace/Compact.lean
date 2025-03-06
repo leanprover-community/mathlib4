@@ -42,28 +42,26 @@ theorem lebesgue_number_lemma {ι : Sort*} {U : ι → Set α} (hK : IsCompact K
   exact ⟨ind y y.2, fun z hz ↦ hWU _ _ ⟨x, hxy, mem_iInter₂.1 hz _ hyt⟩⟩
 
 theorem lebesgue_number_lemma_nhds' {U : (x : α) → x ∈ K → Set α} (hK : IsCompact K)
-    (hU : ∀ x hx, U x hx ∈ 𝓝 x) : ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y : K, ball x V ⊆ U y y.2 := by
-  rcases lebesgue_number_lemma (U := fun x : K => interior (U x x.2)) hK (fun _ => isOpen_interior)
-    (fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, mem_interior_iff_mem_nhds.2 (hU x hx)⟩) with ⟨V, V_uni, hV⟩
-  exact ⟨V, V_uni, fun x hx => (hV x hx).imp fun y hy => hy.trans interior_subset⟩
+    (hU : ∀ x hx, U x hx ∈ 𝓝 x) : ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y : K, ball x V ⊆ U y y.2 :=
+  (lebesgue_number_lemma (U := fun x : K => interior (U x x.2)) hK (fun _ => isOpen_interior)
+    (fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, mem_interior_iff_mem_nhds.2 (hU x hx)⟩)).imp
+    fun _ ⟨V_uni, hV⟩ => ⟨V_uni, fun x hx => (hV x hx).imp fun _ hy => hy.trans interior_subset⟩
 
 theorem lebesgue_number_lemma_nhds {U : α → Set α} (hK : IsCompact K) (hU : ∀ x ∈ K, U x ∈ 𝓝 x) :
-    ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y, ball x V ⊆ U y := by
-  refine (lebesgue_number_lemma_nhds' hK hU).imp fun V ⟨V_uni, hV⟩ => ⟨V_uni, fun x hx => ?_⟩
-  rcases hV x hx with ⟨y, hy⟩
-  exact ⟨y, hy⟩
+    ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y, ball x V ⊆ U y :=
+  (lebesgue_number_lemma (U := fun x => interior (U x)) hK (fun _ => isOpen_interior)
+    (fun x hx => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x hx)⟩)).imp
+    fun _ ⟨V_uni, hV⟩ => ⟨V_uni, fun x hx => (hV x hx).imp fun _ hy => hy.trans interior_subset⟩
 
 theorem lebesgue_number_lemma_nhdsWithin' {U : (x : α) → x ∈ K → Set α} (hK : IsCompact K)
     (hU : ∀ x hx, U x hx ∈ 𝓝[K] x) : ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y : K, ball x V ∩ K ⊆ U y y.2 := by
-  choose U' U'_nhds hU' using fun x hx => mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (hU x hx)
-  exact (lebesgue_number_lemma_nhds' hK U'_nhds).imp fun V ⟨V_nhds, hV⟩ => ⟨V_nhds, fun x hx =>
-    (hV x hx).imp fun y hy => (Set.inter_subset_inter_left K hy).trans (hU' y y.2)⟩
+  refine (lebesgue_number_lemma_nhds' hK (fun x hx => Filter.mem_inf_principal'.1 (hU x hx))).imp
+    fun V ⟨V_uni, hV⟩ => ⟨V_uni, fun x hx => (hV x hx).imp fun _ hy => (inter_subset _ _ _).2 hy⟩
 
 theorem lebesgue_number_lemma_nhdsWithin {U : α → Set α} (hK : IsCompact K)
     (hU : ∀ x ∈ K, U x ∈ 𝓝[K] x) : ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y, ball x V ∩ K ⊆ U y := by
-  refine (lebesgue_number_lemma_nhdsWithin' hK hU).imp fun V ⟨V_uni, hV⟩ => ⟨V_uni, fun x hx => ?_⟩
-  rcases hV x hx with ⟨y, hy⟩
-  exact ⟨y, hy⟩
+  refine (lebesgue_number_lemma_nhds hK (fun x hx => Filter.mem_inf_principal'.1 (hU x hx))).imp
+    fun V ⟨V_uni, hV⟩ => ⟨V_uni, fun x hx => (hV x hx).imp fun _ hy => (inter_subset _ _ _).2 hy⟩
 
 /-- Let `U : ι → Set α` be an open cover of a compact set `K`.
 Then there exists an entourage `V`
