@@ -32,13 +32,14 @@ open CategoryTheory Rep Finsupp Representation
 
 variable {k G H : Type u} [CommRing k] [Group G] [Group H]
   {A : Rep k G} {B : Rep k H} (f : G →* H) (φ : A ⟶ (Action.res _ f).obj B) (n : ℕ)
-  [DecidableEq G] [DecidableEq H]
 
 theorem congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ : A ⟶ (Action.res _ f₁).obj B} {T : Type*}
     (F : (f : G →* H) → (φ : A ⟶ (Action.res _ f).obj B) → T) :
     F f₁ φ = F f₂ (h ▸ φ) := by
   subst h
   rfl
+
+variable [DecidableEq G] [DecidableEq H]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the chain map sending `∑ aᵢ·gᵢ : Gⁿ →₀ A` to `∑ φ(aᵢ)·(f ∘ gᵢ) : Hⁿ →₀ B`. -/
@@ -308,14 +309,7 @@ instance mapOneCycles_quotientGroupMk'_epi (S : Subgroup G) [S.Normal]
   simpa [mem_oneCycles_iff, ← (mem_oneCycles_iff _).1 hx, sum_mapDomain_index_inj (f := s)
       (fun x y h => by rw [← hs x, ← hs y, h])]
     using Finsupp.sum_congr fun a b => QuotientGroup.induction_on a fun a => by
-      simp [← QuotientGroup.mk_inv, ρ_eq_of_coe_eq A S (s a)⁻¹ a⁻¹ (by simp [hs])]
-
-instance H1Map_quotientGroupMk'_epi (S : Subgroup G) [S.Normal]
-    [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)] :
-    Epi (H1Map (QuotientGroup.mk' S) (resOfQuotientIso A S).inv) := by
-  convert epi_of_epi (H1π A) _
-  rw [H1π_comp_H1Map]
-  exact @epi_comp _ _ _ _ _ _ (mapOneCycles_quotientGroupMk'_epi A S) (H1π _) inferInstance
+      simp [← QuotientGroup.mk_inv, ρ_eq_of_coe_eq A.ρ S (s a)⁻¹ a⁻¹ (by simp [hs])]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map `H₁(G, A) ⟶ H₁(H, B)`. -/
@@ -371,7 +365,15 @@ def H1CoresCoinfOfTrivial (S : Subgroup G) [S.Normal]
   X₃ := H1 (ofQuotient A S)
   f := H1Map S.subtype (𝟙 _)
   g := H1Map (QuotientGroup.mk' S) <| (resOfQuotientIso A S).inv
-  zero := by rw [← H1Map_comp, congr (QuotientGroup.mk'_comp_subtype S) H1Map, H1Map_one]
+  zero := by
+    rw [← H1Map_comp, congr (QuotientGroup.mk'_comp_subtype S) H1Map, H1Map_one]
+
+instance H1Map_quotientGroupMk'_epi (S : Subgroup G) [S.Normal]
+    [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)] :
+    Epi (H1Map (QuotientGroup.mk' S) (resOfQuotientIso A S).inv) := by
+  convert epi_of_epi (H1π A) _
+  rw [H1π_comp_H1Map]
+  exact @epi_comp _ _ _ _ _ _ (mapOneCycles_quotientGroupMk'_epi A S) (H1π _) inferInstance
 
 /-- Given a `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially, the
 induced map `H₁(G, A) ⟶ H₁(G ⧸ S, A)` is an epimorphism. -/
