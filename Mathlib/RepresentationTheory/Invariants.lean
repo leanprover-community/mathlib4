@@ -115,7 +115,7 @@ variable (ρ : Representation k G V) (S : Subgroup G) [S.Normal]
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
 the invariants of `ρ|_S`. -/
-noncomputable abbrev toInvariants :
+abbrev toInvariants :
     Representation k G (invariants (ρ.comp S.subtype)) :=
   subrepresentation ρ _ fun g x hx ⟨s, hs⟩ => by
     simpa using congr(ρ g $(hx ⟨(g⁻¹ * s * g), Subgroup.Normal.conj_mem' ‹_› s hs g⟩))
@@ -125,7 +125,7 @@ instance : IsTrivial ((toInvariants ρ S).comp S.subtype) where
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the invariants of `ρ|_S`. -/
-noncomputable abbrev quotientToInvariants :
+abbrev quotientToInvariants :
     Representation k (G ⧸ S) (invariants (ρ.comp S.subtype)) :=
   ofQuotient (toInvariants ρ S) S
 
@@ -192,7 +192,7 @@ variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) (S : Subgroup G) [S
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
 the invariants of `ρ|_S`. -/
-noncomputable abbrev toInvariants :
+abbrev toInvariants :
     Rep k G := Rep.of <| A.ρ.toInvariants S
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
