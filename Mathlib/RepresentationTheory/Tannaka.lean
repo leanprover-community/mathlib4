@@ -58,6 +58,7 @@ def equivApp (g : G) (X : FDRep k G) : X.V ≅ X.V where
 
 variable (k G) in
 /-- The group homomorphism `G →* Aut (forget k G)` shown to be an isomorphism. -/
+@[simps]
 def equivHom : G →* Aut (forget k G) where
   toFun g :=
     LaxMonoidalFunctor.isoOfComponents (equivApp g) (fun f ↦ (f.comm g).symm) rfl (by intros; rfl)
@@ -67,11 +68,10 @@ def equivHom : G →* Aut (forget k G) where
 /-- The representation on `G → k` induced by multiplication on the right in `G`. -/
 @[simps]
 def rightRegular : Representation k G (G → k) where
-  toFun s := {
-    toFun f t := f (t * s)
+  toFun s :=
+  { toFun f t := f (t * s)
     map_add' _ _ := rfl
-    map_smul' _ _ := rfl
-  }
+    map_smul' _ _ := rfl }
   map_one' := by
     ext
     simp
@@ -82,11 +82,10 @@ def rightRegular : Representation k G (G → k) where
 /-- The representation on `G → k` induced by multiplication on the left in `G`. -/
 @[simps]
 def leftRegular : Representation k G (G → k) where
-  toFun s := {
-    toFun f t := f (s⁻¹ * t)
+  toFun s :=
+  { toFun f t := f (s⁻¹ * t)
     map_add' _ _ := rfl
-    map_smul' _ _ := rfl
-  }
+    map_smul' _ _ := rfl }
   map_one' := by
     ext
     simp
@@ -98,6 +97,7 @@ variable [Fintype G]
 
 variable (k G) in
 /-- The right regular representation `rightRegular` on `G → k` as a `FDRep k G`. -/
+@[simps!]
 def rightFDRep : FDRep k G := FDRep.of rightRegular
 
 /-- Map sending `η : Aut (forget k G)` to its component at `rightFDRep k G` as a linear map. -/
