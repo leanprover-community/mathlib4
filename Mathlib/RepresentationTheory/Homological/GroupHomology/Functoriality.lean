@@ -22,7 +22,7 @@ We also provide extra API for these maps in degrees 0, 1, 2.
 * `groupHomology.map f φ n` is the map `Hₙ(G, A) ⟶ Hₙ(H, B)` induced by a group homomorphism
   `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`.
 * `groupHomology.H1CoresCoinf A S` is the short complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A_S)`
-  for a normal subgroup `S ≤ G` and a representation `A` on which `S` acts trivially.
+  for a normal subgroup `S ≤ G` and a `G`-representation `A`.
 -/
 
 universe v u
