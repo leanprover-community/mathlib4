@@ -202,14 +202,14 @@ variable {k : WithTop ℕ∞}
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {I : ModelWithCorners ℝ E H} [IsManifold I k M]
-  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
-  /-{I' : ModelWithCorners ℝ E H}-/ [IsManifold I k M']
+  --{M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
+  --/-{I' : ModelWithCorners ℝ E H}-/ [IsManifold I k M']
   {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
   /-{I'' : ModelWithCorners ℝ E H}-/ [IsManifold I k M''] {n : ℕ}
   [CompactSpace M] [BoundarylessManifold I M]
-  [CompactSpace M'] [BoundarylessManifold I M'] [CompactSpace M''] [BoundarylessManifold I M'']
+  --[CompactSpace M'] [BoundarylessManifold I M'] [CompactSpace M''] [BoundarylessManifold I M'']
   [CompactSpace M] [FiniteDimensional ℝ E]
-  [CompactSpace M'] [FiniteDimensional ℝ E'] [CompactSpace M''] [FiniteDimensional ℝ E'']
+  --[CompactSpace M'] [FiniteDimensional ℝ E'] [CompactSpace M''] [FiniteDimensional ℝ E'']
 
 omit [FiniteDimensional ℝ E] -- speculative!
 
@@ -218,12 +218,17 @@ variable (k) in
 is a compact smooth `n`-manifold `W` with a continuous map `F: W → X`
 whose boundary is diffeomorphic to the disjoint union `M ⊔ N` such that `F` restricts to `f`
 resp. `g` in the obvious way. -/
-structure UnorientedCobordism.{v} (s : SingularNManifold X k I) (t : SingularNManifold X k I) where
+structure UnorientedCobordism.{v, w, x} (s : SingularNManifold X k I) (t : SingularNManifold X k I) where
   /-- TODO! -/
   W : Type v
   /-- The manifold `W` is a topological space. -/
   [topologicalSpace: TopologicalSpace W]
-  [hW : CompactSpace W]
+  [compactSpace : CompactSpace W]
+  E' : Type w
+  [normedAddCommGroup: NormedAddCommGroup E']
+  [normedSpace : NormedSpace ℝ E']
+  H' : Type x
+  [topologicalSpaceH : TopologicalSpace H']
   /-- The manifold `W` is a charted space over `H'`. -/
   [chartedSpace: ChartedSpace H' W]
   /-- TODO! -/
@@ -231,10 +236,6 @@ structure UnorientedCobordism.{v} (s : SingularNManifold X k I) (t : SingularNMa
   [isManifold: IsManifold J k W]
   /-- TODO! -/
   bd: BoundaryManifoldData W J k I
-  -- Why are these needed?
-  [topSpaceBd: TopologicalSpace bd.M₀]
-  [chartedSpaceBd: ChartedSpace H bd.M₀]
-
   /-- TODO! -/
   F : W → X
   hF : Continuous F
