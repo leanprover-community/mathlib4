@@ -3,7 +3,7 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Field.Subfield.Basic
+import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.UniformRing
 
@@ -47,7 +47,7 @@ which does not have a cluster point at 0 is a Cauchy filter
 (with respect to the additive uniform structure). This ensures the completion is
 a field.
 -/
-class CompletableTopField extends T0Space K : Prop where
+class CompletableTopField : Prop extends T0Space K where
   nice : ∀ F : Filter K, Cauchy F → 𝓝 0 ⊓ F = ⊥ → Cauchy (map (fun x => x⁻¹) F)
 
 namespace UniformSpace
@@ -63,6 +63,7 @@ variable {K}
 def hatInv : hat K → hat K :=
   isDenseInducing_coe.extend fun x : K => (↑x⁻¹ : hat K)
 
+@[fun_prop]
 theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
     ContinuousAt hatInv x := by
   refine isDenseInducing_coe.continuousAt_extend ?_
@@ -121,10 +122,7 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   let c := (fun (x : K) => (x : hat K))
   change f x = 1
   have cont : ContinuousAt f x := by
-    letI : TopologicalSpace (hat K × hat K) := instTopologicalSpaceProd
-    have : ContinuousAt (fun y : hat K => ((y, hatInv y) : hat K × hat K)) x :=
-      continuous_id.continuousAt.prod (continuous_hatInv x_ne)
-    exact (_root_.continuous_mul.continuousAt.comp this :)
+    fun_prop (disch := assumption)
   have clo : x ∈ closure (c '' {0}ᶜ) := by
     have := isDenseInducing_coe.dense x
     rw [← image_univ, show (univ : Set K) = {0} ∪ {0}ᶜ from (union_compl_self _).symm,

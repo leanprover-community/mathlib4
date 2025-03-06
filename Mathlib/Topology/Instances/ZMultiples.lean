@@ -7,8 +7,8 @@ import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Algebra.Module.Rat
 import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Topology.Algebra.Ring.Real
 import Mathlib.Topology.Algebra.UniformGroup.Basic
-import Mathlib.Topology.Instances.Real.Defs
 import Mathlib.Topology.Metrizable.Basic
 
 /-!

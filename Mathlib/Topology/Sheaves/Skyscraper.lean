@@ -257,8 +257,6 @@ def toSkyscraperPresheaf {𝓕 : Presheaf C X} {c : C} (f : 𝓕.stalk p₀ ⟶ 
     if h : p₀ ∈ U.unop then 𝓕.germ _ p₀ h ≫ f ≫ eqToHom (if_pos h).symm
     else ((if_neg h).symm.ndrec terminalIsTerminal).from _
   naturality U V inc := by
-    -- Porting note: don't know why original proof fell short of working, add `aesop_cat` finished
-    -- the proofs anyway
     dsimp
     by_cases hV : p₀ ∈ V.unop
     · have hU : p₀ ∈ U.unop := leOfHom inc.unop hV
@@ -365,7 +363,7 @@ def skyscraperPresheafStalkAdjunction [HasColimits C] :
 instance [HasColimits C] : (skyscraperPresheafFunctor p₀ : C ⥤ Presheaf C X).IsRightAdjoint  :=
   (skyscraperPresheafStalkAdjunction _).isRightAdjoint
 
-instance [HasColimits C] : (Presheaf.stalkFunctor C p₀).IsLeftAdjoint  :=
+instance [HasColimits C] : (Presheaf.stalkFunctor C p₀).IsLeftAdjoint :=
   -- Use a classical instance instead of the one from `variable`s
   have : ∀ U : Opens X, Decidable (p₀ ∈ U) := fun _ ↦ Classical.dec _
   (skyscraperPresheafStalkAdjunction _).isLeftAdjoint

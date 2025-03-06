@@ -152,6 +152,10 @@ lemma preimage_opensRange {X Y : Scheme.{u}} (f : X.Hom Y) [IsOpenImmersion f] :
     f ⁻¹ᵁ f.opensRange = ⊤ := by
   simp [Scheme.Hom.opensRange]
 
+lemma isIso_app (V : Y.Opens) (hV : V ≤ f.opensRange) : IsIso (f.app V) := by
+  rw [show V = f ''ᵁ f ⁻¹ᵁ V from Opens.ext (Set.image_preimage_eq_of_subset hV).symm]
+  infer_instance
+
 /-- The isomorphism `Γ(Y, f(U)) ≅ Γ(X, U)` induced by an open immersion `f : X ⟶ Y`. -/
 def appIso (U) : Γ(Y, f ''ᵁ U) ≅ Γ(X, U) :=
   (asIso <| LocallyRingedSpace.IsOpenImmersion.invApp f.toLRSHom U).symm
@@ -433,9 +437,8 @@ instance forget_map_isOpenImmersion : LocallyRingedSpace.IsOpenImmersion ((forge
 
 instance hasLimit_cospan_forget_of_left :
     HasLimit (cospan f g ⋙ Scheme.forgetToLocallyRingedSpace) := by
-  apply @hasLimitOfIso _ _ _ _ _ _ ?_ (diagramIsoCospan.{u} _).symm
-  change HasLimit (cospan ((forget).map f) ((forget).map g))
-  infer_instance
+  rw [hasLimit_iff_of_iso (diagramIsoCospan _)]
+  exact inferInstanceAs (HasLimit (cospan ((forget).map f) ((forget).map g)))
 
 open CategoryTheory.Limits.WalkingCospan
 
@@ -444,9 +447,8 @@ instance hasLimit_cospan_forget_of_left' :
   show HasLimit (cospan ((forget).map f) ((forget).map g)) from inferInstance
 
 instance hasLimit_cospan_forget_of_right : HasLimit (cospan g f ⋙ forget) := by
-  apply @hasLimitOfIso _ _ _ _ _ _ ?_ (diagramIsoCospan.{u} _).symm
-  change HasLimit (cospan ((forget).map g) ((forget).map f))
-  infer_instance
+  rw [hasLimit_iff_of_iso (diagramIsoCospan _)]
+  exact inferInstanceAs (HasLimit (cospan ((forget).map g) ((forget).map f)))
 
 instance hasLimit_cospan_forget_of_right' :
     HasLimit (cospan ((cospan g f ⋙ forget).map Hom.inl) ((cospan g f ⋙ forget).map Hom.inr)) :=
@@ -483,17 +485,13 @@ instance pullback_snd_of_left : IsOpenImmersion (pullback.snd f g) := by
 
 instance pullback_fst_of_right : IsOpenImmersion (pullback.fst g f) := by
   rw [← pullbackSymmetry_hom_comp_snd]
-  -- Porting note: was just `infer_instance`, it is a bit weird that no explicit class instance is
-  -- provided but still class inference fail to find this
-  exact LocallyRingedSpace.IsOpenImmersion.comp (H := inferInstance) _ _
+  infer_instance
 
 instance pullback_to_base [IsOpenImmersion g] :
     IsOpenImmersion (limit.π (cospan f g) WalkingCospan.one) := by
   rw [← limit.w (cospan f g) WalkingCospan.Hom.inl]
   change IsOpenImmersion (_ ≫ f)
-  -- Porting note: was just `infer_instance`, it is a bit weird that no explicit class instance is
-  -- provided but still class inference fail to find this
-  exact LocallyRingedSpace.IsOpenImmersion.comp (H := inferInstance) _ _
+  infer_instance
 
 instance forgetToTop_preserves_of_left : PreservesLimit (cospan f g) Scheme.forgetToTop := by
   delta Scheme.forgetToTop
