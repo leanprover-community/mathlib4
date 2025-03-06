@@ -87,7 +87,6 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCom
 /-- If the codomain of an injective linear map is finite dimensional, the domain must be as well. -/
 theorem of_injective (f : V →ₗ[K] V₂) (w : Function.Injective f) [FiniteDimensional K V₂] :
     FiniteDimensional K V :=
-  have : IsNoetherian K V₂ := IsNoetherian.iff_fg.mpr ‹_›
   Module.Finite.of_injective f w
 
 /-- If the domain of a surjective linear map is finite dimensional, the codomain must be as well. -/
@@ -118,7 +117,6 @@ noncomputable def fintypeBasisIndex {ι : Type*} [FiniteDimensional K V] (b : Ba
 /-- If a vector space is `FiniteDimensional`, `Basis.ofVectorSpace` is indexed by
   a finite type. -/
 noncomputable instance [FiniteDimensional K V] : Fintype (Basis.ofVectorSpaceIndex K V) := by
-  letI : IsNoetherian K V := IsNoetherian.iff_fg.2 inferInstance
   infer_instance
 
 /-- If a vector space has a basis indexed by elements of a finite set, then it is
@@ -128,13 +126,13 @@ theorem of_finite_basis {ι : Type w} {s : Set ι} (h : Basis s K V) (hs : Set.F
   haveI := hs.fintype
   of_fintype_basis h
 
-/-- A subspace of a finite-dimensional space is also finite-dimensional. -/
+/-- A subspace of a finite-dimensional space is also finite-dimensional.
+
+This is a shortcut instance to simplify inference in the presence of `[FiniteDimensional K V]`.
+-/
 instance finiteDimensional_submodule [FiniteDimensional K V] (S : Submodule K V) :
     FiniteDimensional K S := by
-  letI : IsNoetherian K V := iff_fg.2 ?_
-  · exact iff_fg.1 <| IsNoetherian.iff_rank_lt_aleph0.2 <|
-      (Submodule.rank_le _).trans_lt (rank_lt_aleph0 K V)
-  · infer_instance
+  infer_instance
 
 /-- A quotient of a finite-dimensional space is also finite-dimensional. -/
 instance finiteDimensional_quotient [FiniteDimensional K V] (S : Submodule K V) :
@@ -197,11 +195,10 @@ theorem _root_.LinearIndependent.lt_aleph0_of_finiteDimensional {ι : Type w} [F
 whole space. -/
 theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submodule K V}
     (h : finrank K S = finrank K V) : S = ⊤ := by
-  haveI : IsNoetherian K V := iff_fg.2 inferInstance
   set bS := Basis.ofVectorSpace K S with bS_eq
-  have : LinearIndependent K ((↑) : ((↑) '' Basis.ofVectorSpaceIndex K S : Set V) → V) :=
-    LinearIndependent.image_subtype (f := Submodule.subtype S)
-      (by simpa [bS] using bS.linearIndependent) (by simp)
+  have : LinearIndepOn K id (Subtype.val '' Basis.ofVectorSpaceIndex K S) := by
+    simpa [bS] using bS.linearIndependent.linearIndepOn_id.image
+      (f := Submodule.subtype S) (by simp)
   set b := Basis.extend this with b_eq
   -- Porting note: `letI` now uses `this` so we need to give different names
   letI i1 : Fintype (this.extend _) :=
@@ -346,15 +343,13 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- A submodule is finitely generated if and only if it is finite-dimensional -/
 theorem fg_iff_finiteDimensional (s : Submodule K V) : s.FG ↔ FiniteDimensional K s :=
-  ⟨fun h => Module.finite_def.2 <| (fg_top s).2 h, fun h => (fg_top s).1 <| Module.finite_def.1 h⟩
+  (fg_top s).symm.trans Module.finite_def.symm
 
 /-- A submodule contained in a finite-dimensional submodule is
 finite-dimensional. -/
 theorem finiteDimensional_of_le {S₁ S₂ : Submodule K V} [FiniteDimensional K S₂] (h : S₁ ≤ S₂) :
     FiniteDimensional K S₁ :=
-  haveI : IsNoetherian K S₂ := iff_fg.2 inferInstance
-  iff_fg.1
-    (IsNoetherian.iff_rank_lt_aleph0.2 ((Submodule.rank_mono h).trans_lt (rank_lt_aleph0 K S₂)))
+  (isNoetherian_of_le h).finite
 
 /-- The inf of two submodules, the first finite-dimensional, is
 finite-dimensional. -/
@@ -549,17 +544,18 @@ theorem ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} 
     (s : Finset ι) (comm) (h : s.SupIndep fun i ↦ ker (f i)) :
     ker (s.noncommProd f comm) = ⨆ i ∈ s, ker (f i) := by
   classical
-  induction' s using Finset.induction_on with i s hi ih
-  · simp [one_eq_id]
-  replace ih : ker (Finset.noncommProd s f <| Set.Pairwise.mono (s.subset_insert i) comm) =
-      ⨆ x ∈ s, ker (f x) := ih _ (h.subset (s.subset_insert i))
-  rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, mul_eq_comp,
-    ker_comp_eq_of_commute_of_disjoint_ker]
-  · simp_rw [Finset.mem_insert_coe, iSup_insert, Finset.mem_coe, ih]
-  · exact s.noncommProd_commute _ _ _ fun j hj ↦
-      comm (s.mem_insert_self i) (Finset.mem_insert_of_mem hj) (by aesop)
-  · replace h := Finset.supIndep_iff_disjoint_erase.mp h i (s.mem_insert_self i)
-    simpa [ih, hi, Finset.sup_eq_iSup] using h
+  induction s using Finset.induction_on with
+  | empty => simp [one_eq_id]
+  | @insert i s hi ih =>
+    replace ih : ker (Finset.noncommProd s f <| Set.Pairwise.mono (s.subset_insert i) comm) =
+        ⨆ x ∈ s, ker (f x) := ih _ (h.subset (s.subset_insert i))
+    rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, mul_eq_comp,
+      ker_comp_eq_of_commute_of_disjoint_ker]
+    · simp_rw [Finset.mem_insert_coe, iSup_insert, Finset.mem_coe, ih]
+    · exact s.noncommProd_commute _ _ _ fun j hj ↦
+        comm (s.mem_insert_self i) (Finset.mem_insert_of_mem hj) (by aesop)
+    · replace h := Finset.supIndep_iff_disjoint_erase.mp h i (s.mem_insert_self i)
+      simpa [ih, hi, Finset.sup_eq_iSup] using h
 
 end DivisionRing
 
@@ -713,7 +709,7 @@ theorem finrank_eq_one_iff_of_nonzero (v : V) (nz : v ≠ 0) :
     finrank K V = 1 ↔ span K ({v} : Set V) = ⊤ :=
   ⟨fun h => by simpa using (basisSingleton Unit h v nz).span_eq, fun s =>
     finrank_eq_card_basis
-      (Basis.mk (linearIndependent_singleton nz)
+      (Basis.mk (LinearIndepOn.id_singleton _ nz)
         (by
           convert s.ge  -- Porting note: added `.ge` to make things easier for `convert`
           simp))⟩
