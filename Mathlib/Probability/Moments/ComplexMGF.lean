@@ -327,13 +327,12 @@ theorem MeasureTheory.ext_of_forall_complexMGF_eq [IsFiniteMeasure μ]
   apply MeasureTheory.ext_of_charFun_eq Circle.exp.continuous probFourierChar_ne_one
     inner_ne_zero continuous_inner (μ.map X) (μ'.map Y)
   intro w
-  simp [probChar_apply, probFourierChar]
-  simp [complexMGF] at h
-  rw [integral_map hX (AEMeasurable.aestronglyMeasurable <| by fun_prop)]
-  rw [integral_map hY (AEMeasurable.aestronglyMeasurable <| by fun_prop)]
   specialize h (Multiplicative.toAdd w * I)
+  simp [complexMGF] at h
   simp_rw [mul_comm ((Multiplicative.toAdd w) * I) _, ← mul_assoc] at h
-  exact h
+  simp [probChar_apply, probFourierChar]
+  rwa [integral_map hX (AEMeasurable.aestronglyMeasurable <| by fun_prop),
+    integral_map hY (AEMeasurable.aestronglyMeasurable <| by fun_prop)]
 
 end ext
 
