@@ -88,6 +88,11 @@ section Ring
 
 variable (R : Type u) [Ring R]
 
+@[simp] lemma hom_comp (A B C : FGModuleCat R) (f : A ⟶ B) (g : B ⟶ C) :
+  (f ≫ g).hom = g.hom.comp f.hom := rfl
+
+@[simp] lemma hom_id (A : FGModuleCat R) : ModuleCat.Hom.hom (𝟙 A) = LinearMap.id := rfl
+
 instance finite (V : FGModuleCat R) : Module.Finite R V :=
   V.property
 
