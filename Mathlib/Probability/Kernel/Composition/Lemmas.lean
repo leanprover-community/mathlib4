@@ -59,7 +59,7 @@ lemma swap_parallelComp : swap β δ ∘ₖ (κ ∥ₖ η) = η ∥ₖ κ ∘ₖ
   swap; · exact ((Kernel.id.measurable_coe hs).comp measurable_swap).aemeasurable
   congr with d
   simp_rw [Prod.swap_prod_mk, Measure.dirac_apply' _ hs, ← Set.indicator_comp_right,
-    lintegral_indicator (measurable_prod_mk_left hs)]
+    lintegral_indicator (measurable_prodMk_left hs)]
   simp
 
 /-- For a deterministic kernel, copying then applying the kernel to the two copies is the same
@@ -83,13 +83,13 @@ lemma prod_comp_right [SFinite ν] {κ : Kernel β γ} [IsSFiniteKernel κ] :
     μ.prod (κ ∘ₘ ν) = (Kernel.id ∥ₖ κ) ∘ₘ (μ.prod ν) := by
   ext s hs
   rw [Measure.prod_apply hs, Measure.bind_apply hs (Kernel.measurable _)]
-  simp_rw [Measure.bind_apply (measurable_prod_mk_left hs) (Kernel.measurable _)]
+  simp_rw [Measure.bind_apply (measurable_prodMk_left hs) (Kernel.measurable _)]
   rw [MeasureTheory.lintegral_prod]
   swap; · exact (Kernel.measurable_coe _ hs).aemeasurable
   congr with a
   congr with b
   rw [Kernel.parallelComp_apply, Kernel.id_apply, Measure.prod_apply hs, lintegral_dirac']
-  exact measurable_measure_prod_mk_left hs
+  exact measurable_measure_prodMk_left hs
 
 lemma prod_comp_left [SFinite μ] [SFinite ν] {κ : Kernel α γ} [IsSFiniteKernel κ] :
     (κ ∘ₘ μ).prod ν = (κ ∥ₖ Kernel.id) ∘ₘ (μ.prod ν) := by
