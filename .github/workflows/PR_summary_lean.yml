@@ -53,6 +53,7 @@ jobs:
         run: |
           git checkout master
           git checkout -
+          printf '\n* Checkout dance completed\n'
           cp scripts/declarations_diff.lean Mathlib/declarations_diff.lean
           echo "ddiff" >> Mathlib/declarations_diff.lean
           lake build Mathlib.declarations_diff
