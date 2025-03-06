@@ -145,7 +145,8 @@ def subtype (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
 
 /-- Given a `k`-linear `G`-representation `(V, ρ)` and a `G`-invariant `k`-submodule `W ≤ V`, this
 is the representation induced on `V ⧸ W` by `ρ`.-/
-abbrev quotient (W) (le_comap) :=
+abbrev quotient (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
+    Rep k G :=
   Rep.of (A.ρ.quotient W le_comap)
 
 /-- The natural projection from a representation to its quotient by a subrepresentation. -/
