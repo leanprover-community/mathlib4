@@ -3,8 +3,8 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.SMulWithZero
 import Mathlib.Order.Hom.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Algebra.Order.AddGroupWithTop
@@ -90,7 +90,6 @@ theorem trop_untrop (x : Tropical R) : trop (untrop x) = x :=
 theorem untrop_trop (x : R) : untrop (trop x) = x :=
   rfl
 
--- Porting note: New attribute seems to fix things
 attribute [irreducible] Tropical
 
 theorem leftInverse_trop : Function.LeftInverse (trop : R → Tropical R) untrop :=

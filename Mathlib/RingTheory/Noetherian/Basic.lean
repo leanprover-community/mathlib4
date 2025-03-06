@@ -63,15 +63,12 @@ variable [Module R M] [Module R P]
 
 open IsNoetherian
 
-variable (M)
-
+variable (M) in
 theorem isNoetherian_of_surjective (f : M →ₗ[R] P) (hf : LinearMap.range f = ⊤) [IsNoetherian R M] :
     IsNoetherian R P :=
   ⟨fun s =>
     have : (s.comap f).map f = s := Submodule.map_comap_eq_self <| hf.symm ▸ le_top
     this ▸ (noetherian _).map _⟩
-
-variable {M}
 
 instance isNoetherian_range (f : M →ₗ[R] P) [IsNoetherian R M] :
     IsNoetherian R (LinearMap.range f) :=

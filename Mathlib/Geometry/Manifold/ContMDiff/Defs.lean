@@ -624,7 +624,7 @@ theorem contMDiffAt_iff_nat {n : ℕ∞} :
   simp [← contMDiffWithinAt_univ, contMDiffWithinAt_iff_nat]
 
 /-- A function is `C^n` within a set at a point iff it is `C^m` within this set at this point, for
-any `m ≤ n` which is different from `∞`. The interest of this result is that, when `m ≠ ∞`, being
+any `m ≤ n` which is different from `∞`. This result is useful because, when `m ≠ ∞`, being
 `C^m` extends locally to a neighborhood, giving flexibility for local proofs. -/
 theorem contMDiffWithinAt_iff_le_ne_infty :
     ContMDiffWithinAt I I' n f s x ↔ ∀ m, m ≤ n → m ≠ ∞ → ContMDiffWithinAt I I' m f s x := by
@@ -636,7 +636,7 @@ theorem contMDiffWithinAt_iff_le_ne_infty :
     exact contMDiffWithinAt_iff_nat.2 (fun m hm ↦ h _ (mod_cast hm) (by simp))
 
 /-- A function is `C^n`at a point iff it is `C^m`at this point, for
-any `m ≤ n` which is different from `∞`. The interest of this result is that, when `m ≠ ∞`, being
+any `m ≤ n` which is different from `∞`. This result is useful because, when `m ≠ ∞`, being
 `C^m` extends locally to a neighborhood, giving flexibility for local proofs. -/
 theorem contMDiffAt_iff_le_ne_infty :
     ContMDiffAt I I' n f x ↔ ∀ m, m ≤ n → m ≠ ∞ → ContMDiffAt I I' m f x := by
