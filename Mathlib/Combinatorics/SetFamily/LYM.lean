@@ -49,7 +49,7 @@ shadow, lym, slice, sperner, antichain
 open Finset Nat
 open scoped FinsetFamily
 
-variable {𝕜 α : Type*} [LinearOrderedField 𝕜]
+variable {𝕜 α : Type*} [LinearOrderedSemifield 𝕜]
 
 namespace Finset
 
@@ -222,30 +222,22 @@ theorem lubell_yamamoto_meshalkin_inequality_sum_inv_choose (h𝒜 : IsAntichain
       simp [slice, div_eq_mul_inv]
     _ ≤ 1 := lubell_yamamoto_meshalkin_inequality_sum_card_div_choose h𝒜
 
-end LYM
-
 /-! ### Sperner's theorem -/
 
 /-- **Sperner's theorem**. The size of an antichain in `Finset α` is bounded by the size of the
 maximal layer in `Finset α`. This precisely means that `Finset α` is a Sperner order. -/
-theorem _root_.IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
-    (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
+theorem _root_.IsAntichain.sperner (h𝒜 : IsAntichain (· ⊆ ·) 𝒜.toSet) :
     #𝒜 ≤ (Fintype.card α).choose (Fintype.card α / 2) := by
-  classical
-    suffices (∑ r ∈ Iic (Fintype.card α),
-        (#(𝒜 # r) : ℚ) / (Fintype.card α).choose (Fintype.card α / 2)) ≤ 1 by
-      rw [← sum_div, ← Nat.cast_sum, div_le_one] at this
-      · simp only [cast_le] at this
-        rwa [sum_card_slice] at this
-      simp only [cast_pos]
-      exact choose_pos (Nat.div_le_self _ _)
-    rw [Iic_eq_Icc, ← Ico_succ_right, bot_eq_zero, Ico_zero_eq_range]
-    refine (sum_le_sum fun r hr => ?_).trans
-      (lubell_yamamoto_meshalkin_inequality_sum_card_div_choose h𝒜)
-    rw [mem_range] at hr
-    refine div_le_div_of_nonneg_left ?_ ?_ ?_ <;> norm_cast
-    · exact Nat.zero_le _
-    · exact choose_pos (Nat.lt_succ_iff.1 hr)
-    · exact choose_le_middle _ _
+  have : 0 < ((Fintype.card α).choose (Fintype.card α / 2) : ℚ≥0) :=
+    Nat.cast_pos.2 <| choose_pos (Nat.div_le_self _ _)
+  have h := calc
+    ∑ s ∈ 𝒜, ((Fintype.card α).choose (Fintype.card α / 2) : ℚ≥0)⁻¹
+    _ ≤ ∑ s ∈ 𝒜, ((Fintype.card α).choose #s : ℚ≥0)⁻¹ := by
+      gcongr with s hs
+      · exact mod_cast choose_pos s.card_le_univ
+      · exact choose_le_middle _ _
+    _ ≤ 1 := lubell_yamamoto_meshalkin_inequality_sum_inv_choose h𝒜
+  simpa [mul_inv_le_iff₀' this] using h
 
+end LYM
 end Finset
