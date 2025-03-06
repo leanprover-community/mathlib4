@@ -1,6 +1,8 @@
-import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Module
 
 
 set_option autoImplicit true
@@ -123,6 +125,55 @@ example (x y z w : ℚ) (hzw : z = w) : x * z + 2 * y * z = x * w + 2 * y * w :=
 
 example (x y : ℤ) (h : x = 0) : y ^ 2 * x = 0 := by linear_combination y ^ 2 * h
 
+/-! ### Scalar multiplication -/
+
+section
+variable {K V : Type*}
+
+section
+variable [AddCommGroup V] [Field K] [CharZero K] [Module K V] {a b μ ν : K} {v w x y : V}
+
+example  (h : a ^ 2 + b ^ 2 = 1) : a • (a • x - b • y) + (b • a • y + b • b • x) = x := by
+  linear_combination (norm := module) h • x
+
+example (h1 : a • x + b • y = 0) (h2 : a • μ • x + b • ν • y = 0) : (μ - ν) • a • x = 0 := by
+  linear_combination (norm := module) h2 - ν • h1
+
+example (h₁ : x - y = -(v - w)) (h₂ : x + y = v + w) : x = w := by
+  linear_combination (norm := module) (2:K)⁻¹ • h₁ + (2:K)⁻¹ • h₂
+
+example (h : a + b ≠ 0) (H : a • x = b • y) : x = (b / (a + b)) • (x + y) := by
+  linear_combination (norm := match_scalars) (a + b)⁻¹ • H
+  · field_simp
+    ring
+  · ring
+
+end
+
+example [OrderedCommSemiring K] [OrderedCancelAddCommMonoid V] [Module K V] [OrderedSMul K V]
+    {x y r : V} (hx : x < r) (hy : y < r) {a b : K} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) :
+    a • x + b • y < r := by
+  linear_combination (norm := skip) a • hx + b • hy + hab • r
+  apply le_of_eq
+  module
+
+example [OrderedCommSemiring K] [OrderedCancelAddCommMonoid V] [Module K V] [OrderedSMul K V]
+    {x y z : V} (hyz : y ≤ z) {a b : K} (hb : 0 ≤ b) (hab : a + b = 1) (H : z ≤ a • x + b • y) :
+    a • z ≤ a • x := by
+  linear_combination (norm := skip) b • hyz + hab • z + H
+  apply le_of_eq
+  module
+
+example [OrderedCommRing K] [OrderedAddCommGroup V] [Module K V] [OrderedSMul K V]
+    {x y : V} (hx : 0 < x) (hxy : x < y) {a b c : K} (hc : 0 < c) (hac : c < a) (hab : a + b ≤ 1):
+    c • x + b • y < y := by
+  have := hx.trans hxy
+  linear_combination (norm := skip) hab • y + hac • y + c • hxy
+  apply le_of_eq
+  module
+
+end
+
 /-! ### Tests in semirings -/
 
 example (a _b : ℕ) (h1 : a = 3) : a = 3 := by
@@ -229,6 +280,10 @@ example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y = -2 * y + 1 :
   linear_combination (norm := ring_nf)
   linear_combination h1 - 2 * h2
 
+example {A : Type*} [AddCommGroup A] {x y z : A} (h1 : x + y = 10 • z) (h2 : x - y = 6 • z) :
+    2 • x = 2 • (8 • z) := by
+  linear_combination (norm := abel) h1 + h2
+
 /-! ### Cases that should fail -/
 
 /--
@@ -255,7 +310,7 @@ example (a : ℚ) (ha : a = 1) : a = 2 := by linear_combination ha
 --   this behavior.
 /--
 error: application type mismatch
-  Mathlib.Tactic.LinearCombination.c_mul_pf h2 0
+  Mathlib.Tactic.LinearCombination.mul_const_eq h2 0
 argument
   0
 has type
@@ -314,6 +369,103 @@ example (K : Type)
   linear_combination (exp := 6) 2 * y * z ^ 2 * h₂ / 7 + (x ^ 3  - y ^ 2 * z / 7) * h₁ -
     x * y * z * h₀ + y * z * h / 7
 
+/-! ### Linear inequalities -/
+
+example : (3:ℤ) ≤ 4 := by linear_combination
+
+example (x : ℚ) (hx : x ≤ 3) : x - 1 ≤ 5 := by linear_combination hx
+example (x : ℝ) (hx : x ≤ 3) : x - 1 ≤ 5 := by linear_combination hx
+
+example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≤ 1) : a + b ≤ 2 := by linear_combination h1 + h2
+example (a b : ℚ) (h1 : a ≤ 1) (h2 : b = 1) : a + b < 3 := by linear_combination h1 + h2
+example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≥ 2) : a ≤ b := by linear_combination h1 + h2
+
+example (a : ℚ) (ha : 0 ≤ a) : 0 ≤ 2 * a := by linear_combination 2 * ha
+
+example {x y : ℚ} (h : x + 1 < y) : x < y := by linear_combination h
+example {x y : ℚ} (h : x < y) : x < y := by linear_combination h
+
+example (a b : ℚ) (h1 : a ≤ 1) (h2 : b = 1) : (a + b) / 2 ≤ 1 := by linear_combination (h1 + h2) / 2
+
+example {x y : ℤ} (hx : x + 3 ≤ 2) (hy : y + 2 * x ≥ 3) : y > 3 := by linear_combination hy + 2 * hx
+example {x y : ℕ} (hx : x + 3 ≤ 2) (hy : y + 2 * x ≥ 3) : y > 3 := by linear_combination hy + 2 * hx
+
+example {x y : ℤ} (h : x + 1 ≤ y) : x < y := by linear_combination h
+
+example {x y z : ℚ} (h1 : 4 * x + y + 3 * z ≤ 25) (h2 : -x + 2 * y + z = 3)
+    (h3 : 5 * x + 7 * z = 43) :
+    x ≤ 4 := by
+  linear_combination (14 * h1 - 7 * h2 - 5 * h3) / 38
+
+example {a b c d e : ℚ}
+    (h1 : 3 * a + 4 * b - 2 * c + d = 15)
+    (h2 : a + 2 * b + c - 2 * d + 2 * e ≤ 3)
+    (h3 : 5 * a + 5 * b - c + d + 4 * e = 31)
+    (h4 : 8 * a + b - c - 2 * d + 2 * e = 8)
+    (h5 : 1 - 2 * b + 3 * c - 4 * d + 5 * e = -4) :
+    a ≤ 1 := by
+  linear_combination (-155 * h1 + 68 * h2 + 49 * h3 + 59 * h4 - 90 * h5) / 320
+
+example {a b c d e : ℚ}
+    (h1 : 3 * a + 4 * b - 2 * c + d = 15)
+    (h2 : a + 2 * b + c - 2 * d + 2 * e ≤ 3)
+    (h3 : 5 * a + 5 * b - c + d + 4 * e = 31)
+    (h4 : 8 * a + b - c - 2 * d + 2 * e = 8)
+    (h5 : 1 - 2 * b + 3 * c - 4 * d + 5 * e > -4) :
+    a < 1 := by
+  linear_combination (-155 * h1 + 68 * h2 + 49 * h3 + 59 * h4 + 90 * h5) / 320
+
+/--
+error: comparison failed, LHS is larger
+a b : ℚ
+h1 : a ≤ 1
+h2 : b ≥ 0
+⊢ 1 ≤ 0
+-/
+#guard_msgs in
+example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≥ 0) : a ≤ b := by linear_combination h1 + h2
+
+/--
+error: ring failed, ring expressions not equal up to an additive constant
+a b : ℚ
+h1 : a ≤ 1
+h2 : b ≥ 0
+⊢ 1 - b ≤ 0
+-/
+#guard_msgs in
+example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≥ 0) : a ≤ b := by linear_combination h1
+
+/-- error: coefficients of inequalities in 'linear_combination' must be nonnegative -/
+#guard_msgs in
+example (x y : ℤ) (h : x ≤ y) : -x ≤ -y := by linear_combination 4 - h
+
+/-! ### Nonlinear inequalities -/
+
+example {a b : ℝ} (ha : 0 ≤ a) (hb : b < 1) : a * b ≤ a := by linear_combination a * hb
+example {a b : ℝ} (ha : 0 ≤ a) (hb : b < 1) : a * b ≤ a := by linear_combination hb * a
+
+/-- error: could not establish the nonnegativity of a -/
+#guard_msgs in
+example {a b : ℝ} (hb : b < 1) : a * b ≤ a := by linear_combination a * hb
+
+example {u v x y A B : ℝ} (_ : 0 ≤ u) (_ : 0 ≤ v) (h2 : A ≤ 1) (h3 : 1 ≤ B) (h4 : x ≤ B)
+    (h5 : y ≤ B) (h8 : u < A) (h9 : v < A) :
+    u * y + v * x + u * v < 3 * A * B := by
+  linear_combination v * h2 + v * h3 + v * h4 + u * h5 + (v + B) * h8 + 2 * B * h9
+
+example {t : ℚ} (ht : t ≥ 10) : t ^ 2 - 3 * t - 17 ≥ 5 := by linear_combination (t + 7) * ht
+
+example {n : ℤ} (hn : n ≥ 5) : n ^ 2 > 2 * n + 11 := by linear_combination (n + 3) * hn
+
+example {a b : ℚ} : a * b ≤ (a ^ 2 + b ^ 2) / 2 := by linear_combination sq_nonneg (a - b) / 2
+
+example {a b c : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hc : 0 ≤ c) :
+    a * b * c ≤ (a ^ 3 + b ^ 3 + c ^ 3) / 3 := by
+  have h : (a - b) ^ 2 + (b - c) ^ 2 + (c - a) ^ 2 ≥ 0 := by positivity
+  linear_combination (a + b + c) * h / 6
+
+example {a b c x : ℚ} (h : a * x ^ 2 + b * x + c = 0) : b ^ 2 ≥ 4 * a * c := by
+  linear_combination 4 * a * h + sq_nonneg (2 * a * x + b)
 
 /-! ### Regression tests -/
 
@@ -329,7 +481,7 @@ example {r s a b : ℕ} (h₁ : (r : ℤ) = a + 1) (h₂ : (s : ℤ) = b + 1) :
 
 -- Implementation at the time of the port (Nov 2022) was 110,000 heartbeats.
 -- Eagerly elaborating leaf nodes brings this to 7,540 heartbeats.
-set_option maxHeartbeats 8000 in
+set_option maxHeartbeats 10000 in
 example (K : Type*) [Field K] [CharZero K] {x y z p q : K}
     (h₀ : 3 * x ^ 2 + z ^ 2 * p = 0)
     (h₁ : z * (2 * y) = 0)
@@ -362,4 +514,14 @@ example (K : Type*) [Field K] [CharZero K] {x y z p q : K}
               13122 * q ^ 6 * p ^ 3 * x * z -
             59049 * q ^ 7 * p * x ^ 2) *
           h₂
+  exact test_sorry
+
+/- When `linear_combination` is used to prove inequalities, its speed is very sensitive to how much
+typeclass inference is demanded by the lemmas it orchestrates.  This example took 2146 heartbeats
+(and 73 ms on a good laptop) on an implementation with "minimal" typeclasses everywhere, e.g. lots of
+`CovariantClass`/`ContravariantClass`, and takes 206 heartbeats (10 ms on a good laptop) on the
+implementation at the time of joining Mathlib (November 2024). -/
+set_option maxHeartbeats 1200 in
+example {a b : ℝ} (h : a < b) : 0 < b - a := by
+  linear_combination (norm := skip) h
   exact test_sorry

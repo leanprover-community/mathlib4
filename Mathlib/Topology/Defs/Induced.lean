@@ -25,7 +25,7 @@ as well as topology inducing maps, topological embeddings, and quotient maps.
 * `IsInducing`: a map `f : X → Y` is called *inducing*,
   if the topology on the domain is equal to the induced topology.
 
-* `Embedding`: a map `f : X → Y` is an *embedding*,
+* `IsEmbedding`: a map `f : X → Y` is an *embedding*,
   if it is a topology inducing map and it is injective.
 
 * `IsOpenEmbedding`: a map `f : X → Y` is an *open embedding*,
@@ -80,6 +80,7 @@ def coinduced (f : X → Y) (t : TopologicalSpace X) : TopologicalSpace Y where
 
 end TopologicalSpace
 
+namespace Topology
 variable {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
 
 /-- We say that restrictions of the topology on `X` to sets from a family `S`
@@ -107,16 +108,16 @@ structure IsInducing (f : X → Y) : Prop where
 /-- A function between topological spaces is an embedding if it is injective,
   and for all `s : Set X`, `s` is open iff it is the preimage of an open set. -/
 @[mk_iff]
-structure IsEmbedding (f : X → Y) extends IsInducing f : Prop where
+structure IsEmbedding (f : X → Y) : Prop extends IsInducing f where
   /-- A topological embedding is injective. -/
-  inj : Function.Injective f
+  injective : Function.Injective f
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding := IsEmbedding
 
 /-- An open embedding is an embedding with open range. -/
 @[mk_iff]
-structure IsOpenEmbedding (f : X → Y) extends IsEmbedding f : Prop where
+structure IsOpenEmbedding (f : X → Y) : Prop extends IsEmbedding f where
   /-- The range of an open embedding is an open set. -/
   isOpen_range : IsOpen <| range f
 
@@ -125,7 +126,7 @@ alias OpenEmbedding := IsOpenEmbedding
 
 /-- A closed embedding is an embedding with closed image. -/
 @[mk_iff]
-structure IsClosedEmbedding (f : X → Y) extends IsEmbedding f : Prop where
+structure IsClosedEmbedding (f : X → Y) : Prop extends IsEmbedding f where
   /-- The range of a closed embedding is a closed set. -/
   isClosed_range : IsClosed <| range f
 
@@ -142,3 +143,5 @@ structure IsQuotientMap {X : Type*} {Y : Type*} [tX : TopologicalSpace X] [tY : 
 
 @[deprecated (since := "2024-10-22")]
 alias QuotientMap := IsQuotientMap
+
+end Topology

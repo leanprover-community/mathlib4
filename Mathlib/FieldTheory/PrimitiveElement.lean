@@ -3,8 +3,11 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.FieldTheory.IsAlgClosed.Basic
+import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.RingTheory.IntegralDomain
+import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 # Primitive Element Theorem
@@ -13,10 +16,10 @@ In this file we prove the primitive element theorem.
 
 ## Main results
 
-- `exists_primitive_element`: a finite separable extension `E / F` has a primitive element, i.e.
-  there is an `α : E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`.
+- `Field.exists_primitive_element`: a finite separable extension `E / F` has a primitive element,
+  i.e. there is an `α : E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`.
 
-- `exists_primitive_element_iff_finite_intermediateField`: a finite extension `E / F` has a
+- `Field.exists_primitive_element_iff_finite_intermediateField`: a finite extension `E / F` has a
   primitive element if and only if there exist only finitely many intermediate fields between `E`
   and `F`.
 
@@ -48,6 +51,7 @@ variable (F : Type*) [Field F] (E : Type*) [Field E] [Algebra F E]
 
 
 /-- **Primitive element theorem** assuming E is finite. -/
+@[stacks 09HY "second part"]
 theorem exists_primitive_element_of_finite_top [Finite E] : ∃ α : E, F⟮α⟯ = ⊤ := by
   obtain ⟨α, hα⟩ := @IsCyclic.exists_generator Eˣ _ _
   use α
@@ -125,15 +129,8 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
     mt EuclideanDomain.gcd_eq_zero_iff.mp (not_and.mpr fun _ => map_g_ne_zero)
   suffices p_linear : p.map (algebraMap F⟮γ⟯ E) = C h.leadingCoeff * (X - C β) by
     have finale : β = algebraMap F⟮γ⟯ E (-p.coeff 0 / p.coeff 1) := by
-      rw [map_div₀, RingHom.map_neg, ← coeff_map, ← coeff_map, p_linear]
-      -- Porting note: had to add `-map_add` to avoid going in the wrong direction.
-      simp [mul_sub, coeff_C, mul_div_cancel_left₀ β (mt leadingCoeff_eq_zero.mp h_ne_zero),
-        -map_add]
-      -- Porting note: an alternative solution is:
-      -- simp_rw [Polynomial.coeff_C_mul, Polynomial.coeff_sub, mul_sub,
-      --   Polynomial.coeff_X_zero, Polynomial.coeff_X_one, mul_zero, mul_one, zero_sub, neg_neg,
-      --   Polynomial.coeff_C, eq_self_iff_true, Nat.one_ne_zero, if_true, if_false, mul_zero,
-      --   sub_zero, mul_div_cancel_left β (mt leadingCoeff_eq_zero.mp h_ne_zero)]
+      simp [map_div₀, RingHom.map_neg, ← coeff_map, ← coeff_map, p_linear,
+        mul_sub, coeff_C, mul_div_cancel_left₀ β (mt leadingCoeff_eq_zero.mp h_ne_zero)]
     rw [finale]
     exact Subtype.mem (-p.coeff 0 / p.coeff 1)
   have h_sep : h.Separable := separable_gcd_right _ (Algebra.IsSeparable.isSeparable F β).map
@@ -206,16 +203,17 @@ variable [FiniteDimensional F E] [Algebra.IsSeparable F E]
 
 /-- **Primitive element theorem**: a finite separable field extension `E` of `F` has a
   primitive element, i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`. -/
+@[stacks 030N "The moreover part"]
 theorem exists_primitive_element : ∃ α : E, F⟮α⟯ = ⊤ := by
   rcases isEmpty_or_nonempty (Fintype F) with (F_inf | ⟨⟨F_finite⟩⟩)
   · let P : IntermediateField F E → Prop := fun K => ∃ α : E, F⟮α⟯ = K
     have base : P ⊥ := ⟨0, adjoin_zero⟩
     have ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F) := by
       intro K β hK
-      cases' hK with α hK
+      obtain ⟨α, hK⟩ := hK
       rw [← hK, adjoin_simple_adjoin_simple]
       haveI : Infinite F := isEmpty_fintype.mp F_inf
-      cases' primitive_element_inf_aux F α β with γ hγ
+      obtain ⟨γ, hγ⟩ := primitive_element_inf_aux F α β
       exact ⟨γ, hγ.symm⟩
     exact induction_on_adjoin P base ih ⊤
   · exact exists_primitive_element_of_finite_bot F E
@@ -283,9 +281,6 @@ theorem FiniteDimensional.of_finite_intermediateField
   rw [htop] at hfin
   exact topEquiv.toLinearEquiv.finiteDimensional
 
-@[deprecated (since := "2024-02-02")]
-alias finiteDimensional_of_finite_intermediateField := FiniteDimensional.of_finite_intermediateField
-
 theorem exists_primitive_element_of_finite_intermediateField
     [Finite (IntermediateField F E)] (K : IntermediateField F E) : ∃ α : E, F⟮α⟯ = K := by
   haveI := FiniteDimensional.of_finite_intermediateField F E
@@ -303,9 +298,6 @@ theorem FiniteDimensional.of_exists_primitive_element [Algebra.IsAlgebraic F E]
   have hfin := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral (R := F) α)
   rw [hprim] at hfin
   exact topEquiv.toLinearEquiv.finiteDimensional
-
-@[deprecated (since := "2024-02-02")]
-alias finiteDimensional_of_exists_primitive_element := FiniteDimensional.of_exists_primitive_element
 
 -- A finite simple extension has only finitely many intermediate fields
 theorem finite_intermediateField_of_exists_primitive_element [Algebra.IsAlgebraic F E]
@@ -335,6 +327,7 @@ theorem finite_intermediateField_of_exists_primitive_element [Algebra.IsAlgebrai
 /-- **Steinitz theorem**: an algebraic extension `E` of `F` has a
   primitive element (i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`)
   if and only if there exist only finitely many intermediate fields between `E` and `F`. -/
+@[stacks 030N "Equivalence of (1) & (2)"]
 theorem exists_primitive_element_iff_finite_intermediateField :
     (Algebra.IsAlgebraic F E ∧ ∃ α : E, F⟮α⟯ = ⊤) ↔ Finite (IntermediateField F E) :=
   ⟨fun ⟨_, h⟩ ↦ finite_intermediateField_of_exists_primitive_element F E h,

@@ -54,8 +54,7 @@ Vector bundle
 
 noncomputable section
 
-open Bundle Set
-open scoped Topology
+open Bundle Set Topology
 
 variable (R : Type*) {B : Type*} (F : Type*) (E : B → Type*)
 
@@ -190,25 +189,19 @@ theorem linearEquivAt_symm_apply (e : Trivialization F (π F E)) [e.IsLinear R] 
     (hb : b ∈ e.baseSet) (v : F) : (e.linearEquivAt R b hb).symm v = e.symm b v :=
   rfl
 
-variable (R)
-
+variable (R) in
 /-- A fiberwise linear inverse to `e`. -/
 protected def symmₗ (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : F →ₗ[R] E b :=
   e.toPretrivialization.symmₗ R b
-
-variable {R}
 
 theorem coe_symmₗ (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) :
     ⇑(e.symmₗ R b) = e.symm b :=
   rfl
 
-variable (R)
-
+variable (R) in
 /-- A fiberwise linear map equal to `e` on `e.baseSet`. -/
 protected def linearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : E b →ₗ[R] F :=
   e.toPretrivialization.linearMapAt R b
-
-variable {R}
 
 open Classical in
 theorem coe_linearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) :
@@ -240,15 +233,14 @@ theorem linearMapAt_symmₗ (e : Trivialization F (π F E)) [e.IsLinear R] {b : 
     (y : F) : e.linearMapAt R b (e.symmₗ R b y) = y :=
   e.toPretrivialization.linearMapAt_symmₗ hb y
 
-variable (R)
-
+variable (R) in
 open Classical in
 /-- A coordinate change function between two trivializations, as a continuous linear equivalence.
   Defined to be the identity when `b` does not lie in the base set of both trivializations. -/
 def coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear R] (b : B) :
     F ≃L[R] F :=
   { toLinearEquiv := if hb : b ∈ e.baseSet ∩ e'.baseSet
-      then (e.linearEquivAt R b (hb.1 : _)).symm.trans (e'.linearEquivAt R b hb.2)
+      then (e.linearEquivAt R b (hb.1 :)).symm.trans (e'.linearEquivAt R b hb.2)
       else LinearEquiv.refl R F
     continuous_toFun := by
       by_cases hb : b ∈ e.baseSet ∩ e'.baseSet
@@ -268,8 +260,6 @@ def coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear 
         exact fun y => e.mem_source.mpr hb.1
       · rw [dif_neg hb]
         exact continuous_id }
-
-variable {R}
 
 theorem coe_coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet ∩ e'.baseSet) :
@@ -409,8 +399,7 @@ theorem continuousLinearMapAt_symmL (e : Trivialization F (π F E)) [e.IsLinear 
     (hb : b ∈ e.baseSet) (y : F) : e.continuousLinearMapAt R b (e.symmL R b y) = y :=
   e.linearMapAt_symmₗ hb y
 
-variable (R)
-
+variable (R) in
 /-- In a vector bundle, a trivialization in the fiber (which is a priori only linear)
 is in fact a continuous linear equiv between the fibers and the model fiber. -/
 @[simps (config := .asFn) apply symm_apply]
@@ -422,8 +411,6 @@ def continuousLinearEquivAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : 
     continuous_toFun := (e.continuousOn.comp_continuous
       (FiberBundle.totalSpaceMk_isInducing F E b).continuous fun _ => e.mem_source.mpr hb).snd
     continuous_invFun := (e.symmL R b).continuous }
-
-variable {R}
 
 theorem coe_continuousLinearEquivAt_eq (e : Trivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet) :
@@ -523,7 +510,7 @@ def toFiberBundleCore : FiberBundleCore ι B F :=
       isBoundedBilinearMap_apply.continuous.comp_continuousOn
         ((Z.continuousOn_coordChange i j).prod_map continuousOn_id) }
 
--- Porting note (#11215): TODO: restore coercion
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: restore coercion
 -- instance toFiberBundleCoreCoe : Coe (VectorBundleCore R B F ι) (FiberBundleCore ι B F) :=
 --   ⟨toFiberBundleCore⟩
 
@@ -535,7 +522,7 @@ theorem coordChange_linear_comp (i j k : ι) :
   exact Z.coordChange_comp i j k x hx v
 
 /-- The index set of a vector bundle core, as a convenience function for dot notation -/
-@[nolint unusedArguments] -- Porting note(#5171): was `nolint has_nonempty_instance`
+@[nolint unusedArguments]
 def Index := ι
 
 /-- The base space of a vector bundle core, as a convenience function for dot notation -/
@@ -544,7 +531,7 @@ def Base := B
 
 /-- The fiber of a vector bundle core, as a convenience function for dot notation and
 typeclass inference -/
-@[nolint unusedArguments] -- Porting note(#5171): was `nolint has_nonempty_instance`
+@[nolint unusedArguments]
 def Fiber : B → Type _ :=
   Z.toFiberBundleCore.Fiber
 
@@ -746,7 +733,6 @@ The field `exists_coordChange` is stated as an existential statement (instead of
 fields), since it depends on propositional information (namely `e e' ∈ pretrivializationAtlas`).
 This makes it inconvenient to explicitly define a `coordChange` function when constructing a
 `VectorPrebundle`. -/
--- Porting note(#5171): was @[nolint has_nonempty_instance]
 structure VectorPrebundle where
   pretrivializationAtlas : Set (Pretrivialization F (π F E))
   pretrivialization_linear' : ∀ e, e ∈ pretrivializationAtlas → e.IsLinear R

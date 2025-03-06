@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Order.CauSeq.Completion
 import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Data.Rat.Cast.Defs
 
 /-!
 # Real numbers from Cauchy sequences
@@ -23,10 +24,7 @@ The fact that the real numbers are a (trivial) *-ring has similarly been deferre
 -/
 
 
-assert_not_exists Finset
-assert_not_exists Module
-assert_not_exists Submonoid
-assert_not_exists FloorRing
+assert_not_exists Finset Module Submonoid FloorRing
 
 /-- The type `ℝ` of real numbers constructed as equivalence classes of Cauchy sequences of rational
 numbers. -/
@@ -54,7 +52,7 @@ namespace Real
 
 open CauSeq CauSeq.Completion
 
-variable {x y : ℝ}
+variable {x : ℝ}
 
 theorem ext_cauchy_iff : ∀ {x y : Real}, x = y ↔ x.cauchy = y.cauchy
   | ⟨a⟩, ⟨b⟩ => by rw [ofCauchy.injEq]
@@ -301,7 +299,7 @@ theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by
 
 @[elab_as_elim]
 protected theorem ind_mk {C : Real → Prop} (x : Real) (h : ∀ y, C (mk y)) : C x := by
-  cases' x with x
+  obtain ⟨x⟩ := x
   induction' x using Quot.induction_on with x
   exact h x
 
@@ -343,12 +341,6 @@ protected theorem zero_lt_one : (0 : ℝ) < 1 := by
 
 protected theorem fact_zero_lt_one : Fact ((0 : ℝ) < 1) :=
   ⟨Real.zero_lt_one⟩
-
-@[deprecated mul_pos (since := "2024-08-15")]
-protected theorem mul_pos {a b : ℝ} : 0 < a → 0 < b → 0 < a * b := by
-  induction' a using Real.ind_mk with a
-  induction' b using Real.ind_mk with b
-  simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
 
 instance instStrictOrderedCommRing : StrictOrderedCommRing ℝ where
   __ := Real.commRing
@@ -483,8 +475,6 @@ instance : SemilatticeInf ℝ :=
 instance : SemilatticeSup ℝ :=
   inferInstance
 
-open scoped Classical
-
 instance leTotal_R : IsTotal ℝ (· ≤ ·) :=
   ⟨by
     intros a b
@@ -492,6 +482,7 @@ instance leTotal_R : IsTotal ℝ (· ≤ ·) :=
     induction' b using Real.ind_mk with b
     simpa using le_total a b⟩
 
+open scoped Classical in
 noncomputable instance linearOrder : LinearOrder ℝ :=
   Lattice.toLinearOrder ℝ
 
@@ -547,7 +538,8 @@ noncomputable instance decidableEq (a b : ℝ) : Decidable (a = b) := by infer_i
 The representative chosen is the one passed in the VM to `Quot.mk`, so two cauchy sequences
 converging to the same number may be printed differently.
 -/
-unsafe instance : Repr ℝ where reprPrec r _ := "Real.ofCauchy " ++ repr r.cauchy
+unsafe instance : Repr ℝ where
+  reprPrec r p := Repr.addAppParen ("Real.ofCauchy " ++ repr r.cauchy) p
 
 theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j) → x ≤ mk f := by
   intro h
@@ -564,7 +556,7 @@ theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j
 
 theorem mk_le_of_forall_le {f : CauSeq ℚ abs} {x : ℝ} (h : ∃ i, ∀ j ≥ i, (f j : ℝ) ≤ x) :
     mk f ≤ x := by
-  cases' h with i H
+  obtain ⟨i, H⟩ := h
   rw [← neg_le_neg_iff, ← mk_neg]
   exact le_mk_of_forall_le ⟨i, fun j ij => by simp [H _ ij]⟩
 
@@ -584,11 +576,14 @@ lemma mul_add_one_le_add_one_pow {a : ℝ} (ha : 0 ≤ a) (b : ℕ) : a * b + 1 
   induction b generalizing a with
   | zero => simp
   | succ b hb =>
-    rw [Nat.cast_add_one, mul_add, mul_one, add_right_comm, pow_succ, mul_add, mul_one, add_comm]
-    gcongr
-    · rw [le_mul_iff_one_le_left ha']
-      exact (pow_le_pow_left zero_le_one (by simpa using ha'.le) b).trans' (by simp)
-    · exact hb ha'
+    calc
+      a * ↑(b + 1) + 1 = (0 + 1) ^ b * a + (a * b + 1) := by
+        simp [mul_add, add_assoc, add_left_comm]
+      _ ≤ (a + 1) ^ b * a + (a + 1) ^ b := by
+        gcongr
+        · norm_num
+        · exact hb ha'
+      _ = (a + 1) ^ (b + 1) := by simp [pow_succ, mul_add]
 
 end Real
 

@@ -174,12 +174,12 @@ lemma SurjectiveOnStalks.baseChange
       one_mul, mul_one, id_apply, ← e]
     rw [Algebra.algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc]
 
-lemma surjectiveOnStalks_iff_of_isLocalHom [LocalRing S] [IsLocalHom f] :
+lemma surjectiveOnStalks_iff_of_isLocalHom [IsLocalRing S] [IsLocalHom f] :
     f.SurjectiveOnStalks ↔ Function.Surjective f := by
   refine ⟨fun H x ↦ ?_, fun h ↦ surjectiveOnStalks_of_surjective h⟩
   obtain ⟨y, r, c, hc, hr, e⟩ :=
-    (surjective_localRingHom_iff _).mp (H (LocalRing.maximalIdeal _) inferInstance) x
-  simp only [LocalRing.mem_maximalIdeal, mem_nonunits_iff, not_not] at hc hr
+    (surjective_localRingHom_iff _).mp (H (IsLocalRing.maximalIdeal _) inferInstance) x
+  simp only [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, not_not] at hc hr
   refine ⟨(isUnit_of_map_unit f r hr).unit⁻¹ * y, ?_⟩
   apply hr.mul_right_injective
   apply hc.mul_right_injective

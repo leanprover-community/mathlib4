@@ -23,7 +23,7 @@ attribute [-instance] decidableEq_of_subsingleton
 
 open Finset Fintype
 
-variable {α : Type*} (G G' : SimpleGraph α) [DecidableRel G.Adj] {ε : ℝ} {s t u : Finset α}
+variable {α : Type*} (G : SimpleGraph α) [DecidableRel G.Adj] {ε : ℝ} {s t u : Finset α}
 
 namespace SimpleGraph
 
@@ -50,7 +50,7 @@ private lemma edgeDensity_badVertices_le (hε : 0 ≤ ε) (dst : 2 * ε ≤ G.ed
 
 private lemma card_badVertices_le (dst : 2 * ε ≤ G.edgeDensity s t) (hst : G.IsUniform ε s t) :
     #(badVertices G ε s t) ≤ #s * ε := by
-  have hε : ε ≤ 1 := (le_mul_of_one_le_of_le_of_nonneg (by norm_num) le_rfl hst.pos.le).trans
+  have hε : ε ≤ 1 := (le_rfl.trans <| le_mul_of_one_le_left hst.pos.le (by norm_num)).trans
     (dst.trans <| by exact_mod_cast edgeDensity_le_one _ _ _)
   by_contra! h
   have : |(G.edgeDensity (badVertices G ε s t) t - G.edgeDensity s t : ℝ)| < ε :=
@@ -146,7 +146,7 @@ private lemma triple_eq_triple_of_mem (hst : Disjoint s t) (hsu : Disjoint s u) 
   · rintro rfl
     solve_by_elim
 
-variable [Fintype α] {P : Finpartition (univ : Finset α)}
+variable [Fintype α]
 
 /-- The **Triangle Counting Lemma**. If `G` is a graph and `s`, `t`, `u` are disjoint sets of
 vertices such that each pair is `ε`-uniform and `2 * ε`-dense, then `G` contains at least

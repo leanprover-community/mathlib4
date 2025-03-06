@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Group.Subgroup.ZPowers
 import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Module.NatInt
 import Mathlib.GroupTheory.QuotientGroup.Defs
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 
 /-!
 # Lemmas about quotients in characteristic zero
@@ -58,7 +58,7 @@ theorem zmultiples_zsmul_eq_zsmul_iff {ψ θ : R ⧸ AddSubgroup.zmultiples p} {
   -- Porting note: Introduced Zp notation to shorten lines
   let Zp := AddSubgroup.zmultiples p
   have : (Quotient.mk _ : R → R ⧸ Zp) = ((↑) : R → R ⧸ Zp) := rfl
-  simp only [this]
+  simp only [Zp, this]
   simp_rw [← QuotientAddGroup.mk_zsmul, ← QuotientAddGroup.mk_add,
     QuotientAddGroup.eq_iff_sub_mem, ← smul_sub, ← sub_sub]
   exact AddSubgroup.zsmul_mem_zmultiples_iff_exists_sub_div hz

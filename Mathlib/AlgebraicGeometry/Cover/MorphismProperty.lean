@@ -54,7 +54,7 @@ structure Cover (P : MorphismProperty Scheme.{u}) (X : Scheme.{u}) where
   obj (j : J) : Scheme
   /-- the components map to `X` -/
   map (j : J) : obj j ⟶ X
-  /-- given a point of `x : X`, `f x` is the index of the component which contains `x`  -/
+  /-- given a point of `x : X`, `f x` is the index of the component which contains `x` -/
   f (x : X) : J
   /-- the components cover `X` -/
   covers (x : X) : x ∈ Set.range (map (f x)).base
@@ -73,6 +73,32 @@ theorem Cover.iUnion_range {X : Scheme.{u}} (𝒰 : X.Cover P) :
   rw [Set.mem_iUnion]
   exact ⟨𝒰.f x, 𝒰.covers x⟩
 
+lemma Cover.exists_eq (𝒰 : X.Cover P) (x : X) : ∃ i y, (𝒰.map i).base y = x :=
+  ⟨_, 𝒰.covers x⟩
+
+/-- Given a family of schemes with morphisms to `X` satisfying `P` that jointly
+cover `X`, this an associated `P`-cover of `X`. -/
+@[simps]
+def Cover.mkOfCovers (J : Type*) (obj : J → Scheme.{u}) (map : (j : J) → obj j ⟶ X)
+    (covers : ∀ x, ∃ j y, (map j).base y = x)
+    (map_prop : ∀ j, P (map j) := by infer_instance) : X.Cover P where
+  J := J
+  obj := obj
+  map := map
+  f x := (covers x).choose
+  covers x := (covers x).choose_spec
+  map_prop := map_prop
+
+/-- Turn a `P`-cover into a `Q`-cover by showing that the components satisfy `Q`. -/
+def Cover.changeProp (Q : MorphismProperty Scheme.{u}) (𝒰 : X.Cover P) (h : ∀ j, Q (𝒰.map j)) :
+    X.Cover Q where
+  J := 𝒰.J
+  obj := 𝒰.obj
+  map := 𝒰.map
+  f := 𝒰.f
+  covers := 𝒰.covers
+  map_prop := h
+
 /-- Given a `P`-cover `{ Uᵢ }` of `X`, and for each `Uᵢ` a `P`-cover, we may combine these
 covers to form a `P`-cover of `X`. -/
 @[simps! J obj map]
@@ -87,7 +113,7 @@ def Cover.bind [P.IsStableUnderComposition] (f : ∀ x : 𝒰.J, (𝒰.obj x).Co
     rcases (f (𝒰.f x)).covers y with ⟨z, hz⟩
     change x ∈ Set.range ((f (𝒰.f x)).map ((f (𝒰.f x)).f y) ≫ 𝒰.map (𝒰.f x)).base
     use z
-    erw [comp_apply]
+    simp only [comp_coeBase, TopCat.hom_comp, ContinuousMap.comp_apply]
     rw [hz, hy]
   map_prop _ := P.comp_mem _ _ ((f _).map_prop _) (𝒰.map_prop _)
 
@@ -100,7 +126,7 @@ def coverOfIsIso [P.ContainsIdentities] [P.RespectsIso] {X Y : Scheme.{u}} (f : 
   map _ := f
   f _ := PUnit.unit
   covers x := by
-    rw [Set.range_iff_surjective.mpr]
+    rw [Set.range_eq_univ.mpr]
     all_goals try trivial
     rw [← TopCat.epi_iff_surjective]
     infer_instance
@@ -116,7 +142,7 @@ def Cover.copy [P.RespectsIso] {X : Scheme.{u}} (𝒰 : X.Cover P)
   { J, obj, map
     f := fun x ↦ e₁.symm (𝒰.f x)
     covers := fun x ↦ by
-      rw [h, Scheme.comp_base, TopCat.coe_comp, Set.range_comp, Set.range_iff_surjective.mpr,
+      rw [h, Scheme.comp_base, TopCat.coe_comp, Set.range_comp, Set.range_eq_univ.mpr,
         Set.image_univ, e₁.rightInverse_symm]
       · exact 𝒰.covers x
       · rw [← TopCat.epi_iff_surjective]; infer_instance
@@ -265,7 +291,7 @@ structure AffineCover (P : MorphismProperty Scheme.{u}) (X : Scheme.{u}) where
   obj (j : J) : CommRingCat.{u}
   /-- the components map to `X` -/
   map (j : J) : Spec (obj j) ⟶ X
-  /-- given a point of `x : X`, `f x` is the index of the component which contains `x`  -/
+  /-- given a point of `x : X`, `f x` is the index of the component which contains `x` -/
   f (x : X) : J
   /-- the components cover `X` -/
   covers (x : X) : x ∈ Set.range (map (f x)).base

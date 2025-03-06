@@ -38,6 +38,26 @@ example (p : ℕ) (h2 : 2 < p) (h5 : p < 5) : p = 3 ∨ p = 4 := by
   · norm_num
   · norm_num
 
+-- Check naming of cases
+/--
+info: case «0».«0»
+⊢ True
+
+case «0».«1»
+⊢ True
+
+case «1».«0»
+⊢ True
+
+case «1».«1»
+⊢ True
+-/
+#guard_msgs in
+example (x y:Fin 2): True := by
+  fin_cases x, y
+  trace_state
+  all_goals trivial
+
 -- TODO Restore the remaining tests from mathlib3:
 -- Some of these test the `with` and `using` clauses which haven't been re-implemented.
 

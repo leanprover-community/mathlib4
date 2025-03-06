@@ -37,7 +37,7 @@ variable [MonoidalCategory D] [SymmetricCategory D] [MonoidalClosed D]
 section
 variable {R : C ⥤ D} [R.Faithful] [R.Full] {L : D ⥤ C} (adj : L ⊣ R)
 
-/-- The uncurried retraction of the unit in the proof of `4 → 1` in `day_reflection` below. -/
+/-- The uncurried retraction of the unit in the proof of `4 → 1` in `isIso_tfae` below. -/
 private noncomputable def adjRetractionAux
     (c : C) (d : D) [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ adj.unit.app d))] :
   d ⊗ ((L ⋙ R).obj ((ihom d).obj (R.obj c))) ⟶ (R.obj c) :=
@@ -45,7 +45,7 @@ private noncomputable def adjRetractionAux
     R.map (inv (L.map (adj.unit.app _ ⊗ adj.unit.app _))) ≫ (L ⋙ R).map (β_ _ _).hom ≫
       (L ⋙ R).map ((ihom.ev _).app _) ≫ inv (adj.unit.app _)
 
-/-- The retraction of the unit in the proof of `4 → 1` in `day_reflection` below. -/
+/-- The retraction of the unit in the proof of `4 → 1` in `isIso_tfae` below. -/
 private noncomputable def adjRetraction (c : C) (d : D)
     [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ adj.unit.app d))] :
     (L ⋙ R).obj ((ihom d).obj (R.obj c)) ⟶ ((ihom d).obj (R.obj c)) :=
@@ -190,13 +190,15 @@ theorem isIso_tfae : List.TFAE
 end
 
 section
+
+open Functor.OplaxMonoidal Functor.LaxMonoidal Functor.Monoidal
+
 variable [MonoidalCategory C]
-variable {L : MonoidalFunctor D C} {R : C ⥤ D} [R.Faithful] [R.Full] (adj : L.toFunctor ⊣ R)
+variable {L : D ⥤ C} [L.Monoidal] {R : C ⥤ D} [R.Faithful] [R.Full] (adj : L ⊣ R)
 
 instance (d d' : D) : IsIso (L.map ((adj.unit.app d) ⊗ (adj.unit.app d'))) := by
-  have := L.μ_natural (adj.unit.app d) (adj.unit.app d')
-  change _ = (asIso _).hom ≫ _ at this
-  rw [← Iso.inv_comp_eq] at this
+  have := δ _ _ _ ≫= μ_natural L (adj.unit.app d) (adj.unit.app d')
+  rw [δ_μ_assoc] at this
   rw [← this]
   infer_instance
 
@@ -208,17 +210,18 @@ instance (c : C) (d : D) : IsIso (adj.unit.app ((ihom d).obj (R.obj c))) := by
 
 /-- Auxiliary definition for `monoidalClosed`. -/
 noncomputable def closed (c : C) : Closed c where
-  rightAdj := R ⋙ (ihom (R.obj c)) ⋙ L.toFunctor
+  rightAdj := R ⋙ (ihom (R.obj c)) ⋙ L
   adj := by
     refine ((ihom.adjunction (R.obj c)).comp adj).restrictFullyFaithful
       (FullyFaithful.ofFullyFaithful R)
       (FullyFaithful.id _) ?_ ?_
-    · refine NatIso.ofComponents (fun _ ↦ ?_) (fun _ ↦ ?_)
-      · exact (asIso (L.μ _ _)).symm ≪≫ asIso ((adj.counit.app _) ⊗ (adj.counit.app _))
-      · simp only [comp_obj, id_obj, Functor.comp_map, tensorLeft_map, Iso.trans_hom, Iso.symm_hom,
-          asIso_inv, asIso_hom, Functor.id_map, Category.assoc, IsIso.eq_inv_comp]
-        rw [← L.μ_natural_right_assoc]
-        simp [← id_tensorHom, ← tensor_comp]
+    · refine NatIso.ofComponents (fun _ ↦ (μIso L _ _).symm ≪≫
+        asIso ((adj.counit.app _) ⊗ (adj.counit.app _))) (fun _ ↦ ?_)
+      dsimp
+      rw [Category.assoc, ← δ_natural_right_assoc,
+        tensorHom_def', ← MonoidalCategory.whiskerLeft_comp_assoc,
+        Adjunction.counit_naturality, whisker_exchange,
+        tensorHom_def_assoc, MonoidalCategory.whiskerLeft_comp]
     · exact NatIso.ofComponents (fun _ ↦ asIso (adj.unit.app ((ihom _).obj _)))
 
 /--

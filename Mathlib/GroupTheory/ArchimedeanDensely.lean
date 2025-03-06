@@ -3,12 +3,13 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.Int.Interval
-import Mathlib.GroupTheory.Archimedean
 import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Group.TypeTags
 import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Data.Int.Interval
+import Mathlib.GroupTheory.Archimedean
 
 /-!
 # Archimedean groups are either discrete or densely ordered
@@ -105,7 +106,8 @@ noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
     · intro a b
       simp only [MulEquiv.coe_mk, Equiv.coe_fn_mk, Subtype.mk_le_mk]
       generalize_proofs A B C D
-      simp [zpow_le_zpow_iff ypos, ← zpow_le_zpow_iff xpos, A.choose_spec, B.choose_spec]
+      simp [zpow_le_zpow_iff_right ypos, ← zpow_le_zpow_iff_right xpos, A.choose_spec,
+        B.choose_spec]
 
 variable {G : Type*} [LinearOrderedCommGroup G] [MulArchimedean G]
 
@@ -138,7 +140,7 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
     · intro x
       simp only [mem_closure_singleton, mem_setOf_eq, and_imp, forall_exists_index]
       rintro k rfl hk
-      rw [← zpow_one b, ← zpow_mul, one_mul, zpow_le_zpow_iff h, ← zero_add 1,
+      rw [← zpow_one b, ← zpow_mul, one_mul, zpow_le_zpow_iff_right h, ← zero_add 1,
           ← Int.lt_iff_add_one_le]
       contrapose! hk
       rw [← Left.one_le_inv_iff, ← zpow_neg]
@@ -205,7 +207,7 @@ lemma LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered (G : Type*)
   intro e H
   rw [denselyOrdered_iff_of_orderIsoClass e] at H
   obtain ⟨_, _⟩ := exists_between (one_pos (α := ℤ))
-  linarith
+  omega
 
 variable (G) in
 /-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
@@ -429,3 +431,18 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_disc
     simp [zero_lt_iff, hb0]
 
 end WellFounded
+
+@[to_additive]
+lemma OrderMonoidIso.mulArchimedean {α β} [OrderedCommMonoid α] [OrderedCommMonoid β]
+    (e : α ≃*o β) [MulArchimedean α] : MulArchimedean β := by
+  constructor
+  intro x y hxy
+  replace hxy : 1 < e.symm y := by simp [← map_lt_map_iff e, hxy]
+  refine (MulArchimedean.arch (e.symm x) hxy).imp ?_
+  simp [← map_pow, ← map_le_map_iff e]
+
+lemma WithZero.mulArchimedean_iff {α} [OrderedCommGroup α] :
+    MulArchimedean (WithZero α) ↔ MulArchimedean α := by
+  constructor <;> intro _
+  · exact OrderMonoidIso.unitsWithZero.mulArchimedean
+  · infer_instance

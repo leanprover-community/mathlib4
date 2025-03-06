@@ -40,7 +40,7 @@ Given `[EstimatorData a ε]`
 * we can ask for an improved lower bound via `improve a e : Option ε`.
 
 The value `a` in `α` that we are estimating is hidden inside a `Thunk` to avoid evaluation.
- -/
+-/
 class EstimatorData (a : Thunk α) (ε : Type*) where
   /-- The value of the bound for `a` representation by a term of `ε`. -/
   bound : ε → α
@@ -74,10 +74,10 @@ abbrev Estimator.trivial.{u} {α : Type u} (a : α) : Type u := { b : α // b = 
 instance {a : α} : Bot (Estimator.trivial a) := ⟨⟨a, rfl⟩⟩
 
 instance : WellFoundedGT Unit where
-  wf := ⟨fun .unit => ⟨.unit, nofun⟩⟩
+  wf := ⟨fun .unit => ⟨Unit.unit, nofun⟩⟩
 
 instance (a : α) : WellFoundedGT (Estimator.trivial a) :=
-  let f : Estimator.trivial a ≃o Unit := RelIso.relIsoOfUniqueOfRefl _ _
+  let f : Estimator.trivial a ≃o Unit := RelIso.ofUniqueOfRefl _ _
   let f' : Estimator.trivial a ↪o Unit := f.toOrderEmbedding
   f'.wellFoundedGT
 

@@ -25,9 +25,8 @@ ball/sphere with another center and radius.
 
 noncomputable section
 
+open Filter Metric Real Set Topology
 open scoped UpperHalfPlane ComplexConjugate NNReal Topology MatrixGroups
-
-open Set Metric Filter Real
 
 variable {z w : ℍ} {r : ℝ}
 
@@ -45,9 +44,9 @@ theorem sinh_half_dist (z w : ℍ) :
 
 theorem cosh_half_dist (z w : ℍ) :
     cosh (dist z w / 2) = dist (z : ℂ) (conj (w : ℂ)) / (2 * √(z.im * w.im)) := by
-  rw [← sq_eq_sq, cosh_sq', sinh_half_dist, div_pow, div_pow, one_add_div, mul_pow, sq_sqrt]
+  rw [← sq_eq_sq₀, cosh_sq', sinh_half_dist, div_pow, div_pow, one_add_div, mul_pow, sq_sqrt]
   · congr 1
-    simp only [Complex.dist_eq, Complex.sq_abs, Complex.normSq_sub, Complex.normSq_conj,
+    simp only [Complex.dist_eq, Complex.sq_norm, Complex.normSq_sub, Complex.normSq_conj,
       Complex.conj_conj, Complex.mul_re, Complex.conj_re, Complex.conj_im, coe_im]
     ring
   all_goals positivity
@@ -80,7 +79,7 @@ protected theorem dist_comm (z w : ℍ) : dist z w = dist w z := by
 
 theorem dist_le_iff_le_sinh :
     dist z w ≤ r ↔ dist (z : ℂ) w / (2 * √(z.im * w.im)) ≤ sinh (r / 2) := by
-  rw [← div_le_div_right (zero_lt_two' ℝ), ← sinh_le_sinh, sinh_half_dist]
+  rw [← div_le_div_iff_of_pos_right (zero_lt_two' ℝ), ← sinh_le_sinh, sinh_half_dist]
 
 theorem dist_eq_iff_eq_sinh :
     dist z w = r ↔ dist (z : ℂ) w / (2 * √(z.im * w.im)) = sinh (r / 2) := by
@@ -88,7 +87,7 @@ theorem dist_eq_iff_eq_sinh :
 
 theorem dist_eq_iff_eq_sq_sinh (hr : 0 ≤ r) :
     dist z w = r ↔ dist (z : ℂ) w ^ 2 / (4 * z.im * w.im) = sinh (r / 2) ^ 2 := by
-  rw [dist_eq_iff_eq_sinh, ← sq_eq_sq, div_pow, mul_pow, sq_sqrt, mul_assoc]
+  rw [dist_eq_iff_eq_sinh, ← sq_eq_sq₀, div_pow, mul_pow, sq_sqrt, mul_assoc]
   · norm_num
   all_goals positivity
 
@@ -118,7 +117,7 @@ open Complex
 
 theorem cosh_dist' (z w : ℍ) :
     Real.cosh (dist z w) = ((z.re - w.re) ^ 2 + z.im ^ 2 + w.im ^ 2) / (2 * z.im * w.im) := by
-  field_simp [cosh_dist, Complex.dist_eq, Complex.sq_abs, normSq_apply]
+  field_simp [cosh_dist, Complex.dist_eq, Complex.sq_norm, normSq_apply]
   ring
 
 /-- Euclidean center of the circle with center `z` and radius `r` in the hyperbolic metric. -/
@@ -140,7 +139,7 @@ theorem center_zero (z : ℍ) : center z 0 = z :=
 theorem dist_coe_center_sq (z w : ℍ) (r : ℝ) : dist (z : ℂ) (w.center r) ^ 2 =
     2 * z.im * w.im * (Real.cosh (dist z w) - Real.cosh r) + (w.im * Real.sinh r) ^ 2 := by
   have H : 2 * z.im * w.im ≠ 0 := by positivity
-  simp only [Complex.dist_eq, Complex.sq_abs, normSq_apply, coe_re, coe_im, center_re, center_im,
+  simp only [Complex.dist_eq, Complex.sq_norm, normSq_apply, coe_re, coe_im, center_re, center_im,
     cosh_dist', mul_div_cancel₀ _ H, sub_sq z.im, mul_pow, Real.cosh_sq, sub_re, sub_im, mul_sub, ←
     sq]
   ring
@@ -152,14 +151,17 @@ theorem dist_coe_center (z w : ℍ) (r : ℝ) : dist (z : ℂ) (w.center r) =
 theorem cmp_dist_eq_cmp_dist_coe_center (z w : ℍ) (r : ℝ) :
     cmp (dist z w) r = cmp (dist (z : ℂ) (w.center r)) (w.im * Real.sinh r) := by
   letI := metricSpaceAux
-  cases' lt_or_le r 0 with hr₀ hr₀
+  rcases lt_or_le r 0 with hr₀ | hr₀
   · trans Ordering.gt
     exacts [(hr₀.trans_le dist_nonneg).cmp_eq_gt,
       ((mul_neg_of_pos_of_neg w.im_pos (sinh_neg_iff.2 hr₀)).trans_le dist_nonneg).cmp_eq_gt.symm]
   have hr₀' : 0 ≤ w.im * Real.sinh r := by positivity
   have hzw₀ : 0 < 2 * z.im * w.im := by positivity
-  simp only [← cosh_strictMonoOn.cmp_map_eq dist_nonneg hr₀, ←
-    (pow_left_strictMonoOn two_ne_zero).cmp_map_eq dist_nonneg hr₀', dist_coe_center_sq]
+  #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  we need to give Lean the hint `(y := w.im * Real.sinh r)`. -/
+  simp only [← cosh_strictMonoOn.cmp_map_eq dist_nonneg hr₀,
+    ← (pow_left_strictMonoOn₀ two_ne_zero).cmp_map_eq dist_nonneg (y := w.im * Real.sinh r) hr₀',
+    dist_coe_center_sq]
   rw [← cmp_mul_pos_left hzw₀, ← cmp_sub_zero, ← mul_sub, ← cmp_add_right, zero_add]
 
 theorem dist_eq_iff_dist_coe_center_eq :
@@ -215,7 +217,7 @@ theorem dist_log_im_le (z w : ℍ) : dist (log z.im) (log w.im) ≤ dist z w :=
       simp_rw [dist_eq]
       dsimp only [coe_mk, mk_im]
       gcongr
-      simpa [sqrt_sq_eq_abs] using Complex.abs_im_le_abs (z - w)
+      simpa [sqrt_sq_eq_abs] using Complex.abs_im_le_norm (z - w)
 
 theorem im_le_im_mul_exp_dist (z w : ℍ) : z.im ≤ w.im * Real.exp (dist z w) := by
   rw [← div_le_iff₀' w.im_pos, ← exp_log z.im_pos, ← exp_log w.im_pos, ← Real.exp_sub, exp_le_exp]
@@ -269,7 +271,7 @@ theorem im_pos_of_dist_center_le {z : ℍ} {r : ℝ} {w : ℂ}
     0 < z.im * (Real.cosh r - Real.sinh r) := mul_pos z.im_pos (sub_pos.2 <| sinh_lt_cosh _)
     _ = (z.center r).im - z.im * Real.sinh r := mul_sub _ _ _
     _ ≤ (z.center r).im - dist (z.center r : ℂ) w := sub_le_sub_left (by rwa [dist_comm]) _
-    _ ≤ w.im := sub_le_comm.1 <| (le_abs_self _).trans (abs_im_le_abs <| z.center r - w)
+    _ ≤ w.im := sub_le_comm.1 <| (le_abs_self _).trans (abs_im_le_norm <| z.center r - w)
 
 theorem image_coe_closedBall (z : ℍ) (r : ℝ) :
     ((↑) : ℍ → ℂ) '' closedBall (α := ℍ) z r = closedBall ↑(z.center r) (z.im * Real.sinh r) := by
@@ -324,13 +326,11 @@ instance : IsometricSMul SL(2, ℝ) ℍ :=
     have h₀ : Isometry (fun z => ModularGroup.S • z : ℍ → ℍ) :=
       Isometry.of_dist_eq fun y₁ y₂ => by
         have h₁ : 0 ≤ im y₁ * im y₂ := mul_nonneg y₁.property.le y₂.property.le
-        have h₂ : Complex.abs (y₁ * y₂) ≠ 0 := by simp [y₁.ne_zero, y₂.ne_zero]
-        simp only [dist_eq, modular_S_smul, inv_neg, neg_div, div_mul_div_comm, coe_mk, mk_im,
-          div_one, Complex.inv_im, Complex.neg_im, coe_im, neg_neg, Complex.normSq_neg,
-          mul_eq_mul_left_iff, Real.arsinh_inj, one_ne_zero,
-          dist_neg_neg, mul_neg, neg_mul, dist_inv_inv₀ y₁.ne_zero y₂.ne_zero, ←
-          AbsoluteValue.map_mul, ← Complex.normSq_mul, Real.sqrt_div h₁, ← Complex.abs_apply,
-          mul_div (2 : ℝ), div_div_div_comm, div_self h₂, Complex.norm_eq_abs]
+        have h₂ : ‖(y₁ * y₂ : ℂ)‖ ≠ 0 := by simp [y₁.ne_zero, y₂.ne_zero]
+        simp_rw [modular_S_smul, inv_neg, dist_eq, coe_mk, dist_neg_neg,
+          dist_inv_inv₀ y₁.ne_zero y₂.ne_zero, mk_im, neg_im, inv_im, coe_im, neg_div, neg_neg,
+          div_mul_div_comm, ← normSq_mul, Real.sqrt_div h₁, ← norm_def, mul_div (2 : ℝ)]
+        rw [div_div_div_comm, ← norm_mul, div_self h₂, div_one]
     by_cases hc : g 1 0 = 0
     · obtain ⟨u, v, h⟩ := exists_SL2_smul_eq_of_apply_zero_one_eq_zero g hc
       rw [h]

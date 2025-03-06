@@ -6,7 +6,7 @@ Authors: Yakov Pechersky
 import Mathlib.Order.Irreducible
 import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Ideal.IsPrimary
-import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 # Lasker ring
@@ -15,9 +15,9 @@ import Mathlib.RingTheory.Noetherian
 
 - `IsLasker`: A ring `R` satisfies `IsLasker R` when any `I : Ideal R` can be decomposed into
   finitely many primary ideals.
-- `IsLasker.minimal`: Any `I : Ideal R` in a ring `R` satisifying `IsLasker R` can be
+- `IsLasker.minimal`: Any `I : Ideal R` in a ring `R` satisfying `IsLasker R` can be
   decomposed into primary ideals, such that the decomposition is minimal:
-  each primary ideal is necessary, and each primary ideal has an indepedent radical.
+  each primary ideal is necessary, and each primary ideal has an independent radical.
 - `Ideal.isLasker`: Every Noetherian commutative ring is a Lasker ring.
 
 ## Implementation details
@@ -33,7 +33,7 @@ section IsLasker
 variable (R : Type*) [CommSemiring R]
 
 /-- A ring `R` satisfies `IsLasker R` when any `I : Ideal R` can be decomposed into
-finitely many primary ideals.-/
+finitely many primary ideals. -/
 def IsLasker : Prop :=
   ∀ I : Ideal R, ∃ s : Finset (Ideal R), s.inf id = I ∧ ∀ ⦃J⦄, J ∈ s → J.IsPrimary
 
@@ -47,13 +47,15 @@ lemma decomposition_erase_inf [DecidableEq (Ideal R)] {I : Ideal R}
   induction s using Finset.strongInductionOn
   rename_i _ s IH
   by_cases H : ∀ J ∈ s, ¬ (s.erase J).inf id ≤ J
-  · exact ⟨s, le_rfl, hs, H⟩
+  · exact ⟨s, Finset.Subset.rfl, hs, H⟩
   push_neg at H
   obtain ⟨J, hJ, hJ'⟩ := H
   refine (IH (s.erase J) (Finset.erase_ssubset hJ) ?_).imp
     fun t ↦ And.imp_left (fun ht ↦ ht.trans (Finset.erase_subset _ _))
   rw [← Finset.insert_erase hJ] at hs
   simp [← hs, hJ']
+
+open scoped Function -- required for scoped `on` notation
 
 lemma isPrimary_decomposition_pairwise_ne_radical {I : Ideal R}
     {s : Finset (Ideal R)} (hs : s.inf id = I) (hs' : ∀ ⦃J⦄, J ∈ s → J.IsPrimary) :

@@ -38,6 +38,8 @@ topological space, then specialize them to the case `X = s : Set Y`, `e = (↑)`
 Tietze extension theorem, Urysohn's lemma, normal topological space
 -/
 
+open Topology
+
 /-!  ### The `TietzeExtension` class -/
 
 section TietzeExtensionClass
@@ -179,13 +181,13 @@ theorem tietze_extension_step (f : X →ᵇ ℝ) (e : C(X, Y)) (he : IsClosedEmb
     are disjoint, hence by Urysohn's lemma there exists a function `g` that is equal to `-‖f‖ / 3`
     on the former set and is equal to `‖f‖ / 3` on the latter set. This function `g` satisfies the
     assertions of the lemma. -/
-  have hf3 : -‖f‖ / 3 < ‖f‖ / 3 := (div_lt_div_right h3).2 (Left.neg_lt_self hf)
+  have hf3 : -‖f‖ / 3 < ‖f‖ / 3 := (div_lt_div_iff_of_pos_right h3).2 (Left.neg_lt_self hf)
   have hc₁ : IsClosed (e '' (f ⁻¹' Iic (-‖f‖ / 3))) :=
     he.isClosedMap _ (isClosed_Iic.preimage f.continuous)
   have hc₂ : IsClosed (e '' (f ⁻¹' Ici (‖f‖ / 3))) :=
     he.isClosedMap _ (isClosed_Ici.preimage f.continuous)
   have hd : Disjoint (e '' (f ⁻¹' Iic (-‖f‖ / 3))) (e '' (f ⁻¹' Ici (‖f‖ / 3))) := by
-    refine disjoint_image_of_injective he.inj (Disjoint.preimage _ ?_)
+    refine disjoint_image_of_injective he.injective (Disjoint.preimage _ ?_)
     rwa [Iic_disjoint_Ici, not_le]
   rcases exists_bounded_mem_Icc_of_closed_of_le hc₁ hc₂ hd hf3.le with ⟨g, hg₁, hg₂, hgf⟩
   refine ⟨g, ?_, ?_⟩
@@ -406,7 +408,7 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
         _ = dg y := (dgb rfl).symm
     · exact ((sub_le_self_iff _).2 (dgmem _).1).trans_lt hlt
   rcases hb.exists_between hyb with ⟨_, ⟨xu, rfl⟩, hyxu, _⟩
-  cases' lt_or_le c (g y) with hc hc
+  rcases lt_or_le c (g y) with hc | hc
   · rcases em (a ∈ range f) with (⟨x, rfl⟩ | _)
     · refine ⟨x, xu, ?_, hyxu.le⟩
       calc
@@ -508,11 +510,8 @@ theorem exists_extension_forall_mem_of_isClosedEmbedding (f : C(X, ℝ)) {t : Se
 alias exists_extension_forall_mem_of_closedEmbedding :=
   exists_extension_forall_mem_of_isClosedEmbedding
 
-@[deprecated (since := "2024-01-16")]
-alias exists_extension_of_isClosedEmbedding := exists_extension'
-
 @[deprecated (since := "2024-10-20")]
-alias exists_extension_of_closedEmbedding := exists_extension_of_isClosedEmbedding
+alias exists_extension_of_closedEmbedding := exists_extension'
 
 /-- **Tietze extension theorem** for real-valued continuous maps, a version for a closed set. Let
 `s` be a closed set in a normal topological space `Y`. Let `f` be a continuous real-valued function
@@ -526,8 +525,6 @@ theorem exists_restrict_eq_forall_mem_of_closed {s : Set Y} (f : C(s, ℝ)) {t :
   let ⟨g, hgt, hgf⟩ :=
     exists_extension_forall_mem_of_isClosedEmbedding f ht hne hs.isClosedEmbedding_subtypeVal
   ⟨g, hgt, coe_injective hgf⟩
-
-@[deprecated (since := "2024-01-16")] alias exists_restrict_eq_of_closed := exists_restrict_eq
 
 end ContinuousMap
 

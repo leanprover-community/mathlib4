@@ -3,22 +3,21 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Ring.Subsemiring.Order
+import Mathlib.Data.ZMod.Basic
 
 /-!
 
-A `CanonicallyOrderedCommSemiring` with two different elements `a` and `b` such that
+A canonically ordered commutative semiring with two different elements `a` and `b` such that
 `a ≠ b` and `2 * a = 2 * b`.  Thus, multiplication by a fixed non-zero element of a canonically
 ordered semiring need not be injective.  In particular, multiplying by a strictly positive element
 need not be strictly monotone.
 
-Recall that a `CanonicallyOrderedCommSemiring` is a commutative semiring with a partial ordering
-that is "canonical" in the sense that the inequality `a ≤ b` holds if and only if there is a `c`
-such that `a + c = b`.  There are several compatibility conditions among addition/multiplication
-and the order relation.  The point of the counterexample is to show that monotonicity of
-multiplication cannot be strengthened to **strict** monotonicity.
+Recall that a canonically ordered commutative semiring is a commutative semiring with a partial
+ordering that is "canonical" in the sense that the inequality `a ≤ b` holds if and only if there is
+a `c` such that `a + c = b`.  There are several compatibility conditions among
+addition/multiplication and the order relation.  The point of the counterexample is to show that
+monotonicity of multiplication cannot be strengthened to **strict** monotonicity.
 
 Reference:
 https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/canonically_ordered.20pathology
@@ -54,9 +53,9 @@ instance preN2 : PartialOrder (ℕ × ZMod 2) where
       · exact Or.inr (xy.trans yz)
   le_antisymm := by
     intro a b ab ba
-    cases' ab with ab ab
+    obtain ab | ab := ab
     · exact ab
-    · cases' ba with ba ba
+    · obtain ba | ba := ba
       · exact ba.symm
       · exact (Nat.lt_asymm ab ba).elim
 
@@ -101,8 +100,7 @@ theorem mul_lt_mul_of_pos_right : ∀ a b c : ℕ × ZMod 2, a < b → 0 < c →
 instance socsN2 : StrictOrderedCommSemiring (ℕ × ZMod 2) :=
   { Nxzmod2.csrN21, (inferInstance : PartialOrder (ℕ × ZMod 2)),
     (inferInstance : CommSemiring (ℕ × ZMod 2)),
-    pullback_nonzero Prod.fst Prod.fst_zero
-      Prod.fst_one with
+    domain_nontrivial Prod.fst Prod.fst_zero Prod.fst_one with
     add_le_add_left := add_le_add_left
     le_of_add_le_add_left := le_of_add_le_add_left
     zero_le_one := zero_le_one
@@ -202,13 +200,14 @@ theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ a b : L, a * b = 0 → a = 0 ∨
     · rfl
     · exact (hb rfl).elim
 
-instance can : CanonicallyOrderedCommSemiring L :=
-  { (inferInstance : OrderBot L),
-    (inferInstance :
-      OrderedCommSemiring L) with
-    exists_add_of_le := @(exists_add_of_le)
-    le_self_add := le_self_add
-    eq_zero_or_eq_zero_of_mul_eq_zero := @(eq_zero_or_eq_zero_of_mul_eq_zero) }
+instance : OrderedCommSemiring L := inferInstance
+
+instance : CanonicallyOrderedAdd L where
+  exists_add_of_le := @(exists_add_of_le)
+  le_self_add := le_self_add
+
+instance : NoZeroDivisors L where
+  eq_zero_or_eq_zero_of_mul_eq_zero := @(eq_zero_or_eq_zero_of_mul_eq_zero)
 
 /-- The elements `(1,0)` and `(1,1)` of `L` are different, but their doubles coincide.
 -/

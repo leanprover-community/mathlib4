@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 
@@ -50,7 +50,7 @@ noncomputable section
 
 open RCLike
 
-open scoped ComplexConjugate Classical
+open scoped ComplexConjugate
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
@@ -142,11 +142,13 @@ theorem adjointAux_unique (y : T.adjointDomain) {x₀ : E}
 
 variable (T)
 
-/-- The adjoint operator as a partially defined linear operator. -/
+open scoped Classical in
+/-- The adjoint operator as a partially defined linear operator, denoted as `T†`. -/
 def adjoint : F →ₗ.[𝕜] E where
   domain := T.adjointDomain
   toFun := if hT : Dense (T.domain : Set E) then adjointAux hT else 0
 
+@[inherit_doc]
 scoped postfix:1024 "†" => LinearPMap.adjoint
 
 theorem mem_adjoint_domain_iff (y : F) : y ∈ T†.domain ↔ Continuous ((innerₛₗ 𝕜 y).comp T.toFun) :=
@@ -156,17 +158,19 @@ variable {T}
 
 theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, ⟪w, x⟫ = ⟪y, T x⟫) :
     y ∈ T†.domain := by
-  cases' h with w hw
+  obtain ⟨w, hw⟩ := h
   rw [T.mem_adjoint_domain_iff]
   have : Continuous ((innerSL 𝕜 w).comp T.domain.subtypeL) := by fun_prop
   convert this using 1
   exact funext fun x => (hw x).symm
 
 theorem adjoint_apply_of_not_dense (hT : ¬Dense (T.domain : Set E)) (y : T†.domain) : T† y = 0 := by
+  classical
   change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _
   simp only [hT, not_false_iff, dif_neg, LinearMap.zero_apply]
 
 theorem adjoint_apply_of_dense (y : T†.domain) : T† y = adjointAux hT y := by
+  classical
   change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _
   simp only [hT, dif_pos, LinearMap.coe_mk]
 

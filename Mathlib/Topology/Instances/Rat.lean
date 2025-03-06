@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Topology.Algebra.Order.Archimedean
+import Mathlib.Topology.Algebra.Ring.Real
 import Mathlib.Topology.Instances.Nat
-import Mathlib.Topology.Instances.Real
 
 /-!
 # Topology on the rational numbers
@@ -13,8 +13,7 @@ import Mathlib.Topology.Instances.Real
 The structure of a metric space on `ℚ` is introduced in this file, induced from `ℝ`.
 -/
 
-
-open Metric Set Filter
+open Filter Metric Set Topology
 
 namespace Rat
 
@@ -97,21 +96,21 @@ theorem uniformContinuous_add : UniformContinuous fun p : ℚ × ℚ => p.1 + p.
 
 theorem uniformContinuous_neg : UniformContinuous (@Neg.neg ℚ _) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
-    ⟨_, ε0, fun h => by rw [dist_comm] at h; simpa only [dist_eq, cast_neg, neg_sub_neg] using h⟩
+    ⟨_, ε0, fun _ _ h => by simpa only [abs_sub_comm, dist_eq, cast_neg, neg_sub_neg] using h⟩
 
 instance : UniformAddGroup ℚ :=
   UniformAddGroup.mk' Rat.uniformContinuous_add Rat.uniformContinuous_neg
 
-instance : TopologicalAddGroup ℚ := inferInstance
+instance : IsTopologicalAddGroup ℚ := inferInstance
 
 instance : OrderTopology ℚ := induced_orderTopology _ Rat.cast_lt exists_rat_btwn
 
 theorem uniformContinuous_abs : UniformContinuous (abs : ℚ → ℚ) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
-    ⟨ε, ε0, fun h =>
+    ⟨ε, ε0, fun _ _ h =>
       lt_of_le_of_lt (by simpa [Rat.dist_eq] using abs_abs_sub_abs_le_abs_sub _ _) h⟩
 
-instance : TopologicalRing ℚ := inferInstance
+instance : IsTopologicalRing ℚ := inferInstance
 
 nonrec theorem totallyBounded_Icc (a b : ℚ) : TotallyBounded (Icc a b) := by
   simpa only [preimage_cast_Icc]

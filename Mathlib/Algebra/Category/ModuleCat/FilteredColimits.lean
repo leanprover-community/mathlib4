@@ -36,7 +36,7 @@ namespace ModuleCat.FilteredColimits
 section
 
 variable {R : Type u} [Ring R] {J : Type v} [SmallCategory J] [IsFiltered J]
-variable (F : J ⥤ ModuleCatMax.{v, u, u} R)
+variable (F : J ⥤ ModuleCat.{max v u, u} R)
 
 /-- The colimit of `F ⋙ forget₂ (ModuleCat R) AddCommGrp` in the category `AddCommGrp`.
 In the following, we will show that this has the structure of an `R`-module.
@@ -85,7 +85,7 @@ private theorem colimitModule.one_smul (x : (M F)) : (1 : R) • x = x := by
   simp
   rfl
 
--- Porting note (#11083): writing directly the `Module` instance makes things very slow.
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/11083): writing directly the `Module` instance makes things very slow.
 instance colimitMulAction : MulAction R (M F) where
   one_smul x := by
     refine Quot.inductionOn x ?_; clear x; intro x; obtain ⟨j, x⟩ := x
@@ -127,13 +127,14 @@ instance colimitModule : Module R (M F) :=
   add_smul := colimitModule.add_smul F }
 
 /-- The bundled `R`-module giving the filtered colimit of a diagram. -/
-def colimit : ModuleCatMax.{v, u, u} R :=
+def colimit : ModuleCat.{max v u, u} R :=
   ModuleCat.of R (M F)
 
 /-- The linear map from a given `R`-module in the diagram to the colimit module. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
-  { (AddCommGrp.FilteredColimits.colimitCocone
-      (F ⋙ forget₂ (ModuleCat R) AddCommGrp.{max v u})).ι.app j with
+  ofHom
+    { ((AddCommGrp.FilteredColimits.colimitCocone
+      (F ⋙ forget₂ (ModuleCat R) AddCommGrp.{max v u})).ι.app j).hom with
     map_smul' := fun r x => by erw [colimit_smul_mk_eq F r ⟨j, x⟩]; rfl }
 
 /-- The cocone over the proposed colimit module. -/
@@ -142,7 +143,7 @@ def colimitCocone : Cocone F where
   ι :=
     { app := coconeMorphism F
       naturality := fun _ _' f =>
-        LinearMap.coe_injective
+        hom_ext <| LinearMap.coe_injective
           ((Types.TypeMax.colimitCocone (F ⋙ forget (ModuleCat R))).ι.naturality f) }
 
 /-- Given a cocone `t` of `F`, the induced monoid linear map from the colimit to the cocone point.
@@ -150,42 +151,42 @@ We already know that this is a morphism between additive groups. The only thing 
 it is a linear map, i.e. preserves scalar multiplication.
 -/
 def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
-  { (AddCommGrp.FilteredColimits.colimitCoconeIsColimit
-          (F ⋙ forget₂ (ModuleCatMax.{v, u} R) AddCommGrp.{max v u})).desc
-      ((forget₂ (ModuleCat R) AddCommGrp.{max v u}).mapCocone t) with
+  ofHom
+    { ((AddCommGrp.FilteredColimits.colimitCoconeIsColimit
+          (F ⋙ forget₂ (ModuleCat.{max v u} R) AddCommGrp.{max v u})).desc
+      ((forget₂ (ModuleCat R) AddCommGrp.{max v u}).mapCocone t)).hom with
     map_smul' := fun r x => by
       refine Quot.inductionOn x ?_; clear x; intro x; obtain ⟨j, x⟩ := x
       erw [colimit_smul_mk_eq]
-      exact LinearMap.map_smul (t.ι.app j) r x }
+      exact LinearMap.map_smul (t.ι.app j).hom r x }
 
 /-- The proposed colimit cocone is a colimit in `ModuleCat R`. -/
 def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   desc := colimitDesc F
   fac t j :=
-    LinearMap.coe_injective <|
+    hom_ext <| LinearMap.coe_injective <|
       (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget (ModuleCat R))).fac
         ((forget (ModuleCat R)).mapCocone t) j
   uniq t _ h :=
-    LinearMap.coe_injective <|
+    hom_ext <| LinearMap.coe_injective <|
       (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget (ModuleCat R))).uniq
-        ((forget (ModuleCat R)).mapCocone t) _ fun j => funext fun x => LinearMap.congr_fun (h j) x
+        ((forget (ModuleCat R)).mapCocone t) _ fun j => funext fun x => LinearMap.congr_fun
+          (ModuleCat.hom_ext_iff.mp (h j)) x
 
-instance forget₂AddCommGroupPreservesFilteredColimits :
+instance forget₂AddCommGroup_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ (ModuleCat.{u} R) AddCommGrp.{u}) where
-  preserves_filtered_colimits J _ _ :=
-  { -- Porting note: without the curly braces for `F`
-    -- here we get a confusing error message about universes.
-    preservesColimit := fun {F : J ⥤ ModuleCat.{u} R} =>
-      preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit F)
+  preserves_filtered_colimits _ _ _ :=
+  { preservesColimit := fun {F} =>
+      preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit F)
         (AddCommGrp.FilteredColimits.colimitCoconeIsColimit
           (F ⋙ forget₂ (ModuleCat.{u} R) AddCommGrp.{u})) }
 
-instance forgetPreservesFilteredColimits : PreservesFilteredColimits (forget (ModuleCat.{u} R)) :=
-  Limits.compPreservesFilteredColimits (forget₂ (ModuleCat R) AddCommGrp)
+instance forget_preservesFilteredColimits : PreservesFilteredColimits (forget (ModuleCat.{u} R)) :=
+  Limits.comp_preservesFilteredColimits (forget₂ (ModuleCat R) AddCommGrp)
     (forget AddCommGrp)
 
-instance forgetReflectsFilteredColimits : ReflectsFilteredColimits (forget (ModuleCat.{u} R)) where
-  reflects_filtered_colimits _ := { reflectsColimit := reflectsColimitOfReflectsIsomorphisms _ _ }
+instance forget_reflectsFilteredColimits : ReflectsFilteredColimits (forget (ModuleCat.{u} R)) where
+  reflects_filtered_colimits _ := { reflectsColimit := reflectsColimit_of_reflectsIsomorphisms _ _ }
 
 end
 

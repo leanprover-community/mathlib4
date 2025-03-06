@@ -159,7 +159,7 @@ theorem solution_nonzero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha�
 theorem solution_spec' {a₁ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (a₂ : 𝕎 k) :
     solution p a₁ a₂ ^ p * a₁.coeff 0 = solution p a₁ a₂ * a₂.coeff 0 := by
   have := solution_spec p a₁ a₂
-  cases' Nat.exists_eq_succ_of_ne_zero hp.out.ne_zero with q hq
+  obtain ⟨q, hq⟩ := Nat.exists_eq_succ_of_ne_zero hp.out.ne_zero
   have hq' : q = p - 1 := by simp only [hq, tsub_zero, Nat.succ_sub_succ_eq_sub]
   conv_lhs =>
     congr
@@ -203,7 +203,7 @@ theorem frobeniusRotation_nonzero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠
 theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ : a₂.coeff 0 ≠ 0) :
     frobenius (frobeniusRotation p ha₁ ha₂) * a₁ = frobeniusRotation p ha₁ ha₂ * a₂ := by
   ext n
-  cases' n with n
+  rcases n with - | n
   · simp only [WittVector.mul_coeff_zero, WittVector.coeff_frobenius_charP, frobeniusRotation,
       frobeniusRotationCoeff]
     apply solution_spec' _ ha₁
@@ -219,12 +219,12 @@ theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 �
     simp only [WittVector.coeff_truncateFun, WittVector.coeff_frobenius_charP]
     rfl
 
-local notation "φ" => IsFractionRing.fieldEquivOfRingEquiv (frobeniusEquiv p k)
+local notation "φ" => IsFractionRing.ringEquivOfRingEquiv (frobeniusEquiv p k)
 
 theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) (hr' : r'.coeff 0 ≠ 0)
     (hq' : q'.coeff 0 ≠ 0) (hq : (p : 𝕎 k) ^ n * q' ∈ nonZeroDivisors (𝕎 k)) :
     let b : 𝕎 k := frobeniusRotation p hr' hq'
-    IsFractionRing.fieldEquivOfRingEquiv (frobeniusEquiv p k)
+    IsFractionRing.ringEquivOfRingEquiv (frobeniusEquiv p k)
           (algebraMap (𝕎 k) (FractionRing (𝕎 k)) b) *
         Localization.mk ((p : 𝕎 k) ^ m * r') ⟨(p : 𝕎 k) ^ n * q', hq⟩ =
       (p : Localization (nonZeroDivisors (𝕎 k))) ^ (m - n : ℤ) *

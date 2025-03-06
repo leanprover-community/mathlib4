@@ -3,10 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.Group.Submonoid.MulAction
 
 /-!
 # Definition of `orbit`, `fixedPoints` and `stabilizer`
@@ -22,6 +22,7 @@ This file defines orbits, stabilizers, and other objects defined in terms of act
 
 -/
 
+assert_not_exists MonoidWithZero DistribMulAction
 
 universe u v
 
@@ -101,19 +102,16 @@ section FixedPoints
 def fixedPoints : Set α :=
   { a : α | ∀ m : M, m • a = a }
 
-variable {M}
-
+variable {M} in
 /-- `fixedBy m` is the set of elements fixed by `m`. -/
 @[to_additive "`fixedBy m` is the set of elements fixed by `m`."]
 def fixedBy (m : M) : Set α :=
   { x | m • x = x }
 
-variable (M)
-
 @[to_additive]
 theorem fixed_eq_iInter_fixedBy : fixedPoints M α = ⋂ m : M, fixedBy α m :=
   Set.ext fun _ =>
-    ⟨fun hx => Set.mem_iInter.2 fun m => hx m, fun hx m => (Set.mem_iInter.1 hx m : _)⟩
+    ⟨fun hx => Set.mem_iInter.2 fun m => hx m, fun hx m => (Set.mem_iInter.1 hx m :)⟩
 
 variable {M α}
 
@@ -202,45 +200,6 @@ lemma subgroup_toSubmonoid : (α^*M).toSubmonoid = submonoid M α :=
 
 end FixedPoints
 end Group
-
-section AddMonoid
-
-variable [AddMonoid α] [DistribMulAction M α]
-
-/-- The additive submonoid of elements fixed under the whole action. -/
-def FixedPoints.addSubmonoid : AddSubmonoid α where
-  carrier := MulAction.fixedPoints M α
-  zero_mem' := smul_zero
-  add_mem' ha hb _ := by rw [smul_add, ha, hb]
-
-@[simp]
-lemma FixedPoints.mem_addSubmonoid (a : α) : a ∈ addSubmonoid M α ↔ ∀ m : M, m • a = a :=
-  Iff.rfl
-
-end AddMonoid
-
-section AddGroup
-
-variable [AddGroup α] [DistribMulAction M α]
-
-/-- The additive subgroup of elements fixed under the whole action. -/
-def FixedPoints.addSubgroup : AddSubgroup α where
-  __ := addSubmonoid M α
-  neg_mem' ha _ := by rw [smul_neg, ha]
-
-/-- The notation for `FixedPoints.addSubgroup`, chosen to resemble `αᴹ`. -/
-notation α "^+" M:51 => FixedPoints.addSubgroup M α
-
-@[simp]
-lemma FixedPoints.mem_addSubgroup (a : α) : a ∈ α^+M ↔ ∀ m : M, m • a = a :=
-  Iff.rfl
-
-@[simp]
-lemma FixedPoints.addSubgroup_toAddSubmonoid : (α^+M).toAddSubmonoid = addSubmonoid M α :=
-  rfl
-
-end AddGroup
-
 end FixedPoints
 
 namespace MulAction
@@ -312,8 +271,14 @@ variable {G α}
 theorem orbitRel_apply {a b : α} : orbitRel G α a b ↔ a ∈ orbit G b :=
   Iff.rfl
 
-@[to_additive (attr := deprecated (since := "2024-10-18"))]
+@[to_additive]
 alias orbitRel_r_apply := orbitRel_apply
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+attribute [deprecated orbitRel_apply (since := "2024-10-18")] orbitRel_r_apply
+attribute [deprecated AddAction.orbitRel_apply (since := "2024-10-18")] AddAction.orbitRel_r_apply
+
 
 /-- When you take a set `U` in `α`, push it down to the quotient, and pull back, you get the union
 of the orbit of `U` under `G`. -/
@@ -431,7 +396,7 @@ nonrec lemma orbitRel.Quotient.orbit_nonempty (x : orbitRel.Quotient G α) :
 nonrec lemma orbitRel.Quotient.mapsTo_smul_orbit (g : G) (x : orbitRel.Quotient G α) :
     Set.MapsTo (g • ·) x.orbit x.orbit := by
   rw [orbitRel.Quotient.orbit_eq_orbit_out x Quotient.out_eq']
-  exact mapsTo_smul_orbit g x.out'
+  exact mapsTo_smul_orbit g x.out
 
 @[to_additive]
 instance (x : orbitRel.Quotient G α) : MulAction G x.orbit where
@@ -485,12 +450,12 @@ local notation "Ω" => orbitRel.Quotient G α
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
 
 This version is expressed in terms of `MulAction.orbitRel.Quotient.orbit` instead of
-`MulAction.orbit`, to avoid mentioning `Quotient.out'`. -/
+`MulAction.orbit`, to avoid mentioning `Quotient.out`. -/
 @[to_additive
       "Decomposition of a type `X` as a disjoint union of its orbits under an additive group action.
 
       This version is expressed in terms of `AddAction.orbitRel.Quotient.orbit` instead of
-      `AddAction.orbit`, to avoid mentioning `Quotient.out'`. "]
+      `AddAction.orbit`, to avoid mentioning `Quotient.out`. "]
 def selfEquivSigmaOrbits' : α ≃ Σω : Ω, ω.orbit :=
   letI := orbitRel G α
   calc
@@ -503,7 +468,7 @@ def selfEquivSigmaOrbits' : α ≃ Σω : Ω, ω.orbit :=
 @[to_additive
       "Decomposition of a type `X` as a disjoint union of its orbits under an additive group
       action."]
-def selfEquivSigmaOrbits : α ≃ Σω : Ω, orbit G ω.out' :=
+def selfEquivSigmaOrbits : α ≃ Σω : Ω, orbit G ω.out :=
   (selfEquivSigmaOrbits' G α).trans <|
     Equiv.sigmaCongrRight fun _ =>
       Equiv.Set.ofEq <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
@@ -521,8 +486,8 @@ lemma univ_eq_iUnion_orbit :
 end Orbit
 
 section Stabilizer
-variable (G)
 
+variable (G) in
 /-- The stabilizer of an element under an action, i.e. what sends the element to itself.
 A subgroup. -/
 @[to_additive
@@ -531,8 +496,6 @@ A subgroup. -/
 def stabilizer (a : α) : Subgroup G :=
   { stabilizerSubmonoid G a with
     inv_mem' := fun {m} (ha : m • a = a) => show m⁻¹ • a = a by rw [inv_smul_eq_iff, ha] }
-
-variable {G}
 
 @[to_additive]
 instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizer G a) :=

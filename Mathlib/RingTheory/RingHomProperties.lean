@@ -30,7 +30,6 @@ open CategoryTheory Opposite CategoryTheory.Limits
 
 namespace RingHom
 
--- Porting Note: Deleted variable `f` here, since it wasn't used explicitly
 variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop)
 
 section RespectsIso
@@ -45,19 +44,19 @@ def RespectsIso : Prop :=
 variable {P}
 
 theorem RespectsIso.cancel_left_isIso (hP : RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S)
-    (g : S ⟶ T) [IsIso f] : P (f ≫ g) ↔ P g :=
+    (g : S ⟶ T) [IsIso f] : P (g.hom.comp f.hom) ↔ P g.hom :=
   ⟨fun H => by
-    convert hP.2 (f ≫ g) (asIso f).symm.commRingCatIsoToRingEquiv H
-    exact (IsIso.inv_hom_id_assoc _ _).symm, hP.2 g (asIso f).commRingCatIsoToRingEquiv⟩
+    convert hP.2 (f ≫ g).hom (asIso f).symm.commRingCatIsoToRingEquiv H
+    simp [← CommRingCat.hom_comp], hP.2 g.hom (asIso f).commRingCatIsoToRingEquiv⟩
 
 theorem RespectsIso.cancel_right_isIso (hP : RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S)
-    (g : S ⟶ T) [IsIso g] : P (f ≫ g) ↔ P f :=
+    (g : S ⟶ T) [IsIso g] : P (g.hom.comp f.hom) ↔ P f.hom :=
   ⟨fun H => by
-    convert hP.1 (f ≫ g) (asIso g).symm.commRingCatIsoToRingEquiv H
-    change f = f ≫ g ≫ inv g
-    simp, hP.1 f (asIso g).commRingCatIsoToRingEquiv⟩
+    convert hP.1 (f ≫ g).hom (asIso g).symm.commRingCatIsoToRingEquiv H
+    simp [← CommRingCat.hom_comp],
+   hP.1 f.hom (asIso g).commRingCatIsoToRingEquiv⟩
 
-theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S : Type u}
+theorem RespectsIso.isLocalization_away_iff (hP : RingHom.RespectsIso @P) {R S : Type u}
     (R' S' : Type u) [CommRing R] [CommRing S] [CommRing R'] [CommRing S'] [Algebra R R']
     [Algebra S S'] (f : R →+* S) (r : R) [IsLocalization.Away r R'] [IsLocalization.Away (f r) S'] :
     P (Localization.awayMap f r) ↔ P (IsLocalization.Away.map R' S' f r) := by
@@ -84,6 +83,9 @@ theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S 
   ext1 x
   dsimp [e, e₁, e₂, IsLocalization.Away.map]
   simp only [IsLocalization.map_eq, id_apply, RingHomCompTriple.comp_apply]
+
+@[deprecated (since := "2025-03-01")]
+alias RespectsIso.is_localization_away_iff := RespectsIso.isLocalization_away_iff
 
 end RespectsIso
 
@@ -156,13 +158,13 @@ theorem IsStableUnderBaseChange.mk (h₁ : RespectsIso @P)
 attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
 theorem IsStableUnderBaseChange.pushout_inl (hP : RingHom.IsStableUnderBaseChange @P)
-    (hP' : RingHom.RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S) (g : R ⟶ T) (H : P g) :
-    P (pushout.inl _ _ : S ⟶ pushout f g) := by
-  letI := f.toAlgebra
-  letI := g.toAlgebra
+    (hP' : RingHom.RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S) (g : R ⟶ T) (H : P g.hom) :
+    P (pushout.inl _ _ : S ⟶ pushout f g).hom := by
+  letI := f.hom.toAlgebra
+  letI := g.hom.toAlgebra
   rw [← show _ = pushout.inl f g from
       colimit.isoColimitCocone_ι_inv ⟨_, CommRingCat.pushoutCoconeIsColimit R S T⟩ WalkingSpan.left,
-    hP'.cancel_right_isIso]
+    CommRingCat.hom_comp, hP'.cancel_right_isIso]
   dsimp only [CommRingCat.pushoutCocone_inl, PushoutCocone.ι_app_left]
   apply hP R T S (TensorProduct R S T)
   exact H
@@ -173,7 +175,7 @@ section ToMorphismProperty
 
 /-- The categorical `MorphismProperty` associated to a property of ring homs expressed
 non-categorical terms. -/
-def toMorphismProperty : MorphismProperty CommRingCat := fun _ _ f ↦ P f
+def toMorphismProperty : MorphismProperty CommRingCat := fun _ _ f ↦ P f.hom
 
 variable {P}
 
@@ -181,15 +183,25 @@ lemma toMorphismProperty_respectsIso_iff :
     RespectsIso P ↔ (toMorphismProperty P).RespectsIso := by
   refine ⟨fun h ↦ MorphismProperty.RespectsIso.mk _ ?_ ?_, fun h ↦ ⟨?_, ?_⟩⟩
   · intro X Y Z e f hf
-    exact h.right f e.commRingCatIsoToRingEquiv hf
+    exact h.right f.hom e.commRingCatIsoToRingEquiv hf
   · intro X Y Z e f hf
-    exact h.left f e.commRingCatIsoToRingEquiv hf
+    exact h.left f.hom e.commRingCatIsoToRingEquiv hf
   · intro X Y Z _ _ _ f e hf
     exact MorphismProperty.RespectsIso.postcomp (toMorphismProperty P)
       e.toCommRingCatIso.hom (CommRingCat.ofHom f) hf
   · intro X Y Z _ _ _ f e
     exact MorphismProperty.RespectsIso.precomp (toMorphismProperty P)
       e.toCommRingCatIso.hom (CommRingCat.ofHom f)
+
+/-- Variant of `MorphismProperty.arrow_mk_iso_iff` specialized to morphism properties in
+`CommRingCat` given by ring hom properties. -/
+lemma RespectsIso.arrow_mk_iso_iff (hQ : RingHom.RespectsIso P) {A B A' B' : CommRingCat}
+    {f : A ⟶ B} {g : A' ⟶ B'} (e : Arrow.mk f ≅ Arrow.mk g) :
+    P f.hom ↔ P g.hom := by
+  have : (toMorphismProperty P).RespectsIso := by
+    rwa [← toMorphismProperty_respectsIso_iff]
+  change toMorphismProperty P _ ↔ toMorphismProperty P _
+  rw [MorphismProperty.arrow_mk_iso_iff (toMorphismProperty P) e]
 
 end ToMorphismProperty
 

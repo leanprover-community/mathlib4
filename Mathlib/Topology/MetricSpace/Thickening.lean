@@ -80,6 +80,7 @@ theorem thickening_of_nonpos (hδ : δ ≤ 0) (s : Set α) : thickening δ s = �
 
 /-- The (open) thickening `Metric.thickening δ E` of a fixed subset `E` is an increasing function of
 the thickening radius `δ`. -/
+@[gcongr]
 theorem thickening_mono {δ₁ δ₂ : ℝ} (hle : δ₁ ≤ δ₂) (E : Set α) :
     thickening δ₁ E ⊆ thickening δ₂ E :=
   preimage_mono (Iio_subset_Iio (ENNReal.ofReal_le_ofReal hle))
@@ -99,6 +100,7 @@ theorem frontier_thickening_subset (E : Set α) {δ : ℝ} :
     frontier (thickening δ E) ⊆ { x : α | infEdist x E = ENNReal.ofReal δ } :=
   frontier_lt_subset_eq continuous_infEdist continuous_const
 
+open scoped Function in -- required for scoped `on` notation
 theorem frontier_thickening_disjoint (A : Set α) :
     Pairwise (Disjoint on fun r : ℝ => frontier (thickening r A)) := by
   refine (pairwise_disjoint_on _).2 fun r₁ r₂ hr => ?_
@@ -622,6 +624,7 @@ theorem cthickening_cthickening_subset (hε : 0 ≤ ε) (hδ : 0 ≤ δ) (s : Se
   simp_rw [mem_cthickening_iff, ENNReal.ofReal_add hε hδ]
   exact fun hx => infEdist_le_infEdist_cthickening_add.trans (add_le_add_right hx _)
 
+open scoped Function in -- required for scoped `on` notation
 theorem frontier_cthickening_disjoint (A : Set α) :
     Pairwise (Disjoint on fun r : ℝ≥0 => frontier (cthickening r A)) := fun r₁ r₂ hr =>
   ((disjoint_singleton.2 <| by simpa).preimage _).mono (frontier_cthickening_subset _)
@@ -629,4 +632,42 @@ theorem frontier_cthickening_disjoint (A : Set α) :
 
 end Cthickening
 
+theorem thickening_ball [PseudoMetricSpace α] (x : α) (ε δ : ℝ) :
+    thickening ε (ball x δ) ⊆ ball x (ε + δ) := by
+  rw [← thickening_singleton, ← thickening_singleton]
+  apply thickening_thickening_subset
+
 end Metric
+
+open Metric in
+theorem IsCompact.exists_thickening_image_subset
+    [PseudoEMetricSpace α] {β : Type*} [PseudoEMetricSpace β]
+    {f : α → β} {K : Set α} {U : Set β} (hK : IsCompact K) (ho : IsOpen U)
+    (hf : ∀ x ∈ K, ContinuousAt f x) (hKU : MapsTo f K U) :
+    ∃ ε > 0, ∃ V ∈ 𝓝ˢ K, thickening ε (f '' V) ⊆ U := by
+  apply hK.induction_on (p := fun K ↦ ∃ ε > 0, ∃ V ∈ 𝓝ˢ K, thickening ε (f '' V) ⊆ U)
+  · use 1, by positivity, ∅, by simp, by simp
+  · exact fun s t hst ⟨ε, hε, V, hV, hthickening⟩ ↦ ⟨ε, hε, V, nhdsSet_mono hst hV, hthickening⟩
+  · rintro s t ⟨ε₁, hε₁, V₁, hV₁, hV₁thickening⟩ ⟨ε₂, hε₂, V₂, hV₂, hV₂thickening⟩
+    refine ⟨min ε₁ ε₂, by positivity, V₁ ∪ V₂, union_mem_nhdsSet hV₁ hV₂, ?_⟩
+    rw [image_union, thickening_union]
+    calc thickening (ε₁ ⊓ ε₂) (f '' V₁) ∪ thickening (ε₁ ⊓ ε₂) (f '' V₂)
+      _ ⊆ thickening ε₁ (f '' V₁) ∪ thickening ε₂ (f '' V₂) := by gcongr <;> norm_num
+      _ ⊆ U ∪ U := by gcongr
+      _ = U := union_self _
+  · intro x hx
+    have : {f x} ⊆ U := by rw [singleton_subset_iff]; exact hKU hx
+    obtain ⟨δ, hδ, hthick⟩ := (isCompact_singleton (x := f x)).exists_thickening_subset_open ho this
+    let V := f ⁻¹' (thickening (δ / 2) {f x})
+    have : V ∈ 𝓝 x := by
+      apply hf x hx
+      apply isOpen_thickening.mem_nhds
+      exact (self_subset_thickening (by positivity) _) rfl
+    refine ⟨K ∩ (interior V), inter_mem_nhdsWithin K (interior_mem_nhds.mpr this),
+      δ / 2, by positivity, V, by rw [← subset_interior_iff_mem_nhdsSet]; simp, ?_⟩
+    calc thickening (δ / 2) (f '' V)
+      _ ⊆ thickening (δ / 2) (thickening (δ / 2) {f x}) :=
+        thickening_subset_of_subset _ (image_preimage_subset f _)
+      _ ⊆ thickening ((δ / 2) + (δ / 2)) ({f x}) :=
+        thickening_thickening_subset (δ / 2) (δ / 2) {f x}
+      _ ⊆ U := by simp [hthick]

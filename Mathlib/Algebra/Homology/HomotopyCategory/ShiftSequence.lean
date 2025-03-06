@@ -19,6 +19,8 @@ and `HomotopyCategory` namespaces.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category ComplexShape Limits
 
 variable (C : Type*) [Category C] [Preadditive C]
@@ -29,9 +31,6 @@ open HomologicalComplex
 
 attribute [local simp] XIsoOfEq_hom_naturality smul_smul
 
--- See https://github.com/leanprover-community/mathlib4/issues/12534
--- Removing this adds about 10% to the instruction count in this file.
-set_option backward.isDefEq.lazyWhnfCore false in
 /-- The natural isomorphism `(K⟦n⟧).sc' i j k ≅ K.sc' i' j' k'` when `n + i = i'`,
 `n + j = j'` and `n + k = k'`. -/
 @[simps!]
@@ -39,11 +38,11 @@ def shiftShortComplexFunctor' (n i j k i' j' k' : ℤ)
     (hi : n + i = i') (hj : n + j = j') (hk : n + k = k') :
     (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n) ⋙ shortComplexFunctor' C _ i j k ≅
       shortComplexFunctor' C _ i' j' k' :=
-  NatIso.ofComponents (fun K => by
-    dsimp [shortComplexFunctor']
-    exact ShortComplex.isoMk
+  NatIso.ofComponents (fun K => ShortComplex.isoMk
       (n.negOnePow • ((shiftEval C n i i' hi).app K))
-      ((shiftEval C n j j' hj).app K) (n.negOnePow • ((shiftEval C n k k' hk).app K)))
+      ((shiftEval C n j j' hj).app K) (n.negOnePow • ((shiftEval C n k k' hk).app K))
+      (by dsimp; simp) (by dsimp; simp))
+      (fun f ↦ by ext <;> dsimp <;> simp)
 
 /-- The natural isomorphism `(K⟦n⟧).sc i ≅ K.sc i'` when `n + i = i'`. -/
 @[simps!]

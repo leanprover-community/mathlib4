@@ -34,7 +34,7 @@ variable {R : Type u} {S : Type v} [CommRing R] [CommRing S]
 def IsStandardSmooth (f : R →+* S) : Prop :=
   @Algebra.IsStandardSmooth.{t, w} _ _ _ _ f.toAlgebra
 
-/-- Helper lemma for the `algebraize` tactic.-/
+/-- Helper lemma for the `algebraize` tactic -/
 lemma IsStandardSmooth.toAlgebra {f : R →+* S} (hf : IsStandardSmooth.{t, w} f) :
     @Algebra.IsStandardSmooth.{t, w} R S _ _ f.toAlgebra := hf
 
@@ -44,7 +44,7 @@ lemma IsStandardSmooth.toAlgebra {f : R →+* S} (hf : IsStandardSmooth.{t, w} f
 def IsStandardSmoothOfRelativeDimension (f : R →+* S) : Prop :=
   @Algebra.IsStandardSmoothOfRelativeDimension.{t, w} n _ _ _ _ f.toAlgebra
 
-/-- Helper lemma for the `algebraize` tactic.-/
+/-- Helper lemma for the `algebraize` tactic -/
 lemma IsStandardSmoothOfRelativeDimension.toAlgebra {f : R →+* S}
     (hf : IsStandardSmoothOfRelativeDimension.{t, w} n f) :
     @Algebra.IsStandardSmoothOfRelativeDimension.{t, w} n R S _ _ f.toAlgebra := hf
@@ -162,13 +162,13 @@ lemma isStandardSmooth_stableUnderCompositionWithLocalizationAway :
 
 lemma isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalizationAway :
     StableUnderCompositionWithLocalizationAway (IsStandardSmoothOfRelativeDimension.{0, 0} n) where
-  left _ S T _ _ _ _ s _ _ hf :=
-    have : (algebraMap S T).IsStandardSmoothOfRelativeDimension 0 :=
-      IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway s
-    zero_add n ▸ IsStandardSmoothOfRelativeDimension.comp this hf
-  right R S _ _ _ _ _ r _ _ hf :=
+  left R S _ _ _ _ _ r _ _ hf :=
     have : (algebraMap R S).IsStandardSmoothOfRelativeDimension 0 :=
       IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway r
     add_zero n ▸ IsStandardSmoothOfRelativeDimension.comp hf this
+  right _ S T _ _ _ _ s _ _ hf :=
+    have : (algebraMap S T).IsStandardSmoothOfRelativeDimension 0 :=
+      IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway s
+    zero_add n ▸ IsStandardSmoothOfRelativeDimension.comp this hf
 
 end RingHom

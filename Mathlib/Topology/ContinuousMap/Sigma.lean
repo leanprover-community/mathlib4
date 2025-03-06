@@ -34,8 +34,7 @@ continuous map, sigma type, disjoint union
 
 noncomputable section
 
-open scoped Topology
-open Filter
+open Filter Topology
 
 variable {X ι : Type*} {Y : ι → Type*} [TopologicalSpace X] [∀ i, TopologicalSpace (Y i)]
 
@@ -47,11 +46,11 @@ theorem isEmbedding_sigmaMk_comp [Nonempty X] :
     ⟨fun i ↦ (sigmaMk i).isInducing_postcomp IsEmbedding.sigmaMk.isInducing, fun i ↦
       let ⟨x⟩ := ‹Nonempty X›
       ⟨_, (isOpen_sigma_fst_preimage {i}).preimage (continuous_eval_const x), fun _ ↦ Iff.rfl⟩⟩
-  inj := by
-    · rintro ⟨i, g⟩ ⟨i', g'⟩ h
-      obtain ⟨rfl, hg⟩ : i = i' ∧ HEq (⇑g) (⇑g') :=
-        Function.eq_of_sigmaMk_comp <| congr_arg DFunLike.coe h
-      simpa using hg
+  injective := by
+    rintro ⟨i, g⟩ ⟨i', g'⟩ h
+    obtain ⟨rfl, hg⟩ : i = i' ∧ HEq (⇑g) (⇑g') :=
+      Function.eq_of_sigmaMk_comp <| congr_arg DFunLike.coe h
+    simpa using hg
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_sigmaMk_comp := isEmbedding_sigmaMk_comp
@@ -79,7 +78,7 @@ The inverse map sends `⟨i, g⟩` to `ContinuousMap.comp (ContinuousMap.sigmaMk
 @[simps! symm_apply]
 def sigmaCodHomeomorph : C(X, Σ i, Y i) ≃ₜ Σ i, C(X, Y i) :=
   .symm <| Equiv.toHomeomorphOfIsInducing
-    (.ofBijective _ ⟨isEmbedding_sigmaMk_comp.inj, fun f ↦
+    (.ofBijective _ ⟨isEmbedding_sigmaMk_comp.injective, fun f ↦
       let ⟨i, g, hg⟩ := f.exists_lift_sigma; ⟨⟨i, g⟩, hg.symm⟩⟩)
     isEmbedding_sigmaMk_comp.isInducing
 

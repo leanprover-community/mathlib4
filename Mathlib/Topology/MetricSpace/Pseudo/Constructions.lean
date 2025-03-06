@@ -14,8 +14,8 @@ This file constructs the supremum distance on binary products of pseudometric sp
 instances for type synonyms.
 -/
 
-open Bornology Filter Metric Set
-open scoped NNReal Topology
+open Bornology Filter Metric Set Topology
+open scoped NNReal
 
 variable {α β : Type*} [PseudoMetricSpace α]
 
@@ -37,8 +37,8 @@ abbrev PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace 
 /-- Pull back a pseudometric space structure by an inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `TopologicalSpace`
 structure. -/
-def IsInducing.comapPseudoMetricSpace {α β : Type*} [TopologicalSpace α] [m : PseudoMetricSpace β]
-    {f : α → β} (hf : IsInducing f) : PseudoMetricSpace α :=
+def Topology.IsInducing.comapPseudoMetricSpace {α β : Type*} [TopologicalSpace α]
+    [m : PseudoMetricSpace β] {f : α → β} (hf : IsInducing f) : PseudoMetricSpace α :=
   .replaceTopology (.induced f m) hf.eq_induced
 
 @[deprecated (since := "2024-10-28")]
@@ -147,7 +147,7 @@ section Prod
 variable [PseudoMetricSpace β]
 
 -- Porting note: added `let`, otherwise `simp` failed
-noncomputable instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
+instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
   let i := PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun x y : α × β => dist x.1 y.1 ⊔ dist x.2 y.2)
     (fun _ _ => (max_lt (edist_lt_top _ _) (edist_lt_top _ _)).ne) fun x y => by
@@ -207,7 +207,7 @@ lemma continuous_dist : Continuous fun p : α × α ↦ dist p.1 p.2 := uniformC
 @[continuity, fun_prop]
 protected lemma Continuous.dist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => dist (f b) (g b) :=
-  continuous_dist.comp (hf.prod_mk hg : _)
+  continuous_dist.comp (hf.prod_mk hg :)
 
 protected lemma Filter.Tendsto.dist {f g : β → α} {x : Filter β} {a b : α}
     (hf : Tendsto f x (𝓝 a)) (hg : Tendsto g x (𝓝 b)) :
@@ -233,7 +233,7 @@ lemma continuous_nndist : Continuous fun p : α × α => nndist p.1 p.2 :=
 @[fun_prop]
 protected lemma Continuous.nndist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => nndist (f b) (g b) :=
-  continuous_nndist.comp (hf.prod_mk hg : _)
+  continuous_nndist.comp (hf.prod_mk hg :)
 
 protected lemma Filter.Tendsto.nndist {f g : β → α} {x : Filter β} {a b : α}
     (hf : Tendsto f x (𝓝 a)) (hg : Tendsto g x (𝓝 b)) :

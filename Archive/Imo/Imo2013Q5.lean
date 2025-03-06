@@ -65,15 +65,9 @@ theorem le_of_all_pow_lt_succ' {x y : ℝ} (hx : 1 < x) (hy : 0 < y)
   refine le_of_all_pow_lt_succ hx ?_ h
   by_contra! hy'' : y ≤ 1
   -- Then there exists y' such that 0 < y ≤ 1 < y' < x.
-  let y' := (x + 1) / 2
-  have h_y'_lt_x : y' < x :=
-    calc
-      (x + 1) / 2 < x * 2 / 2 := by linarith
-      _ = x := by field_simp
-  have h1_lt_y' : 1 < y' :=
-    calc
-      1 = 1 * 2 / 2 := by field_simp
-      _ < (x + 1) / 2 := by linarith
+  have h_y'_lt_x : (x + 1) / 2 < x := by linarith
+  have h1_lt_y' : 1 < (x + 1) / 2 := by linarith
+  set y' := (x + 1) / 2
   have h_y_lt_y' : y < y' := by linarith
   have hh : ∀ n, 0 < n → x ^ n - 1 < y' ^ n := by
     intro n hn
@@ -121,7 +115,7 @@ theorem pow_f_le_f_pow {f : ℚ → ℝ} {n : ℕ} (hn : 0 < n) {x : ℚ} (hx : 
     f (x ^ n) ≤ f x ^ n := by
   induction' n with pn hpn
   · exfalso; exact Nat.lt_asymm hn hn
-  cases' pn with pn
+  rcases pn with - | pn
   · norm_num
   have hpn' := hpn pn.succ_pos
   rw [pow_succ x (pn + 1), pow_succ (f x) (pn + 1)]
@@ -173,7 +167,7 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
   obtain ⟨a, ha1, hae⟩ := H_fixed_point
   have H3 : ∀ x : ℚ, 0 < x → ∀ n : ℕ, 0 < n → ↑n * f x ≤ f (n * x) := by
     intro x hx n hn
-    cases' n with n
+    rcases n with - | n
     · exact (lt_irrefl 0 hn).elim
     induction' n with pn hpn
     · norm_num
@@ -214,9 +208,9 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
   have h_f_commutes_with_pos_nat_mul : ∀ n : ℕ, 0 < n → ∀ x : ℚ, 0 < x → f (n * x) = n * f x := by
     intro n hn x hx
     have h2 : f (n * x) ≤ n * f x := by
-      cases' n with n
+      rcases n with - | n
       · exfalso; exact Nat.lt_asymm hn hn
-      cases' n with n
+      rcases n with - | n
       · norm_num
       have hfneq : f n.succ.succ = n.succ.succ := by
         have :=

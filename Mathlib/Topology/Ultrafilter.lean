@@ -3,10 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Algebra.Group.Support
 import Mathlib.Order.Filter.Lift
 import Mathlib.Topology.Basic
-import Mathlib.Order.Filter.Ultrafilter
+import Mathlib.Order.Filter.Ultrafilter.Basic
 
 /-! # Characterization of basic topological properties in terms of ultrafilters -/
 

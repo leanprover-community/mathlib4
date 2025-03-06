@@ -13,6 +13,7 @@ variable {x y : ℕ}
 example : 3 ≤ (3:ℕ) := by ring_le
 example : 1 ≤ (3:ℕ) := by ring_le
 example : 0 ≤ (3:ℕ) + 1 := by ring_le
+example : x ≤ x := by ring_le
 example : x ≤ x + 3 := by ring_le
 example : x ≤ 1 + x := by ring_le
 example : x + y + 1 ≤ y + x + 3 := by ring_le

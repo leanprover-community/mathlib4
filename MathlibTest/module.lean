@@ -156,12 +156,8 @@ example (h : a = b) : a • x = b • x := by
   match_scalars
   linear_combination h
 
-/- `linear_combination` does not currently handle `•`.  The following mimics what should eventually
-be performed by a `linear_combination` call, with exact syntax TBD -- maybe
-`linear_combination (norm := module) h • x` or `module_combination h • x`. -/
 example (h : a = b) : a • x = b • x := by
-  apply eq_of_add (congr($h • x):)
-  module
+  linear_combination (norm := module) h • x
 
 example (h : a ^ 2 + b ^ 2 = 1) : a • (a • x - b • y) + (b • a • y + b • b • x) = x := by
   match_scalars
@@ -169,25 +165,17 @@ example (h : a ^ 2 + b ^ 2 = 1) : a • (a • x - b • y) + (b • a • y + b
   · ring
 
 example (h : a ^ 2 + b ^ 2 = 1) : a • (a • x - b • y) + (b • a • y + b • b • x) = x := by
-  -- `linear_combination (norm := module) h • x`
-  apply eq_of_add (congr($h • x):)
-  module
+  linear_combination (norm := module) h • x
 
 example (h1 : a • x + b • y = 0) (h2 : a • μ • x + b • ν • y = 0) :
     (μ - ν) • a • x = 0 ∧ (μ - ν) • b • y = 0 := by
   constructor
-  · -- `linear_combination (norm := module) h2 - ν • h1`
-    apply eq_of_add (congr($h2 - ν • $h1):)
-    module
-  · -- `linear_combination (norm := module) μ • h1 + h2`
-    apply eq_of_add (congr(μ • $h1 - $h2):)
-    module
+  · linear_combination (norm := module) h2 - ν • h1
+  · linear_combination (norm := module) μ • h1 - h2
 
 example (h1 : 0 • z + a • x + b • y = 0) (h2 : 0 • ρ • z + a • μ • x + b • ν • y = 0) :
     (μ - ν) • a • x = 0 := by
-  -- `linear_combination (norm := module) h2 - ν • h1`
-  apply eq_of_add (congr($h2 - ν • $h1):)
-  module
+  linear_combination (norm := module) h2 - ν • h1
 
 example
     (h1 : a • x + b • y + c • z = 0)
@@ -196,15 +184,9 @@ example
     (μ - ν) • (μ - ρ) • a • x = 0 ∧ (μ - ν) • (ν - ρ) • b • y = 0
       ∧ (μ - ρ) • (ν - ρ) • c • z = 0 := by
   refine ⟨?_, ?_, ?_⟩
-  · -- `linear_combination (norm := module) h3 - (ν + ρ) • h2 + ν • ρ • h1`
-    apply eq_of_add (congr($h3 - (ν + ρ) • $h2 + ν • ρ • $h1):)
-    module
-  · -- `linear_combination (norm := module) - h3 + (μ + ρ) • h2 - μ • ρ • h1`
-    apply eq_of_add (congr(- $h3 + (μ + ρ) • $h2 - μ • ρ • $h1):)
-    module
-  · -- `linear_combination (norm := module) h3 - (μ + ν) • h2 + μ • ν • h1`
-    apply eq_of_add (congr($h3 - (μ + ν) • $h2 + μ • ν • $h1):)
-    module
+  · linear_combination (norm := module) h3 - (ν + ρ) • h2 + ν • ρ • h1
+  · linear_combination (norm := module) - h3 + (μ + ρ) • h2 - μ • ρ • h1
+  · linear_combination (norm := module) h3 - (μ + ν) • h2 + μ • ν • h1
 
 /--
 error: ring failed, ring expressions not equal
@@ -253,9 +235,7 @@ variable [Field K] [CharZero K] [Module K V]
 example : (2:K)⁻¹ • x + (3:K)⁻¹ • x + (6:K)⁻¹ • x = x := by module
 
 example (h₁ : t - u = -(v - w)) (h₂ : t + u = v + w) : t = w := by
-  -- `linear_combination (norm := module) 2⁻¹ • h₁ + 2⁻¹ • h₂`
-  apply eq_of_add (congr((2:K)⁻¹ • $h₁ + (2:K)⁻¹ • $h₂):)
-  module
+  linear_combination (norm := module) (2:K)⁻¹ • h₁ + (2:K)⁻¹ • h₂
 
 end CharZeroField
 
@@ -288,8 +268,7 @@ example (h₁ : 1 = a ^ 2 + b ^ 2) (h₂ : 1 - a ≠ 0) :
     ((2 / (1 - a)) ^ 2 * b ^ 2 + 4)⁻¹ • (4:K) • ((2 / (1 - a)) • y)
     + ((2 / (1 - a)) ^ 2 * b ^ 2 + 4)⁻¹ • ((2 / (1 - a)) ^ 2 * b ^ 2 - 4) • x
     = a • x + y := by
-  -- `linear_combination (norm := skip) (h₁ * (b ^ 2 + (1 - a) ^ 2)⁻¹) • (y + (a - 1) • x)`
-  apply eq_of_add (congr(($h₁ * (b ^ 2 + (1 - a) ^ 2)⁻¹) • (y + (a - 1) • x)):)
+  linear_combination (norm := skip) (h₁ * (b ^ 2 + (1 - a) ^ 2)⁻¹) • (y + (a - 1) • x)
   match_scalars
   · field_simp
     ring

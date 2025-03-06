@@ -3,10 +3,15 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Noetherian
-import Mathlib.RingTheory.Localization.Module
-import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.Algebra.Small.Module
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.RingTheory.Finiteness.Projective
+import Mathlib.RingTheory.Localization.BaseChange
+import Mathlib.RingTheory.Noetherian.Basic
+import Mathlib.RingTheory.TensorProduct.Finite
+
 /-!
 
 # Finitely Presented Modules
@@ -69,21 +74,33 @@ end Semiring
 
 section Ring
 
-variable (R M N) [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+section
 
-universe u in
-variable (R M : Type u) [Ring R] [AddCommGroup M] [Module R M] in
+universe u v
+variable (R : Type u) (M : Type*) [Ring R] [AddCommGroup M] [Module R M]
+
+theorem Module.FinitePresentation.exists_fin [fp : Module.FinitePresentation R M] :
+    ∃ (n : ℕ) (K : Submodule R (Fin n → R)) (_ : M ≃ₗ[R] (Fin n → R) ⧸ K), K.FG := by
+  have ⟨ι, ⟨hι₁, hι₂⟩⟩ := fp
+  refine ⟨_, LinearMap.ker (linearCombination R Subtype.val ∘ₗ
+    (lcongr ι.equivFin (.refl ..) ≪≫ₗ linearEquivFunOnFinite R R _).symm.toLinearMap),
+    (LinearMap.quotKerEquivOfSurjective _ <| LinearMap.range_eq_top.mp ?_).symm, ?_⟩
+  · simpa [range_linearCombination] using hι₁
+  · simpa [LinearMap.ker_comp, Submodule.comap_equiv_eq_map_symm] using hι₂.map _
+
 /-- A finitely presented module is isomorphic to the quotient of a finite free module by a finitely
 generated submodule. -/
-theorem Module.FinitePresentation.equiv_quotient [fp : Module.FinitePresentation R M] :
-    ∃ (L : Type u) (_ : AddCommGroup L) (_ : Module R L) (K : Submodule R L) (_ : M ≃ₗ[R] L ⧸ K),
-      Module.Free R L ∧ Module.Finite R L ∧ K.FG := by
-  obtain ⟨ι, ⟨hι₁, hι₂⟩⟩ := fp
-  use ι →₀ R, inferInstance, inferInstance
-  use LinearMap.ker (Finsupp.linearCombination R Subtype.val)
-  refine ⟨(LinearMap.quotKerEquivOfSurjective _ ?_).symm, inferInstance, inferInstance, hι₂⟩
-  apply LinearMap.range_eq_top.mp
-  simpa only [Finsupp.range_linearCombination, Subtype.range_coe_subtype, Finset.setOf_mem]
+theorem Module.FinitePresentation.equiv_quotient [Module.FinitePresentation R M] [Small.{v} R] :
+    ∃ (L : Type v) (_ : AddCommGroup L) (_ : Module R L) (K : Submodule R L)
+      (_ : M ≃ₗ[R] L ⧸ K), Module.Free R L ∧ Module.Finite R L ∧ K.FG :=
+  have ⟨_n, _K, e, fg⟩ := Module.FinitePresentation.exists_fin R M
+  let es := linearEquivShrink
+  ⟨_, inferInstance, inferInstance, _, e ≪≫ₗ Submodule.Quotient.equiv _ _ (es ..) rfl,
+    .of_equiv (es ..), .equiv (es ..), fg.map (es ..).toLinearMap⟩
+
+end
+
+variable (R M N) [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 -- Ideally this should be an instance but it makes mathlib much slower.
 lemma Module.finitePresentation_of_finite [IsNoetherianRing R] [h : Module.Finite R M] :
@@ -152,7 +169,8 @@ lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M
   obtain ⟨s, hs, hs'⟩ := h
   obtain ⟨t, ht⟩ := hl'
   have H : Function.Surjective (Finsupp.linearCombination R ((↑) : s → M)) :=
-    LinearMap.range_eq_top.mp (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
+    LinearMap.range_eq_top.mp
+      (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
   apply Module.finitePresentation_of_free_of_surjective (l ∘ₗ linearCombination R Subtype.val)
     (hl.comp H)
   choose σ hσ using (show _ from H)
@@ -168,7 +186,8 @@ lemma Module.FinitePresentation.fg_ker [Module.Finite R M]
   classical
   obtain ⟨s, hs, hs'⟩ := h
   have H : Function.Surjective (Finsupp.linearCombination R ((↑) : s → N)) :=
-    LinearMap.range_eq_top.mp (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
+    LinearMap.range_eq_top.mp
+      (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
   obtain ⟨f, hf⟩ : ∃ f : (s →₀ R) →ₗ[R] M, l ∘ₗ f = (Finsupp.linearCombination R Subtype.val) := by
     choose f hf using show _ from hl
     exact ⟨Finsupp.linearCombination R (fun i ↦ f i), by ext; simp [hf]⟩
@@ -181,7 +200,7 @@ lemma Module.FinitePresentation.fg_ker [Module.Finite R M]
     exact ⟨_, hy, by simp⟩
   apply Submodule.fg_of_fg_map_of_fg_inf_ker f.range.mkQ
   · rw [this]
-    exact Module.Finite.out
+    exact Module.Finite.fg_top
   · rw [Submodule.ker_mkQ, inf_comm, ← Submodule.map_comap_eq, ← LinearMap.ker_comp, hf]
     exact hs'.map f
 
@@ -195,12 +214,13 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
     Module.FinitePresentation R M := by
   obtain ⟨s, hs⟩ : (⊤ : Submodule R M).FG := by
     apply Submodule.fg_of_fg_map_of_fg_inf_ker l
-    · rw [Submodule.map_top, LinearMap.range_eq_top.mpr hl]; exact Module.Finite.out
-    · rw [top_inf_eq, ← Submodule.fg_top]; exact Module.Finite.out
+    · rw [Submodule.map_top, LinearMap.range_eq_top.mpr hl]; exact Module.Finite.fg_top
+    · rw [top_inf_eq, ← Submodule.fg_top]; exact Module.Finite.fg_top
   refine ⟨s, hs, ?_⟩
   let π := Finsupp.linearCombination R ((↑) : s → M)
   have H : Function.Surjective π :=
-    LinearMap.range_eq_top.mp (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
+    LinearMap.range_eq_top.mp
+      (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
   have inst : Module.Finite R (LinearMap.ker (l ∘ₗ π)) := by
     constructor
     rw [Submodule.fg_top]; exact Module.FinitePresentation.fg_ker _ (hl.comp H)
@@ -218,8 +238,37 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
     Submodule.comap_mono (f := π) (bot_le (a := LinearMap.ker l))
   rw [← inf_eq_right.mpr this, ← Submodule.range_subtype (LinearMap.ker _),
     ← Submodule.map_comap_eq, ← LinearMap.ker_comp, e, LinearMap.ker_comp f,
-    LinearMap.ker_eq_bot.mpr (Submodule.injective_subtype _), Submodule.comap_bot]
+    LinearMap.ker_eq_bot.mpr (Submodule.injective_subtype (LinearMap.ker l)), Submodule.comap_bot]
   exact (Module.FinitePresentation.fg_ker f hf).map (Submodule.subtype _)
+
+/-- Given a split exact sequence `0 → M → N → P → 0` with `N` finitely presented,
+then `M` is also finitely presented. -/
+lemma Module.finitePresentation_of_split_exact
+    {P : Type*} [AddCommGroup P] [Module R P]
+    [Module.FinitePresentation R N]
+    (f : M →ₗ[R] N) (g : N →ₗ[R] P) (l : P →ₗ[R] N) (hl : g ∘ₗ l = .id)
+    (hf : Function.Injective f) (H : Function.Exact f g) :
+    Module.FinitePresentation R M := by
+  have hg : Function.Surjective g := Function.LeftInverse.surjective (DFunLike.congr_fun hl)
+  have := Module.Finite.of_surjective g hg
+  obtain ⟨e, rfl, rfl⟩ := ((Function.Exact.split_tfae' H).out 0 2 rfl rfl).mp
+    ⟨hf, l, hl⟩
+  refine Module.finitePresentation_of_surjective (LinearMap.fst _ _ _ ∘ₗ e.toLinearMap)
+    (Prod.fst_surjective.comp e.surjective) ?_
+  rw [LinearMap.ker_comp, Submodule.comap_equiv_eq_map_symm,
+    LinearMap.exact_iff.mp Function.Exact.inr_fst, ← Submodule.map_top]
+  exact .map _ (.map _ (Module.Finite.fg_top))
+
+/-- Given an exact sequence `0 → M → N → P → 0`
+with `N` finitely presented and `P` projective, then `M` is also finitely presented. -/
+lemma Module.finitePresentation_of_projective_of_exact
+    {P : Type*} [AddCommGroup P] [Module R P]
+    [Module.FinitePresentation R N] [Module.Projective R P]
+    (f : M →ₗ[R] N) (g : N →ₗ[R] P)
+    (hf : Function.Injective f) (hg : Function.Surjective g) (H : Function.Exact f g) :
+    Module.FinitePresentation R M :=
+  have ⟨l, hl⟩ := Module.projective_lifting_property g .id hg
+  Module.finitePresentation_of_split_exact f g l hl hf H
 
 end Ring
 
@@ -228,6 +277,36 @@ section CommRing
 variable {R M N N'} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable [AddCommGroup N'] [Module R N'] (S : Submonoid R) (f : N →ₗ[R] N') [IsLocalizedModule S f]
 
+open TensorProduct in
+instance {A} [CommRing A] [Algebra R A] [Module.FinitePresentation R M] :
+    Module.FinitePresentation A (A ⊗[R] M) := by
+  classical
+  obtain ⟨n, f, hf⟩ := Module.Finite.exists_fin' R M
+  have inst := Module.finitePresentation_of_projective A (A ⊗[R] (Fin n → R))
+  apply Module.finitePresentation_of_surjective (f.baseChange A)
+    (LinearMap.lTensor_surjective A hf)
+  have : Function.Exact ((LinearMap.ker f).subtype.baseChange A) (f.baseChange A) :=
+    lTensor_exact A f.exact_subtype_ker_map hf
+  rw [LinearMap.exact_iff] at this
+  rw [this, ← Submodule.map_top]
+  apply Submodule.FG.map
+  have : Module.Finite R (LinearMap.ker f) :=
+    ⟨(Submodule.fg_top _).mpr (Module.FinitePresentation.fg_ker f hf)⟩
+  exact Module.Finite.fg_top (R := A) (M := A ⊗[R] LinearMap.ker f)
+
+open TensorProduct in
+lemma FinitePresentation.of_isBaseChange
+    {A} [CommRing A] [Algebra R A] [Module A N] [IsScalarTower R A N]
+    (f : M →ₗ[R] N) (h : IsBaseChange A f) [Module.FinitePresentation R M] :
+    Module.FinitePresentation A N :=
+  Module.finitePresentation_of_surjective
+    h.equiv.toLinearMap h.equiv.surjective (by simpa using Submodule.fg_bot)
+
+open TensorProduct in
+instance (S : Submonoid R) [Module.FinitePresentation R M] :
+    Module.FinitePresentation (Localization S) (LocalizedModule S M) :=
+  FinitePresentation.of_isBaseChange (LocalizedModule.mkLinearMap S M)
+    ((isLocalizedModule_iff_isBaseChange S _ _).mp inferInstance)
 
 lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     [h : Module.FinitePresentation R M] (g : M →ₗ[R] N') :
@@ -235,7 +314,8 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
   obtain ⟨σ, hσ, τ, hτ⟩ := h
   let π := Finsupp.linearCombination R ((↑) : σ → M)
   have hπ : Function.Surjective π :=
-    LinearMap.range_eq_top.mp (by rw [range_linearCombination, Subtype.range_val, ← hσ]; rfl)
+    LinearMap.range_eq_top.mp
+      (by rw [range_linearCombination, Subtype.range_val, ← hσ]; rfl)
   classical
   choose s hs using IsLocalizedModule.surj S f
   let i : σ → N :=
@@ -335,7 +415,7 @@ lemma exists_bijective_map_powers [Module.Finite R M] [Module.FinitePresentation
     simp only [Module.algebraMap_end_apply, algebraMap_smul, LinearMap.map_smul_of_tower]
     rw [LinearMap.smul_comp, ← smul_assoc s₀.1, Algebra.smul_def s₀.1, IsUnit.mul_val_inv, one_smul]
     apply LinearMap.restrictScalars_injective R
-    apply IsLocalizedModule.ringHom_ext (.powers t) (LocalizedModule.mkLinearMap (.powers t) M)
+    apply IsLocalizedModule.ext (.powers t) (LocalizedModule.mkLinearMap (.powers t) M)
       (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap (.powers t) M))
     ext x
     have : s₂.1 • l' (l x) = s₂.1 • s₀.1 • x := congr($hs₂ x)
@@ -346,7 +426,7 @@ lemma exists_bijective_map_powers [Module.Finite R M] [Module.FinitePresentation
     simp only [Module.algebraMap_end_apply, algebraMap_smul, LinearMap.map_smul_of_tower]
     rw [LinearMap.comp_smul, ← smul_assoc s₀.1, Algebra.smul_def s₀.1, IsUnit.mul_val_inv, one_smul]
     apply LinearMap.restrictScalars_injective R
-    apply IsLocalizedModule.ringHom_ext (.powers t) (LocalizedModule.mkLinearMap (.powers t) N)
+    apply IsLocalizedModule.ext (.powers t) (LocalizedModule.mkLinearMap (.powers t) N)
       (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap (.powers t) N))
     ext x
     have : s₁.1 • l (l' x) = s₁.1 • s₀.1 • x := congr($hs₁ x)
@@ -377,7 +457,7 @@ lemma Module.FinitePresentation.exists_lift_equiv_of_isLocalizedModule
   obtain ⟨l', s, H⟩ := Module.FinitePresentation.exists_lift_of_isLocalizedModule S g (l ∘ₗ f)
   have : Function.Bijective (IsLocalizedModule.map S f g l') := by
     have : IsLocalizedModule.map S f g l' = (s • LinearMap.id) ∘ₗ l := by
-      apply IsLocalizedModule.ringHom_ext S f (IsLocalizedModule.map_units g)
+      apply IsLocalizedModule.ext S f (IsLocalizedModule.map_units g)
       apply LinearMap.ext fun x ↦ ?_
       simp only [LinearMap.coe_comp, Function.comp_apply, IsLocalizedModule.map_apply,
         Basis.coe_repr_symm, LinearMap.coe_restrictScalars]
@@ -395,12 +475,12 @@ lemma Module.FinitePresentation.exists_lift_equiv_of_isLocalizedModule
     ((Module.End_isUnit_iff _).mp ((hsu.unit⁻¹).isUnit.map (algebraMap _ (End Rᵣₛ
       (LocalizedModule rs N))))).comp (hr' (r * s) (dvd_mul_right _ _))
   refine ⟨r * s, mul_mem hr s.2, LinearEquiv.ofBijective _ this, ?_⟩
-  apply IsLocalizedModule.ringHom_ext rs (LocalizedModule.mkLinearMap rs M) fun x ↦ map_units g
+  apply IsLocalizedModule.ext rs (LocalizedModule.mkLinearMap rs M) fun x ↦ map_units g
     ⟨x.1, SetLike.le_def.mp (Submonoid.powers_le.mpr (mul_mem hr s.2)) x.2⟩
   ext x
   apply ((Module.End_isUnit_iff _).mp (IsLocalizedModule.map_units g s)).1
   have : ∀ x, g (l' x) = s.1 • (l (f x)) := LinearMap.congr_fun H
-  simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
+  simp only [rs, LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
     Function.comp_apply, LocalizedModule.mkLinearMap_apply, LinearEquiv.ofBijective_apply,
     LinearMap.smul_apply, LocalizedModule.map_mk, algebraMap_end_apply]
   rw [← map_smul, ← smul_assoc, Algebra.smul_def s.1, hsu.mul_val_inv, one_smul]
@@ -408,7 +488,7 @@ lemma Module.FinitePresentation.exists_lift_equiv_of_isLocalizedModule
     inv_one, Units.val_one, LinearMap.one_apply, this]
 
 instance Module.FinitePresentation.isLocalizedModule_map [Module.FinitePresentation R M] :
-      IsLocalizedModule S (IsLocalizedModule.map S f g) := by
+    IsLocalizedModule S (IsLocalizedModule.map S f g) := by
   constructor
   · intro s
     rw [Module.End_isUnit_iff]
@@ -423,7 +503,7 @@ instance Module.FinitePresentation.isLocalizedModule_map [Module.FinitePresentat
   · intro h
     obtain ⟨h', s, e⟩ := Module.FinitePresentation.exists_lift_of_isLocalizedModule S g (h ∘ₗ f)
     refine ⟨⟨h', s⟩, ?_⟩
-    apply IsLocalizedModule.ringHom_ext S f (IsLocalizedModule.map_units g)
+    apply IsLocalizedModule.ext S f (IsLocalizedModule.map_units g)
     refine e.symm.trans (by ext; simp)
   · intro h₁ h₂ e
     apply Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule S g

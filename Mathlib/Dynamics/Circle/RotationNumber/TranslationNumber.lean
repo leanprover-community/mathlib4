@@ -3,11 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Order.Iterate
 import Mathlib.Order.SemiconjSup
 import Mathlib.Topology.Order.MonotoneContinuity
+import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Translation number of a monotone real map that commutes with `x ↦ x + 1`
@@ -123,7 +123,7 @@ open Function hiding Commute
 -/
 
 /-- A lift of a monotone degree one map `S¹ → S¹`. -/
-structure CircleDeg1Lift extends ℝ →o ℝ : Type where
+structure CircleDeg1Lift : Type extends ℝ →o ℝ where
   map_add_one' : ∀ x, toFun (x + 1) = toFun x + 1
 
 namespace CircleDeg1Lift
@@ -253,7 +253,7 @@ theorem commute_iff_commute {f g : CircleDeg1Lift} : Commute f g ↔ Function.Co
 `translation (Multiplicative.ofAdd x)`. -/
 def translate : Multiplicative ℝ →* CircleDeg1Liftˣ := MonoidHom.toHomUnits <|
   { toFun := fun x =>
-      ⟨⟨fun y => Multiplicative.toAdd x + y, fun _ _ h => add_le_add_left h _⟩, fun _ =>
+      ⟨⟨fun y => x.toAdd + y, fun _ _ h => add_le_add_left h _⟩, fun _ =>
         (add_assoc _ _ _).symm⟩
     map_one' := ext <| zero_add
     map_mul' := fun _ _ => ext <| add_assoc _ _ }
@@ -578,11 +578,12 @@ theorem transnumAuxSeq_dist_lt (n : ℕ) :
     dist (f.transnumAuxSeq n) (f.transnumAuxSeq (n + 1)) < 1 / 2 / 2 ^ n := by
   have : 0 < (2 ^ (n + 1) : ℝ) := pow_pos zero_lt_two _
   rw [div_div, ← pow_succ', ← abs_of_pos this]
-  replace := abs_pos.2 (ne_of_gt this)
-  convert (div_lt_div_right this).2 ((f ^ 2 ^ n).dist_map_map_zero_lt (f ^ 2 ^ n)) using 1
-  simp_rw [transnumAuxSeq, Real.dist_eq]
-  rw [← abs_div, sub_div, pow_succ, pow_succ', ← two_mul, mul_div_mul_left _ _ (two_ne_zero' ℝ),
-    pow_mul, sq, mul_apply]
+  calc
+    _ = dist ((f ^ 2 ^ n) 0 + (f ^ 2 ^ n) 0) ((f ^ 2 ^ n) ((f ^ 2 ^ n) 0)) / |2 ^ (n + 1)| := by
+      simp_rw [transnumAuxSeq, Real.dist_eq]
+      rw [← abs_div, sub_div, pow_succ, pow_succ', ← two_mul, mul_div_mul_left _ _ (two_ne_zero' ℝ),
+        pow_mul, sq, mul_apply]
+    _ < _ := by gcongr; exact (f ^ 2 ^ n).dist_map_map_zero_lt (f ^ 2 ^ n)
 
 theorem tendsto_translationNumber_aux : Tendsto f.transnumAuxSeq atTop (𝓝 <| τ f) :=
   (cauchySeq_of_le_geometric_two fun n => le_of_lt <| f.transnumAuxSeq_dist_lt n).tendsto_limUnder
@@ -599,7 +600,7 @@ theorem tendsto_translationNumber_of_dist_bounded_aux (x : ℕ → ℝ) (C : ℝ
   · exact fun n => C / 2 ^ n
   · intro n
     have : 0 < (2 ^ n : ℝ) := pow_pos zero_lt_two _
-    convert (div_le_div_right this).2 (H (2 ^ n)) using 1
+    convert (div_le_div_iff_of_pos_right this).2 (H (2 ^ n)) using 1
     rw [transnumAuxSeq, Real.dist_eq, ← sub_div, abs_div, abs_of_pos this, Real.dist_eq]
   · exact mul_zero C ▸ tendsto_const_nhds.mul <| tendsto_inv_atTop_zero.comp <|
       tendsto_pow_atTop_atTop_of_one_lt one_lt_two
@@ -671,8 +672,8 @@ theorem tendsto_translation_number₀' :
         ((tendsto_const_div_atTop_nhds_zero_nat 1).comp (tendsto_add_atTop_nat 1))
   dsimp
   have : (0 : ℝ) < n + 1 := n.cast_add_one_pos
-  rw [Real.dist_eq, div_sub' _ _ _ (ne_of_gt this), abs_div, ← Real.dist_eq, abs_of_pos this,
-    Nat.cast_add_one, div_le_div_right this, ← Nat.cast_add_one]
+  rw [Real.dist_eq, div_sub' (ne_of_gt this), abs_div, ← Real.dist_eq, abs_of_pos this,
+    Nat.cast_add_one, div_le_div_iff_of_pos_right this, ← Nat.cast_add_one]
   apply dist_pow_map_zero_mul_translationNumber_le
 
 theorem tendsto_translation_number₀ : Tendsto (fun n : ℕ => (f ^ n) 0 / n) atTop (𝓝 <| τ f) :=

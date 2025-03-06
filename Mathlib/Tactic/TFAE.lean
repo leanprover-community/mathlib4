@@ -249,8 +249,8 @@ def elabTFAEType (tfaeList : List Q(Prop)) : TSyntax ``tfaeType → TermElabM Ex
     let l := tfaeList.length
     let i' ← elabIndex i l
     let j' ← elabIndex j l
-    let Pi := tfaeList.get! (i'-1)
-    let Pj := tfaeList.get! (j'-1)
+    let Pi := tfaeList[i'-1]!
+    let Pj := tfaeList[j'-1]!
     /- TODO: this is a hack to show the types `Pi`, `Pj` on hover. See [Zulip](https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/Pre-RFC.3A.20Forcing.20terms.20to.20be.20shown.20in.20hover.3F). -/
     Term.addTermInfo' i q(sorry : $Pi) Pi
     Term.addTermInfo' j q(sorry : $Pj) Pj
@@ -298,18 +298,18 @@ elab_rules : tactic
   goal.withContext do
     let (tfaeListQ, tfaeList) ← getTFAEList (← goal.getType)
     closeMainGoal `tfae_finish <|← AtomM.run .reducible do
-      let is ← tfaeList.mapM AtomM.addAtom
+      let is ← tfaeList.mapM (fun e ↦ Prod.fst <$> AtomM.addAtom e)
       let mut hyps := #[]
       for hyp in ← getLocalHyps do
         let ty ← whnfR <|← instantiateMVars <|← inferType hyp
         if let (``Iff, #[p1, p2]) := ty.getAppFnArgs then
-          let q1 ← AtomM.addAtom p1
-          let q2 ← AtomM.addAtom p2
+          let (q1, _) ← AtomM.addAtom p1
+          let (q2, _) ← AtomM.addAtom p2
           hyps := hyps.push (q1, q2, ← mkAppM ``Iff.mp #[hyp])
           hyps := hyps.push (q2, q1, ← mkAppM ``Iff.mpr #[hyp])
         else if ty.isArrow then
-          let q1 ← AtomM.addAtom ty.bindingDomain!
-          let q2 ← AtomM.addAtom ty.bindingBody!
+          let (q1, _) ← AtomM.addAtom ty.bindingDomain!
+          let (q2, _) ← AtomM.addAtom ty.bindingBody!
           hyps := hyps.push (q1, q2, hyp)
       proveTFAE hyps (← get).atoms is tfaeListQ
 

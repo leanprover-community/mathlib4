@@ -9,8 +9,8 @@ import Mathlib.Lean.Expr.Basic
 # `Ineq` datatype
 
 This file contains an enum `Ineq` (whose constructors are `eq`, `le`, `lt`), and operations
-involving it. The type `Ineq` is one of the fundamental objects manipulated by the `linarith` tactic
-(and, in future, also the `linear_combination` tactic).
+involving it. The type `Ineq` is one of the fundamental objects manipulated by the `linarith` and
+`linear_combination` tactics.
 -/
 
 open Lean Elab Tactic Meta

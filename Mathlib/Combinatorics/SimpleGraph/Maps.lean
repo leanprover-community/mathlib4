@@ -5,6 +5,7 @@ Authors: Hunter Monroe, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Dart
 import Mathlib.Data.FunLike.Fintype
+import Mathlib.Logic.Embedding.Set
 
 /-!
 # Maps between graphs
@@ -202,7 +203,7 @@ abbrev Hom :=
   RelHom G.Adj G'.Adj
 
 /-- A graph embedding is an embedding `f` such that for vertices `v w : V`,
-`G.Adj (f v) (f w) ↔ G.Adj v w`. Its image is an induced subgraph of G'.
+`G'.Adj (f v) (f w) ↔ G.Adj v w`. Its image is an induced subgraph of G'.
 
 The notation `G ↪g G'` represents the type of graph embeddings. -/
 abbrev Embedding :=
@@ -271,6 +272,13 @@ def mapSpanningSubgraphs {G G' : SimpleGraph V} (h : G ≤ G') : G →g G' where
   toFun x := x
   map_rel' ha := h ha
 
+lemma mapSpanningSubgraphs_inj {G G' : SimpleGraph V} {v w : V} (h : G ≤ G') :
+    mapSpanningSubgraphs h v = mapSpanningSubgraphs h w ↔ v = w := by simp
+
+lemma mapSpanningSubgraphs_injective {G G' : SimpleGraph V} (h : G ≤ G') :
+    Injective (mapSpanningSubgraphs h) :=
+  fun v w hvw ↦ by simpa [mapSpanningSubgraphs_apply] using hvw
+
 theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective f.mapEdgeSet := by
   rintro ⟨e₁, h₁⟩ ⟨e₂, h₂⟩
   dsimp [Hom.mapEdgeSet]
@@ -334,7 +342,7 @@ theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w
 @[simps]
 def mapEdgeSet : G.edgeSet ↪ G'.edgeSet where
   toFun := Hom.mapEdgeSet f
-  inj' := Hom.mapEdgeSet.injective f f.injective
+  inj' := Hom.mapEdgeSet.injective f.toRelHom f.injective
 
 /-- A graph embedding induces an embedding of neighbor sets. -/
 @[simps]

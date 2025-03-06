@@ -3,8 +3,9 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
+import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Nat.Bits
-import Mathlib.Order.Lattice
 
 /-! Lemmas about `size`. -/
 
@@ -90,7 +91,7 @@ theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
   cases b <;> dsimp [bit] <;> omega
 
 theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
-  ⟨fun h => lt_of_lt_of_le (lt_size_self _) (pow_le_pow_of_le_right (by decide) h), by
+  ⟨fun h => lt_of_lt_of_le (lt_size_self _) (pow_le_pow_right (by decide) h), by
     rw [← one_shiftLeft]
     induction m using binaryRec generalizing n with
     | z => simp

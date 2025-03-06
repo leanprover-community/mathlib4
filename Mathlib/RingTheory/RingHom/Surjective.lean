@@ -65,7 +65,7 @@ theorem surjective_localizationPreserves :
   `Rᵣ →+* Sᵣ` is surjective. -/
 theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
   introv R e H
-  rw [← Set.range_iff_surjective, Set.eq_univ_iff_forall]
+  rw [← Set.range_eq_univ, Set.eq_univ_iff_forall]
   letI := f.toAlgebra
   intro x
   apply Submodule.mem_of_span_eq_top_of_smul_pow_mem

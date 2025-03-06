@@ -265,7 +265,8 @@ def ExProd.mkNegNat (_ : Q(Ring $α)) (n : ℕ) : (e : Q($α)) × ExProd sα e :
   ⟨q((Int.negOfNat $lit).rawCast : $α), .const (-n) none⟩
 
 /--
-Constructs the expression corresponding to `.const (-n)`.
+Constructs the expression corresponding to `.const q h` for `q = n / d`
+and `h` a proof that `(d : α) ≠ 0`.
 (The `.const` constructor does not check that the expression is correct.)
 -/
 def ExProd.mkRat (_ : Q(DivisionRing $α)) (q : ℚ) (n : Q(ℤ)) (d : Q(ℕ)) (h : Expr) :
@@ -512,9 +513,8 @@ mutual
 partial def ExBase.evalNatCast {a : Q(ℕ)} (va : ExBase sℕ a) : AtomM (Result (ExBase sα) q($a)) :=
   match va with
   | .atom _ => do
-    let a' : Q($α) := q($a)
-    let i ← addAtom a'
-    pure ⟨a', ExBase.atom i, (q(Eq.refl $a') : Expr)⟩
+    let (i, ⟨b', _⟩) ← addAtomQ q($a)
+    pure ⟨b', ExBase.atom i, q(Eq.refl $b')⟩
   | .sum va => do
     let ⟨_, vc, p⟩ ← va.evalNatCast
     pure ⟨_, .sum vc, p⟩
@@ -663,7 +663,7 @@ def evalPowAtom {a : Q($α)} {b : Q(ℕ)} (va : ExBase sα a) (vb : ExProd sℕ 
 theorem const_pos (n : ℕ) (h : Nat.ble 1 n = true) : 0 < (n.rawCast : ℕ) := Nat.le_of_ble_eq_true h
 
 theorem mul_exp_pos {a₁ a₂ : ℕ} (n) (h₁ : 0 < a₁) (h₂ : 0 < a₂) : 0 < a₁ ^ n * a₂ :=
-  Nat.mul_pos (Nat.pos_pow_of_pos _ h₁) h₂
+  Nat.mul_pos (Nat.pow_pos h₁) h₂
 
 theorem add_pos_left {a₁ : ℕ} (a₂) (h : 0 < a₁) : 0 < a₁ + a₂ :=
   Nat.lt_of_lt_of_le h (Nat.le_add_right ..)
@@ -952,11 +952,11 @@ Evaluates an atom, an expression where `ring` can find no additional structure.
 def evalAtom (e : Q($α)) : AtomM (Result (ExSum sα) e) := do
   let r ← (← read).evalAtom e
   have e' : Q($α) := r.expr
-  let i ← addAtom e'
-  let ve' := (ExBase.atom i (e := e')).toProd (ExProd.mkNat sℕ 1).2 |>.toSum
+  let (i, ⟨a', _⟩) ← addAtomQ e'
+  let ve' := (ExBase.atom i (e := a')).toProd (ExProd.mkNat sℕ 1).2 |>.toSum
   pure ⟨_, ve', match r.proof? with
   | none => (q(atom_pf $e) : Expr)
-  | some (p : Q($e = $e')) => (q(atom_pf' $p) : Expr)⟩
+  | some (p : Q($e = $a')) => (q(atom_pf' $p) : Expr)⟩
 
 theorem inv_mul {R} [DivisionRing R] {a₁ a₂ a₃ b₁ b₃ c}
     (_ : (a₁⁻¹ : R) = b₁) (_ : (a₃⁻¹ : R) = b₃)
@@ -977,9 +977,8 @@ variable (dα : Q(DivisionRing $α))
 
 /-- Applies `⁻¹` to a polynomial to get an atom. -/
 def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase sα) q($a⁻¹)) := do
-  let a' : Q($α) := q($a⁻¹)
-  let i ← addAtom a'
-  pure ⟨a', ExBase.atom i, (q(Eq.refl $a') : Expr)⟩
+  let (i, ⟨b', _⟩) ← addAtomQ q($a⁻¹)
+  pure ⟨b', ExBase.atom i, q(Eq.refl $b')⟩
 
 /-- Inverts a polynomial `va` to get a normalized result polynomial.
 

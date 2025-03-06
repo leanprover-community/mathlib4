@@ -120,7 +120,7 @@ def inverse : HomologicalComplex (Karoubi C) c ⥤ Karoubi (HomologicalComplex C
 `Karoubi (HomologicalComplex C c) ≌ HomologicalComplex (Karoubi C) c`. -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (HomologicalComplex (Karoubi C) c) :=
-  eqToIso (Functor.ext (fun P => HomologicalComplex.ext (by aesop_cat) (by aesop_cat))
+  eqToIso (Functor.ext (fun P => HomologicalComplex.ext (by aesop_cat) (by simp))
     (by aesop_cat))
 
 /-- The unit isomorphism of the equivalence

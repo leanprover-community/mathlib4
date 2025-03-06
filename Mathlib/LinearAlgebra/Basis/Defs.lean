@@ -3,7 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Bases
@@ -52,8 +53,7 @@ basis, bases
 
 -/
 
-assert_not_exists LinearIndependent
-assert_not_exists Cardinal
+assert_not_exists LinearMap.pi LinearIndependent Cardinal
 
 noncomputable section
 
@@ -150,14 +150,10 @@ theorem repr_linearCombination (v) : b.repr (Finsupp.linearCombination _ b v) = 
   rw [← b.coe_repr_symm]
   exact b.repr.apply_symm_apply v
 
-@[deprecated (since := "2024-08-29")] alias repr_total := repr_linearCombination
-
 @[simp]
 theorem linearCombination_repr : Finsupp.linearCombination _ b (b.repr x) = x := by
   rw [← b.coe_repr_symm]
   exact b.repr.symm_apply_apply x
-
-@[deprecated (since := "2024-08-29")] alias total_repr := linearCombination_repr
 
 theorem repr_range : LinearMap.range (b.repr : M →ₗ[R] ι →₀ R) = Finsupp.supported R R univ := by
   rw [LinearEquiv.range, Finsupp.supported_univ]
@@ -209,8 +205,6 @@ theorem coe_sumCoords : (b.sumCoords : M → R) = fun m => (b.repr m).sum fun _ 
 @[simp high]
 theorem coe_sumCoords_of_fintype [Fintype ι] : (b.sumCoords : M → R) = ∑ i, b.coord i := by
   ext m
-  -- Porting note: - `eq_self_iff_true`
-  --               + `comp_apply` `LinearMap.coeFn_sum`
   simp only [sumCoords, Finsupp.sum_fintype, LinearMap.id_coe, LinearEquiv.coe_coe, coord_apply,
     id, Fintype.sum_apply, imp_true_iff, Finsupp.coe_lsum, LinearMap.coe_comp, comp_apply,
     LinearMap.coeFn_sum]
@@ -269,10 +263,9 @@ theorem repr_apply_eq (f : M → ι → R) (hadd : ∀ x y, f (x + y) = f x + f 
     (hsmul : ∀ (c : R) (x : M), f (c • x) = c • f x) (f_eq : ∀ i, f (b i) = Finsupp.single i 1)
     (x : M) (i : ι) : b.repr x i = f x i := by
   let f_i : M →ₗ[R] R :=
-    { toFun := fun x => f x i
-      -- Porting note(#12129): additional beta reduction needed
-      map_add' := fun _ _ => by beta_reduce; rw [hadd, Pi.add_apply]
-      map_smul' := fun _ _ => by simp [hsmul, Pi.smul_apply] }
+    { toFun x := f x i
+      map_add' _ _ := by beta_reduce; rw [hadd, Pi.add_apply]
+      map_smul' _ _ := by simp [hsmul, Pi.smul_apply] }
   have : Finsupp.lapply i ∘ₗ ↑b.repr = f_i := by
     refine b.ext fun j => ?_
     show b.repr (b j) i = f (b j) i
@@ -364,8 +357,6 @@ def mapCoeffs (h : ∀ (c) (x : M), f c • x = c • x) : Basis ι R' M := by
   letI : Module R' R := Module.compHom R (↑f.symm : R' →+* R)
   haveI : IsScalarTower R' R M :=
     { smul_assoc := fun x y z => by
-        -- Porting note: `dsimp [(· • ·)]` is unavailable because
-        --               `HSMul.hsmul` becomes `SMul.smul`.
         change (f.symm x * y) • z = x • (y • z)
         rw [mul_smul, ← h, f.apply_symm_apply] }
   exact ofRepr <| (b.repr.restrictScalars R').trans <|
@@ -380,8 +371,6 @@ theorem mapCoeffs_apply (i : ι) : b.mapCoeffs f h i = b i :=
     letI : Module R' R := Module.compHom R (↑f.symm : R' →+* R)
     haveI : IsScalarTower R' R M :=
     { smul_assoc := fun x y z => by
-        -- Porting note: `dsimp [(· • ·)]` is unavailable because
-        --               `HSMul.hsmul` becomes `SMul.smul`.
         change (f.symm x * y) • z = x • (y • z)
         rw [mul_smul, ← h, f.apply_symm_apply] }
     simp
@@ -509,7 +498,6 @@ theorem reindexFinsetRange_repr_self (i : ι) :
       Finsupp.single ⟨b i, Finset.mem_image_of_mem b (Finset.mem_univ i)⟩ 1 := by
   ext ⟨bi, hbi⟩
   rw [reindexFinsetRange, repr_reindex, Finsupp.mapDomain_equiv_apply, reindexRange_repr_self]
-  -- Porting note: replaced a `convert; refl` with `simp`
   simp [Finsupp.single_apply]
 
 @[simp]
