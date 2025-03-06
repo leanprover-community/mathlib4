@@ -23,7 +23,8 @@ for the names of the declarations whose syntax begins in position at least `pos`
 -/
 def getNamesFrom {m} [Monad m] [MonadEnv m] [MonadFileMap m] (pos : String.Pos) :
     m (Array Syntax) := do
-  let drs := declRangeExt.getState (← getEnv)
+  -- declarations from paralellism branches should not be interesting here, so use `local`
+  let drs := declRangeExt.toPersistentEnvExtension.getState (asyncMode := .local) (← getEnv)
   let fm ← getFileMap
   let mut nms := #[]
   for (nm, rgs) in drs do
