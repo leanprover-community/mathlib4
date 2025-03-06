@@ -306,10 +306,6 @@ noncomputable def restrictLatticeHom {V : Set 𝕜} (h : V ⊆ U) :
 lemma restrictLatticeHom_apply {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
     restrictLatticeHom h D = D.restrict h := by rfl
 
-/-- Restriction as an order-preserving morphism -/
-noncomputable example {V : Set 𝕜} (h : V ⊆ U) : DivisorOn U →o DivisorOn V :=
-  restrictLatticeHom h
-
 /-!
 ## Derived invariants
 -/
