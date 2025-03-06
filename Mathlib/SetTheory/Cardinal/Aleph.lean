@@ -772,4 +772,17 @@ theorem isNormal_beth : IsNormal (ord ∘ beth) :=
 theorem beth_normal : IsNormal.{u} fun o => (beth o).ord :=
   isNormal_beth
 
+theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit (ℶ_ o) := by
+  rcases eq_or_ne o 0 with (rfl | h)
+  · rw [beth_zero]
+    exact isStrongLimit_aleph0
+  · refine ⟨beth_ne_zero o, fun a ha ↦ ?_⟩
+    rw [beth_limit] at ha
+    · rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
+      have := power_le_power_left two_ne_zero ha.le
+      rw [← beth_succ] at this
+      exact this.trans_lt (beth_strictMono (H.succ_lt hi))
+    · rw [isLimit_iff]
+      exact ⟨h, H⟩
+
 end Cardinal
