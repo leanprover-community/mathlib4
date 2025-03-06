@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro
 -/
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.AtomM
 
 /-!
 # linear_combination' Tactic

@@ -7,6 +7,7 @@ import Mathlib.Tactic.LinearCombination.Lemmas
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Ring.Compare
+import Mathlib.Util.AtomM
 
 /-!
 # linear_combination Tactic
