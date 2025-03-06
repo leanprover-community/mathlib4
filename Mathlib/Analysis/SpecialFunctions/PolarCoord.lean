@@ -55,7 +55,7 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
   right_inv' := by
     rintro ⟨r, θ⟩ ⟨hr, hθ⟩
     dsimp at hr hθ
-    simp only [Prod.mk.inj_iff]
+    simp only [Prod.mk_inj]
     constructor
     · conv_rhs => rw [← sqrt_sq (le_of_lt hr), ← one_mul (r ^ 2), ← sin_sq_add_cos_sq θ]
       congr 1
