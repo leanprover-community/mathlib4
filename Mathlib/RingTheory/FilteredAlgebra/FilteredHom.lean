@@ -26,6 +26,29 @@ alongside with the property that `∀ p : ι`, the image of the `p`-th filtratio
 and `FR_lt` under `f` is exactly the intersection of the image of `f` with the `p`-th
 filtration layer of `FS` and `FS_lt` respectively.
 
+* `FilteredAddGroupHom` : A morphism between filtered abelian groups that preserves both the
+group and filtered morphism structures.
+
+* `FilteredAddGroupHom.comp` : The composition of filtered ring morphisms. Given two filtered
+abelian group morphisms `f : FilteredAddGroupHom FA FA_lt FB FB_lt` and
+`g : FilteredAddGroupHom FB FB_lt FC FC_lt`, their composition `g.comp  f` is defined by composing
+the underlying group homomorphisms and ensuring compatibility with the filtration structures.
+
+* `FilteredAddGroupHom.GradedPieceHom` :
+The induced morphism on the `i`-th graded piece of the associated graded group
+(written as `Gr(i)[f]`, where `f` is the filtered abelian group morphism).
+Given a filtered abelian group homomorphism `f : FilteredAddGroupHom FA FA_lt FB FB_lt`, this
+function takes an element in the `i`-th graded piece of `FA` (represented as a quotient
+`FA i / FA_lt i`) and maps it to the corresponding graded piece of `FB` by applying the group
+homomorphism `f`, ensuring that the result lies within the `i`-th filtration layer of `FB`.
+The construction respects the quotient equivalence relation, making it a well-defined additive
+group homomorphism.
+
+* `FilteredAddGroupHom.AssociatedGradedAddMonoidHom` :
+The induced graded group morphism between associated graded groups by giving
+the component-wise map `GradedPieceHom f`
+(Mathematically, it is `Gr[f] = ⨁ Gr(i)[f]`).
+
 -/
 section
 
