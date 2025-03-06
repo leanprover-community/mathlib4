@@ -9,7 +9,7 @@ import Mathlib.NumberTheory.ArithmeticFunction
 /-!
 # The Selberg Sieve
 
-We set up the working assumptions of the Selberg sieve and define the notion of an upper bound sieve
+We set up the working assumptions of the Selberg sieve, define the notion of an upper bound sieve
 and show that every upper bound sieve yields an upper bound on the size of the sifted set. We also
 define the Λ² sieve and prove that Λ² sieves are upper bound sieves. We then diagonalise the main
 term of the Λ² sieve.
@@ -25,7 +25,7 @@ minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(
 The `SelbergSieve.Notation` namespace includes common shorthand for the variables included in the
 `SelbergSieve` structure.
  * `A` for `support`
- * `𝒜 d` for `multSum d`
+ * `𝒜 d` for `multSum d` - the combined weight of the elements of `A` that are divisible by `d`
  * `P` for `prodPrimes`
  * `a` for `weights`
  * `X` for `totalMass`
@@ -47,18 +47,16 @@ open scoped BigOperators ArithmeticFunction
 
 open Finset Real Nat
 
-/--
-We set up the Selberg sieve as follows. Take a finite set of natural numbers `A`, whose elements
-are weighted by a sequence `a n`. Also take a finite set of primes `P`, represented as a squarefree
+/-- We set up a sieve problem as follows. Take a finite set of natural numbers `A`, whose elements
+are weighted by a sequence `a n`. Also take a finite set of primes `P`, represented by a squarefree
 natural number. These are the primes that we will sift from our set `A`. Suppose we can approximate
 `∑ n ∈ {k ∈ A | d ∣ k}, a n = ν d * X + R d`, where `X` is an approximation to the total size of `A`
 and `ν` is a multiplicative arithmetic function such that `0 < ν p < 1` for all primes `p ∣ P`.
 
-Then the fundamental theorem of the Selberg sieve will give us an upper bound on the size of the
-sifted sum `∑ n ∈ {k ∈ support | k.Coprime P}, a n`, obtained by removing any elements of `A` that
-are a multiple of a prime in `P`.
--/
-class SelbergSieve where
+Then a sieve-type theorem will give us an upper (or lower) bound on the size of the sifted sum
+`∑ n ∈ {k ∈ support | k.Coprime P}, a n`, obtained by removing any elements of `A` that are a
+multiple of a prime in `P`. -/
+class BoundingSieve where
   /-- The set of natural numbers that is to be sifted. The fundamental lemma yields an upper bound
     on the size of this set after the multiples of small primes have been removed. -/
   support : Finset ℕ
@@ -77,15 +75,20 @@ class SelbergSieve where
   nu_mult : nu.IsMultiplicative
   nu_pos_of_prime : ∀ p : ℕ, p.Prime → p ∣ prodPrimes → 0 < nu p
   nu_lt_one_of_prime : ∀ p : ℕ, p.Prime → p ∣ prodPrimes → nu p < 1
+
+/-- The Selberg upper bound sieve in particular introduces a parameter called the `level` which
+  gives the user control over the size of the error term. -/
+class SelbergSieve extends BoundingSieve where
   /-- The `level` of the sieve controls how many terms we include in the inclusion-exclusion type
     sum. A higher level will yield a tighter bound for the main term, but will also increase the
     size of the error term. -/
   level : ℝ
   one_le_level : 1 ≤ level
 
-attribute [arith_mult] SelbergSieve.nu_mult
+attribute [arith_mult] BoundingSieve.nu_mult
 
 namespace SelbergSieve
+open BoundingSieve
 
 namespace Notation
 
@@ -101,16 +104,16 @@ scoped notation3 "X" => totalMass
 scoped notation3 "A" => support
 @[inherit_doc level]
 scoped notation3 "y" => level
-/-- `1 ≤ y`-/
-scoped notation3 "hy" => one_le_level
+
+theorem one_le_y [s : SelbergSieve] : 1 ≤ y := one_le_level
 
 end Notation
 
 open Notation
 
-variable [s : SelbergSieve]
+variable [s : BoundingSieve]
 
-/-! Lemmas aboud $P$. -/
+/-! Lemmas about $P$. -/
 
 theorem prodPrimes_ne_zero : P ≠ 0 :=
   Squarefree.ne_zero prodPrimes_squarefree
@@ -142,7 +145,7 @@ theorem nu_ne_zero {d : ℕ} (hd : d ∣ P) : ν d ≠ 0 := by
   apply _root_.ne_of_gt
   exact nu_pos_of_dvd_prodPrimes hd
 
-theorem nu_lt_self_of_dvd_prodPrimes (d : ℕ) (hdP : d ∣ P) (hd_ne_one : d ≠ 1) : ν d < 1 := by
+theorem nu_lt_one_of_dvd_prodPrimes {d : ℕ} (hdP : d ∣ P) (hd_ne_one : d ≠ 1) : ν d < 1 := by
   have hd_sq : Squarefree d := Squarefree.squarefree_of_dvd hdP prodPrimes_squarefree
   have := hd_sq.ne_zero
   calc
