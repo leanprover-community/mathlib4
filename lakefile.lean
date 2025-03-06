@@ -160,21 +160,3 @@ lean_exe unused where
 
 lean_exe mathlib_test_executable where
   root := `MathlibTest.MathlibTestExecutable
-
-/-!
-## Other configuration
--/
-
-/--
-When a package depending on Mathlib updates its dependencies,
-update its toolchain to match Mathlib's and fetch the new cache.
--/
-post_update pkg do
-  let rootPkg ← getRootPackage
-  if rootPkg.name = pkg.name then
-    return -- do not run in Mathlib itself
-  if (← IO.getEnv "MATHLIB_NO_CACHE_ON_UPDATE") != some "1" then
-    let exeFile ← runBuild cache.fetch
-    let exitCode ← env exeFile.toString #["get"]
-    if exitCode ≠ 0 then
-      error s!"{pkg.name}: failed to fetch cache"
