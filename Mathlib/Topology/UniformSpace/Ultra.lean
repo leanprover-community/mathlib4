@@ -29,7 +29,8 @@ but rather extend the relation properties as needed.
 
 ## TODOs
 
-* Prove that `IsUltraUniformity` iff `IsUltrametricDist` on a `PseudoMetricSpace`
+* Prove that `IsUltraUniformity` iff metrizable by `IsUltrametricDist` on a `PseudoMetricSpace`
+  under a countable system/basis condition
 * Generalize `IsUltrametricDist` to `IsUltrametricUniformity`
 * Provide `IsUltraUniformity` for the uniformity in a `Valued` ring
 * Generalize results about open/closed balls and spheres in `IsUltraUniformity` to
