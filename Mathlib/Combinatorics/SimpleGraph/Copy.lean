@@ -31,7 +31,7 @@ open Fintype
 
 namespace SimpleGraph
 
-variable {V α β γ : Type*} {G : SimpleGraph V}
+variable {V α β γ : Type*} {G G₁ G₂ G₃ : SimpleGraph V}
   {A : SimpleGraph α} {B : SimpleGraph β} {C : SimpleGraph γ}
 
 section Copy
@@ -121,7 +121,7 @@ abbrev IsIsoSubgraph (A : SimpleGraph α) (B : SimpleGraph β) := Nonempty (Copy
 @[refl] theorem isIsoSubgraph_refl (G : SimpleGraph V) : G ⊑ G := ⟨Copy.id G⟩
 
 /-- A simple graph contains its subgraphs. -/
-theorem isIsoSubgraph_of_le {G₁ G₂ : SimpleGraph V} (h : G₁ ≤ G₂) : G₁ ⊑ G₂ := ⟨Copy.ofLE G₁ G₂ h⟩
+theorem isIsoSubgraph_of_le (h : G₁ ≤ G₂) : G₁ ⊑ G₂ := ⟨Copy.ofLE G₁ G₂ h⟩
 
 /-- If `A` contains `B` and `B` contains `C`, then `A` contains `C`. -/
 theorem isIsoSubgraph_trans : A ⊑ B → B ⊑ C → A ⊑ C := fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
