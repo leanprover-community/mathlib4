@@ -3,9 +3,13 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.ZeroOne.Prod
+import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Monoid, group etc structures on `M × N`
@@ -502,7 +506,7 @@ variable [CommMonoid P] (f : M →* P) (g : N →* P)
 
 /-- Coproduct of two `MonoidHom`s with the same codomain:
   `f.coprod g (p : M × N) = f p.1 * g p.2`.
-  (Commutative case; for the general case, see `MonoidHom.noncommCoprod`.)-/
+  (Commutative case; for the general case, see `MonoidHom.noncommCoprod`.) -/
 @[to_additive
     "Coproduct of two `AddMonoidHom`s with the same codomain:
     `f.coprod g (p : M × N) = f p.1 + g p.2`.

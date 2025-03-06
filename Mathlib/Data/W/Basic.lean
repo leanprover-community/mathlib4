@@ -3,7 +3,8 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Logic.Equiv.List
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Logic.Encodable.Pi
 
 /-!
 # W types
@@ -59,8 +60,7 @@ theorem ofSigma_toSigma : ∀ w : WType β, ofSigma (toSigma w) = w
 theorem toSigma_ofSigma : ∀ s : Σa : α, β a → WType β, toSigma (ofSigma s) = s
   | ⟨_, _⟩ => rfl
 
-variable (β)
-
+variable (β) in
 /-- The canonical bijection with the sigma type, showing that `WType` is a fixed point of
   the polynomial functor `X ↦ Σ a : α, β a → X`. -/
 @[simps]
@@ -69,8 +69,6 @@ def equivSigma : WType β ≃ Σa : α, β a → WType β where
   invFun := ofSigma
   left_inv := ofSigma_toSigma
   right_inv := toSigma_ofSigma
-
-variable {β}
 
 -- Porting note: Universes have a different order than mathlib3 definition
 /-- The canonical map from `WType β` into any type `γ` given a map `(Σ a : α, β a → γ) → γ`. -/
@@ -99,8 +97,8 @@ theorem infinite_of_nonempty_of_isEmpty (a b : α) [ha : Nonempty (β a)] [he : 
         ?_
     intro n m h
     induction' n with n ih generalizing m
-    · cases' m with m <;> simp_all
-    · cases' m with m
+    · rcases m with - | m <;> simp_all
+    · rcases m with - | m
       · simp_all
       · refine congr_arg Nat.succ (ih ?_)
         simp_all [funext_iff]⟩
@@ -142,7 +140,7 @@ private def encodable_zero : Encodable (WType' β 0) :=
 
 private def f (n : ℕ) : WType' β (n + 1) → Σa : α, β a → WType' β n
   | ⟨t, h⟩ => by
-    cases' t with a f
+    obtain ⟨a, f⟩ := t
     have h₀ : ∀ i : β a, WType.depth (f i) ≤ n := fun i =>
       Nat.le_of_lt_succ (lt_of_lt_of_le (WType.depth_lt_depth_mk a f i) h)
     exact ⟨a, fun i : β a => ⟨f i, h₀ i⟩⟩

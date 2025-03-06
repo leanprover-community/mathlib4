@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Union
 import Mathlib.Data.Multiset.Pi
+import Mathlib.Logic.Function.DependsOn
 
 /-!
 # The cartesian product of finsets
@@ -164,6 +165,12 @@ def restrict (s : Finset ι) (f : (i : ι) → π i) : (i : s) → π i := fun x
 
 theorem restrict_def (s : Finset ι) : s.restrict (π := π) = fun f x ↦ f x := rfl
 
+theorem _root_.Set.piCongrLeft_comp_restrict {s : Finset ι} :
+    (s.equivToSet.symm.piCongrLeft (fun i : s.toSet ↦ π i)) ∘ s.toSet.restrict = s.restrict := rfl
+
+theorem piCongrLeft_comp_restrict {s : Finset ι} :
+    (s.equivToSet.piCongrLeft (fun i : s ↦ π i)) ∘ s.restrict = s.toSet.restrict := rfl
+
 /-- If a function `f` is restricted to a finite set `t`, and `s ⊆ t`,
 this is the restriction to `s`. -/
 @[simp]
@@ -178,6 +185,9 @@ theorem restrict₂_comp_restrict {s t : Finset ι} (hst : s ⊆ t) :
 
 theorem restrict₂_comp_restrict₂ {s t u : Finset ι} (hst : s ⊆ t) (htu : t ⊆ u) :
     (restrict₂ (π := π) hst) ∘ (restrict₂ htu) = restrict₂ (hst.trans htu) := rfl
+
+lemma dependsOn_restrict (s : Finset ι) : DependsOn (s.restrict (π := π)) s :=
+  (s : Set ι).dependsOn_restrict
 
 end Pi
 
