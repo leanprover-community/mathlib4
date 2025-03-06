@@ -1,0 +1,143 @@
+name = "mathlib"
+testDriver = "MathlibTest"
+defaultTargets = ["Mathlib"]
+
+# Mathlib dependencies on upstream projects
+
+[[require]]
+name = "batteries"
+scope = "leanprover-community"
+version = "git#main"
+
+[[require]]
+name = "Qq"
+scope = "leanprover-community"
+version = "git#master"
+
+[[require]]
+name = "aesop"
+scope = "leanprover-community"
+version = "git#master"
+
+[[require]]
+name = "proofwidgets"
+scope = "leanprover-community"
+version = "git#v0.0.53" # ProofWidgets should always be pinned to a specific version
+options = {errorOnBuild = "ProofWidgets not up-to-date. Please run `lake exe cache get` to fetch the latest ProofWidgets. If this does not work, report your issue on the Lean Zulip."}
+
+[[require]]
+name = "importGraph"
+scope = "leanprover-community"
+version = "git#main"
+
+[[require]]
+name = "LeanSearchClient"
+scope = "leanprover-community"
+version = "git#main"
+
+[[require]]
+name = "plausible"
+scope = "leanprover-community"
+version = "git#main"
+
+# Mathlib libraries
+
+# We disable the `docPrime` linter: https://github.com/leanprover-community/mathlib4/issues/20560
+
+[[lean_lib]]
+name = "Mathlib"
+leanOptions = {pp.unicode.fun = true, autoImplicit = false, maxSynthPendingDepth = 3, weak.linter.docPrime = false, weak.linter.hashCommand = true, weak.linter.oldObtain = true, weak.linter.refine = true, weak.linter.style.cdot = true, weak.linter.style.dollarSyntax = true, weak.linter.style.header = true, weak.linter.style.lambdaSyntax = true, weak.linter.style.longLine = true, weak.linter.style.longFile = 1500, weak.linter.style.missingEnd = true, weak.linter.style.multiGoal = true, weak.linter.style.setOption = true}
+moreServerOptions = {linter.docPrime = false, linter.hashCommand = true, linter.oldObtain = true, linter.refine = true, linter.style.cdot = true, linter.style.dollarSyntax = true, linter.style.header = true, linter.style.lambdaSyntax = true, linter.style.longLine = true, linter.style.longFile = 1500, linter.style.missingEnd = true, linter.style.multiGoal = true, linter.style.setOption = true}
+
+[[lean_lib]]
+name = "Archive"
+leanOptions = {pp.unicode.fun = true, autoImplicit = false, maxSynthPendingDepth = 3, weak.linter.docPrime = false, weak.linter.hashCommand = true, weak.linter.oldObtain = true, weak.linter.refine = true, weak.linter.style.cdot = true, weak.linter.style.dollarSyntax = true, weak.linter.style.header = true, weak.linter.style.lambdaSyntax = true, weak.linter.style.longLine = true, weak.linter.style.longFile = 1500, weak.linter.style.missingEnd = true, weak.linter.style.multiGoal = true, weak.linter.style.setOption = true}
+moreServerOptions = {linter.docPrime = false, linter.hashCommand = true, linter.oldObtain = true, linter.refine = true, linter.style.cdot = true, linter.style.dollarSyntax = true, linter.style.header = true, linter.style.lambdaSyntax = true, linter.style.longLine = true, linter.style.longFile = 1500, linter.style.missingEnd = true, linter.style.multiGoal = true, linter.style.setOption = true}
+
+[[lean_lib]]
+name = "Counterexamples"
+leanOptions = {pp.unicode.fun = true, autoImplicit = false, maxSynthPendingDepth = 3, weak.linter.docPrime = false, weak.linter.hashCommand = true, weak.linter.oldObtain = true, weak.linter.refine = true, weak.linter.style.cdot = true, weak.linter.style.dollarSyntax = true, weak.linter.style.header = true, weak.linter.style.lambdaSyntax = true, weak.linter.style.longLine = true, weak.linter.style.longFile = 1500, weak.linter.style.missingEnd = true, weak.linter.style.multiGoal = true, weak.linter.style.setOption = true}
+moreServerOptions = {linter.docPrime = false, linter.hashCommand = true, linter.oldObtain = true, linter.refine = true, linter.style.cdot = true, linter.style.dollarSyntax = true, linter.style.header = true, linter.style.lambdaSyntax = true, linter.style.longLine = true, linter.style.longFile = 1500, linter.style.missingEnd = true, linter.style.multiGoal = true, linter.style.setOption = true}
+
+# When adding further libraries, check if they should be excluded from `getLeanLibs` in
+# `scripts/mk_all.lean`.
+
+[[lean_lib]]
+name = "Cache"
+
+[[lean_lib]]
+name = "LongestPole"
+
+[[lean_lib]]
+name = "MathlibTest"
+globs = ["MathlibTest.+"]
+
+# Additional documentation in the form of modules that only contain module docstrings.
+[[lean_lib]]
+name = "docs"
+
+# Executables provided by Mathlib
+
+# `lake exe autolabel 150100` adds a topic label to PR `150100` if there is a unique choice.
+# This requires GitHub CLI `gh` to be installed!
+# Calling `lake exe autolabel` without a PR number will print the result without applying
+# any labels online.
+[[lean_exe]]
+name = "autolabel"
+srcDir = "scripts"
+
+# `lake exe cache get` retrieves precompiled `.olean` files from a central server.
+[[lean_exe]]
+name = "cache"
+root = "Cache.Main"
+
+# `lake exe check-yaml` verifies that all declarations referred to in `docs/*.yaml` files exist.
+[[lean_exe]]
+name = "check-yaml"
+srcDir = "scripts"
+supportInterpreter = true
+
+# `lake exe mk_all` constructs the files containing all imports for a project.
+[[lean_exe]]
+name = "mk_all"
+srcDir = "scripts"
+supportInterpreter = true
+weakLinkArgs = ["-lLake"]
+
+# `lake exe shake` checks files for unnecessary imports.
+[[lean_exe]]
+name = "shake"
+root = "Shake.Main"
+supportInterpreter = true
+
+# `lake exe lint-style` runs text-based style linters.
+[[lean_exe]]
+name = "lint-style"
+srcDir = "scripts"
+
+# `lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
+# and then calculates the longest pole
+# (i.e. the sequence of files you would be waiting for during a infinite parallelism build).
+[[lean_exe]]
+name = "pole"
+root = "LongestPole.Main"
+supportInterpreter = true
+weakLinkArgs = ["-lLake"]
+
+# `lake exe unused module_1 ... module_n` will analyze unused transitive imports in a given sequence.
+# The script expects the sequence to be in "reverse order", i.e. files imported later in `Mathlib` should
+# come earlier in the sequence.
+#
+# Outputs a markdown file (called  `unused.md` by default) and a number of `lake exe graph` commands
+# highlighting particular ranges of transitively unused imports.
+#
+# Typically this should be run via `scripts/unused_in_pole.sh`.
+[[lean_exe]]
+name = "unused"
+root = "LongestPole.Unused"
+supportInterpreter = true
+weakLinkArgs = ["-lLake"]
+
+[[lean_exe]]
+name = "mathlib_test_executable"
+root = "MathlibTest.MathlibTestExecutable"
