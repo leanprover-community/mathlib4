@@ -3,13 +3,11 @@ Copyright (c) 2025 Bernhard Reinke. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amir Livne Bar-on, Bernhard Reinke
 -/
-
-import Mathlib.GroupTheory.FreeGroup.Reduce
-import Mathlib.Tactic.Linarith
-
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Lemmas
+import Mathlib.GroupTheory.FreeGroup.Reduce
 import Mathlib.GroupTheory.OrderOfElement
+import Mathlib.Tactic.Linarith
 
 /-!
 This file defines some extra lemmas for free groups, in particular about (cyclically) reduced words.
