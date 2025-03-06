@@ -1,6 +1,15 @@
+/-
+Copyright (c) 2025 Peter Nelson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Peter Nelson
+-/
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Finite.Sum
+
+/-!
+Placeholder
+-/
 
 variable {α : Type*}
 
@@ -42,11 +51,11 @@ theorem _root_.Infinite.eNat_card_eq (hα : Infinite α) : card α = ⊤ :=
 
 @[simp]
 theorem card_sum (α β : Type*) : card (α ⊕ β) = card α + card β := by
-  obtain hfin | hinf := finite_or_infinite (α ⊕ β)
+  obtain ⟨⟨hfin⟩⟩ | hinf := nonempty_fintype_or_infinite (α ⊕ β)
   · have hα := @Fintype.ofFinite α (Finite.sum_left β)
     have hβ := @Fintype.ofFinite β (Finite.sum_right α)
     simp only [card_eq_coe_fintype_card, ← Nat.cast_add, Nat.cast_inj]
-    exact @Fintype.card_sum α β hα hβ
+    convert @Fintype.card_sum α β hα hβ
   obtain h | h := infinite_sum.1 hinf <;>
   simp [card_eq_top_of_infinite]
 
