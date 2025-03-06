@@ -460,7 +460,7 @@ end OfTrivial
 
 /-- The short complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A_S)`. -/
 @[simps X₁ X₂ X₃ f g]
-def H1CoresCoinf [DecidableEq (G ⧸ S)] :
+noncomputable def H1CoresCoinf [DecidableEq (G ⧸ S)] :
     ShortComplex (ModuleCat k) where
   X₁ := H1 ((Action.res _ S.subtype).obj A)
   X₂ := H1 A
@@ -469,6 +469,7 @@ def H1CoresCoinf [DecidableEq (G ⧸ S)] :
   g := H1Map (QuotientGroup.mk' S) (mkQ _ _ fun _ => le_comap_augmentationSubmodule _ _ _)
   zero := by rw [← H1Map_comp, congr (QuotientGroup.mk'_comp_subtype S) H1Map, H1Map_one]
 
+omit [DecidableEq (G ⧸ S)] in
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, let `I(S)A` denote the submodule
 of `A` spanned by elements of the form `ρ(s)(a) - a` for `s : S, a : A`. Then the image of
 `C₁(G, I(S)A)` in `C₁(G, A)⧸B₁(G, A)` is contained in the image of `C₁(S, A)`. -/
@@ -521,20 +522,21 @@ and `Y - ∑ aᵢ·sᵢ` is a cycle. -/
       sum_mapDomain_index_inj] using Subtype.ext_iff.1 hZ.symm
   use H1π A ⟨Y - mapDomain S.subtype Z, H⟩
   simp only [H1CoresCoinf_X₃, H1CoresCoinf_X₂, H1CoresCoinf_g, ModuleCat.hom_ofHom,
-    Subgroup.coeSubtype, Submodule.mkQ_apply, H1π_comp_H1Map_apply]
+    Subgroup.coe_subtype, Submodule.mkQ_apply, H1π_comp_H1Map_apply]
 /- Moreover, the image of `Y - ∑ aᵢ·sᵢ` in `Z₁(G ⧸ S, A_S)` is `x - ∑ aᵢ·1`, and hence differs from
 `x` by a boundary, since `aᵢ·1 = d(aᵢ·(1, 1))`. -/
   refine (H1π_eq_iff _ _).2 ?_
   rw [← hy, mapOneCycles_comp_subtype_apply, mapOneCycles_comp_subtype_apply,
     ← lmapDomain_apply _ k]
-  simpa [map_sub, mapRange_sub, hY, ← mapDomain_comp, ← mapDomain_mapRange, Function.comp_def]
-      using Submodule.finsupp_sum_mem _ _ _ _ fun _ _ => single_one_mem_oneBoundaries _
+  simpa [map_sub, mapRange_sub, hY, ← mapDomain_comp, ← mapDomain_mapRange, Function.comp_def,
+    (QuotientGroup.eq_one_iff <| Subtype.val _).2 (Subtype.prop _)]
+    using Submodule.finsupp_sum_mem _ _ _ _ fun _ _ => single_one_mem_oneBoundaries _
 
 -- not sure why this is so slow even after I squeezed all the simps :(
 set_option maxHeartbeats 320000 in
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, the short complex
 `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A_S)` is exact. -/
-instance [DecidableEq (G ⧸ S)] :
+theorem H1CoresCoinf_exact :
     (H1CoresCoinf A S).Exact := by
   rw [ShortComplex.moduleCat_exact_iff_ker_sub_range]
   intro x hx
@@ -578,7 +580,7 @@ equals `Z₁(π, π)(x) : Z₁(G ⧸ S, A_S)`. -/
       have := Finsupp.ext_iff.1 (congr($((mapShortComplexH1 (B := toCoinvariants A S)
         (MonoidHom.id G) (mkQ _ _ _)).comm₁₂.symm) W)) g
       simpa only [mapRange.linearMap_apply, mapRange_apply, Finsupp.coe_add, Pi.add_apply,
-        Submodule.mkQ_apply, Submodule.Quotient.mk_add, Subgroup.coeSubtype, lmapDomain_apply,
+        Submodule.mkQ_apply, Submodule.Quotient.mk_add, Subgroup.coe_subtype, lmapDomain_apply,
         implies_true, ← mapDomain_mapRange, hZ, Action.res_obj_V, shortComplexH1,
         moduleCatMk_X₁_carrier, moduleCatMk_X₂_carrier, moduleCatMk_f, mapShortComplexH1_τ₂,
         ModuleCat.ofHom_comp, MonoidHom.coe_id, lmapDomain_id, ModuleCat.ofHom_id, mkQ_hom,
@@ -601,9 +603,9 @@ equals `Z₁(π, π)(x) : Z₁(G ⧸ S, A_S)`. -/
   rcases (moduleCat_pOpcycles_eq_iff _ _ _).1 hα with ⟨(δ : G × G →₀ A), hβ⟩
 /- Then, by assumption, `d(W + δ) = C₁(i, Id)(α + Z) - x`. -/
   have hαZ : dOne A (W + δ) = mapDomain Subtype.val (α + Z) - x := by
-    simp_all only [shortComplexH1, moduleCatMk_X₂_carrier, moduleCatMk_X₃_carrier,
+    simp_all only [shortComplexH1, moduleCatMk_X₂_carrier, moduleCatMk_X₃_carrier, Finsupp.coe_sub,
       moduleCatMk_g, ModuleCat.hom_ofHom, moduleCatMk_X₁_carrier, Submodule.Quotient.mk_eq_zero,
-      LinearMap.mem_range, Action.res_obj_V, Subgroup.coeSubtype, lmapDomain_apply, Finsupp.coe_sub,
+      LinearMap.mem_range, Action.res_obj_V, Subgroup.coe_subtype, lmapDomain_apply,
       Finsupp.coe_add, Pi.sub_apply, Pi.add_apply, mapShortComplexH1_τ₂, ModuleCat.ofHom_comp,
       Action.id_hom, ModuleCat.hom_id, mapRange.linearMap_id, ModuleCat.ofHom_id, Category.comp_id,
       LinearMap.coe_comp, Function.comp_apply, coinvariantsShortComplex_X₁, Submodule.coe_subtype,
@@ -619,7 +621,7 @@ equals `Z₁(π, π)(x) : Z₁(G ⧸ S, A_S)`. -/
     refine (H1π_eq_iff _ _).2 ⟨W + δ, ?_⟩
     have := mapOneCycles_comp_subtype_apply (B := A) S.subtype (𝟙 _)
     simp_all only [Submodule.Quotient.mk_eq_zero, LinearMap.mem_range, Action.res_obj_V,
-      mapShortComplexH1_τ₂, ModuleCat.ofHom_comp, Subgroup.coeSubtype, Action.id_hom,
+      mapShortComplexH1_τ₂, ModuleCat.ofHom_comp, Subgroup.coe_subtype, Action.id_hom,
       ModuleCat.hom_id, mapRange.linearMap_id, ModuleCat.ofHom_id, Category.comp_id,
       ModuleCat.hom_ofHom, LinearMap.coe_comp, Function.comp_apply, coinvariantsShortComplex_f,
       coinvariantsShortComplex_X₁, MonoidHom.coe_id, lmapDomain_id, subtype_hom, Category.id_comp,
