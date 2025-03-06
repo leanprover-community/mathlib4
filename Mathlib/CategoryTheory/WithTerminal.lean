@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
@@ -273,6 +274,13 @@ instance {X : WithTerminal C} : Unique (X ⟶ star) where
 /-- `WithTerminal.star` is terminal. -/
 def starTerminal : Limits.IsTerminal (star : WithTerminal C) :=
   Limits.IsTerminal.ofUnique _
+
+instance : Limits.HasTerminal (WithTerminal C) := Limits.hasTerminal_of_unique star
+
+/-- The isomorphism between star and an abstract terminal object of `WithTerminal C` -/
+@[simps!]
+noncomputable def starIsoTerminal : star ≅ ⊤_ (WithTerminal C) :=
+    starTerminal.uniqueUpToIso (Limits.terminalIsTerminal)
 
 /-- Lift a functor `F : C ⥤ D` to `WithTerminal C ⥤ D`. -/
 @[simps]
@@ -570,6 +578,13 @@ instance {X : WithInitial C} : Unique (star ⟶ X) where
 /-- `WithInitial.star` is initial. -/
 def starInitial : Limits.IsInitial (star : WithInitial C) :=
   Limits.IsInitial.ofUnique _
+
+instance : Limits.HasInitial (WithInitial C) := Limits.hasInitial_of_unique star
+
+/-- The isomorphism between star and an abstract terminal object of `WithTerminal C` -/
+@[simps!]
+noncomputable def starIsoInitial : star ≅ ⊥_ (WithInitial C) :=
+    starInitial.uniqueUpToIso (Limits.initialIsInitial)
 
 /-- Lift a functor `F : C ⥤ D` to `WithInitial C ⥤ D`. -/
 @[simps]
