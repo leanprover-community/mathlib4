@@ -43,6 +43,7 @@ jobs:
           lake build cache
           # get the cache here to avoid some clutter in the output of the next step
           lake exe cache get Mathlib/Algebra/Quandle.lean
+          lake build Mathlib.Algebra.Quandle
 
       - name: Report diff in Lean
         env:
