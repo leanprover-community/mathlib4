@@ -315,8 +315,7 @@ namespace HasSubgaussianMGF
 
 lemma aestronglyMeasurable (h : HasSubgaussianMGF X c μ) : AEStronglyMeasurable X μ := by
   have h_int := h.integrable_exp_mul 1
-  simp only [one_mul] at h_int
-  exact (aemeasurable_of_aemeasurable_exp h_int.1.aemeasurable).aestronglyMeasurable
+  simpa using (aemeasurable_of_aemeasurable_exp h_int.1.aemeasurable).aestronglyMeasurable
 
 lemma memLp_exp_mul (h : HasSubgaussianMGF X c μ) (t : ℝ) (p : ℝ≥0) :
     MemLp (fun ω ↦ exp (t * X ω)) p μ := by
