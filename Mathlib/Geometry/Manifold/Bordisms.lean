@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
+import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.HasSmoothBoundary
 
 /-!
@@ -197,7 +198,7 @@ variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpa
   [NormedAddCommGroup E'''] [NormedSpace ℝ E''']
   [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace H''] [TopologicalSpace H''']
 
-variable {k : ℕ∞}
+variable {k : WithTop ℕ∞}
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {I : ModelWithCorners ℝ E H} [IsManifold I k M]
@@ -215,16 +216,28 @@ variable (k) in
 is a compact smooth `n`-manifold `W` with a continuous map `F: W → X`
 whose boundary is diffeomorphic to the disjoint union `M ⊔ N` such that `F` restricts to `f`
 resp. `g` in the obvious way. -/
-structure UnorientedCobordism (s : SingularNManifold X k I) (t : SingularNManifold X k I) where
-  W : Type u -- TODO: making this Type* fails
+structure UnorientedCobordism.{v} (s : SingularNManifold X k I) (t : SingularNManifold X k I) where
+  /-- TODO! -/
+  W : Type v
   /-- The manifold `W` is a topological space. -/
   [topologicalSpace: TopologicalSpace W]
   /-- The manifold `W` is a charted space over `H`. -/
   [chartedSpace: ChartedSpace H W]
+  /-- TODO! -/
   J : ModelWithCorners ℝ E H
   [smoothManifold: IsManifold J k W]
+  /-- TODO! -/
   bd: BoundaryManifoldData W J k I
   [hW : CompactSpace W]
-  hW' : finrank ℝ E'' = n + 1
+  /-- TODO! -/
   F : W → X
   hF : Continuous F
+  /-- The boundary of `W` is diffeomorphic to the disjoint union `M ⊔ M'`. -/
+  φ : Diffeomorph I J (s.M ⊕ t.M) bd.M₀ k
+  /-- `F` restricted to `M ↪ ∂W` equals `f`: this is formalised more nicely as
+  `f = F ∘ ι ∘ φ⁻¹ : M → X`, where `ι : ∂W → W` is the inclusion. -/
+  hFf : F ∘ bd.f ∘ φ ∘ Sum.inl = s.f
+  /-- `F` restricted to `N ↪ ∂W` equals `g` -/
+  hFg : F ∘ bd.f ∘ φ ∘ Sum.inr = t.f
+
+-- TODO: why does the checkUnivs linter still error?
