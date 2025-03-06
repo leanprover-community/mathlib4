@@ -1901,6 +1901,23 @@ lemma inv_neg_of_neg_ne_bot {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : a⁻¹ < 
   | h_real a => rw [← coe_inv a]; norm_cast at *; exact inv_lt_zero.2 h
   | h_top => exact (not_top_lt h).rec
 
+lemma inv_strictAntiOn : StrictAntiOn (fun (x : EReal) => x⁻¹) (Ioi 0)
+  | ⊤ => fun _ _ _ h ↦ (not_top_lt h).rec
+  | ⊥ => fun h ↦ (not_lt_bot (mem_Ioi.1 h)).rec
+  | (a : ℝ) => by
+    intro a_0 b
+    match b with
+    | ⊤ =>
+      intro _ _
+      simp only [EReal.inv_top]
+      exact inv_pos_of_pos_ne_top (mem_Ioi.1 a_0) (EReal.coe_ne_top a)
+    | ⊥ => exact fun h ↦ (not_lt_bot (mem_Ioi.1 h)).rec
+    | (b : ℝ) =>
+      intro b_0 a_b
+      simp only [← EReal.coe_inv, EReal.coe_lt_coe_iff]
+      exact _root_.inv_strictAntiOn (mem_Ioi.2 <| EReal.coe_pos.1 <| mem_Ioi.1 a_0)
+        (mem_Ioi.2 <| EReal.coe_pos.1 <| mem_Ioi.1 b_0) (EReal.coe_lt_coe_iff.1 a_b)
+
 /-! ### Division -/
 
 protected lemma div_eq_inv_mul (a b : EReal) : a / b = b⁻¹ * a := EReal.mul_comm a b⁻¹

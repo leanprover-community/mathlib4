@@ -304,10 +304,10 @@ lemma le_limsup_mul (hu : ∃ᶠ x in f, 0 ≤ u x) (hv : 0 ≤ᶠ[f] v) :
   have uv0 : 0 ≤ limsup (u * v) f :=
     le_limsup_of_frequently_le <| (hu.and_eventually hv).mono fun _ ⟨hu, hv⟩ ↦ mul_nonneg hu hv
   refine mul_le_of_forall_lt_of_nonneg u0 uv0 fun a ha b hb ↦ (le_limsup_iff).2 fun c c_ab ↦ ?_
-  refine (((frequently_lt_of_lt_limsup) (mem_Ico.1 ha).2).and_eventually
-    <| (eventually_lt_of_lt_liminf (mem_Ico.1 hb).2).and
+  refine (((frequently_lt_of_lt_limsup) (mem_Ioo.1 ha).2).and_eventually
+    <| (eventually_lt_of_lt_liminf (mem_Ioo.1 hb).2).and
     <| hv).mono fun x ⟨xa, ⟨xb, vx⟩⟩ ↦ ?_
-  exact c_ab.trans_le (mul_le_mul xa.le xb.le (mem_Ico.1 hb).1 ((mem_Ico.1 ha).1.trans xa.le))
+  exact c_ab.trans_le (mul_le_mul xa.le xb.le (mem_Ioo.1 hb).1.le ((mem_Ioo.1 ha).1.le.trans xa.le))
 
 lemma limsup_mul_le (hu : ∃ᶠ x in f, 0 ≤ u x) (hv : 0 ≤ᶠ[f] v)
     (h₁ : limsup u f ≠ 0 ∨ limsup v f ≠ ⊤) (h₂ : limsup u f ≠ ⊤ ∨ limsup v f ≠ 0) :
@@ -332,9 +332,9 @@ lemma le_liminf_mul (hu : 0 ≤ᶠ[f] u) (hv : 0 ≤ᶠ[f] v) :
   apply mul_le_of_forall_lt_of_nonneg ((le_liminf_of_le) hu)
     <| (le_liminf_of_le) ((hu.and hv).mono fun x ⟨u0, v0⟩ ↦ mul_nonneg u0 v0)
   refine fun a ha b hb ↦ (le_liminf_iff).2 fun c c_ab ↦ ?_
-  filter_upwards [eventually_lt_of_lt_liminf (mem_Ico.1 ha).2,
-    eventually_lt_of_lt_liminf (mem_Ico.1 hb).2] with x xa xb
-  exact c_ab.trans_le (mul_le_mul xa.le xb.le (mem_Ico.1 hb).1 ((mem_Ico.1 ha).1.trans xa.le))
+  filter_upwards [eventually_lt_of_lt_liminf (mem_Ioo.1 ha).2,
+    eventually_lt_of_lt_liminf (mem_Ioo.1 hb).2] with x xa xb
+  exact c_ab.trans_le (mul_le_mul xa.le xb.le (mem_Ioo.1 hb).1.le ((mem_Ioo.1 ha).1.le.trans xa.le))
 
 lemma liminf_mul_le [NeBot f] (hu : 0 ≤ᶠ[f] u) (hv : 0 ≤ᶠ[f] v)
     (h₁ : limsup u f ≠ 0 ∨ liminf v f ≠ ⊤) (h₂ : limsup u f ≠ ⊤ ∨ liminf v f ≠ 0) :
