@@ -6,7 +6,7 @@ Authors: Rémy Degenne
 import Mathlib.Analysis.Analytic.IsolatedZeros
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Measuretheory.Integral.FiniteMeasureCharFun
+import Mathlib.MeasureTheory.Integral.FiniteMeasureCharFun
 import Mathlib.Probability.Moments.Basic
 import Mathlib.Probability.Moments.IntegrableExpMul
 
