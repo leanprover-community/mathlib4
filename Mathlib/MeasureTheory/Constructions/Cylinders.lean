@@ -251,6 +251,12 @@ theorem _root_.MeasurableSet.cylinder [∀ i, MeasurableSpace (α i)] (s : Finse
     MeasurableSet (cylinder s S) :=
   measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) hS
 
+/-- The indicator of a cylinder only depends on the variables whose the cylinder depends on. -/
+theorem dependsOn_cylinder_indicator_const {M : Type*} [Zero M] {I : Finset ι}
+    (S : Set (Π i : I, α i)) (c : M) :
+    DependsOn ((cylinder I S).indicator (fun _ ↦ c)) I :=
+  fun x y hxy ↦ Set.indicator_const_eq_indicator_const (by simp [Finset.restrict_def, hxy])
+
 end cylinder
 
 section cylinders
@@ -360,6 +366,20 @@ theorem generateFrom_measurableCylinders :
     ext1 x
     simp only [mem_preimage, Function.eval, mem_cylinder, mem_setOf_eq, Finset.restrict]
 
+/-- The cylinders of a product space indexed by `ℕ` can be seen as depending on the first
+coordinates. -/
+theorem measurableCylinders_nat {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)] :
+    measurableCylinders X = ⋃ (a) (S) (_ : MeasurableSet S), {cylinder (Finset.Iic a) S} := by
+  ext s
+  simp only [mem_measurableCylinders, exists_prop, mem_iUnion, mem_singleton]
+  refine ⟨?_, fun ⟨N, S, mS, s_eq⟩ ↦ ⟨Finset.Iic N, S, mS, s_eq⟩⟩
+  rintro ⟨t, S, mS, rfl⟩
+  refine ⟨t.sup id, Finset.restrict₂ t.subset_Iic_sup_id ⁻¹' S,
+    Finset.measurable_restrict₂ _ mS, ?_⟩
+  unfold cylinder
+  rw [← preimage_comp, Finset.restrict₂_comp_restrict]
+  exact mem_singleton _
+
 end cylinders
 
 /-! ### Cylinder events as a sigma-algebra -/
@@ -370,7 +390,7 @@ variable {α ι : Type*} {X : ι → Type*} {mα : MeasurableSpace α} [m : ∀ 
   {Δ Δ₁ Δ₂ : Set ι} {i : ι}
 
 /-- The σ-algebra of cylinder events on `Δ`. It is the smallest σ-algebra making the projections
-on the `i`-th coordinate continuous for all `i ∈ Δ`. -/
+on the `i`-th coordinate measurable for all `i ∈ Δ`. -/
 def cylinderEvents (Δ : Set ι) : MeasurableSpace (∀ i, X i) := ⨆ i ∈ Δ, (m i).comap fun σ ↦ σ i
 
 @[simp] lemma cylinderEvents_univ : cylinderEvents (X := X) univ = MeasurableSpace.pi := by

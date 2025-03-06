@@ -20,10 +20,10 @@ One can interpret `κ n` as a kernel which takes as an input the trajectory of a
 `X 0` and moving `X 0 → X 1 → X 2 → ... → X n` and which outputs the distribution of the next
 position of the point in `X (n + 1)`. If `a b : ℕ` and `a < b`, we can compose the kernels,
 and `κ a ⊗ₖ κ (a + 1) ⊗ₖ ... ⊗ₖ κ b` will take the trajectory up to time `a` as input and outputs
-the distrbution of the trajectory on `X (a + 1) × ... × X (b + 1)`.
+the distribution of the trajectory on `X (a + 1) × ... × X (b + 1)`.
 
 The Ionescu-Tulcea theorem tells us that these compositions can be extended into a
-`Kernel (Π i : Iic a, X i) (Π n ≥ a, X n)` which given the trajectory up to time `a` outputs
+`Kernel (Π i : Iic a, X i) (Π n > a, X n)` which given the trajectory up to time `a` outputs
 the distribution of the infinite trajectory started in `X (a + 1)`. In other words this theorem
 makes sense of composing infinitely many kernels together.
 
@@ -31,9 +31,9 @@ In this file we construct this "limit" kernel given the family `κ`. More precis
 we construct the kernel `traj κ a : Kernel (Π i : Iic a, X i) (Π n, X n)`, which takes as input
 the trajectory in `X 0 × ... × X a` and outputs the distribution of the whole trajectory. The name
 `traj` thus stands for "trajectory". We build a kernel with output in `Π n, X n` instead of
-`Π i ≥ a, X i` to make manipulations easier. The first coordinates are deterministic.
+`Π i > a, X i` to make manipulations easier. The first coordinates are deterministic.
 
-We also provide to compute integrals against `traj κ a` and an expression for the conditional
+We also provide tools to compute integrals against `traj κ a` and an expression for the conditional
 expectation.
 
 ## Main definition
@@ -55,7 +55,7 @@ expectation.
 ## Implementation notes
 
 The kernel `traj κ a` is built using the Carathéodory extension theorem. First we build a projective
-family of measures using `inducedFamily` and `partialTraj κ a`. Then we build an
+family of measures using `inducedFamily` and `partialTraj κ a`. Then we build a
 `MeasureTheory.AddContent` on `MeasureTheory.measurableCylinders` called `trajContent` using
 `projectiveFamilyContent`. Finally we prove `trajContent_tendsto_zero` which implies the
 `σ`-additivity of the content, allowing to turn it into a measure.
@@ -77,26 +77,6 @@ open Filter Finset Function MeasurableEquiv MeasurableSpace MeasureTheory Preord
 open scoped ENNReal Topology
 
 variable {X : ℕ → Type*}
-
-/-- Gluing `Iic a` and `Ioi a` into `ℕ`, version as a measurable equivalence
-on dependent functions. -/
-def MeasurableEquiv.IicProdIoi [∀ n, MeasurableSpace (X n)] (a : ℕ) :
-    ((Π i : Iic a, X i) × ((i : Set.Ioi a) → X i)) ≃ᵐ (Π n, X n) where
-  toFun := fun x i ↦ if hi : i ≤ a
-    then x.1 ⟨i, mem_Iic.2 hi⟩
-    else x.2 ⟨i, Set.mem_Ioi.2 (not_le.1 hi)⟩
-  invFun := fun x ↦ (fun i ↦ x i, fun i ↦ x i)
-  left_inv := fun x ↦ by
-    ext i
-    · simp [mem_Iic.1 i.2]
-    · simp [not_le.2 <| Set.mem_Ioi.1 i.2]
-  right_inv := fun x ↦ by simp
-  measurable_toFun := by
-    refine measurable_pi_lambda _ (fun i ↦ ?_)
-    by_cases hi : i ≤ a <;> simp only [Equiv.coe_fn_mk, hi, ↓reduceDIte]
-    · exact measurable_fst.eval
-    · exact measurable_snd.eval
-  measurable_invFun := Measurable.prod_mk (measurable_restrict _) (Set.measurable_restrict _)
 
 section castLemmas
 
@@ -257,19 +237,6 @@ theorem trajContent_eq_lmarginalPartialTraj {b : ℕ} {S : Set (Π i : Iic b, X 
   congrm (fun i ↦ ?_) ∈ S
   simp [updateFinset, i.2]
 
-/-- The cylinders of a product space indexed by `ℕ` can be seen as depending on the first
-coordinates. -/
-theorem cylinders_nat :
-    measurableCylinders X = ⋃ (a) (S) (_ : MeasurableSet S), {cylinder (Iic a) S} := by
-  ext s
-  simp only [mem_measurableCylinders, exists_prop, Set.mem_iUnion, mem_singleton]
-  refine ⟨?_, fun ⟨N, S, mS, s_eq⟩ ↦ ⟨Iic N, S, mS, s_eq⟩⟩
-  rintro ⟨t, S, mS, rfl⟩
-  refine ⟨t.sup id, restrict₂ t.subset_Iic_sup_id ⁻¹' S, measurable_restrict₂ _ mS, ?_⟩
-  unfold cylinder
-  rw [← Set.preimage_comp, restrict₂_comp_restrict]
-  exact Set.mem_singleton _
-
 variable {κ} in
 lemma trajContent_ne_top {a : ℕ} {x : Π i : Iic a, X i} {s : Set (Π n, X n)} :
     trajContent κ x s ≠ ∞ :=
@@ -354,12 +321,6 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
   rw [mem_coe, mem_Iic] at hi
   omega
 
-/-- The indicator of a cylinder only depends on the variables whose the cylinder depends on. -/
-theorem dependsOn_cylinder_indicator {ι : Type*} {α : ι → Type*} {I : Finset ι}
-    (S : Set ((i : I) → α i)) :
-    DependsOn ((cylinder I S).indicator (1 : ((Π i, α i) → ℝ≥0∞))) I :=
-  fun x y hxy ↦ Set.indicator_const_eq_indicator_const (by simp [restrict_def, hxy])
-
 /-- This is the key theorem to prove the existence of the `traj`:
 the `trajContent` of a decreasing sequence of cylinders with empty intersection
 converges to `0`.
@@ -379,7 +340,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
       exact ProbabilityMeasure.nonempty ⟨κ m Classical.ofNonempty, inferInstance⟩
   -- `Aₙ` is a cylinder, it can be written as `cylinder (Iic (a n)) Sₙ`.
   have A_cyl n : ∃ a S, MeasurableSet S ∧ A n = cylinder (Iic a) S := by
-    simpa [cylinders_nat] using A_mem n
+    simpa [measurableCylinders_nat] using A_mem n
   choose a S mS A_eq using A_cyl
   -- We write `χₙ` for the indicator function of `Aₙ`.
   let χ n := (A n).indicator (1 : (Π n, X n) → ℝ≥0∞)
@@ -390,7 +351,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
   -- `χₙ` only depends on the first coordinates.
   have χ_dep n : DependsOn (χ n) (Iic (a n)) := by
     simp_rw [χ, A_eq]
-    exact dependsOn_cylinder_indicator _
+    exact dependsOn_cylinder_indicator_const ..
   -- Therefore its integral against `partialTraj κ k (a n)` is constant.
   have lma_const x y n :
       lmarginalPartialTraj κ p (a n) (χ n) (updateFinset x _ x₀) =
@@ -519,7 +480,7 @@ theorem measurable_trajFun (a : ℕ) : Measurable (trajFun κ a) := by
     isPiSystem_measurableCylinders (by simp) (fun t ht ↦ ?cylinder) (fun t mt ht ↦ ?compl)
     (fun f disf mf hf ↦ ?union)
   · obtain ⟨N, S, mS, t_eq⟩ : ∃ N S, MeasurableSet S ∧ t = cylinder (Iic N) S := by
-      simpa [cylinders_nat] using ht
+      simpa [measurableCylinders_nat] using ht
     simp_rw [trajFun, AddContent.measure_eq _ _ generateFrom_measurableCylinders.symm _ ht,
       trajContent, projectiveFamilyContent_congr _ t t_eq mS, inducedFamily]
     refine Measure.measurable_measure.1 ?_ _ mS
@@ -552,7 +513,7 @@ lemma traj_apply (a : ℕ) (x : Π i : Iic a, X i) : traj κ a x = trajFun κ a 
 instance (a : ℕ) : IsMarkovKernel (traj κ a) := ⟨fun _ ↦ isProbabilityMeasure_trajFun ..⟩
 
 lemma traj_map_frestrictLe (a b : ℕ) : (traj κ a).map (frestrictLe b) = partialTraj κ a b := by
-  ext1 x
+  ext x
   rw [map_apply, traj_apply, frestrictLe, isProjectiveLimit_trajFun, inducedFamily_Iic]
   fun_prop
 
@@ -569,7 +530,7 @@ lemma traj_map_frestrictLe_of_le {a b : ℕ} (hab : a ≤ b) :
 is `partialTraj κ a b` for any `b ≥ n`. -/
 theorem eq_traj' {a : ℕ} (n : ℕ) (η : Kernel (Π i : Iic a, X i) (Π n, X n))
     (hη : ∀ b ≥ n, η.map (frestrictLe b) = partialTraj κ a b) : η = traj κ a := by
-  ext1 x
+  ext x : 1
   refine ((isProjectiveLimit_trajFun _ _ _).unique ?_).symm
   rw [isProjectiveLimit_nat_iff' _ _ n]
   · intro k hk
@@ -732,8 +693,7 @@ theorem condExp_traj {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
   · exact (i_f'.1.comp_ae_measurable' (measurable_frestrictLe b).aemeasurable)
 
 
-variable (κ)
-
+variable (κ) in
 theorem condExp_traj' {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c)
     (x₀ : Π i : Iic a, X i) (f : (Π n, X n) → E) :
     (traj κ a x₀)[f|piLE b] =ᵐ[traj κ a x₀]
