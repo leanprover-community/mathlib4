@@ -856,9 +856,9 @@ theorem castPred_zero (h := Fin.ext_iff.not.2 last_pos.ne)  :
     castPred (0 : Fin (n + 2)) h = 0 := rfl
 
 theorem castPred_ne_zero {j : Fin (n + 2)} (h₁ : j ≠ Fin.last (n + 1)) (h₂ : j ≠ 0) :
-     Fin.castPred j h₁ ≠ 0 := by
-   contrapose! h₂
-   rwa [← Fin.castPred_zero, Fin.castPred_inj] at h₂
+    Fin.castPred j h₁ ≠ 0 := by
+  contrapose! h₂
+  rwa [← Fin.castPred_zero, Fin.castPred_inj] at h₂
 
 @[simp]
 theorem castPred_one [NeZero n] (h := Fin.ext_iff.not.2 one_lt_last.ne) :
