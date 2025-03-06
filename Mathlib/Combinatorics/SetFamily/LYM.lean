@@ -18,12 +18,14 @@ This file proves the local LYM and LYM inequalities as well as Sperner's theorem
 
 ## Main declarations
 
-* `Finset.card_div_choose_le_card_shadow_div_choose`: Local Lubell-Yamamoto-Meshalkin inequality.
-  The shadow of a set `𝒜` in a layer takes a greater proportion of its layer than `𝒜` does.
-* `Finset.sum_card_slice_div_choose_le_one`: Lubell-Yamamoto-Meshalkin inequality. The sum of
-  densities of `𝒜` in each layer is at most `1` for any antichain `𝒜`.
+* `Finset.local_lubell_yamamoto_meshalkin_inequality_div`: Local Lubell-Yamamoto-Meshalkin
+  inequality. The shadow of a set `𝒜` in a layer takes a greater proportion of its layer than `𝒜`
+  does.
+* `Finset.lubell_yamamoto_meshalkin_inequality_sum_card_div_choose`: Lubell-Yamamoto-Meshalkin
+  inequality. The sum of densities of `𝒜` in each layer is at most `1` for any antichain `𝒜`.
 * `IsAntichain.sperner`: Sperner's theorem. The size of any antichain in `Finset α` is at most the
-  size of the maximal layer of `Finset α`. It is a corollary of `sum_card_slice_div_choose_le_one`.
+  size of the maximal layer of `Finset α`. It is a corollary of
+  `lubell_yamamoto_meshalkin_inequality_sum_card_div_choose`.
 
 ## TODO
 
@@ -204,6 +206,9 @@ theorem lubell_yamamoto_meshalkin_inequality_sum_card_div_choose
         Set.Sized.card_le (sized_falling 0 𝒜)
     · rw [tsub_self, choose_zero_right]
       exact zero_lt_one
+
+@[deprecated (since := "2025-03-06")]
+alias sum_card_slice_div_choose_le_one := lubell_yamamoto_meshalkin_inequality_sum_card_div_choose
 
 /-- The **Lubell-Yamamoto-Meshalkin inequality**. If `𝒜` is an antichain, then the sum of the
 proportion of elements it takes from each layer is less than `1`. -/
