@@ -106,7 +106,7 @@ lemma accumulate_invAccumulate {n m} (hmn : m ≤ n) {s : Fin m → ℕ} (hs : A
     rw [accumulate_rec (him.trans_le hmn) hi, ih hi, invAccumulate, dif_pos him, dif_pos hi]
     simp only
     exact Nat.sub_add_cancel (hs i.le_succ)
-  · have := (Nat.sub_one_add_one <| Nat.not_eq_zero_of_lt hm).symm
+  · have := (Nat.sub_one_add_one <| Nat.ne_zero_of_lt hm).symm
     rw [accumulate_last (hm.trans_le hmn) this, invAccumulate, dif_pos hm, dif_neg this.not_gt,
       Nat.sub_zero]
     intro j hj
@@ -173,7 +173,7 @@ private lemma supDegree_monic_esymm [Nontrivial R] {i : ℕ} (him : i < m) :
       toLex (Finsupp.indicator (Iic ⟨i, him⟩) fun _ _ ↦ 1) ∧
     Monic toLex (esymm (Fin m) R (i + 1)) := by
   have := supDegree_leadingCoeff_sum_eq (D := toLex) (s := univ.powersetCard (i + 1))
-    (i := Iic (⟨i, him⟩ : Fin m)) ?_ (f := fun s ↦ monomial (∑ j in s, fun₀ | j => 1) (1 : R)) ?_
+    (i := Iic (⟨i, him⟩ : Fin m)) ?_ (f := fun s ↦ monomial (∑ j ∈ s, fun₀ | j => 1) (1 : R)) ?_
   · rwa [← esymm_eq_sum_monomial, ← Finsupp.indicator_eq_sum_single, ← single_eq_monomial,
       supDegree_single_ne_zero _ one_ne_zero, leadingCoeff_single toLex.injective] at this
   · exact mem_powersetCard.2 ⟨subset_univ _, Fin.card_Iic _⟩

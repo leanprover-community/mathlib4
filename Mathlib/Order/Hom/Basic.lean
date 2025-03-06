@@ -521,7 +521,18 @@ protected def withBotMap (f : α →o β) : WithBot α →o WithBot β :=
 protected def withTopMap (f : α →o β) : WithTop α →o WithTop β :=
   ⟨WithTop.map f, f.mono.withTop_map⟩
 
+/-- Lift an order homomorphism `f : α →o β` to an order homomorphism `ULift α →o ULift β` in a
+higher universe. -/
+@[simps!]
+def uliftMap (f : α →o β) : ULift α →o ULift β :=
+  ⟨fun i => ⟨f i.down⟩, fun _ _ h ↦ f.monotone h⟩
+
 end OrderHom
+
+-- See note [lower instance priority]
+instance (priority := 90) OrderHomClass.toOrderHomClassOrderDual [LE α] [LE β]
+    [FunLike F α β] [OrderHomClass F α β] : OrderHomClass F αᵒᵈ βᵒᵈ where
+  map_rel f := map_rel f
 
 /-- Embeddings of partial orders that preserve `<` also preserve `≤`. -/
 def RelEmbedding.orderEmbeddingOfLTEmbedding [PartialOrder α] [PartialOrder β]
@@ -589,11 +600,10 @@ protected theorem wellFoundedGT [WellFoundedGT β] (f : α ↪o β) : WellFounde
   @OrderEmbedding.wellFoundedLT αᵒᵈ _ _ _ _ f.dual
 
 /-- A version of `WithBot.map` for order embeddings. -/
-@[simps (config := .asFn)]
-protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β :=
-  { f.toEmbedding.optionMap with
-    toFun := WithBot.map f,
-    map_rel_iff' := @fun a b => WithBot.map_le_iff f f.map_rel_iff a b }
+@[simps! (config := .asFn)]
+protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β where
+  __ := f.toEmbedding.optionMap
+  map_rel_iff' := WithBot.map_le_iff f f.map_rel_iff
 
 /-- A version of `WithTop.map` for order embeddings. -/
 @[simps (config := .asFn)]
@@ -634,9 +644,19 @@ theorem coe_ofStrictMono {α β} [LinearOrder α] [Preorder β] {f : α → β} 
   rfl
 
 /-- Embedding of a subtype into the ambient type as an `OrderEmbedding`. -/
-@[simps! (config := .asFn)]
 def subtype (p : α → Prop) : Subtype p ↪o α :=
   ⟨Function.Embedding.subtype p, Iff.rfl⟩
+
+@[simp]
+theorem subtype_apply {p : α → Prop} (x : Subtype p) : subtype p x = x :=
+  rfl
+
+theorem subtype_injective (p : α → Prop) : Function.Injective (subtype p) :=
+  Subtype.coe_injective
+
+@[simp]
+theorem coe_subtype (p : α → Prop) : ⇑(subtype p) = Subtype.val :=
+  rfl
 
 /-- Convert an `OrderEmbedding` to an `OrderHom`. -/
 @[simps (config := .asFn)]
@@ -1000,7 +1020,7 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
       apply gf }
 
 /-- To show that `f : α →o β` and `g : β →o α` make up an order isomorphism it is enough to show
-    that `g` is the inverse of `f`-/
+that `g` is the inverse of `f`. -/
 def ofHomInv {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G β α]
     [OrderHomClass G β α] (f : F) (g : G)
     (h₁ : (f : α →o β).comp (g : β →o α) = OrderHom.id)
@@ -1027,6 +1047,15 @@ def funUnique (α β : Type*) [Unique α] [Preorder β] : (α → β) ≃o β wh
 theorem funUnique_symm_apply {α β : Type*} [Unique α] [Preorder β] :
     ((funUnique α β).symm : β → α → β) = Function.const α :=
   rfl
+
+/-- The order isomorphism `α ≃o β` when `α` and `β` are preordered types
+containing unique elements. -/
+@[simps!]
+noncomputable def ofUnique
+    (α β : Type*) [Unique α] [Unique β] [Preorder α] [Preorder β] :
+    α ≃o β where
+  toEquiv := Equiv.ofUnique α β
+  map_rel_iff' := by simp
 
 end OrderIso
 
@@ -1173,6 +1202,12 @@ theorem coe_toDualTopEquiv_eq [LE α] :
     (WithBot.toDualTopEquiv : WithBot αᵒᵈ → (WithTop α)ᵒᵈ) = toDual ∘ WithBot.ofDual :=
   funext fun _ => rfl
 
+/-- Embedding into `WithBot α`. -/
+@[simps]
+def _root_.Function.Embedding.coeWithBot : α ↪ WithBot α where
+  toFun := (↑)
+  inj' := WithBot.coe_injective
+
 /-- The coercion `α → WithBot α` bundled as monotone map. -/
 @[simps]
 def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithBot α where
@@ -1210,6 +1245,12 @@ theorem toDualBotEquiv_symm_top [LE α] : WithTop.toDualBotEquiv.symm (⊤ : (Wi
 theorem coe_toDualBotEquiv [LE α] :
     (WithTop.toDualBotEquiv : WithTop αᵒᵈ → (WithBot α)ᵒᵈ) = toDual ∘ WithTop.ofDual :=
   funext fun _ => rfl
+
+/-- Embedding into `WithTop α`. -/
+@[simps]
+def _root_.Function.Embedding.coeWithTop : α ↪ WithTop α where
+  toFun := (↑)
+  inj' := WithTop.coe_injective
 
 /-- The coercion `α → WithTop α` bundled as monotone map. -/
 @[simps]
@@ -1287,6 +1328,11 @@ theorem OrderIso.complementedLattice_iff (f : α ≃o β) :
 end BoundedOrder
 
 end LatticeIsos
+
+-- See note [lower instance priority]
+instance (priority := 90) OrderIsoClass.toOrderIsoClassOrderDual [LE α] [LE β]
+    [EquivLike F α β] [OrderIsoClass F α β] : OrderIsoClass F αᵒᵈ βᵒᵈ where
+  map_le_map_iff f := map_le_map_iff f
 
 section DenselyOrdered
 

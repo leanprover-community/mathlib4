@@ -3,8 +3,13 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Algebra.ZeroOne.Prod
+import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Monoid, group etc structures on `M × N`
@@ -29,10 +34,9 @@ We also prove trivial `simp` lemmas, and define the following operations on `Mon
 * `divMonoidHom`: Division bundled as a monoid homomorphism.
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists MonoidWithZero DenselyOrdered
 -- TODO:
 -- assert_not_exists AddMonoidWithOne
-assert_not_exists DenselyOrdered
 
 variable {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
 
@@ -72,33 +76,6 @@ theorem one_mk_mul_one_mk [Monoid M] [Mul N] (b₁ b₂ : N) :
 theorem mk_one_mul_mk_one [Mul M] [Monoid N] (a₁ a₂ : M) :
     (a₁, (1 : N)) * (a₂, 1) = (a₁ * a₂, 1) := by
   rw [mk_mul_mk, mul_one]
-
-@[to_additive]
-instance instOne [One M] [One N] : One (M × N) :=
-  ⟨(1, 1)⟩
-
-@[to_additive (attr := simp)]
-theorem fst_one [One M] [One N] : (1 : M × N).1 = 1 :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem snd_one [One M] [One N] : (1 : M × N).2 = 1 :=
-  rfl
-
-@[to_additive]
-theorem one_eq_mk [One M] [One N] : (1 : M × N) = (1, 1) :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem mk_one_one [One M] [One N] : ((1 : M), (1 : N)) = 1 := rfl
-
-@[to_additive (attr := simp)]
-theorem mk_eq_one [One M] [One N] {x : M} {y : N} : (x, y) = 1 ↔ x = 1 ∧ y = 1 :=
-  mk.inj_iff
-
-@[to_additive (attr := simp)]
-theorem swap_one [One M] [One N] : (1 : M × N).swap = 1 :=
-  rfl
 
 @[to_additive]
 theorem fst_mul_snd [MulOneClass M] [MulOneClass N] (p : M × N) : (p.fst, 1) * (1, p.snd) = p :=
@@ -261,7 +238,7 @@ theorem Prod.semiconjBy_iff {x y z : M × N} :
 
 @[to_additive AddCommute.prod]
 theorem Commute.prod {x y : M × N} (hm : Commute x.1 y.1) (hn : Commute x.2 y.2) : Commute x y :=
-  .prod hm hn
+  SemiconjBy.prod hm hn
 
 @[to_additive]
 theorem Prod.commute_iff {x y : M × N} :
@@ -529,7 +506,7 @@ variable [CommMonoid P] (f : M →* P) (g : N →* P)
 
 /-- Coproduct of two `MonoidHom`s with the same codomain:
   `f.coprod g (p : M × N) = f p.1 * g p.2`.
-  (Commutative case; for the general case, see `MonoidHom.noncommCoprod`.)-/
+  (Commutative case; for the general case, see `MonoidHom.noncommCoprod`.) -/
 @[to_additive
     "Coproduct of two `AddMonoidHom`s with the same codomain:
     `f.coprod g (p : M × N) = f p.1 + g p.2`.
@@ -671,6 +648,11 @@ def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ where
     exact ⟨rfl, rfl⟩
   map_mul' := MonoidHom.map_mul _
 
+@[to_additive]
+lemma _root_.Prod.isUnit_iff {x : M × N} : IsUnit x ↔ IsUnit x.1 ∧ IsUnit x.2 where
+  mp h := ⟨(prodUnits h.unit).1.isUnit, (prodUnits h.unit).2.isUnit⟩
+  mpr h := (prodUnits.symm (h.1.unit, h.2.unit)).isUnit
+
 end
 
 end MulEquiv
@@ -692,7 +674,7 @@ def embedProduct (α : Type*) [Monoid α] : αˣ →* α × αᵐᵒᵖ where
 
 @[to_additive]
 theorem embedProduct_injective (α : Type*) [Monoid α] : Function.Injective (embedProduct α) :=
-  fun _ _ h => Units.ext <| (congr_arg Prod.fst h : _)
+  fun _ _ h => Units.ext <| (congr_arg Prod.fst h :)
 
 end Units
 

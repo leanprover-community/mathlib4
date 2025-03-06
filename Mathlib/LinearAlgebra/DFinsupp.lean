@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Kenny Lau
 import Mathlib.Data.DFinsupp.Submonoid
 import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.LinearAlgebra.Finsupp.SumProd
-import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 /-!
 # Properties of the module `Π₀ i, M i`
@@ -70,8 +70,6 @@ theorem lhom_ext' ⦃φ ψ : (Π₀ i, M i) →ₗ[R] N⦄ (h : ∀ i, φ.comp (
     φ = ψ :=
   lhom_ext fun i => LinearMap.congr_fun (h i)
 
--- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[simp, nolint simpNF]
 theorem lmk_apply (s : Finset ι) (x) : (lmk s : _ →ₗ[R] Π₀ i, M i) x = mk s x :=
   rfl
 
@@ -90,6 +88,9 @@ def lapply (i : ι) : (Π₀ i, M i) →ₗ[R] M i where
 @[simp]
 theorem lapply_apply (i : ι) (f : Π₀ i, M i) : (lapply i : (Π₀ i, M i) →ₗ[R] _) f = f i :=
   rfl
+
+theorem injective_pi_lapply : Function.Injective (LinearMap.pi (R := R) <| lapply (M := M)) :=
+  fun _ _ h ↦ ext fun _ ↦ congr_fun h _
 
 @[simp]
 theorem lapply_comp_lsingle_same [DecidableEq ι] (i : ι) :
@@ -168,6 +169,15 @@ with `DFinsupp.lsum_apply_apply`. -/
 theorem lsum_single [Semiring S] [Module S N] [SMulCommClass R S N] (F : ∀ i, M i →ₗ[R] N) (i)
     (x : M i) : lsum S (M := M) F (single i x) = F i x := by
   simp
+
+theorem lsum_lsingle [Semiring S] [∀ i, Module S (M i)] [∀ i, SMulCommClass R S (M i)] :
+    lsum S (lsingle (R := R) (M := M)) = .id :=
+  lhom_ext (lsum_single _ _)
+
+theorem iSup_range_lsingle : ⨆ i, LinearMap.range (lsingle (R := R) (M := M) i) = ⊤ :=
+  top_le_iff.mp fun m _ ↦ by
+    rw [← LinearMap.id_apply (R := R) m, ← lsum_lsingle ℕ]
+    exact dfinsupp_sumAddHom_mem _ _ _ fun i _ ↦ Submodule.mem_iSup_of_mem i ⟨_, rfl⟩
 
 end Lsum
 
@@ -628,7 +638,6 @@ variable [Module R M] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
 variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
 variable {γ : ι → Type*} [DecidableEq ι]
-
 
 @[simp]
 theorem map_dfinsupp_sumAddHom [∀ i, AddZeroClass (γ i)] (f : M ≃ₛₗ[τ₁₂] M₂) (t : Π₀ i, γ i)

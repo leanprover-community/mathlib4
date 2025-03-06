@@ -3,12 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Data.NNReal.Basic
 import Mathlib.Order.Fin.Tuple
 import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Topology.Order.MonotoneConvergence
 import Mathlib.Topology.MetricSpace.Pseudo.Real
+import Mathlib.Topology.Order.MonotoneConvergence
 /-!
 # Rectangular boxes in `ℝⁿ`
 
@@ -55,7 +56,7 @@ open Set Function Metric Filter
 
 noncomputable section
 
-open scoped Classical NNReal Topology
+open scoped NNReal Topology
 
 namespace BoxIntegral
 
@@ -273,6 +274,7 @@ theorem withBotCoe_subset_iff {I J : WithBot (Box ι)} : (I : Set (ι → ℝ)) 
 theorem withBotCoe_inj {I J : WithBot (Box ι)} : (I : Set (ι → ℝ)) = J ↔ I = J := by
   simp only [Subset.antisymm_iff, ← le_antisymm_iff, withBotCoe_subset_iff]
 
+open scoped Classical in
 /-- Make a `WithBot (Box ι)` from a pair of corners `l u : ι → ℝ`. If `l i < u i` for all `i`,
 then the result is `⟨l, u, _⟩ : Box ι`, otherwise it is `⊥`. In any case, the result interpreted
 as a set in `ι → ℝ` is the set `{x : ι → ℝ | ∀ i, x i ∈ Ioc (l i) (u i)}`. -/
@@ -286,7 +288,7 @@ theorem mk'_eq_bot {l u : ι → ℝ} : mk' l u = ⊥ ↔ ∃ i, u i ≤ l i := 
 
 @[simp]
 theorem mk'_eq_coe {l u : ι → ℝ} : mk' l u = I ↔ l = I.lower ∧ u = I.upper := by
-  cases' I with lI uI hI; rw [mk']; split_ifs with h
+  obtain ⟨lI, uI, hI⟩ := I; rw [mk']; split_ifs with h
   · simp [WithBot.coe_eq_coe]
   · suffices l = lI → u ≠ uI by simpa
     rintro rfl rfl
@@ -357,7 +359,7 @@ def face {n} (I : Box (Fin (n + 1))) (i : Fin (n + 1)) : Box (Fin n) :=
 theorem face_mk {n} (l u : Fin (n + 1) → ℝ) (h : ∀ i, l i < u i) (i : Fin (n + 1)) :
     face ⟨l, u, h⟩ i = ⟨l ∘ Fin.succAbove i, u ∘ Fin.succAbove i, fun _ ↦ h _⟩ := rfl
 
-@[mono]
+@[gcongr, mono]
 theorem face_mono {n} {I J : Box (Fin (n + 1))} (h : I ≤ J) (i : Fin (n + 1)) :
     face I i ≤ face J i :=
   fun _ hx _ ↦ Ioc_subset_Ioc ((le_iff_bounds.1 h).1 _) ((le_iff_bounds.1 h).2 _) (hx _)
@@ -382,7 +384,7 @@ theorem continuousOn_face_Icc {X} [TopologicalSpace X] {n} {f : (Fin (n + 1) →
     {I : Box (Fin (n + 1))} (h : ContinuousOn f (Box.Icc I)) {i : Fin (n + 1)} {x : ℝ}
     (hx : x ∈ Icc (I.lower i) (I.upper i)) :
     ContinuousOn (f ∘ i.insertNth x) (Box.Icc (I.face i)) :=
-  h.comp (continuousOn_const.fin_insertNth i continuousOn_id) (I.mapsTo_insertNth_face_Icc hx)
+  h.comp (continuousOn_const.finInsertNth i continuousOn_id) (I.mapsTo_insertNth_face_Icc hx)
 
 /-!
 ### Covering of the interior of a box by a monotone sequence of smaller boxes

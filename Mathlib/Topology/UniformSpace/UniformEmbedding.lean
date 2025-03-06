@@ -199,7 +199,7 @@ alias UniformInducing.injective := IsUniformInducing.injective
 /-- A map `f : α → β` between uniform spaces is a *uniform embedding* if it is uniform inducing and
 injective. If `α` is a separated space, then the latter assumption follows from the former. -/
 @[mk_iff]
-structure IsUniformEmbedding (f : α → β) extends IsUniformInducing f : Prop where
+structure IsUniformEmbedding (f : α → β) : Prop extends IsUniformInducing f where
   /-- A uniform embedding is injective. -/
   injective : Function.Injective f
 
@@ -372,7 +372,7 @@ theorem closure_image_mem_nhds_of_isUniformInducing {s : Set (α × α)} {e : α
     (he₁ : IsUniformInducing e) (he₂ : IsDenseInducing e) (hs : s ∈ 𝓤 α) :
     ∃ a, closure (e '' { a' | (a, a') ∈ s }) ∈ 𝓝 b := by
   obtain ⟨U, ⟨hU, hUo, hsymm⟩, hs⟩ :
-    ∃ U, (U ∈ 𝓤 β ∧ IsOpen U ∧ SymmetricRel U) ∧ Prod.map e e ⁻¹' U ⊆ s := by
+    ∃ U, (U ∈ 𝓤 β ∧ IsOpen U ∧ IsSymmetricRel U) ∧ Prod.map e e ⁻¹' U ⊆ s := by
       rwa [← he₁.comap_uniformity, (uniformity_hasBasis_open_symmetric.comap _).mem_iff] at hs
   rcases he₂.dense.mem_nhds (UniformSpace.ball_mem_nhds b hU) with ⟨a, ha⟩
   refine ⟨a, mem_of_superset ?_ (closure_mono <| image_subset _ <| UniformSpace.ball_mono hs a)⟩
@@ -660,3 +660,36 @@ theorem uniformly_extend_unique {g : α → γ} (hg : ∀ b, g (e b) = f b) (hc 
   IsDenseInducing.extend_unique _ hg hc
 
 end UniformExtension
+
+section DenseExtension
+
+variable {α β : Type*} [UniformSpace α] [UniformSpace β]
+
+theorem isUniformInducing_val (s : Set α) :
+    IsUniformInducing (@Subtype.val α s) := ⟨uniformity_setCoe⟩
+
+namespace Dense
+
+variable {s : Set α} {f : s → β}
+
+theorem extend_exists [CompleteSpace β] (hs : Dense s) (hf : UniformContinuous f) (a : α) :
+    ∃ b, Tendsto f (comap (↑) (𝓝 a)) (𝓝 b) :=
+  uniformly_extend_exists (isUniformInducing_val s) hs.denseRange_val hf a
+
+theorem extend_spec [CompleteSpace β] (hs : Dense s) (hf : UniformContinuous f) (a : α) :
+    Tendsto f (comap (↑) (𝓝 a)) (𝓝 (hs.extend f a)) :=
+  uniformly_extend_spec (isUniformInducing_val s) hs.denseRange_val hf a
+
+theorem uniformContinuous_extend [CompleteSpace β] (hs : Dense s) (hf : UniformContinuous f) :
+    UniformContinuous (hs.extend f) :=
+  uniformContinuous_uniformly_extend (isUniformInducing_val s) hs.denseRange_val hf
+
+variable [T0Space β]
+
+theorem extend_of_ind (hs : Dense s) (hf : UniformContinuous f) (x : s) :
+    hs.extend f x = f x :=
+  IsDenseInducing.extend_eq_at _ hf.continuous.continuousAt
+
+end Dense
+
+end DenseExtension

@@ -5,9 +5,13 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 -/
 import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Fintype.Pi
-import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Data.Set.Finite.Lemmas
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.Filter.CountablyGenerated
 import Mathlib.Order.Filter.Ker
 import Mathlib.Order.Filter.Pi
+import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # The cofinite filter

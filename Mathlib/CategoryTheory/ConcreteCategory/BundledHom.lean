@@ -66,7 +66,7 @@ instance category : Category (Bundled c) where
   id_comp _ := by apply 𝒞.hom_ext; simp
 
 /-- A category given by `BundledHom` is a concrete category. -/
-instance concreteCategory : ConcreteCategory.{u} (Bundled c) where
+instance hasForget : HasForget.{u} (Bundled c) where
   forget :=
     { obj := fun X => X
       map := @fun X Y f => 𝒞.toFun X.str Y.str f
@@ -82,7 +82,7 @@ unif_hint (C : Bundled c) where
 
 variable {hom}
 
-attribute [local instance] ConcreteCategory.instFunLike
+attribute [local instance] HasForget.instFunLike
 
 /-- A version of `HasForget₂.mk'` for categories defined using `@BundledHom`. -/
 def mkHasForget₂ {d : Type u → Type u} {hom_d : ∀ ⦃α β : Type u⦄ (_ : d α) (_ : d β), Type u}

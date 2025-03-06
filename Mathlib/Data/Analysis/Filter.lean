@@ -267,7 +267,7 @@ protected def bind {f : Filter α} {m : α → Filter β} (F : f.Realizer) (G : 
         simp only [mem_iUnion, forall_exists_index]
         exact fun i h₁ h₂ ↦ ⟨i, F.F.inf_le_right _ _ h₁, (G i).F.inf_le_right _ _ h₂⟩ },
     filter_eq <| Set.ext fun _ ↦ by
-      cases' F with _ F _; subst f
+      obtain ⟨_, F, _⟩ := F; subst f
       simp only [CFilter.toFilter, iUnion_subset_iff, Sigma.exists, Filter.mem_sets, mem_bind]
       exact
         ⟨fun ⟨s, f, h⟩ ↦
@@ -286,7 +286,7 @@ protected def iSup {f : α → Filter β} (F : ∀ i, (f i).Realizer) : (⨆ i, 
       ⟨fun ⟨_, f⟩ i ↦ f i ⟨⟩, fun f ↦ ⟨(), fun i _ ↦ f i⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
 
 /-- Construct a realizer for the product of filters -/
-protected def prod {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f.prod g).Realizer :=
+protected def prod {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ×ˢ g).Realizer :=
   (F.comap _).inf (G.comap _)
 
 theorem le_iff {f g : Filter α} (F : f.Realizer) (G : g.Realizer) :

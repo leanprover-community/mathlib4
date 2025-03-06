@@ -36,7 +36,7 @@ Lastly, calls a normalization tactic on this target.
 -/
 
 namespace Mathlib.Tactic.LinearCombination
-open Lean hiding Rat
+open Lean
 open Elab Meta Term Mathlib Ineq
 
 /-- Result of `expandLinearCombo`, either an equality/inequality proof or a value. -/

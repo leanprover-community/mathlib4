@@ -68,8 +68,8 @@ lemma comm₂₃' : pres.toExtension.toKaehler.comp pres.cotangentSpaceBasis.rep
   dsimp
   rw [Basis.repr_symm_apply, Finsupp.linearCombination_single,
     Finsupp.linearCombination_single, one_smul, one_smul,
-    Generators.cotangentSpaceBasis_apply, mapBaseChange_tmul, one_smul]
-  simp
+    Generators.cotangentSpaceBasis_apply]
+  simp [Generators.toExtension]
 
 /-- The canonical map `(pres.rels →₀ S) →ₗ[S] pres.toExtension.Cotangent`. -/
 noncomputable def hom₁ : (pres.rels →₀ S) →ₗ[S] pres.toExtension.Cotangent :=

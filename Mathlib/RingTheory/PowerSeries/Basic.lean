@@ -155,6 +155,10 @@ theorem ext {φ ψ : R⟦X⟧} (h : ∀ n, coeff R n φ = coeff R n ψ) : φ = �
     · apply h
     rfl
 
+@[simp]
+theorem forall_coeff_eq_zero (φ : R⟦X⟧) : (∀ n, coeff R n φ = 0) ↔ φ = 0 :=
+  ⟨fun h => ext h, fun h => by simp [h]⟩
+
 /-- Two formal power series are equal if all their coefficients are equal. -/
 add_decl_doc PowerSeries.ext_iff
 
@@ -194,6 +198,8 @@ def constantCoeff : R⟦X⟧ →+* R :=
 /-- The constant formal power series. -/
 def C : R →+* R⟦X⟧ :=
   MvPowerSeries.C Unit R
+
+@[simp] lemma algebraMap_eq {R : Type*} [CommSemiring R] : algebraMap R R⟦X⟧ = C R := rfl
 
 variable {R}
 
@@ -457,7 +463,27 @@ theorem map_X : map f X = X := by
   ext
   simp [coeff_X, apply_ite f]
 
+theorem map_surjective (f : S →+* T) (hf : Function.Surjective f) :
+    Function.Surjective (PowerSeries.map f) := by
+  intro g
+  use PowerSeries.mk fun k ↦ Function.surjInv hf (PowerSeries.coeff _ k g)
+  ext k
+  simp only [Function.surjInv, coeff_map, coeff_mk]
+  exact Classical.choose_spec (hf ((coeff T k) g))
+
+theorem map_injective (f : S →+* T) (hf : Function.Injective ⇑f) :
+    Function.Injective (PowerSeries.map f) := by
+  intro u v huv
+  ext k
+  apply hf
+  rw [← PowerSeries.coeff_map, ← PowerSeries.coeff_map, huv]
+
 end Map
+
+@[simp]
+theorem map_eq_zero {R S : Type*} [DivisionSemiring R] [Semiring S] [Nontrivial S] (φ : R⟦X⟧)
+    (f : R →+* S) : φ.map f = 0 ↔ φ = 0 :=
+  MvPowerSeries.map_eq_zero _ _
 
 theorem X_pow_dvd_iff {n : ℕ} {φ : R⟦X⟧} :
     (X : R⟦X⟧) ^ n ∣ φ ↔ ∀ m, m < n → coeff R m φ = 0 := by
@@ -586,7 +612,7 @@ lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
   rcases Nat.eq_zero_or_pos n with (rfl | hn)
   · simp
   induction n with
-  | zero => by_contra; linarith
+  | zero => omega
   | succ n' ih =>
       have h₁ (m : ℕ) : φ ^ (m + 1) = φ ^ m * φ := by exact rfl
       have h₂ : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
@@ -812,6 +838,12 @@ theorem coe_C (a : R) : ((C a : R[X]) : PowerSeries R) = PowerSeries.C R a := by
 @[simp, norm_cast]
 theorem coe_X : ((X : R[X]) : PowerSeries R) = PowerSeries.X :=
   coe_monomial _ _
+
+@[simp]
+lemma polynomial_map_coe {U V : Type*} [CommSemiring U] [CommSemiring V] {φ : U →+* V}
+    {f : Polynomial U} : Polynomial.map φ f = PowerSeries.map φ f := by
+  ext
+  simp
 
 @[simp]
 theorem constantCoeff_coe : PowerSeries.constantCoeff R φ = φ.coeff 0 :=

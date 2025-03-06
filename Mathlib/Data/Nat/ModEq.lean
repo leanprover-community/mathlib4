@@ -23,8 +23,7 @@ and proves basic properties about it such as the Chinese Remainder Theorem
 ModEq, congruence, mod, MOD, modulo
 -/
 
-assert_not_exists OrderedAddCommMonoid
-assert_not_exists Function.support
+assert_not_exists OrderedAddCommMonoid Function.support
 
 namespace Nat
 
@@ -244,8 +243,8 @@ lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) :  a ≡ b 
     rw [Int.mul_sub]
     exact modEq_iff_dvd.mp h
   · show Int.gcd (m / d) (c / d) = 1
-    simp only [← Int.natCast_div, Int.gcd_natCast_natCast (m / d) (c / d), gcd_div hmd hcd,
-      Nat.div_self (gcd_pos_of_pos_left c hm)]
+    simp only [d, ← Int.natCast_div, Int.gcd_natCast_natCast (m / d) (c / d),
+      gcd_div hmd hcd, Nat.div_self (gcd_pos_of_pos_left c hm)]
 
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c` -/
 lemma cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [MOD m]) : a ≡ b [MOD m / gcd m c] := by
@@ -443,7 +442,7 @@ theorem odd_of_mod_four_eq_one {n : ℕ} : n % 4 = 1 → n % 2 = 1 := by
 theorem odd_of_mod_four_eq_three {n : ℕ} : n % 4 = 3 → n % 2 = 1 := by
   simpa [ModEq] using @ModEq.of_mul_left 2 n 3 2
 
-/-- A natural number is odd iff it has residue `1` or `3` mod `4`-/
+/-- A natural number is odd iff it has residue `1` or `3` mod `4`. -/
 theorem odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
   have help : ∀ m : ℕ, m < 4 → m % 2 = 1 → m = 1 ∨ m = 3 := by decide
   ⟨fun hn =>

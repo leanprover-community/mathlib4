@@ -182,12 +182,14 @@ variable {ι M}
 theorem apply_eq_component (f : ⨁ i, M i) (i : ι) : f i = component R ι M i f := rfl
 
 -- Note(kmill): `@[ext]` cannot prove `ext_iff` because `R` is not determined by `f` or `g`.
-@[ext (iff := false)]
-theorem ext {f g : ⨁ i, M i} (h : ∀ i, component R ι M i f = component R ι M i g) : f = g :=
+-- This is not useful as an `@[ext]` lemma as the `ext` tactic can not infer `R`.
+theorem ext_component {f g : ⨁ i, M i} (h : ∀ i, component R ι M i f = component R ι M i g) :
+    f = g :=
   DFinsupp.ext h
 
-theorem ext_iff {f g : ⨁ i, M i} : f = g ↔ ∀ i, component R ι M i f = component R ι M i g :=
-  ⟨fun h _ ↦ by rw [h], ext R⟩
+theorem ext_component_iff {f g : ⨁ i, M i} :
+    f = g ↔ ∀ i, component R ι M i f = component R ι M i g :=
+  ⟨fun h _ ↦ by rw [h], ext_component R⟩
 
 @[simp]
 theorem lof_apply [DecidableEq ι] (i : ι) (b : M i) : ((lof R ι M i) b) i = b :=
@@ -201,6 +203,52 @@ theorem component.lof_self [DecidableEq ι] (i : ι) (b : M i) :
 theorem component.of [DecidableEq ι] (i j : ι) (b : M j) :
     component R ι M i ((lof R ι M j) b) = if h : j = i then Eq.recOn h b else 0 :=
   DFinsupp.single_apply
+
+section map
+
+variable {R} {N : ι → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
+  (f : Π i, M i →ₗ[R] N i)
+
+/-- The linear map between direct sums induced by a family of linear maps. -/
+def lmap : (⨁ i, M i) →ₗ[R] ⨁ i, N i := DFinsupp.mapRange.linearMap f
+
+@[simp] theorem lmap_apply (x i) : lmap f x i = f i (x i) := rfl
+
+@[simp] lemma lmap_of [DecidableEq ι] (i : ι) (x : M i) :
+    lmap f (of M i x) = of N i (f i x) :=
+  DFinsupp.mapRange_single (hf := fun _ => map_zero _)
+
+@[simp] theorem lmap_lof [DecidableEq ι] (i) (x : M i) :
+    lmap f (lof R _ _ _ x) = lof R _ _ _ (f i x) :=
+  DFinsupp.mapRange_single (hf := fun _ ↦ map_zero _)
+
+@[simp] lemma lmap_id :
+    (lmap (fun i ↦ LinearMap.id (R := R) (M := M i))) = LinearMap.id :=
+  DFinsupp.mapRange.linearMap_id
+
+@[simp] lemma lmap_comp {K : ι → Type*} [∀ i, AddCommMonoid (K i)] [∀ i, Module R (K i)]
+    (g : ∀ (i : ι), N i →ₗ[R] K i) :
+    (lmap (fun i ↦ (g i) ∘ₗ (f i))) = (lmap g) ∘ₗ (lmap f) :=
+  DFinsupp.mapRange.linearMap_comp _ _
+
+theorem lmap_injective : Function.Injective (lmap f) ↔ ∀ i, Function.Injective (f i) := by
+  classical exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
+
+theorem lmap_surjective : Function.Surjective (lmap f) ↔ (∀ i, Function.Surjective (f i)) := by
+  classical exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
+
+lemma lmap_eq_iff (x y : ⨁ i, M i) :
+    lmap f x = lmap f y ↔ ∀ i, f i (x i) = f i (y i) :=
+  map_eq_iff (fun i => (f i).toAddMonoidHom) _ _
+
+lemma toAddMonoidHom_lmap :
+    (lmap f).toAddMonoidHom = map (fun i => (f i).toAddMonoidHom) :=
+  rfl
+
+lemma lmap_eq_map (x : ⨁ i, M i) : lmap f x = map (fun i => (f i).toAddMonoidHom) x :=
+  rfl
+
+end map
 
 section CongrLeft
 
@@ -351,9 +399,13 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
     sigmaFinsuppEquivDFinsupp_single, LinearEquiv.ofBijective_apply,
     sigmaFinsuppAddEquivDFinsupp_apply]
   rw [DFinsupp.mapRange.linearEquiv_symm]
+  -- `DFunLike.coe (β := fun x ↦ ⨁ (i : ι), ↥(A i))`
+  -- appears in the goal, but the lemma is expecting
+  -- `DFunLike.coe (β := fun x ↦ Π₀ (i : ι), ↥(A i))`
   erw [DFinsupp.mapRange.linearEquiv_apply]
   simp only [DFinsupp.mapRange_single, Basis.repr_symm_apply, linearCombination_single, one_smul,
     toModule]
+  -- Similarly here.
   erw [DFinsupp.lsum_single]
   simp only [Submodule.coe_subtype]
 

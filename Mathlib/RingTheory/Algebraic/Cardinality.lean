@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Polynomial.Cardinal
-import Mathlib.RingTheory.Algebraic
+import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.RingTheory.Algebraic.Defs
 
 /-!
 # Cardinality of algebraic extensions
@@ -31,7 +32,7 @@ theorem lift_cardinalMk_le_sigma_polynomial :
       let p := Classical.indefiniteDescription _ (Algebra.IsAlgebraic.isAlgebraic x)
       ⟨p.1, x, by
         dsimp
-        have := (Polynomial.map_ne_zero_iff (NoZeroSMulDivisors.algebraMap_injective R L)).2 p.2.1
+        have := (Polynomial.map_ne_zero_iff (FaithfulSMul.algebraMap_injective R L)).2 p.2.1
         rw [Polynomial.mem_roots this, Polynomial.IsRoot, Polynomial.eval_map,
           ← Polynomial.aeval_def, p.2.2]⟩)
     fun x y => by

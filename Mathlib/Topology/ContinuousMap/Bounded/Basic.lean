@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
 import Mathlib.Algebra.Module.MinimalAxioms
-import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
-import Mathlib.Topology.Bornology.BoundedOperation
 import Mathlib.Tactic.Monotonicity
+import Mathlib.Topology.Algebra.Indicator
+import Mathlib.Topology.Bornology.BoundedOperation
+import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 # Bounded continuous functions
@@ -38,10 +39,10 @@ you should parametrize over `(F : Type*) [BoundedContinuousMapClass F α β] (f 
 
 When you extend this structure, make sure to extend `BoundedContinuousMapClass`. -/
 structure BoundedContinuousFunction (α : Type u) (β : Type v) [TopologicalSpace α]
-    [PseudoMetricSpace β] extends ContinuousMap α β : Type max u v where
+    [PseudoMetricSpace β] : Type max u v extends ContinuousMap α β where
   map_bounded' : ∃ C, ∀ x y, dist (toFun x) (toFun y) ≤ C
 
-scoped[BoundedContinuousFunction] infixr:25 " →ᵇ " => BoundedContinuousFunction
+@[inherit_doc] scoped[BoundedContinuousFunction] infixr:25 " →ᵇ " => BoundedContinuousFunction
 
 section
 
@@ -50,7 +51,7 @@ section
 
 You should also extend this typeclass when you extend `BoundedContinuousFunction`. -/
 class BoundedContinuousMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α]
-    [PseudoMetricSpace β] [FunLike F α β] extends ContinuousMapClass F α β : Prop where
+    [PseudoMetricSpace β] [FunLike F α β] : Prop extends ContinuousMapClass F α β where
   map_bounded (f : F) : ∃ C, ∀ x y, dist (f x) (f y) ≤ C
 
 end
@@ -82,13 +83,15 @@ instance instCoeTC [FunLike F α β] [BoundedContinuousMapClass F α β] : CoeTC
       map_bounded' := map_bounded f }⟩
 
 @[simp]
-theorem coe_to_continuous_fun (f : α →ᵇ β) : (f.toContinuousMap : α → β) = f := rfl
+theorem coe_toContinuousMap (f : α →ᵇ β) : (f.toContinuousMap : α → β) = f := rfl
+
+@[deprecated (since := "2024-11-23")] alias coe_to_continuous_fun := coe_toContinuousMap
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
 def Simps.apply (h : α →ᵇ β) : α → β := h
 
-initialize_simps_projections BoundedContinuousFunction (toContinuousMap_toFun → apply)
+initialize_simps_projections BoundedContinuousFunction (toFun → apply)
 
 protected theorem bounded (f : α →ᵇ β) : ∃ C, ∀ x y : α, dist (f x) (f y) ≤ C :=
   f.map_bounded'
@@ -256,14 +259,11 @@ theorem isEmbedding_coeFn : IsEmbedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ
 @[deprecated (since := "2024-10-26")]
 alias embedding_coeFn := isEmbedding_coeFn
 
-variable (α)
-
+variable (α) in
 /-- Constant as a continuous bounded function. -/
-@[simps! (config := .asFn)] -- Porting note: Changed `simps` to `simps!`
+@[simps! (config := .asFn)]
 def const (b : β) : α →ᵇ β :=
   ⟨ContinuousMap.const α b, 0, by simp⟩
-
-variable {α}
 
 theorem const_apply' (a : α) (b : β) : (const α b : α → β) a = b := rfl
 
@@ -516,7 +516,7 @@ theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : Is
       · exact (hU x').2.2 _ hx' _ (hU x').1 hf
       · exact (hU x').2.2 _ hx' _ (hU x').1 hg
       · have F_f_g : F (f x') = F (g x') :=
-          (congr_arg (fun f : tα → tβ => (f ⟨x', x'tα⟩ : β)) f_eq_g : _)
+          (congr_arg (fun f : tα → tβ => (f ⟨x', x'tα⟩ : β)) f_eq_g :)
         calc
           dist (f x') (g x') ≤ dist (f x') (F (f x')) + dist (g x') (F (f x')) :=
             dist_triangle_right _ _ _
@@ -1086,13 +1086,11 @@ instance instModule : Module 𝕜 (α →ᵇ β) :=
 variable (𝕜)
 
 /-- The evaluation at a point, as a continuous linear map from `α →ᵇ β` to `β`. -/
+@[simps]
 def evalCLM (x : α) : (α →ᵇ β) →L[𝕜] β where
   toFun f := f x
   map_add' _ _ := add_apply _ _
   map_smul' _ _ := smul_apply _ _ _
-
-@[simp]
-theorem evalCLM_apply (x : α) (f : α →ᵇ β) : evalCLM 𝕜 x f = f x := rfl
 
 variable (α β)
 
@@ -1219,10 +1217,9 @@ instance : NatCast (α →ᵇ R) :=
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : α →ᵇ R) : α → R) = n := rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ((no_index (OfNat.ofNat n) : α →ᵇ R) : α → R) = OfNat.ofNat n :=
+    ((ofNat(n) : α →ᵇ R) : α → R) = ofNat(n) :=
   rfl
 
 instance : IntCast (α →ᵇ R) :=
@@ -1318,7 +1315,7 @@ def C : 𝕜 →+* α →ᵇ γ where
   map_add' _ _ := ext fun _ => (algebraMap 𝕜 γ).map_add _ _
 
 instance instAlgebra : Algebra 𝕜 (α →ᵇ γ) where
-  toRingHom := C
+  algebraMap := C
   commutes' _ _ := ext fun _ ↦ Algebra.commutes' _ _
   smul_def' _ _ := ext fun _ ↦ Algebra.smul_def' _ _
 
@@ -1414,15 +1411,12 @@ instance instLattice : Lattice (α →ᵇ β) := DFunLike.coe_injective.lattice 
 @[simp, norm_cast] lemma coe_posPart (f : α →ᵇ β) : ⇑f⁺ = (⇑f)⁺ := rfl
 @[simp, norm_cast] lemma coe_negPart (f : α →ᵇ β) : ⇑f⁻ = (⇑f)⁻ := rfl
 
-@[deprecated (since := "2024-02-21")] alias coeFn_sup := coe_sup
-@[deprecated (since := "2024-02-21")] alias coeFn_abs := coe_abs
 
 instance instNormedLatticeAddCommGroup : NormedLatticeAddCommGroup (α →ᵇ β) :=
   { instSeminormedAddCommGroup with
     add_le_add_left := by
       intro f g h₁ h t
-      simp only [coe_to_continuous_fun, Pi.add_apply, add_le_add_iff_left, coe_add,
-        ContinuousMap.toFun_eq_coe]
+      simp only [coe_toContinuousMap, Pi.add_apply, add_le_add_iff_left, coe_add]
       exact h₁ _
     solid := by
       intro f g h
@@ -1481,15 +1475,15 @@ variable {α : Type*} [TopologicalSpace α]
 lemma add_norm_nonneg (f : α →ᵇ ℝ) :
     0 ≤ f + const _ ‖f‖ := by
   intro x
-  simp only [ContinuousMap.toFun_eq_coe, coe_to_continuous_fun, coe_zero, Pi.zero_apply, coe_add,
-    const_toFun, Pi.add_apply]
+  simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, coe_zero, Pi.zero_apply, coe_add,
+    const_apply, Pi.add_apply]
   linarith [(abs_le.mp (norm_coe_le_norm f x)).1]
 
 lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
     0 ≤ const _ ‖f‖ - f := by
   intro x
-  simp only [ContinuousMap.toFun_eq_coe, coe_to_continuous_fun, coe_zero, Pi.zero_apply, coe_sub,
-    const_toFun, Pi.sub_apply, sub_nonneg]
+  simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, coe_zero, Pi.zero_apply, coe_sub,
+    const_apply, Pi.sub_apply, sub_nonneg]
   linarith [(abs_le.mp (norm_coe_le_norm f x)).2]
 
 end

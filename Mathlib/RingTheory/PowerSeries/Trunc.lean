@@ -129,6 +129,20 @@ lemma trunc_X_of {n : ℕ} (hn : 2 ≤ n) : trunc n X = (Polynomial.X : R[X]) :=
     | zero => contradiction
     | succ n => exact trunc_X n
 
+@[simp]
+lemma trunc_one_left (p : R⟦X⟧) : trunc (R := R) 1 p = .C (coeff R 0 p) := by
+  ext i; simp +contextual [coeff_trunc, Polynomial.coeff_C]
+
+lemma trunc_one_X : trunc (R := R) 1 X = 0 := by simp
+
+@[simp]
+lemma trunc_C_mul (n : ℕ) (r : R) (f : R⟦X⟧) : trunc n (C R r * f) = .C r * trunc n f := by
+  ext i; simp [coeff_trunc]
+
+@[simp]
+lemma trunc_mul_C (n : ℕ) (f : R⟦X⟧) (r : R) : trunc n (f * C R r) = trunc n f * .C r := by
+  ext i; simp [coeff_trunc]
+
 end Trunc
 
 section Trunc
@@ -210,6 +224,14 @@ theorem coeff_mul_eq_coeff_trunc_mul_trunc {d n} (f g) (h : d < n) :
   coeff_mul_eq_coeff_trunc_mul_trunc₂ f g h h
 
 end Trunc
+
+section Map
+variable {S : Type*} [Semiring R] [Semiring S] (f : R →+* S)
+
+lemma trunc_map (p : R⟦X⟧) (n : ℕ) : (p.map f).trunc n = (p.trunc n).map f := by
+  ext m; simp [coeff_trunc, apply_ite f]
+
+end Map
 
 end PowerSeries
 

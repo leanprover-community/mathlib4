@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.GroupTheory.Subsemigroup.Center
 import Mathlib.RingTheory.NonUnitalSubring.Defs
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
@@ -341,6 +342,17 @@ instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) :=
   { NonUnitalSubsemiring.center.instNonUnitalCommSemiring R,
     inferInstanceAs <| NonUnitalNonAssocRing (center R) with }
 
+variable {R}
+
+/-- The center of isomorphic (not necessarily unital or associative) rings are isomorphic. -/
+@[simps!] def centerCongr {S} [NonUnitalNonAssocRing S] (e : R ≃+* S) : center R ≃+* center S :=
+  NonUnitalSubsemiring.centerCongr e
+
+/-- The center of a (not necessarily uintal or associative) ring
+is isomorphic to the center of its opposite. -/
+@[simps!] def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ :=
+  NonUnitalSubsemiring.centerToMulOpposite
+
 end NonUnitalNonAssocRing
 
 section NonUnitalRing
@@ -391,6 +403,7 @@ theorem closure_le {s : Set R} {t : NonUnitalSubring R} : closure s ≤ t ↔ s 
 
 /-- `NonUnitalSubring` closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
+@[gcongr]
 theorem closure_mono ⦃s t : Set R⦄ (h : s ⊆ t) : closure s ≤ closure t :=
   closure_le.2 <| Set.Subset.trans h subset_closure
 
@@ -501,8 +514,7 @@ def closureNonUnitalCommRingOfComm {R : Type u} [NonUnitalRing R] {s : Set R}
       | neg_left _ _ _ _ h => exact Commute.neg_left h
       | neg_right _ _ _ _ h => exact Commute.neg_right h }
 
-variable (R)
-
+variable (R) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/
 protected def gi : GaloisInsertion (@closure R _) SetLike.coe where
   choice s _ := closure s
@@ -510,9 +522,8 @@ protected def gi : GaloisInsertion (@closure R _) SetLike.coe where
   le_l_u _s := subset_closure
   choice_eq _s _h := rfl
 
-variable {R}
-
 /-- Closure of a `NonUnitalSubring` `S` equals `S`. -/
+@[simp]
 theorem closure_eq (s : NonUnitalSubring R) : closure (s : Set R) = s :=
   (NonUnitalSubring.gi R).l_u_eq s
 

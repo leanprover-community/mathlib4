@@ -104,7 +104,7 @@ theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
     contrapose! hs'; rwa [add_right_eq_self, mul_eq_zero, eq_false_intro hp'.ne', false_or] at hs'
   rw [rpow_def_of_pos hs1, ← exp_log hs2]
   apply exp_strictMono
-  cases' lt_or_gt_of_ne hs' with hs' hs'
+  rcases lt_or_gt_of_ne hs' with hs' | hs'
   · rw [← div_lt_iff₀ hp', ← div_lt_div_right_of_neg hs']
     convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs2 hs1 hs4 hs3 _ using 1
     · rw [add_sub_cancel_left, log_one, sub_zero]
@@ -143,7 +143,7 @@ theorem rpow_one_add_lt_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
     contrapose! hs'; rwa [add_right_eq_self, mul_eq_zero, eq_false_intro hp1.ne', false_or] at hs'
   rw [rpow_def_of_pos hs1, ← exp_log hs2]
   apply exp_strictMono
-  cases' lt_or_gt_of_ne hs' with hs' hs'
+  rcases lt_or_gt_of_ne hs' with hs' | hs'
   · rw [← lt_div_iff₀ hp1, ← div_lt_div_right_of_neg hs']
     convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs1 hs2 hs3 hs4 _ using 1
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]

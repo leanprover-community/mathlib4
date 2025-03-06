@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Independence.Kernel
+import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Independence of sets of sets and measure spaces (σ-algebras)
@@ -426,7 +427,7 @@ theorem iIndepSet.indep_generateFrom_lt [Preorder ι] {s : ι → Set Ω}
     Indep (generateFrom {s i}) (generateFrom { t | ∃ j < i, s j = t }) μ :=
   Kernel.iIndepSet.indep_generateFrom_lt hsm hs i
 
-theorem iIndepSet.indep_generateFrom_le [LinearOrder ι]
+theorem iIndepSet.indep_generateFrom_le [Preorder ι]
     {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s μ) (i : ι) {k : ι} (hk : i < k) :
     Indep (generateFrom {s k}) (generateFrom { t | ∃ j ≤ i, s j = t }) μ :=

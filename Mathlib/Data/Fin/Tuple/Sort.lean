@@ -3,11 +3,10 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Algebra.Group.End
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.List.FinRange
 import Mathlib.Data.Prod.Lex
-import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Order.Interval.Finset.Fin
 
 /-!
@@ -105,7 +104,7 @@ variable {n : ℕ} {α : Type*}
 
 /-- If `f₀ ≤ f₁ ≤ f₂ ≤ ⋯` is a sorted `m`-tuple of elements of `α`, then for any `j : Fin m` and
 `a : α` we have `j < #{i | fᵢ ≤ a}` iff `fⱼ ≤ a`. -/
-theorem lt_card_le_iff_apply_le_of_monotone [PartialOrder α] [DecidableRel (α := α) LE.le]
+theorem lt_card_le_iff_apply_le_of_monotone [Preorder α] [DecidableRel (α := α) LE.le]
     {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Monotone f) (j : Fin m) :
     j < Fintype.card {i // f i ≤ a} ↔ f j ≤ a := by
   suffices h1 : ∀ k : Fin m, (k < Fintype.card {i // f i ≤ a}) → f k ≤ a by
@@ -132,7 +131,7 @@ theorem lt_card_le_iff_apply_le_of_monotone [PartialOrder α] [DecidableRel (α 
   apply h
   exact (h_sorted (le_of_not_lt hij)).trans hia
 
-theorem lt_card_ge_iff_apply_ge_of_antitone [PartialOrder α] [DecidableRel (α := α) LE.le]
+theorem lt_card_ge_iff_apply_ge_of_antitone [Preorder α] [DecidableRel (α := α) LE.le]
     {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Antitone f) (j : Fin m) :
     j < Fintype.card {i // a ≤ f i} ↔ a ≤ f j :=
   lt_card_le_iff_apply_le_of_monotone _ (OrderDual.toDual a) h_sorted.dual_right j
@@ -163,8 +162,8 @@ theorem eq_sort_iff :
     σ = sort f ↔ Monotone (f ∘ σ) ∧ ∀ i j, i < j → f (σ i) = f (σ j) → σ i < σ j := by
   rw [eq_sort_iff']
   refine ⟨fun h => ⟨(monotone_proj f).comp h.monotone, fun i j hij hfij => ?_⟩, fun h i j hij => ?_⟩
-  · exact (((Prod.Lex.lt_iff _ _).1 <| h hij).resolve_left hfij.not_lt).2
-  · obtain he | hl := (h.1 hij.le).eq_or_lt <;> apply (Prod.Lex.lt_iff _ _).2
+  · exact ((Prod.Lex.toLex_lt_toLex.1 <| h hij).resolve_left hfij.not_lt).2
+  · obtain he | hl := (h.1 hij.le).eq_or_lt <;> apply Prod.Lex.toLex_lt_toLex.2
     exacts [Or.inr ⟨he, h.2 i j hij he⟩, Or.inl hl]
 
 /-- The permutation that sorts `f` is the identity if and only if `f` is monotone. -/

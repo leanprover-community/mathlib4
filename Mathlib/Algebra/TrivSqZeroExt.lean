@@ -3,8 +3,8 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Algebra.GroupWithZero.Invertible
 import Mathlib.LinearAlgebra.Prod
 
 /-!
@@ -490,22 +490,13 @@ instance addMonoidWithOne [AddMonoidWithOne R] [AddMonoid M] : AddMonoidWithOne 
 theorem fst_natCast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (n : tsze R M).fst = n :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias fst_nat_cast := fst_natCast
-
 @[simp]
 theorem snd_natCast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (n : tsze R M).snd = 0 :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias snd_nat_cast := snd_natCast
-
 @[simp]
 theorem inl_natCast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (inl n : tsze R M) = n :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias inl_nat_cast := inl_natCast
 
 instance addGroupWithOne [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsze R M) :=
   { TrivSqZeroExt.addGroup, TrivSqZeroExt.addMonoidWithOne with
@@ -517,22 +508,13 @@ instance addGroupWithOne [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsz
 theorem fst_intCast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (z : tsze R M).fst = z :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias fst_int_cast := fst_intCast
-
 @[simp]
 theorem snd_intCast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (z : tsze R M).snd = 0 :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias snd_int_cast := snd_intCast
-
 @[simp]
 theorem inl_intCast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (inl z : tsze R M) = z :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias inl_int_cast := inl_intCast
 
 instance nonAssocSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] :
     NonAssocSemiring (tsze R M) :=
@@ -657,12 +639,12 @@ $r_0\cdots r_{i-1}m_ir_{i+1}\cdots r_n$. -/
 theorem snd_list_prod [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
     [SMulCommClass R Rᵐᵒᵖ M] (l : List (tsze R M)) :
     l.prod.snd =
-      (l.enum.map fun x : ℕ × tsze R M =>
-          ((l.map fst).take x.1).prod •> x.snd.snd <• ((l.map fst).drop x.1.succ).prod).sum := by
+      (l.zipIdx.map fun x : tsze R M × ℕ =>
+          ((l.map fst).take x.2).prod •> x.fst.snd <• ((l.map fst).drop x.2.succ).prod).sum := by
   induction l with
   | nil => simp
   | cons x xs ih =>
-    rw [List.enum_cons, ← List.map_fst_add_enum_eq_enumFrom]
+    rw [List.zipIdx_cons']
     simp_rw [List.map_cons, List.map_map, Function.comp_def, Prod.map_snd, Prod.map_fst, id,
       List.take_zero, List.take_succ_cons, List.prod_nil, List.prod_cons, snd_mul, one_smul,
       List.drop, mul_smul, List.sum_cons, fst_list_prod, ih, List.smul_sum, List.map_map,
@@ -874,20 +856,20 @@ variable [Algebra S R] [Module S M] [Module R M] [Module Rᵐᵒᵖ M] [SMulComm
 variable [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
 variable [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M]
 
-instance algebra' : Algebra S (tsze R M) :=
-  { (TrivSqZeroExt.inlHom R M).comp (algebraMap S R) with
-    smul := (· • ·)
-    commutes' := fun s x =>
-      ext (Algebra.commutes _ _) <|
-        show algebraMap S R s •> x.snd + (0 : M) <• x.fst
-            = x.fst •> (0 : M) + x.snd <• algebraMap S R s by
-          rw [smul_zero, smul_zero, add_zero, zero_add]
-          rw [Algebra.algebraMap_eq_smul_one, MulOpposite.op_smul, op_one, smul_assoc,
-            one_smul, smul_assoc, one_smul]
-    smul_def' := fun s x =>
-      ext (Algebra.smul_def _ _) <|
-        show s • x.snd = algebraMap S R s •> x.snd + (0 : M) <• x.fst by
-          rw [smul_zero, add_zero, algebraMap_smul] }
+instance algebra' : Algebra S (tsze R M) where
+  algebraMap := (TrivSqZeroExt.inlHom R M).comp (algebraMap S R)
+  smul := (· • ·)
+  commutes' := fun s x =>
+    ext (Algebra.commutes _ _) <|
+      show algebraMap S R s •> x.snd + (0 : M) <• x.fst
+          = x.fst •> (0 : M) + x.snd <• algebraMap S R s by
+        rw [smul_zero, smul_zero, add_zero, zero_add]
+        rw [Algebra.algebraMap_eq_smul_one, MulOpposite.op_smul, op_one, smul_assoc,
+          one_smul, smul_assoc, one_smul]
+  smul_def' := fun s x =>
+    ext (Algebra.smul_def _ _) <|
+      show s • x.snd = algebraMap S R s •> x.snd + (0 : M) <• x.fst by
+        rw [smul_zero, add_zero, algebraMap_smul]
 
 -- shortcut instance for the common case
 instance : Algebra R' (tsze R' M) :=

@@ -54,7 +54,7 @@ add_decl_doc CuspForm.toSlashInvariantForm
 `SlashInvariantFormClass` by requiring that the functions be holomorphic and bounded
 at infinity. -/
 class ModularFormClass (F : Type*) (Γ : outParam <| Subgroup (SL(2, ℤ))) (k : outParam ℤ)
-    [FunLike F ℍ ℂ] extends SlashInvariantFormClass F Γ k : Prop where
+    [FunLike F ℍ ℂ] : Prop extends SlashInvariantFormClass F Γ k where
   holo : ∀ f : F, MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f : ℍ → ℂ)
   bdd_at_infty : ∀ (f : F) (A : SL(2, ℤ)), IsBoundedAtImInfty (f ∣[k] A)
 
@@ -62,7 +62,7 @@ class ModularFormClass (F : Type*) (Γ : outParam <| Subgroup (SL(2, ℤ))) (k :
 `SlashInvariantFormClass` by requiring that the functions be holomorphic and zero
 at infinity. -/
 class CuspFormClass (F : Type*) (Γ : outParam <| Subgroup (SL(2, ℤ))) (k : outParam ℤ)
-    [FunLike F ℍ ℂ] extends SlashInvariantFormClass F Γ k : Prop where
+    [FunLike F ℍ ℂ] : Prop extends SlashInvariantFormClass F Γ k where
   holo : ∀ f : F, MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f : ℍ → ℂ)
   zero_at_infty : ∀ (f : F) (A : SL(2, ℤ)), IsZeroAtImInfty (f ∣[k] A)
 
@@ -235,13 +235,15 @@ theorem mul_coe {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k
   rfl
 
 /-- The constant function with value `x : ℂ` as a modular form of weight 0 and any level. -/
-@[simps! (config := .asFn) toFun toSlashInvariantForm]
 def const (x : ℂ) : ModularForm Γ 0 where
   toSlashInvariantForm := .const x
   holo' _ := mdifferentiableAt_const
   bdd_at_infty' A := by
     simpa only [SlashInvariantForm.const_toFun,
       ModularForm.is_invariant_const] using atImInfty.const_boundedAtFilter x
+
+@[simp]
+lemma const_apply (x : ℂ) (τ : ℍ) : (const x : ModularForm Γ 0) τ = x := rfl
 
 instance : One (ModularForm Γ 0) where
   one := { const 1 with toSlashInvariantForm := 1 }
