@@ -36,13 +36,22 @@ def symmDiff (e1 e2 : NameSet) : NameSet × NameSet :=
 
 elab "ddiff" : command => do
   let mods : Array Import := #[`Mathlib.Algebra.Quandle]
-  let fname : System.FilePath := "Mathlib"/"Algebra" / "Quandle.lean"
+  let fname : System.FilePath := "Mathlib" / "Algebra" / "Quandle.lean"
+  let m1 ← IO.Process.run {cmd := "lake", args := #["exe", "cache", "get", fname.toString]}
+  dbg_trace "m1: '{m1}'"
+  let m2 ← IO.Process.run {cmd := "lake", args := #["build", toString mods[0]]}
+  dbg_trace "m2: '{m2}'"
   let e1 ← declsFromImports mods
-  dbg_trace "git checkout master"
-  let _ ← IO.Process.run {cmd := "git", args := #["checkout", "master"]}
+  dbg_trace "git checkout master {fname.toString}"
+  let m3 ← IO.Process.run {cmd := "git", args := #["checkout", "master", fname.toString]}
+  dbg_trace "m3: '{m3}'"
+  dbg_trace "lake exe cache get {fname.toString}"
+  let m4 ← IO.Process.run {cmd := "lake", args := #["exe", "cache", "get", fname.toString]}
+  dbg_trace "m4: '{m4}'"
   dbg_trace "lake build {mods[0]}"
-  let _ ← IO.Process.run {cmd := "lake", args := #["exe", "cache", "get", fname.toString]}
-  let _ ← IO.Process.run {cmd := "lake", args := #["build", toString mods[0]]}
+  let m5 ← IO.Process.run {cmd := "lake", args := #["build", toString mods[0]]}
+  dbg_trace "m5: '{m5}'"
   let e2 ← declsFromImports mods
   let (d1, d2) := symmDiff e1 e2
   logInfo m!"{(d1, d2)}"
+ddiff
