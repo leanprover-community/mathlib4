@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel
 -/
 import Mathlib.Analysis.Complex.Circle
-import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
 /-!
+
 # Characteristic Function of a Finite Measure
 
 This file defines the characteristic function of a `FiniteMeasure P` on a topological vector space
@@ -33,15 +33,6 @@ We show:
 - `MeasureTheory.ext_of_charFun_eq`: If the characteristic functions of two finite measures `P`
   and `P'` are equal, then `P = P'`. In other words, characteristic functions separate finite
   measures.
-
-## Example: Finite Dimensional Case
-
-As an example, we consider the case where `V = W = ℝ ^ d`, `L = ⟪ , ⟫` and `e` is the standard
-probability character given by
-`e = fun x => Complex.exp (Complex.I * x)`
-We show:
-- `ext_of_charFun_eq`: A finite measure `P` on `ℝ ^ d` is uniquely
-  determined by the integrals of the form `∫ v, exp (Complex.I * ⟨v, w⟩) ∂P` for all `w : ℝ ^ d`.
 -/
 
 open MeasureTheory Filter BoundedContinuousFunction Complex
