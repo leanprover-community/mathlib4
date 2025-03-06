@@ -116,7 +116,7 @@ theorem succ_def (a : NatOrdinal) : succ a = toNatOrdinal (toOrdinal a + 1) :=
 theorem zero_le (o : NatOrdinal) : 0 ≤ o :=
   Ordinal.zero_le o
 
-theorem not_lt_zero (o : NatOrdinal) : ¬ o < 0 := by
+theorem not_lt_zero (o : NatOrdinal) : ¬ o < 0 :=
   Ordinal.not_lt_zero o
 
 @[simp]
