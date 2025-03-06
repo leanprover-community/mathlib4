@@ -2056,21 +2056,21 @@ lemma div_nonneg_of_nonpos_of_nonpos (h : a ≤ 0) (h' : b ≤ 0) : 0 ≤ a / b 
   le_of_eq_of_le zero_div.symm (div_le_div_right_of_nonpos h' h)
 
 private lemma exists_lt_mul_left_of_nonneg (ha : 0 ≤ a) (hc : 0 ≤ c) (h : c < a * b) :
-    ∃ a' ∈ Ico 0 a, c < a' * b := by
+    ∃ a' ∈ Ioo 0 a, c < a' * b := by
   rcases eq_or_ne b ⊤ with rfl | b_top
   · rcases eq_or_lt_of_le ha with rfl | ha
     · rw [zero_mul] at h
       exact (not_le_of_lt h hc).rec
     · obtain ⟨a', a0', aa'⟩ := exists_between ha
-      use a', mem_Ico.2 ⟨a0'.le, aa'⟩
+      use a', mem_Ioo.2 ⟨a0', aa'⟩
       rw [mul_top_of_pos ha] at h
       rwa [mul_top_of_pos a0']
   · have b0 : 0 < b := pos_of_mul_pos_right (hc.trans_lt h) ha
     obtain ⟨a', ha', aa'⟩ := exists_between ((div_lt_iff b0 b_top).2 h)
-    exact ⟨a', ⟨(div_nonneg hc b0.le).trans ha'.le, aa'⟩, (div_lt_iff b0 b_top).1 ha'⟩
+    exact ⟨a', ⟨(div_nonneg hc b0.le).trans_lt ha', aa'⟩, (div_lt_iff b0 b_top).1 ha'⟩
 
 private lemma exists_lt_mul_right_of_nonneg (ha : 0 ≤ a) (hc : 0 ≤ c) (h : c < a * b) :
-    ∃ b' ∈ Ico 0 b, c < a * b' := by
+    ∃ b' ∈ Ioo 0 b, c < a * b' := by
   have hb : 0 < b := pos_of_mul_pos_right (hc.trans_lt h) ha
   simp_rw [mul_comm a] at h ⊢
   exact exists_lt_mul_left_of_nonneg hb.le hc h
@@ -2107,12 +2107,12 @@ lemma le_mul_of_forall_lt (h₁ : 0 < a ∨ b ≠ ⊤) (h₂ : a ≠ ⊤ ∨ 0 <
   exact (h a' (mem_Ioo.1 aa').1 b' (mem_Ioo.1 bb').1).trans hd.le
 
 lemma mul_le_of_forall_lt_of_nonneg (ha : 0 ≤ a) (hc : 0 ≤ c)
-    (h : ∀ a' ∈ Ico 0 a, ∀ b' ∈ Ico 0 b, a' * b' ≤ c) : a * b ≤ c := by
+    (h : ∀ a' ∈ Ioo 0 a, ∀ b' ∈ Ioo 0 b, a' * b' ≤ c) : a * b ≤ c := by
   refine le_of_forall_lt_imp_le_of_dense fun d dab ↦ ?_
   rcases lt_or_le d 0 with d0 | d0
   · exact d0.le.trans hc
   obtain ⟨a', aa', dab⟩ := exists_lt_mul_left_of_nonneg ha d0 dab
-  obtain ⟨b', bb', dab⟩ := exists_lt_mul_right_of_nonneg aa'.1 d0 dab
+  obtain ⟨b', bb', dab⟩ := exists_lt_mul_right_of_nonneg aa'.1.le d0 dab
   exact dab.le.trans (h a' aa' b' bb')
 
 /-! #### Division Distributivity -/
