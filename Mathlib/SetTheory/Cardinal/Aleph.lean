@@ -781,7 +781,7 @@ theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit 
     · rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
       have := power_le_power_left two_ne_zero ha.le
       rw [← beth_succ] at this
-      exact this.trans_lt (beth_lt.2 (H.succ_lt hi))
+      exact this.trans_lt (beth_strictMono (H.succ_lt hi))
     · rw [isLimit_iff]
       exact ⟨h, H⟩
 
