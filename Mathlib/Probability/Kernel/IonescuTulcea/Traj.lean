@@ -513,7 +513,7 @@ lemma traj_apply (a : ℕ) (x : Π i : Iic a, X i) : traj κ a x = trajFun κ a 
 instance (a : ℕ) : IsMarkovKernel (traj κ a) := ⟨fun _ ↦ isProbabilityMeasure_trajFun ..⟩
 
 lemma traj_map_frestrictLe (a b : ℕ) : (traj κ a).map (frestrictLe b) = partialTraj κ a b := by
-  ext1 x
+  ext x
   rw [map_apply, traj_apply, frestrictLe, isProjectiveLimit_trajFun, inducedFamily_Iic]
   fun_prop
 
@@ -530,7 +530,7 @@ lemma traj_map_frestrictLe_of_le {a b : ℕ} (hab : a ≤ b) :
 is `partialTraj κ a b` for any `b ≥ n`. -/
 theorem eq_traj' {a : ℕ} (n : ℕ) (η : Kernel (Π i : Iic a, X i) (Π n, X n))
     (hη : ∀ b ≥ n, η.map (frestrictLe b) = partialTraj κ a b) : η = traj κ a := by
-  ext1 x
+  ext x : 1
   refine ((isProjectiveLimit_trajFun _ _ _).unique ?_).symm
   rw [isProjectiveLimit_nat_iff' _ _ n]
   · intro k hk
@@ -693,8 +693,7 @@ theorem condExp_traj {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
   · exact (i_f'.1.comp_ae_measurable' (measurable_frestrictLe b).aemeasurable)
 
 
-variable (κ)
-
+variable (κ) in
 theorem condExp_traj' {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c)
     (x₀ : Π i : Iic a, X i) (f : (Π n, X n) → E) :
     (traj κ a x₀)[f|piLE b] =ᵐ[traj κ a x₀]
