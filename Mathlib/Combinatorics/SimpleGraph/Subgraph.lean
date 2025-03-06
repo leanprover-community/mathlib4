@@ -5,6 +5,7 @@ Authors: Hunter Monroe, Kyle Miller, Alena Gusakov
 -/
 import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Combinatorics.SimpleGraph.Maps
+import Mathlib.Data.Fintype.Powerset
 
 /-!
 # Subgraphs of a simple graph
@@ -196,6 +197,10 @@ def spanningCoeEquivCoeOfSpanning (G' : Subgraph G) (h : G'.IsSpanning) :
 they are adjacent in `G`. -/
 def IsInduced (G' : Subgraph G) : Prop :=
   ∀ {v w : V}, v ∈ G'.verts → w ∈ G'.verts → G.Adj v w → G'.Adj v w
+
+@[simp] protected lemma IsInduced.adj {G' : G.Subgraph} (hG' : G'.IsInduced) {a b : G'.verts} :
+    G'.Adj a b ↔ G.Adj a b :=
+  ⟨coe_adj_sub _ _ _, hG' a.2 b.2⟩
 
 /-- `H.support` is the set of vertices that form edges in the subgraph `H`. -/
 def support (H : Subgraph G) : Set V := Rel.dom H.Adj
@@ -639,6 +644,14 @@ lemma map_monotone : Monotone (Subgraph.map f) := fun _ _ ↦ map_mono
 theorem map_sup (f : G →g G') (H₁ H₂ : G.Subgraph) : (H₁ ⊔ H₂).map f = H₁.map f ⊔ H₂.map f := by
   ext <;> simp [Set.image_union, map_adj, sup_adj, Relation.Map, or_and_right, exists_or]
 
+@[simp] lemma edgeSet_map (f : G →g G') (H : G.Subgraph) :
+    (H.map f).edgeSet = Sym2.map f '' H.edgeSet := by
+  ext ⟨a, b⟩
+  simp only [Subgraph.mem_edgeSet, map_adj, Relation.Map, Set.mem_image, Sym2.exists,
+    Sym2.map_pair_eq, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, and_or_left,
+    exists_or, iff_self_or, forall_exists_index, and_imp]
+  exact fun c d hcd hc hd ↦ ⟨d, c, hcd.symm, hd, hc⟩
+
 end map
 
 /-- Graph homomorphisms induce a contravariant function on subgraphs. -/
@@ -674,6 +687,16 @@ theorem map_le_iff_le_comap {G' : SimpleGraph W} (f : G →g G') (H : G.Subgraph
   · simp only [Relation.Map, map_adj, forall_exists_index, and_imp]
     rintro u u' hu rfl rfl
     exact (h.2 hu).2
+
+open scoped Classical in
+noncomputable instance [Finite V] : Fintype G.Subgraph := by
+  have := (nonempty_fintype V).some
+  exact Fintype.ofEquiv
+    {H : Set V × (V → V → Prop) // H.2 ≤ G.Adj ∧ (∀ a b, H.2 a b → a ∈ H.1) ∧ Symmetric H.2}
+    { toFun := fun H ↦ ⟨H.1.1, H.1.2, @H.2.1, @H.2.2.1, H.2.2.2⟩
+      invFun := fun H ↦ ⟨⟨H.1, H.2⟩, fun _ _ ↦ H.3, fun _ _ ↦ H.4, H.5⟩
+      left_inv := fun {x} ↦ by ext <;> rfl
+      right_inv := fun {x} ↦ by ext <;> rfl }
 
 /-- Given two subgraphs, one a subgraph of the other, there is an induced injective homomorphism of
 the subgraphs as graphs. -/
