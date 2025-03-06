@@ -211,6 +211,8 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [CompactSpace M] [FiniteDimensional ℝ E]
   [CompactSpace M'] [FiniteDimensional ℝ E'] [CompactSpace M''] [FiniteDimensional ℝ E'']
 
+omit [FiniteDimensional ℝ E] -- speculative!
+
 variable (k) in
 /-- An **unoriented cobordism** between two singular `n`-manifolds `(M,f)` and `(N,g)` on `X`
 is a compact smooth `n`-manifold `W` with a continuous map `F: W → X`
@@ -221,22 +223,23 @@ structure UnorientedCobordism.{v} (s : SingularNManifold X k I) (t : SingularNMa
   W : Type v
   /-- The manifold `W` is a topological space. -/
   [topologicalSpace: TopologicalSpace W]
-  /-- The manifold `W` is a charted space over `H`. -/
-  [chartedSpace: ChartedSpace H W]
+  [hW : CompactSpace W]
+  /-- The manifold `W` is a charted space over `H'`. -/
+  [chartedSpace: ChartedSpace H' W]
   /-- TODO! -/
-  J : ModelWithCorners ℝ E H
+  J : ModelWithCorners ℝ E' H'
   [smoothManifold: IsManifold J k W]
   /-- TODO! -/
   bd: BoundaryManifoldData W J k I
   -- Why are these needed?
   [topSpaceBd: TopologicalSpace bd.M₀]
   [chartedSpaceBd: ChartedSpace H bd.M₀]
-  [hW : CompactSpace W]
+
   /-- TODO! -/
   F : W → X
   hF : Continuous F
   /-- The boundary of `W` is diffeomorphic to the disjoint union `M ⊔ M'`. -/
-  φ : Diffeomorph I J (s.M ⊕ t.M) bd.M₀ k
+  φ : Diffeomorph I I (s.M ⊕ t.M) bd.M₀ k
   /-- `F` restricted to `M ↪ ∂W` equals `f`: this is formalised more nicely as
   `f = F ∘ ι ∘ φ⁻¹ : M → X`, where `ι : ∂W → W` is the inclusion. -/
   hFf : F ∘ bd.f ∘ φ ∘ Sum.inl = s.f
@@ -249,10 +252,16 @@ namespace UnorientedCobordism
 
 variable (s t : SingularNManifold X k I)
 
+-- issues inferring H' and E'?
 def refl : UnorientedCobordism k s s where--:= sorry
   W := s.M × (Set.Icc (0 : ℝ) 1)
-  bd := by
-    let icc := BoundaryManifoldData.Icc k
-    apply BoundaryManifoldData.prod_of_boundaryless_left
+  J := I.prod (𝓡∂ 1)
+  bd := BoundaryManifoldData.prod_of_boundaryless_left s.M I (BoundaryManifoldData.Icc k)
+
+  F := s.f ∘ (fun p ↦ p.1)
+  hF := s.hf.comp continuous_fst
+  φ := sorry
+  hFf := sorry
+  hFg := sorry
 
 end UnorientedCobordism
