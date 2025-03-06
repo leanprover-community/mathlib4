@@ -282,9 +282,9 @@ lemma cocyclesMap_comp_isoOneCocycles_hom :
   simp [cochainsMap_f_1_comp_oneCochainsLequiv f, mapShortComplexH1, ← LinearEquiv.toModuleIso_hom]
 
 @[simp]
-theorem mapOneCocycles_one (φ : (Action.res _ 1).obj A ⟶ B) : mapOneCocycles 1 φ = 0 := by
-  rw [mapOneCocycles, ← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i,
-    ShortComplex.cyclesMap'_i]
+theorem mapOneCocycles_one (φ : (Action.res _ 1).obj A ⟶ B) :
+    mapOneCocycles 1 φ = 0 := by
+  rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i, cyclesMap'_i]
   refine ModuleCat.hom_ext (LinearMap.ext fun _ ↦ funext fun y => ?_)
   simp [mapShortComplexH1, shortComplexH1, moduleCatMk, Pi.zero_apply y]
 
@@ -333,7 +333,7 @@ variable (A : Rep k G) (S : Subgroup G) [S.Normal]
 /-- The short complex `H¹(G ⧸ S, A^S) ⟶ H¹(G, A) ⟶ H¹(S, A)`. -/
 @[simps X₁ X₂ X₃ f g]
 noncomputable def H1InfRes :
-     ShortComplex (ModuleCat k) where
+    ShortComplex (ModuleCat k) where
   X₁ := H1 (A.quotientToInvariants S)
   X₂ := H1 A
   X₃ := H1 ((Action.res _ S.subtype).obj A)
@@ -349,7 +349,7 @@ noncomputable def H1InfRes :
 instance : Mono (H1InfRes A S).f := by
   rw [ModuleCat.mono_iff_injective, injective_iff_map_eq_zero]
   intro x hx
-  induction' x using H1_induction_on with x
+  induction x using H1_induction_on
   simp_all only [H1InfRes_X₂, H1InfRes_X₁, H1InfRes_f, H1π_comp_H1Map_apply (QuotientGroup.mk' S),
     Submodule.Quotient.mk_eq_zero]
   rcases hx with ⟨y, hy⟩
@@ -363,7 +363,7 @@ instance : Mono (H1InfRes A S).f := by
 lemma H1InfRes_exact : (H1InfRes A S).Exact := by
   rw [moduleCat_exact_iff_ker_sub_range]
   intro x hx
-  induction' x using H1_induction_on with x
+  induction x using H1_induction_on with | @h x =>
   simp_all only [H1InfRes_X₂, H1InfRes_X₃, H1InfRes_g, H1InfRes_X₁, LinearMap.mem_ker,
     H1π_comp_H1Map_apply S.subtype, Submodule.Quotient.mk_eq_zero, H1InfRes_f]
   rcases hx with ⟨(y : A), hy⟩
@@ -384,11 +384,11 @@ lemma H1InfRes_exact : (H1InfRes A S).Exact := by
           h2 (g⁻¹ * s * g) (Subgroup.Normal.conj_mem' ‹_› _ s.2 _)]
   · intro g h hgh
     have := congr(A.ρ g $(h2 (g⁻¹ * h) <| QuotientGroup.leftRel_apply.1 hgh))
-    simp_all [h1, ← sub_eq_add_neg, sub_eq_sub_iff_sub_eq_sub]
+    simp_all [← sub_eq_add_neg, sub_eq_sub_iff_sub_eq_sub]
   · rw [mem_oneCocycles_iff]
     intro g h
-    induction' g using QuotientGroup.induction_on with g
-    induction' h using QuotientGroup.induction_on with h
+    induction g using QuotientGroup.induction_on with | @H g =>
+    induction h using QuotientGroup.induction_on with | @H h =>
     apply Subtype.ext
     simp [← QuotientGroup.mk_mul, h1 g h, sub_add_eq_add_sub, add_assoc]
   · symm
@@ -397,8 +397,8 @@ lemma H1InfRes_exact : (H1InfRes A S).Exact := by
     use y
     refine Subtype.ext <| funext fun g => ?_
     simp only [moduleCatToCycles_apply_coe, AddSubgroupClass.coe_sub]
-    simp [mapOneCocycles_comp_subtype_apply (A := A.quotientToInvariants S) (QuotientGroup.mk' S),
-      shortComplexH1, oneCocycles.coe_mk (A := A.quotientToInvariants S), ← sub_sub]
+    simp [shortComplexH1, mapOneCocycles_comp_subtype_apply (A := A.quotientToInvariants S)
+      (QuotientGroup.mk' S), oneCocycles.coe_mk (A := A.quotientToInvariants S), ← sub_sub]
 
 end InfRes
 
