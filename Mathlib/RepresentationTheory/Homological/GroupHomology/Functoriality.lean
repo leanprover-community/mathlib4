@@ -355,9 +355,13 @@ lemma H1Map_one (φ : A ⟶ (Action.res _ (1 : G →* H)).obj B) :
   simpa [← mapDomain_mapRange] using
     Submodule.finsupp_sum_mem _ _ _ _ fun _ _ => single_one_mem_oneBoundaries _
 
-section
+section CoresCoinf
 
-variable (A) (S : Subgroup G) [S.Normal] [DecidableEq (G ⧸ S)] [IsTrivial (A.ρ.comp S.subtype)]
+variable (A) (S : Subgroup G) [S.Normal] [DecidableEq (G ⧸ S)]
+
+section OfTrivial
+
+variable [IsTrivial (A.ρ.comp S.subtype)]
 
 /-- Given a `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially, this is the
 short complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A)`. -/
@@ -455,7 +459,9 @@ previous assumptions. -/
     exact ⟨Set.mapsTo_preimage _ _, Set.injOn_of_injective Subtype.val_injective,
       fun x hx => ⟨⟨x, hS hx⟩, hx, rfl⟩⟩
 
-end
+end OfTrivial
+
+end CoresCoinf
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map from the short complex
