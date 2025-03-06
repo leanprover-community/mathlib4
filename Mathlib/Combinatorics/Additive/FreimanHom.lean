@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Submonoid.Defs
@@ -60,7 +60,7 @@ an `AddMonoid`/`Monoid` instead of the `AddMonoid`/`Monoid` itself.
 * Affine maps are Freiman homs.
 -/
 
-assert_not_exists Ideal TwoSidedIdeal
+assert_not_exists Field Ideal TwoSidedIdeal
 
 open Multiset Set
 open scoped Pointwise

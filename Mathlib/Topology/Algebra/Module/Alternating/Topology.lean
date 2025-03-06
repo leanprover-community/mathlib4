@@ -26,7 +26,7 @@ variable {𝕜 E F ι : Type*} [NormedField 𝕜]
 
 section IsClosedRange
 
-variable [TopologicalSpace F] [TopologicalAddGroup F]
+variable [TopologicalSpace F] [IsTopologicalAddGroup F]
 
 instance instTopologicalSpace : TopologicalSpace (E [⋀^ι]→L[𝕜] F) :=
   .induced toContinuousMultilinearMap inferInstance
@@ -104,7 +104,7 @@ theorem completeSpace (h : RestrictGenTopology {s : Set (ι → E) | IsVonNBound
     isUniformEmbedding_toContinuousMultilinearMap.isUniformInducing]
   apply isClosed_range_toContinuousMultilinearMap.isComplete
 
-instance instCompleteSpace [TopologicalAddGroup E] [SequentialSpace (ι → E)] :
+instance instCompleteSpace [IsTopologicalAddGroup E] [SequentialSpace (ι → E)] :
     CompleteSpace (E [⋀^ι]→L[𝕜] F) :=
   completeSpace <| .of_seq fun _u x hux ↦ (hux.isVonNBounded_range 𝕜).insert x
 
@@ -132,18 +132,18 @@ end RestrictScalars
 
 end UniformAddGroup
 
-variable [TopologicalSpace F] [TopologicalAddGroup F]
+variable [TopologicalSpace F] [IsTopologicalAddGroup F]
 
 lemma isEmbedding_toContinuousMultilinearMap :
     IsEmbedding (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F → _)) :=
-  letI := TopologicalAddGroup.toUniformSpace F
-  haveI := comm_topologicalAddGroup_is_uniform (G := F)
+  letI := IsTopologicalAddGroup.toUniformSpace F
+  haveI := uniformAddGroup_of_addCommGroup (G := F)
   isUniformEmbedding_toContinuousMultilinearMap.isEmbedding
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_toContinuousMultilinearMap := isEmbedding_toContinuousMultilinearMap
 
-instance instTopologicalAddGroup : TopologicalAddGroup (E [⋀^ι]→L[𝕜] F) :=
+instance instIsTopologicalAddGroup : IsTopologicalAddGroup (E [⋀^ι]→L[𝕜] F) :=
   isEmbedding_toContinuousMultilinearMap.topologicalAddGroup
     (toContinuousMultilinearMapLinear (R := ℕ))
 
@@ -206,8 +206,8 @@ variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' �
 
 theorem isEmbedding_restrictScalars :
     IsEmbedding (restrictScalars 𝕜' : E [⋀^ι]→L[𝕜] F → E [⋀^ι]→L[𝕜'] F) :=
-  letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
-  haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  letI : UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
+  haveI : UniformAddGroup F := uniformAddGroup_of_addCommGroup
   (isUniformEmbedding_restrictScalars _).isEmbedding
 
 @[deprecated (since := "2024-10-26")]

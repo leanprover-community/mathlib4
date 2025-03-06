@@ -3,7 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Wrenna Robson
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Pi
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.LinearAlgebra.Vandermonde
 import Mathlib.RingTheory.Polynomial.Basic
@@ -249,7 +249,6 @@ theorem degree_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
     (Lagrange.basis s v i).degree = ↑(#s - 1) := by
   rw [degree_eq_natDegree (basis_ne_zero hvs hi), natDegree_basis hvs hi]
 
--- Porting note: Added `Nat.cast_withBot` rewrites
 theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) :
     ∑ j ∈ s, Lagrange.basis s v j = 1 := by
   refine eq_of_degrees_lt_of_eval_index_eq s hvs (lt_of_le_of_lt (degree_sum_le _ _) ?_) ?_ ?_
@@ -323,7 +322,6 @@ theorem degree_interpolate_le (hvs : Set.InjOn v s) :
   · simpa only [hr, map_zero, degree_zero, WithBot.bot_add] using bot_le
   · rw [degree_C hr, zero_add]
 
--- Porting note: Added `Nat.cast_withBot` rewrites
 theorem degree_interpolate_lt (hvs : Set.InjOn v s) : (interpolate s v r).degree < #s := by
   rw [Nat.cast_withBot]
   rcases eq_empty_or_nonempty s with (rfl | h)
@@ -391,7 +389,6 @@ def funEquivDegreeLT (hvs : Set.InjOn v s) : degreeLT F #s ≃ₗ[F] s → F whe
     simp only [Subtype.coe_mk, eval_interpolate_at_node _ hvs hi]
     exact dif_pos hi
 
--- Porting note: Added `Nat.cast_withBot` rewrites
 theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : s.Nonempty)
     (hst : s ⊆ t) :
     interpolate t v r = ∑ i ∈ s, interpolate (insert i (t \ s)) v r * Lagrange.basis s v i := by

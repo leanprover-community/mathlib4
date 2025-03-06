@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Seminorm
+import Mathlib.Data.NNReal.Basic
 import Mathlib.Topology.MetricSpace.Basic
 
 /-!
@@ -482,6 +483,10 @@ theorem abs_norm_sub_norm_le' (a b : E) : |‖a‖ - ‖b‖| ≤ ‖a / b‖ :=
 theorem norm_sub_norm_le' (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a / b‖ :=
   (le_abs_self _).trans (abs_norm_sub_norm_le' a b)
 
+@[to_additive (attr := bound)]
+theorem norm_sub_le_norm_mul (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a * b‖ := by
+  simpa using norm_mul_le' (a * b) (b⁻¹)
+
 @[to_additive dist_norm_norm_le]
 theorem dist_norm_norm_le' (a b : E) : dist ‖a‖ ‖b‖ ≤ ‖a / b‖ :=
   abs_norm_sub_norm_le' a b
@@ -672,6 +677,19 @@ lemma toReal_enorm' (x : E) : ‖x‖ₑ.toReal = ‖x‖ := by simp [enorm]
 lemma ofReal_norm' (x : E) : .ofReal ‖x‖ = ‖x‖ₑ := by
   simp [enorm, ENNReal.ofReal, Real.toNNReal, nnnorm]
 
+@[to_additive enorm_eq_iff_norm_eq]
+theorem enorm'_eq_iff_norm_eq {x : E} {y : F} : ‖x‖ₑ = ‖y‖ₑ ↔ ‖x‖ = ‖y‖ := by
+  simp only [← ofReal_norm']
+  refine ⟨fun h ↦ ?_, fun h ↦ by congr⟩
+  exact (Real.toNNReal_eq_toNNReal_iff (norm_nonneg' _) (norm_nonneg' _)).mp (ENNReal.coe_inj.mp h)
+
+@[to_additive enorm_le_iff_norm_le]
+theorem enorm'_le_iff_norm_le {x : E} {y : F} : ‖x‖ₑ ≤ ‖y‖ₑ ↔ ‖x‖ ≤ ‖y‖ := by
+  simp only [← ofReal_norm']
+  refine ⟨fun h ↦ ?_, fun h ↦ by gcongr⟩
+  rw [ENNReal.ofReal_le_ofReal_iff (norm_nonneg' _)] at h
+  exact h
+
 @[to_additive]
 theorem nndist_eq_nnnorm_div (a b : E) : nndist a b = ‖a / b‖₊ :=
   NNReal.eq <| dist_eq_norm_div _ _
@@ -841,6 +859,17 @@ theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball 1 r ↔ �
   rw [EMetric.mem_ball, edist_one_eq_enorm]
 
 end ENorm
+
+open Set in
+@[to_additive]
+lemma SeminormedGroup.disjoint_nhds (x : E) (f : Filter E) :
+    Disjoint (𝓝 x) f ↔ ∃ δ > 0, ∀ᶠ y in f, δ ≤ ‖y / x‖ := by
+  simp [NormedCommGroup.nhds_basis_norm_lt x |>.disjoint_iff_left, compl_setOf, eventually_iff]
+
+@[to_additive]
+lemma SeminormedGroup.disjoint_nhds_one (f : Filter E) :
+    Disjoint (𝓝 1) f ↔ ∃ δ > 0, ∀ᶠ y in f, δ ≤ ‖y‖ := by
+  simpa using disjoint_nhds 1 f
 
 end SeminormedGroup
 
@@ -1116,6 +1145,8 @@ lemma nnnorm_norm' (x : E) : ‖‖x‖‖₊ = ‖x‖₊ := by simp [nnnorm]
 
 @[to_additive (attr := simp) enorm_norm]
 lemma enorm_norm' (x : E) : ‖‖x‖‖ₑ = ‖x‖ₑ := by simp [enorm]
+
+lemma enorm_enorm {ε : Type*} [ENorm ε] (x : ε) : ‖‖x‖ₑ‖ₑ = ‖x‖ₑ := by simp [enorm]
 
 end SeminormedCommGroup
 

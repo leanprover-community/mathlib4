@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 import Mathlib.Algebra.BigOperators.Associated
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.ENat.Basic
 import Mathlib.Data.Multiset.OrderedMonoid
 import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
@@ -28,6 +28,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
   to get relatively prime elements.
 -/
 
+assert_not_exists Field
 
 variable {α : Type*}
 
@@ -161,9 +162,9 @@ theorem irreducible_iff_prime_of_existsUnique_irreducible_factors [CancelCommMon
         have hx0 : x ≠ 0 := fun hx0 => by simp_all
         have ha0 : a ≠ 0 := left_ne_zero_of_mul hab0
         have hb0 : b ≠ 0 := right_ne_zero_of_mul hab0
-        cases' eif x hx0 with fx hfx
-        cases' eif a ha0 with fa hfa
-        cases' eif b hb0 with fb hfb
+        obtain ⟨fx, hfx⟩ := eif x hx0
+        obtain ⟨fa, hfa⟩ := eif a ha0
+        obtain ⟨fb, hfb⟩ := eif b hb0
         have h : Multiset.Rel Associated (p ::ₘ fx) (fa + fb) := by
           apply uif
           · exact fun i hi => (Multiset.mem_cons.1 hi).elim (fun hip => hip.symm ▸ hpi) (hfx.1 _)
@@ -347,7 +348,7 @@ theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
           rw [con, Multiset.prod_zero]
         · intro x hadd
           rw [Multiset.mem_add] at hadd
-          cases' hadd with h h <;> apply (Classical.choose_spec (pf _ _)).1 _ h <;> assumption
+          rcases hadd with h | h <;> apply (Classical.choose_spec (pf _ _)).1 _ h <;> assumption
         · rw [Multiset.prod_add]
           trans a * c
           · apply Associated.mul_mul <;> apply (Classical.choose_spec (pf _ _)).2 <;> assumption
@@ -464,7 +465,7 @@ theorem exists_reduced_factors :
     · obtain ⟨a', b', c', coprime, rfl, rfl⟩ := ih_a a_ne_zero b
       refine ⟨p * a', b', c', ?_, mul_left_comm _ _ _, rfl⟩
       intro q q_dvd_pa' q_dvd_b'
-      cases' p_prime.left_dvd_or_dvd_right_of_dvd_mul q_dvd_pa' with p_dvd_q q_dvd_a'
+      rcases p_prime.left_dvd_or_dvd_right_of_dvd_mul q_dvd_pa' with p_dvd_q | q_dvd_a'
       · have : p ∣ c' * b' := dvd_mul_of_dvd_right (p_dvd_q.trans q_dvd_b') _
         contradiction
       exact coprime q_dvd_a' q_dvd_b'

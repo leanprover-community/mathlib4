@@ -215,9 +215,6 @@ class IsAlgClosure (R : Type u) (K : Type v) [CommRing R] [Field K] [Algebra R K
   isAlgClosed : IsAlgClosed K
   isAlgebraic : Algebra.IsAlgebraic R K
 
-@[deprecated (since := "2024-08-31")] alias IsAlgClosure.alg_closed := IsAlgClosure.isAlgClosed
-@[deprecated (since := "2024-08-31")] alias IsAlgClosure.algebraic := IsAlgClosure.isAlgebraic
-
 attribute [instance] IsAlgClosure.isAlgebraic
 
 theorem isAlgClosure_iff (K : Type v) [Field K] [Algebra k K] :
@@ -356,8 +353,8 @@ variable [Algebra K J] [Algebra J L] [IsAlgClosure J L] [Algebra K L] [IsScalarT
 
 /-- If `J` is an algebraic extension of `K` and `L` is an algebraic closure of `J`, then it is
   also an algebraic closure of `K`. -/
-theorem ofAlgebraic [hKJ : Algebra.IsAlgebraic K J] : IsAlgClosure K L :=
-  ⟨IsAlgClosure.isAlgClosed J, hKJ.trans⟩
+theorem ofAlgebraic [Algebra.IsAlgebraic K J] : IsAlgClosure K L :=
+  ⟨IsAlgClosure.isAlgClosed J, .trans K J L⟩
 
 /-- A (random) isomorphism between an algebraic closure of `R` and an algebraic closure of
   an algebraic extension of `R` -/
@@ -371,8 +368,8 @@ noncomputable def equivOfAlgebraic' [Nontrivial S] [NoZeroSMulDivisors R S]
 
 /-- A (random) isomorphism between an algebraic closure of `K` and an algebraic closure
   of an algebraic extension of `K` -/
-noncomputable def equivOfAlgebraic [hKJ : Algebra.IsAlgebraic K J] : L ≃ₐ[K] M :=
-  have : Algebra.IsAlgebraic K L := hKJ.trans
+noncomputable def equivOfAlgebraic [Algebra.IsAlgebraic K J] : L ≃ₐ[K] M :=
+  have := Algebra.IsAlgebraic.trans K J L
   equivOfAlgebraic' K J _ _
 
 end EquivOfAlgebraic
