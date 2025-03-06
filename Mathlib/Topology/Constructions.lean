@@ -1138,22 +1138,16 @@ theorem Topology.IsInducing.disjoint_of_sumElim_aux (h : IsInducing (Sum.elim f 
   simpa only [map_inl_inf_map_inr, inf_sup_left, sup_bot_eq, ← map_inf, inl_injective, top_inf_eq,
     map_eq_bot_iff] using h
 
-@[simp]
-theorem Sum.elim_swap {α β γ : Type*} {f : α → γ} {g : β → γ} :
-    (Sum.elim f g) ∘ (@Sum.swap β α) = Sum.elim g f := by aesop
-  -- ext x
-  -- cases x with
-  -- | inl x => simp
-  -- | inr x => simp
-
--- follows from
+-- has a one-line proof, except for an import cycle: (Homeomorph.sumComm X Y).isOpenEmbedding
 theorem IsOpenEmbedding.sumSwap : IsOpenEmbedding (@Sum.swap Y X) := sorry
+
+theorem IsInducing.sumSwap : IsInducing (@Sum.swap Y X) := IsOpenEmbedding.sumSwap.isInducing
 
 theorem isInducing_sumElim :
     IsInducing (Sum.elim f g) ↔ IsInducing f ∧ IsInducing g ∧
       Disjoint (closure (range f)) (range g) ∧ Disjoint (range f) (closure (range g)) :=
   ⟨fun h ↦ ⟨h.sumElim_left, h.sumElim_right, h.disjoint_of_sumElim_aux,
-    ((Sum.elim_swap ▸ h.comp IsOpenEmbedding.sumSwap.isInducing).disjoint_of_sumElim_aux ).symm⟩,
+    ((Sum.elim_swap ▸ h.comp IsInducing.sumSwap).disjoint_of_sumElim_aux ).symm⟩,
     fun ⟨hf, hg, hFg, hfG⟩ ↦ hf.sumElim hg hFg hfG⟩
 
 lemma Topology.IsInducing.sumElim_of_separatedNhds
