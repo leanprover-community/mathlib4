@@ -42,6 +42,10 @@ variable (k G) in
 /-- The monoidal forgetful functor from `FDRep k G` to `FGModuleCat k`. -/
 def forget := LaxMonoidalFunctor.of (forget₂ (FDRep k G) (FGModuleCat k))
 
+@[simp] lemma forget_obj (X : FDRep k G) : (forget k G).obj X = X.V := rfl
+
+@[simp] lemma forget_map (X Y : FDRep k G) (f : X ⟶ Y) : (forget k G).map f = f.hom := rfl
+
 /-- Definition of `equivHom g : Aut (forget k G)` by its components. -/
 @[simps]
 def equivApp (g : G) (X : FDRep k G) : X.V ≅ X.V where
@@ -49,12 +53,10 @@ def equivApp (g : G) (X : FDRep k G) : X.V ≅ X.V where
   inv := ofHom (X.ρ g⁻¹)
   hom_inv_id := by
     ext x
-    change (X.ρ g⁻¹ * X.ρ g) x = x
-    simp [← map_mul]
+    simp
   inv_hom_id := by
     ext x
-    change (X.ρ g * X.ρ g⁻¹) x = x
-    simp [← map_mul]
+    simp
 
 variable (k G) in
 /-- The group homomorphism `G →* Aut (forget k G)` shown to be an isomorphism. -/
@@ -66,7 +68,6 @@ def equivHom : G →* Aut (forget k G) where
   map_mul' _ _ := by ext; simp; rfl
 
 /-- The representation on `G → k` induced by multiplication on the right in `G`. -/
-@[simps]
 def rightRegular : Representation k G (G → k) where
   toFun s :=
   { toFun f t := f (t * s)
@@ -79,8 +80,10 @@ def rightRegular : Representation k G (G → k) where
     ext
     simp [mul_assoc]
 
+@[simp]
+lemma rightRegular_apply (s t : G) (f : G → k) : rightRegular s f t = f (t * s) := rfl
+
 /-- The representation on `G → k` induced by multiplication on the left in `G`. -/
-@[simps]
 def leftRegular : Representation k G (G → k) where
   toFun s :=
   { toFun f t := f (s⁻¹ * t)
@@ -93,14 +96,18 @@ def leftRegular : Representation k G (G → k) where
     ext
     simp [mul_assoc]
 
+@[simp]
+lemma leftRegular_apply (s t : G) (f : G → k) : leftRegular s f t = f (s⁻¹ * t) := rfl
+
 variable [Fintype G]
 
 variable (k G) in
 /-- The right regular representation `rightRegular` on `G → k` as a `FDRep k G`. -/
-@[simps!]
+@[simp]
 def rightFDRep : FDRep k G := FDRep.of rightRegular
 
 /-- Map sending `η : Aut (forget k G)` to its component at `rightFDRep k G` as a linear map. -/
+@[simp]
 def toRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₗ[k] (G → k) :=
   (η.hom.hom.app (rightFDRep k G)).hom
 
@@ -109,10 +116,8 @@ end definitions
 variable [Fintype G]
 
 lemma equivHom_inj [Nontrivial k] [DecidableEq G] : Function.Injective (equivHom k G) := by
-  rw [injective_iff_map_eq_one]
-  intro s h
-  apply_fun (fun x ↦ (toRightFDRepComp x) (single 1 1) 1) at h
-  change (single 1 1 : G → k) (1 * s) = (single 1 1 : G → k) 1 at h
+  intro s t h
+  apply_fun (fun x ↦ (toRightFDRepComp x) (single t 1) 1) at h
   simp_all [single_apply]
 
 end FiniteGroup
