@@ -462,7 +462,7 @@ theorem invRev_empty : invRev ([] : List (α × Bool)) = [] :=
 @[to_additive (attr := simp)]
 theorem invRev_append : invRev (L₁ ++ L₂) = invRev L₂ ++ invRev L₁ := by simp [invRev]
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem invRev_cons {a : (α × Bool)} : invRev (a :: L) = invRev L ++ invRev [a] := by
   simp [invRev]
 
