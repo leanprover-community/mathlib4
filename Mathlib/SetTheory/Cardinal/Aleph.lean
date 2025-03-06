@@ -776,7 +776,7 @@ theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit 
   rcases eq_or_ne o 0 with (rfl | h)
   · rw [beth_zero]
     exact isStrongLimit_aleph0
-  · refine ⟨beth_ne_zero o, fun ha ↦ ?_⟩
+  · refine ⟨beth_ne_zero o, fun a ha ↦ ?_⟩
     rw [beth_limit] at ha
     · rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
       have := power_le_power_left two_ne_zero ha.le
