@@ -56,7 +56,7 @@ section CharP
 
 variable {A : Type*} [Ring A] (p : ℕ) [Fact (Nat.Prime p)] [CharP A p]
 
-theorem natCast_factorial_of_charP  {n : ℕ} (h : n < p) : IsUnit (n ! : A) := by
+theorem natCast_factorial_of_charP {n : ℕ} (h : n < p) : IsUnit (n ! : A) := by
   induction n with
   | zero => simp
   | succ n ih =>
@@ -67,7 +67,7 @@ theorem natCast_factorial_of_charP  {n : ℕ} (h : n < p) : IsUnit (n ! : A) := 
       gcd_eq_gcd_ab, Int.cast_add] at h1
     simp only [succ_eq_add_one, Int.cast_mul, Int.cast_natCast, CharP.cast_eq_zero, zero_mul,
       zero_add] at h1
-    have h2 :=  Nat.cast_commute _ _ |>.eq.symm.trans h1
+    have h2 := Nat.commute_cast _ _ |>.eq.trans h1
     exact ⟨⟨_, _, h1, h2⟩, rfl⟩
 
 end CharP
