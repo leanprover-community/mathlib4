@@ -1,18 +1,7 @@
-/-
-Copyright (c) 2025 Jingting Wang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jingting Wang
--/
 import Mathlib.Init
 import Lean.Meta.Tactic.Simp.Types
 import Qq
 
-/-!
-# A monad for tracking and deduplicating atoms
-
-This monad attempts to provide the same functionality as `AtomM`, but uses the recommended faster =
-approach described in `CanonM`.
--/
 namespace Mathlib.Tactic
 
 open Lean Meta
