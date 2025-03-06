@@ -78,10 +78,13 @@ theorem mk_right_injective {α β : Type*} (b : β) :
 
 @[deprecated (since := "2025-03-06")] alias mk.inj_right := mk_right_injective
 
-lemma mk_inj_left {a : α} {b₁ b₂ : β} : (a, b₁) = (a, b₂) ↔ b₁ = b₂ := (mk_left_injective _).eq_iff
+lemma mk_left_inj {a : α} {b₁ b₂ : β} : (a, b₁) = (a, b₂) ↔ b₁ = b₂ := (mk_left_injective _).eq_iff
 
-lemma mk_inj_right {a₁ a₂ : α} {b : β} : (a₁, b) = (a₂, b) ↔ a₁ = a₂ :=
+lemma mk_right_inj {a₁ a₂ : α} {b : β} : (a₁, b) = (a₂, b) ↔ a₁ = a₂ :=
   (mk_right_injective _).eq_iff
+
+@[deprecated (since := "2025-03-06")] alias mk_inj_left := mk_left_inj
+@[deprecated (since := "2025-03-06")] alias mk_inj_right := mk_right_inj
 
 theorem map_def {f : α → γ} {g : β → δ} : Prod.map f g = fun p : α × β ↦ (f p.1, g p.2) :=
   funext fun p ↦ Prod.ext (map_fst f g p) (map_snd f g p)
