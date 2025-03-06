@@ -282,45 +282,4 @@ lemma injective_path_homotopic_mapFn (e₀ e₁ : E) :
   iterate 2 rw [@Quotient.eq _ (_)]
   exact (hp.homotopicRel_iff_comp ⟨0, .inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
 
-
 end homotopy_lifting
-
-open CategoryTheory
-
-@[simps] def monodromy : FundamentalGroupoid X ⥤ Type _ where
-  obj x := p ⁻¹' {x}
-  map {x₀ x₁} γ := _
-  map_id := _
-  map_comp := _
-
-
-end IsCoveringMap
-
--- define monodromy from fundamental groupoid to fiber ..
-
--- IsGaloisCoveringWith ... arbitrary G with ContinuousConstSmul ..
--- IsGaloisCovering ... G := deck transformations ..
-
--- Galois correspondence between subgroups and covering spaces ..
--- Galois covering: CoveringMap with deck transformations acting transitively on fibers
--- alternatively: image of fundamental group is normal subgroup .. normal subgroupoid ..
--- this only works if the base is path-connected ..?
-
-
--- work with actual paths? refl, symm, trans
-
-  -- forward direction requires HomotopyRel version of ContinuousMap.Homotopy.compContinuousMap
-  -- can be used to show injectivity of the morphism on fundamental groups induced by a covering map
-  --refine ⟨Nonempty.map fun h ↦ h.compContinuousMap _, ?_⟩
-
-
-
--- injective on fundamental group
--- lifting criterion : locally path connected
--- can be used to lift `E → X` to an automorphism of `E` .. need image in fundamental group to be normal for lift to always exist ..
--- TODO: construct covering spaces from action of fundamental groupoid .. put topology on it
--- in particular, define universal cover
-
-
--- two paths with same left+right endpoints don't necessarily lift to paths with same right endpoints
--- but if there's a homotopy rel endpoints between them, then they necessarily lift to same right endpoint
