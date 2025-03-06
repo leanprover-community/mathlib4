@@ -405,7 +405,6 @@ theorem H1CoresCoinfOfTrivial_exact :
 /- Let `s : G ⧸ S → G` be a section of the quotient map. -/
   choose! s hs using QuotientGroup.mk'_surjective S
   have hs₁ : QuotientGroup.mk (s := S) ∘ s = id := funext hs
-  have hs₂ : s.Injective := fun x y hxy => by rw [← hs x, ← hs y, hxy]
 /- Let `z := ∑ y(σ, τ)·(s(σ), s(τ))`. -/
   let z : G × G →₀ A := lmapDomain _ k (Prod.map s s) y
 /- We have that `C₂(π)(z) = y`. -/
