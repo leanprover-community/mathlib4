@@ -92,19 +92,21 @@ variable (ρ : Representation k G V) (S : Subgroup G) [S.Normal]
 lemma le_comap_augmentationSubmodule (g : G) :
     augmentationSubmodule (ρ.comp S.subtype) ≤
       (augmentationSubmodule <| ρ.comp S.subtype).comap (ρ g) :=
-  Submodule.span_le.2 fun y ⟨⟨s, x⟩, hs⟩ => by
+  Submodule.span_le.2 fun _ ⟨⟨s, x⟩, hs⟩ => by
     simpa [← hs] using mem_augmentationSubmodule_of_eq
       ⟨g * s * g⁻¹, Subgroup.Normal.conj_mem ‹_› s.1 s.2 g⟩ (ρ g x) _ <| by simp
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
 the augmentation submodule of `ρ|_S`. -/
-noncomputable abbrev toAugmentationSubmodule :=
+noncomputable abbrev toAugmentationSubmodule :
+    Representation k G (augmentationSubmodule <| ρ.comp S.subtype) :=
   subrepresentation ρ (augmentationSubmodule <| ρ.comp S.subtype)
     fun g => le_comap_augmentationSubmodule ρ S g
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G`-representation on the
 coinvariants of `ρ|_S`. -/
-noncomputable abbrev toCoinvariants :=
+noncomputable abbrev toCoinvariants :
+    Representation k G (coinvariants <| ρ.comp S.subtype) :=
   quotient ρ (augmentationSubmodule <| ρ.comp S.subtype)
     fun g => le_comap_augmentationSubmodule ρ S g
 
@@ -264,13 +266,11 @@ variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) (S : Subgroup G) [S
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
 the augmentation submodule of `ρ|_S`. -/
-abbrev toAugmentationSubmodule :=
-  Rep.of (A.ρ.toAugmentationSubmodule S)
+abbrev toAugmentationSubmodule : Rep k G := Rep.of (A.ρ.toAugmentationSubmodule S)
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G`-representation on the
 coinvariants of `ρ|_S`. -/
-abbrev toCoinvariants :=
-  Rep.of (A.ρ.toCoinvariants S)
+abbrev toCoinvariants : Rep k G := Rep.of (A.ρ.toCoinvariants S)
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` induces a short exact sequence of
 `G`-representations `0 ⟶ I(S)A ⟶ A ⟶ A_S ⟶ 0` where `I(S)A` is the submodule of `A`
@@ -294,8 +294,7 @@ lemma coinvariantsShortComplex_shortExact : (coinvariantsShortComplex A S).Short
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the coinvariants of `ρ|_S`. -/
-abbrev quotientToCoinvariants :=
-  ofQuotient (toCoinvariants A S) S
+abbrev quotientToCoinvariants : Rep k (G ⧸ S) := ofQuotient (toCoinvariants A S) S
 
 end
 

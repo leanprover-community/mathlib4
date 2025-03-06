@@ -292,7 +292,7 @@ section OfQuotient
 variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
 variable (ρ : Representation k G V) (S : Subgroup G)
 
-lemma ρ_eq_of_coe_eq [IsTrivial (ρ.comp S.subtype)] (g h : G) (hgh : (g : G ⧸ S) = h) :
+lemma apply_eq_of_coe_eq [IsTrivial (ρ.comp S.subtype)] (g h : G) (hgh : (g : G ⧸ S) = h) :
     ρ g = ρ h := by
   ext x
   apply (ρ.apply_bijective g⁻¹).1
@@ -303,14 +303,13 @@ variable [S.Normal]
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` which is trivial on `S` factors
 through `G ⧸ S`. -/
-noncomputable def ofQuotient [IsTrivial (ρ.comp S.subtype)] :
+def ofQuotient [IsTrivial (ρ.comp S.subtype)] :
     Representation k (G ⧸ S) V :=
   (QuotientGroup.con S).lift ρ <| by
     rintro x y ⟨⟨z, hz⟩, rfl⟩
     ext w
-    have : ρ y (ρ z.unop _) = _ :=
-      congr(ρ y ($(IsTrivial.out (ρ := ρ.comp S.subtype) ⟨z.unop, hz⟩) w))
-    simpa [← LinearMap.mul_apply, ← map_mul] using this
+    show ρ (_ * z.unop) _ = _
+    exact congr($(apply_eq_of_coe_eq ρ S _ _ (by simp_all)) w)
 
 @[simp]
 lemma ofQuotient_coe_apply [IsTrivial (ρ.comp S.subtype)] (g : G) (x : V) :

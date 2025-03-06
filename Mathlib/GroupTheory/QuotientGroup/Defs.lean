@@ -92,8 +92,7 @@ theorem eq_one_iff {N : Subgroup G} [N.Normal] (x : G) : (x : G ⧸ N) = 1 ↔ x
   rw [mul_one, Subgroup.inv_mem_iff]
 
 @[to_additive (attr := simp)]
-lemma mk'_comp_subtype {G : Type*} [Group G] (N : Subgroup G) [N.Normal] :
-    (mk' N).comp N.subtype = 1 := by ext; simp
+lemma mk'_comp_subtype : (mk' N).comp N.subtype = 1 := by ext; simp
 
 /- Note: `range_mk'` is a lemma about the primed constructor `QuotientGroup.mk'`, not a
   modified version of some `range_mk`. -/
