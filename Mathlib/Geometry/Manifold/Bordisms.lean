@@ -228,6 +228,9 @@ structure UnorientedCobordism.{v} (s : SingularNManifold X k I) (t : SingularNMa
   [smoothManifold: IsManifold J k W]
   /-- TODO! -/
   bd: BoundaryManifoldData W J k I
+  -- Why are these needed?
+  [topSpaceBd: TopologicalSpace bd.M₀]
+  [chartedSpaceBd: ChartedSpace H bd.M₀]
   [hW : CompactSpace W]
   /-- TODO! -/
   F : W → X
@@ -240,4 +243,4 @@ structure UnorientedCobordism.{v} (s : SingularNManifold X k I) (t : SingularNMa
   /-- `F` restricted to `N ↪ ∂W` equals `g` -/
   hFg : F ∘ bd.f ∘ φ ∘ Sum.inr = t.f
 
--- TODO: why does the checkUnivs linter still error?
+-- TODO: the checkUnivs linter complains that M and bd.M₀ only occur together
