@@ -79,6 +79,10 @@ lean to do the necessary elaboration.
 lemma toUnit_unique {X : C} (f g : X ⟶ 𝟙_ _) : f = g :=
   Subsingleton.elim _ _
 
+@[reassoc (attr := simp)]
+theorem comp_toUnit {X Y : C} (f : X ⟶ Y) : f ≫ toUnit Y = toUnit X :=
+  toUnit_unique _ _
+
 /--
 Construct a morphism to the product given its two components.
 -/
@@ -268,6 +272,8 @@ theorem braiding_inv_fst {X Y : C} : (β_ X Y).inv ≫ fst _ _ = snd _ _ := by
 theorem braiding_inv_snd {X Y : C} : (β_ X Y).inv ≫ snd _ _ = fst _ _ := by
   simp [braiding_eq_braiding, fst, snd]
 
+theorem lift_snd_fst {X Y : C} : lift (snd X Y) (fst X Y) = (β_ X Y).hom := rfl
+
 /--
 Construct an instance of `ChosenFiniteProducts C` given an instance of `HasFiniteProducts C`.
 -/
@@ -295,7 +301,7 @@ section terminalComparison
 `terminalComparison F` is the unique map `F (𝟙_ C) ⟶ 𝟙_ D`. -/
 abbrev terminalComparison : F.obj (𝟙_ C) ⟶ 𝟙_ D := toUnit _
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma map_toUnit_comp_terminalCompariso (A : C) :
     F.map (toUnit A) ≫ terminalComparison F = toUnit _ := toUnit_unique _ _
 
@@ -526,7 +532,7 @@ lemma preservesLimit_pair_of_isIso_prodComparison (A B : C)
  · dsimp only [BinaryFan.snd]
    simp [pairComp, prodComparison, lift, snd]
 
-  /-- If `prodComparison F A B` is an isomorphism for all `A B` then `F` preserves limits of shape
+/-- If `prodComparison F A B` is an isomorphism for all `A B` then `F` preserves limits of shape
 `Discrete (WalkingPair)`. -/
 lemma preservesLimitsOfShape_discrete_walkingPair_of_isIso_prodComparison
     [∀ A B, IsIso (prodComparison F A B)] : PreservesLimitsOfShape (Discrete WalkingPair) F := by

@@ -655,7 +655,7 @@ theorem getElem_splitWrtComposition (l : List α) (c : Composition n)
 theorem flatten_splitWrtCompositionAux {ns : List ℕ} :
     ∀ {l : List α}, ns.sum = l.length → (l.splitWrtCompositionAux ns).flatten = l := by
   induction ns with
-  | nil => exact fun h ↦ (length_eq_zero.1 h.symm).symm
+  | nil => exact fun h ↦ (length_eq_zero_iff.1 h.symm).symm
   | cons n ns IH =>
     intro l h; rw [sum_cons] at h
     simp only [splitWrtCompositionAux_cons]; dsimp
@@ -723,23 +723,13 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       · exact c.zero_mem
       · exact c.getLast_mem
       · convert hj1
-    · simp only [or_iff_not_imp_left]
-      intro i_mem i_ne_zero i_ne_last
-      simp? [Fin.ext_iff] at i_ne_zero i_ne_last says
-        simp only [Nat.succ_eq_add_one, Fin.ext_iff, Fin.val_zero, Fin.val_last]
-          at i_ne_zero i_ne_last
-      have A : (1 + (i - 1) : ℕ) = (i : ℕ) := by
-        rw [add_comm]
-        exact Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr i_ne_zero)
-      refine ⟨⟨i - 1, ?_⟩, ?_, ?_⟩
-      · have : (i : ℕ) < n + 1 := i.2
-        omega
-      · convert i_mem
-        simp only
-        rwa [add_comm]
-      · simp only
-        symm
-        rwa [add_comm]
+    · simp only [or_iff_not_imp_left, ← ne_eq, ← Fin.exists_succ_eq]
+      rintro i_mem ⟨j, rfl⟩ i_ne_last
+      rcases Nat.exists_add_one_eq.mpr j.pos with ⟨n, rfl⟩
+      obtain ⟨k, rfl⟩ : ∃ k : Fin n, k.castSucc = j := by
+        simpa [Fin.exists_castSucc_eq] using i_ne_last
+      use k
+      simpa using i_mem
   right_inv := by
     intro s
     ext i

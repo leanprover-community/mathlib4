@@ -50,7 +50,7 @@ namespace RootPairing
 
 For reduced root pairings this definition is equivalent to the usual definition appearing in the
 informal literature but not for non-reduced root pairings it is more restrictive. See the module
-doc string for further remarks.  -/
+doc string for further remarks. -/
 structure Base (P : RootPairing ι R M N) where
   /-- The set of roots / coroots belonging to the base. -/
   support : Set ι

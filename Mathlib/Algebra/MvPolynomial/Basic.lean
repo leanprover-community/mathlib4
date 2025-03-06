@@ -143,7 +143,7 @@ end Instances
 
 variable [CommSemiring R] [CommSemiring S₁] {p q : MvPolynomial σ R}
 
-/-- `monomial s a` is the monomial with coefficient `a` and exponents given by `s`  -/
+/-- `monomial s a` is the monomial with coefficient `a` and exponents given by `s` -/
 def monomial (s : σ →₀ ℕ) : R →ₗ[R] MvPolynomial σ R :=
   AddMonoidAlgebra.lsingle s
 
@@ -470,8 +470,6 @@ theorem support_monomial [h : Decidable (a = 0)] :
     (monomial s a).support = if a = 0 then ∅ else {s} := by
   rw [← Subsingleton.elim (Classical.decEq R a 0) h]
   rfl
-  -- Porting note: the proof in Lean 3 wasn't fundamentally better and needed `by convert rfl`
-  -- the issue is the different decidability instances in the `ite` expressions
 
 theorem support_monomial_subset : (monomial s a).support ⊆ {s} :=
   support_single_subset
@@ -822,20 +820,15 @@ def constantCoeff : MvPolynomial σ R →+* R where
 theorem constantCoeff_eq : (constantCoeff : MvPolynomial σ R → R) = coeff 0 :=
   rfl
 
-variable (σ)
-
+variable (σ) in
 @[simp]
 theorem constantCoeff_C (r : R) : constantCoeff (C r : MvPolynomial σ R) = r := by
   classical simp [constantCoeff_eq]
 
-variable {σ}
-variable (R)
-
+variable (R) in
 @[simp]
 theorem constantCoeff_X (i : σ) : constantCoeff (X i : MvPolynomial σ R) = 0 := by
   simp [constantCoeff_eq]
-
-variable {R}
 
 @[simp]
 theorem constantCoeff_smul {R : Type*} [SMulZeroClass R S₁] (a : R) (f : MvPolynomial σ S₁) :
