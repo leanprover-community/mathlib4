@@ -210,7 +210,8 @@ def proveLE (g : MVarId) : MetaM Unit := do
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
   let c ← mkCache q(cs_of_ocs $α)
   let (⟨a, va, pa⟩, ⟨b, vb, pb⟩)
-    ← AtomM.run .instances do pure (← eval q(cs_of_ocs $α) c e₁, ← eval q(cs_of_ocs $α) c e₂)
+    ← CanonAtomM.run .instances
+        do pure (← eval q(cs_of_ocs $α) c e₁, ← eval q(cs_of_ocs $α) c e₂)
   match ← evalLE sα va vb with
   | .ok p => g.assign q(le_congr $pa $p $pb)
   | .error e =>
@@ -234,7 +235,8 @@ def proveLT (g : MVarId) : MetaM Unit := do
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
   let c ← mkCache q(cs_of_socs $α)
   let (⟨a, va, pa⟩, ⟨b, vb, pb⟩)
-    ← AtomM.run .instances do pure (← eval q(cs_of_socs $α) c e₁, ← eval q(cs_of_socs $α) c e₂)
+    ← CanonAtomM.run .instances
+        do pure (← eval q(cs_of_socs $α) c e₁, ← eval q(cs_of_socs $α) c e₂)
   match ← evalLT sα va vb with
   | .ok p => g.assign q(lt_congr $pa $p $pb)
   | .error e =>
