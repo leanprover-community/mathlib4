@@ -688,15 +688,19 @@ theorem map_le_iff_le_comap {G' : SimpleGraph W} (f : G →g G') (H : G.Subgraph
     rintro u u' hu rfl rfl
     exact (h.2 hu).2
 
-open scoped Classical in
-noncomputable instance [Finite V] : Fintype G.Subgraph := by
-  have := (nonempty_fintype V).some
-  exact Fintype.ofEquiv
-    {H : Set V × (V → V → Prop) // H.2 ≤ G.Adj ∧ (∀ a b, H.2 a b → a ∈ H.1) ∧ Symmetric H.2}
-    { toFun := fun H ↦ ⟨H.1.1, H.1.2, @H.2.1, @H.2.2.1, H.2.2.2⟩
-      invFun := fun H ↦ ⟨⟨H.1, H.2⟩, fun _ _ ↦ H.3, fun _ _ ↦ H.4, H.5⟩
-      left_inv := fun {x} ↦ by ext <;> rfl
-      right_inv := fun {x} ↦ by ext <;> rfl }
+instance [DecidableEq V] [Fintype V] [DecidableRel G.Adj] : Fintype G.Subgraph := by
+  refine .ofBijective
+    (α := {H : Finset V × (V → V → Bool) //
+      (∀ a b, H.2 a b → G.Adj a b) ∧ (∀ a b, H.2 a b → a ∈ H.1) ∧ ∀ a b, H.2 a b = H.2 b a})
+    (fun H ↦ ⟨H.1.1, fun a b ↦ H.1.2 a b, @H.2.1, @H.2.2.1, by simp [Symmetric, H.2.2.2]⟩)
+    ⟨?_, fun H ↦ ?_⟩
+  · rintro ⟨⟨_, _⟩, -⟩ ⟨⟨_, _⟩, -⟩
+    simp [funext_iff]
+  · classical
+    exact ⟨⟨(H.verts.toFinset, fun a b ↦ H.Adj a b), fun a b ↦ by simpa using H.adj_sub,
+      fun a b ↦ by simpa using H.edge_vert, by simp [H.adj_comm]⟩, by simp⟩
+
+instance [Finite V] : Finite G.Subgraph := by classical cases nonempty_fintype V; infer_instance
 
 /-- Given two subgraphs, one a subgraph of the other, there is an induced injective homomorphism of
 the subgraphs as graphs. -/
