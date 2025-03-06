@@ -120,4 +120,3 @@ lemma shiftedLegendre_eval_symm (n : ℕ) (x : ℝ) :
   simp only [even_two, Even.mul_right, Even.neg_pow, one_pow, mul_one]
 
 end Polynomial
-#min_imports
