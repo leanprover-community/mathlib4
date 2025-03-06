@@ -63,14 +63,20 @@ theorem map_snd' (f : α → γ) (g : β → δ) : Prod.snd ∘ map f g = g ∘ 
 theorem mk_inj {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b₂) ↔ a₁ = a₂ ∧ b₁ = b₂ :=
   Iff.of_eq (mk.injEq _ _ _ _)
 
+@[deprecated (since := "2025-03-06")] alias mk.inj_iff := mk_inj
+
 theorem mk_left_injective {α β : Type*} (a : α) : Function.Injective (Prod.mk a : β → α × β) := by
   intro b₁ b₂ h
   simpa only [true_and, Prod.mk_inj, eq_self_iff_true] using h
+
+@[deprecated (since := "2025-03-06")] alias mk.inj_left := mk_left_injective
 
 theorem mk_right_injective {α β : Type*} (b : β) :
     Function.Injective (fun a ↦ Prod.mk a b : α → α × β) := by
   intro b₁ b₂ h
   simpa only [and_true, eq_self_iff_true, mk_inj] using h
+
+@[deprecated (since := "2025-03-06")] alias mk.inj_right := mk_right_injective
 
 lemma mk_inj_left {a : α} {b₁ b₂ : β} : (a, b₁) = (a, b₂) ↔ b₁ = b₂ := (mk_left_injective _).eq_iff
 
