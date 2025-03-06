@@ -114,7 +114,7 @@ lemma coe_IicProdIoc_symm {a b : ι} (hab : a ≤ b) :
 /-- Gluing `Iic a` and `Ioi a` into `ℕ`, version as a measurable equivalence
 on dependent functions. -/
 def IicProdIoi (a : ι) :
-    ((Π i : Iic a, X i) × ((i : Set.Ioi a) → X i)) ≃ᵐ (Π n, X n) where
+    ((Π i : Iic a, X i) × (Π i : Set.Ioi a, X i)) ≃ᵐ (Π n, X n) where
   toFun := fun x i ↦ if hi : i ≤ a
     then x.1 ⟨i, mem_Iic.2 hi⟩
     else x.2 ⟨i, Set.mem_Ioi.2 (not_le.1 hi)⟩
