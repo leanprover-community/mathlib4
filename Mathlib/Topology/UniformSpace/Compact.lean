@@ -54,14 +54,14 @@ theorem lebesgue_number_lemma_nhds {U : α → Set α} (hK : IsCompact K) (hU : 
     fun _ ⟨V_uni, hV⟩ => ⟨V_uni, fun x hx => (hV x hx).imp fun _ hy => hy.trans interior_subset⟩
 
 theorem lebesgue_number_lemma_nhdsWithin' {U : (x : α) → x ∈ K → Set α} (hK : IsCompact K)
-    (hU : ∀ x hx, U x hx ∈ 𝓝[K] x) : ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y : K, ball x V ∩ K ⊆ U y y.2 := by
-  refine (lebesgue_number_lemma_nhds' hK (fun x hx => Filter.mem_inf_principal'.1 (hU x hx))).imp
-    fun V ⟨V_uni, hV⟩ => ⟨V_uni, fun x hx => (hV x hx).imp fun _ hy => (inter_subset _ _ _).2 hy⟩
+    (hU : ∀ x hx, U x hx ∈ 𝓝[K] x) : ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y : K, ball x V ∩ K ⊆ U y y.2 :=
+  (lebesgue_number_lemma_nhds' hK (fun x hx => Filter.mem_inf_principal'.1 (hU x hx))).imp
+    fun _ ⟨V_uni, hV⟩ => ⟨V_uni, fun x hx => (hV x hx).imp fun _ hy => (inter_subset _ _ _).2 hy⟩
 
 theorem lebesgue_number_lemma_nhdsWithin {U : α → Set α} (hK : IsCompact K)
-    (hU : ∀ x ∈ K, U x ∈ 𝓝[K] x) : ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y, ball x V ∩ K ⊆ U y := by
-  refine (lebesgue_number_lemma_nhds hK (fun x hx => Filter.mem_inf_principal'.1 (hU x hx))).imp
-    fun V ⟨V_uni, hV⟩ => ⟨V_uni, fun x hx => (hV x hx).imp fun _ hy => (inter_subset _ _ _).2 hy⟩
+    (hU : ∀ x ∈ K, U x ∈ 𝓝[K] x) : ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y, ball x V ∩ K ⊆ U y :=
+  (lebesgue_number_lemma_nhds hK (fun x hx => Filter.mem_inf_principal'.1 (hU x hx))).imp
+    fun _ ⟨V_uni, hV⟩ => ⟨V_uni, fun x hx => (hV x hx).imp fun _ hy => (inter_subset _ _ _).2 hy⟩
 
 /-- Let `U : ι → Set α` be an open cover of a compact set `K`.
 Then there exists an entourage `V`
