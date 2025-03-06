@@ -36,10 +36,12 @@ def symmDiff (e1 e2 : NameSet) : NameSet × NameSet :=
 
 elab "ddiff" : command => do
   let mods : Array Import := #[`Mathlib.Algebra.Quandle]
-  let fname := "Mathlib/Algebra/Quandle.lean"
+  let fname : System.FilePath := "Mathlib"/"Algebra" / "Quandle.lean"
   let e1 ← declsFromImports mods
+  dbg_trace "git checkout master"
   let _ ← IO.Process.run {cmd := "git", args := #["checkout", "master"]}
-  let _ ← IO.Process.run {cmd := "lake", args := #["build", fname]}
+  dbg_trace "lake build {fname.toString}"
+  let _ ← IO.Process.run {cmd := "lake", args := #["build", fname.toString]}
   let e2 ← declsFromImports mods
   let (d1, d2) := symmDiff e1 e2
   logInfo m!"{(d1, d2)}"
