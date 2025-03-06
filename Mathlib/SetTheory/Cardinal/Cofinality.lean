@@ -293,45 +293,18 @@ theorem cof_iSup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
   rw [H]
   exact cof_lsub_le_lift f
 
-set_option linter.deprecated false in
-@[deprecated cof_iSup_le_lift (since := "2024-08-27")]
-theorem cof_sup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < sup.{u, v} f) :
-    cof (sup.{u, v} f) ≤ Cardinal.lift.{v, u} #ι := by
-  rw [← sup_eq_lsub_iff_lt_sup.{u, v}] at H
-  rw [H]
-  exact cof_lsub_le_lift f
-
 theorem cof_iSup_le {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
     cof (iSup f) ≤ #ι := by
   rw [← (#ι).lift_id]
   exact cof_iSup_le_lift H
 
-set_option linter.deprecated false in
-@[deprecated cof_iSup_le (since := "2024-08-27")]
-theorem cof_sup_le {ι} {f : ι → Ordinal} (H : ∀ i, f i < sup.{u, u} f) :
-    cof (sup.{u, u} f) ≤ #ι := by
-  rw [← (#ι).lift_id]
-  exact cof_sup_le_lift H
-
 theorem iSup_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal} (hι : Cardinal.lift.{v, u} #ι < c.cof)
     (hf : ∀ i, f i < c) : iSup f < c :=
   (sup_le_lsub.{u, v} f).trans_lt (lsub_lt_ord_lift hι hf)
 
-set_option linter.deprecated false in
-@[deprecated iSup_lt_ord_lift (since := "2024-08-27")]
-theorem sup_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal} (hι : Cardinal.lift.{v, u} #ι < c.cof)
-    (hf : ∀ i, f i < c) : sup.{u, v} f < c :=
-  iSup_lt_ord_lift hι hf
-
 theorem iSup_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
     (∀ i, f i < c) → iSup f < c :=
   iSup_lt_ord_lift (by rwa [(#ι).lift_id])
-
-set_option linter.deprecated false in
-@[deprecated iSup_lt_ord (since := "2024-08-27")]
-theorem sup_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
-    (∀ i, f i < c) → sup.{u, u} f < c :=
-  sup_lt_ord_lift (by rwa [(#ι).lift_id])
 
 theorem iSup_lt_lift {ι} {f : ι → Cardinal} {c : Cardinal}
     (hι : Cardinal.lift.{v, u} #ι < c.ord.cof)
@@ -976,21 +949,9 @@ theorem iSup_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegu
     (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c.ord) → iSup f < c.ord :=
   iSup_lt_ord_lift (by rwa [hc.cof_eq])
 
-set_option linter.deprecated false in
-@[deprecated iSup_lt_ord_lift_of_isRegular (since := "2024-08-27")]
-theorem sup_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c)
-    (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c.ord) → Ordinal.sup.{u, v} f < c.ord :=
-  iSup_lt_ord_lift_of_isRegular hc hι
-
 theorem iSup_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
     (∀ i, f i < c.ord) → iSup f < c.ord :=
   iSup_lt_ord (by rwa [hc.cof_eq])
-
-set_option linter.deprecated false in
-@[deprecated iSup_lt_ord_of_isRegular (since := "2024-08-27")]
-theorem sup_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
-    (∀ i, f i < c.ord) → Ordinal.sup f < c.ord :=
-  iSup_lt_ord_of_isRegular hc hι
 
 theorem blsub_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (ho : Cardinal.lift.{v, u} o.card < c) :

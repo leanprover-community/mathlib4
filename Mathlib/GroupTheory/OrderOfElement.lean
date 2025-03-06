@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
-import Mathlib.Algebra.Group.Semiconj.Basic
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Group.Action
@@ -127,6 +127,11 @@ theorem Submonoid.isOfFinOrder_coe {H : Submonoid G} {x : H} :
     IsOfFinOrder (x : G) ↔ IsOfFinOrder x := by
   rw [isOfFinOrder_iff_pow_eq_one, isOfFinOrder_iff_pow_eq_one]
   norm_cast
+
+theorem IsConj.isOfFinOrder (h : IsConj x y) : IsOfFinOrder x → IsOfFinOrder y := by
+  simp_rw [isOfFinOrder_iff_pow_eq_one]
+  rintro ⟨n, n_gt_0, eq'⟩
+  exact ⟨n, n_gt_0, by rw [← isConj_one_right, ← eq']; exact h.pow n⟩
 
 /-- The image of an element of finite order has finite order. -/
 @[to_additive "The image of an element of finite additive order has finite additive order."]
