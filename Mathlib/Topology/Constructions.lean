@@ -121,6 +121,8 @@ end
 
 The topology on this type synonym is inherited without change.
 -/
+
+
 section
 
 variable [TopologicalSpace X]
@@ -312,17 +314,6 @@ lemma continuous_bool_rng [TopologicalSpace X] {f : X → Bool} (b : Bool) :
     Bool.compl_singleton, and_comm]
 
 end Bool
-
-section temp
-
-variable [TopologicalSpace X] [TopologicalSpace Y]
-
-theorem IsOpenEmbedding.sumSwap : IsOpenEmbedding (@Sum.swap Y X) :=
-  Homeomorph.isOpenEmbedding (Homeomorph.sumComm Y X)
-
-theorem IsInducing.sumSwap : IsInducing (@Sum.swap Y X) := IsOpenEmbedding.sumSwap.isInducing
-
-end temp
 
 section Subtype
 
