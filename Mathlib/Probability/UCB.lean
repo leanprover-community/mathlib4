@@ -39,60 +39,6 @@ namespace Bandits
 
 variable {α : Type*} {mα : MeasurableSpace α} {ν : Kernel α ℝ} {k : ℕ → α} {t : ℕ} {a : α}
 
-section piLE
-
-/-! ### Filtration of the first events -/
-
-open MeasurableSpace Preorder
-
-variable {ι : Type*} [Preorder ι] (X : ι → Type*) [∀ i, MeasurableSpace (X i)]
-
-section Set
-
-/-- The canonical filtration on the pi space `Π i, X i`, where `piLE X i` consists of
-measurable sets depending only on coordinates `≤ i`. -/
-def piLE : @Filtration ((i : ι) → X i) ι _ inferInstance where
-  seq n := pi.comap (restrictLe n)
-  mono' i j hij := by
-    simp only
-    rw [← restrictLe₂_comp_restrictLe hij, ← comap_comp]
-    exact comap_mono (measurable_restrictLe₂ _).comap_le
-  le' n := (measurable_restrictLe n).comap_le
-
-end Set
-
-section Finset
-
-variable [LocallyFiniteOrderBot ι]
-
-/-- The canonical filtration on the pi space `Π i, X i`, where `piLE X i` consists of
-measurable sets depending only on coordinates `≤ i`, version where there are only finitely
-many coordinates. -/
-def fpiLE : @Filtration ((i : ι) → X i) ι _ inferInstance where
-  seq n := pi.comap (frestrictLe n)
-  mono' i j hij := by
-    simp only
-    rw [← frestrictLe₂_comp_frestrictLe hij, ← comap_comp]
-    exact comap_mono (measurable_frestrictLe₂ _).comap_le
-  le' n := (measurable_frestrictLe n).comap_le
-
-lemma piLE_eq_fpiLE (i : ι) : piLE X i = fpiLE X i := by
-  let e : Finset.Iic i ≃ Set.Iic i :=
-    { toFun j := ⟨j.1, Finset.coe_Iic i ▸ Finset.mem_coe.2 j.2⟩
-      invFun j := ⟨j.1, by rw [← Finset.mem_coe, Finset.coe_Iic i]; exact j.2⟩
-      left_inv := fun _ ↦ rfl
-      right_inv := fun _ ↦ rfl }
-  apply le_antisymm
-  · rintro - ⟨t, ht, rfl⟩
-    exact ⟨MeasurableEquiv.piCongrLeft (fun j : Set.Iic i ↦ X j) e ⁻¹' t,
-      ht.preimage (by fun_prop), rfl⟩
-  · rintro - ⟨t, ht, rfl⟩
-    exact ⟨MeasurableEquiv.piCongrLeft (fun j : Finset.Iic i ↦ X j) e.symm ⁻¹' t,
-      ht.preimage (by fun_prop), rfl⟩
-
-end Finset
-
-end piLE
 section MeasureSpace
 
 noncomputable
@@ -132,7 +78,7 @@ def X (n : ℕ) (h : ℕ → α × ℝ) : ℝ := (h n).2
 
 def ℱ (α : Type*) [MeasurableSpace α] :
     Filtration ℕ (inferInstance : MeasurableSpace (ℕ → α × ℝ)) :=
-  fpiLE (fun _ ↦ α × ℝ)
+  MeasureTheory.Filtration.piLE (X := fun _ ↦ α × ℝ)
 
 lemma condDistrib_X (b : Bandit α) (n : ℕ) :
     condDistrib (X n) (A n) b.measure = ν := by
