@@ -7,7 +7,6 @@ import Mathlib.Data.Finsupp.Fintype
 import Mathlib.Data.Matrix.Defs
 import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.Basis.Prod
-import Mathlib.LinearAlgebra.Basis.Submodule
 import Mathlib.LinearAlgebra.TensorProduct.Basis
 import Mathlib.Logic.Small.Basic
 import Mathlib.LinearAlgebra.StdBasis

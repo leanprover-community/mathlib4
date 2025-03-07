@@ -44,25 +44,6 @@ theorem mem_submodule_iff' [Fintype ι] {P : Submodule R M} (b : Basis ι R P) {
     Finsupp.equivFunOnFinite.exists_congr_left.trans <|
       exists_congr fun c => by simp [Finsupp.sum_fintype, Finsupp.equivFunOnFinite]
 
-section NoZeroSMulDivisors
-
--- Can't be an instance because the basis can't be inferred.
-protected theorem noZeroSMulDivisors [NoZeroDivisors R] (b : Basis ι R M) :
-    NoZeroSMulDivisors R M :=
-  ⟨fun {c x} hcx => by
-    exact or_iff_not_imp_right.mpr fun hx => by
-      rw [← b.linearCombination_repr x, ← LinearMap.map_smul,
-        ← map_zero (linearCombination R b)] at hcx
-      have := b.linearIndependent hcx
-      rw [smul_eq_zero] at this
-      exact this.resolve_right fun hr => hx (b.repr.map_eq_zero_iff.mp hr)⟩
-
-protected theorem smul_eq_zero [NoZeroDivisors R] (b : Basis ι R M) {c : R} {x : M} :
-    c • x = 0 ↔ c = 0 ∨ x = 0 :=
-  @smul_eq_zero _ _ _ _ _ b.noZeroSMulDivisors _ _
-
-end NoZeroSMulDivisors
-
 end Basis
 
 end Module
