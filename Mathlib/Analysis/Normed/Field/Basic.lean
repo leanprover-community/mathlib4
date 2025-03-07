@@ -172,7 +172,6 @@ section SeminormedAddCommGroup
 variable [SeminormedAddCommGroup G] [One G] [NormOneClass G]
 
 @[simp] lemma nnnorm_one : ‖(1 : G)‖₊ = 1 := NNReal.eq norm_one
-@[simp] lemma enorm_one : ‖(1 : G)‖ₑ = 1 := by simp [enorm]
 
 theorem NormOneClass.nontrivial : Nontrivial G :=
   nontrivial_of_ne 0 1 <| ne_of_apply_ne norm <| by simp
