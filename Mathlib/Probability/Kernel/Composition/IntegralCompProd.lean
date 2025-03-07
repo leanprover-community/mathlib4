@@ -66,14 +66,13 @@ theorem hasFiniteIntegral_prodMk_left (a : α) {s : Set (β × γ)} (h2s : (κ �
   simp_rw [hasFiniteIntegral_iff_enorm, enorm_eq_ofReal toReal_nonneg]
   calc
     ∫⁻ b, ENNReal.ofReal (η (a, b) (Prod.mk b ⁻¹' s)).toReal ∂κ a
-    _ ≤ ∫⁻ b, η (a, b) (Prod.mk b ⁻¹' t) ∂κ a :=
-      by
+    _ ≤ ∫⁻ b, η (a, b) (Prod.mk b ⁻¹' t) ∂κ a := by
       refine lintegral_mono_ae ?_
       filter_upwards [ae_kernel_lt_top a h2s] with b hb
       rw [ofReal_toReal hb.ne]
       exact measure_mono (preimage_mono (subset_toMeasurable _ _))
-    _ ≤ (κ ⊗ₖ η) a t := (le_compProd_apply _ _ _ _)
-    _ = (κ ⊗ₖ η) a s := (measure_toMeasurable s)
+    _ ≤ (κ ⊗ₖ η) a t := le_compProd_apply _ _ _ _
+    _ = (κ ⊗ₖ η) a s := measure_toMeasurable s
     _ < ⊤ := h2s.lt_top
 
 @[deprecated (since := "2025-03-05")]

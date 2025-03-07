@@ -173,6 +173,7 @@ theorem prodMk {f : α → β} {g : α → γ} (hf : AEMeasurable f μ) (hg : AE
     AEMeasurable (fun x => (f x, g x)) μ :=
   ⟨fun a => (hf.mk f a, hg.mk g a), hf.measurable_mk.prodMk hg.measurable_mk,
     EventuallyEq.prod_mk hf.ae_eq_mk hg.ae_eq_mk⟩
+
 @[deprecated (since := "2025-03-05")]
 alias prod_mk := prodMk
 

@@ -644,7 +644,8 @@ lemma iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T) (hf_Indep
   Kernel.iIndepFun.indepFun_finset S T hST hf_Indep hf_meas
 
 lemma iIndepFun.indepFun_prodMk (hf_Indep : iIndepFun f μ) (hf_meas : ∀ i, Measurable (f i))
-    (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) : IndepFun (fun a => (f i a, f j a)) (f k) μ :=
+    (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
+    IndepFun (fun a => (f i a, f j a)) (f k) μ :=
   Kernel.iIndepFun.indepFun_prodMk hf_Indep hf_meas i j k hik hjk
 
 @[deprecated (since := "2025-03-05")]
@@ -655,10 +656,10 @@ lemma iIndepFun.indepFun_prodMk_prodMk (h_indep : iIndepFun f μ) (hf : ∀ i, M
     (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
     IndepFun (fun a ↦ (f i a, f j a)) (fun a ↦ (f k a, f l a)) μ := by
   classical
-  let g (i j : ι) (v : Π x : ({ i, j } : Finset ι), β x) : β i × β j :=
+  let g (i j : ι) (v : Π x : ({i, j} : Finset ι), β x) : β i × β j :=
     ⟨v ⟨i, mem_insert_self _ _⟩, v ⟨j, mem_insert_of_mem <| mem_singleton_self _⟩⟩
   have hg (i j : ι) : Measurable (g i j) := by fun_prop
-  exact (h_indep.indepFun_finset { i, j } { k, l } (by aesop) hf).comp (hg i j) (hg k l)
+  exact (h_indep.indepFun_finset {i, j} {k, l} (by aesop) hf).comp (hg i j) (hg k l)
 
 @[deprecated (since := "2025-03-05")]
 alias iIndepFun.indepFun_prod_mk_prod_mk := iIndepFun.indepFun_prodMk_prodMk
