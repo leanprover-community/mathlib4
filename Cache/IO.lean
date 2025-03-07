@@ -422,44 +422,44 @@ Note: An argument like `Archive` is treated as module, not a path.
 -/
 def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
     IO <| Except String <| Array (Name × FilePath) := do
-      let arg : FilePath := argₛ
-      if arg.components.length > 1 || arg.extension == "lean" then
-        -- provided file name of a Lean file
-        let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
-        let srcDir ← getSrcDir sp mod
-        if !(← arg.pathExists) then
-          -- TODO: (5.) We could use `srcDir` to allow arguments like `Aesop/Builder.lean` which
-          -- refer to a file located under `.lake/packages/...`
-          IO.eprintln s!"Invalid argument: non-existing path {arg}"
-          IO.Process.exit 1
-        if arg.extension == "lean" then
-          -- (3.) provided existing `.lean` file
-          pure <| return #[(mod, argₛ)]
-        else
-          -- (4.) provided existing directory: walk it
-          return .error "Searching lean files in a folder is not supported yet!"
-      else
-        -- provided a module
-        let mod := argₛ.toName
-        let sourceFile ← Lean.findLean sp mod
+  let arg : FilePath := argₛ
+  if arg.components.length > 1 || arg.extension == "lean" then
+    -- provided file name of a Lean file
+    let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
+    -- let srcDir ← getSrcDir sp mod
+    if !(← arg.pathExists) then
+      -- TODO: (5.) We could use `srcDir` to allow arguments like `Aesop/Builder.lean` which
+      -- refer to a file located under `.lake/packages/...`
+      IO.eprintln s!"Invalid argument: non-existing path {arg}"
+      IO.Process.exit 1
+    if arg.extension == "lean" then
+      -- (3.) provided existing `.lean` file
+      pure <| return #[(mod, argₛ)]
+    else
+      -- (4.) provided existing directory: walk it
+      return .error "Searching lean files in a folder is not supported yet!"
+  else
+    -- provided a module
+    let mod := argₛ.toName
+    let sourceFile ← Lean.findLean sp mod
 
-        if ← sourceFile.pathExists then
-          -- (1.) provided valid module
-          return .ok #[(mod, sourceFile)]
-        else
-          -- provided "pseudo-module" (like `Mathlib.Data`) which
-          -- does not correspond to a Lean file, but to an existing folder
-          -- `Mathlib/Data/`
-          let folder := sourceFile.withExtension ""
-          IO.println s!"Searching directory {folder} for .lean files"
-          if ← folder.pathExists then
-            -- (2.) provided "module name" of an existing folder: walk dir
-            -- TODO: will be implemented in #21838
-            return .error "Entering a part of a module name \
-              (i.e. `Mathlib.Data` when only the fold `Mathlib/Data/` but no \
-              file `Mathlib/Data.lean` exists) is not supported yet!"
-          else
-            return .error "Invalid argument: non-existing module {mod}"
+    if ← sourceFile.pathExists then
+      -- (1.) provided valid module
+      return .ok #[(mod, sourceFile)]
+    else
+      -- provided "pseudo-module" (like `Mathlib.Data`) which
+      -- does not correspond to a Lean file, but to an existing folder
+      -- `Mathlib/Data/`
+      let folder := sourceFile.withExtension ""
+      IO.println s!"Searching directory {folder} for .lean files"
+      if ← folder.pathExists then
+        -- (2.) provided "module name" of an existing folder: walk dir
+        -- TODO: will be implemented in #21838
+        return .error "Entering a part of a module name \
+          (i.e. `Mathlib.Data` when only the fold `Mathlib/Data/` but no \
+          file `Mathlib/Data.lean` exists) is not supported yet!"
+      else
+        return .error "Invalid argument: non-existing module {mod}"
 
 /--
 Parse command line arguments.
