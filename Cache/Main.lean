@@ -89,10 +89,8 @@ def main (args : List String) : IO Unit := do
 
   -- We pass any following arguments to `getHashMemo`,
   -- so we can use the cache on `Archive` or `Counterexamples`.
-
   let extraRoots : Array FilePath :=
     roots.keys.toArray.map (·.components.map toString |> mkFilePath |>.withExtension "lean")
-  dbg_trace s!"{extraRoots}"
 
   let hashMemo ← getHashMemo extraRoots
   let hashMap := hashMemo.hashMap
