@@ -426,15 +426,13 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
   if arg.components.length > 1 || arg.extension == "lean" then
     -- provided file name of a Lean file
     let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
-    -- let srcDir ← getSrcDir sp mod
     if !(← arg.pathExists) then
-      -- TODO: (5.) We could use `srcDir` to allow arguments like `Aesop/Builder.lean` which
+      -- TODO: (5.) We could use `getSrcDir` to allow arguments like `Aesop/Builder.lean` which
       -- refer to a file located under `.lake/packages/...`
-      IO.eprintln s!"Invalid argument: non-existing path {arg}"
-      IO.Process.exit 1
+      return .error s!"Invalid argument: non-existing path {arg}"
     if arg.extension == "lean" then
       -- (3.) provided existing `.lean` file
-      pure <| return #[(mod, argₛ)]
+      return .ok #[(mod, argₛ)]
     else
       -- (4.) provided existing directory: walk it
       return .error "Searching lean files in a folder is not supported yet!"
@@ -442,7 +440,6 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
     -- provided a module
     let mod := argₛ.toName
     let sourceFile ← Lean.findLean sp mod
-
     if ← sourceFile.pathExists then
       -- (1.) provided valid module
       return .ok #[(mod, sourceFile)]
