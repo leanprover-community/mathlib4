@@ -20,7 +20,7 @@ namespace CategoryTheory.Limits.CompleteLattice
 
 section Semilattice
 
-variable {α : Type u} {J : Type w} [Category J] [FinCategory J]
+variable {α : Type u} {J : Type w} [SmallCategory J] [FinCategory J]
 
 /-- The limit cone over any functor from a finite diagram into a `SemilatticeInf` with `OrderTop`.
 -/
