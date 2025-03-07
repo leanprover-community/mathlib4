@@ -46,7 +46,7 @@ section LinearOrderedRing
 
 variable [Semiring R] [Nontrivial R] [LinearOrderedRing S]
 
-lemma apply_nat_le_one_of_isNonarchimedean {abv : AbsoluteValue R S}
+lemma apply_natCast_le_one_of_isNonarchimedean {abv : AbsoluteValue R S}
     (nonarch : IsNonarchimedean abv) (n : ℕ) : abv n ≤ 1 := by
   induction n with
   | zero => simp
@@ -62,7 +62,7 @@ section Ring
 
 variable [Ring R] [LinearOrderedCommRing S]
 
-lemma apply_int_le_one_of_isNonarchimedean [Nontrivial R] {abv : AbsoluteValue R S}
+lemma apply_intCast_le_one_of_isNonarchimedean [Nontrivial R] {abv : AbsoluteValue R S}
     (nonarch : IsNonarchimedean abv) (x : ℤ) : abv x ≤ 1 := by
   rw [← AbsoluteValue.apply_natAbs_eq]
   exact apply_nat_le_one_of_isNonarchimedean nonarch x.natAbs
