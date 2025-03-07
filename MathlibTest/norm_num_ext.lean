@@ -15,6 +15,7 @@ import Mathlib.Data.Rat.Floor
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Tactic.NormNum.RealSqrt
+import Mathlib.Tactic.NormNum.Irrational
 
 /-!
 # Tests for `norm_num` extensions
@@ -493,3 +494,9 @@ example : Real.sqrt 0 = 0 := by norm_num
 example : NNReal.sqrt 0 = 0 := by norm_num
 
 end real_sqrt
+
+section irrational
+
+example : Irrational √123 := by norm_num1
+
+end irrational
