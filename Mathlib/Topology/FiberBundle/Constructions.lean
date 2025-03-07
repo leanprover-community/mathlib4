@@ -327,7 +327,7 @@ variable {F E} in
 a map into the total space of the pullback `f *ᵖ E`, then its continuity can be checked by checking
 the continuity of (1) the map `TotalSpace.proj ∘ φ` into `B'`, and (ii) the map
 `Pullback.lift f ∘ φ` into the total space of `E`. -/
-theorem Pullback.continuous_of_continuous_proj_comp_of_smooth_lift_comp
+theorem Pullback.continuous_of_continuous_proj_comp_of_continuous_lift_comp
     (f : B' → B) {M : Type*} [TopologicalSpace M] {φ : M → TotalSpace F (f *ᵖ E)}
     (h1 : Continuous (TotalSpace.proj ∘ φ)) (h2 : Continuous (Pullback.lift f ∘ φ)) :
     Continuous φ := by
@@ -339,13 +339,13 @@ variable {F E} in
 a map into the total space of the pullback `f *ᵖ E`, then its continuity can be checked by checking
 the continuity of (1) the map `TotalSpace.proj ∘ φ` into `B'`, and (ii) the map
 `Pullback.lift f ∘ φ` into the total space of `E`. -/
-theorem Pullback.continuous_iff_continuous_proj_comp_and_smooth_lift_comp
+theorem Pullback.continuous_iff_continuous_proj_comp_and_continuous_lift_comp
     (f : B' → B) {M : Type*} [TopologicalSpace M] (φ : M → TotalSpace F (f *ᵖ E)) :
     Continuous φ ↔ (Continuous (TotalSpace.proj ∘ φ) ∧ Continuous (Pullback.lift f ∘ φ)) := by
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨h₁, h₂⟩ ↦ ?_⟩
   · exact (continuous_proj F E _).comp h
   · exact (Pullback.continuous_lift F E _).comp h
-  · exact Pullback.continuous_of_continuous_proj_comp_of_smooth_lift_comp _ h₁ h₂
+  · exact Pullback.continuous_of_continuous_proj_comp_of_continuous_lift_comp _ h₁ h₂
 
 section FiberBundle
 
