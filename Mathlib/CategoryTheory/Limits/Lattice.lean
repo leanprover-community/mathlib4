@@ -14,18 +14,13 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 -/
 
 
-universe w u
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+universe w w' u
 
 namespace CategoryTheory.Limits.CompleteLattice
 
 section Semilattice
 
-variable {α : Type u}
-variable {J : Type w} [SmallCategory J] [FinCategory J]
+variable {α : Type u} {J : Type w} [Category J] [FinCategory J]
 
 /-- The limit cone over any functor from a finite diagram into a `SemilatticeInf` with `OrderTop`.
 -/
@@ -162,8 +157,7 @@ theorem pushout_eq_sup [SemilatticeSup α] [OrderBot α] (x y z : α) (f : z ⟶
 
 end Semilattice
 
-variable {α : Type u} [CompleteLattice α]
-variable {J : Type u} [SmallCategory J]
+variable {α : Type u} [CompleteLattice α] {J : Type w} [Category.{w'} J]
 
 /-- The limit cone over any functor into a complete lattice.
 -/
@@ -188,11 +182,11 @@ def colimitCocone (F : J ⥤ α) : ColimitCocone F where
 -- It would be nice to only use the `Inf` half of the complete lattice, but
 -- this seems not to have been described separately.
 -- see Note [lower instance priority]
-instance (priority := 100) hasLimits_of_completeLattice : HasLimits α where
+instance (priority := 100) hasLimits_of_completeLattice : HasLimitsOfSize.{w, w'} α where
   has_limits_of_shape _ := { has_limit := fun F => HasLimit.mk (limitCone F) }
 
 -- see Note [lower instance priority]
-instance (priority := 100) hasColimits_of_completeLattice : HasColimits α where
+instance (priority := 100) hasColimits_of_completeLattice : HasColimitsOfSize.{w, w'} α where
   has_colimits_of_shape _ := { has_colimit := fun F => HasColimit.mk (colimitCocone F) }
 
 /-- The limit of a functor into a complete lattice is the infimum of the objects in the image.
