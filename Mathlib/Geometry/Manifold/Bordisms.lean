@@ -142,7 +142,12 @@ noncomputable def comap (s : SingularNManifold X k I)
   f := s.f ∘ φ
   hf := s.hf.comp hφ
 
-@[simp]
+@[simp, mfld_simps]
+lemma comap_M (s : SingularNManifold X k I) {φ : M → s.M} (hφ : Continuous φ) :
+    (s.comap hφ).M = M := by
+  rfl
+
+@[simp, mfld_simps]
 lemma comap_f (s : SingularNManifold X k I) {φ : M → s.M} (hφ : Continuous φ) :
     (s.comap hφ).f = s.f ∘ φ :=
   rfl
@@ -209,10 +214,11 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {I : ModelWithCorners ℝ E H} [IsManifold I k M]
   -- {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
   -- /-{I' : ModelWithCorners ℝ E H}-/ [IsManifold I k M']
-  -- {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
-  -- /-{I'' : ModelWithCorners ℝ E H}-/ [IsManifold I k M'']
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
+  {I'' : ModelWithCorners ℝ E H} [IsManifold I k M'']
   [CompactSpace M] [BoundarylessManifold I M]
-  --[CompactSpace M'] [BoundarylessManifold I M'] [CompactSpace M''] [BoundarylessManifold I M'']
+  --[CompactSpace M'] [BoundarylessManifold I M']
+  [CompactSpace M''] [BoundarylessManifold I M'']
   [CompactSpace M] [FiniteDimensional ℝ E]
   --[CompactSpace M'] [FiniteDimensional ℝ E'] [CompactSpace M''] [FiniteDimensional ℝ E'']
 
@@ -292,6 +298,17 @@ def sum (φ : UnorientedCobordism k s t J) (ψ : UnorientedCobordism k s' t' J) 
     sorry
   hFf := sorry
   hFg := sorry
+
+/-- Suppose `W` is a cobordism between `M` and `N`.
+Then a diffeomorphism `f : M'' → M` induces a cobordism between `M''` and `N`. -/
+def comap_fst (φ : UnorientedCobordism k s t J) (f : Diffeomorph I I M'' s.M k) :
+    UnorientedCobordism k (s.comap f.continuous) t J where
+  bd := φ.bd
+  F := φ.F
+  hF := φ.hF
+  φ := Diffeomorph.trans (f.sumCongr (Diffeomorph.refl _ _ _)) φ.φ
+  hFf := by dsimp; rw [← φ.hFf]; congr
+  hFg := by dsimp; rw [← φ.hFg]; congr
 
 variable (s) in
 def refl : UnorientedCobordism k s s (I.prod (𝓡∂ 1)) where
