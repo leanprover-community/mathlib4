@@ -186,13 +186,6 @@ the Lucas-Lehmer residue `s p (p-2) % (2^p - 1)` is zero.
 def LucasLehmerTest (p : ℕ) : Prop :=
   lucasLehmerResidue p = 0
 
--- Porting note: We have a fast `norm_num` extension, and we would rather use that than accidentally
--- have `simp` use `decide`!
-/-
-instance : DecidablePred LucasLehmerTest :=
-  inferInstanceAs (DecidablePred (lucasLehmerResidue · = 0))
--/
-
 /-- `q` is defined as the minimum factor of `mersenne p`, bundled as an `ℕ+`. -/
 def q (p : ℕ) : ℕ+ :=
   ⟨Nat.minFac (mersenne p), Nat.minFac_pos (mersenne p)⟩
