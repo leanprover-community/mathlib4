@@ -595,7 +595,7 @@ lemma _root_.Monotone.expGrowthInf_comp {u : ℕ → ℝ≥0∞} {v : ℕ → �
     apply le_antisymm
     · rw [← hv.limsup_eq] at ha ha' ⊢
       exact hu.expGrowthInf_comp_le ha ha'
-    · rw [← hv.liminf_eq] at ha' ⊢
+    · rw [← hv.liminf_eq]
       exact le_expGrowthInf_comp h' (tendsto_atTop_of_linGrowthInf_pos hv₁.ne.symm)
 
 lemma _root_.Monotone.expGrowthSup_comp {u : ℕ → ℝ≥0∞} {v : ℕ → ℕ} {a : EReal} (hu : Monotone u)
