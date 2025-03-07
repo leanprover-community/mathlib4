@@ -426,7 +426,9 @@ Note: An argument like `Archive` is treated as module, not a path.
 -/
 def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
     IO <| Except String <| Array (Name × FilePath) := do
-  let arg : FilePath := argₛ
+  -- TODO: This could be just `FilePath.normalize` if the TODO there was addressed
+  let arg : FilePath := System.mkFilePath <|
+    (argₛ : FilePath).normalize.components.filter (· != "")
   if arg.components.length > 1 || arg.extension == "lean" then
     -- provided file name of a Lean file
     let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
