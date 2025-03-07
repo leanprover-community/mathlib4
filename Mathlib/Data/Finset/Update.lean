@@ -3,7 +3,7 @@ Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Pi
 import Mathlib.Logic.Function.DependsOn
 
 /-!
@@ -78,5 +78,29 @@ theorem updateFinset_updateFinset {s t : Finset ι} (hst : Disjoint s t)
   · exfalso; exact Finset.disjoint_left.mp hst his hit
   · exact piCongrLeft_sumInl (fun b : ↥(s ∪ t) => π b) e y z ⟨i, his⟩ |>.symm
   · exact piCongrLeft_sumInr (fun b : ↥(s ∪ t) => π b) e y z ⟨i, hit⟩ |>.symm
+
+lemma updateFinset_updateFinset_of_subset {s t : Finset ι} (hst : s ⊆ t)
+    (x : Π i, π i) (y : Π i : s, π i) (z : Π i : t, π i) :
+    updateFinset (updateFinset x s y) t z = updateFinset x t z := by
+  ext i
+  simp only [updateFinset]
+  split_ifs with h1 h2 <;> try rfl
+  exact (h1 (hst h2)).elim
+
+lemma restrict_updateFinset_of_subset {s t : Finset ι} (hst : s ⊆ t) (x : Π i, π i)
+    (y : Π i : t, π i) : s.restrict (updateFinset x t y) = restrict₂ hst y := by
+  ext i
+  simp [updateFinset, dif_pos (hst i.2)]
+
+lemma restrict_updateFinset {s : Finset ι} (x : Π i, π i) (y : Π i : s, π i) :
+    s.restrict (updateFinset x s y) = y := by
+  rw [restrict_updateFinset_of_subset subset_rfl]
+  rfl
+
+@[simp]
+lemma updateFinset_restrict {s : Finset ι} (x : Π i, π i) :
+    updateFinset x s (s.restrict x) = x := by
+  ext i
+  simp [updateFinset]
 
 end Function

@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.Group.Invertible.Basic
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Logic.Embedding.Basic
 
 /-!
@@ -80,11 +81,12 @@ end Monoid
 end MulAction
 
 section Arrow
+variable {G A B : Type*} [DivisionMonoid G] [MulAction G A]
 
 /-- If `G` acts on `A`, then it acts also on `A → B`, by `(g • F) a = F (g⁻¹ • a)`. -/
 @[to_additive (attr := simps) arrowAddAction
-      "If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)`"]
-def arrowAction {G A B : Type*} [DivisionMonoid G] [MulAction G A] : MulAction G (A → B) where
+"If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)`"]
+def arrowAction : MulAction G (A → B) where
   smul g F a := F (g⁻¹ • a)
   one_smul f := by
     show (fun x => f ((1 : G)⁻¹ • x)) = f
@@ -93,10 +95,31 @@ def arrowAction {G A B : Type*} [DivisionMonoid G] [MulAction G A] : MulAction G
     show (fun a => f ((x*y)⁻¹ • a)) = (fun a => f (y⁻¹ • x⁻¹ • a))
     simp only [mul_smul, mul_inv_rev]
 
+attribute [local instance] arrowAction
+
+variable [Monoid M]
+
+/-- When `M` is a monoid, `ArrowAction` is additionally a `MulDistribMulAction`. -/
+def arrowMulDistribMulAction : MulDistribMulAction G (A → M) where
+  smul_one _ := rfl
+  smul_mul _ _ _ := rfl
+
 end Arrow
 
 namespace IsUnit
 variable [Monoid α] [MulAction α β]
+
+@[to_additive]
+theorem smul_bijective {m : α} (hm : IsUnit m) :
+    Function.Bijective (fun (a : β) ↦ m • a) := by
+  lift m to αˣ using hm
+  exact MulAction.bijective m
+
+@[deprecated (since := "2025-03-03")]
+alias _root_.AddAction.vadd_bijective_of_is_addUnit := IsAddUnit.vadd_bijective
+
+@[to_additive existing, deprecated (since := "2025-03-03")]
+alias _root_.MulAction.smul_bijective_of_is_unit := IsUnit.smul_bijective
 
 @[to_additive]
 lemma smul_left_cancel {a : α} (ha : IsUnit a) {x y : β} : a • x = a • y ↔ x = y :=
