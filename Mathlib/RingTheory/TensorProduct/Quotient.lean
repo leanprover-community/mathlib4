@@ -53,9 +53,13 @@ lemma quotIdealMapEquivTensorQuot_mk (b : B) :
     quotIdealMapEquivTensorQuot B I b = b ⊗ₜ[A] 1 :=
   rfl
 
+lemma quotIdealMapEquivTensorQuot_symm_tmul' (b : B) (a : A) :
+    (quotIdealMapEquivTensorQuot B I).symm (b ⊗ₜ[A] a) = Submodule.Quotient.mk (a • b) :=
+  rfl
+
 @[simp]
 lemma quotIdealMapEquivTensorQuot_symm_tmul (b : B) (a : A) :
-    (quotIdealMapEquivTensorQuot B I).symm (b ⊗ₜ[A] a) = Submodule.Quotient.mk (a • b) :=
+    (quotIdealMapEquivTensorQuot B I).symm (b ⊗ₜ[A] a) = Submodule.mkQ _ (a • b) :=
   rfl
 
 end Algebra.TensorProduct
