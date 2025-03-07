@@ -249,6 +249,22 @@ theorem linearCombination_onFinset {s : Finset α} {f : α → R} (g : α → M)
   contrapose! h
   simp [h]
 
+variable (α M)
+
+@[simp]
+theorem linearCombination_zero : linearCombination R (0 : α → M) = 0 :=
+  LinearMap.ext (linearCombination_zero_apply R)
+
+@[simp]
+theorem linearCombination_single_index (c : M) (a : α) (f : α →₀ R) [DecidableEq α] :
+    linearCombination R (Pi.single a c) f = f a • c := by
+  rw [linearCombination_apply, sum_eq_single a, Pi.single_eq_same]
+  · exact fun i _ hi ↦ by rw [Pi.single_eq_of_ne hi, smul_zero]
+  · exact fun _ ↦ by simp only [single_eq_same, zero_smul]
+
+
+variable {α M}
+
 variable [Module S M] [SMulCommClass R S M]
 
 variable (S) in
@@ -267,19 +283,6 @@ def bilinearCombination : (α → M) →ₗ[S] (α →₀ R) →ₗ[R] M where
 theorem bilinearCombination_apply :
     bilinearCombination R S v = linearCombination R v :=
   rfl
-
-variable (α M)
-
-@[simp]
-theorem linearCombination_zero : linearCombination R (0 : α → M) = 0 :=
-  LinearMap.ext (linearCombination_zero_apply R)
-
-@[simp]
-theorem linearCombination_single_index (c : M) (a : α) (f : α →₀ R) [DecidableEq α] :
-    linearCombination R (Pi.single a c) f = f a • c := by
-  rw [linearCombination_apply, sum_eq_single a, Pi.single_eq_same]
-  · exact fun i _ hi ↦ by rw [Pi.single_eq_of_ne hi, smul_zero]
-  · exact fun _ ↦ by simp only [single_eq_same, zero_smul]
 
 end LinearCombination
 
@@ -349,16 +352,6 @@ variable {S}
 theorem Fintype.bilinearCombination_apply :
     Fintype.bilinearCombination R S v = Fintype.linearCombination R v :=
   rfl
-
-theorem Fintype.bilinearCombination_apply (f) :
-    Fintype.bilinearCombination R S v f = ∑ i, f i • v i :=
-  rfl
-
-@[simp]
-theorem Fintype.bilinearCombination_apply_single [DecidableEq α] (i : α) (r : R) :
-    Fintype.bilinearCombination R S v (Pi.single i r) = r • v i := by
-  simp_rw [Fintype.bilinearCombination_apply, Pi.single_apply, ite_smul, zero_smul]
-  rw [Finset.sum_ite_eq', if_pos (Finset.mem_univ _)]
 
 section SpanRange
 
