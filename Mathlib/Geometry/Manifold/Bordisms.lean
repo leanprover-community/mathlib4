@@ -158,6 +158,10 @@ def empty (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     rw [continuous_iff_continuousAt]
     exact fun x ↦ (IsEmpty.false x).elim
 
+instance [IsEmpty M] : IsEmpty (SingularNManifold.empty X M I (k := k)).M := by
+  unfold SingularNManifold.empty
+  infer_instance
+
 variable (M I) in
 /-- An `n`-dimensional manifold induces a singular `n`-manifold on the one-point space. -/
 def toPUnit : SingularNManifold PUnit k I where

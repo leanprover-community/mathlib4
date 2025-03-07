@@ -141,6 +141,11 @@ def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] :
     simp [Empty.instIsEmpty]
   contMDiff x := (IsEmpty.false x).elim
 
+instance [BoundarylessManifold I M] :
+    IsEmpty (BoundaryManifoldData.of_boundaryless M I (k := k)).M₀ := by
+  unfold BoundaryManifoldData.of_boundaryless
+  infer_instance
+
 -- TODO: fill in these sorries (low priority)
 /-- The `n`-dimensional Euclidean half-space (modelled on itself) has nice boundary
 (which is an `n-1`-dimensional manifold). -/
