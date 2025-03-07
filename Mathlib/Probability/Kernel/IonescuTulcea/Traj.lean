@@ -258,9 +258,10 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
     {l : (Π n, X n) → ℝ≥0∞}
     (htendsto : ∀ x, Tendsto (fun n ↦ lmarginalPartialTraj κ (k + 1) (a n) (f n) x) atTop (𝓝 (l x)))
     (ε : ℝ≥0∞) (y : Π i : Iic k, X i)
-    (hpos : ∀ x n, ε ≤ lmarginalPartialTraj κ k (a n) (f n) (updateFinset x _ y)) :
+    (hpos : ∀ x n, ε ≤ lmarginalPartialTraj κ k (a n) (f n) (updateFinset x (Iic k) y)) :
     ∃ z, ∀ x n,
-      ε ≤ lmarginalPartialTraj κ (k + 1) (a n) (f n) (update (updateFinset x _ y) (k + 1) z) := by
+    ε ≤ lmarginalPartialTraj κ (k + 1) (a n) (f n)
+      (update (updateFinset x (Iic k) y) (k + 1) z) := by
   have _ n : Nonempty (X n) := by
     induction n using Nat.case_strong_induction_on with
     | hz => exact ⟨y ⟨0, mem_Iic.2 (zero_le _)⟩⟩
@@ -579,7 +580,7 @@ theorem traj_eq_prod (a : ℕ) :
   all_goals fun_prop
 
 theorem traj_map_updateFinset {n : ℕ} (x : Π i : Iic n, X i) :
-    (traj κ n x).map (updateFinset · _ x) = traj κ n x := by
+    (traj κ n x).map (updateFinset · (Iic n) x) = traj κ n x := by
   nth_rw 2 [traj_eq_prod]
   have : (updateFinset · _ x) = IicProdIoi n ∘ (Prod.mk x) ∘ (Set.Ioi n).restrict := by
     ext; simp [IicProdIoi, updateFinset]
@@ -614,10 +615,10 @@ theorem aestronglyMeasurable_traj {a b : ℕ} (hab : a ≤ b) {f : (Π n, X n) �
 variable [NormedSpace ℝ E]
 
 /-- When computing `∫ x, f x ∂traj κ n x₀`, because the trajectory up to time `n` is
-determined by `x₀` we can replace `x` by `updateFinset x _ x₀`. -/
+determined by `x₀` we can replace `x` by `updateFinset x (Iic a) x₀`. -/
 theorem integral_traj {a : ℕ} (x₀ : Π i : Iic a, X i) {f : (Π n, X n) → E}
     (mf : AEStronglyMeasurable f (traj κ a x₀)) :
-    ∫ x, f x ∂traj κ a x₀ = ∫ x, f (updateFinset x _ x₀) ∂traj κ a x₀ := by
+    ∫ x, f x ∂traj κ a x₀ = ∫ x, f (updateFinset x (Iic a) x₀) ∂traj κ a x₀ := by
   nth_rw 1 [← traj_map_updateFinset, integral_map]
   · exact measurable_updateFinset_left.aemeasurable
   · convert mf
@@ -704,7 +705,7 @@ variable (κ) in
 theorem condExp_traj' {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c)
     (x₀ : Π i : Iic a, X i) (f : (Π n, X n) → E) :
     (traj κ a x₀)[f|piLE b] =ᵐ[traj κ a x₀]
-      fun x ↦ ∫ y, ((traj κ a x₀)[f|piLE c]) (updateFinset x _ y)
+      fun x ↦ ∫ y, ((traj κ a x₀)[f|piLE c]) (updateFinset x (Iic c) y)
         ∂partialTraj κ b c (frestrictLe b x) := by
   have i_cf : Integrable ((traj κ a x₀)[f|piLE c]) (traj κ a x₀) :=
     integrable_condExp
