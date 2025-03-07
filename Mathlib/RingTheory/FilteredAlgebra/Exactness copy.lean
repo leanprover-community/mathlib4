@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Huanyu Zheng, Weichen Jiao, Yi Yuan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Huanyu Zheng, Weichen Jiao, Yi Yuan
+Authors: Yi Yuan
 -/
 import Mathlib.RingTheory.FilteredAlgebra.Exactness
 import Mathlib.Tactic.Linarith.Frontend
