@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Topology.Bases
-import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Order.CompactlyGenerated.Basic
 import Mathlib.Order.Copy
