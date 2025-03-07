@@ -222,7 +222,6 @@ end Pullback
 
 section IsPullback
 
-
 /-- The pullback of `S` along `f` is isomorphic to `T` given the corresponding pullback square. -/
 def pullbackObjIsoOfIsPullback [HasPullbacks C] {X Y : C} (f : Y ⟶ X) (S : MonoOver X)
     (T : MonoOver Y) (f' : T.obj.left ⟶ S.obj.left)

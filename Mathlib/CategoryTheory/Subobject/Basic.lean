@@ -527,7 +527,7 @@ theorem pullback_obj_mk {A B X Y : C} {f : Y ⟶ X} {i : A ⟶ X} [Mono i]
     (h : IsPullback f' j i f) :
     (pullback f).obj (mk i) = mk j :=
   ((equivMonoOver Y).inverse.mapIso
-    (MonoOver.pullbackObjIsoIsPullback _ _ _ _ h)).to_eq
+    (MonoOver.pullbackObjIsoOfIsPullback _ _ _ _ h)).to_eq
 
 theorem pullback_obj {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
     (pullback f).obj x = mk (pullback.snd x.arrow f) := by
