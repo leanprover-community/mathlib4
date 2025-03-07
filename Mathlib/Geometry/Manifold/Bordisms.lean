@@ -198,6 +198,9 @@ def sum (s t : SingularNManifold X k I) : SingularNManifold X k I where
 @[simp, mfld_simps]
 lemma sum_M (s t : SingularNManifold X k I) : (s.sum t).M = (s.M ⊕ t.M) := rfl
 
+@[simp, mfld_simps]
+lemma sum_f (s t : SingularNManifold X k I) : (s.sum t).f = Sum.elim s.f t.f := rfl
+
 end SingularNManifold
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
@@ -283,7 +286,7 @@ def empty [IsEmpty M] : UnorientedCobordism k (SingularNManifold.empty X M I)
   hFg := by ext x; exact (IsEmpty.false x).elim
 
 /-- The disjoint union of two unoriented cobordisms (over the same model `J`). -/
-def sum (φ : UnorientedCobordism k s t J) (ψ : UnorientedCobordism k s' t' J) :
+noncomputable def sum (φ : UnorientedCobordism k s t J) (ψ : UnorientedCobordism k s' t' J) :
     UnorientedCobordism k (s.sum s') (t.sum t') J where
   W := φ.W ⊕ ψ.W
   bd := φ.bd.sum ψ.bd
@@ -291,8 +294,26 @@ def sum (φ : UnorientedCobordism k s t J) (ψ : UnorientedCobordism k s' t' J) 
   hF := φ.hF.sumElim ψ.hF
   φ := Diffeomorph.trans (Diffeomorph.sumSumSumComm I s.M k t.M s'.M t'.M).symm
       (Diffeomorph.sumCongr φ.φ ψ.φ)
-  hFf := sorry
-  hFg := sorry
+  hFf := by
+    ext x
+    cases x with
+    | inl x =>
+      set Φ := (Diffeomorph.sumSumSumComm I s.M k t.M s'.M t'.M).symm
+      dsimp
+      have : Φ (Sum.inl (Sum.inl x)) = Sum.inl (Sum.inl x) := sorry
+      rw [this]
+      simp --[φ.hFf]
+      change (φ.F ∘ φ.bd.f ∘ φ.φ ∘ Sum.inl) x = s.f x
+      rw [φ.hFf]
+    | inr x =>
+      set Φ := (Diffeomorph.sumSumSumComm I s.M k t.M s'.M t'.M).symm
+      dsimp
+      have : Φ (Sum.inl (Sum.inr x)) = Sum.inr (Sum.inl x) := sorry
+      rw [this]
+      simp --[φ.hFf]
+      change (ψ.F ∘ ψ.bd.f ∘ ψ.φ ∘ Sum.inl) x = s'.f x
+      rw [ψ.hFf]
+  hFg := sorry -- analogous
 
 /-- Suppose `W` is a cobordism between `M` and `N`.
 Then a diffeomorphism `f : M'' → M` induces a cobordism between `M''` and `N`. -/

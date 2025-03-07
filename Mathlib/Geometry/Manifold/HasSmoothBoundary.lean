@@ -336,3 +336,7 @@ noncomputable def BoundaryManifoldData.sum
 @[simp, mfld_simps]
 lemma BoundaryManifoldData.sum_M₀ (bd : BoundaryManifoldData M I k I₀)
     (bd' : BoundaryManifoldData M' I k I₀) : (bd.sum bd').M₀ = (bd.M₀ ⊕ bd'.M₀) := rfl
+
+@[simp, mfld_simps]
+lemma BoundaryManifoldData.sum_f (bd : BoundaryManifoldData M I k I₀)
+    (bd' : BoundaryManifoldData M' I k I₀) : (bd.sum bd').f = Sum.map bd.f bd'.f := rfl
