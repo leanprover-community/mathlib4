@@ -901,7 +901,7 @@ lemma inter_eq_dite {s t : Set ι} {x y : (i : ι) → Set (α i)} (hst : Disjoi
   rw [Set.pi_congr rfl hx, Set.pi_congr rfl hy]
   exact union_pi
 
-lemma pi_mono2 (s t : Set ι) (hst : s ⊆ t) (x : (i : ι) → Set (α i)) : t.pi x ⊆ s.pi x := by
+lemma pi_antitone (s t : Set ι) (hst : s ⊆ t) (x : (i : ι) → Set (α i)) : t.pi x ⊆ s.pi x := by
   rw [← union_diff_cancel hst, union_pi]
   exact Set.inter_subset_left
 
@@ -1010,15 +1010,10 @@ theorem l [∀ (i : ι), Nonempty (α i)] (s : Set ι) (hs : s.Finite)
       have hG1 : G ⊆ (insert a t).pi '' (insert a t).pi C := by
         simp only [G]
         rw [← singleton_union, union_comm, ← Set.pi_inter_distrib]
-        have h : Disjoint t {a} := by
-          exact Set.disjoint_singleton_right.mpr t_fin
-        have hy : ∀ i ∈ ({a} : Set ι), y i ∩ x i ∈ C i := by
-          intro i hi
-          rw [hi]
-          apply (hC a _).inter_mem (y a) (hy1 a (Or.inl rfl)) (x a) (hx1 a (Or.inl rfl))
-          exact ha
-        have hK'1 := IsSetSemiring.subset_disjointOfDiff h_ind' hx3 hy3
-        apply l15 h hy hK'1
+        exact l15 (Set.disjoint_singleton_right.mpr t_fin)
+          (fun i hi ↦ hi ▸ (hC a ha).inter_mem (y a)
+          (hy1 a (Or.inl rfl)) (x a) (hx1 a (Or.inl rfl)))
+            <| IsSetSemiring.subset_disjointOfDiff h_ind' hx3 hy3
 
       have hG2 : PairwiseDisjoint G id := PairwiseDisjoint.image_of_le
         (h_ind'.pairwiseDisjoint_disjointOfDiff hx3 hy3) <| fun _ _ hb ↦
