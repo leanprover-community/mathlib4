@@ -76,6 +76,14 @@ class IsUltraUniformity : Prop where
   has_basis : (𝓤 X).HasBasis
     (fun s : Set (X × X) => s ∈ 𝓤 X ∧ IsSymmetricRel s ∧ IsTransitiveRel s) id
 
+lemma IsUltraUniformity.mk_of_hasBasis {ι : Type*} {p : ι → Prop} {s : ι → Set (X × X)}
+    (h_basis : (𝓤 X).HasBasis p s) (h_symm : ∀ i, p i → IsSymmetricRel (s i))
+    (h_trans : ∀ i, p i → IsTransitiveRel (s i)) :
+    IsUltraUniformity X where
+  has_basis := h_basis.to_hasBasis'
+    (fun i hi ↦ ⟨s i, ⟨h_basis.mem_of_mem hi, h_symm i hi, h_trans i hi⟩, subset_rfl⟩)
+    (fun _ hs ↦ hs.1)
+
 variable [IsUltraUniformity X]
 
 namespace UniformSpace
