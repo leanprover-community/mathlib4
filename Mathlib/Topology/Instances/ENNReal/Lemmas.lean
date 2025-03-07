@@ -1412,7 +1412,7 @@ lemma liminf_mul_le (h : limsup u f ≠ 0 ∨ liminf v f ≠ ∞) (h' : limsup u
     Frequently.mono (((frequently_lt_of_liminf_lt) b_v).and_eventually
     ((eventually_lt_of_limsup_lt) a_u)) fun _ ab_x ↦ (mul_lt_mul ab_x.2 ab_x.1).trans c_ab
 
-/-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
+/-- If `u : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ u) = toReal (liminf u)`. -/
 lemma liminf_toReal_eq [NeBot f] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) (le_b : ∀ᶠ i in f, u i ≤ b) :
     f.liminf (fun i ↦ (u i).toReal) = (f.liminf u).toReal := by
   have liminf_le : f.liminf u ≤ b := by
@@ -1433,7 +1433,7 @@ lemma liminf_toReal_eq [NeBot f] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) (le_b :
   rw [key]
   rfl
 
-/-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
+/-- If `u : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ u) = toReal (liminf u)`. -/
 lemma limsup_toReal_eq [NeBot f] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) (le_b : ∀ᶠ i in f, u i ≤ b) :
     f.limsup (fun i ↦ (u i).toReal) = (f.limsup u).toReal := by
   have aux : ∀ᶠ i in f, (u i).toReal = ENNReal.truncateToReal b (u i) := by
@@ -1460,8 +1460,7 @@ lemma ofNNReal_limsup {u : ι → ℝ≥0} (hf : f.IsBoundedUnder (· ≤ ·) u)
 lemma ofNNReal_liminf {u : ι → ℝ≥0} (hf : f.IsCoboundedUnder (· ≥ ·) u) :
     liminf u f = liminf (fun i ↦ (u i : ℝ≥0∞)) f := by
   refine eq_of_forall_nnreal_iff fun r ↦ ?_
-  simp
-  rw [le_liminf_iff hf, le_liminf_iff]
+  rw [coe_le_coe, le_liminf_iff, le_liminf_iff]
   simp [forall_ennreal]
 
 end LimsupLiminf
