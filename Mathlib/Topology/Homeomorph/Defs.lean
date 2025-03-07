@@ -330,6 +330,7 @@ theorem comp_isOpenMap_iff' (h : X ≃ₜ Y) {f : Y → Z} : IsOpenMap (f ∘ h)
   rw [← Function.comp_id f, ← h.self_comp_symm, ← Function.comp_assoc]
   exact hf.comp h.symm.isOpenMap
 
+variable (X Y) in
 /-- If both `X` and `Y` have a unique element, then `X ≃ₜ Y`. -/
 @[simps!]
 def homeomorphOfUnique [Unique X] [Unique Y] : X ≃ₜ Y :=
