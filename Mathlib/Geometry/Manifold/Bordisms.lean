@@ -147,13 +147,13 @@ lemma comap_f (s : SingularNManifold X k I) {φ : M → s.M} (hφ : Continuous �
     (s.comap hφ).f = s.f ∘ φ :=
   rfl
 
-variable (M I) in
+variable (X) in
 /-- The canonical singular `n`-manifold associated to the empty set (seen as an `n`-dimensional
 manifold, i.e. modelled on an `n`-dimensional space). -/
 def empty (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-    {I : ModelWithCorners ℝ E H} [IsManifold I k M] [IsEmpty M] : SingularNManifold X k I where
+    (I : ModelWithCorners ℝ E H) [IsManifold I k M] [IsEmpty M] : SingularNManifold X k I where
   M := M
-  f := fun x ↦ (IsEmpty.false x).elim
+  f x := (IsEmpty.false x).elim
   hf := by
     rw [continuous_iff_continuousAt]
     exact fun x ↦ (IsEmpty.false x).elim
