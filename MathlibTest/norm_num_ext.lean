@@ -497,6 +497,10 @@ end real_sqrt
 
 section irrational
 
-example : Irrational √123 := by norm_num1
+example : Irrational √2 := by norm_num1
+example : Irrational √(5 - 2) := by norm_num1
+-- big prime number
+example : Irrational
+  √5210644015679228794060694325390955853335898483908056458352183851018372555735221 := by norm_num1
 
 end irrational

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Data.Real.Irrational
-import Mathlib.Tactic.NormNum.Prime
+import Mathlib.Tactic.Rify
 
 /-! # `norm_num` extension for `Nat.sqrt`
 
@@ -18,80 +18,80 @@ namespace NormNum
 open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
 structure NotPowerCertificate (m n : Q(ℕ)) where
-  p : Q(ℕ)
-  q : Q(ℕ)
   k : Q(ℕ)
-  pf1 : Q($m = $p^$k * $q)
-  pf2 : Q($m ≠ 0)
-  pf3 : Q($q % $p ≠ 0)
-  pf4 : Q($k % $n ≠ 0)
-  pf5 : Q(Nat.Prime $p)
+  pf_left : Q($k^$n < $m)
+  pf_right : Q($m < ($k + 1)^$n)
 
-def findNotPowerCertificateCore (m n : ℕ) : Option (ℕ × ℕ × ℕ) := Id.run do
-  let mut x := m
-  let mut p := 2
-  let mut k := 0
-  while x > 1 do
-    if x % p == 0 then
-      k := k + 1
-      x := x / p
+private theorem irrational_of_certificate_aux {x : ℝ} {m n k : ℕ}
+    (hx : 0 ≤ x)
+    (hn : 0 < n)
+    (h1 : x^n = m)
+    (h2 : k^n < m)
+    (h3 : m < (k + 1)^n) :
+    Irrational x := by
+  apply irrational_nrt_of_notint_nrt n (m := m) _ _ hn
+  · simpa
+  intro ⟨k', h⟩
+  rw [h] at h1 hx
+  replace h1 : k' ^ n = m := by
+    rify
+    assumption
+  zify at *
+  rw [← h1] at h2 h3
+  have : k < k' := by
+    apply lt_of_pow_lt_pow_left₀ _ _ h2
+    simpa using hx
+  have : k' < (k + 1) := by
+    apply lt_of_pow_lt_pow_left₀ _ _ h3
+    simp at hx
+    linarith
+  linarith
+
+private theorem irrational_of_certificate {x : ℝ} {m n k : ℕ}
+    (hn : 0 < n)
+    (h1 : x^n = m)
+    (h2 : k^n < m)
+    (h3 : m < (k + 1)^n) :
+    Irrational x := by
+  by_cases hx : 0 ≤ x
+  · apply irrational_of_certificate_aux <;> assumption
+  rw [← irrational_neg_iff]
+  apply irrational_of_certificate_aux (by linarith) hn _ h2 h3
+  rcases Nat.even_or_odd n with (h_even | h_odd)
+  · rwa [h_even.neg_pow]
+  · linarith [h_odd.pow_neg (show x < 0 by linarith)]
+
+private theorem irrational_sqrt_of_certificate {x : ℝ} {m k : ℕ}
+    (h_isNat : IsNat x m)
+    (h1 : k^2 < m)
+    (h2 : m < (k + 1)^2) :
+    Irrational (Real.sqrt x) := by
+  rw [h_isNat.out]
+  apply @irrational_of_certificate _ m 2 k
+  · simp
+  · simp
+  all_goals assumption
+
+def findNotPowerCertificateCore (m n : ℕ) : Option ℕ := Id.run do
+  let mut left := 0
+  let mut right := m + 1
+  while right - left > 1 do
+    let middle := (left + right) / 2
+    if middle^n ≤ m then
+      left := middle
     else
-      if k > 0 && k % n ≠ 0 then
-        return .some (p, m / p^k, k)
-      k := 0
-      p := p + 1
-  if k > 0 && k % n ≠ 0 then
-    return .some (p, m / p^k, k)
+      right := middle
+  if left^n < m then
+    return .some left
   return .none
 
 def findNotPowerCertificate (m n : Q(ℕ)) : MetaM (NotPowerCertificate m n) := do
   let mVal := m.natLit!
   let nVal := n.natLit!
-  let .some (p, q, k) := findNotPowerCertificateCore mVal nVal | failure
-  let pf1 : Q($m = $p^$k * $q) := (q(Eq.refl $m) : Expr)
-
-  let .isBool _ pf2 := ← derive q($m ≠ 0) | failure
-  let .isBool _ pf3 := ← derive q($q % $p ≠ 0) | failure
-  let .isBool _ pf4 ← derive q($k % $n ≠ 0) | failure
-  let .isBool _ pf5 ← derive q(Nat.Prime $p) | failure
-  return ⟨q($p), q($q), q($k), pf1, pf2, pf3, pf4, pf5⟩
-
-private theorem irrational_of_certificate (x : ℝ) (m n p q k : ℕ)
-    (h1 : x^n = m)
-    (h2 : m ≠ 0)
-    (h3 : m = p^k * q)
-    (h4 : q % p ≠ 0)
-    (h5 : k % n ≠ 0)
-    (h6 : p.Prime) :
-    Irrational x := by
-  have _ : Fact (Nat.Prime p) := ⟨h6⟩
-  apply irrational_nrt_of_n_not_dvd_multiplicity n _ p
-  · exact h1
-  · convert h5
-    rw [FiniteMultiplicity.multiplicity_eq_iff]
-    · constructor
-      · simp [h3]
-      · simp [h3, pow_succ]
-        rw [Int.mul_dvd_mul_iff_left]
-        · rwa [Int.ofNat_dvd, Nat.dvd_iff_mod_eq_zero]
-        · apply pow_ne_zero
-          simp
-          exact Nat.Prime.ne_zero h6
-    · rw [Int.finiteMultiplicity_iff]
-      simp [h2]
-      exact Nat.Prime.ne_one h6
-  · exact Int.ofNat_ne_zero.mpr h2
-
-private theorem irrational_sqrt_of_certificate {m p q k : ℕ}
-    (h1 : m = p^k * q)
-    (h2 : m ≠ 0)
-    (h3 : q % p ≠ 0)
-    (h4 : k % 2 ≠ 0)
-    (h5 : p.Prime) :
-    Irrational (Real.sqrt m) := by
-  apply irrational_of_certificate _ m 2 p q k
-  · simp
-  all_goals assumption
+  let .some k := findNotPowerCertificateCore mVal nVal | failure
+  let .isBool true pf_left := ← derive q($k^$n < $m) | failure
+  let .isBool true pf_right := ← derive q($m < ($k + 1)^$n) | failure
+  return ⟨q($k), pf_left, pf_right⟩
 
 @[norm_num Irrational (Real.sqrt _)]
 def evalIrrationalSqrt : NormNumExt where eval {u α} e := do
@@ -102,8 +102,8 @@ def evalIrrationalSqrt : NormNumExt where eval {u α} e := do
     | .isBool _ _ => failure
     | .isNat (sℝ : Q(AddMonoidWithOne ℝ)) ex pf =>
       let cert ← findNotPowerCertificate ex q(nat_lit 2)
-      return .isTrue q(irrational_sqrt_of_certificate $cert.pf1 $cert.pf2 $cert.pf3 $cert.pf4
-        $cert.pf5)
+      assumeInstancesCommute
+      return .isTrue q(irrational_sqrt_of_certificate $pf $cert.pf_left $cert.pf_right)
     | _ => failure
   | _ => failure
 
