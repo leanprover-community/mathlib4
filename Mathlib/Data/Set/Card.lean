@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Peter Nelson
+Authors: Peter Nelson, Yury G. Kudryashov
 -/
 import Mathlib.SetTheory.Cardinal.Finite
 
@@ -148,6 +148,10 @@ theorem finite_of_encard_eq_coe {k : ℕ} (h : s.encard = k) : s.Finite :=
 theorem encard_le_coe_iff {k : ℕ} : s.encard ≤ k ↔ s.Finite ∧ ∃ (n₀ : ℕ), s.encard = n₀ ∧ n₀ ≤ k :=
   ⟨fun h ↦ ⟨finite_of_encard_le_coe h, by rwa [ENat.le_coe_iff] at h⟩,
     fun ⟨_,⟨n₀,hs, hle⟩⟩ ↦ by rwa [hs, Nat.cast_le]⟩
+
+@[simp]
+theorem Set.encard_prod : (s ×ˢ t).encard = s.encard * t.encard := by
+simp [Set.encard, ENat.card_congr (Equiv.Set.prod ..)]
 
 section Lattice
 
