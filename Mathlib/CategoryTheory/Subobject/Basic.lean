@@ -504,24 +504,6 @@ def lowerEquivalence {A : C} {B : D} (e : MonoOver A ≌ MonoOver B) : Subobject
     · exact (ThinSkeleton.map_comp_eq _ _).symm
     · exact ThinSkeleton.map_id_eq.symm
 
-
-section IsPullback
-
-theorem eqOfIsPullback {X Y Z : C} {x x' : Subobject X}
-    {f : X ⟶ Z} {g : Y ⟶ Z} {k : (x : C) ⟶ Y} {k' : (x' : C) ⟶ Y}
-    (h : IsPullback k x.arrow g f) (h' : IsPullback k' x'.arrow g f) :
-    x = x' :=
-  eq_of_comm (IsPullback.isoIsPullback _ _ h h') (by simp)
-
-theorem arrow_isPullback {X Y Z : C}
-    (f : Y ⟶ Z) (g : X ⟶ Z) [HasPullback f g] [Mono f] :
-    IsPullback ((underlyingIso _).hom ≫ pullback.fst f g) (mk (pullback.snd f g)).arrow f g :=
-  IsPullback.of_iso (IsPullback.of_hasPullback f g)
-    (underlyingIso _).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
-    (by simp) (by simp) (by simp) (by simp)
-
-end IsPullback
-
 section Pullback
 
 variable [HasPullbacks C]
