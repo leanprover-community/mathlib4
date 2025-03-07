@@ -226,16 +226,12 @@ theorem sup_eq_closure_mul (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) *
     ((closure_mul_le _ _).trans <| by rw [closure_eq, closure_eq])
 
 @[to_additive]
-theorem set_mul_setNormalizer_comm (S N : Set G) (hLE : S ⊆ setNormalizer N) :
+theorem set_mul_normalizer_comm (S : Set G) (N : Subgroup G) (hLE : S ⊆ N.normalizer) :
     S * N = N * S := by
   rw [← iUnion_mul_left_image, ← iUnion_mul_right_image]
   simp only [image_mul_left, image_mul_right, Set.preimage]
   congr! 5 with s hs x
-  exact (mem_setNormalizer_iff'.mp (inv_mem (hLE hs)) x).symm
-
-@[to_additive]
-theorem set_mul_normalizer_comm (S : Set G) (N : Subgroup G) (hLE : S ⊆ N.normalizer) :
-    S * N = N * S := set_mul_setNormalizer_comm S N <| by rwa [setNormalizer_normalizer]
+  exact (mem_normalizer_iff'.mp (inv_mem (hLE hs)) x).symm
 
 @[to_additive]
 theorem set_mul_normal_comm (S : Set G) (N : Subgroup G) [hN : N.Normal] :
