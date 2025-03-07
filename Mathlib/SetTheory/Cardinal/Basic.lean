@@ -851,11 +851,11 @@ alias isSuccLimit_zero := isSuccPrelimit_zero
 
 end deprecated
 
-/-- A cardinal is a strong limit if it is not zero and it is closed under powersets. Note that `ℵ₀`
-is a strong limit by this definition. -/
+/-- A cardinal is a strong limit if it is not zero and it is closed under powersets.
+Note that `ℵ₀` is a strong limit by this definition. -/
 structure IsStrongLimit (c : Cardinal) : Prop where
   ne_zero : c ≠ 0
-  two_power_lt {x} : x < c → 2 ^ x < c
+  two_power_lt ⦃x⦄ : x < c → 2 ^ x < c
 
 protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLimit c := by
   rw [Cardinal.isSuccLimit_iff]
@@ -1555,7 +1555,7 @@ theorem aleph0_le_of_isSuccLimit {c : Cardinal} (h : IsSuccLimit c) : ℵ₀ ≤
   exact not_isSuccLimit_of_lt_aleph0 h
 
 theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ := by
-  refine ⟨aleph0_ne_zero, fun hx ↦ ?_⟩
+  refine ⟨aleph0_ne_zero, fun x hx ↦ ?_⟩
   obtain ⟨n, rfl⟩ := lt_aleph0.1 hx
   exact_mod_cast nat_lt_aleph0 _
 
