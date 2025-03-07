@@ -5,6 +5,7 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Seminorm
 import Mathlib.Data.NNReal.Basic
+import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.Order.Real
 
@@ -856,6 +857,9 @@ section ENorm
 @[to_additive (attr := simp) enorm_zero]
 lemma enorm_one' {E : Type*} [TopologicalSpace E] [ENormedMonoid E] : ‖(1 : E)‖ₑ = 0 := by
   rw [ENormedMonoid.enorm_eq_zero]
+
+@[to_additive (attr := simp) enorm_neg]
+lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
 
 @[to_additive (attr := simp) enorm_neg]
 lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
