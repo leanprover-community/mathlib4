@@ -78,7 +78,6 @@ end
 
 section
 
--- Porting note: was parameter in Lean3
 variable {a : ℕ} (a1 : 1 < a)
 
 private def d (_a1 : 1 < a) :=
@@ -93,7 +92,6 @@ theorem d_pos : 0 < d a1 :=
 `d = a ^ 2 - 1`, defined together in mutual recursion. -/
 --@[nolint dup_namespace]
 def pell : ℕ → ℕ × ℕ
-  -- Porting note: used pattern matching because `Nat.recOn` is noncomputable
   | 0 => (1, 0)
   | n+1 => ((pell n).1 * a + d a1 * (pell n).2, (pell n).1 + (pell n).2 * a)
 

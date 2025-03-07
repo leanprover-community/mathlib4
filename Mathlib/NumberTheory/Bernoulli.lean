@@ -171,7 +171,6 @@ theorem bernoulli'_odd_eq_zero {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bernoul
     simpa [bernoulli'PowerSeries] using bernoulli'PowerSeries_mul_exp_sub_one ℚ
   rw [sub_mul, h, mul_sub X, sub_right_inj, ← neg_sub, mul_neg, neg_eq_iff_eq_neg]
   suffices evalNegHom (B * (exp ℚ - 1)) * exp ℚ = evalNegHom (X * exp ℚ) * exp ℚ by
-    rw [map_mul, map_mul] at this -- Porting note: Why doesn't simp do this?
     simpa [mul_assoc, sub_mul, mul_comm (evalNegHom (exp ℚ)), exp_mul_exp_neg_eq_one]
   congr
 
@@ -206,7 +205,6 @@ theorem sum_bernoulli (n : ℕ) :
     ring
   have f := sum_bernoulli' n.succ.succ
   simp_rw [sum_range_succ', cast_succ, ← eq_sub_iff_add_eq] at f
-  -- Porting note: was `convert f`
   refine Eq.trans ?_ (Eq.trans f ?_)
   · congr
     funext x
@@ -316,7 +314,6 @@ theorem sum_range_pow (n p : ℕ) :
       have h_const : C ℚ (constantCoeff ℚ (exp ℚ ^ n)) = 1 := by simp
       rw [← h_const, sub_const_eq_X_mul_shift]
     -- key step: a chain of equalities of power series
-    -- Porting note: altered proof slightly
     rw [← mul_right_inj' hexp, mul_comm]
     rw [← exp_pow_sum, geom_sum_mul, h_r, ← bernoulliPowerSeries_mul_exp_sub_one,
       bernoulliPowerSeries, mul_right_comm]

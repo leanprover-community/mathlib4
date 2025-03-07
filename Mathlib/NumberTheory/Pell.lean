@@ -94,8 +94,6 @@ namespace Solution₁
 
 variable {d : ℤ}
 
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): manual deriving
-
 instance instCommGroup : CommGroup (Solution₁ d) :=
   inferInstanceAs (CommGroup (unitary (ℤ√d)))
 
@@ -238,10 +236,6 @@ theorem x_mul_pos {a b : Solution₁ d} (ha : 0 < a.x) (hb : 0 < b.x) : 0 < (a *
   rcases le_or_lt 0 d with h | h
   · positivity
   · rw [(eq_zero_of_d_neg h a).resolve_left ha.ne', (eq_zero_of_d_neg h b).resolve_left hb.ne']
-    -- Porting note: was
-    -- rw [zero_pow two_ne_zero, zero_add, zero_mul, zero_add]
-    -- exact one_pos
-    -- but this relied on the exact output of `ring_nf`
     simp
 
 /-- The set of solutions with `x` and `y` positive is closed under multiplication. -/
@@ -584,7 +578,6 @@ theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solu
   refine
     ((mul_le_mul_right <| zero_lt_one.trans h.1).mpr <| x_mul_y_le_y_mul_x h hax hay).trans_lt ?_
   rw [mul_assoc, ← sq, a₁.prop_x, ← sub_neg]
-  -- Porting note: was `ring_nf`
   suffices a.y - a.x * a₁.y < 0 by convert this using 1; ring
   rw [sub_neg, ← abs_of_pos hay, ← abs_of_pos h.2.1, ← abs_of_pos <| zero_lt_one.trans hax, ←
     abs_mul, ← sq_lt_sq, mul_pow, a.prop_x]
@@ -600,7 +593,6 @@ theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solu
 theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 0 < a.x)
     (hay : 0 ≤ a.y) : ∃ n : ℕ, a = a₁ ^ n := by
   lift a.x to ℕ using hax.le with ax hax'
-  -- Porting note: added
   clear hax
   induction ax using Nat.strong_induction_on generalizing a with | h x ih =>
   rcases hay.eq_or_lt with hy | hy
@@ -621,7 +613,6 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
     have hxx₂ := h.mul_inv_x_lt_x hx₁ hy
     have hyy := h.mul_inv_y_nonneg hx₁ hy
     lift (a * a₁⁻¹).x to ℕ using hxx₁.le with x' hx'
-    -- Porting note: `ih` has its arguments in a different order compared to lean 3.
     obtain ⟨n, hn⟩ := ih x' (mod_cast hxx₂.trans_eq hax'.symm) hyy hx' hxx₁
     exact ⟨n + 1, by rw [pow_succ', ← hn, mul_comm a, ← mul_assoc, mul_inv_cancel, one_mul]⟩
 

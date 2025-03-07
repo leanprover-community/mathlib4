@@ -233,9 +233,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
     · rw [quadraticChar_neg_one_iff_not_isSquare.mpr h]
       simp only [neg_add_cancel, Int.natCast_eq_zero, card_eq_zero]
       ext1
-      -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026):
-      -- added (Set.mem_toFinset), Set.mem_setOf
-      simp only [s, (Set.mem_toFinset), Set.mem_setOf, not_mem_empty, iff_false]
+      simp only [s, Set.mem_toFinset, not_mem_empty, iff_false]
       rw [isSquare_iff_exists_sq] at h
       exact fun h' ↦ h ⟨_, h'.symm⟩
 
