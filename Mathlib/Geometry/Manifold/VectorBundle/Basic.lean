@@ -628,6 +628,7 @@ instance Bundle.Prod.contMDiffVectorBundle : ContMDiffVectorBundle n (F₁ × F�
       simp only [Trivialization.baseSet_prod, mfld_simps]
       mfld_set_tac
 
+omit [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB] in
 /-- For smooth vector bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
 total space of `E₁ ×ᵇ E₂` to the total space of `E₁` is smooth. -/
 theorem Bundle.Prod.contMDiff_fst :
@@ -638,10 +639,17 @@ theorem Bundle.Prod.contMDiff_fst :
   have (x : F₁ × F₂) : ContMDiffAt 𝓘(𝕜, F₁ × F₂) 𝓘(𝕜, F₁) n Prod.fst x := by
     rw [contMDiffAt_iff_contDiffAt]
     exact contDiffAt_fst
+  simp [trivializationAt, FiberBundle.trivializationAt']
+  rw [contMDiffAt_iff_source_of_mem_source]
+
+#exit
+
   refine (this _).comp _ <| contMDiffAt_snd.comp _ <|
     (contMDiffOn_trivializationAt x).contMDiffAt ?_
   apply (trivializationAt (F₁ × F₂) (fun x ↦ E₁ x × E₂ x) x.proj).open_source.mem_nhds
   simp
+
+#exit
 
 /-- For smooth vector bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
 total space of `E₁ ×ᵇ E₂` to the total space of `E₂` is smooth. -/
