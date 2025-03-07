@@ -91,9 +91,8 @@ lemma comp_compProd_comm {η : Kernel (α × β) γ} [SFinite μ] [IsSFiniteKern
 @[simp]
 lemma prodMkLeft_comp_compProd {η : Kernel β γ} [SFinite μ] [IsSFiniteKernel κ] :
     (η.prodMkLeft α) ∘ₘ μ ⊗ₘ κ = η ∘ₘ κ ∘ₘ μ := by
-  conv_rhs => rw [← Measure.snd_compProd (μ := μ)]
-  rw [Kernel.prodMkLeft, Measure.snd, ← Measure.deterministic_comp_eq_map measurable_snd,
-    Measure.comp_assoc, Kernel.comp_deterministic_eq_comap]
+  rw [← snd_compProd μ κ, Kernel.prodMkLeft, snd, ← deterministic_comp_eq_map measurable_snd,
+    comp_assoc, Kernel.comp_deterministic_eq_comap]
 
 end CompProd
 

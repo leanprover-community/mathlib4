@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Data.NNReal.Defs
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.Bornology.Real
 import Mathlib.Topology.Instances.Int
 import Mathlib.Topology.Order.MonotoneContinuity
 import Mathlib.Topology.Order.Real

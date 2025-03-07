@@ -671,6 +671,25 @@ end SymmetricCategory
 
 end Mon_
 
+section
+
+variable {C} [BraidedCategory.{v₁} C]
+
+/-- Predicate for a monoid object to be commutative. -/
+class IsCommMon (X : C) [Mon_Class X] where
+  mul_comm' : (β_ X X).hom ≫ μ = μ := by aesop_cat
+
+open scoped Mon_Class
+
+namespace IsCommMon
+
+@[reassoc (attr := simp)]
+theorem mul_comm (X : C) [Mon_Class X] [IsCommMon X] : (β_ X X).hom ≫ μ = μ := mul_comm'
+
+end IsCommMon
+
+end
+
 /-!
 Projects:
 * Check that `Mon_ MonCat ≌ CommMonCat`, via the Eckmann-Hilton argument.
