@@ -122,7 +122,7 @@ instance (d : BoundaryManifoldData M I k I₀) : ChartedSpace H₀ d.M₀ := d.c
 
 instance (d : BoundaryManifoldData M I k I₀) : IsManifold I₀ k d.M₀ := d.isManifold
 
-variable (M) in
+variable (M I) in
 /-- If `M` is boundaryless, its boundary manifold data is easy to construct. -/
 -- We can just take the empty manifold, with a vacuously defined map.
 def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] :
