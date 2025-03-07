@@ -129,12 +129,12 @@ theorem swap_div [Div G] [Div H] (a b : G × H) : (a / b).swap = a.swap / b.swap
 @[to_additive] lemma div_def [Div M] [Div N] (a b : M × N) : a / b = (a.1 / b.1, a.2 / b.2) := rfl
 
 @[to_additive]
-instance instSemigroup [Semigroup M] [Semigroup N] : Semigroup (M × N) :=
-  { mul_assoc := fun _ _ _ => mk_inj.mpr ⟨mul_assoc _ _ _, mul_assoc _ _ _⟩ }
+instance instSemigroup [Semigroup M] [Semigroup N] : Semigroup (M × N) where
+  mul_assoc _ _ _ := by ext <;> exact mul_assoc ..
 
 @[to_additive]
-instance instCommSemigroup [CommSemigroup G] [CommSemigroup H] : CommSemigroup (G × H) :=
-  { mul_comm := fun _ _ => mk_inj.mpr ⟨mul_comm _ _, mul_comm _ _⟩ }
+instance instCommSemigroup [CommSemigroup G] [CommSemigroup H] : CommSemigroup (G × H) where
+  mul_comm _ _ := by ext <;> exact mul_comm ..
 
 @[to_additive]
 instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) where
@@ -170,8 +170,8 @@ instance [DivisionCommMonoid G] [DivisionCommMonoid H] : DivisionCommMonoid (G �
   { mul_comm := fun ⟨g₁ , h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mul_comm g₁, mul_comm h₁]; rfl }
 
 @[to_additive]
-instance instGroup [Group G] [Group H] : Group (G × H) :=
-  { inv_mul_cancel := fun _ => mk_inj.mpr ⟨inv_mul_cancel _, inv_mul_cancel _⟩ }
+instance instGroup [Group G] [Group H] : Group (G × H) where
+  inv_mul_cancel _ := by ext <;> exact inv_mul_cancel _
 
 @[to_additive]
 instance [Mul G] [Mul H] [IsLeftCancelMul G] [IsLeftCancelMul H] : IsLeftCancelMul (G × H) where

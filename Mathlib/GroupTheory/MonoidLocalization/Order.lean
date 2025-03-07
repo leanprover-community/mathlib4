@@ -105,7 +105,7 @@ instance decidableLT [DecidableRel ((· < ·) : α → α → Prop)] :
 sending `a` to `a - b`."]
 def mkOrderEmbedding (b : s) : α ↪o Localization s where
   toFun a := mk a b
-  inj' := mk_right_injective _
+  inj' := mk_left_injective _
   map_rel_iff' {a b} := by simp [mk_le_mk]
 
 end OrderedCancelCommMonoid
