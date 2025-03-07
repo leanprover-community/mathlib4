@@ -654,6 +654,12 @@ def sumEmpty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M n where
 @[simp]
 theorem sumEmpty_toEquiv [IsEmpty M'] : (sumEmpty I M n).toEquiv = Equiv.sumEmpty M M' := rfl
 
+/-- The unique diffeomorphism between two empty types. -/
+protected def empty [IsEmpty M] [IsEmpty M'] : Diffeomorph I I M M' n where
+  __ := Equiv.equivOfIsEmpty M M'
+  contMDiff_toFun x := (IsEmpty.false x).elim
+  contMDiff_invFun x := (IsEmpty.false x).elim
+
 end disjointUnion
 
 end Constructions
