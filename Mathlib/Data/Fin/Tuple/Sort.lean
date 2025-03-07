@@ -62,7 +62,7 @@ def graphEquiv₁ (f : Fin n → α) : Fin n ≃ graph f where
     -- Porting note: was `simpa [graph] using h`
     simp only [graph, Finset.mem_image, Finset.mem_univ, true_and] at h
     obtain ⟨i', hi'⟩ := h
-    obtain ⟨-, rfl⟩ := Prod.mk.inj_iff.mp hi'
+    obtain ⟨-, rfl⟩ := Prod.mk_inj.mp hi'
     simpa
 
 @[simp]

@@ -141,12 +141,12 @@ lemma two_mul_card_image_offDiag (s : Finset α) : 2 * #(s.offDiag.image Sym2.mk
   have hxy' : y ≠ x := hxy.symm
   have : {z ∈ s.offDiag | Sym2.mk z = s(x, y)} = {(x, y), (y, x)} := by
     ext ⟨x₁, y₁⟩
-    rw [mem_filter, mem_insert, mem_singleton, Sym2.eq_iff, Prod.mk.inj_iff, Prod.mk.inj_iff,
+    rw [mem_filter, mem_insert, mem_singleton, Sym2.eq_iff, Prod.mk_inj, Prod.mk_inj,
       and_iff_right_iff_imp]
     -- `hxy'` is used in `exact`
     rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> rw [mem_offDiag] <;> exact ⟨‹_›, ‹_›, ‹_›⟩
   rw [this, card_insert_of_not_mem, card_singleton]
-  simp only [not_and, Prod.mk.inj_iff, mem_singleton]
+  simp only [not_and, Prod.mk_inj, mem_singleton]
   exact fun _ => hxy'
 
 /-- The `offDiag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `#s.offDiag / 2`.

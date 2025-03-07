@@ -4277,6 +4277,7 @@ import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone
+import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.PolarCoord
 import Mathlib.NumberTheory.NumberField.ClassNumber
 import Mathlib.NumberTheory.NumberField.Completion
 import Mathlib.NumberTheory.NumberField.Discriminant.Basic
@@ -5343,6 +5344,7 @@ import Mathlib.Tactic.LinearCombination.Lemmas
 import Mathlib.Tactic.Linter
 import Mathlib.Tactic.Linter.AdmitLinter
 import Mathlib.Tactic.Linter.DocPrime
+import Mathlib.Tactic.Linter.DocString
 import Mathlib.Tactic.Linter.FlexibleLinter
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter

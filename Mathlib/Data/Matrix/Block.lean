@@ -369,7 +369,7 @@ theorem blockDiagonal_zero : blockDiagonal (0 : o → Matrix m n α) = 0 := by
 theorem blockDiagonal_diagonal [DecidableEq m] (d : o → m → α) :
     (blockDiagonal fun k => diagonal (d k)) = diagonal fun ik => d ik.2 ik.1 := by
   ext ⟨i, k⟩ ⟨j, k'⟩
-  simp only [blockDiagonal_apply, diagonal_apply, Prod.mk.inj_iff, ← ite_and]
+  simp only [blockDiagonal_apply, diagonal_apply, Prod.mk_inj, ← ite_and]
   congr 1
   rw [and_comm]
 
