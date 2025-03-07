@@ -5,7 +5,7 @@ Authors: Patrick Massot, Kim Morrison
 -/
 import Mathlib.Algebra.Order.Interval.Set.Instances
 import Mathlib.Order.Interval.Set.ProjIcc
-import Mathlib.Topology.Instances.Real.Defs
+import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # The unit interval, as a topological space

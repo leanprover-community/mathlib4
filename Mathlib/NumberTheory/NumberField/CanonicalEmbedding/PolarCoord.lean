@@ -89,7 +89,7 @@ the first component and mapping `(rᵢ cos θᵢ, rᵢ sin θᵢ)ᵢ` to `(rᵢ,
 -/
 @[simps! apply target]
 def polarCoordReal : PartialHomeomorph (realMixedSpace K) (realMixedSpace K) :=
-  ((PartialHomeomorph.refl _).prod (PartialHomeomorph.pi fun _ ↦ polarCoord))
+  (PartialHomeomorph.refl _).prod (PartialHomeomorph.pi fun _ ↦ polarCoord)
 
 theorem measurable_polarCoordReal_symm :
     Measurable (polarCoordReal K).symm := by

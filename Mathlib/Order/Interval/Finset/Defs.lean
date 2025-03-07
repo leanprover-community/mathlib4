@@ -859,9 +859,20 @@ Adding a `⊥` to a locally finite `OrderBot` keeps it locally finite.
 
 namespace WithTop
 
-private lemma aux (x : α) (p : α → Prop) :
-    (∃ a : α, p a ∧ WithTop.some a = WithTop.some x) ↔ p x := by
-  simp
+/-- Given a finset on `α`, lift it to being a finset on `WithTop α`
+using `WithTop.some` and then insert `⊤`. -/
+def insertTop : Finset α ↪o Finset (WithTop α) :=
+  OrderEmbedding.ofMapLEIff
+    (fun s => cons ⊤ (s.map Embedding.coeWithTop) <| by simp)
+    (fun s t => by rw [le_iff_subset, cons_subset_cons, map_subset_map, le_iff_subset])
+
+@[simp]
+theorem some_mem_insertTop {s : Finset α} {a : α} : ↑a ∈ insertTop s ↔ a ∈ s := by
+  simp [insertTop]
+
+@[simp]
+theorem top_mem_insertTop {s : Finset α} : ⊤ ∈ insertTop s := by
+  simp [insertTop]
 
 variable (α) [PartialOrder α] [OrderTop α] [LocallyFiniteOrder α]
 
@@ -870,81 +881,31 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     match a, b with
     | ⊤, ⊤ => {⊤}
     | ⊤, (b : α) => ∅
-    | (a : α), ⊤ => insertNone (Ici a)
-    | (a : α), (b : α) => (Icc a b).map Embedding.some
+    | (a : α), ⊤ => insertTop (Ici a)
+    | (a : α), (b : α) => (Icc a b).map Embedding.coeWithTop
   finsetIco a b :=
     match a, b with
     | ⊤, _ => ∅
-    | (a : α), ⊤ => (Ici a).map Embedding.some
-    | (a : α), (b : α) => (Ico a b).map Embedding.some
+    | (a : α), ⊤ => (Ici a).map Embedding.coeWithTop
+    | (a : α), (b : α) => (Ico a b).map Embedding.coeWithTop
   finsetIoc a b :=
     match a, b with
     | ⊤, _ => ∅
-    | (a : α), ⊤ => insertNone (Ioi a)
-    | (a : α), (b : α) => (Ioc a b).map Embedding.some
+    | (a : α), ⊤ => insertTop (Ioi a)
+    | (a : α), (b : α) => (Ioc a b).map Embedding.coeWithTop
   finsetIoo a b :=
     match a, b with
     | ⊤, _ => ∅
-    | (a : α), ⊤ => (Ioi a).map Embedding.some
-    | (a : α), (b : α) => (Ioo a b).map Embedding.some
-  -- Porting note: the proofs below got much worse
-  finset_mem_Icc a b x :=
-    match a, b, x with
-    | ⊤, ⊤, _ => mem_singleton.trans (le_antisymm_iff.trans and_comm)
-    | ⊤, (b : α), _ =>
-      iff_of_false (not_mem_empty _) fun h => (h.1.trans h.2).not_lt <| coe_lt_top _
-    | (a : α), ⊤, ⊤ => by simp [WithTop.some, WithTop.top, insertNone]
-    | (a : α), ⊤, (x : α) => by
-        simp only [le_eq_subset, coe_le_coe, le_top, and_true]
-        rw [← some_eq_coe, some_mem_insertNone, mem_Ici]
-    | (a : α), (b : α), ⊤ => by
-        simp only [Embedding.some, mem_map, mem_Icc, and_false, exists_const, some, le_top,
-          top_le_iff, reduceCtorEq]
-    | (a : α), (b : α), (x : α) => by
-        simp only [le_eq_subset, Embedding.some, mem_map, mem_Icc, Embedding.coeFn_mk, coe_le_coe]
-        -- This used to be in the above `simp` before https://github.com/leanprover/lean4/pull/2644
-        erw [aux]
-  finset_mem_Ico a b x :=
-    match a, b, x with
-    | ⊤, _, _ => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_lt h.2
-    | (a : α), ⊤, ⊤ => by simp [some, Embedding.some]
-    | (a : α), ⊤, (x : α) => by
-        simp only [Embedding.some, mem_map, mem_Ici, Embedding.coeFn_mk, coe_le_coe, aux,
-          coe_lt_top, and_true]
-        -- This used to be in the above `simp` before https://github.com/leanprover/lean4/pull/2644
-        erw [aux]
-    | (a : α), (b : α), ⊤ => by simp [some, Embedding.some]
-    | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, aux]
-                                      -- This used to be in the above `simp` before
-                                      -- https://github.com/leanprover/lean4/pull/2644
-                                      erw [aux]
-  finset_mem_Ioc a b x :=
-    match a, b, x with
-    | ⊤, _, _ => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_le h.2
-    | (a : α), ⊤, ⊤ => by simp [some, insertNone, top]
-    | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux]
-                                -- This used to be in the above `simp` before
-                                -- https://github.com/leanprover/lean4/pull/2644
-                                erw [aux]
-    | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
-    | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, insertNone, aux]
-                                      -- This used to be in the above `simp` before
-                                      -- https://github.com/leanprover/lean4/pull/2644
-                                      erw [aux]
-  finset_mem_Ioo a b x :=
-    match a, b, x with
-    | ⊤, _, _ => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans h.2
-    | (a : α), ⊤, ⊤ => by simp [some, Embedding.some, insertNone]
-    | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux, top]
-                                -- This used to be in the above `simp` before
-                                -- https://github.com/leanprover/lean4/pull/2644
-                                erw [aux]
-    | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
-    | (a : α), (b : α), (x : α) => by
-      simp [some, Embedding.some, insertNone, aux]
-      -- This used to be in the above `simp` before
-      -- https://github.com/leanprover/lean4/pull/2644
-      erw [aux]
+    | (a : α), ⊤ => (Ioi a).map Embedding.coeWithTop
+    | (a : α), (b : α) => (Ioo a b).map Embedding.coeWithTop
+  finset_mem_Icc a b x := by
+    cases a <;> cases b <;> cases x <;> simp
+  finset_mem_Ico a b x := by
+    cases a <;> cases b <;> cases x <;> simp
+  finset_mem_Ioc a b x := by
+    cases a <;> cases b <;> cases x <;> simp
+  finset_mem_Ioo a b x := by
+    cases a <;> cases b <;> cases x <;> simp
 
 variable (a b : α)
 
@@ -975,6 +936,21 @@ theorem Ioo_coe_coe : Ioo (a : WithTop α) b = (Ioo a b).map Embedding.some :=
 end WithTop
 
 namespace WithBot
+
+/-- Given a finset on `α`, lift it to being a finset on `WithBot α`
+using `WithBot.some` and then insert `⊥`. -/
+def insertBot : Finset α ↪o Finset (WithBot α) :=
+  OrderEmbedding.ofMapLEIff
+    (fun s => cons ⊥ (s.map Embedding.coeWithBot) <| by simp)
+    (fun s t => by rw [le_iff_subset, cons_subset_cons, map_subset_map, le_iff_subset])
+
+@[simp]
+theorem some_mem_insertBot {s : Finset α} {a : α} : ↑a ∈ insertBot s ↔ a ∈ s := by
+  simp [insertBot]
+
+@[simp]
+theorem bot_mem_insertBot {s : Finset α} : ⊥ ∈ insertBot s := by
+  simp [insertBot]
 
 variable (α) [PartialOrder α] [OrderBot α] [LocallyFiniteOrder α]
 
