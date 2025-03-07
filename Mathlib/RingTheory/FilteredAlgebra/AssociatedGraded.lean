@@ -137,6 +137,14 @@ section
 
 lemma mk_eq {i : ι} (x : F i) : mk F F_lt x = ⟦x⟧ := rfl
 
+lemma exists_rep {i : ι}(q : GradedPiece F F_lt i): ∃ a, mk F F_lt a = q :=
+  Quotient.exists_rep q
+
+lemma eq_zero_iff {i : ι} (x : F i) : mk F F_lt x = 0 ↔ (x : A) ∈ F_lt i := by
+  apply QuotientAddGroup.eq_zero_iff
+
+lemma mk_add  {i : ι} (x y : F i) : mk F F_lt x + mk F F_lt y = mk F F_lt (x + y) := rfl
+
 lemma HEq_rfl {i j : ι} {r : A} (h : i = j) (hi : r ∈ ofClass (F i)) (hj : r ∈ ofClass (F j)) :
     HEq (mk F F_lt ⟨r, hi⟩) (mk F F_lt ⟨r, hj⟩) :=
   h ▸ HEq.rfl
