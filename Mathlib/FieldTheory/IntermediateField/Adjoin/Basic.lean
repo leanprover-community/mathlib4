@@ -9,11 +9,11 @@ import Mathlib.FieldTheory.IntermediateField.Algebraic
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-import Mathlib.RingTheory.Adjoin.Dimension
-import Mathlib.RingTheory.Finiteness.TensorProduct
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.SetTheory.Cardinal.Subfield
 import Mathlib.LinearAlgebra.Dual
+import Mathlib.RingTheory.Adjoin.Dimension
+import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.TensorProduct.Finite
+import Mathlib.SetTheory.Cardinal.Subfield
 
 /-!
 # Adjoining Elements to Fields

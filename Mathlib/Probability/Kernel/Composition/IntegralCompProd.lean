@@ -3,7 +3,8 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Etienne Marion
 -/
-import Mathlib.Probability.Kernel.Composition.Basic
+import Mathlib.Probability.Kernel.Composition.CompProd
+import Mathlib.Probability.Kernel.Composition.Comp
 import Mathlib.Probability.Kernel.MeasurableIntegral
 
 /-!
@@ -253,7 +254,6 @@ theorem integral_compProd :
     · exact (Kernel.measurable_kernel_prod_mk_left' hs _).aemeasurable
     · exact ae_kernel_lt_top a h2s.ne
     rw [Kernel.compProd_apply hs]
-    rfl
   · intro f g _ i_f i_g hf hg
     simp_rw [integral_add' i_f i_g, Kernel.integral_integral_add' i_f i_g, hf, hg]
   · exact isClosed_eq continuous_integral Kernel.continuous_integral_integral
