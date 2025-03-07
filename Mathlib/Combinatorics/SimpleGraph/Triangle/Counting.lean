@@ -82,7 +82,7 @@ private lemma good_vertices_triangle_card [DecidableEq α] (dst : 2 * ε ≤ G.e
     (mul_le_mul_of_nonneg_left (by linarith) (Nat.cast_nonneg _)).trans hxY
   have hZ : #u * ε ≤ #{y ∈ u | G.Adj x y} :=
     (mul_le_mul_of_nonneg_left (by linarith) (Nat.cast_nonneg _)).trans hsu
-  rw [card_image_of_injective _ (Prod.mk_left_injective _)]
+  rw [card_image_of_injective _ (Prod.mk_right_injective _)]
   have := utu (filter_subset (G.Adj x) _) (filter_subset (G.Adj x) _) hY hZ
   have : ε ≤ G.edgeDensity {y ∈ t | G.Adj x y} {y ∈ u | G.Adj x y} := by
     rw [abs_sub_lt_iff] at this; linarith

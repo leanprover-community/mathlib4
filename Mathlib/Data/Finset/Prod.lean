@@ -207,12 +207,12 @@ theorem product_eq_empty {s : Finset α} {t : Finset β} : s ×ˢ t = ∅ ↔ s 
 
 @[simp]
 theorem singleton_product {a : α} :
-    ({a} : Finset α) ×ˢ t = t.map ⟨Prod.mk a, Prod.mk_left_injective _⟩ := by
+    ({a} : Finset α) ×ˢ t = t.map ⟨Prod.mk a, Prod.mk_right_injective _⟩ := by
   ext ⟨x, y⟩
   simp [and_left_comm, eq_comm]
 
 @[simp]
-lemma product_singleton : s ×ˢ {b} = s.map ⟨fun i => (i, b), Prod.mk_right_injective _⟩ := by
+lemma product_singleton : s ×ˢ {b} = s.map ⟨fun i => (i, b), Prod.mk_left_injective _⟩ := by
   ext ⟨x, y⟩
   simp [and_left_comm, eq_comm]
 

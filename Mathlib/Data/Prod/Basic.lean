@@ -65,26 +65,25 @@ theorem mk_inj {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b₂) �
 
 @[deprecated (since := "2025-03-06")] alias mk.inj_iff := mk_inj
 
-theorem mk_left_injective {α β : Type*} (a : α) : Function.Injective (Prod.mk a : β → α × β) := by
+theorem mk_right_injective {α β : Type*} (a : α) : (mk a : β → α × β).Injective := by
   intro b₁ b₂ h
   simpa only [true_and, Prod.mk_inj, eq_self_iff_true] using h
 
-@[deprecated (since := "2025-03-06")] alias mk.inj_left := mk_left_injective
+@[deprecated (since := "2025-03-06")] alias mk.inj_left := mk_right_injective
 
-theorem mk_right_injective {α β : Type*} (b : β) :
-    Function.Injective (fun a ↦ Prod.mk a b : α → α × β) := by
+theorem mk_left_injective {α β : Type*} (b : β) : (fun a ↦ mk a b : α → α × β).Injective := by
   intro b₁ b₂ h
   simpa only [and_true, eq_self_iff_true, mk_inj] using h
 
-@[deprecated (since := "2025-03-06")] alias mk.inj_right := mk_right_injective
+@[deprecated (since := "2025-03-06")] alias mk.inj_right := mk_left_injective
 
-lemma mk_left_inj {a : α} {b₁ b₂ : β} : (a, b₁) = (a, b₂) ↔ b₁ = b₂ := (mk_left_injective _).eq_iff
+lemma mk_right_inj {a : α} {b₁ b₂ : β} : (a, b₁) = (a, b₂) ↔ b₁ = b₂ :=
+    (mk_right_injective _).eq_iff
 
-lemma mk_right_inj {a₁ a₂ : α} {b : β} : (a₁, b) = (a₂, b) ↔ a₁ = a₂ :=
-  (mk_right_injective _).eq_iff
+lemma mk_left_inj {a₁ a₂ : α} {b : β} : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk_left_injective _).eq_iff
 
-@[deprecated (since := "2025-03-06")] alias mk_inj_left := mk_left_inj
-@[deprecated (since := "2025-03-06")] alias mk_inj_right := mk_right_inj
+@[deprecated (since := "2025-03-06")] alias mk_inj_left := mk_right_inj
+@[deprecated (since := "2025-03-06")] alias mk_inj_right := mk_left_inj
 
 theorem map_def {f : α → γ} {g : β → δ} : Prod.map f g = fun p : α × β ↦ (f p.1, g p.2) :=
   funext fun p ↦ Prod.ext (map_fst f g p) (map_snd f g p)
