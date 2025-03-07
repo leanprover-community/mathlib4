@@ -581,7 +581,7 @@ def starInitial : Limits.IsInitial (star : WithInitial C) :=
 
 instance : Limits.HasInitial (WithInitial C) := Limits.hasInitial_of_unique star
 
-/-- The isomorphism between star and an abstract terminal object of `WithTerminal C` -/
+/-- The isomorphism between star and an abstract initial object of `WithInitial C` -/
 @[simps!]
 noncomputable def starIsoInitial : star ≅ ⊥_ (WithInitial C) :=
     starInitial.uniqueUpToIso (Limits.initialIsInitial)
