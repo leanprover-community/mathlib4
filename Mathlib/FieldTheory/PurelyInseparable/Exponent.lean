@@ -324,8 +324,8 @@ noncomputable def iterateFrobeniusₛₗ {n : ℕ} (hn : exponent K L ≤ n) :
 
 /-- Action of `iterateFrobeniusₛₗ` on the top field. -/
 theorem iterateFrobeniusₛₗ_algebraMap_top {n : ℕ} (hn : exponent K L ≤ n) (a : L) :
-    algebraMap K L (iterateFrobeniusₛₗ F K L p hn a) = a ^ p ^ n := by
-  simpa using iterateFrobeniusAux_algebraMap K p hn a
+    algebraMap K L (iterateFrobeniusₛₗ F K L p hn a) = a ^ p ^ n :=
+  iterateFrobenius_algebraMap_top K p hn a
 
 /-- Action of `iterateFrobeniusₛₗ` on the bottom field. -/
 theorem iterateFrobeniusₛₗ_algebraMap_bot {n : ℕ} (hn : exponent K L ≤ n) (a : K) :
