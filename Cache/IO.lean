@@ -432,7 +432,7 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
       return .error s!"Invalid argument: non-existing path {arg}"
     if arg.extension == "lean" then
       -- (3.) provided existing `.lean` file
-      return .ok #[(mod, argₛ)]
+      return .ok #[(mod, arg)]
     else
       -- (4.) provided existing directory: walk it
       return .error "Searching lean files in a folder is not supported yet!"
