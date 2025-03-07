@@ -161,7 +161,6 @@ The polar coordinate partial homeomorphism between the mixed space `ℝ^r₁ × 
 protected noncomputable def polarCoord : PartialHomeomorph (mixedSpace K) (realMixedSpace K) :=
   (PartialHomeomorph.refl _).prod (PartialHomeomorph.pi fun _ ↦ Complex.polarCoord)
 
-
 theorem polarCoord_target_eq_polarCoordReal_target :
     (mixedEmbedding.polarCoord K).target = (polarCoordReal K).target := rfl
 
