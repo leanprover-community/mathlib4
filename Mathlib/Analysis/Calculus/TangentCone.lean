@@ -39,9 +39,9 @@ open scoped Topology Pointwise
 section Defs
 
 /-- The set of all tangent directions to the set `s` at the point `x`. -/
-def tangentConeAt (𝕜 : Type*) {E : Type*} [AddCommGroup E] [SMul 𝕜 E] [TopologicalSpace E]
+def tangentConeAt (𝕜 : Type*) {E : Type*} [AddCommMonoid E] [SMul 𝕜 E] [TopologicalSpace E]
     (s : Set E) (x : E) : Set E :=
-  { y : E | MapClusterPt y ((⊤ : Filter 𝕜) ×ˢ 𝓝[-x +ᵥ s] 0) (· • ·).uncurry }
+  {y : E | MapClusterPt y ((⊤ : Filter 𝕜) ×ˢ 𝓝[(x + ·) ⁻¹' s] 0) (· • ·).uncurry}
 
 variable (𝕜 : Type*) [Semiring 𝕜] {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 
@@ -65,15 +65,16 @@ def UniqueDiffOn (s : Set E) : Prop :=
 
 end Defs
 
-variable {𝕜}
-variable {E : Type v} {F G : Type*}
+variable {𝕜 E F G : Type*}
 
 section TangentCone
 
-section AddCommGroup
+section SMul
 
-variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-variable {x y : E} {s t : Set E}
+variable [AddCommMonoid E] [SMul 𝕜 E] [TopologicalSpace E] {s t : Set E} {x y : E}
+
+theorem isClosed_tangentConeAt : IsClosed (tangentConeAt 𝕜 s x) :=
+  isClosed_setOf_clusterPt
 
 theorem mem_tangentConeAt_of_seq {α : Type*} {l : Filter α} [l.NeBot] {c : α → 𝕜} {d : α → E}
     (hd₀ : Tendsto d l (𝓝 0)) (hd : ∀ᶠ n in l, x + d n ∈ s)
@@ -82,83 +83,144 @@ theorem mem_tangentConeAt_of_seq {α : Type*} {l : Filter α} [l.NeBot] {c : α 
     (by simpa [comp_def] using hcd.mapClusterPt)
   simpa [← preimage_vadd] using hd
 
-theorem mem_tangentConeAt_of_pow_smul {r : 𝕜} (hr₀ : r ≠ 0) (hr : ‖r‖ < 1)
-    (hs : ∀ᶠ n : ℕ in atTop, x + r ^ n • y ∈ s) : y ∈ tangentConeAt 𝕜 s x := by
-  apply mem_tangentConeAt_of_seq _ hs
-  
-
-@[simp]
-theorem tangentCone_univ : tangentConeAt 𝕜 univ x = univ :=
-  eq_univ_of_forall fun _ ↦
-    mem_tangentConeAt_of_add_smul_mem tendsto_id (by simp) tendsto_const_nhds
-
 @[gcongr]
-theorem tangentCone_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := fun y hys ↦
-  hys.mono <| by gcongr
+theorem tangentConeAt_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x :=
+  fun y hy ↦ hy.mono <| by gcongr
 
-end AddCommGroup
+@[deprecated (since := "2025-03-06")]
+alias tangentCone_mono := tangentConeAt_mono
 
-section TVS
-
-variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousSMul 𝕜 E]
-
-/-- Auxiliary lemma ensuring that, under the assumptions defining the tangent cone,
-the sequence `d` tends to 0 at infinity. -/
-theorem tangentConeAt.lim_zero {α : Type*} (l : Filter α) {c : α → 𝕜} {d : α → E} {y : E}
-    (hc : Tendsto c l (cobounded 𝕜)) (hd : Tendsto (fun n => c n • d n) l (𝓝 y)) :
-    Tendsto d l (𝓝 0) := by
-  have : ∀ᶠ n in l, (c n)⁻¹ • c n • d n = d n := by
-    filter_upwards [hc.eventually_ne_cobounded 0] with n hn using inv_smul_smul₀ hn _
-  simpa only [zero_smul] using (tendsto_inv₀_cobounded.comp hc |>.smul hd).congr' this
-
-variable [ContinuousAdd E] {x y : E} {s t : Set E}
-
-theorem exists_fun_of_mem_tangentConeAt (h : y ∈ tangentConeAt 𝕜 s x) :
-    ∃ (α : Type (max u v)) (l : Filter α) (c : α → 𝕜) (d : α → E),
-      NeBot l ∧ Tendsto c l (cobounded 𝕜) ∧ Tendsto (x + d ·) l (𝓝[s] x) ∧
-        Tendsto (fun n ↦ c n • d n) l (𝓝 y) := by
-  set L := comap (fun (c, d) ↦ c • (d - x)) (𝓝 y) ⊓ (cobounded 𝕜 ×ˢ 𝓟 s)
-  have hL₁ : Tendsto (·.1) L (cobounded 𝕜) := tendsto_fst.mono_left inf_le_right
-  have hL₂ : Tendsto (fun (c, d) ↦ c • (d - x)) L (𝓝 y) := tendsto_comap.mono_left inf_le_left
-  use 𝕜 × E, L, Prod.fst, (·.2 - x)
-  use ?_, hL₁, ?_, hL₂
-  · simpa only [L, neBot_inf_comap_iff_map', mem_tangentConeAt_iff_mapClusterPt] using h
-  · refine tendsto_inf.2 ⟨?_, ?_⟩
-    · simpa only [add_zero] using tendsto_const_nhds.add (tangentConeAt.lim_zero _ hL₁ hL₂)
-    · simpa only [add_sub_cancel] using tendsto_snd.mono_left inf_le_right
-
-theorem mem_tangentConeAt_iff_mapClusterPt_nhdsWithin : y ∈ tangentConeAt 𝕜 s x ↔
-    MapClusterPt y (cobounded 𝕜 ×ˢ 𝓝[s] x) fun (c, d) ↦ c • (d - x) := by
-  constructor <;> intro h
-  · rcases exists_fun_of_mem_tangentConeAt h with ⟨α, l, c, d, hl, hc, hd, hy⟩
-    refine .of_comp (hc.prod_mk hd) (Tendsto.mapClusterPt ?_)
-    simpa [comp_def] using hy
+variable [ContinuousAdd E]
 
 theorem tangentConeAt_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
     tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
-  intro y
-  simp only [mem_tangentConeAt_iff_mapClusterPt_nhdsWithin]
-  exact fun hy ↦ hy.mono (by gcongr)
+  refine fun y hy ↦ hy.mono ?_
+  gcongr _ ×ˢ ?_
+  refine le_inf inf_le_left <| ?_
+  rw [le_principal_iff]
+  have : Tendsto (x + ·) (𝓝 0) (𝓝 x) :=
+    Continuous.tendsto' (by fun_prop) _ _ (by simp)
+  exact this.inf (mapsTo_preimage _ _).tendsto <| h self_mem_nhdsWithin
 
-@[deprecated (since := "2025-01-30")]
+@[deprecated (since := "2025-03-06")]
 alias tangentCone_mono_nhds := tangentConeAt_mono_nhds
 
 /-- Tangent cone of `s` at `x` depends only on `𝓝[s] x`. -/
 theorem tangentConeAt_congr (h : 𝓝[s] x = 𝓝[t] x) : tangentConeAt 𝕜 s x = tangentConeAt 𝕜 t x :=
   (tangentConeAt_mono_nhds h.le).antisymm (tangentConeAt_mono_nhds h.ge)
 
-@[deprecated (since := "2025-01-30")]
+@[deprecated (since := "2025-03-06")]
 alias tangentCone_congr := tangentConeAt_congr
 
 /-- Intersecting with a neighborhood of the point does not change the tangent cone. -/
 theorem tangentConeAt_inter_nhds (ht : t ∈ 𝓝 x) : tangentConeAt 𝕜 (s ∩ t) x = tangentConeAt 𝕜 s x :=
   tangentConeAt_congr (nhdsWithin_restrict' _ ht).symm
 
-@[deprecated (since := "2025-01-30")]
+@[deprecated (since := "2025-03-06")]
 alias tangentCone_inter_nhds := tangentConeAt_inter_nhds
 
-end TVS
+theorem mem_closure_of_tangentConeAt_nonempty (h : (tangentConeAt 𝕜 s x).Nonempty) :
+    x ∈ closure s := by
+  rcases h with ⟨y, hy⟩
+  have : 0 ∈ closure ((x + ·) ⁻¹' s) := by
+    have := hy.neBot.mono inf_le_right
+    simp_all [mem_closure_iff_nhdsWithin_neBot]
+  simpa using map_mem_closure (by fun_prop) this (mapsTo_preimage _ _)
 
+theorem tangentConeAt_of_not_mem_closure (h : x ∉ closure s) : tangentConeAt 𝕜 s x = ∅ := by
+  contrapose! h
+  exact mem_closure_of_tangentConeAt_nonempty h
+
+end SMul
+
+section AddCommMonoid
+
+variable [Semiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] {s : Set E} {x : E}
+
+@[simp]
+theorem tangentConeAt_univ [TopologicalSpace 𝕜] [NeBot (𝓝[{c | IsUnit c}] (0 : 𝕜))]
+    [ContinuousSMul 𝕜 E] : tangentConeAt 𝕜 univ x = univ := by
+  refine eq_univ_of_forall fun y ↦ ?_
+  set l := 𝓝[{c | IsUnit c}] (0 : 𝕜)
+  have hd : Tendsto (fun c : 𝕜 ↦ c • y) l (𝓝 0) :=
+    .mono_left (Continuous.tendsto' (by fun_prop) _ _ (zero_smul _ y)) nhdsWithin_le_nhds
+  have hcd : Tendsto (fun c : 𝕜 ↦ Ring.inverse c • c • y) l (𝓝 y) :=
+    tendsto_const_nhds.congr' <| eventually_mem_nhdsWithin.mono fun c hc ↦ by
+      simp [smul_smul, Ring.inverse_mul_cancel c hc]
+  exact mem_tangentConeAt_of_seq hd (by simp) hcd
+
+@[deprecated (since := "2025-03-06")]
+alias tangentCone_univ := tangentConeAt_univ
+
+variable [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F] {t : Set F} {y : F}
+
+/-- If a continuous linear map maps `s` to `t`,
+then it maps the tangent cone of `s` at `x` to the tangent coen of `t` at `f x`. -/
+theorem mapsTo_tangentConeAt (f : E →L[𝕜] F) (h : MapsTo f s t) :
+    MapsTo f (tangentConeAt 𝕜 s x) (tangentConeAt 𝕜 t (f x)) := by
+  intro z hz
+  refine .of_comp (φ := Prod.map id f) ?_ <|
+    ((hz.out.tendsto_comp f.continuous.continuousAt)).congrFun <| .of_forall <| by simp
+  refine tendsto_id.prod_map <| .inf (f.continuous.tendsto' _ _ (map_zero f)) ?_
+  rw [tendsto_principal_principal]
+  intro a ha
+  simpa using h ha
+
+/-- The tangent cone of a product contains the tangent cone of its left factor.
+
+This version assumes that `0` belongs to the closure of `{z | y + z ∈ t}`.
+For a version assuming `y ∈ closure t`, see `mapsTo_inl_tangentConeAt` below. -/
+theorem mapsTo_inl_tangentConeAt' [ContinuousConstSMul 𝕜 F] {t : Set F} {y : F}
+    (ht : 0 ∈ closure ((y + ·) ⁻¹' t)) :
+    Set.MapsTo (LinearMap.inl 𝕜 E F) (tangentConeAt 𝕜 s x) (tangentConeAt 𝕜 (s ×ˢ t) (x, y)) := by
+  intro z hz
+  refine ((basis_sets _).prod_nhds (basis_sets _)).mapClusterPt_iff_frequently.mpr ?_
+  rintro ⟨U, V⟩ ⟨hzU : U ∈ 𝓝 z, hV₀ : V ∈ 𝓝 0⟩
+  have : ⊤ ×ˢ 𝓝[((x, y) + ·) ⁻¹' s ×ˢ t] 0 =
+      map (Equiv.prodAssoc 𝕜 E F) ((⊤ ×ˢ 𝓝[(x + ·) ⁻¹' s] 0) ×ˢ 𝓝[(y + ·) ⁻¹' t] 0) := by
+    rw [Filter.prod_assoc, ← nhdsWithin_prod_eq]
+    rfl
+  rw [this, frequently_map]
+  apply Frequently.of_curry
+  refine (hz.out.frequently (eventually_mem_set.mpr hzU)).mono ?_
+  suffices ∀ a : 𝕜, ∃ᶠ c in 𝓝[(y + ·) ⁻¹' t] 0, a • c ∈ V by simp [this]
+  intro a
+  rw [frequently_nhdsWithin_iff]
+  refine Eventually.and_frequently ?_ (mem_closure_iff_frequently.mp ht)
+  exact Continuous.tendsto' (by fun_prop) 0 0 (smul_zero a) hV₀
+  
+end AddCommMonoid
+
+section AddCommGroup
+
+variable [Semiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] {s : Set E} {x : E}
+
+@[simp]
+theorem tangentConeAt_closure [ContinuousConstSMul 𝕜 E] [ContinuousAdd E] (s : Set E) (x : E) :
+    tangentConeAt 𝕜 (closure s) x = tangentConeAt 𝕜 s x := by
+  refine Subset.antisymm ?_ (tangentConeAt_mono subset_closure)
+  intro y hy
+  simp only [tangentConeAt, mem_setOf_eq, (nhds_basis_opens _).mapClusterPt_iff_frequently,
+    top_prod, frequently_comap, frequently_nhdsWithin_iff, Prod.exists, exists_eq_left, uncurry,
+    mem_preimage, (nhds_basis_opens _).frequently_iff] at hy ⊢
+  rintro U ⟨hyU, hUo⟩ V ⟨hV₀, hVo⟩
+  rcases hy U ⟨hyU, hUo⟩ V ⟨hV₀, hVo⟩ with ⟨z, hzV, ⟨c, hcU⟩, hzs⟩
+  have : ∀ᶠ w in 𝓝 (x + z), c • (-x + w) ∈ U ∧ -x + w ∈ V := by
+    apply Eventually.and
+    · exact Continuous.tendsto' (by fun_prop) _ _ (by simp) |>.eventually (hUo.mem_nhds hcU)
+    · exact Continuous.tendsto' (by fun_prop) _ _ (by simp) |>.eventually (hVo.mem_nhds hzV)
+  rcases mem_closure_iff_nhds.mp hzs _ this with ⟨w, ⟨hwU, hwV⟩, hws⟩
+  refine ⟨-x + w, hwV, ⟨c, hwU⟩, ?_⟩
+  simpa
+
+variable [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] {t : Set F} {y : F}
+
+theorem mapsTo_inl_tangentConeAt (hy : y ∈ closure t) :
+    MapsTo (·, 0) (tangentConeAt 𝕜 s x) (tangentConeAt 𝕜 (s ×ˢ t) (x, y)) := by
+  intro z hz
+  
+
+end AddCommGroup
 
 section Normed
 variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
