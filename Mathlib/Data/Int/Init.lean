@@ -64,7 +64,7 @@ protected lemma neg_nonneg : 0 ≤ -a ↔ a ≤ 0 := ⟨Int.nonpos_of_neg_nonneg
 @[simp, nolint simpNF]
 protected lemma neg_neg_iff_pos : -a < 0 ↔ 0 < a := ⟨Int.pos_of_neg_neg, Int.neg_neg_of_pos⟩
 
-@[deprecated (since := "2025-03-07")] alias neg_nonpos_iff_nonneg := neg_nonpos_iff
+@[deprecated (since := "2025-03-07")] alias neg_nonpos_iff_nonneg := Int.neg_nonpos_iff
 
 @[simp, nolint simpNF]
 protected lemma sub_pos : 0 < a - b ↔ b < a := ⟨Int.lt_of_sub_pos, Int.sub_pos_of_lt⟩
