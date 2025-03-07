@@ -19,7 +19,7 @@ import Mathlib.LinearAlgebra.Finsupp.Supported
   `v i` with coefficients `l i` (for a finite type `ι`)
 
 * `Finsupp.bilinearCombination R S`, `Fintype.bilinearCombination R S`:
-a bilinear bersion of `Finsupp.linearCombination` and `Fintype.linearCombination`.
+  a bilinear version of `Finsupp.linearCombination` and `Fintype.linearCombination`.
 
 ## Tags
 
@@ -263,12 +263,9 @@ def bilinearCombination : (α → M) →ₗ[S] (α →₀ R) →ₗ[R] M where
   map_add' u v := by ext; simp [Finset.sum_add_distrib, Pi.add_apply, smul_add]
   map_smul' r v := by ext; simp [Finset.smul_sum, smul_comm]
 
-theorem bilinearCombination_apply_eq_linearCombination :
+@[simp]
+theorem bilinearCombination_apply :
     bilinearCombination R S v = linearCombination R v :=
-  rfl
-
-theorem bilinearCombination_apply (f) :
-    bilinearCombination R S v f = f.sum fun i c ↦ c • v i := by
   rfl
 
 variable (α M)
@@ -300,10 +297,10 @@ in `f`. This variant of `Finsupp.linearCombination` is defined on fintype indexe
 This map is linear in `v` if `R` is commutative, and always linear in `f`.
 See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
 -/
-protected def Fintype.linearCombination : ((α → R) →ₗ[R] M) where
-    toFun := fun f => ∑ i, f i • v i
-    map_add' := fun f g => by simp_rw [← Finset.sum_add_distrib, ← add_smul]; rfl
-    map_smul' := fun r f => by simp_rw [Finset.smul_sum, smul_smul]; rfl
+protected def Fintype.linearCombination : (α → R) →ₗ[R] M where
+  toFun f := ∑ i, f i • v i
+  map_add' f g := by simp_rw [← Finset.sum_add_distrib, ← add_smul]; rfl
+  map_smul' r f := by simp_rw [Finset.smul_sum, smul_smul]; rfl
 
 theorem Fintype.linearCombination_apply (f) : Fintype.linearCombination R v f = ∑ i, f i • v i :=
   rfl
@@ -348,7 +345,8 @@ protected def Fintype.bilinearCombination : (α → M) →ₗ[S] (α → R) →�
 
 variable {S}
 
-theorem Fintype.bilinearCombination_apply_eq_linearCombination :
+@[simp]
+theorem Fintype.bilinearCombination_apply :
     Fintype.bilinearCombination R S v = Fintype.linearCombination R v :=
   rfl
 
