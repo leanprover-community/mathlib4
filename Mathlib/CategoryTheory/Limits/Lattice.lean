@@ -24,6 +24,7 @@ variable {α : Type u} {J : Type w} [Category J] [FinCategory J]
 
 /-- The limit cone over any functor from a finite diagram into a `SemilatticeInf` with `OrderTop`.
 -/
+@[simps]
 def finiteLimitCone [SemilatticeInf α] [OrderTop α] (F : J ⥤ α) : LimitCone F where
   cone :=
     { pt := Finset.univ.inf F.obj
@@ -33,6 +34,7 @@ def finiteLimitCone [SemilatticeInf α] [OrderTop α] (F : J ⥤ α) : LimitCone
 /--
 The colimit cocone over any functor from a finite diagram into a `SemilatticeSup` with `OrderBot`.
 -/
+@[simps]
 def finiteColimitCocone [SemilatticeSup α] [OrderBot α] (F : J ⥤ α) : ColimitCocone F where
   cocone :=
     { pt := Finset.univ.sup F.obj
@@ -161,6 +163,7 @@ variable {α : Type u} [CompleteLattice α] {J : Type w} [Category.{w'} J]
 
 /-- The limit cone over any functor into a complete lattice.
 -/
+@[simps]
 def limitCone (F : J ⥤ α) : LimitCone F where
   cone :=
     { pt := iInf F.obj
@@ -171,6 +174,7 @@ def limitCone (F : J ⥤ α) : LimitCone F where
 
 /-- The colimit cocone over any functor into a complete lattice.
 -/
+@[simps]
 def colimitCocone (F : J ⥤ α) : ColimitCocone F where
   cocone :=
     { pt := iSup F.obj
@@ -179,8 +183,6 @@ def colimitCocone (F : J ⥤ α) : ColimitCocone F where
     { desc := fun s =>
         homOfLE (CompleteLattice.sSup_le _ _ (by rintro _ ⟨j, rfl⟩; exact (s.ι.app j).le)) }
 
--- It would be nice to only use the `Inf` half of the complete lattice, but
--- this seems not to have been described separately.
 -- see Note [lower instance priority]
 instance (priority := 100) hasLimits_of_completeLattice : HasLimitsOfSize.{w, w'} α where
   has_limits_of_shape _ := { has_limit := fun F => HasLimit.mk (limitCone F) }
