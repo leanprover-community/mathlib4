@@ -68,6 +68,8 @@ as special cases of a notion of sub-Gaussianity with respect to a kernel and a m
 
 ## Implementation notes
 
+### Definition of `Kernel.HasSubgaussianMGF`
+
 The definition of sub-Gaussian with respect to a kernel and a measure is the following:
 ```
 structure Kernel.HasSubgaussianMGF (X : Ω → ℝ) (c : ℝ≥0)
@@ -82,6 +84,21 @@ the sum of two sub-Gaussian random variables.
 
 Fo the conditional case, that integrability condition reduces to integrability of `exp (t * X)`
 with respect to `μ`.
+
+### Definition of `HasCondSubgaussianMGF`
+
+We define `HasCondSubgaussianMGF` as a special case of `Kernel.HasSubgaussianMGF` with the
+conditional expectation kernel for `m`, `condExpKernel μ m`, and the restriction of `μ` to `m`,
+`μ.trim hm` (where `hm` states that `m` is a sub-sigma-algebra).
+Note that `condExpKernel μ m ∘ₘ μ.trim hm = μ`. The definition is equivalent to the two
+conditions
+* for all `t`, `exp (t * X)` is `μ`-integrable,
+* for `μ.trim hm`-almost all `ω`, for all `t`, the mgf with respect to the the conditional
+  distribution `condExpKernel μ m ω` is bounded by `exp (c * t ^ 2 / 2)`.
+
+For any `t`, we can write the mgf of `X` with respect to the conditional expectation kernel as
+a conditional expectation, `(μ.trim hm)`-almost surely:
+`mgf X (condExpKernel μ m ·) t =ᵐ[μ.trim hm] μ[fun ω' ↦ exp (t * X ω') | m]`.
 
 ## References
 
