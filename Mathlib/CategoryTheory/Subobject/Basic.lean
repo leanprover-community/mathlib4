@@ -549,17 +549,10 @@ theorem pullback_obj_mk {A B X Y : C} {f : Y ⟶ X} {i : A ⟶ X} [Mono i]
 
 theorem pullback_obj {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
     (pullback f).obj x = mk (pullback.snd x.arrow f) := by
-  obtain ⟨Z, ⟨i, ⟨_, hx⟩⟩⟩ := mk_surjective x
-  let i' := (mk i).arrow
-  have h := IsPullback.of_hasPullback i f
-  have h' : IsPullback (pullback.fst i' f ≫ (underlyingIso i).hom) (pullback.snd i' f) i f :=
-    IsPullback.of_iso (IsPullback.of_hasPullback i' f)
-      (Iso.refl _) (underlyingIso i) (Iso.refl _) (Iso.refl _)
-      (by simp) (by simp) (by simp [i']) (by simp)
-  let iso := IsPullback.isoIsPullback _ _ h h'
-  rw [hx, pullback_obj_mk h]
-  apply mk_eq_mk_of_comm (pullback.snd i f) (pullback.snd (mk i).arrow f) iso
-  simp [iso, i']
+  obtain ⟨Z, i, _, rfl⟩ := mk_surjective x
+  rw [pullback_obj_mk (IsPullback.of_hasPullback i f)]
+  exact mk_eq_mk_of_comm _ _ (asIso (pullback.map i f (mk i).arrow f
+    (underlyingIso i).inv (𝟙 _) (𝟙 _) (by simp) (by simp))) (by simp)
 
 instance (f : X ⟶ Y) : (pullback f).Faithful where
 
