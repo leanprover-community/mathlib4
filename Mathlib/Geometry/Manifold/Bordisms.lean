@@ -200,41 +200,38 @@ variable {k : WithTop ℕ∞}
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {I : ModelWithCorners ℝ E H} [IsManifold I k M]
-  --{M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
-  --/-{I' : ModelWithCorners ℝ E H}-/ [IsManifold I k M']
-  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
-  /-{I'' : ModelWithCorners ℝ E H}-/ [IsManifold I k M''] {n : ℕ}
+  -- {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
+  -- /-{I' : ModelWithCorners ℝ E H}-/ [IsManifold I k M']
+  -- {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
+  -- /-{I'' : ModelWithCorners ℝ E H}-/ [IsManifold I k M'']
   [CompactSpace M] [BoundarylessManifold I M]
   --[CompactSpace M'] [BoundarylessManifold I M'] [CompactSpace M''] [BoundarylessManifold I M'']
   [CompactSpace M] [FiniteDimensional ℝ E]
   --[CompactSpace M'] [FiniteDimensional ℝ E'] [CompactSpace M''] [FiniteDimensional ℝ E'']
 
-omit [FiniteDimensional ℝ E] -- speculative!
-
 variable (k) in
 /-- An **unoriented cobordism** between two singular `n`-manifolds `(M,f)` and `(N,g)` on `X`
 is a compact smooth `n`-manifold `W` with a continuous map `F: W → X`
 whose boundary is diffeomorphic to the disjoint union `M ⊔ N` such that `F` restricts to `f`
-resp. `g` in the obvious way. -/
-structure UnorientedCobordism.{v, w, x} (s : SingularNManifold X k I) (t : SingularNManifold X k I) where
-  /-- TODO! -/
+resp. `g` in the obvious way.
+
+We prescribe the model with corners of the underlying manifold `W` as part of this type,
+as glueing arguments require matching models to work. -/
+structure UnorientedCobordism.{v} (s : SingularNManifold X k I) (t : SingularNManifold X k I)
+    (J : ModelWithCorners ℝ E' H') where
+  /-- The underlying compact manifold of this unoriented cobordism -/
   W : Type v
   /-- The manifold `W` is a topological space. -/
   [topologicalSpace: TopologicalSpace W]
   [compactSpace : CompactSpace W]
-  E' : Type w
-  [normedAddCommGroup: NormedAddCommGroup E']
-  [normedSpace : NormedSpace ℝ E']
-  H' : Type x
-  [topologicalSpaceH : TopologicalSpace H']
   /-- The manifold `W` is a charted space over `H'`. -/
   [chartedSpace: ChartedSpace H' W]
-  /-- TODO! -/
-  J : ModelWithCorners ℝ E' H'
   [isManifold: IsManifold J k W]
-  /-- TODO! -/
+  /-- The presentation of the boundary `W` as a smooth manifold -/
+  -- Future: we could allow bd.M₀ to be modelled on some other model, not necessarily I:
+  -- we only care that this is fixed in the type.
   bd: BoundaryManifoldData W J k I
-  /-- TODO! -/
+  /-- A continuous map `W → X` of the cobordism into the topological space we work on -/
   F : W → X
   hF : Continuous F
   /-- The boundary of `W` is diffeomorphic to the disjoint union `M ⊔ M'`. -/
@@ -249,31 +246,21 @@ structure UnorientedCobordism.{v, w, x} (s : SingularNManifold X k I) (t : Singu
 
 namespace UnorientedCobordism
 
-variable {s t : SingularNManifold X k I}
+variable {s t u : SingularNManifold X k I} {J : ModelWithCorners ℝ E' H'}
 
-instance (φ : UnorientedCobordism k s t) : TopologicalSpace φ.W := φ.topologicalSpace
+instance (φ : UnorientedCobordism k s t J) : TopologicalSpace φ.W := φ.topologicalSpace
 
-instance (φ : UnorientedCobordism k s t) : CompactSpace φ.W := φ.compactSpace
+instance (φ : UnorientedCobordism k s t J) : CompactSpace φ.W := φ.compactSpace
 
-instance (φ : UnorientedCobordism k s t) : NormedAddCommGroup φ.E' := φ.normedAddCommGroup
+instance (φ : UnorientedCobordism k s t J) : ChartedSpace H' φ.W := φ.chartedSpace
 
-instance (φ : UnorientedCobordism k s t) : NormedSpace ℝ φ.E' := φ.normedSpace
+instance (φ : UnorientedCobordism k s t J) : IsManifold J k φ.W := φ.isManifold
 
-instance (φ : UnorientedCobordism k s t) : TopologicalSpace φ.H' := φ.topologicalSpaceH
-
-instance (φ : UnorientedCobordism k s t) : ChartedSpace φ.H' φ.W := φ.chartedSpace
-
-instance (φ : UnorientedCobordism k s t) : IsManifold φ.J k φ.W := φ.isManifold
-
--- issues inferring H' and E'?
 variable (s) in
-def refl : UnorientedCobordism k s s where--:= sorry
+def refl : UnorientedCobordism k s s (I.prod (𝓡∂ 1)) where
   W := s.M × (Set.Icc (0 : ℝ) 1)
-  H' := ModelProd H (EuclideanHalfSpace 1)
-  E' := E × (EuclideanSpace ℝ (Fin 1))
-  J := I.prod (𝓡∂ 1)
-  -- TODO: need more sophisticated boundary data, modelled on *I* and not I x ℝ!
-  bd := sorry --BoundaryManifoldData.prod_of_boundaryless_left s.M I (BoundaryManifoldData.Icc k)
+  -- TODO: I want boundary data modelled on I, not I × (∂[0,1])
+  bd := sorry -- BoundaryManifoldData.prod_of_boundaryless_left s.M I (BoundaryManifoldData.Icc k)
   F := s.f ∘ (fun p ↦ p.1)
   hF := s.hf.comp continuous_fst
   φ := sorry
@@ -281,8 +268,7 @@ def refl : UnorientedCobordism k s s where--:= sorry
   hFg := sorry
 
 /-- Being cobordant is symmetric. -/
-def symm (φ : UnorientedCobordism k s t) : UnorientedCobordism k t s where
-  J := φ.J
+def symm (φ : UnorientedCobordism k s t J) : UnorientedCobordism k t s J where
   bd := φ.bd
   F := φ.F
   hF := φ.hF
@@ -292,7 +278,7 @@ def symm (φ : UnorientedCobordism k s t) : UnorientedCobordism k t s where
 
 -- TODO: this requires proving the collar neighbourhood theorem, i.e. is a lot of work
 /-- Being cobordant is transitive. -/
-def trans {u : SingularNManifold X k I} (φ : UnorientedCobordism k s t) :
-  UnorientedCobordism k t u := sorry
+def trans (φ : UnorientedCobordism k s t J) (ψ : UnorientedCobordism k t u J) :
+  UnorientedCobordism k t u J := sorry
 
 end UnorientedCobordism
