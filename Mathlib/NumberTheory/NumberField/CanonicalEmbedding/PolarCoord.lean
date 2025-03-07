@@ -76,7 +76,7 @@ the first component and mapping `(rᵢ cos θᵢ, rᵢ sin θᵢ)ᵢ` to `(rᵢ,
 -/
 @[simps! apply target]
 def polarCoordReal : PartialHomeomorph (realMixedSpace K) (realMixedSpace K) :=
-  ((PartialHomeomorph.refl _).prod (PartialHomeomorph.pi fun _ ↦ polarCoord))
+  (PartialHomeomorph.refl _).prod (PartialHomeomorph.pi fun _ ↦ polarCoord)
 
 theorem measurable_polarCoordReal_symm :
     Measurable (polarCoordReal K).symm := by
@@ -160,6 +160,7 @@ The polar coordinate partial homeomorphism between the mixed space `ℝ^r₁ × 
 @[simps!]
 protected noncomputable def polarCoord : PartialHomeomorph (mixedSpace K) (realMixedSpace K) :=
   (PartialHomeomorph.refl _).prod (PartialHomeomorph.pi fun _ ↦ Complex.polarCoord)
+
 
 theorem polarCoord_target_eq_polarCoordReal_target :
     (mixedEmbedding.polarCoord K).target = (polarCoordReal K).target := rfl
