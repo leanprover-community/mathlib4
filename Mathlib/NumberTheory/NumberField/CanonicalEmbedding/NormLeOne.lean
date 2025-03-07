@@ -17,18 +17,18 @@ Mainly, we prove that this is bounded, its frontier has volume zero and compute 
 
 The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*][marcus1977number].
 
-* First, since `NormLeOne K` is norm-stable, in the sense that
+1. since `NormLeOne K` is norm-stable, in the sense that
   `normLeOne K = normAtAllPlaces⁻¹' (normAtAllPlaces '' (normLeOne K))`,
   see `normLeOne_eq_primeage_image`, it's enough to study the subset
   `normAtAllPlaces '' (normLeOne K)` of `realSpace K`.
 
-* A description of `normAtAllPlaces '' (normLeOne K)` is given by `normAtAllPlaces_normLeOne`, it is
+2. A description of `normAtAllPlaces '' (normLeOne K)` is given by `normAtAllPlaces_normLeOne`, it is
   the set of `x : realSpace K`, nonnegative at all places, whose norm is nonzero and `≤ 1` and such
   that `logMap x` is in the `fundamentalDomain` of `basisUnitLattice K`.
   Note that, here and elsewhere, we identify `x` with its image in `mixedSpace K` given
   by `mixedSpaceOfRealSpace x`.
 
-* In order to describe the inverse image in `realSpace K` of `fundamentalDomain` of
+3. In order to describe the inverse image in `realSpace K` of the `fundamentalDomain` of
   `basisUnitLattice K`, we define the map `expMap : realSpace K → realSpace K` that is, in
   some way, the right inverse of `logMap`, see `logMap_expMap`.
 
