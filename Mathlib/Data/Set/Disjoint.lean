@@ -144,3 +144,17 @@ theorem subset_right_of_subset_union (h : s ⊆ t ∪ u) (hab : Disjoint s t) : 
   hab.left_le_of_le_sup_left h
 
 end Disjoint
+
+theorem diff_union_diff_cancel_of_inter_subset_of_subset_union (hi : s ∩ u ⊆ t) (hu : t ⊆ s ∪ u) :
+    (s \ t) ∪ (t \ u) = s \ u := by
+  rw [← diff_eq_empty, inter_diff_right_comm, ← inter_eq_empty] at hi
+  simpa [subset_antisymm_iff, subset_diff, diff_subset_iff, disjoint_sdiff_left, union_comm u,
+    hu, union_assoc, ← union_assoc (a := s \ t)]
+
+@[simp]
+theorem diff_ssubset_left_iff : s \ t ⊂ s ↔ (s ∩ t).Nonempty :=
+  sdiff_lt_left.trans <| by rw [not_disjoint_iff_nonempty_inter, inter_comm]
+
+theorem _root_.HasSubset.Subset.diff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s.Nonempty) :
+    t \ s ⊂ t := by
+  simpa [inter_eq_self_of_subset_right hst]
