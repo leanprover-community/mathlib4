@@ -25,29 +25,27 @@ variable {R K : Type*}
 section Ring
 variable [Ring R] {p : ℕ} [CharP R p]
 
-theorem CharP.intCast_mul_natCast_gcdA {n : ℕ} (h : n.Coprime p) :
-    (n * n.gcdA p : R) = 1 := by
-  suffices ↑(n * n.gcdA p + p * n.gcdB p : ℤ) = (1 : R) by simpa using this
-  rw [← Nat.gcd_eq_gcd_ab, h, Nat.cast_one, Int.cast_one]
+theorem CharP.intCast_mul_natCast_gcdA_eq_gcd (n : ℕ) :
+    (n * n.gcdA p : R) = n.gcd p := by
+  suffices ↑(n * n.gcdA p + p * n.gcdB p : ℤ) = ((n.gcd p : ℤ) : R) by simpa using this
+  rw [← Nat.gcd_eq_gcd_ab]
 
-theorem CharP.natCast_gcdA_mul_intCast {n : ℕ} (h : n.Coprime p) :
-    (n.gcdA p * n : R) = 1 :=
-  Nat.commute_cast _ _ |>.eq.trans <| CharP.intCast_mul_natCast_gcdA h
+theorem CharP.natCast_gcdA_mul_intCast_eq_gcd (n : ℕ) :
+    (n.gcdA p * n : R) = n.gcd p :=
+  Nat.commute_cast _ _ |>.eq.trans <| CharP.intCast_mul_natCast_gcdA_eq_gcd n
 
 /-- In a ring of characteristic `p`, `(n : R)` is invertible when `n` is coprime with `p`, with
 inverse `n.gcdA p`. -/
 def invertibleOfCoprime {n : ℕ} (h : n.Coprime p) :
     Invertible (n : R) where
   invOf := n.gcdA p
-  invOf_mul_self := CharP.natCast_gcdA_mul_intCast h
-  mul_invOf_self := CharP.intCast_mul_natCast_gcdA h
+  invOf_mul_self := by rw [CharP.natCast_gcdA_mul_intCast_eq_gcd, h, Nat.cast_one]
+  mul_invOf_self := by rw [CharP.intCast_mul_natCast_gcdA_eq_gcd, h, Nat.cast_one]
 
 theorem invOf_eq_of_coprime {n : ℕ} [Invertible (n : R)] (h : n.Coprime p) :
     ⅟(n : R) = n.gcdA p := by
   letI : Invertible (n : R) := invertibleOfCoprime h
   convert (rfl : ⅟(n : R) = _)
-
--- TODO: are these true in terms of `Coprime` instead?
 
 theorem CharP.isUnit_natCast_iff {n : ℕ} (hp : p.Prime) : IsUnit (n : R) ↔ ¬p ∣ n where
   mp h := by
