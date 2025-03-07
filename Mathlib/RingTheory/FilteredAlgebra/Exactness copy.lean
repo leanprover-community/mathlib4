@@ -64,33 +64,31 @@ lemma Int.decreasingInduction' (m n : ℤ) {P : ℤ → Prop}
 
 omit [IsRingFiltration FS fun n ↦ FS <| n - 1] [IsRingFiltration FT fun n ↦ FT <| n - 1] in
 lemma Ggker_eq_Gfrange (Gexact : Function.Exact Gr[f] Gr[g]) (i : ℤ) :
-    Gr(i)[g].ker = Gr(i)[f].range := by
+    Gr(i)[g].ker = Set.range Gr(i)[f] := by
   ext u
   refine Iff.trans (Gf_zero_iff_of_in_ker g u) ?_
-
-  sorry
-  --  (Gf_zero_iff_of_in_ker g) ?_
-  -- rw[Function.Exact.addMonoidHom_ker_eq Gexact]
-  -- have (x : GradedPiece FR (fun n ↦ FR (n - 1)) i) : (of (GradedPiece FS fun n ↦ FS <| n - 1) i)
-  --     ((Gr[f] ((of (GradedPiece FR fun n ↦ FR <| n - 1) i) x)) i)
-  --     = Gr[f] ((of (GradedPiece FR fun n ↦ FR <| n - 1) i) x) := by
-  --   apply AssociatedGraded.ext_iff.mpr fun j ↦ ?_
-  --   by_cases ch : i = j
-  --   · rw[← ch, of_eq_same i ((Gr[f] ((of (GradedPiece FR fun n ↦ FR <| n - 1) i) x)) i)]
-  --   · rw[of_eq_of_ne i j ((Gr[f] ((of (GradedPiece FR fun n ↦ FR <| n - 1) i) x)) i) ch, G_to_Gf,
-  --       of_eq_of_ne i j x ch, map_zero]
-  -- exact ⟨fun ⟨x, hx⟩ ↦ ⟨x i, by rw[← G_to_Gf, hx, of_eq_same i u]⟩,
-  --   fun ⟨x, hx⟩ ↦ ⟨((of (GradedPiece FR fun n ↦ FR <| n - 1) i) x), by rw[← hx, Gof_eq_piece, this]⟩⟩
-
-
+  have := (Gf_in_range_iff_of_in_range f u).symm
+  exact Iff.trans (Gexact ((of (GradedPiece FS fun n ↦ FS (n - 1)) i) u)) this
 
 
 lemma induction_lemma (p s k: ℤ) (k_le : k ≤ p + s) (lt_k : p < k) (x : S) (xin : x ∈ FS k)
     (fg_exact : Function.Exact f.toRingHom g.toRingHom) (GfGg_exact : Function.Exact Gr[f] Gr[g]) :
     g.toRingHom x ∈ g.toRingHom '' (FS (k - 1)) := by
-  obtain⟨z₀, hz₀⟩ : ⟦⟨x, xin⟩⟧ ∈ Gr(k)[f].range := by
+  obtain⟨z₀, hz₀⟩ : ⟦⟨x, xin⟩⟧ ∈ Set.range Gr(k)[f] := by
     rw[← Ggker_eq_Gfrange f g GfGg_exact k]
-    refine Gf_zero g hx klt hy1
+    simp only [SetLike.mem_coe, AddMonoidHom.mem_ker]
+
+    show Gr(k)[g] (mk FS (fun n ↦ FS (n - 1)) ⟨x, xin⟩) = 0
+    rw [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom g ⟨x, xin⟩,
+        eq_zero_iff FT (fun n ↦ FT (n - 1)) ((g.piece_wise_hom k) ⟨x, xin⟩)]
+    show (g.toRingHom x) ∈ FT (k - 1)
+
+
+
+
+
+    sorry
+    -- refine Gf_zero g hx klt hy1
   obtain⟨z, hz⟩ : ∃ z , Gr(k)[f] ⟦z⟧ = ⟦⟨x, xin⟩⟧ := by
     obtain⟨z, eq⟩ := Quotient.exists_rep z₀
     exact ⟨z, by rw[eq, hz₀]⟩
