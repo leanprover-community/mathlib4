@@ -401,6 +401,24 @@ condensed mathematics proper.
 
 -/
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 variable (S : Profinite.{0})
 
 /-
