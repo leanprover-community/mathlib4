@@ -453,7 +453,7 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
         -- (2.) provided "module name" of an existing folder: walk dir
         -- TODO: will be implemented in #21838
         return .error "Entering a part of a module name \
-          (i.e. `Mathlib.Data` when only the fold `Mathlib/Data/` but no \
+          (i.e. `Mathlib.Data` when only the folder `Mathlib/Data/` but no \
           file `Mathlib/Data.lean` exists) is not supported yet!"
       else
         return .error "Invalid argument: non-existing module {mod}"
