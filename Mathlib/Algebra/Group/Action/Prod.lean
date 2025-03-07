@@ -3,7 +3,8 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Group.Action.Faithful
+import Mathlib.Algebra.Group.Action.Hom
 import Mathlib.Algebra.Group.Prod
 
 /-!
@@ -82,11 +83,11 @@ lemma pow_swap (p : α × β) (c : E) : (p ^ c).swap = p.swap ^ c := rfl
 @[to_additive vaddAssocClass]
 instance isScalarTower [SMul M N] [IsScalarTower M N α] [IsScalarTower M N β] :
     IsScalarTower M N (α × β) where
-  smul_assoc _ _ _ := mk.inj_iff.mpr ⟨smul_assoc _ _ _, smul_assoc _ _ _⟩
+  smul_assoc _ _ _ := by ext <;> exact smul_assoc ..
 
 @[to_additive]
 instance smulCommClass [SMulCommClass M N α] [SMulCommClass M N β] : SMulCommClass M N (α × β) where
-  smul_comm _ _ _ := mk.inj_iff.mpr ⟨smul_comm _ _ _, smul_comm _ _ _⟩
+  smul_comm _ _ _ := by ext <;> exact smul_comm ..
 
 @[to_additive]
 instance isCentralScalar [SMul Mᵐᵒᵖ α] [SMul Mᵐᵒᵖ β] [IsCentralScalar M α] [IsCentralScalar M β] :
@@ -118,8 +119,8 @@ instance isScalarTowerBoth [Mul N] [Mul P] [SMul M N] [SMul M P] [IsScalarTower 
 
 @[to_additive]
 instance mulAction [Monoid M] [MulAction M α] [MulAction M β] : MulAction M (α × β) where
-  mul_smul _ _ _ := mk.inj_iff.mpr ⟨mul_smul _ _ _, mul_smul _ _ _⟩
-  one_smul _ := mk.inj_iff.mpr ⟨one_smul _ _, one_smul _ _⟩
+  mul_smul _ _ _ := by ext <;> exact mul_smul ..
+  one_smul _ := by ext <;> exact one_smul ..
 
 end Prod
 
@@ -132,7 +133,7 @@ section BundledSMul
 def smulMulHom [Monoid α] [Mul β] [MulAction α β] [IsScalarTower α β β] [SMulCommClass α β β] :
     α × β →ₙ* β where
   toFun a := a.1 • a.2
-  map_mul' _ _ := (smul_mul_smul _ _ _ _).symm
+  map_mul' _ _ := (smul_mul_smul_comm _ _ _ _).symm
 
 /-- Scalar multiplication as a monoid homomorphism. -/
 @[simps]
@@ -184,6 +185,6 @@ def MulAction.prodEquiv :
     congr 1
     · funext; congr; ext m a; (conv_rhs => rw [← hN.one_smul a]); rfl
     · ext n a; (conv_rhs => rw [← hM.one_smul (SMul.smul n a)]); rfl
-    · apply heq_prop
+    · exact proof_irrel_heq ..
 
 end Action_by_Prod

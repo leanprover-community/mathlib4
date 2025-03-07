@@ -31,7 +31,6 @@ variable (C : Type*) [Category C]
 
 namespace Idempotents
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- In a preadditive category `C`, when an object `X` decomposes as `X ≅ P ⨿ Q`, one may
 consider `P` as a direct factor of `X` and up to unique isomorphism, it is determined by the
 obvious idempotent `X ⟶ P ⟶ X` which is the projection onto `P` with kernel `Q`. More generally,
@@ -101,7 +100,6 @@ theorem hom_ext_iff {P Q : Karoubi C} {f g : P ⟶ Q} : f = g ↔ f.f = g.f := b
     rw [h]
   · apply Hom.ext
 
--- Porting note: added because `Hom.ext` is not triggered automatically
 @[ext]
 theorem hom_ext {P Q : Karoubi C} (f g : P ⟶ Q) (h : f.f = g.f) : f = g := by
   simpa [hom_ext_iff] using h
@@ -111,9 +109,6 @@ theorem comp_f {P Q R : Karoubi C} (f : P ⟶ Q) (g : Q ⟶ R) : (f ≫ g).f = f
 
 @[simp]
 theorem id_f {P : Karoubi C} : Hom.f (𝟙 P) = P.p := rfl
-
-@[deprecated (since := "2024-07-15")]
-theorem id_eq {P : Karoubi C} : 𝟙 P = ⟨P.p, by repeat' rw [P.idem]⟩ := rfl
 
 /-- It is possible to coerce an object of `C` into an object of `Karoubi C`.
 See also the functor `toKaroubi`. -/
@@ -248,12 +243,12 @@ variable {C}
 /-- The split mono which appears in the factorisation `decompId P`. -/
 @[simps]
 def decompId_i (P : Karoubi C) : P ⟶ P.X :=
-  ⟨P.p, by erw [coe_p, comp_id, P.idem]⟩
+  ⟨P.p, by rw [coe_p, comp_id, P.idem]⟩
 
 /-- The split epi which appears in the factorisation `decompId P`. -/
 @[simps]
 def decompId_p (P : Karoubi C) : (P.X : Karoubi C) ⟶ P :=
-  ⟨P.p, by erw [coe_p, id_comp, P.idem]⟩
+  ⟨P.p, by rw [coe_p, id_comp, P.idem]⟩
 
 /-- The formal direct factor of `P.X` given by the idempotent `P.p` in the category `C`
 is actually a direct factor in the category `Karoubi C`. -/
@@ -274,11 +269,11 @@ theorem decompId_p_toKaroubi (X : C) : decompId_p ((toKaroubi C).obj X) = 𝟙 _
 
 theorem decompId_i_naturality {P Q : Karoubi C} (f : P ⟶ Q) :
     f ≫ decompId_i Q = decompId_i P ≫ (by exact Hom.mk f.f (by simp)) := by
-  aesop_cat
+  simp
 
 theorem decompId_p_naturality {P Q : Karoubi C} (f : P ⟶ Q) :
     decompId_p P ≫ f = (by exact Hom.mk f.f (by simp)) ≫ decompId_p Q := by
-  aesop_cat
+  simp
 
 @[simp]
 theorem zsmul_hom [Preadditive C] {P Q : Karoubi C} (n : ℤ) (f : P ⟶ Q) : (n • f).f = n • f.f :=

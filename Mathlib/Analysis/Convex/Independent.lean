@@ -40,16 +40,13 @@ independence, convex position
 -/
 
 
-open scoped Classical
-open Affine
-
-open Finset Function
+open Affine Finset Function
 
 variable {𝕜 E ι : Type*}
 
 section OrderedSemiring
 
-variable (𝕜) [OrderedSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
+variable (𝕜) [OrderedSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 /-- An indexed family is said to be convex independent if every point only belongs to convex hulls
 of sets containing it. -/
@@ -158,6 +155,7 @@ section LinearOrderedField
 
 variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
 
+open scoped Classical in
 /-- To check convex independence, one only has to check finsets thanks to Carathéodory's theorem. -/
 theorem convexIndependent_iff_finset {p : ι → E} :
     ConvexIndependent 𝕜 p ↔

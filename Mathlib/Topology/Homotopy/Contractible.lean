@@ -27,13 +27,13 @@ theorem nullhomotopic_of_constant (y : Y) : Nullhomotopic (ContinuousMap.const X
 
 theorem Nullhomotopic.comp_right {f : C(X, Y)} (hf : f.Nullhomotopic) (g : C(Y, Z)) :
     (g.comp f).Nullhomotopic := by
-  cases' hf with y hy
+  obtain ⟨y, hy⟩ := hf
   use g y
   exact Homotopic.hcomp hy (Homotopic.refl g)
 
 theorem Nullhomotopic.comp_left {f : C(Y, Z)} (hf : f.Nullhomotopic) (g : C(X, Y)) :
     (f.comp g).Nullhomotopic := by
-  cases' hf with y hy
+  obtain ⟨y, hy⟩ := hf
   use y
   exact Homotopic.hcomp (Homotopic.refl g) hy
 
@@ -91,9 +91,9 @@ protected theorem Homeomorph.contractibleSpace_iff (e : X ≃ₜ Y) :
 
 namespace ContractibleSpace
 
-instance [Unique Y] : ContractibleSpace Y := by
-  have : ContractibleSpace (Unit) := ⟨⟨HomotopyEquiv.refl Unit⟩⟩
-  apply (Homeomorph.homeomorphOfUnique Y Unit).contractibleSpace
+instance [Nonempty Y] [Subsingleton Y] : ContractibleSpace Y :=
+  let ⟨_⟩ := nonempty_unique Y
+  ⟨⟨(Homeomorph.homeomorphOfUnique Y Unit).toHomotopyEquiv⟩⟩
 
 variable (X Y) in
 theorem hequiv [ContractibleSpace X] [ContractibleSpace Y] :

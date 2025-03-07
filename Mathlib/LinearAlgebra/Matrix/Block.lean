@@ -39,13 +39,17 @@ open Matrix
 universe v
 
 variable {α β m n o : Type*} {m' n' : α → Type*}
-variable {R : Type v} [CommRing R] {M N : Matrix m m R} {b : m → α}
+variable {R : Type v} {M N : Matrix m m R} {b : m → α}
 
 namespace Matrix
 
 section LT
 
 variable [LT α]
+
+section Zero
+
+variable [Zero R]
 
 /-- Let `b` map rows and columns of a square matrix `M` to blocks indexed by `α`s. Then
 `BlockTriangular M n b` says the matrix is block triangular. -/
@@ -62,7 +66,7 @@ theorem blockTriangular_reindex_iff {b : n → α} {e : m ≃ n} :
   · convert h.submatrix
     simp only [reindex_apply, submatrix_submatrix, submatrix_id_id, Equiv.symm_comp_self]
   · convert h.submatrix
-    simp only [comp.assoc b e e.symm, Equiv.self_comp_symm, comp_id]
+    simp only [comp_assoc b e e.symm, Equiv.self_comp_symm, comp_id]
 
 protected theorem BlockTriangular.transpose :
     M.BlockTriangular b → Mᵀ.BlockTriangular (toDual ∘ b) :=
@@ -76,20 +80,48 @@ protected theorem blockTriangular_transpose_iff {b : m → αᵒᵈ} :
 @[simp]
 theorem blockTriangular_zero : BlockTriangular (0 : Matrix m m R) b := fun _ _ _ => rfl
 
-protected theorem BlockTriangular.neg (hM : BlockTriangular M b) : BlockTriangular (-M) b :=
-  fun _ _ h => neg_eq_zero.2 <| hM h
+end Zero
 
-theorem BlockTriangular.add (hM : BlockTriangular M b) (hN : BlockTriangular N b) :
+protected theorem BlockTriangular.neg [NegZeroClass R] {M : Matrix m m R}
+    (hM : BlockTriangular M b) : BlockTriangular (-M) b :=
+  fun _ _ h => by rw [neg_apply, hM h, neg_zero]
+
+theorem BlockTriangular.add [AddZeroClass R] (hM : BlockTriangular M b) (hN : BlockTriangular N b) :
     BlockTriangular (M + N) b := fun i j h => by simp_rw [Matrix.add_apply, hM h, hN h, zero_add]
 
-theorem BlockTriangular.sub (hM : BlockTriangular M b) (hN : BlockTriangular N b) :
+theorem BlockTriangular.sub [SubNegZeroMonoid R]
+    (hM : BlockTriangular M b) (hN : BlockTriangular N b) :
     BlockTriangular (M - N) b := fun i j h => by simp_rw [Matrix.sub_apply, hM h, hN h, sub_zero]
+
+lemma BlockTriangular.add_iff_right [AddGroup R] (hM : BlockTriangular M b) :
+    BlockTriangular (M + N) b ↔ BlockTriangular N b := ⟨(by simpa using hM.neg.add ·), hM.add⟩
+
+lemma BlockTriangular.add_iff_left [AddGroup R] (hN : BlockTriangular N b) :
+    BlockTriangular (M + N) b ↔ BlockTriangular M b := ⟨(by simpa using ·.sub hN), (·.add hN)⟩
+
+lemma BlockTriangular.sub_iff_right [AddGroup R] (hM : BlockTriangular M b) :
+    BlockTriangular (M - N) b ↔ BlockTriangular N b := ⟨(by simpa using ·.neg.add hM), hM.sub⟩
+
+lemma BlockTriangular.sub_iff_left [AddGroup R] (hN : BlockTriangular N b) :
+    BlockTriangular (M - N) b ↔ BlockTriangular M b := ⟨(by simpa using ·.add hN), (·.sub hN)⟩
+
+lemma BlockTriangular.map {S F} [FunLike F R S] [Zero R] [Zero S] [ZeroHomClass F R S] (f : F)
+    (h : BlockTriangular M b) : BlockTriangular (M.map f) b :=
+  fun i j lt ↦ by simp [h lt]
+
+lemma BlockTriangular.comp [Zero R] {M : Matrix m m (Matrix n n R)} (h : BlockTriangular M b) :
+    BlockTriangular (M.comp m m n n R) fun i ↦ b i.1 :=
+  fun i j lt ↦ by simp [h lt]
 
 end LT
 
 section Preorder
 
 variable [Preorder α]
+
+section Zero
+
+variable [Zero R]
 
 theorem blockTriangular_diagonal [DecidableEq m] (d : m → R) : BlockTriangular (diagonal d) b :=
   fun _ _ h => diagonal_apply_ne' d fun h' => ne_of_lt h (congr_arg _ h')
@@ -107,7 +139,7 @@ theorem blockTriangular_blockDiagonal [DecidableEq α] (d : α → Matrix m m R)
 
 variable [DecidableEq m]
 
-theorem blockTriangular_one : BlockTriangular (1 : Matrix m m R) b :=
+theorem blockTriangular_one [One R] : BlockTriangular (1 : Matrix m m R) b :=
   blockTriangular_diagonal _
 
 theorem blockTriangular_stdBasisMatrix {i j : m} (hij : b i ≤ b j) (c : R) :
@@ -120,6 +152,10 @@ theorem blockTriangular_stdBasisMatrix {i j : m} (hij : b i ≤ b j) (c : R) :
 theorem blockTriangular_stdBasisMatrix' {i j : m} (hij : b j ≤ b i) (c : R) :
     BlockTriangular (stdBasisMatrix i j c) (toDual ∘ b) :=
   blockTriangular_stdBasisMatrix (by exact toDual_le_toDual.mpr hij) _
+
+end Zero
+
+variable [CommRing R] [DecidableEq m]
 
 theorem blockTriangular_transvection {i j : m} (hij : b i ≤ b j) (c : R) :
     BlockTriangular (transvection i j c) b :=
@@ -135,7 +171,8 @@ section LinearOrder
 
 variable [LinearOrder α]
 
-theorem BlockTriangular.mul [Fintype m] {M N : Matrix m m R} (hM : BlockTriangular M b)
+theorem BlockTriangular.mul [Fintype m] [NonUnitalNonAssocSemiring R]
+    {M N : Matrix m m R} (hM : BlockTriangular M b)
     (hN : BlockTriangular N b) : BlockTriangular (M * N) b := by
   intro i j hij
   apply Finset.sum_eq_zero
@@ -146,7 +183,7 @@ theorem BlockTriangular.mul [Fintype m] {M N : Matrix m m R} (hM : BlockTriangul
 
 end LinearOrder
 
-theorem upper_two_blockTriangular [Preorder α] (A : Matrix m m R) (B : Matrix m n R)
+theorem upper_two_blockTriangular [Zero R] [Preorder α] (A : Matrix m m R) (B : Matrix m n R)
     (D : Matrix n n R) {a b : α} (hab : a < b) :
     BlockTriangular (fromBlocks A B 0 D) (Sum.elim (fun _ => a) fun _ => b) := by
   rintro (c | c) (d | d) hcd <;> first | simp [hab.not_lt] at hcd ⊢
@@ -154,7 +191,7 @@ theorem upper_two_blockTriangular [Preorder α] (A : Matrix m m R) (B : Matrix m
 /-! ### Determinant -/
 
 
-variable [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
+variable [CommRing R] [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
 
 theorem equiv_block_det (M : Matrix m m R) {p q : m → Prop} [DecidablePred p] [DecidablePred q]
     (e : ∀ x, q x ↔ p x) : (toSquareBlockProp M p).det = (toSquareBlockProp M q).det := by
@@ -198,7 +235,10 @@ theorem twoBlockTriangular_det' (M : Matrix m m R) (p : m → Prop) [DecidablePr
 
 protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : BlockTriangular M b) :
     M.det = ∏ a ∈ univ.image b, (M.toSquareBlock b a).det := by
-  induction' hs : univ.image b using Finset.strongInduction with s ih generalizing m
+  suffices ∀ hs : Finset α, univ.image b = hs → M.det = ∏ a ∈ hs, (M.toSquareBlock b a).det by
+    exact this _ rfl
+  intro s hs
+  induction s using Finset.strongInduction generalizing m with | H s ih =>
   subst hs
   cases isEmpty_or_nonempty m
   · simp
@@ -245,7 +285,7 @@ theorem det_of_lowerTriangular [LinearOrder m] (M : Matrix m m R) (h : M.BlockTr
 
 open Polynomial
 
-theorem matrixOfPolynomials_blockTriangular {n : ℕ} (p : Fin n → R[X])
+theorem matrixOfPolynomials_blockTriangular {R} [Semiring R] {n : ℕ} (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree ≤ i) :
     Matrix.BlockTriangular (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) id :=
   fun _ j h => by
@@ -316,7 +356,9 @@ theorem toBlock_inverse_eq_zero [LinearOrder α] [Invertible M] (hM : BlockTrian
 /-- The inverse of a block-triangular matrix is block-triangular. -/
 theorem blockTriangular_inv_of_blockTriangular [LinearOrder α] [Invertible M]
     (hM : BlockTriangular M b) : BlockTriangular M⁻¹ b := by
-  induction' hs : univ.image b using Finset.strongInduction with s ih generalizing m
+  suffices ∀ hs : Finset α, univ.image b = hs → BlockTriangular M⁻¹ b by exact this _ rfl
+  intro s hs
+  induction s using Finset.strongInduction generalizing m with | H s ih =>
   subst hs
   intro i j hij
   haveI : Inhabited m := ⟨i⟩
@@ -332,7 +374,7 @@ theorem blockTriangular_inv_of_blockTriangular [LinearOrder α] [Invertible M]
   have hb' : image b' univ ⊂ image b univ := by
     convert image_subtype_univ_ssubset_image_univ k b _ (fun a => a < k) (lt_irrefl _)
     convert max'_mem (α := α) _ _
-  have hij' : b' ⟨j, hij.trans hi⟩ < b' ⟨i, hi⟩ := by simp_rw [hij]
-  simp [hM.inv_toBlock k, (ih (image b' univ) hb' hA rfl hij').symm]
+  have hij' : b' ⟨j, hij.trans hi⟩ < b' ⟨i, hi⟩ := by simp_rw [b', hij]
+  simp [A, hM.inv_toBlock k, (ih (image b' univ) hb' hA rfl hij').symm]
 
 end Matrix

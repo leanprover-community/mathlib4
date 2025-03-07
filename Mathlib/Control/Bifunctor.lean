@@ -5,7 +5,6 @@ Authors: Simon Hudon
 -/
 import Mathlib.Control.Functor
 import Mathlib.Tactic.Common
-import Batteries.Data.Sum.Basic
 
 /-!
 # Functors with two arguments

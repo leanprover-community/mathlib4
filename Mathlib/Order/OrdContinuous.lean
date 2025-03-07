@@ -231,7 +231,7 @@ namespace OrderIso
 
 section Preorder
 
-variable [Preorder α] [Preorder β] (e : α ≃o β) {s : Set α} {x : α}
+variable [Preorder α] [Preorder β] (e : α ≃o β)
 
 protected theorem leftOrdContinuous : LeftOrdContinuous e := fun _ _ hx =>
   ⟨Monotone.mem_upperBounds_image (fun _ _ => e.map_rel_iff.2) hx.1, fun _ hy =>

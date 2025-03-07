@@ -47,7 +47,7 @@ noncomputable def toCircle : AddChar (ZMod N) Circle :=
 lemma toCircle_intCast (j : ℤ) :
     toCircle (j : ZMod N) = exp (2 * π * I * j / N) := by
   rw [toCircle, AddChar.compAddMonoidHom_apply, toCircle_addChar, AddChar.coe_mk,
-    AddCircle.toCircle, toAddCircle_intCast, Function.Periodic.lift_coe, Circle.exp_apply]
+    AddCircle.toCircle, toAddCircle_intCast, Function.Periodic.lift_coe, Circle.coe_exp]
   push_cast
   ring_nf
 

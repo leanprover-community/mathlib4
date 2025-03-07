@@ -14,7 +14,7 @@ This is defined as a type alias `PolynomialModule R M := ℕ →₀ M`, since th
 module structures on `ℕ →₀ M` of interest. See the docstring of `PolynomialModule` for details.
 -/
 universe u v
-open Polynomial BigOperators
+open Polynomial
 
 /-- The `R[X]`-module `M[X]` for an `R`-module `M`.
 This is isomorphic (as an `R`-module) to `M[X]` when `M` is a ring.
@@ -57,7 +57,7 @@ instance instFunLike : FunLike (PolynomialModule R M) ℕ M :=
   Finsupp.instFunLike
 
 instance : CoeFun (PolynomialModule R M) fun _ => ℕ → M :=
-  Finsupp.instCoeFun
+  inferInstanceAs <| CoeFun (_ →₀ _) _
 
 theorem zero_apply (i : ℕ) : (0 : PolynomialModule R M) i = 0 :=
   Finsupp.zero_apply
@@ -66,7 +66,7 @@ theorem add_apply (g₁ g₂ : PolynomialModule R M) (a : ℕ) : (g₁ + g₂) a
   Finsupp.add_apply g₁ g₂ a
 
 /-- The monomial `m * x ^ i`. This is defeq to `Finsupp.singleAddHom`, and is redefined here
-so that it has the desired type signature.  -/
+so that it has the desired type signature. -/
 noncomputable def single (i : ℕ) : M →+ PolynomialModule R M :=
   Finsupp.singleAddHom i
 
@@ -150,10 +150,8 @@ theorem smul_single_apply (i : ℕ) (f : R[X]) (m : M) (n : ℕ) :
   · rw [monomial_smul_single, single_apply, coeff_monomial, ite_smul, zero_smul]
     by_cases h : i ≤ n
     · simp_rw [eq_tsub_iff_add_eq_of_le h, if_pos h]
-    · rw [if_neg h, ite_eq_right_iff]
-      intro e
-      exfalso
-      linarith
+    · rw [if_neg h, if_neg]
+      omega
 
 theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
     (f • g) n = ∑ x ∈ Finset.antidiagonal n, f.coeff x.1 • g x.2 := by
@@ -177,10 +175,11 @@ noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :
     map_smul' := fun r x => by
       dsimp
       rw [← RingEquiv.coe_toEquiv_symm, RingEquiv.coe_toEquiv]
-      induction' x using induction_linear with _ _ hp hq n a
-      · rw [smul_zero, map_zero, mul_zero]
-      · rw [smul_add, map_add, map_add, mul_add, hp, hq]
-      · ext i
+      induction x using induction_linear with
+      | h0 => rw [smul_zero, map_zero, mul_zero]
+      | hadd _ _ hp hq => rw [smul_add, map_add, map_add, mul_add, hp, hq]
+      | hsingle n a =>
+        ext i
         simp only [coeff_ofFinsupp, smul_single_apply, toFinsuppIso_symm_apply, coeff_ofFinsupp,
         single_apply, smul_eq_mul, Polynomial.coeff_mul, mul_ite, mul_zero]
         split_ifs with hn
@@ -240,16 +239,16 @@ theorem map_smul (f : M →ₗ[R] M') (p : R[X]) (q : PolynomialModule R M) :
   · intro f g e₁ e₂
     rw [smul_add, map_add, e₁, e₂, map_add, smul_add]
   intro i m
-  induction' p using Polynomial.induction_on' with _ _ e₁ e₂
-  · rw [add_smul, map_add, e₁, e₂, Polynomial.map_add, add_smul]
-  · rw [monomial_smul_single, map_single, Polynomial.map_monomial, map_single, monomial_smul_single,
-      f.map_smul, algebraMap_smul]
+  induction p using Polynomial.induction_on' with
+  | h_add _ _ e₁ e₂ => rw [add_smul, map_add, e₁, e₂, Polynomial.map_add, add_smul]
+  | h_monomial => rw [monomial_smul_single, map_single, Polynomial.map_monomial, map_single,
+      monomial_smul_single, f.map_smul, algebraMap_smul]
 
 /-- Evaluate a polynomial `p : PolynomialModule R M` at `r : R`. -/
 @[simps! (config := .lemmasOnly)]
 def eval (r : R) : PolynomialModule R M →ₗ[R] M where
   toFun p := p.sum fun i m => r ^ i • m
-  map_add' x y := Finsupp.sum_add_index' (fun _ => smul_zero _) fun _ _ _ => smul_add _ _ _
+  map_add' _ _ := Finsupp.sum_add_index' (fun _ => smul_zero _) fun _ _ _ => smul_add _ _ _
   map_smul' s m := by
     refine (Finsupp.sum_smul_index' ?_).trans ?_
     · exact fun i => smul_zero _
@@ -273,10 +272,9 @@ theorem eval_smul (p : R[X]) (q : PolynomialModule R M) (r : R) :
   · intro f g e₁ e₂
     rw [smul_add, map_add, e₁, e₂, map_add, smul_add]
   intro i m
-  induction' p using Polynomial.induction_on' with _ _ e₁ e₂
-  · rw [add_smul, map_add, Polynomial.eval_add, e₁, e₂, add_smul]
-  · rw [monomial_smul_single, eval_single, Polynomial.eval_monomial, eval_single, smul_comm, ←
-      smul_smul, pow_add, mul_smul]
+  induction p using Polynomial.induction_on' with
+  | h_add _ _ e₁ e₂ => rw [add_smul, map_add, Polynomial.eval_add, e₁, e₂, add_smul]
+  | h_monomial => simp only [monomial_smul_single, Polynomial.eval_monomial, eval_single]; module
 
 @[simp]
 theorem eval_map (f : M →ₗ[R] M') (q : PolynomialModule R M) (r : R) :
@@ -286,7 +284,8 @@ theorem eval_map (f : M →ₗ[R] M') (q : PolynomialModule R M) (r : R) :
   · intro f g e₁ e₂
     simp_rw [map_add, e₁, e₂]
   · intro i m
-    rw [map_single, eval_single, eval_single, f.map_smul, ← map_pow, algebraMap_smul]
+    simp only [map_single, eval_single, f.map_smul]
+    module
 
 @[simp]
 theorem eval_map' (f : M →ₗ[R] M) (q : PolynomialModule R M) (r : R) :
@@ -305,14 +304,13 @@ lemma aeval_equivPolynomial {S : Type*} [CommRing S] [Algebra S R]
     rw [equivPolynomial_single, aeval_monomial, mul_comm, map_single,
       Algebra.linearMap_apply, eval_single, smul_eq_mul]
 
-/-- `comp p q` is the composition of `p : R[X]` and `q : M[X]` as `q(p(x))`.  -/
+/-- `comp p q` is the composition of `p : R[X]` and `q : M[X]` as `q(p(x))`. -/
 @[simps!]
 noncomputable def comp (p : R[X]) : PolynomialModule R M →ₗ[R] PolynomialModule R M :=
   LinearMap.comp ((eval p).restrictScalars R) (map R[X] (lsingle R 0))
 
 theorem comp_single (p : R[X]) (i : ℕ) (m : M) : comp p (single R i m) = p ^ i • single R 0 m := by
-  rw [comp_apply]
-  erw [map_single, eval_single]
+  rw [comp_apply, map_single, eval_single]
   rfl
 
 theorem comp_eval (p : R[X]) (q : PolynomialModule R M) (r : R) :
@@ -323,8 +321,8 @@ theorem comp_eval (p : R[X]) (q : PolynomialModule R M) (r : R) :
   · intro _ _ e₁ e₂
     simp_rw [map_add, e₁, e₂]
   · intro i m
-    rw [LinearMap.comp_apply, comp_single, eval_single, eval_smul, eval_single, pow_zero, one_smul,
-      Polynomial.eval_pow]
+    rw [LinearMap.comp_apply, comp_single, eval_single, eval_smul, eval_single, eval_pow]
+    module
 
 theorem comp_smul (p p' : R[X]) (q : PolynomialModule R M) :
     comp p (p' • q) = p'.comp p • comp p q := by

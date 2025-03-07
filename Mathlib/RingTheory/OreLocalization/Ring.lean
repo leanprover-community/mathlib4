@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
 
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.Algebra.Module.End
 import Mathlib.RingTheory.OreLocalization.Basic
 
 /-!
@@ -17,6 +18,8 @@ The `Monoid` and `DistribMulAction` instances and additive versions are provided
 `Mathlib/RingTheory/OreLocalization/Basic.lean`.
 
 -/
+
+assert_not_exists Subgroup
 
 universe u
 
@@ -113,7 +116,7 @@ def numeratorRingHom : R →+* R[S⁻¹] where
 
 instance {R₀} [CommSemiring R₀] [Algebra R₀ R] : Algebra R₀ R[S⁻¹] where
   __ := inferInstanceAs (Module R₀ R[S⁻¹])
-  __ := numeratorRingHom.comp (algebraMap R₀ R)
+  algebraMap := numeratorRingHom.comp (algebraMap R₀ R)
   commutes' r x := by
     induction' x using OreLocalization.ind with r₁ s₁
     dsimp
@@ -229,7 +232,7 @@ instance nontrivial : Nontrivial R[R⁰⁻¹] :=
 variable [NoZeroDivisors R]
 
 open Classical in
-/-- The inversion of Ore fractions for a ring without zero divisors, satisying `0⁻¹ = 0` and
+/-- The inversion of Ore fractions for a ring without zero divisors, satisfying `0⁻¹ = 0` and
 `(r /ₒ r')⁻¹ = r' /ₒ r` for `r ≠ 0`. -/
 @[irreducible]
 protected def inv : R[R⁰⁻¹] → R[R⁰⁻¹] :=
@@ -275,9 +278,9 @@ instance : DivisionRing R[R⁰⁻¹] where
   mul_inv_cancel := OreLocalization.mul_inv_cancel
   inv_zero := OreLocalization.inv_zero
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun q a => rfl
+  qsmul_def := fun _ _ => rfl
 
 end DivisionRing
 

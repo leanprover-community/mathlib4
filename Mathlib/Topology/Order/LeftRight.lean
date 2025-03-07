@@ -3,6 +3,7 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
+import Mathlib.Order.Antichain
 import Mathlib.Topology.ContinuousOn
 
 /-!
@@ -46,20 +47,27 @@ theorem Filter.Eventually.exists_gt {a : α} [NeBot (𝓝[>] a)] {p : α → Pro
 theorem nhdsWithin_Ici_neBot {a b : α} (H₂ : a ≤ b) : NeBot (𝓝[Ici a] b) :=
   nhdsWithin_neBot_of_mem H₂
 
-instance nhdsWithin_Ici_self_neBot (a : α) : NeBot (𝓝[≥] a) :=
-  nhdsWithin_Ici_neBot (le_refl a)
+instance nhdsGE_neBot (a : α) : NeBot (𝓝[≥] a) := nhdsWithin_Ici_neBot (le_refl a)
+
+@[deprecated nhdsGE_neBot (since := "2024-12-21")]
+theorem nhdsWithin_Ici_self_neBot (a : α) : NeBot (𝓝[≥] a) := nhdsGE_neBot a
 
 theorem nhdsWithin_Iic_neBot {a b : α} (H : a ≤ b) : NeBot (𝓝[Iic b] a) :=
   nhdsWithin_neBot_of_mem H
 
-instance nhdsWithin_Iic_self_neBot (a : α) : NeBot (𝓝[≤] a) :=
-  nhdsWithin_Iic_neBot (le_refl a)
+instance nhdsLE_neBot (a : α) : NeBot (𝓝[≤] a) := nhdsWithin_Iic_neBot (le_refl a)
 
-theorem nhds_left'_le_nhds_ne (a : α) : 𝓝[<] a ≤ 𝓝[≠] a :=
+@[deprecated nhdsLE_neBot (since := "2024-12-21")]
+theorem nhdsWithin_Iic_self_neBot (a : α) : NeBot (𝓝[≤] a) := nhdsLE_neBot a
+
+theorem nhdsLT_le_nhdsNE (a : α) : 𝓝[<] a ≤ 𝓝[≠] a :=
   nhdsWithin_mono a fun _ => ne_of_lt
 
-theorem nhds_right'_le_nhds_ne (a : α) : 𝓝[>] a ≤ 𝓝[≠] a :=
-  nhdsWithin_mono a fun _ => ne_of_gt
+@[deprecated (since := "2024-12-21")] alias nhds_left'_le_nhds_ne := nhdsLT_le_nhdsNE
+
+theorem nhdsGT_le_nhdsNE (a : α) : 𝓝[>] a ≤ 𝓝[≠] a := nhdsWithin_mono a fun _ => ne_of_gt
+
+@[deprecated (since := "2024-12-21")] alias nhds_right'_le_nhds_ne := nhdsGT_le_nhdsNE
 
 -- TODO: add instances for `NeBot (𝓝[<] x)` on (indexed) product types
 
@@ -95,17 +103,25 @@ section TopologicalSpace
 
 variable {α β : Type*} [TopologicalSpace α] [LinearOrder α] [TopologicalSpace β]
 
-theorem nhds_left_sup_nhds_right (a : α) : 𝓝[≤] a ⊔ 𝓝[≥] a = 𝓝 a := by
+theorem nhdsLE_sup_nhdsGE (a : α) : 𝓝[≤] a ⊔ 𝓝[≥] a = 𝓝 a := by
   rw [← nhdsWithin_union, Iic_union_Ici, nhdsWithin_univ]
 
-theorem nhds_left'_sup_nhds_right (a : α) : 𝓝[<] a ⊔ 𝓝[≥] a = 𝓝 a := by
+@[deprecated (since := "2024-12-21")] alias nhds_left_sup_nhds_right := nhdsLE_sup_nhdsGE
+
+theorem nhdsLT_sup_nhdsGE (a : α) : 𝓝[<] a ⊔ 𝓝[≥] a = 𝓝 a := by
   rw [← nhdsWithin_union, Iio_union_Ici, nhdsWithin_univ]
 
-theorem nhds_left_sup_nhds_right' (a : α) : 𝓝[≤] a ⊔ 𝓝[>] a = 𝓝 a := by
+@[deprecated (since := "2024-12-21")] alias nhds_left'_sup_nhds_right := nhdsLT_sup_nhdsGE
+
+theorem nhdsLE_sup_nhdsGT (a : α) : 𝓝[≤] a ⊔ 𝓝[>] a = 𝓝 a := by
   rw [← nhdsWithin_union, Iic_union_Ioi, nhdsWithin_univ]
 
-theorem nhds_left'_sup_nhds_right' (a : α) : 𝓝[<] a ⊔ 𝓝[>] a = 𝓝[≠] a := by
+@[deprecated (since := "2024-12-21")] alias nhds_left_sup_nhds_right' := nhdsLE_sup_nhdsGT
+
+theorem nhdsLT_sup_nhdsGT (a : α) : 𝓝[<] a ⊔ 𝓝[>] a = 𝓝[≠] a := by
   rw [← nhdsWithin_union, Iio_union_Ioi]
+
+@[deprecated (since := "2024-12-21")] alias nhds_left'_sup_nhds_right' := nhdsLT_sup_nhdsGT
 
 lemma nhdsWithin_right_sup_nhds_singleton (a : α) :
     𝓝[>] a ⊔ 𝓝[{a}] a = 𝓝[≥] a := by
@@ -113,7 +129,7 @@ lemma nhdsWithin_right_sup_nhds_singleton (a : α) :
 
 theorem continuousAt_iff_continuous_left_right {a : α} {f : α → β} :
     ContinuousAt f a ↔ ContinuousWithinAt f (Iic a) a ∧ ContinuousWithinAt f (Ici a) a := by
-  simp only [ContinuousWithinAt, ContinuousAt, ← tendsto_sup, nhds_left_sup_nhds_right]
+  simp only [ContinuousWithinAt, ContinuousAt, ← tendsto_sup, nhdsLE_sup_nhdsGE]
 
 theorem continuousAt_iff_continuous_left'_right' {a : α} {f : α → β} :
     ContinuousAt f a ↔ ContinuousWithinAt f (Iio a) a ∧ ContinuousWithinAt f (Ioi a) a := by

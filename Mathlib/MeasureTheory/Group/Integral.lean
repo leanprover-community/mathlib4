@@ -68,9 +68,7 @@ theorem integral_mul_right_eq_self [IsMulRightInvariant μ] (f : G → E) (g : G
 @[to_additive] -- Porting note: was `@[simp]`
 theorem integral_div_right_eq_self [IsMulRightInvariant μ] (f : G → E) (g : G) :
     (∫ x, f (x / g) ∂μ) = ∫ x, f x ∂μ := by
-  simp_rw [div_eq_mul_inv]
-  -- Porting note: was `simp_rw`
-  rw [integral_mul_right_eq_self f g⁻¹]
+  simp_rw [div_eq_mul_inv, integral_mul_right_eq_self f g⁻¹]
 
 /-- If some left-translate of a function negates it, then the integral of the function with respect
 to a left-invariant measure is 0. -/
@@ -123,9 +121,8 @@ theorem integrable_comp_div_left (f : G → F) [IsInvInvariant μ] [IsMulLeftInv
 @[to_additive] -- Porting note: was `@[simp]`
 theorem integral_div_left_eq_self (f : G → E) (μ : Measure G) [IsInvInvariant μ]
     [IsMulLeftInvariant μ] (x' : G) : (∫ x, f (x' / x) ∂μ) = ∫ x, f x ∂μ := by
-  simp_rw [div_eq_mul_inv]
-  -- Porting note: was `simp_rw`
-  rw [integral_inv_eq_self (fun x => f (x' * x)) μ, integral_mul_left_eq_self f x']
+  simp_rw [div_eq_mul_inv, integral_inv_eq_self (fun x => f (x' * x)) μ,
+    integral_mul_left_eq_self f x']
 
 end MeasurableMul
 

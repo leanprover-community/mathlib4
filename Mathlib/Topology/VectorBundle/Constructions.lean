@@ -40,16 +40,13 @@ variable (𝕜 : Type*) (B : Type*) (F : Type*) [NontriviallyNormedField 𝕜] [
 instance trivialization.isLinear : (trivialization B F).IsLinear 𝕜 where
   linear _ _ := ⟨fun _ _ => rfl, fun _ _ => rfl⟩
 
-variable {𝕜}
-
+variable {𝕜} in
 theorem trivialization.coordChangeL (b : B) :
     (trivialization B F).coordChangeL 𝕜 (trivialization B F) b =
       ContinuousLinearEquiv.refl 𝕜 F := by
   ext v
   rw [Trivialization.coordChangeL_apply']
   exacts [rfl, ⟨mem_univ _, mem_univ _⟩]
-
-variable (𝕜)
 
 instance vectorBundle : VectorBundle 𝕜 F (Bundle.Trivial B F) where
   trivialization_linear' e he := by
@@ -136,7 +133,7 @@ instance VectorBundle.prod [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂
 
 variable {𝕜 F₁ E₁ F₂ E₂}
 
-@[simp] -- Porting note: changed arguments to make `simpNF` happy: merged `hx₁` and `hx₂` into `hx`
+@[simp]
 theorem Trivialization.continuousLinearEquivAt_prod {e₁ : Trivialization F₁ (π F₁ E₁)}
     {e₂ : Trivialization F₂ (π F₂ E₂)} [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] {x : B}
     (hx : x ∈ (e₁.prod e₂).baseSet) :
@@ -145,7 +142,7 @@ theorem Trivialization.continuousLinearEquivAt_prod {e₁ : Trivialization F₁ 
   ext v : 2
   obtain ⟨v₁, v₂⟩ := v
   rw [(e₁.prod e₂).continuousLinearEquivAt_apply 𝕜, Trivialization.prod]
-  exact (congr_arg Prod.snd (prod_apply 𝕜 hx.1 hx.2 v₁ v₂) : _)
+  exact (congr_arg Prod.snd (prod_apply 𝕜 hx.1 hx.2 v₁ v₂) :)
 
 end
 

@@ -22,21 +22,18 @@ open Real
 namespace Circle
 
 theorem injective_arg : Injective fun z : Circle => arg z := fun z w h =>
-  Subtype.ext <| ext_abs_arg (z.abs_coe.trans w.abs_coe.symm) h
+  Subtype.ext <| ext_norm_arg (z.norm_coe.trans w.norm_coe.symm) h
 
 @[simp]
 theorem arg_eq_arg {z w : Circle} : arg z = arg w ↔ z = w :=
   injective_arg.eq_iff
 
 theorem arg_exp {x : ℝ} (h₁ : -π < x) (h₂ : x ≤ π) : arg (exp x) = x := by
-  rw [exp_apply, exp_mul_I, arg_cos_add_sin_mul_I ⟨h₁, h₂⟩]
+  rw [coe_exp, exp_mul_I, arg_cos_add_sin_mul_I ⟨h₁, h₂⟩]
 
 @[simp]
 theorem exp_arg (z : Circle) : exp (arg z) = z :=
   injective_arg <| arg_exp (neg_pi_lt_arg _) (arg_le_pi _)
-
-@[deprecated (since := "2024-07-25")] alias _root_.arg_expMapCircle := arg_exp
-@[deprecated (since := "2024-07-25")] alias _root_.expMapCircle_arg := exp_arg
 
 /-- `Complex.arg ∘ (↑)` and `expMapCircle` define a partial equivalence between `circle` and `ℝ`
 with `source = Set.univ` and `target = Set.Ioc (-π) π`. -/
@@ -64,7 +61,7 @@ lemma invOn_arg_exp : InvOn (arg ∘ (↑)) exp (Ioc (-π) π) univ := argPartia
 lemma surjOn_exp_neg_pi_pi : SurjOn exp (Ioc (-π) π) univ := argPartialEquiv.symm.surjOn
 
 lemma exp_eq_exp {x y : ℝ} : exp x = exp y ↔ ∃ m : ℤ, x = y + m * (2 * π) := by
-  rw [Subtype.ext_iff, exp_apply, exp_apply, exp_eq_exp_iff_exists_int]
+  rw [Subtype.ext_iff, coe_exp, coe_exp, exp_eq_exp_iff_exists_int]
   refine exists_congr fun n => ?_
   rw [← mul_assoc, ← add_mul, mul_left_inj' I_ne_zero]
   norm_cast
@@ -73,21 +70,21 @@ lemma periodic_exp : Periodic exp (2 * π) := fun z ↦ exp_eq_exp.2 ⟨1, by rw
 
 @[simp] lemma exp_two_pi : exp (2 * π) = 1 := periodic_exp.eq.trans exp_zero
 
+lemma exp_int_mul_two_pi (n : ℤ) : exp (n * (2 * π)) = 1 :=
+  ext <| by simpa [mul_assoc] using Complex.exp_int_mul_two_pi_mul_I n
+
+lemma exp_two_pi_mul_int (n : ℤ) : exp (2 * π * n) = 1 := by
+  simpa only [mul_comm] using exp_int_mul_two_pi n
+
+lemma exp_eq_one {r : ℝ} : exp r = 1 ↔ ∃ n : ℤ, r = n * (2 * π) := by
+  simp [Circle.ext_iff, Complex.exp_eq_one_iff, ← mul_assoc, Complex.I_ne_zero,
+    ← Complex.ofReal_inj]
+
+lemma exp_inj {r s : ℝ} : exp r = exp s ↔ r ≡ s [PMOD (2 * π)] := by
+  simp [AddCommGroup.ModEq, ← exp_eq_one, div_eq_one, eq_comm (a := exp r)]
+
 lemma exp_sub_two_pi (x : ℝ) : exp (x - 2 * π) = exp x := periodic_exp.sub_eq x
 lemma exp_add_two_pi (x : ℝ) : exp (x + 2 * π) = exp x := periodic_exp x
-
-@[deprecated (since := "2024-07-25")]
-alias _root_.leftInverse_expMapCircle_arg := leftInverse_exp_arg
-
-@[deprecated (since := "2024-07-25")]
-alias _root_.surjOn_expMapCircle_neg_pi_pi := surjOn_exp_neg_pi_pi
-
-@[deprecated (since := "2024-07-25")] alias _root_.invOn_arg_expMapCircle := invOn_arg_exp
-@[deprecated (since := "2024-07-25")] alias _root_.expMapCircle_eq_expMapCircle := exp_eq_exp
-@[deprecated (since := "2024-07-25")] alias _root_.periodic_expMapCircle := periodic_exp
-@[deprecated (since := "2024-07-25")] alias _root_.expMapCircle_two_pi := exp_two_pi
-@[deprecated (since := "2024-07-25")] alias _root_.expMapCircle_sub_two_pi := exp_sub_two_pi
-@[deprecated (since := "2024-07-25")] alias _root_.expMapCircle_add_two_pi := exp_add_two_pi
 
 end Circle
 
@@ -115,16 +112,8 @@ lemma coe_toCircle (θ : Angle) : (θ.toCircle : ℂ) = θ.cos + θ.sin * I := b
 
 @[simp] lemma arg_toCircle (θ : Real.Angle) : (arg θ.toCircle : Angle) = θ := by
   induction θ using Real.Angle.induction_on
-  rw [toCircle_coe, Circle.exp_apply, exp_mul_I, ← ofReal_cos, ← ofReal_sin, ←
+  rw [toCircle_coe, Circle.coe_exp, exp_mul_I, ← ofReal_cos, ← ofReal_sin, ←
     Real.Angle.cos_coe, ← Real.Angle.sin_coe, arg_cos_add_sin_mul_I_coe_angle]
-
-@[deprecated (since := "2024-07-25")] alias expMapCircle := toCircle
-@[deprecated (since := "2024-07-25")] alias expMapCircle_coe := toCircle_coe
-@[deprecated (since := "2024-07-25")] alias coe_expMapCircle := coe_toCircle
-@[deprecated (since := "2024-07-25")] alias expMapCircle_zero := toCircle_zero
-@[deprecated (since := "2024-07-25")] alias expMapCircle_neg := toCircle_neg
-@[deprecated (since := "2024-07-25")] alias expMapCircle_add := toCircle_add
-@[deprecated (since := "2024-07-25")] alias arg_expMapCircle := arg_toCircle
 
 end Real.Angle
 
@@ -154,7 +143,7 @@ theorem toCircle_add (x : AddCircle T) (y : AddCircle T) :
   induction y using QuotientAddGroup.induction_on
   simp_rw [← coe_add, toCircle_apply_mk, mul_add, Circle.exp_add]
 
-lemma toCircle_zero : toCircle (0 : AddCircle T) = 1 := by
+@[simp] lemma toCircle_zero : toCircle (0 : AddCircle T) = 1 := by
   rw [← QuotientAddGroup.mk_zero, toCircle_apply_mk, mul_zero, Circle.exp_zero]
 
 theorem continuous_toCircle : Continuous (@toCircle T) :=
@@ -205,6 +194,3 @@ open AddCircle
 lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp := by
   have : Fact (0 < 2 * π) := ⟨by positivity⟩
   exact homeomorphCircle'.isLocalHomeomorph.comp (isLocalHomeomorph_coe (2 * π))
-
-@[deprecated (since := "2024-07-25")]
-alias isLocalHomeomorph_expMapCircle := isLocalHomeomorph_circleExp

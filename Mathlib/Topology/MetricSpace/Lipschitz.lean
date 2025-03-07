@@ -7,6 +7,7 @@ import Mathlib.Order.Interval.Set.ProjIcc
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Bornology.Hom
 import Mathlib.Topology.EMetricSpace.Lipschitz
+import Mathlib.Topology.Maps.Proper.Basic
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.MetricSpace.Bounded
 
@@ -29,6 +30,8 @@ The parameter `K` has type `ℝ≥0`. This way we avoid conjunction in the defin
 coercions both to `ℝ` and `ℝ≥0∞`. Constructors whose names end with `'` take `K : ℝ` as an
 argument, and return `LipschitzWith (Real.toNNReal K) f`.
 -/
+
+assert_not_exists Basis Ideal
 
 universe u v w x
 
@@ -204,6 +207,13 @@ protected theorem projIcc {a b : ℝ} (h : a ≤ b) : LipschitzWith 1 (projIcc a
 
 end LipschitzWith
 
+/-- The preimage of a proper space under a Lipschitz proper map is proper. -/
+lemma LipschitzWith.properSpace {X Y : Type*} [PseudoMetricSpace X]
+    [PseudoMetricSpace Y] [ProperSpace Y] {f : X → Y} (hf : IsProperMap f)
+    {K : ℝ≥0} (hf' : LipschitzWith K f) : ProperSpace X :=
+  ⟨fun x r ↦ (hf.isCompact_preimage (isCompact_closedBall (f x) (K * r))).of_isClosed_subset
+    Metric.isClosed_closedBall (hf'.mapsTo_closedBall x r).subset_preimage⟩
+
 namespace Metric
 
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] {s : Set α} {t : Set β}
@@ -320,7 +330,7 @@ variable [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β}
 theorem continuousAt_of_locally_lipschitz {x : α} {r : ℝ} (hr : 0 < r) (K : ℝ)
     (h : ∀ y, dist y x < r → dist (f y) (f x) ≤ K * dist y x) : ContinuousAt f x := by
   -- We use `h` to squeeze `dist (f y) (f x)` between `0` and `K * dist y x`
-  refine tendsto_iff_dist_tendsto_zero.2 (squeeze_zero' (eventually_of_forall fun _ => dist_nonneg)
+  refine tendsto_iff_dist_tendsto_zero.2 (squeeze_zero' (Eventually.of_forall fun _ => dist_nonneg)
     (mem_of_superset (ball_mem_nhds _ hr) h) ?_)
   -- Then show that `K * dist y x` tends to zero as `y → x`
   refine (continuous_const.mul (continuous_id.dist continuous_const)).tendsto' _ _ ?_

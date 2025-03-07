@@ -38,7 +38,7 @@ theorem mulAntidiagonal_mono_right (h : t₁ ⊆ t₂) :
 
 end Mul
 
--- Porting note: Removed simp attribute, simpnf linter can simplify lhs. Added aux version below
+-- The left hand side is not in simp normal form, see variant below.
 @[to_additive]
 theorem swap_mem_mulAntidiagonal [CommSemigroup α] {s t : Set α} {a : α} {x : α × α} :
     x.swap ∈ Set.mulAntidiagonal s t a ↔ x ∈ Set.mulAntidiagonal t s a := by
@@ -83,7 +83,8 @@ end CancelCommMonoid
 
 section OrderedCancelCommMonoid
 
-variable [OrderedCancelCommMonoid α] (s t : Set α) (a : α) {x y : mulAntidiagonal s t a}
+variable [CancelCommMonoid α] [PartialOrder α] [MulLeftMono α] [MulRightStrictMono α]
+  (s t : Set α) (a : α) {x y : mulAntidiagonal s t a}
 
 @[to_additive Set.AddAntidiagonal.eq_of_fst_le_fst_of_snd_le_snd]
 theorem eq_of_fst_le_fst_of_snd_le_snd (h₁ : (x : α × α).1 ≤ (y : α × α).1)
@@ -110,8 +111,10 @@ theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (mulAntidiagonal s t
 
 end OrderedCancelCommMonoid
 
+variable [CancelCommMonoid α] [LinearOrder α] [MulLeftMono α] [MulRightStrictMono α]
+
 @[to_additive Set.AddAntidiagonal.finite_of_isWF]
-theorem finite_of_isWF [LinearOrderedCancelCommMonoid α] {s t : Set α} (hs : s.IsWF) (ht : t.IsWF)
+theorem finite_of_isWF {s t : Set α} (hs : s.IsWF) (ht : t.IsWF)
     (a) : (mulAntidiagonal s t a).Finite :=
   finite_of_isPWO hs.isPWO ht.isPWO a
 

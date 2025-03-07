@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Sums.Basic
 
@@ -112,14 +112,14 @@ theorem inverseAssociator_map_inr_inr {X Y : E} (f : inr (inr X) ⟶ inr (inr Y)
 
 /-- The equivalence of categories expressing associativity of sums of categories.
 -/
-def associativity : (C ⊕ D) ⊕ E ≌ C ⊕ (D ⊕ E) :=
-  Equivalence.mk (associator C D E) (inverseAssociator C D E)
-    (NatIso.ofComponents (fun X => eqToIso
-      (by rcases X with ((_|_)|_) <;> rfl)) -- Porting note: aesop_cat fails
-      (by rintro ((_|_)|_) ((_|_)|_) f <;> first | cases f | aesop_cat))
-    (NatIso.ofComponents (fun X => eqToIso
-      (by rcases X with (_|(_|_)) <;> rfl)) -- Porting note: aesop_cat fails
-      (by rintro (_|(_|_)) (_|(_|_)) f <;> first | cases f | aesop_cat))
+@[simps functor inverse]
+def associativity : (C ⊕ D) ⊕ E ≌ C ⊕ (D ⊕ E) where
+  functor := associator C D E
+  inverse := inverseAssociator C D E
+  unitIso := NatIso.ofComponents (by rintro ((_ | _) | _) <;> exact Iso.refl _) (by
+    rintro ((_ | _) | _) ((_ | _) | _) f <;> first | cases f | aesop_cat)
+  counitIso := NatIso.ofComponents (by rintro (_ | (_ | _)) <;> exact Iso.refl _) (by
+    rintro (_ | (_ | _)) (_ | (_ | _)) f <;> first | cases f | aesop_cat)
 
 instance associatorIsEquivalence : (associator C D E).IsEquivalence :=
   (by infer_instance : (associativity C D E).functor.IsEquivalence)

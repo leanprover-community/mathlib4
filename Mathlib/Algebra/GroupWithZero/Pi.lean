@@ -22,7 +22,7 @@ variable {ι : Type*} {α : ι → Type*}
 namespace Pi
 
 section MulZeroClass
-variable [∀ i, MulZeroClass (α i)] [DecidableEq ι] {i j : ι} {f : ∀ i, α i}
+variable [∀ i, MulZeroClass (α i)] [DecidableEq ι] {i : ι} {f : ∀ i, α i}
 
 instance mulZeroClass : MulZeroClass (∀ i, α i) where
   zero_mul := by intros; ext; exact zero_mul _

@@ -59,8 +59,6 @@ abbrev symm (f : Type u₀ → Type u₁) (g : Type v₀ → Type v₁) [ULiftab
 instance refl (f : Type u₀ → Type u₁) [Functor f] [LawfulFunctor f] : ULiftable f f where
   congr e := Functor.mapEquiv _ e
 
-example : ULiftable IO IO := inferInstance
-
 /-- The most common practical use `ULiftable` (together with `down`), the function `up.{v}` takes
 `x : M.{u} α` and lifts it to `M.{max u v} (ULift.{v} α)` -/
 abbrev up {f : Type u₀ → Type u₁} {g : Type max u₀ v → Type v₁} [ULiftable f g] {α} :
@@ -93,12 +91,10 @@ def downMap {F : Type max u₀ v₀ → Type u₁} {G : Type u₀ → Type v₁}
     [Functor F] {α β} (f : α → β) (x : F α) : G β :=
   down (Functor.map (ULift.up.{v₀} ∘ f) x : F (ULift β))
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem up_down {f : Type u₀ → Type u₁} {g : Type max u₀ v₀ → Type v₁} [ULiftable f g] {α}
     (x : g (ULift.{v₀} α)) : up (down x : f α) = x :=
   (ULiftable.congr Equiv.ulift.symm).right_inv _
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem down_up {f : Type u₀ → Type u₁} {g : Type max u₀ v₀ → Type v₁} [ULiftable f g] {α}
     (x : f α) : down (up x : g (ULift.{v₀} α)) = x :=
   (ULiftable.congr Equiv.ulift.symm).left_inv _

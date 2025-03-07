@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
-import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Calculus.ContDiff.Operations
 
 /-!
 # Smooth affine maps
@@ -25,7 +25,7 @@ variable [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 variable [NormedAddCommGroup W] [NormedSpace 𝕜 W]
 
 /-- A continuous affine map between normed vector spaces is smooth. -/
-theorem contDiff {n : ℕ∞} (f : V →ᴬ[𝕜] W) : ContDiff 𝕜 n f := by
+theorem contDiff {n : WithTop ℕ∞} (f : V →ᴬ[𝕜] W) : ContDiff 𝕜 n f := by
   rw [f.decomp]
   apply f.contLinear.contDiff.add
   exact contDiff_const

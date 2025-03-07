@@ -48,7 +48,7 @@ as `x → -∞` (formally, at the filter `Filter.atBot`). We require this for `�
 
 This property holds for linear orders with order topology as well as their products. -/
 class InfConvergenceClass (α : Type*) [Preorder α] [TopologicalSpace α] : Prop where
-  /-- proof that a monotone function tends to `𝓝 a` as `x → -∞`-/
+  /-- proof that a monotone function tends to `𝓝 a` as `x → -∞` -/
   tendsto_coe_atBot_isGLB :
     ∀ (a : α) (s : Set α), IsGLB s a → Tendsto (CoeTC.coe : s → α) atBot (𝓝 a)
 
@@ -67,7 +67,7 @@ instance (priority := 100) LinearOrder.supConvergenceClass [TopologicalSpace α]
   · rcases ha.exists_between hb with ⟨c, hcs, bc, bca⟩
     lift c to s using hcs
     exact (eventually_ge_atTop c).mono fun x hx => bc.trans_le hx
-  · exact eventually_of_forall fun x => (ha.1 x.2).trans_lt hb
+  · exact Eventually.of_forall fun x => (ha.1 x.2).trans_lt hb
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrder.infConvergenceClass [TopologicalSpace α] [LinearOrder α]
@@ -107,7 +107,7 @@ end IsGLB
 
 section CiSup
 
-variable [ConditionallyCompleteLattice α] [SupConvergenceClass α] {f : ι → α} {a : α}
+variable [ConditionallyCompleteLattice α] [SupConvergenceClass α] {f : ι → α}
 
 theorem tendsto_atTop_ciSup (h_mono : Monotone f) (hbdd : BddAbove <| range f) :
     Tendsto f atTop (𝓝 (⨆ i, f i)) := by
@@ -121,7 +121,7 @@ end CiSup
 
 section CiInf
 
-variable [ConditionallyCompleteLattice α] [InfConvergenceClass α] {f : ι → α} {a : α}
+variable [ConditionallyCompleteLattice α] [InfConvergenceClass α] {f : ι → α}
 
 theorem tendsto_atBot_ciInf (h_mono : Monotone f) (hbdd : BddBelow <| range f) :
     Tendsto f atBot (𝓝 (⨅ i, f i)) := by convert tendsto_atTop_ciSup h_mono.dual hbdd.dual using 1
@@ -133,7 +133,7 @@ end CiInf
 
 section iSup
 
-variable [CompleteLattice α] [SupConvergenceClass α] {f : ι → α} {a : α}
+variable [CompleteLattice α] [SupConvergenceClass α] {f : ι → α}
 
 theorem tendsto_atTop_iSup (h_mono : Monotone f) : Tendsto f atTop (𝓝 (⨆ i, f i)) :=
   tendsto_atTop_ciSup h_mono (OrderTop.bddAbove _)
@@ -145,7 +145,7 @@ end iSup
 
 section iInf
 
-variable [CompleteLattice α] [InfConvergenceClass α] {f : ι → α} {a : α}
+variable [CompleteLattice α] [InfConvergenceClass α] {f : ι → α}
 
 theorem tendsto_atBot_iInf (h_mono : Monotone f) : Tendsto f atBot (𝓝 (⨅ i, f i)) :=
   tendsto_atBot_ciInf h_mono (OrderBot.bddBelow _)

@@ -44,7 +44,7 @@ namespace IsCoercive
 variable {V : Type u} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [CompleteSpace V]
 variable {B : V →L[ℝ] V →L[ℝ] ℝ}
 
-local postfix:1024 "♯" => @continuousLinearMapOfBilin ℝ V _ _ _ _
+local postfix:1024 "♯" => continuousLinearMapOfBilin (𝕜 := ℝ)
 
 theorem bounded_below (coercive : IsCoercive B) : ∃ C, 0 < C ∧ ∀ v, C * ‖v‖ ≤ ‖B♯ v‖ := by
   rcases coercive with ⟨C, C_ge_0, coercivity⟩
@@ -64,7 +64,7 @@ theorem antilipschitz (coercive : IsCoercive B) : ∃ C : ℝ≥0, 0 < C ∧ Ant
   refine ⟨C⁻¹.toNNReal, Real.toNNReal_pos.mpr (inv_pos.mpr C_pos), ?_⟩
   refine ContinuousLinearMap.antilipschitz_of_bound B♯ ?_
   simp_rw [Real.coe_toNNReal', max_eq_left_of_lt (inv_pos.mpr C_pos), ←
-    inv_mul_le_iff (inv_pos.mpr C_pos)]
+    inv_mul_le_iff₀ (inv_pos.mpr C_pos)]
   simpa using below_bound
 
 theorem ker_eq_bot (coercive : IsCoercive B) : ker B♯ = ⊥ := by
@@ -76,7 +76,6 @@ theorem isClosed_range (coercive : IsCoercive B) : IsClosed (range B♯ : Set V)
   rcases coercive.antilipschitz with ⟨_, _, antilipschitz⟩
   exact antilipschitz.isClosed_range B♯.uniformContinuous
 
-@[deprecated (since := "2024-03-19")] alias closed_range := isClosed_range
 
 theorem range_eq_top (coercive : IsCoercive B) : range B♯ = ⊤ := by
   haveI := coercive.isClosed_range.completeSpace_coe

@@ -3,7 +3,11 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Algebra.Group.Indicator
+import Mathlib.Order.CompleteLattice.Finset
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.Filter.AtTopBot.Defs
+import Mathlib.Order.Filter.Tendsto
 
 /-!
 # Indicator function and filters
@@ -120,7 +124,7 @@ theorem Filter.EventuallyEq.of_mulIndicator [One β] {l : Filter α} {f : α →
 @[to_additive]
 theorem Filter.EventuallyEq.of_mulIndicator_const [One β] {l : Filter α} {c : β} (hc : c ≠ 1)
     {s t : Set α} (h : s.mulIndicator (fun _ ↦ c) =ᶠ[l] t.mulIndicator fun _ ↦ c) : s =ᶠ[l] t :=
-  .of_mulIndicator (eventually_of_forall fun _ ↦ hc) h
+  .of_mulIndicator (Eventually.of_forall fun _ ↦ hc) h
 
 @[to_additive]
 theorem Filter.mulIndicator_const_eventuallyEq [One β] {l : Filter α} {c : β} (hc : c ≠ 1)

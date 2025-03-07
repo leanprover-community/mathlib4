@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Reid Barton, Simon Hudon, Kenny Lau
+Authors: Kim Morrison, Reid Barton, Simon Hudon, Kenny Lau
 -/
 import Mathlib.Logic.Equiv.Defs
 
@@ -26,11 +26,10 @@ variable (α : Sort u)
 -- example {X Y : C} (f : X ⟶ Y): op Y ⟶ op X := f
 /-- The type of objects of the opposite of `α`; used to define the opposite category.
 
-  Now that Lean 4 supports definitional eta equality for records,
-  both `unop (op X) = X` and `op (unop X) = X` are definitional equalities.
-
+Now that Lean 4 supports definitional eta equality for records,
+both `unop (op X) = X` and `op (unop X) = X` are definitional equalities.
 -/
-structure Opposite :=
+structure Opposite where
   /-- The canonical map `α → αᵒᵖ`. -/
   op ::
   /-- The canonical map `αᵒᵖ → α`. -/

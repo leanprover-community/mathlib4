@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.NumberTheory.NumberField.Embeddings
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.GroupTheory.Torsion
 
 /-!
 # Units of a number field
@@ -25,7 +27,7 @@ places `w` of `K`.
 
 ## Tags
 number field, units
- -/
+-/
 
 open scoped NumberField
 
@@ -94,6 +96,12 @@ protected theorem norm [NumberField K] (x : (𝓞 K)ˣ) :
     |Algebra.norm ℚ (x : K)| = 1 := by
   rw [← RingOfIntegers.coe_norm, isUnit_iff_norm.mp x.isUnit]
 
+variable {K} in
+theorem sum_mult_mul_log [NumberField K] (x : (𝓞 K)ˣ) :
+    ∑ w : InfinitePlace K, w.mult * Real.log (w x) = 0 := by
+  simpa [Units.norm, Real.log_prod, Real.log_pow] using
+    congr_arg Real.log (prod_eq_abs_norm (x : K))
+
 section torsion
 
 /-- The torsion subgroup of the group of units. -/
@@ -102,7 +110,7 @@ def torsion : Subgroup (𝓞 K)ˣ := CommGroup.torsion (𝓞 K)ˣ
 theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
     x ∈ torsion K ↔ ∀ w : InfinitePlace K, w x = 1 := by
   rw [eq_iff_eq (x : K) 1, torsion, CommGroup.mem_torsion]
-  refine ⟨fun hx φ ↦ (((φ.comp $ algebraMap (𝓞 K) K).toMonoidHom.comp $
+  refine ⟨fun hx φ ↦ (((φ.comp <| algebraMap (𝓞 K) K).toMonoidHom.comp <|
     Units.coeHom _).isOfFinOrder hx).norm_eq_one, fun h ↦ isOfFinOrder_iff_pow_eq_one.2 ?_⟩
   obtain ⟨n, hn, hx⟩ := Embeddings.pow_eq_one_of_norm_eq_one K ℂ x.val.isIntegral_coe h
   exact ⟨n, hn, by ext; rw [NumberField.RingOfIntegers.coe_eq_algebraMap, coe_pow, hx,
@@ -121,7 +129,7 @@ instance [NumberField K] : Fintype (torsion K) := by
 
 instance : Nonempty (torsion K) := One.instNonempty
 
-/-- The torsion subgroup is cylic. -/
+/-- The torsion subgroup is cyclic. -/
 instance [NumberField K] : IsCyclic (torsion K) := subgroup_units_cyclic _
 
 /-- The order of the torsion subgroup as a positive integer. -/

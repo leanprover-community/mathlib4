@@ -3,8 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Set.Finite.Lemmas
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.Filter.CountablyGenerated
+import Mathlib.Order.Filter.Ker
 import Mathlib.Order.Filter.Pi
+import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # The cofinite filter
@@ -128,6 +135,50 @@ then for all but countably many elements, `f x ∈ l.ker`. -/
 theorem Tendsto.countable_compl_preimage_ker {f : α → β}
     {l : Filter β} [l.IsCountablyGenerated] (h : Tendsto f cofinite l) :
     Set.Countable (f ⁻¹' l.ker)ᶜ := by rw [← ker_comap]; exact countable_compl_ker h.le_comap
+
+/-- Given a collection of filters `l i : Filter (α i)` and sets `s i ∈ l i`,
+if all but finitely many of `s i` are the whole space,
+then their indexed product `Set.pi Set.univ s` belongs to the filter `Filter.pi l`. -/
+theorem univ_pi_mem_pi {α : ι → Type*} {s : ∀ i, Set (α i)} {l : ∀ i, Filter (α i)}
+    (h : ∀ i, s i ∈ l i) (hfin : ∀ᶠ i in cofinite, s i = univ) : univ.pi s ∈ pi l := by
+  filter_upwards [pi_mem_pi hfin fun i _ ↦ h i] with a ha i _
+  if hi : s i = univ then
+    simp [hi]
+  else
+    exact ha i hi
+
+/-- Given a family of maps `f i : α i → β i` and a family of filters `l i : Filter (α i)`,
+if all but finitely many of `f i` are surjective,
+then the indexed product of `f i`s maps the indexed product of the filters `l i`
+to the indexed products of their pushforwards under individual `f i`s.
+
+See also `map_piMap_pi_finite` for the case of a finite index type.
+-/
+theorem map_piMap_pi {α β : ι → Type*} {f : ∀ i, α i → β i}
+    (hf : ∀ᶠ i in cofinite, Surjective (f i)) (l : ∀ i, Filter (α i)) :
+    map (Pi.map f) (pi l) = pi fun i ↦ map (f i) (l i) := by
+  refine le_antisymm (tendsto_piMap_pi fun _ ↦ tendsto_map) ?_
+  refine ((hasBasis_pi fun i ↦ (l i).basis_sets).map _).ge_iff.2 ?_
+  rintro ⟨I, s⟩ ⟨hI : I.Finite, hs : ∀ i ∈ I, s i ∈ l i⟩
+  classical
+  rw [← univ_pi_piecewise_univ, piMap_image_univ_pi]
+  refine univ_pi_mem_pi (fun i ↦ ?_) ?_
+  · by_cases hi : i ∈ I
+    · simpa [hi] using image_mem_map (hs i hi)
+    · simp [hi]
+  · filter_upwards [hf, hI.compl_mem_cofinite] with i hsurj (hiI : i ∉ I)
+    simp [hiI, hsurj.range_eq]
+
+/-- Given finite families of maps `f i : α i → β i` and of filters `l i : Filter (α i)`,
+the indexed product of `f i`s maps the indexed product of the filters `l i`
+to the indexed products of their pushforwards under individual `f i`s.
+
+See also `map_piMap_pi` for a more general case.
+-/
+theorem map_piMap_pi_finite {α β : ι → Type*} [Finite ι]
+    (f : ∀ i, α i → β i) (l : ∀ i, Filter (α i)) :
+    map (Pi.map f) (pi l) = pi fun i ↦ map (f i) (l i) :=
+  map_piMap_pi (by simp) l
 
 end Filter
 

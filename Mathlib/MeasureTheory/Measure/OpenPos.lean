@@ -100,6 +100,11 @@ theorem _root_.IsClosed.measure_eq_one_iff_eq_univ [OpensMeasurableSpace X] [IsP
 theorem interior_eq_empty_of_null (hs : μ s = 0) : interior s = ∅ :=
   isOpen_interior.eq_empty_of_measure_zero <| measure_mono_null interior_subset hs
 
+/-- A property satisfied almost everywhere is satisfied on a dense subset. -/
+theorem dense_of_ae {p : X → Prop} (hp : ∀ᵐ x ∂μ, p x) : Dense {x | p x} := by
+  rw [dense_iff_closure_eq, closure_eq_compl_interior_compl, compl_univ_iff]
+  exact μ.interior_eq_empty_of_null hp
+
 /-- If two functions are a.e. equal on an open set and are continuous on this set, then they are
 equal on this set. -/
 theorem eqOn_open_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict U] g) (hU : IsOpen U)
@@ -127,13 +132,10 @@ theorem eqOn_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict s] g) (hf : Contin
         (hg.mono this)).of_subset_closure
     hf hg this hU
 
-variable (μ)
-
+variable (μ) in
 theorem _root_.Continuous.ae_eq_iff_eq {f g : X → Y} (hf : Continuous f) (hg : Continuous g) :
     f =ᵐ[μ] g ↔ f = g :=
   ⟨fun h => eq_of_ae_eq h hf hg, fun h => h ▸ EventuallyEq.rfl⟩
-
-variable {μ}
 
 theorem _root_.Continuous.isOpenPosMeasure_map [OpensMeasurableSpace X]
     {Z : Type*} [TopologicalSpace Z] [MeasurableSpace Z] [BorelSpace Z]

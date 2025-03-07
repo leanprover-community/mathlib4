@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
 import Mathlib.Algebra.IsPrimePow
-import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.Tactic.WLOG
 
 /-!
@@ -31,8 +31,6 @@ Note furthermore that no infinite cardinal is irreducible
 
 namespace Cardinal
 
-open Cardinal
-
 universe u
 
 variable {a b : Cardinal.{u}} {n m : ℕ}
@@ -46,7 +44,7 @@ theorem isUnit_iff : IsUnit a ↔ a = 1 := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · exact (not_isUnit_zero h).elim
   rw [isUnit_iff_forall_dvd] at h
-  cases' h 1 with t ht
+  obtain ⟨t, ht⟩ := h 1
   rw [eq_comm, mul_eq_one_iff_of_one_le] at ht
   · exact ht.1
   · exact one_le_iff_ne_zero.mpr ha
@@ -107,7 +105,7 @@ theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by
   · simp only [isUnit_iff, Nat.isUnit_iff]
     exact mod_cast Iff.rfl
   · exact mod_cast h b c (mod_cast hbc)
-  cases' lt_or_le (b * c) ℵ₀ with h' h'
+  rcases lt_or_le (b * c) ℵ₀ with h' | h'
   · rcases mul_lt_aleph0_iff.mp h' with (rfl | rfl | ⟨hb, hc⟩)
     · simp
     · simp
@@ -134,7 +132,7 @@ theorem is_prime_iff {a : Cardinal} : Prime a ↔ ℵ₀ ≤ a ∨ ∃ p : ℕ, 
 theorem isPrimePow_iff {a : Cardinal} : IsPrimePow a ↔ ℵ₀ ≤ a ∨ ∃ n : ℕ, a = n ∧ IsPrimePow n := by
   by_cases h : ℵ₀ ≤ a
   · simp [h, (prime_of_aleph0_le h).isPrimePow]
-  simp only [h, Nat.cast_inj, exists_eq_left', false_or_iff, isPrimePow_nat_iff]
+  simp only [h, Nat.cast_inj, exists_eq_left', false_or, isPrimePow_nat_iff]
   lift a to ℕ using not_le.mp h
   rw [isPrimePow_def]
   refine

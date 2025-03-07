@@ -17,7 +17,7 @@ to clopen sets.
 
 + `IsClopen.biUnion_connectedComponent_eq`: a clopen set is the union of its connected components.
 + `PreconnectedSpace.induction₂`: an induction principle for preconnected spaces.
-+ `ConnectedComponents`: The connected compoenents of a topological space, as a quotient type.
++ `ConnectedComponents`: The connected components of a topological space, as a quotient type.
 
 -/
 
@@ -99,7 +99,7 @@ theorem Continuous.exists_lift_sigma [ConnectedSpace α] [∀ i, TopologicalSpac
     exact ⟨i, hs.trans_subset (image_subset_range _ _)⟩
   rcases range_subset_range_iff_exists_comp.1 hi with ⟨g, rfl⟩
   refine ⟨i, g, ?_, rfl⟩
-  rwa [← embedding_sigmaMk.continuous_iff] at hf
+  rwa [← IsEmbedding.sigmaMk.continuous_iff] at hf
 
 theorem nonempty_inter [PreconnectedSpace α] {s t : Set α} :
     IsOpen s → IsOpen t → s ∪ t = univ → s.Nonempty → t.Nonempty → (s ∩ t).Nonempty := by
@@ -148,7 +148,7 @@ lemma subsingleton_of_disjoint_isClopen
   obtain ⟨i, j, h_ne⟩ := contra
   replace h_ne : s i ∩ s j = ∅ := by
     simpa only [← bot_eq_empty, eq_bot_iff, ← inf_eq_inter, ← disjoint_iff_inf_le] using h_disj h_ne
-  cases' isClopen_iff.mp (h_clopen i) with hi hi
+  rcases isClopen_iff.mp (h_clopen i) with hi | hi
   · exact h_nonempty i hi
   · rw [hi, univ_inter] at h_ne
     exact h_nonempty j h_ne
@@ -264,7 +264,7 @@ theorem isPreconnected_iff_subset_of_disjoint {s : Set α} :
     by_contra H
     specialize h u v hu hv hs (Set.not_nonempty_iff_eq_empty.mp H)
     apply H
-    cases' h with h h
+    rcases h with h | h
     · rcases hsv with ⟨x, hxs, hxv⟩
       exact ⟨x, hxs, ⟨h hxs, hxv⟩⟩
     · rcases hsu with ⟨x, hxs, hxu⟩
@@ -322,7 +322,7 @@ theorem isPreconnected_iff_subset_of_disjoint_closed :
     by_contra H
     specialize h u v hu hv hs (Set.not_nonempty_iff_eq_empty.mp H)
     apply H
-    cases' h with h h
+    rcases h with h | h
     · rcases hsv with ⟨x, hxs, hxv⟩
       exact ⟨x, hxs, ⟨h hxs, hxv⟩⟩
     · rcases hsu with ⟨x, hxs, hxu⟩
@@ -375,9 +375,11 @@ lemma IsClopen.biUnion_connectedComponentIn {X : Type*} [TopologicalSpace X] {u 
   exact le_antisymm (iUnion_subset fun _ ↦ le_rfl) <|
     iUnion_subset fun hx ↦ subset_iUnion₂_of_subset (huv₁ hx) hx le_rfl
 
+variable [TopologicalSpace β] {f : α → β}
+
 /-- The preimage of a connected component is preconnected if the function has connected fibers
 and a subset is closed iff the preimage is. -/
-theorem preimage_connectedComponent_connected [TopologicalSpace β] {f : α → β}
+theorem preimage_connectedComponent_connected
     (connected_fibers : ∀ t : β, IsConnected (f ⁻¹' {t}))
     (hcl : ∀ T : Set β, IsClosed T ↔ IsClosed (f ⁻¹' T)) (t : β) :
     IsConnected (f ⁻¹' connectedComponent t) := by
@@ -429,19 +431,17 @@ theorem preimage_connectedComponent_connected [TopologicalSpace β] {f : α → 
   have hT₂ : IsClosed T₂ := (hcl T₂).2 (T₂_v.symm ▸ IsClosed.inter hT hv)
   have T_decomp : connectedComponent t ⊆ T₁ ∪ T₂ := fun t' ht' => by
     rw [mem_union t' T₁ T₂]
-    cases' fiber_decomp t' ht' with htu htv
-    · left
-      exact ⟨ht', htu⟩
-    right
-    exact ⟨ht', htv⟩
+    rcases fiber_decomp t' ht' with htu | htv
+    · left; exact ⟨ht', htu⟩
+    · right; exact ⟨ht', htv⟩
   have T_disjoint : Disjoint T₁ T₂ := by
     refine Disjoint.of_preimage hf ?_
     rw [T₁_u, T₂_v, disjoint_iff_inter_eq_empty, ← inter_inter_distrib_left, uv_disj.inter_eq,
       inter_empty]
   -- Now we do cases on whether (connectedComponent t) is a subset of T₁ or T₂ to show
   -- that the preimage is a subset of u or v.
-  cases' (isPreconnected_iff_subset_of_fully_disjoint_closed isClosed_connectedComponent).1
-    isPreconnected_connectedComponent T₁ T₂ hT₁ hT₂ T_decomp T_disjoint with h h
+  rcases (isPreconnected_iff_subset_of_fully_disjoint_closed isClosed_connectedComponent).1
+    isPreconnected_connectedComponent T₁ T₂ hT₁ hT₂ T_decomp T_disjoint with h | h
   · left
     rw [Subset.antisymm_iff] at T₁_u
     suffices f ⁻¹' connectedComponent t ⊆ f ⁻¹' T₁
@@ -453,17 +453,23 @@ theorem preimage_connectedComponent_connected [TopologicalSpace β] {f : α → 
       from (this.trans T₂_v.1).trans inter_subset_right
     exact preimage_mono h
 
-theorem QuotientMap.preimage_connectedComponent [TopologicalSpace β] {f : α → β}
-    (hf : QuotientMap f) (h_fibers : ∀ y : β, IsConnected (f ⁻¹' {y})) (a : α) :
+theorem Topology.IsQuotientMap.preimage_connectedComponent (hf : IsQuotientMap f)
+    (h_fibers : ∀ y : β, IsConnected (f ⁻¹' {y})) (a : α) :
     f ⁻¹' connectedComponent (f a) = connectedComponent a :=
   ((preimage_connectedComponent_connected h_fibers (fun _ => hf.isClosed_preimage.symm)
       _).subset_connectedComponent mem_connectedComponent).antisymm
     (hf.continuous.mapsTo_connectedComponent a)
 
-theorem QuotientMap.image_connectedComponent [TopologicalSpace β] {f : α → β} (hf : QuotientMap f)
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.preimage_connectedComponent := IsQuotientMap.preimage_connectedComponent
+
+lemma Topology.IsQuotientMap.image_connectedComponent {f : α → β} (hf : IsQuotientMap f)
     (h_fibers : ∀ y : β, IsConnected (f ⁻¹' {y})) (a : α) :
     f '' connectedComponent a = connectedComponent (f a) := by
   rw [← hf.preimage_connectedComponent h_fibers, image_preimage_eq _ hf.surjective]
+
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.image_connectedComponent := IsQuotientMap.image_connectedComponent
 
 end Preconnected
 
@@ -503,14 +509,17 @@ instance : TopologicalSpace (ConnectedComponents α) :=
   inferInstanceAs (TopologicalSpace (Quotient _))
 
 theorem surjective_coe : Surjective (mk : α → ConnectedComponents α) :=
-  surjective_quot_mk _
+  Quot.mk_surjective
 
-theorem quotientMap_coe : QuotientMap (mk : α → ConnectedComponents α) :=
-  quotientMap_quot_mk
+theorem isQuotientMap_coe : IsQuotientMap (mk : α → ConnectedComponents α) :=
+  isQuotientMap_quot_mk
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_coe := isQuotientMap_coe
 
 @[continuity]
 theorem continuous_coe : Continuous (mk : α → ConnectedComponents α) :=
-  quotientMap_coe.continuous
+  isQuotientMap_coe.continuous
 
 @[simp]
 theorem range_coe : range (mk : α → ConnectedComponents α) = univ :=

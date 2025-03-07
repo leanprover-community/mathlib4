@@ -19,8 +19,8 @@ is the theorem `char_orthonormal`
 
 ## Implementation notes
 
-Irreducible representations are implemented categorically, using the `Simple` class defined in
-`Mathlib.CategoryTheory.Simple`
+Irreducible representations are implemented categorically, using the `CategoryTheory.Simple` class
+defined in `Mathlib.CategoryTheory.Simple`
 
 ## TODO
 * Once we have the monoidal closed structure on `FdRep k G` and a better API for the rigid
@@ -32,7 +32,7 @@ noncomputable section
 
 universe u
 
-open CategoryTheory LinearMap CategoryTheory.MonoidalCategory Representation FiniteDimensional
+open CategoryTheory LinearMap CategoryTheory.MonoidalCategory Representation Module
 
 variable {k : Type u} [Field k]
 
@@ -51,20 +51,13 @@ theorem char_mul_comm (V : FDRep k G) (g : G) (h : G) :
     V.character (h * g) = V.character (g * h) := by simp only [trace_mul_comm, character, map_mul]
 
 @[simp]
-theorem char_one (V : FDRep k G) : V.character 1 = FiniteDimensional.finrank k V := by
+theorem char_one (V : FDRep k G) : V.character 1 = Module.finrank k V := by
   simp only [character, map_one, trace_one]
 
 /-- The character is multiplicative under the tensor product. -/
+@[simp]
 theorem char_tensor (V W : FDRep k G) : (V ⊗ W).character = V.character * W.character := by
   ext g; convert trace_tensorProduct' (V.ρ g) (W.ρ g)
-
--- Porting note: adding variant of `char_tensor` to make the simp-set confluent
-@[simp]
-theorem char_tensor' (V W : FDRep k G) :
-    character (Action.FunctorCategoryEquivalence.inverse.obj
-    (Action.FunctorCategoryEquivalence.functor.obj V ⊗
-     Action.FunctorCategoryEquivalence.functor.obj W)) = V.character * W.character := by
-  simp [← char_tensor]
 
 /-- The character of isomorphic representations is the same. -/
 theorem char_iso {V W : FDRep k G} (i : V ≅ W) : V.character = W.character := by
@@ -96,19 +89,18 @@ variable [Fintype G] [Invertible (Fintype.card G : k)]
 
 theorem average_char_eq_finrank_invariants (V : FDRep k G) :
     ⅟ (Fintype.card G : k) • ∑ g : G, V.character g = finrank k (invariants V.ρ) := by
-  erw [← (isProj_averageMap V.ρ).trace] -- Porting note: Changed `rw` to `erw`
+  rw [← (isProj_averageMap V.ρ).trace]
   simp [character, GroupAlgebra.average, _root_.map_sum]
 
 end Group
 
 section Orthogonality
 
-variable {G : Grp.{u}} [IsAlgClosed k]
-
-open scoped Classical
+variable {G : Type u} [Group G] [IsAlgClosed k]
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
+open scoped Classical in
 /-- Orthogonality of characters for irreducible representations of finite group over an
 algebraically closed field whose characteristic doesn't divide the order of the group. -/
 theorem char_orthonormal (V W : FDRep k G) [Simple V] [Simple W] :
@@ -123,8 +115,8 @@ theorem char_orthonormal (V W : FDRep k G) [Simple V] [Simple W] :
     rw [char_iso (FDRep.dualTensorIsoLinHom W.ρ V)]
   -- The average over the group of the character of a representation equals the dimension of the
   -- space of invariants.
-  rw [average_char_eq_finrank_invariants]
-  rw [show (of (linHom W.ρ V.ρ)).ρ = linHom W.ρ V.ρ from FDRep.of_ρ (linHom W.ρ V.ρ)]
+  rw [average_char_eq_finrank_invariants, ← FDRep.endRingEquiv_comp_ρ (of _),
+      FDRep.of_ρ (linHom W.ρ V.ρ)]
   -- The space of invariants of `Hom(W, V)` is the subspace of `G`-equivariant linear maps,
   -- `Hom_G(W, V)`.
   erw [(linHom.invariantsEquivFDRepHom W V).finrank_eq] -- Porting note: Changed `rw` to `erw`

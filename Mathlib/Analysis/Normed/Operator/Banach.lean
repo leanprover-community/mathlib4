@@ -16,7 +16,6 @@ This file contains the Banach open mapping theorem, i.e., the fact that a biject
 bounded linear map between Banach spaces has a bounded inverse.
 -/
 
-open scoped Classical
 open Function Metric Set Filter Finset Topology NNReal
 
 open LinearMap (range ker)
@@ -121,7 +120,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
       calc
         ‖f x - d • y‖ = ‖f x₁ - (a + d • y) - (f x₂ - a)‖ := by
           congr 1
-          simp only [f.map_sub]
+          simp only [x, f.map_sub]
           abel
         _ ≤ ‖f x₁ - (a + d • y)‖ + ‖f x₂ - a‖ := norm_sub_le _ _
         _ ≤ δ + δ := by rw [dist_eq_norm'] at h₁ h₂; gcongr
@@ -177,9 +176,10 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   refine ⟨2 * C + 1, by linarith, fun y => ?_⟩
   have hnle : ∀ n : ℕ, ‖h^[n] y‖ ≤ (1 / 2) ^ n * ‖y‖ := by
     intro n
-    induction' n with n IH
-    · simp only [one_div, Nat.zero_eq, one_mul, iterate_zero_apply, pow_zero, le_rfl]
-    · rw [iterate_succ']
+    induction n with
+    | zero => simp only [one_div, one_mul, iterate_zero_apply, pow_zero, le_rfl]
+    | succ n IH =>
+      rw [iterate_succ']
       apply le_trans (hle _) _
       rw [pow_succ', mul_assoc]
       gcongr
@@ -205,9 +205,9 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
       _ = (2 * C + 1) * ‖y‖ := by ring
   have fsumeq : ∀ n : ℕ, f (∑ i ∈ Finset.range n, u i) = y - h^[n] y := by
     intro n
-    induction' n with n IH
-    · simp [f.map_zero]
-    · rw [sum_range_succ, f.map_add, IH, iterate_succ_apply', sub_add]
+    induction n with
+    | zero => simp [f.map_zero]
+    | succ n IH => rw [sum_range_succ, f.map_add, IH, iterate_succ_apply', sub_add]
   have : Tendsto (fun n => ∑ i ∈ Finset.range n, u i) atTop (𝓝 x) := su.hasSum.tendsto_sum_nat
   have L₁ : Tendsto (fun n => f (∑ i ∈ Finset.range n, u i)) atTop (𝓝 (f x)) :=
     (f.continuous.tendsto _).comp this
@@ -248,8 +248,11 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
 
   exact Set.mem_image_of_mem _ (hε this)
 
-protected theorem quotientMap (surj : Surjective f) : QuotientMap f :=
-  (f.isOpenMap surj).to_quotientMap f.continuous surj
+theorem isQuotientMap (surj : Surjective f) : IsQuotientMap f :=
+  (f.isOpenMap surj).isQuotientMap f.continuous surj
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap := isQuotientMap
 
 end
 
@@ -280,7 +283,8 @@ theorem frontier_preimage (hsurj : Surjective f) (s : Set F) :
 theorem exists_nonlinearRightInverse_of_surjective (f : E →SL[σ] F)
     (hsurj : LinearMap.range f = ⊤) :
     ∃ fsymm : NonlinearRightInverse f, 0 < fsymm.nnnorm := by
-  choose C hC fsymm h using exists_preimage_norm_le _ (LinearMap.range_eq_top.mp hsurj)
+  choose C hC fsymm h using
+    exists_preimage_norm_le _ (LinearMap.range_eq_top.1 hsurj)
   use {
       toFun := fsymm
       nnnorm := ⟨C, hC.lt.le⟩
@@ -316,7 +320,7 @@ theorem continuous_symm (e : E ≃ₛₗ[σ] F) (h : Continuous e) : Continuous 
   intro s hs
   rw [← e.image_eq_preimage]
   rw [← e.coe_coe] at h ⊢
-  exact ContinuousLinearMap.isOpenMap (σ := σ) ⟨↑e, h⟩ e.surjective s hs
+  exact ContinuousLinearMap.isOpenMap (σ := σ) ⟨_, h⟩ e.surjective s hs
 
 /-- Associating to a linear equivalence between Banach spaces a continuous linear equivalence when
 the direct map is continuous, thanks to the Banach open mapping theorem that ensures that the
@@ -530,7 +534,7 @@ section BijectivityCriteria
 
 namespace ContinuousLinearMap
 
-variable {σ : 𝕜 →+* 𝕜'}  {σ' : 𝕜' →+* 𝕜} [RingHomInvPair σ σ'] {f : E →SL[σ] F}
+variable {σ : 𝕜 →+* 𝕜'} {σ' : 𝕜' →+* 𝕜} [RingHomInvPair σ σ']
 variable {F : Type u_4} [NormedAddCommGroup F] [NormedSpace 𝕜' F]
 variable [CompleteSpace E]
 

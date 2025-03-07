@@ -52,26 +52,26 @@ theorem not_isNilpotent_one [MonoidWithZero R] [Nontrivial R] :
 
 lemma IsNilpotent.pow_succ (n : ℕ) {S : Type*} [MonoidWithZero S] {x : S}
     (hx : IsNilpotent x) : IsNilpotent (x ^ n.succ) := by
-  obtain ⟨N,hN⟩ := hx
+  obtain ⟨N, hN⟩ := hx
   use N
   rw [← pow_mul, Nat.succ_mul, pow_add, hN, mul_zero]
 
-theorem  IsNilpotent.of_pow [MonoidWithZero R] {x : R} {m : ℕ}
+theorem IsNilpotent.of_pow [MonoidWithZero R] {x : R} {m : ℕ}
     (h : IsNilpotent (x ^ m)) : IsNilpotent x := by
   obtain ⟨n, h⟩ := h
-  use m*n
+  use m * n
   rw [← h, pow_mul x m n]
 
 lemma IsNilpotent.pow_of_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
     (hx : IsNilpotent x) (hn : n ≠ 0) : IsNilpotent (x ^ n) := by
   cases n with
   | zero => contradiction
-  | succ => exact  IsNilpotent.pow_succ _ hx
+  | succ => exact IsNilpotent.pow_succ _ hx
 
 @[simp]
-lemma IsNilpotent.pow_iff_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
-    (hn : n ≠ 0) : IsNilpotent (x ^ n) ↔ IsNilpotent x :=
- ⟨fun h => of_pow h, fun h => pow_of_pos h hn⟩
+lemma IsNilpotent.pow_iff_pos {n} {S : Type*} [MonoidWithZero S] {x : S} (hn : n ≠ 0) :
+    IsNilpotent (x ^ n) ↔ IsNilpotent x :=
+  ⟨of_pow, (pow_of_pos · hn)⟩
 
 theorem IsNilpotent.map [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
     [FunLike F R S] [MonoidWithZeroHomClass F R S] (hr : IsNilpotent r) (f : F) :
@@ -167,6 +167,29 @@ end NilpotencyClass
 class IsReduced (R : Type*) [Zero R] [Pow R ℕ] : Prop where
   /-- A reduced structure has no nonzero nilpotent elements. -/
   eq_zero : ∀ x : R, IsNilpotent x → x = 0
+
+namespace IsReduced
+
+theorem pow_eq_zero [Zero R] [Pow R ℕ] [IsReduced R] {n : ℕ} (h : x ^ n = 0) :
+    x = 0 := IsReduced.eq_zero x ⟨n, h⟩
+
+@[simp]
+theorem pow_eq_zero_iff [MonoidWithZero R] [IsReduced R] {n : ℕ} (hn : n ≠ 0) :
+    x ^ n = 0 ↔ x = 0 := ⟨pow_eq_zero, fun h ↦ h.symm ▸ zero_pow hn⟩
+
+theorem pow_ne_zero_iff [MonoidWithZero R] [IsReduced R] {n : ℕ} (hn : n ≠ 0) :
+    x ^ n ≠ 0 ↔ x ≠ 0 := not_congr (pow_eq_zero_iff hn)
+
+theorem pow_ne_zero [Zero R] [Pow R ℕ] [IsReduced R] (n : ℕ) (h : x ≠ 0) :
+    x ^ n ≠ 0 := fun H ↦ h (pow_eq_zero H)
+
+/-- A variant of `IsReduced.pow_eq_zero_iff` assuming `R` is not trivial. -/
+@[simp]
+theorem pow_eq_zero_iff' [MonoidWithZero R] [IsReduced R] [Nontrivial R] {n : ℕ} :
+    x ^ n = 0 ↔ x = 0 ∧ n ≠ 0 := by
+  cases n <;> simp
+
+end IsReduced
 
 instance (priority := 900) isReduced_of_noZeroDivisors [MonoidWithZero R] [NoZeroDivisors R] :
     IsReduced R :=

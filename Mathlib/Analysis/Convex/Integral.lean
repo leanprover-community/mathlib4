@@ -39,9 +39,8 @@ open MeasureTheory MeasureTheory.Measure Metric Set Filter TopologicalSpace Func
 
 open scoped Topology ENNReal Convex
 
-variable {α E F : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [CompleteSpace E] [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F] {μ : Measure α}
-  {s : Set E} {t : Set α} {f : α → E} {g : E → ℝ} {C : ℝ}
+variable {α E : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [CompleteSpace E] {μ : Measure α} {s : Set E} {t : Set α} {f : α → E} {g : E → ℝ} {C : ℝ}
 
 /-!
 ### Non-strict Jensen's inequality
@@ -68,7 +67,7 @@ theorem Convex.integral_mem [IsProbabilityMeasure μ] (hs : Convex ℝ s) (hsc :
   set G : ℕ → SimpleFunc α E := SimpleFunc.approxOn _ hgm.measurable (range g ∩ s) y₀ h₀
   have : Tendsto (fun n => (G n).integral μ) atTop (𝓝 <| ∫ x, g x ∂μ) :=
     tendsto_integral_approxOn_of_measurable hfi _ hg _ (integrable_const _)
-  refine hsc.mem_of_tendsto this (eventually_of_forall fun n => hs.sum_mem ?_ ?_ ?_)
+  refine hsc.mem_of_tendsto this (Eventually.of_forall fun n => hs.sum_mem ?_ ?_ ?_)
   · exact fun _ _ => ENNReal.toReal_nonneg
   · rw [← ENNReal.toReal_sum, (G n).sum_range_measure_preimage_singleton, measure_univ,
       ENNReal.one_toReal]
@@ -82,9 +81,8 @@ theorem Convex.integral_mem [IsProbabilityMeasure μ] (hs : Convex ℝ s) (hsc :
 integrable function sending `μ`-a.e. points to `s`, then the average value of `f` belongs to `s`:
 `⨍ x, f x ∂μ ∈ s`. See also `Convex.centerMass_mem` for a finite sum version of this lemma. -/
 theorem Convex.average_mem [IsFiniteMeasure μ] [NeZero μ] (hs : Convex ℝ s) (hsc : IsClosed s)
-    (hfs : ∀ᵐ x ∂μ, f x ∈ s) (hfi : Integrable f μ) : (⨍ x, f x ∂μ) ∈ s := by
-  refine hs.integral_mem hsc (ae_mono' ?_ hfs) hfi.to_average
-  exact AbsolutelyContinuous.smul (refl _) _
+    (hfs : ∀ᵐ x ∂μ, f x ∈ s) (hfi : Integrable f μ) : (⨍ x, f x ∂μ) ∈ s :=
+  hs.integral_mem hsc (ae_mono' smul_absolutelyContinuous hfs) hfi.to_average
 
 /-- If `μ` is a non-zero finite measure on `α`, `s` is a convex closed set in `E`, and `f` is an
 integrable function sending `μ`-a.e. points to `s`, then the average value of `f` belongs to `s`:
@@ -278,7 +276,7 @@ theorem StrictConvexOn.ae_eq_const_or_map_average_lt [IsFiniteMeasure μ] (hg : 
     ⟨a, b, ha, hb, hab, h_avg⟩
   rw [average_pair hfi hgi, average_pair hfi.integrableOn hgi.integrableOn,
     average_pair hfi.integrableOn hgi.integrableOn, Prod.smul_mk,
-    Prod.smul_mk, Prod.mk_add_mk, Prod.mk.inj_iff] at h_avg
+    Prod.smul_mk, Prod.mk_add_mk, Prod.mk_inj] at h_avg
   simp only [Function.comp] at h_avg
   rw [← h_avg.1, ← h_avg.2]
   calc
@@ -314,8 +312,8 @@ theorem ae_eq_const_or_norm_average_lt_of_norm_le_const [StrictConvexSpace ℝ E
   haveI : IsFiniteMeasure μ := ⟨hμt⟩
   replace h_le : ∀ᵐ x ∂μ, f x ∈ closedBall (0 : E) C := by simpa only [mem_closedBall_zero_iff]
   simpa only [interior_closedBall _ hC0.ne', mem_ball_zero_iff] using
-    (strictConvex_closedBall ℝ (0 : E) C).ae_eq_const_or_average_mem_interior isClosed_ball h_le
-      hfi
+    (strictConvex_closedBall ℝ (0 : E) C).ae_eq_const_or_average_mem_interior isClosed_closedBall
+      h_le hfi
 
 /-- If `E` is a strictly convex normed space and `f : α → E` is a function such that `‖f x‖ ≤ C`
 a.e., then either this function is a.e. equal to its average value, or the norm of its integral is
@@ -328,7 +326,7 @@ theorem ae_eq_const_or_norm_integral_lt_of_norm_le_const [StrictConvexSpace ℝ 
     simp [ENNReal.toReal_pos_iff, pos_iff_ne_zero, h₀, measure_lt_top]
   refine (ae_eq_const_or_norm_average_lt_of_norm_le_const h_le).imp_right fun H => ?_
   rwa [average_eq, norm_smul, norm_inv, Real.norm_eq_abs, abs_of_pos hμ, ← div_eq_inv_mul,
-    div_lt_iff' hμ] at H
+    div_lt_iff₀' hμ] at H
 
 /-- If `E` is a strictly convex normed space and `f : α → E` is a function such that `‖f x‖ ≤ C`
 a.e. on a set `t` of finite measure, then either this function is a.e. equal to its average value on
@@ -339,7 +337,3 @@ theorem ae_eq_const_or_norm_setIntegral_lt_of_norm_le_const [StrictConvexSpace �
   haveI := Fact.mk ht.lt_top
   rw [← restrict_apply_univ]
   exact ae_eq_const_or_norm_integral_lt_of_norm_le_const h_le
-
-@[deprecated (since := "2024-04-17")]
-alias ae_eq_const_or_norm_set_integral_lt_of_norm_le_const :=
-  ae_eq_const_or_norm_setIntegral_lt_of_norm_le_const

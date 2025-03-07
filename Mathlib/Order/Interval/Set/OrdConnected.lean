@@ -27,15 +27,7 @@ namespace Set
 
 section Preorder
 
-variable {α β : Type*} [Preorder α] [Preorder β] {s t : Set α}
-
-/-- We say that a set `s : Set α` is `OrdConnected` if for all `x y ∈ s` it includes the
-interval `[[x, y]]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with
-the `OrderTopology`, then this condition is equivalent to `IsPreconnected s`. If `α` is a
-`LinearOrderedField`, then this condition is also equivalent to `Convex α s`. -/
-class OrdConnected (s : Set α) : Prop where
-  /-- `s : Set α` is `OrdConnected` if for all `x y ∈ s` it includes the interval `[[x, y]]`. -/
-  out' ⦃x⦄ (hx : x ∈ s) ⦃y⦄ (hy : y ∈ s) : Icc x y ⊆ s
+variable {α β : Type*} [Preorder α] [Preorder β] {s : Set α}
 
 theorem OrdConnected.out (h : OrdConnected s) : ∀ ⦃x⦄ (_ : x ∈ s) ⦃y⦄ (_ : y ∈ s), Icc x y ⊆ s :=
   h.1
@@ -101,7 +93,7 @@ namespace Set
 
 section Preorder
 
-variable {α β : Type*} [Preorder α] [Preorder β] {s t : Set α}
+variable {α β : Type*} [Preorder α] [Preorder β]
 
 @[simp]
 lemma image_subtype_val_Icc {s : Set α} [OrdConnected s] (x y : s) :
@@ -150,7 +142,6 @@ instance ordConnected_iInter' {ι : Sort*} {s : ι → Set α} [∀ i, OrdConnec
     OrdConnected (⋂ i, s i) :=
   ordConnected_iInter ‹_›
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 theorem ordConnected_biInter {ι : Sort*} {p : ι → Prop} {s : ∀ i, p i → Set α}
     (hs : ∀ i hi, OrdConnected (s i hi)) : OrdConnected (⋂ (i) (hi), s i hi) :=
   ordConnected_iInter fun i => ordConnected_iInter <| hs i

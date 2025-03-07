@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
 import Mathlib.Tactic.Positivity.Core
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GCongr.CoreAttrs
 
 /-! # Setup for the `gcongr` tactic
 
@@ -13,3 +13,9 @@ The core implementation of the `gcongr` ("generalized congruence") tactic is in 
 `positivity` as a first-pass discharger for side goals (`gcongr_discharger`). -/
 
 macro_rules | `(tactic| gcongr_discharger) => `(tactic| positivity)
+
+/-!
+We register `gcongr` with the `hint` tactic.
+-/
+
+register_hint gcongr

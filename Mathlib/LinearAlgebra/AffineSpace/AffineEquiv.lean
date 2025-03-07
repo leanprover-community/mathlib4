@@ -40,8 +40,6 @@ such that both forward and inverse maps are affine.
 
 We define it using an `Equiv` for the map and a `LinearEquiv` for the linear part in order
 to allow affine equivalences with good definitional equalities. -/
--- Porting note(#5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure AffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring k] [AddCommGroup V₁] [Module k V₁]
   [AddTorsor V₁ P₁] [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] extends P₁ ≃ P₂ where
   linear : V₁ ≃ₗ[k] V₂
@@ -88,9 +86,6 @@ instance equivLike : EquivLike (P₁ ≃ᵃ[k] P₂) P₁ P₂ where
   left_inv f := f.left_inv
   right_inv f := f.right_inv
   coe_injective' _ _ h _ := toAffineMap_injective (DFunLike.coe_injective h)
-
-instance : CoeFun (P₁ ≃ᵃ[k] P₂) fun _ => P₁ → P₂ :=
-  DFunLike.hasCoeToFun
 
 instance : CoeOut (P₁ ≃ᵃ[k] P₂) (P₁ ≃ P₂) :=
   ⟨AffineEquiv.toEquiv⟩
@@ -211,9 +206,7 @@ theorem ofBijective.symm_eq {φ : P₁ →ᵃ[k] P₂} (hφ : Function.Bijective
     (ofBijective hφ).symm.toEquiv = (Equiv.ofBijective _ hφ).symm :=
   rfl
 
-@[simp]
-theorem range_eq (e : P₁ ≃ᵃ[k] P₂) : range e = univ :=
-  e.surjective.range_eq
+theorem range_eq (e : P₁ ≃ᵃ[k] P₂) : range e = univ := by simp
 
 @[simp]
 theorem apply_symm_apply (e : P₁ ≃ᵃ[k] P₂) (p : P₂) : e (e.symm p) = p :=
@@ -323,7 +316,7 @@ instance group : Group (P₁ ≃ᵃ[k] P₁) where
   one := refl k P₁
   mul e e' := e'.trans e
   inv := symm
-  mul_assoc e₁ e₂ e₃ := trans_assoc _ _ _
+  mul_assoc _ _ _ := trans_assoc _ _ _
   one_mul := trans_refl
   mul_one := refl_trans
   inv_mul_cancel := self_trans_symm
@@ -425,7 +418,7 @@ theorem constVAdd_symm (v : V₁) : (constVAdd k P₁ v).symm = constVAdd k P₁
 /-- A more bundled version of `AffineEquiv.constVAdd`. -/
 @[simps]
 def constVAddHom : Multiplicative V₁ →* P₁ ≃ᵃ[k] P₁ where
-  toFun v := constVAdd k P₁ (Multiplicative.toAdd v)
+  toFun v := constVAdd k P₁ v.toAdd
   map_one' := constVAdd_zero _ _
   map_mul' := constVAdd_add _ P₁
 
@@ -470,7 +463,11 @@ open Function
 def pointReflection (x : P₁) : P₁ ≃ᵃ[k] P₁ :=
   (constVSub k x).trans (vaddConst k x)
 
-theorem pointReflection_apply (x y : P₁) : pointReflection k x y = x -ᵥ y +ᵥ x :=
+@[simp] lemma pointReflection_apply_eq_equivPointReflection_apply (x y : P₁) :
+    pointReflection k x y = Equiv.pointReflection x y :=
+  rfl
+
+theorem pointReflection_apply (x y : P₁) : pointReflection k x y = (x -ᵥ y) +ᵥ x :=
   rfl
 
 @[simp]
@@ -482,29 +479,32 @@ theorem toEquiv_pointReflection (x : P₁) :
     (pointReflection k x).toEquiv = Equiv.pointReflection x :=
   rfl
 
-@[simp]
 theorem pointReflection_self (x : P₁) : pointReflection k x x = x :=
   vsub_vadd _ _
 
 theorem pointReflection_involutive (x : P₁) : Involutive (pointReflection k x : P₁ → P₁) :=
   Equiv.pointReflection_involutive x
 
-set_option linter.deprecated false in
 /-- `x` is the only fixed point of `pointReflection x`. This lemma requires
 `x + x = y + y ↔ x = y`. There is no typeclass to use here, so we add it as an explicit argument. -/
-theorem pointReflection_fixed_iff_of_injective_bit0 {x y : P₁} (h : Injective (2 • · : V₁ → V₁)) :
-    pointReflection k x y = y ↔ y = x :=
-  Equiv.pointReflection_fixed_iff_of_injective_bit0 h
+theorem pointReflection_fixed_iff_of_injective_two_nsmul {x y : P₁}
+    (h : Injective (2 • · : V₁ → V₁)) : pointReflection k x y = y ↔ y = x :=
+  Equiv.pointReflection_fixed_iff_of_injective_two_nsmul h
 
-set_option linter.deprecated false in
-theorem injective_pointReflection_left_of_injective_bit0
+@[deprecated (since := "2024-11-18")] alias pointReflection_fixed_iff_of_injective_bit0 :=
+pointReflection_fixed_iff_of_injective_two_nsmul
+
+theorem injective_pointReflection_left_of_injective_two_nsmul
     (h : Injective (2 • · : V₁ → V₁)) (y : P₁) :
     Injective fun x : P₁ => pointReflection k x y :=
-  Equiv.injective_pointReflection_left_of_injective_bit0 h y
+  Equiv.injective_pointReflection_left_of_injective_two_nsmul h y
+
+@[deprecated (since := "2024-11-18")] alias injective_pointReflection_left_of_injective_bit0 :=
+injective_pointReflection_left_of_injective_two_nsmul
 
 theorem injective_pointReflection_left_of_module [Invertible (2 : k)] :
     ∀ y, Injective fun x : P₁ => pointReflection k x y :=
-  injective_pointReflection_left_of_injective_bit0 k fun x y h => by
+  injective_pointReflection_left_of_injective_two_nsmul k fun x y h => by
     dsimp at h
     rwa [two_nsmul, two_nsmul, ← two_smul k x, ← two_smul k y,
       (isUnit_of_invertible (2 : k)).smul_left_cancel] at h
@@ -552,6 +552,6 @@ theorem vadd_lineMap (v : V₁) (p₁ p₂ : P₁) (c : k) :
 variable {R' : Type*} [CommRing R'] [Module R' V₁]
 
 theorem homothety_neg_one_apply (c p : P₁) : homothety c (-1 : R') p = pointReflection R' c p := by
-  simp [homothety_apply, pointReflection_apply]
+  simp [homothety_apply, Equiv.pointReflection_apply]
 
 end AffineMap
