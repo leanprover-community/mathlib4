@@ -7,6 +7,7 @@ import Mathlib.Algebra.CharP.Reduced
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Data.Nat.Prime.Int
 import Mathlib.Data.ZMod.ValMinAbs
+import Mathlib.FieldTheory.Finiteness
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.IntegralDomain
 

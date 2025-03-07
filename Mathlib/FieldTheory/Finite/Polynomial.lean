@@ -5,9 +5,9 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
 ## Polynomials over finite fields
