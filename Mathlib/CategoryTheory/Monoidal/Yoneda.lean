@@ -203,10 +203,8 @@ end Mon_
 
 section CommMon_
 
-variable [ChosenFiniteProducts C]
-
 /-- If `X` represents a presheaf of commutative groups, then `X` is a commutative group object. -/
-def IsCommMon.ofRepresentableBy (F : Cᵒᵖ ⥤ CommMonCat)
+lemma IsCommMon.ofRepresentableBy (F : Cᵒᵖ ⥤ CommMonCat)
     (α : (F ⋙ forget _).RepresentableBy X) :
     letI := Mon_Class.ofRepresentableBy X (F ⋙ (forget₂ CommMonCat MonCat)) α
     IsCommMon X := by
