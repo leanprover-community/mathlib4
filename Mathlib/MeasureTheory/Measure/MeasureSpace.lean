@@ -711,9 +711,6 @@ end OuterMeasure
 
 section
 
-/- Porting note: These variables are wrapped by an anonymous section because they interrupt
-synthesizing instances in `MeasureSpace` section. -/
-
 variable {m0 : MeasurableSpace α} {mβ : MeasurableSpace β} [MeasurableSpace γ]
 variable {μ μ₁ μ₂ μ₃ ν ν' ν₁ ν₂ : Measure α} {s s' t : Set α}
 namespace Measure

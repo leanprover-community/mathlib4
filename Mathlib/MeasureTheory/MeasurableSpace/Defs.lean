@@ -60,13 +60,9 @@ instance [h : MeasurableSpace α] : MeasurableSpace αᵒᵈ := h
 def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
   ‹MeasurableSpace α›.MeasurableSet' s
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `scoped[MeasureTheory]` doesn't work for unknown reason
-namespace MeasureTheory
-set_option quotPrecheck false in
 /-- Notation for `MeasurableSet` with respect to a non-standard σ-algebra. -/
-scoped notation "MeasurableSet[" m "]" => @MeasurableSet _ m
+scoped[MeasureTheory] notation "MeasurableSet[" m "]" => @MeasurableSet _ m
 
-end MeasureTheory
 open MeasureTheory
 
 section
