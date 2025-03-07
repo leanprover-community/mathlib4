@@ -204,6 +204,14 @@ theorem contMDiffAt_section (s : ∀ x, E x) (x₀ : B) :
       ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ := by
   simp_rw [contMDiffAt_totalSpace, and_iff_right_iff_imp]; intro; exact contMDiffAt_id
 
+theorem contMDiffAt_of_totalSpace (f : TotalSpace F E → M) {x₀ : TotalSpace F E} :
+    ContMDiffAt (IB.prod 𝓘(𝕜, F)) IM n f x₀ ↔
+    ContMDiffAt (IB.prod 𝓘(𝕜, F)) IM n
+      (f ∘ (trivializationAt F E x₀.proj).toPartialHomeomorph.symm)
+      (trivializationAt F E x₀.proj x₀) := by
+  rw [contMDiffAt_iff_source, contMDiffAt_iff_source (x := (trivializationAt F E x₀.proj x₀))]
+  rfl
+
 variable (E)
 
 theorem contMDiff_proj : ContMDiff (IB.prod 𝓘(𝕜, F)) IB n (π F E) := fun x ↦ by
@@ -640,7 +648,7 @@ theorem Bundle.Prod.contMDiff_fst :
     rw [contMDiffAt_iff_contDiffAt]
     exact contDiffAt_fst
   simp [trivializationAt, FiberBundle.trivializationAt']
-  rw [contMDiffAt_iff_source_of_mem_source]
+  rw [contMDiffAt_iff_source]
 
 #exit
 
