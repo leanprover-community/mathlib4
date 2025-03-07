@@ -795,3 +795,11 @@ lemma mul_mk {M} [CommMagma M] (xy : M × M) :
     mul (.mk xy) = xy.1 * xy.2 := rfl
 
 end Sym2
+
+lemma Sym2.fromRel_relationMap {r : α → α → Prop} (hr : Symmetric r) {f : α → β} :
+    Sym2.fromRel (Relation.map_symmetric hr f) = Sym2.map f '' Sym2.fromRel hr := by
+  ext ⟨a, b⟩
+  simp only [fromRel_proj_prop, Relation.Map, Set.mem_image, Sym2.exists, map_pair_eq, Sym2.eq,
+    rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, and_or_left, exists_or, iff_self_or,
+    forall_exists_index, and_imp]
+  exact fun c d hcd hc hd ↦ ⟨d, c, hr hcd, hd, hc⟩

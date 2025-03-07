@@ -645,12 +645,7 @@ theorem map_sup (f : G →g G') (H₁ H₂ : G.Subgraph) : (H₁ ⊔ H₂).map f
   ext <;> simp [Set.image_union, map_adj, sup_adj, Relation.Map, or_and_right, exists_or]
 
 @[simp] lemma edgeSet_map (f : G →g G') (H : G.Subgraph) :
-    (H.map f).edgeSet = Sym2.map f '' H.edgeSet := by
-  ext ⟨a, b⟩
-  simp only [Subgraph.mem_edgeSet, map_adj, Relation.Map, Set.mem_image, Sym2.exists,
-    Sym2.map_pair_eq, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, and_or_left,
-    exists_or, iff_self_or, forall_exists_index, and_imp]
-  exact fun c d hcd hc hd ↦ ⟨d, c, hcd.symm, hd, hc⟩
+    (H.map f).edgeSet = Sym2.map f '' H.edgeSet := Sym2.fromRel_relationMap _
 
 end map
 
