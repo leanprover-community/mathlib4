@@ -334,6 +334,12 @@ theorem coe_finRotate (i : Fin n.succ) :
     (finRotate n.succ i : ℕ) = if i = Fin.last n then (0 : ℕ) else i + 1 := by
   rw [finRotate_succ_apply, Fin.val_add_one i]
 
+theorem lt_finRotate_iff_ne_last (i : Fin (n + 1)) :
+    i < finRotate _ i ↔ i ≠ Fin.last n := by
+  refine ⟨fun hi hc ↦ ?_, fun hi ↦ ?_⟩
+  · simp only [hc, finRotate_succ_apply, Fin.last_add_one, Fin.not_lt_zero] at hi
+  · rw [Fin.lt_iff_val_lt_val, coe_finRotate_of_ne_last hi, Nat.lt_add_one_iff]
+
 /-- Equivalence between `Fin m × Fin n` and `Fin (m * n)` -/
 @[simps]
 def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n) where
