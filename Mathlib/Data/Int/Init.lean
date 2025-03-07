@@ -52,8 +52,6 @@ protected lemma one_ne_zero : (1 : ℤ) ≠ 0 := by decide
 
 protected lemma one_nonneg : 0 ≤ (1 : ℤ) := Int.le_of_lt Int.zero_lt_one
 
-lemma zero_le_ofNat (n : ℕ) : 0 ≤ ofNat n := @le.intro _ _ n (by rw [Int.zero_add]; rfl)
-
 protected theorem neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 h
 
 -- We want to use these lemmas earlier than the lemmas simp can prove them with
@@ -66,9 +64,7 @@ protected lemma neg_nonneg : 0 ≤ -a ↔ a ≤ 0 := ⟨Int.nonpos_of_neg_nonneg
 @[simp, nolint simpNF]
 protected lemma neg_neg_iff_pos : -a < 0 ↔ 0 < a := ⟨Int.pos_of_neg_neg, Int.neg_neg_of_pos⟩
 
-@[simp, nolint simpNF]
-protected lemma neg_nonpos_iff_nonneg : -a ≤ 0 ↔ 0 ≤ a :=
-  ⟨Int.nonneg_of_neg_nonpos, Int.neg_nonpos_of_nonneg⟩
+@[deprecated (since := "2025-03-07")] alias neg_nonpos_iff_nonneg := neg_nonpos_iff
 
 @[simp, nolint simpNF]
 protected lemma sub_pos : 0 < a - b ↔ b < a := ⟨Int.lt_of_sub_pos, Int.sub_pos_of_lt⟩
