@@ -214,38 +214,6 @@ theorem linearCombination_coord [CommRing R] [AddCommGroup M] [Module R M] [Fini
 
 end Basis
 
-namespace Module
-
-universe uK uV
-variable {K : Type uK} {V : Type uV}
-variable [CommRing K] [AddCommGroup V] [Module K V]
-
-open Module Module.Dual Submodule LinearMap Basis Module
-
-section IsReflexive
-
-open Function
-
-variable (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
-
-variable [IsReflexive R M]
-
--- see Note [lower instance priority]
-instance (priority := 100) [IsDomain R] : NoZeroSMulDivisors R M := by
-  refine (noZeroSMulDivisors_iff R M).mpr ?_
-  intro r m hrm
-  rw [or_iff_not_imp_left]
-  intro hr
-  suffices Dual.eval R M m = Dual.eval R M 0 from (bijective_dual_eval R M).injective this
-  ext n
-  simp only [Dual.eval_apply, map_zero, LinearMap.zero_apply]
-  suffices r • n m = 0 from eq_zero_of_ne_zero_of_mul_left_eq_zero hr this
-  rw [← LinearMap.map_smul_of_tower, hrm, LinearMap.map_zero]
-
-end IsReflexive
-
-end Module
-
 section DualBases
 
 open Module
