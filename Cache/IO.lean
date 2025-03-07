@@ -426,14 +426,14 @@ Note: An argument like `Archive` is treated as module, not a path.
 -/
 def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
     IO <| Except String <| Array (Name × FilePath) := do
-  let arg : FilePath := (argₛ : FilePath)
+  let arg : FilePath := argₛ
   if arg.components.length > 1 || arg.extension == "lean" then
     -- provided file name of a Lean file
     let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
     if !(← arg.pathExists) then
-      -- TODO: (5.) We could use `srcDir` to allow arguments like `Aesop/Builder.lean` which
+      -- TODO: (5.) We could use `getSrcDir` to allow arguments like `Aesop/Builder.lean` which
       -- refer to a file located under `.lake/packages/...`
-      return .error "Invalid argument: non-existing path {arg}"
+      return .error s!"Invalid argument: non-existing path {arg}"
     if arg.extension == "lean" then
       -- (3.) provided existing `.lean` file
       return .ok #[(mod, arg)]
