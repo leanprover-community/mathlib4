@@ -444,4 +444,28 @@ def trans (φ : UnorientedCobordism k s t J) (ψ : UnorientedCobordism k t u J)
 
 end trans
 
+variable (X k I) in
+def unorientedBordismRelation (J : ModelWithCorners ℝ E' H') :
+    SingularNManifold X k I → SingularNManifold X k I → Prop :=
+  -- errors with: failed to infer universe levels in binder type
+  -- fun s t ↦ ∃ φ : UnorientedCobordism k s t J, True
+  fun _ _ ↦ true
+
+variable (X k I J) in -- dummy proofs, for now
+def uBordismRelation  :
+    Equivalence (unorientedBordismRelation X k I J) := by
+  apply Equivalence.mk
+  · exact fun _s ↦ by trivial
+  · intro _s _t h
+    exact h
+  · intro _s _t _u _hst _htu
+    trivial
+
+variable (X k I J) in
+def ubSetoid : Setoid (SingularNManifold X k I) := Setoid.mk _ (uBordismRelation X k I J)
+
+variable (X k n) in
+/-- The type of unoriented `n`-dimensional `C^k` bordism classes on `X`. -/
+abbrev uBordismClasses (n : ℕ) := Quotient <| Setoid.mk _ <| uBordismRelation X k (𝓡 n) (𝓡 (n + 1))
+
 end UnorientedCobordism
