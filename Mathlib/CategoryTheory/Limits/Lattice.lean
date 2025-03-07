@@ -161,6 +161,7 @@ variable {α : Type u} [CompleteLattice α] {J : Type w} [Category.{w'} J]
 
 /-- The limit cone over any functor into a complete lattice.
 -/
+@[simps]
 def limitCone (F : J ⥤ α) : LimitCone F where
   cone :=
     { pt := iInf F.obj
@@ -171,6 +172,7 @@ def limitCone (F : J ⥤ α) : LimitCone F where
 
 /-- The colimit cocone over any functor into a complete lattice.
 -/
+@[simps]
 def colimitCocone (F : J ⥤ α) : ColimitCocone F where
   cocone :=
     { pt := iSup F.obj
