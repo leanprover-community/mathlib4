@@ -5,8 +5,6 @@ Authors: Huanyu Zheng, Weichen Jiao, Yi Yuan
 -/
 import Mathlib.RingTheory.FilteredAlgebra.Exactness
 import Mathlib.Tactic.Linarith.Frontend
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.Algebra.Ring.Subring.Basic
 
 variable {R S T σR σS σT : Type*}
 

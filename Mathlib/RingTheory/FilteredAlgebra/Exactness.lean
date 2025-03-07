@@ -5,6 +5,9 @@ Authors: Huanyu Zheng, Weichen Jiao, Yi Yuan
 -/
 import Mathlib.Algebra.Exact
 import Mathlib.RingTheory.FilteredAlgebra.FilteredHom
+import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.Algebra.Ring.Subring.Basic
+
 
 /-!
 
@@ -105,6 +108,24 @@ theorem iff2 (m : AssociatedGraded FS FS_lt): m ∈ Set.range Gr[f] ↔
     by_cases mem : i ∈ support m
     · rw [mk_apply_of_mem mem, Classical.choose_spec (h i)]
     · rw [mk_apply_of_not_mem mem, not_mem_support_iff.mp mem, map_zero]
+
+open AddMonoidHom
+
+
+omit [IsRingFiltration FS FS_lt] in
+theorem Gf_in_range_iff_of_in_range {i : ι}(u : GradedPiece FS FS_lt i): u ∈ Set.range Gr(i)[f] ↔
+    (of (GradedPiece FS FS_lt) i u) ∈ Set.range Gr[f] := by
+  rw[iff2]
+  constructor
+  · intro h j
+    by_cases ch : i = j
+    · rwa [← ch, of_eq_same]
+    · use 0
+      rw [of_eq_of_ne i j u ch, map_zero]
+  · intro h
+    have := h i
+    simp at this
+    exact this
 
 
 
