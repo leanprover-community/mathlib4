@@ -30,10 +30,6 @@ variable (f g s) in
 @[to_additive]
 lemma divPairs_comap :
     divPairs g (.comap (g.mulEquivOfLocalizations f).toMonoidHom s) = divPairs f s := by
-  unfold divPairs
-  rw [comap_comap]
-  congr!
-  ext ⟨a, b⟩
-  simp
+  ext; simp
 
 end Submonoid
