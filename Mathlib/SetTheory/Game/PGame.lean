@@ -1760,8 +1760,8 @@ lemma Identical.add {x₁ x₂ y₁ y₂ : PGame.{u}} (hx : x₁ ≡ x₂) (hy :
 
 lemma memₗ_add_iff {x y₁ y₂ : PGame} :
     x ∈ₗ y₁ + y₂ ↔ (∃ z ∈ₗ y₁, x ≡ z + y₂) ∨ (∃ z ∈ₗ y₂, x ≡ y₁ + z) := by
-  cases' y₁ with y₁l y₁r y₁L y₁R
-  cases' y₂ with y₂l y₂r y₂L y₂R
+  obtain ⟨y₁l, y₁r, y₁L, y₁R⟩ := y₁
+  obtain ⟨y₂l, y₂r, y₂L, y₂R⟩ := y₂
   constructor
   · rintro ⟨(i | i), hi⟩
     exacts [.inl ⟨y₁L i, moveLeft_memₗ _ _, hi⟩, .inr ⟨y₂L i, moveLeft_memₗ _ _, hi⟩]
@@ -1770,8 +1770,8 @@ lemma memₗ_add_iff {x y₁ y₂ : PGame} :
 
 lemma memᵣ_add_iff {x y₁ y₂ : PGame} :
     x ∈ᵣ y₁ + y₂ ↔ (∃ z ∈ᵣ y₁, x ≡ z + y₂) ∨ (∃ z ∈ᵣ y₂, x ≡ y₁ + z) := by
-  cases' y₁ with y₁l y₁r y₁L y₁R
-  cases' y₂ with y₂l y₂r y₂L y₂R
+  obtain ⟨y₁l, y₁r, y₁L, y₁R⟩ := y₁
+  obtain ⟨y₂l, y₂r, y₂L, y₂R⟩ := y₂
   constructor
   · rintro ⟨(i | i), hi⟩
     exacts [.inl ⟨y₁R i, moveRight_memᵣ _ _, hi⟩, .inr ⟨y₂R i, moveRight_memᵣ _ _, hi⟩]
@@ -1862,7 +1862,7 @@ theorem add_assoc_equiv {x y z : PGame} : x + y + z ≈ x + (y + z) :=
 theorem neg_add_cancel_le_zero : ∀ x : PGame, -x + x ≤ 0
   | ⟨xl, xr, xL, xR⟩ =>
     le_zero.2 fun i => by
-      cases' i with i i
+      obtain i | i := i
       · -- If Left played in -x, Right responds with the same move in x.
         refine ⟨@toRightMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), ?_⟩
         convert @neg_add_cancel_le_zero (xR i)
@@ -1894,7 +1894,7 @@ theorem sub_self_equiv : ∀ (x : PGame), x - x ≈ 0 :=
 
 private theorem add_le_add_right' : ∀ {x y z : PGame}, x ≤ y → x + z ≤ y + z
   | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR => fun h => by
-    refine le_def.2 ⟨fun i => ?_, fun i => ?_⟩ <;> cases' i with i i
+    refine le_def.2 ⟨fun i => ?_, fun i => ?_⟩ <;> obtain i | i := i
     · rw [le_def] at h
       obtain ⟨h_left, h_right⟩ := h
       rcases h_left i with (⟨i', ih⟩ | ⟨j, jh⟩)

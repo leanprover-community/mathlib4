@@ -40,7 +40,7 @@ def SimplexCategory :=
 
 namespace SimplexCategory
 
--- Porting note: the definition of `SimplexCategory` is made irreducible below
+-- The definition of `SimplexCategory` is made irreducible below.
 /-- Interpret a natural number as an object of the simplex category. -/
 def mk (n : ℕ) : SimplexCategory :=
   n
@@ -159,7 +159,7 @@ def inclusion (n : ℕ) : SimplexCategory.Truncated n ⥤ SimplexCategory :=
 instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Full := FullSubcategory.full _
 instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Faithful := FullSubcategory.faithful _
 
-/-- A proof that the full subcategory inclusion is fully faithful.-/
+/-- A proof that the full subcategory inclusion is fully faithful -/
 noncomputable def inclusion.fullyFaithful (n : ℕ) :
     (inclusion n : Truncated n ⥤ _).op.FullyFaithful := Functor.FullyFaithful.ofFullyFaithful _
 

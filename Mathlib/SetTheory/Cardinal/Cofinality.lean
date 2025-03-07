@@ -279,45 +279,18 @@ theorem cof_iSup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
   rw [H]
   exact cof_lsub_le_lift f
 
-set_option linter.deprecated false in
-@[deprecated cof_iSup_le_lift (since := "2024-08-27")]
-theorem cof_sup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < sup.{u, v} f) :
-    cof (sup.{u, v} f) ≤ Cardinal.lift.{v, u} #ι := by
-  rw [← sup_eq_lsub_iff_lt_sup.{u, v}] at H
-  rw [H]
-  exact cof_lsub_le_lift f
-
 theorem cof_iSup_le {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
     cof (iSup f) ≤ #ι := by
   rw [← (#ι).lift_id]
   exact cof_iSup_le_lift H
 
-set_option linter.deprecated false in
-@[deprecated cof_iSup_le (since := "2024-08-27")]
-theorem cof_sup_le {ι} {f : ι → Ordinal} (H : ∀ i, f i < sup.{u, u} f) :
-    cof (sup.{u, u} f) ≤ #ι := by
-  rw [← (#ι).lift_id]
-  exact cof_sup_le_lift H
-
 theorem iSup_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal} (hι : Cardinal.lift.{v, u} #ι < c.cof)
     (hf : ∀ i, f i < c) : iSup f < c :=
   (sup_le_lsub.{u, v} f).trans_lt (lsub_lt_ord_lift hι hf)
 
-set_option linter.deprecated false in
-@[deprecated iSup_lt_ord_lift (since := "2024-08-27")]
-theorem sup_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal} (hι : Cardinal.lift.{v, u} #ι < c.cof)
-    (hf : ∀ i, f i < c) : sup.{u, v} f < c :=
-  iSup_lt_ord_lift hι hf
-
 theorem iSup_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
     (∀ i, f i < c) → iSup f < c :=
   iSup_lt_ord_lift (by rwa [(#ι).lift_id])
-
-set_option linter.deprecated false in
-@[deprecated iSup_lt_ord (since := "2024-08-27")]
-theorem sup_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
-    (∀ i, f i < c) → sup.{u, u} f < c :=
-  sup_lt_ord_lift (by rwa [(#ι).lift_id])
 
 theorem iSup_lt_lift {ι} {f : ι → Cardinal} {c : Cardinal}
     (hι : Cardinal.lift.{v, u} #ι < c.ord.cof)
@@ -457,7 +430,7 @@ theorem cof_succ (o) : cof (succ o) = 1 := by
 theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
   ⟨inductionOn o fun α r _ z => by
       rcases cof_eq r with ⟨S, hl, e⟩; rw [z] at e
-      cases' mk_ne_zero_iff.1 (by rw [e]; exact one_ne_zero) with a
+      obtain ⟨a⟩ := mk_ne_zero_iff.1 (by rw [e]; exact one_ne_zero)
       refine
         ⟨typein r a,
           Eq.symm <|
@@ -707,7 +680,7 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
       refine lt_of_not_ge fun h => ?_
       obtain ⟨a, e⟩ := Cardinal.mem_range_lift_of_le h
       refine Quotient.inductionOn a (fun α e => ?_) e
-      cases' Quotient.exact e with f
+      obtain ⟨f⟩ := Quotient.exact e
       have f := Equiv.ulift.symm.trans f
       let g a := (f a).1
       let o := succ (iSup g)
@@ -723,7 +696,7 @@ open Ordinal
 
 /-! ### Results on sets -/
 
-theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, (2^x) < #α) {r : α → α → Prop}
+theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) {r : α → α → Prop}
     [IsWellOrder α r] (hr : (#α).ord = type r) : #{ s : Set α // Bounded r s } = #α := by
   rcases eq_or_ne #α 0 with (ha | ha)
   · rw [ha]
@@ -753,7 +726,7 @@ theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, (2^x) < #α) {r : α �
     · intro a b hab
       simpa [singleton_eq_singleton_iff] using hab
 
-theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, (2^x) < #α) :
+theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) :
     #{ s : Set α // #s < cof (#α).ord } = #α := by
   rcases eq_or_ne #α 0 with (ha | ha)
   · simp [ha]

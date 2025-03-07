@@ -98,16 +98,13 @@ theorem exists_fixedPoint (hf : ContractingWith K f) (x : α) (hx : edist x (f x
     edist_le_of_edist_le_geometric_of_tendsto K (edist x (f x))
       (hf.toLipschitzWith.edist_iterate_succ_le_geometric x) hy⟩
 
-variable (f)
-
+variable (f) in
 -- avoid `efixedPoint _` in pretty printer
 /-- Let `x` be a point of a complete emetric space. Suppose that `f` is a contracting map,
 and `edist x (f x) ≠ ∞`. Then `efixedPoint` is the unique fixed point of `f`
 in `EMetric.ball x ∞`. -/
 noncomputable def efixedPoint (hf : ContractingWith K f) (x : α) (hx : edist x (f x) ≠ ∞) : α :=
   Classical.choose <| hf.exists_fixedPoint x hx
-
-variable {f}
 
 theorem efixedPoint_isFixedPt (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞) :
     IsFixedPt f (efixedPoint f hf x hx) :=
@@ -160,8 +157,7 @@ theorem exists_fixedPoint' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s s
     rw [MapsTo.iterate_restrict]
     rfl
 
-variable (f)
-
+variable (f) in
 -- avoid `efixedPoint _` in pretty printer
 /-- Let `s` be a complete forward-invariant set of a self-map `f`. If `f` contracts on `s`
 and `x ∈ s` satisfies `edist x (f x) ≠ ∞`, then `efixedPoint'` is the unique fixed point
@@ -170,8 +166,6 @@ noncomputable def efixedPoint' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f
     (hf : ContractingWith K <| hsf.restrict f s s) (x : α) (hxs : x ∈ s) (hx : edist x (f x) ≠ ∞) :
     α :=
   Classical.choose <| hf.exists_fixedPoint' hsc hsf hxs hx
-
-variable {f}
 
 theorem efixedPoint_mem' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s s)
     (hf : ContractingWith K <| hsf.restrict f s s) {x : α} (hxs : x ∈ s) (hx : edist x (f x) ≠ ∞) :
@@ -269,13 +263,11 @@ theorem dist_fixedPoint_fixedPoint_of_dist_le' (g : α → α) {x y} (hx : IsFix
     _ ≤ C / (1 - K) := (div_le_div_iff_of_pos_right hf.one_sub_K_pos).2 (hfg y)
 
 variable [Nonempty α] [CompleteSpace α]
-variable (f)
 
+variable (f) in
 /-- The unique fixed point of a contracting map in a nonempty complete metric space. -/
 noncomputable def fixedPoint : α :=
   efixedPoint f hf _ (edist_ne_top (Classical.choice ‹Nonempty α›) _)
-
-variable {f}
 
 /-- The point provided by `ContractingWith.fixedPoint` is actually a fixed point. -/
 theorem fixedPoint_isFixedPt : IsFixedPt f (fixedPoint f hf) :=

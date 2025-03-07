@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Data.Countable.Small
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Nat.Cast.Order.Basic
@@ -576,7 +577,7 @@ theorem power_ne_zero {a : Cardinal} (b : Cardinal) : a ≠ 0 → a ^ b ≠ 0 :=
     mk_ne_zero_iff.2 ⟨fun _ => a⟩
 
 theorem mul_power {a b c : Cardinal} : (a * b) ^ c = a ^ c * b ^ c :=
-  inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.arrowProdEquivProdArrow α β γ
+  inductionOn₃ a b c fun _ _ γ => mk_congr <| Equiv.arrowProdEquivProdArrow γ _ _
 
 theorem power_mul {a b c : Cardinal} : a ^ (b * c) = (a ^ b) ^ c := by
   rw [mul_comm b c]
@@ -789,7 +790,7 @@ theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
   simp_rw [succ_def, le_csInf_iff'' this, mem_setOf]
   intro b hlt
   rcases b, c with ⟨⟨β⟩, ⟨γ⟩⟩
-  cases' le_of_lt hlt with f
+  obtain ⟨f⟩ := le_of_lt hlt
   have : ¬Surjective f := fun hn => (not_le_of_lt hlt) (mk_le_of_surjective hn)
   simp only [Surjective, not_forall] at this
   rcases this with ⟨b, hb⟩
@@ -1054,6 +1055,17 @@ theorem bddAbove_range_comp {ι : Type u} {f : ι → Cardinal.{v}} (hf : BddAbo
   rw [range_comp]
   exact bddAbove_image g hf
 
+/-- The type of cardinals in universe `u` is not `Small.{u}`. This is a version of the Burali-Forti
+paradox. -/
+theorem _root_.not_small_cardinal : ¬ Small.{u} Cardinal.{max u v} := by
+  intro h
+  have := small_lift.{_, v} Cardinal.{max u v}
+  rw [← small_univ_iff, ← bddAbove_iff_small] at this
+  exact not_bddAbove_univ this
+
+instance uncountable : Uncountable Cardinal.{u} :=
+  Uncountable.of_not_small not_small_cardinal.{u}
+
 /-! ### Bounds on suprema -/
 
 theorem sum_le_iSup_lift {ι : Type u}
@@ -1119,7 +1131,7 @@ lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
     (hω : ¬ IsSuccPrelimit ω)
     (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
   subst h
-  refine (isLUB_csSup' ?_).exists_of_not_isSuccPrelimit hω
+  suffices BddAbove (range f) from (isLUB_csSup' this).mem_of_not_isSuccPrelimit hω
   contrapose! hω with hf
   rw [iSup, csSup_of_not_bddAbove hf, csSup_empty]
   exact isSuccPrelimit_bot
@@ -1716,7 +1728,7 @@ theorem mk_eq_aleph0 (α : Type*) [Countable α] [Infinite α] : #α = ℵ₀ :=
 
 theorem denumerable_iff {α : Type u} : Nonempty (Denumerable α) ↔ #α = ℵ₀ :=
   ⟨fun ⟨h⟩ => mk_congr ((@Denumerable.eqv α h).trans Equiv.ulift.symm), fun h => by
-    cases' Quotient.exact h with f
+    obtain ⟨f⟩ := Quotient.exact h
     exact ⟨Denumerable.mk' <| f.trans Equiv.ulift⟩⟩
 
 theorem mk_denumerable (α : Type u) [Denumerable α] : #α = ℵ₀ :=

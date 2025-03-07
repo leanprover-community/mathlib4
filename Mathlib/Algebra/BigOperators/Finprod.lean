@@ -111,12 +111,12 @@ open Batteries.ExtendedBinder
 
 /-- `∑ᶠ x, f x` is notation for `finsum f`. It is the sum of `f x`, where `x` ranges over the
 support of `f`, if it's finite, zero otherwise. Taking the sum over multiple arguments or
-conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`-/
+conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x` -/
 notation3"∑ᶠ "(...)", "r:67:(scoped f => finsum f) => r
 
 /-- `∏ᶠ x, f x` is notation for `finprod f`. It is the product of `f x`, where `x` ranges over the
 multiplicative support of `f`, if it's finite, one otherwise. Taking the product over multiple
-arguments or conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`-/
+arguments or conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x` -/
 notation3"∏ᶠ "(...)", "r:67:(scoped f => finprod f) => r
 
 -- Porting note: The following ports the lean3 notation for this file, but is currently very fickle.
@@ -287,6 +287,11 @@ theorem MonoidHom.map_finprod_of_injective (g : M →* N) (hg : Injective g) (f 
 theorem MulEquiv.map_finprod (g : M ≃* N) (f : α → M) : g (∏ᶠ i, f i) = ∏ᶠ i, g (f i) :=
   g.toMonoidHom.map_finprod_of_injective (EquivLike.injective g) f
 
+@[to_additive]
+theorem MulEquivClass.map_finprod {F : Type*} [EquivLike F M N] [MulEquivClass F M N] (g : F)
+    (f : α → M) : g (∏ᶠ i, f i) = ∏ᶠ i, g (f i) :=
+  MulEquiv.map_finprod (MulEquivClass.toMulEquiv g) f
+
 /-- The `NoZeroSMulDivisors` makes sure that the result holds even when the support of `f` is
 infinite. For a more usual version assuming `(support f).Finite` instead, see `finsum_smul'`. -/
 theorem finsum_smul {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
@@ -376,6 +381,11 @@ theorem finprod_eq_prod (f : α → M) (hf : (mulSupport f).Finite) :
 @[to_additive]
 theorem finprod_eq_prod_of_fintype [Fintype α] (f : α → M) : ∏ᶠ i : α, f i = ∏ i, f i :=
   finprod_eq_prod_of_mulSupport_toFinset_subset _ (Set.toFinite _) <| Finset.subset_univ _
+
+@[to_additive]
+theorem map_finset_prod {α F : Type*} [Fintype α] [EquivLike F M N] [MulEquivClass F M N] (f : F)
+    (g : α → M) : f (∏ i : α, g i) = ∏ i : α, f (g i) := by
+  simp [← finprod_eq_prod_of_fintype, MulEquivClass.map_finprod]
 
 @[to_additive]
 theorem finprod_cond_eq_prod_of_cond_iff (f : α → M) {p : α → Prop} {t : Finset α}

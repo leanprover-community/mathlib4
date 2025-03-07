@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Algebra.NeZero
-import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Int.DivMod
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Equiv.Set
@@ -71,8 +70,13 @@ def finZeroElim {α : Fin 0 → Sort*} (x : Fin 0) : α x :=
 
 namespace Fin
 
-@[deprecated (since := "2024-08-13")] alias ne_of_vne := ne_of_val_ne
-@[deprecated (since := "2024-08-13")] alias vne_of_ne := val_ne_of_ne
+@[simp] theorem mk_eq_one {n a : Nat} {ha : a < n + 2} :
+    (⟨a, ha⟩ : Fin (n + 2)) = 1 ↔ a = 1 :=
+  mk.inj_iff
+
+@[simp] theorem one_eq_mk {n a : Nat} {ha : a < n + 2} :
+    1 = (⟨a, ha⟩ : Fin (n + 2)) ↔ a = 1 := by
+  simp [eq_comm]
 
 instance {n : ℕ} : CanLift ℕ (Fin n) Fin.val (· < n) where
   prf k hk := ⟨⟨k, hk⟩, rfl⟩
@@ -230,15 +234,10 @@ def ofNat'' [NeZero n] (i : ℕ) : Fin n :=
 -- Porting note: `Fin.ofNat'` conflicts with something in core (there the hypothesis is `n > 0`),
 -- so for now we make this double-prime `''`. This is also the reason for the dubious translation.
 
-/--
-The `Fin.val_zero` in `Lean` only applies in `Fin (n+1)`.
-This one instead uses a `NeZero n` typeclass hypothesis.
--/
-@[simp]
-theorem val_zero' (n : ℕ) [NeZero n] : ((0 : Fin n) : ℕ) = 0 :=
-  rfl
+@[deprecated (since := "2025-02-24")]
+alias val_zero' := val_zero
 
-/-- Fin.mk_zero` in `Lean` only applies in `Fin (n + 1)`.
+/-- `Fin.mk_zero` in `Lean` only applies in `Fin (n + 1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 @[simp]
@@ -252,17 +251,29 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 protected theorem zero_le' [NeZero n] (a : Fin n) : 0 ≤ a :=
   Nat.zero_le a.val
 
+@[simp, norm_cast]
+theorem val_eq_zero_iff [NeZero n] {a : Fin n} : a.val = 0 ↔ a = 0 := by
+  rw [Fin.ext_iff, val_zero]
+
+theorem val_ne_zero_iff [NeZero n] {a : Fin n} : a.val ≠ 0 ↔ a ≠ 0 :=
+  val_eq_zero_iff.not
+
+@[simp, norm_cast]
+theorem val_pos_iff [NeZero n] {a : Fin n} : 0 < a.val ↔ 0 < a := by
+  rw [← val_fin_lt, val_zero]
+
 /--
 The `Fin.pos_iff_ne_zero` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
-  rw [← val_fin_lt, val_zero', Nat.pos_iff_ne_zero, Ne, Ne, Fin.ext_iff, val_zero']
+  rw [← val_pos_iff, Nat.pos_iff_ne_zero, val_ne_zero_iff]
 
 @[simp] lemma cast_eq_self (a : Fin n) : a.cast rfl = a := rfl
 
 @[simp] theorem cast_eq_zero {k l : ℕ} [NeZero k] [NeZero l]
-    (h : k = l) (x : Fin k) : Fin.cast h x = 0 ↔ x = 0 := by simp [← val_eq_val]
+    (h : k = l) (x : Fin k) : Fin.cast h x = 0 ↔ x = 0 := by
+  simp [← val_eq_zero_iff]
 
 lemma cast_injective {k l : ℕ} (h : k = l) : Injective (Fin.cast h) :=
   fun a b hab ↦ by simpa [← val_eq_val] using hab
@@ -514,7 +525,7 @@ lemma nonempty_embedding_iff : Nonempty (Fin n ↪ Fin m) ↔ n ≤ m := by
   induction n generalizing m with
   | zero => exact m.zero_le
   | succ n ihn =>
-    cases' h with e
+    obtain ⟨e⟩ := h
     rcases exists_eq_succ_of_ne_zero (pos_iff_nonempty.2 (Nonempty.map e inferInstance)).ne'
       with ⟨m, rfl⟩
     refine Nat.succ_le_succ <| ihn ⟨?_⟩
@@ -654,12 +665,14 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 @[simp]
 theorem castSucc_zero' [NeZero n] : castSucc (0 : Fin n) = 0 := rfl
 
+@[simp]
+theorem castSucc_pos_iff [NeZero n] {i : Fin n} : 0 < castSucc i ↔ 0 < i := by simp [← val_pos_iff]
+
 /-- `castSucc i` is positive when `i` is positive.
 
 The `Fin.castSucc_pos` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis. -/
-theorem castSucc_pos' [NeZero n] {i : Fin n} (h : 0 < i) : 0 < castSucc i := by
-  simpa [lt_iff_val_lt_val] using h
+alias ⟨_, castSucc_pos'⟩ := castSucc_pos_iff
 
 /--
 The `Fin.castSucc_eq_zero_iff` in `Lean` only applies in `Fin (n+1)`.
@@ -731,7 +744,7 @@ section Pred
 
 theorem pred_one' [NeZero n] (h := (zero_ne_one' (n := n)).symm) :
     Fin.pred (1 : Fin (n + 1)) h = 0 := by
-  simp_rw [Fin.ext_iff, coe_pred, val_one', val_zero', Nat.sub_eq_zero_iff_le, Nat.mod_le]
+  simp_rw [Fin.ext_iff, coe_pred, val_one', val_zero, Nat.sub_eq_zero_iff_le, Nat.mod_le]
 
 theorem pred_last (h := Fin.ext_iff.not.2 last_pos'.ne') :
     pred (last (n + 1)) h = last n := by simp_rw [← succ_last, pred_succ]
@@ -751,7 +764,7 @@ theorem castSucc_pred_eq_pred_castSucc {a : Fin (n + 1)} (ha : a ≠ 0)
 
 theorem castSucc_pred_add_one_eq {a : Fin (n + 1)} (ha : a ≠ 0) :
     (a.pred ha).castSucc + 1 = a := by
-  cases' a using cases with a
+  cases a using cases
   · exact (ha rfl).elim
   · rw [pred_succ, coeSucc_eq_succ]
 
@@ -855,7 +868,7 @@ theorem succ_castPred_eq_castPred_succ {a : Fin (n + 1)} (ha : a ≠ last n)
 
 theorem succ_castPred_eq_add_one {a : Fin (n + 1)} (ha : a ≠ last n) :
     (a.castPred ha).succ = a + 1 := by
-  cases' a using lastCases with a
+  cases a using lastCases
   · exact (ha rfl).elim
   · rw [castPred_castSucc, coeSucc_eq_succ]
 
@@ -985,7 +998,7 @@ lemma succAbove_right_injective : Injective p.succAbove := by
 lemma succAbove_right_inj : p.succAbove i = p.succAbove j ↔ i = j :=
   succAbove_right_injective.eq_iff
 
-/--  `Fin.succAbove p` as an `Embedding`. -/
+/-- `Fin.succAbove p` as an `Embedding`. -/
 @[simps!]
 def succAboveEmb (p : Fin (n + 1)) : Fin n ↪ Fin (n + 1) := ⟨p.succAbove, succAbove_right_injective⟩
 
@@ -1334,6 +1347,7 @@ section Rec
 
 end Rec
 
+open scoped Relator in
 theorem liftFun_iff_succ {α : Type*} (r : α → α → Prop) [IsTrans α r] {f : Fin (n + 1) → α} :
     ((· < ·) ⇒ r) f f ↔ ∀ i : Fin n, r (f (castSucc i)) (f i.succ) := by
   constructor
