@@ -225,15 +225,15 @@ variable {κ}
 /-- The `trajContent κ x₀` of a cylinder indexed by first coordinates is given by `partialTraj`. -/
 theorem trajContent_cylinder {a b : ℕ} {S : Set (Π i : Iic b, X i)} (mS : MeasurableSet S)
     (x₀ : Π i : Iic a, X i) :
-    trajContent κ x₀ (cylinder _ S) = partialTraj κ a b x₀ S := by
+    trajContent κ x₀ (cylinder (Iic b) S) = partialTraj κ a b x₀ S := by
   rw [trajContent, projectiveFamilyContent_cylinder _ mS, inducedFamily_Iic]
 
 /-- The `trajContent` of a cylinder is equal to the integral of its indicator function against
 `partialTraj`. -/
 theorem trajContent_eq_lmarginalPartialTraj {b : ℕ} {S : Set (Π i : Iic b, X i)}
     (mS : MeasurableSet S) (x₀ : Π n, X n) (a : ℕ) :
-    trajContent κ (frestrictLe a x₀) (cylinder _ S) =
-      lmarginalPartialTraj κ a b ((cylinder _ S).indicator 1) x₀ := by
+    trajContent κ (frestrictLe a x₀) (cylinder (Iic b) S) =
+      lmarginalPartialTraj κ a b ((cylinder (Iic b) S).indicator 1) x₀ := by
   rw [trajContent_cylinder mS, ← lintegral_indicator_one mS, lmarginalPartialTraj]
   congr with x
   apply Set.indicator_const_eq_indicator_const
