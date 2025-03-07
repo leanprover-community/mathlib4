@@ -59,11 +59,6 @@ structure ModuleCat where
 
 attribute [instance] ModuleCat.isAddCommGroup ModuleCat.isModule
 
-/-- An alias for `ModuleCat.{max u₁ u₂}`, to deal around unification issues.
-Since the universe the ring lives in can be inferred, we put that last. -/
-@[nolint checkUnivs]
-abbrev ModuleCatMax.{v₁, v₂, u₁} (R : Type u₁) [Ring R] := ModuleCat.{max v₁ v₂, u₁} R
-
 namespace ModuleCat
 
 instance : CoeSort (ModuleCat.{v} R) (Type v) :=
@@ -540,8 +535,6 @@ instance : Module R (mkOfSMul' φ) where
 given by `R`. -/
 abbrev mkOfSMul := ModuleCat.of R (mkOfSMul' φ)
 
--- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-@[simp, nolint simpNF]
 lemma mkOfSMul_smul (r : R) : (mkOfSMul φ).smul r = φ r := rfl
 
 end
