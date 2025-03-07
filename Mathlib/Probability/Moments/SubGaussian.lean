@@ -82,7 +82,7 @@ with respect to `κ ω'` for `ν`-almost all `ω'`, but integrability with respe
 This is a stronger condition, as the weaker one did not allow to prove interesting results about
 the sum of two sub-Gaussian random variables.
 
-Fo the conditional case, that integrability condition reduces to integrability of `exp (t * X)`
+For the conditional case, that integrability condition reduces to integrability of `exp (t * X)`
 with respect to `μ`.
 
 ### Definition of `HasCondSubgaussianMGF`
