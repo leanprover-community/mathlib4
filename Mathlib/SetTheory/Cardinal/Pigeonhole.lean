@@ -19,7 +19,7 @@ open Cardinal Order Set
 
 universe u
 
-namespace Ordinal
+namespace Cardinal
 
 /-- The infinite pigeonhole principle -/
 theorem infinite_pigeonhole {β α : Type u} (f : β → α) (h₁ : ℵ₀ ≤ #β) (h₂ : #α < (#β).ord.cof) :
@@ -98,4 +98,4 @@ theorem le_range_of_union_finset_eq_top {α β : Type*} [Infinite β] (f : α �
   obtain ⟨⟨-, ⟨a, rfl⟩⟩, p⟩ := exists_infinite_fiber u' h k
   exact (@Infinite.of_injective _ _ p (inclusion (v' a)) (inclusion_injective _)).false
 
-end Ordinal
+end Cardinal
