@@ -58,7 +58,9 @@ singular n-manifold, cobordism
 open scoped Manifold
 open Module Set
 
-noncomputable section
+suppress_compilation
+
+section
 
 /-- A **singular `n`-manifold** on a topological space `X`, for `n ∈ ℕ`, is a pair `(M, f)`
 of a closed `n`-dimensional `C^k` manifold `M` together with a continuous map `M → X`.
@@ -103,7 +105,7 @@ instance {s : SingularNManifold X k I} : BoundarylessManifold I s.M := s.boundar
 
 /-- A map of topological spaces induces a corresponding map of singular n-manifolds. -/
 -- This is part of proving functoriality of the bordism groups.
-noncomputable def map (s : SingularNManifold X k I)
+def map (s : SingularNManifold X k I)
     {φ : X → Y} (hφ : Continuous φ) : SingularNManifold Y k I where
   f := φ ∘ s.f
   hf := hφ.comp s.hf
@@ -162,6 +164,10 @@ def empty (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
   hf := by
     rw [continuous_iff_continuousAt]
     exact fun x ↦ (IsEmpty.false x).elim
+
+omit [CompactSpace M] [BoundarylessManifold I M] in
+@[simp, mfld_simps]
+lemma empty_M [IsEmpty M] : (empty X M I (k := k)).M = M := rfl
 
 instance [IsEmpty M] : IsEmpty (SingularNManifold.empty X M I (k := k)).M := by
   unfold SingularNManifold.empty
@@ -326,6 +332,17 @@ def comap_fst (φ : UnorientedCobordism k s t J) (f : Diffeomorph I I M'' s.M k)
   hFf := by dsimp; rw [← φ.hFf]; congr
   hFg := by dsimp; rw [← φ.hFg]; congr
 
+/-- Suppose `W` is a cobordism between `M` and `N`.
+Then a diffeomorphism `f : N'' → N` induces a cobordism between `M` and `N''`. -/
+def comap_snd (φ : UnorientedCobordism k s t J) (f : Diffeomorph I I M t.M k) :
+    UnorientedCobordism k s (t.comap f.continuous) J where
+  bd := φ.bd
+  F := φ.F
+  hF := φ.hF
+  φ := Diffeomorph.trans ((Diffeomorph.refl _ _ _).sumCongr f) φ.φ
+  hFf := by dsimp; rw [← φ.hFf]; congr
+  hFg := by dsimp; rw [← φ.hFg]; congr
+
 variable (s) in
 def refl : UnorientedCobordism k s s (I.prod (𝓡∂ 1)) where
   W := s.M × (Set.Icc (0 : ℝ) 1)
@@ -346,19 +363,47 @@ def symm (φ : UnorientedCobordism k s t J) : UnorientedCobordism k t s J where
   hFf := by rw [← φ.hFg]; congr
   hFg := by rw [← φ.hFf]; congr
 
--- TODO: this does not work, I'd get a cobordism from s to `s.sum (SingularNManifold.empty X M I)`,
--- whereas I want `s.comap (Diffeomorph.sumEmpty)`... these are not *exactly* the same.
--- def sumEmpty [IsEmpty M] :
---     UnorientedCobordism k (s.sum (SingularNManifold.empty X M I)) s (I.prod (𝓡∂ 1)) := by
---   let sdf := refl s
---   sorry
+-- XXX better name, and study .copy for e.g. Homeomorph to make sure I fully grasp it!
+def copy_map_snd (φ : UnorientedCobordism k s t J)
+    (eq : Diffeomorph I I t'.M t.M k) (h_eq : t'.f = t.f ∘ eq) :
+    UnorientedCobordism k s t' J where
+  W := φ.W
+  bd := φ.bd
+  F := φ.F
+  hF := φ.hF
+  φ := Diffeomorph.trans (Diffeomorph.sumCongr (Diffeomorph.refl I s.M k) eq) φ.φ
+  hFf := by dsimp; rw [← φ.hFf]; congr
+  hFg := by dsimp; rw [h_eq, ← φ.hFg]; congr
 
--- Same issue: I get morally the same result, but of different types. Need to think harder!
--- Is the solution to ask for equal maps (but not equal types) in the def. of the bordism group?
-def sumComm : UnorientedCobordism k (t.sum s) (s.sum t) (I.prod (𝓡∂ 1)) := by
-  let diff := Diffeomorph.sumComm I s.M k t.M
-  -- apply (refl (s.sum t)).comap_fst diff.symm
-  sorry
+def copy_map_fst (φ : UnorientedCobordism k s t J)
+    (eq : Diffeomorph I I s'.M s.M k) (h_eq : s'.f = s.f ∘ eq) :
+    UnorientedCobordism k s' t J where
+  W := φ.W
+  bd := φ.bd
+  F := φ.F
+  hF := φ.hF
+  φ := Diffeomorph.trans (Diffeomorph.sumCongr eq (Diffeomorph.refl I t.M k)) φ.φ
+  hFf := by dsimp; rw [h_eq, ← φ.hFf]; congr
+  hFg := by dsimp; rw [← φ.hFg]; congr
+
+-- Note. The naive approach `almost` is not sufficient, as it would yield a cobordism
+-- from s to `s.sum (SingularNManifold.empty X M I)`,
+-- whereas I want `s.comap (Diffeomorph.sumEmpty)`... these are not *exactly* the same.
+def sumEmpty [IsEmpty M] :
+    UnorientedCobordism k (s.sum (SingularNManifold.empty X M I)) s (I.prod (𝓡∂ 1)) :=
+  letI almost := (refl s).comap_fst (Diffeomorph.sumEmpty I s.M (M' := M) k)
+  almost.copy_map_fst (Diffeomorph.refl I _ k) (by
+    ext x
+    cases x with
+    | inl x => dsimp
+    | inr x => exact (IsEmpty.false x).elim)
+
+def sumComm : UnorientedCobordism k (t.sum s) (s.sum t) (I.prod (𝓡∂ 1)) :=
+  letI almost := (refl (s.sum t)).comap_fst (Diffeomorph.sumComm I s.M k t.M).symm
+  almost.copy_map_fst (Diffeomorph.refl I _ k) (by
+    ext x
+    dsimp
+    cases x <;> simp)
 
 section collarNeighbourhood
 
