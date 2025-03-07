@@ -152,16 +152,6 @@ theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
 theorem mk_eq_mk {a h a' h'} : @mk n a h = @mk n a' h' ↔ a = a' :=
   Fin.ext_iff
 
-@[norm_cast]
-lemma val_ne_zero_iff {n : ℕ} [NeZero n] (k : Fin n) : (k : ℕ) ≠ 0 ↔ k ≠ 0 := by
-  rw [←Fin.val_ne_iff, Fin.val_zero]
-
---Not a `simp` lemma since creates conflicts with `Fin.ext_iff`.
---TODO(Paul-Lez): should this be a `simp` lemma?
-@[norm_cast]
-lemma val_eq_zero_iff {n : ℕ} [NeZero n] (k : Fin n) : (k : ℕ) = 0 ↔ k = 0 := by
-  rw [←Fin.val_eq_val, Fin.val_zero]
-
 -- syntactic tautologies now
 
 /-- Assume `k = l`. If two functions defined on `Fin k` and `Fin l` are equal on each element,
