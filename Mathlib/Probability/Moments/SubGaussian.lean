@@ -296,8 +296,7 @@ lemma memLp_exp_mul (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) (p : ℝ�
     MemLp (fun ω ↦ exp (t * X ω)) p μ :=
   condExpKernel_comp_trim (μ := μ) hm ▸ Kernel.HasSubgaussianMGF.memLp_exp_mul h t p
 
-lemma integrable_exp_mul
-    (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) :
+lemma integrable_exp_mul (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) :
     Integrable (fun ω ↦ exp (t * X ω)) μ :=
   condExpKernel_comp_trim (μ := μ) hm ▸ Kernel.HasSubgaussianMGF.integrable_exp_mul h t
 
