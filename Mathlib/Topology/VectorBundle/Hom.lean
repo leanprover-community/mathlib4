@@ -117,7 +117,7 @@ def continuousLinearMap :
     rw [Trivialization.symmL_continuousLinearMapAt, Trivialization.symmL_continuousLinearMapAt]
     exacts [h₁, h₂]
   right_inv' := fun ⟨x, f⟩ ⟨⟨h₁, h₂⟩, _⟩ => by
-    simp only [Prod.mk_inj_left]
+    simp only [Prod.mk_right_inj]
     ext v
     dsimp only [comp_apply]
     rw [Trivialization.continuousLinearMapAt_symmL, Trivialization.continuousLinearMapAt_symmL]
