@@ -289,18 +289,10 @@ def sum (φ : UnorientedCobordism k s t J) (ψ : UnorientedCobordism k s' t' J) 
   bd := φ.bd.sum ψ.bd
   F := Sum.elim φ.F ψ.F
   hF := φ.hF.sumElim ψ.hF
-  φ := by
-    let aux := Diffeomorph.sumCongr φ.φ ψ.φ
-    simp only [SingularNManifold.sum_M, BoundaryManifoldData.sum_M₀]
-    -- need: diffeo ((s.M ⊕ t.M) ⊕ s'.M ⊕ t'.M) ≃ (s.M ⊕ s'.M) ⊕ t.M ⊕ t'.M)
-    -- A ⊕ B) ⊕ C ⊕ D ≃ (A ⊕ C) ⊕ B ⊕ D
-    -- which exists already, then compose with that
-    -- and hope no equality of types is a problem...
-    sorry
+  φ := Diffeomorph.trans (Diffeomorph.sumSumSumComm I s.M k t.M s'.M t'.M).symm
+      (Diffeomorph.sumCongr φ.φ ψ.φ)
   hFf := sorry
   hFg := sorry
-
-#exit
 
 /-- Suppose `W` is a cobordism between `M` and `N`.
 Then a diffeomorphism `f : M'' → M` induces a cobordism between `M''` and `N`. -/
