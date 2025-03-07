@@ -150,14 +150,10 @@ theorem repr_linearCombination (v) : b.repr (Finsupp.linearCombination _ b v) = 
   rw [← b.coe_repr_symm]
   exact b.repr.apply_symm_apply v
 
-@[deprecated (since := "2024-08-29")] alias repr_total := repr_linearCombination
-
 @[simp]
 theorem linearCombination_repr : Finsupp.linearCombination _ b (b.repr x) = x := by
   rw [← b.coe_repr_symm]
   exact b.repr.symm_apply_apply x
-
-@[deprecated (since := "2024-08-29")] alias total_repr := linearCombination_repr
 
 theorem repr_range : LinearMap.range (b.repr : M →ₗ[R] ι →₀ R) = Finsupp.supported R R univ := by
   rw [LinearEquiv.range, Finsupp.supported_univ]

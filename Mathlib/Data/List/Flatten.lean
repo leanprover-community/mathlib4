@@ -161,9 +161,4 @@ theorem append_flatten_map_append (L : List (List α)) (x : List α) :
 
 @[deprecated (since := "2024-10-15")] alias append_join_map_append := append_flatten_map_append
 
-@[deprecated "No deprecation message was provided." (since := "2024-08-15")]
-theorem sublist_join {l} {L : List (List α)} (h : l ∈ L) :
-    l <+ L.flatten :=
-  sublist_flatten_of_mem h
-
 end List

@@ -89,8 +89,8 @@ instance IsWellOrderContinuous.restriction_setIci
     have : hf.functor.Final := by
       rw [Monotone.final_functor_iff]
       rintro ⟨j', hj'⟩
-      simp at hj'
-      dsimp [f]
+      simp only [Set.mem_Iio] at hj'
+      dsimp only [f]
       by_cases h : j' ≤ j
       · refine ⟨⟨⟨j, le_refl j⟩, ?_⟩, h⟩
         by_contra!
