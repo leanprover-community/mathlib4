@@ -6,6 +6,7 @@ Authors: Huanyu Zheng, Weichen Jiao, Yi Yuan
 import Mathlib.RingTheory.FilteredAlgebra.Exactness
 import Mathlib.Tactic.Linarith.Frontend
 import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.Algebra.Ring.Subring.Basic
 
 variable {R S T σR σS σT : Type*}
 
@@ -24,7 +25,7 @@ variable (g : FilteredRingHom FS (fun n ↦ FS (n - 1)) FT (fun n ↦ FT (n - 1)
 variable [hasGMul FR fun n ↦ FR (n - 1)] [hasGMul FT fun n ↦ FT (n - 1)]
   [hasGMul FS fun n ↦ FS (n - 1)]
 
-open RingHom DirectSum DFinsupp FilteredRingHom GradedPiece
+open RingHom DirectSum DFinsupp FilteredRingHom FilteredAddGroupHom GradedPiece
 
 
 theorem exists_nonneg_x_in_filtration (x : S) (p : ℤ)
@@ -63,42 +64,25 @@ lemma Int.decreasingInduction' (m n : ℤ) {P : ℤ → Prop}
 
 
 
-
-
-omit [IsRingFiltration FS fun n ↦ FS <| n - 1] [IsRingFiltration FT fun n ↦ FT <| n - 1] in
-theorem Gf_zero_iff_of_in_ker (i : ℤ)(u : FS i): Gr(i)[g] u = 0 ↔
-    (of (GradedPiece FS (fun n ↦ FS <| n - 1)) i u) ∈ ker Gr[g] := by
-  rw[Gof_eq_piece g i u]
-  constructor
-  · intro h
-    apply AssociatedGraded.ext_iff.mpr fun j ↦ ?_
-    by_cases ch : i = j
-    · rw[← ch, h, zero_apply]
-    · rw[G_to_Gf, of_eq_of_ne i j u ch, map_zero, DirectSum.zero_apply]
-  · exact fun h ↦
-    (AddSemiconjBy.eq_zero_iff ((Gr[g] ((of (GradedPiece FS fun n ↦ FS <| n - 1) i) u)) i)
-    (congrArg (HAdd.hAdd ((Gr[g] ((of (GradedPiece FS fun n ↦ FS <| n - 1) i) u)) i))
-    <| congrFun (congrArg DFunLike.coe <| id h.symm) i)).mp rfl
-
-
-
-
 omit [IsRingFiltration FS fun n ↦ FS <| n - 1] [IsRingFiltration FT fun n ↦ FT <| n - 1] in
 lemma Ggker_eq_Gfrange (Gexact : Function.Exact Gr[f] Gr[g]) (i : ℤ) :
     Gr(i)[g].ker = Gr(i)[f].range := by
   ext u
-  refine Iff.trans (Gf_zero_iff_of_in_ker g) ?_
-  rw[Function.Exact.addMonoidHom_ker_eq Gexact]
-  have (x : GradedPiece FR (fun n ↦ FR (n - 1)) i) : (of (GradedPiece FS fun n ↦ FS <| n - 1) i)
-      ((Gr[f] ((of (GradedPiece FR fun n ↦ FR <| n - 1) i) x)) i)
-      = Gr[f] ((of (GradedPiece FR fun n ↦ FR <| n - 1) i) x) := by
-    apply AssociatedGraded.ext_iff.mpr fun j ↦ ?_
-    by_cases ch : i = j
-    · rw[← ch, of_eq_same i ((Gr[f] ((of (GradedPiece FR fun n ↦ FR <| n - 1) i) x)) i)]
-    · rw[of_eq_of_ne i j ((Gr[f] ((of (GradedPiece FR fun n ↦ FR <| n - 1) i) x)) i) ch, G_to_Gf,
-        of_eq_of_ne i j x ch, map_zero]
-  exact ⟨fun ⟨x, hx⟩ ↦ ⟨x i, by rw[← G_to_Gf, hx, of_eq_same i u]⟩,
-    fun ⟨x, hx⟩ ↦ ⟨((of (GradedPiece FR fun n ↦ FR <| n - 1) i) x), by rw[← hx, Gof_eq_piece, this]⟩⟩
+  refine Iff.trans (Gf_zero_iff_of_in_ker g u) ?_
+
+  sorry
+  --  (Gf_zero_iff_of_in_ker g) ?_
+  -- rw[Function.Exact.addMonoidHom_ker_eq Gexact]
+  -- have (x : GradedPiece FR (fun n ↦ FR (n - 1)) i) : (of (GradedPiece FS fun n ↦ FS <| n - 1) i)
+  --     ((Gr[f] ((of (GradedPiece FR fun n ↦ FR <| n - 1) i) x)) i)
+  --     = Gr[f] ((of (GradedPiece FR fun n ↦ FR <| n - 1) i) x) := by
+  --   apply AssociatedGraded.ext_iff.mpr fun j ↦ ?_
+  --   by_cases ch : i = j
+  --   · rw[← ch, of_eq_same i ((Gr[f] ((of (GradedPiece FR fun n ↦ FR <| n - 1) i) x)) i)]
+  --   · rw[of_eq_of_ne i j ((Gr[f] ((of (GradedPiece FR fun n ↦ FR <| n - 1) i) x)) i) ch, G_to_Gf,
+  --       of_eq_of_ne i j x ch, map_zero]
+  -- exact ⟨fun ⟨x, hx⟩ ↦ ⟨x i, by rw[← G_to_Gf, hx, of_eq_same i u]⟩,
+  --   fun ⟨x, hx⟩ ↦ ⟨((of (GradedPiece FR fun n ↦ FR <| n - 1) i) x), by rw[← hx, Gof_eq_piece, this]⟩⟩
 
 
 
@@ -107,7 +91,7 @@ lemma induction_lemma (p s k: ℤ) (k_le : k ≤ p + s) (lt_k : p < k) (x : S) (
     (fg_exact : Function.Exact f.toRingHom g.toRingHom) (GfGg_exact : Function.Exact Gr[f] Gr[g]) :
     g.toRingHom x ∈ g.toRingHom '' (FS (k - 1)) := by
   obtain⟨z₀, hz₀⟩ : ⟦⟨x, xin⟩⟧ ∈ Gr(k)[f].range := by
-    rw[← Ggker_eq_Gfrange f g Gexact k]
+    rw[← Ggker_eq_Gfrange f g GfGg_exact k]
     refine Gf_zero g hx klt hy1
   obtain⟨z, hz⟩ : ∃ z , Gr(k)[f] ⟦z⟧ = ⟦⟨x, xin⟩⟧ := by
     obtain⟨z, eq⟩ := Quotient.exists_rep z₀

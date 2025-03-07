@@ -71,24 +71,46 @@ lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict 
 
 variable  [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt]
 
-theorem exact_of_strict_exact (fstrict : f.IsStrict) (gstrict : g.IsStrict)
-    (exact : Function.Exact f.toRingHom g.toRingHom) : Function.Exact Gr[f] Gr[g] := by
-  intro m
-  have iff1 : Gr[g] m = 0 ↔ ∀ i : ι, Gr(i)[g] (m i) = 0 := by
+omit [IsRingFiltration FS FS_lt] in
+theorem iff1 (m : AssociatedGraded FS FS_lt): Gr[g] m = 0 ↔ ∀ i : ι, Gr(i)[g] (m i) = 0 := by
     refine ⟨fun h i ↦ ?_, fun h ↦ ?_⟩
     · rw [← FilteredRingHom.AssociatedGradedRingHom_apply, h, DirectSum.zero_apply]
     · ext i
       simp [h i]
-  have iff2 : m ∈ Set.range Gr[f] ↔ ∀ i : ι, m i ∈ Set.range Gr(i)[f] := by
-    refine ⟨fun ⟨l, hl⟩ i ↦ ?_, fun h ↦ ?_⟩
-    · rw [← hl, FilteredRingHom.AssociatedGradedRingHom_apply]
-      use l i
-    · use DirectSum.mk (GradedPiece FR FR_lt) (support m) (fun i ↦ Classical.choose (h i))
-      ext i
-      rw [FilteredRingHom.AssociatedGradedRingHom_apply]
-      by_cases mem : i ∈ support m
-      · rw [mk_apply_of_mem mem, Classical.choose_spec (h i)]
-      · rw [mk_apply_of_not_mem mem, not_mem_support_iff.mp mem, map_zero]
+
+theorem Gf_zero_iff_of_in_ker {i : ι}(u : GradedPiece FS FS_lt i): Gr(i)[g] u = 0 ↔
+    Gr[g] (of (GradedPiece FS FS_lt) i u) = 0 := by
+  rw[iff1]
+  constructor
+  · intro h j
+    by_cases ch : i = j
+    · rw [← ch, of_eq_same, h]
+    · rw [of_eq_of_ne i j u ch, map_zero]
+  · intro h
+    have := h i
+    simp at this
+    exact this
+
+
+
+omit [IsRingFiltration FS FS_lt] in
+theorem iff2 (m : AssociatedGraded FS FS_lt): m ∈ Set.range Gr[f] ↔
+    ∀ i : ι, m i ∈ Set.range Gr(i)[f] := by
+  refine ⟨fun ⟨l, hl⟩ i ↦ ?_, fun h ↦ ?_⟩
+  · rw [← hl, FilteredRingHom.AssociatedGradedRingHom_apply]
+    use l i
+  · use DirectSum.mk (GradedPiece FR FR_lt) (support m) (fun i ↦ Classical.choose (h i))
+    ext i
+    rw [FilteredRingHom.AssociatedGradedRingHom_apply]
+    by_cases mem : i ∈ support m
+    · rw [mk_apply_of_mem mem, Classical.choose_spec (h i)]
+    · rw [mk_apply_of_not_mem mem, not_mem_support_iff.mp mem, map_zero]
+
+
+
+theorem exact_of_strict_exact (fstrict : f.IsStrict) (gstrict : g.IsStrict)
+    (exact : Function.Exact f.toRingHom g.toRingHom) : Function.Exact Gr[f] Gr[g] := by
+  intro m
   rw [iff1, iff2]
   exact forall_congr'
     (fun i ↦ exact_component_of_strict_exact_component f g fstrict gstrict exact i (m i))
