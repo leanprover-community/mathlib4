@@ -1080,7 +1080,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     · have H : (p, x) ∈ t := by
         apply hε
         refine mem_thickening_iff.2 ⟨(q₀.1, x), ?_, ?_⟩
-        · simp only [hx, singleton_prod, mem_image, Prod.mk.inj_iff, eq_self_iff_true, true_and,
+        · simp only [hx, singleton_prod, mem_image, Prod.mk_inj, eq_self_iff_true, true_and,
             exists_eq_right]
         · rw [← dist_eq_norm] at hp
           simpa only [Prod.dist_eq, εpos, dist_self, max_lt_iff, and_true] using hp
