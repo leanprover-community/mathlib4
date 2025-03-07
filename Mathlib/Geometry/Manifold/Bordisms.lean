@@ -190,9 +190,7 @@ end SingularNManifold
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
--- Careful: E and H must be in the same universe. Actually, must they? Why?
-universe u
--- Let M, M' and W be smooth manifolds.
+-- Let M and M' be smooth manifolds.
 variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
   [NormedAddCommGroup E'''] [NormedSpace ℝ E''']
