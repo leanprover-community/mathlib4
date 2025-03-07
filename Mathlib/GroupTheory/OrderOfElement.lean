@@ -128,6 +128,11 @@ theorem Submonoid.isOfFinOrder_coe {H : Submonoid G} {x : H} :
   rw [isOfFinOrder_iff_pow_eq_one, isOfFinOrder_iff_pow_eq_one]
   norm_cast
 
+theorem IsConj.isOfFinOrder (h : IsConj x y) : IsOfFinOrder x → IsOfFinOrder y := by
+  simp_rw [isOfFinOrder_iff_pow_eq_one]
+  rintro ⟨n, n_gt_0, eq'⟩
+  exact ⟨n, n_gt_0, by rw [← isConj_one_right, ← eq']; exact h.pow n⟩
+
 /-- The image of an element of finite order has finite order. -/
 @[to_additive "The image of an element of finite additive order has finite additive order."]
 theorem MonoidHom.isOfFinOrder [Monoid H] (f : G →* H) {x : G} (h : IsOfFinOrder x) :

@@ -237,6 +237,11 @@ theorem Icc_ssubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b�
   rw [← coe_ssubset, coe_Icc, coe_Icc]
   exact Set.Icc_ssubset_Icc_right hI ha hb
 
+@[simp]
+theorem Ioc_disjoint_Ioc_of_le {d : α} (hbc : b ≤ c) : Disjoint (Ioc a b) (Ioc c d) :=
+  disjoint_left.2 fun _ h1 h2 ↦ not_and_of_not_left _
+    ((mem_Ioc.1 h1).2.trans hbc).not_lt (mem_Ioc.1 h2)
+
 variable (a)
 
 theorem Ico_self : Ico a a = ∅ :=
@@ -426,6 +431,13 @@ theorem Ioo_subset_Iic_self : Ioo a b ⊆ Iic b :=
 
 theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
   disjoint_left.2 fun _ hax hbcx ↦ (mem_Iic.1 hax).not_lt <| lt_of_le_of_lt h (mem_Ioc.1 hbcx).1
+
+/-- An equivalence between `Finset.Iic a` and `Set.Iic a`. -/
+def _root_.Equiv.IicFinsetSet (a : α) : Iic a ≃ Set.Iic a where
+  toFun b := ⟨b.1, coe_Iic a ▸ mem_coe.2 b.2⟩
+  invFun b := ⟨b.1, by rw [← mem_coe, coe_Iic a]; exact b.2⟩
+  left_inv := fun _ ↦ rfl
+  right_inv := fun _ ↦ rfl
 
 end LocallyFiniteOrderBot
 
@@ -804,6 +816,11 @@ theorem Ico_union_Ico {a b c d : α} (h₁ : min a b ≤ max c d) (h₂ : min c 
 theorem Ico_inter_Ico {a b c d : α} : Ico a b ∩ Ico c d = Ico (max a c) (min b d) := by
   rw [← coe_inj, coe_inter, coe_Ico, coe_Ico, coe_Ico, Set.Ico_inter_Ico]
 
+theorem Ioc_inter_Ioc {a b c d : α} : Ioc a b ∩ Ioc c d = Ioc (max a c) (min b d) := by
+  rw [← coe_inj]
+  push_cast
+  exact Set.Ioc_inter_Ioc
+
 @[simp]
 theorem Ico_filter_lt (a b c : α) : {x ∈ Ico a b | x < c} = Ico a (min b c) := by
   cases le_total b c with
@@ -844,6 +861,10 @@ theorem Ico_diff_Ico_right (a b c : α) : Ico a b \ Ico c b = Ico a (min b c) :=
     ext x
     rw [mem_sdiff, mem_Ico, mem_Ico, mem_Ico, min_eq_right h, and_assoc, not_and', not_le]
     exact and_congr_right' ⟨fun hx => hx.2 hx.1, fun hx => ⟨hx.trans_le h, fun _ => hx⟩⟩
+
+@[simp]
+theorem Ioc_disjoint_Ioc : Disjoint (Ioc a₁ a₂) (Ioc b₁ b₂) ↔ min a₂ b₂ ≤ max a₁ b₁ := by
+  simp_rw [disjoint_iff_inter_eq_empty, Ioc_inter_Ioc, Ioc_eq_empty_iff, not_lt]
 
 section LocallyFiniteOrderBot
 
