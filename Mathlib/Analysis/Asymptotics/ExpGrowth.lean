@@ -19,7 +19,7 @@ as homomorphisms preserving finitary `Inf`/`Sup` respectively.
 asymptotics, exponential
 
 ## TODO
-Get bounds on `expGrowthSup (u ∘ v)` with suitable hypotheses on `v : ℕ → ℕ `:
+Get bounds on `expGrowthInf (u ∘ v)` with suitable hypotheses on `v : ℕ → ℕ `:
 linear growth of `v`, monotonicity.
 -/
 
@@ -344,7 +344,8 @@ private lemma EReal.exists_nat_ge_mul {a : EReal} (ha : a ≠ ⊤) (n : ℕ) :
     rwa [← coe_coe_eq_natCast n, ← coe_coe_eq_natCast m, ← EReal.coe_mul, EReal.coe_le_coe_iff]
 
 private lemma tendsto_atTop_of_linGrowthInf_pos {v : ℕ → ℕ}
-    (h : (atTop.liminf fun n ↦ (v n : EReal) / n) ≠ 0) : atTop.Tendsto v atTop := by
+    (h : (atTop.liminf fun n ↦ (v n : EReal) / n) ≠ 0) :
+    atTop.Tendsto v atTop := by
   refine tendsto_atTop_atTop.2 fun M ↦ eventually_atTop.1 ?_
   obtain ⟨a, a_0, a_v⟩ := exists_between (h.symm.lt_of_le (linGrowthInf_nonneg v))
   have h₁ : ∀ᶠ n : ℕ in atTop, M ≤ a * n := by
@@ -358,6 +359,26 @@ private lemma tendsto_atTop_of_linGrowthInf_pos {v : ℕ → ℕ}
     exact a_vn.le
   filter_upwards [h₁, h₂] with n M_a a_vn
   exact Nat.cast_le.1 (M_a.trans a_vn)
+
+lemma le_expGrowthSup_comp {u : ℕ → ℝ≥0∞} {v : ℕ → ℕ} (hu : 1 ≤ᶠ[atTop] u)
+    (hv : atTop.Tendsto v atTop) :
+    (atTop.liminf fun n ↦ (v n : EReal) / n) * expGrowthInf u ≤ expGrowthInf (u ∘ v) := by
+  have uv_exp_0 : 0 ≤ expGrowthInf (u ∘ v) := by
+    rw [← expGrowthInf_const one_ne_zero one_ne_top]
+    exact expGrowthInf_eventually_monotone (hv.eventually hu)
+  rcases eq_or_ne (atTop.liminf fun n ↦ (v n : EReal) / n) 0 with h | h
+  · rw [h, zero_mul]; exact uv_exp_0
+  apply EReal.mul_le_of_forall_lt_of_nonneg (linGrowthInf_nonneg v) uv_exp_0
+  intro a ⟨a_0, a_v⟩ b ⟨b_0, b_u⟩
+  rw [← expGrowthInf_exp (a := a * b)]
+  apply expGrowthInf_eventually_monotone
+  have b_exp_uv : ∀ᶠ n in atTop, exp (b * (v n : EReal)) ≤ u (v n) :=
+    eventually_map.1 <| (le_expGrowthInf_iff.1 (le_refl (expGrowthInf u)) b b_u).filter_mono hv
+  filter_upwards [b_exp_uv, eventually_lt_of_lt_liminf a_v, eventually_gt_atTop 0]
+    with n b_uvn a_vn n_0
+  rw [comp_apply, mul_comm a b, mul_assoc b a]
+  apply b_uvn.trans' <| exp_monotone (mul_le_mul_of_nonneg_left _ b_0.le)
+  exact ((lt_div_iff (Nat.cast_pos'.2 n_0) (natCast_ne_top n)).1 a_vn).le
 
 lemma expGrowthSup_comp_le {u : ℕ → ℝ≥0∞} {v : ℕ → ℕ} (hu : ∃ᶠ n in atTop, 1 ≤ u n)
     (hv₀ : (atTop.limsup fun n ↦ (v n : EReal) / n) ≠ 0)
