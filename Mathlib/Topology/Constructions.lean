@@ -1092,6 +1092,8 @@ lemma Topology.IsInducing.sumElim_right (h : IsInducing (Sum.elim f g)) : IsIndu
 theorem Topology.IsInducing.sumElim (hf : IsInducing f) (hg : IsInducing g)
     (hFg : Disjoint (closure (range f)) (range g)) (hfG : Disjoint (range f) (closure (range g))) :
     IsInducing (Sum.elim f g) := by
+  rw [← disjoint_principal_nhdsSet] at hFg
+  rw [← disjoint_nhdsSet_principal] at hfG
   rw [isInducing_iff_nhds]
   intro x
   apply le_antisymm ((hf.continuous.sumElim hg.continuous).tendsto x).le_comap
@@ -1099,8 +1101,6 @@ theorem Topology.IsInducing.sumElim (hf : IsInducing f) (hg : IsInducing g)
   rw [mem_comap_iff_compl, ← image_preimage_inl_union_image_preimage_inr sᶜ]
   simp_rw [image_union, ← image_comp, elim_comp_inl, elim_comp_inr, preimage_compl, compl_union,
     inter_mem_iff, ← mem_comap_iff_compl]
-  rw [← disjoint_principal_nhdsSet] at hFg
-  rw [← disjoint_nhdsSet_principal] at hfG
   obtain x | x := x <;>
   simp only [nhds_inl, nhds_inr, mem_map] at hs <;>
   simp only [elim_inl, elim_inr, ← hf.nhds_eq_comap, ← hg.nhds_eq_comap, hs, true_and, and_true] <;>
@@ -1116,18 +1116,13 @@ This is an auxiliary result towards proving `isInducing_sumElim`. -/
 theorem Topology.IsInducing.disjoint_of_sumElim_aux (h : IsInducing (Sum.elim f g)) :
     Disjoint (closure (range f)) (range g) := by
   simp_rw [isInducing_iff_nhds, Filter.ext_iff] at h
-  have h (x : X ⊕ Y) : map inl (comap (fun a ↦ f a) (𝓝 (Sum.elim f g x))) ⊔
-      map inr (comap (fun a ↦ g a) (𝓝 (Sum.elim f g x))) = 𝓝 x := by
-    -- FIXME: can this proof be simplified by avoiding conv?
-    conv at h =>
-      intro x
-      conv =>
-        enter [s, 2]
-        rw [mem_comap_iff_compl, ← image_preimage_inl_union_image_preimage_inr sᶜ, image_union]
-        simp only [image_image, elim_inl, elim_inr, preimage_compl, compl_union, inter_mem_iff]
-        simp only [← mem_comap_iff_compl, ← mem_map, ← mem_sup]
-      rw [← Filter.ext_iff, eq_comm]
-    exact h x
+  have h (x : X ⊕ Y) : map inl (comap f (𝓝 (Sum.elim f g x))) ⊔
+      map inr (comap g (𝓝 (Sum.elim f g x))) = 𝓝 x := by
+    ext s
+    rw [h x s]
+    simp_rw [mem_sup, mem_map, mem_comap_iff_compl, ← inter_mem_iff]
+    rw [← image_preimage_inl_union_image_preimage_inr sᶜ, image_union]
+    simp_rw [image_image, elim_inl, elim_inr, preimage_compl, compl_union]
   simp only [disjoint_principal_left, disjoint_principal_right,
     ← disjoint_principal_nhdsSet, ← disjoint_nhdsSet_principal, mem_nhdsSet_iff_forall]
   rintro _ ⟨x, rfl⟩
