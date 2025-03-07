@@ -15,7 +15,7 @@ This file proves variants of the infinite pigeonhole principle.
 Generalize universes of results.
 -/
 
-open Cardinal Order Set
+open Order Ordinal Set
 
 universe u
 
