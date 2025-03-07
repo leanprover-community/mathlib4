@@ -49,27 +49,20 @@ theorem mem_Lp (f : α →ᵇ E) : f.toContinuousMap.toAEEqFun μ ∈ Lp E p μ 
 
 /-- The `Lp`-norm of a bounded continuous function is at most a constant (depending on the measure
 of the whole space) times its sup-norm. -/
-theorem Lp_enorm_le (f : α →ᵇ E) :
-    ‖(⟨f.toContinuousMap.toAEEqFun μ, mem_Lp f⟩ : Lp E p μ)‖ₑ ≤
-      (μ Set.univ).toNNReal ^ p.toReal⁻¹ * ‖f‖ₑ := by
-  apply Lp.enorm_le_of_ae_bound
+theorem Lp_nnnorm_le (f : α →ᵇ E) :
+    ‖(⟨f.toContinuousMap.toAEEqFun μ, mem_Lp f⟩ : Lp E p μ)‖₊ ≤
+      measureUnivNNReal μ ^ p.toReal⁻¹ * ‖f‖₊ := by
+  apply Lp.nnnorm_le_of_ae_bound
   refine (f.toContinuousMap.coeFn_toAEEqFun μ).mono ?_
   intro x hx
-  simp_rw [enorm_eq_nnnorm, ENNReal.coe_le_coe, ← NNReal.coe_le_coe, coe_nnnorm]
-  convert f.norm_coe_le_norm x using 2
-
-@[deprecated (since := "2025-02-12")] alias Lp_nnnorm_le := Lp_enorm_le
+  rw [← NNReal.coe_le_coe, coe_nnnorm, coe_nnnorm]
 
 /-- The `Lp`-norm of a bounded continuous function is at most a constant (depending on the measure
 of the whole space) times its sup-norm. -/
 theorem Lp_norm_le (f : α →ᵇ E) :
     ‖(⟨f.toContinuousMap.toAEEqFun μ, mem_Lp f⟩ : Lp E p μ)‖ ≤
-      (μ Set.univ).toNNReal ^ p.toReal⁻¹ * ‖f‖ := by
-  have := Lp_enorm_le f (E := E) (μ := μ) (p := p)
-  rw [enorm_eq_nnnorm, enorm_eq_nnnorm, ← ENNReal.rpow_eq_pow,
-    ENNReal.rpow_ofNNReal (inv_nonneg_of_nonneg ENNReal.toReal_nonneg),
-    ← ENNReal.coe_mul, ENNReal.coe_le_coe] at this
-  exact this
+      (μ Set.univ).toNNReal ^ p.toReal⁻¹ * ‖f‖ :=
+  Lp_nnnorm_le f
 
 variable (p μ)
 

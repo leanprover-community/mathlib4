@@ -1283,12 +1283,10 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
   _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ *
       (2 ^ k * ENNReal.ofReal (((Finset.Iic (k, 0)).sup (schwartzSeminormFamily 𝕜 E F)) f)) := by
     gcongr
-    refine eLpNormEssSup_le_of_ae_enorm_bound (ae_of_all μ fun x ↦ ?_)
-    rw [enorm_eq_nnnorm, ← norm_toNNReal, ENNReal.coe_le_coe]
-    simp [norm_smul, abs_of_nonneg (h_one_add x).le]
-    rw [Nat.rpow_mul_toNNReal, Real.toNNReal_le_toNNReal_iff (by positivity)]
-    convert one_add_le_sup_seminorm_apply (m := (k, 0)) (le_refl k) (le_refl 0) f x
-    exact norm_iteratedFDeriv_zero.symm
+    refine eLpNormEssSup_le_of_ae_nnnorm_bound (ae_of_all μ fun x ↦ ?_)
+    rw [← norm_toNNReal, Real.toNNReal_le_iff_le_coe]
+    simpa [norm_smul, abs_of_nonneg (h_one_add x).le] using
+      one_add_le_sup_seminorm_apply (m := (k, 0)) (le_refl k) (le_refl 0) f x
   _ = _ := by
     rw [ENNReal.coe_mul, ENNReal.coe_toNNReal hk.ne]
     simp only [ENNReal.coe_pow, ENNReal.coe_ofNat]
