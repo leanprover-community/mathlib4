@@ -7,9 +7,8 @@ import Mathlib.Data.Finsupp.Fintype
 import Mathlib.Data.Matrix.Defs
 import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.Basis.Prod
-import Mathlib.LinearAlgebra.TensorProduct.Basis
-import Mathlib.Logic.Small.Basic
 import Mathlib.LinearAlgebra.StdBasis
+import Mathlib.Logic.Small.Basic
 
 /-!
 # Free modules
@@ -25,12 +24,9 @@ module.
 * `Module.Free R M` : the class of free `R`-modules.
 -/
 
-
 universe u v w z
 
 variable {ι : Type*} (R : Type u) (M : Type v) (N : Type z)
-
-open TensorProduct DirectSum
 
 section Basic
 
@@ -173,9 +169,6 @@ search). -/
 instance function [Finite ι] : Module.Free R (ι → M) :=
   Free.pi _ _
 
-instance finsupp : Module.Free R (ι →₀ M) :=
-  of_basis (Finsupp.basis fun _ => chooseBasis R M)
-
 variable {ι}
 
 instance (priority := 100) of_subsingleton [Subsingleton N] : Module.Free R N :=
@@ -185,28 +178,7 @@ instance (priority := 100) of_subsingleton' [Subsingleton R] : Module.Free R N :
   letI := Module.subsingleton R N
   Module.Free.of_subsingleton R N
 
-instance dfinsupp {ι : Type*} (M : ι → Type*) [∀ i : ι, AddCommMonoid (M i)]
-    [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] : Module.Free R (Π₀ i, M i) :=
-  of_basis <| DFinsupp.basis fun i => chooseBasis R (M i)
-
-instance directSum {ι : Type*} (M : ι → Type*) [∀ i : ι, AddCommMonoid (M i)]
-    [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] : Module.Free R (⨁ i, M i) :=
-  Module.Free.dfinsupp R M
-
 end Semiring
-
-section CommSemiring
-
-variable {S} [CommSemiring R] [Semiring S] [Algebra R S] [AddCommMonoid M] [Module R M]
-  [Module S M] [IsScalarTower R S M] [Module.Free S M]
-  [AddCommMonoid N] [Module R N] [Module.Free R N]
-
-instance tensor : Module.Free S (M ⊗[R] N) :=
-  let ⟨bM⟩ := exists_basis (R := S) (M := M)
-  let ⟨bN⟩ := exists_basis (R := R) (M := N)
-  of_basis (bM.2.tensorProduct bN.2)
-
-end CommSemiring
 
 end Module.Free
 
