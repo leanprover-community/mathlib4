@@ -39,14 +39,14 @@ expectation.
 ## Main definition
 
 * `traj κ a`: a kernel from `Π i : Iic a, X i` to `Π n, X n` which takes as input a trajectory
-  up to time `a` ad outputs the distribution of the trajectory obtained by iterating the kernels
+  up to time `a` and outputs the distribution of the trajectory obtained by iterating the kernels
   `κ`. Its existence is given by the Ionescu-Tulcea theorem.
 
 ## Main statements
 
 * `eq_traj`: Uniqueness of `traj`: to check that `η = traj κ a` it is enough to show that
   the restriction of `η` to variables `≤ b` is `partialTraj κ a b`.
-* `traj_comp_partialTraj`: Given the distribution up to tome `a`, `partialTraj κ a b`
+* `traj_comp_partialTraj`: Given the distribution up to time `a`, `partialTraj κ a b`
   gives the distribution of the trajectory up to time `b`, and composing this with
   `traj κ b` gives the distribution of the whole trajectory.
 * `condExp_traj`: If `a ≤ b`, the conditional expectation of `f` with respect to `traj κ a`
@@ -138,7 +138,7 @@ by `Finset ℕ`, it is enough to check on intervals of the form `Iic n`, where `
 a given integer. -/
 theorem isProjectiveLimit_nat_iff' {μ : (I : Finset ℕ) → Measure (Π i : I, X i)}
     (hμ : IsProjectiveMeasureFamily μ) (ν : Measure (Π n, X n)) (a : ℕ) :
-    IsProjectiveLimit ν μ ↔ ∀ ⦃n⦄, n ≥ a → ν.map (frestrictLe n) = μ (Iic n) := by
+    IsProjectiveLimit ν μ ↔ ∀ ⦃n⦄, a ≤ n → ν.map (frestrictLe n) = μ (Iic n) := by
   refine ⟨fun h n _ ↦ h (Iic n), fun h I ↦ ?_⟩
   have := (I.subset_Iic_sup_id.trans (Iic_subset_Iic.2 (le_max_left (I.sup id) a)))
   rw [← restrict₂_comp_restrict this, ← Measure.map_map, ← frestrictLe, h (le_max_right _ _), ← hμ]
@@ -327,7 +327,8 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
 the `trajContent` of a decreasing sequence of cylinders with empty intersection
 converges to `0`.
 
-This implies the `σ`-additivity of `trajContent` (see `sigma_additive_addContent_of_tendsto_zero`),
+This implies the `σ`-additivity of `trajContent`
+(see `addContent_iUnion_eq_sum_of_tendsto_zero`),
 which allows to extend it to the `σ`-algebra by Carathéodory's theorem. -/
 theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
     (A_mem : ∀ n, A n ∈ measurableCylinders X) (A_anti : Antitone A) (A_inter : ⋂ n, A n = ∅)
@@ -453,7 +454,8 @@ theorem isSigmaSubadditive_trajContent {a : ℕ} (x₀ : Π i : Iic a, X i) :
     (trajContent κ x₀) (fun _ _ ↦ trajContent_ne_top) ?_ hf hf_Union hf'
   exact fun s hs anti_s inter_s ↦ trajContent_tendsto_zero hs anti_s inter_s x₀
 
-/-- This function is the kernel given by the Ionescu-Tulcea theorem. -/
+/-- This function is the kernel given by the Ionescu-Tulcea theorem. It is shown belown that it
+is measurable and turned into a true kernel in `Kernel.traj`. -/
 noncomputable def trajFun (a : ℕ) (x₀ : Π i : Iic a, X i) :
     Measure (Π n, X n) :=
   (trajContent κ x₀).measure isSetSemiring_measurableCylinders generateFrom_measurableCylinders.ge
@@ -501,10 +503,7 @@ where the entries with index `≤ a` are those of `x`, and then one follows iter
 kernels `κ a`, then `κ (a + 1)`, and so on.
 
 The fact that such a kernel exists on infinite trajectories is not obvious, and is the content of
-the Ionescu-Tulcea theorem. We follow the proof of Theorem 8.24 in
-[O. Kallenberg, *Foundations of Modern Probability*][kallenberg2021]. For a more detailed proof
-in the case of constant kernels (i.e. measures),
-see Proposition 10.6.1 in [D. L. Cohn, *Measure Theory*][cohn2013measure]. -/
+the Ionescu-Tulcea theorem. -/
 noncomputable def traj (a : ℕ) : Kernel (Π i : Iic a, X i) (Π n, X n) where
   toFun := trajFun κ a
   measurable' := measurable_trajFun a
@@ -699,7 +698,6 @@ theorem condExp_traj {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
       setIntegral_traj_partialTraj hab i_f mt]
     all_goals fun_prop
   · exact (i_f'.1.comp_ae_measurable' (measurable_frestrictLe b).aemeasurable)
-
 
 variable (κ) in
 theorem condExp_traj' {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c)
