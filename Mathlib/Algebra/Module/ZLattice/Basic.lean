@@ -314,7 +314,7 @@ instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
   · exact discreteTopology_pi_basisFun
   · refine Subtype.map_injective _ (Basis.equivFun b).injective
 
-instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)).toAddSubgroup :=
+instance instDiscreteTopology [Finite ι] : DiscreteTopology (span ℤ (Set.range b)).toAddSubgroup :=
   inferInstanceAs <| DiscreteTopology (span ℤ (Set.range b))
 
 theorem setFinite_inter [ProperSpace E] [Finite ι] {s : Set E} (hs : Bornology.IsBounded s) :
@@ -715,7 +715,7 @@ section NormedLinearOrderedField_comap
 variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
   [ProperSpace E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F]  [FiniteDimensional K F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] [FiniteDimensional K F]
   [ProperSpace F]
 variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice K L]
 

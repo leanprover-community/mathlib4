@@ -48,14 +48,15 @@ namespace NumberField.Units.dirichletUnitTheorem
 /-!
 ### Dirichlet Unit Theorem
 
-We define a group morphism from `(𝓞 K)ˣ` to `{w : InfinitePlace K // w ≠ w₀} → ℝ` where `w₀` is a
-distinguished (arbitrary) infinite place, prove that its kernel is the torsion subgroup (see
-`logEmbedding_eq_zero_iff`) and that its image, called `unitLattice`, is a full `ℤ`-lattice. It
-follows that `unitLattice` is a free `ℤ`-module (see `instModuleFree_unitLattice`) of rank
-`card (InfinitePlaces K) - 1` (see `unitLattice_rank`). To prove that the `unitLattice` is a full
-`ℤ`-lattice, we need to prove that it is discrete (see `unitLattice_inter_ball_finite`) and that it
-spans the full space over `ℝ` (see `unitLattice_span_eq_top`); this is the main part of the proof,
-see the section `span_top` below for more details.
+We define a group morphism from `(𝓞 K)ˣ` to `logSpace K`, defined as
+`{w : InfinitePlace K // w ≠ w₀} → ℝ` where `w₀` is a distinguished (arbitrary) infinite place,
+prove that its kernel is the torsion subgroup (see `logEmbedding_eq_zero_iff`) and that its image,
+called `unitLattice`, is a full `ℤ`-lattice. It follows that `unitLattice` is a free `ℤ`-module
+(see `instModuleFree_unitLattice`) of rank `card (InfinitePlaces K) - 1` (see `unitLattice_rank`).
+To prove that the `unitLattice` is a full `ℤ`-lattice, we need to prove that it is discrete
+(see `unitLattice_inter_ball_finite`) and that it spans the full space over `ℝ`
+(see `unitLattice_span_eq_top`); this is the main part of the proof, see the section `span_top`
+below for more details.
 -/
 
 open Finset
@@ -70,12 +71,17 @@ variable [NumberField K]
 def w₀ : InfinitePlace K := (inferInstance : Nonempty (InfinitePlace K)).some
 
 variable (K) in
+/-- The `logSpace` is defined as `{w : InfinitePlace K // w ≠ w₀} → ℝ` where `w₀` is the
+distinguished infinite place. -/
+abbrev logSpace := {w : InfinitePlace K // w ≠ w₀} → ℝ
+
+variable (K) in
 /-- The logarithmic embedding of the units (seen as an `Additive` group). -/
 def _root_.NumberField.Units.logEmbedding :
-    Additive ((𝓞 K)ˣ) →+ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
+    Additive ((𝓞 K)ˣ) →+ logSpace K :=
 { toFun := fun x w => mult w.val * Real.log (w.val ↑x.toMul)
   map_zero' := by simp; rfl
-  map_add' := fun _ _ => by simp [Real.log_mul, mul_add]; rfl }
+  map_add' := fun _ _ ↦ by simp [Real.log_mul, mul_add]; rfl }
 
 @[simp]
 theorem logEmbedding_component (x : (𝓞 K)ˣ) (w : {w : InfinitePlace K // w ≠ w₀}) :
@@ -95,22 +101,21 @@ theorem mult_log_place_eq_zero {x : (𝓞 K)ˣ} {w : InfinitePlace K} :
     mult w * Real.log (w x) = 0 ↔ w x = 1 := by
   rw [mul_eq_zero, or_iff_right, Real.log_eq_zero, or_iff_right, or_iff_left]
   · linarith [(apply_nonneg _ _ : 0 ≤ w x)]
-  · simp only [ne_eq, map_eq_zero, coe_ne_zero x, not_false_eq_true]
-  · refine (ne_of_gt ?_)
-    rw [mult]; split_ifs <;> norm_num
+  · exact (Units.pos_at_place _ _).ne'
+  · exact mult_coe_ne_zero
 
 variable [NumberField K]
 
 theorem logEmbedding_eq_zero_iff {x : (𝓞 K)ˣ} :
     logEmbedding K (Additive.ofMul x) = 0 ↔ x ∈ torsion K := by
   rw [mem_torsion]
-  refine ⟨fun h w => ?_, fun h => ?_⟩
+  refine ⟨fun h w ↦ ?_, fun h ↦ ?_⟩
   · by_cases hw : w = w₀
     · suffices -mult w₀ * Real.log (w₀ (x : K)) = 0 by
         rw [neg_mul, neg_eq_zero, ← hw] at this
         exact mult_log_place_eq_zero.mp this
       rw [← sum_logEmbedding_component, sum_eq_zero]
-      exact fun w _ => congrFun h w
+      exact fun w _ ↦ congrFun h w
     · exact mult_log_place_eq_zero.mp (congrFun h ⟨w, hw⟩)
   · ext w
     rw [logEmbedding_component, h w.val, Real.log_one, mul_zero, Pi.zero_apply]
@@ -138,7 +143,7 @@ theorem log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r)
     · rw [← hw]
       exact tool _ (abs_nonneg _)
     · refine (sum_le_card_nsmul univ _ _
-        (fun w _ => logEmbedding_component_le hr h w)).trans ?_
+        (fun w _ ↦ logEmbedding_component_le hr h w)).trans ?_
       rw [nsmul_eq_mul]
       refine mul_le_mul ?_ le_rfl hr (Fintype.card (InfinitePlace K)).cast_nonneg
       simp
@@ -153,13 +158,12 @@ variable (K)
 
 /-- The lattice formed by the image of the logarithmic embedding. -/
 noncomputable def _root_.NumberField.Units.unitLattice :
-    Submodule ℤ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
+    Submodule ℤ (logSpace K) :=
   Submodule.map (logEmbedding K).toIntLinearMap ⊤
 
 open scoped Classical in
 theorem unitLattice_inter_ball_finite (r : ℝ) :
-    ((unitLattice K : Set ({ w : InfinitePlace K // w ≠ w₀} → ℝ)) ∩
-      Metric.closedBall 0 r).Finite := by
+    ((unitLattice K : Set (logSpace K)) ∩ Metric.closedBall 0 r).Finite := by
   obtain hr | hr := lt_or_le r 0
   · convert Set.finite_empty
     rw [Metric.closedBall_eq_empty.mpr hr]
@@ -280,11 +284,10 @@ theorem exists_unit (w₁ : InfinitePlace K) :
   rsuffices ⟨n, m, hnm, h⟩ : ∃ n m, n < m ∧
       (Ideal.span ({ (seq K w₁ hB n : 𝓞 K) }) = Ideal.span ({ (seq K w₁ hB m : 𝓞 K) }))
   · have hu := Ideal.span_singleton_eq_span_singleton.mp h
-    refine ⟨hu.choose, fun w hw => Real.log_neg ?_ ?_⟩
-    · exact pos_iff.mpr (coe_ne_zero _)
-    · calc
-        _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m) * (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹) := by
-          rw [← congr_arg (algebraMap (𝓞 K) K) hu.choose_spec, mul_comm, map_mul (algebraMap _ _),
+    refine ⟨hu.choose, fun w hw => Real.log_neg (pos_at_place (Exists.choose hu) w) ?_⟩
+    calc
+      _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m) * (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹) := by
+        rw [← congr_arg (algebraMap (𝓞 K) K) hu.choose_spec, mul_comm, map_mul (algebraMap _ _),
           ← mul_assoc, inv_mul_cancel₀ (seq_ne_zero K w₁ hB n), one_mul]
       _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m)) * w (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹ :=
         _root_.map_mul _ _ _
@@ -297,7 +300,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
   exact seq_norm_le K w₁ hB n
 
 theorem unitLattice_span_eq_top :
-    Submodule.span ℝ (unitLattice K : Set ({w : InfinitePlace K // w ≠ w₀} → ℝ)) = ⊤ := by
+    Submodule.span ℝ (unitLattice K : Set (logSpace K)) = ⊤ := by
   classical
   refine le_antisymm le_top ?_
   -- The standard basis
@@ -347,7 +350,7 @@ instance instDiscrete_unitLattice : DiscreteTopology (unitLattice K) := by
   · refine Set.Finite.of_finite_image ?_ (Set.injOn_of_injective Subtype.val_injective)
     convert unitLattice_inter_ball_finite K 1
     ext x
-    refine ⟨?_, fun ⟨hx1, hx2⟩ => ⟨⟨x, hx1⟩, hx2, rfl⟩⟩
+    refine ⟨?_, fun ⟨hx1, hx2⟩ ↦ ⟨⟨x, hx1⟩, hx2, rfl⟩⟩
     rintro ⟨x, hx, rfl⟩
     exact ⟨Subtype.mem x, hx⟩
 
@@ -356,7 +359,7 @@ instance instZLattice_unitLattice : IsZLattice ℝ (unitLattice K) where
   span_top := unitLattice_span_eq_top K
 
 protected theorem finrank_eq_rank :
-    finrank ℝ ({w : InfinitePlace K // w ≠ w₀} → ℝ) = Units.rank K := by
+    finrank ℝ (logSpace K) = Units.rank K := by
   classical
   simp only [finrank_fintype_fun_eq_card, Fintype.card_subtype_compl,
     Fintype.card_ofSubsingleton, rank]
@@ -369,7 +372,7 @@ theorem unitLattice_rank :
 
 /-- The map obtained by quotienting by the kernel of `logEmbedding`. -/
 def logEmbeddingQuot :
-    Additive ((𝓞 K)ˣ ⧸ (torsion K)) →+ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
+    Additive ((𝓞 K)ˣ ⧸ (torsion K)) →+ logSpace K :=
   MonoidHom.toAdditive' <|
     (QuotientGroup.kerLift (AddMonoidHom.toMultiplicative' (logEmbedding K))).comp
       (QuotientGroup.quotientMulEquivOfEq (by
