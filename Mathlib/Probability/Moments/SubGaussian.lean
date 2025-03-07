@@ -54,7 +54,7 @@ as special cases of a notion of sub-Gaussianity with respect to a kernel and a m
   `exp (c * t ^ 2 / 2)`.
 * `HasCondSubgaussianMGF`: a random variable `X` has a conditionally sub-Gaussian moment generating
   function with parameter `c` with respect to a sigma-algebra `m` and a measure `μ` if for all
-  `t : ℝ`, `exp (t * X)` is `μ`-integrable and the moment generating function of `X` contioned
+  `t : ℝ`, `exp (t * X)` is `μ`-integrable and the moment generating function of `X` conditioned
   on `m` is almost surely bounded by `exp (c * t ^ 2 / 2)` for all `t : ℝ`.
   The actual definition uses `Kernel.HasSubgaussianMGF`: `HasCondSubgaussianMGF` is defined as
   sub-Gaussian with respect to the conditional expectation kernel for `m` and the restriction of `μ`
@@ -271,7 +271,7 @@ variable {Ω : Type*} {m mΩ : MeasurableSpace Ω} {hm : m ≤ mΩ} [StandardBor
 variable (m) (hm) in
 /-- A random variable `X` has a conditionally sub-Gaussian moment generating function
 with parameter `c` with respect to a sigma-algebra `m` and a measure `μ` if for all `t : ℝ`,
-`exp (t * X)` is `μ`-integrable and the moment generating function of `X` contioned on `m` is
+`exp (t * X)` is `μ`-integrable and the moment generating function of `X` conditioned on `m` is
 almost surely bounded by `exp (c * t ^ 2 / 2)` for all `t : ℝ`.
 
 The actual definition uses `Kernel.HasSubgaussianMGF`: `HasCondSubgaussianMGF` is defined as
