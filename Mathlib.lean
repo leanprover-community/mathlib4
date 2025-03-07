@@ -5743,6 +5743,7 @@ import Mathlib.Topology.Gluing
 import Mathlib.Topology.Hom.ContinuousEval
 import Mathlib.Topology.Hom.ContinuousEvalConst
 import Mathlib.Topology.Hom.Open
+import Mathlib.Topology.HomeoDefs
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Homotopy.Basic
 import Mathlib.Topology.Homotopy.Contractible

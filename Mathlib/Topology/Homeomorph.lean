@@ -9,21 +9,10 @@ import Mathlib.Topology.ContinuousMap.Defs
 import Mathlib.Topology.DenseEmbedding
 
 /-!
-# Homeomorphisms
+# Further properties of homeomorphisms
 
-This file defines homeomorphisms between two topological spaces. They are bijections with both
-directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
-
-# Main definitions
-
-* `Homeomorph X Y`: The type of homeomorphisms from `X` to `Y`.
-  This type can be denoted using the following notation: `X ≃ₜ Y`.
-
-# Main results
-
-* Pretty much every topological property is preserved under homeomorphisms.
-* `Homeomorph.homeomorphOfContinuousOpen`: A continuous bijection that is
-  an open map is a homeomorphism.
+This file proves further properties of homeomorphisms between topological spaces.
+Pretty much every topological property is preserved under homeomorphisms.
 
 -/
 
