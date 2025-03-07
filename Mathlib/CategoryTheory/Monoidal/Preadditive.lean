@@ -156,7 +156,7 @@ theorem leftDistributor_inv {J : Type} [Fintype J] (X : C) (f : J → C) :
 
 @[reassoc (attr := simp)]
 theorem leftDistributor_hom_comp_biproduct_π {J : Type} [Fintype J] (X : C) (f : J → C) (j : J) :
-    (leftDistributor X f).hom ≫ biproduct.π _ j = X ◁ biproduct.π _ j := by
+    (leftDistributor X f).hom ≫ biproduct.π _ j = X ◁ biproduct.π f j := by
   classical
   simp [leftDistributor_hom, Preadditive.sum_comp, biproduct.ι_π, comp_dite]
 
@@ -176,7 +176,7 @@ theorem leftDistributor_inv_comp_biproduct_π {J : Type} [Fintype J] (X : C) (f 
 
 @[reassoc (attr := simp)]
 theorem biproduct_ι_comp_leftDistributor_inv {J : Type} [Fintype J] (X : C) (f : J → C) (j : J) :
-    biproduct.ι _ j ≫ (leftDistributor X f).inv = X ◁ biproduct.ι _ j := by
+    biproduct.ι _ j ≫ (leftDistributor X f).inv = X ◁ biproduct.ι f j := by
   classical
   simp [leftDistributor_inv, Preadditive.comp_sum, ← id_tensor_comp, biproduct.ι_π_assoc, dite_comp]
 
@@ -218,7 +218,7 @@ theorem rightDistributor_inv {J : Type} [Fintype J] (f : J → C) (X : C) :
 
 @[reassoc (attr := simp)]
 theorem rightDistributor_hom_comp_biproduct_π {J : Type} [Fintype J] (f : J → C) (X : C) (j : J) :
-    (rightDistributor f X).hom ≫ biproduct.π _ j = biproduct.π _ j ▷ X := by
+    (rightDistributor f X).hom ≫ biproduct.π _ j = biproduct.π f j ▷ X := by
   classical
   simp [rightDistributor_hom, Preadditive.sum_comp, biproduct.ι_π, comp_dite]
 
@@ -238,7 +238,7 @@ theorem rightDistributor_inv_comp_biproduct_π {J : Type} [Fintype J] (f : J →
 
 @[reassoc (attr := simp)]
 theorem biproduct_ι_comp_rightDistributor_inv {J : Type} [Fintype J] (f : J → C) (X : C) (j : J) :
-    biproduct.ι _ j ≫ (rightDistributor f X).inv = biproduct.ι _ j ▷ X := by
+    biproduct.ι _ j ≫ (rightDistributor f X).inv = biproduct.ι f j ▷ X := by
   classical
   simp [rightDistributor_inv, Preadditive.comp_sum, ← id_tensor_comp, biproduct.ι_π_assoc,
     dite_comp]

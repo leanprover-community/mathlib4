@@ -182,7 +182,7 @@ def normalizeIsoApp :
   | of _, _ => Iso.refl _
   | unit, _ => ρ_ _
   | tensor X a, n =>
-    (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIsoApp X n) a ≪≫ normalizeIsoApp _ _
+    (α_ _ _ _).symm ≪≫ normalizeIsoApp X n ▷ a ≪≫ normalizeIsoApp _ _
 
 /-- Almost non-definitionally equal to `normalizeIsoApp`, but has a better definitional property
 in the proof of `normalize_naturality`. -/
@@ -192,7 +192,7 @@ def normalizeIsoApp' :
   | of _, _ => Iso.refl _
   | unit, _ => ρ_ _
   | tensor X Y, n =>
-    (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIsoApp' X n) Y ≪≫ normalizeIsoApp' _ _
+    (α_ _ _ _).symm ≪≫ normalizeIsoApp' X n ▷ Y ≪≫ normalizeIsoApp' _ _
 
 theorem normalizeIsoApp_eq :
     ∀ (X : F C) (n : N C), normalizeIsoApp C X n = normalizeIsoApp' C X n.as
@@ -207,7 +207,7 @@ theorem normalizeIsoApp_eq :
 @[simp]
 theorem normalizeIsoApp_tensor (X Y : F C) (n : N C) :
     normalizeIsoApp C (X ⊗ Y) n =
-      (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIsoApp C X n) Y ≪≫ normalizeIsoApp _ _ _ :=
+      (α_ _ _ _).symm ≪≫ normalizeIsoApp C X n ▷ Y ≪≫ normalizeIsoApp _ _ _ :=
   rfl
 
 @[simp]

@@ -184,8 +184,8 @@ end
 def vcomp (η : StrongOplaxNatTrans F G) (θ : StrongOplaxNatTrans G H) : StrongOplaxNatTrans F H :=
   mkOfOplax (OplaxNatTrans.vcomp η.toOplax θ.toOplax)
     { naturality := fun {a b} f ↦
-        (α_ _ _ _).symm ≪≫ whiskerRightIso (η.naturality f) (θ.app b) ≪≫
-        (α_ _ _ _) ≪≫ whiskerLeftIso (η.app a) (θ.naturality f) ≪≫ (α_ _ _ _).symm }
+        (α_ _ _ _).symm ≪≫ η.naturality f ▷ θ.app b ≪≫
+        (α_ _ _ _) ≪≫ η.app a ◁ θ.naturality f ≪≫ (α_ _ _ _).symm }
 end
 
 end StrongOplaxNatTrans

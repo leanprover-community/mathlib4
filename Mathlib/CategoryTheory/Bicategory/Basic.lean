@@ -209,8 +209,14 @@ def whiskerRightIso {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) : f ≫ h ≅ g
   hom := η.hom ▷ h
   inv := η.inv ▷ h
 
+/-- Notation for the `whiskerLeftIso` isomorphism of bicategories -/
+scoped infixr:81 " ◁ " => whiskerLeftIso
+
+/-- Notation for the `whiskerRightIso` isomorphism of bicategories -/
+scoped infixl:81 " ▷ " => whiskerRightIso
+
 instance whiskerRight_isIso {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) [IsIso η] : IsIso (η ▷ h) :=
-  (whiskerRightIso (asIso η) h).isIso_hom
+  (asIso η ▷ h).isIso_hom
 
 @[simp]
 theorem inv_whiskerRight {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) [IsIso η] :
