@@ -190,6 +190,9 @@ def sum (s t : SingularNManifold X k I) : SingularNManifold X k I where
   f := Sum.elim s.f t.f
   hf := s.hf.sumElim t.hf
 
+@[simp, mfld_simps]
+lemma sum_M (s t : SingularNManifold X k I) : (s.sum t).M = (s.M ⊕ t.M) := rfl
+
 end SingularNManifold
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
@@ -250,7 +253,7 @@ structure UnorientedCobordism.{v} (s : SingularNManifold X k I) (t : SingularNMa
 
 namespace UnorientedCobordism
 
-variable {s t u : SingularNManifold X k I} {J : ModelWithCorners ℝ E' H'}
+variable {s s' t t' u : SingularNManifold X k I} {J : ModelWithCorners ℝ E' H'}
 
 instance (φ : UnorientedCobordism k s t J) : TopologicalSpace φ.W := φ.topologicalSpace
 
@@ -272,6 +275,23 @@ def empty [IsEmpty M] : UnorientedCobordism k (SingularNManifold.empty X M I)
   φ := Diffeomorph.empty
   hFf := by ext x; exact (IsEmpty.false x).elim
   hFg := by ext x; exact (IsEmpty.false x).elim
+
+/-- The disjoint union of two unoriented cobordisms (over the same model `J`). -/
+def sum (φ : UnorientedCobordism k s t J) (ψ : UnorientedCobordism k s' t' J) :
+    UnorientedCobordism k (s.sum s') (t.sum t') J where
+  W := φ.W ⊕ ψ.W
+  bd := φ.bd.sum ψ.bd
+  F := Sum.elim φ.F ψ.F
+  hF := φ.hF.sumElim ψ.hF
+  φ := by
+    let aux := Diffeomorph.sumCongr φ.φ ψ.φ
+    simp only [SingularNManifold.sum_M, BoundaryManifoldData.sum_M₀]
+    -- need: diffeo ((s.M ⊕ t.M) ⊕ s'.M ⊕ t'.M) ≃ (s.M ⊕ s'.M) ⊕ t.M ⊕ t'.M)
+    -- which exists already, then compose with that
+    -- and hope no equality of types is a problem...
+    sorry
+  hFf := sorry
+  hFg := sorry
 
 variable (s) in
 def refl : UnorientedCobordism k s s (I.prod (𝓡∂ 1)) where

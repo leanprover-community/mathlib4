@@ -296,6 +296,7 @@ lemma Topology.IsEmbedding.sumElim_of_separatedNhds {f : X → Z} {g : Y → Z}
     (hf : IsEmbedding f) (hg : IsEmbedding g) (hsep : SeparatedNhds (range f) (range g)) :
     IsEmbedding (Sum.elim f g) := sorry
 
+variable {I₀} in
 /-- If `M` and `M'` are modelled on the same model `I` and have nice boundary over `I₀`,
 their disjoint union also does. -/
 noncomputable def BoundaryManifoldData.sum
@@ -331,3 +332,7 @@ noncomputable def BoundaryManifoldData.sum
     · have : Sum.map bd.f bd'.f ∘ Sum.inr = (@Sum.inr M M') ∘ bd'.f := by
         ext; simp
       rw [this, range_comp, bd'.range_eq_boundary]
+
+@[simp, mfld_simps]
+lemma BoundaryManifoldData.sum_M₀ (bd : BoundaryManifoldData M I k I₀)
+    (bd' : BoundaryManifoldData M' I k I₀) : (bd.sum bd').M₀ = (bd.M₀ ⊕ bd'.M₀) := rfl
