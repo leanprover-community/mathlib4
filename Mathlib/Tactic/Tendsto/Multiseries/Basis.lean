@@ -61,8 +61,7 @@ theorem basis_eventually_pos {basis : Basis} (h : WellFormedBasis basis) :
 /-- First function from well-formed basis is eventually positive. -/
 theorem basis_head_eventually_pos {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (h : WellFormedBasis (basis_hd :: basis_tl)) : ∀ᶠ x in atTop, 0 < basis_hd x := by
-  apply Eventually.mono <| (forall_eventually_of_eventually_forall (basis_eventually_pos h))
-    basis_hd
+  apply ((forall_eventually_of_eventually_forall (basis_eventually_pos h)) basis_hd).mono
   intro x h
   apply h
   simp
@@ -83,12 +82,12 @@ theorem basis_compare {f g : ℝ → ℝ} (a b : ℝ) (hf : ∀ᶠ x in atTop, 0
     (isUnit_iff_ne_zero.mpr hb.ne.symm) (IsLittleO.const_mul_left h a)
   have hf_exp_log : (fun x ↦ (f x)^a) =ᶠ[atTop] fun x ↦ Real.exp (a * (Real.log (f x))) := by
     simp only [EventuallyEq]
-    apply Eventually.mono hf
+    apply hf.mono
     intro x hx
     rw [mul_comm, Real.exp_mul, Real.exp_log hx]
   have hg_exp_log : (fun x ↦ (g x)^b) =ᶠ[atTop] fun x ↦ Real.exp (b * (Real.log (g x))) := by
     simp only [EventuallyEq]
-    apply Eventually.mono (Tendsto.eventually_gt_atTop hg 0)
+    apply (Tendsto.eventually_gt_atTop hg 0).mono
     intro x hx
     rw [mul_comm, Real.exp_mul, Real.exp_log hx]
   apply IsLittleO.trans_eventuallyEq _ hg_exp_log.symm
@@ -122,7 +121,7 @@ theorem basis_tail_majorated_head {hd f : ℝ → ℝ} {tl : Basis}
   intro exp h_exp
   rw [show f = fun x ↦ (f x)^(1 : ℝ) by simp]
   apply basis_compare
-  · apply Eventually.mono <| basis_eventually_pos h_basis.tail
+  · apply (basis_eventually_pos h_basis.tail).mono
     intro x h
     apply h
     exact hf

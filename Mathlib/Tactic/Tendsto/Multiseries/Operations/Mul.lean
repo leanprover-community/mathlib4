@@ -2263,7 +2263,7 @@ mutual
           · exact h_tl_approx
           · exact hM_approx
         · simp only [EventuallyEq] at hf_eq ⊢
-          apply Eventually.mono <| hf_eq.and (basis_head_eventually_pos h_basis)
+          apply (hf_eq.and (basis_head_eventually_pos h_basis)).mono
           intro t ⟨hf_eq, h_pos⟩
           simp [Real.rpow_add h_pos, hf_eq]
           ring_nf
@@ -2435,7 +2435,7 @@ mutual
             · simp [addMany_one]
             constructor
             · simp only [EventuallyEq] at hf_eq ⊢
-              apply Eventually.mono <| hf_eq.and (basis_head_eventually_pos h_basis)
+              apply (hf_eq.and (basis_head_eventually_pos h_basis)).mono
               intro t ⟨hf_eq, h_pos⟩
               rw [Real.rpow_add h_pos, hf_eq]
               simp
@@ -2498,7 +2498,7 @@ mutual
                   simp [addMany_mulMonomial_fC, addMany_mulMonomial_tail_fB,
                     addMany_mulMonomial_tail_BM]
                   simp only [EventuallyEq] at hf_eq ⊢
-                  apply Eventually.mono <| hf_eq.and (basis_head_eventually_pos h_basis)
+                  apply (hf_eq.and (basis_head_eventually_pos h_basis)).mono
                   intro t ⟨hf_eq, h_pos⟩
                   rw [hf_eq]
                   rw [Finset.mul_sum, ← Finset.sum_sub_distrib]
@@ -2570,7 +2570,7 @@ mutual
                     simp [addMany_mulMonomial_fC, addMany_mulMonomial_tail_fB,
                       addMany_mulMonomial_tail_BM]
                     simp only [EventuallyEq] at hf_eq ⊢
-                    apply Eventually.mono <| hf_eq.and (basis_head_eventually_pos h_basis)
+                    apply (hf_eq.and (basis_head_eventually_pos h_basis)).mono
                     intro t ⟨hf_eq, h_pos⟩
                     rw [hf_eq]
                     move_add [← fX t * fY t]
@@ -2646,7 +2646,7 @@ mutual
                     simp
                   constructor
                   · simp only [EventuallyEq] at hf_eq ⊢
-                    apply Eventually.mono <| hf_eq.and (basis_head_eventually_pos h_basis)
+                    apply (hf_eq.and (basis_head_eventually_pos h_basis)).mono
                     intro t ⟨hf_eq, h_pos⟩
                     rw [hf_eq]
                     conv =>
@@ -2755,7 +2755,7 @@ mutual
                     simp [addMany_mulMonomial_fC, addMany_mulMonomial_tail_fB,
                       addMany_mulMonomial_tail_BM]
                     simp only [EventuallyEq] at hf_eq ⊢
-                    apply Eventually.mono <| hf_eq.and (basis_head_eventually_pos h_basis)
+                    apply (hf_eq.and (basis_head_eventually_pos h_basis)).mono
                     intro t ⟨hf_eq, h_pos⟩
                     rw [hf_eq]
                     conv =>

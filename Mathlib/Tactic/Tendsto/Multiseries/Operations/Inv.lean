@@ -142,7 +142,7 @@ theorem inv_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis}
       apply Approximates_of_EventuallyEq (f := fun t ↦ fC⁻¹ t * (basis_hd t)^(-exp) *
         (fC t * (basis_hd t)^(exp) * f⁻¹ t))
       · simp only [EventuallyEq]
-        apply Eventually.mono <| hC_ne_zero.and h_basis_hd_pos
+        apply (hC_ne_zero.and h_basis_hd_pos).mono
         intro t ⟨hC_ne_zero, h_basis_hd_pos⟩
         simp
         ring_nf
@@ -161,7 +161,7 @@ theorem inv_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis}
         (f' := (fun t ↦ 1 - fC⁻¹ t * basis_hd t ^ (-exp) * f t)) at this
       swap
       · simp only [EventuallyEq]
-        apply Eventually.mono <| hC_ne_zero.and h_basis_hd_pos
+        apply (hC_ne_zero.and h_basis_hd_pos).mono
         intro t ⟨hC_ne_zero, h_basis_hd_pos⟩
         simp
         ring_nf
@@ -170,7 +170,7 @@ theorem inv_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis}
       apply Approximates_of_EventuallyEq
         (f := (fun t ↦ (1 - t)⁻¹) ∘ (fun t ↦ 1 - fC⁻¹ t * basis_hd t ^ (-exp) * f t))
       · simp only [EventuallyEq]
-        apply Eventually.mono h_basis_hd_pos
+        apply h_basis_hd_pos.mono
         intro t h_basis_hd_pos
         simp [Real.rpow_neg h_basis_hd_pos.le]
         ring
@@ -181,14 +181,14 @@ theorem inv_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis}
           apply Tendsto.const_sub
           apply Tendsto.congr' (f₁ := f / (fun k ↦ fC k * basis_hd k ^ (exp)))
           · simp only [EventuallyEq]
-            apply Eventually.mono h_basis_hd_pos
+            apply h_basis_hd_pos.mono
             intro t h_basis_hd_pos
             simp [Real.rpow_neg h_basis_hd_pos.le]
             ring
           rw [← isEquivalent_iff_tendsto_one]
           conv => rhs; ext t; rw [mul_comm]
           apply IsEquivalent_coef h_coef h_coef_wo h_coef_trimmed h_coef_ne_zero h_tl h_comp h_basis
-          apply Eventually.mono <| hC_ne_zero.and h_basis_hd_pos
+          apply (hC_ne_zero.and h_basis_hd_pos).mono
           intro t ⟨hC_ne_zero, h_basis_hd_pos⟩
           simp
           constructor
@@ -202,7 +202,7 @@ theorem inv_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis}
           apply NormedAddCommGroup.tendsto_nhds_zero.mp this
           simp
         simp only [EventuallyEq]
-        apply Eventually.mono this
+        apply this.mono
         intro t this
         simp
         rw [invSeries_toFun_eq]

@@ -296,7 +296,7 @@ theorem majorated_self {f : ℝ → ℝ} {exp : ℝ}
   intro exp' h_exp
   apply (isLittleO_iff_tendsto' _).mpr
   · have : (fun t ↦ f t ^ exp / f t ^ exp') =ᶠ[atTop] fun t ↦ (f t)^(exp - exp') := by
-      apply Eventually.mono <| Tendsto.eventually_gt_atTop h 0
+      apply (Tendsto.eventually_gt_atTop h 0).mono
       intro t h
       simp only
       rw [← Real.rpow_sub h]
@@ -307,7 +307,7 @@ theorem majorated_self {f : ℝ → ℝ} {exp : ℝ}
     apply Tendsto.comp _ h
     apply tendsto_rpow_neg_atTop
     linarith
-  · apply Eventually.mono <| Tendsto.eventually_gt_atTop h 0
+  · apply (Tendsto.eventually_gt_atTop h 0).mono
     intro t h1 h2
     absurd h2
     exact (Real.rpow_pos_of_pos h1 _).ne.symm
@@ -375,7 +375,7 @@ theorem mul_majorated {f g basis_hd : ℝ → ℝ} {f_exp g_exp : ℝ} (hf : maj
     (g₁ := fun t ↦ basis_hd t ^ (f_exp + ε) * basis_hd t ^ (g_exp + ε))
   · exact IsLittleO.mul hf hg
   · simp only [EventuallyEq]
-    apply Eventually.mono h_pos
+    apply h_pos.mono
     intro t hx
     conv =>
       rhs

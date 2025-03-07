@@ -89,7 +89,7 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
     · obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
       let coef_ih := coef.leadingTerm_eventually_ne_zero h_coef_trimmed h_coef_ne_zero
         (h_basis.tail)
-      apply Eventually.mono <| coef_ih.and (basis_head_eventually_pos h_basis)
+      apply (coef_ih.and (basis_head_eventually_pos h_basis)).mono
       rintro t ⟨coef_ih, h_basis_hd_pos⟩
       simp [leadingTerm, Term.toFun, -ne_eq]
       simp only [Term.toFun] at coef_ih
@@ -138,7 +138,7 @@ mutual
         apply (isLittleO_iff_tendsto' _).mp
         · have : (fun t ↦ basis_hd t ^ exp / basis_hd t ^ exp') =ᶠ[atTop]
               fun t ↦ (basis_hd t)^(exp - exp') := by
-            apply Eventually.mono <| basis_head_eventually_pos h_basis
+            apply (basis_head_eventually_pos h_basis).mono
             intro t h
             simp only
             rw [← Real.rpow_sub h]
@@ -151,7 +151,7 @@ mutual
           · exact h_basis
           · simp only [exp']
             linarith
-        · apply Eventually.mono <| basis_head_eventually_pos h_basis
+        · apply (basis_head_eventually_pos h_basis).mono
           intro t h1 h2
           absurd h2
           apply div_ne_zero <;> exact (Real.rpow_pos_of_pos h1 _).ne.symm
@@ -160,12 +160,11 @@ mutual
           have h_φ_pos : ∀ᶠ t in atTop, 0 < φ t := by
             apply eventually_gt_of_tendsto_gt (by simp) h_φ
           apply EventuallyEq.rw (p := fun _ b => b ≠ 0) h_C.symm
-          apply Eventually.mono <| h_φ_pos.and (leadingTerm_eventually_ne_zero
-            h_coef_trimmed h_coef_ne_zero ((h_basis.tail)))
+          apply (h_φ_pos.and (leadingTerm_eventually_ne_zero
+            h_coef_trimmed h_coef_ne_zero ((h_basis.tail)))).mono
           rintro t ⟨h_φ_pos, h⟩
           exact mul_ne_zero h_φ_pos.ne.symm h
-        apply Eventually.mono <| h_C_ne_zero.and
-          (basis_head_eventually_pos h_basis)
+        apply (h_C_ne_zero.and (basis_head_eventually_pos h_basis)).mono
         rintro t ⟨h_C_ne_zero, h_basis_pos⟩
         intro h
         absurd h
@@ -212,7 +211,7 @@ lemma eventually_pos_of_IsEquivallent {l : Filter ℝ} {f g : ℝ → ℝ} (h : 
   have hφ : ∀ᶠ x in l, 1/2 < φ x := by
     apply eventually_gt_of_tendsto_gt _ hφ_tendsto
     linarith
-  apply Eventually.mono <| (h_eq.and hφ).and hg
+  apply ((h_eq.and hφ).and hg).mono
   intro x ⟨⟨h_eq, hφ⟩, hg⟩
   rw [h_eq]
   simp
@@ -240,7 +239,7 @@ theorem eventually_ne_zero_of_not_zero {basis : Basis} {ms : PreMS basis} {f : �
     linarith
   have h_leadingTerm := leadingTerm_eventually_ne_zero h_trimmed h_ne_zero h_basis
   simp only [EventuallyEq] at h_eq
-  apply Eventually.mono <| (h_eq.and hφ).and h_leadingTerm
+  apply ((h_eq.and hφ).and h_leadingTerm).mono
   intro t ⟨⟨h_eq, hφ⟩, h_leadingTerm⟩
   rw [h_eq]
   simp

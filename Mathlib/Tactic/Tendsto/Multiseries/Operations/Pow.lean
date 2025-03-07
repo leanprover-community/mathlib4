@@ -268,7 +268,7 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
             IsEquivalent_coef h_coef h_coef_wo h_coef_trimmed h_coef_ne_zero h_tl h_comp h_basis
           have : fC =ᶠ[atTop] (fun t ↦ (basis_hd t)^exp * fC t) / (fun t ↦ (basis_hd t)^exp) := by
             simp only [EventuallyEq]
-            apply Eventually.mono h_basis_hd_pos
+            apply h_basis_hd_pos.mono
             intro t ht
             simp
             rw [mul_div_cancel_left₀]
@@ -278,7 +278,7 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
           apply IsEquivalent.div hF_equiv.symm
           rfl
         apply eventually_pos_of_IsEquivallent hC_equiv
-        apply Eventually.mono <| hF_pos.and h_basis_hd_pos
+        apply (hF_pos.and h_basis_hd_pos).mono
         intro t ⟨hF_pos, h_basis_hd_pos⟩
         simp
         apply div_pos hF_pos
@@ -287,7 +287,7 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
       apply Approximates_of_EventuallyEq (f := fun t ↦ (fC t)^a * (basis_hd t)^(exp * a) *
         (fun t ↦ (fC t)^(-a) * (basis_hd t)^(-exp * a) * (f t)^a) t)
       · simp only [EventuallyEq]
-        apply Eventually.mono <| hC_pos.and h_basis_hd_pos
+        apply (hC_pos.and h_basis_hd_pos).mono
         intro t ⟨hC_pos, h_basis_hd_pos⟩
         simp
         ring_nf
@@ -308,7 +308,7 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
         (f' := (fun t ↦ -1 + fC⁻¹ t * basis_hd t ^ (-exp) * f t)) at this
       swap
       · simp only [EventuallyEq]
-        apply Eventually.mono <| hC_pos.and h_basis_hd_pos
+        apply (hC_pos.and h_basis_hd_pos).mono
         intro t ⟨hC_pos, h_basis_hd_pos⟩
         simp
         ring_nf
@@ -317,7 +317,7 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
       apply Approximates_of_EventuallyEq
         (f := (fun t ↦ (1 + t)^a) ∘ (fun t ↦ -1 + fC⁻¹ t * basis_hd t ^ (-exp) * f t))
       · simp only [EventuallyEq]
-        apply Eventually.mono <| hF_pos.and (hC_pos.and h_basis_hd_pos)
+        apply (hF_pos.and (hC_pos.and h_basis_hd_pos)).mono
         intro t ⟨hF_pos, hC_pos, h_basis_hd_pos⟩
         simp
         rw [Real.mul_rpow _ hF_pos.le, Real.mul_rpow, Real.inv_rpow hC_pos.le,
@@ -338,14 +338,14 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
           apply Tendsto.const_add
           apply Tendsto.congr' (f₁ := f / (fun k ↦ fC k * basis_hd k ^ (exp)))
           · simp only [EventuallyEq]
-            apply Eventually.mono <| h_basis_hd_pos
+            apply h_basis_hd_pos.mono
             intro t h_basis_hd_pos
             simp [Real.rpow_neg h_basis_hd_pos.le]
             ring
           rw [← isEquivalent_iff_tendsto_one]
           conv => rhs; ext; rw [mul_comm]
           apply IsEquivalent_coef h_coef h_coef_wo h_coef_trimmed h_coef_ne_zero h_tl h_comp h_basis
-          apply Eventually.mono <| hC_pos.and h_basis_hd_pos
+          apply (hC_pos.and h_basis_hd_pos).mono
           intro t ⟨hC_pos, h_basis_hd_pos⟩
           simp
           constructor
@@ -359,7 +359,7 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
           apply NormedAddCommGroup.tendsto_nhds_zero.mp this
           simp
         simp only [EventuallyEq]
-        apply Eventually.mono this
+        apply this.mono
         intro t this
         simp
         rw [powSeries_toFun_eq]

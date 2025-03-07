@@ -84,7 +84,7 @@ theorem inv_toFun {t : Term} {basis : Basis} (h_basis : WellFormedBasis basis) :
       unfold EventuallyEq
       specialize ih (h_basis.tail)
       unfold EventuallyEq at ih
-      apply Eventually.mono ((basis_head_eventually_pos h_basis).and ih)
+      apply ((basis_head_eventually_pos h_basis).and ih).mono
       rintro x ⟨h_pos, ih⟩
       simp at ih
       simp only [List.zip_cons_cons, List.foldl_cons, List.map_cons]
@@ -120,7 +120,7 @@ theorem inv_toFun {t : Term} {basis : Basis} (h_basis : WellFormedBasis basis) :
 theorem toFun_pos {t : Term} {basis : Basis}
     (h_basis : WellFormedBasis basis) (h_coef : 0 < t.coef) :
     ∀ᶠ x in atTop, 0 < t.toFun basis x := by
-  apply Eventually.mono <| basis_eventually_pos h_basis
+  apply (basis_eventually_pos h_basis).mono
   intro x hx
   have hx' : ∀ hd ∈ t.exps.zip basis, 0 < hd.2 x := by
     intro hd h_hd
@@ -171,7 +171,7 @@ theorem toFun_log {t : Term} {basis : Basis}
         right; exact h_hd
   unfold toFun
   simp only [EventuallyEq]
-  apply Eventually.mono h_pos
+  apply h_pos.mono
   clear h_pos
   intro x hf
   generalize t.exps.zip basis = li at *
@@ -294,7 +294,7 @@ theorem tendsto_top {coef exp : ℝ} {tl : List ℝ} {basis : Basis}
     have := Tendsto.comp Real.tendsto_exp_atTop h_log
     apply Filter.Tendsto.congr' _ this
     simp only [EventuallyEq]
-    apply Eventually.mono <| toFun_pos (t := t) h_basis h_coef
+    apply (toFun_pos (t := t) h_basis h_coef).mono
     intro x hx
     simp [Real.exp_log hx]
 
@@ -335,7 +335,7 @@ lemma tendsto_zero_pos_coef {coef exp : ℝ} {tl : List ℝ} {basis : Basis}
     have := Tendsto.comp Real.tendsto_exp_atBot h_log
     apply Filter.Tendsto.congr' _ this
     simp only [EventuallyEq]
-    apply Eventually.mono <| toFun_pos (t := t) h_basis h_coef
+    apply (toFun_pos (t := t) h_basis h_coef).mono
     intro x hx
     simp [Real.exp_log hx]
 
@@ -572,7 +572,7 @@ theorem tail_fun_IsLittleO_head {t : Term} {basis_hd : ℝ → ℝ} {basis_tl : 
 
       have aux : (fun x ↦ (basis_hd x)^exp) =ᶠ[atTop]
           fun x ↦ (basis_hd x)^(exp / 2) * (basis_hd x)^(exp / 2) := by
-        apply Eventually.mono <| basis_head_eventually_pos h_basis
+        apply (basis_head_eventually_pos h_basis).mono
         intro x h
         simp only
         rw [← Real.rpow_add h]

@@ -413,7 +413,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
           apply EventuallyEq.add
           · exact hX_approx
           · simp only [Filter.EventuallyEq] at hY_approx ⊢
-            apply Filter.Eventually.mono hY_approx
+            apply hY_approx.mono
             intro t h
             simp [h]
       · obtain ⟨fYC, hY_coef, hY_maj, hY_tl⟩ := Approximates_cons hY_approx
@@ -457,7 +457,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
                   fun t ↦ s_hd * (fY t - basis_hd t ^ Y_exp * fYC t), f * fY
                 constructor
                 · simp only [EventuallyEq] at hf_eq hX_approx ⊢
-                  apply Eventually.mono <| (hf_eq.and hX_approx).and hF_in_ball
+                  apply ((hf_eq.and hX_approx).and hF_in_ball).mono
                   intro t ⟨⟨hf_eq, hX_approx⟩, hF_in_ball⟩
                   simp [hf_eq, hX_approx, toFun_cons h_analytic hF_in_ball]
                   ring_nf!
@@ -633,7 +633,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
               fun t ↦ fX t + s_hd * (fY t - basis_hd t ^ Y_exp * fYC t), f * fY
             constructor
             · simp only [EventuallyEq] at hf_eq ⊢
-              apply Eventually.mono <| hf_eq.and hF_in_ball
+              apply (hf_eq.and hF_in_ball).mono
               intro t ⟨hf_eq, hF_in_ball⟩
               simp [hf_eq, toFun_cons h_analytic hF_in_ball]
               ring
@@ -693,7 +693,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
               f * fY
             constructor
             · simp only [EventuallyEq] at hf_eq ⊢
-              apply Eventually.mono <| hf_eq.and hF_in_ball
+              apply (hf_eq.and hF_in_ball).mono
               intro t ⟨hf_eq, hF_in_ball⟩
               simp [h, hf_eq, toFun_cons h_analytic hF_in_ball]
               ring
