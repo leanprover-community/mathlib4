@@ -65,43 +65,6 @@ theorem linearCombination_single (c : R) (a : α) :
 theorem linearCombination_zero_apply (x : α →₀ R) : (linearCombination R (0 : α → M)) x = 0 := by
   simp [linearCombination_apply]
 
-variable [Module S M] [SMulCommClass R S M]
-
-variable (S) in
-/-- `Finsupp.bilinearCombination R S v f` is the linear combination of vectors in `v` with weights
-in `f`.
-
-This map is linear in `v` if `R` is commutative, and always linear in `f`.
-See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
--/
-def bilinearCombination : (α → M) →ₗ[S] (α →₀ R) →ₗ[R] M where
-  toFun v := linearCombination R v
-  map_add' u v := by ext; simp [Finset.sum_add_distrib, Pi.add_apply, smul_add]
-  map_smul' r v := by ext; simp [Finset.smul_sum, smul_comm]
-
-theorem bilinearCombination_apply_eq_linearCombination :
-    bilinearCombination R S v = linearCombination R v :=
-  rfl
-
-theorem bilinearCombination_apply (f) :
-    bilinearCombination R S v f = f.sum fun i c ↦ c • v i := by
-  rfl
-
-variable (α M)
-
-@[simp]
-theorem linearCombination_zero : linearCombination R (0 : α → M) = 0 :=
-  LinearMap.ext (linearCombination_zero_apply R)
-
-@[simp]
-theorem linearCombination_single_index (c : M) (a : α) (f : α →₀ R) [DecidableEq α] :
-    linearCombination R (Pi.single a c) f = f a • c := by
-  rw [linearCombination_apply, sum_eq_single a, Pi.single_eq_same]
-  · exact fun i _ hi ↦ by rw [Pi.single_eq_of_ne hi, smul_zero]
-  · exact fun _ ↦ by simp only [single_eq_same, zero_smul]
-
-variable {α M}
-
 theorem linearCombination_linear_comp (f : M →ₗ[R] M') :
     linearCombination R (f ∘ v) = f ∘ₗ linearCombination R v := by
   ext
@@ -285,6 +248,41 @@ theorem linearCombination_onFinset {s : Finset α} {f : α → R} (g : α → M)
   intro x _ h
   contrapose! h
   simp [h]
+
+variable [Module S M] [SMulCommClass R S M]
+
+variable (S) in
+/-- `Finsupp.bilinearCombination R S v f` is the linear combination of vectors in `v` with weights
+in `f`.
+
+This map is linear in `v` if `R` is commutative, and always linear in `f`.
+See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
+-/
+def bilinearCombination : (α → M) →ₗ[S] (α →₀ R) →ₗ[R] M where
+  toFun v := linearCombination R v
+  map_add' u v := by ext; simp [Finset.sum_add_distrib, Pi.add_apply, smul_add]
+  map_smul' r v := by ext; simp [Finset.smul_sum, smul_comm]
+
+theorem bilinearCombination_apply_eq_linearCombination :
+    bilinearCombination R S v = linearCombination R v :=
+  rfl
+
+theorem bilinearCombination_apply (f) :
+    bilinearCombination R S v f = f.sum fun i c ↦ c • v i := by
+  rfl
+
+variable (α M)
+
+@[simp]
+theorem linearCombination_zero : linearCombination R (0 : α → M) = 0 :=
+  LinearMap.ext (linearCombination_zero_apply R)
+
+@[simp]
+theorem linearCombination_single_index (c : M) (a : α) (f : α →₀ R) [DecidableEq α] :
+    linearCombination R (Pi.single a c) f = f a • c := by
+  rw [linearCombination_apply, sum_eq_single a, Pi.single_eq_same]
+  · exact fun i _ hi ↦ by rw [Pi.single_eq_of_ne hi, smul_zero]
+  · exact fun _ ↦ by simp only [single_eq_same, zero_smul]
 
 end LinearCombination
 
