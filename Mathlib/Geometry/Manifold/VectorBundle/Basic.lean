@@ -647,8 +647,24 @@ theorem Bundle.Prod.contMDiff_fst :
   have (x : F₁ × F₂) : ContMDiffAt 𝓘(𝕜, F₁ × F₂) 𝓘(𝕜, F₁) n Prod.fst x := by
     rw [contMDiffAt_iff_contDiffAt]
     exact contDiffAt_fst
+  rw [contMDiffAt_of_totalSpace]
+  have : ContMDiffAt (IB.prod 𝓘(𝕜, F₁ × F₂)) 𝓘(𝕜, F₁) n
+    (fun (y : B × F₁ × F₂) ↦ y.2.1)
+    ((trivializationAt (F₁ × F₂) (fun x ↦ E₁ x × E₂ x) x.proj) x) := sorry
+  convert this with y
+  rcases y with ⟨b, v, w⟩
   simp [trivializationAt, FiberBundle.trivializationAt']
-  rw [contMDiffAt_iff_source]
+  have : v = (b, v).2 := rfl
+  rw [this]
+  congr
+  have : (TotalSpace.Prod.fst F₁ F₂ E₁ E₂ x).proj = x.proj := rfl
+  simp [this]
+
+
+
+
+
+
 
 #exit
 
