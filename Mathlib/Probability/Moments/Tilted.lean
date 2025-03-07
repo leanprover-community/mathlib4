@@ -105,7 +105,7 @@ lemma integral_tilted_mul_self (ht : t ∈ interior (integrableExpSet X μ)) :
 
 end Integral
 
-lemma memℒp_tilted_mul (ht : t ∈ interior (integrableExpSet X μ)) (p : ℝ≥0) :
+lemma memLp_tilted_mul (ht : t ∈ interior (integrableExpSet X μ)) (p : ℝ≥0) :
     MemLp X p (μ.tilted (t * X ·)) := by
   have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet ht
   by_cases hp : p = 0
@@ -126,7 +126,7 @@ lemma memℒp_tilted_mul (ht : t ∈ interior (integrableExpSet X μ)) (p : ℝ�
 lemma variance_tilted_mul (ht : t ∈ interior (integrableExpSet X μ)) :
     variance X (μ.tilted (t * X ·)) = iteratedDeriv 2 (cgf X μ) t := by
   rw [variance_eq_integral]
-  swap; · exact (memℒp_tilted_mul ht 1).aestronglyMeasurable.aemeasurable
+  swap; · exact (memLp_tilted_mul ht 1).aestronglyMeasurable.aemeasurable
   rw [integral_tilted_mul_self ht, iteratedDeriv_two_cgf_eq_integral ht, integral_tilted_mul_mgf,
     ← integral_div]
   simp only [Pi.pow_apply, Pi.sub_apply, smul_eq_mul]
