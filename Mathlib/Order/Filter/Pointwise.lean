@@ -3,9 +3,11 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Algebra.Ring.Defs
 import Mathlib.Order.Filter.AtTopBot.Map
 import Mathlib.Order.Filter.Finite
 import Mathlib.Order.Filter.NAry
@@ -129,8 +131,6 @@ theorem tendsto_one {a : Filter β} {f : β → α} : Tendsto f a 1 ↔ ∀ᶠ x
 @[to_additive zero_prod_zero]
 theorem one_prod_one [One β] : (1 : Filter α) ×ˢ (1 : Filter β) = 1 :=
   prod_pure_pure
-
-@[deprecated (since := "2024-08-16")] alias zero_sum_zero := zero_prod_zero
 
 /-- `pure` as a `OneHom`. -/
 @[to_additive "`pure` as a `ZeroHom`."]

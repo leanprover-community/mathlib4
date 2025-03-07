@@ -3,7 +3,7 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison
 -/
-import Mathlib.Algebra.Field.Subfield.Basic
+import Mathlib.Algebra.Field.Subfield.Defs
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.Topology.Algebra.GroupWithZero
@@ -44,7 +44,7 @@ variable (K)
 
 /-- A topological division ring is a division ring with a topology where all operations are
     continuous, including inversion. -/
-class TopologicalDivisionRing extends IsTopologicalRing K, HasContinuousInv₀ K : Prop
+class TopologicalDivisionRing : Prop extends IsTopologicalRing K, HasContinuousInv₀ K
 
 section Subfield
 
