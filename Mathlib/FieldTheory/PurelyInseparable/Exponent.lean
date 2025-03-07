@@ -329,9 +329,8 @@ theorem iterateFrobeniusₛₗ_algebraMap_top {n : ℕ} (hn : exponent K L ≤ n
 
 /-- Action of `iterateFrobeniusₛₗ` on the bottom field. -/
 theorem iterateFrobeniusₛₗ_algebraMap_bot {n : ℕ} (hn : exponent K L ≤ n) (a : K) :
-    iterateFrobeniusₛₗ F K L p hn (algebraMap K L a) = a ^ p ^ n := by
-  apply (algebraMap K L).injective
-  rw [map_pow, iterateFrobeniusₛₗ_algebraMap_top F K L p hn]
+    iterateFrobeniusₛₗ F K L p hn (algebraMap K L a) = a ^ p ^ n :=
+  iterateFrobenius_algebraMap_bot L p hn a
 
 /-- Action of `iterateFrobeniusₛₗ` on the base field. -/
 theorem iterateFrobeniusₛₗ_algebraMap_base {n : ℕ} (hn : exponent K L ≤ n) (a : F) :
