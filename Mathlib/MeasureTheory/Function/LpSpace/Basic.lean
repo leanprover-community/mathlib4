@@ -320,9 +320,22 @@ theorem nnnorm_neg (f : Lp E p μ) : ‖-f‖₊ = ‖f‖₊ := by
 theorem norm_neg (f : Lp E p μ) : ‖-f‖ = ‖f‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) (nnnorm_neg f)
 
+theorem enorm_le_mul_enorm_of_ae_le_mul {c : ℝ≥0} {f : Lp E p μ} {g : Lp F p μ}
+    (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : ‖f‖₊ ≤ c * ‖g‖₊ := by
+  simp only [nnnorm_def]
+  have := eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul h p
+  rwa [← ENNReal.toNNReal_le_toNNReal, ENNReal.smul_def, smul_eq_mul, ENNReal.toNNReal_mul,
+    ENNReal.toNNReal_coe] at this
+  · exact (Lp.memLp _).eLpNorm_ne_top
+  · exact ENNReal.mul_ne_top ENNReal.coe_ne_top (Lp.memLp _).eLpNorm_ne_top
+
 theorem nnnorm_le_mul_nnnorm_of_ae_le_mul {c : ℝ≥0} {f : Lp E p μ} {g : Lp F p μ}
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : ‖f‖₊ ≤ c * ‖g‖₊ := by
   simp only [nnnorm_def]
+  have h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ := by
+    apply h.mono (fun x hx ↦ ?_)
+    rw [enorm_eq_nnnorm, enorm_eq_nnnorm, ← ENNReal.coe_mul]
+    gcongr
   have := eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul h p
   rwa [← ENNReal.toNNReal_le_toNNReal, ENNReal.smul_def, smul_eq_mul, ENNReal.toNNReal_mul,
     ENNReal.toNNReal_coe] at this
@@ -343,9 +356,15 @@ theorem norm_le_norm_of_ae_le {f : Lp E p μ} {g : Lp F p μ} (h : ∀ᵐ x ∂�
   rw [norm_def, norm_def]
   exact ENNReal.toReal_mono (eLpNorm_ne_top _) (eLpNorm_mono_ae h)
 
-theorem mem_Lp_of_nnnorm_ae_le_mul {c : ℝ≥0} {f : α →ₘ[μ] E} {g : Lp F p μ}
-    (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : f ∈ Lp E p μ :=
-  mem_Lp_iff_memLp.2 <| MemLp.of_nnnorm_le_mul (Lp.memLp g) f.aestronglyMeasurable h
+--#check MemLp.of_norm_le_mul
+theorem mem_Lp_of_enorm_ae_le_mul {c : ℝ≥0} {f : α →ₘ[μ] E} {g : Lp F p μ}
+    (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : f ∈ Lp E p μ := by
+  -- was: mem_Lp_iff_memLp.2 <| MemLp.of_norm_le_mul (Lp.memLp g) f.aestronglyMeasurable h OR SO!
+  apply mem_Lp_iff_memLp.2 --<| --MemLp.of_enorm_le_mul (Lp.memLp g) f.aestronglyMeasurable h
+  apply MemLp.of_norm_le_mul --(Lp.memLp g) f.aestronglyMeasurable h
+
+--depr
+#exit
 
 theorem mem_Lp_of_ae_le_mul {c : ℝ} {f : α →ₘ[μ] E} {g : Lp F p μ}
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) : f ∈ Lp E p μ :=
@@ -381,8 +400,22 @@ theorem enorm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ≥0}
   rw [enorm_def]
   exact this
 
-@[deprecated (since := "2025-02-12")] alias nnnorm_le_of_ae_bound := enorm_le_of_ae_bound
-@[deprecated (since := "2025-02-12")] alias norm_le_of_ae_bound := enorm_le_of_ae_bound
+theorem nnnorm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ≥0}
+    (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) : ‖f‖₊ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ * C := by
+  by_cases hμ : μ = 0
+  · by_cases hp : p.toReal⁻¹ = 0
+    · simp [hp, hμ, nnnorm_def]
+    · simp [hμ, nnnorm_def, Real.zero_rpow hp]
+  rw [← ENNReal.coe_le_coe, nnnorm_def, ENNReal.coe_toNNReal (eLpNorm_ne_top _)]
+  refine (eLpNorm_le_of_ae_nnnorm_bound hfC).trans_eq ?_
+  rw [← coe_measureUnivNNReal μ, ← ENNReal.coe_rpow_of_ne_zero (measureUnivNNReal_pos hμ).ne',
+    ENNReal.coe_mul, mul_comm, ENNReal.smul_def, smul_eq_mul]
+
+theorem norm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ} (hC : 0 ≤ C)
+    (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : ‖f‖ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ * C := by
+  lift C to ℝ≥0 using hC
+  have := nnnorm_le_of_ae_bound hfC
+  rwa [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_rpow] at this
 
 instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) :=
   { AddGroupNorm.toNormedAddCommGroup
