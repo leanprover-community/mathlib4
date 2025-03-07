@@ -649,8 +649,8 @@ def sumSumSumComm : Diffeomorph I I ((M ⊕ M') ⊕ N ⊕ N') ((M ⊕ N) ⊕ M' 
   toEquiv := Equiv.sumSumSumComm M M' N N'
   contMDiff_toFun := by
     -- Please, tell me there is a tactic for this!
-    unfold Equiv.sumSumSumComm
-    dsimp
+    -- better approach: compose the relevant diffeomorphisms instead
+    dsimp [Equiv.sumSumSumComm]
     -- change ContMDiff I I n ((Diffeomorph.sumAssoc I (M ⊕ N) n M' N') ∘
     --   (Diffeomorph.sumCongr ((Diffeomorph.sumAssoc I M n N M').symm) (Diffeomorph.refl I N' n)) ∘
     --   Diffeomorph.sumCongr
@@ -670,8 +670,7 @@ def sumSumSumComm : Diffeomorph I I ((M ⊕ M') ⊕ N ⊕ N') ((M ⊕ N) ⊕ M' 
           · exact Diffeomorph.contMDiff ((sumAssoc I M n M' N).sumCongr (Diffeomorph.refl I N' n))
           · exact Diffeomorph.contMDiff (sumAssoc I (M ⊕ M') n N N').symm
   contMDiff_invFun := by
-    unfold Equiv.sumSumSumComm
-    dsimp
+    dsimp [Equiv.sumSumSumComm]
     -- continue with replacing, then done
     change ContMDiff I I n ((Diffeomorph.sumAssoc I (M ⊕ M') n N N') ∘
       Sum.map (Diffeomorph.sumAssoc I M n M' N).symm (Diffeomorph.refl I N' n) ∘
