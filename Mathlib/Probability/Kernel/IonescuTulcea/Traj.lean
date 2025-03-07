@@ -198,13 +198,15 @@ end MeasureTheory
 
 end ProjectiveFamily
 
-variable (κ : (n : ℕ) → Kernel (Π i : Iic n, X i) (X (n + 1))) [∀ n, IsMarkovKernel (κ n)]
+variable {κ : (n : ℕ) → Kernel (Π i : Iic n, X i) (X (n + 1))} [∀ n, IsMarkovKernel (κ n)]
 
 namespace ProbabilityTheory.Kernel
 
 section definition
 
 /-! ### Definition and basic properties of `traj` -/
+
+variable (κ)
 
 lemma isProjectiveMeasureFamily_partialTraj {a : ℕ} (x₀ : Π i : Iic a, X i) :
     IsProjectiveMeasureFamily (inducedFamily (fun b ↦ partialTraj κ a b x₀)) :=
@@ -221,8 +223,8 @@ noncomputable def trajContent {a : ℕ} (x₀ : Π i : Iic a, X i) :
 variable {κ}
 
 /-- The `trajContent κ x₀` of a cylinder indexed by first coordinates is given by `partialTraj`. -/
-theorem trajContent_cylinder {a b : ℕ} (x₀ : Π i : Iic a, X i)
-    {S : Set (Π i : Iic b, X i)} (mS : MeasurableSet S) :
+theorem trajContent_cylinder {a b : ℕ} {S : Set (Π i : Iic b, X i)} (mS : MeasurableSet S)
+    (x₀ : Π i : Iic a, X i) :
     trajContent κ x₀ (cylinder _ S) = partialTraj κ a b x₀ S := by
   rw [trajContent, projectiveFamilyContent_cylinder _ mS, inducedFamily_Iic]
 
@@ -232,7 +234,7 @@ theorem trajContent_eq_lmarginalPartialTraj {b : ℕ} {S : Set (Π i : Iic b, X 
     (mS : MeasurableSet S) (x₀ : Π n, X n) (a : ℕ) :
     trajContent κ (frestrictLe a x₀) (cylinder _ S) =
       lmarginalPartialTraj κ a b ((cylinder _ S).indicator 1) x₀ := by
-  rw [trajContent_cylinder _ mS, ← lintegral_indicator_one mS, lmarginalPartialTraj]
+  rw [trajContent_cylinder mS, ← lintegral_indicator_one mS, lmarginalPartialTraj]
   congr with x
   apply Set.indicator_const_eq_indicator_const
   rw [mem_cylinder]
@@ -456,16 +458,15 @@ theorem isSigmaSubadditive_trajContent {a : ℕ} (x₀ : Π i : Iic a, X i) :
 
 /-- This function is the kernel given by the Ionescu-Tulcea theorem. It is shown belown that it
 is measurable and turned into a true kernel in `Kernel.traj`. -/
-noncomputable def trajFun (a : ℕ) (x₀ : Π i : Iic a, X i) :
-    Measure (Π n, X n) :=
+noncomputable def trajFun (a : ℕ) (x₀ : Π i : Iic a, X i) : Measure (Π n, X n) :=
   (trajContent κ x₀).measure isSetSemiring_measurableCylinders generateFrom_measurableCylinders.ge
     (isSigmaSubadditive_trajContent κ x₀)
 
 theorem isProbabilityMeasure_trajFun (a : ℕ) (x₀ : Π i : Iic a, X i) :
     IsProbabilityMeasure (trajFun κ a x₀) where
   measure_univ := by
-    rw [← cylinder_univ (Iic 0), trajFun, AddContent.measure_eq,
-      trajContent_cylinder _ .univ, measure_univ]
+    rw [← cylinder_univ (Iic 0), trajFun, AddContent.measure_eq, trajContent_cylinder .univ,
+      measure_univ]
     · exact generateFrom_measurableCylinders.symm
     · exact cylinder_mem_measurableCylinders _ _ .univ
 
@@ -511,8 +512,6 @@ noncomputable def traj (a : ℕ) : Kernel (Π i : Iic a, X i) (Π n, X n) where
 end definition
 
 section basic
-
-variable {κ}
 
 lemma traj_apply (a : ℕ) (x : Π i : Iic a, X i) : traj κ a x = trajFun κ a x := rfl
 
@@ -593,7 +592,7 @@ section integral
 
 /-! ### Integrals and `traj` -/
 
-variable {E : Type*} [NormedAddCommGroup E] {κ}
+variable {E : Type*} [NormedAddCommGroup E]
 
 theorem integrable_traj {a b : ℕ} (hab : a ≤ b) {f : (Π n, X n) → E}
     (x₀ : Π i : Iic a, X i) (i_f : Integrable f (traj κ a x₀)) :
@@ -699,7 +698,6 @@ theorem condExp_traj {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
     all_goals fun_prop
   · exact (i_f'.1.comp_ae_measurable' (measurable_frestrictLe b).aemeasurable)
 
-variable (κ) in
 theorem condExp_traj' {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c)
     (x₀ : Π i : Iic a, X i) (f : (Π n, X n) → E) :
     (traj κ a x₀)[f|piLE b] =ᵐ[traj κ a x₀]
