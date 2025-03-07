@@ -1254,13 +1254,10 @@ open TensorProduct
 
 open LinearMap
 
-variable (R)
-
+variable (R) in
 /-- Auxiliary function to defining negation multiplication on tensor product. -/
 def Neg.aux : M ⊗[R] N →ₗ[R] M ⊗[R] N :=
   lift <| (mk R M N).comp (-LinearMap.id)
-
-variable {R}
 
 instance neg : Neg (M ⊗[R] N) where
   neg := Neg.aux R
