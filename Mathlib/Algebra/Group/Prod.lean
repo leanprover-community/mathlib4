@@ -129,17 +129,17 @@ theorem swap_div [Div G] [Div H] (a b : G × H) : (a / b).swap = a.swap / b.swap
 @[to_additive] lemma div_def [Div M] [Div N] (a b : M × N) : a / b = (a.1 / b.1, a.2 / b.2) := rfl
 
 @[to_additive]
-instance instSemigroup [Semigroup M] [Semigroup N] : Semigroup (M × N) :=
-  { mul_assoc := fun _ _ _ => mk.inj_iff.mpr ⟨mul_assoc _ _ _, mul_assoc _ _ _⟩ }
+instance instSemigroup [Semigroup M] [Semigroup N] : Semigroup (M × N) where
+  mul_assoc _ _ _ := by ext <;> exact mul_assoc ..
 
 @[to_additive]
-instance instCommSemigroup [CommSemigroup G] [CommSemigroup H] : CommSemigroup (G × H) :=
-  { mul_comm := fun _ _ => mk.inj_iff.mpr ⟨mul_comm _ _, mul_comm _ _⟩ }
+instance instCommSemigroup [CommSemigroup G] [CommSemigroup H] : CommSemigroup (G × H) where
+  mul_comm _ _ := by ext <;> exact mul_comm ..
 
 @[to_additive]
-instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) :=
-  { one_mul := fun a => Prod.recOn a fun _ _ => mk.inj_iff.mpr ⟨one_mul _, one_mul _⟩,
-    mul_one := fun a => Prod.recOn a fun _ _ => mk.inj_iff.mpr ⟨mul_one _, mul_one _⟩ }
+instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) where
+  one_mul _ := by ext <;> exact one_mul _
+  mul_one _ := by ext <;> exact mul_one _
 
 @[to_additive]
 instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
@@ -150,12 +150,12 @@ instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
     mul_one := by simp }
 
 @[to_additive Prod.subNegMonoid]
-instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) :=
-  { div_eq_mul_inv := fun _ _ => mk.inj_iff.mpr ⟨div_eq_mul_inv _ _, div_eq_mul_inv _ _⟩,
-    zpow := fun z a => ⟨DivInvMonoid.zpow z a.1, DivInvMonoid.zpow z a.2⟩,
-    zpow_zero' := fun _ => Prod.ext (DivInvMonoid.zpow_zero' _) (DivInvMonoid.zpow_zero' _),
-    zpow_succ' := fun _ _ => Prod.ext (DivInvMonoid.zpow_succ' _ _) (DivInvMonoid.zpow_succ' _ _),
-    zpow_neg' := fun _ _ => Prod.ext (DivInvMonoid.zpow_neg' _ _) (DivInvMonoid.zpow_neg' _ _) }
+instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) where
+  div_eq_mul_inv _ _ := by ext <;> exact div_eq_mul_inv ..
+  zpow z a := ⟨DivInvMonoid.zpow z a.1, DivInvMonoid.zpow z a.2⟩
+  zpow_zero' _ := by ext <;> exact DivInvMonoid.zpow_zero' _
+  zpow_succ' _ _ := by ext <;> exact DivInvMonoid.zpow_succ' ..
+  zpow_neg' _ _ := by ext <;> exact DivInvMonoid.zpow_neg' ..
 
 @[to_additive]
 instance [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) :=
@@ -170,8 +170,8 @@ instance [DivisionCommMonoid G] [DivisionCommMonoid H] : DivisionCommMonoid (G �
   { mul_comm := fun ⟨g₁ , h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mul_comm g₁, mul_comm h₁]; rfl }
 
 @[to_additive]
-instance instGroup [Group G] [Group H] : Group (G × H) :=
-  { inv_mul_cancel := fun _ => mk.inj_iff.mpr ⟨inv_mul_cancel _, inv_mul_cancel _⟩ }
+instance instGroup [Group G] [Group H] : Group (G × H) where
+  inv_mul_cancel _ := by ext <;> exact inv_mul_cancel _
 
 @[to_additive]
 instance [Mul G] [Mul H] [IsLeftCancelMul G] [IsLeftCancelMul H] : IsLeftCancelMul (G × H) where

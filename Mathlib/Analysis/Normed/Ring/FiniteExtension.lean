@@ -50,7 +50,7 @@ namespace Basis
 variable {ι : Type*} [Fintype ι] [Nonempty ι] (B : Basis ι K L)
 
 /-- The function sending an element `x : L` to the maximum of the norms of its coefficients
-  with respect to the `K`-basis `B` of `L`.-/
+with respect to the `K`-basis `B` of `L`. -/
 def norm (x : L) : ℝ :=
   Finset.sup' univ univ_nonempty (fun i : ι ↦ ‖B.repr x i‖)
 

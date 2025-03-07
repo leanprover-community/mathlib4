@@ -1080,7 +1080,7 @@ theorem iIndepFun.indepFun_prod_mk (hf_Indep : iIndepFun f κ μ)
     (p ⟨i, Finset.mem_insert_self i _⟩,
     p ⟨j, Finset.mem_insert_of_mem (Finset.mem_singleton_self _)⟩)) ∘ fun a (j : s) => f j a := by
     ext1 a
-    simp only [Prod.mk.inj_iff]
+    simp only [Prod.mk_inj]
     constructor
   have h_meas_left : Measurable fun p : ∀ l : s, β l =>
     (p ⟨i, Finset.mem_insert_self i _⟩,

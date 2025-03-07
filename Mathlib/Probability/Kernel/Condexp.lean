@@ -178,6 +178,12 @@ alias aestronglyMeasurable'_integral_condExpKernel := aestronglyMeasurable_integ
 @[deprecated (since := "2025-01-21")]
 alias aestronglyMeasurable'_integral_condexpKernel := aestronglyMeasurable_integral_condExpKernel
 
+lemma aestronglyMeasurable_trim_condExpKernel (hm : m ≤ mΩ) (hf : AEStronglyMeasurable f μ) :
+    ∀ᵐ ω ∂(μ.trim hm), f =ᵐ[condExpKernel μ m ω] hf.mk f := by
+  refine Measure.ae_ae_of_ae_comp ?_
+  rw [condExpKernel_comp_trim hm]
+  exact hf.ae_eq_mk
+
 end Measurability
 
 section Integrability
@@ -300,6 +306,28 @@ theorem condExp_ae_eq_integral_condExpKernel [NormedAddCommGroup F] {f : Ω → 
 
 @[deprecated (since := "2025-01-21")]
 alias condexp_ae_eq_integral_condexpKernel := condExp_ae_eq_integral_condExpKernel
+
+/-- Auxiliary lemma for `condExp_ae_eq_trim_integral_condExpKernel`. -/
+theorem condExp_ae_eq_trim_integral_condExpKernel_of_stronglyMeasurable
+    [NormedAddCommGroup F] {f : Ω → F} [NormedSpace ℝ F] [CompleteSpace F]
+    (hm : m ≤ mΩ) (hf : StronglyMeasurable f) (hf_int : Integrable f μ) :
+    μ[f|m] =ᵐ[μ.trim hm] fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω := by
+ refine StronglyMeasurable.ae_eq_trim_of_stronglyMeasurable hm ?_ ?_ ?_
+ · exact stronglyMeasurable_condExp
+ · exact hf.integral_condExpKernel
+ · exact condExp_ae_eq_integral_condExpKernel hm hf_int
+
+/-- The conditional expectation of `f` with respect to a σ-algebra `m` is
+(`μ.trim hm`)-almost everywhere equal to the integral `∫ y, f y ∂(condExpKernel μ m ω)`. -/
+theorem condExp_ae_eq_trim_integral_condExpKernel [NormedAddCommGroup F] {f : Ω → F}
+    [NormedSpace ℝ F] [CompleteSpace F] (hm : m ≤ mΩ) (hf_int : Integrable f μ) :
+    μ[f|m] =ᵐ[μ.trim hm] fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω := by
+  refine (condExp_congr_ae_trim hm hf_int.1.ae_eq_mk).trans ?_
+  refine (condExp_ae_eq_trim_integral_condExpKernel_of_stronglyMeasurable hm
+    hf_int.1.stronglyMeasurable_mk ?_).trans ?_
+  · rwa [integrable_congr hf_int.1.ae_eq_mk.symm]
+  filter_upwards [aestronglyMeasurable_trim_condExpKernel hm hf_int.1] with ω hω
+  rw [integral_congr_ae hω]
 
 section Cond
 

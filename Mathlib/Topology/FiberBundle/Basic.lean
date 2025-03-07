@@ -518,7 +518,7 @@ theorem localTrivAsPartialEquiv_trans (i j : ι) :
     rfl
   · rintro ⟨x, v⟩ hx
     simp only [trivChange, localTrivAsPartialEquiv, PartialEquiv.symm,
-      Prod.mk.inj_iff, prodMk_mem_set_prod_eq, PartialEquiv.trans_source, mem_inter_iff,
+      Prod.mk_inj, prodMk_mem_set_prod_eq, PartialEquiv.trans_source, mem_inter_iff,
       mem_preimage, proj, mem_univ, eq_self_iff_true, (· ∘ ·),
       PartialEquiv.coe_trans, TotalSpace.proj] at hx ⊢
     simp only [Z.coordChange_comp, hx, mem_inter_iff, and_self_iff, mem_baseSet_at]

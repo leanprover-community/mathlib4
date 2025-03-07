@@ -276,7 +276,7 @@ theorem StrictConvexOn.ae_eq_const_or_map_average_lt [IsFiniteMeasure μ] (hg : 
     ⟨a, b, ha, hb, hab, h_avg⟩
   rw [average_pair hfi hgi, average_pair hfi.integrableOn hgi.integrableOn,
     average_pair hfi.integrableOn hgi.integrableOn, Prod.smul_mk,
-    Prod.smul_mk, Prod.mk_add_mk, Prod.mk.inj_iff] at h_avg
+    Prod.smul_mk, Prod.mk_add_mk, Prod.mk_inj] at h_avg
   simp only [Function.comp] at h_avg
   rw [← h_avg.1, ← h_avg.2]
   calc

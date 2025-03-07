@@ -276,7 +276,7 @@ theorem coeff_single_smul_vadd [MulZeroClass R] [SMulWithZero R V] {r : R} {x : 
     (HahnSeries.single b r).coeff ij.fst • ((of R).symm x).coeff ij.snd
   · apply sum_congr _ fun _ _ => rfl
     ext ⟨a1, a2⟩
-    simp only [Set.mem_singleton_iff, Prod.mk.inj_iff, mem_vaddAntidiagonal, mem_singleton,
+    simp only [Set.mem_singleton_iff, Prod.mk_inj, mem_vaddAntidiagonal, mem_singleton,
       Set.mem_setOf_eq]
     constructor
     · rintro ⟨rfl, _, h1⟩
@@ -452,7 +452,7 @@ theorem coeff_mul_single_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
   trans ∑ ij ∈ {(a, b)}, x.coeff ij.fst * (single b r).coeff ij.snd
   · apply sum_congr _ fun _ _ => rfl
     ext ⟨a1, a2⟩
-    simp only [Set.mem_singleton_iff, Prod.mk.inj_iff, mem_addAntidiagonal, mem_singleton,
+    simp only [Set.mem_singleton_iff, Prod.mk_inj, mem_addAntidiagonal, mem_singleton,
       Set.mem_setOf_eq]
     constructor
     · rintro ⟨_, rfl, h1⟩
@@ -804,7 +804,7 @@ theorem embDomain_mul [NonUnitalNonAssocSemiring R] (f : Γ ↪o Γ')
     · simp
     apply sum_subset
     · rintro ⟨i, j⟩ hij
-      simp only [exists_prop, mem_map, Prod.mk.inj_iff, mem_addAntidiagonal,
+      simp only [exists_prop, mem_map, Prod.mk_inj, mem_addAntidiagonal,
         Function.Embedding.coe_prodMap, mem_support, Prod.exists] at hij
       obtain ⟨i, j, ⟨hx, hy, rfl⟩, rfl, rfl⟩ := hij
       simp [hx, hy, hf]
@@ -812,7 +812,7 @@ theorem embDomain_mul [NonUnitalNonAssocSemiring R] (f : Γ ↪o Γ')
       contrapose! h2
       obtain ⟨i, _, rfl⟩ := support_embDomain_subset (ne_zero_and_ne_zero_of_mul h2).1
       obtain ⟨j, _, rfl⟩ := support_embDomain_subset (ne_zero_and_ne_zero_of_mul h2).2
-      simp only [exists_prop, mem_map, Prod.mk.inj_iff, mem_addAntidiagonal,
+      simp only [exists_prop, mem_map, Prod.mk_inj, mem_addAntidiagonal,
         Function.Embedding.coe_prodMap, mem_support, Prod.exists]
       simp only [mem_addAntidiagonal, embDomain_coeff, mem_support, ← hf,
         OrderEmbedding.eq_iff_eq] at h1
