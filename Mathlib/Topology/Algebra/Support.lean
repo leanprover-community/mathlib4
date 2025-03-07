@@ -6,7 +6,7 @@ Authors: Floris van Doorn, Patrick Massot
 import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Topology.Homeomorph.Defs
 import Mathlib.Topology.Separation.Hausdorff
 
 /-!

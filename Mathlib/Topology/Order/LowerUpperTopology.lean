@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Topology.Homeomorph.Defs
 import Mathlib.Topology.Order.Lattice
 
 /-!

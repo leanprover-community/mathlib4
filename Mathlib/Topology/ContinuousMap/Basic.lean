@@ -5,7 +5,8 @@ Authors: Nicolò Cavalleri
 -/
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Topology.ContinuousMap.Defs
-import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Topology.Homeomorph.Defs
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Continuous bundled maps
