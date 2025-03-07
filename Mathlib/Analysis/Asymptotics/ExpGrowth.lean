@@ -17,10 +17,6 @@ as homomorphisms preserving finitary `Inf`/`Sup` respectively.
 
 ## Tags
 asymptotics, exponential
-
-## TODO
-Get bounds on `expGrowthInf (u ∘ v)` with suitable hypotheses on `v : ℕ → ℕ `:
-linear growth of `v`, monotonicity.
 -/
 
 namespace ExpGrowth
