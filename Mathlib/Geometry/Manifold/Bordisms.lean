@@ -276,9 +276,88 @@ def symm (φ : UnorientedCobordism k s t J) : UnorientedCobordism k t s J where
   hFf := by rw [← φ.hFg]; congr
   hFg := by rw [← φ.hFf]; congr
 
--- TODO: this requires proving the collar neighbourhood theorem, i.e. is a lot of work
-/-- Being cobordant is transitive. -/
-def trans (φ : UnorientedCobordism k s t J) (ψ : UnorientedCobordism k t u J) :
-  UnorientedCobordism k t u J := sorry
+section collarNeighbourhood
+
+variable {I₀ : ModelWithCorners ℝ E'' H''} [FiniteDimensional ℝ E] [FiniteDimensional ℝ E'']
+
+open Fact.Manifold
+
+namespace _root_
+
+/-- A `C^k` collar neighbourhood of a smooth finite-dimensional manifold `M` with smooth boundary
+of co-dimension one. -/
+structure CollarNeighbourhood (bd : BoundaryManifoldData M I k I₀) where
+  ε : ℝ
+  hε : 0 < ε
+  -- XXX: I may want Ico instead; add if I need it
+  φ : Set.Icc 0 ε × bd.M₀ → M
+  contMDiff : haveI := Fact.mk hε; ContMDiff (((𝓡∂ 1)).prod I₀) I k φ
+  isEmbedding: Topology.IsEmbedding φ
+  isImmersion: haveI := Fact.mk hε; ∀ x, Function.Injective (mfderiv ((𝓡∂ 1).prod I₀) I φ x)
+
+/- The collar neighbourhood theorem: if `M` is a compact finite-dimensional manifold
+with smooth boundary of co-dimension one,
+there exist some `ε > 0` and a smooth embedding `[0, ε) × ∂M → M`, which maps `{0}×∂M` to `∂M`.
+
+Proof outline.
+(1) construct a normal vector field `X` in a neighbourhood of `∂M`, pointing inwards
+(In a chart on Euclidean half-space, we can just take the unit vector in the first component.
+ These can be combined using e.g. a partition of unity.)
+(1') It might simplify the next steps to `X` to a smooth global vector field on `M`, say be zero.
+(2) Since `∂M` is compact, there is an `ε` such that the flow of `X` is defined for time `ε`.
+  (This is not *exactly* the same as ongoing work, but should follow from the same ideas.)
+(3) Thus, the flow of `X` defines a map `[0, ε) × ∂M → M`
+(4) Shrinking `ε` if needed, we can assume `φ` is a (topological) embedding.
+  Since `∂M` is compact and `M` is Hausdorff, it suffices to show injectivity (and continuity).
+  Each `x∈∂M` has a neighbourhood `U_x` where the vector field looks like a flow box
+  (by construction), hence the flow is injective on `U_x` for some time `ε_x`.
+  Cover `∂M` with finitely many such neighbourhoods, then `ε := min ε_i` is positive, and
+  each flow line does not self-intersect until time `ε`.
+  Suppose the map `φ` is not injective, then `φ(x, t)=φ(x', t')`. Say `x ∈ U_i` and `x' ∈ U_j`,
+  then `x, x' ∉ U_i ∩ U_j` by hypothesis, and `x, x'` lie inside separated closed sets:
+  these are some positive distance apart. Now continuity and compactness yields a lower bound
+  `ε_ij` for each pair, on which there is no intersection. (a bit sketchy, but mostly works)
+(5) `φ` is smooth, since solutions of smooth ODEs depend smoothly on their initial conditions
+(6) `φ` is an immersion... that should be obvious
+
+Steps (4) and (5) definitely use ongoing work of Winston Yin; I don't know if the flow of a vector
+field is already defined.
+-/
+def collar_neighbourhood_theorem (h : finrank ℝ E = finrank ℝ E'' + 1)
+    (bd : BoundaryManifoldData M I k I₀) : CollarNeighbourhood bd := sorry
+
+end _root_
+
+end collarNeighbourhood
+
+section trans
+
+variable {n : ℕ} [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
+
+/-- Being cobordant is transitive: two `n+1`-dimensional cobordisms with `n`-dimensional boundary
+can be glued along their common boundary (thanks to the collar neighbourhood theorem). -/
+-- The proof depends on the collar neighbourhood theorem.
+-- TODO: do I need a stronger definition of cobordisms, including a *choice* of collars?
+-- At least, I need to argue that one *can* choose matching collars...
+def trans (φ : UnorientedCobordism k s t J) (ψ : UnorientedCobordism k t u J)
+    (h : finrank ℝ E' = finrank ℝ E + 1) : UnorientedCobordism k t u J :=
+  /- Outline of the proof:
+    - using the collar neighbourhood theorem, choose matching collars for t in φ and ψ
+      invert the first collar, to get a map (-ε, 0] × t.M → φ.W
+    - let W be the attaching space, of φ.W and ψ.W along their common collar
+      (i.e., we quotient the disjoint union φ.W ⊕ ψ.W along the identification by the collars)
+    - the union of the collars defines an open neighbourhood of `t.M`:
+      this is where the hypothesis `h` is used
+    - the quotient is a smooth manifold: away from the boundary, the charts come from W and W';
+      on the image of t.M, we define charts using the common map by the collars
+      (smoothness is the tricky part: this requires the collars to *match*!)
+    - prove: the inclusions of `φ.W` and `ψ.W` into this gluing are smooth
+    - then, boundary data etc. are all easy to construct
+
+  We could state a few more sorries, and provide more of an outline: we will not prove this in
+  detail, this will be a larger project in itself. -/
+  sorry
+
+end trans
 
 end UnorientedCobordism
