@@ -861,9 +861,6 @@ lemma enorm_one' {E : Type*} [TopologicalSpace E] [ENormedMonoid E] : ‖(1 : E)
 @[to_additive (attr := simp) enorm_neg]
 lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
 
-@[to_additive (attr := simp) enorm_neg]
-lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
-
 @[to_additive ofReal_norm_eq_enorm]
 lemma ofReal_norm_eq_enorm' (a : E) : .ofReal ‖a‖ = ‖a‖ₑ := ENNReal.ofReal_eq_coe_nnreal _
 
