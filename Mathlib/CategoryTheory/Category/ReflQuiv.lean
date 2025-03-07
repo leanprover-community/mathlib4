@@ -193,8 +193,7 @@ adjunction between categories and quivers with the map underlying the quotient f
 @[simps! toPrefunctor obj map]
 def adj.unit.app (V : Type u) [ReflQuiver V] :
     V ⥤rq forget.obj (Cat.freeRefl.obj (ReflQuiv.of V)) where
-  toPrefunctor := (Quiv.adj.unit).app (Quiv.of V) ⋙q
-    Quiv.forget.map (Cat.FreeRefl.quotientFunctor V)
+  toPrefunctor := Quiv.adj.unit.app V ⋙q (Cat.FreeRefl.quotientFunctor V).toPrefunctor
   map_id := fun _ => Quotient.sound _ ⟨⟩
 
 /-- This is used in the proof of both triangle equalities. -/
@@ -207,10 +206,10 @@ from the corresponding counit component for the adjunction between categories an
 @[simps!]
 def adj.counit.app (C : Type u) [Category.{max u v} C] :
     Cat.freeRefl.obj (ReflQuiv.of C) ⥤ C :=
-  Quotient.lift Cat.FreeReflRel ((Quiv.adj.counit).app (Cat.of C)) (by
+  Quotient.lift Cat.FreeReflRel (Quiv.adj.counit.app C) (by
     intro x y f g rel
     cases rel
-    unfold Quiv.adj
+    unfold Quiv.adj.counit.app Quiv.adj
     simp only [Adjunction.mkOfHomEquiv_counit_app, Equiv.coe_fn_symm_mk,
       Quiv.lift_map, Prefunctor.mapPath_toPath, composePath_toPath]
     rfl)
@@ -237,26 +236,25 @@ nonrec def adj : Cat.freeRefl.{max u v, u} ⊣ ReflQuiv.forget :=
     left_triangle := by
       ext V
       apply Cat.FreeRefl.lift_unique'
-      simp only [id_obj, Cat.free_obj, comp_obj, Cat.freeRefl_obj_α, NatTrans.comp_app,
-        forget_obj, whiskerRight_app, associator_hom_app, whiskerLeft_app, id_comp,
-        NatTrans.id_app']
-      rw [Cat.id_eq_id, Cat.comp_eq_comp]
-      simp only [Cat.freeRefl_obj_α, Functor.comp_id]
-      rw [← Functor.assoc, ← Cat.freeRefl_naturality, Functor.assoc]
-      dsimp [Cat.freeRefl]
-      have := adj.counit.comp_app_eq (Cat.FreeRefl V)
-      simp [Cat.of_α] at this
-      rw [this]
+      dsimp
+      conv => rhs; rw [Cat.id_eq_id]; apply Functor.comp_id
+      simp only [id_comp]
+      rw [Cat.comp_eq_comp, ← Functor.assoc, ← Cat.freeRefl_naturality, Functor.assoc]
+      dsimp only [Cat.freeRefl, Cat.free_obj, Cat.of_α, of_val, forget_obj,
+        adj.unit.app_toPrefunctor]
+      rw [adj.counit.comp_app_eq]
+      dsimp only [Cat.of_α]
       conv =>
         enter [1, 1, 2]
-        apply (Quiv.comp_eq_comp (X := Quiv.of _) (Y := Quiv.of _) (Z := Quiv.of _) ..).symm
+        apply (Quiv.comp_eq_comp (Z := Quiv.of _) ..).symm
       rw [Cat.free.map_comp]
-      show (_ ⋙ ((Quiv.forget ⋙ Cat.free).map (X := Cat.of _) (Y := Cat.of _)
-        (Cat.FreeRefl.quotientFunctor V))) ⋙ _ = _
-      rw [Functor.assoc]
-      conv => enter [1, 2]; apply Quiv.adj.counit.naturality
-      rw [Cat.comp_eq_comp, ← Functor.assoc, ← Cat.comp_eq_comp]
-      conv => enter [1, 1]; apply Quiv.adj.left_triangle_components V.toQuiv
+      dsimp
+      rw [Cat.free.map_eq, Cat.free.map_eq, Cat.comp_eq_comp, Functor.assoc]
+      rw [Quiv.adj.counit.naturality_eq (Cat.FreeRefl.quotientFunctor V)]
+      rw [← Functor.assoc]
+      show (Cat.freeMapOf (Quiv.adj.unit.app ↑V.toQuiv) ⋙ Quiv.adj.counit.app (Paths ↑V.toQuiv))
+        ⋙ _ = _
+      rw [Quiv.adj.left_triangle_components]
       exact Functor.id_comp _
     right_triangle := by
       ext C

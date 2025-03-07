@@ -57,7 +57,31 @@ theorem comp_eq_comp {X Y Z : Quiv} (F : X ⟶ Y) (G : Y ⟶ Z) : F ≫ G = F �
 
 end Quiv
 
+namespace Prefunctor
+
+/-- Prefunctors between quivers define arrows in `Quiv`. -/
+def toQuivHom {C D : Type u} [Quiver.{v + 1} C] [Quiver.{v + 1} D] (F : C ⥤q D) :
+    (Quiv.of C) ⟶ (Quiv.of D) := F
+
+/-- Arrows in `Quiv` define prefunctors. -/
+def ofQuivHom {C D : Type} [Quiver C] [Quiver D] (F : (Quiv.of C) ⟶ (Quiv.of D)) : C ⥤q D := F
+
+@[simp] theorem of_toQuivHom {C D : Type} [Quiver C] [Quiver D] (F : (Quiv.of C) ⟶ (Quiv.of D)) :
+    toQuivHom (ofQuivHom F) = F := rfl
+
+@[simp] theorem to_ofQuivHom {C D : Type} [Quiver C] [Quiver D] (F : C ⥤q D) :
+    ofQuivHom (toQuivHom F) = F := rfl
+
+end Prefunctor
+
 namespace Cat
+
+@[simps]
+def freeMapOf {V W : Type u} [Quiver.{v + 1} V] [Quiver.{v + 1} W] (F : V ⥤q W) :
+  Paths V ⥤ Paths W where
+    obj := F.obj
+    map := F.mapPath
+    map_comp f g := F.mapPath_comp f g
 
 /-- The functor sending each quiver to its path category. -/
 @[simps]
@@ -78,10 +102,13 @@ def free : Quiv.{v, u} ⥤ Cat.{max u v, u} where
     · rfl
     · exact eq_conj_eqToHom _
 
-/-- A partially unbundled version of `Cat.free.map_comp`. -/
+theorem free.map_eq {X Y : Quiv} (F : X ⟶ Y) : free.map F = freeMapOf F := rfl
+
+/-- An unbundled version of `Cat.free.map_comp`. -/
 @[simp]
-theorem free.map_comp' {X Y Z : Quiv} (F : X ⟶ Y) (G : Y ⟶ Z) :
-    free.map (F ⋙q G) = free.map F ⋙ free.map G := free.map_comp F G
+theorem free.map_comp' {X Y Z : Type} [Quiver X] [Quiver Y] [Quiver Z] (F : X ⥤q Y) (G : Y ⥤q Z) :
+    freeMapOf (F ⋙q G) = freeMapOf F ⋙ freeMapOf G :=
+  free.map_comp (Prefunctor.toQuivHom F) (Prefunctor.toQuivHom G)
 
 end Cat
 
@@ -194,9 +221,14 @@ theorem adj.unit.app_eq_pathsOf (V : Type u) [Quiver.{max u v + 1} V] :
   unfold app adj
   simp only [Adjunction.mkOfHomEquiv_unit_app, Equiv.coe_fn_mk, Prefunctor.comp_map, Cat.id_map]
 
-/-- An unbundled version of the counit of `Quiv.adj : Cat.free ⊣ Quiv.forget`. -/
+/-- An unbundled version of the components of the counit of `Quiv.adj : Cat.free ⊣ Quiv.forget`. -/
 nonrec def adj.counit.app (C : Type u) [Category.{max u v} C] : Paths C ⥤ C :=
   adj.counit.app (Cat.of C)
+
+/-- An unbundled version of the naturality of the counit of `Quiv.adj : Cat.free ⊣ Quiv.forget`. -/
+nonrec def adj.counit.naturality_eq {C D: Type u} [Category.{max u v} C] [Category.{max u v} D]
+    (F : C ⥤ D) : Cat.freeMapOf (F.toPrefunctor) ⋙ adj.counit.app D = adj.counit.app C ⋙ F :=
+  adj.counit.naturality (Functor.toCatHom F)
 
 theorem adj.counit.app_eq_pathComposition (C : Type u) [Category.{max u v} C] :
     adj.counit.app C = pathComposition C := by
@@ -207,6 +239,15 @@ theorem adj.counit.app_eq_pathComposition (C : Type u) [Category.{max u v} C] :
   show composePath (Prefunctor.mapPath (𝟭q _) f) = composePath f
   simp only [Prefunctor.id_obj, Prefunctor.mapPath_id]
 
+/-- An unbundled version of the left triangle equality. -/
+nonrec theorem adj.left_triangle_components (V : Type u) [Quiver.{max u v + 1} V] :
+    Cat.freeMapOf (adj.unit.app V) ⋙ adj.counit.app (Paths V) = 𝟭 (Paths V) :=
+  adj.left_triangle_components (Quiv.of V)
+
+/-- An unbundled version of the right triangle equality. -/
+nonrec theorem adj.right_triangle_components (C : Type u) [Category.{max u v} C] :
+    adj.unit.app (Quiv.of C) ⋙q (adj.counit.app C).toPrefunctor = 𝟭q (Quiv.of C) :=
+  adj.right_triangle_components (Cat.of C)
 
 end Quiv
 
