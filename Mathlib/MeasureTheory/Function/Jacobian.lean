@@ -1180,6 +1180,8 @@ theorem integral_image_eq_integral_abs_det_fderiv_smul (hs : MeasurableSet s)
   congr with x
   rw [NNReal.smul_def, Real.coe_toNNReal _ (abs_nonneg (f' x).det)]
 
+open ContinuousLinearMap (det_one_smulRight)
+
 /-- Integrability in the change of variable formula for differentiable functions (one-variable
 version): if a function `f` is injective and differentiable on a measurable set `s ⊆ ℝ`, then a
 function `g : ℝ → F` is integrable on `f '' s` if and only if `|(f' x)| • g ∘ f` is integrable on
