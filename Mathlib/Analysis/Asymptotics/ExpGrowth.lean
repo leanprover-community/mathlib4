@@ -360,7 +360,7 @@ private lemma tendsto_atTop_of_linGrowthInf_pos {v : ℕ → ℕ}
   filter_upwards [h₁, h₂] with n M_a a_vn
   exact Nat.cast_le.1 (M_a.trans a_vn)
 
-lemma le_expGrowthSup_comp {u : ℕ → ℝ≥0∞} {v : ℕ → ℕ} (hu : 1 ≤ᶠ[atTop] u)
+lemma le_expGrowthInf_comp {u : ℕ → ℝ≥0∞} {v : ℕ → ℕ} (hu : 1 ≤ᶠ[atTop] u)
     (hv : atTop.Tendsto v atTop) :
     (atTop.liminf fun n ↦ (v n : EReal) / n) * expGrowthInf u ≤ expGrowthInf (u ∘ v) := by
   have uv_exp_0 : 0 ≤ expGrowthInf (u ∘ v) := by
@@ -384,10 +384,10 @@ lemma expGrowthSup_comp_le {u : ℕ → ℝ≥0∞} {v : ℕ → ℕ} (hu : ∃�
     (hv₀ : (atTop.limsup fun n ↦ (v n : EReal) / n) ≠ 0)
     (hv₁ : (atTop.limsup fun n ↦ (v n : EReal) / n) ≠ ⊤) (hv₂ : atTop.Tendsto v atTop) :
     expGrowthSup (u ∘ v) ≤ (atTop.limsup fun n ↦ (v n : EReal) / n) * expGrowthSup u := by
-  have v_0 : 0 < atTop.limsup fun n ↦ (v n : EReal) / n :=
-    hv₀.symm.lt_of_le <| (linGrowthInf_nonneg v).trans (liminf_le_limsup)
+  have v_0 := hv₀.symm.lt_of_le <| (linGrowthInf_nonneg v).trans (liminf_le_limsup)
   refine le_mul_of_forall_lt (.inl v_0) (.inl hv₁) fun a v_a b u_b ↦ ?_
-  refine (expGrowthSup_eventually_monotone ?_).trans_eq (expGrowthSup_exp (a := a * b))
+  rw [← expGrowthSup_exp (a := a * b)]
+  apply expGrowthSup_eventually_monotone
   have b_0 : 0 ≤ b := by
     rw [← expGrowthInf_const one_ne_zero one_ne_top]
     exact (expGrowthInf_le_expGrowthSup_of_frequently_le hu).trans u_b.le
@@ -415,21 +415,25 @@ lemma _root_.Monotone.expGrowthInf_nonneg {u : ℕ → ℝ≥0∞} (h : Monotone
 lemma _root_.Monotone.expGrowthSup_nonneg {u : ℕ → ℝ≥0∞} (hu : Monotone u) (hu' : u ≠ 0) :
     0 ≤ expGrowthSup u := (hu.expGrowthInf_nonneg hu').trans expGrowthInf_le_expGrowthSup
 
-private lemma expGrowthSup_comp_nonneg {u : ℕ → ℝ≥0∞} {v : ℕ → ℕ} (hu : Monotone u) (hu' : u ≠ 0)
-    (hv : (atTop.liminf fun n ↦ (v n : EReal) / n) ≠ 0) :
-    0 ≤ expGrowthSup (u ∘ v) := by
+private lemma expGrowthInf_comp_nonneg {u : ℕ → ℝ≥0∞} {v : ℕ → ℕ} (hu : Monotone u) (hu' : u ≠ 0)
+    (hv : atTop.Tendsto v atTop) :
+    0 ≤ expGrowthInf (u ∘ v) := by
   simp only [ne_eq, funext_iff, Pi.zero_apply, not_forall] at hu'
   obtain ⟨m, hum⟩ := hu'
   have um_uvn : ∀ᶠ n in atTop, u m ≤ (u ∘ v) n := by
     simp only [comp_apply]
     rw [← eventually_map (P := fun n : ℕ ↦ u m ≤ u n)]
-    apply (eventually_atTop.2 ⟨m, fun n m_n ↦ hu m_n⟩).filter_mono
-    exact tendsto_atTop_of_linGrowthInf_pos hv
+    exact (eventually_atTop.2 ⟨m, fun n m_n ↦ hu m_n⟩).filter_mono hv
   rcases eq_or_ne (u m) ⊤ with hum' | hum'
   · rw [hum'] at um_uvn
-    exact le_top.trans (expGrowthSup_top.symm.trans_le (expGrowthSup_eventually_monotone um_uvn))
+    exact le_top.trans (expGrowthInf_top.symm.trans_le (expGrowthInf_eventually_monotone um_uvn))
   · rw [← expGrowthInf_const hum hum']
-    exact expGrowthInf_le_expGrowthSup_of_frequently_le um_uvn.frequently
+    exact expGrowthInf_eventually_monotone um_uvn
+
+private lemma expGrowthSup_comp_nonneg {u : ℕ → ℝ≥0∞} {v : ℕ → ℕ} (hu : Monotone u) (hu' : u ≠ 0)
+    (hv : atTop.Tendsto v atTop) :
+    0 ≤ expGrowthSup (u ∘ v) :=
+  (expGrowthInf_comp_nonneg hu hu' hv).trans expGrowthInf_le_expGrowthSup
 
 private lemma Real.eventually_atTop_exists_int_between {a b : ℝ} (h : a < b) :
     ∀ᶠ x : ℝ in atTop, ∃ n : ℤ, a * x ≤ n ∧ n ≤ b * x := by
@@ -453,33 +457,78 @@ private lemma Real.eventually_atTop_exists_nat_between {a b : ℝ} (ha : 0 ≤ a
 
 private lemma EReal.eventually_atTop_exists_nat_between {a b : EReal} (ha : 0 ≤ a) (hb : a < b) :
     ∀ᶠ n : ℕ in atTop, ∃ m : ℕ, a * n ≤ m ∧ m ≤ b * n := by
-  match a with
-  | ⊤ => exact (not_top_lt hb).rec
-  | ⊥ => exact (not_lt_of_le ha bot_lt_zero).rec
-  | (a : ℝ) =>
-    match b with
-    | ⊤ =>
-      refine (eventually_gt_atTop 0).mono fun n n_0 ↦ ?_
-      obtain ⟨m, hm⟩ := EReal.exists_nat_ge_mul hb.ne n
-      exact ⟨m, hm, le_of_le_of_eq le_top (top_mul_of_pos (Nat.cast_pos'.2 n_0)).symm⟩
-    | ⊥ => exact (not_lt_bot hb).rec
-    | (b : ℝ) =>
-      obtain ⟨x, hx⟩ := eventually_atTop.1 <| Real.eventually_atTop_exists_nat_between
-        (EReal.coe_nonneg.1 ha) (EReal.coe_lt_coe_iff.1 hb)
-      obtain ⟨n, x_n⟩ := _root_.exists_nat_ge x
-      refine eventually_atTop.2 ⟨n, fun k n_k ↦ ?_⟩
-      simp only [← coe_coe_eq_natCast, ← EReal.coe_mul, EReal.coe_le_coe_iff]
-      exact hx k (x_n.trans (Nat.cast_le.2 n_k))
+  lift a to ℝ using ⟨ne_top_of_lt hb, ne_bot_of_gt (bot_lt_zero.trans_le ha)⟩
+  match b with
+  | ⊤ =>
+    refine (eventually_gt_atTop 0).mono fun n n_0 ↦ ?_
+    obtain ⟨m, hm⟩ := EReal.exists_nat_ge_mul hb.ne n
+    exact ⟨m, hm, le_of_le_of_eq le_top (top_mul_of_pos (Nat.cast_pos'.2 n_0)).symm⟩
+  | ⊥ => exact (not_lt_bot hb).rec
+  | (b : ℝ) =>
+    obtain ⟨x, hx⟩ := eventually_atTop.1 <| Real.eventually_atTop_exists_nat_between
+      (EReal.coe_nonneg.1 ha) (EReal.coe_lt_coe_iff.1 hb)
+    obtain ⟨n, x_n⟩ := _root_.exists_nat_ge x
+    refine eventually_atTop.2 ⟨n, fun k n_k ↦ ?_⟩
+    simp only [← coe_coe_eq_natCast, ← EReal.coe_mul, EReal.coe_le_coe_iff]
+    exact hx k (x_n.trans (Nat.cast_le.2 n_k))
+
+lemma _root_.Monotone.expGrowthInf_comp_le {u : ℕ → ℝ≥0∞} {v : ℕ → ℕ} (hu : Monotone u)
+    (hv₀ : (atTop.limsup fun n ↦ (v n : EReal) / n) ≠ 0)
+    (hv₁ : (atTop.limsup fun n ↦ (v n : EReal) / n) ≠ ⊤) :
+    expGrowthInf (u ∘ v) ≤ (atTop.limsup fun n ↦ (v n : EReal) / n) * expGrowthInf u := by
+  -- First we apply `le_mul_of_forall_lt`.
+  by_cases h : u = 0
+  · rw [h, Pi.zero_comp, expGrowthInf_zero]; exact bot_le
+  have v_0 := hv₀.symm.lt_of_le <| (linGrowthInf_nonneg v).trans (liminf_le_limsup)
+  refine le_mul_of_forall_lt (.inl v_0) (.inl hv₁) fun a v_a b u_b ↦ ?_
+  have b_0 := (hu.expGrowthInf_nonneg h).trans_lt u_b
+  have a_0 := v_0.trans v_a
+  rcases eq_or_ne a ⊤ with rfl | a_top
+  · rw [top_mul_of_pos b_0]; exact le_top
+  rw [← expGrowthSup_exp (a := a * b)]
+  apply expGrowthInf_le_expGrowthSup_of_frequently_le
+  obtain ⟨a', v_a', a_a'⟩ := exists_between v_a
+  -- We get an epsilon of room: if `m` is large enough, then `v n ≤ a' * n < a * n`.
+  -- Using `u_b`, we can find arbitrarily large values `n` such that `u n ≤ exp (b * n)`.
+  -- If such an `n` is large enough, then we can find an integer `k` such that
+  -- `a⁻¹ * n ≤ k ≤ a'⁻¹ * n`, or, in other words, `a' * k ≤ n ≤ a * k`.
+  -- Then `v k ≤ a' * k ≤ n`, so `u (v k) ≤ u n ≤ exp (b * n) ≤ exp (b * a * k)`.
+  have a_0' := v_0.trans v_a'
+  have a_top' := ne_top_of_lt a_a'
+  have a_a_inv' : a⁻¹ < a'⁻¹ := EReal.inv_strictAntiOn (mem_Ioi.2 a_0') (mem_Ioi.2 a_0) a_a'
+  replace v_a' : ∀ᶠ n : ℕ in atTop, v n ≤ a' * n := by
+    filter_upwards [eventually_lt_of_limsup_lt v_a', eventually_gt_atTop 0] with n vn_a' n_0
+    rw [mul_comm]
+    exact (div_le_iff_le_mul (Nat.cast_pos'.2 n_0) (natCast_ne_top n)).1 vn_a'.le
+  suffices h : (∀ᶠ n : ℕ in atTop, v n ≤ a' * n)
+    → ∃ᶠ n : ℕ in atTop, (u ∘ v) n ≤ exp (a * b * n) from h v_a'
+  rw [← frequently_imp_distrib]
+  replace u_b := (expGrowthInf_le_iff.1 (le_refl (expGrowthInf u)) b u_b)
+  replace u_b := u_b.and_eventually (eventually_gt_atTop 0)
+  replace u_b := u_b.and_eventually <| EReal.eventually_atTop_exists_nat_between
+    (EReal.inv_nonneg_of_nonneg a_0.le) a_a_inv'
+  refine frequently_atTop.2 fun M ↦ ?_
+  obtain ⟨M', aM_M'⟩ := EReal.exists_nat_ge_mul a_top M
+  obtain ⟨n, n_M', ⟨un_bn, n_0⟩, k, an_k, k_an'⟩ := frequently_atTop.1 u_b M'
+  refine ⟨k, ?_, fun vk_ak' ↦ ?_⟩
+  · rw [mul_comm a, ← le_div_iff_mul_le a_0 a_top, EReal.div_eq_inv_mul] at aM_M'
+    apply (Nat.cast_le (α := EReal)).1 <| aM_M'.trans <| an_k.trans' _
+    exact mul_le_mul_of_nonneg_left (Nat.cast_le.2 n_M') (inv_nonneg_of_nonneg a_0.le)
+  · rw [comp_apply, mul_comm a b, mul_assoc b a]
+    rw [← EReal.div_eq_inv_mul, le_div_iff_mul_le a_0' a_top', mul_comm] at k_an'
+    rw [← EReal.div_eq_inv_mul, div_le_iff_le_mul a_0 a_top] at an_k
+    have vk_n := Nat.cast_le.1 (vk_ak'.trans k_an')
+    exact (hu vk_n).trans <| un_bn.trans (exp_monotone (mul_le_mul_of_nonneg_left an_k b_0.le))
 
 lemma _root_.Monotone.le_expGrowthSup_comp {u : ℕ → ℝ≥0∞} {v : ℕ → ℕ} (hu : Monotone u)
     (hv : (atTop.liminf fun n ↦ (v n : EReal) / n) ≠ 0) :
     (atTop.liminf fun n ↦ (v n : EReal) / n) * expGrowthSup u ≤ expGrowthSup (u ∘ v) := by
   have v_0 := hv.symm.lt_of_le (linGrowthInf_nonneg v)
-  -- WLOG, `u` is non-zero.
+  -- WLOG, `u` is non-zero, and we can apply `mul_le_of_forall_lt_of_nonneg`.
   by_cases h : u = 0
   · rw [h, expGrowthSup_zero, mul_bot_of_pos v_0]; exact bot_le
-  -- Now we can apply `mul_le_of_forall_lt_of_nonneg`.
-  apply mul_le_of_forall_lt_of_nonneg v_0.le (expGrowthSup_comp_nonneg hu h hv)
+  apply mul_le_of_forall_lt_of_nonneg v_0.le
+    (expGrowthSup_comp_nonneg hu h (tendsto_atTop_of_linGrowthInf_pos hv))
   intro a ⟨a_0, a_v⟩ b ⟨b_0, b_u⟩
   rw [← expGrowthInf_exp (a := a * b)]
   apply expGrowthInf_le_expGrowthSup_of_frequently_le
@@ -489,8 +538,8 @@ lemma _root_.Monotone.le_expGrowthSup_comp {u : ℕ → ℝ≥0∞} {v : ℕ →
   -- If such an `n` is large enough, then we can find an integer `k` such that
   -- `a'⁻¹ * n ≤ k ≤ a⁻¹ * n`, or, in other words, `a * k ≤ n ≤ a' * k`.
   -- Then `v k ≥ a' * k ≥ n`, so `u (v k) ≥ u n ≥ exp (b * n) ≥ exp (b * a * k)`.
-  have a_top' := a_v'.trans_le le_top
-  have a_0' : 0 < a' := a_0.trans a_a'
+  have a_top' := ne_top_of_lt a_v'
+  have a_0' := a_0.trans a_a'
   have a_a_inv' : a'⁻¹ < a⁻¹ := inv_strictAntiOn (mem_Ioi.2 a_0) (mem_Ioi.2 a_0') a_a'
   replace a_v' : ∀ᶠ n : ℕ in atTop, a' * n ≤ v n := by
     filter_upwards [eventually_lt_of_lt_liminf a_v', eventually_gt_atTop 0] with n a_vn' n_0
@@ -503,17 +552,51 @@ lemma _root_.Monotone.le_expGrowthSup_comp {u : ℕ → ℝ≥0∞} {v : ℕ →
   replace b_u := b_u.and_eventually <| EReal.eventually_atTop_exists_nat_between
     (EReal.inv_nonneg_of_nonneg (a_0.trans a_a').le) a_a_inv'
   refine frequently_atTop.2 fun M ↦ ?_
-  obtain ⟨M', aM_M'⟩ := EReal.exists_nat_ge_mul a_top'.ne M
+  obtain ⟨M', aM_M'⟩ := EReal.exists_nat_ge_mul a_top' M
   obtain ⟨n, n_M', ⟨bn_un, n_0⟩, k, an_k', k_an⟩ := frequently_atTop.1 b_u M'
   refine ⟨k, ?_, fun ak_vk' ↦ ?_⟩
-  · rw [mul_comm a', ← le_div_iff_mul_le a_0' a_top'.ne, EReal.div_eq_inv_mul] at aM_M'
+  · rw [mul_comm a', ← le_div_iff_mul_le a_0' a_top', EReal.div_eq_inv_mul] at aM_M'
     apply (Nat.cast_le (α := EReal)).1 <| aM_M'.trans <| an_k'.trans' _
     exact mul_le_mul_of_nonneg_left (Nat.cast_le.2 n_M') (inv_nonneg_of_nonneg a_0'.le)
   · rw [comp_apply, mul_comm a b, mul_assoc b a]
-    rw [← EReal.div_eq_inv_mul, div_le_iff_le_mul a_0' a_top'.ne] at an_k'
-    rw [← EReal.div_eq_inv_mul, le_div_iff_mul_le a_0 (a_a'.trans a_top').ne, mul_comm] at k_an
+    rw [← EReal.div_eq_inv_mul, div_le_iff_le_mul a_0' a_top'] at an_k'
+    rw [← EReal.div_eq_inv_mul, le_div_iff_mul_le a_0 (ne_top_of_lt a_a'), mul_comm] at k_an
     have n_vk := Nat.cast_le.1 (an_k'.trans ak_vk')
     exact (exp_monotone (mul_le_mul_of_nonneg_left k_an b_0.le)).trans <| bn_un.trans (hu n_vk)
+
+lemma _root_.Monotone.expGrowthInf_comp {u : ℕ → ℝ≥0∞} {v : ℕ → ℕ} {a : EReal} (hu : Monotone u)
+    (hv : atTop.Tendsto (fun n ↦ (v n : EReal) / n) (nhds a)) (ha : a ≠ 0) (ha' : a ≠ ⊤) :
+    expGrowthInf (u ∘ v) = a * expGrowthInf u := by
+  have hv₁ : 0 < atTop.liminf fun n ↦ (v n : EReal) / n := by
+    rw [← hv.liminf_eq] at ha
+    exact ha.symm.lt_of_le (linGrowthInf_nonneg v)
+  -- Either `u = 0`, or `u` is non-zero and bounded by `1`, or `u` is eventually larger than one.
+  -- In the latter case, we apply `le_expGrowthInf_comp` and `expGrowthInf_comp_le`.
+  by_cases h : u = 0
+  · rw [h, Pi.zero_comp, expGrowthInf_zero, ← hv.liminf_eq, mul_bot_of_pos hv₁]
+  by_cases h' : ∃ᶠ n : ℕ in atTop, u n ≤ 1
+  · have u_0 : expGrowthInf u = 0 := by
+      apply le_antisymm _ (hu.expGrowthInf_nonneg h)
+      rw [← expGrowthSup_const one_ne_zero one_ne_top]
+      exact expGrowthInf_le_expGrowthSup_of_frequently_le h'
+    replace h' : ∀ᶠ n : ℕ in atTop, u n ≤ 1 := by
+      refine Eventually.of_forall fun n ↦ ?_
+      obtain ⟨m, n_m, um_1⟩ := (frequently_atTop.1 h') n
+      exact (hu n_m).trans um_1
+    have uv_0 : expGrowthInf (u ∘ v) = 0 := by
+      apply le_antisymm _
+        (expGrowthInf_comp_nonneg hu h (tendsto_atTop_of_linGrowthInf_pos hv₁.ne.symm))
+      rw [← expGrowthInf_const one_ne_zero one_ne_top]
+      apply expGrowthInf_eventually_monotone
+      exact (tendsto_atTop_of_linGrowthInf_pos hv₁.ne.symm).eventually h'
+    rw [u_0, uv_0, mul_zero]
+  · simp only [not_frequently, not_le, ge_iff_le] at h'
+    replace h' := h'.mono fun n hn ↦ hn.le
+    apply le_antisymm
+    · rw [← hv.limsup_eq] at ha ha' ⊢
+      exact hu.expGrowthInf_comp_le ha ha'
+    · rw [← hv.liminf_eq] at ha' ⊢
+      exact le_expGrowthInf_comp h' (tendsto_atTop_of_linGrowthInf_pos hv₁.ne.symm)
 
 lemma _root_.Monotone.expGrowthSup_comp {u : ℕ → ℝ≥0∞} {v : ℕ → ℕ} {a : EReal} (hu : Monotone u)
     (hv : atTop.Tendsto (fun n ↦ (v n : EReal) / n) (nhds a)) (ha : a ≠ 0) (ha' : a ≠ ⊤) :
@@ -531,7 +614,8 @@ lemma _root_.Monotone.expGrowthSup_comp {u : ℕ → ℝ≥0∞} {v : ℕ → �
       rw [← expGrowthSup_const one_ne_zero one_ne_top]
       exact expGrowthSup_eventually_monotone h'
     have uv_0 : expGrowthSup (u ∘ v) = 0 := by
-      apply le_antisymm _ (expGrowthSup_comp_nonneg hu h hv₁.ne.symm)
+      apply le_antisymm _
+        (expGrowthSup_comp_nonneg hu h (tendsto_atTop_of_linGrowthInf_pos hv₁.ne.symm))
       rw [← expGrowthSup_const one_ne_zero one_ne_top]
       apply expGrowthSup_eventually_monotone
       exact (tendsto_atTop_of_linGrowthInf_pos hv₁.ne.symm).eventually h'
@@ -543,6 +627,14 @@ lemma _root_.Monotone.expGrowthSup_comp {u : ℕ → ℝ≥0∞} {v : ℕ → �
       · rwa [hv.limsup_eq]
     · rw [← hv.liminf_eq]
       exact hu.le_expGrowthSup_comp hv₁.ne.symm
+
+lemma _root_.Monotone.expGrowthInf_comp_mul {u : ℕ → ℝ≥0∞} {m : ℕ} (hu : Monotone u) (hm : m ≠ 0) :
+    expGrowthInf (fun n ↦ u (m * n)) = m * expGrowthInf u := by
+  have h : atTop.Tendsto (fun n : ℕ ↦ ((m * n : ℕ ) : EReal) / n) (nhds m) := by
+    refine tendsto_nhds_of_eventually_eq ((eventually_gt_atTop 0).mono fun x hx ↦ ?_)
+    rw [mul_comm, natCast_mul x m, ← mul_div]
+    exact EReal.mul_div_cancel (natCast_ne_bot x) (natCast_ne_top x) (Nat.cast_ne_zero.2 hx.ne.symm)
+  exact hu.expGrowthInf_comp h (Nat.cast_ne_zero.2 hm) (natCast_ne_top m)
 
 lemma _root_.Monotone.expGrowthSup_comp_mul {u : ℕ → ℝ≥0∞} {m : ℕ} (hu : Monotone u) (hm : m ≠ 0) :
     expGrowthSup (fun n ↦ u (m * n)) = m * expGrowthSup u := by
