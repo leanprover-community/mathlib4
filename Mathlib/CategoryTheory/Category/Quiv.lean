@@ -76,6 +76,7 @@ end Prefunctor
 
 namespace Cat
 
+/-- A prefunctor `V ⥤q W` induces a functor between the path categories defined by `F.mapPath`. -/
 @[simps]
 def freeMapOf {V W : Type u} [Quiver.{v + 1} V] [Quiver.{v + 1} W] (F : V ⥤q W) :
   Paths V ⥤ Paths W where
@@ -226,7 +227,7 @@ nonrec def adj.counit.app (C : Type u) [Category.{max u v} C] : Paths C ⥤ C :=
   adj.counit.app (Cat.of C)
 
 /-- An unbundled version of the naturality of the counit of `Quiv.adj : Cat.free ⊣ Quiv.forget`. -/
-nonrec def adj.counit.naturality_eq {C D: Type u} [Category.{max u v} C] [Category.{max u v} D]
+nonrec theorem adj.counit.naturality_eq {C D: Type u} [Category.{max u v} C] [Category.{max u v} D]
     (F : C ⥤ D) : Cat.freeMapOf (F.toPrefunctor) ⋙ adj.counit.app D = adj.counit.app C ⋙ F :=
   adj.counit.naturality (Functor.toCatHom F)
 
