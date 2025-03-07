@@ -805,7 +805,7 @@ end
 theorem toLocalizationMap_eq_monoidOf : toLocalizationMap M (Localization M) = monoidOf M :=
   rfl
 
-theorem monoidOf_eq_algebraMap (x) : (monoidOf M).toMap x = algebraMap R (Localization M) x :=
+theorem monoidOf_eq_algebraMap (x) : monoidOf M x = algebraMap R (Localization M) x :=
   rfl
 
 theorem mk_one_eq_algebraMap (x) : mk x 1 = algebraMap R (Localization M) x :=
