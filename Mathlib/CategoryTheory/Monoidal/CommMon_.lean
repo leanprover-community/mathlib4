@@ -233,3 +233,18 @@ def equivLaxBraidedFunctorPUnit : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C â
   counitIso := counitIso C
 
 end CommMon_
+
+namespace CommMon_
+
+variable {C}
+
+/-- Construct an object of `CommMon_ C` from an object `X : C` a `Mon_Class X` instance
+and a `IsCommMon X` insance. -/
+def mk' (X : C) [Mon_Class X] [IsCommMon X] : CommMon_ C where
+  __ := Mon_.mk' X
+  mul_comm := IsCommMon.mul_comm X
+
+instance (X : CommMon_ C) : IsCommMon X.X where
+  mul_comm' := X.mul_comm
+
+end CommMon_
