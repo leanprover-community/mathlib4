@@ -321,12 +321,12 @@ lemma integrable_exp_add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsMarkovKernel
     Integrable (fun ω ↦ exp (t * (X ω.1 + Y ω.2))) (⇑(κ ⊗ₖ η) ∘ₘ ν) := by
   simp_rw [mul_add, exp_add]
   refine MemLp.integrable_mul (p := 2) (q := 2) ?_ ?_
-  · have h := hX.memLp t 2
+  · have h := hX.memLp_exp_mul t 2
     simp only [ENNReal.coe_ofNat] at h
     have : κ ∘ₘ ν = ((κ ⊗ₖ η) ∘ₘ ν).map Prod.fst := by
       rw [Measure.map_comp _ _ measurable_fst, ← fst_eq, fst_compProd]
     rwa [this, memLp_map_measure_iff h.1 measurable_fst.aemeasurable] at h
-  · have h := hY.memLp t 2
+  · have h := hY.memLp_exp_mul t 2
     simp only [ENNReal.coe_ofNat] at h
     rwa [Measure.comp_compProd_comm, Measure.snd,
       memLp_map_measure_iff h.1 measurable_snd.aemeasurable] at h
@@ -537,7 +537,7 @@ lemma add_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF
     HasSubgaussianMGF (fun ω ↦ X ω + Y ω) (cX + cY) μ where
   integrable_exp_mul t := by
     simp_rw [mul_add, exp_add]
-    convert MemLp.integrable_mul (hX.memLp t 2) (hY.memLp t 2)
+    convert MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
     norm_cast
     infer_instance
   mgf_le t := by
@@ -552,7 +552,7 @@ lemma add_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF
     _ = exp ((cX + cY) * t ^ 2 / 2) := by rw [← exp_add]; congr; ring
 
 lemma sum_of_iIndepFun {ι : Type*} [IsZeroOrProbabilityMeasure μ]
-    {X : ι → Ω → ℝ} (h_indep : iIndepFun (fun _ ↦ inferInstance) X μ) {c : ι → ℝ≥0}
+    {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ι → ℝ≥0}
     (h_meas : ∀ i, Measurable (X i))
     {s : Finset ι} (h_subG : ∀ i ∈ s, HasSubgaussianMGF (X i) (c i) μ) :
     HasSubgaussianMGF (fun ω ↦ ∑ i ∈ s, X i ω) (∑ i ∈ s, c i) μ := by
@@ -571,7 +571,7 @@ lemma sum_of_iIndepFun {ι : Type*} [IsZeroOrProbabilityMeasure μ]
 
 /-- **Hoeffding inequality** for sub-Gaussian random variables. -/
 lemma prob_sum_ge_le_of_iIndepFun {ι : Type*} [IsZeroOrProbabilityMeasure μ]
-    {X : ι → Ω → ℝ} (h_indep : iIndepFun (fun _ ↦ inferInstance) X μ) {c : ι → ℝ≥0}
+    {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ι → ℝ≥0}
     (h_meas : ∀ i, Measurable (X i))
     {s : Finset ι} (h_subG : ∀ i ∈ s, HasSubgaussianMGF (X i) (c i) μ) {ε : ℝ} (hε : 0 ≤ ε) :
     (μ {ω | ε ≤ ∑ i ∈ s, X i ω}).toReal ≤ exp (- ε ^ 2 / (2 * ∑ i ∈ s, c i)) :=
@@ -579,7 +579,7 @@ lemma prob_sum_ge_le_of_iIndepFun {ι : Type*} [IsZeroOrProbabilityMeasure μ]
 
 /-- **Hoeffding inequality** for sub-Gaussian random variables. -/
 lemma prob_sum_range_ge_le_of_iIndepFun [IsZeroOrProbabilityMeasure μ]
-    {X : ℕ → Ω → ℝ} (h_indep : iIndepFun (fun _ ↦ inferInstance) X μ) {c : ℝ≥0}
+    {X : ℕ → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ℝ≥0}
     (h_meas : ∀ i, Measurable (X i))
     {n : ℕ} (h_subG : ∀ i < n, HasSubgaussianMGF (X i) c μ) {ε : ℝ} (hε : 0 ≤ ε) :
     (μ {ω | ε ≤ ∑ i ∈ Finset.range n, X i ω}).toReal ≤ exp (- ε ^ 2 / (2 * n * c)) := by
