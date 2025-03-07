@@ -3,9 +3,9 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
+import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Data.Finsupp.Fintype
 import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.LinearAlgebra.Basis.Prod
 import Mathlib.Logic.Small.Basic
 
 /-!
@@ -22,7 +22,7 @@ module.
 * `Module.Free R M` : the class of free `R`-modules.
 -/
 
-assert_not_exists DirectSum TensorProduct
+assert_not_exists DirectSum Matrix TensorProduct
 
 universe u v w z
 
@@ -146,9 +146,6 @@ variable (R M N)
 /-- The module structure provided by `Semiring.toModule` is free. -/
 instance self : Module.Free R R :=
   of_basis (Basis.singleton Unit R)
-
-instance prod [Module.Free R N] : Module.Free R (M × N) :=
-  of_basis <| (chooseBasis R M).prod (chooseBasis R N)
 
 instance ulift [Free R M] : Free R (ULift M) := of_equiv ULift.moduleEquiv.symm
 
