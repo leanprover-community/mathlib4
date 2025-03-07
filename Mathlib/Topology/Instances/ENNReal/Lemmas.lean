@@ -1363,7 +1363,7 @@ end truncateToReal
 
 section LimsupLiminf
 
-variable {ι : Type*}
+variable {ι : Type*} {f : Filter ι} {u v : ι → ℝ≥0∞}
 
 lemma limsup_sub_const (F : Filter ι) (f : ι → ℝ≥0∞) (c : ℝ≥0∞) :
     Filter.limsup (fun i ↦ f i - c) F = Filter.limsup f F - c := by
@@ -1389,49 +1389,44 @@ lemma liminf_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) {c : �
   (Antitone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c_ne_top).continuousAt).symm
 
-lemma le_limsup_mul {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞} :
-    limsup u f * liminf v f ≤ limsup (u * v) f :=
+lemma le_limsup_mul : limsup u f * liminf v f ≤ limsup (u * v) f :=
   mul_le_of_forall_lt fun a a_u b b_v ↦ (le_limsup_iff).2 fun c c_ab ↦
     Frequently.mono (Frequently.and_eventually ((frequently_lt_of_lt_limsup) a_u)
     ((eventually_lt_of_lt_liminf) b_v)) fun _ ab_x ↦ c_ab.trans (mul_lt_mul ab_x.1 ab_x.2)
 
 /-- See also `ENNReal.limsup_mul_le`. -/
-lemma limsup_mul_le' {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞}
-    (h : limsup u f ≠ 0 ∨ limsup v f ≠ ∞) (h' : limsup u f ≠ ∞ ∨ limsup v f ≠ 0) :
+lemma limsup_mul_le' (h : limsup u f ≠ 0 ∨ limsup v f ≠ ∞) (h' : limsup u f ≠ ∞ ∨ limsup v f ≠ 0) :
     limsup (u * v) f ≤ limsup u f * limsup v f := by
   refine le_mul_of_forall_lt h h' fun a a_u b b_v ↦ (limsup_le_iff).2 fun c c_ab ↦ ?_
   filter_upwards [eventually_lt_of_limsup_lt a_u, eventually_lt_of_limsup_lt b_v] with x a_x b_x
   exact (mul_lt_mul a_x b_x).trans c_ab
 
-lemma le_liminf_mul {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞} :
-    liminf u f * liminf v f ≤ liminf (u * v) f := by
+lemma le_liminf_mul : liminf u f * liminf v f ≤ liminf (u * v) f := by
   refine mul_le_of_forall_lt fun a a_u b b_v ↦ (le_liminf_iff).2 fun c c_ab ↦ ?_
   filter_upwards [eventually_lt_of_lt_liminf a_u, eventually_lt_of_lt_liminf b_v] with x a_x b_x
   exact c_ab.trans (mul_lt_mul a_x b_x)
 
-lemma liminf_mul_le {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞}
-    (h : limsup u f ≠ 0 ∨ liminf v f ≠ ∞) (h' : limsup u f ≠ ∞ ∨ liminf v f ≠ 0) :
+lemma liminf_mul_le (h : limsup u f ≠ 0 ∨ liminf v f ≠ ∞) (h' : limsup u f ≠ ∞ ∨ liminf v f ≠ 0) :
     liminf (u * v) f ≤ limsup u f * liminf v f :=
   le_mul_of_forall_lt h h' fun a a_u b b_v ↦ (liminf_le_iff).2 fun c c_ab ↦
     Frequently.mono (((frequently_lt_of_liminf_lt) b_v).and_eventually
     ((eventually_lt_of_limsup_lt) a_u)) fun _ ab_x ↦ (mul_lt_mul ab_x.2 ab_x.1).trans c_ab
 
 /-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
-lemma liminf_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
-    {xs : ι → ℝ≥0∞} (le_b : ∀ᶠ i in F, xs i ≤ b) :
-    F.liminf (fun i ↦ (xs i).toReal) = (F.liminf xs).toReal := by
-  have liminf_le : F.liminf xs ≤ b := by
+lemma liminf_toReal_eq [NeBot f] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) (le_b : ∀ᶠ i in f, u i ≤ b) :
+    f.liminf (fun i ↦ (u i).toReal) = (f.liminf u).toReal := by
+  have liminf_le : f.liminf u ≤ b := by
     apply liminf_le_of_le ⟨0, by simp⟩
     intro y h
     obtain ⟨i, hi⟩ := (Eventually.and h le_b).exists
     exact hi.1.trans hi.2
-  have aux : ∀ᶠ i in F, (xs i).toReal = ENNReal.truncateToReal b (xs i) := by
+  have aux : ∀ᶠ i in f, (u i).toReal = ENNReal.truncateToReal b (u i) := by
     filter_upwards [le_b] with i i_le_b
     simp only [truncateToReal_eq_toReal b_ne_top i_le_b, implies_true]
-  have aux' : (F.liminf xs).toReal = ENNReal.truncateToReal b (F.liminf xs) := by
+  have aux' : (f.liminf u).toReal = ENNReal.truncateToReal b (f.liminf u) := by
     rw [truncateToReal_eq_toReal b_ne_top liminf_le]
   simp_rw [liminf_congr aux, aux']
-  have key := Monotone.map_liminf_of_continuousAt (F := F) (monotone_truncateToReal b_ne_top) xs
+  have key := Monotone.map_liminf_of_continuousAt (F := f) (monotone_truncateToReal b_ne_top) u
           (continuous_truncateToReal b_ne_top).continuousAt
           (IsBoundedUnder.isCoboundedUnder_ge ⟨b, by simpa only [eventually_map] using le_b⟩)
           ⟨0, Eventually.of_forall (by simp)⟩
@@ -1456,16 +1451,15 @@ lemma limsup_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (
   rfl
 
 @[simp, norm_cast]
-lemma ofNNReal_limsup (hf : l.IsBoundedUnder (· ≤ ·) f) :
-    limsup f l = limsup (fun x ↦ (f x : ℝ≥0∞)) l := by
+lemma ofNNReal_limsup {u : ι → ℝ≥0} (hf : f.IsBoundedUnder (· ≤ ·) u) :
+    limsup u f = limsup (fun i ↦ (u i : ℝ≥0∞)) f := by
   refine eq_of_forall_nnreal_iff fun r ↦ ?_
-  simp
-  rw [le_limsup_iff, le_limsup_iff]
+  rw [coe_le_coe, le_limsup_iff, le_limsup_iff]
   simp [forall_ennreal]
 
 @[simp, norm_cast]
-lemma ofNNReal_liminf (hf : l.IsCoboundedUnder (· ≥ ·) f) :
-    liminf f l = liminf (fun x ↦ (f x : ℝ≥0∞)) l := by
+lemma ofNNReal_liminf {u : ι → ℝ≥0} (hf : f.IsCoboundedUnder (· ≥ ·) u) :
+    liminf u f = liminf (fun i ↦ (u i : ℝ≥0∞)) f := by
   refine eq_of_forall_nnreal_iff fun r ↦ ?_
   simp
   rw [le_liminf_iff hf, le_liminf_iff]
