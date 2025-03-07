@@ -11,9 +11,15 @@ import Mathlib.LinearAlgebra.Finsupp.Supported
 
 ## Main definitions
 
-* `Finsupp.linearCombination R (v : ι → M)`: sends `l : ι → R` to the linear combination of
+* `Finsupp.linearCombination R (v : ι → M)`: sends `l : ι →₀ R` to the linear combination of
   `v i` with coefficients `l i`;
 * `Finsupp.linearCombinationOn`: a restricted version of `Finsupp.linearCombination` with domain
+
+* `Fintype.linearCombination R (v : ι → M)`: sends `l : ι → R` to the linear combination of
+  `v i` with coefficients `l i` (for a finite type `ι`)
+
+* `Finsupp.bilinearCombination R S`, `Fintype.bilinearCombination R S`:
+a bilinear bersion of `Finsupp.linearCombination` and `Fintype.linearCombination`.
 
 ## Tags
 
@@ -59,6 +65,28 @@ theorem linearCombination_single (c : R) (a : α) :
 theorem linearCombination_zero_apply (x : α →₀ R) : (linearCombination R (0 : α → M)) x = 0 := by
   simp [linearCombination_apply]
 
+variable [Module S M] [SMulCommClass R S M]
+
+variable (S) in
+/-- `Finsupp.bilinearCombination R S v f` is the linear combination of vectors in `v` with weights
+in `f`.
+
+This map is linear in `v` if `R` is commutative, and always linear in `f`.
+See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
+-/
+def bilinearCombination : (α → M) →ₗ[S] (α →₀ R) →ₗ[R] M where
+  toFun v := linearCombination R v
+  map_add' u v := by ext; simp [Finset.sum_add_distrib, Pi.add_apply, smul_add]
+  map_smul' r v := by ext; simp [Finset.smul_sum, smul_comm]
+
+theorem bilinearCombination_apply_eq_linearCombination :
+    bilinearCombination R S v = linearCombination R v :=
+  rfl
+
+theorem bilinearCombination_apply (f) :
+    bilinearCombination R S v f = f.sum fun i c ↦ c • v i := by
+  rfl
+
 variable (α M)
 
 @[simp]
@@ -95,7 +123,7 @@ theorem linearCombination_surjective (h : Function.Surjective v) :
     Function.Surjective (linearCombination R v) := by
   intro x
   obtain ⟨y, hy⟩ := h x
-  exact ⟨Finsupp.single y 1, by simp [hy]⟩
+  exact ⟨single y 1, by simp [hy]⟩
 
 theorem linearCombination_range (h : Function.Surjective v) :
     LinearMap.range (linearCombination R v) = ⊤ :=
@@ -120,7 +148,7 @@ theorem range_linearCombination : LinearMap.range (linearCombination R v) = span
     intro x hx
     rcases hx with ⟨i, hi⟩
     rw [SetLike.mem_coe, LinearMap.mem_range]
-    use Finsupp.single i 1
+    use single i 1
     simp [hi]
 
 theorem lmapDomain_linearCombination (f : α → α') (g : M →ₗ[R] M') (h : ∀ i, g (v i) = v' (f i)) :
