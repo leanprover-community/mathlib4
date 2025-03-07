@@ -138,7 +138,7 @@ lemma ae_forall_integrable_exp_mul (h : HasSubgaussianMGF X c κ ν) :
   filter_upwards [h_int] with ω' h_int t
   exact integrable_exp_mul_of_le_of_le (h_int _) (h_int _) (Int.floor_le t) (Int.le_ceil t)
 
-protected lemma memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (t : ℝ) (p : ℝ≥0) :
+lemma memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (t : ℝ) (p : ℝ≥0) :
     MemLp (fun ω ↦ exp (t * X ω)) p (κ ∘ₘ ν) := by
   by_cases hp0 : p = 0
   · simpa [hp0] using (h.integrable_exp_mul t).1
@@ -153,9 +153,9 @@ protected lemma memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (t : ℝ) (p : �
       ENNReal.ofReal_rpow_of_nonneg (by positivity), ← exp_mul, mul_comm, ← mul_assoc]
     positivity
 
-lemma cgf_le (h : HasSubgaussianMGF X c κ ν) (t : ℝ) :
-    ∀ᵐ ω' ∂ν, cgf X (κ ω') t ≤ c * t ^ 2 / 2 := by
-  filter_upwards [h.mgf_le, h.ae_forall_integrable_exp_mul] with ω' h h_int
+lemma cgf_le (h : HasSubgaussianMGF X c κ ν) :
+    ∀ᵐ ω' ∂ν, ∀ t, cgf X (κ ω') t ≤ c * t ^ 2 / 2 := by
+  filter_upwards [h.mgf_le, h.ae_forall_integrable_exp_mul] with ω' h h_int t
   calc cgf X (κ ω') t
   _ = log (mgf X (κ ω') t) := rfl
   _ ≤ log (exp (c * t ^ 2 / 2)) := by
@@ -266,21 +266,31 @@ def HasCondSubgaussianMGF (X : Ω → ℝ) (c : ℝ≥0)
 
 namespace HasCondSubgaussianMGF
 
-lemma condExp_le (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) :
-    ∀ᵐ ω' ∂μ, (μ[fun ω ↦ exp (t * X ω) | m]) ω' ≤ exp (c * t ^ 2 / 2) := by
-  have h_eq := condExp_ae_eq_integral_condExpKernel hm (h.integrable_exp_mul t)
+lemma mgf_le (h : HasCondSubgaussianMGF m hm X c μ) :
+    ∀ᵐ ω' ∂(μ.trim hm), ∀ t, mgf X (condExpKernel μ m ω') t ≤ exp (c * t ^ 2 / 2) :=
+  Kernel.HasSubgaussianMGF.mgf_le h
+
+lemma cgf_le (h : HasCondSubgaussianMGF m hm X c μ) :
+    ∀ᵐ ω' ∂(μ.trim hm), ∀ t, cgf X (condExpKernel μ m ω') t ≤ c * t ^ 2 / 2 :=
+  Kernel.HasSubgaussianMGF.cgf_le h
+
+lemma ae_trim_condExp_le (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) :
+    ∀ᵐ ω' ∂(μ.trim hm), (μ[fun ω ↦ exp (t * X ω) | m]) ω' ≤ exp (c * t ^ 2 / 2) := by
+  have h_eq := condExp_ae_eq_trim_integral_condExpKernel hm (h.integrable_exp_mul t)
   simp_rw [condExpKernel_comp_trim] at h_eq
-  filter_upwards [ae_of_ae_trim hm h.mgf_le, h_eq] with ω' h_mgf h_eq
+  filter_upwards [h.mgf_le, h_eq] with ω' h_mgf h_eq
   rw [h_eq]
   exact h_mgf t
 
-@[simp]
-lemma fun_zero : HasCondSubgaussianMGF m hm (fun _ ↦ 0) 0 μ :=
-  Kernel.HasSubgaussianMGF.fun_zero
+lemma ae_condExp_le (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) :
+    ∀ᵐ ω' ∂μ, (μ[fun ω ↦ exp (t * X ω) | m]) ω' ≤ exp (c * t ^ 2 / 2) :=
+  ae_of_ae_trim hm (h.ae_trim_condExp_le t)
 
 @[simp]
-lemma zero : HasCondSubgaussianMGF m hm 0 0 μ :=
-  Kernel.HasSubgaussianMGF.zero
+lemma fun_zero : HasCondSubgaussianMGF m hm (fun _ ↦ 0) 0 μ := Kernel.HasSubgaussianMGF.fun_zero
+
+@[simp]
+lemma zero : HasCondSubgaussianMGF m hm 0 0 μ := Kernel.HasSubgaussianMGF.zero
 
 lemma memLp_exp_mul (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) (p : ℝ≥0) :
     MemLp (fun ω ↦ exp (t * X ω)) p μ :=
@@ -301,7 +311,12 @@ variable {Ω : Type*} {m mΩ : MeasurableSpace Ω} {μ : Measure Ω} {X : Ω →
 
 /-- A random variable `X` has a sub-Gaussian moment generating function with parameter `c`
 with respect to a measure `μ` if for all `t : ℝ`, `exp (t * X)` is `μ`-integrable and
-the moment generating function of `X` is bounded by `exp (c * t ^ 2 / 2)` for all `t : ℝ`. -/
+the moment generating function of `X` is bounded by `exp (c * t ^ 2 / 2)` for all `t : ℝ`.
+
+This is equivalent to `Kernel.HasSubgaussianMGF X c (Kernel.const Unit μ) (Measure.dirac ())`,
+as proved in `HasSubgaussianMGF_iff_kernel`.
+Properties about sub-Gaussian moment generating functions should be proved first for
+`Kernel.HasSubgaussianMGF` when possible. -/
 structure HasSubgaussianMGF (X : Ω → ℝ) (c : ℝ≥0) (μ : Measure Ω := by volume_tac) : Prop where
   integrable_exp_mul : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X ω)) μ
   mgf_le : ∀ t : ℝ, mgf X μ t ≤ exp (c * t ^ 2 / 2)
@@ -324,7 +339,7 @@ lemma memLp_exp_mul (h : HasSubgaussianMGF X c μ) (t : ℝ) (p : ℝ≥0) :
 
 lemma cgf_le (h : HasSubgaussianMGF X c μ) (t : ℝ) : cgf X μ t ≤ c * t ^ 2 / 2 := by
   rw [HasSubgaussianMGF_iff_kernel] at h
-  simpa using h.cgf_le t
+  simpa using (all_ae_of h.cgf_le t)
 
 @[simp]
 lemma fun_zero [IsZeroOrProbabilityMeasure μ] : HasSubgaussianMGF (fun _ ↦ 0) 0 μ := by
