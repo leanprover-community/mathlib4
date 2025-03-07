@@ -98,7 +98,7 @@ instance (M : ModuleCat R) : IsIso ((forget R).map
     inferInstanceAs (discrete _).Full
   rw [← Sheaf.isConstant_iff_isIso_counit_app]
   constructor
-  change _ ∈ (discrete _).essImage
+  change (discrete _).essImage _
   rw [essImage_eq_of_natIso CondensedSet.LocallyConstant.iso.symm]
   exact obj_mem_essImage CondensedSet.LocallyConstant.functor M
 
@@ -114,7 +114,7 @@ noncomputable def functorIsoDiscreteComponents (M : ModuleCat R) :
 /--
 `CondensedMod.LocallyConstant.functor` is naturally isomorphic to the constant sheaf functor from
 `R`-modules to condensed `R`-modules.
- -/
+-/
 noncomputable def functorIsoDiscrete : functor R ≅ discrete _ :=
   NatIso.ofComponents (fun M ↦ (functorIsoDiscreteComponents R M).symm) fun f ↦ by
     dsimp
@@ -214,7 +214,7 @@ instance (M : ModuleCat R) :
     inferInstanceAs (discrete _).Full
   rw [← Sheaf.isConstant_iff_isIso_counit_app]
   constructor
-  change _ ∈ (discrete _).essImage
+  change (discrete _).essImage _
   rw [essImage_eq_of_natIso LightCondSet.LocallyConstant.iso.symm]
   exact obj_mem_essImage LightCondSet.LocallyConstant.functor M
 
@@ -230,7 +230,7 @@ noncomputable def functorIsoDiscreteComponents (M : ModuleCat R) :
 /--
 `LightCondMod.LocallyConstant.functor` is naturally isomorphic to the constant sheaf functor from
 `R`-modules to light condensed `R`-modules.
- -/
+-/
 noncomputable def functorIsoDiscrete : functor R ≅ discrete _ :=
   NatIso.ofComponents (fun M ↦ (functorIsoDiscreteComponents R M).symm) fun f ↦ by
     dsimp
@@ -248,7 +248,7 @@ noncomputable def functorIsoDiscrete : functor R ≅ discrete _ :=
 /--
 `LightCondMod.LocallyConstant.functor` is left adjoint to the forgetful functor from light condensed
 `R`-modules to `R`-modules.
- -/
+-/
 noncomputable def adjunction : functor R ⊣ underlying (ModuleCat R) :=
   Adjunction.ofNatIsoLeft (discreteUnderlyingAdj _) (functorIsoDiscrete R).symm
 

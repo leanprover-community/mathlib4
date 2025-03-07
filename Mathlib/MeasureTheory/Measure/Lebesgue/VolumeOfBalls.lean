@@ -256,7 +256,7 @@ theorem Complex.volume_sum_rpow_lt_one {p : ℝ} (hp : 1 ≤ p) :
   simp_rw [eq_norm] at eq_zero nm_zero nm_neg nm_add
   have nm_smul := fun (r : ℝ) (x : ι → ℂ) =>
     norm_smul_le (β := PiLp (.ofReal p) (fun _ : ι => ℂ)) r x
-  simp_rw [eq_norm, norm_eq_abs] at nm_smul
+  simp_rw [eq_norm] at nm_smul
   -- We use `measure_lt_one_eq_integral_div_gamma` with `g` equals to the norm `L_p`
   convert measure_lt_one_eq_integral_div_gamma (volume : Measure (ι → ℂ))
     (g := fun x => (∑ i, ‖x i‖ ^ p) ^ (1 / p)) nm_zero nm_neg nm_add (eq_zero _).mp
@@ -308,7 +308,7 @@ theorem Complex.volume_sum_rpow_le [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : �
   simp_rw [eq_norm] at eq_zero nm_zero nm_neg nm_add
   have nm_smul := fun (r : ℝ) (x : ι → ℂ) =>
     norm_smul_le (β := PiLp (.ofReal p) (fun _ : ι => ℂ)) r x
-  simp_rw [eq_norm, norm_eq_abs] at nm_smul
+  simp_rw [eq_norm] at nm_smul
   rw [measure_le_eq_lt _ nm_zero (fun x ↦ nm_neg x) (fun x y ↦ nm_add x y) (eq_zero _).mp
     (fun r x => nm_smul r x), Complex.volume_sum_rpow_lt _ hp]
 

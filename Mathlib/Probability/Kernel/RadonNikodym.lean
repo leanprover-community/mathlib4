@@ -187,7 +187,7 @@ def mutuallySingularSet (κ η : Kernel α γ) : Set (α × γ) := {p | 1 ≤ rn
 `κ` and `η`. That is,
 * `withDensity η (rnDeriv κ η) a (mutuallySingularSetSlice κ η a) = 0`,
 * `singularPart κ η a (mutuallySingularSetSlice κ η a)ᶜ = 0`.
- -/
+-/
 def mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) : Set γ :=
   {x | 1 ≤ rnDerivAux κ (κ + η) a x}
 
@@ -604,5 +604,13 @@ lemma rnDeriv_withDensity [IsFiniteKernel κ] {f : α → γ → ℝ≥0∞} [Is
   have hf' : ∀ a, Measurable (f a) := fun _ ↦ hf.of_uncurry_left
   filter_upwards [h_ae, (κ a).rnDeriv_withDensity (hf' a)] with x hx1 hx2
   rw [hx1, κ.withDensity_apply hf, hx2]
+
+lemma rnDeriv_eq_one_iff_eq [IsFiniteKernel κ] [IsFiniteKernel η] {a : α}
+    (h_ac : κ a ≪ η a) :
+    (∀ᵐ b ∂(η a), κ.rnDeriv η a b = 1) ↔ κ a = η a := by
+  rw [← Measure.rnDeriv_eq_one_iff_eq h_ac]
+  refine eventually_congr ?_
+  filter_upwards [rnDeriv_eq_rnDeriv_measure (κ := κ) (η := η) (a := a)] with c hc
+  rw [hc, Pi.one_apply]
 
 end ProbabilityTheory.Kernel

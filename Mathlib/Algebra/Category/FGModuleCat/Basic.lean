@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 import Mathlib.CategoryTheory.Monoidal.Subcategory
 import Mathlib.LinearAlgebra.Coevaluation
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathlib.RingTheory.Finiteness.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # The category of finitely generated modules over a ring
@@ -204,9 +204,7 @@ instance closedPredicateModuleFinite :
 
 instance : MonoidalClosed (FGModuleCat K) := by
   dsimp [FGModuleCat]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11187): was `infer_instance`
-  exact MonoidalCategory.fullMonoidalClosedSubcategory
-    (fun V : ModuleCat.{u} K => Module.Finite K V)
+  infer_instance
 
 variable (V W : FGModuleCat K)
 
