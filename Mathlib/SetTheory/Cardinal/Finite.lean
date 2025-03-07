@@ -4,8 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Data.ENat.Lattice
-import Mathlib.Data.Fintype.Sum
+import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Finite.Sum
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Finite Cardinality Functions
@@ -63,6 +66,43 @@ lemma ENat.sSup_eq_top_iff {s : Set ℕ∞} : sSup s = ⊤ ↔ ∀ n : ℕ, ∃ 
   lift b to ℕ using hb.ne
   obtain ⟨x, hx, hbx⟩ := h (b+1)
   exact ⟨x, hx, ENat.coe_lt_iff.2 hbx⟩
+
+@[simp]
+lemma ENat.mul_eq_zero {m n : ℕ∞} : m * n = 0 ↔ m = 0 ∨ n = 0 := by
+  cases m using ENat.recTopCoe with
+  | top =>
+    cases n using ENat.recTopCoe with
+    | top => simp
+    | coe n => obtain rfl | n := n <;> simp
+  | coe m =>
+  cases n using ENat.recTopCoe with
+  | top =>
+    obtain rfl | m := m <;> simp
+  | coe n =>
+  norm_cast
+  simp
+
+lemma ENat.toNat_mul (m n : ℕ∞) : (m * n).toNat = m.toNat * n.toNat := by
+  cases m using ENat.recTopCoe with
+  | top => simp +contextual [or_iff_not_imp_left]
+  | coe m =>
+  cases n using ENat.recTopCoe with
+  | top => simp +contextual [or_iff_not_imp_left]
+  | coe n =>
+  norm_cast
+
+@[simp]
+lemma ENat.toNat_prod {ι : Type*} (s : Finset ι) (f : ι → ℕ∞) :
+    (∏ i ∈ s, f i).toNat = ∏ i ∈ s, (f i).toNat := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | @insert x s hxs ih => rw [Finset.prod_insert hxs, ENat.toNat_mul, Finset.prod_insert hxs, ih]
+
+instance : NoZeroDivisors ℕ∞ where
+  eq_zero_or_eq_zero_of_mul_eq_zero := ENat.mul_eq_zero.1
+
+instance : OrderedCommMonoid ℕ∞ := CanonicallyOrderedAdd.toOrderedCommMonoid
 
 namespace ENat
 
@@ -156,6 +196,20 @@ theorem _root_.Function.Surjective.bijective_of_eNatCard_le [Finite α] {f : α 
     (surj : Surjective f) (hc : card α ≤ card β) : Bijective f :=
   (ENat.bijective_iff_surjective_and_card _).2 ⟨surj, hc.antisymm surj.eNatCard_le⟩
 
+
+theorem card_eq_zero_iff_isEmpty (α : Type*) : card α = 0 ↔ IsEmpty α := by
+  obtain ⟨⟨hfin⟩⟩ | hinf := nonempty_fintype_or_infinite α
+  · rw [card_eq_coe_fintypeCard, Nat.cast_eq_zero, Fintype.card_eq_zero_iff]
+  simp [hinf.eNat_card_eq]
+
+@[simp]
+theorem card_eq_zero (α : Type*) [IsEmpty α] : card α = 0 := by
+  rwa [card_eq_zero_iff_isEmpty]
+
+@[simp]
+theorem one_le_card_iff_nonempty (α : Type*) : 1 ≤ card α ↔ Nonempty α := by
+  simp [one_le_iff_ne_zero, Ne, card_eq_zero_iff_isEmpty]
+
 @[simp]
 theorem card_sum (α β : Type*) : card (α ⊕ β) = card α + card β := by
   obtain ⟨⟨hfin⟩⟩ | hinf := nonempty_fintype_or_infinite (α ⊕ β)
@@ -165,6 +219,14 @@ theorem card_sum (α β : Type*) : card (α ⊕ β) = card α + card β := by
     convert @Fintype.card_sum α β hα hβ
   obtain h | h := infinite_sum.1 hinf <;>
   simp [card_eq_top_of_infinite]
+
+@[simp]
+theorem card_prod (α β : Type*) : ENat.card (α × β) = ENat.card α * ENat.card β := by
+  refine (isEmpty_or_nonempty α).elim (fun _ ↦ by simp) (fun hαne ↦ ?_)
+  refine (isEmpty_or_nonempty β).elim (fun _ ↦ by simp) (fun hβne ↦ ?_)
+  obtain ⟨⟨hα⟩⟩ | hβ := nonempty_fintype_or_infinite α <;>
+  obtain ⟨⟨hβ⟩⟩ | hβ := nonempty_fintype_or_infinite β <;>
+  simp
 
 @[simp] lemma card_ulift (α : Type*) : card (ULift α) = card α := card_congr Equiv.ulift
 
@@ -176,15 +238,6 @@ theorem card_image_of_injOn {α β : Type*} {f : α → β} {s : Set α} (h : Se
 
 theorem card_image_of_injective {α β : Type*} (f : α → β) (s : Set α)
     (h : Function.Injective f) : card (f '' s) = card s := card_image_of_injOn h.injOn
-
-theorem card_eq_zero_iff_isEmpty (α : Type*) : card α = 0 ↔ IsEmpty α := by
-  obtain ⟨⟨hfin⟩⟩ | hinf := nonempty_fintype_or_infinite α
-  · rw [card_eq_coe_fintypeCard, Nat.cast_eq_zero, Fintype.card_eq_zero_iff]
-  simp [hinf.eNat_card_eq]
-
-@[simp]
-theorem card_eq_zero (α : Type*) [IsEmpty α] : card α = 0 := by
-  rwa [card_eq_zero_iff_isEmpty]
 
 theorem card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsingleton α := by
   obtain ⟨⟨hfin⟩⟩ | hinf := nonempty_fintype_or_infinite α
@@ -207,13 +260,54 @@ theorem card_unique [Nonempty α] [Subsingleton α] : card α = 1 := by
   simp [card_eq_one_iff, *]
 
 theorem card_eq_two_iff : card α = 2 ↔ ∃ x y : α, x ≠ y ∧ {x, y} = @Set.univ α := by
+  classical
   obtain hα | ⟨⟨hα⟩⟩ := (nonempty_fintype_or_infinite α).symm
   · simp only [card_eq_top_of_infinite, top_ne_ofNat, ne_eq, false_iff, not_exists, not_and]
     exact fun x y _ h ↦ by simpa [← h] using Set.infinite_univ (α := α)
-  simp [card_eq_coe_fintypeCard]
-  rw [Fintype.card_eq_two]
+  rw [card_eq_coe_fintypeCard, ← Finset.card_univ, show (2 : ℕ∞) = (2 : ℕ) from rfl,
+    Nat.cast_inj, Finset.card_eq_two]
+  simp [Set.ext_iff, Finset.ext_iff]
 
+theorem card_eq_two_iff' (x : α) : card α = 2 ↔ ∃! y, y ≠ x := by
+  rw [card_eq_two_iff]
+  refine ⟨fun ⟨a, b, hab, heq⟩ ↦ ?_, fun ⟨y, hy, hy'⟩ ↦ ?_⟩
+  · obtain rfl | rfl := heq.symm.subset (Set.mem_univ x)
+    · exact ⟨b, hab.symm, fun y hya ↦ by simpa [hya] using heq.symm.subset <| Set.mem_univ y⟩
+    exact ⟨a, hab, fun y hya ↦ by simpa [hya] using heq.symm.subset <| Set.mem_univ y⟩
+  refine ⟨x, y, hy.symm, (Set.subset_univ _).antisymm fun a _ ↦ ?_⟩
+  rw [Set.mem_insert_iff, or_iff_not_imp_left]
+  exact hy' _
 
+@[simp]
+theorem card_subtype_true : card {_a : α // True} = card α :=
+  card_congr <| Equiv.subtypeUnivEquiv fun _ => trivial
+
+theorem card_sigma {β : α → Type*} [Fintype α] : ENat.card (Sigma β) = ∑ a, ENat.card (β a) := by
+  by_cases ha : ∀ a, Finite (β a)
+  · have (a : α) : Fintype (β a) := Fintype.ofFinite (β a)
+    simp [ENat.card_eq_coe_fintypeCard, Fintype.card_sigma]
+  obtain ⟨a, ha : Infinite (β a)⟩ := by simpa [not_finite_iff_infinite] using ha
+  have _ : Infinite (Sigma β) := Infinite.sigma_of_right (a := a)
+  rw [card_eq_top_of_infinite, eq_comm, eq_top_iff]
+  simpa using Finset.univ.single_le_sum (f := fun a : α ↦ card (β a)) (by simp) (a := a) (by simp)
+
+theorem card_pi {β : α → Type*} [Fintype α] : ENat.card (Π a, β a) = ∏ a, ENat.card (β a) := by
+  classical
+  obtain ⟨a, ha⟩ | h := em <| ∃ a, IsEmpty (β a)
+  · rw [(card_eq_zero_iff_isEmpty _).2 (Function.isEmpty fun x ↦ x a), eq_comm,
+      Finset.prod_eq_zero_iff]
+    exact ⟨a, by simp, by simp⟩
+  simp only [not_exists, not_isEmpty_iff] at h
+  by_cases ha : ∀ a, Finite (β a)
+  · have (a : α) : Fintype (β a) := Fintype.ofFinite (β a)
+    simp [ENat.card_eq_coe_fintypeCard]
+  obtain ⟨a, ha : Infinite (β a)⟩ := by simpa [not_finite_iff_infinite] using ha
+  have _ : Infinite (Π a, β a) := Pi.infinite_of_exists_right a
+  rw [card_eq_top_of_infinite, eq_comm, eq_top_iff]
+  simpa using Finset.single_le_prod' (by simpa) (show a ∈ Finset.univ by simp)
+    (f := fun x ↦ card (β x))
+
+-- theorem card_fun [Finite α] : card (α → β) = card β ^ card α := by
 
 end ENat
 
@@ -381,10 +475,10 @@ def equivFinOfCardPos {α : Type*} (h : Nat.card α ≠ 0) : α ≃ Fin (Nat.car
 
 theorem card_of_subsingleton (a : α) [Subsingleton α] : Nat.card α = 1 := by
   rw [← Nat.cast_inj (R := ℕ∞), Nat.cast_card]
-  simp only [cast_one]
+  exact ENat.card_of_subsingleton a
 
 theorem card_eq_one_iff_unique : Nat.card α = 1 ↔ Subsingleton α ∧ Nonempty α := by
-  simp [Nat.card, ENat.toNat_eq_iff, ENat.card_eq_one_iff]]
+  simp [Nat.card, ENat.toNat_eq_iff, ENat.card_eq_one_iff]
 
 
 @[simp]
@@ -395,11 +489,11 @@ theorem card_eq_one_iff_exists : Nat.card α = 1 ↔ ∃ x : α, ∀ y : α, y =
   rw [card_eq_one_iff_unique]
   exact ⟨fun ⟨s, ⟨a⟩⟩ ↦ ⟨a, fun x ↦ s.elim x a⟩, fun ⟨x, h⟩ ↦ ⟨subsingleton_of_forall_eq x h, ⟨x⟩⟩⟩
 
-theorem card_eq_two_iff : Nat.card α = 2 ↔ ∃ x y : α, x ≠ y ∧ {x, y} = @Set.univ α :=
-  toNat_eq_ofNat.trans mk_eq_two_iff
+theorem card_eq_two_iff : Nat.card α = 2 ↔ ∃ x y : α, x ≠ y ∧ {x, y} = @Set.univ α := by
+  rw [Nat.card, ENat.toNat_eq_iff (by simp), Nat.cast_two, ENat.card_eq_two_iff]
 
-theorem card_eq_two_iff' (x : α) : Nat.card α = 2 ↔ ∃! y, y ≠ x :=
-  toNat_eq_ofNat.trans (mk_eq_two_iff' x)
+theorem card_eq_two_iff' (x : α) : Nat.card α = 2 ↔ ∃! y, y ≠ x := by
+  rw [Nat.card, ENat.toNat_eq_iff (by simp), Nat.cast_two, ENat.card_eq_two_iff']
 
 @[simp]
 theorem card_subtype_true : Nat.card {_a : α // True} = Nat.card α :=
@@ -413,7 +507,7 @@ theorem card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + 
 
 @[simp]
 theorem card_prod (α β : Type*) : Nat.card (α × β) = Nat.card α * Nat.card β := by
-  simp only [Nat.card, mk_prod, toNat_mul, toNat_lift]
+  simp [Nat.card, ENat.card_prod, ENat.toNat_mul]
 
 @[simp]
 theorem card_ulift (α : Type*) : Nat.card (ULift α) = Nat.card α :=
@@ -429,7 +523,7 @@ theorem card_sigma {β : α → Type*} [Fintype α] [∀ a, Finite (β a)] :
   simp_rw [Nat.card_eq_fintype_card, Fintype.card_sigma]
 
 theorem card_pi {β : α → Type*} [Fintype α] : Nat.card (∀ a, β a) = ∏ a, Nat.card (β a) := by
-  simp_rw [Nat.card, mk_pi, prod_eq_of_fintype, toNat_lift, map_prod]
+  simp [Nat.card, ENat.card_pi]
 
 theorem card_fun [Finite α] : Nat.card (α → β) = Nat.card β ^ Nat.card α := by
   haveI := Fintype.ofFinite α
