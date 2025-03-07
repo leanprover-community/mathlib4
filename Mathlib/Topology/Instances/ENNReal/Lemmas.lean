@@ -1434,16 +1434,15 @@ lemma liminf_toReal_eq [NeBot f] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) (le_b :
   rfl
 
 /-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
-lemma limsup_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
-    {xs : ι → ℝ≥0∞} (le_b : ∀ᶠ i in F, xs i ≤ b) :
-    F.limsup (fun i ↦ (xs i).toReal) = (F.limsup xs).toReal := by
-  have aux : ∀ᶠ i in F, (xs i).toReal = ENNReal.truncateToReal b (xs i) := by
+lemma limsup_toReal_eq [NeBot f] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) (le_b : ∀ᶠ i in f, u i ≤ b) :
+    f.limsup (fun i ↦ (u i).toReal) = (f.limsup u).toReal := by
+  have aux : ∀ᶠ i in f, (u i).toReal = ENNReal.truncateToReal b (u i) := by
     filter_upwards [le_b] with i i_le_b
     simp only [truncateToReal_eq_toReal b_ne_top i_le_b, implies_true]
-  have aux' : (F.limsup xs).toReal = ENNReal.truncateToReal b (F.limsup xs) := by
+  have aux' : (f.limsup u).toReal = ENNReal.truncateToReal b (f.limsup u) := by
     rw [truncateToReal_eq_toReal b_ne_top (limsup_le_of_le ⟨0, by simp⟩ le_b)]
   simp_rw [limsup_congr aux, aux']
-  have key := Monotone.map_limsup_of_continuousAt (F := F) (monotone_truncateToReal b_ne_top) xs
+  have key := Monotone.map_limsup_of_continuousAt (F := f) (monotone_truncateToReal b_ne_top) u
           (continuous_truncateToReal b_ne_top).continuousAt
           ⟨b, by simpa only [eventually_map] using le_b⟩
           (IsBoundedUnder.isCoboundedUnder_le ⟨0, Eventually.of_forall (by simp)⟩)
