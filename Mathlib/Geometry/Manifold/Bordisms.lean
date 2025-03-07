@@ -260,6 +260,19 @@ instance (φ : UnorientedCobordism k s t J) : ChartedSpace H' φ.W := φ.charted
 
 instance (φ : UnorientedCobordism k s t J) : IsManifold J k φ.W := φ.isManifold
 
+def empty [IsEmpty M] : UnorientedCobordism k (SingularNManifold.empty X M I)
+    (SingularNManifold.empty X M I) I where
+  W := M
+  -- XXX: generalise to any model J, by post-composing the boundary data
+  bd := BoundaryManifoldData.of_boundaryless M I
+  F x := (IsEmpty.false x).elim
+  hF := by
+    rw [continuous_iff_continuousAt]
+    exact fun x ↦ (IsEmpty.false x).elim
+  φ := Diffeomorph.empty
+  hFf := by ext x; exact (IsEmpty.false x).elim
+  hFg := by ext x; exact (IsEmpty.false x).elim
+
 variable (s) in
 def refl : UnorientedCobordism k s s (I.prod (𝓡∂ 1)) where
   W := s.M × (Set.Icc (0 : ℝ) 1)
