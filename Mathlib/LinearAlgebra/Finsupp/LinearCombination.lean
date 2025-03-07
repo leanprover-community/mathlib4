@@ -333,8 +333,6 @@ theorem Fintype.range_linearCombination :
     LinearMap.range (Fintype.linearCombination R v) = Submodule.span R (Set.range v) := by
   rw [← Finsupp.linearCombination_eq_fintype_linearCombination, LinearMap.range_comp,
       LinearEquiv.range, Submodule.map_top, Finsupp.range_linearCombination]
-section SpanRange
-
 
 /-- `Fintype.bilinearCombination R S v f` is the linear combination of vectors in `v` with weights
 in `f`. This variant of `Finsupp.linearCombination` is defined on fintype indexed vectors.
@@ -363,6 +361,8 @@ theorem Fintype.bilinearCombination_apply_single [DecidableEq α] (i : α) (r : 
     Fintype.bilinearCombination R S v (Pi.single i r) = r • v i := by
   simp_rw [Fintype.bilinearCombination_apply, Pi.single_apply, ite_smul, zero_smul]
   rw [Finset.sum_ite_eq', if_pos (Finset.mem_univ _)]
+
+section SpanRange
 
 variable {v} {x : M}
 
