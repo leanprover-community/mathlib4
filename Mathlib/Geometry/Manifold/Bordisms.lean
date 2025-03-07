@@ -346,6 +346,20 @@ def symm (φ : UnorientedCobordism k s t J) : UnorientedCobordism k t s J where
   hFf := by rw [← φ.hFg]; congr
   hFg := by rw [← φ.hFf]; congr
 
+-- TODO: this does not work, I'd get a cobordism from s to `s.sum (SingularNManifold.empty X M I)`,
+-- whereas I want `s.comap (Diffeomorph.sumEmpty)`... these are not *exactly* the same.
+-- def sumEmpty [IsEmpty M] :
+--     UnorientedCobordism k (s.sum (SingularNManifold.empty X M I)) s (I.prod (𝓡∂ 1)) := by
+--   let sdf := refl s
+--   sorry
+
+-- Same issue: I get morally the same result, but of different types. Need to think harder!
+-- Is the solution to ask for equal maps (but not equal types) in the def. of the bordism group?
+def sumComm : UnorientedCobordism k (t.sum s) (s.sum t) (I.prod (𝓡∂ 1)) := by
+  let diff := Diffeomorph.sumComm I s.M k t.M
+  -- apply (refl (s.sum t)).comap_fst diff.symm
+  sorry
+
 section collarNeighbourhood
 
 variable {I₀ : ModelWithCorners ℝ E'' H''} [FiniteDimensional ℝ E] [FiniteDimensional ℝ E'']
