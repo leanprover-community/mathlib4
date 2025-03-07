@@ -87,6 +87,10 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
     · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
 
+theorem continuous_polarCoord_symm :
+    Continuous (polarCoord.symm) :=
+  Continuous.prod_mk (by fun_prop) (by fun_prop)
+
 /-- The derivative of `polarCoord.symm`, see `hasFDerivAt_polarCoord_symm`. -/
 def fderivPolarCoordSymm (p : ℝ × ℝ) : ℝ × ℝ →L[ℝ] ℝ × ℝ :=
   LinearMap.toContinuousLinearMap (Matrix.toLin (Basis.finTwoProd ℝ)
