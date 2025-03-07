@@ -150,8 +150,8 @@ theorem encard_le_coe_iff {k : ℕ} : s.encard ≤ k ↔ s.Finite ∧ ∃ (n₀ 
     fun ⟨_,⟨n₀,hs, hle⟩⟩ ↦ by rwa [hs, Nat.cast_le]⟩
 
 @[simp]
-theorem Set.encard_prod : (s ×ˢ t).encard = s.encard * t.encard := by
-simp [Set.encard, ENat.card_congr (Equiv.Set.prod ..)]
+theorem encard_prod : (s ×ˢ t).encard = s.encard * t.encard := by
+  simp [Set.encard, ENat.card_congr (Equiv.Set.prod ..)]
 
 section Lattice
 
