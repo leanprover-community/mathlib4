@@ -5,6 +5,7 @@ Authors: Fabrizio Barroero
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Nonarchimedean absolute values
@@ -93,3 +94,5 @@ end Ring
 end LinearOrderedCommRing
 
 end AbsoluteValue
+
+#min_imports
