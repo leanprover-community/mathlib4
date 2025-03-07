@@ -230,7 +230,7 @@ def isoIsPullback {X Y Z : C} (S S' : MonoOver X)
   isoMk (IsPullback.isoIsPullback _ _ h h') (by simp)
 
 /-- The pullback of `S` along `f` is isomorphic to `T` given the corresponding pullback square. -/
-def pullbackObjIsoIsPullback [HasPullbacks C] {X Y : C} (f : Y ⟶ X) (S : MonoOver X)
+def pullbackObjIsoOfIsPullback [HasPullbacks C] {X Y : C} (f : Y ⟶ X) (S : MonoOver X)
     (T : MonoOver Y) (f' : T.obj.left ⟶ S.obj.left)
     (h : IsPullback f' T.arrow S.arrow f) :
     (pullback f).obj S ≅ T :=
