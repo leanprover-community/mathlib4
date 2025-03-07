@@ -23,15 +23,15 @@ require "leanprover-community" / "plausible" @ git "main"
 ## Options for building mathlib
 -/
 
-/-- These options are used
-* as `leanOptions`, prefixed by `` `weak``, so that `lake build` uses them;
-* as `moreServerArgs`, to set their default value in mathlib
-  (as well as `Archive`, `Counterexamples` and `test`). -/
+/--
+Mathlib (as well as `Archive` and `Counterexamples`)
+enforces these linter options, which are not active by default.
+-/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
   ⟨`linter.docPrime, false⟩,
   ⟨`linter.hashCommand, true⟩,
-  ⟨`linter.oldObtain, true,⟩,
+  ⟨`linter.oldObtain, true⟩,
   ⟨`linter.refine, true⟩,
   ⟨`linter.style.cdot, true⟩,
   ⟨`linter.style.dollarSyntax, true⟩,
@@ -45,13 +45,14 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.style.setOption, true⟩
 ]
 
-/-- These options are passed as `leanOptions` to building mathlib, as well as the
-`Archive` and `Counterexamples`. (`tests` omits the first two options.) -/
+/-- These options are passed as `leanOptions` when elaborating Mathlib
+(during a build or interactively), as well as `Archive` and `Counterexamples`. -/
 abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
     ⟨`maxSynthPendingDepth, .ofNat 3⟩
-  ] ++ -- options that are used in `lake build`
+  ] ++
+    -- These options are prefixed with `` `weak`` as they are not defined in core.
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
 
 package mathlib where
@@ -69,8 +70,6 @@ package mathlib where
 @[default_target]
 lean_lib Mathlib where
   leanOptions := mathlibLeanOptions
-  -- Mathlib also enforces these linter options, which are not active by default.
-  moreServerOptions := mathlibOnlyLinters
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
 -- `scripts/mk_all.lean`.
@@ -82,11 +81,9 @@ lean_lib MathlibTest where
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions
-  moreServerOptions := mathlibOnlyLinters
 
 lean_lib Counterexamples where
   leanOptions := mathlibLeanOptions
-  moreServerOptions := mathlibOnlyLinters
 
 /-- Additional documentation in the form of modules that only contain module docstrings. -/
 lean_lib docs where
