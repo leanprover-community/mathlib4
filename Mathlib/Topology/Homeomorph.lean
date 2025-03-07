@@ -34,8 +34,6 @@ open Filter Function Set Topology
 
 variable {X Y W Z : Type*}
 
-
-
 namespace Homeomorph
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace W] [TopologicalSpace Z]
