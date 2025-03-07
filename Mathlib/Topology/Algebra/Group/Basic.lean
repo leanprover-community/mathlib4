@@ -395,10 +395,12 @@ continuous. Topological additive groups are defined in the same way. Equivalentl
 that the division operation `x y ↦ x * y⁻¹` (resp., subtraction) is continuous.
 -/
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO should this docstring be extended
--- to match the multiplicative version?
 /-- A topological (additive) group is a group in which the addition and negation operations are
-continuous. -/
+continuous.
+
+When you declare an instance that does not already have a `UniformSpace` instance,
+you should also provide an instance of `UniformSpace` and `UniformAddGroup` using
+`IsTopologicalAddGroup.toUniformSpace` and `uniformAddGroup_of_addCommGroup`. -/
 class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] : Prop
     extends ContinuousAdd G, ContinuousNeg G
 
@@ -407,8 +409,7 @@ continuous.
 
 When you declare an instance that does not already have a `UniformSpace` instance,
 you should also provide an instance of `UniformSpace` and `UniformGroup` using
-`IsTopologicalGroup.toUniformSpace` and `topologicalCommGroup_isUniform`. -/
--- Porting note: check that these ↑ names exist once they've been ported in the future.
+`IsTopologicalGroup.toUniformSpace` and `uniformGroup_of_commGroup`. -/
 @[to_additive]
 class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] : Prop
     extends ContinuousMul G, ContinuousInv G
@@ -1422,8 +1423,6 @@ theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
       ext x
       simp only [image_smul, mem_setOf_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
       exact Set.smul_inter_ne_empty_iff' }
-
--- attribute [local semireducible] MulOpposite -- Porting note: doesn't work in Lean 4
 
 /-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the right, if
 it is discrete in the sense that `S ∩ K` is finite for all compact `K`. (See also

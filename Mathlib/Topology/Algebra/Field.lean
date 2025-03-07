@@ -59,8 +59,7 @@ def Subfield.topologicalClosure (K : Subfield α) : Subfield α :=
       dsimp only at hx ⊢
       rcases eq_or_ne x 0 with (rfl | h)
       · rwa [inv_zero]
-      · -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: Lean fails to find InvMemClass instance
-        rw [← @inv_coe_set α (Subfield α) _ _ SubfieldClass.toInvMemClass K, ← Set.image_inv_eq_inv]
+      · rw [← inv_coe_set, ← Set.image_inv_eq_inv]
         exact mem_closure_image (continuousAt_inv₀ h) hx }
 
 theorem Subfield.le_topologicalClosure (s : Subfield α) : s ≤ s.topologicalClosure :=

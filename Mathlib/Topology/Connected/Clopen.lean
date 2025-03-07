@@ -294,8 +294,6 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
     have := hsuv; rw [inter_comm u] at this
     simpa [*, or_imp, forall_and] using h {u, v}
 
--- Porting note: `IsPreconnected.subset_isClopen` moved up from here
-
 /-- Preconnected sets are either contained in or disjoint to any given clopen set. -/
 theorem disjoint_or_subset_of_isClopen {s t : Set α} (hs : IsPreconnected s) (ht : IsClopen t) :
     Disjoint s t ∨ s ⊆ t :=

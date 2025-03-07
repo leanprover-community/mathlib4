@@ -80,7 +80,6 @@ variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
 variable [ContinuousConstSMul 𝕜 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
--- Porting note: the next four instances should be derived from the definition
 instance instAddCommMonoid : AddCommMonoid (WeakDual 𝕜 E) :=
   WeakBilin.instAddCommMonoid (topDualPairing 𝕜 E)
 
@@ -176,7 +175,6 @@ variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
 namespace WeakSpace
 
--- Porting note: the next four instances should be derived from the definition
 instance instAddCommMonoid : AddCommMonoid (WeakSpace 𝕜 E) :=
   WeakBilin.instAddCommMonoid (topDualPairing 𝕜 E).flip
 

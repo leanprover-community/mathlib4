@@ -27,6 +27,10 @@ In this file we define class `ContinuousConstSMul`. We say `ContinuousConstSMul 
   many `γ:Γ` move `K` to have nontrivial intersection with `L`.
 * `Homeomorph.smul`: scalar multiplication by an element of a group `Γ` acting on `T`
   is a homeomorphism of `T`.
+*`Homeomorph.smulOfNeZero`: if a group with zero `G₀` (e.g., a field) acts on `X` and `c : G₀`
+  is a nonzero element of `G₀`, then scalar multiplication by `c` is a homeomorphism of `X`;
+* `Homeomorph.smul`: scalar multiplication by an element of a group `G` acting on `X`
+  is a homeomorphism of `X`.
 
 ## Main results
 
@@ -410,7 +414,7 @@ nonrec theorem smul_mem_nhds_smul_iff (hc : IsUnit c) {s : Set α} {a : α} :
 
 end IsUnit
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `Set.Nonempty`
+-- TODO: use `Set.Nonempty`
 /-- Class `ProperlyDiscontinuousSMul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
 `γ:Γ` move `K` to have nontrivial intersection with `L`.

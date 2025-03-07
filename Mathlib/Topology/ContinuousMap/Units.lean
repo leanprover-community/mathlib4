@@ -72,7 +72,6 @@ theorem continuous_isUnit_unit {f : C(X, R)} (h : ∀ x, IsUnit (f x)) :
   simp only
   simp only [← Ring.inverse_unit, IsUnit.unit_spec] at this ⊢
   exact this.comp (f.continuousAt x)
--- Porting note: this had the worst namespace: `NormedRing`
 
 /-- Construct a continuous map into the group of units of a normed ring from a function into the
 normed ring and a proof that every element of the range is a unit. -/
