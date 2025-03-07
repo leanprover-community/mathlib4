@@ -542,7 +542,6 @@ theorem eLpNorm_le_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ
   refine (eLpNorm_mono_ae this).trans_eq ?_
   rw [eLpNorm_const _ hp (NeZero.ne μ), C.enorm_eq, one_div, ENNReal.smul_def, smul_eq_mul]
 
-set_option linter.deprecated false in
 theorem eLpNorm_le_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
     eLpNorm f p μ ≤ μ Set.univ ^ p.toReal⁻¹ * ENNReal.ofReal C := by
   rw [← mul_comm]
@@ -1032,23 +1031,23 @@ theorem MemLp.norm {f : α → E} (h : MemLp f p μ) : MemLp (fun x => ‖f x‖
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.norm := MemLp.norm
 
+-- TODO: generalise this to enorms
 theorem memLp_norm_iff {f : α → E} (hf : AEStronglyMeasurable f μ) :
     MemLp (fun x => ‖f x‖) p μ ↔ MemLp f p μ :=
   ⟨fun h => ⟨hf, by rw [← eLpNorm_norm]; exact h.2⟩, fun h => h.norm⟩
 
--- TODO: generalise this, once #21433 lands
 @[deprecated (since := "2025-02-21")]
 alias memℒp_norm_iff := memLp_norm_iff
 
 theorem eLpNorm'_eq_zero_of_ae_zero {f : α → F} (hq0_lt : 0 < q) (hf_zero : f =ᵐ[μ] 0) :
     eLpNorm' f q μ = 0 := by rw [eLpNorm'_congr_ae hf_zero, eLpNorm'_zero hq0_lt]
 
--- TODO: generalise this, once #21433 lands
+-- TODO: generalise this to enorms
 theorem eLpNorm'_eq_zero_of_ae_zero' (hq0_ne : q ≠ 0) (hμ : μ ≠ 0) {f : α → F}
     (hf_zero : f =ᵐ[μ] 0) :
     eLpNorm' f q μ = 0 := by rw [eLpNorm'_congr_ae hf_zero, eLpNorm'_zero' hq0_ne hμ]
 
--- TODO: generalise this, once #21433 lands
+-- TODO: generalise this to enorms
 theorem ae_eq_zero_of_eLpNorm'_eq_zero (hq0 : 0 ≤ q) (hf : AEStronglyMeasurable f μ)
     (h : eLpNorm' f q μ = 0) : f =ᵐ[μ] 0 := by
   simp only [eLpNorm'_eq_lintegral_enorm, lintegral_eq_zero_iff' (hf.enorm.pow_const q), one_div,
@@ -1058,7 +1057,7 @@ theorem ae_eq_zero_of_eLpNorm'_eq_zero (hq0 : 0 ≤ q) (hf : AEStronglyMeasurabl
     or_false] at hx
   exact hx.1
 
--- TODO: generalise this, once #21433 lands
+-- TODO: generalise this to enorms
 theorem eLpNorm'_eq_zero_iff (hq0_lt : 0 < q) {f : α → E} (hf : AEStronglyMeasurable f μ) :
     eLpNorm' f q μ = 0 ↔ f =ᵐ[μ] 0 :=
   ⟨ae_eq_zero_of_eLpNorm'_eq_zero (le_of_lt hq0_lt) hf, eLpNorm'_eq_zero_of_ae_zero hq0_lt⟩
@@ -1087,13 +1086,11 @@ theorem eLpNorm_eq_zero_of_ae_zero {ε} [TopologicalSpace ε] [ENormedAddMonoid 
   rw [← eLpNorm_zero (p := p) (μ := μ) (α := α) (ε := ε)]
   exact eLpNorm_congr_ae hf
 
-#exit
 theorem ae_le_eLpNormEssSup {f : α → ε} : ∀ᵐ y ∂μ, ‖f y‖ₑ ≤ eLpNormEssSup f μ :=
   ae_le_essSup
 
 -- NB. Changing this lemma to use ‖‖ₑ makes it false (only => still holds);
 -- unlike a nnnorm, the enorm can be ∞.
-set_option linter.deprecated false in
 lemma eLpNormEssSup_lt_top_iff_isBoundedUnder :
     eLpNormEssSup f μ < ⊤ ↔ IsBoundedUnder (· ≤ ·) (ae μ) fun x ↦ ‖f x‖₊ where
   mp h := ⟨(eLpNormEssSup f μ).toNNReal, by
