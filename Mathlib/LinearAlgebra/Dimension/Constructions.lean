@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison, Chris Hug
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.LinearAlgebra.Dimension.Free
+import Mathlib.LinearAlgebra.TensorProduct.Basis
 
 /-!
 # Rank of various constructions
