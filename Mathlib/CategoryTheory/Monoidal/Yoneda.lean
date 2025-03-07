@@ -60,6 +60,9 @@ def Mon_Class.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget
     simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
     simp
 
+@[deprecated (since := "2025-03-07")]
+alias Mon_ClassOfRepresentableBy := Mon_Class.ofRepresentableBy
+
 /-- If `X` is a monoid object, then `Hom(Y, X)` has a monoid structure. -/
 @[reducible] def monoidOfMon_Class [Mon_Class X] (Y : C) : Monoid (Y ⟶ X) where
   mul f₁ f₂ := lift f₁ f₂ ≫ μ
@@ -112,6 +115,10 @@ lemma Mon_Class.ofRepresentableBy_yonedaMonObjRepresentableBy [Mon_Class X] :
   ext
   show lift (fst X X) (snd X X) ≫ μ = μ
   rw [lift_fst_snd, Category.id_comp]
+
+@[deprecated (since := "2025-03-07")]
+alias Mon_ClassOfRepresentableBy_yonedaMonObjRepresentableBy :=
+  Mon_Class.ofRepresentableBy_yonedaMonObjRepresentableBy
 
 /-- If `X` represents a presheaf of monoids `F`, then `Hom(-, X)` is isomorphic to `F` as
 a presheaf of monoids. -/
