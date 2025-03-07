@@ -11,7 +11,7 @@ Here we find the limit of series by reducing the problem to computing limits for
 term.
 -/
 
-open Filter Asymptotics
+open Filter Asymptotics Topology
 
 namespace TendstoTactic
 
@@ -258,7 +258,7 @@ theorem tendsto_zero_of_zero_coef {basis : Basis} {ms : PreMS basis} {f : ℝ �
     {t_coef : ℝ} {t_exps : List ℝ}
     (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
     (h_coef : t_coef = 0) :
-    Tendsto f atTop (nhds 0) := by
+    Tendsto f atTop (𝓝 0) := by
   apply (IsEquivalent.tendsto_nhds_iff
     (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
   rw [h_eq]
@@ -272,7 +272,7 @@ theorem tendsto_const_of_AllZero {basis : Basis} {ms : PreMS basis} {f : ℝ →
     {t_coef : ℝ} {t_exps : List ℝ}
     (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
     (h_exps : Term.AllZero t_exps) :
-    Tendsto f atTop (nhds t_coef) := by
+    Tendsto f atTop (𝓝 t_coef) := by
   apply (IsEquivalent.tendsto_nhds_iff
     (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
   rw [h_eq]
@@ -286,7 +286,7 @@ theorem tendsto_zero_of_FirstIsNeg {basis : Basis} {ms : PreMS basis} {f : ℝ �
     {t_coef : ℝ} {t_exps : List ℝ}
     (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
     (h_exps : Term.FirstIsNeg t_exps) :
-    Tendsto f atTop (nhds 0) := by
+    Tendsto f atTop (𝓝 0) := by
   cases' basis with basis_hd basis_tl
   · simp [leadingTerm] at h_eq
     simp [h_eq.right, Term.FirstIsNeg] at h_exps
@@ -300,11 +300,11 @@ theorem tendsto_zero_of_FirstIsNeg {basis : Basis} {ms : PreMS basis} {f : ℝ �
     simp [← h_eq.right, Term.FirstIsNeg] at h_exps
     cases' h_exps with h_neg h_zero
     · exact majorated_tendsto_zero_of_neg h_neg h_maj
-    have hC : Tendsto fC atTop (nhds 0) := by
+    have hC : Tendsto fC atTop (𝓝 0) := by
       apply tendsto_zero_of_FirstIsNeg (t_coef := t_coef) h_coef_wo h_coef_approx _ h_zero.right
       rw [← h_eq.left]
-    have h_tl : Tendsto (f - fC) atTop (nhds 0) := by
-      have h : Tendsto (fun t ↦ f t - basis_hd t ^ exp * fC t) atTop (nhds 0) := by
+    have h_tl : Tendsto (f - fC) atTop (𝓝 0) := by
+      have h : Tendsto (fun t ↦ f t - basis_hd t ^ exp * fC t) atTop (𝓝 0) := by
         apply neg_leadingExp_tendsto_zero _ h_tl_approx
         convert h_comp
         simp [h_zero.left]

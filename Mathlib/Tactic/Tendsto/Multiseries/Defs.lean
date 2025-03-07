@@ -30,7 +30,7 @@ For details see the docs for `Approximates`.
 
 namespace TendstoTactic
 
-open Filter Asymptotics Stream' Seq
+open Filter Asymptotics Topology Stream' Seq
 
 abbrev Basis := List (ℝ → ℝ)
 
@@ -323,7 +323,7 @@ theorem majorated_of_lt {f basis_hd : ℝ → ℝ} {exp1 exp2 : ℝ}
 /-- If `f` is majorated with negative exponent, then it tends to zero. -/
 theorem majorated_tendsto_zero_of_neg {f basis_hd : ℝ → ℝ} {exp : ℝ}
     (h_lt : exp < 0) (h : majorated f basis_hd exp) :
-    Tendsto f atTop (nhds 0) := by
+    Tendsto f atTop (𝓝 0) := by
   simp [majorated] at h
   specialize h 0 (by linarith)
   simpa using h

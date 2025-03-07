@@ -13,7 +13,7 @@ where `[b1, b2, ...]` is well-formed basis and `coef` is real constant.
 
 namespace TendstoTactic
 
-open Asymptotics Filter
+open Asymptotics Filter Topology
 
 /-- Structure for representing monomials in some basis of functions. When some
 `basis : List (R -> R)` is given, one can interpret `<coef, exps> : Term` as function
@@ -326,7 +326,7 @@ lemma tendsto_zero_pos_coef {coef exp : ℝ} {tl : List ℝ} {basis : Basis}
     (h_length : (exp :: tl).length = basis.length) (h_basis : WellFormedBasis basis)
     (h_coef : 0 < coef) (h_exp : exp < 0) :
     let t : Term := ⟨coef, exp :: tl⟩;
-    Tendsto (t.toFun basis) atTop (nhds 0) := by
+    Tendsto (t.toFun basis) atTop (𝓝 0) := by
   intro t
   have h_t_equiv : Real.log ∘ t.toFun basis ~[atTop]
       fun x => Real.log coef + exp * Real.log (basis.head! x) :=
@@ -356,7 +356,7 @@ lemma tendsto_zero_neg_coef {coef exp : ℝ} {tl : List ℝ} {basis : Basis}
     (h_length : (exp :: tl).length = basis.length)
     (h_coef : coef < 0) (h_exp : exp < 0) (h_basis : WellFormedBasis basis) :
     let t : Term := ⟨coef, exp :: tl⟩;
-    Tendsto (t.toFun basis) atTop (nhds 0) := by
+    Tendsto (t.toFun basis) atTop (𝓝 0) := by
   intro t
   rw [neg_coef_toFun (t := t), ← neg_zero]
   apply Filter.Tendsto.neg
@@ -368,7 +368,7 @@ theorem tendsto_zero (coef : ℝ) {exp : ℝ} {tl : List ℝ} {basis : Basis}
     (h_length : (exp :: tl).length = basis.length)
     (h_exp : exp < 0) (h_basis : WellFormedBasis basis) :
     let t : Term := ⟨coef, exp :: tl⟩;
-    Tendsto (t.toFun basis) atTop (nhds 0) := by
+    Tendsto (t.toFun basis) atTop (𝓝 0) := by
   intro t
   rcases lt_trichotomy coef 0 with (h_coef | h_coef | h_coef)
   · apply tendsto_zero_neg_coef <;> assumption
@@ -379,7 +379,7 @@ theorem tendsto_zero (coef : ℝ) {exp : ℝ} {tl : List ℝ} {basis : Basis}
 /-- `t.toFun` tends to `𝓝 t.coef` when `t.exps` is empty. -/
 theorem nil_tendsto_const (coef : ℝ) (basis : Basis) :
     let t : Term := ⟨coef, []⟩;
-    Tendsto (t.toFun basis) atTop (nhds coef) := by
+    Tendsto (t.toFun basis) atTop (𝓝 coef) := by
   eta_expand
   simp [toFun]
 
@@ -387,7 +387,7 @@ theorem nil_tendsto_const (coef : ℝ) (basis : Basis) :
 theorem tendsto_zero_of_coef_zero {coef : ℝ} {exps : List ℝ} (basis : Basis)
     (h_coef : coef = 0) :
     let t : Term := ⟨coef, exps⟩;
-    Tendsto (t.toFun basis) atTop (nhds 0) := by
+    Tendsto (t.toFun basis) atTop (𝓝 0) := by
   intro t
   rw [zero_coef_toFun]
   · eta_expand
@@ -436,7 +436,7 @@ theorem tendsto_const_of_AllZero {coef : ℝ} {exps : List ℝ} {basis : Basis}
     (h_length : exps.length = basis.length)
     (h_exps : AllZero exps) :
     let t : Term := ⟨coef, exps⟩
-    Tendsto (t.toFun basis) atTop (nhds coef) := by
+    Tendsto (t.toFun basis) atTop (𝓝 coef) := by
   cases exps with
   | nil =>
     exact nil_tendsto_const coef basis
@@ -455,7 +455,7 @@ theorem tendsto_zero_of_FirstIsNeg {coef : ℝ} {exps : List ℝ} {basis : Basis
     (h_length : exps.length = basis.length)
     (h_exps : FirstIsNeg exps) :
     let t : Term := ⟨coef, exps⟩
-    Tendsto (t.toFun basis) atTop (nhds 0) := by
+    Tendsto (t.toFun basis) atTop (𝓝 0) := by
   cases exps with
   | nil =>
     simp [FirstIsNeg] at h_exps

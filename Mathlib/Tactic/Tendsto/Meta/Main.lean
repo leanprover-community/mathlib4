@@ -145,12 +145,12 @@ elab "compute_asymptotics" : tactic =>
       let ⟨limit, h_tendsto⟩ ← computeTendsto f
       if !(← isDefEq limit targetLimit) then
         match targetLimit, limit with
-        | ~q(nhds $a), ~q(nhds $b) =>
+        | ~q(𝓝 $a), ~q(𝓝 $b) =>
           let h_eq : Q($b = $a) ← mkFreshExprMVarQ q($b = $a)
           let extraGoals ← evalTacticAt (← `(tactic| try norm_num)) h_eq.mvarId!
           appendGoals extraGoals
           pure q(Eq.subst
-            (motive := fun x ↦ Filter.Tendsto $f atTop (nhds (X := ℝ) x)) $h_eq $h_tendsto)
+            (motive := fun x ↦ Filter.Tendsto $f atTop (𝓝 x)) $h_eq $h_tendsto)
         | _ =>
           throwError m!"The tactic proved that the function tends to {← ppExpr limit},
             not {← ppExpr targetLimit}."

@@ -16,7 +16,7 @@ import Mathlib.Tactic.Tendsto.Multiseries.LeadingTerm
 
 -/
 
-open Filter Asymptotics
+open Filter Asymptotics Topology
 
 namespace TendstoTactic
 
@@ -333,7 +333,7 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
             linarith
       apply Approximates_of_EventuallyEq (f := (powSeries a).toFun ∘
           (fun t ↦ -1 + fC⁻¹ t * basis_hd t ^ (-exp) * f t))
-      · have : Tendsto (fun t ↦ -1 + fC⁻¹ t * basis_hd t ^ (-exp) * f t) atTop (nhds 0) := by
+      · have : Tendsto (fun t ↦ -1 + fC⁻¹ t * basis_hd t ^ (-exp) * f t) atTop (𝓝 0) := by
           rw [show (0 : ℝ) = -1 + 1 by simp]
           apply Tendsto.const_add
           apply Tendsto.congr' (f₁ := f / (fun k ↦ fC k * basis_hd k ^ (exp)))

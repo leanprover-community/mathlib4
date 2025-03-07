@@ -13,7 +13,7 @@ namespace TendstoTactic
 
 namespace PreMS
 
-open Stream'
+open Filter Topology Stream'
 
 /-- We call multiseries `Trimmed` if it is either constant, `[]` or `cons (exp, coef) tl` where
 coef is trimmed and is not zero. Intuitively, when multiseries is trimmed, it guarantees that
@@ -57,10 +57,10 @@ it tends to zero. -/
 theorem neg_leadingExp_tendsto_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : PreMS (basis_hd :: basis_tl)} {f : ℝ → ℝ}
     (h_neg : ms.leadingExp < 0) (h_approx : ms.Approximates f) :
-    Filter.Tendsto f Filter.atTop (nhds 0) := by
+    Tendsto f atTop (𝓝 0) := by
     cases' ms with exp coef tl
     · apply Approximates_nil at h_approx
-      apply Filter.Tendsto.congr' h_approx.symm
+      apply Tendsto.congr' h_approx.symm
       apply tendsto_const_nhds
     · obtain ⟨C, h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
       simp at h_neg

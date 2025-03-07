@@ -17,7 +17,7 @@ import Mathlib.Tactic.Tendsto.Multiseries.Trimming
 
 
 
-open Filter Asymptotics Stream' Seq
+open Filter Asymptotics Topology Stream' Seq
 
 namespace TendstoTactic
 
@@ -153,7 +153,7 @@ theorem toFun_cons {s_hd : ℝ} {s_tl : LazySeries} {t : ℝ}
 
 theorem toFun_tendsto_head {s_hd : ℝ} {s_tl : LazySeries}
     (h_analytic : analytic (.cons s_hd s_tl)) :
-    Tendsto (toFun (.cons s_hd s_tl)) (nhds 0) (nhds s_hd) := by
+    Tendsto (toFun (.cons s_hd s_tl)) (𝓝 0) (𝓝 s_hd) := by
   have : (toFun (.cons s_hd s_tl)) 0 = s_hd := by
     simp [toFun, FormalMultilinearSeries.sum]
     rw [tsum_eq_zero_add']
@@ -171,7 +171,7 @@ theorem toFun_tendsto_head {s_hd : ℝ} {s_tl : LazySeries}
   exact HasFPowerSeriesAt.continuousAt h_hsum
 
 theorem toFun_IsBigO_one {s : LazySeries} (h_analytic : s.analytic) {f : ℝ → ℝ}
-    (hF : Tendsto f atTop (nhds 0)) : ((toFun s) ∘ f) =O[atTop] (1 : ℝ → ℝ) := by
+    (hF : Tendsto f atTop (𝓝 0)) : ((toFun s) ∘ f) =O[atTop] (1 : ℝ → ℝ) := by
   cases' s with s_hd s_tl
   · simp [toFun_nil]
     apply isBigO_zero
@@ -364,7 +364,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) (h_wo : ms.WellOrdered)
     (h_neg : ms.leadingExp < 0) {f : ℝ → ℝ}
     (h_approx : ms.Approximates f) : (apply s ms).Approximates (s.toFun ∘ f) := by
-  have hF_tendsto_zero : Tendsto f atTop (nhds 0) := by
+  have hF_tendsto_zero : Tendsto f atTop (𝓝 0) := by
     apply neg_leadingExp_tendsto_zero h_neg h_approx
   let motive : (f : ℝ → ℝ) → (ms : PreMS (basis_hd :: basis_tl)) → Prop := fun f' ms' =>
     ∃ (s : LazySeries), (analytic s) ∧

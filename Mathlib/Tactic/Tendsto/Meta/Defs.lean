@@ -11,6 +11,8 @@ import Mathlib.Tactic.Tendsto.Multiseries
 
 namespace TendstoTactic.PreMS
 
+open scoped Topology
+
 -- I don't want to define them earlier because I was enjoying Stream'.Seq API available for `nil`
 -- and `cons` when proving thing in `Multiseries` folder. On the meta level I need them to work only
 -- with multiseries without heavy parsing.
@@ -35,7 +37,7 @@ theorem cons_of_destruct {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS
 
 open Filter in
 lemma nil_tendsto_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
-    (h : PreMS.Approximates (@PreMS.nil basis_hd basis_tl) f) : Tendsto f atTop (nhds 0) := by
+    (h : PreMS.Approximates (@PreMS.nil basis_hd basis_tl) f) : Tendsto f atTop (𝓝 0) := by
   apply PreMS.Approximates_nil at h
   exact h.tendsto
 
