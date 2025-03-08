@@ -253,19 +253,24 @@ def miscFormattingLinter : TextbasedLinter := fun lines ↦ Id.run do
     let mut stripped := line.trimLeft
     if stripped.startsWith ":" then
       errors := errors.push (StyleError.leadingColon, idx + 1)
-    else if stripped.startsWith "where" then
-      errors := errors.push (StyleError.isolatedWhere, idx + 1)
-    else if stripped.startsWith "by" then
-      let prev := lines[idx - 1]!.trimRight
-      if stripped == "by" && !(prev.endsWith ",") then
+    else if stripped == "where" then
+      -- We purposefully don't check if the line starts with it, as that would have false positives
+      -- with function doc-strings.
+      pure () --errors := errors.push (StyleError.isolatedWhere, idx + 1)
+    else if stripped == "by" then
+      if stripped == "by" && !(lines[idx - 1]!.trimRight.endsWith ",") then
         errors := errors.push (StyleError.leadingBy, idx + 1)
-      else if prev.endsWith ":=" then
+    else if stripped.startsWith "by " then
+      let prev := lines[idx - 1]!.trimRight
+      if prev.endsWith ":=" then
         -- If the previous line is short enough, we can suggest an auto-fix.
         -- Future: error also if it is not: currently, mathlib contains about 30 such
         -- instances which are not obvious to fix.
         if fixedLines[idx - 1]!.length <= 97 then
           errors := errors.push (StyleError.leadingBy, idx + 1)
-          fixedLines := fixedLines.set! (idx - 1) (s!"{prev} by\n")
+          fixedLines := fixedLines.set! (idx - 1) (s!"{prev} by")
+          let indent := line.takeWhile (·.isWhitespace)
+          fixedLines := fixedLines.set! idx (s!"{indent}{stripped.drop 3}")
    return (errors, if errors.size > 0 then some fixedLines else none)
 
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
