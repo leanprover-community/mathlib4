@@ -29,14 +29,17 @@ and data can be recovered from the distribution of the data and the posterior.
 * `compProd_posterior_eq_map_swap`: the main property of the posterior,
   `(κ ∘ₘ μ) ⊗ₘ κ†μ = (μ ⊗ₘ κ).map Prod.swap`.
 * `ae_eq_posterior_of_compProd_eq`
-* `posterior_comp_self`: `(κ†μ) ∘ₘ κ ∘ₘ μ = μ`
+* `posterior_comp_self`: `κ†μ ∘ₘ κ ∘ₘ μ = μ`
 * `posterior_posterior`: `(κ†μ)†(κ ∘ₘ μ) =ᵐ[μ] κ`
-* `posterior_comp`: `(η ∘ₖ κ)†μ =ᵐ[η ∘ₘ κ ∘ₘ μ] (κ†μ) ∘ₖ η†(κ ∘ₘ μ)`
+* `posterior_comp`: `(η ∘ₖ κ)†μ =ᵐ[η ∘ₘ κ ∘ₘ μ] κ†μ ∘ₖ η†(κ ∘ₘ μ)`
 
 ## Notation
 
 `κ†μ` denotes the posterior of `κ` with respect to `μ`, `posterior κ μ`.
 `†` can be typed as `\dag` or `\dagger`.
+
+This notation emphasizes that the posterior is a kind of inverse of `κ`, which we would want to
+denote `κ†`, but we have to also specify the measure `μ`.
 
 -/
 
