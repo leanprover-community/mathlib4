@@ -25,7 +25,8 @@ of `ℂ_p`, they coincide with the classical de Rham period rings.
 
 1. Extend the θ map to \(\mathbb{B}_dR^+\)
 2. Show that \(\mathbb{B}_dR^+\) is a discrete valuation ring.
-3. Show that ker θ is principal when the base ring is integral perfectoid and define \(\mathbb{B}_dR\).
+3. Show that ker θ is principal when the base ring is
+integral perfectoid and define \(\mathbb{B}_dR\).
 
 ## Reference
 
