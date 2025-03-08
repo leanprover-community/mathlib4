@@ -76,7 +76,7 @@ theorem hasFiniteIntegral_prodMk_left (a : α) {s : Set (β × γ)} (h2s : (κ �
     _ = (κ ⊗ₖ η) a s := (measure_toMeasurable s)
     _ < ⊤ := h2s.lt_top
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-05")]
 alias hasFiniteIntegral_prod_mk_left := hasFiniteIntegral_prodMk_left
 
 theorem integrable_kernel_prodMk_left (a : α) {s : Set (β × γ)} (hs : MeasurableSet s)

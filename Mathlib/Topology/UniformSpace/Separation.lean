@@ -158,7 +158,7 @@ theorem eq_of_uniformity_basis {α : Type*} [UniformSpace α] [T0Space α] {ι :
   (hs.inseparable_iff_uniformity.2 @h).eq
 
 theorem eq_of_forall_symmetric {α : Type*} [UniformSpace α] [T0Space α] {x y : α}
-    (h : ∀ {V}, V ∈ 𝓤 α → SymmetricRel V → (x, y) ∈ V) : x = y :=
+    (h : ∀ {V}, V ∈ 𝓤 α → IsSymmetricRel V → (x, y) ∈ V) : x = y :=
   eq_of_uniformity_basis hasBasis_symmetric (by simpa)
 
 theorem eq_of_clusterPt_uniformity [T0Space α] {x y : α} (h : ClusterPt (x, y) (𝓤 α)) : x = y :=

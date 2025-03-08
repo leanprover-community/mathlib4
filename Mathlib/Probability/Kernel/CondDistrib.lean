@@ -320,7 +320,7 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prodMk {Ω F} {m�
     · simp
     · contrapose! hX; exact measurable_fst.comp_aemeasurable hX
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-05")]
 alias _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_mk :=
   MeasureTheory.AEStronglyMeasurable.comp_snd_map_prodMk
 
@@ -336,7 +336,7 @@ theorem _root_.MeasureTheory.Integrable.comp_snd_map_prodMk {Ω} {mΩ : Measurab
     · simp
     · contrapose! hX; exact measurable_fst.comp_aemeasurable hX
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-05")]
 alias _root_.MeasureTheory.Integrable.comp_snd_map_prod_mk :=
   MeasureTheory.Integrable.comp_snd_map_prodMk
 
@@ -346,7 +346,7 @@ theorem aestronglyMeasurable_comp_snd_map_prodMk_iff {Ω F} {_ : MeasurableSpace
       AEStronglyMeasurable f μ :=
   ⟨fun h => h.comp_measurable (hX.prodMk measurable_id), fun h => h.comp_snd_map_prodMk X⟩
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-05")]
 alias aestronglyMeasurable_comp_snd_map_prod_mk_iff :=
   aestronglyMeasurable_comp_snd_map_prodMk_iff
 
@@ -355,7 +355,7 @@ theorem integrable_comp_snd_map_prodMk_iff {Ω} {_ : MeasurableSpace Ω} {X : Ω
     Integrable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) ↔ Integrable f μ :=
   ⟨fun h => h.comp_measurable (hX.prodMk measurable_id), fun h => h.comp_snd_map_prodMk X⟩
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-05")]
 alias integrable_comp_snd_map_prod_mk_iff := integrable_comp_snd_map_prodMk_iff
 
 theorem condExp_ae_eq_integral_condDistrib_id [NormedSpace ℝ F] [CompleteSpace F] {X : Ω → β}

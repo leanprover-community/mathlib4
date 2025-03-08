@@ -172,9 +172,9 @@ theorem map_map_of_aemeasurable {g : β → γ} {f : α → β} (hg : AEMeasurab
 theorem prodMk {f : α → β} {g : α → γ} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun x => (f x, g x)) μ :=
   ⟨fun a => (hf.mk f a, hg.mk g a), hf.measurable_mk.prodMk hg.measurable_mk,
-    EventuallyEq.prodMk hf.ae_eq_mk hg.ae_eq_mk⟩
+    hf.ae_eq_mk.prodMk hg.ae_eq_mk⟩
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-05")]
 alias prod_mk := prodMk
 
 theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀ᵐ x ∂μ, f x ∈ t)
