@@ -1076,19 +1076,17 @@ theorem enorm_ae_le_eLpNormEssSup {_ : MeasurableSpace α} (f : α → ε) (μ :
 coe_nnnorm_ae_le_eLpNormEssSup := enorm_ae_le_eLpNormEssSup
 
 @[simp]
-theorem eLpNormEssSup_eq_zero_iff {ε} [TopologicalSpace ε] [ENormedAddMonoid ε] {f : α → ε} :
-    eLpNormEssSup f μ = 0 ↔ f =ᵐ[μ] 0 := by
+theorem eLpNormEssSup_eq_zero_iff {f : α → ε} : eLpNormEssSup f μ = 0 ↔ f =ᵐ[μ] 0 := by
   simp [EventuallyEq, eLpNormEssSup_eq_essSup_enorm]
 
-theorem eLpNorm_eq_zero_iff {ε} [TopologicalSpace ε] [ENormedAddMonoid ε] {f : α → E}
-    (hf : AEStronglyMeasurable f μ) (h0 : p ≠ 0) : eLpNorm f p μ = 0 ↔ f =ᵐ[μ] 0 := by
+theorem eLpNorm_eq_zero_iff {f : α → E} (hf : AEStronglyMeasurable f μ) (h0 : p ≠ 0) :
+    eLpNorm f p μ = 0 ↔ f =ᵐ[μ] 0 := by
   by_cases h_top : p = ∞
   · rw [h_top, eLpNorm_exponent_top, eLpNormEssSup_eq_zero_iff]
   rw [eLpNorm_eq_eLpNorm' h0 h_top]
   exact eLpNorm'_eq_zero_iff (ENNReal.toReal_pos h0 h_top) hf
 
-theorem eLpNorm_eq_zero_of_ae_zero {ε} [TopologicalSpace ε] [ENormedAddMonoid ε] {f : α → ε}
-    (hf : f =ᵐ[μ] 0) : eLpNorm f p μ = 0 := by
+theorem eLpNorm_eq_zero_of_ae_zero {f : α → ε} (hf : f =ᵐ[μ] 0) : eLpNorm f p μ = 0 := by
   rw [← eLpNorm_zero (p := p) (μ := μ) (α := α) (ε := ε)]
   exact eLpNorm_congr_ae hf
 
@@ -1125,8 +1123,7 @@ lemma eLpNorm_lt_top_of_finite [Finite α] [IsFiniteMeasure μ] : eLpNorm f p μ
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.of_discrete := MemLp.of_discrete
 
-@[simp] lemma eLpNorm_of_isEmpty [IsEmpty α] {ε} [TopologicalSpace ε] [ENormedAddMonoid ε]
-    (f : α → ε) (p : ℝ≥0∞) : eLpNorm f p μ = 0 := by
+@[simp] lemma eLpNorm_of_isEmpty [IsEmpty α] (f : α → ε) (p : ℝ≥0∞) : eLpNorm f p μ = 0 := by
   simp [Subsingleton.elim f 0]
 
 section MapMeasure
