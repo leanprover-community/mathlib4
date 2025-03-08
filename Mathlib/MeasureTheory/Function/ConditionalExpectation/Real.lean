@@ -185,7 +185,7 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
   let A : MeasurableSpace α := m0
   have hmeas : ∀ n, ∀ C, MeasurableSet {x | C ≤ ‖(μ[g|ℱ n]) x‖₊} := fun n C =>
     measurableSet_le measurable_const (stronglyMeasurable_condExp.mono (hℱ n)).measurable.nnnorm
-  have hg : Memℒp g 1 μ := memℒp_one_iff_integrable.2 hint
+  have hg : MemLp g 1 μ := memLp_one_iff_integrable.2 hint
   refine uniformIntegrable_of le_rfl ENNReal.one_ne_top
     (fun n => (stronglyMeasurable_condExp.mono (hℱ n)).aestronglyMeasurable) fun ε hε => ?_
   by_cases hne : eLpNorm g 1 μ = 0

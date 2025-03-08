@@ -278,7 +278,7 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
       convert hk 1
       rw [one_pow 2]
       ring -- Porting note: rfl is not enough to close this
-    simp only [Prod.mk.inj_iff, Subtype.mk_eq_mk]
+    simp only [Prod.mk_inj, Subtype.mk_eq_mk]
     constructor
     · field_simp [h3]
       ring

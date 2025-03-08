@@ -540,11 +540,14 @@ theorem pullback_comp {f : Y ⟶ X} {g : Z ⟶ Y} (S : Sieve X) :
 theorem pullback_inter {f : Y ⟶ X} (S R : Sieve X) :
     (S ⊓ R).pullback f = S.pullback f ⊓ R.pullback f := by simp [Sieve.ext_iff]
 
-theorem pullback_eq_top_iff_mem (f : Y ⟶ X) : S f ↔ S.pullback f = ⊤ := by
+theorem mem_iff_pullback_eq_top (f : Y ⟶ X) : S f ↔ S.pullback f = ⊤ := by
   rw [← id_mem_iff_eq_top, pullback_apply, id_comp]
 
+@[deprecated (since := "2025-02-28")]
+alias pullback_eq_top_iff_mem := mem_iff_pullback_eq_top
+
 theorem pullback_eq_top_of_mem (S : Sieve X) {f : Y ⟶ X} : S f → S.pullback f = ⊤ :=
-  (pullback_eq_top_iff_mem f).1
+  (mem_iff_pullback_eq_top f).1
 
 lemma pullback_ofObjects_eq_top
     {I : Type*} (Y : I → C) {X : C} {i : I} (g : X ⟶ Y i) :

@@ -45,8 +45,8 @@ section
 
 You should extend this class when you extend `ContinuousOrderHom`. -/
 class ContinuousOrderHomClass (F : Type*) (α β : outParam Type*) [Preorder α] [Preorder β]
-    [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β] extends
-    ContinuousMapClass F α β : Prop where
+    [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β] : Prop
+    extends ContinuousMapClass F α β where
   map_monotone (f : F) : Monotone f
 
 -- Porting note: namespaced these results since there are more than 3 now

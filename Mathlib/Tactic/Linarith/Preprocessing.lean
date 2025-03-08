@@ -145,7 +145,7 @@ If `h` is an equality or inequality between natural numbers,
 `natToInt` lifts this inequality to the integers.
 It also adds the facts that the integers involved are nonnegative.
 To avoid adding the same nonnegativity facts many times, it is a global preprocessor.
- -/
+-/
 def natToInt : GlobalBranchingPreprocessor where
   description := "move nats to ints"
   transform g l := do
@@ -202,7 +202,7 @@ section compWithZero
 /--
 `rearrangeComparison e` takes a proof `e` of an equality, inequality, or negation thereof,
 and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
- -/
+-/
 partial def rearrangeComparison (e : Expr) : MetaM (Option Expr) := do
   match ← (← inferType e).ineq? with
   | (Ineq.le, _) => try? <| mkAppM ``Linarith.sub_nonpos_of_le #[e]
@@ -212,7 +212,7 @@ partial def rearrangeComparison (e : Expr) : MetaM (Option Expr) := do
 /--
 `compWithZero h` takes a proof `h` of an equality, inequality, or negation thereof,
 and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
- -/
+-/
 def compWithZero : Preprocessor where
   description := "make comparisons with zero"
   transform e := return (← rearrangeComparison e).toList
