@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 import Mathlib.MeasureTheory.SetSemiring
+import Mathlib.Data.Nat.Lattice
 
 /-! # Rings of sets
 
@@ -25,7 +26,7 @@ TODO: State the result that finite unions of sets in a semi-ring form a ring.
 
 -/
 
-open Finset Set
+open Finset Set Order
 
 namespace MeasureTheory
 

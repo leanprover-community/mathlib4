@@ -43,7 +43,7 @@ two intervals.
 -/
 
 
-open Finset Set Order
+open Finset Set
 
 namespace MeasureTheory
 
