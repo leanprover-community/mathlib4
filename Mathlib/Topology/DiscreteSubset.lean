@@ -194,7 +194,7 @@ theorem codiscreteWithin_iff_locallyFiniteComplementWithin [T1Space X] {s U : Se
       simp
   · intro h z h₁z
     obtain ⟨t, h₁t, h₂t⟩ := h z h₁z
-    use t \ (t ∩ (U \ s)), nhdNE_of_nhdNE_diff_finite (mem_nhdsWithin_of_mem_nhds h₁t) h₂t
+    use t \ (t ∩ (U \ s)), nhdNE_of_nhdNE_sdiff_finite (mem_nhdsWithin_of_mem_nhds h₁t) h₂t
     simp
 
 /-- In any topological space, the open sets with discrete complement form a filter,
