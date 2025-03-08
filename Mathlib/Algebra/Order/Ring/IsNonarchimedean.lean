@@ -21,11 +21,11 @@ namespace IsNonarchimedean
 variable {R : Type*} [LinearOrderedSemiring R] {a b : R} {m n : ℕ}
 
 /-- A nonarchimedean function satisfies the triangle inequality. -/
-theorem add_le {F α : Type*} [Add α] [FunLike F α R] [NonnegHomClass F α R] {f : F}
+theorem add_le {α : Type*} [Add α] {f : α → R} (hf : ∀ x : α, 0 ≤ f x)
     (hna : IsNonarchimedean f) {a b : α} : f (a + b) ≤ f a + f b := by
   apply le_trans (hna _ _)
   rw [max_le_iff, le_add_iff_nonneg_right, le_add_iff_nonneg_left]
-  exact ⟨apply_nonneg f b, apply_nonneg f a⟩
+  exact ⟨hf _, hf _⟩
 
 open Finset in
 /-- Ultrametric inequality with `Finset.Sum`. -/
@@ -51,32 +51,51 @@ theorem nsmul_le {F α : Type*} [AddMonoid α] [FunLike F α R] [ZeroHomClass F 
   | succ n _ =>
     rw [add_nsmul]
     apply le_trans <| hna (n • a) (1 • a)
-    simpa only [one_nsmul, sup_le_iff, le_refl, and_true]
+    simpa
+
+/-- If `f` is a nonarchimedean additive group seminorm on `α`, then for every `n : ℕ` and `a : α`,
+  we have `f (n * a) ≤ (f a)`. -/
+theorem nmul_le {F α : Type*} [Ring α] [FunLike F α R] [ZeroHomClass F α R] [NonnegHomClass F α R]
+    {f : F} (hna : IsNonarchimedean f) {n : ℕ} {a : α} : f (n * a) ≤ f a := by
+  rw [← nsmul_eq_mul]
+  exact nsmul_le hna
 
 lemma apply_natCast_le_one_of_isNonarchimedean {F α : Type*} [Semiring α] [FunLike F α R]
-    [ZeroHomClass F α R] [NonnegHomClass F α R] [MonoidHomClass F α R] {f : F}
+    [ZeroHomClass F α R] [NonnegHomClass F α R] [OneHomClass F α R] {f : F}
     (hna : IsNonarchimedean f) {n : ℕ} : f n ≤ 1 := by
   rw [← nsmul_one ↑n]
   exact le_trans (nsmul_le hna) (le_of_eq (map_one f))
 
 lemma apply_intCast_le_one_of_isNonarchimedean {F α : Type*} [Ring α] [FunLike F α R]
-    [ZeroHomClass F α R] [NonnegHomClass F α R] [MonoidHomClass F α R] {f : F}
-    (hna : IsNonarchimedean f) (map_neg : ∀ a, f (-a) = f a) {n : ℤ} : f n ≤ 1 := by
+    [AddGroupSeminormClass F α R] [OneHomClass F α R] {f : F}
+    (hna : IsNonarchimedean f) {n : ℤ} : f n ≤ 1 := by
   obtain ⟨a, rfl | rfl⟩ := Int.eq_nat_or_neg n <;>
-  simp [map_neg, apply_natCast_le_one_of_isNonarchimedean hna]
+  simp [map_neg] <;>
+  exact apply_natCast_le_one_of_isNonarchimedean hna
 
-/-- If `f` is a nonarchimedean additive group seminorm on `α`, then for every `n : ℕ` and `a : α`,
-  we have `f (n * a) ≤ (f a)`. -/
-theorem nmul_le {F α : Type*} [Ring α] [FunLike F α R] [AddGroupSeminormClass F α R]
-    {f : F} (hna : IsNonarchimedean f) {n : ℕ} {a : α} : f (n * a) ≤ f a := by
-  rw [← nsmul_eq_mul]
-  exact nsmul_le hna
+lemma apply_sum_eq_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
+    [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α}
+    (h_ne : f x < f y) : f (x + y) = f y := by
+  by_contra! h
+  have h1 : f (x + y) ≤ f y := le_trans (hna x y) (le_of_eq <| max_eq_right_of_lt h_ne)
+  apply lt_irrefl (f y)
+  calc
+    f y = f (y + x + -x) := by simp
+    _   ≤ max (f (y + x)) (f (-x)) := hna (y + x) (-x)
+    _   < max (f y) (f y) := by
+      --rw [max_self, map_neg, add_comm]
+      sorry
+      /- rw [max_self, AbsoluteValue.map_neg, add_comm]
+      exact max_lt (lt_of_le_of_ne h1 h) h_ne -/
+    _   = f y := max_self (f y)
+
 
 /-- If `f` is a nonarchimedean additive group seminorm on `α` and `x y : α` are such that
   `f x ≠ f y`, then `f (x + y) = max (f x) (f y)`. -/
 theorem add_eq_max_of_ne {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α} (hne : f x ≠ f y) :
     f (x + y) = max (f x) (f y) := by
+
   sorry
   /- let _ := AddGroupSeminormClass.toSeminormedAddGroup f
   have := AddGroupSeminormClass.isUltrametricDist hna
@@ -137,5 +156,3 @@ theorem add_pow_le {F α : Type*} [CommRing α] [FunLike F α R]
   exact le_trans hM (le_trans (nmul_le hna) (map_mul_le_mul _ _ _))
 
 end IsNonarchimedean
-
-#min_imports
