@@ -65,9 +65,7 @@ instance : IsMarkovKernel (κ†μ) := by rw [posterior]; infer_instance
 
 /-- The main property of the posterior. -/
 lemma compProd_posterior_eq_map_swap : (κ ∘ₘ μ) ⊗ₘ κ†μ = (μ ⊗ₘ κ).map Prod.swap := by
-  have h := ((μ ⊗ₘ κ).map Prod.swap).disintegrate ((μ ⊗ₘ κ).map Prod.swap).condKernel
-  simp only [Measure.fst_map_swap, Measure.snd_compProd] at h
-  exact h
+  simpa using ((μ ⊗ₘ κ).map Prod.swap).disintegrate ((μ ⊗ₘ κ).map Prod.swap).condKernel
 
 lemma compProd_posterior_eq_swap_comp : (κ ∘ₘ μ) ⊗ₘ κ†μ = Kernel.swap Ω β ∘ₘ μ ⊗ₘ κ := by
   rw [compProd_posterior_eq_map_swap, Measure.swap_comp]
@@ -129,7 +127,7 @@ lemma deterministic_comp_posterior [MeasurableSpace.CountablyGenerated β]
   calc μ.map f ⊗ₘ (Kernel.deterministic f hf ∘ₖ Kernel.deterministic f hf†μ)
   _ = (Kernel.deterministic f hf ∘ₘ μ)
       ⊗ₘ (Kernel.deterministic f hf ∘ₖ Kernel.deterministic f hf†μ) := by
-    rw [@Measure.deterministic_comp_eq_map]
+    rw [Measure.deterministic_comp_eq_map]
   _ = (Kernel.id ∥ₖ Kernel.deterministic f hf) ∘ₘ (Kernel.id ∥ₖ Kernel.deterministic f hf†μ) ∘ₘ
       Kernel.copy β ∘ₘ Kernel.deterministic f hf ∘ₘ μ := by
     rw [Measure.compProd_eq_parallelComp_comp_copy_comp,
