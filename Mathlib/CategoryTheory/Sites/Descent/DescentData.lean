@@ -42,12 +42,12 @@ variable {C : Type u} [Category.{v} C]
 structure DescentData where
   obj (i : ι) : F.obj ⟨⟨X i⟩⟩
   iso ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) :
-      (F.map ⟨f₁.op⟩).obj (obj i₁) ≅ (F.map ⟨f₂.op⟩).obj (obj i₂)
+      (F.map f₁.op.toLoc).obj (obj i₁) ≅ (F.map f₂.op.toLoc).obj (obj i₂)
   iso_comp ⦃Y' Y : C⦄ (g : Y' ⟶ Y) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) :
       iso (g ≫ f₁) (g ≫ f₂) =
-    (F.mapComp ⟨f₁.op⟩ ⟨g.op⟩).app _ ≪≫
-      Functor.mapIso (F.map ⟨g.op⟩) (iso f₁ f₂) ≪≫
-      (F.mapComp ⟨f₂.op⟩ ⟨g.op⟩).symm.app _
+    (F.mapComp f₁.op.toLoc g.op.toLoc).app _ ≪≫
+      Functor.mapIso (F.map g.op.toLoc) (iso f₁ f₂) ≪≫
+      (F.mapComp f₂.op.toLoc g.op.toLoc).symm.app _
   iso_trans ⦃Y : C⦄ ⦃i₁ i₂ i₃ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) (f₃ : Y ⟶ X i₃) :
     iso f₁ f₂ ≪≫ iso f₂ f₃ = iso f₁ f₃ := by aesop_cat
 
@@ -59,8 +59,8 @@ variable {F X}
 structure Hom (D₁ D₂ : F.DescentData X) where
   hom (i : ι) : D₁.obj i ⟶ D₂.obj i
   comm ⦃Y : C⦄ ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) :
-    (F.map ⟨f₁.op⟩).map (hom i₁) ≫ (D₂.iso f₁ f₂).hom =
-      (D₁.iso f₁ f₂).hom ≫ (F.map ⟨f₂.op⟩).map (hom i₂) := by aesop_cat
+    (F.map f₁.op.toLoc).map (hom i₁) ≫ (D₂.iso f₁ f₂).hom =
+      (D₁.iso f₁ f₂).hom ≫ (F.map f₂.op.toLoc).map (hom i₂) := by aesop_cat
 
 attribute [reassoc (attr := simp)] Hom.comm
 
