@@ -328,8 +328,9 @@ everywhere equal to `𝔼[g | ℱ n]`. -/
 theorem Martingale.eq_condExp_of_tendsto_eLpNorm {μ : Measure Ω} (hf : Martingale f ℱ μ)
     (hg : Integrable g μ) (hgtends : Tendsto (fun n => eLpNorm (f n - g) 1 μ) atTop (𝓝 0)) (n : ℕ) :
     f n =ᵐ[μ] μ[g|ℱ n] := by
-  rw [← sub_ae_eq_zero, ← eLpNorm_eq_zero_iff (((hf.stronglyMeasurable n).mono (ℱ.le _)).sub
-    (stronglyMeasurable_condExp.mono (ℱ.le _))).aestronglyMeasurable one_ne_zero]
+  rw [← sub_ae_eq_zero, ← eL pNorm_eq_zero_iff (ε := ℝ) (
+      ((hf.stronglyMeasurable n).mono (ℱ.le _)).sub (stronglyMeasurable_condExp.mono (ℱ.le _))
+    ).aestronglyMeasurable one_ne_zero]
   have ht : Tendsto (fun m => eLpNorm (μ[f m - g|ℱ n]) 1 μ) atTop (𝓝 0) :=
     haveI hint : ∀ m, Integrable (f m - g) μ := fun m => (hf.integrable m).sub hg
     tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hgtends (fun m => zero_le _)
