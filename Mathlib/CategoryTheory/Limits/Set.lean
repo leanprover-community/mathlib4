@@ -24,13 +24,13 @@ namespace Set
 /-- Given `X : Type u`, this the functor `Set X ⥤ Type u` which sends `A`
 to its underlying type. -/
 @[simps obj map]
-def toTypes {X : Type u} : Set X ⥤ Type u where
+def functorToTypes {X : Type u} : Set X ⥤ Type u where
   obj S := S
   map {S T} f := fun ⟨x, hx⟩ ↦ ⟨x, leOfHom f hx⟩
 
 open CompleteLattice in
 instance {J : Type w} [Category.{w'} J] {X : Type u} [IsFilteredOrEmpty J] :
-    PreservesColimitsOfShape J (toTypes (X := X)) where
+    PreservesColimitsOfShape J (functorToTypes (X := X)) where
   preservesColimit {F} := by
     apply preservesColimit_of_preserves_colimit_cocone (colimitCocone F).isColimit
     apply Types.FilteredColimit.isColimitOf
