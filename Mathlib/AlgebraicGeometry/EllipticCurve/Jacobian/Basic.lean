@@ -32,6 +32,10 @@ group operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Formula.le
  * `WeierstrassCurve.Jacobian.Nonsingular`: the nonsingular condition on a point representative.
  * `WeierstrassCurve.Jacobian.NonsingularLift`: the nonsingular condition on a point class.
 
+## Main statements
+
+ * `WeierstrassCurve.Jacobian.polynomial_relation`: Euler's homogeneous function theorem.
+
 ## Implementation notes
 
 All definitions and lemmas for Weierstrass curves in Jacobian coordinates live in the namespace
@@ -351,6 +355,13 @@ lemma eval_polynomialZ (P : Fin 3 → R) : eval P W'.polynomialZ =
   rw [polynomialZ_eq]
   eval_simp
 
+/-- Euler's homogeneous function theorem in Jacobian coordinates. -/
+theorem polynomial_relation (P : Fin 3 → R) : 6 * eval P W'.polynomial =
+    2 * P x * eval P W'.polynomialX + 3 * P y * eval P W'.polynomialY +
+      P z * eval P W'.polynomialZ := by
+  rw [eval_polynomial, eval_polynomialX, eval_polynomialY, eval_polynomialZ]
+  ring1
+
 variable (W') in
 /-- The proposition that a Jacobian point representative `(x, y, z)` on a Weierstrass curve `W` is
 nonsingular.
@@ -531,6 +542,12 @@ variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebr
 lemma baseChange_polynomial : (W'.baseChange B).toJacobian.polynomial =
     MvPolynomial.map f (W'.baseChange A).toJacobian.polynomial := by
   rw [← map_polynomial, map_baseChange]
+
+variable {P} in
+lemma Equation.baseChange (h : (W'.baseChange A).toJacobian.Equation P) :
+    (W'.baseChange B).toJacobian.Equation (f ∘ P) := by
+  convert Equation.map f.toRingHom h using 1
+  rw [AlgHom.toRingHom_eq_coe, map_baseChange]
 
 variable {f} in
 lemma baseChange_equation (hf : Function.Injective f) :
