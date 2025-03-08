@@ -5,12 +5,10 @@ Authors: Huanyu Zheng, Weichen Jiao, Yi Yuan
 -/
 import Mathlib.Algebra.Exact
 import Mathlib.RingTheory.FilteredAlgebra.FilteredHom
-import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Algebra.Ring.Subring.Basic
 
-
 /-!
-# The filtration on abelian groups and rings
+# The property of exactness om AssociatedGradedRingHom
 
 In this file, we define the concept of exhaustive filtrations.
 
@@ -50,14 +48,15 @@ variable {FR_lt: outParam <| ι → σR} {FS_lt: outParam <| ι → σS} {FT_lt:
 
 variable (f : FilteredRingHom FR FR_lt FS FS_lt) (g : FilteredRingHom FS FS_lt FT FT_lt)
 
-open DirectSum DFinsupp FilteredAddGroupHom
 open scoped FilteredRingHom
 
-variable  [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt]
+variable [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt]
 
 
 
 section AssociatedGradedRingHom_ext
+
+open DirectSum
 
 theorem AssociatedGradedRingHom_eq_zero_iff_GradedPieceHom_eq_zero (m : AssociatedGraded FS FS_lt) :
     Gr[g] m = 0 ↔ ∀ i : ι, Gr(i)[g] (m i) = 0 := by
@@ -75,20 +74,19 @@ theorem GradedPieceHom_eq_zero_iff_AssociatedGradedRingHom_of_eq_zero {i : ι}
     · rw [← ch, of_eq_same, h]
     · rw [of_eq_of_ne i j u ch, map_zero]
   · intro h
-    have := h i
-    simpa using this
+    simpa using h i
 
 theorem AssociatedGradedRingHom_in_range_iff_GradedPieceHom_in_range
     (m : AssociatedGraded FS FS_lt) : m ∈ Set.range Gr[f] ↔ ∀ i : ι, m i ∈ Set.range Gr(i)[f] := by
   refine ⟨fun ⟨l, hl⟩ i ↦ ?_, fun h ↦ ?_⟩
   · rw [← hl, FilteredRingHom.AssociatedGradedRingHom_apply]
     use l i
-  · use DirectSum.mk (GradedPiece FR FR_lt) (support m) (fun i ↦ Classical.choose (h i))
+  · use mk (GradedPiece FR FR_lt) (DFinsupp.support m) (fun i ↦ Classical.choose (h i))
     ext i
     rw [FilteredRingHom.AssociatedGradedRingHom_apply]
-    by_cases mem : i ∈ support m
+    by_cases mem : i ∈ DFinsupp.support m
     · rw [mk_apply_of_mem mem, Classical.choose_spec (h i)]
-    · rw [mk_apply_of_not_mem mem, not_mem_support_iff.mp mem, map_zero]
+    · rw [mk_apply_of_not_mem mem, DFinsupp.not_mem_support_iff.mp mem, map_zero]
 
 theorem GradedPieceHom_in_range_iff_AssociatedGradedRingHom_of_in_range {i : ι}
     (u : GradedPiece FS FS_lt i) : u ∈ Set.range Gr(i)[f] ↔
@@ -101,17 +99,16 @@ theorem GradedPieceHom_in_range_iff_AssociatedGradedRingHom_of_in_range {i : ι}
     · use 0
       rw [of_eq_of_ne i j u ch, map_zero]
   · intro h
-    have := h i
-    simpa using this
+    simpa using h i
 
 theorem GradedPieceHom_ker_eq_GradedPieceHom_range (i : ι) (Gexact : Function.Exact Gr[f] Gr[g]) :
     Gr(i)[g].ker = Set.range Gr(i)[f] := by
   ext u
-  refine Iff.trans (GradedPieceHom_eq_zero_iff_AssociatedGradedRingHom_of_eq_zero g u) ?_
-  have := (GradedPieceHom_in_range_iff_AssociatedGradedRingHom_of_in_range f u).symm
-  exact Iff.trans (Gexact ((of (GradedPiece FS FS_lt) i) u)) this
+  apply Iff.trans (GradedPieceHom_eq_zero_iff_AssociatedGradedRingHom_of_eq_zero g u)
+  apply Iff.trans (Gexact ((of (GradedPiece FS FS_lt) i) u))
+  exact (GradedPieceHom_in_range_iff_AssociatedGradedRingHom_of_in_range f u).symm
 
-theorem AssociatedGradedRingHom_exact_iff_GradedPieceHom_exact :
+theorem GradedPieceHom_exact_of_AssociatedGradedRingHom_exact :
     Function.Exact Gr[f] Gr[g] → ∀ i, Function.Exact Gr(i)[f] Gr(i)[g] := by
   refine fun h i ↦ AddMonoidHom.exact_iff.mpr ?_
   have := GradedPieceHom_ker_eq_GradedPieceHom_range f g i h
@@ -120,9 +117,9 @@ theorem AssociatedGradedRingHom_exact_iff_GradedPieceHom_exact :
 
 end AssociatedGradedRingHom_ext
 
-
-
 section exactness
+
+open FilteredAddGroupHom
 
 variable [IsRingFiltration FS FS_lt]
 
