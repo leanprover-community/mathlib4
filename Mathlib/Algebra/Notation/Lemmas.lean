@@ -4,13 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yael Dillies
 -/
 import Batteries.Tactic.Init
-import Mathlib.Data.One.Defs
+import Mathlib.Algebra.Notation.Defs
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.TypeStar
+import Mathlib.Util.AssertExists
 
 /-! # Lemmas about inequalities with `1`. -/
 
-variable {α : Type _}
+assert_not_exists Monoid
+
+variable {α : Type*}
 
 section dite
 variable [One α] {p : Prop} [Decidable p] {a : p → α} {b : ¬ p → α}

@@ -17,22 +17,22 @@ Mainly, we prove that this is bounded, its frontier has volume zero and compute 
 
 The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*][marcus1977number].
 
-* First, since `NormLeOne K` is norm-stable, in the sense that
+1. since `NormLeOne K` is norm-stable, in the sense that
   `normLeOne K = normAtAllPlaces⁻¹' (normAtAllPlaces '' (normLeOne K))`,
   see `normLeOne_eq_primeage_image`, it's enough to study the subset
   `normAtAllPlaces '' (normLeOne K)` of `realSpace K`.
 
-* A description of `normAtAllPlaces '' (normLeOne K)` is given by `normAtAllPlaces_normLeOne`, it is
-  the set of `x : realSpace K`, nonnegative at all places, whose norm is nonzero and `≤ 1` and such
-  that `logMap x` is in the `fundamentalDomain` of `basisUnitLattice K`.
+2. A description of `normAtAllPlaces '' (normLeOne K)` is given by `normAtAllPlaces_normLeOne`, it
+  is the set of `x : realSpace K`, nonnegative at all places, whose norm is nonzero and `≤ 1` and
+  such that `logMap x` is in the `fundamentalDomain` of `basisUnitLattice K`.
   Note that, here and elsewhere, we identify `x` with its image in `mixedSpace K` given
   by `mixedSpaceOfRealSpace x`.
 
-* In order to describe the inverse image in `realSpace K` of `fundamentalDomain` of
+3. In order to describe the inverse image in `realSpace K` of the `fundamentalDomain` of
   `basisUnitLattice K`, we define the map `expMap : realSpace K → realSpace K` that is, in
   some way, the right inverse of `logMap`, see `logMap_expMap`.
 
-*  We also need to construct a basis `completeBasis` of `realSpace K` with the following properties:
+4. We also need to construct a basis `completeBasis` of `realSpace K` with the following properties:
   Denote by `ηᵢ` (with `i ≠ w₀` where `w₀` is the distinguished infinite place,
   see `logSpace` below), the fundamental system of units given by `fundSystem` and let `|ηᵢ|` denote
   `normAtAllPlaces (mixedEmbedding ηᵢ))`, that is the vector `(w (ηᵢ)_w` in `realSpace K`. Then,
@@ -42,7 +42,7 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
   `basisUnitLattice K` in the sense that, for `i ≠ w₀`, the image of `completeBasis K i` by the
   natural restriction map `realSpace K → logSpace K` is `basisUnitLattice K`.
 
-* At this point, we can construct the map `expMapBasis` that plays a crucial part in the proof.
+5. At this point, we can construct the map `expMapBasis` that plays a crucial part in the proof.
   It is the map that sends `x : realSpace K` to `Real.exp (x w₀) * ∏_{i ≠ w₀} |ηᵢ| ^ x i`, see
   `expMapBasis_apply'`.
 
@@ -124,7 +124,7 @@ abbrev normLeOne : Set (mixedSpace K) :=
   {x | x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ 1}
 
 variable {K} in
-theorem mem_normLeOne (x : mixedSpace K) :
+theorem mem_normLeOne {x : mixedSpace K} :
     x ∈ normLeOne K ↔ x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ 1 := Set.mem_sep_iff
 
 theorem normLeOne_eq_primeage_image :
@@ -137,17 +137,22 @@ theorem normLeOne_eq_primeage_image :
 
 open scoped Classical in
 theorem normAtAllPlaces_normLeOne :
-    normAtAllPlaces '' (normLeOne K) = {x | (∀ w, 0 ≤ x w) ∧
-      logMap (mixedSpaceOfRealSpace x) ∈
-      ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K)) ∧
-      mixedEmbedding.norm (mixedSpaceOfRealSpace x) ≠ 0 ∧
-      mixedEmbedding.norm (mixedSpaceOfRealSpace x) ≤ 1} := by
+    normAtAllPlaces '' (normLeOne K) =
+    mixedSpaceOfRealSpace⁻¹'
+      (logMap⁻¹'
+          ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K))) ∩
+      {x | (∀ w, 0 ≤ x w)} ∩
+      {x | mixedEmbedding.norm (mixedSpaceOfRealSpace x) ≠ 0} ∩
+      {x | mixedEmbedding.norm (mixedSpaceOfRealSpace x) ≤ 1} := by
   ext x
-  refine ⟨?_, fun ⟨hx₁, hx₂, hx₃, hx₄⟩ ↦ ?_⟩
-  · rintro ⟨a, ⟨⟨ha₁, ha₂⟩, ha₃⟩, rfl⟩
-    refine ⟨fun w ↦ normAtPlace_nonneg w a, ?_⟩
-    exact (logMap_normAtAllPlaces a) ▸ (norm_normAtAllPlaces a) ▸ ⟨ha₁, ha₂, ha₃⟩
-  · exact ⟨mixedSpaceOfRealSpace x, ⟨⟨hx₂, hx₃⟩, hx₄⟩, normAtAllPlaces_mixedSpaceOfRealSpace hx₁⟩
+  refine ⟨?_, fun ⟨⟨⟨h₁, h₂⟩, h₃⟩, h₄⟩ ↦ ?_⟩
+  · rintro ⟨y, ⟨⟨h₁, h₂⟩, h₃⟩, rfl⟩
+    refine ⟨⟨⟨?_, ?_⟩, ?_⟩, ?_⟩
+    · rwa [Set.mem_preimage, ← logMap_normAtAllPlaces] at h₁
+    · exact fun w ↦ normAtPlace_nonneg w y
+    · rwa [Set.mem_setOf_eq, ← norm_normAtAllPlaces] at h₂
+    · rwa [← norm_normAtAllPlaces] at h₃
+  · exact ⟨mixedSpaceOfRealSpace x, ⟨⟨h₁, h₃⟩, h₄⟩, normAtAllPlaces_mixedSpaceOfRealSpace h₂⟩
 
 end normLeOne_def
 
@@ -179,8 +184,8 @@ variable [NumberField K]
 The map from `realSpace K → realSpace K` whose components is given by `expMap_single`. It is, in
 some respect, a right inverse of `logMap`, see `logMap_expMap`.
 -/
-def expMap : PartialHomeomorph (realSpace K) (realSpace K) := by
-  refine PartialHomeomorph.pi fun w ↦ expMap_single w
+def expMap : PartialHomeomorph (realSpace K) (realSpace K) :=
+  PartialHomeomorph.pi fun w ↦ expMap_single w
 
 variable (K)
 
