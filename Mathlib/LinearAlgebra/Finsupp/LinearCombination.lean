@@ -262,16 +262,15 @@ theorem linearCombination_single_index (c : M) (a : α) (f : α →₀ R) [Decid
   · exact fun i _ hi ↦ by rw [Pi.single_eq_of_ne hi, smul_zero]
   · exact fun _ ↦ by simp only [single_eq_same, zero_smul]
 
-
 variable {α M}
 
 variable [Module S M] [SMulCommClass R S M]
 
 variable (S) in
 /-- `Finsupp.bilinearCombination R S v f` is the linear combination of vectors in `v` with weights
-in `f`.
+in `f`, as a bilinear map of `v` and `f`.
+In the absence of `SMulCommClass R S M`, use `Finsupp.linearCombination`.
 
-This map is linear in `v` if `R` is commutative, and always linear in `f`.
 See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
 -/
 def bilinearCombination : (α → M) →ₗ[S] (α →₀ R) →ₗ[R] M where
@@ -352,6 +351,10 @@ variable {S}
 theorem Fintype.bilinearCombination_apply :
     Fintype.bilinearCombination R S v = Fintype.linearCombination R v :=
   rfl
+
+theorem Fintype.bilinearCombination_apply_single [DecidableEq α] (i : α) (r : R) :
+    Fintype.bilinearCombination R S v (Pi.single i r) = r • v i := by
+  simp [Fintype.bilinearCombination]-- Fintype.linearCombination_apply_single]
 
 section SpanRange
 
