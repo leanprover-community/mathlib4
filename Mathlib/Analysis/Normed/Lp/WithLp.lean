@@ -58,14 +58,12 @@ instance instNontrivial [Nontrivial V] : Nontrivial (WithLp p V) := ‹Nontrivia
 instance instUnique [Unique V] : Unique (WithLp p V) := ‹Unique V›
 instance instDecidableEq [DecidableEq V] : DecidableEq (WithLp p V) := ‹DecidableEq V›
 
-instance instAddMonoid [AddMonoid V] : AddMonoid (WithLp p V) := ‹AddMonoid V›
-instance instAddCommMonoid [AddCommMonoid V] : AddCommMonoid (WithLp p V) := ‹AddCommMonoid V›
 instance instAddCommGroup [AddCommGroup V] : AddCommGroup (WithLp p V) := ‹AddCommGroup V›
 @[to_additive] instance instSMul [SMul K V] : SMul K (WithLp p V) := ‹SMul K V›
 @[to_additive] instance instMulAction [Monoid K] [MulAction K V] : MulAction K V := ‹MulAction K V›
-instance instDistribMulAction [Monoid K] [AddMonoid V] [DistribMulAction K V] :
+instance instDistribMulAction [Monoid K] [AddCommGroup V] [DistribMulAction K V] :
     DistribMulAction K (WithLp p V) := ‹DistribMulAction K V›
-instance instModule [Semiring K] [AddCommMonoid V] [Module K V] : Module K (WithLp p V) :=
+instance instModule [Semiring K] [AddCommGroup V] [Module K V] : Module K (WithLp p V) :=
   ‹Module K V›
 
 /-! `WithLp p V` inherits various module-adjacent structures from `V`. -/
@@ -81,7 +79,7 @@ instance instSMulCommClass [SMul K V] [SMul K' V] [SMulCommClass K K' V] :
   ‹SMulCommClass K K' V›
 
 instance instModuleFinite
-    [Semiring K] [AddCommMonoid V] [Module K V] [Module.Finite K V] :
+    [Semiring K] [AddCommGroup V] [Module K V] [Module.Finite K V] :
     Module.Finite K (WithLp p V) :=
   ‹Module.Finite K V›
 
