@@ -27,28 +27,32 @@ This files defines compact systems of sets.
 
 open Set Finset Nat
 
-section definition
-
 variable {α : Type*} {p : Set α → Prop} {C : ℕ → Set α}
+
+section definition
 
 /-- A set of sets is a compact system if, whenever a countable subfamily has empty intersection,
 then finitely many of them already have empty intersection. -/
 def IsCompactSystem (p : Set α → Prop) : Prop :=
   ∀ C : ℕ → Set α, (∀ i, p (C i)) → ⋂ i, C i = ∅ → ∃ (n : ℕ), Dissipate C n = ∅
 
+end definition
+
+namespace IsCompactSystem
+
 /-- In a compact system, given a countable family with empty intersection, we choose a finite
-subfamily with empty intersection-/
+subfamily with empty intersection. -/
 noncomputable
-def IsCompactSystem.max_of_empty (hp : IsCompactSystem p) (hC : ∀ i, p (C i))
+def max_of_empty (hp : IsCompactSystem p) (hC : ∀ i, p (C i))
     (hC_empty : ⋂ i, C i = ∅) : ℕ :=
   (hp C hC hC_empty).choose
 
-lemma IsCompactSystem.iInter_eq_empty (hp : IsCompactSystem p) (hC : ∀ i, p (C i))
+lemma iInter_eq_empty (hp : IsCompactSystem p) (hC : ∀ i, p (C i))
     (hC_empty : ⋂ i, C i = ∅) :
     Dissipate C (hp.max_of_empty hC hC_empty) = ∅ :=
   (hp C hC hC_empty).choose_spec
 
-theorem IsCompactSystem.iff_of_nempty (p : Set α → Prop) :
+theorem iff_of_nempty (p : Set α → Prop) :
     IsCompactSystem p ↔ (∀ C : ℕ → Set α, (∀ i, p (C i)) → (∀ (n : ℕ),
       (Dissipate C n).Nonempty) → (⋂ i, C i).Nonempty) := by
   refine ⟨fun h C hC hn ↦ ?_, fun h C hC ↦ ?_⟩ <;> have h2 := not_imp_not.mpr <| h C hC
@@ -57,7 +61,7 @@ theorem IsCompactSystem.iff_of_nempty (p : Set α → Prop) :
   · push_neg at h2
     exact h2
 
-theorem IsCompactSystem.iff_directed (hpi : ∀ (s t : Set α), p s → p t → p (s ∩ t)) :
+theorem iff_directed (hpi : ∀ (s t : Set α), p s → p t → p (s ∩ t)) :
     (IsCompactSystem p) ↔
     (∀ (C : ℕ → Set α), ∀ (_ : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C), (∀ i, p (C i)) →
       ⋂ i, C i = ∅ → ∃ (n : ℕ), C n = ∅) := by
@@ -67,7 +71,7 @@ theorem IsCompactSystem.iff_directed (hpi : ∀ (s t : Set α), p s → p t → 
   · rw [← biInter_le_eq_iInter] at h2
     exact h (Dissipate C) dissipate_directed (dissipate_of_piSystem hpi h1) h2
 
-theorem IsCompactSystem.iff_directed' (hpi : ∀ (s t : Set α), p s → p t → p (s ∩ t)) :
+theorem iff_directed' (hpi : ∀ (s t : Set α), p s → p t → p (s ∩ t)) :
     (IsCompactSystem p) ↔
     ∀ (C : ℕ → Set α), ∀ (_ : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C), (∀ i, p (C i)) →
     (∀ (n : ℕ), (C n).Nonempty) → (⋂ i, C i).Nonempty  := by
@@ -76,7 +80,7 @@ theorem IsCompactSystem.iff_directed' (hpi : ∀ (s t : Set α), p s → p t →
   · exact h1 C h3 h4
   · exact h1 C h3 s
 
-end definition
+end IsCompactSystem
 
 section ClosedCompact
 
