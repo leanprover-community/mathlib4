@@ -696,15 +696,23 @@ theorem MemLp.ae_eq [TopologicalSpace ε] {f g : α → ε} (hfg : f =ᵐ[μ] g)
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.ae_eq := MemLp.ae_eq
 
+section
+
+variable {ε ε' : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+    [TopologicalSpace ε'] [ENormedAddMonoid ε']
+
 theorem MemLp.of_le {f : α → E} {g : α → F} (hg : MemLp g p μ) (hf : AEStronglyMeasurable f μ)
     (hfg : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) : MemLp f p μ :=
   ⟨hf, (eLpNorm_mono_ae hfg).trans_lt hg.eLpNorm_lt_top⟩
+
+theorem MemLp.of_le' {f : α → ε} {g : α → ε'} (hg : MemLp g p μ) (hf : AEStronglyMeasurable f μ)
+    (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) : MemLp f p μ :=
+  ⟨hf, (eLpNorm_mono_ae' hfg).trans_lt hg.eLpNorm_lt_top⟩
 
 @[deprecated (since := "2025-02-21")] alias Memℒp.of_le := MemLp.of_le
 
 alias MemLp.mono := MemLp.of_le
 @[deprecated (since := "2025-02-21")] alias Memℒp.mono := MemLp.mono
-
 
 theorem MemLp.mono' {f : α → E} {g : α → ℝ} (hg : MemLp g p μ) (hf : AEStronglyMeasurable f μ)
     (h : ∀ᵐ a ∂μ, ‖f a‖ ≤ g a) : MemLp f p μ :=
@@ -717,12 +725,21 @@ theorem MemLp.congr_norm {f : α → E} {g : α → F} (hf : MemLp f p μ) (hg :
     (h : ∀ᵐ a ∂μ, ‖f a‖ = ‖g a‖) : MemLp g p μ :=
   hf.mono hg <| EventuallyEq.le <| EventuallyEq.symm h
 
+theorem MemLp.congr_enorm {f : α → ε} {g : α → ε'}
+    (hf : MemLp f p μ) (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) :
+    MemLp g p μ :=
+  hf.of_le' hg <| EventuallyEq.le <| EventuallyEq.symm h
+
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.congr_norm := MemLp.congr_norm
 
 theorem memLp_congr_norm {f : α → E} {g : α → F} (hf : AEStronglyMeasurable f μ)
     (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ a ∂μ, ‖f a‖ = ‖g a‖) : MemLp f p μ ↔ MemLp g p μ :=
   ⟨fun h2f => h2f.congr_norm hg h, fun h2g => h2g.congr_norm hf <| EventuallyEq.symm h⟩
+
+theorem memLp_congr_enorm {f : α → ε} {g : α → ε'} (hf : AEStronglyMeasurable f μ)
+    (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) : MemLp f p μ ↔ MemLp g p μ :=
+  ⟨fun h2f => h2f.congr_enorm hg h, fun h2g => h2g.congr_enorm hf <| EventuallyEq.symm h⟩
 
 @[deprecated (since := "2025-02-21")]
 alias memℒp_congr_norm := memLp_congr_norm
@@ -732,6 +749,12 @@ theorem memLp_top_of_bound {f : α → E} (hf : AEStronglyMeasurable f μ) (C : 
   ⟨hf, by
     rw [eLpNorm_exponent_top]
     exact eLpNormEssSup_lt_top_of_ae_bound hfC⟩
+
+theorem memLp_top_of_bound' {f : α → ε} (hf : AEStronglyMeasurable f μ) (C : ℝ≥0)
+    (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) : MemLp f ∞ μ :=
+  ⟨hf, by
+    rw [eLpNorm_exponent_top]
+    exact eLpNormEssSup_lt_top_of_ae_enorm_bound hfC⟩
 
 @[deprecated (since := "2025-02-21")]
 alias memℒp_top_of_bound := memLp_top_of_bound
@@ -749,6 +772,8 @@ theorem memLp_of_bounded [IsFiniteMeasure μ]
   have ha : ∀ᵐ x ∂μ, a ≤ f x := h.mono fun ω h => h.1
   have hb : ∀ᵐ x ∂μ, f x ≤ b := h.mono fun ω h => h.2
   (memLp_const (max |a| |b|)).mono' hX (by filter_upwards [ha, hb] with x using abs_le_max_abs_abs)
+
+end
 
 @[deprecated (since := "2025-02-21")]
 alias memℒp_of_bounded := memLp_of_bounded
