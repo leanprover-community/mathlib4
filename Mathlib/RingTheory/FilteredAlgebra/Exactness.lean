@@ -84,7 +84,7 @@ theorem AssociatedGradedRingHom_in_range_iff_GradedPieceHom_in_range
   refine ⟨fun ⟨l, hl⟩ i ↦ ?_, fun h ↦ ?_⟩
   · rw [← hl, FilteredRingHom.AssociatedGradedRingHom_apply]
     use l i
-  · use DirectSum.mk (GradedPiece FR FR_lt) (DFinsupp.support m) (fun i ↦ Classical.choose (h i))
+  · use mk (GradedPiece FR FR_lt) (DFinsupp.support m) (fun i ↦ Classical.choose (h i))
     ext i
     rw [FilteredRingHom.AssociatedGradedRingHom_apply]
     by_cases mem : i ∈ DFinsupp.support m
