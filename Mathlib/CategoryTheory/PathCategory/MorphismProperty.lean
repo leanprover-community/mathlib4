@@ -23,8 +23,9 @@ variable (V : Type u₁) [Quiver.{v₁ + 1} V]
 /-- A reformulation of `CategoryTheory.Paths.induction` in terms of `MorphismProperty`. -/
 lemma morphismProperty_eq_top
     (P : MorphismProperty (Paths V))
-    (id : ∀ {v : V}, P (𝟙 (of.obj v)))
-    (comp : ∀ {u v w : V} (p : of.obj u ⟶ of.obj v) (q : v ⟶ w), P p → P (p ≫ of.map q)) :
+    (id : ∀ {v : V}, P (𝟙 ((of V).obj v)))
+    (comp : ∀ {u v w : V}
+      (p : (of V).obj u ⟶ (of V).obj v) (q : v ⟶ w), P p → P (p ≫ (of V).map q)) :
     P = ⊤ := by
   ext; constructor
   · simp
@@ -33,8 +34,9 @@ lemma morphismProperty_eq_top
 /-- A reformulation of `CategoryTheory.Paths.induction'` in terms of `MorphismProperty`. -/
 lemma morphismProperty_eq_top'
     (P : MorphismProperty (Paths V))
-    (id : ∀ {v : V}, P (𝟙 (of.obj v)))
-    (comp : ∀ {u v w : V} (p : u ⟶ v) (q : of.obj v ⟶ of.obj w), P q → P (of.map p ≫ q)) :
+    (id : ∀ {v : V}, P (𝟙 ((of V).obj v)))
+    (comp : ∀ {u v w : V}
+      (p : u ⟶ v) (q : (of V).obj v ⟶ (of V).obj w), P q → P ((of V).map p ≫ q)) :
     P = ⊤ := by
   ext; constructor
   · simp
