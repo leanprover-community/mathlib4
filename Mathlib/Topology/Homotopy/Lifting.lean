@@ -16,11 +16,10 @@ open Topology unitInterval
 
 variable {E X A : Type*} [TopologicalSpace E] [TopologicalSpace X] [TopologicalSpace A] {p : E → X}
 
--- TODO: generalize to IsLocalHomeomorphOn
 /-- If `p : E → X` is a local homeomorphism, and if `g : I × A → E` is a lift of `f : C(I × A, X)`
   continuous on `{0} × A ∪ I × {a}` for some `a : A`, then there exists a neighborhood `N ∈ 𝓝 a`
   and `g' : I × A → E` continuous on `I × N` that agrees with `g` on `{0} × A ∪ I × {a}`.
-  The proof follows Hatcher, Proof of Theorem 1.7, p.30.
+  The proof follows [hatcher02], Proof of Theorem 1.7, p.30.
 
   This lemma should also be true for an arbitrary space in place of `I` if `A` is locally connected
   and `p` is a separated map, which guarantees uniqueness and therefore well-definedness
@@ -30,12 +29,16 @@ theorem IsLocalHomeomorph.exists_lift_nhds (hp : IsLocalHomeomorph p)
     (cont_0 : Continuous (g ⟨0, ·⟩)) (a : A) (cont_a : Continuous (g ⟨·, a⟩)) :
     ∃ N ∈ 𝓝 a, ∃ g' : I × A → E, ContinuousOn g' (Set.univ ×ˢ N) ∧ p ∘ g' = f ∧
       (∀ a, g' (0, a) = g (0, a)) ∧ ∀ t, g' (t, a) = g (t, a) := by
-  /- For every `e : E`, we can upgrade `p` to a LocalHomeomorph `q e` around `e`. -/
+  -- For every `e : E`, upgrade `p` to a LocalHomeomorph `q e` around `e`.
   choose q mem_source hpq using hp
+  /- Using the hypothesis `cont_a`, we partition the unit interval so that for each subinterval
+    [tₙ, tₙ₊₁], g ([tₙ, tₙ₊₁] × {a}) is contained in the domain of some local homeomorphism `q e`. -/
   obtain ⟨t, t_0, t_mono, ⟨n_max, h_max⟩, t_sub⟩ :=
     exists_monotone_Icc_subset_open_cover_unitInterval
       (fun e ↦ (q e).open_source.preimage cont_a)
       fun t _ ↦ Set.mem_iUnion.mpr ⟨g (t, a), mem_source _⟩
+  /- We aim to inductively prove the existence of Nₙ and g' continuous on [0, tₙ] × Nₙ for each n,
+    and get the desired result by taking some n with tₙ = 1. -/
   suffices ∀ n, ∃ N, a ∈ N ∧ IsOpen N ∧ ∃ g' : I × A → E, ContinuousOn g' (Set.Icc 0 (t n) ×ˢ N) ∧
       p ∘ g' = f ∧ (∀ a, g' (0, a) = g (0, a)) ∧ ∀ t' ≤ t n, g' (t', a) = g (t', a) by
     obtain ⟨N, haN, N_open, hN⟩ := this n_max
@@ -45,17 +48,23 @@ theorem IsLocalHomeomorph.exists_lift_nhds (hp : IsLocalHomeomorph p)
     · rw [imp_iff_right]; exact le_top
   refine Nat.rec ⟨_, Set.mem_univ a, isOpen_univ, g, ?_, g_lifts, fun a ↦ rfl, fun _ _ ↦ rfl⟩
     (fun n ⟨N, haN, N_open, g', cont_g', g'_lifts, g'_0, g'_a⟩ ↦ ?_)
-  · refine (cont_0.comp continuous_snd).continuousOn.congr (fun ta ⟨ht, _⟩ ↦ ?_)
+  · -- the n = 0 case is covered by the hypothesis cont_0.
+    refine (cont_0.comp continuous_snd).continuousOn.congr (fun ta ⟨ht, _⟩ ↦ ?_)
     rw [t_0, Set.Icc_self, Set.mem_singleton_iff] at ht; rw [← ta.eta, ht]; rfl
+  /- Since g ([tₙ, tₙ₊₁] × {a}) is contained in the domain of some local homeomorphism `q e` and
+    g lifts f, f ([tₙ, tₙ₊₁] × {a}) is contained in the target of `q e`. -/
   obtain ⟨e, h_sub⟩ := t_sub n
   have : Set.Icc (t n) (t (n+1)) ×ˢ {a} ⊆ f ⁻¹' (q e).target := by
     rintro ⟨t0, a'⟩ ⟨ht, ha⟩
     rw [Set.mem_singleton_iff] at ha; dsimp only at ha
     rw [← g_lifts, hpq e, ha]
     exact (q e).map_source (h_sub ht)
+  /- Using compactness of [tₙ, tₙ₊₁], we can find a neighborhood N of a such that
+    f ([tₙ, tₙ₊₁] × N) is contained in the target of `q e`. -/
   obtain ⟨u, v, -, v_open, hu, hav, huv⟩ := generalized_tube_lemma isClosed_Icc.isCompact
     isCompact_singleton ((q e).open_target.preimage f.continuous) this
   classical
+  -- Use the inverse of `q e` to extend g' from [0, tₙ] × Nₙ to [0, tₙ₊₁] × (Nₙ ∩ N).
   refine ⟨_, ?_, v_open.inter <| (cont_g'.comp (Continuous.Prod.mk <| t n).continuousOn
       fun a ha ↦ ⟨?_, ha⟩).isOpen_inter_preimage N_open (q e).open_source,
     fun ta ↦ if ta.1 ≤ t n then g' ta else if f ta ∈ (q e).target then (q e).symm (f ta) else g ta,
