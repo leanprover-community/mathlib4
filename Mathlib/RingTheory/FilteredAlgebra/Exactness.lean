@@ -74,8 +74,7 @@ theorem GradedPieceHom_eq_zero_iff_AssociatedGradedRingHom_of_eq_zero {i : ι}
     · rw [← ch, of_eq_same, h]
     · rw [of_eq_of_ne i j u ch, map_zero]
   · intro h
-    have := h i
-    simpa using this
+    simpa using h i
 
 theorem AssociatedGradedRingHom_in_range_iff_GradedPieceHom_in_range
     (m : AssociatedGraded FS FS_lt) : m ∈ Set.range Gr[f] ↔ ∀ i : ι, m i ∈ Set.range Gr(i)[f] := by
@@ -100,17 +99,16 @@ theorem GradedPieceHom_in_range_iff_AssociatedGradedRingHom_of_in_range {i : ι}
     · use 0
       rw [of_eq_of_ne i j u ch, map_zero]
   · intro h
-    have := h i
-    simpa using this
+    simpa using h i
 
 theorem GradedPieceHom_ker_eq_GradedPieceHom_range (i : ι) (Gexact : Function.Exact Gr[f] Gr[g]) :
     Gr(i)[g].ker = Set.range Gr(i)[f] := by
   ext u
-  refine Iff.trans (GradedPieceHom_eq_zero_iff_AssociatedGradedRingHom_of_eq_zero g u) ?_
-  have := (GradedPieceHom_in_range_iff_AssociatedGradedRingHom_of_in_range f u).symm
-  exact Iff.trans (Gexact ((of (GradedPiece FS FS_lt) i) u)) this
+  apply Iff.trans (GradedPieceHom_eq_zero_iff_AssociatedGradedRingHom_of_eq_zero g u)
+  apply Iff.trans (Gexact ((of (GradedPiece FS FS_lt) i) u))
+  exact (GradedPieceHom_in_range_iff_AssociatedGradedRingHom_of_in_range f u).symm
 
-theorem AssociatedGradedRingHom_exact_iff_GradedPieceHom_exact :
+theorem GradedPieceHom_exact_of_AssociatedGradedRingHom_exact :
     Function.Exact Gr[f] Gr[g] → ∀ i, Function.Exact Gr(i)[f] Gr(i)[g] := by
   refine fun h i ↦ AddMonoidHom.exact_iff.mpr ?_
   have := GradedPieceHom_ker_eq_GradedPieceHom_range f g i h
@@ -118,8 +116,6 @@ theorem AssociatedGradedRingHom_exact_iff_GradedPieceHom_exact :
   rwa [eq, SetLike.coe_set_eq] at this
 
 end AssociatedGradedRingHom_ext
-
-
 
 section exactness
 
