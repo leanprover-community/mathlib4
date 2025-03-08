@@ -41,7 +41,12 @@ lemma tilted_mul_apply_mgf [SFinite μ] (s : Set Ω) :
     μ.tilted (t * X ·) s = ∫⁻ a in s, ENNReal.ofReal (exp (t * X a) / mgf X μ t) ∂μ := by
   rw [tilted_apply, mgf]
 
-lemma tilted_mul_apply_cgf [IsProbabilityMeasure μ] (s : Set Ω)
+lemma tilted_mul_apply_cgf' [NeZero μ] {s : Set Ω} (hs : MeasurableSet s)
+    (ht : Integrable (fun ω ↦ exp (t * X ω)) μ) :
+    μ.tilted (t * X ·) s = ∫⁻ a in s, ENNReal.ofReal (exp (t * X a - cgf X μ t)) ∂μ := by
+  simp_rw [tilted_mul_apply_mgf' hs, exp_sub, exp_cgf ht]
+
+lemma tilted_mul_apply_cgf [NeZero μ] [SFinite μ] (s : Set Ω)
     (ht : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     μ.tilted (t * X ·) s = ∫⁻ a in s, ENNReal.ofReal (exp (t * X a - cgf X μ t)) ∂μ := by
   simp_rw [tilted_mul_apply_mgf s, exp_sub, exp_cgf ht]
@@ -54,12 +59,17 @@ lemma tilted_mul_apply_eq_ofReal_integral_mgf [SFinite μ] (s : Set Ω) :
     μ.tilted (t * X ·) s = ENNReal.ofReal (∫ a in s, exp (t * X a) / mgf X μ t ∂μ) := by
   rw [tilted_apply_eq_ofReal_integral _ s, mgf]
 
-lemma tilted_mul_apply_eq_ofReal_integral_cgf [IsProbabilityMeasure μ] (s : Set Ω)
+lemma tilted_mul_apply_eq_ofReal_integral_cgf' [NeZero μ] {s : Set Ω} (hs : MeasurableSet s)
+    (ht : Integrable (fun ω ↦ exp (t * X ω)) μ) :
+    μ.tilted (t * X ·) s = ENNReal.ofReal (∫ a in s, exp (t * X a - cgf X μ t) ∂μ) := by
+  simp_rw [tilted_mul_apply_eq_ofReal_integral_mgf' hs, exp_sub]
+  rwa [exp_cgf]
+
+lemma tilted_mul_apply_eq_ofReal_integral_cgf [NeZero μ] [SFinite μ] (s : Set Ω)
     (ht : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     μ.tilted (t * X ·) s = ENNReal.ofReal (∫ a in s, exp (t * X a - cgf X μ t) ∂μ) := by
   simp_rw [tilted_mul_apply_eq_ofReal_integral_mgf s, exp_sub]
-  rw [exp_cgf]
-  exact ht
+  rwa [exp_cgf]
 
 end Apply
 
@@ -79,7 +89,12 @@ lemma setIntegral_tilted_mul_mgf [SFinite μ] (g : Ω → E) (s : Set Ω) :
     ∫ x in s, g x ∂(μ.tilted (t * X ·)) = ∫ x in s, (exp (t * X x) / mgf X μ t) • (g x) ∂μ := by
   rw [setIntegral_tilted, mgf]
 
-lemma setIntegral_tilted_mul_cgf [IsProbabilityMeasure μ] (g : Ω → E) (s : Set Ω)
+lemma setIntegral_tilted_mul_cgf' [NeZero μ] (g : Ω → E) {s : Set Ω}
+    (hs : MeasurableSet s) (ht : Integrable (fun ω ↦ exp (t * X ω)) μ) :
+    ∫ x in s, g x ∂(μ.tilted (t * X ·)) = ∫ x in s, exp (t * X x - cgf X μ t) • (g x) ∂μ := by
+  simp_rw [setIntegral_tilted_mul_mgf' _ hs, exp_sub, exp_cgf ht]
+
+lemma setIntegral_tilted_mul_cgf [NeZero μ] [SFinite μ] (g : Ω → E) (s : Set Ω)
     (ht : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     ∫ x in s, g x ∂(μ.tilted (t * X ·)) = ∫ x in s, exp (t * X x - cgf X μ t) • (g x) ∂μ := by
   simp_rw [setIntegral_tilted_mul_mgf, exp_sub, exp_cgf ht]
@@ -88,12 +103,11 @@ lemma integral_tilted_mul_mgf (g : Ω → E) :
     ∫ ω, g ω ∂(μ.tilted (t * X ·)) = ∫ ω, (exp (t * X ω) / mgf X μ t) • (g ω) ∂μ := by
   rw [integral_tilted, mgf]
 
-lemma integral_tilted_mul_cgf [IsProbabilityMeasure μ] (g : Ω → E)
+lemma integral_tilted_mul_cgf [NeZero μ] (g : Ω → E)
     (ht : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     ∫ ω, g ω ∂(μ.tilted (t * X ·)) = ∫ ω, exp (t * X ω - cgf X μ t) • (g ω) ∂μ := by
   simp_rw [integral_tilted_mul_mgf, exp_sub]
-  rw [exp_cgf]
-  exact ht
+  rwa [exp_cgf]
 
 lemma integral_tilted_mul_self (ht : t ∈ interior (integrableExpSet X μ)) :
     (μ.tilted (t * X ·))[X] = deriv (cgf X μ) t := by
