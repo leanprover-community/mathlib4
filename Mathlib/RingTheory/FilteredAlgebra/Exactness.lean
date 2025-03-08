@@ -50,14 +50,15 @@ variable {FR_lt: outParam <| ι → σR} {FS_lt: outParam <| ι → σS} {FT_lt:
 
 variable (f : FilteredRingHom FR FR_lt FS FS_lt) (g : FilteredRingHom FS FS_lt FT FT_lt)
 
-open DirectSum DFinsupp FilteredAddGroupHom
 open scoped FilteredRingHom
 
-variable  [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt]
+variable [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt]
 
 
 
 section AssociatedGradedRingHom_ext
+
+open DirectSum
 
 theorem AssociatedGradedRingHom_eq_zero_iff_GradedPieceHom_eq_zero (m : AssociatedGraded FS FS_lt) :
     Gr[g] m = 0 ↔ ∀ i : ι, Gr(i)[g] (m i) = 0 := by
@@ -83,12 +84,12 @@ theorem AssociatedGradedRingHom_in_range_iff_GradedPieceHom_in_range
   refine ⟨fun ⟨l, hl⟩ i ↦ ?_, fun h ↦ ?_⟩
   · rw [← hl, FilteredRingHom.AssociatedGradedRingHom_apply]
     use l i
-  · use DirectSum.mk (GradedPiece FR FR_lt) (support m) (fun i ↦ Classical.choose (h i))
+  · use DirectSum.mk (GradedPiece FR FR_lt) (DFinsupp.support m) (fun i ↦ Classical.choose (h i))
     ext i
     rw [FilteredRingHom.AssociatedGradedRingHom_apply]
-    by_cases mem : i ∈ support m
+    by_cases mem : i ∈ DFinsupp.support m
     · rw [mk_apply_of_mem mem, Classical.choose_spec (h i)]
-    · rw [mk_apply_of_not_mem mem, not_mem_support_iff.mp mem, map_zero]
+    · rw [mk_apply_of_not_mem mem, DFinsupp.not_mem_support_iff.mp mem, map_zero]
 
 theorem GradedPieceHom_in_range_iff_AssociatedGradedRingHom_of_in_range {i : ι}
     (u : GradedPiece FS FS_lt i) : u ∈ Set.range Gr(i)[f] ↔
@@ -123,6 +124,8 @@ end AssociatedGradedRingHom_ext
 
 
 section exactness
+
+open FilteredAddGroupHom
 
 variable [IsRingFiltration FS FS_lt]
 
