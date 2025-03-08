@@ -264,6 +264,16 @@ lemma prodMkLeft_add (κ η : Kernel α β) :
 lemma prodMkRight_add (κ η : Kernel α β) :
     prodMkRight γ (κ + η) = prodMkRight γ κ + prodMkRight γ η := by ext; simp
 
+lemma sum_prodMkLeft {ι : Type*} [Countable ι] {κ : ι → Kernel α β} :
+    Kernel.sum (fun i ↦ Kernel.prodMkLeft γ (κ i)) = Kernel.prodMkLeft γ (Kernel.sum κ) := by
+  ext
+  simp_rw [sum_apply, prodMkLeft_apply, sum_apply]
+
+lemma sum_prodMkRight {ι : Type*} [Countable ι] {κ : ι → Kernel α β} :
+    Kernel.sum (fun i ↦ Kernel.prodMkRight γ (κ i)) = Kernel.prodMkRight γ (Kernel.sum κ) := by
+  ext
+  simp_rw [sum_apply, prodMkRight_apply, sum_apply]
+
 theorem lintegral_prodMkLeft (κ : Kernel α β) (ca : γ × α) (g : β → ℝ≥0∞) :
     ∫⁻ b, g b ∂prodMkLeft γ κ ca = ∫⁻ b, g b ∂κ ca.snd := rfl
 
@@ -325,6 +335,9 @@ def swapLeft (κ : Kernel (α × β) γ) : Kernel (β × α) γ :=
   comap κ Prod.swap measurable_swap
 
 @[simp]
+lemma swapLeft_zero : swapLeft (0 : Kernel (α × β) γ) = 0 := by simp [swapLeft]
+
+@[simp]
 theorem swapLeft_apply (κ : Kernel (α × β) γ) (a : β × α) : swapLeft κ a = κ a.swap := rfl
 
 theorem swapLeft_apply' (κ : Kernel (α × β) γ) (a : β × α) (s : Set γ) :
@@ -356,6 +369,9 @@ noncomputable def swapRight (κ : Kernel α (β × γ)) : Kernel α (γ × β) :
 
 lemma swapRight_eq (κ : Kernel α (β × γ)) : swapRight κ = map κ Prod.swap := by
   simp [swapRight]
+
+@[simp]
+lemma swapRight_zero : swapRight (0 : Kernel α (β × γ)) = 0 := by simp [swapRight]
 
 theorem swapRight_apply (κ : Kernel α (β × γ)) (a : α) : swapRight κ a = (κ a).map Prod.swap :=
   rfl
@@ -453,7 +469,7 @@ theorem snd_apply (κ : Kernel α (β × γ)) (a : α) : snd κ a = (κ a).map P
   rfl
 
 theorem snd_apply' (κ : Kernel α (β × γ)) (a : α) {s : Set γ} (hs : MeasurableSet s) :
-    snd κ a s = κ a {p | p.2 ∈ s} := by rw [snd_apply, Measure.map_apply measurable_snd hs]; rfl
+    snd κ a s = κ a (Prod.snd ⁻¹' s) := by rw [snd_apply, Measure.map_apply measurable_snd hs]
 
 @[simp]
 lemma snd_zero : snd (0 : Kernel α (β × γ)) = 0 := by simp [snd]
@@ -616,6 +632,20 @@ lemma sectR_prodMkRight (β : Type*) [MeasurableSpace β] (κ : Kernel α γ) (b
 @[simp] lemma sectR_swapRight (κ : Kernel (α × β) γ) : sectR (swapLeft κ) = sectL κ := rfl
 
 end sectLsectR
+
+lemma isSFiniteKernel_prodMkLeft_iff [Nonempty γ] {κ : Kernel α β} :
+    IsSFiniteKernel (prodMkLeft γ κ) ↔ IsSFiniteKernel κ := by
+  inhabit γ
+  refine ⟨fun h ↦ ?_, fun _ ↦ inferInstance⟩
+  rw [← sectR_prodMkLeft γ κ default]
+  infer_instance
+
+lemma isSFiniteKernel_prodMkRight_iff [Nonempty γ] {κ : Kernel α β} :
+    IsSFiniteKernel (prodMkRight γ κ) ↔ IsSFiniteKernel κ := by
+  inhabit γ
+  refine ⟨fun h ↦ ?_, fun _ ↦ inferInstance⟩
+  rw [← sectL_prodMkRight γ κ default]
+  infer_instance
 
 end Kernel
 end ProbabilityTheory
