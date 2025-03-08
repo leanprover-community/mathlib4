@@ -172,6 +172,7 @@ theorem exists_path_lifts : ∃ Γ : C(I,E), p ∘ Γ = γ ∧ Γ 0 = e := by
     exacts [eqOn ⟨hs.1, h⟩, (q x).proj_symm_apply' (t_sub ⟨le_of_not_le h, hs.2⟩)]
   · dsimp only; rwa [if_pos (t_0 ▸ t_mono n.zero_le)]
 
+/-- The lift of a path to a covering space given a lift of the left endpoint. -/
 noncomputable def liftPath : C(I,E) := (hp.exists_path_lifts γ e γ_0).choose
 
 lemma liftPath_lifts : p ∘ hp.liftPath γ e γ_0 = γ := (hp.exists_path_lifts γ e γ_0).choose_spec.1
@@ -225,6 +226,8 @@ lemma eq_liftHomotopy_iff' (H' : C(I × A, E)) :
 variable {f₀ f₁ : C(A, X)} {S : Set A} (F : f₀.HomotopyRel f₁ S)
 
 open ContinuousMap in
+/-- The lift of a homotopy between two continuous maps relative to a set to a covering space
+given compatible lifts of the continuous maps. -/
 noncomputable def liftHomotopyRel [PreconnectedSpace A]
     {f₀' f₁' : C(A, E)} (he : ∃ a ∈ S, f₀' a = f₁' a)
     (h₀ : p ∘ f₀' = f₀) (h₁ : p ∘ f₁' = f₁) : f₀'.HomotopyRel f₁' S :=
