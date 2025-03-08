@@ -402,6 +402,9 @@ continuous. -/
 class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] : Prop
     extends ContinuousAdd G, ContinuousNeg G
 
+@[deprecated (since := "2025-02-14")] alias TopologicalAddGroup :=
+  IsTopologicalAddGroup
+
 /-- A topological group is a group in which the multiplication and inversion operations are
 continuous.
 
@@ -412,6 +415,9 @@ you should also provide an instance of `UniformSpace` and `UniformGroup` using
 @[to_additive]
 class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] : Prop
     extends ContinuousMul G, ContinuousInv G
+
+@[deprecated (since := "2025-02-14")] alias TopologicalGroup :=
+  IsTopologicalGroup
 
 section Conj
 
