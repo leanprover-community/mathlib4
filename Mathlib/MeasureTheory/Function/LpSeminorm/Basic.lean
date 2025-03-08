@@ -279,7 +279,7 @@ theorem eLpNorm_measure_zero {f : α → ε} : eLpNorm f p (0 : Measure α) = 0 
   rw [← Ne] at h0
   simp [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm', ENNReal.toReal_pos h0 h_top]
 
-@[simp] lemma memLp_measure_zero [TopologicalSpace ε] {f : α → ε} : MemLp f p (0 : Measure α) := by
+@[simp] lemma memLp_measure_zero {f : α → ε} : MemLp f p (0 : Measure α) := by
   simp [MemLp]
 
 @[deprecated (since := "2025-02-21")]
@@ -749,28 +749,28 @@ lemma eLpNorm_restrict_le (f : α → ε) (p : ℝ≥0∞) (μ : Measure α) (s 
     eLpNorm f p (μ.restrict s) ≤ eLpNorm f p μ :=
   eLpNorm_mono_measure f Measure.restrict_le_self
 
-lemma eLpNorm_indicator_le {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] (f : α → ε) :
+variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+
+lemma eLpNorm_indicator_le (f : α → ε) :
     eLpNorm (s.indicator f) p μ ≤ eLpNorm f p μ := by
   refine eLpNorm_mono_ae' <| .of_forall fun x ↦ ?_
   rw [enorm_indicator_eq_indicator_enorm]
   exact s.indicator_le_self _ x
 
-lemma eLpNormEssSup_indicator_le {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
-    (s : Set α) (f : α → ε) :
+lemma eLpNormEssSup_indicator_le (s : Set α) (f : α → ε) :
     eLpNormEssSup (s.indicator f) μ ≤ eLpNormEssSup f μ := by
   refine essSup_mono_ae (Eventually.of_forall fun x => ?_)
   simp_rw [enorm_indicator_eq_indicator_enorm]
   exact Set.indicator_le_self s _ x
 
-lemma eLpNormEssSup_indicator_const_le {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
-    (s : Set α) (c : ε) : eLpNormEssSup (s.indicator fun _ : α => c) μ ≤ ‖c‖ₑ := by
+lemma eLpNormEssSup_indicator_const_le (s : Set α) (c : ε) :
+    eLpNormEssSup (s.indicator fun _ : α => c) μ ≤ ‖c‖ₑ := by
   by_cases hμ0 : μ = 0
   · rw [hμ0, eLpNormEssSup_measure_zero]
     exact zero_le _
   · exact (eLpNormEssSup_indicator_le s fun _ => c).trans (eLpNormEssSup_const c hμ0).le
 
-lemma eLpNormEssSup_indicator_const_eq {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
-    (s : Set α) (c : ε) (hμs : μ s ≠ 0) :
+lemma eLpNormEssSup_indicator_const_eq (s : Set α) (c : ε) (hμs : μ s ≠ 0) :
     eLpNormEssSup (s.indicator fun _ : α => c) μ = ‖c‖ₑ := by
   refine le_antisymm (eLpNormEssSup_indicator_const_le s c) ?_
   by_contra! h
@@ -779,7 +779,7 @@ lemma eLpNormEssSup_indicator_const_eq {ε : Type*} [TopologicalSpace ε] [ENorm
   refine hμs (measure_mono_null (fun x hx_mem => ?_) h')
   rw [Set.mem_setOf_eq, Set.indicator_of_mem hx_mem]
 
-variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] {c : ε}
+variable {c : ε}
 
 lemma eLpNorm_indicator_const₀ (hs : NullMeasurableSet s μ) (hp : p ≠ 0) (hp_top : p ≠ ∞) :
     eLpNorm (s.indicator fun _ => c) p μ = ‖c‖ₑ * μ s ^ (1 / p.toReal) :=
@@ -908,7 +908,10 @@ theorem eLpNorm_restrict_eq_of_support_subset
     have : ¬(p.toReal ≤ 0) := by simpa only [not_le] using ENNReal.toReal_pos hp0 hp_top
     simpa [this] using hsf
 
-theorem MemLp.restrict [TopologicalSpace ε] (s : Set α) {f : α → ε} (hf : MemLp f p μ) :
+variable {ε : Type*} [ENorm ε] [TopologicalSpace ε]
+
+theorem MemLp.restrict {ε} [ENorm ε] [TopologicalSpace ε]
+    (s : Set α) {f : α → ε} (hf : MemLp f p μ) :
     MemLp f p (μ.restrict s) :=
   hf.mono_measure Measure.restrict_le_self
 
@@ -973,7 +976,8 @@ theorem eLpNorm_one_smul_measure {f : α → F} (c : ℝ≥0∞) :
     eLpNorm f 1 (c • μ) = c * eLpNorm f 1 μ := by
   rw [eLpNorm_smul_measure_of_ne_top] <;> simp
 
-theorem MemLp.of_measure_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞)
+theorem MemLp.of_measure_le_smul {ε} [TopologicalSpace ε] [ENormedAddMonoid ε]
+    {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞)
     (hμ'_le : μ' ≤ c • μ) {f : α → ε} (hf : MemLp f p μ) : MemLp f p μ' := by
   refine ⟨hf.1.mono_ac (Measure.absolutelyContinuous_of_le_smul hμ'_le), ?_⟩
   refine (eLpNorm_mono_measure f hμ'_le).trans_lt ?_
@@ -992,6 +996,8 @@ theorem MemLp.smul_measure {c : ℝ≥0∞}
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.smul_measure := MemLp.smul_measure
+
+omit [TopologicalSpace ε]
 
 theorem eLpNorm_one_add_measure (f : α → ε) (μ ν : Measure α) :
     eLpNorm f 1 (μ + ν) = eLpNorm f 1 μ + eLpNorm f 1 ν := by
