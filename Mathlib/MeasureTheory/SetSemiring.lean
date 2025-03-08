@@ -635,185 +635,37 @@ end piSemiring
 
 end IsSetSemiring
 
-/-- A ring of sets `C` is a family of sets containing `∅`, stable by union and set difference.
-It is then also stable by intersection (see `IsSetRing.inter_mem`). -/
-structure IsSetRing (C : Set (Set α)) : Prop where
-  empty_mem : ∅ ∈ C
-  union_mem ⦃s t : Set α⦄ : s ∈ C → t ∈ C → s ∪ t ∈ C
-  diff_mem ⦃s t : Set α⦄ : s ∈ C → t ∈ C → s \ t ∈ C
-
-namespace IsSetRing
-
-lemma inter_mem (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) : s ∩ t ∈ C := by
-  rw [← diff_diff_right_self]; exact hC.diff_mem hs (hC.diff_mem hs ht)
-
-/-- A ring is a semi-ring. -/
-lemma isSetSemiring (hC : IsSetRing C) : IsSetSemiring C where
-  empty_mem := hC.empty_mem
-  inter_mem := fun _ hs _ ht => hC.inter_mem hs ht
-  diff_eq_sUnion' := by
-    refine fun s hs t ht => ⟨{s \ t}, ?_, ?_, ?_⟩
-    · simp only [coe_singleton, Set.singleton_subset_iff]
-      exact hC.diff_mem hs ht
-    · simp only [coe_singleton, pairwiseDisjoint_singleton]
-    · simp only [coe_singleton, sUnion_singleton]
-
-lemma biUnion_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
-    (S : Finset ι) (hs : ∀ n ∈ S, s n ∈ C) :
-    ⋃ i ∈ S, s i ∈ C := by
-  classical
-  induction S using Finset.induction with
-  | empty => simp [hC.empty_mem]
-  | insert i S _ h =>
-    simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
-    refine hC.union_mem (hs i (mem_insert_self i S)) ?_
-    exact h (fun n hnS ↦ hs n (mem_insert_of_mem hnS))
-
-lemma biInter_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
-    (S : Finset ι) (hS : S.Nonempty) (hs : ∀ n ∈ S, s n ∈ C) :
-    ⋂ i ∈ S, s i ∈ C := by
-  classical
-  induction hS using Finset.Nonempty.cons_induction with
-  | singleton => simpa using hs
-  | cons i S hiS _ h =>
-    simp_rw [← Finset.mem_coe, Finset.coe_cons, Set.biInter_insert]
-    simp only [cons_eq_insert, Finset.mem_insert, forall_eq_or_imp] at hs
-    refine hC.inter_mem hs.1 ?_
-    exact h (fun n hnS ↦ hs.2 n hnS)
-
-lemma finsetSup_mem (hC : IsSetRing C) {ι : Type*} {s : ι → Set α} {t : Finset ι}
-    (hs : ∀ i ∈ t, s i ∈ C) :
-    t.sup s ∈ C := by
-  classical
-  induction t using Finset.induction_on with
-  | empty => exact hC.empty_mem
-  | insert m t hm ih =>
-    simpa only [sup_insert] using
-      hC.union_mem (hs m <| mem_insert_self m t) (ih <| fun i hi ↦ hs _ <| mem_insert_of_mem hi)
-
-lemma partialSups_mem {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
-    (hC : IsSetRing C) {s : ι → Set α} (hs : ∀ n, s n ∈ C) (n : ι) :
-    partialSups s n ∈ C := by
-  simpa only [partialSups_apply, sup'_eq_sup] using hC.finsetSup_mem (fun i hi ↦ hs i)
-
-lemma disjointed_mem {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
-    (hC : IsSetRing C) {s : ι → Set α} (hs : ∀ j, s j ∈ C) (i : ι) :
-    disjointed s i ∈ C :=
-  disjointedRec (fun _ j ht ↦ hC.diff_mem ht <| hs j) (hs i)
-
-theorem iUnion_le_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n ∈ C) (n : ℕ) :
-    (⋃ i ≤ n, s i) ∈ C := by
-  induction n with
-  | zero => simp [hs 0]
-  | succ n hn => rw [biUnion_le_succ]; exact hC.union_mem hn (hs _)
-
-theorem iInter_le_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n ∈ C) (n : ℕ) :
-    (⋂ i ≤ n, s i) ∈ C := by
-  induction n with
-  | zero => simp [hs 0]
-  | succ n hn => rw [biInter_le_succ]; exact hC.inter_mem hn (hs _)
-
-theorem accumulate_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ i, s i ∈ C) (n : ℕ) :
-    Accumulate s n ∈ C := by
-  induction n with
-  | zero => simp [hs 0]
-  | succ n hn => rw [accumulate_succ]; exact hC.union_mem hn (hs _)
-
-end IsSetRing
-
 section piSemiring
 
 variable {ι : Type*} {α : ι → Type*} {C : (i : ι) → Set (Set (α i))}
 
-noncomputable
-def l5 {β γ : Type*} (hβ : Fintype β) (f : β → γ) (h : ∀ x : γ, ∃ b : β, f b = x) :
-    (Fintype γ) := by
-  choose z hz using h
-  have h : Function.Injective z := by
-    exact Function.LeftInverse.injective hz
-  refine Fintype.ofInjective z h
-
-example {β γ : Type*}  (s : Set β) [Finite s] (f : β → γ) : Finite (f '' s) := by
-  exact Finite.Set.finite_image s f
-
-
-noncomputable
-def finite_of_image {β γ : Type*} (t : Set γ) (s : Finset β) (f : β → γ)
-    (h : ∀ x ∈ t, ∃ b ∈ s, f b = x) : (Finite t) := by
-  choose z hz using h
-  let z' : t → s := fun x ↦ ⟨z x.val x.prop, (hz x.val x.prop).1⟩
-  have hz' : ∀ (x : t), (s.restrict f) (z' x) = x := fun x ↦ (hz x.val x.prop).2
-  have h : Function.Injective z' := by
-    intro a b hab
-    have h1 := hz' a
-    rw [hab, hz' b] at h1
-    exact SetCoe.ext (id (Eq.symm h1))
-  exact Fintype.finite <| Fintype.ofInjective z' h
-
-example (t : Set ι) (x : Set ((i : ι) → α i)) : x ∈ t.pi '' t.pi C ↔ ∃ s ∈ t.pi C, t.pi s = x := by
-  rw [mem_image]
-
-lemma l0 (t : Set ι) (x : Set ((i : ι) → α i)) : x ∈ t.pi '' t.pi C ↔
-  ∃ (s : (i : ι) → Set (α i)) (_ : ∀ i ∈ t, s i ∈ C i), t.pi s = x := by
-  exact Iff.symm bex_def
-
 variable {β : Type*}
 
-lemma l10 (a : Set β) (B : Set (Set β)) : a ∩ ⋃₀ B = ⋃ b ∈ B, a ∩ b := by
-  rw [sUnion_eq_iUnion]
-  simp only [iUnion_coe_set]
-  exact inter_iUnion₂ a fun i j ↦ i
-
-
-lemma l7 {I J : Set (Set β)} (hI : PairwiseDisjoint I id) (hJ : PairwiseDisjoint J id)
-    (hIJ : Disjoint (⋃₀ I) (⋃₀ J)) : PairwiseDisjoint (I ∪ J) id := by
-  intro a ha b hb hab
-  rw [Set.mem_union] at ha hb
-  rcases ha with ha1 | ha2 <;> rcases hb with hb1 | hb2
-  · exact hI ha1 hb1 hab
-  · exact disjoint_of_subset (subset_sUnion_of_subset I a (subset_refl a) ha1)
-      (subset_sUnion_of_subset J b (subset_refl b) hb2) hIJ
-  · exact disjoint_of_subset (subset_sUnion_of_subset J a (subset_refl a) ha2)
-      (subset_sUnion_of_subset I b (subset_refl b) hb1) hIJ.symm
-  · exact hJ ha2 hb2 hab
-
-example (a c d : Set ι) (hcd : c = d) : a ∩ c = a ∩ d := by exact congrArg (Inter.inter a) hcd
-
-lemma l12 (s t : Set ι) (x : (i : ι) → Set (α i)) (y : (i : ι) → Set (α i)) :
+lemma pi_setdiff_eq_union (s t : Set ι) (x : (i : ι) → Set (α i)) (y : (i : ι) → Set (α i)) :
   (s ∪ t).pi x \ (s ∪ t).pi y = (t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y) ∪
     t.pi x ∩ (s.pi x \ s.pi y) := by
     ext z
     refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · simp only [mem_diff] at h
-      -- rw [← hx2, ← hy2] at h
-      simp only [mem_inter_iff, Set.mem_preimage, Function.eval, Set.mem_pi, not_and,
+    · simp only [mem_diff, mem_inter_iff, Set.mem_preimage, Function.eval, Set.mem_pi, not_and,
           not_forall, Classical.not_imp] at h
       obtain ⟨h1, ⟨j, ⟨hj1, hj2⟩⟩⟩ := h
       by_cases hz : ∃ a ∈ s, z a ∉ y a
       · right
         simp only [mem_inter_iff, Set.mem_pi, mem_diff, not_forall, Classical.not_imp]
-        refine ⟨?_, ?_, ?_⟩
-        · exact fun i hi ↦ h1 i (Set.subset_union_right hi)
-        · exact fun i hi ↦ h1 i (Set.subset_union_left hi)
-        · exact bex_def.mpr hz
+        refine ⟨fun i hi ↦ h1 i (Set.subset_union_right hi),
+          fun i hi ↦ h1 i (Set.subset_union_left hi), bex_def.mpr hz⟩
       · simp only [not_exists, not_and, not_not] at hz
         left
         simp only [mem_inter_iff, mem_diff, Set.mem_pi, not_forall, Classical.not_imp,
           Set.mem_preimage, Function.eval]
-        refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
-        · exact fun i hi ↦ h1 i (Set.subset_union_right hi)
+        refine ⟨⟨fun i hi ↦ h1 i (Set.subset_union_right hi), ?_⟩,
+          fun i hi ↦ h1 i (Set.subset_union_left hi), hz⟩
         · have hj : j ∈ t := by
-            by_contra h
-            have h' : j ∈ s := by
-              by_contra h'
-              have h1 : j ∉ s ∪ t:= by
-                simp only [Set.mem_union, not_or]
-                exact ⟨h', h⟩
-              exact h1 hj1
-            exact hj2 <| hz j h'
+            simp only [Set.mem_union] at hj1
+            cases' hj1 with g1 g2
+            · exact False.elim (hj2 (hz j g1))
+            · exact g2
           exact ⟨j, hj, hj2⟩
-        · exact fun i hi ↦ h1 i (Set.subset_union_left hi)
-        · exact hz
     · simp only [Set.mem_union, mem_inter_iff, mem_diff, Set.mem_pi, not_forall,
       Classical.not_imp] at h
       simp only [mem_diff, Set.mem_pi, Set.mem_union, not_forall, Classical.not_imp]
@@ -847,7 +699,7 @@ def fintype_pi_of_finset (a : ι) (K' : (i : ι) → (Set (Set (α i)))) (K : Fi
     rw [← hK'] at hx1
     refine ⟨x a, hx1, hx2.symm ▸ Eq.symm (singleton_pi' a x)⟩
   simp only [mem_coe] at h
-  exact Finite.fintype <| finite_of_image (({a} : Set ι).pi  '' ({a} : Set ι).pi K') K E h
+  exact Finite.fintype <| Finite.Set.subset (E '' ↑K) h
 
 lemma subset_pi_image_of_subset {s : Set ι} {B C : (i : ι) → Set (Set (α i))}
     (hBC : ∀ i ∈ s, B i ⊆ C i) : s.pi  '' s.pi B ⊆ s.pi  '' s.pi C := by
@@ -869,7 +721,7 @@ lemma Set.PairwiseDisjoint.set_pi {a : ι} {K : (i : ι) → Set (Set (α i))}
   apply Set.Disjoint.set_pi (mem_singleton_iff.mpr rfl)
   exact h ho1 hp1 <| fun h7 ↦  hmn <| Set.pi_congr rfl <| fun i hi ↦ (mem_singleton_iff.mpr hi) ▸ h7
 
-lemma l16 {a : ι} {K' : (i : ι) → Set (Set (α i))}
+private lemma pi_singleton_diff_eq_sUnion {a : ι} {K' : (i : ι) → Set (Set (α i))}
   {x y : (i : ι) → Set (α i)} (hK : x a \ y a = ⋃₀ K' a) :
       (({a} : Set ι).pi x \ ({a} : Set ι).pi y) =
         ⋃₀ (({a} : Set ι).pi  '' ({a} : Set ι).pi K') := by
@@ -905,8 +757,8 @@ lemma pi_antitone (s t : Set ι) (hst : s ⊆ t) (x : (i : ι) → Set (α i)) :
   rw [← union_diff_cancel hst, union_pi]
   exact Set.inter_subset_left
 
-lemma l15 {s t : Set ι} {x : (i : ι) → Set (α i)}  (hst : Disjoint s t) (hx : ∀ i ∈ t, x i ∈ C i)
-  {K' : Set (Set ((i : ι) → α i))} (hK'1 : K' ⊆ s.pi '' s.pi C) :
+private lemma pi_inter_image {s t : Set ι} {x : (i : ι) → Set (α i)}  (hst : Disjoint s t)
+  (hx : ∀ i ∈ t, x i ∈ C i) {K' : Set (Set ((i : ι) → α i))} (hK'1 : K' ⊆ s.pi '' s.pi C) :
   Set.inter (t.pi x) '' K' ⊆ (s ∪ t).pi '' (s ∪ t).pi C := by
   intro a ha
   obtain ⟨b, ⟨hb1, hb2⟩⟩ := ha
@@ -927,13 +779,12 @@ lemma l15 {s t : Set ι} {x : (i : ι) → Set (α i)}  (hst : Disjoint s t) (hx
   · rw [← hb2, ← hc2, inter_eq_dite hst, inter_comm]
     rfl
 
-lemma l15' {s t : Set ι} {x : (i : ι) → Set (α i)}  (hst : Disjoint s t) (hx : ∀ i ∈ t, x i ∈ C i)
-  {K' : (i : ι) → Set (Set (α i))} (hK'1 : ∀ i ∈ s, K' i ⊆ C i) :
+lemma pi_inter_image' {s t : Set ι} {x : (i : ι) → Set (α i)}  (hst : Disjoint s t)
+(hx : ∀ i ∈ t, x i ∈ C i) {K' : (i : ι) → Set (Set (α i))} (hK'1 : ∀ i ∈ s, K' i ⊆ C i) :
   Set.inter (t.pi x) '' (s.pi  '' s.pi K') ⊆ (s ∪ t).pi '' (s ∪ t).pi C := by
-  exact l15 hst hx <| subset_pi_image_of_subset hK'1
+  exact pi_inter_image hst hx <| subset_pi_image_of_subset hK'1
 
-
-theorem l [∀ (i : ι), Nonempty (α i)] (s : Set ι) (hs : s.Finite)
+theorem IsSetSemiring_pi [∀ (i : ι), Nonempty (α i)] (s : Set ι) (hs : s.Finite)
     (hC : ∀ i ∈ s, IsSetSemiring (C i)) : s.Nonempty →  IsSetSemiring (s.pi '' s.pi C) := by
   classical
   refine Set.Finite.induction_on_subset s hs (fun h ↦ False.elim <| Set.not_nonempty_empty h) ?_
@@ -958,7 +809,7 @@ theorem l [∀ (i : ι), Nonempty (α i)] (s : Set ι) (hs : s.Finite)
     have h1 : u \ v = ((t.pi x \ t.pi y) ∩ (({a} : Set ι).pi x ∩ ({a} : Set ι).pi y))
         ∪ (t.pi x ∩ (({a} : Set ι).pi x \ ({a} : Set ι).pi y)) :=  by
       rw [← hx2, ← hy2, ← union_pi, ← union_pi]
-      apply l12
+      apply pi_setdiff_eq_union
     -- Show that the two sets from `h1` are disjoint.
     obtain h2 := l13 ({a} : Set ι) t x y
     -- `K : Set (Set (α a))` is such that `x a \ y a = ⋃₀ K`.
@@ -978,19 +829,19 @@ theorem l [∀ (i : ι), Nonempty (α i)] (s : Set ι) (hs : s.Finite)
     have hE1 := subset_pi_image_of_subset hK'1; clear hK'1
     have hE2 : PairwiseDisjoint (({a} : Set ι).pi  '' ({a} : Set ι).pi K') id :=
       Set.PairwiseDisjoint.set_pi (hKK' ▸ hK2)
-    have hE3 := l16 (hKK'.symm ▸ hK3)
+    have hE3 := pi_singleton_diff_eq_sUnion (hKK'.symm ▸ hK3)
 
     let F := Set.inter (t.pi x) '' (({a} : Set ι).pi  '' ({a} : Set ι).pi K')
 
     have hF1 : F ⊆ (insert a t).pi '' (insert a t).pi C :=
-      l15' (Set.disjoint_singleton_left.mpr t_fin) (fun i hi ↦ hx1 i (Or.inr hi))
+      pi_inter_image' (Set.disjoint_singleton_left.mpr t_fin) (fun i hi ↦ hx1 i (Or.inr hi))
         (fun i hi ↦ mem_singleton_iff.mp hi ▸ hKK' ▸ hK1)
 
     have hF2 : PairwiseDisjoint F id :=
       PairwiseDisjoint.image_of_le (Set.PairwiseDisjoint.set_pi (hKK' ▸ hK2)) <|
       fun a b hb ↦ Set.mem_of_mem_inter_right hb
     have hF3 : ⋃₀ F = (t.pi x) ∩ (({a} : Set ι).pi x \ ({a} : Set ι).pi y) := by
-      rw [hE3, l10]
+      simp_rw [hE3, sUnion_eq_iUnion, iUnion_coe_set, inter_iUnion₂]
       simp only [singleton_pi, sUnion_image, Set.mem_image, Set.mem_preimage, Function.eval,
         iUnion_exists, biUnion_and', iUnion_iUnion_eq_right, F]
       rfl
@@ -1010,7 +861,7 @@ theorem l [∀ (i : ι), Nonempty (α i)] (s : Set ι) (hs : s.Finite)
       have hG1 : G ⊆ (insert a t).pi '' (insert a t).pi C := by
         simp only [G]
         rw [← singleton_union, union_comm, ← Set.pi_inter_distrib]
-        exact l15 (Set.disjoint_singleton_right.mpr t_fin)
+        exact pi_inter_image (Set.disjoint_singleton_right.mpr t_fin)
           (fun i hi ↦ hi ▸ (hC a ha).inter_mem (y a)
           (hy1 a (Or.inl rfl)) (x a) (hx1 a (Or.inl rfl)))
             <| IsSetSemiring.subset_disjointOfDiff h_ind' hx3 hy3
@@ -1019,14 +870,17 @@ theorem l [∀ (i : ι), Nonempty (α i)] (s : Set ι) (hs : s.Finite)
         (h_ind'.pairwiseDisjoint_disjointOfDiff hx3 hy3) <| fun _ _ hb ↦
           Set.mem_of_mem_inter_right hb
       have hG3 : ⋃₀ G = ((({a} : Set ι).pi x ∩ ({a} : Set ι).pi y)) ∩ (t.pi x \ t.pi y) := by
-        rw [← h_ind'.sUnion_disjointOfDiff hx3 hy3, l10, inter_comm]
+        rw [← h_ind'.sUnion_disjointOfDiff hx3 hy3]
+        nth_rewrite 2 [sUnion_eq_iUnion]
+        rw [iUnion_coe_set, inter_iUnion₂, inter_comm]
         simp only [mem_coe, sUnion_image, G]
         rfl
 
       use F.toFinset ∪ G.toFinset
       simp only [coe_union, coe_toFinset]
       refine ⟨union_subset_iff.mpr ⟨hF1, hG1⟩, ?_, ?_⟩
-      · apply hG3 ▸ hF3 ▸ (l7 hF2 hG2)
+      · apply (pairwiseDisjoint_union_of_disjoint (fun ⦃a b⦄ a ↦ a) hF2 hG2 )
+        rw [hF3, hG3]
         nth_rewrite 2 [inter_comm]
         exact (Disjoint.symm h2)
       · rw [sUnion_union, hF3, hG3, h1, union_comm]
