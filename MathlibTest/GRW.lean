@@ -9,19 +9,23 @@ import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.NormNum
 import Mathlib.Algebra.Order.Ring.Abs
 
+/- In many examples in this module, we rewrite expressions which do not make it into the final term.
+
+This only happens because we are writing tests where we resolve the goal with a universal axiom, it
+would not happen in real proofs, so we disable the resulting linter warnings.
+-/
+set_option linter.unusedVariables false
+
 private axiom test_sorry : ∀ {α}, α
 
-private axiom α : Type
-@[instance] private axiom inst : LinearOrderedCommRing α
-
-variable (a b c d e : α)
+variable {α : Type*} [LinearOrderedCommRing α] (a b c d e : α)
 
 section inequalities
 
 example (h₁ : a ≤ b) (h₂ : b ≤ c) : a + 5 ≤ c + 6 := by
   grw [h₁, h₂]
   guard_target =ₛ c + 5 ≤ c + 6
-  exact test_sorry
+  grw [show (5 : α) < 6 by norm_num]
 
 example (h₁ : a ≤ b) (h₂ : b ≤ c) : c + 6 > a + 5 := by
   grw [h₁, h₂]
@@ -81,7 +85,7 @@ mathematically sound to transform the goal here to `2 * y ≤ z`, not `2 * y < z
 
 However, the current behavior is easier to implement, and preserves the form of the goal (`?_ < z`),
 which is a useful invariant. -/
-example {x y : ℤ} (hx : x < y) : 2 * x < z := by
+example {x y z : ℤ} (hx : x < y) : 2 * x < z := by
   grw [hx]
   guard_target =ₛ 2 * y < z
   exact test_sorry
@@ -217,4 +221,14 @@ example {a b : ℚ} {P : Prop} (hP : P) (h : P → a < b) : False := by
 
 example {a b : ℚ} {P Q : Prop} (hP : P) (hQ : Q) (h : P → Q → a < b) : False := by
   have : 2 * a ≤ 2 * b := by grw [h ?_ hQ]; exact hP
+  exact test_sorry
+
+example {a a' : ℕ} {X : Set ℕ} (h₁ : a + 1 ∈ X) (h₂ : a = a') : False := by
+  grw [h₂] at h₁
+  guard_hyp h₁ :ₛ a' + 1 ∈ X
+  exact test_sorry
+
+example {Prime : ℕ → Prop} {a a' : ℕ} (h₁ : Prime (a + 1)) (h₂ : a = a') : False := by
+  grw [h₂] at h₁
+  guard_hyp h₁ :ₛ Prime (a' + 1)
   exact test_sorry

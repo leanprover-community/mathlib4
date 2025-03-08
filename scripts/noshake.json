@@ -261,6 +261,8 @@
   ["Mathlib.Data.Subtype", "Mathlib.Util.TermReduce"],
   "Mathlib.Tactic.ITauto": ["Batteries.Tactic.Init", "Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Group": ["Mathlib.Algebra.Group.Commutator"],
+  "Mathlib.Tactic.GRW.Lemmas": ["Mathlib.Tactic.GRW.Core"],
+  "Mathlib.Tactic.GRW": ["Mathlib.Tactic.GRW.Lemmas"],
   "Mathlib.Tactic.GCongr.Core":
   ["Mathlib.Order.Defs", "Mathlib.Order.Defs.PartialOrder"],
   "Mathlib.Tactic.GCongr": ["Mathlib.Tactic.Positivity.Core"],
@@ -423,6 +425,7 @@
   "Mathlib.Data.List.Basic":
   ["Mathlib.Control.Basic", "Mathlib.Data.Option.Basic"],
   "Mathlib.Data.LazyList.Basic": ["Mathlib.Lean.Thunk"],
+  "Mathlib.Data.Int.ModEq": ["Mathlib.Tactic.GRW.Core"],
   "Mathlib.Data.Int.Init": ["Batteries.Tactic.Init"],
   "Mathlib.Data.Int.Defs": ["Batteries.Data.Int.Order", "Mathlib.Tactic.OfNat"],
   "Mathlib.Data.Int.ConditionallyCompleteOrder":

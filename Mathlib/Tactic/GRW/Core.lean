@@ -6,7 +6,6 @@ Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth
 import Mathlib.Tactic.Core
 import Lean.LabelAttribute
 import Mathlib.Tactic.GCongr.Core
-import Mathlib.Data.Prod.Basic
 
 /-!
 # GRW Tactic
