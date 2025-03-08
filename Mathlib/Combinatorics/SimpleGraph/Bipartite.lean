@@ -30,6 +30,22 @@ This file proves results about bipartite simple graphs, including several double
 * `SimpleGraph.isBipartiteWith_sum_degrees_eq_card_edges` is the proof that if
   `G.IsBipartiteWith s t`, then sum of the degrees of the vertices in `s` is equal to the number of
   edges in `G`.
+
+  See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version, and
+  `SimpleGraph.isBipartiteWith_sum_degrees_eq_card_edges'` for the version from the "right".
+
+## Implementation notes
+
+For the formulation of double-counting arguments where a bipartite graph is considered as a
+relation `r : α → β → Prop`, see `Mathlib.Combinatorics.Enumerative.DoubleCounting`.
+
+## TODO
+
+* Define `G.IsBipartite := G.Colorable 2` and prove `G.IsBipartite` iff there exist sets
+  `s t : Set V` such that `G.IsBipartiteWith s t`.
+
+* Prove that `G.IsBipartite` iff `G` does not contain an odd cycle.
+  I.e., `G.IsBipartite ↔ ∀ n, (cycleGraph (2*n+1)).Free G`.
 -/
 
 
