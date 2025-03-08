@@ -79,8 +79,6 @@ section Integral
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-/-- For a version that does not assume that the set is measurable, but works only for s-finite
-measures, see `setIntegral_tilted_mul_mgf`. -/
 lemma setIntegral_tilted_mul_mgf' (g : Ω → E) {s : Set Ω} (hs : MeasurableSet s) :
     ∫ x in s, g x ∂(μ.tilted (t * X ·)) = ∫ x in s, (exp (t * X x) / mgf X μ t) • (g x) ∂μ := by
   rw [setIntegral_tilted' _ _ hs, mgf]
