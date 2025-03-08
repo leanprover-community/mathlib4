@@ -55,6 +55,14 @@ theorem pairwiseDisjoint_sUnion {s : Set (Set ι)} (h : DirectedOn (· ⊆ ·) s
     (⋃₀ s).PairwiseDisjoint f ↔ ∀ ⦃a⦄, a ∈ s → Set.PairwiseDisjoint a f :=
   pairwise_sUnion h
 
+theorem pairwiseDisjoint_union_of_disjoint
+  {s t : Set (Set ι)} {f : Set ι → α} (hf : Monotone f)
+  (hs : PairwiseDisjoint s f) (ht : PairwiseDisjoint t f)
+    (hst : Disjoint (f (Set.sUnion s)) (f (sUnion t))) : PairwiseDisjoint (s ∪ t) f := by
+  apply pairwiseDisjoint_union.mpr ⟨hs, ht, ?_⟩
+  exact fun a ha b hb hab ↦ Disjoint.mono (hf (subset_sUnion_of_subset s a (subset_refl a) ha))
+      (hf (subset_sUnion_of_subset t b (subset_refl b) hb)) hst
+
 end PartialOrderBot
 
 section CompleteLattice
