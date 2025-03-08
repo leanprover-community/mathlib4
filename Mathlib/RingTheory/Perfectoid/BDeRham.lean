@@ -72,6 +72,11 @@ def BDeRhamPlus : Type u :=
 
 instance : CommRing (BDeRhamPlus O p) := AdicCompletion.instCommRing _
 
+def BDeRham : Type u :=
+    if (RingHom.ker fontaineThetaInvertP).isPrincipal then
+      (Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭))) / (Ideal.span {fontaineThetaInvertP (1)}).toSubmodule
+    else 0
+
 local notation "𝔹_dR^+(" O ")" => BDeRhamPlus O p
 
 end
