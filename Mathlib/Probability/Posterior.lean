@@ -58,7 +58,7 @@ def posterior (κ : Kernel Ω β) (μ : Measure Ω) [IsFiniteMeasure μ] [IsFini
   ((μ ⊗ₘ κ).map Prod.swap).condKernel
 
 /-- Posterior of the kernel `κ` with respect to the measure `μ`. -/
-scoped[ProbabilityTheory] notation3 κ "†" μ:100 => ProbabilityTheory.posterior κ μ
+scoped[ProbabilityTheory] notation3 κ:arg "†" μ:arg => ProbabilityTheory.posterior κ μ
 
 /-- The posterior is a Markov kernel. -/
 instance : IsMarkovKernel (κ†μ) := by rw [posterior]; infer_instance
@@ -92,7 +92,7 @@ lemma parallelProd_posterior_comp_copy_comp :
     rw [Measure.comp_assoc, Kernel.swap_parallelComp, Measure.comp_assoc, Kernel.comp_assoc,
       Kernel.swap_copy, Measure.comp_assoc]
 
-lemma posterior_prod_id_comp : ((κ†μ) ×ₖ Kernel.id) ∘ₘ κ ∘ₘ μ = μ ⊗ₘ κ := by
+lemma posterior_prod_id_comp : (κ†μ ×ₖ Kernel.id) ∘ₘ κ ∘ₘ μ = μ ⊗ₘ κ := by
   rw [← Kernel.swap_prod, ← Measure.comp_assoc, ← Measure.compProd_eq_comp_prod,
     compProd_posterior_eq_swap_comp, Measure.comp_assoc, Kernel.swap_swap, Measure.id_comp]
 
@@ -109,7 +109,7 @@ lemma ae_eq_posterior_of_compProd_eq_swap_comp (η : Kernel β Ω) [IsFiniteKern
   ae_eq_posterior_of_compProd_eq <| by rw [h, Measure.swap_comp]
 
 @[simp]
-lemma posterior_comp_self [IsMarkovKernel κ] : (κ†μ) ∘ₘ κ ∘ₘ μ = μ := by
+lemma posterior_comp_self [IsMarkovKernel κ] : κ†μ ∘ₘ κ ∘ₘ μ = μ := by
   rw [← Measure.snd_compProd, compProd_posterior_eq_map_swap, Measure.snd_map_swap,
     Measure.fst_compProd]
 
@@ -121,16 +121,16 @@ lemma posterior_id (μ : Measure Ω) [IsFiniteMeasure μ] : Kernel.id†μ =ᵐ[
   refine ae_eq_posterior_of_compProd_eq_swap_comp Kernel.id ?_
   rw [Measure.id_comp, Measure.compProd_id_eq_copy_comp, Measure.comp_assoc, Kernel.swap_copy]
 
-/-- For a deterministic kernel `κ`, `κ ∘ₖ (κ†μ)` is `μ.map f`-a.e. equal to the identity kernel. -/
+/-- For a deterministic kernel `κ`, `κ ∘ₖ κ†μ` is `μ.map f`-a.e. equal to the identity kernel. -/
 lemma deterministic_comp_posterior [MeasurableSpace.CountablyGenerated β]
     {f : Ω → β} (hf : Measurable f) :
-    Kernel.deterministic f hf ∘ₖ ((Kernel.deterministic f hf)†μ) =ᵐ[μ.map f] Kernel.id := by
+    Kernel.deterministic f hf ∘ₖ (Kernel.deterministic f hf)†μ =ᵐ[μ.map f] Kernel.id := by
   refine Kernel.ae_eq_of_compProd_eq ?_
-  calc μ.map f ⊗ₘ (Kernel.deterministic f hf ∘ₖ Kernel.deterministic f hf†μ)
+  calc μ.map f ⊗ₘ (Kernel.deterministic f hf ∘ₖ (Kernel.deterministic f hf)†μ)
   _ = (Kernel.deterministic f hf ∘ₘ μ)
-      ⊗ₘ (Kernel.deterministic f hf ∘ₖ Kernel.deterministic f hf†μ) := by
+      ⊗ₘ (Kernel.deterministic f hf ∘ₖ (Kernel.deterministic f hf)†μ) := by
     rw [@Measure.deterministic_comp_eq_map]
-  _ = (Kernel.id ∥ₖ Kernel.deterministic f hf) ∘ₘ (Kernel.id ∥ₖ Kernel.deterministic f hf†μ) ∘ₘ
+  _ = (Kernel.id ∥ₖ Kernel.deterministic f hf) ∘ₘ (Kernel.id ∥ₖ (Kernel.deterministic f hf)†μ) ∘ₘ
       Kernel.copy β ∘ₘ Kernel.deterministic f hf ∘ₘ μ := by
     rw [Measure.compProd_eq_parallelComp_comp_copy_comp,
       ← Kernel.parallelComp_id_left_comp_parallelComp, ← Measure.comp_assoc]
@@ -150,7 +150,7 @@ variable [StandardBorelSpace β] [Nonempty β]
 
 /-- The posterior is involutive (up to `μ`-a.e. equality). -/
 lemma posterior_posterior [IsMarkovKernel κ] : (κ†μ)†(κ ∘ₘ μ) =ᵐ[μ] κ := by
-  suffices κ =ᵐ[(κ†μ) ∘ₘ κ ∘ₘ μ] (κ†μ)†(κ ∘ₘ μ) by
+  suffices κ =ᵐ[κ†μ ∘ₘ κ ∘ₘ μ] (κ†μ)†(κ ∘ₘ μ) by
     rw [posterior_comp_self] at this
     filter_upwards [this] with a h using h.symm
   refine ae_eq_posterior_of_compProd_eq_swap_comp κ ?_
@@ -159,7 +159,7 @@ lemma posterior_posterior [IsMarkovKernel κ] : (κ†μ)†(κ ∘ₘ μ) =ᵐ[
 
 /-- The posterior is contravariant. -/
 lemma posterior_comp {η : Kernel β γ} [IsFiniteKernel η] :
-    (η ∘ₖ κ)†μ =ᵐ[η ∘ₘ κ ∘ₘ μ] (κ†μ) ∘ₖ η†(κ ∘ₘ μ) := by
+    (η ∘ₖ κ)†μ =ᵐ[η ∘ₘ κ ∘ₘ μ] κ†μ ∘ₖ η†(κ ∘ₘ μ) := by
   rw [Measure.comp_assoc]
   refine (ae_eq_posterior_of_compProd_eq_swap_comp ((κ†μ) ∘ₖ η†(κ ∘ₘ μ)) ?_).symm
   simp_rw [Measure.compProd_eq_comp_prod, ← Kernel.parallelComp_comp_copy,
