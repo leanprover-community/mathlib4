@@ -7,8 +7,8 @@ import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Group.Action.Pointwise.Finset
 import Mathlib.Algebra.Group.Submonoid.Pointwise
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Data.ENat.Card
 import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Qify
 

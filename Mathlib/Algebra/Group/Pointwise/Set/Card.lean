@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
+import Mathlib.SetTheory.Cardinal.ToNat
 import Mathlib.Data.Set.Card
 
 /-!
@@ -31,7 +32,7 @@ variable [IsCancelMul M]
 lemma natCard_mul_le : Nat.card (s * t) ≤ Nat.card s * Nat.card t := by
   obtain h | h := (s * t).infinite_or_finite
   · simp [Set.Infinite.card_eq_zero h]
-  simp only [Nat.card, ← Cardinal.toNat_mul]
+  simp only [← Cardinal.toNat_cardinalMk, ← Cardinal.toNat_mul]
   refine Cardinal.toNat_le_toNat Cardinal.mk_mul_le ?_
   aesop (add simp [Cardinal.mul_lt_aleph0_iff, finite_mul])
 
@@ -54,7 +55,8 @@ lemma _root_.Cardinal.mk_inv (s : Set G) : #↥(s⁻¹) = #s := by
 
 @[to_additive (attr := simp)]
 lemma natCard_inv (s : Set G) : Nat.card ↥(s⁻¹) = Nat.card s := by
-  rw [← image_inv_eq_inv, Nat.card_image_of_injective inv_injective]
+  rw [← image_inv_eq_inv, Nat.card_coe_set_eq, ncard_image_of_injective _ inv_injective,
+    Nat.card_coe_set_eq]
 
 @[to_additive] alias card_inv := natCard_inv
 
@@ -65,7 +67,7 @@ attribute [deprecated natCard_neg (since := "2024-09-30")] card_neg
 
 @[to_additive (attr := simp)]
 lemma encard_inv (s : Set G) : s⁻¹.encard = s.encard := by
-  simp [ENat.card, ← toENat_cardinalMk]
+  simp [encard, ← toENat_cardinalMk]
 
 @[to_additive (attr := simp)]
 lemma ncard_inv (s : Set G) : s⁻¹.ncard = s.ncard := by simp [ncard]
@@ -103,7 +105,7 @@ lemma _root_.Cardinal.mk_smul_set (a : G) (s : Set α) : #↥(a • s) = #s :=
 
 @[to_additive (attr := simp)]
 lemma natCard_smul_set (a : G) (s : Set α) : Nat.card ↥(a • s) = Nat.card s :=
-  Nat.card_image_of_injective (MulAction.injective a) _
+  ncard_image_of_injective _ (MulAction.injective a)
 
 @[to_additive]
 alias card_smul_set := Cardinal.mk_smul_set
@@ -114,8 +116,8 @@ attribute [deprecated Cardinal.mk_smul_set (since := "2024-09-30")] card_smul_se
 attribute [deprecated Cardinal.mk_vadd_set (since := "2024-09-30")] card_vadd_set
 
 @[to_additive (attr := simp)]
-lemma encard_smul_set (a : G) (s : Set α) : (a • s).encard = s.encard := by
-  simp [ENat.card, ← toENat_cardinalMk]
+lemma encard_smul_set (a : G) (s : Set α) : (a • s).encard = s.encard :=
+  (MulAction.injective a).encard_image _
 
 @[to_additive (attr := simp)]
 lemma ncard_smul_set (a : G) (s : Set α) : (a • s).ncard = s.ncard := by simp [ncard]

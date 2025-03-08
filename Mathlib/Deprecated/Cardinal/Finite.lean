@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Deprecated.Cardinal.PartENat
-import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.SetTheory.Cardinal.ENat
 import Mathlib.Data.Finite.Card
 
 /-!
@@ -107,13 +107,12 @@ theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α 
   rw [← natCast_lt_toPartENat_iff]
   simp only [PartENat.card, Nat.cast_one]
 
-set_option linter.deprecated false in
-@[deprecated ENat.card_eq_coe_natCard (since := "2024-11-30")]
+-- set_option linter.deprecated false in
+-- @[deprecated ENat.card_eq_coe_natCard (since := "2024-11-30")]
 theorem card_eq_coe_natCard (α : Type*) [Finite α] : card α = Nat.card α := by
   unfold PartENat.card
   apply symm
   rw [Cardinal.natCast_eq_toPartENat_iff]
-  exact Nat.cast_card
-
+  exact cast_eNatCard
 
 end PartENat

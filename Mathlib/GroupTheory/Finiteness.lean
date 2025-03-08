@@ -5,8 +5,8 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.Data.ENat.Card
 import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Finitely generated monoids and groups

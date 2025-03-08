@@ -3,7 +3,7 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.SetTheory.Cardinal.ENat
 
 /-!
 
@@ -166,46 +166,50 @@ end Finite
 
 namespace ENat
 
-theorem card_eq_coe_natCard (α : Type*) [Finite α] : card α = Nat.card α := by
-  unfold ENat.card
-  apply symm
-  rw [Cardinal.natCast_eq_toENat_iff]
-  exact Nat.cast_card
+-- theorem card_eq_coe_natCard (α : Type*) [Finite α] : card α = Nat.card α := by
+--   rw [Nat.card, cas]
+--   unfold ENat.card
+--   apply symm
+--   rw [Cardinal.natCast_eq_toENat_iff]
+--   exact Nat.cast_card
 
 end ENat
 
 namespace Set
 
-theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + Nat.card t := by
-  rcases _root_.finite_or_infinite (↥(s ∪ t)) with h | h
-  · rw [finite_coe_iff, finite_union, ← finite_coe_iff, ← finite_coe_iff] at h
-    cases h
-    rw [← @Nat.cast_le Cardinal, Nat.cast_add, Nat.cast_card, Nat.cast_card, Nat.cast_card]
-    exact Cardinal.mk_union_le s t
-  · exact Nat.card_eq_zero_of_infinite.trans_le (zero_le _)
+-- theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + Nat.card t := by
+--   rcases _root_.finite_or_infinite (↥(s ∪ t)) with h | h
+--   · rw [finite_coe_iff, finite_union, ← finite_coe_iff, ← finite_coe_iff] at h
+--     cases h
+--     rw [← @Nat.cast_le Cardinal, Nat.cast_add, Nat.cast_card, Nat.cast_card, Nat.cast_card]
+--     exact Cardinal.mk_union_le s t
+--   · exact Nat.card_eq_zero_of_infinite.trans_le (zero_le _)
 
 namespace Finite
 
 variable {s t : Set α}
 
-theorem card_lt_card (ht : t.Finite) (hsub : s ⊂ t) : Nat.card s < Nat.card t := by
-  have : Fintype t := Finite.fintype ht
-  have : Fintype s := Finite.fintype (subset ht (subset_of_ssubset hsub))
-  simp only [Nat.card_eq_fintype_card]
-  exact Set.card_lt_card hsub
+-- theorem card_lt_card (ht : t.Finite) (hsub : s ⊂ t) : Nat.card s < Nat.card t := by
+--   have : Fintype t := Finite.fintype ht
+--   have : Fintype s := Finite.fintype (subset ht (subset_of_ssubset hsub))
+--   simp only [Nat.card_eq_fintype_card]
+--   exact Set.card_lt_card hsub
 
-theorem eq_of_subset_of_card_le (ht : t.Finite) (hsub : s ⊆ t) (hcard : Nat.card t ≤ Nat.card s) :
-    s = t :=
-  (eq_or_ssubset_of_subset hsub).elim id fun h ↦ absurd hcard <| not_le_of_lt <| ht.card_lt_card h
+-- theorem eq_of_subset_of_card_le (ht : t.Finite) (hsub : s ⊆ t)
+--(hcard : Nat.card t ≤ Nat.card s) :
+--     s = t :=
+--   (eq_or_ssubset_of_subset hsub).elim id fun h ↦ absurd hcard <| not_le_of_lt <|
+-- ht.card_lt_card h
 
-theorem equiv_image_eq_iff_subset (e : α ≃ α) (hs : s.Finite) : e '' s = s ↔ e '' s ⊆ s :=
-  ⟨fun h ↦ by rw [h], fun h ↦ hs.eq_of_subset_of_card_le h <|
-    ge_of_eq (Nat.card_congr (e.image s).symm)⟩
+-- theorem equiv_image_eq_iff_subset (e : α ≃ α) (hs : s.Finite) : e '' s = s ↔ e '' s ⊆ s :=
+--   ⟨fun h ↦ by rw [h], fun h ↦ hs.eq_of_subset_of_card_le h <|
+--     ge_of_eq (Nat.card_congr (e.image s).symm)⟩
 
 end Finite
 
-theorem eq_top_of_card_le_of_finite [Finite α] {s : Set α} (h : Nat.card α ≤ Nat.card s) : s = ⊤ :=
-  Set.Finite.eq_of_subset_of_card_le univ.toFinite (subset_univ s) <|
-    Nat.card_congr (Equiv.Set.univ α) ▸ h
+-- theorem eq_top_of_card_le_of_finite [Finite α] {s : Set α} (h : Nat.card α ≤ Nat.card s) :
+-- s = ⊤ :=
+--   Set.Finite.eq_of_subset_of_card_le univ.toFinite (subset_univ s) <|
+--     Nat.card_congr (Equiv.Set.univ α) ▸ h
 
 end Set

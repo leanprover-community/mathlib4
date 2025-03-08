@@ -3,7 +3,7 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Data.ENat.Card
 
 /-!
 # Noncomputable Set Cardinality
@@ -70,13 +70,13 @@ theorem encard_univ (α : Type*) :
 
 theorem Finite.encard_eq_coe_toFinset_card (h : s.Finite) : s.encard = h.toFinset.card := by
   have := h.fintype
-  rw [encard, ENat.card_eq_coe_fintype_card, toFinite_toFinset, toFinset_card]
+  rw [encard, ENat.card_eq_coe_fintypeCard, toFinite_toFinset, toFinset_card]
 
 theorem encard_eq_coe_toFinset_card (s : Set α) [Fintype s] : encard s = s.toFinset.card := by
   have h := toFinite s
   rw [h.encard_eq_coe_toFinset_card, toFinite_toFinset]
 
-@[simp] theorem toENat_cardinalMk (s : Set α) : (Cardinal.mk s).toENat = s.encard := rfl
+-- @[simp] theorem toENat_cardinalMk (s : Set α) : (Cardinal.mk s).toENat = s.encard := rfl
 
 @[simp] theorem coe_fintypeCard (s : Set α) [Fintype s] : Fintype.card s = s.encard := by
   simp [encard_eq_coe_toFinset_card]
@@ -90,7 +90,7 @@ theorem Infinite.encard_eq {s : Set α} (h : s.Infinite) : s.encard = ⊤ := by
   rw [encard, ENat.card_eq_top_of_infinite]
 
 @[simp] theorem encard_eq_zero : s.encard = 0 ↔ s = ∅ := by
-  rw [encard, ENat.card_eq_zero_iff_empty, isEmpty_subtype, eq_empty_iff_forall_not_mem]
+  rw [encard, ENat.card_eq_zero_iff_isEmpty, isEmpty_subtype, eq_empty_iff_forall_not_mem]
 
 @[simp] theorem encard_empty : (∅ : Set α).encard = 0 := by
   rw [encard_eq_zero]
@@ -107,7 +107,7 @@ theorem encard_ne_zero : s.encard ≠ 0 ↔ s.Nonempty := by
 protected alias ⟨_, Nonempty.encard_pos⟩ := encard_pos
 
 @[simp] theorem encard_singleton (e : α) : ({e} : Set α).encard = 1 := by
-  rw [encard, ENat.card_eq_coe_fintype_card, Fintype.card_ofSubsingleton, Nat.cast_one]
+  rw [encard, ENat.card_eq_coe_fintypeCard, Fintype.card_ofSubsingleton, Nat.cast_one]
 
 theorem encard_union_eq (h : Disjoint s t) : (s ∪ t).encard = s.encard + t.encard := by
   classical
@@ -511,8 +511,8 @@ theorem ncard_eq_toFinset_card' (s : Set α) [Fintype s] :
     s.ncard = s.toFinset.card := by
   simp [← Nat.card_coe_set_eq, Nat.card_eq_fintype_card]
 
-lemma cast_ncard {s : Set α} (hs : s.Finite) :
-    (s.ncard : Cardinal) = Cardinal.mk s := @Nat.cast_card _ hs
+-- lemma cast_ncard {s : Set α} (hs : s.Finite) :
+--     (s.ncard : Cardinal) = Cardinal.mk s := @Nat.cast_card _ hs
 
 theorem encard_le_coe_iff_finite_ncard_le {k : ℕ} : s.encard ≤ k ↔ s.Finite ∧ s.ncard ≤ k := by
   rw [encard_le_coe_iff, and_congr_right_iff]

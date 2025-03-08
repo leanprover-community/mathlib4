@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.Data.ENat.Basic
+import Mathlib.Data.ENat.Card
 import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
@@ -283,6 +283,33 @@ lemma toENat_eq_iff_of_le_aleph0 {c c' : Cardinal} (hc : c ≤ ℵ₀) (hc' : c'
     toENat c = toENat c' ↔ c = c' :=
   toENat_strictMonoOn.injOn.eq_iff hc hc'
 
+@[simp]
+theorem _root_.Cardinal.natCast_le_toENat_iff {n : ℕ} {c : Cardinal} :
+    ↑n ≤ toENat c ↔ ↑n ≤ c := by
+  rw [← toENat_nat n, toENat_le_iff_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
+
+theorem _root_.Cardinal.toENat_le_natCast_iff {c : Cardinal} {n : ℕ} :
+    toENat c ≤ n ↔ c ≤ n := by simp
+
+@[simp]
+theorem _root_.Cardinal.natCast_eq_toENat_iff {n : ℕ} {c : Cardinal} :
+    ↑n = toENat c ↔ ↑n = c := by
+  rw [le_antisymm_iff, le_antisymm_iff, Cardinal.toENat_le_natCast_iff,
+    Cardinal.natCast_le_toENat_iff]
+
+theorem _root_.Cardinal.toENat_eq_natCast_iff {c : Cardinal} {n : ℕ} :
+    Cardinal.toENat c = n ↔ c = n := by simp
+
+@[simp]
+theorem _root_.Cardinal.natCast_lt_toENat_iff {n : ℕ} {c : Cardinal} :
+    ↑n < toENat c ↔ ↑n < c := by
+  simp only [← not_le, Cardinal.toENat_le_natCast_iff]
+
+@[simp]
+theorem _root_.Cardinal.toENat_lt_natCast_iff {n : ℕ} {c : Cardinal} :
+    toENat c < ↑n ↔ c < ↑n := by
+  simp only [← not_le, Cardinal.natCast_le_toENat_iff]
+
 @[simp, norm_cast]
 lemma ofENat_add (m n : ℕ∞) : ofENat (m + n) = m + n := by apply toENat_injOn <;> simp
 
@@ -311,6 +338,16 @@ def ofENatHom : ℕ∞ →+*o Cardinal where
   map_add' := ofENat_add
   monotone' := ofENat_mono
 
-
-
 end Cardinal
+
+@[simp]
+lemma toENat_cardinalMk (α : Type*) : (Cardinal.mk α).toENat = ENat.card α := by
+  obtain ⟨⟨hα⟩⟩ | hα := ENat.nonempty_fintype_or_infinite α <;> simp
+
+lemma cast_eNatCard {α : Type*} [Finite α] : (Nat.card α : Cardinal) = Cardinal.mk α := by
+  have := Fintype.ofFinite α
+  simp
+
+lemma Nat.cast_card {α : Type*} [Finite α] : (Nat.card α : Cardinal) = Cardinal.mk α := by
+  have := Fintype.ofFinite α
+  simp

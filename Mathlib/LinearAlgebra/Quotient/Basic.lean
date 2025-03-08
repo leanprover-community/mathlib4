@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
 import Mathlib.Algebra.Module.Equiv.Basic
+import Mathlib.Data.ENat.Card
 import Mathlib.GroupTheory.QuotientGroup.Basic
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Quotient.Defs
 import Mathlib.LinearAlgebra.Span.Basic
-import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Quotients by submodules
