@@ -72,7 +72,6 @@ def ofQuivHom {C D : Quiv} (F : C ⟶ D) : C ⥤q D := F
     ofQuivHom (toQuivHom F) = F := rfl
 
 end Prefunctor
-
 namespace Cat
 
 /-- A prefunctor `V ⥤q W` induces a functor between the path categories defined by `F.mapPath`. -/
@@ -82,14 +81,18 @@ def freeMap {V W : Type*} [Quiver V] [Quiver W] (F : V ⥤q W) : Paths V ⥤ Pat
     map := F.mapPath
     map_comp f g := F.mapPath_comp f g
 
+/-- The functor `free : Quiv ⥤ Cat` preserves identities up to natural isomorphism and in fact up
+to equality. -/
 @[simps!]
 def freeMapIdIso (V : Type*) [Quiver V] : freeMap (𝟭q V) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
-def freeMap_id (V : Type*) [Quiver V] :
+theorem freeMap_id (V : Type*) [Quiver V] :
     freeMap (𝟭q V) = 𝟭 _ :=
   Functor.ext_of_iso (freeMapIdIso V) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
+/-- The functor `free : Quiv ⥤ Cat` preserves composition up to natural isomorphism and in fact up
+to equality. -/
 @[simps!]
 def freeMapCompIso {V₁ : Type u₁} {V₂ : Type u₂} {V₃ : Type u₃}
     [Quiver.{v₁ + 1} V₁] [Quiver.{v₂ + 1} V₂] [Quiver.{v₃ + 1} V₃] (F : V₁ ⥤q V₂) (G : V₂ ⥤q V₃) :
@@ -98,7 +101,7 @@ def freeMapCompIso {V₁ : Type u₁} {V₂ : Type u₂} {V₃ : Type u₃}
     dsimp
     simp only [Category.comp_id, Category.id_comp, Prefunctor.mapPath_comp_apply])
 
-def freeMap_comp {V₁ : Type u₁} {V₂ : Type u₂} {V₃ : Type u₃}
+theorem freeMap_comp {V₁ : Type u₁} {V₂ : Type u₂} {V₃ : Type u₃}
     [Quiver.{v₁ + 1} V₁] [Quiver.{v₂ + 1} V₂] [Quiver.{v₃ + 1} V₃]
     (F : V₁ ⥤q V₂) (G : V₂ ⥤q V₃) :
     freeMap (F ⋙q G) = freeMap F ⋙ freeMap G :=
