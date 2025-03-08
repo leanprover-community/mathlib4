@@ -205,15 +205,18 @@ theorem subset_iterate_compRel {s t : Set (α × α)} (h : idRel ⊆ s) (n : ℕ
   | succ n ihn => exact (right_subset_compRel h).trans ihn
 
 /-- The relation is invariant under swapping factors. -/
-def SymmetricRel (V : Set (α × α)) : Prop :=
+def IsSymmetricRel (V : Set (α × α)) : Prop :=
   Prod.swap ⁻¹' V = V
+
+@[deprecated (since := "2025-03-05")]
+alias SymmetricRel := IsSymmetricRel
 
 /-- The maximal symmetric relation contained in a given relation. -/
 def symmetrizeRel (V : Set (α × α)) : Set (α × α) :=
   V ∩ Prod.swap ⁻¹' V
 
-theorem symmetric_symmetrizeRel (V : Set (α × α)) : SymmetricRel (symmetrizeRel V) := by
-  simp [SymmetricRel, symmetrizeRel, preimage_inter, inter_comm, ← preimage_comp]
+theorem symmetric_symmetrizeRel (V : Set (α × α)) : IsSymmetricRel (symmetrizeRel V) := by
+  simp [IsSymmetricRel, symmetrizeRel, preimage_inter, inter_comm, ← preimage_comp]
 
 theorem symmetrizeRel_subset_self (V : Set (α × α)) : symmetrizeRel V ⊆ V :=
   sep_subset _ _
@@ -222,15 +225,24 @@ theorem symmetrizeRel_subset_self (V : Set (α × α)) : symmetrizeRel V ⊆ V :
 theorem symmetrize_mono {V W : Set (α × α)} (h : V ⊆ W) : symmetrizeRel V ⊆ symmetrizeRel W :=
   inter_subset_inter h <| preimage_mono h
 
-theorem SymmetricRel.mk_mem_comm {V : Set (α × α)} (hV : SymmetricRel V) {x y : α} :
+theorem IsSymmetricRel.mk_mem_comm {V : Set (α × α)} (hV : IsSymmetricRel V) {x y : α} :
     (x, y) ∈ V ↔ (y, x) ∈ V :=
   Set.ext_iff.1 hV (y, x)
 
-theorem SymmetricRel.eq {U : Set (α × α)} (hU : SymmetricRel U) : Prod.swap ⁻¹' U = U :=
+@[deprecated (since := "2025-03-05")]
+alias SymmetricRel.mk_mem_comm := IsSymmetricRel.mk_mem_comm
+
+theorem IsSymmetricRel.eq {U : Set (α × α)} (hU : IsSymmetricRel U) : Prod.swap ⁻¹' U = U :=
   hU
 
-theorem SymmetricRel.inter {U V : Set (α × α)} (hU : SymmetricRel U) (hV : SymmetricRel V) :
-    SymmetricRel (U ∩ V) := by rw [SymmetricRel, preimage_inter, hU.eq, hV.eq]
+@[deprecated (since := "2025-03-05")]
+alias SymmetricRel.eq := IsSymmetricRel.eq
+
+theorem IsSymmetricRel.inter {U V : Set (α × α)} (hU : IsSymmetricRel U) (hV : IsSymmetricRel V) :
+    IsSymmetricRel (U ∩ V) := by rw [IsSymmetricRel, preimage_inter, hU.eq, hV.eq]
+
+@[deprecated (since := "2025-03-05")]
+alias SymmetricRel.inter := IsSymmetricRel.inter
 
 /-- This core description of a uniform space is outside of the type class hierarchy. It is useful
   for constructions of uniform spaces, when the topology is derived from the uniform space. -/
@@ -459,7 +471,7 @@ theorem symmetrize_mem_uniformity {V : Set (α × α)} (h : V ∈ 𝓤 α) : sym
 
 /-- Symmetric entourages form a basis of `𝓤 α` -/
 theorem UniformSpace.hasBasis_symmetric :
-    (𝓤 α).HasBasis (fun s : Set (α × α) => s ∈ 𝓤 α ∧ SymmetricRel s) id :=
+    (𝓤 α).HasBasis (fun s : Set (α × α) => s ∈ 𝓤 α ∧ IsSymmetricRel s) id :=
   hasBasis_self.2 fun t t_in =>
     ⟨symmetrizeRel t, symmetrize_mem_uniformity t_in, symmetric_symmetrizeRel t,
       symmetrizeRel_subset_self t⟩
@@ -492,7 +504,7 @@ theorem comp_le_uniformity3 : ((𝓤 α).lift' fun s : Set (α × α) => s ○ (
 
 /-- See also `comp_open_symm_mem_uniformity_sets`. -/
 theorem comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤 α) :
-    ∃ t ∈ 𝓤 α, SymmetricRel t ∧ t ○ t ⊆ s := by
+    ∃ t ∈ 𝓤 α, IsSymmetricRel t ∧ t ○ t ⊆ s := by
   obtain ⟨w, w_in, w_sub⟩ : ∃ w ∈ 𝓤 α, w ○ w ⊆ s := comp_mem_uniformity_sets hs
   use symmetrizeRel w, symmetrize_mem_uniformity w_in, symmetric_symmetrizeRel w
   have : symmetrizeRel w ⊆ w := symmetrizeRel_subset_self w
@@ -504,7 +516,7 @@ theorem subset_comp_self_of_mem_uniformity {s : Set (α × α)} (h : s ∈ 𝓤 
   subset_comp_self (refl_le_uniformity h)
 
 theorem comp_comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤 α) :
-    ∃ t ∈ 𝓤 α, SymmetricRel t ∧ t ○ t ○ t ⊆ s := by
+    ∃ t ∈ 𝓤 α, IsSymmetricRel t ∧ t ○ t ○ t ⊆ s := by
   rcases comp_symm_mem_uniformity_sets hs with ⟨w, w_in, _, w_sub⟩
   rcases comp_symm_mem_uniformity_sets w_in with ⟨t, t_in, t_symm, t_sub⟩
   use t, t_in, t_symm
@@ -553,24 +565,24 @@ theorem ball_inter_left (x : β) (V W : Set (β × β)) : ball x (V ∩ W) ⊆ b
 theorem ball_inter_right (x : β) (V W : Set (β × β)) : ball x (V ∩ W) ⊆ ball x W :=
   ball_mono inter_subset_right x
 
-theorem mem_ball_symmetry {V : Set (β × β)} (hV : SymmetricRel V) {x y} :
+theorem mem_ball_symmetry {V : Set (β × β)} (hV : IsSymmetricRel V) {x y} :
     x ∈ ball y V ↔ y ∈ ball x V :=
   show (x, y) ∈ Prod.swap ⁻¹' V ↔ (x, y) ∈ V by
-    unfold SymmetricRel at hV
+    unfold IsSymmetricRel at hV
     rw [hV]
 
-theorem ball_eq_of_symmetry {V : Set (β × β)} (hV : SymmetricRel V) {x} :
+theorem ball_eq_of_symmetry {V : Set (β × β)} (hV : IsSymmetricRel V) {x} :
     ball x V = { y | (y, x) ∈ V } := by
   ext y
   rw [mem_ball_symmetry hV]
   exact Iff.rfl
 
-theorem mem_comp_of_mem_ball {V W : Set (β × β)} {x y z : β} (hV : SymmetricRel V)
+theorem mem_comp_of_mem_ball {V W : Set (β × β)} {x y z : β} (hV : IsSymmetricRel V)
     (hx : x ∈ ball z V) (hy : y ∈ ball z W) : (x, y) ∈ V ○ W := by
   rw [mem_ball_symmetry hV] at hx
   exact ⟨z, hx, hy⟩
 
-theorem mem_comp_comp {V W M : Set (β × β)} (hW' : SymmetricRel W) {p : β × β} :
+theorem mem_comp_comp {V W M : Set (β × β)} (hW' : IsSymmetricRel W) {p : β × β} :
     p ∈ V ○ M ○ W ↔ (ball p.1 V ×ˢ ball p.2 W ∩ M).Nonempty := by
   obtain ⟨x, y⟩ := p
   constructor
@@ -637,7 +649,7 @@ theorem UniformSpace.ball_mem_nhdsWithin {x : α} {S : Set α} ⦃V : Set (α ×
   exact ⟨V, V_in, Subset.rfl⟩
 
 theorem UniformSpace.mem_nhds_iff_symm {x : α} {s : Set α} :
-    s ∈ 𝓝 x ↔ ∃ V ∈ 𝓤 α, SymmetricRel V ∧ ball x V ⊆ s := by
+    s ∈ 𝓝 x ↔ ∃ V ∈ 𝓤 α, IsSymmetricRel V ∧ ball x V ⊆ s := by
   rw [UniformSpace.mem_nhds_iff]
   constructor
   · rintro ⟨V, V_in, V_sub⟩
@@ -647,13 +659,13 @@ theorem UniformSpace.mem_nhds_iff_symm {x : α} {s : Set α} :
     exact ⟨V, V_in, V_sub⟩
 
 theorem UniformSpace.hasBasis_nhds (x : α) :
-    HasBasis (𝓝 x) (fun s : Set (α × α) => s ∈ 𝓤 α ∧ SymmetricRel s) fun s => ball x s :=
+    HasBasis (𝓝 x) (fun s : Set (α × α) => s ∈ 𝓤 α ∧ IsSymmetricRel s) fun s => ball x s :=
   ⟨fun t => by simp [UniformSpace.mem_nhds_iff_symm, and_assoc]⟩
 
 open UniformSpace
 
 theorem UniformSpace.mem_closure_iff_symm_ball {s : Set α} {x} :
-    x ∈ closure s ↔ ∀ {V}, V ∈ 𝓤 α → SymmetricRel V → (s ∩ ball x V).Nonempty := by
+    x ∈ closure s ↔ ∀ {V}, V ∈ 𝓤 α → IsSymmetricRel V → (s ∩ ball x V).Nonempty := by
   simp [mem_closure_iff_nhds_basis (hasBasis_nhds x), Set.Nonempty]
 
 theorem UniformSpace.mem_closure_iff_ball {s : Set α} {x} :
