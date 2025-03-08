@@ -33,12 +33,12 @@ theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
 theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l :=
   ⟨fun H => ⟨H a (by simp) b (Mem.tail a h),
     fun _ hp _ hq => H _ (Mem.tail a hp) _ (Mem.tail a hq)⟩,
-      by
-        rintro ⟨ab, H⟩ p (_ | ⟨_, hp⟩) q (_ | ⟨_, hq⟩)
-        · rfl
-        · exact ab.trans (H _ h _ hq)
-        · exact (ab.trans (H _ h _ hp)).symm
-        · exact H _ hp _ hq⟩
+   by
+      rintro ⟨ab, H⟩ p (_ | ⟨_, hp⟩) q (_ | ⟨_, hq⟩)
+      · rfl
+      · exact ab.trans (H _ h _ hq)
+      · exact (ab.trans (H _ h _ hp)).symm
+      · exact H _ hp _ hq⟩
 
 theorem tfae_cons_cons {a b} {l : List Prop} : TFAE (a :: b :: l) ↔ (a ↔ b) ∧ TFAE (b :: l) :=
   tfae_cons_of_mem (Mem.head _)
