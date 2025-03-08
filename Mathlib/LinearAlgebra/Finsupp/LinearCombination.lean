@@ -20,6 +20,8 @@ import Mathlib.LinearAlgebra.Finsupp.Supported
 
 * `Finsupp.bilinearCombination R S`, `Fintype.bilinearCombination R S`:
   a bilinear version of `Finsupp.linearCombination` and `Fintype.linearCombination`.
+  It requires that `M` is both an `R`-module and an `S`-module, with `SMulCommClass R S M`;
+  the case `S = R` typically requires that `R` is commutative.
 
 ## Tags
 
