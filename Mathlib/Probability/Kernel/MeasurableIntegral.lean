@@ -25,8 +25,14 @@ open MeasureTheory ProbabilityTheory Function Set Filter
 open scoped MeasureTheory ENNReal Topology
 
 variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
-  {κ : Kernel α β} {η : Kernel (α × β) γ} {a : α}
-  {E : Type*} [NormedAddCommGroup E] [IsSFiniteKernel κ] [IsSFiniteKernel η]
+  {κ : Kernel α β} {η : Kernel β γ} {a : α} {E : Type*} [NormedAddCommGroup E]
+
+theorem ProbabilityTheory.measurableSet_integrable ⦃f : β → E⦄ (hf : StronglyMeasurable f) :
+    MeasurableSet {a | Integrable f (κ a)} := by
+  simp_rw [Integrable, hf.aestronglyMeasurable, true_and]
+  exact measurableSet_lt hf.enorm.lintegral_kernel measurable_const
+
+variable [IsSFiniteKernel κ] {η : Kernel (α × β) γ} [IsSFiniteKernel η]
 
 theorem ProbabilityTheory.measurableSet_kernel_integrable ⦃f : α → β → E⦄
     (hf : StronglyMeasurable (uncurry f)) :
@@ -39,6 +45,30 @@ open ProbabilityTheory.Kernel
 namespace MeasureTheory
 
 variable [NormedSpace ℝ E]
+
+omit [IsSFiniteKernel κ] in
+theorem StronglyMeasurable.integral_kernel ⦃f : β → E⦄
+    (hf : StronglyMeasurable f) : StronglyMeasurable fun x ↦ ∫ y, f y ∂κ x := by
+  classical
+  by_cases hE : CompleteSpace E; swap
+  · simp [integral, hE, stronglyMeasurable_const]
+  borelize E
+  have : TopologicalSpace.SeparableSpace (range f ∪ {0} : Set E) :=
+    hf.separableSpace_range_union_singleton
+  let s : ℕ → SimpleFunc β E := SimpleFunc.approxOn _ hf.measurable (range f ∪ {0}) 0 (by simp)
+  let f' n : α → E := {x | Integrable f (κ x)}.indicator fun x ↦ (s n).integral (κ x)
+  refine stronglyMeasurable_of_tendsto (f := f') atTop (fun n ↦ ?_) ?_
+  · refine StronglyMeasurable.indicator ?_ (measurableSet_integrable hf)
+    simp_rw [SimpleFunc.integral_eq]
+    refine Finset.stronglyMeasurable_sum _ fun _ _ ↦ ?_
+    refine (Measurable.ennreal_toReal ?_).stronglyMeasurable.smul_const _
+    exact κ.measurable_coe ((s n).measurableSet_fiber _)
+  · rw [tendsto_pi_nhds]; intro x
+    by_cases hfx : Integrable f (κ x)
+    · simp only [mem_setOf_eq, hfx, indicator_of_mem, f']
+      apply tendsto_integral_approxOn_of_measurable_of_range_subset _ hfx
+      exact subset_rfl
+    · simp [f', hfx, integral_undef]
 
 theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
     (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun x => ∫ y, f x y ∂κ x := by

@@ -57,7 +57,7 @@ variable (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M]
 A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and,
 for all `R`-linear maps `f : N → N'` such that `id ⊗ f = 0`, we have `f = 0`.
 -/
-@[mk_iff] class FaithfullyFlat extends Module.Flat R M : Prop where
+@[mk_iff] class FaithfullyFlat : Prop extends Module.Flat R M where
   submodule_ne_top : ∀ ⦃m : Ideal R⦄ (_ : Ideal.IsMaximal m), m • (⊤ : Submodule R M) ≠ ⊤
 
 namespace FaithfullyFlat
@@ -389,7 +389,8 @@ lemma iff_exact_iff_rTensor_exact :
       (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3),
         Function.Exact l12 l23 ↔ Function.Exact (l12.rTensor M) (l23.rTensor M)) :=
   ⟨fun fl _ _ _ _ _ _ _ _ _ l12 l23 => (rTensor_exact_iff_exact R M l12 l23).symm, fun iff_exact =>
-    iff_flat_and_rTensor_reflects_triviality _ _ |>.2 ⟨Flat.iff_rTensor_exact.2 <| by aesop,
+    iff_flat_and_rTensor_reflects_triviality _ _ |>.2
+      ⟨Flat.iff_rTensor_exact.2 <| fun _ _ _ => iff_exact .. |>.1,
     fun N _ _ h => subsingleton_iff_forall_eq 0 |>.2 <| fun y => by
       simpa [eq_comm] using (iff_exact (0 : PUnit →ₗ[R] N) (0 : N →ₗ[R] PUnit) |>.2 fun x => by
         simpa using Subsingleton.elim _ _) y⟩⟩

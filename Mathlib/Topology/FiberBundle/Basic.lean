@@ -442,13 +442,13 @@ def trivChange (i j : ι) : PartialHomeomorph (B × F) (B × F) where
   map_target' p hp := by simpa using hp
   left_inv' := by
     rintro ⟨x, v⟩ hx
-    simp only [prod_mk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ] at hx
+    simp only [prodMk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ] at hx
     dsimp only
     rw [coordChange_comp, Z.coordChange_self]
     exacts [hx.1, ⟨⟨hx.1, hx.2⟩, hx.1⟩]
   right_inv' := by
     rintro ⟨x, v⟩ hx
-    simp only [prod_mk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ] at hx
+    simp only [prodMk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ] at hx
     dsimp only
     rw [Z.coordChange_comp, Z.coordChange_self]
     · exact hx.2
@@ -478,7 +478,7 @@ def localTrivAsPartialEquiv (i : ι) : PartialEquiv Z.TotalSpace (B × F) where
   invFun p := ⟨p.1, Z.coordChange i (Z.indexAt p.1) p.1 p.2⟩
   toFun p := ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩
   map_source' p hp := by
-    simpa only [Set.mem_preimage, and_true, Set.mem_univ, Set.prod_mk_mem_set_prod_eq] using hp
+    simpa only [Set.mem_preimage, and_true, Set.mem_univ, Set.prodMk_mem_set_prod_eq] using hp
   map_target' p hp := by
     simpa only [Set.mem_preimage, and_true, Set.mem_univ, Set.mem_prod] using hp
   left_inv' := by
@@ -488,7 +488,7 @@ def localTrivAsPartialEquiv (i : ι) : PartialEquiv Z.TotalSpace (B × F) where
     rw [Z.coordChange_comp, Z.coordChange_self] <;> apply_rules [mem_baseSet_at, mem_inter]
   right_inv' := by
     rintro ⟨x, v⟩ hx
-    simp only [prod_mk_mem_set_prod_eq, and_true, mem_univ] at hx
+    simp only [prodMk_mem_set_prod_eq, and_true, mem_univ] at hx
     dsimp only
     rw [Z.coordChange_comp, Z.coordChange_self]
     exacts [hx, ⟨⟨hx, Z.mem_baseSet_at _⟩, hx⟩]
@@ -518,7 +518,7 @@ theorem localTrivAsPartialEquiv_trans (i j : ι) :
     rfl
   · rintro ⟨x, v⟩ hx
     simp only [trivChange, localTrivAsPartialEquiv, PartialEquiv.symm,
-      Prod.mk.inj_iff, prod_mk_mem_set_prod_eq, PartialEquiv.trans_source, mem_inter_iff,
+      Prod.mk_inj, prodMk_mem_set_prod_eq, PartialEquiv.trans_source, mem_inter_iff,
       mem_preimage, proj, mem_univ, eq_self_iff_true, (· ∘ ·),
       PartialEquiv.coe_trans, TotalSpace.proj] at hx ⊢
     simp only [Z.coordChange_comp, hx, mem_inter_iff, and_self_iff, mem_baseSet_at]
@@ -536,7 +536,7 @@ theorem open_source' (i : ι) : IsOpen (Z.localTrivAsPartialEquiv i).source := b
   simp only [exists_prop, mem_iUnion, mem_singleton_iff]
   refine ⟨i, Z.baseSet i ×ˢ univ, (Z.isOpen_baseSet i).prod isOpen_univ, ?_⟩
   ext p
-  simp only [localTrivAsPartialEquiv_apply, prod_mk_mem_set_prod_eq, mem_inter_iff, and_self_iff,
+  simp only [localTrivAsPartialEquiv_apply, prodMk_mem_set_prod_eq, mem_inter_iff, and_self_iff,
     mem_localTrivAsPartialEquiv_source, and_true, mem_univ, mem_preimage]
 
 /-- Extended version of the local trivialization of a fiber bundle constructed from core,

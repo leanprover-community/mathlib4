@@ -27,7 +27,9 @@ to choices of square roots of `d` in `R`.
   are called `re` and `im` by analogy to the negative `d` case. -/
 @[ext]
 structure Zsqrtd (d : ℤ) where
+  /-- Component of the integer not multiplied by `√d` -/
   re : ℤ
+  /-- Component of the integer multiplied by `√d` -/
   im : ℤ
   deriving DecidableEq
 
