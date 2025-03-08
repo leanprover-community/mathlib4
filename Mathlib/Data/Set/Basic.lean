@@ -19,8 +19,9 @@ have type `X` are thus defined as `Set X := X → Prop`. Note that this function
 be decidable. The definition is in the module `Mathlib.Data.Set.Defs`.
 
 This file provides some basic definitions related to sets and functions not present in the
-definitions file, as well as extra lemmas for functions in the core library (empty set, univ, union,
-intersection, insert, singleton, set-theoretic difference, complement, and powerset).
+definitions file, as well as extra lemmas for functions defined in the definitions file and
+`Mathlib.Data.Set.Operations` (empty set, univ, union, intersection, insert, singleton,
+set-theoretic difference, complement, and powerset).
 
 Note that a set is a term, not a type. There is a coercion from `Set α` to `Type*` sending
 `s` to the corresponding subtype `↥s`.
