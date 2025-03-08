@@ -1144,6 +1144,22 @@ theorem memLp_norm_iff {f : α → E} (hf : AEStronglyMeasurable f μ) :
     MemLp (fun x => ‖f x‖) p μ ↔ MemLp f p μ :=
   ⟨fun h => ⟨hf, by rw [← eLpNorm_norm]; exact h.2⟩, fun h => h.norm⟩
 
+theorem memLp_enorm_iff {f : α → ε} (hf : AEStronglyMeasurable f μ) :
+    MemLp (fun x => ‖f x‖ₑ) p μ ↔ MemLp f p μ := by
+  refine ⟨fun h => ⟨hf, h.2⟩, fun h => ?_⟩
+  rw [MemLp]
+  constructor
+  · sorry -- I need a different statement... look at the source and duplicate! apply h.1.enorm
+  · -- TODO: what if p = 0 or p = ⊤? is the statement still true?
+    rw [eLpNorm_eq_lintegral_rpow_enorm]
+    · simp_rw [enorm_enorm]
+      · rw [← eLpNorm_eq_lintegral_rpow_enorm]
+        · exact h.2
+        · sorry -- p ≠ 0 ?
+        · sorry -- p ≠ ⊤ ?
+    · sorry -- p ≠ 0 ?
+    · sorry -- p ≠ ⊤?
+
 @[deprecated (since := "2025-02-21")]
 alias memℒp_norm_iff := memLp_norm_iff
 
