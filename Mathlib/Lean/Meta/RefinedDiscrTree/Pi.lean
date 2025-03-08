@@ -4,11 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
 import Mathlib.Init
-import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Pi.Notation
 
 /-!
 # Reducing Pi instances for indexing in the RefinedDiscrTree
 -/
+
+-- This file is only concerned with notation, and should avoid importing the actual algebraic
+-- hierarchy.
+assert_not_exists Monoid
 
 namespace Lean.Meta.RefinedDiscrTree
 

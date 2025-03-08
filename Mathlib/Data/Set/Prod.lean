@@ -152,22 +152,16 @@ theorem Disjoint.set_prod_right (ht : Disjoint t₁ t₂) (s₁ s₂ : Set α) :
     Disjoint (s₁ ×ˢ t₁) (s₂ ×ˢ t₂) :=
   disjoint_left.2 fun ⟨_a, _b⟩ ⟨_, hb₁⟩ ⟨_, hb₂⟩ => disjoint_left.1 ht hb₁ hb₂
 
+theorem prodMap_image_prod (f : α → β) (g : γ → δ) (s : Set α) (t : Set γ) :
+    (Prod.map f g) '' (s ×ˢ t) = (f '' s) ×ˢ (g '' t) := by
+  ext
+  aesop
+
 theorem insert_prod : insert a s ×ˢ t = Prod.mk a '' t ∪ s ×ˢ t := by
-  ext ⟨x, y⟩
-  simp +contextual [image, iff_def, or_imp]
+  simp only [insert_eq, union_prod, singleton_prod]
 
 theorem prod_insert : s ×ˢ insert b t = (fun a => (a, b)) '' s ∪ s ×ˢ t := by
-  ext ⟨x, y⟩
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745):
-  -- was `simp +contextual [image, iff_def, or_imp, Imp.swap]`
-  simp only [mem_prod, mem_insert_iff, image, mem_union, mem_setOf_eq, Prod.mk.injEq]
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · obtain ⟨hx, rfl|hy⟩ := h
-    · exact Or.inl ⟨x, hx, rfl, rfl⟩
-    · exact Or.inr ⟨hx, hy⟩
-  · obtain ⟨x, hx, rfl, rfl⟩|⟨hx, hy⟩ := h
-    · exact ⟨hx, Or.inl rfl⟩
-    · exact ⟨hx, Or.inr hy⟩
+  simp only [insert_eq, prod_union, prod_singleton]
 
 theorem prod_preimage_eq {f : γ → α} {g : δ → β} :
     (f ⁻¹' s) ×ˢ (g ⁻¹' t) = (fun p : γ × δ => (f p.1, g p.2)) ⁻¹' s ×ˢ t :=
@@ -280,18 +274,27 @@ theorem prod_eq_empty_iff : s ×ˢ t = ∅ ↔ s = ∅ ∨ t = ∅ := by
 theorem prod_sub_preimage_iff {W : Set γ} {f : α × β → γ} :
     s ×ˢ t ⊆ f ⁻¹' W ↔ ∀ a b, a ∈ s → b ∈ t → f (a, b) ∈ W := by simp [subset_def]
 
-theorem image_prod_mk_subset_prod {f : α → β} {g : α → γ} {s : Set α} :
+theorem image_prodMk_subset_prod {f : α → β} {g : α → γ} {s : Set α} :
     (fun x => (f x, g x)) '' s ⊆ (f '' s) ×ˢ (g '' s) := by
   rintro _ ⟨x, hx, rfl⟩
   exact mk_mem_prod (mem_image_of_mem f hx) (mem_image_of_mem g hx)
 
-theorem image_prod_mk_subset_prod_left (hb : b ∈ t) : (fun a => (a, b)) '' s ⊆ s ×ˢ t := by
+@[deprecated (since := "2025-02-22")]
+alias image_prod_mk_subset_prod := image_prodMk_subset_prod
+
+theorem image_prodMk_subset_prod_left (hb : b ∈ t) : (fun a => (a, b)) '' s ⊆ s ×ˢ t := by
   rintro _ ⟨a, ha, rfl⟩
   exact ⟨ha, hb⟩
 
-theorem image_prod_mk_subset_prod_right (ha : a ∈ s) : Prod.mk a '' t ⊆ s ×ˢ t := by
+@[deprecated (since := "2025-02-22")]
+alias image_prod_mk_subset_prod_left := image_prodMk_subset_prod_left
+
+theorem image_prodMk_subset_prod_right (ha : a ∈ s) : Prod.mk a '' t ⊆ s ×ˢ t := by
   rintro _ ⟨b, hb, rfl⟩
   exact ⟨ha, hb⟩
+
+@[deprecated (since := "2025-02-22")]
+alias image_prod_mk_subset_prod_right := image_prodMk_subset_prod_right
 
 theorem prod_subset_preimage_fst (s : Set α) (t : Set β) : s ×ˢ t ⊆ Prod.fst ⁻¹' s :=
   inter_subset_left
@@ -727,6 +730,23 @@ theorem pi_if {p : ι → Prop} [h : DecidablePred p] (s : Set ι) (t₁ t₂ : 
 theorem union_pi : (s₁ ∪ s₂).pi t = s₁.pi t ∩ s₂.pi t := by
   simp [pi, or_imp, forall_and, setOf_and]
 
+theorem pi_antitone (h : s₁ ⊆ s₂) : s₂.pi t ⊆ s₁.pi t := by
+  rw [← union_diff_cancel h, union_pi]
+  exact Set.inter_subset_left
+
+open scoped Classical in
+lemma union_pi_ite_of_disjoint {s t : Set ι} {x y : (i : ι) → Set (α i)} (hst : Disjoint s t) :
+((s ∪ t).pi fun i ↦ if i ∈ s then x i else y i)  = (s.pi x) ∩ (t.pi y) := by
+  have hx : ∀ i ∈ s, x i = if h : i ∈ s then x i else y i := by
+    intro i hi
+    simp only [dite_eq_ite, hi, ↓reduceIte]
+  have hy : ∀ i ∈ t, y i = if h : i ∈ s then x i else y i := by
+    intro i hi
+    have h : i ∉ s := Disjoint.not_mem_of_mem_left (id (Disjoint.symm hst)) hi
+    simp only [hi, hst, dite_eq_ite, h, ↓reduceIte]
+  rw [Set.pi_congr rfl hx, Set.pi_congr rfl hy]
+  exact union_pi
+
 theorem union_pi_inter
     (ht₁ : ∀ i ∉ s₁, t₁ i = univ) (ht₂ : ∀ i ∉ s₂, t₂ i = univ) :
     (s₁ ∪ s₂).pi (fun i ↦ t₁ i ∩ t₂ i) = s₁.pi t₁ ∩ s₂.pi t₂ := by
@@ -887,6 +907,58 @@ theorem univ_pi_ite (s : Set ι) [DecidablePred (· ∈ s)] (t : ∀ i, Set (α 
   refine forall_congr' fun i => ?_
   split_ifs with h <;> simp [h]
 
+section Setdiff
+
+/-- Write that set difference `(s ∪ t).pi x \ (s ∪ t).pi y` as a union. -/
+lemma pi_setdiff_eq_union (s t : Set ι) (x y : (i : ι) → Set (α i)) :
+  (s ∪ t).pi x \ (s ∪ t).pi y = (t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y) ∪
+    t.pi x ∩ (s.pi x \ s.pi y) := by
+    ext z
+    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    · simp only [mem_diff, mem_inter_iff, Set.mem_preimage, Function.eval, Set.mem_pi, not_and,
+          not_forall, Classical.not_imp] at h
+      obtain ⟨h1, ⟨j, ⟨hj1, hj2⟩⟩⟩ := h
+      by_cases hz : ∃ a ∈ s, z a ∉ y a
+      · right
+        simp only [mem_inter_iff, Set.mem_pi, mem_diff, not_forall, Classical.not_imp]
+        refine ⟨fun i hi ↦ h1 i (Set.subset_union_right hi),
+          fun i hi ↦ h1 i (Set.subset_union_left hi), bex_def.mpr hz⟩
+      · simp only [not_exists, not_and, not_not] at hz
+        left
+        simp only [mem_inter_iff, mem_diff, Set.mem_pi, not_forall, Classical.not_imp,
+          Set.mem_preimage, Function.eval]
+        refine ⟨⟨fun i hi ↦ h1 i (Set.subset_union_right hi), ?_⟩,
+          fun i hi ↦ h1 i (Set.subset_union_left hi), hz⟩
+        · have hj : j ∈ t := by
+            simp only [Set.mem_union] at hj1
+            rcases hj1 with (g1 | g2)
+            · exact False.elim (hj2 (hz j g1))
+            · exact g2
+          exact ⟨j, hj, hj2⟩
+    · simp only [Set.mem_union, mem_inter_iff, mem_diff, Set.mem_pi, not_forall,
+      Classical.not_imp] at h
+      simp only [mem_diff, Set.mem_pi, Set.mem_union, not_forall, Classical.not_imp]
+      rcases h with ⟨⟨h11, h12⟩, h2, h3⟩ | ⟨h1, h2, h3⟩
+      · refine ⟨?_, ?_⟩
+        · rintro i (hi1 | hi2)
+          · exact h2 i hi1
+          · exact h11 i hi2
+        · obtain ⟨x, hx1, hx2⟩ := h12
+          exact ⟨x, Or.inr hx1, hx2⟩
+      · refine ⟨?_, ?_⟩
+        · rintro i (hi1 | hi2)
+          · exact h2 i hi1
+          · exact h1 i hi2
+        · obtain ⟨x, hx1, hx2⟩ := h3
+          exact ⟨x, Or.inl hx1, hx2⟩
+
+lemma pi_setdiff_union_disjoint (s t : Set ι) (x : (i : ι) → Set (α i)) (y : (i : ι) → Set (α i)) :
+  Disjoint ((t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y)) (t.pi x ∩ (s.pi x \ s.pi y)) :=
+  Disjoint.mono (inter_subset_right) (inter_subset_right) <|
+    Disjoint.mono Set.inter_subset_right (fun ⦃_⦄ a ↦ a) <| disjoint_sdiff_right
+
+end Setdiff
+
 end Pi
 
 end Set
@@ -924,3 +996,18 @@ theorem sumPiEquivProdPi_symm_preimage_univ_pi (π : ι ⊕ ι' → Type*) (t : 
   · rintro ⟨h₁, h₂⟩ (i|i) <;> simp <;> apply_assumption
 
 end Equiv
+
+section image
+
+open Set
+variable {ι ι' : Type*} {α : ι → Type*}
+
+lemma subset_pi_image_of_subset {s : Set ι} {B C : (i : ι) → Set (Set (α i))}
+    (hBC : ∀ i ∈ s, B i ⊆ C i) : s.pi  '' s.pi B ⊆ s.pi  '' s.pi C := by
+  simp only [Set.image_subset_iff]
+  intro b hb
+  simp only [Set.mem_preimage, Set.mem_image, Set.mem_pi] at hb ⊢
+  exact ⟨b, ⟨fun i a ↦ hBC i a (hb i a), rfl⟩⟩
+
+
+end image

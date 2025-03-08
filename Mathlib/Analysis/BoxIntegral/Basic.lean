@@ -207,7 +207,7 @@ theorem integrable_iff_cauchy_basis [CompleteSpace F] : Integrable I l f vol ↔
   rw [integrable_iff_cauchy, cauchy_map_iff',
     (l.hasBasis_toFilteriUnion_top _).prod_self.tendsto_iff uniformity_basis_dist_le]
   refine forall₂_congr fun ε _ => exists_congr fun r => ?_
-  simp only [exists_prop, Prod.forall, Set.mem_iUnion, exists_imp, prod_mk_mem_set_prod_eq, and_imp,
+  simp only [exists_prop, Prod.forall, Set.mem_iUnion, exists_imp, prodMk_mem_set_prod_eq, and_imp,
     mem_inter_iff, mem_setOf_eq]
   exact
     and_congr Iff.rfl
