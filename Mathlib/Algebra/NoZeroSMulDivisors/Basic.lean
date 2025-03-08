@@ -55,13 +55,10 @@ variable [Semiring R] [AddCommGroup M] [Module R M]
 
 section SMulInjective
 
-variable (M)
-
+variable (M) in
 theorem smul_right_injective [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) :
     Function.Injective (c • · : M → M) :=
   (injective_iff_map_eq_zero (smulAddHom R M c)).2 fun _ ha => (smul_eq_zero.mp ha).resolve_left hc
-
-variable {M}
 
 theorem smul_right_inj [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) {x y : M} :
     c • x = c • y ↔ x = y :=

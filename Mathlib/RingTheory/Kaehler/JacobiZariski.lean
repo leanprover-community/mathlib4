@@ -171,7 +171,7 @@ lemma CotangentSpace.map_toComp_injective :
       ((Extension.CotangentSpace.map (Q.toComp P).toExtensionHom).liftBaseChange T) := by
   rw [← compEquiv_symm_inr]
   apply (compEquiv Q P).symm.injective.comp
-  exact Prod.mk.inj_left _
+  exact Prod.mk_right_injective _
 
 lemma CotangentSpace.map_ofComp_surjective :
     Function.Surjective (Extension.CotangentSpace.map (Q.ofComp P).toExtensionHom) := by
@@ -328,6 +328,7 @@ def δ :
 
 lemma exact_δ_map :
     Function.Exact (δ Q P) (mapBaseChange R S T) := by
+  simp only [δ]
   apply SnakeLemma.exact_δ_left (π₂ := (Q.comp P).toExtension.toKaehler)
     (hπ₂ := (Q.comp P).toExtension.exact_cotangentComplex_toKaehler)
   · apply (P.cotangentSpaceBasis.baseChange T).ext
@@ -346,6 +347,7 @@ lemma δ_eq (x : Q.toExtension.H1Cotangent) (y)
     (hz : (Extension.CotangentSpace.map (toComp Q P).toExtensionHom).liftBaseChange T z =
       (Q.comp P).toExtension.cotangentComplex y) :
     δ Q P x = P.toExtension.toKaehler.baseChange T z := by
+  simp only [δ]
   apply SnakeLemma.δ_eq
   exacts [hy, hz]
 
@@ -380,6 +382,7 @@ lemma δ_eq_δ (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S)
 
 lemma exact_map_δ :
     Function.Exact (Extension.H1Cotangent.map (Q.ofComp P).toExtensionHom) (δ Q P) := by
+  simp only [δ]
   apply SnakeLemma.exact_δ_right
     (ι₂ := (Q.comp P).toExtension.h1Cotangentι)
     (hι₂ := LinearMap.exact_subtype_ker_map _)

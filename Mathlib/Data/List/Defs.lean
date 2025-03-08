@@ -484,21 +484,6 @@ theorem length_mapAccumr₂ :
 
 end MapAccumr
 
-section Deprecated
-
-@[deprecated List.mem_cons (since := "2024-08-10")]
-theorem mem_cons_eq (a y : α) (l : List α) : (a ∈ y :: l) = (a = y ∨ a ∈ l) :=
-  propext List.mem_cons
-
 alias ⟨eq_or_mem_of_mem_cons, _⟩ := mem_cons
-
-@[deprecated List.not_mem_nil (since := "2024-08-10")]
-theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
-  fun ⟨_, hx, _⟩ => List.not_mem_nil _ hx
-
-
-@[deprecated (since := "2024-08-10")] alias length_le_of_sublist := Sublist.length_le
-
-end Deprecated
 
 end List

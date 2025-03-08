@@ -452,7 +452,7 @@ lemma contMDiff_of_contMDiff_inl {f : M → N}
   nontriviality N
   inhabit N
   let aux : N ⊕ N' → N := Sum.elim (@id N) (fun _ ↦ inhabited_h.default)
-  have : aux ∘ (@Sum.inl N N') ∘ f = f := by simp only [aux]; rfl
+  have : aux ∘ (@Sum.inl N N') ∘ f = f := by ext; simp [aux]
   rw [← this]
   rw [← contMDiffOn_univ] at h ⊢
   apply (contMDiff_id.sumElim contMDiff_const).contMDiffOn (s := @Sum.inl N N' '' univ).comp h
@@ -465,7 +465,7 @@ lemma contMDiff_of_contMDiff_inr {g : M' → N'}
   nontriviality N'
   inhabit N'
   let aux : N ⊕ N' → N' := Sum.elim (fun _ ↦ inhabited_h.default) (@id N')
-  have : aux ∘ (@Sum.inr N N') ∘ g = g := by simp only [aux]; rfl
+  have : aux ∘ (@Sum.inr N N') ∘ g = g := by ext; simp [aux]
   rw [← this]
   rw [← contMDiffOn_univ] at h ⊢
   apply ((contMDiff_const.sumElim contMDiff_id).contMDiffOn (s := Sum.inr '' univ)).comp h

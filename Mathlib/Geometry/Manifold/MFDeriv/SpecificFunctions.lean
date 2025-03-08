@@ -259,7 +259,6 @@ theorem mfderivWithin_fst {s : Set (M × M')} {x : M × M'}
 @[simp, mfld_simps]
 theorem tangentMap_prod_fst {p : TangentBundle (I.prod I') (M × M')} :
     tangentMap (I.prod I') I Prod.fst p = ⟨p.proj.1, p.2.1⟩ := by
-  -- Porting note: `rfl` wasn't needed
   simp [tangentMap]; rfl
 
 theorem tangentMapWithin_prod_fst {s : Set (M × M')} {p : TangentBundle (I.prod I') (M × M')}
@@ -443,7 +442,6 @@ end prodMap
 @[simp, mfld_simps]
 theorem tangentMap_prod_snd {p : TangentBundle (I.prod I') (M × M')} :
     tangentMap (I.prod I') I' Prod.snd p = ⟨p.proj.2, p.2.2⟩ := by
-  -- Porting note: `rfl` wasn't needed
   simp [tangentMap]; rfl
 
 theorem tangentMapWithin_prod_snd {s : Set (M × M')} {p : TangentBundle (I.prod I') (M × M')}
