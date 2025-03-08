@@ -39,7 +39,7 @@ lemma tilted_mul_apply_mgf' {s : Set Ω} (hs : MeasurableSet s) :
 
 lemma tilted_mul_apply_mgf [SFinite μ] (s : Set Ω) :
     μ.tilted (t * X ·) s = ∫⁻ a in s, ENNReal.ofReal (exp (t * X a) / mgf X μ t) ∂μ := by
-  rw [tilted_apply _ _, mgf]
+  rw [tilted_apply, mgf]
 
 lemma tilted_mul_apply_cgf [IsProbabilityMeasure μ] (s : Set Ω)
     (ht : Integrable (fun ω ↦ exp (t * X ω)) μ) :
@@ -82,9 +82,7 @@ lemma setIntegral_tilted_mul_mgf [SFinite μ] (g : Ω → E) (s : Set Ω) :
 lemma setIntegral_tilted_mul_cgf [IsProbabilityMeasure μ] (g : Ω → E) (s : Set Ω)
     (ht : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     ∫ x in s, g x ∂(μ.tilted (t * X ·)) = ∫ x in s, exp (t * X x - cgf X μ t) • (g x) ∂μ := by
-  simp_rw [setIntegral_tilted_mul_mgf, exp_sub]
-  rw [exp_cgf]
-  exact ht
+  simp_rw [setIntegral_tilted_mul_mgf, exp_sub, exp_cgf ht]
 
 lemma integral_tilted_mul_mgf (g : Ω → E) :
     ∫ ω, g ω ∂(μ.tilted (t * X ·)) = ∫ ω, (exp (t * X ω) / mgf X μ t) • (g ω) ∂μ := by
@@ -109,8 +107,7 @@ lemma memLp_tilted_mul (ht : t ∈ interior (integrableExpSet X μ)) (p : ℝ≥
     MemLp X p (μ.tilted (t * X ·)) := by
   have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet ht
   by_cases hp : p = 0
-  · simp only [hp, ENNReal.coe_zero, memLp_zero_iff_aestronglyMeasurable]
-    exact hX.aestronglyMeasurable.mono_ac (tilted_absolutelyContinuous _ _)
+  · simpa [hp] using hX.aestronglyMeasurable.mono_ac (tilted_absolutelyContinuous _ _)
   refine ⟨hX.aestronglyMeasurable.mono_ac (tilted_absolutelyContinuous _ _), ?_⟩
   rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top]
   rotate_left
