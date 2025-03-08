@@ -956,6 +956,12 @@ variable {F : Filter α} {u : α → X} {x : X}
 theorem mapClusterPt_def : MapClusterPt x F u ↔ ClusterPt x (map u F) := Iff.rfl
 alias ⟨MapClusterPt.clusterPt, _⟩ := mapClusterPt_def
 
+theorem Filter.EventuallyEq.mapClusterPt_iff {v : α → X} (h : u =ᶠ[F] v) :
+    MapClusterPt x F u ↔ MapClusterPt x F v := by
+  simp only [mapClusterPt_def, map_congr h]
+
+alias ⟨MapClusterPt.congrFun, _⟩ := Filter.EventuallyEq.mapClusterPt_iff
+
 theorem MapClusterPt.mono {G : Filter α} (h : MapClusterPt x F u) (hle : F ≤ G) :
     MapClusterPt x G u :=
   h.clusterPt.mono (map_mono hle)
@@ -978,6 +984,10 @@ theorem Filter.HasBasis.mapClusterPt_iff_frequently {ι : Sort*} {p : ι → Pro
 
 theorem mapClusterPt_iff : MapClusterPt x F u ↔ ∀ s ∈ 𝓝 x, ∃ᶠ a in F, u a ∈ s :=
   (𝓝 x).basis_sets.mapClusterPt_iff_frequently
+
+theorem MapClusterPt.frequently (h : MapClusterPt x F u) {p : X → Prop} (hp : ∀ᶠ y in 𝓝 x, p y) :
+    ∃ᶠ a in F, p (u a) :=
+  mapClusterPt_iff.mp h (setOf p) hp
 
 theorem mapClusterPt_comp {φ : α → β} {u : β → X} :
     MapClusterPt x F (u ∘ φ) ↔ MapClusterPt x (map φ F) u := Iff.rfl
