@@ -763,6 +763,20 @@ theorem MemLp.of_bound [IsFiniteMeasure μ] {f : α → E} (hf : AEStronglyMeasu
     (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : MemLp f p μ :=
   (memLp_const C).of_le hf (hfC.mono fun _x hx => le_trans hx (le_abs_self _))
 
+-- this is clearly a missing instance...
+instance : ENormedAddMonoid ℝ≥0∞ := sorry
+
+theorem MemLp.of_bound' [IsFiniteMeasure μ] {f : α → ε} (hf : AEStronglyMeasurable f μ) (C : ℝ≥0)
+    (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) : MemLp f p μ := by
+  let C' : ℝ≥0∞ := .ofNNReal C
+  have : ‖C'‖ₑ < ⊤ := sorry -- easy
+  have : MemLp (fun _ ↦ C') p μ := by
+    sorry -- 'apply memLp_const' this' raises a defeq time-out
+  -- apply this.of_le' same time-out
+  --apply (memLp_const' C).of_le
+  --(memLp_const' C).of_le hf (hfC.mono' fun _x hx => le_trans hx (le_abs_self _))
+  sorry
+
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.of_bound := MemLp.of_bound
 
