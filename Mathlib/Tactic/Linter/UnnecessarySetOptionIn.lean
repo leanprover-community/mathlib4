@@ -82,9 +82,9 @@ def findSetOptionIn (cmd : CommandElab) : CommandElab := fun stx => do
 
 @[inherit_doc linter.unnecessarySetOptionIn]
 def unnecessarySetOptionIn : Linter where run cmd := do
-  if (← getMainModule).getRoot == `MathlibTest ||
-    (← getMainModule) != `MathlibTest.UnnecessarySetOptionIn
-  then return
+  let mod ← getMainModule
+  if mod.getRoot == `MathlibTest && mod != `MathlibTest.UnnecessarySetOptionIn then
+    return
   if Linter.getLinterValue linter.unnecessarySetOptionIn (← getOptions) then
     findSetOptionIn elabCommand cmd
 
