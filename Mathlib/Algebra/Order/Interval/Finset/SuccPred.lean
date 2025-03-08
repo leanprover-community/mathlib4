@@ -55,6 +55,13 @@ lemma Ico_add_one_add_one_eq_Ioc_of_not_isMax (hb : ¬ IsMax b) (a : α) :
     Ico (a + 1) (b + 1) = Ioc a b := by
   simpa [succ_eq_add_one] using Ico_succ_succ_eq_Ioc_of_not_isMax hb a
 
+lemma insert_Icc_add_one_left_eq_Icc (h : a ≤ b) : insert a (Icc (a + 1) b) = Icc a b := by
+  simpa [succ_eq_add_one] using insert_Icc_succ_left_eq_Icc h
+
+lemma insert_Icc_eq_Icc_add_one_right (h : a ≤ b + 1) :
+    insert (b + 1) (Icc a b) = Icc a (b + 1) := by
+  simpa [← succ_eq_add_one] using insert_Icc_eq_Icc_succ_right (succ_eq_add_one b ▸ h)
+
 variable [NoMaxOrder α]
 
 lemma Icc_add_one_left_eq_Ioc (a b : α) : Icc (a + 1) b = Ioc a b := by
@@ -89,6 +96,13 @@ lemma Ioo_sub_one_left_eq_Ioc_of_not_isMin (ha : ¬ IsMin a) (b : α) : Ioo (a -
 lemma Ioc_sub_one_sub_one_eq_Ico_of_not_isMin (ha : ¬ IsMin a) (b : α) :
     Ioc (a - 1) (b - 1) = Ico a b := by
   simpa [pred_eq_sub_one] using Ioc_pred_pred_eq_Ico_of_not_isMin ha b
+
+lemma insert_Icc_sub_one_right_eq_Icc (h : a ≤ b) : insert b (Icc a (b - 1)) = Icc a b := by
+  simpa [pred_eq_sub_one] using insert_Icc_pred_right_eq_Icc h
+
+lemma insert_Icc_eq_Icc_sub_one_left (h : a - 1 ≤ b) :
+    insert (a - 1) (Icc a b) = Icc (a - 1) b := by
+  simpa [← pred_eq_sub_one] using insert_Icc_eq_Icc_pred_left (pred_eq_sub_one a ▸ h)
 
 variable [NoMinOrder α]
 

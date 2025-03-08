@@ -120,7 +120,7 @@ A family `{ eᵢ }` of idempotent elements is complete orthogonal if
 2. (complete) `∑ eᵢ = 1`
 -/
 @[mk_iff]
-structure CompleteOrthogonalIdempotents (e : I → R) extends OrthogonalIdempotents e : Prop where
+structure CompleteOrthogonalIdempotents (e : I → R) : Prop extends OrthogonalIdempotents e where
   complete : ∑ i, e i = 1
 
 /-- If a family is complete orthogonal, it consists of idempotents. -/

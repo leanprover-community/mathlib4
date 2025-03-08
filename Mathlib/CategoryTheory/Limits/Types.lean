@@ -3,7 +3,6 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton
 -/
-import Mathlib.Data.TypeMax
 import Mathlib.Logic.UnivLE
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 
@@ -91,7 +90,7 @@ The first, in the `CategoryTheory.Limits.Types.Small` namespace,
 assumes `Small.{u} J` and constructs `J`-indexed limits in `Type u`.
 
 The second, in the `CategoryTheory.Limits.Types.TypeMax` namespace
-constructs limits for functors `F : J ⥤ TypeMax.{v, u}`, for `J : Type v`.
+constructs limits for functors `F : J ⥤ Type max v u`, for `J : Type v`.
 This construction is slightly nicer, as the limit is definitionally just `F.sections`,
 rather than `Shrink F.sections`, which makes an arbitrary choice of `u`-small representative.
 
@@ -151,7 +150,7 @@ section TypeMax
 implemented as flat sections of a pi type
 -/
 @[simps]
-noncomputable def limitCone (F : J ⥤ TypeMax.{v, u}) : Cone F where
+noncomputable def limitCone (F : J ⥤ Type max v u) : Cone F where
   pt := F.sections
   π :=
     { app := fun j u => u.val j
@@ -161,7 +160,7 @@ noncomputable def limitCone (F : J ⥤ TypeMax.{v, u}) : Cone F where
 
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/
 @[simps]
-noncomputable def limitConeIsLimit (F : J ⥤ TypeMax.{v, u}) : IsLimit (limitCone F) where
+noncomputable def limitConeIsLimit (F : J ⥤ Type max v u) : IsLimit (limitCone F) where
   lift s v :=
     { val := fun j => s.π.app j v
       property := fun f => congr_fun (Cone.w s f) _ }
@@ -199,7 +198,7 @@ instance (priority := 1300) hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w
 
 variable (F : J ⥤ Type u) [HasLimit F]
 
-/-- The equivalence between the abstract limit of `F` in `TypeMax.{v, u}`
+/-- The equivalence between the abstract limit of `F` in `Type max v u`
 and the "concrete" definition as the sections of `F`.
 -/
 noncomputable def limitEquivSections : limit F ≃ F.sections :=
@@ -302,7 +301,7 @@ In this section we verify that instances are available as expected.
 -/
 section instances
 
-example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (TypeMax.{w, v}) := inferInstance
+example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max w v) := inferInstance
 example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max v w) := inferInstance
 
 example : HasLimitsOfSize.{0, 0, v, v+1} (Type v) := inferInstance
@@ -489,7 +488,7 @@ instance (priority := 1300) hasColimitsOfSize [UnivLE.{v, u}] :
 
 section instances
 
-example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (TypeMax.{w, v}) := inferInstance
+example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max w v) := inferInstance
 example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max v w) := inferInstance
 
 example : HasColimitsOfSize.{0, 0, v, v+1} (Type v) := inferInstance
@@ -505,14 +504,14 @@ namespace TypeMax
 implemented as a quotient of a sigma type
 -/
 @[simps]
-def colimitCocone (F : J ⥤ TypeMax.{v, u}) : Cocone F where
+def colimitCocone (F : J ⥤ Type max v u) : Cocone F where
   pt := Quot F
   ι :=
     { app := fun j x => Quot.mk (Quot.Rel F) ⟨j, x⟩
       naturality := fun _ _ f => funext fun _ => (Quot.sound ⟨f, rfl⟩).symm }
 
 /-- (internal implementation) the fact that the proposed colimit cocone is the colimit -/
-def colimitCoconeIsColimit (F : J ⥤ TypeMax.{v, u}) : IsColimit (colimitCocone F) where
+def colimitCoconeIsColimit (F : J ⥤ Type max v u) : IsColimit (colimitCocone F) where
   desc s :=
     Quot.lift (fun p : Σj, F.obj j => s.ι.app p.1 p.2) fun ⟨j, x⟩ ⟨j', x'⟩ ⟨f, hf⟩ => by
       dsimp at hf

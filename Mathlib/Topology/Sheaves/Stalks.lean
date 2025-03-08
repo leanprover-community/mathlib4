@@ -63,13 +63,10 @@ variable {X Y Z : TopCat.{v}}
 
 namespace TopCat.Presheaf
 
-variable (C)
-
+variable (C) in
 /-- Stalks are functorial with respect to morphisms of presheaves over a fixed `X`. -/
 def stalkFunctor (x : X) : X.Presheaf C ⥤ C :=
   (whiskeringLeft _ _ C).obj (OpenNhds.inclusion x).op ⋙ colim
-
-variable {C}
 
 /-- The stalk of a presheaf `F` at a point `x` is calculated as the colimit of the functor
 nbhds x ⥤ opens F.X ⥤ C

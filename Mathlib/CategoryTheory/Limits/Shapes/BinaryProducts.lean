@@ -850,12 +850,12 @@ abbrev HasBinaryCoproducts :=
 /-- If `C` has all limits of diagrams `pair X Y`, then it has all binary products -/
 theorem hasBinaryProducts_of_hasLimit_pair [∀ {X Y : C}, HasLimit (pair X Y)] :
     HasBinaryProducts C :=
-  { has_limit := fun F => hasLimitOfIso (diagramIsoPair F).symm }
+  { has_limit := fun F => hasLimit_of_iso (diagramIsoPair F).symm }
 
 /-- If `C` has all colimits of diagrams `pair X Y`, then it has all binary coproducts -/
 theorem hasBinaryCoproducts_of_hasColimit_pair [∀ {X Y : C}, HasColimit (pair X Y)] :
     HasBinaryCoproducts C :=
-  { has_colimit := fun F => hasColimitOfIso (diagramIsoPair F) }
+  { has_colimit := fun F => hasColimit_of_iso (diagramIsoPair F) }
 
 noncomputable section
 
