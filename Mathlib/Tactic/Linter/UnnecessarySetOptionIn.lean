@@ -63,9 +63,6 @@ register_option linter.unnecessarySetOptionIn : Bool := {
   descr := "enable the unnecessarySetOptionIn linter"
 }
 
-@[inherit_doc linter.unnecessarySetOptionIn]
-def getSetOptionIn (o : Options) : Bool := Linter.getLinterValue linter.unnecessarySetOptionIn o
-
 /-- reports a warning if the "first layer" `set_option ... in` is unnecessary. -/
 def findSetOptionIn (cmd : CommandElab) : CommandElab := fun stx => do
   let mut (report?, declId) := (false, default)
@@ -85,7 +82,8 @@ def findSetOptionIn (cmd : CommandElab) : CommandElab := fun stx => do
 
 @[inherit_doc linter.unnecessarySetOptionIn]
 def unnecessarySetOptionIn : Linter where run cmd := do
-  if getSetOptionIn (← getOptions) then
+  if (← getMainModule).root == `MathlibTest then return
+  if Linter.getLinterValue linter.unnecessarySetOptionIn (← getOptions) then
     findSetOptionIn elabCommand cmd
 
 initialize addLinter unnecessarySetOptionIn
