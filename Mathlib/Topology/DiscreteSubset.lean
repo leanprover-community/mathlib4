@@ -153,18 +153,13 @@ theorem isClosed_sdiff_of_codiscreteWithin {s U : Set X} (hs : s ∈ codiscreteW
     filter_upwards [eventually_nhdsWithin_iff.1 (disjoint_principal_right.1 (hs x h₁x))]
     intro a ha
     by_cases h₂a : a = x
-    · simp [hx, h₂a]
-    · have W := ha h₂a
-      simp only [mem_diff, not_and, not_not] at W
-      by_cases h₃a : a ∈ U
-      · tauto
-      · by_contra
-        tauto
+    · tauto_set
+    · specialize ha h₂a
+      tauto_set
   · rw [eventually_iff_exists_mem]
     use Uᶜ, hU.compl_mem_nhds h₁x
     intro y hy
-    simp only [mem_compl_iff, mem_diff, not_and, not_not]
-    tauto
+    tauto_set
 
 /-- In a T1Space, punctured neighborhoods are stable under removing finite sets of points. -/
 theorem nhdNE_of_nhdNE_diff_finite {X : Type*} [TopologicalSpace X] [T1Space X] {x : X}
