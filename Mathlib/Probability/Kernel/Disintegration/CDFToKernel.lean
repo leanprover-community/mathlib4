@@ -159,7 +159,7 @@ lemma setLIntegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondK
     refine measure_mono (Iic_subset_Iic.mpr ?_)
     exact mod_cast hij
   · refine Measurable.ennreal_ofReal ?_
-    exact (measurable_stieltjesOfMeasurableRat hf.measurable _).comp measurable_prod_mk_left
+    exact (measurable_stieltjesOfMeasurableRat hf.measurable _).comp measurable_prodMk_left
   simp_rw [setLIntegral_stieltjesOfMeasurableRat_rat hf _ _ hs]
   rw [← Monotone.measure_iInter]
   · rw [← prod_iInter]
@@ -187,7 +187,7 @@ lemma integrable_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondKer
   rw [this]
   refine integrable_toReal_of_lintegral_ne_top ?_ ?_
   · refine (Measurable.ennreal_ofReal ?_).aemeasurable
-    exact (measurable_stieltjesOfMeasurableRat hf.measurable x).comp measurable_prod_mk_left
+    exact (measurable_stieltjesOfMeasurableRat hf.measurable x).comp measurable_prodMk_left
   · rw [lintegral_stieltjesOfMeasurableRat hf]
     exact measure_ne_top _ _
 
@@ -245,7 +245,7 @@ lemma IsRatCondKernelCDFAux.measurable_right (hf : IsRatCondKernelCDFAux f κ ν
     Measurable (fun t ↦ f (a, t) q) := by
   let h := hf.measurable
   rw [measurable_pi_iff] at h
-  exact (h q).comp measurable_prod_mk_left
+  exact (h q).comp measurable_prodMk_left
 
 lemma IsRatCondKernelCDFAux.mono (hf : IsRatCondKernelCDFAux f κ ν) (a : α) :
     ∀ᵐ c ∂(ν a), Monotone (f (a, c)) := by
@@ -500,7 +500,7 @@ lemma setLIntegral_toKernel_univ [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
   rw [lintegral_iSup_directed]
   · simp_rw [setLIntegral_toKernel_Iic hf _ _ hs]
   · refine fun q ↦ Measurable.aemeasurable ?_
-    exact (Kernel.measurable_coe _ measurableSet_Iic).comp measurable_prod_mk_left
+    exact (Kernel.measurable_coe _ measurableSet_Iic).comp measurable_prodMk_left
   · refine Monotone.directed_le fun i j hij t ↦ measure_mono (Iic_subset_Iic.mpr ?_)
     exact mod_cast hij
 
@@ -527,7 +527,7 @@ lemma setLIntegral_toKernel_prod [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
     _ = ∫⁻ b in s, hf.toKernel f (a, b) univ ∂(ν a)
           - ∫⁻ b in s, hf.toKernel f (a, b) t ∂(ν a) := by
         rw [lintegral_sub]
-        · exact (Kernel.measurable_coe (hf.toKernel f) ht).comp measurable_prod_mk_left
+        · exact (Kernel.measurable_coe (hf.toKernel f) ht).comp measurable_prodMk_left
         · rw [iht]
           exact measure_ne_top _ _
         · exact Eventually.of_forall fun a ↦ measure_mono (subset_univ _)
@@ -546,7 +546,7 @@ lemma setLIntegral_toKernel_prod [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
     · exact hf_disj.mono fun i j h ↦ h.set_prod_right _ _
     · exact fun i ↦ MeasurableSet.prod hs (hf_meas i)
     · exact fun i ↦
-        ((Kernel.measurable_coe _ (hf_meas i)).comp measurable_prod_mk_left).aemeasurable.restrict
+        ((Kernel.measurable_coe _ (hf_meas i)).comp measurable_prodMk_left).aemeasurable.restrict
 
 open scoped Function in -- required for scoped `on` notation
 lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
@@ -584,7 +584,7 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     _ = ∫⁻ b, hf.toKernel f (a, b) univ
           - hf.toKernel f (a, b) (Prod.mk b ⁻¹' t) ∂(ν a) := by
         congr with x : 1
-        exact measure_compl (measurable_prod_mk_left ht)
+        exact measure_compl (measurable_prodMk_left ht)
           (measure_ne_top (hf.toKernel f (a, x)) _)
     _ = ∫⁻ x, hf.toKernel f (a, x) univ ∂(ν a) -
           ∫⁻ x, hf.toKernel f (a, x) (Prod.mk x ⁻¹' t) ∂(ν a) := by
@@ -592,7 +592,7 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
               ≤ᵐ[ν a] fun x ↦ hf.toKernel f (a, x) univ :=
           Eventually.of_forall fun _ ↦ measure_mono (subset_univ _)
         rw [lintegral_sub _ _ h_le]
-        · exact Kernel.measurable_kernel_prod_mk_left' ht a
+        · exact Kernel.measurable_kernel_prodMk_left' ht a
         refine ((lintegral_mono_ae h_le).trans_lt ?_).ne
         rw [lintegral_toKernel_univ hf]
         exact measure_lt_top _ univ
@@ -614,9 +614,9 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     calc ∫⁻ b, hf.toKernel f (a, b) (⋃ i, Prod.mk b ⁻¹' f' i) ∂(ν a)
       = ∫⁻ b, ∑' i, hf.toKernel f (a, b) (Prod.mk b ⁻¹' f' i) ∂(ν a) := by
           congr with x : 1
-          rw [measure_iUnion (h_disj x) fun i ↦ measurable_prod_mk_left (hf_meas i)]
+          rw [measure_iUnion (h_disj x) fun i ↦ measurable_prodMk_left (hf_meas i)]
     _ = ∑' i, ∫⁻ b, hf.toKernel f (a, b) (Prod.mk b ⁻¹' f' i) ∂(ν a) :=
-          lintegral_tsum fun i ↦ (Kernel.measurable_kernel_prod_mk_left' (hf_meas i) a).aemeasurable
+          lintegral_tsum fun i ↦ (Kernel.measurable_kernel_prodMk_left' (hf_meas i) a).aemeasurable
     _ = ∑' i, κ a (f' i) := by simp_rw [hf_eq]
     _ = κ a (iUnion f') := (measure_iUnion hf_disj hf_meas).symm
 
