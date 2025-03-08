@@ -31,15 +31,6 @@ open System
 
 namespace Mathlib.Linter.TextBased
 
-/-- Different kinds of "broad imports" that are linted against. -/
-inductive BroadImports
-  /-- Importing the entire "Mathlib.Tactic" folder -/
-  | TacticFolder
-  /-- Importing any module in `Lake`, unless carefully measured
-  This has caused unexpected regressions in the past. -/
-  | Lake
-deriving BEq
-
 /-- Possible errors that text-based linters can report. -/
 -- We collect these in one inductive type to centralise error reporting.
 inductive StyleError where
