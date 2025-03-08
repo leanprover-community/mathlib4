@@ -260,7 +260,7 @@ variable (F₁ : Type*) [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] (E₁ 
 
 /-- Given fiber bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
 total space of `E₁ ×ᵇ E₂` to the total space of `E₁` is smooth. -/
-theorem contMDiff_fst :
+protected theorem contMDiff_fst :
     ContMDiff (IB.prod 𝓘(𝕜, F₁ × F₂)) (IB.prod 𝓘(𝕜, F₁)) n (TotalSpace.Prod.fst F₁ F₂ E₁ E₂) := by
   intro x
   rw [contMDiffAt_totalSpace]
@@ -284,15 +284,14 @@ theorem contMDiff_fst :
   rcases y with ⟨b, v, w⟩
   simp only [trivializationAt, FiberBundle.trivializationAt', Trivialization.mem_target,
     Trivialization.baseSet_prod, mem_inter_iff] at hy
-  have : (TotalSpace.Prod.fst F₁ F₂ E₁ E₂ x).proj = x.proj := rfl -- make a simp lemma
-  simp only [trivializationAt, FiberBundle.trivializationAt', Function.comp_apply, this]
+  simp only [trivializationAt, FiberBundle.trivializationAt', Function.comp_apply, proj_fst]
   rw [Trivialization.fst_prod_symm_apply, Trivialization.apply_symm_apply]
   · simpa [Trivialization.mem_target] using hy.1
   · exact hy.1
 
 /-- Given fiber bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
 total space of `E₁ ×ᵇ E₂` to the total space of `E₂` is smooth. -/
-theorem contMDiff_snd :
+protected theorem contMDiff_snd :
     ContMDiff (IB.prod 𝓘(𝕜, F₁ × F₂)) (IB.prod 𝓘(𝕜, F₂)) n (TotalSpace.Prod.snd F₁ F₂ E₁ E₂) := by
   intro x
   rw [contMDiffAt_totalSpace]
@@ -316,8 +315,7 @@ theorem contMDiff_snd :
   rcases y with ⟨b, v, w⟩
   simp only [trivializationAt, FiberBundle.trivializationAt', Trivialization.mem_target,
     Trivialization.baseSet_prod, mem_inter_iff] at hy
-  have : (TotalSpace.Prod.snd F₁ F₂ E₁ E₂ x).proj = x.proj := rfl -- make a simp lemma
-  simp only [trivializationAt, FiberBundle.trivializationAt', Function.comp_apply, this]
+  simp only [trivializationAt, FiberBundle.trivializationAt', Function.comp_apply, this, proj_snd]
   rw [Trivialization.snd_prod_symm_apply, Trivialization.apply_symm_apply]
   · simpa [Trivialization.mem_target] using hy.2
   · exact hy.2

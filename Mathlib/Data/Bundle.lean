@@ -107,6 +107,12 @@ def TotalSpace.Prod.snd (F₁ F₂ : Type*) (E₁ E₂ : B → Type*) :
     TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₂ E₂ :=
   fun ⟨x, v⟩ ↦ ⟨x, v.2⟩
 
+@[simp] lemma proj_fst {F₁ F₂ : Type*} {E₁ E₂ : B → Type*} {x : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)} :
+    (TotalSpace.Prod.fst F₁ F₂ E₁ E₂ x).proj = x.proj := rfl
+
+@[simp] lemma proj_snd {F₁ F₂ : Type*} {E₁ E₂ : B → Type*} {x : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)} :
+    (TotalSpace.Prod.snd F₁ F₂ E₁ E₂ x).proj = x.proj := rfl
+
 /-- `Bundle.Trivial B F` is the trivial bundle over `B` of fiber `F`. -/
 @[reducible, nolint unusedArguments]
 def Trivial (B : Type*) (F : Type*) : B → Type _ := fun _ => F
