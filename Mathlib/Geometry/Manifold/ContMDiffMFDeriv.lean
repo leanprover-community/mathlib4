@@ -101,7 +101,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     have : MapsTo (fun x ↦ (x, g x)) t (t ×ˢ u) := fun y hy ↦ by simp [hy, hu hy]
     filter_upwards [((continuousWithinAt_id.prod hg.continuousWithinAt)
       |>.tendsto_nhdsWithin this).eventually h3f, self_mem_nhdsWithin] with x hx h'x
-    apply hx.comp (g x) (contMDiffWithinAt_const.prod_mk contMDiffWithinAt_id)
+    apply hx.comp (g x) (contMDiffWithinAt_const.prodMk contMDiffWithinAt_id)
     exact fun y hy ↦ by simp [h'x, hy]
   have h2g : g ⁻¹' (extChartAt I (g x₀)).source ∈ 𝓝[t] x₀ :=
     hg.continuousWithinAt.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds (g x₀))
