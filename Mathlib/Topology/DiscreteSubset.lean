@@ -135,15 +135,12 @@ theorem discreteTopology_of_codiscreteWithin {U s : Set X} (h : s ∈ Filter.cod
 codiscreteWithin `U` iff every point `z ∈ U` has a punctured neighborhood that does not intersect
 `U \ s`. -/
 lemma codiscreteWithin_iff_locallyEmptyComplementWithin {s U : Set X} :
-    (s ∈ codiscreteWithin U) ↔ (∀ z ∈ U, ∃ t ∈ 𝓝[≠] z, t ∩ (U \ s) = ∅) := by
+    s ∈ codiscreteWithin U ↔ ∀ z ∈ U, ∃ t ∈ 𝓝[≠] z, t ∩ (U \ s) = ∅ := by
   simp only [mem_codiscreteWithin, disjoint_principal_right]
-  constructor
-  <;> intro h z hz
-  · use (U \ s)ᶜ, (h z hz)
-    simp
-  · rw [← exists_mem_subset_iff]
-    obtain ⟨t, h₁t, h₂t⟩ := h z hz
-    use t, h₁t, (disjoint_iff_inter_eq_empty.mpr h₂t).subset_compl_right
+  refine ⟨fun h z hz ↦ ⟨(U \ s)ᶜ, h z hz, by simp⟩, fun h z hz ↦ ?_⟩
+  rw [← exists_mem_subset_iff]
+  obtain ⟨t, h₁t, h₂t⟩ := h z hz
+  use t, h₁t, (disjoint_iff_inter_eq_empty.mpr h₂t).subset_compl_right
 
 /-- If `U` is closed and `s` is codiscrete within `U`, then `U \ s` is closed.-/
 theorem isClosed_sdiff_of_codiscreteWithin {s U : Set X} (hs : s ∈ codiscreteWithin U)
