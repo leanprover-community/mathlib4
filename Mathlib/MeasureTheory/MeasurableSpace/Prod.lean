@@ -94,9 +94,9 @@ lemma MeasurableEmbedding.prodMap {α β γ δ : Type*} {mα : MeasurableSpace �
 alias MeasurableEmbedding.prod_mk := MeasurableEmbedding.prodMap
 
 lemma MeasurableEmbedding.prodMk_left {β γ : Type*} [MeasurableSingletonClass α]
-    {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ} (x : α) {f : γ → β}
-    (hf : MeasurableEmbedding f) : MeasurableEmbedding (fun y ↦ (x, f y))
-    where
+    {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
+    (x : α) {f : γ → β} (hf : MeasurableEmbedding f) :
+    MeasurableEmbedding (fun y ↦ (x, f y)) where
   injective := by
     intro y y'
     simp only [Prod.mk.injEq, true_and]
@@ -119,8 +119,9 @@ lemma measurableEmbedding_prodMk_left [MeasurableSingletonClass α] (x : α) :
 alias measurableEmbedding_prod_mk_left := measurableEmbedding_prodMk_left
 
 lemma MeasurableEmbedding.prodMk_right {β γ : Type*} [MeasurableSingletonClass α]
-    {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ} {f : γ → β} (hf : MeasurableEmbedding f)
-    (x : α) : MeasurableEmbedding (fun y ↦ (f y, x)) :=
+    {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
+    {f : γ → β} (hf : MeasurableEmbedding f) (x : α) :
+    MeasurableEmbedding (fun y ↦ (f y, x)) :=
   MeasurableEquiv.prodComm.measurableEmbedding.comp (hf.prodMk_left _)
 
 @[deprecated (since := "2025-03-05")]

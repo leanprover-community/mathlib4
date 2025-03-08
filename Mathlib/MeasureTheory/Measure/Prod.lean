@@ -74,16 +74,13 @@ theorem measurable_measure_prodMk_left_finite [IsFiniteMeasure ν] {s : Set (α 
   | empty => simp
   | basic s hs =>
     obtain ⟨s, hs, t, -, rfl⟩ := hs
-    classical
-      simpa only [mk_preimage_prod_right_eq_if, measure_if] using measurable_const.indicator hs
-  | compl s hs
-    ihs =>
+    classical simpa only [mk_preimage_prod_right_eq_if, measure_if]
+      using measurable_const.indicator hs
+  | compl s hs ihs =>
     simp_rw [preimage_compl, measure_compl (measurable_prodMk_left hs) (measure_ne_top ν _)]
     exact ihs.const_sub _
-  | iUnion f hfd hfm
-    ihf =>
-    have (a : α) : ν (Prod.mk a ⁻¹' ⋃ i, f i) = ∑' i, ν (Prod.mk a ⁻¹' f i) :=
-      by
+  | iUnion f hfd hfm ihf =>
+    have (a : α) : ν (Prod.mk a ⁻¹' ⋃ i, f i) = ∑' i, ν (Prod.mk a ⁻¹' f i) := by
       rw [preimage_iUnion, measure_iUnion]
       exacts [hfd.mono fun _ _ ↦ .preimage _, fun i ↦ measurable_prodMk_left (hfm i)]
     simpa only [this] using Measurable.ennreal_tsum ihf
@@ -116,7 +113,8 @@ theorem measurable_measure_prodMk_right {μ : Measure α} [SFinite μ] {s : Set 
 @[deprecated (since := "2025-03-05")]
 alias measurable_measure_prod_mk_right := measurable_measure_prodMk_right
 
-theorem Measurable.map_prodMk_left [SFinite ν] : Measurable fun x : α => map (Prod.mk x) ν := by
+theorem Measurable.map_prodMk_left [SFinite ν] :
+    Measurable fun x : α => map (Prod.mk x) ν := by
   apply measurable_of_measurable_coe; intro s hs
   simp_rw [map_apply measurable_prodMk_left hs]
   exact measurable_measure_prodMk_left hs
@@ -893,23 +891,23 @@ lemma fst_prod [IsProbabilityMeasure ν] : (μ.prod ν).fst = μ := by
   ext1 s hs
   rw [fst_apply hs, ← prod_univ, prod_prod, measure_univ, mul_one]
 
-theorem fst_map_prodMk₀ {X : α → β} {Y : α → γ} {μ : Measure α} (hY : AEMeasurable Y μ) :
-    (μ.map fun a => (X a, Y a)).fst = μ.map X := by
+theorem fst_map_prodMk₀ {X : α → β} {Y : α → γ} {μ : Measure α}
+    (hY : AEMeasurable Y μ) : (μ.map fun a => (X a, Y a)).fst = μ.map X := by
   by_cases hX : AEMeasurable X μ
   · ext1 s hs
     rw [Measure.fst_apply hs, Measure.map_apply_of_aemeasurable (hX.prodMk hY) (measurable_fst hs),
       Measure.map_apply_of_aemeasurable hX hs, ← prod_univ, mk_preimage_prod, preimage_univ,
       inter_univ]
   · have : ¬AEMeasurable (fun x ↦ (X x, Y x)) μ := by
-      contrapose! hX;
+      contrapose! hX
       exact measurable_fst.comp_aemeasurable hX
     simp [map_of_not_aemeasurable, hX, this]
 
 @[deprecated (since := "2025-03-05")]
 alias fst_map_prod_mk₀ := fst_map_prodMk₀
 
-theorem fst_map_prodMk {X : α → β} {Y : α → γ} {μ : Measure α} (hY : Measurable Y) :
-    (μ.map fun a => (X a, Y a)).fst = μ.map X :=
+theorem fst_map_prodMk {X : α → β} {Y : α → γ} {μ : Measure α}
+    (hY : Measurable Y) : (μ.map fun a => (X a, Y a)).fst = μ.map X :=
   fst_map_prodMk₀ hY.aemeasurable
 
 @[deprecated (since := "2025-03-05")]

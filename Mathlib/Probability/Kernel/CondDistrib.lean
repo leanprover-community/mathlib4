@@ -324,8 +324,8 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prodMk {Ω F} {m�
 alias _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_mk :=
   MeasureTheory.AEStronglyMeasurable.comp_snd_map_prodMk
 
-theorem _root_.MeasureTheory.Integrable.comp_snd_map_prodMk {Ω} {mΩ : MeasurableSpace Ω} (X : Ω → β)
-    {μ : Measure Ω} {f : Ω → F} (hf_int : Integrable f μ) :
+theorem _root_.MeasureTheory.Integrable.comp_snd_map_prodMk
+    {Ω} {mΩ : MeasurableSpace Ω} (X : Ω → β) {μ : Measure Ω} {f : Ω → F} (hf_int : Integrable f μ) :
     Integrable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) := by
   by_cases hX : AEMeasurable X μ
   · have hf := hf_int.1.comp_snd_map_prodMk X (mΩ := mΩ) (mβ := mβ)
