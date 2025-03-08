@@ -177,6 +177,51 @@ lemma posterior_comp {η : Kernel β γ} [IsFiniteKernel η] :
     rw [Kernel.swap_parallelComp, Kernel.comp_assoc, ← Kernel.comp_assoc (Kernel.swap Ω β),
       Kernel.swap_parallelComp, Kernel.comp_assoc, Kernel.swap_copy]
 
+theorem setLIntegral_prod_symm {α β: Type*} {_ : MeasurableSpace α} {_ : MeasurableSpace β}
+    {μ : Measure α} {ν : Measure β} [SFinite μ] [SFinite ν]
+    {s : Set α} (t : Set β) (f : α × β → ENNReal)
+    (hf : AEMeasurable f ((μ.prod ν).restrict (s ×ˢ t))) :
+    ∫⁻ z in s ×ˢ t, f z ∂μ.prod ν = ∫⁻ y in t, ∫⁻ x in s, f (x, y) ∂μ ∂ν := by
+  --rw [← lintegral_prod_swap]
+  rw [← Measure.prod_restrict, ← lintegral_prod_swap, Measure.prod_restrict,
+    setLIntegral_prod]
+  · rfl
+  · sorry
+
+lemma rnDeriv_posterior (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
+    ∀ᵐ ω ∂μ, ∀ᵐ b ∂(κ ∘ₘ μ), ((κ†μ) b).rnDeriv μ ω = (κ ω).rnDeriv (κ ∘ₘ μ) b := by
+  suffices ∀ᵐ p ∂(μ.prod (κ ∘ₘ μ)), ((κ†μ) p.2).rnDeriv μ p.1 = (κ p.1).rnDeriv (κ ∘ₘ μ) p.2 by
+    rwa [Measure.ae_prod_iff_ae_ae] at this
+    sorry
+  have h_prod {s : Set Ω} {t : Set β} (hs : MeasurableSet s) (ht : MeasurableSet t) :
+      ∫⁻ x in s ×ˢ t, (∂(κ†μ) x.2/∂μ) x.1 ∂μ.prod (⇑κ ∘ₘ μ)
+        = ∫⁻ x in s ×ˢ t, (∂κ x.1/∂⇑κ ∘ₘ μ) x.2 ∂μ.prod (⇑κ ∘ₘ μ) := by
+    rw [setLIntegral_prod_symm, setLIntegral_prod]
+    rotate_left
+    · sorry
+    · sorry
+    sorry
+  refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite ?_ ?_ ?_
+  · sorry
+  · sorry
+  intro s hs hμs
+  refine MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ _ hs
+  · simp
+  · rintro _ ⟨s, hs, t, ht, rfl⟩
+    simp only
+    exact h_prod hs ht
+  · intro t ht h_eq
+    rw [setLintegral_compl ht, setLintegral_compl ht]
+    · rw [h_eq]
+      congr 1
+      simpa using h_prod .univ .univ
+    · sorry
+    · sorry
+  · intro f hf_disj hf_meas h
+    simp_rw [lintegral_iUnion hf_meas hf_disj]
+    congr with i
+    exact h i
+
 end StandardBorelSpace
 
 end ProbabilityTheory
