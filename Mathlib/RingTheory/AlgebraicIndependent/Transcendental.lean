@@ -109,20 +109,21 @@ theorem AlgebraicIndependent.option_iff {a : A} :
   ⟨fun h ↦ have := h.comp _ (Option.some_injective _); ⟨this,
     (this.option_iff_transcendental _).mp h⟩, fun h ↦ (h.1.option_iff_transcendental _).mpr h.2⟩
 
-theorem AlgebraicIndependent.insert_iff {s : Set A} {a : A} (h : a ∉ s) :
-    (insert a s).AlgebraicIndependent R ↔
-      s.AlgebraicIndependent R ∧ Transcendental (adjoin R s) a := by
-  classical simp_rw [← algebraicIndependent_equiv (subtypeInsertEquivOption h).symm]
-  convert option_iff (a := a) using 2
+theorem AlgebraicIndepOn.insert_iff {s : Set ι} {i : ι} (h : i ∉ s) :
+    AlgebraicIndepOn R x (insert i s) ↔
+      AlgebraicIndepOn R x s ∧ Transcendental (adjoin R (x '' s)) (x i) := by
+  classical simp_rw [← algebraicIndependent_equiv (subtypeInsertEquivOption h).symm,
+    AlgebraicIndepOn]
+  convert option_iff (x := fun i : s ↦ x i) (a := x i) using 2
   · ext (_|_) <;> rfl
-  · rw [Subtype.range_val]
+  · rw [Set.image_eq_range]
 
-protected theorem AlgebraicIndependent.insert {s : Set A} {a : A} (hs : s.AlgebraicIndependent R)
-    (ha : Transcendental (adjoin R s) a) : (insert a s).AlgebraicIndependent R := by
+protected theorem AlgebraicIndepOn.insert {s : Set ι} {i : ι} (hs : AlgebraicIndepOn R x s)
+    (hi : Transcendental (adjoin R (x '' s)) (x i)) : AlgebraicIndepOn R x (insert i s) := by
   nontriviality R
   have := hs.algebraMap_injective.nontrivial
-  exact (insert_iff fun h ↦ ha <| isAlgebraic_algebraMap
-    (⟨a, subset_adjoin h⟩ : adjoin R s)).mpr ⟨hs, ha⟩
+  exact (insert_iff fun h ↦ hi <| isAlgebraic_algebraMap
+    (⟨_, subset_adjoin ⟨i, h, rfl⟩⟩ : adjoin R (x '' s))).mpr ⟨hs, hi⟩
 
 theorem algebraicIndependent_of_set_of_finite (s : Set ι)
     (ind : AlgebraicIndependent R fun i : s ↦ x i)
@@ -154,9 +155,9 @@ theorem algebraicIndependent_of_finite_type'
 /-- Variant of `algebraicIndependent_of_finite` using `Transcendental`. -/
 theorem algebraicIndependent_of_finite' (s : Set A)
     (hinj : Injective (algebraMap R A))
-    (H : ∀ t ⊆ s, t.Finite → t.AlgebraicIndependent R →
+    (H : ∀ t ⊆ s, t.Finite → AlgebraicIndependent R ((↑) : t → A) →
       ∀ a ∈ s, a ∉ t → Transcendental (adjoin R t) a) :
-    s.AlgebraicIndependent R :=
+    AlgebraicIndependent R ((↑) : s → A) :=
   algebraicIndependent_of_finite_type' hinj fun t hfin h i hi ↦ H _
     (by rintro _ ⟨x, _, rfl⟩; exact x.2) (hfin.image _) h.image _ i.2
     (mt Subtype.val_injective.mem_set_image.mp hi)

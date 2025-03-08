@@ -47,7 +47,7 @@ open AlgebraicIndependent
 
 variable {R} in
 theorem exists_isTranscendenceBasis_superset {s : Set A}
-    (hs : s.AlgebraicIndependent R) :
+    (hs : AlgebraicIndepOn R id s) :
     ∃ t, s ⊆ t ∧ IsTranscendenceBasis R ((↑) : t → A) := by
   simpa only [subset_univ, and_true, ← isTranscendenceBasis_iff_maximal]
     using exists_maximal_algebraicIndependent s _ (subset_univ _) hs
@@ -219,7 +219,7 @@ variable [NoZeroDivisors A]
 
 private def indepMatroid : IndepMatroid A where
   E := univ
-  Indep := Set.AlgebraicIndependent R
+  Indep := AlgebraicIndepOn R id
   indep_empty := (algebraicIndependent_empty_iff ..).mpr inj
   indep_subset _ _ := (·.mono)
   indep_aug I B I_ind h B_base := by
@@ -230,12 +230,13 @@ private def indepMatroid : IndepMatroid A where
       contrapose! h
       have ⟨b, hb⟩ := B_base
       exact ⟨b, ⟨hb, fun hbI ↦ h ⟨b, hbI⟩⟩, .of_subsingleton⟩
-    rw [I_ind.isTranscendenceBasis_iff_isAlgebraic]
+    apply I_ind.isTranscendenceBasis_iff_isAlgebraic.mpr
     replace B_base := B_base.isAlgebraic
+    simp_rw [id_eq]
     rw [Subtype.range_val] at B_base ⊢
     refine ⟨fun a ↦ (B_base.1 a).adjoin_of_forall_isAlgebraic fun x hx ↦ ?_⟩
     contrapose! h
-    exact ⟨x, hx, I_ind.insert h⟩
+    exact ⟨x, hx, I_ind.insert <| by rwa [image_id]⟩
   indep_maximal X _ I ind hIX := exists_maximal_algebraicIndependent I X hIX ind
   subset_ground _ _ := subset_univ _
 
@@ -251,7 +252,7 @@ instance : (matroid inj).Finitary where
 @[simp] theorem matroid_e : (matroid inj).E = univ := rfl
 
 theorem matroid_indep_iff {s : Set A} :
-    (matroid inj).Indep s ↔ s.AlgebraicIndependent R := Iff.rfl
+    (matroid inj).Indep s ↔ AlgebraicIndepOn R id s := Iff.rfl
 
 theorem matroid_isBase_iff {s : Set A} :
     (matroid inj).IsBase s ↔ IsTranscendenceBasis R ((↑) : s → A) := Iff.rfl
@@ -262,13 +263,14 @@ theorem matroid_cRank_eq : (matroid inj).cRank = trdeg R A :=
 end
 
 theorem matroid_isBasis_iff [IsDomain A] {s t : Set A} : (matroid inj).IsBasis s t ↔
-    s.AlgebraicIndependent R ∧ s ⊆ t ∧ ∀ a ∈ t, IsAlgebraic (adjoin R s) a := by
+    AlgebraicIndepOn R id s ∧ s ⊆ t ∧ ∀ a ∈ t, IsAlgebraic (adjoin R s) a := by
   rw [Matroid.IsBasis, maximal_iff_forall_insert fun s t h hst ↦ ⟨h.1.subset hst, hst.trans h.2⟩]
   simp_rw [matroid_indep_iff, ← and_assoc, matroid_e, subset_univ, and_true]
   exact and_congr_right fun h ↦ ⟨fun max a ha ↦ of_not_not fun tr ↦ max _
     (fun ha ↦ tr (isAlgebraic_algebraMap (⟨a, subset_adjoin ha⟩ : adjoin R s)))
-      ⟨.insert h.1 tr, insert_subset ha h.2⟩,
-    fun alg a ha h ↦ ((insert_iff ha).mp h.1).2 (alg _ <| h.2 <| mem_insert ..)⟩
+      ⟨.insert h.1 (by rwa [image_id]), insert_subset ha h.2⟩,
+    fun alg a ha h ↦ ((AlgebraicIndepOn.insert_iff ha).mp h.1).2 <| by
+      rw [image_id]; exact alg _ <| h.2 <| mem_insert ..⟩
 
 theorem matroid_isBasis_iff_of_subsingleton [Subsingleton A] {s t : Set A} :
     (matroid inj).IsBasis s t ↔ s = t := by
@@ -334,7 +336,7 @@ transitivity of algebraicity: there may exist `a : A` such that `S := R[a]` is a
 The only `R`-algebraically independent subset of `{a}` is `∅`, which is not a transcendence basis.
 See the docstring of `IsAlgebraic.restrictScalars_of_isIntegral` for an example. -/
 theorem exists_isTranscendenceBasis_between [NoZeroDivisors A] (s t : Set A) (hst : s ⊆ t)
-    (hs : s.AlgebraicIndependent R) [ht : Algebra.IsAlgebraic (adjoin R t) A] :
+    (hs : AlgebraicIndepOn R id s) [ht : Algebra.IsAlgebraic (adjoin R t) A] :
     ∃ u, s ⊆ u ∧ u ⊆ t ∧ IsTranscendenceBasis R ((↑) : u → A) := by
   have := ht.nontrivial; have := Subtype.val_injective (p := (· ∈ adjoin R t)).nontrivial
   have := (isDomain_iff_noZeroDivisors_and_nontrivial A).mpr ⟨inferInstance, inferInstance⟩
