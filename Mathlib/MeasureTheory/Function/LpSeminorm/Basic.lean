@@ -329,8 +329,9 @@ theorem eLpNorm'_const (c : ε) (hq_pos : 0 < q) :
   suffices hq_cancel : q * (1 / q) = 1 by rw [hq_cancel, ENNReal.rpow_one]
   rw [one_div, mul_inv_cancel₀ (ne_of_lt hq_pos).symm]
 
--- Generalising this to ENormedAddMonoid means requiring c ≠ ⊤.
-theorem eLpNorm'_const' [IsFiniteMeasure μ] (c : F) (hc_ne_zero : c ≠ 0) (hq_ne_zero : q ≠ 0) :
+-- XXX: better name?
+theorem eLpNorm'_const'' [IsFiniteMeasure μ]
+    {c : ε} (hc : ‖c‖ₑ < ⊤) (hc_ne_zero : ‖c‖ₑ ≠ 0) (hq_ne_zero : q ≠ 0) :
     eLpNorm' (fun _ : α => c) q μ = ‖c‖ₑ * μ Set.univ ^ (1 / q) := by
   rw [eLpNorm'_eq_lintegral_enorm, lintegral_const,
     ENNReal.mul_rpow_of_ne_top _ (measure_ne_top μ Set.univ)]
@@ -338,8 +339,13 @@ theorem eLpNorm'_const' [IsFiniteMeasure μ] (c : F) (hc_ne_zero : c ≠ 0) (hq_
     rw [← ENNReal.rpow_mul]
     suffices hp_cancel : q * (1 / q) = 1 by rw [hp_cancel, ENNReal.rpow_one]
     rw [one_div, mul_inv_cancel₀ hq_ne_zero]
-  · rw [Ne, ENNReal.rpow_eq_top_iff, not_or, not_and_or, not_and_or]
-    simp [hc_ne_zero]
+  · simp_rw [Ne, ENNReal.rpow_eq_top_iff, hc_ne_zero, false_and, false_or, not_and, not_lt]
+    intro h
+    simp_all only [lt_self_iff_false]
+
+theorem eLpNorm'_const' [IsFiniteMeasure μ] (c : F) (hc_ne_zero : c ≠ 0) (hq_ne_zero : q ≠ 0) :
+    eLpNorm' (fun _ : α => c) q μ = ‖c‖ₑ * μ Set.univ ^ (1 / q) :=
+  eLpNorm'_const'' enorm_lt_top (enorm_ne_zero.mpr hc_ne_zero) hq_ne_zero
 
 theorem eLpNormEssSup_const (c : ε) (hμ : μ ≠ 0) : eLpNormEssSup (fun _ : α => c) μ = ‖c‖ₑ := by
   rw [eLpNormEssSup_eq_essSup_enorm, essSup_const _ hμ]
