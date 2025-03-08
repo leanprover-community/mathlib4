@@ -130,7 +130,7 @@ instance (V) [ReflQuiver V] : Category (FreeRefl V) :=
 
 /-- The quotient functor associated to a quotient category defines a natural map from the free
 category on the underlying quiver of a refl quiver to the free category on the reflexive quiver. -/
-def FreeRefl.quotientFunctor (V) [ReflQuiver V] : Cat.free.obj (Quiv.of V) ⥤ FreeRefl V :=
+def FreeRefl.quotientFunctor (V) [ReflQuiver V] : Paths V ⥤ FreeRefl V :=
   Quotient.functor (C := Cat.free.obj (Quiv.of V)) (FreeReflRel (V := V))
 
 /-- This is a specialization of `Quotient.lift_unique'` rather than `Quotient.lift_unique`, hence
@@ -140,17 +140,32 @@ theorem FreeRefl.lift_unique' {V} [ReflQuiver V] {D} [Category D] (F₁ F₂ : F
     F₁ = F₂ :=
   Quotient.lift_unique' (C := Cat.free.obj (Quiv.of V)) (FreeReflRel (V := V)) _ _ h
 
+
+/-- A refl prefunctor `V ⥤rq W` induces a functor `FreeRefl V ⥤ FreeRefl W` defined using
+`freeMap` and the quotient functor. -/
+@[simps!]
+def freeReflMap {V W : Type*} [ReflQuiver.{v₁ + 1} V] [ReflQuiver.{v₂ + 1} W] (F : V ⥤rq W) :
+    FreeRefl V ⥤ FreeRefl W := by
+  refine Quotient.lift _ ?_ ?_
+  · show Paths V ⥤ _
+    exact freeMap F.toPrefunctor ⋙ FreeRefl.quotientFunctor _
+  · intro X Y f g hfg
+    apply Quotient.sound
+    cases hfg
+    simp [ReflPrefunctor.map_id]
+    constructor
+
+theorem freeReflMap_naturality
+    {V W : Type*} [ReflQuiver.{v₁ + 1} V] [ReflQuiver.{v₂ + 1} W] (F : V ⥤rq W) :
+  FreeRefl.quotientFunctor V ⋙ freeReflMap F =
+    freeMap F.toPrefunctor ⋙ FreeRefl.quotientFunctor W := Quotient.lift_spec _ _ _
+
 /-- The functor sending a reflexive quiver to the free category it generates, a quotient of
 its path category -/
 @[simps!]
 def freeRefl : ReflQuiv.{v, u} ⥤ Cat.{max u v, u} where
   obj V := Cat.of (FreeRefl V)
-  map f := Quotient.lift _ ((by exact Cat.free.map f.toPrefunctor) ⋙ FreeRefl.quotientFunctor _)
-    (fun X Y f g hfg => by
-      apply Quotient.sound
-      cases hfg
-      simp [ReflPrefunctor.map_id]
-      constructor)
+  map F := freeReflMap F
   map_id X := by
     dsimp
     refine (Quotient.lift_unique _ _ _ _ ((Functor.comp_id _).trans <|
@@ -160,28 +175,18 @@ def freeRefl : ReflQuiv.{v, u} ⥤ Cat.{max u v, u} where
   map_comp {X Y Z} f g := by
     dsimp
     apply (Quotient.lift_unique _ _ _ _ _).symm
-    have : free.map (f ≫ g).toPrefunctor =
-        free.map (X := X.toQuiv) (Y := Y.toQuiv) f.toPrefunctor ⋙
-        free.map (X := Y.toQuiv) (Y := Z.toQuiv) g.toPrefunctor := by
-      show _ = _ ≫ _
-      rw [← Functor.map_comp]; rfl
-    rw [this, Functor.assoc]
-    show _ ⋙ _ ⋙ _ = _
-    rw [← Functor.assoc, Quotient.lift_spec, Functor.assoc, FreeRefl.quotientFunctor,
-      Quotient.lift_spec]
-
-theorem freeRefl_naturality {X Y} [ReflQuiver X] [ReflQuiver Y] (f : X ⥤rq Y) :
-    free.map (X := Quiv.of X) (Y := Quiv.of Y) f.toPrefunctor ⋙
-    FreeRefl.quotientFunctor ↑Y =
-    FreeRefl.quotientFunctor ↑X ⋙ freeRefl.map (X := ReflQuiv.of X) (Y := ReflQuiv.of Y) f := by
-  simp only [free_obj, FreeRefl.quotientFunctor, freeRefl, ReflQuiv.of_val]
-  rw [Quotient.lift_spec]
+    show FreeRefl.quotientFunctor _ ⋙ _ = _
+    rw [Cat.comp_eq_comp, ← Functor.assoc, freeReflMap_naturality, Functor.assoc,
+      freeReflMap_naturality, ← Functor.assoc]
+    have : freeMap (f ≫ g).toPrefunctor =
+        freeMap f.toPrefunctor ⋙ freeMap g.toPrefunctor := by rw [← freeMap_comp]; rfl
+    rw [this]
 
 /-- We will make use of the natural quotient map from the free category on the underlying
 quiver of a refl quiver to the free category on the reflexive quiver. -/
 def freeReflNatTrans : ReflQuiv.forgetToQuiv ⋙ Cat.free ⟶ freeRefl where
   app V := FreeRefl.quotientFunctor V
-  naturality _ _ f := freeRefl_naturality f
+  naturality _ _ f := freeReflMap_naturality f
 
 end Cat
 
@@ -193,7 +198,7 @@ adjunction between categories and quivers with the map underlying the quotient f
 @[simps! toPrefunctor obj map]
 def adj.unit.app (V : Type u) [ReflQuiver V] :
     V ⥤rq forget.obj (Cat.freeRefl.obj (ReflQuiv.of V)) where
-  toPrefunctor := Quiv.adj.unit.app V ⋙q (Cat.FreeRefl.quotientFunctor V).toPrefunctor
+  toPrefunctor := Paths.of V ⋙q (Cat.FreeRefl.quotientFunctor V).toPrefunctor
   map_id := fun _ => Quotient.sound _ ⟨⟩
 
 /-- This is used in the proof of both triangle equalities. -/
@@ -206,10 +211,10 @@ from the corresponding counit component for the adjunction between categories an
 @[simps!]
 def adj.counit.app (C : Type u) [Category.{max u v} C] :
     Cat.freeRefl.obj (ReflQuiv.of C) ⥤ C :=
-  Quotient.lift Cat.FreeReflRel (Quiv.adj.counit.app C) (by
+  Quotient.lift Cat.FreeReflRel (pathComposition C) (by
     intro x y f g rel
     cases rel
-    unfold Quiv.adj.counit.app Quiv.adj
+    unfold pathComposition
     simp only [Adjunction.mkOfHomEquiv_counit_app, Equiv.coe_fn_symm_mk,
       Quiv.lift_map, Prefunctor.mapPath_toPath, composePath_toPath]
     rfl)
@@ -217,7 +222,7 @@ def adj.counit.app (C : Type u) [Category.{max u v} C] :
 /-- The counit of `ReflQuiv.adj` is closely related to the counit of `Quiv.adj`. -/
 @[simp]
 theorem adj.counit.comp_app_eq (C : Type u) [Category C] :
-    Cat.FreeRefl.quotientFunctor C ⋙ adj.counit.app C = Quiv.adj.counit.app (Cat.of C) := rfl
+    Cat.FreeRefl.quotientFunctor C ⋙ adj.counit.app C = pathComposition (Cat.of C) := rfl
 
 /--
 The adjunction between forming the free category on a reflexive quiver, and forgetting a category
@@ -239,22 +244,18 @@ nonrec def adj : Cat.freeRefl.{max u v, u} ⊣ ReflQuiv.forget :=
       dsimp
       conv => rhs; rw [Cat.id_eq_id]; apply Functor.comp_id
       simp only [id_comp]
-      rw [Cat.comp_eq_comp, ← Functor.assoc, ← Cat.freeRefl_naturality, Functor.assoc]
+      rw [Cat.comp_eq_comp, ← Functor.assoc]
+      show (Cat.FreeRefl.quotientFunctor _ ⋙ Cat.freeReflMap _) ⋙ _ = _
+      rw [Cat.freeReflMap_naturality, Functor.assoc]
       dsimp only [Cat.freeRefl, Cat.free_obj, Cat.of_α, of_val, forget_obj,
         adj.unit.app_toPrefunctor]
       rw [adj.counit.comp_app_eq]
       dsimp only [Cat.of_α]
-      conv =>
-        enter [1, 1, 2]
-        apply (Quiv.comp_eq_comp (Z := Quiv.of _) ..).symm
-      rw [Cat.free.map_comp]
-      dsimp
-      rw [Cat.free.map_eq, Cat.free.map_eq, Cat.comp_eq_comp, Functor.assoc]
-      rw [Quiv.adj.counit.naturality_eq (Cat.FreeRefl.quotientFunctor V)]
+      rw [Cat.freeMap_comp, Functor.assoc, Quiv.pathComposition_naturality]
       rw [← Functor.assoc]
-      show (Cat.freeMapOf (Quiv.adj.unit.app ↑V.toQuiv) ⋙ Quiv.adj.counit.app (Paths ↑V.toQuiv))
-        ⋙ _ = _
-      rw [Quiv.adj.left_triangle_components]
+      have := Quiv.freeMap_pathsOf_pathComposition
+      simp only [Cat.of_α] at this
+      rw [this]
       exact Functor.id_comp _
     right_triangle := by
       ext C
