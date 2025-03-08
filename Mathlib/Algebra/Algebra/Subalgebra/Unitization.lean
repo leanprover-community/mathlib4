@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.Unitization
-import Mathlib.Algebra.Star.NonUnitalSubalgebra
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.GroupTheory.GroupAction.Ring
 
@@ -46,54 +45,6 @@ this map to be injective it suffices that the range omits `1`. In this setting w
 
 /-! ## Subalgebras -/
 
-section Subalgebra
-
-variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-
-/-- Turn a `Subalgebra` into a `NonUnitalSubalgebra` by forgetting that it contains `1`. -/
-def Subalgebra.toNonUnitalSubalgebra (S : Subalgebra R A) : NonUnitalSubalgebra R A :=
-  { S with
-    smul_mem' := fun r _x hx => S.smul_mem hx r }
-
-theorem Subalgebra.one_mem_toNonUnitalSubalgebra (S : Subalgebra R A) :
-    (1 : A) ∈ S.toNonUnitalSubalgebra :=
-  S.one_mem
-
-/-- Turn a non-unital subalgebra containing `1` into a subalgebra. -/
-def NonUnitalSubalgebra.toSubalgebra (S : NonUnitalSubalgebra R A) (h1 : (1 : A) ∈ S) :
-    Subalgebra R A :=
-  { S with
-    one_mem' := h1
-    algebraMap_mem' := fun r =>
-      (Algebra.algebraMap_eq_smul_one (R := R) (A := A) r).symm ▸ SMulMemClass.smul_mem r h1 }
-
-theorem Subalgebra.toNonUnitalSubalgebra_toSubalgebra (S : Subalgebra R A) :
-    S.toNonUnitalSubalgebra.toSubalgebra S.one_mem = S := by cases S; rfl
-
-theorem NonUnitalSubalgebra.toSubalgebra_toNonUnitalSubalgebra (S : NonUnitalSubalgebra R A)
-    (h1 : (1 : A) ∈ S) : (NonUnitalSubalgebra.toSubalgebra S h1).toNonUnitalSubalgebra = S := by
-  cases S; rfl
-
-open Submodule in
-lemma Algebra.adjoin_nonUnitalSubalgebra_eq_span (s : NonUnitalSubalgebra R A) :
-    Subalgebra.toSubmodule (adjoin R (s : Set A)) = span R {1} ⊔ s.toSubmodule := by
-  rw [adjoin_eq_span, Submonoid.closure_eq_one_union, span_union, ← NonUnitalAlgebra.adjoin_eq_span,
-      NonUnitalAlgebra.adjoin_eq]
-
-variable (R)
-
-lemma NonUnitalAlgebra.adjoin_le_algebra_adjoin (s : Set A) :
-    adjoin R s ≤ (Algebra.adjoin R s).toNonUnitalSubalgebra :=
-  adjoin_le Algebra.subset_adjoin
-
-lemma Algebra.adjoin_nonUnitalSubalgebra (s : Set A) :
-    adjoin R (NonUnitalAlgebra.adjoin R s : Set A) = adjoin R s :=
-  le_antisymm
-    (adjoin_le <| NonUnitalAlgebra.adjoin_le_algebra_adjoin R s)
-    (adjoin_le <| (NonUnitalAlgebra.subset_adjoin R).trans subset_adjoin)
-
-end Subalgebra
-
 namespace Unitization
 
 variable {R A C : Type*} [CommSemiring R] [NonUnitalSemiring A]
@@ -133,7 +84,7 @@ theorem unitization_apply (x : Unitization R s) :
 
 theorem unitization_range : (unitization s).range = Algebra.adjoin R (s : Set A) := by
   rw [unitization, Unitization.lift_range]
-  simp only [NonUnitalAlgHom.coe_range, NonUnitalSubalgebraClass.coeSubtype,
+  simp only [NonUnitalAlgHom.coe_range, NonUnitalSubalgebraClass.coe_subtype,
     Subtype.range_coe_subtype, SetLike.mem_coe]
   rfl
 
@@ -200,33 +151,6 @@ end NonUnitalSubalgebra
 
 /-! ## Subsemirings -/
 
-section Subsemiring
-
-variable {R : Type*} [NonAssocSemiring R]
-
-/-- Turn a `Subsemiring` into a `NonUnitalSubsemiring` by forgetting that it contains `1`. -/
-def Subsemiring.toNonUnitalSubsemiring (S : Subsemiring R) : NonUnitalSubsemiring R :=
-  { S with }
-
-theorem Subsemiring.one_mem_toNonUnitalSubsemiring (S : Subsemiring R) :
-    (1 : R) ∈ S.toNonUnitalSubsemiring :=
-  S.one_mem
-
-/-- Turn a non-unital subsemiring containing `1` into a subsemiring. -/
-def NonUnitalSubsemiring.toSubsemiring (S : NonUnitalSubsemiring R) (h1 : (1 : R) ∈ S) :
-    Subsemiring R :=
-  { S with
-    one_mem' := h1 }
-
-theorem Subsemiring.toNonUnitalSubsemiring_toSubsemiring (S : Subsemiring R) :
-    S.toNonUnitalSubsemiring.toSubsemiring S.one_mem = S := by cases S; rfl
-
-theorem NonUnitalSubsemiring.toSubsemiring_toNonUnitalSubsemiring (S : NonUnitalSubsemiring R)
-    (h1 : (1 : R) ∈ S) : (NonUnitalSubsemiring.toSubsemiring S h1).toNonUnitalSubsemiring = S := by
-  cases S; rfl
-
-end Subsemiring
-
 namespace NonUnitalSubsemiring
 
 variable {R S : Type*} [Semiring R] [SetLike S R] [hSR : NonUnitalSubsemiringClass S R] (s : S)
@@ -241,38 +165,13 @@ theorem unitization_apply (x : Unitization ℕ s) : unitization s x = x.fst + x.
   rfl
 
 theorem unitization_range :
-    (unitization s).range = subalgebraOfSubsemiring (Subsemiring.closure s) := by
+    (unitization s).range = subalgebraOfSubsemiring (.closure s) := by
   have := AddSubmonoidClass.nsmulMemClass (S := S)
   rw [unitization, NonUnitalSubalgebra.unitization_range (hSRA := this), Algebra.adjoin_nat]
 
 end NonUnitalSubsemiring
 
 /-! ## Subrings -/
-
-section Subring
-
--- TODO: Maybe we could use `NonAssocRing` here but right now `Subring` takes a `Ring` argument.
-variable {R : Type*} [Ring R]
-
-/-- Turn a `Subring` into a `NonUnitalSubring` by forgetting that it contains `1`. -/
-def Subring.toNonUnitalSubring (S : Subring R) : NonUnitalSubring R :=
-  { S with }
-
-theorem Subring.one_mem_toNonUnitalSubring (S : Subring R) : (1 : R) ∈ S.toNonUnitalSubring :=
-  S.one_mem
-
-/-- Turn a non-unital subring containing `1` into a subring. -/
-def NonUnitalSubring.toSubring (S : NonUnitalSubring R) (h1 : (1 : R) ∈ S) : Subring R :=
-  { S with
-    one_mem' := h1 }
-
-theorem Subring.toNonUnitalSubring_toSubring (S : Subring R) :
-    S.toNonUnitalSubring.toSubring S.one_mem = S := by cases S; rfl
-
-theorem NonUnitalSubring.toSubring_toNonUnitalSubring (S : NonUnitalSubring R) (h1 : (1 : R) ∈ S) :
-    (NonUnitalSubring.toSubring S h1).toNonUnitalSubring = S := by cases S; rfl
-
-end Subring
 
 namespace NonUnitalSubring
 
@@ -288,66 +187,13 @@ theorem unitization_apply (x : Unitization ℤ s) : unitization s x = x.fst + x.
   rfl
 
 theorem unitization_range :
-    (unitization s).range = subalgebraOfSubring (Subring.closure s) := by
+    (unitization s).range = subalgebraOfSubring (.closure s) := by
   have := AddSubgroupClass.zsmulMemClass (S := S)
   rw [unitization, NonUnitalSubalgebra.unitization_range (hSRA := this), Algebra.adjoin_int]
 
 end NonUnitalSubring
 
 /-! ## Star subalgebras -/
-
-section StarSubalgebra
-
-variable {R A : Type*} [CommSemiring R] [StarRing R] [Semiring A] [StarRing A]
-variable [Algebra R A] [StarModule R A]
-
-/-- Turn a `StarSubalgebra` into a `NonUnitalStarSubalgebra` by forgetting that it contains `1`. -/
-def StarSubalgebra.toNonUnitalStarSubalgebra (S : StarSubalgebra R A) :
-    NonUnitalStarSubalgebra R A :=
-  { S with
-    carrier := S.carrier
-    smul_mem' := fun r _x hx => S.smul_mem hx r }
-
-theorem StarSubalgebra.one_mem_toNonUnitalStarSubalgebra (S : StarSubalgebra R A) :
-    (1 : A) ∈ S.toNonUnitalStarSubalgebra :=
-  S.one_mem'
-
-/-- Turn a non-unital star subalgebra containing `1` into a `StarSubalgebra`. -/
-def NonUnitalStarSubalgebra.toStarSubalgebra (S : NonUnitalStarSubalgebra R A) (h1 : (1 : A) ∈ S) :
-    StarSubalgebra R A :=
-  { S with
-    carrier := S.carrier
-    one_mem' := h1
-    algebraMap_mem' := fun r =>
-      (Algebra.algebraMap_eq_smul_one (R := R) (A := A) r).symm ▸ SMulMemClass.smul_mem r h1 }
-
-theorem StarSubalgebra.toNonUnitalStarSubalgebra_toStarSubalgebra (S : StarSubalgebra R A) :
-    S.toNonUnitalStarSubalgebra.toStarSubalgebra S.one_mem' = S := by cases S; rfl
-
-theorem NonUnitalStarSubalgebra.toStarSubalgebra_toNonUnitalStarSubalgebra
-    (S : NonUnitalStarSubalgebra R A) (h1 : (1 : A) ∈ S) :
-    (S.toStarSubalgebra h1).toNonUnitalStarSubalgebra = S := by
-  cases S; rfl
-
-open Submodule in
-lemma StarAlgebra.adjoin_nonUnitalStarSubalgebra_eq_span (s : NonUnitalStarSubalgebra R A) :
-    Subalgebra.toSubmodule (adjoin R (s : Set A)).toSubalgebra = span R {1} ⊔ s.toSubmodule := by
-  rw [adjoin_eq_span, Submonoid.closure_eq_one_union, span_union,
-    ← NonUnitalStarAlgebra.adjoin_eq_span, NonUnitalStarAlgebra.adjoin_eq]
-
-variable (R)
-
-lemma NonUnitalStarAlgebra.adjoin_le_starAlgebra_adjoin (s : Set A) :
-    adjoin R s ≤ (StarAlgebra.adjoin R s).toNonUnitalStarSubalgebra :=
-  adjoin_le <| StarAlgebra.subset_adjoin R s
-
-lemma StarAlgebra.adjoin_nonUnitalStarSubalgebra (s : Set A) :
-    adjoin R (NonUnitalStarAlgebra.adjoin R s : Set A) = adjoin R s :=
-  le_antisymm
-    (adjoin_le <| NonUnitalStarAlgebra.adjoin_le_starAlgebra_adjoin R s)
-    (adjoin_le <| (NonUnitalStarAlgebra.subset_adjoin R s).trans <| subset_adjoin R _)
-
-end StarSubalgebra
 
 namespace Unitization
 
@@ -391,7 +237,7 @@ theorem unitization_apply (x : Unitization R s) : unitization s x = algebraMap R
 
 theorem unitization_range : (unitization s).range = StarAlgebra.adjoin R s := by
   rw [unitization, Unitization.starLift_range]
-  simp only [NonUnitalStarAlgHom.coe_range, NonUnitalStarSubalgebraClass.coeSubtype,
+  simp only [NonUnitalStarAlgHom.coe_range, NonUnitalStarSubalgebraClass.coe_subtype,
     Subtype.range_coe_subtype]
   rfl
 

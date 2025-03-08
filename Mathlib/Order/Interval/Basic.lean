@@ -200,11 +200,11 @@ instance setLike : SetLike (NonemptyInterval α) α where
   coe s := Icc s.fst s.snd
   coe_injective' := coeHom.injective
 
-@[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
+@[norm_cast]
 theorem coe_subset_coe : (s : Set α) ⊆ t ↔ (s : NonemptyInterval α) ≤ t :=
   (@coeHom α _).le_iff_le
 
-@[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
+@[norm_cast]
 theorem coe_ssubset_coe : (s : Set α) ⊂ t ↔ s < t :=
   (@coeHom α _).lt_iff_lt
 
@@ -292,7 +292,7 @@ def recBotCoe {C : Interval α → Sort*} (bot : C ⊥) (coe : ∀ a : NonemptyI
 theorem coe_injective : Injective ((↑) : NonemptyInterval α → Interval α) :=
   WithBot.coe_injective
 
-@[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
+@[norm_cast]
 theorem coe_inj {s t : NonemptyInterval α} : (s : Interval α) = t ↔ s = t :=
   WithBot.coe_inj
 
@@ -400,11 +400,11 @@ instance setLike : SetLike (Interval α) α where
   coe := coeHom
   coe_injective' := coeHom.injective
 
-@[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
+@[norm_cast]
 theorem coe_subset_coe : (s : Set α) ⊆ t ↔ s ≤ t :=
   (@coeHom α _).le_iff_le
 
-@[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
+@[norm_cast]
 theorem coe_sSubset_coe : (s : Set α) ⊂ t ↔ s < t :=
   (@coeHom α _).lt_iff_lt
 
@@ -681,7 +681,6 @@ theorem coe_sInf [DecidableRel (α := α) (· ≤ ·)] (S : Set (Interval α)) :
 theorem coe_iInf [DecidableRel (α := α) (· ≤ ·)] (f : ι → Interval α) :
     ↑(⨅ i, f i) = ⋂ i, (f i : Set α) := by simp [iInf]
 
--- @[simp] -- Porting note: not in simpNF
 @[norm_cast]
 theorem coe_iInf₂ [DecidableRel (α := α) (· ≤ ·)] (f : ∀ i, κ i → Interval α) :
     ↑(⨅ (i) (j), f i j) = ⋂ (i) (j), (f i j : Set α) := by simp_rw [coe_iInf]

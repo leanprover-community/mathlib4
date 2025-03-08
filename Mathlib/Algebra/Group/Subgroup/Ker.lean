@@ -42,9 +42,7 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
-assert_not_exists OrderedAddCommMonoid
-assert_not_exists Multiset
-assert_not_exists Ring
+assert_not_exists OrderedAddCommMonoid Multiset Ring
 
 open Function
 open scoped Int
@@ -176,7 +174,7 @@ def ofLeftInverse {f : G →* N} {g : N →* G} (h : Function.LeftInverse g f) :
     right_inv := by
       rintro ⟨x, y, rfl⟩
       apply Subtype.ext
-      rw [coe_rangeRestrict, Function.comp_apply, Subgroup.coeSubtype, Subtype.coe_mk, h] }
+      rw [coe_rangeRestrict, Function.comp_apply, Subgroup.coe_subtype, Subtype.coe_mk, h] }
 
 @[to_additive (attr := simp)]
 theorem ofLeftInverse_apply {f : G →* N} {g : N →* G} (h : Function.LeftInverse g f) (x : G) :
@@ -460,7 +458,17 @@ theorem map_le_map_iff_of_injective {f : G →* N} (hf : Function.Injective f) {
 @[to_additive (attr := simp)]
 theorem map_subtype_le_map_subtype {G' : Subgroup G} {H K : Subgroup G'} :
     H.map G'.subtype ≤ K.map G'.subtype ↔ H ≤ K :=
-  map_le_map_iff_of_injective <| by apply Subtype.coe_injective
+  map_le_map_iff_of_injective G'.subtype_injective
+
+@[to_additive]
+theorem map_lt_map_iff_of_injective {f : G →* N} (hf : Function.Injective f) {H K : Subgroup G} :
+    H.map f < K.map f ↔ H < K :=
+  lt_iff_lt_of_le_iff_le' (map_le_map_iff_of_injective hf) (map_le_map_iff_of_injective hf)
+
+@[to_additive (attr := simp)]
+theorem map_subtype_lt_map_subtype {G' : Subgroup G} {H K : Subgroup G'} :
+    H.map G'.subtype < K.map G'.subtype ↔ H < K :=
+  map_lt_map_iff_of_injective G'.subtype_injective
 
 @[to_additive]
 theorem map_injective {f : G →* N} (h : Function.Injective f) : Function.Injective (map f) :=
@@ -474,11 +482,15 @@ theorem map_injective_of_ker_le {H K : Subgroup G} (hH : f.ker ≤ H) (hK : f.ke
   rwa [comap_map_eq, comap_map_eq, sup_of_le_left hH, sup_of_le_left hK] at hf
 
 @[to_additive]
+theorem ker_subgroupMap : (f.subgroupMap H).ker = f.ker.subgroupOf H :=
+  ext fun _ ↦ Subtype.ext_iff
+
+@[to_additive]
 theorem closure_preimage_eq_top (s : Set G) : closure ((closure s).subtype ⁻¹' s) = ⊤ := by
   apply map_injective (closure s).subtype_injective
   rw [MonoidHom.map_closure, ← MonoidHom.range_eq_map, range_subtype,
     Set.image_preimage_eq_of_subset]
-  rw [coeSubtype, Subtype.range_coe_subtype]
+  rw [coe_subtype, Subtype.range_coe_subtype]
   exact subset_closure
 
 @[to_additive]

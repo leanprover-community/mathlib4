@@ -354,8 +354,8 @@ certain linear equations. -/
 noncomputable def linearMapEquiv : (M →ₗ[A] N) ≃ relations.Solution N where
   toFun f := solution.postcomp f
   invFun s := h.desc s
-  left_inv f := h.postcomp_injective (by aesop)
-  right_inv s := by aesop
+  left_inv f := h.postcomp_injective (by simp)
+  right_inv s := by simp
 
 section
 

@@ -29,10 +29,7 @@ This file is similar to `Order.Synonym`.
 
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
-assert_not_exists MonoidHom
-assert_not_exists Finite
+assert_not_exists MonoidWithZero DenselyOrdered MonoidHom Finite
 
 universe u v
 
@@ -448,7 +445,7 @@ lemma Pi.mulSingle_multiplicativeOfAdd_eq {ι : Type*} [DecidableEq ι] {M : ι 
       Multiplicative.ofAdd ((Pi.single i a) j) := by
   rcases eq_or_ne j i with rfl | h
   · simp only [mulSingle_eq_same, single_eq_same]
-  · simp only [mulSingle, ne_eq, h, not_false_eq_true, Function.update_noteq, one_apply, single,
+  · simp only [mulSingle, ne_eq, h, not_false_eq_true, Function.update_of_ne, one_apply, single,
       zero_apply, ofAdd_zero]
 
 lemma Pi.single_additiveOfMul_eq {ι : Type*} [DecidableEq ι] {M : ι → Type*}
@@ -457,5 +454,5 @@ lemma Pi.single_additiveOfMul_eq {ι : Type*} [DecidableEq ι] {M : ι → Type*
       Additive.ofMul ((Pi.mulSingle i a) j) := by
   rcases eq_or_ne j i with rfl | h
   · simp only [mulSingle_eq_same, single_eq_same]
-  · simp only [single, ne_eq, h, not_false_eq_true, Function.update_noteq, zero_apply, mulSingle,
+  · simp only [single, ne_eq, h, not_false_eq_true, Function.update_of_ne, zero_apply, mulSingle,
       one_apply, ofMul_one]

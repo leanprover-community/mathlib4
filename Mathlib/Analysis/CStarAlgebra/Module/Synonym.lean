@@ -6,6 +6,8 @@ Authors: Jireh Loreaux
 import Mathlib.RingTheory.Finiteness.Defs
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.UniformSpace.Equiv
+import Mathlib.Topology.Algebra.Module.Equiv
+import Mathlib.Topology.Algebra.UniformGroup.Basic
 
 /-! # Type synonym for types with a `CStarModule` structure
 
@@ -47,8 +49,8 @@ The pattern here is the same one as is used by `Lex` for order structures; it av
 separate synonym for each type, and allows all the structure-copying code to be shared.
 -/
 
-/-- A type synonym for endowing a given type with a `CStarModule` structure. This has the scoped
-notation `C⋆ᵐᵒᵈ`.
+/-- A type synonym for endowing a given type with a `CStarModule` structure.
+This has the scoped notation `C⋆ᵐᵒᵈ` in the WithCStarModule namespace.
 
 Note: because the C⋆-algebra `A` over which `E` is a `CStarModule` is listed as an `outParam` in
 that class, we don't pass it as an unused argument to `WithCStarModule`, unlike the `p` parameter
@@ -75,11 +77,21 @@ instance instUnique [Unique E] : Unique (WithCStarModule E) := ‹Unique E›
 
 /-! ## `WithCStarModule E` inherits various module-adjacent structures from `E`. -/
 
+instance instZero [Zero E] : Zero (WithCStarModule E) := ‹Zero E›
+instance instAdd [Add E] : Add (WithCStarModule E) := ‹Add E›
+instance instSub [Sub E] : Sub (WithCStarModule E) := ‹Sub E›
+instance instNeg [Neg E] : Neg (WithCStarModule E) := ‹Neg E›
+instance instAddMonoid [AddMonoid E] : AddMonoid (WithCStarModule E) := ‹AddMonoid E›
+instance instSubNegMonoid [SubNegMonoid E] : SubNegMonoid (WithCStarModule E) := ‹SubNegMonoid E›
+instance instSubNegZeroMonoid [SubNegZeroMonoid E] : SubNegZeroMonoid (WithCStarModule E) :=
+  ‹SubNegZeroMonoid E›
+
 instance instAddCommGroup [AddCommGroup E] : AddCommGroup (WithCStarModule E) := ‹AddCommGroup E›
+
 instance instSMul {R : Type*} [SMul R E] : SMul R (WithCStarModule E) := ‹SMul R E›
+
 instance instModule {R : Type*} [Semiring R] [AddCommGroup E] [Module R E] :
-    Module R (WithCStarModule E) :=
-  ‹Module R E›
+    Module R (WithCStarModule E) := ‹Module R E›
 
 instance instIsScalarTower [SMul R R'] [SMul R E] [SMul R' E]
     [IsScalarTower R R' E] : IsScalarTower R R' (WithCStarModule E) :=
@@ -88,11 +100,6 @@ instance instIsScalarTower [SMul R R'] [SMul R E] [SMul R' E]
 instance instSMulCommClass [SMul R E] [SMul R' E] [SMulCommClass R R' E] :
     SMulCommClass R R' (WithCStarModule E) :=
   ‹SMulCommClass R R' E›
-
-instance instModuleFinite [Semiring R] [AddCommGroup E] [Module R E] [Module.Finite R E] :
-    Module.Finite R (WithCStarModule E) :=
-  ‹Module.Finite R E›
-
 
 section Equiv
 
@@ -151,12 +158,28 @@ theorem equiv_symm_smul : (equiv E).symm (c • x') = c • (equiv E).symm x' :=
 
 end Equiv
 
+/-- `WithCStarModule.equiv` as an additive equivalence. -/
+def addEquiv [AddCommGroup E] : C⋆ᵐᵒᵈ E ≃+ E :=
+  { AddEquiv.refl _ with
+    toFun := equiv _
+    invFun := (equiv _).symm }
+
 /-- `WithCStarModule.equiv` as a linear equivalence. -/
 @[simps (config := .asFn)]
 def linearEquiv [Semiring R] [AddCommGroup E] [Module R E] : C⋆ᵐᵒᵈ E ≃ₗ[R] E :=
   { LinearEquiv.refl _ _ with
     toFun := equiv _
     invFun := (equiv _).symm }
+
+lemma map_top_submodule {R : Type*} [Semiring R] [AddCommGroup E] [Module R E] :
+    (⊤ : Submodule R E).map (linearEquiv R E).symm = ⊤ := by
+  ext x
+  refine ⟨fun _  => trivial, fun _ => ?_⟩
+  rw [Submodule.mem_map]
+  exact ⟨linearEquiv R E x, by simp⟩
+
+instance instModuleFinite [Semiring R] [AddCommGroup E] [Module R E] [Module.Finite R E] :
+    Module.Finite R (WithCStarModule E) := inferInstanceAs (Module.Finite R E)
 
 /-! ## `WithCStarModule E` inherits the uniformity and bornology from `E`. -/
 
@@ -170,8 +193,25 @@ instance [Bornology E] : Bornology (C⋆ᵐᵒᵈ E) := Bornology.induced <| equ
 def uniformEquiv [UniformSpace E] : C⋆ᵐᵒᵈ E ≃ᵤ E :=
   equiv E |>.toUniformEquivOfIsUniformInducing ⟨rfl⟩
 
+/-- `WithCStarModule.equiv` as a continuous linear equivalence between `C⋆ᵐᵒᵈ E` and `E`. -/
+@[simps! apply symm_apply]
+def equivL [Semiring R] [AddCommGroup E] [UniformSpace E] [Module R E] : C⋆ᵐᵒᵈ E ≃L[R] E :=
+  { linearEquiv R E with
+    continuous_toFun := UniformEquiv.continuous uniformEquiv
+    continuous_invFun := UniformEquiv.continuous uniformEquiv.symm }
+
 instance [UniformSpace E] [CompleteSpace E] : CompleteSpace (C⋆ᵐᵒᵈ E) :=
   uniformEquiv.completeSpace_iff.mpr inferInstance
+
+instance [AddCommGroup E] [UniformSpace E] [ContinuousAdd E] : ContinuousAdd (C⋆ᵐᵒᵈ E) :=
+  ContinuousAdd.induced (addEquiv E)
+
+instance [AddCommGroup E] [UniformSpace E] [UniformAddGroup E] : UniformAddGroup (C⋆ᵐᵒᵈ E) :=
+  UniformAddGroup.comap (addEquiv E)
+
+instance [Semiring R] [TopologicalSpace R] [AddCommGroup E] [UniformSpace E] [Module R E]
+    [ContinuousSMul R E] : ContinuousSMul R (C⋆ᵐᵒᵈ E) :=
+  ContinuousSMul.induced (linearEquiv R E)
 
 end Basic
 

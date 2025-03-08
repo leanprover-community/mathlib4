@@ -198,9 +198,9 @@ theorem mfderiv_const :
     mfderiv I I' (fun _ : M => c) x = (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) :=
   HasMFDerivAt.mfderiv (hasMFDerivAt_const c x)
 
-theorem mfderivWithin_const (hxs : UniqueMDiffWithinAt I s x) :
+theorem mfderivWithin_const :
     mfderivWithin I I' (fun _ : M => c) s x = (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) :=
-  (hasMFDerivWithinAt_const _ _ _).mfderivWithin hxs
+  (hasMFDerivWithinAt_const _ _ _).mfderivWithin_eq_zero
 
 end Const
 
@@ -259,7 +259,6 @@ theorem mfderivWithin_fst {s : Set (M × M')} {x : M × M'}
 @[simp, mfld_simps]
 theorem tangentMap_prod_fst {p : TangentBundle (I.prod I') (M × M')} :
     tangentMap (I.prod I') I Prod.fst p = ⟨p.proj.1, p.2.1⟩ := by
-  -- Porting note: `rfl` wasn't needed
   simp [tangentMap]; rfl
 
 theorem tangentMapWithin_prod_fst {s : Set (M × M')} {p : TangentBundle (I.prod I') (M × M')}
@@ -443,7 +442,6 @@ end prodMap
 @[simp, mfld_simps]
 theorem tangentMap_prod_snd {p : TangentBundle (I.prod I') (M × M')} :
     tangentMap (I.prod I') I' Prod.snd p = ⟨p.proj.2, p.2.2⟩ := by
-  -- Porting note: `rfl` wasn't needed
   simp [tangentMap]; rfl
 
 theorem tangentMapWithin_prod_snd {s : Set (M × M')} {p : TangentBundle (I.prod I') (M × M')}
@@ -548,7 +546,7 @@ section Arithmetic
 Note that in the `HasMFDerivAt` lemmas there is an abuse of the defeq between `E'` and
 `TangentSpace 𝓘(𝕜, E') (f z)` (similarly for `g',F',p',q'`). In general this defeq is not
 canonical, but in this case (the tangent space of a vector space) it is canonical.
- -/
+-/
 
 section Group
 

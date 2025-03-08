@@ -138,7 +138,7 @@ theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
     by_cases h : ∃ i, x ∈ s i
     · simp only [mem_comap, coe_comp, coe_subtype, Function.comp_apply, restrictDom_apply,
         mem_iUnion, h, filter_single_of_pos]
-      cases' h with i hi
+      obtain ⟨i, hi⟩ := h
       exact le_iSup (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
     · simp [h]
 
@@ -168,7 +168,7 @@ theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
 
 /-- Interpret `Finsupp.restrictSupportEquiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/
-def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M := by
+@[simps!] def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M := by
   let F : supported M R s ≃ (s →₀ M) := restrictSupportEquiv s M
   refine F.toLinearEquiv ?_
   have :
@@ -177,6 +177,10 @@ def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M :=
     rfl
   rw [this]
   exact LinearMap.isLinear _
+
+@[simp] theorem supportedEquivFinsupp_symm_apply_coe (s : Set α) [DecidablePred (· ∈ s)]
+    (f : s →₀ M) : (supportedEquivFinsupp (R := R) s).symm f = f.extendDomain := by
+  convert restrictSupportEquiv_symm_apply_coe ..
 
 section LMapDomain
 

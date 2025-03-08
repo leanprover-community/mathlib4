@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Moritz Doll
 -/
 import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.LinearMap
 import Mathlib.Topology.Algebra.Module.WeakBilin
 
 /-!
@@ -149,14 +149,14 @@ end Semiring
 
 section Ring
 
-variable [CommRing 𝕜] [TopologicalSpace 𝕜] [TopologicalAddGroup 𝕜] [ContinuousConstSMul 𝕜 𝕜]
-variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]
+variable [CommRing 𝕜] [TopologicalSpace 𝕜] [IsTopologicalAddGroup 𝕜] [ContinuousConstSMul 𝕜 𝕜]
+variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
 
 instance instAddCommGroup : AddCommGroup (WeakDual 𝕜 E) :=
   WeakBilin.instAddCommGroup (topDualPairing 𝕜 E)
 
-instance instTopologicalAddGroup : TopologicalAddGroup (WeakDual 𝕜 E) :=
-  WeakBilin.instTopologicalAddGroup (topDualPairing 𝕜 E)
+instance instIsTopologicalAddGroup : IsTopologicalAddGroup (WeakDual 𝕜 E) :=
+  WeakBilin.instIsTopologicalAddGroup (topDualPairing 𝕜 E)
 
 end Ring
 
@@ -259,14 +259,14 @@ section Ring
 
 namespace WeakSpace
 
-variable [CommRing 𝕜] [TopologicalSpace 𝕜] [TopologicalAddGroup 𝕜] [ContinuousConstSMul 𝕜 𝕜]
-variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]
+variable [CommRing 𝕜] [TopologicalSpace 𝕜] [IsTopologicalAddGroup 𝕜] [ContinuousConstSMul 𝕜 𝕜]
+variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
 
 instance instAddCommGroup : AddCommGroup (WeakSpace 𝕜 E) :=
   WeakBilin.instAddCommGroup (topDualPairing 𝕜 E).flip
 
-instance instTopologicalAddGroup : TopologicalAddGroup (WeakSpace 𝕜 E) :=
-  WeakBilin.instTopologicalAddGroup (topDualPairing 𝕜 E).flip
+instance instIsTopologicalAddGroup : IsTopologicalAddGroup (WeakSpace 𝕜 E) :=
+  WeakBilin.instIsTopologicalAddGroup (topDualPairing 𝕜 E).flip
 
 end WeakSpace
 

@@ -117,7 +117,7 @@ notation:20 A " ⟹ " B:19 => (exp A).obj B
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for `Prefunctor.obj` -/
-@[delab app.Prefunctor.obj]
+@[app_delab Prefunctor.obj]
 def delabPrefunctorObjExp : Delab := whenPPOption getPPNotation <| withOverApp 6 <| do
   let e ← getExpr
   guard <| e.isAppOfArity' ``Prefunctor.obj 6
@@ -163,13 +163,9 @@ def curry : (A ⊗ Y ⟶ X) → (Y ⟶ A ⟹ X) :=
 def uncurry : (Y ⟶ A ⟹ X) → (A ⊗ Y ⟶ X) :=
   ((exp.adjunction A).homEquiv _ _).symm
 
--- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[simp, nolint simpNF]
 theorem homEquiv_apply_eq (f : A ⊗ Y ⟶ X) : (exp.adjunction A).homEquiv _ _ f = curry f :=
   rfl
 
--- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[simp, nolint simpNF]
 theorem homEquiv_symm_apply_eq (f : Y ⟶ A ⟹ X) :
     ((exp.adjunction A).homEquiv _ _).symm f = uncurry f :=
   rfl
@@ -234,12 +230,12 @@ end CartesianClosed
 open CartesianClosed
 
 /-- The exponential with the terminal object is naturally isomorphic to the identity. The typeclass
-argument is explicit: any instance can be used.-/
+argument is explicit: any instance can be used. -/
 def expUnitNatIso [Exponentiable (𝟙_ C)] : 𝟭 C ≅ exp (𝟙_ C) :=
   MonoidalClosed.unitNatIso (C := C)
 
 /-- The exponential of any object with the terminal object is isomorphic to itself, i.e. `X^1 ≅ X`.
-The typeclass argument is explicit: any instance can be used.-/
+The typeclass argument is explicit: any instance can be used. -/
 def expUnitIsoSelf [Exponentiable (𝟙_ C)] : (𝟙_ C) ⟹ X ≅ X :=
   (expUnitNatIso.app X).symm
 
@@ -375,6 +371,4 @@ def cartesianClosedOfEquiv (e : C ≌ D) [CartesianClosed C] : CartesianClosed D
 
 end Functor
 
-attribute [nolint simpNF] CategoryTheory.CartesianClosed.homEquiv_apply_eq
-  CategoryTheory.CartesianClosed.homEquiv_symm_apply_eq
 end CategoryTheory

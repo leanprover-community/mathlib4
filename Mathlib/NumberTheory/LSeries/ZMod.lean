@@ -55,7 +55,7 @@ Results for completed L-functions:
   the functional equation relating `completedLFunction Φ (1 - s)` to `completedLFunction (𝓕 Φ) s`.
 -/
 
-open HurwitzZeta Complex ZMod Finset Classical Topology Filter Set
+open HurwitzZeta Complex ZMod Finset Topology Filter Set
 
 open scoped Real
 
@@ -66,7 +66,7 @@ variable {N : ℕ} [NeZero N]
 /-- If `Φ` is a periodic function, then the L-series of `Φ` converges for `1 < re s`. -/
 lemma LSeriesSummable_of_one_lt_re (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
     LSeriesSummable (Φ ·) s := by
-  let c := max' _ <| univ_nonempty.image (Complex.abs ∘ Φ)
+  let c := max' _ <| univ_nonempty.image (norm ∘ Φ)
   refine LSeriesSummable_of_bounded_of_one_lt_re (fun n _ ↦ le_max' _ _ ?_) (m := c) hs
   exact mem_image_of_mem _ (mem_univ _)
 
@@ -76,7 +76,7 @@ latter is convergent. This is constructed as a linear combination of Hurwitz zet
 
 Note that this is not the same as `LSeries Φ`: they agree in the convergence range, but
 `LSeries Φ s` is defined to be `0` if `re s ≤ 1`.
- -/
+-/
 noncomputable def LFunction (Φ : ZMod N → ℂ) (s : ℂ) : ℂ :=
   N ^ (-s) * ∑ j : ZMod N, Φ j * hurwitzZeta (toAddCircle j) s
 
@@ -412,7 +412,7 @@ private lemma completedLFunction_one_sub_of_one_lt_even (hΦ : Φ.Even) {s : ℂ
     simp only [completedLFunction_def_even hΦ, neg_sub, completedHurwitzZetaEven_one_sub, this]
   -- reduce to equality with un-completed L-functions:
   suffices ∑ x, Φ x * cosZeta (toAddCircle x) s = LFunction (𝓕 Φ) s by
-    simpa only [cosZeta, Function.update_noteq hs₀, ← mul_div_assoc, ← sum_div,
+    simpa only [cosZeta, Function.update_of_ne hs₀, ← mul_div_assoc, ← sum_div,
       LFunction_eq_completed_div_gammaFactor_even (dft_even_iff.mpr hΦ) _ (.inl hs₀),
       div_left_inj' (Gammaℝ_ne_zero_of_re_pos (zero_lt_one.trans hs))]
   -- expand out `LFunction (𝓕 Φ)` and use parity:

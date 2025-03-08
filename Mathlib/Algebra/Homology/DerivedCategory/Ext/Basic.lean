@@ -40,7 +40,9 @@ sheaves over `X` shall be in `Type u`.
 
 -/
 
-universe w' w v u
+assert_not_exists TwoSidedIdeal
+
+universe w'' w' w v u
 
 namespace CategoryTheory
 
@@ -74,6 +76,10 @@ lemma hasExt_iff [HasDerivedCategory.{w'} C] :
 lemma hasExt_of_hasDerivedCategory [HasDerivedCategory.{w} C] : HasExt.{w} C := by
   rw [hasExt_iff.{w}]
   infer_instance
+
+lemma HasExt.standard : HasExt.{max u v} C := by
+  letI := HasDerivedCategory.standard
+  exact hasExt_of_hasDerivedCategory _
 
 variable {C}
 
@@ -154,12 +160,12 @@ lemma mk₀_hom [HasDerivedCategory.{w'} C] (f : X ⟶ Y) :
     (mk₀ f).hom = ShiftedHom.mk₀ _ (by simp) ((singleFunctor C 0).map f) := by
   apply SmallShiftedHom.equiv_mk₀
 
-@[simp 1100]
+@[simp]
 lemma mk₀_comp_mk₀ (f : X ⟶ Y) (g : Y ⟶ Z) :
     (mk₀ f).comp (mk₀ g) (zero_add 0) = mk₀ (f ≫ g) := by
   letI := HasDerivedCategory.standard C; ext; simp
 
-@[simp 1100]
+@[simp]
 lemma mk₀_comp_mk₀_assoc (f : X ⟶ Y) (g : Y ⟶ Z) {n : ℕ} (α : Ext Z T n) :
     (mk₀ f).comp ((mk₀ g).comp α (zero_add n)) (zero_add n) =
       (mk₀ (f ≫ g)).comp α (zero_add n) := by
@@ -358,12 +364,30 @@ noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{w} where
         symm
         apply Ext.comp_assoc
         all_goals omega }
-  map_comp {X₁ X₂ X₃} f f'  := by
+  map_comp {X₁ X₂ X₃} f f' := by
     ext Y α
     dsimp
     rw [← Ext.mk₀_comp_mk₀]
     apply Ext.comp_assoc
     all_goals omega
+
+section ChangeOfUniverse
+
+namespace Ext
+
+variable [HasExt.{w'} C] {X Y : C} {n : ℕ}
+
+/-- Up to an equivalence, the type `Ext.{w} X Y n` does not depend on the universe `w`. -/
+noncomputable def chgUniv : Ext.{w} X Y n ≃ Ext.{w'} X Y n :=
+  SmallShiftedHom.chgUniv.{w', w}
+
+lemma homEquiv_chgUniv [HasDerivedCategory.{w''} C] (e : Ext.{w} X Y n) :
+    homEquiv.{w'', w'} (chgUniv.{w'} e) = homEquiv.{w'', w} e := by
+  apply SmallShiftedHom.equiv_chgUniv
+
+end Ext
+
+end ChangeOfUniverse
 
 end Abelian
 

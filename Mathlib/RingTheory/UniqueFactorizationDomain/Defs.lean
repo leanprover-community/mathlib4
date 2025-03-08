@@ -3,10 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.Algebra.Associated.Basic
-import Mathlib.Algebra.BigOperators.Group.Multiset
-import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Algebra.GroupWithZero.Associated
+import Mathlib.Algebra.GroupWithZero.Submonoid
 import Mathlib.Order.WellFounded
 
 /-!
@@ -19,9 +19,7 @@ import Mathlib.Order.WellFounded
   `Irreducible` is equivalent to `Prime`
 -/
 
-assert_not_exists Field
-assert_not_exists Finsupp
-assert_not_exists Ideal
+assert_not_exists Field Finsupp Ideal
 
 variable {α : Type*}
 
@@ -30,7 +28,7 @@ local infixl:50 " ~ᵤ " => Associated
 /-- Well-foundedness of the strict version of ∣, which is equivalent to the descending chain
 condition on divisibility and to the ascending chain condition on
 principal ideals in an integral domain.
-  -/
+-/
 abbrev WfDvdMonoid (α : Type*) [CommMonoidWithZero α] : Prop :=
   IsWellFounded α DvdNotUnit
 
@@ -108,10 +106,9 @@ section Prio
 -- set_option default_priority 100
 
 -- see Note [default priority]
-/-- unique factorization monoids.
-
-These are defined as `CancelCommMonoidWithZero`s with well-founded strict divisibility
-relations, but this is equivalent to more familiar definitions:
+/--
+Unique factorization monoids are defined as `CancelCommMonoidWithZero`s with well-founded
+strict divisibility relations, but this is equivalent to more familiar definitions:
 
 Each element (except zero) is uniquely represented as a multiset of irreducible factors.
 Uniqueness is only up to associated elements.
@@ -120,25 +117,19 @@ Each element (except zero) is non-uniquely represented as a multiset
 of prime factors.
 
 To define a UFD using the definition in terms of multisets
-of irreducible factors, use the definition `of_exists_unique_irreducible_factors`
+of irreducible factors, use the definition `of_existsUnique_irreducible_factors`
 
 To define a UFD using the definition in terms of multisets
 of prime factors, use the definition `of_exists_prime_factors`
-
 -/
-class UniqueFactorizationMonoid (α : Type*) [CancelCommMonoidWithZero α] extends
-    IsWellFounded α DvdNotUnit : Prop where
+class UniqueFactorizationMonoid (α : Type*) [CancelCommMonoidWithZero α] : Prop
+    extends IsWellFounded α DvdNotUnit where
   protected irreducible_iff_prime : ∀ {a : α}, Irreducible a ↔ Prime a
 
 instance (priority := 100) ufm_of_decomposition_of_wfDvdMonoid
     [CancelCommMonoidWithZero α] [WfDvdMonoid α] [DecompositionMonoid α] :
     UniqueFactorizationMonoid α :=
   { ‹WfDvdMonoid α› with irreducible_iff_prime := irreducible_iff_prime }
-
-@[deprecated ufm_of_decomposition_of_wfDvdMonoid (since := "2024-02-12")]
-theorem ufm_of_gcd_of_wfDvdMonoid [CancelCommMonoidWithZero α] [WfDvdMonoid α]
-    [DecompositionMonoid α] : UniqueFactorizationMonoid α :=
-  ufm_of_decomposition_of_wfDvdMonoid
 
 end Prio
 

@@ -3,7 +3,7 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.RingTheory.Artinian
+import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Modules of finite length
@@ -11,20 +11,19 @@ import Mathlib.RingTheory.Artinian
 We define modules of finite length (`IsFiniteLength`) to be finite iterated extensions of
 simple modules, and show that a module is of finite length iff it is both Noetherian and Artinian,
 iff it admits a composition series.
+
 We do not make `IsFiniteLength` a class, instead we use `[IsNoetherian R M] [IsArtinian R M]`.
 
-## Tag
+## Tags
 
 Finite length, Composition series
 -/
-
-universe u
 
 variable (R : Type*) [Ring R]
 
 /-- A module of finite length is either trivial or a simple extension of a module known
 to be of finite length. -/
-inductive IsFiniteLength : ∀ (M : Type u) [AddCommGroup M] [Module R M], Prop
+inductive IsFiniteLength : ∀ (M : Type*) [AddCommGroup M] [Module R M], Prop
   | of_subsingleton {M} [AddCommGroup M] [Module R M] [Subsingleton M] : IsFiniteLength M
   | of_simple_quotient {M} [AddCommGroup M] [Module R M] {N : Submodule R M}
       [IsSimpleModule R (M ⧸ N)] : IsFiniteLength N → IsFiniteLength M
@@ -33,9 +32,11 @@ variable {R} {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Modul
 
 theorem LinearEquiv.isFiniteLength (e : M ≃ₗ[R] N)
     (h : IsFiniteLength R M) : IsFiniteLength R N := by
-  induction' h with M _ _ _ M _ _ S _ _ ih generalizing N
-  · have := e.symm.toEquiv.subsingleton; exact .of_subsingleton
-  · have : IsSimpleModule R (N ⧸ Submodule.map (e : M →ₗ[R] N) S) :=
+  induction h generalizing N with
+  | of_subsingleton =>
+    have := e.symm.toEquiv.subsingleton; exact .of_subsingleton
+  | @of_simple_quotient M _ _ S _ _ ih =>
+    have : IsSimpleModule R (N ⧸ Submodule.map (e : M →ₗ[R] N) S) :=
       IsSimpleModule.congr (Submodule.Quotient.equiv S _ e rfl).symm
     exact .of_simple_quotient (ih <| e.submoduleMap S)
 

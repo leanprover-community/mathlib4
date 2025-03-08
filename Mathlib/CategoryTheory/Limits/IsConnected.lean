@@ -39,7 +39,9 @@ unit-valued, singleton, colimit
 
 universe w v u
 
-namespace CategoryTheory.Limits.Types
+namespace CategoryTheory
+
+namespace Limits.Types
 
 variable (C : Type u) [Category.{v} C]
 
@@ -111,15 +113,28 @@ theorem isConnected_iff_isColimit_pUnitCocone :
   simp only [isConnected_iff_colimit_constPUnitFunctor_iso_pUnit.{w} C]
   exact ⟨colimit.isoColimitCocone colimitCocone⟩
 
+end Limits.Types
+
+namespace Functor
+
+open Limits.Types
+
 universe v₂ u₂
-variable {C : Type u} {D : Type u₂} [Category.{v} C] [Category.{v₂} D]
+
+variable {C : Type u} [Category.{v} C] {D : Type u₂} [Category.{v₂} D]
 
 /-- The domain of a final functor is connected if and only if its codomain is connected. -/
-theorem isConnected_iff_of_final (F : C ⥤ D) [CategoryTheory.Functor.Final F] :
-    IsConnected C ↔ IsConnected D := by
+theorem isConnected_iff_of_final (F : C ⥤ D) [F.Final] : IsConnected C ↔ IsConnected D := by
   rw [isConnected_iff_colimit_constPUnitFunctor_iso_pUnit.{max v u v₂ u₂} C,
     isConnected_iff_colimit_constPUnitFunctor_iso_pUnit.{max v u v₂ u₂} D]
   exact Equiv.nonempty_congr <| Iso.isoCongrLeft <|
     CategoryTheory.Functor.Final.colimitIso F <| constPUnitFunctor.{max u v u₂ v₂} D
 
-end CategoryTheory.Limits.Types
+/-- The domain of an initial functor is connected if and only if its codomain is connected. -/
+theorem isConnected_iff_of_initial (F : C ⥤ D) [F.Initial] : IsConnected C ↔ IsConnected D := by
+  rw [← isConnected_op_iff_isConnected C, ← isConnected_op_iff_isConnected D]
+  exact isConnected_iff_of_final F.op
+
+end Functor
+
+end CategoryTheory

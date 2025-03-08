@@ -160,9 +160,6 @@ theorem Squarefree.isRadical {x : R} (hx : Squarefree x) : IsRadical x :=
 theorem Squarefree.dvd_pow_iff_dvd {x y : R} {n : ℕ} (hsq : Squarefree x) (h0 : n ≠ 0) :
     x ∣ y ^ n ↔ x ∣ y := ⟨hsq.isRadical n y, (·.pow h0)⟩
 
-@[deprecated (since := "2024-02-12")]
-alias UniqueFactorizationMonoid.dvd_pow_iff_dvd_of_squarefree := Squarefree.dvd_pow_iff_dvd
-
 end
 
 variable [CancelCommMonoidWithZero R] {x y p d : R}
@@ -283,7 +280,5 @@ theorem squarefree_natAbs {n : ℤ} : Squarefree n.natAbs ↔ Squarefree n := by
 @[simp]
 theorem squarefree_natCast {n : ℕ} : Squarefree (n : ℤ) ↔ Squarefree n := by
   rw [← squarefree_natAbs, natAbs_ofNat]
-
-@[deprecated (since := "2024-04-05")] alias squarefree_coe_nat := squarefree_natCast
 
 end Int
