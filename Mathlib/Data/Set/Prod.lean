@@ -723,9 +723,16 @@ theorem pi_antitone (h : s₁ ⊆ s₂) : s₂.pi t ⊆ s₁.pi t := by
 
 open scoped Classical in
 lemma union_pi_ite_of_disjoint {s t : Set ι} {x y : (i : ι) → Set (α i)} (hst : Disjoint s t) :
-    ((s ∪ t).pi fun i ↦ if i ∈ s then x i else y i)  = (s.pi x) ∩ (t.pi y) := by
-  rw [union_pi, Set.pi_congr rfl (fun i hi ↦ if_pos hi), Set.pi_congr rfl (fun i hi ↦
-    if_neg <| hst.symm.notMem_of_mem_left hi)]
+((s ∪ t).pi fun i ↦ if i ∈ s then x i else y i)  = (s.pi x) ∩ (t.pi y) := by
+  have hx : ∀ i ∈ s, x i = if h : i ∈ s then x i else y i := by
+    intro i hi
+    simp only [dite_eq_ite, hi, ↓reduceIte]
+  have hy : ∀ i ∈ t, y i = if h : i ∈ s then x i else y i := by
+    intro i hi
+    have h : i ∉ s := Disjoint.not_mem_of_mem_left (id (Disjoint.symm hst)) hi
+    simp only [hi, hst, dite_eq_ite, h, ↓reduceIte]
+  rw [Set.pi_congr rfl hx, Set.pi_congr rfl hy]
+  exact union_pi
 
 theorem union_pi_inter
     (ht₁ : ∀ i ∉ s₁, t₁ i = univ) (ht₂ : ∀ i ∉ s₂, t₂ i = univ) :

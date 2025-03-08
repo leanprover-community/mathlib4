@@ -21,6 +21,8 @@ Typically, rings arise by taking unions of sets in a semi-ring (e.g. the set of 
 
 * `MeasureTheory.IsSetRing.inter_mem`: a ring is stsable under intersections.
 
+TODO: State the result that finite unions of sets in a semi-ring form a ring.
+
 -/
 
 open Finset Set
