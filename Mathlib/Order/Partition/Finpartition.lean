@@ -503,7 +503,6 @@ lemma mem_part_self : a ∈ P.part a ↔ a ∈ s := by
   · simp [part, ha, choose_property (p := fun s => a ∈ s) P.parts (P.existsUnique_mem ha)]
   · simp [P.part_eq_empty.2, ha]
 
-@[deprecated (since := "2025-02-07")]
 alias ⟨_, mem_part⟩ := mem_part_self
 
 lemma part_eq_iff_mem (ht : t ∈ P.parts) : P.part a = t ↔ a ∈ t := by
@@ -518,12 +517,12 @@ lemma part_eq_of_mem (ht : t ∈ P.parts) (hat : a ∈ t) : P.part a = t :=
 
 lemma mem_part_iff_part_eq_part {b : α} (ha : a ∈ s) (hb : b ∈ s) :
     a ∈ P.part b ↔ P.part a = P.part b :=
-  ⟨fun c ↦ (P.part_eq_of_mem (P.part_mem.2 hb) c), fun c ↦ c ▸ P.mem_part_self.2 ha⟩
+  ⟨fun c ↦ (P.part_eq_of_mem (P.part_mem.2 hb) c), fun c ↦ c ▸ P.mem_part ha⟩
 
 theorem part_surjOn : Set.SurjOn P.part s P.parts := fun p hp ↦ by
   obtain ⟨x, hx⟩ := P.nonempty_of_mem_parts hp
   have hx' := mem_of_subset (P.le hp) hx
-  use x, hx', (P.existsUnique_mem hx').unique ⟨P.part_mem.2 hx', P.mem_part_self.2 hx'⟩ ⟨hp, hx⟩
+  use x, hx', (P.existsUnique_mem hx').unique ⟨P.part_mem.2 hx', P.mem_part hx'⟩ ⟨hp, hx⟩
 
 theorem exists_subset_part_bijOn : ∃ r ⊆ s, Set.BijOn P.part r P.parts := by
   obtain ⟨r, hrs, hr⟩ := P.part_surjOn.exists_bijOn_subset
@@ -541,7 +540,7 @@ theorem mem_part_iff_exists {b} : a ∈ P.part b ↔ ∃ p ∈ P.parts, a ∈ p 
 
 /-- Equivalence between a finpartition's parts as a dependent sum and the partitioned set. -/
 def equivSigmaParts : s ≃ Σ t : P.parts, t.1 where
-  toFun x := ⟨⟨P.part x.1, P.part_mem.2 x.2⟩, ⟨x, P.mem_part_self.2 x.2⟩⟩
+  toFun x := ⟨⟨P.part x.1, P.part_mem.2 x.2⟩, ⟨x, P.mem_part x.2⟩⟩
   invFun x := ⟨x.2, mem_of_subset (P.le x.1.2) x.2.2⟩
   left_inv x := by simp
   right_inv x := by
