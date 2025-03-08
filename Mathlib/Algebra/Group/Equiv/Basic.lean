@@ -17,6 +17,8 @@ This file contains basic results on `MulEquiv` and `AddEquiv`.
 Equiv, MulEquiv, AddEquiv
 -/
 
+assert_not_exists Fintype
+
 open Function
 
 variable {F α β M N P G H : Type*}

@@ -10,6 +10,7 @@ import Mathlib.Algebra.Group.TypeTags.Hom
 # Additive and multiplicative equivalences associated to `Multiplicative` and `Additive`.
 -/
 
+assert_not_exists Finite Fintype
 
 variable {ι G H : Type*}
 

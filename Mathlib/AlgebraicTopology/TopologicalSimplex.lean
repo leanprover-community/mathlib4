@@ -7,7 +7,6 @@ import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Connected.PathConnected
-import Mathlib.Topology.Instances.NNReal.Defs
 
 /-!
 # Topological simplices

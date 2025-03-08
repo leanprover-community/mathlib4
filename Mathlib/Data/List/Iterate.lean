@@ -31,21 +31,10 @@ theorem getElem?_iterate (f : α → α) (a : α) :
   | n + 1, 0    , _ => by simp
   | n + 1, i + 1, h => by simp [getElem?_iterate f (f a) n i (by simpa using h)]
 
-set_option linter.deprecated false in
-@[deprecated getElem?_iterate (since := "2024-08-23")]
-theorem get?_iterate (f : α → α) (a : α) (n i : ℕ) (h : i < n) :
-    get? (iterate f a n) i = f^[i] a := by
-  simp only [get?_eq_getElem?, getElem?_iterate, h]
-
 @[simp]
 theorem getElem_iterate (f : α → α) (a : α) (n : ℕ) (i : Nat) (h : i < (iterate f a n).length) :
     (iterate f a n)[i] = f^[i] a :=
   getElem_eq_iff.2 <| getElem?_iterate _ _ _ _ <| by rwa [length_iterate] at h
-
-@[deprecated getElem_iterate (since := "2024-08-23")]
-theorem get_iterate (f : α → α) (a : α) (n : ℕ) (i : Fin (iterate f a n).length) :
-    get (iterate f a n) i = f^[↑i] a := by
-  simp
 
 @[simp]
 theorem mem_iterate {f : α → α} {a : α} {n : ℕ} {b : α} :

@@ -10,6 +10,7 @@ import Mathlib.Data.Complex.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Field
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.RealVectorSpace
+import Mathlib.Topology.MetricSpace.ProperSpace.Real
 
 /-!
 
@@ -79,7 +80,6 @@ instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [Semin
   ext; exact norm_intCast n
 
 @[deprecated (since := "2025-02-16")] alias comap_abs_nhds_zero := comap_norm_nhds_zero
-@[deprecated (since := "2024-08-25")] alias nnnorm_int := nnnorm_intCast
 @[deprecated (since := "2025-02-16")] alias continuous_abs := continuous_norm
 
 @[continuity, fun_prop]

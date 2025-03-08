@@ -1263,7 +1263,7 @@ lemma bddAbove_of_absorbent {ι : Sort*} {p : ι → Seminorm 𝕜 E} {s : Set E
   rw [Seminorm.bddAbove_range_iff]
   intro x
   obtain ⟨c, hc₀, hc⟩ : ∃ c ≠ 0, (c : 𝕜) • x ∈ s :=
-    (eventually_mem_nhdsWithin.and (hs.eventually_nhdsWithin_zero x)).exists
+    (eventually_mem_nhdsWithin.and (hs.eventually_nhdsNE_zero x)).exists
   rcases h _ hc with ⟨M, hM⟩
   refine ⟨M / ‖c‖, forall_mem_range.mpr fun i ↦ (le_div_iff₀' (norm_pos_iff.2 hc₀)).2 ?_⟩
   exact hM ⟨i, map_smul_eq_mul ..⟩
