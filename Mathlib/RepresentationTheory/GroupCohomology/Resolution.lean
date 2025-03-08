@@ -121,9 +121,14 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
         Fin.insertNth_zero']
       refine' Fin.cases (Fin.cons_zero _ _) (fun i => _) x
       · simp only [Fin.cons_succ, mul_left_inj, inv_inj, Fin.castSucc_fin_succ] -/
-    dsimp [actionDiagonalSucc]
-    erw [hn (fun (j : Fin (n + 1)) => f j.succ)]
-    exact Fin.cases rfl (fun i => rfl) x
+    dsimp only [actionDiagonalSucc, Iso.trans_hom, tensorIso_hom, comp_hom,
+      instMonoidalCategory_tensorHom_hom, types_comp_apply, tensor_apply]
+    rw [hn]
+    refine Fin.cases ?_ (fun i ↦ ?_) x
+    · -- heavy rfl
+      rfl
+    · -- heavy rfl
+      rfl
 
 theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f : Fin n → G) :
     (actionDiagonalSucc G n).inv.hom (g, f) = (g • Fin.partialProd f : Fin (n + 1) → G) := by

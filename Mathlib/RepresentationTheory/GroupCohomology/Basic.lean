@@ -115,6 +115,14 @@ def d [Monoid G] (n : ℕ) (A : Rep k G) : ((Fin n → G) → A) →ₗ[k] (Fin 
 
 variable [Group G] (n) (A : Rep k G)
 
+@[simp]
+lemma resolution_X_V : ((resolution k G).X n).V = ((Fin (n + 1) → G) →₀ k) :=
+  rfl
+
+@[simp]
+lemma diagonal_V : (diagonal k G n).V = ((Fin n → G) →₀ k) :=
+  rfl
+
 /- Porting note: linter says the statement doesn't typecheck, so we add `@[nolint checkType]` -/
 /-- The theorem that our isomorphism `Fun(Gⁿ, A) ≅ Hom(k[Gⁿ⁺¹], A)` (where the righthand side is
 morphisms in `Rep k G`) commutes with the differentials in the complex of inhomogeneous cochains
@@ -144,22 +152,25 @@ and the homogeneous `linearYonedaObjResolution`. -/
       rw [diagonalHomEquiv_symm_partialProd_succ, Fin.val_succ] -/
   -- https://github.com/leanprover-community/mathlib4/issues/5026
   -- https://github.com/leanprover-community/mathlib4/issues/5164
+  simp only [LinearEquiv.toModuleIso_inv, ModuleCat.hom_comp, LinearEquiv.toModuleIso_hom,
+    ModuleCat.hom_ofHom, LinearMap.comp_apply, ChainComplex.linearYonedaObj_d]
   change d n A f g = diagonalHomEquiv (n + 1) A
     ((resolution k G).d (n + 1) n ≫ (diagonalHomEquiv n A).symm f) g
-  rw [diagonalHomEquiv_apply, Action.comp_hom, ConcreteCategory.comp_apply, resolution.d_eq]
-  erw [resolution.d_of (Fin.partialProd g)]
-  simp only [map_sum, ← Finsupp.smul_single_one _ ((-1 : k) ^ _)]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [d_apply, @Fin.sum_univ_succ _ _ (n + 1), Fin.val_zero, pow_zero, one_smul,
-    Fin.succAbove_zero, diagonalHomEquiv_symm_apply f (Fin.partialProd g ∘ @Fin.succ (n + 1))]
+  suffices (d n A) f g = (ConcreteCategory.hom ((diagonalHomEquiv n A).symm f).hom)
+    ((resolution.d k G (n + 1)) (Finsupp.single (Fin.partialProd g) 1)) by
+    simpa [diagonalHomEquiv_apply, resolution.d_eq]
+  rw [resolution.d_of (Fin.partialProd g), map_sum]
+  simp only [← Finsupp.smul_single_one _ ((-1 : k) ^ _)]
+  rw [Fin.sum_univ_succ, Fin.val_zero, pow_zero, Fin.succAbove_zero, one_smul,
+    diagonalHomEquiv_symm_apply f (Fin.partialProd g ∘ Fin.succ)]
   simp_rw [Function.comp_apply, Fin.partialProd_succ, Fin.castSucc_zero,
     Fin.partialProd_zero, one_mul]
+  rw [d_apply]
   rcongr x
   · have := Fin.partialProd_right_inv g (Fin.castSucc x)
     simp only [mul_inv_rev, Fin.castSucc_fin_succ] at this ⊢
     rw [mul_assoc, ← mul_assoc _ _ (g x.succ), this, inv_mul_cancel_left]
-  · -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [map_smul, diagonalHomEquiv_symm_partialProd_succ, Fin.val_succ]
+  · rw [map_smul, diagonalHomEquiv_symm_partialProd_succ f g x, Fin.val_succ]
 
 end inhomogeneousCochains
 
