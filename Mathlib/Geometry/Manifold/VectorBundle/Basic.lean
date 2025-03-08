@@ -653,12 +653,13 @@ theorem Bundle.Prod.contMDiff_fst :
     ((trivializationAt (F₁ × F₂) (fun x ↦ E₁ x × E₂ x) x.proj) x) := sorry
   convert this with y
   rcases y with ⟨b, v, w⟩
-  simp [trivializationAt, FiberBundle.trivializationAt']
-  have : v = (b, v).2 := rfl
-  rw [this]
-  congr
+  simp only [trivializationAt, FiberBundle.trivializationAt', Function.comp_apply,
+    Trivialization.prod_symm_apply']
   have : (TotalSpace.Prod.fst F₁ F₂ E₁ E₂ x).proj = x.proj := rfl
-  simp [this]
+  simp [this, TotalSpace.Prod.fst]
+  have : (FiberBundle.trivializationAt' x.proj) (b, (FiberBundle.trivializationAt' x.proj).symm b v) = (b, v) := by
+    sorry
+
 
 
 

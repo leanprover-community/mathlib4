@@ -252,13 +252,29 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
 @[simp]
 theorem baseSet_prod : (prod e₁ e₂).baseSet = e₁.baseSet ∩ e₂.baseSet := rfl
 
-@[simp]
 theorem prod_symm_apply (x : B) (w₁ : F₁) (w₂ : F₂) :
     (prod e₁ e₂).toPartialEquiv.symm (x, w₁, w₂) = ⟨x, e₁.symm x w₁, e₂.symm x w₂⟩ := rfl
 
-@[simp]
 theorem prod_symm_apply' (x : B) (w₁ : F₁) (w₂ : F₂) :
     (prod e₁ e₂).toPartialHomeomorph.symm (x, w₁, w₂) = ⟨x, e₁.symm x w₁, e₂.symm x w₂⟩ := rfl
+
+@[simp]
+theorem fst_prod_symm_apply (x : B) (w₁ : F₁) (w₂ : F₂) (hx : x ∈ e₁.baseSet) :
+    TotalSpace.Prod.fst F₁ F₂ E₁ E₂ ((prod e₁ e₂).toPartialHomeomorph.symm (x, w₁, w₂)) =
+    e₁.toPartialHomeomorph.symm (x, w₁) := by
+  simp only [TotalSpace.Prod.fst]
+  ext
+  · simp [symm_coe_proj e₁ hx, prod_symm_apply']
+  · simp [prod_symm_apply', Trivialization.symm_apply _ hx]
+
+@[simp]
+theorem snd_prod_symm_apply (x : B) (w₁ : F₁) (w₂ : F₂) (hx : x ∈ e₂.baseSet) :
+    TotalSpace.Prod.snd F₁ F₂ E₁ E₂ ((prod e₁ e₂).toPartialHomeomorph.symm (x, w₁, w₂)) =
+    e₂.toPartialHomeomorph.symm (x, w₂) := by
+  simp only [TotalSpace.Prod.snd]
+  ext
+  · simp [symm_coe_proj e₂ hx, prod_symm_apply']
+  · simp [prod_symm_apply', Trivialization.symm_apply _ hx]
 
 end Trivialization
 
