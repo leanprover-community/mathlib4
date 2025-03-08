@@ -880,24 +880,61 @@ theorem subset_pi_eval_image (s : Set ι) (u : Set (∀ i, α i)) : u ⊆ pi s f
   fun f hf _ _ => ⟨f, hf, rfl⟩
 
 theorem univ_pi_ite (s : Set ι) [DecidablePred (· ∈ s)] (t : ∀ i, Set (α i)) :
-    (pi univ fun i => if i ∈ s then t i else univ) = s.pi t := by grind
+    (pi univ fun i => if i ∈ s then t i else univ) = s.pi t := by
+  ext
+  simp_rw [mem_univ_pi]
+  refine forall_congr' fun i => ?_
+  split_ifs with h <;> simp [h]
+
 section Setdiff
 
-/-- Write the set difference `(s ∪ t).pi x \ (s ∪ t).pi y` as a union. -/
+/-- Write that set difference `(s ∪ t).pi x \ (s ∪ t).pi y` as a union. -/
 lemma pi_setdiff_eq_union (s t : Set ι) (x y : (i : ι) → Set (α i)) :
-  (s ∪ t).pi x \ (s ∪ t).pi y =
-    t.pi x ∩ (s.pi x \ s.pi y) ∪ (t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y) := by
-  rw [union_pi, union_pi, diff_eq_compl_inter, compl_inter,  union_inter_distrib_right,
-    ← inter_assoc, ← diff_eq_compl_inter, ← inter_assoc, inter_comm, inter_assoc,
-    inter_comm (s.pi x ) (t.pi x), ← inter_assoc,  ← diff_eq_compl_inter, ← union_diff_self]
-  apply congrArg (Union.union (t.pi x ∩ (s.pi x \ s.pi y)))
-  aesop
+  (s ∪ t).pi x \ (s ∪ t).pi y = (t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y) ∪
+    t.pi x ∩ (s.pi x \ s.pi y) := by
+    ext z
+    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    · simp only [mem_diff, mem_inter_iff, Set.mem_preimage, Function.eval, Set.mem_pi, not_and,
+          not_forall, Classical.not_imp] at h
+      obtain ⟨h1, ⟨j, ⟨hj1, hj2⟩⟩⟩ := h
+      by_cases hz : ∃ a ∈ s, z a ∉ y a
+      · right
+        simp only [mem_inter_iff, Set.mem_pi, mem_diff, not_forall, Classical.not_imp]
+        refine ⟨fun i hi ↦ h1 i (Set.subset_union_right hi),
+          fun i hi ↦ h1 i (Set.subset_union_left hi), bex_def.mpr hz⟩
+      · simp only [not_exists, not_and, not_not] at hz
+        left
+        simp only [mem_inter_iff, mem_diff, Set.mem_pi, not_forall, Classical.not_imp,
+          Set.mem_preimage, Function.eval]
+        refine ⟨⟨fun i hi ↦ h1 i (Set.subset_union_right hi), ?_⟩,
+          fun i hi ↦ h1 i (Set.subset_union_left hi), hz⟩
+        · have hj : j ∈ t := by
+            simp only [Set.mem_union] at hj1
+            rcases hj1 with (g1 | g2)
+            · exact False.elim (hj2 (hz j g1))
+            · exact g2
+          exact ⟨j, hj, hj2⟩
+    · simp only [Set.mem_union, mem_inter_iff, mem_diff, Set.mem_pi, not_forall,
+      Classical.not_imp] at h
+      simp only [mem_diff, Set.mem_pi, Set.mem_union, not_forall, Classical.not_imp]
+      rcases h with ⟨⟨h11, h12⟩, h2, h3⟩ | ⟨h1, h2, h3⟩
+      · refine ⟨?_, ?_⟩
+        · rintro i (hi1 | hi2)
+          · exact h2 i hi1
+          · exact h11 i hi2
+        · obtain ⟨x, hx1, hx2⟩ := h12
+          exact ⟨x, Or.inr hx1, hx2⟩
+      · refine ⟨?_, ?_⟩
+        · rintro i (hi1 | hi2)
+          · exact h2 i hi1
+          · exact h1 i hi2
+        · obtain ⟨x, hx1, hx2⟩ := h3
+          exact ⟨x, Or.inl hx1, hx2⟩
 
-lemma disjoint_pi_of_interSetdiff_of_interSetdiffInter (s t : Set ι)
-  (x : (i : ι) → Set (α i)) (y : (i : ι) → Set (α i)) :
-  Disjoint (t.pi x ∩ (s.pi x \ s.pi y)) ((t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y)) :=
-    Disjoint.symm (Disjoint.inter_left' (t.pi x \ t.pi y) (Disjoint.symm
-    (Disjoint.inter_left' (t.pi x) disjoint_sdiff_inter)))
+lemma pi_setdiff_union_disjoint (s t : Set ι) (x : (i : ι) → Set (α i)) (y : (i : ι) → Set (α i)) :
+  Disjoint ((t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y)) (t.pi x ∩ (s.pi x \ s.pi y)) :=
+  Disjoint.mono (inter_subset_right) (inter_subset_right) <|
+    Disjoint.mono Set.inter_subset_right (fun ⦃_⦄ a ↦ a) <| disjoint_sdiff_right
 
 end Setdiff
 
@@ -935,6 +972,21 @@ theorem sumPiEquivProdPi_symm_preimage_univ_pi (π : ι ⊕ ι' → Type*) (t : 
   simp
 
 end Equiv
+
+section image
+
+open Set
+variable {ι ι' : Type*} {α : ι → Type*}
+
+lemma subset_pi_image_of_subset {s : Set ι} {B C : (i : ι) → Set (Set (α i))}
+    (hBC : ∀ i ∈ s, B i ⊆ C i) : s.pi  '' s.pi B ⊆ s.pi  '' s.pi C := by
+  simp only [Set.image_subset_iff]
+  intro b hb
+  simp only [Set.mem_preimage, Set.mem_image, Set.mem_pi] at hb ⊢
+  exact ⟨b, ⟨fun i a ↦ hBC i a (hb i a), rfl⟩⟩
+
+
+end image
 
 section image
 
