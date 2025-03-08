@@ -107,6 +107,8 @@ lemma integral_tilted_mul_cgf [NeZero μ] (g : Ω → E)
   simp_rw [integral_tilted_mul_mgf, exp_sub]
   rwa [exp_cgf]
 
+/-- The integral of `X` against the tilted measure `μ.tilted (t * X ·)` is the first derivative of
+the cumulant generating function of `X` at `t`. -/
 lemma integral_tilted_mul_self (ht : t ∈ interior (integrableExpSet X μ)) :
     (μ.tilted (t * X ·))[X] = deriv (cgf X μ) t := by
   simp_rw [integral_tilted_mul_mgf, deriv_cgf ht, ← integral_div, smul_eq_mul]
@@ -132,6 +134,8 @@ lemma memLp_tilted_mul (ht : t ∈ interior (integrableExpSet X μ)) (p : ℝ≥
     smul_eq_mul, mul_comm]
   exact integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet ht p.2
 
+/-- The variance of the tilted measure `μ.tilted (t * X ·)` is the second derivative of the
+cumulant generating function of `X` at `t`. -/
 lemma variance_tilted_mul (ht : t ∈ interior (integrableExpSet X μ)) :
     variance X (μ.tilted (t * X ·)) = iteratedDeriv 2 (cgf X μ) t := by
   rw [variance_eq_integral]
