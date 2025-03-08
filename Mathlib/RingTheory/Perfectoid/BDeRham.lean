@@ -40,7 +40,7 @@ universe u
 
 open Ideal WittVector
 
-variable {O : Type u} [CommRing O] {p : ℕ} [Fact (Nat.Prime p)]
+variable (O : Type u) [CommRing O] (p : ℕ) [Fact (Nat.Prime p)]
     [Fact ¬IsUnit (p : O)] [IsAdicComplete (span {(p : O)}) O]
 
 local notation A "^♭" => PreTilt A p
@@ -56,8 +56,6 @@ def fontaineThetaInvertP :
   Localization.awayLift ((algebraMap O _).comp fontaineTheta) (p : 𝕎 (O^♭))
       (by simpa using IsLocalization.Away.algebraMap_isUnit (p : O))
 
-variable (O p)
-
 /--
 The de Rham period ring \(\mathbb{B}_dR^+\) for general perfectoid ring.
 It is the completion of `𝕎 (O^♭)` inverting `p` with respect to the kernel of
@@ -67,16 +65,28 @@ then this
 definition is the zero ring.
 -/
 def BDeRhamPlus : Type u :=
-  AdicCompletion (R := (Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭))))
-      (RingHom.ker fontaineThetaInvertP) (Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭)))
+  AdicCompletion (R := (Localization.Away (M := 𝕎 (O^♭)) p))
+      (RingHom.ker <| fontaineThetaInvertP O p) (Localization.Away (M := 𝕎 (O^♭)) p)
 
 instance : CommRing (BDeRhamPlus O p) := AdicCompletion.instCommRing _
 
+/--
+The de Rham period ring \(\mathbb{B}_dR\) for general perfectoid ring.
+It is defined as \(\mathbb{B}_dR^+\) inverting the generators of the ideal `ker θ`.
+Mathematically, this is equivalent to inverting *a* generator of the ideal `ker θ`.
+When \(O = \mathcal{O}_{\mathbb{C}_p}\), it coincides
+with the classical de Rham period ring.
+Note that if `p = 0` in `O`, then this definition is the zero ring.
+This definition will be refactored after we show that `ker θ` is principal
+under suitable assumptions.
+-/
 def BDeRham : Type u :=
-    if (RingHom.ker fontaineThetaInvertP).isPrincipal then
-      (Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭))) / (Ideal.span {fontaineThetaInvertP (1)}).toSubmodule
-    else 0
+  Localization (M := BDeRhamPlus O p) <| Submonoid.closure <|
+    {a | (RingHom.ker (fontaineThetaInvertP O p)) = Ideal.span {a}}.image
+    (AdicCompletion.of ((RingHom.ker (fontaineThetaInvertP O p))) _)
 
 local notation "𝔹_dR^+(" O ")" => BDeRhamPlus O p
+
+local notation "𝔹_dR(" O ")" => BDeRham O p
 
 end
