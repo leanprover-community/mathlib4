@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Joachim Breitner
 -/
 import Mathlib.Algebra.Group.Action.End
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.SetTheory.Cardinal.Basic
@@ -145,13 +145,7 @@ def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
     Con.lift _ (FreeMonoid.lift fun p : Σi, M i => fi p.fst p.snd) <|
       Con.conGen_le <| by
         simp_rw [Con.ker_rel]
-        rintro _ _ (i | ⟨x, y⟩)
-        · change FreeMonoid.lift _ (FreeMonoid.of _) = FreeMonoid.lift _ 1
-          simp only [MonoidHom.map_one, FreeMonoid.lift_eval_of]
-        · change
-            FreeMonoid.lift _ (FreeMonoid.of _ * FreeMonoid.of _) =
-              FreeMonoid.lift _ (FreeMonoid.of _)
-          simp only [MonoidHom.map_mul, FreeMonoid.lift_eval_of]
+        rintro _ _ (i | ⟨x, y⟩) <;> simp
   invFun f _ := f.comp of
   left_inv := by
     intro fi

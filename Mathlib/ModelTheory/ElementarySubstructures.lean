@@ -70,7 +70,14 @@ def subtype (S : L.ElementarySubstructure M) : S ↪ₑ[L] M where
   map_formula' := S.isElementary
 
 @[simp]
-theorem coe_subtype {S : L.ElementarySubstructure M} : ⇑S.subtype = ((↑) : S → M) :=
+theorem subtype_apply {S : L.ElementarySubstructure M} {x : S} : subtype S x = x :=
+  rfl
+
+theorem subtype_injective (S : L.ElementarySubstructure M): Function.Injective (subtype S) :=
+  Subtype.coe_injective
+
+@[simp]
+theorem coe_subtype (S : L.ElementarySubstructure M) : ⇑S.subtype = Subtype.val :=
   rfl
 
 @[deprecated (since := "2025-02-18")]
