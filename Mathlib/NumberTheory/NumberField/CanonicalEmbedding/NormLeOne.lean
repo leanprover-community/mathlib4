@@ -74,7 +74,7 @@ abbrev normLeOne : Set (mixedSpace K) :=
   {x | x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ 1}
 
 variable {K} in
-theorem mem_normLeOne (x : mixedSpace K) :
+theorem mem_normLeOne {x : mixedSpace K} :
     x ∈ normLeOne K ↔ x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ 1 := Set.mem_sep_iff
 
 theorem normLeOne_eq_primeage_image :
@@ -87,17 +87,22 @@ theorem normLeOne_eq_primeage_image :
 
 open scoped Classical in
 theorem normAtAllPlaces_normLeOne :
-    normAtAllPlaces '' (normLeOne K) = {x | (∀ w, 0 ≤ x w) ∧
-      logMap (mixedSpaceOfRealSpace x) ∈
-      ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K)) ∧
-      mixedEmbedding.norm (mixedSpaceOfRealSpace x) ≠ 0 ∧
-      mixedEmbedding.norm (mixedSpaceOfRealSpace x) ≤ 1} := by
+    normAtAllPlaces '' (normLeOne K) =
+    mixedSpaceOfRealSpace⁻¹'
+      (logMap⁻¹'
+          ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K))) ∩
+      {x | (∀ w, 0 ≤ x w)} ∩
+      {x | mixedEmbedding.norm (mixedSpaceOfRealSpace x) ≠ 0} ∩
+      {x | mixedEmbedding.norm (mixedSpaceOfRealSpace x) ≤ 1} := by
   ext x
-  refine ⟨?_, fun ⟨hx₁, hx₂, hx₃, hx₄⟩ ↦ ?_⟩
-  · rintro ⟨a, ⟨⟨ha₁, ha₂⟩, ha₃⟩, rfl⟩
-    refine ⟨fun w ↦ normAtPlace_nonneg w a, ?_⟩
-    exact (logMap_normAtAllPlaces a) ▸ (norm_normAtAllPlaces a) ▸ ⟨ha₁, ha₂, ha₃⟩
-  · exact ⟨mixedSpaceOfRealSpace x, ⟨⟨hx₂, hx₃⟩, hx₄⟩, normAtAllPlaces_mixedSpaceOfRealSpace hx₁⟩
+  refine ⟨?_, fun ⟨⟨⟨h₁, h₂⟩, h₃⟩, h₄⟩ ↦ ?_⟩
+  · rintro ⟨y, ⟨⟨h₁, h₂⟩, h₃⟩, rfl⟩
+    refine ⟨⟨⟨?_, ?_⟩, ?_⟩, ?_⟩
+    · rwa [Set.mem_preimage, ← logMap_normAtAllPlaces] at h₁
+    · exact fun w ↦ normAtPlace_nonneg w y
+    · rwa [Set.mem_setOf_eq, ← norm_normAtAllPlaces] at h₂
+    · rwa [← norm_normAtAllPlaces] at h₃
+  · exact ⟨mixedSpaceOfRealSpace x, ⟨⟨h₁, h₃⟩, h₄⟩, normAtAllPlaces_mixedSpaceOfRealSpace h₂⟩
 
 end normLeOne_def
 
@@ -129,8 +134,8 @@ variable [NumberField K]
 The map from `realSpace K → realSpace K` whose components is given by `expMap_single`. It is, in
 some respect, a right inverse of `logMap`, see `logMap_expMap`.
 -/
-def expMap : PartialHomeomorph (realSpace K) (realSpace K) := by
-  refine PartialHomeomorph.pi fun w ↦ expMap_single w
+def expMap : PartialHomeomorph (realSpace K) (realSpace K) :=
+  PartialHomeomorph.pi fun w ↦ expMap_single w
 
 variable (K)
 
