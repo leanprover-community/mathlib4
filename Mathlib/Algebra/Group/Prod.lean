@@ -8,8 +8,7 @@ import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.Group.Prod.Notation
-import Mathlib.Algebra.ZeroOne.Prod
+import Mathlib.Algebra.Notation.Prod
 import Mathlib.Logic.Equiv.Basic
 
 /-!
