@@ -1012,7 +1012,7 @@ lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
         ← Nat.card_eq_fintype_card (α := Stab w), InfinitePlace.card_stabilizer, if_neg,
         Nat.mul_div_cancel _ zero_lt_two, Set.toFinset_card]
       rwa [← isUnramifiedIn_comap]
-  · simp [isUnramifiedIn_comap]
+  · simp [Set.MapsTo, isUnramifiedIn_comap]
 
 open scoped Classical in
 lemma card_eq_card_isUnramifiedIn [NumberField k] [IsGalois k K] :
