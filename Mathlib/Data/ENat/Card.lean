@@ -3,7 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Peter Nelson
 -/
-import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.ENat.BigOperators
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Finite.Sum
 import Mathlib.Data.Fintype.BigOperators
@@ -33,89 +33,6 @@ variable {α β : Type*}
 universe u v
 
 variable {α β : Type*}
-
-
-/-
-Lemmas about `ENat` to move to an `ENat` file.
--/
-section ENatLemmas
-
-variable {a b m n : ℕ∞}
-
-def ENat.recTopZeroCoe {C : ℕ∞ → Sort*} (top : C ⊤) (zero : C 0) (coe : (a : ℕ) → C ↑(a + 1))
-    (n : ℕ∞) : C n :=
-  ENat.recTopCoe (n := n) top fun a ↦ a.recAux zero fun b _ ↦ coe b
-
-lemma ENat.le_one_iff : a ≤ 1 ↔ (a = 0) ∨ (a = 1) := by
-  cases a using ENat.recTopCoe with
-  | top => simp
-  | coe a => simpa using Nat.le_one_iff_eq_zero_or_eq_one
-
-lemma ENat.natCast_lt_add_right_iff (a : ℕ) {b : ℕ∞} : a < a + b ↔ b ≠ 0 := by
-  cases b using ENat.recTopCoe with
-  | top => simp
-  | coe b => simp [← Nat.cast_add, Nat.ne_zero_iff_zero_lt]
-
-lemma ENat.natCast_lt_add_left_iff (a : ℕ) {b : ℕ∞} : a < b + a ↔ b ≠ 0 := by
-  rw [add_comm, ENat.natCast_lt_add_right_iff]
-
-@[simp]
-lemma ENat.lt_add_right_iff (a b : ℕ∞) : a < a + b ↔ a ≠ ⊤ ∧ b ≠ 0 := by
-  cases a using ENat.recTopCoe with
-  | top => simp
-  | coe a => simp [ENat.natCast_lt_add_right_iff]
-
-@[simp]
-lemma ENat.lt_add_left_iff (a b : ℕ∞) : a < b + a ↔ a ≠ ⊤ ∧ b ≠ 0 := by
-  simp [add_comm]
-
-lemma ENat.coe_lt_iff {a : ℕ} {b : ℕ∞} : a < b ↔ a + 1 ≤ b := by
-  cases b using ENat.recTopCoe with
-  | top => simp
-  | coe b => norm_cast
-
-lemma ENat.sSup_eq_top_iff {s : Set ℕ∞} : sSup s = ⊤ ↔ ∀ n : ℕ, ∃ x ∈ s, n ≤ x := by
-  refine sSup_eq_top.trans ⟨fun h n ↦ ?_, fun h b hb ↦ ?_⟩
-  · obtain ⟨a, has, hba⟩ := h n (by simp)
-    exact ⟨_, has, hba.le⟩
-  lift b to ℕ using hb.ne
-  obtain ⟨x, hx, hbx⟩ := h (b+1)
-  exact ⟨x, hx, ENat.coe_lt_iff.2 hbx⟩
-
-@[simp]
-lemma ENat.mul_eq_zero {m n : ℕ∞} : m * n = 0 ↔ m = 0 ∨ n = 0 := by
-  wlog hmn : m ≤ n with aux
-  · rw [mul_comm, aux (not_le.1 hmn).le, or_comm]
-  cases n using ENat.recTopCoe with
-  | top => obtain h | h := eq_or_ne m 0 <;> simp [h]
-  | coe n =>
-  lift m to ℕ using (hmn.trans_lt (by simp)).ne
-  norm_cast
-  simp
-
-lemma ENat.toNat_mul (m n : ℕ∞) : (m * n).toNat = m.toNat * n.toNat := by
-  cases m using ENat.recTopCoe with
-  | top => simp +contextual [or_iff_not_imp_left]
-  | coe m =>
-  cases n using ENat.recTopCoe with
-  | top => simp +contextual [or_iff_not_imp_left]
-  | coe n =>
-  norm_cast
-
-@[simp]
-lemma ENat.toNat_prod {ι : Type*} (s : Finset ι) (f : ι → ℕ∞) :
-    (∏ i ∈ s, f i).toNat = ∏ i ∈ s, (f i).toNat := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | @insert x s hxs ih => rw [Finset.prod_insert hxs, ENat.toNat_mul, Finset.prod_insert hxs, ih]
-
-instance : NoZeroDivisors ℕ∞ where
-  eq_zero_or_eq_zero_of_mul_eq_zero := ENat.mul_eq_zero.1
-
-instance : OrderedCommMonoid ℕ∞ := CanonicallyOrderedAdd.toOrderedCommMonoid
-
-end ENatLemmas
 
 namespace ENat
 
@@ -320,7 +237,7 @@ theorem card_pi {β : α → Type*} [Fintype α] : ENat.card (Π a, β a) = ∏ 
     (f := fun x ↦ card (β x))
 
 /-- TODO : define `Pow ℕ∞ ℕ∞` and use it to state this for infinite `α`. -/
-theorem card_fun' [Fintype α] : card (α → β) = card β ^ Fintype.card α := by
+theorem card_fun [Fintype α] : card (α → β) = card β ^ Fintype.card α := by
   classical
   obtain hα | hα := isEmpty_or_nonempty α
   · simp

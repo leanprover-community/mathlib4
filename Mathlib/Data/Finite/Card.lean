@@ -21,7 +21,7 @@ complicated dependent type that easily leads to "motive not type correct" errors
 
 Theorems about `Nat.card` are sometimes incidentally true for both finite and infinite
 types. If removing a finiteness constraint results in no loss in legibility, we remove
-it. We generally put such theorems into the `SetTheory.Cardinal.Finite` module.
+it.
 
 -/
 
