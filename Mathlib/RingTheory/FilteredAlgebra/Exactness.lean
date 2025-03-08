@@ -3,6 +3,7 @@ Copyright (c) 2025 Huanyu Zheng, Weichen Jiao, Yi Yuan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Huanyu Zheng, Weichen Jiao, Yi Yuan
 -/
+import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Exact
 import Mathlib.RingTheory.FilteredAlgebra.FilteredHom
 import Mathlib.Algebra.Ring.Subring.Basic
@@ -58,62 +59,34 @@ section AssociatedGradedRingHom_ext
 
 open DirectSum
 
-theorem AssociatedGradedRingHom_eq_zero_iff_GradedPieceHom_eq_zero (m : AssociatedGraded FS FS_lt) :
-    Gr[g] m = 0 ↔ ∀ i : ι, Gr(i)[g] (m i) = 0 := by
-  refine ⟨fun h i ↦ ?_, fun h ↦ ?_⟩
-  · rw [← FilteredRingHom.AssociatedGradedRingHom_apply, h, DirectSum.zero_apply]
-  · ext i
-    simp [h i]
+theorem AssociatedGradedRingHom_eq_zero_iff_GradedPieceHom_eq_zero (x : AssociatedGraded FS FS_lt) :
+    Gr[g] x = 0 ↔ ∀ i : ι, Gr(i)[g] (x i) = 0 :=
+  mem_map_ker_iff (fun i ↦ Gr(i)[g]) x
 
 theorem GradedPieceHom_eq_zero_iff_AssociatedGradedRingHom_of_eq_zero {i : ι}
-    (u : GradedPiece FS FS_lt i): Gr(i)[g] u = 0 ↔ Gr[g] (of (GradedPiece FS FS_lt) i u) = 0 := by
-  rw [AssociatedGradedRingHom_eq_zero_iff_GradedPieceHom_eq_zero]
-  constructor
-  · intro h j
-    by_cases ch : i = j
-    · rw [← ch, of_eq_same, h]
-    · rw [of_eq_of_ne i j u ch, map_zero]
-  · intro h
-    simpa using h i
+    (u : GradedPiece FS FS_lt i): Gr(i)[g] u = 0 ↔ Gr[g] (of (GradedPiece FS FS_lt) i u) = 0 :=
+  of_mem_map_ker_iff (fun i ↦ Gr(i)[g]) i u
 
 theorem AssociatedGradedRingHom_in_range_iff_GradedPieceHom_in_range
-    (m : AssociatedGraded FS FS_lt) : m ∈ Set.range Gr[f] ↔ ∀ i : ι, m i ∈ Set.range Gr(i)[f] := by
-  refine ⟨fun ⟨l, hl⟩ i ↦ ?_, fun h ↦ ?_⟩
-  · rw [← hl, FilteredRingHom.AssociatedGradedRingHom_apply]
-    use l i
-  · use mk (GradedPiece FR FR_lt) (DFinsupp.support m) (fun i ↦ Classical.choose (h i))
-    ext i
-    rw [FilteredRingHom.AssociatedGradedRingHom_apply]
-    by_cases mem : i ∈ DFinsupp.support m
-    · rw [mk_apply_of_mem mem, Classical.choose_spec (h i)]
-    · rw [mk_apply_of_not_mem mem, DFinsupp.not_mem_support_iff.mp mem, map_zero]
+    (m : AssociatedGraded FS FS_lt) : m ∈ Gr[f].range ↔ ∀ i : ι, m i ∈ Set.range Gr(i)[f] :=
+  mem_map_range_iff (fun i ↦ Gr(i)[f]) m
 
 theorem GradedPieceHom_in_range_iff_AssociatedGradedRingHom_of_in_range {i : ι}
-    (u : GradedPiece FS FS_lt i) : u ∈ Set.range Gr(i)[f] ↔
-    (of (GradedPiece FS FS_lt) i u) ∈ Set.range Gr[f] := by
-  rw [AssociatedGradedRingHom_in_range_iff_GradedPieceHom_in_range]
-  constructor
-  · intro h j
-    by_cases ch : i = j
-    · rwa [← ch, of_eq_same]
-    · use 0
-      rw [of_eq_of_ne i j u ch, map_zero]
-  · intro h
-    simpa using h i
+    (u : GradedPiece FS FS_lt i) : u ∈ Gr(i)[f].range ↔
+    (of (GradedPiece FS FS_lt) i u) ∈ Gr[f].range := by
+  convert (of_mem_map_range_iff (fun i ↦ Gr(i)[f]) i u).symm
 
 theorem GradedPieceHom_ker_eq_GradedPieceHom_range (i : ι) (Gexact : Function.Exact Gr[f] Gr[g]) :
-    Gr(i)[g].ker = Set.range Gr(i)[f] := by
+    Gr(i)[g].ker = Gr(i)[f].range := by
   ext u
   apply Iff.trans (GradedPieceHom_eq_zero_iff_AssociatedGradedRingHom_of_eq_zero g u)
-  apply Iff.trans (Gexact ((of (GradedPiece FS FS_lt) i) u))
+  rw [Gexact ((of (GradedPiece FS FS_lt) i) u)]
   exact (GradedPieceHom_in_range_iff_AssociatedGradedRingHom_of_in_range f u).symm
 
 theorem GradedPieceHom_exact_of_AssociatedGradedRingHom_exact :
-    Function.Exact Gr[f] Gr[g] → ∀ i, Function.Exact Gr(i)[f] Gr(i)[g] := by
-  refine fun h i ↦ AddMonoidHom.exact_iff.mpr ?_
-  have := GradedPieceHom_ker_eq_GradedPieceHom_range f g i h
-  have eq : Set.range Gr(i)[f] = Gr(i)[f].range := rfl
-  rwa [eq, SetLike.coe_set_eq] at this
+    Function.Exact Gr[f] Gr[g] → ∀ i, Function.Exact Gr(i)[f] Gr(i)[g] :=
+  fun h i ↦ AddMonoidHom.exact_iff.mpr
+    (GradedPieceHom_ker_eq_GradedPieceHom_range f g i h)
 
 end AssociatedGradedRingHom_ext
 
@@ -152,7 +125,8 @@ lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict 
 theorem exact_of_strict_exact (fstrict : f.IsStrict) (gstrict : g.IsStrict)
     (exact : Function.Exact f.toRingHom g.toRingHom) : Function.Exact Gr[f] Gr[g] := by
   intro m
-  rw [AssociatedGradedRingHom_eq_zero_iff_GradedPieceHom_eq_zero,
+  have : m ∈ Set.range Gr[f] ↔ m ∈ Gr[f].range := Set.mem_def
+  rw [AssociatedGradedRingHom_eq_zero_iff_GradedPieceHom_eq_zero, this,
       AssociatedGradedRingHom_in_range_iff_GradedPieceHom_in_range]
   exact forall_congr'
     (fun i ↦ exact_component_of_strict_exact_component f g fstrict gstrict exact i (m i))
