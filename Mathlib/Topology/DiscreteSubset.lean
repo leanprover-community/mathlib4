@@ -181,7 +181,7 @@ theorem nhdNE_of_nhdNE_diff_finite {X : Type*} [TopologicalSpace X] [T1Space X] 
 More precisely: `s` is codiscreteWithin `U` iff every point `z ∈ U` has a punctured neighborhood
 intersect `U \ s` in only finitely many points. -/
 theorem codiscreteWithin_iff_locallyFiniteComplementWithin [T1Space X] {s U : Set X} :
-    (s ∈ codiscreteWithin U) ↔ ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ (U \ s)) := by
+    s ∈ codiscreteWithin U ↔ ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ (U \ s)) := by
   rw [codiscreteWithin_iff_locallyEmptyComplementWithin]
   constructor
   · intro h z h₁z
