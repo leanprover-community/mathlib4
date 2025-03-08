@@ -415,11 +415,25 @@ theorem memLp_const (c : E) [IsFiniteMeasure μ] : MemLp (fun _ : α => c) p μ 
   refine ENNReal.rpow_lt_top_of_nonneg ?_ (measure_ne_top μ Set.univ)
   simp
 
+theorem memLp_const' {ε} [TopologicalSpace ε] [ENormedAddMonoid ε]
+    {c : ε} (hc : ‖c‖ₑ < ⊤) [IsFiniteMeasure μ] : MemLp (fun _ : α => c) p μ := by
+  refine ⟨aestronglyMeasurable_const, ?_⟩
+  by_cases h0 : p = 0
+  · simp [h0]
+  by_cases hμ : μ = 0
+  · simp [hμ]
+  rw [eLpNorm_const c h0 hμ]
+  exact ENNReal.mul_lt_top hc (ENNReal.rpow_lt_top_of_nonneg (by simp) (measure_ne_top μ Set.univ))
+
 @[deprecated (since := "2025-02-21")]
 alias memℒp_const := memLp_const
 
 theorem memLp_top_const (c : E) : MemLp (fun _ : α => c) ∞ μ :=
   ⟨aestronglyMeasurable_const, by by_cases h : μ = 0 <;> simp [eLpNorm_const _, h]⟩
+
+theorem memLp_top_const' {ε} [TopologicalSpace ε] [ENormedAddMonoid ε]
+    {c : ε} (hc : ‖c‖ₑ < ⊤) : MemLp (fun _ : α => c) ∞ μ :=
+  ⟨aestronglyMeasurable_const, by by_cases h : μ = 0 <;> simp [eLpNorm_const _, h, hc]⟩
 
 @[deprecated (since := "2025-02-21")]
 alias memℒp_top_const := memLp_top_const
@@ -428,6 +442,12 @@ theorem memLp_const_iff {p : ℝ≥0∞} {c : E} (hp_ne_zero : p ≠ 0) (hp_ne_t
     MemLp (fun _ : α => c) p μ ↔ c = 0 ∨ μ Set.univ < ∞ := by
   rw [← eLpNorm_const_lt_top_iff hp_ne_zero hp_ne_top]
   exact ⟨fun h => h.2, fun h => ⟨aestronglyMeasurable_const, h⟩⟩
+
+theorem memLp_const_iff' {ε} [TopologicalSpace ε] [ENormedAddMonoid ε]
+    {p : ℝ≥0∞} {c : ε} (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
+    MemLp (fun _ : α => c) p μ ↔ μ Set.univ = 0 ∨ (‖c‖ₑ < ⊤ ∧ (c = 0 ∨ μ Set.univ < ∞)) := by
+  simp only [MemLp, aestronglyMeasurable_const, true_and]
+  rw [eLpNorm_const_lt_top_iff' hp_ne_zero hp_ne_top]
 
 @[deprecated (since := "2025-02-21")]
 alias memℒp_const_iff := memLp_const_iff
