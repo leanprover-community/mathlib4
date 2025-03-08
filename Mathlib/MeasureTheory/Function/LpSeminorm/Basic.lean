@@ -1052,16 +1052,19 @@ theorem eLpNorm'_eq_zero_of_ae_zero' (hq0_ne : q ≠ 0) (hμ : μ ≠ 0) {f : α
     (hf_zero : f =ᵐ[μ] 0) :
     eLpNorm' f q μ = 0 := by rw [eLpNorm'_congr_ae hf_zero, eLpNorm'_zero' hq0_ne hμ]
 
-theorem ae_eq_zero_of_eLpNorm'_eq_zero (hq0 : 0 ≤ q) (hf : AEStronglyMeasurable f μ)
+theorem ae_eq_zero_of_eLpNorm'_eq_zero {f : α → ε} (hq0 : 0 ≤ q) (hf : AEStronglyMeasurable f μ)
     (h : eLpNorm' f q μ = 0) : f =ᵐ[μ] 0 := by
   simp only [eLpNorm'_eq_lintegral_enorm, lintegral_eq_zero_iff' (hf.enorm.pow_const q), one_div,
     ENNReal.rpow_eq_zero_iff, inv_pos, inv_neg'', hq0.not_lt, and_false, or_false] at h
   refine h.left.mono fun x hx ↦ ?_
   simp only [Pi.zero_apply, ENNReal.rpow_eq_zero_iff, enorm_eq_zero, enorm_ne_top, false_and,
     or_false] at hx
-  exact hx.1
+  obtain ⟨hx1, _⟩ | ⟨_, hx2⟩ := hx
+  · exact hx1
+  · exfalso
+    linarith [h.2]
 
-theorem eLpNorm'_eq_zero_iff (hq0_lt : 0 < q) {f : α → E} (hf : AEStronglyMeasurable f μ) :
+theorem eLpNorm'_eq_zero_iff (hq0_lt : 0 < q) {f : α → ε} (hf : AEStronglyMeasurable f μ) :
     eLpNorm' f q μ = 0 ↔ f =ᵐ[μ] 0 :=
   ⟨ae_eq_zero_of_eLpNorm'_eq_zero (le_of_lt hq0_lt) hf, eLpNorm'_eq_zero_of_ae_zero hq0_lt⟩
 
