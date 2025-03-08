@@ -627,7 +627,7 @@ theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → �
     fun i s hs hμs => ?_⟩
   by_cases hμs' : μ s = 0
   · rw [(eLpNorm_eq_zero_iff ((hf i).indicator hs).aestronglyMeasurable hpzero).2
-      (indicator_meas_zero hμs')]
+        (indicator_meas_zero hμs')]
     norm_num
   calc
     eLpNorm (Set.indicator s (f i)) p μ ≤
