@@ -10,14 +10,25 @@ import Mathlib.Algebra.Ring.Subring.Basic
 
 
 /-!
+# The filtration on abelian groups and rings
 
+In this file, we define the concept of exhaustive filtrations.
+
+We also prove a AssociatedGradedRingHom sequence is exact iff each GradedPieceHom is exact.
+
+And when a sequence is strict exact, the corresponding AssociatedGradedRingHom sequence is also
+exact.
+
+# Main definitions
+
+* `IsExhaustiveFiltration` : `F`, `F_lt` is a filtration of `A`, `F` is exhaustive if `A = ⋃ F n`
 -/
 
 section ExhaustiveFiltration
 
 variable {ι A σ : Type*} [Preorder ι] [SetLike σ A]
 
-/-- -/
+/-- `F`, `F_lt` is a filtration of `A`, `F` is exhaustive if `A = ⋃ F n`-/
 class IsExhaustiveFiltration (F : ι → σ) (F_lt : ι → σ) [IsFiltration F F_lt] : Prop where
   exhaustive : ⋃ i, (F i : Set A) = Set.univ
 
@@ -115,7 +126,7 @@ section exactness
 
 variable [IsRingFiltration FS FS_lt]
 
-omit [DecidableEq ι] in
+omit [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt] [DecidableEq ι] in
 lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict : g.IsStrict)
     (fgexact : Function.Exact f.toAddMonoidHom g.toAddMonoidHom) (i : ι)
     (x : GradedPiece FS FS_lt i) : Gr(i)[g] x = 0 ↔ x ∈ Set.range Gr(i)[f] :=
