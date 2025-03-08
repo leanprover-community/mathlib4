@@ -645,7 +645,7 @@ theorem map_sup (f : G →g G') (H₁ H₂ : G.Subgraph) : (H₁ ⊔ H₂).map f
   ext <;> simp [Set.image_union, map_adj, sup_adj, Relation.Map, or_and_right, exists_or]
 
 @[simp] lemma edgeSet_map (f : G →g G') (H : G.Subgraph) :
-    (H.map f).edgeSet = Sym2.map f '' H.edgeSet := Sym2.fromRel_relationMap _
+    (H.map f).edgeSet = Sym2.map f '' H.edgeSet := Sym2.fromRel_relationMap ..
 
 end map
 
