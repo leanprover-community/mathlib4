@@ -53,7 +53,7 @@ def nerve₂Adj.counit.app (C : Type u) [SmallCategory C] :
   · intro x y f g rel
     obtain ⟨φ⟩ := rel
     simpa [ReflQuiv.adj, Quot.liftOn, Cat.FreeRefl.quotientFunctor, Quotient.functor,
-        Quiv.adj.counit.app, Quiv.adj, OneTruncation₂.nerveHomEquiv] using
+        pathComposition, Quiv.adj, OneTruncation₂.nerveHomEquiv] using
       φ.map_comp (X := 0) (Y := 1) (Z := 2) (homOfLE (by decide)) (homOfLE (by decide))
 
 @[simp]

@@ -222,7 +222,8 @@ def adj.counit.app (C : Type u) [Category.{max u v} C] :
 /-- The counit of `ReflQuiv.adj` is closely related to the counit of `Quiv.adj`. -/
 @[simp]
 theorem adj.counit.comp_app_eq (C : Type u) [Category C] :
-    Cat.FreeRefl.quotientFunctor C ⋙ adj.counit.app C = pathComposition (Cat.of C) := rfl
+    Cat.FreeRefl.quotientFunctor C ⋙ adj.counit.app C = pathComposition (Cat.of C) :=
+  rfl
 
 /--
 The adjunction between forming the free category on a reflexive quiver, and forgetting a category
