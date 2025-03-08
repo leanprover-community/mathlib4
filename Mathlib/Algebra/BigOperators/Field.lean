@@ -22,7 +22,8 @@ lemma Multiset.sum_map_div (s : Multiset ι) (f : ι → K) (a : K) :
 lemma Finset.sum_div (s : Finset ι) (f : ι → K) (a : K) :
     (∑ i ∈ s, f i) / a = ∑ i ∈ s, f i / a := by simp only [div_eq_mul_inv, sum_mul]
 
--- TODO: Move these once `Finset.dens` doesn't depend on `Field` anymore
+-- TODO: Move these to `Algebra.BigOperators.Group.Finset.Basic`, next to the corresponding `card`
+-- lemmas, once `Finset.dens` doesn't depend on `Field` anymore.
 namespace Finset
 variable {α β : Type*} [Fintype β]
 
@@ -32,7 +33,7 @@ lemma dens_disjiUnion (s : Finset α) (t : α → Finset β) (h) :
 
 variable {s : Finset α} {t : α → Finset β}
 
-lemma dens_biUnion [DecidableEq β] (h : ∀ x ∈ s, ∀ y ∈ s, x ≠ y → Disjoint (t x) (t y)) :
+lemma dens_biUnion [DecidableEq β] (h : s.toSet.PairwiseDisjoint t) :
     (s.biUnion t).dens = ∑ u ∈ s, (t u).dens := by
   simp [dens, card_biUnion h, sum_div]
 
@@ -42,8 +43,8 @@ lemma dens_biUnion_le [DecidableEq β] : (s.biUnion t).dens ≤ ∑ a ∈ s, (t 
   · positivity
   · exact mod_cast card_biUnion_le
 
-lemma dens_eq_sum_dens_fiberwise [DecidableEq α] {f : β → α} {t : Finset β} (h : ∀ x ∈ t, f x ∈ s) :
-    t.dens = ∑ a ∈ s, {b ∈ t | f b = a}.dens := by
+lemma dens_eq_sum_dens_fiberwise [DecidableEq α] {f : β → α} {t : Finset β}
+    (h : t.toSet.MapsTo f s) : t.dens = ∑ a ∈ s, {b ∈ t | f b = a}.dens := by
   simp [dens, ← sum_div, card_eq_sum_card_fiberwise h]
 
 lemma dens_eq_sum_dens_image [DecidableEq α] (f : β → α) (t : Finset β) :
