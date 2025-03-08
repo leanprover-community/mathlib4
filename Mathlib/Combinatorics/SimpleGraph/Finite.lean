@@ -214,6 +214,13 @@ theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v
 theorem degree_pos_iff_exists_adj : 0 < G.degree v ↔ ∃ w, G.Adj v w := by
   simp only [degree, card_pos, Finset.Nonempty, mem_neighborFinset]
 
+lemma one_lt_degree_iff : 1 < G.degree v ↔ ∃ x₁ x₂, G.Adj v x₁ ∧ G.Adj v x₂ ∧ x₁ ≠ x₂  := by
+  simp_rw [degree, one_lt_card_iff, mem_neighborFinset]
+
+lemma two_lt_degree_iff : 2 < G.degree v ↔ ∃ x₁ x₂ x₃, G.Adj v x₁ ∧ G.Adj v x₂ ∧ G.Adj v x₃ ∧
+    x₁ ≠ x₂ ∧ x₁ ≠ x₃ ∧ x₂ ≠ x₃ := by
+  simp_rw [degree, two_lt_card_iff, mem_neighborFinset]
+
 theorem degree_pos_iff_mem_support : 0 < G.degree v ↔ v ∈ G.support := by
   rw [G.degree_pos_iff_exists_adj v, mem_support]
 
