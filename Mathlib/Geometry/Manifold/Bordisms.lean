@@ -276,8 +276,9 @@ instance (φ : UnorientedCobordism k s t J) : ChartedSpace H' φ.W := φ.charted
 
 instance (φ : UnorientedCobordism k s t J) : IsManifold J k φ.W := φ.isManifold
 
-def empty [IsEmpty M] : UnorientedCobordism k (SingularNManifold.empty X M I)
-    (SingularNManifold.empty X M I) I where
+/-- The cobordism between two empty singular n-manifolds. -/
+def SSs [IsEmpty M] [IsEmpty M''] : UnorientedCobordism k (SingularNManifold.empty X M I)
+    (SingularNManifold.empty X M'' I) I where
   W := M
   -- XXX: generalise to any model J, by post-composing the boundary data
   bd := BoundaryManifoldData.of_boundaryless M I
@@ -342,6 +343,7 @@ def comap_snd (φ : UnorientedCobordism k s t J) (f : Diffeomorph I I M t.M k) :
   hFg := by dsimp; rw [← φ.hFg]; congr
 
 variable (s) in
+/-- Each singular n-manifold is bordant to itself. -/
 def refl : UnorientedCobordism k s s (I.prod (𝓡∂ 1)) where
   W := s.M × (Set.Icc (0 : ℝ) 1)
   -- TODO: I want boundary data modelled on I, not I × (∂[0,1])
@@ -361,18 +363,9 @@ def symm (φ : UnorientedCobordism k s t J) : UnorientedCobordism k t s J where
   hFf := by rw [← φ.hFg]; congr
   hFg := by rw [← φ.hFf]; congr
 
--- XXX better name, and study .copy for e.g. Homeomorph to make sure I fully grasp it!
-def copy_map_snd (φ : UnorientedCobordism k s t J)
-    (eq : Diffeomorph I I t'.M t.M k) (h_eq : t'.f = t.f ∘ eq) :
-    UnorientedCobordism k s t' J where
-  W := φ.W
-  bd := φ.bd
-  F := φ.F
-  hF := φ.hF
-  φ := Diffeomorph.trans (Diffeomorph.sumCongr (Diffeomorph.refl I s.M k) eq) φ.φ
-  hFf := by dsimp; rw [← φ.hFf]; congr
-  hFg := by dsimp; rw [h_eq, ← φ.hFg]; congr
-
+-- XXX are there better names?
+/-- Replace the first singular n-manifold in an unoriented bordism by an equivalent one:
+useful to fix definitional equalities. -/
 def copy_map_fst (φ : UnorientedCobordism k s t J)
     (eq : Diffeomorph I I s'.M s.M k) (h_eq : s'.f = s.f ∘ eq) :
     UnorientedCobordism k s' t J where
@@ -384,9 +377,24 @@ def copy_map_fst (φ : UnorientedCobordism k s t J)
   hFf := by dsimp; rw [h_eq, ← φ.hFf]; congr
   hFg := by dsimp; rw [← φ.hFg]; congr
 
+/-- Replace the second singular n-manifold in an unoriented bordism by an equivalent one:
+useful to fix definitional equalities. -/
+def copy_map_snd (φ : UnorientedCobordism k s t J)
+    (eq : Diffeomorph I I t'.M t.M k) (h_eq : t'.f = t.f ∘ eq) :
+    UnorientedCobordism k s t' J where
+  W := φ.W
+  bd := φ.bd
+  F := φ.F
+  hF := φ.hF
+  φ := Diffeomorph.trans (Diffeomorph.sumCongr (Diffeomorph.refl I s.M k) eq) φ.φ
+  hFf := by dsimp; rw [← φ.hFf]; congr
+  hFg := by dsimp; rw [h_eq, ← φ.hFg]; congr
+
 -- Note. The naive approach `almost` is not sufficient, as it would yield a cobordism
 -- from s to `s.sum (SingularNManifold.empty X M I)`,
 -- whereas I want `s.comap (Diffeomorph.sumEmpty)`... these are not *exactly* the same.
+
+/-- Each singular n-manifold is bordant to itself plus the empty manifold. -/
 def sumEmpty [IsEmpty M] :
     UnorientedCobordism k (s.sum (SingularNManifold.empty X M I)) s (I.prod (𝓡∂ 1)) :=
   letI almost := (refl s).comap_fst (Diffeomorph.sumEmpty I s.M (M' := M) k)
@@ -396,6 +404,7 @@ def sumEmpty [IsEmpty M] :
     | inl x => dsimp
     | inr x => exact (IsEmpty.false x).elim)
 
+/-- The direct sum of singular n-manifolds is commutative up to bordism. -/
 def sumComm : UnorientedCobordism k (t.sum s) (s.sum t) (I.prod (𝓡∂ 1)) :=
   letI almost := (refl (s.sum t)).comap_fst (Diffeomorph.sumComm I s.M k t.M).symm
   almost.copy_map_fst (Diffeomorph.refl I _ k) (by
@@ -407,13 +416,14 @@ lemma foo {α β γ X : Type*} {f : α → X} {g : β → X} {h : γ → X} :
     Sum.elim (Sum.elim f g) h = Sum.elim f (Sum.elim g h) ∘ (Equiv.sumAssoc α β γ) := by
   aesop
 
+/-- The direct sum of singular n-manifolds is associative up to bordism. -/
 def sumAssoc : UnorientedCobordism k (s.sum (t.sum u)) ((s.sum t).sum u) (I.prod (𝓡∂ 1)) := by
   letI almost := (refl (s.sum (t.sum u))).comap_snd (Diffeomorph.sumAssoc I s.M k t.M u.M)
   exact almost.copy_map_snd (Diffeomorph.refl I _ k) (by
     simpa only [mfld_simps, CompTriple.comp_eq] using foo)
 
 /-- The direct sum of a manifold with itself is null-bordant. -/
-def sumSelf [IsEmpty M] :
+def sum_self [IsEmpty M] :
     UnorientedCobordism k (s.sum s) (SingularNManifold.empty X M I) (I.prod (𝓡∂ 1)) where
   -- This is the same manifold as for `refl`, but with a different map.
   W := s.M × (Set.Icc (0 : ℝ) 1)
@@ -510,14 +520,17 @@ def trans (φ : UnorientedCobordism k s t J) (ψ : UnorientedCobordism k t u J)
 end trans
 
 variable (X k I) in
-def unorientedBordismRelation (J : ModelWithCorners ℝ E' H') :
+/-- The "unordered bordism" equivalence relation: two singular n-manifolds modelled on `I`
+are equivalent iff there exists an unoriented cobordism between them. -/
+def unorientedBordismRelation (_J : ModelWithCorners ℝ E' H') :
     SingularNManifold X k I → SingularNManifold X k I → Prop :=
   -- errors with: failed to infer universe levels in binder type
+  -- XXX: shall we demand a relation between I and J here? for the equivalence, we need to!
   -- fun s t ↦ ∃ φ : UnorientedCobordism k s t J, True
   fun _ _ ↦ true
 
 variable (X k I J) in -- dummy proofs, for now
-def uBordismRelation  :
+lemma uBordismRelation /-[FiniteDimensional ℝ E'] (h : finrank ℝ E' = finrank ℝ E + 1)-/ :
     Equivalence (unorientedBordismRelation X k I J) := by
   apply Equivalence.mk
   · exact fun _s ↦ by trivial
@@ -527,7 +540,9 @@ def uBordismRelation  :
     trivial
 
 variable (X k I J) in
-def ubSetoid : Setoid (SingularNManifold X k I) := Setoid.mk _ (uBordismRelation X k I J)
+/-- The `Setoid` of singular n-manifolds, with the unoriented bordism relation. -/
+def unorientedBordismSetoid : Setoid (SingularNManifold X k I) :=
+  Setoid.mk _ (uBordismRelation X k I J)
 
 variable (X k n) in
 /-- The type of unoriented `n`-dimensional `C^k` bordism classes on `X`. -/
