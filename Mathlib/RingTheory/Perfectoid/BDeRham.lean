@@ -21,12 +21,11 @@ of `ℂ_p`, they coincide with the classical de Rham period rings.
 
 * `BDeRhamPlus` : The period ring \(\mathbb{B}_dR^+\).
 
-* `BDeRham` : The period ring \(\mathbb{B}_dR\).
-
 ## TODO
 
 1. Extend the θ map to \(\mathbb{B}_dR^+\)
 2. Show that \(\mathbb{B}_dR^+\) is a discrete valuation ring.
+3. Show that ker θ is principal when the base ring is integral perfectoid and define \(\mathbb{B}_dR\).
 
 ## Reference
 
@@ -72,21 +71,6 @@ def BDeRhamPlus : Type u :=
 
 instance : CommRing (BDeRhamPlus O p) := AdicCompletion.instCommRing _
 
-/--
-The de Rham period ring \(\mathbb{B}_dR\) for general perfectoid ring.
-It is the fraction field of \(\mathbb{B}_dR^+\).
-When \(O = \mathcal{O}_{\mathbb{C}_p}\), it coincides
-with the classical de Rham period ring. Note that if `p = 0` in `O`,
-then this
-definition is the zero ring.
--/
-def BDeRham : Type u := FractionRing (BDeRhamPlus O p)
-
-instance : CommRing (BDeRham O p) :=
-  inferInstanceAs <| CommRing (FractionRing (BDeRhamPlus O p))
-
 local notation "𝔹_dR^+(" O ")" => BDeRhamPlus O p
-
-local notation "𝔹_dR(" O ")" => BDeRham O p
 
 end
