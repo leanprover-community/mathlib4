@@ -627,9 +627,9 @@ theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicati
     · ring
     rw [Nat.mul_eq_zero] at *
     apply not_or_intro ha hb
-  · simp only [Set.InjOn, mem_coe, mem_divisorsAntidiagonal, Ne, mem_product, Prod.mk.inj_iff]
+  · simp only [Set.InjOn, mem_coe, mem_divisorsAntidiagonal, Ne, mem_product, Prod.mk_inj]
     rintro ⟨⟨a1, a2⟩, ⟨b1, b2⟩⟩ ⟨⟨rfl, ha⟩, ⟨rfl, hb⟩⟩ ⟨⟨c1, c2⟩, ⟨d1, d2⟩⟩ hcd h
-    simp only [Prod.mk.inj_iff] at h
+    simp only [Prod.mk_inj] at h
     ext <;> dsimp only
     · trans Nat.gcd (a1 * a2) (a1 * b1)
       · rw [Nat.gcd_mul_left, cop.coprime_mul_left.coprime_mul_right_right.gcd_eq_one, mul_one]
@@ -655,7 +655,7 @@ theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicati
         rw [← hcd.2.1, h.2, Nat.gcd_mul_right,
           cop.coprime_mul_left.coprime_mul_right_right.symm.gcd_eq_one, one_mul]
   · simp only [Set.SurjOn, Set.subset_def, mem_coe, mem_divisorsAntidiagonal, Ne, mem_product,
-      Set.mem_image, exists_prop, Prod.mk.inj_iff]
+      Set.mem_image, exists_prop, Prod.mk_inj]
     rintro ⟨b1, b2⟩ h
     dsimp at h
     use ((b1.gcd m, b2.gcd m), (b1.gcd n, b2.gcd n))
