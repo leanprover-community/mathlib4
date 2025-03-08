@@ -58,26 +58,35 @@ instance instNontrivial [Nontrivial V] : Nontrivial (WithLp p V) := ‹Nontrivia
 instance instUnique [Unique V] : Unique (WithLp p V) := ‹Unique V›
 instance instDecidableEq [DecidableEq V] : DecidableEq (WithLp p V) := ‹DecidableEq V›
 
-variable [Semiring K] [Semiring K'] [AddCommGroup V]
+instance instAddMonoid [AddMonoid V] : AddMonoid (WithLp p V) := ‹AddMonoid V›
+instance instAddCommMonoid [AddCommMonoid V] : AddCommMonoid (WithLp p V) := ‹AddCommMonoid V›
+instance instAddCommGroup [AddCommGroup V] : AddCommGroup (WithLp p V) := ‹AddCommGroup V›
+@[to_additive] instance instSMul [SMul K V] : SMul K (WithLp p V) := ‹SMul K V›
+@[to_additive] instance instMulAction [Monoid K] [MulAction K V] : MulAction K V := ‹MulAction K V›
+instance instDistribMulAction [Monoid K] [AddMonoid V] [DistribMulAction K V] :
+    DistribMulAction K (WithLp p V) := ‹DistribMulAction K V›
+instance instModule [Semiring K] [AddCommMonoid V] [Module K V] : Module K (WithLp p V) :=
+  ‹Module K V›
 
 /-! `WithLp p V` inherits various module-adjacent structures from `V`. -/
 
-instance instAddCommGroup : AddCommGroup (WithLp p V) := ‹AddCommGroup V›
-instance instModule [Module K V] : Module K (WithLp p V) := ‹Module K V›
-
-instance instIsScalarTower [SMul K K'] [Module K V] [Module K' V] [IsScalarTower K K' V] :
+@[to_additive instVAddAssocClass]
+instance instIsScalarTower [SMul K K'] [SMul K V] [SMul K' V] [IsScalarTower K K' V] :
     IsScalarTower K K' (WithLp p V) :=
   ‹IsScalarTower K K' V›
 
-instance instSMulCommClass [Module K V] [Module K' V] [SMulCommClass K K' V] :
+@[to_additive]
+instance instSMulCommClass [SMul K V] [SMul K' V] [SMulCommClass K K' V] :
     SMulCommClass K K' (WithLp p V) :=
   ‹SMulCommClass K K' V›
 
-instance instModuleFinite [Module K V] [Module.Finite K V] : Module.Finite K (WithLp p V) :=
+instance instModuleFinite
+    [Semiring K] [AddCommMonoid V] [Module K V] [Module.Finite K V] :
+    Module.Finite K (WithLp p V) :=
   ‹Module.Finite K V›
 
 variable {K V}
-variable [Module K V]
+variable [AddCommGroup V] [Semiring K] [Module K V]
 variable (c : K) (x y : WithLp p V) (x' y' : V)
 
 /-! `WithLp.equiv` preserves the module structure. -/
