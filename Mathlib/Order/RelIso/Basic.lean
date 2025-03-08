@@ -497,14 +497,14 @@ def sumLexMap (f : r ↪r s) (g : t ↪r u) : Sum.Lex r t ↪r Sum.Lex s u where
 @[simps]
 def prodLexMkLeft (s : β → β → Prop) {a : α} (h : ¬r a a) : s ↪r Prod.Lex r s where
   toFun := Prod.mk a
-  inj' := Prod.mk.inj_left a
+  inj' := Prod.mk_right_injective a
   map_rel_iff' := by simp [Prod.lex_def, h]
 
 /-- `fun a ↦ Prod.mk a b` as a relation embedding. -/
 @[simps]
 def prodLexMkRight (r : α → α → Prop) {b : β} (h : ¬s b b) : r ↪r Prod.Lex r s where
   toFun a := (a, b)
-  inj' := Prod.mk.inj_right b
+  inj' := Prod.mk_left_injective b
   map_rel_iff' := by simp [Prod.lex_def, h]
 
 /-- `Prod.map` as a relation embedding. -/
