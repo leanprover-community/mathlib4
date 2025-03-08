@@ -363,20 +363,46 @@ theorem eLpNorm_const' (c : ε) (h0 : p ≠ 0) (h_top : p ≠ ∞) :
     eLpNorm (fun _ : α => c) p μ = ‖c‖ₑ * μ Set.univ ^ (1 / ENNReal.toReal p) := by
   simp [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm'_const, ENNReal.toReal_pos h0 h_top]
 
-theorem eLpNorm_const_lt_top_iff {p : ℝ≥0∞} {c : F} (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
-    eLpNorm (fun _ : α => c) p μ < ∞ ↔ c = 0 ∨ μ Set.univ < ∞ := by
+-- Is this lemma really useful?
+theorem eLpNorm_const_lt_top_iff' {ε} [TopologicalSpace ε] [ENormedAddMonoid ε]
+    {p : ℝ≥0∞} {c : ε} (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
+    eLpNorm (fun _ : α => c) p μ < ∞ ↔ μ Set.univ = 0 ∨ (‖c‖ₑ < ⊤ ∧ (c = 0 ∨ μ Set.univ < ∞)) := by
+  by_cases hμ : μ Set.univ = 0
+  · simp [hμ]
+    -- missing API: eLpNorm is zero if μ Set.univ is zero
+    have : (∫⁻ (x : α), ‖c‖ₑ ^ p.toReal ∂μ) = 0 := by
+      rw [lintegral_eq_zero_iff]
+      sorry -- obvious: if univ has measure zero, it's a.e. equal
+      sorry -- measurable
+    rw [eLpNorm_eq_lintegral_rpow_enorm hp_ne_zero hp_ne_top, this]
+    have : 0 < 1 / p.toReal := one_div_pos.mpr (ENNReal.toReal_pos hp_ne_zero hp_ne_top)
+    rw [ENNReal.zero_rpow_def, if_pos this]
+    simp [this]
+  push_neg at hμ
+  by_cases h : ‖c‖ₑ = ⊤
+  · simp only [h, lt_self_iff_false, false_and, iff_false, not_lt, top_le_iff, hμ, false_or]
+    rw [eLpNorm_eq_lintegral_rpow_enorm hp_ne_zero hp_ne_top, h, lintegral_const]
+    have h1 : 0 < p.toReal := ENNReal.toReal_pos hp_ne_zero hp_ne_top
+    simp [h1, ENNReal.top_mul hμ]
+  have hcnorm : ‖c‖ₑ < ⊤ := by push_neg at h; exact h.symm.lt_top'
+  simp only [hcnorm, true_and]
   have hp : 0 < p.toReal := ENNReal.toReal_pos hp_ne_zero hp_ne_top
   by_cases hμ : μ = 0
   · simp only [hμ, Measure.coe_zero, Pi.zero_apply, or_true, ENNReal.zero_lt_top,
       eLpNorm_measure_zero]
   by_cases hc : c = 0
-  · simp only [hc, true_or, eq_self_iff_true, ENNReal.zero_lt_top, eLpNorm_zero']
+  · simp only [hc, true_or, eq_self_iff_true, ENNReal.zero_lt_top, eLpNorm_zero', or_true]
   rw [eLpNorm_const' c hp_ne_zero hp_ne_top]
   obtain hμ_top | hμ_top := eq_or_ne (μ .univ) ∞
   · simp [hc, hμ_top, hp]
   rw [ENNReal.mul_lt_top_iff]
-  simpa [hμ, hc, hμ_top, hμ_top.lt_top] using
+  simpa [hcnorm, true_and, hμ, hc, hμ_top, hμ_top.lt_top] using
     ENNReal.rpow_lt_top_of_nonneg (inv_nonneg.mpr hp.le) hμ_top
+
+theorem eLpNorm_const_lt_top_iff {p : ℝ≥0∞} {c : F} (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
+    eLpNorm (fun _ : α => c) p μ < ∞ ↔ c = 0 ∨ μ Set.univ < ∞ := by
+  rw [eLpNorm_const_lt_top_iff' hp_ne_zero hp_ne_top]
+  by_cases aux : μ Set.univ = 0 <;> simp [aux]
 
 theorem memLp_const (c : E) [IsFiniteMeasure μ] : MemLp (fun _ : α => c) p μ := by
   refine ⟨aestronglyMeasurable_const, ?_⟩
