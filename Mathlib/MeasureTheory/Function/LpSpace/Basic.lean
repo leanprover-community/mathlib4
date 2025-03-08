@@ -301,7 +301,7 @@ theorem nnnorm_eq_zero_iff {f : Lp E p μ} (hp : 0 < p) : ‖f‖₊ = 0 ↔ f =
   rw [nnnorm_def, ENNReal.toNNReal_eq_zero_iff] at hf
   cases hf with
   | inl hf =>
-    rw [eLpNorm_eq_zero_iff (Lp.aestronglyMeasurable f) hp.ne.symm] at hf
+    rw [eLpNorm_eq_zero_iff (ε := E) (Lp.aestronglyMeasurable f) hp.ne.symm] at hf
     exact Subtype.eq (AEEqFun.ext (hf.trans AEEqFun.coeFn_zero.symm))
   | inr hf =>
     exact absurd hf (eLpNorm_ne_top f)

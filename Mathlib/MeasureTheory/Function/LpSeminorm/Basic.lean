@@ -908,10 +908,9 @@ theorem eLpNorm_restrict_eq_of_support_subset
     have : ¬(p.toReal ≤ 0) := by simpa only [not_le] using ENNReal.toReal_pos hp0 hp_top
     simpa [this] using hsf
 
-variable {ε : Type*} [ENorm ε] [TopologicalSpace ε]
+variable {ε : Type*} [ENorm ε]
 
-theorem MemLp.restrict {ε} [ENorm ε] [TopologicalSpace ε]
-    (s : Set α) {f : α → ε} (hf : MemLp f p μ) :
+theorem MemLp.restrict [TopologicalSpace ε] (s : Set α) {f : α → ε} (hf : MemLp f p μ) :
     MemLp f p (μ.restrict s) :=
   hf.mono_measure Measure.restrict_le_self
 
@@ -996,8 +995,6 @@ theorem MemLp.smul_measure {c : ℝ≥0∞}
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.smul_measure := MemLp.smul_measure
-
-omit [TopologicalSpace ε]
 
 theorem eLpNorm_one_add_measure (f : α → ε) (μ ν : Measure α) :
     eLpNorm f 1 (μ + ν) = eLpNorm f 1 μ + eLpNorm f 1 ν := by
