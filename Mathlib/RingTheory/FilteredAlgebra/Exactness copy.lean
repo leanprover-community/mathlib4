@@ -66,9 +66,11 @@ omit [IsRingFiltration FS fun n ↦ FS <| n - 1] [IsRingFiltration FT fun n ↦ 
 lemma Ggker_eq_Gfrange (Gexact : Function.Exact Gr[f] Gr[g]) (i : ℤ) :
     Gr(i)[g].ker = Set.range Gr(i)[f] := by
   ext u
-  refine Iff.trans (Gf_zero_iff_of_in_ker g u) ?_
+
+  sorry
+  /-apply Iff.trans (Gf_zero_iff_of_in_ker g u) ?_
   have := (Gf_in_range_iff_of_in_range f u).symm
-  exact Iff.trans (Gexact ((of (GradedPiece FS fun n ↦ FS (n - 1)) i) u)) this
+  exact Iff.trans (Gexact ((of (GradedPiece FS fun n ↦ FS (n - 1)) i) u)) this-/
 
 
 lemma induction_lemma (p s k: ℤ) (k_le : k ≤ p + s) (lt_k : p < k) (x : S) (xin : x ∈ FS k)
@@ -76,11 +78,8 @@ lemma induction_lemma (p s k: ℤ) (k_le : k ≤ p + s) (lt_k : p < k) (x : S) (
     g.toRingHom x ∈ g.toRingHom '' (FS (k - 1)) := by
   obtain⟨z₀, hz₀⟩ : ⟦⟨x, xin⟩⟧ ∈ Set.range Gr(k)[f] := by
     rw[← Ggker_eq_Gfrange f g GfGg_exact k]
-    simp only [SetLike.mem_coe, AddMonoidHom.mem_ker]
-
     show Gr(k)[g] (mk FS (fun n ↦ FS (n - 1)) ⟨x, xin⟩) = 0
-    rw [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom g ⟨x, xin⟩,
-        eq_zero_iff FT (fun n ↦ FT (n - 1)) ((g.piece_wise_hom k) ⟨x, xin⟩)]
+    simp [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom g ⟨x, xin⟩, eq_zero_iff]
     show (g.toRingHom x) ∈ FT (k - 1)
 
 
