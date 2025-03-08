@@ -3,9 +3,9 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.ENat.Basic
-import Mathlib.Algebra.Group.Action.Defs
 
 /-!
 # Extended natural numbers form a complete linear order
@@ -59,6 +59,18 @@ lemma coe_iSup : BddAbove (range f) → ↑(⨆ i, f i) = ⨆ i, (f i : ℕ∞) 
 @[simp]
 lemma iInf_eq_top_of_isEmpty [IsEmpty ι] : ⨅ i, (f i : ℕ∞) = ⊤ :=
   iInf_coe_eq_top.mpr ‹_›
+
+lemma iSup_eq_top_iff {f : ι → ℕ∞} : ⨆ i, f i = ⊤ ↔ ∀ n : ℕ, ∃ i, n ≤ f i := by
+  refine (iSup_eq_top _).trans ⟨fun h n ↦ ?_, fun h n hn ↦ ?_⟩
+  · obtain ⟨a, ha⟩ := h n (by simp)
+    exact ⟨_, ha.le⟩
+  lift n to ℕ using hn.ne
+  obtain ⟨a, ha⟩ := h (n+1)
+  simp only [Nat.cast_add, Nat.cast_one, ← natCast_lt_iff] at ha
+  exact ⟨_, ha⟩
+
+lemma sSup_eq_top_iff {s : Set ℕ∞} : sSup s = ⊤ ↔ ∀ n : ℕ, ∃ x ∈ s, n ≤ x := by
+  simp [sSup_eq_iSup', iSup_eq_top_iff]
 
 lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
   cases isEmpty_or_nonempty ι
