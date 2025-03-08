@@ -58,7 +58,7 @@ def posterior (κ : Kernel Ω β) (μ : Measure Ω) [IsFiniteMeasure μ] [IsFini
   ((μ ⊗ₘ κ).map Prod.swap).condKernel
 
 /-- Posterior of the kernel `κ` with respect to the measure `μ`. -/
-scoped[ProbabilityTheory] notation3 κ:arg "†" μ:arg => ProbabilityTheory.posterior κ μ
+scoped[ProbabilityTheory] infix:arg "†" => ProbabilityTheory.posterior
 
 /-- The posterior is a Markov kernel. -/
 instance : IsMarkovKernel (κ†μ) := by rw [posterior]; infer_instance
