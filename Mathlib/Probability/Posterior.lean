@@ -144,7 +144,42 @@ lemma deterministic_comp_posterior [MeasurableSpace.CountablyGenerated β]
     rw [Measure.compProd_id_eq_copy_comp, ← Measure.comp_assoc,
       Measure.deterministic_comp_eq_map]
 
+lemma posterior_ac_of_ac {ν : Measure β} [SFinite ν] (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ ν) :
+    ∀ᵐ b ∂(κ ∘ₘ μ), (κ†μ) b ≪ μ := by
+  suffices (κ ∘ₘ μ) ⊗ₘ (κ†μ) ≪ ν.prod μ by
+    rw [← Measure.compProd_const] at this
+    simpa using this.kernel_of_compProd
+  suffices μ ⊗ₘ κ ≪ μ.prod ν by
+    rw [compProd_posterior_eq_map_swap, ← Measure.prod_swap]
+    exact this.map measurable_swap
+  rw [← Measure.compProd_const]
+  refine Measure.AbsolutelyContinuous.compProd_right ?_
+  simpa
+
 section StandardBorelSpace
+
+lemma ac_of_posterior_ac [MeasurableSpace.CountableOrCountablyGenerated Ω β]
+    (h_ac : ∀ᵐ b ∂(κ ∘ₘ μ), (κ†μ) b ≪ μ) :
+    ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ := by
+  suffices μ ⊗ₘ κ ≪ μ.prod (κ ∘ₘ μ) by
+    rw [← Measure.compProd_const] at this
+    simpa using this.kernel_of_compProd
+  suffices (κ ∘ₘ μ) ⊗ₘ (κ†μ) ≪ (κ ∘ₘ μ).prod μ by
+    rw [← swap_compProd_posterior, ← Measure.prod_swap, Measure.swap_comp]
+    exact this.map measurable_swap
+  rw [← Measure.compProd_const]
+  refine Measure.AbsolutelyContinuous.compProd_right ?_
+  simpa
+
+lemma posterior_ac_iff [MeasurableSpace.CountableOrCountablyGenerated Ω β] :
+    (∀ᵐ b ∂(κ ∘ₘ μ), (κ†μ) b ≪ μ) ↔ ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ :=
+  ⟨ac_of_posterior_ac, posterior_ac_of_ac⟩
+
+lemma ac_comp_of_ac [MeasurableSpace.CountableOrCountablyGenerated Ω β]
+    {ν : Measure β} [SFinite ν] (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ ν) :
+    ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ := by
+  rw [← posterior_ac_iff]
+  exact posterior_ac_of_ac h_ac
 
 variable [StandardBorelSpace β] [Nonempty β]
 
