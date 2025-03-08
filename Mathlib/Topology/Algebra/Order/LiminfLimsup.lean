@@ -470,8 +470,7 @@ open Filter Real
 
 variable {f : Filter ι} {u v : ι → ℝ}
 
-lemma le_limsup_mul [f.NeBot] (h₁ : ∃ᶠ x in f, 0 ≤ u x)
-    (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u)
+lemma le_limsup_mul (h₁ : ∃ᶠ x in f, 0 ≤ u x) (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u)
     (h₃ : 0 ≤ᶠ[f] v) (h₄ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f v) :
     (limsup u f) * liminf v f ≤ limsup (u * v) f := by
   have h := IsCoboundedUnder.of_frequently_ge (a := 0)
@@ -482,7 +481,8 @@ lemma le_limsup_mul [f.NeBot] (h₁ : ∃ᶠ x in f, 0 ≤ u x)
     le_limsup_of_frequently_le ((h₁.and_eventually h₃).mono fun _ ⟨hu, hv⟩ ↦ mul_nonneg hu hv) h'
   refine mul_le_of_forall_lt_of_nonneg u0 uv fun a a0 au b b0 bv ↦ ?_
   refine (le_limsup_iff h h').2 fun c c_ab ↦ ?_
-  have h₅ := frequently_lt_of_lt_limsup (IsCoboundedUnder.of_frequently_ge h₁) au
+  replace h₁ := IsCoboundedUnder.of_frequently_ge h₁
+  have h₅ := frequently_lt_of_lt_limsup h₁ au
   have h₆ := eventually_lt_of_lt_liminf bv (isBoundedUnder_of_eventually_ge h₃)
   apply (h₅.and_eventually (h₆.and h₃)).mono
   exact fun x ⟨xa, ⟨xb, _⟩⟩ ↦ c_ab.trans_le <| mul_le_mul xa.le xb.le b0 (a0.trans xa.le)
