@@ -88,7 +88,7 @@ theorem numDerangements_succ (n : ℕ) :
 
 theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
     card (derangements (Fin n)) = numDerangements n := by
-  induction' n using Nat.strong_induction_on with n hyp
+  induction n using Nat.strongRecOn with | ind n hyp => _
   rcases n with _ | _ | n
   -- knock out cases 0 and 1
   · rfl
@@ -105,12 +105,14 @@ theorem card_derangements_eq_numDerangements (α : Type*) [Fintype α] [Decidabl
 theorem numDerangements_sum (n : ℕ) :
     (numDerangements n : ℤ) =
       ∑ k ∈ Finset.range (n + 1), (-1 : ℤ) ^ k * Nat.ascFactorial (k + 1) (n - k) := by
-  induction' n with n hn; · rfl
-  rw [Finset.sum_range_succ, numDerangements_succ, hn, Finset.mul_sum, tsub_self,
-    Nat.ascFactorial_zero, Int.ofNat_one, mul_one, pow_succ', neg_one_mul, sub_eq_add_neg,
-    add_left_inj, Finset.sum_congr rfl]
-  -- show that (n + 1) * (-1)^x * asc_fac x (n - x) = (-1)^x * asc_fac x (n.succ - x)
-  intro x hx
-  have h_le : x ≤ n := Finset.mem_range_succ_iff.mp hx
-  rw [Nat.succ_sub h_le, Nat.ascFactorial_succ, add_right_comm, add_tsub_cancel_of_le h_le,
-    Int.ofNat_mul, Int.ofNat_add, mul_left_comm, Nat.cast_one]
+  induction n with
+  | zero => rfl
+  | succ n hn =>
+    rw [Finset.sum_range_succ, numDerangements_succ, hn, Finset.mul_sum, tsub_self,
+      Nat.ascFactorial_zero, Int.ofNat_one, mul_one, pow_succ', neg_one_mul, sub_eq_add_neg,
+      add_left_inj, Finset.sum_congr rfl]
+    -- show that (n + 1) * (-1)^x * asc_fac x (n - x) = (-1)^x * asc_fac x (n.succ - x)
+    intro x hx
+    have h_le : x ≤ n := Finset.mem_range_succ_iff.mp hx
+    rw [Nat.succ_sub h_le, Nat.ascFactorial_succ, add_right_comm, add_tsub_cancel_of_le h_le,
+      Int.ofNat_mul, Int.ofNat_add, mul_left_comm, Nat.cast_one]

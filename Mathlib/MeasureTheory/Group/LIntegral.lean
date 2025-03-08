@@ -53,9 +53,9 @@ theorem lintegral_div_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0�
 
 end MeasurableMul
 
-section TopologicalGroup
+section IsTopologicalGroup
 
-variable [TopologicalSpace G] [Group G] [TopologicalGroup G] [BorelSpace G] [IsMulLeftInvariant μ]
+variable [TopologicalSpace G] [Group G] [IsTopologicalGroup G] [BorelSpace G] [IsMulLeftInvariant μ]
 
 /-- For nonzero regular left invariant measures, the integral of a continuous nonnegative function
   `f` is 0 iff `f` is 0. -/
@@ -66,6 +66,6 @@ theorem lintegral_eq_zero_of_isMulLeftInvariant [Regular μ] [NeZero μ] {f : G 
     (hf : Continuous f) : ∫⁻ x, f x ∂μ = 0 ↔ f = 0 := by
   rw [lintegral_eq_zero_iff hf.measurable, hf.ae_eq_iff_eq μ continuous_zero]
 
-end TopologicalGroup
+end IsTopologicalGroup
 
 end MeasureTheory

@@ -132,14 +132,10 @@ lemma ofHom_apply {X Y : Type u} [BooleanAlgebra X] [BooleanAlgebra Y]
     (f : BoundedLatticeHom X Y) (x : X) :
     (ofHom f) x = f x := rfl
 
-@[simp]
 lemma inv_hom_apply {X Y : BoolAlg} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {X Y : BoolAlg} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 instance : Inhabited BoolAlg :=
@@ -180,6 +176,9 @@ def dual : BoolAlg ⥤ BoolAlg where
   obj X := of Xᵒᵈ
   map f := ofHom f.hom.dual
 
+#adaptation_note /-- nightly-2025-02-12
+This apparently became slower. (Possibly due to changes in `simp +arith`?) -/
+set_option maxHeartbeats 400000 in
 /-- The equivalence between `BoolAlg` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
 def dualEquiv : BoolAlg ≌ BoolAlg where

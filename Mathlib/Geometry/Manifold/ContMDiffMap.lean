@@ -31,7 +31,7 @@ the trivial model) in the `Manifold` namespace. -/
 def ContMDiffMap :=
   { f : M → M' // ContMDiff I I' n f }
 
-@[deprecated (since := "024-11-21")] alias SmoothMap := ContMDiffMap
+@[deprecated (since := "2024-11-21")] alias SmoothMap := ContMDiffMap
 
 @[inherit_doc]
 scoped[Manifold] notation "C^" n "⟮" I ", " M "; " I' ", " M' "⟯" => ContMDiffMap I I' M M' n

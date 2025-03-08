@@ -379,9 +379,8 @@ abbrev fromTop {X : TopCat} (x : X) : πₓ X := ⟨x⟩
 
 /-- Help the typechecker by converting an arrow in the fundamental groupoid of
 a topological space back to a path in that space (i.e., `Path.Homotopic.Quotient`). -/
--- Porting note: Added `(X := X)` to the type.
 abbrev toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
-    Path.Homotopic.Quotient (X := X) x₀.as x₁.as :=
+    Path.Homotopic.Quotient x₀.as x₁.as :=
   p
 
 /-- Help the typechecker by converting a path in a topological space to an arrow in the

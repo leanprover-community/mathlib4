@@ -303,9 +303,9 @@ theorem cauchySeq_of_controlled [SemilatticeSup β] [Nonempty β] (U : β → Se
     (by
       intro s hs
       rw [mem_map, mem_atTop_sets]
-      cases' hU s hs with N hN
+      obtain ⟨N, hN⟩ := hU s hs
       refine ⟨(N, N), fun mn hmn => ?_⟩
-      cases' mn with m n
+      obtain ⟨m, n⟩ := mn
       exact hN (hf hmn.1 hmn.2))
 
 theorem isComplete_iff_clusterPt {s : Set α} :
@@ -337,7 +337,7 @@ theorem isComplete_iUnion_separated {ι : Sort*} {s : ι → Set α} (hs : ∀ i
   set S := ⋃ i, s i
   intro l hl hls
   rw [le_principal_iff] at hls
-  cases' cauchy_iff.1 hl with hl_ne hl'
+  obtain ⟨hl_ne, hl'⟩ := cauchy_iff.1 hl
   obtain ⟨t, htS, htl, htU⟩ : ∃ t, t ⊆ S ∧ t ∈ l ∧ t ×ˢ t ⊆ U := by
     rcases hl' U hU with ⟨t, htl, htU⟩
     refine ⟨t ∩ S, inter_subset_right, inter_mem htl hls, Subset.trans ?_ htU⟩
@@ -470,7 +470,7 @@ theorem Filter.HasBasis.totallyBounded_iff {ι} {p : ι → Prop} {U : ι → Se
     h.imp fun _ ht => ⟨ht.1, ht.2.trans <| iUnion₂_mono fun _ _ _ hy => hUV hy⟩
 
 theorem totallyBounded_of_forall_symm {s : Set α}
-    (h : ∀ V ∈ 𝓤 α, SymmetricRel V → ∃ t : Set α, Set.Finite t ∧ s ⊆ ⋃ y ∈ t, ball y V) :
+    (h : ∀ V ∈ 𝓤 α, IsSymmetricRel V → ∃ t : Set α, Set.Finite t ∧ s ⊆ ⋃ y ∈ t, ball y V) :
     TotallyBounded s :=
   UniformSpace.hasBasis_symmetric.totallyBounded_iff.2 fun V hV => by
     simpa only [ball_eq_of_symmetry hV.2] using h V hV.1 hV.2
@@ -532,7 +532,7 @@ lemma totallyBounded_singleton (a : α) : TotallyBounded {a} := (finite_singleto
 theorem totallyBounded_empty : TotallyBounded (∅ : Set α) := finite_empty.totallyBounded
 
 /-- The union of two sets is totally bounded
-if and only if each of the two sets is totally bounded.-/
+if and only if each of the two sets is totally bounded. -/
 @[simp]
 lemma totallyBounded_union {s t : Set α} :
     TotallyBounded (s ∪ t) ↔ TotallyBounded s ∧ TotallyBounded t := by
@@ -634,7 +634,7 @@ theorem isCompact_of_totallyBounded_isClosed [CompleteSpace α] {s : Set α} (ht
 theorem CauchySeq.totallyBounded_range {s : ℕ → α} (hs : CauchySeq s) :
     TotallyBounded (range s) := by
   intro a ha
-  cases' cauchySeq_iff.1 hs a ha with n hn
+  obtain ⟨n, hn⟩ := cauchySeq_iff.1 hs a ha
   refine ⟨s '' { k | k ≤ n }, (finite_le_nat _).image _, ?_⟩
   rw [range_subset_iff, biUnion_image]
   intro m
@@ -792,7 +792,7 @@ from second countable spaces to separable spaces, and we want to avoid loops. -/
 theorem secondCountable_of_separable [SeparableSpace α] : SecondCountableTopology α := by
   rcases exists_countable_dense α with ⟨s, hsc, hsd⟩
   obtain
-    ⟨t : ℕ → Set (α × α), hto : ∀ i : ℕ, t i ∈ (𝓤 α).sets ∧ IsOpen (t i) ∧ SymmetricRel (t i),
+    ⟨t : ℕ → Set (α × α), hto : ∀ i : ℕ, t i ∈ (𝓤 α).sets ∧ IsOpen (t i) ∧ IsSymmetricRel (t i),
       h_basis : (𝓤 α).HasAntitoneBasis t⟩ :=
     (@uniformity_hasBasis_open_symmetric α _).exists_antitone_subbasis
   choose ht_mem hto hts using hto
@@ -816,7 +816,7 @@ section DiscreteUniformity
 
 open Filter
 
-/-- A Cauchy filter in a discrete uniform space is contained in a principal filter-/
+/-- A Cauchy filter in a discrete uniform space is contained in a principal filter. -/
 theorem DiscreteUnif.cauchy_le_pure {X : Type*} {uX : UniformSpace X}
     (hX : uX = ⊥) {α : Filter X} (hα : Cauchy α) : ∃ x : X, α = pure x := by
   rcases hα with ⟨α_ne_bot, α_le⟩

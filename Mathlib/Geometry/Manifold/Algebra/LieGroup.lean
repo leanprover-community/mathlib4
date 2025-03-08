@@ -57,7 +57,7 @@ the addition and negation operations are `C^n`. -/
 class LieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
     (n : WithTop ℕ∞) (G : Type*)
-    [AddGroup G] [TopologicalSpace G] [ChartedSpace H G] extends ContMDiffAdd I n G : Prop where
+    [AddGroup G] [TopologicalSpace G] [ChartedSpace H G] : Prop extends ContMDiffAdd I n G where
   /-- Negation is smooth in an additive Lie group. -/
   contMDiff_neg : ContMDiff I I n fun a : G => -a
 
@@ -68,7 +68,7 @@ the multiplication and inverse operations are `C^n`. -/
 class LieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
     (n : WithTop ℕ∞) (G : Type*)
-    [Group G] [TopologicalSpace G] [ChartedSpace H G] extends ContMDiffMul I n G : Prop where
+    [Group G] [TopologicalSpace G] [ChartedSpace H G] : Prop extends ContMDiffMul I n G where
   /-- Inversion is smooth in a Lie group. -/
   contMDiff_inv : ContMDiff I I n fun a : G => a⁻¹
 
@@ -101,7 +101,7 @@ instance {a : WithTop ℕ∞} [LieGroup I ω G] : LieGroup I a G :=
   LieGroup.of_le le_top
 
 @[to_additive]
-instance [TopologicalGroup G] : LieGroup I 0 G := by
+instance [IsTopologicalGroup G] : LieGroup I 0 G := by
   constructor
   rw [contMDiff_zero_iff]
   exact continuous_inv
@@ -129,7 +129,7 @@ include I n in
 see note [Design choices about smooth algebraic structures]. -/
 @[to_additive "An additive Lie group is an additive topological group. This is not an instance for
 technical reasons, see note [Design choices about smooth algebraic structures]."]
-theorem topologicalGroup_of_lieGroup : TopologicalGroup G :=
+theorem topologicalGroup_of_lieGroup : IsTopologicalGroup G :=
   { continuousMul_of_contMDiffMul I n with continuous_inv := (contMDiff_inv I n).continuous }
 
 end

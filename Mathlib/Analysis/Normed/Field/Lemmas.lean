@@ -12,7 +12,6 @@ import Mathlib.Analysis.Normed.Group.Bounded
 import Mathlib.Analysis.Normed.Group.Rat
 import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Topology.MetricSpace.DilationEquiv
-import Mathlib.Topology.Instances.NNReal.Defs
 
 /-!
 # Normed fields
@@ -174,8 +173,8 @@ instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSem
 
 -- see Note [lower instance priority]
 /-- A seminormed ring is a topological ring. -/
-instance (priority := 100) NonUnitalSeminormedRing.toTopologicalRing [NonUnitalSeminormedRing α] :
-    TopologicalRing α where
+instance (priority := 100) NonUnitalSeminormedRing.toIsTopologicalRing [NonUnitalSeminormedRing α] :
+    IsTopologicalRing α where
 
 namespace SeparationQuotient
 

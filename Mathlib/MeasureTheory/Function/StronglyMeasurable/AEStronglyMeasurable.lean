@@ -274,19 +274,19 @@ protected theorem inv [Inv β] [ContinuousInv β] (hf : AEStronglyMeasurable[m] 
   ⟨(hf.mk f)⁻¹, hf.stronglyMeasurable_mk.inv, hf.ae_eq_mk.inv⟩
 
 @[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
-protected theorem div [Group β] [TopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ)
+protected theorem div [Group β] [IsTopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ)
     (hg : AEStronglyMeasurable[m] g μ) : AEStronglyMeasurable[m] (f / g) μ :=
   ⟨hf.mk f / hg.mk g, hf.stronglyMeasurable_mk.div hg.stronglyMeasurable_mk,
     hf.ae_eq_mk.div hg.ae_eq_mk⟩
 
 @[to_additive]
-theorem mul_iff_right [CommGroup β] [TopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ) :
+theorem mul_iff_right [CommGroup β] [IsTopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ) :
     AEStronglyMeasurable[m] (f * g) μ ↔ AEStronglyMeasurable[m] g μ :=
   ⟨fun h ↦ show g = f * g * f⁻¹ by simp only [mul_inv_cancel_comm] ▸ h.mul hf.inv,
     fun h ↦ hf.mul h⟩
 
 @[to_additive]
-theorem mul_iff_left [CommGroup β] [TopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ) :
+theorem mul_iff_left [CommGroup β] [IsTopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ) :
     AEStronglyMeasurable[m] (g * f) μ ↔ AEStronglyMeasurable[m] g μ :=
   mul_comm g f ▸ AEStronglyMeasurable.mul_iff_right hf
 
@@ -491,7 +491,7 @@ lemma nullMeasurableSet_mulSupport {E} [TopologicalSpace E] [MetrizableSpace E] 
     (hf : AEStronglyMeasurable f μ) : NullMeasurableSet (mulSupport f) μ :=
   (hf.nullMeasurableSet_eq_fun stronglyMeasurable_const.aestronglyMeasurable).compl
 
-theorem nullMeasurableSet_lt [LinearOrder β] [OrderClosedTopology β] [PseudoMetrizableSpace β]
+theorem nullMeasurableSet_lt [Preorder β] [OrderClosedTopology β] [PseudoMetrizableSpace β]
     {f g : α → β} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     NullMeasurableSet { a | f a < g a } μ := by
   apply
@@ -780,7 +780,7 @@ protected theorem add [AddMonoid β] [ContinuousAdd β] (hf : AEFinStronglyMeasu
     hf.ae_eq_mk.add hg.ae_eq_mk⟩
 
 @[measurability]
-protected theorem neg [AddGroup β] [TopologicalAddGroup β] (hf : AEFinStronglyMeasurable f μ) :
+protected theorem neg [AddGroup β] [IsTopologicalAddGroup β] (hf : AEFinStronglyMeasurable f μ) :
     AEFinStronglyMeasurable (-f) μ :=
   ⟨-hf.mk f, hf.finStronglyMeasurable_mk.neg, hf.ae_eq_mk.neg⟩
 

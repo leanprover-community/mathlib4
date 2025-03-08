@@ -270,7 +270,7 @@ theorem card_roots_X_pow_sub_C {n : ℕ} (hn : 0 < n) (a : R) :
 
 section NthRoots
 
-/-- `nthRoots n a` noncomputably returns the solutions to `x ^ n = a`-/
+/-- `nthRoots n a` noncomputably returns the solutions to `x ^ n = a`. -/
 def nthRoots (n : ℕ) (a : R) : Multiset R :=
   roots ((X : R[X]) ^ n - C a)
 
@@ -774,7 +774,7 @@ theorem roots_map_of_map_ne_zero_of_card_eq_natDegree [IsDomain A] [IsDomain B] 
     simpa only [Multiset.card_map, hroots] using (p.map f).card_roots'.trans natDegree_map_le
 
 theorem Monic.roots_map_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p : A[X]} (hm : p.Monic)
-    (f : A →+* B) (hroots : p.roots.card = p.natDegree) : p.roots.map f  = (p.map f).roots :=
+    (f : A →+* B) (hroots : p.roots.card = p.natDegree) : p.roots.map f = (p.map f).roots :=
   roots_map_of_map_ne_zero_of_card_eq_natDegree f (map_monic_ne_zero hm) hroots
 
 end

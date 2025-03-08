@@ -175,7 +175,7 @@ theorem IsChain.exists_maxChain (hc : IsChain r c) : ∃ M, @IsMaxChain _ r M �
   rintro y ⟨sy, hsy, hysy⟩ z ⟨sz, hsz, hzsz⟩ hyz
   obtain rfl | hsseq := eq_or_ne sy sz
   · exact (hcs₀ hsy).right hysy hzsz hyz
-  cases' hcs₁ hsy hsz hsseq with h h
+  rcases hcs₁ hsy hsz hsseq with h | h
   · exact (hcs₀ hsz).right (h hysy) hzsz hyz
   · exact (hcs₀ hsy).right hysy (h hzsz) hyz
 
