@@ -3,6 +3,7 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.Data.Set.FunctorToTypes
 import Mathlib.CategoryTheory.Limits.Lattice
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.TypesFiltered
@@ -10,23 +11,16 @@ import Mathlib.CategoryTheory.Limits.TypesFiltered
 /-!
 # The functor from `Set X` to types preserves filtered colimits
 
-Given `X : Type u`, the functor `Set.toTypes : Set X ⥤ Type u`
+Given `X : Type u`, the functor `Set.functorToTypes : Set X ⥤ Type u`
 which sends `A : Set X` to its underlying type preserves filtered colimits.
 
 -/
 
 universe w w' u
 
-open CategoryTheory Limits
+open CategoryTheory Limits CompleteLattice
 
 namespace Set
-
-/-- Given `X : Type u`, this the functor `Set X ⥤ Type u` which sends `A`
-to its underlying type. -/
-@[simps obj map]
-def functorToTypes {X : Type u} : Set X ⥤ Type u where
-  obj S := S
-  map {S T} f := fun ⟨x, hx⟩ ↦ ⟨x, leOfHom f hx⟩
 
 open CompleteLattice in
 instance {J : Type w} [Category.{w'} J] {X : Type u} [IsFilteredOrEmpty J] :
