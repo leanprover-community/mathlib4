@@ -23,7 +23,7 @@ exact.
 * `IsExhaustiveFiltration` : `F`, `F_lt` is a filtration of `A`, `F` is exhaustive if `A = ⋃ F n`
 -/
 
-section AssociatedGradedAddMonoidHom_ext
+section
 
 variable {ι A B C σA σB σC: Type*} [SetLike σA A] [SetLike σB B] [SetLike σC C]
 
@@ -40,40 +40,38 @@ open scoped FilteredAddGroupHom
 open DirectSum
 
 theorem AssociatedGradedAddMonoidHom_eq_zero_iff_GradedPieceHom_eq_zero
-    (x : AssociatedGraded FB FB_lt) : Gr[g] x = 0 ↔ ∀ i : ι, Gr(i)[g] (x i) = 0 :=
+    (x : AssociatedGraded FB FB_lt) : x ∈ Gr[g].ker ↔ ∀ i : ι, x i ∈ Gr(i)[g].ker  :=
   mem_map_ker_iff (fun i ↦ Gr(i)[g]) x
 
 theorem GradedPieceHom_eq_zero_iff_AssociatedGradedAddMonoidHom_of_eq_zero {i : ι} [DecidableEq ι]
-    (u : GradedPiece FB FB_lt i): Gr(i)[g] u = 0 ↔ Gr[g] (of (GradedPiece FB FB_lt) i u) = 0 :=
+    (u : GradedPiece FB FB_lt i): u ∈ Gr(i)[g].ker ↔ of (GradedPiece FB FB_lt) i u ∈ Gr[g].ker :=
   of_mem_map_ker_iff (fun i ↦ Gr(i)[g]) i u
 
 theorem AssociatedGradedAddMonoidHom_in_range_iff_GradedPieceHom_in_range
-    (m : AssociatedGraded FB FB_lt) : m ∈ Set.range Gr[f] ↔ ∀ i : ι, m i ∈ Set.range Gr(i)[f] :=
+    (m : AssociatedGraded FB FB_lt) : m ∈ Gr[f].range ↔ ∀ i : ι, m i ∈ Gr(i)[f].range :=
   mem_map_range_iff (fun i ↦ Gr(i)[f]) m
 
 theorem GradedPieceHom_in_range_iff_AssociatedGradedAddMonoidHom_of_in_range {i : ι} [DecidableEq ι]
-    (u : GradedPiece FB FB_lt i) : u ∈ Set.range Gr(i)[f] ↔
-    (of (GradedPiece FB FB_lt) i u) ∈ Set.range Gr[f] := by
+    (u : GradedPiece FB FB_lt i) : u ∈ Gr(i)[f].range ↔
+    (of (GradedPiece FB FB_lt) i u) ∈ Gr[f].range := by
   convert (of_mem_map_range_iff (fun i ↦ Gr(i)[f]) i u).symm
 
-theorem GradedPieceHom_ker_eq_GradedPieceHom_range (i : ι) [DecidableEq ι]
-    (Gexact : Function.Exact Gr[f] Gr[g]) : Gr(i)[g].ker = Set.range Gr(i)[f] := by
+theorem GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom (i : ι) [DecidableEq ι]
+    (Gexact : Function.Exact Gr[f] Gr[g]) : Gr(i)[g].ker = Gr(i)[f].range := by
   ext u
-  refine Iff.trans (GradedPieceHom_eq_zero_iff_AssociatedGradedAddMonoidHom_of_eq_zero g u) ?_
-  have := (GradedPieceHom_in_range_iff_AssociatedGradedAddMonoidHom_of_in_range f u).symm
-  exact Iff.trans (Gexact ((of (GradedPiece FB FB_lt) i) u)) this
+  apply Iff.trans (GradedPieceHom_eq_zero_iff_AssociatedGradedAddMonoidHom_of_eq_zero g u)
+  apply Iff.trans (Gexact ((of (GradedPiece FB FB_lt) i) u))
+  exact (GradedPieceHom_in_range_iff_AssociatedGradedAddMonoidHom_of_in_range f u).symm
 
-theorem AssociatedGradedAddMonoidHom_exact_iff_GradedPieceHom_exact [DecidableEq ι] :
-    Function.Exact Gr[f] Gr[g] → ∀ i, Function.Exact Gr(i)[f] Gr(i)[g] := by
-  refine fun h i ↦ AddMonoidHom.exact_iff.mpr ?_
-  have := GradedPieceHom_ker_eq_GradedPieceHom_range f g i h
-  have eq : Set.range Gr(i)[f] = Gr(i)[f].range := rfl
-  rwa [eq, SetLike.coe_set_eq] at this
+theorem AssociatedGradedAddMonoidHom_exact_of_GradedPieceHom_exact
+    (h : ∀ i, Function.Exact Gr(i)[f] Gr(i)[g]) : Function.Exact Gr[f] Gr[g] := by
+  rw [AddMonoidHom.exact_iff]
+  ext x
+  rw [AssociatedGradedAddMonoidHom_eq_zero_iff_GradedPieceHom_eq_zero,
+    AssociatedGradedAddMonoidHom_in_range_iff_GradedPieceHom_in_range]
+  exact forall_congr' (fun i ↦ h i (x i))
 
-end AssociatedGradedAddMonoidHom_ext
-
-
-
+end
 
 section ExhaustiveFiltration
 
@@ -85,14 +83,12 @@ class IsExhaustiveFiltration (F : ι → σ) (F_lt : ι → σ) [IsFiltration F 
 
 end ExhaustiveFiltration
 
-
-
 section exactness
 
 open FilteredAddGroupHom
 
 
-variable {ι R S T σR σS σT : Type*} [OrderedAddCommMonoid ι]
+variable {ι R S T σR σS σT : Type*}
 
 variable [Ring R] [SetLike σR R] [AddSubgroupClass σR R]
 
@@ -106,10 +102,9 @@ variable {FR_lt: outParam <| ι → σR} {FS_lt: outParam <| ι → σS} {FT_lt:
 
 variable (f : FilteredAddGroupHom FR FR_lt FS FS_lt) (g : FilteredAddGroupHom FS FS_lt FT FT_lt)
 
-open scoped FilteredAddGroupHom
+open FilteredAddGroupHom
 
-
-variable [IsFiltration FS FS_lt]
+variable [Preorder ι] [IsFiltration FS FS_lt]
 
 lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict : g.IsStrict)
     (fgexact : Function.Exact f.toAddMonoidHom g.toAddMonoidHom) (i : ι)
@@ -133,15 +128,12 @@ lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict 
     exact ⟨hs', SetCoe.ext this⟩
   · induction y using QuotientAddGroup.induction_on
     rename_i z
-    rw [← hy, FilteredAddGroupHom.GradedPieceHom_comp_apply]
+    rw [← hy, GradedPieceHom_comp_apply]
     exact congrArg (GradedPiece.mk FT FT_lt) (SetCoe.ext (fgexact.apply_apply_eq_zero z.1))
 
 theorem exact_of_strict_exact (fstrict : f.IsStrict) (gstrict : g.IsStrict)
-    (exact : Function.Exact f.toAddMonoidHom g.toAddMonoidHom) : Function.Exact Gr[f] Gr[g] := by
-  intro m
-  rw [AssociatedGradedAddMonoidHom_eq_zero_iff_GradedPieceHom_eq_zero g,
-      AssociatedGradedAddMonoidHom_in_range_iff_GradedPieceHom_in_range f m]
-  exact forall_congr'
-    (fun i ↦ exact_component_of_strict_exact_component f g fstrict gstrict exact i (m i))
+    (exact : Function.Exact f.toAddMonoidHom g.toAddMonoidHom) : Function.Exact Gr[f] Gr[g] :=
+  AssociatedGradedAddMonoidHom_exact_of_GradedPieceHom_exact f g
+    (fun i x ↦ exact_component_of_strict_exact_component f g fstrict gstrict exact i x)
 
 end exactness
