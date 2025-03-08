@@ -162,7 +162,7 @@ theorem isClosed_sdiff_of_codiscreteWithin {s U : Set X} (hs : s ∈ codiscreteW
     tauto_set
 
 /-- In a T1Space, punctured neighborhoods are stable under removing finite sets of points. -/
-theorem nhdNE_of_nhdNE_diff_finite {X : Type*} [TopologicalSpace X] [T1Space X] {x : X}
+theorem nhdNE_of_nhdNE_sdiff_finite {X : Type*} [TopologicalSpace X] [T1Space X] {x : X}
     {U s : Set X} (hU : U ∈ 𝓝[≠] x) (hs : Finite s) :
     U \ s ∈ 𝓝[≠] x := by
   rw [mem_nhdsWithin] at hU ⊢
