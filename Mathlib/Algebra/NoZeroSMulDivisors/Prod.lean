@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.Algebra.ZeroOne.Prod
-import Mathlib.Algebra.Group.Prod.Notation
+import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Prod instances for NoZeroSMulDivisors
