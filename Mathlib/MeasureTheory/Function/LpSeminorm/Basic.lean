@@ -521,11 +521,11 @@ theorem eLpNormEssSup_lt_top_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ 
     eLpNormEssSup f μ < ∞ :=
   (eLpNormEssSup_le_of_ae_bound hfC).trans_lt ENNReal.ofReal_lt_top
 
-theorem eLpNorm_le_of_ae_enorm_bound {f : α → ε} {C : ℝ≥0∞} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) :
+theorem eLpNorm_le_of_ae_enorm_bound {ε} [TopologicalSpace ε] [ENormedAddMonoid ε]
+    {f : α → ε} {C : ℝ≥0∞} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) :
     eLpNorm f p μ ≤ C • μ Set.univ ^ p.toReal⁻¹ := by
   rcases eq_zero_or_neZero μ with rfl | hμ
   · simp
-    sorry -- TODO: stronger hypothesis!
   by_cases hp : p = 0
   · simp [hp]
   have : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖C‖ₑ := hfC.mono fun x hx ↦ hx.trans (Preorder.le_refl C)
@@ -890,9 +890,11 @@ alias Memℒp.piecewise := MemLp.piecewise
 
 end Indicator
 
+variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+
 /-- For a function `f` with support in `s`, the Lᵖ norms of `f` with respect to `μ` and
 `μ.restrict s` are the same. -/
-theorem eLpNorm_restrict_eq_of_support_subset {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+theorem eLpNorm_restrict_eq_of_support_subset
     {s : Set α} {f : α → ε} (hsf : f.support ⊆ s) :
     eLpNorm f p (μ.restrict s) = eLpNorm f p μ := by
   by_cases hp0 : p = 0
@@ -966,18 +968,17 @@ lemma eLpNorm_smul_measure_of_ne_top' (hp : p ≠ ∞) (c : ℝ≥0) (f : α →
   have : 0 ≤ p.toReal⁻¹ := by positivity
   refine (eLpNorm_smul_measure_of_ne_top hp ..).trans ?_
   simp [ENNReal.smul_def, ENNReal.coe_rpow_of_nonneg, this]
+
 theorem eLpNorm_one_smul_measure {f : α → F} (c : ℝ≥0∞) :
     eLpNorm f 1 (c • μ) = c * eLpNorm f 1 μ := by
-  rw [@eLpNorm_smul_measure_of_ne_top _ _ _ μ _ 1 (@ENNReal.coe_ne_top 1) f c]
-  simp
+  rw [eLpNorm_smul_measure_of_ne_top] <;> simp
 
-theorem MemLp.of_measure_le_smul [TopologicalSpace ε] {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞)
+theorem MemLp.of_measure_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞)
     (hμ'_le : μ' ≤ c • μ) {f : α → ε} (hf : MemLp f p μ) : MemLp f p μ' := by
   refine ⟨hf.1.mono_ac (Measure.absolutelyContinuous_of_le_smul hμ'_le), ?_⟩
   refine (eLpNorm_mono_measure f hμ'_le).trans_lt ?_
   by_cases hc0 : c = 0
   · simp [hc0]
-    sorry -- does this need a zero also?
   rw [eLpNorm_smul_measure_of_ne_zero hc0, smul_eq_mul]
   refine ENNReal.mul_lt_top (Ne.lt_top ?_) hf.2
   simp [hc, hc0]
@@ -985,7 +986,7 @@ theorem MemLp.of_measure_le_smul [TopologicalSpace ε] {μ' : Measure α} {c : �
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.of_measure_le_smul := MemLp.of_measure_le_smul
 
-theorem MemLp.smul_measure [TopologicalSpace ε] {f : α → ε} {c : ℝ≥0∞}
+theorem MemLp.smul_measure {c : ℝ≥0∞}
     (hf : MemLp f p μ) (hc : c ≠ ∞) : MemLp f p (c • μ) :=
   hf.of_measure_le_smul hc le_rfl
 
@@ -1031,7 +1032,6 @@ theorem MemLp.norm {f : α → E} (h : MemLp f p μ) : MemLp (fun x => ‖f x‖
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.norm := MemLp.norm
 
--- TODO: generalise this to enorms
 theorem memLp_norm_iff {f : α → E} (hf : AEStronglyMeasurable f μ) :
     MemLp (fun x => ‖f x‖) p μ ↔ MemLp f p μ :=
   ⟨fun h => ⟨hf, by rw [← eLpNorm_norm]; exact h.2⟩, fun h => h.norm⟩
@@ -1042,12 +1042,10 @@ alias memℒp_norm_iff := memLp_norm_iff
 theorem eLpNorm'_eq_zero_of_ae_zero {f : α → F} (hq0_lt : 0 < q) (hf_zero : f =ᵐ[μ] 0) :
     eLpNorm' f q μ = 0 := by rw [eLpNorm'_congr_ae hf_zero, eLpNorm'_zero hq0_lt]
 
--- TODO: generalise this to enorms
 theorem eLpNorm'_eq_zero_of_ae_zero' (hq0_ne : q ≠ 0) (hμ : μ ≠ 0) {f : α → F}
     (hf_zero : f =ᵐ[μ] 0) :
     eLpNorm' f q μ = 0 := by rw [eLpNorm'_congr_ae hf_zero, eLpNorm'_zero' hq0_ne hμ]
 
--- TODO: generalise this to enorms
 theorem ae_eq_zero_of_eLpNorm'_eq_zero (hq0 : 0 ≤ q) (hf : AEStronglyMeasurable f μ)
     (h : eLpNorm' f q μ = 0) : f =ᵐ[μ] 0 := by
   simp only [eLpNorm'_eq_lintegral_enorm, lintegral_eq_zero_iff' (hf.enorm.pow_const q), one_div,
@@ -1057,7 +1055,6 @@ theorem ae_eq_zero_of_eLpNorm'_eq_zero (hq0 : 0 ≤ q) (hf : AEStronglyMeasurabl
     or_false] at hx
   exact hx.1
 
--- TODO: generalise this to enorms
 theorem eLpNorm'_eq_zero_iff (hq0_lt : 0 < q) {f : α → E} (hf : AEStronglyMeasurable f μ) :
     eLpNorm' f q μ = 0 ↔ f =ᵐ[μ] 0 :=
   ⟨ae_eq_zero_of_eLpNorm'_eq_zero (le_of_lt hq0_lt) hf, eLpNorm'_eq_zero_of_ae_zero hq0_lt⟩
@@ -1124,87 +1121,6 @@ alias Memℒp.of_discrete := MemLp.of_discrete
   simp [Subsingleton.elim f 0]
 
 section MapMeasure
-
-variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
-  {β : Type*} {mβ : MeasurableSpace β} {f : α → β} {g : β → ε}
-
-theorem eLpNormEssSup_map_measure (hg : AEStronglyMeasurable g (Measure.map f μ))
-    (hf : AEMeasurable f μ) : eLpNormEssSup g (Measure.map f μ) = eLpNormEssSup (g ∘ f) μ :=
-  essSup_map_measure hg.enorm hf
-
-theorem eLpNorm_map_measure (hg : AEStronglyMeasurable g (Measure.map f μ))
-    (hf : AEMeasurable f μ) : eLpNorm g p (Measure.map f μ) = eLpNorm (g ∘ f) p μ := by
-  by_cases hp_zero : p = 0
-  · simp only [hp_zero, eLpNorm_exponent_zero]
-  by_cases hp_top : p = ∞
-  · simp_rw [hp_top, eLpNorm_exponent_top]
-    exact eLpNormEssSup_map_measure hg hf
-  simp_rw [eLpNorm_eq_lintegral_rpow_enorm hp_zero hp_top]
-  rw [lintegral_map' (hg.enorm.pow_const p.toReal) hf]
-  rfl
-
-theorem memLp_map_measure_iff (hg : AEStronglyMeasurable g (Measure.map f μ))
-    (hf : AEMeasurable f μ) : MemLp g p (Measure.map f μ) ↔ MemLp (g ∘ f) p μ := by
-  simp [MemLp, eLpNorm_map_measure hg hf, hg.comp_aemeasurable hf, hg]
-
-@[deprecated (since := "2025-02-21")]
-alias memℒp_map_measure_iff := memLp_map_measure_iff
-
-theorem MemLp.comp_of_map (hg : MemLp g p (Measure.map f μ)) (hf : AEMeasurable f μ) :
-    MemLp (g ∘ f) p μ :=
-  (memLp_map_measure_iff hg.aestronglyMeasurable hf).1 hg
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.comp_of_map := MemLp.comp_of_map
-
-theorem eLpNorm_comp_measurePreserving {ν : MeasureTheory.Measure β} (hg : AEStronglyMeasurable g ν)
-    (hf : MeasurePreserving f μ ν) : eLpNorm (g ∘ f) p μ = eLpNorm g p ν :=
-  Eq.symm <| hf.map_eq ▸ eLpNorm_map_measure (hf.map_eq ▸ hg) hf.aemeasurable
-
-theorem AEEqFun.eLpNorm_compMeasurePreserving {ν : MeasureTheory.Measure β} (g : β →ₘ[ν] E)
-    (hf : MeasurePreserving f μ ν) :
-    eLpNorm (g.compMeasurePreserving f hf) p μ = eLpNorm g p ν := by
-  rw [eLpNorm_congr_ae (g.coeFn_compMeasurePreserving _)]
-  exact eLpNorm_comp_measurePreserving g.aestronglyMeasurable hf
-
-theorem MemLp.comp_measurePreserving {ν : MeasureTheory.Measure β} (hg : MemLp g p ν)
-    (hf : MeasurePreserving f μ ν) : MemLp (g ∘ f) p μ :=
-  .comp_of_map (hf.map_eq.symm ▸ hg) hf.aemeasurable
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.comp_measurePreserving := MemLp.comp_measurePreserving
-
-theorem _root_.MeasurableEmbedding.eLpNormEssSup_map_measure (hf : MeasurableEmbedding f) :
-    eLpNormEssSup g (Measure.map f μ) = eLpNormEssSup (g ∘ f) μ :=
-  hf.essSup_map_measure
-
-theorem _root_.MeasurableEmbedding.eLpNorm_map_measure (hf : MeasurableEmbedding f) :
-    eLpNorm g p (Measure.map f μ) = eLpNorm (g ∘ f) p μ := by
-  by_cases hp_zero : p = 0
-  · simp only [hp_zero, eLpNorm_exponent_zero]
-  by_cases hp : p = ∞
-  · simp_rw [hp, eLpNorm_exponent_top]
-    exact hf.essSup_map_measure
-  · simp_rw [eLpNorm_eq_lintegral_rpow_enorm hp_zero hp]
-    rw [hf.lintegral_map]
-    rfl
-
-theorem _root_.MeasurableEmbedding.memLp_map_measure_iff (hf : MeasurableEmbedding f) :
-    MemLp g p (Measure.map f μ) ↔ MemLp (g ∘ f) p μ := by
-  simp_rw [MemLp, hf.aestronglyMeasurable_map_iff, hf.eLpNorm_map_measure]
-
-@[deprecated (since := "2025-02-21")]
-alias _root_.MeasurableEmbedding.memℒp_map_measure_iff :=
-  _root_.MeasurableEmbedding.memLp_map_measure_iff
-
-theorem _root_.MeasurableEquiv.memLp_map_measure_iff (f : α ≃ᵐ β) :
-    MemLp g p (Measure.map f μ) ↔ MemLp (g ∘ f) p μ :=
-  f.measurableEmbedding.memLp_map_measure_iff
-
-@[deprecated (since := "2025-02-21")]
-alias _root_.MeasurableEquiv.memℒp_map_measure_iff := _root_.MeasurableEquiv.memLp_map_measure_iff
-
-end MapMeasure
 
 variable {β : Type*} {mβ : MeasurableSpace β} {f : α → β} {g : β → E}
 
@@ -1583,3 +1499,5 @@ end UnifTight
 end Lp
 
 end MeasureTheory
+
+set_option linter.style.longFile 1700
