@@ -583,6 +583,18 @@ theorem eLpNorm_norm (f : α → F) : eLpNorm (fun x => ‖f x‖) p μ = eLpNor
 theorem eLpNorm_enorm (f : α → ε) : eLpNorm (fun x ↦ ‖f x‖ₑ) p μ = eLpNorm f p μ :=
   eLpNorm_congr_enorm_ae <| Eventually.of_forall fun _ => enorm_enorm _
 
+-- XXX: where to move this?
+@[simp]
+theorem enorm_rpow (q : ℝ) (A : ℝ≥0∞) : ‖A ^ q‖ₑ = A ^ q := rfl
+
+theorem eLpNorm'_enorm_rpow (f : α → ε) (p q : ℝ) (hq_pos : 0 < q) :
+    eLpNorm' (fun x => ‖f x‖ₑ ^ q) p μ = eLpNorm' f (p * q) μ ^ q := by
+  simp_rw [eLpNorm'_eq_lintegral_enorm, ← ENNReal.rpow_mul, ← one_div_mul_one_div, one_div,
+    mul_assoc, inv_mul_cancel₀ hq_pos.ne.symm, mul_one, mul_comm p]
+  congr
+  ext a
+  rw [enorm_rpow, ENNReal.rpow_mul]
+
 theorem eLpNorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
     eLpNorm' (fun x => ‖f x‖ ^ q) p μ = eLpNorm' f (p * q) μ ^ q := by
   simp_rw [eLpNorm', ← ENNReal.rpow_mul, ← one_div_mul_one_div, one_div,
