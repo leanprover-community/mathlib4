@@ -60,8 +60,6 @@ open Module Set
 
 suppress_compilation
 
-section
-
 /-- A **singular `n`-manifold** on a topological space `X`, for `n ∈ ℕ`, is a pair `(M, f)`
 of a closed `n`-dimensional `C^k` manifold `M` together with a continuous map `M → X`.
 We assume that `M` is a manifold over the pair `(E, H)` with model `I`.
@@ -404,6 +402,28 @@ def sumComm : UnorientedCobordism k (t.sum s) (s.sum t) (I.prod (𝓡∂ 1)) :=
     ext x
     dsimp
     cases x <;> simp)
+
+lemma foo {α β γ X : Type*} {f : α → X} {g : β → X} {h : γ → X} :
+    Sum.elim (Sum.elim f g) h = Sum.elim f (Sum.elim g h) ∘ (Equiv.sumAssoc α β γ) := by
+  aesop
+
+def sumAssoc : UnorientedCobordism k (s.sum (t.sum u)) ((s.sum t).sum u) (I.prod (𝓡∂ 1)) := by
+  letI almost := (refl (s.sum (t.sum u))).comap_snd (Diffeomorph.sumAssoc I s.M k t.M u.M)
+  exact almost.copy_map_snd (Diffeomorph.refl I _ k) (by
+    simpa only [mfld_simps, CompTriple.comp_eq] using foo)
+
+/-- The direct sum of a manifold with itself is null-bordant. -/
+def sumSelf [IsEmpty M] :
+    UnorientedCobordism k (s.sum s) (SingularNManifold.empty X M I) (I.prod (𝓡∂ 1)) where
+  -- This is the same manifold as for `refl`, but with a different map.
+  W := s.M × (Set.Icc (0 : ℝ) 1)
+  -- TODO: I want boundary data modelled on I, not I × (∂[0,1])
+  bd := sorry -- BoundaryManifoldData.prod_of_boundaryless_left s.M I (BoundaryManifoldData.Icc k)
+  F := s.f ∘ (fun p ↦ p.1)
+  hF := s.hf.comp continuous_fst
+  φ := sorry -- map everything into the left component
+  hFf := sorry
+  hFg := sorry
 
 section collarNeighbourhood
 
