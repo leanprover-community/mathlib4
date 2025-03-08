@@ -203,6 +203,12 @@ theorem free_congr (e : A ≃g B) : A.Free C ↔ B.Free C := by
   rw [not_iff_not]
   exact isContained_congr e
 
+lemma free_bot (h : A.edgeSet.Nonempty) : A.Free (⊥ : SimpleGraph β) := by
+  intro ⟨f, hf⟩
+  absurd f.map_mem_edgeSet h.choose_spec
+  rw [edgeSet_bot]
+  exact Set.not_mem_empty (h.choose.map f)
+
 end Free
 
 end SimpleGraph
