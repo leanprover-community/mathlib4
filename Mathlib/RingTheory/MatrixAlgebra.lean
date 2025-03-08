@@ -142,9 +142,6 @@ theorem matrixEquivTensor_apply_stdBasisMatrix (i j : n) (x : A) :
   have t : ∀ p : n × n, i = p.1 ∧ j = p.2 ↔ p = (i, j) := by aesop
   simp [ite_tmul, t, stdBasisMatrix]
 
-@[deprecated (since := "2024-08-11")] alias matrixEquivTensor_apply_std_basis :=
-  matrixEquivTensor_apply_stdBasisMatrix
-
 @[simp]
 theorem matrixEquivTensor_apply_symm (a : A) (M : Matrix n n R) :
     (matrixEquivTensor n R A).symm (a ⊗ₜ M) = M.map fun x => a * algebraMap R A x :=

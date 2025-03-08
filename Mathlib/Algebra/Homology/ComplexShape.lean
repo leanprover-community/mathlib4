@@ -5,6 +5,7 @@ Authors: Johan Commelin, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Relation
+import Mathlib.Logic.Function.Basic
 
 /-!
 # Shapes of homological complexes

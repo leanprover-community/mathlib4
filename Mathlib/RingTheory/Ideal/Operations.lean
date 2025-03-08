@@ -499,6 +499,10 @@ theorem natCast_eq_top {n : ℕ} (hn : n ≠ 0) : (n : Ideal R) = ⊤ := by
 theorem ofNat_eq_top {n : ℕ} [n.AtLeastTwo] : (ofNat(n) : Ideal R) = ⊤ :=
   natCast_eq_top (NeZero.ne _)
 
+theorem pow_eq_zero_of_mem {I : Ideal R} {n m : ℕ} (hnI : I ^ n = 0) (hmn : n ≤ m) {x : R}
+    (hx : x ∈ I) : x ^ m = 0 := by
+  simpa [hnI] using pow_le_pow_right hmn <| pow_mem_pow hx m
+
 end Semiring
 
 section MulAndRadical
@@ -760,12 +764,9 @@ theorem isRadical_iff_pow_one_lt (k : ℕ) (hk : 1 < k) : I.IsRadical ↔ ∀ r,
   ⟨fun h _r hr ↦ h ⟨k, hr⟩, fun h x ⟨n, hx⟩ ↦
     k.pow_imp_self_of_one_lt hk _ (fun _ _ ↦ .inr ∘ I.smul_mem _) h n x hx⟩
 
-variable (R)
-
+variable (R) in
 theorem radical_top : (radical ⊤ : Ideal R) = ⊤ :=
   (eq_top_iff_one _).2 ⟨0, Submodule.mem_top⟩
-
-variable {R}
 
 theorem radical_mono (H : I ≤ J) : radical I ≤ radical J := fun _ ⟨n, hrni⟩ => ⟨n, H hrni⟩
 

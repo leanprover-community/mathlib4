@@ -1335,6 +1335,7 @@ theorem Continuous.quotient_liftOn' {f : X → Y} (h : Continuous f)
     Continuous (fun x => Quotient.liftOn' x f hs : Quotient s → Y) :=
   h.quotient_lift hs
 
+open scoped Relator in
 @[continuity, fun_prop]
 theorem Continuous.quotient_map' {t : Setoid Y} {f : X → Y} (hf : Continuous f)
     (H : (s.r ⇒ t.r) f f) : Continuous (Quotient.map' f H) :=

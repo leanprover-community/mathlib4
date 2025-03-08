@@ -261,8 +261,7 @@ lemma isBaseChange_tensorProduct_map {f : M →ₗ[S] N} (hf : IsBaseChange A f)
 
 end
 
-variable (f)
-
+variable (f) in
 theorem IsBaseChange.of_lift_unique
     (h : ∀ (Q : Type max v₁ v₂ v₃) [AddCommMonoid Q],
       ∀ [Module R Q] [Module S Q], ∀ [IsScalarTower R S Q],
@@ -295,8 +294,6 @@ theorem IsBaseChange.of_lift_unique
     change (g <| (1 : S) • f x).down = _
     rw [one_smul, hg]
     rfl
-
-variable {f}
 
 theorem IsBaseChange.iff_lift_unique :
     IsBaseChange S f ↔
