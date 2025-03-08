@@ -605,7 +605,7 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
           prodCongrLeft (fun k => σ k (Finset.mem_univ _)) (k, x) =
             prodCongrLeft (fun k => σ' k (Finset.mem_univ _)) (k, x) :=
         fun k x => by rw [eq]
-      simp only [prodCongrLeft_apply, Prod.mk.inj_iff] at this
+      simp only [prodCongrLeft_apply, Prod.mk_inj] at this
       exact (this k x).1
     · intro σ hσ
       rw [mem_preserving_snd] at hσ

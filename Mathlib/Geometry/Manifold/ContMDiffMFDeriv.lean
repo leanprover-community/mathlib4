@@ -423,8 +423,8 @@ theorem tangentMap_tangentBundle_pure [Is : IsManifold I 1 M]
   congr 1
   refine fderivWithin_congr (fun y hy => ?_) ?_
   · simp only [mfld_simps] at hy
-    simp only [hy, Prod.mk.inj_iff, mfld_simps]
-  · simp only [Prod.mk.inj_iff, mfld_simps]
+    simp only [hy, Prod.mk_inj, mfld_simps]
+  · simp only [Prod.mk_inj, mfld_simps]
 
 end TangentBundle
 

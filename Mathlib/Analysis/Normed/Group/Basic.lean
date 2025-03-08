@@ -854,7 +854,9 @@ end NNNorm
 
 section ENorm
 
-@[to_additive (attr := simp) enorm_zero] lemma enorm_one' : ‖(1 : E)‖ₑ = 0 := by simp [enorm]
+@[to_additive (attr := simp) enorm_zero]
+lemma enorm_one' {E : Type*} [TopologicalSpace E] [ENormedMonoid E] : ‖(1 : E)‖ₑ = 0 := by
+  rw [ENormedMonoid.enorm_eq_zero]
 
 @[to_additive (attr := simp) enorm_neg]
 lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
