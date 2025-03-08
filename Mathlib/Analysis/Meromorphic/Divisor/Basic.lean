@@ -306,19 +306,4 @@ noncomputable def restrictLatticeHom {V : Set 𝕜} (h : V ⊆ U) :
 lemma restrictLatticeHom_apply {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
     restrictLatticeHom h D = D.restrict h := by rfl
 
-/-!
-## Derived invariants
--/
-
-/-- The degree of a divisor on U is the sum of its values, or 0 if the support is infinite. -/
-noncomputable def deg (D : DivisorOn U) : ℤ := ∑ᶠ z, D z
-
 end DivisorOn
-
-/-- The counting function for a divisor -/
-noncomputable def Divisor.counting (D : Divisor 𝕜) : ℝ → ℝ :=
-  fun r ↦ ∑ᶠ z, D.restrict (by tauto : closedBall (0 : 𝕜) |r| ⊆ ⊤) z
-
-/-- The logarithmic counting function for a divisor -/
-noncomputable def Divisor.logCounting (D : Divisor 𝕜) : ℝ → ℝ :=
-  fun r ↦ ∑ᶠ z, D.restrict (by tauto : closedBall (0 : 𝕜) |r| ⊆ ⊤) z * (log r - log ‖z‖)
