@@ -3,8 +3,7 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 
 /-!
 # Divisors on subsets of normed fields
