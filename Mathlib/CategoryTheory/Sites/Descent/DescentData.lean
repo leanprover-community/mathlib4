@@ -20,6 +20,21 @@ open Category Limits
 
 namespace Pseudofunctor
 
+section
+
+variable {B C : Type*} [Bicategory B] [Bicategory C]
+  (F : Pseudofunctor B C)
+  {a b c : B} (f : a ⟶ b) (g : b ⟶ c) (fg : a ⟶ c) (hfg : f ≫ g = fg)
+
+def mapComp' : F.map fg ≅ F.map f ≫ F.map g := by
+  subst hfg
+  exact F.mapComp f g
+
+@[simp]
+lemma mapComp_rfl : F.mapComp' f g _ rfl = F.mapComp f g := rfl
+
+end
+
 variable {C : Type u} [Category.{v} C]
   (F : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat.{v', u'})
   {ι : Type w} (X : ι → C)
@@ -64,15 +79,22 @@ end DescentData
 def toDescentDataOfIsTerminal (X₀ : C) (hX₀ : IsTerminal X₀) :
     F.obj ⟨⟨X₀⟩⟩ ⥤ F.DescentData X where
   obj A :=
-    { obj i := (F.map ⟨(hX₀.from (X i)).op⟩).obj A
-      iso Y i₁ i₂ f₁ f₂ := by
-        trans (F.map ⟨(hX₀.from Y).op⟩).obj A
-        · sorry
-        · sorry
-      iso_comp := sorry }
+    { obj i := (F.map (hX₀.from (X i)).op.toLoc).obj A
+      iso Y i₁ i₂ f₁ f₂ :=
+        (F.mapComp' (hX₀.from (X i₁)).op.toLoc f₁.op.toLoc (hX₀.from Y).op.toLoc
+            --(by rw [← Quiver.Hom.comp_toLoc, ← op_comp, IsTerminal.comp_from])
+            sorry).symm.app A ≪≫
+          (F.mapComp' (hX₀.from (X i₂)).op.toLoc f₂.op.toLoc (hX₀.from Y).op.toLoc
+            --(by rw [← Quiver.Hom.comp_toLoc, ← op_comp, IsTerminal.comp_from])
+            sorry).app A
+      iso_comp Y' Y g i₁ i₂ f₁ f₂ := by
+        sorry }
   map {A B} f :=
     { hom i := (F.map _).map f
-      comm := sorry }
+      comm Y i₁ i₂ f₁ f₂ := by
+        dsimp
+        simp
+        sorry }
 
 end Pseudofunctor
 
