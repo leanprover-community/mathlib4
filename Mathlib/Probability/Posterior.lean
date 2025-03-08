@@ -221,13 +221,14 @@ theorem setLIntegral_prod_symm {α β: Type*} {_ : MeasurableSpace α} {_ : Meas
   rw [← Measure.prod_restrict, ← lintegral_prod_swap, Measure.prod_restrict,
     setLIntegral_prod]
   · rfl
-  · sorry
+  · refine AEMeasurable.comp_measurable ?_ measurable_swap
+    convert hf
+    sorry
 
 lemma rnDeriv_posterior (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
     ∀ᵐ ω ∂μ, ∀ᵐ b ∂(κ ∘ₘ μ), ((κ†μ) b).rnDeriv μ ω = (κ ω).rnDeriv (κ ∘ₘ μ) b := by
   suffices ∀ᵐ p ∂(μ.prod (κ ∘ₘ μ)), ((κ†μ) p.2).rnDeriv μ p.1 = (κ p.1).rnDeriv (κ ∘ₘ μ) p.2 by
-    rwa [Measure.ae_prod_iff_ae_ae] at this
-    sorry
+    convert Measure.ae_ae_of_ae_prod this -- `convert` is muct faster than `exact`
   have h_prod {s : Set Ω} {t : Set β} (hs : MeasurableSet s) (ht : MeasurableSet t) :
       ∫⁻ x in s ×ˢ t, (∂(κ†μ) x.2/∂μ) x.1 ∂μ.prod (⇑κ ∘ₘ μ)
         = ∫⁻ x in s ×ˢ t, (∂κ x.1/∂⇑κ ∘ₘ μ) x.2 ∂μ.prod (⇑κ ∘ₘ μ) := by
@@ -235,6 +236,7 @@ lemma rnDeriv_posterior (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
     rotate_left
     · sorry
     · sorry
+    simp only
     sorry
   refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite ?_ ?_ ?_
   · sorry
