@@ -18,66 +18,43 @@ This file defines pullbacks of `C^n` vector bundles over a manifold.
 -/
 
 open Bundle Set
-open scoped Manifold
+open scoped Manifold Topology
 
 variable {𝕜 B B' : Type*} (F : Type*) (E : B → Type*) {n : WithTop ℕ∞}
-variable [NontriviallyNormedField 𝕜] [∀ x, AddCommMonoid (E x)] [∀ x, Module 𝕜 (E x)]
+variable [NontriviallyNormedField 𝕜] [∀ x, AddCommMonoid (E x)]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [TopologicalSpace (TotalSpace F E)]
   [∀ x, TopologicalSpace (E x)] {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B]
   [ChartedSpace HB B] {EB' : Type*} [NormedAddCommGroup EB']
-  [NormedSpace 𝕜 EB'] {HB' : Type*} [TopologicalSpace HB'] (IB' : ModelWithCorners 𝕜 EB' HB')
+  [NormedSpace 𝕜 EB'] {HB' : Type*} [TopologicalSpace HB'] {IB' : ModelWithCorners 𝕜 EB' HB'}
   [TopologicalSpace B'] [ChartedSpace HB' B'] [FiberBundle F E]
-  [VectorBundle 𝕜 F E] [ContMDiffVectorBundle n F E IB] (f : ContMDiffMap IB' IB B' B n)
+  {M EM HM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] [TopologicalSpace HM]
+  {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
+  (f : ContMDiffMap IB' IB B' B n)
 
-/-- For a `C^n` vector bundle `E` over a manifold `B` and a `C^n` map `f : B' → B`, the pullback
-vector bundle `f *ᵖ E` is a `C^n` vector bundle. -/
-instance ContMDiffVectorBundle.pullback : ContMDiffVectorBundle n F (f *ᵖ E) IB' where
-  contMDiffOn_coordChangeL := by
-    rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
-    refine ((contMDiffOn_coordChangeL e e').comp f.contMDiff.contMDiffOn fun b hb => hb).congr ?_
-    rintro b (hb : f b ∈ e.baseSet ∩ e'.baseSet); ext v
-    show ((e.pullback f).coordChangeL 𝕜 (e'.pullback f) b) v = (e.coordChangeL 𝕜 e' (f b)) v
-    rw [e.coordChangeL_apply e' hb, (e.pullback f).coordChangeL_apply' _]
-    exacts [rfl, hb]
-
-variable {IB'}
-
-#check Pullback.lift
-
-omit [ContMDiffVectorBundle n F E IB] in
-/-- For a smooth vector bundle `E` over a manifold `B` and a smooth map `f : B' → B`, the natural
-"lift" map from the total space of `f *ᵖ E` to the total space of `E` is smooth. -/
+/-- For a fiber bundle `E` over a manifold `B` and a regular map `f : B' → B`, the natural
+"lift" map from the total space of `f *ᵖ E` to the total space of `E` is regular. -/
 theorem Bundle.Pullback.contMDiff_lift :
     ContMDiff (IB'.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n
-      (Pullback.lift f : TotalSpace F (f *ᵖ E) → _) := by
+      (Pullback.lift f : TotalSpace F (f *ᵖ E) → TotalSpace F E) := by
   intro x
   rw [contMDiffAt_totalSpace]
   refine ⟨f.contMDiff.contMDiffAt.comp _ (contMDiffAt_proj (f *ᵖ E)), ?_⟩
-  rw [contMDiffAt_of_totalSpace]
-  simp [trivializationAt, FiberBundle.trivializationAt']
-  have : ContMDiffAt (IB'.prod 𝓘(𝕜, F)) 𝓘(𝕜, F) n (Prod.snd)
-      (((FiberBundle.trivializationAt' (f x.proj)).pullback f) x) := by
-    apply contMDiffAt_snd
-  apply ContMDiffAt.congr_of_eventuallyEq this
-  filter_upwards [] with y
-  simp
-  simp only [Trivialization.pullback, PartialHomeomorph.mk_coe_symm, PartialEquiv.coe_symm_mk,
-    Function.comp_apply, lift_mk]
+  simp only [contMDiffAt_of_totalSpace, trivializationAt, lift_proj, FiberBundle.trivializationAt']
+  apply ContMDiffAt.congr_of_eventuallyEq contMDiffAt_snd
+  have : (trivializationAt F (f *ᵖ E) x.proj).target ∈
+      𝓝 ((trivializationAt F (f *ᵖ E) x.proj) x) := by
+    apply IsOpen.mem_nhds
+    · exact (trivializationAt F (f *ᵖ E) x.proj).open_target
+    · simpa [Trivialization.mem_target] using FiberBundle.mem_baseSet_trivializationAt' x.proj
+  filter_upwards [this]
+  rintro ⟨y, v⟩ hy
+  have A : f y ∈ (FiberBundle.trivializationAt' (E := E) (F := F) (f x.proj)).baseSet := by
+    simpa [trivializationAt, FiberBundle.trivializationAt', Trivialization.pullback] using hy
+  simp only [Function.comp_apply, A, lift_pullback_symm_apply]
+  rw [Trivialization.apply_symm_apply]
+  exact (Trivialization.mk_mem_target (FiberBundle.trivializationAt' (f x.proj))).mpr A
 
-
-
-  refine (contMDiffAt_snd (M := B')).comp _ <|
-    (contMDiffOn_trivializationAt x).contMDiffAt ?_
-  apply (trivializationAt F (f *ᵖ E) x.proj).open_source.mem_nhds
-  simp
-
-#exit
-
-variable {M EM HM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] [TopologicalSpace HM]
-  {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
-
-omit [(x : B) → Module 𝕜 (E x)] in
 /-- Given a smooth fibre bundle `E` over a manifold `B` and a smooth map `f : B' → B`, if `φ` is
 a map into the total space of the pullback `f *ᵖ E`, then its smoothness can be checked by checking
 the smoothness of (1) the map `TotalSpace.proj ∘ φ` into `B'`, and (2) the map
@@ -101,9 +78,9 @@ theorem Bundle.Pullback.contMDiff_of_contMDiff_proj_comp_of_contMDiff_lift_comp
     exact contDiffAt_snd
   exact (this _).comp _ h2.2
 
-/-- Given a smooth fibre bundle `E` over a manifold `B` and a smooth map `f : B' → B`, a map `φ`
-into the total space of the pullback `f *ᵖ E` is smooth if and only if the following two maps are
-smooth: (1) the map `TotalSpace.proj ∘ φ` into `B'`, and (2) the map `Pullback.lift f ∘ φ` into the
+/-- Given a fibre bundle `E` over a manifold `B` and a regular map `f : B' → B`, a map `φ`
+into the total space of the pullback `f *ᵖ E` is regular if and only if the following two maps are
+regular: (1) the map `TotalSpace.proj ∘ φ` into `B'`, and (2) the map `Pullback.lift f ∘ φ` into the
 total space of `E`. -/
 theorem Bundle.Pullback.contMDiff_iff_contMDiff_proj_comp_and_contMDiff_lift_comp
     (φ : M → TotalSpace F (f *ᵖ E)) :
@@ -113,3 +90,16 @@ theorem Bundle.Pullback.contMDiff_iff_contMDiff_proj_comp_and_contMDiff_lift_com
   · exact (Bundle.contMDiff_proj (f *ᵖ E)).comp h
   · exact (Bundle.Pullback.contMDiff_lift F E f).comp h
   · exact Bundle.Pullback.contMDiff_of_contMDiff_proj_comp_of_contMDiff_lift_comp F E f h₁ h₂
+
+variable [∀ x, Module 𝕜 (E x)] [VectorBundle 𝕜 F E] [ContMDiffVectorBundle n F E IB]
+
+/-- For a `C^n` vector bundle `E` over a manifold `B` and a `C^n` map `f : B' → B`, the pullback
+vector bundle `f *ᵖ E` is a `C^n` vector bundle. -/
+instance ContMDiffVectorBundle.pullback : ContMDiffVectorBundle n F (f *ᵖ E) IB' where
+  contMDiffOn_coordChangeL := by
+    rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
+    refine ((contMDiffOn_coordChangeL e e').comp f.contMDiff.contMDiffOn fun b hb => hb).congr ?_
+    rintro b (hb : f b ∈ e.baseSet ∩ e'.baseSet); ext v
+    show ((e.pullback f).coordChangeL 𝕜 (e'.pullback f) b) v = (e.coordChangeL 𝕜 e' (f b)) v
+    rw [e.coordChangeL_apply e' hb, (e.pullback f).coordChangeL_apply' _]
+    exacts [rfl, hb]
