@@ -11,14 +11,23 @@ import Mathlib.SetTheory.Ordinal.FixedPoint
 We define the two-arguments Veblen function, which satisfies `veblen 0 a = ω ^ a` and that for
 `o ≠ 0`, `veblen o` enumerates the common fixed points of `veblen o'` for `o' < o`.
 
+We use this to define two important functions on ordinals: the epsilon function `ε_ o = veblen 1 o`,
+and the gamma function `Γ_ o` enumerating the fixed points of `veblen · 0`.
+
 ## Main definitions
 
 * `veblenWith`: The Veblen hierarchy with a specified initial function.
 * `veblen`: The Veblen hierarchy starting with `ω ^ ·`.
 
+## Notation
+
+The following notation is scoped to the `Ordinal` namespace.
+
+- `ε_ o` is notation for `veblen 1 o`. `ε₀` is notation for `ε_ 0`.
+- `Γ_ o` is notation for `gamma o`. `Γ₀` is notation for `Γ_ 0`.
+
 ## TODO
 
-- Define the epsilon numbers and gamma numbers.
 - Prove that `ε₀` and `Γ₀` are countable.
 - Prove that the exponential principal ordinals are the epsilon ordinals (and 0, 1, 2, ω).
 - Prove that the ordinals principal under `veblen` are the gamma ordinals (and 0).
@@ -331,4 +340,131 @@ theorem veblen_eq_veblen_iff :
  veblenWith_eq_veblenWith_iff (isNormal_opow one_lt_omega0)
 
 end veblen
+
+/-! ### Epsilon function -/
+
+/-- The epsilon function enumerates the fixed points of `ω ^ ⬝`. -/
+scoped notation "ε_ " => veblen 1
+
+/-- `ε₀` is the first fixed point of `ω ^ ⬝`, i.e. the supremum of `ω`, `ω ^ ω`, `ω ^ ω ^ ω`, … -/
+scoped notation "ε₀" => ε_ 0
+
+theorem epsilon_eq_deriv (o : Ordinal) : ε_ o = deriv (fun a ↦ ω ^ a) o := by
+  rw [← succ_zero, veblen_succ, veblen_zero]
+
+theorem epsilon0_eq_nfp : ε₀ = nfp (fun a ↦ ω ^ a) 0 := by
+  rw [epsilon_eq_deriv, deriv_zero_right]
+
+theorem epsilon_succ_eq_nfp (o : Ordinal) :
+    ε_ (Order.succ o) = nfp (fun a ↦ ω ^ a) (Order.succ (ε_ o)) := by
+  rw [epsilon_eq_deriv, epsilon_eq_deriv, deriv_succ]
+
+theorem epsilon0_le_of_omega0_opow_le (h : ω ^ o ≤ o) : ε₀ ≤ o := by
+  rw [epsilon0_eq_nfp]
+  exact nfp_le_fp (fun _ _ ↦ (opow_le_opow_iff_right one_lt_omega0).2) (Ordinal.zero_le o) h
+
+@[simp]
+theorem omega0_opow_epsilon (o : Ordinal) : ω ^ ε_ o = ε_ o := by
+  rw [epsilon_eq_deriv, (isNormal_opow one_lt_omega0).deriv_fp]
+
+/-- `ε₀` is the limit of `0`, `ω ^ 0`, `ω ^ ω ^ 0`, … -/
+theorem lt_epsilon0 : o < ε₀ ↔ ∃ n : ℕ, o < (fun a ↦ ω ^ a)^[n] 0 := by
+  rw [epsilon0_eq_nfp, lt_nfp]
+
+/-- `ω ^ ω ^ … ^ 0 < ε₀` -/
+theorem iterate_omega0_opow_lt_epsilon0 (n : ℕ) : (fun a ↦ ω ^ a)^[n] 0 < ε₀ := by
+  rw [lt_epsilon0]
+  use n + 1
+  induction n with
+  | zero => simp
+  | succ n IH => rwa [Function.iterate_succ_apply', Function.iterate_succ_apply',
+      opow_lt_opow_iff_right one_lt_omega0]
+
+theorem omega0_lt_epsilon (o : Ordinal) : ω < ε_ o := by
+  apply lt_of_lt_of_le _ <| (veblen_right_strictMono _).monotone (Ordinal.zero_le o)
+  simpa using iterate_omega0_opow_lt_epsilon0 2
+
+theorem nat_lt_epsilon (n : ℕ) (o : Ordinal) : n < ε_ o :=
+  (nat_lt_omega0 n).trans <| omega0_lt_epsilon o
+
+theorem epsilon_pos (o : Ordinal) : 0 < ε_ o :=
+  nat_lt_epsilon 0 o
+
+/-! ### Gamma function -/
+
+/-- The gamma function enumerates the fixed points of `veblen · 0`.
+
+Of particular importance is `Γ₀ = gamma 0`, the Feferman-Schütte ordinal. -/
+def gamma (o : Ordinal) : Ordinal :=
+  deriv (veblen · 0) o
+
+@[inherit_doc]
+scoped notation "Γ_ " => gamma
+
+/-- The Feferman-Schütte ordinal `Γ₀` is the smallest fixed point of `veblen · 0`, i.e. the supremum
+of `veblen ε₀ 0`, `veblen (veblen ε₀ 0) 0`, etc. -/
+scoped notation "Γ₀" => Γ_ 0
+
+theorem isNormal_gamma : IsNormal gamma :=
+  isNormal_deriv _
+
+theorem strictMono_gamma : StrictMono gamma :=
+  isNormal_gamma.strictMono
+
+theorem monotone_gamma : Monotone gamma :=
+  isNormal_gamma.monotone
+
+@[simp]
+theorem gamma_lt_gamma : Γ_ a < Γ_ b ↔ a < b :=
+  strictMono_gamma.lt_iff_lt
+
+@[simp]
+theorem gamma_le_gamma : Γ_ a ≤ Γ_ b ↔ a ≤ b :=
+  strictMono_gamma.le_iff_le
+
+@[simp]
+theorem gamma_inj : Γ_ a = Γ_ b ↔ a = b :=
+  strictMono_gamma.injective.eq_iff
+
+@[simp]
+theorem veblen_gamma_zero (o : Ordinal) : veblen (Γ_ o) 0 = Γ_ o :=
+  isNormal_veblen_zero.deriv_fp o
+
+theorem gamma0_eq_nfp : Γ₀ = nfp (veblen · 0) 0 :=
+  deriv_zero_right _
+
+theorem gamma_succ_eq_nfp (o : Ordinal) :
+    Γ_ (Order.succ o) = nfp (veblen · 0) (Order.succ (Γ_ o)) :=
+  deriv_succ _ _
+
+theorem gamma0_le_of_veblen_le (h : veblen o 0 ≤ o) : Γ₀ ≤ o := by
+  rw [gamma0_eq_nfp]
+  exact nfp_le_fp (veblen_left_monotone 0) (Ordinal.zero_le o) h
+
+/-- `Γ₀` is the limit of `0`, `veblen 0 0`, `veblen (veblen 0 0) 0`, … -/
+theorem lt_gamma0 : o < Γ₀ ↔ ∃ n : ℕ, o < (fun a ↦ veblen a 0)^[n] 0 := by
+  rw [gamma0_eq_nfp, lt_nfp]
+
+/-- `veblen (veblen … (veblen 0 0) … 0) 0 < Γ₀` -/
+theorem iterate_veblen_lt_gamma0 (n : ℕ) : (fun a ↦ veblen a 0)^[n] 0 < Γ₀ := by
+  rw [lt_gamma0]
+  use n + 1
+  induction n with
+  | zero => simp
+  | succ n _ => rwa [Function.iterate_succ_apply', Function.iterate_succ_apply',
+      veblen_zero_lt_veblen_zero]
+
+theorem epsilon0_lt_gamma (o : Ordinal) : ε₀ < Γ_ o := by
+  apply lt_of_lt_of_le _ <| (gamma_le_gamma.2 (Ordinal.zero_le _))
+  simpa using iterate_veblen_lt_gamma0 2
+
+theorem omega0_lt_gamma (o : Ordinal) : ω < Γ_ o :=
+  (omega0_lt_epsilon 0).trans (epsilon0_lt_gamma o)
+
+theorem nat_lt_gamma (n : ℕ) : n < Γ_ o :=
+  (nat_lt_omega0 n).trans (omega0_lt_gamma o)
+
+theorem gamma_pos : 0 < Γ_ o :=
+  nat_lt_gamma 0
+
 end Ordinal
