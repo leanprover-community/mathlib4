@@ -327,6 +327,7 @@ import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Hom.CompTypeclasses
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Hom.End
+import Mathlib.Algebra.Group.Hom.FunLike
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.Group.Idempotent
 import Mathlib.Algebra.Group.Indicator
