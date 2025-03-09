@@ -72,7 +72,7 @@ theorem Bundle.Pullback.contMDiff_of_contMDiff_proj_comp_of_contMDiff_lift_comp
   constructor
   · exact Pullback.continuous_of_continuous_proj_comp_of_continuous_lift_comp f h1_cont h2_cont
       |>.continuousAt
-  apply ContMDiffAt.prod_mk_space h1.2
+  apply ContMDiffAt.prodMk_space h1.2
   have (x : EB × F) : ContMDiffAt 𝓘(𝕜, EB × F) 𝓘(𝕜, F) n Prod.snd x := by
     rw [contMDiffAt_iff_contDiffAt]
     exact contDiffAt_snd

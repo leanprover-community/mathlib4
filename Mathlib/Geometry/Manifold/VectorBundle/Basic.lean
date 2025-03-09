@@ -334,8 +334,8 @@ theorem contMDiff_of_contMDiff_fst_comp_of_contMDiff_snd_comp
   constructor
   · exact FiberBundle.Prod.continuous_of_continuous_fst_comp_of_continuous_snd_comp h1_cont h2_cont
       |>.continuousAt
-  apply ContMDiffAt.prod_mk_space h1_base.2
-  apply ContMDiffAt.prod_mk_space
+  apply ContMDiffAt.prodMk_space h1_base.2
+  apply ContMDiffAt.prodMk_space
   · have (x : EB × F₁) : ContMDiffAt 𝓘(𝕜, EB × F₁) 𝓘(𝕜, F₁) n Prod.snd x := by
       rw [contMDiffAt_iff_contDiffAt]
       exact contDiffAt_snd
