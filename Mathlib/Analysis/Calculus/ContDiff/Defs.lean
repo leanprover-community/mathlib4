@@ -573,6 +573,11 @@ theorem ContDiffOn.congr_mono (hf : ContDiffOn 𝕜 n f s) (h₁ : ∀ x ∈ s�
     ContDiffOn 𝕜 n f₁ s₁ :=
   (hf.mono hs).congr h₁
 
+theorem ContDiffWithinAt.eventually_contDiffOn (hm : m ≤ n) (h' : m = ∞ → n = ω)
+    (h : ContDiffWithinAt 𝕜 n f s x) :
+    ∀ᶠ u in (𝓝[insert x s] x).smallSets, ContDiffOn 𝕜 m f u :=
+  eventually_smallSets.mpr <| (h.contDiffOn hm h').imp fun _u hu ↦ ⟨hu.1, fun _ ↦ hu.2.2.mono⟩
+
 /-- If a function is `C^n` on a set with `n ≥ 1`, then it is differentiable there. -/
 theorem ContDiffOn.differentiableOn (h : ContDiffOn 𝕜 n f s) (hn : 1 ≤ n) :
     DifferentiableOn 𝕜 f s := fun x hx => (h x hx).differentiableWithinAt hn
@@ -997,6 +1002,10 @@ theorem ContDiffAt.differentiableAt (h : ContDiffAt 𝕜 n f x) (hn : 1 ≤ n) :
 nonrec lemma ContDiffAt.contDiffOn (h : ContDiffAt 𝕜 n f x) (hm : m ≤ n) (h' : m = ∞ → n = ω):
     ∃ u ∈ 𝓝 x, ContDiffOn 𝕜 m f u := by
   simpa [nhdsWithin_univ] using h.contDiffOn hm h'
+
+nonrec theorem ContDiffAt.eventually_contDiffOn (h : ContDiffAt 𝕜 n f x) (hm : m ≤ n)
+    (h' : m = ∞ → n = ω) : ∀ᶠ u in (𝓝 x).smallSets, ContDiffOn 𝕜 m f u := by
+  simpa [nhdsWithin_univ] using h.eventually_contDiffOn hm h'
 
 /-- A function is `C^(n + 1)` at a point iff locally, it has a derivative which is `C^n`. -/
 theorem contDiffAt_succ_iff_hasFDerivAt {n : ℕ} :
