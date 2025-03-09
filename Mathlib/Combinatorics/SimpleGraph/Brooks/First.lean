@@ -13,9 +13,8 @@ namespace Walk
 --   cases p with
 --   | nil => simp at h0
 --   | cons h p => intro; subst_vars; simp at hp
-
-lemma IsPath.eq_snd_of_start_mem_edge {u v x : α} {p : G.Walk u v} (hp : p.IsPath)
-    (hs : s(x, u) ∈ p.edges) : x = p.snd := by
+variable {u v x : α} {p : G.Walk u v}
+lemma IsPath.eq_snd_of_start_mem_edge (hp : p.IsPath) (hs : s(x, u) ∈ p.edges) : x = p.snd := by
   cases p with
   | nil => simp at hs
   | cons h p =>
@@ -25,8 +24,8 @@ lemma IsPath.eq_snd_of_start_mem_edge {u v x : α} {p : G.Walk u v} (hp : p.IsPa
     | inr h => exact False.elim <| hp.2 <| snd_mem_support_of_mem_edges p h
 
 
-lemma IsPath.eq_penultimate_of_end_mem_edge {u v x : α} {p : G.Walk u v} (hp : p.IsPath)
-    (hs : s(x, v) ∈ p.edges) : x = p.penultimate :=
+lemma IsPath.eq_penultimate_of_end_mem_edge (hp : p.IsPath) (hs : s(x, v) ∈ p.edges) :
+     x = p.penultimate :=
   p.snd_reverse.symm ▸
     hp.reverse.eq_snd_of_start_mem_edge (p.edges_reverse ▸ (List.mem_reverse.mpr hs))
 
@@ -49,25 +48,26 @@ abbrev find {u v : α} (p : G.Walk u v) (P : α → Prop) [DecidablePred P] : α
   | nil => u
   | cons _ p => if (P u) then u else (p.find P)
 
+variable {P : α → Prop} [DecidablePred P]
 @[simp]
-lemma find_nil {u : α} {P : α → Prop} [DecidablePred P] :(@nil _ G u).find P = u := rfl
+lemma find_nil :(@nil _ G u).find P = u := rfl
+
+variable {w : α}
+@[simp]
+lemma find_cons (h : G.Adj u v) (p : G.Walk v w) :
+    (cons h p).find P = if (P u) then u else (p.find P) := rfl
 
 @[simp]
-lemma find_cons {u v w : α} {P : α → Prop} [DecidablePred P] {h : G.Adj u v} {p : G.Walk v w} :
-     (cons h p).find P = if (P u) then u else (p.find P) := rfl
-
-@[simp]
-lemma find_cons_pos {u v w : α} {P : α → Prop} [DecidablePred P] (h : G.Adj u v) (p : G.Walk v w)
-(hu : P u) : (cons h p).find P = u := by
+lemma find_cons_pos (h : G.Adj u v) (p : G.Walk v w)  (hu : P u) : (cons h p).find P = u := by
   rw [find_cons, if_pos hu]
 
 @[simp]
-lemma find_cons_neg {u v w : α} {P : α → Prop} [DecidablePred P] (h : G.Adj u v) (p : G.Walk v w)
-(hu : ¬ P u) : (cons h p).find P = (p.find P) := by
-  rw [find_cons, if_neg hu]
+lemma find_cons_neg (h : G.Adj u v) (p : G.Walk v w) (hu : ¬ P u) :
+    (cons h p).find P = (p.find P) := by rw [find_cons, if_neg hu]
 
-lemma find_spec_some {u v a : α}  (p : G.Walk u v) (P : α → Prop) [DecidablePred P]
-(hp : a ∈ p.support.filter P) : P (p.find P) := by
+variable {a : α}
+lemma find_spec_some  (p : G.Walk u v) (P : α → Prop) [DecidablePred P]
+    (hp : a ∈ p.support.filter P) : P (p.find P) := by
   induction p with
   | nil => aesop
   | cons h p ih =>
@@ -76,12 +76,10 @@ lemma find_spec_some {u v a : α}  (p : G.Walk u v) (P : α → Prop) [Decidable
     · exact h1
     · aesop
 
-lemma not_of_not_find {u v a : α} {P : α → Prop} [DecidablePred P] {p : G.Walk u v}
-    (hp : ¬ P (p.find P)) (ha : a ∈ p.support) : ¬ P a :=
+lemma not_of_not_find (hp : ¬ P (p.find P)) (ha : a ∈ p.support) : ¬ P a :=
   fun ha' ↦ hp <| find_spec_some _ _ <| List.mem_filter.2 ⟨ha, decide_eq_true ha'⟩
 
-lemma find_spec_none {u v : α} (p : G.Walk u v) (P : α → Prop) [DecidablePred P]
-(hp : ∀ a, a ∈ p.support → ¬ P a) : p.find P = v := by
+lemma find_spec_none (hp : ∀ a, a ∈ p.support → ¬ P a) : p.find P = v := by
   induction p with
   | nil => simp
   | @cons u v w h p ih =>
@@ -93,27 +91,28 @@ lemma find_spec_none {u v : α} (p : G.Walk u v) (P : α → Prop) [DecidablePre
     exact hp a (by simp [ha])
 
 @[simp]
-lemma find_mem_support {u v : α} {P : α → Prop} [DecidablePred P] {p : G.Walk u v} :
-    p.find P ∈ p.support := by
+lemma find_mem_support : p.find P ∈ p.support := by
   induction p with
   | nil => aesop
   | cons h p ih =>
     rw [find]
     split_ifs <;> aesop
 
-variable [DecidableEq α]
+variable (p) in
+lemma penultimate_mem_support : p.penultimate ∈ p.support := getVert_mem_support _ _
 
-lemma find_spec_not {u v b : α} {P : α → Prop} [DecidablePred P] {p : G.Walk u v}
-(hp : b ∈ (p.takeUntil (p.find P) find_mem_support).support) (hb : P b) : b = p.find P := by
+variable [DecidableEq α] {b : α}
+
+/-- The only element of `p.takeUntil (p.find P)` for which `P` holds is `p.find P`. -/
+lemma eq_of_mem_takeUntil_find (hp : b ∈ (p.takeUntil (p.find P) find_mem_support).support)
+    (hb : P b) : b = p.find P := by
   induction p with
   | nil => simp_all
   | @cons u v w h p ih =>
     by_cases hu : P u
     · have hf := find_cons_pos h p hu
       rw [ ← (cons h p).takeUntil_eq _ (cons h p).start_mem_support hf.symm] at *
-      simp only [takeUntil_start, support_copy, support_nil, List.mem_cons, List.not_mem_nil,
-        or_false] at hp
-      exact hf.symm ▸ hp
+      aesop
     · have hf := find_cons_neg h p hu
       have hnu : u ≠ p.find P := by
         intro h; apply hu; rw [h, ← hf]
@@ -125,54 +124,78 @@ lemma find_spec_not {u v b : α} {P : α → Prop} [DecidablePred P] {p : G.Walk
       cases hp with
       | head as => contradiction
       | tail b h' => exact ih h'
-      
-/-- If there `x` is in the walk `p` and `P x` holds then `x` is also in the walk
-`p.reverse.dropUntil (p.reverse.find P)` -/
-lemma find_spec_reverse {u v x : α} {P : α → Prop} [DecidablePred P] {p : G.Walk u v}
-    (hx : x ∈ p.support.filter P) :
-    x ∈ (p.reverse.dropUntil (p.reverse.find P) find_mem_support).support := by
-  have := p.reverse.take_spec (u := p.reverse.find P) find_mem_support
+
+/-- If `x ∈ p.support` and `P x` holds then `x` is also in the walk `p.dropUntil (p.find P)`. -/
+lemma mem_dropUntil_find_of_mem_filter (hx : x ∈ p.support.filter P) :
+    x ∈ (p.dropUntil (p.find P) find_mem_support).support := by
+  have := p.take_spec (u := p.find P) find_mem_support
   apply_fun support at this
-  simp_rw [support_append, p.support_reverse] at this
-  rw [List.mem_filter, ← List.mem_reverse] at hx
+  simp_rw [support_append] at this
+  rw [List.mem_filter] at hx
   cases List.mem_append.1 (this ▸ hx.1) with
   | inl h =>
-    rw [find_spec_not h (by simpa using hx.2)]
-    simp
+    rw [eq_of_mem_takeUntil_find h (decide_eq_true_eq (p:= P x) ▸ hx.2)]
+    exact start_mem_support _
   | inr h => exact List.mem_of_mem_tail h
 
 open Finset
 
-lemma IsPath.isCycle_of_mem_ne_snd_adj_start {u v x : α} {p : G.Walk u v} (hp : p.IsPath)
-    (ha : G.Adj x u) (hx : x ∈ p.support) (hs : x ≠ p.snd) : ((p.takeUntil x hx).cons ha).IsCycle :=
+lemma IsPath.cons_takeUntil_isCycle  (hp : p.IsPath) (ha : G.Adj x u) (hx : x ∈ p.support)
+    (hs : x ≠ p.snd) : ((p.takeUntil x hx).cons ha).IsCycle :=
   cons_isCycle_iff _ ha|>.2 ⟨hp.takeUntil _, fun hf ↦
     (fun hf ↦ hs <| hp.eq_snd_of_start_mem_edge hf) <| (edges_takeUntil_subset ..) hf⟩
 
-lemma IsPath.isCycle_of_end_adj_mem_ne_penultimate {u v x : α} {p : G.Walk u v} (hp : p.IsPath)
-    (ha : G.Adj v x) (hx : x ∈ p.support) (hs : x ≠ p.penultimate) :
-    ((p.dropUntil x hx).cons ha).IsCycle :=
+lemma IsPath.cons_dropUntil_isCycle (hp : p.IsPath) (ha : G.Adj v x) (hx : x ∈ p.support)
+    (hs : x ≠ p.penultimate) : ((p.dropUntil x hx).cons ha).IsCycle :=
   cons_isCycle_iff _ ha|>.2 ⟨hp.dropUntil _, fun hf ↦ (fun hf ↦ hs
     <| hp.eq_penultimate_of_end_mem_edge hf) <| (edges_dropUntil_subset ..) (Sym2.eq_swap ▸ hf)⟩
 
 variable [LocallyFinite G]
---variable [DecidableEq α]
 
-lemma exists_closing_adj {u v : α} {p : G.Walk u v} (hp : p.IsPath)
-  (hmax : G.neighborFinset u ⊆ p.support.toFinset) (h1 : 1 < G.degree u) :
-    ∃ x, x ∈ p.support ∧ x ≠ p.snd ∧ G.Adj u x := by
-  obtain ⟨x, _, hxy⟩ := (G.one_lt_degree_iff u).1 h1
-  wlog hax : x ≠ p.snd
+lemma exists_closing_adj (hp : p.IsPath) (hmax : G.neighborFinset v ⊆ p.support.toFinset)
+    (h1 : 1 < G.degree v) : ∃ x, x ∈ p.support ∧ G.Adj v x ∧ x ≠ p.penultimate  := by
+  obtain ⟨x, _, hxy⟩ := (G.one_lt_degree_iff v).1 h1
+  wlog hax : x ≠ p.penultimate
   · rw [ne_eq, not_not] at hax
     subst_vars
-    exact this hp hmax h1 _ p.snd ⟨hxy.2.1, hxy.1, hxy.2.2.symm⟩ hxy.2.2.symm
-  exact ⟨_, List.mem_toFinset.1 <| hmax <| (mem_neighborFinset ..).2 hxy.1, hax, hxy.1⟩
+    exact this hp hmax h1 _ p.penultimate ⟨hxy.2.1, hxy.1, hxy.2.2.symm⟩ hxy.2.2.symm
+  exact ⟨_, List.mem_toFinset.1 <| hmax <| (mem_neighborFinset ..).2 hxy.1, hxy.1, hax⟩
+
+lemma exists_cycle_of_max_path (hp : p.IsPath) (hmax : G.neighborFinset v ⊆ p.support.toFinset)
+    (h1 : 1 < G.degree v) : ∃ x, ∃ (hx : x ∈ p.support), ∃ (ha : G.Adj v x),
+    ((p.dropUntil x hx).cons ha).IsCycle :=
+  let ⟨x, hx, ha, hne⟩ := exists_closing_adj hp hmax h1
+  ⟨x, hx, ha, hp.cons_dropUntil_isCycle ha hx hne⟩
+
+lemma penultimate_dropUntil  (p : G.Walk u v) (hsu : w ≠ v)  (h : w ∈ p.support) :
+    (p.dropUntil w h).penultimate = p.penultimate := by
+  sorry
 
 
-lemma exists_cycle_of_max_path {u v : α} {p : G.Walk u v} (hp : p.IsPath)
-  (hmax : G.neighborFinset u ⊆ p.support.toFinset) (h1 : 1 < G.degree u) :
-    ∃ x, ∃ (ha : G.Adj x u), ∃ (hx : x ∈ p.support), ((p.takeUntil x hx).cons ha).IsCycle :=
-    let ⟨x, hx, hne, ha⟩ := exists_closing_adj hp hmax h1
-    ⟨x, ha.symm, hx, hp.isCycle_of_mem_ne_snd_adj_start ha.symm hx hne ⟩
+
+lemma maximal_cycle_of_maximal_path (hp : p.IsPath) (hmax : G.neighborFinset v ⊆ p.support.toFinset)
+    (h1 : 1 < G.degree v) :  ∃ x, ∃ (hx : x ∈ p.support), ∃ (ha : G.Adj v x),
+    ((p.dropUntil x hx).cons ha).IsCycle ∧
+    G.neighborFinset v ⊆ ((p.dropUntil x hx).cons ha).support.toFinset := by
+  classical
+  let P : α → Prop := fun x => G.Adj v x ∧ x ≠ p.penultimate
+  let ⟨x, hx, ha, hne⟩ := exists_closing_adj hp hmax h1
+  have hP : P x := ⟨ha, hne⟩
+  use (p.find P), find_mem_support
+  have := find_spec_some _ _ <| List.mem_filter.2 ⟨hx, decide_eq_true hP⟩
+  use this.1
+  use hp.cons_dropUntil_isCycle this.1 find_mem_support this.2
+  intro y hy
+  rw [List.mem_toFinset, support_cons] at *
+  right
+  by_cases hpen : y = p.penultimate
+  · rw [hpen]
+    have h2 := penultimate_mem_support (p.dropUntil (p.find P) find_mem_support)
+    rwa [ penultimate_dropUntil _ (fun hv ↦ G.loopless _ (hv ▸ this.1))] at h2
+  · apply mem_dropUntil_find_of_mem_filter <| List.mem_filter.2 ⟨List.mem_toFinset.1 (hmax hy), _⟩
+    rw [decide_eq_true]
+    rw [mem_neighborFinset] at hy
+    exact ⟨hy, hpen⟩
 
 
 
