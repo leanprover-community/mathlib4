@@ -262,11 +262,11 @@ lemma mem_map_ker_iff (x : ⨁ i, α i) : x ∈ (map f).ker ↔ ∀ i, x i ∈ (
     exact h i
 
 lemma of_mem_map_ker_iff [DecidableEq ι] (i : ι) (x : α i) :
-    x ∈ (f i).ker ↔ (of α i x) ∈ (map f).ker := by
+    (of α i x) ∈ (map f).ker ↔ x ∈ (f i).ker := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · simp [AddMonoidHom.mem_ker.mp h]
   · simp only [AddMonoidHom.mem_ker, map_of] at h
     exact DFinsupp.single_eq_zero.mp h
+  · simp [AddMonoidHom.mem_ker.mp h]
 
 lemma mem_map_range_iff (y : ⨁ i, β i) [DecidableEq ι] [(i : ι) → (x : β i) → Decidable (x ≠ 0)] :
     y ∈ (map f).range ↔ ∀ i, y i ∈ (f i).range := by
