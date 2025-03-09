@@ -147,7 +147,7 @@ theorem sol_eq_of_eq_init (u v : ℕ → α) (hu : E.IsSolution u) (hv : E.IsSol
   ext x
   exact mod_cast h (mem_range.mpr x.2)
 
-/-! `E.tupleSucc` maps `![s₀, s₁, ..., sₙ]` to `![s₁, ..., sₙ, ∑ (E.coeffs i) * sᵢ]`,
+/-- `E.tupleSucc` maps `![s₀, s₁, ..., sₙ]` to `![s₁, ..., sₙ, ∑ (E.coeffs i) * sᵢ]`,
 where `n := E.order`. This operation is quite useful for determining closed-form
 solutions of `E`. -/
 def tupleSucc : (Fin E.order → α) →ₗ[α] Fin E.order → α where
