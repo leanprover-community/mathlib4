@@ -182,6 +182,7 @@ lemma Kernel.ac_comp_of_ac {ν : Measure 𝓧} [SFinite ν] (h_ac : ∀ᵐ ω �
   rw [← posterior_ac_iff]
   exact posterior_ac_of_ac h_ac
 
+-- todo: docstring. This is a form of Bayes' rule.
 lemma rnDeriv_posterior (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
     ∀ᵐ ω ∂μ, ∀ᵐ b ∂(κ ∘ₘ μ),
       (κ†μ).rnDeriv (Kernel.const _ μ) b ω = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω b := by
