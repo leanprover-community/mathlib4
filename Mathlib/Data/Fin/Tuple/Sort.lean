@@ -104,7 +104,7 @@ variable {n : ℕ} {α : Type*}
 
 /-- If `f₀ ≤ f₁ ≤ f₂ ≤ ⋯` is a sorted `m`-tuple of elements of `α`, then for any `j : Fin m` and
 `a : α` we have `j < #{i | fᵢ ≤ a}` iff `fⱼ ≤ a`. -/
-theorem lt_card_le_iff_apply_le_of_monotone [Preorder α] [DecidableRel (α := α) LE.le]
+theorem lt_card_le_iff_apply_le_of_monotone [Preorder α] [DecidableLE α]
     {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Monotone f) (j : Fin m) :
     j < Fintype.card {i // f i ≤ a} ↔ f j ≤ a := by
   suffices h1 : ∀ k : Fin m, (k < Fintype.card {i // f i ≤ a}) → f k ≤ a by
@@ -131,7 +131,7 @@ theorem lt_card_le_iff_apply_le_of_monotone [Preorder α] [DecidableRel (α := �
   apply h
   exact (h_sorted (le_of_not_lt hij)).trans hia
 
-theorem lt_card_ge_iff_apply_ge_of_antitone [Preorder α] [DecidableRel (α := α) LE.le]
+theorem lt_card_ge_iff_apply_ge_of_antitone [Preorder α] [DecidableLE α]
     {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Antitone f) (j : Fin m) :
     j < Fintype.card {i // a ≤ f i} ↔ a ≤ f j :=
   lt_card_le_iff_apply_le_of_monotone _ (OrderDual.toDual a) h_sorted.dual_right j

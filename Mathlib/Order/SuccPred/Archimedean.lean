@@ -130,7 +130,7 @@ This isn't an instance due to a loop with `LinearOrder`.
 -/
 -- See note [reducible non instances]
 abbrev IsSuccArchimedean.linearOrder [SuccOrder α] [IsSuccArchimedean α]
-     [DecidableEq α] [DecidableRel (α := α) (· ≤ ·)] [DecidableRel (α := α) (· < ·)]
+     [DecidableEq α] [DecidableLE α] [DecidableLT α]
      [IsDirected α (· ≥ ·)] : LinearOrder α where
   le_total a b :=
     have ⟨c, ha, hb⟩ := directed_of (· ≥ ·) a b
@@ -152,7 +152,7 @@ This isn't an instance due to a loop with `LinearOrder`.
 -/
 -- See note [reducible non instances]
 abbrev IsPredArchimedean.linearOrder [PredOrder α] [IsPredArchimedean α]
-     [DecidableEq α] [DecidableRel (α := α) (· ≤ ·)] [DecidableRel (α := α) (· < ·)]
+     [DecidableEq α] [DecidableLE α] [DecidableLT α]
      [IsDirected α (· ≤ ·)] : LinearOrder α :=
   letI : LinearOrder αᵒᵈ := IsSuccArchimedean.linearOrder
   inferInstanceAs (LinearOrder αᵒᵈᵒᵈ)
