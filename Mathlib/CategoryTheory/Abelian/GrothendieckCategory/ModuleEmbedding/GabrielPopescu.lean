@@ -97,7 +97,7 @@ theorem finiteSubcoproductsCocone_ι_app_preadditive {α : Type v} [DecidableEq 
 
 attribute [local instance] IsFiltered.isConnected in
 /-- This is the "Lemma" in [mitchell1981]. -/
-theorem ι_d_comp_d {G : C} (hG : IsSeparator G) {A B : C} {M : ModuleCat (End G)ᵐᵒᵖ}
+theorem kernel_ι_d_comp_d {G : C} (hG : IsSeparator G) {A B : C} {M : ModuleCat (End G)ᵐᵒᵖ}
     (g : M ⟶ ModuleCat.of (End G)ᵐᵒᵖ (G ⟶ A)) (hg : Mono g)
     (f : M ⟶ ModuleCat.of (End G)ᵐᵒᵖ (G ⟶ B)) :
     kernel.ι (d g) ≫ d f = 0 := by
@@ -121,7 +121,7 @@ theorem exists_d_comp_eq_d {G : C} (hG : IsSeparator G) {A} (B : C) [Injective B
     {M : ModuleCat (End G)ᵐᵒᵖ} (g : M ⟶ ModuleCat.of (End G)ᵐᵒᵖ (G ⟶ A)) (hg : Mono g)
     (f : M ⟶ ModuleCat.of (End G)ᵐᵒᵖ (G ⟶ B)) : ∃ (l : A ⟶ B), d g ≫ l = d f := by
   let l₁ : image (d g) ⟶ B := epiDesc (factorThruImage (d g)) (d f) (by
-    rw [← kernelFactorThruImage_hom_comp_ι, Category.assoc, ι_d_comp_d hG _ hg, comp_zero])
+    rw [← kernelFactorThruImage_hom_comp_ι, Category.assoc, kernel_ι_d_comp_d hG _ hg, comp_zero])
   let l₂ : A ⟶ B := Injective.factorThru l₁ (Limits.image.ι (d g))
   refine ⟨l₂, ?_⟩
   simp only [l₂, l₁]
@@ -135,11 +135,11 @@ open GrothendieckPopescuAux
 theorem full (G : C) (hG : IsSeparator G) : (preadditiveCoyonedaObj G).Full where
   map_surjective {A B} f := by
     have := (isSeparator_iff_epi G).1 hG A
-    have := ι_d_comp_d hG (𝟙 _) inferInstance f
-    simp only [ModuleCat.hom_id, LinearMap.id_coe, id_eq, d] at this
-    refine ⟨Abelian.epiDesc _ _ this, ?_⟩
+    have h := kernel_ι_d_comp_d hG (𝟙 _) inferInstance f
+    simp only [ModuleCat.hom_id, LinearMap.id_coe, id_eq, d] at h
+    refine ⟨Abelian.epiDesc _ _ h, ?_⟩
     ext q
-    simpa [-Abelian.comp_epiDesc] using Sigma.ι _ q ≫= comp_epiDesc _ _ this
+    simpa [-Abelian.comp_epiDesc] using Sigma.ι _ q ≫= comp_epiDesc _ _ h
 
 /-- `G ⟶ G` and `(End G)ᵐᵒᵖ` are isomorphic as `(End G)ᵐᵒᵖ`-modules. -/
 @[simps]
@@ -157,11 +157,10 @@ theorem preserves_injectives (G : C) (hG : IsSeparator G) :
     rw [← Module.injective_iff_injective_object]
     simp only [preadditiveCoyonedaObj_obj_carrier, preadditiveCoyonedaObj_obj_isAddCommGroup,
       preadditiveCoyonedaObj_obj_isModule]
-    apply Module.Baer.injective
-    intro M g
-    have := exists_d_comp_eq_d hG B (ModuleCat.ofHom
+    refine Module.Baer.injective (fun M g => ?_)
+    have h := exists_d_comp_eq_d hG B (ModuleCat.ofHom
       ⟨⟨fun i => i.1.unop, by aesop_cat⟩, by aesop_cat⟩) ?_ (ModuleCat.ofHom g)
-    · obtain ⟨l, hl⟩ := this
+    · obtain ⟨l, hl⟩ := h
       refine ⟨((preadditiveCoyonedaObj G).map l).hom ∘ₗ (linearEquiv G).symm.toLinearMap, ?_⟩
       intro f hf
       simpa [d] using Sigma.ι _ ⟨f, hf⟩ ≫= hl
