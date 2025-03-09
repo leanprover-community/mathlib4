@@ -203,16 +203,16 @@ private noncomputable abbrev eqv1 :
 /- `eqv2` is the isomorphism from `k[X_0,...,X_n]/T(I)` into `k[X_0,...,X_n]/I`,
 induced by `T`. -/
 private noncomputable abbrev eqv2 :
-    (MvPolynomial (Fin (n + 1)) k ⧸ I.map (T f)) ≃ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I
-  := quotientEquivAlg (R₁ := k) (I.map (T f)) I (T f).symm <| by
-  calc
-    _ = I.map ((T f).symm.toRingEquiv.toRingHom.comp (T f)) := by
-      have : (T f).symm.toRingEquiv.toRingHom.comp (T f) = RingHom.id _ :=
-        RingEquiv.symm_toRingHom_comp_toRingHom _
-      rw [this, Ideal.map_id]
-    _ = _ := by
-      rw [← Ideal.map_map, Ideal.map_coe, Ideal.map_coe]
-      exact congrArg _ rfl
+    (MvPolynomial (Fin (n + 1)) k ⧸ I.map (T f)) ≃ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I :=
+  quotientEquivAlg (R₁ := k) (I.map (T f)) I (T f).symm <| by
+    calc
+      _ = I.map ((T f).symm.toRingEquiv.toRingHom.comp (T f)) := by
+        have : (T f).symm.toRingEquiv.toRingHom.comp (T f) = RingHom.id _ :=
+          RingEquiv.symm_toRingHom_comp_toRingHom _
+        rw [this, Ideal.map_id]
+      _ = _ := by
+        rw [← Ideal.map_map, Ideal.map_coe, Ideal.map_coe]
+        exact congrArg _ rfl
 
 /- `hom2` is the composition of maps above, from `k[X_0,...X_(n-1)]` to `k[X_0,...X_n]/I`. -/
 private noncomputable def hom2 : MvPolynomial (Fin n) k →ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I :=
