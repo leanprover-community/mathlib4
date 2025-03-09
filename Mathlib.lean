@@ -1537,6 +1537,7 @@ import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.Normed.Field.ProperSpace
 import Mathlib.Analysis.Normed.Field.Ultra
 import Mathlib.Analysis.Normed.Field.UnitBall
+import Mathlib.Analysis.Normed.Field.WithAbs
 import Mathlib.Analysis.Normed.Group.AddCircle
 import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.Normed.Group.BallSphere
