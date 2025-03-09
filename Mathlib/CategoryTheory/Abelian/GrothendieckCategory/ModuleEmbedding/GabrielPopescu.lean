@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Abelian.Yoneda
 import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
 import Mathlib.Algebra.Category.ModuleCat.Injective
 import Mathlib.CategoryTheory.Filtered.Connected
+import Mathlib.CategoryTheory.Preadditive.LiftToFinset
 
 /-!
 # The Gabriel-Popescu theorem
@@ -30,7 +31,7 @@ namespace CategoryTheory.Abelian
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [IsGrothendieckAbelian.{v} C]
 
-namespace GrothendieckPopescuAux
+namespace GabrielPopescuAux
 
 open CoproductsFromFiniteFiltered
 
@@ -44,20 +45,6 @@ theorem ι_d {G A : C} {M : ModuleCat (End G)ᵐᵒᵖ} (g : M ⟶ ModuleCat.of 
     Sigma.ι _ m ≫ d g = g.hom m := by
   simp [d]
 
-theorem finiteSubcoproductsCocone_ι_app_preadditive {α : Type v} [DecidableEq α] (f : α → C)
-    [HasCoproduct f]
-    (S : Finset (Discrete α)) :
-    (finiteSubcoproductsCocone f).ι.app S = ∑ a ∈ S.attach, Sigma.π _ a ≫ Sigma.ι _ a.1.as := by
-  dsimp only [liftToFinsetObj_obj, Discrete.functor_obj_eq_as, finiteSubcoproductsCocone_pt,
-    Functor.const_obj_obj, finiteSubcoproductsCocone_ι_app]
-  ext v
-  simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, Preadditive.comp_sum]
-  rw [Finset.sum_eq_single v]
-  · simp
-  · intro b hb hb₁
-    rw [Sigma.ι_π_of_ne_assoc _ (Ne.symm hb₁), zero_comp]
-  · simp
-
 attribute [local instance] IsFiltered.isConnected in
 /-- This is the "Lemma" in [mitchell1981]. -/
 theorem kernel_ι_d_comp_d {G : C} (hG : IsSeparator G) {A B : C} {M : ModuleCat (End G)ᵐᵒᵖ}
@@ -68,7 +55,7 @@ theorem kernel_ι_d_comp_d {G : C} (hG : IsSeparator G) {A B : C} {M : ModuleCat
   dsimp only [liftToFinsetObj_obj, Discrete.functor_obj_eq_as, finiteSubcoproductsCocone_pt,
     Functor.const_obj_obj]
   classical
-  rw [finiteSubcoproductsCocone_ι_app_preadditive, ← pullback.condition_assoc]
+  rw [finiteSubcoproductsCocone_ι_app_eq_sum, ← pullback.condition_assoc]
   refine (Preadditive.isSeparator_iff G).1 hG _ (fun h => ?_)
   rw [Preadditive.comp_sum_assoc, Preadditive.comp_sum_assoc, Preadditive.sum_comp]
   simp only [Category.assoc, ι_d]
@@ -91,9 +78,9 @@ theorem exists_d_comp_eq_d {G : C} (hG : IsSeparator G) {A} (B : C) [Injective B
   conv_lhs => congr; rw [← Limits.image.fac (d g)]
   simp [-Limits.image.fac]
 
-end GrothendieckPopescuAux
+end GabrielPopescuAux
 
-open GrothendieckPopescuAux
+open GabrielPopescuAux
 
 theorem full (G : C) (hG : IsSeparator G) : (preadditiveCoyonedaObj G).Full where
   map_surjective {A B} f := by
