@@ -63,12 +63,21 @@ register_option linter.unnecessarySetOptionIn : Bool := {
   descr := "enable the unnecessarySetOptionIn linter"
 }
 
+register_option linter.unnecessarySetOptionIn.heartbeats : Bool := {
+  defValue := false
+  descr := "if `true`, then the unnecessarySetOptionIn linter also tries to remove `maxHeartbeat`
+    options"
+}
+
 /-- reports a warning if the "first layer" `set_option ... in` is unnecessary. -/
 def findSetOptionIn (cmd : CommandElab) : CommandElab := fun stx => do
   let mut (report?, declId) := (false, default)
   let s ← get
   match stx with
     | `(command| set_option $opt $_ in $inner) => do
+      if !Linter.getLinterValue linter.unnecessarySetOptionIn.heartbeats (← getOptions) &&
+        opt.getId == `maxHeartbeats then
+          return
       if !opt.getId.components.contains `linter then
         if let some (exm, id) := (← toExample inner) then
           cmd exm

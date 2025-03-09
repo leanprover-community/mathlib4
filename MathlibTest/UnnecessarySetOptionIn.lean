@@ -1,5 +1,6 @@
 import Mathlib.Tactic.Linter.UnnecessarySetOptionIn
 
+set_option linter.unnecessarySetOptionIn.heartbeats true in
 /--
 warning: unnecessary 'set_option maxHeartbeats' in '«example»'
 note: this linter can be disabled with `set_option linter.unnecessarySetOptionIn false`
@@ -46,6 +47,15 @@ def foo'' := 0
 #guard_msgs in
 set_option linter.unusedVariables false in
 lemma bar (h : Nat) : True := by trivial
+
+-- when the `linter.unnecessarySetOptionIn.heartbeats` is not set, the linter ignores
+-- `set_option maxHeartbeats 0 in`
+#guard_msgs in
+set_option maxHeartbeats 0 in
+--set_option linter.unnecessarySetOptionIn true in
+instance (priority := high) e : Inhabited Nat := ⟨0⟩
+
+set_option linter.unnecessarySetOptionIn.heartbeats true
 
 /--
 warning: unnecessary 'set_option maxHeartbeats' in 'd'
