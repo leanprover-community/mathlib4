@@ -40,13 +40,13 @@ def getCases' : Syntax → Array Syntax
   | _ => default
 
 @[inherit_doc linter.style.cases]
-def casesLinter : Linter where run := withSetOptionIn fun _stx => do
+def casesLinter : Linter where run := withSetOptionIn fun stx => do
   unless Linter.getLinterValue linter.style.cases (← getOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return
-  for stx in (getCases' _stx) do
-    Linter.logLint linter.style.cases stx
+  for stx' in (getCases' stx) do
+    Linter.logLint linter.style.cases stx'
       "The `cases'` tactic is discouraged: \
       please strongly consider using `obtain`, `rcases` or `cases` instead."
 
