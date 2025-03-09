@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Fabrizio Barroero
 -/
 
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Order.Hom.Basic
-import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Nonarchimedean functions
@@ -113,3 +114,5 @@ theorem add_eq_max_of_ne {F α : Type*} [AddGroup α] [FunLike F α R]
     exact Eq.symm (max_eq_left_of_lt h_lt)
 
 end IsNonarchimedean
+
+#min_imports

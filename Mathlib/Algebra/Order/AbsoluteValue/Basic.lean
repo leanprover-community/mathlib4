@@ -218,7 +218,7 @@ protected theorem map_neg (a : R) : abv (-a) = abv a := by
   exact ((neg_lt_zero.mpr (abv.pos ha)).trans (abv.pos (neg_ne_zero.mpr ha))).ne'
 
 instance addGroupSeminormClass : AddGroupSeminormClass (AbsoluteValue R S) R S :=
-  AddGroupSeminormClass.mk (fun f ↦ map_zero f) (fun f a ↦ AbsoluteValue.map_neg f a)
+  AddGroupSeminormClass.mk map_zero (by simp)
 
 protected theorem map_sub (a b : R) : abv (a - b) = abv (b - a) := by rw [← neg_sub, abv.map_neg]
 
