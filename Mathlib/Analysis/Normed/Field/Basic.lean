@@ -5,6 +5,7 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Field.Subfield.Defs
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.Analysis.Normed.Ring.Basic
 
 /-!
