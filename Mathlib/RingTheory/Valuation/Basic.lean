@@ -268,7 +268,11 @@ theorem map_sub (x y : R) : v (x - y) ≤ max (v x) (v y) :=
 
 theorem map_sub_le {x y g} (hx : v x ≤ g) (hy : v y ≤ g) : v (x - y) ≤ g := by
   rw [sub_eq_add_neg]
-  exact v.map_add_le hx (le_trans (le_of_eq (v.map_neg y)) hy)
+  exact v.map_add_le hx <| (v.map_neg y).trans_le hy
+
+theorem map_sub_lt {x y : R} {g : Γ₀} (hx : v x < g) (hy : v y < g) : v (x - y) < g := by
+  rw [sub_eq_add_neg]
+  exact v.map_add_lt hx <| (v.map_neg y).trans_lt hy
 
 variable {x y : R}
 
