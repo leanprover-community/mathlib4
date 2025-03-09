@@ -21,64 +21,40 @@ For these `FunLike`s, the coercion to a function can be seen as a monoid homomor
 * `MonoidFunLike`
 -/
 
-variable {α : Type*} {β : α → Type*} {F : Type*} [DFunLike F α β]
+variable {α : Type*} {β : α → Type*} (F : Type*) [DFunLike F α β]
 
-section Zero
+section defs
 
-variable (F) in
 /-- `ZeroFunLike F` states that `0 a = 0`. -/
 class ZeroFunLike [∀ a, Zero (β a)] [Zero F] where
   protected zero_map' : ∀ a, (0 : F) a = 0
 
-end Zero
-
-section Add
-
-variable (F) in
 /-- `AddFunLike F` states that `(f + g) a = f a + g a`. -/
 class AddFunLike [∀ a, Add (β a)] [Add F] where
   protected add_map' : ∀ f g a, (f + g : F) a = f a + g a
 
-end Add
-
-section add_zero
-
-variable (F) in
 /-- `AddMonoidFunLike F` states that `(⇑)` is a monoid homomorphism. -/
 class AddMonoidFunLike [∀ a, AddZeroClass (β a)] [AddZeroClass F] extends
   ZeroFunLike F, AddFunLike F
 
-end add_zero
-
-section One
-
-variable (F) in
 /-- `OneFunLike F` states that `1 a = 1`. -/
 @[to_additive]
 class OneFunLike [∀ a, One (β a)] [One F] where
   protected one_map' : ∀ a, (1 : F) a = 1
 
-end One
-
-section Add
-
-variable (F) in
 /-- `MulFunLike F` states that `(f * g) a = f a * g a`. -/
 @[to_additive]
 class MulFunLike [∀ a, Mul (β a)] [Mul F] where
   protected mul_map' : ∀ f g a, (f * g : F) a = f a * g a
 
-end Add
-
-section add_zero
-
-variable (F) in
 /-- `MonoidFunLike F` states that `(⇑)` is a monoid homomorphism. -/
 @[to_additive]
 class MonoidFunLike [∀ a, MulOneClass (β a)] [MulOneClass F] extends
   OneFunLike F, MulFunLike F
 
-end add_zero
+end defs
+
+variable {F}
 
 @[to_additive (attr := simp)]
 theorem one_map [∀ a, One (β a)] [One F] [OneFunLike F] (a : α) :
