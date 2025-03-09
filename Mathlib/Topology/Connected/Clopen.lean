@@ -25,7 +25,7 @@ open Set Function Topology TopologicalSpace Relation
 
 universe u v
 
-variable {α : Type u} {β : Type v} {ι : Type*} {π : ι → Type*} [TopologicalSpace α]
+variable {α : Type u} {β : Type v} {ι : Type*} {X : ι → Type*} [TopologicalSpace α]
   {s t u v : Set α}
 
 section Preconnected
@@ -35,7 +35,7 @@ theorem IsPreconnected.subset_isClopen {s t : Set α} (hs : IsPreconnected s) (h
     (hne : (s ∩ t).Nonempty) : s ⊆ t :=
   hs.subset_left_of_subset_union ht.isOpen ht.compl.isOpen disjoint_compl_right (by simp) hne
 
-theorem Sigma.isConnected_iff [∀ i, TopologicalSpace (π i)] {s : Set (Σi, π i)} :
+theorem Sigma.isConnected_iff [∀ i, TopologicalSpace (X i)] {s : Set (Σi, X i)} :
     IsConnected s ↔ ∃ i t, IsConnected t ∧ s = Sigma.mk i '' t := by
   refine ⟨fun hs => ?_, ?_⟩
   · obtain ⟨⟨i, x⟩, hx⟩ := hs.nonempty
@@ -46,8 +46,8 @@ theorem Sigma.isConnected_iff [∀ i, TopologicalSpace (π i)] {s : Set (Σi, π
   · rintro ⟨i, t, ht, rfl⟩
     exact ht.image _ continuous_sigmaMk.continuousOn
 
-theorem Sigma.isPreconnected_iff [hι : Nonempty ι] [∀ i, TopologicalSpace (π i)]
-    {s : Set (Σi, π i)} : IsPreconnected s ↔ ∃ i t, IsPreconnected t ∧ s = Sigma.mk i '' t := by
+theorem Sigma.isPreconnected_iff [hι : Nonempty ι] [∀ i, TopologicalSpace (X i)]
+    {s : Set (Σi, X i)} : IsPreconnected s ↔ ∃ i t, IsPreconnected t ∧ s = Sigma.mk i '' t := by
   refine ⟨fun hs => ?_, ?_⟩
   · obtain rfl | h := s.eq_empty_or_nonempty
     · exact ⟨Classical.choice hι, ∅, isPreconnected_empty, (Set.image_empty _).symm⟩
@@ -88,12 +88,12 @@ theorem Sum.isPreconnected_iff [TopologicalSpace β] {s : Set (α ⊕ β)} :
     · exact ht.image _ continuous_inl.continuousOn
     · exact ht.image _ continuous_inr.continuousOn
 
-/-- A continuous map from a connected space to a disjoint union `Σ i, π i` can be lifted to one of
-the components `π i`. See also `ContinuousMap.exists_lift_sigma` for a version with bundled
+/-- A continuous map from a connected space to a disjoint union `Σ i, X i` can be lifted to one of
+the components `X i`. See also `ContinuousMap.exists_lift_sigma` for a version with bundled
 `ContinuousMap`s. -/
-theorem Continuous.exists_lift_sigma [ConnectedSpace α] [∀ i, TopologicalSpace (π i)]
-    {f : α → Σ i, π i} (hf : Continuous f) :
-    ∃ (i : ι) (g : α → π i), Continuous g ∧ f = Sigma.mk i ∘ g := by
+theorem Continuous.exists_lift_sigma [ConnectedSpace α] [∀ i, TopologicalSpace (X i)]
+    {f : α → Σ i, X i} (hf : Continuous f) :
+    ∃ (i : ι) (g : α → X i), Continuous g ∧ f = Sigma.mk i ∘ g := by
   obtain ⟨i, hi⟩ : ∃ i, range f ⊆ range (.mk i) := by
     rcases Sigma.isConnected_iff.1 (isConnected_range hf) with ⟨i, s, -, hs⟩
     exact ⟨i, hs.trans_subset (image_subset_range _ _)⟩
