@@ -1,90 +1,27 @@
-import Mathlib.Combinatorics.SimpleGraph.Greedy
 import Mathlib.Combinatorics.SimpleGraph.Finite
+import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
+import Mathlib.Combinatorics.SimpleGraph.Coloring
+import Mathlib.Combinatorics.SimpleGraph.Brooks.First
 namespace SimpleGraph
 variable {α : Type*} {G : SimpleGraph α}
-
+open Finset
 section Walks
 namespace Walk
-
-theorem append_isPath_iff {u v w : α } {p : G.Walk u v} {q : G.Walk v w} :
-     (p.append q).IsPath ↔ p.IsPath ∧ q.IsPath ∧ p.support.Disjoint q.support.tail := by
-  refine ⟨fun h ↦ ⟨h.of_append_left, h.of_append_right,
-      (List.nodup_append.1 <| support_append .. ▸ h.2).2.2⟩, fun h ↦ IsPath.mk' ?_⟩
-  rw [support_append, List.nodup_append]
-  exact ⟨h.1.2, h.2.1.2.sublist <| List.tail_sublist _, h.2.2⟩
-open Finset
-
-@[simp]
-lemma IsPath.ne_of_pos {u v : α} {p : G.Walk u v} (hp : p.IsPath) (h0 : 0 < p.length) :
-  u ≠ v := by
-  cases p with
-  | nil => simp at h0
-  | cons h p => intro; subst_vars; simp at hp
-
-/-- If p is a path of length > 1 from u to v then uv is not an edge of p -/
-@[simp]
-lemma IsPath.not_edge_start_end {u v : α} {p : G.Walk u v} (hp : p.IsPath) (h0 : 1 < p.length) :
-    s(u, v) ∉ p.edges := by
-  intro hp
-  cases p with
-  | nil => simp at h0
-  | cons h p =>
-    rename_i _ hux
-    simp only [edges_cons, List.mem_cons, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, true_and,
-      Prod.swap_prod_mk,length_cons, Nat.lt_add_left_iff_pos,cons_isPath_iff] at hux hp h0
-    cases hp with
-    | inl h => cases h with
-               | inl h => apply hux.1.ne_of_pos h0 h.symm
-               | inr h => apply hux.2 (h.1 ▸ p.start_mem_support)
-    | inr h => apply hux.2 (p.fst_mem_support_of_mem_edges h)
-
-variable [DecidableEq α] [LocallyFinite G]
-lemma exists_cycle_of_max_path {u v : α} {p : G.Walk u v} (hp : p.IsPath)
-  (hmax : G.neighborFinset u ⊆ p.support.toFinset) (h1 : 1 < G.degree u) :
-    ∃ x, ∃ (had : G.Adj x u), ∃ (hx : x ∈ p.support), ((p.takeUntil x hx).cons had).IsCycle := by
-  cases p with
-  | nil =>
-    simp_rw [support_nil, List.toFinset_cons,  List.toFinset_nil,
-      insert_emptyc_eq] at *
-    have := Nat.lt_of_lt_of_le h1 <| card_le_card hmax
-    simp at this
-  | cons h p =>
-    rename_i a
-    obtain ⟨x, y, hxy⟩ := (G.one_lt_degree_iff u).1 h1
-    wlog hax : x ≠ a
-    · rw [ne_eq, not_not] at hax
-      subst_vars
-      exact this h1 h p hp hmax y x ⟨hxy.2.1,hxy.1, hxy.2.2.symm⟩ hxy.2.2.symm
-    use x, hxy.1.symm
-    rw [← mem_neighborFinset] at hxy
-    use List.mem_toFinset.1 <| hmax hxy.1
-    rw [cons_isCycle_iff]
-    use hp.takeUntil _
-    rw [Sym2.eq_swap]
-    apply (hp.takeUntil _).not_edge_start_end
-    rw [takeUntil]
-    rename_i h'
-    have : u ≠ x := by
-      intro hf; rw [hf] at h'
-      exact (G.loopless _ h'.1)
-    simp_rw [dif_neg this]
-    cases p with
-    | nil =>
-      exfalso
-      simp only [support_cons, support_nil, List.toFinset_cons, List.toFinset_nil,
-        insert_emptyc_eq] at hmax
-      have hx : x ∈ {u, v} := hmax hxy.1
-      simp only [mem_insert, mem_singleton] at hx
-      cases hx with
-      | inl h => exact this h.symm
-      | inr h => exact hax h
-    | cons h p =>
-      rw [takeUntil, dif_neg hax.symm]
-      simp
 /-
-Need p.takeUntil_pred
+def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Walk v u
+  | nil, u, h => by rw [mem_support_nil_iff.mp h]
+  | cons r p, u, h =>
+    if hx : v = u then
+      hx ▸ Walk.nil
+    else
+      cons r (takeUntil p u <| by
+        cases h
+        · exact (hx rfl).elim
+        · assumption)
 -/
 #check List.takeWhile
+variable [LocallyFinite G] [DecidableEq α]
 lemma exists_max_cycle_of_max_path {u v : α} {p : G.Walk u v} (hp : p.IsPath)
   (hmax : G.neighborFinset u ⊆ p.support.toFinset) (h1 : 1 < G.degree u) :
     ∃ x, ∃ (had : G.Adj x u), ∃ (hx : x ∈ p.support), ((p.takeUntil x hx).cons had).IsCycle
@@ -106,16 +43,14 @@ lemma exists_maximal_path_subset {u v : α} (s : Finset α) {q : G.Walk u v} (hq
       obtain ⟨y, hy⟩ := not_subset.mp <| hf x p hp hs
       rw [mem_inter, mem_neighborFinset] at hy
       use y, p.cons hy.1.1.symm
-      simp_all only [append_isPath_iff, cons_isPath_iff, length_append, true_and,
-        List.disjoint_cons_left, and_true, cons_append,
-        support_cons, List.toFinset_cons, length_cons, add_le_add_iff_right]
-      refine ⟨?_,?_ ⟩
-      · rw [List.mem_toFinset, support_append] at *
-        exact hy.2
-      · intro z hz;
-        cases mem_insert.1 hz with
-        | inl hz => exact hz ▸ hy.1.2
-        | inr hz => exact hs hz
+      simp_all only [length_append, cons_append, cons_isPath_iff, mem_support_append_iff, not_or,
+      true_and,  support_cons, List.toFinset_cons, length_cons, Nat.add_le_add_iff_right, and_true]
+      simp_all only [List.mem_toFinset, mem_support_append_iff, not_or, not_false_eq_true, and_self,
+         true_and]
+      intro z hz;
+      cases mem_insert.1 hz with
+      | inl hz => exact hz ▸ hy.1.2
+      | inr hz => exact hs hz
   obtain ⟨w, _, hp, hc⟩ := this #s
   have := (List.toFinset_card_of_nodup hp.2) ▸ (card_le_card hc.1)
   rw [length_support] at this

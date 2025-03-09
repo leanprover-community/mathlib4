@@ -46,7 +46,7 @@ lemma takeUntil_cons {v' : V} {p : G.Walk v' v} (hwp : w ∈ p.support) (h : u �
   simp [Walk.takeUntil, h]
 
 @[simp]
-lemma takeUntil_first (p : G.Walk u v) :
+lemma takeUntil_start (p : G.Walk u v) :
     p.takeUntil u p.start_mem_support = .nil := by cases p <;> simp [Walk.takeUntil]
 
 @[simp]
@@ -132,6 +132,12 @@ theorem count_edges_takeUntil_le_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.s
           · exact (h' rfl).elim
           · cases p' <;> simp!
         · apply ih
+
+
+@[simp]
+theorem takeUntil_eq {u v x y} (p : G.Walk u v) (hx : x ∈ p.support) (hy : y ∈ p.support)
+    (h : y = x) : (p.takeUntil y hy).copy rfl h = p.takeUntil x hx := by
+  subst_vars; rfl
 
 @[simp]
 theorem takeUntil_copy {u v w v' w'} (p : G.Walk v w) (hv : v = v') (hw : w = w')
@@ -227,7 +233,7 @@ lemma takeUntil_takeUntil {w x : V} (p : G.Walk u v) (hw : w ∈ p.support)
     subst h
     simp
   | case2 _ _ q _ hadj hu' =>
-    simp only [takeUntil_first, support_nil, List.mem_singleton] at hx
+    simp only [takeUntil_start, support_nil, List.mem_singleton] at hx
     subst hx
     simp
   | case3 a w' v' hadj q u' hu' hau' ih =>

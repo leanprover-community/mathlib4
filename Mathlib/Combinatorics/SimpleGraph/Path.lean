@@ -231,6 +231,13 @@ theorem IsPath.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
 lemma IsPath.of_adj {G : SimpleGraph V} {u v : V} (h : G.Adj u v) : h.toWalk.IsPath := by
   aesop
 
+theorem append_isPath_iff {u v w : V} {p : G.Walk u v} {q : G.Walk v w} :
+     (p.append q).IsPath ↔ p.IsPath ∧ q.IsPath ∧ p.support.Disjoint q.support.tail := by
+  refine ⟨fun h ↦ ⟨h.of_append_left, h.of_append_right,
+      (List.nodup_append.1 <| support_append .. ▸ h.2).2.2⟩, fun h ↦ IsPath.mk' ?_⟩
+  rw [support_append, List.nodup_append]
+  exact ⟨h.1.2, h.2.1.2.sublist <| List.tail_sublist _, h.2.2⟩
+
 @[simp]
 theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.ne_nil rfl
 
@@ -387,7 +394,7 @@ lemma IsCycle.snd_ne_penultimate {p : G.Walk u u} (hp : p.IsCycle) : p.snd ≠ p
   apply hp.getVert_injOn (by simp; omega) (by simp; omega) at h
   omega
 
-lemma IsCycle.getVert_endpoint_iff {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle) (hl : i ≤ p.length) :
+lemma IsCycle.getVert_eq_end_iff {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle) (hl : i ≤ p.length) :
     p.getVert i = u ↔ i = 0 ∨ i = p.length := by
   refine ⟨?_, by aesop⟩
   rw [or_iff_not_imp_left]
@@ -395,13 +402,13 @@ lemma IsCycle.getVert_endpoint_iff {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle) 
   exact hpc.getVert_injOn (by simp only [Set.mem_setOf_eq]; omega)
     (by simp only [Set.mem_setOf_eq]; omega) (h.symm ▸ (Walk.getVert_length p).symm)
 
-lemma IsCycle.getVert_sub_one_neq_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
+lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
     (h : i ≤ p.length) : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
   have hl := hpc.three_le_length
   by_cases hi' : i ≥ p.length - 1
   · intro h'
     rw [p.getVert_of_length_le (by omega : p.length ≤ i + 1),
-      hpc.getVert_endpoint_iff (by omega)] at h'
+      hpc.getVert_eq_end_iff (by omega)] at h'
     omega
   intro h'
   have := hpc.getVert_injOn' (by simp only [Set.mem_setOf_eq, Nat.sub_le_iff_le_add]; omega)
@@ -461,7 +468,7 @@ lemma IsCycle.isPath_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.su
   rw [← isCycle_reverse, ← take_spec c h, reverse_append] at hc
   exact (c.takeUntil w h).isPath_reverse_iff.mp (hc.isPath_of_append_right (not_nil_of_ne hvw))
 
-lemma endpoint_not_mem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w ∈ p.support)
+lemma end_not_mem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w ∈ p.support)
     (h : v ≠ w) : v ∉ (p.takeUntil w hw).support := by
   intro hv
   rw [Walk.mem_support_iff_exists_getVert] at hv
