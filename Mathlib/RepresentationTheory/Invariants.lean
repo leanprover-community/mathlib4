@@ -22,11 +22,11 @@ suppress_compilation
 
 universe u
 
-open MonoidAlgebra
-
 open Representation
 
 namespace GroupAlgebra
+
+open MonoidAlgebra
 
 variable (k G : Type*) [CommSemiring k] [Group G]
 variable [Fintype G] [Invertible (Fintype.card G : k)]
@@ -85,6 +85,8 @@ theorem invariants_eq_top [ρ.IsTrivial] :
     invariants ρ = ⊤ :=
 eq_top_iff.2 (fun x _ g => ρ.isTrivial_apply g x)
 
+section
+
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
 /-- The action of `average k G` gives a projection map onto the subspace of invariants.
@@ -108,6 +110,34 @@ theorem averageMap_id (v : V) (hv : v ∈ invariants ρ) : averageMap ρ v = v :
 theorem isProj_averageMap : LinearMap.IsProj ρ.invariants ρ.averageMap :=
   ⟨ρ.averageMap_invariant, ρ.averageMap_id⟩
 
+end
+section Subgroup
+
+variable {V : Type*} [AddCommMonoid V] [Module k V]
+variable (ρ : Representation k G V) (S : Subgroup G) [S.Normal]
+
+lemma le_comap_invariants (g : G) :
+    (invariants <| ρ.comp S.subtype) ≤
+      (invariants <| ρ.comp S.subtype).comap (ρ g) :=
+  fun x hx ⟨s, hs⟩ => by
+    simpa using congr(ρ g $(hx ⟨(g⁻¹ * s * g), Subgroup.Normal.conj_mem' ‹_› s hs g⟩))
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
+the invariants of `ρ|_S`. -/
+abbrev toInvariants :
+    Representation k G (invariants (ρ.comp S.subtype)) :=
+  subrepresentation ρ _ <| le_comap_invariants ρ S
+
+instance : IsTrivial ((toInvariants ρ S).comp S.subtype) where
+  out g := LinearMap.ext fun ⟨x, hx⟩ => Subtype.ext <| by simpa using (hx g)
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
+the invariants of `ρ|_S`. -/
+abbrev quotientToInvariants :
+    Representation k (G ⧸ S) (invariants (ρ.comp S.subtype)) :=
+  ofQuotient (toInvariants ρ S) S
+
+end Subgroup
 end Invariants
 
 namespace linHom
@@ -166,7 +196,17 @@ namespace Rep
 
 open CategoryTheory
 
-variable (k G : Type u) [CommRing k] [Group G] (A : Rep k G)
+variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) (S : Subgroup G) [S.Normal]
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
+the invariants of `ρ|_S`. -/
+abbrev toInvariants : Rep k G := Rep.of <| A.ρ.toInvariants S
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
+the invariants of `ρ|_S`. -/
+abbrev quotientToInvariants : Rep k (G ⧸ S) := Rep.of (A.ρ.quotientToInvariants S)
+
+variable (k G)
 
 /-- The functor sending a representation to its submodule of invariants. -/
 @[simps]
@@ -180,5 +220,23 @@ noncomputable def invariantsFunctor : Rep k G ⥤ ModuleCat k where
 instance : (invariantsFunctor k G).PreservesZeroMorphisms where
 
 instance : (invariantsFunctor k G).Additive where
+
+/-- The adjunction between the functor equipping a module with the trivial representation, and
+the functor sending a representation to its submodule of invariants. -/
+noncomputable abbrev invariantsAdjunction : trivialFunctor G ⊣ invariantsFunctor k G :=
+  Adjunction.mkOfHomEquiv {
+    homEquiv := fun _ _ => {
+      toFun := fun f => ModuleCat.ofHom <|
+        LinearMap.codRestrict _ f.hom.hom fun x g => (hom_comm_apply f _ _).symm
+      invFun := fun f => {
+        hom := ModuleCat.ofHom (Submodule.subtype _ ∘ₗ f.hom)
+        comm := fun g => by ext x; exact ((f x).2 g).symm }
+      left_inv := by intro; rfl
+      right_inv := by intro; rfl }
+    homEquiv_naturality_left_symm := by intros; rfl
+    homEquiv_naturality_right := by intros; rfl }
+
+noncomputable instance : Limits.PreservesLimits (invariantsFunctor k G) :=
+  (invariantsAdjunction k G).rightAdjoint_preservesLimits
 
 end Rep
