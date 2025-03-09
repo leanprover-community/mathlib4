@@ -203,11 +203,11 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
     rintro ⟨⟨⟩⟩
     · rw [← ConcreteCategory.comp_apply]
       erw [Limits.prod.map_fst]
-      rw [← ConcreteCategory.comp_apply, TopCat.prodIsoProd_inv_fst_assoc, TopCat.comp_app]
+      rw [ConcreteCategory.comp_apply, TopCat.prodIsoProd_inv_fst_apply]
       exact hx₁
     · rw [← ConcreteCategory.comp_apply]
       erw [Limits.prod.map_snd]
-      rw [← ConcreteCategory.comp_apply, TopCat.prodIsoProd_inv_snd_assoc, TopCat.comp_app]
+      rw [ConcreteCategory.comp_apply, TopCat.prodIsoProd_inv_snd_apply]
       exact hx₂
 
 theorem isInducing_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : IsInducing f)
@@ -265,8 +265,9 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         (binaryCofanIsColimit X Y)).symm.isOpenEmbedding.comp .inl,
           (homeoOfIso <| h.coconePointUniqueUpToIso
             (binaryCofanIsColimit X Y)).symm.isOpenEmbedding.comp .inr, ?_⟩
-      erw [Set.range_comp, ← eq_compl_iff_isCompl, Set.range_comp _ Sum.inr,
-        ← Set.image_compl_eq (homeoOfIso <| h.coconePointUniqueUpToIso
+      rw [Set.range_comp, ← eq_compl_iff_isCompl]
+      conv_rhs => rw [Set.range_comp]
+      erw [← Set.image_compl_eq (homeoOfIso <| h.coconePointUniqueUpToIso
             (binaryCofanIsColimit X Y)).symm.bijective, Set.compl_range_inr, Set.image_comp]
     · rintro ⟨h₁, h₂, h₃⟩
       have : ∀ x, x ∈ Set.range c.inl ∨ x ∈ Set.range c.inr := by
