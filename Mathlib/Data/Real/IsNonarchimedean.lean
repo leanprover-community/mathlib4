@@ -20,40 +20,10 @@ namespace IsNonarchimedean
 
 open IsUltrametricDist
 
-/-- A nonarchimedean function satisfies the triangle inequality. -/
-theorem add_le' {α : Type*} [Add α] {f : α → ℝ} (hf : ∀ x : α, 0 ≤ f x)
-    (hna : IsNonarchimedean f) {a b : α} : f (a + b) ≤ f a + f b := by
-  apply le_trans (hna _ _)
-  rw [max_le_iff, le_add_iff_nonneg_right, le_add_iff_nonneg_left]
-  exact ⟨hf _, hf _⟩
-
-/-- If `f` is a nonarchimedean additive group seminorm on `α`, then for every `n : ℕ` and `a : α`,
-  we have `f (n • a) ≤ (f a)`. -/
-theorem nsmul_le' {F α : Type*} [AddGroup α] [FunLike F α ℝ]
-    [AddGroupSeminormClass F α ℝ] {f : F} (hna : IsNonarchimedean f) {n : ℕ} {a : α} :
-    f (n • a) ≤ f a := by
-  exact nsmul_le hna
-
-/-- If `f` is a nonarchimedean additive group seminorm on `α`, then for every `n : ℕ` and `a : α`,
-  we have `f (n * a) ≤ (f a)`. -/
-theorem nmul_le' {F α : Type*} [Ring α] [FunLike F α ℝ] [AddGroupSeminormClass F α ℝ]
-    {f : F} (hna : IsNonarchimedean f) {n : ℕ} {a : α} : f (n * a) ≤ f a := by
-  exact nmul_le hna
-
-/-- If `f` is a nonarchimedean additive group seminorm on `α` and `x y : α` are such that
-  `f x ≠ f y`, then `f (x + y) = max (f x) (f y)`. -/
-theorem add_eq_max_of_ne' {F α : Type*} [AddGroup α] [FunLike F α ℝ]
-    [AddGroupSeminormClass F α ℝ] {f : F} (hna : IsNonarchimedean f) {x y : α} (hne : f x ≠ f y) :
-    f (x + y) = max (f x) (f y) := by
-  let _ := AddGroupSeminormClass.toSeminormedAddGroup f
-  have := AddGroupSeminormClass.isUltrametricDist hna
-  simp only [← AddGroupSeminormClass.toSeminormedAddGroup_norm_eq] at hne ⊢
-  exact norm_add_eq_max_of_norm_ne_norm hne
-
 /-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a finset
   `t : Finset β`, we can always find `b : β`, belonging to `t` if `t` is nonempty, such that
   `f (t.sum g) ≤ f (g b)` . -/
-theorem finset_image_add' {F α β : Type*} [AddCommGroup α] [FunLike F α ℝ]
+theorem finset_image_add {F α β : Type*} [AddCommGroup α] [FunLike F α ℝ]
     [AddGroupSeminormClass F α ℝ] [Nonempty β] {f : F} (hna : IsNonarchimedean f)
     (g : β → α) (t : Finset β) :
     ∃ b : β, (t.Nonempty → b ∈ t) ∧ f (t.sum g) ≤ f (g b) := by
@@ -65,7 +35,7 @@ theorem finset_image_add' {F α β : Type*} [AddCommGroup α] [FunLike F α ℝ]
 /-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a
   nonempty finset `t : Finset β`, we can always find `b : β` belonging to `t` such that
   `f (t.sum g) ≤ f (g b)` . -/
-theorem finset_image_add_of_nonempty' {F α β : Type*} [AddCommGroup α] [FunLike F α ℝ]
+theorem finset_image_add_of_nonempty {F α β : Type*} [AddCommGroup α] [FunLike F α ℝ]
     [AddGroupSeminormClass F α ℝ] [Nonempty β] {f : F} (hna : IsNonarchimedean f)
     (g : β → α) {t : Finset β} (ht : t.Nonempty) :
     ∃ b : β, (b ∈ t) ∧ f (t.sum g) ≤ f (g b) := by
@@ -75,7 +45,7 @@ theorem finset_image_add_of_nonempty' {F α β : Type*} [AddCommGroup α] [FunLi
 /-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a
   multiset `s : Multiset β`, we can always find `b : β`, belonging to `s` if `s` is nonempty,
   such that `f (t.sum g) ≤ f (g b)` . -/
-theorem multiset_image_add' {F α β : Type*} [AddCommGroup α] [FunLike F α ℝ]
+theorem multiset_image_add {F α β : Type*} [AddCommGroup α] [FunLike F α ℝ]
     [AddGroupSeminormClass F α ℝ] [Nonempty β] {f : F} (hna : IsNonarchimedean f)
     (g : β → α) (s : Multiset β) :
     ∃ b : β, (s ≠ 0 → b ∈ s) ∧ f (Multiset.map g s).sum ≤ f (g b) := by
@@ -87,7 +57,7 @@ theorem multiset_image_add' {F α β : Type*} [AddCommGroup α] [FunLike F α �
 /-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a
   nonempty multiset `s : Multiset β`, we can always find `b : β` belonging to `s` such that
   `f (t.sum g) ≤ f (g b)` . -/
-theorem multiset_image_add_of_nonempty' {F α β : Type*} [AddCommGroup α] [FunLike F α ℝ]
+theorem multiset_image_add_of_nonempty {F α β : Type*} [AddCommGroup α] [FunLike F α ℝ]
     [AddGroupSeminormClass F α ℝ] [Nonempty β] {f : F} (hna : IsNonarchimedean f)
     (g : β → α) {s : Multiset β} (hs : s ≠ 0) :
     ∃ b : β, (b ∈ s) ∧ f (Multiset.map g s).sum ≤ f (g b) := by
@@ -97,7 +67,7 @@ theorem multiset_image_add_of_nonempty' {F α β : Type*} [AddCommGroup α] [Fun
 /-- If `f` is a nonarchimedean additive group seminorm on a commutative ring `α`, `n : ℕ`, and
   `a b : α`, then we can find `m : ℕ` such that `m ≤ n` and
   `f ((a + b) ^ n) ≤ (f (a ^ m)) * (f (b ^ (n - m)))`. -/
-theorem add_pow_le' {F α : Type*} [CommRing α] [FunLike F α ℝ]
+theorem add_pow_le {F α : Type*} [CommRing α] [FunLike F α ℝ]
     [RingSeminormClass F α ℝ] {f : F} (hna : IsNonarchimedean f) (n : ℕ) (a b : α) :
     ∃ m < n + 1, f ((a + b) ^ n) ≤ f (a ^ m) * f (b ^ (n - m)) := by
   obtain ⟨m, hm_lt, hM⟩ := finset_image_add hna

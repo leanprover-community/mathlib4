@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: María Inés de Frutos-Fernández
+Authors: María Inés de Frutos-Fernández, Fabrizio Barroero
 -/
 
 import Mathlib.Algebra.GroupWithZero.Action.Defs
@@ -63,7 +63,7 @@ theorem nmul_le {F α : Type*} [Ring α] [FunLike F α R] [ZeroHomClass F α R] 
 lemma apply_natCast_le_one_of_isNonarchimedean {F α : Type*} [Semiring α] [FunLike F α R]
     [ZeroHomClass F α R] [NonnegHomClass F α R] [OneHomClass F α R] {f : F}
     (hna : IsNonarchimedean f) {n : ℕ} : f n ≤ 1 := by
-  rw [← nsmul_one ↑n]
+  rw [← nsmul_one n]
   exact le_trans (nsmul_le hna) (le_of_eq (map_one f))
 
 lemma apply_intCast_le_one_of_isNonarchimedean {F α : Type*} [Ring α] [FunLike F α R]
@@ -75,84 +75,41 @@ lemma apply_intCast_le_one_of_isNonarchimedean {F α : Type*} [Ring α] [FunLike
 
 lemma apply_sum_eq_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α}
-    (h_ne : f x < f y) : f (x + y) = f y := by
+    (h_lt : f x < f y) : f (x + y) = f y := by
   by_contra! h
-  have h1 : f (x + y) ≤ f y := le_trans (hna x y) (le_of_eq <| max_eq_right_of_lt h_ne)
+  have h1 : f (x + y) ≤ f y := le_trans (hna x y) (le_of_eq <| max_eq_right_of_lt h_lt)
   apply lt_irrefl (f y)
   calc
-    f y = f (y + x + -x) := by simp
-    _   ≤ max (f (y + x)) (f (-x)) := hna (y + x) (-x)
+    f y = f (-x + (x + y)) := by simp
+    _   ≤ max (f (-x)) (f (x + y)) := hna (-x) (x + y)
     _   < max (f y) (f y) := by
-      --rw [max_self, map_neg, add_comm]
-      sorry
-      /- rw [max_self, AbsoluteValue.map_neg, add_comm]
-      exact max_lt (lt_of_le_of_ne h1 h) h_ne -/
+      rw [max_self, map_neg_eq_map]
+      exact max_lt h_lt <| lt_of_le_of_ne h1 h
     _   = f y := max_self (f y)
 
+lemma apply_sum_eq_of_lt' {F α : Type*} [AddGroup α] [FunLike F α R]
+    [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α}
+    (h_lt : f y < f x) : f (x + y) = f x := by
+  by_contra! h
+  have h1 : f (x + y) ≤ f x := le_trans (hna x y) (le_of_eq <| max_eq_left_of_lt h_lt)
+  apply lt_irrefl (f x)
+  calc
+    f x = f (x + y + -y) := by simp
+    _   ≤ max (f (x + y)) (f (-y)) := hna (x + y) (-y)
+    _   < max (f x) (f x) := by
+      rw [max_self, map_neg_eq_map]
+      apply max_lt (lt_of_le_of_ne h1 h) h_lt
+    _   = f x := max_self (f x)
 
 /-- If `f` is a nonarchimedean additive group seminorm on `α` and `x y : α` are such that
   `f x ≠ f y`, then `f (x + y) = max (f x) (f y)`. -/
 theorem add_eq_max_of_ne {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α} (hne : f x ≠ f y) :
     f (x + y) = max (f x) (f y) := by
-
-  sorry
-  /- let _ := AddGroupSeminormClass.toSeminormedAddGroup f
-  have := AddGroupSeminormClass.isUltrametricDist hna
-  simp only [← AddGroupSeminormClass.toSeminormedAddGroup_norm_eq] at hne ⊢
-  exact norm_add_eq_max_of_norm_ne_norm hne -/
-
-/-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a finset
-  `t : Finset β`, we can always find `b : β`, belonging to `t` if `t` is nonempty, such that
-  `f (t.sum g) ≤ f (g b)` . -/
-theorem finset_image_add {F α β : Type*} [AddCommGroup α] [FunLike F α R]
-    [AddGroupSeminormClass F α R] [Nonempty β] {f : F} (hna : IsNonarchimedean f)
-    (g : β → α) (t : Finset β) :
-    ∃ b : β, (t.Nonempty → b ∈ t) ∧ f (t.sum g) ≤ f (g b) := by
-  sorry
-
-/-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a
-  nonempty finset `t : Finset β`, we can always find `b : β` belonging to `t` such that
-  `f (t.sum g) ≤ f (g b)` . -/
-theorem finset_image_add_of_nonempty {F α β : Type*} [AddCommGroup α] [FunLike F α R]
-    [AddGroupSeminormClass F α R] [Nonempty β] {f : F} (hna : IsNonarchimedean f)
-    (g : β → α) {t : Finset β} (ht : t.Nonempty) :
-    ∃ b : β, (b ∈ t) ∧ f (t.sum g) ≤ f (g b) := by
-  obtain ⟨b, hbt, hbf⟩ := finset_image_add hna g t
-  exact ⟨b, hbt ht, hbf⟩
-
-/-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a
-  multiset `s : Multiset β`, we can always find `b : β`, belonging to `s` if `s` is nonempty,
-  such that `f (t.sum g) ≤ f (g b)` . -/
-theorem multiset_image_add {F α β : Type*} [AddCommGroup α] [FunLike F α R]
-    [AddGroupSeminormClass F α R] [Nonempty β] {f : F} (hna : IsNonarchimedean f)
-    (g : β → α) (s : Multiset β) :
-    ∃ b : β, (s ≠ 0 → b ∈ s) ∧ f (Multiset.map g s).sum ≤ f (g b) := by
-  sorry
-
-/-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a
-  nonempty multiset `s : Multiset β`, we can always find `b : β` belonging to `s` such that
-  `f (t.sum g) ≤ f (g b)` . -/
-theorem multiset_image_add_of_nonempty {F α β : Type*} [AddCommGroup α] [FunLike F α R]
-    [AddGroupSeminormClass F α R] [Nonempty β] {f : F} (hna : IsNonarchimedean f)
-    (g : β → α) {s : Multiset β} (hs : s ≠ 0) :
-    ∃ b : β, (b ∈ s) ∧ f (Multiset.map g s).sum ≤ f (g b) := by
-  obtain ⟨b, hbs, hbf⟩ := multiset_image_add hna g s
-  exact ⟨b, hbs hs, hbf⟩
-
-/-- If `f` is a nonarchimedean additive group seminorm on a commutative ring `α`, `n : ℕ`, and
-  `a b : α`, then we can find `m : ℕ` such that `m ≤ n` and
-  `f ((a + b) ^ n) ≤ (f (a ^ m)) * (f (b ^ (n - m)))`. -/
-theorem add_pow_le {F α : Type*} [CommRing α] [FunLike F α R]
-    [RingSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) (n : ℕ) (a b : α) :
-    ∃ m < n + 1, f ((a + b) ^ n) ≤ f (a ^ m) * f (b ^ (n - m)) := by
-  obtain ⟨m, hm_lt, hM⟩ := finset_image_add hna
-    (fun m => a ^ m * b ^ (n - m) * ↑(n.choose m)) (Finset.range (n + 1))
-  simp only [Finset.nonempty_range_iff, ne_eq, Nat.succ_ne_zero, not_false_iff, Finset.mem_range,
-    if_true, forall_true_left] at hm_lt
-  refine ⟨m, hm_lt, ?_⟩
-  simp only [← add_pow] at hM
-  rw [mul_comm] at hM
-  exact le_trans hM (le_trans (nmul_le hna) (map_mul_le_mul _ _ _))
+  rcases hne.lt_or_lt with h_lt | h_lt
+  · rw [apply_sum_eq_of_lt hna h_lt]
+    exact (max_eq_right_of_lt h_lt).symm
+  · rw [apply_sum_eq_of_lt' hna h_lt]
+    exact Eq.symm (max_eq_left_of_lt h_lt)
 
 end IsNonarchimedean
