@@ -322,8 +322,7 @@ theorem contMDiffWithinAt_iff_source :
       · exact (continuousAt_extChartAt_symm x).continuousWithinAt
       · exact MapsTo.mono_left (mapsTo_preimage _ _) inter_subset_left
       · exact extChartAt_to_inv x
-    · have : (extChartAt I x).source ∈ 𝓝 x := by exact extChartAt_source_mem_nhds x
-      rw [← continuousWithinAt_inter (extChartAt_source_mem_nhds (I := I) x)]
+    · rw [← continuousWithinAt_inter (extChartAt_source_mem_nhds (I := I) x)]
       have : ContinuousWithinAt ((f ∘ ↑(extChartAt I x).symm) ∘ ↑(extChartAt I x))
           (s ∩ (extChartAt I x).source) x := by
         apply h.comp (continuousAt_extChartAt x).continuousWithinAt

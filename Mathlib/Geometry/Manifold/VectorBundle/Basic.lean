@@ -265,9 +265,6 @@ protected theorem contMDiff_fst :
   intro x
   rw [contMDiffAt_totalSpace]
   refine ⟨contMDiff_proj (E₁ ×ᵇ E₂) _, ?_⟩
-  have (x : F₁ × F₂) : ContMDiffAt 𝓘(𝕜, F₁ × F₂) 𝓘(𝕜, F₁) n Prod.fst x := by
-    rw [contMDiffAt_iff_contDiffAt]
-    exact contDiffAt_fst
   rw [contMDiffAt_of_totalSpace]
   have : ContMDiffAt (IB.prod 𝓘(𝕜, F₁ × F₂)) 𝓘(𝕜, F₁) n (Prod.fst ∘ Prod.snd : B × F₁ × F₂ → F₁)
       ((trivializationAt (F₁ × F₂) (fun x ↦ E₁ x × E₂ x) x.proj) x) := by
@@ -296,9 +293,6 @@ protected theorem contMDiff_snd :
   intro x
   rw [contMDiffAt_totalSpace]
   refine ⟨contMDiff_proj (E₁ ×ᵇ E₂) _, ?_⟩
-  have (x : F₁ × F₂) : ContMDiffAt 𝓘(𝕜, F₁ × F₂) 𝓘(𝕜, F₁) n Prod.fst x := by
-    rw [contMDiffAt_iff_contDiffAt]
-    exact contDiffAt_fst
   rw [contMDiffAt_of_totalSpace]
   have : ContMDiffAt (IB.prod 𝓘(𝕜, F₁ × F₂)) 𝓘(𝕜, F₂) n (Prod.snd ∘ Prod.snd : B × F₁ × F₂ → F₂)
       ((trivializationAt (F₁ × F₂) (fun x ↦ E₁ x × E₂ x) x.proj) x) := by
