@@ -111,10 +111,11 @@ theorem get_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k <
 
 set_option linter.unnecessarySimpa false in
 theorem insertIdx_injective (n : ℕ) (x : α) : Function.Injective (insertIdx n x) := by
-  induction' n with n IH
-  · have : insertIdx 0 x = cons x := funext fun _ => rfl
+  induction n with
+  | zero =>
+    have : insertIdx 0 x = cons x := funext fun _ => rfl
     simp [this]
-  · rintro (_ | ⟨a, as⟩) (_ | ⟨b, bs⟩) h <;> simpa [IH.eq_iff] using h
+  | succ n IH => rintro (_ | ⟨a, as⟩) (_ | ⟨b, bs⟩) h <;> simpa [IH.eq_iff] using h
 
 @[deprecated (since := "2024-10-21")] alias insertNth_zero := insertIdx_zero
 @[deprecated (since := "2024-10-21")] alias insertNth_succ_nil := insertIdx_succ_nil
