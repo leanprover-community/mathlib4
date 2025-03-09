@@ -43,6 +43,9 @@ instance ContMDiffVectorBundle.pullback : ContMDiffVectorBundle n F (f *ᵖ E) I
 
 variable {IB'}
 
+#check Pullback.lift
+
+omit [ContMDiffVectorBundle n F E IB] in
 /-- For a smooth vector bundle `E` over a manifold `B` and a smooth map `f : B' → B`, the natural
 "lift" map from the total space of `f *ᵖ E` to the total space of `E` is smooth. -/
 theorem Bundle.Pullback.contMDiff_lift :
@@ -51,10 +54,25 @@ theorem Bundle.Pullback.contMDiff_lift :
   intro x
   rw [contMDiffAt_totalSpace]
   refine ⟨f.contMDiff.contMDiffAt.comp _ (contMDiffAt_proj (f *ᵖ E)), ?_⟩
+  rw [contMDiffAt_of_totalSpace]
+  simp [trivializationAt, FiberBundle.trivializationAt']
+  have : ContMDiffAt (IB'.prod 𝓘(𝕜, F)) 𝓘(𝕜, F) n (Prod.snd)
+      (((FiberBundle.trivializationAt' (f x.proj)).pullback f) x) := by
+    apply contMDiffAt_snd
+  apply ContMDiffAt.congr_of_eventuallyEq this
+  filter_upwards [] with y
+  simp
+  simp only [Trivialization.pullback, PartialHomeomorph.mk_coe_symm, PartialEquiv.coe_symm_mk,
+    Function.comp_apply, lift_mk]
+
+
+
   refine (contMDiffAt_snd (M := B')).comp _ <|
     (contMDiffOn_trivializationAt x).contMDiffAt ?_
   apply (trivializationAt F (f *ᵖ E) x.proj).open_source.mem_nhds
   simp
+
+#exit
 
 variable {M EM HM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] [TopologicalSpace HM]
   {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]

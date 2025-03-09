@@ -437,6 +437,17 @@ noncomputable instance FiberBundle.pullback [∀ x, TopologicalSpace (E x)] [Fib
   mem_baseSet_trivializationAt' x := mem_baseSet_trivializationAt F E (f x)
   trivialization_mem_atlas' x := ⟨trivializationAt F E (f x), inferInstance, rfl⟩
 
+@[simp] lemma lift_pullback_symm_apply (f : K) (e : Trivialization F (π F E))
+    {x : B'} {v : F} (hx : f x ∈ e.baseSet) :
+    Pullback.lift f ((e.pullback f).toPartialHomeomorph.symm (x, v)) =
+      e.toPartialHomeomorph.symm (f x, v) := by
+  have A : (e.toPartialHomeomorph.symm (f x, v)).proj = f x := Trivialization.symm_coe_proj e hx
+  simp only [Pullback.lift, Trivialization.pullback, PartialHomeomorph.mk_coe_symm,
+    PartialEquiv.coe_symm_mk]
+  ext
+  · simp [A]
+  · simp [A, Trivialization.symm_apply _ hx]
+
 end FiberBundle
 
 end
