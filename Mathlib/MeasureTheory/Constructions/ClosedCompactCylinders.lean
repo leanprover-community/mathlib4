@@ -52,7 +52,7 @@ noncomputable def closedCompactCylinders.finset (ht : t ∈ closedCompactCylinde
 
 /-- A set `S` such that `t = cylinder s S`. `s` is given by `closedCompactCylinders.finset`. -/
 def closedCompactCylinders.set (ht : t ∈ closedCompactCylinders α) :
-    Set (∀ i : closedCompactCylinders.finset ht, α i) :=
+    Set (Π i : closedCompactCylinders.finset ht, α i) :=
   ((mem_closedCompactCylinders t).mp ht).choose_spec.choose
 
 theorem closedCompactCylinders.isClosed (ht : t ∈ closedCompactCylinders α) :
@@ -67,7 +67,7 @@ theorem closedCompactCylinders.eq_cylinder (ht : t ∈ closedCompactCylinders α
     t = cylinder (closedCompactCylinders.finset ht) (closedCompactCylinders.set ht) :=
   ((mem_closedCompactCylinders t).mp ht).choose_spec.choose_spec.2.2
 
-theorem cylinder_mem_closedCompactCylinders (s : Finset ι) (S : Set (∀ i : s, α i))
+theorem cylinder_mem_closedCompactCylinders (s : Finset ι) (S : Set (Π i : s, α i))
     (hS_closed : IsClosed S) (hS_compact : IsCompact S) :
     cylinder s S ∈ closedCompactCylinders α := by
   rw [mem_closedCompactCylinders]
