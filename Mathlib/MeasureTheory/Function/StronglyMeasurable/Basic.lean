@@ -134,6 +134,25 @@ protected theorem tendsto_approx {_ : MeasurableSpace α} (hf : StronglyMeasurab
     ∀ x, Tendsto (fun n => hf.approx n x) atTop (𝓝 (f x)) :=
   hf.choose_spec
 
+/-- To prove that a property holds for any strongly measurable functions, it is enough to show
+that it holds for constant indicator functions of measurable sets and that it is closed under
+addition and pointwise limit. -/
+theorem induction [MeasurableSpace α] [AddMonoid β] (P : (α → β) → Prop)
+    (ind : ∀ c ⦃s : Set α⦄, MeasurableSet s → P (s.indicator fun _ ↦ c))
+    (add : ∀ ⦃f g : α → β⦄, Disjoint f.support g.support →
+      StronglyMeasurable f → StronglyMeasurable g → P f → P g → P (f + g))
+    (lim : ∀ ⦃f : ℕ → α → β⦄ ⦃g : α → β⦄,
+      (∀ n, StronglyMeasurable (f n)) → (∀ n, P (f n)) → StronglyMeasurable g →
+      (∀ x, Tendsto (f · x) atTop (𝓝 (g x))) → P g)
+    (f : α → β) (hf : StronglyMeasurable f) : P f := by
+  let s := hf.approx
+  have ms n := (s n).stronglyMeasurable
+  have hs x : Tendsto (s · x) atTop (𝓝 (f x)) := hf.tendsto_approx x
+  refine lim ms (fun n ↦ ?_) hf hs
+  induction s n using SimpleFunc.induction with
+  | h_ind c hs => exact ind c hs
+  | @h_add f g h_supp hf hg => exact add h_supp f.stronglyMeasurable g.stronglyMeasurable hf hg
+
 /-- Similar to `stronglyMeasurable.approx`, but enforces that the norm of every function in the
 sequence is less than `c` everywhere. If `‖f x‖ ≤ c` this sequence of simple functions verifies
 `Tendsto (fun n => hf.approxBounded n x) atTop (𝓝 (f x))`. -/
