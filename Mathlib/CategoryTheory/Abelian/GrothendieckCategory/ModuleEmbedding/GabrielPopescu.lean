@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Connected
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
+import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Coseparator
 import Mathlib.CategoryTheory.Abelian.Yoneda
 import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
 import Mathlib.Algebra.Category.ModuleCat.Injective
@@ -30,6 +30,21 @@ open CategoryTheory Limits
 namespace CategoryTheory.Abelian
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [IsGrothendieckAbelian.{v} C]
+
+instance {G : C} : (preadditiveCoyonedaObj G).IsRightAdjoint :=
+  isRightAdjoint_of_preservesLimits_of_isCoseparating (isCoseparator_coseparator _) _
+
+/-- The left adjoint of the functor `Hom(G, ·)`, which can be thought of as `· ⊗ G`. -/
+noncomputable def tensorObj (G : C) : ModuleCat (End G)ᵐᵒᵖ ⥤ C :=
+  (preadditiveCoyonedaObj G).leftAdjoint
+
+/-- The tensor-hom adjunction `(· ⊗ G) ⊣ Hom(G, ·)`. -/
+noncomputable def tensorObjPreadditiveCoyonedaObjAdjunction (G : C) :
+    tensorObj G ⊣ preadditiveCoyonedaObj G :=
+  Adjunction.ofIsRightAdjoint _
+
+instance {G : C} : (tensorObj G).IsLeftAdjoint :=
+  (tensorObjPreadditiveCoyonedaObjAdjunction G).isLeftAdjoint
 
 namespace GabrielPopescuAux
 
@@ -82,7 +97,9 @@ end GabrielPopescuAux
 
 open GabrielPopescuAux
 
-theorem full (G : C) (hG : IsSeparator G) : (preadditiveCoyonedaObj G).Full where
+/-- Faithfulness follows because `G` is a separator, see
+`isSeparator_iff_faithful_preadditiveCoyonedaObj`. -/
+theorem GabrielPopescu.full (G : C) (hG : IsSeparator G) : (preadditiveCoyonedaObj G).Full where
   map_surjective {A B} f := by
     have := (isSeparator_iff_epi G).1 hG A
     have h := kernel_ι_d_comp_d hG (𝟙 _) inferInstance f
@@ -91,7 +108,7 @@ theorem full (G : C) (hG : IsSeparator G) : (preadditiveCoyonedaObj G).Full wher
     ext q
     simpa [-Abelian.comp_epiDesc] using Sigma.ι _ q ≫= comp_epiDesc _ _ h
 
-theorem preserves_injectives (G : C) (hG : IsSeparator G) :
+theorem GabrielPopescu.preservesInjectiveObjects (G : C) (hG : IsSeparator G) :
     (preadditiveCoyonedaObj G).PreservesInjectiveObjects where
   injective_obj {B} hB := by
     rw [← Module.injective_iff_injective_object]
@@ -107,5 +124,19 @@ theorem preserves_injectives (G : C) (hG : IsSeparator G) :
       simpa [d] using Sigma.ι _ ⟨f, hf⟩ ≫= hl
     · rw [ModuleCat.mono_iff_injective]
       aesop_cat
+
+/-- Right exactness follows because `tensorObj G` is a left adjoint. -/
+theorem GabrielPopescu.preservesFiniteLimits (G : C) (hG : IsSeparator G) :
+    PreservesFiniteLimits (tensorObj G) := by
+  have := preservesInjectiveObjects G hG
+  have : (tensorObj G).PreservesMonomorphisms :=
+    (tensorObj G).preservesMonomorphisms_of_adjunction_of_preservesInjectiveObjects
+      (tensorObjPreadditiveCoyonedaObjAdjunction G)
+  have : PreservesBinaryBiproducts (tensorObj G) :=
+    preservesBinaryBiproducts_of_preservesBinaryCoproducts _
+  have : (tensorObj G).Additive := Functor.additive_of_preservesBinaryBiproducts _
+  have : (tensorObj G).PreservesHomology :=
+    (tensorObj G).preservesHomology_of_preservesMonos_and_cokernels
+  exact (tensorObj G).preservesFiniteLimits_of_preservesHomology
 
 end CategoryTheory.Abelian
