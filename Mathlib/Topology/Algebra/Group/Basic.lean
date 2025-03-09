@@ -458,7 +458,7 @@ instance : IsTopologicalGroup (ULift G) where
 
 section ZPow
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_zpow : ∀ z : ℤ, Continuous fun a : G => a ^ z
   | Int.ofNat n => by simpa using continuous_pow n
   | Int.negSucc n => by simpa using (continuous_pow (n + 1)).inv

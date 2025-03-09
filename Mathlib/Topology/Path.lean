@@ -396,7 +396,7 @@ theorem symm_continuous_family {ι : Type*} [TopologicalSpace ι]
 
 @[continuity]
 theorem continuous_symm : Continuous (symm : Path x y → Path y x) :=
-  continuous_uncurry_iff.mp <| symm_continuous_family _ (continuous_fst.eval continuous_snd)
+  continuous_uncurry_iff.mp <| symm_continuous_family _ (by fun_prop)
 
 @[continuity]
 theorem continuous_uncurry_extend_of_continuous_family {ι : Type*} [TopologicalSpace ι]
@@ -426,20 +426,19 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
   · rintro st hst
     simp [hst, mul_inv_cancel₀ (two_ne_zero' ℝ)]
 
-@[continuity]
+@[continuity, fun_prop]
 theorem _root_.Continuous.path_trans {f : Y → Path x y} {g : Y → Path y z} :
     Continuous f → Continuous g → Continuous fun t => (f t).trans (g t) := by
   intro hf hg
   apply continuous_uncurry_iff.mp
   exact trans_continuous_family _ (continuous_uncurry_iff.mpr hf) _ (continuous_uncurry_iff.mpr hg)
 
-@[continuity]
-theorem continuous_trans {x y z : X} : Continuous fun ρ : Path x y × Path y z => ρ.1.trans ρ.2 :=
-  continuous_fst.path_trans continuous_snd
+@[continuity, fun_prop]
+theorem continuous_trans {x y z : X} : Continuous fun ρ : Path x y × Path y z => ρ.1.trans ρ.2 := by
+  fun_prop
+
 
 /-! #### Product of paths -/
-
-
 section Prod
 
 variable {a₁ a₂ a₃ : X} {b₁ b₂ b₃ : Y}
