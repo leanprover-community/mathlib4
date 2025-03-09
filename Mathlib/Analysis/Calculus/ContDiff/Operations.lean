@@ -138,7 +138,7 @@ section Add
 theorem HasFTaylorSeriesUpToOn.add {n : WithTop ℕ∞} {q g} (hf : HasFTaylorSeriesUpToOn n f p s)
     (hg : HasFTaylorSeriesUpToOn n g q s) : HasFTaylorSeriesUpToOn n (f + g) (p + q) s := by
   exact HasFTaylorSeriesUpToOn.continuousLinearMap_comp
-    (ContinuousLinearMap.fst 𝕜 F F + .snd 𝕜 F F) (hf.prod hg)
+    (ContinuousLinearMap.fst 𝕜 F F + .snd 𝕜 F F) (hf.prodMk hg)
 
 -- The sum is smooth.
 theorem contDiff_add : ContDiff 𝕜 n fun p : F × F => p.1 + p.2 :=
@@ -148,7 +148,7 @@ theorem contDiff_add : ContDiff 𝕜 n fun p : F × F => p.1 + p.2 :=
 at this point. -/
 theorem ContDiffWithinAt.add {s : Set E} {f g : E → F} (hf : ContDiffWithinAt 𝕜 n f s x)
     (hg : ContDiffWithinAt 𝕜 n g s x) : ContDiffWithinAt 𝕜 n (fun x => f x + g x) s x :=
-  contDiff_add.contDiffWithinAt.comp x (hf.prod hg) subset_preimage_univ
+  contDiff_add.contDiffWithinAt.comp x (hf.prodMk hg) subset_preimage_univ
 
 /-- The sum of two `C^n` functions at a point is `C^n` at this point. -/
 theorem ContDiffAt.add {f g : E → F} (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
@@ -158,7 +158,7 @@ theorem ContDiffAt.add {f g : E → F} (hf : ContDiffAt 𝕜 n f x) (hg : ContDi
 /-- The sum of two `C^n`functions is `C^n`. -/
 theorem ContDiff.add {f g : E → F} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n fun x => f x + g x :=
-  contDiff_add.comp (hf.prod hg)
+  contDiff_add.comp (hf.prodMk hg)
 
 /-- The sum of two `C^n` functions on a domain is `C^n`. -/
 theorem ContDiffOn.add {s : Set E} {f g : E → F} (hf : ContDiffOn 𝕜 n f s)
@@ -340,7 +340,7 @@ theorem contDiff_mul : ContDiff 𝕜 n fun p : 𝔸 × 𝔸 => p.1 * p.2 :=
 at this point. -/
 theorem ContDiffWithinAt.mul {s : Set E} {f g : E → 𝔸} (hf : ContDiffWithinAt 𝕜 n f s x)
     (hg : ContDiffWithinAt 𝕜 n g s x) : ContDiffWithinAt 𝕜 n (fun x => f x * g x) s x :=
-  contDiff_mul.comp_contDiffWithinAt (hf.prod hg)
+  contDiff_mul.comp_contDiffWithinAt (hf.prodMk hg)
 
 /-- The product of two `C^n` functions at a point is `C^n` at this point. -/
 nonrec theorem ContDiffAt.mul {f g : E → 𝔸} (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
@@ -354,7 +354,7 @@ theorem ContDiffOn.mul {f g : E → 𝔸} (hf : ContDiffOn 𝕜 n f s) (hg : Con
 /-- The product of two `C^n`functions is `C^n`. -/
 theorem ContDiff.mul {f g : E → 𝔸} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n fun x => f x * g x :=
-  contDiff_mul.comp (hf.prod hg)
+  contDiff_mul.comp (hf.prodMk hg)
 
 theorem contDiffWithinAt_prod' {t : Finset ι} {f : ι → E → 𝔸'}
     (h : ∀ i ∈ t, ContDiffWithinAt 𝕜 n (f i) s x) : ContDiffWithinAt 𝕜 n (∏ i ∈ t, f i) s x :=
@@ -432,7 +432,7 @@ theorem contDiff_smul : ContDiff 𝕜 n fun p : 𝕜 × F => p.1 • p.2 :=
 set at this point. -/
 theorem ContDiffWithinAt.smul {s : Set E} {f : E → 𝕜} {g : E → F} (hf : ContDiffWithinAt 𝕜 n f s x)
     (hg : ContDiffWithinAt 𝕜 n g s x) : ContDiffWithinAt 𝕜 n (fun x => f x • g x) s x :=
-  contDiff_smul.contDiffWithinAt.comp x (hf.prod hg) subset_preimage_univ
+  contDiff_smul.contDiffWithinAt.comp x (hf.prodMk hg) subset_preimage_univ
 
 /-- The scalar multiplication of two `C^n` functions at a point is `C^n` at this point. -/
 theorem ContDiffAt.smul {f : E → 𝕜} {g : E → F} (hf : ContDiffAt 𝕜 n f x)
@@ -442,7 +442,7 @@ theorem ContDiffAt.smul {f : E → 𝕜} {g : E → F} (hf : ContDiffAt 𝕜 n f
 /-- The scalar multiplication of two `C^n` functions is `C^n`. -/
 theorem ContDiff.smul {f : E → 𝕜} {g : E → F} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n fun x => f x • g x :=
-  contDiff_smul.comp (hf.prod hg)
+  contDiff_smul.comp (hf.prodMk hg)
 
 /-- The scalar multiplication of two `C^n` functions on a domain is `C^n`. -/
 theorem ContDiffOn.smul {s : Set E} {f : E → 𝕜} {g : E → F} (hf : ContDiffOn 𝕜 n f s)
@@ -516,50 +516,72 @@ variable {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
 
 /-- The product map of two `C^n` functions within a set at a point is `C^n`
 within the product set at the product point. -/
-theorem ContDiffWithinAt.prod_map' {s : Set E} {t : Set E'} {f : E → F} {g : E' → F'} {p : E × E'}
+theorem ContDiffWithinAt.prodMap' {s : Set E} {t : Set E'} {f : E → F} {g : E' → F'} {p : E × E'}
     (hf : ContDiffWithinAt 𝕜 n f s p.1) (hg : ContDiffWithinAt 𝕜 n g t p.2) :
     ContDiffWithinAt 𝕜 n (Prod.map f g) (s ×ˢ t) p :=
-  (hf.comp p contDiffWithinAt_fst (prod_subset_preimage_fst _ _)).prod
+  (hf.comp p contDiffWithinAt_fst (prod_subset_preimage_fst _ _)).prodMk
     (hg.comp p contDiffWithinAt_snd (prod_subset_preimage_snd _ _))
 
-theorem ContDiffWithinAt.prod_map {s : Set E} {t : Set E'} {f : E → F} {g : E' → F'} {x : E}
-    {y : E'} (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g t y) :
+@[deprecated (since := "2025-03-09")]
+alias ContDiffWithinAt.prod_map' := ContDiffWithinAt.prodMap'
+
+theorem ContDiffWithinAt.prodMap {s : Set E} {t : Set E'} {f : E → F} {g : E' → F'} {x : E} {y : E'}
+    (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g t y) :
     ContDiffWithinAt 𝕜 n (Prod.map f g) (s ×ˢ t) (x, y) :=
-  ContDiffWithinAt.prod_map' hf hg
+  ContDiffWithinAt.prodMap' hf hg
+
+@[deprecated (since := "2025-03-09")]
+alias ContDiffWithinAt.prod_map := ContDiffWithinAt.prodMap
 
 /-- The product map of two `C^n` functions on a set is `C^n` on the product set. -/
-theorem ContDiffOn.prod_map {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {F' : Type*}
+theorem ContDiffOn.prodMap {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {F' : Type*}
     [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {s : Set E} {t : Set E'} {f : E → F} {g : E' → F'}
     (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn 𝕜 n g t) : ContDiffOn 𝕜 n (Prod.map f g) (s ×ˢ t) :=
-  (hf.comp contDiffOn_fst (prod_subset_preimage_fst _ _)).prod
+  (hf.comp contDiffOn_fst (prod_subset_preimage_fst _ _)).prodMk
     (hg.comp contDiffOn_snd (prod_subset_preimage_snd _ _))
 
+@[deprecated (since := "2025-03-09")]
+alias ContDiffOn.prod_map := ContDiffOn.prodMap
+
 /-- The product map of two `C^n` functions within a set at a point is `C^n`
 within the product set at the product point. -/
-theorem ContDiffAt.prod_map {f : E → F} {g : E' → F'} {x : E} {y : E'} (hf : ContDiffAt 𝕜 n f x)
+theorem ContDiffAt.prodMap {f : E → F} {g : E' → F'} {x : E} {y : E'} (hf : ContDiffAt 𝕜 n f x)
     (hg : ContDiffAt 𝕜 n g y) : ContDiffAt 𝕜 n (Prod.map f g) (x, y) := by
   rw [ContDiffAt] at *
-  convert hf.prod_map hg
-  simp only [univ_prod_univ]
+  simpa only [univ_prod_univ] using hf.prodMap hg
+
+@[deprecated (since := "2025-03-09")]
+alias ContDiffAt.prod_map := ContDiffAt.prodMap
 
 /-- The product map of two `C^n` functions within a set at a point is `C^n`
 within the product set at the product point. -/
-theorem ContDiffAt.prod_map' {f : E → F} {g : E' → F'} {p : E × E'} (hf : ContDiffAt 𝕜 n f p.1)
-    (hg : ContDiffAt 𝕜 n g p.2) : ContDiffAt 𝕜 n (Prod.map f g) p := by
-  rcases p with ⟨⟩
-  exact ContDiffAt.prod_map hf hg
+theorem ContDiffAt.prodMap' {f : E → F} {g : E' → F'} {p : E × E'} (hf : ContDiffAt 𝕜 n f p.1)
+    (hg : ContDiffAt 𝕜 n g p.2) : ContDiffAt 𝕜 n (Prod.map f g) p :=
+  hf.prodMap hg
+
+@[deprecated (since := "2025-03-09")]
+alias ContDiffAt.prod_map' := ContDiffAt.prodMap'
 
 /-- The product map of two `C^n` functions is `C^n`. -/
-theorem ContDiff.prod_map {f : E → F} {g : E' → F'} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
+theorem ContDiff.prodMap {f : E → F} {g : E' → F'} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n (Prod.map f g) := by
   rw [contDiff_iff_contDiffAt] at *
-  exact fun ⟨x, y⟩ => (hf x).prod_map (hg y)
+  exact fun ⟨x, y⟩ => (hf x).prodMap (hg y)
 
-theorem contDiff_prod_mk_left (f₀ : F) : ContDiff 𝕜 n fun e : E => (e, f₀) :=
-  contDiff_id.prod contDiff_const
+@[deprecated (since := "2025-03-09")]
+alias ContDiff.prod_map := ContDiff.prodMap
 
-theorem contDiff_prod_mk_right (e₀ : E) : ContDiff 𝕜 n fun f : F => (e₀, f) :=
-  contDiff_const.prod contDiff_id
+theorem contDiff_prodMk_left (f₀ : F) : ContDiff 𝕜 n fun e : E => (e, f₀) :=
+  contDiff_id.prodMk contDiff_const
+
+@[deprecated (since := "2025-03-09")]
+alias contDiff_prod_mk_left := contDiff_prodMk_left
+
+theorem contDiff_prodMk_right (e₀ : E) : ContDiff 𝕜 n fun f : F => (e₀, f) :=
+  contDiff_const.prodMk contDiff_id
+
+@[deprecated (since := "2025-03-09")]
+alias contDiff_prod_mk_right := contDiff_prodMk_right
 
 end prodMap
 
