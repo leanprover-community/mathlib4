@@ -371,7 +371,14 @@ noncomputable def BoundaryManifoldData.prod_Icc [BoundarylessManifold I M] :
     cases p with
     | inl x =>
       rw [MDifferentiableAt.mfderiv_prod]
-      · sorry -- injectivity
+      · intro X Y h
+        -- set L1 := (mfderiv I I (fun x ↦ (Sum.elim (fun x ↦ (x, ⊥)) (fun x ↦ (x, (⊤ : Set.Icc 0)) x).1) (Sum.inl x))
+        -- rw [ContinuousLinearMap.prod_apply] at h
+        -- simp at h
+        -- obtain ⟨l, r⟩ := h
+        -- --apply Function.Injective.prodMap
+        -- #check ContinuousLinearMap.prod
+        sorry -- injectivity
       · -- argue: f coincides with the function which always does the same, then use prod
         have : MDifferentiableAt I (I.prod (𝓡∂ 1)) ((·, ⊥): M → M × (Set.Icc (0 :ℝ) 1)) x :=
           mdifferentiableAt_id.prod_mk mdifferentiableAt_const
@@ -387,9 +394,15 @@ noncomputable def BoundaryManifoldData.prod_Icc [BoundarylessManifold I M] :
       sorry
     | inr x => sorry -- same argument as in the other case
   range_eq_boundary := by
-    simp only [boundary_product, Set.Sum.elim_range, Set.prod, mem_univ, true_and]
+    simp only [Set.Sum.elim_range, Set.prod, mem_univ, true_and]
+    -- makes no progress: simp only [boundary_product]
     ext x
-    sorry
+    constructor
+    · rintro (⟨x', hx'⟩ | ⟨x', hx'⟩)
+      <;> beta_reduce at hx' ⊢ <;> rw [← hx'] --<;> tauto
+      · sorry -- proved this, basically
+      · sorry
+    · sorry
     /- rw [mem_setOf]
     constructor
     · rintro (⟨x', hx'⟩ | ⟨x', hx'⟩) <;> rw [← hx'] <;> tauto
