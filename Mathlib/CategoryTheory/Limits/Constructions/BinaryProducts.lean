@@ -82,15 +82,12 @@ noncomputable def limitConeOfTerminalAndPullbacks [HasTerminal C] [HasPullbacks 
   isLimit :=
     isBinaryProductOfIsTerminalIsPullback F _ terminalIsTerminal _ _ (pullbackIsPullback _ _)
 
-variable (C)
-
+variable (C) in
 -- This is not an instance, as it is not always how one wants to construct binary products!
 /-- Any category with pullbacks and terminal object has binary products. -/
 theorem hasBinaryProducts_of_hasTerminal_and_pullbacks [HasTerminal C] [HasPullbacks C] :
     HasBinaryProducts C :=
   { has_limit := fun F => HasLimit.mk (limitConeOfTerminalAndPullbacks F) }
-
-variable {C}
 
 /-- A functor that preserves terminal objects and pullbacks preserves binary products. -/
 lemma preservesBinaryProducts_of_preservesTerminal_and_pullbacks [HasTerminal C]
@@ -188,15 +185,12 @@ noncomputable def colimitCoconeOfInitialAndPushouts [HasInitial C] [HasPushouts 
           Discrete.casesOn x fun x => WalkingPair.casesOn x (pushout.inl _ _) (pushout.inr _ _) }
   isColimit := isBinaryCoproductOfIsInitialIsPushout F _ initialIsInitial _ _ (pushoutIsPushout _ _)
 
-variable (C)
-
+variable (C) in
 -- This is not an instance, as it is not always how one wants to construct binary coproducts!
 /-- Any category with pushouts and initial object has binary coproducts. -/
 theorem hasBinaryCoproducts_of_hasInitial_and_pushouts [HasInitial C] [HasPushouts C] :
     HasBinaryCoproducts C :=
   { has_colimit := fun F => HasColimit.mk (colimitCoconeOfInitialAndPushouts F) }
-
-variable {C}
 
 /-- A functor that preserves initial objects and pushouts preserves binary coproducts. -/
 lemma preservesBinaryCoproducts_of_preservesInitial_and_pushouts [HasInitial C]

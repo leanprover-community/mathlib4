@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Mitchell Lee
 -/
 import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Group.Submonoid.Basic
+import Mathlib.Algebra.Group.ULift
 import Mathlib.Order.Filter.Pointwise
 import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Group.ULift
 import Mathlib.Topology.ContinuousMap.Defs
-import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
 # Theory of topological monoids
@@ -793,7 +793,6 @@ theorem Filter.tendsto_cocompact_mul_right {a b : M} (ha : a * b = 1) :
   refine Filter.Tendsto.of_tendsto_comp ?_ (Filter.comap_cocompact_le (continuous_mul_right b))
   simp only [comp_mul_right, ha, mul_one]
   exact Filter.tendsto_id
-  -- Porting note: changed proof
 
 /-- If `R` acts on `A` via `A`, then continuous multiplication implies continuous scalar
 multiplication by constants.

@@ -154,8 +154,7 @@ theorem choose_property (hp : ∃! a, a ∈ l ∧ p a) : p (choose p l hp) :=
 
 end Choose
 
-variable (α)
-
+variable (α) in
 /-- The equivalence between lists and multisets of a subsingleton type. -/
 def subsingletonEquiv [Subsingleton α] : List α ≃ Multiset α where
   toFun := ofList
@@ -164,8 +163,6 @@ def subsingletonEquiv [Subsingleton α] : List α ≃ Multiset α where
       (List.ext_get h.length_eq) fun _ _ _ => Subsingleton.elim _ _
   left_inv _ := rfl
   right_inv m := Quot.inductionOn m fun _ => rfl
-
-variable {α}
 
 @[simp]
 theorem coe_subsingletonEquiv [Subsingleton α] :

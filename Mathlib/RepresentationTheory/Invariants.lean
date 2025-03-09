@@ -20,6 +20,8 @@ results that the order of `G` is invertible in `k` (e. g. `k` has characteristic
 
 suppress_compilation
 
+universe u
+
 open MonoidAlgebra
 
 open Representation
@@ -81,7 +83,7 @@ theorem invariants_eq_inter : (invariants ρ).carrier = ⋂ g : G, Function.fixe
 
 theorem invariants_eq_top [ρ.IsTrivial] :
     invariants ρ = ⊤ :=
-eq_top_iff.2 (fun x _ g => ρ.apply_eq_self g x)
+eq_top_iff.2 (fun x _ g => ρ.isTrivial_apply g x)
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
@@ -109,8 +111,6 @@ theorem isProj_averageMap : LinearMap.IsProj ρ.invariants ρ.averageMap :=
 end Invariants
 
 namespace linHom
-
-universe u
 
 open CategoryTheory Action
 
@@ -161,3 +161,24 @@ end FDRep
 end linHom
 
 end Representation
+
+namespace Rep
+
+open CategoryTheory
+
+variable (k G : Type u) [CommRing k] [Group G] (A : Rep k G)
+
+/-- The functor sending a representation to its submodule of invariants. -/
+@[simps]
+noncomputable def invariantsFunctor : Rep k G ⥤ ModuleCat k where
+  obj A := ModuleCat.of k A.ρ.invariants
+  map {A B} f := ModuleCat.ofHom <| (f.hom.hom ∘ₗ A.ρ.invariants.subtype).codRestrict
+    B.ρ.invariants fun ⟨c, hc⟩ g => by
+      have := (hom_comm_apply f g c).symm
+      simp_all [hc g]
+
+instance : (invariantsFunctor k G).PreservesZeroMorphisms where
+
+instance : (invariantsFunctor k G).Additive where
+
+end Rep

@@ -15,7 +15,7 @@ import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 For any abelian category `C`, we introduce a type class `IsSerreClass C` for
 Serre classes in `S` (also known as "Serre subcategories"). A Serre class is
 a property `P : ObjectProperty C` of objects in `P` which holds for a zero object,
-and is stable under subobjects, quotients and extensions.
+and is closed under subobjects, quotients and extensions.
 
 ## Future works
 
@@ -27,21 +27,22 @@ and is stable under subobjects, quotients and extensions.
 
 -/
 
-universe v u
+universe v v' u u'
 
 namespace CategoryTheory
 
 open Limits ZeroObject
 
 variable {C : Type u} [Category.{v} C] [Abelian C] (P : ObjectProperty C)
+  {D : Type u'} [Category.{v'} D] [Abelian D]
 
 namespace ObjectProperty
 
 /-- A Serre class in an abelian category consists of predicate which
-hold for the zero object and $is stable under subobjects, quotients, extensions. -/
-class IsSerreClass extends P.ContainsZero,
-    P.IsStableUnderSubobjects, P.IsStableUnderQuotients,
-    P.IsStableUnderExtensions : Prop where
+hold for the zero object and is closed under subobjects, quotients, extensions. -/
+class IsSerreClass : Prop extends P.ContainsZero,
+    P.IsClosedUnderSubobjects, P.IsClosedUnderQuotients,
+    P.IsClosedUnderExtensions where
 
 variable [P.IsSerreClass]
 
@@ -63,6 +64,10 @@ lemma prop_X₂_of_exact {S : ShortComplex C} (hS : S.Exact)
   have := hS.mono_g' d.right
   exact (P.prop_X₂_of_shortExact (hS.shortExact d)
     (P.prop_of_epi d.left.f' h₁) (P.prop_of_mono d.right.g' h₃) :)
+
+instance (F : D ⥤ C) [PreservesFiniteLimits F]
+    [PreservesFiniteColimits F] :
+    (P.inverseImage F).IsSerreClass where
 
 end ObjectProperty
 

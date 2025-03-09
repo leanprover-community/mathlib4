@@ -978,15 +978,12 @@ theorem mk'_add_mk' (m₁ m₂ : M) (s₁ s₂ : S) :
 @[simp]
 theorem mk'_zero (s : S) : mk' f 0 s = 0 := by rw [← zero_smul R (0 : M), mk'_smul, zero_smul]
 
-variable (S)
-
+variable (S) in
 @[simp]
 theorem mk'_one (m : M) : mk' f m (1 : S) = f m := by
   delta mk'
   rw [fromLocalizedModule_mk, Module.End_algebraMap_isUnit_inv_apply_eq_iff, Submonoid.coe_one,
     one_smul]
-
-variable {S}
 
 @[simp]
 theorem mk'_cancel (m : M) (s : S) : mk' f (s • m) s = f m := by
