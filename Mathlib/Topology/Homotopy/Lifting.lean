@@ -3,6 +3,8 @@ Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
 import Mathlib.Topology.Connected.LocPathConnected
 import Mathlib.Topology.Covering
 import Mathlib.Topology.Homotopy.Path
@@ -18,6 +20,11 @@ open Topology unitInterval
 
 variable {E X A : Type*} [TopologicalSpace E] [TopologicalSpace X] [TopologicalSpace A] {p : E → X}
 
+namespace IsLocalHomeomorph
+
+variable (homeo : IsLocalHomeomorph p)
+include homeo
+
 /-- If `p : E → X` is a local homeomorphism, and if `g : I × A → E` is a lift of `f : C(I × A, X)`
   continuous on `{0} × A ∪ I × {a}` for some `a : A`, then there exists a neighborhood `N ∈ 𝓝 a`
   and `g' : I × A → E` continuous on `I × N` that agrees with `g` on `{0} × A ∪ I × {a}`.
@@ -26,13 +33,12 @@ variable {E X A : Type*} [TopologicalSpace E] [TopologicalSpace X] [TopologicalS
   This lemma should also be true for an arbitrary space in place of `I` if `A` is locally connected
   and `p` is a separated map, which guarantees uniqueness and therefore well-definedness
   on the intersections. -/
-theorem IsLocalHomeomorph.exists_lift_nhds (hp : IsLocalHomeomorph p)
-    {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ g = f)
+theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ g = f)
     (cont_0 : Continuous (g ⟨0, ·⟩)) (a : A) (cont_a : Continuous (g ⟨·, a⟩)) :
     ∃ N ∈ 𝓝 a, ∃ g' : I × A → E, ContinuousOn g' (Set.univ ×ˢ N) ∧ p ∘ g' = f ∧
       (∀ a, g' (0, a) = g (0, a)) ∧ ∀ t, g' (t, a) = g (t, a) := by
   -- For every `e : E`, upgrade `p` to a LocalHomeomorph `q e` around `e`.
-  choose q mem_source hpq using hp
+  choose q mem_source hpq using homeo
   /- Using the hypothesis `cont_a`, we partition the unit interval so that for each subinterval
    [tₙ, tₙ₊₁], g ([tₙ, tₙ₊₁] × {a}) is contained in the domain of some local homeomorphism `q e`. -/
   obtain ⟨t, t_0, t_mono, ⟨n_max, h_max⟩, t_sub⟩ :=
@@ -100,10 +106,8 @@ theorem IsLocalHomeomorph.exists_lift_nhds (hp : IsLocalHomeomorph p)
       rw [(q e).right_inv hf, ← hpq e]; exact (congr_fun g_lifts _).symm
     · rfl
 
-namespace IsLocalHomeomorph
-
-variable (homeo : IsLocalHomeomorph p) (sep : IsSeparatedMap p)
-include homeo sep
+variable (sep : IsSeparatedMap p)
+include sep
 
 theorem continuous_lift (f : C(I × A, X)) {g : I × A → E} (g_lifts : p ∘ g = f)
     (cont_0 : Continuous (g ⟨0, ·⟩)) (cont_A : ∀ a, Continuous (g ⟨·, a⟩)) : Continuous g := by
@@ -148,8 +152,8 @@ open PathConnectedSpace (somePath) in
   uniquely through a local homeomorphism `p : E → X` if for every path `γ` in `A`, the composed
   path `f ∘ γ` in `X` lifts to `E` with endpoint only dependent on the endpoint of `γ` and
   independent of the path chosen. In this theorem, we require that a specific point `a₀ : A` is
-  lifted to a specific point `e₀ : E`. -/
-def liftContinuousMap [PathConnectedSpace A] [LocPathConnectedSpace A]
+  lifted to a specific point `e₀ : E` over `a₀`. -/
+theorem existsUnique_lift_continuousMap [PathConnectedSpace A] [LocPathConnectedSpace A]
     (f : C(A, X)) (a₀ : A) (e₀ : E) (he : p e₀ = f a₀)
     (ex : ∀ γ : C(I, A), γ 0 = a₀ → ∃ Γ : C(I, E), Γ 0 = e₀ ∧ p ∘ Γ = f.comp γ)
     (uniq : ∀ γ γ' : C(I, A), ∀ Γ Γ' : C(I, E), γ 0 = a₀ → γ' 0 = a₀ → Γ 0 = e₀ → Γ' 0 = e₀ →
@@ -332,6 +336,22 @@ lemma injective_path_homotopic_mapFn (e₀ e₁ : E) :
   simp_rw [← Path.Homotopic.map_lift]
   iterate 2 rw [Quotient.eq]
   exact (hp.homotopicRel_iff_comp ⟨0, .inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
+
+/-- A map `f` from a simply-connected, locally path-connected space `A` to another space `X` lifts
+  uniquely through a covering map `p : E → X`. We may require that a specific point `a₀ : A` is
+  lifted to a specific point `e₀ : E` over `a₀`. -/
+theorem existsUnique_lift_continuousMap [SimplyConnectedSpace A] [LocPathConnectedSpace A]
+    (f : C(A, X)) (a₀ : A) (e₀ : E) (he : p e₀ = f a₀) :
+    ∃! F : C(A, E), F a₀ = e₀ ∧ p ∘ F = f := by
+  refine hp.isLocalHomeomorph.existsUnique_lift_continuousMap f a₀ e₀ he (fun γ γ_0 ↦ ?_)
+    fun γ γ' Γ Γ' γ_0 γ'_0 Γ_0 Γ'_0 Γ_lifts Γ'_lifts γγ'1 ↦ ?_
+  · simpa [and_comm] using hp.exists_path_lifts (f.comp γ) e₀ (by simp [γ_0, he])
+  let pγ : Path a₀ (γ 1) := ⟨γ, γ_0, rfl⟩
+  let pγ' : Path a₀ (γ 1) := ⟨γ', γ'_0, γγ'1.symm⟩
+  convert hp.liftPath_apply_one_eq_of_homotopicRel (ContinuousMap.HomotopicRel.comp_continuousMap
+    (SimplyConnectedSpace.paths_homotopic pγ pγ') f) e₀ (by simp [he]) (by simp [he]) <;>
+    rw [eq_liftPath_iff']
+  exacts [⟨Γ_lifts, Γ_0⟩, ⟨Γ'_lifts, Γ'_0⟩]
 
 end homotopy_lifting
 
