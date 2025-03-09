@@ -329,7 +329,8 @@ theorem eLpNorm'_const (c : ε) (hq_pos : 0 < q) :
   suffices hq_cancel : q * (1 / q) = 1 by rw [hq_cancel, ENNReal.rpow_one]
   rw [one_div, mul_inv_cancel₀ (ne_of_lt hq_pos).symm]
 
--- Generalising this to ENormedAddMonoid means requiring c ≠ ⊤.
+-- Generalising this to ENormedAddMonoid requires a case analysis whether ‖c‖ₑ = ⊤,
+-- and will happen in a future PR.
 theorem eLpNorm'_const' [IsFiniteMeasure μ] (c : F) (hc_ne_zero : c ≠ 0) (hq_ne_zero : q ≠ 0) :
     eLpNorm' (fun _ : α => c) q μ = ‖c‖ₑ * μ Set.univ ^ (1 / q) := by
   rw [eLpNorm'_eq_lintegral_enorm, lintegral_const,
