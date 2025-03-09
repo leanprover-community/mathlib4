@@ -442,7 +442,7 @@ def kernelIsIsoComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [HasKernel
   inv := kernel.lift _ (kernel.ι _ ≫ inv f) (by simp)
 
 /-- Equal maps have isomorphic kernels. -/
-@[simps] noncomputable def kernel.congr {X Y : C} (f g : X ⟶ Y) [HasKernel f] [HasKernel g]
+@[simps] def kernel.congr {X Y : C} (f g : X ⟶ Y) [HasKernel f] [HasKernel g]
     (h : f = g) : kernel f ≅ kernel g where
   hom := kernel.lift _ (kernel.ι f) (by simp [← h])
   inv := kernel.lift _ (kernel.ι g) (by simp [h])
@@ -924,7 +924,7 @@ def cokernelEpiComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi f] [HasCokernel
         simp)
 
 /-- Equal maps have isomorphic cokernels. -/
-@[simps] noncomputable def cokernel.congr {X Y : C} (f g : X ⟶ Y) [HasCokernel f] [HasCokernel g]
+@[simps] def cokernel.congr {X Y : C} (f g : X ⟶ Y) [HasCokernel f] [HasCokernel g]
     (h : f = g) : cokernel f ≅ cokernel g where
   hom := cokernel.desc _ (cokernel.π g) (by simp [h])
   inv := cokernel.desc _ (cokernel.π f) (by simp [← h])
@@ -1009,7 +1009,7 @@ section
 variable (f : X ⟶ Y) [HasKernel f] [HasImage f] [HasKernel (factorThruImage f)]
 
 /-- The kernel of the morphism `X ⟶ image f` is just the kernel of `f`. -/
-noncomputable def kernelFactorThruImage : kernel (factorThruImage f) ≅ kernel f :=
+def kernelFactorThruImage : kernel (factorThruImage f) ≅ kernel f :=
   (kernelCompMono (factorThruImage f) (image.ι f)).symm ≪≫ (kernel.congr _ _ (by simp))
 
 @[reassoc (attr := simp)]
