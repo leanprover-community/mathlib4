@@ -189,7 +189,7 @@ For example,
 * `reorderUsing [0, 1, 2] [(1, true)] = [1, 0, 2]`,
 * `reorderUsing [0, 1, 2] [(1, true), (0, false)] = [1, 2, 0]`.
 -/
-def reorderUsing (toReorder : List α) (instructions : List (α × Bool)) : List α :=
+def reorderUsing (toReorder : List α) (instructions : List (α × Bool)) : Array α :=
   let uInstructions :=
     let (as, as?) := instructions.unzip
     (uniquify as).zip as?
@@ -199,7 +199,7 @@ def reorderUsing (toReorder : List α) (instructions : List (α × Bool)) : List
       | none, none =>
         (uToReorder.idxOf? x).get! ≤ (uToReorder.idxOf? y).get!
       | _, _ => weight uInstructions x ≤ weight uInstructions y
-  (reorder.map Prod.fst).toList
+  reorder.map Prod.fst
 
 end reorder
 
@@ -278,22 +278,21 @@ it returns the list of pairs of expressions `(old_sum, new_sum)`, for which `old
 sorted by decreasing value of `Lean.Expr.size`.
 In particular, a subexpression of an `old_sum` can only appear *after* its over-expression.
 -/
-def rankSums (tgt : Expr) (instructions : List (Expr × Bool)) : MetaM (List (Expr × Expr)) := do
+def rankSums (tgt : Expr) (instructions : List (Expr × Bool)) : MetaM (Array (Expr × Expr)) := do
   let sums ← getOps op (← instantiateMVars tgt)
-  let candidates := sums.map fun (addends, sum) => do
+  let candidates := sums.filterMap fun (addends, sum) ↦ (
     let reord := reorderUsing addends.toList instructions
     let left_assoc? := sum.getAppFn.isConstOf `And || sum.getAppFn.isConstOf `Or
-    let resummed := sumList (prepareOp sum) left_assoc? reord
-    if (resummed != sum) then some (sum, resummed) else none
-  return (candidates.toList.reduceOption.toArray.qsort
-    (fun x y : Expr × Expr ↦ (y.1.size  ≤ x.1.size))).toList
+    let resummed := sumList (prepareOp sum) left_assoc? reord.toList
+    if (resummed != sum) then some (sum, resummed) else none)
+  return (candidates.qsort (fun x y : Expr × Expr ↦ (y.1.size  ≤ x.1.size)))
 
 /-- `permuteExpr op tgt instructions` takes the same input as `rankSums` and returns the
 expression obtained from `tgt` by replacing all `old_sum`s by the corresponding `new_sum`.
 If there were no required changes, then `permuteExpr` reports this in its second factor. -/
 def permuteExpr (tgt : Expr) (instructions : List (Expr × Bool)) : MetaM Expr := do
   let permInstructions ← rankSums op tgt instructions
-  if permInstructions == [] then throwError "The goal is already in the required form"
+  if permInstructions == #[] then throwError "The goal is already in the required form"
   let mut permTgt := tgt
   -- We cannot do `Expr.replace` all at once here, we need to follow
   -- the order of the instructions.
