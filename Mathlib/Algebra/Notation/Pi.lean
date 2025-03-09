@@ -3,8 +3,7 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Operations
-import Mathlib.Data.One.Defs
+import Mathlib.Algebra.Notation.Defs
 import Mathlib.Util.AssertExists
 
 /-!
@@ -14,7 +13,6 @@ This file provides only the notation for (pointwise) `0`, `1`, `+`, `*`, `•`, 
 See `Mathlib.Algebra.Group.Pi.Basic` for the `Monoid` and `Group` instances.
 -/
 
--- We enforce to only import `Algebra.Group.Defs` and basic logic
 assert_not_exists Set.range Monoid DenselyOrdered
 
 open Function

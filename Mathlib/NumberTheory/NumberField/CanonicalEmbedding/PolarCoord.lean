@@ -93,7 +93,7 @@ def polarCoordReal : PartialHomeomorph (realMixedSpace K) (realMixedSpace K) :=
 
 theorem measurable_polarCoordReal_symm :
     Measurable (polarCoordReal K).symm := by
-  refine measurable_fst.prod_mk <| Measurable.comp ?_ measurable_snd
+  refine measurable_fst.prodMk <| Measurable.comp ?_ measurable_snd
   exact measurable_pi_lambda _
     fun _ ↦ continuous_polarCoord_symm.measurable.comp (measurable_pi_apply _)
 
