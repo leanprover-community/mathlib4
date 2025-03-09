@@ -340,3 +340,61 @@ lemma BoundaryManifoldData.sum_M₀ (bd : BoundaryManifoldData M I k I₀)
 @[simp, mfld_simps]
 lemma BoundaryManifoldData.sum_f (bd : BoundaryManifoldData M I k I₀)
     (bd' : BoundaryManifoldData M' I k I₀) : (bd.sum bd').f = Sum.map bd.f bd'.f := rfl
+
+open Fact.Manifold
+
+variable (k) in
+-- FIXME: delete this, in favour of the boundary data instance on Icc and the product
+noncomputable def BoundaryManifoldData.prod_Icc [BoundarylessManifold I M] :
+    BoundaryManifoldData (M × (Set.Icc (0 : ℝ) 1)) (I.prod (𝓡∂ 1)) k I where
+  M₀ := M ⊕ M
+  f := Sum.elim (·, ⊥) (·, ⊤)
+  isEmbedding := by
+    apply IsClosedEmbedding.isEmbedding
+    apply (IsClosedEmbedding.of_continuous_injective_isClosedMap)
+    · fun_prop
+    · intro x y hxy
+      -- Can this be simplified further?
+      cases x with
+      | inl x' =>
+        cases y with
+        | inl y' => simp_all
+        | inr y' => simp_all
+      | inr x' =>
+        cases y with
+        | inl y' => simp_all
+        | inr y' => simp_all
+    · apply IsClosedMap.sumElim <;> apply isClosedMap_prodMk_right
+  contMDiff := (contMDiff_id.prod_mk contMDiff_const).sumElim
+    (contMDiff_id.prod_mk contMDiff_const)
+  isImmersion hk p := by
+    cases p with
+    | inl x =>
+      rw [MDifferentiableAt.mfderiv_prod]
+      · sorry -- injectivity
+      · -- argue: f coincides with the function which always does the same, then use prod
+        have : MDifferentiableAt I (I.prod (𝓡∂ 1)) ((·, ⊥): M → M × (Set.Icc (0 :ℝ) 1)) x :=
+          mdifferentiableAt_id.prod_mk mdifferentiableAt_const
+        -- actually, want a more general lemma: Sum.elim should be MDifferentiableAt each point
+        -- if the individual branches are
+        sorry --apply MDifferentiableAt.congr_of_eventuallyEq this
+        -- then argue these are EventuallyEq, so we're fine
+      -- mfderiv I J f x "is" mfderiv I J (Sum.elim f g) (.inl x)
+      have : Function.Injective (mfderiv I (I.prod (𝓡∂ 1))
+          ((·, ⊥) : M → M × (Set.Icc (0 : ℝ) 1)) x) := by
+        rw [mfderiv_prod_left]
+        apply LinearMap.inl_injective
+      sorry
+    | inr x => sorry -- same argument as in the other case
+  range_eq_boundary := by
+    simp only [boundary_product, Set.Sum.elim_range, Set.prod, mem_univ, true_and]
+    ext x
+    sorry
+    /- rw [mem_setOf]
+    constructor
+    · rintro (⟨x', hx'⟩ | ⟨x', hx'⟩) <;> rw [← hx'] <;> tauto
+    · -- Can this be simplified?
+      intro hx
+      simp only [mem_insert_iff, mem_singleton_iff] at hx
+      obtain (h | h) := hx
+      exacts [Or.inl ⟨x.1, by rw [← h]⟩, Or.inr ⟨x.1, by rw [← h]⟩] -/
