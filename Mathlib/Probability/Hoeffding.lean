@@ -1,10 +1,15 @@
 /-
 Copyright (c) 2024 Kei Tsukamoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kei Tsukamoto, Kazumi Kasaura, Naoto Onda, Sho sonoda, Yuma Mizuno
+Authors: Kei Tsukamoto
 -/
 
-import Mathlib.Probability.Moments
+import Mathlib.Probability.Moments.Basic
+import Mathlib.Probability.Moments.MGFAnalytic
+import Mathlib.Probability.Variance
+import Mathlib.Analysis.Calculus.ParametricIntegral
+import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+import Mathlib.MeasureTheory.Measure.Tilted
 
 /-!
 # Hoeffding's lemma
@@ -30,15 +35,89 @@ universe u
 
 variable {Ω : Type u} [MeasurableSpace Ω] (μ : Measure Ω := by volume_tac)
 
-theorem ProbabilityTheory.extracted_1 [IsProbabilityMeasure μ]
-    (t a b : ℝ) {X : Ω → ℝ} (ht : 0 ≤ t) (hX : AEMeasurable X μ)
-    (h : ∀ᵐ (ω : Ω) ∂μ, X ω ∈ Set.Icc a b) (h0 : ∫ (x : Ω), X x ∂μ = 0) (w : ¬t = 0) :
+lemma integrable_exp_of_ae_le_const [IsFiniteMeasure μ] {X : Ω → ℝ} (b : ℝ)
+    (hX : AEMeasurable X μ) (hb : ∀ᵐ ω ∂μ, X ω ≤ b) :
+    ∀ (t : ℝ), 0 ≤ t → t ∈ integrableExpSet X μ := by
+  intro t ht
+  refine .of_mem_Icc 0 (rexp (t * b)) (measurable_exp.comp_aemeasurable (hX.const_mul t)) ?_
+  filter_upwards [hb] with ω hb using ⟨by positivity, by gcongr⟩
+
+lemma integrable_exp_of_ae_const_le [IsFiniteMeasure μ] {X : Ω → ℝ} (a : ℝ)
+    (hX : AEMeasurable X μ) (hb : ∀ᵐ ω ∂μ, a ≤ X ω) :
+    ∀ (t : ℝ), t ≤ 0 → t ∈ integrableExpSet X μ := by
+  intro t ht
+  dsimp [integrableExpSet]
+  rw [(by funext ω; simp only [mul_neg, neg_mul, neg_neg]:
+    (fun ω ↦ rexp (t * X ω)) = (fun ω ↦ rexp (-t * -X ω)))]
+  apply integrable_exp_of_ae_le_const
+  · exact AEMeasurable.neg hX
+  · filter_upwards [hb] with ω hb using neg_le_neg_iff.mpr hb
+  · exact neg_nonneg.mpr ht
+
+lemma integrable_exp_of_ae_mem_Icc [IsFiniteMeasure μ] {X : Ω → ℝ} (a b : ℝ)
+    (hX : AEMeasurable X μ) (hb : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
+    integrableExpSet X μ = Set.univ := by
+  apply Set.eq_univ_iff_forall.mpr
+  intro t
+  by_cases sign_t : 0 ≤ t
+  case pos =>
+    apply integrable_exp_of_ae_le_const _ _ hX
+      (by filter_upwards [hb] with ω hb using hb.2) _ sign_t
+  case neg =>
+    apply integrable_exp_of_ae_const_le _ _  hX
+      (by filter_upwards [hb] with ω hb using hb.1) _ (le_of_not_ge sign_t)
+
+theorem integrable_exp_set_interior_of_ae_mem_Icc  [IsFiniteMeasure μ] {X : Ω → ℝ} (t a b : ℝ)
+    (hX : AEMeasurable X μ)
+    (h : ∀ᵐ (ω : Ω) ∂μ, X ω ∈ Set.Icc a b) : t ∈ interior (integrableExpSet X μ) := by
+  rw [integrable_exp_of_ae_mem_Icc μ a b hX h]
+  apply mem_interior_iff_mem_nhds.mpr Filter.univ_mem
+
+theorem cgf_deriv_eq_tilted_measure_expectation [IsProbabilityMeasure μ] {X : Ω → ℝ} (t : ℝ)
+    (h0 : t ∈ interior (integrableExpSet X μ)) :
+    deriv (cgf X μ) t = (μ.tilted fun ω ↦ t * X ω)[X] := by
+  rw [deriv_cgf]
+  · rw [MeasureTheory.integral_tilted, ← integral_div]
+    simp only [smul_eq_mul, mgf]; congr with ω; ring
+  · exact h0
+
+theorem cgf_iterated_deriv_two_eq_tilted_measure_variance [IsProbabilityMeasure μ]
+    {X : Ω → ℝ} (t a b : ℝ) (hX : AEMeasurable X μ) (h : ∀ᵐ (ω : Ω) ∂μ, X ω ∈ Set.Icc a b):
+    iteratedDeriv 2 (cgf X μ) t = Var[X; μ.tilted fun ω ↦ t * X ω] := by
+  rw [iteratedDeriv_two_cgf]
+  · have p : (μ.tilted (fun ω ↦ t * X ω))[fun ω ↦ (X ω) ^ 2] =
+      (μ[fun ω ↦ (X ω) ^ 2 * rexp (t * X ω)]) / mgf X μ t := by
+      rw [MeasureTheory.integral_tilted, ← integral_div]
+      simp only [smul_eq_mul, mgf]; congr with ω; ring
+    rw [<- p, cgf_deriv_eq_tilted_measure_expectation _ t
+      (integrable_exp_set_interior_of_ae_mem_Icc μ t a b hX h)]
+    dsimp only
+    have p : Var[X; μ.tilted fun ω ↦ t * X ω] =
+        (μ.tilted fun ω ↦ t * X ω)[X ^ 2] - ((μ.tilted fun ω ↦ t * X ω)[X]) ^ 2 := by
+      have _ : IsProbabilityMeasure (μ.tilted fun ω ↦ t * X ω) :=
+        isProbabilityMeasure_tilted
+        (by rw [integrable_exp_of_ae_mem_Icc μ a b hX h]; exact trivial : t ∈ integrableExpSet X μ)
+      have hμ := tilted_absolutelyContinuous μ fun ω ↦ t * X ω
+      apply variance_def' <|
+        memLp_of_bounded (hμ h) (AEMeasurable.aestronglyMeasurable (hX.mono_ac hμ)) 2
+    rw [p]; exact rfl
+  · exact integrable_exp_set_interior_of_ae_mem_Icc μ t a b hX h
+
+theorem cgf_le_bound_of_ae_mem_Icc_and_mean_zero [IsProbabilityMeasure μ]
+    (t a b : ℝ) {X : Ω → ℝ} (ht : 0 < t)
+    (hX : AEMeasurable X μ)
+    (h : ∀ᵐ (ω : Ω) ∂μ, X ω ∈ Set.Icc a b) (h0 : ∫ (x : Ω), X x ∂μ = 0):
   cgf X μ t ≤ t ^ 2 * (b - a) ^ 2 / 8 := by
-  let f := fun t ↦ cgf X μ t
+  let f := cgf X μ
+  let f' := deriv (cgf X μ)
+  let f'' := iteratedDeriv 2 (cgf X μ)
   have hf : f 0 = 0 := cgf_zero
-  set f' : ℝ → ℝ := fun t ↦ (μ.tilted (fun ω ↦ t * X ω))[X]
-  have hf' : f' 0 = 0 := cgf_zero_deriv h0
-  set f'' : ℝ → ℝ := fun t ↦ variance X (μ.tilted (fun ω ↦ t * X ω))
+  have hf' : f' 0 = 0 := by
+    dsimp [f']
+    rw [deriv_cgf_zero]
+    · simp only [measure_univ, ENNReal.one_toReal, div_one, f']
+      exact h0
+    · exact integrable_exp_set_interior_of_ae_mem_Icc μ 0 a b hX h
   have q : ∀ x : ℝ, ∃ c ∈ (Set.Ioo 0 t), f t = f 0 + f' 0 * t + f'' c * t ^ 2 / 2 := by
     let A := (f t - f 0 - f' 0 * t) * 2 / t ^ 2
     have q0 : f t = f 0 + f' 0 * t + A * t ^ 2 / 2 := by
@@ -48,8 +127,7 @@ theorem ProbabilityTheory.extracted_1 [IsProbabilityMeasure μ]
           Eq.symm (mul_div_right_comm ((f t - f 0 - f' 0 * t) * 2) (t ^ 2) (t ^ 2))
         _ = (f t - f 0 - f' 0 * t) * 2 * (t ^ 2 / t ^ 2) := by ring
         _ = (f t - f 0 - f' 0 * t) * 2 := by field_simp only
-      rw [q0']
-      ring
+      rw [q0']; ring
     set g : ℝ → ℝ := fun x ↦ f t - f x - f' x * (t - x) - A * (t - x) ^ 2 / 2
     have q1 : g 0 = 0 := by
       dsimp only [g, A]
@@ -64,24 +142,30 @@ theorem ProbabilityTheory.extracted_1 [IsProbabilityMeasure μ]
       simp only [sub_self, mul_zero, ne_eq, OfNat.ofNat_ne_zero,
         not_false_eq_true, zero_pow, zero_div]
     set g' : ℝ → ℝ := fun x ↦ - f'' x * (t - x) + A * (t - x)
-    have q3 : ∀ x : ℝ, HasDerivAt g (g' x) x := by
-      intro x
+    have q3 : ∀ x : ℝ, (x ∈ interior (integrableExpSet X μ)) → HasDerivAt g (g' x) x := by
+      intro x hs
       apply HasDerivAt.add
       · rw [← (by ring : 0 - f' x + (f' x - f'' x * (t - x)) = - f'' x * (t - x))]
-        apply ((hasDerivAt_const x _).sub (cgf_deriv_one a b hX h x)).add
-        convert (cgf_deriv_two a b hX h x).mul ((hasDerivAt_id' x).add_const (-t)) using 1
-        · ext; ring
+        refine HasDerivAt.add ?_ ?_
+        · refine HasDerivAt.sub ?_ ?_
+          exact hasDerivAt_const x (f t)
+          refine DifferentiableAt.hasDerivAt ?_
+          apply AnalyticAt.differentiableAt (analyticAt_cgf hs)
         · dsimp [f', f'']
-          have p : variance X (Measure.tilted μ fun ω ↦ x * X ω) =
-              (μ.tilted fun ω ↦ x * X ω)[X ^ 2] - ((μ.tilted fun ω ↦ x * X ω)[X]) ^ 2 := by
-            have _ : IsProbabilityMeasure (μ.tilted fun ω ↦ x * X ω) :=
-              isProbabilityMeasure_tilted (integrable_expt_bound hX h)
-            have hμ := tilted_absolutelyContinuous μ fun ω ↦ x * X ω
-            apply variance_def' <|
-              memℒp_of_bounded (hμ h) (AEMeasurable.aestronglyMeasurable (hX.mono_ac hμ)) 2
-          rw [p]
-          simp only [Pi.pow_apply, mul_one]
-          ring
+          suffices HasDerivAt (fun x ↦ (deriv (cgf X μ) x * (x - t)))
+            (iteratedDeriv 2 (cgf X μ) x * (x - t) + deriv (cgf X μ) x * 1) x from by
+            rw [(by funext x; ring : (fun x ↦ -(deriv (cgf X μ) x * (t - x)))
+              = fun x ↦ (deriv (cgf X μ) x * (x - t)))]
+            rw [(by ring : (deriv (cgf X μ) x - iteratedDeriv 2 (cgf X μ) x * (t - x))
+              = (iteratedDeriv 2 (cgf X μ) x * (x - t) + deriv (cgf X μ) x * 1))]
+            exact this
+          apply HasDerivAt.mul
+          · rw [iteratedDeriv_succ]
+            simp only [iteratedDeriv_one, hasDerivAt_deriv_iff]
+            have r := differentiableAt_iteratedDeriv_cgf hs 1
+            simp only [iteratedDeriv_one] at r
+            exact r
+          · exact HasDerivAt.add_const (-t) (hasDerivAt_id' x)
       · rw [(by ext x; ring : (fun x ↦ -(A * (t - x) ^ 2 / 2)) =
           (fun x ↦ -A * ((x - t) ^ 2 / 2))),
             (by ring : (A * (t - x)) = -A * (x - t))]
@@ -92,17 +176,17 @@ theorem ProbabilityTheory.extracted_1 [IsProbabilityMeasure μ]
         rw [(by ext x; ring : (fun y ↦ (y - t) ^ 2) = (fun y ↦ y ^ 2 - 2 * t * y + t ^ 2)),
             (by ring : (2 * (x - t)) = 2 * (x ^ (2 - 1)) - 2 * t + 0)]
         apply HasDerivAt.add
-        apply HasDerivAt.add
-        apply hasDerivAt_pow
-        rw [(by ext x; ring : (fun x ↦ -(2 * t * x)) = (fun x ↦ (x * -(2 * t))))]
-        apply hasDerivAt_mul_const
-        apply hasDerivAt_const
-    have q4 : ∃ c ∈ (Set.Ioo 0 t), g' c = 0 := by
-      apply exists_hasDerivAt_eq_zero (lt_of_le_of_ne ht fun a ↦ w (a.symm))
-      apply HasDerivAt.continuousOn
-      intros x _; exact q3 x
-      rw [q1, q2]
-      intros x _; exact q3 x
+        · apply HasDerivAt.add
+          · apply hasDerivAt_pow
+          · rw [(by ext x; ring : (fun x ↦ -(2 * t * x)) = (fun x ↦ (x * -(2 * t))))]
+            apply hasDerivAt_mul_const
+        · apply hasDerivAt_const
+    have q4 : ∃ c ∈ (Set.Ioo 0 t), g' c = 0 :=
+      exists_hasDerivAt_eq_zero ht
+        (HasDerivAt.continuousOn
+          (fun x _ => q3 _ (integrable_exp_set_interior_of_ae_mem_Icc μ x a b hX h)))
+        (by rw [q1, q2] : g 0 = g t)
+        (fun x _ => q3 _ (integrable_exp_set_interior_of_ae_mem_Icc μ x a b hX h))
     obtain ⟨c, ⟨cq, cq'⟩⟩ := q4
     intro
     use c; constructor
@@ -112,28 +196,29 @@ theorem ProbabilityTheory.extracted_1 [IsProbabilityMeasure μ]
       have cq''' : A = f'' c := by
         have cr : (A - f'' c) = 0 := by
           simp only [mul_eq_zero] at cq''
-          obtain cq''' | cq'''' := cq''
-          · exact cq'''
-          · dsimp only [Set.Ioo] at cq
-            obtain ⟨_, cq2⟩ := cq
-            linarith
+          exact cq''.elim id (by intro; obtain ⟨_, _⟩ := cq; linarith)
         linarith
       rw [← cq''']
       exact q0
   rw [hf, hf'] at q
-  simp only [Set.mem_Ioo, zero_mul, add_zero, zero_add, forall_const] at q
+  simp only [zero_mul, add_zero, zero_add, forall_const] at q
   obtain ⟨c, ⟨_, cq'⟩⟩ := q
   have s : f t ≤ t^2 * (b - a)^2 / 8 := by
     rw [cq']
     calc
     _ ≤ ((b - a) / 2) ^ 2 * t ^ 2 / 2 := by
       apply mul_le_mul_of_nonneg_right
-      apply mul_le_mul_of_nonneg_right
-      dsimp [f'']
-      have _ : IsProbabilityMeasure (μ.tilted fun ω ↦ t * X ω) :=
-        isProbabilityMeasure_tilted (integrable_expt_bound hX h)
-      exact tilt_var_bound a b c h hX
-      exact sq_nonneg t; simp only [inv_nonneg, Nat.ofNat_nonneg]
+      · apply mul_le_mul_of_nonneg_right
+        dsimp [f'']
+        rw [cgf_iterated_deriv_two_eq_tilted_measure_variance _ c a b hX h]
+        · have _ : IsProbabilityMeasure (μ.tilted fun ω ↦ c * X ω) := isProbabilityMeasure_tilted
+            (by rw [integrable_exp_of_ae_mem_Icc μ a b hX h]; exact trivial :
+              c ∈ integrableExpSet X μ)
+          exact variance_le_sq_of_bounded
+            ((tilted_absolutelyContinuous μ fun ω ↦ c * X ω) h)
+            (hX.mono_ac (tilted_absolutelyContinuous μ fun ω ↦ c * X ω))
+        · exact sq_nonneg t
+      · linarith
     _ = t ^ 2 * (b - a) ^ 2 / 8 := by ring
   exact s
 
@@ -153,8 +238,9 @@ theorem hoeffding_nonneg [IsProbabilityMeasure μ]
     rw [<- log_le_iff_le_exp]
     exact this
     apply mgf_pos' (Ne.symm (NeZero.ne' μ))
-    apply integrable_expt_bound hX h
-  exact ProbabilityTheory.extracted_1 μ t a b ht hX h h0 w
+      (by rw [integrable_exp_of_ae_mem_Icc μ a b hX h]; exact trivial : (t ∈ integrableExpSet X μ))
+  exact cgf_le_bound_of_ae_mem_Icc_and_mean_zero μ t a b
+    (lt_of_le_of_ne ht fun a ↦ w (id (Eq.symm a))) hX h h0
 
 /-! ### Hoeffding's lemma-/
 
