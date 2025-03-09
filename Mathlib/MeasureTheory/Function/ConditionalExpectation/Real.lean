@@ -189,10 +189,10 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
   refine uniformIntegrable_of le_rfl ENNReal.one_ne_top
     (fun n => (stronglyMeasurable_condExp.mono (hℱ n)).aestronglyMeasurable) fun ε hε => ?_
   by_cases hne : eLpNorm g 1 μ = 0
-  · rw [eLpNorm_eq_zero_iff (ε := ℝ) hg.1 one_ne_zero] at hne
-    refine ⟨0, fun n => (le_of_eq <| (eLpNorm_eq_zero_iff (ε := ℝ)
-      ((stronglyMeasurable_condExp.mono (hℱ n)).aestronglyMeasurable.indicator (hmeas n 0))
-      one_ne_zero).2 ?_).trans (zero_le _)⟩
+  · rw [eLpNorm_eq_zero_iff hg.1 one_ne_zero] at hne
+    refine ⟨0, fun n => (le_of_eq <|
+      (eLpNorm_eq_zero_iff ((stronglyMeasurable_condExp.mono (hℱ n)).aestronglyMeasurable.indicator
+        (hmeas n 0)) one_ne_zero).2 ?_).trans (zero_le _)⟩
     filter_upwards [condExp_congr_ae (m := ℱ n) hne] with x hx
     simp only [zero_le', Set.setOf_true, Set.indicator_univ, Pi.zero_apply, hx, condExp_zero]
   obtain ⟨δ, hδ, h⟩ := hg.eLpNorm_indicator_le le_rfl ENNReal.one_ne_top hε
