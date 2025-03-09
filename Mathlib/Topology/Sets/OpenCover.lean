@@ -40,8 +40,8 @@ lemma iSup_set_eq_univ (hu : IsOpenCover u) : ⋃ i, (u i : Set X) = univ := by
 
 /-- Pullback of a covering of `Y` by a continuous map `X → Y`, giving a covering of `X` with the
 same index type. -/
-lemma comap (hv : IsOpenCover v) (f : C(X, Y)) : IsOpenCover fun k ↦ (v k).comap f :=
-  by simp [IsOpenCover, ← preimage_iUnion, hv.iSup_set_eq_univ]
+lemma comap (hv : IsOpenCover v) (f : C(X, Y)) : IsOpenCover fun k ↦ (v k).comap f := by
+  simp [IsOpenCover, ← preimage_iUnion, hv.iSup_set_eq_univ]
 
 lemma exists_mem (hu : IsOpenCover u) (a : X) : ∃ i, a ∈ u i := by
   simpa [← hu.iSup_set_eq_univ] using mem_univ a
