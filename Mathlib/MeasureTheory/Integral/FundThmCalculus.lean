@@ -1050,8 +1050,6 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
         · rw [intervalIntegral.integral_of_le hab]
           simp only [integral_Icc_eq_integral_Ioc', Real.volume_singleton]
 
--- Porting note: Lean was adding `lb`/`lb'` to the arguments of this theorem, so I enclosed FTC-1
--- into a `section`
 /-- Hard part of FTC-2 for integrable derivatives, real-valued functions: one has
 `g b - g a ≤ ∫ y in a..b, g' y` when `g'` is integrable.
 Auxiliary lemma in the proof of `integral_eq_sub_of_hasDeriv_right_of_le`.
