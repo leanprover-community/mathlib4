@@ -64,6 +64,60 @@ private theorem irrational_of_certificate {x : ℝ} {m n k : ℕ}
   · rwa [h_even.neg_pow]
   · linarith [h_odd.pow_neg (show x < 0 by linarith)]
 
+private theorem irrational_rpow_of_not_power {q : ℚ} {a b : ℕ}
+    (h : ¬ ∃ p : ℚ, q^a = p^b) (hb : 0 < b) (hq : 0 ≤ q) :
+    Irrational (Real.rpow q (a / b : ℚ)) := by
+  simp at h
+  simp [Irrational]
+  intro x hx
+  specialize h x
+  absurd h
+  rify
+  rw [hx, ← Real.rpow_mul_natCast, div_mul_cancel₀]
+  · simp
+  · simp
+    omega
+  · simpa
+
+private theorem not_power_nat_of_bounds {n k d : ℕ}
+    (h_left : k^d < n)
+    (h_right : n < (k + 1)^d) :
+    ¬ ∃ m, n = m^d := by
+  intro ⟨m, h⟩
+  rw [h] at h_left h_right
+  have : k < m := by exact lt_of_pow_lt_pow_left' d h_left
+  have : m < k + 1 := by exact lt_of_pow_lt_pow_left' d h_right
+  omega
+
+private theorem not_power_rat_of_num_den {a b d : ℕ}
+    (h_coprime : a.Coprime b)
+    (ha : ¬ ∃ x, a = x^d)
+    (hb : ¬ ∃ y, b = y^d) :
+    ¬ ∃ q, 0 ≤ q ∧ (a / b : ℚ) = q^d := by
+  by_cases hb_zero : b = 0
+  · subst hb_zero
+    simp at h_coprime
+    subst h_coprime
+    absurd ha
+    use 1
+    simp
+  intro ⟨q, hq, h⟩
+  rw [← Rat.num_div_den q] at h
+  set x' := q.num
+  set y := q.den
+  obtain ⟨x, hx'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ x' by sorry)
+  rw [hx'] at h
+  simp at ha hb
+  specialize ha x
+  specialize hb y
+  simp [div_pow] at h
+  rw [div_eq_div_iff] at h
+  rotate_left
+  · simpa
+  · apply pow_ne_zero
+    simp [y]
+  sorry
+
 private theorem irrational_rpow_rat_rat {x y : ℝ} {x_num x_den y_num y_den k_num k_den : ℕ}
     (hx_isRat : IsRat x (Int.ofNat x_num) x_den)
     (hy_isRat : IsRat y (Int.ofNat y_num) y_den)
