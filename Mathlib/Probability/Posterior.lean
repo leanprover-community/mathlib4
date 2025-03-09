@@ -158,6 +158,41 @@ lemma posterior_ac_of_ac {ν : Measure 𝓧} [SFinite ν] (h_ac : ∀ᵐ ω ∂�
   refine Measure.AbsolutelyContinuous.compProd_right ?_
   simpa
 
+section StandardBorelSpace
+
+variable [StandardBorelSpace 𝓧] [Nonempty 𝓧]
+
+/-- The posterior is involutive (up to `μ`-a.e. equality). -/
+lemma posterior_posterior [IsMarkovKernel κ] : (κ†μ)†(κ ∘ₘ μ) =ᵐ[μ] κ := by
+  suffices κ =ᵐ[κ†μ ∘ₘ κ ∘ₘ μ] (κ†μ)†(κ ∘ₘ μ) by
+    rw [posterior_comp_self] at this
+    filter_upwards [this] with a h using h.symm
+  refine ae_eq_posterior_of_compProd_eq_swap_comp κ ?_
+  rw [posterior_comp_self, compProd_posterior_eq_swap_comp, Measure.comp_assoc,
+    Kernel.swap_swap, Measure.id_comp]
+
+/-- The posterior is contravariant. -/
+lemma posterior_comp {η : Kernel 𝓧 𝓨} [IsFiniteKernel η] :
+    (η ∘ₖ κ)†μ =ᵐ[η ∘ₘ κ ∘ₘ μ] κ†μ ∘ₖ η†(κ ∘ₘ μ) := by
+  rw [Measure.comp_assoc]
+  refine (ae_eq_posterior_of_compProd_eq_swap_comp ((κ†μ) ∘ₖ η†(κ ∘ₘ μ)) ?_).symm
+  simp_rw [Measure.compProd_eq_comp_prod, ← Kernel.parallelComp_comp_copy,
+    ← Kernel.parallelComp_id_left_comp_parallelComp, ← Measure.comp_assoc]
+  calc (Kernel.id ∥ₖ κ†μ) ∘ₘ (Kernel.id ∥ₖ η†(κ ∘ₘ μ)) ∘ₘ (Kernel.copy 𝓨) ∘ₘ η ∘ₘ κ ∘ₘ μ
+  _ = (Kernel.id ∥ₖ κ†μ) ∘ₘ (η ∥ₖ Kernel.id) ∘ₘ Kernel.copy 𝓧 ∘ₘ κ ∘ₘ μ := by
+    rw [parallelProd_posterior_comp_copy_comp]
+  _ = (η ∥ₖ Kernel.id) ∘ₘ (Kernel.id ∥ₖ κ†μ) ∘ₘ Kernel.copy 𝓧 ∘ₘ κ ∘ₘ μ := by
+    rw [Measure.comp_assoc, Kernel.parallelComp_comm, ← Measure.comp_assoc]
+  _ = (η ∥ₖ Kernel.id) ∘ₘ (κ ∥ₖ Kernel.id) ∘ₘ Kernel.copy Ω ∘ₘ μ := by
+    rw [parallelProd_posterior_comp_copy_comp]
+  _ = (Kernel.swap _ _) ∘ₘ (Kernel.id ∥ₖ η) ∘ₘ (Kernel.id ∥ₖ κ) ∘ₘ Kernel.copy Ω ∘ₘ μ := by
+    simp_rw [Measure.comp_assoc]
+    conv_rhs => rw [← Kernel.comp_assoc]
+    rw [Kernel.swap_parallelComp, Kernel.comp_assoc, ← Kernel.comp_assoc (Kernel.swap Ω 𝓧),
+      Kernel.swap_parallelComp, Kernel.comp_assoc, Kernel.swap_copy]
+
+end StandardBorelSpace
+
 section CountableOrCountablyGenerated
 
 variable [MeasurableSpace.CountableOrCountablyGenerated Ω 𝓧]
@@ -183,12 +218,9 @@ lemma Kernel.ac_comp_of_ac {ν : Measure 𝓧} [SFinite ν] (h_ac : ∀ᵐ ω �
   exact posterior_ac_of_ac h_ac
 
 -- todo: docstring. This is a form of Bayes' rule.
-lemma rnDeriv_posterior (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
-    ∀ᵐ ω ∂μ, ∀ᵐ b ∂(κ ∘ₘ μ),
-      (κ†μ).rnDeriv (Kernel.const _ μ) b ω = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω b := by
-  suffices ∀ᵐ p ∂(μ.prod (κ ∘ₘ μ)),
-      (κ†μ).rnDeriv (Kernel.const _ μ) p.2 p.1 = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) p.1 p.2 by
-    convert Measure.ae_ae_of_ae_prod this -- `convert` is muct faster than `exact`
+lemma rnDeriv_posterior_ae_prod (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
+    ∀ᵐ p ∂(μ.prod (κ ∘ₘ μ)),
+      (κ†μ).rnDeriv (Kernel.const _ μ) p.2 p.1 = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) p.1 p.2 := by
   have h_ac' : ∀ᵐ x ∂(κ ∘ₘ μ), (κ†μ) x ≪ μ := posterior_ac_of_ac h_ac
   have h1 {s : Set Ω} {t : Set 𝓧} (hs : MeasurableSet s) (ht : MeasurableSet t) :
       ∫⁻ x in s ×ˢ t, (κ†μ).rnDeriv (Kernel.const _ μ) x.2 x.1 ∂μ.prod (⇑κ ∘ₘ μ)
@@ -242,41 +274,34 @@ lemma rnDeriv_posterior (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
     congr with i
     exact h i
 
+-- todo: docstring. This is a form of Bayes' rule.
+lemma rnDeriv_posterior (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
+    ∀ᵐ ω ∂μ, ∀ᵐ x ∂(κ ∘ₘ μ),
+      (κ†μ).rnDeriv (Kernel.const _ μ) x ω = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω x := by
+  convert Measure.ae_ae_of_ae_prod (rnDeriv_posterior_ae_prod h_ac) -- much faster than `exact`
+
+lemma rnDeriv_posterior_symm (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
+    ∀ᵐ x ∂(κ ∘ₘ μ), ∀ᵐ ω ∂μ,
+      (κ†μ).rnDeriv (Kernel.const _ μ) x ω = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω x := by
+  refine Measure.ae_ae_of_ae_prod (μ := κ ∘ₘ μ) (ν := μ)
+    (p := fun (u : 𝓧 × Ω) ↦ (κ†μ).rnDeriv (Kernel.const _ μ) u.1 u.2
+      = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) u.2 u.1) ?_
+  rw [← Measure.prod_swap, ae_map_iff]
+  · exact rnDeriv_posterior_ae_prod h_ac
+  · fun_prop
+  · exact measurableSet_eq_fun' (by fun_prop) (by fun_prop)
+
+lemma posterior_ae_eq_withDensity (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
+    ∀ᵐ x ∂(κ ∘ₘ μ), (κ†μ) x = μ.withDensity (fun ω ↦ κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω x) := by
+  have h_ac' : ∀ᵐ x ∂(κ ∘ₘ μ), (κ†μ) x ≪ μ := posterior_ac_of_ac h_ac
+  filter_upwards [rnDeriv_posterior_symm h_ac, h_ac'] with x h h_ac'
+  ext s hs
+  rw [← Measure.setLIntegral_rnDeriv h_ac', withDensity_apply _ hs]
+  refine setLIntegral_congr_fun hs ?_
+  filter_upwards [h, Kernel.rnDeriv_eq_rnDeriv_measure (κ := κ†μ) (η := Kernel.const 𝓧 μ) (a := x)]
+    with ω h h_eq hωs
+  rw [← h, h_eq, Kernel.const_apply]
+
 end CountableOrCountablyGenerated
-
-section StandardBorelSpace
-
-variable [StandardBorelSpace 𝓧] [Nonempty 𝓧]
-
-/-- The posterior is involutive (up to `μ`-a.e. equality). -/
-lemma posterior_posterior [IsMarkovKernel κ] : (κ†μ)†(κ ∘ₘ μ) =ᵐ[μ] κ := by
-  suffices κ =ᵐ[κ†μ ∘ₘ κ ∘ₘ μ] (κ†μ)†(κ ∘ₘ μ) by
-    rw [posterior_comp_self] at this
-    filter_upwards [this] with a h using h.symm
-  refine ae_eq_posterior_of_compProd_eq_swap_comp κ ?_
-  rw [posterior_comp_self, compProd_posterior_eq_swap_comp, Measure.comp_assoc,
-    Kernel.swap_swap, Measure.id_comp]
-
-/-- The posterior is contravariant. -/
-lemma posterior_comp {η : Kernel 𝓧 𝓨} [IsFiniteKernel η] :
-    (η ∘ₖ κ)†μ =ᵐ[η ∘ₘ κ ∘ₘ μ] κ†μ ∘ₖ η†(κ ∘ₘ μ) := by
-  rw [Measure.comp_assoc]
-  refine (ae_eq_posterior_of_compProd_eq_swap_comp ((κ†μ) ∘ₖ η†(κ ∘ₘ μ)) ?_).symm
-  simp_rw [Measure.compProd_eq_comp_prod, ← Kernel.parallelComp_comp_copy,
-    ← Kernel.parallelComp_id_left_comp_parallelComp, ← Measure.comp_assoc]
-  calc (Kernel.id ∥ₖ κ†μ) ∘ₘ (Kernel.id ∥ₖ η†(κ ∘ₘ μ)) ∘ₘ (Kernel.copy 𝓨) ∘ₘ η ∘ₘ κ ∘ₘ μ
-  _ = (Kernel.id ∥ₖ κ†μ) ∘ₘ (η ∥ₖ Kernel.id) ∘ₘ Kernel.copy 𝓧 ∘ₘ κ ∘ₘ μ := by
-    rw [parallelProd_posterior_comp_copy_comp]
-  _ = (η ∥ₖ Kernel.id) ∘ₘ (Kernel.id ∥ₖ κ†μ) ∘ₘ Kernel.copy 𝓧 ∘ₘ κ ∘ₘ μ := by
-    rw [Measure.comp_assoc, Kernel.parallelComp_comm, ← Measure.comp_assoc]
-  _ = (η ∥ₖ Kernel.id) ∘ₘ (κ ∥ₖ Kernel.id) ∘ₘ Kernel.copy Ω ∘ₘ μ := by
-    rw [parallelProd_posterior_comp_copy_comp]
-  _ = (Kernel.swap _ _) ∘ₘ (Kernel.id ∥ₖ η) ∘ₘ (Kernel.id ∥ₖ κ) ∘ₘ Kernel.copy Ω ∘ₘ μ := by
-    simp_rw [Measure.comp_assoc]
-    conv_rhs => rw [← Kernel.comp_assoc]
-    rw [Kernel.swap_parallelComp, Kernel.comp_assoc, ← Kernel.comp_assoc (Kernel.swap Ω 𝓧),
-      Kernel.swap_parallelComp, Kernel.comp_assoc, Kernel.swap_copy]
-
-end StandardBorelSpace
 
 end ProbabilityTheory
