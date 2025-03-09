@@ -6,6 +6,7 @@ Authors: Michael Rothgang
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
 import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.HasSmoothBoundary
+import Mathlib.Algebra.Group.MinimalAxioms
 
 /-!
 ## (Unoriented) bordism theory
@@ -303,19 +304,13 @@ noncomputable def sum (φ : UnorientedCobordism k s t J) (ψ : UnorientedCobordi
     ext x
     cases x with
     | inl x =>
-      set Φ := (Diffeomorph.sumSumSumComm I s.M k t.M s'.M t'.M).symm
       dsimp
-      have : Φ (Sum.inl (Sum.inl x)) = Sum.inl (Sum.inl x) := sorry
-      rw [this]
-      simp --[φ.hFf]
+      simp only [Sum.map_map]
       change (φ.F ∘ φ.bd.f ∘ φ.φ ∘ Sum.inl) x = s.f x
       rw [φ.hFf]
     | inr x =>
-      set Φ := (Diffeomorph.sumSumSumComm I s.M k t.M s'.M t'.M).symm
       dsimp
-      have : Φ (Sum.inl (Sum.inr x)) = Sum.inr (Sum.inl x) := sorry
-      rw [this]
-      simp --[φ.hFf]
+      simp only [Sum.map_map]
       change (ψ.F ∘ ψ.bd.f ∘ ψ.φ ∘ Sum.inl) x = s'.f x
       rw [ψ.hFf]
   hFg := sorry -- analogous
@@ -554,6 +549,10 @@ variable (X k I J) in
 -- TODO: need to impose a constraint in I and J!
 abbrev uBordismClass := Quotient <| Setoid.mk _ <| uBordismRelation X k I (H' := H') (E' := E') J
 
+variable (X k n) in
+/-- The type of unoriented `n`-dimensional `C^k` bordism classes on `X`. -/
+abbrev uBordismClassN (n : ℕ) := uBordismClass X k (𝓡 n) (𝓡 (n + 1))
+
 variable (X k I J) in
 /-- The bordism class of the empty set: the neutral element for the group operation -/
 def empty : uBordismClass X k I (E' := E') (H' := H') J :=
@@ -566,10 +565,14 @@ def empty : uBordismClass X k I (E' := E') (H' := H') J :=
 --     (h : unorientedBordismRelation X k I (H' := H') (E' := E') J a₁ a₂)
 --     (h' : unorientedBordismRelation X k I (H' := H') (E' := E') J b₁ b₂) :
 --     a₁.sum b₁ = a₂.sum b₂ := sorry
+-- the proof is basically UnorientedCobordism.sum
+
+def uBordismClass.sum : (uBordismClass X k I (E' := E') (H' := H') J) →
+    (uBordismClass X k I (E' := E') (H' := H') J) →
+    uBordismClass X k I (E' := E') (H' := H') J := sorry
 
 -- Almost there: want to also descend the final operator to the quotient...
-variable (X k I J) in
-def uBordismClass.sum :=
+def uBordismClass.sum2 :=
 --Quotient (unorientedBordismSetoid X k I J) → Quotient (unorientedBordismSetoid X k I J) → Quotient (unorientedBordismSetoid X k I J) :=
   --(uBordismClass X k I (E' := E') (H' := H') J) → (uBordismClass X k I (E' := E') (H' := H') J)
   --  → uBordismClass X k I (E' := E') (H' := H') J := by
@@ -580,6 +583,35 @@ def uBordismClass.sum :=
     (s₂ := unorientedBordismSetoid X k I (E' := E') (H' := H') J) (f := f) sorry
   aux
 
-variable (X k n) in
-/-- The type of unoriented `n`-dimensional `C^k` bordism classes on `X`. -/
-abbrev uBordismClassN (n : ℕ) := uBordismClass X k (𝓡 n) (𝓡 (n + 1))
+instance : Zero (uBordismClass X k I J) where
+  zero := empty X k I J
+
+instance : Neg (uBordismClass X k I J) where
+  -- XXX: better name for the variable?
+  neg Φ := Φ
+
+instance : Add (uBordismClass X k I J) where
+  add := uBordismClass.sum
+
+variable (X k I J) in
+def ubgroupAux : AddGroup (uBordismClass X k I (E' := E') (H' := H') J) := by
+  apply AddGroup.ofLeftAxioms
+  -- XXX: better name for the variables?
+  · intro Φ Ψ Δ
+    change uBordismClass.sum (uBordismClass.sum Φ Ψ) Δ = uBordismClass.sum Φ (uBordismClass.sum Ψ Δ)
+    -- use UnorientedCobordism.sumAssoc
+    sorry
+  · intro Φ
+    change uBordismClass.sum (empty X k I J) Φ = Φ
+    -- change: s ⊕ ∅ is equivalent to s, i.e. bordant
+    -- use UnorientedCobordism.sumEmpty
+    sorry
+  · intro Φ
+    change uBordismClass.sum Φ Φ = empty X k I J
+    -- change: s ⊕ s is equivalent to SingularNManifold X empty I, i.e. cobordism
+    -- use UnorientedCobordism.sum_self
+    sorry
+
+instance : AddCommGroup (uBordismClass X k I (E' := E') (H' := H') J) where
+  __ := ubgroupAux X k I J
+  add_comm Φ Ψ := sorry -- unfold goal, the use UnorientedCobordism.sumComm
