@@ -104,16 +104,6 @@ theorem full (G : C) (hG : IsSeparator G) : (preadditiveCoyonedaObj G).Full wher
     ext q
     simpa [-Abelian.comp_epiDesc] using Sigma.ι _ q ≫= comp_epiDesc _ _ h
 
-/-- `G ⟶ G` and `(End G)ᵐᵒᵖ` are isomorphic as `(End G)ᵐᵒᵖ`-modules. -/
-@[simps]
-def linearEquiv (G : C) : (G ⟶ G) ≃ₗ[(End G)ᵐᵒᵖ] (End G)ᵐᵒᵖ where
-  toFun f := ⟨f⟩
-  map_add' := by aesop_cat
-  map_smul' := by aesop_cat
-  invFun := fun ⟨f⟩ => f
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
-
 theorem preserves_injectives (G : C) (hG : IsSeparator G) :
     (preadditiveCoyonedaObj G).PreservesInjectiveObjects where
   injective_obj {B} hB := by
@@ -124,7 +114,8 @@ theorem preserves_injectives (G : C) (hG : IsSeparator G) :
     have h := exists_d_comp_eq_d hG B (ModuleCat.ofHom
       ⟨⟨fun i => i.1.unop, by aesop_cat⟩, by aesop_cat⟩) ?_ (ModuleCat.ofHom g)
     · obtain ⟨l, hl⟩ := h
-      refine ⟨((preadditiveCoyonedaObj G).map l).hom ∘ₗ (linearEquiv G).symm.toLinearMap, ?_⟩
+      refine ⟨((preadditiveCoyonedaObj G).map l).hom ∘ₗ
+        (Preadditive.homSelfLinearEquivEndMulOpposite G).symm.toLinearMap, ?_⟩
       intro f hf
       simpa [d] using Sigma.ι _ ⟨f, hf⟩ ≫= hl
     · rw [ModuleCat.mono_iff_injective]
