@@ -418,7 +418,7 @@ theorem Nat.sq_add_sq_modEq (p : ℕ) [Fact p.Prime] (x : ℕ) :
 
 namespace CharP
 
-theorem sq_add_sq (R : Type*) [CommRing R] [IsDomain R] (p : ℕ) [NeZero p] [CharP R p] (x : ℤ) :
+theorem sq_add_sq (R : Type*) [Ring R] [IsDomain R] (p : ℕ) [NeZero p] [CharP R p] (x : ℤ) :
     ∃ a b : ℕ, ((a : R) ^ 2 + (b : R) ^ 2) = x := by
   haveI := char_is_prime_of_pos R p
   obtain ⟨a, b, hab⟩ := ZMod.sq_add_sq p x
