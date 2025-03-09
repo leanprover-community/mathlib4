@@ -320,7 +320,7 @@ end CompMeasurable
 /-- The class of `x ↦ (f x, g x)`. -/
 def pair (f : α →ₘ[μ] β) (g : α →ₘ[μ] γ) : α →ₘ[μ] β × γ :=
   Quotient.liftOn₂' f g (fun f g => mk (fun x => (f.1 x, g.1 x)) (f.2.prodMk g.2))
-    fun _f _g _f' _g' Hf Hg => mk_eq_mk.2 <| Hf.prod_mk Hg
+    fun _f _g _f' _g' Hf Hg => mk_eq_mk.2 <| Hf.prodMk Hg
 
 @[simp]
 theorem pair_mk_mk (f : α → β) (hf) (g : α → γ) (hg) :

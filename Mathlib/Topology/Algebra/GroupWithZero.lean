@@ -222,7 +222,7 @@ theorem ContinuousAt.comp_div_cases {f g : α → G₀} (h : α → G₀ → β)
   by_cases hga : g a = 0
   · rw [ContinuousAt]
     simp_rw [comp_apply, hga, div_zero]
-    exact (h2h hga).comp (continuousAt_id.tendsto.prod_mk tendsto_top)
+    exact (h2h hga).comp (continuousAt_id.tendsto.prodMk tendsto_top)
   · fun_prop (disch := assumption)
 
 /-- `h x (f x / g x)` is continuous under certain conditions, even if the denominator is sometimes

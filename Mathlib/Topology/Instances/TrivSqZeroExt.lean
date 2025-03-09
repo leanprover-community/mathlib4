@@ -57,10 +57,10 @@ nonrec theorem continuous_snd : Continuous (snd : tsze R M → M) :=
   continuous_snd
 
 theorem continuous_inl [Zero M] : Continuous (inl : R → tsze R M) :=
-  continuous_id.prod_mk continuous_const
+  continuous_id.prodMk continuous_const
 
 theorem continuous_inr [Zero R] : Continuous (inr : M → tsze R M) :=
-  continuous_const.prod_mk continuous_id
+  continuous_const.prodMk continuous_id
 
 theorem IsEmbedding.inl [Zero M] : IsEmbedding (inl : R → tsze R M) :=
   .of_comp continuous_inl continuous_fst .id
@@ -105,7 +105,7 @@ instance [Add R] [Add M] [ContinuousAdd R] [ContinuousAdd M] : ContinuousAdd (ts
 
 instance [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] [ContinuousMul R] [ContinuousSMul R M]
     [ContinuousSMul Rᵐᵒᵖ M] [ContinuousAdd M] : ContinuousMul (tsze R M) :=
-  ⟨((continuous_fst.comp continuous_fst).mul (continuous_fst.comp continuous_snd)).prod_mk <|
+  ⟨((continuous_fst.comp continuous_fst).mul (continuous_fst.comp continuous_snd)).prodMk <|
       ((continuous_fst.comp continuous_fst).smul (continuous_snd.comp continuous_snd)).add
         ((MulOpposite.continuous_op.comp <| continuous_fst.comp <| continuous_snd).smul
           (continuous_snd.comp continuous_fst))⟩
@@ -179,10 +179,10 @@ nonrec theorem uniformContinuous_snd : UniformContinuous (snd : tsze R M → M) 
   uniformContinuous_snd
 
 theorem uniformContinuous_inl [Zero M] : UniformContinuous (inl : R → tsze R M) :=
-  uniformContinuous_id.prod_mk uniformContinuous_const
+  uniformContinuous_id.prodMk uniformContinuous_const
 
 theorem uniformContinuous_inr [Zero R] : UniformContinuous (inr : M → tsze R M) :=
-  uniformContinuous_const.prod_mk uniformContinuous_id
+  uniformContinuous_const.prodMk uniformContinuous_id
 
 end Uniformity
 

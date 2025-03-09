@@ -257,7 +257,7 @@ instance _root_.IsTopologicalSemiring.toIsModuleTopology : IsModuleTopology R R 
     The map `R → R × R` sending `r` to `(r,1)` is a map into a product, so it suffices to show
     that each of the two factors is continuous. But the first is the identity function
     on `(R, usual topology)` and the second is a constant function. -/
-    exact @Continuous.prod_mk _ _ _ _ (moduleTopology R R) _ _ _ continuous_id <|
+    exact @Continuous.prodMk _ _ _ _ (moduleTopology R R) _ _ _ continuous_id <|
       @continuous_const _ _ _ (moduleTopology R R) _
 
 end self

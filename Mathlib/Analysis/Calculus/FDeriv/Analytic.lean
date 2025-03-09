@@ -99,7 +99,7 @@ theorem HasFPowerSeriesWithinAt.hasFDerivWithinAt (h : HasFPowerSeriesWithinAt f
   intro c hc
   have : Tendsto (fun y ↦ (y, x)) (𝓝[insert x s] x) (𝓝[insert x s ×ˢ insert x s] (x, x)) := by
     rw [nhdsWithin_prod_eq]
-    exact Tendsto.prod_mk tendsto_id (tendsto_const_nhdsWithin (by simp))
+    exact Tendsto.prodMk tendsto_id (tendsto_const_nhdsWithin (by simp))
   exact this (isLittleO_iff.1 h.hasStrictFDerivWithinAt hc)
 
 theorem HasFPowerSeriesAt.hasFDerivAt (h : HasFPowerSeriesAt f p x) :
@@ -851,7 +851,7 @@ theorem _root_.HasFDerivWithinAt.linear_multilinear_comp
       ((f.flipMultilinear (fun i ↦ b i x)) ∘L a' +
         ∑ i, ((f (a x)).toContinuousLinearMap (fun j ↦ b j x) i) ∘L (b' i)) s x := by
   convert (hasFDerivAt_uncurry_of_multilinear f (a x, fun i ↦ b i x)).comp_hasFDerivWithinAt x
-    (ha.prod (hasFDerivWithinAt_pi.mpr hb))
+    (ha.prodMk (hasFDerivWithinAt_pi.mpr hb))
   ext v
   simp
 
