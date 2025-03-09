@@ -231,7 +231,7 @@ variable {C} in
 noncomputable def GabrielPopescu.package
     [IsGrothendieckAbelian.{v} C] (G : C) (hG : IsSeparator G) :
     GabrielPopescuPackage.{v} C := by
-  letI := preservesFiniteLimits G hG
+  have := preservesFiniteLimits G hG
   have := full G hG
   have := (isSeparator_iff_faithful_preadditiveCoyonedaObj G).1 hG
   exact {
