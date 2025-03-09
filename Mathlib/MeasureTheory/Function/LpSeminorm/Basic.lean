@@ -329,23 +329,35 @@ theorem eLpNorm'_const (c : ε) (hq_pos : 0 < q) :
   suffices hq_cancel : q * (1 / q) = 1 by rw [hq_cancel, ENNReal.rpow_one]
   rw [one_div, mul_inv_cancel₀ (ne_of_lt hq_pos).symm]
 
--- XXX: better name?
-theorem eLpNorm'_const'' [IsFiniteMeasure μ]
-    {c : ε} (hc : ‖c‖ₑ < ⊤) (hc_ne_zero : ‖c‖ₑ ≠ 0) (hq_ne_zero : q ≠ 0) :
+theorem eLpNorm'_const' [IsFiniteMeasure μ]
+    (c : ε) (hc_ne_zero : ‖c‖ₑ ≠ 0) (hq_ne_zero : q ≠ 0) :
     eLpNorm' (fun _ : α => c) q μ = ‖c‖ₑ * μ Set.univ ^ (1 / q) := by
+  by_cases hc : ‖c‖ₑ = ⊤
+  · rw [hc, ENNReal.top_mul']
+    by_cases hμ : μ Set.univ = 0
+    · by_cases hq : q < 0
+      · simp_all [hμ, eLpNorm'_eq_lintegral_enorm]
+      have hq : 0 < q := sorry -- proven below
+      simp only [hμ, hq, ↓reduceIte]
+      sorry -- missing API lemma: integral over a measure zero set is always zero
+    · simp_all [eLpNorm'_eq_lintegral_enorm, hc]
+      by_cases hq: q < 0
+      · simp_all
+      · have : 0 < q := by -- is there a better tactic?
+          simp at hq
+          push_neg at hq_ne_zero
+          exact lt_of_le_of_ne hq hq_ne_zero.symm
+        simp_all
   rw [eLpNorm'_eq_lintegral_enorm, lintegral_const,
     ENNReal.mul_rpow_of_ne_top _ (measure_ne_top μ Set.univ)]
   · congr
     rw [← ENNReal.rpow_mul]
     suffices hp_cancel : q * (1 / q) = 1 by rw [hp_cancel, ENNReal.rpow_one]
     rw [one_div, mul_inv_cancel₀ hq_ne_zero]
-  · simp_rw [Ne, ENNReal.rpow_eq_top_iff, hc_ne_zero, false_and, false_or, not_and, not_lt]
+  · have : ‖c‖ₑ < ⊤ := Ne.lt_top' fun a ↦ hc a.symm
+    simp_rw [Ne, ENNReal.rpow_eq_top_iff, hc_ne_zero, false_and, false_or, not_and, not_lt]
     intro h
     simp_all only [lt_self_iff_false]
-
-theorem eLpNorm'_const' [IsFiniteMeasure μ] (c : F) (hc_ne_zero : c ≠ 0) (hq_ne_zero : q ≠ 0) :
-    eLpNorm' (fun _ : α => c) q μ = ‖c‖ₑ * μ Set.univ ^ (1 / q) :=
-  eLpNorm'_const'' enorm_lt_top (enorm_ne_zero.mpr hc_ne_zero) hq_ne_zero
 
 theorem eLpNormEssSup_const (c : ε) (hμ : μ ≠ 0) : eLpNormEssSup (fun _ : α => c) μ = ‖c‖ₑ := by
   rw [eLpNormEssSup_eq_essSup_enorm, essSup_const _ hμ]
