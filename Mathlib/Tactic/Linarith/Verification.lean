@@ -64,12 +64,12 @@ def mulExpr (n : ℕ) (e : Expr) : MetaM Expr := do
 def addExprs' {u : Level} {α : Q(Type $u)} (_inst : Q(AddMonoid $α)) : List Q($α) → Q($α)
   | []   => q(0)
   | h::t => go h t
-    where
-    /-- Inner loop for `addExprs'`. -/
-    go (p : Q($α)) : List Q($α) → Q($α)
-    | [] => p
-    | [q] => q($p + $q)
-    | q::t => go q($p + $q) t
+where
+  /-- Inner loop for `addExprs'`. -/
+  go (p : Q($α)) : List Q($α) → Q($α)
+  | [] => p
+  | [q] => q($p + $q)
+  | q::t => go q($p + $q) t
 
 /-- `addExprs L` creates an `Expr` representing the sum of the elements of `L`, associated left. -/
 def addExprs : List Expr → MetaM Expr
