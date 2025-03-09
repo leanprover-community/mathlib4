@@ -142,7 +142,7 @@ theorem rel_equiv : Equivalence D.Rel :=
 open CategoryTheory.Limits.WalkingParallelPair
 
 theorem eqvGen_of_π_eq
-    -- Porting note: was `{x y : ∐ D.U} (h : 𝖣.π x = 𝖣.π y)`
+    -- Porting note: was `{x y : ∐ D.U}`
     {x y : sigmaObj (β := D.toGlueData.J) (C := TopCat) D.toGlueData.U}
     (h : 𝖣.π x = 𝖣.π y) :
     Relation.EqvGen
@@ -166,10 +166,6 @@ theorem eqvGen_of_π_eq
           (colimit.isoColimitCocone (Types.coequalizerColimit _ _)).hom)
         this :
       _)
-  -- Porting note: was
-  -- simp only [eqToHom_refl, types_comp_apply, colimit.ι_map_assoc,
-  --   diagramIsoParallelPair_hom_app, colimit.isoColimitCocone_ι_hom, types_id_apply] at this
-  -- See https://github.com/leanprover-community/mathlib4/issues/5026
   rw [colimit.ι_map_assoc, diagramIsoParallelPair_hom_app, eqToHom_refl,
     colimit.isoColimitCocone_ι_hom, types_comp_apply, types_id_apply, types_comp_apply,
     types_id_apply] at this

@@ -88,7 +88,7 @@ def Simps.apply (f : C(X, Y)) : X → Y := f
 -- this must come after the coe_to_fun definition
 initialize_simps_projections ContinuousMap (toFun → apply)
 
-@[simp] -- Porting note: removed `norm_cast` attribute
+@[simp]
 protected theorem coe_coe {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] (f : F) :
     ⇑(f : C(X, Y)) = f :=
   rfl

@@ -193,7 +193,7 @@ theorem mem_inf {x} : x ∈ U ⊓ V ↔ x ∈ U ∧ x ∈ V :=
 @[to_additive]
 instance instPartialOrderOpenSubgroup : PartialOrder (OpenSubgroup G) := inferInstance
 
--- Porting note: we override `toPartialorder` to get better `le`
+-- We override `toPartialorder` to get better `le`
 @[to_additive]
 instance instSemilatticeInfOpenSubgroup : SemilatticeInf (OpenSubgroup G) :=
   { SetLike.coe_injective.semilatticeInf ((↑) : OpenSubgroup G → Set G) fun _ _ ↦ rfl with
@@ -333,7 +333,7 @@ instance : Max (OpenSubgroup G) :=
 @[to_additive (attr := simp, norm_cast)]
 theorem toSubgroup_sup (U V : OpenSubgroup G) : (↑(U ⊔ V) : Subgroup G) = ↑U ⊔ ↑V := rfl
 
--- Porting note: we override `toPartialorder` to get better `le`
+-- We override `toPartialorder` to get better `le`
 @[to_additive]
 instance : Lattice (OpenSubgroup G) :=
   { instSemilatticeInfOpenSubgroup,

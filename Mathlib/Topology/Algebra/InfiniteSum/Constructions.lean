@@ -309,8 +309,6 @@ theorem hasSum_unop {f : β → αᵐᵒᵖ} {a : αᵐᵒᵖ} :
 theorem summable_op : (Summable fun a ↦ op (f a)) ↔ Summable f :=
   ⟨Summable.unop, Summable.op⟩
 
--- Porting note: This theorem causes a loop easily in Lean 4, so the priority should be `low`.
-@[simp low]
 theorem summable_unop {f : β → αᵐᵒᵖ} : (Summable fun a ↦ unop (f a)) ↔ Summable f :=
   ⟨Summable.op, Summable.unop⟩
 

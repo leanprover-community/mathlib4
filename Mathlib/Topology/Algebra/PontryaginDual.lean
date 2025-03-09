@@ -37,14 +37,12 @@ instance : TopologicalSpace (PontryaginDual A) :=
 instance : T2Space (PontryaginDual A) :=
   (inferInstance : T2Space (ContinuousMonoidHom A Circle))
 
--- Porting note: instance is now noncomputable
 noncomputable instance : CommGroup (PontryaginDual A) :=
   (inferInstance : CommGroup (ContinuousMonoidHom A Circle))
 
 instance : IsTopologicalGroup (PontryaginDual A) :=
   (inferInstance : IsTopologicalGroup (ContinuousMonoidHom A Circle))
 
--- Porting note: instance is now noncomputable
 noncomputable instance : Inhabited (PontryaginDual A) :=
   (inferInstance : Inhabited (ContinuousMonoidHom A Circle))
 
