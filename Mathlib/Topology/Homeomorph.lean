@@ -754,7 +754,7 @@ def sumArrowHomeomorphProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι
   toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
   continuous_toFun := by
     simp only [Equiv.sumArrowEquivProdArrow, Equiv.coe_fn_mk, continuous_prod_mk]
-    continuity
+    constructor <;> fun_prop
   continuous_invFun := continuous_pi fun i ↦ match i with
     | .inl i => by apply (continuous_apply _).comp' continuous_fst
     | .inr i => by apply (continuous_apply _).comp' continuous_snd

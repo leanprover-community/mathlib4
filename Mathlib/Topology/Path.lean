@@ -174,7 +174,7 @@ instance : ContinuousEval (Path x y) I X := .of_continuous_forget continuous_ind
 @[deprecated Continuous.eval (since := "2024-10-04")]
 theorem _root_.Continuous.path_eval {Y} [TopologicalSpace Y] {f : Y → Path x y} {g : Y → I}
     (hf : Continuous f) (hg : Continuous g) : Continuous fun y => f y (g y) := by
-  continuity
+  fun_prop
 
 theorem continuous_uncurry_iff {Y} [TopologicalSpace Y] {g : Y → Path x y} :
     Continuous ↿g ↔ Continuous g :=
