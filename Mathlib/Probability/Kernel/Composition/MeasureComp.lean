@@ -88,6 +88,12 @@ lemma comp_compProd_comm {η : Kernel (α × β) γ} [SFinite μ] [IsSFiniteKern
   · rfl
   · exact measurable_snd hs
 
+@[simp]
+lemma prodMkLeft_comp_compProd {η : Kernel β γ} [SFinite μ] [IsSFiniteKernel κ] :
+    (η.prodMkLeft α) ∘ₘ μ ⊗ₘ κ = η ∘ₘ κ ∘ₘ μ := by
+  rw [← snd_compProd μ κ, Kernel.prodMkLeft, snd, ← deterministic_comp_eq_map measurable_snd,
+    comp_assoc, Kernel.comp_deterministic_eq_comap]
+
 end CompProd
 
 section Integrable
