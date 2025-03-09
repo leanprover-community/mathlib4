@@ -240,6 +240,37 @@ def semicolonLinter : TextbasedLinter := fun lines ↦ Id.run do
       fixedLines := fixedLines.set! idx (line.replace (⟨[' ', ';']⟩ : String) ";")
    return (errors, if errors.size > 0 then some fixedLines else none)
 
+-- add to Batteries.Data.String.Matcher
+def _root_.String.countSubstr (s : String) (pattern: Substring) : ℕ :=
+  (s.findAllSubstr pattern).size
+
+/-- Take a list of tuples of enumerated lines of the form `(line, lineNumber)`
+and return a list of `(line, lineNumber, true/false)` where lines have `true` attached
+when they are in a single or multi-line Lean comment. -/
+def annotate_comments (enumeratedLines: Array (String × ℕ)) : Array (String × ℕ × Bool) := Id.run do
+  let mut res := #[]
+  -- We're in a comment when `nesting_depth > 0`.
+  let mut nestingDepth := 0
+  -- Whether we're in a comment when starting the line.
+  let mut startsInComment := false
+
+  for (line, number) in enumeratedLines do
+    -- We assume multiline comments do not begin or end within single-line comments.
+    -- Hence, a single-line comment always means we're in a comment, and we do not need to update
+    -- any counter.
+    if /-line == "\n" ||-/ line.trimLeft.startsWith "--" then
+      res := res.push (line, number, true)
+      continue
+    -- We assume that "/-/" and "-/-" never occur outside of "--" comments.
+    -- We assume that we do not encounter "... -/ <term> /- ...".
+    -- We also don't account for "/-" and "-/" appearing in strings.
+    startsInComment := (nestingDepth > 0)
+    nestingDepth := nestingDepth + line.countSubstr "/-" - line.countSubstr "-/"
+    let inComment := (startsInComment || line.trimLeft.startsWith "/-") &&
+        (nestingDepth > 0 || line.trimLeft.endsWith "-/")
+    res := res.push (line, number, inComment)
+  return res
+
 /-- Lint a collection of input strings for a few miscellaneous formatting tweaks
 - an "isolated by", i.e. "by" on a single line (or at the beginning of a line)
 - "where" being put on a single line (it should be on the preceding line)
@@ -247,8 +278,8 @@ def semicolonLinter : TextbasedLinter := fun lines ↦ Id.run do
 def miscFormattingLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut errors := Array.mkEmpty 0
   let mut fixedLines := lines
-  for h : idx in [:lines.size] do
-    let line := lines[idx]
+  let annotated := annotate_comments lines.zipIdx
+  for (line, idx, _is_in_comment) in annotated do
     let indent := line.takeWhile (·.isWhitespace)
     let mut stripped := line.trimLeft
     if stripped.startsWith ":" then
