@@ -5,8 +5,6 @@ Authors: Damiano Testa
 -/
 
 import Mathlib.Tactic.Lemma
-import Lean.Elab.Command
-import Lean.Linter.Util
 
 /-!
 # The `unnecessarySetOptionIn`
@@ -63,6 +61,8 @@ register_option linter.unnecessarySetOptionIn : Bool := {
   descr := "enable the unnecessarySetOptionIn linter"
 }
 
+/-- The `unnecessarySetOptionIn` linter only tries to remove `maxHeartbeat` options if the
+`linter.unnecessarySetOptionIn.heartbeats` option is set to `true`. -/
 register_option linter.unnecessarySetOptionIn.heartbeats : Bool := {
   defValue := false
   descr := "if `true`, then the unnecessarySetOptionIn linter also tries to remove `maxHeartbeat`
