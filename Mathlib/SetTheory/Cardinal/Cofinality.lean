@@ -1159,3 +1159,21 @@ lemma iSup_sequence_lt_omega1 {α : Type u} [Countable α]
 end Ordinal
 
 end Omega1
+
+namespace Ordinal
+
+theorem isLimit_of_not_isRegular_aleph {o : Ordinal} (h : ¬((aleph o).IsRegular)) :
+    o.IsLimit := by
+  have ho : o ≠ 0 := fun h0 ↦ False.elim <| (aleph_zero ▸ h0 ▸ h) isRegular_aleph0
+  contrapose! h
+  obtain ⟨p, rfl⟩ := ((zero_or_succ_or_limit o).resolve_left ho).resolve_right h
+  exact isRegular_aleph_succ p
+
+theorem ord_cof_pos {o : Ordinal} : 0 < o.cof.ord ↔ 0 < o := by
+  constructor
+  · exact fun h ↦ Ordinal.pos_iff_ne_zero.mpr fun h' ↦ (h' ▸ cof_zero ▸ ord_zero ▸ h).ne rfl
+  · exact fun h ↦ Ordinal.pos_iff_ne_zero.mpr fun h' ↦ by
+      rw [ord_eq_zero, cof_eq_zero] at h'
+      exact h.ne h'.symm
+
+end Ordinal
