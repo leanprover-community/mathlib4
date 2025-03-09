@@ -47,7 +47,7 @@ lemma analyticWithinAt_of_singleton_mem {f : E → F} {s : Set E} {x : E} (h : {
     hasSum := by
       intro y ys yr
       simp only [subset_singleton_iff, mem_inter_iff, and_imp] at st
-      simp only [mem_insert_iff, add_right_eq_self] at ys
+      simp only [mem_insert_iff, add_eq_left] at ys
       have : x + y = x := by
         rcases ys with rfl | ys
         · simp
@@ -71,10 +71,10 @@ lemma analyticOn_of_locally_analyticOn {f : E → F} {s : Set E}
         intro y ys yr
         simp only [EMetric.mem_ball, lt_min_iff, edist_lt_ofReal, dist_zero_right] at yr
         apply fp.hasSum
-        · simp only [mem_insert_iff, add_right_eq_self] at ys
+        · simp only [mem_insert_iff, add_eq_left] at ys
           rcases ys with rfl | ys
           · simp
-          · simp only [mem_insert_iff, add_right_eq_self, mem_inter_iff, ys, true_and]
+          · simp only [mem_insert_iff, add_eq_left, mem_inter_iff, ys, true_and]
             apply Or.inr (ru ?_)
             simp only [Metric.mem_ball, dist_self_add_left, yr]
         · simp only [EMetric.mem_ball, yr] }⟩

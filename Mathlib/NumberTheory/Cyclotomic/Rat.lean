@@ -520,7 +520,7 @@ lemma toInteger_sub_one_dvd_prime [hcycl : IsCyclotomicExtension {p ^ (k + 1)} �
   by_cases htwo : p ^ (k + 1) = 2
   · replace htwo : (p : ℕ) ^ (k + 1) = 2 := by exact_mod_cast htwo
     have ⟨hp2, hk⟩ := (Nat.Prime.pow_eq_iff Nat.prime_two).1 htwo
-    simp only [add_left_eq_self] at hk
+    simp only [add_eq_right] at hk
     have hζ' : ζ = -1 := by
       refine IsPrimitiveRoot.eq_neg_one_of_two_right ?_
       rwa [hk, zero_add, pow_one, hp2] at hζ

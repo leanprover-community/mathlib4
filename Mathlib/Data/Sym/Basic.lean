@@ -529,7 +529,7 @@ theorem filter_ne_fill [DecidableEq α] (a : α) (m : Σi : Fin (n + 1), Sym α 
   sigma_sub_ext
     (by
       rw [filterNe, ← val_eq_coe, Subtype.coe_mk, val_eq_coe, coe_fill]
-      rw [filter_add, filter_eq_self.2, add_right_eq_self, eq_zero_iff_forall_not_mem]
+      rw [filter_add, filter_eq_self.2, add_eq_left, eq_zero_iff_forall_not_mem]
       · intro b hb
         rw [mem_filter, Sym.mem_coe, mem_replicate] at hb
         exact hb.2 hb.1.2.symm

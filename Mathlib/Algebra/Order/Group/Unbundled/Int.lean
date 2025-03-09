@@ -76,7 +76,7 @@ theorem abs_le_one_iff {a : ℤ} : |a| ≤ 1 ↔ a = 0 ∨ a = 1 ∨ a = -1 := b
   | (n : ℕ) => simp [abs_eq_natAbs]
   | -[n+1] =>
       simp only [negSucc_ne_zero, abs_eq_natAbs, natAbs_negSucc, succ_eq_add_one,
-        natCast_add, Nat.cast_ofNat_Int, add_left_eq_self, natCast_eq_zero, false_or, reduceNeg]
+        natCast_add, Nat.cast_ofNat_Int, add_eq_right, natCast_eq_zero, false_or, reduceNeg]
       rw [negSucc_eq']
       omega
 
