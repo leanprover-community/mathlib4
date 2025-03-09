@@ -13,12 +13,12 @@ proof of Kolmogorov's extension theorem.
 
 ## Main definitions
 
-* `closedCompactCylinders α`: the set of all cylinders based on closed compact sets.
+* `closedCompactCylinders X`: the set of all cylinders of `Π i, X i` based on closed compact sets.
 
 ## Main statements
 
 * `mem_measurableCylinders_of_mem_closedCompactCylinders`: in a topological space with second
-  countable topology and measurable open sets, a set in `closedCompactCylinders α` is a measurable
+  countable topology and measurable open sets, a set in `closedCompactCylinders X` is a measurable
   cylinder.
 
 -/
@@ -27,56 +27,56 @@ open Set
 
 namespace MeasureTheory
 
-variable {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)] {t : Set (Π i, α i)}
+variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] {t : Set (Π i, X i)}
 
-variable (α) in
+variable (X) in
 /-- The set of all cylinders based on closed compact sets. Note that such a set is closed, but
 not compact in general (for instance, the whole space is always a closed compact cylinder). -/
-def closedCompactCylinders : Set (Set (Π i, α i)) :=
+def closedCompactCylinders : Set (Set (Π i, X i)) :=
   ⋃ (s) (S) (_ : IsClosed S) (_ : IsCompact S), {cylinder s S}
 
-variable (α) in
-theorem empty_mem_closedCompactCylinders : ∅ ∈ closedCompactCylinders α := by
+variable (X) in
+theorem empty_mem_closedCompactCylinders : ∅ ∈ closedCompactCylinders X := by
   simp_rw [closedCompactCylinders, mem_iUnion, mem_singleton_iff]
   exact ⟨∅, ∅, isClosed_empty, isCompact_empty, (cylinder_empty _).symm⟩
 
-theorem mem_closedCompactCylinders (t : Set (Π i, α i)) :
-    t ∈ closedCompactCylinders α
+theorem mem_closedCompactCylinders (t : Set (Π i, X i)) :
+    t ∈ closedCompactCylinders X
       ↔ ∃ (s S : _), IsClosed S ∧ IsCompact S ∧ t = cylinder s S := by
   simp_rw [closedCompactCylinders, mem_iUnion, mem_singleton_iff, exists_prop]
 
 /-- A finset `s` such that `t = cylinder s S`. `S` is given by `closedCompactCylinders.set`. -/
-noncomputable def closedCompactCylinders.finset (ht : t ∈ closedCompactCylinders α) :
+noncomputable def closedCompactCylinders.finset (ht : t ∈ closedCompactCylinders X) :
     Finset ι :=
   ((mem_closedCompactCylinders t).mp ht).choose
 
 /-- A set `S` such that `t = cylinder s S`. `s` is given by `closedCompactCylinders.finset`. -/
-def closedCompactCylinders.set (ht : t ∈ closedCompactCylinders α) :
-    Set (Π i : closedCompactCylinders.finset ht, α i) :=
+def closedCompactCylinders.set (ht : t ∈ closedCompactCylinders X) :
+    Set (Π i : closedCompactCylinders.finset ht, X i) :=
   ((mem_closedCompactCylinders t).mp ht).choose_spec.choose
 
-theorem closedCompactCylinders.isClosed (ht : t ∈ closedCompactCylinders α) :
+theorem closedCompactCylinders.isClosed (ht : t ∈ closedCompactCylinders X) :
     IsClosed (closedCompactCylinders.set ht) :=
   ((mem_closedCompactCylinders t).mp ht).choose_spec.choose_spec.1
 
-theorem closedCompactCylinders.isCompact (ht : t ∈ closedCompactCylinders α) :
+theorem closedCompactCylinders.isCompact (ht : t ∈ closedCompactCylinders X) :
     IsCompact (closedCompactCylinders.set ht) :=
   ((mem_closedCompactCylinders t).mp ht).choose_spec.choose_spec.2.1
 
-theorem closedCompactCylinders.eq_cylinder (ht : t ∈ closedCompactCylinders α) :
+theorem closedCompactCylinders.eq_cylinder (ht : t ∈ closedCompactCylinders X) :
     t = cylinder (closedCompactCylinders.finset ht) (closedCompactCylinders.set ht) :=
   ((mem_closedCompactCylinders t).mp ht).choose_spec.choose_spec.2.2
 
-theorem cylinder_mem_closedCompactCylinders (s : Finset ι) (S : Set (Π i : s, α i))
+theorem cylinder_mem_closedCompactCylinders (s : Finset ι) (S : Set (Π i : s, X i))
     (hS_closed : IsClosed S) (hS_compact : IsCompact S) :
-    cylinder s S ∈ closedCompactCylinders α := by
+    cylinder s S ∈ closedCompactCylinders X := by
   rw [mem_closedCompactCylinders]
   exact ⟨s, S, hS_closed, hS_compact, rfl⟩
 
-theorem mem_measurableCylinders_of_mem_closedCompactCylinders [∀ i, MeasurableSpace (α i)]
-    [∀ i, SecondCountableTopology (α i)] [∀ i, OpensMeasurableSpace (α i)]
-    (ht : t ∈ closedCompactCylinders α) :
-    t ∈ measurableCylinders α := by
+theorem mem_measurableCylinders_of_mem_closedCompactCylinders [∀ i, MeasurableSpace (X i)]
+    [∀ i, SecondCountableTopology (X i)] [∀ i, OpensMeasurableSpace (X i)]
+    (ht : t ∈ closedCompactCylinders X) :
+    t ∈ measurableCylinders X := by
   rw [mem_measurableCylinders]
   refine ⟨closedCompactCylinders.finset ht, closedCompactCylinders.set ht, ?_, ?_⟩
   · exact (closedCompactCylinders.isClosed ht).measurableSet
