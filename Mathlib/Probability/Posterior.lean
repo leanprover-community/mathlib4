@@ -230,15 +230,20 @@ lemma rnDeriv_posterior (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
     ∀ᵐ ω ∂μ, ∀ᵐ b ∂(κ ∘ₘ μ), ((κ†μ) b).rnDeriv μ ω = (κ ω).rnDeriv (κ ∘ₘ μ) b := by
   suffices ∀ᵐ p ∂(μ.prod (κ ∘ₘ μ)), ((κ†μ) p.2).rnDeriv μ p.1 = (κ p.1).rnDeriv (κ ∘ₘ μ) p.2 by
     convert Measure.ae_ae_of_ae_prod this -- `convert` is muct faster than `exact`
+  have h1 {s : Set Ω} {t : Set 𝓧} (hs : MeasurableSet s) (ht : MeasurableSet t) :
+      ∫⁻ x in s ×ˢ t, (∂(κ†μ) x.2/∂μ) x.1 ∂μ.prod (⇑κ ∘ₘ μ) = (μ ⊗ₘ κ) (s ×ˢ t) := by
+    rw [setLIntegral_prod_symm]
+    sorry
+    sorry
+  have h2 {s : Set Ω} {t : Set 𝓧} (hs : MeasurableSet s) (ht : MeasurableSet t) :
+      ∫⁻ x in s ×ˢ t, (∂κ x.1/∂⇑κ ∘ₘ μ) x.2 ∂μ.prod (⇑κ ∘ₘ μ) = (μ ⊗ₘ κ) (s ×ˢ t) := by
+    rw [setLIntegral_prod]
+    sorry
+    sorry
   have h_prod {s : Set Ω} {t : Set 𝓧} (hs : MeasurableSet s) (ht : MeasurableSet t) :
       ∫⁻ x in s ×ˢ t, (∂(κ†μ) x.2/∂μ) x.1 ∂μ.prod (⇑κ ∘ₘ μ)
         = ∫⁻ x in s ×ˢ t, (∂κ x.1/∂⇑κ ∘ₘ μ) x.2 ∂μ.prod (⇑κ ∘ₘ μ) := by
-    rw [setLIntegral_prod_symm, setLIntegral_prod]
-    rotate_left
-    · sorry
-    · sorry
-    simp only
-    sorry
+    rw [h1 hs ht, h2 hs ht]
   refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite ?_ ?_ ?_
   · sorry
   · sorry
