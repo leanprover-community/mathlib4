@@ -274,7 +274,7 @@ lemma finSuccEquiv_coeff_isHomogeneous {N : ℕ} {φ : MvPolynomial (Fin (N+1)) 
   rw [finSuccEquiv_coeff_coeff] at hd
   have h' : (weight 1) (Finsupp.cons i d) = i + j := by
     simpa [Finset.sum_subset_zero_on_sdiff (g := d.cons i)
-     (d.cons_support (y := i)) (by simp) (fun _ _ ↦ rfl), ← h] using hφ hd
+     (d.cons_support_subset (y := i)) (by simp) (fun _ _ ↦ rfl), ← h] using hφ hd
   simp only [weight_apply, Pi.one_apply, smul_eq_mul, mul_one, Finsupp.sum_cons,
     add_right_inj] at h' ⊢
   exact h'
