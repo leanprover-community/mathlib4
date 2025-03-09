@@ -3,13 +3,12 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
+import Mathlib.Algebra.Category.ModuleCat.Injective
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Connected
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Coseparator
-import Mathlib.CategoryTheory.Abelian.Yoneda
 import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
-import Mathlib.Algebra.Category.ModuleCat.Injective
-import Mathlib.CategoryTheory.Filtered.Connected
 import Mathlib.CategoryTheory.Preadditive.LiftToFinset
+import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 
 /-!
 # The Gabriel-Popescu theorem
@@ -18,6 +17,15 @@ We prove the following Gabriel-Popescu theorem: if `C` is a Grothendieck abelian
 `G` is a separator, then the functor `preadditiveCoyonedaObj G : C ⥤ ModuleCat (End R)ᵐᵒᵖ` sending
 `X` to `Hom(G, X)` is fully faithful and has an exact left adjoint.
 
+We closely follow the elementary proof given by Barry Mitchell.
+
+## Future work
+
+The left adjoint `tensorObj G` actually exists as soon as `C` is cocomplete and additive, so the
+construction could be generalized.
+
+The theorem as stated here implies that `C` is a Serre quotient of `ModuleCat (End R)ᵐᵒᵖ`.
+
 ## References
 
 * [Barry Mitchell, *A quick proof of the Gabriel-Popesco theorem*][mitchell1981]
@@ -25,9 +33,9 @@ We prove the following Gabriel-Popescu theorem: if `C` is a Grothendieck abelian
 
 universe v u
 
-open CategoryTheory Limits
+open CategoryTheory Limits Abelian
 
-namespace CategoryTheory.Abelian
+namespace CategoryTheory.IsGrothendieckAbelian
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [IsGrothendieckAbelian.{v} C]
 
@@ -104,9 +112,9 @@ theorem GabrielPopescu.full (G : C) (hG : IsSeparator G) : (preadditiveCoyonedaO
     have := (isSeparator_iff_epi G).1 hG A
     have h := kernel_ι_d_comp_d hG (𝟙 _) inferInstance f
     simp only [ModuleCat.hom_id, LinearMap.id_coe, id_eq, d] at h
-    refine ⟨Abelian.epiDesc _ _ h, ?_⟩
+    refine ⟨epiDesc _ _ h, ?_⟩
     ext q
-    simpa [-Abelian.comp_epiDesc] using Sigma.ι _ q ≫= comp_epiDesc _ _ h
+    simpa [-comp_epiDesc] using Sigma.ι _ q ≫= comp_epiDesc _ _ h
 
 theorem GabrielPopescu.preservesInjectiveObjects (G : C) (hG : IsSeparator G) :
     (preadditiveCoyonedaObj G).PreservesInjectiveObjects where
@@ -139,4 +147,4 @@ theorem GabrielPopescu.preservesFiniteLimits (G : C) (hG : IsSeparator G) :
     (tensorObj G).preservesHomology_of_preservesMonos_and_cokernels
   exact (tensorObj G).preservesFiniteLimits_of_preservesHomology
 
-end CategoryTheory.Abelian
+end CategoryTheory.IsGrothendieckAbelian
