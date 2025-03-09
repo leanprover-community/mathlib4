@@ -104,6 +104,19 @@ theorem mul_to_nat (m) : ∀ n, ((m * n : PosNum) : ℕ) = m * n
     (add_to_nat (bit0 (m * p)) m).trans <|
       show (↑(m * p) + ↑(m * p) + ↑m : ℕ) = ↑m * (p + p) + m by rw [mul_to_nat m p, left_distrib]
 
+@[norm_cast]
+theorem ppowRec_to_nat (m : PosNum) : ∀ n : ℕ, (hn : 0 < n) → ppowRec n hn (m : ℕ) = ppowRec n hn m
+  | 0, h => (Nat.not_lt_zero 0 h).elim
+  | 1, _ => rfl
+  | n + 2, _ => by rw [ppowRec, ppowRec_to_nat m (n + 1)]; norm_cast
+
+@[norm_cast]
+theorem psmulRec_to_nat (m : PosNum) :
+    ∀ n : ℕ, (hn : 0 < n) → psmulRec n hn (m : ℕ) = psmulRec n hn m
+| 0, h => (Nat.not_lt_zero 0 h).elim
+| 1, _ => rfl
+| n + 2, _ => by rw [psmulRec, psmulRec_to_nat m (n + 1)]; norm_cast
+
 theorem to_nat_pos : ∀ n : PosNum, 0 < (n : ℕ)
   | 1 => Nat.zero_lt_one
   | bit0 p =>
@@ -354,6 +367,7 @@ instance commSemiring : CommSemiring Num where
   __ := Num.addMonoidWithOne
   mul := (· * ·)
   npow := @npowRec Num ⟨1⟩ ⟨(· * ·)⟩
+  ppow := @ppowRec Num ⟨(· * ·)⟩
   mul_zero _ := by rw [← to_nat_inj, mul_to_nat, cast_zero, mul_zero]
   zero_mul _ := by rw [← to_nat_inj, mul_to_nat, cast_zero, zero_mul]
   mul_one _ := by rw [← to_nat_inj, mul_to_nat, cast_one, mul_one]
@@ -505,8 +519,9 @@ example (n : PosNum) (m : PosNum) : n ≤ n + m := by
   exact Nat.le_add_right _ _
 ```
 -/
+
 scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
-    (repeat first | rw [← to_nat_inj] | rw [← lt_to_nat] | rw [← le_to_nat]
+    (repeat first | rw [← to_nat_inj] | rw [← lt_to_nat] | rw [← le_to_nat] | rw [← psmulRec_to_nat]
      repeat first | rw [add_to_nat] | rw [mul_to_nat] | rw [cast_one] | rw [cast_zero]))
 
 /--
@@ -523,11 +538,13 @@ instance addCommSemigroup : AddCommSemigroup PosNum where
   add := (· + ·)
   add_assoc := by transfer
   add_comm := by transfer
+  psmul := @psmulRec PosNum ⟨(· + ·)⟩
 
 instance commMonoid : CommMonoid PosNum where
   mul := (· * ·)
   one := (1 : PosNum)
   npow := @npowRec PosNum ⟨1⟩ ⟨(· * ·)⟩
+  ppow := @ppowRec PosNum ⟨(· * ·)⟩
   mul_assoc := by transfer
   one_mul := by transfer
   mul_one := by transfer
