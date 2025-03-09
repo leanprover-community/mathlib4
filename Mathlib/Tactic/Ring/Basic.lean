@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Aurélien Saue, Anne Baanen
 -/
 import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.NormNum.Pow
-import Mathlib.Util.AtomM
+import Mathlib.Util.CanonAtomM
 
 /-!
 # `ring` tactic
@@ -79,7 +79,7 @@ assert_not_exists OrderedAddCommMonoid
 namespace Mathlib.Tactic
 namespace Ring
 
-open Mathlib.Meta Qq NormNum Lean.Meta AtomM
+open Mathlib.Meta Qq NormNum Lean.Meta
 
 attribute [local instance] monadLiftOptionMetaM
 
@@ -510,10 +510,11 @@ mutual
 * An atom `e` causes `↑e` to be allocated as a new atom.
 * A sum delegates to `ExSum.evalNatCast`.
 -/
-partial def ExBase.evalNatCast {a : Q(ℕ)} (va : ExBase sℕ a) : AtomM (Result (ExBase sα) q($a)) :=
+partial def ExBase.evalNatCast {a : Q(ℕ)} (va : ExBase sℕ a) :
+    CanonAtomM (Result (ExBase sα) q($a)) :=
   match va with
   | .atom _ => do
-    let (i, ⟨b', _⟩) ← addAtomQ q($a)
+    let (i, ⟨b', _⟩) ← CanonAtomM.addAtomQ q($a)
     pure ⟨b', ExBase.atom i, q(Eq.refl $b')⟩
   | .sum va => do
     let ⟨_, vc, p⟩ ← va.evalNatCast
@@ -524,7 +525,8 @@ partial def ExBase.evalNatCast {a : Q(ℕ)} (va : ExBase sℕ a) : AtomM (Result
 * `↑c = c` if `c` is a numeric literal
 * `↑(a ^ n * b) = ↑a ^ n * ↑b`
 -/
-partial def ExProd.evalNatCast {a : Q(ℕ)} (va : ExProd sℕ a) : AtomM (Result (ExProd sα) q($a)) :=
+partial def ExProd.evalNatCast {a : Q(ℕ)} (va : ExProd sℕ a) :
+    CanonAtomM (Result (ExProd sα) q($a)) :=
   match va with
   | .const c hc =>
     have n : Q(ℕ) := a.appArg!
@@ -539,7 +541,7 @@ partial def ExProd.evalNatCast {a : Q(ℕ)} (va : ExProd sℕ a) : AtomM (Result
 * `↑0 = 0`
 * `↑(a + b) = ↑a + ↑b`
 -/
-partial def ExSum.evalNatCast {a : Q(ℕ)} (va : ExSum sℕ a) : AtomM (Result (ExSum sα) q($a)) :=
+partial def ExSum.evalNatCast {a : Q(ℕ)} (va : ExSum sℕ a) : CanonAtomM (Result (ExSum sα) q($a)) :=
   match va with
   | .zero => pure ⟨_, .zero, q(natCast_zero (R := $α))⟩
   | .add va₁ va₂ => do
@@ -561,7 +563,7 @@ polynomial expressions.
 * `a • b = ↑a * b` otherwise
 -/
 def evalNSMul {a : Q(ℕ)} {b : Q($α)} (va : ExSum sℕ a) (vb : ExSum sα b) :
-    AtomM (Result (ExSum sα) q($a • $b)) := do
+    CanonAtomM (Result (ExSum sα) q($a • $b)) := do
   if ← isDefEq sα sℕ then
     let ⟨_, va'⟩ := va.cast
     have _b : Q(ℕ) := b
@@ -949,10 +951,10 @@ Evaluates an atom, an expression where `ring` can find no additional structure.
 
 * `a = a ^ 1 * 1 + 0`
 -/
-def evalAtom (e : Q($α)) : AtomM (Result (ExSum sα) e) := do
+def evalAtom (e : Q($α)) : CanonAtomM (Result (ExSum sα) e) := do
   let r ← (← read).evalAtom e
   have e' : Q($α) := r.expr
-  let (i, ⟨a', _⟩) ← addAtomQ e'
+  let (i, ⟨a', _⟩) ← CanonAtomM.addAtomQ e'
   let ve' := (ExBase.atom i (e := a')).toProd (ExProd.mkNat sℕ 1).2 |>.toSum
   pure ⟨_, ve', match r.proof? with
   | none => (q(atom_pf $e) : Expr)
@@ -976,8 +978,8 @@ section
 variable (dα : Q(DivisionRing $α))
 
 /-- Applies `⁻¹` to a polynomial to get an atom. -/
-def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase sα) q($a⁻¹)) := do
-  let (i, ⟨b', _⟩) ← addAtomQ q($a⁻¹)
+def evalInvAtom (a : Q($α)) : CanonAtomM (Result (ExBase sα) q($a⁻¹)) := do
+  let (i, ⟨b', _⟩) ← CanonAtomM.addAtomQ q($a⁻¹)
   pure ⟨b', ExBase.atom i, q(Eq.refl $b')⟩
 
 /-- Inverts a polynomial `va` to get a normalized result polynomial.
@@ -986,7 +988,7 @@ def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase sα) q($a⁻¹)) := do
 * `(a ^ b * c)⁻¹ = a⁻¹ ^ b * c⁻¹`
 -/
 def ExProd.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExProd sα a) :
-    AtomM (Result (ExProd sα) q($a⁻¹)) := do
+    CanonAtomM (Result (ExProd sα) q($a⁻¹)) := do
   Lean.Core.checkSystem decl_name%.toString
   match va with
   | .const c hc =>
@@ -1012,7 +1014,7 @@ def ExProd.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExProd sα
 * `a⁻¹ = (a⁻¹)` if `a` is a nontrivial sum
 -/
 def ExSum.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExSum sα a) :
-    AtomM (Result (ExSum sα) q($a⁻¹)) :=
+    CanonAtomM (Result (ExSum sα) q($a⁻¹)) :=
   match va with
   | ExSum.zero => pure ⟨_, .zero, (q(inv_zero (R := $α)) : Expr)⟩
   | ExSum.add va ExSum.zero => do
@@ -1032,7 +1034,7 @@ theorem div_pf {R} [DivisionRing R] {a b c d : R} (_ : b⁻¹ = c) (_ : a * c = 
 * `a / b = a * b⁻¹`
 -/
 def evalDiv {a b : Q($α)} (rα : Q(DivisionRing $α)) (czα : Option Q(CharZero $α)) (va : ExSum sα a)
-    (vb : ExSum sα b) : AtomM (Result (ExSum sα) q($a / $b)) := do
+    (vb : ExSum sα b) : CanonAtomM (Result (ExSum sα) q($a / $b)) := do
   let ⟨_c, vc, pc⟩ ← vb.evalInv sα rα czα
   let ⟨d, vd, (pd : Q($a * $_c = $d))⟩ ← evalMul sα va vc
   pure ⟨d, vd, (q(div_pf $pc $pd) : Expr)⟩
@@ -1078,7 +1080,7 @@ Returns:
 -/
 -- Note this is not the same as whether the result of `eval` is an atom. (e.g. consider `x + 0`.)
 def isAtomOrDerivable {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    (c : Cache sα) (e : Q($α)) : AtomM (Option (Option (Result (ExSum sα) e))) := do
+    (c : Cache sα) (e : Q($α)) : CanonAtomM (Option (Option (Result (ExSum sα) e))) := do
   let els := try
       pure <| some (evalCast sα (← derive e))
     catch _ => pure (some none)
@@ -1099,7 +1101,7 @@ Evaluates expression `e` of type `α` into a normalized representation as a poly
 This is the main driver of `ring`, which calls out to `evalAdd`, `evalMul` etc.
 -/
 partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    (c : Cache sα) (e : Q($α)) : AtomM (Result (ExSum sα) e) := Lean.withIncRecDepth do
+    (c : Cache sα) (e : Q($α)) : CanonAtomM (Result (ExSum sα) e) := Lean.withIncRecDepth do
   let els := do
     try evalCast sα (← derive e)
     catch _ => evalAtom sα e
@@ -1198,7 +1200,7 @@ to apply the `ring_nf` simp set to the goal.
 initialize ringCleanupRef : IO.Ref (Expr → MetaM Expr) ← IO.mkRef pure
 
 /-- Frontend of `ring1`: attempt to close a goal `g`, assuming it is an equation of semirings. -/
-def proveEq (g : MVarId) : AtomM Unit := do
+def proveEq (g : MVarId) : CanonAtomM Unit := do
   let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
     | throwError "ring failed: not an equality"
   let .sort u ← whnf (← inferType α) | unreachable!
@@ -1227,7 +1229,7 @@ where
   /-- The core of `proveEq` takes expressions `e₁ e₂ : α` where `α` is a `CommSemiring`,
   and returns a proof that they are equal (or fails). -/
   ringCore {v : Level} {α : Q(Type v)} (sα : Q(CommSemiring $α))
-      (e₁ e₂ : Q($α)) : AtomM Q($e₁ = $e₂) := do
+      (e₁ e₂ : Q($α)) : CanonAtomM Q($e₁ = $e₂) := do
     let c ← mkCache sα
     profileitM Exception "ring" (← getOptions) do
       let ⟨a, va, pa⟩ ← eval sα c e₁
@@ -1247,7 +1249,7 @@ allowing variables in the exponent.
   to determine equality of atoms.
 -/
 elab (name := ring1) "ring1" tk:"!"? : tactic => liftMetaMAtMain fun g ↦ do
-  AtomM.run (if tk.isSome then .default else .reducible) (proveEq g)
+  CanonAtomM.run (if tk.isSome then .default else .reducible) (proveEq g)
 
 @[inherit_doc ring1] macro "ring1!" : tactic => `(tactic| ring1 !)
 

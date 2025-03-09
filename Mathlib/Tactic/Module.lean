@@ -6,7 +6,7 @@ Authors: Heather Macbeth
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Tactic.Ring
-import Mathlib.Util.AtomM
+import Mathlib.Util.CanonAtomM
 
 /-! # A tactic for normalization over modules
 
@@ -408,7 +408,7 @@ Possible TODO, if poor performance on large problems is witnessed: switch the im
 `AtomM` to `CanonM`, per the discussion
 https://github.com/leanprover-community/mathlib4/pull/16593/files#r1749623191 -/
 partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
-    AtomM (Σ u : Level, Σ R : Q(Type u), Σ iR : Q(Semiring $R), Σ _ : Q(@Module $R $M $iR $iM),
+    CanonAtomM (Σ u : Level, Σ R : Q(Type u), Σ iR : Q(Semiring $R), Σ _ : Q(@Module $R $M $iR $iM),
       Σ l : qNF R M, Q($x = NF.eval $(l.toNF))) := do
   match x with
   /- parse an addition: `x₁ + x₂` -/
@@ -464,7 +464,7 @@ partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
     pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [], q(NF.zero_eq_eval $M)⟩
   /- anything else should be treated as an atom -/
   | _ =>
-    let (k, ⟨x', _⟩) ← AtomM.addAtomQ x
+    let (k, ⟨x', _⟩) ← CanonAtomM.addAtomQ x
     pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [((q(1), x'), k)],
       q(NF.atom_eq_eval $x')⟩
 
@@ -516,7 +516,7 @@ the respective equalities of the `R`-coefficients of each atom.
 
 This is an auxiliary function which produces slightly awkward goals in `R`; they are later cleaned
 up by the function `Mathlib.Tactic.Module.postprocess`. -/
-def matchScalarsAux (g : MVarId) : AtomM (List MVarId) := do
+def matchScalarsAux (g : MVarId) : CanonAtomM (List MVarId) := do
   /- Parse the goal as an equality in a type `M` of two expressions `lhs` and `rhs`, with `M`
   carrying an `AddCommMonoid` instance. -/
   let eqData ← do
@@ -582,7 +582,7 @@ def postprocess (mvarId : MVarId) : MetaM MVarId := do
 RHS of the goal as linear combinations of `M`-atoms over some semiring `R`, and reduce the goal to
 the respective equalities of the `R`-coefficients of each atom. -/
 def matchScalars (g : MVarId) : MetaM (List MVarId) := do
-  let mvars ← AtomM.run .instances (matchScalarsAux g)
+  let mvars ← CanonAtomM.run .instances (matchScalarsAux g)
   mvars.mapM postprocess
 
 /-- Given a goal which is an equality in a type `M` (with `M` an `AddCommMonoid`), parse the LHS and
@@ -649,6 +649,6 @@ example [AddCommGroup M] [CommRing R] [Module R M] (a b μ ν : R) (x y : M) :
 -/
 elab "module" : tactic => Tactic.liftMetaFinishingTactic fun g ↦ do
   let l ← matchScalars g
-  discard <| l.mapM fun mvar ↦ AtomM.run .instances (Ring.proveEq mvar)
+  discard <| l.mapM fun mvar ↦ CanonAtomM.run .instances (Ring.proveEq mvar)
 
 end Mathlib.Tactic.Module
