@@ -13,10 +13,9 @@ Consider `f : X → Y` and `g : X → Z` and assume that `g` is measurable with 
 along `f`. Then `g` factors though `f`, which means that there exists `h : Y → Z` such that
 `g = h ∘ f`.
 
-## TODO
-
-* Under certain assumptions, the factorization map `h` is measurable. This is the content of the
-  [Doob-Dynkin lemma](https://en.wikipedia.org/wiki/Doob–Dynkin_lemma).
+Under certain assumptions, the factorization map `h` is measurable. This is the content of the
+[Doob-Dynkin lemma](https://en.wikipedia.org/wiki/Doob–Dynkin_lemma):
+see `exists_eq_measurable_comp`.
 -/
 
 namespace MeasureTheory
@@ -41,8 +40,8 @@ theorem _root_.Measurable.factorsThrough [MeasurableSpace Z] [MeasurableSingleto
 /-- If a function `g` is strongly measurable with respect to the pullback along some function `f`,
 then to prove `g x = g y` it is enough to prove `f x = f y`.
 
-TODO: under certain assumptions, the factorization map `h` is measurable. This is the content of the
-[Doob-Dynkin lemma](https://en.wikipedia.org/wiki/Doob–Dynkin_lemma). -/
+Under certain assumptions, the factorization map `h` is measurable
+(see `exists_eq_measurable_comp`). -/
 theorem StronglyMeasurable.factorsThrough [TopologicalSpace Z]
     [PseudoMetrizableSpace Z] [T1Space Z] (hg : StronglyMeasurable[mY.comap f] g) :
     g.FactorsThrough f := by
@@ -103,6 +102,8 @@ theorem stronglyMeasurable_limUnder [MeasurableSpace X] [hZ : Nonempty Z] [l.NeB
     · rw [Function.extend_val_apply' hx]
       exact subset_union_right (mem_singleton z_)
 
+/-- If a function `g` is strongly measurable with respect to the pullback along some function `f`,
+then there exists some measurable function `h : Y → Z` such that `g = h ∘ f`. -/
 theorem exists_eq_measurable_comp [AddMonoid Z] [ContinuousAdd Z]
     {f :  X → Y} {g : X → Z} (hg : StronglyMeasurable[mY.comap f] g) :
     ∃ h : Y → Z, StronglyMeasurable h ∧ g = h ∘ f := by
