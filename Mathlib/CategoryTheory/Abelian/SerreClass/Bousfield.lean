@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Localization.Bousfield
 If `G : D ⥤ C` is an exact functor between abelian categories,
 with a fully faithful right adjoint `F`, then `G` identifies
 `C` to the localization of `D` with respect to the
-class of morphisms `G.kernel.serreW`, i.e. `D`
+class of morphisms `G.kernel.isoModSerre`, i.e. `D`
 is the localization of `C` with respect to Serre class
 `G.kernel` consisting of the objects in `D`
 that are sent to a zero object by `G`.
@@ -30,10 +30,10 @@ variable {C D : Type*} [Category C] [Category D]
 
 namespace Abelian
 
-lemma serreW_kernel_eq_inverseImage_isomorphisms :
-    G.kernel.serreW = (isomorphisms C).inverseImage G := by
+lemma isoModSerre_kernel_eq_inverseImage_isomorphisms :
+    G.kernel.isoModSerre = (isomorphisms C).inverseImage G := by
   ext X Y f
-  refine ⟨(G.kernel.serreW_isInvertedBy_iff G).2 (by rfl) _ , fun hf ↦ ?_⟩
+  refine ⟨(G.kernel.isoModSerre_isInvertedBy_iff G).2 (by rfl) _ , fun hf ↦ ?_⟩
   simp only [inverseImage_iff, isomorphisms.iff] at hf
   constructor
   · exact KernelFork.IsLimit.isZero_of_mono
@@ -41,16 +41,16 @@ lemma serreW_kernel_eq_inverseImage_isomorphisms :
   · exact CokernelCofork.IsColimit.isZero_of_epi
       (CokernelCofork.mapIsColimit _ (cokernelIsCokernel f) G)
 
-lemma serreW_kernel_eq_leftBousfield_W_of_rightAdjoint
+lemma isoModSerre_kernel_eq_leftBousfield_W_of_rightAdjoint
     {F : C ⥤ D} (adj : G ⊣ F) [F.Full] [F.Faithful] :
-    G.kernel.serreW = LeftBousfield.W (· ∈ Set.range F.obj) := by
+    G.kernel.isoModSerre = LeftBousfield.W (· ∈ Set.range F.obj) := by
   rw [LeftBousfield.W_eq_inverseImage_isomorphisms adj,
-    serreW_kernel_eq_inverseImage_isomorphisms]
+    isoModSerre_kernel_eq_inverseImage_isomorphisms]
 
-lemma isLocalization_serreW_kernel_of_leftAdjoint
+lemma isLocalization_isoModSerre_kernel_of_leftAdjoint
     {F : C ⥤ D} (adj : G ⊣ F) [F.Full] [F.Faithful] :
-    G.IsLocalization G.kernel.serreW := by
-  rw [serreW_kernel_eq_inverseImage_isomorphisms G]
+    G.IsLocalization G.kernel.isoModSerre := by
+  rw [isoModSerre_kernel_eq_inverseImage_isomorphisms G]
   exact adj.isLocalization
 
 end Abelian
