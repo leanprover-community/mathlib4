@@ -519,9 +519,14 @@ def trans (φ : UnorientedCobordism k s t J) (ψ : UnorientedCobordism k t u J)
 
 end trans
 
+end UnorientedCobordism
+
+variable {J : ModelWithCorners ℝ E' H'}
+
 variable (X k I) in
 /-- The "unordered bordism" equivalence relation: two singular n-manifolds modelled on `I`
 are equivalent iff there exists an unoriented cobordism between them. -/
+-- FIXME: remove the E' and H' arguments below, once J is actually used
 def unorientedBordismRelation (_J : ModelWithCorners ℝ E' H') :
     SingularNManifold X k I → SingularNManifold X k I → Prop :=
   -- errors with: failed to infer universe levels in binder type
@@ -531,7 +536,7 @@ def unorientedBordismRelation (_J : ModelWithCorners ℝ E' H') :
 
 variable (X k I J) in -- dummy proofs, for now
 lemma uBordismRelation /-[FiniteDimensional ℝ E'] (h : finrank ℝ E' = finrank ℝ E + 1)-/ :
-    Equivalence (unorientedBordismRelation X k I J) := by
+    Equivalence (unorientedBordismRelation (H' := H') (E' := E') X k I J) := by
   apply Equivalence.mk
   · exact fun _s ↦ by trivial
   · intro _s _t h
@@ -542,15 +547,19 @@ lemma uBordismRelation /-[FiniteDimensional ℝ E'] (h : finrank ℝ E' = finran
 variable (X k I J) in
 /-- The `Setoid` of singular n-manifolds, with the unoriented bordism relation. -/
 def unorientedBordismSetoid : Setoid (SingularNManifold X k I) :=
-  Setoid.mk _ (uBordismRelation X k I J)
+  Setoid.mk _ (uBordismRelation X k I (H' := H') (E' := E') J)
 
 variable (X k I J) in
 /-- The type of unoriented `C^k` bordism classes on `X`. -/
 -- TODO: need to impose a constraint in I and J!
-abbrev uBordismClass := Quotient <| Setoid.mk _ <| uBordismRelation X k I J
+abbrev uBordismClass := Quotient <| Setoid.mk _ <| uBordismRelation X k I (H' := H') (E' := E') J
+
+variable (X k I J) in
+/-- The bordism class of the empty set: the neutral element for the group operation -/
+def empty : uBordismClass X k I (E' := E') (H' := H') J :=
+  haveI := ChartedSpace.empty
+  Quotient.mk _ (SingularNManifold.empty X Empty I)
 
 variable (X k n) in
 /-- The type of unoriented `n`-dimensional `C^k` bordism classes on `X`. -/
 abbrev uBordismClassN (n : ℕ) := uBordismClass X k (𝓡 n) (𝓡 (n + 1))
-
-end UnorientedCobordism
