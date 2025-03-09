@@ -134,10 +134,10 @@ lemma memLp_tilted_mul (ht : t ∈ interior (integrableExpSet X μ)) (p : ℝ≥
     smul_eq_mul, mul_comm]
   exact integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet ht p.2
 
-/-- The variance of the tilted measure `μ.tilted (t * X ·)` is the second derivative of the
-cumulant generating function of `X` at `t`. -/
+/-- The variance of `X` under the tilted measure `μ.tilted (t * X ·)` is the second derivative of
+the cumulant generating function of `X` at `t`. -/
 lemma variance_tilted_mul (ht : t ∈ interior (integrableExpSet X μ)) :
-    variance X (μ.tilted (t * X ·)) = iteratedDeriv 2 (cgf X μ) t := by
+    Var[X; μ.tilted (t * X ·)] = iteratedDeriv 2 (cgf X μ) t := by
   rw [variance_eq_integral]
   swap; · exact (memLp_tilted_mul ht 1).aestronglyMeasurable.aemeasurable
   rw [integral_tilted_mul_self ht, iteratedDeriv_two_cgf_eq_integral ht, integral_tilted_mul_mgf,
