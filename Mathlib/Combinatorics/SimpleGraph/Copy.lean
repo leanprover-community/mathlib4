@@ -24,8 +24,13 @@ This file introduces the concept of one simple graph containing a copy of anothe
 
 * `SimpleGraph.Free` is the predicate that `B` is `A`-free, that is, `B` does not contain a copy of
   `A`. This is the negation of `SimpleGraph.IsContained` implemented for convenience.
--/
 
+## Notation
+
+The following notation is declared in locale `SimpleGraph`:
+
+* `G ⊑ H` for `SimpleGraph.IsContained G H`.
+-/
 
 open Fintype
 
