@@ -750,14 +750,12 @@ theorem liminf_le_liminf_of_le {α β} [ConditionallyCompleteLattice β] {f g : 
     liminf u f ≤ liminf u g :=
   limsInf_le_limsInf_of_le (map_mono h) hf hg
 
--- rajouter Tendsto. pour autoriser la notation .
-lemma le_liminf_comp {α β γ} [CompleteLattice γ] {f₁ : Filter α} {f₂ : Filter β} (u : β → γ)
+lemma Tendsto.le_liminf_comp {α β γ} [CompleteLattice γ] {f₁ : Filter α} {f₂ : Filter β} (u : β → γ)
     {v : α → β} (h : f₁.Tendsto v f₂) :
     f₂.liminf u ≤ f₁.liminf (u ∘ v) :=
   liminf_comp u v f₁ ▸ liminf_le_liminf_of_le h
 
--- rajouter Tendsto. pour autoriser la notation .
-lemma limsup_comp_le {α β γ} [CompleteLattice γ] {f₁ : Filter α} {f₂ : Filter β} (u : β → γ)
+lemma Tendsto.limsup_comp_le {α β γ} [CompleteLattice γ] {f₁ : Filter α} {f₂ : Filter β} (u : β → γ)
     {v : α → β} (h : f₁.Tendsto v f₂) :
     f₁.limsup (u ∘ v) ≤ f₂.limsup u :=
   limsup_comp u v f₁ ▸ limsup_le_limsup_of_le h
