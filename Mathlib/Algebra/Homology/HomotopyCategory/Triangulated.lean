@@ -87,6 +87,7 @@ lemma hom_inv_id : hom f g ≫ inv f g = 𝟙 _ := by
   ext n
   simp [hom, inv, lift_desc_f _ _ _ _ _ _ _ n (n+1) rfl, ext_from_iff _ (n + 1) _ rfl]
 
+set_option linter.unnecessarySetOptionIn false in
 set_option maxHeartbeats 400000 in
 /-- Given two composable morphisms `f` and `g` in the category of cochain complexes,
 this is the `homotopyInvHomId` field of the homotopy equivalence
