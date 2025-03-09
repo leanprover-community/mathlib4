@@ -703,7 +703,6 @@ import Mathlib.Algebra.Notation
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue.Basic
 import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
-import Mathlib.Algebra.Order.AbsoluteValue.Nonarchimedean
 import Mathlib.Algebra.Order.AddGroupWithTop
 import Mathlib.Algebra.Order.AddTorsor
 import Mathlib.Algebra.Order.Algebra
