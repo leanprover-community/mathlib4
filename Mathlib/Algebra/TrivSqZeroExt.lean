@@ -207,7 +207,7 @@ instance addCommGroup [AddCommGroup R] [AddCommGroup M] : AddCommGroup (tsze R M
   Prod.instAddCommGroup
 
 instance smul [SMul S R] [SMul S M] : SMul S (tsze R M) :=
-  Prod.smul
+  Prod.instSMul
 
 instance isScalarTower [SMul T R] [SMul T M] [SMul S R] [SMul S M] [SMul T S]
     [IsScalarTower T S R] [IsScalarTower T S M] : IsScalarTower T S (tsze R M) :=
