@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+import Mathlib.MeasureTheory.Constructions.Polish.Basic
 import Mathlib.Probability.Process.Filtration
 
 /-!
@@ -21,9 +22,13 @@ along `f`. Then `g` factors though `f`, which means that there exists `h : Y →
 
 namespace MeasureTheory
 
-open Filtration Set TopologicalSpace
+open Filter Filtration Set TopologicalSpace
+
+open scoped Topology
 
 variable {X Y Z : Type*} [mY : MeasurableSpace Y] {f : X → Y} {g : X → Z}
+
+section FactorsThrough
 
 /-- If a function `g` is measurable with respect to the pullback along some function `f`,
 then to prove `g x = g y` it is enough to prove `f x = f y`. -/
@@ -44,6 +49,29 @@ theorem StronglyMeasurable.factorsThrough [TopologicalSpace Z]
     g.FactorsThrough f := by
   borelize Z
   exact hg.measurable.factorsThrough
+
+variable {ι : Type*} [MetricSpace Z] [CompleteSpace Z] [MeasurableSpace Z] [BorelSpace Z]
+  [Countable ι] {l : Filter ι} [l.IsCountablyGenerated] {f : ι → X → Z}
+
+theorem StronglyMeasurable.measurableSet_exists_tendsto [MeasurableSpace X]
+    (hf : ∀ i, StronglyMeasurable (f i)) :
+    MeasurableSet {x | ∃ c, Tendsto (f · x) l (𝓝 c)} := by
+  by_cases hl : l.NeBot
+  swap; · simp_all
+  let s := closure (⋃ i, range (f i))
+  have : PolishSpace s :=
+    { toSecondCountableTopology := @UniformSpace.secondCountable_of_separable s _ _
+        (IsSeparable.iUnion (fun i ↦ (hf i).isSeparable_range)).closure.separableSpace
+      complete := ⟨inferInstance, rfl, isClosed_closure.completeSpace_coe⟩ }
+  let g i x : s := ⟨f i x, subset_closure <| Set.mem_iUnion.2 ⟨i, ⟨x, rfl⟩⟩⟩
+  have mg i : Measurable (g i) := (hf i).measurable.subtype_mk
+  convert MeasureTheory.measurableSet_exists_tendsto mg with x
+  · refine ⟨fun ⟨c, hc⟩ ↦ ⟨⟨c, ?_⟩, tendsto_subtype_rng.2 hc⟩,
+      fun ⟨c, hc⟩ ↦ ⟨c, tendsto_subtype_rng.1 hc⟩⟩
+    exact mem_closure_of_tendsto hc (Eventually.of_forall fun i ↦ Set.mem_iUnion.2 ⟨i, ⟨x, rfl⟩⟩)
+  infer_instance
+
+end FactorsThrough
 
 variable {ι : Type*} {X : ι → Type*} [∀ i, MeasurableSpace (X i)] {f : (Π i, X i) → Z}
 
