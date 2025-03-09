@@ -15,8 +15,12 @@ of `X`.
 
 ## Main statements
 
-* `integral_tilted_mul_self`: `(μ.tilted (t * X ·))[X] = deriv (cgf X μ) t`
-* `variance_tilted_mul`: `variance X (μ.tilted (t * X ·)) = iteratedDeriv 2 (cgf X μ) t`
+* `integral_tilted_mul_self`: the integral of `X` against the tilted measure `μ.tilted (t * X ·)`
+  is the first derivative of the cumulant generating function of `X` at `t`.
+  `(μ.tilted (t * X ·))[X] = deriv (cgf X μ) t`
+* `variance_tilted_mul`: the variance of `X` under the tilted measure `μ.tilted (t * X ·)`
+  is the second derivative of the cumulant generating function of `X` at `t`.
+  `Var[X; μ.tilted (t * X ·)] = iteratedDeriv 2 (cgf X μ) t`
 
 -/
 
