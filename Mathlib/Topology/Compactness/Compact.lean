@@ -193,6 +193,18 @@ theorem IsCompact.elim_nhds_subcover (hs : IsCompact s) (U : X → Set X) (hU : 
     ∃ t : Finset X, (∀ x ∈ t, x ∈ s) ∧ s ⊆ ⋃ x ∈ t, U x :=
   (hs.elim_nhds_subcover_nhdsSet hU).imp fun _ h ↦ h.imp_right subset_of_mem_nhdsSet
 
+theorem IsCompact.elim_nhdsWithin_subcover' (hs : IsCompact s) (U : ∀ x ∈ s, Set X)
+    (hU : ∀ x (hx : x ∈ s), U x hx ∈ 𝓝[s] x) : ∃ t : Finset s, s ⊆ ⋃ x ∈ t, U x x.2 :=
+  (hs.elim_nhds_subcover' _ (fun x hx => Filter.mem_inf_principal'.1 (hU x hx))).imp
+    fun _ ht _ hx => mem_iUnion₂.2 ((mem_iUnion₂.1 (ht hx)).imp
+    fun _ ⟨hy, hxy⟩ => ⟨hy, hxy.resolve_left (not_not_intro hx)⟩)
+
+theorem IsCompact.elim_nhdsWithin_subcover (hs : IsCompact s) (U : X → Set X)
+    (hU : ∀ x ∈ s, U x ∈ 𝓝[s] x) : ∃ t : Finset X, (∀ x ∈ t, x ∈ s) ∧ s ⊆ ⋃ x ∈ t, U x :=
+  (hs.elim_nhds_subcover _ (fun x hx => Filter.mem_inf_principal'.1 (hU x hx))).imp
+    fun _ ⟨t_sub_s, ht⟩ => ⟨t_sub_s, fun _ hx => mem_iUnion₂.2 ((mem_iUnion₂.1 (ht hx)).imp
+    fun _ ⟨hy, hxy⟩ => ⟨hy, hxy.resolve_left (not_not_intro hx)⟩)⟩
+
 /-- The neighborhood filter of a compact set is disjoint with a filter `l` if and only if the
 neighborhood filter of each point of this set is disjoint with `l`. -/
 theorem IsCompact.disjoint_nhdsSet_left {l : Filter X} (hs : IsCompact s) :
