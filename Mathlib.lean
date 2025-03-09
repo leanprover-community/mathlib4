@@ -1530,7 +1530,6 @@ import Mathlib.Analysis.Normed.Algebra.Ultra
 import Mathlib.Analysis.Normed.Algebra.Unitization
 import Mathlib.Analysis.Normed.Algebra.UnitizationL1
 import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.Analysis.Normed.Field.Instances
 import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.Normed.Field.ProperSpace
@@ -1595,6 +1594,7 @@ import Mathlib.Analysis.Normed.Order.Hom.Ultra
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.Normed.Order.UpperLower
 import Mathlib.Analysis.Normed.Ring.Basic
+import Mathlib.Analysis.Normed.Ring.InfiniteSum
 import Mathlib.Analysis.Normed.Ring.Lemmas
 import Mathlib.Analysis.Normed.Ring.Ultra
 import Mathlib.Analysis.Normed.Ring.Units
