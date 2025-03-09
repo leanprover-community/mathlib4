@@ -279,7 +279,8 @@ def miscFormattingLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut errors := Array.mkEmpty 0
   let mut fixedLines := lines
   let annotated := annotate_comments lines.zipIdx
-  for (line, idx, _is_in_comment) in annotated do
+  for (line, idx, is_in_comment) in annotated do
+    if is_in_comment then continue
     let indent := line.takeWhile (·.isWhitespace)
     let mut stripped := line.trimLeft
     if stripped.startsWith ":" then
@@ -287,7 +288,9 @@ def miscFormattingLinter : TextbasedLinter := fun lines ↦ Id.run do
     else if stripped == "where" then
       -- We purposefully don't check if the line starts with it, as that would have false positives
       -- with function doc-strings.
-      pure () --errors := errors.push (StyleError.isolatedWhere, idx + 1)
+      -- We also allow lines starting with "where", as this could also denote the keyword:
+      -- indented "where"s are linted (because they should be changed regardless).
+      if indent != "" then errors := errors.push (StyleError.isolatedWhere, idx + 1)
     else if stripped == "by" then
       if stripped == "by" && !(lines[idx - 1]!.trimRight.endsWith ",") then
         errors := errors.push (StyleError.leadingBy, idx + 1)
