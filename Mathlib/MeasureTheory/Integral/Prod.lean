@@ -292,8 +292,9 @@ theorem Integrable.prod_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [Norm
   · exact Eventually.of_forall fun x => hg.smul (f x)
   · simpa only [norm_smul, integral_mul_left] using hf.norm.mul_const _
 
-theorem Integrable.prod_mul {L : Type*} [RCLike L] {f : α → L} {g : β → L} (hf : Integrable f μ)
-    (hg : Integrable g ν) : Integrable (fun z : α × β => f z.1 * g z.2) (μ.prod ν) :=
+theorem Integrable.prod_mul {L : Type*} [DenselyNormedField L] {f : α → L} {g : β → L}
+    (hf : Integrable f μ) (hg : Integrable g ν) :
+    Integrable (fun z : α × β => f z.1 * g z.2) (μ.prod ν) :=
   hf.prod_smul hg
 
 end
