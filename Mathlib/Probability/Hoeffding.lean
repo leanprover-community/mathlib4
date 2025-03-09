@@ -73,7 +73,7 @@ theorem integrable_exp_set_interior_of_ae_mem_Icc  [IsFiniteMeasure μ] {X : Ω 
   rw [integrable_exp_of_ae_mem_Icc μ a b hX h]
   apply mem_interior_iff_mem_nhds.mpr Filter.univ_mem
 
-theorem cgf_deriv_eq_tilted_measure_expectation [IsProbabilityMeasure μ] {X : Ω → ℝ} (t : ℝ)
+theorem cgf_deriv_eq_tilted_measure_expectation {X : Ω → ℝ} (t : ℝ)
     (h0 : t ∈ interior (integrableExpSet X μ)) :
     deriv (cgf X μ) t = (μ.tilted fun ω ↦ t * X ω)[X] := by
   rw [deriv_cgf]
