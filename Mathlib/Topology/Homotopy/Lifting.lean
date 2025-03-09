@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Junyan Xu. All rights reserved.
+Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
@@ -11,9 +11,17 @@ import Mathlib.Topology.Homotopy.Path
 import Mathlib.Topology.UnitInterval
 
 /-!
-
 # The homotopy lifting property for covering maps
 
+- `IsCoveringMap.exists_path_lifts`, `IsCoveringMap.liftPath`: any path in the base of a covering
+  map lifts uniquely to the covering space (given a lift of the starting point).
+
+- `IsCoveringMap.liftHomotopy`: any homotopy `I × A → X` in the base of a covering map `E → X` can
+  be lifted to a homotopy `I × A → E`, starting from a given lift of the restriction `{0} × A → X`.
+
+- `IsCoveringMap.existsUnique_continuousMap_lifts`: any continuous map from a simply-connected,
+  locally path-connected space lifts uniquely through a covering map (given a lift of an
+  arbitrary point).
 -/
 
 open Topology unitInterval
@@ -153,7 +161,7 @@ open PathConnectedSpace (somePath) in
   path `f ∘ γ` in `X` lifts to `E` with endpoint only dependent on the endpoint of `γ` and
   independent of the path chosen. In this theorem, we require that a specific point `a₀ : A` is
   lifted to a specific point `e₀ : E` over `a₀`. -/
-theorem existsUnique_lift_continuousMap [PathConnectedSpace A] [LocPathConnectedSpace A]
+theorem existsUnique_continuousMap_lifts [PathConnectedSpace A] [LocPathConnectedSpace A]
     (f : C(A, X)) (a₀ : A) (e₀ : E) (he : p e₀ = f a₀)
     (ex : ∀ γ : C(I, A), γ 0 = a₀ → ∃ Γ : C(I, E), Γ 0 = e₀ ∧ p ∘ Γ = f.comp γ)
     (uniq : ∀ γ γ' : C(I, A), ∀ Γ Γ' : C(I, E), γ 0 = a₀ → γ' 0 = a₀ → Γ 0 = e₀ → Γ' 0 = e₀ →
@@ -340,10 +348,10 @@ lemma injective_path_homotopic_mapFn (e₀ e₁ : E) :
 /-- A map `f` from a simply-connected, locally path-connected space `A` to another space `X` lifts
   uniquely through a covering map `p : E → X`. We may require that a specific point `a₀ : A` is
   lifted to a specific point `e₀ : E` over `a₀`. -/
-theorem existsUnique_lift_continuousMap [SimplyConnectedSpace A] [LocPathConnectedSpace A]
+theorem existsUnique_continuousMap_lifts [SimplyConnectedSpace A] [LocPathConnectedSpace A]
     (f : C(A, X)) (a₀ : A) (e₀ : E) (he : p e₀ = f a₀) :
     ∃! F : C(A, E), F a₀ = e₀ ∧ p ∘ F = f := by
-  refine hp.isLocalHomeomorph.existsUnique_lift_continuousMap f a₀ e₀ he (fun γ γ_0 ↦ ?_)
+  refine hp.isLocalHomeomorph.existsUnique_continuousMap_lifts f a₀ e₀ he (fun γ γ_0 ↦ ?_)
     fun γ γ' Γ Γ' γ_0 γ'_0 Γ_0 Γ'_0 Γ_lifts Γ'_lifts γγ'1 ↦ ?_
   · simpa [and_comm] using hp.exists_path_lifts (f.comp γ) e₀ (by simp [γ_0, he])
   let pγ : Path a₀ (γ 1) := ⟨γ, γ_0, rfl⟩
