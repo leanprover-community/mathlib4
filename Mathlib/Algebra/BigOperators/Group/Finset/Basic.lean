@@ -1237,9 +1237,8 @@ theorem card_disjiUnion (s : Finset α) (t : α → Finset β) (h) :
     #(s.disjiUnion t h) = ∑ a ∈ s, #(t a) :=
   Multiset.card_bind _ _
 
-theorem card_biUnion [DecidableEq β] {s : Finset α} {t : α → Finset β}
-    (h : ∀ x ∈ s, ∀ y ∈ s, x ≠ y → Disjoint (t x) (t y)) : #(s.biUnion t) = ∑ u ∈ s, #(t u) := by
-  simpa using sum_biUnion h (β := ℕ) (f := 1)
+theorem card_biUnion [DecidableEq β] {t : α → Finset β} (h : s.toSet.PairwiseDisjoint t) :
+    #(s.biUnion t) = ∑ u ∈ s, #(t u) := by simpa using sum_biUnion h (β := ℕ) (f := 1)
 
 theorem card_biUnion_le [DecidableEq β] {s : Finset α} {t : α → Finset β} :
     #(s.biUnion t) ≤ ∑ a ∈ s, #(t a) :=
@@ -1251,7 +1250,7 @@ theorem card_biUnion_le [DecidableEq β] {s : Finset α} {t : α → Finset β} 
       _ ≤ ∑ a ∈ insert a s, #(t a) := by rw [sum_insert has]; exact Nat.add_le_add_left ih _
 
 theorem card_eq_sum_card_fiberwise [DecidableEq β] {f : α → β} {s : Finset α} {t : Finset β}
-    (H : ∀ x ∈ s, f x ∈ t) : #s = ∑ b ∈ t, #{a ∈ s | f a = b} := by
+    (H : s.toSet.MapsTo f t) : #s = ∑ b ∈ t, #{a ∈ s | f a = b} := by
   simp only [card_eq_sum_ones, sum_fiberwise_of_maps_to H]
 
 theorem card_eq_sum_card_image [DecidableEq β] (f : α → β) (s : Finset α) :
