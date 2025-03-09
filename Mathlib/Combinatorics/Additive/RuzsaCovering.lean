@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Action.Pointwise.Finset
+import Mathlib.Data.ENat.Card
 import Mathlib.Data.Real.Basic
-import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Tactic.Positivity.Finset
 
 /-!
