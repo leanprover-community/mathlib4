@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Module.Projective
-import Mathlib.FieldTheory.Finiteness
+import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-!
 # Finite dimensional vector spaces
@@ -116,8 +117,8 @@ noncomputable def fintypeBasisIndex {ι : Type*} [FiniteDimensional K V] (b : Ba
 
 /-- If a vector space is `FiniteDimensional`, `Basis.ofVectorSpace` is indexed by
   a finite type. -/
-noncomputable instance [FiniteDimensional K V] : Fintype (Basis.ofVectorSpaceIndex K V) := by
-  infer_instance
+noncomputable instance [FiniteDimensional K V] : Fintype (Basis.ofVectorSpaceIndex K V) :=
+  fintypeBasisIndex (Basis.ofVectorSpace K V)
 
 /-- If a vector space has a basis indexed by elements of a finite set, then it is
 finite-dimensional. -/
