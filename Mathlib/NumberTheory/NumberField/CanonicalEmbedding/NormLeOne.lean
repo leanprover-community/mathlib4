@@ -32,11 +32,60 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
   `basisUnitLattice K`, we define the map `expMap : realSpace K → realSpace K` that is, in
   some way, the right inverse of `logMap`, see `logMap_expMap`.
 
+4. Denote by `ηᵢ` (with `i ≠ w₀` where `w₀` is the distinguished infinite place,
+  see the description of `logSpace` below) the fundamental system of units given by
+  `fundSystem` and let `|ηᵢ|` denote `normAtAllPlaces (mixedEmbedding ηᵢ))`, that is the vector
+  `(w (ηᵢ)_w` in `realSpace K`. Then, the image of `|ηᵢ|` by `expMap.symm` form a basis of the
+  subspace `{x : realSpace K | ∑ w, x w = 0}`. We complete by adding the vector `(mult w)_w` to
+  get a basis, called `completeBasis`, of `realSpace K`. The basis `completeBasis K` has
+  the property that, for `i ≠ w₀`, the image of `completeBasis K i` by the
+  natural restriction map `realSpace K → logSpace K` is `basisUnitLattice K`.
+
+5. At this point, we can construct the map `expMapBasis` that plays a crucial part in the proof.
+  It is the map that sends `x : realSpace K` to `Real.exp (x w₀) * ∏_{i ≠ w₀} |ηᵢ| ^ x i`, see
+  `expMapBasis_apply'`.
+
+## Spaces and maps
+
+To help understand the proof, we make a list of (almost) all the spaces and maps used and
+their connections (as hinted above, we do not mention the map `mixedSpaceOfRealSpace` since we
+identify `realSpace K` with its image in `mixedSpace K`).
+
+* `mixedSpace`: the set `({w // IsReal w} → ℝ) × (w // IsComplex w → ℂ)` where `w` denote the
+  infinite places of `K`.
+
+* `realSpace`: the set `w → ℝ` where `w` denote the infinite places of `K`
+
+* `logSpace`: the set `{w // w ≠ w₀} → ℝ` where `w₀` is a distinguished place of `K`. It is the set
+  used in the proof of Dirichlet Unit Theorem.
+
+* `mixedEmbedding : K → mixedSpace K`: the map that sends `x : K` to `φ_w(x)` where, for all
+  infinite place `w`, `φ_w : K → ℝ` or `ℂ`, resp. if `w` is real or if `w` is complex, denote a
+  complex embedding associated to `w`.
+
+* `logEmbedding : (𝓞 K)ˣ → logSpace K`: the map that sends the unit `u : (𝓞 K)ˣ` to
+  `(mult w * log (w u))_w` for `w ≠ w₀`. Its image is `unitLattice K`, a `ℤ`-lattice of
+  `logSpace K`, that admits `basisUnitLattice K` as a basis.
+
+* `logMap : mixedSpace K → logSpace K`: this map is defined such that it factors `logEmbedding`,
+  that is, for `u : (𝓞 K)ˣ`, `logMap (mixedEmbedding x) = logEmbedding x`, and that
+  `logMap (c • x) = logMap x` for `c ≠ 0` and `norm x ≠ 0`. The inverse image of the fundamental
+  domain of `basisUnitLattice K` by `logMap` (minus the elements of norm zero) is
+  `fundamentalCone K`.
+
+* `expMap : realSpace K → realSpace K`: the right inverse of `logMap` in the sense that
+  `logMap (expMap x) = (x_w)_{w ≠ w₀}`.
+
+* `expMapBasis : realSpace K → realSpace K`: the map that sends `x : realSpace K` to
+  `Real.exp (x w₀) * ∏_{i ≠ w₀} |ηᵢ| ^ x i` where `|ηᵢ|` denote the vector of `realSpace K` given
+  by `w (ηᵢ)` and `ηᵢ` denote the units in `fundSystem K`.
+
 -/
 
 variable (K : Type*) [Field K]
 
-open NumberField NumberField.InfinitePlace NumberField.mixedEmbedding NumberField.Units
+open Finset NumberField NumberField.InfinitePlace NumberField.mixedEmbedding NumberField.Units
+  NumberField.Units.dirichletUnitTheorem
 
 namespace NumberField.mixedEmbedding
 
@@ -154,6 +203,24 @@ variable {K}
 theorem expMap_apply (x : realSpace K) (w : InfinitePlace K) :
     expMap x w = Real.exp ((↑w.mult)⁻¹ * x w) := rfl
 
+theorem expMap_pos (x : realSpace K) (w : InfinitePlace K) :
+    0 < expMap x w := Real.exp_pos _
+
+theorem expMap_smul (c : ℝ) (x : realSpace K) :
+    expMap (c • x) = (expMap x) ^ c := by
+  ext
+  simp [mul_comm c _, ← mul_assoc, Real.exp_mul]
+
+theorem expMap_add (x y : realSpace K) :
+    expMap (x + y) = expMap x * expMap y := by
+  ext
+  simp [mul_add, Real.exp_add]
+
+theorem expMap_sum {ι : Type*} (s : Finset ι) (f : ι → realSpace K) :
+    expMap (∑ i ∈ s, f i) = ∏ i ∈ s, expMap (f i) := by
+  ext
+  simp [← Real.exp_sum, ← mul_sum]
+
 @[simp]
 theorem expMap_symm_apply (x : realSpace K) (w : InfinitePlace K) :
     expMap.symm x w = ↑w.mult * Real.log (x w) := rfl
@@ -165,6 +232,176 @@ theorem logMap_expMap {x : realSpace K}
   rw [logMap, normAtPlace_mixedSpaceOfRealSpace (Real.exp_nonneg _), expMap_apply, Real.log_exp,
     mul_sub, mul_inv_cancel_left₀ mult_coe_ne_zero, hx, Real.log_one, zero_mul, mul_zero, sub_zero]
 
+theorem sum_expMap_symm_apply {x : K} (hx : x ≠ 0) :
+    ∑ w : InfinitePlace K, expMap.symm ((normAtAllPlaces (mixedEmbedding K x))) w =
+      Real.log (|Algebra.norm ℚ x| : ℚ) := by
+  simp_rw [← prod_eq_abs_norm, Real.log_prod _ _ (fun _ _ ↦ pow_ne_zero _ ((map_ne_zero _).mpr hx)),
+    Real.log_pow, expMap_symm_apply, normAtAllPlaces_mixedEmbedding]
+
 end expMap
+
+noncomputable section completeBasis
+
+variable [NumberField K]
+
+variable {K}
+
+open scoped Classical in
+/--
+A fixed equiv between `Fin (rank K)` and `{w : InfinitePlace K // w ≠ w₀}`.
+-/
+def equivFinRank : Fin (rank K) ≃ {w : InfinitePlace K // w ≠ w₀} :=
+  Fintype.equivOfCardEq <| by
+    rw [Fintype.card_subtype_compl, Fintype.card_ofSubsingleton, Fintype.card_fin, rank]
+
+variable (K) in
+/--
+A family of elements in the `realSpace K` formed by the pullback of `basisUnitLattice`, see
+`realSpaceToLogSpace_completeFamily_of_ne`, and the vector `(mult w)_w`. This family is
+in fact a basis of `realSpace K`, see `completeBasis`.
+-/
+def completeFamily : InfinitePlace K → realSpace K := by
+  intro i
+  by_cases hi : i = w₀
+  · exact fun w ↦ mult w
+  · exact expMap.symm
+      (normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm ⟨i, hi⟩))))
+
+/--
+An auxiliary map from `realSpace K` to `logSpace K` used to prove that `completeFamily` is
+linearly independent, see `linearIndependent_completeFamily`.
+-/
+def realSpaceToLogSpace : realSpace K →ₗ[ℝ] {w : InfinitePlace K // w ≠ w₀} → ℝ where
+  toFun := fun x w ↦ x w.1 - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹
+  map_add' := fun _ _ ↦ funext fun _ ↦ by simpa [sum_add_distrib] using by ring
+  map_smul' := fun _ _ ↦ funext fun _ ↦ by simpa [← mul_sum] using by ring
+
+theorem realSpaceToLogSpace_apply (x :realSpace K) (w : {w : InfinitePlace K // w ≠ w₀}) :
+    realSpaceToLogSpace x w = x w - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹ := rfl
+
+theorem realSpaceToLogSpace_expMap_symm {x : K} (hx : x ≠ 0) :
+    realSpaceToLogSpace (expMap.symm (normAtAllPlaces (mixedEmbedding K x))) =
+      logMap (mixedEmbedding K x) := by
+  ext w
+  simp_rw [realSpaceToLogSpace_apply, sum_expMap_symm_apply hx, expMap_symm_apply,
+    logMap, normAtPlace_apply, mul_sub, mul_assoc, norm_eq_norm]
+
+theorem realSpaceToLogSpace_completeFamily_of_eq :
+    realSpaceToLogSpace (completeFamily K w₀) = 0 := by
+  ext
+  rw [realSpaceToLogSpace_apply, completeFamily, dif_pos rfl, ← Nat.cast_sum, sum_mult_eq,
+    mul_inv_cancel_right₀ (Nat.cast_ne_zero.mpr Module.finrank_pos.ne'), sub_self, Pi.zero_apply]
+
+theorem realSpaceToLogSpace_completeFamily_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
+    realSpaceToLogSpace (completeFamily K i) = basisUnitLattice K (equivFinRank.symm i) := by
+  ext
+  rw [← logEmbedding_fundSystem, ← logMap_eq_logEmbedding, completeFamily, dif_neg,
+    realSpaceToLogSpace_expMap_symm]
+  exact coe_ne_zero _
+
+theorem sum_eq_zero_of_mem_span_completeFamily {x : realSpace K}
+    (hx : x ∈ Submodule.span ℝ (Set.range fun w : {w // w ≠ w₀} ↦ completeFamily K w.1)) :
+    ∑ w, x w = 0 := by
+  induction hx using Submodule.span_induction with
+  | mem _ h =>
+      obtain ⟨w, rfl⟩ := h
+      simp_rw [completeFamily,  dif_neg w.prop, sum_expMap_symm_apply (coe_ne_zero _),
+        Units.norm, Rat.cast_one, Real.log_one]
+  | zero => simp
+  | add _ _ _ _ hx hy => simp [sum_add_distrib, hx, hy]
+  | smul _ _ _ hx => simp [← mul_sum, hx]
+
+variable (K)
+
+theorem linearIndependent_completeFamily :
+    LinearIndependent ℝ (completeFamily K) := by
+  classical
+  have h₁ : LinearIndependent ℝ (fun w : {w // w ≠ w₀} ↦ completeFamily K w.1) := by
+    refine LinearIndependent.of_comp realSpaceToLogSpace ?_
+    simp_rw [Function.comp_def, realSpaceToLogSpace_completeFamily_of_ne]
+    convert (((basisUnitLattice K).ofZLatticeBasis ℝ _).reindex equivFinRank).linearIndependent
+    simp
+  have h₂ : completeFamily K w₀ ∉ Submodule.span ℝ
+      (Set.range (fun w : {w // w ≠ w₀} ↦ completeFamily K w.1)) := by
+    intro h
+    have := sum_eq_zero_of_mem_span_completeFamily h
+    rw [completeFamily, dif_pos rfl, ← Nat.cast_sum, sum_mult_eq, Nat.cast_eq_zero] at this
+    exact Module.finrank_pos.ne' this
+  rw [← linearIndependent_equiv (Equiv.optionSubtypeNe w₀), linearIndependent_option]
+  exact ⟨h₁, h₂⟩
+
+/--
+The basis formed by the pullback in `realSpace K` of the vectors of `basisUnitLattice`
+(which form a basis of a subspace `{x : realSpace K | ∑ w, x w = 0}`) and the vector `(mult w)_w`.
+For `i ≠ w₀`, the image of `completeBasis K i` by the natural restriction map
+`realSpace K → logSpace K` is `basisUnitLattice K`
+-/
+def completeBasis : Basis (InfinitePlace K) ℝ (realSpace K) :=
+  basisOfLinearIndependentOfCardEqFinrank (linearIndependent_completeFamily K)
+    (Module.finrank_fintype_fun_eq_card _).symm
+
+theorem completeBasis_apply_of_eq :
+    completeBasis K w₀ = fun w ↦ (mult w : ℝ) := by
+  rw [completeBasis, coe_basisOfLinearIndependentOfCardEqFinrank, completeFamily, dif_pos rfl]
+
+theorem completeBasis_apply_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
+    completeBasis K i =
+      expMap.symm (normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm i)))) := by
+  rw [completeBasis, coe_basisOfLinearIndependentOfCardEqFinrank, completeFamily, dif_neg]
+
+theorem expMap_basis_of_eq :
+    expMap (completeBasis K w₀) = fun _ ↦ Real.exp 1 := by
+  ext
+  simp_rw [expMap_apply, completeBasis_apply_of_eq, inv_mul_cancel₀ mult_coe_ne_zero]
+
+theorem expMap_basis_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
+    expMap (completeBasis K i) =
+      normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm i))) := by
+  rw [completeBasis_apply_of_ne, PartialHomeomorph.right_inv _ (by simp [expMap_target])]
+
+end completeBasis
+
+noncomputable section expMapBasis
+
+variable [NumberField K]
+
+variable {K}
+
+/--
+The map that sends `x : realSpace K` to
+`Real.exp (x w₀) * ∏_{i ≠ w₀} |ηᵢ| ^ x i` where `|ηᵢ|` denote the vector of `realSpace K` given
+by `w (ηᵢ)` and `ηᵢ` denote the units in `fundSystem K`, see `expMapBasis_apply'`.
+-/
+def expMapBasis : PartialHomeomorph (realSpace K) (realSpace K) :=
+  (completeBasis K).equivFunL.symm.toHomeomorph.transPartialHomeomorph expMap
+
+variable (K)
+
+theorem expMapBasis_source :
+    expMapBasis.source = (Set.univ : Set (realSpace K)) := by
+  simp [expMapBasis, expMap_source]
+
+variable {K}
+
+theorem expMapBasis_pos (x : realSpace K) (w : InfinitePlace K) :
+    0 < expMapBasis x w := expMap_pos _ _
+
+theorem expMapBasis_nonneg (x : realSpace K) (w : InfinitePlace K) :
+    0 ≤ expMapBasis x w := (expMapBasis_pos _ _).le
+
+theorem expMapBasis_apply (x : realSpace K) :
+    expMapBasis x = expMap ((completeBasis K).equivFun.symm x) := rfl
+
+open scoped Classical in
+theorem expMapBasis_apply' (x : realSpace K) :
+    expMapBasis x = Real.exp (x w₀) •
+      fun w : InfinitePlace K ↦
+         ∏ i : {w // w ≠ w₀}, w (fundSystem K (equivFinRank.symm i)) ^ x i := by
+  simp_rw [expMapBasis_apply, Basis.equivFun_symm_apply, Fintype.sum_eq_add_sum_subtype_ne _ w₀,
+    expMap_add, expMap_smul, expMap_basis_of_eq, Pi.pow_def, Real.exp_one_rpow, Pi.mul_def,
+    expMap_sum, expMap_smul, expMap_basis_of_ne, Pi.smul_def, smul_eq_mul, prod_apply, Pi.pow_apply,
+    normAtAllPlaces_mixedEmbedding]
+
+end expMapBasis
 
 end NumberField.mixedEmbedding
