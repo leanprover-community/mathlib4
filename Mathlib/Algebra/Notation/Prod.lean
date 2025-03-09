@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Util.AssertExists
-import Mathlib.Data.One.Defs
+import Mathlib.Algebra.Notation.Defs
 import Mathlib.Data.Prod.Basic
 
 /-!
@@ -14,9 +14,7 @@ In this file we define `0` and `1` on `M × N` as the pair `(0, 0)` and `(1, 1)`
 We also prove trivial `simp` lemmas:
 -/
 
-assert_not_exists AddMonoidWithOne
-assert_not_exists DenselyOrdered
-assert_not_exists MonoidWithZero
+assert_not_exists Monoid DenselyOrdered
 
 variable {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
 
@@ -42,8 +40,7 @@ theorem one_eq_mk [One M] [One N] : (1 : M × N) = (1, 1) :=
 theorem mk_one_one [One M] [One N] : ((1 : M), (1 : N)) = 1 := rfl
 
 @[to_additive (attr := simp)]
-theorem mk_eq_one [One M] [One N] {x : M} {y : N} : (x, y) = 1 ↔ x = 1 ∧ y = 1 :=
-  mk.inj_iff
+theorem mk_eq_one [One M] [One N] {x : M} {y : N} : (x, y) = 1 ↔ x = 1 ∧ y = 1 := mk_inj
 
 @[to_additive (attr := simp)]
 theorem swap_one [One M] [One N] : (1 : M × N).swap = 1 :=
