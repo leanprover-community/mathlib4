@@ -13,7 +13,7 @@ a cochain complex `L`: `L.X 0 ⟶ L.X 1 ⟶ L.X 2 ⟶ ...`,
 a morphism `d₀: K.X 0 ⟶ L.X 0` satisfying the identifies `K.d 1 0 ≫ d₀ = 0`
 and `d₀ ≫ L.d 0 1 = 0`, we construct a cochain complex indexed by `ℤ` of the form
 `... ⟶ K.X 2 ⟶ K.X 1 ⟶ K.X 0 ⟶ L.X 0 ⟶ L.X 1 ⟶ L.X 2 ⟶ ...`,
-where `K.X 0` lies in degree `-1` and `K.X 0` in degree `0`.
+where `K.X 0` lies in degree `-1` and `L.X 0` in degree `0`.
 
 -/
 
