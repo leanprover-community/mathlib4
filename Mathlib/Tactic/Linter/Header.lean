@@ -256,8 +256,9 @@ register_option linter.style.header : Bool := {
 namespace Style.header
 
 /-- Check the `Syntax` `imports` for broad imports:
-`Mathlib.Tactic`, any import starting with `Lake`, `Mathlib.Tactic.{Have,Replace}`
-or anything in the `Deprecated` folder. -/
+`Mathlib.Tactic`, any import starting with `Lake`, `Mathlib.Tactic.{Have,Replace}` or
+anything in the `Deprecated` folder,
+as well as forbidden imports: `Algebra.Notation` must not import files in `Algebra.OtherDir`. -/
 def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : CommandElabM Unit := do
   for i in imports do
     match i.getId with
@@ -284,6 +285,13 @@ def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : CommandElab
         -- We do not complain about files in the `Deprecated` directory importing one another.
         Linter.logLint linter.style.header i
           "Files in the `Deprecated` directory are not supposed to be imported."
+      else if (`Mathlib.Algebra.Notation).isPrefixOf mainModule &&
+          (`Mathlib.Algebra).isPrefixOf modName &&
+          !(`Mathlib.Algebra.Notation).isPrefixOf modName then
+        Linter.logLint linter.style.header i
+          "Files inside the Algebra.Notation directory must not import Algebra files outside \
+          of that directory"
+
 
 /-- Check the syntax `imports` for syntactically duplicate imports.
 The output is an array of `Syntax` atoms whose ranges are the import statements,
