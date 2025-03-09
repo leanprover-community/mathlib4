@@ -268,19 +268,20 @@ lemma of_mem_map_ker_iff [DecidableEq ι] (i : ι) (x : α i) :
   · simp only [AddMonoidHom.mem_ker, map_of] at h
     exact DFinsupp.single_eq_zero.mp h
 
-open Classical in
-lemma mem_map_range_iff (y : ⨁ i, β i) : y ∈ (map f).range ↔ ∀ i, y i ∈ (f i).range := by
+lemma mem_map_range_iff (y : ⨁ i, β i) [DecidableEq ι] [(i : ι) → (x : β i) → Decidable (x ≠ 0)] :
+    y ∈ (map f).range ↔ ∀ i, y i ∈ (f i).range := by
   refine ⟨fun ⟨x, hx⟩ i ↦ ?_, fun h ↦ ?_⟩
   · simp [← hx]
   · use DirectSum.mk α y.support (fun i ↦ Classical.choose (h i))
     ext i
     simp only [Finset.coe_sort_coe, map_apply]
     by_cases mem : i ∈ y.support
-    · erw [mk_apply_of_mem mem, Classical.choose_spec (h i)]
-    · erw [mk_apply_of_not_mem mem, DFinsupp.not_mem_support_iff.mp mem, map_zero]
+    · rw [← Classical.choose_spec (h i)]
+      exact congrArg (f i) (mk_apply_of_mem mem)
+    · rw [DFinsupp.not_mem_support_iff.mp mem, ← map_zero (f i)]
+      exact congrArg (f i) (mk_apply_of_not_mem mem)
 
-open Classical in
-lemma of_mem_map_range_iff (i : ι) (y : β i) :
+lemma of_mem_map_range_iff (i : ι) (y : β i) [DecidableEq ι] :
     (of β i y) ∈ (map f).range ↔ y ∈ (f i).range := by
   refine ⟨fun ⟨x, hx⟩ ↦ ?_, fun ⟨x, hx⟩ ↦ ?_⟩
   · use x i
