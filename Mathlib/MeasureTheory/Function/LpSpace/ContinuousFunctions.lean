@@ -61,7 +61,7 @@ theorem Lp_nnnorm_le (f : α →ᵇ E) :
 of the whole space) times its sup-norm. -/
 theorem Lp_norm_le (f : α →ᵇ E) :
     ‖(⟨f.toContinuousMap.toAEEqFun μ, mem_Lp f⟩ : Lp E p μ)‖ ≤
-      measureUnivNNReal ^ p.toReal⁻¹ * ‖f‖ :=
+      measureUnivNNReal μ ^ p.toReal⁻¹ * ‖f‖ :=
   Lp_nnnorm_le f
 
 variable (p μ)

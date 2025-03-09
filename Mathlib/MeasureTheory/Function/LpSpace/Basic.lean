@@ -301,7 +301,7 @@ theorem nnnorm_eq_zero_iff {f : Lp E p μ} (hp : 0 < p) : ‖f‖₊ = 0 ↔ f =
   rw [nnnorm_def, ENNReal.toNNReal_eq_zero_iff] at hf
   cases hf with
   | inl hf =>
-    rw [eLpNorm_eq_zero_iff (ε := E) (Lp.aestronglyMeasurable f) hp.ne.symm] at hf
+    rw [eLpNorm_eq_zero_iff (Lp.aestronglyMeasurable f) hp.ne.symm] at hf
     exact Subtype.eq (AEEqFun.ext (hf.trans AEEqFun.coeFn_zero.symm))
   | inr hf =>
     exact absurd hf (eLpNorm_ne_top f)
@@ -332,10 +332,6 @@ theorem enorm_le_mul_enorm_of_ae_le_mul {c : ℝ≥0} {f : Lp E p μ} {g : Lp F 
 theorem nnnorm_le_mul_nnnorm_of_ae_le_mul {c : ℝ≥0} {f : Lp E p μ} {g : Lp F p μ}
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : ‖f‖₊ ≤ c * ‖g‖₊ := by
   simp only [nnnorm_def]
-  have h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ := by
-    apply h.mono (fun x hx ↦ ?_)
-    rw [enorm_eq_nnnorm, enorm_eq_nnnorm, ← ENNReal.coe_mul]
-    gcongr
   have := eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul h p
   rwa [← ENNReal.toNNReal_le_toNNReal, ENNReal.smul_def, smul_eq_mul, ENNReal.toNNReal_mul,
     ENNReal.toNNReal_coe] at this
@@ -356,14 +352,12 @@ theorem norm_le_norm_of_ae_le {f : Lp E p μ} {g : Lp F p μ} (h : ∀ᵐ x ∂�
   rw [norm_def, norm_def]
   exact ENNReal.toReal_mono (eLpNorm_ne_top _) (eLpNorm_mono_ae h)
 
---#check MemLp.of_norm_le_mul
 theorem mem_Lp_of_enorm_ae_le_mul {c : ℝ≥0} {f : α →ₘ[μ] E} {g : Lp F p μ}
     (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : f ∈ Lp E p μ := by
   -- was: mem_Lp_iff_memLp.2 <| MemLp.of_norm_le_mul (Lp.memLp g) f.aestronglyMeasurable h OR SO!
   apply mem_Lp_iff_memLp.2 --<| --MemLp.of_enorm_le_mul (Lp.memLp g) f.aestronglyMeasurable h
   apply MemLp.of_norm_le_mul --(Lp.memLp g) f.aestronglyMeasurable h
 
---depr
 #exit
 
 theorem mem_Lp_of_ae_le_mul {c : ℝ} {f : α →ₘ[μ] E} {g : Lp F p μ}
