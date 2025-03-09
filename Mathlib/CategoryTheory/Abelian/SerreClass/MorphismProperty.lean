@@ -25,13 +25,14 @@ of three property and is stable under retracts.
 
 -/
 
-universe v u
+universe v v' u u'
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits ZeroObject
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
+  {D : Type u'} [Category.{v'} D] [Abelian D]
 
 namespace ObjectProperty
 
@@ -86,6 +87,28 @@ instance : P.serreW.IsStableUnderRetracts where
   of_retract {X' Y' X Y} f' f h hf :=
     ⟨P.prop_of_mono (kernel.map f' f h.left.i h.right.i (by simp)) hf.1,
       P.prop_of_epi (cokernel.map f f' h.left.r h.right.r (by simp)) hf.2⟩
+
+lemma le_kernel_of_serreW_isInvertedBy (F : C ⥤ D) [F.PreservesZeroMorphisms]
+    (hF : P.serreW.IsInvertedBy F) :
+    P ≤ F.kernel := by
+  intro X hX
+  simp only [prop_inverseImage_iff]
+  let f : 0 ⟶ X := 0
+  have := hF _ ((P.serreW_iff_of_mono f).2
+    ((P.prop_iff_of_iso cokernelZeroIsoTarget).2 hX))
+  refine (asIso (F.map f)).isZero_iff.1 (F.map_isZero (isZero_zero C))
+
+lemma serreW_isInvertedBy_iff (F : C ⥤ D)
+    [PreservesFiniteLimits F] [PreservesFiniteColimits F] :
+    P.serreW.IsInvertedBy F ↔ P ≤ F.kernel := by
+  refine ⟨P.le_kernel_of_serreW_isInvertedBy F, fun hF X Y f ⟨h₁, h₂⟩ ↦ ?_⟩
+  have : Mono (F.map f) :=
+    (((ShortComplex.mk _ _ (kernel.condition f)).exact_of_f_is_kernel
+      (kernelIsKernel f)).map F).mono_g (((hF _ h₁).eq_of_src _ _))
+  have : Epi (F.map f) :=
+    (((ShortComplex.mk _ _ (cokernel.condition f)).exact_of_g_is_cokernel
+      (cokernelIsCokernel f)).map F).epi_f (((hF _ h₂).eq_of_tgt _ _))
+  exact isIso_of_mono_of_epi (F.map f)
 
 end ObjectProperty
 
