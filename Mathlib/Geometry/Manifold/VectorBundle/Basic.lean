@@ -204,7 +204,7 @@ theorem contMDiffAt_section (s : ∀ x, E x) (x₀ : B) :
       ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ := by
   simp_rw [contMDiffAt_totalSpace, and_iff_right_iff_imp]; intro; exact contMDiffAt_id
 
-theorem contMDiffAt_of_totalSpace (f : TotalSpace F E → M) {x₀ : TotalSpace F E} :
+theorem contMDiffAt_of_totalSpace {f : TotalSpace F E → M} {x₀ : TotalSpace F E} :
     ContMDiffAt (IB.prod 𝓘(𝕜, F)) IM n f x₀ ↔
     ContMDiffAt (IB.prod 𝓘(𝕜, F)) IM n
       (f ∘ (trivializationAt F E x₀.proj).toPartialHomeomorph.symm)
@@ -719,6 +719,7 @@ instance Bundle.Trivial.contMDiffVectorBundle :
 
 /-! ### Direct sums of `C^n` vector bundles -/
 
+
 section Prod
 
 variable (F₁ : Type*) [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] (E₁ : B → Type*)
@@ -727,11 +728,11 @@ variable (F₁ : Type*) [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] (E₁ 
 variable (F₂ : Type*) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] (E₂ : B → Type*)
   [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, AddCommMonoid (E₂ x)] [∀ x, Module 𝕜 (E₂ x)]
 
-variable [∀ x : B, TopologicalSpace (E₁ x)] [∀ x : B, TopologicalSpace (E₂ x)]
-  [FiberBundle F₁ E₁] [FiberBundle F₂ E₂]
-  [VectorBundle 𝕜 F₁ E₁] [ContMDiffVectorBundle n F₁ E₁ IB]
-  [VectorBundle 𝕜 F₂ E₂] [ContMDiffVectorBundle n F₂ E₂ IB]
-  [IsManifold IB n B]
+variable [∀ x : B, TopologicalSpace (E₁ x)] [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₁ E₁]
+  [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂ E₂]
+  [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB]
+
+variable [IsManifold IB n B]
 
 /-- The direct sum of two `C^n` vector bundles over the same base is a `C^n` vector bundle. -/
 instance Bundle.Prod.contMDiffVectorBundle : ContMDiffVectorBundle n (F₁ × F₂) (E₁ ×ᵇ E₂) IB where

@@ -55,9 +55,9 @@ theorem Bundle.Pullback.contMDiff_lift :
   rw [Trivialization.apply_symm_apply]
   exact (Trivialization.mk_mem_target (FiberBundle.trivializationAt' (f x.proj))).mpr A
 
-/-- Given a smooth fibre bundle `E` over a manifold `B` and a smooth map `f : B' → B`, if `φ` is
-a map into the total space of the pullback `f *ᵖ E`, then its smoothness can be checked by checking
-the smoothness of (1) the map `TotalSpace.proj ∘ φ` into `B'`, and (2) the map
+/-- Given a fiber bundle `E` over a manifold `B` and a regular map `f : B' → B`, if `φ` is
+a map into the total space of the pullback `f *ᵖ E`, then its regularity can be checked by checking
+the regularity of (1) the map `TotalSpace.proj ∘ φ` into `B'`, and (2) the map
 `Pullback.lift f ∘ φ` into the total space of `E`. -/
 theorem Bundle.Pullback.contMDiff_of_contMDiff_proj_comp_of_contMDiff_lift_comp
     {φ : M → TotalSpace F (f *ᵖ E)} (h1 : ContMDiff IM IB' n (TotalSpace.proj ∘ φ))
@@ -78,7 +78,7 @@ theorem Bundle.Pullback.contMDiff_of_contMDiff_proj_comp_of_contMDiff_lift_comp
     exact contDiffAt_snd
   exact (this _).comp _ h2.2
 
-/-- Given a fibre bundle `E` over a manifold `B` and a regular map `f : B' → B`, a map `φ`
+/-- Given a fiber bundle `E` over a manifold `B` and a regular map `f : B' → B`, a map `φ`
 into the total space of the pullback `f *ᵖ E` is regular if and only if the following two maps are
 regular: (1) the map `TotalSpace.proj ∘ φ` into `B'`, and (2) the map `Pullback.lift f ∘ φ` into the
 total space of `E`. -/

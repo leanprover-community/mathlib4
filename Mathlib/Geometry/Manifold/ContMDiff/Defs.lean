@@ -289,8 +289,7 @@ theorem contMDiffWithinAt_iff_target :
     ContinuousWithinAt f s x ∧ ContinuousWithinAt (extChartAt I' (f x) ∘ f) s x ↔
         ContinuousWithinAt f s x :=
       and_iff_left_of_imp <| (continuousAt_extChartAt _).comp_continuousWithinAt
-  simp_rw [cont]
-  simp_rw [ContDiffWithinAtProp, extChartAt, PartialHomeomorph.extend, PartialEquiv.coe_trans,
+  simp_rw [cont, ContDiffWithinAtProp, extChartAt, PartialHomeomorph.extend, PartialEquiv.coe_trans,
     ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.coe_coe, modelWithCornersSelf_coe,
     chartAt_self_eq, PartialHomeomorph.refl_apply, id_comp]
   rfl
@@ -307,7 +306,7 @@ theorem contMDiffAt_iff_target {x : M} :
 
 @[deprecated (since := "2024-11-20")] alias smoothAt_iff_target := contMDiffAt_iff_target
 
-/-- One can reformulate being `Cⁿ` within a set at a point as begin `Cⁿ` in the source space when
+/-- One can reformulate being `Cⁿ` within a set at a point as being `Cⁿ` in the source space when
 composing with the extended chart. -/
 theorem contMDiffWithinAt_iff_source :
     ContMDiffWithinAt I I' n f s x ↔
