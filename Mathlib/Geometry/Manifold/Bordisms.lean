@@ -560,6 +560,26 @@ def empty : uBordismClass X k I (E' := E') (H' := H') J :=
   haveI := ChartedSpace.empty
   Quotient.mk _ (SingularNManifold.empty X Empty I)
 
+-- cannot even state this, universe constraints...
+-- The disjoint union of singular manifolds descends to bordism classes.
+-- lemma aux {a₁ b₁ a₂ b₂ : SingularNManifold X k I}
+--     (h : unorientedBordismRelation X k I (H' := H') (E' := E') J a₁ a₂)
+--     (h' : unorientedBordismRelation X k I (H' := H') (E' := E') J b₁ b₂) :
+--     a₁.sum b₁ = a₂.sum b₂ := sorry
+
+-- Almost there: want to also descend the final operator to the quotient...
+variable (X k I J) in
+def uBordismClass.sum :=
+--Quotient (unorientedBordismSetoid X k I J) → Quotient (unorientedBordismSetoid X k I J) → Quotient (unorientedBordismSetoid X k I J) :=
+  --(uBordismClass X k I (E' := E') (H' := H') J) → (uBordismClass X k I (E' := E') (H' := H') J)
+  --  → uBordismClass X k I (E' := E') (H' := H') J := by
+  let f : (SingularNManifold X k I) → (SingularNManifold X k I) → (SingularNManifold X k I) :=
+    fun s t ↦ s.sum t
+  --Quotient.mk (unorientedBordismSetoid X k I (E' := E') (H' := H') J) <|
+  let aux := Quotient.lift₂ (s₁ := unorientedBordismSetoid X k I (E' := E') (H' := H') J)
+    (s₂ := unorientedBordismSetoid X k I (E' := E') (H' := H') J) (f := f) sorry
+  aux
+
 variable (X k n) in
 /-- The type of unoriented `n`-dimensional `C^k` bordism classes on `X`. -/
 abbrev uBordismClassN (n : ℕ) := uBordismClass X k (𝓡 n) (𝓡 (n + 1))
