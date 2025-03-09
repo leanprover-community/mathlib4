@@ -491,6 +491,21 @@ theorem arg_div_coe_angle {x y : ℂ} (hx : x ≠ 0) (hy : y ≠ 0) :
     (arg (x / y) : Real.Angle) = arg x - arg y := by
   rw [div_eq_mul_inv, arg_mul_coe_angle hx (inv_ne_zero hy), arg_inv_coe_angle, sub_eq_add_neg]
 
+theorem arg_pow_coe_angle {x : ℂ} {n: ℕ} :
+    ((x ^ n).arg : Real.Angle) = n • (x.arg : Real.Angle) := by
+  by_cases x0: x = 0
+  · by_cases n0: n = 0
+    repeat simp [x0, n0]
+  · induction n with
+    | zero => simp [x0]
+    | succ n ih => rw [pow_succ, arg_mul_coe_angle (pow_ne_zero n x0) x0, ih]; rfl
+
+theorem arg_zpow_coe_angle {x : ℂ} {n: ℤ} :
+    ((x ^ n).arg : Real.Angle) = n • (x.arg : Real.Angle) := by
+  match n with
+  | Int.ofNat m => simp; exact arg_pow_coe_angle
+  | Int.negSucc m => simp; exact arg_pow_coe_angle
+
 @[simp]
 theorem arg_coe_angle_toReal_eq_arg (z : ℂ) : (arg z : Real.Angle).toReal = arg z := by
   rw [Real.Angle.toReal_coe_eq_self_iff_mem_Ioc]
