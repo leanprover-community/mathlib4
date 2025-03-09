@@ -20,14 +20,12 @@ the inverse image by `G` of the class of isomorphisms.
 
 namespace CategoryTheory
 
-open Localization Category
+open MorphismProperty
 
 namespace Adjunction
 
 variable {C₁ C₂ : Type*} [Category C₁] [Category C₂]
   {G : C₁ ⥤ C₂} {F : C₂ ⥤ C₁} [F.Full] [F.Faithful]
-
-open MorphismProperty
 
 lemma hasLeftCalculusOfFractions (adj : G ⊣ F) :
     ((isomorphisms C₂).inverseImage G).HasLeftCalculusOfFractions where
