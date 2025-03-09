@@ -222,7 +222,7 @@ theorem cgf_le_bound_of_ae_mem_Icc_and_mean_zero [IsProbabilityMeasure μ]
     _ = t ^ 2 * (b - a) ^ 2 / 8 := by ring
   exact s
 
-/-! ### Hoeffding's lemma restricted to t ≥ 0-/
+/-! ### Hoeffding's lemma restricted to t ≥ 0 -/
 
 theorem hoeffding_nonneg [IsProbabilityMeasure μ]
     (t a b : ℝ) {X : Ω → ℝ} (ht : 0 ≤ t) (hX : AEMeasurable X μ)
@@ -242,11 +242,11 @@ theorem hoeffding_nonneg [IsProbabilityMeasure μ]
   exact cgf_le_bound_of_ae_mem_Icc_and_mean_zero μ t a b
     (lt_of_le_of_ne ht fun a ↦ w (id (Eq.symm a))) hX h h0
 
-/-! ### Hoeffding's lemma-/
+/-! ### Hoeffding's lemma -/
 
 /-- Hoeffding's Lemma states that for a random variable `X` with `E[X] = 0` (zero mean) and
  `a ≤ X ≤ b` almost surely, the inequality
- `μ[exp (t * (X ω))] ≤ exp (t^2 * (b - a)^2 / 8)` holds almost surely for all `t ∈ ℝ`.-/
+ `μ[exp (t * (X ω))] ≤ exp (t^2 * (b - a)^2 / 8)` holds almost surely for all `t ∈ ℝ`. -/
 theorem hoeffding [IsProbabilityMeasure μ] (t a b : ℝ) {X : Ω → ℝ} (hX : AEMeasurable X μ)
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (h0 : μ[X] = 0) :
     mgf X μ t ≤ exp (t^2 * (b - a)^2 / 8) := by
