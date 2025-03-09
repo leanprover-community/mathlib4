@@ -544,8 +544,13 @@ variable (X k I J) in
 def unorientedBordismSetoid : Setoid (SingularNManifold X k I) :=
   Setoid.mk _ (uBordismRelation X k I J)
 
+variable (X k I J) in
+/-- The type of unoriented `C^k` bordism classes on `X`. -/
+-- TODO: need to impose a constraint in I and J!
+abbrev uBordismClass := Quotient <| Setoid.mk _ <| uBordismRelation X k I J
+
 variable (X k n) in
 /-- The type of unoriented `n`-dimensional `C^k` bordism classes on `X`. -/
-abbrev uBordismClasses (n : ℕ) := Quotient <| Setoid.mk _ <| uBordismRelation X k (𝓡 n) (𝓡 (n + 1))
+abbrev uBordismClassN (n : ℕ) := uBordismClass X k (𝓡 n) (𝓡 (n + 1))
 
 end UnorientedCobordism
