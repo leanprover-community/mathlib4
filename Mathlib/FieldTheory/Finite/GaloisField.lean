@@ -255,4 +255,169 @@ def ringEquivOfCardEq (hKK' : Fintype.card K = Fintype.card K') : K ≃+* K' := 
   letI : Algebra (ZMod p) K' := ZMod.algebra _ _
   exact ↑(algEquivOfCardEq p hKK')
 
+theorem pow_finrank_eq_card [CharP K p] : p ^ Module.finrank (⊥ : Subfield K) K = Nat.card K := by
+  obtain ⟨⟨n, npos⟩, hp, hn⟩ := FiniteField.card K p
+  have _ := finite_bot K p
+  have _ := Fintype.ofFinite (⊥ : Subfield K)
+  have := (card_eq_pow_finrank (K := (⊥ : Subfield K)) (V := K)).symm
+  rwa [← Nat.card_eq_fintype_card, ← Nat.card_eq_fintype_card, card_bot K p] at this
+
+theorem finrank_ne [CharP K p] : Module.finrank (⊥ : Subfield K) K ≠ 0 := by
+  by_contra h
+  have : p ^ Module.finrank (⊥ : Subfield K) K = Fintype.card K := by
+    rw [pow_finrank_eq_card, Nat.card_eq_fintype_card]
+  rw [h, pow_zero, ← Nat.card_eq_fintype_card] at this
+  apply (Nat.ne_of_lt' Finite.one_lt_card) this.symm
+
+/-- The frobenius map as an equivalence on a finite field. -/
+def frobeniusEquiv [CharP K p] : K ≃+* K where
+  toFun x := frobenius K p x
+  invFun x := (frobenius K p ^ (Module.finrank (⊥ : Subfield K) K - 1)) x
+  left_inv := by
+    simp only [Function.LeftInverse, frobenius, powMonoidHom, RingHom.coe_mk, MonoidHom.coe_mk,
+      OneHom.coe_mk, RingHom.coe_pow, pow_iterate]
+    intro x
+    rw [← npow_mul', pow_sub_one_mul (finrank_ne p) p, pow_finrank_eq_card,
+      Nat.card_eq_fintype_card, pow_card]
+  right_inv := by
+    simp only [Function.RightInverse, Function.LeftInverse, frobenius, powMonoidHom,
+      RingHom.coe_pow, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, pow_iterate]
+    intro x
+    rw [← npow_mul, pow_sub_one_mul (finrank_ne p) p, pow_finrank_eq_card, Nat.card_eq_fintype_card,
+      pow_card]
+  map_mul' x y := by simp
+  map_add' x y := by simp
+
+/-- This needs to be generalized to arbitrary characteristic -/
+@[simps!]
+def RingEquivToAlgEquiv [CharP K p] : (K ≃+* K) ≃* (K ≃ₐ[(⊥ : Subfield K)] K) where
+  toFun g := {
+    toFun := fun x ↦ g x
+    invFun := fun x ↦ g.symm x
+    left_inv x := by simp
+    right_inv x := by simp
+    map_mul' x y := by simp
+    map_add' x y := by simp
+    commutes' x := by
+      have hx := x.2
+      obtain ⟨n, hn⟩ := (mem_bot (x := x.1) p K).mp x.2
+      have : (algebraMap (⊥ : Subfield K) K) x = x.1 := rfl
+      rw [this, ← hn]
+      exact map_intCast g n
+  }
+  invFun g := g
+  left_inv g := by ext; simp
+  right_inv g := by ext; simp
+  map_mul' g h := by
+    ext x
+    simp only [AlgEquiv.coe_mk, Equiv.coe_fn_mk, AlgEquiv.mul_apply]
+    exact rfl
+
+-- TODO : frobeniusEquiv as an automorphism of any algebraic extension of `⊥`, or perfect field.
+
+/-- The action of the automorphism group of `K` on `K` -/
+local instance : MulSemiringAction (K ≃+* K) K where
+  smul g x := g x
+  one_smul x := rfl
+  mul_smul x y z := rfl
+  smul_zero g := by simp [HSMul.hSMul]
+  smul_add g x y := by simp [HSMul.hSMul]
+  smul_one g := by simp [HSMul.hSMul]
+  smul_mul g x y := by simp [HSMul.hSMul]
+
+theorem fixedBy_frobenius [CharP K p] : FixedBy.subfield K (frobeniusEquiv (K := K) p) = ⊥ := by
+  refine bot_unique ?_
+  rw [SetLike.le_def]
+  intro _ h
+  exact (mem_bot_iff p).mpr h
+
+theorem fixedPoints_eq_bot [CharP K p] :
+    FixedPoints.subfield (K ≃+* K) K  = (⊥ : Subfield K) := by
+  rw [eq_bot_iff, SetLike.le_def]
+  intro x hx
+  have hx : ∀ (g : K ≃+* K), g x = x := hx
+  specialize hx (frobeniusEquiv (K := K) p)
+  have hx : x ^ p = x := hx
+  exact (mem_bot_iff p (F := K)).mpr hx
+
+omit [Fact (Nat.Prime p)] [Fintype K] in
+theorem mem_bot_iff_mem_bot (x : K) :
+    x ∈ (⊥ : IntermediateField (⊥ : Subfield K) K) ↔ x ∈ (⊥ : Subfield K) := by
+  rw [IntermediateField.mem_bot, Set.mem_range]
+  refine ⟨fun h ↦ ?_, fun h ↦ Exists.intro ⟨x, h⟩ rfl⟩
+  obtain ⟨⟨a, hha⟩, ha⟩ := h
+  have : a = x := ha
+  rwa [this] at hha
+--#find_home! mem_bot_iff_mem_bot --[Mathlib.FieldTheory.IntermediateField.Adjoin.Defs]
+
+theorem fixedField_eq_bot [CharP K p] : IntermediateField.fixedField (Subgroup.closure
+    {(RingEquivToAlgEquiv p) (frobeniusEquiv p)}) = (⊥ : IntermediateField (⊥ : Subfield K) K) := by
+  ext x
+  rw [IntermediateField.mem_fixedField_iff]
+  constructor
+  · intro h
+    specialize h ((RingEquivToAlgEquiv p) (frobeniusEquiv p))
+    have h : x ^ p = x := by simpa using h
+    rwa [← mem_bot_iff, ← mem_bot_iff_mem_bot] at h
+  · intro h f hf
+    have := fixedPoints_eq_bot p (K := K)
+    rw [Subfield.ext_iff] at this
+    rw [mem_bot_iff_mem_bot, ← this] at h
+    exact h ((RingEquivToAlgEquiv p).symm f)
+
+theorem closure_frobenius_intermediate [CharP K p] :
+    Subgroup.closure {RingEquivToAlgEquiv p (frobeniusEquiv p (K := K))} =
+      (⊤ : Subgroup (K ≃ₐ[(⊥ : Subfield K)] K)) := by
+  have h := IntermediateField.fixingSubgroup_fixedField (Subgroup.closure
+    ({RingEquivToAlgEquiv p (frobeniusEquiv p (K := K))} : Set (K ≃ₐ[(⊥ : Subfield K)] K)))
+  have := fixedField_eq_bot p (K := K)
+  rw [this] at h
+  rw [← h, Subgroup.eq_top_iff']
+  intro g
+  have : ∀ x ∈ (⊥ : Subfield K), ((RingEquivToAlgEquiv p).symm g) x = x := by
+    intro x hx
+    have := fixedPoints_eq_bot p (K := K)
+    rw [Subfield.ext_iff] at this
+    rw [← this] at hx
+    exact hx ((RingEquivToAlgEquiv p).symm g)
+  have : ∀ x ∈ (⊥ : Subfield K), g x = x := this
+  simp_rw [← mem_bot_iff_mem_bot] at this
+  intro y
+  exact this y.1 y.2
+
+theorem aut_cyclic_intermediate [CharP K p] : IsCyclic (K ≃ₐ[(⊥ : Subfield K)] K) := by
+  refine isCyclic_iff_exists_zpowers_eq_top.mpr ?_
+  use (RingEquivToAlgEquiv p (frobeniusEquiv p (K := K)))
+  rw [Subgroup.zpowers_eq_closure]
+  exact closure_frobenius_intermediate p
+
+theorem aut_cyclic [CharP K p] : IsCyclic (K ≃+* K) := by
+  have := aut_cyclic_intermediate p (K := K)
+  refine isCyclic_of_injective (G' := (K ≃ₐ[(⊥ : Subfield K)] K))
+    (RingEquivToAlgEquiv p).toMonoidHom ?_
+  rw [MulEquiv.coe_toMonoidHom]
+  exact MulEquiv.injective (RingEquivToAlgEquiv p)
+
+
+-- IsGalois.card_aut_eq_finrank : If L/K is Galois, then rank_K L is the order of the group.
+
+/-!
+theorem closure_frobenius [CharP K p] :
+    Subgroup.closure {frobeniusEquiv p (K := K)} = (⊤ : Subgroup (K ≃+* K)) := by
+  have := closure_frobenius_intermediate p (K := K)
+
+  sorry
+
+`FiniteField.frobenius_pow` says that `frobenius K p ^ n = 1` under the assumption
+`hcard : q = p ^ n`.  I want to say that `frobenius K p` generates the automorphism group of `K` and
+has order exactly `n`.
+
+First, the fixed field of `frobenius K p` is `⊥`, because all of the roots of `X^p - X` lie
+there.  This means `Gal K/⊥` is precisely the cyclic group generated by `frobenius K p`,
+by Galois correspondence.  Then, since subgroups of cyclic groups are classified, we can classify
+intermediate fields: If `d∣n`, then `frobenius K p ^ d` has order `n/d`, and the fixed field is
+precisely the splitting subfield.
+
+-/
+
 end FiniteField
