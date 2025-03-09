@@ -3,7 +3,6 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 import Mathlib.MeasureTheory.Constructions.Polish.Basic
 import Mathlib.Probability.Process.Filtration
 
@@ -50,8 +49,8 @@ theorem StronglyMeasurable.factorsThrough [TopologicalSpace Z]
   borelize Z
   exact hg.measurable.factorsThrough
 
-variable {ι : Type*} [MetricSpace Z] [CompleteSpace Z] [MeasurableSpace Z] [BorelSpace Z]
-  [Countable ι] {l : Filter ι} [l.IsCountablyGenerated] {f : ι → X → Z}
+variable {ι : Type*} [MetricSpace Z] [CompleteSpace Z] [Countable ι] {l : Filter ι}
+  [l.IsCountablyGenerated] {f : ι → X → Z}
 
 theorem StronglyMeasurable.measurableSet_exists_tendsto [MeasurableSpace X]
     (hf : ∀ i, StronglyMeasurable (f i)) :
@@ -64,6 +63,7 @@ theorem StronglyMeasurable.measurableSet_exists_tendsto [MeasurableSpace X]
         (IsSeparable.iUnion (fun i ↦ (hf i).isSeparable_range)).closure.separableSpace
       complete := ⟨inferInstance, rfl, isClosed_closure.completeSpace_coe⟩ }
   let g i x : s := ⟨f i x, subset_closure <| Set.mem_iUnion.2 ⟨i, ⟨x, rfl⟩⟩⟩
+  borelize Z
   have mg i : Measurable (g i) := (hf i).measurable.subtype_mk
   convert MeasureTheory.measurableSet_exists_tendsto mg with x
   · refine ⟨fun ⟨c, hc⟩ ↦ ⟨⟨c, ?_⟩, tendsto_subtype_rng.2 hc⟩,
@@ -74,6 +74,7 @@ theorem StronglyMeasurable.measurableSet_exists_tendsto [MeasurableSpace X]
 theorem stronglyMeasurable_limUnder [MeasurableSpace X] [hZ : Nonempty Z] [l.NeBot]
     (hf : ∀ i, StronglyMeasurable (f i)) :
     StronglyMeasurable (fun x ↦ limUnder l (f · x)) := by
+  borelize Z
   let z_ := Classical.choice hZ
   let conv := {x | ∃ c, Tendsto (f · x) l (𝓝 c)}
   have mconv : MeasurableSet conv := StronglyMeasurable.measurableSet_exists_tendsto hf
@@ -110,11 +111,11 @@ theorem exists_eq_measurable_comp [AddMonoid Z] [ContinuousAdd Z]
     (fun c s hs ↦ ?_) ?_ ?_ g
   · obtain ⟨t, ht, rfl⟩ := hs
     exact ⟨t.indicator fun _ ↦ c, stronglyMeasurable_const.indicator ht, rfl⟩
-  · rintro - - - hg hh ⟨g', hg', rfl⟩ ⟨h', hh', rfl⟩
-    exact ⟨g' + h', hg'.add hh', rfl⟩
-  · intro h g hh h_ind hg h_lim
-    choose h' hh'1 hh'2 using h_ind
-    refine ⟨fun y ↦ limUnder atTop (h' · y), stronglyMeasurable_limUnder hh'1, ?_⟩
+  · rintro - - - - - ⟨h₁, mh₁, rfl⟩ ⟨h₂, mh₂, rfl⟩
+    exact ⟨h₁ + h₂, mh₁.add mh₂, rfl⟩
+  · intro g h mg h_ind mh h_lim
+    choose i mi hi using h_ind
+    refine ⟨fun y ↦ limUnder atTop (i · y), stronglyMeasurable_limUnder mi, ?_⟩
     ext x
     rw [Function.comp_apply, Tendsto.limUnder_eq]
     simp_all
