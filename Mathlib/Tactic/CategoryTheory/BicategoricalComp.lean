@@ -66,22 +66,22 @@ instance refl (f : a ⟶ b) : BicategoricalCoherence f f :=
 @[simps]
 instance whiskerLeft (f : a ⟶ b) (g h : b ⟶ c)
     [BicategoricalCoherence g h] : BicategoricalCoherence (f ≫ g) (f ≫ h) :=
-  ⟨whiskerLeftIso f ⊗𝟙⟩
+  ⟨f ◁ ⊗𝟙⟩
 
 @[simps]
 instance whiskerRight (f g : a ⟶ b) (h : b ⟶ c)
     [BicategoricalCoherence f g] : BicategoricalCoherence (f ≫ h) (g ≫ h) :=
-  ⟨whiskerRightIso ⊗𝟙 h⟩
+  ⟨⊗𝟙 ▷ h⟩
 
 @[simps]
 instance tensorRight (f : a ⟶ b) (g : b ⟶ b)
     [BicategoricalCoherence (𝟙 b) g] : BicategoricalCoherence f (f ≫ g) :=
-  ⟨(ρ_ f).symm ≪≫ (whiskerLeftIso f ⊗𝟙)⟩
+  ⟨(ρ_ f).symm ≪≫ (f ◁ ⊗𝟙)⟩
 
 @[simps]
 instance tensorRight' (f : a ⟶ b) (g : b ⟶ b)
     [BicategoricalCoherence g (𝟙 b)] : BicategoricalCoherence (f ≫ g) f :=
-  ⟨whiskerLeftIso f ⊗𝟙 ≪≫ (ρ_ f)⟩
+  ⟨f ◁ ⊗𝟙 ≪≫ (ρ_ f)⟩
 
 @[simps]
 instance left (f g : a ⟶ b) [BicategoricalCoherence f g] :

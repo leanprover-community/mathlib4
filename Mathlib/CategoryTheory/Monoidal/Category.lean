@@ -359,8 +359,14 @@ def whiskerRightIso {X Y : C} (f : X ≅ Y) (Z : C) : X ⊗ Z ≅ Y ⊗ Z where
   hom := f.hom ▷ Z
   inv := f.inv ▷ Z
 
+/-- Notation for the `whiskerLeftIso` isomorphism of monoidal categories -/
+scoped infixr:81 " ◁ " => whiskerLeftIso
+
+/-- Notation for the `whiskerRightIso` isomorphism of monoidal categories -/
+scoped infixl:81 " ▷ " => whiskerRightIso
+
 instance whiskerRight_isIso {X Y : C} (f : X ⟶ Y) (Z : C) [IsIso f] : IsIso (f ▷ Z) :=
-  (whiskerRightIso (asIso f) Z).isIso_hom
+  (asIso f ▷ Z).isIso_hom
 
 @[simp]
 theorem inv_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) [IsIso f] :
@@ -369,17 +375,17 @@ theorem inv_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) [IsIso f] :
 
 @[simp]
 lemma whiskerRightIso_refl (X W : C) :
-    whiskerRightIso (Iso.refl X) W = Iso.refl (X ⊗ W) :=
+    Iso.refl X ▷ W = Iso.refl (X ⊗ W) :=
   Iso.ext (id_whiskerRight X W)
 
 @[simp]
 lemma whiskerRightIso_trans {X Y Z : C} (f : X ≅ Y) (g : Y ≅ Z) (W : C) :
-    whiskerRightIso (f ≪≫ g) W = whiskerRightIso f W ≪≫ whiskerRightIso g W :=
+    (f ≪≫ g) ▷ W = f ▷ W ≪≫ g ▷ W :=
   Iso.ext (comp_whiskerRight f.hom g.hom W)
 
 @[simp]
 lemma whiskerRightIso_symm {X Y : C} (f : X ≅ Y) (W : C) :
-    (whiskerRightIso f W).symm = whiskerRightIso f.symm W := rfl
+    (f ▷ W).symm = f.symm ▷ W := rfl
 
 /-- The tensor product of two isomorphisms is an isomorphism. -/
 @[simps]
@@ -394,11 +400,11 @@ def tensorIso {X Y X' Y' : C} (f : X ≅ Y)
 scoped infixr:70 " ⊗ " => tensorIso
 
 theorem tensorIso_def {X Y X' Y' : C} (f : X ≅ Y) (g : X' ≅ Y') :
-    f ⊗ g = whiskerRightIso f X' ≪≫ whiskerLeftIso Y g :=
+    f ⊗ g = f ▷ X' ≪≫ Y ◁ g :=
   Iso.ext (tensorHom_def f.hom g.hom)
 
 theorem tensorIso_def' {X Y X' Y' : C} (f : X ≅ Y) (g : X' ≅ Y') :
-    f ⊗ g = whiskerLeftIso X g ≪≫ whiskerRightIso f Y' :=
+    f ⊗ g = X ◁ g ≪≫ f ▷ Y' :=
   Iso.ext (tensorHom_def' f.hom g.hom)
 
 instance tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] : IsIso (f ⊗ g) :=

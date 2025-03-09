@@ -129,8 +129,9 @@ def whiskerHom (i : s ⟶ t) {x : B} (h : c ⟶ x) :
   StructuredArrow.homMk (i.right ▷ h) <| by
     rw [← cancel_mono (α_ _ _ _).inv]
     calc
+        (((s.whisker h).hom ≫ (precomp x f).map (i.right ▷ h)) ≫ (α_ f t.extension h).inv)
       _ = (unit s ≫ f ◁ i.right) ▷ h := by simp [- LeftExtension.w]
-      _ = unit t ▷ h := congrArg (· ▷ h) (LeftExtension.w i)
+      _ = unit t ▷ h := congr($(LeftExtension.w i) ▷ h)
       _ = _ := by simp
 
 /-- Construct an isomorphism between whiskered extensions. -/
@@ -249,8 +250,9 @@ def whiskerHom (i : s ⟶ t) {x : B} (h : x ⟶ c) :
   StructuredArrow.homMk (h ◁ i.right) <| by
     rw [← cancel_mono (α_ h _ _).hom]
     calc
+        ((s.whisker h).hom ≫ (postcomp x f).map (h ◁ i.right)) ≫ (α_ h t.lift f).hom
       _ = h ◁ (unit s ≫ i.right ▷ f) := by simp [- LeftLift.w]
-      _ = h ◁ unit t := congrArg (h ◁ ·) (LeftLift.w i)
+      _ = h ◁ unit t := congr(_ ◁ $(LeftLift.w i))
       _ = _ := by simp
 
 /-- Construct an isomorphism between whiskered lifts. -/

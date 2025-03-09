@@ -164,11 +164,11 @@ variable (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b)
 
 /-- The isomorphism version of `leftZigzag`. -/
 abbrev leftZigzagIso (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) :=
-  whiskerRightIso η f ≪⊗≫ whiskerLeftIso f ε
+  η ▷ f ≪⊗≫ f ◁ ε
 
 /-- The isomorphism version of `rightZigzag`. -/
 abbrev rightZigzagIso (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) :=
-  whiskerLeftIso g η ≪⊗≫ whiskerRightIso ε g
+  g ◁ η ≪⊗≫ ε ▷ g
 
 @[simp]
 theorem leftZigzagIso_hom : (leftZigzagIso η ε).hom = leftZigzag η.hom ε.hom :=
@@ -208,7 +208,7 @@ theorem right_triangle_of_left_triangle (h : leftZigzag η.hom ε.hom = (λ_ f).
 
 /-- An auxiliary definition for `mkOfAdjointifyCounit`. -/
 def adjointifyCounit (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) : g ≫ f ≅ 𝟙 b :=
-  whiskerLeftIso g ((ρ_ f).symm ≪≫ rightZigzagIso ε.symm η.symm ≪≫ λ_ f) ≪≫ ε
+  g ◁ ((ρ_ f).symm ≪≫ rightZigzagIso ε.symm η.symm ≪≫ λ_ f) ≪≫ ε
 
 theorem adjointifyCounit_left_triangle (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) :
     leftZigzagIso η (adjointifyCounit η ε) = λ_ f ≪≫ (ρ_ f).symm := by

@@ -133,7 +133,7 @@ noncomputable def enrichedComp : enrichedHom V F₁ F₂ ⊗ enrichedHom V F₂ 
   end_.lift (fun j ↦ (end_.π _ j ⊗ end_.π _ j) ≫ eComp V _ _ _) (fun i j f ↦ by
     dsimp
     trans (end_.π (diagram V F₁ F₂) i ⊗ end_.π (diagram V F₂ F₃) j) ≫
-      (ρ_ _).inv ▷ _ ≫ (_ ◁ (eHomEquiv V (F₂.map f))) ▷ _ ≫ eComp V _ (F₂.obj i) _ ▷ _ ≫
+      (ρ_ _).inv ▷ _ ≫ (_ ◁ eHomEquiv V (F₂.map f)) ▷ _ ≫ eComp V _ (F₂.obj i) _ ▷ _ ≫
         eComp V _ (F₂.obj j) _
     · have := end_.condition (diagram V F₂ F₃) f
       dsimp [eHomWhiskerLeft, eHomWhiskerRight] at this ⊢

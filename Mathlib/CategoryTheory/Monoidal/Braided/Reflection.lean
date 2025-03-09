@@ -101,7 +101,7 @@ theorem isIso_tfae : List.TFAE
     -- We then write the tensor product of the two units as the composition of the whiskered units,
     -- and conclude.
     have : (adj.unit.app d) ⊗ (adj.unit.app d') =
-        (adj.unit.app d ▷ d') ≫ (((L ⋙ R).obj _) ◁ adj.unit.app d') := by
+        adj.unit.app d ▷ d' ≫ (L ⋙ R).obj _ ◁ adj.unit.app d' := by
       simp [← tensorHom_id, ← id_tensorHom, ← tensor_comp]
     rw [this, map_comp]
     infer_instance

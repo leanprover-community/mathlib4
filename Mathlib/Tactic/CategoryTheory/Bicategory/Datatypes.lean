@@ -117,12 +117,12 @@ theorem structuralIsoOfExpr_comp {f g h : a ⟶ b}
 
 theorem structuralIsoOfExpr_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c}
     (η : g ⟶ h) (η' : g ≅ h) (ih_η : η'.hom = η)  :
-    (whiskerLeftIso f η').hom = f ◁ η := by
+    (f ◁ η').hom = f ◁ η := by
   simp [ih_η]
 
 theorem structuralIsoOfExpr_whiskerRight {f g : a ⟶ b} (h : b ⟶ c)
     (η : f ⟶ g) (η' : f ≅ g) (ih_η : η'.hom = η)  :
-    (whiskerRightIso η' h).hom = η ▷ h := by
+    (η' ▷ h).hom = η ▷ h := by
   simp [ih_η]
 
 theorem StructuralOfExpr_bicategoricalComp {f g h i : a ⟶ b} [BicategoricalCoherence g h]
@@ -206,7 +206,7 @@ instance : MonadMor₂Iso BicategoryM where
     have g_e : Q($b ⟶ $c) := g.e
     have h_e : Q($b ⟶ $c) := h.e
     have η_e : Q($g_e ≅ $h_e) := η.e
-    return .whiskerLeft q(whiskerLeftIso $f_e $η_e) f g h η
+    return .whiskerLeft q($f_e ◁ $η_e) f g h η
   whiskerRightM η h := do
     let ctx ← read
     let _bicat := ctx.instBicategory
@@ -219,7 +219,7 @@ instance : MonadMor₂Iso BicategoryM where
     have g_e : Q($a ⟶ $b) := g.e
     have h_e : Q($b ⟶ $c) := h.e
     have η_e : Q($f_e ≅ $g_e) := η.e
-    return .whiskerRight q(whiskerRightIso $η_e $h_e) f g η h
+    return .whiskerRight q($η_e ▷ $h_e) f g η h
   horizontalCompM _ _ := throwError "horizontal composition is not implemented"
   symmM η := do
     let ctx ← read

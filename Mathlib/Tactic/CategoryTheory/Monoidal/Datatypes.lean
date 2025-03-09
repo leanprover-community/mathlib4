@@ -117,12 +117,12 @@ variable [MonoidalCategory C]
 
 theorem structuralIsoOfExpr_whiskerLeft (f : C) {g h : C}
     (η : g ⟶ h) (η' : g ≅ h) (ih_η : η'.hom = η)  :
-    (whiskerLeftIso f η').hom = f ◁ η := by
+    (f ◁ η').hom = f ◁ η := by
   simp [ih_η]
 
 theorem structuralIsoOfExpr_whiskerRight {f g : C} (h : C)
     (η : f ⟶ g) (η' : f ≅ g) (ih_η : η'.hom = η)  :
-    (whiskerRightIso η' h).hom = η ▷ h := by
+    (η' ▷ h).hom = η ▷ h := by
   simp [ih_η]
 
 theorem structuralIsoOfExpr_horizontalComp {f₁ g₁ f₂ g₂ : C}
@@ -190,7 +190,7 @@ instance : MonadMor₂Iso MonoidalM where
     have g_e : Q($ctx.C) := g.e
     have h_e : Q($ctx.C) := h.e
     have η_e : Q($g_e ≅ $h_e) := η.e
-    return .whiskerLeft q(whiskerLeftIso $f_e $η_e) f g h η
+    return .whiskerLeft q($f_e ◁ $η_e) f g h η
   whiskerRightM η h := do
     let ctx ← read
     let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
@@ -200,7 +200,7 @@ instance : MonadMor₂Iso MonoidalM where
     have g_e : Q($ctx.C) := g.e
     have h_e : Q($ctx.C) := h.e
     have η_e : Q($f_e ≅ $g_e) := η.e
-    return .whiskerRight q(whiskerRightIso $η_e $h_e) f g η h
+    return .whiskerRight q($η_e ▷ $h_e) f g η h
   horizontalCompM η θ := do
     let ctx ← read
     let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
