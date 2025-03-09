@@ -481,7 +481,7 @@ lemma le_limsup_mul (h₁ : ∃ᶠ x in f, 0 ≤ u x) (h₂ : IsBoundedUnder (fu
     le_limsup_of_frequently_le ((h₁.and_eventually h₃).mono fun _ ⟨hu, hv⟩ ↦ mul_nonneg hu hv) h'
   refine mul_le_of_forall_lt_of_nonneg u0 uv fun a a0 au b b0 bv ↦ ?_
   refine (le_limsup_iff h h').2 fun c c_ab ↦ ?_
-  replace h₁ := IsCoboundedUnder.of_frequently_ge h₁
+  replace h₁ := IsCoboundedUnder.of_frequently_ge h₁ -- Pre-compute it to gain 4 s.
   have h₅ := frequently_lt_of_lt_limsup h₁ au
   have h₆ := eventually_lt_of_lt_liminf bv (isBoundedUnder_of_eventually_ge h₃)
   apply (h₅.and_eventually (h₆.and h₃)).mono

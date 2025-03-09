@@ -1419,7 +1419,7 @@ theorem le_limsup_iff {x : β} (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by is
     exact (h z z_x).mono <| fun w hw ↦ (or_iff_right (not_le_of_lt hw)).1 (hz (u w))
 
 /- A version of `le_limsup_iff` with large inequalities in densely ordered spaces.-/
-lemma le_limsup_iff'[DenselyOrdered β] {x : β}
+lemma le_limsup_iff' [DenselyOrdered β] {x : β}
     (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
     (h₂ : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) :
     x ≤ limsup u f ↔ ∀ y < x, ∃ᶠ a in f, y ≤ u a := by
