@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Comma.Over.Pullback
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.CategoryTheory.Limits.Shapes.Images
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 # Monomorphisms over a fixed object
@@ -218,6 +219,17 @@ theorem pullback_obj_arrow (f : X ⟶ Y) (g : MonoOver Y) :
   rfl
 
 end Pullback
+
+section IsPullback
+
+/-- The pullback of `S` along `f` is isomorphic to `T` given the corresponding pullback square. -/
+def pullbackObjIsoOfIsPullback [HasPullbacks C] {X Y : C} (f : Y ⟶ X) (S : MonoOver X)
+    (T : MonoOver Y) (f' : T.obj.left ⟶ S.obj.left)
+    (h : IsPullback f' T.arrow S.arrow f) :
+    (pullback f).obj S ≅ T :=
+  isoMk ((IsPullback.isoPullback h).symm) (by simp)
+
+end IsPullback
 
 section Map
 
