@@ -183,9 +183,6 @@ lemma _root_.MvPolynomial.isHomogeneous_C_mul_X (r : R) (i : σ) :
     (C r * X i).IsHomogeneous 1 :=
   (isHomogeneous_X _ _).C_mul _
 
-@[deprecated (since := "2024-03-21")]
-alias _root_.MvPolynomial.C_mul_X := _root_.MvPolynomial.isHomogeneous_C_mul_X
-
 lemma pow (hφ : φ.IsHomogeneous m) (n : ℕ) : (φ ^ n).IsHomogeneous (m * n) := by
   rw [show φ ^ n = ∏ _i ∈ Finset.range n, φ by simp]
   rw [show m * n = ∑ _i ∈ Finset.range n, m by simp [mul_comm]]
@@ -363,7 +360,7 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
     obtain hFn | hFn := ne_or_eq ((finSuccEquiv R N F).coeff n) 0
     · exact hF.exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux hFn
     have hin : i < n := hin.lt_or_eq.elim id <| by aesop
-    obtain ⟨j, hj⟩ : ∃ j, i + (j + 1) = n := (Nat.exists_eq_add_of_lt hin).imp <| by intros; omega
+    obtain ⟨j, hj⟩ : ∃ j, i + (j + 1) = n := (Nat.exists_eq_add_of_lt hin).imp <| by omega
     obtain ⟨r, hr⟩ : ∃ r, (eval r) (Polynomial.coeff ((finSuccEquiv R N) F) i) ≠ 0 :=
       IH (hF.finSuccEquiv_coeff_isHomogeneous _ _ hj) hi (.trans (by norm_cast; omega) hnR)
     set φ : R[X] := Polynomial.map (eval r) (finSuccEquiv _ _ F) with hφ

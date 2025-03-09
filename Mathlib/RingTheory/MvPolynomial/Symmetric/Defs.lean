@@ -80,6 +80,15 @@ lemma pow_smul_esymm {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTowe
     rw [Function.comp_apply, (mem_powersetCard.1 hx).2]
   · simp_rw [smul_prod, esymm, powersetCard_map, map_map, Function.comp_def]
 
+-- TODO: `Multiset.insert_eq_cons` being simp means that `esymm {x, y}` is not simp normal form
+@[simp] lemma esymm_pair_one (x y : R) :
+    esymm (x ::ₘ {y}) 1 = x + y := by
+  simp [esymm, powersetCard_one, add_comm]
+
+@[simp] lemma esymm_pair_two (x y : R) :
+    esymm (x ::ₘ {y}) 2 = x * y := by
+  simp [esymm, powersetCard_one]
+
 end Multiset
 
 namespace MvPolynomial
@@ -136,7 +145,7 @@ theorem map (hφ : IsSymmetric φ) (f : R →+* S) : IsSymmetric (map f φ) := f
 
 protected theorem rename (hφ : φ.IsSymmetric) (e : σ ≃ τ) : (rename e φ).IsSymmetric := fun _ => by
   apply rename_injective _ e.symm.injective
-  simp_rw [rename_rename, ← Equiv.coe_trans, Equiv.self_trans_symm, Equiv.coe_refl, rename_id]
+  simp_rw [rename_rename, ← Equiv.coe_trans, Equiv.self_trans_symm, Equiv.coe_refl, rename_id_apply]
   rw [hφ]
 
 @[simp]

@@ -84,12 +84,19 @@ See note [partially-applied ext lemmas]. -/
 
  See note [partially-applied ext lemmas]. "]
 theorem monoidHom_ext ⦃f g : G ⧸ N →* M⦄ (h : f.comp (mk' N) = g.comp (mk' N)) : f = g :=
-  MonoidHom.ext fun x => QuotientGroup.induction_on x <| (DFunLike.congr_fun h : _)
+  MonoidHom.ext fun x => QuotientGroup.induction_on x <| (DFunLike.congr_fun h :)
 
 @[to_additive (attr := simp)]
 theorem eq_one_iff {N : Subgroup G} [N.Normal] (x : G) : (x : G ⧸ N) = 1 ↔ x ∈ N := by
   refine QuotientGroup.eq.trans ?_
   rw [mul_one, Subgroup.inv_mem_iff]
+
+/- Note: `range_mk'` is a lemma about the primed constructor `QuotientGroup.mk'`, not a
+  modified version of some `range_mk`. -/
+set_option linter.docPrime false in
+@[to_additive (attr := simp)]
+theorem range_mk' : (QuotientGroup.mk' N).range = ⊤ :=
+  MonoidHom.range_eq_top.mpr (mk'_surjective N)
 
 @[to_additive]
 theorem ker_le_range_iff {I : Type w} [Group I] (f : G →* H) [f.range.Normal] (g : H →* I) :

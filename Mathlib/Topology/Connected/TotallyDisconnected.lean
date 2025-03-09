@@ -134,6 +134,11 @@ theorem isTotallyDisconnected_of_totallyDisconnectedSpace [TotallyDisconnectedSp
     IsTotallyDisconnected s := fun t _ ht =>
   TotallyDisconnectedSpace.isTotallyDisconnected_univ _ t.subset_univ ht
 
+lemma TotallyDisconnectedSpace.eq_of_continuous [TopologicalSpace β]
+    [PreconnectedSpace α] [TotallyDisconnectedSpace β] (f : α → β) (hf : Continuous f)
+    (i j : α) : f i = f j :=
+  (isPreconnected_univ.image f hf.continuousOn).subsingleton ⟨i, trivial, rfl⟩ ⟨j, trivial, rfl⟩
+
 theorem isTotallyDisconnected_of_image [TopologicalSpace β] {f : α → β} (hf : ContinuousOn f s)
     (hf' : Injective f) (h : IsTotallyDisconnected (f '' s)) : IsTotallyDisconnected s :=
   fun _t hts ht _x x_in _y y_in =>

@@ -3,7 +3,7 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 import Mathlib.Condensed.Light.Epi
 import Mathlib.Condensed.Light.Limits
 /-!
@@ -13,6 +13,7 @@ import Mathlib.Condensed.Light.Limits
 The category of light condensed `R`-modules over a ring satisfies the countable version of
 Grothendieck's AB4* axiom
 -/
+
 universe u
 
 open CategoryTheory Limits

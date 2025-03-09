@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Module.BigOperators
 import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
@@ -27,9 +26,7 @@ base rings to be a field, so we also generalize the lemma to rings in this file.
 
 open Pointwise
 
-universe u v w u₁
-
-variable (R : Type u) (S : Type v) (A : Type w) (B : Type u₁)
+variable (R S A B : Type*)
 
 namespace IsScalarTower
 
@@ -38,7 +35,6 @@ section Semiring
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra S A] [Algebra S B] [Algebra R A] [Algebra R B]
 variable [IsScalarTower R S A] [IsScalarTower R S B]
-
 
 /-- Suppose that `R → S → A` is a tower of algebras.
 If an element `r : R` is invertible in `S`, then it is invertible in `A`. -/
@@ -89,28 +85,17 @@ section Semiring
 
 open Finsupp
 
-open scoped Classical
-
-universe v₁ w₁
-
 variable {R S A}
-variable [Ring R] [Ring S] [AddCommGroup A]
+variable [Semiring R] [Semiring S] [AddCommMonoid A]
 variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
-theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁} {c : ι' → A}
+theorem linearIndependent_smul {ι : Type*} {b : ι → S} {ι' : Type*} {c : ι' → A}
     (hb : LinearIndependent R b) (hc : LinearIndependent S c) :
-    LinearIndependent R fun p : ι × ι' => b p.1 • c p.2 := by
-  rw [linearIndependent_iff'] at hb hc; rw [linearIndependent_iff'']; rintro s g hg hsg ⟨i, k⟩
-  by_cases hik : (i, k) ∈ s
-  · have h1 : ∑ i ∈ s.image Prod.fst ×ˢ s.image Prod.snd, g i • b i.1 • c i.2 = 0 := by
-      rw [← hsg]
-      exact
-        (Finset.sum_subset Finset.subset_product fun p _ hp =>
-            show g p • b p.1 • c p.2 = 0 by rw [hg p hp, zero_smul]).symm
-    rw [Finset.sum_product_right] at h1
-    simp_rw [← smul_assoc, ← Finset.sum_smul] at h1
-    exact hb _ _ (hc _ _ h1 k (Finset.mem_image_of_mem _ hik)) i (Finset.mem_image_of_mem _ hik)
-  exact hg _ hik
+    LinearIndependent R fun p : ι × ι' ↦ b p.1 • c p.2 := by
+  rw [← linearIndependent_equiv' (.prodComm ..) (g := fun p : ι' × ι ↦ b p.2 • c p.1) rfl,
+    LinearIndependent, linearCombination_smul]
+  simpa using Function.Injective.comp hc
+    ((mapRange_injective _ (map_zero _) hb).comp <| Equiv.injective _)
 
 variable (R)
 
@@ -122,13 +107,12 @@ theorem Basis.isScalarTower_of_nonempty {ι} [Nonempty ι] (b : Basis ι S A) : 
 theorem Basis.isScalarTower_finsupp {ι} (b : Basis ι S A) : IsScalarTower R S (ι →₀ S) :=
   b.repr.symm.isScalarTower_of_injective R b.repr.symm.injective
 
-variable {R}
+variable {R} {ι ι' : Type*} (b : Basis ι R S) (c : Basis ι' S A)
 
 /-- `Basis.smulTower (b : Basis ι R S) (c : Basis ι S A)` is the `R`-basis on `A`
 where the `(i, j)`th basis vector is `b i • c j`. -/
 noncomputable
-def Basis.smulTower {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) :
-    Basis (ι × ι') R A :=
+def Basis.smulTower : Basis (ι × ι') R A :=
   haveI := c.isScalarTower_finsupp R
   .ofRepr
     (c.repr.restrictScalars R ≪≫ₗ
@@ -137,19 +121,16 @@ def Basis.smulTower {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : B
           Finsupp.lcongr (Equiv.prodComm ι' ι) (LinearEquiv.refl _ _))))
 
 @[simp]
-theorem Basis.smulTower_repr {ι : Type v₁} {ι' : Type w₁}
-    (b : Basis ι R S) (c : Basis ι' S A) (x ij) :
+theorem Basis.smulTower_repr (x ij) :
     (b.smulTower c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by
   simp [smulTower]
 
-theorem Basis.smulTower_repr_mk {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A)
-    (x i j) : (b.smulTower c).repr x (i, j) = b.repr (c.repr x j) i :=
+theorem Basis.smulTower_repr_mk (x i j) : (b.smulTower c).repr x (i, j) = b.repr (c.repr x j) i :=
   b.smulTower_repr c x (i, j)
 
 @[simp]
-theorem Basis.smulTower_apply {ι : Type v₁} {ι' : Type w₁}
-    (b : Basis ι R S) (c : Basis ι' S A) (ij) :
-    (b.smulTower c) ij = b ij.1 • c ij.2 := by
+theorem Basis.smulTower_apply (ij) : (b.smulTower c) ij = b ij.1 • c ij.2 := by
+  classical
   obtain ⟨i, j⟩ := ij
   rw [Basis.apply_eq_iff]
   ext ⟨i', j'⟩
@@ -159,6 +140,21 @@ theorem Basis.smulTower_apply {ι : Type v₁} {ι' : Type w₁}
   split_ifs with hi
   · simp [hi, Finsupp.single_apply]
   · simp [hi]
+
+/-- `Basis.smulTower (b : Basis ι R S) (c : Basis ι S A)` is the `R`-basis on `A`
+where the `(i, j)`th basis vector is `b j • c i`. -/
+noncomputable def Basis.smulTower' : Basis (ι' × ι) R A :=
+  (b.smulTower c).reindex (.prodComm ..)
+
+theorem Basis.smulTower'_repr (x ij) :
+    (b.smulTower' c).repr x ij = b.repr (c.repr x ij.1) ij.2 := by
+  rw [smulTower', repr_reindex_apply, smulTower_repr]; rfl
+
+theorem Basis.smulTower'_repr_mk (x i j) : (b.smulTower' c).repr x (i, j) = b.repr (c.repr x i) j :=
+  b.smulTower'_repr c x (i, j)
+
+theorem Basis.smulTower'_apply (ij) : b.smulTower' c ij = b ij.2 • c ij.1 := by
+  rw [smulTower', reindex_apply, smulTower_apply]; rfl
 
 end Semiring
 
@@ -171,7 +167,7 @@ variable [CommRing R] [Ring S] [Algebra R S]
 theorem Basis.algebraMap_injective {ι : Type*} [NoZeroDivisors R] [Nontrivial S]
     (b : @Basis ι R S _ _ Algebra.toModule) : Function.Injective (algebraMap R S) :=
   have : NoZeroSMulDivisors R S := b.noZeroSMulDivisors
-  NoZeroSMulDivisors.algebraMap_injective R S
+  FaithfulSMul.algebraMap_injective R S
 
 end Ring
 
@@ -181,7 +177,6 @@ variable {A} {C D : Type*} [CommSemiring A] [CommSemiring C] [CommSemiring D] [A
   [Algebra A D]
 
 variable [CommSemiring B] [Algebra A B] [Algebra B C] [IsScalarTower A B C] (f : C →ₐ[A] D)
-
 
 /-- Restrict the domain of an `AlgHom`. -/
 def AlgHom.restrictDomain : B →ₐ[A] D :=

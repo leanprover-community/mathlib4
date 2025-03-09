@@ -25,10 +25,8 @@ noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
 
-open scoped Classical
-
-variable {ι ι' R K A A' : Type*} {x : ι → A}
-variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
+variable {ι R A : Type*} {x : ι → A}
+variable [CommRing R] [CommRing A] [Algebra R A]
 
 /-- A one-element family `x` is algebraically independent if and only if
 its element is transcendental. -/
@@ -41,6 +39,11 @@ theorem algebraicIndependent_unique_type_iff [Unique ι] :
     ext y
     simp [i, Subsingleton.elim y default]
   simp [key]
+
+theorem algebraicIndependent_singleton_iff [Subsingleton ι] (i : ι) :
+    AlgebraicIndependent R x ↔ Transcendental R (x i) :=
+  letI := uniqueOfSubsingleton i
+  algebraicIndependent_unique_type_iff
 
 /-- The one-element family `![x]` is algebraically independent if and only if
 `x` is transcendental. -/
@@ -78,42 +81,66 @@ theorem AlgebraicIndependent.option_iff (hx : AlgebraicIndependent R x) (a : A) 
   exact Injective.of_comp_iff' (Polynomial.aeval a)
     (mvPolynomialOptionEquivPolynomialAdjoin hx).bijective
 
+/-- Variant of `algebraicIndependent_of_finite_type` using `Transcendental`. -/
+theorem algebraicIndependent_of_finite_type'
+    (hinj : Injective (algebraMap R A))
+    (H : ∀ t : Set ι, t.Finite → AlgebraicIndependent R (fun i : t ↦ x i) →
+      ∀ i : ι, i ∉ t → Transcendental (adjoin R (x '' t)) (x i)) :
+    AlgebraicIndependent R x := by
+  classical
+  refine algebraicIndependent_of_finite_type fun t hfin ↦ hfin.induction_on_subset _
+    (algebraicIndependent_empty_type_iff.mpr hinj) fun {a u} ha hu ha' h ↦ ?_
+  convert ((Set.image_eq_range _ _ ▸ h.option_iff <| x a).2 <| H u (hfin.subset hu) h _ ha').comp _
+    (Set.subtypeInsertEquivOption ha').injective with x
+  by_cases h : ↑x = a <;> simp [h, Set.subtypeInsertEquivOption]
+
 /-- Variant of `algebraicIndependent_of_finite` using `Transcendental`. -/
 theorem algebraicIndependent_of_finite' (s : Set A)
     (hinj : Injective (algebraMap R A))
-    (H : ∀ t ⊆ s, t.Finite → ∀ a ∈ s, a ∉ t → Transcendental (adjoin R t) a) :
-    AlgebraicIndependent R ((↑) : s → A) := by
-  classical
-  refine algebraicIndependent_of_finite s fun t hts hfin ↦ hfin.induction_on'
-    ((algebraicIndependent_empty_iff R A).2 hinj) fun {a} {u} ha hu ha' h ↦ ?_
-  convert ((Subtype.range_coe ▸ h.option_iff a).2 <| H u (hu.trans hts) (hfin.subset hu)
-    a (hts ha) ha').comp _ (Set.subtypeInsertEquivOption ha').injective
-  ext x
-  by_cases h : ↑x = a <;> simp [h, Set.subtypeInsertEquivOption]
+    (H : ∀ t ⊆ s, t.Finite → AlgebraicIndependent R ((↑) : t → A) →
+      ∀ a ∈ s, a ∉ t → Transcendental (adjoin R t) a) :
+    AlgebraicIndependent R ((↑) : s → A) :=
+  algebraicIndependent_of_finite_type' hinj fun t hfin h i hi ↦ H _
+    (by rintro _ ⟨x, _, rfl⟩; exact x.2) (hfin.image _) h.image _ i.2
+    (mt Subtype.val_injective.mem_set_image.mp hi)
 
-/-- `Type` version of `algebraicIndependent_of_finite'`. -/
-theorem algebraicIndependent_of_finite_type'
-    (hinj : Injective (algebraMap R A))
-    (H : ∀ t : Set ι, t.Finite → ∀ i : ι, i ∉ t → Transcendental (adjoin R (x '' t)) (x i)) :
-    AlgebraicIndependent R x := by
-  nontriviality R
-  haveI := hinj.nontrivial
-  have hx : Injective x := by
-    simp_rw [Transcendental] at H
-    contrapose! H
-    obtain ⟨i, j, h1, h2⟩ := not_injective_iff.1 H
-    refine ⟨{j}, by simp, i, by simp [h2], ?_⟩
-    rw [h1, Set.image_singleton]
-    exact isAlgebraic_algebraMap (⟨x j, Algebra.self_mem_adjoin_singleton R _⟩ : adjoin R {x j})
-  rw [← Set.coe_comp_rangeFactorization x]
-  refine .comp (algebraicIndependent_of_finite' _ hinj fun t ht hfin a ha ha' ↦ ?_) _
-    (Set.rightInverse_rangeSplitting hx).injective
-  change Finite t at hfin
-  have := H (x ⁻¹' t) (Finite.of_injective _ (hx.restrictPreimage t))
-    ((Equiv.ofInjective _ hx).symm ⟨_, ha⟩)
-    (by rwa [Set.mem_preimage, Equiv.apply_ofInjective_symm hx])
-  rwa [Set.image_preimage_eq_inter_range, Set.inter_eq_self_of_subset_left ht,
-    Equiv.apply_ofInjective_symm hx] at this
+namespace AlgebraicIndependent
+
+variable (hx : AlgebraicIndependent R x)
+include hx
+
+theorem adjoin_of_disjoint {s t : Set ι} (h : Disjoint s t) :
+    AlgebraicIndependent (adjoin R (x '' s)) fun i : t ↦ x i := by
+  let e := (sumAlgEquiv R t s).trans (mapAlgEquiv t (hx.comp _ Subtype.val_injective).aevalEquiv)
+  have : ((aeval fun i : t ↦ x i).restrictScalars R).comp e.toAlgHom =
+      (aeval x).comp (rename <| Sum.elim Subtype.val Subtype.val) := by
+    ext (_|_) <;> simp [e, algebraMap_aevalEquiv]
+  have _ := @MvPolynomial.isScalarTower
+  rw [Set.image_eq_range, AlgebraicIndependent, ← AlgHom.coe_restrictScalars' R, ← e.injective_comp]
+  show Injective ((AlgHom.restrictScalars R <| aeval _).comp e.toAlgHom)
+  rw [this, AlgHom.coe_comp]
+  exact .comp hx (rename_injective _ <| Subtype.val_injective.sumElim
+    Subtype.val_injective fun i j eq ↦ h.ne_of_mem j.2 i.2 eq.symm)
+
+theorem adjoin_iff_disjoint [Nontrivial A] {s t : Set ι} :
+    (AlgebraicIndependent (adjoin R (x '' s)) fun i : t ↦ x i) ↔ Disjoint s t := by
+  refine ⟨fun ind ↦ of_not_not fun ndisj ↦ ?_, adjoin_of_disjoint hx⟩
+  have ⟨i, hs, ht⟩ := Set.not_disjoint_iff.mp ndisj
+  refine ind.transcendental ⟨i, ht⟩ (isAlgebraic_algebraMap (⟨_, subset_adjoin ?_⟩ : adjoin R _))
+  exact ⟨i, hs, rfl⟩
+
+theorem transcendental_adjoin {s : Set ι} {i : ι} (hi : i ∉ s) :
+    Transcendental (adjoin R (x '' s)) (x i) := by
+  convert ← hx.adjoin_of_disjoint (Set.disjoint_singleton_right.mpr hi)
+  rw [algebraicIndependent_singleton_iff ⟨i, rfl⟩]
+
+theorem transcendental_adjoin_iff [Nontrivial A] {s : Set ι} {i : ι} :
+    Transcendental (adjoin R (x '' s)) (x i) ↔ i ∉ s := by
+  rw [← Set.disjoint_singleton_right]
+  convert ← hx.adjoin_iff_disjoint (t := {i})
+  rw [algebraicIndependent_singleton_iff ⟨i, rfl⟩]
+
+end AlgebraicIndependent
 
 namespace MvPolynomial
 
@@ -123,7 +150,7 @@ theorem algebraicIndependent_polynomial_aeval_X
     (f : ι → Polynomial R) (hf : ∀ i, Transcendental R (f i)) :
     AlgebraicIndependent R fun i ↦ Polynomial.aeval (X i : MvPolynomial ι R) (f i) := by
   set x := fun i ↦ Polynomial.aeval (X i : MvPolynomial ι R) (f i)
-  refine algebraicIndependent_of_finite_type' (C_injective _ _) fun t _ i hi ↦ ?_
+  refine algebraicIndependent_of_finite_type' (C_injective _ _) fun t _ _ i hi ↦ ?_
   have hle : adjoin R (x '' t) ≤ supported R t := by
     rw [Algebra.adjoin_le_iff, Set.image_subset_iff]
     intro _ h

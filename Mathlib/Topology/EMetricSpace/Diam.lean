@@ -11,7 +11,7 @@ import Mathlib.Topology.EMetricSpace.Pi
 -/
 
 
-open Set Filter Classical
+open Set Filter
 
 open scoped Uniformity Topology Filter NNReal ENNReal Pointwise
 
@@ -96,7 +96,7 @@ theorem diam_union {t : Set α} (xs : x ∈ s) (yt : y ∈ t) :
       _ ≤ diam s + edist x y + diam t :=
         add_le_add (add_le_add (edist_le_diam_of_mem ha xs) le_rfl) (edist_le_diam_of_mem yt hb)
   refine diam_le fun a ha b hb => ?_
-  cases' (mem_union _ _ _).1 ha with h'a h'a <;> cases' (mem_union _ _ _).1 hb with h'b h'b
+  rcases (mem_union _ _ _).1 ha with h'a | h'a <;> rcases (mem_union _ _ _).1 hb with h'b | h'b
   · calc
       edist a b ≤ diam s := edist_le_diam_of_mem h'a h'b
       _ ≤ diam s + (edist x y + diam t) := le_self_add

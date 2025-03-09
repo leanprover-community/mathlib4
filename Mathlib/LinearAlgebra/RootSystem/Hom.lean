@@ -196,10 +196,10 @@ lemma weightHom_injective (P : RootPairing ι R M N) : Injective (weightHom P) :
   intro f g hfg
   ext x
   · exact LinearMap.congr_fun hfg x
-  · refine (LinearEquiv.injective P.toDualRight) ?_
+  · refine LinearEquiv.injective P.toDualRight ?_
     simp_rw [← weight_coweight_transpose_apply]
     exact congrFun (congrArg DFunLike.coe (congrArg LinearMap.dualMap hfg)) (P.toDualRight x)
-  · refine (Embedding.injective P.root) ?_
+  · refine Embedding.injective P.root ?_
     simp_rw [← root_weightMap_apply]
     exact congrFun (congrArg DFunLike.coe hfg) (P.root x)
 

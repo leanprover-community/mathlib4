@@ -210,9 +210,9 @@ variable {I} {K : Type w₃}
 -- so that the suitable category instances could be found
 /-- The functor `Sigma.map` applied to a composition is a composition of functors. -/
 @[simps!]
-def mapComp (f : K → J) (g : J → I) : map (fun x ↦ C (g x)) f ⋙ (map C g : _) ≅ map C (g ∘ f) :=
+def mapComp (f : K → J) (g : J → I) : map (fun x ↦ C (g x)) f ⋙ (map C g :) ≅ map C (g ∘ f) :=
   (descUniq _ _) fun k =>
-    (isoWhiskerRight (inclCompMap (fun i => C (g i)) f k) (map C g : _) : _) ≪≫ inclCompMap _ _ _
+    (isoWhiskerRight (inclCompMap (fun i => C (g i)) f k) (map C g :) :) ≪≫ inclCompMap _ _ _
 
 end
 

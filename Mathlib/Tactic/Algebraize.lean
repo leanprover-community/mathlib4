@@ -38,7 +38,7 @@ specified declaration should be one of the following:
 
 1. An inductive type (i.e. the `Algebra` property itself), in this case it is assumed that the
 `RingHom` and the `Algebra` property are definitionally the same, and the tactic will construct the
-`Algebra` property by giving the `RingHom` property as a term. Due to how this is peformed, we also
+`Algebra` property by giving the `RingHom` property as a term. Due to how this is performed, we also
 need to assume that the `Algebra` property can be constructed only from the homomorphism, so it can
 not have any other explicit arguments.
 2. A lemma (or constructor) proving the `Algebra` property from the `RingHom` property. In this case
@@ -124,7 +124,7 @@ namespace Algebraize
 /-- Given an expression `f` of type `RingHom A B` where `A` and `B` are commutative semirings,
 this function adds the instance `Algebra A B` to the context (if it does not already exist).
 
-This function also requries the type of `f`, given by the parameter `ft`. The reason this is done
+This function also requires the type of `f`, given by the parameter `ft`. The reason this is done
 (even though `ft` can be inferred from `f`) is to avoid recomputing `ft` in the `algebraize` tactic,
 as when `algebraize` calls `addAlgebraInstanceFromRingHom` it has already computed `ft`. -/
 def addAlgebraInstanceFromRingHom (f ft : Expr) : TacticM Unit := withMainContext do

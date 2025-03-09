@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.Analysis.Normed.Ring.Seminorm
-import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 /-!
 # seminormFromBounded
@@ -51,7 +50,7 @@ variable {R : Type _} [CommRing R] (f : R → ℝ) {c : ℝ}
 section seminormFromBounded
 
 /-- The real-valued function sending `x ∈ R` to the supremum of  `f(x*y)/f(y)`, where `y` runs over
-the elements of `R`.-/
+the elements of `R`. -/
 def seminormFromBounded' : R → ℝ := fun x ↦ iSup fun y : R ↦ f (x * y) / f y
 
 variable {f}
@@ -159,7 +158,7 @@ theorem seminormFromBounded_eq_zero_iff (f_nonneg : 0 ≤ f)
     rw [h, mul_zero] at hf
     exact hf.antisymm (seminormFromBounded_nonneg f_nonneg f_mul x)
 
-/-- If `f` is invariant under negation of `x`, then so is `seminormFromBounded'`.-/
+/-- If `f` is invariant under negation of `x`, then so is `seminormFromBounded'`. -/
 theorem seminormFromBounded_neg (f_neg : ∀ x : R, f (-x) = f x) (x : R) :
     seminormFromBounded' f (-x) = seminormFromBounded' f x := by
   suffices ⨆ y, f (-x * y) / f y = ⨆ y, f (x * y) / f y by simpa only [seminormFromBounded']

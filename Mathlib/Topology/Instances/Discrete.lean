@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Topology.Order.Basic
+import Mathlib.Order.SuccPred.LinearLocallyFinite
 
 /-!
 # Instances related to the discrete topology
@@ -36,11 +37,6 @@ instance (priority := 100) DiscreteTopology.secondCountableTopology_of_countable
   secondCountableTopology_of_countable_cover (singletons_open_iff_discrete.mpr hd)
     (iUnion_of_singleton α)
 
-@[deprecated DiscreteTopology.secondCountableTopology_of_countable (since := "2024-03-11")]
-theorem DiscreteTopology.secondCountableTopology_of_encodable {α : Type*}
-    [TopologicalSpace α] [DiscreteTopology α] [Countable α] : SecondCountableTopology α :=
-  DiscreteTopology.secondCountableTopology_of_countable
-
 theorem LinearOrder.bot_topologicalSpace_eq_generateFrom {α} [LinearOrder α] [PredOrder α]
     [SuccOrder α] : (⊥ : TopologicalSpace α) = generateFrom { s | ∃ a, s = Ioi a ∨ s = Iio a } := by
   let _ := Preorder.topology α
@@ -63,3 +59,9 @@ alias discreteTopology_iff_orderTopology_of_pred_succ' :=
 instance OrderTopology.of_discreteTopology [LinearOrder α] [PredOrder α] [SuccOrder α]
     [DiscreteTopology α] : OrderTopology α :=
   discreteTopology_iff_orderTopology_of_pred_succ.mp ‹_›
+
+instance OrderTopology.of_linearLocallyFinite
+    [LinearOrder α] [LocallyFiniteOrder α] [DiscreteTopology α] : OrderTopology α :=
+  haveI := LinearLocallyFiniteOrder.succOrder α
+  haveI := LinearLocallyFiniteOrder.predOrder α
+  inferInstance

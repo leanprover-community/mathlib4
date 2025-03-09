@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow, Kexing Ying
 -/
 import Mathlib.LinearAlgebra.BilinearForm.Hom
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Bilinear form
@@ -90,10 +90,10 @@ protected theorem eq (H : B.IsSymm) (x y : M) : B x y = B y x :=
 theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 => H x y ▸ H1
 
 protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
-    (B₁ + B₂).IsSymm := fun x y => (congr_arg₂ (· + ·) (hB₁ x y) (hB₂ x y) : _)
+    (B₁ + B₂).IsSymm := fun x y => (congr_arg₂ (· + ·) (hB₁ x y) (hB₂ x y) :)
 
 protected theorem sub {B₁ B₂ : BilinForm R₁ M₁} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
-    (B₁ - B₂).IsSymm := fun x y => (congr_arg₂ Sub.sub (hB₁ x y) (hB₂ x y) : _)
+    (B₁ - B₂).IsSymm := fun x y => (congr_arg₂ Sub.sub (hB₁ x y) (hB₂ x y) :)
 
 protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsSymm) : (-B).IsSymm := fun x y =>
   congr_arg Neg.neg (hB x y)
@@ -133,7 +133,7 @@ theorem eq_of_add_add_eq_zero [IsCancelAdd R] {a b c : M} (H : B.IsAlt) (hAdd : 
     B a b = B b c := LinearMap.IsAlt.eq_of_add_add_eq_zero H hAdd
 
 protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) : (B₁ + B₂).IsAlt :=
-  fun x => (congr_arg₂ (· + ·) (hB₁ x) (hB₂ x) : _).trans <| add_zero _
+  fun x => (congr_arg₂ (· + ·) (hB₁ x) (hB₂ x) :).trans <| add_zero _
 
 protected theorem sub {B₁ B₂ : BilinForm R₁ M₁} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) :
     (B₁ - B₂).IsAlt := fun x => (congr_arg₂ Sub.sub (hB₁ x) (hB₂ x)).trans <| sub_zero _
@@ -275,8 +275,8 @@ noncomputable def dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basi
 theorem dualBasis_repr_apply
     (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (x i) :
     (B.dualBasis hB b).repr x i = B x (b i) := by
-  #adaptation_note
-  /-- Before https://github.com/leanprover/lean4/pull/4814, we did not need the `@` in front of `toDual_def` in the `rw`.
+  #adaptation_note /-- https://github.com/leanprover/lean4/pull/4814
+  we did not need the `@` in front of `toDual_def` in the `rw`.
   I'm confused! -/
   rw [dualBasis, Basis.map_repr, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
     Basis.dualBasis_repr, @toDual_def]

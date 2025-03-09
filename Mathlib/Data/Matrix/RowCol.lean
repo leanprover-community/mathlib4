@@ -136,7 +136,7 @@ theorem row_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α
   ext
   rfl
 
-theorem row_mulVec_eq_const [Fintype m] [NonUnitalNonAssocSemiring α]  (v w : m → α) :
+theorem row_mulVec_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] (v w : m → α) :
     Matrix.row ι v *ᵥ w = Function.const _ (v ⬝ᵥ w) := rfl
 
 theorem mulVec_col_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] (v w : m → α) :
@@ -181,25 +181,25 @@ variable {M : Matrix m n α} {i : m} {j : n} {b : n → α} {c : m → α}
 @[simp]
 theorem updateRow_self [DecidableEq m] : updateRow M i b i = b :=
   -- Porting note: (implicit arg) added `(β := _)`
-  Function.update_same (β := fun _ => (n → α)) i b M
+  Function.update_self (β := fun _ => (n → α)) i b M
 
 @[simp]
 theorem updateCol_self [DecidableEq n] : updateCol M j c i j = c i :=
   -- Porting note: (implicit arg) added `(β := _)`
-  Function.update_same (β := fun _ => α) j (c i) (M i)
+  Function.update_self (β := fun _ => α) j (c i) (M i)
 
 @[deprecated (since := "2024-12-11")] alias updateColumn_self := updateCol_self
 
 @[simp]
 theorem updateRow_ne [DecidableEq m] {i' : m} (i_ne : i' ≠ i) : updateRow M i b i' = M i' :=
   -- Porting note: (implicit arg) added `(β := _)`
-  Function.update_noteq (β := fun _ => (n → α)) i_ne b M
+  Function.update_of_ne (β := fun _ => (n → α)) i_ne b M
 
 @[simp]
 theorem updateCol_ne [DecidableEq n] {j' : n} (j_ne : j' ≠ j) :
     updateCol M j c i j' = M i j' :=
   -- Porting note: (implicit arg) added `(β := _)`
-  Function.update_noteq (β := fun _ => α) j_ne (c i) (M i)
+  Function.update_of_ne (β := fun _ => α) j_ne (c i) (M i)
 
 @[deprecated (since := "2024-12-11")] alias updateColumn_ne := updateCol_ne
 
@@ -288,8 +288,8 @@ theorem diagonal_updateCol_single [DecidableEq n] [Zero α] (v : n → α) (i : 
   obtain rfl | hjk := eq_or_ne j k
   · rw [diagonal_apply_eq]
     obtain rfl | hji := eq_or_ne j i
-    · rw [updateCol_self, Pi.single_eq_same, Function.update_same]
-    · rw [updateCol_ne hji, diagonal_apply_eq, Function.update_noteq hji]
+    · rw [updateCol_self, Pi.single_eq_same, Function.update_self]
+    · rw [updateCol_ne hji, diagonal_apply_eq, Function.update_of_ne hji]
   · rw [diagonal_apply_ne _ hjk]
     obtain rfl | hki := eq_or_ne k i
     · rw [updateCol_self, Pi.single_eq_of_ne hjk]

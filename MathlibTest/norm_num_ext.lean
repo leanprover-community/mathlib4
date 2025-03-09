@@ -8,11 +8,13 @@ import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.NormNum.NatFib
+import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Data.Rat.Floor
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.NormNum.RealSqrt
 
 /-!
 # Tests for `norm_num` extensions
@@ -306,6 +308,19 @@ example : @Squarefree ℕ Multiplicative.monoid 1 := by
     cases h
 -/
 
+example : Nat.log 0 0 = 0 := by norm_num1
+example : Nat.log 0 1 = 0 := by norm_num1
+example : Nat.log 0 100 = 0 := by norm_num1
+example : Nat.log 1 0 = 0 := by norm_num1
+example : Nat.log 1 1 = 0 := by norm_num1
+example : Nat.log 1 100 = 0 := by norm_num1
+example : Nat.log 10 0 = 0 := by norm_num1
+example : Nat.log 10 3 = 0 := by norm_num1
+example : Nat.log 2 2 = 1 := by norm_num1
+example : Nat.log 2 256 = 8 := by norm_num1
+example : Nat.log 10 10000000 = 7 := by norm_num1
+example : Nat.log 10 (10 ^ 7 + 2) + Nat.log 2 (2 ^ 30 + 3) = 7 + 30 := by norm_num1
+
 example : Nat.fib 0 = 0 := by norm_num1
 example : Nat.fib 1 = 1 := by norm_num1
 example : Nat.fib 2 = 1 := by norm_num1
@@ -465,3 +480,16 @@ example : (-6 / 15 : ℚ).num = -2 := by norm_num1
 example : (-6 / 15 : ℚ).den = 5 := by norm_num1
 
 end num_den
+
+section real_sqrt
+
+example : Real.sqrt 25 = 5 := by norm_num
+example : Real.sqrt (25 / 16) = 5 / 4 := by norm_num
+example : Real.sqrt (0.25) = 1/2 := by norm_num
+example : NNReal.sqrt 25 = 5 := by norm_num
+example : Real.sqrt (-37) = 0 := by norm_num
+example : Real.sqrt (-5 / 3) = 0 := by norm_num
+example : Real.sqrt 0 = 0 := by norm_num
+example : NNReal.sqrt 0 = 0 := by norm_num
+
+end real_sqrt

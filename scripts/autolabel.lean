@@ -105,6 +105,8 @@ def mathlibLabels : Array Label := #[
   { label := "t-dynamics" },
   { label := "t-euclidean-geometry",
     dirs := #["Mathlib" / "Geometry" / "Euclidean"] },
+  { label := "t-geometric-group-theory",
+    dirs := #["Mathlib" / "Geometry" / "Group"] },
   { label := "t-linter",
     dirs := #["Mathlib" / "Tactic" / "Linter"] },
   { label := "t-logic",
@@ -134,7 +136,9 @@ def mathlibLabels : Array Label := #[
   { label := "CI",
     dirs := #[".github"] },
   { label := "IMO",
-    dirs := #["Archive" / "Imo"] } ]
+    dirs := #["Archive" / "Imo"] },
+  { label := "dependency-bump",
+    dirs := #["lake-manifest.json"] } ]
 
 /-- Exceptions inside `Mathlib/` which are not covered by any label. -/
 def mathlibUnlabelled : Array FilePath := #[
@@ -184,6 +188,9 @@ section Tests
 #guard getMatchingLabels #[
   "Mathlib" / "Tactic"/ "Linter" / "Lint.lean",
   "Mathlib" / "Tactic" / "Abel.lean" ] == #["t-linter", "t-meta"]
+
+-- Test targeting a file instead of a directory
+#guard getMatchingLabels #["lake-manifest.json"] == #["dependency-bump"]
 
 /-- Testing function to ensure the labels defined in `mathlibLabels` cover all
 subfolders of `Mathlib/`. -/

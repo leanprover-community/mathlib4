@@ -33,7 +33,7 @@ lemma hasEigenvector_toLin_diagonal (d : n → R) (i : n) (b : Basis n R M) :
     HasEigenvector (toLin b b (diagonal d)) (d i) (b i) :=
   ⟨mem_eigenspace_iff.mpr <| by simp [diagonal], Basis.ne_zero b i⟩
 
-/--  Standard basis vectors are eigenvectors of any associated diagonal linear operator. -/
+/-- Standard basis vectors are eigenvectors of any associated diagonal linear operator. -/
 lemma hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
     HasEigenvector (toLin' (diagonal d)) (d i) (Pi.basisFun R n i)  :=
   hasEigenvector_toLin_diagonal _ _ (Pi.basisFun R n)

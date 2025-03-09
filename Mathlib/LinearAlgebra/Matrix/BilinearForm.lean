@@ -100,19 +100,12 @@ theorem Matrix.toBilin'_apply (M : Matrix n n R₁) (x y : n → R₁) :
     (by simp only [smul_eq_mul, mul_assoc, mul_comm, mul_left_comm])
 
 theorem Matrix.toBilin'_apply' (M : Matrix n n R₁) (v w : n → R₁) :
-    Matrix.toBilin' M v w = Matrix.dotProduct v (M *ᵥ w) := Matrix.toLinearMap₂'_apply' _ _ _
+    Matrix.toBilin' M v w = dotProduct v (M *ᵥ w) := Matrix.toLinearMap₂'_apply' _ _ _
 
 @[simp]
 theorem Matrix.toBilin'_single (M : Matrix n n R₁) (i j : n) :
     Matrix.toBilin' M (Pi.single i 1) (Pi.single j 1) = M i j := by
   simp [Matrix.toBilin'_apply, Pi.single_apply]
-
-set_option linter.deprecated false in
-@[simp, deprecated Matrix.toBilin'_single (since := "2024-08-09")]
-theorem Matrix.toBilin'_stdBasis (M : Matrix n n R₁) (i j : n) :
-    Matrix.toBilin' M
-      (LinearMap.stdBasis R₁ (fun _ ↦ R₁) i 1)
-      (LinearMap.stdBasis R₁ (fun _ ↦ R₁) j 1) = M i j := Matrix.toBilin'_single _ _ _
 
 @[simp]
 theorem LinearMap.BilinForm.toMatrix'_symm :

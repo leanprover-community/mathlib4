@@ -3,7 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yourong Zang
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Calculus.Deriv.Linear
 import Mathlib.Analysis.Complex.Basic
 
@@ -14,8 +14,7 @@ then its restriction to `ℝ` is differentiable over `ℝ`, with derivative the 
 complex derivative.
 -/
 
-assert_not_exists IsConformalMap
-assert_not_exists Conformal
+assert_not_exists IsConformalMap Conformal
 
 section RealDerivOfComplex
 

@@ -163,6 +163,7 @@ theorem antipode_comul₁ (A : Hopf_ C) :
 Auxiliary calculation for `antipode_comul`.
 This calculation calls for some ASCII art out of This Week's Finds.
 
+```
    |   |
    n   n
   | \ / |
@@ -177,6 +178,7 @@ This calculation calls for some ASCII art out of This Week's Finds.
     \ /
      v
      |
+```
 
 We move the left antipode up through the crossing,
 the right antipode down through the crossing,
@@ -312,6 +314,7 @@ theorem mul_antipode₁ (A : Hopf_ C) :
 /--
 Auxiliary calculation for `mul_antipode`.
 
+```
        |
        n
       /  \
@@ -325,6 +328,7 @@ Auxiliary calculation for `mul_antipode`.
     \ / \ /
      v   v
      |   |
+```
 
 We move the leftmost multiplication up, so we can reassociate.
 We then move the rightmost comultiplication under the strand,

@@ -487,7 +487,6 @@ theorem of_nonempty (h : ∀ s, IsClosed s → s.Nonempty → IsClosed (f '' s))
 theorem isClosed_range (hf : IsClosedMap f) : IsClosed (range f) :=
   @image_univ _ _ f ▸ hf _ isClosed_univ
 
-@[deprecated (since := "2024-03-17")] alias closed_range := isClosed_range
 
 theorem isQuotientMap (hcl : IsClosedMap f) (hcont : Continuous f)
     (hsurj : Surjective f) : IsQuotientMap f :=
@@ -758,6 +757,11 @@ lemma of_continuous_injective_isClosedMap (h₁ : Continuous f) (h₂ : Injectiv
 @[deprecated (since := "2024-10-20")]
 alias _root_.closedEmbedding_of_continuous_injective_closed :=
   IsClosedEmbedding.of_continuous_injective_isClosedMap
+
+lemma isClosedEmbedding_iff_continuous_injective_isClosedMap {f : X → Y} :
+    IsClosedEmbedding f ↔ Continuous f ∧ Injective f ∧ IsClosedMap f where
+  mp h := ⟨h.continuous, h.injective, h.isClosedMap⟩
+  mpr h := .of_continuous_injective_isClosedMap h.1 h.2.1 h.2.2
 
 protected theorem id : IsClosedEmbedding (@id X) := ⟨.id, IsClosedMap.id.isClosed_range⟩
 

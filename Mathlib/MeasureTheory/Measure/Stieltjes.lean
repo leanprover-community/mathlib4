@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov, Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.Topology.Order.LeftRightLim
+import Mathlib.Topology.Algebra.UniformMulAction
 
 /-!
 # Stieltjes measures on the real line
@@ -144,9 +145,9 @@ noncomputable def _root_.Monotone.stieltjesFunction {f : ℝ → ℝ} (hf : Mono
     obtain ⟨l, u, hlu, lus⟩ : ∃ l u : ℝ, rightLim f x ∈ Ioo l u ∧ Ioo l u ⊆ s :=
       mem_nhds_iff_exists_Ioo_subset.1 hs
     obtain ⟨y, xy, h'y⟩ : ∃ (y : ℝ), x < y ∧ Ioc x y ⊆ f ⁻¹' Ioo l u :=
-      mem_nhdsWithin_Ioi_iff_exists_Ioc_subset.1 (hf.tendsto_rightLim x (Ioo_mem_nhds hlu.1 hlu.2))
+      mem_nhdsGT_iff_exists_Ioc_subset.1 (hf.tendsto_rightLim x (Ioo_mem_nhds hlu.1 hlu.2))
     change ∀ᶠ y in 𝓝[≥] x, rightLim f y ∈ s
-    filter_upwards [Ico_mem_nhdsWithin_Ici ⟨le_refl x, xy⟩] with z hz
+    filter_upwards [Ico_mem_nhdsGE xy] with z hz
     apply lus
     refine ⟨hlu.1.trans_le (hf.rightLim hz.1), ?_⟩
     obtain ⟨a, za, ay⟩ : ∃ a : ℝ, z < a ∧ a < y := exists_between hz.2
@@ -184,7 +185,7 @@ theorem length_Ioc (a b : ℝ) : f.length (Ioc a b) = ofReal (f b - f a) := by
   rcases le_or_lt b a with ab | ab
   · rw [Real.toNNReal_of_nonpos (sub_nonpos.2 (f.mono ab))]
     apply zero_le
-  cases' (Ioc_subset_Ioc_iff ab).1 h with h₁ h₂
+  obtain ⟨h₁, h₂⟩ := (Ioc_subset_Ioc_iff ab).1 h
   exact Real.toNNReal_le_toNNReal (sub_le_sub (f.mono h₁) (f.mono h₂))
 
 theorem length_mono {s₁ s₂ : Set ℝ} (h : s₁ ⊆ s₂) : f.length s₁ ≤ f.length s₂ :=

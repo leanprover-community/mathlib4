@@ -45,9 +45,7 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
-assert_not_exists OrderedAddCommMonoid
-assert_not_exists Multiset
-assert_not_exists Ring
+assert_not_exists OrderedAddCommMonoid Multiset Ring
 
 open Function
 open scoped Int
@@ -149,8 +147,8 @@ theorem map_one_eq_bot : K.map (1 : G →* N) = ⊥ :=
 
 @[to_additive]
 theorem mem_map_equiv {f : G ≃* N} {K : Subgroup G} {x : N} :
-    x ∈ K.map f.toMonoidHom ↔ f.symm x ∈ K := by
-  erw [@Set.mem_image_equiv _ _ (↑K) f.toEquiv x]; rfl
+    x ∈ K.map f.toMonoidHom ↔ f.symm x ∈ K :=
+  Set.mem_image_equiv
 
 -- The simpNF linter says that the LHS can be simplified via `Subgroup.mem_map`.
 -- However this is a higher priority lemma.
@@ -297,6 +295,11 @@ theorem mem_subgroupOf {H K : Subgroup G} {h : K} : h ∈ H.subgroupOf K ↔ (h 
 @[to_additive (attr := simp)]
 theorem subgroupOf_map_subtype (H K : Subgroup G) : (H.subgroupOf K).map K.subtype = H ⊓ K :=
   SetLike.ext' <| by refine Subtype.image_preimage_coe _ _ |>.trans ?_; apply Set.inter_comm
+
+@[to_additive]
+theorem map_subgroupOf_eq_of_le {H K : Subgroup G} (h : H ≤ K) :
+    (H.subgroupOf K).map K.subtype = H := by
+  rwa [subgroupOf_map_subtype, inf_eq_left]
 
 @[to_additive (attr := simp)]
 theorem bot_subgroupOf : (⊥ : Subgroup G).subgroupOf H = ⊥ :=

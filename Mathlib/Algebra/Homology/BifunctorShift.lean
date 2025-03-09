@@ -23,6 +23,8 @@ that the two ways to deduce an isomorphism
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category Limits
 
 variable {C₁ C₂ D : Type*} [Category C₁] [Category C₂] [Category D]

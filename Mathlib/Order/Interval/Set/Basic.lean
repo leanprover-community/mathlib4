@@ -3,11 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
+import Mathlib.Data.Prod.Basic
+import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.Interval.Set.Defs
 import Mathlib.Order.MinMax
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Tactic.Says
 import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Says
 
 /-!
 # Intervals
@@ -29,6 +30,8 @@ in particular for some statements it should be `LinearOrder` or `DenselyOrdered`
 
 TODO: This is just the beginning; a lot of rules are missing
 -/
+
+assert_not_exists RelIso
 
 open Function
 
@@ -228,19 +231,23 @@ theorem Ioc_self (a : α) : Ioc a a = ∅ :=
 theorem Ioo_self (a : α) : Ioo a a = ∅ :=
   Ioo_eq_empty <| lt_irrefl _
 
+@[simp]
 theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a :=
   ⟨fun h => h <| left_mem_Ici, fun h _ hx => h.trans hx⟩
 
 @[gcongr] alias ⟨_, _root_.GCongr.Ici_subset_Ici_of_le⟩ := Ici_subset_Ici
 
+@[simp]
 theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b :=
   @Ici_subset_Ici αᵒᵈ _ _ _
 
 @[gcongr] alias ⟨_, _root_.GCongr.Iic_subset_Iic_of_le⟩ := Iic_subset_Iic
 
+@[simp]
 theorem Ici_subset_Ioi : Ici a ⊆ Ioi b ↔ b < a :=
   ⟨fun h => h left_mem_Ici, fun h _ hx => h.trans_le hx⟩
 
+@[simp]
 theorem Iic_subset_Iio : Iic a ⊆ Iio b ↔ a < b :=
   ⟨fun h => h right_mem_Iic, fun h _ hx => lt_of_le_of_lt hx h⟩
 
@@ -491,6 +498,54 @@ theorem not_mem_Ico_of_ge (hb : b ≤ c) : c ∉ Ico a b := fun h => lt_irrefl _
 theorem not_mem_Ioo_of_le (ha : c ≤ a) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.1.trans_le ha
 
 theorem not_mem_Ioo_of_ge (hb : b ≤ c) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.2.trans_le hb
+
+section matched_intervals
+
+@[simp] theorem Icc_eq_Ioc_same_iff : Icc a b = Ioc a b ↔ ¬a ≤ b where
+  mp h := by simpa using Set.ext_iff.mp h a
+  mpr h := by rw [Icc_eq_empty h, Ioc_eq_empty (mt le_of_lt h)]
+
+@[simp] theorem Icc_eq_Ico_same_iff : Icc a b = Ico a b ↔ ¬a ≤ b where
+  mp h := by simpa using Set.ext_iff.mp h b
+  mpr h := by rw [Icc_eq_empty h, Ico_eq_empty (mt le_of_lt h)]
+
+@[simp] theorem Icc_eq_Ioo_same_iff : Icc a b = Ioo a b ↔ ¬a ≤ b where
+  mp h := by simpa using Set.ext_iff.mp h b
+  mpr h := by rw [Icc_eq_empty h, Ioo_eq_empty (mt le_of_lt h)]
+
+@[simp] theorem Ioc_eq_Ico_same_iff : Ioc a b = Ico a b ↔ ¬a < b where
+  mp h := by simpa using Set.ext_iff.mp h a
+  mpr h := by rw [Ioc_eq_empty h, Ico_eq_empty h]
+
+@[simp] theorem Ioo_eq_Ioc_same_iff : Ioo a b = Ioc a b ↔ ¬a < b where
+  mp h := by simpa using Set.ext_iff.mp h b
+  mpr h := by rw [Ioo_eq_empty h, Ioc_eq_empty h]
+
+@[simp] theorem Ioo_eq_Ico_same_iff : Ioo a b = Ico a b ↔ ¬a < b where
+  mp h := by simpa using Set.ext_iff.mp h a
+  mpr h := by rw [Ioo_eq_empty h, Ico_eq_empty h]
+
+-- Mirrored versions of the above for `simp`.
+
+@[simp] theorem Ioc_eq_Icc_same_iff : Ioc a b = Icc a b ↔ ¬a ≤ b :=
+  eq_comm.trans Icc_eq_Ioc_same_iff
+
+@[simp] theorem Ico_eq_Icc_same_iff : Ico a b = Icc a b ↔ ¬a ≤ b :=
+  eq_comm.trans Icc_eq_Ico_same_iff
+
+@[simp] theorem Ioo_eq_Icc_same_iff : Ioo a b = Icc a b ↔ ¬a ≤ b :=
+  eq_comm.trans Icc_eq_Ioo_same_iff
+
+@[simp] theorem Ico_eq_Ioc_same_iff : Ico a b = Ioc a b ↔ ¬a < b :=
+  eq_comm.trans Ioc_eq_Ico_same_iff
+
+@[simp] theorem Ioc_eq_Ioo_same_iff : Ioc a b = Ioo a b ↔ ¬a < b :=
+  eq_comm.trans Ioo_eq_Ioc_same_iff
+
+@[simp] theorem Ico_eq_Ioo_same_iff : Ico a b = Ioo a b ↔ ¬a < b :=
+  eq_comm.trans Ioo_eq_Ico_same_iff
+
+end matched_intervals
 
 end Preorder
 
@@ -743,7 +798,7 @@ theorem Ico_bot : Ico ⊥ a = Iio a := by simp [← Ici_inter_Iio]
 
 end OrderBot
 
-theorem Icc_bot_top [PartialOrder α] [BoundedOrder α] : Icc (⊥ : α) ⊤ = univ := by simp
+theorem Icc_bot_top [Preorder α] [BoundedOrder α] : Icc (⊥ : α) ⊤ = univ := by simp
 
 section LinearOrder
 
@@ -1439,6 +1494,17 @@ theorem Ico_inter_Iio : Ico a b ∩ Iio c = Ico a (min b c) :=
 theorem Ioc_diff_Iic : Ioc a b \ Iic c = Ioc (max a c) b := by
   rw [diff_eq, compl_Iic, Ioc_inter_Ioi]
 
+theorem compl_Ioc : (Ioc a b)ᶜ = Iic a ∪ Ioi b := by
+  ext i
+  rw [mem_compl_iff, mem_Ioc, mem_union, mem_Iic, mem_Ioi, not_and_or, not_lt, not_le]
+
+theorem Iic_diff_Ioc : Iic b \ Ioc a b = Iic (a ⊓ b) := by
+  rw [diff_eq, compl_Ioc, inter_union_distrib_left, Iic_inter_Iic, ← compl_Iic, inter_compl_self,
+    union_empty, min_comm]
+
+theorem Iic_diff_Ioc_self_of_le (hab : a ≤ b) : Iic b \ Ioc a b = Iic a := by
+  rw [Iic_diff_Ioc, min_eq_left hab]
+
 @[simp]
 theorem Ioc_union_Ioc_right : Ioc a b ∪ Ioc a c = Ioc a (max b c) := by
   rw [Ioc_union_Ioc, min_self] <;> exact (min_le_left _ _).trans (le_max_left _ _)
@@ -1460,6 +1526,7 @@ theorem Ioc_union_Ioc_union_Ioc_cycle :
   all_goals
   solve_by_elim (config := { maxDepth := 5 }) [min_le_of_left_le, min_le_of_right_le,
        le_max_of_le_left, le_max_of_le_right, le_refl]
+
 end LinearOrder
 
 /-!

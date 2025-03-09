@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
@@ -64,7 +65,6 @@ namespace WithTerminal
 variable {C}
 
 /-- Morphisms for `WithTerminal C`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `nolint has_nonempty_instance`
 @[simp]
 def Hom : WithTerminal C → WithTerminal C → Type v
   | of X, of Y => X ⟶ Y
@@ -275,6 +275,13 @@ instance {X : WithTerminal C} : Unique (X ⟶ star) where
 def starTerminal : Limits.IsTerminal (star : WithTerminal C) :=
   Limits.IsTerminal.ofUnique _
 
+instance : Limits.HasTerminal (WithTerminal C) := Limits.hasTerminal_of_unique star
+
+/-- The isomorphism between star and an abstract terminal object of `WithTerminal C` -/
+@[simps!]
+noncomputable def starIsoTerminal : star ≅ ⊤_ (WithTerminal C) :=
+    starTerminal.uniqueUpToIso (Limits.terminalIsTerminal)
+
 /-- Lift a functor `F : C ⥤ D` to `WithTerminal C ⥤ D`. -/
 @[simps]
 def lift {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
@@ -368,7 +375,6 @@ namespace WithInitial
 variable {C}
 
 /-- Morphisms for `WithInitial C`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `nolint has_nonempty_instance`
 @[simp]
 def Hom : WithInitial C → WithInitial C → Type v
   | of X, of Y => X ⟶ Y
@@ -572,6 +578,13 @@ instance {X : WithInitial C} : Unique (star ⟶ X) where
 /-- `WithInitial.star` is initial. -/
 def starInitial : Limits.IsInitial (star : WithInitial C) :=
   Limits.IsInitial.ofUnique _
+
+instance : Limits.HasInitial (WithInitial C) := Limits.hasInitial_of_unique star
+
+/-- The isomorphism between star and an abstract initial object of `WithInitial C` -/
+@[simps!]
+noncomputable def starIsoInitial : star ≅ ⊥_ (WithInitial C) :=
+    starInitial.uniqueUpToIso (Limits.initialIsInitial)
 
 /-- Lift a functor `F : C ⥤ D` to `WithInitial C ⥤ D`. -/
 @[simps]
