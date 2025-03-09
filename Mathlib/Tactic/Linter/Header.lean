@@ -291,8 +291,6 @@ def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : CommandElab
         Linter.logLint linter.style.header i
           "Files inside the Algebra.Notation directory must not import Algebra files outside \
           of that directory"
-
-
 /-- Check the syntax `imports` for syntactically duplicate imports.
 The output is an array of `Syntax` atoms whose ranges are the import statements,
 and the embedded strings are the error message of the linter.
