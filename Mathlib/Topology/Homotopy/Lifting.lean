@@ -3,9 +3,11 @@ Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
+import Mathlib.Topology.Connected.LocPathConnected
 import Mathlib.Topology.Covering
 import Mathlib.Topology.Homotopy.Path
 import Mathlib.Topology.UnitInterval
+
 /-!
 
 # The homotopy lifting property for covering maps
@@ -140,6 +142,49 @@ theorem monodromy_theorem {γ₀ γ₁ : C(I, X)} (γ : γ₀.HomotopyRel γ₁ 
   · simp_rw [Γ_0]; exact continuous_const
   · exact fun t ↦ (Γ t).2
 
+omit sep
+open PathConnectedSpace (somePath) in
+/-- A map `f` from a path-connected, locally path-connected space `A` to another space `X` lifts
+  uniquely through a local homeomorphism `p : E → X` if for every path `γ` in `A`, the composed
+  path `f ∘ γ` in `X` lifts to `E` with endpoint only dependent on the endpoint of `γ` and
+  independent of the path chosen. In this theorem, we require that a specific point `a₀ : A` is
+  lifted to a specific point `e₀ : E`. -/
+def liftContinuousMap [PathConnectedSpace A] [LocPathConnectedSpace A]
+    (f : C(A, X)) (a₀ : A) (e₀ : E) (he : p e₀ = f a₀)
+    (ex : ∀ γ : C(I, A), γ 0 = a₀ → ∃ Γ : C(I, E), Γ 0 = e₀ ∧ p ∘ Γ = f.comp γ)
+    (uniq : ∀ γ γ' : C(I, A), ∀ Γ Γ' : C(I, E), γ 0 = a₀ → γ' 0 = a₀ → Γ 0 = e₀ → Γ' 0 = e₀ →
+      p ∘ Γ = f.comp γ → p ∘ Γ' = f.comp γ' → γ 1 = γ' 1 → Γ 1 = Γ' 1) :
+    ∃! F : C(A, E), F a₀ = e₀ ∧ p ∘ F = f := by
+  choose Γ Γ_0 Γ_lifts using ex
+  let F (a : A) : E := Γ _ (somePath a₀ a).source 1
+  have (a : A) : p (F a) = f a := by simpa using congr_fun (Γ_lifts _ (Path.source _)) 1
+  refine ⟨⟨F, continuous_iff_continuousAt.mpr fun a ↦ ?_⟩, ⟨?_, funext this⟩, fun F' ⟨F'_0, hpF'⟩ ↦
+    DFunLike.ext _ _ fun a ↦ ?_⟩
+  · obtain ⟨p, hep, rfl⟩ := homeo (F a)
+    have hfap : f a ∈ p.target := by rw [← this]; exact p.map_source hep
+    refine ContinuousAt.congr (f := p.symm ∘ f) ((p.continuousOn_symm.continuousAt <|
+      p.open_target.mem_nhds hfap).comp f.2.continuousAt) ?_
+    have ⟨U, ⟨haU, U_conn⟩, hUp⟩ := (path_connected_basis a).mem_iff.mp
+      ((p.open_target.preimage f.continuous).mem_nhds hfap)
+    refine Filter.mem_of_superset haU fun x hxU ↦ ?_
+    have ⟨γ, hγ⟩ := U_conn.joinedIn _ (mem_of_mem_nhds haU) _ hxU
+    let Γ' : Path e₀ ((p.symm ∘ f) a) :=
+      ⟨Γ _ (somePath a₀ a).source, Γ_0 .., by simp [← this, hep, F]⟩
+    specialize uniq ((somePath a₀ a).trans γ) _ (Γ'.trans <| γ.map' <| p.continuousOn_symm.comp
+      f.2.continuousOn <| by rintro _ ⟨t, rfl⟩; exact hUp (hγ _)) _ (by simp) (somePath a₀ x).source
+      (by simp) (Γ_0 _ (somePath a₀ x).source) _ (Γ_lifts ..) (by simp)
+    · ext
+      simp only [Function.comp, ContinuousMap.coe_coe, Path.trans_apply, ContinuousMap.coe_comp]
+      split_ifs
+      · apply congr_fun (Γ_lifts ..)
+      · simp [Path.map', p.right_inv (hUp (hγ _))]
+    simpa using uniq
+  · exact uniq _ (.const I a₀) _ (.const I e₀) (somePath a₀ a₀).source rfl (Γ_0 ..) rfl (Γ_lifts ..)
+      (by simpa) (Path.target _)
+  · let γ := somePath a₀ a
+    simpa using uniq _ _ (F'.comp γ) (Γ _ γ.source) γ.source γ.source (by simpa) (Γ_0 ..)
+      (by simp [← Function.comp_assoc, hpF']) (Γ_lifts ..) rfl
+
 end IsLocalHomeomorph
 
 namespace IsCoveringMap
@@ -152,13 +197,14 @@ include γ_0
 
 /-- The path lifting property (existence) for covering maps. -/
 theorem exists_path_lifts : ∃ Γ : C(I,E), p ∘ Γ = γ ∧ Γ 0 = e := by
-  have := hp; choose _ q mem_base using this
+  choose _ q mem_base using hp
   obtain ⟨t, t_0, t_mono, ⟨n_max, h_max⟩, t_sub⟩ :=
     exists_monotone_Icc_subset_open_cover_unitInterval
     (fun x ↦ (q x).open_baseSet.preimage γ.continuous) fun t _ ↦ Set.mem_iUnion.2 ⟨γ t, mem_base _⟩
   suffices ∀ n, ∃ Γ : I → E, ContinuousOn Γ (Set.Icc 0 (t n)) ∧
       (Set.Icc 0 (t n)).EqOn (p ∘ Γ) γ ∧ Γ 0 = e by
-    obtain ⟨Γ, cont, eqOn, Γ_0⟩ := this n_max; rw [h_max _ le_rfl] at cont eqOn
+    obtain ⟨Γ, cont, eqOn, Γ_0⟩ := this n_max
+    rw [h_max _ le_rfl] at cont eqOn
     exact ⟨⟨Γ, continuous_iff_continuousOn_univ.mpr
       (by convert cont; rw [eq_comm, Set.eq_univ_iff_forall]; exact fun t ↦ ⟨bot_le, le_top⟩)⟩,
       funext fun _ ↦ eqOn ⟨bot_le, le_top⟩, Γ_0⟩
