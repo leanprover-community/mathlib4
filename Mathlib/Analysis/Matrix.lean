@@ -579,7 +579,7 @@ theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B�
   have :=
     @nnnorm_inner_le_nnnorm α _ _ _ _ ((WithLp.equiv 2 <| _ → α).symm fun j => star (A i j))
       ((WithLp.equiv 2 <| _ → α).symm fun k => B k j)
-  simpa only [WithLp.equiv_symm_pi_apply, PiLp.inner_apply, RCLike.inner_apply, starRingEnd_apply,
+  simpa only [WithLp.equiv_symm_pi_apply, PiLp.inner_apply, RCLike.inner_apply', starRingEnd_apply,
     Pi.nnnorm_def, PiLp.nnnorm_eq_of_L2, star_star, nnnorm_star, NNReal.sqrt_eq_rpow,
     NNReal.rpow_two] using this
 
