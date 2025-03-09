@@ -19,7 +19,7 @@ of three property and is stable under retracts.
 
 ## TODO
 
-* show that localized category with respect to `P.serreW` is abelian.
+* show that a localized category with respect to `P.serreW` is abelian.
 
 -/
 
