@@ -626,12 +626,6 @@ theorem exists_isFiniteMeasure_absolutelyContinuous [SFinite μ] :
   refine ⟨.sum fun n ↦ c n • sfiniteSeq μ n, ⟨?_⟩, fun _ ↦ this.1, fun _ ↦ this.2⟩
   simpa [mul_comm] using hc
 
-variable (μ) in
-@[deprecated exists_isFiniteMeasure_absolutelyContinuous (since := "2024-08-25")]
-theorem exists_absolutelyContinuous_isFiniteMeasure [SFinite μ] :
-    ∃ ν : Measure α, IsFiniteMeasure ν ∧ μ ≪ ν :=
-  let ⟨ν, hfin, h, _⟩ := exists_isFiniteMeasure_absolutelyContinuous μ; ⟨ν, hfin, h⟩
-
 end SFinite
 
 /-- A measure `μ` is called σ-finite if there is a countable collection of sets

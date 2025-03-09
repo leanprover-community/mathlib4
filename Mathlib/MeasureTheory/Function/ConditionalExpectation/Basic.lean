@@ -203,6 +203,11 @@ theorem condExp_congr_ae (h : f =ᵐ[μ] g) : μ[f|m] =ᵐ[μ] μ[g|m] := by
 
 @[deprecated (since := "2025-01-21")] alias condexp_congr_ae := condExp_congr_ae
 
+lemma condExp_congr_ae_trim (hm : m ≤ m₀) (hfg : f =ᵐ[μ] g) :
+    μ[f|m] =ᵐ[μ.trim hm] μ[g|m] :=
+  StronglyMeasurable.ae_eq_trim_of_stronglyMeasurable hm
+    stronglyMeasurable_condExp stronglyMeasurable_condExp (condExp_congr_ae hfg)
+
 theorem condExp_of_aestronglyMeasurable' (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] {f : α → E}
     (hf : AEStronglyMeasurable[m] f μ) (hfi : Integrable f μ) : μ[f|m] =ᵐ[μ] f := by
   refine ((condExp_congr_ae hf.ae_eq_mk).trans ?_).trans hf.ae_eq_mk.symm
