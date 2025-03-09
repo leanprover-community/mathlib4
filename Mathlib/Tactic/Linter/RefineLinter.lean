@@ -38,13 +38,16 @@ register_option linter.refine : Bool := {
 
 /-- `getRefine' t` returns all usages of the `refine'` tactic in the input syntax `t`. -/
 partial
-def getRefineCases' : Syntax → Array Syntax × Array Syntax
+def getRefineCases' : Syntax → Array (Syntax × MessageData)
   | stx@(.node _ kind args) =>
-    let (refine's, cases's) := (args.map getRefineCases').foldl (init := (#[], #[])) fun
-      (totRefine, totCases) (rs, cs) => (totRefine ++ rs, totCases ++ cs)
-    if ``Lean.Parser.Tactic.refine' == kind then (refine's.push stx, cases's)
-    else if `Mathlib.Tactic.cases' == kind then (refine's, cases's.push stx)
-    else (refine's, cases's)
+    let rargs := (args.map getRefineCases').flatten
+    if ``Lean.Parser.Tactic.refine' == kind then
+      rargs.push (stx, "The `refine'` tactic is discouraged: \
+                        please strongly consider using `refine` or `apply` instead.")
+    else if `Mathlib.Tactic.cases' == kind then
+      rargs.push (stx, "The `cases'` tactic is discouraged: \
+                        please strongly consider using `obtain`, `rcases` or `cases` instead.")
+    else rargs
   | _ => default
 
 @[inherit_doc linter.refine]
@@ -53,15 +56,8 @@ def refineLinter : Linter where run := withSetOptionIn fun stx => do
     return
   if (← MonadState.get).messages.hasErrors then
     return
-  let (refine's, cases') := getRefineCases' stx
-  for stx' in refine's do
-    Linter.logLint linter.refine stx'
-      "The `refine'` tactic is discouraged: \
-      please strongly consider using `refine` or `apply` instead."
-  for stx' in cases' do
-    Linter.logLint linter.refine stx'
-      "The `cases'` tactic is discouraged: \
-      please strongly consider using `obtain`, `rcases` or `cases` instead."
+  for (stx', msg) in getRefineCases' stx do
+    Linter.logLint linter.refine stx' msg
 
 initialize addLinter refineLinter
 
