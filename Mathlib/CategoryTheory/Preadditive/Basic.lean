@@ -3,12 +3,14 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.End
+import Mathlib.Algebra.Ring.Equiv
+import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Preadditive categories
@@ -42,7 +44,6 @@ is simplified to `f ≫ g`.
 
 additive, preadditive, Hom group, Ab-category, Ab-enriched
 -/
-
 
 universe v u
 
@@ -437,5 +438,14 @@ lemma neg_iso_inv (e : X ≅ Y) : (-e).inv = -e.inv := rfl
 end
 
 end Preadditive
+
+/-- An isomorphism between two objects defines a ring isomorphism between their
+rings of endomorphisms. -/
+@[simps!] def Iso.conjRingEquiv {C} [Category C] [Preadditive C] {X Y : C} (α : X ≅ Y) :
+    End X ≃+* End Y where
+  __ := α.conj
+  map_add' _ _ := by
+    simp only [MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, conj_apply]
+    rw [Preadditive.add_comp, Preadditive.comp_add]
 
 end CategoryTheory
