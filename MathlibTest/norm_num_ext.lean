@@ -503,4 +503,12 @@ example : Irrational √(5 - 2) := by norm_num1
 example : Irrational
   √5210644015679228794060694325390955853335898483908056458352183851018372555735221 := by norm_num1
 
+example : Irrational (Real.sqrt (3/2 : ℚ)) := by norm_num1
+
+example : Irrational (Real.sqrt (7/2 : ℚ)) := by norm_num1
+
+example : Irrational (Real.rpow 100 (1/3 : ℝ)) := by norm_num1
+
+example : Irrational (Real.rpow (8/28) (1/3 : ℝ)) := by norm_num1
+
 end irrational
