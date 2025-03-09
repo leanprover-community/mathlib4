@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 /-!
 # The calculus of fractions deduced from an adjunction
 
-if `G ⊣ F` is an adjunction, and `F` is fully faithful,
+If `G ⊣ F` is an adjunction, and `F` is fully faithful,
 then there is a left calculus of fractions for
 the inverse image by `G` of the class of isomorphisms.
 
