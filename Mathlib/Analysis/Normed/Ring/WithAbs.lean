@@ -10,8 +10,7 @@ import Mathlib.Analysis.Normed.Ring.Basic
 
 `WithAbs v` is a type synonym for a semiring `R` which depends on an absolute value. The point of
 this is to allow the type class inference system to handle multiple sources of instances that
-arise from absolute values. See `NumberTheory.NumberField.Completion` for an example of this
-being used to define Archimedean completions of a number field.
+arise from absolute values.
 
 ## Main definitions
  - `WithAbs` : type synonym for a semiring which depends on an absolute value. This is
@@ -19,8 +18,6 @@ being used to define Archimedean completions of a number field.
   to assign and infer instances on a semiring that depend on absolute values.
  - `WithAbs.equiv v` : the canonical (type) equivalence between `WithAbs v` and `R`.
  - `WithAbs.ringEquiv v` : The canonical ring equivalence between `WithAbs v` and `R`.
- - `AbsoluteValue.Completion` : the uniform space completion of a field `K` according to the
-  uniform structure defined by the specified real absolute value.
 -/
 
 open Topology
