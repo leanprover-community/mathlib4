@@ -206,9 +206,9 @@ section CommMon_
 /-- If `X` represents a presheaf of commutative groups, then `X` is a commutative group object. -/
 lemma IsCommMon.ofRepresentableBy (F : Cᵒᵖ ⥤ CommMonCat)
     (α : (F ⋙ forget _).RepresentableBy X) :
-    letI := Mon_Class.ofRepresentableBy X (F ⋙ (forget₂ CommMonCat MonCat)) α
+    letI := Mon_Class.ofRepresentableBy X (F ⋙ forget₂ CommMonCat MonCat) α
     IsCommMon X := by
-  letI : Mon_Class X := Mon_Class.ofRepresentableBy X (F ⋙ (forget₂ CommMonCat MonCat)) α
+  letI : Mon_Class X := Mon_Class.ofRepresentableBy X (F ⋙ forget₂ CommMonCat MonCat) α
   have : μ = α.homEquiv.symm (α.homEquiv (fst X X) * α.homEquiv (snd X X)) := rfl
   exact ⟨by simp_rw [this, ←α.homEquiv.apply_eq_iff_eq, α.homEquiv_comp, Functor.comp_map,
     ConcreteCategory.forget_map_eq_coe, Equiv.apply_symm_apply, map_mul,
