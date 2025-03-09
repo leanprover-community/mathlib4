@@ -16,9 +16,7 @@ namespace StateT
 
 section
 
-variable {σ : Type u}
-variable {m : Type u → Type v}
-variable {α : Type u}
+variable {σ : Type u} {m : Type u → Type v} {α β : Type u}
 
 /-
 Porting note:
@@ -39,6 +37,12 @@ protected def mk (f : σ → m (α × σ)) : StateT σ m α := f
 @[simp]
 theorem run_mk (f : σ → m (α × σ)) (st : σ) : StateT.run (StateT.mk f) st = f st :=
   rfl
+
+protected lemma mapConst_eq_map_const [Monad m] (y : β) (x : StateT σ m α) :
+    Functor.mapConst y x = Function.const α y <$> x := rfl
+
+@[simp] lemma run_mapConst [Monad m] [LawfulMonad m] (x : StateT σ m α) (y : β) (st : σ) :
+    (Functor.mapConst y x).run st = Prod.map (Function.const α y) id <$> x.run st := run_map _ _ _
 
 -- Porting note: `StateT.adapt` is removed.
 
@@ -134,6 +138,13 @@ theorem run_map (f : α → β) [LawfulMonad m] : (f <$> x).run = Option.map f <
 theorem run_monadLift {n} [MonadLiftT n m] (x : n α) :
     (monadLift x : OptionT m α).run = (monadLift x : m α) >>= fun a => pure (some a) :=
   rfl
+
+protected lemma mapConst_eq_map_const (y : β) (x : OptionT m α) :
+    Functor.mapConst y x = Function.const α y <$> x := rfl
+
+@[simp] lemma run_mapConst [LawfulMonad m] (x : OptionT m α) (y : β) :
+    (Functor.mapConst y x).run = Option.map (Function.const α y) <$> x.run := by
+  rw [OptionT.mapConst_eq_map_const, run_map]
 
 end Monad
 
