@@ -813,11 +813,11 @@ theorem subsetProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
       · exact (hhc (g' 0)).symm.trans (hhc (g' 1))
       · exact hg' (Nat.zero_le 1)
 
-theorem imageProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
+theorem imageProdLex [Preorder α] [Preorder β] {s : Set (α ×ₗ β)}
     (hαβ : s.IsPWO) : ((fun (x : α ×ₗ β) => (ofLex x).1)'' s).IsPWO :=
   IsPWO.image_of_monotone hαβ Prod.Lex.monotone_fst
 
-theorem fiberProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
+theorem fiberProdLex [Preorder α] [Preorder β] {s : Set (α ×ₗ β)}
     (hαβ : s.IsPWO) (a : α) : {y | toLex (a, y) ∈ s}.IsPWO := by
   let f : α ×ₗ β → β := fun x => (ofLex x).2
   have h : {y | toLex (a, y) ∈ s} = f '' (s ∩ (fun x ↦ (ofLex x).1) ⁻¹' {a}) := by

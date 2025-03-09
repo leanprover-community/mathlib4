@@ -83,11 +83,11 @@ lemma pow_swap (p : α × β) (c : E) : (p ^ c).swap = p.swap ^ c := rfl
 @[to_additive vaddAssocClass]
 instance isScalarTower [SMul M N] [IsScalarTower M N α] [IsScalarTower M N β] :
     IsScalarTower M N (α × β) where
-  smul_assoc _ _ _ := mk.inj_iff.mpr ⟨smul_assoc _ _ _, smul_assoc _ _ _⟩
+  smul_assoc _ _ _ := by ext <;> exact smul_assoc ..
 
 @[to_additive]
 instance smulCommClass [SMulCommClass M N α] [SMulCommClass M N β] : SMulCommClass M N (α × β) where
-  smul_comm _ _ _ := mk.inj_iff.mpr ⟨smul_comm _ _ _, smul_comm _ _ _⟩
+  smul_comm _ _ _ := by ext <;> exact smul_comm ..
 
 @[to_additive]
 instance isCentralScalar [SMul Mᵐᵒᵖ α] [SMul Mᵐᵒᵖ β] [IsCentralScalar M α] [IsCentralScalar M β] :
@@ -119,8 +119,8 @@ instance isScalarTowerBoth [Mul N] [Mul P] [SMul M N] [SMul M P] [IsScalarTower 
 
 @[to_additive]
 instance mulAction [Monoid M] [MulAction M α] [MulAction M β] : MulAction M (α × β) where
-  mul_smul _ _ _ := mk.inj_iff.mpr ⟨mul_smul _ _ _, mul_smul _ _ _⟩
-  one_smul _ := mk.inj_iff.mpr ⟨one_smul _ _, one_smul _ _⟩
+  mul_smul _ _ _ := by ext <;> exact mul_smul ..
+  one_smul _ := by ext <;> exact one_smul ..
 
 end Prod
 
