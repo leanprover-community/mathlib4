@@ -36,9 +36,6 @@ import re
 import shutil
 
 
-ERR_IBY = 11 # isolated by
-ERR_IWH = 22 # isolated where
-ERR_CLN = 16 # line starts with a colon
 ERR_IND = 17 # second line not correctly indented
 ERR_ARR = 18 # space after "←"
 ERR_NSP = 20 # non-terminal simp
@@ -171,36 +168,6 @@ def nonterminal_simp_check(lines, path):
     return errors, newlines
 
 
-def isolated_by_dot_semicolon_check(lines, path):
-    errors = []
-    newlines = []
-    for line_nr, line in lines:
-        if line.strip() == "by":
-            # We excuse those "by"s following a comma or ", fun ... =>", since generally hanging "by"s
-            # should not be used in the second or later arguments of a tuple/anonymous constructor
-            # See https://github.com/leanprover-community/mathlib4/pull/3825#discussion_r1186702599
-            prev_line = lines[line_nr - 2][1].rstrip()
-            if not prev_line.endswith(",") and not re.search(", fun [^,]* (=>|↦)$", prev_line):
-                errors += [(ERR_IBY, line_nr, path)]
-        elif line.lstrip().startswith("by "):
-            # We also error if the previous line ends on := and the current line starts with "by ".
-            prev_line = newlines[-1][1].rstrip()
-            if prev_line.endswith(":="):
-                # If the previous line is short enough, we can suggest an auto-fix.
-                # Future: error also if it is not: currently, mathlib contains about 30 such
-                # instances which are not obvious to fix.
-                if len(prev_line) <= 97:
-                    errors += [(ERR_IBY, line_nr, path)]
-                    newlines[-1] = (line_nr - 1, prev_line + " by\n")
-                    indent = " " * (len(line) - len(line.lstrip()))
-                    line = f"{indent}{line.lstrip()[3:]}"
-        elif line.lstrip() == "where":
-            errors += [(ERR_IWH, line_nr, path)]
-        if line.lstrip().startswith(":"):
-            errors += [(ERR_CLN, line_nr, path)]
-        newlines.append((line_nr, line))
-    return errors, newlines
-
 def left_arrow_check(lines, path):
     errors = []
     newlines = []
@@ -228,12 +195,6 @@ def format_errors(errors):
         if (errno, path.resolve(), None) in exceptions:
             continue
         new_exceptions = True
-        if errno == ERR_IBY:
-            output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
-        if errno == ERR_IWH:
-            output_message(path, line_nr, "ERR_IWH", "Line is an isolated where")
-        if errno == ERR_CLN:
-            output_message(path, line_nr, "ERR_CLN", "Put : and := before line breaks, not after")
         if errno == ERR_IND:
             output_message(path, line_nr, "ERR_IND", "If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)")
         if errno == ERR_ARR:
@@ -250,7 +211,6 @@ def lint(path, fix=False):
         enum_lines = enumerate(lines, 1)
         newlines = enum_lines
         for error_check in [four_spaces_in_second_line,
-                            isolated_by_dot_semicolon_check,
                             left_arrow_check,
                             nonterminal_simp_check]:
             errs, newlines = error_check(newlines, path)
