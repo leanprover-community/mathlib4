@@ -26,44 +26,6 @@ universe v u
 
 open CategoryTheory Limits
 
-namespace CategoryTheory.Limits
-
-variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C] {X Y : C}
-
-section
-
-variable (f g : X ⟶ Y) (h : f = g) [HasKernel f] [HasKernel g]
-
-/-- Equal maps have isomorphic kernels. -/
-@[simps] noncomputable def kernel.congr : kernel f ≅ kernel g where
-  hom := kernel.lift _ (kernel.ι f) (by simp [← h])
-  inv := kernel.lift _ (kernel.ι g) (by simp [h])
-
-end
-
-section
-
-variable (f : X ⟶ Y) [HasKernel f] [HasImage f] [HasKernel (factorThruImage f)]
-
-/-- The kernel of the morphism `X ⟶ image f` is just the kernel of `f`. -/
-noncomputable def kernelFactorThruImage : kernel (factorThruImage f) ≅ kernel f :=
-  (kernelCompMono (factorThruImage f) (image.ι f)).symm ≪≫ (kernel.congr _ _ (by simp))
-
-@[reassoc (attr := simp)]
-theorem kernelFactorThruImage_hom_comp_ι :
-    (kernelFactorThruImage f).hom ≫ kernel.ι f = kernel.ι (factorThruImage f) := by
-  simp [kernelFactorThruImage]
-
-@[reassoc (attr := simp)]
-theorem kernelFactorThruImage_inv_comp_ι :
-    (kernelFactorThruImage f).inv ≫ kernel.ι (factorThruImage f) = kernel.ι f := by
-  simp [kernelFactorThruImage]
-
-end
-
-
-end CategoryTheory.Limits
-
 namespace CategoryTheory.Abelian
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [IsGrothendieckAbelian.{v} C]
@@ -86,7 +48,8 @@ theorem finiteSubcoproductsCocone_ι_app_preadditive {α : Type v} [DecidableEq 
     [HasCoproduct f]
     (S : Finset (Discrete α)) :
     (finiteSubcoproductsCocone f).ι.app S = ∑ a ∈ S.attach, Sigma.π _ a ≫ Sigma.ι _ a.1.as := by
-  dsimp
+  dsimp only [liftToFinsetObj_obj, Discrete.functor_obj_eq_as, finiteSubcoproductsCocone_pt,
+    Functor.const_obj_obj, finiteSubcoproductsCocone_ι_app]
   ext v
   simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, Preadditive.comp_sum]
   rw [Finset.sum_eq_single v]
