@@ -305,15 +305,23 @@ noncomputable def sum (φ : UnorientedCobordism k s t J) (ψ : UnorientedCobordi
     cases x with
     | inl x =>
       dsimp
-      simp only [Sum.map_map]
       change (φ.F ∘ φ.bd.f ∘ φ.φ ∘ Sum.inl) x = s.f x
       rw [φ.hFf]
     | inr x =>
       dsimp
-      simp only [Sum.map_map]
       change (ψ.F ∘ ψ.bd.f ∘ ψ.φ ∘ Sum.inl) x = s'.f x
       rw [ψ.hFf]
-  hFg := sorry -- analogous
+  hFg := by
+    ext x
+    cases x with
+    | inl x =>
+      dsimp
+      change (φ.F ∘ φ.bd.f ∘ φ.φ ∘ Sum.inr) x = t.f x
+      rw [φ.hFg]
+    | inr x =>
+      dsimp
+      change (ψ.F ∘ ψ.bd.f ∘ ψ.φ ∘ Sum.inr) x = t'.f x
+      rw [ψ.hFg]
 
 /-- Suppose `W` is a cobordism between `M` and `N`.
 Then a diffeomorphism `f : M'' → M` induces a cobordism between `M''` and `N`. -/

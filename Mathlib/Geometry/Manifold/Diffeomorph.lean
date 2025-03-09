@@ -687,19 +687,17 @@ def sumSumSumComm : Diffeomorph I I ((M ⊕ M') ⊕ N ⊕ N') ((M ⊕ N) ⊕ M' 
     --   · apply contMDiff_id
     -- · apply contMDiff_id
 
-@[simp]
+@[simp, mfld_simps]
 theorem sumSumSumComm_coe :
   (sumSumSumComm I M n M' N N').toEquiv = Equiv.sumSumSumComm M M' N N' := rfl
 
-@[simp]
+@[simp, mfld_simps]
 theorem sumSumSumComm_apply (x : (M ⊕ M') ⊕ N ⊕ N') :
   (sumSumSumComm I M n M' N N') x = (Equiv.sumSumSumComm M M' N N') x := rfl
 
-lemma sumSumSumComm_apply_inl_inl (x : M) :
-    (sumSumSumComm I M n M' N N') (Sum.inl (Sum.inl x)) = Sum.inl (Sum.inl x) := by simp
-
-lemma sumSumSumComm_apply_inl_inr (x : M') :
-    (sumSumSumComm I M n M' N N') (Sum.inl (Sum.inr x)) = Sum.inr (Sum.inl x) := by simp
+@[simp, mfld_simps]
+theorem sumSumSumComm_symm :
+  (sumSumSumComm I M n M' N N').symm = sumSumSumComm I M n N M' N' := rfl
 
 variable (I M n) in
 /-- The canonical diffeomorphism `M ⊕ ∅ → M` -/
