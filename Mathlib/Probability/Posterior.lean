@@ -158,10 +158,11 @@ lemma posterior_ac_of_ac {ν : Measure 𝓧} [SFinite ν] (h_ac : ∀ᵐ ω ∂�
   refine Measure.AbsolutelyContinuous.compProd_right ?_
   simpa
 
-section StandardBorelSpace
+section CountableOrCountablyGenerated
 
-lemma ac_of_posterior_ac [MeasurableSpace.CountableOrCountablyGenerated Ω 𝓧]
-    (h_ac : ∀ᵐ b ∂(κ ∘ₘ μ), (κ†μ) b ≪ μ) :
+variable [MeasurableSpace.CountableOrCountablyGenerated Ω 𝓧]
+
+lemma ac_of_posterior_ac (h_ac : ∀ᵐ b ∂(κ ∘ₘ μ), (κ†μ) b ≪ μ) :
     ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ := by
   suffices μ ⊗ₘ κ ≪ μ.prod (κ ∘ₘ μ) by
     rw [← Measure.compProd_const] at this
@@ -173,15 +174,76 @@ lemma ac_of_posterior_ac [MeasurableSpace.CountableOrCountablyGenerated Ω 𝓧]
   refine Measure.AbsolutelyContinuous.compProd_right ?_
   simpa
 
-lemma posterior_ac_iff [MeasurableSpace.CountableOrCountablyGenerated Ω 𝓧] :
-    (∀ᵐ b ∂(κ ∘ₘ μ), (κ†μ) b ≪ μ) ↔ ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ :=
+lemma posterior_ac_iff : (∀ᵐ b ∂(κ ∘ₘ μ), (κ†μ) b ≪ μ) ↔ ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ :=
   ⟨ac_of_posterior_ac, posterior_ac_of_ac⟩
 
-lemma ac_comp_of_ac [MeasurableSpace.CountableOrCountablyGenerated Ω 𝓧]
-    {ν : Measure 𝓧} [SFinite ν] (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ ν) :
+lemma Kernel.ac_comp_of_ac {ν : Measure 𝓧} [SFinite ν] (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ ν) :
     ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ := by
   rw [← posterior_ac_iff]
   exact posterior_ac_of_ac h_ac
+
+lemma rnDeriv_posterior (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
+    ∀ᵐ ω ∂μ, ∀ᵐ b ∂(κ ∘ₘ μ),
+      (κ†μ).rnDeriv (Kernel.const _ μ) b ω = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω b := by
+  suffices ∀ᵐ p ∂(μ.prod (κ ∘ₘ μ)),
+      (κ†μ).rnDeriv (Kernel.const _ μ) p.2 p.1 = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) p.1 p.2 by
+    convert Measure.ae_ae_of_ae_prod this -- `convert` is muct faster than `exact`
+  have h_ac' : ∀ᵐ x ∂(κ ∘ₘ μ), (κ†μ) x ≪ μ := posterior_ac_of_ac h_ac
+  have h1 {s : Set Ω} {t : Set 𝓧} (hs : MeasurableSet s) (ht : MeasurableSet t) :
+      ∫⁻ x in s ×ˢ t, (κ†μ).rnDeriv (Kernel.const _ μ) x.2 x.1 ∂μ.prod (⇑κ ∘ₘ μ)
+        = (μ ⊗ₘ κ) (s ×ˢ t) := by
+    rw [setLIntegral_prod_symm _ (by fun_prop), ← swap_compProd_posterior, Measure.swap_comp,
+      Measure.map_apply measurable_swap (hs.prod ht), Set.preimage_swap_prod,
+      Measure.compProd_apply_prod ht hs]
+    refine lintegral_congr_ae <| ae_restrict_of_ae ?_
+    filter_upwards [h_ac'] with x h_ac'
+    change ∫⁻ ω in s, (κ†μ).rnDeriv (Kernel.const 𝓧 μ) x ω ∂(Kernel.const 𝓧 μ x) = _
+    rw [Kernel.setLIntegral_rnDeriv h_ac' hs]
+  have h2 {s : Set Ω} {t : Set 𝓧} (hs : MeasurableSet s) (ht : MeasurableSet t) :
+      ∫⁻ x in s ×ˢ t, κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) x.1 x.2 ∂μ.prod (⇑κ ∘ₘ μ)
+        = (μ ⊗ₘ κ) (s ×ˢ t) := by
+    rw [setLIntegral_prod _ (by fun_prop), Measure.compProd_apply_prod hs ht]
+    refine lintegral_congr_ae <| ae_restrict_of_ae ?_
+    filter_upwards [h_ac] with ω h_ac
+    change ∫⁻ x in t, κ.rnDeriv (Kernel.const Ω (κ ∘ₘ μ)) ω x ∂(Kernel.const Ω (κ ∘ₘ μ) ω) = _
+    rw [Kernel.setLIntegral_rnDeriv h_ac ht]
+  have h_prod {s : Set Ω} {t : Set 𝓧} (hs : MeasurableSet s) (ht : MeasurableSet t) :
+      ∫⁻ x in s ×ˢ t, (κ†μ).rnDeriv (Kernel.const _ μ) x.2 x.1 ∂μ.prod (⇑κ ∘ₘ μ)
+        = ∫⁻ x in s ×ˢ t, κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) x.1 x.2 ∂μ.prod (⇑κ ∘ₘ μ) := by
+    rw [h1 hs ht, h2 hs ht]
+  refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite ?_ ?_ ?_
+  · fun_prop
+  · fun_prop
+  intro s hs hμs
+  refine MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ _ hs
+  · simp
+  · rintro _ ⟨s, hs, t, ht, rfl⟩
+    exact h_prod hs ht
+  · intro t ht h_eq
+    rw [setLintegral_compl ht, setLintegral_compl ht]
+    · rw [h_eq]
+      congr 1
+      simpa using h_prod .univ .univ
+    · refine ne_of_lt ?_
+      calc ∫⁻ x in t, κ.rnDeriv (Kernel.const Ω (κ ∘ₘ μ)) x.1 x.2 ∂μ.prod (κ ∘ₘ μ)
+      _ ≤ ∫⁻ x, κ.rnDeriv (Kernel.const Ω (κ ∘ₘ μ)) x.1 x.2 ∂μ.prod (κ ∘ₘ μ) :=
+        setLIntegral_le_lintegral t _
+      _ = (μ ⊗ₘ κ) Set.univ := by rw [← setLIntegral_univ, ← Set.univ_prod_univ, h2 .univ .univ]
+      _ < ⊤ := measure_lt_top _ _
+    · refine ne_of_lt ?_
+      calc ∫⁻ x in t, (κ†μ).rnDeriv (Kernel.const _ μ) x.2 x.1 ∂μ.prod (κ ∘ₘ μ)
+      _ ≤ ∫⁻ x, (κ†μ).rnDeriv (Kernel.const _ μ) x.2 x.1 ∂μ.prod (κ ∘ₘ μ) :=
+        setLIntegral_le_lintegral t _
+      _ = (μ ⊗ₘ κ) Set.univ := by rw [← setLIntegral_univ, ← Set.univ_prod_univ, h1 .univ .univ]
+      _ < ⊤ := measure_lt_top _ _
+  · intro f hf_disj hf_meas h
+    simp_rw [lintegral_iUnion hf_meas hf_disj]
+    congr with i
+    exact h i
+
+end CountableOrCountablyGenerated
+
+section StandardBorelSpace
 
 variable [StandardBorelSpace 𝓧] [Nonempty 𝓧]
 
@@ -213,57 +275,6 @@ lemma posterior_comp {η : Kernel 𝓧 𝓨} [IsFiniteKernel η] :
     conv_rhs => rw [← Kernel.comp_assoc]
     rw [Kernel.swap_parallelComp, Kernel.comp_assoc, ← Kernel.comp_assoc (Kernel.swap Ω 𝓧),
       Kernel.swap_parallelComp, Kernel.comp_assoc, Kernel.swap_copy]
-
-theorem setLIntegral_prod_symm {α β: Type*} {_ : MeasurableSpace α} {_ : MeasurableSpace β}
-    {μ : Measure α} {ν : Measure β} [SFinite μ] [SFinite ν]
-    {s : Set α} (t : Set β) (f : α × β → ENNReal)
-    (hf : AEMeasurable f ((μ.prod ν).restrict (s ×ˢ t))) :
-    ∫⁻ z in s ×ˢ t, f z ∂μ.prod ν = ∫⁻ y in t, ∫⁻ x in s, f (x, y) ∂μ ∂ν := by
-  rw [← Measure.prod_restrict, ← lintegral_prod_swap, Measure.prod_restrict,
-    setLIntegral_prod]
-  · rfl
-  · refine AEMeasurable.comp_measurable ?_ measurable_swap
-    convert hf
-    rw [← Measure.prod_restrict, Measure.prod_swap, Measure.prod_restrict]
-
-lemma rnDeriv_posterior (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
-    ∀ᵐ ω ∂μ, ∀ᵐ b ∂(κ ∘ₘ μ), ((κ†μ) b).rnDeriv μ ω = (κ ω).rnDeriv (κ ∘ₘ μ) b := by
-  suffices ∀ᵐ p ∂(μ.prod (κ ∘ₘ μ)), ((κ†μ) p.2).rnDeriv μ p.1 = (κ p.1).rnDeriv (κ ∘ₘ μ) p.2 by
-    convert Measure.ae_ae_of_ae_prod this -- `convert` is muct faster than `exact`
-  have h1 {s : Set Ω} {t : Set 𝓧} (hs : MeasurableSet s) (ht : MeasurableSet t) :
-      ∫⁻ x in s ×ˢ t, (∂(κ†μ) x.2/∂μ) x.1 ∂μ.prod (⇑κ ∘ₘ μ) = (μ ⊗ₘ κ) (s ×ˢ t) := by
-    rw [setLIntegral_prod_symm]
-    sorry
-    sorry
-  have h2 {s : Set Ω} {t : Set 𝓧} (hs : MeasurableSet s) (ht : MeasurableSet t) :
-      ∫⁻ x in s ×ˢ t, (∂κ x.1/∂⇑κ ∘ₘ μ) x.2 ∂μ.prod (⇑κ ∘ₘ μ) = (μ ⊗ₘ κ) (s ×ˢ t) := by
-    rw [setLIntegral_prod]
-    sorry
-    sorry
-  have h_prod {s : Set Ω} {t : Set 𝓧} (hs : MeasurableSet s) (ht : MeasurableSet t) :
-      ∫⁻ x in s ×ˢ t, (∂(κ†μ) x.2/∂μ) x.1 ∂μ.prod (⇑κ ∘ₘ μ)
-        = ∫⁻ x in s ×ˢ t, (∂κ x.1/∂⇑κ ∘ₘ μ) x.2 ∂μ.prod (⇑κ ∘ₘ μ) := by
-    rw [h1 hs ht, h2 hs ht]
-  refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite ?_ ?_ ?_
-  · sorry
-  · sorry
-  intro s hs hμs
-  refine MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ _ hs
-  · simp
-  · rintro _ ⟨s, hs, t, ht, rfl⟩
-    simp only
-    exact h_prod hs ht
-  · intro t ht h_eq
-    rw [setLintegral_compl ht, setLintegral_compl ht]
-    · rw [h_eq]
-      congr 1
-      simpa using h_prod .univ .univ
-    · sorry
-    · sorry
-  · intro f hf_disj hf_meas h
-    simp_rw [lintegral_iUnion hf_meas hf_disj]
-    congr with i
-    exact h i
 
 end StandardBorelSpace
 
