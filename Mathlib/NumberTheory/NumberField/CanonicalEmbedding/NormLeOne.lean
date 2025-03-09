@@ -32,14 +32,13 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
   `basisUnitLattice K`, we define the map `expMap : realSpace K → realSpace K` that is, in
   some way, the right inverse of `logMap`, see `logMap_expMap`.
 
-4. We also need to construct a basis `completeBasis` of `realSpace K` with the following properties:
-  Denote by `ηᵢ` (with `i ≠ w₀` where `w₀` is the distinguished infinite place,
-  see `logSpace` below), the fundamental system of units given by `fundSystem` and let `|ηᵢ|` denote
-  `normAtAllPlaces (mixedEmbedding ηᵢ))`, that is the vector `(w (ηᵢ)_w` in `realSpace K`. Then,
-  the image of `|ηᵢ|` by `expMap.symm` form a basis of the subspace
-  `{x : realSpace K | ∑ w, x w = 0}`, and we complete to get a basis of `realSpace K` by
-  adding the vector `(mult w)_w`. The basis `completeBasis K` is a pullback of
-  `basisUnitLattice K` in the sense that, for `i ≠ w₀`, the image of `completeBasis K i` by the
+4. Denote by `ηᵢ` (with `i ≠ w₀` where `w₀` is the distinguished infinite place,
+  see the description of `logSpace` below) the fundamental system of units given by
+  `fundSystem` and let `|ηᵢ|` denote `normAtAllPlaces (mixedEmbedding ηᵢ))`, that is the vector
+  `(w (ηᵢ)_w` in `realSpace K`. Then, the image of `|ηᵢ|` by `expMap.symm` form a basis of the
+  subspace `{x : realSpace K | ∑ w, x w = 0}`. We complete by adding the vector `(mult w)_w` to
+  get a basis, called `completeBasis`, of `realSpace K`. The basis `completeBasis K` has
+  the property that, for `i ≠ w₀`, the image of `completeBasis K i` by the
   natural restriction map `realSpace K → logSpace K` is `basisUnitLattice K`.
 
 5. At this point, we can construct the map `expMapBasis` that plays a crucial part in the proof.
