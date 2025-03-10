@@ -209,7 +209,7 @@ lemma _root_.Algebra.Generators.ker_localizationAway :
 variable (S) in
 /-- If `S` is the localization of `R` away from `r`, we can construct a natural
 presentation of `S` as `R`-algebra with a single generator `X` and the relation `r * X - 1 = 0`. -/
-@[simps relation, simps (config := .lemmasOnly) rels]
+@[simps relation, simps -isSimp rels]
 noncomputable def localizationAway : Presentation R S where
   toGenerators := Generators.localizationAway r
   rels := Unit
@@ -286,7 +286,7 @@ private lemma span_range_relation_eq_ker_baseChange :
 
 /-- If `P` is a presentation of `S` over `R` and `T` is an `R`-algebra, we
 obtain a natural presentation of `T ⊗[R] S` over `T`. -/
-@[simps relation, simps (config := .lemmasOnly) rels]
+@[simps relation, simps -isSimp rels]
 noncomputable
 def baseChange : Presentation T (T ⊗[R] S) where
   __ := Generators.baseChange P.toGenerators
@@ -431,7 +431,7 @@ private lemma span_range_relation_eq_ker_comp : Ideal.span
 
 /-- Given presentations of `T` over `S` and of `S` over `R`,
 we may construct a presentation of `T` over `R`. -/
-@[simps rels, simps (config := .lemmasOnly) relation]
+@[simps rels, simps -isSimp relation]
 noncomputable def comp : Presentation R T where
   toGenerators := Q.toGenerators.comp P.toGenerators
   rels := Q.rels ⊕ P.rels
