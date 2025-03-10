@@ -413,3 +413,14 @@ instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] :
   inferInstanceAs (Module R (M ⧸ this))
 
 end AddCommGroup
+
+section Units
+
+variable {R : Type*} [CommRing R]
+
+theorem Units.neg_one_mem_torsion : -1 ∈ CommGroup.torsion Rˣ := by
+  rw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
+  use 2
+  simp
+
+end Units

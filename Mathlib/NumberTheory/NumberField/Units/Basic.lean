@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.GroupTheory.Torsion
+import Mathlib.Algebra.CharP.NeTwo
 
 /-!
 # Units of a number field
@@ -175,7 +176,7 @@ theorem torsionOrder_eq_two_of_odd_finrank [NumberField K]
     (h : Odd (Module.finrank ℚ K)) : NumberField.Units.torsionOrder K = 2 := by
   classical
   refine PNat.eq (Finset.card_eq_two.2 ?_)
-  use 1 , ⟨-1, by erw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]; use 2; norm_num⟩
+  use 1 , ⟨-1, Units.neg_one_mem_torsion⟩
   constructor
   · intro hc
     simp [← Subtype.val_inj] at hc
