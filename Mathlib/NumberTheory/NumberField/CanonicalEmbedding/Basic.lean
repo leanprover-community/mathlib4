@@ -1247,10 +1247,6 @@ theorem normAtAllPlaces_image_preimage_of_nonneg {s : Set (realSpace K)}
   refine ⟨mixedSpaceOfRealSpace x, funext fun w ↦ ?_⟩
   rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace (hs x hx w)]
 
-example {s : Set (realSpace K)} :
-    normAtAllPlaces⁻¹' (normAtAllPlaces '' (normAtAllPlaces⁻¹' s)) = normAtAllPlaces⁻¹' s := by
-  exact Set.preimage_image_preimage
-  sorry
 end realSpace
 
 end NumberField.mixedEmbedding
