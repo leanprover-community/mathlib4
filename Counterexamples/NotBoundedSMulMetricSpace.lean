@@ -79,12 +79,10 @@ open PiCountable
 /-- Not all distances on a metric space are induced by a norm. Phrased by remarking that
 one can have a `MetricSpace` and even `NormedAddCommGroup` without `BoundedSMul`, which is
 a prerequisite for `NormedSpace`. -/
-theorem not_all_dist_induced_by_norm : ∃ (𝕜 E : Type) (_ : MetricSpace 𝕜) (_ : MetricSpace E)
-    (_ : Zero 𝕜) (_ : Zero E) (_: SMul 𝕜 E),
-    ¬ BoundedSMul 𝕜 E := by
-  refine ⟨ℝ, ℕ → ℝ, inferInstance, PiCountable.metricSpace, inferInstance, inferInstance,
-    inferInstance, ?_⟩
-  rintro ⟨H, H'⟩
+theorem not_all_dist_induced_by_norm : ¬ ∀ (𝕜 E : Type) [MetricSpace 𝕜] [MetricSpace E]
+    [Zero 𝕜] [Zero E] [SMul 𝕜 E], BoundedSMul 𝕜 E := by
+  intro H
+  obtain ⟨H, -⟩ := H ℝ (ℕ → ℝ)
   apply PiCountable.not_dist_homogeneous'
   intro f g r
   simpa using H r f g
