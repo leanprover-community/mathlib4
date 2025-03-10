@@ -204,7 +204,7 @@ def denest (hn : p.IsNested) : DyckWord where
       · tauto
     rw [← drop_one, take_drop, dropLast_eq_take, take_take]
     have ub : min (1 + i) (p.toList.length - 1) < p.toList.length :=
-      (min_le_right _ p.toList.length.pred).trans_lt (Nat.pred_lt ((length_pos.mpr h).ne'))
+      (min_le_right _ p.toList.length.pred).trans_lt (Nat.pred_lt ((length_pos_iff.mpr h).ne'))
     have lb : 0 < min (1 + i) (p.toList.length - 1) := by omega
     have eq := hn.2 lb ub
     set j := min (1 + i) (p.toList.length - 1)
@@ -263,7 +263,7 @@ lemma firstReturn_pos : 0 < p.firstReturn := by
   What's going on?
   -/
   swap
-  · rw [length_range, length_pos]
+  · rw [length_range, length_pos_iff]
     exact toList_ne_nil.mpr h
   · rw [getElem_range] at f
     simp at f
