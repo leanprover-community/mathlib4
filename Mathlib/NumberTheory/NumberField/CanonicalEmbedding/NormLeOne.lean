@@ -8,7 +8,7 @@ import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.PolarCoord
 import Mathlib.NumberTheory.NumberField.Units.Regulator
 
 /-!
-# Fundamental Cone: elements of norm ≤ 1
+# Fundamental Cone: set of elements of norm ≤ 1
 
 In this file, we study the subset `NormLeOne` of the `fundamentalCone` of elements `x` with
 `mixedEmbedding.norm x ≤ 1`.
@@ -19,121 +19,108 @@ Mainly, we prove that this is bounded, its frontier has volume zero and compute 
 
 The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*][marcus1977number].
 
-* First, since `NormLeOne K` is norm-stable, in the sense that
+1. since `NormLeOne K` is norm-stable, in the sense that
   `normLeOne K = normAtAllPlaces⁻¹' (normAtAllPlaces '' (normLeOne K))`,
   see `normLeOne_eq_primeage_image`, it's enough to study the subset
   `normAtAllPlaces '' (normLeOne K)` of `realSpace K`.
 
-* A description of `normAtAllPlaces '' (normLeOne K)` is given by `normAtAllPlaces_normLeOne`, it is
-  the set of `x : realSpace K`, nonnegative at all places, whose norm is nonzero and `≤ 1` and such
-  that `logMap x` is in the `fundamentalDomain` of `basisUnitLattice K`.
+2. A description of `normAtAllPlaces '' (normLeOne K)` is given by `normAtAllPlaces_normLeOne`, it
+  is the set of `x : realSpace K`, nonnegative at all places, whose norm is nonzero and `≤ 1` and
+  such that `logMap x` is in the `fundamentalDomain` of `basisUnitLattice K`.
   Note that, here and elsewhere, we identify `x` with its image in `mixedSpace K` given
   by `mixedSpaceOfRealSpace x`.
 
-* In order to describe the inverse image in `realSpace K` of `fundamentalDomain` of
+3. In order to describe the inverse image in `realSpace K` of the `fundamentalDomain` of
   `basisUnitLattice K`, we define the map `expMap : realSpace K → realSpace K` that is, in
   some way, the right inverse of `logMap`, see `logMap_expMap`.
-  We also need to construct a basis of `realSpace K` that extends the basis `basisUnitLattice K` of
-  `logSpace K`.
-
-* Denote by `ηᵢ` (with `i ≠ w₀` where `w₀` is the distinguished infinite place,
-  see `logSpace` below), the fundamental system of units given by `fundSystem` and let `|ηᵢ|` denote
-  `normAtAllPlaces (mixedEmbedding ηᵢ))`, that is the vector `(w (ηᵢ)_w` in `realSpace K`. We
-  construct a map, called `expMapBasis : realSpace K → realSpace K` such that
-  `expMapBasis x = Real.exp (x w₀) * ∏_{i ≠ w₀}, |ηᵢ| ^ x i`.
-  The map `expMapBasis` is constructed
-
-## Spaces and maps
-
-To help understand the proof, we make a list of (almost) all the spaces and maps used and
-their connections (as hinted above, we do not mention the map `mixedSpaceOfRealSpace` since we
-identify `realSpace K` with its image in `mixedSpace K`).
-
-* `mixedSpace`: the set `({w // IsReal w} → ℝ) × (w // IsComplex w → ℂ)` where `w` denote the
-  infinite places of `K`.
-
-* `realSpace`: the set `w → ℝ` where `w` denote the infinite places of `K`
-
-* `logSpace`: the set `{w // w ≠ w₀} → ℝ` where `w₀` is a distinguished place of `K`. It is the set
-  used in the proof of Dirichlet Unit Theorem.
-
-* `mixedEmbedding : K → mixedSpace K`: the map that sends `x : K` to `φ_w(x)` where, for all
-  infinite place `w`, `φ_w : K → ℝ` or `ℂ`, resp. if `w` is real or if `w` is complex, denote a
-  complex embedding associated to `w`.
-
-* `logEmbedding : (𝓞 K)ˣ → logSpace K`: the map that sends the unit `u : (𝓞 K)ˣ` to
-  `(mult w * log (w u))_w` for `w ≠ w₀`. Its image is `unitLattice K`, a `ℤ`-lattice of
-  `logSpace K`, that admits `basisUnitLattice K` as a basis.
-
-* `logMap : mixedSpace K → logSpace K`: this map is defined such that it factors `logEmbedding`,
-  that is, for `u : (𝓞 K)ˣ`, `logMap (mixedEmbedding x) = logEmbedding x`, and that
-  `logMap (c • x) = logMap x` for `c ≠ 0` and `norm x ≠ 0`. The inverse image of the fundamental
-  domain of `basisUnitLattice K` by `logMap` (minus the elements of norm zero) is
-  `fundamentalCone K`.
-
-* `expMap : realSpace K → realSpace K`: the right inverse of `logMap` in the sense that
-  `logMap (expMap x) = (x_w)_{w ≠ w₀}`.
 
 -/
 
 variable (K : Type*) [Field K]
 
-namespace NumberField.mixedEmbedding
+open Finset NumberField InfinitePlace mixedEmbedding Units dirichletUnitTheorem
 
-open Finset NumberField.InfinitePlace NumberField.Units NumberField.Units.dirichletUnitTheorem
+namespace NumberField.mixedEmbedding
 
 section normAtAllPlaces
 
+variable [NumberField K]
+
 variable {K}
 
-theorem logMap_normAtAllPlaces [NumberField K] (x : mixedSpace K) :
+theorem logMap_normAtAllPlaces (x : mixedSpace K) :
     logMap (mixedSpaceOfRealSpace (normAtAllPlaces x)) = logMap x :=
   logMap_eq_of_normAtPlace_eq
     fun w ↦ by rw [normAtPlace_mixedSpaceOfRealSpace (normAtPlace_nonneg w x)]
 
-theorem norm_normAtAllPlaces [NumberField K] (x : mixedSpace K) :
+theorem norm_normAtAllPlaces (x : mixedSpace K) :
     mixedEmbedding.norm (mixedSpaceOfRealSpace (normAtAllPlaces x)) = mixedEmbedding.norm x := by
   simp_rw [mixedEmbedding.norm_apply,
     normAtPlace_mixedSpaceOfRealSpace (normAtAllPlaces_nonneg _ _)]
 
-theorem normAtAllPlaces_mem_fundamentalCone_iff [NumberField K] {x : mixedSpace K} :
+theorem normAtAllPlaces_mem_fundamentalCone_iff {x : mixedSpace K} :
     mixedSpaceOfRealSpace (normAtAllPlaces x) ∈ fundamentalCone K ↔ x ∈ fundamentalCone K := by
   simp_rw [fundamentalCone, Set.mem_diff, Set.mem_preimage, logMap_normAtAllPlaces,
     Set.mem_setOf_eq, norm_normAtAllPlaces]
 
 end normAtAllPlaces
 
-section normLeOne
+section normLeOne_def
 
 variable [NumberField K]
 
 /--
-Docstring.
+The set of elements of the `fundamentalCone` of `norm ≤ 1`.
 -/
-abbrev normLeOne  : Set (mixedSpace K) :=
+abbrev normLeOne : Set (mixedSpace K) :=
   {x | x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ 1}
 
 variable {K} in
--- incorporate?
-theorem mem_normLeOne_iff (x : mixedSpace K):
-    x ∈ normLeOne K ↔ mixedSpaceOfRealSpace (normAtAllPlaces x) ∈ normLeOne K := by
-  simp only [normLeOne, Set.mem_setOf_eq, normAtAllPlaces_mem_fundamentalCone_iff,
-    norm_normAtAllPlaces]
+theorem mem_normLeOne {x : mixedSpace K} :
+    x ∈ normLeOne K ↔ x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ 1 := Set.mem_sep_iff
+
+variable {K} in
+ -- incorporate?
+ theorem mem_normLeOne_iff (x : mixedSpace K):
+     x ∈ normLeOne K ↔ mixedSpaceOfRealSpace (normAtAllPlaces x) ∈ normLeOne K := by
+   simp only [normLeOne, Set.mem_setOf_eq, normAtAllPlaces_mem_fundamentalCone_iff,
+     norm_normAtAllPlaces]
 
 theorem normLeOne_eq_primeage_image :
-    normLeOne K = normAtAllPlaces⁻¹' (normAtAllPlaces '' (normLeOne K)) :=
-  mem_iff_normAtAllPlaces_mem_iff.mp fun x ↦ mem_normLeOne_iff x
+    normLeOne K = normAtAllPlaces⁻¹' (normAtAllPlaces '' (normLeOne K)) := by
+  refine subset_antisymm (Set.subset_preimage_image _ _) ?_
+  rintro x ⟨y, hy₁, hy₂⟩
+  rw [mem_normLeOne, ← normAtAllPlaces_mem_fundamentalCone_iff, ← norm_normAtAllPlaces,
+    ← mem_normLeOne] at hy₁ ⊢
+  rwa [← hy₂]
 
-end normLeOne
+open scoped Classical in
+theorem normAtAllPlaces_normLeOne :
+    normAtAllPlaces '' (normLeOne K) =
+    mixedSpaceOfRealSpace⁻¹'
+      (logMap⁻¹'
+          ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K))) ∩
+      {x | (∀ w, 0 ≤ x w)} ∩
+      {x | mixedEmbedding.norm (mixedSpaceOfRealSpace x) ≠ 0} ∩
+      {x | mixedEmbedding.norm (mixedSpaceOfRealSpace x) ≤ 1} := by
+  ext x
+  refine ⟨?_, fun ⟨⟨⟨h₁, h₂⟩, h₃⟩, h₄⟩ ↦ ?_⟩
+  · rintro ⟨y, ⟨⟨h₁, h₂⟩, h₃⟩, rfl⟩
+    refine ⟨⟨⟨?_, ?_⟩, ?_⟩, ?_⟩
+    · rwa [Set.mem_preimage, ← logMap_normAtAllPlaces] at h₁
+    · exact fun w ↦ normAtPlace_nonneg w y
+    · rwa [Set.mem_setOf_eq, ← norm_normAtAllPlaces] at h₂
+    · rwa [← norm_normAtAllPlaces] at h₃
+  · exact ⟨mixedSpaceOfRealSpace x, ⟨⟨h₁, h₃⟩, h₄⟩, normAtAllPlaces_mixedSpaceOfRealSpace h₂⟩
 
-namespace NormLeOne
+end normLeOne_def
 
 noncomputable section expMap
 
 variable {K}
 
 /--
-Docstring.
+The component of `expMap` at the place `w`.
 -/
 @[simps]
 def expMap_single (w : InfinitePlace K) : PartialHomeomorph ℝ ℝ where
@@ -164,10 +151,11 @@ theorem hasDerivAt_expMap_single (w : InfinitePlace K) (x : ℝ) :
 variable [NumberField K]
 
 /--
-Docstring.
+The map from `realSpace K → realSpace K` whose components is given by `expMap_single`. It is, in
+some respect, a right inverse of `logMap`, see `logMap_expMap`.
 -/
-def expMap : PartialHomeomorph (realSpace K) (realSpace K) := by
-  refine PartialHomeomorph.pi fun w ↦ expMap_single w
+def expMap : PartialHomeomorph (realSpace K) (realSpace K) :=
+  PartialHomeomorph.pi fun w ↦ expMap_single w
 
 variable (K)
 
@@ -586,33 +574,19 @@ theorem measurableSet_interior_paramSet :
   · exact measurableSet_Iio
   · exact measurableSet_Ioo
 
-open scoped Classical in
-theorem normAtAllPlaces_normLeOne :
-    normAtAllPlaces '' (normLeOne K) = {x | (∀ w, 0 ≤ x w) ∧
-      logMap (mixedSpaceOfRealSpace x) ∈
-      ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K)) ∧
-      mixedEmbedding.norm (mixedSpaceOfRealSpace x) ≠ 0 ∧
-      mixedEmbedding.norm (mixedSpaceOfRealSpace x) ≤ 1} := by
-  ext x
-  refine ⟨?_, fun ⟨hx₁, hx₂, hx₃, hx₄⟩ ↦ ?_⟩
-  · rintro ⟨a, ⟨⟨ha₁, ha₂⟩, ha₃⟩, rfl⟩
-    refine ⟨fun w ↦ normAtPlace_nonneg w a, ?_⟩
-    exact (logMap_normAtAllPlaces a) ▸ (norm_normAtAllPlaces a) ▸ ⟨ha₁, ha₂, ha₃⟩
-  · exact ⟨mixedSpaceOfRealSpace x, ⟨⟨hx₂, hx₃⟩, hx₄⟩, normAtAllPlaces_mixedSpaceOfRealSpace hx₁⟩
-
 theorem normAtAllPlaces_normLeOne_eq_image :
     normAtAllPlaces '' (normLeOne K) = expMapBasis '' (paramSet K) := by
   ext x
   by_cases hx : ∀ w, 0 < x w
   · rw [← expMapBasis.right_inv (Set.mem_univ_pi.mpr hx), (injective_expMapBasis K).mem_set_image]
-    simp only [normAtAllPlaces_normLeOne, ne_eq, Set.mem_setOf_eq, expMapBasis_nonneg,
-      implies_true, logMap_expMapBasis, norm_expMapBasis, pow_eq_zero_iff', Real.exp_ne_zero,
-      false_and, not_false_eq_true, pow_le_one_iff_of_nonneg (Real.exp_nonneg _)
-      Module.finrank_pos.ne', Real.exp_le_one_iff, true_and, Set.mem_univ_pi]
+    simp only [normAtAllPlaces_normLeOne, Set.mem_inter_iff, Set.mem_setOf_eq, expMapBasis_nonneg,
+      Set.mem_preimage, logMap_expMapBasis, implies_true, and_true, norm_expMapBasis,
+      pow_le_one_iff_of_nonneg (Real.exp_nonneg _) Module.finrank_pos.ne', Real.exp_le_one_iff,
+      ne_eq, pow_eq_zero_iff', Real.exp_ne_zero, false_and, not_false_eq_true,  Set.mem_univ_pi]
     refine ⟨fun ⟨h₁, h₂⟩ w ↦ ?_, fun h ↦ ⟨fun w hw ↦ by simpa [hw] using h w, by simpa using h w₀⟩⟩
-    split_ifs with hw
-    · exact hw ▸ h₂
-    · exact h₁ w hw
+    · split_ifs with hw
+      · exact hw ▸ h₂
+      · exact h₁ w hw
   · refine ⟨?_, ?_⟩
     · rintro ⟨a, ⟨ha, _⟩, rfl⟩
       exact (hx fun w ↦ fundamentalCone.normAtPlace_pos_of_mem ha w).elim
@@ -744,11 +718,9 @@ theorem compactSet_ae :
 
 end compactSet
 
-end NormLeOne
-
 variable [NumberField K]
 
-open ENNReal Bornology MeasureTheory NormLeOne
+open ENNReal Bornology MeasureTheory
 
 theorem measurableSet_normLeOne :
     MeasurableSet (normLeOne K) :=

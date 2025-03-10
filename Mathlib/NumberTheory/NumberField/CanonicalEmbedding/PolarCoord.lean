@@ -11,25 +11,25 @@ import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 
 We define two polar coordinate changes of variables for the mixed space `ℝ^r₁ × ℂ^r₂` associated
 to a number field `K` of signature `(r₁, r₂)`. The first one is `mixedEmbedding.polarCoord` and has
-value in `realMixedSpace K` defined as `ℝ^r₁ × (ℝ ⨯ ℝ)^r₂`, the second is
-`mixedEmbedding.polarSpaceCoord` and has value in `polarSpace K` defined as `ℝ^(r₁+r₂) × ℝ^r₂`.
-
-The change of variables with the `polarSpace` is useful to compute the volumes of subsets of the
-mixed space with enough symmetries, see ...
+value in the `realMixedSpace K` defined as `ℝ^r₁ × (ℝ ⨯ ℝ)^r₂`, the second is
+`mixedEmbedding.polarSpaceCoord` and has value in the `polarSpace K` defined as `ℝ^(r₁+r₂) × ℝ^r₂`.
 
 ## Main definitions and results
 
 * `mixedEmbedding.polarCoord`: the polar coordinate change of variables between the mixed
- space `ℝ^r₁ × ℂ^r₂` and `ℝ^r₁ × (ℝ × ℝ)^r₂` defined as the identity on the first component and
- mapping `(zᵢ)ᵢ` to `(‖zᵢ‖, Arg zᵢ)ᵢ` on the second component.
+  space `ℝ^r₁ × ℂ^r₂` and `ℝ^r₁ × (ℝ × ℝ)^r₂` defined as the identity on the first component and
+  mapping `(zᵢ)ᵢ` to `(‖zᵢ‖, Arg zᵢ)ᵢ` on the second component.
+
 * `mixedEmbedding.integral_comp_polarCoord_symm`: the change of variables formula for
- `mixedEmbedding.polarCoord`
+  `mixedEmbedding.polarCoord`
+
 * `mixedEmbedding.polarSpaceCoord`: the polar coordinate change of variables between the mixed
- space `ℝ^r₁ × ℂ^r₂` and the polar space `ℝ^(r₁ + r₂) × ℝ^r₂` defined by sending `x` to
- `x w` or `‖x w‖` depending on wether `w` is real or complex for the first component, and
- to `Arg (x w)`, `w` complex, for the second component.
+  space `ℝ^r₁ × ℂ^r₂` and the polar space `ℝ^(r₁ + r₂) × ℝ^r₂` defined by sending `x` to
+  `x w` or `‖x w‖` depending on wether `w` is real or complex for the first component, and
+  to `Arg (x w)`, `w` complex, for the second component.
+
 * `mixedEmbedding.integral_comp_polarSpaceCoord_symm`: the change of variables formula for
- `mixedEmbedding.polarSpaceCoord`
+  `mixedEmbedding.polarSpaceCoord`
 
 -/
 
@@ -76,11 +76,11 @@ the first component and mapping `(rᵢ cos θᵢ, rᵢ sin θᵢ)ᵢ` to `(rᵢ,
 -/
 @[simps! apply target]
 def polarCoordReal : PartialHomeomorph (realMixedSpace K) (realMixedSpace K) :=
-  ((PartialHomeomorph.refl _).prod (PartialHomeomorph.pi fun _ ↦ polarCoord))
+  (PartialHomeomorph.refl _).prod (PartialHomeomorph.pi fun _ ↦ polarCoord)
 
 theorem measurable_polarCoordReal_symm :
     Measurable (polarCoordReal K).symm := by
-  refine measurable_fst.prod_mk <| Measurable.comp ?_ measurable_snd
+  refine measurable_fst.prodMk <| Measurable.comp ?_ measurable_snd
   exact measurable_pi_lambda _
     fun _ ↦ continuous_polarCoord_symm.measurable.comp (measurable_pi_apply _)
 
@@ -329,21 +329,6 @@ theorem lintegral_comp_polarSpaceCoord_symm [NumberField K] (f : mixedSpace K �
     homeoRealMixedSpacePolarSpace_apply_fst_ofIsReal,
     homeoRealMixedSpacePolarSpace_apply_fst_ofIsComplex, homeoRealMixedSpacePolarSpace_apply_snd]
 
-/-- The `realSpace` associated to a number field `K` is the real vector space indexed by the
-infinite places of `K`. -/
-abbrev realSpace := InfinitePlace K → ℝ
-
-variable {K}
-
-/-- The continuous linear map from `realSpace K` to `mixedSpace K` which is the identity of real
-places and the natural map `ℝ → ℂ` at complex places. -/
-def mixedSpaceOfRealSpace : realSpace K →L[ℝ] mixedSpace K :=
-  .prod (.pi fun w ↦ .proj w.1) (.pi fun w ↦ Complex.ofRealCLM.comp (.proj w.1))
-
-theorem mixedSpaceOfRealSpace_apply (x : realSpace K) :
-    mixedSpaceOfRealSpace x = ⟨fun w ↦ x w.1, fun w ↦ x w.1⟩ := rfl
-
-variable (K) in
 theorem injective_mixedSpaceOfRealSpace :
     Function.Injective (mixedSpaceOfRealSpace : realSpace K → mixedSpace K) := by
   refine (injective_iff_map_eq_zero mixedSpaceOfRealSpace).mpr fun _ h ↦ ?_
@@ -352,6 +337,8 @@ theorem injective_mixedSpaceOfRealSpace :
   obtain hw | hw := isReal_or_isComplex w
   · exact h.1 ⟨w, hw⟩
   · exact Complex.ofReal_inj.mp <| h.2 ⟨w, hw⟩
+
+variable {K}
 
 open scoped Classical in
 /-- The map from the `mixedSpace K` to `realSpace K` that sends the values at complex places
@@ -473,30 +460,10 @@ theorem volume_eq_two_pi_pow_mul_integral [NumberField K]
   · exact (Measurable.mul (by fun_prop)
       <| measurable_const.indicator <| hm.preimage (measurable_polarSpaceCoord_symm K)).aemeasurable
 
-/--
-Docstring.
--/
-abbrev normAtAllPlaces (x : mixedSpace K) : realSpace K :=
-    fun w ↦ normAtPlace w x
-
 variable (K) in
 theorem continuous_normAtAllPlaces :
     Continuous (normAtAllPlaces : mixedSpace K → realSpace K) :=
   continuous_pi fun _ ↦ continuous_normAtPlace _
-
-@[simp]
-theorem normAtAllPlaces_apply (x : mixedSpace K) (w : InfinitePlace K) :
-    normAtAllPlaces x w = normAtPlace w x := rfl
-
-theorem normAtAllPlaces_nonneg (x : mixedSpace K) (w : InfinitePlace K) :
-    0 ≤ normAtAllPlaces x w := normAtPlace_nonneg _ _
-
-theorem normAtPlace_mixedSpaceOfRealSpace {x : realSpace K} {w : InfinitePlace K} (hx : 0 ≤ x w) :
-    normAtPlace w (mixedSpaceOfRealSpace x) = x w := by
-  simp only [mixedSpaceOfRealSpace_apply]
-  obtain hw | hw := isReal_or_isComplex w
-  · rw [normAtPlace_apply_of_isReal hw, Real.norm_of_nonneg hx]
-  · rw [normAtPlace_apply_of_isComplex hw, Complex.norm_of_nonneg hx]
 
 theorem normAtAllPlaces_image_preimage_of_nonneg {s : Set (realSpace K)}
     (hs : ∀ x ∈ s, ∀ w, 0 ≤ x w) :
@@ -505,17 +472,6 @@ theorem normAtAllPlaces_image_preimage_of_nonneg {s : Set (realSpace K)}
   rintro x hx
   refine ⟨mixedSpaceOfRealSpace x, funext fun w ↦ ?_⟩
   rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace (hs x hx w)]
-
-theorem normAtAllPlaces_mixedSpaceOfRealSpace {x : realSpace K} (hx : ∀ w, 0 ≤ x w) :
-    normAtAllPlaces (mixedSpaceOfRealSpace x) = x := by
-  ext
-  rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace (hx _)]
-
--- theorem mixedSpaceOfRealSpace_normAtAllPlaces {x : mixedSpace K} (hx : )
-
-theorem normAtAllPlaces_normAtAllPlaces (x : mixedSpace K) :
-    normAtAllPlaces (mixedSpaceOfRealSpace (normAtAllPlaces x)) = normAtAllPlaces x :=
-  normAtAllPlaces_mixedSpaceOfRealSpace fun _ ↦ (normAtAllPlaces_nonneg _ _)
 
 theorem normAtAllPlaces_mixedEmbedding (x : K) (w : InfinitePlace K) :
     normAtAllPlaces (mixedEmbedding K x) w = w x := by

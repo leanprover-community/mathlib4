@@ -3,12 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Group.Equiv.Opposite
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Logic.Equiv.Set
-import Mathlib.Util.AssertExists
+import Mathlib.Algebra.Notation.Prod
 
 /-!
 # (Semi)ring equivs
@@ -76,8 +75,8 @@ add_decl_doc RingEquiv.toMulEquiv
 
 /-- `RingEquivClass F R S` states that `F` is a type of ring structure preserving equivalences.
 You should extend this class when you extend `RingEquiv`. -/
-class RingEquivClass (F R S : Type*) [Mul R] [Add R] [Mul S] [Add S] [EquivLike F R S]
-  extends MulEquivClass F R S : Prop where
+class RingEquivClass (F R S : Type*) [Mul R] [Add R] [Mul S] [Add S] [EquivLike F R S] : Prop
+  extends MulEquivClass F R S where
   /-- By definition, a ring isomorphism preserves the additive structure. -/
   map_add : ∀ (f : F) (a b), f (a + b) = f a + f b
 

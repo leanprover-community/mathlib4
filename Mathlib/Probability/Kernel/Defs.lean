@@ -235,6 +235,16 @@ lemma apply_congr_of_mem_measurableAtom (κ : Kernel α β) {y' y : α} (hy' : y
   ext s hs
   exact mem_of_mem_measurableAtom hy' (κ.measurable_coe hs (measurableSet_singleton (κ y s))) rfl
 
+@[nontriviality]
+lemma eq_zero_of_isEmpty_left (κ : Kernel α β) [h : IsEmpty α] : κ = 0 := by
+  ext a
+  exact h.elim a
+
+@[nontriviality]
+lemma eq_zero_of_isEmpty_right (κ : Kernel α β) [IsEmpty β] : κ = 0 := by
+  ext a
+  simp [Measure.eq_zero_of_isEmpty (κ a)]
+
 section Sum
 
 /-- Sum of an indexed family of kernels. -/

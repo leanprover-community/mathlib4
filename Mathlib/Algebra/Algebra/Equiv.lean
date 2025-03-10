@@ -40,8 +40,8 @@ notation:50 A " ≃ₐ[" R "] " A' => AlgEquiv R A A'
 /-- `AlgEquivClass F R A B` states that `F` is a type of algebra structure preserving
   equivalences. You should extend this class when you extend `AlgEquiv`. -/
 class AlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R] [Semiring A]
-    [Semiring B] [Algebra R A] [Algebra R B] [EquivLike F A B]
-    extends RingEquivClass F A B : Prop where
+    [Semiring B] [Algebra R A] [Algebra R B] [EquivLike F A B] : Prop
+    extends RingEquivClass F A B where
   /-- An equivalence of algebras commutes with the action of scalars. -/
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 
@@ -198,34 +198,6 @@ theorem commutes : ∀ r : R, e (algebraMap R A₁ r) = algebraMap R A₂ r :=
   e.commutes'
 
 end coe
-
-section map
-
-@[deprecated map_add (since := "2024-06-20")]
-protected theorem map_add : ∀ x y, e (x + y) = e x + e y :=
-  map_add e
-
-@[deprecated map_zero (since := "2024-06-20")]
-protected theorem map_zero : e 0 = 0 :=
-  map_zero e
-
-@[deprecated map_mul (since := "2024-06-20")]
-protected theorem map_mul : ∀ x y, e (x * y) = e x * e y :=
-  map_mul e
-
-@[deprecated map_one (since := "2024-06-20")]
-protected theorem map_one : e 1 = 1 :=
-  map_one e
-
-@[deprecated map_smul (since := "2024-06-20")]
-protected theorem map_smul (r : R) (x : A₁) : e (r • x) = r • e x :=
-  map_smul _ _ _
-
-@[deprecated map_pow (since := "2024-06-20")]
-protected theorem map_pow : ∀ (x : A₁) (n : ℕ), e (x ^ n) = e x ^ n :=
-  map_pow _
-
-end map
 
 section bijective
 
