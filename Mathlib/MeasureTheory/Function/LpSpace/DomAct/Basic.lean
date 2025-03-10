@@ -94,7 +94,7 @@ instance : DistribSMul Mᵈᵐᵃ (Lp E p μ) where
   smul_zero _ := rfl
   smul_add := by rintro _ ⟨⟨⟩, _⟩ ⟨⟨⟩, _⟩; rfl
 
--- The next few lemmas follow from the `IsometricSMul` instance if `1 ≤ p`
+-- The next few lemmas follow from the `IsIsometricSMul` instance if `1 ≤ p`
 @[to_additive (attr := simp)]
 theorem norm_smul_Lp (c : Mᵈᵐᵃ) (f : Lp E p μ) : ‖c • f‖ = ‖f‖ :=
   Lp.norm_compMeasurePreserving _ _
@@ -114,7 +114,7 @@ theorem edist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : edist (c • f) (c �
 variable [Fact (1 ≤ p)]
 
 @[to_additive]
-instance : IsometricSMul Mᵈᵐᵃ (Lp E p μ) := ⟨edist_smul_Lp⟩
+instance : IsIsometricSMul Mᵈᵐᵃ (Lp E p μ) := ⟨edist_smul_Lp⟩
 
 end SMul
 
