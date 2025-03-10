@@ -82,6 +82,12 @@ theorem lt_of_lt_of_le' : b < c → a ≤ b → a < c :=
 theorem not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
   rw [lt_iff_le_not_le, Classical.not_and_iff_or_not_not, Classical.not_not]
 
+theorem not_le_of_le_of_not_le (h₁ : a ≤ b) (h₂ : ¬ c ≤ b) : ¬ c ≤ a :=
+  fun h ↦ h₂ (le_trans h h₁)
+
+theorem not_le_of_not_le_of_le (h₁ : ¬ b ≤ a) (h₂ : b ≤ c) : ¬ c ≤ a :=
+  fun h ↦ h₁ (le_trans h₂ h)
+
 end Preorder
 
 section PartialOrder
