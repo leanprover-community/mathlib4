@@ -283,15 +283,6 @@ instance {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsIntegral K L
 
 end TotallyDisconnected
 
-@[simp] lemma IntermediateField.fixingSubgroup_top (K L : Type*) [Field K] [Field L] [Algebra K L] :
-    IntermediateField.fixingSubgroup (⊤ : IntermediateField K L) = ⊥ := by
-  ext
-  simp [mem_fixingSubgroup_iff, DFunLike.ext_iff]
-
-@[simp] lemma IntermediateField.fixingSubgroup_bot (K L : Type*) [Field K] [Field L] [Algebra K L] :
-    IntermediateField.fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
-  ext
-  simp [mem_fixingSubgroup_iff, mem_bot]
 
 instance krullTopology_discreteTopology_of_finiteDimensional (K L : Type*) [Field K] [Field L]
     [Algebra K L] [FiniteDimensional K L] : DiscreteTopology (L ≃ₐ[K] L) := by
