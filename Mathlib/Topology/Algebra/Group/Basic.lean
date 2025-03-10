@@ -404,6 +404,9 @@ you should also provide an instance of `UniformSpace` and `UniformAddGroup` usin
 class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] : Prop
     extends ContinuousAdd G, ContinuousNeg G
 
+@[deprecated (since := "2025-02-14")] alias TopologicalAddGroup :=
+  IsTopologicalAddGroup
+
 /-- A topological group is a group in which the multiplication and inversion operations are
 continuous.
 
@@ -413,6 +416,9 @@ you should also provide an instance of `UniformSpace` and `UniformGroup` using
 @[to_additive]
 class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] : Prop
     extends ContinuousMul G, ContinuousInv G
+
+@[deprecated (since := "2025-02-14")] alias TopologicalGroup :=
+  IsTopologicalGroup
 
 section Conj
 
@@ -453,7 +459,7 @@ instance : IsTopologicalGroup (ULift G) where
 
 section ZPow
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_zpow : ∀ z : ℤ, Continuous fun a : G => a ^ z
   | Int.ofNat n => by simpa using continuous_pow n
   | Int.negSucc n => by simpa using (continuous_pow (n + 1)).inv
@@ -1797,7 +1803,7 @@ instance : Bot (GroupTopology α) :=
   let _t : TopologicalSpace α := ⊥
   ⟨{  continuous_mul := by
         haveI := discreteTopology_bot α
-        continuity
+        fun_prop
       continuous_inv := continuous_bot }⟩
 
 @[to_additive (attr := simp)]
