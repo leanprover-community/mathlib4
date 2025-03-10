@@ -343,9 +343,11 @@ theorem union : ∀ (_ : Dioph S) (_ : Dioph S'), Dioph (S ∪ S')
             (exists_congr fun t =>
               (@mul_eq_zero _ _ _ (p ((v ⊗ t) ∘ (inl ⊗ inr ∘ inl)))
                   (q ((v ⊗ t) ∘ (inl ⊗ inr ∘ inr)))).symm))
-      · refine inject_dummies_lem _ (some ⊗ fun _ => none) ?_ _ _
+      · -- Porting note: putting everything on the same line fails
+        refine inject_dummies_lem _ (some ⊗ fun _ => none) ?_ _ _
         exact fun _ => by simp only [elim_inl]
-      · refine inject_dummies_lem _ ((fun _ => none) ⊗ some) ?_ _ _
+      · -- Porting note: putting everything on the same line fails
+        refine inject_dummies_lem _ ((fun _ => none) ⊗ some) ?_ _ _
         exact fun _ => by simp only [elim_inr]⟩
 
 /-- A partial function is Diophantine if its graph is Diophantine. -/

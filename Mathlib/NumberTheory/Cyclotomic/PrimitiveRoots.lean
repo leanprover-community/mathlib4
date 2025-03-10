@@ -156,6 +156,7 @@ noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDoma
       left_inv := fun _ => Subtype.ext rfl
       right_inv := fun _ => Subtype.ext rfl }
 
+-- Porting note: renamed argument `φ`: "expected '_' or identifier"
 @[simp]
 theorem embeddingsEquivPrimitiveRoots_apply_coe (C : Type*) [CommRing C] [IsDomain C] [Algebra K C]
     (hirr : Irreducible (cyclotomic n K)) (φ' : L →ₐ[K] C) :

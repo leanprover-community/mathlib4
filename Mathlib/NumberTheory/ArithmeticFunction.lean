@@ -402,6 +402,7 @@ theorem zeta_apply {x : ℕ} : ζ x = if x = 0 then 0 else 1 :=
 theorem zeta_apply_ne {x : ℕ} (h : x ≠ 0) : ζ x = 1 :=
   if_neg h
 
+-- Porting note: removed `@[simp]`, LHS not in normal form
 theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [Module R M]
     {f : ArithmeticFunction M} {x : ℕ} :
     ((↑ζ : ArithmeticFunction R) • f) x = ∑ i ∈ divisors x, f i := by
