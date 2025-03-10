@@ -148,11 +148,9 @@ def Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 
 initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
 
--- Porting note:
--- Added these lemmas as restatements of `left_inv` and `right_inv`,
--- which use the coercions.
--- We might even consider switching the names, and having these as a public API.
+/-- Restatement of `Equiv.left_inv` in terms of `Function.LeftInverse`. -/
 theorem left_inv' (e : α ≃ β) : Function.LeftInverse e.symm e := e.left_inv
+/-- Restatement of `Equiv.right_inv` in terms of `Function.RightInverse`. -/
 theorem right_inv' (e : α ≃ β) : Function.RightInverse e.symm e := e.right_inv
 
 /-- Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. -/
@@ -420,7 +418,6 @@ def ofIff {P Q : Prop} (h : P ↔ Q) : P ≃ Q := ⟨h.mp, h.mpr, fun _ => rfl, 
 
 /-- If `α₁` is equivalent to `α₂` and `β₁` is equivalent to `β₂`, then the type of maps `α₁ → β₁`
 is equivalent to the type of maps `α₂ → β₂`. -/
--- Porting note: removing `congr` attribute
 @[simps apply]
 def arrowCongr {α₁ β₁ α₂ β₂ : Sort*} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) : (α₁ → β₁) ≃ (α₂ → β₂) where
   toFun f := e₂ ∘ f ∘ e₁.symm
@@ -448,7 +445,6 @@ theorem arrowCongr_comp {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort*} (ea : α�
 The `equiv_rw` tactic is not able to use the default `Sort` level `Equiv.arrowCongr`,
 because Lean's universe rules will not unify `?l_1` with `imax (1 ?m_1)`.
 -/
--- Porting note: removing `congr` attribute
 @[simps! apply]
 def arrowCongr' {α₁ β₁ α₂ β₂ : Type*} (hα : α₁ ≃ α₂) (hβ : β₁ ≃ β₂) : (α₁ → β₁) ≃ (α₂ → β₂) :=
   Equiv.arrowCongr hα hβ
@@ -667,15 +663,8 @@ end Perm
     (Σ a : α₁, β (e a)) ≃ Σ a : α₂, β a where
   toFun a := ⟨e a.1, a.2⟩
   invFun a := ⟨e.symm a.1, (e.right_inv' a.1).symm ▸ a.2⟩
-  -- Porting note: this was a pretty gnarly match already, and it got worse after porting
-  left_inv := fun ⟨a, b⟩ =>
-    match (motive := ∀ a' (h : a' = a), Sigma.mk _ (congr_arg e h.symm ▸ b) = ⟨a, b⟩)
-      e.symm (e a), e.left_inv a with
-    | _, rfl => rfl
-  right_inv := fun ⟨a, b⟩ =>
-    match (motive := ∀ a' (h : a' = a), Sigma.mk a' (h.symm ▸ b) = ⟨a, b⟩)
-      e (e.symm a), e.apply_symm_apply _ with
-    | _, rfl => rfl
+  left_inv := fun ⟨a, b⟩ => by simp
+  right_inv := fun ⟨a, b⟩ => by simp
 
 /-- Transporting a sigma type through an equivalence of the base -/
 def sigmaCongrLeft' {α₁ α₂} {β : α₁ → Sort _} (f : α₁ ≃ α₂) :
