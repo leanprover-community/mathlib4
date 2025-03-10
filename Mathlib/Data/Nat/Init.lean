@@ -613,7 +613,7 @@ proved above, and some of the results in later sections depend on the definition
 @[simp]
 lemma rec_zero {C : ℕ → Sort*} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) : Nat.rec h0 h 0 = h0 := rfl
 
-@[simp]
+-- Not `@[simp]` since `simp` can reduce the whole term.
 lemma rec_add_one {C : ℕ → Sort*} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) (n : ℕ) :
     Nat.rec h0 h (n + 1) = h n (Nat.rec h0 h n) := rfl
 
