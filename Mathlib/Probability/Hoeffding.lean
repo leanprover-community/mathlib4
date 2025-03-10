@@ -10,6 +10,7 @@ import Mathlib.Probability.Variance
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.MeasureTheory.Measure.Tilted
+import Mathlib.Analysis.Calculus.Taylor
 
 /-!
 # Hoeffding's lemma
@@ -118,7 +119,26 @@ theorem cgf_le_bound_of_ae_mem_Icc_and_mean_zero [IsProbabilityMeasure μ]
     · simp only [measure_univ, ENNReal.one_toReal, div_one, f']
       exact h0
     · exact integrable_exp_set_interior_of_ae_mem_Icc μ 0 a b hX h
-  have q : ∀ x : ℝ, ∃ c ∈ (Set.Ioo 0 t), f t = f 0 + f' 0 * t + f'' c * t ^ 2 / 2 := by
+  have q : ∃ c ∈ (Set.Ioo 0 t), f t = f 0 + f' 0 * t + f'' c * t ^ 2 / 2 := by
+    have q' : ∃ c ∈ (Set.Ioo 0 t), f t - taylorWithinEval f 1 (Set.Icc 0 t) 0 t =
+      iteratedDerivWithin (1 + 1) f (Set.Icc 0 t) c * (t - 0) ^ (1 + 1) / ↑(1 + 1).factorial := by
+      apply @taylor_mean_remainder_lagrange f t 0 1 ht _ _
+      simp only [Nat.cast_one]
+      refine AnalyticOn.contDiffOn_of_completeSpace ?_
+      dsimp [f]
+      have r : AnalyticOn ℝ (cgf X μ) (interior (integrableExpSet X μ)) := analyticOn_cgf
+      rw [integrable_exp_of_ae_mem_Icc μ a b hX h] at r
+      simp only [interior_univ] at r
+      apply AnalyticOn.mono r (fun ⦃a⦄ a ↦ trivial)
+      apply DifferentiableOn.mono
+      rw [differentiableOn_univ]
+      · apply?
+      · sorry
+
+
+
+    sorry
+    /-
     let A := (f t - f 0 - f' 0 * t) * 2 / t ^ 2
     have q0 : f t = f 0 + f' 0 * t + A * t ^ 2 / 2 := by
       have q0' : A * t ^ 2 = (f t - f 0 - f' 0 * t) * 2 := by
@@ -188,7 +208,6 @@ theorem cgf_le_bound_of_ae_mem_Icc_and_mean_zero [IsProbabilityMeasure μ]
         (by rw [q1, q2] : g 0 = g t)
         (fun x _ => q3 _ (integrable_exp_set_interior_of_ae_mem_Icc μ x a b hX h))
     obtain ⟨c, ⟨cq, cq'⟩⟩ := q4
-    intro
     use c; constructor
     · exact cq
     · dsimp only [g'] at cq';
@@ -200,6 +219,7 @@ theorem cgf_le_bound_of_ae_mem_Icc_and_mean_zero [IsProbabilityMeasure μ]
         linarith
       rw [← cq''']
       exact q0
+  -/
   rw [hf, hf'] at q
   simp only [zero_mul, add_zero, zero_add, forall_const] at q
   obtain ⟨c, ⟨_, cq'⟩⟩ := q
