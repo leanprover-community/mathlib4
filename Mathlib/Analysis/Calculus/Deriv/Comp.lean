@@ -289,6 +289,12 @@ theorem deriv_comp (hh₂ : DifferentiableAt 𝕜' h₂ (h x)) (hh : Differentia
 
 @[deprecated (since := "2024-10-31")] alias deriv.comp := deriv_comp
 
+theorem deriv_comp_mul (hd : DifferentiableAt 𝕜' f (c*x)) :
+  deriv (fun x => f (c*x)) x = c * deriv f (c*x) := by
+  rw [show (fun x => f (c*x)) = f ∘ (fun x => c*x) by rfl]
+  rw [deriv_comp, deriv_const_mul _ (differentiableAt_id'), mul_comm]
+  simp
+
 theorem deriv_comp_of_eq (hh₂ : DifferentiableAt 𝕜' h₂ y) (hh : DifferentiableAt 𝕜 h x)
     (hy : h x = y) :
     deriv (h₂ ∘ h) x = deriv h₂ (h x) * deriv h x := by

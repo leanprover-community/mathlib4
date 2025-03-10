@@ -261,6 +261,20 @@ theorem deriv_mul_const (hc : DifferentiableAt 𝕜 c x) (d : 𝔸) :
     deriv (fun y => c y * d) x = deriv c x * d :=
   (hc.hasDerivAt.mul_const d).deriv
 
+theorem iteratedDeriv_const_mul (d : Nat) (hf : ContDiff 𝕜 (⊤ : ℕ∞) f):
+  iteratedDeriv d (fun x => f (c*x)) x = c^d * (iteratedDeriv d f (c*x)) := by
+  induction' d with d ih
+  · simp
+  · rw [iteratedDeriv_succ]
+    rw [congrArg deriv (funext ih)]
+    rw [deriv_const_mul, deriv_comp_mul, ← iteratedDeriv_succ, pow_succ', ← mul_assoc]
+    · linarith
+    · apply ContDiff.differentiable_iteratedDeriv d hf (Batteries.compareOfLessAndEq_eq_lt.mp rfl)
+    · apply Differentiable.differentiableAt
+      rw [show (fun x => iteratedDeriv d f (c * x)) = ((iteratedDeriv d f) ∘ (fun x => c*x)) by rfl]
+      apply Differentiable.comp (ContDiff.differentiable_iteratedDeriv d hf (Batteries.compareOfLessAndEq_eq_lt.mp rfl))
+      apply Differentiable.const_mul (differentiable_id)
+
 theorem deriv_mul_const_field (v : 𝕜') : deriv (fun y => u y * v) x = deriv u x * v := by
   by_cases hu : DifferentiableAt 𝕜 u x
   · exact deriv_mul_const hu v

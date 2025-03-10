@@ -421,6 +421,11 @@ theorem norm_derivWithin_eq_norm_fderivWithin : ‖derivWithin f s x‖ = ‖fde
 theorem fderiv_deriv : (fderiv 𝕜 f x : 𝕜 → F) 1 = deriv f x :=
   rfl
 
+theorem derivWithin_eq_deriv (hf : ContDiff 𝕜 ⊤ f) (hs : UniqueDiffWithinAt 𝕜 s x):
+  derivWithin f s x = deriv f x := by
+  simp only [derivWithin, deriv]
+  rw [fderivWithin_eq_fderiv hs (ContDiffAt.differentiableAt (ContDiff.contDiffAt hf) (by simp))]
+
 @[simp]
 theorem fderiv_eq_smul_deriv (y : 𝕜) : (fderiv 𝕜 f x : 𝕜 → F) y = y • deriv f x := by
   rw [← fderiv_deriv, ← ContinuousLinearMap.map_smul]
@@ -509,6 +514,16 @@ theorem derivWithin_Ioi_eq_Ici {E : Type*} [NormedAddCommGroup E] [NormedSpace �
       derivWithin_zero_of_not_differentiableWithinAt]
     rwa [differentiableWithinAt_Ioi_iff_Ici] at H
 
+theorem iteratedDerivWithin_eq_iteratedDeriv
+(hf : ContDiff 𝕜 (⊤ : ℕ∞) f) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s):
+iteratedDerivWithin d f s x = iteratedDeriv d f x := by
+  induction' d with d hd
+  · simp
+  · rw [iteratedDerivWithin_succ (UniqueDiffOn.uniqueDiffWithinAt hs hx), iteratedDeriv_succ, derivWithin, deriv]
+    rw [fderivWithin_congr hd (hd x hx)]
+    rw [fderivWithin_eq_fderiv (UniqueDiffOn.uniqueDiffWithinAt hs hx)]
+    apply Differentiable.differentiableAt (ContDiff.differentiable_iteratedDeriv d hf (Batteries.compareOfLessAndEq_eq_lt.mp rfl))
+
 section congr
 
 /-! ### Congruence properties of derivatives -/
@@ -577,6 +592,15 @@ theorem derivWithin_congr (hs : EqOn f₁ f s) (hx : f₁ x = f x) :
     derivWithin f₁ s x = derivWithin f s x := by
   unfold derivWithin
   rw [fderivWithin_congr hs hx]
+
+theorem iteratedDerivWithin_congr (hs : Set.EqOn f₁ f s) (hx : f₁ x = f x) (hxs : UniqueDiffOn 𝕜 s) (hx2 : x ∈ s) : iteratedDerivWithin n f₁ s x = iteratedDerivWithin n f s x := by
+  revert x
+  induction' n with n hn
+  <;> intro x hx hx2
+  · simp [hx]
+  · simp only [iteratedDerivWithin_succ (UniqueDiffOn.uniqueDiffWithinAt hxs hx2)]
+    simp only [Set.EqOn] at hs
+    rw [derivWithin_congr (by simp [Set.EqOn]; intro y hy; exact hn (hs hy) hy) (hn hx hx2)]
 
 theorem Filter.EventuallyEq.deriv_eq (hL : f₁ =ᶠ[𝓝 x] f) : deriv f₁ x = deriv f x := by
   unfold deriv
