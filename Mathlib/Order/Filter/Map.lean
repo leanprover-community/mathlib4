@@ -561,6 +561,14 @@ theorem NeBot.comap_of_range_mem {f : Filter β} {m : α → β} (_ : NeBot f) (
   comap_neBot_iff_frequently.2 <| Eventually.frequently hm
 
 @[simp]
+theorem map_inl_inf_map_inr {X Y} (u : Filter X) (v : Filter Y) :
+    map Sum.inl u ⊓ map Sum.inr v = ⊥ := by
+  apply le_bot_iff.mp
+  trans map Sum.inl ⊤ ⊓ map Sum.inr ⊤
+  · apply inf_le_inf <;> simp
+  · simp
+
+@[simp]
 theorem comap_fst_neBot_iff {f : Filter α} :
     (f.comap (Prod.fst : α × β → α)).NeBot ↔ f.NeBot ∧ Nonempty β := by
   cases isEmpty_or_nonempty β
