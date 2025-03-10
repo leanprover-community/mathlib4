@@ -64,29 +64,14 @@ lemma of_isMonoidalLeftDistrib [IsMonoidalLeftDistrib C] : IsCartesianDistributi
   SymmetricCategory.isMonoidalDistrib_of_isMonoidalLeftDistrib
 
 /-- The coproduct coprojections are monic in a cartesian distributive category. -/
-instance monoCoprod [IsMonoidalLeftDistrib C] : MonoCoprod C :=
-  MonoCoprod.mk' fun A B => by
-    refine ⟨BinaryCofan.mk (coprod.inl : A ⟶ A ⨿ B) coprod.inr, ?_, ?_⟩
-    · exact coprodIsCoprod A B
-    · refine ⟨?_⟩
-      intro Z f g he
-      simp at he
-      have : SplitMono (Z ◁ coprod.inl) := {
-        retraction := (∂L Z A B).inv ≫ (coprod.desc (𝟙 _) (fst Z B ≫ lift (𝟙 Z) f))
-        id := by
-          rw [← assoc]
-          simp only [whiskerLeft_coprod_inl_leftDistrib_inv, coprod.inl_desc]
-      }
-      have : Mono (Z ◁ coprod.inl) := SplitMono.mono this
-      have :  Mono (Z ◁ (coprod.inl (X:= A) (Y:= B))) := by infer_instance
-      have H : (lift (𝟙 Z) f) ≫ (Z ◁ coprod.inl (X:= A) (Y:= B)) =
-        (lift (𝟙 Z) g) ≫ (Z ◁ coprod.inl) := by
-          aesop
-      have : (lift (𝟙 Z) f) = (lift (𝟙 Z) g) := by
-        apply (cancel_mono  (Z ◁ (coprod.inl (X:= A) (Y:= B)))).1 H
-      convert lift_snd (𝟙 Z) g
-      rw [← this]
-      simp only [lift_snd]
+instance monoCoprod [IsCartesianDistributive C] : MonoCoprod C :=
+  MonoCoprod.mk' fun A B =>
+    ⟨_, coprodIsCoprod A B, ⟨fun {Z} f g he ↦ by
+      let ι := coprod.inl (X := A) (Y := B)
+      have : Mono (Z ◁ ι) := SplitMono.mono
+        { retraction := (∂L Z A B).inv ≫ coprod.desc (𝟙 _) (fst Z B ≫ lift (𝟙 Z) f) }
+      have : lift (𝟙 Z) f = lift (𝟙 Z) g := by rw [← cancel_mono (Z ◁ ι)]; aesop
+      simpa only [lift_snd] using this =≫ snd _ _⟩⟩
 
 end IsCartesianDistributive
 
