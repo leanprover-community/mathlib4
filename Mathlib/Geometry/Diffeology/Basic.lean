@@ -33,9 +33,9 @@ plots whose domains are subsets of ℝⁿ.
 Since the D-topology does not always commute with e.g. products, it can not be registered as an
 instance - otherwise, there would be two `TopologicalSpace`-instances on binary products, the
 product topology of the D-topologies on the factors and the D-topology of the product diffeology.
-We thus instead define a typeclass `DTopCompatible X` to express when the topology on `X` does match
-the D-topology, and also give the D-topology the short name `DTop` to enable use of notations such
-as `Continuous[_, DTop]` for continuity with respect to the D-topology.
+We thus instead define a typeclass `IsDTopCompatible X` to express when the topology on `X` does
+match the D-topology, and also give the D-topology the short name `DTop` to enable use of notations
+such as `Continuous[_, DTop]` for continuity with respect to the D-topology.
 
 In order to make it easier to work with diffeological spaces whose natural diffeology does match
 the D-topology, we also include the D-topology as part of the data of `DiffeologicalSpace X`.
@@ -47,7 +47,7 @@ Every normed spaces carries a natural diffeology consisting of all smooth maps f
 "normed space diffeology" does commute with arbitrary products, we can't register it as an instance
 because it wouldn't be defeq to the product diffeology on products of normed spaces. We thus only
 give it as a definition (`euclideanDiffeology`) instead of an instance, and instead provide a
-typeclass `ContDiffCompatible X` for talking about normed spaces equipped with the normed space
+typeclass `IsContDiffCompatible X` for talking about normed spaces equipped with the normed space
 diffeology.
 
 To make working with finite-dimensional spaces easier, `euclideanDiffeology` is defined in such a
@@ -104,7 +104,7 @@ section Defs
 
 /-- D-topology of a diffeological space. This is a definition rather than an instance
 because the D-topology might not agree with already registered topologies like the one
-on normed spaces.-/
+on normed spaces. -/
 def DTop : TopologicalSpace X := DiffeologicalSpace.dTopology
 
 /-- A map `p : Eucl n → X` is called a plot iff it is part of the diffeology on `X`. This is
@@ -271,50 +271,50 @@ smoothness in the sense of `ContDiff ℝ ∞`. Necessary as a hypothesis for som
 because some normed spaces carry a diffeology that is equal but not defeq to the normed space
 diffeology (for example the product diffeology in the case of `Fin n → ℝ`), so the information
 that these theorems still holds needs to be made available via this typeclass. -/
-class ContDiffCompatible (X : Type*) [NormedAddCommGroup X] [NormedSpace ℝ X]
+class IsContDiffCompatible (X : Type*) [NormedAddCommGroup X] [NormedSpace ℝ X]
     [DiffeologicalSpace X] : Prop where
   isPlot_iff {n : ℕ} {p : Eucl n → X} : IsPlot p ↔ ContDiff ℝ ∞ p
 
 /-- Technical condition saying that the topology on a type agrees with the D-topology.
 Necessary because the D-topologies on for example products and subspaces don't agree with
 the product and subspace topologies. -/
-class DTopCompatible (X : Type*) [t : TopologicalSpace X] [DiffeologicalSpace X] : Prop where
+class IsDTopCompatible (X : Type*) [t : TopologicalSpace X] [DiffeologicalSpace X] : Prop where
   dTop_eq : DTop = t
 
-theorem dTop_eq (X : Type*) [t : TopologicalSpace X] [DiffeologicalSpace X] [DTopCompatible X] :
-    DTop = t := DTopCompatible.dTop_eq
+theorem dTop_eq (X : Type*) [t : TopologicalSpace X] [DiffeologicalSpace X] [IsDTopCompatible X] :
+    DTop = t := IsDTopCompatible.dTop_eq
 
 /-- A smooth function between spaces that are equipped with the D-topology is continuous. -/
 protected theorem DSmooth.continuous' {X Y : Type*} [TopologicalSpace X] [DiffeologicalSpace X]
-    [DTopCompatible X] [TopologicalSpace Y] [DiffeologicalSpace Y]
-    [DTopCompatible Y] {f : X → Y} (hf : DSmooth f) : Continuous f :=
+    [IsDTopCompatible X] [TopologicalSpace Y] [DiffeologicalSpace Y]
+    [IsDTopCompatible Y] {f : X → Y} (hf : DSmooth f) : Continuous f :=
   dTop_eq X ▸ dTop_eq Y ▸ hf.continuous
 
 instance {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
-    [FiniteDimensional ℝ X] : @ContDiffCompatible X _ _ euclideanDiffeology :=
+    [FiniteDimensional ℝ X] : @IsContDiffCompatible X _ _ euclideanDiffeology :=
   let _ := euclideanDiffeology (X := X); ⟨Iff.rfl⟩
 
 lemma contDiffCompatible_iff_eq_euclideanDiffeology {X : Type*} [NormedAddCommGroup X]
     [NormedSpace ℝ X] [FiniteDimensional ℝ X] [d : DiffeologicalSpace X] :
-    ContDiffCompatible X ↔ d = euclideanDiffeology :=
-  ⟨fun _ ↦ by ext n p; exact ContDiffCompatible.isPlot_iff, fun h ↦ h ▸ inferInstance⟩
+    IsContDiffCompatible X ↔ d = euclideanDiffeology :=
+  ⟨fun _ ↦ by ext n p; exact IsContDiffCompatible.isPlot_iff, fun h ↦ h ▸ inferInstance⟩
 
 instance {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
-    [FiniteDimensional ℝ X] : @DTopCompatible X _ euclideanDiffeology :=
+    [FiniteDimensional ℝ X] : @IsDTopCompatible X _ euclideanDiffeology :=
   let _ := euclideanDiffeology (X := X); ⟨rfl⟩
 
 instance : DiffeologicalSpace ℝ := euclideanDiffeology
 
-example : ContDiffCompatible ℝ := inferInstance
+example : IsContDiffCompatible ℝ := inferInstance
 
-example : DTopCompatible ℝ := inferInstance
+example : IsDTopCompatible ℝ := inferInstance
 
 noncomputable instance {ι : Type*} [Fintype ι] : DiffeologicalSpace (EuclideanSpace ℝ ι) :=
   euclideanDiffeology
 
-example {ι : Type*} [Fintype ι] : ContDiffCompatible (EuclideanSpace ℝ ι) := inferInstance
+example {ι : Type*} [Fintype ι] : IsContDiffCompatible (EuclideanSpace ℝ ι) := inferInstance
 
-example {ι : Type*} [Fintype ι] : DTopCompatible (EuclideanSpace ℝ ι) := inferInstance
+example {ι : Type*} [Fintype ι] : IsDTopCompatible (EuclideanSpace ℝ ι) := inferInstance
 
 protected theorem IsPlot.dsmooth {n : ℕ} {p : Eucl n → X} (hp : IsPlot p) : DSmooth p :=
   fun _ _ ↦ isPlot_reparam hp
@@ -326,11 +326,11 @@ theorem isPlot_iff_dsmooth {n : ℕ} {p : Eucl n → X} : IsPlot p ↔ DSmooth p
   ⟨IsPlot.dsmooth, DSmooth.isPlot⟩
 
 variable {X Y : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X] [DiffeologicalSpace X]
-  [ContDiffCompatible X] [NormedAddCommGroup Y] [NormedSpace ℝ Y] [DiffeologicalSpace Y]
-  [ContDiffCompatible Y]
+  [IsContDiffCompatible X] [NormedAddCommGroup Y] [NormedSpace ℝ Y] [DiffeologicalSpace Y]
+  [IsContDiffCompatible Y]
 
 theorem isPlot_iff_contDiff {n : ℕ} {p : Eucl n → X} : IsPlot p ↔ ContDiff ℝ ∞ p :=
-  ContDiffCompatible.isPlot_iff
+  IsContDiffCompatible.isPlot_iff
 
 protected theorem ContDiff.dsmooth {f : X → Y} (hf: ContDiff ℝ ∞ f) : DSmooth f :=
   fun _ _ hp ↦ isPlot_iff_contDiff.2 (hf.comp (isPlot_iff_contDiff.1 hp))
