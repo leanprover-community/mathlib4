@@ -125,7 +125,9 @@ theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y :=
   have h₂ : ‖(I : 𝕜) • y + x‖ = ‖(I : 𝕜) • x - y‖ := by
     convert (I_smul ((I : 𝕜) • y + x)).symm using 2
     linear_combination (norm := module) -hI' • y
-  rw [h₁, h₂]
+  rw [h₁, h₂];
+  have (x : ℝ) : (x : 𝕜) = 𝓚 x := rfl
+  simp only [this]
   ring
 
 variable [InnerProductSpaceable E]

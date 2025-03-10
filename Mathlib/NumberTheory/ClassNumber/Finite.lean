@@ -197,7 +197,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
       mul_left_comm, mul_inv_cancel₀, mul_one, rpow_natCast] <;>
       try norm_cast; omega
     · exact Iff.mpr Int.cast_nonneg this
-    · linarith
+    · exact le_of_lt hε
   set μ : Fin (cardM bS adm).succ ↪ R := distinctElems bS adm with hμ
   let s : ι →₀ R := bS.repr a
   have s_eq : ∀ i, s i = bS.repr a i := fun i => rfl
