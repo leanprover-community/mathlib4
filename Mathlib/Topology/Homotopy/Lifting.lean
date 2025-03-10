@@ -376,6 +376,8 @@ theorem monodromy_comp_apply {x y z : X}
 
 open CategoryTheory
 
+/-- Monodromy of a covering map as a functor. Definition 2.1 in
+https://ncatlab.org/nlab/show/monodromy. -/
 @[simps] noncomputable def monodromyFunctor : FundamentalGroupoid X ⥤ Type _ where
   obj x := p ⁻¹' {x.as}
   map := cov.monodromy
