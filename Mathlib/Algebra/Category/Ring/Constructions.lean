@@ -332,7 +332,7 @@ open CategoryTheory.Limits.WalkingParallelPair Opposite
 
 open CategoryTheory.Limits.WalkingParallelPairHom
 
-instance equalizer_ι_is_local_ring_hom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
+instance equalizer_ι_isLocalHom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
     IsLocalHom (limit.π F (Opposite.op WalkingParallelPair.one)).hom := by
   have : _ = limit.π F (walkingParallelPairOpEquiv.functor.obj _) :=
     (limit.isoLimitCone_inv_π

@@ -288,7 +288,7 @@ theorem mk'_eq_bot {l u : ι → ℝ} : mk' l u = ⊥ ↔ ∃ i, u i ≤ l i := 
 
 @[simp]
 theorem mk'_eq_coe {l u : ι → ℝ} : mk' l u = I ↔ l = I.lower ∧ u = I.upper := by
-  cases' I with lI uI hI; rw [mk']; split_ifs with h
+  obtain ⟨lI, uI, hI⟩ := I; rw [mk']; split_ifs with h
   · simp [WithBot.coe_eq_coe]
   · suffices l = lI → u ≠ uI by simpa
     rintro rfl rfl

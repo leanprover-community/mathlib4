@@ -41,6 +41,16 @@ def Foo2.Simps.elim (α : Type _) : Foo2 α → α × α := fun x ↦ (x.elim.1,
 
 initialize_simps_projections Foo2
 
+
+/--
+info: [simps.verbose] The projections for this structure have already been initialized by a previous invocation of `initialize_simps_projections` or `@[simps]`.
+    Generated projections for Foo2:
+    Projection elim: fun α x => (x.elim.1, x.elim.2)
+-/
+#guard_msgs in
+initialize_simps_projections Foo2
+
+
 @[simps]
 def Foo2.foo2 : Foo2 Nat := ⟨(0, 0)⟩
 
@@ -100,7 +110,7 @@ structure Equiv' (α : Sort _) (β : Sort _) where
 infix:25 (priority := default+1) " ≃ " => Equiv'
 
 /- Since `prod` and `PProd` are a special case for `@[simps]`, we define a new structure to test
-  the basic functionality.-/
+  the basic functionality. -/
 structure MyProd (α β : Type _) where (fst : α) (snd : β)
 
 def MyProd.map {α α' β β'} (f : α → α') (g : β → β') (x : MyProd α β) : MyProd α' β' :=
@@ -429,7 +439,7 @@ class has_hom (obj : Type u) : Type (max u (v+1)) where
 
 infixr:10 " ⟶ " => has_hom.hom -- type as \h
 
-class CategoryStruct (obj : Type u) extends has_hom.{v} obj : Type (max u (v+1)) where
+class CategoryStruct (obj : Type u) : Type (max u (v+1)) extends has_hom.{v} obj where
   (id   : ∀ X : obj, hom X X)
   (comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z))
 
@@ -1228,11 +1238,11 @@ def myFoo : Foo := ⟨1, ⟨1, 1⟩, 1⟩
 
 structure Prod (X Y : Type _) extends _root_.Prod X Y
 
-structure Prod2 (X Y : Type _) extends Prod X Y
+structure Prod2 (X Y : Type _) extends toProd_1 : Prod X Y
 
 initialize_simps_projections Prod2 (toProd → myName, toProd_1 → myOtherName)
 
-structure Prod3 (X Y : Type _) extends Prod X Y
+structure Prod3 (X Y : Type _) extends toProd_1 : Prod X Y
 
 @[simps] def foo : Prod3 Nat Nat := { fst := 1, snd := 3 }
 @[simps toProd_1] def foo' : Prod3 Nat Nat := { fst := 1, snd := 3 }

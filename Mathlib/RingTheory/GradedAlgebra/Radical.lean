@@ -99,7 +99,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
         rw [eq_sub_of_add_eq eq_add_sum.symm]
         refine Ideal.sub_mem _ hxy (Ideal.sum_mem _ fun z H => ?_)
         rcases z with ⟨i, j⟩
-        simp only [antidiag, mem_erase, Prod.mk.inj_iff, Ne, mem_filter, mem_product] at H
+        simp only [antidiag, mem_erase, Prod.mk_inj, Ne, mem_filter, mem_product] at H
         rcases H with ⟨H₁, ⟨H₂, H₃⟩, H₄⟩
         have max_lt : max₁ < i ∨ max₂ < j := by
           rcases lt_trichotomy max₁ i with (h | rfl | h)
@@ -127,8 +127,8 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
           rw [mem_filter] at mem_max₁ mem_max₂
           exact ⟨mem_max₁.2, mem_max₂.2⟩
         intro _rid
-        cases' homogeneous_mem_or_mem ⟨max₁, SetLike.coe_mem _⟩ ⟨max₂, SetLike.coe_mem _⟩ mem_I
-          with h h
+        rcases homogeneous_mem_or_mem ⟨max₁, SetLike.coe_mem _⟩ ⟨max₂, SetLike.coe_mem _⟩ mem_I
+          with h | h
         · apply neither_mem.1 h
         · apply neither_mem.2 h
       exact not_mem_I mem_I⟩

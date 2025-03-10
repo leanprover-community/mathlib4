@@ -333,7 +333,7 @@ theorem StrictConvex.affine_image (hs : StrictConvex 𝕜 s) {f : E →ᵃ[𝕜]
     hf.image_interior_subset _
       ⟨a • x + b • y, ⟨hs hx hy (ne_of_apply_ne _ hxy) ha hb hab, Convex.combo_affine_apply hab⟩⟩
 
-variable [TopologicalAddGroup E]
+variable [IsTopologicalAddGroup E]
 
 theorem StrictConvex.neg (hs : StrictConvex 𝕜 s) : StrictConvex 𝕜 (-s) :=
   hs.is_linear_preimage IsLinearMap.isLinearMap_neg continuous_id.neg neg_injective

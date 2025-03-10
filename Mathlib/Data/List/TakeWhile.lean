@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
 import Mathlib.Order.Basic
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Set
 
@@ -24,8 +24,6 @@ theorem dropWhile_get_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length) :
       apply IH
       simp_all only [dropWhile_cons_of_pos]
     · simp [hp]
-
-@[deprecated (since := "2024-08-19")] alias dropWhile_nthLe_zero_not := dropWhile_get_zero_not
 
 variable {p} {l : List α}
 

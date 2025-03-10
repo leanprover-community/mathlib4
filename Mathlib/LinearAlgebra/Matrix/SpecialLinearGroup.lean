@@ -465,7 +465,7 @@ theorem coe_T : ↑T = (!![1, 1; 0, 1] : Matrix _ _ ℤ) :=
 theorem coe_T_inv : ↑(T⁻¹) = !![1, -1; 0, 1] := by simp [coe_inv, coe_T, adjugate_fin_two]
 
 theorem coe_T_zpow (n : ℤ) : (T ^ n).1 = !![1, n; 0, 1] := by
-  induction n using Int.induction_on with
+  induction n with
   | hz => rw [zpow_zero, coe_one, Matrix.one_fin_two]
   | hp n h =>
     simp_rw [zpow_add, zpow_one, coe_mul, h, coe_T, Matrix.mul_fin_two]

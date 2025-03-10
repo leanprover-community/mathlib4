@@ -571,11 +571,13 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
     have hsvi := bsv.linearIndependent
     have hsvt := bsv.span_eq
     rw [Basis.coe_extend] at hsvi hsvt
+    rw [linearIndependent_subtype_iff] at hsvi h
     have hsv := h.subset_extend (Set.subset_univ _)
     have h0 : ∀ v : V, v ∈ h.extend (Set.subset_univ _) → v ≠ 0 := by
       intro v hv
       simpa [bsv] using bsv.ne_zero ⟨v, hv⟩
-    rw [linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
+    rw [← linearIndependent_subtype_iff,
+      linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
     refine ⟨{p₁} ∪ (fun v => v +ᵥ p₁) '' h.extend (Set.subset_univ _), ?_, ?_⟩
     · refine Set.Subset.trans ?_ (Set.union_subset_union_right _ (Set.image_subset _ hsv))
       simp [Set.image_image]
@@ -831,9 +833,7 @@ theorem face_points' {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1))} {
 theorem face_eq_mkOfPoint {n : ℕ} (s : Simplex k P n) (i : Fin (n + 1)) :
     s.face (Finset.card_singleton i) = mkOfPoint k (s.points i) := by
   ext
-  simp only [Affine.Simplex.mkOfPoint_points, Affine.Simplex.face_points]
-  -- Porting note: `simp` can't use the next lemma
-  rw [Finset.orderEmbOfFin_singleton]
+  simp [Affine.Simplex.mkOfPoint_points, Affine.Simplex.face_points, Finset.orderEmbOfFin_singleton]
 
 /-- The set of points of a face. -/
 @[simp]

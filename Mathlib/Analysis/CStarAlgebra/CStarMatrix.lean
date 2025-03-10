@@ -338,8 +338,7 @@ lemma ofMatrix_eq_ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [St
 
 end basic
 
-variable [Fintype m] [Fintype n] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
-
+variable [Fintype n] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 /-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on `C⋆ᵐᵒᵈ (n → A)`. -/
 def toCLM : CStarMatrix m n A →ₗ[ℂ] (C⋆ᵐᵒᵈ (n → A)) →L[ℂ] (C⋆ᵐᵒᵈ (m → A)) where
@@ -395,6 +394,8 @@ open WithCStarModule in
 lemma toCLM_apply_single_apply [DecidableEq n] {M : CStarMatrix m n A} {i : m} {j : n} (a : A) :
     (toCLM M) (equiv _ |>.symm <| Pi.single j a) i = M i j * a := by simp
 
+variable [Fintype m]
+
 open WithCStarModule in
 lemma mul_entry_mul_eq_inner_toCLM [DecidableEq m] [DecidableEq n] {M : CStarMatrix m n A}
     {i : m} {j : n} (a b : A) :
@@ -432,7 +433,6 @@ lemma norm_def {M : CStarMatrix m n A} : ‖M‖ = ‖toCLM M‖ := rfl
 
 lemma norm_def' {M : CStarMatrix n n A} : ‖M‖ = ‖toCLMNonUnitalAlgHom (A := A) M‖ := rfl
 
-set_option maxSynthPendingDepth 2 in
 lemma normedSpaceCore: NormedSpace.Core ℂ (CStarMatrix m n A) where
   norm_nonneg M := (toCLM M).opNorm_nonneg
   norm_smul c M := by rw [norm_def, norm_def, map_smul, norm_smul _ (toCLM M)]
@@ -446,8 +446,7 @@ lemma norm_entry_le_norm {M : CStarMatrix m n A} {i : m} {j : n} :
   classical
   suffices ‖M i j‖ * ‖M i j‖ ≤ ‖M‖ * ‖M i j‖ by
     obtain (h | h) := eq_zero_or_norm_pos (M i j)
-    · set_option maxSynthPendingDepth 2 in
-      simp [h, norm_def]
+    · simp [h, norm_def]
     · exact le_of_mul_le_mul_right this h
   rw [← CStarRing.norm_self_mul_star, ← toCLM_apply_single_apply]
   apply norm_apply_le_norm _ _ |>.trans
@@ -577,7 +576,7 @@ instance instCompleteSpace : CompleteSpace (CStarMatrix m n A) := Pi.complete _
 instance instT2Space : T2Space (CStarMatrix m n A) := Pi.t2Space
 instance instT3Space : T3Space (CStarMatrix m n A) := _root_.instT3Space
 
-instance instTopologicalAddGroup : TopologicalAddGroup (CStarMatrix m n A) :=
+instance instIsTopologicalAddGroup : IsTopologicalAddGroup (CStarMatrix m n A) :=
   Pi.topologicalAddGroup
 
 instance instUniformAddGroup : UniformAddGroup (CStarMatrix m n A) :=
@@ -598,9 +597,7 @@ instance instNormedSpace : NormedSpace ℂ (CStarMatrix m n A) :=
 noncomputable instance instNonUnitalNormedRing :
     NonUnitalNormedRing (CStarMatrix n n A) where
   dist_eq _ _ := rfl
-  norm_mul _ _ := by
-    set_option maxSynthPendingDepth 2 in
-    simpa only [norm_def', map_mul] using norm_mul_le _ _
+  norm_mul _ _ := by simpa only [norm_def', map_mul] using norm_mul_le _ _
 
 open ContinuousLinearMap CStarModule in
 /-- Matrices with entries in a C⋆-algebra form a C⋆-algebra. -/

@@ -41,7 +41,7 @@ open scoped NNReal CStarAlgebra
 local notation "σₙ" => quasispectrum
 
 theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [StarRing A]
-    [StarOrderedRing A] [Algebra ℝ A] [TopologicalRing A] [T2Space A]
+    [StarOrderedRing A] [Algebra ℝ A] [IsTopologicalRing A] [T2Space A]
     [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
     [NonnegSpectrumClass ℝ A] (f g : ℝ≥0 → ℝ≥0)
     (a : A) (hfg : ∀ x ∈ spectrum ℝ≥0 a, g x ≤ f x) (ha : 0 ≤ a := by cfc_tac)
@@ -59,9 +59,9 @@ theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [Sta
       ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
 
 theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialOrder A] [StarRing A]
-    [StarOrderedRing A] [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [TopologicalRing A]
-    [T2Space A] [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
-    [NonnegSpectrumClass ℝ A] (f g : ℝ≥0 → ℝ≥0)
+    [StarOrderedRing A] [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
+    [IsTopologicalRing A] [T2Space A] [NonUnitalContinuousFunctionalCalculus ℝ
+    (IsSelfAdjoint : A → Prop)] [NonnegSpectrumClass ℝ A] (f g : ℝ≥0 → ℝ≥0)
     (a : A) (hfg : ∀ x ∈ σₙ ℝ≥0 a, g x ≤ f x) (ha : 0 ≤ a := by cfc_tac)
     (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
     (hg : ContinuousOn g (σₙ ℝ≥0 a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac) :
@@ -112,7 +112,7 @@ end Unitization
 /-- `cfc_le_iff` only applies to a scalar ring where `R` is an actual `Ring`, and not a `Semiring`.
 However, this theorem still holds for `ℝ≥0` as long as the algebra `A` itself is an `ℝ`-algebra. -/
 lemma cfc_nnreal_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A]
-    [StarOrderedRing A] [Algebra ℝ A] [TopologicalRing A] [NonnegSpectrumClass ℝ A]
+    [StarOrderedRing A] [Algebra ℝ A] [IsTopologicalRing A] [NonnegSpectrumClass ℝ A]
     [T2Space A] [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
     (f : ℝ≥0 → ℝ≥0) (g : ℝ≥0 → ℝ≥0) (a : A)
     (ha_spec : SpectrumRestricts a ContinuousMap.realToNNReal)

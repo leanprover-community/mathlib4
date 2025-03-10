@@ -569,8 +569,8 @@ theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
     [∀ i, SeminormedAddCommGroup (β i)] (n : ℕ) (h : p = n) (f : PiLp p β) :
     ‖f‖ = (∑ i, ‖f i‖ ^ n) ^ (1 / (n : ℝ)) := by
   have := p.toReal_pos_iff_ne_top.mpr (ne_of_eq_of_ne h <| ENNReal.natCast_ne_top n)
-  simp only [one_div, h, Real.rpow_natCast, ENNReal.toReal_nat, eq_self_iff_true, Finset.sum_congr,
-    norm_eq_sum this]
+  simp only [one_div, h, Real.rpow_natCast, ENNReal.toReal_natCast, eq_self_iff_true,
+    Finset.sum_congr, norm_eq_sum this]
 
 section L1
 variable {β} [∀ i, SeminormedAddCommGroup (β i)]

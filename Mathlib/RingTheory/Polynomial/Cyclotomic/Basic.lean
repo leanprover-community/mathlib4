@@ -303,7 +303,7 @@ theorem degree_cyclotomic (n : ℕ) (R : Type*) [Ring R] [Nontrivial R] :
     (cyclotomic n R).degree = Nat.totient n := by
   rw [← map_cyclotomic_int]
   rw [degree_map_eq_of_leadingCoeff_ne_zero (Int.castRingHom R) _]
-  · cases' n with k
+  · rcases n with - | k
     · simp only [cyclotomic, degree_one, dif_pos, Nat.totient_zero, CharP.cast_eq_zero]
     rw [← degree_cyclotomic' (Complex.isPrimitiveRoot_exp k.succ (Nat.succ_ne_zero k))]
     exact (int_cyclotomic_spec k.succ).2.1
@@ -601,7 +601,7 @@ private theorem _root_.IsPrimitiveRoot.pow_sub_pow_eq_prod_sub_mul_field {K : Ty
     [Field K] {ζ : K} (x y : K) (hpos : 0 < n) (h : IsPrimitiveRoot ζ n) :
     x ^ n - y ^ n = ∏ ζ ∈ nthRootsFinset n K, (x - ζ * y) := by
   by_cases hy : y = 0
-  · simp only [hy, zero_pow (Nat.not_eq_zero_of_lt hpos), sub_zero, mul_zero, prod_const]
+  · simp only [hy, zero_pow (Nat.ne_zero_of_lt hpos), sub_zero, mul_zero, prod_const]
     congr
     rw [h.card_nthRootsFinset]
   convert congr_arg (eval (x/y) · * y ^ card (nthRootsFinset n K)) <| X_pow_sub_one_eq_prod hpos h

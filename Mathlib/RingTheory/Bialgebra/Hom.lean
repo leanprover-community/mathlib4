@@ -48,8 +48,8 @@ notation:25 A " →ₐc[" R "] " B => BialgHom R A B
 from `A` to `B`. -/
 class BialgHomClass (F : Type*) (R A B : outParam Type*)
     [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-    [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
-    extends CoalgHomClass F R A B, MonoidHomClass F A B : Prop
+    [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B] : Prop
+    extends CoalgHomClass F R A B, MonoidHomClass F A B
 
 namespace BialgHomClass
 
