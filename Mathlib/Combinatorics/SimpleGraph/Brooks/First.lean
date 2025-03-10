@@ -161,10 +161,10 @@ lemma IsMaximal.isClosable (hm : p.IsMaximal) (h1 : 1 < G.degree v) :
 
 /--
 If `p : G.Walk u v` is a maximal path (i.e. all neighbors of `v` lie in `p`) and `v` has more than
-one neighbor then we can close `p` into a maximal cycle, where `c : G.Walk w w` is maximal means
-that all neighbors of `w` lie in `c`.
+one neighbor then we can close `p` into a maximal cycle, where a cycle `c : G.Walk w w` is maximal
+ means that all neighbors of `w` lie in `c`.
 -/
-lemma maximal_cycle_of_maximal_path (hp : p.IsMaxPath) (h1 : 1 < G.degree v) :
+lemma IsMaxCycle.of_isMaxPath_one_lt_degree_end (hp : p.IsMaxPath) (h1 : 1 < G.degree v) :
     ((p.dropUntil p.close find_mem_support).cons (hp.isClosable h1).adj).IsMaxCycle := by
   let hc := hp.isClosable h1
   use hp.cons_dropUntil_isCycle hc.adj find_mem_support hc.ne
