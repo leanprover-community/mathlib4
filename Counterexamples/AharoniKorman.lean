@@ -1099,7 +1099,7 @@ theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
         rw [← this, ← hfp, f.eq_self_of_mem hp.1]
       exact f.not_le_of_eq this.symm (by simp) (.next_min (hx.2.trans' (by simp)))
 
-/-- Every element of `S \ (C ∩ level n)` must be mapped into `C ∩ level (n - 1)`.  -/
+/-- Every element of `S \ (C ∩ level n)` must be mapped into `C ∩ level (n - 1)`. -/
 lemma S_mapsTo_previous (f : SpinalMap C) (hC : IsChain (· ≤ ·) C) (hn : n ≠ 0) :
     ∀ x ∈ S n C \ (C ∩ level n), f x ∈ C ∩ level (n - 1) := by
   -- Clearly it must be mapped into `C`
