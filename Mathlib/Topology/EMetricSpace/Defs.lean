@@ -36,7 +36,7 @@ variable {α : Type u} {β : Type v} {X : Type*}
 
 /-- Characterizing uniformities associated to a (generalized) distance function `D`
 in terms of the elements of the uniformity. -/
-theorem uniformity_dist_of_mem_uniformity [LinearOrder β] {U : Filter (α × α)} (z : β)
+theorem uniformity_dist_of_mem_uniformity [LT β] {U : Filter (α × α)} (z : β)
     (D : α → α → β) (H : ∀ s, s ∈ U ↔ ∃ ε > z, ∀ {a b : α}, D a b < ε → (a, b) ∈ s) :
     U = ⨅ ε > z, 𝓟 { p : α × α | D p.1 p.2 < ε } :=
   HasBasis.eq_biInf ⟨fun s => by simp only [H, subset_def, Prod.forall, mem_setOf]⟩

@@ -1,5 +1,6 @@
 import Mathlib.Tactic.Linter.CasesLinter
 import Mathlib.Tactic.Linter.DocPrime
+import Mathlib.Tactic.Linter.DocString
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.Header

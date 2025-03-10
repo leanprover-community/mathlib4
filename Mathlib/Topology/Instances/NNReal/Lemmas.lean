@@ -4,12 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Data.NNReal.Basic
-import Mathlib.Data.NNReal.Star
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
+import Mathlib.Topology.Algebra.Ring.Real
 import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Topology.Instances.NNReal.Defs
-import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
 # Topology on `ℝ≥0`

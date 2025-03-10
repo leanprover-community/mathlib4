@@ -978,9 +978,6 @@ lemma sub_mod_eq_zero_of_mod_eq (h : m % k = n % k) : (m - n) % k = 0 := by
 lemma one_mod_eq_one : ∀ {n : ℕ}, 1 % n = 1 ↔ n ≠ 1
   | 0 | 1 | n + 2 => by simp
 
-@[deprecated "No deprecation message was provided." (since := "2024-08-28")]
-lemma one_mod_of_ne_one  : ∀ {n : ℕ}, n ≠ 1 → 1 % n = 1 := one_mod_eq_one.mpr
-
 lemma dvd_sub_mod (k : ℕ) : n ∣ k - k % n :=
   ⟨k / n, Nat.sub_eq_of_eq_add (Nat.div_add_mod k n).symm⟩
 
