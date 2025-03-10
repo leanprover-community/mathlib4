@@ -211,8 +211,6 @@ open CategoryTheory
 
 open scoped FundamentalGroupoid
 
-attribute [local instance] Path.Homotopic.setoid
-
 variable {X Y : TopCat.{u}} {f g : C(X, Y)} (H : ContinuousMap.Homotopy f g)
 
 /-- Given a homotopy H : f ∼ g, we have an associated natural isomorphism between the induced
