@@ -74,8 +74,14 @@ theorem IsBoundedSMul.of_norm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ 
   { dist_smul_pair' := fun a b₁ b₂ => by simpa [smul_sub, dist_eq_norm] using h a (b₁ - b₂)
     dist_pair_smul' := fun a₁ a₂ b => by simpa [sub_smul, dist_eq_norm] using h (a₁ - a₂) b }
 
+@[deprecated (since := "2025-03-10")]
+alias BoundedSMul.of_norm_smul_le := IsBoundedSMul.of_norm_smul_le
+
 theorem IsBoundedSMul.of_nnnorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊) :
     IsBoundedSMul α β := .of_norm_smul_le h
+
+@[deprecated (since := "2025-03-10")]
+alias BoundedSMul.of_nnnorm_smul_le := IsBoundedSMul.of_nnnorm_smul_le
 
 end SeminormedRing
 

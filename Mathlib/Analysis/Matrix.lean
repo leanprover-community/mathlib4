@@ -184,6 +184,8 @@ protected theorem isBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [
     [IsBoundedSMul R α] : IsBoundedSMul R (Matrix m n α) :=
   Pi.instIsBoundedSMul
 
+@[deprecated (since := "2025-03-10")] alias boundedSMul := isBoundedSMul
+
 variable [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α]
 
 /-- Normed space instance (using sup norm of sup norm) for matrices over a normed space.  Not
@@ -462,6 +464,8 @@ theorem frobeniusIsBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [M
     [IsBoundedSMul R α] :
     IsBoundedSMul R (Matrix m n α) :=
   (by infer_instance : IsBoundedSMul R (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
+
+@[deprecated (since := "2025-03-10")] alias frobeniusBoundedSMul := frobeniusIsBoundedSMul
 
 /-- Normed space instance (using frobenius norm) for matrices over a normed space.  Not
 declared as an instance because there are several natural choices for defining the norm of a
