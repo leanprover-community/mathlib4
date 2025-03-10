@@ -26,8 +26,6 @@ monoidal distributive category with respect to this monoidal structure.
 
 ## Main results
 
-- Cartesian distributive categories are both left and right distributive.
-
 - The coproduct coprojections are monic in a cartesian distributive category.
 
 
