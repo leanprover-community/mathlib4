@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Data.Nat.ModEq
+import Mathlib.Tactic.GRW.Core
 
 /-!
 
@@ -56,6 +57,9 @@ protected theorem trans : a ≡ b [ZMOD n] → b ≡ c [ZMOD n] → a ≡ c [ZMO
 
 instance : IsTrans ℤ (ModEq n) where
   trans := @Int.ModEq.trans n
+
+@[grw] lemma rewrite_modeq {a b a' b' : ℤ} (H : a ≡ b [ZMOD n]) (ha : a ≡ a' [ZMOD n])
+    (hb' : b ≡ b' [ZMOD n]) : a' ≡ b' [ZMOD n] := (ha.symm.trans H).trans hb'
 
 protected theorem eq : a ≡ b [ZMOD n] → a % n = b % n := id
 
