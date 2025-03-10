@@ -11,7 +11,8 @@ import Mathlib.Tactic.TautoSet
 
 /-! # `norm_num` extension for `Irrational`
 
-This module defines a `norm_num` extension for `Irrational x^y` for rational `x` and `y`.
+This module defines a `norm_num` extension for `Irrational x^y` for rational `x` and `y`. It also
+supports `Irrational √x` expressions.
 -/
 
 namespace Tactic
@@ -295,11 +296,17 @@ private theorem irrational_sqrt_nat {x : ℝ} {n k : ℕ}
 
 end lemmas
 
+/-- To prove that `m` is not `n`-power (and thus `m^(1/n)` is irrational), we find `k` such that
+`k^n < m < (k + 1)^n`. -/
 structure NotPowerCertificate (m n : Q(ℕ)) where
+  /-- Natural `k` such that `k^n < m < (k + 1)^n`. -/
   k : Q(ℕ)
+  /-- Proof of `k^n < m`. -/
   pf_left : Q($k^$n < $m)
+  /-- Proof of `m < (k + 1)^n`. -/
   pf_right : Q($m < ($k + 1)^$n)
 
+/-- Finds `k` such that `k^n < m < (k + 1)^n` using bisection method. -/
 def findNotPowerCertificateCore (m n : ℕ) : Option ℕ := Id.run do
   let mut left := 0
   let mut right := m + 1
@@ -313,6 +320,7 @@ def findNotPowerCertificateCore (m n : ℕ) : Option ℕ := Id.run do
     return .some left
   return .none
 
+/-- Finds `NotPowerCertificate` showing that `m` is not `n`-power. -/
 def findNotPowerCertificate (m n : Q(ℕ)) : MetaM (NotPowerCertificate m n) := do
   let .isNat (_ : Q(AddMonoidWithOne ℕ)) m _ := ← derive m | failure
   let .isNat (_ : Q(AddMonoidWithOne ℕ)) n _ := ← derive n | failure
@@ -323,6 +331,7 @@ def findNotPowerCertificate (m n : Q(ℕ)) : MetaM (NotPowerCertificate m n) := 
   let .isBool true pf_right ← derive q($m < ($k + 1)^$n) | failure
   return ⟨q($k), pf_left, pf_right⟩
 
+/-- `norm_num` extension that proves `Irrational x^y` for rational `x` and `y`. -/
 @[norm_num Irrational (Real.rpow _ _)]
 def evalIrrationalRpow : NormNumExt where eval {u α} e := do
   match u, α, e with
@@ -341,7 +350,7 @@ def evalIrrationalRpow : NormNumExt where eval {u α} e := do
           | ~q(Int.ofNat $x_num') =>
             let ⟨g, pf_coprime⟩ := proveNatGCD x_num' x_den
             if g.natLit! != 1 then failure
-            have : $g =Q 1 := ⟨⟩
+            let _ : $g =Q 1 := ⟨⟩
             let numCert ← findNotPowerCertificate q($x_num'^$y_num') y_den
             let denCert ← findNotPowerCertificate q($x_den^$y_num') y_den
             assumeInstancesCommute
@@ -354,6 +363,7 @@ def evalIrrationalRpow : NormNumExt where eval {u α} e := do
     | _ => failure
   | _ => failure
 
+/-- `norm_num` extension that proves `Irrational √x` for rational `x`. -/
 @[norm_num Irrational (Real.sqrt _)]
 def evalIrrationalSqrt : NormNumExt where eval {u α} e := do
   match u, α, e with
@@ -368,7 +378,7 @@ def evalIrrationalSqrt : NormNumExt where eval {u α} e := do
       | ~q(Int.ofNat $n') =>
         let ⟨g, pf_coprime⟩ := proveNatGCD n' ed
         if g.natLit! != 1 then failure
-        have : $g =Q 1 := ⟨⟩
+        let _ : $g =Q 1 := ⟨⟩
         let numCert ← findNotPowerCertificate n' q(nat_lit 2)
         let denCert ← findNotPowerCertificate ed q(nat_lit 2)
         assumeInstancesCommute
