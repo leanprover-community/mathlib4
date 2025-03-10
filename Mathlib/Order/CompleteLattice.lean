@@ -1122,6 +1122,23 @@ lemma biInf_gt_eq_iInf {ι : Type*} [LT ι] [NoMinOrder ι] {f : ι → α} :
 lemma biInf_ge_eq_iInf {ι : Type*} [Preorder ι] {f : ι → α} : ⨅ (i) (j ≥ i), f j = ⨅ i, f i :=
   biInf_le_eq_iInf (ι := ιᵒᵈ)
 
+lemma biSup_le_eq_of_monotone [Preorder β] {f : β → α} (hf : Monotone f) (b : β) :
+    ⨆ (b' ≤ b), f b' = f b :=
+  le_antisymm (iSup₂_le_iff.2 (fun _ hji ↦ hf hji))
+    (le_iSup_of_le b (le_of_eq (Eq.symm (iSup_pos (Preorder.le_refl b)))))
+
+lemma biInf_le_eq_of_antitone [Preorder β] {f : β → α} (hf : Antitone f) (b : β) :
+    ⨅ (b' ≤ b), f b' = f b :=
+  biSup_le_eq_of_monotone (α := αᵒᵈ) hf.dual_right b
+
+lemma biSup_ge_eq_of_antitone [Preorder β] {f : β → α} (hf : Antitone f) (b : β) :
+    ⨆ (b' ≥ b), f b' = f b :=
+  biSup_le_eq_of_monotone (β := βᵒᵈ) hf.dual_left b
+
+lemma biInf_ge_of_monotone [Preorder β] {f : β → α} (hf : Monotone f) (b : β) :
+    ⨅ (b' ≥ b), f b' = f b :=
+  biInf_le_eq_of_antitone (β := βᵒᵈ) hf.dual_left b
+
 /-! ### `iSup` and `iInf` under `Prop` -/
 
 
