@@ -52,6 +52,24 @@ def lintUpTo (stx : Syntax) : Option String.Pos :=
     stx.getTailPos?
   else none
 
+def removeComments (s : String) : String :=
+  let lines := s.splitOn "\n"
+  let lines := lines.filterMap fun l =>
+    -- remove lines that begin with a comment
+    if l.trim.startsWith "--" then none
+    -- remove the text in a line, starting from the beginning `--`
+    else if let st::_ := l.splitOn "--" then some st.trimLeft
+    else some l
+  "\n".intercalate lines
+/-
+#eval do
+  let s := "Hi\n  -- this is a comment\nthere there is some -- another comment -- with more\ntext"
+  IO.println <| removeComments s
+-/
+
+def furtherFormatting (s : String) : String :=
+  s |>.replace "¬ " "¬"
+
 namespace Style.CommandStart
 
 @[inherit_doc Mathlib.Linter.linter.style.commandStart]
@@ -73,13 +91,13 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let origSubstring : Substring := {stx.getSubstring?.getD default with stopPos := finalLintPos}
     let (real, lths) := polishSource origSubstring.toString
     let fmt ← (liftCoreM do PrettyPrinter.ppCategory `command stx <|> (do
-      Linter.logLint linter.style.commandStart stx
-        m!"The `commandStart` linter had some parsing issues: \
-           feel free to silence it with `set_option linter.style.commandStart false in` \
-           and report this error!"
+      --Linter.logLint linter.style.commandStart stx
+      --  m!"The `commandStart` linter had some parsing issues: \
+      --     feel free to silence it with `set_option linter.style.commandStart false in` \
+      --     and report this error!"
       return real))
     let st := polishPP fmt.pretty
-    if ! st.startsWith real then
+    if ! st.startsWith (furtherFormatting (removeComments real)) then
       let diff := real.firstDiffPos st
       let pos := posToShiftedPos lths diff.1 + origSubstring.startPos.1
       let f := origSubstring.str.drop (pos)
