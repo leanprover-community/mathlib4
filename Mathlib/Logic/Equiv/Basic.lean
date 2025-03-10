@@ -93,7 +93,7 @@ def pprodEquivProdPLift : PProd α β ≃ PLift α × PLift β :=
 /-- Product of two equivalences. If `α₁ ≃ α₂` and `β₁ ≃ β₂`, then `α₁ × β₁ ≃ α₂ × β₂`. This is
 `Prod.map` as an equivalence. -/
 -- Porting note: in Lean 3 there was also a @[congr] tag
-@[simps (config := .asFn) apply]
+@[simps -fullyApplied apply]
 def prodCongr {α₁ α₂ β₁ β₂} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) : α₁ × β₁ ≃ α₂ × β₂ :=
   ⟨Prod.map e₁ e₂, Prod.map e₁.symm e₂.symm, fun ⟨a, b⟩ => by simp, fun ⟨a, b⟩ => by simp⟩
 
@@ -139,7 +139,7 @@ theorem prodProdProdComm_symm (α β γ δ) :
   rfl
 
 /-- `γ`-valued functions on `α × β` are equivalent to functions `α → β → γ`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def curry (α β γ) : (α × β → γ) ≃ (α → β → γ) where
   toFun := Function.curry
   invFun := uncurry
@@ -344,7 +344,7 @@ def boolEquivPUnitSumPUnit : Bool ≃ PUnit.{u + 1} ⊕ PUnit.{v + 1} :=
     fun b => by cases b <;> rfl, fun s => by rcases s with (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> rfl⟩
 
 /-- Sum of types is commutative up to an equivalence. This is `Sum.swap` as an equivalence. -/
-@[simps (config := .asFn) apply]
+@[simps -fullyApplied apply]
 def sumComm (α β) : α ⊕ β ≃ β ⊕ α :=
   ⟨Sum.swap, Sum.swap, Sum.swap_swap, Sum.swap_swap⟩
 
@@ -670,7 +670,7 @@ def piCurry {α} {β : α → Type*} (γ : ∀ a, β a → Type*) :
   left_inv := Sigma.uncurry_curry
   right_inv := Sigma.curry_uncurry
 
--- `simps` overapplies these but `simps (config := .asFn)` under-applies them
+-- `simps` overapplies these but `simps -fullyApplied` under-applies them
 @[simp] theorem piCurry_apply {α} {β : α → Type*} (γ : ∀ a, β a → Type*)
     (f : ∀ x : Σ i, β i, γ x.1 x.2) :
     piCurry γ f = Sigma.curry f :=
@@ -767,7 +767,7 @@ theorem ofFiberEquiv_map {α β γ} {f : α → γ} {g : β → γ}
 /-- A variation on `Equiv.prodCongr` where the equivalence in the second component can depend
   on the first component. A typical example is a shear mapping, explaining the name of this
   declaration. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def prodShear (e₁ : α₁ ≃ α₂) (e₂ : α₁ → β₁ ≃ β₂) : α₁ × β₁ ≃ α₂ × β₂ where
   toFun := fun x : α₁ × β₁ => (e₁ x.1, e₂ x.1 x.2)
   invFun := fun y : α₂ × β₂ => (e₁.symm y.1, (e₂ <| e₁.symm y.1).symm y.2)
@@ -1608,7 +1608,7 @@ section
 
 /-- Transport dependent functions through an equivalence of the base space.
 -/
-@[simps apply, simps (config := .lemmasOnly) symm_apply]
+@[simps apply, simps -isSimp symm_apply]
 def piCongrLeft' (P : α → Sort*) (e : α ≃ β) : (∀ a, P a) ≃ ∀ b, P (e.symm b) where
   toFun f x := f (e.symm x)
   invFun f x := (e.symm_apply_apply x).ndrec (f (e x))
