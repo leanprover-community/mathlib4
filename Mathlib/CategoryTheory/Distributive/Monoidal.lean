@@ -244,15 +244,9 @@ instance isMonoidalDistrib.of_symmetric_monoidal_closed [SymmetricCategory C] [M
 /-- The inverse of distributivity isomorphism from the closed monoidal strurcture -/
 lemma MonoidalClosed.leftDistrib_inv [MonoidalClosed C] {X Y Z : C} :
     (leftDistrib X Y Z).inv =
-    MonoidalClosed.uncurry
-      (coprod.desc (MonoidalClosed.curry coprod.inl) (MonoidalClosed.curry coprod.inr)) := by
-  simp [← (MonoidalClosed.curry_eq_iff)]
-  have : curry (∂L X Y Z).inv = coprod.desc
-      (coprod.inl ≫ curry (∂L X Y Z).inv) (coprod.inr ≫ curry (∂L X Y Z).inv) := by
-    aesop
-  convert this
-  · rw [← MonoidalClosed.curry_natural_left, whiskerLeft_coprod_inl_leftDistrib_inv]
-  · rw [← MonoidalClosed.curry_natural_left, whiskerLeft_coprod_inr_leftDistrib_inv]
+      uncurry (coprod.desc (curry coprod.inl) (curry coprod.inr)) := by
+  rw [← curry_eq_iff]
+  ext <;> simp [← curry_natural_left]
 
 section Endofunctors
 
