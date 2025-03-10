@@ -7,7 +7,7 @@ import Mathlib.Data.Real.Irrational
 import Mathlib.Tactic.Rify
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Tactic.NormNum.GCD
-
+import Mathlib.Tactic.TautoSet
 
 /-! # `norm_num` extension for `Nat.sqrt`
 
@@ -93,7 +93,7 @@ private theorem not_power_rat_of_num_den {a b d : ℕ}
     (h_coprime : a.Coprime b)
     (ha : ¬ ∃ x, a = x^d)
     (hb : ¬ ∃ y, b = y^d) :
-    ¬ ∃ q, 0 ≤ q ∧ (a / b : ℚ) = q^d := by
+    ¬ ∃ q ≥ 0, (a / b : ℚ) = q^d := by
   by_cases hb_zero : b = 0
   · subst hb_zero
     simp at h_coprime
@@ -105,7 +105,7 @@ private theorem not_power_rat_of_num_den {a b d : ℕ}
   rw [← Rat.num_div_den q] at h
   set x' := q.num
   set y := q.den
-  obtain ⟨x, hx'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ x' by sorry)
+  obtain ⟨x, hx'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ x' by rwa [Rat.num_nonneg])
   rw [hx'] at h
   simp at ha hb
   specialize ha x
@@ -116,7 +116,64 @@ private theorem not_power_rat_of_num_den {a b d : ℕ}
   · simpa
   · apply pow_ne_zero
     simp [y]
-  sorry
+  replace h : a * y ^ d = x ^ d * b := by
+    qify
+    assumption
+  have hy_zero : y ≠ 0 := by simp [y]
+  by_cases ha_zero : a = 0
+  · subst ha_zero
+    simp [hb_zero] at h
+    simp [h.left, h.right] at ha
+  by_cases hd_zero : d = 0
+  · subst hd_zero
+    simp at h hb
+    simp [h, hb] at h_coprime
+  by_cases hx_zero : x = 0
+  · subst hx_zero
+    simp [zero_pow hd_zero] at h ha
+    simp [ha, y] at h
+  suffices a.factorization = (x ^ d).factorization by
+    have := Nat.factorization_inj ha_zero (pow_ne_zero d hx_zero) this
+    exact ha this
+  apply_fun Nat.factorization at h
+  obtain ⟨hax, hby, hay⟩ : a.primeFactors = x.primeFactors ∧ b.primeFactors = y.primeFactors ∧
+      Disjoint a.primeFactors y.primeFactors := by
+    apply_fun Finsupp.support at h
+    simp [Nat.primeFactors_mul ha_zero (pow_ne_zero d hy_zero),
+      Nat.primeFactors_mul (pow_ne_zero d hx_zero) hb_zero, Nat.primeFactors_pow _ hd_zero] at h
+    have hab : a.primeFactors ∩ b.primeFactors = ∅ := by
+      rwa [← Finset.disjoint_iff_inter_eq_empty, Nat.disjoint_primeFactors ha_zero hb_zero]
+    have hxy : x.primeFactors ∩ y.primeFactors = ∅ := by
+      rw [← Finset.disjoint_iff_inter_eq_empty, Nat.disjoint_primeFactors hx_zero hy_zero]
+      have : x'.natAbs.Coprime y := Rat.reduced q
+      simpa [hx'] using this
+    apply_fun Finset.toSet at h hab hxy
+    simp at h hab hxy
+    constructorm* _ ∧ _
+    · apply_fun Finset.toSet
+      · tauto_set
+      · exact Finset.coe_injective
+    · apply_fun Finset.toSet
+      · tauto_set
+      · exact Finset.coe_injective
+    · rw [← Finset.disjoint_coe]
+      tauto_set
+  rw [Finsupp.ext_iff']
+  constructor
+  · simpa [Finsupp.support_smul_eq hd_zero]
+  intro p hp
+  replace h : (a * y ^ d).factorization p = (x ^ d * b).factorization p := by
+    rw [h]
+  rw [Nat.factorization_mul ha_zero (pow_ne_zero d hy_zero)] at h
+  rw [Nat.factorization_mul (pow_ne_zero d hx_zero) hb_zero] at h
+  simp at h ⊢
+  have hy0 : y.factorization p = 0 := by
+    rw [← Finsupp.not_mem_support_iff]
+    exact Disjoint.not_mem_of_mem_left_finset hay hp
+  have hb0 : b.factorization p = 0 := by
+    rw [← Finsupp.not_mem_support_iff, Nat.support_factorization]
+    exact Disjoint.not_mem_of_mem_left_finset (Nat.Coprime.disjoint_primeFactors h_coprime) hp
+  simpa [hy0, hb0] using h
 
 private theorem irrational_rpow_rat_rat {x y : ℝ} {x_num x_den y_num y_den k_num k_den : ℕ}
     (hx_isRat : IsRat x (Int.ofNat x_num) x_den)
@@ -130,6 +187,13 @@ private theorem irrational_rpow_rat_rat {x y : ℝ} {x_num x_den y_num y_den k_n
   rcases hx_isRat with ⟨hx_inv, hx_eq⟩
   rcases hy_isRat with ⟨hy_inv, hy_eq⟩
   rw [hy_eq]
+  -- have : ((Int.ofNat y_num) * ⅟(y_den : ℝ) : ℝ) = ((y_num / y_den : ℚ) : ℝ) := by
+  --   simp
+  --   rfl
+  -- rw [this]
+  -- change Irrational (x.rpow ((y_num / y_den : ℚ) : ℝ))
+
+  apply irrational_rpow_of_not_power
   rw [Real.rpow_intCast_mul sorry]
   simp
   apply irrational_nrt_of_notint_nrt
