@@ -415,7 +415,7 @@ open FundamentalGroup in
 /-- A continuous map `f` from a path connected, locally path-connected space `A` to another
   space `X` lifts through a covering map `p : E → X` (such that `f a₀` is lifted to `e₀`)
   if `f⁎ π₁(A, a₀) ⊆ p⁎ π₁(E, e₀)`. Proposition 1.33 of [hatcher02]. -/
-theorem exists_continuousMap_lifts_iff [PathConnectedSpace A] [LocPathConnectedSpace A]
+theorem exists_continuousMap_lifts_of_range_le [PathConnectedSpace A] [LocPathConnectedSpace A]
     {f : C(A, X)} {a₀ : A} {e₀ : E} (he : p e₀ = f a₀)
     (le : (map f a₀).range ≤ (mapOfEq ⟨p, cov.continuous⟩ he).range) :
     ∃! F : C(A, E), F a₀ = e₀ ∧ p ∘ F = f := by
