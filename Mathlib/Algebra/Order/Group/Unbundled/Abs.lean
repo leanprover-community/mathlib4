@@ -28,8 +28,9 @@ variable [Lattice α]
 section Group
 variable [Group α] {a b : α}
 
-/-- `mabs a` is the absolute value of `a`. -/
-@[to_additive "`abs a` is the absolute value of `a`"] def mabs (a : α) : α := a ⊔ a⁻¹
+/-- `mabs a`, denoted `|a|ₘ`, is the absolute value of `a`. -/
+@[to_additive "`abs a`, denoted `|a|`, is the absolute value of `a`"]
+def mabs (a : α) : α := a ⊔ a⁻¹
 
 @[inherit_doc mabs]
 macro:max atomic("|" noWs) a:term noWs "|ₘ" : term => `(mabs $a)

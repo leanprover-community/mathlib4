@@ -129,8 +129,7 @@ end lift
 
 section
 
-open scoped Classical
-
+open scoped Classical in
 theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) :=
   fun x y hoxy ↦ Classical.by_contradiction fun hxy : x ≠ y ↦
     let f : FreeAbelianGroup α →+ ℤ := lift fun z ↦ if x = z then (1 : ℤ) else 0
@@ -334,15 +333,11 @@ def map (f : α → β) : FreeAbelianGroup α →+ FreeAbelianGroup β :=
 
 theorem lift_comp {α} {β} {γ} [AddCommGroup γ] (f : α → β) (g : β → γ) (x : FreeAbelianGroup α) :
     lift (g ∘ f) x = lift g (map f x) := by
-  -- Porting note: Added motive.
-  apply FreeAbelianGroup.induction_on (C := fun x ↦ lift (g ∘ f) x = lift g (map f x)) x
-  · simp only [map_zero]
-  · intro _
-    simp only [lift.of, map, Function.comp]
-  · intro _ h
-    simp only [h, AddMonoidHom.map_neg]
-  · intro _ _ h₁ h₂
-    simp only [h₁, h₂, AddMonoidHom.map_add]
+  induction x using FreeAbelianGroup.induction_on with
+  | C0 => simp only [map_zero]
+  | C1 => simp only [lift.of, map, Function.comp]
+  | Cn _ h => simp only [h, AddMonoidHom.map_neg]
+  | Cp _ _ h₁ h₂ => simp only [h₁, h₂, AddMonoidHom.map_add]
 
 theorem map_id : map id = AddMonoidHom.id (FreeAbelianGroup α) :=
   Eq.symm <|
@@ -506,9 +501,8 @@ theorem liftMonoid_coe (f : α →* R) : ⇑(liftMonoid f) = lift f :=
   rfl
 
 @[simp]
--- Porting note: Added a type to `↑f`.
 theorem liftMonoid_symm_coe (f : FreeAbelianGroup α →+* R) :
-    ⇑(liftMonoid.symm f) = lift.symm (↑f : FreeAbelianGroup α →+ R) :=
+    ⇑(liftMonoid.symm f) = lift.symm f :=
   rfl
 
 end Monoid

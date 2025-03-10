@@ -8,7 +8,8 @@ import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.Finsupp.SumProd
-import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.LinearAlgebra.LinearIndependent.Basic
+import Mathlib.LinearAlgebra.Pi
 
 /-!
 # Bases
@@ -223,9 +224,7 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
       rfl
     have h₂ : map (Submodule.subtype (span R (range v))) (span R (range fun i => ⟨v i, this i⟩)) =
         span R (range v) := by
-      rw [← span_image, Submodule.coe_subtype]
-      -- Porting note: why doesn't `rw [h₁]` work here?
-      exact congr_arg _ h₁
+      rw [← span_image, Submodule.coe_subtype, h₁]
     have h₃ : (x : M) ∈ map (Submodule.subtype (span R (range v)))
         (span R (Set.range fun i => Subtype.mk (v i) (this i))) := by
       rw [h₂]
@@ -311,36 +310,6 @@ theorem repr_isUnitSMul {v : Basis ι R₂ M} {w : ι → R₂} (hw : ∀ i, IsU
     (v.isUnitSMul hw).repr x i = (hw i).unit⁻¹ • v.repr x i :=
   repr_unitsSMul _ _ _ _
 
-end Basis
-
-end Module
-
-section Module
-
-open LinearMap
-
-variable {v : ι → M}
-variable [Ring R] [CommRing R₂] [AddCommGroup M]
-variable [Module R M] [Module R₂ M]
-variable {x y : M}
-variable (b : Basis ι R M)
-
-theorem Basis.eq_bot_of_rank_eq_zero [NoZeroDivisors R] (b : Basis ι R M) (N : Submodule R M)
-    (rank_eq : ∀ {m : ℕ} (v : Fin m → N), LinearIndependent R ((↑) ∘ v : Fin m → M) → m = 0) :
-    N = ⊥ := by
-  rw [Submodule.eq_bot_iff]
-  intro x hx
-  contrapose! rank_eq with x_ne
-  refine ⟨1, fun _ => ⟨x, hx⟩, ?_, one_ne_zero⟩
-  rw [Fintype.linearIndependent_iff]
-  rintro g sum_eq i
-  cases' i with _ hi
-  simp only [Function.const_apply, Fin.default_eq_zero, Submodule.coe_mk, Finset.univ_unique,
-    Function.comp_const, Finset.sum_singleton] at sum_eq
-  convert (b.smul_eq_zero.mp sum_eq).resolve_right x_ne
-
-namespace Basis
-
 /-- Any basis is a maximal linear independent set.
 -/
 theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal := fun w hi h => by
@@ -367,6 +336,36 @@ theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal 
   simp only [u, Embedding.coeFn_mk, Subtype.mk_eq_mk] at W
   apply q ⟨j, W⟩
 
+end Basis
+
+end Module
+
+section Module
+
+open LinearMap
+
+variable {v : ι → M}
+variable [Ring R] [CommRing R₂] [AddCommGroup M]
+variable [Module R M] [Module R₂ M]
+variable {x y : M}
+variable (b : Basis ι R M)
+
+theorem Basis.eq_bot_of_rank_eq_zero [NoZeroDivisors R] (b : Basis ι R M) (N : Submodule R M)
+    (rank_eq : ∀ {m : ℕ} (v : Fin m → N), LinearIndependent R ((↑) ∘ v : Fin m → M) → m = 0) :
+    N = ⊥ := by
+  rw [Submodule.eq_bot_iff]
+  intro x hx
+  contrapose! rank_eq with x_ne
+  refine ⟨1, fun _ => ⟨x, hx⟩, ?_, one_ne_zero⟩
+  rw [Fintype.linearIndependent_iff]
+  rintro g sum_eq i
+  obtain ⟨_, hi⟩ := i
+  simp only [Function.const_apply, Fin.default_eq_zero, Submodule.coe_mk, Finset.univ_unique,
+    Function.comp_const, Finset.sum_singleton] at sum_eq
+  convert (b.smul_eq_zero.mp sum_eq).resolve_right x_ne
+
+namespace Basis
+
 section Fin
 
 /-- Let `b` be a basis for a submodule `N` of `M`. If `y : M` is linear independent of `N`
@@ -391,8 +390,6 @@ noncomputable def mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fi
 theorem coe_mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fin n) R N)
     (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0) (hsp : ∀ z : M, ∃ c : R, z + c • y ∈ N) :
     (mkFinCons y b hli hsp : Fin (n + 1) → M) = Fin.cons y ((↑) ∘ b) := by
-  -- Porting note: without `unfold`, Lean can't reuse the proofs included in the definition
-  -- `mkFinCons`
   unfold mkFinCons
   exact coe_mk (v := Fin.cons y (N.subtype ∘ b)) _ _
 
@@ -457,21 +454,23 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*
     exfalso
     rw [mem_bot] at x_mem
     simpa [x_mem] using x_ortho 1 0 N.zero_mem
-  induction' n with n rank_ih generalizing N
-  · suffices N = ⊥ by rwa [this]
+  induction n generalizing N with
+  | zero =>
+    suffices N = ⊥ by rwa [this]
     apply Basis.eq_bot_of_rank_eq_zero b _ fun m hv => Nat.le_zero.mp (rank_le _ hv)
-  apply ih
-  intro N' N'_le x x_mem x_ortho
-  apply rank_ih
-  intro m v hli
-  refine Nat.succ_le_succ_iff.mp (rank_le (Fin.cons ⟨x, x_mem⟩ fun i => ⟨v i, N'_le (v i).2⟩) ?_)
-  convert hli.fin_cons' x _ ?_
-  · ext i
-    refine Fin.cases ?_ ?_ i <;> simp
-  · intro c y hcy
-    refine x_ortho c y (Submodule.span_le.mpr ?_ y.2) hcy
-    rintro _ ⟨z, rfl⟩
-    exact (v z).2
+  | succ n rank_ih =>
+    apply ih
+    intro N' N'_le x x_mem x_ortho
+    apply rank_ih
+    intro m v hli
+    refine Nat.succ_le_succ_iff.mp (rank_le (Fin.cons ⟨x, x_mem⟩ fun i => ⟨v i, N'_le (v i).2⟩) ?_)
+    convert hli.fin_cons' x _ ?_
+    · ext i
+      refine Fin.cases ?_ ?_ i <;> simp
+    · intro c y hcy
+      refine x_ortho c y (Submodule.span_le.mpr ?_ y.2) hcy
+      rintro _ ⟨z, rfl⟩
+      exact (v z).2
 
 end Induction
 

@@ -23,7 +23,7 @@ universe u v
 
 open CategoryTheory Limits MonoidalCategory
 
-variable {V : Type (u + 1)} [LargeCategory V] {G : MonCat.{u}}
+variable {V : Type (u + 1)} [LargeCategory V] {G : Type u} [Monoid G]
 
 namespace Action
 
@@ -39,24 +39,14 @@ variable [MonoidalCategory V]
 instance instMonoidalCategory : MonoidalCategory (Action V G) :=
   Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
 
-/- Adding this solves `simpNF` linter report at `tensorUnit_ρ` -/
 @[simp]
-theorem tensorUnit_ρ' {g : G} :
-    @DFunLike.coe (G →* MonCat.of (End (𝟙_ V))) _ _ _ (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) := by
+theorem tensorUnit_ρ {g : G} :
+    @DFunLike.coe (G →* End (𝟙_ V)) _ _ _ (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) := by
   rfl
 
 @[simp]
-theorem tensorUnit_ρ {g : G} : (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
-  rfl
-
-/- Adding this solves `simpNF` linter report at `tensor_ρ` -/
-@[simp]
-theorem tensor_ρ' {X Y : Action V G} {g : G} :
-    @DFunLike.coe (G →* MonCat.of (End (X.V ⊗ Y.V))) _ _ _ (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
-  rfl
-
-@[simp]
-theorem tensor_ρ {X Y : Action V G} {g : G} : (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
+theorem tensor_ρ {X Y : Action V G} {g : G} :
+    @DFunLike.coe (G →* End (X.V ⊗ Y.V)) _ _ _ (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
   rfl
 
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action
@@ -90,6 +80,12 @@ variable [BraidedCategory V]
 instance : BraidedCategory (Action V G) :=
   braidedCategoryOfFaithful (Action.forget V G) (fun X Y => mkIso (β_ _ _)
     (fun g => by simp [FunctorCategoryEquivalence.inverse])) (by simp)
+
+@[simp]
+theorem β_hom_hom {X Y : Action V G} : (β_ X Y).hom.hom = (β_ X.V Y.V).hom := rfl
+
+@[simp]
+theorem β_inv_hom {X Y : Action V G} : (β_ X Y).inv.hom = (β_ X.V Y.V).inv := rfl
 
 /-- When `V` is braided the forgetful functor `Action V G` to `V` is braided. -/
 instance : (Action.forget V G).Braided where
@@ -148,25 +144,25 @@ lemma FunctorCategoryEquivalence.functor_δ (A B : Action V G) :
     δ FunctorCategoryEquivalence.functor A B = 𝟙 _ := rfl
 
 
-variable (H : Grp.{u})
+variable (H : Type u) [Group H]
 
-instance [RightRigidCategory V] : RightRigidCategory (SingleObj (H : MonCat.{u}) ⥤ V) := by
-  change RightRigidCategory (SingleObj H ⥤ V); infer_instance
+instance [RightRigidCategory V] : RightRigidCategory (SingleObj H ⥤ V) := by
+  infer_instance
 
 /-- If `V` is right rigid, so is `Action V G`. -/
 instance [RightRigidCategory V] : RightRigidCategory (Action V H) :=
   rightRigidCategoryOfEquivalence
     (functorCategoryEquivalence V H).toAdjunction
 
-instance [LeftRigidCategory V] : LeftRigidCategory (SingleObj (H : MonCat.{u}) ⥤ V) := by
-  change LeftRigidCategory (SingleObj H ⥤ V); infer_instance
+instance [LeftRigidCategory V] : LeftRigidCategory (SingleObj H ⥤ V) := by
+  infer_instance
 
 /-- If `V` is left rigid, so is `Action V G`. -/
 instance [LeftRigidCategory V] : LeftRigidCategory (Action V H) :=
   leftRigidCategoryOfEquivalence (functorCategoryEquivalence V H).toAdjunction
 
-instance [RigidCategory V] : RigidCategory (SingleObj (H : MonCat.{u}) ⥤ V) := by
-  change RigidCategory (SingleObj H ⥤ V); infer_instance
+instance [RigidCategory V] : RigidCategory (SingleObj H ⥤ V) := by
+  infer_instance
 
 /-- If `V` is rigid, so is `Action V G`. -/
 instance [RigidCategory V] : RigidCategory (Action V H) :=
@@ -183,13 +179,9 @@ theorem rightDual_v [RightRigidCategory V] : Xᘁ.V = X.Vᘁ :=
 theorem leftDual_v [LeftRigidCategory V] : (ᘁX).V = ᘁX.V :=
   rfl
 
--- This lemma was always bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644
-@[simp, nolint simpNF]
 theorem rightDual_ρ [RightRigidCategory V] (h : H) : Xᘁ.ρ h = (X.ρ (h⁻¹ : H))ᘁ := by
   rw [← SingleObj.inv_as_inv]; rfl
 
--- This lemma was always bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644
-@[simp, nolint simpNF]
 theorem leftDual_ρ [LeftRigidCategory V] (h : H) : (ᘁX).ρ h = ᘁX.ρ (h⁻¹ : H) := by
   rw [← SingleObj.inv_as_inv]; rfl
 
@@ -199,12 +191,12 @@ end Monoidal
 
 open MonoidalCategory
 
-/-- Given `X : Action (Type u) (MonCat.of G)` for `G` a group, then `G × X` (with `G` acting as left
+/-- Given `X : Action (Type u) G` for `G` a group, then `G × X` (with `G` acting as left
 multiplication on the first factor and by `X.ρ` on the second) is isomorphic as a `G`-set to
 `G × X` (with `G` acting as left multiplication on the first factor and trivially on the second).
 The isomorphism is given by `(g, x) ↦ (g, g⁻¹ • x)`. -/
 @[simps]
-noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type u) (MonCat.of G)) :
+noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type u) G) :
     leftRegular G ⊗ X ≅ leftRegular G ⊗ Action.mk X.V 1 where
   hom :=
     { hom := fun g => ⟨g.1, (X.ρ (g.1⁻¹ : G) g.2 : X.V)⟩
@@ -218,24 +210,19 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
       comm := fun (g : G) => by
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
         refine Prod.ext rfl ?_
-        rw [tensor_ρ, tensor_ρ]
-        dsimp
-        -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-        erw [leftRegular_ρ_apply]
-        rw [map_mul]
-        rfl }
+        simp [leftRegular] }
   hom_inv_id := by
     apply Hom.ext
     funext x
     refine Prod.ext rfl ?_
     change (X.ρ x.1 * X.ρ (x.1⁻¹ : G)) x.2 = x.2
-    rw [← X.ρ.map_mul, mul_inv_cancel, X.ρ.map_one, MonCat.one_of, End.one_def, types_id_apply]
+    rw [← X.ρ.map_mul, mul_inv_cancel, X.ρ.map_one, End.one_def, types_id_apply]
   inv_hom_id := by
     apply Hom.ext
     funext x
     refine Prod.ext rfl ?_
     change (X.ρ (x.1⁻¹ : G) * X.ρ x.1) x.2 = x.2
-    rw [← X.ρ.map_mul, inv_mul_cancel, X.ρ.map_one, MonCat.one_of, End.one_def, types_id_apply]
+    rw [← X.ρ.map_mul, inv_mul_cancel, X.ρ.map_one, End.one_def, types_id_apply]
 
 /-- The natural isomorphism of `G`-sets `Gⁿ⁺¹ ≅ G × Gⁿ`, where `G` acts by left multiplication on
 each factor. -/

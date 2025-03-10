@@ -132,7 +132,7 @@ theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn
       Finset.mem_inter]
     intro t -- Porting note: used to be `exact` below, but the definition of `∈` has changed.
     simpa using hab.disjoint_primeFactors.le_bot t
-  cases' this with h h <;> simp [h, imp_or]
+  rcases this with h | h <;> simp [h, imp_or]
 
 theorem Nat.mul_divisors_filter_prime_pow {a b : ℕ} (hab : a.Coprime b) :
     (a * b).divisors.filter IsPrimePow = (a.divisors ∪ b.divisors).filter IsPrimePow := by

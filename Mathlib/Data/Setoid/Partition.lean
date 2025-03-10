@@ -3,6 +3,7 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot, Wen Yang, Johan Commelin
 -/
+
 import Mathlib.Data.Set.Finite.Range
 import Mathlib.Order.Partition.Finpartition
 
@@ -248,8 +249,7 @@ instance Partition.partialOrder : PartialOrder (Subtype (@IsPartition α)) where
     let h := @le_antisymm (Setoid α) _ _ _ hx hy
     rw [Subtype.ext_iff_val, ← classes_mkClasses x.1 x.2, ← classes_mkClasses y.1 y.2, h]
 
-variable (α)
-
+variable (α) in
 /-- The order-preserving bijection between equivalence relations on a type `α`, and
   partitions of `α` into subsets. -/
 protected def Partition.orderIso : Setoid α ≃o { C : Set (Set α) // IsPartition C } where
@@ -260,8 +260,6 @@ protected def Partition.orderIso : Setoid α ≃o { C : Set (Set α) // IsPartit
   map_rel_iff' {r s} := by
     conv_rhs => rw [← mkClasses_classes r, ← mkClasses_classes s]
     rfl
-
-variable {α}
 
 /-- A complete lattice instance for partitions; there is more infrastructure for the
     equivalent complete lattice on equivalence relations. -/
@@ -299,15 +297,15 @@ an index to an element of the corresponding set.
 This type is primarily useful for definitional control of `s` - if this is not needed, then
 `Setoid.ker index` by itself may be sufficient. -/
 structure IndexedPartition {ι α : Type*} (s : ι → Set α) where
-  /-- two indexes are equal if they are equal in membership  -/
+  /-- two indexes are equal if they are equal in membership -/
   eq_of_mem : ∀ {x i j}, x ∈ s i → x ∈ s j → i = j
   /-- sends an index to an element of the corresponding set -/
   some : ι → α
-  /-- membership invariance for `some`-/
+  /-- membership invariance for `some` -/
   some_mem : ∀ i, some i ∈ s i
-  /-- index for type `α`-/
+  /-- index for type `α` -/
   index : α → ι
-  /-- membership invariance for `index`-/
+  /-- membership invariance for `index` -/
   mem_index : ∀ x, x ∈ s (index x)
 
 open scoped Function -- required for scoped `on` notation
@@ -336,8 +334,7 @@ instance [Unique ι] [Inhabited α] : Inhabited (IndexedPartition fun _i : ι =>
       index := default
       mem_index := Set.mem_univ }⟩
 
--- Porting note: `simpNF` complains about `mem_index`
-attribute [simp] some_mem --mem_index
+attribute [simp] some_mem
 
 variable (hs : IndexedPartition s)
 

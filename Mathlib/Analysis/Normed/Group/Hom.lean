@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Analysis.Normed.Group.Int
+import Mathlib.Analysis.Normed.Group.Subgroup
 import Mathlib.Analysis.Normed.Group.Uniform
 
 /-!
@@ -110,7 +111,6 @@ variable (f g)
 theorem toFun_eq_coe : f.toFun = f :=
   rfl
 
--- Porting note: removed `simp` because `simpNF` complains the LHS doesn't simplify.
 theorem coe_mk (f) (h₁) (h₂) (h₃) : ⇑(⟨f, h₁, h₂, h₃⟩ : NormedAddGroupHom V₁ V₂) = f :=
   rfl
 
@@ -229,6 +229,9 @@ protected theorem uniformContinuous (f : NormedAddGroupHom V₁ V₂) : UniformC
 @[continuity]
 protected theorem continuous (f : NormedAddGroupHom V₁ V₂) : Continuous f :=
   f.uniformContinuous.continuous
+
+instance : ContinuousMapClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
+  map_continuous := fun f => f.continuous
 
 theorem ratio_le_opNorm (x : V₁) : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
   div_le_of_le_mul₀ (norm_nonneg _) f.opNorm_nonneg (le_opNorm _ _)

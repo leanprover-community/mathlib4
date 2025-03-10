@@ -537,9 +537,9 @@ theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
 /-- Embed a list as a sequence -/
 @[coe]
 def ofList (l : List α) : Seq α :=
-  ⟨List.get? l, fun {n} h => by
-    rw [List.get?_eq_none_iff] at h ⊢
-    exact h.trans (Nat.le_succ n)⟩
+  ⟨(l[·]?), fun {n} h => by
+    rw [List.getElem?_eq_none_iff] at h ⊢
+    exact Nat.le_succ_of_le h⟩
 
 instance coeList : Coe (List α) (Seq α) :=
   ⟨ofList⟩
@@ -549,7 +549,7 @@ theorem ofList_nil : ofList [] = (nil : Seq α) :=
   rfl
 
 @[simp]
-theorem ofList_get (l : List α) (n : ℕ) : (ofList l).get? n = l.get? n :=
+theorem ofList_get? (l : List α) (n : ℕ) : (ofList l).get? n = l[n]? :=
   rfl
 
 @[simp]
@@ -557,7 +557,7 @@ theorem ofList_cons (a : α) (l : List α) : ofList (a::l) = cons a (ofList l) :
   ext1 (_ | n) <;> rfl
 
 theorem ofList_injective : Function.Injective (ofList : List α → _) :=
-  fun _ _ h => List.ext_get? fun _ => congr_fun (Subtype.ext_iff.1 h) _
+  fun _ _ h => List.ext_getElem? fun _ => congr_fun (Subtype.ext_iff.1 h) _
 
 /-- Embed an infinite stream as a sequence -/
 @[coe]
