@@ -11,7 +11,7 @@ import Mathlib.MeasureTheory.Function.L2Space
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.Periodic
 import Mathlib.Topology.ContinuousMap.StoneWeierstrass
-import Mathlib.MeasureTheory.Integral.FundThmCalculus
+import Mathlib.MeasureTheory.Integral.IntegrationByParts
 
 /-!
 
