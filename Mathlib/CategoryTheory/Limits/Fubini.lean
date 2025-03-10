@@ -233,14 +233,8 @@ def isLimitOfIsLimitConeOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit
       π :=
         { app j := (Q j).lift <|
             (Cones.postcompose (E j).hom).obj <| s.whisker (Prod.sectR j K)
-          naturality {j' j} f := by
-            symm
-            simp only [Functor.const_obj_obj, DiagramOfCones.conePoints_obj, Functor.const_obj_map,
-              Category.id_comp, DiagramOfCones.conePoints_map]
-            apply (Q j).uniq (s := (Cones.postcompose _).obj <| s.whisker (Prod.sectR j K))
-            intro k; symm
-            haveI := s.π.naturality ((Prod.sectL J k).map f)
-            simpa [E] using this } }
+          naturality {j' j} f := (Q j).hom_ext <|
+            fun k ↦ by simpa [E] using s.π.naturality ((Prod.sectL J k).map f) } }
   { lift s := P.lift (S s)
     fac s p := by
       have h1 := (Q p.1).fac ((Cones.postcompose (E p.1).hom).obj <|
@@ -257,13 +251,8 @@ def isLimitOfIsLimitConeOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit
         NatIso.ofComponents_hom_app, Iso.refl_hom, Prod.sectL_obj, Prod.sectL_map, eq_mp_eq_cast,
         eq_mpr_eq_cast, coneOfConeUncurry_pt, coneOfConeUncurry_π_app, S, E] at h2 ⊢
       simp [← h1, ← h2]
-    uniq s f hf := by
-      apply P.uniq (s := S s)
-      intro j
-      dsimp only [S]
-      apply (Q j).uniq ((Cones.postcompose (E j).hom).obj <| s.whisker (Prod.sectR j K))
-      intro k
-      simpa [E] using (hf (j,k)) }
+    uniq s f hf := P.uniq (s := S s) _ <|
+      fun j ↦ (Q j).hom_ext <| fun k ↦ by simpa [S, E] using hf (j, k) }
 
 /-- `coconeOfCoconeUncurry Q c` is a colimit cocone when `c` is a colimit cocone.
 -/
@@ -316,14 +305,8 @@ def isColimitOfIsColimitCoconeOfCoconeUncurry {D : DiagramOfCocones F}
       ι :=
         { app j := (Q j).desc <|
             (Cocones.precompose (E j).inv).obj <| s.whisker (Prod.sectR j K)
-          naturality {j j'} f := by
-            simp only [DiagramOfCocones.coconePoints_obj, Functor.const_obj_obj,
-              DiagramOfCocones.coconePoints_map, Functor.comp_obj, Prod.sectR_obj, uncurry_obj_obj,
-              NatTrans.id_app, Functor.const_obj_map, Category.comp_id]
-            apply (Q j).uniq (s := (Cocones.precompose _).obj <| s.whisker (Prod.sectR j K))
-            intro k
-            haveI := s.ι.naturality ((Prod.sectL J k).map f)
-            simpa [E] using this } }
+          naturality {j j'} f := (Q j).hom_ext <|
+            fun k ↦ by simpa [E] using s.ι.naturality ((Prod.sectL J k).map f) } }
   { desc s := P.desc (S s)
     fac s p := by
       have h1 := (Q p.1).fac ((Cocones.precompose (E p.1).inv).obj <|
@@ -340,13 +323,8 @@ def isColimitOfIsColimitCoconeOfCoconeUncurry {D : DiagramOfCocones F}
         Iso.refl_inv, whiskerLeft_app, Prod.sectL_obj, Prod.sectL_map, eq_mp_eq_cast,
         eq_mpr_eq_cast, coconeOfCoconeUncurry_pt, coconeOfCoconeUncurry_ι_app, S, E] at h2 ⊢
       simp [← h1, ← h2]
-    uniq s f hf := by
-      apply P.uniq (s := S s)
-      intro j
-      dsimp only [S]
-      apply (Q j).uniq ((Cocones.precompose (E j).inv).obj <| s.whisker (Prod.sectR j K))
-      intro k
-      simpa [E] using (hf (j,k)) }
+    uniq s f hf := P.uniq (s := S s) _ <|
+      fun j ↦ (Q j).hom_ext <| fun k ↦ by simpa [S, E] using hf (j, k) }
 
 section
 
