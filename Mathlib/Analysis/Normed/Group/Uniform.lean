@@ -281,8 +281,6 @@ lemma LipschitzWith.mul (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
     LipschitzWith (Kf + Kg) fun x ↦ f x * g x := by
   simpa [← lipschitzOnWith_univ] using hf.lipschitzOnWith.mul hg.lipschitzOnWith
 
-@[deprecated (since := "2024-08-25")] alias LipschitzWith.mul' := LipschitzWith.mul
-
 @[to_additive]
 lemma LocallyLipschitzOn.mul (hf : LocallyLipschitzOn s f) (hg : LocallyLipschitzOn s g) :
     LocallyLipschitzOn s fun x ↦ f x * g x := fun x hx ↦ by
@@ -359,7 +357,7 @@ instance (priority := 100) SeminormedCommGroup.to_uniformGroup : UniformGroup E 
 -- short-circuit type class inference
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) SeminormedCommGroup.toTopologicalGroup : TopologicalGroup E :=
+instance (priority := 100) SeminormedCommGroup.toIsTopologicalGroup : IsTopologicalGroup E :=
   inferInstance
 
 /-! ### SeparationQuotient -/

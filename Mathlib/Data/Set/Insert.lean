@@ -3,8 +3,8 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Basic
-import Mathlib.Data.One.Defs
+import Mathlib.Algebra.Notation.Defs
+import Mathlib.Data.Set.Disjoint
 
 /-!
 # Lemmas about insertion, singleton, and pairs
@@ -316,6 +316,14 @@ lemma disjoint_singleton : Disjoint ({a} : Set α) {b} ↔ a ≠ b := by
 
 lemma ssubset_iff_sdiff_singleton : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t \ {a} := by
   simp [ssubset_iff_insert, subset_diff, insert_subset_iff]; aesop
+
+@[simp]
+theorem disjoint_insert_left : Disjoint (insert a s) t ↔ a ∉ t ∧ Disjoint s t := by
+  simp only [Set.disjoint_left, Set.mem_insert_iff, forall_eq_or_imp]
+
+@[simp]
+theorem disjoint_insert_right : Disjoint s (insert a t) ↔ a ∉ s ∧ Disjoint s t := by
+  rw [disjoint_comm, disjoint_insert_left, disjoint_comm]
 
 /-! ### Lemmas about complement -/
 

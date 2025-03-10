@@ -256,7 +256,7 @@ theorem map_map {α : F ⟶ G} {X Y : Grothendieck F} {f : X ⟶ Y} :
     (Grothendieck.map α).map f =
     ⟨f.base, (eqToHom (α.naturality f.base).symm).app X.fiber ≫ (α.app Y.base).map f.fiber⟩ := rfl
 
-/-- The functor `Grothendieck.map α : Grothendieck F ⥤ Grothendieck G` lies over `C`.-/
+/-- The functor `Grothendieck.map α : Grothendieck F ⥤ Grothendieck G` lies over `C`. -/
 theorem functor_comp_forget {α : F ⟶ G} :
     Grothendieck.map α ⋙ Grothendieck.forget G = Grothendieck.forget F := rfl
 
@@ -319,6 +319,7 @@ def compAsSmallFunctorEquivalence :
   counitIso := Iso.refl _
   unitIso := Iso.refl _
 
+variable {F} in
 /-- Mapping a Grothendieck construction along the whiskering of any natural transformation
 `α : F ⟶ G` with the functor `asSmallFunctor : Cat ⥤ Cat` is naturally isomorphic to conjugating
 `map α` with the equivalence between `Grothendieck (F ⋙ asSmallFunctor)` and `Grothendieck F`. -/
@@ -525,7 +526,7 @@ variable {E : Type*} [Category E]
 
 variable (F) in
 /-- The inclusion of a fiber `F.obj c` of a functor `F : C ⥤ Cat` into its Grothendieck
-construction.-/
+construction. -/
 @[simps obj map]
 def ι (c : C) : F.obj c ⥤ Grothendieck F where
   obj d := ⟨c, d⟩
@@ -577,6 +578,11 @@ def ιCompFunctorFrom (c : C) : ι F c ⋙ (functorFrom fib hom hom_id hom_comp)
   NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [hom_id])
 
 end FunctorFrom
+
+/-- The fiber inclusion `ι F c` composed with `map α` is isomorphic to `α.app c ⋙ ι F' c`. -/
+@[simps!]
+def ιCompMap {F' : C ⥤ Cat} (α : F ⟶ F') (c : C) : ι F c ⋙ map α ≅ α.app c ⋙ ι F' c :=
+  NatIso.ofComponents (fun X => Iso.refl _) (fun f => by simp [map])
 
 end Grothendieck
 

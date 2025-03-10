@@ -395,7 +395,7 @@ theorem hasSum_norm (hp : 0 < p.toReal) (f : lp E p) :
 theorem norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
   · simp [lp.norm_eq_card_dsupport f]
-  · cases' isEmpty_or_nonempty α with _i _i
+  · rcases isEmpty_or_nonempty α with _i | _i
     · rw [lp.norm_eq_ciSup]
       simp [Real.iSup_of_isEmpty]
     inhabit α
@@ -420,7 +420,7 @@ theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
     have : { i : α | ¬f i = 0 } = ∅ := by simpa [lp.norm_eq_card_dsupport f] using h
     have : (¬f i = 0) = False := congr_fun this i
     tauto
-  · cases' isEmpty_or_nonempty α with _i _i
+  · rcases isEmpty_or_nonempty α with _i | _i
     · simp [eq_iff_true_of_subsingleton]
     have H : IsLUB (Set.range fun i => ‖f i‖) 0 := by simpa [h] using lp.isLUB_norm f
     ext i
@@ -789,8 +789,7 @@ variable [∀ i, NormOneClass (B i)]
 theorem _root_.one_memℓp_infty : Memℓp (1 : ∀ i, B i) ∞ :=
   ⟨1, by rintro i ⟨i, rfl⟩; exact norm_one.le⟩
 
-variable (B)
-
+variable (B) in
 /-- The `𝕜`-subring of elements of `∀ i : α, B i` whose `lp` norm is finite. This is `lp E ∞`,
 with extra structure. -/
 def _root_.lpInftySubring : Subring (PreLp B) :=
@@ -798,8 +797,6 @@ def _root_.lpInftySubring : Subring (PreLp B) :=
     carrier := { f | Memℓp f ∞ }
     one_mem' := one_memℓp_infty
     mul_mem' := Memℓp.infty_mul }
-
-variable {B}
 
 instance inftyRing : Ring (lp B ∞) :=
   (lpInftySubring B).toRing

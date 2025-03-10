@@ -435,6 +435,10 @@ theorem le_of_forall_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r < x
   lift r to ℝ≥0 using ne_top_of_lt hr
   exact h r hr
 
+lemma eq_of_forall_nnreal_iff {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r ≤ x ↔ ↑r ≤ y) : x = y :=
+  le_antisymm (le_of_forall_nnreal_lt fun _r hr ↦ (h _).1 hr.le)
+    (le_of_forall_nnreal_lt fun _r hr ↦ (h _).2 hr.le)
+
 theorem le_of_forall_pos_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, 0 < r → ↑r < x → ↑r ≤ y) : x ≤ y :=
   le_of_forall_nnreal_lt fun r hr =>
     (zero_le r).eq_or_lt.elim (fun h => h ▸ zero_le _) fun h0 => h r h0 hr
@@ -604,7 +608,7 @@ theorem exists_inv_two_pow_lt (ha : a ≠ 0) : ∃ n : ℕ, 2⁻¹ ^ n < a := by
 
 @[simp, norm_cast]
 theorem coe_zpow (hr : r ≠ 0) (n : ℤ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ≥0∞) ^ n := by
-  cases' n with n n
+  rcases n with n | n
   · simp only [Int.ofNat_eq_coe, coe_pow, zpow_natCast]
   · have : r ^ n.succ ≠ 0 := pow_ne_zero (n + 1) hr
     simp only [zpow_negSucc, coe_inv this, coe_pow]
@@ -660,7 +664,7 @@ theorem Ioo_zero_top_eq_iUnion_Ico_zpow {y : ℝ≥0∞} (hy : 1 < y) (h'y : y �
 
 @[gcongr]
 theorem zpow_le_of_le {x : ℝ≥0∞} (hx : 1 ≤ x) {a b : ℤ} (h : a ≤ b) : x ^ a ≤ x ^ b := by
-  induction' a with a a <;> induction' b with b b
+  obtain a | a := a <;> obtain b | b := b
   · simp only [Int.ofNat_eq_coe, zpow_natCast]
     exact pow_right_mono₀ hx (Int.le_of_ofNat_le_ofNat h)
   · apply absurd h (not_le_of_gt _)

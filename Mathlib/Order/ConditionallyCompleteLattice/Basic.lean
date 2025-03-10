@@ -247,12 +247,6 @@ theorem csInf_upperBounds_eq_csSup {s : Set α} (h : BddAbove s) (hs : s.Nonempt
     sInf (upperBounds s) = sSup s :=
   (isGLB_csInf h <| hs.mono fun _ hx _ hy => hy hx).unique (isLUB_csSup hs h).isGLB
 
-@[deprecated (since := "2024-08-25")]
-alias csSup_lower_bounds_eq_csInf := csSup_lowerBounds_eq_csInf
-
-@[deprecated (since := "2024-08-25")]
-alias csInf_upper_bounds_eq_csSup := csInf_upperBounds_eq_csSup
-
 theorem csSup_lowerBounds_range [Nonempty β] {f : β → α} (hf : BddBelow (range f)) :
     sSup (lowerBounds (range f)) = ⨅ i, f i :=
   csSup_lowerBounds_eq_csInf hf <| range_nonempty _
@@ -934,7 +928,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
       show ite _ _ _ ≤ a by
         simp only [OrderBot.bddBelow, not_true_eq_false, or_false]
         split_ifs with h₁
-        · cases' a with a
+        · cases a
           · exact le_rfl
           cases h₁ haS
         · cases a

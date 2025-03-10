@@ -140,7 +140,7 @@ theorem not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_within_diff
     (hg : deriv f =O[𝓝[[[a, b]] \ {c}] c] g) : ¬IntervalIntegrable g volume a b := by
   obtain ⟨l, hl, hl', hle, hmem⟩ :
     ∃ l : Filter ℝ, TendstoIxxClass Icc l l ∧ l.NeBot ∧ l ≤ 𝓝 c ∧ [[a, b]] \ {c} ∈ l := by
-    cases' (min_lt_max.2 hne).lt_or_lt c with hlt hlt
+    rcases (min_lt_max.2 hne).lt_or_lt c with hlt | hlt
     · refine ⟨𝓝[<] c, inferInstance, inferInstance, inf_le_left, ?_⟩
       rw [← Iic_diff_right]
       exact diff_mem_nhdsWithin_diff (Icc_mem_nhdsLE_of_mem ⟨hlt, hc.2⟩) _
@@ -175,7 +175,7 @@ theorem not_intervalIntegrable_of_sub_inv_isBigO_punctured {f : ℝ → F} {a b 
   have B : Tendsto (fun x => ‖Real.log (x - c)‖) (𝓝[≠] c) atTop := by
     refine tendsto_abs_atBot_atTop.comp (Real.tendsto_log_nhdsWithin_zero.comp ?_)
     rw [← sub_self c]
-    exact ((hasDerivAt_id c).sub_const c).tendsto_punctured_nhds one_ne_zero
+    exact ((hasDerivAt_id c).sub_const c).tendsto_nhdsNE one_ne_zero
   exact not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_punctured
     (A.mono fun x hx => hx.differentiableAt) B
     (hf.congr' (A.mono fun x hx => hx.deriv.symm) EventuallyEq.rfl) hne hc

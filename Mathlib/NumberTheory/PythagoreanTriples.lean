@@ -278,7 +278,7 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
       convert hk 1
       rw [one_pow 2]
       ring -- Porting note: rfl is not enough to close this
-    simp only [Prod.mk.inj_iff, Subtype.mk_eq_mk]
+    simp only [Prod.mk_inj, Subtype.mk_eq_mk]
     constructor
     · field_simp [h3]
       ring
@@ -586,8 +586,8 @@ theorem coprime_classification :
       | constructor; ring; exact coprime_sq_sub_mul co pp
       | constructor; ring; rw [Int.gcd_comm]; exact coprime_sq_sub_mul co pp
 
-/-- by assuming `x` is odd and `z` is positive we get a slightly more precise classification of
-the Pythagorean triple `x ^ 2 + y ^ 2 = z ^ 2`-/
+/-- By assuming `x` is odd and `z` is positive we get a slightly more precise classification of
+the Pythagorean triple `x ^ 2 + y ^ 2 = z ^ 2`. -/
 theorem coprime_classification' {x y z : ℤ} (h : PythagoreanTriple x y z)
     (h_coprime : Int.gcd x y = 1) (h_parity : x % 2 = 1) (h_pos : 0 < z) :
     ∃ m n,

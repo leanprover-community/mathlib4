@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
 -/
 import Mathlib.Logic.Equiv.Fin
-import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.Connected.LocallyConnected
 import Mathlib.Topology.ContinuousMap.Defs
 import Mathlib.Topology.DenseEmbedding
@@ -27,6 +26,8 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
   an open map is a homeomorphism.
 
 -/
+
+assert_not_exists Module MonoidWithZero
 
 open Filter Function Set Topology
 
@@ -181,9 +182,7 @@ theorem symm_comp_self (h : X ≃ₜ Y) : h.symm ∘ h = id :=
 theorem self_comp_symm (h : X ≃ₜ Y) : h ∘ h.symm = id :=
   funext h.apply_symm_apply
 
-@[simp]
-theorem range_coe (h : X ≃ₜ Y) : range h = univ :=
-  h.surjective.range_eq
+theorem range_coe (h : X ≃ₜ Y) : range h = univ := by simp
 
 theorem image_symm (h : X ≃ₜ Y) : image h.symm = preimage h :=
   funext h.symm.toEquiv.image_eq_preimage
@@ -377,11 +376,6 @@ theorem preimage_frontier (h : X ≃ₜ Y) (s : Set Y) : h ⁻¹' frontier s = f
 theorem image_frontier (h : X ≃ₜ Y) (s : Set X) : h '' frontier s = frontier (h '' s) := by
   rw [← preimage_symm, preimage_frontier]
 
-@[to_additive]
-theorem _root_.HasCompactMulSupport.comp_homeomorph {M} [One M] {f : Y → M}
-    (hf : HasCompactMulSupport f) (φ : X ≃ₜ Y) : HasCompactMulSupport (f ∘ φ) :=
-  hf.comp_isClosedEmbedding φ.isClosedEmbedding
-
 @[simp]
 theorem map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝 x) = 𝓝 (h x) :=
   h.isEmbedding.map_nhds_of_mem _ (by simp)
@@ -520,9 +514,25 @@ def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
 
 /-- Sum of two homeomorphisms. -/
 def sumCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X ⊕ Y ≃ₜ X' ⊕ Y' where
-  continuous_toFun := h₁.continuous.sum_map h₂.continuous
-  continuous_invFun := h₁.symm.continuous.sum_map h₂.symm.continuous
+  continuous_toFun := h₁.continuous.sumMap h₂.continuous
+  continuous_invFun := h₁.symm.continuous.sumMap h₂.symm.continuous
   toEquiv := h₁.toEquiv.sumCongr h₂.toEquiv
+
+@[simp]
+lemma sumCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
+  (sumCongr h₁ h₂).symm = sumCongr h₁.symm h₂.symm := rfl
+
+@[simp]
+theorem sumCongr_refl : sumCongr (.refl X) (.refl Y) = .refl (X ⊕ Y) := by
+  ext i
+  cases i <;> rfl
+
+@[simp]
+theorem sumCongr_trans {X'' Y'' : Type*} [TopologicalSpace X''] [TopologicalSpace Y'']
+    (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') (h₃ : X' ≃ₜ X'') (h₄ : Y' ≃ₜ Y'') :
+    (sumCongr h₁ h₂).trans (sumCongr h₃ h₄) = sumCongr (h₁.trans h₃) (h₂.trans h₄) := by
+  ext i
+  cases i <;> rfl
 
 /-- Product of two homeomorphisms. -/
 def prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X × Y ≃ₜ X' × Y' where
@@ -559,11 +569,11 @@ theorem coe_sumComm : ⇑(sumComm X Y) = Sum.swap :=
 
 @[continuity, fun_prop]
 lemma continuous_sumAssoc : Continuous (Equiv.sumAssoc X Y Z) :=
-  Continuous.sum_elim (by fun_prop) (by fun_prop)
+  Continuous.sumElim (by fun_prop) (by fun_prop)
 
 @[continuity, fun_prop]
 lemma continuous_sumAssoc_symm : Continuous (Equiv.sumAssoc X Y Z).symm :=
-  Continuous.sum_elim (by fun_prop) (by fun_prop)
+  Continuous.sumElim (by fun_prop) (by fun_prop)
 
 /-- `(X ⊕ Y) ⊕ Z` is homeomorphic to `X ⊕ (Y ⊕ Z)`. -/
 def sumAssoc : (X ⊕ Y) ⊕ Z ≃ₜ X ⊕ Y ⊕ Z where
@@ -598,7 +608,7 @@ lemma sumSumSumComm_symm : (sumSumSumComm X Y W Z).symm = (sumSumSumComm X W Y Z
 @[simps! (config := .asFn) apply]
 def sumEmpty [IsEmpty Y] : X ⊕ Y ≃ₜ X where
   toEquiv := Equiv.sumEmpty X Y
-  continuous_toFun := Continuous.sum_elim continuous_id (by fun_prop)
+  continuous_toFun := Continuous.sumElim continuous_id (by fun_prop)
   continuous_invFun := continuous_inl
 
 /-- The sum of `X` with any empty topological space is homeomorphic to `X`. -/
@@ -766,7 +776,7 @@ theorem _root_.Fin.continuous_append (m n : ℕ) :
   exact Homeomorph.continuous_toFun _
 
 /-- The natural homeomorphism between `(Fin m → X) × (Fin n → X)` and `Fin (m + n) → X`.
-`Fin.appendEquiv` as a homeomorphism.-/
+`Fin.appendEquiv` as a homeomorphism -/
 @[simps!]
 def _root_.Fin.appendHomeomorph (m n : ℕ) : (Fin m → X) × (Fin n → X) ≃ₜ (Fin (m + n) → X) where
   toEquiv := Fin.appendEquiv m n
@@ -787,9 +797,9 @@ section Distrib
 def sumProdDistrib : (X ⊕ Y) × Z ≃ₜ (X × Z) ⊕ (Y × Z) :=
   Homeomorph.symm <|
     homeomorphOfContinuousOpen (Equiv.sumProdDistrib X Y Z).symm
-        ((continuous_inl.prodMap continuous_id).sum_elim
+        ((continuous_inl.prodMap continuous_id).sumElim
           (continuous_inr.prodMap continuous_id)) <|
-      (isOpenMap_inl.prodMap IsOpenMap.id).sum_elim (isOpenMap_inr.prodMap IsOpenMap.id)
+      (isOpenMap_inl.prodMap IsOpenMap.id).sumElim (isOpenMap_inr.prodMap IsOpenMap.id)
 
 /-- `X × (Y ⊕ Z)` is homeomorphic to `X × Y ⊕ X × Z`. -/
 def prodSumDistrib : X × (Y ⊕ Z) ≃ₜ (X × Y) ⊕ (X × Z) :=
@@ -946,7 +956,7 @@ theorem continuous_symm_of_equiv_compact_to_t2 [CompactSpace X] [T2Space Y] {f :
 
 This is not true when T2 is weakened to T1
 (see `Continuous.homeoOfEquivCompactToT2.t1_counterexample`). -/
-@[simps toEquiv] -- Porting note: was `@[simps]`
+@[simps toEquiv]
 def homeoOfEquivCompactToT2 [CompactSpace X] [T2Space Y] {f : X ≃ Y} (hf : Continuous f) : X ≃ₜ Y :=
   { f with
     continuous_toFun := hf
@@ -1057,7 +1067,7 @@ lemma IsHomeomorph.comp {g : Y → Z} (hg : IsHomeomorph g) (hf : IsHomeomorph f
     IsHomeomorph (g ∘ f) := ⟨hg.1.comp hf.1, hg.2.comp hf.2, hg.3.comp hf.3⟩
 
 lemma IsHomeomorph.sumMap {g : Z → W} (hf : IsHomeomorph f) (hg : IsHomeomorph g) :
-    IsHomeomorph (Sum.map f g) := ⟨hf.1.sum_map hg.1, hf.2.sumMap hg.2, hf.3.sum_map hg.3⟩
+    IsHomeomorph (Sum.map f g) := ⟨hf.1.sumMap hg.1, hf.2.sumMap hg.2, hf.3.sumMap hg.3⟩
 
 lemma IsHomeomorph.prodMap {g : Z → W} (hf : IsHomeomorph f) (hg : IsHomeomorph g) :
     IsHomeomorph (Prod.map f g) := ⟨hf.1.prodMap hg.1, hf.2.prodMap hg.2, hf.3.prodMap hg.3⟩
@@ -1074,7 +1084,7 @@ lemma IsHomeomorph.pi_map {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalS
     IsHomeomorph (fun (x : ∀ i, X i) i ↦ f i (x i)) :=
   (Homeomorph.piCongrRight fun i ↦ (h i).homeomorph (f i)).isHomeomorph
 
-/-- `HomeomorphClass F A B` states that `F` is a type of homeomorphisms.-/
+/-- `HomeomorphClass F A B` states that `F` is a type of homeomorphisms. -/
 class HomeomorphClass (F : Type*) (A B : outParam Type*)
     [TopologicalSpace A] [TopologicalSpace B] [h : EquivLike F A B] : Prop where
   map_continuous : ∀ (f : F), Continuous f

@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Algebra.GCDMonoid.Multiset
+import Mathlib.Algebra.GCDMonoid.Nat
+import Mathlib.Algebra.Group.TypeTags.Finite
 import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Data.List.Rotate
-import Mathlib.GroupTheory.Perm.Cycle.Factors
 import Mathlib.GroupTheory.Perm.Closure
-import Mathlib.Algebra.GCDMonoid.Nat
+import Mathlib.GroupTheory.Perm.Cycle.Factors
 import Mathlib.Tactic.NormNum.GCD
 
 /-!
@@ -206,6 +207,14 @@ theorem cycleType_prime_order {σ : Perm α} (hσ : (orderOf σ).Prime) :
     exact hσ.ne_one
   · exact (hσ.eq_one_or_self_of_dvd n (dvd_of_mem_cycleType hn)).resolve_left
       (one_lt_of_mem_cycleType hn).ne'
+
+theorem pow_prime_eq_one_iff {σ : Perm α} {p : ℕ} [hp : Fact (Nat.Prime p)] :
+    σ ^ p = 1 ↔ ∀ c ∈ σ.cycleType, c = p := by
+  rw [← orderOf_dvd_iff_pow_eq_one, ← lcm_cycleType, Multiset.lcm_dvd]
+  apply forall_congr'
+  exact fun c ↦ ⟨fun hc h ↦ Or.resolve_left (hp.elim.eq_one_or_self_of_dvd c (hc h))
+       (Nat.ne_of_lt' (one_lt_of_mem_cycleType h)),
+     fun hc h ↦ by rw [hc h]⟩
 
 theorem isCycle_of_prime_order {σ : Perm α} (h1 : (orderOf σ).Prime)
     (h2 : σ.support.card < 2 * orderOf σ) : σ.IsCycle := by
@@ -541,7 +550,7 @@ variable [DecidableEq α]
 def partition (σ : Perm α) : (Fintype.card α).Partition where
   parts := σ.cycleType + Multiset.replicate (Fintype.card α - σ.support.card) 1
   parts_pos {n hn} := by
-    cases' mem_add.mp hn with hn hn
+    rcases mem_add.mp hn with hn | hn
     · exact zero_lt_one.trans (one_lt_of_mem_cycleType hn)
     · exact lt_of_lt_of_le zero_lt_one (ge_of_eq (Multiset.eq_of_mem_replicate hn))
   parts_sum := by

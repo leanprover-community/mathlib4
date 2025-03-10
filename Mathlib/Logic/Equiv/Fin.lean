@@ -3,10 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.Int.Defs
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Logic.Embedding.Set
 import Mathlib.Logic.Equiv.Option
+import Mathlib.Data.Int.Init
 
 /-!
 # Equivalences for `Fin n`
@@ -220,7 +220,7 @@ def Equiv.embeddingFinSucc (n : ℕ) (ι : Type*) :
 def finSumFinEquiv : Fin m ⊕ Fin n ≃ Fin (m + n) where
   toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
   invFun i := @Fin.addCases m n (fun _ => Fin m ⊕ Fin n) Sum.inl Sum.inr i
-  left_inv x := by cases' x with y y <;> dsimp <;> simp
+  left_inv x := by rcases x with y | y <;> dsimp <;> simp
   right_inv x := by refine Fin.addCases (fun i => ?_) (fun i => ?_) x <;> simp
 
 @[simp]
@@ -390,7 +390,7 @@ def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
       toNat_of_nonneg (emod_nonneg _ <| natCast_eq_zero.not.2 (NeZero.ne n)), emod_emod,
       ediv_add_emod']
   right_inv := fun ⟨q, r, hrn⟩ => by
-    simp only [Fin.val_mk, Prod.mk.inj_iff, Fin.ext_iff]
+    simp only [Fin.val_mk, Prod.mk_inj, Fin.ext_iff]
     obtain ⟨h1, h2⟩ := Int.natCast_nonneg r, Int.ofNat_lt.2 hrn
     rw [Int.add_comm, add_mul_ediv_right _ _ (natCast_eq_zero.not.2 (NeZero.ne n)),
       ediv_eq_zero_of_lt h1 h2, natMod, add_mul_emod_self, emod_eq_of_lt h1 h2, toNat_natCast]
@@ -415,7 +415,7 @@ instance subsingleton_fin_zero : Subsingleton (Fin 0) :=
 instance subsingleton_fin_one : Subsingleton (Fin 1) :=
   finOneEquiv.subsingleton
 
-/-- The natural `Equiv` between `(Fin m → α) × (Fin n → α)` and `Fin (m + n) → α`.-/
+/-- The natural `Equiv` between `(Fin m → α) × (Fin n → α)` and `Fin (m + n) → α` -/
 @[simps]
 def Fin.appendEquiv {α : Type*} (m n : ℕ) :
     (Fin m → α) × (Fin n → α) ≃ (Fin (m + n) → α) where

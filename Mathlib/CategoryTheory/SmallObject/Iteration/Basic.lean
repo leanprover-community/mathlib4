@@ -143,6 +143,7 @@ def prop : MorphismProperty C := .ofHoms (fun (X : C) ↦ Φ.toSucc X)
 lemma prop_toSucc (X : C) : Φ.prop (Φ.toSucc X) := ⟨_⟩
 
 /-- The map `Φ.toSucc X : X ⟶ Φ.Succ X`, as an element in `Arrow C`. -/
+@[simps!]
 def toSuccArrow (X : C) : Arrow C := Arrow.mk (Φ.toSucc X)
 
 lemma prop_iff {X Y : C} (f : X ⟶ Y) :
@@ -154,19 +155,28 @@ lemma prop_iff {X Y : C} (f : X ⟶ Y) :
     rw [← Φ.prop.arrow_mk_mem_toSet_iff, h]
     apply prop_toSucc
 
-variable {Φ} in
+variable {Φ}
+
 lemma prop.succ_eq {X Y : C} {f : X ⟶ Y} (hf : Φ.prop f) :
     Φ.succ X = Y := by
   cases hf
   rfl
 
-variable {Φ} in
 @[reassoc]
 lemma prop.fac {X Y : C} {f : X ⟶ Y} (hf : Φ.prop f) :
     f = Φ.toSucc X ≫ eqToHom hf.succ_eq := by
   cases hf
   simp
 
+/-- If `Φ : SuccStruct C` and `f` is a morphism in `C` which
+satisfies `Φ.prop f`, then this is the isomorphism of arrows
+between `f` and `Φ.toSuccArrow X`. -/
+@[simps!]
+def prop.arrowIso {X Y : C} {f : X ⟶ Y} (hf : Φ.prop f) :
+    Arrow.mk f ≅ Φ.toSuccArrow X :=
+  Arrow.isoMk (Iso.refl _) (eqToIso hf.succ_eq.symm) (by simp [hf.fac])
+
+variable (Φ)
 variable [LinearOrder J]
 
 /-- Given a functor `F : Set.Iic ⥤ C`, this is the morphism in `C`, as an element
@@ -219,7 +229,7 @@ end
 
 variable [SuccOrder J] [OrderBot J] [HasIterationOfShape J C]
 
-/-- The category of `j`th iterations of a succesor structure `Φ : SuccStruct C`.
+/-- The category of `j`th iterations of a successor structure `Φ : SuccStruct C`.
 An object consists of the data of all iterations of `Φ` for `i : J` such
 that `i ≤ j` (this is the field `F`). Such objects are
 equipped with data and properties which characterizes uniquely the iterations

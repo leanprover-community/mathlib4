@@ -3,6 +3,7 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Group.TypeTags.Finite
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
@@ -248,36 +249,13 @@ lemma injOn_pow {n : ℕ} {ζ : M} (hζ : IsPrimitiveRoot ζ n) :
   exact hζ.pow_inj hi hj e
 
 lemma exists_pos {k : ℕ} (hζ : ζ ^ k = 1) (hk : k ≠ 0) :
-    ∃ k' > 0, IsPrimitiveRoot ζ k' := by
-  classical
-  have H : ∃ k ≠ 0, ζ ^ k = 1 := ⟨k, hk, hζ⟩
-  let k' := Nat.find H
-  have hk' : 0 < k' := Nat.pos_iff_ne_zero.mpr (Nat.find_spec H).1
-  refine ⟨k', hk', (Nat.find_spec H).2, ?_⟩
-  intro l hl
-  have := Nat.find_min' H (m := .gcd k' l) ⟨Nat.gcd_ne_zero_left hk'.ne', ?_⟩
-  · exact Nat.gcd_eq_left_iff_dvd.mpr ((Nat.gcd_le_left l hk').antisymm this)
-  · have : IsUnit ζ := by
-      refine isUnit_iff_exists_inv.mpr ⟨ζ ^ (k - 1), ?_⟩
-      rw [← pow_succ', tsub_add_cancel_of_le, hζ]
-      rwa [Nat.one_le_iff_ne_zero]
-    have h₁ : this.unit ^ k' = 1 := by ext; simpa using (Nat.find_spec H).2
-    have h₂ : this.unit ^ l = 1 := by ext; simpa
-    suffices this.unit ^ (k'.gcd l : ℤ) = 1 by simpa using congr($(this).1)
-    simp [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, zpow_natCast, h₁, h₂]
-
-variable (ζ) in
-lemma «exists» : ∃ k, IsPrimitiveRoot ζ k := by
-  by_cases hζ : ∃ k ≠ 0, ζ ^ k = 1
-  · obtain ⟨k, hk, hζ⟩ := hζ
-    obtain ⟨k', -, hk'⟩ := exists_pos hζ hk
-    exact ⟨k', hk'⟩
-  · simp only [ne_eq, not_exists, not_and, not_imp_not] at hζ
-    exact ⟨0, pow_zero _, fun l hl ↦ zero_dvd_iff.mpr (hζ l hl)⟩
+    ∃ k' > 0, IsPrimitiveRoot ζ k' :=
+  ⟨orderOf ζ, by
+    rw [gt_iff_lt, orderOf_pos_iff, isOfFinOrder_iff_pow_eq_one]
+    exact ⟨k, Nat.pos_iff_ne_zero.mpr hk, hζ⟩, .orderOf _⟩
 
 lemma existsUnique : ∃! k, IsPrimitiveRoot ζ k :=
-  let ⟨k, hk⟩ := IsPrimitiveRoot.exists ζ
-  ⟨k, hk, fun _ hl ↦ unique hl hk⟩
+  ⟨_, .orderOf _, fun _ hl ↦ unique hl (.orderOf _)⟩
 
 section Maps
 

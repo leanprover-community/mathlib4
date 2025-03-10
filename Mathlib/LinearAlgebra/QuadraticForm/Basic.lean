@@ -613,7 +613,7 @@ def linMulLin (f g : M →ₗ[R] A) : QuadraticMap R M A where
   toFun := f * g
   toFun_smul a x := by
     rw [Pi.mul_apply, Pi.mul_apply, LinearMap.map_smulₛₗ, RingHom.id_apply, LinearMap.map_smulₛₗ,
-      RingHom.id_apply, smul_mul_assoc, mul_smul_comm, ← smul_assoc, (smul_eq_mul R)]
+      RingHom.id_apply, smul_mul_assoc, mul_smul_comm, ← smul_assoc, smul_eq_mul]
   exists_companion' :=
     ⟨(LinearMap.mul R A).compl₁₂ f g + (LinearMap.mul R A).flip.compl₁₂ g f, fun x y => by
       simp only [Pi.mul_apply, map_add, left_distrib, right_distrib, LinearMap.add_apply,

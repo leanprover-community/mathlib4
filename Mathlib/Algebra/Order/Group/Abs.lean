@@ -73,14 +73,14 @@ theorem le_of_abs_le (h : |a| ≤ b) : a ≤ b :=
   (abs_le.mp h).2
 
 @[to_additive]
-theorem apply_abs_le_mul_of_one_le' {β : Type*} [MulOneClass β] [Preorder β]
+theorem apply_abs_le_mul_of_one_le' {β : Type*} [MulOneClass β] [LE β]
     [MulLeftMono β] [MulRightMono β] {f : α → β}
     {a : α} (h₁ : 1 ≤ f a) (h₂ : 1 ≤ f (-a)) : f |a| ≤ f a * f (-a) :=
   (le_total a 0).rec (fun ha => (abs_of_nonpos ha).symm ▸ le_mul_of_one_le_left' h₁) fun ha =>
     (abs_of_nonneg ha).symm ▸ le_mul_of_one_le_right' h₂
 
 @[to_additive]
-theorem apply_abs_le_mul_of_one_le {β : Type*} [MulOneClass β] [Preorder β]
+theorem apply_abs_le_mul_of_one_le {β : Type*} [MulOneClass β] [LE β]
     [MulLeftMono β] [MulRightMono β] {f : α → β}
     (h : ∀ x, 1 ≤ f x) (a : α) : f |a| ≤ f a * f (-a) :=
   apply_abs_le_mul_of_one_le' (h _) (h _)
@@ -178,6 +178,12 @@ theorem dist_bdd_within_interval {a b lb ub : α} (hal : lb ≤ a) (hau : a ≤ 
 
 theorem eq_of_abs_sub_nonpos (h : |a - b| ≤ 0) : a = b :=
   eq_of_abs_sub_eq_zero (le_antisymm h (abs_nonneg (a - b)))
+
+lemma eq_of_abs_sub_lt_all {x y : α} (h : ∀ ε > 0, |x - y| < ε) : x = y :=
+  eq_of_abs_sub_nonpos <| forall_lt_iff_le'.mp h
+
+lemma eq_of_abs_sub_le_all [DenselyOrdered α] {x y : α} (h : ∀ ε > 0, |x - y| ≤ ε) : x = y :=
+  eq_of_abs_sub_nonpos <| forall_gt_imp_ge_iff_le_of_dense.mp h
 
 theorem abs_sub_nonpos : |a - b| ≤ 0 ↔ a = b :=
   ⟨eq_of_abs_sub_nonpos, by rintro rfl; rw [sub_self, abs_zero]⟩

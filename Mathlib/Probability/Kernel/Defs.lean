@@ -73,7 +73,9 @@ instance instFunLike : FunLike (Kernel α β) α (Measure β) where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
 
+@[fun_prop]
 lemma measurable (κ : Kernel α β) : Measurable κ := κ.measurable'
+
 @[simp, norm_cast] lemma coe_mk (f : α → Measure β) (hf) : mk f hf = f := rfl
 
 initialize_simps_projections Kernel (toFun → apply)
@@ -232,6 +234,16 @@ lemma apply_congr_of_mem_measurableAtom (κ : Kernel α β) {y' y : α} (hy' : y
     κ y' = κ y := by
   ext s hs
   exact mem_of_mem_measurableAtom hy' (κ.measurable_coe hs (measurableSet_singleton (κ y s))) rfl
+
+@[nontriviality]
+lemma eq_zero_of_isEmpty_left (κ : Kernel α β) [h : IsEmpty α] : κ = 0 := by
+  ext a
+  exact h.elim a
+
+@[nontriviality]
+lemma eq_zero_of_isEmpty_right (κ : Kernel α β) [IsEmpty β] : κ = 0 := by
+  ext a
+  simp [Measure.eq_zero_of_isEmpty (κ a)]
 
 section Sum
 
