@@ -155,9 +155,11 @@ lemma range_weylGroupToPerm :
     | mul w₁ w₂ hw₁ hw₂ h₁ h₂ =>
       simpa only [← Submonoid.mk_mul_mk _ w₁ w₂ hw₁ hw₂, map_mul] using Subgroup.mul_mem _ h₁ h₂
 
+/-- The natural representation of the Weyl group on the root space. -/
 def weylGroupRootRep : Representation R P.weylGroup M :=
   Representation.ofDistribMulAction R P.weylGroup M
 
+/-- The natural representation of the Weyl group on the coroot space. -/
 def weylGroupCorootRep : Representation R P.weylGroup.op N :=
   Representation.ofDistribMulAction R P.weylGroup.op N
 

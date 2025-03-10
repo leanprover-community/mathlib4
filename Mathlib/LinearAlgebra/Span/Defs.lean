@@ -440,7 +440,6 @@ theorem span_eq_bot : span R (s : Set M) = ⊥ ↔ ∀ x ∈ s, (x : M) = 0 :=
     ⟨fun H _ h => (mem_bot R).1 <| H <| subset_span h, fun H =>
       span_le.2 fun x h => (mem_bot R).2 <| H x h⟩
 
-@[simp]
 theorem span_singleton_eq_bot : (R ∙ x) = ⊥ ↔ x = 0 :=
   span_eq_bot.trans <| by simp
 

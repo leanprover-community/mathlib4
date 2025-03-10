@@ -141,7 +141,6 @@ theorem asModuleEquiv_map_smul (r : MonoidAlgebra k G) (x : ρ.asModule) :
     ρ.asModuleEquiv (r • x) = ρ.asAlgebraHom r (ρ.asModuleEquiv x) :=
   rfl
 
-@[simp]
 theorem asModuleEquiv_symm_map_smul (r : k) (x : V) :
     ρ.asModuleEquiv.symm (r • x) = algebraMap k (MonoidAlgebra k G) r • ρ.asModuleEquiv.symm x := by
   rw [LinearEquiv.symm_apply_eq]
