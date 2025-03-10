@@ -415,7 +415,16 @@ alias coe_comp' := coe_comp
 @[to_additive (attr := deprecated "use `coe_id` instead" (since := "2025-01-28"))]
 alias coe_id' := coe_id
 
-@[to_additive]
+/-- This instance allows type class synthesis to "see through" `CommGrp.of` to
+the underlying type when attempting synthesis on `Unique (CommGrp.of _)`.
+
+It is scoped because its discrimination tree keys are `Unique _` allowing
+Lean to attempt it in *any* search for `Unique α`. -/
+@[to_additive "This instance allows type class synthesis to \"see through\" `AddCommGrp.of`
+to the underlying type when attempting synthesis on `Unique (AddCommGrp.of _)`.
+
+It is scoped because its discrimination tree keys are `Unique _` allowing
+Lean to attempt it in *any* search for `Unique α`." ]
 scoped instance ofUnique (G : Type*) [CommGroup G] [i : Unique G] : Unique (CommGrp.of G) :=
   i
 
