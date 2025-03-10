@@ -72,13 +72,21 @@ def furtherFormatting (s : String) : String :=
 
 namespace Style.CommandStart
 
+/--
+`unlintedNodes` contains the `SyntaxNodeKind`s for which there is no clear formatting preference:
+if they appear in surface syntax, the linter will ignore formatting.
+
+Currently, the unlined nodes are mostly related to `Subtype`, `Set` and `Finset` notation.
+-/
+abbrev unlintedNodes := #[``«term{_:_//_}», `«term{_}», `Mathlib.Meta.setBuilder]
+
 @[inherit_doc Mathlib.Linter.linter.style.commandStart]
 def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.style.commandStart (← getOptions) do
     return
   if (← get).messages.hasErrors then
     return
-  -- if a command does not start on the first column, emit a warning
+  -- If a command does not start on the first column, emit a warning.
   if let some pos := stx.getPos? then
     let colStart := ((← getFileMap).toPosition pos).column
     if colStart ≠ 0 then
@@ -87,8 +95,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
           but all commands should start at the beginning of the line."
   -- We only lint up to the position given by `lintUpTo`
   if let some finalLintPos := lintUpTo stx then
-    -- if the command contains subtype notation before `finalLintPos`, we do not lint
-    if let some stype := stx.find? (·.isOfKind ``«term{_:_//_}») then
+    if let some stype := stx.find? (unlintedNodes.contains ·.getKind) then
       if let some pos := stype.getPos? then
         if pos.1 ≤ finalLintPos.1 then
           return
