@@ -199,32 +199,37 @@ theorem lintegral_eq_lintegral_of_isPiSystem
     congr with i
     exact h i
 
-theorem lintegral_eq_lintegral_of_isPiSystem_of_univ_mem
+lemma lintegral_eq_lintegral_of_isPiSystem_of_univ_mem
     (h_eq : m0 = MeasurableSpace.generateFrom s) (h_inter : IsPiSystem s) (h_univ : Set.univ ∈ s)
     (basic : ∀ t ∈ s, ∫⁻ x in t, f x ∂μ = ∫⁻ x in t, g x ∂μ)
-    (hf_int : ∫⁻ x, f x ∂μ ≠ ∞) (hg_int : ∫⁻ x, g x ∂μ ≠ ∞) :
-    ∀ t (_ : MeasurableSet t), ∫⁻ x in t, f x ∂μ = ∫⁻ x in t, g x ∂μ := by
-  refine lintegral_eq_lintegral_of_isPiSystem h_eq h_inter basic ?_ hf_int hg_int
+    (hf_int : ∫⁻ x, f x ∂μ ≠ ∞) (hg_int : ∫⁻ x, g x ∂μ ≠ ∞)
+    {t : Set α} (ht : MeasurableSet t) :
+    ∫⁻ x in t, f x ∂μ = ∫⁻ x in t, g x ∂μ := by
+  refine lintegral_eq_lintegral_of_isPiSystem h_eq h_inter basic ?_ hf_int hg_int t ht
   rw [← setLIntegral_univ, ← setLIntegral_univ (f := g)]
   exact basic _ h_univ
 
+/-- If two a.e.-measurable functions `α × β → ℝ≥0∞` with finite integrals have the same integral
+on every rectangle, then they are almost everywhere equal. -/
 lemma ae_eq_of_setLIntegral_prod_eq₀ {β : Type*} {mβ : MeasurableSpace β}
-    {μ : Measure (α × β)} [SigmaFinite μ] {f g : α × β → ℝ≥0∞}
+    {μ : Measure (α × β)} {f g : α × β → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     (hf_int : ∫⁻ x, f x ∂μ ≠ ∞) (hg_int : ∫⁻ x, g x ∂μ ≠ ∞)
     (h : ∀ {s : Set α} (_ : MeasurableSet s) {t : Set β} (_ : MeasurableSet t),
       ∫⁻ x in s ×ˢ t, f x ∂μ = ∫⁻ x in s ×ˢ t, g x ∂μ) :
     f =ᵐ[μ] g := by
-  refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀ hf hg fun s hs _ ↦ ?_
+  refine AEMeasurable.ae_eq_of_forall_setLIntegral_eq hf hg hf_int hg_int fun s hs _ ↦ ?_
   refine lintegral_eq_lintegral_of_isPiSystem_of_univ_mem generateFrom_prod.symm isPiSystem_prod
-    ?_ ?_ hf_int hg_int s hs
+    ?_ ?_ hf_int hg_int hs
   · simp only [Set.mem_image2, Set.mem_setOf_eq]
     exact ⟨Set.univ, .univ, Set.univ, .univ, Set.univ_prod_univ⟩
   · rintro _ ⟨s, hs, t, ht, rfl⟩
     exact h hs ht
 
+/-- If two measurable functions `α × β → ℝ≥0∞` with finite integrals have the same integral
+on every rectangle, then they are almost everywhere equal. -/
 lemma ae_eq_of_setLIntegral_prod_eq {β : Type*} {mβ : MeasurableSpace β}
-    {μ : Measure (α × β)} [SigmaFinite μ] {f g : α × β → ℝ≥0∞}
+    {μ : Measure (α × β)} {f g : α × β → ℝ≥0∞}
     (hf : Measurable f) (hg : Measurable g) (hf_int : ∫⁻ x, f x ∂μ ≠ ∞) (hg_int : ∫⁻ x, g x ∂μ ≠ ∞)
     (h : ∀ {s : Set α} (_ : MeasurableSet s) {t : Set β} (_ : MeasurableSet t),
       ∫⁻ x in s ×ˢ t, f x ∂μ = ∫⁻ x in s ×ˢ t, g x ∂μ) :
