@@ -127,10 +127,14 @@ lemma IsPath.cons_dropUntil_isCycle (hp : p.IsPath) (ha : G.Adj v x) (hx : x ∈
 structure IsMaximal {u v : α} (p : G.Walk u v) : Prop where
   max : ∀ y, G.Adj v y → y ∈ p.support
 
+/-- A walk `IsMaxPath` if it is a path containing all neighbors of its end-vertex. -/
+structure IsMaxPath {u v : α} (p : G.Walk u v) [Fintype (G.neighborSet v)] : Prop extends
+  IsPath p, IsMaximal p
+
 /-- A walk `IsClosableMaxPath` if it is a path containing all neighbors of its end-vertex of which
 there is more than one -/
 structure IsCloseableMaxPath {u v : α} (p : G.Walk u v) [Fintype (G.neighborSet v)] : Prop extends
-  IsPath p, IsMaximal p where
+  IsMaxPath p where
 /-- The end vertex has at least one other neighbor -/
   one_lt_degree : 1 < G.degree v
 
@@ -143,7 +147,8 @@ vertex other than the penultimate vertex of `p`. -/
 abbrev IsClosable (p : G.Walk u v) : Prop := ∃ x, x ∈ p.support ∧ G.Adj v x ∧ x ≠ p.penultimate
 
 variable [DecidableRel G.Adj]
-/-- The first vertex in the walk `p` that is adjacent to its end-vertex -/
+/-- The first vertex in the walk `p` that is adjacent to its end-vertex and not equal to its
+penultimate vertex. -/
 abbrev close (p : G.Walk u v) : α := p.find (fun x ↦ G.Adj v x ∧ x ≠ p.penultimate)
 
 lemma IsClosable.adj (hp : p.IsClosable) : G.Adj v p.close :=
@@ -184,6 +189,8 @@ lemma IsMaxCycle.dropUntil_of_isClosableMaxPath (hp : p.IsCloseableMaxPath) :
     rwa [penultimate_dropUntil (fun hv ↦ G.loopless _ (hv ▸ hp.isClosable.adj))] at h2
   · apply (mem_dropUntil_find_of_mem_prop ⟨(hp.max _ hy), _⟩)
     exact ⟨hy, hpen⟩
+
+
 
 end Walk
 

@@ -8,19 +8,15 @@ variable {α : Type*} {G : SimpleGraph α}
 open Finset
 section Walks
 namespace Walk
--- #check List.takeWhile
--- variable [LocallyFinite G] [DecidableEq α]
--- lemma exists_max_cycle_of_max_path {u v : α} {p : G.Walk u v} (hp : p.IsPath)
---   (hmax : G.neighborFinset u ⊆ p.support.toFinset) (h1 : 1 < G.degree u) :
---     ∃ x, ∃ (had : G.Adj x u), ∃ (hx : x ∈ p.support), ((p.takeUntil x hx).cons had).IsCycle
---     ∧ G.neighborFinset u ⊆ ((p.takeUntil x hx).cons had).support.toFinset := by
---   sorry
+
 variable [DecidableEq α] [LocallyFinite G]
+
 lemma exists_maximal_path_subset {u v : α} (s : Finset α) {q : G.Walk u v} (hq : q.IsPath)
-    (hs : q.support.toFinset ⊆ s): ∃ x, ∃ p : G.Walk x u, (p.append q).IsPath ∧
-  (p.append q).support.toFinset ⊆ s ∧ G.neighborFinset x ∩ s ⊆ (p.append q).support.toFinset := by
+    (hs : ∀ y , y ∈ q.support → y ∈ s) : ∃ x, ∃ p : G.Walk x u, (p.append q).IsPath ∧
+  (∀ y, y ∈ (p.append q).support → y ∈ s) ∧
+∀ y, y ∈ G.neighborFinset x ∩ s → y ∈ (p.append q).support := by
   by_contra! hf
-  have : ∀ n, ∃ x, ∃ p : G.Walk x u, (p.append q).IsPath ∧ (p.append q).support.toFinset ⊆ s ∧
+  have : ∀ n, ∃ x, ∃ p : G.Walk x u, (p.append q).IsPath ∧ (∀ x, x ∈ (p.append q).support → x ∈ s) ∧
     n ≤ (p.append q).length := by
     intro n
     induction n with
@@ -28,21 +24,14 @@ lemma exists_maximal_path_subset {u v : α} (s : Finset α) {q : G.Walk u v} (hq
       use u, Walk.nil; simpa using ⟨hq, hs⟩
     | succ n ih =>
       obtain ⟨x, p, hp, hs, hc⟩ := ih
-      obtain ⟨y, hy⟩ := not_subset.mp <| hf x p hp hs
+      obtain ⟨y, hy⟩ := hf x p hp hs
       rw [mem_inter, mem_neighborFinset] at hy
       use y, p.cons hy.1.1.symm
-      simp_all only [length_append, cons_append, cons_isPath_iff, mem_support_append_iff, not_or,
-      true_and,  support_cons, List.toFinset_cons, length_cons, Nat.add_le_add_iff_right, and_true]
-      simp_all only [List.mem_toFinset, mem_support_append_iff, not_or, not_false_eq_true, and_self,
-         true_and]
-      intro z hz;
-      cases mem_insert.1 hz with
-      | inl hz => exact hz ▸ hy.1.2
-      | inr hz => exact hs hz
-  obtain ⟨w, _, hp, hc⟩ := this #s
-  have := (List.toFinset_card_of_nodup hp.2) ▸ (card_le_card hc.1)
-  rw [length_support] at this
-  exact Nat.lt_irrefl _ <| hc.2.trans_lt this
+      aesop
+  obtain ⟨_, _, hp, hc⟩ := this #s
+  simp_rw [← List.mem_toFinset] at hc
+  have := length_support _ ▸ ((List.toFinset_card_of_nodup hp.2) ▸ (card_le_card hc.1))
+  exact Nat.not_succ_le_self _ (this.trans hc.2)
 
 end Walk
 end Walks
@@ -51,13 +40,6 @@ section degreeOn
 
 variable  [DecidableRel G.Adj] [Fintype α]
 open Finset
-/-
-
-theorem degree_pos_iff_exists_adj : 0 < G.degree v ↔ ∃ w, G.Adj v w := by
-  simp only [degree, card_pos, Finset.Nonempty, mem_neighborFinset]
-
--/
-
 
 variable [DecidableEq α]
 variable (G) in
@@ -481,7 +463,7 @@ lemma degreeOn_lt_degree {a v : α} {s : Finset α} (hv : v ∈ G.neighborFinset
           List.not_mem_nil, or_false, true_and, support_cons, not_or]
         exact ⟨h1.1.ne, h3.1.ne, hne.symm⟩
       obtain ⟨vᵣ, q, hq, hss, hmax⟩ : ∃ vᵣ, ∃ q : G.Walk vᵣ v₃, (q.append v31).IsPath ∧
-        (q.append v31).support.toFinset ⊆ s ∧
+        (∀ y, y ∈ (q.append v31).support → y ∈ s) ∧
           G.neighborFinset vᵣ ⊆ ((q.append v31)).support.toFinset := by
 
         have v31s : v31.support.toFinset ⊆ s := by
