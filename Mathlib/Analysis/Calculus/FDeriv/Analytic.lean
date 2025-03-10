@@ -851,7 +851,7 @@ theorem _root_.HasFDerivWithinAt.linear_multilinear_comp
       ((f.flipMultilinear (fun i ↦ b i x)) ∘L a' +
         ∑ i, ((f (a x)).toContinuousLinearMap (fun j ↦ b j x) i) ∘L (b' i)) s x := by
   convert (hasFDerivAt_uncurry_of_multilinear f (a x, fun i ↦ b i x)).comp_hasFDerivWithinAt x
-    (ha.prod (hasFDerivWithinAt_pi.mpr hb))
+    (ha.prodMk (hasFDerivWithinAt_pi.mpr hb))
   ext v
   simp
 
