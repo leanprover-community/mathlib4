@@ -87,7 +87,7 @@ variable (K : Type*) [Field K]
 open Finset NumberField NumberField.InfinitePlace NumberField.mixedEmbedding NumberField.Units
   NumberField.Units.dirichletUnitTheorem
 
-namespace NumberField.mixedEmbedding
+namespace NumberField.mixedEmbedding.fundamentalCone
 
 section normAtAllPlaces
 
@@ -119,8 +119,7 @@ variable [NumberField K]
 /--
 The set of elements of the `fundamentalCone` of `norm ≤ 1`.
 -/
-abbrev normLeOne : Set (mixedSpace K) :=
-  {x | x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ 1}
+abbrev normLeOne : Set (mixedSpace K) := fundamentalCone K ∩ {x | mixedEmbedding.norm x ≤ 1}
 
 variable {K} in
 theorem mem_normLeOne {x : mixedSpace K} :
@@ -150,7 +149,7 @@ theorem normAtAllPlaces_normLeOne :
     · rwa [Set.mem_preimage, ← logMap_normAtAllPlaces] at h₁
     · exact fun w ↦ normAtPlace_nonneg w y
     · rwa [Set.mem_setOf_eq, ← norm_normAtAllPlaces] at h₂
-    · rwa [← norm_normAtAllPlaces] at h₃
+    · rwa [Set.mem_setOf_eq, ← norm_normAtAllPlaces] at h₃
   · exact ⟨mixedSpaceOfRealSpace x, ⟨⟨h₁, h₃⟩, h₄⟩, normAtAllPlaces_mixedSpaceOfRealSpace h₂⟩
 
 end normLeOne_def
@@ -403,4 +402,4 @@ theorem expMapBasis_apply' (x : realSpace K) :
 
 end expMapBasis
 
-end NumberField.mixedEmbedding
+end NumberField.mixedEmbedding.fundamentalCone
