@@ -368,6 +368,85 @@ instance isIso_of_from_star {X : WithTerminal C} (f : star ⟶ X) : IsIso f :=
   | of _X => f.elim
   | star => ⟨f, rfl, rfl⟩
 
+section
+
+variable {D : Type*} [Category D]
+
+/-- A functor `WithTerminal C ⥤ D` can be seen as an element of the comma category
+`Comma (𝟭 (C ⥤ D)) (const C)`. -/
+@[simps!]
+def mkCommaObject (F : WithTerminal C ⥤ D) : Comma (𝟭 (C ⥤ D)) (Functor.const C) where
+  right := F.obj .star
+  left := (incl ⋙ F)
+  hom :=
+    { app x := F.map (starTerminal.from (.of x))
+      naturality x y f := by
+        dsimp
+        rw [Category.comp_id, ← F.map_comp]
+        congr 1}
+
+/-- A morphism of functors `WithTerminal C ⥤ D` gives a morphism between the associated comma
+objects. -/
+@[simps!]
+def mkCommaMorphism {F G: WithTerminal C ⥤ D} (η : F ⟶ G) : mkCommaObject F ⟶ mkCommaObject G where
+  right := η.app .star
+  left := whiskerLeft incl η
+
+/-- An element of the comma category `Comma (𝟭 (C ⥤ D)) (Functor.const C)` can be seen as a
+functor `WithTerminal C ⥤ D`. -/
+@[simps!]
+def ofCommaObject (c : Comma (𝟭 (C ⥤ D)) (Functor.const C)) : WithTerminal C ⥤ D :=
+  lift (Z := c.right) c.left (fun x ↦ c.hom.app x) (fun x y f ↦ by simp)
+
+/-- An morphism in `Comma (𝟭 (C ⥤ D)) (Functor.const C)` gives a morphism between the associated
+functors `WithTerminal C ⥤ D`. -/
+@[simps!]
+def ofCommaMorphism {c c': Comma (𝟭 (C ⥤ D)) (Functor.const C)} (φ : c ⟶ c') :
+    ofCommaObject c ⟶ ofCommaObject c' where
+  app x :=
+    match x with
+    | of x => φ.left.app x
+    | star => φ.right
+  naturality x y f :=
+    match x, y, f with
+    | of _, of _, f => by simp
+    | of a, star, _ => by simp; simpa [-CommaMorphism.w] using (congrArg (fun f ↦ f.app a) φ.w).symm
+    | star, star, _ => by simp
+
+/-- The category of functors `WithTerminal C ⥤ D` is equivalent to the category
+`Comma (𝟭 (C ⥤ D)) (const C) `. -/
+@[simps!]
+def equivComma : (WithTerminal C ⥤ D) ≌ Comma (𝟭 (C ⥤ D)) (Functor.const C) where
+  functor :=
+    { obj := mkCommaObject
+      map := mkCommaMorphism }
+  inverse :=
+    { obj := ofCommaObject
+      map := ofCommaMorphism }
+  unitIso :=
+    NatIso.ofComponents
+      (fun F ↦ liftUnique
+        (incl ⋙ F)
+        (fun x ↦ F.map (starTerminal.from (of x)))
+        (fun x y f ↦ by
+          simp only [Functor.comp_obj, Functor.comp_map]
+          rw [← F.map_comp]
+          congr 1)
+        F (Iso.refl _) (Iso.refl _)
+        (fun x ↦ by
+          simp only [Iso.refl_symm, Iso.refl_hom, Category.id_comp, Functor.comp_obj,
+            NatTrans.id_app, Category.comp_id]; rfl))
+      (fun {x y} f ↦ by ext t; cases t <;> simp [incl])
+  counitIso := NatIso.ofComponents (fun F ↦ Iso.refl _)
+  functor_unitIso_comp x := by
+    simp only [id_eq, Functor.id_obj, ofCommaObject_obj, ofCommaMorphism_app, Comma.id_right,
+      NatTrans.id_app, Comma.id_left, Comma.comp_right, NatTrans.comp_app, Comma.comp_left,
+      Functor.comp_obj, liftUnique, Functor.comp_map, eq_mpr_eq_cast, lift_obj,
+      NatIso.ofComponents_hom_app, Iso.refl_hom, Category.comp_id]
+    ext <;> rfl
+
+end
+
 end WithTerminal
 
 namespace WithInitial
@@ -674,6 +753,86 @@ instance isIso_of_to_star {X : WithInitial C} (f : X ⟶ star) : IsIso f :=
   match X with
   | of _X => f.elim
   | star => ⟨f, rfl, rfl⟩
+
+section
+
+variable {D : Type*} [Category D]
+
+/-- A functor `WithInitial C ⥤ D` can be seen as an element of the comma category
+`Comma (const C) (𝟭 (C ⥤ D))`. -/
+@[simps!]
+def mkCommaObject (F : WithInitial C ⥤ D) : Comma (Functor.const C) (𝟭 (C ⥤ D)) where
+  left := F.obj .star
+  right := (incl ⋙ F)
+  hom :=
+    { app x := F.map (starInitial.to (.of x))
+      naturality x y f := by
+        dsimp
+        rw [Category.id_comp, ← F.map_comp]
+        congr 1}
+
+/-- A morphism of functors `WithInitial C ⥤ D` gives a morphism between the associated comma
+objects. -/
+@[simps!]
+def mkCommaMorphism {F G: WithInitial C ⥤ D} (η : F ⟶ G) : mkCommaObject F ⟶ mkCommaObject G where
+  left := η.app .star
+  right := whiskerLeft incl η
+
+/-- An element of the comma category `Comma (Functor.const C) (𝟭 (C ⥤ D))` can be seen as a
+functor `WithInitial C ⥤ D`. -/
+@[simps!]
+def ofCommaObject (c : Comma (Functor.const C) (𝟭 (C ⥤ D))) : WithInitial C ⥤ D :=
+  lift (Z := c.left) c.right (fun x ↦ c.hom.app x)
+    (fun x y f ↦ by simpa using (c.hom.naturality f).symm)
+
+/-- An morphism in `Comma (Functor.const C) (𝟭 (C ⥤ D))` gives a morphism between the associated
+functors `WithInitial C ⥤ D`. -/
+@[simps!]
+def ofCommaMorphism {c c': Comma (Functor.const C) (𝟭 (C ⥤ D))} (φ : c ⟶ c') :
+    ofCommaObject c ⟶ ofCommaObject c' where
+  app x :=
+    match x with
+    | of x => φ.right.app x
+    | star => φ.left
+  naturality x y f :=
+    match x, y, f with
+    | of _, of _, f => by simp
+    | star, of a, _ => by simpa [-CommaMorphism.w] using (congrArg (fun f ↦ f.app a) φ.w).symm
+    | star, star, _ => by simp
+
+/-- The category of functors `WithInitial C ⥤ D` is equivalent to the category
+`Comma (const C) (𝟭 (C ⥤ D))`. -/
+@[simps!]
+def equivComma : (WithInitial C ⥤ D) ≌ Comma (Functor.const C) (𝟭 (C ⥤ D)) where
+  functor :=
+    { obj := mkCommaObject
+      map := mkCommaMorphism }
+  inverse :=
+    { obj := ofCommaObject
+      map := ofCommaMorphism }
+  unitIso :=
+    NatIso.ofComponents
+      (fun F ↦ liftUnique
+        (incl ⋙ F)
+        (fun x ↦ F.map (starInitial.to (of x)))
+        (fun x y f ↦ by
+          simp only [Functor.comp_obj, Functor.comp_map]
+          rw [← F.map_comp]
+          congr 1)
+        F (Iso.refl _) (Iso.refl _)
+        (fun x ↦ by
+          simp only [Iso.refl_symm, Iso.refl_hom, Category.id_comp, Functor.comp_obj,
+            NatTrans.id_app, Category.comp_id]; rfl))
+      (fun {x y} f ↦ by ext t; cases t <;> simp [incl])
+  counitIso := NatIso.ofComponents (fun F ↦ Iso.refl _)
+  functor_unitIso_comp x := by
+    simp only [id_eq, Functor.id_obj, ofCommaObject_obj, ofCommaMorphism_app, Comma.id_right,
+      NatTrans.id_app, Comma.id_left, Comma.comp_right, NatTrans.comp_app, Comma.comp_left,
+      Functor.comp_obj, liftUnique, Functor.comp_map, eq_mpr_eq_cast, lift_obj,
+      NatIso.ofComponents_hom_app, Iso.refl_hom, Category.comp_id]
+    ext <;> rfl
+
+end
 
 end WithInitial
 
