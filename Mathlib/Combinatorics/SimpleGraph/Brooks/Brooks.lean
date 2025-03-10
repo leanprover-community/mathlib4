@@ -8,26 +8,14 @@ variable {α : Type*} {G : SimpleGraph α}
 open Finset
 section Walks
 namespace Walk
-/-
-def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Walk v u
-  | nil, u, h => by rw [mem_support_nil_iff.mp h]
-  | cons r p, u, h =>
-    if hx : v = u then
-      hx ▸ Walk.nil
-    else
-      cons r (takeUntil p u <| by
-        cases h
-        · exact (hx rfl).elim
-        · assumption)
--/
-#check List.takeWhile
-variable [LocallyFinite G] [DecidableEq α]
-lemma exists_max_cycle_of_max_path {u v : α} {p : G.Walk u v} (hp : p.IsPath)
-  (hmax : G.neighborFinset u ⊆ p.support.toFinset) (h1 : 1 < G.degree u) :
-    ∃ x, ∃ (had : G.Adj x u), ∃ (hx : x ∈ p.support), ((p.takeUntil x hx).cons had).IsCycle
-    ∧ G.neighborFinset u ⊆ ((p.takeUntil x hx).cons had).support.toFinset := by
-  sorry
-
+-- #check List.takeWhile
+-- variable [LocallyFinite G] [DecidableEq α]
+-- lemma exists_max_cycle_of_max_path {u v : α} {p : G.Walk u v} (hp : p.IsPath)
+--   (hmax : G.neighborFinset u ⊆ p.support.toFinset) (h1 : 1 < G.degree u) :
+--     ∃ x, ∃ (had : G.Adj x u), ∃ (hx : x ∈ p.support), ((p.takeUntil x hx).cons had).IsCycle
+--     ∧ G.neighborFinset u ⊆ ((p.takeUntil x hx).cons had).support.toFinset := by
+--   sorry
+variable [DecidableEq α] [LocallyFinite G]
 lemma exists_maximal_path_subset {u v : α} (s : Finset α) {q : G.Walk u v} (hq : q.IsPath)
     (hs : q.support.toFinset ⊆ s): ∃ x, ∃ p : G.Walk x u, (p.append q).IsPath ∧
   (p.append q).support.toFinset ⊆ s ∧ G.neighborFinset x ∩ s ⊆ (p.append q).support.toFinset := by
