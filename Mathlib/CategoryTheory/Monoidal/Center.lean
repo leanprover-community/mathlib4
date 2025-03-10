@@ -119,8 +119,8 @@ def tensorObj (X Y : Center C) : Center C :=
   ⟨X.1 ⊗ Y.1,
     { β := fun U =>
         α_ _ _ _ ≪≫
-          (whiskerLeftIso X.1 (Y.2.β U)) ≪≫ (α_ _ _ _).symm ≪≫
-            (whiskerRightIso (X.2.β U) Y.1) ≪≫ α_ _ _ _
+          (X.1 ◁ Y.2.β U) ≪≫ (α_ _ _ _).symm ≪≫
+            (X.2.β U ▷ Y.1) ≪≫ α_ _ _ _
       monoidal := fun U U' => by
         dsimp only [Iso.trans_hom, whiskerLeftIso_hom, Iso.symm_hom, whiskerRightIso_hom]
         simp only [HalfBraiding.monoidal]
@@ -247,8 +247,8 @@ theorem tensor_fst (X Y : Center C) : (X ⊗ Y).1 = X.1 ⊗ Y.1 :=
 theorem tensor_β (X Y : Center C) (U : C) :
     (X ⊗ Y).2.β U =
       α_ _ _ _ ≪≫
-        (whiskerLeftIso X.1 (Y.2.β U)) ≪≫ (α_ _ _ _).symm ≪≫
-          (whiskerRightIso (X.2.β U) Y.1) ≪≫ α_ _ _ _ :=
+        (X.1 ◁ Y.2.β U) ≪≫ (α_ _ _ _).symm ≪≫
+          (X.2.β U ▷ Y.1) ≪≫ α_ _ _ _ :=
   rfl
 
 @[simp]

@@ -536,7 +536,7 @@ noncomputable def rightUnitor : tensorObj X tensorUnit ≅ X :=
       (rightUnitorNatIso C) (fun (⟨i₁, i₂⟩ : I × I) => i₁ + i₂) add_zero X
 
 lemma rightUnitor_inv_apply (i : I) :
-    (rightUnitor X).inv i = (ρ_ (X i)).inv ≫ (X i) ◁ tensorUnit₀.inv ≫
+    (rightUnitor X).inv i = (ρ_ (X i)).inv ≫ X i ◁ tensorUnit₀.inv ≫
       ιTensorObj X tensorUnit i 0 i (add_zero i) := rfl
 
 variable {X X'}

@@ -27,12 +27,9 @@ universe v u
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
-local infixr:81 " ◁ " => MonoidalCategory.whiskerLeftIso
-local infixl:81 " ▷ " => MonoidalCategory.whiskerRightIso
-
 /-- The composition of the normalizing isomorphisms `η_f : p ⊗ f ≅ pf` and `η_g : pf ⊗ g ≅ pfg`. -/
 abbrev normalizeIsoComp {p f g pf pfg : C} (η_f : p ⊗ f ≅ pf) (η_g : pf ⊗ g ≅ pfg) :=
-  (α_ _ _ _).symm ≪≫ whiskerRightIso η_f g ≪≫ η_g
+  (α_ _ _ _).symm ≪≫ η_f ▷ g ≪≫ η_g
 
 theorem naturality_associator {p f g h pf pfg pfgh : C}
     (η_f : p ⊗ f ≅ pf) (η_g : pf ⊗ g ≅ pfg) (η_h : pfg ⊗ h ≅ pfgh) :
@@ -221,8 +218,8 @@ theorem of_normalize_eq {f g f' : C} {η θ : f ≅ g} (η_f : 𝟙_ C ⊗ f ≅
 theorem mk_eq_of_naturality {f g f' : C} {η θ : f ⟶ g} {η' θ' : f ≅ g}
     (η_f : 𝟙_ C ⊗ f ≅ f') (η_g : 𝟙_ C ⊗ g ≅ f')
     (η_hom : η'.hom = η) (Θ_hom : θ'.hom = θ)
-    (Hη : whiskerLeftIso (𝟙_ C) η' ≪≫ η_g = η_f)
-    (Hθ : whiskerLeftIso (𝟙_ C) θ' ≪≫ η_g = η_f) : η = θ :=
+    (Hη : 𝟙_ C ◁ η' ≪≫ η_g = η_f)
+    (Hθ : 𝟙_ C ◁ θ' ≪≫ η_g = η_f) : η = θ :=
   calc
     η = η'.hom := η_hom.symm
     _ = (λ_ f).inv ≫ η_f.hom ≫ η_g.inv ≫ (λ_ g).hom := by
@@ -253,8 +250,8 @@ instance : MkEqOfNaturality MonoidalM where
     have η_g : Q(tensorUnit ⊗ $g ≅ $f') := η_g.e
     have η_hom : Q(Iso.hom $η'_e = $η) := ηIso.eq
     have Θ_hom : Q(Iso.hom $θ'_e = $θ) := θIso.eq
-    have Hη : Q(whiskerLeftIso tensorUnit $η'_e ≪≫ $η_g = $η_f) := Hη
-    have Hθ : Q(whiskerLeftIso tensorUnit $θ'_e ≪≫ $η_g = $η_f) := Hθ
+    have Hη : Q(tensorUnit ◁ $η'_e ≪≫ $η_g = $η_f) := Hη
+    have Hθ : Q(tensorUnit ◁ $θ'_e ≪≫ $η_g = $η_f) := Hθ
     return q(mk_eq_of_naturality $η_f $η_g $η_hom $Θ_hom $Hη $Hθ)
 
 open Elab.Tactic

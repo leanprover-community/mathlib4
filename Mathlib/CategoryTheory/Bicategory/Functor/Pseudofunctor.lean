@@ -202,7 +202,7 @@ lemma mapComp_id_left_hom (f : a ⟶ b) : (F.mapComp (𝟙 a) f).hom =
   simp
 
 lemma mapComp_id_left (f : a ⟶ b) : (F.mapComp (𝟙 a) f) = F.map₂Iso (λ_ f) ≪≫
-    (λ_ (F.map f)).symm ≪≫ (whiskerRightIso (F.mapId a) (F.map f)).symm :=
+    (λ_ (F.map f)).symm ≪≫ (F.mapId a ▷ F.map f).symm :=
   Iso.ext <| F.mapComp_id_left_hom f
 
 @[reassoc, to_app]
@@ -210,7 +210,7 @@ lemma mapComp_id_left_inv (f : a ⟶ b) : (F.mapComp (𝟙 a) f).inv =
     (F.mapId a).hom ▷ F.map f ≫ (λ_ (F.map f)).hom ≫ F.map₂ (λ_ f).inv := by
   simp [mapComp_id_left]
 
-lemma whiskerRightIso_mapId (f : a ⟶ b) : whiskerRightIso (F.mapId a) (F.map f) =
+lemma whiskerRightIso_mapId (f : a ⟶ b) : F.mapId a ▷ F.map f =
     (F.mapComp (𝟙 a) f).symm ≪≫ F.map₂Iso (λ_ f) ≪≫ (λ_ (F.map f)).symm := by
   simp [mapComp_id_left]
 
@@ -230,7 +230,7 @@ lemma mapComp_id_right_hom (f : a ⟶ b) : (F.mapComp f (𝟙 b)).hom =
   simp
 
 lemma mapComp_id_right (f : a ⟶ b) : (F.mapComp f (𝟙 b)) = F.map₂Iso (ρ_ f) ≪≫
-    (ρ_ (F.map f)).symm ≪≫ (whiskerLeftIso (F.map f) (F.mapId b)).symm :=
+    (ρ_ (F.map f)).symm ≪≫ (F.map f ◁ F.mapId b).symm :=
   Iso.ext <| F.mapComp_id_right_hom f
 
 @[reassoc, to_app]
@@ -238,7 +238,7 @@ lemma mapComp_id_right_inv (f : a ⟶ b) : (F.mapComp f (𝟙 b)).inv =
     F.map f ◁ (F.mapId b).hom ≫ (ρ_ (F.map f)).hom ≫ F.map₂ (ρ_ f).inv := by
   simp [mapComp_id_right]
 
-lemma whiskerLeftIso_mapId (f : a ⟶ b) : whiskerLeftIso (F.map f) (F.mapId b) =
+lemma whiskerLeftIso_mapId (f : a ⟶ b) : F.map f ◁ F.mapId b =
     (F.mapComp f (𝟙 b)).symm ≪≫ F.map₂Iso (ρ_ f) ≪≫ (ρ_ (F.map f)).symm := by
   simp [mapComp_id_right]
 

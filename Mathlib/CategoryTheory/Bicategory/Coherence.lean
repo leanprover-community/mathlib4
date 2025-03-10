@@ -131,7 +131,7 @@ def normalizeIso {a : B} :
   | _, _, _, Hom.of _ => Iso.refl _
   | _, _, _, Hom.id b => ρ_ _
   | _, _, p, Hom.comp f g =>
-    (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIso p f) g ≪≫ normalizeIso (normalizeAux p f) g
+    (α_ _ _ _).symm ≪≫ normalizeIso p f ▷ g ≪≫ normalizeIso (normalizeAux p f) g
 
 /-- Given a 2-morphism between `f` and `g` in the free bicategory, we have the equality
 `normalizeAux p f = normalizeAux p g`.
@@ -223,7 +223,7 @@ def inclusionMapCompAux {a b : B} :
     ∀ {c : B} (f : Path a b) (g : Path b c),
       (preinclusion _).map (⟨f⟩ ≫ ⟨g⟩) ≅ (preinclusion _).map ⟨f⟩ ≫ (preinclusion _).map ⟨g⟩
   | _, f, nil => (ρ_ ((preinclusion _).map ⟨f⟩)).symm
-  | _, f, cons g₁ g₂ => whiskerRightIso (inclusionMapCompAux f g₁) (Hom.of g₂) ≪≫ α_ _ _ _
+  | _, f, cons g₁ g₂ => inclusionMapCompAux f g₁ ▷ Hom.of g₂ ≪≫ α_ _ _ _
 
 /-- The inclusion pseudofunctor from the locally discrete bicategory on the path category into the
 free bicategory.

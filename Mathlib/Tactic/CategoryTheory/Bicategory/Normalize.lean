@@ -60,13 +60,13 @@ theorem eval_monoidalComp
 
 @[nolint synTaut]
 theorem evalWhiskerLeft_nil (f : a ⟶ b) {g h : b ⟶ c} (α : g ≅ h) :
-    (whiskerLeftIso f α).hom = (whiskerLeftIso f α).hom := by
+    (f ◁ α).hom = (f ◁ α).hom := by
   simp
 
 theorem evalWhiskerLeft_of_cons
     {f : a ⟶ b} {g h i j : b ⟶ c}
     (α : g ≅ h) (η : h ⟶ i) {ηs : i ⟶ j} {θ : f ≫ i ⟶ f ≫ j} (e_θ : f ◁ ηs = θ) :
-    f ◁ (α.hom ≫ η ≫ ηs) = (whiskerLeftIso f α).hom ≫ f ◁ η ≫ θ := by
+    f ◁ (α.hom ≫ η ≫ ηs) = (f ◁ α).hom ≫ f ◁ η ≫ θ := by
   simp [e_θ]
 
 theorem evalWhiskerLeft_comp
@@ -112,7 +112,7 @@ theorem evalWhiskerRight_cons_of_of
     {α : f ≅ g} {η : g ⟶ h} {ηs : h ⟶ i} {ηs₁ : h ≫ j ⟶ i ≫ j}
     {η₁ : g ≫ j ⟶ h ≫ j} {η₂ : g ≫ j ⟶ i ≫ j} {η₃ : f ≫ j ⟶ i ≫ j}
     (e_ηs₁ : ηs ▷ j = ηs₁) (e_η₁ : η ▷ j = η₁)
-    (e_η₂ : η₁ ≫ ηs₁ = η₂) (e_η₃ : (whiskerRightIso α j).hom ≫ η₂ = η₃) :
+    (e_η₂ : η₁ ≫ ηs₁ = η₂) (e_η₃ : (α ▷ j).hom ≫ η₂ = η₃) :
     (α.hom ≫ η ≫ ηs) ▷ j = η₃ := by
   simp_all
 
@@ -125,7 +125,7 @@ theorem evalWhiskerRight_cons_whisker
     (e_η₁ : ((Iso.refl _).hom ≫ η ≫ (Iso.refl _).hom) ▷ k = η₁) (e_η₂ : f ◁ η₁ = η₂)
     (e_ηs₁ : ηs ▷ k = ηs₁) (e_ηs₂ : (α_ _ _ _).inv ≫ ηs₁ = ηs₂)
     (e_η₃ : η₂ ≫ ηs₂ = η₃) (e_η₄ : (α_ _ _ _).hom ≫ η₃ = η₄)
-    (e_η₅ : (whiskerRightIso α k).hom ≫ η₄ = η₅) :
+    (e_η₅ : (α ▷ k).hom ≫ η₄ = η₅) :
     (α.hom ≫ (f ◁ η) ≫ ηs) ▷ k = η₅ := by
   simp at e_η₁ e_η₅
   simp [e_η₁, e_η₂, e_ηs₁, e_ηs₂, e_η₃, e_η₄, e_η₅]
@@ -341,7 +341,7 @@ instance : MkEvalWhiskerRight BicategoryM where
     have e_ηs₁ : Q($ηs ▷ $j = $ηs₁) := e_ηs₁
     have e_η₁ : Q($η ▷ $j = $η₁) := e_η₁
     have e_η₂ : Q($η₁ ≫ $ηs₁ = $η₂) := e_η₂
-    have e_η₃ : Q((whiskerRightIso $α $j).hom ≫ $η₂ = $η₃) := e_η₃
+    have e_η₃ : Q(($α ▷ $j).hom ≫ $η₂ = $η₃) := e_η₃
     return q(evalWhiskerRight_cons_of_of $e_ηs₁ $e_η₁ $e_η₂ $e_η₃)
   mkEvalWhiskerRightConsWhisker f k α η ηs η₁ η₂ ηs₁ ηs₂ η₃ η₄ η₅
       e_η₁ e_η₂ e_ηs₁ e_ηs₂ e_η₃ e_η₄ e_η₅ := do
@@ -377,7 +377,7 @@ instance : MkEvalWhiskerRight BicategoryM where
     have e_ηs₂ : Q((α_ _ _ _).inv ≫ $ηs₁ = $ηs₂) := e_ηs₂
     have e_η₃ : Q($η₂ ≫ $ηs₂ = $η₃) := e_η₃
     have e_η₄ : Q((α_ _ _ _).hom ≫ $η₃ = $η₄) := e_η₄
-    have e_η₅ : Q((whiskerRightIso $α $k).hom ≫ $η₄ = $η₅) := e_η₅
+    have e_η₅ : Q(($α ▷ $k).hom ≫ $η₄ = $η₅) := e_η₅
     return q(evalWhiskerRight_cons_whisker $e_η₁ $e_η₂ $e_ηs₁ $e_ηs₂ $e_η₃ $e_η₄ $e_η₅)
   mkEvalWhiskerRightComp g h η η₁ η₂ η₃ η₄ e_η₁ e_η₂ e_η₃ e_η₄ := do
     let ctx ← read

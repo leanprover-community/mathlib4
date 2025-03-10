@@ -224,7 +224,7 @@ noncomputable def rightUnitor' :
     GradedObject.Monoidal.rightUnitor K.X
 
 lemma rightUnitor'_inv (i : I) :
-    (rightUnitor' K).inv i = (ρ_ (K.X i)).inv ≫ ((K.X i) ◁ (singleObjXSelf c 0 (𝟙_ C)).inv) ≫
+    (rightUnitor' K).inv i = (ρ_ (K.X i)).inv ≫ (K.X i ◁ (singleObjXSelf c 0 (𝟙_ C)).inv) ≫
       ιTensorObj K (tensorUnit C c) i 0 i (add_zero i) := by
   dsimp [rightUnitor']
   rw [GradedObject.Monoidal.rightUnitor_inv_apply, assoc, assoc, Iso.cancel_iso_inv_left,
