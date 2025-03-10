@@ -256,9 +256,8 @@ def equivFinRank : Fin (rank K) ≃ {w : InfinitePlace K // w ≠ w₀} :=
 
 variable (K) in
 /--
-A family of elements in the `realSpace K` formed by the pullback of `basisUnitLattice`, see
-`realSpaceToLogSpace_completeFamily_of_ne`, and the vector `(mult w)_w`. This family is
-in fact a basis of `realSpace K`, see `completeBasis`.
+A family of elements in the `realSpace K` formed of the image of the fundamental units
+and the vector `(mult w)_w`. This family is in fact a basis of `realSpace K`, see `completeBasis`.
 -/
 def completeFamily : InfinitePlace K → realSpace K := by
   intro i
@@ -331,7 +330,7 @@ theorem linearIndependent_completeFamily :
   exact ⟨h₁, h₂⟩
 
 /--
-The basis formed by the pullback in `realSpace K` of the vectors of `basisUnitLattice`
+A basis of `realSpace K` formed by the image of the fundamental units
 (which form a basis of a subspace `{x : realSpace K | ∑ w, x w = 0}`) and the vector `(mult w)_w`.
 For `i ≠ w₀`, the image of `completeBasis K i` by the natural restriction map
 `realSpace K → logSpace K` is `basisUnitLattice K`
