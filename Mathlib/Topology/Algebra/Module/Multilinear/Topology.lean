@@ -256,7 +256,7 @@ theorem continuous_restrictScalars :
 
 variable (𝕜') in
 /-- `ContinuousMultilinearMap.restrictScalars` as a `ContinuousLinearMap`. -/
-@[simps (config := .asFn) apply]
+@[simps -fullyApplied apply]
 def restrictScalarsLinear [ContinuousConstSMul 𝕜' F] :
     ContinuousMultilinearMap 𝕜 E F →L[𝕜'] ContinuousMultilinearMap 𝕜' E F where
   toFun := restrictScalars 𝕜'
