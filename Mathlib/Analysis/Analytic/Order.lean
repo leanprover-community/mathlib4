@@ -189,21 +189,11 @@ theorem isClopen_setOf_order_eq_top :
 `f` has finite order at every point. -/
 theorem exists_order_ne_top_iff_forall (hU : IsConnected U) :
     (∃ u : U, (hf u u.2).order ≠ ⊤) ↔ (∀ u : U, (hf u u.2).order ≠ ⊤) := by
-  constructor
-  · intro h₂f
-    have := isPreconnected_iff_preconnectedSpace.1 hU.isPreconnected
-    rcases isClopen_iff.1 hf.isClopen_setOf_order_eq_top with h | h
-    · intro u
-      have : u ∉ (∅ : Set U) := by exact fun a => a
-      rw [← h] at this
-      tauto
-    · obtain ⟨u, hU⟩ := h₂f
-      have : u ∈ univ := by trivial
-      rw [← h] at this
-      tauto
-  · intro h₂f
-    obtain ⟨v, hv⟩ := hU.nonempty
-    use ⟨v, hv⟩, h₂f ⟨v, hv⟩
+  have : ConnectedSpace U := Subtype.connectedSpace hU
+  obtain ⟨v⟩ : Nonempty U := inferInstance
+  suffices (∀ (u : U), (hf u u.2).order ≠ ⊤) ∨ ∀ (u : U), (hf u u.2).order = ⊤ by tauto
+  simpa [Set.eq_empty_iff_forall_not_mem, Set.eq_univ_iff_forall] using
+      isClopen_iff.1 hf.isClopen_setOf_order_eq_top
 
 /-- On a preconnected set, a meromorphic function has finite order at one point if it has finite
 order at another point. -/
