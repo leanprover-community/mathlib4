@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Distributive.Monoidal
 import Mathlib.CategoryTheory.Limits.MonoCoprod
 
-
 /-!
 
 # Distributive categories
