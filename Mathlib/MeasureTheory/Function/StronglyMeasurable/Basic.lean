@@ -137,7 +137,7 @@ protected theorem tendsto_approx {_ : MeasurableSpace α} (hf : StronglyMeasurab
 /-- To prove that a property holds for any strongly measurable functions, it is enough to show
 that it holds for constant indicator functions of measurable sets and that it is closed under
 addition and pointwise limit. -/
-theorem induction [MeasurableSpace α] [AddMonoid β] (P : (α → β) → Prop)
+theorem induction [MeasurableSpace α] [AddZeroClass β] (P : (α → β) → Prop)
     (ind : ∀ c ⦃s : Set α⦄, MeasurableSet s → P (s.indicator fun _ ↦ c))
     (add : ∀ ⦃f g : α → β⦄, Disjoint f.support g.support →
       StronglyMeasurable f → StronglyMeasurable g → P f → P g → P (f + g))

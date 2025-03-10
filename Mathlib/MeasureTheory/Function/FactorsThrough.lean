@@ -105,7 +105,7 @@ theorem stronglyMeasurable_limUnder [MeasurableSpace X] [hZ : Nonempty Z] [l.NeB
 
 /-- If a function `g` is strongly measurable with respect to the pullback along some function `f`,
 then there exists some measurable function `h : Y → Z` such that `g = h ∘ f`. -/
-theorem exists_eq_measurable_comp [AddMonoid Z] [ContinuousAdd Z]
+theorem exists_eq_measurable_comp [AddZeroClass Z] [ContinuousAdd Z]
     {f :  X → Y} {g : X → Z} (hg : StronglyMeasurable[mY.comap f] g) :
     ∃ h : Y → Z, StronglyMeasurable h ∧ g = h ∘ f := by
   let mX : MeasurableSpace X := mY.comap f
