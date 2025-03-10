@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Kim Morrison, Emily Riehl, Joël Riou
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Category.Cat
@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.PathCategory.Basic
 The category of (bundled) quivers, and the free/forgetful adjunction between `Cat` and `Quiv`.
 -/
 
-universe v u
+universe v u v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
@@ -57,26 +57,64 @@ theorem comp_eq_comp {X Y Z : Quiv} (F : X ⟶ Y) (G : Y ⟶ Z) : F ≫ G = F �
 
 end Quiv
 
+namespace Prefunctor
+
+/-- Prefunctors between quivers define arrows in `Quiv`. -/
+def toQuivHom {C D : Type u} [Quiver.{v + 1} C] [Quiver.{v + 1} D] (F : C ⥤q D) :
+    (Quiv.of C) ⟶ (Quiv.of D) := F
+
+/-- Arrows in `Quiv` define prefunctors. -/
+def ofQuivHom {C D : Quiv} (F : C ⟶ D) : C ⥤q D := F
+
+@[simp] theorem of_toQuivHom {C D : Quiv} (F : C ⟶ D) : toQuivHom (ofQuivHom F) = F := rfl
+
+@[simp] theorem to_ofQuivHom {C D : Type} [Quiver C] [Quiver D] (F : C ⥤q D) :
+    ofQuivHom (toQuivHom F) = F := rfl
+
+end Prefunctor
 namespace Cat
+
+/-- A prefunctor `V ⥤q W` induces a functor between the path categories defined by `F.mapPath`. -/
+@[simps]
+def freeMap {V W : Type*} [Quiver V] [Quiver W] (F : V ⥤q W) : Paths V ⥤ Paths W where
+    obj := F.obj
+    map := F.mapPath
+    map_comp f g := F.mapPath_comp f g
+
+/-- The functor `free : Quiv ⥤ Cat` preserves identities up to natural isomorphism and in fact up
+to equality. -/
+@[simps!]
+def freeMapIdIso (V : Type*) [Quiver V] : freeMap (𝟭q V) ≅ 𝟭 _ :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+
+theorem freeMap_id (V : Type*) [Quiver V] :
+    freeMap (𝟭q V) = 𝟭 _ :=
+  Functor.ext_of_iso (freeMapIdIso V) (fun _ ↦ rfl) (fun _ ↦ rfl)
+
+/-- The functor `free : Quiv ⥤ Cat` preserves composition up to natural isomorphism and in fact up
+to equality. -/
+@[simps!]
+def freeMapCompIso {V₁ : Type u₁} {V₂ : Type u₂} {V₃ : Type u₃}
+    [Quiver.{v₁ + 1} V₁] [Quiver.{v₂ + 1} V₂] [Quiver.{v₃ + 1} V₃] (F : V₁ ⥤q V₂) (G : V₂ ⥤q V₃) :
+    freeMap (F ⋙q G) ≅ freeMap F ⋙ freeMap G :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _) (fun f ↦ by
+    dsimp
+    simp only [Category.comp_id, Category.id_comp, Prefunctor.mapPath_comp_apply])
+
+theorem freeMap_comp {V₁ : Type u₁} {V₂ : Type u₂} {V₃ : Type u₃}
+    [Quiver.{v₁ + 1} V₁] [Quiver.{v₂ + 1} V₂] [Quiver.{v₃ + 1} V₃]
+    (F : V₁ ⥤q V₂) (G : V₂ ⥤q V₃) :
+    freeMap (F ⋙q G) = freeMap F ⋙ freeMap G :=
+  Functor.ext_of_iso (freeMapCompIso F G)
+    (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 /-- The functor sending each quiver to its path category. -/
 @[simps]
 def free : Quiv.{v, u} ⥤ Cat.{max u v, u} where
   obj V := Cat.of (Paths V)
-  map F :=
-    { obj := fun X => F.obj X
-      map := fun f => F.mapPath f
-      map_comp := fun f g => F.mapPath_comp f g }
-  map_id V := by
-    change (show Paths V ⥤ _ from _) = _
-    ext
-    · rfl
-    · exact eq_conj_eqToHom _
-  map_comp {U _ _} F G := by
-    change (show Paths U ⥤ _ from _) = _
-    ext
-    · rfl
-    · exact eq_conj_eqToHom _
+  map F := Functor.toCatHom (freeMap (Prefunctor.ofQuivHom F))
+  map_id _ := freeMap_id _
+  map_comp _ _ := freeMap_comp _ _
 
 end Cat
 
@@ -154,29 +192,64 @@ def lift {V : Type u} [Quiver.{v + 1} V] {C : Type*} [Category C] (F : Prefuncto
   obj X := F.obj X
   map f := composePath (F.mapPath f)
 
--- We might construct `of_lift_iso_self : Paths.of ⋙ lift F ≅ F`
--- (and then show that `lift F` is initial amongst such functors)
--- but it would require lifting quite a bit of machinery to quivers!
+/-- Naturality of `pathComposition`, which defines a natural transformation
+`Quiv.forget ⋙ Cat.free ⟶ 𝟭 _`. -/
+theorem pathComposition_naturality {C D: Type u} [Category.{max u v} C] [Category.{max u v} D]
+    (F : C ⥤ D) : Cat.freeMap (F.toPrefunctor) ⋙ pathComposition D = pathComposition C ⋙ F := by
+  refine Paths.ext_functor rfl ?_
+  intro _ _ _
+  dsimp
+  rw [Category.comp_id, Category.id_comp, composePath_toPath, composePath_toPath]
+
+/-- The left triangle identity of `Cat.free ⊣ Quiv.forget` as a natural isomorphism -/
+def freeMapPathsOfCompPathCompositionIso (V : Type u) [Quiver.{max u v + 1} V] :
+    Cat.freeMap (Paths.of V) ⋙ pathComposition (Cat.of (Paths V)) ≅ 𝟭 (Paths V) := by
+  refine NatIso.ofComponents (fun _ ↦ Iso.refl _) ?_
+  intro _ _ p
+  dsimp
+  rw [Category.comp_id, Category.id_comp]
+  induction p with
+  | nil => rfl
+  | cons _ _ h => simp [h]; rfl
+
+lemma freeMap_pathsOf_pathComposition (V : Type u) [Quiver.{max u v + 1} V] :
+    Cat.freeMap (Paths.of (V := V)) ⋙ pathComposition (Cat.of (Paths V)) = 𝟭 (Paths V) :=
+  Functor.ext_of_iso (freeMapPathsOfCompPathCompositionIso V) (fun _ ↦ rfl)
+    (fun _ ↦ rfl)
+
+lemma freeMap_pathsOf_pathComposition' (V : Type u) [Quiver.{max u v + 1} V] :
+    Cat.freeMap (Paths.of (V := V)) ⋙ pathComposition (Cat.of (Paths V)) = 𝟭 (Paths V) :=
+  Paths.ext_functor rfl (by simp)
+
+/-- An unbundled version of the right triangle equality. -/
+lemma pathsOf_pathComposition_toPrefunctor (C : Type u) [Category.{max u v} C] :
+    Paths.of (Quiv.of C) ⋙q (pathComposition C).toPrefunctor = 𝟭q (Quiv.of C) := by
+  dsimp only [Prefunctor.comp]
+  congr
+  funext X Y f
+  exact Category.id_comp _
+
 /--
 The adjunction between forming the free category on a quiver, and forgetting a category to a quiver.
 -/
 def adj : Cat.free ⊣ Quiv.forget :=
-  Adjunction.mkOfHomEquiv
-    { homEquiv := fun V C =>
-        { toFun := fun F => Paths.of.comp F.toPrefunctor
-          invFun := fun F => @lift V _ C _ F
-          left_inv := fun F => Paths.ext_functor rfl (by simp)
-          right_inv := by
-            rintro ⟨obj, map⟩
-            dsimp only [Prefunctor.comp]
-            congr
-            funext X Y f
-            exact Category.id_comp _ }
-      homEquiv_naturality_left_symm := fun {V _ _} f g => by
-        change (show Paths V ⥤ _ from _) = _
-        ext
-        · rfl
-        · apply eq_conj_eqToHom }
+  Adjunction.mkOfUnitCounit {
+    unit := { app _ := Paths.of _}
+    counit := {
+      app C := pathComposition C
+      naturality _ _ F := pathComposition_naturality F
+    }
+    left_triangle := by
+      ext V
+      exact freeMap_pathsOf_pathComposition V
+    right_triangle := by
+      ext C
+      exact pathsOf_pathComposition_toPrefunctor C
+  }
+
+/-- The `homEquiv` arising from `adj : Cat.free ⊣ Quiv.forget`. -/
+def pathsEquiv {V C : Type} [Quiver V] [Category C] : (Paths V ⥤ C) ≃ (V ⥤q C) :=
+  adj.homEquiv (Quiv.of V) (Cat.of C)
 
 end Quiv
 
