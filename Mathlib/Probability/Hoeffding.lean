@@ -132,11 +132,8 @@ theorem cgf_le_bound_of_ae_mem_Icc_and_mean_zero [IsProbabilityMeasure μ]
       apply AnalyticOn.mono r (fun ⦃a⦄ a ↦ trivial)
       apply DifferentiableOn.mono
       rw [differentiableOn_univ]
-      · apply?
       · sorry
-
-
-
+      · exact fun ⦃a⦄ a ↦ trivial
     sorry
     /-
     let A := (f t - f 0 - f' 0 * t) * 2 / t ^ 2
