@@ -558,7 +558,7 @@ alias ofList_get := ofList_get?
 
 @[simp]
 theorem ofList_cons (a : α) (l : List α) : ofList (a::l) = cons a (ofList l) := by
-  ext1 (_ | n) <;> rfl
+  ext1 (_ | n) <;> simp
 
 theorem ofList_injective : Function.Injective (ofList : List α → _) :=
   fun _ _ h => List.ext_getElem? fun _ => congr_fun (Subtype.ext_iff.1 h) _
@@ -766,7 +766,8 @@ theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
         rw [destruct_eq_cons h]
         match n with
         | 0 => simp
-        | n+1 => simp [Nat.add_lt_add_iff_right, get?_cons_succ, getElem?_take]
+        | n+1 =>
+          simp [List.getElem?_cons_succ, Nat.add_lt_add_iff_right, getElem?_take]
 
 theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
     (h_get : s.get? m = .some x) : x ∈ s.take n := by
@@ -1108,7 +1109,7 @@ theorem take_drop {s : Seq α} {n m : ℕ} :
   induction m generalizing n s with
   | zero => simp [drop]
   | succ k ih =>
-    cases s
+    cases' s with x tl
     · simp
     cases n with
     | zero => simp
@@ -1155,7 +1156,7 @@ theorem zipWith_nil_right {f : α → β → γ} {s} :
 theorem zipWith_cons_cons {f : α → β → γ} {x s x' s'} :
     zipWith f (cons x s) (cons x' s') = cons (f x x') (zipWith f s s') := by
   ext1 n
-  cases n <;> simp
+  cases' n <;> simp
 
 @[simp]
 theorem zip_nil_left {s : Seq α} :
