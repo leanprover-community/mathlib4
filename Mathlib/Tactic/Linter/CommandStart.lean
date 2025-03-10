@@ -9,14 +9,20 @@ import Mathlib.Tactic.Linter.PPRoundtrip
 /-!
 #  The "commandStart" linter
 
-The "commandStart" linter emits a warning if a command does not start on column `0`.
+The "commandStart" linter emits a warning if
+* each command starts at the beginning of a line;
+* the "hypotheses segment" of each declaration coincides with its pretty-printed version.
 -/
 
 open Lean Elab Command
 
 namespace Mathlib.Linter
 
-/-- The "commandStart" linter emits a warning if a command does not start on column `0`. -/
+/--
+The "commandStart" linter emits a warning if
+* each command starts at the beginning of a line;
+* the "hypotheses segment" of each declaration coincides with its pretty-printed version.
+-/
 register_option linter.style.commandStart : Bool := {
   defValue := true
   descr := "enable the commandStart linter"
@@ -46,9 +52,9 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       let origSubstring : Substring := {stx.getSubstring?.getD default with stopPos := finalLintPos}
       let (real, lths) := polishSource origSubstring.toString
       let fmt ← (liftCoreM do PrettyPrinter.ppCategory `command stx <|> (do
-        Linter.logLint linter.ppRoundtrip stx
-          m!"The ppRoundtrip linter had some parsing issues: \
-             feel free to silence it with `set_option linter.ppRoundtrip false in` \
+        Linter.logLint linter.style.commandStart stx
+          m!"The `commandStart` linter had some parsing issues: \
+             feel free to silence it with `set_option linter.style.commandStart false in` \
              and report this error!"
         return real))
       let st := polishPP fmt.pretty
@@ -59,7 +65,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
         let extraLth := (f.takeWhile (· != st.get diff)).length
         let srcCtxt := zoomString real diff.1 5
         let ppCtxt  := zoomString st diff.1 5
-        Linter.logLint linter.ppRoundtrip (.ofRange ⟨⟨pos⟩, ⟨pos + extraLth + 1⟩⟩)
+        Linter.logLint linter.style.commandStart (.ofRange ⟨⟨pos⟩, ⟨pos + extraLth + 1⟩⟩)
           m!"Current syntax:  '{srcCtxt}'\nExpected syntax: '{ppCtxt}'\n"
 
 initialize addLinter commandStartLinter
