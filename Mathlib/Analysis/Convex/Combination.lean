@@ -207,7 +207,6 @@ theorem convex_iff_sum_mem : Convex R s ↔ ∀ (t : Finset E) (w : E → R),
   · rw [h_cases, ← add_smul, hab, one_smul]
     exact hy
   · convert h {x, y} (fun z => if z = y then b else a) _ _ _
-    -- Porting note: Original proof had 2 `simp_intro i hi`
     · simp only [sum_pair h_cases, if_neg h_cases, if_pos trivial]
     · intro i _
       simp only

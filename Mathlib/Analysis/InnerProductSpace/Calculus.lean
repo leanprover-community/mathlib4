@@ -48,7 +48,7 @@ def fderivInnerCLM (p : E × E) : E × E →L[ℝ] 𝕜 :=
 theorem fderivInnerCLM_apply (p x : E × E) : fderivInnerCLM 𝕜 p x = ⟪p.1, x.2⟫ + ⟪x.1, p.2⟫ :=
   rfl
 
-variable {𝕜} -- Porting note: Lean 3 magically switches back to `{𝕜}` here
+variable {𝕜}
 
 theorem contDiff_inner {n} : ContDiff ℝ n fun p : E × E => ⟪p.1, p.2⟫ :=
   isBoundedBilinearMap_inner.contDiff
@@ -189,7 +189,6 @@ theorem ContDiff.dist (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) (hne : ∀
 
 end
 
--- Porting note: use `2 •` instead of `bit0`
 theorem hasStrictFDerivAt_norm_sq (x : F) :
     HasStrictFDerivAt (fun x => ‖x‖ ^ 2) (2 • (innerSL ℝ x)) x := by
   simp only [sq, ← @inner_self_eq_norm_mul_norm ℝ]

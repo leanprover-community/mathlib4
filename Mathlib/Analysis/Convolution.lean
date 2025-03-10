@@ -1345,10 +1345,7 @@ theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E')
     (ν : Measure ℝ := by volume_tac) [NoAtoms ν] :
     posConvolution f g L ν = convolution (indicator (Ioi 0) f) (indicator (Ioi 0) g) L ν := by
   ext1 x
-  -- Porting note: was `rw [convolution, posConvolution, indicator]`, now `rw` can't do it
-  -- the `rw` unfolded only one `indicator`; now we unfold it everywhere, so we need to adjust
-  -- `rw`s below
-  unfold convolution posConvolution indicator; simp only
+  rw [convolution, posConvolution, indicator]
   split_ifs with h
   · rw [intervalIntegral.integral_of_le (le_of_lt h), integral_Ioc_eq_integral_Ioo, ←
       integral_indicator (measurableSet_Ioo : MeasurableSet (Ioo 0 x))]
@@ -1359,34 +1356,20 @@ theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E')
       · rcases lt_or_le t x with (h' | h')
         exacts [Or.inr (Or.inl ⟨h, h'⟩), Or.inr (Or.inr h')]
     rcases this with (ht | ht | ht)
-    · -- Porting note: was
-      -- rw [indicator_of_not_mem (not_mem_Ioo_of_le ht), indicator_of_not_mem (not_mem_Ioi.mpr ht),
-      --   ContinuousLinearMap.map_zero, ContinuousLinearMap.zero_apply]
-      rw [indicator_of_not_mem (not_mem_Ioo_of_le ht), if_neg (not_mem_Ioi.mpr ht),
+    · rw [indicator_of_not_mem (not_mem_Ioo_of_le ht), indicator_of_not_mem (not_mem_Ioi.mpr ht),
         ContinuousLinearMap.map_zero, ContinuousLinearMap.zero_apply]
-    · -- Porting note: was
-      -- rw [indicator_of_mem ht, indicator_of_mem (mem_Ioi.mpr ht.1),
-      --     indicator_of_mem (mem_Ioi.mpr <| sub_pos.mpr ht.2)]
-      rw [indicator_of_mem ht, if_pos (mem_Ioi.mpr ht.1),
-        if_pos (mem_Ioi.mpr <| sub_pos.mpr ht.2)]
-    · -- Porting note: was
-      -- rw [indicator_of_not_mem (not_mem_Ioo_of_ge ht),
-      --     indicator_of_not_mem (not_mem_Ioi.mpr (sub_nonpos_of_le ht)),
-      --     ContinuousLinearMap.map_zero]
-      rw [indicator_of_not_mem (not_mem_Ioo_of_ge ht),
-        if_neg (not_mem_Ioi.mpr (sub_nonpos_of_le ht)), ContinuousLinearMap.map_zero]
+    · rw [indicator_of_mem ht, indicator_of_mem (mem_Ioi.mpr ht.1),
+          indicator_of_mem (mem_Ioi.mpr <| sub_pos.mpr ht.2)]
+    · rw [indicator_of_not_mem (not_mem_Ioo_of_ge ht),
+          indicator_of_not_mem (not_mem_Ioi.mpr (sub_nonpos_of_le ht)),
+          ContinuousLinearMap.map_zero]
   · convert (integral_zero ℝ F).symm with t
     by_cases ht : 0 < t
-    · -- Porting note: was
-      -- rw [indicator_of_not_mem (_ : x - t ∉ Ioi 0), ContinuousLinearMap.map_zero]
-      rw [if_neg (_ : x - t ∉ Ioi 0), ContinuousLinearMap.map_zero]
+    · rw [indicator_of_not_mem (_ : x - t ∉ Ioi 0), ContinuousLinearMap.map_zero]
       rw [not_mem_Ioi] at h ⊢
       exact sub_nonpos.mpr (h.trans ht.le)
-    · -- Porting note: was
-      -- rw [indicator_of_not_mem (mem_Ioi.not.mpr ht), ContinuousLinearMap.map_zero,
-      --  ContinuousLinearMap.zero_apply]
-      rw [if_neg (mem_Ioi.not.mpr ht), ContinuousLinearMap.map_zero,
-        ContinuousLinearMap.zero_apply]
+    · rw [indicator_of_not_mem (mem_Ioi.not.mpr ht), ContinuousLinearMap.map_zero,
+       ContinuousLinearMap.zero_apply]
 
 theorem integrable_posConvolution {f : ℝ → E} {g : ℝ → E'} {μ ν : Measure ℝ} [SFinite μ]
     [SFinite ν] [IsAddRightInvariant μ] [NoAtoms ν] (hf : IntegrableOn f (Ioi 0) ν)

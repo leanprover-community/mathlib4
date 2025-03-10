@@ -80,7 +80,6 @@ variable [hT : Fact (0 < T)]
 def haarAddCircle : Measure (AddCircle T) :=
   addHaarMeasure ⊤
 
--- Porting note: was `deriving IsAddHaarMeasure` on `haarAddCircle`
 instance : IsAddHaarMeasure (@haarAddCircle T _) :=
   Measure.isAddHaarMeasure_addHaarMeasure ⊤
 

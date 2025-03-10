@@ -74,9 +74,7 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
   let a : Finset ℂ := ?_
   on_goal 1 => let b : Finset ℂ := ?_
   on_goal 1 => let c : Finset ℂ := ?_
-  -- Porting note: was
-  --   change a.card = b.card + c.card
-  suffices a.card = b.card + c.card by exact this
+  change a.card = b.card + c.card
   have ha : ∀ z : ℂ, z ∈ a ↔ aeval z p = 0 := by
     intro z; rw [Set.mem_toFinset, mem_rootSet_of_ne hp]
   have hb : ∀ z : ℂ, z ∈ b ↔ aeval z p = 0 ∧ z.im = 0 := by

@@ -304,7 +304,6 @@ def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
     · simp only [edist_eq_iSup]
       cases isEmpty_or_nonempty ι
       · simp only [ciSup_of_empty, ENNReal.bot_eq_zero, add_zero, nonpos_iff_eq_zero]
-      -- Porting note: `le_iSup` needed some help
       refine
         iSup_le fun i => (edist_triangle _ (g i) _).trans <| add_le_add
             (le_iSup (fun k => edist (f k) (g k)) i) (le_iSup (fun k => edist (g k) (h k)) i)
@@ -356,14 +355,12 @@ abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
       · refine le_antisymm (ciSup_le fun i => ?_) ?_
         · rw [← ENNReal.ofReal_le_iff_le_toReal (iSup_edist_ne_top_aux f g), ←
             PseudoMetricSpace.edist_dist]
-          -- Porting note: `le_iSup` needed some help
           exact le_iSup (fun k => edist (f k) (g k)) i
         · refine ENNReal.toReal_le_of_le_ofReal (Real.sSup_nonneg ?_) (iSup_le fun i => ?_)
           · rintro - ⟨i, rfl⟩
             exact dist_nonneg
           · change PseudoMetricSpace.edist _ _ ≤ _
             rw [PseudoMetricSpace.edist_dist]
-            -- Porting note: `le_ciSup` needed some help
             exact ENNReal.ofReal_le_ofReal
               (le_ciSup (Finite.bddAbove_range (fun k => dist (f k) (g k))) i)
     · have A : ∀ i, edist (f i) (g i) ^ p.toReal ≠ ⊤ := fun i =>
@@ -395,7 +392,6 @@ theorem antilipschitzWith_equiv_aux :
   rcases p.dichotomy with (rfl | h)
   · simp only [edist_eq_iSup, ENNReal.div_top, ENNReal.zero_toReal, NNReal.rpow_zero,
       ENNReal.coe_one, one_mul, iSup_le_iff]
-    -- Porting note: `Finset.le_sup` needed some help
     exact fun i => Finset.le_sup (f := fun i => edist (x i) (y i)) (Finset.mem_univ i)
   · have pos : 0 < p.toReal := zero_lt_one.trans_le h
     have nonneg : 0 ≤ 1 / p.toReal := one_div_nonneg.2 (le_of_lt pos)
@@ -488,14 +484,12 @@ instance [∀ i, MetricSpace (α i)] : MetricSpace (PiLp p α) :=
 theorem nndist_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*} [∀ i, PseudoMetricSpace (β i)]
     (hp : p ≠ ∞) (x y : PiLp p β) :
     nndist x y = (∑ i : ι, nndist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) :=
-  -- Porting note: was `Subtype.ext`
   NNReal.eq <| by
     push_cast
     exact dist_eq_sum (p.toReal_pos_iff_ne_top.mpr hp) _ _
 
 theorem nndist_eq_iSup {β : ι → Type*} [∀ i, PseudoMetricSpace (β i)] (x y : PiLp ∞ β) :
     nndist x y = ⨆ i, nndist (x i) (y i) :=
-  -- Porting note: was `Subtype.ext`
   NNReal.eq <| by
     push_cast
     exact dist_eq_iSup _ _
@@ -690,7 +684,7 @@ theorem _root_.LinearIsometryEquiv.piLpCongrLeft_apply (e : ι ≃ ι') (v : PiL
 theorem _root_.LinearIsometryEquiv.piLpCongrLeft_symm (e : ι ≃ ι') :
     (LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e).symm =
       LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e.symm :=
-  LinearIsometryEquiv.ext fun z ↦ -- Porting note: was `rfl`
+  LinearIsometryEquiv.ext fun z ↦
     congr_arg (Equiv.toFun · z) (Equiv.piCongrLeft'_symm _ _)
 
 @[simp high]
@@ -800,7 +794,6 @@ section Single
 variable (p)
 variable [DecidableEq ι]
 
--- Porting note: added `hp`
 @[simp]
 theorem nnnorm_equiv_symm_single (i : ι) (b : β i) :
     ‖(WithLp.equiv p (∀ i, β i)).symm (Pi.single i b)‖₊ = ‖b‖₊ := by
