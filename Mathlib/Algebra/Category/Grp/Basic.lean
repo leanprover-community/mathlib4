@@ -215,7 +215,16 @@ lemma ofHom_injective {X Y : Type u} [Group X] [Group Y] :
   ext
   apply ConcreteCategory.congr_hom h
 
-@[to_additive]
+/-- This instance allows type class synthesis to "see through" `Grp.of` to
+the underlying type when attempting synthesis on `Unique (Grp.of _)`.
+
+It is scoped because its discrimination tree keys are `Unique _` allowing
+Lean to attempt it in *any* search for `Unique α`. -/
+@[to_additive "This instance allows type class synthesis to \"see through\" `AddGrp.of`
+to the underlying type when attempting synthesis on `Unique (AddGrp.of _)`.
+
+It is scoped because its discrimination tree keys are `Unique _` allowing
+Lean to attempt it in *any* search for `Unique α`." ]
 scoped instance ofUnique (G : Type*) [Group G] [i : Unique G] : Unique (Grp.of G) := i
 
 -- We verify that simp lemmas apply when coercing morphisms to functions.
