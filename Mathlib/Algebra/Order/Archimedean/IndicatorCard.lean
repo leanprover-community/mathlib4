@@ -6,8 +6,8 @@ Authors: Damien Thomine
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Group.Indicator
+import Mathlib.Data.ENat.Card
 import Mathlib.Order.LiminfLimsup
-import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Cardinality and limit of sum of indicators

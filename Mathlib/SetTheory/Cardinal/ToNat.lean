@@ -156,4 +156,8 @@ theorem toNat_lift_add_lift {a : Cardinal.{u}} {b : Cardinal.{v}} (ha : a < ℵ�
     toNat (lift.{v} a + lift.{u} b) = toNat a + toNat b := by
   simp [*]
 
+@[simp]
+theorem toNat_cardinalMk (α : Type*) : (Cardinal.mk α).toNat = Nat.card α := by
+  obtain ⟨⟨hα⟩⟩ | hα := ENat.nonempty_fintype_or_infinite α <;> simp
+
 end Cardinal

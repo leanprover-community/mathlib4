@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
+import Mathlib.Data.ENat.Card
 import Mathlib.Data.Fintype.Perm
-import Mathlib.SetTheory.Cardinal.Finite
 
 /-! # Properties of `Equiv.Perm` on `Finite` types
 

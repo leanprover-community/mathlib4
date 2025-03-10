@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Ring.Int.Units
+import Mathlib.Algebra.GroupWithZero.Units.Equiv
+import Mathlib.Data.ENat.Card
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sum
-import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # fintype instances relating to units
