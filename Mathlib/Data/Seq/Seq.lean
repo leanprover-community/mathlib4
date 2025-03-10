@@ -317,7 +317,7 @@ variable (R : Seq α → Seq α → Prop)
 
 local infixl:50 " ~ " => R
 
-/-- Bisimilarity relation over `Option` of `Seq1 α`-/
+/-- Bisimilarity relation over `Option` of `Seq1 α` -/
 def BisimO : Option (Seq1 α) → Option (Seq1 α) → Prop
   | none, none => True
   | some (a, s), some (a', s') => a = a' ∧ R s s'
@@ -487,7 +487,7 @@ theorem lt_length_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
 ### Membership
 -/
 
-/-- member definition for `Seq`-/
+/-- member definition for `Seq` -/
 protected def Mem (s : Seq α) (a : α) :=
   some a ∈ s.1
 
@@ -768,7 +768,7 @@ theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
         rw [destruct_eq_cons h]
         match n with
         | 0 => simp
-        | n+1 => simp [List.get?_cons_succ, Nat.add_lt_add_iff_right, get?_cons_succ, getElem?_take]
+        | n+1 => simp [Nat.add_lt_add_iff_right, get?_cons_succ, getElem?_take]
 
 theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
     (h_get : s.get? m = .some x) : x ∈ s.take n := by
@@ -831,7 +831,7 @@ theorem length_toList (s : Seq α) (h : s.Terminates) : (toList s h).length = le
 theorem getElem?_toList (s : Seq α) (h : s.Terminates) (n : ℕ) : (toList s h)[n]? = s.get? n := by
   ext k
   simp only [ofList, toList, get?_mk, Option.mem_def, getElem?_take, Nat.lt_find_iff, length,
-    Option.ite_none_right_eq_some, and_iff_right_iff_imp, TerminatedAt, List.get?_eq_getElem?]
+    Option.ite_none_right_eq_some, and_iff_right_iff_imp, TerminatedAt]
   intro h m hmn
   let ⟨a, ha⟩ := ge_stable s hmn h
   simp [ha]
@@ -839,7 +839,7 @@ theorem getElem?_toList (s : Seq α) (h : s.Terminates) (n : ℕ) : (toList s h)
 @[simp]
 theorem ofList_toList (s : Seq α) (h : s.Terminates) :
     ofList (toList s h) = s := by
-  ext n; simp [ofList, List.get?_eq_getElem?]
+  ext n; simp [ofList]
 
 @[simp]
 theorem toList_ofList (l : List α) : toList (ofList l) (terminates_ofList l) = l :=
