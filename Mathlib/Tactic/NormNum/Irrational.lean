@@ -3,15 +3,15 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Data.Real.Irrational
-import Mathlib.Tactic.Rify
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Data.Real.Irrational
 import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Rify
 import Mathlib.Tactic.TautoSet
 
-/-! # `norm_num` extension for `Nat.sqrt`
+/-! # `norm_num` extension for `Irrational`
 
-This module defines a `norm_num` extension for `Nat.sqrt`.
+This module defines a `norm_num` extension for `Irrational x^y` for rational `x` and `y`.
 -/
 
 namespace Tactic
@@ -20,10 +20,7 @@ namespace NormNum
 
 open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
-structure NotPowerCertificate (m n : Q(ℕ)) where
-  k : Q(ℕ)
-  pf_left : Q($k^$n < $m)
-  pf_right : Q($m < ($k + 1)^$n)
+section lemmas
 
 private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
     (h : ¬ ∃ p : ℚ, q^a = p^b) (hb : 0 < b) (hq : 0 ≤ q) :
@@ -296,6 +293,13 @@ private theorem irrational_sqrt_nat {x : ℝ} {n k : ℕ}
   · simp
     exact hn2
 
+end lemmas
+
+structure NotPowerCertificate (m n : Q(ℕ)) where
+  k : Q(ℕ)
+  pf_left : Q($k^$n < $m)
+  pf_right : Q($m < ($k + 1)^$n)
+
 def findNotPowerCertificateCore (m n : ℕ) : Option ℕ := Id.run do
   let mut left := 0
   let mut right := m + 1
@@ -377,3 +381,5 @@ def evalIrrationalSqrt : NormNumExt where eval {u α} e := do
 end NormNum
 
 end Tactic
+
+#min_imports
