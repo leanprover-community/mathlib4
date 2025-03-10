@@ -62,14 +62,21 @@ lemma invariantVectorField_smul (c : 𝕜) (v : GroupLieAlgebra I G) :
   ext g
   simp [invariantVectorField]
 
+
 open VectorField
 
-variable [LieGroup I (minSmoothness 𝕜 3) G]
+instance : Bracket (GroupLieAlgebra I G) (GroupLieAlgebra I G) where
+  bracket v w := mlieBracket I (invariantVectorField v) (invariantVectorField w) (1 : G)
+
+lemma GroupLieAlgebra.bracket_def (v w : GroupLieAlgebra I G) :
+    ⁅v, w⁆ = mlieBracket I (invariantVectorField v) (invariantVectorField w) (1 : G) := rfl
+
+variable [LieGroup I (minSmoothness 𝕜 1) G]
 
 @[simp]
 lemma inverse_mfderiv_mul_left {g h : G} :
     (mfderiv I I (fun b ↦ g * b) h).inverse = mfderiv I I (fun b ↦ g⁻¹ * b) (g * h) := by
-  have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by norm_num) le_minSmoothness
+  have M : 1 ≤ minSmoothness 𝕜 1 := le_trans (by norm_num) le_minSmoothness
   have A : mfderiv I I ((fun x ↦ g⁻¹ * x) ∘ (fun x ↦ g * x)) h =
       ContinuousLinearMap.id _ _ := by
     have : (fun x ↦ g⁻¹ * x) ∘ (fun x ↦ g * x) = id := by ext x; simp
@@ -86,7 +93,7 @@ lemma inverse_mfderiv_mul_left {g h : G} :
 
 lemma mpullback_invariantVectorField (g : G) (v : GroupLieAlgebra I G) :
     mpullback I I (g * ·) (invariantVectorField v) = invariantVectorField v := by
-  have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by norm_num) le_minSmoothness
+  have M : 1 ≤ minSmoothness 𝕜 1 := le_trans (by norm_num) le_minSmoothness
   ext h
   simp only [mpullback, inverse_mfderiv_mul_left, invariantVectorField]
   have D : (fun x ↦ h * x) = (fun b ↦ g⁻¹ * b) ∘ (fun x ↦ g * h * x) := by
@@ -100,7 +107,7 @@ lemma mpullback_invariantVectorField (g : G) (v : GroupLieAlgebra I G) :
 lemma invariantVectorField_eq_mpullback (g : G) (V : Π (g : G), TangentSpace I g) :
     invariantVectorField (V 1) g = mpullback I I (g ⁻¹ * ·) V g := by
   have A : 1 = g⁻¹ * g := by simp
-  simp [invariantVectorField, mpullback]
+  simp only [invariantVectorField, mpullback, inverse_mfderiv_mul_left]
   congr
   simp
 
@@ -122,7 +129,7 @@ theorem contMDiff_invariantVectorField (v : GroupLieAlgebra I G) :
   let F₂ : (TangentBundle I G × TangentBundle I G) → TangentBundle (I.prod I) (G × G) :=
     (equivTangentBundleProd I G I G).symm
   have S₂ : ContMDiff (I.tangent.prod I.tangent) (I.prod I).tangent (minSmoothness 𝕜 2) F₂ :=
-    smooth_equivTangentBundleProd_symm
+    contMDiff_equivTangentBundleProd_symm
   let F₃ : TangentBundle (I.prod I) (G × G) → TangentBundle I G :=
     tangentMap (I.prod I) I (fun (p : G × G) ↦ p.1 * p.2)
   have S₃ : ContMDiff (I.prod I).tangent I.tangent (minSmoothness 𝕜 2) F₃ := by
@@ -153,13 +160,6 @@ theorem mdifferentiableAt_invariantVectorField (v : GroupLieAlgebra I G) {g : G}
 
 open VectorField
 
-instance : Bracket (GroupLieAlgebra I G) (GroupLieAlgebra I G) where
-  bracket v w := mlieBracket I (invariantVectorField v) (invariantVectorField w) (1 : G)
-
-omit [LieGroup I (minSmoothness 𝕜 3) G] in
-lemma bracket_def (v w : GroupLieAlgebra I G) :
-    ⁅v, w⁆ = mlieBracket I (invariantVectorField v) (invariantVectorField w) (1 : G) := rfl
-
 variable [CompleteSpace E]
 
 lemma invariantVector_mlieBracket (v w : GroupLieAlgebra I G) :
@@ -175,24 +175,24 @@ lemma invariantVector_mlieBracket (v w : GroupLieAlgebra I G) :
 
 instance : LieRing (GroupLieAlgebra I G) where
   add_lie u v w := by
-    simp only [bracket_def, invariantVectorField_add]
+    simp only [GroupLieAlgebra.bracket_def, invariantVectorField_add]
     rw [mlieBracket_add_left]
     · exact mdifferentiableAt_invariantVectorField _
     · exact mdifferentiableAt_invariantVectorField _
   lie_add u v w := by
-    simp only [bracket_def, invariantVectorField_add]
+    simp only [GroupLieAlgebra.bracket_def, invariantVectorField_add]
     rw [mlieBracket_add_right]
     · exact mdifferentiableAt_invariantVectorField _
     · exact mdifferentiableAt_invariantVectorField _
-  lie_self v := by simp [bracket_def]
+  lie_self v := by simp [GroupLieAlgebra.bracket_def]
   leibniz_lie u v w := by
-    simp [bracket_def, invariantVector_mlieBracket]
+    simp only [GroupLieAlgebra.bracket_def, invariantVector_mlieBracket]
     apply leibniz_identity_mlieBracket_apply <;>
       exact contMDiff_invariantVectorField _ _
 
 instance : LieAlgebra 𝕜 (GroupLieAlgebra I G) where
   lie_smul c v w := by
-    simp only [bracket_def, invariantVectorField_smul]
+    simp only [GroupLieAlgebra.bracket_def, invariantVectorField_smul]
     rw [mlieBracket_smul_right]
     exact mdifferentiableAt_invariantVectorField _
 
