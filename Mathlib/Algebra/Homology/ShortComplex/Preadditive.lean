@@ -574,7 +574,7 @@ def LeftHomologyMapData.ofNullHomotopic
   commf' := by
     rw [← cancel_mono H₂.i, assoc, LeftHomologyData.liftK_i, LeftHomologyData.f'_i_assoc,
       nullHomotopic_τ₁, add_comp, add_comp, assoc, assoc, assoc, LeftHomologyData.f'_i,
-      self_eq_add_left, h₀_f]
+      right_eq_add, h₀_f]
   commπ := by
     rw [H₂.liftK_π_eq_zero_of_boundary (H₁.i ≫ h₁ ≫ S₂.f) (H₁.i ≫ h₁) (by rw [assoc]), comp_zero]
 
