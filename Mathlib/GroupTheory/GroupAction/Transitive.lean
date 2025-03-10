@@ -20,11 +20,10 @@ of monoids `φ: M → N`,
   iff that of `M` on `X`  is pretransitive.
 
 Given `MulAction G X` where `G` is a group,
-
 - `MulAction.isPretransitive_iff_base G a` shows that `IsPretransitive G X`
   iff every element is translated from `a`
 
-- `MulAction.IsPretransitive.iff_orbit_eq_top G a` shows that `MulAction.IsPretransitive G X`
+- `MulAction.isPretransitive_iff_orbit_eq_univ G a` shows that `MulAction.IsPretransitive G X`
   iff `MulAction.orbit G a` is full.
 
 -/
@@ -48,12 +47,12 @@ theorem isPretransitive_iff_base (a : X) :
 /-- An action of a group is pretransitive iff the orbit of every given element is full -/
 @[to_additive
   "An action of a group is pretransitive iff the orbit of every given element is full"]
-theorem isPretransitive_iff_orbit_eq_top (a : X) :
-    IsPretransitive G X ↔ orbit G a = ⊤ := by
+theorem isPretransitive_iff_orbit_eq_univ (a : X) :
+    IsPretransitive G X ↔ orbit G a = .univ := by
   rw [isPretransitive_iff_base a, Set.ext_iff]
   apply forall_congr'
   intro x
-  simp_rw [Set.top_eq_univ, Set.mem_univ, iff_true, mem_orbit_iff]
+  simp_rw [Set.mem_univ, iff_true, mem_orbit_iff]
 
 variable {M N α β : Type*} [Monoid M] [Monoid N] [MulAction M α] [MulAction N β]
 

@@ -107,7 +107,7 @@ variable {Y : Opens X}
     in the sieve. This full subcategory is equivalent to `OpensLeCover U`, the (poset)
     category of opens contained in some `U i`. -/
 @[simps]
-def generateEquivalenceOpensLe_functor' (hY : Y = iSup U) :
+def generateEquivalenceOpensLe_functor' :
     (FullSubcategory fun f : Over Y => (Sieve.generate (presieveOfCoveringAux U Y)).arrows f.hom) ⥤
     OpensLeCover U :=
 { obj := fun f =>
@@ -150,7 +150,7 @@ def generateEquivalenceOpensLe (hY : Y = iSup U) :
     (FullSubcategory fun f : Over Y => (Sieve.generate (presieveOfCoveringAux U Y)).arrows f.hom) ≌
     OpensLeCover U where
   -- Porting note: split it out to prevent timeout
-  functor := generateEquivalenceOpensLe_functor' _ hY
+  functor := generateEquivalenceOpensLe_functor' _
   inverse := generateEquivalenceOpensLe_inverse' _ hY
   unitIso := eqToIso <| CategoryTheory.Functor.ext
     (by rintro ⟨⟨_, _⟩, _⟩; dsimp; congr)

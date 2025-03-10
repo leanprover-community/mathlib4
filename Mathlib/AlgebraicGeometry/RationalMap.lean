@@ -310,7 +310,7 @@ lemma equiv_toPartialMap_iff_of_isSeparated [X.Over S] [Y.Over S] [IsReduced X]
 end PartialMap
 
 /-- A rational map from `X` to `Y` (`X ⤏ Y`) is an equivalence class of partial maps,
-where two partial maps are equivalent if they are equal on a dense open subscheme.  -/
+where two partial maps are equivalent if they are equal on a dense open subscheme. -/
 def RationalMap (X Y : Scheme.{u}) : Type u :=
   @Quotient (X.PartialMap Y) inferInstance
 
@@ -430,10 +430,10 @@ lemma RationalMap.fromFunctionField_ofFunctionField [IsIntegral X] [LocallyOfFin
 
 lemma RationalMap.eq_of_fromFunctionField_eq [IsIntegral X] (f g : X.RationalMap Y)
     (H : f.fromFunctionField = g.fromFunctionField) : f = g := by
-    obtain ⟨f, rfl⟩ := f.exists_rep
-    obtain ⟨g, rfl⟩ := g.exists_rep
-    refine PartialMap.toRationalMap_eq_iff.mpr ?_
-    exact PartialMap.equiv_of_fromSpecStalkOfMem_eq _ _ _ _ H
+  obtain ⟨f, rfl⟩ := f.exists_rep
+  obtain ⟨g, rfl⟩ := g.exists_rep
+  refine PartialMap.toRationalMap_eq_iff.mpr ?_
+  exact PartialMap.equiv_of_fromSpecStalkOfMem_eq _ _ _ _ H
 
 /--
 Given `S`-schemes `X` and `Y` such that `Y` is locally of finite type and `X` is integral,

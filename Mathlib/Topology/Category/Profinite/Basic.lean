@@ -37,10 +37,6 @@ profinite
 
 -/
 
--- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
-attribute [local instance] CategoryTheory.HasForget.instFunLike
-
-
 universe v u
 
 open CategoryTheory Topology CompHausLike
@@ -67,10 +63,6 @@ instance : Inhabited Profinite :=
 instance {X : Profinite} : TotallyDisconnectedSpace X :=
   X.prop
 
-instance {X : Profinite} : TotallyDisconnectedSpace ((forget Profinite).obj X) := by
-  change TotallyDisconnectedSpace X
-  exact inferInstance
-
 end Profinite
 
 /-- The fully faithful embedding of `Profinite` in `CompHaus`. -/
@@ -79,7 +71,6 @@ abbrev profiniteToCompHaus : Profinite ⥤ CompHaus :=
 -- Porting note: deriving fails, adding manually.
 -- deriving Full, Faithful
 
--- Porting note: added, as it is not found otherwise.
 instance {X : Profinite} : TotallyDisconnectedSpace (profiniteToCompHaus.obj X) :=
   X.prop
 
@@ -217,8 +208,7 @@ instance forget_preservesLimits : Limits.PreservesLimits (forget Profinite) := b
 
 theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
-  · -- Porting note: in mathlib3 `contrapose` saw through `Function.Surjective`.
-    dsimp [Function.Surjective]
+  · dsimp [Function.Surjective]
     contrapose!
     rintro ⟨y, hy⟩ hf
     let C := Set.range f

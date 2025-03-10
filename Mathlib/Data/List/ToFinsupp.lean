@@ -3,6 +3,9 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+import Mathlib.Algebra.BigOperators.Group.List.Basic
+import Mathlib.Algebra.Group.Embedding
+import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Data.Finsupp.Single
 import Mathlib.Data.List.GetD
 
@@ -114,15 +117,18 @@ theorem toFinsupp_concat_eq_toFinsupp_add_single {R : Type*} [AddZeroClass R] (x
     addLeftEmbedding_apply, add_zero]
 
 
-theorem toFinsupp_eq_sum_map_enum_single {R : Type*} [AddMonoid R] (l : List R)
+theorem toFinsupp_eq_sum_mapIdx_single {R : Type*} [AddMonoid R] (l : List R)
     [DecidablePred (getD l · 0 ≠ 0)] :
-    toFinsupp l = (l.enum.map fun nr : ℕ × R => Finsupp.single nr.1 nr.2).sum := by
+    toFinsupp l = (l.mapIdx fun n r => Finsupp.single n r).sum := by
   /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `induction` fails to substitute `l = []` in
   `[DecidablePred (getD l · 0 ≠ 0)]`, so we manually do some `revert`/`intro` as a workaround -/
   revert l; intro l
   induction l using List.reverseRecOn with
   | nil => exact toFinsupp_nil
   | append_singleton x xs ih =>
-    classical simp [toFinsupp_concat_eq_toFinsupp_add_single, enum_append, ih]
+    classical simp [toFinsupp_concat_eq_toFinsupp_add_single, ih]
+
+@[deprecated (since := "2025-01-28")]
+alias toFinsupp_eq_sum_map_enum_single := toFinsupp_eq_sum_mapIdx_single
 
 end List

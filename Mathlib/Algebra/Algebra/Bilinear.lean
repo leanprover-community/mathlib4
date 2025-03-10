@@ -3,9 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Algebra.NonUnitalHom
-import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
@@ -185,7 +183,6 @@ theorem mulLeft_one : mulLeft R (1 : A) = LinearMap.id := ext fun _ => one_mul _
 @[simp]
 theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by
   constructor <;> intro h
-  -- Porting note: had to supply `R` explicitly in `@mulLeft_apply` below
   · rw [← mul_one a, ← mulLeft_apply R a 1, h, LinearMap.zero_apply]
   · rw [h]
     exact mulLeft_zero_eq_zero _ _
@@ -207,7 +204,6 @@ theorem mulRight_one : mulRight R (1 : A) = LinearMap.id := ext fun _ => mul_one
 @[simp]
 theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 := by
   constructor <;> intro h
-  -- Porting note: had to supply `R` explicitly in `@mulRight_apply` below
   · rw [← one_mul a, ← mulRight_apply R a 1, h, LinearMap.zero_apply]
   · rw [h]
     exact mulRight_zero_eq_zero _ _

@@ -300,8 +300,15 @@ protected theorem pow_zero : M ^ 0 = 1 := rfl
 
 protected theorem pow_succ {n : ℕ} : M ^ (n + 1) = M ^ n * M := rfl
 
+protected theorem pow_add {m n : ℕ} (h : n ≠ 0) : M ^ (m + n) = M ^ m * M ^ n :=
+  npowRec_add m n h _ M.one_mul
+
 protected theorem pow_one : M ^ 1 = M := by
   rw [Submodule.pow_succ, Submodule.pow_zero, Submodule.one_mul]
+
+/-- `Submodule.pow_succ` with the right hand side commuted. -/
+protected theorem pow_succ' {n : ℕ} (h : n ≠ 0) : M ^ (n + 1) = M * M ^ n := by
+  rw [add_comm, M.pow_add h, Submodule.pow_one]
 
 theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.toAddSubmonoid ^ n := by
   induction n with
@@ -348,11 +355,11 @@ theorem one_eq_range : (1 : Submodule R A) = LinearMap.range (Algebra.linearMap 
     LinearMap.toSpanSingleton_eq_algebra_linearMap]
 
 theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : Submodule R A) := by
-  rw [one_eq_range]; exact LinearMap.mem_range_self _ _
+  simp [one_eq_range]
 
 @[simp]
 theorem mem_one {x : A} : x ∈ (1 : Submodule R A) ↔ ∃ y, algebraMap R A y = x := by
-  rw [one_eq_range]; rfl
+  simp [one_eq_range]
 
 protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
     map f.toLinearMap (1 : Submodule R A) = 1 := by
@@ -410,12 +417,12 @@ protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
       apply congr_arg sSup
       ext S
       constructor <;> rintro ⟨y, hy⟩
-      · use ⟨f y, mem_map.mpr ⟨y.1, y.2, rfl⟩⟩  -- Porting note: added `⟨⟩`
+      · use ⟨f y, mem_map.mpr ⟨y.1, y.2, rfl⟩⟩
         refine Eq.trans ?_ hy
         ext
         simp
       · obtain ⟨y', hy', fy_eq⟩ := mem_map.mp y.2
-        use ⟨y', hy'⟩  -- Porting note: added `⟨⟩`
+        use ⟨y', hy'⟩
         refine Eq.trans ?_ hy
         rw [f.toLinearMap_apply] at fy_eq
         ext
@@ -574,7 +581,6 @@ protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n →
     (add : ∀ x y i hx hy, C i x hx → C i y hy → C i (x + y) (add_mem ‹_› ‹_›))
     (mem_mul : ∀ m (hm : m ∈ M), ∀ (i x hx), C i x hx → C i.succ (m * x)
       ((pow_succ' M i).symm ▸ (mul_mem_mul hm hx)))
-    -- Porting note: swapped argument order to match order of `C`
     {n : ℕ} {x : A}
     (hx : x ∈ M ^ n) : C n x hx := by
   induction n generalizing x with
@@ -596,7 +602,6 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
     (mul_mem :
       ∀ i x hx, C i x hx →
         ∀ m (hm : m ∈ M), C i.succ (x * m) (mul_mem_mul hx hm))
-    -- Porting note: swapped argument order to match order of `C`
     {n : ℕ} {x : A} (hx : x ∈ M ^ n) : C n x hx := by
   induction n generalizing x with
   | zero =>
@@ -615,8 +620,7 @@ is closed under addition, and holds for `m * x` where `m ∈ M` and it holds for
 protected theorem pow_induction_on_left {C : A → Prop} (hr : ∀ r : R, C (algebraMap _ _ r))
     (hadd : ∀ x y, C x → C y → C (x + y)) (hmul : ∀ m ∈ M, ∀ (x), C x → C (m * x)) {x : A} {n : ℕ}
     (hx : x ∈ M ^ n) : C x :=
-  -- Porting note: `M` is explicit yet can't be passed positionally!
-  Submodule.pow_induction_on_left' (M := M) (C := fun _ a _ => C a) hr
+  Submodule.pow_induction_on_left' M (C := fun _ a _ => C a) hr
     (fun x y _i _hx _hy => hadd x y)
     (fun _m hm _i _x _hx => hmul _ hm _) hx
 
@@ -741,9 +745,7 @@ variable (R A)
 
 /-- R-submodules of the R-algebra A are a module over `Set A`. -/
 instance moduleSet : Module (SetSemiring A) (Submodule R A) where
-  -- Porting note: have to unfold both `HSMul.hSMul` and `SMul.smul`
-  -- Note: the hint `(α := A)` is new in https://github.com/leanprover-community/mathlib4/pull/8386
-  smul s P := span R (SetSemiring.down (α := A) s) * P
+  smul s P := span R (SetSemiring.down s) * P
   smul_add _ _ _ := mul_add _ _ _
   add_smul s t P := by
     simp_rw [HSMul.hSMul, SetSemiring.down_add, span_union, sup_mul, add_eq_sup]
@@ -819,7 +821,7 @@ theorem one_mem_div {I J : Submodule R A} : 1 ∈ I / J ↔ J ≤ I := by
   rw [← one_le, le_div_iff_mul_le, one_mul]
 
 theorem le_self_mul_one_div {I : Submodule R A} (hI : I ≤ 1) : I ≤ I * (1 / I) := by
-  refine (mul_one I).symm.trans_le ?_  -- Porting note: drop `rw {occs := _}` in favor of `refine`
+  refine (mul_one I).symm.trans_le ?_
   apply mul_le_mul_right (one_le_one_div.mpr hI)
 
 theorem mul_one_div_le_one {I : Submodule R A} : I * (1 / I) ≤ 1 := by

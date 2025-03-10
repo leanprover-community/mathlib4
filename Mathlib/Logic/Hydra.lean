@@ -118,9 +118,8 @@ theorem cutExpand_fibration (r : α → α → Prop) :
 
 /-- `CutExpand` preserves leftward-closedness under a relation. -/
 lemma cutExpand_closed [IsIrrefl α r] (p : α → Prop)
-    (h : ∀ {a' a}, r a' a → p a → p a') :
-    ∀ {s' s}, CutExpand r s' s → (∀ a ∈ s, p a) → ∀ a ∈ s', p a := by
-  intros s' s
+    (h : ∀ {a' a}, r a' a → p a → p a') {s' s : Multiset α} :
+    CutExpand r s' s → (∀ a ∈ s, p a) → ∀ a ∈ s', p a := by
   classical
   rw [cutExpand_iff]
   rintro ⟨t, a, hr, ha, rfl⟩ hsp a' h'

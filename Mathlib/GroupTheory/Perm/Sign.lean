@@ -6,7 +6,6 @@ Authors: Chris Hughes
 import Mathlib.Algebra.Group.Conj
 import Mathlib.Algebra.Group.Subgroup.Lattice
 import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Fintype.Perm
@@ -16,6 +15,7 @@ import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Data.Finset.Sigma
 
 /-!
 # Sign of a permutation
@@ -44,11 +44,9 @@ def modSwap (i j : α) : Setoid (Perm α) :=
   ⟨fun σ τ => σ = τ ∨ σ = swap i j * τ, fun σ => Or.inl (refl σ), fun {σ τ} h =>
     Or.casesOn h (fun h => Or.inl h.symm) fun h => Or.inr (by rw [h, swap_mul_self_mul]),
     fun {σ τ υ} hστ hτυ => by
-    cases' hστ with hστ hστ <;> cases' hτυ with hτυ hτυ <;> try rw [hστ, hτυ, swap_mul_self_mul] <;>
-    simp [hστ, hτυ] -- Porting note: should close goals, but doesn't
-    · simp [hστ, hτυ]
-    · simp [hστ, hτυ]
-    · simp [hστ, hτυ]⟩
+    rcases hστ with hστ | hστ <;> rcases hτυ with hτυ | hτυ <;>
+      (try rw [hστ, hτυ, swap_mul_self_mul]) <;>
+      simp [hστ, hτυ]⟩
 
 noncomputable instance {α : Type*} [Fintype α] [DecidableEq α] (i j : α) :
     DecidableRel (modSwap i j).r :=
@@ -99,7 +97,7 @@ is preserved under composition with a non-trivial swap, then `P` holds for all p
 theorem swap_induction_on [Finite α] {P : Perm α → Prop} (f : Perm α) :
     P 1 → (∀ f x y, x ≠ y → P f → P (swap x y * f)) → P f := by
   cases nonempty_fintype α
-  cases' (truncSwapFactors f).out with l hl
+  obtain ⟨l, hl⟩ := (truncSwapFactors f).out
   induction' l with g l ih generalizing f
   · simp +contextual only [hl.left.symm, List.prod_nil, forall_true_iff]
   · intro h1 hmul_swap
@@ -355,7 +353,6 @@ theorem signAux3_mul_and_swap [Finite α] (f g : Perm α) (s : Multiset α) (hs 
 theorem signAux3_symm_trans_trans [Finite α] [DecidableEq β] [Finite β] (f : Perm α) (e : α ≃ β)
     {s : Multiset α} {t : Multiset β} (hs : ∀ x, x ∈ s) (ht : ∀ x, x ∈ t) :
     signAux3 ((e.symm.trans f).trans e) ht = signAux3 f hs := by
-  -- Porting note: switched from term mode to tactic mode
   induction' t, s using Quotient.inductionOn₂ with t s ht hs
   show signAux2 _ _ = signAux2 _ _
   rcases Finite.exists_equiv_fin β with ⟨n, ⟨e'⟩⟩
@@ -433,14 +430,11 @@ theorem sign_abs (f : Perm α) :
     |(Equiv.Perm.sign f : ℤ)| = 1 := by
   rw [Int.abs_eq_natAbs, Int.units_natAbs, Nat.cast_one]
 
-variable (α)
-
+variable (α) in
 theorem sign_surjective [Nontrivial α] : Function.Surjective (sign : Perm α → ℤˣ) := fun a =>
   (Int.units_eq_one_or a).elim (fun h => ⟨1, by simp [h]⟩) fun h =>
     let ⟨x, y, hxy⟩ := exists_pair_ne α
     ⟨swap x y, by rw [sign_swap hxy, h]⟩
-
-variable {α}
 
 theorem eq_sign_of_surjective_hom {s : Perm α →* ℤˣ} (hs : Surjective s) : s = sign :=
   have : ∀ {f}, IsSwap f → s f = -1 := fun {f} ⟨x, y, hxy, hxy'⟩ =>
