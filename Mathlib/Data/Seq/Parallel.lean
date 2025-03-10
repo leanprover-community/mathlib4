@@ -60,7 +60,6 @@ theorem terminates_parallel.aux :
       simp only [parallel.aux1, rmap, corec_eq]
       rw [e]
     rw [this]
-    -- Porting note: This line is required.
     exact ret_terminates a
   intro l S c m T
   revert l S

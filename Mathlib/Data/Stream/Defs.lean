@@ -64,7 +64,6 @@ def enum (s : Stream' α) : Stream' (ℕ × α) := fun n => (n, s.get n)
 /-- The constant stream: `Stream'.get n (Stream'.const a) = a`. -/
 def const (a : α) : Stream' α := fun _ => a
 
--- Porting note: used to be implemented using RecOn
 /-- Iterates of a function as a stream. -/
 def iterate (f : α → α) (a : α) : Stream' α
   | 0 => a
