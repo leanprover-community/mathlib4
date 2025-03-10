@@ -64,32 +64,32 @@ lemma Congruent.similar [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] {v�
 
 namespace Similar
 
-/-- Similarity preserves extended distance. -/
+/-- Similarity scales extended distance. -/
 alias ⟨exists_edist_eq, _⟩ := similar_iff_exists_edist_eq
 
-/-- Similarity follows from preserved extended distance. -/
+/-- Similarity follows from scaled extended distance. -/
 alias ⟨_, of_exists_edist_eq⟩ := similar_iff_exists_edist_eq
 
-/-- Similarity preserves non-negative distance. -/
+/-- Similarity scales non-negative distance. -/
 alias ⟨exists_nndist_eq, _⟩ := similar_iff_exists_nndist_eq
 
-/-- Similarity follows from preserved non-negative distance. -/
+/-- Similarity follows from scaled non-negative distance. -/
 alias ⟨_, of_exists_nndist_eq⟩ := similar_iff_exists_nndist_eq
 
-/-- Similarity preserves distance. -/
+/-- Similarity scales distance. -/
 alias ⟨exists_dist_eq, _⟩ := similar_iff_exists_dist_eq
 
-/-- Similarity follows from preserved distance. -/
+/-- Similarity follows from scaled distance. -/
 alias ⟨_, of_exists_dist_eq⟩ := similar_iff_exists_dist_eq
 
-/-- Similarity follows from pairwise preserved extended distance. -/
+/-- Similarity follows from pairwise scaled extended distance. -/
 lemma of_pairwise_exists_edist_eq [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] [DecidableEq ι]
     {r : NNReal} (hr : r ≠ 0) (h : Pairwise (fun i₁ i₂ => (edist (v₁ i₁) (v₁ i₂) =
       r * edist (v₂ i₁) (v₂ i₂)))) :
     v₁ ∼ v₂ :=
   ⟨r, hr, fun i₁ i₂ => if g : i₁ = i₂ then by { rw [g]; simp } else h g⟩
 
-/-- Similarity follows from pairwise preserved non-negative distance. -/
+/-- Similarity follows from pairwise scaled non-negative distance. -/
 lemma of_pairwise_exists_nndist_eq [PseudoMetricSpace P₁] [PseudoMetricSpace P₂]
     [DecidableEq ι] {r : NNReal} (hr : r ≠ 0)
     (h : Pairwise (fun i₁ i₂ => (nndist (v₁ i₁) (v₁ i₂) = r * nndist (v₂ i₁) (v₂ i₂)))) :
@@ -98,7 +98,7 @@ lemma of_pairwise_exists_nndist_eq [PseudoMetricSpace P₁] [PseudoMetricSpace P
     simp_rw [edist_nndist, h hn]
     norm_cast)
 
-/-- Similarity follows from pairwise preserved distance. -/
+/-- Similarity follows from pairwise scaled distance. -/
 lemma of_pairwise_exists_dist_eq [PseudoMetricSpace P₁] [PseudoMetricSpace P₂]
     [DecidableEq ι] {r : NNReal} (hr : r ≠ 0)
     (h : Pairwise (fun i₁ i₂ => dist (v₁ i₁) (v₁ i₂) = r * dist (v₂ i₁) (v₂ i₂))) :
