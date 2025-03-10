@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+import Mathlib.Lean.Expr.ExtraRecognizers
 
 /-!
 
