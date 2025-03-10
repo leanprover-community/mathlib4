@@ -432,8 +432,7 @@ instance inhabitedPrimes : Inhabited Primes :=
 instance coeNat : Coe Nat.Primes ℕ :=
   ⟨Subtype.val⟩
 
--- Porting note: change in signature to match change in coercion
-theorem coe_nat_injective : Function.Injective (fun (a : Nat.Primes) ↦ (a : ℕ)) :=
+theorem coe_nat_injective : Function.Injective ((↑) : Nat.Primes → ℕ) :=
   Subtype.coe_injective
 
 theorem coe_nat_inj (p q : Nat.Primes) : (p : ℕ) = (q : ℕ) ↔ p = q :=
