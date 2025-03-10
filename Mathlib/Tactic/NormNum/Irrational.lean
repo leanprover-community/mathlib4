@@ -25,46 +25,7 @@ structure NotPowerCertificate (m n : Q(ℕ)) where
   pf_left : Q($k^$n < $m)
   pf_right : Q($m < ($k + 1)^$n)
 
-private theorem irrational_of_certificate_aux {x : ℝ} {m n k : ℕ}
-    (hx : 0 ≤ x)
-    (hn : 0 < n)
-    (h1 : x^n = m)
-    (h2 : k^n < m)
-    (h3 : m < (k + 1)^n) :
-    Irrational x := by
-  apply irrational_nrt_of_notint_nrt n (m := m) _ _ hn
-  · simpa
-  intro ⟨k', h⟩
-  rw [h] at h1 hx
-  replace h1 : k' ^ n = m := by
-    rify
-    assumption
-  zify at *
-  rw [← h1] at h2 h3
-  have : k < k' := by
-    apply lt_of_pow_lt_pow_left₀ _ _ h2
-    simpa using hx
-  have : k' < (k + 1) := by
-    apply lt_of_pow_lt_pow_left₀ _ _ h3
-    simp at hx
-    linarith
-  linarith
-
-private theorem irrational_of_certificate {x : ℝ} {m n k : ℕ}
-    (hn : 0 < n)
-    (h1 : x^n = m)
-    (h2 : k^n < m)
-    (h3 : m < (k + 1)^n) :
-    Irrational x := by
-  by_cases hx : 0 ≤ x
-  · apply irrational_of_certificate_aux <;> assumption
-  rw [← irrational_neg_iff]
-  apply irrational_of_certificate_aux (by linarith) hn _ h2 h3
-  rcases Nat.even_or_odd n with (h_even | h_odd)
-  · rwa [h_even.neg_pow]
-  · linarith [h_odd.pow_neg (show x < 0 by linarith)]
-
-private theorem irrational_rpow_of_not_power {q : ℚ} {a b : ℕ}
+private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
     (h : ¬ ∃ p : ℚ, q^a = p^b) (hb : 0 < b) (hq : 0 ≤ q) :
     Irrational (Real.rpow q (a / b : ℚ)) := by
   simp at h
@@ -79,6 +40,48 @@ private theorem irrational_rpow_of_not_power {q : ℚ} {a b : ℕ}
     omega
   · simpa
 
+private theorem irrational_rpow_nat_of_not_power_aux {n : ℕ} {a b : ℕ}
+    (h : ¬ ∃ m : ℤ, n^a = m^b) (hb : 0 < b) :
+    Irrational (Real.rpow n (a / b : ℚ)) := by
+  simp at h
+  simp [Irrational]
+  intro q hq
+  have h' : q ^ b = (n ^ a : ℕ) := by
+    rify
+    rw [hq, ← Real.rpow_mul_natCast, div_mul_cancel₀]
+    · simp
+    · simp; omega
+    · simp
+  have : (q ^ b).den = 1 := by simp [h']
+  rw [Rat.den_pow] at this
+  simp [show b ≠ 0 by omega] at this
+  rw [Rat.den_eq_one_iff] at this
+  rw [← this] at h'
+  specialize h q.num
+  qify at h
+  simp [h'] at h
+
+private theorem irrational_rpow_nat_of_not_power {n : ℕ} {a b : ℕ}
+    (h : ¬ ∃ m : ℕ, n^a = m^b) (hb : 0 < b) :
+    Irrational (Real.rpow n (a / b : ℚ)) := by
+  apply irrational_rpow_nat_of_not_power_aux _ hb
+  intro ⟨m, hm⟩
+  push_neg at h
+  specialize h m.natAbs
+  zify at h
+  by_cases hm' : 0 ≤ m
+  · rw [← abs_of_nonneg hm'] at hm
+    contradiction
+  rw [abs_of_neg (by linarith)] at h
+  rcases b.even_or_odd with (h_even | h_odd)
+  · rw [h_even.neg_pow] at h
+    contradiction
+  · have : 0 ≤ m ^ b := by
+      rw [← hm]
+      positivity
+    rw [h_odd.pow_nonneg_iff] at this
+    contradiction
+
 private theorem not_power_nat_of_bounds {n k d : ℕ}
     (h_left : k^d < n)
     (h_right : n < (k + 1)^d) :
@@ -89,7 +92,7 @@ private theorem not_power_nat_of_bounds {n k d : ℕ}
   have : m < k + 1 := by exact lt_of_pow_lt_pow_left' d h_right
   omega
 
-private theorem not_power_rat_of_num_den {a b d : ℕ}
+private theorem not_power_rat_of_num_den_aux {a b d : ℕ}
     (h_coprime : a.Coprime b)
     (ha : ¬ ∃ x, a = x^d)
     (hb : ¬ ∃ y, b = y^d) :
@@ -175,6 +178,29 @@ private theorem not_power_rat_of_num_den {a b d : ℕ}
     exact Disjoint.not_mem_of_mem_left_finset (Nat.Coprime.disjoint_primeFactors h_coprime) hp
   simpa [hy0, hb0] using h
 
+private theorem not_power_rat_of_num_den {a b d : ℕ}
+    (h_coprime : a.Coprime b)
+    (ha : ¬ ∃ x, a = x^d)
+    (hb : ¬ ∃ y, b = y^d) :
+    ¬ ∃ q : ℚ, (a / b : ℚ) = q^d := by
+  intro ⟨q, h_eq⟩
+  by_cases hq : 0 ≤ q
+  · have := not_power_rat_of_num_den_aux h_coprime ha hb
+    push_neg at this
+    specialize this q hq
+    contradiction
+  rcases d.even_or_odd with (h_even | h_odd)
+  · have := not_power_rat_of_num_den_aux h_coprime ha hb
+    push_neg at this
+    specialize this (-q) (by linarith)
+    rw [h_even.neg_pow] at this
+    contradiction
+  · have : 0 ≤ q ^ d := by
+      rw [← h_eq]
+      positivity
+    rw [h_odd.pow_nonneg_iff] at this
+    contradiction
+
 private theorem irrational_rpow_rat_rat {x y : ℝ} {x_num x_den y_num y_den k_num k_den : ℕ}
     (hx_isRat : IsRat x (Int.ofNat x_num) x_den)
     (hy_isRat : IsRat y (Int.ofNat y_num) y_den)
@@ -186,18 +212,26 @@ private theorem irrational_rpow_rat_rat {x y : ℝ} {x_num x_den y_num y_den k_n
     Irrational (x^y) := by
   rcases hx_isRat with ⟨hx_inv, hx_eq⟩
   rcases hy_isRat with ⟨hy_inv, hy_eq⟩
-  rw [hy_eq]
-  -- have : ((Int.ofNat y_num) * ⅟(y_den : ℝ) : ℝ) = ((y_num / y_den : ℚ) : ℝ) := by
-  --   simp
-  --   rfl
-  -- rw [this]
-  -- change Irrational (x.rpow ((y_num / y_den : ℚ) : ℝ))
-
-  apply irrational_rpow_of_not_power
-  rw [Real.rpow_intCast_mul sorry]
-  simp
-  apply irrational_nrt_of_notint_nrt
-  all_goals sorry
+  rw [hy_eq, hx_eq]
+  have h1 : ((Int.ofNat y_num) * ⅟(y_den : ℝ) : ℝ) = ((y_num / y_den : ℚ) : ℝ) := by
+    simp
+    rfl
+  have h2 : ((Int.ofNat x_num) * ⅟(x_den : ℝ) : ℝ) = ((x_num / x_den : ℚ) : ℝ) := by
+    simp
+    rfl
+  rw [h1, h2]
+  apply irrational_rpow_rat_of_not_power
+  · simp only [div_pow, ← Nat.cast_npow]
+    apply not_power_rat_of_num_den
+    · apply Nat.Coprime.pow _ _ hx_coprime
+    · apply not_power_nat_of_bounds hn1 hn2
+    · apply not_power_nat_of_bounds hd1 hd2
+  · by_contra hy_den
+    replace hy_den : y_den = 0 := by omega
+    have : (y_den : ℝ) ≠ 0 := by apply hy_inv.ne_zero
+    simp at this
+    contradiction
+  · positivity
 
 private theorem irrational_rpow_nat_rat {x y : ℝ} {x_num y_num y_den k : ℕ}
     (hx_isNat : IsNat x x_num)
@@ -205,7 +239,19 @@ private theorem irrational_rpow_nat_rat {x y : ℝ} {x_num y_num y_den k : ℕ}
     (hn1 : k^y_den < x_num^y_num)
     (hn2 : x_num^y_num < (k + 1)^y_den) :
     Irrational (x^y) := by
-  sorry
+  rcases hx_isNat with ⟨hx_eq⟩
+  rcases hy_isRat with ⟨hy_inv, hy_eq⟩
+  have h1 : ((Int.ofNat y_num) * ⅟(y_den : ℝ) : ℝ) = ((y_num / y_den : ℚ) : ℝ) := by
+    simp
+    rfl
+  rw [hx_eq, hy_eq, h1]
+  apply irrational_rpow_nat_of_not_power
+  · apply not_power_nat_of_bounds hn1 hn2
+  · by_contra hy_den
+    replace hy_den : y_den = 0 := by omega
+    have : (y_den : ℝ) ≠ 0 := by apply hy_inv.ne_zero
+    simp at this
+    contradiction
 
 private theorem irrational_sqrt_rat {x : ℝ} {num den num_k den_k : ℕ}
     (hx_isRat : IsRat x (Int.ofNat num) den)
@@ -215,18 +261,40 @@ private theorem irrational_sqrt_rat {x : ℝ} {num den num_k den_k : ℕ}
     (hd1 : den_k^2 < den)
     (hd2 : den < (den_k + 1)^2) :
     Irrational (Real.sqrt x) := by
-  sorry
+  rw [Real.sqrt_eq_rpow]
+  apply irrational_rpow_rat_rat hx_isRat (y_num := 1) (y_den := 2)
+  · constructor
+    · simp
+    · constructor
+      rotate_right
+      · exact (1/2 : ℝ)
+      all_goals simp
+  · exact hx_coprime
+  · simp
+    exact hn1
+  · simp
+    exact hn2
+  · simp
+    exact hd1
+  · simpa
 
-private theorem irrational_sqrt_of_certificate {x : ℝ} {m k : ℕ}
-    (h_isNat : IsNat x m)
-    (h1 : k^2 < m)
-    (h2 : m < (k + 1)^2) :
+private theorem irrational_sqrt_nat {x : ℝ} {n k : ℕ}
+    (hx_isNat : IsNat x n)
+    (hn1 : k^2 < n)
+    (hn2 : n < (k + 1)^2) :
     Irrational (Real.sqrt x) := by
-  rw [h_isNat.out]
-  apply @irrational_of_certificate _ m 2 k
+  rw [Real.sqrt_eq_rpow]
+  apply irrational_rpow_nat_rat hx_isNat (y_num := 1) (y_den := 2)
+  · constructor
+    · simp
+    · constructor
+      rotate_right
+      · exact (1/2 : ℝ)
+      all_goals simp
   · simp
+    exact hn1
   · simp
-  all_goals assumption
+    exact hn2
 
 def findNotPowerCertificateCore (m n : ℕ) : Option ℕ := Id.run do
   let mut left := 0
@@ -290,7 +358,7 @@ def evalIrrationalSqrt : NormNumExt where eval {u α} e := do
     | .isNat sℝ ex pf =>
       let cert ← findNotPowerCertificate ex q(nat_lit 2)
       assumeInstancesCommute
-      return .isTrue q(irrational_sqrt_of_certificate $pf $cert.pf_left $cert.pf_right)
+      return .isTrue q(irrational_sqrt_nat $pf $cert.pf_left $cert.pf_right)
     | .isRat sℝ eq en ed pf =>
       match en with
       | ~q(Int.ofNat $n') =>
