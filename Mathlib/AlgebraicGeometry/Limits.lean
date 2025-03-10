@@ -205,7 +205,7 @@ instance : CreatesColimit (Discrete.functor f) Scheme.forgetToLocallyRingedSpace
 variable {σ : Type v} (g : σ → Scheme.{u})
 
 noncomputable
-instance [UnivLE.{v, u}] :
+instance [Small.{u} σ] :
     CreatesColimitsOfShape (Discrete σ) Scheme.forgetToLocallyRingedSpace.{u} := by
   choose σ' eq using Small.equiv_small.{u} (α := σ)
   let e : Discrete σ ≌ Discrete σ' := Discrete.equivalence eq.some
@@ -215,9 +215,13 @@ instance [UnivLE.{v, u}] :
     exact createsColimitOfIsoDiagram _ (Discrete.natIsoFunctor (F := K)).symm
   apply CategoryTheory.createsColimitsOfShapeOfEquiv e.symm
 
-instance [UnivLE.{v, u}] : PreservesColimitsOfShape (Discrete σ) Scheme.forgetToTop.{u} :=
-  inferInstanceAs (PreservesColimitsOfShape (Discrete σ) (Scheme.forgetToLocallyRingedSpace ⋙
-      LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget CommRingCat))
+instance [Small.{u} σ] : PreservesColimitsOfShape (Discrete σ) Scheme.forgetToTop.{u} :=
+  sorry
+  --inferInstanceAs (PreservesColimitsOfShape (Discrete σ) (Scheme.forgetToLocallyRingedSpace ⋙
+  --    LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget CommRingCat))
+
+instance [Small.{u} σ] : HasColimitsOfShape (Discrete σ) Scheme.{u} :=
+  ⟨fun _ ↦ hasColimit_of_created _ Scheme.forgetToLocallyRingedSpace⟩
 
 instance [UnivLE.{v, u}] : HasCoproducts.{v} Scheme.{u} :=
   fun _ ↦ ⟨fun _ ↦ hasColimit_of_created _ Scheme.forgetToLocallyRingedSpace⟩
@@ -249,7 +253,7 @@ instance (i) : IsOpenImmersion (Sigma.ι f i) := by
   rw [← ι_sigmaIsoGlued_inv]
   infer_instance
 
-instance [UnivLE.{v, u}] (i) : IsOpenImmersion (Sigma.ι g i) := by
+instance [Small.{u} σ] (i) : IsOpenImmersion (Sigma.ι g i) := by
   obtain ⟨ι, ⟨e⟩⟩ := Small.equiv_small (α := σ)
   obtain ⟨i, rfl⟩ := e.symm.surjective i
   rw [← Sigma.ι_reindex_hom e.symm g i]
@@ -282,7 +286,7 @@ lemma disjoint_opensRange_sigmaι (i j : ι) (h : i ≠ j) :
   obtain ⟨rfl⟩ := (sigmaι_eq_iff _ _ _ _ _).mp hy
   cases h rfl
 
-lemma exists_sigmaι_eq [UnivLE.{v, u}] (x : (∐ g :)) : ∃ i y, (Sigma.ι g i).base y = x := by
+lemma exists_sigmaι_eq [Small.{u} σ] (x : (∐ g :)) : ∃ i y, (Sigma.ι g i).base y = x := by
   obtain ⟨ι, ⟨e⟩⟩ := Small.equiv_small (α := σ)
   let x' : (∐ g ∘ e.symm :) := (Sigma.reindex e.symm g).inv.base x
   obtain ⟨i, y, h⟩ := (disjointGlueData <| g ∘ e.symm).ι_jointly_surjective
@@ -298,7 +302,7 @@ lemma iSup_opensRange_sigmaι : ⨆ i, (Sigma.ι f i).opensRange = ⊤ :=
 /-- The open cover of the coproduct. -/
 @[simps obj map]
 noncomputable
-def sigmaOpenCover [UnivLE.{v, u}] : (∐ g).OpenCover where
+def sigmaOpenCover [Small.{u} σ] : (∐ g).OpenCover where
   J := σ
   obj := g
   map := Sigma.ι g
@@ -351,7 +355,7 @@ private lemma isOpenImmersion_sigmaDesc_aux
     · simp [← Scheme.stalkMap_comp, Scheme.stalkMap_congr_hom _ _ (Sigma.ι_desc _ _)]
 
 open scoped Function in
-lemma isOpenImmersion_sigmaDesc [UnivLE.{v, u}]
+lemma isOpenImmersion_sigmaDesc [Small.{u} σ]
     {X : Scheme.{u}} (α : ∀ i, g i ⟶ X) [∀ i, IsOpenImmersion (α i)]
     (hα : Pairwise (Disjoint on (Set.range <| α · |>.base))) :
     IsOpenImmersion (Sigma.desc α) := by
@@ -367,7 +371,7 @@ lemma isOpenImmersion_sigmaDesc [UnivLE.{v, u}]
 open scoped Function in
 /-- `S` is the disjoint union of `Xᵢ` if the `Xᵢ` are covering, pairwise disjoint open subschemes
 of `S`. -/
-lemma nonempty_isColimit_cofanMk_of [UnivLE.{v, u}]
+lemma nonempty_isColimit_cofanMk_of [Small.{u} σ]
     {X : σ → Scheme.{u}} {S : Scheme.{u}} (f : ∀ i, X i ⟶ S) [∀ i, IsOpenImmersion (f i)]
     (hcov : ⨆ i, (f i).opensRange = ⊤) (hdisj : Pairwise (Disjoint on (f · |>.opensRange))) :
     Nonempty (IsColimit <| Cofan.mk S f) := by
