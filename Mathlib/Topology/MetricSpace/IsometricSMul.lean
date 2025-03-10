@@ -41,10 +41,14 @@ variable (M : Type u) (G : Type v) (X : Type w)
 class IsIsometricVAdd [PseudoEMetricSpace X] [VAdd M X] : Prop where
   protected isometry_vadd : ∀ c : M, Isometry ((c +ᵥ ·) : X → X)
 
+@[deprecated (since := "2025-03-10")] alias IsometricVAdd := IsIsometricVAdd
+
 /-- A multiplicative action is isometric if each map `x ↦ c • x` is an isometry. -/
 @[to_additive]
 class IsIsometricSMul [PseudoEMetricSpace X] [SMul M X] : Prop where
   protected isometry_smul : ∀ c : M, Isometry ((c • ·) : X → X)
+
+@[deprecated (since := "2025-03-10")] alias IsometricSMul := IsIsometricSMul
 
 -- Porting note: Lean 4 doesn't support `[]` in classes, so make a lemma instead of `export`ing
 @[to_additive]
