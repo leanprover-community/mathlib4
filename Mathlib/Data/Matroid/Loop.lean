@@ -75,8 +75,8 @@ lemma singleton_dep : M.Dep {e} ↔ M.IsLoop e :=
 alias ⟨_, IsLoop.dep⟩ := singleton_dep
 
 @[simp]
-lemma singleton_not_indep (he : e ∈ M.E := by aesop_mat) : ¬M.Indep {e} ↔ M.IsLoop e :=
-  by rw [← singleton_dep, ← not_indep_iff]
+lemma singleton_not_indep (he : e ∈ M.E := by aesop_mat) : ¬M.Indep {e} ↔ M.IsLoop e := by
+  rw [← singleton_dep, ← not_indep_iff]
 
 @[simp]
 lemma singleton_isCircuit : M.IsCircuit {e} ↔ M.IsLoop e :=
