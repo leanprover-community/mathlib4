@@ -290,8 +290,8 @@ theorem Antiperiodic.neg_eq [AddGroup α] [InvolutiveNeg β] (h : Antiperiodic f
     f (-c) = -f 0 := by
   simpa only [zero_add] using h.neg 0
 
-theorem Antiperiodic.nat_mul_eq_of_eq_zero [Semiring α] [NegZeroClass β] (h : Antiperiodic f c)
-    (hi : f 0 = 0) : ∀ n : ℕ, f (n * c) = 0
+theorem Antiperiodic.nat_mul_eq_of_eq_zero [NonAssocSemiring α] [NegZeroClass β]
+    (h : Antiperiodic f c) (hi : f 0 = 0) : ∀ n : ℕ, f (n * c) = 0
   | 0 => by rwa [Nat.cast_zero, zero_mul]
   | n + 1 => by simp [add_mul, h _, Antiperiodic.nat_mul_eq_of_eq_zero h hi n]
 
@@ -368,15 +368,15 @@ theorem Antiperiodic.const_inv_smul [AddMonoid α] [Neg β] [Group γ] [DistribM
     (h : Antiperiodic f c) (a : γ) : Antiperiodic (fun x => f (a⁻¹ • x)) (a • c) := by
   simpa only [inv_inv] using h.const_smul a⁻¹
 
-theorem Antiperiodic.add [AddGroup α] [InvolutiveNeg β] (h1 : Antiperiodic f c₁)
+theorem Antiperiodic.add [AddSemigroup α] [InvolutiveNeg β] (h1 : Antiperiodic f c₁)
     (h2 : Antiperiodic f c₂) : Periodic f (c₁ + c₂) := by simp_all [← add_assoc]
 
 theorem Antiperiodic.sub [AddGroup α] [InvolutiveNeg β] (h1 : Antiperiodic f c₁)
     (h2 : Antiperiodic f c₂) : Periodic f (c₁ - c₂) := by
   simpa only [sub_eq_add_neg] using h1.add h2.neg
 
-theorem Periodic.add_antiperiod [AddGroup α] [Neg β] (h1 : Periodic f c₁) (h2 : Antiperiodic f c₂) :
-    Antiperiodic f (c₁ + c₂) := by simp_all [← add_assoc]
+theorem Periodic.add_antiperiod [AddSemigroup α] [Neg β] (h1 : Periodic f c₁)
+    (h2 : Antiperiodic f c₂) : Antiperiodic f (c₁ + c₂) := by simp_all [← add_assoc]
 
 theorem Periodic.sub_antiperiod [AddGroup α] [InvolutiveNeg β] (h1 : Periodic f c₁)
     (h2 : Antiperiodic f c₂) : Antiperiodic f (c₁ - c₂) := by

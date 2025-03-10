@@ -57,8 +57,8 @@ lemma fwdDiff_smul {R : Type} [Ring R] [Module R G] (f : M → R) (g : M → G) 
 
 -- Note `fwdDiff_const_smul` is more general than `fwdDiff_smul` since it allows `R` to be a
 -- semiring, rather than a ring; in particular `R = ℕ` is allowed.
-@[simp] lemma fwdDiff_const_smul {R : Type*} [Semiring R] [Module R G] (r : R) (f : M → G) :
-    Δ_[h] (r • f) = r • Δ_[h] f :=
+@[simp] lemma fwdDiff_const_smul {R : Type*} [Semiring R] [DistribMulAction R G] (r : R)
+    (f : M → G) : Δ_[h] (r • f) = r • Δ_[h] f :=
   funext fun _ ↦ (smul_sub ..).symm
 
 @[simp] lemma fwdDiff_smul_const {R : Type} [Ring R] [Module R G] (f : M → R) (g : G) :

@@ -573,8 +573,9 @@ an algebra homomorphism, and a separate homeomorphism,
 along with a witness that as functions they are the same.
 -/
 theorem Subalgebra.topologicalClosure_comap_homeomorph (s : Subalgebra R A) {B : Type*}
-    [TopologicalSpace B] [Ring B] [IsTopologicalRing B] [Algebra R B] (f : B →ₐ[R] A) (f' : B ≃ₜ A)
-    (w : (f : B → A) = f') : s.topologicalClosure.comap f = (s.comap f).topologicalClosure := by
+    [TopologicalSpace B] [Ring B] [IsTopologicalSemiring B] [Algebra R B] (f : B →ₐ[R] A)
+    (f' : B ≃ₜ A) (w : (f : B → A) = f') :
+    s.topologicalClosure.comap f = (s.comap f).topologicalClosure := by
   apply SetLike.ext'
   simp only [Subalgebra.topologicalClosure_coe]
   simp only [Subalgebra.coe_comap, Subsemiring.coe_comap, AlgHom.coe_toRingHom]

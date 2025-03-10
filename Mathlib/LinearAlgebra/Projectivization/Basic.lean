@@ -213,9 +213,9 @@ theorem map_id : map (LinearMap.id : V →ₗ[K] V) (LinearEquiv.refl K V).injec
   rfl
 
 -- Porting note: removed `@[simp]` because of unusable `hg.comp hf` in the LHS
-theorem map_comp {F U : Type*} [Field F] [AddCommGroup U] [Module F U] {σ : K →+* L} {τ : L →+* F}
-    {γ : K →+* F} [RingHomCompTriple σ τ γ] (f : V →ₛₗ[σ] W) (hf : Function.Injective f)
-    (g : W →ₛₗ[τ] U) (hg : Function.Injective g) :
+theorem map_comp {F U : Type*} [DivisionRing F] [AddCommGroup U] [Module F U] {σ : K →+* L}
+    {τ : L →+* F} {γ : K →+* F} [RingHomCompTriple σ τ γ] (f : V →ₛₗ[σ] W)
+    (hf : Function.Injective f) (g : W →ₛₗ[τ] U) (hg : Function.Injective g) :
     map (g.comp f) (hg.comp hf) = map g hg ∘ map f hf := by
   ext ⟨v⟩
   rfl
