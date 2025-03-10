@@ -10,8 +10,8 @@ import Mathlib.Tactic.Linter.PPRoundtrip
 #  The "commandStart" linter
 
 The "commandStart" linter emits a warning if
-* each command starts at the beginning of a line;
-* the "hypotheses segment" of each declaration coincides with its pretty-printed version.
+* a command does not start at the beginning of a line;
+* the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
 -/
 
 open Lean Elab Command
@@ -20,8 +20,17 @@ namespace Mathlib.Linter
 
 /--
 The "commandStart" linter emits a warning if
-* each command starts at the beginning of a line;
-* the "hypotheses segment" of each declaration coincides with its pretty-printed version.
+* a command does not start at the beginning of a line;
+* the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
+
+In practice, this makes sure that the spacing in a typical declaration look like
+```lean
+example (a : Nat) {R : Type} [Add R] : <not linted part>
+```
+as opposed to
+```lean
+example (a: Nat) {R:Type}  [Add  R] : <not linted part>
+```
 -/
 register_option linter.style.commandStart : Bool := {
   defValue := true
