@@ -175,7 +175,7 @@ instance : Module ℂ (SlashInvariantForm Γ k) :=
   coeHom_injective.module ℂ coeHom fun _ _ => rfl
 
 /-- The `SlashInvariantForm` corresponding to `Function.const _ x`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def const (x : ℂ) : SlashInvariantForm Γ 0 where
   toFun := Function.const _ x
   slash_action_eq' A _ := ModularForm.is_invariant_const A x

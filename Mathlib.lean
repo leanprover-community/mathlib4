@@ -47,7 +47,8 @@ import Mathlib.Algebra.BigOperators.Expect
 import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Algebra.BigOperators.Finsupp
+import Mathlib.Algebra.BigOperators.Finsupp.Basic
+import Mathlib.Algebra.BigOperators.Finsupp.Fin
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 import Mathlib.Algebra.BigOperators.Group.Finset.Pi
@@ -352,6 +353,7 @@ import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.Pi.Units
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.Pointwise.Finset.Density
 import Mathlib.Algebra.Group.Pointwise.Finset.Interval
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
@@ -1891,6 +1893,8 @@ import Mathlib.CategoryTheory.Dialectica.Basic
 import Mathlib.CategoryTheory.Dialectica.Monoidal
 import Mathlib.CategoryTheory.DifferentialObject
 import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Distributive.Cartesian
+import Mathlib.CategoryTheory.Distributive.Monoidal
 import Mathlib.CategoryTheory.EffectiveEpi.Basic
 import Mathlib.CategoryTheory.EffectiveEpi.Comp
 import Mathlib.CategoryTheory.EffectiveEpi.Coproduct
@@ -4052,6 +4056,7 @@ import Mathlib.MeasureTheory.Integral.Gamma
 import Mathlib.MeasureTheory.Integral.Indicator
 import Mathlib.MeasureTheory.Integral.IntegrableOn
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+import Mathlib.MeasureTheory.Integral.IntegrationByParts
 import Mathlib.MeasureTheory.Integral.IntervalAverage
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.MeasureTheory.Integral.Layercake
