@@ -448,9 +448,6 @@ theorem mult_ne_zero {w : InfinitePlace K} : mult w ≠ 0 := mult_pos.ne'
 theorem mult_coe_ne_zero {w : InfinitePlace K} : (mult w : ℝ) ≠ 0 :=
   Nat.cast_ne_zero.mpr mult_ne_zero
 
-theorem mult_coe_ne_zero {w : InfinitePlace K} : (mult w : ℝ) ≠ 0 :=
-  Nat.cast_ne_zero.mpr mult_ne_zero
-
 theorem one_le_mult {w : InfinitePlace K} : (1 : ℝ) ≤ mult w := by
   rw [← Nat.cast_one, Nat.cast_le]
   exact mult_pos

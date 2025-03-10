@@ -460,23 +460,6 @@ theorem volume_eq_two_pi_pow_mul_integral [NumberField K]
   · exact (Measurable.mul (by fun_prop)
       <| measurable_const.indicator <| hm.preimage (measurable_polarSpaceCoord_symm K)).aemeasurable
 
-variable (K) in
-theorem continuous_normAtAllPlaces :
-    Continuous (normAtAllPlaces : mixedSpace K → realSpace K) :=
-  continuous_pi fun _ ↦ continuous_normAtPlace _
-
-theorem normAtAllPlaces_image_preimage_of_nonneg {s : Set (realSpace K)}
-    (hs : ∀ x ∈ s, ∀ w, 0 ≤ x w) :
-    normAtAllPlaces '' (normAtAllPlaces ⁻¹' s) = s := by
-  rw [Set.image_preimage_eq_iff]
-  rintro x hx
-  refine ⟨mixedSpaceOfRealSpace x, funext fun w ↦ ?_⟩
-  rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace (hs x hx w)]
-
-theorem normAtAllPlaces_mixedEmbedding (x : K) (w : InfinitePlace K) :
-    normAtAllPlaces (mixedEmbedding K x) w = w x := by
-  rw [normAtAllPlaces_apply, normAtPlace_apply]
-
 theorem forall_mem_iff_normAtAllPlaces_mem {s : Set (realSpace K)}
     (hs : A = normAtAllPlaces ⁻¹' s) :
     ∀ x, x ∈ A ↔ mixedSpaceOfRealSpace (normAtAllPlaces x) ∈ A := fun _ ↦ by
