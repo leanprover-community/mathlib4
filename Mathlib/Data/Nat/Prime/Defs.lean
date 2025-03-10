@@ -166,6 +166,10 @@ theorem prime_three : Prime 3 := by decide
 
 theorem prime_five : Prime 5 := by decide
 
+theorem prime_seven : Prime 7 := by decide
+
+theorem prime_eleven : Prime 11 := by decide
+
 theorem dvd_prime {p m : ℕ} (pp : Prime p) : m ∣ p ↔ m = 1 ∨ m = p :=
   ⟨fun d => pp.eq_one_or_self_of_dvd m d, fun h =>
     h.elim (fun e => e.symm ▸ one_dvd _) fun e => e.symm ▸ dvd_rfl⟩
