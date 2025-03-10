@@ -79,7 +79,6 @@ namespace Path
 theorem coe_mk_mk (f : I → X) (h₁) (h₂ : f 0 = x) (h₃ : f 1 = y) :
     ⇑(mk ⟨f, h₁⟩ h₂ h₃ : Path x y) = f :=
   rfl
--- Porting note: the name `Path.coe_mk` better refers to a new lemma below
 
 variable (γ : Path x y)
 
@@ -106,7 +105,6 @@ initialize_simps_projections Path (toFun → simps.apply, -toContinuousMap)
 theorem coe_toContinuousMap : ⇑γ.toContinuousMap = γ :=
   rfl
 
--- Porting note: this is needed because of the `Path.continuousMapClass` instance
 @[simp]
 theorem coe_mk : ⇑(γ : C(I, X)) = γ :=
   rfl
@@ -162,12 +160,6 @@ theorem symm_range {a b : X} (γ : Path a b) : range γ.symm = range γ := by
 
 
 open ContinuousMap
-
-/- porting note: because of the `DFunLike` instance, we already have a coercion to `C(I, X)`
-so we avoid adding another.
---instance : Coe (Path x y) C(I, X) :=
-  --⟨fun γ => γ.1⟩
--/
 
 /-- The following instance defines the topology on the path space to be induced from the
 compact-open topology on the space `C(I,X)` of continuous maps from `I` to `X`.
@@ -614,7 +606,6 @@ def reparam (γ : Path x y) (f : I → I) (hfcont : Continuous f) (hf₀ : f 0 =
 theorem coe_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0)
     (hf₁ : f 1 = 1) : ⇑(γ.reparam f hfcont hf₀ hf₁) = γ ∘ f :=
   rfl
--- Porting note: this seems like it was poorly named (was: `coe_to_fun`)
 
 @[simp]
 theorem reparam_id (γ : Path x y) : γ.reparam id continuous_id rfl rfl = γ := by

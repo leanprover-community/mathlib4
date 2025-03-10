@@ -789,8 +789,7 @@ variable [∀ i, NormOneClass (B i)]
 theorem _root_.one_memℓp_infty : Memℓp (1 : ∀ i, B i) ∞ :=
   ⟨1, by rintro i ⟨i, rfl⟩; exact norm_one.le⟩
 
-variable (B)
-
+variable (B) in
 /-- The `𝕜`-subring of elements of `∀ i : α, B i` whose `lp` norm is finite. This is `lp E ∞`,
 with extra structure. -/
 def _root_.lpInftySubring : Subring (PreLp B) :=
@@ -798,8 +797,6 @@ def _root_.lpInftySubring : Subring (PreLp B) :=
     carrier := { f | Memℓp f ∞ }
     one_mem' := one_memℓp_infty
     mul_mem' := Memℓp.infty_mul }
-
-variable {B}
 
 instance inftyRing : Ring (lp B ∞) :=
   (lpInftySubring B).toRing
