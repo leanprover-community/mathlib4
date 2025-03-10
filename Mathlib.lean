@@ -4955,12 +4955,14 @@ import Mathlib.RingTheory.MvPolynomial.Symmetric.NewtonIdentities
 import Mathlib.RingTheory.MvPolynomial.Tower
 import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 import Mathlib.RingTheory.MvPowerSeries.Basic
+import Mathlib.RingTheory.MvPowerSeries.Evaluation
 import Mathlib.RingTheory.MvPowerSeries.Inverse
 import Mathlib.RingTheory.MvPowerSeries.LexOrder
 import Mathlib.RingTheory.MvPowerSeries.LinearTopology
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 import Mathlib.RingTheory.MvPowerSeries.Order
 import Mathlib.RingTheory.MvPowerSeries.PiTopology
+import Mathlib.RingTheory.MvPowerSeries.Substitution
 import Mathlib.RingTheory.MvPowerSeries.Trunc
 import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.Nilpotent.Basic
@@ -5028,6 +5030,7 @@ import Mathlib.RingTheory.PowerBasis
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.Binomial
 import Mathlib.RingTheory.PowerSeries.Derivative
+import Mathlib.RingTheory.PowerSeries.Evaluation
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Order
 import Mathlib.RingTheory.PowerSeries.PiTopology
