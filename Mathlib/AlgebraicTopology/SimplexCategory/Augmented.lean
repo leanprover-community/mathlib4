@@ -23,7 +23,7 @@ and we provide a translation of the main constrcutions on (co)simplicial objects
 (i.e `drop`, `point` and `toArrow`) in terms of these equivalences.
 
 ## TODOs
-* Define a (symmetric) monoidal structure on `AugmentedSimplexCategory`.
+* Define a monoidal structure on `AugmentedSimplexCategory`.
 -/
 
 open CategoryTheory
