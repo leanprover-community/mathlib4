@@ -34,6 +34,9 @@ if ! lake update; then
     exit 1
 fi
 
+# Add files touched by lake update
+git add lakefile.lean lake-manifest.json
+
 # Attempt to commit. This will fail if there are conflicts.
 if git commit -m "merge $BRANCH_NAME"; then
     echo "Merge successful."
