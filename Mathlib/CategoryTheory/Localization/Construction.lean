@@ -123,12 +123,10 @@ def wIso {X Y : C} (w : X ⟶ Y) (hw : W w) : Iso (W.Q.obj X) (W.Q.obj Y) where
 abbrev wInv {X Y : C} (w : X ⟶ Y) (hw : W w) :=
   (wIso w hw).inv
 
-variable (W)
-
+variable (W) in
 theorem _root_.CategoryTheory.MorphismProperty.Q_inverts : W.IsInvertedBy W.Q := fun _ _ w hw =>
   (Localization.Construction.wIso w hw).isIso_hom
 
-variable {W}
 variable (G : C ⥤ D) (hG : W.IsInvertedBy G)
 
 /-- The lifting of a functor to the path category of `LocQuiver W` -/
@@ -187,8 +185,7 @@ theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂
       refine Functor.congr_inv_of_congr_hom _ _ _ ?_ ?_ hw'
       all_goals apply Functor.congr_obj h
 
-variable (W)
-
+variable (W) in
 /-- The canonical bijection between objects in a category and its
 localization with respect to a morphism_property `W` -/
 @[simps]
@@ -199,8 +196,6 @@ def objEquiv : C ≃ W.Localization where
   right_inv := by
     rintro ⟨⟨X⟩⟩
     rfl
-
-variable {W}
 
 /-- A `MorphismProperty` in `W.Localization` is satisfied by all
 morphisms in the localized category if it contains the image of the

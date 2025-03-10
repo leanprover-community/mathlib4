@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Submonoid.Defs
+import Mathlib.Data.Set.Inclusion
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.FastInstance
 
@@ -72,13 +73,13 @@ class NegMemClass (S : Type*) (G : outParam Type*) [Neg G] [SetLike S G] : Prop 
 export NegMemClass (neg_mem)
 
 /-- `SubgroupClass S G` states `S` is a type of subsets `s ⊆ G` that are subgroups of `G`. -/
-class SubgroupClass (S : Type*) (G : outParam Type*) [DivInvMonoid G] [SetLike S G]
-    extends SubmonoidClass S G, InvMemClass S G : Prop
+class SubgroupClass (S : Type*) (G : outParam Type*) [DivInvMonoid G] [SetLike S G] : Prop
+    extends SubmonoidClass S G, InvMemClass S G
 
 /-- `AddSubgroupClass S G` states `S` is a type of subsets `s ⊆ G` that are
 additive subgroups of `G`. -/
-class AddSubgroupClass (S : Type*) (G : outParam Type*) [SubNegMonoid G] [SetLike S G]
-    extends AddSubmonoidClass S G, NegMemClass S G : Prop
+class AddSubgroupClass (S : Type*) (G : outParam Type*) [SubNegMonoid G] [SetLike S G] : Prop
+    extends AddSubmonoidClass S G, NegMemClass S G
 
 attribute [to_additive] InvMemClass SubgroupClass
 
@@ -194,6 +195,16 @@ instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [S
 protected def subtype : H →* G where
   toFun := ((↑) : H → G); map_one' := rfl; map_mul' := fun _ _ => rfl
 
+variable {H} in
+@[to_additive (attr := simp)]
+lemma subtype_apply (x : H) :
+    SubgroupClass.subtype H x = x := rfl
+
+@[to_additive]
+lemma subtype_injective :
+    Function.Injective (SubgroupClass.subtype H) :=
+  Subtype.coe_injective
+
 @[to_additive (attr := simp)]
 theorem coe_subtype : (SubgroupClass.subtype H : H → G) = ((↑) : H → G) := by
   rfl
@@ -275,6 +286,12 @@ add_decl_doc AddSubgroup.toAddSubmonoid
 
 namespace Subgroup
 
+/-- The actual `Subgroup` obtained from an element of a `SubgroupClass` -/
+@[to_additive "The actual `AddSubgroup` obtained from an element of a `AddSubgroupClass`"]
+def ofClass {S G : Type*} [Group G] [SetLike S G] [SubgroupClass S G]
+    (s : S) : Subgroup G :=
+  ⟨⟨⟨s, MulMemClass.mul_mem⟩, OneMemClass.one_mem s⟩, InvMemClass.inv_mem⟩
+
 @[to_additive]
 instance : SetLike (Subgroup G) G where
   coe s := s.carrier
@@ -282,6 +299,11 @@ instance : SetLike (Subgroup G) G where
     obtain ⟨⟨⟨hp,_⟩,_⟩,_⟩ := p
     obtain ⟨⟨⟨hq,_⟩,_⟩,_⟩ := q
     congr
+
+@[to_additive]
+instance : CanLift (Set G) (Subgroup G) (↑)
+    (fun s ↦ 1 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧ ∀ {x}, x ∈ s → x⁻¹ ∈ s) where
+  prf s h := ⟨{ carrier := s, one_mem' := h.1, mul_mem' := h.2.1, inv_mem' := h.2.2}, rfl⟩
 
 -- TODO: Below can probably be written more uniformly
 @[to_additive]
@@ -522,6 +544,15 @@ protected def subtype : H →* G where
   toFun := ((↑) : H → G); map_one' := rfl; map_mul' _ _ := rfl
 
 @[to_additive (attr := simp)]
+lemma subtype_apply {s : Subgroup G} (x : s) :
+    s.subtype x = x := rfl
+
+@[to_additive]
+lemma subtype_injective (s : Subgroup G) :
+    Function.Injective s.subtype :=
+  Subtype.coe_injective
+
+@[to_additive (attr := simp)]
 theorem coe_subtype : ⇑ H.subtype = ((↑) : H → G) :=
   rfl
 
@@ -529,10 +560,6 @@ theorem coe_subtype : ⇑ H.subtype = ((↑) : H → G) :=
 alias coeSubtype := coe_subtype
 @[deprecated (since := "2025-02-18")]
 alias _root_.AddSubgroup.coeSubtype := AddSubgroup.coe_subtype
-
-@[to_additive]
-theorem subtype_injective : Function.Injective (Subgroup.subtype H) :=
-  Subtype.coe_injective
 
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive "The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`."]
