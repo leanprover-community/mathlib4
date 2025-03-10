@@ -203,6 +203,7 @@
   "Mathlib.Topology.Order.LeftRightNhds":
   ["Mathlib.Algebra.Ring.Pointwise.Set"],
   "Mathlib.Topology.Germ": ["Mathlib.Analysis.Normed.Module.Basic"],
+  "Mathlib.Topology.DiscreteSubset": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Topology.Category.UniformSpace":
   ["Mathlib.CategoryTheory.Monad.Limits"],
@@ -215,7 +216,8 @@
   "Mathlib.Tactic.Widget.CommDiag": ["Mathlib.CategoryTheory.Category.Basic"],
   "Mathlib.Tactic.Use": ["Batteries.Logic"],
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
-  "Mathlib.Tactic.TautoSet": ["Mathlib.Data.Set.SymmDiff"],
+  "Mathlib.Tactic.TautoSet":
+  ["Mathlib.Data.Set.Disjoint", "Mathlib.Data.Set.SymmDiff"],
   "Mathlib.Tactic.Tauto": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.TFAE": ["Mathlib.Data.List.TFAE", "Mathlib.Tactic.Have"],
   "Mathlib.Tactic.Subsingleton": ["Mathlib.Logic.Basic", "Std.Logic"],
@@ -354,6 +356,8 @@
   "Mathlib.Order.RelClasses": ["Batteries.WF"],
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
+  "Mathlib.Order.Filter.Bases.Basic": ["Mathlib.Tactic.Subsingleton"],
+  "Mathlib.Order.Filter.AtTopBot.Basic": ["Mathlib.Tactic.Subsingleton"],
   "Mathlib.Order.Defs.PartialOrder": ["Batteries.Tactic.Trans"],
   "Mathlib.Order.Defs": ["Batteries.Tactic.Trans"],
   "Mathlib.Order.BoundedOrder.Basic": ["Mathlib.Tactic.Finiteness.Attr"],
@@ -376,9 +380,14 @@
   "Mathlib.LinearAlgebra.DFinsupp": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.LinearAlgebra.Basic": ["Mathlib.Algebra.BigOperators.Group.Finset"],
   "Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional": ["Mathlib.Init.Core"],
+  "Mathlib.LinearAlgebra.AffineSpace.Defs": ["Mathlib.Algebra.AddTorsor.Defs"],
   "Mathlib.LinearAlgebra.AffineSpace.Basic":
   ["Mathlib.Algebra.AddTorsor", "Mathlib.Algebra.AddTorsor.Defs"],
-  "Mathlib.Lean.Meta.RefinedDiscrTree.Pi": ["Mathlib.Algebra.Group.Pi.Basic"],
+  "Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs":
+  ["Mathlib.LinearAlgebra.AffineSpace.Defs"],
+  "Mathlib.LinearAlgebra.AffineSpace.AffineMap":
+  ["Mathlib.LinearAlgebra.AffineSpace.Defs"],
+  "Mathlib.Lean.Meta.RefinedDiscrTree.Pi": ["Mathlib.Algebra.Notation.Pi"],
   "Mathlib.Lean.Meta": ["Batteries.Logic"],
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Operations"],
   "Mathlib.Lean.Expr.Basic": ["Batteries.Logic"],
@@ -466,12 +475,12 @@
   ["Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
-  "Mathlib.Algebra.ZeroOne.Lemmas": ["Batteries.Tactic.Init"],
+  "Mathlib.Algebra.Notation.Lemmas": ["Batteries.Tactic.Init"],
   "Mathlib.Algebra.Star.Module": ["Mathlib.Algebra.Module.LinearMap.Star"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Defs"],
   "Mathlib.Algebra.Order.Ring.Nat": ["Mathlib.Algebra.Order.Group.Nat"],
   "Mathlib.Algebra.Order.Quantale": ["Mathlib.Tactic.Variable"],
-  "Mathlib.Algebra.Order.Pi": ["Mathlib.Algebra.ZeroOne.Lemmas"],
+  "Mathlib.Algebra.Order.Pi": ["Mathlib.Algebra.Notation.Lemmas"],
   "Mathlib.Algebra.Order.Nonneg.Field": ["Mathlib.Algebra.Order.Field.InjSurj"],
   "Mathlib.Algebra.Order.Field.Subfield":
   ["Mathlib.Algebra.Order.Field.InjSurj"],
@@ -498,6 +507,7 @@
   ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],
   "Mathlib.Algebra.Category.MonCat.Basic":
   ["Mathlib.Algebra.Ring.Action.Group"],
+  "Mathlib.Algebra.BigOperators.Pi": ["Mathlib.Data.Finset.Lattice.Fold"],
   "Mathlib.Algebra.BigOperators.Group.List.Lemmas":
   ["Mathlib.Data.List.ProdSigma"],
   "Mathlib.Algebra.BigOperators.Group.List": ["Mathlib.Data.List.ProdSigma"],

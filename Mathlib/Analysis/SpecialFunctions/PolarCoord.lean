@@ -43,7 +43,7 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
         sin_eq_zero_iff_of_lt_of_lt hθ.1 hθ.2] using h'θ
   map_source' := by
     rintro ⟨x, y⟩ hxy
-    simp only [prod_mk_mem_set_prod_eq, mem_Ioi, sqrt_pos, mem_Ioo, Complex.neg_pi_lt_arg,
+    simp only [prodMk_mem_set_prod_eq, mem_Ioi, sqrt_pos, mem_Ioo, Complex.neg_pi_lt_arg,
       true_and, Complex.arg_lt_pi_iff]
     constructor
     · rcases hxy with hxy | hxy
@@ -54,9 +54,7 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
       · exact Or.inr hxy
   right_inv' := by
     rintro ⟨r, θ⟩ ⟨hr, hθ⟩
-    dsimp at hr hθ
-    simp only [Prod.mk.inj_iff]
-    constructor
+    ext <;> dsimp at hr hθ ⊢
     · conv_rhs => rw [← sqrt_sq (le_of_lt hr), ← one_mul (r ^ 2), ← sin_sq_add_cos_sq θ]
       congr 1
       ring
@@ -86,6 +84,10 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
       (g := Complex.arg) (fun z hz => ?_) ?_ A
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
     · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
+
+theorem continuous_polarCoord_symm :
+    Continuous (polarCoord.symm) :=
+  Continuous.prod_mk (by fun_prop) (by fun_prop)
 
 /-- The derivative of `polarCoord.symm`, see `hasFDerivAt_polarCoord_symm`. -/
 def fderivPolarCoordSymm (p : ℝ × ℝ) : ℝ × ℝ →L[ℝ] ℝ × ℝ :=
