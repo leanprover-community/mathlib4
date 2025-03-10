@@ -500,8 +500,9 @@ section Ring
 
 variable {R M ι : Type*} [Ring R] [AddCommGroup M] [Module R M] (i : ι) (c : ι → R) (h₀ : c i = 0)
 
-/-- The linear isomorphism corresponding to a matrix with 1 on the diagonal
-and all other nonzero entries on the same row. -/
+/-- Given `c : ι → R` and an index `i` such that `c i = 0`, this is the linear isomorphism sending
+the `j`-th standard basis vector to itself plus `c j` multiplied with the `i`-th standard basis
+vector (in particular, the `i`-th standard basis vector is kept invariant). -/
 def Finsupp.addSubEquiv : (ι →₀ R) ≃ₗ[R] (ι →₀ R) := by
   refine .ofLinear (linearCombination _ fun j ↦ single j 1 + single i (c j))
     (linearCombination _ fun j ↦ single j 1 - single i (c j)) ?_ ?_ <;>
