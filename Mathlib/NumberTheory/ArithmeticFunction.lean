@@ -669,7 +669,7 @@ theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicati
     dsimp only
     rw [hf.map_mul_of_coprime cop.coprime_mul_right.coprime_mul_right_right,
       hg.map_mul_of_coprime cop.coprime_mul_left.coprime_mul_left_right]
-    ring
+    ring_nf
 
 @[arith_mult]
 theorem pmul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicative)

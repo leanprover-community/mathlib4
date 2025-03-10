@@ -205,6 +205,7 @@ lemma equation_iff_variableChange (x y : R) :
     W'.Equation x y ↔ (W'.variableChange ⟨1, x, 0, y⟩).toAffine.Equation 0 0 := by
   rw [equation_iff', ← neg_eq_zero, equation_zero, variableChange_a₆, inv_one, Units.val_one]
   congr! 1
+  simp only [neg_sub, one_pow, one_mul]
   ring1
 
 end Equation
@@ -602,7 +603,7 @@ lemma addY_sub_negY_addY {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
     y₃ - W.negY x₃ y₃ =
       ((y₂ - W.negY x₂ y₂) * (x₁ - x₃) - (y₁ - W.negY x₁ y₁) * (x₂ - x₃)) / (x₂ - x₁) := by
   simp_rw [addY, negY, eq_div_iff (sub_ne_zero.mpr hx.symm)]
-  linear_combination (norm := ring1) 2 * cyclic_sum_Y_mul_X_sub_X y₁ y₂ hx
+  linear_combination (norm := ring_nf) 2 * cyclic_sum_Y_mul_X_sub_X (W := W) y₁ y₂ hx
 
 end Field
 

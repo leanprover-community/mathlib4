@@ -285,7 +285,8 @@ theorem eval_map (f : M →ₗ[R] M') (q : PolynomialModule R M) (r : R) :
     simp_rw [map_add, e₁, e₂]
   · intro i m
     simp only [map_single, eval_single, f.map_smul]
-    module
+    match_scalars
+    rfl
 
 @[simp]
 theorem eval_map' (f : M →ₗ[R] M) (q : PolynomialModule R M) (r : R) :

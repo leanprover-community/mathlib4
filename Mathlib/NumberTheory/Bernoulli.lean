@@ -292,7 +292,7 @@ theorem sum_range_pow (n p : ℕ) :
       map_inv₀, map_natCast, coeff_mk, mul_inv_rev]
     rw [mul_comm ((n : ℚ) ^ (q - m + 1)), ← mul_assoc _ _ ((n : ℚ) ^ (q - m + 1)), ← one_div,
       mul_one_div, div_div, tsub_add_eq_add_tsub (le_of_lt_succ h), cast_div, cast_mul]
-    · ring
+    · rw [Nat.succ_eq_add_one]; ring
     · exact factorial_mul_factorial_dvd_factorial h.le
     · simp [hne, factorial_ne_zero]
   -- same as our goal except we pull out `p!` for convenience
