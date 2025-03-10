@@ -222,9 +222,23 @@ end Pullback
 
 section IsPullback
 
-/-- The pullback of `S` along `f` is isomorphic to `T` given the corresponding pullback square. -/
+/--
+Given two monomorphisms `S` and `T` over `X` and `Y` and two morphisms `f` and `f'` between them
+forming the following pullback square:
+
+```
+(T : C) -f'-> (S : C)
+   |             |
+T.arrow       S.arrow
+   |             |
+   v             v
+   Y -----f----> X
+```
+
+we get an isomorphism between `T` and the pullback of `S` along `f` through the `pullback` functor.
+-/
 def pullbackObjIsoOfIsPullback [HasPullbacks C] {X Y : C} (f : Y ⟶ X) (S : MonoOver X)
-    (T : MonoOver Y) (f' : T.obj.left ⟶ S.obj.left)
+    (T : MonoOver Y) (f' : (T : C) ⟶ (S : C))
     (h : IsPullback f' T.arrow S.arrow f) :
     (pullback f).obj S ≅ T :=
   isoMk ((IsPullback.isoPullback h).symm) (by simp)
