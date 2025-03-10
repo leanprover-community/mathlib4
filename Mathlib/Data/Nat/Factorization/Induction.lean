@@ -101,9 +101,7 @@ theorem multiplicative_factorization {β : Type*} [CommMonoid β] (f : ℕ → �
     ∀ {n : ℕ}, n ≠ 0 → f n = n.factorization.prod fun p k => f (p ^ k) := by
   apply Nat.recOnPosPrimePosCoprime
   · rintro p k hp - -
-    -- Porting note: replaced `simp` with `rw`
-    rw [Prime.factorization_pow hp, Finsupp.prod_single_index _]
-    rwa [pow_zero]
+    simp [Prime.factorization_pow hp, Finsupp.prod_single_index _, hf]
   · simp
   · rintro -
     rw [factorization_one, hf]

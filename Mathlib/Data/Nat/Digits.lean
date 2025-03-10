@@ -96,7 +96,7 @@ theorem digits_zero_succ' : ∀ {n : ℕ}, n ≠ 0 → digits 0 n = [n]
 theorem digits_one (n : ℕ) : digits 1 n = List.replicate n 1 :=
   rfl
 
--- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10685): dsimp can prove this
+-- no `@[simp]`: dsimp can prove this
 theorem digits_one_succ (n : ℕ) : digits 1 (n + 1) = 1 :: digits 1 n :=
   rfl
 
@@ -383,9 +383,7 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
   -- base b+2 expansion of 0 has no digits
   rw [digits_add_two_add_one] at hd
   cases hd
-  · exact n.succ.mod_lt (by simp)
-  -- Porting note: Previous code (single line) contained linarith.
-  -- . exact IH _ (Nat.div_lt_self (Nat.succ_pos _) (by linarith)) hd
+  · exact n.succ.mod_lt (by linarith)
   · apply IH ((n + 1) / (b + 2))
     · apply Nat.div_lt_self <;> omega
     · assumption

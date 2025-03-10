@@ -167,7 +167,6 @@ theorem fib_two_mul_add_one (n : ℕ) : fib (2 * n + 1) = fib (n + 1) ^ 2 + fib 
 theorem fib_two_mul_add_two (n : ℕ) :
     fib (2 * n + 2) = fib (n + 1) * (2 * fib n + fib (n + 1)) := by
   rw [fib_add_two, fib_two_mul, fib_two_mul_add_one]
-  -- Porting note: A bunch of issues similar to [this zulip thread](https://github.com/leanprover-community/mathlib4/pull/1576) with `zify`
   have : fib n ≤ 2 * fib (n + 1) :=
     le_trans fib_le_fib_succ (mul_comm 2 _ ▸ Nat.le_mul_of_pos_right _ two_pos)
   zify [this]

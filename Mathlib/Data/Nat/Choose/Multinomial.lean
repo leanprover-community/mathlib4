@@ -260,18 +260,13 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
   induction' s using Finset.induction with a s ha ih
   · rw [sum_empty]
     rintro (_ | n)
-      -- Porting note: Lean cannot infer this instance by itself
-    · haveI : Subsingleton (Sym α 0) := Unique.instSubsingleton
-      rw [_root_.pow_zero, Fintype.sum_subsingleton]
+    · rw [_root_.pow_zero, Fintype.sum_subsingleton]
       swap
-        -- Porting note: Lean cannot infer this instance by itself
-      · have : Zero (Sym α 0) := Sym.instZeroSym
-        exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
+      · exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
       convert (@one_mul R _ _).symm
       convert @Nat.cast_one R _
       simp
     · rw [_root_.pow_succ, mul_zero]
-      -- Porting note: Lean cannot infer this instance by itself
       haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
       apply (Fintype.sum_empty _).symm
   intro n; specialize ih (hc.mono <| s.subset_insert a)
