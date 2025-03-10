@@ -153,6 +153,11 @@ lemma IsMaximal.isClosable (hm : p.IsMaximal) (h1 : 1 < G.degree v) :
     exact this hm h1 _ p.penultimate ⟨hxy.2.1, hxy.1, hxy.2.2.symm⟩ hxy.2.2.symm
   exact ⟨_, hm _ hxy.1, hxy.1, hax⟩
 
+/--
+If `p : G.Walk u v` is a maximal path (i.e. all neighbors of `v` lie in `p`) and `v` has more than
+one neighbor then we can close `p` into a maximal cycle, where `c : G.Walk w w` is maximal means
+that all neighbors of `w` lie in `c`.
+-/
 lemma maximal_cycle_of_maximal_path (hp : p.IsPath) (hm : p.IsMaximal) (h1 : 1 < G.degree v) :
     ((p.dropUntil p.maxClose find_mem_support).cons (hm.isClosable h1).adj).IsCycle ∧
     ((p.dropUntil p.maxClose find_mem_support).cons (hm.isClosable h1).adj).IsMaximal := by
