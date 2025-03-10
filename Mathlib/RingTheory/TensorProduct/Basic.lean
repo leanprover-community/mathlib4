@@ -1062,7 +1062,6 @@ theorem tensorTensorTensorComm_tmul (m : A) (n : B) (p : C) (q : D) :
     tensorTensorTensorComm R S A B C D (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
   rfl
 
-set_option maxSynthPendingDepth 2 in
 @[simp]
 theorem tensorTensorTensorComm_symm_tmul (m : A) (n : C) (p : B) (q : D) :
     (tensorTensorTensorComm R S A B C D).symm (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
@@ -1072,7 +1071,6 @@ theorem tensorTensorTensorComm_symm :
     (tensorTensorTensorComm R R A B C D).symm = tensorTensorTensorComm R R A C B D := by
   ext; rfl
 
-set_option maxSynthPendingDepth 2 in
 theorem tensorTensorTensorComm_toLinearEquiv :
     (tensorTensorTensorComm R S A B C D).toLinearEquiv =
       TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R S A B C D := rfl
