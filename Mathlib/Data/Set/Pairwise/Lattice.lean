@@ -86,7 +86,7 @@ theorem PairwiseDisjoint.prod_left {f : ι × ι' → α}
   rintro ⟨i, i'⟩ hi ⟨j, j'⟩ hj h
   rw [mem_prod] at hi hj
   obtain rfl | hij := eq_or_ne i j
-  · refine (ht hi.2 hj.2 <| (Prod.mk.inj_left _).ne_iff.1 h).mono ?_ ?_
+  · refine (ht hi.2 hj.2 <| (Prod.mk_right_injective _).ne_iff.1 h).mono ?_ ?_
     · convert le_iSup₂ (α := α) i hi.1; rfl
     · convert le_iSup₂ (α := α) i hj.1; rfl
   · refine (hs hi.1 hj.1 hij).mono ?_ ?_

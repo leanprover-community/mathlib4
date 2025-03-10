@@ -1226,12 +1226,12 @@ theorem fst_integral [CompleteSpace F] {f : X → E × F} (hf : Integrable f μ)
 theorem snd_integral [CompleteSpace E] {f : X → E × F} (hf : Integrable f μ) :
     (∫ x, f x ∂μ).2 = ∫ x, (f x).2 ∂μ := by
   rw [← Prod.fst_swap, swap_integral]
-  exact fst_integral <| hf.snd.prod_mk hf.fst
+  exact fst_integral <| hf.snd.prodMk hf.fst
 
 theorem integral_pair [CompleteSpace E] [CompleteSpace F] {f : X → E} {g : X → F}
     (hf : Integrable f μ) (hg : Integrable g μ) :
     ∫ x, (f x, g x) ∂μ = (∫ x, f x ∂μ, ∫ x, g x ∂μ) :=
-  have := hf.prod_mk hg
+  have := hf.prodMk hg
   Prod.ext (fst_integral this) (snd_integral this)
 
 theorem integral_smul_const {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [CompleteSpace E]
