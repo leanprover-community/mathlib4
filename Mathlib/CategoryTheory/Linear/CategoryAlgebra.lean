@@ -1,9 +1,15 @@
+/-
+Copyright (c) 2025 Bernhard Reinke. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bernhard Reinke
+-/
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.DirectSum.Basic
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.CategoryTheory.Linear.Basic
+import Mathlib.Algebra.Ring.Assoc
 
-universe w v u
+universe w' w v u
 
 namespace CategoryTheory.Linear
 
@@ -32,9 +38,16 @@ instance CategoryAlgebra.instModule : Module R (CategoryAlgebra R C) :=
 def CategoryAlgebra.of (a b : C) : (a ⟶ b) →+ CategoryAlgebra R C :=
   DirectSum.of (fun (p : C × C) ↦ p.1 ⟶ p.2) (a,b)
 
-@[simps]
-def comp' (X Y Z W : C) (h : Y = Z) : (X ⟶ Y) →+ (Z ⟶ W) →+ (CategoryAlgebra R C) where
-  toFun f := AddMonoidHom.comp (CategoryAlgebra.of X W) (compHom (f ≫ eqToHom h))
+theorem CategoryAlgebra.addHom_ext {γ : Type w'} [AddZeroClass γ] ⦃f g : CategoryAlgebra R C →+ γ⦄
+    (H : ∀ (X Y : C) (y : X ⟶ Y), f (CategoryAlgebra.of X Y y) = g (CategoryAlgebra.of X Y y)) :
+    f = g := DFinsupp.addHom_ext (fun p => H p.1 p.2)
+
+theorem CategoryAlgebra.of_eq_single (a b : C) (f : a ⟶ b) :
+    (CategoryAlgebra.of a b f : CategoryAlgebra R C) =
+    DFinsupp.single (a,b) f := by rfl
+
+def compEq (X Y Z W : C) (h : Y = Z) : (X ⟶ Y) →+ (Z ⟶ W) →+ (X ⟶ W) where
+  toFun f := compHom (f ≫ eqToHom h)
   map_add' := by
     intros
     ext
@@ -43,25 +56,86 @@ def comp' (X Y Z W : C) (h : Y = Z) : (X ⟶ Y) →+ (Z ⟶ W) →+ (CategoryAlg
     ext
     simp
 
-def comp'' (X Y Z W : C) : (X ⟶ Y) →+ (Z ⟶ W) →+ (CategoryAlgebra R C) :=
-  if h : Y = Z then comp' X Y Z W h else 0
+def comp₀ (X Y Z W : C): (X ⟶ Y) →+ (Z ⟶ W) →+ (X ⟶ W) :=
+  if h : Y = Z then compEq X Y Z W h else 0
 
-@[irreducible] def mul' (f g : CategoryAlgebra R C) : CategoryAlgebra R C :=
-  DFinsupp.sumAddHom (fun p ↦ DFinsupp.sumAddHom (fun q ↦ comp'' q.1 q.2 p.1 p.2) g) f
+theorem comp₀_assoc (X₁ Y₁ X₂ Y₂ X₃ Y₃ : C) (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) (h : X₃ ⟶ Y₃) :
+    ((comp₀ X₁ Y₂ X₃ Y₃) (((comp₀ X₁ Y₁ X₂ Y₂) f) g)) h =
+    ((comp₀ X₁ Y₁ X₂ Y₃) f) (((comp₀ X₂ Y₂ X₃ Y₃) g) h)
+    := by
+  by_cases h₁₂ : Y₁ = X₂ <;> by_cases h₂₃ : Y₂ = X₃ <;>
+  simp [comp₀, compEq, h₁₂, h₂₃, compHom, Preadditive.leftComp]
 
-instance instMul : Mul (CategoryAlgebra R C) := ⟨mul'⟩
+@[irreducible] def mul' : CategoryAlgebra R C →+ CategoryAlgebra R C →+ CategoryAlgebra R C :=
+  DFinsupp.sumAddHom₂ (fun q p ↦ AddMonoidHom.compr₂
+    (comp₀ q.1 q.2 p.1 p.2) (CategoryAlgebra.of q.1 p.2))
+
+instance instMul : Mul (CategoryAlgebra R C) := ⟨fun f g => mul' f g⟩
 
 theorem mul_def (f g : CategoryAlgebra R C) :
-  f * g = DFinsupp.sumAddHom (fun p ↦ DFinsupp.sumAddHom (fun q ↦ comp'' q.1 q.2 p.1 p.2) g) f := by
+    f * g = DFinsupp.sumAddHom₂ (fun q p ↦ AddMonoidHom.compr₂
+    (comp₀ q.1 q.2 p.1 p.2) (CategoryAlgebra.of q.1 p.2)) f g := by
   with_unfolding_all rfl
 
-instance : NonUnitalSemiring (CategoryAlgebra R C) where
-  mul := mul'
+instance : NonUnitalNonAssocSemiring (CategoryAlgebra R C) where
   left_distrib := fun a b c => by simp [mul_def]
   right_distrib := fun a b c => by simp [mul_def]
   zero_mul := fun a => by simp [mul_def]
   mul_zero := fun a => by simp [mul_def]
-  mul_assoc := fun a b c => by sorry
 
+theorem mul_of (X₁ Y₁ X₂ Y₂ : C) (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
+    (CategoryAlgebra.of X₁ Y₁ f) * (CategoryAlgebra.of X₂ Y₂ g : (CategoryAlgebra R C)) =
+    CategoryAlgebra.of X₁ Y₂ (comp₀ X₁ Y₁ X₂ Y₂ f g) := by
+  simp [mul_def, CategoryAlgebra.of_eq_single, DFinsupp.sumAddHom₂_single]
 
+instance : NonUnitalSemiring (CategoryAlgebra R C) where
+  mul_assoc := by
+    rw [AddMonoidHom.associative_iff_mull₃_eq_mulr₃]
+    apply CategoryAlgebra.addHom_ext
+    rintro X₁ Y₁ f
+    apply CategoryAlgebra.addHom_ext
+    rintro X₂ Y₂ g
+    apply CategoryAlgebra.addHom_ext
+    rintro X₃ Y₃ h
+    simp only [AddMonoidHom.mull₃, AddMonoidHom.mul, AddMonoidHom.mulLeft, AddMonoidHom.coe_mk,
+      ZeroHom.coe_mk, AddMonoidHom.coe_comp, Function.comp_apply, mul_of, AddMonoidHom.mulr₃,
+      AddMonoidHom.compr₂, AddMonoidHom.compHom_apply_apply]
+    apply congrArg
+    apply comp₀_assoc
+
+section Unital
+
+variable [Fintype C]
+
+def one' : CategoryAlgebra R C :=  ∑ i : C, (CategoryAlgebra.of i i (𝟙 i))
+
+instance : One (CategoryAlgebra R C) := ⟨one'⟩
+
+theorem one_def : (1 : CategoryAlgebra R C) = ∑ i : C, (CategoryAlgebra.of i i (𝟙 i)) := rfl
+
+instance [Fintype C] : Semiring (CategoryAlgebra R C) where
+  one_mul := by
+    have H : (AddMonoidHom.mulLeft (1 : (CategoryAlgebra R C)) = (AddMonoidHom.id _)) := by
+      apply CategoryAlgebra.addHom_ext
+      rintro X₁ Y₁ f
+      simp only [AddMonoidHom.mulLeft, one_def, Finset.sum_mul, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
+        mul_of, AddMonoidHom.id_apply]
+      rw [Finset.sum_eq_single_of_mem X₁ (Finset.mem_univ _)]
+      · simp [comp₀, compEq, compHom, Preadditive.leftComp]
+      · intro b _ h
+        simp [comp₀, h]
+    apply DFunLike.congr_fun (h₁ := H)
+  mul_one := by
+    have H : (AddMonoidHom.mulRight (1 : (CategoryAlgebra R C)) = (AddMonoidHom.id _)) := by
+      apply CategoryAlgebra.addHom_ext
+      rintro X₁ Y₁ f
+      simp only [AddMonoidHom.mulRight, one_def, Finset.mul_sum, AddMonoidHom.coe_mk,
+        ZeroHom.coe_mk, mul_of, AddMonoidHom.id_apply]
+      rw [Finset.sum_eq_single_of_mem Y₁ (Finset.mem_univ _)]
+      · simp [comp₀, compEq, compHom, Preadditive.leftComp]
+      · intro b _ h
+        simp [comp₀, h.symm]
+    apply DFunLike.congr_fun (h₁ := H)
+
+end Unital
 end CategoryTheory.Linear
