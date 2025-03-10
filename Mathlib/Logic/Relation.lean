@@ -222,6 +222,10 @@ lemma map_apply_apply (hf : Injective f) (hg : Injective g) (r : α → β → P
 instance [Decidable (∃ a b, r a b ∧ f a = c ∧ g b = d)] : Decidable (Relation.Map r f g c d) :=
   ‹Decidable _›
 
+lemma map_symmetric {r : α → α → Prop} (hr : Symmetric r) (f : α → β) :
+    Symmetric (Relation.Map r f f) := by
+  rintro _ _ ⟨x, y, hxy, rfl, rfl⟩; exact ⟨_, _, hr hxy, rfl, rfl⟩
+
 end Map
 
 variable {r : α → α → Prop} {a b c : α}
