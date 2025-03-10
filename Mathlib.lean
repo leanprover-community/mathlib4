@@ -3392,6 +3392,7 @@ import Mathlib.Geometry.Euclidean.Inversion.Calculus
 import Mathlib.Geometry.Euclidean.Inversion.ImageHyperplane
 import Mathlib.Geometry.Euclidean.MongePoint
 import Mathlib.Geometry.Euclidean.PerpBisector
+import Mathlib.Geometry.Euclidean.SignedDist
 import Mathlib.Geometry.Euclidean.Sphere.Basic
 import Mathlib.Geometry.Euclidean.Sphere.Power
 import Mathlib.Geometry.Euclidean.Sphere.Ptolemy
