@@ -210,25 +210,9 @@ theorem codiscrete_setOf_order_eq_zero_or_top :
   intro x hx
   rw [Filter.disjoint_principal_right]
   rcases (hf x hx).eventually_eq_zero_or_eventually_ne_zero with h₁f | h₁f
-  · filter_upwards [eventually_nhdsWithin_of_eventually_nhds
-      (Filter.Eventually.eventually_nhds h₁f)]
-    simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_image, Set.mem_setOf_eq, Subtype.exists,
-      exists_and_right, exists_eq_right, not_exists, not_or, not_and, not_forall, Decidable.not_not]
-    intro a _ h₁a
-    use h₁a
-    by_cases h₂a : a = x
-    · rw [← (hf x hx).order_eq_top_iff] at h₁f
-      simp_rw [h₂a]
-      tauto
-    · have : (hf a h₁a).order = ⊤ := by rwa [(hf a h₁a).order_eq_top_iff]
-      tauto
-  · filter_upwards [h₁f]
-    intro a h₁a
-    simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_image, Set.mem_setOf_eq, Subtype.exists,
-      exists_and_right, exists_eq_right, not_exists, not_or, not_and, not_forall, Decidable.not_not]
-    intro h₂a
-    use h₂a
-    rw [(hf a h₂a).order_eq_zero_iff.2 h₁a]
-    tauto
+  · filter_upwards [eventually_nhdsWithin_of_eventually_nhds h₁f.eventually_nhds] with a ha
+    simp +contextual [(hf a _).order_eq_top_iff, ha]
+  · filter_upwards [h₁f] with a ha
+    simp +contextual [(hf a _).order_eq_zero_iff, ha]
 
 end AnalyticOnNhd
