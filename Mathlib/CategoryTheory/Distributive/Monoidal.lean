@@ -34,7 +34,7 @@ A distributive monoidal category is a monoidal category that is both left and ri
 - A closed monoidal category is left distributive.
 
 - For a category `C` the category of endofunctors `C ⥤ C` is left distributive (but almost
-  never right distributive). The left distributivity is tentamount to the fact that the coproduct
+  never right distributive). The left distributivity is tantamount to the fact that the coproduct
   in the functor categories is computed pointwise.
 
 - We show that any preadditive monoidal category with coporducts is distributive. This includes the
