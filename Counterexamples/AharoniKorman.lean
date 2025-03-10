@@ -24,7 +24,7 @@ order satisfies at least one of the following:
 
 In November 2024, Hollom disproved this conjecture. In this file, we construct Hollom's
 counterexample P_5 and show it satisfies neither of the above, and thus disprove the conjecture.
-See https://arxiv.org/abs/2411.16844 for further details.
+See [hollom2025] for further details.
 
 We show a number of key properties of P_5:
 1. It is a partial order
@@ -192,7 +192,7 @@ lemma toHollom_le_toHollom {a b c d e f : ℕ} (h : (a, b) ≤ (d, e)) (hcf : f 
 /--
 The Hollom partial order is divided into "levels", indexed by the natural numbers. These correspond
 to the third coordinate of the tuple.
-This is written L_n in the paper.
+This is written $L_n$ in the [hollom2025].
 -/
 def level (n : ℕ) : Set Hollom := {h(x, y, n) | (x : ℕ) (y : ℕ)}
 
@@ -244,7 +244,7 @@ lemma no_infinite_antichain_level {n : ℕ} {A : Set Hollom} (hA : A ⊆ level n
 /--
 Each level is order-connected, i.e. for any `x ∈ level n` and `y ∈ level n` we have
 `[x, y] ⊆ level n`.
-This corresponds to 5.8 (i) in the paper.
+This corresponds to 5.8 (i) in the [hollom2025].
 -/
 lemma ordConnected_level {n : ℕ} : (level n).OrdConnected := by
   rw [Set.ordConnected_iff]
@@ -346,7 +346,7 @@ theorem scattered {f : ℚ → Hollom} (hf : StrictMono f) : False := by
   exact h₁ (h₃.subset h₂)
 
 /--
-Any antichain in the Hollom partial order is finite. This corresponds to Lemma 5.9 in the paper.
+Any antichain in the Hollom partial order is finite. This corresponds to Lemma 5.9 in [hollom2025].
 -/
 theorem no_infinite_antichain {A : Set Hollom} (hC : IsAntichain (· ≤ ·) A) : A.Finite := by
   let f (x : Hollom) : ℕ := (ofHollom x).2.2
@@ -381,7 +381,7 @@ open Filter
 /--
 Show that every chain in the Hollom partial order has a finite intersection with infinitely many
 levels.
-This corresponds to Lemma 5.10 from the paper.
+This corresponds to Lemma 5.10 from [hollom2025].
 -/
 theorem exists_finite_intersection (hC : IsChain (· ≤ ·) C) :
     ∃ᶠ n in atTop, (C ∩ level n).Finite := by
@@ -555,8 +555,8 @@ variable {f : SpinalMap C}
 
 /-! ### Explicit chains
 In this section we construct an explicit chain in ℕ × ℕ that will be useful later.
-These comprise part of 5.8(iv) from the paper: the full strength of that observation is not actually
-needed.
+These comprise part of 5.8(iv) from [hollom2025]: the full strength of that observation is not
+actually needed.
 -/
 section make_chains
 
