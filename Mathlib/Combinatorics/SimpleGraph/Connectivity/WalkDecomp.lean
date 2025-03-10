@@ -78,20 +78,21 @@ def dropUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
       · assumption
 
 @[simp]
-lemma nil_dropUntil (p : G.Walk u v) (hwp : w ∈ p.support) (hnil : (p.dropUntil w hwp).Nil) :
-    w = v := by
+lemma nil_dropUntil (p : G.Walk u v) (hwp : w ∈ p.support) (hne : w ≠ v) :
+    ¬ (p.dropUntil w hwp).Nil := by
+  contrapose! hne
   induction p with
-  | nil => simp only [dropUntil, eq_mpr_eq_cast] at hnil; exact hnil.eq
+  | nil => simp only [dropUntil, eq_mpr_eq_cast] at hne; exact hne.eq
   | @cons u v x h p ih =>
-    rw [dropUntil] at hnil
+    rw [dropUntil] at hne
     rw [support_cons, List.mem_cons] at hwp
     by_cases h: u = w
-    · rw [dif_pos h] at hnil
-      simp only [dropUntil, eq_mpr_eq_cast] at hnil; exact hnil.eq
-    · rw [dif_neg h] at hnil
+    · rw [dif_pos h] at hne
+      simp only [dropUntil, eq_mpr_eq_cast] at hne; exact hne.eq
+    · rw [dif_neg h] at hne
       obtain hw1 | hw2 := hwp
       · exact absurd hw1.symm h
-      · exact ih hw2 hnil
+      · exact ih hw2 hne
 
 /-- The `takeUntil` and `dropUntil` functions split a walk into two pieces.
 The lemma `SimpleGraph.Walk.count_support_takeUntil_eq_one` specifies where this split occurs. -/
@@ -226,10 +227,10 @@ lemma getVert_takeUntil {u v : V} {n : ℕ} {p : G.Walk u v} (hw : w ∈ p.suppo
     omega
 
 lemma getVert_dropUntil {u v : V} {p : G.Walk u v} (n : ℕ) (hw : w ∈ p.support) :
-    p.getVert (n + (p.takeUntil w hw).length) = (p.dropUntil w hw).getVert n  := by
-  nth_rw 1 [← take_spec p hw]
+    (p.dropUntil w hw).getVert n = p.getVert (n + (p.takeUntil w hw).length) := by
+  nth_rw 2 [← take_spec p hw]
   have ha := getVert_append (p.takeUntil w hw) (p.dropUntil w hw) (n + (p.takeUntil w hw).length)
-  rwa [if_neg (by simp), Nat.add_sub_cancel] at ha
+  rwa [if_neg <| not_lt.2 <| Nat.le_add_left _ _, Nat.add_sub_cancel, Eq.comm] at ha
 
 lemma snd_takeUntil (hsu : w ≠ u) (p : G.Walk u v) (h : w ∈ p.support) :
     (p.takeUntil w h).snd = p.snd := by
@@ -240,12 +241,11 @@ lemma snd_takeUntil (hsu : w ≠ u) (p : G.Walk u v) (h : w ∈ p.support) :
 
 lemma penultimate_dropUntil (hsu : w ≠ v) (p : G.Walk u v) (hw : w ∈ p.support) :
     (p.dropUntil w hw).penultimate = p.penultimate := by
-  have := getVert_dropUntil ((p.dropUntil w hw).length - 1) hw
-  simp_rw [penultimate, ← this]
+  simp_rw [penultimate, getVert_dropUntil ((p.dropUntil w hw).length - 1) hw]
   congr
   nth_rw 3 [← take_spec p hw]
-  rw [length_append]
-  sorry
+  rw [length_append, add_comm, Nat.add_sub_assoc]
+  exact not_nil_iff_lt_length.1 <| p.nil_dropUntil hw hsu
 
 lemma length_takeUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (huw : u ≠ w) :
     (p.takeUntil u h).length < p.length := by
