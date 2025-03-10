@@ -166,7 +166,6 @@ abbrev φ₁' (x y : SimplexCategory) : x ⟶ tensorObjOf x y := WithInitial.dow
 `SimplexCategory`. -/
 abbrev φ₂' (x y : SimplexCategory) : y ⟶ tensorObjOf x y := WithInitial.down <| φ₂ (.of x) (.of y)
 
-@[simp]
 lemma φ₁'_eval (x y : SimplexCategory) (i : Fin (x.len + 1)) :
     (φ₁' x y).toOrderHom i = (i.castAdd _).cast (eq_comm x.len (y.len + 1)) := by
   simp only [SimplexCategory.len_mk, φ₁', WithInitial.down, φ₁, MonoidalCategoryStruct.rightUnitor,
@@ -177,7 +176,6 @@ lemma φ₁'_eval (x y : SimplexCategory) (i : Fin (x.len + 1)) :
     OrderIso.coe_toOrderEmbedding, Function.comp_apply, Fin.castOrderIso_apply, Fin.cast_inj]
   rfl
 
-@[simp]
 lemma φ₂'_eval (x y : SimplexCategory) (i : Fin (y.len + 1)) :
     (φ₂' x y).toOrderHom i = (i.natAdd _).cast (eq_comm x.len (y.len + 1)) := by
   simp only [SimplexCategory.len_mk, φ₂', WithInitial.down, φ₂, MonoidalCategoryStruct.leftUnitor,
