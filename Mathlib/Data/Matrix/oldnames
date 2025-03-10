@@ -1,0 +1,122 @@
+
+-- Copies Row j to Row i, used in SwapRow
+def dupRow [DecidableEq m] (M : Matrix m n α) (i : m) (j : m) : Matrix m n α :=
+  Matrix.updateRow M i (M j)
+
+-- Operation with swaps Row i and j
+def swapRow [DecidableEq m] (M : Matrix m n α) (i : m) (j : m) : Matrix m n α :=
+  Matrix.updateRow (dupRow M i j) j (M i)
+
+-- Operation which multiplies x by Row i
+def mulRow [SMul R α] (M : Matrix m n α) (i : m) (x : R) : Matrix m n α :=
+  Matrix.updateRow M i (x • M i)
+
+-- If you multiply Row i by x then Row i will be the it will change to that
+lemma mulRowi [SMul R α] (M : Matrix m n α) (i : m) (x : R)
+  : mulRow M i x i = x • M i := by
+  rw [mulRow]
+  rw [Matrix.updateRow_self]
+
+-- If you multiply Row i by x then all other rows stay the same
+lemma mulRownoti [SMul R α] (M : Matrix m n α) (i : m) (p : m) (h1 : p ≠ i) (x : R)
+  : mulRow M i x p = M p := by
+  rw [mulRow]
+  rw [Matrix.updateRow_ne]
+  exact h1
+
+--If you multiply Row i by x and then by 1/x you will get the original
+theorem mulRow_inv_cancel [GroupWithZero R] [MulAction R α] (M : Matrix m n α) (i : m) (x : R) (hx : x ≠ 0)
+  : mulRow (mulRow M i x) i (x⁻¹) = M := by
+  unfold mulRow
+  ext k l
+  by_cases h : k = i
+  · rw [h]
+    repeat rw [Matrix.updateRow_self]
+    simp
+    rw [smul_smul (x⁻¹) x (M i l)]
+    rw [inv_mul_cancel]
+    simp
+    exact hx
+  · rw [Matrix.updateRow_ne h]
+    rw [Matrix.updateRow_ne h]
+
+-- Let Eix by the elementary matrix formed by multiplying Row i of the identity matrix by x
+-- Here we show that multiplying Eix by M is the same as multiplying Row i of M by x
+theorem mulRowMat_eq_mulRow [DecidableEq n] [Fintype n] [Fintype m] (M : Matrix n m ℝ) (i : n) (x : ℝ)
+  : mulRow (1 : Matrix n n ℝ) i x * M = mulRow M i x := by
+  ext k l
+  by_cases h : k = i
+  · rw [h, mulRowi]
+    rw [Matrix.mul_apply, mulRowi]
+    simp
+    simp_rw [Matrix.one_apply]
+    simp
+  · rw [mulRownoti]
+    rw [Matrix.mul_apply, mulRownoti]
+    simp_rw [Matrix.one_apply]
+    simp
+    exact h
+    exact h
+
+theorem mulRowtoOne [DecidableEq α] [DivisionRing α] {y : ℕ} {z : ℕ} (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (j : Fin z) (h : M i j ≠ 0)
+  : (mulRow M i (1/(M i j))) i j = 1 := by
+  unfold mulRow
+  simp
+  rw [inv_mul_cancel]
+  exact h
+
+-- Operation which add x times Row j to Row i
+def addMulRow [SMul R α] [Add α] (M : Matrix m n α) (i : m) (j : m) (x : R): Matrix m n α :=
+  Matrix.updateRow M i (M i + x • M j)
+
+-- If you add a multiple of Row j into Row i, then it will be the original i plus the multiple of Row j
+lemma addMulRowi [SMul R α] [Add α] (M : Matrix m n α) (i : m) (j : m) (x : R)
+  : addMulRow M i j x i = M i + x • M j := by
+  rw [addMulRow]
+  by_cases h : i = j
+  · rw [h, Matrix.updateRow_self]
+  · rw [Matrix.updateRow_self]
+
+-- If you add a multiple of Roa j into Row i, then all other rows will remain the same
+lemma addMulRownoti [SMul R α] [Add α] (M : Matrix m n α) (i : m) (j : m) (p : m) (h1 : p ≠ i) (x : R)
+  : addMulRow M i j x p = M p := by
+  rw [addMulRow]
+  rw [Matrix.updateRow_ne h1]
+
+-- If you add a multiple of Row j into Row i, then substract the same multiple of Row j from Row will get the original matrix back
+theorem addMulRow_neg_cancel [Ring R] [AddCommGroup α] [Module R α] (M : Matrix m n α) (i : m) (j : m) (h1 : j ≠ i) (x : R)
+  : addMulRow (addMulRow M i j x) i j (-x) = M := by
+  unfold addMulRow
+  ext k l
+  by_cases h : k = i
+  · rw [h]
+    repeat rw [Matrix.updateRow_self]
+    rw [Matrix.updateRow_ne]
+    simp
+    exact h1
+  · rw [Matrix.updateRow_ne h]
+    rw [Matrix.updateRow_ne h]
+
+-- Let Eijx by the elementary matrix formed by adding a multiple of Row j to Row i of the identity matrix
+-- Here we show that multiplying Eijx by M is the same as adding a multiple of Row j into Row i of M
+theorem addMulRowMat_eq_addMulRow [DecidableEq n] [Fintype n] [Fintype m] (M : Matrix n m ℝ) (i : n) (j : n) (x : ℝ)
+  : addMulRow (1 : Matrix n n ℝ) i j x * M = addMulRow M i j x := by
+  ext k l
+  by_cases h : k = i
+  · rw [h, addMulRowi]
+    rw [Matrix.mul_apply, addMulRowi]
+    simp
+    simp_rw [Matrix.one_apply]
+    simp
+    simp [add_mul]
+    rw [Finset.sum_add_distrib]
+    simp
+
+  · rw [addMulRownoti]
+    rw [Matrix.mul_apply, addMulRownoti]
+    simp_rw [Matrix.one_apply]
+    simp
+    exact h
+    exact h
+
+

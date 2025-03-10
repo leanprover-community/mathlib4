@@ -1,0 +1,76 @@
+-- /-- -/
+-- theorem addMulRowToZeroOld [DecidableEq α] [DivisionRing α] {y : ℕ} {z : ℕ}
+--     (M : Matrix (Fin y) (Fin z) α) (i : Fin y) (j : Fin z) (k : Fin y) (h : M i j ≠ 0) :
+--     (addMulRow M k i (-(M k j)*(1/(M i j)))) k j = 0 := by
+--   unfold addMulRow
+--   simp
+--   rw [mul_assoc]
+--   rw [inv_mul_cancel]
+--   · simp
+--   · exact h
+
+
+/-- Returns the row index of the highest value in column `l` of matrix `M`. Row `i` is the first
+row in the matrix and `m` is the index of the last one. -/
+def maxColVal_RowPos [LinearOrder α] [AddGroup α] {m : ℕ} {n : ℕ} (M : Matrix (Fin m) (Fin n) α)
+  (i : Fin m) (l : Fin n) [∀ (x : α)  (y : α), Decidable (|x| ≥ |y|)] :
+  Fin m := if h1 : i + 1 = m then i
+     else
+     let isucc := (⟨i+1,lessSucc i h1⟩ : Fin m)
+     let k := maxColVal_RowPos M isucc l
+     maxMatCol M i k l
+  termination_by m - i
+
+
+
+OLD maxColVal_RowPos_Max I'M CONFUSED WHY
+
+-- /-- The row index of the highest value in column `l` of matrix `M` is greater than or equal to the
+-- index of row `i`, which is the first row in the matrix. -/
+-- theorem maxColVal_RowPos_Max [LinearOrder α] [AddGroup α] {m : ℕ} {n : ℕ}
+--     (M : Matrix (Fin m) (Fin n) α) (i : Fin m) (l : Fin n)
+--     [∀ (x : α)  (y : α), Decidable (|x| ≥ |y|)] : maxColVal_RowPos M i l ≥ i := by
+--   unfold maxColVal_RowPos
+--   --intro i
+--   split_ifs with h1
+--   exact Preorder.le_refl i
+--   --rw [maxColVal_RowPos_Max]
+--   unfold_let
+--   unfold maxMatCol
+--   split_ifs with h2
+--   exact Preorder.le_refl i
+--   let isucc := (⟨i+1,lessSucc i h1⟩ : Fin m)
+--   have h3 : isucc ≤ maxColVal_RowPos M isucc l
+--     := by apply maxColVal_RowPos_Max
+--   have h4 : i ≤ isucc
+--     := by unfold_let ; rw [Fin.mk_le_mk] ; simp
+--   apply Preorder.le_trans i isucc (maxColVal_RowPos M isucc l)
+--   exact h4
+--   exact h3
+-- termination_by m - i
+
+-- theorem maxColVal_RowPos_Max2
+--   [LinearOrder α] [AddGroup α]
+--   {y : ℕ} {z : ℕ}
+--   (M : Matrix (Fin y) (Fin z) α)
+--   (i : Fin y)
+--   (j : Fin z)
+--   [∀ (x : α)  (y : α), Decidable (|x| ≥ |y|)]
+--   : maxColVal_RowPos M i j ≥ i := by
+--   unfold maxColVal_RowPos
+--   split_ifs with h1
+--   exact Preorder.le_refl i
+--   --unfold_let
+--   let isucc := (⟨i+1,lessSucc i h1⟩ : Fin y)
+--   let k := maxColVal_RowPos M isucc j
+--   cases' (maxMatColEither M i k j) with h1 h2
+--   rw [h1]
+--   rw [h2]
+--   have h3 : isucc ≤ maxColVal_RowPos M isucc j
+--     := by apply maxColVal_RowPos_Max2
+--   have h4 : i ≤ isucc
+--     := by unfold_let ; rw [Fin.mk_le_mk] ; simp
+--   apply Preorder.le_trans i isucc k
+--   exact h4
+--   exact h3
+-- termination_by y - i
