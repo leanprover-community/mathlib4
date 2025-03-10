@@ -48,6 +48,12 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
   `expMapBasis_apply'`. Then, we prove a change a variable formula for `expMapBasis`, see
   `setLIntegral_expMapBasis_image`.
 
+6. We define a set `paramSet` in `realSpace K` and prove that
+  `normAtAllPlaces '' (normLeOne K) = expMapBasis (paramSet K)`, see
+  `normAtAllPlaces_normLeOne_eq_image`. Using this, `setLIntegral_expMapBasis_image` and the results
+  from `mixedEmbedding.polarCoord`, we can then compute the volume of `normLeOne K`, see
+  `volume_normLeOne`.
+
 ## Spaces and maps
 
 To help understand the proof, we make a list of (almost) all the spaces and maps used and
