@@ -51,6 +51,7 @@ lemma continuous_coinducingCoprod {S : LightProfinite.{u}} (x : X.val.obj ⟨S�
 
 variable {X} {Y : LightCondSet} (f : X ⟶ Y)
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- The map part of the functor `LightCondSet ⥤ TopCat` -/
 @[simps!]
 def toTopCatMap : X.toTopCat ⟶ Y.toTopCat :=

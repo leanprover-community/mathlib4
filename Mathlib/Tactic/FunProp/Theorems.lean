@@ -158,9 +158,9 @@ structure FunctionTheorem where
   funOrigin   : Origin
   /-- array of argument indices about which this theorem is about -/
   mainArgs    : Array Nat
-  /-- total number of arguments applied to the function  -/
+  /-- total number of arguments applied to the function -/
   appliedArgs : Nat
-  /-- priority  -/
+  /-- priority -/
   priority    : Nat  := eval_prio default
   /-- form of the theorem, see documentation of TheoremForm -/
   form : TheoremForm
@@ -168,6 +168,7 @@ structure FunctionTheorem where
 
 private local instance : Ord Name := ⟨Name.quickCmp⟩
 
+set_option linter.style.docString false in
 /-- -/
 structure FunctionTheorems where
   /-- map: function name → function property → function theorem -/
@@ -182,7 +183,7 @@ def FunctionTheorem.getProof (thm : FunctionTheorem) : MetaM Expr := do
   | .decl name => mkConstWithFreshMVarLevels name
   | .fvar id => return .fvar id
 
-
+set_option linter.style.docString false in
 /-- -/
 abbrev FunctionTheoremsExt := SimpleScopedEnvExtension FunctionTheorem FunctionTheorems
 
@@ -201,6 +202,7 @@ initialize functionTheoremsExt : FunctionTheoremsExt ←
               thms.push e}
   }
 
+set_option linter.style.docString false in
 /-- -/
 def getTheoremsForFunction (funName : Name) (funPropName : Name) :
     CoreM (Array FunctionTheorem) := do
@@ -210,8 +212,7 @@ def getTheoremsForFunction (funName : Name) (funPropName : Name) :
 
 --------------------------------------------------------------------------------
 
-/-- General theorem about function property
-  used for transition and morphism theorems -/
+/-- General theorem about a function property used for transition and morphism theorems -/
 structure GeneralTheorem where
   /-- function property name -/
   funPropName   : Name
@@ -248,7 +249,7 @@ initialize transitionTheoremsExt : GeneralTheoremsExt ←
 /-- Get transition theorems applicable to `e`.
 
 For example calling on `e` equal to `Continuous f` might return theorems implying continuity
-from linearity over finite dimensional spaces or differentiability.  -/
+from linearity over finite dimensional spaces or differentiability. -/
 def getTransitionTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let ext := transitionTheoremsExt.getState (← getEnv)
   let candidates ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|

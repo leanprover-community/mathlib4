@@ -87,7 +87,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
 structure ErrorContext where
-  /-- The underlying `StyleError`-/
+  /-- The underlying `StyleError` -/
   error : StyleError
   /-- The line number of the error (1-based) -/
   lineNumber : ℕ

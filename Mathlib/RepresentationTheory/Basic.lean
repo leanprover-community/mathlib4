@@ -50,28 +50,33 @@ namespace Representation
 
 section trivial
 
-variable (k : Type*) {G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+variable (k G V : Type*) [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
 
 /-- The trivial representation of `G` on a `k`-module V.
 -/
 def trivial : Representation k G V :=
   1
 
--- Porting note: why is `V` implicit
-theorem trivial_def (g : G) (v : V) : trivial k (V := V) g v = v :=
+variable {G V}
+
+@[simp]
+theorem trivial_apply (g : G) (v : V) : trivial k G V g v = v :=
   rfl
 
 variable {k}
 
 /-- A predicate for representations that fix every element. -/
 class IsTrivial (ρ : Representation k G V) : Prop where
-  out : ∀ g x, ρ g x = x := by aesop
+  out : ∀ g, ρ g = LinearMap.id := by aesop
 
-instance : IsTrivial (trivial k (G := G) (V := V)) where
+instance : IsTrivial (trivial k G V) where
 
-@[simp] theorem apply_eq_self
-    (ρ : Representation k G V) (g : G) (x : V) [h : IsTrivial ρ] :
-    ρ g x = x := h.out g x
+@[simp]
+theorem isTrivial_def (ρ : Representation k G V) [IsTrivial ρ] (g : G) :
+    ρ g = LinearMap.id := IsTrivial.out g
+
+theorem isTrivial_apply (ρ : Representation k G V) [IsTrivial ρ] (g : G) (x : V) :
+    ρ g x = x := congr($(isTrivial_def ρ g) x)
 
 end trivial
 
@@ -258,6 +263,7 @@ variable {k G H}
 theorem ofMulAction_def (g : G) : ofMulAction k G H g = Finsupp.lmapDomain k k (g • ·) :=
   rfl
 
+@[simp]
 theorem ofMulAction_single (g : G) (x : H) (r : k) :
     ofMulAction k G H g (Finsupp.single x r) = Finsupp.single (g • x) r :=
   Finsupp.mapDomain_single
