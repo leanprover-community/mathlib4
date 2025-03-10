@@ -120,7 +120,7 @@ theorem NormedAddGroupHom.zero_completion : (0 : NormedAddGroupHom G H).completi
   normedAddGroupHomCompletionHom.map_zero
 
 /-- The map from a normed group to its completion, as a normed group hom. -/
-@[simps] -- Porting note: added `@[simps]`
+@[simps]
 def NormedAddCommGroup.toCompl : NormedAddGroupHom G (Completion G) where
   toFun := (↑)
   map_add' := Completion.toCompl.map_add

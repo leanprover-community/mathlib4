@@ -420,12 +420,12 @@ theorem natCast_fin_three (n : ℕ) :
 
 theorem ofNat_fin_two (n : ℕ) [n.AtLeastTwo] :
     (ofNat(n) : Matrix (Fin 2) (Fin 2) α) =
-      !![OfNat.ofNat n, 0; 0, OfNat.ofNat n] :=
+      !![ofNat(n), 0; 0, ofNat(n)] :=
   natCast_fin_two _
 
 theorem ofNat_fin_three (n : ℕ) [n.AtLeastTwo] :
     (ofNat(n) : Matrix (Fin 3) (Fin 3) α) =
-      !![OfNat.ofNat n, 0, 0; 0, OfNat.ofNat n, 0; 0, 0, OfNat.ofNat n] :=
+      !![ofNat(n), 0, 0; 0, ofNat(n), 0; 0, 0, ofNat(n)] :=
   natCast_fin_three _
 
 end AddMonoidWithOne

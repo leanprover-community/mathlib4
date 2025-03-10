@@ -19,7 +19,7 @@ implementation. Use `ℕ∞` instead unless you care about computability.
 The following instances are defined:
 
 * `OrderedAddCommMonoid PartENat`
-* `CanonicallyOrderedAddCommMonoid PartENat`
+* `CanonicallyOrderedAdd PartENat`
 * `CompleteLinearOrder PartENat`
 
 There is no additive analogue of `MonoidWithZero`; if there were then `PartENat` could
@@ -106,7 +106,7 @@ theorem some_eq_natCast (n : ℕ) : some n = n :=
 instance : CharZero PartENat where
   cast_injective := Part.some_injective
 
-/-- Alias of `Nat.cast_inj` specialized to `PartENat` --/
+/-- Alias of `Nat.cast_inj` specialized to `PartENat` -/
 theorem natCast_inj {x y : ℕ} : (x : PartENat) = y ↔ x = y :=
   Nat.cast_inj
 
@@ -236,12 +236,12 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
       specialize H hy
       specialize h fun _ => hy
       rw [not_forall] at h
-      cases' h with hx' h
+      obtain ⟨hx', h⟩ := h
       rw [not_le] at h
       exact h
     · specialize h fun hx' => (hx hx').elim
       rw [not_forall] at h
-      cases' h with hx' h
+      obtain ⟨hx', h⟩ := h
       exact (hx hx').elim
   · rintro ⟨hx, H⟩
     exact ⟨⟨fun _ => hx, fun hy => (H hy).le⟩, fun hxy h => not_lt_of_le (h _) (H _)⟩
@@ -272,10 +272,10 @@ instance orderTop : OrderTop PartENat where
 instance : ZeroLEOneClass PartENat where
   zero_le_one := bot_le
 
-/-- Alias of `Nat.cast_le` specialized to `PartENat` --/
+/-- Alias of `Nat.cast_le` specialized to `PartENat` -/
 theorem coe_le_coe {x y : ℕ} : (x : PartENat) ≤ y ↔ x ≤ y := Nat.cast_le
 
-/-- Alias of `Nat.cast_lt` specialized to `PartENat` --/
+/-- Alias of `Nat.cast_lt` specialized to `PartENat` -/
 theorem coe_lt_coe {x y : ℕ} : (x : PartENat) < y ↔ x < y := Nat.cast_lt
 
 @[simp]
@@ -407,10 +407,8 @@ noncomputable instance lattice : Lattice PartENat :=
     inf_le_right := min_le_right
     le_inf := fun _ _ _ => le_min }
 
-noncomputable instance : CanonicallyOrderedAddCommMonoid PartENat :=
-  { PartENat.semilatticeSup, PartENat.orderBot,
-    PartENat.orderedAddCommMonoid with
-    le_self_add := fun a b =>
+instance : CanonicallyOrderedAdd PartENat :=
+  { le_self_add := fun a b =>
       PartENat.casesOn b (le_top.trans_eq (add_top _).symm) fun _ =>
         PartENat.casesOn a (top_add _).ge fun _ =>
           (coe_le_coe.2 le_self_add).trans_eq (Nat.cast_add _ _)
@@ -642,8 +640,7 @@ theorem ofENat_lt {x y : ℕ∞} : ofENat x < ofENat y ↔ x < y := by
 
 section WithTopEquiv
 
-open scoped Classical
-
+open scoped Classical in
 @[simp]
 theorem toWithTop_add {x y : PartENat} : toWithTop (x + y) = toWithTop x + toWithTop y := by
   refine PartENat.casesOn y ?_ ?_ <;> refine PartENat.casesOn x ?_ ?_
@@ -653,6 +650,7 @@ theorem toWithTop_add {x y : PartENat} : toWithTop (x + y) = toWithTop x + toWit
   · simp only [top_add, toWithTop_top', toWithTop_natCast', _root_.top_add, forall_const]
   · simp_rw [toWithTop_natCast', ← Nat.cast_add, toWithTop_natCast', forall_const]
 
+open scoped Classical in
 /-- `Equiv` between `PartENat` and `ℕ∞` (for the order isomorphism see
 `withTopOrderIso`). -/
 @[simps]

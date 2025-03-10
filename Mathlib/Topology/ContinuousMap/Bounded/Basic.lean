@@ -39,7 +39,7 @@ you should parametrize over `(F : Type*) [BoundedContinuousMapClass F α β] (f 
 
 When you extend this structure, make sure to extend `BoundedContinuousMapClass`. -/
 structure BoundedContinuousFunction (α : Type u) (β : Type v) [TopologicalSpace α]
-    [PseudoMetricSpace β] extends ContinuousMap α β : Type max u v where
+    [PseudoMetricSpace β] : Type max u v extends ContinuousMap α β where
   map_bounded' : ∃ C, ∀ x y, dist (toFun x) (toFun y) ≤ C
 
 @[inherit_doc] scoped[BoundedContinuousFunction] infixr:25 " →ᵇ " => BoundedContinuousFunction
@@ -51,7 +51,7 @@ section
 
 You should also extend this typeclass when you extend `BoundedContinuousFunction`. -/
 class BoundedContinuousMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α]
-    [PseudoMetricSpace β] [FunLike F α β] extends ContinuousMapClass F α β : Prop where
+    [PseudoMetricSpace β] [FunLike F α β] : Prop extends ContinuousMapClass F α β where
   map_bounded (f : F) : ∃ C, ∀ x y, dist (f x) (f y) ≤ C
 
 end
@@ -259,14 +259,11 @@ theorem isEmbedding_coeFn : IsEmbedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ
 @[deprecated (since := "2024-10-26")]
 alias embedding_coeFn := isEmbedding_coeFn
 
-variable (α)
-
+variable (α) in
 /-- Constant as a continuous bounded function. -/
-@[simps! (config := .asFn)] -- Porting note: Changed `simps` to `simps!`
+@[simps! (config := .asFn)]
 def const (b : β) : α →ᵇ β :=
   ⟨ContinuousMap.const α b, 0, by simp⟩
-
-variable {α}
 
 theorem const_apply' (a : α) (b : β) : (const α b : α → β) a = b := rfl
 
@@ -1318,7 +1315,7 @@ def C : 𝕜 →+* α →ᵇ γ where
   map_add' _ _ := ext fun _ => (algebraMap 𝕜 γ).map_add _ _
 
 instance instAlgebra : Algebra 𝕜 (α →ᵇ γ) where
-  toRingHom := C
+  algebraMap := C
   commutes' _ _ := ext fun _ ↦ Algebra.commutes' _ _
   smul_def' _ _ := ext fun _ ↦ Algebra.smul_def' _ _
 

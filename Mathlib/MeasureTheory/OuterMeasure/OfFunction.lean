@@ -44,8 +44,6 @@ namespace OuterMeasure
 
 section OfFunction
 
--- Porting note: "set_option eqn_compiler.zeta true" removed
-
 variable {α : Type*}
 
 /-- Given any function `m` assigning measures to sets satisfying `m ∅ = 0`, there is
@@ -195,7 +193,7 @@ theorem comap_ofFunction {β} (f : β → α) (h : Monotone m ∨ Surjective f) 
     refine iInf_mono' fun ht => ?_
     rw [Set.image_subset_iff, preimage_iUnion] at ht
     refine ⟨ht, ENNReal.tsum_le_tsum fun n => ?_⟩
-    cases' h with hl hr
+    rcases h with hl | hr
     exacts [hl (image_preimage_subset _ _), (congr_arg m (hr.image_preimage (t n))).le]
 
 theorem map_ofFunction_le {β} (f : α → β) :

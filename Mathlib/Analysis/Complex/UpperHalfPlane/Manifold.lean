@@ -26,7 +26,8 @@ instance : IsManifold 𝓘(ℂ) ω ℍ :=
   UpperHalfPlane.isOpenEmbedding_coe.isManifold_singleton
 
 /-- The inclusion map `ℍ → ℂ` is an analytic map of manifolds. -/
-theorem contMDiff_coe : ContMDiff 𝓘(ℂ) 𝓘(ℂ) ω ((↑) : ℍ → ℂ) := fun _ => contMDiffAt_extChartAt
+theorem contMDiff_coe {n : WithTop ℕ∞} : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n ((↑) : ℍ → ℂ) :=
+  fun _ => contMDiffAt_extChartAt
 
 @[deprecated (since := "2024-11-20")] alias smooth_coe := contMDiff_coe
 
@@ -34,8 +35,8 @@ theorem contMDiff_coe : ContMDiff 𝓘(ℂ) 𝓘(ℂ) ω ((↑) : ℍ → ℂ) :
 theorem mdifferentiable_coe : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) ((↑) : ℍ → ℂ) :=
   contMDiff_coe.mdifferentiable le_top
 
-lemma contMDiffAt_ofComplex {z : ℂ} (hz : 0 < z.im) :
-    ContMDiffAt 𝓘(ℂ) 𝓘(ℂ) ω ofComplex z := by
+lemma contMDiffAt_ofComplex {n : WithTop ℕ∞} {z : ℂ} (hz : 0 < z.im) :
+    ContMDiffAt 𝓘(ℂ) 𝓘(ℂ) n ofComplex z := by
   rw [contMDiffAt_iff]
   constructor
   · -- continuity at z

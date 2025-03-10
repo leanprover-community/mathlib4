@@ -3,8 +3,9 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
@@ -12,7 +13,7 @@ import Mathlib.Data.Nat.Cast.Order.Basic
 
 -/
 
-variable {α : Type*}
+variable {R α : Type*}
 
 namespace Nat
 
@@ -69,7 +70,7 @@ end OrderedSemiring
 /-- A version of `Nat.cast_sub` that works for `ℝ≥0` and `ℚ≥0`. Note that this proof doesn't work
 for `ℕ∞` and `ℝ≥0∞`, so we use type-specific lemmas for these types. -/
 @[simp, norm_cast]
-theorem cast_tsub [CanonicallyOrderedCommSemiring α] [Sub α] [OrderedSub α]
+theorem cast_tsub [OrderedCommSemiring α] [CanonicallyOrderedAdd α] [Sub α] [OrderedSub α]
     [AddLeftReflectLE α] (m n : ℕ) : ↑(m - n) = (m - n : α) := by
   rcases le_total m n with h | h
   · rw [Nat.sub_eq_zero_of_le h, cast_zero, tsub_eq_zero_of_le]
@@ -77,14 +78,22 @@ theorem cast_tsub [CanonicallyOrderedCommSemiring α] [Sub α] [OrderedSub α]
   · rcases le_iff_exists_add'.mp h with ⟨m, rfl⟩
     rw [add_tsub_cancel_right, cast_add, add_tsub_cancel_right]
 
+section LinearOrderedRing
+variable [LinearOrderedRing R] {m n : ℕ}
+
 @[simp, norm_cast]
-theorem abs_cast [LinearOrderedRing α] (a : ℕ) : |(a : α)| = a :=
-  abs_of_nonneg (cast_nonneg a)
+theorem abs_cast (n : ℕ) : |(n : R)| = n := abs_of_nonneg n.cast_nonneg
 
 @[simp]
-theorem abs_ofNat [LinearOrderedRing α] (n : ℕ) [n.AtLeastTwo] :
-    |(ofNat(n) : α)| = ofNat(n) :=
-  abs_cast n
+theorem abs_ofNat (n : ℕ) [n.AtLeastTwo] : |(ofNat(n) : R)| = ofNat(n) := abs_cast n
+
+@[simp, norm_cast] lemma neg_cast_eq_cast : (-m : R) = n ↔ m = 0 ∧ n = 0 := by
+  simp [neg_eq_iff_add_eq_zero, ← cast_add]
+
+@[simp, norm_cast] lemma cast_eq_neg_cast : (m : R) = -n ↔ m = 0 ∧ n = 0 := by
+  simp [eq_neg_iff_add_eq_zero, ← cast_add]
+
+end LinearOrderedRing
 
 lemma mul_le_pow {a : ℕ} (ha : a ≠ 1) (b : ℕ) :
     a * b ≤ a ^ b := by

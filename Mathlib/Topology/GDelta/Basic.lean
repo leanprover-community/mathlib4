@@ -132,9 +132,9 @@ theorem IsGδ.union {s t : Set X} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∪ t
 
 /-- The union of finitely many Gδ sets is a Gδ set, `Set.sUnion` version. -/
 theorem IsGδ.sUnion {S : Set (Set X)} (hS : S.Finite) (h : ∀ s ∈ S, IsGδ s) : IsGδ (⋃₀ S) := by
-  induction S, hS using Set.Finite.dinduction_on with
-  | H0 => simp
-  | H1 _ _ ih =>
+  induction S, hS using Set.Finite.induction_on with
+  | empty => simp
+  | insert _ _ ih =>
     simp only [forall_mem_insert, sUnion_insert] at *
     exact h.1.union (ih h.2)
 

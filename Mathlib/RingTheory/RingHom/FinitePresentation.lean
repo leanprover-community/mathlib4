@@ -58,7 +58,7 @@ theorem finitePresentation_holdsForLocalizationAway :
   introv R _
   suffices Algebra.FinitePresentation R S by
     rw [RingHom.FinitePresentation]
-    convert this; ext;
+    convert this; ext
     rw [Algebra.smul_def]; rfl
   exact IsLocalization.Away.finitePresentation r
 
@@ -96,7 +96,7 @@ theorem finitePresentation_ofLocalizationSpanTarget :
   classical
   letI := f.toAlgebra
   replace H : ∀ r : s, Algebra.FinitePresentation R (Localization.Away (r : S)) := by
-    intro r; simp_rw [RingHom.FinitePresentation] at H;
+    intro r; simp_rw [RingHom.FinitePresentation] at H
     convert H r; ext; simp_rw [Algebra.smul_def]; rfl
   /-
   We already know that `S` is of finite type over `R`, so we have a surjection

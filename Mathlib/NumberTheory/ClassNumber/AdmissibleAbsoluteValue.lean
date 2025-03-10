@@ -70,11 +70,13 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
     ∀ {ε : ℝ} (_hε : 0 < ε) {b : R} (_hb : b ≠ 0) (A : Fin (h.card ε ^ n).succ → Fin n → R),
       ∃ i₀ i₁, i₀ ≠ i₁ ∧ ∀ k, (abv (A i₁ k % b - A i₀ k % b) : ℝ) < abv b • ε := by
   haveI := Classical.decEq R
-  induction' n with n ih
-  · intro ε _hε b _hb A
+  induction n with
+  | zero =>
+    intro ε _hε b _hb A
     refine ⟨0, 1, ?_, ?_⟩
     · simp
     rintro ⟨i, ⟨⟩⟩
+  | succ n ih =>
   intro ε hε b hb A
   let M := h.card ε
   -- By the "nicer" pigeonhole principle, we can find a collection `s`
@@ -98,8 +100,8 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
     · rwa [Finset.length_toList]
     · ext
       simpa [(Finset.nodup_toList _).getElem_inj_iff] using h
-    · #adaptation_note
-      /-- This proof was nicer prior to https://github.com/leanprover/lean4/pull/4400.
+    · #adaptation_note /-- https://github.com/leanprover/lean4/pull/4400
+      This proof was nicer before.
       Please feel welcome to improve it, by avoiding use of `List.get` in favour of `GetElem`. -/
       have : ∀ i h, t ((Finset.univ.filter fun x ↦ t x = s).toList.get ⟨i, h⟩) = s := fun i h ↦
         (Finset.mem_filter.mp (Finset.mem_toList.mp (List.get_mem _ ⟨i, h⟩))).2

@@ -7,6 +7,7 @@ import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
 # Localizations of commutative monoids with zeroes
@@ -53,8 +54,6 @@ theorem LocalizationMap.subsingleton (f : Submonoid.LocalizationMap S N) (h : 0 
 /-- The type of homomorphisms between monoids with zero satisfying the characteristic predicate:
 if `f : M →*₀ N` satisfies this predicate, then `N` is isomorphic to the localization of `M` at
 `S`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure LocalizationWithZeroMap extends LocalizationMap S N where
   map_zero' : toFun 0 = 0
 

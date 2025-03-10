@@ -3,7 +3,6 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Data.Subtype
 import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Order.Notation
@@ -79,6 +78,9 @@ theorem lt_of_le_of_lt' : b ≤ c → a < b → a < c :=
 
 theorem lt_of_lt_of_le' : b < c → a ≤ b → a < c :=
   flip lt_of_le_of_lt
+
+theorem not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
+  rw [lt_iff_le_not_le, Classical.not_and_iff_or_not_not, Classical.not_not]
 
 end Preorder
 
@@ -417,8 +419,16 @@ theorem eq_of_forall_le_iff [PartialOrder α] {a b : α} (H : ∀ c, c ≤ a ↔
 theorem le_of_forall_le [Preorder α] {a b : α} (H : ∀ c, c ≤ a → c ≤ b) : a ≤ b :=
   H _ le_rfl
 
-theorem le_of_forall_le' [Preorder α] {a b : α} (H : ∀ c, a ≤ c → b ≤ c) : b ≤ a :=
+theorem le_of_forall_ge [Preorder α] {a b : α} (H : ∀ c, a ≤ c → b ≤ c) : b ≤ a :=
   H _ le_rfl
+
+@[deprecated (since := "2025-01-30")] alias le_of_forall_le' := le_of_forall_ge
+
+theorem forall_le_iff_le [Preorder α] {a b : α} : (∀ ⦃c⦄, c ≤ a → c ≤ b) ↔ a ≤ b :=
+  ⟨le_of_forall_le, fun h _ hca ↦ le_trans hca h⟩
+
+theorem forall_le_iff_ge [Preorder α] {a b : α} : (∀ ⦃c⦄, a ≤ c → b ≤ c) ↔ b ≤ a :=
+  ⟨le_of_forall_ge, fun h _ hca ↦ le_trans h hca⟩
 
 theorem le_of_forall_lt [LinearOrder α] {a b : α} (H : ∀ c, c < a → c < b) : a ≤ b :=
   le_of_not_lt fun h ↦ lt_irrefl _ (H _ h)
@@ -1261,32 +1271,47 @@ instance [∀ i, Preorder (π i)] [∀ i, DenselyOrdered (π i)] :
           ⟨le_update_iff.2 ⟨ha.le, fun _ _ ↦ le_rfl⟩, i, by rwa [update_self]⟩,
           update_le_iff.2 ⟨hb.le, fun _ _ ↦ hab _⟩, i, by rwa [update_self]⟩⟩
 
-theorem le_of_forall_le_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α}
-    (h : ∀ a, a₂ < a → a₁ ≤ a) : a₁ ≤ a₂ :=
+section LinearOrder
+variable [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α}
+
+theorem le_of_forall_gt_imp_ge_of_dense (h : ∀ a, a₂ < a → a₁ ≤ a) : a₁ ≤ a₂ :=
   le_of_not_gt fun ha ↦
     let ⟨a, ha₁, ha₂⟩ := exists_between ha
     lt_irrefl a <| lt_of_lt_of_le ‹a < a₁› (h _ ‹a₂ < a›)
 
-theorem eq_of_le_of_forall_le_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α} (h₁ : a₂ ≤ a₁)
-    (h₂ : ∀ a, a₂ < a → a₁ ≤ a) : a₁ = a₂ :=
-  le_antisymm (le_of_forall_le_of_dense h₂) h₁
+lemma forall_gt_imp_ge_iff_le_of_dense : (∀ a, a₂ < a → a₁ ≤ a) ↔ a₁ ≤ a₂ :=
+  ⟨le_of_forall_gt_imp_ge_of_dense, fun ha _a ha₂ ↦ ha.trans ha₂.le⟩
 
-theorem le_of_forall_ge_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α}
-    (h : ∀ a₃ < a₁, a₃ ≤ a₂) : a₁ ≤ a₂ :=
+lemma eq_of_le_of_forall_lt_imp_le_of_dense (h₁ : a₂ ≤ a₁) (h₂ : ∀ a, a₂ < a → a₁ ≤ a) : a₁ = a₂ :=
+  le_antisymm (le_of_forall_gt_imp_ge_of_dense h₂) h₁
+
+theorem le_of_forall_lt_imp_le_of_dense (h : ∀ a < a₁, a ≤ a₂) : a₁ ≤ a₂ :=
   le_of_not_gt fun ha ↦
     let ⟨a, ha₁, ha₂⟩ := exists_between ha
     lt_irrefl a <| lt_of_le_of_lt (h _ ‹a < a₁›) ‹a₂ < a›
 
-theorem eq_of_le_of_forall_ge_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α} (h₁ : a₂ ≤ a₁)
-    (h₂ : ∀ a₃ < a₁, a₃ ≤ a₂) : a₁ = a₂ :=
-  (le_of_forall_ge_of_dense h₂).antisymm h₁
+lemma forall_lt_imp_le_iff_le_of_dense : (∀ a < a₁, a ≤ a₂) ↔ a₁ ≤ a₂ :=
+  ⟨le_of_forall_lt_imp_le_of_dense, fun ha _a ha₁ ↦ ha₁.le.trans ha⟩
 
-theorem forall_lt_le_iff [LinearOrder α] [DenselyOrdered α] {a b : α} : (∀ c < a, c ≤ b) ↔ a ≤ b :=
-  ⟨le_of_forall_ge_of_dense, fun hab _c hca ↦ hca.le.trans hab⟩
+theorem eq_of_le_of_forall_gt_imp_ge_of_dense (h₁ : a₂ ≤ a₁) (h₂ : ∀ a < a₁, a ≤ a₂) : a₁ = a₂ :=
+  (le_of_forall_lt_imp_le_of_dense h₂).antisymm h₁
 
-theorem forall_gt_ge_iff [LinearOrder α] [DenselyOrdered α] {a b : α} :
-    (∀ c, a < c → b ≤ c) ↔ b ≤ a :=
-  forall_lt_le_iff (α := αᵒᵈ)
+@[deprecated (since := "2025-01-21")]
+alias le_of_forall_le_of_dense := le_of_forall_gt_imp_ge_of_dense
+
+@[deprecated (since := "2025-01-21")]
+alias le_of_forall_ge_of_dense := le_of_forall_lt_imp_le_of_dense
+
+@[deprecated (since := "2025-01-21")] alias forall_lt_le_iff := forall_lt_imp_le_iff_le_of_dense
+@[deprecated (since := "2025-01-21")] alias forall_gt_ge_iff := forall_gt_imp_ge_iff_le_of_dense
+
+@[deprecated (since := "2025-01-21")]
+alias eq_of_le_of_forall_le_of_dense := eq_of_le_of_forall_lt_imp_le_of_dense
+
+@[deprecated (since := "2025-01-21")]
+alias eq_of_le_of_forall_ge_of_dense := eq_of_le_of_forall_gt_imp_ge_of_dense
+
+end LinearOrder
 
 theorem dense_or_discrete [LinearOrder α] (a₁ a₂ : α) :
     (∃ a, a₁ < a ∧ a < a₂) ∨ (∀ a, a₁ < a → a₂ ≤ a) ∧ ∀ a < a₂, a ≤ a₁ :=
@@ -1375,41 +1400,3 @@ noncomputable instance AsLinearOrder.linearOrder [PartialOrder α] [IsTotal α (
   __ := inferInstanceAs (PartialOrder α)
   le_total := @total_of α (· ≤ ·) _
   decidableLE := Classical.decRel _
-
-section dite
-variable [One α] {p : Prop} [Decidable p] {a : p → α} {b : ¬ p → α}
-
-@[to_additive dite_nonneg]
-lemma one_le_dite [LE α] (ha : ∀ h, 1 ≤ a h) (hb : ∀ h, 1 ≤ b h) : 1 ≤ dite p a b := by
-  split; exacts [ha ‹_›, hb ‹_›]
-
-@[to_additive]
-lemma dite_le_one [LE α] (ha : ∀ h, a h ≤ 1) (hb : ∀ h, b h ≤ 1) : dite p a b ≤ 1 := by
-  split; exacts [ha ‹_›, hb ‹_›]
-
-@[to_additive dite_pos]
-lemma one_lt_dite [LT α] (ha : ∀ h, 1 < a h) (hb : ∀ h, 1 < b h) : 1 < dite p a b := by
-  split; exacts [ha ‹_›, hb ‹_›]
-
-@[to_additive]
-lemma dite_lt_one [LT α] (ha : ∀ h, a h < 1) (hb : ∀ h, b h < 1) : dite p a b < 1 := by
-  split; exacts [ha ‹_›, hb ‹_›]
-
-end dite
-
-section
-variable [One α] {p : Prop} [Decidable p] {a b : α}
-
-@[to_additive ite_nonneg]
-lemma one_le_ite [LE α] (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ ite p a b := by split <;> assumption
-
-@[to_additive]
-lemma ite_le_one [LE α] (ha : a ≤ 1) (hb : b ≤ 1) : ite p a b ≤ 1 := by split <;> assumption
-
-@[to_additive ite_pos]
-lemma one_lt_ite [LT α] (ha : 1 < a) (hb : 1 < b) : 1 < ite p a b := by split <;> assumption
-
-@[to_additive]
-lemma ite_lt_one [LT α] (ha : a < 1) (hb : b < 1) : ite p a b < 1 := by split <;> assumption
-
-end

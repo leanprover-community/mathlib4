@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.Algebra.Module.Torsion
+import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Nakayama
-import Mathlib.Algebra.Module.Torsion
 
 /-!
 # Finite modules over local rings
@@ -203,8 +203,6 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
       (g₁ := (LinearMap.ker i).subtype) (g₂ := i) (LinearMap.exact_subtype_mkQ 𝔪)
       (Submodule.mkQ_surjective _) (LinearMap.exact_subtype_ker_map i) hi H ?_ ?_
     · apply Module.Flat.lTensor_preserves_injective_linearMap
-        (N := LinearMap.ker i) (N' := ι →₀ R)
-        (L := (LinearMap.ker i).subtype)
       exact Subtype.val_injective
     · apply hi'.injective
       rw [LinearMap.baseChange_eq_ltensor]

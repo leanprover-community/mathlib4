@@ -94,8 +94,8 @@ theorem stereoToFun_apply (x : E) :
     stereoToFun v x = (2 / ((1 : ℝ) - innerSL ℝ v x)) • orthogonalProjection (ℝ ∙ v)ᗮ x :=
   rfl
 
-theorem contDiffOn_stereoToFun :
-    ContDiffOn ℝ ω (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} := by
+theorem contDiffOn_stereoToFun {n : WithTop ℕ∞} :
+    ContDiffOn ℝ n (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} := by
   refine ContDiffOn.smul ?_ (orthogonalProjection (ℝ ∙ v)ᗮ).contDiff.contDiffOn
   refine contDiff_const.contDiffOn.div ?_ ?_
   · exact (contDiff_const.sub (innerSL ℝ v).contDiff).contDiffOn
@@ -104,10 +104,9 @@ theorem contDiffOn_stereoToFun :
 
 theorem continuousOn_stereoToFun :
     ContinuousOn (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} :=
-  contDiffOn_stereoToFun.continuousOn
+  (contDiffOn_stereoToFun (n := 0)).continuousOn
 
-variable (v)
-
+variable (v) in
 /-- Auxiliary function for the construction of the reverse direction of the stereographic
 projection.  This is a map from the orthogonal complement of a unit vector `v` in an inner product
 space `E` to `E`; we will later prove that it takes values in the unit sphere.
@@ -115,8 +114,6 @@ space `E` to `E`; we will later prove that it takes values in the unit sphere.
 For most purposes, use `stereoInvFun`, not `stereoInvFunAux`. -/
 def stereoInvFunAux (w : E) : E :=
   (‖w‖ ^ 2 + 4)⁻¹ • ((4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v)
-
-variable {v}
 
 @[simp]
 theorem stereoInvFunAux_apply (w : E) :
@@ -159,7 +156,7 @@ theorem hasFDerivAt_stereoInvFunAux_comp_coe (v : E) :
     hasFDerivAt_stereoInvFunAux v
   refine this.comp (0 : (ℝ ∙ v)ᗮ) (by apply ContinuousLinearMap.hasFDerivAt)
 
-theorem contDiff_stereoInvFunAux : ContDiff ℝ ω (stereoInvFunAux v) := by
+theorem contDiff_stereoInvFunAux {m : WithTop ℕ∞} : ContDiff ℝ m (stereoInvFunAux v) := by
   have h₀ : ContDiff ℝ ω fun w : E => ‖w‖ ^ 2 := contDiff_norm_sq ℝ
   have h₁ : ContDiff ℝ ω fun w : E => (‖w‖ ^ 2 + 4)⁻¹ := by
     refine (h₀.add contDiff_const).inv ?_
@@ -168,7 +165,7 @@ theorem contDiff_stereoInvFunAux : ContDiff ℝ ω (stereoInvFunAux v) := by
   have h₂ : ContDiff ℝ ω fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v := by
     refine (contDiff_const.smul contDiff_id).add ?_
     exact (h₀.sub contDiff_const).smul contDiff_const
-  exact h₁.smul h₂
+  exact (h₁.smul h₂).of_le le_top
 
 /-- Stereographic projection, reverse direction.  This is a map from the orthogonal complement of a
 unit vector `v` in an inner product space `E` to the unit sphere in `E`. -/
@@ -195,7 +192,8 @@ theorem stereoInvFun_ne_north_pole (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
   · simpa using stereoInvFunAux_mem hv w.2
 
 theorem continuous_stereoInvFun (hv : ‖v‖ = 1) : Continuous (stereoInvFun hv) :=
-  continuous_induced_rng.2 (contDiff_stereoInvFunAux.continuous.comp continuous_subtype_val)
+  continuous_induced_rng.2
+    ((contDiff_stereoInvFunAux (m := 0)).continuous.comp continuous_subtype_val)
 
 open scoped InnerProductSpace in
 attribute [-simp] AddSubgroupClass.coe_norm Submodule.coe_norm in
@@ -388,9 +386,9 @@ instance EuclideanSpace.instIsManifoldSphere
         (-- Removed type ascription, and this helped for some reason with timeout issues?
             OrthonormalBasis.fromOrthogonalSpanSingleton (𝕜 := ℝ)
             n (ne_zero_of_mem_unit_sphere v')).repr
-      have H₁ := U'.contDiff.comp_contDiffOn contDiffOn_stereoToFun
+      have H₁ := U'.contDiff.comp_contDiffOn (contDiffOn_stereoToFun (n := ω))
       -- Porting note: need to help with implicit variables again
-      have H₂ := (contDiff_stereoInvFunAux (v := v.val)|>.comp
+      have H₂ := (contDiff_stereoInvFunAux (m := ω) (v := v.val)|>.comp
         (ℝ ∙ (v : E))ᗮ.subtypeL.contDiff).comp U.symm.contDiff
       convert H₁.comp_inter (H₂.contDiffOn : ContDiffOn ℝ ω _ Set.univ) using 1
       -- -- squeezed from `ext, simp [sphere_ext_iff, stereographic'_symm_apply, real_inner_comm]`
@@ -408,8 +406,8 @@ instance (n : ℕ) : IsManifold (𝓡 n) ω (sphere (0 :  EuclideanSpace ℝ (Fi
   EuclideanSpace.instIsManifoldSphere
 
 /-- The inclusion map (i.e., `coe`) from the sphere in `E` to `E` is analytic. -/
-theorem contMDiff_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
-    ContMDiff (𝓡 n) 𝓘(ℝ, E) ω ((↑) : sphere (0 : E) 1 → E) := by
+theorem contMDiff_coe_sphere {m : WithTop ℕ∞} {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
+    ContMDiff (𝓡 n) 𝓘(ℝ, E) m ((↑) : sphere (0 : E) 1 → E) := by
   -- Porting note: trouble with filling these implicit variables in the instance
   have := EuclideanSpace.instIsManifoldSphere (E := E) (n := n)
   rw [contMDiff_iff]
@@ -454,18 +452,18 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {f
   simp [not_iff_not, Subtype.ext_iff, hfxv, real_inner_comm]
 
 /-- The antipodal map is analytic. -/
-theorem contMDiff_neg_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
-    ContMDiff (𝓡 n) (𝓡 n) ω fun x : sphere (0 : E) 1 => -x := by
+theorem contMDiff_neg_sphere {m : WithTop ℕ∞} {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
+    ContMDiff (𝓡 n) (𝓡 n) m fun x : sphere (0 : E) 1 => -x := by
   -- this doesn't elaborate well in term mode
   apply ContMDiff.codRestrict_sphere
   apply contDiff_neg.contMDiff.comp _
   exact contMDiff_coe_sphere
 
 private lemma stereographic'_neg {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
-  stereographic' n (-v) v = 0 := by
-    dsimp [stereographic']
-    simp only [EmbeddingLike.map_eq_zero_iff]
-    apply stereographic_neg_apply
+    stereographic' n (-v) v = 0 := by
+  dsimp [stereographic']
+  simp only [EmbeddingLike.map_eq_zero_iff]
+  apply stereographic_neg_apply
 
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
 linear map from `TangentSpace (𝓡 n) v` to `E`.  The range of this map is the orthogonal complement
@@ -563,17 +561,14 @@ instance : LieGroup (𝓡 1) ω Circle where
     -- Porting note: needed to fill in first 3 arguments or could not figure out typeclasses
     suffices h₁ : ContMDiff ((𝓡 1).prod (𝓡 1)) (𝓘(ℝ, ℂ).prod 𝓘(ℝ, ℂ)) ω (Prod.map c c) from
       h₂.comp h₁
-    apply ContMDiff.prod_map <;>
-    exact contMDiff_coe_sphere
+    apply ContMDiff.prodMap <;> exact contMDiff_coe_sphere
   contMDiff_inv := by
     apply ContMDiff.codRestrict_sphere
     simp only [← Circle.coe_inv, Circle.coe_inv_eq_conj]
     exact Complex.conjCLE.contDiff.contMDiff.comp contMDiff_coe_sphere
 
 /-- The map `fun t ↦ exp (t * I)` from `ℝ` to the unit circle in `ℂ` is analytic. -/
-theorem contMDiff_circleExp : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) ω Circle.exp :=
+theorem contMDiff_circleExp {m : WithTop ℕ∞} : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) m Circle.exp :=
   (contDiff_exp.comp (contDiff_id.smul contDiff_const)).contMDiff.codRestrict_sphere _
-
-@[deprecated (since := "2024-07-25")] alias contMDiff_expMapCircle := contMDiff_circleExp
 
 end Circle

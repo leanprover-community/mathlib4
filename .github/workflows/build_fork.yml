@@ -190,10 +190,12 @@ jobs:
           # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
           # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
           if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
-            lake exe cache clean!
-            rm -rf .lake/build/lib/Mathlib
+            cd DownstreamTest
+            cp ../lean-toolchain .
+            MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
             lake exe cache get || (sleep 1; lake exe cache get)
-            lake build --no-build
+            lake build Plausible ProofWidgets
+            lake build --no-build Mathlib
           fi
 
       - name: build archive
@@ -334,6 +336,15 @@ jobs:
           cp ../lean-toolchain .
           lake build
 
+      - name: Add the "awaiting-CI" label
+        if: always()
+        # we use curl rather than octokit/request-action so that the job won't fail
+        # (and send an annoying email) if the labels don't exist
+        run: |
+          curl --request ADD \
+            --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/labels/awaiting-CI \
+            --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
+
   final:
     name: Post-CI job (fork)
     if: github.repository != 'leanprover-community/mathlib4'
@@ -350,6 +361,15 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           # Only return if PR is still open
           filterOutClosed: true
+
+      - if: contains(steps.PR.outputs.pr_labels, 'bench-after-CI')
+        name: If `bench-after-CI` is present, add a `!bench` comment.
+        uses: GrantBirki/comment@v2
+        with:
+          token: ${{ secrets.AUTO_MERGE_TOKEN }}
+          issue-number: ${{ steps.PR.outputs.number }}
+          body: |
+            !bench
 
       - id: remove_labels
         name: Remove "awaiting-CI"

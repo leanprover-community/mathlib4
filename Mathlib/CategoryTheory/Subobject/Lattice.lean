@@ -6,6 +6,7 @@ Authors: Bhavik Mehta, Kim Morrison
 import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Subobject.FactorThru
 import Mathlib.CategoryTheory.Subobject.WellPowered
+import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # The lattice of subobjects
@@ -240,6 +241,11 @@ theorem mk_eq_top_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : mk f = ⊤ :=
 
 theorem eq_top_of_isIso_arrow {Y : C} (P : Subobject Y) [IsIso P.arrow] : P = ⊤ :=
   (isIso_arrow_iff_eq_top P).mp inferInstance
+
+lemma epi_iff_mk_eq_top [Balanced C] (f : X ⟶ Y) [Mono f] :
+    Epi f ↔ Subobject.mk f = ⊤ := by
+  rw [← isIso_iff_mk_eq_top]
+  exact ⟨fun _ ↦ isIso_of_mono_of_epi f, fun _ ↦ inferInstance⟩
 
 section
 

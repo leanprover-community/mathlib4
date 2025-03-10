@@ -4,15 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Group.Nat.Basic
+import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Data.Nat.Sqrt
 
 /-!
 # `IsSquare` and `Even` for natural numbers
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 namespace Nat
 
@@ -73,7 +72,7 @@ lemma even_pow' (h : n ≠ 0) : Even (m ^ n) ↔ Even m := even_pow.trans <| and
 lemma even_mul_succ_self (n : ℕ) : Even (n * (n + 1)) := by rw [even_mul, even_add_one]; exact em _
 
 lemma even_mul_pred_self : ∀ n : ℕ, Even (n * (n - 1))
-  | 0 => even_zero
+  | 0 => .zero
   | (n + 1) => mul_comm (n + 1 - 1) (n + 1) ▸ even_mul_succ_self n
 
 lemma two_mul_div_two_of_even : Even n → 2 * (n / 2) = n := fun h ↦
@@ -97,7 +96,6 @@ theorem add_one_lt_of_even (hn : Even n) (hm : Even m) (hnm : n < m) :
 -- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by simp [*, parity_simps]
 
--- Porting note: the `simp` lemmas about `bit*` no longer apply.
 example : ¬Even 25394535 := by decide
 
 end Nat

@@ -7,6 +7,8 @@ import Mathlib.Algebra.BigOperators.Finsupp
 
 /-! # Connection between `Submonoid.closure` and `Finsupp.prod` -/
 
+assert_not_exists Field
+
 namespace Submonoid
 
 variable {M : Type*} [CommMonoid M] {ι : Type*} (f : ι → M) (x : M)

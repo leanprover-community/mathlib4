@@ -3,6 +3,7 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Algebra.Order.Chebyshev
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Order.Partition.Equipartition
@@ -41,7 +42,7 @@ theorem le_stepBound : id ≤ stepBound := fun n =>
   Nat.le_mul_of_pos_right _ <| pow_pos (by norm_num) n
 
 theorem stepBound_mono : Monotone stepBound := fun _ _ h =>
-  Nat.mul_le_mul h <| Nat.pow_le_pow_of_le_right (by norm_num) h
+  Nat.mul_le_mul h <| Nat.pow_le_pow_right (by norm_num) h
 
 theorem stepBound_pos_iff {n : ℕ} : 0 < stepBound n ↔ 0 < n :=
   mul_pos_iff_of_pos_right <| by positivity
@@ -74,8 +75,6 @@ private theorem m_pos [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts ≤ card α
 
 /-- Local extension for the `positivity` tactic: A few facts that are needed many times for the
 proof of Szemerédi's regularity lemma. -/
--- Porting note: positivity extensions must now be global, and this did not seem like a good
--- match for positivity anymore, so I wrote a new tactic (kmill)
 scoped macro "sz_positivity" : tactic =>
   `(tactic|
       { try have := m_pos ‹_›
@@ -220,10 +219,10 @@ theorem add_div_le_sum_sq_div_card (hst : s ⊆ t) (f : ι → 𝕜) (d : 𝕜) 
   have h₃ := mul_sq_le_sum_sq hst (fun i => (f i - (∑ j ∈ t, f j) / #t)) h₂ hscard.ne'
   apply (add_le_add_left h₃ _).trans
   -- Porting note: was
-  -- `simp [← mul_div_right_comm _ (#t : 𝕜), sub_div' _ _ _ htcard.ne', ← sum_div, ← add_div,`
-  -- `  mul_pow, div_le_iff₀ (sq_pos_of_ne_zero htcard.ne'), sub_sq, sum_add_distrib, ← sum_mul,`
-  -- `  ← mul_sum]`
-  simp_rw [sub_div' _ _ _ htcard.ne']
+  -- simp [← mul_div_right_comm _ (#t : 𝕜), sub_div' _ _ _ htcard.ne', ← sum_div, ← add_div,
+  --   mul_pow, div_le_iff₀ (sq_pos_of_ne_zero htcard.ne'), sub_sq, sum_add_distrib, ← sum_mul,
+  --   ← mul_sum]
+  simp_rw [sub_div' htcard.ne']
   conv_lhs => enter [2, 2, x]; rw [div_pow]
   rw [div_pow, ← sum_div, ← mul_div_right_comm _ (#t : 𝕜), ← add_div,
     div_le_iff₀ (sq_pos_of_ne_zero htcard.ne')]

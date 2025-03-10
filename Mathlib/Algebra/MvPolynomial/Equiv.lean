@@ -184,21 +184,19 @@ theorem iterToSum_X (b : S₁) : iterToSum R S₁ S₂ (X b) = X (Sum.inl b) :=
 theorem iterToSum_C_X (c : S₂) : iterToSum R S₁ S₂ (C (X c)) = X (Sum.inr c) :=
   Eq.trans (eval₂_C _ _ (X c)) (eval₂_X _ _ _)
 
-variable (σ)
+section isEmptyRingEquiv
+variable [IsEmpty σ]
 
+variable (σ) in
 /-- The algebra isomorphism between multivariable polynomials in no variables
 and the ground ring. -/
-@[simps!]
-def isEmptyAlgEquiv [he : IsEmpty σ] : MvPolynomial σ R ≃ₐ[R] R :=
-  AlgEquiv.ofAlgHom (aeval (IsEmpty.elim he)) (Algebra.ofId _ _)
-    (by ext)
-    (by
-      ext i m
-      exact IsEmpty.elim' he i)
+@[simps! apply]
+def isEmptyAlgEquiv : MvPolynomial σ R ≃ₐ[R] R :=
+  .ofAlgHom (aeval isEmptyElim) (Algebra.ofId _ _) (by ext) (by ext i m; exact isEmptyElim i)
 
-variable {R S₁ σ} in
+variable {R S₁} in
 @[simp]
-lemma aeval_injective_iff_of_isEmpty [IsEmpty σ] [CommSemiring S₁] [Algebra R S₁] {f : σ → S₁} :
+lemma aeval_injective_iff_of_isEmpty [CommSemiring S₁] [Algebra R S₁] {f : σ → S₁} :
     Function.Injective (aeval f : MvPolynomial σ R →ₐ[R] S₁) ↔
       Function.Injective (algebraMap R S₁) := by
   have : aeval f = (Algebra.ofId R S₁).comp (@isEmptyAlgEquiv R σ _ _).toAlgHom := by
@@ -207,13 +205,20 @@ lemma aeval_injective_iff_of_isEmpty [IsEmpty σ] [CommSemiring S₁] [Algebra R
   rw [this, ← Injective.of_comp_iff' _ (@isEmptyAlgEquiv R σ _ _).bijective]
   rfl
 
+variable (σ) in
 /-- The ring isomorphism between multivariable polynomials in no variables
 and the ground ring. -/
-@[simps!]
-def isEmptyRingEquiv [IsEmpty σ] : MvPolynomial σ R ≃+* R :=
-  (isEmptyAlgEquiv R σ).toRingEquiv
+@[simps! apply]
+def isEmptyRingEquiv : MvPolynomial σ R ≃+* R := (isEmptyAlgEquiv R σ).toRingEquiv
 
-variable {σ}
+lemma isEmptyRingEquiv_symm_toRingHom : (isEmptyRingEquiv R σ).symm.toRingHom = C := rfl
+@[simp] lemma isEmptyRingEquiv_symm_apply (r : R) : (isEmptyRingEquiv R σ).symm r = C r := rfl
+
+lemma isEmptyRingEquiv_eq_coeff_zero {σ R : Type*} [CommSemiring R] [IsEmpty σ] {x} :
+    isEmptyRingEquiv R σ x = x.coeff 0 := by
+  obtain ⟨x, rfl⟩ := (isEmptyRingEquiv R σ).symm.surjective x; simp
+
+end isEmptyRingEquiv
 
 /-- A helper function for `sumRingEquiv`. -/
 @[simps]
@@ -266,6 +271,30 @@ lemma sumAlgEquiv_comp_rename_inl :
       MvPolynomial.mapAlgHom (Algebra.ofId _ _) := by
   ext i
   simp
+
+section commAlgEquiv
+variable {R S₁ S₂ : Type*} [CommSemiring R]
+
+variable (R S₁ S₂) in
+/-- The algebra isomorphism between multivariable polynomials in variables `S₁` of multivariable
+polynomials in variables `S₂` and multivariable polynomials in variables `S₂` of multivariable
+polynomials in variables `S₁`. -/
+noncomputable
+def commAlgEquiv : MvPolynomial S₁ (MvPolynomial S₂ R) ≃ₐ[R] MvPolynomial S₂ (MvPolynomial S₁ R) :=
+  (sumAlgEquiv R S₁ S₂).symm.trans <| (renameEquiv _ (.sumComm S₁ S₂)).trans (sumAlgEquiv R S₂ S₁)
+
+@[simp] lemma commAlgEquiv_C (p) : commAlgEquiv R S₁ S₂ (.C p) = .map C p := by
+  suffices (commAlgEquiv R S₁ S₂).toAlgHom.comp
+      (IsScalarTower.toAlgHom R (MvPolynomial S₂ R) _) = mapAlgHom (Algebra.ofId _ _) by
+    exact DFunLike.congr_fun this p
+  ext x : 1
+  simp [commAlgEquiv]
+
+lemma commAlgEquiv_C_X (i) : commAlgEquiv R S₁ S₂ (.C (.X i)) = .X i := by simp
+
+@[simp] lemma commAlgEquiv_X (i) : commAlgEquiv R S₁ S₂ (.X i) = .C (.X i) := by simp [commAlgEquiv]
+
+end commAlgEquiv
 
 section
 
@@ -499,20 +528,17 @@ theorem degree_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} (h : f ≠ 0) :
   -- TODO: these should be lemmas
   have h₀ : ∀ {α β : Type _} (f : α → β), (fun x => x) ∘ f = f := fun f => rfl
   have h₁ : ∀ {α β : Type _} (f : α → β), f ∘ (fun x => x) = f := fun f => rfl
-  have h₂ : WithBot.some = Nat.cast := rfl
 
   have h' : ((finSuccEquiv R n f).support.sup fun x => x) = degreeOf 0 f := by
     rw [degreeOf_eq_sup, support_finSuccEquiv, Finset.sup_image, h₀]
-  rw [Polynomial.degree, ← h', ← h₂, Finset.coe_sup_of_nonempty (support_finSuccEquiv_nonempty h),
-    Finset.max_eq_sup_coe, h₁]
+  rw [Polynomial.degree, ← h', Nat.cast_withBot,
+    Finset.coe_sup_of_nonempty (support_finSuccEquiv_nonempty h), Finset.max_eq_sup_coe, h₁]
 
 theorem natDegree_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
     (finSuccEquiv R n f).natDegree = degreeOf 0 f := by
   by_cases c : f = 0
   · rw [c, map_zero, Polynomial.natDegree_zero, degreeOf_zero]
-  · rw [Polynomial.natDegree, degree_finSuccEquiv (by simpa only [Ne] )]
-    erw [WithBot.unbot'_coe]
-    simp
+  · rw [Polynomial.natDegree, degree_finSuccEquiv c, Nat.cast_withBot, WithBot.unbotD_coe]
 
 theorem degreeOf_coeff_finSuccEquiv (p : MvPolynomial (Fin (n + 1)) R) (j : Fin n) (i : ℕ) :
     degreeOf j (Polynomial.coeff (finSuccEquiv R n p) i) ≤ degreeOf j.succ p := by
