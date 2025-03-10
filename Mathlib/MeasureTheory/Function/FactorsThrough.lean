@@ -75,16 +75,17 @@ theorem stronglyMeasurable_limUnder [MeasurableSpace X] [hZ : Nonempty Z] [l.NeB
     StronglyMeasurable (fun x ↦ limUnder l (f · x)) := by
   borelize Z
   let z_ := Classical.choice hZ
-  let conv := {x | ∃ c, Tendsto (f · x) l (𝓝 c)}
-  have mconv : MeasurableSet conv := StronglyMeasurable.measurableSet_exists_tendsto hf
-  have : (fun x ↦ limUnder l (f · x)) = ((↑) : conv → X).extend
-      (fun x : conv ↦ limUnder l (f · x)) (fun _ ↦ z_) := by
-    ext x
-    by_cases hx : x ∈ conv
-    · rw [Function.extend_val_apply hx]
-    · rw [Function.extend_val_apply' hx, limUnder_of_not_tendsto hx]
-  rw [this, stronglyMeasurable_iff_measurable_separable]; constructor
-  · refine (MeasurableEmbedding.subtype_coe mconv).measurable_extend ?_ measurable_const
+  rw [stronglyMeasurable_iff_measurable_separable]; constructor
+  · let conv := {x | ∃ c, Tendsto (f · x) l (𝓝 c)}
+    have mconv : MeasurableSet conv := StronglyMeasurable.measurableSet_exists_tendsto hf
+    have : (fun x ↦ limUnder l (f · x)) = ((↑) : conv → X).extend
+        (fun x : conv ↦ limUnder l (f · x)) (fun _ ↦ z_) := by
+      ext x
+      by_cases hx : x ∈ conv
+      · rw [Function.extend_val_apply hx]
+      · rw [Function.extend_val_apply' hx, limUnder_of_not_tendsto hx]
+    rw [this]
+    refine (MeasurableEmbedding.subtype_coe mconv).measurable_extend ?_ measurable_const
     refine  measurable_of_tendsto_metrizable' l
       (fun i ↦ (hf i).measurable.comp measurable_subtype_coe)
       (tendsto_pi_nhds.2 fun ⟨x, ⟨c, hc⟩⟩ ↦ ?_)
@@ -92,14 +93,14 @@ theorem stronglyMeasurable_limUnder [MeasurableSpace X] [hZ : Nonempty Z] [l.NeB
   · let s := closure (⋃ i, range (f i)) ∪ {z_}
     have hs : IsSeparable s := (IsSeparable.iUnion (fun i ↦ (hf i).isSeparable_range)).closure.union
       (finite_singleton z_).isSeparable
-    refine IsSeparable.mono hs ?_
+    refine hs.mono ?_
     rintro - ⟨x, rfl⟩
-    by_cases hx : x ∈ conv
+    by_cases hx : ∃ c, Tendsto (f · x) l (𝓝 c)
     · obtain ⟨c, hc⟩ := hx
-      rw [Function.extend_val_apply ⟨c, hc⟩, hc.limUnder_eq]
+      simp_rw [hc.limUnder_eq]
       exact subset_union_left <| mem_closure_of_tendsto hc
         (Eventually.of_forall fun i ↦ Set.mem_iUnion.2 ⟨i, ⟨x, rfl⟩⟩)
-    · rw [Function.extend_val_apply' hx]
+    · simp_rw [limUnder_of_not_tendsto hx]
       exact subset_union_right (mem_singleton z_)
 
 /-- If a function `g` is strongly measurable with respect to the pullback along some function `f`,
