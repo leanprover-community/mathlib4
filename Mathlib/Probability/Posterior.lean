@@ -226,15 +226,7 @@ lemma Kernel.ac_comp_of_ac {ν : Measure 𝓧} [SFinite ν] (h_ac : ∀ᵐ ω �
 lemma rnDeriv_posterior_ae_prod (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
     ∀ᵐ p ∂(μ.prod (κ ∘ₘ μ)),
       (κ†μ).rnDeriv (Kernel.const _ μ) p.2 p.1 = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) p.1 p.2 := by
-  have h_ac' : ∀ᵐ x ∂(κ ∘ₘ μ), (κ†μ) x ≪ μ := posterior_ac_of_ac h_ac
-  -- We prove that the integrals over any measurable set of the functions on the two sides
-  -- are equal, which implies the equality almost everywhere.
-  refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite ?_ ?_ ?_
-  · fun_prop
-  · fun_prop
-  intro s hs hμs
-  -- We prove the equality of the integrals by proving it on a π-system generating the σ-algebra.
-  -- We use the π-system of rectangles.
+  -- We prove the a.e. equality by showing that integrals on the π-system of rectangles are equal.
   -- First, the integral of the left-hand side on `s ×ˢ t` is `(μ ⊗ₘ κ) (s ×ˢ t)`, which we prove
   -- by showing that it's equal to `((κ ∘ₘ μ) ⊗ κ†μ) (t ×ˢ s)` and using the main property of the
   -- posterior.
@@ -245,7 +237,7 @@ lemma rnDeriv_posterior_ae_prod (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ)
       Measure.map_apply measurable_swap (hs.prod ht), Set.preimage_swap_prod,
       Measure.compProd_apply_prod ht hs]
     refine lintegral_congr_ae <| ae_restrict_of_ae ?_
-    filter_upwards [h_ac'] with x h_ac'
+    filter_upwards [posterior_ac_of_ac h_ac] with x h_ac'
     change ∫⁻ ω in s, (κ†μ).rnDeriv (Kernel.const 𝓧 μ) x ω ∂(Kernel.const 𝓧 μ x) = _
     rw [Kernel.setLIntegral_rnDeriv h_ac' hs]
   have h2 {s : Set Ω} {t : Set 𝓧} (hs : MeasurableSet s) (ht : MeasurableSet t) :
@@ -257,37 +249,18 @@ lemma rnDeriv_posterior_ae_prod (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ)
     filter_upwards [h_ac] with ω h_ac
     change ∫⁻ x in t, κ.rnDeriv (Kernel.const Ω (κ ∘ₘ μ)) ω x ∂(Kernel.const Ω (κ ∘ₘ μ) ω) = _
     rw [Kernel.setLIntegral_rnDeriv h_ac ht]
-  -- On products of sets, the two integrals are equal.
-  have h_prod {s : Set Ω} {t : Set 𝓧} (hs : MeasurableSet s) (ht : MeasurableSet t) :
-      ∫⁻ x in s ×ˢ t, (κ†μ).rnDeriv (Kernel.const _ μ) x.2 x.1 ∂μ.prod (⇑κ ∘ₘ μ)
-        = ∫⁻ x in s ×ˢ t, κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) x.1 x.2 ∂μ.prod (⇑κ ∘ₘ μ) := by
+  -- We extend from the π-system to the σ-algebra.
+  refine ae_eq_of_setLIntegral_prod_eq (by fun_prop) (by fun_prop) ?_ ?_ ?_
+  · refine ne_of_lt ?_
+    calc ∫⁻ x, (κ†μ).rnDeriv (Kernel.const _ μ) x.2 x.1 ∂μ.prod (κ ∘ₘ μ)
+    _ = (μ ⊗ₘ κ) Set.univ := by rw [← setLIntegral_univ, ← Set.univ_prod_univ, h1 .univ .univ]
+    _ < ⊤ := measure_lt_top _ _
+  · refine ne_of_lt ?_
+    calc ∫⁻ x, κ.rnDeriv (Kernel.const Ω (κ ∘ₘ μ)) x.1 x.2 ∂μ.prod (κ ∘ₘ μ)
+    _ = (μ ⊗ₘ κ) Set.univ := by rw [← setLIntegral_univ, ← Set.univ_prod_univ, h2 .univ .univ]
+    _ < ⊤ := measure_lt_top _ _
+  · intro s hs t ht
     rw [h1 hs ht, h2 hs ht]
-  -- Now we extend from the π-system to the σ-algebra.
-  refine MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ _ hs
-  · simp
-  · rintro _ ⟨s, hs, t, ht, rfl⟩
-    exact h_prod hs ht
-  · intro t ht h_eq
-    rw [setLintegral_compl ht, setLintegral_compl ht]
-    · rw [h_eq]
-      congr 1
-      simpa using h_prod .univ .univ
-    · refine ne_of_lt ?_
-      calc ∫⁻ x in t, κ.rnDeriv (Kernel.const Ω (κ ∘ₘ μ)) x.1 x.2 ∂μ.prod (κ ∘ₘ μ)
-      _ ≤ ∫⁻ x, κ.rnDeriv (Kernel.const Ω (κ ∘ₘ μ)) x.1 x.2 ∂μ.prod (κ ∘ₘ μ) :=
-        setLIntegral_le_lintegral t _
-      _ = (μ ⊗ₘ κ) Set.univ := by rw [← setLIntegral_univ, ← Set.univ_prod_univ, h2 .univ .univ]
-      _ < ⊤ := measure_lt_top _ _
-    · refine ne_of_lt ?_
-      calc ∫⁻ x in t, (κ†μ).rnDeriv (Kernel.const _ μ) x.2 x.1 ∂μ.prod (κ ∘ₘ μ)
-      _ ≤ ∫⁻ x, (κ†μ).rnDeriv (Kernel.const _ μ) x.2 x.1 ∂μ.prod (κ ∘ₘ μ) :=
-        setLIntegral_le_lintegral t _
-      _ = (μ ⊗ₘ κ) Set.univ := by rw [← setLIntegral_univ, ← Set.univ_prod_univ, h1 .univ .univ]
-      _ < ⊤ := measure_lt_top _ _
-  · intro f hf_disj hf_meas h
-    simp_rw [lintegral_iUnion hf_meas hf_disj]
-    congr with i
-    exact h i
 
 -- todo: docstring. This is a form of Bayes' rule.
 lemma rnDeriv_posterior (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
