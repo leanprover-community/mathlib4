@@ -5,7 +5,7 @@ Authors: David Kurniadi Angdinata
 -/
 import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.RingTheory.Spectrum.Maximal.Basic
-import Mathlib.RingTheory.Spectrum.Prime.Basic
+import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 /-!
 # Maximal spectrum of a commutative (semi)ring
@@ -14,8 +14,6 @@ Localization results.
 -/
 
 noncomputable section
-
-open scoped Classical
 
 variable (R S P : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring P]
 
@@ -121,6 +119,7 @@ variable {ι} (R : ι → Type*) [∀ i, CommSemiring (R i)] [∀ i, Nontrivial 
 
 theorem toPiLocalization_not_surjective_of_infinite [Infinite ι] :
     ¬ Function.Surjective (toPiLocalization (Π i, R i)) := fun surj ↦ by
+  classical
   have ⟨J, max, nmem⟩ := PrimeSpectrum.exists_maximal_nmem_range_sigmaToPi_of_infinite R
   obtain ⟨r, hr⟩ := surj (Function.update 0 ⟨J, max⟩ 1)
   have : r = 0 := funext fun i ↦ toPiLocalization_injective _ <| funext fun I ↦ by
@@ -172,6 +171,7 @@ localizations at maximal ideals. -/
 def piLocalizationToMaximal : PiLocalization R →+* MaximalSpectrum.PiLocalization R :=
   Pi.ringHom fun I ↦ Pi.evalRingHom _ I.toPrimeSpectrum
 
+open scoped Classical in
 theorem piLocalizationToMaximal_surjective : Function.Surjective (piLocalizationToMaximal R) :=
   fun r ↦ ⟨fun I ↦ if h : I.1.IsMaximal then r ⟨_, h⟩ else 0, funext fun _ ↦ dif_pos _⟩
 
@@ -197,6 +197,7 @@ variable {S}
 
 theorem isMaximal_of_toPiLocalization_surjective (surj : Function.Surjective (toPiLocalization R))
     (I : PrimeSpectrum R) : I.1.IsMaximal := by
+  classical
   have ⟨J, max, le⟩ := I.1.exists_le_maximal I.2.ne_top
   obtain ⟨r, hr⟩ := surj (Function.update 0 ⟨J, max.isPrime⟩ 1)
   by_contra h

@@ -5,7 +5,7 @@ Authors: Alex J. Best, Yaël Dillies
 -/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Module.Pi
 
@@ -372,7 +372,7 @@ private def muFun (a : α) : α → 𝕜
   | b =>
     if a = b then 1
     else
-      -∑ x in (Ico a b).attach,
+      -∑ x ∈ (Ico a b).attach,
           let h := mem_Ico.1 x.2
           have : (Icc a x).card < (Icc a b).card :=
             card_lt_card (Icc_ssubset_Icc_right (h.1.trans h.2.le) le_rfl h.2)
@@ -380,7 +380,7 @@ private def muFun (a : α) : α → 𝕜
 termination_by b => (Icc a b).card
 
 private lemma muFun_apply (a b : α) :
-    muFun 𝕜 a b = if a = b then 1 else -∑ x in (Ico a b).attach, muFun 𝕜 a x := by rw [muFun]
+    muFun 𝕜 a b = if a = b then 1 else -∑ x ∈ (Ico a b).attach, muFun 𝕜 a x := by rw [muFun]
 
 /-- The Möbius function which inverts `zeta` as an element of the incidence algebra. -/
 def mu : IncidenceAlgebra 𝕜 α :=
@@ -429,7 +429,7 @@ private def muFun' (b : α) : α → 𝕜
   | a =>
     if a = b then 1
     else
-      -∑ x in (Ioc a b).attach,
+      -∑ x ∈ (Ioc a b).attach,
           let h := mem_Ioc.1 x.2
           have : (Icc ↑x b).card < (Icc a b).card :=
             card_lt_card (Icc_ssubset_Icc_left (h.1.le.trans h.2) h.1 le_rfl)
@@ -437,7 +437,7 @@ private def muFun' (b : α) : α → 𝕜
 termination_by a => (Icc a b).card
 
 private lemma muFun'_apply (a b : α) :
-    muFun' 𝕜 b a = if a = b then 1 else -∑ x in (Ioc a b).attach, muFun' 𝕜 b x := by
+    muFun' 𝕜 b a = if a = b then 1 else -∑ x ∈ (Ioc a b).attach, muFun' 𝕜 b x := by
   rw [muFun']
 
 /-- This is the reversed definition of `mu`, which is equal to `mu` but easiest to prove equal by

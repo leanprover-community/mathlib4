@@ -3,9 +3,8 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Ring.Subsemiring.Order
+import Mathlib.Data.ZMod.Basic
 
 /-!
 
@@ -54,9 +53,9 @@ instance preN2 : PartialOrder (ℕ × ZMod 2) where
       · exact Or.inr (xy.trans yz)
   le_antisymm := by
     intro a b ab ba
-    cases' ab with ab ab
+    obtain ab | ab := ab
     · exact ab
-    · cases' ba with ba ba
+    · obtain ba | ba := ba
       · exact ba.symm
       · exact (Nat.lt_asymm ab ba).elim
 
@@ -175,7 +174,7 @@ theorem exists_add_of_le : ∀ a b : L, a ≤ b → ∃ c, b = a + c := by
   rintro a ⟨b, _⟩ (⟨rfl, rfl⟩ | h)
   · exact ⟨0, (add_zero _).symm⟩
   · exact
-      ⟨⟨b - a.1, fun H => (tsub_pos_of_lt h).ne' (Prod.mk.inj_iff.1 H).1⟩,
+      ⟨⟨b - a.1, fun H => (tsub_pos_of_lt h).ne' (Prod.mk_inj.1 H).1⟩,
         Subtype.ext <| Prod.ext (add_tsub_cancel_of_le h.le).symm (add_sub_cancel _ _).symm⟩
 
 theorem le_self_add : ∀ a b : L, a ≤ a + b := by

@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.NNReal.Defs
+import Mathlib.Order.Interval.Set.WithBotTop
 
 /-!
 # Extended non-negative reals
@@ -193,7 +194,7 @@ instance : NNRatCast ℝ≥0∞ where
 theorem coe_nnratCast (q : ℚ≥0) : ↑(q : ℝ≥0) = (q : ℝ≥0∞) := rfl
 
 /-- `toNNReal x` returns `x` if it is real, otherwise 0. -/
-protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
+protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untopD 0
 
 /-- `toReal x` returns `x` if it is real, `0` otherwise. -/
 protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
@@ -207,6 +208,12 @@ protected def ofReal (r : Real) : ℝ≥0∞ := r.toNNReal
 theorem coe_toNNReal : ∀ {a : ℝ≥0∞}, a ≠ ∞ → ↑a.toNNReal = a
   | ofNNReal _, _ => rfl
   | ⊤, h => (h rfl).elim
+
+@[simp]
+theorem coe_comp_toNNReal_comp {ι : Type*} {f : ι → ℝ≥0∞} (hf : ∀ x, f x ≠ ∞) :
+    (fun (x : ℝ≥0) => (x : ℝ≥0∞)) ∘ ENNReal.toNNReal ∘ f = f := by
+  ext x
+  simp [coe_toNNReal (hf x)]
 
 @[simp]
 theorem ofReal_toReal {a : ℝ≥0∞} (h : a ≠ ∞) : ENNReal.ofReal a.toReal = a := by
@@ -275,7 +282,7 @@ theorem exists_ne_top {p : ℝ≥0∞ → Prop} : (∃ a ≠ ∞, p a) ↔ ∃ r
   Option.exists_ne_none
 
 theorem toNNReal_eq_zero_iff (x : ℝ≥0∞) : x.toNNReal = 0 ↔ x = 0 ∨ x = ∞ :=
-  WithTop.untop'_eq_self_iff
+  WithTop.untopD_eq_self_iff
 
 theorem toReal_eq_zero_iff (x : ℝ≥0∞) : x.toReal = 0 ↔ x = 0 ∨ x = ∞ := by
   simp [ENNReal.toReal, toNNReal_eq_zero_iff]
@@ -287,7 +294,7 @@ theorem toReal_ne_zero : a.toReal ≠ 0 ↔ a ≠ 0 ∧ a ≠ ∞ :=
   a.toReal_eq_zero_iff.not.trans not_or
 
 theorem toNNReal_eq_one_iff (x : ℝ≥0∞) : x.toNNReal = 1 ↔ x = 1 :=
-  WithTop.untop'_eq_iff.trans <| by simp
+  WithTop.untopD_eq_iff.trans <| by simp
 
 theorem toReal_eq_one_iff (x : ℝ≥0∞) : x.toReal = 1 ↔ x = 1 := by
   rw [ENNReal.toReal, NNReal.coe_eq_one, ENNReal.toNNReal_eq_one_iff]
@@ -381,7 +388,7 @@ theorem coe_two : ((2 : ℝ≥0) : ℝ≥0∞) = 2 := rfl
 
 theorem toNNReal_eq_toNNReal_iff (x y : ℝ≥0∞) :
     x.toNNReal = y.toNNReal ↔ x = y ∨ x = 0 ∧ y = ⊤ ∨ x = ⊤ ∧ y = 0 :=
-  WithTop.untop'_eq_untop'_iff
+  WithTop.untopD_eq_untopD_iff
 
 theorem toReal_eq_toReal_iff (x y : ℝ≥0∞) :
     x.toReal = y.toReal ↔ x = y ∨ x = 0 ∧ y = ⊤ ∨ x = ⊤ ∧ y = 0 := by
@@ -396,10 +403,6 @@ theorem toReal_eq_toReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ �
   simp only [ENNReal.toReal, NNReal.coe_inj, toNNReal_eq_toNNReal_iff' hx hy]
 
 theorem one_lt_two : (1 : ℝ≥0∞) < 2 := Nat.one_lt_ofNat
-
-theorem two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
-
-theorem two_lt_top : (2 : ℝ≥0∞) < ∞ := coe_lt_top
 
 /-- `(1 : ℝ≥0∞) ≤ 1`, recorded as a `Fact` for use with `Lp` spaces. -/
 instance _root_.fact_one_le_one_ennreal : Fact ((1 : ℝ≥0∞) ≤ 1) :=
@@ -492,18 +495,35 @@ lemma ofNat_lt_top {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) < ∞ := natCast_lt_t
 
 @[simp] theorem top_ne_natCast (n : ℕ) : ∞ ≠ n := WithTop.top_ne_natCast n
 
+@[simp] theorem top_ne_ofNat {n : ℕ} [n.AtLeastTwo] : ∞ ≠ ofNat(n) :=
+  ofNat_ne_top.symm
+
+@[deprecated ofNat_ne_top (since := "2025-01-21")] lemma two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
+@[deprecated ofNat_lt_top (since := "2025-01-21")] lemma two_lt_top : (2 : ℝ≥0∞) < ∞ := coe_lt_top
+
 @[simp] theorem one_lt_top : 1 < ∞ := coe_lt_top
 
 @[simp, norm_cast]
-theorem toNNReal_nat (n : ℕ) : (n : ℝ≥0∞).toNNReal = n := by
+theorem toNNReal_natCast (n : ℕ) : (n : ℝ≥0∞).toNNReal = n := by
   rw [← ENNReal.coe_natCast n, ENNReal.toNNReal_coe]
 
+@[deprecated (since := "2025-02-19")] alias toNNReal_nat := toNNReal_natCast
+
+theorem toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] : ENNReal.toNNReal ofNat(n) = ofNat(n) :=
+  toNNReal_natCast n
+
 @[simp, norm_cast]
-theorem toReal_nat (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
+theorem toReal_natCast (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
   rw [← ENNReal.ofReal_natCast n, ENNReal.toReal_ofReal (Nat.cast_nonneg _)]
 
+@[deprecated (since := "2025-02-19")] alias toReal_nat := toReal_natCast
+
 @[simp] theorem toReal_ofNat (n : ℕ) [n.AtLeastTwo] : ENNReal.toReal ofNat(n) = ofNat(n) :=
-  toReal_nat n
+  toReal_natCast n
+
+lemma toNNReal_natCast_eq_toNNReal (n : ℕ) :
+    (n : ℝ≥0∞).toNNReal = (n : ℝ).toNNReal := by
+  rw [Real.toNNReal_of_nonneg (by positivity), ENNReal.toNNReal_natCast, mk_natCast]
 
 theorem le_coe_iff : a ≤ ↑r ↔ ∃ p : ℝ≥0, a = p ∧ p ≤ r := WithTop.le_coe_iff
 
@@ -562,13 +582,6 @@ theorem le_of_forall_pos_le_add (h : ∀ ε : ℝ≥0, 0 < ε → b < ∞ → a 
 theorem natCast_lt_coe {n : ℕ} : n < (r : ℝ≥0∞) ↔ n < r := ENNReal.coe_natCast n ▸ coe_lt_coe
 
 theorem coe_lt_natCast {n : ℕ} : (r : ℝ≥0∞) < n ↔ r < n := ENNReal.coe_natCast n ▸ coe_lt_coe
-
-@[deprecated (since := "2024-04-05")] alias coe_nat := coe_natCast
-@[deprecated (since := "2024-04-05")] alias ofReal_coe_nat := ofReal_natCast
-@[deprecated (since := "2024-04-05")] alias nat_ne_top := natCast_ne_top
-@[deprecated (since := "2024-04-05")] alias top_ne_nat := top_ne_natCast
-@[deprecated (since := "2024-04-05")] alias coe_nat_lt_coe := natCast_lt_coe
-@[deprecated (since := "2024-04-05")] alias coe_lt_coe_nat := coe_lt_natCast
 
 protected theorem exists_nat_gt {r : ℝ≥0∞} (h : r ≠ ∞) : ∃ n : ℕ, r < n := by
   lift r to ℝ≥0 using h

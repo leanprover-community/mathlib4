@@ -70,6 +70,7 @@ While this is equivalent, `SetLike` conveniently uses a carrier set projection d
 subobjects
 -/
 
+assert_not_exists RelIso
 
 /-- A class to indicate that there is a canonical injection between `A` and `Set B`.
 
@@ -213,5 +214,15 @@ theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p :=
 
 theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
   rw [lt_iff_le_not_le, not_le_iff_exists]
+
+/-- membership is inherited from `Set X` -/
+abbrev instSubtypeSet {X} {p : Set X → Prop} : SetLike {s // p s} X where
+  coe := (↑)
+  coe_injective' := Subtype.val_injective
+
+/-- membership is inherited from `S` -/
+abbrev instSubtype {X S} [SetLike S X] {p : S → Prop} : SetLike {s // p s} X where
+  coe := (↑)
+  coe_injective' := SetLike.coe_injective.comp Subtype.val_injective
 
 end SetLike

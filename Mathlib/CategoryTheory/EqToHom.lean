@@ -51,6 +51,14 @@ theorem eqToHom_trans {X Y Z : C} (p : X = Y) (q : Y = Z) :
   cases q
   simp
 
+/-- `eqToHom h` is heterogeneously equal to the identity of its domain. -/
+lemma eqToHom_heq_id_dom (X Y : C) (h : X = Y) : HEq (eqToHom h) (𝟙 X) := by
+  subst h; rfl
+
+/-- `eqToHom h` is heterogeneously equal to the identity of its codomain. -/
+lemma eqToHom_heq_id_cod (X Y : C) (h : X = Y) : HEq (eqToHom h) (𝟙 Y) := by
+  subst h; rfl
+
 /-- Two morphisms are conjugate via eqToHom if and only if they are heterogeneously equal.
 Note this used to be in the Functor namespace, where it doesn't belong. -/
 theorem conj_eqToHom_iff_heq {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) (h : W = Y) (h' : X = Z) :
@@ -252,6 +260,7 @@ theorem hext {F G : C ⥤ D} (h_obj : ∀ X, F.obj X = G.obj X)
 -- Using equalities between functors.
 theorem congr_obj {F G : C ⥤ D} (h : F = G) (X) : F.obj X = G.obj X := by rw [h]
 
+@[reassoc]
 theorem congr_hom {F G : C ⥤ D} (h : F = G) {X Y} (f : X ⟶ Y) :
     F.map f = eqToHom (congr_obj h X) ≫ G.map f ≫ eqToHom (congr_obj h Y).symm := by
   subst h; simp

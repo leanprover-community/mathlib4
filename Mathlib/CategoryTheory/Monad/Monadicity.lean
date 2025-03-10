@@ -79,13 +79,6 @@ def comparisonLeftAdjointObj (A : adj.toMonad.Algebra)
     [HasCoequalizer (F.map A.a) (adj.counit.app _)] : D :=
   coequalizer (F.map A.a) (adj.counit.app _)
 
-#adaptation_note
-/--
-The new unused variable linter in
-https://github.com/leanprover/lean4/pull/5338
-flags `{ f : F.obj A.A ⟶ B // _ }`.
--/
-set_option linter.unusedVariables false in
 /--
 We have a bijection of homsets which will be used to construct the left adjoint to the comparison
 functor.
@@ -337,21 +330,21 @@ instance [CreatesColimitOfIsSplitPair G] : ∀ (A : Algebra adj.toMonad),
   fun _ => CreatesColimitOfIsSplitPair.out _ _
 
 /--
-Beck's monadicity theorem. If `G` has a left adjoint and creates coequalizers of `G`-split pairs,
-then it is monadic.
+**Beck's monadicity theorem**: if `G` has a left adjoint and creates coequalizers of `G`-split
+pairs, then it is monadic.
 This is the converse of `createsGSplitCoequalizersOfMonadic`.
 -/
 def monadicOfCreatesGSplitCoequalizers [CreatesColimitOfIsSplitPair G] :
     MonadicRightAdjoint G := by
   let I {A B} (f g : A ⟶ B) [G.IsSplitPair f g] : HasColimit (parallelPair f g ⋙ G) := by
-    apply @hasColimitOfIso _ _ _ _ _ _ ?_ (diagramIsoParallelPair.{v₁} _)
+    rw [hasColimit_iff_of_iso (diagramIsoParallelPair.{v₁} _)]
     exact inferInstanceAs <| HasCoequalizer (G.map f) (G.map g)
   have : HasCoequalizerOfIsSplitPair G := ⟨fun _ _ => hasColimit_of_created (parallelPair _ _) G⟩
   have : PreservesColimitOfIsSplitPair G := ⟨by intros; infer_instance⟩
   have : ReflectsColimitOfIsSplitPair G := ⟨by intros; infer_instance⟩
   exact monadicOfHasPreservesReflectsGSplitCoequalizers adj
 
-/-- An alternate version of Beck's monadicity theorem. If `G` reflects isomorphisms, preserves
+/-- An alternate version of **Beck's monadicity theorem**: if `G` reflects isomorphisms, preserves
 coequalizers of `G`-split pairs and `C` has coequalizers of `G`-split pairs, then it is monadic.
 -/
 def monadicOfHasPreservesGSplitCoequalizersOfReflectsIsomorphisms [G.ReflectsIsomorphisms]

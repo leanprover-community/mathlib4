@@ -4,16 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Hom
+import Mathlib.Tactic.MinImports
 
 /-!
 # Further lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
 
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered MulAction
 
 variable {M M₀ G₀ M₀' G₀' F F' : Type*}
 variable [MonoidWithZero M₀]
@@ -117,16 +117,6 @@ theorem MonoidWithZero.inverse_apply {M : Type*} [CommMonoidWithZero M] (a : M) 
 /-- Inversion on a commutative group with zero, considered as a monoid with zero homomorphism. -/
 def invMonoidWithZeroHom {G₀ : Type*} [CommGroupWithZero G₀] : G₀ →*₀ G₀ :=
   { invMonoidHom with map_zero' := inv_zero }
-
-namespace Units
-
-variable [GroupWithZero G₀]
-
-@[simp]
-theorem smul_mk0 {α : Type*} [SMul G₀ α] {g : G₀} (hg : g ≠ 0) (a : α) : mk0 g hg • a = g • a :=
-  rfl
-
-end Units
 
 /-- If a monoid homomorphism `f` between two `GroupWithZero`s maps `0` to `0`, then it maps `x^n`,
 `n : ℤ`, to `(f x)^n`. -/

@@ -118,7 +118,6 @@ macro_rules | `(!$p:subscript[$e:term,*]) => do
   let n := e.getElems.size
   `((WithLp.equiv $p <| ∀ _ : Fin $(quote n), _).symm ![$e,*])
 
-set_option trace.debug true in
 /-- Unexpander for the `!₂[x, y, ...]` notation. -/
 @[app_delab DFunLike.coe]
 def EuclideanSpace.delabVecNotation : Delab :=
@@ -390,12 +389,7 @@ protected def toBasis (b : OrthonormalBasis ι 𝕜 E) : Basis ι 𝕜 E :=
   Basis.ofEquivFun b.repr.toLinearEquiv
 
 @[simp]
-protected theorem coe_toBasis (b : OrthonormalBasis ι 𝕜 E) : (⇑b.toBasis : ι → E) = ⇑b := by
-  rw [OrthonormalBasis.toBasis] -- Porting note: was `change`
-  ext j
-  classical
-    rw [Basis.coe_ofEquivFun]
-    congr
+protected theorem coe_toBasis (b : OrthonormalBasis ι 𝕜 E) : (⇑b.toBasis : ι → E) = ⇑b := rfl
 
 @[simp]
 protected theorem coe_toBasis_repr (b : OrthonormalBasis ι 𝕜 E) :
@@ -689,10 +683,7 @@ theorem Complex.isometryOfOrthonormal_symm_apply (v : OrthonormalBasis (Fin 2) �
 
 theorem Complex.isometryOfOrthonormal_apply (v : OrthonormalBasis (Fin 2) ℝ F) (z : ℂ) :
     Complex.isometryOfOrthonormal v z = z.re • v 0 + z.im • v 1 := by
-  -- Porting note: was
-  -- simp [Complex.isometryOfOrthonormal, ← v.sum_repr_symm]
-  rw [Complex.isometryOfOrthonormal, LinearIsometryEquiv.trans_apply]
-  simp [← v.sum_repr_symm]
+  simp [Complex.isometryOfOrthonormal, ← v.sum_repr_symm]
 
 end Complex
 

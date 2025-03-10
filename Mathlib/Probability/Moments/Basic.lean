@@ -91,8 +91,8 @@ theorem centralMoment_one [IsZeroOrProbabilityMeasure μ] : centralMoment X 1 μ
       fun_prop
     rw [integral_undef this]
 
-theorem centralMoment_two_eq_variance [IsFiniteMeasure μ] (hX : Memℒp X 2 μ) :
-    centralMoment X 2 μ = variance X μ := by rw [hX.variance_eq]; rfl
+lemma centralMoment_two_eq_variance (hX : AEMeasurable X μ) : centralMoment X 2 μ = variance X μ :=
+  (variance_eq_integral hX).symm
 
 section MomentGeneratingFunction
 
@@ -114,11 +114,10 @@ theorem mgf_zero_fun : mgf 0 μ t = (μ Set.univ).toReal := by
 theorem cgf_zero_fun : cgf 0 μ t = log (μ Set.univ).toReal := by simp only [cgf, mgf_zero_fun]
 
 @[simp]
-theorem mgf_zero_measure : mgf X (0 : Measure Ω) t = 0 := by simp only [mgf, integral_zero_measure]
+theorem mgf_zero_measure : mgf X (0 : Measure Ω) = 0 := by ext; simp [mgf]
 
 @[simp]
-theorem cgf_zero_measure : cgf X (0 : Measure Ω) t = 0 := by
-  simp only [cgf, log_zero, mgf_zero_measure]
+theorem cgf_zero_measure : cgf X (0 : Measure Ω) = 0 := by ext; simp [cgf]
 
 @[simp]
 theorem mgf_const' (c : ℝ) : mgf (fun _ => c) μ t = (μ Set.univ).toReal * exp (t * c) := by
@@ -184,17 +183,35 @@ theorem mgf_pos [IsProbabilityMeasure μ] (h_int_X : Integrable (fun ω => exp (
     0 < mgf X μ t :=
   mgf_pos' (IsProbabilityMeasure.ne_zero μ) h_int_X
 
+lemma mgf_pos_iff [hμ : NeZero μ] :
+    0 < mgf X μ t ↔ Integrable (fun ω ↦ exp (t * X ω)) μ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ mgf_pos' hμ.out h⟩
+  contrapose! h with h
+  simp [mgf_undef h]
+
 lemma exp_cgf_of_neZero [hμ : NeZero μ] (hX : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     exp (cgf X μ t) = mgf X μ t := by rw [cgf, exp_log (mgf_pos' hμ.out hX)]
 
 lemma exp_cgf [IsProbabilityMeasure μ] (hX : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     exp (cgf X μ t) = mgf X μ t := by rw [cgf, exp_log (mgf_pos hX)]
 
+lemma mgf_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'} {Y : Ω' → Ω} {X : Ω → ℝ}
+    (hY : AEMeasurable Y μ) {t : ℝ} (hX : AEStronglyMeasurable (fun ω ↦ exp (t * X ω)) (μ.map Y)) :
+    mgf X (μ.map Y) t = mgf (X ∘ Y) μ t := by
+  simp_rw [mgf, integral_map hY hX, Function.comp_apply]
+
 lemma mgf_id_map (hX : AEMeasurable X μ) : mgf id (μ.map X) = mgf X μ := by
   ext t
-  rw [mgf, integral_map hX]
-  · rfl
-  · exact (measurable_const_mul _).exp.aestronglyMeasurable
+  rw [mgf_map hX, Function.id_comp]
+  exact (measurable_const_mul _).exp.aestronglyMeasurable
+
+lemma mgf_congr {Y : Ω → ℝ} (h : X =ᵐ[μ] Y) : mgf X μ t = mgf Y μ t :=
+  integral_congr_ae <| by filter_upwards [h] with ω hω using by rw [hω]
+
+lemma mgf_congr_identDistrib {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ' : Measure Ω'}
+    {Y : Ω' → ℝ} (h : IdentDistrib X Y μ μ') :
+    mgf X μ = mgf Y μ' := by
+  rw [← mgf_id_map h.aemeasurable_fst, ← mgf_id_map h.aemeasurable_snd, h.map_eq]
 
 theorem mgf_neg : mgf (-X) μ t = mgf X μ (-t) := by simp_rw [mgf, Pi.neg_apply, mul_neg, neg_mul]
 
@@ -294,7 +311,7 @@ theorem IndepFun.integrable_exp_mul_add {X Y : Ω → ℝ} (h_indep : IndepFun X
   exact (h_indep.exp_mul t t).integrable_mul h_int_X h_int_Y
 
 theorem iIndepFun.integrable_exp_mul_sum [IsFiniteMeasure μ] {X : ι → Ω → ℝ}
-    (h_indep : iIndepFun (fun _ => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
+    (h_indep : iIndepFun X μ) (h_meas : ∀ i, Measurable (X i))
     {s : Finset ι} (h_int : ∀ i ∈ s, Integrable (fun ω => exp (t * X i ω)) μ) :
     Integrable (fun ω => exp (t * (∑ i ∈ s, X i) ω)) μ := by
   classical
@@ -311,7 +328,7 @@ theorem iIndepFun.integrable_exp_mul_sum [IsFiniteMeasure μ] {X : ι → Ω →
 -- TODO(vilin97): weaken `h_meas` to `AEMeasurable (X i)` or `AEStronglyMeasurable (X i)` throughout
 -- https://github.com/leanprover-community/mathlib4/issues/20367
 theorem iIndepFun.mgf_sum {X : ι → Ω → ℝ}
-    (h_indep : iIndepFun (fun _ => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
+    (h_indep : iIndepFun X μ) (h_meas : ∀ i, Measurable (X i))
     (s : Finset ι) : mgf (∑ i ∈ s, X i) μ t = ∏ i ∈ s, mgf (X i) μ t := by
   have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
   classical
@@ -325,7 +342,7 @@ theorem iIndepFun.mgf_sum {X : ι → Ω → ℝ}
       h_rec, prod_insert hi_notin_s]
 
 theorem iIndepFun.cgf_sum {X : ι → Ω → ℝ}
-    (h_indep : iIndepFun (fun _ => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
+    (h_indep : iIndepFun X μ) (h_meas : ∀ i, Measurable (X i))
     {s : Finset ι} (h_int : ∀ i ∈ s, Integrable (fun ω => exp (t * X i ω)) μ) :
     cgf (∑ i ∈ s, X i) μ t = ∑ i ∈ s, cgf (X i) μ t := by
   have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
@@ -345,7 +362,7 @@ theorem mgf_sum_of_identDistrib
     {X : ι → Ω → ℝ}
     {s : Finset ι} {j : ι}
     (h_meas : ∀ i, Measurable (X i))
-    (h_indep : iIndepFun (fun _ => inferInstance) X μ)
+    (h_indep : iIndepFun X μ)
     (hident : ∀ i ∈ s, ∀ j ∈ s, IdentDistrib (X i) (X j) μ μ)
     (hj : j ∈ s) (t : ℝ) : mgf (∑ i ∈ s, X i) μ t = mgf (X j) μ t ^ #s := by
   rw [h_indep.mgf_sum h_meas]

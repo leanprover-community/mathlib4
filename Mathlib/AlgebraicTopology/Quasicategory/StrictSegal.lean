@@ -61,8 +61,8 @@ instance quasicategory {X : SSet.{u}} [StrictSegal X] : Quasicategory X := by
       fin_cases i <;> contradiction
     /- We construct the triangle in the standard simplex as a 2-simplex in
     the horn. While the triangle is not contained in the inner horn `Λ[2, 1]`,
-    we can inhabit `Λ[n + 2, i] _[2]` by induction on `n`. -/
-    let triangle : Λ[n + 2, i] _[2] := by
+    we can inhabit `Λ[n + 2, i] _⦋2⦌` by induction on `n`. -/
+    let triangle : Λ[n + 2, i] _⦋2⦌ := by
       cases n with
       | zero => contradiction
       | succ _ => exact horn.primitiveTriangle i h₀ hₙ k (by omega)

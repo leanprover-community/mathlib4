@@ -73,7 +73,7 @@ universe u v
 and, for all `ℱ : Filter X`, any cluster point of `map f ℱ` is the image by `f` of a cluster point
 of `ℱ`. -/
 @[mk_iff isProperMap_iff_clusterPt, fun_prop]
-structure IsProperMap (f : X → Y) extends Continuous f : Prop where
+structure IsProperMap (f : X → Y) : Prop extends Continuous f where
   /-- By definition, if `f` is a proper map and `ℱ` is any filter on `X`, then any cluster point of
   `map f ℱ` is the image by `f` of some cluster point of `ℱ`. -/
   clusterPt_of_mapClusterPt :
@@ -296,8 +296,6 @@ alias isProperMap_restr_of_proper_of_closed := IsProperMap.restrict
 /-- The range of a proper map is closed. -/
 lemma IsProperMap.isClosed_range (hf : IsProperMap f) : IsClosed (range f) :=
   hf.isClosedMap.isClosed_range
-
-@[deprecated (since := "2024-05-08")] alias IsProperMap.closed_range := IsProperMap.isClosed_range
 
 /-- Version of `isProperMap_iff_isClosedMap_and_compact_fibers` in terms of `cofinite` and
 `cocompact`. Only works when the codomain is `T1`. -/
