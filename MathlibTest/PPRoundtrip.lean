@@ -1,5 +1,4 @@
 import Mathlib.Tactic.Linter.PPRoundtrip
-import Mathlib.Tactic.Linter.CommandStart
 
 /--
 info: "a   a"
@@ -65,60 +64,3 @@ set_option linter.ppRoundtrip true in
 -- check that trailing comments do not trigger the linter
 example : 0 = 0 := by
   rw [] -- this goal is closed by the `rfl` implied by `rw`
-
-/--
-warning: Current syntax:  'le {a: Nat'
-Expected syntax: 'le {a : Na'
-
-note: this linter can be disabled with `set_option linter.style.commandStart false`
--/
-#guard_msgs in
-example {a: Nat} : a = a := rfl
-
-/--
-warning: Current syntax:  ' {a :Nat} '
-Expected syntax: ' {a : Nat}'
-
-note: this linter can be disabled with `set_option linter.style.commandStart false`
--/
-#guard_msgs in
-example {a :Nat} : a = a := rfl
-
-/--
-warning: Current syntax:  'mple  {a :'
-Expected syntax: 'mple {a : '
-
-note: this linter can be disabled with `set_option linter.style.commandStart false`
--/
-#guard_msgs in
-example  {a :Nat} : a = a := rfl
-
-/--
-warning: unused variable `b`
-note: this linter can be disabled with `set_option linter.unusedVariables false`
----
-warning: Current syntax:  ' Nat}{b : '
-Expected syntax: ' Nat} {b :'
-
-note: this linter can be disabled with `set_option linter.style.commandStart false`
--/
-#guard_msgs in
-example {a : Nat}{b : Nat} : a = a := rfl
-
-/--
-warning: Current syntax:  'Nat}  '
-Expected syntax: 'Nat} : a ='
-
-note: this linter can be disabled with `set_option linter.style.commandStart false`
--/
-#guard_msgs in
-example {a : Nat}  : a = a := rfl
-
-/--
-warning: Current syntax:  'alpha   ] '
-Expected syntax: 'alpha] {a '
-
-note: this linter can be disabled with `set_option linter.style.commandStart false`
--/
-#guard_msgs in
-example {alpha} [Neg alpha   ] {a : Nat} : a = a := rfl
