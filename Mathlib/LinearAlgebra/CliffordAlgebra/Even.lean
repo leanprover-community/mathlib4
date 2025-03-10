@@ -192,7 +192,7 @@ private theorem fFold_fFold (m : M) (x : A × S f) : fFold f m (fFold f m x) = Q
 -- `.lemmasOnly`, so that `aux_apply` isn't a simp lemma.
 /-- The final auxiliary construction for `CliffordAlgebra.even.lift`. This map is the forwards
 direction of that equivalence, but not in the fully-bundled form. -/
-@[simps! (config := .lemmasOnly) apply]
+@[simps! -isSimp apply]
 def aux (f : EvenHom Q A) : CliffordAlgebra.even Q →ₗ[R] A := by
   refine ?_ ∘ₗ (even Q).val.toLinearMap
   -- Porting note: added, can't be found otherwise
