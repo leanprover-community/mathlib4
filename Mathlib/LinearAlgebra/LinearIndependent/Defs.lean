@@ -566,6 +566,11 @@ theorem linearIndependent_iff'' :
           (by simp_rw [ite_smul, zero_smul, Finset.sum_extend_by_zero, hg]) i
       exact (if_pos hi).symm⟩
 
+theorem linearIndependent_add_smul_iff {c : ι → R} {i : ι} (h₀ : c i = 0) :
+    LinearIndependent R (v + (c · • v i)) ↔ LinearIndependent R v := by
+  simp [linearIndependent_iff_injective_linearCombination,
+    ← Finsupp.linearCombination_comp_addSingleEquiv i c h₀]
+
 theorem not_linearIndependent_iff :
     ¬LinearIndependent R v ↔
       ∃ s : Finset ι, ∃ g : ι → R, ∑ i ∈ s, g i • v i = 0 ∧ ∃ i ∈ s, g i ≠ 0 := by
