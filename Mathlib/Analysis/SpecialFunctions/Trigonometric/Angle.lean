@@ -22,18 +22,18 @@ noncomputable section
 
 namespace Real
 
--- Porting note: can't derive `NormedAddCommGroup, Inhabited`
 /-- The type of angles -/
 def Angle : Type :=
   AddCircle (2 * π)
 
 namespace Angle
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added due to missing instances due to no deriving
+-- The following instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
+
 instance : NormedAddCommGroup Angle :=
   inferInstanceAs (NormedAddCommGroup (AddCircle (2 * π)))
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added due to missing instances due to no deriving
 instance : Inhabited Angle :=
   inferInstanceAs (Inhabited (AddCircle (2 * π)))
 
