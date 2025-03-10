@@ -255,6 +255,16 @@ variable (X Y) in
 lemma mk₀_zero : mk₀ (0 : X ⟶ Y) = 0 := by
   letI := HasDerivedCategory.standard C; ext; simp [this, zero_hom']
 
+@[simp]
+lemma mk₀_add (f g : X ⟶ Y) :
+    mk₀ (f + g) = mk₀ f + mk₀ g := by
+  letI := HasDerivedCategory.standard C; ext; simp [add_hom']
+
+@[simp]
+lemma mk₀_neg (f : X ⟶ Y) :
+    mk₀ (-f) = -mk₀ f := by
+  letI := HasDerivedCategory.standard C; ext; simp [neg_hom']
+
 section
 
 attribute [local instance] preservesBinaryBiproducts_of_preservesBiproducts in
@@ -370,6 +380,12 @@ noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{w} where
     rw [← Ext.mk₀_comp_mk₀]
     apply Ext.comp_assoc
     all_goals omega
+
+instance (n : ℕ) : (extFunctor (C := C) n).Additive where
+
+instance (X : Cᵒᵖ) (n : ℕ) : ((extFunctor n).obj X).Additive where
+
+instance (Y : C) (n : ℕ) : ((extFunctor n).flip.obj Y).Additive where
 
 section ChangeOfUniverse
 
