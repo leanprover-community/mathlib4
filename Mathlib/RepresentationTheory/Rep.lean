@@ -86,16 +86,6 @@ lemma ρ_hom {X : Rep k G} (g : G) : (Action.ρ X g).hom = X.ρ g := rfl
 @[simp]
 lemma ofHom_ρ {X : Rep k G} (g : G) : ModuleCat.ofHom (X.ρ g) = Action.ρ X g := rfl
 
-@[simp]
-theorem ρ_inv_self_apply {G : Type u} [Group G] (A : Rep k G) (g : G) (x : A) :
-    A.ρ g⁻¹ (A.ρ g x) = x :=
-  show (A.ρ g⁻¹ * A.ρ g) x = x by rw [← map_mul, inv_mul_cancel, map_one, LinearMap.one_apply]
-
-@[simp]
-theorem ρ_self_inv_apply {G : Type u} [Group G] {A : Rep k G} (g : G) (x : A) :
-    A.ρ g (A.ρ g⁻¹ x) = x :=
-  show (A.ρ g * A.ρ g⁻¹) x = x by rw [← map_mul, mul_inv_cancel, map_one, LinearMap.one_apply]
-
 theorem hom_comm_apply {A B : Rep k G} (f : A ⟶ B) (g : G) (x : A) :
     f.hom (A.ρ g x) = B.ρ g (f.hom x) :=
   LinearMap.ext_iff.1 (ModuleCat.hom_ext_iff.mp (f.comm g)) x
@@ -112,6 +102,15 @@ theorem trivial_def {V : Type u} [AddCommGroup V] [Module k V] (g : G) :
     (trivial k G V).ρ g = LinearMap.id :=
   rfl
 
+variable (G) in
+/-- The functor equipping a module with the trivial representation. -/
+@[simps]
+noncomputable def trivialFunctor : ModuleCat k ⥤ Rep k G where
+  obj V := trivial k G V
+  map f := { hom := f, comm := fun _ => rfl }
+
+instance (X : ModuleCat k) : ((trivialFunctor G).obj X).ρ.IsTrivial where
+
 /-- A predicate for representations that fix every element. -/
 abbrev IsTrivial (A : Rep k G) := A.ρ.IsTrivial
 
@@ -119,7 +118,56 @@ instance {V : Type u} [AddCommGroup V] [Module k V] :
     IsTrivial (Rep.trivial k G V) where
 
 instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
-    IsTrivial (Rep.of ρ) where
+    IsTrivial (Rep.of ρ) := ‹_›
+
+instance {H V : Type u} [Group H] [AddCommGroup V] [Module k V] (ρ : Representation k H V)
+    (f : G →* H) [Representation.IsTrivial (ρ.comp f)] :
+    Representation.IsTrivial ((Rep.of ρ).ρ.comp f) := ‹_›
+
+section
+
+variable {G : Type u} [Group G] (A : Rep k G) (S : Subgroup G)
+  [S.Normal] [Representation.IsTrivial (A.ρ.comp S.subtype)]
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` which is trivial on `S` factors
+through `G ⧸ S`. -/
+abbrev ofQuotient : Rep k (G ⧸ S) := Rep.of (A.ρ.ofQuotient S)
+
+/-- A `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially induces a
+`G ⧸ S`-representation on `A`, and composing this with the quotient map `G → G ⧸ S` gives the
+original representation by definition. Useful for typechecking. -/
+abbrev resOfQuotientIso [Representation.IsTrivial (A.ρ.comp S.subtype)] :
+    (Action.res _ (QuotientGroup.mk' S)).obj (A.ofQuotient S) ≅ A := Iso.refl _
+
+end
+
+variable (A : Rep k G)
+
+/-- Given a `k`-linear `G`-representation `(V, ρ)`, this is the representation defined by
+restricting `ρ` to a `G`-invariant `k`-submodule of `V`. -/
+abbrev subrepresentation (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
+    Rep k G :=
+  Rep.of (A.ρ.subrepresentation W le_comap)
+
+/-- The natural inclusion of a subrepresentation into the ambient representation. -/
+@[simps]
+def subtype (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
+    subrepresentation A W le_comap ⟶ A where
+  hom := ModuleCat.ofHom W.subtype
+  comm _ := rfl
+
+/-- Given a `k`-linear `G`-representation `(V, ρ)` and a `G`-invariant `k`-submodule `W ≤ V`, this
+is the representation induced on `V ⧸ W` by `ρ`.-/
+abbrev quotient (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
+    Rep k G :=
+  Rep.of (A.ρ.quotient W le_comap)
+
+/-- The natural projection from a representation to its quotient by a subrepresentation. -/
+@[simps]
+def mkQ (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
+    A ⟶ quotient A W le_comap where
+  hom := ModuleCat.ofHom <| Submodule.mkQ _
+  comm _ := rfl
 
 -- Porting note: the two following instances were found automatically in mathlib3
 noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
@@ -297,11 +345,117 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (leftRegular k G ⟶ A) �
   left_inv f := by ext; simp [← hom_comm_apply f]
   right_inv x := by simp
 
-theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
+theorem leftRegularHomEquiv_symm_hom_single {A : Rep k G} (x : A) (g : G) :
     ((leftRegularHomEquiv A).symm x).hom (Finsupp.single g 1) = A.ρ g x := by
   simp
 
 end Linearization
+section Finsupp
+
+open Finsupp
+
+/-- The representation on `α →₀ A` defined pointwise by a representation on `A`. -/
+abbrev finsupp (α : Type u) (A : Rep k G) : Rep k G :=
+  Rep.of (Representation.finsupp A.ρ α)
+
+variable (k G) in
+/-- The representation on `α →₀ k[G]` defined pointwise by the left regular representation on
+`k[G]`. -/
+abbrev free (α : Type u) : Rep k G :=
+  Rep.of (V := (α →₀ G →₀ k)) (Representation.free k G α)
+
+/-- Given `f : α → A`, the natural representation morphism `(α →₀ k[G]) ⟶ A` sending
+`single a (single g r) ↦ r • A.ρ g (f a)`. -/
+@[simps]
+def freeLift {α : Type u} (A : Rep k G) (f : α → A) :
+    free k G α ⟶ A where
+  hom := ModuleCat.ofHom <| linearCombination k (fun x => A.ρ x.2 (f x.1)) ∘ₗ
+    (finsuppProdLEquiv k).symm.toLinearMap
+  comm _ := ModuleCat.hom_ext <| lhom_ext' fun _ => lhom_ext fun _ _ => by
+    simp [ModuleCat.endRingEquiv]
+
+lemma freeLift_hom_single_single {α : Type u} (A : Rep k G)
+    (f : α → A) (i : α) (g : G) (r : k) :
+    (freeLift A f).hom (single i (single g r)) = r • A.ρ g (f i) := by
+  simp
+
+/-- The natural linear equivalence between functions `α → A` and representation morphisms
+`(α →₀ k[G]) ⟶ A`. -/
+@[simps]
+def freeLiftLEquiv (α : Type u) (A : Rep k G) :
+    (free k G α ⟶ A) ≃ₗ[k] (α → A) where
+  toFun f i := f.hom (single i (single 1 1))
+  invFun := freeLift A
+  left_inv x := Action.Hom.ext <| ModuleCat.hom_ext <| lhom_ext' fun i => lhom_ext fun j y => by
+      have := (hom_comm_apply x j (single i (single 1 1))).symm
+      simp_all [← map_smul]
+  right_inv _ := by ext; simp
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+@[ext]
+lemma free_ext {α : Type u} {A : Rep k G} (f g : free k G α ⟶ A)
+    (h : ∀ i : α, f.hom (single i (single 1 1)) = g.hom (single i (single 1 1))) : f = g :=
+  (freeLiftLEquiv α A).injective (funext_iff.2 h)
+
+section
+
+open MonoidalCategory
+
+variable (A B : Rep k G) (α : Type u)
+
+open ModuleCat.MonoidalCategory
+
+/-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
+`(α →₀ A) ⊗ B ≅ (A ⊗ B) →₀ α` sending `single x a ⊗ₜ b ↦ single x (a ⊗ₜ b)`. -/
+@[simps! hom_hom inv_hom]
+def finsuppTensorLeft [DecidableEq α] :
+    A.finsupp α ⊗ B ≅ (A ⊗ B).finsupp α :=
+  Action.mkIso (TensorProduct.finsuppLeft k A B α).toModuleIso
+    fun _ => ModuleCat.hom_ext <| TensorProduct.ext <| lhom_ext fun _ _ => by
+      ext
+      simp [Action_ρ_eq_ρ, TensorProduct.finsuppLeft_apply_tmul,
+        instMonoidalCategoryStruct_tensorObj, instMonoidalCategoryStruct_tensorHom,
+        ModuleCat.MonoidalCategory.tensorObj, ModuleCat.endRingEquiv]
+
+/-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
+`A ⊗ (α →₀ B) ≅ (A ⊗ B) →₀ α` sending `a ⊗ₜ single x b ↦ single x (a ⊗ₜ b)`. -/
+@[simps! hom_hom inv_hom]
+def finsuppTensorRight [DecidableEq α] :
+    A ⊗ B.finsupp α ≅ (A ⊗ B).finsupp α :=
+  Action.mkIso (TensorProduct.finsuppRight k A B α).toModuleIso fun _ => ModuleCat.hom_ext <|
+    TensorProduct.ext <| LinearMap.ext fun _ => lhom_ext fun _ _ => by
+      simp [Action_ρ_eq_ρ, TensorProduct.finsuppRight_apply_tmul, ModuleCat.endRingEquiv,
+        instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj]
+
+variable (k G) in
+/-- The natural isomorphism sending `single g r₁ ⊗ single a r₂ ↦ single a (single g r₁r₂)`. -/
+@[simps! (config := .lemmasOnly) hom_hom inv_hom]
+def leftRegularTensorTrivialIsoFree (α : Type u) :
+    leftRegular k G ⊗ trivial k G (α →₀ k) ≅ free k G α :=
+  Action.mkIso (finsuppTensorFinsupp' k G α ≪≫ₗ Finsupp.domLCongr (Equiv.prodComm G α) ≪≫ₗ
+    finsuppProdLEquiv k).toModuleIso fun _ =>
+      ModuleCat.hom_ext <| TensorProduct.ext <| lhom_ext fun _ _ => lhom_ext fun _ _ => by
+        simp [Action_ρ_eq_ρ, instMonoidalCategoryStruct_tensorObj, ModuleCat.endRingEquiv,
+          instMonoidalCategoryStruct_whiskerRight, ModuleCat.MonoidalCategory.whiskerRight,
+          ModuleCat.MonoidalCategory.tensorObj]
+
+variable {α : Type u}
+
+lemma leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single (i : α) (g : G) (r s : k) :
+    (leftRegularTensorTrivialIsoFree k G α).hom.hom (single g r ⊗ₜ single i s) =
+      single i (single g (r * s)) := by
+  simp [leftRegularTensorTrivialIsoFree, instMonoidalCategoryStruct_tensorObj,
+    ModuleCat.MonoidalCategory.tensorObj]
+
+lemma leftRegularTensorTrivialIsoFree_inv_hom_single_single (i : α) (g : G) (r : k) :
+    (leftRegularTensorTrivialIsoFree k G α).inv.hom (single i (single g r)) =
+      single g r ⊗ₜ[k] single i 1 := by
+  simp [leftRegularTensorTrivialIsoFree, finsuppTensorFinsupp'_symm_single_eq_tmul_single_one,
+    instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj]
+
+end
+end Finsupp
 
 end
 
