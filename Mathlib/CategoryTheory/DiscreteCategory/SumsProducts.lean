@@ -6,6 +6,7 @@ Authors: Robin Carlier
 import Mathlib.CategoryTheory.DiscreteCategory.Basic
 import Mathlib.CategoryTheory.Sums.Basic
 import Mathlib.CategoryTheory.Products.Basic
+
 /-! # Sums and products of discrete categories.
 
 This file shows that binary products and binary sums of discrete categories
@@ -22,6 +23,7 @@ are also discrete, both in the form of explicit equivalences and through the
 * `IsDiscrete.sum`: an `IsDiscrete` instance on the sum of two discrete categories.
 
 -/
+
 universe v₁ u₁
 
 namespace CategoryTheory
