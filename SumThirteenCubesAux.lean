@@ -446,7 +446,7 @@ private lemma find_rep_iff_zero_middle (i n k : ℕ) (l : List ℕ) (hi : i ≠ 
   rw [find_rep, List.mem_singleton]
   constructor
   · rintro rfl
-    simp [hi]
+    simp? [hi]
   rintro ⟨h₁, -, -, h₂⟩
   simpa [eq_replicate_iff, h₁, sum_eq_zero_iff, hi] using h₂
 
@@ -557,6 +557,9 @@ def test_val (i n : ℕ) : Array (List ℕ) := Id.run do
             if k.length + 1 < best.length then best := t :: k
     tab := tab.push best
   return tab
+
+#eval test_val 3 100
+#eval find_all 3 7 81
 
 lemma Tactic.mem_sum_of_powers_base (i k : ℕ) (hi : (i != 0) = true) : 0 ∈ sum_of_powers i k := by
   apply zero_mem_sum_of_powers
@@ -671,8 +674,12 @@ def sum_of_powers_tac (g : MVarId) : MetaM Unit := do
 elab "prove_sumOfPowers" : tactic =>
   Elab.Tactic.liftMetaFinishingTactic sum_of_powers_tac
 
+example : 4500 ∈ sum_of_powers 3 16 := by prove_sumOfPowers
+
 end
 
+set_option trace.profiler.threshold 0 in
+set_option trace.profiler true in
 lemma mid_range : ∀ i : ℕ, 455 ≤ i → i < 3235 → i ∈ sum_of_powers 3 7 := by
   prove_sumOfPowers
 
@@ -680,6 +687,8 @@ end compute
 
 lemma low_range : ∀ (i : ℕ), 0 ≤ i → i < 455 → i ∈ sum_of_powers 3 9 := by
   prove_sumOfPowers
+
+#exit
 
 theorem sum_thirteen_cubes (n : ℕ) : n ∈ sum_of_powers 3 13 := by
   cases' le_or_lt (14 * 379 ^ 9) n with h₁ h₁
