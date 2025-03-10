@@ -174,19 +174,18 @@ theorem AEMeasurable.ae_eq_of_forall_setLIntegral_eq {f g : α → ℝ≥0∞} (
 
 section PiSystem
 
-theorem lintegral_eq_lintegral_of_isPiSystem {s : Set (Set α)}
-    (h_eq : m0 = MeasurableSpace.generateFrom s) (h_inter : IsPiSystem s) (h_univ : Set.univ ∈ s)
-    {f g : α → ℝ≥0∞} {μ : Measure α}
+variable {s : Set (Set α)} {f g : α → ℝ≥0∞}
+
+theorem lintegral_eq_lintegral_of_isPiSystem
+    (h_eq : m0 = MeasurableSpace.generateFrom s) (h_inter : IsPiSystem s)
     (basic : ∀ t ∈ s, ∫⁻ x in t, f x ∂μ = ∫⁻ x in t, g x ∂μ)
+    (h_univ : ∫⁻ x, f x ∂μ = ∫⁻ x, g x ∂μ)
     (hf_int : ∫⁻ x, f x ∂μ ≠ ∞) (hg_int : ∫⁻ x, g x ∂μ ≠ ∞) :
     ∀ t (_ : MeasurableSet t), ∫⁻ x in t, f x ∂μ = ∫⁻ x in t, g x ∂μ := by
   refine MeasurableSpace.induction_on_inter h_eq h_inter ?_ basic ?_ ?_
   · simp
   · intro t ht h_eq
-    rw [setLintegral_compl ht, setLintegral_compl ht, h_eq]
-    · congr 1
-      rw [← setLIntegral_univ, ← setLIntegral_univ (f := g)]
-      exact basic _ h_univ
+    rw [setLintegral_compl ht, setLintegral_compl ht, h_eq, h_univ]
     · refine ne_of_lt ?_
       calc ∫⁻ x in t, g x ∂μ
       _ ≤ ∫⁻ x, g x ∂μ := setLIntegral_le_lintegral t _
@@ -200,6 +199,15 @@ theorem lintegral_eq_lintegral_of_isPiSystem {s : Set (Set α)}
     congr with i
     exact h i
 
+theorem lintegral_eq_lintegral_of_isPiSystem_of_univ_mem
+    (h_eq : m0 = MeasurableSpace.generateFrom s) (h_inter : IsPiSystem s) (h_univ : Set.univ ∈ s)
+    (basic : ∀ t ∈ s, ∫⁻ x in t, f x ∂μ = ∫⁻ x in t, g x ∂μ)
+    (hf_int : ∫⁻ x, f x ∂μ ≠ ∞) (hg_int : ∫⁻ x, g x ∂μ ≠ ∞) :
+    ∀ t (_ : MeasurableSet t), ∫⁻ x in t, f x ∂μ = ∫⁻ x in t, g x ∂μ := by
+  refine lintegral_eq_lintegral_of_isPiSystem h_eq h_inter basic ?_ hf_int hg_int
+  rw [← setLIntegral_univ, ← setLIntegral_univ (f := g)]
+  exact basic _ h_univ
+
 lemma ae_eq_of_setLIntegral_prod_eq₀ {β : Type*} {mβ : MeasurableSpace β}
     {μ : Measure (α × β)} [SigmaFinite μ] {f g : α × β → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
@@ -208,8 +216,8 @@ lemma ae_eq_of_setLIntegral_prod_eq₀ {β : Type*} {mβ : MeasurableSpace β}
       ∫⁻ x in s ×ˢ t, f x ∂μ = ∫⁻ x in s ×ˢ t, g x ∂μ) :
     f =ᵐ[μ] g := by
   refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀ hf hg fun s hs _ ↦ ?_
-  refine lintegral_eq_lintegral_of_isPiSystem generateFrom_prod.symm isPiSystem_prod ?_ ?_
-    hf_int hg_int s hs
+  refine lintegral_eq_lintegral_of_isPiSystem_of_univ_mem generateFrom_prod.symm isPiSystem_prod
+    ?_ ?_ hf_int hg_int s hs
   · simp only [Set.mem_image2, Set.mem_setOf_eq]
     exact ⟨Set.univ, .univ, Set.univ, .univ, Set.univ_prod_univ⟩
   · rintro _ ⟨s, hs, t, ht, rfl⟩
