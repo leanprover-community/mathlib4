@@ -3,8 +3,8 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Topology.Algebra.Module.LinearMap
 
 /-!
@@ -26,6 +26,8 @@ the topological `R`-algebras `A` and `B` is denoted by `A →A[R] B`.
 TODO: add continuous algebra isomorphisms.
 
 -/
+
+assert_not_exists Basis
 
 open Algebra Set TopologicalSpace Topology
 
