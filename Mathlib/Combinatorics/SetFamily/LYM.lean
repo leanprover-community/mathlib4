@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SetFamily.Shadow
 
@@ -221,7 +220,7 @@ theorem _root_.IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
         rwa [sum_card_slice] at this
       simp only [cast_pos]
       exact choose_pos (Nat.div_le_self _ _)
-    rw [Iic_eq_Icc, ← Ico_succ_right, bot_eq_zero, Ico_zero_eq_range]
+    rw [Iic_eq_Icc, ← Ico_add_one_right_eq_Icc, bot_eq_zero, Ico_zero_eq_range]
     refine (sum_le_sum fun r hr => ?_).trans (sum_card_slice_div_choose_le_one h𝒜)
     rw [mem_range] at hr
     refine div_le_div_of_nonneg_left ?_ ?_ ?_ <;> norm_cast
