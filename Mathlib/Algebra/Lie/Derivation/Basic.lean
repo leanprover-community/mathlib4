@@ -386,9 +386,10 @@ end Inner
 
 section ExpNilpotent
 
+variable {R L : Type*} [Field R] [CharZero R] [LieRing L] [LieAlgebra R L] (D : LieDerivation R L L)
+
 open Finset
 open scoped Nat
-variable (R L : Type*) [LieRing L] [Field R] [CharZero R] [LieAlgebra R L] (D : LieDerivation R L L)
 
 /-- In characteristic zero, the exponential of a nilpotent derivation is a Lie algebra
 automorphism. -/
