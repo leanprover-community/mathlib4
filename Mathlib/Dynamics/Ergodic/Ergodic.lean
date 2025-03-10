@@ -125,8 +125,6 @@ theorem ae_empty_or_univ₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s 
     s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ :=
   eventuallyConst_set'.mp <| hf.aeconst_set₀ hsm hs
 
-@[deprecated (since := "2024-07-21")] alias ae_empty_or_univ' := ae_empty_or_univ₀
-
 /-- For a quasi ergodic map, sets that are almost invariant (rather than strictly invariant) are
 still either almost empty or full. -/
 theorem ae_mem_or_ae_nmem₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s μ)

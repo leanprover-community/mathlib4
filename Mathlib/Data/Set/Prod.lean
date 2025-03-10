@@ -152,22 +152,16 @@ theorem Disjoint.set_prod_right (ht : Disjoint t₁ t₂) (s₁ s₂ : Set α) :
     Disjoint (s₁ ×ˢ t₁) (s₂ ×ˢ t₂) :=
   disjoint_left.2 fun ⟨_a, _b⟩ ⟨_, hb₁⟩ ⟨_, hb₂⟩ => disjoint_left.1 ht hb₁ hb₂
 
+theorem prodMap_image_prod (f : α → β) (g : γ → δ) (s : Set α) (t : Set γ) :
+    (Prod.map f g) '' (s ×ˢ t) = (f '' s) ×ˢ (g '' t) := by
+  ext
+  aesop
+
 theorem insert_prod : insert a s ×ˢ t = Prod.mk a '' t ∪ s ×ˢ t := by
-  ext ⟨x, y⟩
-  simp +contextual [image, iff_def, or_imp]
+  simp only [insert_eq, union_prod, singleton_prod]
 
 theorem prod_insert : s ×ˢ insert b t = (fun a => (a, b)) '' s ∪ s ×ˢ t := by
-  ext ⟨x, y⟩
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745):
-  -- was `simp +contextual [image, iff_def, or_imp, Imp.swap]`
-  simp only [mem_prod, mem_insert_iff, image, mem_union, mem_setOf_eq, Prod.mk.injEq]
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · obtain ⟨hx, rfl|hy⟩ := h
-    · exact Or.inl ⟨x, hx, rfl, rfl⟩
-    · exact Or.inr ⟨hx, hy⟩
-  · obtain ⟨x, hx, rfl, rfl⟩|⟨hx, hy⟩ := h
-    · exact ⟨hx, Or.inl rfl⟩
-    · exact ⟨hx, Or.inr hy⟩
+  simp only [insert_eq, prod_union, prod_singleton]
 
 theorem prod_preimage_eq {f : γ → α} {g : δ → β} :
     (f ⁻¹' s) ×ˢ (g ⁻¹' t) = (fun p : γ × δ => (f p.1, g p.2)) ⁻¹' s ×ˢ t :=
@@ -231,6 +225,9 @@ theorem preimage_swap_prod (s : Set α) (t : Set β) : Prod.swap ⁻¹' s ×ˢ t
 @[simp]
 theorem image_swap_prod (s : Set α) (t : Set β) : Prod.swap '' s ×ˢ t = t ×ˢ s := by
   rw [image_swap_eq_preimage_swap, preimage_swap_prod]
+
+theorem mapsTo_swap_prod (s : Set α) (t : Set β) : MapsTo Prod.swap (s ×ˢ t) (t ×ˢ s) :=
+  fun _ ⟨hx, hy⟩ ↦ ⟨hy, hx⟩
 
 theorem prod_image_image_eq {m₁ : α → γ} {m₂ : β → δ} :
     (m₁ '' s) ×ˢ (m₂ '' t) = (fun p : α × β => (m₁ p.1, m₂ p.2)) '' s ×ˢ t :=

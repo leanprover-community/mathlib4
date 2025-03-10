@@ -51,6 +51,9 @@ def pi : Ideal (Π i, α i) where
 theorem mem_pi (x : Π i, α i) : x ∈ pi I ↔ ∀ i, x i ∈ I i :=
   Iff.rfl
 
+instance (priority := low) [∀ i, (I i).IsTwoSided] : (pi I).IsTwoSided :=
+  ⟨fun _b hb i ↦ mul_mem_right _ _ (hb i)⟩
+
 end Pi
 
 section Commute
@@ -137,7 +140,7 @@ theorem sum_pow_mem_span_pow {ι} (s : Finset ι) (f : ι → α) (n : ℕ) :
 theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
     span ((fun (x : α) => x ^ n) '' s) = ⊤ := by
   rw [eq_top_iff_one]
-  cases' n with n
+  rcases n with - | n
   · obtain rfl | ⟨x, hx⟩ := eq_empty_or_nonempty s
     · rw [Set.image_empty, hs]
       trivial

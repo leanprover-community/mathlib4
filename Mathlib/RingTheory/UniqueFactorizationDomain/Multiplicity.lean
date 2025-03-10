@@ -16,6 +16,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
   occurs in the `normalizedFactors`.
 -/
 
+assert_not_exists Field
 
 variable {α : Type*}
 

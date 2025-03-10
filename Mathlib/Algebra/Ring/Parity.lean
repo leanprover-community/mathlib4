@@ -20,11 +20,11 @@ As opposed to `Even`, `Odd` does not have a multiplicative counterpart.
 
 Try to generalize `Even` lemmas further. For example, there are still a few lemmas whose `Semiring`
 assumptions I (DT) am not convinced are necessary. If that turns out to be true, they could be moved
-to `Algebra.Group.Even`.
+to `Mathlib.Algebra.Group.Even`.
 
 ## See also
 
-`Algebra.Group.Even` for the definition of even elements.
+`Mathlib.Algebra.Group.Even` for the definition of even elements.
 -/
 
 assert_not_exists DenselyOrdered OrderedRing
@@ -55,8 +55,6 @@ lemma Even.neg_one_zpow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_zpow, o
 end DivisionMonoid
 
 @[simp] lemma IsSquare.zero [MulZeroClass α] : IsSquare (0 : α) := ⟨0, (mul_zero _).symm⟩
-
-@[deprecated (since := "2024-01-07")] alias isSquare_zero := IsSquare.zero
 
 section Semiring
 variable [Semiring α] [Semiring β] {a b : α} {m n : ℕ}
@@ -308,7 +306,6 @@ end
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
   simp [*, two_ne_zero, parity_simps]
 
-/- Porting note: the `simp` lemmas about `bit*` no longer apply. -/
 example : ¬Even 25394535 := by decide
 
 end Nat

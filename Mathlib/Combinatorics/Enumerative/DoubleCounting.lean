@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Nat
 
@@ -28,6 +28,7 @@ and `t`.
 * `card_mul_eq_card_mul`: Equality combination of the previous.
 -/
 
+assert_not_exists Field
 
 open Finset Function Relator
 
@@ -89,8 +90,8 @@ theorem card_nsmul_le_card_nsmul [∀ a b, Decidable (r a b)]
     (hm : ∀ a ∈ s, m ≤ #(t.bipartiteAbove r a))
     (hn : ∀ b ∈ t, #(s.bipartiteBelow r b) ≤ n) : #s • m ≤ #t • n :=
   calc
-    _ ≤ ∑ a in s, (#(t.bipartiteAbove r a) : R) := s.card_nsmul_le_sum _ _ hm
-    _ = ∑ b in t, (#(s.bipartiteBelow r b) : R) := by
+    _ ≤ ∑ a ∈ s, (#(t.bipartiteAbove r a) : R) := s.card_nsmul_le_sum _ _ hm
+    _ = ∑ b ∈ t, (#(s.bipartiteBelow r b) : R) := by
       norm_cast; rw [sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow]
     _ ≤ _ := t.sum_le_card_nsmul _ _ hn
 
@@ -119,7 +120,7 @@ theorem card_nsmul_lt_card_nsmul_of_lt_of_le [∀ a b, Decidable (r a b)] (hs : 
   calc
     _ = ∑ _a ∈ s, m := by rw [sum_const]
     _ < ∑ a ∈ s, (#(t.bipartiteAbove r a) : R) := sum_lt_sum_of_nonempty hs hm
-    _ = ∑ b in t, (#(s.bipartiteBelow r b) : R) := by
+    _ = ∑ b ∈ t, (#(s.bipartiteBelow r b) : R) := by
       norm_cast; rw [sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow]
     _ ≤ _ := t.sum_le_card_nsmul _ _ hn
 
@@ -131,8 +132,8 @@ theorem card_nsmul_lt_card_nsmul_of_le_of_lt [∀ a b, Decidable (r a b)] (ht : 
     (hm : ∀ a ∈ s, m ≤ #(t.bipartiteAbove r a))
     (hn : ∀ b ∈ t, #(s.bipartiteBelow r b) < n) : #s • m < #t • n :=
   calc
-    _ ≤ ∑ a in s, (#(t.bipartiteAbove r a) : R) := s.card_nsmul_le_sum _ _ hm
-    _ = ∑ b in t, (#(s.bipartiteBelow r b) : R) := by
+    _ ≤ ∑ a ∈ s, (#(t.bipartiteAbove r a) : R) := s.card_nsmul_le_sum _ _ hm
+    _ = ∑ b ∈ t, (#(s.bipartiteBelow r b) : R) := by
       norm_cast; rw [sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow]
     _ < ∑ _b ∈ t, n := sum_lt_sum_of_nonempty ht hn
     _ = _ := sum_const _

@@ -127,7 +127,7 @@ open Finset Nat
 
 /-- The general Leibniz rule for Lie derivatives. -/
 theorem iterate_apply_lie (D : LieDerivation R L L) (n : ℕ) (a b : L) :
-    D^[n] ⁅a, b⁆ = ∑ ij in antidiagonal n, choose n ij.1 • ⁅D^[ij.1] a, D^[ij.2] b⁆ := by
+    D^[n] ⁅a, b⁆ = ∑ ij ∈ antidiagonal n, choose n ij.1 • ⁅D^[ij.1] a, D^[ij.2] b⁆ := by
   induction n with
   | zero => simp
   | succ n ih =>
@@ -139,7 +139,7 @@ theorem iterate_apply_lie (D : LieDerivation R L L) (n : ℕ) (a b : L) :
 
 /-- Alternate version of the general Leibniz rule for Lie derivatives. -/
 theorem iterate_apply_lie' (D : LieDerivation R L L) (n : ℕ) (a b : L) :
-    D^[n] ⁅a, b⁆ = ∑ i in range (n + 1), n.choose i • ⁅D^[i] a, D^[n - i] b⁆ := by
+    D^[n] ⁅a, b⁆ = ∑ i ∈ range (n + 1), n.choose i • ⁅D^[i] a, D^[n - i] b⁆ := by
   rw [iterate_apply_lie D n a b]
   exact sum_antidiagonal_eq_sum_range_succ (fun i j ↦ n.choose i • ⁅D^[i] a, D^[j] b⁆) n
 

@@ -33,11 +33,6 @@ namespace Function
 
 namespace Embedding
 
-/-- Embedding into `WithTop α`. -/
-@[simps]
-def coeWithTop {α} : α ↪ WithTop α :=
-  { Embedding.some with toFun := WithTop.some }
-
 /-- Given an embedding `f : α ↪ β` and a point outside of `Set.range f`, construct an embedding
 `Option α ↪ β`. -/
 @[simps]
@@ -107,17 +102,17 @@ def subtypeOrEquiv (p q : α → Prop) [DecidablePred p] (h : Disjoint p q) :
   right_inv x := by
     cases x with
     | inl x =>
-        simp only [Sum.elim_inl]
-        rw [subtypeOrLeftEmbedding_apply_left]
-        · simp
-        · simpa using x.prop
+      simp only [Sum.elim_inl]
+      rw [subtypeOrLeftEmbedding_apply_left]
+      · simp
+      · simpa using x.prop
     | inr x =>
-        simp only [Sum.elim_inr]
-        rw [subtypeOrLeftEmbedding_apply_right]
-        · simp
-        · suffices ¬p x by simpa
-          intro hp
-          simpa using h.le_bot x ⟨hp, x.prop⟩
+      simp only [Sum.elim_inr]
+      rw [subtypeOrLeftEmbedding_apply_right]
+      · simp
+      · suffices ¬p x by simpa
+        intro hp
+        simpa using h.le_bot x ⟨hp, x.prop⟩
 
 @[simp]
 theorem subtypeOrEquiv_symm_inl (p q : α → Prop) [DecidablePred p] (h : Disjoint p q)

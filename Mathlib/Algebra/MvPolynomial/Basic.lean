@@ -143,9 +143,11 @@ end Instances
 
 variable [CommSemiring R] [CommSemiring S₁] {p q : MvPolynomial σ R}
 
-/-- `monomial s a` is the monomial with coefficient `a` and exponents given by `s`  -/
+/-- `monomial s a` is the monomial with coefficient `a` and exponents given by `s` -/
 def monomial (s : σ →₀ ℕ) : R →ₗ[R] MvPolynomial σ R :=
   AddMonoidAlgebra.lsingle s
+
+theorem one_def : (1 : MvPolynomial σ R) = monomial 0 1 := rfl
 
 theorem single_eq_monomial (s : σ →₀ ℕ) (a : R) : Finsupp.single s a = monomial s a :=
   rfl
@@ -468,8 +470,6 @@ theorem support_monomial [h : Decidable (a = 0)] :
     (monomial s a).support = if a = 0 then ∅ else {s} := by
   rw [← Subsingleton.elim (Classical.decEq R a 0) h]
   rfl
-  -- Porting note: the proof in Lean 3 wasn't fundamentally better and needed `by convert rfl`
-  -- the issue is the different decidability instances in the `ite` expressions
 
 theorem support_monomial_subset : (monomial s a).support ⊆ {s} :=
   support_single_subset
@@ -820,20 +820,15 @@ def constantCoeff : MvPolynomial σ R →+* R where
 theorem constantCoeff_eq : (constantCoeff : MvPolynomial σ R → R) = coeff 0 :=
   rfl
 
-variable (σ)
-
+variable (σ) in
 @[simp]
 theorem constantCoeff_C (r : R) : constantCoeff (C r : MvPolynomial σ R) = r := by
   classical simp [constantCoeff_eq]
 
-variable {σ}
-variable (R)
-
+variable (R) in
 @[simp]
 theorem constantCoeff_X (i : σ) : constantCoeff (X i : MvPolynomial σ R) = 0 := by
   simp [constantCoeff_eq]
-
-variable {R}
 
 @[simp]
 theorem constantCoeff_smul {R : Type*} [SMulZeroClass R S₁] (a : R) (f : MvPolynomial σ S₁) :
@@ -868,6 +863,104 @@ theorem as_sum (p : MvPolynomial σ R) : p = ∑ v ∈ p.support, monomial v (co
   (support_sum_monomial_coeff p).symm
 
 end AsSum
+
+section coeffsIn
+variable {R S σ : Type*} [CommSemiring R] [CommSemiring S]
+
+section Module
+variable [Module R S] {M N : Submodule R S} {p : MvPolynomial σ S} {s : σ} {i : σ →₀ ℕ} {x : S}
+  {n : ℕ}
+
+variable (σ M) in
+/-- The `R`-submodule of multivariate polynomials whose coefficients lie in a `R`-submodule `M`. -/
+@[simps]
+def coeffsIn : Submodule R (MvPolynomial σ S) where
+  carrier := {p | ∀ i, p.coeff i ∈ M}
+  add_mem' := by simp+contextual [add_mem]
+  zero_mem' := by simp
+  smul_mem' := by simp+contextual [Submodule.smul_mem]
+
+lemma mem_coeffsIn : p ∈ coeffsIn σ M ↔ ∀ i, p.coeff i ∈ M := .rfl
+
+@[simp]
+lemma monomial_mem_coeffsIn : monomial i x ∈ coeffsIn σ M ↔ x ∈ M := by
+  classical
+  simp only [mem_coeffsIn, coeff_monomial]
+  exact ⟨fun h ↦ by simpa using h i, fun hs j ↦ by split <;> simp [hs]⟩
+
+@[simp]
+lemma C_mem_coeffsIn : C x ∈ coeffsIn σ M ↔ x ∈ M := by simpa using monomial_mem_coeffsIn (i := 0)
+
+@[simp]
+lemma one_coeffsIn : 1 ∈ coeffsIn σ M ↔ 1 ∈ M := by simpa using C_mem_coeffsIn (x := (1 : S))
+
+@[simp]
+lemma mul_monomial_mem_coeffsIn : p * monomial i 1 ∈ coeffsIn σ M ↔ p ∈ coeffsIn σ M := by
+  classical
+  simp only [mem_coeffsIn, coeff_mul_monomial', Finsupp.mem_support_iff]
+  constructor
+  · rintro hp j
+    simpa using hp (j + i)
+  · rintro hp i
+    split <;> simp [hp]
+
+@[simp]
+lemma monomial_mul_mem_coeffsIn : monomial i 1 * p ∈ coeffsIn σ M ↔ p ∈ coeffsIn σ M := by
+  simp [mul_comm]
+
+@[simp]
+lemma mul_X_mem_coeffsIn : p * X s ∈ coeffsIn σ M ↔ p ∈ coeffsIn σ M := by
+  simpa [-mul_monomial_mem_coeffsIn] using mul_monomial_mem_coeffsIn (i := .single s 1)
+
+@[simp]
+lemma X_mul_mem_coeffsIn : X s * p ∈ coeffsIn σ M ↔ p ∈ coeffsIn σ M := by simp [mul_comm]
+
+variable (M) in
+lemma coeffsIn_eq_span_monomial : coeffsIn σ M = .span R {monomial i m | (m ∈ M) (i : σ →₀ ℕ)} := by
+  classical
+  refine le_antisymm ?_ <| Submodule.span_le.2 ?_
+  · rintro p hp
+    rw [p.as_sum]
+    exact sum_mem fun i hi ↦ Submodule.subset_span ⟨_, hp i, _, rfl⟩
+  · rintro _ ⟨m, hm, s, n, rfl⟩ i
+    simp [coeff_X_pow]
+    split <;> simp [hm]
+
+lemma coeffsIn_le {N : Submodule R (MvPolynomial σ S)} :
+    coeffsIn σ M ≤ N ↔ ∀ m ∈ M, ∀ i, monomial i m ∈ N := by
+  simp [coeffsIn_eq_span_monomial, Submodule.span_le, Set.subset_def,
+    forall_swap (α := MvPolynomial σ S)]
+
+end Module
+
+section Algebra
+variable [Algebra R S] {M : Submodule R S}
+
+lemma coeffsIn_mul (M N : Submodule R S) : coeffsIn σ (M * N) = coeffsIn σ M * coeffsIn σ N := by
+  classical
+  refine le_antisymm (coeffsIn_le.2 ?_) ?_
+  · intros r hr s
+    induction hr using Submodule.mul_induction_on' with
+    | mem_mul_mem m hm n hn =>
+      rw [← add_zero s, ← monomial_mul]
+      apply Submodule.mul_mem_mul <;> simpa
+    | add x _ y _ hx hy =>
+      simpa [map_add] using add_mem hx hy
+  · rw [Submodule.mul_le]
+    intros x hx y hy k
+    rw [MvPolynomial.coeff_mul]
+    exact sum_mem fun c hc ↦ Submodule.mul_mem_mul (hx _) (hy _)
+
+lemma coeffsIn_pow : ∀ {n}, n ≠ 0 → ∀ M : Submodule R S, coeffsIn σ (M ^ n) = coeffsIn σ M ^ n
+  | 1, _, M => by simp
+  | n + 2, _, M => by rw [pow_succ, coeffsIn_mul, coeffsIn_pow, ← pow_succ]; exact n.succ_ne_zero
+
+lemma le_coeffsIn_pow : ∀ {n}, coeffsIn σ M ^ n ≤ coeffsIn σ (M ^ n)
+  | 0 => by simpa using ⟨1, map_one _⟩
+  | n + 1 => (coeffsIn_pow n.succ_ne_zero _).ge
+
+end Algebra
+end coeffsIn
 
 end CommSemiring
 

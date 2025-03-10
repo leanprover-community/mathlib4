@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Defs
+import Mathlib.Data.Multiset.Nodup
 
 /-!
 # Attaching a proof of membership to a finite set

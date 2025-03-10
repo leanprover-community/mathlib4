@@ -51,7 +51,7 @@ variable [Preorder ι] [LocallyFiniteOrderBot ι]
 
 /-- The function mapping `i` to `f i \ (⨆ j < i, f j)`. When `ι` is a partial order, this is the
 unique function `g` having the same `partialSups` as `f` and such that `g i` and `g j` are
-disjoint whenever `i < j`.  -/
+disjoint whenever `i < j`. -/
 def disjointed (f : ι → α) (i : ι) : α := f i \ (Iio i).sup f
 
 lemma disjointed_apply (f : ι → α) (i : ι) : disjointed f i = f i \ (Iio i).sup f := rfl

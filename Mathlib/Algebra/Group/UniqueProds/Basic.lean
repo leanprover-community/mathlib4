@@ -102,8 +102,6 @@ theorem set_subsingleton (h : UniqueMul A B a0 b0) :
   rcases h hy.1 hy.2.1 hy.2.2 with ⟨rfl, rfl⟩
   rfl
 
--- Porting note: mathport warning: expanding binder collection
---  (ab «expr ∈ » [finset.product/multiset.product/set.prod/list.product](A, B)) -/
 @[to_additive]
 theorem iff_existsUnique (aA : a0 ∈ A) (bB : b0 ∈ B) :
     UniqueMul A B a0 b0 ↔ ∃! ab, ab ∈ A ×ˢ B ∧ ab.1 * ab.2 = a0 * b0 :=
@@ -129,8 +127,6 @@ theorem iff_card_le_one [DecidableEq G] (ha0 : a0 ∈ A) (hb0 : b0 ∈ B) :
 @[deprecated (since := "2024-09-23")]
 alias _root_.UniqueAdd.iff_card_nonpos := UniqueAdd.iff_card_le_one
 
--- Porting note: mathport warning: expanding binder collection
---  (ab «expr ∈ » [finset.product/multiset.product/set.prod/list.product](A, B)) -/
 @[to_additive]
 theorem exists_iff_exists_existsUnique :
     (∃ a0 b0 : G, a0 ∈ A ∧ b0 ∈ B ∧ UniqueMul A B a0 b0) ↔
@@ -138,7 +134,7 @@ theorem exists_iff_exists_existsUnique :
   ⟨fun ⟨_, _, hA, hB, h⟩ ↦ ⟨_, (iff_existsUnique hA hB).mp h⟩, fun ⟨g, h⟩ ↦ by
     have h' := h
     rcases h' with ⟨⟨a, b⟩, ⟨hab, rfl, -⟩, -⟩
-    cases' Finset.mem_product.mp hab with ha hb
+    obtain ⟨ha, hb⟩ := Finset.mem_product.mp hab
     exact ⟨a, b, ha, hb, (iff_existsUnique ha hb).mpr h⟩⟩
 
 /-- `UniqueMul` is preserved by inverse images under injective, multiplicative maps. -/

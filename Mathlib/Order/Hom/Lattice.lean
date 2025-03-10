@@ -276,17 +276,18 @@ end OrderEmbedding
 
 section BoundedLattice
 
-variable [Lattice α] [BoundedOrder α] [Lattice β] [BoundedOrder β]
-variable [FunLike F α β] [BoundedLatticeHomClass F α β]
-variable (f : F) {a b : α}
+variable [Lattice α] [Lattice β] [FunLike F α β]
 
-theorem Disjoint.map (h : Disjoint a b) : Disjoint (f a) (f b) := by
+theorem Disjoint.map [OrderBot α] [OrderBot β] [BotHomClass F α β] [InfHomClass F α β] {a b : α}
+    (f : F) (h : Disjoint a b) : Disjoint (f a) (f b) := by
   rw [disjoint_iff, ← map_inf, h.eq_bot, map_bot]
 
-theorem Codisjoint.map (h : Codisjoint a b) : Codisjoint (f a) (f b) := by
+theorem Codisjoint.map [OrderTop α] [OrderTop β] [TopHomClass F α β] [SupHomClass F α β] {a b : α}
+    (f : F) (h : Codisjoint a b) : Codisjoint (f a) (f b) := by
   rw [codisjoint_iff, ← map_sup, h.eq_top, map_top]
 
-theorem IsCompl.map (h : IsCompl a b) : IsCompl (f a) (f b) :=
+theorem IsCompl.map [BoundedOrder α] [BoundedOrder β] [BoundedLatticeHomClass F α β] {a b : α}
+    (f : F) (h : IsCompl a b) : IsCompl (f a) (f b) :=
   ⟨h.1.map _, h.2.map _⟩
 
 end BoundedLattice

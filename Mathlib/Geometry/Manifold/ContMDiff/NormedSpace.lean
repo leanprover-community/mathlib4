@@ -3,7 +3,7 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.Product
+import Mathlib.Geometry.Manifold.ContMDiff.Constructions
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
 
 /-! ## Equivalence of smoothness with the basic definition for functions between vector spaces

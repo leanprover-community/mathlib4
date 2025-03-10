@@ -136,12 +136,10 @@ theorem inv_comp (r : Rel α β) (s : Rel β γ) : inv (r • s) = inv s • inv
 
 @[simp]
 theorem inv_bot : (⊥ : Rel α β).inv = (⊥ : Rel β α) := by
-  #adaptation_note /-- nightly-2024-03-16: simp was `simp [Bot.bot, inv, flip]` -/
   simp [Bot.bot, inv, Function.flip_def]
 
 @[simp]
 theorem inv_top : (⊤ : Rel α β).inv = (⊤ : Rel β α) := by
-  #adaptation_note /-- nightly-2024-03-16: simp was `simp [Top.top, inv, flip]` -/
   simp [Top.top, inv, Function.flip_def]
 
 /-- Image of a set under a relation -/
@@ -150,6 +148,7 @@ def image (s : Set α) : Set β := { y | ∃ x ∈ s, r x y }
 theorem mem_image (y : β) (s : Set α) : y ∈ image r s ↔ ∃ x ∈ s, r x y :=
   Iff.rfl
 
+open scoped Relator in
 theorem image_subset : ((· ⊆ ·) ⇒ (· ⊆ ·)) r.image r.image := fun _ _ h _ ⟨x, xs, rxy⟩ =>
   ⟨x, h xs, rxy⟩
 
@@ -283,6 +282,7 @@ def core (s : Set β) := { x | ∀ y, r x y → y ∈ s }
 theorem mem_core (x : α) (s : Set β) : x ∈ r.core s ↔ ∀ y, r x y → y ∈ s :=
   Iff.rfl
 
+open scoped Relator in
 theorem core_subset : ((· ⊆ ·) ⇒ (· ⊆ ·)) r.core r.core := fun _s _t h _x h' y rxy => h (h' y rxy)
 
 theorem core_mono : Monotone r.core :=

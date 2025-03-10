@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Rel
@@ -171,13 +171,17 @@ variable {r} {s : RelSeries r} {x : α}
 lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
   ⟨RelSeries.withLength r 0 0⟩
 
+lemma nonempty_of_finiteDimensional [r.FiniteDimensional] : Nonempty α := by
+  obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff r).mp ‹_›
+  exact ⟨p 0⟩
+
 instance membership : Membership α (RelSeries r) :=
   ⟨Function.swap (· ∈ Set.range ·)⟩
 
 theorem mem_def : x ∈ s ↔ x ∈ Set.range s := Iff.rfl
 
 @[simp] theorem mem_toList : x ∈ s.toList ↔ x ∈ s := by
-  rw [RelSeries.toList, List.mem_ofFn, RelSeries.mem_def]
+  rw [RelSeries.toList, List.mem_ofFn', RelSeries.mem_def]
 
 theorem subsingleton_of_length_eq_zero (hs : s.length = 0) : {x | x ∈ s}.Subsingleton := by
   rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩
@@ -689,8 +693,15 @@ protected noncomputable def withLength [InfiniteDimensionalOrder α] (n : ℕ) :
   RelSeries.length_withLength _ _
 
 /-- if `α` is infinite dimensional, then `α` is nonempty. -/
-lemma nonempty_of_infiniteDimensionalType [InfiniteDimensionalOrder α] : Nonempty α :=
+lemma nonempty_of_infiniteDimensionalOrder [InfiniteDimensionalOrder α] : Nonempty α :=
   ⟨LTSeries.withLength α 0 0⟩
+
+@[deprecated (since := "2025-03-01")]
+alias nonempty_of_infiniteDimensionalType := nonempty_of_infiniteDimensionalOrder
+
+lemma nonempty_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : Nonempty α := by
+  obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff _).mp ‹_›
+  exact ⟨p 0⟩
 
 variable {α}
 
@@ -781,7 +792,7 @@ def range (n : ℕ) : LTSeries ℕ where
 /--
 In ℕ, two entries in an `LTSeries` differ by at least the difference of their indices.
 (Expressed in a way that avoids subtraction).
- -/
+-/
 lemma apply_add_index_le_apply_add_index_nat (p : LTSeries ℕ) (i j : Fin (p.length + 1))
     (hij : i ≤ j) : p i + j ≤ p j + i := by
   have ⟨i, hi⟩ := i

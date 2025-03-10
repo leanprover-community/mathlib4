@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.Vector.Defs
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
+import Mathlib.Data.List.Scan
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 import Mathlib.Algebra.BigOperators.Group.List.Basic
@@ -175,7 +176,7 @@ def _root_.Equiv.vectorEquivFin (α : Type*) (n : ℕ) : Vector α n ≃ (Fin n 
   ⟨Vector.get, Vector.ofFn, Vector.ofFn_get, fun f => funext <| Vector.get_ofFn f⟩
 
 theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, by omega⟩ := by
-  cases' i with i ih; dsimp
+  obtain ⟨i, ih⟩ := i; dsimp
   rcases x with ⟨_ | _, h⟩ <;> try rfl
   rw [List.length] at h
   rw [← h] at ih
@@ -232,7 +233,7 @@ theorem map_id {n : ℕ} (v : Vector α n) : Vector.map id v = v :=
   Vector.eq _ _ (by simp only [List.map_id, Vector.toList_map])
 
 theorem nodup_iff_injective_get {v : Vector α n} : v.toList.Nodup ↔ Function.Injective v.get := by
-  cases' v with l hl
+  obtain ⟨l, hl⟩ := v
   subst hl
   exact List.nodup_iff_injective_get
 
@@ -363,7 +364,7 @@ This lemma is the `get` version of `scanl_cons`.
 @[simp]
 theorem scanl_get (i : Fin n) :
     (scanl f b v).get i.succ = f ((scanl f b v).get (Fin.castSucc i)) (v.get i) := by
-  cases' n with n
+  rcases n with - | n
   · exact i.elim0
   induction' n with n hn generalizing b
   · have i0 : i = 0 := Fin.eq_zero _
@@ -541,14 +542,9 @@ theorem eraseIdx_val {i : Fin n} : ∀ {v : Vector α n}, (eraseIdx i v).val = v
   | _ => rfl
 
 @[deprecated (since := "2024-10-21")] alias eraseNth_val := eraseIdx_val
-@[deprecated (since := "2024-05-04")] alias removeNth_val := eraseIdx_val
-
 theorem eraseIdx_insertIdx {v : Vector α n} {i : Fin (n + 1)} :
     eraseIdx i (insertIdx a i v) = v :=
   Subtype.eq <| List.eraseIdx_insertIdx i.1 v.1
-
-@[deprecated (since := "2024-05-04")] alias eraseIdx_insertNth := eraseIdx_insertIdx
-@[deprecated (since := "2024-05-04")] alias removeNth_insertNth := eraseIdx_insertIdx
 
 /-- Erasing an element after inserting an element, at different indices. -/
 theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
@@ -570,9 +566,6 @@ theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
       · rfl
       · simpa
       · simpa [not_lt] using hij
-
-@[deprecated (since := "2024-05-04")] alias eraseIdx_insertNth' := eraseIdx_insertIdx'
-@[deprecated (since := "2024-05-04")] alias removeNth_insertNth' := eraseIdx_insertIdx'
 
 theorem insertIdx_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
     ∀ v : Vector α n,
@@ -622,9 +615,9 @@ theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
   refine (List.prod_set v.toList i a).trans ?_
   simp_all
 
-/-- Variant of `List.Vector.prod_set` that multiplies by the inverse of the replaced element.-/
+/-- Variant of `List.Vector.prod_set` that multiplies by the inverse of the replaced element -/
 @[to_additive
-  "Variant of `List.Vector.sum_set` that subtracts the inverse of the replaced element."]
+  "Variant of `List.Vector.sum_set` that subtracts the inverse of the replaced element"]
 theorem prod_set' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a := by
   refine (List.prod_set' v.toList i a).trans ?_

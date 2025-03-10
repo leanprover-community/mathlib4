@@ -76,7 +76,7 @@ variable {X : Type*}
 
 /-- Given a subset `F`, an entourage `U` and an integer `n`, a subset `s` is a `(U, n)`-
 dynamical cover of `F` if any orbit of length `n` in `F` is `U`-shadowed by an orbit of length `n`
-of a point in `s`.-/
+of a point in `s`. -/
 def IsDynCoverOf (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) (s : Set X) : Prop :=
   F ⊆ ⋃ x ∈ s, ball x (dynEntourage T U n)
 
@@ -135,7 +135,7 @@ lemma IsDynCoverOf.nonempty_inter {T : X → X} {F : Set X} {U : Set (X × X)} {
 `U ○ U` and any multiple `m * n` of `m` with controlled cardinality. This lemma is the first step
 in a submultiplicative-like property of `coverMincard`, with consequences such as explicit bounds
 for the topological entropy (`coverEntropyInfEntourage_le_card_div`) and an equality between
-two notions of topological entropy (`coverEntropyInf_eq_coverEntropySup_of_inv`).-/
+two notions of topological entropy (`coverEntropyInf_eq_coverEntropySup_of_inv`). -/
 lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U : Set (X × X)}
     (U_symm : SymmetricRel U) {m : ℕ} (n : ℕ) {s : Finset X} (h : IsDynCoverOf T F U m s) :
     ∃ t : Finset X, IsDynCoverOf T F (U ○ U) (m * n) t ∧ t.card ≤ s.card ^ n := by
@@ -231,7 +231,7 @@ lemma exists_isDynCoverOf_of_isCompact_invariant [UniformSpace X] {T : X → X} 
 /-! ### Minimal cardinality of dynamical covers -/
 
 /-- The smallest cardinality of a `(U, n)`-dynamical cover of `F`. Takes values in `ℕ∞`, and is
-  infinite if and only if `F` admits no finite dynamical cover.-/
+  infinite if and only if `F` admits no finite dynamical cover. -/
 noncomputable def coverMincard (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) : ℕ∞ :=
   ⨅ (s : Finset X) (_ : IsDynCoverOf T F U n s), (s.card : ℕ∞)
 
@@ -338,7 +338,7 @@ lemma coverMincard_finite_of_isCompact_invariant [UniformSpace X] {T : X → X} 
 
 /-- All dynamical balls of a minimal dynamical cover of `F` intersect `F`. This lemma is the key
   to relate Bowen-Dinaburg's definition of topological entropy with covers and their definition
-  of topological entropy with nets.-/
+  of topological entropy with nets. -/
 lemma nonempty_inter_of_coverMincard {T : X → X} {F : Set X} {U : Set (X × X)} {n : ℕ}
     {s : Finset X} (h : IsDynCoverOf T F U n s) (h' : s.card = coverMincard T F U n) :
     ∀ x ∈ s, (F ∩ ball x (dynEntourage T U n)).Nonempty := by
@@ -408,13 +408,13 @@ open Filter
 
 /-- The entropy of an entourage `U`, defined as the exponential rate of growth of the size
   of the smallest `(U, n)`-refined cover of `F`. Takes values in the space of extended real numbers
-  `[-∞, +∞]`. This first version uses a `limsup`, and is chosen as the default definition.-/
+  `[-∞, +∞]`. This first version uses a `limsup`, and is chosen as the default definition. -/
 noncomputable def coverEntropyEntourage (T : X → X) (F : Set X) (U : Set (X × X)) :=
   atTop.limsup fun n : ℕ ↦ log (coverMincard T F U n) / n
 
 /-- The entropy of an entourage `U`, defined as the exponential rate of growth of the size
   of the smallest `(U, n)`-refined cover of `F`. Takes values in the space of extended real numbers
-  `[-∞, +∞]`. This second version uses a `liminf`, and is chosen as an alternative definition.-/
+  `[-∞, +∞]`. This second version uses a `liminf`, and is chosen as an alternative definition. -/
 noncomputable def coverEntropyInfEntourage (T : X → X) (F : Set X) (U : Set (X × X)) :=
   atTop.liminf fun n : ℕ ↦ log (coverMincard T F U n) / n
 
@@ -519,14 +519,14 @@ lemma coverEntropyEntourage_finite_of_isCompact_invariant [UniformSpace X] {T : 
 /-- The entropy of `T` restricted to `F`, obtained by taking the supremum
   of `coverEntropyEntourage` over entourages. Note that this supremum is approached by taking small
   entourages. This first version uses a `limsup`, and is chosen as the default definition
-  for topological entropy.-/
+  for topological entropy. -/
 noncomputable def coverEntropy [UniformSpace X] (T : X → X) (F : Set X) :=
   ⨆ U ∈ 𝓤 X, coverEntropyEntourage T F U
 
 /-- The entropy of `T` restricted to `F`, obtained by taking the supremum
   of `coverEntropyInfEntourage` over entourages. Note that this supremum is approached by taking
   small entourages. This second version uses a `liminf`, and is chosen as an alternative
-  definition for topological entropy.-/
+  definition for topological entropy. -/
 noncomputable def coverEntropyInf [UniformSpace X] (T : X → X) (F : Set X) :=
   ⨆ U ∈ 𝓤 X, coverEntropyInfEntourage T F U
 

@@ -216,11 +216,8 @@ theorem shiftFunctor_map_apply {β : Type*} [AddCommGroup β] (s : β)
 instance [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) :
   Zero (X ⟶ Y) := ⟨fun _ => 0⟩
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/4481
-the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
--/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/4481
+the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`. -/
 @[simp, nolint simpNF]
 theorem zero_apply [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) (b : β) :
     (0 : X ⟶ Y) b = 0 :=

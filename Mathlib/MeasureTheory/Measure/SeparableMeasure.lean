@@ -230,11 +230,11 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_finite [IsFiniteMeasur
                     (⋃ n ∈ (Finset.range (N + 1)), g ↑n))).toReal
                       ≤ (μ (⋃ n ∈ (Finset.range (N + 1)), f n ∆ g n)).toReal :=
                           toReal_mono (measure_ne_top _ _) (measure_mono biSup_symmDiff_biSup_le)
-                    _ ≤ ∑ n in (Finset.range (N + 1)), (μ (f n ∆ g n)).toReal := by
+                    _ ≤ ∑ n ∈ Finset.range (N + 1), (μ (f n ∆ g n)).toReal := by
                           rw [← toReal_sum (fun _ _ ↦ measure_ne_top _ _)]
                           exact toReal_mono (ne_of_lt <| sum_lt_top.2 fun _ _ ↦ measure_lt_top μ _)
                             (measure_biUnion_finset_le _ _)
-                    _ < ∑ n in (Finset.range (N + 1)), (ε / (2 * (N + 1))) :=
+                    _ < ∑ n ∈ Finset.range (N + 1), (ε / (2 * (N + 1))) :=
                           Finset.sum_lt_sum (fun i _ ↦ le_of_lt (hg i)) ⟨0, by simp, hg 0⟩
                     _ ≤ ε / 2 := by
                           simp only [Finset.sum_const, Finset.card_range, nsmul_eq_mul,
@@ -500,9 +500,9 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
         --   `≤ ‖f - bf‖ₚ + ‖g - bg‖ₚ`
         --   `< ε/2 + ε/2 = ε`.
         calc
-          ‖Memℒp.toLp f hf + Memℒp.toLp g hg - (bf + bg)‖
-            = ‖(Memℒp.toLp f hf) - bf + ((Memℒp.toLp g hg) - bg)‖ := by congr; abel
-          _ ≤ ‖(Memℒp.toLp f hf) - bf‖ + ‖(Memℒp.toLp g hg) - bg‖ := norm_add_le ..
+          ‖MemLp.toLp f hf + MemLp.toLp g hg - (bf + bg)‖
+            = ‖(MemLp.toLp f hf) - bf + ((MemLp.toLp g hg) - bg)‖ := by congr; abel
+          _ ≤ ‖(MemLp.toLp f hf) - bf‖ + ‖(MemLp.toLp g hg) - bg‖ := norm_add_le ..
           _ < ε := by linarith [hbf, hbg]
 
 end SecondCountableLp

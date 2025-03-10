@@ -40,6 +40,16 @@ theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
 instance center.isCommutative : (center G).IsCommutative :=
   ⟨⟨fun a b => Subtype.ext (b.2.comm a).symm⟩⟩
 
+variable {G} in
+/-- The center of isomorphic groups are isomorphic. -/
+@[to_additive (attr := simps!) "The center of isomorphic additive groups are isomorphic."]
+def centerCongr {H} [Group H] (e : G ≃* H) : center G ≃* center H := Submonoid.centerCongr e
+
+/-- The center of a group is isomorphic to the center of its opposite. -/
+@[to_additive (attr := simps!)
+"The center of an additive group is isomorphic to the center of its opposite."]
+def centerToMulOpposite : center G ≃* center Gᵐᵒᵖ := Submonoid.centerToMulOpposite
+
 /-- For a group with zero, the center of the units is the same as the units of the center. -/
 @[simps! apply_val_coe symm_apply_coe_val]
 def centerUnitsEquivUnitsCenter (G₀ : Type*) [GroupWithZero G₀] :

@@ -32,8 +32,6 @@ theorem nnnorm_natCast (n : ℕ) : ‖(n : ℤ)‖₊ = n :=
 
 @[simp] lemma enorm_natCast (n : ℕ) : ‖(n : ℤ)‖ₑ = n := Real.enorm_natCast _
 
-@[deprecated (since := "2024-04-05")] alias nnnorm_coe_nat := nnnorm_natCast
-
 @[simp]
 theorem toNat_add_toNat_neg_eq_nnnorm (n : ℤ) : ↑n.toNat + ↑(-n).toNat = ‖n‖₊ := by
   rw [← Nat.cast_add, toNat_add_toNat_neg_eq_natAbs, NNReal.natCast_natAbs]

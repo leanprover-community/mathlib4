@@ -297,8 +297,6 @@ alias isProperMap_restr_of_proper_of_closed := IsProperMap.restrict
 lemma IsProperMap.isClosed_range (hf : IsProperMap f) : IsClosed (range f) :=
   hf.isClosedMap.isClosed_range
 
-@[deprecated (since := "2024-05-08")] alias IsProperMap.closed_range := IsProperMap.isClosed_range
-
 /-- Version of `isProperMap_iff_isClosedMap_and_compact_fibers` in terms of `cofinite` and
 `cocompact`. Only works when the codomain is `T1`. -/
 lemma isProperMap_iff_isClosedMap_and_tendsto_cofinite [T1Space Y] :

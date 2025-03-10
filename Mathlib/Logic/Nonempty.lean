@@ -68,9 +68,8 @@ theorem nonempty_plift {α} : Nonempty (PLift α) ↔ Nonempty α :=
   Iff.intro (fun ⟨⟨a⟩⟩ ↦ ⟨a⟩) fun ⟨a⟩ ↦ ⟨⟨a⟩⟩
 
 /-- Using `Classical.choice`, lifts a (`Prop`-valued) `Nonempty` instance to a (`Type`-valued)
-  `Inhabited` instance. `Classical.inhabited_of_nonempty` already exists, in
-  `Init/Classical.lean`, but the assumption is not a type class argument,
-  which makes it unsuitable for some applications. -/
+`Inhabited` instance. `Classical.inhabited_of_nonempty` already exists, in `Init/Classical.lean`,
+but the assumption is not a type class argument, which makes it unsuitable for some applications. -/
 noncomputable def Classical.inhabited_of_nonempty' {α} [h : Nonempty α] : Inhabited α :=
   ⟨Classical.choice h⟩
 
@@ -83,7 +82,7 @@ protected noncomputable abbrev Classical.arbitrary (α) [h : Nonempty α] : α :
   Classical.choice h
 
 /-- Given `f : α → β`, if `α` is nonempty then `β` is also nonempty.
-  `Nonempty` cannot be a `functor`, because `Functor` is restricted to `Type`. -/
+`Nonempty` cannot be a `functor`, because `Functor` is restricted to `Type`. -/
 theorem Nonempty.map {α β} (f : α → β) : Nonempty α → Nonempty β
   | ⟨h⟩ => ⟨f h⟩
 

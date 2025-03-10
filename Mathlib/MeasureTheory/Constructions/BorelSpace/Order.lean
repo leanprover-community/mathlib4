@@ -585,7 +585,7 @@ theorem AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ 
   classical
   nontriviality α
   haveI hα : Nonempty α := inferInstance
-  cases' isEmpty_or_nonempty ι with hι hι
+  rcases isEmpty_or_nonempty ι with hι | hι
   · simp only [IsEmpty.exists_iff, setOf_false, isLUB_empty_iff] at hg
     exact aemeasurable_const' (hg.mono fun a ha => hg.mono fun b hb => (ha _).antisymm (hb _))
   let p : δ → (ι → α) → Prop := fun x f' => IsLUB { a | ∃ i, f' i = a } (g x)

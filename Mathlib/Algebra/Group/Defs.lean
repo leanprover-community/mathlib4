@@ -39,7 +39,7 @@ We register the following instances:
 
 -/
 
-assert_not_exists MonoidWithZero DenselyOrdered Function.Injective.eq_iff
+assert_not_exists MonoidWithZero DenselyOrdered Function.const_injective
 
 universe u v w
 
@@ -101,6 +101,17 @@ theorem mul_left_cancel : a * b = a * c → b = c :=
 theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
   ⟨mul_left_cancel, congrArg _⟩
 
+@[to_additive]
+theorem mul_right_injective (a : G) : Injective (a * ·) := fun _ _ ↦ mul_left_cancel
+
+@[to_additive (attr := simp)]
+theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
+  (mul_right_injective a).eq_iff
+
+@[to_additive]
+theorem mul_ne_mul_right (a : G) {b c : G} : a * b ≠ a * c ↔ b ≠ c :=
+  (mul_right_injective a).ne_iff
+
 end IsLeftCancelMul
 
 section IsRightCancelMul
@@ -114,6 +125,17 @@ theorem mul_right_cancel : a * b = c * b → a = c :=
 @[to_additive]
 theorem mul_right_cancel_iff : b * a = c * a ↔ b = c :=
   ⟨mul_right_cancel, congrArg (· * a)⟩
+
+@[to_additive]
+theorem mul_left_injective (a : G) : Function.Injective (· * a) := fun _ _ ↦ mul_right_cancel
+
+@[to_additive (attr := simp)]
+theorem mul_left_inj (a : G) {b c : G} : b * a = c * a ↔ b = c :=
+  (mul_left_injective a).eq_iff
+
+@[to_additive]
+theorem mul_ne_mul_left (a : G) {b c : G} : b * a ≠ c * a ↔ b ≠ c :=
+  (mul_left_injective a).ne_iff
 
 end IsRightCancelMul
 
@@ -575,6 +597,12 @@ lemma pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
   | 0 => by simp
   | n + 1 => by rw [pow_succ _ n, pow_succ, pow_succ', mul_assoc]
 
+@[to_additive] lemma mul_pow_mul (a b : M) (n : ℕ) :
+    (a * b) ^ n * a = a * (b * a) ^ n := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp [pow_succ', ← ih, Nat.mul_add, mul_assoc]
+
 @[to_additive]
 lemma pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n := by rw [← pow_succ, pow_succ']
 
@@ -905,11 +933,22 @@ attribute [to_additive existing (attr := simp) negSucc_zsmul] zpow_negSucc
 This is a duplicate of `DivInvMonoid.div_eq_mul_inv` ensuring that the types unfold better.
 -/
 @[to_additive "Subtracting an element is the same as adding by its negative.
-This is a duplicate of `SubNegMonoid.sub_eq_mul_neg` ensuring that the types unfold better."]
+This is a duplicate of `SubNegMonoid.sub_eq_add_neg` ensuring that the types unfold better."]
 theorem div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ :=
   DivInvMonoid.div_eq_mul_inv _ _
 
 alias division_def := div_eq_mul_inv
+
+@[to_additive, field_simps] -- The attributes are out of order on purpose
+theorem inv_eq_one_div (x : G) : x⁻¹ = 1 / x := by rw [div_eq_mul_inv, one_mul]
+
+@[to_additive]
+theorem mul_div_assoc (a b c : G) : a * b / c = a * (b / c) := by
+  rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc _ _ _]
+
+@[to_additive (attr := simp)]
+theorem one_div (a : G) : 1 / a = a⁻¹ :=
+  (inv_eq_one_div a).symm
 
 @[to_additive (attr := simp) one_zsmul]
 lemma zpow_one (a : G) : a ^ (1 : ℤ) = a := by rw [zpow_ofNat, pow_one]
@@ -1042,6 +1081,9 @@ private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b :=
 theorem mul_inv_cancel (a : G) : a * a⁻¹ = 1 := by
   rw [← inv_mul_cancel a⁻¹, inv_eq_of_mul (inv_mul_cancel a)]
 
+@[to_additive (attr := simp) sub_self]
+theorem div_self' (a : G) : a / a = 1 := by rw [div_eq_mul_inv, mul_inv_cancel a]
+
 @[deprecated (since := "2024-08-12")] alias mul_left_inv := inv_mul_cancel
 @[deprecated (since := "2024-08-12")] alias mul_right_inv := mul_inv_cancel
 @[deprecated (since := "2024-08-12")] alias add_left_neg := neg_add_cancel
@@ -1064,8 +1106,16 @@ theorem mul_inv_cancel_right (a b : G) : a * b * b⁻¹ = a := by
   rw [mul_assoc, mul_inv_cancel, mul_one]
 
 @[to_additive (attr := simp)]
+theorem mul_div_cancel_right (a b : G) : a * b / b = a := by
+  rw [div_eq_mul_inv, mul_inv_cancel_right a b]
+
+@[to_additive (attr := simp)]
 theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a := by
   rw [mul_assoc, inv_mul_cancel, mul_one]
+
+@[to_additive (attr := simp)]
+theorem div_mul_cancel (a b : G) : a / b * b = a := by
+  rw [div_eq_mul_inv, inv_mul_cancel_right a b]
 
 @[to_additive]
 instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=

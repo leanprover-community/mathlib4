@@ -69,8 +69,9 @@ theorem vandermonde_transpose_mul_vandermonde {n : ℕ} (v : Fin n → R) (i j) 
 theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
     det (vandermonde v) = ∏ i : Fin n, ∏ j ∈ Ioi i, (v j - v i) := by
   unfold vandermonde
-  induction' n with n ih
-  · exact det_eq_one_of_card_eq_zero (Fintype.card_fin 0)
+  induction n with
+  | zero => exact det_eq_one_of_card_eq_zero (Fintype.card_fin 0)
+  | succ n ih =>
   calc
     det (of fun i j : Fin n.succ => v i ^ (j : ℕ)) =
         det

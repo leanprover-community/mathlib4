@@ -50,10 +50,6 @@ def getLastI [Inhabited α] : List α → α
   | [_, b] => b
   | _ :: _ :: l => getLastI l
 
-/-- List with a single given element. -/
-@[inline, deprecated List.pure (since := "2024-03-24")]
-protected def ret {α : Type u} (a : α) : List α := [a]
-
 /-- "Inhabited" `take` function: Take `n` elements from a list `l`. If `l` has less than `n`
   elements, append `n - length l` elements `default`. -/
 def takeI [Inhabited α] (n : Nat) (l : List α) : List α :=
@@ -487,10 +483,6 @@ theorem length_mapAccumr₂ :
   | _, [], [], _ => rfl
 
 end MapAccumr
-
-/- #adaptation_note: this attribute should be removed after Mathlib moves to v4.15.0-rc1. -/
-set_option allowUnsafeReducibility true in
-attribute [semireducible] Fin.foldr.loop
 
 section Deprecated
 

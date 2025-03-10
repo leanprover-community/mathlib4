@@ -106,8 +106,6 @@ variable {Ω : Type*} [MeasurableSpace Ω]
 instance [Inhabited Ω] : Inhabited (ProbabilityMeasure Ω) :=
   ⟨⟨Measure.dirac default, Measure.dirac.isProbabilityMeasure⟩⟩
 
--- Porting note: as with other subtype synonyms (e.g., `ℝ≥0`), we need a new function for the
--- coercion instead of relying on `Subtype.val`.
 /-- Coercion from `MeasureTheory.ProbabilityMeasure Ω` to `MeasureTheory.Measure Ω`. -/
 @[coe]
 def toMeasure : ProbabilityMeasure Ω → Measure Ω := Subtype.val
@@ -340,10 +338,8 @@ def normalize : ProbabilityMeasure Ω :=
     { val := ↑(μ.mass⁻¹ • μ)
       property := by
         refine ⟨?_⟩
-        -- Porting note: paying the price that this isn't `simp` lemma now.
-        rw [FiniteMeasure.toMeasure_smul]
-        simp only [Measure.coe_smul, Pi.smul_apply, Measure.nnreal_smul_coe_apply, ne_eq,
-          mass_zero_iff, ENNReal.coe_inv zero, ennreal_mass]
+        simp only [toMeasure_smul, Measure.coe_smul, Pi.smul_apply, Measure.nnreal_smul_coe_apply,
+          ENNReal.coe_inv zero, ennreal_mass]
         rw [← Ne, ← ENNReal.coe_ne_zero, ennreal_mass] at zero
         exact ENNReal.inv_mul_cancel zero μ.prop.measure_univ_lt_top.ne }
 

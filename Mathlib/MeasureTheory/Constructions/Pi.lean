@@ -3,6 +3,7 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+import Mathlib.Logic.Encodable.Pi
 import Mathlib.MeasureTheory.Group.Measure
 import Mathlib.MeasureTheory.MeasurableSpace.Pi
 import Mathlib.MeasureTheory.Measure.Prod
@@ -54,7 +55,7 @@ noncomputable section
 
 open Function Set MeasureTheory.OuterMeasure Filter MeasurableSpace Encodable
 
-open scoped Classical Topology ENNReal
+open scoped Topology ENNReal
 
 universe u v
 
@@ -168,6 +169,7 @@ open List MeasurableEquiv
 
 variable [Encodable ι]
 
+open scoped Classical in
 /-- The product measure on an encodable finite type, defined by mapping `Measure.tprod` along the
   equivalence `MeasurableEquiv.piMeasurableEquivTProd`.
   The definition `MeasureTheory.Measure.pi` should be used instead of this one. -/
@@ -176,6 +178,7 @@ def pi' : Measure (∀ i, α i) :=
 
 theorem pi'_pi [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) :
     pi' μ (pi univ s) = ∏ i, μ i (s i) := by
+  classical
   rw [pi']
   rw [← MeasurableEquiv.piMeasurableEquivTProd_symm_apply, MeasurableEquiv.map_apply,
     MeasurableEquiv.piMeasurableEquivTProd_symm_apply, elim_preimage_pi, tprod_tprod _ μ, ←
@@ -203,8 +206,6 @@ theorem pi_caratheodory :
 protected irreducible_def pi : Measure (∀ i, α i) :=
   toMeasure (OuterMeasure.pi fun i => (μ i).toOuterMeasure) (pi_caratheodory μ)
 
--- Porting note: moved from below so that instances about `Measure.pi` and `MeasureSpace.pi`
--- go together
 instance _root_.MeasureTheory.MeasureSpace.pi {α : ι → Type*} [∀ i, MeasureSpace (α i)] :
     MeasureSpace (∀ i, α i) :=
   ⟨Measure.pi fun _ => volume⟩
@@ -342,6 +343,7 @@ theorem pi_empty_univ {α : Type*} [Fintype α] [IsEmpty α] {β : α → Type*}
 
 theorem pi_eval_preimage_null {i : ι} {s : Set (α i)} (hs : μ i s = 0) :
     Measure.pi μ (eval i ⁻¹' s) = 0 := by
+  classical
   -- WLOG, `s` is measurable
   rcases exists_measurable_superset_of_null hs with ⟨t, hst, _, hμt⟩
   suffices Measure.pi μ (eval i ⁻¹' t) = 0 from measure_mono_null (preimage_mono hst) this
@@ -692,9 +694,9 @@ theorem measurePreserving_arrowProdEquivProdArrow (α β γ : Type*) [Measurable
     · rintro _ ⟨s, ⟨s, _, rfl⟩, ⟨_, ⟨t, _, rfl⟩, rfl⟩⟩
       rw [MeasurableEquiv.map_apply, MeasurableEquiv.arrowProdEquivProdArrow,
         MeasurableEquiv.coe_mk]
-      rw [show Equiv.arrowProdEquivProdArrow α β γ ⁻¹' (univ.pi s ×ˢ univ.pi t) =
+      rw [show Equiv.arrowProdEquivProdArrow γ _ _ ⁻¹' (univ.pi s ×ˢ univ.pi t) =
           (univ.pi fun i ↦ s i ×ˢ t i) by
-          ext; simp [Equiv.arrowProdEquivProdArrow, Equiv.coe_fn_mk, Set.mem_pi, forall_and]]
+          ext; simp [Set.mem_pi, forall_and]]
       simp_rw [pi_pi, prod_prod, pi_pi, Finset.prod_mul_distrib]
 
 theorem volume_measurePreserving_arrowProdEquivProdArrow (α β γ : Type*) [MeasureSpace α]

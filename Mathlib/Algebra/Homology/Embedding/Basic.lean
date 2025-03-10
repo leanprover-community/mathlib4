@@ -219,9 +219,7 @@ lemma not_mem_range_embeddingUpIntLE_iff (n : ℤ) :
   constructor
   · intro h
     by_contra!
-    simp only [Int.not_lt] at this
-    obtain ⟨k, rfl⟩ := Int.le.dest this
-    exact (h k) (by simp)
+    exact h (p - n).natAbs (by simp; omega)
   · intros
     dsimp
     omega
@@ -231,9 +229,7 @@ lemma not_mem_range_embeddingUpIntGE_iff (n : ℤ) :
   constructor
   · intro h
     by_contra!
-    simp only [Int.not_lt] at this
-    obtain ⟨k, rfl⟩ := Int.le.dest this
-    exact (h k) (by simp)
+    exact h (n - p).natAbs (by simp; omega)
   · intros
     dsimp
     omega

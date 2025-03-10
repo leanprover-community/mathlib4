@@ -3,10 +3,11 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Data.NNReal.Star
 import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.Instances.Real.Defs
+import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
 # Topology on `ℝ≥0`
@@ -18,7 +19,7 @@ The natural topology on `ℝ≥0` (the one induced from `ℝ`), and a basic API.
 Instances for the following typeclasses are defined:
 
 * `TopologicalSpace ℝ≥0`
-* `TopologicalSemiring ℝ≥0`
+* `IsTopologicalSemiring ℝ≥0`
 * `SecondCountableTopology ℝ≥0`
 * `OrderTopology ℝ≥0`
 * `ProperSpace ℝ≥0`
@@ -39,7 +40,7 @@ namespace NNReal
 instance : TopologicalSpace ℝ≥0 := inferInstance
 
 -- short-circuit type class inference
-instance : TopologicalSemiring ℝ≥0 where
+instance : IsTopologicalSemiring ℝ≥0 where
   toContinuousAdd := continuousAdd_induced toRealHom
   toContinuousMul := continuousMul_induced toRealHom
 
@@ -84,6 +85,9 @@ instance [TopologicalSpace α] [MulAction ℝ α] [ContinuousSMul ℝ α] :
 @[simps (config := .asFn)]
 def _root_.ContinuousMap.coeNNRealReal : C(ℝ≥0, ℝ) :=
   ⟨(↑), continuous_coe⟩
+
+@[simp]
+lemma coeNNRealReal_zero : ContinuousMap.coeNNRealReal 0 = 0 := rfl
 
 instance ContinuousMap.canLift {X : Type*} [TopologicalSpace X] :
     CanLift C(X, ℝ) C(X, ℝ≥0) ContinuousMap.coeNNRealReal.comp fun f => ∀ x, 0 ≤ f x where

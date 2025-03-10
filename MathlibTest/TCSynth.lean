@@ -64,7 +64,7 @@ section
 
 open Complex in
 set_option synthInstance.maxHeartbeats 3200 in
-example (x : ℝ) : abs (cos x + sin x * I) = 1 := by simp
+example (x : ℝ) : ‖cos x + sin x * I‖ = 1 := by simp
 
 end
 
@@ -90,5 +90,22 @@ open Equiv in
 set_option synthInstance.maxHeartbeats 1000 in
 example {n : ℕ} (p : Fin (n + 1)) (e : Perm (Fin n)) :
     Equiv.Perm.decomposeFin.symm (p, e) 0 = p := by simp
+
+end
+
+section
+
+-- synthinstance heartbeat count was reduced from 20000 to 500 in the fix at https://github.com/leanprover-community/mathlib4/pull/21449
+-- This fixes the failing simpNF of `MvPolynomial.vanishingIdeal_zeroLocus_eq_radical`
+variable (σ k : Type*) [Field k] [IsAlgClosed k] [Finite σ] (I : Ideal (MvPolynomial σ k)) in
+
+set_option synthInstance.maxHeartbeats 1000 in
+/--
+error: failed to synthesize
+  I.IsPrime
+Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#synth I.IsPrime
 
 end

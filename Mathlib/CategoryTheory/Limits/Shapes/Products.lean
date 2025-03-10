@@ -679,6 +679,34 @@ instance (priority := 100) hasProductsOfShape_of_hasProducts [HasProducts.{w} C]
 instance (priority := 100) hasCoproductsOfShape_of_hasCoproducts [HasCoproducts.{w} C]
     (J : Type w) : HasCoproductsOfShape J C := inferInstance
 
+open Opposite in
+/-- The functor sending `(X, n)` to the product of copies of `X` indexed by `n`. -/
+@[simps]
+def piConst [Limits.HasProducts.{w} C] : C ⥤ Type wᵒᵖ ⥤ C where
+  obj X := { obj n := ∏ᶜ fun _ : (unop n) ↦ X, map f := Limits.Pi.map' f.unop fun _ ↦ 𝟙 _ }
+  map f := { app n := Limits.Pi.map fun _ ↦ f }
+
+/-- `n ↦ ∏ₙ X` is left adjoint to `Hom(-, X)`. -/
+def piConstAdj [Limits.HasProducts.{v} C] (X : C) :
+    (piConst.obj X).rightOp ⊣ yoneda.obj X where
+  unit := { app n i := Limits.Pi.π (fun _ : n ↦ X) i }
+  counit :=
+  { app Y := (Limits.Pi.lift id).op,
+    naturality _ _ _ := by apply Quiver.Hom.unop_inj; aesop_cat }
+  left_triangle_components _ := by apply Quiver.Hom.unop_inj; aesop_cat
+
+/-- The functor sending `(X, n)` to the coproduct of copies of `X` indexed by `n`. -/
+@[simps]
+def sigmaConst [Limits.HasCoproducts.{w} C] : C ⥤ Type w ⥤ C where
+  obj X := { obj n := ∐ fun _ : n ↦ X, map f := Limits.Sigma.map' f fun _ ↦ 𝟙 _ }
+  map f := { app n := Limits.Sigma.map fun _ ↦ f }
+
+/-- `n ↦ ∐ₙ X` is left adjoint to `Hom(X, -)`. -/
+def sigmaConstAdj [Limits.HasCoproducts.{v} C] (X : C) :
+    sigmaConst.obj X ⊣ coyoneda.obj (Opposite.op X) where
+  unit := { app n i := Limits.Sigma.ι (fun _ : n ↦ X) i }
+  counit := { app Y := Limits.Sigma.desc id }
+
 /-!
 (Co)products over a type with a unique term.
 -/

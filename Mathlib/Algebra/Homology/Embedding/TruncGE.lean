@@ -59,12 +59,12 @@ noncomputable def X (i : ι) : C :=
   then K.opcycles (e.f i)
   else K.X (e.f i)
 
-/-- The isomorphism `truncGE'.X K e i ≅ K.opcycles (e.f i)` when `e.BoundaryGE i` holds.-/
+/-- The isomorphism `truncGE'.X K e i ≅ K.opcycles (e.f i)` when `e.BoundaryGE i` holds. -/
 noncomputable def XIsoOpcycles {i : ι} (hi : e.BoundaryGE i) :
     X K e i ≅ K.opcycles (e.f i) :=
   eqToIso (if_pos hi)
 
-/-- The isomorphism `truncGE'.X K e i ≅ K.X (e.f i)` when `e.BoundaryGE i` does not hold.-/
+/-- The isomorphism `truncGE'.X K e i ≅ K.X (e.f i)` when `e.BoundaryGE i` does not hold. -/
 noncomputable def XIso {i : ι} (hi : ¬ e.BoundaryGE i) :
     X K e i ≅ K.X (e.f i) :=
   eqToIso (if_neg hi)

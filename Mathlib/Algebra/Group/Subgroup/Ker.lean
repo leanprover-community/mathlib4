@@ -174,7 +174,7 @@ def ofLeftInverse {f : G →* N} {g : N →* G} (h : Function.LeftInverse g f) :
     right_inv := by
       rintro ⟨x, y, rfl⟩
       apply Subtype.ext
-      rw [coe_rangeRestrict, Function.comp_apply, Subgroup.coeSubtype, Subtype.coe_mk, h] }
+      rw [coe_rangeRestrict, Function.comp_apply, Subgroup.coe_subtype, Subtype.coe_mk, h] }
 
 @[to_additive (attr := simp)]
 theorem ofLeftInverse_apply {f : G →* N} {g : N →* G} (h : Function.LeftInverse g f) (x : G) :
@@ -490,7 +490,7 @@ theorem closure_preimage_eq_top (s : Set G) : closure ((closure s).subtype ⁻¹
   apply map_injective (closure s).subtype_injective
   rw [MonoidHom.map_closure, ← MonoidHom.range_eq_map, range_subtype,
     Set.image_preimage_eq_of_subset]
-  rw [coeSubtype, Subtype.range_coe_subtype]
+  rw [coe_subtype, Subtype.range_coe_subtype]
   exact subset_closure
 
 @[to_additive]

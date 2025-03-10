@@ -242,7 +242,7 @@ theorem chainHeight_eq_iSup_Ici : s.chainHeight = ⨆ i ∈ s, (s ∩ Set.Ici i)
       cases hi
       · exact left_mem_Ici
       rename_i hi
-      cases' chain'_iff_pairwise.mp h.1 with _ _ h'
+      obtain - | h' := chain'_iff_pairwise.mp h.1
       exact (h' _ hi).le
   · exact iSup₂_le fun i _ ↦ chainHeight_mono Set.inter_subset_left
 
@@ -264,8 +264,8 @@ theorem chainHeight_insert_of_forall_gt (a : α) (hx : ∀ b ∈ s, a < b) :
       refine ⟨ys, ⟨h'.2.1.1, fun i hi ↦ ?_⟩, by simp⟩
       apply (h'.2.1.2 i hi).resolve_left
       rintro rfl
-      cases' chain'_iff_pairwise.mp h.1 with _ _ hy
-      cases' h'.1 with h' h'
+      obtain - | hy := chain'_iff_pairwise.mp h.1
+      rcases h'.1 with h' | h'
       exacts [(hy _ hi).ne h', not_le_of_gt (hy _ hi) (hx _ h').le]
   · intro l hl
     refine ⟨a::l, ⟨?_, ?_⟩, by simp⟩
@@ -317,7 +317,7 @@ theorem chainHeight_union_eq (s t : Set α) (H : ∀ a ∈ s, ∀ b ∈ t, a < b
   refine ⟨l ++ l', ⟨Chain'.append hl.1 hl'.1 fun x hx y hy ↦ ?_, fun i hi ↦ ?_⟩, by simp⟩
   · exact H x (hl.2 _ <| mem_of_mem_getLast? hx) y (hl'.2 _ <| mem_of_mem_head? hy)
   · rw [mem_append] at hi
-    cases' hi with hi hi
+    rcases hi with hi | hi
     exacts [Or.inl (hl.2 _ hi), Or.inr (hl'.2 _ hi)]
 
 theorem wellFoundedGT_of_chainHeight_ne_top (s : Set α) (hs : s.chainHeight ≠ ⊤) :

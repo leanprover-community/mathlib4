@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Prod.Basic
-import Mathlib.Data.Sigma.Basic
 
 /-!
 # Lists in product and sigma types
@@ -91,7 +90,7 @@ theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :
     (y, x) ∈ map Prod.swap xs ↔ (x, y) ∈ xs := by
   induction' xs with x xs xs_ih
   · simp only [not_mem_nil, map_nil]
-  · cases' x with a b
+  · obtain ⟨a, b⟩ := x
     simp only [mem_cons, Prod.mk.inj_iff, map, Prod.swap_prod_mk, Prod.exists, xs_ih, and_comm]
 
 end List

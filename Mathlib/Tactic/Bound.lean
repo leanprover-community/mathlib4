@@ -220,13 +220,14 @@ An example use case is
 
 ```
 -- Calc example: A weak lower bound for `z ↦ z^2 + c`
-lemma le_sqr_add {c z : ℂ} (cz : abs c ≤ abs z) (z3 : 3 ≤ abs z) :
-    2 * abs z ≤ abs (z^2 + c) := by
-  calc abs (z^2 + c)
-    _ ≥ abs (z^2) - abs c := by bound
-    _ ≥ abs (z^2) - abs z := by bound
-    _ ≥ (abs z - 1) * abs z := by rw [mul_comm, mul_sub_one, ← pow_two, ← abs.map_pow]
-    _ ≥ 2 * abs z := by bound
+lemma le_sqr_add (c z : ℝ) (cz : ‖c‖ ≤ ‖z‖) (z3 : 3 ≤ ‖z‖) :
+    2 * ‖z‖ ≤ ‖z^2 + c‖ := by
+  calc ‖z^2 + c‖
+    _ ≥ ‖z^2‖ - ‖c‖ := by bound
+    _ ≥ ‖z^2‖ - ‖z‖ := by  bound
+    _ ≥ (‖z‖ - 1) * ‖z‖ := by
+      rw [mul_comm, mul_sub_one, ← pow_two, ← norm_pow]
+    _ ≥ 2 * ‖z‖ := by bound
 ```
 
 `bound` is built on top of `aesop`, and uses
