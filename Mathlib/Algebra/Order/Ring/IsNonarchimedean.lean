@@ -114,5 +114,3 @@ theorem add_eq_max_of_ne {F α : Type*} [AddGroup α] [FunLike F α R]
     exact Eq.symm (max_eq_left_of_lt h_lt)
 
 end IsNonarchimedean
-
-#min_imports

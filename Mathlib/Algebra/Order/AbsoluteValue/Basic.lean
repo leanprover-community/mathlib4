@@ -210,7 +210,7 @@ section OrderedCommRing
 
 variable [OrderedCommRing S] [Ring R] (abv : AbsoluteValue R S) [NoZeroDivisors S]
 
-@[simp]
+@[simp 1100]
 protected theorem map_neg (a : R) : abv (-a) = abv a := by
   by_cases ha : a = 0; · simp [ha]
   refine
