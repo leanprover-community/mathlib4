@@ -71,12 +71,12 @@ instance : Bracket (GroupLieAlgebra I G) (GroupLieAlgebra I G) where
 lemma GroupLieAlgebra.bracket_def (v w : GroupLieAlgebra I G) :
     ⁅v, w⁆ = mlieBracket I (invariantVectorField v) (invariantVectorField w) (1 : G) := rfl
 
-variable [LieGroup I (minSmoothness 𝕜 1) G]
+variable [LieGroup I (minSmoothness 𝕜 3) G]
 
 @[simp]
 lemma inverse_mfderiv_mul_left {g h : G} :
     (mfderiv I I (fun b ↦ g * b) h).inverse = mfderiv I I (fun b ↦ g⁻¹ * b) (g * h) := by
-  have M : 1 ≤ minSmoothness 𝕜 1 := le_trans (by norm_num) le_minSmoothness
+  have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by norm_num) le_minSmoothness
   have A : mfderiv I I ((fun x ↦ g⁻¹ * x) ∘ (fun x ↦ g * x)) h =
       ContinuousLinearMap.id _ _ := by
     have : (fun x ↦ g⁻¹ * x) ∘ (fun x ↦ g * x) = id := by ext x; simp
@@ -93,7 +93,7 @@ lemma inverse_mfderiv_mul_left {g h : G} :
 
 lemma mpullback_invariantVectorField (g : G) (v : GroupLieAlgebra I G) :
     mpullback I I (g * ·) (invariantVectorField v) = invariantVectorField v := by
-  have M : 1 ≤ minSmoothness 𝕜 1 := le_trans (by norm_num) le_minSmoothness
+  have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by norm_num) le_minSmoothness
   ext h
   simp only [mpullback, inverse_mfderiv_mul_left, invariantVectorField]
   have D : (fun x ↦ h * x) = (fun b ↦ g⁻¹ * b) ∘ (fun x ↦ g * h * x) := by
