@@ -56,7 +56,6 @@ theorem Lp_nnnorm_le (f : α →ᵇ E) :
   refine (f.toContinuousMap.coeFn_toAEEqFun μ).mono ?_
   intro x hx
   rw [← NNReal.coe_le_coe, coe_nnnorm, coe_nnnorm]
-  convert f.norm_coe_le_norm x using 2
 
 /-- The `Lp`-norm of a bounded continuous function is at most a constant (depending on the measure
 of the whole space) times its sup-norm. -/
