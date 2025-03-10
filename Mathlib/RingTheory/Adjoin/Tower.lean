@@ -86,8 +86,8 @@ open Finset Submodule
 
 theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : Submodule B C).FG) :
     ∃ B₀ : Subalgebra A B, B₀.FG ∧ (⊤ : Submodule B₀ C).FG := by
-  cases' hAC with x hx
-  cases' hBC with y hy
+  obtain ⟨x, hx⟩ := hAC
+  obtain ⟨y, hy⟩ := hBC
   have := hy
   simp_rw [eq_top_iff', mem_span_finset] at this
   choose f hf using this

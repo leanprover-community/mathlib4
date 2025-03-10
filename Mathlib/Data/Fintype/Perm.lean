@@ -3,9 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.GroupTheory.Perm.Basic
-import Mathlib.Tactic.Ring
+import Mathlib.Algebra.BigOperators.Group.List.Defs
+import Mathlib.Algebra.Group.End
+import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Data.Fintype.EquivFin
 import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
@@ -15,6 +16,8 @@ Main declarations:
 * `permsOfFinset s`: The finset of permutations of the finset `s`.
 
 -/
+
+assert_not_exists MonoidWithZero
 
 open Function
 
@@ -36,10 +39,7 @@ def permsOfList : List α → List (Perm α)
 theorem length_permsOfList : ∀ l : List α, length (permsOfList l) = l.length !
   | [] => rfl
   | a :: l => by
-    rw [length_cons, Nat.factorial_succ]
-    simp only [permsOfList, length_append, length_permsOfList, length_flatMap, comp_def,
-     length_map, map_const', sum_replicate, smul_eq_mul, succ_mul]
-    ring
+    simp [Nat.factorial_succ, permsOfList, length_permsOfList, comp_def, succ_mul, add_comm]
 
 theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x → x ∈ l) :
     f ∈ permsOfList l := by

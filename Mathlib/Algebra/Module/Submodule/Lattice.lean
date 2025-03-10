@@ -10,6 +10,7 @@ import Mathlib.Algebra.Module.Submodule.Defs
 import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Module.PUnit
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
@@ -201,6 +202,7 @@ instance completeLattice : CompleteLattice (Submodule R M) :=
     le_inf := fun _ _ _ ↦ Set.subset_inter
     inf_le_left := fun _ _ ↦ Set.inter_subset_left
     inf_le_right := fun _ _ ↦ Set.inter_subset_right
+    sSup S := sInf {sm | ∀ s ∈ S, s ≤ sm}
     le_sSup := fun _ _ hs ↦ le_sInf' fun _ hq ↦ by exact hq _ hs
     sSup_le := fun _ _ hs ↦ sInf_le' hs
     le_sInf := fun _ _ ↦ le_sInf'

@@ -36,7 +36,7 @@ variable {α : Type u} {β : Type v} {X : Type*}
 
 /-- Characterizing uniformities associated to a (generalized) distance function `D`
 in terms of the elements of the uniformity. -/
-theorem uniformity_dist_of_mem_uniformity [LinearOrder β] {U : Filter (α × α)} (z : β)
+theorem uniformity_dist_of_mem_uniformity [LT β] {U : Filter (α × α)} (z : β)
     (D : α → α → β) (H : ∀ s, s ∈ U ↔ ∃ ε > z, ∀ {a b : α}, D a b < ε → (a, b) ∈ s) :
     U = ⨅ ε > z, 𝓟 { p : α × α | D p.1 p.2 < ε } :=
   HasBasis.eq_biInf ⟨fun s => by simp only [H, subset_def, Prod.forall, mem_setOf]⟩
@@ -46,6 +46,7 @@ open scoped Uniformity Topology Filter NNReal ENNReal Pointwise
 /-- `EDist α` means that `α` is equipped with an extended distance. -/
 @[ext]
 class EDist (α : Type*) where
+  /-- Extended distance between two points -/
   edist : α → α → ℝ≥0∞
 
 export EDist (edist)
@@ -73,7 +74,7 @@ on a product.
 
 Continuity of `edist` is proved in `Topology.Instances.ENNReal`
 -/
-class PseudoEMetricSpace (α : Type u) extends EDist α : Type u where
+class PseudoEMetricSpace (α : Type u) : Type u extends EDist α  where
   edist_self : ∀ x : α, edist x x = 0
   edist_comm : ∀ x y : α, edist x y = edist y x
   edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z
@@ -89,8 +90,8 @@ namespace, while notions associated to metric spaces are mostly in the root name
 @[ext]
 protected theorem PseudoEMetricSpace.ext {α : Type*} {m m' : PseudoEMetricSpace α}
     (h : m.toEDist = m'.toEDist) : m = m' := by
-  cases' m with ed  _ _ _ U hU
-  cases' m' with ed' _ _ _ U' hU'
+  obtain ⟨_, _, _, U, hU⟩ := m; rename EDist α => ed
+  obtain ⟨_, _, _, U', hU'⟩ := m'; rename EDist α => ed'
   congr 1
   exact UniformSpace.ext (((show ed = ed' from h) ▸ hU).trans hU'.symm)
 
@@ -540,7 +541,7 @@ end EMetric
 
 --namespace
 /-- We now define `EMetricSpace`, extending `PseudoEMetricSpace`. -/
-class EMetricSpace (α : Type u) extends PseudoEMetricSpace α : Type u where
+class EMetricSpace (α : Type u) : Type u extends PseudoEMetricSpace α where
   eq_of_edist_eq_zero : ∀ {x y : α}, edist x y = 0 → x = y
 
 @[ext]
