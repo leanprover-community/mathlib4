@@ -87,6 +87,11 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
           but all commands should start at the beginning of the line."
   -- We only lint up to the position given by `lintUpTo`
   if let some finalLintPos := lintUpTo stx then
+    -- if the command contains subtype notation before `finalLintPos`, we do not lint
+    if let some stype := stx.find? (·.isOfKind ``«term{_:_//_}») then
+      if let some pos := stype.getPos? then
+        if pos.1 ≤ finalLintPos.1 then
+          return
     let stx := capSyntax stx finalLintPos.1
     let origSubstring : Substring := {stx.getSubstring?.getD default with stopPos := finalLintPos}
     let (real, lths) := polishSource origSubstring.toString
