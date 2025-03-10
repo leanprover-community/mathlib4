@@ -32,7 +32,7 @@ open Metric Set
 
 namespace Topology
 
-/-- A CW complex is finite dimensional if `cell C n` is empty for all but finitely many `n`.-/
+/-- A CW complex is finite dimensional if `cell C n` is empty for all but finitely many `n`. -/
 class RelCWComplex.FiniteDimensional.{u} {X : Type u} [TopologicalSpace X] (C : Set X) {D : Set X}
     [RelCWComplex C D] : Prop where
   /-- For some natural number `n`, the type `cell C m` is empty for all `m ≥ n`. -/
@@ -44,7 +44,7 @@ class RelCWComplex.FiniteType.{u} {X : Type u} [TopologicalSpace X] (C : Set X) 
   /-- `cell C n` is finite for every `n`.-/
   finite_cell (n : ℕ) : Finite (cell C n)
 
-/-- A CW complex is finite if it is finite dimensional and of finite type.-/
+/-- A CW complex is finite if it is finite dimensional and of finite type. -/
 class RelCWComplex.Finite.{u} {X : Type u} [TopologicalSpace X] (C : Set X) {D : Set X}
     [RelCWComplex C D] : Prop where
   /-- For some natural number `n`, the type `cell C m` is empty for all `m ≥ n`. -/
