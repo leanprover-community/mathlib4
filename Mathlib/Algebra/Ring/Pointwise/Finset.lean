@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Ring.Pointwise.Set
 import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Algebra.Module.Defs
 
 /-!
 # Pointwise operations of sets in a ring
@@ -19,7 +18,7 @@ set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
 
--- assert_not_exists MulAction
+assert_not_exists MulAction
 
 open scoped Pointwise
 
