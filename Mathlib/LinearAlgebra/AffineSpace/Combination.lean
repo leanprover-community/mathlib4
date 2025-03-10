@@ -593,6 +593,19 @@ theorem map_affineCombination {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k 
   simp only [weightedVSubOfPoint_apply, RingHom.id_apply, AffineMap.map_vadd,
     LinearMap.map_smulₛₗ, AffineMap.linearMap_vsub, map_sum, Function.comp_apply]
 
+/-- The value of `affineCombination`, where the given points take only two values. -/
+lemma affineCombination_apply_eq_lineMap_sum [DecidableEq ι] (w : ι → k) (p : ι → P)
+    (p₁ p₂ : P) (s' : Finset ι) (h : ∑ i ∈ s, w i = 1) (hp₂ : ∀ i ∈ s ∩ s', p i = p₂)
+    (hp₁ : ∀ i ∈ s \ s', p i = p₁) :
+    s.affineCombination k p w = AffineMap.lineMap p₁ p₂ (∑ i ∈ s ∩ s', w i) := by
+  rw [s.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w p h p₁,
+    weightedVSubOfPoint_apply, ← s.sum_inter_add_sum_diff s', AffineMap.lineMap_apply,
+    vadd_right_cancel_iff, sum_smul]
+  convert add_zero _ with i hi
+  · convert Finset.sum_const_zero with i hi
+    simp [hp₁ i hi]
+  · exact (hp₂ i hi).symm
+
 variable (k)
 
 /-- Weights for expressing a single point as an affine combination. -/
