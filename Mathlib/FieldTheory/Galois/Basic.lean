@@ -278,12 +278,12 @@ theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
 
 theorem mem_bot_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
     x ∈ (⊥ : IntermediateField F E) ↔ ∀ f : E ≃ₐ[F] E, f x = x := by
-  rw [←fixedField_bot, mem_fixedField_iff]
+  rw [← fixedField_bot, mem_fixedField_iff]
   simp only [Subgroup.mem_top, forall_const]
 
 theorem mem_range_algebraMap_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
     x ∈ Set.range (algebraMap F E) ↔ ∀ f : E ≃ₐ[F] E, f x = x := by
-  rw [<-mem_bot_iff_fixed]
+  rw [<- mem_bot_iff_fixed]
   rfl
 
 theorem card_fixingSubgroup_eq_finrank [DecidablePred (· ∈ IntermediateField.fixingSubgroup K)]
