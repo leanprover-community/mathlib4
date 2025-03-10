@@ -24,6 +24,8 @@ universe w' w v u
 
 open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
 
+attribute [local instance] Opposite.small
+
 namespace SheafedSpace
 
 variable {C : Type u} [Category.{v} C]
