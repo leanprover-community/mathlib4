@@ -8,7 +8,7 @@ import Mathlib.Topology.MetricSpace.Congruence
 /-!
 # Similarities
 
-This file defines `Similarity`, i.e., the equivalence between sets of points in a metric space
+This file defines `Similarity`, i.e., the equivalence between indexed sets of points in a metric space
 where all corresponding pairwise distances have the same ratio. The motivating example are
 triangles in the plane.
 
