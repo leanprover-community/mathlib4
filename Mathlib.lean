@@ -1169,7 +1169,7 @@ import Mathlib.AlgebraicTopology.Quasicategory.Nerve
 import Mathlib.AlgebraicTopology.Quasicategory.StrictSegal
 import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
 import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
-import Mathlib.AlgebraicTopology.SimplexCategory.Augmented
+import Mathlib.AlgebraicTopology.SimplexCategory.Augmented.Basic
 import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 import Mathlib.AlgebraicTopology.SimplexCategory.Defs
 import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.Basic
