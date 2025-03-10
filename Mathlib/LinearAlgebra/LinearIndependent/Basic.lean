@@ -3,6 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 -/
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
 /-!
@@ -258,9 +259,6 @@ theorem LinearIndependent.linearCombination_ne_of_not_mem_support [Nontrivial R]
   rw [Finsupp.span_image_eq_map_linearCombination] at p
   simp only [not_exists, not_and, mem_map] at p -- Porting note: `mem_map` isn't currently triggered
   exact p f (f.mem_supported_support R) rfl
-
-@[deprecated (since := "2024-08-29")] alias LinearIndependent.total_ne_of_not_mem_support :=
-  LinearIndependent.linearCombination_ne_of_not_mem_support
 
 end Subtype
 

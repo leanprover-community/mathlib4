@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
 -/
 import Mathlib.Logic.Equiv.Fin
-import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.Connected.LocallyConnected
 import Mathlib.Topology.ContinuousMap.Defs
 import Mathlib.Topology.DenseEmbedding
@@ -27,6 +26,8 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
   an open map is a homeomorphism.
 
 -/
+
+assert_not_exists Module MonoidWithZero
 
 open Filter Function Set Topology
 
@@ -97,7 +98,7 @@ theorem ext {h h' : X ≃ₜ Y} (H : ∀ x, h x = h' x) : h = h' :=
   DFunLike.ext _ _ H
 
 /-- Identity map as a homeomorphism. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 protected def refl (X : Type*) [TopologicalSpace X] : X ≃ₜ X where
   continuous_toFun := continuous_id
   continuous_invFun := continuous_id
@@ -375,11 +376,6 @@ theorem preimage_frontier (h : X ≃ₜ Y) (s : Set Y) : h ⁻¹' frontier s = f
 theorem image_frontier (h : X ≃ₜ Y) (s : Set X) : h '' frontier s = frontier (h '' s) := by
   rw [← preimage_symm, preimage_frontier]
 
-@[to_additive]
-theorem _root_.HasCompactMulSupport.comp_homeomorph {M} [One M] {f : Y → M}
-    (hf : HasCompactMulSupport f) (φ : X ≃ₜ Y) : HasCompactMulSupport (f ∘ φ) :=
-  hf.comp_isClosedEmbedding φ.isClosedEmbedding
-
 @[simp]
 theorem map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝 x) = 𝓝 (h x) :=
   h.isEmbedding.map_nhds_of_mem _ (by simp)
@@ -609,7 +605,7 @@ lemma sumSumSumComm_toEquiv : (sumSumSumComm X Y W Z).toEquiv = (Equiv.sumSumSum
 lemma sumSumSumComm_symm : (sumSumSumComm X Y W Z).symm = (sumSumSumComm X W Y Z) := rfl
 
 /-- The sum of `X` with any empty topological space is homeomorphic to `X`. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 def sumEmpty [IsEmpty Y] : X ⊕ Y ≃ₜ X where
   toEquiv := Equiv.sumEmpty X Y
   continuous_toFun := Continuous.sumElim continuous_id (by fun_prop)
@@ -667,7 +663,7 @@ theorem prodProdProdComm_symm : (prodProdProdComm X Y W Z).symm = prodProdProdCo
   rfl
 
 /-- `X × {*}` is homeomorphic to `X`. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 def prodPUnit : X × PUnit ≃ₜ X where
   toEquiv := Equiv.prodPUnit X
   continuous_toFun := continuous_fst
@@ -703,7 +699,7 @@ space `f ⬝` when `α` only contains `⬝`.
 
 This is `Equiv.piUnique` as a `Homeomorph`.
 -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def piUnique {α : Type*} [Unique α] (f : α → Type*) [∀ x, TopologicalSpace (f x)] :
     (Π t, f t) ≃ₜ f default :=
   homeomorphOfContinuousOpen (Equiv.piUnique f) (continuous_apply default) (isOpenMap_eval _)
@@ -758,7 +754,7 @@ def sumArrowHomeomorphProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι
   toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
   continuous_toFun := by
     simp only [Equiv.sumArrowEquivProdArrow, Equiv.coe_fn_mk, continuous_prod_mk]
-    continuity
+    constructor <;> fun_prop
   continuous_invFun := continuous_pi fun i ↦ match i with
     | .inl i => by apply (continuous_apply _).comp' continuous_fst
     | .inr i => by apply (continuous_apply _).comp' continuous_snd
@@ -822,21 +818,21 @@ def sigmaProdDistrib : (Σ i, X i) × Y ≃ₜ Σ i, X i × Y :=
 end Distrib
 
 /-- If `ι` has a unique element, then `ι → X` is homeomorphic to `X`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def funUnique (ι X : Type*) [Unique ι] [TopologicalSpace X] : (ι → X) ≃ₜ X where
   toEquiv := Equiv.funUnique ι X
   continuous_toFun := continuous_apply _
   continuous_invFun := continuous_pi fun _ => continuous_id
 
 /-- Homeomorphism between dependent functions `Π i : Fin 2, X i` and `X 0 × X 1`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def piFinTwo.{u} (X : Fin 2 → Type u) [∀ i, TopologicalSpace (X i)] : (∀ i, X i) ≃ₜ X 0 × X 1 where
   toEquiv := piFinTwoEquiv X
   continuous_toFun := (continuous_apply 0).prod_mk (continuous_apply 1)
   continuous_invFun := continuous_pi <| Fin.forall_fin_two.2 ⟨continuous_fst, continuous_snd⟩
 
 /-- Homeomorphism between `X² = Fin 2 → X` and `X × X`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def finTwoArrow : (Fin 2 → X) ≃ₜ X × X :=
   { piFinTwo fun _ => X with toEquiv := finTwoArrowEquiv X }
 
@@ -850,7 +846,7 @@ def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
   toEquiv := e.toEquiv.image s
 
 /-- `Set.univ X` is homeomorphic to `X`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def Set.univ (X : Type*) [TopologicalSpace X] : (univ : Set X) ≃ₜ X where
   toEquiv := Equiv.Set.univ X
   continuous_toFun := continuous_subtype_val
