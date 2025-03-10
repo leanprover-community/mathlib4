@@ -41,6 +41,13 @@ both scoped to `LSeries.notation`. The latter makes it convenient to use arithme
 or Dirichlet characters (or anything that coerces to a function `N → R`, where `ℕ` coerces
 to `N` and `R` coerces to `ℂ`) as arguments to `LSeries` etc.
 
+## Reference
+
+For some background on the design decisions made when implementing L-series in Mathlib
+(and applications motivating the development), see the paper
+[Formalizing zeta and L-functions in Lean](https://arxiv.org/abs/2503.00959)
+by David Loeffler and Michael Stoll.
+
 ## Tags
 
 L-series
@@ -348,7 +355,7 @@ lemma LSeriesSummable_of_le_const_mul_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ}
   · simpa only [term_zero, norm_zero] using norm_nonneg _
   have hn' : 0 < (n : ℝ) ^ s.re := Real.rpow_pos_of_pos (Nat.cast_pos.mpr hn) _
   simp_rw [term_of_ne_zero hn.ne', norm_div, norm_natCast_cpow_of_pos hn, div_le_iff₀ hn',
-    norm_eq_abs (C : ℂ), abs_ofReal, abs_of_nonneg hC₀, div_eq_mul_inv, mul_assoc,
+    norm_real, Real.norm_of_nonneg hC₀, div_eq_mul_inv, mul_assoc,
     ← Real.rpow_neg <| Nat.cast_nonneg _, ← Real.rpow_add <| Nat.cast_pos.mpr hn]
   simpa using hC n <| Nat.pos_iff_ne_zero.mp hn
 
@@ -376,12 +383,12 @@ lemma LSeriesSummable_of_isBigO_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ} (hs :
 
 /-- If `f` is bounded, then its `LSeries` is summable at `s` when `re s > 1`. -/
 theorem LSeriesSummable_of_bounded_of_one_lt_re {f : ℕ → ℂ} {m : ℝ}
-    (h : ∀ n ≠ 0, Complex.abs (f n) ≤ m) {s : ℂ} (hs : 1 < s.re) :
+    (h : ∀ n ≠ 0, ‖f n‖ ≤ m) {s : ℂ} (hs : 1 < s.re) :
     LSeriesSummable f s :=
   LSeriesSummable_of_le_const_mul_rpow hs ⟨m, fun n hn ↦ by simp [h n hn]⟩
 
 /-- If `f` is bounded, then its `LSeries` is summable at `s : ℝ` when `s > 1`. -/
 theorem LSeriesSummable_of_bounded_of_one_lt_real {f : ℕ → ℂ} {m : ℝ}
-    (h : ∀ n ≠ 0, Complex.abs (f n) ≤ m) {s : ℝ} (hs : 1 < s) :
+    (h : ∀ n ≠ 0, ‖f n‖ ≤ m) {s : ℝ} (hs : 1 < s) :
     LSeriesSummable f s :=
   LSeriesSummable_of_bounded_of_one_lt_re h <| by simp [hs]

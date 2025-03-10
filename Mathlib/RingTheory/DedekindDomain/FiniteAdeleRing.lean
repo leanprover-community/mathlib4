@@ -269,27 +269,29 @@ theorem one : (1 : K_hat R K).IsFiniteAdele := by
 
 open scoped Multiplicative
 
-theorem algebraMap' (k : K) : (_root_.algebraMap K (K_hat R K) k).IsFiniteAdele := by
+open scoped algebraMap in
+theorem algebraMap' (k : K) : (algebraMap K (K_hat R K) k).IsFiniteAdele := by
   rw [IsFiniteAdele, Filter.eventually_cofinite]
   simp_rw [mem_adicCompletionIntegers, ProdAdicCompletions.algebraMap_apply',
     adicCompletion, Valued.valuedCompletion_apply, not_le]
-  change {v : HeightOneSpectrum R | 1 < v.valuation k}.Finite
+  change {v : HeightOneSpectrum R | 1 < v.valuation K k}.Finite
   -- The goal currently: if k ∈ K = field of fractions of a Dedekind domain R,
   -- then v(k)>1 for only finitely many v.
   -- We now write k=n/d and go via R to solve this goal. Do we need to do this?
   obtain ⟨⟨n, ⟨d, hd⟩⟩, hk⟩ := IsLocalization.surj (nonZeroDivisors R) k
   have hd' : d ≠ 0 := nonZeroDivisors.ne_zero hd
-  suffices {v : HeightOneSpectrum R | v.valuation (_root_.algebraMap R K d : K) < 1}.Finite by
+  suffices {v : HeightOneSpectrum R | v.valuation K d < 1}.Finite by
     apply Finite.subset this
     intro v hv
-    apply_fun v.valuation at hk
+    apply_fun v.valuation K at hk
     simp only [Valuation.map_mul, valuation_of_algebraMap] at hk
     rw [mem_setOf_eq, valuation_of_algebraMap]
     have := intValuation_le_one v n
     contrapose! this
     change 1 < v.intValuation n
     rw [← hk, mul_comm]
-    exact lt_mul_of_le_of_one_lt' this hv (by simp) (by simp)
+    exact (lt_mul_of_one_lt_right (by simp) hv).trans_le <|
+      mul_le_mul_of_nonneg_right this (by simp)
   simp_rw [valuation_of_algebraMap]
   change {v : HeightOneSpectrum R | v.intValuationDef d < 1}.Finite
   simp_rw [intValuation_lt_one_iff_dvd]

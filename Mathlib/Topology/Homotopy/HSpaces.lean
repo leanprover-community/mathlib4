@@ -75,45 +75,32 @@ open HSpaces
 
 instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] [HSpace X]
     [HSpace Y] : HSpace (X × Y) where
-  hmul := ⟨fun p => (p.1.1 ⋀ p.2.1, p.1.2 ⋀ p.2.2), by
-    -- Porting note: was `continuity`
-    exact ((map_continuous HSpace.hmul).comp ((continuous_fst.comp continuous_fst).prod_mk
-        (continuous_fst.comp continuous_snd))).prod_mk ((map_continuous HSpace.hmul).comp
-        ((continuous_snd.comp continuous_fst).prod_mk (continuous_snd.comp continuous_snd)))
-  ⟩
+  hmul := ⟨fun p => (p.1.1 ⋀ p.2.1, p.1.2 ⋀ p.2.2), by fun_prop⟩
   e := (HSpace.e, HSpace.e)
   hmul_e_e := by
-    simp only [ContinuousMap.coe_mk, Prod.mk.inj_iff]
+    simp only [ContinuousMap.coe_mk, Prod.mk_inj]
     exact ⟨HSpace.hmul_e_e, HSpace.hmul_e_e⟩
   eHmul := by
     let G : I × X × Y → X × Y := fun p => (HSpace.eHmul (p.1, p.2.1), HSpace.eHmul (p.1, p.2.2))
-    have hG : Continuous G :=
-      (Continuous.comp HSpace.eHmul.1.1.2
-          (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
-        (Continuous.comp HSpace.eHmul.1.1.2
-          (continuous_fst.prod_mk (continuous_snd.comp continuous_snd)))
+    have hG : Continuous G := by fun_prop
     use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
       exact Prod.ext (HSpace.eHmul.1.2 x) (HSpace.eHmul.1.2 y)
     · rintro ⟨x, y⟩
       exact Prod.ext (HSpace.eHmul.1.3 x) (HSpace.eHmul.1.3 y)
     · rintro t ⟨x, y⟩ h
-      replace h := Prod.mk.inj_iff.mp h
+      replace h := Prod.mk_inj.mp h
       exact Prod.ext (HSpace.eHmul.2 t x h.1) (HSpace.eHmul.2 t y h.2)
   hmulE := by
     let G : I × X × Y → X × Y := fun p => (HSpace.hmulE (p.1, p.2.1), HSpace.hmulE (p.1, p.2.2))
-    have hG : Continuous G :=
-      (Continuous.comp HSpace.hmulE.1.1.2
-            (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
-        (Continuous.comp HSpace.hmulE.1.1.2
-          (continuous_fst.prod_mk (continuous_snd.comp continuous_snd)))
+    have hG : Continuous G := by fun_prop
     use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
       exact Prod.ext (HSpace.hmulE.1.2 x) (HSpace.hmulE.1.2 y)
     · rintro ⟨x, y⟩
       exact Prod.ext (HSpace.hmulE.1.3 x) (HSpace.hmulE.1.3 y)
     · rintro t ⟨x, y⟩ h
-      replace h := Prod.mk.inj_iff.mp h
+      replace h := Prod.mk_inj.mp h
       exact Prod.ext (HSpace.hmulE.2 t x h.1) (HSpace.hmulE.2 t y h.2)
 
 
@@ -122,7 +109,7 @@ namespace IsTopologicalGroup
 /-- The definition `toHSpace` is not an instance because its additive version would
 lead to a diamond since a topological field would inherit two `HSpace` structures, one from the
 `MulOneClass` and one from the `AddZeroClass`. In the case of a group, we make
-`IsTopologicalGroup.hSpace` an instance."-/
+`IsTopologicalGroup.hSpace` an instance." -/
 @[to_additive
       "The definition `toHSpace` is not an instance because it comes together with a
       multiplicative version which would lead to a diamond since a topological field would inherit
@@ -161,6 +148,7 @@ continuity of `delayReflRight`. -/
 def qRight (p : I × I) : I :=
   Set.projIcc 0 1 zero_le_one (2 * p.1 / (1 + p.2))
 
+@[fun_prop]
 theorem continuous_qRight : Continuous qRight :=
   continuous_projIcc.comp <|
     Continuous.div (by fun_prop) (by fun_prop) fun _ ↦ (add_pos zero_lt_one).ne'
@@ -202,7 +190,7 @@ variable {X : Type u} [TopologicalSpace X] {x y : X}
 the product path `γ ∧ e` to `γ`. -/
 def delayReflRight (θ : I) (γ : Path x y) : Path x y where
   toFun t := γ (qRight (t, θ))
-  continuous_toFun := γ.continuous.comp (continuous_qRight.comp <| Continuous.Prod.mk_left θ)
+  continuous_toFun := by fun_prop
   source' := by
     dsimp only
     rw [qRight_zero_left, γ.source]
