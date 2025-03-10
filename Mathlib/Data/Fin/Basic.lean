@@ -231,8 +231,6 @@ instance {n : ℕ} : WellFoundedRelation (Fin n) :=
 @[deprecated Fin.ofNat' (since := "2024-10-15")]
 def ofNat'' [NeZero n] (i : ℕ) : Fin n :=
   ⟨i % n, mod_lt _ n.pos_of_neZero⟩
--- Porting note: `Fin.ofNat'` conflicts with something in core (there the hypothesis is `n > 0`),
--- so for now we make this double-prime `''`. This is also the reason for the dubious translation.
 
 @[deprecated (since := "2025-02-24")]
 alias val_zero' := val_zero
@@ -348,7 +346,7 @@ section Add
 theorem val_one' (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
   rfl
 
--- Porting note: Delete this lemma after porting
+@[deprecated val_one' (since := "2025-03-10")]
 theorem val_one'' {n : ℕ} : ((1 : Fin (n + 1)) : ℕ) = 1 % (n + 1) :=
   rfl
 
@@ -398,7 +396,6 @@ theorem ofNat'_eq_cast (n : ℕ) [NeZero n] (a : ℕ) : Fin.ofNat' n a = a :=
 
 @[simp] lemma val_natCast (a n : ℕ) [NeZero n] : (a : Fin n).val = a % n := rfl
 
--- Porting note: is this the right name for things involving `Nat.cast`?
 /-- Converting an in-range number to `Fin (n + 1)` produces a result
 whose value is the original number. -/
 theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).val = a :=
@@ -1134,7 +1131,6 @@ lemma castPred_succAbove_castPred {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a �
   simp_rw [← castSucc_inj (b := (a.succAbove b).castPred hk), ← castSucc_succAbove_castSucc,
     castSucc_castPred]
 
---@[simp] -- Porting note: can be proved by `simp`
 lemma one_succAbove_zero {n : ℕ} : (1 : Fin (n + 2)).succAbove 0 = 0 := by
   rfl
 

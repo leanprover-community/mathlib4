@@ -65,8 +65,6 @@ theorem lt_rev_iff {i j : Fin n} : i < rev j ↔ j < rev i := by
 theorem le_rev_iff {i j : Fin n} : i ≤ rev j ↔ j ≤ rev i := by
   rw [← rev_le_rev, rev_rev]
 
--- Porting note: this is now syntactically equal to `val_last`
-
 @[simp] theorem val_rev_zero [NeZero n] : ((rev 0 : Fin n) : ℕ) = n.pred := rfl
 
 theorem rev_pred {i : Fin (n + 1)} (h : i ≠ 0) (h' := rev_ne_iff.mpr ((rev_last _).symm ▸ h)) :
