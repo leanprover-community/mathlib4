@@ -406,15 +406,15 @@ lemma rTensor_mkQ (N : Submodule R M) :
   rw [← exact_iff]
   exact rTensor_exact Q (LinearMap.exact_subtype_mkQ N) (Submodule.mkQ_surjective N)
 
+open Submodule LinearEquiv in
 lemma LinearMap.ker_tensorProductMk {I : Ideal R} :
-    LinearMap.ker (TensorProduct.mk R (R ⧸ I) Q 1) = I • ⊤ := by
-  apply Submodule.comap_injective_of_surjective (TensorProduct.lid R Q).surjective
-  rw [← Submodule.comap_coe_toLinearMap, ← LinearMap.ker_comp]
+    ker (TensorProduct.mk R (R ⧸ I) Q 1) = I • ⊤ := by
+  apply comap_injective_of_surjective (TensorProduct.lid R Q).surjective
+  rw [← comap_coe_toLinearMap, ← ker_comp]
   convert rTensor_mkQ Q I
   · ext; simp
-  rw [← Submodule.comap_coe_toLinearMap]
-  erw [Submodule.comap_equiv_eq_map_symm, Submodule.map_symm_eq_iff]
-  rw [Submodule.map_range_rTensor_subtype_lid]
+  rw [← comap_coe_toLinearMap, ← toLinearMap_eq_coe, comap_equiv_eq_map_symm, toLinearMap_eq_coe,
+    map_coe_toLinearMap, map_symm_eq_iff, map_range_rTensor_subtype_lid]
 
 variable {M' N' P' : Type*}
     [AddCommGroup M'] [AddCommGroup N'] [AddCommGroup P']
