@@ -27,7 +27,9 @@ to choices of square roots of `d` in `R`.
   are called `re` and `im` by analogy to the negative `d` case. -/
 @[ext]
 structure Zsqrtd (d : ℤ) where
+  /-- Component of the integer not multiplied by `√d` -/
   re : ℤ
+  /-- Component of the integer multiplied by `√d` -/
   im : ℤ
   deriving DecidableEq
 
@@ -257,14 +259,6 @@ instance : CharZero (ℤ√d) where cast_injective m n := by simp [Zsqrtd.ext_if
 @[simp]
 theorem ofInt_eq_intCast (n : ℤ) : (ofInt n : ℤ√d) = n := by ext <;> simp [ofInt_re, ofInt_im]
 
-@[deprecated (since := "2024-04-05")] alias coe_nat_re := natCast_re
-@[deprecated (since := "2024-04-05")] alias coe_nat_im := natCast_im
-@[deprecated (since := "2024-04-05")] alias coe_nat_val := natCast_val
-@[deprecated (since := "2024-04-05")] alias coe_int_re := intCast_re
-@[deprecated (since := "2024-04-05")] alias coe_int_im := intCast_im
-@[deprecated (since := "2024-04-05")] alias coe_int_val := intCast_val
-@[deprecated (since := "2024-04-05")] alias ofInt_eq_coe := ofInt_eq_intCast
-
 @[simp]
 theorem smul_val (n x y : ℤ) : (n : ℤ√d) * ⟨x, y⟩ = ⟨n * x, n * y⟩ := by ext <;> simp
 
@@ -286,11 +280,6 @@ theorem decompose {x y : ℤ} : (⟨x, y⟩ : ℤ√d) = x + sqrtd (d := d) * y 
 theorem mul_star {x y : ℤ} : (⟨x, y⟩ * star ⟨x, y⟩ : ℤ√d) = x * x - d * y * y := by
   ext <;> simp [sub_eq_add_neg, mul_comm]
 
-@[deprecated (since := "2024-05-25")] alias coe_int_add := Int.cast_add
-@[deprecated (since := "2024-05-25")] alias coe_int_sub := Int.cast_sub
-@[deprecated (since := "2024-05-25")] alias coe_int_mul := Int.cast_mul
-@[deprecated (since := "2024-05-25")] alias coe_int_inj := Int.cast_inj
-
 theorem intCast_dvd (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ z ∣ a.im := by
   constructor
   · rintro ⟨x, rfl⟩
@@ -309,9 +298,6 @@ theorem intCast_dvd_intCast (a b : ℤ) : (a : ℤ√d) ∣ b ↔ a ∣ b := by
     rwa [intCast_re] at hre
   · rw [intCast_re, intCast_im]
     exact fun hc => ⟨hc, dvd_zero a⟩
-
-@[deprecated (since := "2024-05-25")] alias coe_int_dvd_iff := intCast_dvd
-@[deprecated (since := "2024-05-25")] alias coe_int_dvd_coe_int := intCast_dvd_intCast
 
 protected theorem eq_of_smul_eq_smul_left {a : ℤ} {b c : ℤ√d} (ha : a ≠ 0) (h : ↑a * b = a * c) :
     b = c := by
@@ -413,7 +399,7 @@ def Nonnegg (c d : ℕ) : ℤ → ℤ → Prop
   | -[_+1], -[_+1] => False
 
 theorem nonnegg_comm {c d : ℕ} {x y : ℤ} : Nonnegg c d x y = Nonnegg d c y x := by
-  induction x <;> induction y <;> rfl
+  cases x <;> cases y <;> rfl
 
 theorem nonnegg_neg_pos {c d} : ∀ {a b : ℕ}, Nonnegg c d (-a) b ↔ SqLe a d b c
   | 0, b => ⟨by simp [SqLe, Nat.zero_le], fun _ => trivial⟩
@@ -450,15 +436,9 @@ theorem norm_one : norm (1 : ℤ√d) = 1 := by simp [norm]
 @[simp]
 theorem norm_intCast (n : ℤ) : norm (n : ℤ√d) = n * n := by simp [norm]
 
-@[deprecated (since := "2024-04-17")]
-alias norm_int_cast := norm_intCast
-
 @[simp]
 theorem norm_natCast (n : ℕ) : norm (n : ℤ√d) = n * n :=
   norm_intCast n
-
-@[deprecated (since := "2024-04-17")]
-alias norm_nat_cast := norm_natCast
 
 @[simp]
 theorem norm_mul (n m : ℤ√d) : norm (n * m) = norm n * norm m := by
@@ -668,7 +648,7 @@ theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
     | ⟨-[x+1], -[y+1]⟩ => ⟨x + 1, y + 1, by simp [Int.negSucc_coe, add_assoc]; trivial⟩
   refine ⟨x + d * y, h.trans ?_⟩
   change Nonneg ⟨↑x + d * y - ↑x, 0 - ↑y⟩
-  cases' y with y
+  rcases y with - | y
   · simp
     trivial
   have h : ∀ y, SqLe y d (d * y) 1 := fun y => by

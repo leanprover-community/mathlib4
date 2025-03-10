@@ -84,7 +84,7 @@ theorem Subgroup.exists_isLeast_one_lt {H : Subgroup G} (hbot : H ≠ ⊥) {a : 
     not_le] at hxmin
   rcases hxmin x ⟨hxH, (one_le_pow_of_one_le'  h₀.le _).trans_lt hnx⟩ with ⟨y, ⟨hyH, hy₀⟩, hxy⟩
   rcases hex y hy₀ with ⟨m, hm⟩
-  cases' lt_or_le m n with hmn hnm
+  rcases lt_or_le m n with hmn | hnm
   · exact hmin m hmn ⟨y, hyH, hm⟩
   · refine disjoint_left.1 hd (div_mem hxH hyH) ⟨one_lt_div'.2 hxy, div_lt_iff_lt_mul'.2 ?_⟩
     calc x ≤ a^ (n + 1) := hxn

@@ -9,6 +9,7 @@ import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.Linter.OldObtain
+import Mathlib.Tactic.Simproc.ExistsAndEq
 
 /-!
 # Basic tactics and utilities for tactic writing

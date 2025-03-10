@@ -3,11 +3,11 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
-
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.InnerProductSpace.Defs
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+import Mathlib.GroupTheory.MonoidLocalization.Basic
 
 /-!
 # Properties of inner product spaces
@@ -20,8 +20,6 @@ This file proves many basic properties of inner product spaces (real or complex)
 - `norm_inner_eq_norm_iff`: the equality criteion in the Cauchy-Schwartz inequality (also in many
   variants).
 - `inner_eq_sum_norm_sq_div_four`: the polarization identity.
-- We show that the inner product is continuous, `continuous_inner`, and bundle it as the
-  continuous sesquilinear map `innerSL` (see also `innerₛₗ` for the non-continuous version).
 
 ## Tags
 
@@ -488,19 +486,6 @@ theorem inner_eq_sum_norm_sq_div_four (x y : E) :
   push_cast
   simp only [sq, ← mul_div_right_comm, ← add_div]
 
--- See note [lower instance priority]
-instance (priority := 100) InnerProductSpace.toUniformConvexSpace : UniformConvexSpace F :=
-  ⟨fun ε hε => by
-    refine
-      ⟨2 - √(4 - ε ^ 2), sub_pos_of_lt <| (sqrt_lt' zero_lt_two).2 ?_, fun x hx y hy hxy => ?_⟩
-    · norm_num
-      exact pow_pos hε _
-    rw [sub_sub_cancel]
-    refine le_sqrt_of_sq_le ?_
-    rw [sq, eq_sub_iff_add_eq.2 (parallelogram_law_with_norm ℝ x y), ← sq ‖x - y‖, hx, hy]
-    ring_nf
-    gcongr⟩
-
 /-- Polarization identity: The real inner product, in terms of the norm. -/
 theorem real_inner_eq_norm_add_mul_self_sub_norm_mul_self_sub_norm_mul_self_div_two (x y : F) :
     ⟪x, y⟫_ℝ = (‖x + y‖ * ‖x + y‖ - ‖x‖ * ‖x‖ - ‖y‖ * ‖y‖) / 2 :=
@@ -592,27 +577,6 @@ theorem real_inner_smul_self_left (x : F) (r : ℝ) : ⟪r • x, x⟫_ℝ = r *
 theorem real_inner_smul_self_right (x : F) (r : ℝ) : ⟪x, r • x⟫_ℝ = r * (‖x‖ * ‖x‖) := by
   rw [inner_smul_right, ← real_inner_self_eq_norm_mul_norm]
 
-/-- When an inner product space `E` over `𝕜` is considered as a real normed space, its inner
-product satisfies `IsBoundedBilinearMap`.
-
-In order to state these results, we need a `NormedSpace ℝ E` instance. We will later establish
-such an instance by restriction-of-scalars, `InnerProductSpace.rclikeToReal 𝕜 E`, but this
-instance may be not definitionally equal to some other “natural” instance. So, we assume
-`[NormedSpace ℝ E]`.
--/
-theorem _root_.isBoundedBilinearMap_inner [NormedSpace ℝ E] [IsScalarTower ℝ 𝕜 E] :
-    IsBoundedBilinearMap ℝ fun p : E × E => ⟪p.1, p.2⟫ :=
-  { add_left := inner_add_left
-    smul_left := fun r x y => by
-      simp only [← algebraMap_smul 𝕜 r x, algebraMap_eq_ofReal, inner_smul_real_left]
-    add_right := inner_add_right
-    smul_right := fun r x y => by
-      simp only [← algebraMap_smul 𝕜 r y, algebraMap_eq_ofReal, inner_smul_real_right]
-    bound :=
-      ⟨1, zero_lt_one, fun x y => by
-        rw [one_mul]
-        exact norm_inner_le_norm x y⟩ }
-
 /-- The inner product of two weighted sums, where the weights in each
 sum add to 0, in terms of the norms of pairwise differences. -/
 theorem inner_sum_smul_sum_smul_of_sum_eq_zero {ι₁ : Type*} {s₁ : Finset ι₁} {w₁ : ι₁ → ℝ}
@@ -702,8 +666,8 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
       try positivity
     simp only [@norm_sq_eq_inner 𝕜] at h
     letI : InnerProductSpace.Core 𝕜 E := InnerProductSpace.toCore
-    erw [← InnerProductSpace.Core.cauchy_schwarz_aux (𝕜 := 𝕜) (F := E),
-      InnerProductSpace.Core.normSq_eq_zero, sub_eq_zero] at h
+    erw [← InnerProductSpace.Core.cauchy_schwarz_aux (𝕜 := 𝕜) (F := E)] at h
+    rw [InnerProductSpace.Core.normSq_eq_zero, sub_eq_zero] at h
     rw [div_eq_inv_mul, mul_smul, h, inv_smul_smul₀]
     rwa [inner_self_ne_zero]
   tfae_have 2 → 3 := fun h => h.imp_right fun h' => ⟨_, h'⟩
@@ -925,43 +889,3 @@ noncomputable instance RCLike.toInnerProductSpaceReal : InnerProductSpace ℝ �
 example : (innerProductSpace : InnerProductSpace ℝ ℝ) = RCLike.toInnerProductSpaceReal := rfl
 example :
   (instInnerProductSpaceRealComplex : InnerProductSpace ℝ ℂ) = RCLike.toInnerProductSpaceReal := rfl
-
-section Continuous
-
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
-
-/-!
-### Continuity of the inner product
--/
-
-theorem continuous_inner : Continuous fun p : E × E => ⟪p.1, p.2⟫ :=
-  letI : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
-  letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
-  isBoundedBilinearMap_inner.continuous
-
-variable {α : Type*}
-
-theorem Filter.Tendsto.inner {f g : α → E} {l : Filter α} {x y : E} (hf : Tendsto f l (𝓝 x))
-    (hg : Tendsto g l (𝓝 y)) : Tendsto (fun t => ⟪f t, g t⟫) l (𝓝 ⟪x, y⟫) :=
-  (continuous_inner.tendsto _).comp (hf.prod_mk_nhds hg)
-
-variable [TopologicalSpace α] {f g : α → E} {x : α} {s : Set α}
-
-theorem ContinuousWithinAt.inner (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
-    ContinuousWithinAt (fun t => ⟪f t, g t⟫) s x :=
-  Filter.Tendsto.inner hf hg
-
-theorem ContinuousAt.inner (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
-    ContinuousAt (fun t => ⟪f t, g t⟫) x :=
-  Filter.Tendsto.inner hf hg
-
-theorem ContinuousOn.inner (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
-    ContinuousOn (fun t => ⟪f t, g t⟫) s := fun x hx => (hf x hx).inner (hg x hx)
-
-@[continuity]
-theorem Continuous.inner (hf : Continuous f) (hg : Continuous g) : Continuous fun t => ⟪f t, g t⟫ :=
-  continuous_iff_continuousAt.2 fun _x => hf.continuousAt.inner hg.continuousAt
-
-end Continuous

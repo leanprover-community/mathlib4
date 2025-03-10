@@ -363,8 +363,8 @@ theorem _root_.Matrix.posDef_diagonal_iff
     PosDef (diagonal d) ↔ ∀ i, 0 < d i := by
   refine ⟨fun h i => ?_, .diagonal⟩
   have := h.2 (Pi.single i 1)
-  simp only [mulVec_single, mul_one, dotProduct_diagonal', Pi.star_apply, Pi.single_eq_same,
-    star_one, one_mul, Function.ne_iff, Pi.zero_apply] at this
+  simp_rw [mulVec_single_one, ← Pi.single_star, star_one, single_dotProduct, one_mul,
+    transpose_apply, diagonal_apply_eq, Function.ne_iff] at this
   exact this ⟨i, by simp⟩
 
 protected theorem one [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R] :

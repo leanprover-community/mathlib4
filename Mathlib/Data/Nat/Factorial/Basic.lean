@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes, Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Monotonicity.Attr
@@ -30,7 +30,13 @@ def factorial : ℕ → ℕ
   | 0 => 1
   | succ n => succ n * factorial n
 
-/-- factorial notation `n!` -/
+/-- factorial notation `(n)!` for `Nat.factorial n`.
+In Lean, names can end with exclamation marks (e.g. `List.get!`), so you cannot write
+`n!` in Lean, but must write `(n)!` or `n !` instead. The former is preferred, since
+Lean can confuse the `!` in `n !` as the (prefix) boolean negation operation in some
+cases.
+For numerals the parentheses are not required, so e.g. `0!` or `1!` work fine.
+Todo: replace occurrences of `n !` with `(n)!` in Mathlib. -/
 scoped notation:10000 n "!" => Nat.factorial n
 
 section Factorial
@@ -157,7 +163,7 @@ theorem add_factorial_succ_le_factorial_add_succ (i : ℕ) (n : ℕ) :
     | succ (succ n) => contradiction
 
 theorem add_factorial_le_factorial_add (i : ℕ) {n : ℕ} (n1 : 1 ≤ n) : i + n ! ≤ (i + n)! := by
-  cases' n1 with h
+  rcases n1 with - | @h
   · exact self_le_factorial _
   exact add_factorial_succ_le_factorial_add_succ i h
 
@@ -434,7 +440,7 @@ lemma two_pow_mul_factorial_le_factorial_two_mul (n : ℕ) : 2 ^ n * n ! ≤ (2 
   rw [Nat.mul_comm, Nat.two_mul]
   calc
     _ ≤ (n + 1)! * (n + 2) ^ (n + 1) :=
-      Nat.mul_le_mul_left _ (pow_le_pow_of_le_left (le_add_left _ _) _)
+      Nat.mul_le_mul_left _ (pow_le_pow_left (le_add_left _ _) _)
     _ ≤ _ := Nat.factorial_mul_pow_le_factorial
 
 end Nat

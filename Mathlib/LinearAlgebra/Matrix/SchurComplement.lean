@@ -13,7 +13,7 @@ This file proves properties of 2×2 block matrices `[A B; C D]` that relate to t
 `D - C*A⁻¹*B`.
 
 Some of the results here generalize to 2×2 matrices in a category, rather than just a ring. A few
-results in this direction can be found in the file `CategoryTheory.Preadditive.Biproducts`,
+results in this direction can be found in the file `Mathlib.CategoryTheory.Preadditive.Biproducts`,
 especially the declarations `CategoryTheory.Biprod.gaussian` and `CategoryTheory.Biprod.isoElim`.
 Compare with `Matrix.invertibleOfFromBlocks₁₁Invertible`.
 
@@ -454,7 +454,7 @@ theorem schur_complement_eq₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : M
     (star (x ⊕ᵥ y)) ᵥ* (fromBlocks A B Bᴴ D) ⬝ᵥ (x ⊕ᵥ y) =
       (star (x + (A⁻¹ * B) *ᵥ y)) ᵥ* A ⬝ᵥ (x + (A⁻¹ * B) *ᵥ y) +
         (star y) ᵥ* (D - Bᴴ * A⁻¹ * B) ⬝ᵥ y := by
-  simp [Function.star_sum_elim, fromBlocks_mulVec, vecMul_fromBlocks, add_vecMul,
+  simp [Function.star_sumElim, fromBlocks_mulVec, vecMul_fromBlocks, add_vecMul,
     dotProduct_mulVec, vecMul_sub, Matrix.mul_assoc, vecMul_mulVec, hA.eq,
     conjTranspose_nonsing_inv, star_mulVec]
   abel
@@ -465,7 +465,7 @@ theorem schur_complement_eq₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A : M
     (star (x ⊕ᵥ y)) ᵥ* (fromBlocks A B Bᴴ D) ⬝ᵥ (x ⊕ᵥ y) =
       (star ((D⁻¹ * Bᴴ) *ᵥ x + y)) ᵥ* D ⬝ᵥ ((D⁻¹ * Bᴴ) *ᵥ x + y) +
         (star x) ᵥ* (A - B * D⁻¹ * Bᴴ) ⬝ᵥ x := by
-  simp [Function.star_sum_elim, fromBlocks_mulVec, vecMul_fromBlocks, add_vecMul,
+  simp [Function.star_sumElim, fromBlocks_mulVec, vecMul_fromBlocks, add_vecMul,
     dotProduct_mulVec, vecMul_sub, Matrix.mul_assoc, vecMul_mulVec, hD.eq,
     conjTranspose_nonsing_inv, star_mulVec]
   abel

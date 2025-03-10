@@ -246,6 +246,17 @@ theorem derivWithin_mul_const (hc : DifferentiableWithinAt 𝕜 c s x) (d : 𝔸
   · exact (hc.hasDerivWithinAt.mul_const d).derivWithin hxs
   · simp [derivWithin_zero_of_isolated hxs]
 
+lemma derivWithin_mul_const_field (u : 𝕜') :
+    derivWithin (fun y => v y * u) s x = derivWithin v s x * u := by
+  by_cases hv : DifferentiableWithinAt 𝕜 v s x
+  · rw [derivWithin_mul_const hv u]
+  by_cases hu : u = 0
+  · simp [hu]
+  rw [derivWithin_zero_of_not_differentiableWithinAt hv, zero_mul,
+      derivWithin_zero_of_not_differentiableWithinAt]
+  have : v = fun x ↦ (v x * u) * u⁻¹ := by ext; simp [hu]
+  exact fun h_diff ↦ hv <| this ▸ h_diff.mul_const _
+
 theorem deriv_mul_const (hc : DifferentiableAt 𝕜 c x) (d : 𝔸) :
     deriv (fun y => c y * d) x = deriv c x * d :=
   (hc.hasDerivAt.mul_const d).deriv
@@ -283,6 +294,11 @@ theorem derivWithin_const_mul (c : 𝔸) (hd : DifferentiableWithinAt 𝕜 d s x
   rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
   · exact (hd.hasDerivWithinAt.const_mul c).derivWithin hxs
   · simp [derivWithin_zero_of_isolated hxs]
+
+lemma derivWithin_const_mul_field (u : 𝕜') :
+    derivWithin (fun y => u * v y) s x = u * derivWithin v s x := by
+  simp_rw [mul_comm u]
+  exact derivWithin_mul_const_field u
 
 theorem deriv_const_mul (c : 𝔸) (hd : DifferentiableAt 𝕜 d x) :
     deriv (fun y => c * d y) x = c * deriv d x :=

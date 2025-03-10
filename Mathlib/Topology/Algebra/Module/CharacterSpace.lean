@@ -207,7 +207,7 @@ section GelfandTransform
 
 open ContinuousMap
 
-variable (𝕜 A) [CommRing 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] [TopologicalRing 𝕜]
+variable (𝕜 A) [CommRing 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
   [TopologicalSpace A] [Semiring A] [Algebra 𝕜 A]
 
 /-- The **Gelfand transform** is an algebra homomorphism (over `𝕜`) from a topological `𝕜`-algebra

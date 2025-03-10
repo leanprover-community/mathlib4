@@ -3,6 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Order.Directed
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Logic.Embedding.Set
 import Mathlib.Logic.Equiv.Set
@@ -35,13 +36,19 @@ theorem map_sup [SemilatticeSup α] [LinearOrder β] [FunLike F β α]
     a (m ⊔ n) = a m ⊔ a n :=
   map_inf (α := αᵒᵈ) (β := βᵒᵈ) _ _ _
 
+theorem directed [FunLike F α β] [RelHomClass F r s] {ι : Sort*} {a : ι → α} {f : F}
+    (ha : Directed r a) : Directed s (f ∘ a) :=
+  ha.mono_comp _ fun _ _ h ↦ map_rel f h
+
+theorem directedOn [FunLike F α β] [RelHomClass F r s] {f : F}
+    {t : Set α} (hs : DirectedOn r t) : DirectedOn s (f '' t) :=
+  hs.mono_comp fun _ _ h ↦ map_rel f h
+
 end RelHomClass
 
 namespace RelIso
 
-@[simp]
-theorem range_eq (e : r ≃r s) : Set.range e = Set.univ :=
-  e.surjective.range_eq
+theorem range_eq (e : r ≃r s) : Set.range e = Set.univ := by simp
 
 end RelIso
 
