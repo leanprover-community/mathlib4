@@ -464,11 +464,9 @@ lemma equivTangentBundleProd_eq_tangentMap_prod_tangentMap :
       (tangentMap (I.prod I') I Prod.fst p, tangentMap (I.prod I') I' Prod.snd p) := by
   simp only [tangentMap_prod_fst, tangentMap_prod_snd]; rfl
 
-variable [IsManifold I (n + 1) M] [IsManifold I' (n + 1) M']
-
 /-- The canonical equivalence between the tangent bundle of a product and the product of
 tangent bundles is smooth. -/
-lemma contMDiff_equivTangentBundleProd :
+lemma contMDiff_equivTangentBundleProd [IsManifold I (n + 1) M] [IsManifold I' (n + 1) M'] :
     haveI : IsManifold I 1 M := .of_le (n := n + 1) le_add_self
     haveI : IsManifold I' 1 M' := .of_le (n := n + 1) le_add_self
     ContMDiff (I.prod I').tangent (I.tangent.prod I'.tangent) n
@@ -481,13 +479,9 @@ lemma contMDiff_equivTangentBundleProd :
 
 /-- The canonical equivalence between the product of tangent bundles and the tangent bundle of a
 product is smooth. -/
-lemma contMDiff_equivTangentBundleProd_symm :
-    haveI : IsManifold I 1 M := .of_le (n := n + 1) le_add_self
-    haveI : IsManifold I' 1 M' := .of_le (n := n + 1) le_add_self
+lemma contMDiff_equivTangentBundleProd_symm [IsManifold I 1 M] [IsManifold I' 1 M'] :
     ContMDiff (I.tangent.prod I'.tangent) (I.prod I').tangent n
       (equivTangentBundleProd I M I' M').symm := by
-  haveI : IsManifold I 1 M := .of_le (n := n + 1) le_add_self
-  haveI : IsManifold I' 1 M' := .of_le (n := n + 1) le_add_self
   /- Contrary to what one might expect, this proof is nontrivial. It is not a formalization issue:
   even on paper, I don't have a simple proof of the statement. The reason is that there is no nice
   functorial expression for the map from `TM × T'M` to `T (M × M')`, so I need to come back to
@@ -526,7 +520,7 @@ lemma contMDiff_equivTangentBundleProd_symm :
       PartialEquiv.prod_source, Set.mem_prod, TangentBundle.mem_chart_source_iff] at hp
     let φ (x : E) := I ((chartAt H a.proj) ((chartAt H p.1.proj).symm (I.symm x)))
     have D0 : DifferentiableWithinAt 𝕜 φ (Set.range I) (I ((chartAt H p.1.proj) p.1.proj)) := by
-      apply ContDiffWithinAt.differentiableWithinAt (n := n + 1) _ le_add_self
+      apply ContDiffWithinAt.differentiableWithinAt (n := 1) _ le_rfl
       apply contDiffWithinAt_ext_coord_change
       simp [hp.1]
     have D (w : TangentBundle I' M') :
@@ -539,7 +533,7 @@ lemma contMDiff_equivTangentBundleProd_symm :
     · let φ' (x : E') := I' ((chartAt H' b.proj) ((chartAt H' p.2.proj).symm (I'.symm x)))
       have D0' : DifferentiableWithinAt 𝕜 φ' (Set.range I')
           (I' ((chartAt H' p.2.proj) p.2.proj)) := by
-        apply ContDiffWithinAt.differentiableWithinAt (n := n + 1) _ le_add_self
+        apply ContDiffWithinAt.differentiableWithinAt (n := 1) _ le_rfl
         apply contDiffWithinAt_ext_coord_change
         simp [hp.2]
       have D' : DifferentiableWithinAt 𝕜 (φ' ∘ Prod.snd) (Set.range (Prod.map I I'))
@@ -565,7 +559,7 @@ lemma contMDiff_equivTangentBundleProd_symm :
       PartialEquiv.prod_source, Set.mem_prod, TangentBundle.mem_chart_source_iff] at hp
     let φ (x : E') := I' ((chartAt H' b.proj) ((chartAt H' p.2.proj).symm (I'.symm x)))
     have D0 : DifferentiableWithinAt 𝕜 φ (Set.range I') (I' ((chartAt H' p.2.proj) p.2.proj)) := by
-      apply ContDiffWithinAt.differentiableWithinAt (n := n + 1) _ le_add_self
+      apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
       apply contDiffWithinAt_ext_coord_change
       simp [hp.2]
     have D (w : TangentBundle I M) :
@@ -578,7 +572,7 @@ lemma contMDiff_equivTangentBundleProd_symm :
     · let φ' (x : E) := I ((chartAt H a.proj) ((chartAt H p.1.proj).symm (I.symm x)))
       have D0' : DifferentiableWithinAt 𝕜 φ' (Set.range I)
           (I ((chartAt H p.1.proj) p.1.proj)) := by
-        apply ContDiffWithinAt.differentiableWithinAt (n := n + 1) _ le_add_self
+        apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
         apply contDiffWithinAt_ext_coord_change
         simp [hp.1]
       have D' : DifferentiableWithinAt 𝕜 (φ' ∘ Prod.fst) (Set.range (Prod.map I I'))
