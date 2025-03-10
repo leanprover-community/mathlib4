@@ -5,7 +5,6 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.Order.Fin.Basic
-import Mathlib.Util.Superscript
 
 /-! # The simplex category
 
