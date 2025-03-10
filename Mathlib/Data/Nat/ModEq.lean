@@ -382,7 +382,7 @@ theorem add_mod_of_add_mod_lt {a b c : ℕ} (hc : a % c + b % c < c) :
 theorem add_mod_add_of_le_add_mod {a b c : ℕ} (hc : c ≤ a % c + b % c) :
     (a + b) % c + c = a % c + b % c := by rw [← add_mod_add_ite, if_pos hc]
 
-theorem add_div {a b c : ℕ} (hc0 : 0 < c) :
+protected theorem add_div {a b c : ℕ} (hc0 : 0 < c) :
     (a + b) / c = a / c + b / c + if c ≤ a % c + b % c then 1 else 0 := by
   rw [← mul_right_inj' hc0.ne', ← @add_left_cancel_iff _ _ _ ((a + b) % c + a % c + b % c)]
   suffices
