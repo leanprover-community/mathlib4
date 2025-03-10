@@ -112,7 +112,7 @@ section PseudoEMetricSpace
 
 variable [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] [PseudoEMetricSpace P₃]
 
-@[refl] protected lemma refl (v₁ : ι → P₁): v₁ ∼ v₁ :=
+@[refl] protected lemma refl (v₁ : ι → P₁) : v₁ ∼ v₁ :=
   ⟨1, one_ne_zero, fun _ _ => by {norm_cast; rw [one_mul]}⟩
 
 @[symm] protected lemma symm (h : v₁ ∼ v₂) : v₂ ∼ v₁ := by
