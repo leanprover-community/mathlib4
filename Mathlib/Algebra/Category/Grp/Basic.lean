@@ -216,7 +216,7 @@ lemma ofHom_injective {X Y : Type u} [Group X] [Group Y] :
   apply ConcreteCategory.congr_hom h
 
 @[to_additive]
-instance ofUnique (G : Type*) [Group G] [i : Unique G] : Unique (Grp.of G) := i
+scoped instance ofUnique (G : Type*) [Group G] [i : Unique G] : Unique (Grp.of G) := i
 
 -- We verify that simp lemmas apply when coercing morphisms to functions.
 @[to_additive]
@@ -407,7 +407,7 @@ alias coe_comp' := coe_comp
 alias coe_id' := coe_id
 
 @[to_additive]
-instance ofUnique (G : Type*) [CommGroup G] [i : Unique G] : Unique (CommGrp.of G) :=
+scoped instance ofUnique (G : Type*) [CommGroup G] [i : Unique G] : Unique (CommGrp.of G) :=
   i
 
 @[to_additive]
