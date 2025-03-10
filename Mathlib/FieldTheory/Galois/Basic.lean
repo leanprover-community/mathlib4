@@ -268,17 +268,17 @@ theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
     Fintype.card_congr (IntermediateField.fixingSubgroupEquiv K).toEquiv]
   exact (card_aut_eq_finrank K E).symm
 
-@[simp] lemma fixedField_bot [IsGalois F E] [FiniteDimensional F E] :
+@[simp] lemma fixedField_top [IsGalois F E] [FiniteDimensional F E] :
     IntermediateField.fixedField (⊤ : Subgroup (E ≃ₐ[F] E)) = ⊥ := by
   rw [← fixingSubgroup_bot, fixedField_fixingSubgroup]
 
-@[simp] lemma fixingSubgroup_top [IsGalois F E] [FiniteDimensional F E] :
-    IntermediateField.fixingSubgroup (⊥ : IntermediateField F E) = ⊤ := by
-  rw [← fixedField_bot, fixingSubgroup_fixedField]
+@[simp] lemma fixedField_bot [IsGalois F E] [FiniteDimensional F E] :
+    IntermediateField.fixedField (⊥ : Subgroup (E ≃ₐ[F] E)) = ⊤ := by
+  rw [← fixingSubgroup_top, fixedField_fixingSubgroup]
 
 theorem mem_bot_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
     x ∈ (⊥ : IntermediateField F E) ↔ ∀ f : E ≃ₐ[F] E, f x = x := by
-  rw [← fixedField_bot, mem_fixedField_iff]
+  rw [← fixedField_top, mem_fixedField_iff]
   simp only [Subgroup.mem_top, forall_const]
 
 theorem mem_range_algebraMap_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
