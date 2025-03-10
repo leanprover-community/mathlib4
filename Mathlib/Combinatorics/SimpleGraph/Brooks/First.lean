@@ -123,8 +123,15 @@ lemma IsPath.cons_dropUntil_isCycle (hp : p.IsPath) (ha : G.Adj v x) (hx : x ∈
   cons_isCycle_iff _ ha|>.2 ⟨hp.dropUntil _, fun hf ↦ (fun hf ↦ hs
     <| hp.eq_penultimate_of_end_mem_edge hf) <| (edges_dropUntil_subset ..) (Sym2.eq_swap ▸ hf)⟩
 
-/-- A walk `IsMaximal` if it contains all neighbors of its end-vertex. -/
-abbrev IsMaximal (p : G.Walk u v) : Prop := ∀ y, G.Adj v y → y ∈ p.support
+@[mk_iff]
+structure IsMaximal {u v : α} (p : G.Walk u v) : Prop where
+  max : ∀ y, G.Adj v y → y ∈ p.support
+
+/-- A walk `IsMaxPath` if it is a path containing all neighbors of its end-vertex. -/
+structure IsMaxPath {u v : α} (p : G.Walk u v) : Prop extends IsPath p, IsMaximal p
+
+/-- A walk `IsMaxCycle` if it contains all neighbors of its end-vertex. -/
+structure IsMaxCycle {v : α} (p : G.Walk v v) : Prop extends IsCycle p, IsMaximal p
 
 /-- A walk `p` in a graph `G` `IsClosable` if there is an edge in `G` from its end-vertex to a
 vertex other than the penultimate vertex of `p`. -/
@@ -150,18 +157,18 @@ lemma IsMaximal.isClosable (hm : p.IsMaximal) (h1 : 1 < G.degree v) :
   · rw [ne_eq, not_not] at hax
     subst_vars
     exact this hm h1 _ p.penultimate ⟨hxy.2.1, hxy.1, hxy.2.2.symm⟩ hxy.2.2.symm
-  exact ⟨_, hm _ hxy.1, hxy.1, hax⟩
+  exact ⟨_, hm.max _ hxy.1, hxy.1, hax⟩
 
 /--
 If `p : G.Walk u v` is a maximal path (i.e. all neighbors of `v` lie in `p`) and `v` has more than
 one neighbor then we can close `p` into a maximal cycle, where `c : G.Walk w w` is maximal means
 that all neighbors of `w` lie in `c`.
 -/
-lemma maximal_cycle_of_maximal_path (hp : p.IsPath) (hm : p.IsMaximal) (h1 : 1 < G.degree v) :
-    ((p.dropUntil p.close find_mem_support).cons (hm.isClosable h1).adj).IsCycle ∧
-    ((p.dropUntil p.close find_mem_support).cons (hm.isClosable h1).adj).IsMaximal := by
-  let hc := hm.isClosable h1
+lemma maximal_cycle_of_maximal_path (hp : p.IsMaxPath) (h1 : 1 < G.degree v) :
+    ((p.dropUntil p.close find_mem_support).cons (hp.isClosable h1).adj).IsMaxCycle := by
+  let hc := hp.isClosable h1
   use hp.cons_dropUntil_isCycle hc.adj find_mem_support hc.ne
+  rw [isMaximal_iff]
   intro y hy
   rw [support_cons] at *
   right
@@ -169,7 +176,7 @@ lemma maximal_cycle_of_maximal_path (hp : p.IsPath) (hm : p.IsMaximal) (h1 : 1 <
   · rw [hpen]
     have h2 := (p.dropUntil p.close find_mem_support).penultimate_mem_support
     rwa [penultimate_dropUntil (fun hv ↦ G.loopless _ (hv ▸ hc.adj))] at h2
-  · apply (mem_dropUntil_find_of_mem_prop ⟨(hm _ hy), _⟩)
+  · apply (mem_dropUntil_find_of_mem_prop ⟨(hp.max _ hy), _⟩)
     exact ⟨hy, hpen⟩
 
 end Walk
