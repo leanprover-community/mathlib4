@@ -53,7 +53,7 @@ theorem frattini_nongenerating [IsCoatomic (Subgroup G)] {K : Subgroup G}
 /-- When `G` is finite, the Frattini subgroup is nilpotent. -/
 theorem frattini_nilpotent [Finite G] : Group.IsNilpotent (frattini G) := by
   -- We use the characterisation of nilpotency in terms of all Sylow subgroups being normal.
-  have q := (isNilpotent_of_finite_tfae (G := frattini G)).out 0 3
+  have q := (isNilpotent_tfae_of_finite (G := frattini G)).out 0 3
   rw [q]; clear q
   -- Consider each prime `p` and Sylow `p`-subgroup `P` of `frattini G`.
   intro p p_prime P
