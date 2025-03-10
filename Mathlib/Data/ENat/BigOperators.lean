@@ -28,4 +28,12 @@ lemma sum_iSup_of_monotone {α ι : Type*} [Preorder ι] [IsDirected ι (· ≤ 
     {f : α → ι → ℕ∞} (hf : ∀ a, Monotone (f a)) : (∑ a ∈ s, iSup (f a)) = ⨆ n, ∑ a ∈ s, f a n :=
   sum_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ a ↦ ⟨hf a hi, hf a hj⟩
 
+@[simp]
+lemma toNat_prod {ι : Type*} (s : Finset ι) (f : ι → ℕ∞) :
+    (∏ i ∈ s, f i).toNat = ∏ i ∈ s, (f i).toNat := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | @insert x s hxs ih => rw [Finset.prod_insert hxs, ENat.toNat_mul, Finset.prod_insert hxs, ih]
+
 end ENat
