@@ -348,4 +348,3 @@ end AddCommGroup
 end coprod
 
 end ContinuousLinearMap
-
