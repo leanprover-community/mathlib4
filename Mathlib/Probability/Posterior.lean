@@ -33,6 +33,11 @@ and data can be recovered from the distribution of the data and the posterior.
 * `posterior_posterior`: `(κ†μ)†(κ ∘ₘ μ) =ᵐ[μ] κ`
 * `posterior_comp`: `(η ∘ₖ κ)†μ =ᵐ[η ∘ₘ κ ∘ₘ μ] κ†μ ∘ₖ η†(κ ∘ₘ μ)`
 
+* `posterior_ae_eq_withDensity`: If `κ ω ≪ κ ∘ₘ μ` for `μ`-almost every `ω`,
+  then for `κ ∘ₘ μ`-almost every `x`,
+  `κ†μ x = μ.withDensity (fun ω ↦ κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω x)`.
+  The condition is true for countable `Ω`: see `absolutelyContinuous_comp_of_countable`.
+
 ## Notation
 
 `κ†μ` denotes the posterior of `κ` with respect to `μ`, `posterior κ μ`.
@@ -51,9 +56,9 @@ namespace ProbabilityTheory
 
 variable {Ω 𝓧 𝓨 𝓩 : Type*} {mΩ : MeasurableSpace Ω} {m𝓧 : MeasurableSpace 𝓧}
     {m𝓨 : MeasurableSpace 𝓨} {m𝓩 : MeasurableSpace 𝓩}
-    {κ : Kernel Ω 𝓧} {μ : Measure Ω} [IsFiniteMeasure μ] [IsFiniteKernel κ]
+    {κ : Kernel Ω 𝓧} {μ : Measure Ω}
 
-variable [StandardBorelSpace Ω] [Nonempty Ω]
+variable [StandardBorelSpace Ω] [Nonempty Ω] [IsFiniteMeasure μ] [IsFiniteKernel κ]
 
 /-- Posterior of the kernel `κ` with respect to the measure `μ`. -/
 noncomputable
@@ -222,6 +227,17 @@ lemma rnDeriv_posterior_ae_prod (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ)
     ∀ᵐ p ∂(μ.prod (κ ∘ₘ μ)),
       (κ†μ).rnDeriv (Kernel.const _ μ) p.2 p.1 = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) p.1 p.2 := by
   have h_ac' : ∀ᵐ x ∂(κ ∘ₘ μ), (κ†μ) x ≪ μ := posterior_ac_of_ac h_ac
+  -- We prove that the integrals over any measurable set of the functions on the two sides
+  -- are equal, which implies the equality almost everywhere.
+  refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite ?_ ?_ ?_
+  · fun_prop
+  · fun_prop
+  intro s hs hμs
+  -- We prove the equality of the integrals by proving it on a π-system generating the σ-algebra.
+  -- We use the π-system of rectangles.
+  -- First, the integral of the left-hand side on `s ×ˢ t` is `(μ ⊗ₘ κ) (s ×ˢ t)`, which we prove
+  -- by showing that it's equal to `((κ ∘ₘ μ) ⊗ κ†μ) (t ×ˢ s)` and using the main property of the
+  -- posterior.
   have h1 {s : Set Ω} {t : Set 𝓧} (hs : MeasurableSet s) (ht : MeasurableSet t) :
       ∫⁻ x in s ×ˢ t, (κ†μ).rnDeriv (Kernel.const _ μ) x.2 x.1 ∂μ.prod (⇑κ ∘ₘ μ)
         = (μ ⊗ₘ κ) (s ×ˢ t) := by
@@ -233,6 +249,7 @@ lemma rnDeriv_posterior_ae_prod (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ)
     change ∫⁻ ω in s, (κ†μ).rnDeriv (Kernel.const 𝓧 μ) x ω ∂(Kernel.const 𝓧 μ x) = _
     rw [Kernel.setLIntegral_rnDeriv h_ac' hs]
   have h2 {s : Set Ω} {t : Set 𝓧} (hs : MeasurableSet s) (ht : MeasurableSet t) :
+  -- Second, the integral of the right-hand side on `s ×ˢ t` is `(μ ⊗ₘ κ) (s ×ˢ t)`.
       ∫⁻ x in s ×ˢ t, κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) x.1 x.2 ∂μ.prod (⇑κ ∘ₘ μ)
         = (μ ⊗ₘ κ) (s ×ˢ t) := by
     rw [setLIntegral_prod _ (by fun_prop), Measure.compProd_apply_prod hs ht]
@@ -240,14 +257,12 @@ lemma rnDeriv_posterior_ae_prod (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ)
     filter_upwards [h_ac] with ω h_ac
     change ∫⁻ x in t, κ.rnDeriv (Kernel.const Ω (κ ∘ₘ μ)) ω x ∂(Kernel.const Ω (κ ∘ₘ μ) ω) = _
     rw [Kernel.setLIntegral_rnDeriv h_ac ht]
+  -- On products of sets, the two integrals are equal.
   have h_prod {s : Set Ω} {t : Set 𝓧} (hs : MeasurableSet s) (ht : MeasurableSet t) :
       ∫⁻ x in s ×ˢ t, (κ†μ).rnDeriv (Kernel.const _ μ) x.2 x.1 ∂μ.prod (⇑κ ∘ₘ μ)
         = ∫⁻ x in s ×ˢ t, κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) x.1 x.2 ∂μ.prod (⇑κ ∘ₘ μ) := by
     rw [h1 hs ht, h2 hs ht]
-  refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite ?_ ?_ ?_
-  · fun_prop
-  · fun_prop
-  intro s hs hμs
+  -- Now we extend from the π-system to the σ-algebra.
   refine MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ _ hs
   · simp
   · rintro _ ⟨s, hs, t, ht, rfl⟩
