@@ -63,10 +63,43 @@ lemma IsTransitiveRel.comp_subset_self {s : Set (X × X)}
   intro z
   exact @h x z y
 
+lemma isTransitiveRel_empty : IsTransitiveRel (X := X) ∅ := by
+  intro
+  simp
+
+lemma isTransitiveRel_univ : IsTransitiveRel (X := X) Set.univ := by
+  intro
+  simp
+
+lemma isTransitiveRel_singleton (x y : X) : IsTransitiveRel {(x, y)} := by
+  intro
+  simp +contextual
+
+lemma IsTransitiveRel.symmetrizeRel {s : Set (X × X)}
+    (h : IsTransitiveRel s) :
+    IsTransitiveRel (symmetrizeRel s) := by
+  intro x y z
+  simp only [_root_.symmetrizeRel, mem_inter_iff, mem_preimage, Prod.swap_prod_mk, and_imp]
+  intro hxy hyx hyz hzy
+  exact ⟨h hxy hyz, h hzy hyx⟩
+
 lemma IsTransitiveRel.comp_eq_of_idRel_subset {s : Set (X × X)}
     (h : IsTransitiveRel s) (h' : idRel ⊆ s) :
     s ○ s = s :=
   le_antisymm h.comp_subset_self (subset_comp_self h')
+
+open UniformSpace in
+lemma IsTransitiveRel.ball_subset_of_mem {V : Set (X × X)} (h : IsTransitiveRel V)
+    {x y : X} (hy : y ∈ ball x V) :
+    ball y V ⊆ ball x V :=
+  ball_subset_of_comp_subset hy (h.comp_subset_self)
+
+lemma UniformSpace.ball_eq_of_mem_of_isSymmetricRel_of_isTransitiveRel {V : Set (X × X)}
+    (h_symm : IsSymmetricRel V) (h_trans : IsTransitiveRel V) {x y : X}
+    (hy : y ∈ ball x V) :
+    ball x V = ball y V := by
+  refine le_antisymm (h_trans.ball_subset_of_mem ?_) (h_trans.ball_subset_of_mem hy)
+  rwa [← mem_ball_symmetry h_symm]
 
 variable [UniformSpace X]
 
@@ -84,50 +117,51 @@ lemma IsUltraUniformity.mk_of_hasBasis {ι : Type*} {p : ι → Prop} {s : ι �
     (fun i hi ↦ ⟨s i, ⟨h_basis.mem_of_mem hi, h_symm i hi, h_trans i hi⟩, subset_rfl⟩)
     (fun _ hs ↦ hs.1)
 
-variable [IsUltraUniformity X]
-
 namespace UniformSpace
+
+lemma _root_.IsTransitiveRel.isOpen_ball_of_mem_uniformity (x : X) {V : Set (X × X)}
+    (h : IsTransitiveRel V) (h' : V ∈ 𝓤 X) :
+    IsOpen (ball x V) := by
+  rw [isOpen_iff_ball_subset]
+  intro y hy
+  exact ⟨V, h', h.ball_subset_of_mem hy⟩
+
+lemma isClosed_ball_of_isSymmetricRel_of_isTransitiveRel_of_mem_uniformity
+    (x : X) {V : Set (X × X)} (h_symm : IsSymmetricRel V)
+    (h_trans : IsTransitiveRel V) (h' : V ∈ 𝓤 X) :
+    IsClosed (ball x V) := by
+  rw [← isOpen_compl_iff, isOpen_uniformity]
+  simp only [mem_compl_iff, mem_setOf_eq]
+  intro z hz
+  rw [hasBasis_symmetric.mem_iff]
+  refine ⟨V, ⟨h', h_symm⟩, ?_⟩
+  rintro ⟨a, b⟩
+  simp only [id_eq, mem_setOf_eq]
+  rintro hab rfl
+  replace hab : b ∈ ball a V := hab
+  contrapose! hz
+  rwa [ball_eq_of_mem_of_isSymmetricRel_of_isTransitiveRel ‹_› ‹_› hz,
+    mem_ball_symmetry h_symm]
+
+lemma isClopen_ball_of_isSymmetricRel_of_isTransitiveRel_of_mem_uniformity
+    (x : X) {V : Set (X × X)} (h_symm : IsSymmetricRel V)
+    (h_trans : IsTransitiveRel V) (h' : V ∈ 𝓤 X) :
+    IsClopen (ball x V) :=
+  ⟨isClosed_ball_of_isSymmetricRel_of_isTransitiveRel_of_mem_uniformity _ ‹_› ‹_› ‹_›,
+   h_trans.isOpen_ball_of_mem_uniformity _ ‹_›⟩
+
+variable [IsUltraUniformity X]
 
 lemma nhds_basis_clopens (x : X) :
     (𝓝 x).HasBasis (fun s : Set X => x ∈ s ∧ IsClopen s) id := by
-  constructor
-  intro t
-  constructor
-  · rw [nhds_eq_comap_uniformity, Filter.mem_comap]
-    rintro ⟨u, hu, hu'⟩
-    rw [IsUltraUniformity.has_basis.mem_iff] at hu
-    obtain ⟨v, hv, hv'⟩ := hu
-    refine ⟨{y | (x, y) ∈ v}, ⟨?_, ?_⟩, ?_⟩
-    · simp only [mem_setOf_eq]
-      exact refl_mem_uniformity hv.left
-    · constructor
-      · rw [← isOpen_compl_iff, isOpen_uniformity]
-        simp only [mem_compl_iff, mem_setOf_eq]
-        intro z hz
-        rw [IsUltraUniformity.has_basis.mem_iff]
-        refine ⟨v, hv, ?_⟩
-        intro ⟨a, b⟩
-        simp only [id_eq, mem_setOf_eq]
-        rintro h rfl H
-        rw [hv.right.left.mk_mem_comm] at h
-        exact hz (hv.right.right H h)
-      · rw [isOpen_uniformity]
-        simp only [mem_setOf_eq]
-        intro z hz
-        rw [IsUltraUniformity.has_basis.mem_iff]
-        refine ⟨v, hv, ?_⟩
-        intro ⟨a, b⟩
-        simp only [id_eq, mem_setOf_eq]
-        rintro h rfl
-        exact hv.right.right hz h
-    · refine le_trans ?_ hu'
-      intro z
-      simp only [id_eq, mem_setOf_eq, mem_preimage]
-      intro hz
-      exact hv' hz
-  · rintro ⟨u, ⟨hu, hu'⟩, hu''⟩
-    rw [_root_.mem_nhds_iff]
-    exact ⟨u, hu'', hu'.right, hu⟩
+  refine (nhds_basis_uniformity' (IsUltraUniformity.has_basis)).to_hasBasis' ?_ ?_
+  · intro V ⟨hV, h_symm, h_trans⟩
+    refine ⟨ball x V, ⟨?_,
+      isClopen_ball_of_isSymmetricRel_of_isTransitiveRel_of_mem_uniformity _ h_symm h_trans hV⟩,
+      le_rfl⟩
+    exact mem_ball_self _ hV
+  · rintro u ⟨hx, hu⟩
+    simp [hu.right.mem_nhds_iff, hx]
 
 /-- A uniform space with a nonarchimedean uniformity is zero-dimensional. -/
 lemma _root_.TopologicalSpace.isTopologicalBasis_clopens :
