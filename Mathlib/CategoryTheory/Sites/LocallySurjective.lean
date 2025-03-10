@@ -40,7 +40,7 @@ namespace Presheaf
 
 /-- Given `f : F ⟶ G`, a morphism between presieves, and `s : G.obj (op U)`, this is the sieve
 of `U` consisting of the `i : V ⟶ U` such that `s` restricted along `i` is in the image of `f`. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def imageSieve {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : ToType (G.obj (op U))) : Sieve U where
   arrows V i := ∃ t : ToType (F.obj (op V)), f.app _ t = G.map i.op s
   downward_closed := by
