@@ -476,71 +476,52 @@ lemma contMDiff_equivTangentBundleProd :
   haveI : IsManifold I 1 M := .of_le (n := n + 1) le_add_self
   haveI : IsManifold I' 1 M' := .of_le (n := n + 1) le_add_self
   rw [equivTangentBundleProd_eq_tangentMap_prod_tangentMap]
-  exact (contMDiff_fst.contMDiff_tangentMap le_rfl).prod_mk
+  exact (contMDiff_fst.contMDiff_tangentMap le_rfl).prodMk
     (contMDiff_snd.contMDiff_tangentMap le_rfl)
 
 /-- The canonical equivalence between the product of tangent bundles and the tangent bundle of a
 product is smooth. -/
-lemma smooth_equivTangentBundleProd_symm :
+lemma contMDiff_equivTangentBundleProd_symm :
     haveI : IsManifold I 1 M := .of_le (n := n + 1) le_add_self
     haveI : IsManifold I' 1 M' := .of_le (n := n + 1) le_add_self
     ContMDiff (I.tangent.prod I'.tangent) (I.prod I').tangent n
       (equivTangentBundleProd I M I' M').symm := by
   haveI : IsManifold I 1 M := .of_le (n := n + 1) le_add_self
   haveI : IsManifold I' 1 M' := .of_le (n := n + 1) le_add_self
-  /- I am really unhappy with this proof, but I haven't found a more functorial one, so I have to
-  unfold more definitions than I'd like. The argument goes as follows: since we're looking at a
-  map into a vector bundle whose basis map is smooth, it suffices to check the smoothness of the
-  second coordinate. We're in a product, so it suffices to check that each projection is smooth.
-  We notice that the first projection is the composition of the tangent map to `(x : M) ↦ (x, b.2)`
-  with obvious extensions or restrictions, and the tangent map to a smooth map is smooth, so we're
-  done.
+  /- Contrary to what one might expect, this proof is nontrivial. It is not a formalization issue:
+  even on paper, I don't have a simple proof of the statement. The reason is that there is no nice
+  functorial expression for the map from `TM × T'M` to `T (M × M')`, so I need to come back to
+  the definition and break things into pieces.
+  The argument goes as follows. Since we're looking at a map into a vector bundle whose basis map
+  is smooth, it suffices to check the smoothness of the second component, in a chart. It lands in
+  a product vector space `E × E'`, so it suffices to check that the composition with each projection
+  to `E` and `E'` is smooth.
+  We notice that the composition of this map with the first projection coincides with the projection
+  `TM × TM' → TM` read in the target chart, which is smooth, so we're done.
   The issue is with checking differentiability everywhere (to justify that the derivative of a
   product is the product of the derivatives), and writing down things.
   -/
-  simp only [ContMDiff, Prod.forall]
-  intro a b
+  rintro ⟨a, b⟩
+  have U w w' : UniqueDiffWithinAt 𝕜 (Set.range (Prod.map I I')) (I w, I' w') := by
+    simp only [Set.range_prod_map]
+    apply UniqueDiffWithinAt.prod
+    · exact ModelWithCorners.uniqueDiffWithinAt_image I
+    · exact ModelWithCorners.uniqueDiffWithinAt_image I'
   rw [contMDiffAt_totalSpace]
-  simp only [equivTangentBundleProd, Equiv.coe_fn_symm_mk, TangentBundle.trivializationAt_apply,
-    PartialHomeomorph.extend, prodChartedSpace_chartAt, PartialHomeomorph.prod_toPartialEquiv,
-    PartialEquiv.prod, PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.coe_coe_symm,
-    modelWithCorners_prod_toPartialEquiv, ModelWithCorners.toPartialEquiv_coe,
-    ModelWithCorners.toPartialEquiv_coe_symm, ModelWithCorners.source_eq, Set.univ_prod_univ,
-    ModelWithCorners.target_eq, PartialEquiv.coe_trans, comp_def, PartialEquiv.coe_trans_symm,
-    PartialEquiv.coe_symm_mk, modelWithCorners_prod_coe, comp_apply]
+  simp only [equivTangentBundleProd, TangentBundle.trivializationAt_apply, mfld_simps,
+    Equiv.coe_fn_symm_mk]
   refine ⟨?_, (contMDiffAt_prod_module_iff _).2 ⟨?_, ?_⟩⟩
-  · exact ContMDiffAt.prod_map (contMDiffAt_proj (TangentSpace I))
+  · exact ContMDiffAt.prodMap (contMDiffAt_proj (TangentSpace I))
       (contMDiffAt_proj (TangentSpace I'))
-  · -- check that, in the fiber, the first projection is smooth in charts
-    -- for this, write down a map which is obviously smooth (`C` below) and then check that the two
-    -- maps coincide, up to obvious compositions.
-    have C : ContMDiffAt I.tangent (I.prod I').tangent n (fun (p : TangentBundle I M)
-        ↦ (⟨(p.1, b.1), (p.2, 0)⟩ : TangentBundle (I.prod I') (M × M'))) a := by
-      let f : M → M × M' := fun m ↦ (m, b.1)
-      have A : ContMDiff I.tangent (I.prod I').tangent n (tangentMap I (I.prod I') f) := by
-        apply ContMDiff.contMDiff_tangentMap _ le_rfl
-        exact contMDiff_id.prod_mk contMDiff_const
-      have B : tangentMap I (I.prod I') f = fun p ↦ ⟨(p.1, b.1), (p.2, 0)⟩ := by
-        ext p : 1
-        exact tangentMap_prod_left
-      rw [B] at A
-      exact A a
-    have Z := ((contMDiffAt_totalSpace _ _).1 C).2
-    simp only [modelWithCornersSelf_prod, TangentBundle.trivializationAt_apply,
-      PartialHomeomorph.extend, prodChartedSpace_chartAt, PartialHomeomorph.prod_toPartialEquiv,
-      PartialEquiv.prod, PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.coe_coe_symm,
-      modelWithCorners_prod_toPartialEquiv, ModelWithCorners.toPartialEquiv_coe,
-      ModelWithCorners.toPartialEquiv_coe_symm, ModelWithCorners.source_eq, Set.univ_prod_univ,
-      ModelWithCorners.target_eq, PartialEquiv.coe_trans, comp_def, PartialEquiv.coe_trans_symm,
-      PartialEquiv.coe_symm_mk, modelWithCorners_prod_coe, comp_apply] at Z
-    have D1 : ContMDiff (𝓘(𝕜, E × E')) (𝓘(𝕜, E)) n (Prod.fst : E × E' → E) := by
-      rw [contMDiff_iff_contDiff]; exact contDiff_fst
-    have D2 : ContMDiffAt (I.tangent.prod I'.tangent) I.tangent n Prod.fst (a, b) := contMDiffAt_fst
-    have U' := (ContMDiffAt.comp a D1.contMDiffAt Z).comp (a, b) D2
-    apply U'.congr_of_eventuallyEq
+  · /- check that the composition with the first projection in the target chart is smooth.
+    For this, we check that it coincides locally with the projection `pM : TM × TM' → TM` read in
+    the target chart, which is obviously smooth. -/
+    have smooth_pM : ContMDiffAt (I.tangent.prod I'.tangent) I.tangent n Prod.fst (a, b) :=
+      contMDiffAt_fst
+    apply ((contMDiffAt_totalSpace _ _).1 smooth_pM).2.congr_of_eventuallyEq
     filter_upwards [chart_source_mem_nhds (ModelProd (ModelProd H E) (ModelProd H' E')) (a, b)]
       with p hp
-    clear U' D1 D2 C Z
+    -- now we have to check that the original map coincides locally with `pM` read in target chart.
     simp only [prodChartedSpace_chartAt, PartialHomeomorph.prod_toPartialEquiv,
       PartialEquiv.prod_source, Set.mem_prod, TangentBundle.mem_chart_source_iff] at hp
     let φ (x : E) := I ((chartAt H a.proj) ((chartAt H p.1.proj).symm (I.symm x)))
@@ -553,72 +534,33 @@ lemma smooth_equivTangentBundleProd_symm :
         (I ((chartAt H p.1.proj) p.1.proj), I' ((chartAt H' w.proj) w.proj)) :=
       DifferentiableWithinAt.comp (t := Set.range I) _ (by exact D0)
         differentiableWithinAt_fst (by simp [mapsTo_fst_prod])
-    let φ' (x : E') := I' ((chartAt H' b.proj) ((chartAt H' b.proj).symm (I'.symm x)))
-    have D0' : DifferentiableWithinAt 𝕜 φ' (Set.range I')
-        (I' ((chartAt H' b.proj) b.proj)) := by
-      apply ContDiffWithinAt.differentiableWithinAt (n := n + 1) _ le_add_self
-      apply contDiffWithinAt_ext_coord_change
-      simp
-    have D' : DifferentiableWithinAt 𝕜 (φ' ∘ Prod.snd) (Set.range (Prod.map I I'))
-        (I ((chartAt H p.1.proj) p.1.proj), I' ((chartAt H' b.proj) b.proj)) :=
-      DifferentiableWithinAt.comp (t := Set.range I') _ (by exact D0') differentiableWithinAt_snd
-        (by simp [mapsTo_snd_prod])
-    have U w : UniqueDiffWithinAt 𝕜 (Set.range (Prod.map I I'))
-        (I ((chartAt H p.1.proj) p.1.proj), I' w) := by
-      simp only [Set.range_prod_map]
-      apply UniqueDiffWithinAt.prod
-      · exact ModelWithCorners.uniqueDiffWithinAt_image I
-      · exact ModelWithCorners.uniqueDiffWithinAt_image I'
     simp only [Set.range_prod_map, ContinuousLinearMap.prod_apply, comp_def, comp_apply]
-    rw [DifferentiableWithinAt.fderivWithin_prod (by exact D _) ?_ (U _)]; swap
-    · let φ'' (x : E') := I' ((chartAt H' b.proj) ((chartAt H' p.2.proj).symm (I'.symm x)))
-      have D0' : DifferentiableWithinAt 𝕜 φ'' (Set.range I')
+    rw [DifferentiableWithinAt.fderivWithin_prod (by exact D _) ?_ (U _ _)]; swap
+    · let φ' (x : E') := I' ((chartAt H' b.proj) ((chartAt H' p.2.proj).symm (I'.symm x)))
+      have D0' : DifferentiableWithinAt 𝕜 φ' (Set.range I')
           (I' ((chartAt H' p.2.proj) p.2.proj)) := by
         apply ContDiffWithinAt.differentiableWithinAt (n := n + 1) _ le_add_self
         apply contDiffWithinAt_ext_coord_change
         simp [hp.2]
-      have D' : DifferentiableWithinAt 𝕜 (φ'' ∘ Prod.snd) (Set.range (Prod.map I I'))
+      have D' : DifferentiableWithinAt 𝕜 (φ' ∘ Prod.snd) (Set.range (Prod.map I I'))
           (I ((chartAt H p.1.proj) p.1.proj), I' ((chartAt H' p.2.proj) p.2.proj)) :=
         DifferentiableWithinAt.comp (t := Set.range I') _ (by exact D0')
           differentiableWithinAt_snd (by simp [mapsTo_snd_prod])
       exact D'
-    rw [DifferentiableWithinAt.fderivWithin_prod (by exact D _) (by exact D') (U _)]
-    change fderivWithin 𝕜 (φ ∘ Prod.fst) _ _ _ = fderivWithin 𝕜 (φ ∘ Prod.fst) _ _ _
-    rw [Set.range_prod_map] at U ⊢
-    rw [fderivWithin_comp _ (by exact D0) differentiableWithinAt_fst mapsTo_fst_prod (U _),
-      fderivWithin_comp _ (by exact D0) differentiableWithinAt_fst mapsTo_fst_prod (U _)]
+    simp only [TangentBundle.trivializationAt_apply, mfld_simps]
+    change fderivWithin 𝕜 (φ ∘ Prod.fst) _ _ _ = fderivWithin 𝕜 φ _ _ _
+    rw [Set.range_prod_map] at U
+    rw [fderivWithin_comp _ (by exact D0) differentiableWithinAt_fst mapsTo_fst_prod (U _ _)]
     simp [fderivWithin_fst, U]
-  · -- check that, in the fiber, the second projection is smooth in charts
-    -- for this, write down a map which is obviously smooth (`C` below) and then check that the two
-    -- maps coincide, up to obvious compositions.
-    have C : ContMDiffAt I'.tangent (I.prod I').tangent n (fun (p : TangentBundle I' M')
-        ↦ (⟨(a.1, p.1), (0, p.2)⟩ : TangentBundle (I.prod I') (M × M'))) b := by
-      let f : M' → M × M' := fun m ↦ (a.1, m)
-      have A : ContMDiff I'.tangent (I.prod I').tangent n (tangentMap I' (I.prod I') f) := by
-        apply ContMDiff.contMDiff_tangentMap _ le_rfl
-        exact contMDiff_const.prod_mk contMDiff_id
-      have B : tangentMap I' (I.prod I') f = fun p ↦ ⟨(a.1, p.1), (0, p.2)⟩ := by
-        ext p : 1
-        exact tangentMap_prod_right
-      rw [B] at A
-      exact A b
-    have Z := ((contMDiffAt_totalSpace _ _).1 C).2
-    simp only [modelWithCornersSelf_prod, TangentBundle.trivializationAt_apply,
-      PartialHomeomorph.extend, prodChartedSpace_chartAt, PartialHomeomorph.prod_toPartialEquiv,
-      PartialEquiv.prod, PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.coe_coe_symm,
-      modelWithCorners_prod_toPartialEquiv, ModelWithCorners.toPartialEquiv_coe,
-      ModelWithCorners.toPartialEquiv_coe_symm, ModelWithCorners.source_eq, Set.univ_prod_univ,
-      ModelWithCorners.target_eq, PartialEquiv.coe_trans, comp_def, PartialEquiv.coe_trans_symm,
-      PartialEquiv.coe_symm_mk, modelWithCorners_prod_coe, comp_apply] at Z
-    have D1 : ContMDiff (𝓘(𝕜, E × E')) (𝓘(𝕜, E')) n (Prod.snd : E × E' → E') := by
-      rw [contMDiff_iff_contDiff]; exact contDiff_snd
-    have D2 : ContMDiffAt (I.tangent.prod I'.tangent) I'.tangent n Prod.snd (a, b) :=
+  · /- check that the composition with the second projection in the target chart is smooth.
+    For this, we check that it coincides locally with the projection `pM' : TM × TM' → TM'` read in
+    the target chart, which is obviously smooth. -/
+    have smooth_pM' : ContMDiffAt (I.tangent.prod I'.tangent) I'.tangent n Prod.snd (a, b) :=
       contMDiffAt_snd
-    have U' := (ContMDiffAt.comp b D1.contMDiffAt Z).comp (a, b) D2
-    apply U'.congr_of_eventuallyEq
+    apply ((contMDiffAt_totalSpace _ _).1 smooth_pM').2.congr_of_eventuallyEq
     filter_upwards [chart_source_mem_nhds (ModelProd (ModelProd H E) (ModelProd H' E')) (a, b)]
       with p hp
-    clear U' D1 D2 C Z
+    -- now we have to check that the original map coincides locally with `pM` read in target chart.
     simp only [prodChartedSpace_chartAt, PartialHomeomorph.prod_toPartialEquiv,
       PartialEquiv.prod_source, Set.mem_prod, TangentBundle.mem_chart_source_iff] at hp
     let φ (x : E') := I' ((chartAt H' b.proj) ((chartAt H' p.2.proj).symm (I'.symm x)))
@@ -631,40 +573,23 @@ lemma smooth_equivTangentBundleProd_symm :
         (I ((chartAt H w.proj) w.proj), I' ((chartAt H' p.2.proj) p.2.proj)) :=
       DifferentiableWithinAt.comp (t := Set.range I') _ (by exact D0)
         differentiableWithinAt_snd (by simp [mapsTo_snd_prod])
-    let φ' (x : E) := I ((chartAt H a.proj) ((chartAt H a.proj).symm (I.symm x)))
-    have D0' : DifferentiableWithinAt 𝕜 φ' (Set.range I)
-        (I ((chartAt H a.proj) a.proj)) := by
-      apply ContDiffWithinAt.differentiableWithinAt (n := n + 1) _ le_add_self
-      apply contDiffWithinAt_ext_coord_change
-      simp
-    have D' : DifferentiableWithinAt 𝕜 (φ' ∘ Prod.fst) (Set.range (Prod.map I I'))
-        (I ((chartAt H a.proj) a.proj), I' ((chartAt H' p.2.proj) p.2.proj)) :=
-      DifferentiableWithinAt.comp (t := Set.range I) _ (by exact D0') differentiableWithinAt_fst
-        (by simp [mapsTo_fst_prod])
-    have U w : UniqueDiffWithinAt 𝕜 (Set.range (Prod.map I I'))
-        (I w, I' ((chartAt H' p.2.proj) p.2.proj)) := by
-      simp only [Set.range_prod_map]
-      apply UniqueDiffWithinAt.prod
-      · exact ModelWithCorners.uniqueDiffWithinAt_image I
-      · exact ModelWithCorners.uniqueDiffWithinAt_image I'
     simp only [Set.range_prod_map, ContinuousLinearMap.prod_apply, comp_def, comp_apply]
-    rw [DifferentiableWithinAt.fderivWithin_prod ?_ (by exact D _) (U _)]; swap
-    · let φ'' (x : E) := I ((chartAt H a.proj) ((chartAt H p.1.proj).symm (I.symm x)))
-      have D0' : DifferentiableWithinAt 𝕜 φ'' (Set.range I)
+    rw [DifferentiableWithinAt.fderivWithin_prod ?_ (by exact D _) (U _ _)]; swap
+    · let φ' (x : E) := I ((chartAt H a.proj) ((chartAt H p.1.proj).symm (I.symm x)))
+      have D0' : DifferentiableWithinAt 𝕜 φ' (Set.range I)
           (I ((chartAt H p.1.proj) p.1.proj)) := by
         apply ContDiffWithinAt.differentiableWithinAt (n := n + 1) _ le_add_self
         apply contDiffWithinAt_ext_coord_change
         simp [hp.1]
-      have D' : DifferentiableWithinAt 𝕜 (φ'' ∘ Prod.fst) (Set.range (Prod.map I I'))
+      have D' : DifferentiableWithinAt 𝕜 (φ' ∘ Prod.fst) (Set.range (Prod.map I I'))
           (I ((chartAt H p.1.proj) p.1.proj), I' ((chartAt H' p.2.proj) p.2.proj)) :=
         DifferentiableWithinAt.comp (t := Set.range I) _ (by exact D0')
           differentiableWithinAt_fst (by simp [mapsTo_fst_prod])
       exact D'
-    rw [DifferentiableWithinAt.fderivWithin_prod (by exact D') (by exact D a) (U _)]
-    change fderivWithin 𝕜 (φ ∘ Prod.snd) _ _ _ = fderivWithin 𝕜 (φ ∘ Prod.snd) _ _ _
-    rw [Set.range_prod_map] at U ⊢
-    rw [fderivWithin_comp _ (by exact D0) differentiableWithinAt_snd mapsTo_snd_prod (U _),
-      fderivWithin_comp _ (by exact D0) differentiableWithinAt_snd mapsTo_snd_prod (U _)]
+    simp only [TangentBundle.trivializationAt_apply, mfld_simps]
+    change fderivWithin 𝕜 (φ ∘ Prod.snd) _ _ _ = fderivWithin 𝕜 φ _ _ _
+    rw [Set.range_prod_map] at U
+    rw [fderivWithin_comp _ (by exact D0) differentiableWithinAt_snd mapsTo_snd_prod (U _ _)]
     simp [fderivWithin_snd, U]
 
 end EquivTangentBundleProd
