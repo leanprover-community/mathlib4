@@ -54,11 +54,10 @@ theorem not_nodup_pair (a : α) : ¬Nodup [a, a] :=
   not_nodup_cons_of_mem <| mem_singleton_self _
 
 theorem nodup_iff_sublist {l : List α} : Nodup l ↔ ∀ a, ¬[a, a] <+ l :=
-  ⟨fun d a h => not_nodup_pair a (d.sublist h),
-    by
-      induction' l with a l IH <;> intro h; · exact nodup_nil
-      exact (IH fun a s => h a <| sublist_cons_of_sublist _ s).cons fun al =>
-        h a <| (singleton_sublist.2 al).cons_cons _⟩
+  ⟨fun d a h => not_nodup_pair a (d.sublist h), by
+    induction' l with a l IH <;> intro h; · exact nodup_nil
+    exact (IH fun a s => h a <| sublist_cons_of_sublist _ s).cons fun al =>
+      h a <| (singleton_sublist.2 al).cons_cons _⟩
 
 @[simp]
 theorem nodup_mergeSort {l : List α} {le : α → α → Bool} : (l.mergeSort le).Nodup ↔ l.Nodup :=

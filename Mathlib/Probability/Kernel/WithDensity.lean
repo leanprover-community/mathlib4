@@ -44,8 +44,7 @@ with image 0 otherwise. If `Function.uncurry f` is measurable, it satisfies
 noncomputable def withDensity (κ : Kernel α β) [IsSFiniteKernel κ] (f : α → β → ℝ≥0∞) :
     Kernel α β :=
   @dite _ (Measurable (Function.uncurry f)) (Classical.dec _) (fun hf =>
-    (⟨fun a => (κ a).withDensity (f a),
-      by
+    (⟨fun a => (κ a).withDensity (f a), by
         refine Measure.measurable_of_measurable_coe _ fun s hs => ?_
         simp_rw [withDensity_apply _ hs]
         exact hf.setLIntegral_kernel_prod_right hs⟩ : Kernel α β)) fun _ => 0
