@@ -210,7 +210,9 @@ end Ctop.Realizer
 choice of open sets from the basis of `F` such that they intersect only finitely many of the values
 of `f`. -/
 structure LocallyFinite.Realizer [TopologicalSpace α] (F : Ctop.Realizer α) (f : β → Set α) where
+  /-- The open sets from `F`'s basis -/
   bas : ∀ a, { s // a ∈ F.F s }
+  /-- The sets `bas` intersect only finitely many of `f`'s values -/
   sets : ∀ x : α, Fintype { i | (f i ∩ F.F (bas x)).Nonempty }
 
 theorem LocallyFinite.Realizer.to_locallyFinite [TopologicalSpace α] {F : Ctop.Realizer α}
