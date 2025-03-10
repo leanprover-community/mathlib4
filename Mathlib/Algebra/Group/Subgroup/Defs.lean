@@ -675,17 +675,19 @@ def setNormalizer (S : Set G) : Subgroup G where
 variable {H}
 
 @[to_additive]
-theorem mem_normalizer_iff {g : G} : g ∈ H.normalizer ↔ ∀ h, h ∈ H ↔ g * h * g⁻¹ ∈ H :=
-  Iff.rfl
+theorem setNormalizer_normalizer : setNormalizer (H : Set G) = H.normalizer := rfl
 
 @[to_additive]
-theorem mem_normalizer_iff'' {g : G} : g ∈ H.normalizer ↔ ∀ h : G, h ∈ H ↔ g⁻¹ * h * g ∈ H := by
-  rw [← inv_mem_iff (x := g), mem_normalizer_iff, inv_inv]
+theorem mem_normalizer_iff {g : G} : g ∈ H.normalizer ↔ ∀ h, h ∈ H ↔ g * h * g⁻¹ ∈ H := Iff.rfl
 
 @[to_additive]
 theorem mem_normalizer_iff' {g : G} : g ∈ H.normalizer ↔ ∀ n, n * g ∈ H ↔ g * n ∈ H :=
   ⟨fun h n => by rw [h, mul_assoc, mul_inv_cancel_right], fun h n => by
     rw [mul_assoc, ← h, inv_mul_cancel_right]⟩
+
+@[to_additive]
+theorem mem_normalizer_iff'' {g : G} : g ∈ H.normalizer ↔ ∀ h : G, h ∈ H ↔ g⁻¹ * h * g ∈ H := by
+  rw [← inv_mem_iff (x := g), mem_normalizer_iff, inv_inv]
 
 @[to_additive]
 theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
