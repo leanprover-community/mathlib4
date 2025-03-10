@@ -44,7 +44,7 @@ such that
 10. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 -/
 structure GlueData where
-  /-- The index type `J` -/
+  /-- The index type `J` of a gluing datum -/
   J : Type v
   /-- For each `i : J`, an object `U i` -/
   U : J → C
