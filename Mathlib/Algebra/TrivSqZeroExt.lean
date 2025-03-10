@@ -3,10 +3,9 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Algebra.GroupWithZero.Invertible
 import Mathlib.LinearAlgebra.Prod
-import Mathlib.Algebra.BigOperators.Pi
 
 /-!
 # Trivial Square-Zero Extension
@@ -208,7 +207,7 @@ instance addCommGroup [AddCommGroup R] [AddCommGroup M] : AddCommGroup (tsze R M
   Prod.instAddCommGroup
 
 instance smul [SMul S R] [SMul S M] : SMul S (tsze R M) :=
-  Prod.smul
+  Prod.instSMul
 
 instance isScalarTower [SMul T R] [SMul T M] [SMul S R] [SMul S M] [SMul T S]
     [IsScalarTower T S R] [IsScalarTower T S M] : IsScalarTower T S (tsze R M) :=

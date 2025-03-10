@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Joey van Langen, Casper Putz
 -/
 import Mathlib.Algebra.CharP.Reduced
+import Mathlib.Algebra.Field.ZMod
+import Mathlib.Data.Nat.Prime.Int
 import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.IntegralDomain
@@ -363,7 +365,7 @@ theorem frobenius_pow {p : ℕ} [Fact p.Prime] [CharP K p] {n : ℕ} (hcard : q 
 open Polynomial
 
 theorem expand_card (f : K[X]) : expand K q f = f ^ q := by
-  cases' CharP.exists K with p hp
+  obtain ⟨p, hp⟩ := CharP.exists K
   letI := hp
   rcases FiniteField.card K p with ⟨⟨n, npos⟩, ⟨hp, hn⟩⟩
   haveI : Fact p.Prime := ⟨hp⟩
@@ -377,7 +379,7 @@ namespace ZMod
 open FiniteField Polynomial
 
 theorem sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p, a ^ 2 + b ^ 2 = x := by
-  cases' hp.1.eq_two_or_odd with hp2 hp_odd
+  rcases hp.1.eq_two_or_odd with hp2 | hp_odd
   · subst p
     change Fin 2 at x
     fin_cases x

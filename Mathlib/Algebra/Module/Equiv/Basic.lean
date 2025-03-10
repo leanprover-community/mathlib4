@@ -321,8 +321,7 @@ The `R`-linear equivalence between additive morphisms `A →+ B` and `ℕ`-linea
 -/
 @[simps]
 def addMonoidHomLequivNat {A B : Type*} (R : Type*) [Semiring R] [AddCommMonoid A]
-    [AddCommMonoid B] [Module R B] : (A →+ B) ≃ₗ[R] A →ₗ[ℕ] B
-    where
+    [AddCommMonoid B] [Module R B] : (A →+ B) ≃ₗ[R] A →ₗ[ℕ] B where
   toFun := AddMonoidHom.toNatLinearMap
   invFun := LinearMap.toAddMonoidHom
   map_add' _ _ := rfl
@@ -335,8 +334,7 @@ The `R`-linear equivalence between additive morphisms `A →+ B` and `ℤ`-linea
 -/
 @[simps]
 def addMonoidHomLequivInt {A B : Type*} (R : Type*) [Semiring R] [AddCommGroup A] [AddCommGroup B]
-    [Module R B] : (A →+ B) ≃ₗ[R] A →ₗ[ℤ] B
-    where
+    [Module R B] : (A →+ B) ≃ₗ[R] A →ₗ[ℤ] B where
   toFun := AddMonoidHom.toIntLinearMap
   invFun := LinearMap.toAddMonoidHom
   map_add' _ _ := rfl
@@ -670,23 +668,12 @@ theorem funLeft_comp (f₁ : n → p) (f₂ : m → n) :
   rfl
 
 theorem funLeft_surjective_of_injective (f : m → n) (hf : Injective f) :
-    Surjective (funLeft R M f) := by
-  classical
-    intro g
-    refine ⟨fun x ↦ if h : ∃ y, f y = x then g h.choose else 0, ?_⟩
-    ext
-    dsimp only [funLeft_apply]
-    split_ifs with w
-    · congr
-      exact hf w.choose_spec
-    · simp only [not_true, exists_apply_eq_apply] at w
+    Surjective (funLeft R M f) :=
+  hf.surjective_comp_right
 
 theorem funLeft_injective_of_surjective (f : m → n) (hf : Surjective f) :
-    Injective (funLeft R M f) := by
-  obtain ⟨g, hg⟩ := hf.hasRightInverse
-  suffices LeftInverse (funLeft R M g) (funLeft R M f) by exact this.injective
-  intro x
-  rw [← LinearMap.comp_apply, ← funLeft_comp, hg.id, funLeft_id]
+    Injective (funLeft R M f) :=
+  hf.injective_comp_right
 
 end LinearMap
 

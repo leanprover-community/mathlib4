@@ -57,7 +57,9 @@ Thinking of `V → V → Prop` as `Set (V × V)`, a set of darts (i.e., half-edg
 `Subgraph.adj_sub` is that the darts of a subgraph are a subset of the darts of `G`. -/
 @[ext]
 structure Subgraph {V : Type u} (G : SimpleGraph V) where
+  /-- Vertices of the subgraph -/
   verts : Set V
+  /-- Edges of the subgraph -/
   Adj : V → V → Prop
   adj_sub : ∀ {v w : V}, Adj v w → G.Adj v w
   edge_vert : ∀ {v w : V}, Adj v w → v ∈ verts
@@ -173,6 +175,12 @@ theorem spanningCoe_inj : G₁.spanningCoe = G₂.spanningCoe ↔ G₁.Adj = G�
 
 lemma mem_of_adj_spanningCoe {v w : V} {s : Set V} (G : SimpleGraph s)
     (hadj : G.spanningCoe.Adj v w) : v ∈ s := by aesop
+
+@[simp]
+lemma spanningCoe_subgraphOfAdj {v w : V} (hadj : G.Adj v w) :
+    (G.subgraphOfAdj hadj).spanningCoe = fromEdgeSet {s(v, w)} := by
+  ext v w
+  aesop
 
 /-- `spanningCoe` is equivalent to `coe` for a subgraph that `IsSpanning`. -/
 @[simps]
@@ -566,6 +574,10 @@ theorem _root_.SimpleGraph.toSubgraph.isSpanning (H : SimpleGraph V) (h : H ≤ 
 theorem spanningCoe_le_of_le {H H' : Subgraph G} (h : H ≤ H') : H.spanningCoe ≤ H'.spanningCoe :=
   h.2
 
+@[simp]
+lemma sup_spanningCoe (H H' : Subgraph G) :
+    (H ⊔ H').spanningCoe = H.spanningCoe ⊔ H'.spanningCoe := rfl
+
 /-- The top of the `Subgraph G` lattice is equivalent to the graph itself. -/
 def topEquiv : (⊤ : Subgraph G).coe ≃g G where
   toFun v := ↑v
@@ -763,6 +775,20 @@ theorem degree_eq_one_iff_unique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neig
     G'.degree v = 1 ↔ ∃! w : V, G'.Adj v w := by
   rw [← finset_card_neighborSet_eq_degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
   simp only [Set.mem_toFinset, mem_neighborSet]
+
+lemma neighborSet_eq_of_equiv {v : V} {H : Subgraph G}
+    (h : G.neighborSet v ≃ H.neighborSet v) (hfin : (G.neighborSet v).Finite) :
+    H.neighborSet v = G.neighborSet v := by
+  lift H.neighborSet v to Finset V using h.set_finite_iff.mp hfin with s hs
+  lift G.neighborSet v to Finset V using hfin with t ht
+  refine congrArg _ <| Finset.eq_of_subset_of_card_le ?_ (Finset.card_eq_of_equiv h).le
+  rw [← Finset.coe_subset, hs, ht]
+  exact H.neighborSet_subset _
+
+lemma adj_iff_of_neighborSet_equiv {v : V} {H : Subgraph G}
+    (h : G.neighborSet v ≃ H.neighborSet v) (hfin : (G.neighborSet v).Finite) :
+    ∀ {w}, H.Adj v w ↔ G.Adj v w :=
+  Set.ext_iff.mp (neighborSet_eq_of_equiv h hfin) _
 
 end Subgraph
 

@@ -972,7 +972,7 @@ theorem lf_or_equiv_or_gf (x y : PGame) : x ⧏ y ∨ (x ≈ y) ∨ y ⧏ x := b
   by_cases h : x ⧏ y
   · exact Or.inl h
   · right
-    cases' lt_or_equiv_of_le (PGame.not_lf.1 h) with h' h'
+    rcases lt_or_equiv_of_le (PGame.not_lf.1 h) with h' | h'
     · exact Or.inr h'.lf
     · exact Or.inl (Equiv.symm h')
 
@@ -1079,7 +1079,7 @@ theorem fuzzy_of_equiv_of_fuzzy {x y z : PGame} (h₁ : x ≈ y) (h₂ : y ‖ z
 
 /-- Exactly one of the following is true (although we don't prove this here). -/
 theorem lt_or_equiv_or_gt_or_fuzzy (x y : PGame) : x < y ∨ (x ≈ y) ∨ y < x ∨ x ‖ y := by
-  cases' le_or_gf x y with h₁ h₁ <;> cases' le_or_gf y x with h₂ h₂
+  rcases le_or_gf x y with h₁ | h₁ <;> rcases le_or_gf y x with h₂ | h₂
   · right
     left
     exact ⟨h₁, h₂⟩
@@ -1654,7 +1654,7 @@ theorem leftMoves_add_cases {x y : PGame} (k) {P : (x + y).LeftMoves → Prop}
     (hl : ∀ i, P <| toLeftMovesAdd (Sum.inl i)) (hr : ∀ i, P <| toLeftMovesAdd (Sum.inr i)) :
     P k := by
   rw [← toLeftMovesAdd.apply_symm_apply k]
-  cases' toLeftMovesAdd.symm k with i i
+  rcases toLeftMovesAdd.symm k with i | i
   · exact hl i
   · exact hr i
 
@@ -1663,7 +1663,7 @@ theorem rightMoves_add_cases {x y : PGame} (k) {P : (x + y).RightMoves → Prop}
     (hl : ∀ j, P <| toRightMovesAdd (Sum.inl j)) (hr : ∀ j, P <| toRightMovesAdd (Sum.inr j)) :
     P k := by
   rw [← toRightMovesAdd.apply_symm_apply k]
-  cases' toRightMovesAdd.symm k with i i
+  rcases toRightMovesAdd.symm k with i | i
   · exact hl i
   · exact hr i
 
@@ -1760,8 +1760,8 @@ lemma Identical.add {x₁ x₂ y₁ y₂ : PGame.{u}} (hx : x₁ ≡ x₂) (hy :
 
 lemma memₗ_add_iff {x y₁ y₂ : PGame} :
     x ∈ₗ y₁ + y₂ ↔ (∃ z ∈ₗ y₁, x ≡ z + y₂) ∨ (∃ z ∈ₗ y₂, x ≡ y₁ + z) := by
-  cases' y₁ with y₁l y₁r y₁L y₁R
-  cases' y₂ with y₂l y₂r y₂L y₂R
+  obtain ⟨y₁l, y₁r, y₁L, y₁R⟩ := y₁
+  obtain ⟨y₂l, y₂r, y₂L, y₂R⟩ := y₂
   constructor
   · rintro ⟨(i | i), hi⟩
     exacts [.inl ⟨y₁L i, moveLeft_memₗ _ _, hi⟩, .inr ⟨y₂L i, moveLeft_memₗ _ _, hi⟩]
@@ -1770,8 +1770,8 @@ lemma memₗ_add_iff {x y₁ y₂ : PGame} :
 
 lemma memᵣ_add_iff {x y₁ y₂ : PGame} :
     x ∈ᵣ y₁ + y₂ ↔ (∃ z ∈ᵣ y₁, x ≡ z + y₂) ∨ (∃ z ∈ᵣ y₂, x ≡ y₁ + z) := by
-  cases' y₁ with y₁l y₁r y₁L y₁R
-  cases' y₂ with y₂l y₂r y₂L y₂R
+  obtain ⟨y₁l, y₁r, y₁L, y₁R⟩ := y₁
+  obtain ⟨y₂l, y₂r, y₂L, y₂R⟩ := y₂
   constructor
   · rintro ⟨(i | i), hi⟩
     exacts [.inl ⟨y₁R i, moveRight_memᵣ _ _, hi⟩, .inr ⟨y₂R i, moveRight_memᵣ _ _, hi⟩]
@@ -1862,7 +1862,7 @@ theorem add_assoc_equiv {x y z : PGame} : x + y + z ≈ x + (y + z) :=
 theorem neg_add_cancel_le_zero : ∀ x : PGame, -x + x ≤ 0
   | ⟨xl, xr, xL, xR⟩ =>
     le_zero.2 fun i => by
-      cases' i with i i
+      obtain i | i := i
       · -- If Left played in -x, Right responds with the same move in x.
         refine ⟨@toRightMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), ?_⟩
         convert @neg_add_cancel_le_zero (xR i)
@@ -1894,9 +1894,9 @@ theorem sub_self_equiv : ∀ (x : PGame), x - x ≈ 0 :=
 
 private theorem add_le_add_right' : ∀ {x y z : PGame}, x ≤ y → x + z ≤ y + z
   | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR => fun h => by
-    refine le_def.2 ⟨fun i => ?_, fun i => ?_⟩ <;> cases' i with i i
+    refine le_def.2 ⟨fun i => ?_, fun i => ?_⟩ <;> obtain i | i := i
     · rw [le_def] at h
-      cases' h with h_left h_right
+      obtain ⟨h_left, h_right⟩ := h
       rcases h_left i with (⟨i', ih⟩ | ⟨j, jh⟩)
       · exact Or.inl ⟨toLeftMovesAdd (Sum.inl i'), add_le_add_right' ih⟩
       · refine Or.inr ⟨toRightMovesAdd (Sum.inl j), ?_⟩

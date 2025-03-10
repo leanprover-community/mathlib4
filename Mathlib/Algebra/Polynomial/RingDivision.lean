@@ -48,7 +48,7 @@ end
 
 theorem smul_modByMonic (c : R) (p : R[X]) : c • p %ₘ q = c • (p %ₘ q) := by
   by_cases hq : q.Monic
-  · cases' subsingleton_or_nontrivial R with hR hR
+  · rcases subsingleton_or_nontrivial R with hR | hR
     · simp only [eq_iff_true_of_subsingleton]
     · exact
       (div_modByMonic_unique (c • (p /ₘ q)) (c • (p %ₘ q)) hq
