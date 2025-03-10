@@ -13,12 +13,8 @@ bibtool --pass.comments=on -- 'select{$key "[^-.:A-Za-z0-9_]+"}' \
 
 if [ -s docs/non-ascii.bib ]; then
     echo "ERROR: There are items in references.bib with keys containing non-ASCII characters:"
-    echo
     cat docs/non-ascii.bib
-    rm docs/non-ascii.bib
     exit 1
-else
-    rm docs/non-ascii.bib
 fi
 
 # https://leanprover-community.github.io/contribute/doc.html#citing-other-works
