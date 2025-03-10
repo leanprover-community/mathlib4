@@ -339,7 +339,7 @@ theorem contMDiffWithinAt_iff_source :
   simp only [ContDiffWithinAtProp, mfld_simps]
   rfl
 
-/-- One can reformulate being `Cⁿ` at a point as begin `Cⁿ` in the source space when
+/-- One can reformulate being `Cⁿ` at a point as being `Cⁿ` in the source space when
 composing with the extended chart. -/
 theorem contMDiffAt_iff_source :
     ContMDiffAt I I' n f x ↔
