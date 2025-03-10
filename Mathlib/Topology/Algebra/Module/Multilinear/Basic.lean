@@ -3,8 +3,8 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.LinearAlgebra.Multilinear.Basic
 import Mathlib.Topology.Algebra.Module.LinearMapPiProd
+import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Continuous multilinear maps
@@ -315,7 +315,7 @@ theorem prod_ext_iff {f g : ContinuousMultilinearMap R M₁ (M₂ × M₃)} :
       (ContinuousLinearMap.fst _ _ _).compContinuousMultilinearMap g ∧
       (ContinuousLinearMap.snd _ _ _).compContinuousMultilinearMap f =
       (ContinuousLinearMap.snd _ _ _).compContinuousMultilinearMap g := by
-  rw [← Prod.mk.inj_iff, ← prodEquiv_symm_apply, ← prodEquiv_symm_apply, Equiv.apply_eq_iff_eq]
+  rw [← Prod.mk_inj, ← prodEquiv_symm_apply, ← prodEquiv_symm_apply, Equiv.apply_eq_iff_eq]
 
 @[ext]
 theorem prod_ext {f g : ContinuousMultilinearMap R M₁ (M₂ × M₃)}

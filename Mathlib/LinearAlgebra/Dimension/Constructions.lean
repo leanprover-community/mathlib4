@@ -427,13 +427,10 @@ theorem rank_span_of_finset (s : Finset M) : Module.rank R (span R (s : Set M)) 
 
 open Submodule Module
 
-variable (R)
-
+variable (R) in
 /-- The rank of a set of vectors as a natural number. -/
 protected noncomputable def Set.finrank (s : Set M) : ℕ :=
   finrank R (span R s)
-
-variable {R}
 
 theorem finrank_span_le_card (s : Set M) [Fintype s] : finrank R (span R s) ≤ s.toFinset.card :=
   finrank_le_of_rank_le (by simpa using rank_span_le (R := R) s)

@@ -911,7 +911,7 @@ theorem WithSeminorms.firstCountableTopology (hp : WithSeminorms p) :
     FirstCountableTopology E := by
   have := hp.topologicalAddGroup
   let _ : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
-  have : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
+  have : UniformAddGroup E := uniformAddGroup_of_addCommGroup
   have : (𝓝 (0 : E)).IsCountablyGenerated := by
     rw [p.withSeminorms_iff_nhds_eq_iInf.mp hp]
     exact Filter.iInf.isCountablyGenerated _

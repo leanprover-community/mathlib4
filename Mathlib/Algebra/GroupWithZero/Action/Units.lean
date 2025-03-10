@@ -24,7 +24,15 @@ admits a `MulDistribMulAction G Mˣ` structure, again with the obvious definitio
 * `Algebra.GroupWithZero.Action.Prod`
 -/
 
-variable {G M α β : Type*}
+variable {G₀ G M α β : Type*}
+
+namespace Units
+variable [GroupWithZero G₀]
+
+@[simp]
+lemma smul_mk0 {α : Type*} [SMul G₀ α] {g : G₀} (hg : g ≠ 0) (a : α) : mk0 g hg • a = g • a := rfl
+
+end Units
 
 section GroupWithZero
 variable [GroupWithZero α] [MulAction α β] {a : α}

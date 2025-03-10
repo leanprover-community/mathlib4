@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+import Mathlib.LinearAlgebra.TensorProduct.Associator
 
 /-!
 # Coalgebras
