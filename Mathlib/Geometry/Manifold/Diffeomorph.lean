@@ -594,7 +594,7 @@ def sumCongr (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
 lemma sumCongr_symm_symm (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
     sumCongr φ.symm ψ.symm = (sumCongr φ ψ).symm := rfl
 
-@[simp]
+@[simp, mfld_simps]
 lemma sumCongr_coe (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
     sumCongr φ ψ = Sum.map φ ψ := rfl
 
@@ -611,10 +611,10 @@ def sumComm : Diffeomorph I I (M ⊕ M') (M' ⊕ M) n where
   contMDiff_toFun := ContMDiff.swap
   contMDiff_invFun := ContMDiff.swap
 
-@[simp]
+@[simp, mfld_simps]
 theorem sumComm_coe : (Diffeomorph.sumComm I M n M' : (M ⊕ M') → (M' ⊕ M)) = Sum.swap := rfl
 
-@[simp]
+@[simp, mfld_simps]
 theorem sumComm_symm : (Diffeomorph.sumComm I M n M').symm = Diffeomorph.sumComm I M' n M := rfl
 
 variable (I M M' n) in
@@ -651,7 +651,7 @@ def sumEmpty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M n where
   contMDiff_toFun := contMDiff_id.sumElim fun x ↦ (IsEmpty.false x).elim
   contMDiff_invFun := ContMDiff.inl
 
-@[simp]
+@[simp, mfld_simps]
 theorem sumEmpty_toEquiv [IsEmpty M'] : (sumEmpty I M n).toEquiv = Equiv.sumEmpty M M' := rfl
 
 end disjointUnion
