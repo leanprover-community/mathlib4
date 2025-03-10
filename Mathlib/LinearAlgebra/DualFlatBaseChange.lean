@@ -3,7 +3,8 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.PerfectPairing
+import Mathlib.Algebra.Module.FinitePresentation
+import Mathlib.LinearAlgebra.PerfectPairing.Basic
 import Mathlib.RingTheory.Flat.Basic
 
 /-!
@@ -48,10 +49,15 @@ Note that Dual.eval is id.flip - this doesn't help with bijectivity.
   projective.
 * CommAlg. Ch 1 sec 2.10 Prop 11: If S is R-flat and M is finitely presented, then the map
   S ⊗ Hom_R (M, X) → Hom_S (M_S, X_S) is bijective.  Also, injective if M is just finitely
-  generated.  Proof: take a presentation of M, and push it through the functors to get a commutative
+  generated.  Proof: First, decompose the map into the composition of a homomorphism
+  S ⊗ Hom_R (M, X) → Hom_R (M, S ⊗ X) and the canonical isomorphism
+  Hom_R (M, S ⊗ X) → Hom_S (M_S, X_S). To show the first homomorphism is an isomorphism,
+  take a presentation of M, and push it through the functors to get a commutative
   diagram. The bottom row is exact automatically, and the top row is exact by flatness.  The middle
   vertical arrow is an isom when M is finitely generated, and the right arrow is an isom when M is
   fin pres. This yields an isom or inj for the left arrow.
+
+
 * CommAlg. Ch 7 sec 2 Prop 8: R a Noetherian commring, S an R-flat comm alg, M fin gen reflexive
   R-mod. Then S ⊗ M is a reflexive S-mod.  Proof: Uses the fact that fin gen. modules for a Noeth
   ring are fin pres, and sec.2.10 prop 11.
@@ -66,7 +72,6 @@ Reason: ⊕ℤ is reflexive, but ⊕ℚ is not, when the sums are over a countab
 Want f : S ⊗[R] R →ₗ[S] S ⊗[R] N ≃ S ⊗[R] N
 
 Add these when working!!!
-import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.Algebra.Module.LinearMap.Basic
 
 -/
@@ -84,7 +89,11 @@ def BaseChangeHom : S ⊗[R] (M →ₗ[R] N) →ₗ[S] (S ⊗[R] M →ₗ[S] S �
   TensorProduct.AlgebraTensorModule.congr (LinearMap.ringLmapEquivSelf S S S).symm
   (LinearEquiv.refl R (M →ₗ[R] N))
 
-instance : SMul S (S →ₗ[R] N) where
+-- Following Bourbaki, I should decompose this as the composition of the canonical homomorphism
+-- `S ⊗ Hom_R (M, X) → Hom_R (M, S ⊗ X)` and the canonical isomorphism
+-- `Hom_R (M, S ⊗ X) → Hom_S (M_S, X_S)`.
+
+local instance : SMul S (S →ₗ[R] N) where
   smul s f :=
     { toFun := fun s' => f (s * s')
       map_add' := by
@@ -94,7 +103,7 @@ instance : SMul S (S →ₗ[R] N) where
         intro r s
         simp }
 
-instance : Module S (S →ₗ[R] N) where
+local instance : Module S (S →ₗ[R] N) where
   smul s f := s • f
   one_smul f := by
     ext s
@@ -118,7 +127,29 @@ instance : Module S (S →ₗ[R] N) where
     ext s
     dsimp [HSMul.hSMul, SMul.smul]
     rw [zero_mul, map_zero]
+
+-- This is a copy to keep the import
+theorem Module.FinitePresentation.exists_partialResolution [Module.FinitePresentation R M] :
+    ∃ (m n : ℕ) (f : (Fin m → R) →ₗ[R] (Fin n → R)) (g : (Fin n → R) →ₗ[R] M),
+      Function.Surjective g ∧ LinearMap.ker g = LinearMap.range f :=
+  Module.FinitePresentation.exists_free_quotient R M
+
+-- apply this to show `S ⊗ Hom_R (M, X) → Hom_R (M, S ⊗ X)` is an isomorphism.
+
 /-!
+universe u in
+lemma BaseChangeHom_bijective {R M : Type u} [CommRing R] [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] [CommRing S] [Algebra R S] [Flat R S] [FinitePresentation R M] :
+    Bijective (BaseChangeHom R S M N) := by
+  obtain ⟨m, n, f, g, hg, hgf⟩ := Module.FinitePresentation.exists_free_quotient R M
+  set fS := (BaseChangeHom R S (Fin m → R) (Fin n → R)) (1 ⊗ₜ f) with hfS
+  set gS := (BaseChangeHom R S (Fin n → R) M) (1 ⊗ₜ g) with hgS
+
+  let fM := BaseChangeHom R S M N
+
+  sorry
+
+
 def BaseChangeHom_equiv_of_base : (S ⊗[R] (R →ₗ[R] N)) ≃ₗ[S] (S ⊗[R] R →ₗ[S] (S ⊗[R] N)) := by
   refine LinearEquiv.ofLinear (BaseChangeHom R S R N) ?_ ?_ ?_
   · sorry
@@ -139,14 +170,6 @@ lemma BaseChangeHom_bijective_of_base : Bijective (BaseChangeHom R S R N) := by
 
 
 
-universe u in
-lemma BaseChangeHom_bijective {R M : Type u} [CommRing R] [AddCommGroup M] [Module R M]
-    [AddCommGroup N] [Module R N] [CommRing S] [Algebra R S] [Flat R S] [FinitePresentation R M] :
-    Bijective (BaseChangeHom R S M N) := by
-  obtain ⟨L, _, _, K, f, hL, hfL, hK⟩ := Module.FinitePresentation.equiv_quotient R M
-  let fL := BaseChangeHom R S L N
-
-  sorry
 
 --last : S ⊗[R] R ≃ₗ[S] S := AlgebraTensorModule.rid R S S
 

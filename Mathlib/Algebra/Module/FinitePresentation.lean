@@ -98,6 +98,27 @@ theorem Module.FinitePresentation.equiv_quotient [Module.FinitePresentation R M]
   ⟨_, inferInstance, inferInstance, _, e ≪≫ₗ Submodule.Quotient.equiv _ _ (es ..) rfl,
     .of_equiv (es ..), .equiv (es ..), fg.map (es ..).toLinearMap⟩
 
+theorem Module.FinitePresentation.exists_free_quotient [fp : Module.FinitePresentation R M] :
+    ∃ (m n : ℕ) (f : (Fin m → R) →ₗ[R] (Fin n → R)) (g : (Fin n → R) →ₗ[R] M),
+      Function.Surjective g ∧ LinearMap.ker g = LinearMap.range f := by
+  obtain ⟨n, K, x, hK⟩ := Module.FinitePresentation.exists_fin R M
+  rw [Submodule.fg_iff_exists_fin_generating_family] at hK
+  obtain ⟨m, s, hs⟩ := hK
+  use m
+  use n
+  set g : (Fin n → R) →ₗ[R] M := x.symm ∘ₗ (Submodule.mkQ K) with hg
+  have hgK : LinearMap.ker g = K := by rw [LinearEquiv.ker_comp, Submodule.ker_mkQ]
+  set f : (Fin m → R) →ₗ[R] (Fin n → R) :=
+    linearCombination R s ∘ₗ (linearEquivFunOnFinite R R (Fin m)).symm with hf
+  use f
+  use g
+  constructor
+  · have hK : Function.Surjective K.mkQ := Submodule.mkQ_surjective K
+    have hx : Function.Surjective x.symm.toLinearMap := LinearEquiv.surjective x.symm
+    rw [show g = x.symm.toLinearMap ∘ K.mkQ by rfl]
+    exact Function.Surjective.comp hx hK
+  · rw [hgK, hf, ← hs, LinearEquiv.range_comp, range_linearCombination]
+
 end
 
 variable (R M N) [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
