@@ -66,8 +66,10 @@ def mkUnit {a : Units k} {A : 𝕎 k} (hA : A.coeff 0 = a) : Units (𝕎 k) :=
     have ha : (a : k) ^ p ^ (n + 1) = ↑(a ^ p ^ (n + 1)) := by norm_cast
     have ha_inv : (↑a⁻¹ : k) ^ p ^ (n + 1) = ↑(a ^ p ^ (n + 1))⁻¹ := by norm_cast
     simp only [nthRemainder_spec, inverseCoeff, succNthValUnits, hA,
-      one_coeff_eq_of_pos, Nat.succ_pos', ha_inv, ha, inv_pow]
-    ring!)
+      one_coeff_eq_of_pos, Nat.succ_pos', ha_inv, ha, inv_pow, add_comm 1 n, H_coeff]
+    set w := nthRemainder p n (truncateFun (n + 1) A) fun i ↦ inverseCoeff a A ↑i
+    ring_nf!; exact neg_add_cancel w
+    )
 
 @[simp]
 theorem coe_mkUnit {a : Units k} {A : 𝕎 k} (hA : A.coeff 0 = a) : (mkUnit hA : 𝕎 k) = A :=
