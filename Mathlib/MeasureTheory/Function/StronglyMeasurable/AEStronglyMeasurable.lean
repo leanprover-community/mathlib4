@@ -35,7 +35,7 @@ measurable functions, as a basis for the Bochner integral.
 ## References
 
 * [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
-  Springer, 2016.][Hytönen_VanNeerven_Veraar_Wies_2016]
+  Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
 
 -/
 
