@@ -72,13 +72,9 @@ theorem norm_coe (a : ℝ) : ‖(a : ℍ)‖ = ‖a‖ := by
 theorem nnnorm_coe (a : ℝ) : ‖(a : ℍ)‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_coe a
 
-@[simp]
-theorem norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by
-  simp_rw [norm_eq_sqrt_real_inner, inner_self, normSq_star]
+theorem norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by simp
 
-@[simp]
-theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
-  Subtype.ext <| norm_star a
+theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ := by simp
 
 noncomputable instance : NormedDivisionRing ℍ where
   dist_eq _ _ := rfl
