@@ -1266,7 +1266,7 @@ lemma exists_image_eq_injOn_of_subset_range (ht : t ⊆ range f) :
   image_preimage_eq_of_subset ht ▸ exists_image_eq_and_injOn _ _
 
 /-- If `f` maps `s` bijectively to `t` and a set `t'` is contained in the image of some `s₁ ⊇ s`,
-then `s₁` has a subset containing `s` that `f` maps bijectively to `t'`.-/
+then `s₁` has a subset containing `s` that `f` maps bijectively to `t'`. -/
 theorem BijOn.exists_extend_of_subset {t' : Set β} (h : BijOn f s t) (hss₁ : s ⊆ s₁) (htt' : t ⊆ t')
     (ht' : SurjOn f s₁ t') : ∃ s', s ⊆ s' ∧ s' ⊆ s₁ ∧ Set.BijOn f s' t' := by
   obtain ⟨r, hrss, hbij⟩ := exists_subset_bijOn ((s₁ ∩ f ⁻¹' t') \ f ⁻¹' t) f
@@ -1508,6 +1508,10 @@ namespace Semiconj
 
 theorem mapsTo_image (h : Semiconj f fa fb) (ha : MapsTo fa s t) : MapsTo fb (f '' s) (f '' t) :=
   fun _y ⟨x, hx, hy⟩ => hy ▸ ⟨fa x, ha hx, h x⟩
+
+theorem mapsTo_image_right {t : Set β} (h : Semiconj f fa fb) (hst : MapsTo f s t) :
+    MapsTo f (fa '' s) (fb '' t) :=
+  mapsTo_image_iff.2 fun x hx ↦ ⟨f x, hst hx, (h x).symm⟩
 
 theorem mapsTo_range (h : Semiconj f fa fb) : MapsTo fb (range f) (range f) := fun _y ⟨x, hy⟩ =>
   hy ▸ ⟨fa x, h x⟩

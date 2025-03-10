@@ -528,12 +528,9 @@ theorem IsOpen.not_inseparable (hs : IsOpen s) (hx : x ∈ s) (hy : y ∉ s) : �
 In this section we define the quotient of a topological space by the `Inseparable` relation.
 -/
 
-
-variable (X)
-
+variable (X) in
 instance : TopologicalSpace (SeparationQuotient X) := instTopologicalSpaceQuotient
 
-variable {X}
 variable {t : Set (SeparationQuotient X)}
 
 namespace SeparationQuotient

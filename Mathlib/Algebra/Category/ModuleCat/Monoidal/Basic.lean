@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Kim Morrison, Jakob von Raumer
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Associator
 import Mathlib.CategoryTheory.Monoidal.Linear
 
 /-!
@@ -127,9 +127,7 @@ theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
   -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): broken ext
   apply TensorProduct.ext
   ext x
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10934): used to be dsimp
-  change ((leftUnitor N).hom) ((tensorHom (𝟙 (of R R)) f) ((1 : R) ⊗ₜ[R] x)) =
-    f (((leftUnitor M).hom) (1 ⊗ₜ[R] x))
+  dsimp
   erw [TensorProduct.lid_tmul, TensorProduct.lid_tmul]
   rw [LinearMap.map_smul]
   rfl
