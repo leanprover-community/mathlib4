@@ -407,12 +407,12 @@ def equivPUnit (α : Sort u) [Unique α] : α ≃ PUnit.{v} := ofUnique α _
 def propEquivPUnit {p : Prop} (h : p) : p ≃ PUnit.{0} := @equivPUnit p <| uniqueProp h
 
 /-- `ULift α` is equivalent to `α`. -/
-@[simps (config := .asFn) apply]
+@[simps -fullyApplied apply]
 protected def ulift {α : Type v} : ULift.{u} α ≃ α :=
   ⟨ULift.down, ULift.up, ULift.up_down, ULift.down_up.{v, u}⟩
 
 /-- `PLift α` is equivalent to `α`. -/
-@[simps (config := .asFn) apply]
+@[simps -fullyApplied apply]
 protected def plift : PLift α ≃ α := ⟨PLift.down, PLift.up, PLift.up_down, PLift.down_up⟩
 
 /-- equivalence of propositions is the same as iff -/
@@ -527,7 +527,7 @@ def arrowPUnitEquivPUnit (α : Sort*) : (α → PUnit.{v}) ≃ PUnit.{w} :=
   ⟨fun _ => .unit, fun _ _ => .unit, fun _ => rfl, fun _ => rfl⟩
 
 /-- The equivalence `(∀ i, β i) ≃ β ⋆` when the domain of `β` only contains `⋆` -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def piUnique [Unique α] (β : α → Sort*) : (∀ i, β i) ≃ β default where
   toFun f := f default
   invFun := uniqueElim
@@ -535,7 +535,7 @@ def piUnique [Unique α] (β : α → Sort*) : (∀ i, β i) ≃ β default wher
   right_inv _ := rfl
 
 /-- If `α` has a unique term, then the type of function `α → β` is equivalent to `β`. -/
-@[simps! (config := .asFn) apply symm_apply]
+@[simps! -fullyApplied apply symm_apply]
 def funUnique (α β) [Unique.{u} α] : (α → β) ≃ β := piUnique _
 
 /-- The sort of maps from `PUnit` is equivalent to the codomain. -/

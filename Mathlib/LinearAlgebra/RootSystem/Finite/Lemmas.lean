@@ -3,6 +3,7 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.LinearAlgebra.RootSystem.Base
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 import Mathlib.LinearAlgebra.RootSystem.Reduced
 import Mathlib.NumberTheory.Divisors
@@ -38,13 +39,16 @@ namespace RootPairing
 
 variable (P : RootPairing ι R M N) [Finite ι]
 
+local notation "Φ" => range P.root
+local notation "α" => P.root
+
 /-- SGA3 XXI Prop. 2.3.1 -/
 lemma coxeterWeightIn_le_four (S : Type*) [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R]
     [Module S M] [IsScalarTower S R M] [P.IsValuedIn S] (i j : ι) :
     P.coxeterWeightIn S i j ≤ 4 := by
   have : Fintype ι := Fintype.ofFinite ι
-  let ri : span S (range P.root) := ⟨P.root i, Submodule.subset_span (mem_range_self _)⟩
-  let rj : span S (range P.root) := ⟨P.root j, Submodule.subset_span (mem_range_self _)⟩
+  let ri : span S Φ := ⟨α i, Submodule.subset_span (mem_range_self _)⟩
+  let rj : span S Φ := ⟨α j, Submodule.subset_span (mem_range_self _)⟩
   set li := (P.posRootForm S).posForm ri ri
   set lj := (P.posRootForm S).posForm rj rj
   set lij := (P.posRootForm S).posForm ri rj
@@ -108,9 +112,9 @@ variable [NoZeroSMulDivisors R M] [NoZeroSMulDivisors R N]
 variable {i j}
 
 lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i ≠ j) :
-    P.root i - P.root j ∈ range P.root := by
+    α i - α j ∈ Φ := by
   have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
-  by_cases hli : LinearIndependent R ![P.root i, P.root j]
+  by_cases hli : LinearIndependent R ![α i, α j]
   · -- The case where the two roots are linearly independent
     suffices P.pairingIn ℤ i j = 1 ∨ P.pairingIn ℤ j i = 1 by
       rcases this with h₁ | h₁
@@ -143,11 +147,89 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
     · rw [and_comm] at hij
       simp [(P.pairingIn_one_four_iff ℤ j i).mp hij, two_smul]
 
-lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : P.root i ≠ - P.root j) :
-    P.root i + P.root j ∈ range P.root := by
+lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : α i ≠ - α j) :
+    α i + α j ∈ Φ := by
   let _i := P.indexNeg
   replace h : 0 < P.pairingIn ℤ i (-j) := by simpa
   replace h' : i ≠ -j := by contrapose! h'; simp [h']
   simpa using P.root_sub_root_mem_of_pairingIn_pos h h'
+
+namespace Base
+
+variable {P}
+variable (b : P.Base) (i j k : ι) (hij : i ≠ j) (hi : i ∈ b.support) (hj : j ∈ b.support)
+include b hij hi hj
+
+variable {i j} in
+lemma pairingIn_le_zero_of_ne :
+    P.pairingIn ℤ i j ≤ 0 := by
+  by_contra! h
+  exact b.sub_nmem_range_root hi hj <| P.root_sub_root_mem_of_pairingIn_pos h hij
+
+/-- This is Lemma 2.5 (a) from [Geck](Geck2017). -/
+lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
+    (hkj : k ≠ j) (hk' : α k + α i ∈ Φ) :
+    α k - α j ∈ Φ := by
+  rcases lt_or_le 0 (P.pairingIn ℤ j k) with hm | hm
+  · rw [← neg_mem_range_root_iff, neg_sub]
+    exact P.root_sub_root_mem_of_pairingIn_pos hm hkj.symm
+  obtain ⟨l, hl⟩ := hk
+  have hli : l ≠ i := by
+    rintro rfl
+    rw [add_comm, add_sub_assoc, self_eq_add_right, sub_eq_zero, P.root.injective.eq_iff] at hl
+    exact hkj hl
+  suffices 0 < P.pairingIn ℤ l i by
+    convert P.root_sub_root_mem_of_pairingIn_pos this hli using 1
+    rw [hl]
+    module
+  have hkl : l ≠ k := by rintro rfl; exact hij <| by simpa [add_sub_assoc, sub_eq_zero] using hl
+  replace hkl : P.pairingIn ℤ l k ≤ 0 := by
+    suffices α l - α k ∉ Φ by contrapose! this; exact P.root_sub_root_mem_of_pairingIn_pos this hkl
+    replace hl : α l - α k = α i - α j := by rw [hl]; module
+    rw [hl]
+    exact b.sub_nmem_range_root hi hj
+  have hki : P.pairingIn ℤ i k ≤ -2 := by
+    suffices P.pairingIn ℤ l k = 2 + P.pairingIn ℤ i k - P.pairingIn ℤ j k by linarith
+    apply algebraMap_injective ℤ R
+    simp only [algebraMap_pairingIn, map_sub, map_add, map_ofNat]
+    simpa using (P.coroot' k : M →ₗ[R] R).congr_arg hl
+  replace hki : P.pairingIn ℤ k i = -1 := by
+    replace hk' : α i ≠ - α k := by
+      rw [← sub_ne_zero, sub_neg_eq_add, add_comm]
+      intro contra
+      rw [contra] at hk'
+      exact P.ne_zero _ hk'.choose_spec
+    have aux (h : P.pairingIn ℤ i k = -2) : ¬P.pairingIn ℤ k i = -2 := by
+      contrapose! hk'; exact (P.pairingIn_neg_two_neg_two_iff ℤ i k).mp ⟨h, hk'⟩
+    have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i k
+    aesop
+  replace hki : P.pairing k i = -1 := by rw [← P.algebraMap_pairingIn ℤ, hki]; simp
+  have : P.pairingIn ℤ l i = 1 - P.pairingIn ℤ j i := by
+    apply algebraMap_injective ℤ R
+    simp only [algebraMap_pairingIn, map_sub, map_one, algebraMap_pairingIn]
+    convert (P.coroot' i : M →ₗ[R] R).congr_arg hl using 1
+    simp only [PerfectPairing.flip_apply_apply, map_sub, map_add, LinearMap.sub_apply,
+      LinearMap.add_apply, root_coroot_eq_pairing, hki, pairing_same]
+    ring
+  replace hij := pairingIn_le_zero_of_ne b hij.symm hj hi
+  omega
+
+/-- This is Lemma 2.5 (b) from [Geck](Geck2017). -/
+lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
+    (hkj : α k ≠ - α i) (hk' : α k - α j ∈ Φ) :
+    α k + α i ∈ Φ := by
+  let _i := P.indexNeg
+  replace hk : α (-k) + α j - α i ∈ Φ := by
+    rw [← neg_mem_range_root_iff]
+    convert hk using 1
+    simp only [indexNeg_neg, root_reflection_perm, reflection_apply_self]
+    module
+  rw [← neg_mem_range_root_iff]
+  convert b.root_sub_root_mem_of_mem_of_mem j i (-k) hij.symm hj hi hk (by aesop)
+    (by convert P.neg_mem_range_root_iff.mpr hk' using 1; simp [neg_add_eq_sub]) using 1
+  simp only [indexNeg_neg, root_reflection_perm, reflection_apply_self]
+  module
+
+end Base
 
 end RootPairing

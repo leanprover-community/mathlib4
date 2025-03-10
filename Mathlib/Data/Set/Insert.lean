@@ -3,8 +3,8 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Basic
-import Mathlib.Data.One.Defs
+import Mathlib.Algebra.Notation.Defs
+import Mathlib.Data.Set.Disjoint
 
 /-!
 # Lemmas about insertion, singleton, and pairs
