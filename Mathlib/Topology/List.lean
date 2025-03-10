@@ -41,7 +41,6 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
         exists []
         simp only [List.forall₂_nil_left_iff, exists_eq_left]
         exact ⟨trivial, hus⟩
-      -- porting note -- renamed reordered variables based on previous types
       | cons ht _ ih =>
         rcases mem_nhds_iff.1 ht with ⟨u, hut, hu⟩
         rcases ih _ Subset.rfl with ⟨v, hv, hvss⟩

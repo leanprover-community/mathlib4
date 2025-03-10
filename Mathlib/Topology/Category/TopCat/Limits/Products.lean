@@ -111,14 +111,13 @@ theorem sigmaIsoSigma_inv_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i 
 
 section Prod
 
--- Porting note: why is autoParam not firing?
 /-- The first projection from the product. -/
 abbrev prodFst {X Y : TopCat.{u}} : TopCat.of (X × Y) ⟶ X :=
-  ofHom ⟨Prod.fst, by continuity⟩
+  ofHom { toFun := Prod.fst }
 
 /-- The second projection from the product. -/
 abbrev prodSnd {X Y : TopCat.{u}} : TopCat.of (X × Y) ⟶ Y :=
-  ofHom ⟨Prod.snd, by continuity⟩
+  ofHom { toFun := Prod.snd }
 
 /-- The explicit binary cofan of `X, Y` given by `X × Y`. -/
 def prodBinaryFan (X Y : TopCat.{u}) : BinaryFan X Y :=
