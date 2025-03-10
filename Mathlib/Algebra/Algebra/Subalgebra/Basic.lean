@@ -18,8 +18,8 @@ More lemmas about `adjoin` can be found in `RingTheory.Adjoin`.
 universe u u' v w w'
 
 /-- A subalgebra is a sub(semi)ring that includes the range of `algebraMap`. -/
-structure Subalgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] extends
-  Subsemiring A : Type v where
+structure Subalgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] : Type v
+    extends Subsemiring A where
   /-- The image of `algebraMap` is contained in the underlying set of the subalgebra -/
   algebraMap_mem' : ∀ r, algebraMap R A r ∈ carrier
   zero_mem' := (algebraMap R A).map_zero ▸ algebraMap_mem' 0
@@ -180,12 +180,6 @@ protected theorem intCast_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [A
 def toAddSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
     (S : Subalgebra R A) : AddSubmonoid A :=
   S.toSubsemiring.toAddSubmonoid
-
--- Porting note: this field already exists in Lean 4.
--- /-- The projection from a subalgebra of `A` to a submonoid of `A`. -/
--- def toSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
---     (S : Subalgebra R A) : Submonoid A :=
---   S.toSubsemiring.toSubmonoid
 
 /-- A subalgebra over a ring is also a `Subring`. -/
 @[simps toSubsemiring]
@@ -662,10 +656,10 @@ theorem toSubring_eq_top {R A : Type*} [CommRing R] [Ring A] [Algebra R A] {S : 
   Subalgebra.toSubring_injective.eq_iff' top_toSubring
 
 theorem mem_sup_left {S T : Subalgebra R A} : ∀ {x : A}, x ∈ S → x ∈ S ⊔ T :=
-  have : S ≤ S ⊔ T := le_sup_left; (this ·) -- Porting note: need `have` instead of `show`
+  have : S ≤ S ⊔ T := le_sup_left; (this ·)
 
 theorem mem_sup_right {S T : Subalgebra R A} : ∀ {x : A}, x ∈ T → x ∈ S ⊔ T :=
-  have : T ≤ S ⊔ T := le_sup_right; (this ·) -- Porting note: need `have` instead of `show`
+  have : T ≤ S ⊔ T := le_sup_right; (this ·)
 
 theorem mul_mem_sup {S T : Subalgebra R A} {x y : A} (hx : x ∈ S) (hy : y ∈ T) : x * y ∈ S ⊔ T :=
   (S ⊔ T).mul_mem (mem_sup_left hx) (mem_sup_right hy)
@@ -919,7 +913,7 @@ instance : Unique (Subalgebra R R) :=
 
 /-- The map `S → T` when `S` is a subalgebra contained in the subalgebra `T`.
 
-This is the subalgebra version of `Submodule.inclusion`, or `Subring.inclusion`  -/
+This is the subalgebra version of `Submodule.inclusion`, or `Subring.inclusion` -/
 def inclusion {S T : Subalgebra R A} (h : S ≤ T) : S →ₐ[R] T where
   toFun := Set.inclusion h
   map_one' := rfl

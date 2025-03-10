@@ -221,7 +221,7 @@ lemma summable_f_int (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_in
     funext this ▸ (HasSum.int_rec (summable_f_nat k a ht).hasSum
       (summable_f_nat k (1 - a) ht).hasSum).summable.norm
   intro n
-  cases' n with m m
+  rcases n with - | m
   · simp only [f_int, f_nat, Int.ofNat_eq_coe, Int.cast_natCast, norm_mul, norm_eq_abs, abs_pow,
       abs_abs]
   · simp only [f_int, f_nat, Int.cast_negSucc, norm_mul, norm_eq_abs, abs_pow, abs_abs,
@@ -240,7 +240,7 @@ lemma F_int_eq_of_mem_Icc (k : ℕ) {a : ℝ} (ha : a ∈ Icc 0 1) {t : ℝ} (ht
   simp only [F_int, F_nat, Function.Periodic.lift_coe]
   convert ((summable_f_nat k a ht).hasSum.int_rec (summable_f_nat k (1 - a) ht).hasSum).tsum_eq
     using 3 with n
-  cases' n with m m
+  cases n
   · rw [f_int_ofNat _ ha.1]
   · rw [f_int_negSucc _ ha.2]
 

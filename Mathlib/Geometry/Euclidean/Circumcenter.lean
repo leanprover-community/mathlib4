@@ -109,7 +109,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     · intro p₁ hp₁
       rw [Sphere.mem_coe, mem_sphere, ← mul_self_inj_of_nonneg dist_nonneg (Real.sqrt_nonneg _),
         Real.mul_self_sqrt (add_nonneg (mul_self_nonneg _) (mul_self_nonneg _))]
-      cases' hp₁ with hp₁ hp₁
+      rcases hp₁ with hp₁ | hp₁
       · rw [hp₁]
         rw [hpo,
           dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd (orthogonalProjection_mem p) hcc _ _
@@ -134,16 +134,16 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
       ⟨cr₃, fun p₁ hp₁ => dist_of_mem_subset_mk_sphere (Set.mem_insert_of_mem _ hp₁) hcr₃⟩
     rw [exists_dist_eq_iff_exists_dist_orthogonalProjection_eq hps cc₃, hcc₃'',
       orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ hcc₃'] at hcr₃'
-    cases' hcr₃' with cr₃' hcr₃'
+    obtain ⟨cr₃', hcr₃'⟩ := hcr₃'
     have hu := hcccru ⟨cc₃', cr₃'⟩
     simp only at hu
     replace hu := hu ⟨hcc₃', hcr₃'⟩
     -- Porting note: was
     -- cases' hu with hucc hucr
     -- substs hucc hucr
-    cases' hu
+    cases hu
     have hcr₃val : cr₃ = √(cr * cr + t₃ * y * (t₃ * y)) := by
-      cases' hnps with p0 hp0
+      obtain ⟨p0, hp0⟩ := hnps
       have h' : ↑(⟨cc, hcc₃'⟩ : s) = cc := rfl
       rw [← dist_of_mem_subset_mk_sphere (Set.mem_insert_of_mem _ hp0) hcr₃, hcc₃'', ←
         mul_self_inj_of_nonneg dist_nonneg (Real.sqrt_nonneg _),
@@ -185,9 +185,9 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
     have h := Fintype.card_pos_iff.2 hne
     rw [hn] at h
     exact lt_irrefl 0 h
-  · cases' m with m
+  · rcases m with - | m
     · rw [Fintype.card_eq_one_iff] at hn
-      cases' hn with i hi
+      obtain ⟨i, hi⟩ := hn
       haveI : Unique ι := ⟨⟨i⟩, hi⟩
       use ⟨p i, 0⟩
       simp only [Set.range_unique, AffineSubspace.mem_affineSpan_singleton]
@@ -359,7 +359,7 @@ theorem circumcenter_eq_centroid (s : Simplex ℝ P 1) :
       one_smul ℝ (s.points i -ᵥ s.points 0), ← one_smul ℝ (s.points j -ᵥ s.points 0)]
     fin_cases i <;> fin_cases j <;> simp [-one_smul, ← sub_smul] <;> norm_num
   rw [Set.pairwise_eq_iff_exists_eq] at hr
-  cases' hr with r hr
+  obtain ⟨r, hr⟩ := hr
   exact
     (s.eq_circumcenter_of_dist_eq
         (centroid_mem_affineSpan_of_card_eq_add_one ℝ _ (Finset.card_fin 2)) fun i =>
@@ -434,12 +434,12 @@ theorem orthogonalProjection_eq_circumcenter_of_exists_dist_eq {n : ℕ} (s : Si
   change ∃ r : ℝ, ∀ i, (fun x => dist x p = r) (s.points i) at hr
   have hr : ∃ (r : ℝ), ∀ (a : P),
       a ∈ Set.range (fun (i : Fin (n + 1)) => s.points i) → dist a p = r := by
-    cases' hr with r hr
+    obtain ⟨r, hr⟩ := hr
     use r
     refine Set.forall_mem_range.mpr ?_
     exact hr
   rw [exists_dist_eq_iff_exists_dist_orthogonalProjection_eq (subset_affineSpan ℝ _) p] at hr
-  cases' hr with r hr
+  obtain ⟨r, hr⟩ := hr
   exact
     s.eq_circumcenter_of_dist_eq (orthogonalProjection_mem p) fun i => hr _ (Set.mem_range_self i)
 
@@ -500,7 +500,7 @@ theorem sum_pointsWithCircumcenter {α : Type*} [AddCommMonoid α] {n : ℕ}
   have h : univ = insert circumcenterIndex (univ.map (pointIndexEmbedding n)) := by
     ext x
     refine ⟨fun h => ?_, fun _ => mem_univ _⟩
-    cases' x with i
+    obtain i | - := x
     · exact mem_insert_of_mem (mem_map_of_mem _ (mem_univ i))
     · exact mem_insert_self _ _
   change _ = (∑ i, f (pointIndexEmbedding n i)) + _
@@ -871,7 +871,7 @@ theorem eq_or_eq_reflection_of_dist_eq {n : ℕ} {s : Simplex ℝ P n} {p p₁ p
       simpa only [Ne, vsub_eq_zero_iff_eq, inner_self_eq_zero] using hp
     rw [mul_left_inj' hz, mul_self_eq_mul_self_iff] at hd₁
     rw [hp₁, hp₂]
-    cases' hd₁ with hd₁ hd₁
+    rcases hd₁ with hd₁ | hd₁
     · left
       rw [hd₁]
     · right

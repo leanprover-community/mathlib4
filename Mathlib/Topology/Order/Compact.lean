@@ -375,13 +375,13 @@ theorem IsCompact.bddAbove_image [ClosedIciTopology α] [Nonempty α] {f : β �
   IsCompact.bddBelow_image (α := αᵒᵈ) hK hf
 
 /-- A continuous function with compact support is bounded below. -/
-@[to_additive " A continuous function with compact support is bounded below. "]
+@[to_additive "A continuous function with compact support is bounded below."]
 theorem Continuous.bddBelow_range_of_hasCompactMulSupport [ClosedIicTopology α] [One α]
     {f : β → α} (hf : Continuous f) (h : HasCompactMulSupport f) : BddBelow (range f) :=
   (h.isCompact_range hf).bddBelow
 
 /-- A continuous function with compact support is bounded above. -/
-@[to_additive " A continuous function with compact support is bounded above. "]
+@[to_additive "A continuous function with compact support is bounded above."]
 theorem Continuous.bddAbove_range_of_hasCompactMulSupport [ClosedIciTopology α] [One α]
     {f : β → α} (hf : Continuous f) (h : HasCompactMulSupport f) : BddAbove (range f) :=
   Continuous.bddBelow_range_of_hasCompactMulSupport (α := αᵒᵈ) hf h

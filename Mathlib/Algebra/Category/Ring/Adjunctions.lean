@@ -5,8 +5,7 @@ Authors: Kim Morrison, Johannes Hölzl, Andrew Yang
 -/
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.CategoryTheory.Adjunction.Over
--- import Mathlib.Algebra.Category.Mon
+import Mathlib.CategoryTheory.Comma.Over.Pullback
 
 /-!
 # Adjunctions in `CommRingCat`
@@ -40,10 +39,7 @@ def free : Type u ⥤ CommRingCat.{u} where
 theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = MvPolynomial α ℤ :=
   rfl
 
--- The `simpNF` linter complains here, even though it is a `rfl` lemma,
--- because the implicit arguments on the left-hand side simplify via `dsimp`.
--- (That is, the left-hand side really is not in simp normal form.)
-@[simp, nolint simpNF]
+-- This is not a `@[simp]` lemma as the left-hand side simplifies via `dsimp`.
 theorem free_map_coe {α β : Type u} {f : α → β} : ⇑(free.map f) = ⇑(rename f) :=
   rfl
 

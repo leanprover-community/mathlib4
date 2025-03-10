@@ -543,9 +543,7 @@ theorem addHaar_parallelepiped (b : Basis ι ℝ G) (v : ι → G) :
   have : FiniteDimensional ℝ G := FiniteDimensional.of_fintype_basis b
   have A : parallelepiped v = b.constr ℕ v '' parallelepiped b := by
     rw [image_parallelepiped]
-    -- Porting note: was `congr 1 with i` but Lean 4 `congr` applies `ext` first
-    refine congr_arg _ <| funext fun i ↦ ?_
-    exact (b.constr_basis ℕ v i).symm
+    exact congr_arg _ <| funext fun i ↦ (b.constr_basis ℕ v i).symm
   rw [A, addHaar_image_linearMap, b.addHaar_self, mul_one, ← LinearMap.det_toMatrix b,
     ← Basis.toMatrix_eq_toMatrix_constr, Basis.det_apply]
 
@@ -624,12 +622,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
         μ (s ∩ ({x} + r • t)) / μ (closedBall x r) * (μ (closedBall x r) / μ ({x} + r • u)))
       (𝓝[>] 0) (𝓝 (0 * (μ (closedBall x 1) / μ ({x} + u)))) := by
     apply ENNReal.Tendsto.mul A _ B (Or.inr ENNReal.zero_ne_top)
-    simp only [ne_eq, not_true, singleton_add, image_add_left, measure_preimage_add, false_or,
-      ENNReal.div_eq_top, h'u, not_and, and_false]
-    intro aux
-    exact (measure_closedBall_lt_top.ne aux).elim
-    -- Porting note: it used to be enough to pass `measure_closedBall_lt_top.ne` to `simp`
-    -- and avoid the `intro; exact` dance.
+    simp [ENNReal.div_eq_top, h'u, measure_closedBall_lt_top.ne]
   simp only [zero_mul] at C
   apply C.congr' _
   filter_upwards [self_mem_nhdsWithin]

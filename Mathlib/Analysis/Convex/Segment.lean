@@ -6,6 +6,7 @@ Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 import Mathlib.LinearAlgebra.Ray
 import Mathlib.Tactic.GCongr
 
@@ -494,7 +495,7 @@ theorem segment_eq_Icc' (x y : 𝕜) : [x -[𝕜] y] = Icc (min x y) (max x y) :
   · rw [segment_symm, segment_eq_Icc h, max_eq_left h, min_eq_right h]
 
 theorem openSegment_eq_Ioo' (hxy : x ≠ y) : openSegment 𝕜 x y = Ioo (min x y) (max x y) := by
-  cases' hxy.lt_or_lt with h h
+  rcases hxy.lt_or_lt with h | h
   · rw [openSegment_eq_Ioo h, max_eq_right h.le, min_eq_left h.le]
   · rw [openSegment_symm, openSegment_eq_Ioo h, max_eq_left h.le, min_eq_right h.le]
 

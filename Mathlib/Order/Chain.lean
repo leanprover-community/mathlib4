@@ -228,7 +228,7 @@ private theorem chainClosure_succ_total_aux (hc₁ : ChainClosure r c₁)
     SuccChain r c₂ ⊆ c₁ ∨ c₁ ⊆ c₂ := by
   induction hc₁ with
   | @succ c₃ hc₃ ih =>
-    cases' ih with ih ih
+    obtain ih | ih := ih
     · exact Or.inl (ih.trans subset_succChain)
     · exact (h hc₃ ih).imp_left fun (h : c₂ = c₃) => h ▸ Subset.rfl
   | union _ ih =>

@@ -14,7 +14,7 @@ In this file, we define `Module.toAddMonoidEnd`, which is `(•)` as a monoid ho
 We use this to prove some results on scalar multiplication by integers.
 -/
 
-assert_not_exists Multiset Set.indicator Pi.single_smul₀ Field
+assert_not_exists RelIso Multiset Set.indicator Pi.single_smul₀ Field
 
 open Function Set
 
@@ -42,6 +42,7 @@ def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
     -- Somehow, now that `SMul` is heterogeneous, it can't unfold earlier fields of a definition for
     -- use in later fields.  See
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
+    -- TODO(jmc): there should be a rw-lemma `smul_comp` close to `SMulZeroClass.compFun`
     map_zero' := AddMonoidHom.ext fun r => show (0 : R) • r = 0 by simp
     map_add' := fun x y =>
       AddMonoidHom.ext fun r => show (x + y) • r = x • r + y • r by simp [add_smul] }
