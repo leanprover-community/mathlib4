@@ -503,7 +503,7 @@ variable {R M ι : Type*} [Ring R] [AddCommGroup M] [Module R M] (i : ι) (c : �
 /-- Given `c : ι → R` and an index `i` such that `c i = 0`, this is the linear isomorphism sending
 the `j`-th standard basis vector to itself plus `c j` multiplied with the `i`-th standard basis
 vector (in particular, the `i`-th standard basis vector is kept invariant). -/
-def Finsupp.addSubEquiv : (ι →₀ R) ≃ₗ[R] (ι →₀ R) := by
+def Finsupp.addSingleEquiv : (ι →₀ R) ≃ₗ[R] (ι →₀ R) := by
   refine .ofLinear (linearCombination _ fun j ↦ single j 1 + single i (c j))
     (linearCombination _ fun j ↦ single j 1 - single i (c j)) ?_ ?_ <;>
   ext j k <;> obtain rfl | hk := eq_or_ne i k
@@ -512,8 +512,8 @@ def Finsupp.addSubEquiv : (ι →₀ R) ≃ₗ[R] (ι →₀ R) := by
   · simp [h₀]
   · simp [single_eq_of_ne hk]
 
-theorem Finsupp.linearCombination_comp_addSubEquiv (v : ι → M) :
-    linearCombination R v ∘ₗ addSubEquiv i c h₀ = linearCombination R (v + (c · • v i)) := by
-  ext; simp [addSubEquiv]
+theorem Finsupp.linearCombination_comp_addSingleEquiv (v : ι → M) :
+    linearCombination R v ∘ₗ addSingleEquiv i c h₀ = linearCombination R (v + (c · • v i)) := by
+  ext; simp [addSingleEquiv]
 
 end Ring
