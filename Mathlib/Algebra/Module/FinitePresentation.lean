@@ -106,7 +106,7 @@ theorem Module.FinitePresentation.exists_free_quotient [fp : Module.FinitePresen
   obtain ⟨m, s, hs⟩ := hK
   use m
   use n
-  set g : (Fin n → R) →ₗ[R] M := x.symm ∘ₗ (Submodule.mkQ K) with hg
+  set g : (Fin n → R) →ₗ[R] M := x.symm ∘ₗ (Submodule.mkQ K)
   have hgK : LinearMap.ker g = K := by rw [LinearEquiv.ker_comp, Submodule.ker_mkQ]
   set f : (Fin m → R) →ₗ[R] (Fin n → R) :=
     linearCombination R s ∘ₗ (linearEquivFunOnFinite R R (Fin m)).symm with hf

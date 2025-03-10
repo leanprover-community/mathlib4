@@ -58,7 +58,7 @@ variable  [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R 
 def IsRegularElement (x : N) : Prop := ∀(i : ι), P.toPerfectPairing (P.root i) x ≠ 0
 
 /-- A separation is a subset of roots, called `positive`, such that any root is either positive or
-minus one times positive, and any root that is the sum of positive roots is positive.-/
+minus one times positive, and any root that is the sum of positive roots is positive. -/
 structure Separation (P : RootPairing ι R M N) where
   /-- The positivity predicate. -/
   pos : Set ι
