@@ -123,13 +123,13 @@ lemma IsPath.cons_dropUntil_isCycle (hp : p.IsPath) (ha : G.Adj v x) (hx : x ∈
   cons_isCycle_iff _ ha|>.2 ⟨hp.dropUntil _, fun hf ↦ (fun hf ↦ hs
     <| hp.eq_penultimate_of_end_mem_edge hf) <| (edges_dropUntil_subset ..) (Sym2.eq_swap ▸ hf)⟩
 
-@[mk_iff]
+@[mk_iff IsMaximal.iff]
 structure IsMaximal {u v : α} (p : G.Walk u v) : Prop where
   max : ∀ y, G.Adj v y → y ∈ p.support
 
-/-- A walk `IsMaxPath` if it is a path containing all neighbors of its end-vertex of which
+/-- A walk `IsClosableMaxPath` if it is a path containing all neighbors of its end-vertex of which
 there is more than one -/
-structure IsMaxPath {u v : α} (p : G.Walk u v) [Fintype (G.neighborSet v)] : Prop extends
+structure IsCloseableMaxPath {u v : α} (p : G.Walk u v) [Fintype (G.neighborSet v)] : Prop extends
   IsPath p, IsMaximal p where
 /-- The end vertex has at least one other neighbor -/
   one_lt_degree : 1 < G.degree v
@@ -146,16 +146,15 @@ variable [DecidableRel G.Adj]
 /-- The first vertex in the walk `p` that is adjacent to its end-vertex -/
 abbrev close (p : G.Walk u v) : α := p.find (fun x ↦ G.Adj v x ∧ x ≠ p.penultimate)
 
-lemma IsClosable.adj (hp : p.IsClosable) : G.Adj v p.close := by
-  obtain ⟨a, ha, hp⟩ := hp
-  exact (find_spec_some (P := (fun x ↦ G.Adj v x ∧ x ≠ p.penultimate)) ⟨ha, hp⟩).1
+lemma IsClosable.adj (hp : p.IsClosable) : G.Adj v p.close :=
+  let ⟨_, ha, hp⟩ := hp
+  (find_spec_some (P := (fun x ↦ G.Adj v x ∧ x ≠ p.penultimate)) ⟨ha, hp⟩).1
 
-lemma IsClosable.ne (hp : p.IsClosable) : p.close ≠ p.penultimate := by
-  obtain ⟨a, ha, hp⟩ := hp
-  exact (find_spec_some (P := (fun x ↦ G.Adj v x ∧ x ≠ p.penultimate)) ⟨ha, hp⟩).2
+lemma IsClosable.ne (hp : p.IsClosable) : p.close ≠ p.penultimate :=
+  let ⟨_, ha, hp⟩ := hp
+  (find_spec_some (P := (fun x ↦ G.Adj v x ∧ x ≠ p.penultimate)) ⟨ha, hp⟩).2
 
-variable [LocallyFinite G]
-
+variable [Fintype (G.neighborSet v)]
 lemma IsMaximal.isClosable (hm : p.IsMaximal) (h1 : 1 < G.degree v) :
     p.IsClosable := by
   obtain ⟨x, _, hxy⟩ := (G.one_lt_degree_iff v).1 h1
@@ -165,18 +164,17 @@ lemma IsMaximal.isClosable (hm : p.IsMaximal) (h1 : 1 < G.degree v) :
     exact this hm h1 _ p.penultimate ⟨hxy.2.1, hxy.1, hxy.2.2.symm⟩ hxy.2.2.symm
   exact ⟨_, hm.max _ hxy.1, hxy.1, hax⟩
 
-lemma IsMaxPath.isClosable (hp : p.IsMaxPath) : p.IsClosable :=
-    hp.toIsMaximal.isClosable hp.one_lt_degree
+lemma IsCloseableMaxPath.isClosable (hp : p.IsCloseableMaxPath) : p.IsClosable :=
+  hp.toIsMaximal.isClosable hp.one_lt_degree
 
 /--
-If `p : G.Walk u v` is a maximal path (i.e. all neighbors of `v` lie in `p`) and `v` has more than
-one neighbor then we can close `p` into a maximal cycle, where a cycle `c : G.Walk w w` is maximal
- means that all neighbors of `w` lie in `c`.
--/
-lemma IsMaxCycle.of_isMaxPath_one_lt_degree_end (hp : p.IsMaxPath) :
-    ((p.dropUntil p.close find_mem_support).cons (hp.isClosable).adj).IsMaxCycle := by
+If `p : G.Walk u v` is a a closable maximal path (i.e. all neighbors of `v` lie in `p` and `v` has
+ more than one neighbor) then we can close `p` into a maximal cycle, where a cycle `c : G.Walk w w`
+ is maximal means that all neighbors of `w` lie in `c`. -/
+lemma IsMaxCycle.dropUntil_of_isClosableMaxPath (hp : p.IsCloseableMaxPath) :
+    ((p.dropUntil p.close find_mem_support).cons hp.isClosable.adj).IsMaxCycle := by
   use hp.cons_dropUntil_isCycle hp.isClosable.adj find_mem_support hp.isClosable.ne
-  rw [isMaximal_iff]
+  apply IsMaximal.mk
   intro y hy
   rw [support_cons] at *
   right

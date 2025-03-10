@@ -55,7 +55,7 @@ lemma nil_takeUntil (p : G.Walk u v) (hwp : w ∈ p.support) :
   refine ⟨?_, fun h => by subst h; simp⟩
   intro hnil
   cases p with
-  | nil => simp only [takeUntil, eq_mpr_eq_cast] at hnil; exact hnil.eq
+  | nil => exact hnil.eq
   | cons h q =>
     simp only [support_cons, List.mem_cons, false_or] at hwp
     obtain hl | hr := hwp
@@ -78,17 +78,17 @@ def dropUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
       · assumption
 
 @[simp]
-lemma nil_dropUntil (p : G.Walk u v) (hwp : w ∈ p.support) (hne : w ≠ v) :
+lemma not_nil_dropUntil (p : G.Walk u v) (hwp : w ∈ p.support) (hne : w ≠ v) :
     ¬ (p.dropUntil w hwp).Nil := by
   contrapose! hne
   induction p with
-  | nil => simp only [dropUntil, eq_mpr_eq_cast] at hne; exact hne.eq
+  | nil => exact hne.eq
   | @cons u v x h p ih =>
     rw [dropUntil] at hne
     rw [support_cons, List.mem_cons] at hwp
     by_cases h: u = w
     · rw [dif_pos h] at hne
-      simp only [dropUntil, eq_mpr_eq_cast] at hne; exact hne.eq
+      exact hne.eq
     · rw [dif_neg h] at hne
       obtain hw1 | hw2 := hwp
       · exact absurd hw1.symm h
@@ -245,7 +245,7 @@ lemma penultimate_dropUntil (hsu : w ≠ v) (p : G.Walk u v) (hw : w ∈ p.suppo
   congr
   nth_rw 3 [← take_spec p hw]
   rw [length_append, add_comm, Nat.add_sub_assoc]
-  exact not_nil_iff_lt_length.1 <| p.nil_dropUntil hw hsu
+  exact not_nil_iff_lt_length.1 <| p.not_nil_dropUntil hw hsu
 
 lemma length_takeUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (huw : u ≠ w) :
     (p.takeUntil u h).length < p.length := by
