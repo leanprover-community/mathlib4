@@ -215,8 +215,17 @@ lemma ofHom_injective {X Y : Type u} [Group X] [Group Y] :
   ext
   apply ConcreteCategory.congr_hom h
 
-@[to_additive]
-instance ofUnique (G : Type*) [Group G] [i : Unique G] : Unique (Grp.of G) := i
+/-- This instance allows type class synthesis to "see through" `Grp.of` to
+the underlying type when attempting synthesis on `Unique (Grp.of _)`.
+
+It is scoped because its discrimination tree keys are `Unique _` allowing
+Lean to attempt it in *any* search for `Unique α`. -/
+@[to_additive "This instance allows type class synthesis to \"see through\" `AddGrp.of`
+to the underlying type when attempting synthesis on `Unique (AddGrp.of _)`.
+
+It is scoped because its discrimination tree keys are `Unique _` allowing
+Lean to attempt it in *any* search for `Unique α`." ]
+scoped instance ofUnique (G : Type*) [Group G] [i : Unique G] : Unique (Grp.of G) := i
 
 -- We verify that simp lemmas apply when coercing morphisms to functions.
 @[to_additive]
@@ -406,8 +415,17 @@ alias coe_comp' := coe_comp
 @[to_additive (attr := deprecated "use `coe_id` instead" (since := "2025-01-28"))]
 alias coe_id' := coe_id
 
-@[to_additive]
-instance ofUnique (G : Type*) [CommGroup G] [i : Unique G] : Unique (CommGrp.of G) :=
+/-- This instance allows type class synthesis to "see through" `CommGrp.of` to
+the underlying type when attempting synthesis on `Unique (CommGrp.of _)`.
+
+It is scoped because its discrimination tree keys are `Unique _` allowing
+Lean to attempt it in *any* search for `Unique α`. -/
+@[to_additive "This instance allows type class synthesis to \"see through\" `AddCommGrp.of`
+to the underlying type when attempting synthesis on `Unique (AddCommGrp.of _)`.
+
+It is scoped because its discrimination tree keys are `Unique _` allowing
+Lean to attempt it in *any* search for `Unique α`." ]
+scoped instance ofUnique (G : Type*) [CommGroup G] [i : Unique G] : Unique (CommGrp.of G) :=
   i
 
 @[to_additive]
