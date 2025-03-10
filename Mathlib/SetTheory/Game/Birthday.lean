@@ -67,7 +67,7 @@ theorem lt_birthday_iff {x : PGame} {o : Ordinal} :
   constructor
   · rw [birthday_def]
     intro h
-    cases' lt_max_iff.1 h with h' h'
+    rcases lt_max_iff.1 h with h' | h'
     · left
       rwa [lt_lsub_iff] at h'
     · right

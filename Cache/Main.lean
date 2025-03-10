@@ -11,16 +11,16 @@ Usage: cache [COMMAND]
 
 Commands:
   # No privilege required
-  get  [ARGS]  Download linked files missing on the local cache and decompress
-  get! [ARGS]  Download all linked files and decompress
-  get- [ARGS]  Download linked files missing to the local cache, but do not decompress
-  pack         Compress non-compressed build files into the local cache
-  pack!        Compress build files into the local cache (no skipping)
-  unpack       Decompress linked already downloaded files
-  unpack!      Decompress linked already downloaded files (no skipping)
-  clean        Delete non-linked files
-  clean!       Delete everything on the local cache
-  lookup       Show information about cache files for the given lean files
+  get  [ARGS]   Download linked files missing on the local cache and decompress
+  get! [ARGS]   Download all linked files and decompress
+  get- [ARGS]   Download linked files missing to the local cache, but do not decompress
+  pack          Compress non-compressed build files into the local cache
+  pack!         Compress build files into the local cache (no skipping)
+  unpack        Decompress linked already downloaded files
+  unpack!       Decompress linked already downloaded files (no skipping)
+  clean         Delete non-linked files
+  clean!        Delete everything on the local cache
+  lookup [ARGS] Show information about cache files for the given lean files
 
   # Privilege required
   put          Run 'mk' then upload linked files missing on the server

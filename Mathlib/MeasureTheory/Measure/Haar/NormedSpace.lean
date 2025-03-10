@@ -31,7 +31,7 @@ section LinearEquiv
 
 variable {𝕜 G H : Type*} [MeasurableSpace G] [MeasurableSpace H] [NontriviallyNormedField 𝕜]
   [TopologicalSpace G] [TopologicalSpace H] [AddCommGroup G] [AddCommGroup H]
-  [TopologicalAddGroup G] [TopologicalAddGroup H] [Module 𝕜 G] [Module 𝕜 H] (μ : Measure G)
+  [IsTopologicalAddGroup G] [IsTopologicalAddGroup H] [Module 𝕜 G] [Module 𝕜 H] (μ : Measure G)
   [IsAddHaarMeasure μ] [BorelSpace G] [BorelSpace H]
   [CompleteSpace 𝕜] [T2Space G] [FiniteDimensional 𝕜 G] [ContinuousSMul 𝕜 G]
   [ContinuousSMul 𝕜 H] [T2Space H]
@@ -43,7 +43,7 @@ end LinearEquiv
 
 section SeminormedGroup
 variable {G H : Type*} [MeasurableSpace G] [Group G] [TopologicalSpace G]
-  [TopologicalGroup G] [BorelSpace G] [LocallyCompactSpace G]
+  [IsTopologicalGroup G] [BorelSpace G] [LocallyCompactSpace G]
   [MeasurableSpace H] [SeminormedGroup H] [OpensMeasurableSpace H]
 
 -- TODO: This could be streamlined by proving that inner regular measures always exist

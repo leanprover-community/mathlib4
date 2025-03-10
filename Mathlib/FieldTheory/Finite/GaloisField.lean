@@ -90,11 +90,9 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
   set g_poly := (X ^ p ^ n - X : (ZMod p)[X])
   have hp : 1 < p := h_prime.out.one_lt
   have aux : g_poly ≠ 0 := FiniteField.X_pow_card_pow_sub_X_ne_zero _ h hp
-  -- Porting note: in the statement of `key`, replaced `g_poly` by its value otherwise the
-  -- proof fails
   have key : Fintype.card (g_poly.rootSet (GaloisField p n)) = g_poly.natDegree :=
     card_rootSet_eq_natDegree (galois_poly_separable p _ (dvd_pow (dvd_refl p) h))
-      (SplittingField.splits (X ^ p ^ n - X : (ZMod p)[X]))
+      (SplittingField.splits (g_poly : (ZMod p)[X]))
   have nat_degree_eq : g_poly.natDegree = p ^ n :=
     FiniteField.X_pow_card_pow_sub_X_natDegree_eq _ h hp
   rw [nat_degree_eq] at key

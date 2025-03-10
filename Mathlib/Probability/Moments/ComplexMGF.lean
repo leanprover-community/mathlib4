@@ -71,7 +71,7 @@ lemma complexMGF_undef (hX : AEMeasurable X μ) (h : ¬ Integrable (fun ω ↦ r
     complexMGF X μ z = 0 := by
   rw [complexMGF, integral_undef]
   rw [← integrable_norm_iff (AEMeasurable.aestronglyMeasurable <| by fun_prop)]
-  simpa [Complex.norm_eq_abs, Complex.abs_exp] using h
+  simpa [Complex.norm_exp] using h
 
 lemma complexMGF_id_map (hX : AEMeasurable X μ) : complexMGF id (μ.map X) = complexMGF X μ := by
   ext t
@@ -84,12 +84,14 @@ lemma complexMGF_congr_identDistrib {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {
     complexMGF X μ = complexMGF Y μ' := by
   rw [← complexMGF_id_map h.aemeasurable_fst, ← complexMGF_id_map h.aemeasurable_snd, h.map_eq]
 
-lemma abs_complexMGF_le_mgf : abs (complexMGF X μ z) ≤ mgf X μ z.re := by
+lemma norm_complexMGF_le_mgf : ‖complexMGF X μ z‖ ≤ mgf X μ z.re := by
   rw [complexMGF, ← re_add_im z]
-  simp_rw [add_mul, Complex.exp_add, re_add_im, ← Complex.norm_eq_abs]
+  simp_rw [add_mul, Complex.exp_add, re_add_im]
   calc ‖∫ ω, cexp (z.re * X ω) * cexp (z.im * I * X ω) ∂μ‖
   _ ≤ ∫ ω, ‖cexp (z.re * X ω) * cexp (z.im * I * X ω)‖ ∂μ := norm_integral_le_integral_norm _
-  _ = ∫ ω, rexp (z.re * X ω) ∂μ := by simp [Complex.abs_exp]
+  _ = ∫ ω, rexp (z.re * X ω) ∂μ := by simp [Complex.norm_exp]
+
+@[deprecated (since := "2025-02-17")] alias abs_complexMGF_le_mgf := norm_complexMGF_le_mgf
 
 lemma complexMGF_ofReal (x : ℝ) : complexMGF X μ x = mgf X μ x := by
   rw [complexMGF, mgf, ← integral_complex_ofReal]
@@ -124,8 +126,8 @@ lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet 
   · exact integrable_pow_mul_cexp_of_re_mem_interior_integrableExpSet hz n
   · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
   · refine ae_of_all _ fun ω ε hε ↦ ?_
-    simp only [norm_mul, norm_pow, norm_real, Real.norm_eq_abs, Complex.norm_eq_abs]
-    rw [Complex.abs_ofReal, Complex.abs_exp]
+    simp only [norm_mul, norm_pow, norm_real, Real.norm_eq_abs]
+    rw [Complex.norm_exp]
     simp only [mul_re, ofReal_re, ofReal_im, mul_zero, sub_zero]
     gcongr
     have : ε = z + (ε - z) := by simp
@@ -134,8 +136,8 @@ lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet 
     refine (le_abs_self _).trans ?_
     rw [abs_mul]
     gcongr
-    refine (abs_re_le_abs _).trans ?_
-    simp only [Metric.mem_ball, dist_eq_norm, Complex.norm_eq_abs] at hε
+    refine (abs_re_le_norm _).trans ?_
+    simp only [Metric.mem_ball, dist_eq_norm] at hε
     exact hε.le
   · refine integrable_pow_abs_mul_exp_add_of_integrable_exp_mul ?_ ?_ ?_ ?_ (t := t) (n + 1)
     · exact h_subset (add_half_inf_sub_mem_Ioo hlu)
@@ -218,7 +220,7 @@ end Deriv
 section EqOfMGF
 
 /-! We prove that if two random variables have the same `mgf`, then
-they also have the same `complexMGF`.-/
+they also have the same `complexMGF`. -/
 
 variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {Y : Ω' → ℝ} {μ' : Measure Ω'}
 

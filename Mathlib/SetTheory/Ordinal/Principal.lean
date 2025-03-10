@@ -51,10 +51,6 @@ def Principal (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) : Prop :=
 theorem principal_swap_iff : Principal (Function.swap op) o ↔ Principal op o := by
   constructor <;> exact fun h a b ha hb => h hb ha
 
-@[deprecated principal_swap_iff (since := "2024-08-18")]
-theorem principal_iff_principal_swap : Principal op o ↔ Principal (Function.swap op) o :=
-  principal_swap_iff
-
 theorem not_principal_iff : ¬ Principal op o ↔ ∃ a < o, ∃ b < o, o ≤ op a b := by
   simp [Principal]
 
@@ -105,7 +101,7 @@ end Arbitrary
 private theorem principal_nfp_iSup (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
     Principal op (nfp (fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, succ (op y.1.1 y.1.2)) o) := by
   intro a b ha hb
-  rw [lt_nfp] at *
+  rw [lt_nfp_iff] at *
   obtain ⟨m, ha⟩ := ha
   obtain ⟨n, hb⟩ := hb
   obtain h | h := le_total
@@ -133,12 +129,12 @@ set_option linter.deprecated false in
 theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
     Principal op (nfp (fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b)) o) := by
   intro a b ha hb
-  rw [lt_nfp] at *
-  cases' ha with m hm
-  cases' hb with n hn
-  cases' le_total
+  rw [lt_nfp_iff] at *
+  obtain ⟨m, hm⟩ := ha
+  obtain ⟨n, hn⟩ := hb
+  rcases le_total
     ((fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b))^[m] o)
-    ((fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b))^[n] o) with h h
+    ((fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b))^[n] o) with h | h
   · use n + 1
     rw [Function.iterate_succ']
     exact lt_blsub₂ (@fun a _ b _ => op a b) (hm.trans_le h) hn
@@ -171,7 +167,7 @@ alias principal_add_isLimit := isLimit_of_principal_add
 
 theorem principal_add_iff_add_left_eq_self : Principal (· + ·) o ↔ ∀ a < o, a + o = o := by
   refine ⟨fun ho a hao => ?_, fun h a b hao hbo => ?_⟩
-  · cases' lt_or_le 1 o with ho₁ ho₁
+  · rcases lt_or_le 1 o with ho₁ | ho₁
     · exact op_eq_self_of_principal hao (isNormal_add_right a) ho (isLimit_of_principal_add ho₁ ho)
     · rcases le_one_iff.1 ho₁ with (rfl | rfl)
       · exact (Ordinal.not_lt_zero a hao).elim
@@ -312,7 +308,7 @@ theorem principal_mul_of_le_two (ho : o ≤ 2) : Principal (· * ·) o := by
 
 theorem principal_add_of_principal_mul (ho : Principal (· * ·) o) (ho₂ : o ≠ 2) :
     Principal (· + ·) o := by
-  cases' lt_or_gt_of_ne ho₂ with ho₁ ho₂
+  rcases lt_or_gt_of_ne ho₂ with ho₁ | ho₂
   · replace ho₁ : o < succ 1 := by rwa [succ_one]
     rw [lt_succ_iff] at ho₁
     exact principal_add_of_le_one ho₁
@@ -330,7 +326,7 @@ alias principal_mul_isLimit := isLimit_of_principal_mul
 
 theorem principal_mul_iff_mul_left_eq : Principal (· * ·) o ↔ ∀ a, 0 < a → a < o → a * o = o := by
   refine ⟨fun h a ha₀ hao => ?_, fun h a b hao hbo => ?_⟩
-  · cases' le_or_gt o 2 with ho ho
+  · rcases le_or_gt o 2 with ho | ho
     · convert one_mul o
       apply le_antisymm
       · rw [← lt_succ_iff, succ_one]

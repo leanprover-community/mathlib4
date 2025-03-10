@@ -28,6 +28,7 @@ def PrimeSpectrum.tensorProductTo (x : PrimeSpectrum (S ⊗[R] T)) :
     PrimeSpectrum S × PrimeSpectrum T :=
   ⟨comap (algebraMap _ _) x, comap Algebra.TensorProduct.includeRight.toRingHom x⟩
 
+@[fun_prop]
 lemma PrimeSpectrum.continuous_tensorProductTo : Continuous (tensorProductTo R S T) :=
   (comap _).2.prod_mk (comap _).2
 

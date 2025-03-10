@@ -106,7 +106,7 @@ lemma accumulate_invAccumulate {n m} (hmn : m ≤ n) {s : Fin m → ℕ} (hs : A
     rw [accumulate_rec (him.trans_le hmn) hi, ih hi, invAccumulate, dif_pos him, dif_pos hi]
     simp only
     exact Nat.sub_add_cancel (hs i.le_succ)
-  · have := (Nat.sub_one_add_one <| Nat.not_eq_zero_of_lt hm).symm
+  · have := (Nat.sub_one_add_one <| Nat.ne_zero_of_lt hm).symm
     rw [accumulate_last (hm.trans_le hmn) this, invAccumulate, dif_pos hm, dif_neg this.not_gt,
       Nat.sub_zero]
     intro j hj
