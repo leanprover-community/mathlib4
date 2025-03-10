@@ -277,7 +277,7 @@ inner product is the integral of their pointwise inner product. -/
 theorem BoundedContinuousFunction.inner_toLp (f g : α →ᵇ 𝕜) :
     ⟪BoundedContinuousFunction.toLp (E := 𝕜) 2 μ 𝕜 f,
         BoundedContinuousFunction.toLp (E := 𝕜) 2 μ 𝕜 g⟫ =
-      ∫ x, conj (f x) * g x ∂μ := by
+      ∫ x, g x * conj (f x) ∂μ := by
   apply integral_congr_ae
   have hf_ae := f.coeFn_toLp 2 μ 𝕜
   have hg_ae := g.coeFn_toLp 2 μ 𝕜
@@ -291,7 +291,7 @@ variable [CompactSpace α]
 inner product is the integral of their pointwise inner product. -/
 theorem ContinuousMap.inner_toLp (f g : C(α, 𝕜)) :
     ⟪ContinuousMap.toLp (E := 𝕜) 2 μ 𝕜 f, ContinuousMap.toLp (E := 𝕜) 2 μ 𝕜 g⟫ =
-      ∫ x, conj (f x) * g x ∂μ := by
+      ∫ x, g x * conj (f x) ∂μ := by
   apply integral_congr_ae
   -- Porting note: added explicitly passed arguments
   have hf_ae := f.coeFn_toLp (p := 2) (𝕜 := 𝕜) μ
