@@ -1128,7 +1128,8 @@ alias Memℒp.of_discrete := MemLp.of_discrete
 
 section MapMeasure
 
-variable {β : Type*} {mβ : MeasurableSpace β} {f : α → β} {g : β → E}
+variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+  {β : Type*} {mβ : MeasurableSpace β} {f : α → β} {g : β → ε}
 
 theorem eLpNormEssSup_map_measure (hg : AEStronglyMeasurable g (Measure.map f μ))
     (hf : AEMeasurable f μ) : eLpNormEssSup g (Measure.map f μ) = eLpNormEssSup (g ∘ f) μ :=
@@ -1176,11 +1177,11 @@ theorem MemLp.comp_measurePreserving {ν : MeasureTheory.Measure β} (hg : MemLp
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.comp_measurePreserving := MemLp.comp_measurePreserving
 
-theorem _root_.MeasurableEmbedding.eLpNormEssSup_map_measure {g : β → F}
-    (hf : MeasurableEmbedding f) : eLpNormEssSup g (Measure.map f μ) = eLpNormEssSup (g ∘ f) μ :=
+theorem _root_.MeasurableEmbedding.eLpNormEssSup_map_measure (hf : MeasurableEmbedding f) :
+    eLpNormEssSup g (Measure.map f μ) = eLpNormEssSup (g ∘ f) μ :=
   hf.essSup_map_measure
 
-theorem _root_.MeasurableEmbedding.eLpNorm_map_measure {g : β → F} (hf : MeasurableEmbedding f) :
+theorem _root_.MeasurableEmbedding.eLpNorm_map_measure (hf : MeasurableEmbedding f) :
     eLpNorm g p (Measure.map f μ) = eLpNorm (g ∘ f) p μ := by
   by_cases hp_zero : p = 0
   · simp only [hp_zero, eLpNorm_exponent_zero]
@@ -1191,7 +1192,7 @@ theorem _root_.MeasurableEmbedding.eLpNorm_map_measure {g : β → F} (hf : Meas
     rw [hf.lintegral_map]
     rfl
 
-theorem _root_.MeasurableEmbedding.memLp_map_measure_iff {g : β → F} (hf : MeasurableEmbedding f) :
+theorem _root_.MeasurableEmbedding.memLp_map_measure_iff (hf : MeasurableEmbedding f) :
     MemLp g p (Measure.map f μ) ↔ MemLp (g ∘ f) p μ := by
   simp_rw [MemLp, hf.aestronglyMeasurable_map_iff, hf.eLpNorm_map_measure]
 
@@ -1199,7 +1200,7 @@ theorem _root_.MeasurableEmbedding.memLp_map_measure_iff {g : β → F} (hf : Me
 alias _root_.MeasurableEmbedding.memℒp_map_measure_iff :=
   _root_.MeasurableEmbedding.memLp_map_measure_iff
 
-theorem _root_.MeasurableEquiv.memLp_map_measure_iff (f : α ≃ᵐ β) {g : β → F} :
+theorem _root_.MeasurableEquiv.memLp_map_measure_iff (f : α ≃ᵐ β) :
     MemLp g p (Measure.map f μ) ↔ MemLp (g ∘ f) p μ :=
   f.measurableEmbedding.memLp_map_measure_iff
 
