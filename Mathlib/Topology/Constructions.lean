@@ -676,6 +676,7 @@ theorem prod_eq_generateFrom :
       (forall_mem_image.2 fun t ht =>
         GenerateOpen.basic _ ⟨univ, t, by simpa [Set.prod_eq] using ht⟩))
 
+-- TODO: align with `mem_nhds_prod_iff'`
 theorem isOpen_prod_iff {s : Set (X × Y)} :
     IsOpen s ↔ ∀ a b, (a, b) ∈ s →
       ∃ u v, IsOpen u ∧ IsOpen v ∧ a ∈ u ∧ b ∈ v ∧ u ×ˢ v ⊆ s :=

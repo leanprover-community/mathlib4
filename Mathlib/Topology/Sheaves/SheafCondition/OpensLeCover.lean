@@ -51,6 +51,9 @@ namespace SheafCondition
 def OpensLeCover : Type w :=
   FullSubcategory fun V : Opens X => ∃ i, V ≤ U i
 
+-- The following instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
+
 instance : Category (OpensLeCover U) := FullSubcategory.category _
 
 instance [h : Nonempty ι] : Inhabited (OpensLeCover U) :=

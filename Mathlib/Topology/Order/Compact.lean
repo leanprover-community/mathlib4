@@ -88,6 +88,9 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   have ha : a ∈ s := by simp [s, hpt, hab]
   rcases hab.eq_or_lt with (rfl | _hlt)
   · exact ha.2
+  -- Porting note: the `obtain` below was instead
+  -- `set c := Sup s`
+  -- `have hsc : IsLUB s c := isLUB_csSup ⟨a, ha⟩ sbd`
   obtain ⟨c, hsc⟩ : ∃ c, IsLUB s c := ⟨sSup s, isLUB_csSup ⟨a, ha⟩ ⟨b, hsb⟩⟩
   have hc : c ∈ Icc a b := ⟨hsc.1 ha, hsc.2 hsb⟩
   specialize hf c hc

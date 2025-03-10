@@ -80,6 +80,9 @@ variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
 variable [ContinuousConstSMul 𝕜 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
+-- The following instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
+
 instance instAddCommMonoid : AddCommMonoid (WeakDual 𝕜 E) :=
   WeakBilin.instAddCommMonoid (topDualPairing 𝕜 E)
 
@@ -174,6 +177,9 @@ variable [ContinuousConstSMul 𝕜 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
 namespace WeakSpace
+
+-- The following instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 instance instAddCommMonoid : AddCommMonoid (WeakSpace 𝕜 E) :=
   WeakBilin.instAddCommMonoid (topDualPairing 𝕜 E).flip
