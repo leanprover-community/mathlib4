@@ -37,6 +37,21 @@ register_option linter.style.commandStart : Bool := {
   descr := "enable the commandStart linter"
 }
 
+/-- `lintUpTo stx` returns the position up until the `commandStart` linter checks the formatting.
+This is every declaration until the type-specification, if there is one, or the value,
+as well as all `variable` commands.
+-/
+def lintUpTo (stx : Syntax) : Option String.Pos :=
+  if let some cmd := stx.find? (·.isOfKind ``Lean.Parser.Command.declaration) then
+    match cmd.find? (·.isOfKind ``Lean.Parser.Term.typeSpec) with
+      | some s => s.getPos?
+      | none => match cmd.find? (·.isOfKind ``Lean.Parser.Command.declValSimple) with
+        | some s => s.getPos?
+        | none => none
+  else if stx.isOfKind ``Lean.Parser.Command.variable then
+    stx.getTailPos?
+  else none
+
 namespace Style.CommandStart
 
 @[inherit_doc Mathlib.Linter.linter.style.commandStart]
@@ -45,37 +60,34 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
+  -- if a command does not start on the first column, emit a warning
   if let some pos := stx.getPos? then
     let colStart := ((← getFileMap).toPosition pos).column
     if colStart ≠ 0 then
       Linter.logLint linter.style.commandStart stx
         m!"'{stx}' starts on column {colStart}, \
           but all commands should start at the beginning of the line."
-    if let some cmd := stx.find? (·.isOfKind ``Lean.Parser.Command.declaration) then
-      let finalLintPos := match cmd.find? (·.isOfKind ``Lean.Parser.Term.typeSpec) with
-        | some s => s.getPos?.getD default
-        | none => match cmd.find? (·.isOfKind ``Lean.Parser.Command.declValSimple) with
-          | some s => s.getPos?.getD default
-          | none => default
-      let stx := capSyntax stx finalLintPos.1 --(stx.getTailPos?.getD default).1
-      let origSubstring : Substring := {stx.getSubstring?.getD default with stopPos := finalLintPos}
-      let (real, lths) := polishSource origSubstring.toString
-      let fmt ← (liftCoreM do PrettyPrinter.ppCategory `command stx <|> (do
-        Linter.logLint linter.style.commandStart stx
-          m!"The `commandStart` linter had some parsing issues: \
-             feel free to silence it with `set_option linter.style.commandStart false in` \
-             and report this error!"
-        return real))
-      let st := polishPP fmt.pretty
-      if ! st.startsWith real then
-        let diff := real.firstDiffPos st
-        let pos := posToShiftedPos lths diff.1 + origSubstring.startPos.1
-        let f := origSubstring.str.drop (pos)
-        let extraLth := (f.takeWhile (· != st.get diff)).length
-        let srcCtxt := zoomString real diff.1 5
-        let ppCtxt  := zoomString st diff.1 5
-        Linter.logLint linter.style.commandStart (.ofRange ⟨⟨pos⟩, ⟨pos + extraLth + 1⟩⟩)
-          m!"Current syntax:  '{srcCtxt}'\nExpected syntax: '{ppCtxt}'\n"
+  -- We only lint up to the position given by `lintUpTo`
+  if let some finalLintPos := lintUpTo stx then
+    let stx := capSyntax stx finalLintPos.1
+    let origSubstring : Substring := {stx.getSubstring?.getD default with stopPos := finalLintPos}
+    let (real, lths) := polishSource origSubstring.toString
+    let fmt ← (liftCoreM do PrettyPrinter.ppCategory `command stx <|> (do
+      Linter.logLint linter.style.commandStart stx
+        m!"The `commandStart` linter had some parsing issues: \
+           feel free to silence it with `set_option linter.style.commandStart false in` \
+           and report this error!"
+      return real))
+    let st := polishPP fmt.pretty
+    if ! st.startsWith real then
+      let diff := real.firstDiffPos st
+      let pos := posToShiftedPos lths diff.1 + origSubstring.startPos.1
+      let f := origSubstring.str.drop (pos)
+      let extraLth := (f.takeWhile (· != st.get diff)).length
+      let srcCtxt := zoomString real diff.1 5
+      let ppCtxt  := zoomString st diff.1 5
+      Linter.logLint linter.style.commandStart (.ofRange ⟨⟨pos⟩, ⟨pos + extraLth + 1⟩⟩)
+        m!"Current syntax:  '{srcCtxt}'\nExpected syntax: '{ppCtxt}'\n"
 
 initialize addLinter commandStartLinter
 

@@ -17,6 +17,15 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 example  : True := trivial
 
 /--
+warning: Current syntax:  'le (a: Nat'
+Expected syntax: 'le (a : Na'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+variable (a: Nat)
+
+/--
 warning: unused variable `a`
 note: this linter can be disabled with `set_option linter.unusedVariables false`
 ---
