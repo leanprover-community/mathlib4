@@ -55,7 +55,7 @@ class ContinuousSemilinearEquivClass (F : Type*) {R : outParam Type*} {S : outPa
     [Semiring R] [Semiring S] (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R}
     [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : outParam Type*) [TopologicalSpace M]
     [AddCommMonoid M] (M₂ : outParam Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
-    [Module S M₂] [EquivLike F M M₂] extends SemilinearEquivClass F σ M M₂ : Prop where
+    [Module S M₂] [EquivLike F M M₂] : Prop extends SemilinearEquivClass F σ M M₂ where
   map_continuous : ∀ f : F, Continuous f := by continuity
   inv_continuous : ∀ f : F, Continuous (EquivLike.inv f) := by continuity
 
@@ -406,13 +406,13 @@ theorem comp_coe (f : M₁ ≃SL[σ₁₂] M₂) (f' : M₂ ≃SL[σ₂₃] M₃
     (f' : M₂ →SL[σ₂₃] M₃).comp (f : M₁ →SL[σ₁₂] M₂) = (f.trans f' : M₁ →SL[σ₁₃] M₃) :=
   rfl
 
--- Porting note: The priority should be higher than `comp_coe`.
+-- The priority should be higher than `comp_coe`.
 @[simp high]
 theorem coe_comp_coe_symm (e : M₁ ≃SL[σ₁₂] M₂) :
     (e : M₁ →SL[σ₁₂] M₂).comp (e.symm : M₂ →SL[σ₂₁] M₁) = ContinuousLinearMap.id R₂ M₂ :=
   ContinuousLinearMap.ext e.apply_symm_apply
 
--- Porting note: The priority should be higher than `comp_coe`.
+-- The priority should be higher than `comp_coe`.
 @[simp high]
 theorem coe_symm_comp_coe (e : M₁ ≃SL[σ₁₂] M₂) :
     (e.symm : M₂ →SL[σ₂₁] M₁).comp (e : M₁ →SL[σ₁₂] M₂) = ContinuousLinearMap.id R₁ M₁ :=
@@ -861,7 +861,7 @@ variable [Semiring R]
 variable [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] [∀ i, TopologicalSpace (M i)]
 
 variable (R M) in
-/-- `Fin.consEquiv` as a continuous linear equivalence.  -/
+/-- `Fin.consEquiv` as a continuous linear equivalence. -/
 @[simps!]
 def _root_.Fin.consEquivL : (M 0 × Π i, M (Fin.succ i)) ≃L[R] (Π i, M i) where
   __ := Fin.consLinearEquiv R M

@@ -278,7 +278,6 @@ variable [CommRing R] [Ring S] [Algebra R S]
 
 variable (A B : Subalgebra R S)
 
-set_option maxSynthPendingDepth 2 in
 lemma mulLeftMap_ker_eq_bot_iff_linearIndependent_op {ι : Type*} (a : ι → A) :
     LinearMap.ker (Submodule.mulLeftMap (M := toSubmodule A) (toSubmodule B) a) = ⊥ ↔
     LinearIndependent B.op (MulOpposite.op ∘ A.val ∘ a) := by
@@ -317,7 +316,6 @@ theorem of_basis_left_op {ι : Type*} (a : Basis ι R A)
   rw [← mulLeftMap_ker_eq_bot_iff_linearIndependent_op] at H
   exact Submodule.LinearDisjoint.of_basis_left _ _ a H
 
-set_option maxSynthPendingDepth 2 in
 lemma mulRightMap_ker_eq_bot_iff_linearIndependent {ι : Type*} (b : ι → B) :
     LinearMap.ker (Submodule.mulRightMap (toSubmodule A) (N := toSubmodule B) b) = ⊥ ↔
     LinearIndependent A (B.val ∘ b) := by
