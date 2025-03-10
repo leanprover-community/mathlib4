@@ -45,8 +45,8 @@ lemma find_cons_pos (h : G.Adj u v) (p : G.Walk v w)  (hu : P u) : (cons h p).fi
 lemma find_cons_neg (h : G.Adj u v) (p : G.Walk v w) (hu : ¬ P u) :
     (cons h p).find P = (p.find P) := by rw [find_cons, if_neg hu]
 
-lemma find_spec_some  (p : G.Walk u v) (P : α → Prop) [DecidablePred P]
-    (hp : a ∈ p.support.filter P) : P (p.find P) := by
+lemma find_spec_some  {p : G.Walk u v} {P : α → Prop} [DecidablePred P]
+    (hp : a ∈ p.support ∧ P a) : P (p.find P) := by
   induction p with
   | nil => aesop
   | cons h p ih =>
@@ -56,7 +56,7 @@ lemma find_spec_some  (p : G.Walk u v) (P : α → Prop) [DecidablePred P]
     · aesop
 
 lemma not_of_not_find (hp : ¬ P (p.find P)) (ha : a ∈ p.support) : ¬ P a :=
-  fun ha' ↦ hp <| find_spec_some _ _ <| List.mem_filter.2 ⟨ha, decide_eq_true ha'⟩
+  fun ha' ↦ hp <| find_spec_some ⟨ha, ha'⟩
 
 lemma find_spec_none_eq_end (hp : ∀ a, a ∈ p.support → ¬ P a) : p.find P = v := by
   induction p with
@@ -91,8 +91,7 @@ lemma eq_of_mem_takeUntil_find (hp : b ∈ (p.takeUntil (p.find P) find_mem_supp
     · have hf := find_cons_neg h p hu
       have hnu : u ≠ p.find P := by
         intro h; apply hu; rw [h, ← hf]
-        apply find_spec_some _ _
-          <| List.mem_filter.2 ⟨support_takeUntil_subset _ _ hp, decide_eq_true hb⟩
+        exact find_spec_some ⟨support_takeUntil_subset _ _ hp, hb⟩
       rw [ ← (cons h p).takeUntil_eq _ (hf ▸ find_mem_support) hf.symm, support_copy,
          takeUntil_cons find_mem_support hnu, support_cons] at hp
       rw [hf]
@@ -101,15 +100,14 @@ lemma eq_of_mem_takeUntil_find (hp : b ∈ (p.takeUntil (p.find P) find_mem_supp
       | tail b h' => exact ih h'
 
 /-- If `x ∈ p.support` and `P x` holds then `x` is also in the walk `p.dropUntil (p.find P)`. -/
-lemma mem_dropUntil_find_of_mem_filter (hx : x ∈ p.support.filter P) :
+lemma mem_dropUntil_find_of_mem_prop (hx : x ∈ p.support ∧ P x) :
     x ∈ (p.dropUntil (p.find P) find_mem_support).support := by
   have := p.take_spec (u := p.find P) find_mem_support
   apply_fun support at this
   simp_rw [support_append] at this
-  rw [List.mem_filter] at hx
   cases List.mem_append.1 (this ▸ hx.1) with
   | inl h =>
-    rw [eq_of_mem_takeUntil_find h (decide_eq_true_eq (p:= P x) ▸ hx.2)]
+    rw [eq_of_mem_takeUntil_find h hx.2]
     exact start_mem_support _
   | inr h => exact List.mem_of_mem_tail h
 
@@ -125,49 +123,50 @@ lemma IsPath.cons_dropUntil_isCycle (hp : p.IsPath) (ha : G.Adj v x) (hx : x ∈
   cons_isCycle_iff _ ha|>.2 ⟨hp.dropUntil _, fun hf ↦ (fun hf ↦ hs
     <| hp.eq_penultimate_of_end_mem_edge hf) <| (edges_dropUntil_subset ..) (Sym2.eq_swap ▸ hf)⟩
 
+/-- A walk `IsMaximal` if it contains all neighbors of its end-vertex. -/
+abbrev IsMaximal (p : G.Walk u v) : Prop := ∀ y, G.Adj v y → y ∈ p.support
+
+/-- A walk `p` in a graph `G` `IsClosable` if there is an edge in `G` from its end-vertex to a
+vertex other than the penultimate vertex of `p`. -/
+abbrev IsClosable (p : G.Walk u v) : Prop := ∃ x, x ∈ p.support ∧ G.Adj v x ∧ x ≠ p.penultimate
+variable [DecidableRel G.Adj]
+/-- The first vertex in the walk `p` that is adjacent to its end-vertex -/
+abbrev maxClose (p : G.Walk u v) : α := p.find (fun x ↦ G.Adj v x ∧ x ≠ p.penultimate)
+
+lemma IsClosable.adj (hp : p.IsClosable) : G.Adj v p.maxClose := by
+  obtain ⟨a, ha, hp⟩ := hp
+  exact (find_spec_some (P := (fun x ↦ G.Adj v x ∧ x ≠ p.penultimate)) ⟨ha, hp⟩).1
+
+
+lemma IsClosable.ne (hp : p.IsClosable) : p.maxClose ≠ p.penultimate := by
+  obtain ⟨a, ha, hp⟩ := hp
+  exact (find_spec_some (P := (fun x ↦ G.Adj v x ∧ x ≠ p.penultimate)) ⟨ha, hp⟩).2
+
 variable [LocallyFinite G]
 
-lemma exists_closing_adj (hp : p.IsPath) (hmax : G.neighborFinset v ⊆ p.support.toFinset)
-    (h1 : 1 < G.degree v) : ∃ x, x ∈ p.support ∧ G.Adj v x ∧ x ≠ p.penultimate  := by
+lemma IsMaximal.isClosable (hm : p.IsMaximal) (h1 : 1 < G.degree v) :
+    p.IsClosable := by
   obtain ⟨x, _, hxy⟩ := (G.one_lt_degree_iff v).1 h1
   wlog hax : x ≠ p.penultimate
   · rw [ne_eq, not_not] at hax
     subst_vars
-    exact this hp hmax h1 _ p.penultimate ⟨hxy.2.1, hxy.1, hxy.2.2.symm⟩ hxy.2.2.symm
-  exact ⟨_, List.mem_toFinset.1 <| hmax <| (mem_neighborFinset ..).2 hxy.1, hxy.1, hax⟩
+    exact this hm h1 _ p.penultimate ⟨hxy.2.1, hxy.1, hxy.2.2.symm⟩ hxy.2.2.symm
+  exact ⟨_, hm _ hxy.1, hxy.1, hax⟩
 
-lemma exists_cycle_of_max_path (hp : p.IsPath) (hmax : G.neighborFinset v ⊆ p.support.toFinset)
-    (h1 : 1 < G.degree v) : ∃ x, ∃ (hx : x ∈ p.support), ∃ (ha : G.Adj v x),
-    ((p.dropUntil x hx).cons ha).IsCycle :=
-  let ⟨x, hx, ha, hne⟩ := exists_closing_adj hp hmax h1
-  ⟨x, hx, ha, hp.cons_dropUntil_isCycle ha hx hne⟩
-
-variable [DecidableRel G.Adj]
-lemma maximal_cycle_of_maximal_path (hp : p.IsPath) (hmax : G.neighborFinset v ⊆ p.support.toFinset)
-    (h1 : 1 < G.degree v) : ∃ x, ∃ (hx : x ∈ p.support), ∃ (ha : G.Adj v x),
-    ((p.dropUntil x hx).cons ha).IsCycle ∧
-    G.neighborFinset v ⊆ ((p.dropUntil x hx).cons ha).support.toFinset := by
-  let P : α → Prop := fun x => G.Adj v x ∧ x ≠ p.penultimate
-  let ⟨x, hx, ha, hne⟩ := exists_closing_adj hp hmax h1
-  have hP : P x := ⟨ha, hne⟩
-  use (p.find P), find_mem_support
-  have := p.find_spec_some _ <| List.mem_filter.2 ⟨hx, decide_eq_true hP⟩
-  use this.1, hp.cons_dropUntil_isCycle this.1 find_mem_support this.2
+lemma maximal_cycle_of_maximal_path (hp : p.IsPath) (hm : p.IsMaximal) (h1 : 1 < G.degree v) :
+    ((p.dropUntil p.maxClose find_mem_support).cons (hm.isClosable h1).adj).IsCycle ∧
+    ((p.dropUntil p.maxClose find_mem_support).cons (hm.isClosable h1).adj).IsMaximal := by
+  let hc :=(hm.isClosable h1)
+  use hp.cons_dropUntil_isCycle hc.adj find_mem_support hc.ne
   intro y hy
-  rw [List.mem_toFinset, support_cons] at *
+  rw [support_cons] at *
   right
   by_cases hpen : y = p.penultimate
   · rw [hpen]
-    have h2 := (p.dropUntil (p.find P) find_mem_support).penultimate_mem_support
-    rwa [penultimate_dropUntil (fun hv ↦ G.loopless _ (hv ▸ this.1))] at h2
-  · apply mem_dropUntil_find_of_mem_filter <| List.mem_filter.2 ⟨List.mem_toFinset.1 (hmax hy), _⟩
-    rw [decide_eq_true]
-    rw [mem_neighborFinset] at hy
+    have h2 := (p.dropUntil (p.maxClose) find_mem_support).penultimate_mem_support
+    rwa [penultimate_dropUntil (fun hv ↦ G.loopless _ (hv ▸ hc.adj))] at h2
+  · apply mem_dropUntil_find_of_mem_prop ⟨(hm _ hy), _⟩
     exact ⟨hy, hpen⟩
-
-
-
-
 
 end Walk
 

@@ -905,7 +905,6 @@ lemma adj_penultimate {p : G.Walk v w} (hp : ¬ p.Nil) :
 @[simp]
 lemma penultimate_mem_support (p : G.Walk u v) : p.penultimate ∈ p.support := getVert_mem_support ..
 
-
 @[simp]
 lemma snd_reverse (p : G.Walk u v) : p.reverse.snd = p.penultimate := by
   simpa using getVert_reverse p 1
