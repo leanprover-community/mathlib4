@@ -67,11 +67,9 @@ NB. Some authors include the empty category as connected, we do not.
 We instead are interested in categories with exactly one 'connected
 component'.
 
-This allows us to show that the functor X ⨯ - preserves connected limits.
-
-See <https://stacks.math.columbia.edu/tag/002S>
--/
-class IsConnected (J : Type u₁) [Category.{v₁} J] extends IsPreconnected J : Prop where
+This allows us to show that the functor X ⨯ - preserves connected limits. -/
+@[stacks 002S]
+class IsConnected (J : Type u₁) [Category.{v₁} J] : Prop extends IsPreconnected J where
   [is_nonempty : Nonempty J]
 
 attribute [instance 100] IsConnected.is_nonempty

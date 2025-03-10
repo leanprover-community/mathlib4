@@ -3,10 +3,10 @@ Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Ring.Pow
+import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Algebra.Ring.Int.Parity
 
 /-!
@@ -116,7 +116,7 @@ protected lemma Odd.zpow_nonneg_iff (hn : Odd n) : 0 ≤ a ^ n ↔ 0 ≤ a :=
 theorem Odd.zpow_nonpos_iff (hn : Odd n) : a ^ n ≤ 0 ↔ a ≤ 0 := by
   rw [le_iff_lt_or_eq, le_iff_lt_or_eq, hn.zpow_neg_iff, zpow_eq_zero_iff]
   rintro rfl
-  exact Int.not_even_iff_odd.2 hn even_zero
+  exact Int.not_even_iff_odd.2 hn .zero
 
 lemma Odd.zpow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a := lt_iff_lt_of_le_iff_le hn.zpow_nonpos_iff
 
@@ -125,7 +125,7 @@ alias ⟨_, Odd.zpow_neg⟩ := Odd.zpow_neg_iff
 alias ⟨_, Odd.zpow_nonpos⟩ := Odd.zpow_nonpos_iff
 
 theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
-  cases' abs_choice a with h h <;> simp only [h, hp.neg_zpow _]
+  rcases abs_choice a with h | h <;> simp only [h, hp.neg_zpow _]
 
 /-! ### Bernoulli's inequality -/
 

@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Mul
 
 /-!
@@ -39,6 +40,13 @@ def conjTranspose [Star α] (M : Matrix m n α) : Matrix n m α :=
 
 @[inherit_doc]
 scoped postfix:1024 "ᴴ" => Matrix.conjTranspose
+
+@[simp]
+lemma conjTranspose_stdBasisMatrix [DecidableEq n] [DecidableEq m] [AddMonoid α]
+    [StarAddMonoid α] (i : m) (j : n) (a : α) :
+    (stdBasisMatrix i j a)ᴴ = stdBasisMatrix j i (star a) := by
+  show (stdBasisMatrix i j a).transpose.map starAddEquiv = stdBasisMatrix j i (star a)
+  simp
 
 section Diagonal
 

@@ -3,8 +3,8 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
+import Mathlib.Algebra.Group.PUnit
 import Mathlib.Algebra.Group.ULift
-import Mathlib.Algebra.PUnitInstances.Algebra
 import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
@@ -402,6 +402,9 @@ theorem Pi.nnnorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (π i)] {i 
     refine Pi.apply_single (fun i (x : π i) ↦ ‖x‖₊) ?_ i y b
     simp
   simp [Pi.nnnorm_def, H, Pi.single_apply, Finset.sup_ite, Finset.filter_eq']
+
+lemma Pi.enorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (π i)] {i : ι} (y : π i) :
+    ‖Pi.single i y‖ₑ = ‖y‖ₑ := by simp [enorm, Pi.nnnorm_single]
 
 theorem Pi.norm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (π i)] {i : ι} (y : π i) :
     ‖Pi.single i y‖ = ‖y‖ :=

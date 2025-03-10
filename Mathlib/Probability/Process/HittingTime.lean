@@ -53,7 +53,6 @@ noncomputable def hitting [Preorder ι] [InfSet ι] (u : ι → Ω → β)
   fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s
     then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m
 
-#adaptation_note /-- nightly-2024-03-16: added to replace simp [hitting] -/
 open scoped Classical in
 theorem hitting_def [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : Set β) (n m : ι) :
     hitting u s n m =
@@ -286,7 +285,7 @@ variable {u : ι → Ω → β} {s : Set β}
 
 theorem hitting_bot_le_iff {i n : ι} {ω : Ω} (hx : ∃ j, j ≤ n ∧ u j ω ∈ s) :
     hitting u s ⊥ n ω ≤ i ↔ ∃ j ≤ i, u j ω ∈ s := by
-  cases' lt_or_le i n with hi hi
+  rcases lt_or_le i n with hi | hi
   · rw [hitting_le_iff_of_lt _ hi]
     simp
   · simp only [(hitting_le ω).trans hi, true_iff]

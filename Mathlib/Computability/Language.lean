@@ -157,7 +157,7 @@ lemma mem_kstar_iff_exists_nonempty {x : List α} :
   · rintro ⟨S, rfl, h⟩
     refine ⟨S.filter fun l ↦ !List.isEmpty l,
       by simp [List.flatten_filter_not_isEmpty], fun y hy ↦ ?_⟩
-    simp only [mem_filter, Bool.not_eq_eq_eq_not, Bool.not_true, isEmpty_eq_false, ne_eq] at hy
+    simp only [mem_filter, Bool.not_eq_eq_eq_not, Bool.not_true, isEmpty_eq_false_iff, ne_eq] at hy
     exact ⟨h y hy.1, hy.2⟩
   · rintro ⟨S, hx, h⟩
     exact ⟨S, hx, fun y hy ↦ (h y hy).1⟩
@@ -199,7 +199,7 @@ theorem add_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Langu
 theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     x ∈ l ^ n ↔ ∃ S : List (List α), x = S.flatten ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by
   induction' n with n ihn generalizing x
-  · simp only [mem_one, pow_zero, length_eq_zero]
+  · simp only [mem_one, pow_zero, length_eq_zero_iff]
     constructor
     · rintro rfl
       exact ⟨[], rfl, rfl, fun _ h ↦ by contradiction⟩

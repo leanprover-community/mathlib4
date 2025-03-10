@@ -30,7 +30,6 @@ open CategoryTheory Opposite CategoryTheory.Limits
 
 namespace RingHom
 
--- Porting Note: Deleted variable `f` here, since it wasn't used explicitly
 variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop)
 
 section RespectsIso
@@ -48,16 +47,16 @@ theorem RespectsIso.cancel_left_isIso (hP : RespectsIso @P) {R S T : CommRingCat
     (g : S ⟶ T) [IsIso f] : P (g.hom.comp f.hom) ↔ P g.hom :=
   ⟨fun H => by
     convert hP.2 (f ≫ g).hom (asIso f).symm.commRingCatIsoToRingEquiv H
-    exact (IsIso.inv_hom_id_assoc _ _).symm, hP.2 g.hom (asIso f).commRingCatIsoToRingEquiv⟩
+    simp [← CommRingCat.hom_comp], hP.2 g.hom (asIso f).commRingCatIsoToRingEquiv⟩
 
 theorem RespectsIso.cancel_right_isIso (hP : RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S)
     (g : S ⟶ T) [IsIso g] : P (g.hom.comp f.hom) ↔ P f.hom :=
   ⟨fun H => by
     convert hP.1 (f ≫ g).hom (asIso g).symm.commRingCatIsoToRingEquiv H
-    change f = f ≫ g ≫ inv g
-    simp, hP.1 f.hom (asIso g).commRingCatIsoToRingEquiv⟩
+    simp [← CommRingCat.hom_comp],
+   hP.1 f.hom (asIso g).commRingCatIsoToRingEquiv⟩
 
-theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S : Type u}
+theorem RespectsIso.isLocalization_away_iff (hP : RingHom.RespectsIso @P) {R S : Type u}
     (R' S' : Type u) [CommRing R] [CommRing S] [CommRing R'] [CommRing S'] [Algebra R R']
     [Algebra S S'] (f : R →+* S) (r : R) [IsLocalization.Away r R'] [IsLocalization.Away (f r) S'] :
     P (Localization.awayMap f r) ↔ P (IsLocalization.Away.map R' S' f r) := by
@@ -84,6 +83,9 @@ theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S 
   ext1 x
   dsimp [e, e₁, e₂, IsLocalization.Away.map]
   simp only [IsLocalization.map_eq, id_apply, RingHomCompTriple.comp_apply]
+
+@[deprecated (since := "2025-03-01")]
+alias RespectsIso.is_localization_away_iff := RespectsIso.isLocalization_away_iff
 
 end RespectsIso
 

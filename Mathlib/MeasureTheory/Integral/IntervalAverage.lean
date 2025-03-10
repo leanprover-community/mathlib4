@@ -31,6 +31,7 @@ open scoped Interval
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
+/-- `⨍ x in a..b, f x` is the average of `f` over the interval `Ι a w.r.t. the Lebesgue measure. -/
 notation3 "⨍ "(...)" in "a".."b",
   "r:60:(scoped f => average (Measure.restrict volume (uIoc a b)) f) => r
 
@@ -48,3 +49,10 @@ theorem interval_average_eq (f : ℝ → E) (a b : ℝ) :
 theorem interval_average_eq_div (f : ℝ → ℝ) (a b : ℝ) :
     (⨍ x in a..b, f x) = (∫ x in a..b, f x) / (b - a) := by
   rw [interval_average_eq, smul_eq_mul, div_eq_inv_mul]
+
+/-- Interval averages are invariant when functions change along discrete sets. -/
+theorem intervalAverage_congr_codiscreteWithin {a b : ℝ} {f₁ f₂ : ℝ → ℝ}
+    (hf : f₁ =ᶠ[Filter.codiscreteWithin (Ι a b)] f₂) :
+    ⨍ (x : ℝ) in a..b, f₁ x = ⨍ (x : ℝ) in a..b, f₂ x := by
+  rw [interval_average_eq, intervalIntegral.integral_congr_codiscreteWithin hf,
+    ← interval_average_eq]

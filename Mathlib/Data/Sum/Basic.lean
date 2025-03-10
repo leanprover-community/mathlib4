@@ -165,19 +165,23 @@ open Sum
 
 namespace Function
 
-theorem Injective.sum_elim {f : α → γ} {g : β → γ} (hf : Injective f) (hg : Injective g)
+theorem Injective.sumElim {f : α → γ} {g : β → γ} (hf : Injective f) (hg : Injective g)
     (hfg : ∀ a b, f a ≠ g b) : Injective (Sum.elim f g)
   | inl _, inl _, h => congr_arg inl <| hf h
   | inl _, inr _, h => (hfg _ _ h).elim
   | inr _, inl _, h => (hfg _ _ h.symm).elim
   | inr _, inr _, h => congr_arg inr <| hg h
 
-theorem Injective.sum_map {f : α → β} {g : α' → β'} (hf : Injective f) (hg : Injective g) :
+@[deprecated (since := "2025-02-20")] alias Injective.sum_elim := Injective.sumElim
+
+theorem Injective.sumMap {f : α → β} {g : α' → β'} (hf : Injective f) (hg : Injective g) :
     Injective (Sum.map f g)
   | inl _, inl _, h => congr_arg inl <| hf <| inl.inj h
   | inr _, inr _, h => congr_arg inr <| hg <| inr.inj h
 
-theorem Surjective.sum_map {f : α → β} {g : α' → β'} (hf : Surjective f) (hg : Surjective g) :
+@[deprecated (since := "2025-02-20")] alias Injective.sum_map := Injective.sumMap
+
+theorem Surjective.sumMap {f : α → β} {g : α' → β'} (hf : Surjective f) (hg : Surjective g) :
     Surjective (Sum.map f g)
   | inl y =>
     let ⟨x, hx⟩ := hf y
@@ -186,9 +190,13 @@ theorem Surjective.sum_map {f : α → β} {g : α' → β'} (hf : Surjective f)
     let ⟨x, hx⟩ := hg y
     ⟨inr x, congr_arg inr hx⟩
 
-theorem Bijective.sum_map {f : α → β} {g : α' → β'} (hf : Bijective f) (hg : Bijective g) :
+@[deprecated (since := "2025-02-20")] alias Surjective.sum_map := Surjective.sumMap
+
+theorem Bijective.sumMap {f : α → β} {g : α' → β'} (hf : Bijective f) (hg : Bijective g) :
     Bijective (Sum.map f g) :=
-  ⟨hf.injective.sum_map hg.injective, hf.surjective.sum_map hg.surjective⟩
+  ⟨hf.injective.sumMap hg.injective, hf.surjective.sumMap hg.surjective⟩
+
+@[deprecated (since := "2025-02-20")] alias Bijective.sum_map := Bijective.sumMap
 
 end Function
 
@@ -202,7 +210,7 @@ theorem map_injective {f : α → γ} {g : β → δ} :
   ⟨fun h =>
     ⟨fun a₁ a₂ ha => inl_injective <| @h (inl a₁) (inl a₂) (congr_arg inl ha :), fun b₁ b₂ hb =>
       inr_injective <| @h (inr b₁) (inr b₂) (congr_arg inr hb :)⟩,
-    fun h => h.1.sum_map h.2⟩
+    fun h => h.1.sumMap h.2⟩
 
 @[simp]
 theorem map_surjective {f : α → γ} {g : β → δ} :
@@ -216,7 +224,7 @@ theorem map_surjective {f : α → γ} {g : β → δ} :
         obtain ⟨a | b, h⟩ := h (inr d)
         · cases h
         · exact ⟨b, inr_injective h⟩)⟩,
-    fun h => h.1.sum_map h.2⟩
+    fun h => h.1.sumMap h.2⟩
 
 @[simp]
 theorem map_bijective {f : α → γ} {g : β → δ} :
@@ -269,3 +277,17 @@ def in₂ (c : γ) : α ⊕ (β ⊕ γ) :=
   inr <| inr c
 
 end Sum3
+
+/-!
+### PSum
+-/
+
+namespace PSum
+
+variable {α β : Sort*}
+
+theorem inl_injective : Function.Injective (PSum.inl : α → α ⊕' β) := fun _ _ ↦ inl.inj
+
+theorem inr_injective : Function.Injective (PSum.inr : β → α ⊕' β) := fun _ _ ↦ inr.inj
+
+end PSum

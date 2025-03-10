@@ -97,10 +97,8 @@ There is also a constructor `Adjunction.mkOfHomEquiv` which constructs an adjunc
 hom set equivalence.
 
 To construct adjoints to a given functor, there are constructors `leftAdjointOfEquiv` and
-`adjunctionOfEquivLeft` (as well as their duals).
-
-See <https://stacks.math.columbia.edu/tag/0037>.
--/
+`adjunctionOfEquivLeft` (as well as their duals). -/
+@[stacks 0037]
 structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
   /-- The unit of an adjunction -/
   unit : 𝟭 C ⟶ F.comp G
@@ -288,14 +286,14 @@ theorem eq_homEquiv_apply {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B
     g = adj.homEquiv A B f ↔ (adj.homEquiv A B).symm g = f :=
   eq_unit_comp_map_iff adj f g
 
-/--  If `adj : F ⊣ G`, and `X : C`, then `F.obj X` corepresents `Y ↦ (X ⟶ G.obj Y)`-/
+/-- If `adj : F ⊣ G`, and `X : C`, then `F.obj X` corepresents `Y ↦ (X ⟶ G.obj Y)`. -/
 @[simps]
 def corepresentableBy (X : C) :
     (G ⋙ coyoneda.obj (Opposite.op X)).CorepresentableBy (F.obj X) where
   homEquiv := adj.homEquiv _ _
   homEquiv_comp := by simp
 
-/--  If `adj : F ⊣ G`, and `Y : D`, then `G.obj Y` represents `X ↦ (F.obj X ⟶ Y)`-/
+/-- If `adj : F ⊣ G`, and `Y : D`, then `G.obj Y` represents `X ↦ (F.obj X ⟶ Y)`. -/
 @[simps]
 def representableBy (Y : D) :
     (F.op ⋙ yoneda.obj Y).RepresentableBy (G.obj Y) where
@@ -508,11 +506,8 @@ section
 variable {E : Type u₃} [ℰ : Category.{v₃} E] {H : D ⥤ E} {I : E ⥤ D}
   (adj₁ : F ⊣ G) (adj₂ : H ⊣ I)
 
-/-- Composition of adjunctions.
-
-See <https://stacks.math.columbia.edu/tag/0DV0>.
--/
-@[simps! (config := .lemmasOnly) unit counit]
+/-- Composition of adjunctions. -/
+@[simps! (config := .lemmasOnly) unit counit, stacks 0DV0]
 def comp : F ⋙ H ⊣ I ⋙ G :=
   mk' {
     homEquiv := fun _ _ ↦ Equiv.trans (adj₂.homEquiv _ _) (adj₁.homEquiv _ _)

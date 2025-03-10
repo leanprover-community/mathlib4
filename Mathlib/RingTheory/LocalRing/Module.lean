@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.Algebra.Module.Torsion
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Flat.EquationalCriterion
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic

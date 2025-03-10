@@ -95,13 +95,10 @@ variable [Semiring 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
 variable [∀ i, Module 𝕜 (β i)] (c : 𝕜)
 variable (x y : PiLp p β) (i : ι)
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/4481
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/4481
 the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
 
-(It appears to also be unused in Mathlib.)
--/
+(It appears to also be unused in Mathlib.) -/
 @[simp, nolint simpNF]
 theorem zero_apply : (0 : PiLp p β) i = 0 :=
   rfl
@@ -572,8 +569,8 @@ theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
     [∀ i, SeminormedAddCommGroup (β i)] (n : ℕ) (h : p = n) (f : PiLp p β) :
     ‖f‖ = (∑ i, ‖f i‖ ^ n) ^ (1 / (n : ℝ)) := by
   have := p.toReal_pos_iff_ne_top.mpr (ne_of_eq_of_ne h <| ENNReal.natCast_ne_top n)
-  simp only [one_div, h, Real.rpow_natCast, ENNReal.toReal_nat, eq_self_iff_true, Finset.sum_congr,
-    norm_eq_sum this]
+  simp only [one_div, h, Real.rpow_natCast, ENNReal.toReal_natCast, eq_self_iff_true,
+    Finset.sum_congr, norm_eq_sum this]
 
 section L1
 variable {β} [∀ i, SeminormedAddCommGroup (β i)]

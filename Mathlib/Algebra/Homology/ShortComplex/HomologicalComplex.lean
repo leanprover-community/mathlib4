@@ -70,7 +70,9 @@ noncomputable abbrev isoSc' (hi : c.prev j = i) (hk : c.next j = k) :
 short complex `K.sc i` has. -/
 abbrev HasHomology := (K.sc i).HasHomology
 
-section variable [K.HasHomology i]
+section
+
+variable [K.HasHomology i]
 
 /-- The homology in degree `i` of a homological complex. -/
 noncomputable def homology := (K.sc i).homology
@@ -613,6 +615,11 @@ lemma exactAt_iff_isZero_homology [K.HasHomology i] :
     K.ExactAt i ↔ IsZero (K.homology i) := by
   dsimp [homology]
   rw [exactAt_iff, ShortComplex.exact_iff_isZero_homology]
+
+variable {K i} in
+lemma ExactAt.isZero_homology [K.HasHomology i] (h : K.ExactAt i) :
+    IsZero (K.homology i) := by
+  rwa [← exactAt_iff_isZero_homology]
 
 /-- A homological complex `K` is acyclic if it is exact at `i` for any `i`. -/
 def Acyclic := ∀ i, K.ExactAt i

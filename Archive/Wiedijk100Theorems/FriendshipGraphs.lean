@@ -5,9 +5,6 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 import Mathlib.LinearAlgebra.Matrix.Charpoly.FiniteField
-import Mathlib.Data.Int.ModEq
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Tactic.IntervalCases
 
 /-!
 # The Friendship Theorem
@@ -337,7 +334,7 @@ include hG in
 theorem friendship_theorem [Nonempty V] : ExistsPolitician G := by
   by_contra npG
   rcases hG.isRegularOf_not_existsPolitician npG with ⟨d, dreg⟩
-  cases' lt_or_le d 3 with dle2 dge3
+  rcases lt_or_le d 3 with dle2 | dge3
   · exact npG (hG.existsPolitician_of_degree_le_two dreg (Nat.lt_succ_iff.mp dle2))
   · exact hG.false_of_three_le_degree dreg dge3
 
