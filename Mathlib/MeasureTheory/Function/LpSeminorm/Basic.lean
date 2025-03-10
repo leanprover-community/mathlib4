@@ -1128,7 +1128,8 @@ alias Memℒp.of_discrete := MemLp.of_discrete
 
 section MapMeasure
 
-variable {β : Type*} {mβ : MeasurableSpace β} {f : α → β} {g : β → E}
+variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+  {β : Type*} {mβ : MeasurableSpace β} {f : α → β} {g : β → ε}
 
 theorem eLpNormEssSup_map_measure (hg : AEStronglyMeasurable g (Measure.map f μ))
     (hf : AEMeasurable f μ) : eLpNormEssSup g (Measure.map f μ) = eLpNormEssSup (g ∘ f) μ :=
@@ -1176,11 +1177,11 @@ theorem MemLp.comp_measurePreserving {ν : MeasureTheory.Measure β} (hg : MemLp
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.comp_measurePreserving := MemLp.comp_measurePreserving
 
-theorem _root_.MeasurableEmbedding.eLpNormEssSup_map_measure {g : β → F}
-    (hf : MeasurableEmbedding f) : eLpNormEssSup g (Measure.map f μ) = eLpNormEssSup (g ∘ f) μ :=
+theorem _root_.MeasurableEmbedding.eLpNormEssSup_map_measure (hf : MeasurableEmbedding f) :
+    eLpNormEssSup g (Measure.map f μ) = eLpNormEssSup (g ∘ f) μ :=
   hf.essSup_map_measure
 
-theorem _root_.MeasurableEmbedding.eLpNorm_map_measure {g : β → F} (hf : MeasurableEmbedding f) :
+theorem _root_.MeasurableEmbedding.eLpNorm_map_measure (hf : MeasurableEmbedding f) :
     eLpNorm g p (Measure.map f μ) = eLpNorm (g ∘ f) p μ := by
   by_cases hp_zero : p = 0
   · simp only [hp_zero, eLpNorm_exponent_zero]
@@ -1191,7 +1192,7 @@ theorem _root_.MeasurableEmbedding.eLpNorm_map_measure {g : β → F} (hf : Meas
     rw [hf.lintegral_map]
     rfl
 
-theorem _root_.MeasurableEmbedding.memLp_map_measure_iff {g : β → F} (hf : MeasurableEmbedding f) :
+theorem _root_.MeasurableEmbedding.memLp_map_measure_iff (hf : MeasurableEmbedding f) :
     MemLp g p (Measure.map f μ) ↔ MemLp (g ∘ f) p μ := by
   simp_rw [MemLp, hf.aestronglyMeasurable_map_iff, hf.eLpNorm_map_measure]
 
@@ -1199,7 +1200,7 @@ theorem _root_.MeasurableEmbedding.memLp_map_measure_iff {g : β → F} (hf : Me
 alias _root_.MeasurableEmbedding.memℒp_map_measure_iff :=
   _root_.MeasurableEmbedding.memLp_map_measure_iff
 
-theorem _root_.MeasurableEquiv.memLp_map_measure_iff (f : α ≃ᵐ β) {g : β → F} :
+theorem _root_.MeasurableEquiv.memLp_map_measure_iff (f : α ≃ᵐ β) :
     MemLp g p (Measure.map f μ) ↔ MemLp (g ∘ f) p μ :=
   f.measurableEmbedding.memLp_map_measure_iff
 
@@ -1210,29 +1211,26 @@ end MapMeasure
 
 section Monotonicity
 
-theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ≥0}
-    (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) {p : ℝ} (hp : 0 < p) :
+theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul {f : α → ε} {g : α → G} {c : ℝ≥0}
+    (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) {p : ℝ} (hp : 0 < p) :
     eLpNorm' f p μ ≤ c • eLpNorm' g p μ := by
   simp_rw [eLpNorm'_eq_lintegral_enorm]
   rw [← ENNReal.rpow_le_rpow_iff hp, ENNReal.smul_def, smul_eq_mul,
     ENNReal.mul_rpow_of_nonneg _ _ hp.le]
-  simp_rw [← ENNReal.rpow_mul, one_div, inv_mul_cancel₀ hp.ne.symm, ENNReal.rpow_one, enorm,
-    ← ENNReal.coe_rpow_of_nonneg _ hp.le, ← lintegral_const_mul' _ _ ENNReal.coe_ne_top,
-    ← ENNReal.coe_mul]
+  simp_rw [← ENNReal.rpow_mul, one_div, inv_mul_cancel₀ hp.ne.symm, ENNReal.rpow_one,
+    ← ENNReal.coe_rpow_of_nonneg _ hp.le, ← lintegral_const_mul' _ _ ENNReal.coe_ne_top]
   apply lintegral_mono_ae
-  simp_rw [ENNReal.coe_le_coe, ← NNReal.mul_rpow, NNReal.rpow_le_rpow_iff hp]
-  exact h
+  have aux (x) : (↑c) ^ p * ‖g x‖ₑ ^ p = (↑c * ‖g x‖ₑ) ^ p := by simp [ENNReal.mul_rpow_eq_ite]
+  simpa [ENNReal.coe_rpow_of_nonneg _ hp.le, aux, ENNReal.rpow_le_rpow_iff hp]
 
-theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ≥0}
-    (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : eLpNormEssSup f μ ≤ c • eLpNormEssSup g μ :=
+theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul {f : α → ε} {g : α → ε'} {c : ℝ≥0}
+    (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : eLpNormEssSup f μ ≤ c • eLpNormEssSup g μ :=
   calc
-    essSup (‖f ·‖ₑ) μ ≤ essSup (fun x => (↑(c * ‖g x‖₊) : ℝ≥0∞)) μ :=
-      essSup_mono_ae <| h.mono fun _ hx => ENNReal.coe_le_coe.mpr hx
-    _ = essSup (c * ‖g ·‖ₑ) μ := by simp_rw [ENNReal.coe_mul, enorm]
+    essSup (‖f ·‖ₑ) μ ≤ essSup (fun x => (↑(c * ‖g x‖ₑ) : ℝ≥0∞)) μ := essSup_mono_ae <| h
     _ = c • essSup (‖g ·‖ₑ) μ := ENNReal.essSup_const_mul
 
-theorem eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ≥0}
-    (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) (p : ℝ≥0∞) : eLpNorm f p μ ≤ c • eLpNorm g p μ := by
+theorem eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul {f : α → ε} {g : α → G} {c : ℝ≥0}
+    (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) (p : ℝ≥0∞) : eLpNorm f p μ ≤ c • eLpNorm g p μ := by
   by_cases h0 : p = 0
   · simp [h0]
   by_cases h_top : p = ∞
