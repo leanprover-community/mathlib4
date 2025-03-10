@@ -250,18 +250,18 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
 
 theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι → M)
     (h : LinearIndependent k (TensorProduct.mk R k M 1 ∘ v)) : LinearIndependent R v := by
-  rw [linearIndependent_iff']; intro s; revert v
+  rw [linearIndependent_iff']; intro s f hfv
   classical
-  refine s.induction (fun _ _ _ _ _ hi ↦ (Finset.not_mem_empty _ hi).elim)
-    fun n s hn ih x hx f hfx i hi ↦ ?_
-  rw [← Finset.sum_coe_sort] at hfx
-  have ⟨l, a, y, hay, hfa⟩ := Flat.isTrivialRelation_of_sum_smul_eq_zero hfx
-  have : x n ∉ 𝔪 • (⊤ : Submodule R M) := by
-    simpa only [← LinearMap.ker_tensorProductMk] using hx.ne_zero n
+  induction' s using Finset.induction with n s hn ih generalizing v <;> intro i hi
+  · exact (Finset.not_mem_empty _ hi).elim
+  rw [← Finset.sum_coe_sort] at hfv
+  have ⟨l, a, y, hay, hfa⟩ := Flat.isTrivialRelation_of_sum_smul_eq_zero hfv
+  have : v n ∉ 𝔪 • (⊤ : Submodule R M) := by
+    simpa only [← LinearMap.ker_tensorProductMk] using h.ne_zero n
   set n : ↥(insert n s) := ⟨n, Finset.mem_insert_self ..⟩ with n_def
   obtain ⟨j, hj⟩ : ∃ j, IsUnit (a n j) := by
     contrapose! this
-    rw [show x n = _ from hay n]
+    rw [show v n = _ from hay n]
     exact sum_mem fun _ _ ↦ Submodule.smul_mem_smul (this _) ⟨⟩
   let a' (i : ι) : R := if hi : _ then a ⟨i, hi⟩ j else 0
   have a_eq i : a i j = a' i.1 := by simp_rw [a', dif_pos i.2]
@@ -270,13 +270,13 @@ theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι �
     convert hfa j
     simp_rw [a_eq, Finset.sum_coe_sort _ (fun i ↦ f i * a' i), s.sum_insert hn, n_def]
   let c (i : ι) : R := -(if i = n then 0 else a' i) * hj.unit⁻¹
-  specialize ih (x + (c · • x n)) ?_ f ?_
-  · convert (linearIndependent_add_smul_iff (c := Ideal.Quotient.mk _ ∘ c) (i := n.1) ?_).mpr hx
+  specialize ih (v + (c · • v n)) ?_ ?_
+  · convert (linearIndependent_add_smul_iff (c := Ideal.Quotient.mk _ ∘ c) (i := n.1) ?_).mpr h
     · ext; simp [tmul_add]; rfl
     simp_rw [Function.comp_def, c, if_pos, neg_zero, zero_mul, map_zero]
-  · rw [Finset.sum_coe_sort _ (fun i ↦ f i • x i), s.sum_insert hn, add_comm, hfn] at hfx
+  · rw [Finset.sum_coe_sort _ (fun i ↦ f i • v i), s.sum_insert hn, add_comm, hfn] at hfv
     simp_rw [Pi.add_apply, smul_add, s.sum_add_distrib, c, smul_smul, ← s.sum_smul, ← mul_assoc,
-      ← s.sum_mul, mul_neg, s.sum_neg_distrib, ← hfx]
+      ← s.sum_mul, mul_neg, s.sum_neg_distrib, ← hfv]
     congr 4
     exact s.sum_congr rfl fun i hi ↦ by rw [if_neg (ne_of_mem_of_not_mem hi hn)]
   obtain hi | hi := Finset.mem_insert.mp hi
